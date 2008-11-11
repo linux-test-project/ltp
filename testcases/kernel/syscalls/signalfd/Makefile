@@ -15,15 +15,7 @@
 #  along with this program;  if not, write to the Free Software
 #  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
-
-include ../utils/cond.mk
-
-
-CFLAGS += -I../../../../include \
-	$(call check_header,sys/signalfd.h, -DHAS_SYS_SIGNALFD_H -DHAS_SIGNALFD, )     \
-	$(call check_header,linux/signalfd.h, -DHAS_LINUX_SIGNALFD_H -DHAS_SIGNALFD, ) \
-	$(call check_header,signalfd.h, -DHAS_SIGNALFD_H -DHAS_SIGNALFD, )             \
-	-Wall 
+CFLAGS += -I../../../../include -Wall
 LDLIBS += -L../../../../lib -lltp
 
 SRCS    = $(wildcard *.c)

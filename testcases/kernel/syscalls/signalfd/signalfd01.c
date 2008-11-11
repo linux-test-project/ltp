@@ -35,6 +35,8 @@
  */
 # define _GNU_SOURCE
 
+#include "config.h"
+
 
 #include "test.h"
 #include "usctest.h"
@@ -50,29 +52,22 @@ TCID_DEFINE(signalfd01);
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-#ifdef HAS_SIGNALFD
-#include <linux/version.h>
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,23)
-#define SSI_SIGNO signo
-#else
-#define SSI_SIGNO ssi_signo
+
+#ifdef HAVE_LINUX_TYPES_H
+#include <linux/types.h>
 #endif
 
-
-#ifdef HAS_SYS_SIGNALFD_H
-
+#if defined HAVE_SYS_SIGNALFD_H
 #include <sys/signalfd.h>
-
-#elif HAS_LINUX_SIGNALFD_H || HAS_SIGNALFD_H
-
-#include <linux/types.h>
-
-#ifdef HAS_LINUX_SIGNALFD_H
+#elif defined HAVE_LINUX_SIGNALFD_H
 #include <linux/signalfd.h>
-#else
+#elif defined HAVE_SIGNALFD_H
 #include <signalfd.h>
-#endif	/* HAS_LINUX_SIGNALFD_H */
+#else
+#define  USE_STUB
+#endif
 
+#ifndef HAVE_SIGNALFD
 #include "linux_syscall_numbers.h"
 #ifndef __NR_signalfd
 #define __NR_signalfd 0
@@ -84,8 +79,26 @@ signalfd(int fd, const sigset_t *mask, int flags)
   /* Taken from GLIBC. */
   return (syscall(__NR_signalfd, fd, mask, _NSIG / 8));
 }
+#endif
 
-#endif	/* HAS_SYS_SIGNALFD_H */
+#if defined HAVE_SIGNALFD_SIGINFO_SSI_SIGNO
+#define LTP_SYSCALL_SIGNALFD_FIELD_PREFIX(FIELD) ssi_##FIELD
+#elif defined HAVE_SIGNALFD_SIGINFO_SIGNO
+#define LTP_SYSCALL_SIGNALFD_FIELD_PREFIX(FIELD) FIELD
+#else
+#define  USE_STUB
+#endif
+
+#ifdef USE_STUB
+int
+main(int argc, char** argv)
+{
+ tst_resm(TCONF,
+ "System doesn't support execution of the test");
+ return 0;
+}
+#else
+
 
 void cleanup(void);
 void setup(void);
@@ -177,15 +190,15 @@ do_test1(int ntst, int sig)
 		goto out;
 	}
 	
-	if (fdsi.SSI_SIGNO == sig) {
+ if (fdsi.LTP_SYSCALL_SIGNALFD_FIELD_PREFIX(signo) == sig) {
 		tst_resm(TPASS, "got expected signal");
 		sfd_for_next = sfd;
 		goto out;
 	}
 	else {
 		tst_resm(TFAIL, "got unexpected signal: signal=%d : %s",
-			 fdsi.SSI_SIGNO,
-			 strsignal(fdsi.SSI_SIGNO));
+ fdsi.LTP_SYSCALL_SIGNALFD_FIELD_PREFIX(signo),
+ strsignal(fdsi.LTP_SYSCALL_SIGNALFD_FIELD_PREFIX(signo)));
 		sfd_for_next = -1;
 		close(sfd);
 		goto out;
@@ -271,14 +284,14 @@ do_test2(int ntst, int fd, int sig)
 		goto out;
 	}
 	
-	if (fdsi.SSI_SIGNO == sig) {
+ if (fdsi.LTP_SYSCALL_SIGNALFD_FIELD_PREFIX(signo) == sig) {
 		tst_resm(TPASS, "got expected signal");
 		goto out;
 	}
 	else {
 		tst_resm(TFAIL, "got unexpected signal: signal=%d : %s",
-			 fdsi.SSI_SIGNO,
-			 strsignal(fdsi.SSI_SIGNO));
+ fdsi.LTP_SYSCALL_SIGNALFD_FIELD_PREFIX(signo),
+ strsignal(fdsi.LTP_SYSCALL_SIGNALFD_FIELD_PREFIX(signo)));
 		goto out;
 	}
 out:
@@ -348,16 +361,5 @@ cleanup(void)
 	tst_exit();
 }
 
+#endif
 
-#else  /* !HAS_SIGNALFD */
-
-int
-main(int argc, char** argv)
-{
-	tst_resm(TCONF,
-		 "System doesn't support execution of the test");
-	return 0;
-}
-
-
-#endif /* !HAS_SIGNALFD */

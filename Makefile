@@ -44,7 +44,8 @@ export CC AR RANLIB CPPFLAGS LDFLAGS HAS_NUMA
 
 -include config.mk
 
-all: libltp.a 
+VPATH += include m4
+all: config.h libltp.a 
 	@$(MAKE) -C pan $@
 	@$(MAKE) -C testcases $@
 	@$(MAKE) -C tools $@
@@ -59,6 +60,7 @@ install: all
 	@$(MAKE) -C lib install
 	@$(MAKE) -C include install
 	@$(MAKE) -C pan install
+	@$(MAKE) -C m4 install
 	@$(MAKE) -C doc/man1 install
 	@$(MAKE) -C doc/man3 install
 
@@ -87,13 +89,38 @@ uclinux_libltp.a:
 menuconfig:
 	@./ltpmenu
 
-clean:
+clean: dist-clean ac-dist-clean
 	@$(MAKE) -C lib $@
 	@$(MAKE) -C pan $@
 	@$(MAKE) -C tools $@
 	@$(MAKE) -C testcases $@
 
+dist-clean: clean ac-dist-clean
+	@$(MAKE) -C include $@
+
+maintainer-clean: dist-clean ac-maintainer-clean
+	@$(MAKE) -C include $@
+
 package: 
 	rpmbuild -ba ltp-devel.spec
 
 
+#
+# Autoconf related
+#
+config.h: config.h.in configure
+	./configure
+
+config.h.in: configure.ac
+	autoheader
+
+configure: configure.ac $(notdir $(wildcard m4/*.m4))
+	autoconf
+
+.PHONY: ac-dist-clean ac-maintainer-clean
+ac-dist-clean:
+	rm -rf autom4te.cache
+	rm -f  config.log config.status
+
+ac-maintainer-clean:
+	rm -f configure
