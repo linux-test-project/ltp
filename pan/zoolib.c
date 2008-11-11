@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: zoolib.c,v 1.6 2006/06/27 09:37:34 vapier Exp $ */
+/* $Id: zoolib.c,v 1.7 2008/11/11 05:15:52 subrata_modak Exp $ */
 /* 
  * ZooLib
  *
@@ -169,7 +169,7 @@ zoo_mark(zoo_t z, char *entry)
 	    found = 1;
 	    break;
 	}
-    } while (buf);
+    } while (1);
 
     if (!found) {
 	if (fseek(fp, 0, SEEK_END)) {
@@ -251,7 +251,7 @@ zoo_clear(zoo_t z, pid_t p)
 	    found = 1;
 	    break;
 	}
-    } while (buf);
+    } while (1);
 
     fflush( fp );
 
@@ -299,7 +299,7 @@ zoo_getpid(zoo_t z, char *tag)
 
 	this_pid = atoi(buf);
 	break;
-    } while (buf);
+    } while (1);
 
     if (zoo_unlock(z))
 	return -1;

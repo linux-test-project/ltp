@@ -49,7 +49,7 @@
  *			   - added option to create a command file with all failed tests.
  * 	
  */
-/* $Id: pan.c,v 1.27 2008/10/29 07:03:39 subrata_modak Exp $ */
+/* $Id: pan.c,v 1.28 2008/11/11 05:15:52 subrata_modak Exp $ */
 
 #include <errno.h>
 #include <string.h>
@@ -895,7 +895,7 @@ run_child(struct coll_entry *colle, struct tag_pgrp *active, int quiet_mode)
 	 * cmd directly.
 	 */
 	if (strpbrk(c_cmdline, "\"';|<>$\\")) {
-	    execlp("sh", "sh", "-c", c_cmdline, 0);
+	    execlp("sh", "sh", "-c", c_cmdline, (char*)0);
 	    errlen = sprintf(errbuf, 
 		    "pan(%s): execlp of '%s' (tag %s) failed.  errno:%d %s",
 		    panname, c_cmdline, colle->name, errno, strerror(errno));

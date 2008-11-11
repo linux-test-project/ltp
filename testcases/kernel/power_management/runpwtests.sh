@@ -1,3 +1,4 @@
+#! /bin/sh 
 ################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2001                 ##
@@ -27,7 +28,6 @@
 # History:      26 Aug 2008 - Created this file
 # 03 Nov 2008 - Added CPUIDLE sysfs testcase
 #
-#! /bin/sh 
 
 # Exporting Required variables
 

@@ -20,7 +20,7 @@ CFLAGS += -I../../../../include -Wall
 LDLIBS += -L../../../../lib -lltp -lnuma -lrt
 
 check_numa_move_pages = $(shell \
-	if echo -e \
+	if printf \
 	"\#include <numa.h>\n\
 	int main() \
 	{ \

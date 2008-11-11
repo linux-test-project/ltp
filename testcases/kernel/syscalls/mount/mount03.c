@@ -443,7 +443,7 @@ setup_uid()
 			Cmd_buffer[2] = Path_name;
 
             /* Put command into string */
-            sprintf("command, :%s %s %s", cmd, testhome_path, Path_name);
+            sprintf(command, "%s %s %s", cmd, testhome_path, Path_name);
 
             /*Run command to cp file to right spot */
             system (command);

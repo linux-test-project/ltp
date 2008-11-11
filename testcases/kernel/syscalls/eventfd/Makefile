@@ -23,7 +23,7 @@ CFLAGS += -I../../../../include -Wall
 LDLIBS += -L../../../../lib -lltp
 
 check_aio_eventfd = $(shell \
-	if echo -e \
+	if printf \
 	"\#include <libaio.h>\n\
 	int main() \
 	{ \

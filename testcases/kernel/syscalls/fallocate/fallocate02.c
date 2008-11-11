@@ -332,13 +332,13 @@ main(int   ac,    /* number of command line parameters                      */
 				tst_exit();
 			}
 	            TEST_ERROR_LOG(TEST_ERRNO);
-	            tst_resm(TFAIL, "fallocatee(%s:%d, %d, %lld, %lld) Failed, expected errno:%d \
+	            tst_resm(TFAIL, "fallocate(%s:%d, %d, %lld, %lld) Failed, expected errno:%d \
 				instead errno=%d : %s", fname, fd,test_data[test_index].mode, 
 				test_data[test_index].offset * block_size, test_data[test_index].len * block_size, 
 				test_data[test_index].error, TEST_ERRNO, strerror(TEST_ERRNO));
 		 } else {
 		        /* No Verification test, yet... */
-		        tst_resm(TPASS, "fallocatee(%s:%d, %d, %lld, %lld) returned %d ",
+		        tst_resm(TPASS, "fallocate(%s:%d, %d, %lld, %lld) returned %d ",
 			fname, fd,test_data[test_index].mode, test_data[test_index].offset * block_size, 
 			test_data[test_index].len * block_size, TEST_ERRNO);
         		}
