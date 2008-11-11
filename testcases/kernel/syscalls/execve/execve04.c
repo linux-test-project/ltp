@@ -50,6 +50,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <fcntl.h>
 #include <test.h>
 #include <usctest.h>
@@ -83,6 +84,8 @@ main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
+	int childpid;
+	int err;
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, options, &help)) != (char *)NULL){
@@ -106,18 +109,28 @@ main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		TEST(execve(test_name, NULL, NULL));
+		childpid=fork();
+		if(childpid==-1) {
+			tst_resm(TBROK, "fork() failed: %s", strerror(errno));
+		} else if(childpid==0) {
+			TEST(execve(test_name, NULL, NULL));
+			exit(TEST_ERRNO);
+		} else { /* parent */
+			waitpid(childpid, &err, 0);
+			err=WEXITSTATUS(err);
 
-		if (TEST_ERRNO != EMFILE) {
-			tst_resm(TFAIL, "execve(%s) failed: expected EMFILE(%d), got %d (%s)",
-				test_name, EMFILE, TEST_ERRNO, strerror(TEST_ERRNO));
-			continue;
+			if (err != EMFILE) {
+				tst_resm(TFAIL, "execve(%s) failed: expected EMFILE(%d), got %d (%s)",
+								 test_name, EMFILE, err, strerror(err));
+				continue;
+			}
+
+			TEST_ERROR_LOG(err);
+
+			tst_resm(TPASS, "Expected failure - %d : %s",
+							 err, strerror(err));
 		}
 
-		TEST_ERROR_LOG(TEST_ERRNO);
-
-		tst_resm(TPASS, "Expected failure - %d : %s", 
-			 TEST_ERRNO, strerror(TEST_ERRNO));
 	}
 	cleanup();
 
@@ -146,7 +159,7 @@ setup()
 	char *pname = NULL;
 
 	/* capture signals */
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
