@@ -327,9 +327,8 @@ main(int   ac,    /* number of command line parameters                      */
 			 /* check return code */
 	        if ( TEST_ERRNO != test_data[test_index].error ) {
 			if ( TEST_ERRNO == EOPNOTSUPP ) {
-				tst_resm( TCONF, " fallocate system call" \
+				tst_brkm( TCONF, cleanup, " fallocate system call" \
 				" is not implemented");
-				tst_exit();
 			}
 	            TEST_ERROR_LOG(TEST_ERRNO);
 	            tst_resm(TFAIL, "fallocate(%s:%d, %d, %lld, %lld) Failed, expected errno:%d \

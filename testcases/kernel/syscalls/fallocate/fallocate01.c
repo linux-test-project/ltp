@@ -336,9 +336,8 @@ runtest(int mode, int fd, loff_t expected_size)
          /* check return code */
          if ( TEST_RETURN != 0 ) {
 		if ( TEST_ERRNO == EOPNOTSUPP ) {
-			tst_resm( TCONF, " fallocate system call" \
+			tst_brkm( TCONF, cleanup, " fallocate system call" \
 				" is not implemented");
-			tst_exit();
 		}
           TEST_ERROR_LOG(TEST_ERRNO);
            tst_resm(TFAIL, "fallocate(%d, %d, %lld, %lld) Failed, errno=%d : %s", 
