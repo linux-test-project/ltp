@@ -125,7 +125,7 @@ long waittmr(int tfd, int timeo) {
 int TST_TOTAL = 3;
 
 int main(int ac, char **av) {
-	int i, tfd, tfd2;
+	int i, tfd;
 	long ticks;
 	unsigned long long tnow, ttmr;
 	u_int64_t uticks;
