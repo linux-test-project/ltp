@@ -450,7 +450,7 @@ cleanup()
 	
 	/* Restore mode permissions on test directory created in setup2() */
 	if (chmod(DIR_TEMP, MODE_RWX) < 0) {
-		tst_brkm(TBROK, NULL, "chmod(2) of %s failed", DIR_TEMP);
+		tst_resm(TBROK, "chmod(2) of %s failed", DIR_TEMP);
 	}
 
 	/* Remove files and temporary directory created */

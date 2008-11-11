@@ -240,7 +240,7 @@ void cleanup()
 
 	/* Close the testfile */
 	if (close(fildes) == -1) {
-		tst_brkm(TBROK, NULL, "close(%s) Failed, errno=%d : %s",
+		tst_resm(TBROK, "close(%s) Failed, errno=%d : %s",
 			 TESTFILE, errno, strerror(errno));
 	}
 

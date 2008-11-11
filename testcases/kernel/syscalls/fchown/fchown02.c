@@ -334,11 +334,11 @@ void cleanup()
 
 	/* Close the temporary file(s) opened in the setups  */
 	if (close(Fd1) == -1) {
-		tst_brkm(TBROK, cleanup, "close(%s) Failed, errno=%d : %s",
+		tst_resm(TBROK, "close(%s) Failed, errno=%d : %s",
 			 TESTFILE1, errno, strerror(errno));
 	}
 	if (close(Fd2) == -1) {
-		tst_brkm(TBROK, cleanup, "close(%s) Failed, errno=%d : %s",
+		tst_resm(TBROK, "close(%s) Failed, errno=%d : %s",
 			 TESTFILE2, errno, strerror(errno));
 	}
 
