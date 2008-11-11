@@ -22,6 +22,13 @@ cat << EOF > ${output}
 
 #include <sys/syscall.h>
 
+	
+static void cleanup(void);
+
+#define syscall(N, ...) ( \
+	N==0 ? ({tst_brkm(TCONF, cleanup, "Syscall %s not supported on your arch", #N); errno=ENOSYS; -1; }) : \
+	syscall(N, ##__VA_ARGS__) \
+)
 EOF
 
 for arch in `cat order` ; do

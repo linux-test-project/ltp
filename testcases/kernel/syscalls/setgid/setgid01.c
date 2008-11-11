@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: setgid01.c,v 1.4 2008/08/19 07:00:50 subrata_modak Exp $ */
+/* $Id: setgid01.c,v 1.5 2008/11/11 05:57:38 subrata_modak Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -115,8 +115,8 @@
 #include "test.h"
 #include "usctest.h"
 
-void setup();
-void cleanup();
+static void setup();
+static void cleanup();
 
 #include "compat_16.h"
 

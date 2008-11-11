@@ -44,6 +44,8 @@
 #include <test.h>
 #include "linux_syscall_numbers.h"
 
+#define cleanup tst_exit
+
 /* We use EXIT_FAILURE for an expected failure from utimensat()
    (e.g., EACCES and EPERM), and one of the following for unexpected
    failures (i.e., something broke in our test setup). */

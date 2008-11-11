@@ -63,6 +63,7 @@ char name[256], fname[256];
 
 void init_buffers(char*[]);
 void l_seek(int, off_t, int, off_t);
+static void cleanup(void);
 
 int main(int ac, char *av[]) 
 {

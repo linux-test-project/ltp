@@ -56,8 +56,8 @@ char root[] = "root";
 struct passwd *getpwnam(), *ltpuser1pwent, *rootpwent;
 int mygid;
 
-void setup(void);
-void cleanup(void);
+static void setup(void);
+static void cleanup(void);
 
 #include "compat_16.h"
 

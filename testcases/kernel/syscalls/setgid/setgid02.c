@@ -58,8 +58,8 @@ char nobody_gid[] = "nobody";
 struct passwd *ltpuser;
 
 
-void setup(void);
-void cleanup(void);
+static void setup(void);
+static void cleanup(void);
 
 #include "compat_16.h"
 
