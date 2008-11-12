@@ -78,11 +78,11 @@ int signalfd(int fd, const sigset_t * mask, int flags)
 #endif
 
 #if defined HAVE_SIGNALFD_SIGINFO_SSI_SIGNO
-#define LTP_SYSCALL_SIGNALFD_FIELD_PREFIX(FIELD) ssi_##FIELD
+# define SIGNALFD_PREFIX(FIELD) ssi_##FIELD
 #elif defined HAVE_SIGNALFD_SIGINFO_SIGNO
-#define LTP_SYSCALL_SIGNALFD_FIELD_PREFIX(FIELD) FIELD
+# define SIGNALFD_PREFIX(FIELD) FIELD
 #else
-#define  USE_STUB
+# define  USE_STUB
 #endif
 
 #ifdef USE_STUB
@@ -172,14 +172,14 @@ int do_test1(int ntst, int sig)
 		goto out;
 	}
 
-	if (fdsi.LTP_SYSCALL_SIGNALFD_FIELD_PREFIX(signo) == sig) {
+	if (fdsi.SIGNALFD_PREFIX(signo) == sig) {
 		tst_resm(TPASS, "got expected signal");
 		sfd_for_next = sfd;
 		goto out;
 	} else {
 		tst_resm(TFAIL, "got unexpected signal: signal=%d : %s",
-			 fdsi.LTP_SYSCALL_SIGNALFD_FIELD_PREFIX(signo),
-			 strsignal(fdsi.LTP_SYSCALL_SIGNALFD_FIELD_PREFIX(signo)));
+			 fdsi.SIGNALFD_REFIX(signo),
+			 strsignal(fdsi.SIGNALFD_PREFIX(signo)));
 		sfd_for_next = -1;
 		close(sfd);
 		goto out;
@@ -256,13 +256,13 @@ void do_test2(int ntst, int fd, int sig)
 		goto out;
 	}
 
-	if (fdsi.LTP_SYSCALL_SIGNALFD_FIELD_PREFIX(signo) == sig) {
+	if (fdsi.SIGNALFD_PREFIX(signo) == sig) {
 		tst_resm(TPASS, "got expected signal");
 		goto out;
 	} else {
 		tst_resm(TFAIL, "got unexpected signal: signal=%d : %s",
-			 fdsi.LTP_SYSCALL_SIGNALFD_FIELD_PREFIX(signo),
-			 strsignal(fdsi.LTP_SYSCALL_SIGNALFD_FIELD_PREFIX(signo)));
+			 fdsi.SIGNALFD_PREFIX(signo),
+			 strsignal(fdsi.SIGNALFD_PREFIX(signo)));
 		goto out;
 	}
 
