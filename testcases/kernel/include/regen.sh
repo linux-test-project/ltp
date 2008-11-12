@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 output="linux_syscall_numbers.h"
 
@@ -63,7 +63,7 @@ done
 
 echo -n "Generating stub list ... "
 echo "" >> ${output}
-for nr in `cat stub-list` ; do
+for nr in $(awk '{print $1}' *.in | sort -u) ; do
 	cat <<-EOF >> ${output}
 	# ifndef $nr
 	#  define $nr 0
