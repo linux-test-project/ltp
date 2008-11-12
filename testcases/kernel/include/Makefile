@@ -8,7 +8,7 @@ clean distclean:
 install:
 	@true
 
-linux_syscall_numbers.h: *.in
+linux_syscall_numbers.h: *.in regen.sh
 	$(MAKE) regen
 
 regen:
