@@ -140,7 +140,11 @@ static inline int test_socket(int domain, int type, int protocol)
 
 static inline int test_bind(int sk, struct sockaddr *addr, socklen_t addrlen)
 {
-	int error = bind(sk, addr, addrlen);
+	int error;
+	int true_const=1;
+
+	setsockopt(sk, SOL_SOCKET, SO_REUSEADDR, &true_const, sizeof(int));
+	error = bind(sk, addr, addrlen);
         if (-1 == error)
                 tst_brkm(TBROK, tst_exit, "bind: %s", strerror(errno));
 	return error;
