@@ -1,4 +1,6 @@
-all: linux_syscall_numbers.h
+all: ../../../include/linux_syscall_numbers.h
+
+../../../include/linux_syscall_numbers.h: linux_syscall_numbers.h
 	ln -sf ../testcases/kernel/include/linux_syscall_numbers.h ../../../include/
 
 clean distclean:
