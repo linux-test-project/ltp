@@ -6,6 +6,7 @@ HEADERS=compiler.h dataascii.h databin.h file_lock.h forker.h open_flags.h \
 	str_to_bytes.h test.h tlibio.h usctest.h write_log.h \
 	linux_syscall_numbers.h libtestsuite.h config.h
 
+.PHONY: all install
 all:
 
 install: $(HEADERS)
@@ -13,11 +14,14 @@ install: $(HEADERS)
 		install -D -m 644 $$i $(DESTDIR)/$(PREFIX)/include/ltp/$$i; \
 	done
 
-dist-clean: ac-dist-clean
-maintainer-clean: dist-clean ac-maintainer-clean
+.PHONY: clean distclean maintainer-clean
+clean: ac-clean
+distclean: clean ac-distclean
+maintainer-clean: distclean ac-maintainer-clean
 
-.PHONY: ac-dist-clean ac-maintainer-clean
-ac-dist-clean:
+.PHONY: ac-clean ac-distclean ac-maintainerclean
+ac-clean:
+ac-distclean:
 	rm -f config.h
 ac-maintainer-clean:
 	rm -f config.h.in

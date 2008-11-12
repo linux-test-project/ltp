@@ -66,7 +66,7 @@ install: all
 
 	@./IDcheck.sh
 
-libltp.a:
+libltp.a: config.h
 	@$(MAKE) -C lib $@
 
 uclinux: uclinux_libltp.a
@@ -89,16 +89,16 @@ uclinux_libltp.a:
 menuconfig:
 	@./ltpmenu
 
-clean: dist-clean ac-dist-clean
+clean: ac-clean
 	@$(MAKE) -C lib $@
 	@$(MAKE) -C pan $@
 	@$(MAKE) -C tools $@
 	@$(MAKE) -C testcases $@
 
-dist-clean: clean ac-dist-clean
+distclean: clean ac-distclean
 	@$(MAKE) -C include $@
 
-maintainer-clean: dist-clean ac-maintainer-clean
+maintainer-clean: distclean ac-maintainer-clean
 	@$(MAKE) -C include $@
 
 package: 
@@ -106,21 +106,21 @@ package:
 
 
 #
-# Autoconf related
+# Autotools related
 #
-config.h: config.h.in configure
-	./configure
+configure: configure.ac $(notdir $(wildcard m4/*.m4)) config.h.in
+	autoconf
 
 config.h.in: configure.ac
 	autoheader
 
-configure: configure.ac $(notdir $(wildcard m4/*.m4))
-	autoconf
+config.h: config.h.default
+	cp include/config.h.default include/config.h
 
-.PHONY: ac-dist-clean ac-maintainer-clean
-ac-dist-clean:
+.PHONY: ac-clean ac-distclean ac-ac-maintainer-clean
+ac-clean:
 	rm -rf autom4te.cache
-	rm -f  config.log config.status
-
-ac-maintainer-clean:
+	rm -f config.log config.status
+ac-distclean: ac-clean
+ac-maintainer-clean: ac-distclean
 	rm -f configure
