@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Header: /cvsroot/ltp/ltp/testcases/kernel/ipc/pipeio/pipeio.c,v 1.12 2008/09/19 11:01:41 subrata_modak Exp $ */
+/* $Header: /cvsroot/ltp/ltp/testcases/kernel/ipc/pipeio/pipeio.c,v 1.13 2008/11/12 06:14:34 subrata_modak Exp $ */
 /*
  *  This tool can be used to beat on system or named pipes.
  *  See the help() function below for user information.
@@ -409,9 +409,7 @@ char *av[];
 	 */
 	if ( size > PIPE_BUF && num_wrters > 1 ) {
 	    if ( ! loop ) {
-		j=(num_writes*size)/PIPE_BUF;
-		if ( (num_writes*size)%PIPE_BUF ) 
-		    j++;
+		j=((long long)num_writes*size+PIPE_BUF-1)/PIPE_BUF;
 		num_writes=j;
 	        tst_resm (TINFO, "adjusting i/o size to %d, and # of writes to %d",
 		    PIPE_BUF, num_writes);
