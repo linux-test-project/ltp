@@ -12,3 +12,8 @@ mail export TCdat=$LTPROOT/testcases/bin; mail_tests.sh
 cpio export TCdat=$LTPROOT/testcases/bin; cpio_tests.sh
 unzip01 unzip_tests.sh
 gzip01 gzip_tests.sh
+cp_tests01 cp_tests.sh
+ln_tests01 ln_tests.sh
+mkdir_tests01 mkdir_tests.sh
+mv_tests01 mv_tests.sh
+
