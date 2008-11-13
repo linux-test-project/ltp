@@ -538,7 +538,8 @@ main()
                          ${LTPROOT}/runtest/timers                  \
                          ${LTPROOT}/runtest/power_management_tests  \
                          ${LTPROOT}/runtest/numa                    \
-                         ${LTPROOT}/runtest/hugetlb
+                         ${LTPROOT}/runtest/hugetlb                 \
+                         ${LTPROOT}/runtest/commands
         do
             [ -e "$SCENFILES" ] || \
             {
