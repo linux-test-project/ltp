@@ -211,3 +211,9 @@ then
     fi
 fi
 ## END => Test Series 6                               ##
+
+
+## The next one i plan to run is tpm_tools            ##
+## START => Test Series 7                             ##
+./runltp -f tpm_tools
+## END => Test Series 7                               ##
