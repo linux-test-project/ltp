@@ -154,7 +154,7 @@ main(int ac, char **av)
 		/* Attempt to mmap a huge page into a low memory address */
 		errno = 0;
 		addr2 = mmap(LOW_ADDR2, MAP_SIZE, PROT_READ | PROT_WRITE,
-			    MAP_SHARED | MAP_FIXED, fildes, 0);
+			    MAP_SHARED, fildes, 0);
 		
 #if __WORDSIZE==64 /* 64-bit process */ 
 		if (addr2 == MAP_FAILED) {
@@ -165,13 +165,15 @@ main(int ac, char **av)
 			tst_resm(TPASS, "huge mmap() correctly succeeded for 64-bit");
 		}
 #else /* 32-bit process */ 
-		if (addr2 != MAP_FAILED) {
-			tst_resm(TFAIL, "huge mmap() unexpectedly succeeded on %s for 32-bit, errno=%d : %s",
-				 TEMPFILE, errno, strerror(errno));
-			continue;
-		} else {
-			tst_resm(TPASS, "huge mmap() failed correctly for 32-bit");
-		}
+                if (addr2 > 0){
+                        tst_resm(TCONF, "huge mmap() failed to test the scenario");
+                        continue;
+                } else if (addr == 0) {
+                        tst_resm(TPASS, "huge mmap() succeeded for 32-bit");
+                } else {
+                        tst_resm(TFAIL, "huge mmap() unexpectedly failed %s for 32-bit, errno=%d : %s",
+                                TEMPFILE, errno, strerror(errno));
+                }
 #endif
 
 		/* Clean up things in case we are looping */
