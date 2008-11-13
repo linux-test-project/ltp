@@ -1,5 +1,5 @@
 #SUBDIRS = `ls */Makefile | sed "s/Makefile//g" | grep -v at | grep -v unzip`
-SUBDIRS = `ls */Makefile | sed "s/Makefile//g" | grep -v unzip`
+SUBDIRS = `ls */Makefile | sed "s/Makefile//g"`
 
 all:
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i ; done

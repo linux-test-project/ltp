@@ -50,12 +50,12 @@
 # 
 # Return:		- zero on success.
 # 				- non-zero on failure.
+
 chk_ifexists()
 {
 	RC=0
-
-	which $2 &>$LTPTMP/tst_unzip.err || RC=$?
-	if [ $RC -ne 0 ]
+	which $2 > $LTPTMP/tst_unzip.err || RC=$?
+	if [ $? -ne 0 ]
 	then
 		tst_brkm TBROK NULL "$1: command $2 not found."
 	fi
@@ -92,7 +92,7 @@ init()
 	# Initialize global variables.
 	export RC=0
 	export TST_TOTAL=1
-	export TCID="unzip"
+	export TCID="unzip01"
 	export TST_COUNT=0
 
 	# Inititalize cleanup function.
@@ -105,7 +105,7 @@ init()
 	chk_ifexists INIT awk       || return $RC
 
 	# create the temporary directory used by this testcase
-	if [ -z $TMP ]
+	if [ -d $TMP ]
 	then
 		LTPTMP=/tmp/tst_unzip.$$
 		TMP=/tmp
@@ -113,7 +113,7 @@ init()
 		LTPTMP=$TMP/tst_unzip.$$
 	fi
 
-	mkdir -p $LTPTMP &>/dev/null || RC=$?
+	mkdir -p $LTPTMP >/dev/null || RC=$?
 	if [ $RC -ne 0 ]
 	then
 		 tst_brkm TBROK "INIT: Unable to create temporary directory"
@@ -162,15 +162,14 @@ test01()
 
 	tst_resm TINFO "Test #1: unzip command un-compresses a .zip file."
 
-	unzip $TMP/tst_unzip_file.zip &>$LTPTMP/tst_unzip.out || RC=$?
+	unzip $TMP/tst_unzip_file.zip >$LTPTMP/tst_unzip.out || RC=$?
 	if [ $RC -ne 0 ]
 	then
 		tst_res TFAIL $LTPTMP/tst_unzip.out \
 			"Test #1: unzip command failed. Return value = $RC. Details:"
 		return $RC
 	else
-		diff -iwB $LTPTMP/tst_unzip.out $LTPTMP/tst_unzip.out.exp \
-			&>$LTPTMP/tst_unzip.out.err || RC=$?
+		diff -iwB $LTPTMP/tst_unzip.out $LTPTMP/tst_unzip.out.exp > $LTPTMP/tst_unzip.out.err || RC=$?
 		if [ $RC -ne 0 ]
 		then
 			tst_res TFAIL $LTPTMP/tst_unzip.err \
