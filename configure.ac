@@ -1,3 +1,4 @@
+AC_PREREQ([2.61])
 AC_INIT([ltp], [cvs], [ltp-results@lists.sourceforge.net])
 AC_CONFIG_HEADERS([include/config.h])
 
