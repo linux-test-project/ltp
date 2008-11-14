@@ -64,19 +64,6 @@ extern int Tst_count;
 #define  USE_STUB
 #endif
 
-#ifndef HAVE_SIGNALFD
-#include "linux_syscall_numbers.h"
-#ifndef __NR_signalfd
-#define __NR_signalfd 0
-#endif
-
-int signalfd(int fd, const sigset_t * mask, int flags)
-{
-	/* Taken from GLIBC. */
-	return (syscall(__NR_signalfd, fd, mask, _NSIG / 8));
-}
-#endif
-
 #if defined HAVE_SIGNALFD_SIGINFO_SSI_SIGNO
 # define SIGNALFD_PREFIX(FIELD) ssi_##FIELD
 #elif defined HAVE_SIGNALFD_SIGINFO_SIGNO
@@ -92,6 +79,15 @@ int main(int argc, char **argv)
 	return 0;
 }
 #else
+
+#ifndef HAVE_SIGNALFD
+#include "linux_syscall_numbers.h"
+int signalfd(int fd, const sigset_t * mask, int flags)
+{
+	/* Taken from GLIBC. */
+	return (syscall(__NR_signalfd, fd, mask, _NSIG / 8));
+}
+#endif
 
 void cleanup(void);
 void setup(void);
