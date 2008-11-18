@@ -119,7 +119,15 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's*/
 	int (*setupfunc)();
 } Test_cases[] = {
 	{ SYM_FILE1, "No Search permissions to process", EACCES, 1, setup1 },
+	/* Don't test with bufsize -1, since this cause a fortify-check-fail when
+	   using glibc and -D_FORITY_SOURCE=2
+           
+           Discussion: http://lkml.org/lkml/2008/10/23/229
+	   Conclusion: Only test with 0 as non-positive bufsize.
+
 	{ SYM_FILE2, "Buffer size is not positive", EINVAL, -1, setup2 },
+	*/
+	{ SYM_FILE2, "Buffer size is not positive", EINVAL, 0, setup2 },
 	{ TEST_FILE2, "File is not symbolic link", EINVAL, 1, no_setup },
 	{ Longpathname, "Symlink path too long", ENAMETOOLONG, 1, lpath_setup },
 	{ "", "Symlink Pathname is empty", ENOENT, 1, no_setup },
