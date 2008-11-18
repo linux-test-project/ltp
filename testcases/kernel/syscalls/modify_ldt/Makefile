@@ -15,42 +15,17 @@
 #  along with this program;  if not, write to the Free Software
 #  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
-
-include ../utils/cond.mk
-
+CFLAGS += -I../../../../include -g -Wall -Wall
+LDLIBS += -L../../../../lib -lltp
 
 SRCS    = $(wildcard *.c)
 TARGETS = $(patsubst %.c,%,$(SRCS))
-SYSCALL = modify_ldt
-
-ifeq ($(call check_header,asm/ldt.h),yes)
-
-# TODO: Next shell call makes cross-compiling LTP difficult.
-NEEDSPECIAL:=$(shell echo "\#include <asm/ldt.h>" | $(CC) -E - 2>&1 | grep user_desc)
-ifeq ($(strip $(NEEDSPECIAL)),)
-CFLAGS+=-I../../../../include -g -Wall
-else
-CFLAGS+=-I../../../../include -g -Wall -DMODIFY_LDT_SPECIALCASE
-endif
-
-LDLIBS += -L../../../../lib -lltp
 
 all: $(TARGETS)
 
 install:
 	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
-	cp run-$(SYSCALL)01.sh ../../../bin/run-$(SYSCALL)01.sh
-	cp run-$(SYSCALL)02.sh ../../../bin/run-$(SYSCALL)02.sh
-
-else ### does not have asm/ldt.h ###
-
-all:
-
-install:
-	cp run-$(SYSCALL)01.sh ../../../bin/run-$(SYSCALL)01.sh
-	cp run-$(SYSCALL)02.sh ../../../bin/run-$(SYSCALL)02.sh
-
-endif
 
 clean:
 	rm -f $(TARGETS)
+

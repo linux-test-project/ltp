@@ -49,50 +49,53 @@
  *	None
  */
 
-#ifdef __i386__
-#include <asm/ldt.h>
-#include <asm/unistd.h>
-#endif
-#include <errno.h>
+#include "config.h"
 #include "test.h"
 #include "usctest.h"
 
-/* Newer ldt.h files use user_desc, instead of modify_ldt_ldt_s */
-#ifdef MODIFY_LDT_SPECIALCASE
-#define modify_ldt_ldt_s user_desc
-#endif
-
-#if !defined(modify_ldt_ldt_s) || !defined(user_desc)
- typedef struct modify_ldt_ldt_t
- {
-   unsigned int entry_number;
-   unsigned long int base_addr;
-   unsigned int limit;
-   unsigned int seg_32bit:1;
-   unsigned int contents:2;
-   unsigned int read_exec_only:1;
-   unsigned int limit_in_pages:1;
-   unsigned int seg_not_present:1;
-   unsigned int useable:1;
-   unsigned int empty:25;
- }modify_ldt_s;
-#endif
-
-void cleanup(void);
-void setup(void);
-char *TCID= "modify_ldt01";
+TCID_DEFINE(modify_ldt01);
 int TST_TOTAL = 1;
 extern int Tst_count;
-int seg[4];
 
-int flag;
-#define FAILED 1
 
-#if defined(__i386__)
+#if defined(__i386__) && defined(HAVE_MODIFY_LDT)
+
+#ifdef HAVE_ASM_LDT_H
+#include <asm/ldt.h>
+#endif
+extern int modify_ldt(int, void*, unsigned long);
+
+
+#include <asm/unistd.h>
+#include <errno.h>
+
+/* Newer ldt.h files use user_desc, instead of modify_ldt_ldt_s */
+#ifdef HAVE_STRUCT_USER_DESC
+typedef struct user_desc modify_ldt_s;
+#elif  HAVE_STRUCT_MODIFY_LDT_LDT_S
+typedef struct modify_ldt_ldt_s modify_ldt_s; 
+#else
+typedef struct modify_ldt_ldt_t
+{
+  unsigned int entry_number;
+  unsigned long int base_addr;
+  unsigned int limit;
+  unsigned int seg_32bit:1;
+  unsigned int contents:2;
+  unsigned int read_exec_only:1;
+  unsigned int limit_in_pages:1;
+  unsigned int seg_not_present:1;
+  unsigned int useable:1;
+  unsigned int empty:25;
+} modify_ldt_s;
+#endif
 
 int create_segment(void *, size_t);
+void cleanup(void);
+void setup(void);
 
-extern int modify_ldt(int, void*, unsigned long);
+#define FAILED 1
+
 
 int main(int ac, char **av)
 {
@@ -101,6 +104,9 @@ int main(int ac, char **av)
 
 	void *ptr;
 	int retval, func;
+
+	int flag;
+	int seg[4];
 
         /* parse standard options */
         if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
@@ -217,15 +223,25 @@ int main(int ac, char **av)
 	return(0);
 }
 
-#else /* if defined(linux) && defined(__i386__) */
-
-int main()
+/*
+ * create_segment() - 
+ */
+int
+create_segment(void *seg, size_t size)
 {
-	tst_resm(TINFO, "modify_ldt01 test only for ix86");
-	return 0;
-}
+	modify_ldt_s entry;
 
-#endif /* if defined(linux) && defined(__i386__) */
+	entry.entry_number = 0;
+	entry.base_addr = (unsigned long)seg;
+	entry.limit = size;
+	entry.seg_32bit = 1;
+	entry.contents = 0;
+	entry.read_exec_only = 0;
+	entry.limit_in_pages = 0;
+	entry.seg_not_present = 0;
+
+	return modify_ldt(1, &entry, sizeof(entry));
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test
@@ -257,21 +273,18 @@ cleanup(void)
 	tst_exit();
 }
 
-#if defined(__i386__)
-int
-create_segment(void *seg, size_t size)
+#elif HAVE_MODIFY_LDT
+int main()
 {
-	modify_ldt_s entry;
-
-	entry.entry_number = 0;
-	entry.base_addr = (unsigned long)seg;
-	entry.limit = size;
-	entry.seg_32bit = 1;
-	entry.contents = 0;
-	entry.read_exec_only = 0;
-	entry.limit_in_pages = 0;
-	entry.seg_not_present = 0;
-
-	return modify_ldt(1, &entry, sizeof(entry));
+	tst_resm(TCONF, "modify_ldt is available but not tested on the platform than __i386__");
+	return 0;
 }
-#endif /* if defined(linux) && defined(__i386__) */
+
+#else
+int main()
+{
+	tst_resm(TINFO, "modify_ldt01 test only for ix86");
+	return 0;
+}
+
+#endif /* defined(__i386__) */
