@@ -19,29 +19,44 @@
 ##                                                                            ##
 ################################################################################
 
-exit_code=0
 pidns01
 rc=$?
 if [ $rc -ne 0 ]; then
-	exit_code=$rc
-	exit $exit_code
+	err_code=$rc
 fi
+
 pidns02
 rc=$?
-if [ $rc -ne 0 ]; then
-	exit_code=$rc
-	exit $exit_code
+if [ $rc -ne 0 ] && [ -z $err_code ]; then
+	err_code=$rc
 fi
+
 pidns03
 rc=$?
-if [ $rc -ne 0 ]; then
-	exit_code=$rc
-	exit $exit_code
+if [ $rc -ne 0 ] && [ -z $err_code ]; then
+	err_code=$rc
 fi
+
 pidns04
 rc=$?
-if [ $rc -ne 0 ]; then
-	exit_code=$rc
-	exit $exit_code
+if [ $rc -ne 0 ] && [ -z $err_code ]; then
+	err_code=$rc
 fi
-exit $exit_code
+
+pidns05
+rc=$?
+if [ $rc -ne 0 ] && [ -z $err_code ]; then
+	err_code=$rc
+fi
+
+pidns06
+rc=$?
+if [ $rc -ne 0 ] && [ -z $err_code ]; then
+	err_code=$rc
+fi
+
+# If any test failed then exit with the value error-code.
+if ! [ -z $err_code ]; then
+	exit $err_code
+fi
+
