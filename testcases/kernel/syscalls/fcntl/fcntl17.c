@@ -88,7 +88,7 @@ void child_free();
 void do_child1();
 void do_child2();
 void do_child3();
-int do_test(struct flock *, short);
+int do_test(struct flock *, pid_t);
 void stop_children();
 void catch_child();
 void catch_alarm();
@@ -278,7 +278,7 @@ do_child3()
 }
 
 int
-do_test(struct flock *lock, short pid)
+do_test(struct flock *lock, pid_t pid)
 {
 	struct flock fl;
 
