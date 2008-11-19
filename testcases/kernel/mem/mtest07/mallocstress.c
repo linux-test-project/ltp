@@ -168,8 +168,8 @@ allocate_free(int    repeat,	/* number of times to repeat allocate/free    */
 
     for (loop = 0; loop < repeat; loop++)
     {
-        size_t  oldsize    = 1;	    /* remember size for fibannoci series     */
-        size_t  size       = 1;     /* size of next block in ptrs[]           */
+        size_t  oldsize    = 5;	    /* remember size for fibannoci series     */
+        size_t  size       = sizeof(long);     /* size of next block in ptrs[]           */
         long    *ptrs[MAXPTRS];     /* the pointers allocated in this loop    */
         int     num_alloc;	    /* number of elements in ptrs[] so far    */
         int     i;
