@@ -63,7 +63,7 @@ AC_CHECK_HEADERS(sys/signalfd.h linux/signalfd.h signalfd.h,[dnl
 LTP_SYSCALL_SIGNALFD_HEADER=yes],[],[dnl
 #ifdef HAVE_LINUX_TYPES_H
 #include <linux/types.h>
-#endif)
+#endif
 ]dnl
 )dnl
 ]dnl
