@@ -31,6 +31,7 @@
  * Author(s)
  *      Raghavendra P.G. <raghavendra.pg@hp.com>
  *      Raghavendra M.S. <raghavendra.ms@hp.com>
+ *      Shuah Khan <shuah.khan@hp.com>
  *
  * This file handles all the power related queries
  *
@@ -111,17 +112,19 @@ SaErrorT oa_soap_get_power_state(void *oh_handler,
 
         /* Check resource type and query server or interconnect power state*/
         switch (rpt->ResourceEntity.Entry[0].EntityType) {
-                case (SAHPI_ENT_SYSTEM_BLADE) :
+                case (SAHPI_ENT_SYSTEM_BLADE):
+                case (SAHPI_ENT_IO_BLADE):
+                case (SAHPI_ENT_DISK_BLADE):
                         rv = get_server_power_state(oa_handler->active_con,
                                                     bay_number, state);
                         break;
 
-                case (SAHPI_ENT_SWITCH_BLADE) :
+                case (SAHPI_ENT_SWITCH_BLADE):
                         rv = get_interconnect_power_state(
                                 oa_handler->active_con, bay_number, state);
                         break;
 
-                default :
+                default:
                         err("Invalid Resource Type");
                         rv = SA_ERR_HPI_INTERNAL_ERROR;
         }
@@ -184,17 +187,21 @@ SaErrorT oa_soap_set_power_state(void *oh_handler,
         bay_number = rpt->ResourceEntity.Entry[0].EntityLocation;
         /* Check resource type and set the server or interconnect power state*/
         switch (rpt->ResourceEntity.Entry[0].EntityType) {
-                 case (SAHPI_ENT_SYSTEM_BLADE) :
+                 case (SAHPI_ENT_SYSTEM_BLADE):
                         rv = set_server_power_state(oa_handler->active_con,
                                                     bay_number, state);
                         break;
 
-                  case (SAHPI_ENT_SWITCH_BLADE) :
+                 case (SAHPI_ENT_IO_BLADE):
+                 case (SAHPI_ENT_DISK_BLADE):
+                        return(SA_ERR_HPI_UNSUPPORTED_API);
+
+                 case (SAHPI_ENT_SWITCH_BLADE):
                         rv = set_interconnect_power_state(
                                 oa_handler->active_con, bay_number, state);
                         break;
 
-                  default :
+                 default:
                         err("Invalid Resource Type");
                         return SA_ERR_HPI_UNKNOWN;
         }
@@ -239,17 +246,17 @@ SaErrorT get_server_power_state(SOAP_CON *con,
         }
 
         switch (response.powered) {
-                case (POWER_ON) :
+                case (POWER_ON):
                         *state = SAHPI_POWER_ON;
                         break;
-                case (POWER_OFF) :
+                case (POWER_OFF):
                         *state = SAHPI_POWER_OFF;
                         break;
-                case (POWER_REBOOT) :
+                case (POWER_REBOOT):
                         err("Wrong Power State (REBOOT) detected");
                         return SA_ERR_HPI_INTERNAL_ERROR;
                         break;
-                default :
+                default:
                         err("Unknown Power State detected");
                         return SA_ERR_HPI_INTERNAL_ERROR;
         }
@@ -293,17 +300,17 @@ SaErrorT get_interconnect_power_state(SOAP_CON *con,
         }
 
         switch (response.powered) {
-                case (POWER_ON) :
+                case (POWER_ON):
                         *state = SAHPI_POWER_ON;
                         break;
-                case (POWER_OFF) :
+                case (POWER_OFF):
                         *state = SAHPI_POWER_OFF;
                         break;
-                case (POWER_REBOOT) :
+                case (POWER_REBOOT):
                         err("Wrong (REBOOT) Power State detected");
                         return SA_ERR_HPI_INTERNAL_ERROR;
                         break;
-                default :
+                default:
                         err("Unknown Power State detected");
                         return SA_ERR_HPI_INTERNAL_ERROR;
         }
@@ -357,7 +364,7 @@ SaErrorT set_server_power_state(SOAP_CON *con,
 
         blade_power.bayNumber = bay_number;
         switch (state) {
-                case (SAHPI_POWER_ON)   :
+                case (SAHPI_POWER_ON):
                         blade_power.power = MOMENTARY_PRESS;
                         rv = soap_setBladePower(con, &blade_power);
                         if (rv != SOAP_OK) {
@@ -366,7 +373,7 @@ SaErrorT set_server_power_state(SOAP_CON *con,
                         }
                         break;
 
-                case (SAHPI_POWER_OFF)  :
+                case (SAHPI_POWER_OFF):
                         blade_power.power = PRESS_AND_HOLD;
                         rv = soap_setBladePower(con, &blade_power);
                         if (rv != SOAP_OK) {
@@ -430,7 +437,7 @@ SaErrorT set_server_power_state(SOAP_CON *con,
                                 return SA_ERR_HPI_INTERNAL_ERROR;
                         }
                         break;
-                default :
+                default:
                         err("Invalid power state");
                         return SA_ERR_HPI_INVALID_PARAMS;
         }
@@ -468,7 +475,7 @@ SaErrorT set_interconnect_power_state(SOAP_CON *con,
 
         interconnect_power.bayNumber = bay_number;
         switch (state) {
-                case (SAHPI_POWER_ON) :
+                case (SAHPI_POWER_ON):
                         interconnect_power.on = HPOA_TRUE;
                         rv = soap_setInterconnectTrayPower(con,
                                                            &interconnect_power);
@@ -479,7 +486,7 @@ SaErrorT set_interconnect_power_state(SOAP_CON *con,
                         }
                         break;
 
-                case (SAHPI_POWER_OFF) :
+                case (SAHPI_POWER_OFF):
                         interconnect_power.on = HPOA_FALSE;
                         rv = soap_setInterconnectTrayPower(con,
                                                            &interconnect_power);
@@ -525,7 +532,7 @@ SaErrorT set_interconnect_power_state(SOAP_CON *con,
                                 return SA_ERR_HPI_INTERNAL_ERROR;
                         }
                         break;
-                default :
+                default:
                         err("Invalid power state");
                         return SA_ERR_HPI_INVALID_PARAMS;
         }

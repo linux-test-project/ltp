@@ -31,6 +31,7 @@
 #include <getopt.h>
 #include <limits.h>
 #include "strmsock.h"
+#include "oh_domain.h"
 
 extern "C"
 {
@@ -494,8 +495,8 @@ static tResult HandleMsg(psstrmsock thrdinst,
                                                         hm, pReq, &domain_id ) < 0 )
                                 return eResultError;
                 
-                        ret = saHpiSessionOpen( domain_id, &session_id, securityparams );
-                
+			// patched version ret = saHpiSessionOpen( SAHPI_UNSPECIFIED_DOMAIN_ID, &session_id, securityparams );
+                        ret = saHpiSessionOpen( OH_DEFAULT_DOMAIN_ID, &session_id, securityparams );
                         thrdinst->header.m_len = HpiMarshalReply1( hm, pReq, &ret, &session_id );
                 
                         // this is used in case the connection ever breaks!

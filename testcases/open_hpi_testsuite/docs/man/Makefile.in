@@ -72,8 +72,10 @@ CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 SOURCES =
 DIST_SOURCES =
+man1dir = $(mandir)/man1
+am__installdirs = "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(man7dir)" \
+	"$(DESTDIR)$(man8dir)"
 man7dir = $(mandir)/man7
-am__installdirs = "$(DESTDIR)$(man7dir)" "$(DESTDIR)$(man8dir)"
 man8dir = $(mandir)/man8
 NROFF = nroff
 MANS = $(man_MANS)
@@ -234,10 +236,26 @@ target_alias = @target_alias@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 MAINTAINERCLEANFILES = Makefile.in
-EXTRA_DIST = openhpi.pod.7 openhpid.pod.8
+EXTRA_DIST = openhpi.pod.7   openhpid.pod.8      \
+                          hpialarms.pod.1 hpifan.pod.1        \
+                          hpipower.pod.1  hpisettime.pod.1    \
+                          hpitree.pod.1   hpiel.pod.1         \
+                          hpiinv.pod.1    hpireset.pod.1      \
+                          hpithres.pod.1  hpiwdt.pod.1        \
+                          hpievents.pod.1 hpionIBMblade.pod.1 \
+                          hpisensor.pod.1 hpitop.pod.1
+
 
 #mandir = $(datadir)/man
-man_MANS = openhpi.7 openhpid.8
+man_MANS = openhpi.7   openhpid.8      \
+           hpialarms.1 hpifan.1        \
+           hpipower.1  hpisettime.1    \
+           hpitree.1   hpiel.1         \
+           hpiinv.1    hpireset.1      \
+           hpithres.1  hpiwdt.1        \
+           hpievents.1 hpionIBMblade.1 \
+           hpisensor.1 hpitop.1
+
 all: all-am
 
 .SUFFIXES:
@@ -276,6 +294,51 @@ mostlyclean-libtool:
 
 clean-libtool:
 	-rm -rf .libs _libs
+install-man1: $(man1_MANS) $(man_MANS)
+	@$(NORMAL_INSTALL)
+	test -z "$(man1dir)" || $(MKDIR_P) "$(DESTDIR)$(man1dir)"
+	@list='$(man1_MANS) $(dist_man1_MANS) $(nodist_man1_MANS)'; \
+	l2='$(man_MANS) $(dist_man_MANS) $(nodist_man_MANS)'; \
+	for i in $$l2; do \
+	  case "$$i" in \
+	    *.1*) list="$$list $$i" ;; \
+	  esac; \
+	done; \
+	for i in $$list; do \
+	  if test -f $(srcdir)/$$i; then file=$(srcdir)/$$i; \
+	  else file=$$i; fi; \
+	  ext=`echo $$i | sed -e 's/^.*\\.//'`; \
+	  case "$$ext" in \
+	    1*) ;; \
+	    *) ext='1' ;; \
+	  esac; \
+	  inst=`echo $$i | sed -e 's/\\.[0-9a-z]*$$//'`; \
+	  inst=`echo $$inst | sed -e 's/^.*\///'`; \
+	  inst=`echo $$inst | sed '$(transform)'`.$$ext; \
+	  echo " $(INSTALL_DATA) '$$file' '$(DESTDIR)$(man1dir)/$$inst'"; \
+	  $(INSTALL_DATA) "$$file" "$(DESTDIR)$(man1dir)/$$inst"; \
+	done
+uninstall-man1:
+	@$(NORMAL_UNINSTALL)
+	@list='$(man1_MANS) $(dist_man1_MANS) $(nodist_man1_MANS)'; \
+	l2='$(man_MANS) $(dist_man_MANS) $(nodist_man_MANS)'; \
+	for i in $$l2; do \
+	  case "$$i" in \
+	    *.1*) list="$$list $$i" ;; \
+	  esac; \
+	done; \
+	for i in $$list; do \
+	  ext=`echo $$i | sed -e 's/^.*\\.//'`; \
+	  case "$$ext" in \
+	    1*) ;; \
+	    *) ext='1' ;; \
+	  esac; \
+	  inst=`echo $$i | sed -e 's/\\.[0-9a-z]*$$//'`; \
+	  inst=`echo $$inst | sed -e 's/^.*\///'`; \
+	  inst=`echo $$inst | sed '$(transform)'`.$$ext; \
+	  echo " rm -f '$(DESTDIR)$(man1dir)/$$inst'"; \
+	  rm -f "$(DESTDIR)$(man1dir)/$$inst"; \
+	done
 install-man7: $(man7_MANS) $(man_MANS)
 	@$(NORMAL_INSTALL)
 	test -z "$(man7dir)" || $(MKDIR_P) "$(DESTDIR)$(man7dir)"
@@ -403,7 +466,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(MANS)
 installdirs:
-	for dir in "$(DESTDIR)$(man7dir)" "$(DESTDIR)$(man8dir)"; do \
+	for dir in "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(man7dir)" "$(DESTDIR)$(man8dir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -459,7 +522,7 @@ install-html: install-html-am
 
 install-info: install-info-am
 
-install-man: install-man7 install-man8
+install-man: install-man1 install-man7 install-man8
 
 install-pdf: install-pdf-am
 
@@ -485,7 +548,7 @@ ps-am:
 
 uninstall-am: uninstall-man
 
-uninstall-man: uninstall-man7 uninstall-man8
+uninstall-man: uninstall-man1 uninstall-man7 uninstall-man8
 
 .MAKE: install-am install-strip
 
@@ -495,12 +558,12 @@ uninstall-man: uninstall-man7 uninstall-man8
 	install-am install-data install-data-am install-dvi \
 	install-dvi-am install-exec install-exec-am install-html \
 	install-html-am install-info install-info-am install-man \
-	install-man7 install-man8 install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
+	install-man1 install-man7 install-man8 install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-generic \
 	mostlyclean-libtool pdf pdf-am ps ps-am uninstall uninstall-am \
-	uninstall-man uninstall-man7 uninstall-man8
+	uninstall-man uninstall-man1 uninstall-man7 uninstall-man8
 
 
 %.1: %.pod.1

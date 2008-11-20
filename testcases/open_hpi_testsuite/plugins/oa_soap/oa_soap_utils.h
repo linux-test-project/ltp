@@ -31,6 +31,7 @@
  * Author(s)
  *      Raghavendra P.G. <raghavendra.pg@hp.com>
  *      Vivek Kumar <vivek.kumar2@hp.com>
+ *      Shuah Khan <shuah.khan@hp.com>
  */
 
 #ifndef _OA_SOAP_UTILS_H
@@ -49,10 +50,6 @@
 
 /* Max timeout value for checking the availability of OA */
 #define MAX_TIMEOUT 300
-
-/* Error codes returned by OA on event session failure */
-#define ERR_EVENT_PIPE 201
-#define ERR_EVENT_DAEMON_KILLED 204
 
 /* Function prototypes */
 
@@ -115,4 +112,9 @@ SaErrorT convert_lower_to_upper(char *src,
                                 char *dest,
                                 SaHpiInt32T dest_len);
 
+void oa_soap_update_resource_status(resource_status_t *res_status,
+                                    SaHpiInt32T index,
+                                    char *serial_number,
+                                    SaHpiResourceIdT resource_id,
+                                    resource_presence_status_t presence);
 #endif

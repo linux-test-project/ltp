@@ -31,6 +31,7 @@
  * Author(s)
  *      Raghavendra M.S. <raghavendra.ms@hp.com>
  *      Bhaskara Bhatt <bhaskara.hg@hp.com>
+ *      Shuah Khan <shuah.khan@hp.com>
  *
  * This file supports the functions related to HPI Inventory Data repositories.
  * The file covers three general classes of function: IDR ABI functions,
@@ -1270,15 +1271,16 @@ SaErrorT build_enclosure_inv_rdr(struct oh_handler_state *oh_handler,
                                  struct oa_soap_inventory **inventory)
 {
         SaErrorT rv = SA_OK;
-        SaHpiEntityPathT entity_path;
         SaHpiIdrFieldT hpi_field;
-        char *entity_root = NULL;
         char enclosure_inv_str[] = ENCLOSURE_INVENTORY_STRING;
         struct oa_soap_inventory *local_inventory = NULL;
         struct oa_soap_area *head_area = NULL;
         SaHpiInt32T add_success_flag = 0;
         SaHpiInt32T product_area_success_flag = 0;
         SaHpiInt32T area_count = 0;
+        struct oa_soap_handler *oa_handler = NULL;
+        SaHpiResourceIdT resource_id;
+        SaHpiRptEntryT *rpt = NULL;
 
         if (oh_handler == NULL || response == NULL || rdr == NULL ||
             inventory == NULL) {
@@ -1286,25 +1288,19 @@ SaErrorT build_enclosure_inv_rdr(struct oh_handler_state *oh_handler,
                 return SA_ERR_HPI_INVALID_PARAMS;
         }
 
-        entity_root = (char *)g_hash_table_lookup(oh_handler->config,
-                                                  "entity_root");
-        rv = oh_encode_entitypath(entity_root, &entity_path);
-        if (rv != SA_OK) {
-                err("Encoding entity path failed");
+        oa_handler = (struct oa_soap_handler *) oh_handler->data;
+        resource_id = oa_handler->oa_soap_resources.enclosure_rid;
+        /* Get the rpt entry of the resource */
+        rpt = oh_get_resource_by_id(oh_handler->rptcache, resource_id);
+        if (rpt == NULL) {
+                err("resource RPT is NULL");
                 return SA_ERR_HPI_INTERNAL_ERROR;
         }
 
         /* Populating the inventory rdr with default values and resource name */
+        rdr->Entity = rpt->ResourceEntity;
         rdr->RecordId = 0;
         rdr->RdrType  = SAHPI_INVENTORY_RDR;
-        rdr->Entity.Entry[0].EntityType = SAHPI_ENT_ROOT;
-        rdr->Entity.Entry[0].EntityLocation = 0;
-        rv = oh_concat_ep(&rdr->Entity, &entity_path);
-        if (rv != SA_OK) {
-                err("Concat of entity path failed");
-                return SA_ERR_HPI_INTERNAL_ERROR;
-        }
-
         rdr->RdrTypeUnion.InventoryRec.IdrId = SAHPI_DEFAULT_INVENTORY_ID;
         rdr->IdString.DataType = SAHPI_TL_TYPE_TEXT;
         rdr->IdString.Language = SAHPI_LANG_ENGLISH;
@@ -1404,14 +1400,14 @@ SaErrorT build_enclosure_inv_rdr(struct oh_handler_state *oh_handler,
          */
          if (product_area_success_flag == SAHPI_TRUE) {
                 /* Add the product version field if the enclosure hardware info
-                 * is available 
+                 * is available
                  */
                 if (response->hwVersion != NULL) {
                         memset(&hpi_field, 0, sizeof(SaHpiIdrFieldT));
                         hpi_field.AreaId = local_inventory->info.area_list->
                                            idr_area_head.AreaId;
                         hpi_field.Type = SAHPI_IDR_FIELDTYPE_PRODUCT_VERSION;
-                        strcpy ((char *)hpi_field.Field.Data, 
+                        strcpy ((char *)hpi_field.Field.Data,
                                 response->hwVersion);
 
                         rv = idr_field_add(&(local_inventory->info.area_list
@@ -1458,15 +1454,16 @@ SaErrorT build_oa_inv_rdr(struct oh_handler_state *oh_handler,
                           struct oa_soap_inventory **inventory)
 {
         SaErrorT rv = SA_OK;
-        SaHpiEntityPathT entity_path;
         SaHpiIdrFieldT hpi_field;
-        char *entity_root = NULL;
         char oa_inv_str[] = OA_INVENTORY_STRING;
         struct oa_soap_inventory *local_inventory = NULL;
         struct oa_soap_area *head_area = NULL;
         SaHpiInt32T add_success_flag = 0;
         SaHpiInt32T product_area_success_flag = 0;
         SaHpiInt32T area_count = 0;
+        struct oa_soap_handler *oa_handler = NULL;
+        SaHpiResourceIdT resource_id;
+        SaHpiRptEntryT *rpt = NULL;
 
         if (oh_handler == NULL || response == NULL || rdr == NULL ||
             inventory == NULL) {
@@ -1474,25 +1471,18 @@ SaErrorT build_oa_inv_rdr(struct oh_handler_state *oh_handler,
                 return SA_ERR_HPI_INVALID_PARAMS;
         }
 
-        entity_root =
-                (char *)g_hash_table_lookup(oh_handler->config,"entity_root");
-        rv = oh_encode_entitypath(entity_root, &entity_path);
-        if (rv != SA_OK) {
-                err("Encoding entity path failed");
+        oa_handler = (struct oa_soap_handler *) oh_handler->data;
+        resource_id = oa_handler->
+                oa_soap_resources.oa.resource_id[response->bayNumber - 1];
+        /* Get the rpt entry of the resource */
+        rpt = oh_get_resource_by_id(oh_handler->rptcache, resource_id);
+        if (rpt == NULL) {
+                err("resource RPT is NULL");
                 return SA_ERR_HPI_INTERNAL_ERROR;
         }
 
         /* Populating the inventory rdr with default values and resource name */
-        rdr->Entity.Entry[1].EntityType = SAHPI_ENT_ROOT;
-        rdr->Entity.Entry[1].EntityLocation = 0;
-        rdr->Entity.Entry[0].EntityType = SAHPI_ENT_SYS_MGMNT_MODULE;
-        rdr->Entity.Entry[0].EntityLocation = response->bayNumber;
-        rv = oh_concat_ep(&rdr->Entity, &entity_path);
-        if (rv != SA_OK) {
-                err("Concat of entity path failed");
-                return SA_ERR_HPI_INTERNAL_ERROR;
-        }
-
+        rdr->Entity = rpt->ResourceEntity;
         rdr->RecordId = 0;
         rdr->RdrType  = SAHPI_INVENTORY_RDR;
         rdr->RdrTypeUnion.InventoryRec.IdrId = SAHPI_DEFAULT_INVENTORY_ID;
@@ -1572,15 +1562,15 @@ SaErrorT build_oa_inv_rdr(struct oh_handler_state *oh_handler,
          * the end of the field list.
          */
          if (product_area_success_flag == SAHPI_TRUE) {
-                /* Add the product version field if the firmware info 
-                 * is available 
+                /* Add the product version field if the firmware info
+                 * is available
                  */
                 if (response->fwVersion != NULL) {
                         memset(&hpi_field, 0, sizeof(SaHpiIdrFieldT));
                         hpi_field.AreaId = local_inventory->info.area_list->
                                            idr_area_head.AreaId;
                         hpi_field.Type = SAHPI_IDR_FIELDTYPE_PRODUCT_VERSION;
-                        strcpy ((char *)hpi_field.Field.Data, 
+                        strcpy ((char *)hpi_field.Field.Data,
                                 response->fwVersion);
 
                         rv = idr_field_add(&(local_inventory->info.area_list
@@ -1629,9 +1619,7 @@ SaErrorT build_server_inv_rdr(struct oh_handler_state *oh_handler,
                               struct oa_soap_inventory **inventory)
 {
         SaErrorT rv = SA_OK;
-        SaHpiEntityPathT entity_path;
         SaHpiIdrFieldT hpi_field;
-        char *entity_root = NULL;
         char server_inv_str[] = SERVER_INVENTORY_STRING;
         struct oa_soap_inventory *local_inventory = NULL;
         struct oa_soap_area *head_area = NULL;
@@ -1642,12 +1630,25 @@ SaErrorT build_server_inv_rdr(struct oh_handler_state *oh_handler,
         struct bladeInfo response;
         struct getBladeMpInfo blade_mp_request;
         struct bladeMpInfo blade_mp_response;
+        struct oa_soap_handler *oa_handler = NULL;
+        SaHpiResourceIdT resource_id;
+        SaHpiRptEntryT *rpt = NULL;
 
         if (oh_handler == NULL || con == NULL || rdr == NULL ||
             inventory == NULL) {
                 err("Invalid parameter.");
                 return SA_ERR_HPI_INVALID_PARAMS;
         }
+
+        oa_handler = (struct oa_soap_handler *) oh_handler->data;
+        resource_id =
+           oa_handler->oa_soap_resources.server.resource_id[bay_number - 1];
+        rpt = oh_get_resource_by_id(oh_handler->rptcache, resource_id);
+        if (!rpt) {
+                err("Could not find blade resource rpt");
+                return(SA_ERR_HPI_INTERNAL_ERROR);
+        }
+        rdr->Entity = rpt->ResourceEntity;
 
         request.bayNumber = bay_number;
         rv = soap_getBladeInfo(con,
@@ -1657,25 +1658,7 @@ SaErrorT build_server_inv_rdr(struct oh_handler_state *oh_handler,
                 return rv;
         }
 
-        entity_root = (char *)g_hash_table_lookup(oh_handler->config,
-                                                  "entity_root");
-        rv = oh_encode_entitypath(entity_root, &entity_path);
-        if (rv != SA_OK) {
-                err("Encoding entity path failed");
-                return SA_ERR_HPI_INTERNAL_ERROR;
-        }
-
-        /* Populating the inventory rdr with default values and resource name */
-        rdr->Entity.Entry[1].EntityType = SAHPI_ENT_ROOT;
-        rdr->Entity.Entry[1].EntityLocation = 0;
-        rdr->Entity.Entry[0].EntityType = SAHPI_ENT_SYSTEM_BLADE;
-        rdr->Entity.Entry[0].EntityLocation = response.bayNumber;
-        rv = oh_concat_ep(&rdr->Entity, &entity_path);
-        if (rv != SA_OK) {
-                err("Concat of entity path failed");
-                return SA_ERR_HPI_INTERNAL_ERROR;
-        }
-
+        /* Populating the inventory rdr with rpt values for the resource */
         rdr->RecordId = 0;
         rdr->RdrType  = SAHPI_INVENTORY_RDR;
         rdr->RdrTypeUnion.InventoryRec.IdrId = SAHPI_DEFAULT_INVENTORY_ID;
@@ -1704,7 +1687,7 @@ SaErrorT build_server_inv_rdr(struct oh_handler_state *oh_handler,
                 (char *)g_malloc0(strlen(server_inv_str) + 1);
         snprintf(local_inventory->comment, strlen(server_inv_str) + 1,
                  "%s", server_inv_str);
-        
+
         /* Create and add product area if resource name and/or manufacturer
          * information exist
          */
@@ -1765,16 +1748,16 @@ SaErrorT build_server_inv_rdr(struct oh_handler_state *oh_handler,
                         err("Get blade mp info failed");
                         return rv;
                 }
-               
-                /* Add the product version field if the firmware info 
-                 * is available 
+
+                /* Add the product version field if the firmware info
+                 * is available
                  */
                 if (blade_mp_response.fwVersion != NULL) {
                         memset(&hpi_field, 0, sizeof(SaHpiIdrFieldT));
                         hpi_field.AreaId = local_inventory->info.area_list->
                                            idr_area_head.AreaId;
                         hpi_field.Type = SAHPI_IDR_FIELDTYPE_PRODUCT_VERSION;
-                        strcpy ((char *)hpi_field.Field.Data, 
+                        strcpy ((char *)hpi_field.Field.Data,
                                 blade_mp_response.fwVersion);
 
                         rv = idr_field_add(&(local_inventory->info.area_list
@@ -1831,36 +1814,28 @@ SaErrorT build_inserted_server_inv_rdr(struct oh_handler_state *oh_handler,
                                        SaHpiRdrT *rdr,
                                        struct oa_soap_inventory **inventory)
 {
-        SaErrorT rv = SA_OK;
-        SaHpiEntityPathT entity_path;
         char server_inv_str[] = SERVER_INVENTORY_STRING;
-        char *entity_root = NULL;
         struct oa_soap_inventory *local_inventory = NULL;
+        struct oa_soap_handler *oa_handler = NULL;
+        SaHpiResourceIdT resource_id;
+        SaHpiRptEntryT *rpt = NULL;
 
         if (oh_handler == NULL || rdr == NULL || inventory == NULL) {
                 err("Invalid parameter.");
                 return SA_ERR_HPI_INVALID_PARAMS;
         }
 
-        entity_root = (char *)g_hash_table_lookup(oh_handler->config,
-                                                  "entity_root");
-        rv = oh_encode_entitypath(entity_root, &entity_path);
-        if (rv != SA_OK) {
-                err("Encoding entity path failed");
-                return SA_ERR_HPI_INTERNAL_ERROR;
+        oa_handler = (struct oa_soap_handler *) oh_handler->data;
+        resource_id =
+           oa_handler->oa_soap_resources.server.resource_id[bay_number - 1];
+        rpt = oh_get_resource_by_id(oh_handler->rptcache, resource_id);
+        if (!rpt) {
+                err("Could not find blade resource rpt");
+                return(SA_ERR_HPI_INTERNAL_ERROR);
         }
+        rdr->Entity = rpt->ResourceEntity;
 
         /* Populating the inventory rdr with default values and resource name */
-        rdr->Entity.Entry[1].EntityType = SAHPI_ENT_ROOT;
-        rdr->Entity.Entry[1].EntityLocation = 0;
-        rdr->Entity.Entry[0].EntityType = SAHPI_ENT_SYSTEM_BLADE;
-        rdr->Entity.Entry[0].EntityLocation = bay_number;
-        rv = oh_concat_ep(&rdr->Entity, &entity_path);
-        if (rv != SA_OK) {
-                err("Concat of entity path failed");
-                return SA_ERR_HPI_INTERNAL_ERROR;
-        }
-
         rdr->RecordId = 0;
         rdr->RdrType  = SAHPI_INVENTORY_RDR;
         rdr->RdrTypeUnion.InventoryRec.IdrId = SAHPI_DEFAULT_INVENTORY_ID;
@@ -2010,16 +1985,16 @@ SaErrorT build_server_inventory_area(SOAP_CON *con,
                         err("Get blade mp info failed");
                         return rv;
                 }
-               
-                /* Add the product version field if the firmware info 
-                 * is available 
+
+                /* Add the product version field if the firmware info
+                 * is available
                  */
                 if (blade_mp_response.fwVersion != NULL) {
                         memset(&hpi_field, 0, sizeof(SaHpiIdrFieldT));
                         hpi_field.AreaId = local_inventory->info.area_list->
                                            idr_area_head.AreaId;
                         hpi_field.Type = SAHPI_IDR_FIELDTYPE_PRODUCT_VERSION;
-                        strcpy ((char *)hpi_field.Field.Data, 
+                        strcpy ((char *)hpi_field.Field.Data,
                                 blade_mp_response.fwVersion);
 
                         rv = idr_field_add(&(local_inventory->info.area_list
@@ -2068,8 +2043,6 @@ SaErrorT build_interconnect_inv_rdr(struct oh_handler_state *oh_handler,
                                     struct oa_soap_inventory **inventory)
 {
         SaErrorT rv = SA_OK;
-        SaHpiEntityPathT entity_path;
-        char *entity_root = NULL;
         char interconnect_inv_str[] = INTERCONNECT_INVENTORY_STRING;
         struct oa_soap_inventory *local_inventory = NULL;
         struct oa_soap_area *head_area = NULL;
@@ -2077,11 +2050,24 @@ SaErrorT build_interconnect_inv_rdr(struct oh_handler_state *oh_handler,
         SaHpiInt32T area_count = 0;
         struct getInterconnectTrayInfo request;
         struct interconnectTrayInfo response;
+        struct oa_soap_handler *oa_handler = NULL;
+        SaHpiResourceIdT resource_id;
+        SaHpiRptEntryT *rpt = NULL;
 
         if (oh_handler == NULL || con == NULL || rdr == NULL ||
             inventory == NULL) {
                 err("Invalid parameter.");
                 return SA_ERR_HPI_INVALID_PARAMS;
+        }
+
+        oa_handler = (struct oa_soap_handler *) oh_handler->data;
+        resource_id = oa_handler->
+                oa_soap_resources.interconnect.resource_id[bay_number - 1];
+        /* Get the rpt entry of the resource */
+        rpt = oh_get_resource_by_id(oh_handler->rptcache, resource_id);
+        if (rpt == NULL) {
+                err("resource RPT is NULL");
+                return SA_ERR_HPI_INTERNAL_ERROR;
         }
 
         request.bayNumber = bay_number;
@@ -2091,25 +2077,8 @@ SaErrorT build_interconnect_inv_rdr(struct oh_handler_state *oh_handler,
                 return SA_ERR_HPI_INTERNAL_ERROR;
         }
 
-        entity_root = (char *)g_hash_table_lookup(oh_handler->config,
-                                                  "entity_root");
-        rv = oh_encode_entitypath(entity_root, &entity_path);
-        if (rv != SA_OK) {
-                err("Encoding entity path failed");
-                return SA_ERR_HPI_INTERNAL_ERROR;
-        }
-
-        /* Populating the inventory rdr with default values and resource name */
-        rdr->Entity.Entry[1].EntityType = SAHPI_ENT_ROOT;
-        rdr->Entity.Entry[1].EntityLocation = 0;
-        rdr->Entity.Entry[0].EntityType = SAHPI_ENT_SWITCH_BLADE;
-        rdr->Entity.Entry[0].EntityLocation = response.bayNumber;
-        rv = oh_concat_ep(&rdr->Entity, &entity_path);
-        if (rv != SA_OK) {
-                err("Concat of entity path failed");
-                return SA_ERR_HPI_INTERNAL_ERROR;
-        }
-
+        /* Populating the inventory rdr with rpt values for the resource */
+        rdr->Entity = rpt->ResourceEntity;
         rdr->RecordId = 0;
         rdr->RdrType  = SAHPI_INVENTORY_RDR;
         rdr->RdrTypeUnion.InventoryRec.IdrId = SAHPI_DEFAULT_INVENTORY_ID;
@@ -2215,13 +2184,14 @@ SaErrorT build_fan_inv_rdr(struct oh_handler_state *oh_handler,
                            struct oa_soap_inventory **inventory)
 {
         SaErrorT rv = SA_OK;
-        SaHpiEntityPathT entity_path;
-        char *entity_root = NULL;
         char fan_inv_str[] = FAN_INVENTORY_STRING;
         struct oa_soap_inventory *local_inventory = NULL;
         struct oa_soap_area *head_area = NULL;
         SaHpiInt32T add_success_flag = 0;
         SaHpiInt32T area_count = 0;
+        struct oa_soap_handler *oa_handler = NULL;
+        SaHpiResourceIdT resource_id;
+        SaHpiRptEntryT *rpt = NULL;
 
         if (oh_handler == NULL || response == NULL || rdr == NULL ||
             inventory == NULL) {
@@ -2229,26 +2199,19 @@ SaErrorT build_fan_inv_rdr(struct oh_handler_state *oh_handler,
                 return SA_ERR_HPI_INVALID_PARAMS;
         }
 
-        entity_root =
-                (char *)g_hash_table_lookup(oh_handler->config,"entity_root");
-        rv = oh_encode_entitypath(entity_root, &entity_path);
-        if (rv != SA_OK) {
-                err("Encoding entity path failed");
+        oa_handler = (struct oa_soap_handler *) oh_handler->data;
+        resource_id = oa_handler->
+                oa_soap_resources.fan.resource_id[response->bayNumber - 1];
+        /* Get the rpt entry of the resource */
+        rpt = oh_get_resource_by_id(oh_handler->rptcache, resource_id);
+        if (rpt == NULL) {
+                err("resource RPT is NULL");
                 return SA_ERR_HPI_INTERNAL_ERROR;
         }
 
         /* Populating the inventory rdr with default values and resource name */
         rdr->RdrType  = SAHPI_INVENTORY_RDR;
-        rdr->Entity.Entry[1].EntityType = SAHPI_ENT_ROOT;
-        rdr->Entity.Entry[1].EntityLocation = 0;
-        rdr->Entity.Entry[0].EntityType = SAHPI_ENT_COOLING_DEVICE;
-        rdr->Entity.Entry[0].EntityLocation = response->bayNumber;
-        rv = oh_concat_ep(&rdr->Entity, &entity_path);
-        if (rv != SA_OK) {
-                err("Concat of entity path failed");
-                return SA_ERR_HPI_INTERNAL_ERROR;
-        }
-
+        rdr->Entity = rpt->ResourceEntity;
         rdr->RecordId = 0;
         rdr->RdrTypeUnion.InventoryRec.IdrId = SAHPI_DEFAULT_INVENTORY_ID;
         rdr->IdString.DataType = SAHPI_TL_TYPE_TEXT;
@@ -2351,14 +2314,15 @@ SaErrorT build_power_inv_rdr(struct oh_handler_state *oh_handler,
                              struct oa_soap_inventory **inventory)
 {
         SaErrorT rv = SA_OK;
-        SaHpiEntityPathT entity_path;
-        char *entity_root = NULL;
         char *power_rdr_str = POWER_SUPPLY_RDR_STRING;
         char power_inv_str[] = POWER_SUPPLY_INVENTORY_STRING;
         struct oa_soap_inventory *local_inventory = NULL;
         struct oa_soap_area *head_area = NULL;
         SaHpiInt32T add_success_flag = 0;
         SaHpiInt32T area_count = 0;
+        struct oa_soap_handler *oa_handler = NULL;
+        SaHpiResourceIdT resource_id;
+        SaHpiRptEntryT *rpt = NULL;
 
         if (oh_handler == NULL || response == NULL || rdr == NULL ||
             inventory == NULL) {
@@ -2366,25 +2330,18 @@ SaErrorT build_power_inv_rdr(struct oh_handler_state *oh_handler,
                 return SA_ERR_HPI_INVALID_PARAMS;
         }
 
-        entity_root = (char *)g_hash_table_lookup(oh_handler->config,
-                                                  "entity_root");
-        rv = oh_encode_entitypath(entity_root, &entity_path);
-        if (rv != SA_OK) {
-                err("Encoding entity path failed");
+        oa_handler = (struct oa_soap_handler *) oh_handler->data;
+        resource_id =
+           oa_handler->oa_soap_resources.ps_unit.resource_id[response->bayNumber - 1];
+        /* Get the rpt entry of the resource */
+        rpt = oh_get_resource_by_id(oh_handler->rptcache, resource_id);
+        if (rpt == NULL) {
+                err("resource RPT is NULL");
                 return SA_ERR_HPI_INTERNAL_ERROR;
         }
 
         /* Populating the inventory rdr with default values and resource name */
-        rdr->Entity.Entry[1].EntityType = SAHPI_ENT_ROOT;
-        rdr->Entity.Entry[1].EntityLocation = 0;
-        rdr->Entity.Entry[0].EntityType = SAHPI_ENT_POWER_UNIT;
-        rdr->Entity.Entry[0].EntityLocation = response->bayNumber;
-        rv = oh_concat_ep(&rdr->Entity, &entity_path);
-        if (rv != SA_OK) {
-                err("concat of entity path failed");
-                return SA_ERR_HPI_INTERNAL_ERROR;
-        }
-
+        rdr->Entity = rpt->ResourceEntity;
         rdr->RecordId = 0;
         rdr->RdrType  = SAHPI_INVENTORY_RDR;
         rdr->RdrTypeUnion.InventoryRec.IdrId = SAHPI_DEFAULT_INVENTORY_ID;

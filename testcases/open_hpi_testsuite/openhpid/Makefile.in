@@ -51,7 +51,7 @@ host_triplet = @host@
 sbin_PROGRAMS = openhpid$(EXEEXT)
 @HAVE_OPENSSL_TRUE@am__append_1 = $(top_builddir)/$(SSLDIR)/libopenhpi_ssl.la
 
-# this is defined with ./configure --enable-daemon=static
+# this is defined with ./configure --disable-dynamicdaemon
 @OPENHPID_STATIC_TRUE@am__append_2 = -static
 @OPENHPID_STATIC_FALSE@am__append_3 = -lstdc++
 subdir = openhpid
@@ -85,15 +85,10 @@ libopenhpi_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 sbinPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(sbin_PROGRAMS)
 am_openhpid_OBJECTS = openhpid.$(OBJEXT)
-am__objects_1 = config.$(OBJEXT) domain.$(OBJEXT) event.$(OBJEXT) \
-	threaded.$(OBJEXT) alarm.$(OBJEXT) hotswap.$(OBJEXT) \
-	lock.$(OBJEXT) plugin.$(OBJEXT) plugin_static.$(OBJEXT) \
-	init.$(OBJEXT) safhpi.$(OBJEXT) session.$(OBJEXT) \
-	ohpi.$(OBJEXT)
-nodist_openhpid_OBJECTS = $(am__objects_1)
-openhpid_OBJECTS = $(am_openhpid_OBJECTS) $(nodist_openhpid_OBJECTS)
+openhpid_OBJECTS = $(am_openhpid_OBJECTS)
 am__DEPENDENCIES_1 =
-openhpid_DEPENDENCIES = $(top_builddir)/utils/libopenhpiutils.la \
+openhpid_DEPENDENCIES = $(top_builddir)/src/libopenhpi.la \
+	$(top_builddir)/utils/libopenhpiutils.la \
 	$(top_builddir)/marshal/libohtcpconnx.la $(am__append_1) \
 	$(am__DEPENDENCIES_1)
 openhpid_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
@@ -120,8 +115,7 @@ CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(libopenhpi_la_SOURCES) $(openhpid_SOURCES) \
-	$(nodist_openhpid_SOURCES)
+SOURCES = $(libopenhpi_la_SOURCES) $(openhpid_SOURCES)
 DIST_SOURCES = $(libopenhpi_la_SOURCES) $(openhpid_SOURCES)
 ETAGS = etags
 CTAGS = ctags
@@ -282,21 +276,6 @@ target_alias = @target_alias@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 MAINTAINERCLEANFILES = Makefile.in *~
-REMOTE_SOURCES = \
-	config.c \
-       	domain.c \
-        event.c \
-       	threaded.c \
-        alarm.c \
-       	hotswap.c \
-       	lock.c \
-       	plugin.c \
-       	plugin_static.c \
-       	init.c \
-       	safhpi.c \
-       	session.c \
-       	ohpi.c
-
 INCLUDES = \
 	@OPENHPI_INCLUDES@  -I$(top_srcdir)/marshal @OH_SSL_INCLUDES@
 
@@ -304,8 +283,8 @@ EXTRA_DIST = \
 	openhpid.sh.in oh_client.h oh_client_conf.h oh_client_session.h
 
 openhpid_SOURCES = openhpid.cpp
-nodist_openhpid_SOURCES = $(REMOTE_SOURCES)
-openhpid_LDADD = $(top_builddir)/utils/libopenhpiutils.la \
+openhpid_LDADD = $(top_builddir)/src/libopenhpi.la \
+	$(top_builddir)/utils/libopenhpiutils.la \
 	$(top_builddir)/marshal/libohtcpconnx.la $(am__append_1) \
 	$(am__append_3)
 openhpid_LDFLAGS = -export-dynamic $(am__append_2)
@@ -417,23 +396,10 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/alarm.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/config.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/domain.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/event.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hotswap.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/init.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lock.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/oh_client.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/oh_client_conf.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/oh_client_session.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ohpi.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/openhpid.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plugin.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plugin_static.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/safhpi.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/session.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/threaded.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -669,15 +635,6 @@ uninstall-am: uninstall-libLTLIBRARIES uninstall-local \
 
 .NOTPARALLEL:
 
-$(REMOTE_SOURCES):
-	if test ! -f $@ -a ! -L $@; then \
-		if test -f $(top_srcdir)/src/$@; then \
-			ln -s $(top_srcdir)/src/$@; \
-		else \
-			ln -s $(top_builddir)/src/$@; \
-		fi \
-	fi
-
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(sysconfdir)/init.d
 	$(INSTALL) -m 0755 openhpid.sh $(DESTDIR)$(sysconfdir)/init.d/openhpid
@@ -686,7 +643,7 @@ uninstall-local:
 	rm -f $(DESTDIR)$(sysconfdir)/init.d/openhpid
 
 clean-local:
-	rm -f *~ core core.* $(REMOTE_SOURCES)
+	rm -f *~ core core.* 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

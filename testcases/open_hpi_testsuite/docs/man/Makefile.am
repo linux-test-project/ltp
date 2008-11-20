@@ -29,7 +29,15 @@
 
 MAINTAINERCLEANFILES 	= Makefile.in
 
-EXTRA_DIST		= openhpi.pod.7 openhpid.pod.8
+EXTRA_DIST		= openhpi.pod.7   openhpid.pod.8      \
+                          hpialarms.pod.1 hpifan.pod.1        \
+                          hpipower.pod.1  hpisettime.pod.1    \
+                          hpitree.pod.1   hpiel.pod.1         \
+                          hpiinv.pod.1    hpireset.pod.1      \
+                          hpithres.pod.1  hpiwdt.pod.1        \
+                          hpievents.pod.1 hpionIBMblade.pod.1 \
+                          hpisensor.pod.1 hpitop.pod.1
+
 
 %.1: %.pod.1
 	pod2man --release=$(VERSION) --name=`echo $@ | sed 's/.1//'` \
@@ -52,7 +60,14 @@ EXTRA_DIST		= openhpi.pod.7 openhpid.pod.8
 		-s 8 -c "OpenHPI" $< $@
 
 #mandir = $(datadir)/man
-man_MANS = openhpi.7 openhpid.8
+man_MANS = openhpi.7   openhpid.8      \
+           hpialarms.1 hpifan.1        \
+           hpipower.1  hpisettime.1    \
+           hpitree.1   hpiel.1         \
+           hpiinv.1    hpireset.1      \
+           hpithres.1  hpiwdt.1        \
+           hpievents.1 hpionIBMblade.1 \
+           hpisensor.1 hpitop.1
 
 clean-local: am_config_clean-local
 

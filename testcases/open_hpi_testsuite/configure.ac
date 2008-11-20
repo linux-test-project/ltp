@@ -5,7 +5,7 @@ dnl   various hacks by Sean Dague <http://dague.net/sean> 4/23/03
 
 
 AC_PREREQ(2.57)
-AC_INIT(openhpi, 2.12.0)
+AC_INIT(openhpi, 2.13.1)
 AC_CONFIG_SRCDIR(openhpi.spec.in)
 AM_INIT_AUTOMAKE([1.8])
 
@@ -23,7 +23,7 @@ AH_BOTTOM([#endif /* __OPENHPI_CONFIG_H */])
 # minor version: 11 = 11
 # patch version: 4  = 4
 #
-HPI_LIB_VERSION=14:0:12
+HPI_LIB_VERSION=15:1:13
 HPI_PKG=$PACKAGE_NAME
 HPI_UTIL_PKG=${PACKAGE_NAME}utils
 HPI_CLIENT_PKG=${PACKAGE_NAME}client
@@ -142,30 +142,17 @@ AC_CHECK_HEADERS([libxml2/libxml/xmlexports.h],[XML2_INCLUDE="-I/usr/include/lib
 AC_SUBST(XML2_LIB)
 AC_SUBST(XML2_INCLUDE)
 
-dnl Enable the marshal directory only when needed by
-dnl the deamon
+dnl Build daemon statically or dynamically.
 openhpid_static="no"
-oh_daemon_enabled="no"
 
+ENABLED_DIRS="$ENABLED_DIRS openhpid"
 AC_ARG_ENABLE([daemon],
-    [  --enable-daemon         build HPI daemon and client library [[default=yes]]],
-    [if test "x$enableval" = "xyes"; then
-        ENABLED_DIRS="$ENABLED_DIRS openhpid"
-	AC_DEFINE([OH_DAEMON_ENABLED],[1],[Build daemon and client libs])
-	oh_daemon_enabled="yes"
-     elif test "x$enableval" = "xstatic"; then
-        ENABLED_DIRS="$ENABLED_DIRS openhpid"
+	[  --enable-dynamic-daemon   build HPI daemon and client library non-statically[[default=yes]]],
+        [if test "x$enableval" = "xno"; then   
         openhpid_static="yes"
-	AC_DEFINE([OH_DAEMON_ENABLED],[1],[Build daemon and client libs])
-	oh_daemon_enabled="yes"
     fi],
-    [
-    ENABLED_DIRS="$ENABLED_DIRS openhpid"
-    AC_DEFINE([OH_DAEMON_ENABLED],[1],[Build daemon and client libs])
-    oh_daemon_enabled="yes"
-    openhpid_dinamic="yes"])
+    [openhpid_static="no"])
 
-AM_CONDITIONAL(OH_DAEMON_ENABLED, test x$oh_daemon_enabled = xyes)
 AM_CONDITIONAL(OPENHPID_STATIC, test x$openhpid_static = xyes)
 
 
@@ -398,12 +385,8 @@ AC_ARG_ENABLE([oa_soap],
      fi
     ])
 
-
-dnl enable marshal library when needed
-if test "x$oh_daemon_enabled" = "xyes"; then
-        AC_SUBST(MARSHALDIR,marshal)
-fi
-
+dnl enable marshal library
+AC_SUBST(MARSHALDIR,marshal)
 
 dnl
 dnl create static plugin config

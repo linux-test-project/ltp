@@ -40,7 +40,7 @@ extern GStaticRecMutex sessions_sem;
 SaErrorT oh_create_connx(SaHpiDomainIdT, pcstrmsock *);
 void oh_delete_connx(pcstrmsock);
 SaErrorT oh_close_connx(SaHpiSessionIdT);
-SaErrorT oh_get_connx(SaHpiSessionIdT, SaHpiSessionIdT *, pcstrmsock *);
+SaErrorT oh_get_connx(SaHpiSessionIdT, SaHpiSessionIdT *, pcstrmsock *, SaHpiDomainIdT *);
 
 SaHpiSessionIdT oh_open_session(SaHpiDomainIdT, SaHpiSessionIdT, pcstrmsock);
 SaErrorT oh_close_session(SaHpiSessionIdT);

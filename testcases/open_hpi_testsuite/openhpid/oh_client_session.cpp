@@ -41,6 +41,7 @@ static void __destroy_client_connx(gpointer data)
 
 int oh_client_init(void)
 {
+	char *tmp_env_str = NULL;
         // Initialize GLIB thread engine
 	if (!g_thread_supported()) {
         	g_thread_init(NULL);
@@ -59,15 +60,23 @@ int oh_client_init(void)
 
         if (!domains) { // Create domain table
                 struct oh_domain_conf *domain_conf = NULL;
-                // SaHpiDomainIdT default_did = SAHPI_UNSPECIFIED_DOMAIN_ID;
-		SaHpiDomainIdT default_did = OH_DEFAULT_DOMAIN_ID;
-		
+                //  SaHpiDomainIdT default_did = SAHPI_UNSPECIFIED_DOMAIN_ID;
+                SaHpiDomainIdT default_did = OH_DEFAULT_DOMAIN_ID;
+
+
+
                 domains = g_hash_table_new_full(
                         g_int_hash, g_int_equal,
                         NULL, g_free
                 );                
                 /* TODO: Have a default openhpiclient.conf file in /etc */
-                oh_load_client_config(OH_CLIENT_DEFAULT_CONF, domains);
+                if ((tmp_env_str = getenv("OPENHPICLIENT_CONF")) != NULL) {
+			oh_load_client_config(tmp_env_str, domains);
+                } else {
+			oh_load_client_config(OH_CLIENT_DEFAULT_CONF, domains);	
+		}
+		
+                
                 
                 /* Check to see if a default domain exists, if not, add it */
                 domain_conf =
@@ -81,7 +90,7 @@ int oh_client_init(void)
                         host = getenv("OPENHPI_DAEMON_HOST");
                         if (!host) host = "localhost";
                         
-                        portstr = getenv("OPENHI_DAEMON_PORT");
+                        portstr = getenv("OPENHPI_DAEMON_PORT");
                         if (!portstr) port = OPENHPI_DEFAULT_DAEMON_PORT;
                         else port = atoi(portstr);
                         
@@ -171,14 +180,14 @@ SaErrorT oh_close_connx(SaHpiSessionIdT SessionId)
         return SA_OK;
 }
 
-SaErrorT oh_get_connx(SaHpiSessionIdT csid, SaHpiSessionIdT *dsid, pcstrmsock *pinst)
+SaErrorT oh_get_connx(SaHpiSessionIdT csid, SaHpiSessionIdT *dsid, pcstrmsock *pinst, SaHpiDomainIdT *did)
 {
         pthread_t thread_id = pthread_self();
         struct oh_client_session *client_session = NULL;
         pcstrmsock connx = NULL;
         SaErrorT ret = SA_OK;
 
-	if (!csid || !dsid || !pinst)
+	if (!csid || !dsid || !pinst || !did)
 		return SA_ERR_HPI_INVALID_PARAMS;
 		
 	oh_client_init(); /* Initialize library - Will run only once */
@@ -205,6 +214,7 @@ SaErrorT oh_get_connx(SaHpiSessionIdT csid, SaHpiSessionIdT *dsid, pcstrmsock *p
                         }
                 }
                 *dsid = client_session->dsid;
+				*did  = client_session->did;
                 *pinst = connx;
         }
         g_static_rec_mutex_unlock(&sessions_sem);        
@@ -236,7 +246,7 @@ SaHpiSessionIdT oh_open_session(SaHpiDomainIdT did,
         
         if (!sid || !pinst)
 		return 0;
-
+	
         client_session = g_new0(struct oh_client_session, 1);
         
         g_static_rec_mutex_lock(&sessions_sem);

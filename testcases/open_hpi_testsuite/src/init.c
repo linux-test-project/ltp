@@ -35,9 +35,8 @@
 int oh_init(void)
 {
         static int initialized = 0;
-        struct oh_parsed_config config = { NULL, NULL, 0, 0, 0, 0, FALSE };
+        struct oh_parsed_config config = { NULL, 0, 0 };
         struct oh_global_param config_param = { .type = OPENHPI_CONF };
-        oh_entitypath_pattern epp;
         SaErrorT rval;
 
         data_access_lock();
@@ -92,25 +91,16 @@ int oh_init(void)
         oh_process_config(&config);
 
         /* Create default domain if it does not exist yet. */
-        if (!config.default_domain) {
-                if (oh_compile_entitypath_pattern("*", &epp)) {
-                        data_access_unlock();
-                        err("Could not compile entitypath pattern.");
-                        return SA_ERR_HPI_ERROR;
-                }
-        
-                if (oh_create_domain(OH_DEFAULT_DOMAIN_ID,
-                                     &epp, "DEFAULT",
-                                     SAHPI_UNSPECIFIED_DOMAIN_ID,
-                                     SAHPI_UNSPECIFIED_DOMAIN_ID,
-                                     SAHPI_DOMAIN_CAP_AUTOINSERT_READ_ONLY,
-                                     SAHPI_TIMEOUT_IMMEDIATE)) {
-                        data_access_unlock();
-                        err("Could not create first domain!");
-                        return SA_ERR_HPI_ERROR;
-                }
-                dbg("Created DEFAULT domain");
-        }
+	if (oh_create_domain(OH_DEFAULT_DOMAIN_ID,
+	                     "DEFAULT",
+	                      SAHPI_UNSPECIFIED_DOMAIN_ID,
+	                      SAHPI_UNSPECIFIED_DOMAIN_ID,
+	                      SAHPI_DOMAIN_CAP_AUTOINSERT_READ_ONLY,
+	                      SAHPI_TIMEOUT_IMMEDIATE)) {
+	        data_access_unlock();
+		err("Could not create first domain!");
+		return SA_ERR_HPI_ERROR;
+       }
 
         /*
          * Wipes away configuration lists (plugin_names and handler_configs).
@@ -130,17 +120,13 @@ int oh_init(void)
                      " Check previous messages.");
         }
 
-        if (config.domains_defined != config.domains_loaded) {
-                warn("*Warning*: Not all domains defined where created."
-                     " Check previous messages.");
-        }
+        /* Start discovery and event threads */
+	oh_threaded_start();
 
-        /* this only does something if the config says to */
-        oh_threaded_start();
-
-        dbg("Set init state");
         initialized = 1;
         data_access_unlock();
+	dbg("OpenHPI has been initialized");
+
         /* infrastructure initialization has completed at this point */
 
         /* Check if there are any handlers loaded */

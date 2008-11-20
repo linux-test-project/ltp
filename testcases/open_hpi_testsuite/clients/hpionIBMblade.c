@@ -71,7 +71,7 @@
 #include <oHpi.h>
 #include <oh_clients.h>
 
-#define OH_SVN_REV "$Revision: 1.3 $"
+#define OH_SVN_REV "$Revision: 1.4 $"
 
 #define READ_BUF_SIZE	1024
 #define MAX_BYTE_COUNT 128
@@ -874,7 +874,7 @@ static SaErrorT hpiIBMspecial_find_blade_slot(void)
 
 			
         /*
-          CH_SLOT=`echo $X | awk '{i=20; x=x $i; print x}'`
+          CH_SLOT=`echo $X | gawk '{i=20; x=x $i; print x}'`
         */
 	if (byte_count >= 3)  {
         	memcpy(&str2, &VPD_DATA[39], 2);

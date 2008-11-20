@@ -112,9 +112,10 @@ static void* get_event(void *unused)
                         rptentry.ResourceId = 0;
 			memset(&event, 0xF, sizeof(event));
 			rv = saHpiEventGet(Domain->sessionId,
-				SAHPI_TIMEOUT_IMMEDIATE, &event,
+				SAHPI_TIMEOUT_BLOCK, &event,
 				NULL, NULL, NULL);		
 			if (rv != SA_OK ) {
+				printf("saHpiEventGet failed with error <%d>", rv);
 				break;
 			}
 			if (prt_flag == 1) {
@@ -263,7 +264,8 @@ int close_session()
 {
 	SaErrorT rv;
 
-	pthread_kill(ge_thread, SIGKILL);
+	/* Bug 2171901, replace pthread_kill(ge_thread, SIGKILL); */
+	pthread_cancel(ge_thread);
 	
 	rv = saHpiSessionClose(Domain->sessionId);
 	if (rv != SA_OK) {

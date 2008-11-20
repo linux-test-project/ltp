@@ -1,0 +1,55 @@
+=head1 NAME
+
+hpievents - An openhpi sample application that polls for events. 
+
+=head1 SYNOPSIS 
+
+hpievents [ -t -d -x ]
+
+=head1 DESCRIPTION
+
+hpievents polls for events in an opened HPI session.  User can specify wait time for the event. User can also select the order between hpi resource (resource event) discovery and hpi event subscription.
+
+=head1 OPTIONS
+
+=over 2
+ 
+ where:  -t <value> - wait <value> seconds for event;
+         -t SAHPI_TIMEOUT_BLOCK or BLOCK - infinite wait
+         -d - call saHpiDiscover() after saHpiSubscribe()
+         -x - displays eXtra debug messages
+
+=back
+
+=head1 HPI APIs uniquely used in this application 
+
+=over 2
+
+SaErrorT SAHPI_API saHpiSubscribe (
+    SAHPI_IN SaHpiSessionIdT      SessionId
+);
+
+SaErrorT SAHPI_API saHpiUnsubscribe (
+    SAHPI_IN SaHpiSessionIdT  SessionId
+);
+
+SaErrorT SAHPI_API saHpiEventGet (
+    SAHPI_IN SaHpiSessionIdT            SessionId,
+    SAHPI_IN SaHpiTimeoutT              Timeout,
+    SAHPI_OUT SaHpiEventT               *Event,
+    SAHPI_INOUT SaHpiRdrT               *Rdr,
+    SAHPI_INOUT SaHpiRptEntryT          *RptEntry,
+    SAHPI_INOUT SaHpiEvtQueueStatusT    *EventQueueStatus
+);
+
+=back
+
+=head1 SEE ALSO
+
+ 
+=head1 AUTHORS
+
+Authors of this man page:
+
+ Peter D Phan (pdphan@users.sourceforge.net)
+

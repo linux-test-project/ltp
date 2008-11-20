@@ -32,7 +32,7 @@
 
 enum {
         HPI_CLIENT_CONF_TOKEN_DOMAIN = G_TOKEN_LAST,
-        HPI_CLIENT_CONF_TOKEN_DEFAULT,
+        HPI_CLIENT_CONF_TOKEN_DEFAULT,	
         HPI_CLIENT_CONF_TOKEN_HOST,
         HPI_CLIENT_CONF_TOKEN_PORT
 } hpiClientConfType;
@@ -51,6 +51,7 @@ static struct tokens oh_client_conf_tokens[] = {
                 .name = "default",
                 .token = HPI_CLIENT_CONF_TOKEN_DEFAULT
         },
+	
         {
                 .name = "host",
                 .token = HPI_CLIENT_CONF_TOKEN_HOST
@@ -142,7 +143,7 @@ static int process_domain_token (GScanner *oh_scanner, GHashTable *domains)
                 // Default domain
                 domain_conf = g_malloc0(sizeof(struct oh_domain_conf));
                 // domain_conf->did = SAHPI_UNSPECIFIED_DOMAIN_ID;
-		domain_conf->did = OH_DEFAULT_DOMAIN_ID;
+                domain_conf->did = OH_DEFAULT_DOMAIN_ID;
                 dbg("Processing domain: Found default domain definition");
         } else if (next_token == G_TOKEN_INT) {
                 if (oh_scanner->value.v_int == 0) { // Domain Id of 0 is invalid

@@ -381,13 +381,11 @@ static int process_event(SaHpiDomainIdT did,
 SaErrorT oh_process_events()
 {
         struct oh_event *e;
-        GArray *domain_results = NULL;
-        SaHpiEntityPathT epath;
+        // GArray *domain_results = NULL;
         SaHpiDomainIdT tmp_did;
         char *et;
-        int i;
 
-        domain_results = oh_query_domains();
+        // domain_results = oh_query_domains();
 
         while ((e = g_async_queue_pop(oh_process_q.q)) != NULL) {
                 et = oh_lookup_eventtype(e->event.EventType);
@@ -406,27 +404,6 @@ SaErrorT oh_process_events()
                         goto free_event;
                 } /* TODO: Include HPI_SW event type in special case */
                 
-                /* 2. Determine proper domains to handle this event */
-                if (!oh_entity_path_lookup(e->event.Source, &epath)) {
-                        /* Convert the event's source id to an entitypath */
-                        for (i = 0; i < domain_results->len; i++) {
-                                /* Process event in each domain matching
-                                 * the event's entity path.
-                                 */
-                                oh_domain_result dr =
-#if defined(__sparc) || defined(__sparc__)
-                                        ((oh_domain_result *)((void *)(domain_results->data)))[i];
-#else
-                                        g_array_index(domain_results, oh_domain_result, i);
-#endif
-                                /* Skip default domain here. Will be processed there later. */
-                                if (dr.id == OH_DEFAULT_DOMAIN_ID) continue;
-
-                                if (oh_match_entitypath_pattern(&dr.entity_pattern, &epath))
-                                        process_event(dr.id, e);
-                        }
-                        
-                }
                 /* All events get processed in the default domain regardless. */
                 process_event(OH_DEFAULT_DOMAIN_ID, e);
                 
@@ -434,7 +411,7 @@ free_event:
                 oh_event_free(e, FALSE);
 	}
         /* Should never get here */
-        g_array_free(domain_results, TRUE);
+        // g_array_free(domain_results, TRUE);
 	return SA_ERR_HPI_INTERNAL_ERROR;
 }
 

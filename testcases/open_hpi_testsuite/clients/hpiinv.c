@@ -38,7 +38,7 @@
 #include <oh_utils.h>
 #endif
 
-#define OH_SVN_REV "$Revision: 1.2 $"
+#define OH_SVN_REV "$Revision: 1.3 $"
 
 #define NCT 25
 #define MAX_STRSIZE  64

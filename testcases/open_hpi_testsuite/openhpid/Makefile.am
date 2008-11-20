@@ -17,21 +17,6 @@
 
 MAINTAINERCLEANFILES 	= Makefile.in *~
 
-REMOTE_SOURCES		= \
-	config.c \
-       	domain.c \
-        event.c \
-       	threaded.c \
-        alarm.c \
-       	hotswap.c \
-       	lock.c \
-       	plugin.c \
-       	plugin_static.c \
-       	init.c \
-       	safhpi.c \
-       	session.c \
-       	ohpi.c
-
 INCLUDES 		= \
 	@OPENHPI_INCLUDES@  -I$(top_srcdir)/marshal @OH_SSL_INCLUDES@
 
@@ -42,16 +27,17 @@ EXTRA_DIST		= \
 sbin_PROGRAMS           = openhpid
 
 openhpid_SOURCES        = openhpid.cpp
-nodist_openhpid_SOURCES = $(REMOTE_SOURCES)
 
-openhpid_LDADD		= $(top_builddir)/utils/libopenhpiutils.la \
-			  $(top_builddir)/marshal/libohtcpconnx.la
+
+openhpid_LDADD         = $(top_builddir)/src/libopenhpi.la \
+	                 $(top_builddir)/utils/libopenhpiutils.la \
+			 $(top_builddir)/marshal/libohtcpconnx.la
 if HAVE_OPENSSL
 openhpid_LDADD		+= $(top_builddir)/$(SSLDIR)/libopenhpi_ssl.la
 endif
 openhpid_LDFLAGS        = -export-dynamic
 
-# this is defined with ./configure --enable-daemon=static
+# this is defined with ./configure --disable-dynamicdaemon
 if OPENHPID_STATIC
 openhpid_LDFLAGS        += -static
 else
@@ -67,16 +53,6 @@ libopenhpi_la_LDFLAGS = -version-info @HPI_LIB_VERSION@
 libopenhpi_la_LIBADD  = $(top_builddir)/marshal/libohtcpconnx.la -lstdc++ \
                         $(top_builddir)/utils/libopenhpiutils.la
 
-
-$(REMOTE_SOURCES):
-	if test ! -f $@ -a ! -L $@; then \
-		if test -f $(top_srcdir)/src/$@; then \
-			ln -s $(top_srcdir)/src/$@; \
-		else \
-			ln -s $(top_builddir)/src/$@; \
-		fi \
-	fi
-
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(sysconfdir)/init.d
 	$(INSTALL) -m 0755 openhpid.sh $(DESTDIR)$(sysconfdir)/init.d/openhpid
@@ -85,4 +61,4 @@ uninstall-local:
 	rm -f $(DESTDIR)$(sysconfdir)/init.d/openhpid
 	
 clean-local:
-	rm -f *~ core core.* $(REMOTE_SOURCES)
+	rm -f *~ core core.* 

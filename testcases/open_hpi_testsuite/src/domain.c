@@ -73,7 +73,7 @@ static void __delete_domain(struct oh_domain *d)
         g_static_rec_mutex_free(&d->refcount_lock);
         g_free(d);
 }
-
+#if 0
 static void __query_domains(gpointer key, gpointer value, gpointer user_data)
 {
         oh_domain_result dr;
@@ -87,6 +87,7 @@ static void __query_domains(gpointer key, gpointer value, gpointer user_data)
 
         g_array_append_val(data, dr);
 }
+#endif
 
 static GList *__get_domain(SaHpiDomainIdT did)
 {
@@ -164,7 +165,6 @@ static void update_drt(SaHpiDomainIdT target_id,
                 drtentry->EntryId = ++(domain->drt.next_id);
                 drtentry->IsPeer = subject_is_peer;
                 domain->drt.list = g_slist_append(domain->drt.list, drtentry);
-                domain->state |= (subject_is_peer) ? OH_DOMAIN_PEER : OH_DOMAIN_PARENT;
                 gen_domain_event(target_id, subject_id, SAHPI_TRUE);
         } else {
                 GSList *node = NULL, *savenode = NULL;
@@ -192,13 +192,6 @@ static void update_drt(SaHpiDomainIdT target_id,
                         }
                 }
 
-                if (is_peer) {
-                        /* Remove peer state */
-                        if (peer_count == 1) domain->state &= 0x03;
-                } else {
-                        /* Remove parent state */
-                        if (child_count == 1) domain->state &= 0x05;
-                }
         }
 
         if (addition || found) {
@@ -228,6 +221,7 @@ static int connect2parent(struct oh_domain *domain, SaHpiDomainIdT parent_id)
         }
 
         /* Add child drt to peers of parent domain */
+#if 0
         if (parent->state & OH_DOMAIN_PEER) {
                 GSList *node = NULL;
                 for (node = parent->drt.list; node; node = node->next) {
@@ -238,11 +232,12 @@ static int connect2parent(struct oh_domain *domain, SaHpiDomainIdT parent_id)
                         }
                 }
         }
+#endif 
         oh_release_domain(parent);
 
         /* Add child drt to parent domain */
         add_drtentry(parent_id, domain->id, SAHPI_FALSE);
-        domain->state |= OH_DOMAIN_CHILD; /* set child state */
+        // domain->state |= OH_DOMAIN_CHILD; /* set child state */
         domain->drt.parent_id = parent_id;
 
         return 0;
@@ -263,7 +258,7 @@ static int connect2peer(struct oh_domain *domain, SaHpiDomainIdT peer_id)
         }
 
         /* Copy entitypath pattern. Peers contain the same resources */
-        domain->entity_pattern = peer->entity_pattern;
+        // domain->entity_pattern = peer->entity_pattern;
         /* Copy drt list from target peer.
          * Also, add self drt to peers of target peer. */
         for (node = peer->drt.list; node; node = node->next) {
@@ -281,18 +276,19 @@ static int connect2peer(struct oh_domain *domain, SaHpiDomainIdT peer_id)
         /* Add each others drts to domain and domain's peer */
         add_drtentry(domain->id, peer_id, SAHPI_TRUE);
         add_drtentry(peer_id, domain->id, SAHPI_TRUE);
-        domain->state |= OH_DOMAIN_PEER;
+        // domain->state |= OH_DOMAIN_PEER;
 
         return 0;
 }
 
+#if 0
 static int disconnect_parent(struct oh_domain *child)
 {
         GSList *node = NULL;
         struct oh_domain *parent = NULL;
 
         if (!child) return -1;
-        if (!(child->state & OH_DOMAIN_CHILD)) return -2;
+        // if (!(child->state & OH_DOMAIN_CHILD)) return -2;
         
         parent = oh_get_domain(child->drt.parent_id);
         if (!parent) return -3;
@@ -306,7 +302,7 @@ static int disconnect_parent(struct oh_domain *child)
         oh_release_domain(parent);
         /* Finally, remove child drt from the parent */
         del_drtentry(child->drt.parent_id, child->id);
-        child->state = child->state & 0x06; /* Unset child state */
+        // child->state = child->state & 0x06; /* Unset child state */
 
         return 0;
 }
@@ -316,7 +312,7 @@ static int disconnect_peers(struct oh_domain *domain)
         GSList *node = NULL;
 
         if (!domain) return -1;
-        if (!(domain->state & OH_DOMAIN_PEER)) return -2;
+        // if (!(domain->state & OH_DOMAIN_PEER)) return -2;
 
         /* Remove drt from peers */
         for (node = domain->drt.list; node; node = node->next) {
@@ -326,10 +322,11 @@ static int disconnect_peers(struct oh_domain *domain)
                 }
         }
 
-        domain->state = domain->state & 0x03; /* Unset peer state */
+        // domain->state = domain->state & 0x03; /* Unset peer state */
 
         return 0;
 }
+#endif 
 
 /**
  * oh_create_domain
@@ -346,7 +343,6 @@ static int disconnect_peers(struct oh_domain *domain)
  * Returns: SA_OK if domain was created successfully.
  **/
 SaErrorT oh_create_domain(SaHpiDomainIdT id,
-                          oh_entitypath_pattern *entity_pattern,
                           char *tag,
                           SaHpiDomainIdT child_of,
                           SaHpiDomainIdT peer_of,
@@ -360,14 +356,14 @@ SaErrorT oh_create_domain(SaHpiDomainIdT id,
         /* Fix id to int capable value */
         if (id == SAHPI_UNSPECIFIED_DOMAIN_ID)
                 id = OH_DEFAULT_DOMAIN_ID;
-
-        /* Input validation */
-        if (!entity_pattern && peer_of == SAHPI_UNSPECIFIED_DOMAIN_ID)
-                return SA_ERR_HPI_INVALID_PARAMS;
-        else if (peer_of == id || child_of == id ||
+		
+		
+	/* Input validation */
+        if (peer_of == id || child_of == id ||
                  (child_of == peer_of && child_of != SAHPI_UNSPECIFIED_DOMAIN_ID))
                 return SA_ERR_HPI_INVALID_PARAMS;
-        
+	
+	              
         /* Check to see if domain id is already taken */
         domains_lock();
         if (g_hash_table_lookup(oh_domains.table, &id)) {
@@ -378,12 +374,7 @@ SaErrorT oh_create_domain(SaHpiDomainIdT id,
         }
 
         domain->id = id; /* Set domain id */
-        if (entity_pattern) { /* Set entity pattern */
-                memcpy(&domain->entity_pattern,
-                       entity_pattern,
-                       sizeof(oh_entitypath_pattern));
-        }
-        
+
         if (tag) { /* Set domain tag */
                 oh_init_textbuffer(&domain->tag);
                 oh_append_textbuffer(&domain->tag, tag);
@@ -457,11 +448,10 @@ SaErrorT oh_create_domain(SaHpiDomainIdT id,
         
         domains_unlock();
 
-        dbg("Domain %u has been created.", id);
-
         return SA_OK;
 }
 
+#if 0
 SaErrorT oh_create_domain_from_table(GHashTable *table)
 {
         SaHpiDomainIdT *id = NULL, *child_of = NULL, *peer_of = NULL;
@@ -515,6 +505,7 @@ SaErrorT oh_create_domain_from_table(GHashTable *table)
                                 (peer_of) ? *peer_of : SAHPI_UNSPECIFIED_DOMAIN_ID,
                                 capabilities, ai_timeout);
 }
+#endif
 
 /**
  * oh_destroy_domain
@@ -540,12 +531,14 @@ SaErrorT oh_destroy_domain(SaHpiDomainIdT did)
 
         domain = (struct oh_domain *)node->data;
 
+#if 0
         if (domain->state & OH_DOMAIN_CHILD)
                 disconnect_parent(domain);
 
         if (domain->state & OH_DOMAIN_PEER)
                 disconnect_peers(domain);
-        
+#endif     
+
         domains_lock();
         g_hash_table_remove(oh_domains.table, &domain->id);
         oh_domains.list = g_list_delete_link(oh_domains.list, node);
@@ -608,6 +601,7 @@ SaErrorT oh_release_domain(struct oh_domain *domain)
         return SA_OK;
 }
 
+#if 0
 /**
  * oh_query_domains
  *
@@ -626,6 +620,7 @@ GArray *oh_query_domains()
 
         return domain_results;
 }
+#endif
 
 /**
  * oh_drt_entry_get

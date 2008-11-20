@@ -1,0 +1,33 @@
+=head1 NAME
+
+hpipower - This sample openhpi application excercises HPI Power Management APIs. 
+
+=head1 SYNOPSIS 
+
+hpipower [ -d -p -r -u -b -x ]
+
+=head1 DESCRIPTION
+
+hpipower searches the Resource Presence Table (RPT) for resources with Power Capability. It sends the requested power action to the selected target.
+
+=head1 OPTIONS
+
+=over 2
+
+ -d  power down target object
+ -p  power on target object
+ -r  reset target object
+ -u  unattended
+ -b <n>  Specify blade <n> (1...n)
+ -x  debug messages
+
+=back
+
+=head1 SEE ALSO
+
+=head1 AUTHORS
+
+Authors of this man page:
+
+ Peter D Phan (pdphan@users.sourceforge.net)
+

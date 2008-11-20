@@ -93,9 +93,6 @@
 /* default client configfile */
 #undef OH_CLIENT_DEFAULT_CONF
 
-/* Build daemon and client libs */
-#undef OH_DAEMON_ENABLED
-
 /* Enables dynamic debug messages */
 #undef OH_DBG_MSGS
 

@@ -59,7 +59,8 @@ SaErrorT update_server_hotswap_state(struct oh_handler_state *oh_handler,
                                      SaHpiInt32T bay_number);
 
 SaErrorT remove_server_blade(struct oh_handler_state *oh_handler,
-                             SaHpiInt32T bay_number);
+                             SaHpiInt32T bay_number,
+                             enum bladeType blade_type);
 
 SaErrorT add_server_blade(struct oh_handler_state *oh_handler,
                           SOAP_CON *con,

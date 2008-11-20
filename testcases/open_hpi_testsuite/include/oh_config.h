@@ -27,12 +27,8 @@ extern "C" {
 	
 struct oh_parsed_config {
         GSList *handler_configs;
-	GSList *domain_configs;
         guint handlers_defined;
         guint handlers_loaded;
-        guint domains_defined;
-        guint domains_loaded;
-        gboolean default_domain;
 };
 
 typedef enum {
@@ -46,7 +42,8 @@ typedef enum {
 	OPENHPI_DAT_SAVE,
         OPENHPI_PATH,
         OPENHPI_VARPATH,
-        OPENHPI_CONF
+        OPENHPI_CONF, 
+	OPENHPICLIENT_CONF
 } oh_global_param_type;
 
 typedef union {

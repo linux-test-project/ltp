@@ -1,0 +1,34 @@
+=head1 NAME
+
+hpireset - This sample openhpi application excercises HPI Reset Management APIs. 
+
+=head1 SYNOPSIS 
+
+hpireset [-r -d -x]
+
+=head1 DESCRIPTION
+
+hpireset searches the Resource Presence Table (RPT) for resources with Reset Capability. It sends the requested reset action to all resources with SAHPI_CAPABILITY_RESET.
+
+=head1 OPTIONS
+
+=over 2
+
+ -r  hard Resets the system
+ -d  powers Down the system
+ -c  power Cycles the system
+ -n  sends NMI to the system
+ -o  soft-shutdown OS
+ -s  reboots to Service Partition
+ -x  show eXtra debug messages
+
+=back
+
+=head1 SEE ALSO
+
+=head1 AUTHORS
+
+Authors of this man page:
+
+ Peter D Phan (pdphan@users.sourceforge.net)
+

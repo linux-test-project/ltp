@@ -70,7 +70,7 @@ SaErrorT oa_soap_set_fumi_source(void *oh_handler,
  *      @banknum:     Bank number
  *
  * Purpose:
- *      Validate the integrity of the source image associated with 
+ *      Validate the integrity of the source image associated with
  *      the given bank.
  *
  * Detailed Description: NA
@@ -94,7 +94,7 @@ SaErrorT oa_soap_set_fumi_source(void *oh_handler,
  *      @resource_id: Resource ID
  *      @num:         FUMI number
  *      @banknum:     Bank number
- *      @sourceuri:   Source Image URI 
+ *      @sourceuri:   Source Image URI
  *
  * Purpose:
  *      Get the source image URI information assigned to the given bank.
@@ -171,7 +171,7 @@ SaErrorT oa_soap_set_fumi_source(void *oh_handler,
  *      @resource_id: Resource ID
  *      @num:         FUMI number
  *      @banknum:     Bank number
- *      @position:    bank position in boot order 
+ *      @position:    bank position in boot order
  *
  * Purpose:
  *      Set the bank position in boot order .
@@ -313,7 +313,7 @@ SaErrorT oa_soap_set_fumi_source(void *oh_handler,
  *                                   support this API
  **/
  SaErrorT oa_soap_cancel_fumi_upgrade(void *oh_handler,
- 
+
                                 SaHpiResourceIdT resource_id,
                                 SaHpiFumiNumT num,
                                 SaHpiBankNumT banknum)
@@ -329,7 +329,7 @@ SaErrorT oa_soap_set_fumi_source(void *oh_handler,
  *      @num:         FUMI number
  *
  * Purpose:
- *      To rollback the image 
+ *      To rollback the image
  *      (Stop the image upgrade process and restore the backup image).
  *
  * Detailed Description: NA

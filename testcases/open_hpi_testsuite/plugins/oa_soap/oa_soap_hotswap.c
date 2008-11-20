@@ -319,7 +319,7 @@ SaErrorT oa_soap_request_hotswap_action(void *oh_handler,
                         }
                         break;
 
-                default :
+                default:
                         err("Invalid parameter");
                         rv = SA_ERR_HPI_INVALID_PARAMS;
         }

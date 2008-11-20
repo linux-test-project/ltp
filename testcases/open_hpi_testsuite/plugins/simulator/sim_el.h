@@ -1,6 +1,6 @@
 /*      -*- linux-c -*-
  *
- * (C) Copyright IBM Corp. 2005,2006
+ * (C) Copyright IBM Corp. 2005,2006, 2007, 2008
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -11,6 +11,7 @@
  *
  * Author(s):
  *      W. David Ashley <dashley@us.ibm.com>
+ *      Suntrupth S Yadav <suntrupth@in.ibm.com> 
  */
 
 
@@ -29,3 +30,6 @@ SaErrorT sim_el_get_entry(void *hnd, SaHpiResourceIdT id,
                           SaHpiRptEntryT *rptentry);
 SaErrorT sim_el_clear(void *hnd, SaHpiResourceIdT id);
 SaErrorT sim_el_overflow(void *hnd, SaHpiResourceIdT id);
+SaErrorT sim_el_get_caps(void *hnd, SaHpiResourceIdT id,
+                         SaHpiEventLogCapabilitiesT *caps);
+

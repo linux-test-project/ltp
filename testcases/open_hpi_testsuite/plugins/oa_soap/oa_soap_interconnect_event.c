@@ -30,6 +30,7 @@
  *
  * Author(s)
  *      Raghavendra P.G. <raghavendra.pg@hp.com>
+ *      Shuah Khan <shuah.khan@hp.com>
  *
  * This file has the interconnect blade related events handling
  *
@@ -47,9 +48,6 @@
  *
  *      process_interconnect_status_event()     - Process the interconeect
  *                                                status event
- *
- *      build_inserted_interconnect_rpt()       - Builds the inserted
- *                                                interconnect RPT entry
  *
  *      process_interconnect_thermal_event()    - Process the interconeect
  *                                                thermal event
@@ -77,12 +75,11 @@ SaErrorT process_interconnect_reset_event(struct oh_handler_state *oh_handler,
                                           struct eventInfo *oa_event)
 {
         struct oa_soap_hotswap_state *hotswap_state = NULL;
-        char* entity_root = NULL;
-        SaErrorT rv = SA_OK;
-        SaHpiEntityPathT root_entity_path;
-        SaHpiEntityPathT entity_path;
         struct oh_event event;
         SaHpiRptEntryT *rpt = NULL;
+        SaHpiResourceIdT resource_id;
+        struct oa_soap_handler *oa_handler = NULL;
+        SaHpiInt32T bay_number;
 
         if (oh_handler == NULL || oa_event == NULL) {
                 err("Invalid parameters");
@@ -90,29 +87,15 @@ SaErrorT process_interconnect_reset_event(struct oh_handler_state *oh_handler,
         }
 
         update_hotswap_event(oh_handler, &event);
-        entity_root = (char *) g_hash_table_lookup(oh_handler->config,
-                                                   "entity_root");
-        rv = oh_encode_entitypath(entity_root, &root_entity_path);
-        if (rv != SA_OK) {
-                err("Encoding entity path failed");
-                return SA_ERR_HPI_INTERNAL_ERROR;
-        }
 
-        memset(&entity_path, 0, sizeof(SaHpiEntityPathT));
-        entity_path.Entry[1].EntityType = SAHPI_ENT_ROOT;
-        entity_path.Entry[1].EntityLocation = 0;
-        entity_path.Entry[0].EntityType=SAHPI_ENT_SWITCH_BLADE;
-        entity_path.Entry[0].EntityLocation =
-                oa_event->eventData.interconnectTrayStatus.bayNumber;
-        rv = oh_concat_ep(&entity_path, &root_entity_path);
-        if (rv != SA_OK) {
-                err("Encoding entity path failed");
-                return SA_ERR_HPI_INTERNAL_ERROR;
-        }
-
-        rpt = oh_get_resource_by_ep(oh_handler->rptcache, &entity_path);
+        oa_handler = (struct oa_soap_handler *) oh_handler->data;
+        bay_number = oa_event->eventData.interconnectTrayStatus.bayNumber;
+        resource_id = oa_handler->
+                oa_soap_resources.interconnect.resource_id[bay_number - 1];
+        /* Get the rpt entry of the resource */
+        rpt = oh_get_resource_by_id(oh_handler->rptcache, resource_id);
         if (rpt == NULL) {
-                err("resource rpt is NULL");
+                err("resource RPT is NULL");
                 return SA_ERR_HPI_INTERNAL_ERROR;
         }
 
@@ -152,7 +135,7 @@ SaErrorT process_interconnect_reset_event(struct oh_handler_state *oh_handler,
         event.event.EventDataUnion.HotSwapEvent.HotSwapState =
                 SAHPI_HS_STATE_INACTIVE;
         /* EXTRACTION_PENDING to INACTIVE state change happened due
-         * to Auto policy of server blade
+         * to Auto policy of the server blade
          */
         event.event.EventDataUnion.HotSwapEvent.CauseOfStateChange =
                 SAHPI_HS_CAUSE_AUTO_POLICY;
@@ -202,15 +185,15 @@ SaErrorT process_interconnect_power_event(struct oh_handler_state *oh_handler,
                                           struct eventInfo *oa_event)
 {
         struct oa_soap_hotswap_state *hotswap_state = NULL;
-        char* entity_root = NULL;
         SaErrorT rv = SA_OK;
-        SaHpiEntityPathT root_entity_path;
-        SaHpiEntityPathT entity_path;
         SaHpiRptEntryT *rpt = NULL;
         struct oh_event event;
         struct oa_soap_sensor_info *sensor_info=NULL;
         SaHpiRdrT *rdr = NULL;
         SaHpiIdrIdT sen_rdr_num = OA_SOAP_RES_SEN_TEMP_NUM;
+        SaHpiResourceIdT resource_id;
+        struct oa_soap_handler *oa_handler = NULL;
+        SaHpiInt32T bay_number;
 
         if (oh_handler == NULL || oa_event == NULL) {
                 err("Invalid parameters");
@@ -219,29 +202,14 @@ SaErrorT process_interconnect_power_event(struct oh_handler_state *oh_handler,
 
         update_hotswap_event(oh_handler, &event);
 
-        entity_root = (char *) g_hash_table_lookup(oh_handler->config,
-                                                   "entity_root");
-        rv = oh_encode_entitypath(entity_root, &root_entity_path);
-        if (rv != SA_OK) {
-                err("Encoding entity path failed");
-                return SA_ERR_HPI_INTERNAL_ERROR;
-        }
-
-        memset(&entity_path, 0, sizeof(SaHpiEntityPathT));
-        entity_path.Entry[1].EntityType = SAHPI_ENT_ROOT;
-        entity_path.Entry[1].EntityLocation = 0;
-        entity_path.Entry[0].EntityType = SAHPI_ENT_SWITCH_BLADE;
-        entity_path.Entry[0].EntityLocation =
-                oa_event->eventData.interconnectTrayStatus.bayNumber;
-        rv = oh_concat_ep(&entity_path, &root_entity_path);
-        if (rv != SA_OK) {
-                err("Encoding entity path failed");
-                return SA_ERR_HPI_INTERNAL_ERROR;
-        }
-
-        rpt = oh_get_resource_by_ep(oh_handler->rptcache, &entity_path);
+        oa_handler = (struct oa_soap_handler *) oh_handler->data;
+        bay_number = oa_event->eventData.interconnectTrayStatus.bayNumber;
+        resource_id = oa_handler->
+                oa_soap_resources.interconnect.resource_id[bay_number - 1];
+        /* Get the rpt entry of the server */
+        rpt = oh_get_resource_by_id(oh_handler->rptcache, resource_id);
         if (rpt == NULL) {
-                err("resource rpt is NULL");
+                err("resource RPT is NULL");
                 return SA_ERR_HPI_INTERNAL_ERROR;
         }
 
@@ -256,7 +224,7 @@ SaErrorT process_interconnect_power_event(struct oh_handler_state *oh_handler,
         }
 
         switch (oa_event->eventData.interconnectTrayStatus.powered) {
-                case (POWER_OFF) :
+                case (POWER_OFF):
                         event.resource.ResourceSeverity = SAHPI_CRITICAL;
                         /* Update the current hotswap state to INACTIVE */
                         hotswap_state->currentHsState = SAHPI_HS_STATE_INACTIVE;
@@ -296,7 +264,7 @@ SaErrorT process_interconnect_power_event(struct oh_handler_state *oh_handler,
                                           copy_oa_soap_event(&event));
                         break;
 
-                case (POWER_ON) :
+                case (POWER_ON):
                         event.resource.ResourceSeverity = SAHPI_OK;
                         /* Update the current hot swap state to ACTIVE */
                         hotswap_state->currentHsState = SAHPI_HS_STATE_ACTIVE;
@@ -367,7 +335,7 @@ SaErrorT process_interconnect_power_event(struct oh_handler_state *oh_handler,
                                           copy_oa_soap_event(&event));
                         break;
 
-                default :
+                default:
                         err("Wrong power state %d",
                             oa_event->eventData.bladeStatus.powered);
                         return SA_ERR_HPI_INTERNAL_ERROR;
@@ -420,18 +388,20 @@ SaErrorT process_interconnect_insertion_event(struct oh_handler_state
                 return SA_ERR_HPI_INTERNAL_ERROR;
         }
 
-        /* Update the serial number array */
-        strcpy(oa_handler->oa_soap_resources.interconnect.
-               serial_number[bay_number - 1], response.serialNumber);
-
         /* Build the inserted interconnect RPT entry */
-        rv = build_inserted_interconnect_rpt(oh_handler,
-                                             response.name,
-                                             bay_number, &resource_id);
+        rv = build_interconnect_rpt(oh_handler, con, response.name,
+                                    bay_number, &resource_id, TRUE);
         if (rv != SA_OK) {
                 err("Failed to build the interconnect RPT");
                 return rv;
         }
+
+        /* Update resource_status structure with resource_id,
+         * serial_number, and presence status
+         */
+        oa_soap_update_resource_status(
+                 &oa_handler->oa_soap_resources.interconnect, bay_number,
+                 response.serialNumber, resource_id, RES_PRESENT);
 
         /* Build the inserted interconnect RDRs */
         rv = build_interconnect_rdr(oh_handler, con,
@@ -440,6 +410,10 @@ SaErrorT process_interconnect_insertion_event(struct oh_handler_state
                 err("Failed to build the interconnect RDR");
                 rv = oh_remove_resource(oh_handler->rptcache,
                                         event.resource.ResourceId);
+                /* reset resource_status structure to default values */
+                oa_soap_update_resource_status(
+                      &oa_handler->oa_soap_resources.interconnect, bay_number,
+                      "", SAHPI_UNSPECIFIED_RESOURCE_ID, RES_ABSENT);
                 return rv;
         }
 
@@ -460,10 +434,6 @@ SaErrorT process_interconnect_insertion_event(struct oh_handler_state
         event.event.EventDataUnion.HotSwapEvent.CauseOfStateChange =
                 SAHPI_HS_CAUSE_OPERATOR_INIT;
         oh_evt_queue_push(oh_handler->eventq, copy_oa_soap_event(&event));
-
-        /* Update the interconnect resource presence metrix to PRESENT */
-        oa_handler->oa_soap_resources.interconnect.presence[bay_number - 1] =
-                RES_PRESENT;
 
         return SA_OK;
 }
@@ -526,20 +496,19 @@ SaErrorT process_interconnect_extraction_event(struct oh_handler_state
 SaErrorT process_interconnect_status_event(struct oh_handler_state *oh_handler,
                                            struct eventInfo *oa_event)
 {
-        SaErrorT rv = SA_OK;
-        char* entity_root = NULL;
         struct oa_soap_hotswap_state *hotswap_state;
-        SaHpiEntityPathT entity_path;
-        SaHpiEntityPathT root_entity_path;
         SaHpiRptEntryT *rpt = NULL;
         struct oh_event event;
         SaHpiInt32T bay_number;
+        SaHpiResourceIdT resource_id;
+        struct oa_soap_handler *oa_handler = NULL;
 
         if (oh_handler == NULL || oa_event == NULL) {
                 err("Invalid parameters");
                 return SA_ERR_HPI_INVALID_PARAMS;
         }
 
+        oa_handler = (struct oa_soap_handler *) oh_handler->data;
         bay_number = oa_event->eventData.interconnectTrayStatus.bayNumber;
         update_hotswap_event(oh_handler, &event);
 
@@ -547,30 +516,15 @@ SaErrorT process_interconnect_status_event(struct oh_handler_state *oh_handler,
                 return SA_OK;
         }
 
-        entity_root = (char *) g_hash_table_lookup(oh_handler->config,
-                                                   "entity_root");
-        rv = oh_encode_entitypath(entity_root, &root_entity_path);
-        if (rv != SA_OK) {
-                err("Encoding entity path failed");
-                return SA_ERR_HPI_INTERNAL_ERROR;
-        }
-
-        memset(&entity_path, 0, sizeof(SaHpiEntityPathT));
-        entity_path.Entry[1].EntityType = SAHPI_ENT_ROOT;
-        entity_path.Entry[1].EntityLocation = 0;
-        entity_path.Entry[0].EntityType=SAHPI_ENT_SWITCH_BLADE;
-        entity_path.Entry[0].EntityLocation= bay_number;
-        rv = oh_concat_ep(&entity_path, &root_entity_path);
-        if (rv != SA_OK) {
-                err("Encoding entity path failed");
-                return SA_ERR_HPI_INTERNAL_ERROR;
-        }
-
-        rpt = oh_get_resource_by_ep(oh_handler->rptcache, &entity_path);
+        resource_id = oa_handler->
+                oa_soap_resources.interconnect.resource_id[bay_number - 1];
+        /* Get the rpt entry of the server */
+        rpt = oh_get_resource_by_id(oh_handler->rptcache, resource_id);
         if (rpt == NULL) {
-                err("resource rpt is NULL");
+                err("resource RPT is NULL");
                 return SA_ERR_HPI_INTERNAL_ERROR;
         }
+
         memcpy(&(event.resource), rpt, sizeof(SaHpiRptEntryT));
         event.event.Source = event.resource.ResourceId;
 
@@ -606,123 +560,6 @@ SaErrorT process_interconnect_status_event(struct oh_handler_state *oh_handler,
 }
 
 /**
- * build_inserted_interconnect_rpt
- *      @oh_handler:  Pointer to openhpi handler
- *      @name:        Pointer to the name of the switch blade
- *      @bay_number:  Bay number of the switch blade
- *      @resource_id: Pointer to the resource id
- *
- * Purpose:
- *      Populate the switch blade RPT.
- *      Pushes the RPT entry to infrastructure
- *
- * Detailed Description: NA
- *
- * Return values:
- *      SA_OK  - on success.
- *      SA_ERR_HPI_INVALID_PARAMS - on wrong parameters
- *      SA_ERR_HPI_OUT_OF_MEMORY - on malloc failure
- *      SA_ERR_HPI_INTERNAL_ERROR - on failure.
- **/
-
-SaErrorT build_inserted_interconnect_rpt(struct oh_handler_state *oh_handler,
-                                         char *name,
-                                         SaHpiInt32T bay_number,
-                                         SaHpiResourceIdT *resource_id)
-{
-        SaErrorT rv = SA_OK;
-        SaHpiEntityPathT entity_path;
-        char *entity_root = NULL;
-        struct oa_soap_hotswap_state *hotswap_state = NULL;
-        SaHpiRptEntryT rpt;
-        char temp[MAX_NAME_LEN];
-
-        if (oh_handler == NULL || name == NULL || resource_id == NULL) {
-                err("invalid parameters");
-                return SA_ERR_HPI_INVALID_PARAMS;
-        }
-
-        entity_root = (char *) g_hash_table_lookup(oh_handler->config,
-                                                   "entity_root");
-        rv = oh_encode_entitypath(entity_root, &entity_path);
-        if (rv != SA_OK) {
-                err("Encoding entity path failed");
-                return SA_ERR_HPI_INTERNAL_ERROR;
-        }
-
-        memset(&rpt, 0, sizeof(SaHpiRptEntryT));
-        rpt.ResourceCapabilities = SAHPI_CAPABILITY_RDR |
-                                   SAHPI_CAPABILITY_RESET |
-                                   SAHPI_CAPABILITY_RESOURCE |
-                                   SAHPI_CAPABILITY_POWER |
-                                   SAHPI_CAPABILITY_FRU |
-                                   SAHPI_CAPABILITY_MANAGED_HOTSWAP |
-                                   SAHPI_CAPABILITY_SENSOR |
-                                   SAHPI_CAPABILITY_CONTROL |
-                                   SAHPI_CAPABILITY_INVENTORY_DATA;
-        rpt.ResourceEntity.Entry[1].EntityType = SAHPI_ENT_ROOT;
-        rpt.ResourceEntity.Entry[1].EntityLocation = 0;
-        rpt.ResourceEntity.Entry[0].EntityType =SAHPI_ENT_SWITCH_BLADE;
-        rpt.ResourceEntity.Entry[0].EntityLocation= bay_number;
-        rv = oh_concat_ep(&(rpt.ResourceEntity), &entity_path);
-        if (rv != SA_OK) {
-                err("concat of entity path failed");
-                return SA_ERR_HPI_INTERNAL_ERROR;
-        }
-
-        rpt.ResourceId = oh_uid_from_entity_path(&rpt.ResourceEntity);
-
-        /* Check whether the interconnect blade is from Cisco Systems
-         * TODO: Cisco interconnect blades will have name starting with "Cisco"
-         *       If this format gets changed for any reason,
-         *       then Cisco interconnect blades will have manufacture id as HP
-         *       in ManufacturerId field of rpt entry.
-         *       If the interconnect name format changes,
-         *       please change the logic accordingly.
-         */
-        convert_lower_to_upper(name, strlen(name), temp, MAX_NAME_LEN);
-        if (strstr(temp, CISCO) != NULL)
-                rpt.ResourceInfo.ManufacturerId = CISCO_MANUFACTURING_ID;
-        else
-                rpt.ResourceInfo.ManufacturerId = HP_MANUFACTURING_ID;
-
-        rpt.ResourceSeverity = SAHPI_OK;
-        rpt.ResourceFailed = SAHPI_FALSE;
-        rpt.HotSwapCapabilities = SAHPI_HS_CAPABILITY_AUTOEXTRACT_READ_ONLY;
-        rpt.ResourceTag.DataType = SAHPI_TL_TYPE_TEXT;
-        rpt.ResourceTag.Language = SAHPI_LANG_ENGLISH;
-        rpt.ResourceTag.DataLength = strlen(name) + 1;
-        memset(rpt.ResourceTag.Data, 0, SAHPI_MAX_TEXT_BUFFER_LENGTH);
-        snprintf((char *) (rpt.ResourceTag.Data),
-                  rpt.ResourceTag.DataLength,"%s",
-                  name);
-
-        hotswap_state = (struct oa_soap_hotswap_state *)
-                g_malloc0(sizeof(struct oa_soap_hotswap_state));
-        if (hotswap_state == NULL) {
-                err("Out of memory");
-                return SA_ERR_HPI_OUT_OF_MEMORY;
-        }
-        /* The interconnect takes nearly 3 seconds to power on after insertion
-         * Put the current hotswap state as INSERTION_PENDING
-         * The INSERTION_PENDING to ACTIVE state change is handled as part of
-         * interconnect status events
-         */
-        hotswap_state->currentHsState = SAHPI_HS_STATE_INSERTION_PENDING;
-
-        rv = oh_add_resource(oh_handler->rptcache, &rpt, hotswap_state, 0);
-        if (rv != SA_OK) {
-                err("Failed to add Server rpt");
-                if (hotswap_state != NULL)
-                        g_free(hotswap_state);
-                return rv;
-        }
-
-        *resource_id = rpt.ResourceId;
-        return SA_OK;
-}
-
-/**
  * process_interconnect_thermal_event
  *      @oh_handler:  Pointer to openhpi handler structure
  *      @oa_event:    Pointer to the OA event structure
@@ -741,44 +578,28 @@ SaErrorT process_interconnect_thermal_event(struct oh_handler_state *oh_handler,
                                             struct eventInfo *oa_event)
 {
         SaErrorT rv = SA_OK;
-        char *entity_root = NULL;
-        SaHpiEntityPathT entity_path;
-        SaHpiEntityPathT root_entity_path;
         SaHpiRptEntryT *rpt = NULL;
         SaHpiRdrT *rdr = NULL;
         struct oa_soap_sensor_info *sensor_info=NULL;
         SaHpiSensorReadingT current_reading;
         SaHpiSeverityT event_severity;
+        SaHpiResourceIdT resource_id;
+        struct oa_soap_handler *oa_handler = NULL;
+        SaHpiInt32T bay_number;
 
         if (oh_handler == NULL || oa_event == NULL) {
                 err("Invalid parameters");
                 return SA_ERR_HPI_INVALID_PARAMS;
         }
 
-        entity_root = (char *) g_hash_table_lookup(oh_handler->config,
-                                                   "entity_root");
-        rv = oh_encode_entitypath(entity_root, &root_entity_path);
-        if (rv != SA_OK) {
-                err("Encoding entity path failed");
-                return SA_ERR_HPI_INTERNAL_ERROR;
-        }
-
-        memset(&entity_path, 0, sizeof(SaHpiEntityPathT));
-        entity_path.Entry[1].EntityType = SAHPI_ENT_ROOT;
-        entity_path.Entry[1].EntityLocation = 0;
-        entity_path.Entry[0].EntityType=SAHPI_ENT_SWITCH_BLADE;
-        entity_path.Entry[0].EntityLocation =
-                oa_event->eventData.interconnectTrayStatus.bayNumber;
-
-        rv = oh_concat_ep(&entity_path, &root_entity_path);
-        if (rv != SA_OK) {
-                err("Encoding entity path failed");
-                return SA_ERR_HPI_INTERNAL_ERROR;
-        }
-
-        rpt = oh_get_resource_by_ep(oh_handler->rptcache, &entity_path);
+        oa_handler = (struct oa_soap_handler *) oh_handler->data;
+        bay_number = oa_event->eventData.interconnectTrayStatus.bayNumber;
+        resource_id = oa_handler->
+                oa_soap_resources.interconnect.resource_id[bay_number - 1];
+        /* Get the rpt entry of the server */
+        rpt = oh_get_resource_by_id(oh_handler->rptcache, resource_id);
         if (rpt == NULL) {
-                err("resource rpt is NULL");
+                err("resource RPT is NULL");
                 return SA_ERR_HPI_INTERNAL_ERROR;
         }
 

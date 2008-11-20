@@ -32,10 +32,6 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-@OH_DAEMON_ENABLED_TRUE@am__append_1 = -I$(top_srcdir)/openhpid \
-@OH_DAEMON_ENABLED_TRUE@			   -I$(top_srcdir)/marshal \
-@OH_DAEMON_ENABLED_TRUE@			   -DCLIENT
-
 bin_PROGRAMS = hpi_shell$(EXEEXT)
 subdir = hpi_shell
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
@@ -56,12 +52,7 @@ am__objects_1 = hpi_cmd.$(OBJEXT) cmdparser.$(OBJEXT) \
 	service.$(OBJEXT) dimi.$(OBJEXT) fumi.$(OBJEXT)
 am_hpi_shell_OBJECTS = $(am__objects_1)
 hpi_shell_OBJECTS = $(am_hpi_shell_OBJECTS)
-@OH_DAEMON_ENABLED_FALSE@am__DEPENDENCIES_1 =  \
-@OH_DAEMON_ENABLED_FALSE@	$(top_builddir)/src/libopenhpi.la
-@OH_DAEMON_ENABLED_TRUE@am__DEPENDENCIES_1 = $(top_builddir)/marshal/libohtcpconnx.la \
-@OH_DAEMON_ENABLED_TRUE@	$(top_builddir)/utils/libopenhpiutils.la \
-@OH_DAEMON_ENABLED_TRUE@	$(top_builddir)/openhpid/libopenhpi.la
-hpi_shell_DEPENDENCIES = $(am__DEPENDENCIES_1)
+hpi_shell_DEPENDENCIES = $(COMMONLIBS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -238,13 +229,10 @@ MAINTAINERCLEANFILES = Makefile.in
 MOSTLYCLEANFILES = @TEST_CLEAN@
 EXTRA_DIST = hpi_ui.h
 INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/utils \
-	$(am__append_1)
-@OH_DAEMON_ENABLED_FALSE@COMMONLIBS = $(top_builddir)/src/libopenhpi.la \
-@OH_DAEMON_ENABLED_FALSE@			   @STATIC_PLUGIN_LIBS@ @STATIC_PLUGIN_EXTRA_LIBS@
-
-@OH_DAEMON_ENABLED_TRUE@COMMONLIBS = $(top_builddir)/marshal/libohtcpconnx.la \
-@OH_DAEMON_ENABLED_TRUE@			   $(top_builddir)/utils/libopenhpiutils.la \
-@OH_DAEMON_ENABLED_TRUE@			   $(top_builddir)/openhpid/libopenhpi.la
+	-I$(top_srcdir)/openhpid -I$(top_srcdir)/marshal -DCLIENT
+COMMONLIBS = $(top_builddir)/marshal/libohtcpconnx.la \
+			   $(top_builddir)/utils/libopenhpiutils.la \
+			   $(top_builddir)/openhpid/libopenhpi.la
 
 HS_SOURCES = \
 	hpi_cmd.h \

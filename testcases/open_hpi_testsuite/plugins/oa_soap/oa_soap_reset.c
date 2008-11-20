@@ -30,6 +30,7 @@
  *
  * Author(s)
  *      Raghavendra P.G. <raghavendra.pg@hp.com>
+ *      Shuah Khan <shuah.khan@hp.com>
  *
  *
  * This file handles all the resource reset states related apis.
@@ -82,11 +83,11 @@ SaErrorT oa_soap_get_reset_state(void *oh_handler,
         }
 
         switch (state) {
-                case (SAHPI_POWER_ON) :
+                case (SAHPI_POWER_ON):
                         *action = SAHPI_RESET_DEASSERT;
                         break;
 
-                case (SAHPI_POWER_OFF) :
+                case (SAHPI_POWER_OFF):
                         *action = SAHPI_RESET_ASSERT;
                         break;
 
@@ -94,11 +95,11 @@ SaErrorT oa_soap_get_reset_state(void *oh_handler,
                  * Hence, resource should never give the 'power cycle' as
                  * its current power state
                  */
-                case (SAHPI_POWER_CYCLE) :
+                case (SAHPI_POWER_CYCLE):
                         err("Wrong reset state (Power cycle) detected");
                         return SA_ERR_HPI_INTERNAL_ERROR;
                         break;
-                default :
+                default:
                         err("Wrong reset state");
                         return SA_ERR_HPI_INTERNAL_ERROR;
         }
@@ -228,6 +229,11 @@ SaErrorT oa_soap_set_reset_state(void *oh_handler,
                                         }
                                         return SA_OK;
                                         break;
+
+                                case SAHPI_ENT_IO_BLADE:
+                                case SAHPI_ENT_DISK_BLADE:
+                                        return(SA_ERR_HPI_UNSUPPORTED_API);
+
                                 case SAHPI_ENT_SWITCH_BLADE:
                                         /* Resource type is interconnect blade.
                                          * Reset the interconnect blade
@@ -244,12 +250,12 @@ SaErrorT oa_soap_set_reset_state(void *oh_handler,
                                         }
                                         return SA_OK;
                                         break;
-                                default :
+                                default:
                                         err("Invalid Resource Type");
                                         return SA_ERR_HPI_INTERNAL_ERROR;
                         }
                         break;
-                default :
+                default:
                         err("Invalid reset state requested");
                         return SA_ERR_HPI_INVALID_REQUEST;
         }

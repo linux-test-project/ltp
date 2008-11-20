@@ -41,6 +41,7 @@ RPMFLAGS                = -ba
 
 EXTRA_DIST              = openhpi.spec.in \
 	openhpi.conf.example \
+	openhpiclient.conf.example \
 	README.daemon \
         $(shell find $(srcdir)/include -name '*.h')
 
@@ -108,7 +109,7 @@ $(top_srcdir)/utils/sahpi_enum_utils.h:
 $(top_srcdir)/utils/sahpiatca_enum_utils.h:
 	make -C $(top_builddir)/utils sahpiatca_enum_utils.h
 
-install-data-local: openhpi.pc openhpi.conf.example
+install-data-local: openhpi.pc openhpi.conf.example openhpiclient.conf.example
 	$(mkinstalldirs) $(DESTDIR)$(libdir)/pkgconfig
 	$(INSTALL_DATA) openhpi.pc $(DESTDIR)$(libdir)/pkgconfig
 	$(mkinstalldirs) $(DESTDIR)$(VARPATH)
@@ -117,15 +118,18 @@ install-data-local: openhpi.pc openhpi.conf.example
 	if test ! -e  $(DESTDIR)$(sysconfdir)/openhpi/openhpi.conf; then \
 		$(INSTALL_DATA) $(top_srcdir)/openhpi.conf.example $(DESTDIR)$(sysconfdir)/openhpi/openhpi.conf; \
 	fi
+	if test ! -e  $(DESTDIR)$(sysconfdir)/openhpi/openhpiclient.conf; then \
+		$(INSTALL_DATA) $(top_srcdir)/openhpiclient.conf.example $(DESTDIR)$(sysconfdir)/openhpi/openhpiclient.conf; \
+	fi
 
 uninstall-local:
 	rm -f $(DESTDIR)$(libdir)/pkgconfig/openhpi.pc
 	if cmp $(top_srcdir)/openhpi.conf.example $(DESTDIR)$(sysconfdir)/openhpi/openhpi.conf; then \
-		: \
-	else \
 		rm -f $(DESTDIR)$(sysconfdir)/openhpi/openhpi.conf; \
 	fi
-
+	if cmp $(top_srcdir)/openhpiclient.conf.example $(DESTDIR)$(sysconfdir)/openhpi/openhpiclient.conf; then \
+		rm -f $(DESTDIR)$(sysconfdir)/openhpi/openhpiclient.conf; \
+	fi
 
 rpm: dist
 	rm -rf $(top_srcdir)/rpm

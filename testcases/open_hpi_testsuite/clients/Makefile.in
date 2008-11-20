@@ -33,8 +33,6 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-@OH_DAEMON_ENABLED_TRUE@am__append_1 = $(top_builddir)/openhpid/libopenhpi.la
-@OH_DAEMON_ENABLED_FALSE@am__append_2 = $(top_builddir)/src/libopenhpi.la
 bin_PROGRAMS = hpievents$(EXEEXT) hpifan$(EXEEXT) hpiinv$(EXEEXT) \
 	hpiel$(EXEEXT) hpisensor$(EXEEXT) hpipower$(EXEEXT) \
 	hpitree$(EXEEXT) hpialarms$(EXEEXT) hpireset$(EXEEXT) \
@@ -57,7 +55,7 @@ PROGRAMS = $(bin_PROGRAMS)
 am__objects_1 = clients.$(OBJEXT)
 am_hpialarms_OBJECTS = hpialarms.$(OBJEXT) $(am__objects_1)
 hpialarms_OBJECTS = $(am_hpialarms_OBJECTS)
-am__DEPENDENCIES_1 = $(am__append_1) $(am__append_2)
+am__DEPENDENCIES_1 = $(top_builddir)/openhpid/libopenhpi.la
 hpialarms_DEPENDENCIES = $(am__DEPENDENCIES_1)
 am_hpiel_OBJECTS = hpiel.$(OBJEXT) $(am__objects_1)
 hpiel_OBJECTS = $(am_hpiel_OBJECTS)
@@ -292,7 +290,7 @@ MOSTLYCLEANFILES = @TEST_CLEAN@
 INCLUDES = @OPENHPI_INCLUDES@
 EXTRA_DIST = oh_clients.h
 COMMONLIBS = @STATIC_PLUGIN_LIBS@ @STATIC_PLUGIN_EXTRA_LIBS@ \
-	$(am__append_1) $(am__append_2)
+	$(top_builddir)/openhpid/libopenhpi.la
 CLIENTS_SRC = clients.c
 include_HEADERS = 
 hpialarms_SOURCES = hpialarms.c $(CLIENTS_SRC)

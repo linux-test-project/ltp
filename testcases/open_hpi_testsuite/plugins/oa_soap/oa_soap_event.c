@@ -104,6 +104,7 @@ gpointer oa_soap_event_thread(gpointer event_handler)
         struct oh_handler_state *handler = NULL;
         struct oa_info *oa = NULL;
         int ret_code = SA_ERR_HPI_INVALID_PARAMS;
+        int retry_on_switchover = 0;
         struct oa_soap_handler *oa_handler = NULL;
         struct event_handler *evt_handler = NULL;
         SaHpiBoolT is_plugin_initialized = SAHPI_FALSE;
@@ -165,7 +166,7 @@ gpointer oa_soap_event_thread(gpointer event_handler)
                 g_mutex_unlock(oa->mutex);
         } else {
                 g_mutex_unlock(oa->mutex);
-	        process_oa_out_of_access(handler, oa);
+                process_oa_out_of_access(handler, oa);
         }
 
         /* Get the user_name and password from config file */
@@ -214,41 +215,60 @@ gpointer oa_soap_event_thread(gpointer event_handler)
          */
         while (listen_for_events == SAHPI_TRUE) {
                 rv = soap_getAllEvents(oa->event_con, &request, &response);
-                if (rv != SOAP_OK) {
-                        err("OA %s may not be accessible", oa->server);
-                        /* Try to recover from the error */
-                        oa_soap_error_handling(handler, oa);
-                        request.pid = oa->event_pid;
-
-                        /* Re-initialize the con */
-                        if (con != NULL) {
-                                soap_close(con);
-                                con = NULL;
-                        }
-                        memset(url, 0, MAX_URL_LEN);
-                        snprintf(url, strlen(oa->server) + strlen(PORT) + 1,
-                                "%s" PORT, oa->server);
-
-                        /* Ideally, the soap_open should pass in 1st try.
-                         * If not, try until soap_open succeeds
+                if (rv == SOAP_OK) {
+                        retry_on_switchover = 0;
+                        /* OA returns empty event response payload for LCD
+                         * status change events. Ignore empty event response.
                          */
-                        while (con == NULL) {
-                                con = soap_open(url, user_name, password,
-                                                HPI_CALL_TIMEOUT);
-                                if (con == NULL)
-                                        sleep(2);
-                        }
-                        continue;
-                }
+                        if (response.eventInfoArray == NULL) {
+                                dbg("Ignoring empty event response");
+                        } else
+                                process_oa_events(handler, oa, con, &response);
+                } else {
+                        /* On switchover, the standby-turned-active OA stops
+                         * responding to SOAP calls to avoid the network loop.
+                         * This change is applicable from OA firmware version
+                         * 2.21. Re-try the getAllEvents SOAP XML call skipping
+                         * the error handling.
+                         */
+                        if (oa->oa_status == STANDBY &&
+                            get_oa_fw_version(handler) >= OA_2_21 &&
+                            retry_on_switchover < MAX_RETRY_ON_SWITCHOVER) {
+                                sleep(WAIT_ON_SWITCHOVER);
+                                dbg("getAllEvents call failed, may be due to "
+                                    "OA switchover");
+                                dbg("Re-try the getAllEvents SOAP call");
+                                retry_on_switchover++;
+                        } else {
+                                /* Try to recover from the error */
+                                err("OA %s may not be accessible", oa->server);
+                                oa_soap_error_handling(handler, oa);
+                                request.pid = oa->event_pid;
 
-                /* OA returns empty event response payload for LCD status
-                 * change events.  Ignore empty event response.
-                 */
-                if (response.eventInfoArray == NULL) {
-                        dbg("Ignoring empty event response");
-                } else
-                        process_oa_events(handler, oa, con, &response);
-        }
+                                /* Re-initialize the con */
+                                if (con != NULL) {
+                                        soap_close(con);
+                                        con = NULL;
+                                }
+                                memset(url, 0, MAX_URL_LEN);
+                                snprintf(url, strlen(oa->server) +
+                                         strlen(PORT) + 1,
+                                        "%s" PORT, oa->server);
+
+                                /* Ideally, the soap_open should pass in
+                                 * 1st try. If not, try until soap_open succeeds
+                                 */
+                                while (con == NULL) {
+                                        con = soap_open(url, user_name,
+                                                        password,
+                                                        HPI_CALL_TIMEOUT);
+                                        if (con == NULL)
+                                                sleep(2);
+                                }
+                        } /* end of else (non-switchover error handling) */
+                } /* end of else (SOAP call failure handling) */
+        } /* end of 'while(listen_for_events == SAHPI_TRUE)' loop */
+
         return (gpointer *) SA_OK;
 }
 
@@ -322,7 +342,7 @@ void oa_soap_error_handling(struct oh_handler_state *oh_handler,
                 rv = create_event_session(oa);
                 if (rv != SA_OK) {
                         /* Set the error code to  -1 to make sure
-                         * recovery for OA out of access is recovery is done 
+                         * recovery for OA out of access is recovery is done
                          */
                         error_code = -1;
                         continue;
@@ -353,7 +373,7 @@ void oa_soap_error_handling(struct oh_handler_state *oh_handler,
                                     oa->server);
                                 /* Set the error code to  -1 to make sure
                                  * recovery for OA out of access is recovery
-                                 * is done 
+                                 * is done
                                  */
                                 error_code = -1;
                         }
@@ -417,7 +437,7 @@ void process_oa_out_of_access(struct oh_handler_state *oh_handler,
                                 time_elapsed = g_timer_elapsed(timer,
                                                                &micro_seconds);
                                 /* Break the loop on reaching timeout value */
-                                if (time_elapsed >= timeout) 
+                                if (time_elapsed >= timeout)
                                         break;
 
                                 oa_was_removed = SAHPI_TRUE;
@@ -433,7 +453,7 @@ void process_oa_out_of_access(struct oh_handler_state *oh_handler,
                 *
                 * Say, Active OA is in slot 1 and standby OA is in slot 2.
                 * 1. Remove the active OA (slot 1) which results in
-                * switchover. OA in slot status is set to ABSENT. 
+                * switchover. OA in slot status is set to ABSENT.
                 * 2. After sometime (atleast 10 mins) current Active OA (slot 2)
                 *    is extracted. At this stage, there is no OA in the
                 *    c-Class enclosure.
@@ -546,317 +566,312 @@ void process_oa_events(struct oh_handler_state *oh_handler,
                 /* Get the event from eventInfoArray */
                 soap_getEventInfo(response->eventInfoArray, &event);
                 switch (event.event) {
-                        case EVENT_HEARTBEAT :
+                        case EVENT_HEARTBEAT:
                                 dbg("HEART BEAT EVENT");
                                 break;
-                        case EVENT_ENC_STATUS :
+                        case EVENT_ENC_STATUS:
                                 dbg("EVENT_ENC_STATUS -- Not processed");
                                 break;
-                        case EVENT_ENC_UID :
+                        case EVENT_ENC_UID:
                                 dbg("EVENT_ENC_UID -- Not processed");
                                 break;
-                        case EVENT_ENC_SHUTDOWN :
+                        case EVENT_ENC_SHUTDOWN:
                                 dbg("EVENT_ENC_SHUTDOWN -- Not processed");
                                 break;
-                        case EVENT_ENC_INFO :
+                        case EVENT_ENC_INFO:
                                 dbg("EVENT_ENC_INFO -- Not processed");
                                 break;
-                        case EVENT_ENC_NAMES :
+                        case EVENT_ENC_NAMES:
                                 dbg("EVENT_ENC_NAMES -- Not processed");
                                 break;
-                        case EVENT_USER_PERMISSION :
+                        case EVENT_USER_PERMISSION:
                                 dbg("EVENT_USER_PERMISSION -- Not processed");
                                 break;
-                        case EVENT_ADMIN_RIGHTS_CHANGED :
+                        case EVENT_ADMIN_RIGHTS_CHANGED:
                                 dbg("EVENT_ADMIN_RIGHTS_CHANGED "
                                     "-- Not processed");
                                 break;
-                        case EVENT_ENC_SHUTDOWN_PENDING :
+                        case EVENT_ENC_SHUTDOWN_PENDING:
                                 dbg("EVENT_ENC_SHUTDOWN_PENDING "
                                     "-- Not processed");
                                 break;
-                        case EVENT_ENC_TOPOLOGY :
+                        case EVENT_ENC_TOPOLOGY:
                                 dbg("EVENT_ENC_TOPOLOGY -- Not processed");
                                 break;
-                        case EVENT_FAN_STATUS :
+                        case EVENT_FAN_STATUS:
                                 dbg("EVENT_FAN_STATUS -- Not processed");
                                 break;
 
-                        case EVENT_FAN_INSERTED :
+                        case EVENT_FAN_INSERTED:
                                 dbg("EVENT_FAN_INSERTED");
                                 rv = process_fan_insertion_event(oh_handler,
                                                                  con, &event);
                                 break;
 
-                        case EVENT_FAN_REMOVED :
+                        case EVENT_FAN_REMOVED:
                                 dbg("EVENT_FAN_REMOVED");
                                 rv = process_fan_extraction_event(oh_handler,
                                                                   &event);
                                 break;
 
-                        case EVENT_FAN_GROUP_STATUS :
+                        case EVENT_FAN_GROUP_STATUS:
                                 dbg("EVENT_FAN_GROUP_STATUS -- Not processed");
                                 break;
-                        case EVENT_THERMAL_STATUS :
+                        case EVENT_THERMAL_STATUS:
                                 dbg("EVENT_THERMAL_STATUS -- Not processed");
                                 break;
-                        case EVENT_COOLING_STATUS :
+                        case EVENT_COOLING_STATUS:
                                 dbg("EVENT_COOLING_STATUS -- Not processed");
                                 break;
-                        case EVENT_FAN_ZONE_STATUS :
+                        case EVENT_FAN_ZONE_STATUS:
                                 dbg("EVENT_FAN_ZONE_STATUS -- Not processed");
                                 break;
-                        case EVENT_PS_STATUS :
+                        case EVENT_PS_STATUS:
                                 dbg("EVENT_PS_STATUS -- Not processed");
                                 break;
-                        case EVENT_PS_INSERTED :
+                        case EVENT_PS_INSERTED:
                                 dbg("EVENT_PS_INSERTED");
                                 rv = process_ps_insertion_event(oh_handler,
                                                                 con, &event);
                                 break;
 
-                        case EVENT_PS_REMOVED :
+                        case EVENT_PS_REMOVED:
                                 dbg("EVENT_PS_REMOVED");
                                 rv = process_ps_extraction_event(oh_handler,
                                                                  &event);
                                 break;
 
-                        case EVENT_PS_REDUNDANT :
+                        case EVENT_PS_REDUNDANT:
                                 dbg("EVENT_PS_REDUNDANT -- Not processed");
                                 break;
-                        case EVENT_PS_OVERLOAD :
+                        case EVENT_PS_OVERLOAD:
                                 dbg("EVENT_PS_OVERLOAD -- Not processed");
                                 break;
-                        case EVENT_AC_FAILURE :
+                        case EVENT_AC_FAILURE:
                                 dbg("EVENT_AC_FAILURE -- Not processed");
                                 break;
-                        case EVENT_PS_INFO :
+                        case EVENT_PS_INFO:
                                 dbg("EVENT_PS_INFO -- Not processed");
                                 break;
-                        case EVENT_PS_SUBSYSTEM_STATUS :
+                        case EVENT_PS_SUBSYSTEM_STATUS:
                                 dbg("EVENT_PS_SUBSYSTEM_STATUS "
                                     "-- Not processed");
                                 break;
-                        case EVENT_SERVER_POWER_REDUCTION_STATUS :
+                        case EVENT_SERVER_POWER_REDUCTION_STATUS:
                                 dbg("EVENT_SERVER_POWER_REDUCTION_STATUS "
                                     "-- Not processed");
                                 break;
-                        case EVENT_INTERCONNECT_STATUS :
+                        case EVENT_INTERCONNECT_STATUS:
                                 dbg("EVENT_INTERCONNECT_STATUS");
                                 rv = process_interconnect_status_event(
                                         oh_handler, &event);
                                 break;
 
-                        case EVENT_INTERCONNECT_RESET :
+                        case EVENT_INTERCONNECT_RESET:
                                 dbg("EVENT_INTERCONNECT_RESET");
                                 rv = process_interconnect_reset_event(
                                         oh_handler, &event);
                                 break;
-                        case EVENT_INTERCONNECT_UID :
+                        case EVENT_INTERCONNECT_UID:
                                 dbg("EVENT_INTERCONNECT_UID -- Not processed");
                                 break;
-                        case EVENT_INTERCONNECT_INSERTED :
+                        case EVENT_INTERCONNECT_INSERTED:
                                 dbg("EVENT_INTERCONNECT_INSERTED");
                                 rv = process_interconnect_insertion_event(
                                         oh_handler, con, &event);
                                 break;
 
-                        case EVENT_INTERCONNECT_REMOVED :
+                        case EVENT_INTERCONNECT_REMOVED:
                                 dbg("EVENT_INTERCONNECT_REMOVED");
                                 rv = process_interconnect_extraction_event(
                                         oh_handler, &event);
                                 break;
 
-                        case EVENT_INTERCONNECT_INFO :
+                        case EVENT_INTERCONNECT_INFO:
                                 dbg("EVENT_INTERCONNECT_INFO -- Not processed");
                                 break;
-                        case EVENT_INTERCONNECT_HEALTH_LED :
+                        case EVENT_INTERCONNECT_HEALTH_LED:
                                 dbg("EVENT_INTERCONNECT_HEALTH_LED "
                                     "-- Not processed");
                                 break;
-                        case EVENT_INTERCONNECT_THERMAL :
+                        case EVENT_INTERCONNECT_THERMAL:
                                 dbg("EVENT_INTERCONNECT_THERMAL");
                                 rv = process_interconnect_thermal_event(
                                         oh_handler, &event);
                                 break;
-                        case EVENT_INTERCONNECT_CPUFAULT :
+                        case EVENT_INTERCONNECT_CPUFAULT:
                                 dbg("EVENT_INTERCONNECT_CPUFAULT "
                                     "-- Not processed");
                                 break;
-                        case EVENT_INTERCONNECT_POWER :
+                        case EVENT_INTERCONNECT_POWER:
                                 dbg("EVENT_INTERCONNECT_POWER");
                                 rv = process_interconnect_power_event(
                                         oh_handler, &event);
                                 break;
-                        case EVENT_INTERCONNECT_PORTMAP :
+                        case EVENT_INTERCONNECT_PORTMAP:
                                 dbg("EVENT_INTERCONNECT_PORTMAP "
                                     "-- Not processed");
                                 break;
-                        case EVENT_BLADE_PORTMAP :
+                        case EVENT_BLADE_PORTMAP:
                                 dbg("EVENT_BLADE_PORTMAP -- Not processed");
                                 break;
-                        case EVENT_INTERCONNECT_VENDOR_BLOCK :
+                        case EVENT_INTERCONNECT_VENDOR_BLOCK:
                                 dbg("EVENT_INTERCONNECT_VENDOR_BLOCK "
                                     "-- Not processed");
                                 break;
-                        case EVENT_INTERCONNECT_HEALTH_STATE :
+                        case EVENT_INTERCONNECT_HEALTH_STATE:
                                 dbg("EVENT_INTERCONNECT_HEALTH_STATE "
                                     "-- Not processed");
                                 break;
-                        case EVENT_DEMO_MODE :
+                        case EVENT_DEMO_MODE:
                                 dbg("EVENT_DEMO_MODE -- Not processed");
                                 break;
-                        case EVENT_BLADE_STATUS :
+                        case EVENT_BLADE_STATUS:
                                 dbg("EVENT_BLADE_STATUS -- Not processed");
                                 break;
 
-                        case EVENT_BLADE_INSERTED :
-                                dbg("EVENT_BLADE_INSERTED");
-                                rv = process_server_insertion_event(oh_handler,
-                                                                    con,
-                                                                    &event);
+                        case EVENT_BLADE_INSERTED:
+                                dbg("EVENT_BLADE_INSERTED -- Not processed");
                                 break;
 
-                        case EVENT_BLADE_REMOVED :
+                        case EVENT_BLADE_REMOVED:
                                 dbg("EVENT_BLADE_REMOVED");
                                 rv = process_server_extraction_event(oh_handler,
                                                                      &event);
                                 break;
 
-                        case EVENT_BLADE_POWER_STATE :
+                        case EVENT_BLADE_POWER_STATE:
                                 dbg("EVENT_BLADE_POWER_STATE");
                                 rv = process_server_power_event(oh_handler,
                                                                 con, &event);
                                 break;
 
-                        case EVENT_BLADE_POWER_MGMT :
+                        case EVENT_BLADE_POWER_MGMT:
                                 dbg("EVENT_BLADE_POWER_MGMT -- Not processed");
                                 break;
-                        case EVENT_BLADE_UID :
+                        case EVENT_BLADE_UID:
                                 dbg("EVENT_BLADE_UID -- Not processed");
                                 break;
-                        case EVENT_BLADE_SHUTDOWN :
+                        case EVENT_BLADE_SHUTDOWN:
                                 dbg("EVENT_BLADE_SHUTDOWN -- Not processed");
                                 break;
-                        case EVENT_BLADE_FAULT :
+                        case EVENT_BLADE_FAULT:
                                 dbg("EVENT_BLADE_FAULT -- Not processed");
                                 break;
-                        case EVENT_BLADE_THERMAL :
+                        case EVENT_BLADE_THERMAL:
                                 dbg("EVENT_BLADE_THERMAL");
                                 rv = process_server_thermal_event(oh_handler,
                                                                   &event);
                                 break;
-                        case EVENT_BLADE_INFO :
+                        case EVENT_BLADE_INFO:
                                 dbg("EVENT_BLADE_INFO -- Not processed");
                                 break;
-                        case EVENT_BLADE_MP_INFO :
+                        case EVENT_BLADE_MP_INFO:
                                 dbg("EVENT_BLADE_MP_INFO -- Not processed");
                                 break;
-                        case EVENT_ILO_READY :
+                        case EVENT_ILO_READY:
                                 dbg("EVENT_ILO_READY -- Not processed");
                                 break;
-                        case EVENT_LCD_BUTTON :
+                        case EVENT_LCD_BUTTON:
                                 dbg("EVENT_LCD_BUTTON -- Not processed");
                                 break;
-                        case EVENT_KEYING_ERROR :
+                        case EVENT_KEYING_ERROR:
                                 dbg("EVENT_KEYING_ERROR -- Not processed");
                                 break;
-                        case EVENT_ILO_HAS_IPADDRESS :
+                        case EVENT_ILO_HAS_IPADDRESS:
                                 dbg("EVENT_ILO_HAS_IPADDRESS -- Not processed");
                                 break;
-                        case EVENT_POWER_INFO :
+                        case EVENT_POWER_INFO:
                                 dbg("EVENT_POWER_INFO -- Not processed");
                                 break;
-                        case EVENT_LCD_STATUS :
+                        case EVENT_LCD_STATUS:
                                 dbg("EVENT_LCD_STATUS -- Not processed");
                                 break;
-                        case EVENT_LCD_INFO :
+                        case EVENT_LCD_INFO:
                                 dbg("EVENT_LCD_INFO -- Not processed");
                                 break;
-                        case EVENT_REDUNDANCY :
+                        case EVENT_REDUNDANCY:
                                 dbg("EVENT_REDUNDANCY -- Not processed");
                                 break;
-                        case EVENT_ILO_DEAD :
+                        case EVENT_ILO_DEAD:
                                 dbg("EVENT_ILO_DEAD -- Not processed");
                                 break;
-                        case EVENT_RACK_SERVICE_STARTED :
+                        case EVENT_RACK_SERVICE_STARTED:
                                 dbg("EVENT_RACK_SERVICE_STARTED "
                                     "-- Not processed");
                                 break;
-                        case EVENT_LCD_SCREEN_REFRESH :
+                        case EVENT_LCD_SCREEN_REFRESH:
                                 dbg("EVENT_LCD_SCREEN_REFRESH "
                                     "-- Not processed");
                                 break;
-                        case EVENT_ILO_ALIVE :
+                        case EVENT_ILO_ALIVE:
                                 dbg("EVENT_ILO_ALIVE -- Not processed");
                                 break;
-                        case EVENT_PERSONALITY_CHECK :
+                        case EVENT_PERSONALITY_CHECK:
                                 dbg("EVENT_PERSONALITY_CHECK -- Not processed");
                                 break;
 
-                        case EVENT_BLADE_POST_COMPLETE :
+                        case EVENT_BLADE_POST_COMPLETE:
                                 dbg("EVENT_BLADE_POST_COMPLETE "
                                     "-- Not processed");
                                 break;
 
-                        case EVENT_BLADE_SIGNATURE_CHANGED :
+                        case EVENT_BLADE_SIGNATURE_CHANGED:
                                 dbg("EVENT_BLADE_SIGNATURE_CHANGED "
                                     "-- Not processed");
                                 break;
-                        case EVENT_BLADE_PERSONALITY_CHANGED :
+                        case EVENT_BLADE_PERSONALITY_CHANGED:
                                 dbg("EVENT_BLADE_PERSONALITY_CHANGED "
                                     "-- Not processed");
                                 break;
-                        case EVENT_BLADE_TOO_LOW_POWER :
+                        case EVENT_BLADE_TOO_LOW_POWER:
                                 dbg("EVENT_BLADE_TOO_LOW_POWER "
                                     "-- Not processed");
                                 break;
-                        case EVENT_VIRTUAL_MEDIA_STATUS :
+                        case EVENT_VIRTUAL_MEDIA_STATUS:
                                 dbg("EVENT_VIRTUAL_MEDIA_STATUS "
                                     "-- Not processed");
                                 break;
-                        case EVENT_MEDIA_DRIVE_INSERTED :
+                        case EVENT_MEDIA_DRIVE_INSERTED:
                                 dbg("EVENT_MEDIA_DRIVE_INSERTED "
                                     "-- Not processed");
                                 break;
-                        case EVENT_MEDIA_DRIVE_REMOVED :
+                        case EVENT_MEDIA_DRIVE_REMOVED:
                                 dbg("EVENT_MEDIA_DRIVE_REMOVED "
                                     "-- Not processed");
                                 break;
-                        case EVENT_MEDIA_INSERTED :
+                        case EVENT_MEDIA_INSERTED:
                                 dbg("EVENT_MEDIA_INSERTED -- Not processed");
                                 break;
-                        case EVENT_MEDIA_REMOVED :
+                        case EVENT_MEDIA_REMOVED:
                                 dbg("EVENT_MEDIA_REMOVED -- Not processed");
                                 break;
-                        case EVENT_OA_NAMES :
+                        case EVENT_OA_NAMES:
                                 dbg("EVENT_OA_NAMES -- Not processed");
                                 break;
-                        case EVENT_OA_STATUS :
+                        case EVENT_OA_STATUS:
                                 dbg("EVENT_OA_STATUS -- Not processed");
                                 break;
-                        case EVENT_OA_UID :
+                        case EVENT_OA_UID:
                                 dbg("EVENT_OA_UID -- Not processed");
                                 break;
 
-                        case EVENT_OA_INSERTED :
-                                dbg("EVENT_OA_INSERTED");
-                                rv = process_oa_insertion_event(oh_handler,
-                                                                con, &event);
+                        case EVENT_OA_INSERTED:
+                                dbg("EVENT_OA_INSERTED -- Not processed");
                                 break;
 
-                        case EVENT_OA_REMOVED :
+                        case EVENT_OA_REMOVED:
                                 dbg("EVENT_OA_REMOVED");
                                 rv = process_oa_extraction_event(oh_handler,
                                                                  &event);
                                 break;
 
-                        case EVENT_OA_INFO :
+                        case EVENT_OA_INFO:
                                 dbg("EVENT_OA_INFO");
                                 rv = process_oa_info_event(oh_handler,
                                                            con, &event);
                                 break;
-                        case EVENT_OA_FAILOVER :
+                        case EVENT_OA_FAILOVER:
                                 dbg("EVENT_OA_FAILOVER");
                                 rv = process_oa_failover_event(oh_handler, oa);
                                 /* We have done the re-discovery as part of
@@ -866,252 +881,254 @@ void process_oa_events(struct oh_handler_state *oh_handler,
                                 return;
                                 break;
 
-                        case EVENT_OA_TRANSITION_COMPLETE :
+                        case EVENT_OA_TRANSITION_COMPLETE:
                                 dbg("EVENT_OA_TRANSITION_COMPLETE "
                                     "-- Not processed");
                                 break;
-                        case EVENT_OA_VCM :
+                        case EVENT_OA_VCM:
                                 dbg("EVENT_OA_VCM -- Not processed");
                                 break;
-                        case EVENT_NETWORK_INFO_CHANGED :
+                        case EVENT_NETWORK_INFO_CHANGED:
                                 dbg("EVENT_NETWORK_INFO_CHANGED "
                                     "-- Not processed");
                                 break;
-                        case EVENT_SNMP_INFO_CHANGED :
+                        case EVENT_SNMP_INFO_CHANGED:
                                 dbg("EVENT_SNMP_INFO_CHANGED -- Not processed");
                                 break;
-                        case EVENT_SYSLOG_CLEARED :
+                        case EVENT_SYSLOG_CLEARED:
                                 dbg("EVENT_SYSLOG_CLEARED -- Not processed");
                                 break;
-                        case EVENT_SESSION_CLEARED :
+                        case EVENT_SESSION_CLEARED:
                                 dbg("EVENT_SESSION_CLEARED -- Not processed");
                                 break;
-                        case EVENT_TIME_CHANGE :
+                        case EVENT_TIME_CHANGE:
                                 dbg("EVENT_TIME_CHANGE -- Not processed");
                                 break;
-                        case EVENT_SESSION_STARTED :
+                        case EVENT_SESSION_STARTED:
                                 dbg("EVENT_SESSION_STARTED -- Not processed");
                                 break;
-                        case EVENT_BLADE_CONNECT :
+                        case EVENT_BLADE_CONNECT:
                                 dbg("EVENT_BLADE_CONNECT -- Not processed");
                                 break;
-                        case EVENT_BLADE_DISCONNECT :
+                        case EVENT_BLADE_DISCONNECT:
                                 dbg("EVENT_BLADE_DISCONNECT -- Not processed");
                                 break;
-                        case EVENT_SWITCH_CONNECT :
+                        case EVENT_SWITCH_CONNECT:
                                 dbg("EVENT_SWITCH_CONNECT -- Not processed");
                                 break;
-                        case EVENT_SWITCH_DISCONNECT :
+                        case EVENT_SWITCH_DISCONNECT:
                                 dbg("EVENT_SWITCH_DISCONNECT -- Not processed");
                                 break;
-                        case EVENT_BLADE_CLEARED :
+                        case EVENT_BLADE_CLEARED:
                                 dbg("EVENT_BLADE_CLEARED -- Not processed");
                                 break;
-                        case EVENT_SWITCH_CLEARED :
+                        case EVENT_SWITCH_CLEARED:
                                 dbg("EVENT_SWITCH_CLEARED -- Not processed");
                                 break;
-                        case EVENT_ALERTMAIL_INFO_CHANGED :
+                        case EVENT_ALERTMAIL_INFO_CHANGED:
                                 dbg("EVENT_ALERTMAIL_INFO_CHANGED "
                                     "-- Not processed");
                                 break;
-                        case EVENT_LDAP_INFO_CHANGED :
+                        case EVENT_LDAP_INFO_CHANGED:
                                 dbg("EVENT_LDAP_INFO_CHANGED -- Not processed");
                                 break;
-                        case EVENT_EBIPA_INFO_CHANGED :
+                        case EVENT_EBIPA_INFO_CHANGED:
                                 dbg("EVENT_EBIPA_INFO_CHANGED "
                                     "-- Not processed");
                                 break;
-                        case EVENT_HPSIM_TRUST_MODE_CHANGED :
+                        case EVENT_HPSIM_TRUST_MODE_CHANGED:
                                 dbg("EVENT_HPSIM_TRUST_MODE_CHANGED "
                                     "-- Not processed");
                                 break;
-                        case EVENT_HPSIM_CERTIFICATE_ADDED :
+                        case EVENT_HPSIM_CERTIFICATE_ADDED:
                                 dbg("EVENT_HPSIM_CERTIFICATE_ADDED "
                                     "-- Not processed");
                                 break;
-                        case EVENT_HPSIM_CERTIFICATE_REMOVED :
+                        case EVENT_HPSIM_CERTIFICATE_REMOVED:
                                 dbg("EVENT_HPSIM_CERTIFICATE_REMOVED "
                                     "-- Not processed");
                                 break;
-                        case EVENT_USER_INFO_CHANGED :
+                        case EVENT_USER_INFO_CHANGED:
                                 dbg("EVENT_USER_INFO_CHANGED -- Not processed");
                                 break;
-                        case EVENT_BAY_CHANGED :
+                        case EVENT_BAY_CHANGED:
                                 dbg("EVENT_BAY_CHANGED -- Not processed");
                                 break;
-                        case EVENT_GROUP_CHANGED :
+                        case EVENT_GROUP_CHANGED:
                                 dbg("EVENT_GROUP_CHANGED -- Not processed");
                                 break;
-                        case EVENT_OA_REBOOT :
+                        case EVENT_OA_REBOOT:
                                 dbg("EVENT_OA_REBOOT -- Not processed");
                                 break;
-                        case EVENT_OA_LOGOFF_REQUEST :
+                        case EVENT_OA_LOGOFF_REQUEST:
                                 dbg("EVENT_OA_LOGOFF_REQUEST -- Not processed");
                                 break;
-                        case EVENT_USER_ADDED :
+                        case EVENT_USER_ADDED:
                                 dbg("EVENT_USER_ADDED -- Not processed");
                                 break;
-                        case EVENT_USER_DELETED :
+                        case EVENT_USER_DELETED:
                                 dbg("EVENT_USER_DELETED -- Not processed");
                                 break;
-                        case EVENT_USER_ENABLED :
+                        case EVENT_USER_ENABLED:
                                 dbg("EVENT_USER_ENABLED -- Not processed");
                                 break;
-                        case EVENT_USER_DISABLED :
+                        case EVENT_USER_DISABLED:
                                 dbg("EVENT_USER_DISABLED -- Not processed");
                                 break;
-                        case EVENT_GROUP_ADDED :
+                        case EVENT_GROUP_ADDED:
                                 dbg("EVENT_GROUP_ADDED -- Not processed");
                                 break;
-                        case EVENT_GROUP_DELETED :
+                        case EVENT_GROUP_DELETED:
                                 dbg("EVENT_GROUP_DELETED -- Not processed");
                                 break;
-                        case EVENT_LDAPGROUP_ADDED :
+                        case EVENT_LDAPGROUP_ADDED:
                                 dbg("EVENT_LDAPGROUP_ADDED -- Not processed");
                                 break;
-                        case EVENT_LDAPGROUP_DELETED :
+                        case EVENT_LDAPGROUP_DELETED:
                                 dbg("EVENT_LDAPGROUP_DELETED -- Not processed");
                                 break;
-                        case EVENT_LDAPGROUP_ADMIN_RIGHTS_CHANGED :
+                        case EVENT_LDAPGROUP_ADMIN_RIGHTS_CHANGED:
                                 dbg("EVENT_LDAPGROUP_ADMIN_RIGHTS_CHANGED "
                                     "-- Not processed");
                                 break;
-                        case EVENT_LDAPGROUP_INFO_CHANGED :
+                        case EVENT_LDAPGROUP_INFO_CHANGED:
                                 dbg("EVENT_LDAPGROUP_INFO_CHANGED "
                                     "-- Not processed");
                                 break;
-                        case EVENT_LDAPGROUP_PERMISSION :
+                        case EVENT_LDAPGROUP_PERMISSION:
                                 dbg("EVENT_LDAPGROUP_PERMISSION "
                                     "-- Not processed");
                                 break;
-                        case EVENT_LCDPIN :
+                        case EVENT_LCDPIN:
                                 dbg("EVENT_LCDPIN -- Not processed");
                                 break;
-                        case EVENT_LCD_USER_NOTES_CHANGED :
+                        case EVENT_LCD_USER_NOTES_CHANGED:
                                 dbg("EVENT_LCD_USER_NOTES_CHANGED "
                                     "-- Not processed");
                                 break;
-                        case EVENT_LCD_BUTTONS_LOCKED :
+                        case EVENT_LCD_BUTTONS_LOCKED:
                                 dbg("EVENT_LCD_BUTTONS_LOCKED "
                                     "-- Not processed");
                                 break;
-                        case EVENT_LCD_SCREEN_CHAT_REQUESTED :
+                        case EVENT_LCD_SCREEN_CHAT_REQUESTED:
                                 dbg("EVENT_LCD_SCREEN_CHAT_REQUESTED "
                                     "-- Not processed");
                                 break;
-                        case EVENT_LCD_SCREEN_CHAT_WITHDRAWN :
+                        case EVENT_LCD_SCREEN_CHAT_WITHDRAWN:
                                 dbg("EVENT_LCD_SCREEN_CHAT_WITHDRAWN "
                                     "-- Not processed");
                                 break;
-                        case EVENT_LCD_SCREEN_CHAT_ANSWERED :
+                        case EVENT_LCD_SCREEN_CHAT_ANSWERED:
                                 dbg("EVENT_LCD_SCREEN_CHAT_ANSWERED "
                                     "-- Not processed");
                                 break;
-                        case EVENT_LCD_USER_NOTES_IMAGE_CHANGED :
+                        case EVENT_LCD_USER_NOTES_IMAGE_CHANGED:
                                 dbg("EVENT_LCD_USER_NOTES_IMAGE_CHANGED "
                                     "-- Not processed");
                                 break;
-                        case EVENT_ENC_WIZARD_STATUS :
+                        case EVENT_ENC_WIZARD_STATUS:
                                 dbg("EVENT_ENC_WIZARD_STATUS -- Not processed");
                                 break;
-                        case EVENT_SSHKEYS_INSTALLED :
+                        case EVENT_SSHKEYS_INSTALLED:
                                 dbg("EVENT_SSHKEYS_INSTALLED -- Not processed");
                                 break;
-                        case EVENT_SSHKEYS_CLEARED :
+                        case EVENT_SSHKEYS_CLEARED:
                                 dbg("EVENT_SSHKEYS_CLEARED -- Not processed");
                                 break;
-                        case EVENT_LDAP_DIRECTORY_SERVER_CERTIFICATE_ADDED :
+                        case EVENT_LDAP_DIRECTORY_SERVER_CERTIFICATE_ADDED:
                                 dbg("EVENT_LDAP_DIRECTORY_SERVER_CERTIFICATE_"
                                     "ADDED -- Not processed");
                                 break;
-                        case EVENT_LDAP_DIRECTORY_SERVER_CERTIFICATE_REMOVED :
+                        case EVENT_LDAP_DIRECTORY_SERVER_CERTIFICATE_REMOVED:
                                 dbg("EVENT_LDAP_DIRECTORY_SERVER_CERTIFICATE_"
                                     "REMOVED -- Not processed");
                                 break;
-                        case EVENT_BLADE_BOOT_CONFIG :
+                        case EVENT_BLADE_BOOT_CONFIG:
                                 dbg("EVENT_BLADE_BOOT_CONFIG -- Not processed");
                                 break;
-                        case EVENT_OA_NETWORK_CONFIG_CHANGED :
+                        case EVENT_OA_NETWORK_CONFIG_CHANGED:
                                 dbg("EVENT_OA_NETWORK_CONFIG_CHANGED "
                                     "-- Not processed");
                                 break;
-                        case EVENT_HPSIM_XENAME_ADDED :
+                        case EVENT_HPSIM_XENAME_ADDED:
                                 dbg("EVENT_HPSIM_XENAME_ADDED "
                                     "-- Not processed");
                                 break;
-                        case EVENT_HPSIM_XENAME_REMOVED :
+                        case EVENT_HPSIM_XENAME_REMOVED:
                                 dbg("EVENT_HPSIM_XENAME_REMOVED "
                                     "-- Not processed");
                                 break;
-                        case EVENT_FLASH_PENDING :
+                        case EVENT_FLASH_PENDING:
                                 dbg("EVENT_FLASH_PENDING -- Not processed");
                                 break;
-                        case EVENT_FLASH_STARTED :
+                        case EVENT_FLASH_STARTED:
                                 dbg("EVENT_FLASH_STARTED -- Not processed");
                                 break;
-                        case EVENT_FLASH_PROGRESS :
+                        case EVENT_FLASH_PROGRESS:
                                 dbg("EVENT_FLASH_PROGRESS -- Not processed");
                                 break;
-                        case EVENT_FLASH_COMPLETE :
+                        case EVENT_FLASH_COMPLETE:
                                 dbg("EVENT_FLASH_COMPLETE -- Not processed");
                                 break;
-                        case EVENT_STANDBY_FLASH_STARTED :
+                        case EVENT_STANDBY_FLASH_STARTED:
                                 dbg("EVENT_STANDBY_FLASH_STARTED "
                                     "-- Not processed");
                                 break;
-                        case EVENT_STANDBY_FLASH_PROGRESS :
+                        case EVENT_STANDBY_FLASH_PROGRESS:
                                 dbg("EVENT_STANDBY_FLASH_PROGRESS "
                                     "-- Not processed");
                                 break;
-                        case EVENT_STANDBY_FLASH_COMPLETE :
+                        case EVENT_STANDBY_FLASH_COMPLETE:
                                 dbg("EVENT_STANDBY_FLASH_COMPLETE "
                                     "-- Not processed");
                                 break;
-                        case EVENT_STANDBY_FLASH_BOOTING :
+                        case EVENT_STANDBY_FLASH_BOOTING:
                                 dbg("EVENT_STANDBY_FLASH_BOOTING "
                                     "-- Not processed");
                                 break;
-                        case EVENT_STANDBY_FLASH_BOOTED :
+                        case EVENT_STANDBY_FLASH_BOOTED:
                                 dbg("EVENT_STANDBY_FLASH_BOOTED "
                                     "-- Not processed");
                                 break;
-                        case EVENT_STANDBY_FLASH_FAILED :
+                        case EVENT_STANDBY_FLASH_FAILED:
                                 dbg("EVENT_STANDBY_FLASH_FAILED "
                                     "-- Not processed");
                                 break;
-                        case EVENT_FLASHSYNC_BUILD :
+                        case EVENT_FLASHSYNC_BUILD:
                                 dbg("EVENT_FLASHSYNC_BUILD -- Not processed");
                                 break;
-                        case EVENT_FLASHSYNC_BUILDDONE :
+                        case EVENT_FLASHSYNC_BUILDDONE:
                                 dbg("EVENT_FLASHSYNC_BUILDDONE "
                                     "-- Not processed");
                                 break;
-                        case EVENT_FLASHSYNC_FAILED :
+                        case EVENT_FLASHSYNC_FAILED:
                                 dbg("EVENT_FLASHSYNC_FAILED -- Not processed");
                                 break;
-                        case EVENT_FLASHSYNC_STANDBY_BUILD :
+                        case EVENT_FLASHSYNC_STANDBY_BUILD:
                                 dbg("EVENT_FLASHSYNC_STANDBY_BUILD "
                                     "-- Not processed");
                                 break;
-                        case EVENT_FLASHSYNC_STANDBY_BUILDDONE :
+                        case EVENT_FLASHSYNC_STANDBY_BUILDDONE:
                                 dbg("EVENT_FLASHSYNC_STANDBY_BUILDDONE "
                                     "-- Not processed");
                                 break;
-                        case EVENT_FLASHSYNC_STANDBY_FAILED :
+                        case EVENT_FLASHSYNC_STANDBY_FAILED:
                                 dbg("EVENT_FLASHSYNC_STANDBY_FAILED "
                                     "-- Not processed");
                                 break;
-                        case EVENT_NONILO_EBIPA :
+                        case EVENT_NONILO_EBIPA:
                                 dbg("EVENT_NONILO_EBIPA -- Not processed");
                                 break;
-                        case EVENT_FACTORY_RESET :
+                        case EVENT_FACTORY_RESET:
                                 dbg("EVENT_FACTORY_RESET -- Not processed");
                                 break;
-                        case EVENT_BLADE_INSERT_COMPLETED :
-                                dbg("EVENT_BLADE_INSERT_COMPLETED "
-                                    "-- Not processed");
+                        case EVENT_BLADE_INSERT_COMPLETED:
+                                dbg("EVENT_BLADE_INSERT_COMPLETED");
+                                rv = process_server_insertion_event(oh_handler,
+                                                                    con,
+                                                                    &event);
                                 break;
-                        case EVENT_EBIPA_INFO_CHANGED_EX :
+                        case EVENT_EBIPA_INFO_CHANGED_EX:
                                 dbg("EVENT_EBIPA_INFO_CHANGED_EX "
                                     "-- Not processed");
                                 break;

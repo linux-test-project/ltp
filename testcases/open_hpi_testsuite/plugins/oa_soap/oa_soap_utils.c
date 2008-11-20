@@ -31,6 +31,7 @@
  * Author(s)
  *      Raghavendra P.G. <raghavendra.pg@hp.com>
  *      Vivek Kumar <vivek.kumar2@hp.com>
+ *      Shuah Khan <shuah.khan@hp.com>
  *
  * This file implements all the utility functions which will be useful of oa
  * soap functioning. Majority of the functions are helper functions for
@@ -79,9 +80,9 @@
  *
  *      create_oa_connection()          - Create OA connection after closing the
  *                                        earlier soap_con structures
- *                                        
+ *
  *      initialize_oa_con()             - Initialize the hpi_con and event_con
- *      
+ *
  *      delete_all_inventory_info()     - Frees the memory allocated for
  *                                        inventory areas for all the resources
  *
@@ -342,7 +343,7 @@ SaErrorT get_oa_state(struct oh_handler_state *oh_handler,
                 /* Find the active and standby bay number, IP address
                  * and firmware version */
                 switch (oa_role) {
-                        case ACTIVE :
+                        case ACTIVE:
                                 active_bay = i;
                                 memset(active_ip, 0, MAX_URL_LEN);
                                 strncpy(active_ip,
@@ -353,7 +354,7 @@ SaErrorT get_oa_state(struct oh_handler_state *oh_handler,
                                 memset(active_fm, 0, MAX_BUF_SIZE);
                                 strncpy(active_fm, firmware, strlen(firmware));
                                 break;
-                        case STANDBY :
+                        case STANDBY:
                                 standby_bay = i;
                                 memset(standby_ip, 0, MAX_URL_LEN);
                                 strncpy(standby_ip,
@@ -364,7 +365,7 @@ SaErrorT get_oa_state(struct oh_handler_state *oh_handler,
                                 memset(standby_fm, 0, MAX_BUF_SIZE);
                                 strncpy(standby_fm, firmware, strlen(firmware));
                                 break;
-                        default :
+                        default:
                                 err("wrong oa state detected for bay %d", i);
                                 soap_close(hpi_con);
                                 soap_close(event_con);
@@ -1316,8 +1317,15 @@ SaErrorT push_discovered_resource_events(struct oh_handler_state *oh_handler)
 void cleanup_plugin_rptable(struct oh_handler_state *oh_handler)
 {
         SaErrorT rv = SA_OK;
+        struct oa_soap_handler *oa_handler = NULL;
 
         if (oh_handler == NULL) {
+                err("Invalid parameter");
+                return;
+        }
+
+        oa_handler = (struct oa_soap_handler *) oh_handler->data;
+        if(oa_handler == NULL) {
                 err("Invalid parameter");
                 return;
         }
@@ -1326,6 +1334,8 @@ void cleanup_plugin_rptable(struct oh_handler_state *oh_handler)
         if (rv != SA_OK) {
                 err("Deleting all inventory information failed");
         }
+
+        release_oa_soap_resources(oa_handler);
 
         rv = oh_flush_rpt(oh_handler->rptcache);
         if (rv != SA_OK) {
@@ -1352,9 +1362,14 @@ void release_oa_soap_resources(struct oa_soap_handler *oa_handler)
 {
         SaHpiInt32T i;
 
-        /* Release memory of blade presence and blade serial number array */
+        /* Release memory of blade presence, resource id and blade
+         * serial number arrays
+         */
         if (oa_handler->oa_soap_resources.server.presence != NULL) {
                 g_free(oa_handler->oa_soap_resources.server.presence);
+        }
+        if (oa_handler->oa_soap_resources.server.resource_id != NULL) {
+                g_free(oa_handler->oa_soap_resources.server.resource_id);
         }
         for (i = 0; i < oa_handler->oa_soap_resources.server.max_bays; i++) {
                 if (oa_handler->oa_soap_resources.server.serial_number[i] !=
@@ -1367,6 +1382,9 @@ void release_oa_soap_resources(struct oa_soap_handler *oa_handler)
         /* Release memory of interconnect presence and serial number array */
         if (oa_handler->oa_soap_resources.interconnect.presence != NULL) {
                 g_free(oa_handler->oa_soap_resources.interconnect.presence);
+        }
+        if (oa_handler->oa_soap_resources.interconnect.resource_id != NULL) {
+                g_free(oa_handler->oa_soap_resources.interconnect.resource_id);
         }
         for (i = 0; i < oa_handler->oa_soap_resources.interconnect.max_bays;
              i++) {
@@ -1381,6 +1399,9 @@ void release_oa_soap_resources(struct oa_soap_handler *oa_handler)
         if (oa_handler->oa_soap_resources.oa.presence != NULL) {
                 g_free(oa_handler->oa_soap_resources.oa.presence);
         }
+        if (oa_handler->oa_soap_resources.oa.resource_id != NULL) {
+                g_free(oa_handler->oa_soap_resources.oa.resource_id);
+        }
         for (i = 0; i < oa_handler->oa_soap_resources.oa.max_bays; i++) {
                 if (oa_handler->oa_soap_resources.oa.serial_number[i] != NULL)
                         g_free(oa_handler->oa_soap_resources.oa.
@@ -1388,15 +1409,22 @@ void release_oa_soap_resources(struct oa_soap_handler *oa_handler)
         }
         g_free(oa_handler->oa_soap_resources.oa.serial_number);
 
-        /* Release memory of fan presence. Since fans does not have serial
-         * numbers, hence serial numbers array is not created for fans
+        /* Release memory of fan presence.  Since fans do not have serial
+         * numbers, a serial numbers array does not need to be released.
          */
-        if (oa_handler->oa_soap_resources.fan.presence != NULL)
+        if (oa_handler->oa_soap_resources.fan.presence != NULL) {
                 g_free(oa_handler->oa_soap_resources.fan.presence);
+        }
+        if (oa_handler->oa_soap_resources.fan.resource_id != NULL) {
+                g_free(oa_handler->oa_soap_resources.fan.resource_id);
+        }
 
         /* Release memory of power supply presence and serial number array */
         if (oa_handler->oa_soap_resources.ps_unit.presence !=NULL) {
                 g_free(oa_handler->oa_soap_resources.ps_unit.presence);
+        }
+        if (oa_handler->oa_soap_resources.ps_unit.resource_id !=NULL) {
+                g_free(oa_handler->oa_soap_resources.ps_unit.resource_id);
         }
         for (i = 0; i < oa_handler->oa_soap_resources.ps_unit.max_bays; i++) {
                 if (oa_handler->oa_soap_resources.ps_unit.serial_number[i]
@@ -1459,7 +1487,6 @@ SaErrorT update_oa_info(struct oh_handler_state *oh_handler,
                         struct oaInfo *response,
                         SaHpiResourceIdT resource_id)
 {
-        struct oa_soap_handler *oa_handler;
         SaHpiRptEntryT *rpt = NULL;
         SaHpiFloat64T fm_version;
         SaHpiInt32T major;
@@ -1468,12 +1495,6 @@ SaErrorT update_oa_info(struct oh_handler_state *oh_handler,
                 err("Invalid parameter");
                 return SA_ERR_HPI_INVALID_PARAMS;
         }
-
-        /* Copy the serial number of the OA to serial_number array */
-        oa_handler = (struct oa_soap_handler *) oh_handler->data;
-        strcpy(oa_handler->oa_soap_resources.oa.
-               serial_number[response->bayNumber - 1],
-               response->serialNumber);
 
         rpt = oh_get_resource_by_id(oh_handler->rptcache, resource_id);
         if (rpt == NULL) {
@@ -1537,3 +1558,44 @@ SaErrorT convert_lower_to_upper(char *src,
 
         return SA_OK;
 }
+
+/**
+ * update_reseource_status()
+ *      @res_status     pointer to resource_status_t
+ *      @index          index into the resource info fields in res_status
+ *      @serial_number  serial_number string to be copied into res_status
+ *      @resource_id    resource id to be updated to res_status
+ *      @presence       presence status
+ *
+ *      Description:
+ *      This routine updates the resource status entry with passed in
+ *      serial_number, resource_id, and presence.  This routine should be
+ *      called to set and reset the resource status fields that change
+ *      when a a resource gets added and removed.
+ *
+ *      Return value: none
+**/
+void oa_soap_update_resource_status(resource_status_t *res_status,
+                                    SaHpiInt32T index,
+                                    char *serial_number,
+                                    SaHpiResourceIdT resource_id,
+                                    resource_presence_status_t presence)
+{
+        if (index <= 0) {
+                err("Invalid index value %d - returning without update\n",
+                    index);
+                return;
+        }
+        if (serial_number != NULL) {
+                size_t len;
+
+                len = strlen(serial_number);
+                strncpy(res_status->serial_number[index-1], serial_number, len);
+                res_status->serial_number[index-1][len] = '\0';
+        }
+        res_status->resource_id[index-1] = resource_id;
+        res_status->presence[index-1] = presence;
+
+        return;
+}
+

@@ -41,14 +41,7 @@ INCLUDES                = @OPENHPI_INCLUDES@ @OH_SSL_INCLUDES@
 
 SUBDIRS                 = t
 
-noinst_LTLIBRARIES =
-lib_LTLIBRARIES =
-
-if OH_DAEMON_ENABLED
-noinst_LTLIBRARIES	+= libopenhpi.la
-else
-lib_LTLIBRARIES         += libopenhpi.la
-endif
+noinst_LTLIBRARIES     = libopenhpi.la
 
 libopenhpi_la_SOURCES   = \
                            config.c \
@@ -69,9 +62,6 @@ libopenhpi_la_LIBADD    = @STATIC_PLUGIN_LIBS@ @STATIC_PLUGIN_EXTRA_LIBS@ $(top_
 if HAVE_OPENSSL
 libopenhpi_la_LIBADD += $(top_builddir)/$(SSLDIR)/libopenhpi_ssl.la
 endif
-libopenhpi_la_LDFLAGS   = -L$(top_builddir)/utils -version-info @HPI_LIB_VERSION@ -export-dynamic
+libopenhpi_la_LDFLAGS   = -L$(top_builddir)/utils -version-info @HPI_LIB_VERSION@ -export-dynamic -static
 libopenhpi_la_DEPENDENCIES = @STATIC_PLUGIN_LIBS@
-
-$(top_builddir)/utils/libopenhpiutils.la:
-	make -C $(top_builddir)/utils libopenhpiutils.la
 

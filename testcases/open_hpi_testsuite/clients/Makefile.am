@@ -7,11 +7,7 @@ EXTRA_DIST	     = oh_clients.h
 
 COMMONLIBS 	     = @STATIC_PLUGIN_LIBS@ @STATIC_PLUGIN_EXTRA_LIBS@
 
-if OH_DAEMON_ENABLED
 COMMONLIBS	     += $(top_builddir)/openhpid/libopenhpi.la
-else
-COMMONLIBS           += $(top_builddir)/src/libopenhpi.la
-endif
 
 CLIENTS_SRC 	     = clients.c
 

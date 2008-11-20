@@ -33,6 +33,11 @@ INCLUDES                = @OPENHPI_INCLUDES@ @XML2_INCLUDE@ @OH_SSL_INCLUDES@
 
 pkglib_LTLIBRARIES      = liboa_soap.la
 
+EXTRA_DIST = \
+             OpenHPI_Blade_DevGuide.pdf
+
+
+
 liboa_soap_la_SOURCES   = oa_soap.h \
                           oa_soap.c \
                           oa_soap_power.h \

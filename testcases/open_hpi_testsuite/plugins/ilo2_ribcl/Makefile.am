@@ -39,6 +39,10 @@ INCLUDES		= @OPENHPI_INCLUDES@ @XML2_INCLUDE@ @OH_SSL_INCLUDES@
 
 pkglib_LTLIBRARIES	= libilo2_ribcl.la
 
+EXTRA_DIST = \
+             OpenHPI_ProLiant_DevGuide.pdf
+
+
 libilo2_ribcl_la_SOURCES  =	\
 				ilo2_ribcl.c \
 				ilo2_ribcl.h \

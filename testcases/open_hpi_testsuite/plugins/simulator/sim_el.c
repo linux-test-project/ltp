@@ -1,6 +1,6 @@
 /*      -*- linux-c -*-
  *
- * (C) Copyright IBM Corp. 2005
+ * (C) Copyright IBM Corp. 2005, 2006, 2007, 2008
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -11,6 +11,7 @@
  *
  * Author(s):
  *      W. David Ashley <dashley@us.ibm.com>
+ *      Suntrupth S Yadav <suntrupth@in.ibm.com>
  */
 
 #include <sim_init.h>
@@ -166,6 +167,33 @@ SaErrorT sim_el_overflow(void *hnd, SaHpiResourceIdT id)
 }
 
 
+SaErrorT sim_el_get_caps(void *hnd, SaHpiResourceIdT id,
+		                    SaHpiEventLogCapabilitiesT *caps)
+{
+        struct oh_handler_state *state;
+		
+        if (!hnd || !caps) {
+	        err("Invalid parameter.");
+                return SA_ERR_HPI_INVALID_PARAMS;
+        }
+	
+
+	*caps = SAHPI_EVTLOG_CAPABILITY_ENTRY_ADD |
+                        SAHPI_EVTLOG_CAPABILITY_CLEAR |
+                        SAHPI_EVTLOG_CAPABILITY_TIME_SET |
+                        SAHPI_EVTLOG_CAPABILITY_STATE_SET;
+	
+        state = (struct oh_handler_state *)hnd;
+	if (state->elcache->info.OverflowResetable) {
+		*caps |= SAHPI_EVTLOG_CAPABILITY_OVERFLOW_RESET;
+	}
+
+
+	return SA_OK;
+}
+
+
+
 void * oh_get_el_info (void *, SaHpiResourceIdT, SaHpiEventLogInfoT *)
                 __attribute__ ((weak, alias("sim_el_get_info")));
 
@@ -191,3 +219,7 @@ void * oh_clear_el (void *, SaHpiResourceIdT)
 
 void * oh_reset_el_overflow (void *, SaHpiResourceIdT)
                 __attribute__ ((weak, alias("sim_el_overflow")));
+
+void * oh_get_el_caps (void *, SaHpiResourceIdT, SaHpiEventLogCapabilitiesT *)
+	        __attribute__ ((weak, alias("sim_el_get_caps")));
+

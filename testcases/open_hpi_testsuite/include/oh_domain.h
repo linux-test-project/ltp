@@ -66,10 +66,6 @@ extern struct oh_domain_table oh_domains;
 struct oh_domain {
         /* id number of domain */
         SaHpiDomainIdT id;
-        /* Domain's state - SINGLE|CHILD|PARENT|PEER */
-        SaHpiUint8T state;
-        /* Entity path pattern - Matching events will go in this domain */
-        oh_entitypath_pattern entity_pattern;
 	/* Name tag of this domain */
 	SaHpiTextBufferT tag;
 	/* Auto insert timeout for this domain */
@@ -94,21 +90,13 @@ struct oh_domain {
         GStaticRecMutex refcount_lock;
 };
 
-typedef struct {
-        SaHpiDomainIdT id;
-        oh_entitypath_pattern entity_pattern;
-        SaHpiTextBufferT tag;
-} oh_domain_result;
-
 SaErrorT oh_create_domain(SaHpiDomainIdT id,
-                          oh_entitypath_pattern *entity_pattern,
                           char *tag,
                           SaHpiDomainIdT tier_of,
                           SaHpiDomainIdT peer_of,
                           SaHpiDomainCapabilitiesT capabilities,
                           SaHpiTimeoutT ai_timeout
                          );
-SaErrorT oh_create_domain_from_table(GHashTable *table);
 SaErrorT oh_destroy_domain(SaHpiDomainIdT did);
 struct oh_domain *oh_get_domain(SaHpiDomainIdT did);
 SaErrorT oh_release_domain(struct oh_domain *domain);

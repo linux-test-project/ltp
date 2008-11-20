@@ -1,0 +1,62 @@
+=head1 NAME
+
+hpialarms - A openhpi sample application that shows "Alarm Control" management instruments
+
+=head1 SYNOPSIS 
+
+hpialarms [-a -b -c -i -m -n -p -o -x]
+
+=head1 DESCRIPTION
+
+hpialarms walks the RPT (Resource Present Table) for resouces that have 
+"Alarm Control" management instruments (SAHPI_CTRL_LED).
+
+
+=head1 OPTIONS
+
+=over 2
+
+ -c1  sets Critical Alarm on
+ -c0  sets Critical Alarm off
+ -m1  sets Major Alarm on
+ -m0  sets Major Alarm off
+ -n1  sets Minor Alarm on
+ -n0  sets Minor Alarm off
+ -p1  sets Power Alarm on
+ -p0  sets Power Alarm off
+ -i5  sets Chassis ID on for 5 sec
+ -i0  sets Chassis ID off
+ -a1  sets Disk A fault on
+ -a0  sets Disk A fault off
+ -b1  sets Disk B fault on
+ -b0  sets Disk B fault off
+ -d[byte] sets raw Alarm byte
+ -o   sets all Alarms off
+ -x   show eXtra debug messages
+
+=back
+
+=head1 SAMPLE OUTPUT 
+
+=over 2
+
+ hpialarmpanel ver 0.6
+ RptInfo: UpdateCount = 5, UpdateTime = 8a2dc6c0
+ rptentry[0] resourceid=1 tag: Mullins
+ RDR[45]: ctltype=2:1 oem=0  Chassis Identify Control
+ RDR[48]: ctltype=0:1 oem=10 Front Panel Power Alarm LED         state = off
+ RDR[51]: ctltype=0:1 oem=13 Front Panel Minor Alarm LED         state = ON
+ RDR[46]: ctltype=0:0 oem=0  Cold Reset Control
+ RDR[49]: ctltype=0:1 oem=11 Front Panel Critical Alarm LED      state = off
+ RDR[50]: ctltype=0:1 oem=12 Front Panel Major Alarm LED         state = off
+
+=back
+
+=head1 SEE ALSO
+
+=head1 AUTHORS
+
+Authors of this man page:
+
+ Peter D Phan (pdphan@users.sourceforge.net)
+

@@ -35,7 +35,7 @@
 #include <oh_clients.h>
 
 #define  uchar  unsigned char
-#define OH_SVN_REV "$Revision: 1.2 $"
+#define OH_SVN_REV "$Revision: 1.3 $"
 
 #define NUSE  6
 char *usedesc[NUSE] = {"reserved", "BIOS FRB2", "BIOS/POST",

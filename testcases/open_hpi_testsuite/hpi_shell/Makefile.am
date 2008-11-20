@@ -8,17 +8,12 @@ EXTRA_DIST		= hpi_ui.h
 
 INCLUDES		= -I$(top_srcdir)/include -I$(top_srcdir)/utils
 
-if OH_DAEMON_ENABLED
 INCLUDES 		+= -I$(top_srcdir)/openhpid \
 			   -I$(top_srcdir)/marshal \
 			   -DCLIENT
 COMMONLIBS		= $(top_builddir)/marshal/libohtcpconnx.la \
 			   $(top_builddir)/utils/libopenhpiutils.la \
 			   $(top_builddir)/openhpid/libopenhpi.la
-else
-COMMONLIBS		= $(top_builddir)/src/libopenhpi.la \
-			   @STATIC_PLUGIN_LIBS@ @STATIC_PLUGIN_EXTRA_LIBS@
-endif
 
 bin_PROGRAMS		= hpi_shell
 

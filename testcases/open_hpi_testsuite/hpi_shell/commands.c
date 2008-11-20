@@ -113,7 +113,9 @@ static ret_code_t help_cmd(void)
 
 static ret_code_t add_config(void)
 {
-#ifndef OH_DAEMON_ENABLED
+#if 0
+// This code needs to call oHpi APIs instead of internal functions
+
         SaErrorT        rv;
         term_def_t      *term;
         struct oh_parsed_config config = {NULL, NULL, 0, 0, 0, 0};

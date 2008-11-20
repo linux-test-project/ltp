@@ -33,6 +33,7 @@
  *      Raghavendra M.S. <raghavendra.ms@hp.com>
  *      Raja Kumar Thatte <raja-kumar.thatte@hp.com>
  *      Vivek Kumar <vivek.kumar2@hp.com>
+ *      Shuah Khan <shuah.khan@hp.com>
  */
 
 #ifndef _OA_SOAP_H
@@ -81,8 +82,14 @@
 #define ERR_INVALID_PRIVILEGE_LEVEL 8
 #define ERR_STANDBY_MODE 139
 
-/* OA firmware version 2.20 */
+/* OA firmware versions */
 #define OA_2_20 2.20
+#define OA_2_21 2.21
+
+/* OA switchover re-try wait period */
+#define WAIT_ON_SWITCHOVER 1
+/* OA switchover max re-try */
+#define MAX_RETRY_ON_SWITCHOVER 1
 
 /* Enum for storing the status of the plugin */
 enum oa_soap_plugin_status {
@@ -105,23 +112,26 @@ struct oa_info
         SaHpiFloat64T fm_version;
 };
 
-enum resource_presence_status
+typedef enum resource_presence_status
 {
         RES_ABSENT = 0,
         RES_PRESENT= 1
-};
+} resource_presence_status_t;
 
 /* Resource presence matrix per resource type */
-struct resource_status
+typedef struct resource_status
 {
         SaHpiInt32T max_bays;
         enum resource_presence_status *presence;
         char **serial_number;
-};
+        SaHpiResourceIdT *resource_id;
+} resource_status_t;
 
 /* Resource presence matrix for all FRUs in HP BladeSystem c-Class */
 struct oa_soap_resource_status
 {
+        SaHpiResourceIdT enclosure_rid;
+        SaHpiResourceIdT power_subsystem_rid;
         struct resource_status oa;
         struct resource_status server;
         struct resource_status interconnect;

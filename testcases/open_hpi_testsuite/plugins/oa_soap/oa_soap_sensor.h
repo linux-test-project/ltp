@@ -30,6 +30,7 @@
  *
  * Author(s)
  *      Raghavendra M.S. <raghavendra.ms@hp.com>
+ *      Shuah Khan <shuah.khan@hp.com>
  */
 
 #ifndef _OA_SOAP_SENSOR_H

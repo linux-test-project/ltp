@@ -21,7 +21,7 @@
 #include <oh_utils.h>
 #include <oh_clients.h>
 
-#define OH_SVN_REV "$Revision: 1.3 $"
+#define OH_SVN_REV "$Revision: 1.4 $"
 
 #define  MAX_MANAGED_SYSTEMS 80
 #define  HPI_POWER_DEBUG_PRINT(a) if(DebugPrints==TRUE)printf(a)

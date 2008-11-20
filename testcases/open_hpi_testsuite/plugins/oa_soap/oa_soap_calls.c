@@ -40,7 +40,7 @@
 #include <string.h>
 #include <oh_error.h>
 #define OA_SOAP_CALLS_FILE              /* Defines ENUM strings in this file */
-#include <oa_soap_calls.h>
+#include "oa_soap_calls.h"
 
 
 /* Macros used in this file, to simplify common code */
@@ -121,6 +121,7 @@ static void     parse_bladeInfo(xmlNode *node, struct bladeInfo *response)
         response->mmDepth = atoi(soap_tree_value(node, "mmDepth"));
         response->deviceId = atoi(soap_tree_value(node, "deviceId"));
         response->productId = atoi(soap_tree_value(node, "productId"));
+        response->extraData = soap_walk_tree(node, "extraData");
 }
 
 /* parse_bladeMpInfo - Parses a bladeMpInfo response structure */
@@ -138,6 +139,7 @@ static void     parse_bladeMpInfo(xmlNode *node, struct bladeMpInfo *response)
         response->loginUrl = soap_tree_value(node, "loginUrl");
         response->ircFullUrl = soap_tree_value(node, "ircFullUrl");
         response->remoteSerialUrl = soap_tree_value(node, "remoteSerialUrl");
+        response->extraData = soap_walk_tree(node, "extraData");
 }
 
 /* parse_diagnosticChecks - Parses a diagnosticChecks response structure */
@@ -200,6 +202,7 @@ static void     parse_syslog(xmlNode *node, struct syslog *response)
         response->logContents = soap_tree_value(node, "logContents"); /* May be
                                                                        * NULL
                                                                        */
+        response->extraData = soap_walk_tree(node, "extraData");
 }
 
 /* parse_rackTopology - Parses a rackTopology response structure */
@@ -208,6 +211,7 @@ static void     parse_rackTopology(xmlNode *node,
 {
         response->ruid = soap_tree_value(node, "ruid"); /* May be NULL */
         response->enclosures = soap_walk_tree(node, "enclosures:enclosure");
+        response->extraData = soap_walk_tree(node, "extraData");
 }
 
 /* parse_rackTopology2 - Parses rackTopology2 response structure */
@@ -216,6 +220,7 @@ static void     parse_rackTopology2(xmlNode *node,
 {
         response->ruid = soap_tree_value(node, "ruid");
         response->enclosures = soap_walk_tree(node, "enclosures:enclosure");
+        response->extraData = soap_walk_tree(node, "extraData");
 }
 
 /* parse_enclosureInfo - Parses a enclosureInfo response structure */
@@ -256,6 +261,7 @@ static void     parse_enclosureInfo(xmlNode *node,
         response->pduPartNumber = soap_tree_value(node, "pduPartNumber");
         response->pduSparePartNumber =
                 soap_tree_value(node, "pduSparePartNumber");
+        response->extraData = soap_walk_tree(node, "extraData");
 }
 
 /* parse_oaStatus - Parses an oaStatus response structure */
@@ -277,6 +283,7 @@ static void     parse_oaStatus(xmlNode *node, struct oaStatus *response)
         response->diagnosticChecksEx =
                 soap_walk_tree(node, "diagnosticChecksEx");
 #endif
+        response->extraData = soap_walk_tree(node, "extraData");
 }
 
 /* parse_oaInfo - Parses an oaInfo response structure */
@@ -297,6 +304,7 @@ static void     parse_oaInfo(xmlNode *node, struct oaInfo *response)
         response->mmHeight = atoi(soap_tree_value(node, "mmHeight"));
         response->mmWidth = atoi(soap_tree_value(node, "mmWidth"));
         response->mmDepth = atoi(soap_tree_value(node, "mmDepth"));
+        response->extraData = soap_walk_tree(node, "extraData");
 }
 
 /* parse_bladeStatus - Parses a bladeStatus response structure */
@@ -324,32 +332,7 @@ static void     parse_bladeStatus(xmlNode *node, struct bladeStatus *response)
         response->diagnosticChecksEx =
                 soap_walk_tree(node, "diagnosticChecksEx");
 #endif
-}
-
-/* parse_fanInfo - Parses a fanInfo response structure */
-static void     parse_fanInfo(xmlNode *node, struct fanInfo *response)
-{
-        response->bayNumber = atoi(soap_tree_value(node, "bayNumber"));
-        response->presence =
-                soap_enum(presence_S, soap_tree_value(node, "presence"));
-        response->name = soap_tree_value(node, "name");
-        response->partNumber = soap_tree_value(node, "partNumber");
-        response->sparePartNumber = soap_tree_value(node, "sparePartNumber");
-        response->serialNumber = soap_tree_value(node, "serialNumber");
-        response->powerConsumed = atoi(soap_tree_value(node, "powerConsumed"));
-        response->fanSpeed = atoi(soap_tree_value(node, "fanSpeed"));
-        response->maxFanSpeed = atoi(soap_tree_value(node, "maxFanSpeed"));
-        response->lowLimitFanSpeed =
-                atoi(soap_tree_value(node, "lowLimitFanSpeed"));
-        response->operationalStatus =
-                soap_enum(opStatus_S,
-                          soap_tree_value(node, "operationalStatus"));
-        parse_diagnosticChecks(soap_walk_tree(node, "diagnosticChecks"),
-                               & (response->diagnosticChecks));
-#if 0                                   /* TODO: Doesn't work yet */
-        response->diagnosticChecksEx =
-                soap_walk_tree(node, "diagnosticChecksEx");
-#endif
+        response->extraData = soap_walk_tree(node, "extraData");
 }
 
 /* parse_interconnectTrayStatus - Parses an interconnectTrayStatus
@@ -380,6 +363,7 @@ static void     parse_interconnectTrayStatus(xmlNode *node,
         response->diagnosticChecksEx =
                 soap_walk_tree(node, "diagnosticChecksEx");
 #endif
+        response->extraData = soap_walk_tree(node, "extraData");
 }
 
 /* parse_interconnectTrayInfo - Parses an interconnectTrayInfo
@@ -414,6 +398,7 @@ static void     parse_interconnectTrayInfo(xmlNode *node,
         response->urlToMgmt = soap_tree_value(node, "urlToMgmt");
         response->powerOnWatts = atoi(soap_tree_value(node, "powerOnWatts"));
         response->powerOffWatts = atoi(soap_tree_value(node, "powerOffWatts"));
+        response->extraData = soap_walk_tree(node, "extraData");
 }
 
 /* parse_powerSupplyInfo - Parses a powerSupplyInfo response structure */
@@ -428,6 +413,7 @@ static void     parse_powerSupplyInfo(xmlNode *node,
         response->serialNumber = soap_tree_value(node, "serialNumber");
         response->capacity = atoi(soap_tree_value(node, "capacity"));
         response->actualOutput = atoi(soap_tree_value(node, "actualOutput"));
+        response->extraData = soap_walk_tree(node, "extraData");
 }
 
 /* parse_powerSupplyStatus - Parses a powerSupplyStatus response structure */
@@ -448,6 +434,7 @@ static void     parse_powerSupplyStatus(xmlNode *node,
         response->diagnosticChecksEx =
                 soap_walk_tree(node, "diagnosticChecksEx");
 #endif
+        response->extraData = soap_walk_tree(node, "extraData");
 }
 
 /* parse_powerSubsystemInfo - Parses a powerSubsystemInfo response structure */
@@ -489,6 +476,7 @@ static void     parse_powerSubsystemInfo(xmlNode *node,
                 atoi(soap_tree_value(node, "wantedPowerSupplies"));
         response->neededPowerSupplies =
                 atoi(soap_tree_value(node, "neededPowerSupplies"));
+        response->extraData = soap_walk_tree(node, "extraData");
 }
 
 /* parse_thermalInfo - Parses a thermalInfo response structure */
@@ -508,6 +496,7 @@ static void     parse_thermalInfo(xmlNode *node, struct thermalInfo *response)
                 atoi(soap_tree_value(node, "cautionThreshold"));
         response->criticalThreshold =
                 atoi(soap_tree_value(node, "criticalThreshold"));
+        response->extraData = soap_walk_tree(node, "extraData");
 }
 
 /* parse_enclosureBaysSelection - Parses an enclosureBaysSelection response
@@ -525,6 +514,7 @@ static void     parse_enclosureBaysSelection(xmlNode *node,
         response->bladeBays = soap_walk_tree(node, "bladeBays:blade");
         response->interconnectTrayBays =
                 soap_walk_tree(node, "interconnectTrayBays:interconnectTray");
+        response->extraData = soap_walk_tree(node, "extraData");
 }
 
 /* parse_userInfo - Parses a userInfo response structure */
@@ -538,6 +528,7 @@ static void     parse_userInfo(xmlNode *node, struct userInfo *response)
         response->acl = soap_enum(userAcl_S, soap_tree_value(node, "acl"));
         parse_enclosureBaysSelection(soap_walk_tree(node, "bayPermissions"),
                                      &(response->bayPermissions));
+        response->extraData = soap_walk_tree(node, "extraData");
 }
 
 /* parse_oaNetworkInfo - Parses a oaNetworkInfo response structure */
@@ -557,6 +548,84 @@ static void     parse_oaNetworkInfo(xmlNode *node,
         response->elinkIpAddress = soap_tree_value(node, "elinkIpAddress");
         response->linkActive =
                 parse_xsdBoolean(soap_tree_value(node, "linkActive"));
+        response->extraData = soap_walk_tree(node, "extraData");
+}
+
+/* parse_thermalSubsystemInfo - Parses a thermalSubsystemInfo response
+ * structure
+ */
+static void     parse_thermalSubsystemInfo(xmlNode *node,
+                                        struct thermalSubsystemInfo *response)
+{
+        response->operationalStatus =
+                soap_enum(opStatus_S,
+                          soap_tree_value(node, "operationalStatus"));
+        response->redundancy =
+                soap_enum(redundancy_S, soap_tree_value(node, "redundancy"));
+        response->goodFans = atoi(soap_tree_value(node, "goodFans"));
+        response->wantedFans = atoi(soap_tree_value(node, "wantedFans"));
+        response->neededFans = atoi(soap_tree_value(node, "neededFans"));
+        response->extraData = soap_walk_tree(node, "extraData");
+}
+
+/* parse_fanZoneArray - Parses a fanZoneArray structure */
+static void     parse_fanZoneArray(xmlNode *node,
+                                   struct getFanZoneArrayResponse *response)
+{
+        response->fanZoneArray = soap_walk_tree(node, "fanZoneArray:fanZone");
+}
+
+/* parse_enclosureStatus - Parses a enclosureStatus structure */
+static void      parse_enclosureStatus(xmlNode *node,
+                                       struct enclosureStatus *response)
+{
+        response->operationalStatus =
+                soap_enum(opStatus_S,
+                          soap_tree_value(node, "operationalStatus"));
+        response->uid =  soap_enum(uidStatus_S,
+                                   soap_tree_value(node, "uid"));
+        response->wizardStatus =
+                soap_enum(wizardStatus_S,
+                          soap_tree_value(node, "wizardStatus"));
+        parse_diagnosticChecks(soap_walk_tree(node, "diagnosticChecks"),
+                               & (response->diagnosticChecks));
+#if 0                                   /* TODO: Doesn't work yet */
+        response->diagnosticChecksEx =
+                soap_walk_tree(node, "diagnosticChecksEx");
+#endif
+        response->extraData = soap_walk_tree(node, "extraData");
+}
+
+/* parse_lcdInfo - Parses a lcdInfo structure */
+static void     parse_lcdInfo(xmlNode *node, struct lcdInfo *response)
+{
+        response->name = soap_tree_value(node, "name");
+        response->partNumber = soap_tree_value(node, "partNumber");
+        response->manufacturer = soap_tree_value(node, "manufacturer");
+        response->fwVersion = soap_tree_value(node, "fwVersion");
+        response->extraData = soap_walk_tree(node, "extraData");
+}
+
+/* parse_lcdStatus - Parses a lcdStatus structure */
+static void     parse_lcdStatus(xmlNode *node, struct lcdStatus *response)
+{
+        response->status = soap_enum(opStatus_S,
+                                     soap_tree_value(node, "status"));
+        response->display =  soap_enum(uidStatus_S,
+                                       soap_tree_value(node, "display"));
+        response->lcdPin = parse_xsdBoolean(soap_tree_value(node, "lcdPin"));
+        response->buttonLock =
+                parse_xsdBoolean(soap_tree_value(node, "buttonLock"));
+        response->lcdSetupHealth =
+                soap_enum(lcdSetupHealth_S,
+                          soap_tree_value(node, "lcdSetupHealth"));
+        parse_diagnosticChecks(soap_walk_tree(node, "diagnosticChecks"),
+                               & (response->diagnosticChecks));
+#if 0                                   /* TODO: Doesn't work yet */
+        response->diagnosticChecksEx =
+                soap_walk_tree(node, "diagnosticChecksEx");
+#endif
+        response->extraData = soap_walk_tree(node, "extraData");
 }
 
 /* parse_getAllEvents - Parses a getAllEventsResponse structure */
@@ -575,6 +644,26 @@ static void     parse_getAllEvents(xmlNode *node,
  * file which contains structure definitions, and to the OA SOAP interface
  * documentation (HP Onboard Administrator SOAP Interface Guide).
  */
+
+/* soap_getExtraData - Walks list of extraData nodes, providing the name and
+ *      value for each.  Used after any SOAP call that returns an extraData
+ *      xmlNode pointer.
+ *
+ * Outputs:
+ *      name:           String containing the extra data name
+ *      value:          String containing the value for this name
+ */
+void    soap_getExtraData(xmlNode *extraData, struct extraDataInfo *result)
+{
+        if ((extraData) &&
+            (extraData->properties) &&
+            (extraData->properties->children))
+                result->name =
+                        (char *)(extraData->properties->children->content);
+        else
+                result->name = NULL;
+        result->value = soap_value(extraData);
+}
 
 /* soap_getBladeCpuInfo - Walks list of bladeCpuInfo nodes, providing details
  *      on each CPU.  Used after calling soap_getBladeInfo().
@@ -657,60 +746,62 @@ void    soap_getEncLink(xmlNode *data, struct encLink *result)
                 soap_tree_value(data, "enclosureName"); /* May be NULL */
         result->url = soap_tree_value(data, "url");
         result->local = parse_xsdBoolean(soap_tree_value(data, "local"));
+        result->extraData = soap_walk_tree(data, "extraData");
 }
 
-/* soap_getEncLink2 - Gets information from encLink2 nodes, 
+/* soap_getEncLink2 - Gets information from encLink2 nodes,
  * providing enclosure information.
  *
  * Outputs:
- *      enclosureNumber        : Which enclosure is this?
- *      productId              : Product ID
- *      mfgId                  : Manufacturer ID
- *      enclosureUuid          : Enclosure Universal Unique ID
- *      encloseSerialNumber    : Serial number from enclosure
- *      enclosureName          : Enclosure name
- *      enclosureProductName   : Enclosure product name including mfg name
- *      enclosureStatus        : Enclosure status
- *      enclosureRackIpAddress : Rack IP address
- *      enclosureUrl           : URL for the enclosure
- *      rackName               : Rack name assigned by user
- *      primaryEnclosure       : Flag for identifying primary
- *      encLinkOaArray         : encLinkOa array structure
+ *      enclosureNumber:        Which enclosure is this?
+ *      productId:              Product ID
+ *      mfgId:                  Manufacturer ID
+ *      enclosureUuid:          Enclosure Universal Unique ID
+ *      encloseSerialNumber:    Serial number from enclosure
+ *      enclosureName:          Enclosure name
+ *      enclosureProductName:   Enclosure product name including mfg name
+ *      enclosureStatus:        Enclosure status
+ *      enclosureRackIpAddress: Rack IP address
+ *      enclosureUrl:           URL for the enclosure
+ *      rackName:               Rack name assigned by user
+ *      primaryEnclosure:       Flag for identifying primary
+ *      encLinkOaArray:         encLinkOa array structure
  */
 void    soap_getEncLink2(xmlNode *data, struct encLink2 *result)
 {
-        result->enclosureNumber = 
+        result->enclosureNumber =
                 atoi(soap_tree_value(data, "enclosureNumber"));
         result->productId = atoi(soap_tree_value(data, "productId"));
         result->mfgId = atoi(soap_tree_value(data, "mfgId"));
         result->enclosureUuid = soap_tree_value(data, "enclosureUuid");
-        result->enclosureSerialNumber = 
+        result->enclosureSerialNumber =
                 soap_tree_value(data, "enclosureSerialNumber");
         result->enclosureName = soap_tree_value(data, "enclosureName");
-        result->enclosureProductName = 
+        result->enclosureProductName =
                 soap_tree_value(data, "enclosureProductName");
-        result->enclosureStatus = 
-                soap_enum(opStatus_S, 
+        result->enclosureStatus =
+                soap_enum(opStatus_S,
                           soap_tree_value(data, "enclosureStatus"));
-        result->enclosureRackIpAddress = 
+        result->enclosureRackIpAddress =
                 soap_tree_value(data, "enclosureRackIpAddress");
         result->enclosureUrl = soap_tree_value(data, "enclosureUrl");
         result->rackName = soap_tree_value(data, "rackName");
-        result->primaryEnclosure = 
+        result->primaryEnclosure =
                 parse_xsdBoolean(soap_tree_value(data, "primaryEnclosure"));
         result->encLinkOa = soap_walk_tree(data, "encLinkOaArray:encLinkOa");
+        result->extraData = soap_walk_tree(data, "extraData");
 }
 
-/* soap_getEncLinkOa - Gets information from encLinkOa nodes, 
+/* soap_getEncLinkOa - Gets information from encLinkOa nodes,
  * providing enclosure information.
  *
  * Outputs:
- *      activeOa    : Active OA flag indicator
- *      bayNumber   : Bay number of the OA
- *      oaName      : OA name assigned by the user
- *      ipAddress   : IP address for OA ENC Link
- *      macAddress  : MAC address for OA ENC Link
- *      fwVersion   : OA firmware version
+ *      activeOa:       Active OA flag indicator
+ *      bayNumber:      Bay number of the OA
+ *      oaName:         OA name assigned by the user
+ *      ipAddress:      IP address for OA ENC Link
+ *      macAddress:     MAC address for OA ENC Link
+ *      fwVersion:      OA firmware version
  */
 void    soap_getEncLinkOa (xmlNode *data, struct encLinkOa *result)
 {
@@ -720,6 +811,7 @@ void    soap_getEncLinkOa (xmlNode *data, struct encLinkOa *result)
         result->ipAddress = soap_tree_value(data, "ipAddress");
         result->macAddress = soap_tree_value(data, "macAddress");
         result->fwVersion = soap_tree_value(data, "fwVersion");
+        result->extraData = soap_walk_tree(data, "extraData");
 }
 
 
@@ -745,6 +837,85 @@ void    soap_getIpAddress(xmlNode *ips, char **result)
         *result = soap_value(ips);
 }
 
+/* soap_fanZone - Gets information from fanZone nodes
+ *
+ * Outputs:
+ *      zoneNumber:         Zone number
+ *      operationalStatus:  Operational status of the fan zone
+ *      redundant:          Redundant status of the fan zone
+ *      targetRpm:          Target RPM of the fan zone
+ *      targetPwm:          Target PWM of the fan zone
+ *      deviceBayArray:     Device bays of the fan zone
+ *      fanInfoArray:       Fan info of the fan zone
+ */
+void    soap_fanZone(xmlNode *node, struct fanZone *result)
+{
+        result->zoneNumber = atoi(soap_tree_value(node, "zoneNumber"));
+        result->redundant =
+                soap_enum(redundancy_S, soap_tree_value(node, "redundant"));
+        result->operationalStatus =
+                soap_enum(opStatus_S,
+                          soap_tree_value(node, "operationalStatus"));
+        result->targetRpm = atoi(soap_tree_value(node, "targetRpm"));
+        result->targetPwm = atoi(soap_tree_value(node, "targetPwm"));
+        result->deviceBayArray = soap_walk_tree(node, "deviceBayArray:bay");
+        result->fanInfoArray = soap_walk_tree(node, "fanInfoArray:fanInfo");
+        result->extraData = soap_walk_tree(node, "extraData");
+}
+
+/* soap_deviceBayArray - Gets information from fanZone nodes
+ *
+ * Outputs:
+ *      bay:                bay number
+ */
+void    soap_deviceBayArray(xmlNode *node, byte *bay)
+{
+        *bay = atoi(soap_value(node));
+}
+
+/* soap_fanInfo - Gets information from fanInfo nodes
+ *
+ * Outputs:
+ *      bayNumber:          Bay number
+ *      presence:           Presence status of the fan
+ *      name:               Name of the fan
+ *      partNumber:         Part number of the fan
+ *      sparePartNumber:    Spare part number of the fan
+ *      serialNumber:       Serial number of the fan
+ *      powerConsumed:      Power consumed by the fan
+ *      fanSpeed:           current fan speed
+ *      maxFanSpeed:        Maximum fan speed
+ *      lowLimitFanSpeed:   Low limit fan speed
+ *      operationalStatus:  Operational status of the fan
+ *      diagnosticChecks:   Diagnostic checks of the fan
+ */
+
+void    soap_fanInfo(xmlNode *node, struct fanInfo *result)
+{
+        result->bayNumber = atoi(soap_tree_value(node, "bayNumber"));
+        result->presence =
+                soap_enum(presence_S, soap_tree_value(node, "presence"));
+        result->name = soap_tree_value(node, "name");
+        result->partNumber = soap_tree_value(node, "partNumber");
+        result->sparePartNumber = soap_tree_value(node, "sparePartNumber");
+        result->serialNumber = soap_tree_value(node, "serialNumber");
+        result->powerConsumed = atoi(soap_tree_value(node, "powerConsumed"));
+        result->fanSpeed = atoi(soap_tree_value(node, "fanSpeed"));
+        result->maxFanSpeed = atoi(soap_tree_value(node, "maxFanSpeed"));
+        result->lowLimitFanSpeed =
+                atoi(soap_tree_value(node, "lowLimitFanSpeed"));
+        result->operationalStatus =
+                soap_enum(opStatus_S,
+                          soap_tree_value(node, "operationalStatus"));
+        parse_diagnosticChecks(soap_walk_tree(node, "diagnosticChecks"),
+                               & (result->diagnosticChecks));
+#if 0                                   /* TODO: Doesn't work yet */
+        result->diagnosticChecksEx =
+                soap_walk_tree(node, "diagnosticChecksEx");
+#endif
+        result->extraData = soap_walk_tree(node, "extraData");
+}
+
 /* soap_getEventInfo - Walks list of eventInfo nodes, providing details
  *      on each event.  Used after calling soap_getAllEvents().
  *
@@ -767,6 +938,7 @@ void    soap_getEventInfo(xmlNode *events, struct eventInfo *result)
                 result->queueSize = atoi(str);
         else
                 result->queueSize = -1;
+        result->extraData = soap_walk_tree(events, "extraData");
 
         /* The remainder depends on what sort of data is returned by the OA.
          * The current documentation says that only one of these can be
@@ -792,7 +964,12 @@ void    soap_getEventInfo(xmlNode *events, struct eventInfo *result)
                 return;
         }
 
-        /* ENCLOSURESTATUS */
+        if ((node = soap_walk_tree(events, "enclosureStatus"))) {
+                result->enum_eventInfo = ENCLOSURESTATUS;
+                parse_enclosureStatus(node,
+                                      &(result->eventData.enclosureStatus));
+                return;
+        }
 
         if ((node = soap_walk_tree(events, "enclosureInfo"))) {
                 result->enum_eventInfo = ENCLOSUREINFO;
@@ -834,7 +1011,7 @@ void    soap_getEventInfo(xmlNode *events, struct eventInfo *result)
 
         if ((node = soap_walk_tree(events, "fanInfo"))) {
                 result->enum_eventInfo = FANINFO;
-                parse_fanInfo(node, &(result->eventData.fanInfo));
+                soap_fanInfo(node, &(result->eventData.fanInfo));
                 return;
         }
 
@@ -909,16 +1086,40 @@ void    soap_getEventInfo(xmlNode *events, struct eventInfo *result)
         /* LCDCHATMESSAGE */
         /* LCDUSERNOTES */
         /* LCDBUTTONEVENT */
-        /* LCDSTATUS */
-        /* LCDINFO */
+
+        if ((node = soap_walk_tree(events, "lcdStatus"))) {
+                result->enum_eventInfo = LCDSTATUS;
+                parse_lcdStatus(node, &(result->eventData.lcdStatus));
+                return;
+        }
+
+        if ((node = soap_walk_tree(events, "lcdInfo"))) {
+                result->enum_eventInfo = LCDINFO;
+                parse_lcdInfo(node, &(result->eventData.lcdInfo));
+                return;
+        }
+
         /* HPSIMINFO */
-        /* THERMALSUBSYSTEMINFO */
+
+        if ((node = soap_walk_tree(events, "thermalSubsystemInfo"))) {
+                result->enum_eventInfo = THERMALSUBSYSTEMINFO;
+                parse_thermalSubsystemInfo(node,
+                        &(result->eventData.thermalSubsystemInfo));
+                return;
+        }
+
         /* BLADEBOOTINFO */
         /* OAVCMMODE */
         /* POWERREDUCTIONSTATUS */
         /* VIRTUALMEDIASTATUS */
         /* OAMEDIADEVICE */
-        /* FANZONE */
+
+        if ((node = soap_walk_tree(events, "fanZone"))) {
+                result->enum_eventInfo = FANZONE;
+                soap_fanZone(node, &(result->eventData.fanZone));
+                return;
+        }
+
         /* EBIPAINFOEX */
         /* CACERTSINFO */
 
@@ -960,17 +1161,15 @@ int soap_subscribeForEvents(SOAP_CON *con, struct eventPid *response)
         return(ret);
 }
 
-
 int soap_unSubscribeForEvents(SOAP_CON *con,
-                              struct unSubscribeForEvents *request)
+                              const struct unSubscribeForEvents *request)
 {
         SOAP_PARM_CHECK_NRS
         return(soap_request(con, UN_SUBSCRIBE_FOR_EVENTS, request->pid));
 }
 
-
 int soap_getEvent(SOAP_CON *con,
-                  struct getEvent *request,
+                  const struct getEvent *request,
                   struct eventInfo *response)
 {
         SOAP_PARM_CHECK
@@ -987,9 +1186,8 @@ int soap_getEvent(SOAP_CON *con,
         return(ret);
 }
 
-
 int soap_getAllEvents(SOAP_CON *con,
-                      struct getAllEvents *request,
+                      const struct getAllEvents *request,
                       struct getAllEventsResponse *response)
 {
         SOAP_PARM_CHECK
@@ -1005,9 +1203,8 @@ int soap_getAllEvents(SOAP_CON *con,
         return(ret);
 }
 
-
 int             soap_getBladeInfo(SOAP_CON *con,
-                                  struct getBladeInfo *request,
+                                  const struct getBladeInfo *request,
                                   struct bladeInfo *response)
 {
         SOAP_PARM_CHECK
@@ -1021,13 +1218,13 @@ int             soap_getBladeInfo(SOAP_CON *con,
         return(ret);
 }
 
-
 int             soap_getBladeMpInfo(SOAP_CON *con,
-                                    struct getBladeMpInfo *request,
+                                    const struct getBladeMpInfo *request,
                                     struct bladeMpInfo *response)
 {
         SOAP_PARM_CHECK
-        if (! (ret = soap_request(con, GET_BLADE_MP_INFO, request->bayNumber))) {
+        if (! (ret = soap_request(con,
+                                  GET_BLADE_MP_INFO, request->bayNumber))) {
                 parse_bladeMpInfo(soap_walk_doc(con->doc,
                                                 "Body:"
                                                 "getBladeMpInfoResponse:"
@@ -1051,9 +1248,8 @@ int soap_getEnclosureInfo(SOAP_CON *con,
         return(ret);
 }
 
-
 int soap_getOaStatus(SOAP_CON *con,
-                     struct getOaStatus *request,
+                     const struct getOaStatus *request,
                      struct oaStatus *response)
 {
         SOAP_PARM_CHECK
@@ -1067,9 +1263,8 @@ int soap_getOaStatus(SOAP_CON *con,
         return(ret);
 }
 
-
 int soap_getOaInfo(SOAP_CON *con,
-                   struct getOaInfo *request,
+                   const struct getOaInfo *request,
                    struct oaInfo *response)
 {
         SOAP_PARM_CHECK
@@ -1083,10 +1278,9 @@ int soap_getOaInfo(SOAP_CON *con,
         return(ret);
 }
 
-
 int soap_getInterconnectTrayStatus(SOAP_CON *con,
-                                   struct getInterconnectTrayStatus *request,
-                                   struct interconnectTrayStatus *response)
+                const struct getInterconnectTrayStatus *request,
+                struct interconnectTrayStatus *response)
 {
         SOAP_PARM_CHECK
         if (! (ret = soap_request(con,
@@ -1102,9 +1296,8 @@ int soap_getInterconnectTrayStatus(SOAP_CON *con,
         return(ret);
 }
 
-
 int soap_getInterconnectTrayInfo(SOAP_CON *con,
-                                 struct getInterconnectTrayInfo *request,
+                                 const struct getInterconnectTrayInfo *request,
                                  struct interconnectTrayInfo *response)
 {
         SOAP_PARM_CHECK
@@ -1121,22 +1314,20 @@ int soap_getInterconnectTrayInfo(SOAP_CON *con,
         return(ret);
 }
 
-
 int soap_getFanInfo(SOAP_CON *con,
-                    struct getFanInfo *request,
+                    const struct getFanInfo *request,
                     struct fanInfo *response)
 {
         SOAP_PARM_CHECK
         if (! (ret = soap_request(con, GET_FAN_INFO, request->bayNumber))) {
-                parse_fanInfo(soap_walk_doc(con->doc,
-                                            "Body:"
-                                            "getFanInfoResponse:"
-                                            "fanInfo"),
-                              response);
+                soap_fanInfo(soap_walk_doc(con->doc,
+                                           "Body:"
+                                           "getFanInfoResponse:"
+                                           "fanInfo"),
+                             response);
         }
         return(ret);
 }
-
 
 int soap_getPowerSubsystemInfo(SOAP_CON *con,
                                struct powerSubsystemInfo *response)
@@ -1153,9 +1344,8 @@ int soap_getPowerSubsystemInfo(SOAP_CON *con,
         return(ret);
 }
 
-
 int soap_getPowerSupplyInfo(SOAP_CON *con,
-                            struct getPowerSupplyInfo *request,
+                            const struct getPowerSupplyInfo *request,
                             struct powerSupplyInfo *response)
 {
         SOAP_PARM_CHECK
@@ -1172,9 +1362,8 @@ int soap_getPowerSupplyInfo(SOAP_CON *con,
         return(ret);
 }
 
-
 int soap_getOaNetworkInfo(SOAP_CON *con,
-                          struct getOaNetworkInfo *request,
+                          const struct getOaNetworkInfo *request,
                           struct oaNetworkInfo *response)
 {
         SOAP_PARM_CHECK
@@ -1191,9 +1380,8 @@ int soap_getOaNetworkInfo(SOAP_CON *con,
         return(ret);
 }
 
-
 int soap_getBladeStatus(SOAP_CON *con,
-                        struct getBladeStatus *request,
+                        const struct getBladeStatus *request,
                         struct bladeStatus *response)
 {
         SOAP_PARM_CHECK
@@ -1207,9 +1395,8 @@ int soap_getBladeStatus(SOAP_CON *con,
         return(ret);
 }
 
-
 int soap_setBladePower(SOAP_CON *con,
-                       struct setBladePower *request)
+                       const struct setBladePower *request)
 {
         char    power[POWER_CONTROL_LENGTH];
 
@@ -1221,26 +1408,23 @@ int soap_setBladePower(SOAP_CON *con,
         return(soap_request(con, SET_BLADE_POWER, request->bayNumber, power));
 }
 
-
 int soap_setInterconnectTrayPower(SOAP_CON *con,
-                                  struct setInterconnectTrayPower *request)
+                const struct setInterconnectTrayPower *request)
 {
         SOAP_PARM_CHECK_NRS
         return(soap_request(con, SET_INTERCONNECT_TRAY_POWER,
                             request->bayNumber, request->on));
 }
 
-
 int soap_resetInterconnectTray(SOAP_CON *con,
-                               struct resetInterconnectTray *request)
+                               const struct resetInterconnectTray *request)
 {
         SOAP_PARM_CHECK_NRS
         return(soap_request(con, RESET_INTERCONNECT_TRAY, request->bayNumber));
 }
 
-
 int soap_getThermalInfo(SOAP_CON *con,
-                        struct getThermalInfo *request,
+                        const struct getThermalInfo *request,
                         struct thermalInfo *response)
 {
         char    sensor[SENSOR_TYPE_LENGTH];
@@ -1261,9 +1445,8 @@ int soap_getThermalInfo(SOAP_CON *con,
         return(ret);
 }
 
-
 int soap_getUserInfo(SOAP_CON *con,
-                     struct getUserInfo *request,
+                     const struct getUserInfo *request,
                      struct userInfo *response)
 {
         /* On this one, are there some special rules that have to be followed
@@ -1283,7 +1466,6 @@ int soap_getUserInfo(SOAP_CON *con,
         return(ret);
 }
 
-
 int soap_getRackTopology2(SOAP_CON *con, struct rackTopology2 *response)
 {
         SOAP_PARM_CHECK_NRQ
@@ -1297,7 +1479,6 @@ int soap_getRackTopology2(SOAP_CON *con, struct rackTopology2 *response)
         return(ret);
 }
 
-
 int soap_isValidSession(SOAP_CON *con)
 {
         if (con == NULL) {
@@ -1307,3 +1488,151 @@ int soap_isValidSession(SOAP_CON *con)
         return(soap_request(con, IS_VALID_SESSION));
 }
 
+int soap_getThermalSubsystemInfo(SOAP_CON *con,
+                                 struct thermalSubsystemInfo *response)
+{
+        SOAP_PARM_CHECK_NRQ
+        if (! (ret = soap_request(con, GET_THERMAL_SUBSYSTEM_INFO))) {
+                parse_thermalSubsystemInfo(soap_walk_doc(con->doc,
+                                             "Body:"
+                                             "getThermalSubsystemInfoResponse:"
+                                             "thermalSubsystemInfo"),
+                                           response);
+        }
+        return(ret);
+}
+
+int soap_getFanZoneArray(SOAP_CON *con,
+                         const struct getFanZoneArray *request,
+                         struct getFanZoneArrayResponse *response)
+{
+        /* TODO: There is messy code below.  It should be encapsulated,
+         * either in a routine or macro.  Holding off doing this for now,
+         * until we're sure how array input parameters will be used.
+         */
+        char    bay_array[(sizeof(BAY) + 1) * request->bayArray.size];
+        byte    *p;
+        SOAP_PARM_CHECK
+        /* Generate the fan zone array necessary for this request */
+        bay_array[0] = 0;
+        for (p = request->bayArray.array;
+             p - request->bayArray.array < request->bayArray.size;
+             p++) {
+                snprintf(bay_array + strlen(bay_array), sizeof(BAY), BAY, *p);
+        }
+        if (! (ret = soap_request(con, GET_FAN_ZONE_ARRAY, bay_array))) {
+                parse_fanZoneArray(soap_walk_doc(con->doc,
+                                                 "Body:"
+                                                 "getFanZoneArrayResponse"),
+                                   response);
+        }
+        return(ret);
+}
+
+int soap_getEnclosureStatus(SOAP_CON *con, struct enclosureStatus *response)
+{
+        SOAP_PARM_CHECK_NRQ
+        if (! (ret = soap_request(con, GET_ENCLOSURE_STATUS))) {
+                parse_enclosureStatus(soap_walk_doc(con->doc,
+                                                   "Body:"
+                                                   "getEnclosureStatusResponse:"
+                                                   "enclosureStatus"),
+                                      response);
+        }
+        return(ret);
+}
+
+int soap_getLcdInfo(SOAP_CON *con, struct lcdInfo *response)
+{
+        SOAP_PARM_CHECK_NRQ
+        if (! (ret = soap_request(con, GET_LCD_INFO))) {
+                parse_lcdInfo(soap_walk_doc(con->doc,
+                                            "Body:"
+                                            "getLcdInfoResponse:"
+                                            "lcdInfo"),
+                              response);
+        }
+        return(ret);
+}
+
+int soap_getLcdStatus(SOAP_CON *con, struct lcdStatus *response)
+{
+        SOAP_PARM_CHECK_NRQ
+        if (! (ret = soap_request(con, GET_LCD_STATUS))) {
+                parse_lcdStatus(soap_walk_doc(con->doc,
+                                              "Body:"
+                                              "getLcdStatusResponse:"
+                                              "lcdStatus"),
+                                response);
+        }
+        return(ret);
+}
+
+int soap_getPowerSupplyStatus(SOAP_CON *con,
+                              const struct getPowerSupplyStatus *request,
+                              struct powerSupplyStatus *response)
+{
+        SOAP_PARM_CHECK
+        if (! (ret = soap_request(con, GET_POWER_SUPPLY_STATUS,
+                                  request->bayNumber))) {
+                parse_powerSupplyStatus(soap_walk_doc(con->doc,
+                                                "Body:"
+                                                "getPowerSupplyStatusResponse:"
+                                                "powerSupplyStatus"),
+                                        response);
+        }
+        return(ret);
+}
+
+int soap_setEnclosureUid(SOAP_CON *con,
+                         const struct setEnclosureUid *request)
+{
+        char    uid[UID_CONTROL_LENGTH];
+
+        SOAP_PARM_CHECK_NRS
+        if (soap_inv_enum(uid, uidControl_S, request->uid)) {
+                err("invalid UID parameter");
+                return(-1);
+        }
+        return(soap_request(con, SET_ENCLOSURE_UID, uid));
+}
+
+int soap_setOaUid(SOAP_CON *con,
+                  const struct setOaUid *request)
+{
+        char    uid[UID_CONTROL_LENGTH];
+
+        SOAP_PARM_CHECK_NRS
+        if (soap_inv_enum(uid, uidControl_S, request->uid)) {
+                err("invalid UID parameter");
+                return(-1);
+        }
+        return(soap_request(con, SET_OA_UID, request->bayNumber, uid));
+}
+
+int soap_setBladeUid(SOAP_CON *con,
+                     const struct setBladeUid *request)
+{
+        char    uid[UID_CONTROL_LENGTH];
+
+        SOAP_PARM_CHECK_NRS
+        if (soap_inv_enum(uid, uidControl_S, request->uid)) {
+                err("invalid UID parameter");
+                return(-1);
+        }
+        return(soap_request(con, SET_BLADE_UID, request->bayNumber, uid));
+}
+
+int soap_setInterconnectTrayUid(SOAP_CON *con,
+                                const struct setInterconnectTrayUid *request)
+{
+        char    uid[UID_CONTROL_LENGTH];
+
+        SOAP_PARM_CHECK_NRS
+        if (soap_inv_enum(uid, uidControl_S, request->uid)) {
+                err("invalid UID parameter");
+                return(-1);
+        }
+        return(soap_request(con, SET_INTERCONNECT_TRAY_UID, request->bayNumber,
+                            uid));
+}

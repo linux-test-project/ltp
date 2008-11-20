@@ -64,9 +64,4 @@ SaErrorT build_inserted_server_rpt(struct oh_handler_state *oh_handler,
                                    struct bladeInfo *response,
                                    SaHpiRptEntryT *rpt);
 
-SaErrorT build_inserted_server_rdr(struct oh_handler_state *oh_handler,
-                                   SOAP_CON *con,
-                                   SaHpiInt32T bay_number,
-                                   struct oh_event *event);
-
 #endif

@@ -38,10 +38,6 @@
 /* Include files */
 #include "oa_soap_re_discover.h"
 
-SaErrorT process_oa_insertion_event(struct oh_handler_state *oh_handler,
-                                    SOAP_CON *con,
-                                    struct eventInfo *oa_event);
-
 SaErrorT process_oa_extraction_event(struct oh_handler_state *oh_handler,
                                      struct eventInfo *oa_event);
 
@@ -52,17 +48,4 @@ SaErrorT process_oa_info_event(struct oh_handler_state *oh_handler,
                                SOAP_CON *con,
                                struct eventInfo *oa_event);
 
-SaErrorT add_oa_inv_area(struct oh_handler_state *oh_handler,
-                         struct oaInfo *info,
-                         SaHpiResourceIdT *resource_id);
-
-SaErrorT build_inserted_oa_rdr(struct oh_handler_state *oh_handler,
-                               SOAP_CON *con,
-                               SaHpiInt32T bay_number,
-                               SaHpiResourceIdT resource_id);
-
-SaErrorT build_inserted_oa_inv_rdr(struct oh_handler_state *oh_handler,
-                                   SaHpiInt32T bay_number,
-                                   SaHpiRdrT *rdr,
-                                   struct oa_soap_inventory **inventory);
 #endif
