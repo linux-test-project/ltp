@@ -58,8 +58,9 @@ dnl
 dnl
 AC_DEFUN([_LTP_CHECK_SYSCALL_SIGNALFD_HEADER],
 [dnl
+AC_CHECK_HEADERS(sys/signalfd.h)
 AC_CHECK_HEADERS_ONCE([linux/types.h])
-AC_CHECK_HEADERS(sys/signalfd.h linux/signalfd.h signalfd.h,[dnl
+AC_CHECK_HEADERS(linux/signalfd.h signalfd.h,[dnl
 LTP_SYSCALL_SIGNALFD_HEADER=yes],[],[dnl
 #ifdef HAVE_LINUX_TYPES_H
 #include <linux/types.h>
@@ -77,12 +78,12 @@ AC_DEFUN([_LTP_CHECK_SYSCALL_SIGNALFD_FIELD_PREFIX],
 [dnl
 AC_CHECK_MEMBERS([struct signalfd_siginfo.ssi_signo, struct signalfd_siginfo.signo],[dnl
 LTP_SYSCALL_SIGNALFD_FIELD_PREFIX=given],[],[dnl
-#ifdef HAVE_LINUX_TYPES_H
-#include <linux/types.h>
-#endif
 #if defined HAVE_SYS_SIGNALFD_H
 #include <sys/signalfd.h>
 #elif defined HAVE_LINUX_SIGNALFD_H
+#ifdef HAVE_LINUX_TYPES_H
+#include <linux/types.h>
+#endif
 #include <linux/signalfd.h>
 #elif defined HAVE_SIGNALFD_H
 #include <signalfd.h>

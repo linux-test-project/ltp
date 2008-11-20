@@ -42,7 +42,6 @@
 
 #include <errno.h>
 #include <signal.h>
-#include <sys/types.h>
 #include <unistd.h>
 #include <fcntl.h>
 
@@ -50,27 +49,34 @@ TCID_DEFINE(signalfd01);
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-#ifdef HAVE_LINUX_TYPES_H
-#include <linux/types.h>
-#endif
+
+#ifndef HAVE_SIGNALFD
+#define  USE_STUB
+#endif 
 
 #if defined HAVE_SYS_SIGNALFD_H
 #include <sys/signalfd.h>
 #elif defined HAVE_LINUX_SIGNALFD_H
+# if defined HAVE_LINUX_TYPES_H
+# include <linux/types.h>
+# endif
 #include <linux/signalfd.h>
+#define USE_OWNIMPL
 #elif defined HAVE_SIGNALFD_H
 #include <signalfd.h>
 #else
 #define  USE_STUB
 #endif
 
-#if defined HAVE_SIGNALFD_SIGINFO_SSI_SIGNO
+#if defined HAVE_STRUCT_SIGNALFD_SIGINFO_SSI_SIGNO
 # define SIGNALFD_PREFIX(FIELD) ssi_##FIELD
-#elif defined HAVE_SIGNALFD_SIGINFO_SIGNO
+#elif defined HAVE_STRUCT_SIGNALFD_SIGINFO_SIGNO
 # define SIGNALFD_PREFIX(FIELD) FIELD
 #else
-# define  USE_STUB
+# define USE_STUB
 #endif
+
+
 
 #ifdef USE_STUB
 int main(int argc, char **argv)
@@ -78,16 +84,15 @@ int main(int argc, char **argv)
 	tst_resm(TCONF, "System doesn't support execution of the test");
 	return 0;
 }
-#else
 
-#ifndef HAVE_SIGNALFD
+#elif USE_OWNIMPL
 #include "linux_syscall_numbers.h"
 int signalfd(int fd, const sigset_t * mask, int flags)
 {
 	/* Taken from GLIBC. */
 	return (syscall(__NR_signalfd, fd, mask, _NSIG / 8));
 }
-#endif
+#else
 
 void cleanup(void);
 void setup(void);
@@ -174,7 +179,7 @@ int do_test1(int ntst, int sig)
 		goto out;
 	} else {
 		tst_resm(TFAIL, "got unexpected signal: signal=%d : %s",
-			 fdsi.SIGNALFD_REFIX(signo),
+			 fdsi.SIGNALFD_PREFIX(signo),
 			 strsignal(fdsi.SIGNALFD_PREFIX(signo)));
 		sfd_for_next = -1;
 		close(sfd);
