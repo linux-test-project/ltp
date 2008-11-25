@@ -82,6 +82,21 @@ void rt_help(void)
 	printf("  -c		Set pass criteria\n");
 }
 
+/* Calibrate the busy work loop */
+void calibrate_busyloop(void)
+{
+	volatile int i = CALIBRATE_LOOPS;
+	nsec_t start, end;
+
+	start = rt_gettime();
+	while (--i > 0) {
+		continue;
+	}
+	end = rt_gettime();
+
+	iters_per_us = (CALIBRATE_LOOPS * NS_PER_US) / (end-start);
+}
+
 int rt_init(const char *options, int (*parse_arg)(int option, char *value), int argc, char *argv[])
 {
 	int use_buffer = 1;
@@ -146,6 +161,8 @@ int rt_init(const char *options, int (*parse_arg)(int option, char *value), int 
 		printf("Priority Inheritance has been disabled for this run.\n");
 	if (use_buffer)
 		buffer_init();
+
+	calibrate_busyloop();
 
 	/*
 	 * atexit() order matters here - buffer_print() will be called before
@@ -466,23 +483,18 @@ void *busy_work_ms(int ms)
 
 void *busy_work_us(int us)
 {
-	int i;
-	int scale;
-	double pi_scaled;
-	double pi_value;
+	volatile int i;
 	nsec_t start, now;
 	int delta; /* time in us */
-	volatile double a=16, b=1.0, c=5.0, d=4, e=1.0, f=239.0;
 
-	scale = us * ITERS_PER_US;
-	pi_scaled = 0;
+	i = us * iters_per_us;
+
 	start = rt_gettime();
-	for (i = 0; i < scale; i++) {
-		double pi = a*atan(b/c) - d*atan(e/f);
-		pi_scaled += pi;
+	while (--i > 0) {
+		continue;
 	}
-	pi_value = pi_scaled / scale;
 	now = rt_gettime();
+
 	delta = (now - start)/NS_PER_US;
 	/* uncomment to tune to your machine */
         /* printf("busy_work_us requested: %dus  actual: %dus\n", us, delta); */
