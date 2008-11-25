@@ -61,7 +61,7 @@ trap '' ERR
 {
 	umount dir1/a
 	umount dir2/a
-	umount dir1
+	umount dir2
 	umount dir1
 	
 	rm -rf dir*
