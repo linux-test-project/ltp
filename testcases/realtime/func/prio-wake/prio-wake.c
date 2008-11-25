@@ -141,7 +141,7 @@ void *worker_thread(void* arg)
 	}
 
 	start = rt_gettime() - beginrun;
-	printf("%08lld us: RealtimeThread-%03d pri %03d started\n", start/NS_PER_US, j, mypri);
+	debug(0, "%08lld us: RealtimeThread-%03d pri %03d started\n", start/NS_PER_US, j, mypri);
 
 	rc = pthread_mutex_lock(&mutex);
 	running_threads++;
@@ -150,7 +150,7 @@ void *worker_thread(void* arg)
 	wake = rt_gettime() - beginrun;
 	running_threads--;
 	wakeup.arr[wakeup.counter++] = mypri;
-	printf("%08lld us: RealtimeThread-%03d pri %03d awake\n", wake/NS_PER_US, j, mypri);
+	debug(0, "%08lld us: RealtimeThread-%03d pri %03d awake\n", wake/NS_PER_US, j, mypri);
 
 	rc = pthread_mutex_unlock(&mutex);
 
