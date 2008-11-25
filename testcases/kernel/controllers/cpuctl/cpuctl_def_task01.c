@@ -25,6 +25,7 @@
 /* Description: This is a c program that runs as a default task in a default  */
 /*              group to create an ideal scenario. In this default group all  */
 /*              the system tasks will be running along with this spinning task*/
+/*              The file is to be used by tests 1-3.                          */
 /*                                                                            */
 /* Total Tests: 1                                                             */
 /*                                                                            */
@@ -58,7 +59,6 @@
 
 #include "../libcontrollers/libcontrollers.h"
 #include "test.h"		/* LTP harness APIs*/
-
 
 #ifdef DEBUG
 #define dbg(x...)	printf(x);
@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
 	double exp_cpu_time;		/* Exp time in % by shares calculation*/
 	struct rusage cpu_usage;
 	time_t current_time, prev_time, delta_time;
-	unsigned long int myshares = 2;
+	unsigned long int myshares = 2, baseshares = 1000;
 	unsigned int fmyshares, num_tasks;
 	struct sigaction newaction, oldaction;
 
@@ -120,6 +120,8 @@ int main(int argc, char *argv[])
 
 	if (test_num == 1)
 		myshares *= my_group_num;
+	else if (test_num == 3)
+		myshares = baseshares;
 	else
 		tst_brkm(TBROK, cleanup, "Wrong Test num passed. Exiting.\n");
 
@@ -226,8 +228,11 @@ int main(int argc, char *argv[])
 				exit(0);	/* This task is done */
 
 			/* Keep same ratio but change values*/
-			myshares = MULTIPLIER * myshares;
-			write_to_file(mysharesfile, "w", myshares);
+			if (test_num == 1) {
+				myshares = MULTIPLIER * myshares;
+				write_to_file(mysharesfile, "w", myshares);
+			}
+			 /* No need to change shares for def task for test 3 */
 
 		}/* end if*/
 	}/* end while*/
