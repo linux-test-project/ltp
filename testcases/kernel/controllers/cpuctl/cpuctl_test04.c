@@ -136,7 +136,13 @@ int main(int argc, char* argv[])
 		tst_brkm (TBROK, cleanup, "Invalid test number passed\n");
 	}
 
-	mygroup_shares = mygroup_num + 1;	/* Min shares value currently is 2 */
+	/*
+	 * Let us give the default group 100 shares, as other groups will have
+	 * a multiple of 100 shares.
+	 * WARN: For large num of groups this may hit MAX_SHARES
+	 */
+	mygroup_shares = mygroup_num * 100;
+
 	sprintf(mytaskfile, "%s", mygroup);
 	strcat (mytaskfile,"/tasks");
 	sprintf(mysharesfile, "%s", mygroup);
