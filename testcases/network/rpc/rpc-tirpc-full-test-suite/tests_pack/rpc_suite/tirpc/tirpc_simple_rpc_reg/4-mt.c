@@ -45,7 +45,10 @@ int run_mode;
 int callNb;
 
 char *registeredProc(char *i_var) {
-	return (char *)&i_var;
+	static int result = 0;
+        result = *i_var;
+        return (char *)&result;
+
 }
 
 void *my_thread_process (void * arg)
@@ -55,19 +58,19 @@ void *my_thread_process (void * arg)
 	
 	if (run_mode == 1)
 	{
-		fprintf(stderr, "Thread %d\n", (int)arg);
+		fprintf(stderr, "Thread %d\n", atoi(arg));
 	}
 	
 	for (i = 0; i < callNb; i++)
 	{
-		thread_array_result[(int)arg] = thread_array_result[(int)arg] + !rpc_reg(progNum + (int)arg, VERSNUM, PROCNUM, (void *)registeredProc,
+		thread_array_result[atoi(arg)] = thread_array_result[atoi(arg)] + !rpc_reg(progNum + atoi(arg), VERSNUM, PROCNUM, (void *)registeredProc,
 											 								 	 (xdrproc_t)xdr_int, (xdrproc_t)xdr_int, "visible");
 	}
 	
     pthread_exit (0);
 }
 
-int main(int argn, int *argc[])
+int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
 	//					   argc[2] : Server Program Number

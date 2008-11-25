@@ -186,7 +186,7 @@ else
 	then
 		echo " - collecting logs file from remote client"
 	fi
-	#scp $CLIENTUSER@$CLIENTIP:/tmp/$LOGDIR/$TESTLOGFILE $LOGDIR/ 
+	scp $CLIENTUSER@$CLIENTIP:/tmp/$LOGDIR/$TESTLOGFILE $LOGDIR/ 
 fi
 
 # cleaning up before Test Suite end
@@ -203,7 +203,7 @@ else
 fi
 
 # end of Test Suite, show message where to find logs and exit
-echo "Check all results in logs dir : ./"$LOGDIR
+echo "Check all results in logs dir : ${LTPROOT}/testcases/network/rpc/rpc-tirpc-full-test-suite/$LOGDIR"
 echo "">>$TESTRUNDETAILSLOG
 LAPTIME=`date +%H:%M-%S`
 echo " - End time : "$LAPTIME>>$TESTRUNDETAILSLOG

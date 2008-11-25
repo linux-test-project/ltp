@@ -25,8 +25,8 @@
 # **********************
 
 # Indicates in which directory tests binaries are installed
-SERVERTSTPACKDIR=/clnfsv4/ltp-full-20080131/testcases/network/rpc/rpc-tirpc-full-test-suite/tests_pack
-CLIENTTSTPACKDIR=/clnfsv4/ltp-full-20080131/testcases/network/rpc/rpc-tirpc-full-test-suite/tests_pack
+SERVERTSTPACKDIR=/home/lerouzic/benchs/ltp-full-20080930/testcases/network/rpc/rpc-tirpc-full-test-suite/tests_pack
+CLIENTTSTPACKDIR=/home/lerouzic/benchs/ltp-full-20080930/testcases/network/rpc/rpc-tirpc-full-test-suite/tests_pack
 # LOCALIP variable is computer IP/name used to run tests scripts
 # if LOCALIP = SERVERIP = CLIENTIP, that means all tests are in local mode
 # (run on the same machine)
@@ -231,7 +231,7 @@ else
 	then
 		echo " - collecting logs file from remote client"
 	fi
-	#scp $CLIENTUSER@$CLIENTIP:/tmp/$LOGDIR/$TESTLOGFILE $LOGDIR/ 
+	scp $CLIENTUSER@$CLIENTIP:/tmp/$LOGDIR/$TESTLOGFILE $LOGDIR/ 
 fi
 
 # cleaning up before Test Suite end
@@ -248,7 +248,7 @@ else
 fi
 
 # end of Test Suite, show message where to find logs and exit
-echo "Check all results in logs dir : ./"$LOGDIR
+echo "Check all results in logs dir : ${LTPROOT}/testcases/network/rpc/rpc-tirpc-full-test-suite/$LOGDIR"
 echo "">>$TESTRUNDETAILSLOG
 LAPTIME=`date +%H:%M-%S`
 echo " - End time : "$LAPTIME>>$TESTRUNDETAILSLOG

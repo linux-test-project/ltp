@@ -64,7 +64,7 @@ void *my_thread_process (void * arg)
 	
 	if (run_mode == 1)
 	{
-		fprintf(stderr, "Thread %d\n", (int)arg);
+		fprintf(stderr, "Thread %d\n", atoi(arg));
 	}
 	
 	tv.tv_sec = 0;
@@ -118,7 +118,7 @@ void *my_thread_process (void * arg)
     pthread_exit (0);
 }
 
-int main(int argn, int *argc[])
+int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
 	//					   argc[2] : Server Program Number
@@ -131,7 +131,8 @@ int main(int argn, int *argc[])
 	//0 : launch by shell script as test case, only one printf -> result status
 	run_mode = 0;
 	int test_status = 1; //Default test result set to FAILED
-	int i, j, rthcreate;
+	int i, rthcreate;
+	long j;
 	int threadNb = atoi((char *)argc[3]);
     int curThd = 1;
 	
@@ -159,7 +160,7 @@ int main(int argn, int *argc[])
 	
 	if (run_mode == 1)
 	{
-		pthread_attr_getstacksize(&thread_attr, &ssz);	//For debug purpose, get default thread stack size
+		pthread_attr_getstacksize(&thread_attr,(size_t *) &ssz);	//For debug purpose, get default thread stack size
 		fprintf(stderr, "Server #%d\n", progNum);
 		fprintf(stderr, "Calls per thread : %d\n", callNb);
 		fprintf(stderr, "Instances : %d\n", threadNb);

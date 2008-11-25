@@ -42,7 +42,7 @@
 
 static void exm_proc();
 
-int main(int argn, int *argc[])
+int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
 	//					   argc[2] : Server Program Number
@@ -55,18 +55,24 @@ int main(int argn, int *argc[])
 	int test_status = 1; //Default test result set to FAILED
 	int progNum = atoi(argc[2]);
 	char nettype[16] = "visible";
-    SVCXPRT *svcr;
+	SVCXPRT *svcr;
+        struct netconfig *nconf;
+
+        //Test initialization
+        if ((nconf = getnetconfigent("tcp")) == (struct netconfig *)NULL){
+        	fprintf(stderr, "Cannot get netconfig entry for TCP\n");
+		exit(1);
+        }
+
 	
 	if (run_mode == 1)
 	{
 		printf("Server : %s\n", argc[1]);
 		printf("Server # %d\n", progNum);
-		printf("Net : %s\n", nettype);
-		printf("Server transport : %d\n", svcr);
 	}	
 	
 	//First create server
-	svcr = svc_create(exm_proc, progNum, VERSNUM, nettype);
+	svcr = svc_tp_create(exm_proc, progNum, VERSNUM, nconf);
 	
 	//Prepare destruction
 	svc_unreg(progNum, VERSNUM);

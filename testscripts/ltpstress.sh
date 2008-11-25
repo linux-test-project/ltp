@@ -153,13 +153,24 @@ if [ $NO_NETWORK -eq 0 ];then
 
   ps -ef | grep portmap | grep -v grep
   if [ $? -eq 1 ];then
-    /sbin/portmap &
-  fi
-  sleep 1
-  ps -ef | grep portmap | grep -v grep
-  if [ $? -eq 1 ];then
-    echo "Error: Could not start portmap daemon."
-    exit 1
+    ps -ef | grep rpcbind | grep -v grep
+    if [ $? -eq 1 ];then
+      echo "Portmap and rpcbind not running"
+      echo "Let's start portmap"
+      /sbin/portmap &
+      sleep 1
+      ps -ef | grep portmap | grep -v grep
+      if [ $? -eq 1 ];then
+        echo "Could not start portmap, Let's start rpcbind"
+        /sbin/rpcbind &
+        sleep 1
+        ps -ef | grep rpcbind | grep -v grep
+        if [ $? -eq 1 ];then
+          Echo "Error: Could not start rpcbind daemon."
+          exit 1
+        fi
+      fi
+    fi
   fi
 
   rpcinfo -p | grep nfs 

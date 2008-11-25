@@ -34,7 +34,7 @@
 #define PROCNUM 1
 #define VERSNUM 1
 
-int main(int argn, int *argc[])
+int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
 	//					   argc[2] : Server Program Number
@@ -59,7 +59,7 @@ int main(int argn, int *argc[])
 	}
 	
 	//If we are here, macro call was successful
-	test_status = !clnt_control(clnt, CLGET_FD, (int *)&fd);
+	test_status = !clnt_control(clnt, CLGET_FD, (char *)&fd);
 	
 	//This last printf gives the result status to the tests suite
 	//normally should be 0: test has passed or 1: test has failed

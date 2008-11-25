@@ -34,7 +34,7 @@
 #define PROCNUM 1
 #define VERSNUM 1
 
-int main(int argn, int *argc[])
+int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
 	//					   argc[2] : Server Program Number
@@ -62,8 +62,8 @@ int main(int argn, int *argc[])
 	tvSet.tv_sec = 1000;
 	tvSet.tv_usec = 2000;
 
-	clnt_control(clnt, CLSET_TIMEOUT, (int *)&tvSet);
-	clnt_control(clnt, CLGET_TIMEOUT, (int *)&tvGet);
+	clnt_control(clnt, CLSET_TIMEOUT, (char *)&tvSet);
+	clnt_control(clnt, CLGET_TIMEOUT, (char *)&tvGet);
 	
 	if ((tvSet.tv_sec != tvGet.tv_sec) || (tvSet.tv_usec != tvGet.tv_usec))
 		test_status = 1;
@@ -77,8 +77,8 @@ int main(int argn, int *argc[])
 	tvSet.tv_sec = 4000;
 	tvSet.tv_usec = 8000;
 
-	clnt_control(clnt, CLSET_RETRY_TIMEOUT, (int *)&tvSet);
-	clnt_control(clnt, CLGET_RETRY_TIMEOUT, (int *)&tvGet);
+	clnt_control(clnt, CLSET_RETRY_TIMEOUT, (char *)&tvSet);
+	clnt_control(clnt, CLGET_RETRY_TIMEOUT, (char *)&tvGet);
 	
 	if ((tvSet.tv_sec != tvGet.tv_sec) || (tvSet.tv_usec != tvGet.tv_usec))
 		test_status = 1;

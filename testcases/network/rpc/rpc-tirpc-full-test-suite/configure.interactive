@@ -36,6 +36,7 @@ export NBTESTPROCESS
 # *** prepare run script for test suite ***
 # *****************************************
 cat inc/rpc_ts_run.hdr>rpc_ts_run.sh
+chmod +x rpc_ts_run.sh
 
 # Prompt for Server tests pack dir
 echo "Leave blank to set default directory to $DEFAULTDIR"
@@ -173,6 +174,7 @@ cat inc/rpc_ts_run.ftr>>rpc_ts_run.sh
 # ***********************************
 
 cat inc/install.hdr >install.sh
+chmod +x install.sh
 echo "">>install.sh
 echo 'SERVERTSTPACKDIR='$SERVERTSTPACKDIR >>install.sh
 echo 'CLIENTTSTPACKDIR='$CLIENTTSTPACKDIR >>install.sh
@@ -193,7 +195,7 @@ cat inc/Makefile.hdr>Makefile.svc
 cat inc/Makefile.hdr>Makefile.clnt
 
 # find all non TI-RPC sources
-find $TSTPACKDIR -name "*.c" | grep -v tirpc | while read fil
+find tests_pack -name "*.c" | grep -v tirpc | while read fil
 do
 		echo '	$(CC) '$fil' $(CFLAGS_RPC) -o '`echo $fil | cut -d '.' -f1`".bin">>Makefile
 	
@@ -210,7 +212,7 @@ do
 done
 
 # find all TI-RPC sources
-find $TSTPACKDIR -name "*.c" | grep tirpc | while read fil
+find tests_pack -name "*.c" | grep tirpc | while read fil
 do
 	echo '	$(CC) $(LDFLAGS_TIRPC) '$fil' $(CFLAGS_TIRPC) -o '`echo $fil | cut -d '.' -f1`".bin">>Makefile
 	

@@ -1,0 +1,5 @@
+#DESCRIPTION:Transport Independant Remote Procedure Call
+#
+# PLEASE READ THE README FILE IN /rpc BEFORE RUNNING THESE.
+#
+run_tirpc_tests.sh export TCbin=$LTPROOT/testcases/network/rpc/rpc-tirpc-full-test-suite; run_tirpc_tests.sh

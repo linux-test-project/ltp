@@ -19,8 +19,10 @@ draw_main_menu()
 {
 	echo "Main menu :"
 	echo " 0. Cancel and exit"
-	echo " 1. Run all Test Suite"
-	echo " 2. Choose and run a part"
+	echo " 1. Run all RPC & TIRPC Test Suite"
+	echo " 2. Run all RPC Test Suite"
+	echo " 3. Run all TIRPC Test Suite"
+	echo " 4. Choose and run a part"
 	echo -n "Choice : "
 }
 
@@ -101,8 +103,13 @@ draw_waytest_menu()
 # Initialization
 RUN=1
 MNLEVEL=0
-EXECSCRIPT= ${LTPROOT}/testcases/network/rpc/rpc-tirpc-full-test-suite/rpc_ts_run.sh
+SAVEPWD=$PWD
+cd ../../../..
+export LTPROOT=${PWD}
+cd $SAVEPWD
+EXECSCRIPT=${LTPROOT}/testcases/network/rpc/rpc-tirpc-full-test-suite/rpc_ts_run.sh
 SCRIPTDIR=scripts
+SCRIPTCATNAME="*_lib.sh"
 VERBOSE=0
 
 export SCRIPTDIR
@@ -118,8 +125,8 @@ do
 	fi
 	if [ "$arg" = "-all" ]
 	then
-		# run all test suite
-		tbl=( $(find ./ -name "*_lib.sh") )
+		# run all rpc & tirpc test suite
+		tbl=( $(find ./ -name "*basic*_lib.sh") )
 	
 		CMD="$EXECSCRIPT "
 		
@@ -133,10 +140,50 @@ do
 			CMD="$CMD -v"
 		fi
 		
-		#echo "./$CMD"
-		./$CMD
+		$CMD
 		exit 0
 	fi
+        if [ "$arg" = "-allrpc" ]
+        then
+                # run all rpc test suite
+                tbl=( $(find ./ -name "rpc*basic*_lib.sh") )
+
+                CMD="$EXECSCRIPT "
+
+                for fic in ${tbl[*]}
+                do
+                        CMD="$CMD -l $fic"
+                done
+
+                if [ $VERBOSE -eq 1 ]
+                then
+                        CMD="$CMD -v"
+                fi
+
+                $CMD
+                exit 0
+        fi
+        if [ "$arg" = "-alltirpc" ]
+        then
+                # run all tirpc test suite
+                tbl=( $(find ./ -name "tirpc*basic*_lib.sh") )
+
+                CMD="$EXECSCRIPT "
+
+                for fic in ${tbl[*]}
+                do
+                        CMD="$CMD -l $fic"
+                done
+
+                if [ $VERBOSE -eq 1 ]
+                then
+                        CMD="$CMD -v"
+                fi
+
+                $CMD
+                exit 0
+        fi
+
 done
 
 # manual mode
@@ -150,27 +197,40 @@ do
 	draw_main_menu
 	
 	read MM_CHOICE
+	if [ $MM_CHOICE -eq 0 ]
+	then
+		RUN=0
+		MNLEVEL=0
+	fi
 	if [ $MM_CHOICE -eq 1 ]
 	then
 		RUN=0
 		MNLEVEL=1
+		SCRIPTCATNAME="*_lib.sh"
 	fi
 	if [ $MM_CHOICE -eq 2 ]
 	then
 		RUN=0
 		MNLEVEL=2
+		SCRIPTCATNAME="rpc*_lib.sh"
 	fi
-	if [ $MM_CHOICE -eq 0 ]
+	if [ $MM_CHOICE -eq 3 ]
 	then
 		RUN=0
-		MNLEVEL=0
+		MNLEVEL=3
+		SCRIPTCATNAME="tirpc*_lib.sh"
+	fi
+	if [ $MM_CHOICE -eq 4 ]
+	then
+		RUN=0
+		MNLEVEL=4
 	fi
 done
 
 if [ $MNLEVEL -eq 1 ]
 then
 	# run all test suite
-	tbl=( $(find ./ -name "*_lib.sh") )
+	tbl=( $(find ./ -name "$SCRIPTCATNAME") )
 	
 	CMD="$EXECSCRIPT "
 	
@@ -221,12 +281,129 @@ then
 		if [ $MNLEVEL -ne 0 ]
 		then
 			#echo "./$CMD -m $TESTWAY -n $NUMBER"
-			./$CMD -m $TESTWAY -n $NUMBER
+			$CMD -m $TESTWAY -n $NUMBER
 		fi
 	fi
 fi
 
 if [ $MNLEVEL -eq 2 ]
+then
+        # run all test suite
+        tbl=( $(find ./ -name "$SCRIPTCATNAME") )
+
+        CMD="$EXECSCRIPT "
+
+        for fic in ${tbl[*]}
+        do
+                CMD="$CMD -l $fic"
+        done
+
+        draw_title
+        draw_instance_menu
+        read NUMBER
+
+        if [ -z $NUMBER ]
+        then
+                NUMBER=1
+        fi
+        if [ $NUMBER -eq 0 ]
+        then
+                MNLEVEL=0
+        else
+                draw_title
+                draw_waytest_menu
+                read MM_CHOICE
+
+                TESTWAY="onetomany"
+
+                if [ -z $MM_CHOICE ]
+                then
+                        MM_CHOICE=2
+                fi
+
+                if [ $MM_CHOICE -eq 1 ]
+                then
+                        TESTWAY="manycouple"
+                fi
+
+                if [ $MM_CHOICE -eq 0 ]
+                then
+                        MNLEVEL=0
+                fi
+
+                if [ $VERBOSE -eq 1 ]
+                then
+                        CMD="$CMD -v"
+                fi
+
+                if [ $MNLEVEL -ne 0 ]
+                then
+                        #echo "./$CMD -m $TESTWAY -n $NUMBER"
+                        $CMD -m $TESTWAY -n $NUMBER
+                fi
+        fi
+fi
+
+if [ $MNLEVEL -eq 3 ]
+then
+        # run all test suite
+        tbl=( $(find ./ -name "$SCRIPTCATNAME") )
+
+        CMD="$EXECSCRIPT "
+
+        for fic in ${tbl[*]}
+        do
+                CMD="$CMD -l $fic"
+        done
+
+        draw_title
+        draw_instance_menu
+        read NUMBER
+
+        if [ -z $NUMBER ]
+        then
+                NUMBER=1
+        fi
+
+        if [ $NUMBER -eq 0 ]
+        then
+                MNLEVEL=0
+        else
+                draw_title
+                draw_waytest_menu
+                read MM_CHOICE
+
+                TESTWAY="onetomany"
+
+                if [ -z $MM_CHOICE ]
+                then
+                        MM_CHOICE=2
+                fi
+
+                if [ $MM_CHOICE -eq 1 ]
+                then
+                        TESTWAY="manycouple"
+                fi
+
+                if [ $MM_CHOICE -eq 0 ]
+                then
+                        MNLEVEL=0
+                fi
+
+                if [ $VERBOSE -eq 1 ]
+                then
+                        CMD="$CMD -v"
+                fi
+
+                if [ $MNLEVEL -ne 0 ]
+                then
+                        #echo "./$CMD -m $TESTWAY -n $NUMBER"
+                        $CMD -m $TESTWAY -n $NUMBER
+                fi
+        fi
+fi
+
+if [ $MNLEVEL -eq 4 ]
 then
 	# run a part only
 	RUN=1
@@ -425,8 +602,7 @@ then
 			
 		if [ $MNLEVEL -ne 0 ]
 		then
-			#echo "./$CMD -m $TESTWAY -n $NUMBER"
-			./$CMD -m $TESTWAY -n $NUMBER
+			$CMD -m $TESTWAY -n $NUMBER
 		fi
 	fi
 fi

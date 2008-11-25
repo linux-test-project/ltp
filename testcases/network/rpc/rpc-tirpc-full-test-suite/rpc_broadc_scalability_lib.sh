@@ -48,8 +48,11 @@ fi
 # *****************
 
 echo "*** Starting Tests Suite : "$TESTSUITENAME" (v "$TESTSUITEVERS") ***"
+echo "Tests Not Complete"
+exit 0
 
 #-- start TIRPC Server # 1 for that following tests series
+
 $REMOTESHELL $SERVERUSER@$SERVERIP "$TESTSERVER_1 $PROGNUMBASE"&
 
 # wait for server creation and initialization

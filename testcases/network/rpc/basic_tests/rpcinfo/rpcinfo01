@@ -77,18 +77,18 @@ do_test()
 {
 $trace_logic
 
-echo "Checking for portmap daemon on `hostname` and $RHOST"
-#Check for portmap on localhost 
+echo "Checking for portmap or rpcbind daemon on `hostname` and $RHOST"
 ps -ewf | grep portmap | grep -v grep > /dev/null
-[ $? -eq 0 ] || end_testcase "The portmap daemon is NOT running"
+[ $? -eq 0 ] || ps -ewf | grep rpcbind | grep -v grep > /dev/null
+[ $? -eq 0 ] || end_testcase "The portmap or rpcbind daemon is NOT running"
 
-#Check for portmap on remotehost
 rsh -n $RHOST "ps -ewf" | grep portmap | grep -v grep > /dev/null
-[ $? -eq 0 ] || end_testcase "The portmap daemon is NOT running on $RHOST"
+[ $? -eq 0 ] || rsh -n $RHOST "ps -ewf" | grep rpcbind | grep -v grep > /dev/null
+[ $? -eq 0 ] || end_testcase "The portmap or rpcbind daemon is NOT running on $RHOST"
 
 echo "Test rpcinfo with default options"
 echo "rpcinfo -p"
-rpcinfo -p | grep portmapper 
+rpcinfo -p $RHOST | grep portmapper 
 [ $? -eq 0 ] || end_testcase "rpcinfo -p failed"
 
 echo "Test rpcinfo with options"

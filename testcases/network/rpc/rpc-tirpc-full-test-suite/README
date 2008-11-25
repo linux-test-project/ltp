@@ -62,7 +62,9 @@ Quick installation
 
 To install and configure your Test Suite, run in a terminal :
  	
-	./configure
+	./configure.auto
+	or
+	./configure.interactive
      
 This will configure the way to run test suite (computer IP, login)
 
@@ -94,6 +96,23 @@ use ls *_lib.sh to display them
 Remark : replace <script_lib.sh> by script lib name like domain_subdomain_test_lib.sh 
          where domain is RPC or TIRPC, subdomain is i.e. stdcall, toplevel... and test is test
          category such as basic, stress...
+
+-------------------------
+Launch Test Suite Scripts
+-------------------------
+	To run with defaults values:
+	./run_rpc_tirpc_test_auto.sh
+
+	To select and run the tests with choiced values:
+	./run_rpc_tirpc_test_interactive.sh
+
+	To run at runtest directory level:
+	./runltp -f rpc
+	or
+	./runltp -f tirpc
+	or
+	./runltp -f rpctirpc
+	
 
 -------------
 Tests results

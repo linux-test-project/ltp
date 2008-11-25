@@ -64,7 +64,7 @@ void *my_thread_process (void * arg)
     {
     	//Test failed
     	printf("5\n");
-    	pthread_exit(5);
+    	pthread_exit((void *)5);
     }
     
     tv.tv_sec = 1;
@@ -76,12 +76,12 @@ void *my_thread_process (void * arg)
     if (client == (CLIENT *)NULL)
     {
     	printf("5\n");
-    	pthread_exit(5);
+    	pthread_exit((void *)5);
     }
 	
 	if (run_mode == 1)
 	{
-		fprintf(stderr, "Thread %d\n", (int)arg);
+		fprintf(stderr, "Thread %d\n", atoi(arg));
 	}
 	
 	for (i = 0; i < callNb; i++)
@@ -97,7 +97,7 @@ void *my_thread_process (void * arg)
     pthread_exit (0);
 }
 
-int main(int argn, int *argc[])
+int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
 	//					   argc[2] : Server Program Number
@@ -138,7 +138,7 @@ int main(int argn, int *argc[])
 	
 	if (run_mode == 1)
 	{
-		pthread_attr_getstacksize(&thread_attr, &ssz);	//For debug purpose, get default thread stack size
+		pthread_attr_getstacksize(&thread_attr, (size_t *) &ssz);//For debug purpose, get default thread stack size
 		fprintf(stderr, "Server #%d\n", progNum);
 		fprintf(stderr, "Calls per thread : %d\n", callNb);
 		fprintf(stderr, "Instances : %d\n", threadNb);

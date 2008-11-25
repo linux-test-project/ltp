@@ -50,7 +50,7 @@ bool_t eachResult (char *out, struct sockaddr_in *addr)
 	return (0); 
 }
 
-int main(int argn, int *argc[])
+int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
 	//					   argc[2] : Server Program Number
@@ -83,7 +83,7 @@ int main(int argn, int *argc[])
 	cs = rpc_broadcast_exp (progNum, VERSNUM, PINGPROC,
 						  	(xdrproc_t)xdr_int, (char *)&varSnd,
 						  	(xdrproc_t)xdr_int, (char *)&varRec,
-						  	eachResult, 0, 100, nettype);
+						  	(resultproc_t)eachResult, 0, 100, nettype);
 	
 	if (currentAnswer == maxAnswer)
 		test_status = 0;

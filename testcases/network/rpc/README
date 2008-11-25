@@ -6,5 +6,5 @@ Directories
 
 basic_tests: contains basic tests, with single client-server programs.
 
-rpc-tirpc-full-test-suite: contains full test suite for the SunRPC ans TI-RPC rpc libraries.
+rpc-tirpc-full-test-suite: contains full test suite for the SunRPC and TI-RPC rpc libraries.
 It allows to tests each fonction of the APIs.

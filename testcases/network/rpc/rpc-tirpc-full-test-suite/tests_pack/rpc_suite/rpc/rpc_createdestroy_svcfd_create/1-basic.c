@@ -34,7 +34,7 @@
 #define PROCNUM 1
 #define VERSNUM 1
 
-int main(int argn, int *argc[])
+int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
 	//					   argc[2] : Server Program Number
@@ -45,7 +45,7 @@ int main(int argn, int *argc[])
 	//0 : launch by shell script as test case, only one printf -> result status
 	int run_mode = 0;
 	int test_status = 1; //Default test result set to FAILED
-	int fd;
+	int fd=0;
 	SVCXPRT *svcr = NULL;
 	
 	//create a server

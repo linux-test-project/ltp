@@ -48,19 +48,19 @@ int run_mode;
 void *server_thread_process (void * arg)
 {
 	//Server process in a thread
-	SVCXPRT *transp = NULL;
+	int err=0;
 	
 	if (run_mode == 1)
 	{
-		printf("Server #%d launched\n", (int)arg);
-		printf("Server Nb : %d\n", progNum + (int)arg);
+		printf("Server #%d launched\n", atoi(arg));
+		printf("Server Nb : %d\n", progNum + atoi(arg));
 	}
 	
-	svc_unreg(progNum + (int)arg, VERSNUM);
+	svc_unreg(progNum + atoi(arg), VERSNUM);
 	
-	transp = svc_create(exm_proc, progNum + (int)arg, VERSNUM, "VISIBLE");
+	err = svc_create(exm_proc, progNum + atoi(arg), VERSNUM, "VISIBLE");
                            
-	if (transp == (SVCXPRT *)NULL)
+	if (err == 0)
 	{
     	fprintf(stderr, "Cannot create service.\n");
     	exit(1);
@@ -178,7 +178,7 @@ static void exm_proc(struct svc_req *rqstp, SVCXPRT *transp)
 		return;
 	}
 	
-	result = (int *)(*proc)((int *)&argument);
+	result = (char *)(*proc)((int *)&argument);
 	
 	if ((result != NULL) && (svc_sendreply(transp, xdr_result, result) == FALSE))
 	{

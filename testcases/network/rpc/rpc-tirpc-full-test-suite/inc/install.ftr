@@ -11,7 +11,7 @@ cc -I/usr/include/tirpc -x c $TSTPACKDIR/cleaner.c.src -ltirpc -lpthread -o $TST
 # deployment on client if needed
 if [ $LOCALIP != $CLIENTIP ]
 then
-	scp -r $TSTPACKDIR $CLIENTUSER@$CLIENTIP:$CLIENTTSTPACKDIR
+	scp -r $TSTPACKDIR/* $CLIENTUSER@$CLIENTIP:$CLIENTTSTPACKDIR
 	scp Makefile.clnt $CLIENTUSER@$CLIENTIP:$CLIENTTSTPACKDIR/Makefile
 	ssh $CLIENTUSER@$CLIENTIP "make -f $CLIENTTSTPACKDIR/Makefile all"
 	ssh $CLIENTUSER@$CLIENTIP "cc -I/usr/include/tirpc -x c $CLIENTTSTPACKDIR/cleaner.c.src -ltirpc -lpthread -o $CLIENTTSTPACKDIR/cleaner.bin"
@@ -20,7 +20,7 @@ fi
 # deployment on server if needed
 if [ $LOCALIP != $SERVERIP ]
 then
-	scp -r $TSTPACKDIR $SERVERUSER@$SERVERIP:$SERVERTSTPACKDIR
+	scp -r $TSTPACKDIR/* $SERVERUSER@$SERVERIP:$SERVERTSTPACKDIR
 	scp Makefile.svc $SERVERUSER@$SERVERIP:$SERVERTSTPACKDIR/Makefile
 	ssh $SERVERUSER@$SERVERIP "make -f $SERVERTSTPACKDIR/Makefile all"
 	ssh $SERVERUSER@$SERVERIP "cc -I/usr/include/tirpc -x c $SERVERTSTPACKDIR/cleaner.c.src -ltirpc -lpthread -o $SERVERTSTPACKDIR/cleaner.bin"

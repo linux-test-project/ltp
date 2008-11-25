@@ -45,7 +45,7 @@
 #define STRPROCNUM 4000
 #define SVCGETARGSPROC 5000
 
-rcp_service(register struct svc_req *rqstp, register SVCXPRT *transp);
+void rcp_service(register struct svc_req *rqstp, register SVCXPRT *transp);
 
 //static int argument;
 union u_argument {
@@ -170,7 +170,7 @@ char *svcGetargsProc(union u_argument *in, SVCXPRT *transp)
 	static char *result;
 	result = in->str;	
 	
-	if ((result = svc_getargs(transp, (xdrproc_t)xdr_int, (char *)&args)) == FALSE)
+	if ((svc_getargs(transp, (xdrproc_t)xdr_int, (char *)&args)) == FALSE)
 	{
 		svcerr_decode(transp);
 		return;
@@ -183,7 +183,7 @@ char *svcGetargsProc(union u_argument *in, SVCXPRT *transp)
 //****************************************//
 //***       Dispatch Function          ***//
 //****************************************//
-rcp_service(register struct svc_req *rqstp, register SVCXPRT *transp)
+void rcp_service(register struct svc_req *rqstp, register SVCXPRT *transp)
 {
 	//printf("* in Dispatch Func.\n");
 	/*union {

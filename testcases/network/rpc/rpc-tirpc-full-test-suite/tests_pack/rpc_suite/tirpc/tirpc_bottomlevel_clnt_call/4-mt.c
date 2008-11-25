@@ -62,7 +62,7 @@ void *my_thread_process (void * arg)
 	
 	if (run_mode == 1)
 	{
-		fprintf(stderr, "Thread %d\n", (int)arg);
+		fprintf(stderr, "Thread %d\n", atoi(arg));
 	}
 	
 	tv.tv_sec = 0;
@@ -87,7 +87,7 @@ void *my_thread_process (void * arg)
         
     //printf("svcaddr reserved (%s)\n", argc[1]);
    
-	if (!rpcb_getaddr(progNum + (int)arg, VERSNUM, nconf,
+	if (!rpcb_getaddr(progNum + atoi(arg), VERSNUM, nconf,
                                &svcaddr, hostname))
     {
     	fprintf(stderr, "rpcb_getaddr failed!!\n");
@@ -96,7 +96,7 @@ void *my_thread_process (void * arg)
     //printf("svc get\n");
 
 	client = clnt_dg_create(RPC_ANYFD, &svcaddr,
-			 				progNum + (int)arg, VERSNUM, 1024, 1024);
+			 				progNum + atoi(arg), VERSNUM, 1024, 1024);
 			 				
 	if (client == (CLIENT *)NULL)
 	{
@@ -111,13 +111,13 @@ void *my_thread_process (void * arg)
 	               		(xdrproc_t)xdr_int, (char *)&var_rec,
 	               		tv);
 	
-		thread_array_result[(int)arg] += (cs == RPC_SUCCESS);
+		thread_array_result[atoi(arg)] += (cs == RPC_SUCCESS);
     }
     
     pthread_exit (0);
 }
 
-int main(int argn, int *argc[])
+int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
 	//					   argc[2] : Server Program Number

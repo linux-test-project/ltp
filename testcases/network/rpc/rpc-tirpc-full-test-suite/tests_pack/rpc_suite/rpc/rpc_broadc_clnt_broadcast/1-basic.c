@@ -36,7 +36,7 @@
 
 int eachResult (char *out, struct sockaddr_in *addr);
 
-int main(int argn, int *argc[])
+int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
 	//					   argc[2] : Server Program Number
@@ -62,7 +62,7 @@ int main(int argn, int *argc[])
 	cs = clnt_broadcast(progNum, VERSNUM, PROCNUM, 
 				   		(xdrproc_t)xdr_int, (char *)&varSnd,
 				   		(xdrproc_t)xdr_int, (char *)&varRec,
-				   		eachResult, "udp");
+				   		eachResult);
 	
 	test_status = (cs == RPC_SUCCESS) ? 0 : 1;
 	

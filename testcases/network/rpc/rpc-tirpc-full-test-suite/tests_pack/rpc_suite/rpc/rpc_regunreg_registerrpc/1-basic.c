@@ -40,10 +40,14 @@
 
 char *simplePing(char *i_var)
 {
-	return (char *)&i_var;
+        //Simple function, returns what received
+        static int result = 0;
+        result = *i_var;
+        return (char *)&result;
+
 }
 
-int main(int argn, int *argc[])
+int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
 	//					   argc[2] : Server Program Number

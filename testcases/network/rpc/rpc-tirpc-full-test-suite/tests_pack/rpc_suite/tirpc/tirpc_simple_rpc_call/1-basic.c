@@ -39,7 +39,7 @@
 #define PROCNUM 1
 #define VERSNUM 1
 
-int main(int argn, int *argc[])
+int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
 	//					   argc[2] : Server Program Number
@@ -70,6 +70,12 @@ int main(int argn, int *argc[])
                     (xdrproc_t)xdr_int, (char *)&recVar, // xdr_out
                     nettype);
     //fprintf(stderr, "received = %d\n", recVar);
+
+	if (run_mode == 1)
+        {
+		if (rslt != RPC_SUCCESS) fprintf(stderr,"FAILLLLLLLLLLLLLLLLLLLLLL\n");
+  }
+
     
 	test_status = (rslt == RPC_SUCCESS) ? 0 : 1;
     

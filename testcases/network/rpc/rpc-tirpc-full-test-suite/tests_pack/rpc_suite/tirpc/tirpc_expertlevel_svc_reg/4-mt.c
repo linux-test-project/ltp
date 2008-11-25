@@ -54,7 +54,7 @@ void *my_thread_process (void * arg)
 	
 	if (run_mode == 1)
 	{
-		fprintf(stderr, "Thread %d\n", (int)arg);
+		fprintf(stderr, "Thread %d\n", atoi(arg));
 	}
 	
 	nconf = getnetconfigent("udp");
@@ -71,14 +71,14 @@ void *my_thread_process (void * arg)
     
     for (i = 0; i < callNb; i++)
 	{
-		svc_unreg(progNum + (int)arg, VERSNUM);
-    	thread_array_result[(int)arg] += svc_reg(transp, progNum + (int)arg, VERSNUM,
+		svc_unreg(progNum + atoi(arg), VERSNUM);
+    	thread_array_result[atoi(arg)] += svc_reg(transp, progNum + atoi(arg), VERSNUM,
                            						 exm_proc, nconf);
     }
     pthread_exit (0);
 }
 
-int main(int argn, int *argc[])
+int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
 	//					   argc[2] : Server Program Number

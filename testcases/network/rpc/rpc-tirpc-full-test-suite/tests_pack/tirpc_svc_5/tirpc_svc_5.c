@@ -119,8 +119,8 @@ static void exm_proc(struct svc_req *rqstp, SVCXPRT *transp)
 		case PROCSIMPLEPING:
 		{
 			//printf("** in PROCPONG dispatch Func.\n");
-			xdr_argument = xdr_int;
-			xdr_result   = xdr_int;
+			xdr_argument = (xdrproc_t) xdr_int;
+			xdr_result   = (xdrproc_t) xdr_int;
 			proc         = (char *(*)(char *))simplePing;
 			break;
 		}

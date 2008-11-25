@@ -43,7 +43,7 @@ int eachresult (char *out, struct sockaddr_in *addr)
 	return 1;
 }
 
-int main(int argn, int *argc[])
+int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
 	//					   argc[2] : Server Program Number
@@ -77,7 +77,7 @@ int main(int argn, int *argc[])
 	rpc_broadcast_exp(progNum, VERSNUM, INTPROCNUM,
 						  (xdrproc_t)xdr_int, (char *)&intSnd,
 						  (xdrproc_t)xdr_int, (char *)&intRec,
-						  eachresult, 1, 1, nettype);	
+						  (resultproc_t) eachresult, 1, 1, nettype);	
 	
 	if (intSnd != intRec)
 		test_status = 1;
@@ -90,7 +90,7 @@ int main(int argn, int *argc[])
 	rpc_broadcast_exp(progNum, VERSNUM, INTPROCNUM,
 						  (xdrproc_t)xdr_int, (char *)&intSnd,
 						  (xdrproc_t)xdr_int, (char *)&intRec,
-						  eachresult, 1, 1, nettype);
+						  (resultproc_t) eachresult, 1, 1, nettype);
 	
 	if (intSnd != intRec)
 		test_status = 1;
@@ -103,7 +103,7 @@ int main(int argn, int *argc[])
 	rpc_broadcast_exp(progNum, VERSNUM, LNGPROCNUM,
 						  (xdrproc_t)xdr_long, (char *)&lngSnd,
 						  (xdrproc_t)xdr_long, (char *)&lngSnd,
-						  eachresult, 1, 1, nettype);	
+						  (resultproc_t) eachresult, 1, 1, nettype);	
 	
 	if (lngSnd != lngRec)
 		test_status = 1;
@@ -116,7 +116,7 @@ int main(int argn, int *argc[])
 	rpc_broadcast_exp(progNum, VERSNUM, DBLPROCNUM,
 						  (xdrproc_t)xdr_long, (char *)&dblSnd,
 						  (xdrproc_t)xdr_long, (char *)&dblSnd,
-						  eachresult, 1, 1, nettype);
+						  (resultproc_t) eachresult, 1, 1, nettype);
 	
 	if (dblSnd != dblRec)
 		test_status = 1;
@@ -130,7 +130,7 @@ int main(int argn, int *argc[])
 	rpc_broadcast_exp(progNum, VERSNUM, DBLPROCNUM,
 						  (xdrproc_t)xdr_wrapstring, (char *)&strSnd,
 						  (xdrproc_t)xdr_wrapstring, (char *)&strRec,
-						  eachresult, 1, 1, nettype);
+						  (resultproc_t) eachresult, 1, 1, nettype);
 	
 	if (strcmp(strSnd, strRec))
 		test_status = 1;

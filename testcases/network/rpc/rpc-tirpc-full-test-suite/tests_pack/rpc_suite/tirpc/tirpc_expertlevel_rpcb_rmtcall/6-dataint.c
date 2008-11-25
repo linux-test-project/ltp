@@ -40,7 +40,7 @@
 //Sys define
 #define ADDRBUFSIZE 100
 
-int main(int argn, int *argc[])
+int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
 	//					   argc[2] : Server Program Number
@@ -104,8 +104,8 @@ int main(int argn, int *argc[])
 	intSnd = -65536;
 	                         
 	cs = rpcb_rmtcall(nconf, argc[1], progNum, VERSNUM, INTPROCNUM,
-	                  xdr_int, (char *)&intSnd, 
-	                  xdr_int, (char *)&intRec,
+	                  (xdrproc_t) xdr_int, (char *)&intSnd, 
+	                  (xdrproc_t) xdr_int, (char *)&intRec,
 	                  tv, &svcaddr);
 		
 	if (intSnd != intRec)
@@ -117,8 +117,8 @@ int main(int argn, int *argc[])
 	intSnd = 16777216;
 	                         
 	cs = rpcb_rmtcall(nconf, argc[1], progNum, VERSNUM, INTPROCNUM,
-	                  xdr_int, (char *)&intSnd, 
-	                  xdr_int, (char *)&intRec,
+	                  (xdrproc_t) xdr_int, (char *)&intSnd, 
+	                  (xdrproc_t) xdr_int, (char *)&intRec,
 	                  tv, &svcaddr);
 	
 	if (intSnd != intRec)
@@ -130,8 +130,8 @@ int main(int argn, int *argc[])
 	lngSnd = -430000;
 	                         
 	cs = rpcb_rmtcall(nconf, argc[1], progNum, VERSNUM, LNGPROCNUM,
-	                  xdr_long, (char *)&lngSnd, 
-	                  xdr_long, (char *)&lngRec,
+	                  (xdrproc_t) xdr_long, (char *)&lngSnd, 
+	                  (xdrproc_t) xdr_long, (char *)&lngRec,
 	                  tv, &svcaddr);
 	
 	if (lngSnd != lngRec)
@@ -143,8 +143,8 @@ int main(int argn, int *argc[])
 	dblSnd = -1735.63000f;
 	
 	cs = rpcb_rmtcall(nconf, argc[1], progNum, VERSNUM, DBLPROCNUM,
-	                  xdr_double, (char *)&dblSnd, 
-	                  xdr_double, (char *)&dblRec,
+	                  (xdrproc_t) xdr_double, (char *)&dblSnd, 
+	                  (xdrproc_t) xdr_double, (char *)&dblRec,
 	                  tv, &svcaddr);
 	
 	if (dblSnd != dblRec)
@@ -157,8 +157,8 @@ int main(int argn, int *argc[])
 	strRec = (char *)malloc(64 * sizeof(char));
 	
 	cs = rpcb_rmtcall(nconf, argc[1], progNum, VERSNUM, STRPROCNUM,
-	                  xdr_wrapstring, (char *)&strSnd, 
-	                  xdr_wrapstring, (char *)&strRec,
+	                  (xdrproc_t) xdr_wrapstring, (char *)&strSnd, 
+	                  (xdrproc_t) xdr_wrapstring, (char *)&strRec,
 	                  tv, &svcaddr);
 	
 	if (strcmp(strSnd, strRec))

@@ -84,7 +84,7 @@ double maxi(double *tbl)
 	return rslt;
 }
 
-int main(int argn, int *argc[])
+int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
 	//					   argc[2] : Server Program Number

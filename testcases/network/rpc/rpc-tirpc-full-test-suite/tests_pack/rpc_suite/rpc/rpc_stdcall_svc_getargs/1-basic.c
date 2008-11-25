@@ -35,7 +35,7 @@
 #define PROCSIMPLEPING	1
 #define SVCGETCALLTEST	2
 
-rcp_service(register struct svc_req *rqstp, register SVCXPRT *transp);
+void rcp_service(register struct svc_req *rqstp, register SVCXPRT *transp);
 char *simplePing(int inVar, SVCXPRT *transp);
 
 static int argument;
@@ -43,7 +43,7 @@ static int argument;
 //****************************************//
 //***           Main Function          ***//
 //****************************************//
-int main(int argn, int *argc[])
+int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
 	//					   argc[2] : Server Program Number
@@ -94,7 +94,7 @@ char *simplePing(int inVar, SVCXPRT *transp)
 //****************************************//
 //***       Dispatch Function          ***//
 //****************************************//
-rcp_service(register struct svc_req *rqstp, register SVCXPRT *transp)
+void rcp_service(register struct svc_req *rqstp, register SVCXPRT *transp)
 {	
 	char *result;            
 	xdrproc_t xdr_argument; 

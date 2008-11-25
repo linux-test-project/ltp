@@ -49,7 +49,7 @@ int eachresult (char *out, struct sockaddr_in *addr)
 	return 1;
 }
 
-int main(int argn, int *argc[])
+int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
 	//					   argc[2] : Server Program Number
@@ -92,7 +92,7 @@ int main(int argn, int *argc[])
 		rslt = rpc_broadcast_exp(progNum, VERSNUM, PROCNUM,
 						  		 (xdrproc_t)xdr_int, (char *)&sndVar,
 						  		 (xdrproc_t)xdr_int, (char *)&recVar,
-						  		 eachresult, paramList[i].init_tout, paramList[i].next_tout, nettype);
+						  		 (resultproc_t)eachresult, paramList[i].init_tout, paramList[i].next_tout, nettype);
 						  
 		//Check result
 		if (rslt != RPC_TIMEDOUT)

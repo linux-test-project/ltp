@@ -105,33 +105,33 @@ void *my_thread_process (void * arg)
 	
 	if (run_mode == 1)
 	{
-		fprintf(stderr, "Thread %d\n", (int)arg);
+		fprintf(stderr, "Thread %d\n", atoi(arg));
 	}
 	
 	vars.a = getRand();
 	vars.b = getRand();
 	vars.c = getRand();
 		
-	resTbl[(int)arg].locRes = vars.a + (vars.b * vars.c);
+	resTbl[atoi(arg)].locRes = vars.a + (vars.b * vars.c);
 	
     clnt_call((CLIENT *)clnt, CALCTHREADPROC, 
 				(xdrproc_t)xdr_datas, (char *)&vars, // xdr_in
-                (xdrproc_t)xdr_double, (char *)&resTbl[(int)arg].svcRes, // xdr_out
+                (xdrproc_t)xdr_double, (char *)&resTbl[atoi(arg)].svcRes, // xdr_out
 				total_timeout);
 	
-	thread_array_result[(int)arg] = (resTbl[(int)arg].svcRes == resTbl[(int)arg].locRes) ? 0 : 1;
+	thread_array_result[atoi(arg)] = (resTbl[atoi(arg)].svcRes == resTbl[atoi(arg)].locRes) ? 0 : 1;
 	
 	if (run_mode == 1)
 	{
 		fprintf(stderr, "Thread #%d calc : %lf, received : %lf\n", 
-		        (int)arg, resTbl[(int)arg].locRes,
-		        resTbl[(int)arg].svcRes);
+		        atoi(arg), resTbl[atoi(arg)].locRes,
+		        resTbl[atoi(arg)].svcRes);
 	}
     
     pthread_exit (0);
 }
 
-int main(int argn, int *argc[])
+int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
 	//					   argc[2] : Server Program Number

@@ -85,7 +85,7 @@ double maxi(double *tbl)
 	return rslt;
 }
 
-int main(int argn, int *argc[])
+int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
 	//					   argc[2] : Server Program Number
@@ -124,7 +124,7 @@ int main(int argn, int *argc[])
 		cs = rpc_broadcast_exp(progNum, VERSNUM, PROCNUM,
 						  		(xdrproc_t)xdr_int, (char *)&sndVar,
 						  		(xdrproc_t)xdr_int, (char *)&recVar,
-						  		eachresult, atoi(argc[3]), atoi(argc[4]), nettype);
+						  		(resultproc_t)eachresult, atoi(argc[3]), atoi(argc[4]), nettype);
 						  
 		//Toc
 		gettimeofday(&tv2, &tz);

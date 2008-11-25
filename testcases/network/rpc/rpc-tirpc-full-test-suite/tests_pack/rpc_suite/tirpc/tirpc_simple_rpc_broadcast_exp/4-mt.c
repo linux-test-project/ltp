@@ -54,7 +54,7 @@ int eachresult (char *out, struct sockaddr_in *addr)
 void *my_thread_process (void * arg)
 {
 	enum clnt_stat rslt;
-    int sndVar = (int)arg;
+    int sndVar = atoi(arg);
     int recVar;
     int i;
     
@@ -63,7 +63,7 @@ void *my_thread_process (void * arg)
     
 	if (run_mode == 1)
 	{
-		fprintf(stderr, "Thread %d\n", (int)arg);
+		fprintf(stderr, "Thread %d\n", atoi(arg));
 	}
 	
 	for (i = 0; i < callNb; i++)
@@ -71,15 +71,15 @@ void *my_thread_process (void * arg)
 		rslt = rpc_broadcast_exp(progNum, VERSNUM, PROCNUM,
 						  		 (xdrproc_t)xdr_int, (char *)&recVar,
 						  	 	 (xdrproc_t)xdr_int, (char *)&recVar,
-						  	 	 eachresult, iTimeOut, mTimeOut, nettype);
+						  	 	 (resultproc_t)eachresult, iTimeOut, mTimeOut, nettype);
 	
-		thread_array_result[(int)arg] += (rslt == RPC_SUCCESS);
+		thread_array_result[atoi(arg)] += (rslt == RPC_SUCCESS);
     }
     
     pthread_exit (0);
 }
 
-int main(int argn, int *argc[])
+int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
 	//					   argc[2] : Server Program Number

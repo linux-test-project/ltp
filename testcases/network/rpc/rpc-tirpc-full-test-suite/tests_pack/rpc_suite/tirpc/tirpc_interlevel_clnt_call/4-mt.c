@@ -57,7 +57,7 @@ void *my_thread_process (void * arg)
 	
 	if (run_mode == 1)
 	{
-		fprintf(stderr, "Thread %d\n", (int)arg);
+		fprintf(stderr, "Thread %d\n", atoi(arg));
 	}
 	
 	//First, test initialization : create client using intermediate level API
@@ -79,7 +79,7 @@ void *my_thread_process (void * arg)
     if (client == (CLIENT *)NULL)
     {
     	clnt_pcreateerror("ERR");
-    	thread_array_result[(int)arg] = 0;
+    	thread_array_result[atoi(arg)] = 0;
     	pthread_exit (5);
     }
 
@@ -91,13 +91,13 @@ void *my_thread_process (void * arg)
                      	 (xdrproc_t)xdr_int, (char *)&recVar, // xdr_out
                      	 tv);
 	
-		thread_array_result[(int)arg] += (rslt == RPC_SUCCESS);
+		thread_array_result[atoi(arg)] += (rslt == RPC_SUCCESS);
 	}
     
     pthread_exit (0);
 }
 
-int main(int argn, int *argc[])
+int main(int argn, char *argc[])
 {
 	//Program parameters : argc[1] : HostName or Host IP
 	//					   argc[2] : Server Program Number
