@@ -107,10 +107,10 @@ NUM_CPUS=`cat /proc/cpuinfo | grep -w processor | wc -l`
 		echo NUM_GROUPS=$NUM_GROUPS >> $LTPROOT/output/cpuctl_results_$FILE.txt;
 		for i in $(seq 1 $NUM_GROUPS)
 		do
-			cp cpuctl_test01 cpuctl_task_$i 2>/dev/null;
+			cp cpuctl_test01 cpuctl_task_$i ;
 			chmod +x cpuctl_task_$i;
 			./cpuctl_task_$i $i /dev/cpuctl/group_$i $$ $NUM_CPUS $TEST_NUM \
-			 >>$LTPROOT/output/cpuctl_results_$FILE.txt 2>/dev/null &
+			 >>$LTPROOT/output/cpuctl_results_$FILE.txt &
 			if [ $? -ne 0 ]
 			then
 				echo "Error: Could not run ./cpuctl_task_$i"
@@ -142,7 +142,7 @@ NUM_CPUS=`cat /proc/cpuinfo | grep -w processor | wc -l`
 			for j in $(seq 1 $TASKS_IN_GROUP)
 			do
 			TASK_NUM=`expr $TASK_NUM + 1`;
-			cp cpuctl_test02 cpuctl_task_$TASK_NUM 2>/dev/null;
+			cp cpuctl_test02 cpuctl_task_$TASK_NUM ;
 			chmod +x cpuctl_task_$TASK_NUM;
 			if [ $i -eq 1 ]	# Renice all tasks of group 1
 			then
@@ -153,7 +153,7 @@ NUM_CPUS=`cat /proc/cpuinfo | grep -w processor | wc -l`
 
 			GROUP_NUM=$i MYGROUP=$MYGROUP SCRIPT_PID=$SCRIPT_PID NUM_CPUS=$NUM_CPUS \
 			TEST_NUM=$TEST_NUM TASK_NUM=$TASK_NUM nice -n $NICELEVEL ./cpuctl_task_$TASK_NUM \
-			>>$LTPROOT/output/cpuctl_results_$FILE.txt 2>/dev/null &
+			>>$LTPROOT/output/cpuctl_results_$FILE.txt &
 			if [ $? -ne 0 ]
 			then
 				echo "Error: Could not run ./cpuctl_task_$TASK_NUM"
@@ -187,12 +187,12 @@ NUM_CPUS=`cat /proc/cpuinfo | grep -w processor | wc -l`
 			for j in $(seq 1 $TASKS_IN_GROUP)
 			do
 			TASK_NUM=`expr $TASK_NUM + 1`;
-			cp cpuctl_test02 cpuctl_task_$TASK_NUM 2>/dev/null;
+			cp cpuctl_test02 cpuctl_task_$TASK_NUM ;
 			chmod +x cpuctl_task_$TASK_NUM;
 
 			GROUP_NUM=$i MYGROUP=$MYGROUP SCRIPT_PID=$SCRIPT_PID NUM_CPUS=$NUM_CPUS \
 			TEST_NUM=$TEST_NUM TASK_NUM=$TASK_NUM ./cpuctl_task_$TASK_NUM \
-			>>$LTPROOT/output/cpuctl_results_$FILE.txt 2>/dev/null &
+			>>$LTPROOT/output/cpuctl_results_$FILE.txt &
 			if [ $? -ne 0 ]
 			then
 				echo "Error: Could not run ./cpuctl_task_$TASK_NUM"

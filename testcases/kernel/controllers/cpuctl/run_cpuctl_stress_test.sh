@@ -158,12 +158,12 @@ usage ()
 			for j in $(seq 1 $TASKS_IN_GROUP)
 			do
 			TASK_NUM=`expr $TASK_NUM + 1`;
-			cp cpuctl_test03 cpuctl_task_$TASK_NUM 2>/dev/null;
+			cp cpuctl_test03 cpuctl_task_$TASK_NUM ;
 			chmod +x cpuctl_task_$TASK_NUM;
 
 			GROUP_NUM=$i MYGROUP=$MYGROUP SCRIPT_PID=$SCRIPT_PID NUM_CPUS=$NUM_CPUS \
 			TEST_NUM=$TEST_NUM TASK_NUM=$TASK_NUM ./cpuctl_task_$TASK_NUM \
-			>>$LTPROOT/output/cpuctl_results_$FILE.txt 2>/dev/null &
+			>>$LTPROOT/output/cpuctl_results_$FILE.txt &
 			if [ $? -ne 0 ]
 			then
 				echo "Error: Could not run ./cpuctl_task_$TASK_NUM"
@@ -202,7 +202,7 @@ usage ()
 			for j in $(seq 1 $TASKS_IN_GROUP)
 			do
 			TASK_NUM=`expr $TASK_NUM + 1`;
-			cp cpuctl_test04 cpuctl_task_$TASK_NUM 2>/dev/null;
+			cp cpuctl_test04 cpuctl_task_$TASK_NUM ;
 			chmod +x cpuctl_task_$TASK_NUM;
 
 			# Per group nice value change must not affect group/task fairness
@@ -221,7 +221,7 @@ usage ()
 
 			GROUP_NUM=$i MYGROUP=$MYGROUP SCRIPT_PID=$SCRIPT_PID NUM_CPUS=$NUM_CPUS \
 			TEST_NUM=$TEST_NUM TASK_NUM=$TASK_NUM nice -n $NICEVALUE ./cpuctl_task_$TASK_NUM \
-			>>$LTPROOT/output/cpuctl_results_$FILE.txt 2>/dev/null &
+			>>$LTPROOT/output/cpuctl_results_$FILE.txt &
 			if [ $? -ne 0 ]
 			then
 				echo "Error: Could not run ./cpuctl_task_$TASK_NUM"
@@ -262,12 +262,12 @@ usage ()
 			for j in $(seq 1 $TASKS_IN_GROUP)
 			do
 			TASK_NUM=`expr $TASK_NUM + 1`;
-			cp cpuctl_test04 cpuctl_task_$TASK_NUM 2>/dev/null;
+			cp cpuctl_test04 cpuctl_task_$TASK_NUM ;
 			chmod +x cpuctl_task_$TASK_NUM;
 
 			GROUP_NUM=$i MYGROUP=$MYGROUP SCRIPT_PID=$SCRIPT_PID NUM_CPUS=$NUM_CPUS \
 			TEST_NUM=$TEST_NUM TASK_NUM=$TASK_NUM ./cpuctl_task_$TASK_NUM \
-			>>$LTPROOT/output/cpuctl_results_$FILE.txt 2>/dev/null &
+			>>$LTPROOT/output/cpuctl_results_$FILE.txt &
 			if [ $? -ne 0 ]
 			then
 				echo "Error: Could not run ./cpuctl_task_$TASK_NUM"
