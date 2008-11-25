@@ -104,7 +104,7 @@ NUM_CPUS=`cat /proc/cpuinfo | grep -w processor | wc -l`
 		echo `date` >> $LTPROOT/output/cpuctl_results_$FILE.txt;
 		echo `uname -a` >> $LTPROOT/output/cpuctl_results_$FILE.txt;
 		echo TEST:- $TEST_NAME $TEST_NUM:  >> $LTPROOT/output/cpuctl_results_$FILE.txt;
-		echo NUM_GROUPS=$NUM_GROUPS >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+		echo NUM_GROUPS=$NUM_GROUPS + 1\(DEF\) >> $LTPROOT/output/cpuctl_results_$FILE.txt;
 		for i in $(seq 1 $NUM_GROUPS)
 		do
 			cp cpuctl_test01 cpuctl_task_$i ;
@@ -119,14 +119,33 @@ NUM_CPUS=`cat /proc/cpuinfo | grep -w processor | wc -l`
 			else
 				PID[$i]=$!;
 			fi
-			i=`expr $i + 1`
 		done
 		else
 			echo "Source file not compiled..Plz check Makefile...Exiting test"
 			cleanup;
 			exit -1;
 		fi;
+		i=`expr $i + 1`
+
 		TOTAL_TASKS=$NUM_GROUPS;
+		# Run the default task in a default group
+		set_def_group;
+		if [ ! -f cpuctl_def_task01 ]; then
+			echo "Source file for default task not compiled";
+			echo "Plz check Makefile...Exiting test";
+			cleanup;
+			exit -1;
+		fi
+		./cpuctl_def_task01 $i /dev/cpuctl/group_def $$ $NUM_CPUS \
+		$TEST_NUM  >>$LTPROOT/output/cpuctl_results_$FILE.txt &
+		if [ $? -ne 0 ]
+		then
+			echo "Error: Could not run ./cpuctl_def_task01"
+			cleanup;
+			exit -1;
+		else
+			echo "Succesfully launched def task $! too";
+		fi
 		;;
 	"4" )
 		if [ -f cpuctl_test02 ]

@@ -77,8 +77,12 @@ get_num_groups()        # Number of tasks should be >= number of cpu's (to check
 cleanup ()
 {
         echo "Cleanup called";
+	killall cpuctl_def_task01;
         rm -f cpuctl_task_* 2>/dev/null
-        rmdir /dev/cpuctl/group_* 2> /dev/null
+	for task in `cat /dev/cpuctl/group_def/tasks`; do
+		echo $task > /dev/cpuctl/tasks 2>/dev/null 1>&2;
+	done
+        rmdir /dev/cpuctl/group* 2> /dev/null
         umount /dev/cpuctl 2> /dev/null
         rmdir /dev/cpuctl 2> /dev/null
         rm -f myfifo 2>/dev/null
@@ -106,7 +110,8 @@ do_setup ()
         fi
 
         # Group created earlier may again be visible if not cleaned properly...so clean them
-        if [ -e /dev/cpuctl/group_1 ]
+	groups=/dev/cpuctl/group*
+        if [ -z "$groups" ]
         then
                 rmdir /dev/cpuctl/group*
                 echo "WARN: Earlier groups found and removed...";
