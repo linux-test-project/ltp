@@ -36,7 +36,7 @@ export TCID
 export TST_COUNT
 export TST_TOTAL
 ret=0 
-source initialize.sh
+. initialize.sh
 
     mkdir -p /tmp/par_sysfs /tmp/mnt || ret=1
     mount --bind /sys /tmp/par_sysfs || ret=1

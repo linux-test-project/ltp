@@ -32,7 +32,7 @@ export TCID
 export TST_COUNT
 export TST_TOTAL
 
-    source initialize.sh
+    . initialize.sh
     echo 1 > /proc/sys/net/ipv4/ip_forward
     echo 1 > /proc/sys/net/ipv4/conf/$netdev/proxy_arp
     create_veth

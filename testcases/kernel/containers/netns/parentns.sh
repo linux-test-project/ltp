@@ -39,7 +39,7 @@ export TCID
 export TST_COUNT
 export TST_TOTAL
 #set -x
-source initialize.sh
+. initialize.sh
 status=0
 
     # Checks if any script is passed as argument.
@@ -78,7 +78,7 @@ status=0
 
     # Executes the script if it is passed as an argument.
     if [ -f $scrpt ] ;  then
-        source $scrpt
+        . $scrpt
     fi
 
     debug "INFO: Done executing parent script $0, status is $status "

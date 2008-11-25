@@ -39,7 +39,7 @@ TST_COUNT=1
 export TCID
 export TST_COUNT
 export TST_TOTAL
-source initialize.sh
+. initialize.sh
 status=0
 
     # Sets up the infrastructure for creating network NS

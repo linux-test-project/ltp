@@ -29,7 +29,7 @@ TST_COUNT=1
 export TCID
 export TST_COUNT
 export TST_TOTAL
-source initialize.sh
+. initialize.sh
 
     create_veth
     vnet2=$dev0

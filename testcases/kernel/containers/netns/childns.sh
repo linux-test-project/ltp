@@ -38,7 +38,7 @@ TST_COUNT=1
 export TCID
 export TST_COUNT
 export TST_TOTAL
-source  initialize.sh
+.  initialize.sh
 status=0
     
     if [ $# == 1 ] ; then
@@ -77,7 +77,7 @@ status=0
     fi
     
     if [ -f  $childscrpt ]; then
-        source $childscrpt
+        . $childscrpt
     fi
     
     cleanup $sshpid $vnet1
