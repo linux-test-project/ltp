@@ -63,7 +63,7 @@
 #include "../libcontrollers/libcontrollers.h"
 #include "test.h"		/* LTP harness APIs*/
 
-#define TIME_INTERVAL	200	/* Time interval in seconds*/
+#define TIME_INTERVAL	100	/* Time interval in seconds*/
 #define NUM_INTERVALS	2       /* How many iterations of TIME_INTERVAL */
 
 extern int Tst_count;

@@ -64,9 +64,9 @@
 #include "../libcontrollers/libcontrollers.h"
 #include "test.h"		/* LTP harness APIs*/
 
-#define TIME_INTERVAL	60	/* Time interval in seconds*/
+#define TIME_INTERVAL	30	/* Time interval in seconds*/
 #define NUM_INTERVALS	3       /* How many iterations of TIME_INTERVAL */
-#define NUM_SETS	7	/* How many share values (with same ratio)*/
+#define NUM_SETS	4	/* How many share values (with same ratio)*/
 #define MULTIPLIER   	10      /* decides the rate at which share value gets multiplied*/
 #define GRANULARITY    5       /* % value by which shares of a group changes */
 extern int Tst_count;
