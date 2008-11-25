@@ -216,7 +216,7 @@ struct timespec stop_data[ITERATIONS];
 
 int main(int argc, char *argv[])
 {
-	int i, err;
+	int i, j, k, err;
 	unsigned long long delta;
 	unsigned long long max, min;
 	struct sched_param param;
@@ -262,9 +262,15 @@ int main(int argc, char *argv[])
 		latency_trace_enable();
 		latency_trace_start();
 	}
-	for (i = 0; i < ITERATIONS; i++) {
-		clock_gettime(CLOCK_MONOTONIC,&start_data[i]);
-		clock_gettime(CLOCK_MONOTONIC,&stop_data[i]);
+	/* This loop runs for a long time, hence can cause soft lockups.
+	   Calling sleep periodically avoids this. */
+	for (i=0; i<1000; i++) {
+		for (j=0; j < ITERATIONS/1000; j++) {
+			k = (i * ITERATIONS/1000) + j;
+			clock_gettime(CLOCK_MONOTONIC,&start_data[k]);
+			clock_gettime(CLOCK_MONOTONIC,&stop_data[k]);
+		}
+		usleep(1000);
 	}
 	for (i = 0; i < ITERATIONS; i++) {
 		delta = timespec_subtract(&start_data[i], &stop_data[i]);
