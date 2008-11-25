@@ -41,7 +41,7 @@
  * of the controller and returns the total added shares of all
  * the groups (currently excludes default group) ??
  */
-int scan_shares_files ()
+int scan_shares_files(unsigned int *shares_pointer)
 {
 	struct stat 	statbuffer;
 	DIR		*dp;
@@ -90,7 +90,7 @@ int scan_shares_files ()
 		FLAG = 1;
 		strcpy (path_pointer, dir_pointer->d_name ); /* append name to fullpath */
 
-		if ((retval = scan_shares_files()) != 0)
+		if ((retval = scan_shares_files(shares_pointer)) != 0)
 			break;
 	}
 

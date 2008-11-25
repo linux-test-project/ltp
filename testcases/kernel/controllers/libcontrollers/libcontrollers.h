@@ -75,7 +75,7 @@ unsigned int read_shares_file (char *filepath);
 
 int read_file(char *filepath, int action, unsigned int *value);
 
-int scan_shares_files ();
+int scan_shares_files(unsigned int *shares_pointer);
 
 int write_to_file (char * file, const char* mode, unsigned int value);
 

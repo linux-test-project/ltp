@@ -164,7 +164,7 @@ int main(int argc, char* argv[])
 	if (!strncpy (fullpath, path, len))
 		tst_brkm (TBROK, cleanup, "Could not copy directory path %s ", path);
 
-	if (scan_shares_files() != 0)
+	if (scan_shares_files(shares_pointer) != 0)
 		tst_brkm (TBROK, cleanup, "From function scan_shares_files in %s ", fullpath);
 
 	/* return val: -1 in case of function error, else 2 is min share value */
