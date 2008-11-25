@@ -149,7 +149,7 @@ usage ()
 		if [ -f cpuctl_test03 ]
 		then
 		echo TEST NAME:- $TEST_NAME: $TEST_NUM >> $LTPROOT/output/cpuctl_results_$FILE.txt;
-		echo Test $TEST_NUM: NUM_GROUPS=$NUM_GROUPS >> $LTPROOT/output/cpuctl_results_$FILE.txt;
+		echo Test $TEST_NUM: NUM_GROUPS=$NUM_GROUPS +1 \(DEF\)>> $LTPROOT/output/cpuctl_results_$FILE.txt;
 		echo Test $TEST_NUM: TASKS PER GROUP=$TASKS_IN_GROUP >> $LTPROOT/output/cpuctl_results_$FILE.txt;
 		echo "==========================================" >> $LTPROOT/output/cpuctl_results_$FILE.txt;
 		for i in $(seq 1 $NUM_GROUPS)
@@ -182,6 +182,26 @@ usage ()
 			exit -1;
 		fi;
 		TOTAL_TASKS=$TASK_NUM;
+		# Run the default task in a default group
+		set_def_group;
+		if [ ! -f cpuctl_def_task03 ]; then
+			echo "Source file for default task not compiled";
+			echo "Plz check Makefile...Exiting test";
+			cleanup;
+			exit -1;
+		fi
+		MYGROUP=/dev/cpuctl/group_def ;
+		GROUP_NUM=0 MYGROUP=$MYGROUP SCRIPT_PID=$SCRIPT_PID \
+		NUM_CPUS=$NUM_CPUS TEST_NUM=$TEST_NUM TASK_NUM=0 \
+		./cpuctl_def_task03 >>$LTPROOT/output/cpuctl_results_$FILE.txt &
+		if [ $? -ne 0 ]
+		then
+			echo "Error: Could not run ./cpuctl_def_task03"
+			cleanup;
+			exit -1;
+		else
+			echo "Succesfully launched def task $! too";
+		fi
 		;;
 	"9" )
 
