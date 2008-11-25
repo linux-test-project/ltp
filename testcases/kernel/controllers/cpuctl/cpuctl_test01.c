@@ -86,7 +86,8 @@ int main(int argc, char* argv[])
 {
 
 	int num_cpus, test_num, len;	/* Total time = TIME_INTERVAL *num_cpus in the machine */
-	char mygroup[32], mytaskfile[32], mysharesfile[32], ch;
+	char mygroup[FILENAME_MAX], mytaskfile[FILENAME_MAX];
+	char mysharesfile[FILENAME_MAX], ch;
 	pid_t pid;
 	int my_group_num,	        /* A number attached with a group*/
 		fd,          	        /* A descriptor to open a fifo for synchronized start*/

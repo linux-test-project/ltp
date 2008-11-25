@@ -87,7 +87,8 @@ int main(int argc, char* argv[])
 
 	int test_num, task_num, len, num_cpus;	/* Total time = TIME_INTERVAL *num_cpus in the machine */
 	int migrate=0;			/* For task migration*/
-	char mygroup[32], mytaskfile[32], mysharesfile[32], ch;
+	char mygroup[FILENAME_MAX], mytaskfile[FILENAME_MAX];
+	char mysharesfile[FILENAME_MAX], ch;
 	/* Following variables are to capture parameters from script*/
 	char *group_num_p, *mygroup_p, *script_pid_p, *num_cpus_p, *test_num_p, *task_num_p;
 	pid_t pid;
