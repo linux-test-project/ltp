@@ -188,7 +188,7 @@ void *worker_thread(void* arg)
 	rc = pthread_cond_wait(&cond[tid], &mutex[tid]);
 	rc = pthread_mutex_unlock(&mutex[tid]);
 
-	/* printf("%llu: Thread %d(%d) wakes up from sleep \n", rt_gettime(), tid, mypri); */
+	debug(DBG_INFO, "%llu: Thread %d(%d) wakes up from sleep \n", rt_gettime(), tid, mypri);
 
 	/*check if we're the last thread */
 	if (tid == NUM_WORKERS-1) {
@@ -202,13 +202,13 @@ void *worker_thread(void* arg)
 	/* Signal next thread */
 	rc = pthread_mutex_lock(&mutex[tid+1]);
 	rc = pthread_cond_signal(&cond[tid+1]);
-	/* printf("%llu: Thread %d(%d): Sent signal (%d) to (%d)\n", rt_gettime(), tid, mypri,
-                        rc, tid+1); */
+	debug(DBG_INFO, "%llu: Thread %d(%d): Sent signal (%d) to (%d)\n", rt_gettime(), tid, mypri,
+                        rc, tid+1);
 
    	pstart = pend = rt_gettime();
 	rc = pthread_mutex_unlock(&mutex[tid+1]);
 
-	/* printf("%llu: Thread %d(%d) setting it's bit \n",rt_gettime(), tid, mypri); */
+	debug(DBG_INFO, "%llu: Thread %d(%d) setting it's bit \n",rt_gettime(), tid, mypri);
 
 	t_after_wait[tid] = 1;
 
