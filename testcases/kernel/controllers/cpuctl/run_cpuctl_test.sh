@@ -88,7 +88,7 @@ NUM_CPUS=`cat /proc/cpuinfo | grep -w processor | wc -l`
 	esac
 	echo "TEST $TEST_NUM: CPU CONTROLLER TESTING";
 	echo "RUNNING SETUP.....";
-	setup;
+	do_setup;
 
 	# Trap the signal from any abnormaly terminated task
 	# and kill all others and let cleanup be called

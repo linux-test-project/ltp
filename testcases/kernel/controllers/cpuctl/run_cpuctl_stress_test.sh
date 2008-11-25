@@ -133,7 +133,7 @@ usage ()
 
 	echo "TEST $TEST_NUM: CPU CONTROLLER STRESS TESTING";
 	echo "RUNNING SETUP.....";
-	setup;
+	do_setup;
 
 	# Trap the signal from any abnormaly terminated task
 	# and kill all others and let cleanup be called

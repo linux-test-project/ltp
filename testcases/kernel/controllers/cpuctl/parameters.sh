@@ -69,7 +69,7 @@ cleanup ()
         # Create /dev/cpuctl &  mount the cgroup file system with cpu controller
         #clean any group created eralier (if any)
 
-setup ()
+do_setup ()
 {
         if [ -e /dev/cpuctl ]
         then
