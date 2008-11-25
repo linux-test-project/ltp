@@ -207,3 +207,19 @@ explicit internal "stacking" e.g. as is done for combining SELinux or
 Smack with capabilities).  Unless you use the security= option to select
 one at boot.  SELinux and Smack will honor the security= option.
 ---------------------------------
+Enablement for Enhancement to kexec/kdump for implementing the following features:
+- Backup/restore memory used by the original kernel before/after kexec.
+- Save/restore CPU state before/after kexec.
+Now, only the i386 architecture is supported. More from the following git logs:
+http://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=commit;h=3ab83521378268044a448113c6aa9a9e245f4d2f,
+http://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=commit;h=89081d17f7bb81d89fa1aa9b70f821c5cf4d39e9,
+---------------------------------
+CONFIG_X86_32=y
+CONFIG_RELOCATABLE=y
+CONFIG_KEXEC=y
+CONFIG_CRASH_DUMP=y
+CONFIG_PM=y
+CONFIG_HIBERNATION=y
+CONFIG_KEXEC_JUMP=y
+---------------------------------
+---------------------------------
