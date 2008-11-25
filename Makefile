@@ -108,10 +108,12 @@ package:
 #
 # Autotools related
 #
-configure: configure.ac $(notdir $(wildcard m4/*.m4)) config.h.in
+.PHONY: autoconf
+autoconf: configure config.h.in config.h
+configure: configure.ac $(notdir $(wildcard m4/*.m4))
 	autoconf
 
-config.h.in: configure.ac
+config.h.in: configure.ac $(notdir $(wildcard m4/*.m4))
 	autoheader
 
 config.h: config.h.default
