@@ -686,7 +686,7 @@ pread03_64 pread03_64
 profil01 profil01
 
 pselect01 pselect01
-pselect01_64 pselect0_64
+pselect01_64 pselect01_64
 
 ptrace01 ptrace01
 ptrace02 ptrace02
