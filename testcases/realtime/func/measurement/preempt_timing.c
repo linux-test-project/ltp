@@ -32,7 +32,6 @@
  *
  * USAGE:
  *      Use run_auto.sh script in current directory to build and run test.
- *      Use "-j" to enable jvm simulator.
  *
  * AUTHOR
  *
@@ -53,19 +52,16 @@
 #include <sys/mman.h>
 #include <stdint.h>
 #include <librttest.h>
-#include <libjvmsim.h>
 
 
 #define ITERATIONS 1000000ULL
 #define INTERVALS 10
 
-static int run_jvmsim=0;
 
 void usage(void)
 {
         rt_help();
         printf("preempt_timing specific options:\n");
-        printf("  -j            enable jvmsim\n");
 }
 
 int parse_args(int c, char *v)
@@ -73,9 +69,6 @@ int parse_args(int c, char *v)
 
         int handled = 1;
         switch (c) {
-                case 'j':
-                        run_jvmsim = 1;
-                        break;
                 case 'h':
                         usage();
                         exit(0);
@@ -97,14 +90,7 @@ int main(int argc, char *argv[])
 	min = -1;
 	setup();
 
-	rt_init("jh",parse_args,argc,argv);
-
-	if (run_jvmsim) {
-		printf("jvmsim enabled\n");
-		jvmsim_init();  // Start the JVM simulation
-	} else {
-		printf("jvmsim disabled\n");
-	}
+	rt_init("h",parse_args,argc,argv);
 
 	/* switch to SCHED_FIFO 99 */
 	param.sched_priority = sched_get_priority_max(SCHED_FIFO);

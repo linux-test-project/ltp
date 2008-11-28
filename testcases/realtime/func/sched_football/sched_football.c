@@ -41,7 +41,6 @@
  *
  * USAGE:
  *      Use run_auto.sh script in current directory to build and run test.
- *      Use "-j" to enable jvm simulator.
  *
  * AUTHOR
  *      John Stultz <johnstul@xxxxxxxxx >
@@ -66,7 +65,6 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include <librttest.h>
-#include <libjvmsim.h>
 
 #define DEF_GAME_LENGTH 5
 
@@ -76,7 +74,6 @@ volatile int the_ball;
 /* pthread_barrier for synchronization */
 pthread_barrier_t barrier;
 
-static int run_jvmsim=0;
 static int players_per_team = 0;
 static int game_length = DEF_GAME_LENGTH;
 
@@ -84,7 +81,6 @@ void usage(void)
 {
 	rt_help();
 	printf("sched_football specific options:\n");
-	printf("  -j            enable jvmsim\n");
 	printf("  -nPLAYERS     players per team (defaults to num_cpus)\n");
 	printf("  -lGAME_LENGTH game length in seconds (defaults to %d s)\n",
 	       DEF_GAME_LENGTH);
@@ -95,9 +91,6 @@ int parse_args(int c, char *v)
 
         int handled = 1;
         switch (c) {
-                case 'j':
-                        run_jvmsim = 1;
-                        break;
                 case 'h':
                         usage();
                         exit(0);
@@ -171,17 +164,10 @@ int main(int argc, char* argv[])
 	int i;
 	setup();
 
-	rt_init("n:l:jh",parse_args,argc,argv);
+	rt_init("n:l:h",parse_args,argc,argv);
 
 	if (players_per_team == 0)
 		players_per_team = sysconf(_SC_NPROCESSORS_ONLN);
-
-	if (run_jvmsim) {
-                printf("jvmsim enabled\n");
-                jvmsim_init();  // Start the JVM simulation
-	} else {
-                printf("jvmsim disabled\n");
-	}
 
 	if ((i = pthread_barrier_init(&barrier, NULL, players_per_team*2 + 1))) {
 		printf("pthread_barrier_init failed: %s\n", strerror(i));

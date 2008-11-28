@@ -25,7 +25,6 @@
  *
  * USAGE:
  *    Use run_auto.sh script in current directory to build and run test.
- *    Use "-j" to enable jvm simulator.
  *
  * AUTHOR
  *    Darren Hart <dvhltc@us.ibm.com>
@@ -45,7 +44,6 @@
 #include <errno.h>
 #include <unistd.h>
 #include <librttest.h>
-#include <libjvmsim.h>
 
 #define NUM_MUTEXES 5000
 #define NUM_THREADS 50
@@ -54,13 +52,11 @@
 
 static pthread_mutex_t *mutexes[NUM_MUTEXES];
 
-static int run_jvmsim=0;
 
 void usage(void)
 {
         rt_help();
         printf("sbrk_mutex specific options:\n");
-        printf("  -j            enable jvmsim\n");
 }
 
 int parse_args(int c, char *v)
@@ -68,9 +64,6 @@ int parse_args(int c, char *v)
 
         int handled = 1;
         switch (c) {
-                case 'j':
-                        run_jvmsim = 1;
-                        break;
                 case 'h':
                         usage();
                         exit(0);
@@ -110,14 +103,7 @@ int main(int argc, char* argv[])
 	pthread_mutexattr_t mutexattr;
 	setup();
 
-	rt_init("jh",parse_args,argc,argv);
-
-	if (run_jvmsim) {
-                printf("jvmsim enabled\n");
-                jvmsim_init();  // Start the JVM simulation
-	} else {
-                printf("jvmsim disabled\n");
-	}
+	rt_init("h",parse_args,argc,argv);
 
         if (pthread_mutexattr_init(&mutexattr) != 0) {
                 printf("Failed to init mutexattr\n");

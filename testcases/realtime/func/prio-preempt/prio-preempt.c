@@ -49,7 +49,6 @@
  *
  * USAGE:
  *      Use run_auto.sh script in current directory to build and run test.
- *      Use "-j" to enable jvm simulator.
  *
  * AUTHOR
  *      Dinakar Guniguntala <dino@us.ibm.com>
@@ -85,7 +84,6 @@ static pthread_cond_t cond[NUM_WORKERS+1];
 static int t_after_wait[NUM_WORKERS];
 
 static int ret = 0;
-static int run_jvmsim=0;
 
 pthread_barrier_t barrier;
 
@@ -93,7 +91,6 @@ void usage(void)
 {
 	rt_help();
 	printf("prio-preempt specific options:\n");
-	printf("  -j            # :enable jvmsim\n");
 	printf("  -i            #: enable interrupter threads\n");
 	printf("  -n#           #: number of busy threads\n");
 }
@@ -103,9 +100,6 @@ int parse_args(int c, char *v)
 
         int handled = 1;
         switch (c) {
-                case 'j':
-                        run_jvmsim = 1;
-                        break;
                 case 'h':
                         usage();
                         exit(0);
@@ -294,7 +288,7 @@ int main(int argc, char* argv[])
 	setup();
 
 	pass_criteria = CHECK_LIMIT;
-	rt_init("jhin:", parse_args, argc, argv);
+	rt_init("hin:", parse_args, argc, argv);
 
 	numcpus = sysconf(_SC_NPROCESSORS_ONLN);
 

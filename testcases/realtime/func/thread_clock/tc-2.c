@@ -31,7 +31,6 @@
  *
  * USAGE:
  *    Use run_auto.sh script in current directory to build and run test.
- *    Use "-j" to enable jvm simulator.
  *
  * AUTHOR
  *    Sripathi Kodi <sripathik@in.ibm.com>
@@ -48,7 +47,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <librttest.h>
-#include <libjvmsim.h>
 
 #define NS_PER_SEC 1000000000
 #define THRESHOLD 0.5  /* 500 milliseconds */
@@ -57,22 +55,17 @@
 
 struct timespec sleepts[NUMSLEEP];
 struct timespec workts[NUMWORK];
-static int run_jvmsim=0;
 
 void usage(void)
 {
 	rt_help();
 	printf("thread_clock specific options:\n");
-	printf("  -j            enable jvmsim\n");
 }
 
 int parse_args(int c, char *v)
 {
 	int handled = 1;
 	switch (c) {
-	case 'j':
-		run_jvmsim = 1;
-		break;
 	case 'h':
 		usage();
 		exit(0);
@@ -184,14 +177,7 @@ int main(int argc,char* argv[])
 	setup();
 
 	pass_criteria = THRESHOLD;
-	rt_init("jht:",parse_args,argc,argv);
-
-	if (run_jvmsim) {
-		printf("jvmsim enabled\n");
-		jvmsim_init();  // Start the JVM simulation
-	} else {
-		printf("jvmsim disabled\n");
-	}
+	rt_init("ht:",parse_args,argc,argv);
 
 	/* Start sleeper threads */
 	for (i=0; i<NUMSLEEP; i++) {

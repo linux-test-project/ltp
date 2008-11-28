@@ -29,7 +29,6 @@
  *
  * USAGE:
  *     Use run_auto.sh script in current directory to build and run test.
- *     Use "-j" to enable jvm simulator.
  *
  * AUTHOR
  *      Darren Hart <dvhltc@us.ibm.com>
@@ -43,7 +42,6 @@
 #include <stdlib.h>
 #include <math.h>
 #include <librttest.h>
-#include <libjvmsim.h>
 #include <libstats.h>
 
 #define DEF_MED_PRIO 60		// (softirqd-hrtimer,98)
@@ -53,7 +51,6 @@
 #define DEF_SLEEP_TIME 10000	// Duration of nanosleep in nanoseconds
 #define DEF_CRITERIA 10		// maximum timer latency in microseconds
 
-static int run_jvmsim = 0;
 static int med_prio = DEF_MED_PRIO;
 static int high_prio;
 static int busy_time = DEF_BUSY_TIME;
@@ -69,7 +66,6 @@ void usage(void)
 {
 	rt_help();
 	printf("hrtimer-prio specific options:\n");
-	printf("  -j            enable jvmsim\n");
 	printf("  -t#           #:busy work time in ms, defaults to %d ms\n", DEF_BUSY_TIME);
 	printf("  -i#           #:number of iterations, defaults to %d\n", DEF_ITERATIONS);
 	printf("  -n#           #:number of busy threads, defaults to NR_CPUS*2\n");
@@ -82,9 +78,6 @@ int parse_args(int c, char *v)
 
 	int handled = 1;
 	switch (c) {
-		case 'j':
-			run_jvmsim = 1;
-			break;
 		case 'h':
 			usage();
 			exit(0);
@@ -174,13 +167,6 @@ int main(int argc, char *argv[])
 	printf("Busy thread work time: %d\n", busy_time);
 	printf("Busy thread priority: %d\n", med_prio);
 	printf("Timer thread priority: %d\n", high_prio);
-
-	if (run_jvmsim) {
-		printf("jvmsim enabled\n");
-		jvmsim_init();  // Start the JVM simulation
-	} else {
-		printf("jvmsim disabled\n");
-	}
 
 	stats_container_t hist;
 	stats_quantiles_t quantiles;

@@ -37,7 +37,6 @@
  *
  * USAGE:
  *      Use run_auto.sh script in current directory to build and run test.
- *      Use "-j" to enable jvm simulator.
  *
  * AUTHOR
  *      Darren Hart <dvhltc@us.ibm.com>
@@ -52,7 +51,6 @@
 #include <time.h>
 #include <sched.h>
 #include <librttest.h>
-#include <libjvmsim.h>
 #include <sys/mman.h>
 
 #define CLOCK_TO_USE CLOCK_MONOTONIC
@@ -60,14 +58,12 @@
 #define START_MAX	3000
 #define REPORT_MIN	1000000
 
-static int run_jvmsim = 0;
 static unsigned int max_window = 0; /* infinite, don't use a window */
 
 void usage(void)
 {
 	rt_help();
 	printf("gtod_infinite specific options:\n");
-	printf("  -j            enable jvmsim\n");
 	printf("  -wWINDOW      iterations in max value window (default inf)\n");
 }
 
@@ -75,9 +71,6 @@ int parse_args(int c, char *v)
 {
 	int handled = 1;
 	switch (c) {
-		case 'j':
-			run_jvmsim = 1;
-			break;
 		case 'h':
 			usage();
 			exit(0);
@@ -112,14 +105,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 */
-	rt_init("jhw:", parse_args, argc, argv);
-
-	if (run_jvmsim) {
-		printf("jvmsim enabled\n");
-		jvmsim_init();
-	} else {
-		printf("jvmsim disabled\n");
-	}
+	rt_init("hw:", parse_args, argc, argv);
 
 	mlockall(MCL_CURRENT|MCL_FUTURE);
 

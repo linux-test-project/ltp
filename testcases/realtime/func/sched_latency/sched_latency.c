@@ -34,7 +34,6 @@
  *
  * USAGE:
  *      Use run_auto.sh script in current directory to build and run test.
- *      Use "-j" to enable jvm simulator.
  *
  * AUTHOR
  *      Darren Hart <dvhltc@us.ibm.com>
@@ -51,7 +50,6 @@
 #include <math.h>
 #include <librttest.h>
 #include <libstats.h>
-#include <libjvmsim.h>
 
 #define PRIO 89
 //#define PERIOD 17*NS_PER_MS
@@ -66,7 +64,6 @@
 
 nsec_t start;
 nsec_t end;
-static int run_jvmsim = 0;
 static int ret = 0;
 static int iterations = 0;
 static unsigned long long latency_threshold = 0;
@@ -81,7 +78,6 @@ void usage(void)
 {
 	rt_help();
 	printf("sched_latency specific options:\n");
-	printf("  -j            enable jvmsim\n");
 	printf("  -dLOAD        periodic load in ms (default 1)\n");
 	printf("  -lTHRESHOLD   trace latency, with given threshold in us\n");
 	printf("  -tPERIOD      period in ms (default 5)\n");
@@ -94,9 +90,6 @@ int parse_args(int c, char *v)
 
         int handled = 1;
         switch (c) {
-                case 'j':
-                        run_jvmsim = 1;
-                        break;
                 case 'h':
                         usage();
                         exit(0);
@@ -235,7 +228,7 @@ int main(int argc, char *argv[])
 	setup();
 
 	pass_criteria = PASS_US;
-	rt_init("d:jl:ht:i:", parse_args, argc, argv);
+	rt_init("d:l:ht:i:", parse_args, argc, argv);
 
 	printf("-------------------------------\n");
 	printf("Scheduling Latency\n");
@@ -259,13 +252,6 @@ int main(int argc, char *argv[])
 	printf("Periodic load duration: %d ms\n", load_ms);
 	printf("Expected running time: %d s\n",
 	       (int)(iterations*((float)period / NS_PER_SEC)));
-
-	if (run_jvmsim) {
-		printf("jvmsim enabled\n");
-		jvmsim_init();	// Start the JVM simulation
-	} else {
-		printf("jvmsim disabled\n");
-	}
 
 	if (stats_container_init(&dat, iterations))
 		exit(1);

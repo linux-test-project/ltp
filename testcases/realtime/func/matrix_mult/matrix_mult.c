@@ -26,7 +26,6 @@
  *
  * USAGE:
  *      Use run_auto.sh script in current directory to build and run test.
- *      Use "-j" to enable jvm simulator.
  *
  * AUTHOR
  *      Darren Hart <dvhltc@us.ibm.com>
@@ -41,7 +40,6 @@
 #include <stdlib.h>
 #include <math.h>
 #include <librttest.h>
-#include <libjvmsim.h>
 #include <libstats.h>
 
 #define MAX_CPUS	8192
@@ -60,7 +58,6 @@
 
 #define THREAD_SLEEP	1 * NS_PER_US
 
-static int run_jvmsim = 0;
 static int ops = DEF_OPS;
 static int numcpus;
 static float criteria;
@@ -79,7 +76,6 @@ void usage(void)
 {
 	rt_help();
 	printf("matrix_mult specific options:\n");
-	printf("  -j            enable jvmsim\n");
 	printf("  -l#           #: number of multiplications per iteration (load)\n");
 	printf("  -i#           #: number of iterations\n");
 }
@@ -88,9 +84,6 @@ int parse_args(int c, char *v)
 {
 	int handled = 1;
 	switch (c) {
-	case 'j':
-		run_jvmsim = 1;
-		break;
 	case 'i':
 		iterations = atoi(v);
 		break;
@@ -317,7 +310,7 @@ int main(int argc, char *argv[])
 {
 	setup();
 	pass_criteria = PASS_CRITERIA;
-	rt_init("jl:i:h", parse_args, argc, argv);
+	rt_init("l:i:h", parse_args, argc, argv);
 	numcpus = sysconf(_SC_NPROCESSORS_ONLN);
 	/* the minimum avg concurrent multiplier to pass */
 	criteria = pass_criteria * numcpus;
@@ -347,13 +340,6 @@ int main(int argc, char *argv[])
 	printf("Matrix Dimensions: %dx%d\n", MATRIX_SIZE, MATRIX_SIZE);
 	printf("Calculations per iteration: %d\n", ops);
 	printf("Number of CPUs: %u\n", numcpus);
-
-	if (run_jvmsim) {
-		printf("jvmsim enabled\n");
-		jvmsim_init();	/* Start the JVM simulation */
-	} else {
-		printf("jvmsim disabled\n");
-	}
 
 	set_priority(PRIO);
 	main_thread();

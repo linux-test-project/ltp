@@ -29,7 +29,6 @@
  *
  * USAGE:
  *     Use run_auto.sh script in current directory to build and run test.
- *     Use "-j" to enable jvm simulator.
  *
  * AUTHOR
  *      Darren Hart <dvhltc@us.ibm.com> 
@@ -45,7 +44,6 @@
 #include <stdint.h>
 #include <pthread.h>
 #include <librttest.h>
-#include <libjvmsim.h>
 #include <libstats.h>
 
 #define HANDLER_PRIO 98
@@ -71,13 +69,11 @@ pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t mutex;
 
 
-static int run_jvmsim=0;
 
 void usage(void)
 {
         rt_help();
         printf("async_handler_tsc specific options:\n");
-        printf("  -j            enable jvmsim\n");
 }
 
 int parse_args(int c, char *v)
@@ -85,9 +81,6 @@ int parse_args(int c, char *v)
 
         int handled = 1;
         switch (c) {
-                case 'j':
-                        run_jvmsim = 1;
-                        break;
                 case 'h':
                         usage();
                         exit(0);
@@ -199,7 +192,7 @@ int main(int argc, char *argv[])
 	int signal_id, handler_id;
 	setup();
 
-	rt_init("jh", parse_args, argc, argv);
+	rt_init("h", parse_args, argc, argv);
 
 	printf("-------------------------------\n");
 	printf("Asynchronous Event Handling Latency\n");
@@ -213,13 +206,6 @@ int main(int argc, char *argv[])
 	init_pi_mutex(&mutex);
 
 	atomic_set(CHILD_START, &step);
-	if (run_jvmsim) {
-                printf("jvmsim enabled\n");
-                jvmsim_init();  // Start the JVM simulation
-        } else {
-                printf("jvmsim disabled\n");
-        }
-
 	handler_id = create_fifo_thread(handler_thread, (void*)0, HANDLER_PRIO);
 	signal_id = create_fifo_thread(signal_thread, (void*)0, SIGNAL_PRIO);
 

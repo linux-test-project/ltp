@@ -25,7 +25,6 @@
  *
  * USAGE:
  *      Use run_auto.sh script in current directory to build and run test.
- *      Use "-j" to enable jvm simulator.
  *
  * AUTHOR
  *      Darren Hart <dvhltc@us.ibm.com>
@@ -40,7 +39,6 @@
 #include <math.h>
 #include <librttest.h>
 #include <libstats.h>
-#include <libjvmsim.h>
 
 #define HIST_BUCKETS 100
 
@@ -55,7 +53,6 @@
 static int prio;
 static int period;
 static int calc_loops;
-static int run_jvmsim = 0;
 static int ret = 0;
 static char *filename_prefix = DEFAULT_FILENAME_PREFIX;
 static int iterations = DEFAULT_ITERATIONS;
@@ -67,7 +64,6 @@ void usage(void)
 	printf("  -lCALC_LOOPS	loops per iteration\n");
 	printf("  -fFILENAME_PREFIX    filename prefix for plot output\n");
 	printf("  -iITERATIONS  number of iterations to calculate the average over\n");
-	printf("  -j            enable jvmsim\n");
 	printf("  -r[0-99]	real-time priority\n");
 	printf("  -tPERIOD	period in ms\n");
 }
@@ -175,9 +171,6 @@ int parse_args(int c, char *v)
 		case 'i':
 			iterations = atoi(v);
 			break;
-		case 'j':
-			run_jvmsim = 1;
-			break;
 		case 'r':
 			prio = atoi(v);
 			break;
@@ -198,7 +191,7 @@ int main(int argc, char *argv[])
 	calc_loops = DEFAULT_CALC_LOOPS;
 	setup();
 
-	rt_init("f:jhi:r:t:l:", parse_args, argc, argv);
+	rt_init("f:hi:r:t:l:", parse_args, argc, argv);
 
 	if (iterations < 100) {
 		printf("Number of iterations cannot be less than 100\n");
@@ -220,13 +213,6 @@ int main(int argc, char *argv[])
 	printf("  period: %d ms\n", period/NS_PER_MS);
 	printf("   loops: %d\n", calc_loops);
 	printf("    logs: %s*\n", filename_prefix);
-
-	if (run_jvmsim) {
-		printf("jvmsim enabled\n");
-		jvmsim_init();	// Start the JVM simulation
-	} else {
-		printf("jvmsim disabled\n");
-	}
 
 	ret = periodic_thread(period, iterations, calc_loops);
 

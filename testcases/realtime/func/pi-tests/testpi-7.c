@@ -25,7 +25,6 @@
  *
  * USAGE:
  *      Use run_auto.sh script in current directory to build and run test.
- *      Use "-j" to enable jvm simulator.
  *
  * AUTHOR
  *      Darren Hart <dvhltc@us.ibm.com>
@@ -42,7 +41,6 @@
 #include <stdlib.h>
 #include <math.h>
 #include <librttest.h>
-#include <libjvmsim.h>
 
 #define HIGH_PRIO 15
 #define MED_PRIO 10
@@ -74,14 +72,12 @@ static volatile phase_t phase_flag = END_OF_CYCLE;
 static pthread_mutex_t flag_mutex;
 
 int med_threads = 0;
-static int run_jvmsim=0;
 long iterations = ITERATIONS;
 
 void usage(void)
 {
         rt_help();
 	printf("testpi-7 specific options:\n");
-	printf("  -j            enable jvmsim\n");
 	printf("  -i#     #: number of iterations\n");
 	printf("  -f      #: Use flag mutex\n");
 	printf("  -m#     #:number of mid priority threads\n");
@@ -91,9 +87,6 @@ int parse_args(int c, char *v)
 {
         int handled = 1;
         switch (c) {
-		case 'j':
-			run_jvmsim=1;
-			break;
 		case 'h':
 			usage();
 			exit(0);
@@ -253,14 +246,7 @@ int main(int argc, char *argv[])
 	int i,numcpus;
 	setup();
 
-	rt_init("jhfi:m:", parse_args, argc, argv);
-
-	if (run_jvmsim) {
-                printf("jvmsim enabled\n");
-                jvmsim_init();  // Start the JVM simulation
-	} else {
-                printf("jvmsim disabled\n");
-	}
+	rt_init("hfi:m:", parse_args, argc, argv);
 
 	if (!med_threads) {
 		printf("This test requires that at least NRCPUS medium priority threads run\n");

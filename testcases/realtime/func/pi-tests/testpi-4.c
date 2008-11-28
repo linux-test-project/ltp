@@ -25,7 +25,6 @@
  *
  * USAGE:
  *      Use run_auto.sh script in current directory to build and run test.
- *      Use "-j" to enable jvm simulator.
  *
  * AUTHOR
  *
@@ -45,16 +44,13 @@
 #include <sys/syscall.h>
 #include <unistd.h>
 #include <librttest.h>
-#include <libjvmsim.h>
 
-static int run_jvmsim=0;
 pthread_barrier_t barrier;
 
 void usage(void)
 {
         rt_help();
         printf("testpi-4 specific options:\n");
-        printf("  -j            enable jvmsim\n");
 }
 
 int parse_args(int c, char *v)
@@ -62,9 +58,6 @@ int parse_args(int c, char *v)
 
         int handled = 1;
         switch (c) {
-                case 'j':
-                        run_jvmsim = 1;
-                        break;
                 case 'h':
                         usage();
                         exit(0);
@@ -204,18 +197,11 @@ int main(int argc, char* argv[]) {
   CPU_SET(0, &mask);
   setup();
 
-  rt_init("jh",parse_args,argc,argv);
+  rt_init("h",parse_args,argc,argv);
 
   if ((retc = pthread_barrier_init(&barrier, NULL, 5))) {
     printf("pthread_barrier_init failed: %s\n", strerror(retc));
     exit(retc);
-  }
-
-  if (run_jvmsim) {
-	printf("jvmsim enabled\n");
-	jvmsim_init();  // Start the JVM simulation
-  } else {
-	printf("jvmsim disabled\n");
   }
 
   retc = sched_setaffinity(0, sizeof(mask), &mask);

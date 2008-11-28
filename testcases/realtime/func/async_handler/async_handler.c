@@ -26,7 +26,6 @@
  *
  * USAGE:
  *     Use run_auto.sh script in current directory to build and run test.
- *     Use "-j" to enable jvm simulator.
  *
  * AUTHOR
  *     Darren Hart <dvhltc@us.ibm.com>
@@ -40,7 +39,6 @@
 #include <stdlib.h>
 #include <math.h>
 #include <librttest.h>
-#include <libjvmsim.h>
 #include <libstats.h>
 #include <getopt.h>
 
@@ -53,7 +51,6 @@
 static nsec_t start;
 static nsec_t end;
 static int iterations = 0;
-static int run_jvmsim = 0;
 
 #define CHILD_START   0
 #define CHILD_WAIT    1
@@ -70,7 +67,6 @@ void usage(void)
 {
         rt_help();
         printf("async_handler specific options:\n");
-        printf("  -j            enable jvmsim\n");
         printf("  -iITERATIONS  number of iterations to calculate the average over\n");
 }
 
@@ -79,9 +75,6 @@ int parse_args(int c, char *v)
 
         int handled = 1;
         switch (c) {
-                case 'j':
-                        run_jvmsim = 1;
-                        break;
 		case 'h':
 			usage();
 			exit(0);
@@ -181,18 +174,12 @@ int main(int argc, char *argv[])
 	printf("-----------------------------------\n\n");
 
 	pass_criteria = PASS_US;
-	rt_init("ji:h", parse_args, argc, argv);
+	rt_init("i:h", parse_args, argc, argv);
 
 	init_pi_mutex(&mutex);
 
 	atomic_set(CHILD_START, &step);
 
-	if (run_jvmsim) {
-		printf("jvmsim enabled\n");
-		jvmsim_init();	// Start the JVM simulation
-	} else {
-		printf("jvmsim disabled\n");
-	}
 	if (iterations == 0)
 		iterations = DEFAULT_ITERATIONS;
 	printf("Running %d iterations\n", iterations);

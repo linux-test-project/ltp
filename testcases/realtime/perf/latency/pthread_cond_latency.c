@@ -24,7 +24,6 @@
  *
  * USAGE:
  *     Use run_auto.sh script in current directory to build and run test.
- *     Use "-j" to enable jvm simulator.
  *
  * AUTHOR
  *      Paul E. McKenney <paulmck@us.ibm.com>
@@ -43,19 +42,16 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <librttest.h>
-#include <libjvmsim.h>
 
 pthread_mutex_t child_mutex = PTHREAD_MUTEX_INITIALIZER;
 volatile int child_waiting = 0;
 double endtime;
 
-static int run_jvmsim=0;
 
 void usage(void)
 {
         rt_help();
         printf("testpi-1 specific options:\n");
-        printf("  -j            enable jvmsim\n");
 }
 
 int parse_args(int c, char *v)
@@ -63,9 +59,6 @@ int parse_args(int c, char *v)
 
         int handled = 1;
         switch (c) {
-                case 'j':
-                        run_jvmsim = 1;
-                        break;
                 case 'h':
                         usage();
                         exit(0);
@@ -206,14 +199,7 @@ main(int argc, char *argv[])
 	long iter;
 	setup();
 
-	rt_init("jh", parse_args, argc, argv);
-
-	if (run_jvmsim) {
-                printf("jvmsim enabled\n");
-                jvmsim_init();  // Start the JVM simulation
-	} else {
-                printf("jvmsim disabled\n");
-	}
+	rt_init("h", parse_args, argc, argv);
 
 	sp.sched_priority = sched_get_priority_max(SCHED_FIFO);
 	if (sp.sched_priority == -1) {

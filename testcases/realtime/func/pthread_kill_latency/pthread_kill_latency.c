@@ -51,7 +51,6 @@
 #include <signal.h>
 #include <errno.h>
 #include <librttest.h>
-#include <libjvmsim.h>
 #include <libstats.h>
 
 #define PRIO 89
@@ -69,13 +68,11 @@ int fail;
 
 atomic_t flag;
 
-static int run_jvmsim=0;
 
 void usage(void)
 {
 	rt_help();
 	printf("pthread_kill_latency specific options:\n");
-	printf("  -j            enable jvmsim\n");
 	printf("  -l threshold  trace latency with given threshold in us\n");
 }
 
@@ -84,9 +81,6 @@ int parse_args(int c, char *v)
 
 	int handled = 1;
 	switch (c) {
-		case 'j':
-			run_jvmsim = 1;
-			break;
 		case 'l':
 			latency_threshold = strtoull(v, NULL, 0);
 			break;
@@ -281,20 +275,13 @@ int main(int argc, char *argv[])
 	setup();
 
 	pass_criteria = THRESHOLD;
-	rt_init("jl:h", parse_args, argc, argv);	/* we need the buffered print system */
+	rt_init("l:h", parse_args, argc, argv);	/* we need the buffered print system */
 
 	printf("-------------------------------\n");
 	printf("pthread_kill Latency\n");
 	printf("-------------------------------\n\n");
 
 	printf("Iterations: %d\n", ITERATIONS);
-
-	if (run_jvmsim) {
-		printf("jvmsim enabled\n");
-		jvmsim_init();  // Start the JVM simulation
-	} else {
-		printf("jvmsim disabled\n");
-	}
 
 	debug(DBG_DEBUG, "Main creating threads\n");
 	fflush(stdout);

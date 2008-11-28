@@ -24,7 +24,6 @@
  *
  * USAGE:
  *      Use run_auto.sh script in current directory to build and run test.
- *      Use "-j" to enable jvm simulator.
  *
  * AUTHOR
  *      Darren Hart <dvhltc@us.ibm.com>
@@ -36,12 +35,10 @@
 
 #include <stdio.h>
 #include <librttest.h>
-#include <libjvmsim.h>
 
 #define NUM_SLAVES 20
 #define SLAVE_PRIO 89
 
-int enable_jvmsim = 0;
 
 pthread_mutex_t MM;
 pthread_mutex_t MS;
@@ -54,13 +51,11 @@ atomic_t slave_order_a = {0};
 atomic_t slave_order_b = {0};
 atomic_t slave_order_c = {0};
 
-static int run_jvmsim=0;
 
 void usage(void)
 {
         rt_help();
         printf("lookup_pi_state specific options:\n");
-        printf("  -j            enable jvmsim\n");
 }
 
 int parse_args(int c, char *v)
@@ -68,9 +63,6 @@ int parse_args(int c, char *v)
 
         int handled = 1;
         switch (c) {
-                case 'j':
-                        run_jvmsim = 1;
-                        break;
                 case 'h':
                         usage();
                         exit(0);
@@ -180,15 +172,7 @@ int main(int argc, char *argv[])
 	pthread_cond_init(&CS, NULL);
 	pthread_cond_init(&CT, NULL);
 
-	rt_init("jh", parse_args, argc, argv);
-
-	// -j to enable jvmsim
-	if (run_jvmsim) {
-		printf("jvmsim Enabled\n");
-		jvmsim_init();
-	} else {
-		printf("jvmsim disabled \n");
-	}
+	rt_init("h", parse_args, argc, argv);
 
 	create_other_thread(master_thread, (void *)0);
 

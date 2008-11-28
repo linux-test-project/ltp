@@ -25,7 +25,6 @@
  *
  * USAGE:
  *      Use run_auto.sh script in current directory to build and run test.
- *      Use "-j" to enable jvm simulator.
  *
  * AUTHOR
  *      Darren Hart <dvhltc@us.ibm.com>
@@ -40,7 +39,6 @@
 #include <math.h>
 #include <librttest.h>
 #include <libstats.h>
-#include <libjvmsim.h>
 
 #define PRIO_A 63
 #define PRIO_B 53
@@ -68,7 +66,6 @@ stats_container_t dat[THREADS_PER_GROUP * NUM_GROUPS];
 stats_quantiles_t quantiles[THREADS_PER_GROUP * NUM_GROUPS];
 static const char groupname[NUM_GROUPS] = "ABC";
 
-static int run_jvmsim = 0;
 static int iterations = ITERATIONS;
 static int ret = 0;
 
@@ -77,15 +74,12 @@ void usage(void)
 	rt_help();
 	printf("periodic_cpu_load specific options:\n");
 	printf("  -iITERATIONS  number of iterations to calculate the average over\n");
-	printf("  -j            enable jvmsim\n");
 }
 
 int parse_args(int c, char *v)
 {
 	int handled = 1;
 	switch (c) {
-		case 'j':
-			run_jvmsim = 1;
 			break;
 		case 'i':
 			iterations = atoi(v);
@@ -170,7 +164,7 @@ int main(int argc, char *argv[])
 	int i;
 	setup();
 
-	rt_init("jhi:", parse_args, argc, argv);
+	rt_init("hi:", parse_args, argc, argv);
 
 	if (iterations < 100) {
 		fprintf(stderr, "Number of iteration cannot be less than 100.\n");
@@ -194,13 +188,6 @@ int main(int argc, char *argv[])
 	printf("  priority: %d\n", PRIO_C);
 	printf("  period: %d ms\n", PERIOD_C/NS_PER_MS);
 	printf("\n");
-
-	if (run_jvmsim) {
-		printf("jvmsim enabled\n");
-		jvmsim_init();	// Start the JVM simulation
-	} else {
-		printf("jvmsim disabled\n");
-	}
 
 	for (i=0; i<(THREADS_PER_GROUP * NUM_GROUPS); i++) {
 		stats_container_init(&dat[i], iterations);
