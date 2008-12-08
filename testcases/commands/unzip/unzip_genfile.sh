@@ -1,3 +1,4 @@
+#! /bin/sh
 ################################################################################
 ##                                                                            ##
 ## Copyright (c) International Business Machines  Corp., 2001                 ##
@@ -27,7 +28,6 @@
 #
 # History:
 # 	Mar 03 2003 - Created - Manoj Iyer.
-#! /bin/sh
 
 # Create directories and fill them with files.
 
@@ -41,7 +41,7 @@ RC=0                          # return value from commands
 while [ $dircnt -lt $numdirs ]
 do
 	dirname=$dirname/d.$dircnt
-	mkdir -p $dirname  &>/dev/null || RC=$?
+	mkdir -p $dirname  >/dev/null 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
 		echo "unzip_genfile.sh: ERROR: while creating $numdirs dirs."
@@ -63,8 +63,8 @@ done
 
 # Create ZIP file.
 
-zip -r tst_unzip_file.zip /tmp/tst_unzip.dir &>/dev/null
+zip -r tst_unzip_file.zip /tmp/tst_unzip.dir >/dev/null 2>&1
 
-rm -fr /tmp/tst_unzip.* &>/dev/null
+rm -fr /tmp/tst_unzip.* >/dev/null 2>&1
 
 exit $RC
