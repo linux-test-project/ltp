@@ -263,9 +263,9 @@ int main(int argc, char *argv[])
 	}
 	/* This loop runs for a long time, hence can cause soft lockups.
 	   Calling sleep periodically avoids this. */
-	for (i=0; i<1000; i++) {
-		for (j=0; j < ITERATIONS/1000; j++) {
-			k = (i * ITERATIONS/1000) + j;
+	for (i=0; i<(ITERATIONS/10000); i++) {
+		for (j=0; j < 10000; j++) {
+			k = (i * 10000) + j;
 			clock_gettime(CLOCK_MONOTONIC,&start_data[k]);
 			clock_gettime(CLOCK_MONOTONIC,&stop_data[k]);
 		}
