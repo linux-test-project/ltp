@@ -58,11 +58,11 @@ int anyfail();
 void ok_exit();
 /*****  **      **      *****/
 
-#define AS_SVSM_VSEG_MAX	48U
-#define AS_SVSM_MMAP_MAX	16U
+#define AS_SVSM_VSEG_MAX	48UL
+#define AS_SVSM_MMAP_MAX	16UL
 
 
-#define EXTRA_VSEGS	2
+#define EXTRA_VSEGS	2L
 #define NUM_SEGS	(AS_SVSM_VSEG_MAX + EXTRA_VSEGS)
 #define ERROR(M) (void)fprintf(stderr, "%s: errno = %d: " M "\n", progname, \
 			errno)
