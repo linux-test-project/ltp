@@ -6,6 +6,8 @@
  * Licensed under the GPL-2 or later
  */
 
+#define _GNU_SOURCE
+
 #if defined(__bfin__)
 
 #include <errno.h>

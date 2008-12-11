@@ -9,6 +9,8 @@
  * Licensed under the GPL-2 or later
  */
 
+#define _GNU_SOURCE
+
 #include <errno.h>
 #include <stdbool.h>
 #include <stdio.h>
