@@ -30,6 +30,8 @@
 #  HISTORY:
 #    04/20/01 Robbie Williamson (robbiew@us.ibm.com)
 #      -Written
+#    11/20/08 Aime Le Rouzic (aime.lerouzic@bull.net)
+#      - Adapt to rpcbind
 #
 # CMD      FLAG      ARGS       
 # rpcinfo   -p
@@ -79,11 +81,21 @@ $trace_logic
 
 echo "Checking for portmap or rpcbind daemon on `hostname` and $RHOST"
 ps -ewf | grep portmap | grep -v grep > /dev/null
-[ $? -eq 0 ] || ps -ewf | grep rpcbind | grep -v grep > /dev/null
-[ $? -eq 0 ] || end_testcase "The portmap or rpcbind daemon is NOT running"
+if [ $? -eq 0 ] 
+then
+	PORTMAPPER="portmap"
+else
+	ps -ewf | grep rpcbind | grep -v grep > /dev/null
+	if [ $? -eq 0 ]
+	then
+		PORTMAPPER="rpcbind"
+	else
+		echo "The portmap or rpcbind daemon is NOT running"
+	fi
+fi
 
-rsh -n $RHOST "ps -ewf" | grep portmap | grep -v grep > /dev/null
-[ $? -eq 0 ] || rsh -n $RHOST "ps -ewf" | grep rpcbind | grep -v grep > /dev/null
+ssh -n $RHOST "ps -ewf" | grep portmap | grep -v grep > /dev/null
+[ $? -eq 0 ] || ssh -n $RHOST "ps -ewf" | grep rpcbind | grep -v grep > /dev/null
 [ $? -eq 0 ] || end_testcase "The portmap or rpcbind daemon is NOT running on $RHOST"
 
 echo "Test rpcinfo with default options"
@@ -180,8 +192,20 @@ echo "Test rpcinfo with missing or bad options"
 # bogusprog, 99999 as versnum.
 
 echo "rpcinfo <no flags>"
-rpcinfo 
-[ $? -eq 1 ] || end_testcase "rpcinfo <no flags> should fail"
+case $PORTMAPPER in
+	portmap)
+		rpcinfo
+		[ $? -eq 1 ] || end_testcase "rpcinfo <no flags> should fail"
+		;;
+	rpcbind)
+		rpcinfo
+		[ $? -eq 0 ]|| end_testcase "rpcinfo <no flags> should not fail"
+		;;
+	*)
+		echo " portmap or rpcbind not running"
+		exit 1
+		;;
+esac
 
 echo "rpcinfo -p <bad hostname>"
 rpcinfo -p bogushost 

@@ -32,6 +32,7 @@ History and project overview
 ----------------------------
 Created by: Cyril Lacabanne - Bull SA
 Maintain by: Aurélien Charbon - Bull SA - aurelien.charbon@ext.bull.net
+11-27-08: Updated by Aime Le Rouzic - Bull SA - aime.lerouzic@bull.net
 
 Web page: http://nfsv4.bullopensource.org/doc/rpc_testsuite.php
 
@@ -52,7 +53,8 @@ Directory structure
 Preparation
 -----------
 You need one, two or three computers, all computers need ssh to run
-test suite correctly and public keys must be shared between computers.
+test suite correctly and public keys MUST be shared between computers.
+It is REQUIRED ssh is used WITHOUT passwd. 
 Use ssh-keygen to do that.
 
 
@@ -100,8 +102,12 @@ Remark : replace <script_lib.sh> by script lib name like domain_subdomain_test_l
 -------------------------
 Launch Test Suite Scripts
 -------------------------
-	To run with defaults values:
+	To run with defaults values (`hostname` for the client ,  RHOST env variable or `hostname`) 
 	./run_rpc_tirpc_test_auto.sh
+	or
+	run_rpc_test_auto.sh
+	or
+	run_tirpc_test_auto.sh
 
 	To select and run the tests with choiced values:
 	./run_rpc_tirpc_test_interactive.sh
@@ -113,7 +119,6 @@ Launch Test Suite Scripts
 	or
 	./runltp -f rpctirpc
 	
-
 -------------
 Tests results
 -------------

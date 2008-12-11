@@ -3,8 +3,9 @@
 # Prepare test suite & Make Makefile shell script for RPC & TIRPC Test Suite
 # Automatic configuration script design for LTP
 # (c) 2008 BULL S.A.S.
-# created by Aurelien Charbon - aurelien.charbon@bull.net
-# creation : 2008-02-25
+# 
+# 2008-02-25: created by Aurelien Charbon - Bull SA - aurelien.charbon@ext.bull.net  
+# 2008-11-27: updated by Aime Le Rouzic - Bull SA - aime.lerouzic@bull.net
 
 # ***************************
 # *** initialization part ***
@@ -13,7 +14,7 @@
 #define current directory, where test suite is installed
 RPCTSDIR=`pwd`
 DEFAULTDIR=$RPCTSDIR/tests_pack
-DEFAULTIP=localhost
+DEFAULTIP=`hostname`
 DEFAULTUSR=root
 TSTPACKDIR=$RPCTSDIR/tests_pack
 NBTHREADPROCESS=4
@@ -24,6 +25,8 @@ SCALINSTNUMBER=8
 export TSTPACKDIR
 export SERVERTSTPACKDIR
 export CLIENTTSTPACKDIR
+export SERVERDEPLOYDIR
+export CLIENTDEPLOYDIR
 export NBTHREADPROCESS
 export NBTESTPROCESS
 
@@ -43,9 +46,13 @@ chmod +x rpc_ts_run.sh
 
 SERVERTSTPACKDIR=$DEFAULTDIR
 echo 'SERVERTSTPACKDIR='$SERVERTSTPACKDIR >>rpc_ts_run.sh
+SERVERDEPLOYDIR=$RPCTSDIR
+echo 'SERVERDEPLOYDIR='$SERVERDEPLOYDIR >>rpc_ts_run.sh
 
 CLIENTTSTPACKDIR=$DEFAULTDIR
 echo 'CLIENTTSTPACKDIR='$CLIENTTSTPACKDIR >>rpc_ts_run.sh
+CLIENTDEPLOYDIR=$RPCTSDIR
+echo 'CLIENTDEPLOYDIR='$CLIENTDEPLOYDIR >>rpc_ts_run.sh
 
 echo "# LOCALIP variable is computer IP/name used to run tests scripts" >>rpc_ts_run.sh
 echo "# if LOCALIP = SERVERIP = CLIENTIP, that means all tests are in local mode" >>rpc_ts_run.sh
@@ -55,7 +62,12 @@ LOCALIP=$DEFAULTIP
 echo 'LOCALIP='$LOCALIP >>rpc_ts_run.sh
 
 
-SERVERIP=$DEFAULTIP
+if [ -z "$RHOST" ]
+then
+	SERVERIP=$DEFAULTIP
+else
+	SERVERIP=$RHOST
+fi
 echo 'SERVERIP='$SERVERIP >>rpc_ts_run.sh
 
 CLIENTIP=$DEFAULTIP
@@ -91,6 +103,8 @@ cat inc/rpc_ts_run.ftr>>rpc_ts_run.sh
 cat inc/install.hdr >install.sh
 chmod +x install.sh
 echo "">>install.sh
+echo 'SERVERDEPLOYDIR='$SERVERDEPLOYDIR >>install.sh
+echo 'CLIENTDEPLOYDIR='$CLIENTDEPLOYDIR >>install.sh
 echo 'SERVERTSTPACKDIR='$SERVERTSTPACKDIR >>install.sh
 echo 'CLIENTTSTPACKDIR='$CLIENTTSTPACKDIR >>install.sh
 echo 'LOCALIP='$LOCALIP >>install.sh

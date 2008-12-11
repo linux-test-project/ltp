@@ -25,7 +25,9 @@
 #   HISTORY     :
 #       02/11/2003 Robbie Williamson (robbiew@austin.ibm.com)
 #               written
-####################################################
+#	11/20/2008 Aime Le Rouzic (aime.lerouzic@bull.net)
+#		adapt script to work with portmap and rpcbind
+##############################################################
 
 export LTPROOT=${PWD}
 echo $LTPROOT | grep testscripts > /dev/null 2>&1
@@ -168,39 +170,47 @@ if [ $NO_NETWORK -eq 0 ];then
         if [ $? -eq 1 ];then
           Echo "Error: Could not start rpcbind daemon."
           exit 1
+        else
+          echo "The RPC test suite is using rpcbind"	
         fi
+      else
+	echo "The RPC test suite is using portmap"
       fi
+    else
+      echo "The RPC test suite is using rpcbind"
     fi
+  else
+    echo "The RPC test suite is using portmap"
   fi
 
-  rpcinfo -p | grep nfs 
+  ps -p | grep nfs 
   if [ $? -eq 1 ];then
     /usr/sbin/rpc.nfsd 
   fi
   sleep 1
-  rpcinfo -p | grep nfs 
+  ps -p | grep nfs 
   if [ $? -eq 1 ];then
     echo "Error: Could not start nfs server daemon."
     exit 1
   fi
 
-  rpcinfo -p | grep status 
+  ps -p | grep status 
   if [ $? -eq 1 ];then
     /sbin/rpc.statd 
   fi
   sleep 1
-  rpcinfo -p | grep status 
+  ps -p | grep status 
   if [ $? -eq 1 ];then
     echo "Error: Could not start statd daemon."
     exit 1
   fi
 
-  rpcinfo -p | grep mount 
+  ps -p | grep mount 
   if [ $? -eq 1 ];then
     /usr/sbin/rpc.mountd 
   fi
   sleep 1
-  rpcinfo -p | grep mount 
+  ps -p | grep mount 
   if [ $? -eq 1 ];then
     echo "Error: Could not start mountd daemon."
     exit 1
