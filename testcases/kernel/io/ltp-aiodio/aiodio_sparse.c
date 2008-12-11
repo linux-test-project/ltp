@@ -39,9 +39,30 @@
 
 #include <libaio.h>
 
+#include "test.h"
+
 #define NUM_CHILDREN 1000
 
 int debug;
+const char* filename1=NULL;
+const char* filename2=NULL;
+
+static void setup(void);
+static void cleanup(void);
+
+char *TCID="aiodio_sparse";	/* Test program identifier.    */
+int TST_TOTAL=1;	/* Total number of test cases. */
+
+#define barrier() __asm__ __volatile__("": : :"memory")
+#define WITH_SIGNALS_BLOCKED(code) {											\
+		sigset_t held_sigs_;																	\
+		sigfillset(&held_sigs_);															\
+		sigprocmask(SIG_SETMASK, &held_sigs_, &held_sigs_);	\
+		barrier(); \
+		code;																									\
+		barrier(); \
+		sigprocmask(SIG_SETMASK, &held_sigs_, NULL);					\
+	}
 
 /*
  * aiodio_sparse - issue async O_DIRECT writes to holes is a file while
@@ -152,7 +173,11 @@ void aiodio_sparse(char *filename, int align, int writesize, int filesize, int n
 		}
 	}
 
-	fd = open(filename, O_DIRECT|O_WRONLY|O_CREAT, 0666);
+	WITH_SIGNALS_BLOCKED(
+		fd = open(filename, O_DIRECT|O_WRONLY|O_CREAT|O_EXCL, 0600);
+		if(fd > 0)
+			filename1=filename;
+	);
 
 	if (fd < 0) {
 		perror("cannot create file");
@@ -171,7 +196,11 @@ void aiodio_sparse(char *filename, int align, int writesize, int filesize, int n
 		if (posix_memalign(&bufptr, align, writesize)) {
 			perror("cannot malloc aligned memory");
 			close(fd);
-			unlink(filename);
+
+			WITH_SIGNALS_BLOCKED(
+				filename1=NULL;
+				unlink(filename);
+			);
 			return;
 		}
 		memset(bufptr, 0, writesize);
@@ -185,7 +214,11 @@ void aiodio_sparse(char *filename, int align, int writesize, int filesize, int n
 	if ((w = io_submit(myctx, num_aio, iocbs)) < 0) {
 		printf("io_submit failed error=%d\n", w);
 		close(fd);
-		unlink(filename);
+
+		WITH_SIGNALS_BLOCKED(
+			filename1=NULL;
+			unlink(filename);
+		);
 		return;
 	}
 	if (debug) 
@@ -270,7 +303,11 @@ void aiodio_sparse(char *filename, int align, int writesize, int filesize, int n
 	if (debug)
 		fprintf(stderr, "AIO DIO write done unlinking file\n");
 	close(fd);
-	unlink(filename);
+
+	WITH_SIGNALS_BLOCKED(
+		filename1=NULL;
+		unlink(filename);
+	);
 }
 
 
@@ -284,7 +321,13 @@ void dirty_freeblocks(int size)
 	pg = getpagesize();
 	size = ((size + pg - 1) / pg) * pg;
 	sprintf(filename, "file.xx.%d", getpid());
-	fd = open(filename, O_CREAT|O_RDWR, 0666);
+
+	WITH_SIGNALS_BLOCKED(
+		fd = open(filename, O_CREAT|O_RDWR|O_EXCL, 0600);
+		if(fd != -1)
+			filename2 = filename;
+	);
+
 	if (fd < 0) {
 		perror("cannot open file");
 		exit(2);
@@ -293,13 +336,22 @@ void dirty_freeblocks(int size)
 	p = mmap(0, size, PROT_WRITE|PROT_READ, MAP_SHARED|MAP_FILE, fd, 0);
 	if (p == MAP_FAILED) {
 		perror("cannot mmap");
+		close(fd);
+
+		WITH_SIGNALS_BLOCKED(
+			filename2=NULL;
+			unlink(filename);
+		);
 		exit(2);
 	}
 	memset(p, 0xaa, size);
 	msync(p, size, MS_SYNC);
 	munmap(p, size);
 	close(fd);
-	unlink(filename);
+	WITH_SIGNALS_BLOCKED(
+		filename2=NULL;
+		unlink(filename);
+	);
 }
 
 int usage()
@@ -399,6 +451,8 @@ int main(int argc, char **argv)
 		}
 	}
 
+	setup();
+
 	/*
 	 * Create some dirty free blocks by allocating, writing, syncing,
 	 * and then unlinking and freeing.
@@ -454,4 +508,20 @@ int main(int argc, char **argv)
 	if (children_errors)
 		exit(10);
 	return 0;
+}
+
+static void setup(void)
+{
+	tst_sig(FORK, DEF_HANDLER, cleanup);
+	signal(SIGTERM, cleanup);
+}
+
+static void cleanup(void)
+{
+	if(filename1)
+		unlink(filename1);
+	if(filename2)
+		unlink(filename2);
+
+	tst_exit();
 }

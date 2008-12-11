@@ -1,5 +1,5 @@
-CFLAGS+= -Wall -O -g -DAIO
-LDLIBS+= -laio
+CFLAGS+= -Wall -O -g -DAIO -I../../../../include
+LDLIBS+= -L../../../../lib -laio -lltp
 
 TARGETS=ltp-diorh aiocp aiodio_append aiodio_sparse dio_append dio_sparse dio_truncate dirty read_checkzero aio-stress
 SRCS=$(wildcard *.c)
