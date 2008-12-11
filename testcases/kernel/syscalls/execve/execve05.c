@@ -55,6 +55,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <libgen.h>
 #include "test.h"
 #include "usctest.h"
 #include "libtestsuite.h"
@@ -212,9 +213,52 @@ help()
 void
 setup()
 {
+	char *cmd, *dirc, *basec, *bname, *dname, *path, *pwd = NULL;
+	int res;
+
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
+	/* Get file name of the passed test file and the absolute path to it.
+	 * We will need these informations to copy the test file in the temp
+	 * directory.
+	 */
+	dirc = strdup(test_name);
+	basec = strdup(test_name);
+	dname = dirname(dirc);
+	bname = basename(basec);
+
+	if (dname[0] == '/')
+		path = dname;
+	else {
+		if ((pwd = getcwd(NULL, 0)) == NULL) {
+			tst_brkm(TBROK, tst_exit, "Could not get current directory");
+		}
+		path = malloc (strlen(pwd) + strlen(dname) +  2);
+		if (path == NULL) {
+			tst_brkm(TBROK, tst_exit, "Cannot alloc path string");
+		}
+		sprintf (path, "%s/%s", pwd, dname);
+	}
+
+	/* make a temp dir and cd to it */
+	tst_tmpdir();
+
+	/* Copy the given test file to the private temp directory.
+	*/
+	cmd = malloc (strlen(path) + strlen(bname) + 15);
+	if (cmd == NULL){
+		tst_brkm(TBROK, tst_exit, "Cannot alloc command string");
+	}
+
+	sprintf (cmd, "cp -p %s/%s .", path, bname);
+	res = system (cmd);
+	free (cmd);
+	if (res == -1) {
+		tst_brkm(TBROK, tst_exit, "Cannot copy file %s", test_name);
+	}
+
+	test_name = bname;
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 }
@@ -232,6 +276,9 @@ cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
+
+	/* Remove the temporary directory */
+	tst_rmdir();
 
 	/* exit with return code appropriate for results */
 	tst_exit();
