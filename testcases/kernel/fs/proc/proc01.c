@@ -2,6 +2,7 @@
  * proc01.c - Tests Linux /proc file reading.
  *
  * Copyright (C) 2001 Stephane Fillod <f4cfe@free.fr>
+ * Copyright (c) 2008 Red Hat, Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
@@ -94,7 +95,6 @@ const Mapping known_issues[] =
    the test while being read.*/
 const char error_nonblock[][PATH_MAX] =
   {
-    "/proc/ppc64/rtas/error_log",
     "/proc/xen/xenbus",
     ""
   };
