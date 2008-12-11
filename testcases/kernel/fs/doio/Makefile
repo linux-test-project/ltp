@@ -1,6 +1,6 @@
 
 CFLAGS+= -Wall -I../../../../include -D_LARGEFILE64_SOURCE
-LDLIBS+= -L../../../../lib -lltp
+LDLIBS+= -L../../../../lib -lltp -laio -lrt
 
 TARGETS=doio growfiles rwtest iogen
 SRCS=$(wildcard *.c)

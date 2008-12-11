@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Header: /cvsroot/ltp/ltp/testcases/kernel/ipc/pipeio/pipeio.c,v 1.14 2008/11/25 13:26:16 subrata_modak Exp $ */
+/* $Header: /cvsroot/ltp/ltp/testcases/kernel/ipc/pipeio/pipeio.c,v 1.15 2008/12/11 13:17:49 subrata_modak Exp $ */
 /*
  *  This tool can be used to beat on system or named pipes.
  *  See the help() function below for user information.
@@ -47,6 +47,7 @@
 #include <string.h>
 #include <signal.h>
 #include <sys/stat.h>
+#include <sys/sem.h>
 
 #include "tlibio.h"
 
@@ -88,6 +89,9 @@ myexit (int x)
 #define BLOCKING_IO	"blking,"
 #define NON_BLOCKING_IO	"non-blking,"
 #define UNNAMED_IO	""
+
+#define MAX_ERRS 16
+#define MAX_EMPTY 256
 
 void sig_handler(), help(), usage(), prt_buf(), prt_examples();
 void sig_child();
@@ -149,6 +153,8 @@ char *av[];
 	struct stat stbuf;
         int iotype = 0;		/* sync io */
 	char *toutput;		/* for getenv() */
+	int sem_id;
+	struct sembuf sem_op;
 
 	format = HEX;
 	blk_type = NON_BLOCKING_IO;
@@ -433,6 +439,13 @@ char *av[];
 
 	writebuf[size-1] = 'A';	/* to detect partial read/write problem */
 
+	if((sem_id = semget(IPC_PRIVATE, 1, IPC_CREAT|S_IRWXU)) == -1) {
+		tst_brkm(TBROK, tst_exit, "Couldn't allocate semaphore: %s", strerror(errno));
+	}
+
+	if(semctl(sem_id, 0, SETVAL, 0) == -1)
+		tst_brkm(TBROK, tst_exit, "Couldn't initialize semaphore value: %s", strerror(errno));
+
 	if ( background ) {
 	    if ( (n=fork() ) == -1 ) {
 		tst_resm (TFAIL, "fork() failed: %s", strerror(errno));
@@ -473,6 +486,24 @@ char *av[];
 printf("num_wrters = %d\n", num_wrters);
 #endif
 
+#ifdef linux
+		signal(SIGCHLD, sig_child);
+		signal(SIGHUP, sig_handler);
+		signal(SIGINT, sig_handler);
+		signal(SIGQUIT, sig_handler);
+#ifdef SIGRECOVERY
+		signal(SIGRECOVERY, sig_handler);
+#endif /* SIGRECOVERY */
+#else
+		sigset(SIGCHLD, sig_child);
+		sigset(SIGHUP, sig_handler);
+		sigset(SIGINT, sig_handler);
+		sigset(SIGQUIT, sig_handler);
+#ifdef SIGRECOVERY
+		sigset(SIGRECOVERY, sig_handler);
+#endif /* SIGRECOVERY */
+#endif /* linux */
+
 	for (i=num_wrters; i > 0; --i) {
 		if ((c=fork()) < 0) {
 			tst_resm (TFAIL, "fork() failed: %s", strerror(errno));
@@ -485,15 +516,27 @@ printf("num_wrters = %d\n", num_wrters);
 printf("child after fork pid = %d\n", getpid());
 #endif
 		if ( ! unpipe ) {
-			if (ndelay) sleep(1);
-			if ((write_fd = open(pname,O_WRONLY|ndelay)) == -1) {
+			if ((write_fd = open(pname,O_WRONLY)) == -1) {
 				tst_resm (TFAIL, "child pipe open(%s, %#o) failed: %s", pname, O_WRONLY|ndelay, strerror(errno));
 				exit(1);
+			}
+			if(ndelay && fcntl(write_fd, F_SETFL, O_NONBLOCK) == -1) {
+				tst_brkm(TBROK, tst_exit, "Failed setting the pipe to nonblocking mode: %s", strerror(errno));
 			}
 		}
 		else {
 			close(read_fd);
 		}
+
+		sem_op = (struct sembuf) {
+			.sem_num = 0,
+			.sem_op = 1,
+			.sem_flg = 0
+		};
+
+		if(semop(sem_id, &sem_op, 1) == -1)
+			tst_brkm(TBROK, tst_exit, "Couldn't raise the semaphore: %s", strerror(errno));
+
 
 		pid_word = (int *)&writebuf[0];
 		count_word = (int *)&writebuf[NBPW];
@@ -516,20 +559,14 @@ printf("child after fork pid = %d\n", getpid());
 			*pid_word = getpid();
 			
                         if ((nb = lio_write_buffer(write_fd, iotype, writebuf, size,
-                                                        SIGUSR1, &cp, 0)) == -1 ) {
-                                tst_resm (TFAIL, "pass %d: lio_write_buffer(%s) failed: %s",
-                                          j, cp, strerror(errno));
-                                exit(1);
-                        }
-			if ( ndelay && nb == 0 ) {
-				j--;
-			}
+                                                        SIGUSR1, &cp, 0)) < 0 ) {
 			/*
 			 * If lio_write_buffer returns a negative number,
 			 * the return will be -errno.
 			 */
-			else if (nb < 0 )
-				tst_resm (TFAIL, "pass %d: lio_write_buffer(%s) failed; it returned %d", j, cp, nb);
+													tst_resm (TFAIL, "pass %d: lio_write_buffer(%s) failed; it returned %d: %s", j, cp, nb, strerror(-nb));
+				exit(1);
+			}
 			else if (nb != size ) {
 				tst_resm (TFAIL, "pass %d: lio_write_buffer(%s) failed, write count %d, but expected to write %d",
 				          j, cp, nb, size);
@@ -548,38 +585,36 @@ printf("child after fork pid = %d\n", getpid());
 		}
 	}
 	if (c > 0) {	/***** if parent *****/
-#ifdef linux
-		signal(SIGCHLD, sig_child);
-		signal(SIGHUP, sig_handler);
-		signal(SIGINT, sig_handler);
-		signal(SIGQUIT, sig_handler);
-#ifdef SIGRECOVERY
-		signal(SIGRECOVERY, sig_handler);
-#endif /* SIGRECOVERY */
-#else
-		sigset(SIGCHLD, sig_child);
-		sigset(SIGHUP, sig_handler);
-		sigset(SIGINT, sig_handler);
-		sigset(SIGQUIT, sig_handler);
-#ifdef SIGRECOVERY
-		sigset(SIGRECOVERY, sig_handler);
-#endif /* SIGRECOVERY */
-#endif /* linux */
 
 		if ( ! unpipe ) {
-			if ((read_fd = open(pname,O_RDONLY|ndelay)) == -1) {
-				tst_resm (TFAIL, "parent pipe open(%s, %#o) failed: %s", pname, O_WRONLY|ndelay, strerror(errno));
+			if ((read_fd = open(pname,O_RDONLY)) == -1) {
+				tst_resm (TFAIL, "parent pipe open(%s, %#o) failed: %s", pname, O_RDONLY, strerror(errno));
 				exit(1);
+			}
+			if(ndelay && fcntl(read_fd, F_SETFL, O_NONBLOCK) == -1) {
+				tst_brkm(TBROK, tst_exit, "Failed setting the pipe to nonblocking mode: %s", strerror(errno));
 			}
 		}
 		else {
 			close(write_fd);
 		}
 
-		for (i=num_wrters*num_writes; i > 0 || loop; --i) {
-			if ( Nchildcomplete >= num_wrters ) {
-				break; /* All children have died */
+		sem_op = (struct sembuf) {
+			.sem_num = 0,
+			.sem_op = -num_wrters,
+			.sem_flg = 0
+		};
+
+		while(Nchildcomplete < num_wrters && semop(sem_id, &sem_op, 1) == -1) {
+			if(errno == EINTR) {
+				continue;
 			}
+			tst_brkm(TBROK, tst_exit, "Couldn't wait on semaphore: %s", strerror(errno));
+		}
+
+		for (i=num_wrters*num_writes; i > 0 || loop; --i) {
+			if(error >= MAX_ERRS || empty_read >= MAX_EMPTY)
+			  break;
 			if (parent_wait) {
                 		clock=time(0);
                 		srand48(clock);
@@ -588,30 +623,31 @@ printf("child after fork pid = %d\n", getpid());
 			}
 			++count;
 			if ((nb = lio_read_buffer(read_fd, iotype, readbuf, size,
-                   					SIGUSR1, &cp, 0)) == -1 ) {
-				tst_resm (TFAIL, "pass %d, count %d: lio_read_buffer(%s) failed: %s",
-				          i, count, cp, strerror(errno));
-				exit(1);
-			}
+                   					SIGUSR1, &cp, 0)) < 0 ) {
                         /*
                          * If lio_read_buffer returns a negative number,
                          * the return will be -errno.
                          */
-                        else if (nb < 0 ) {
-			    tst_resm (TFAIL, "pass %d: lio_read_buffer(%s) failed; it returned %d", i, cp, nb);
+				tst_resm (TFAIL, "pass %d: lio_read_buffer(%s) failed; it returned %d: %s", i, cp, nb, strerror(-nb));
 			    ++i;
 			    count--;
+			    error++;
 			    continue;
 
  			} else {
 				if (nb == 0) {
+					if ( Nchildcomplete >= num_wrters ) {
+						if(!loop)
+							tst_resm(TWARN, "The children have died prematurely");
+						break; /* All children have died */
+					}
 					empty_read++;
 /*
 					fprintf(stdout,
 						"%s: Nothing on the pipe (%d),read count %d (read not counted)\n",
 						TCID,empty_read,count);
- */
 					fflush(stdout);
+ */
 					++i;
 					count--;
 					continue;
@@ -644,6 +680,8 @@ printf("child after fork pid = %d\n", getpid());
 				}
 			}
 		}
+    if(empty_read)
+      tst_resm(TWARN, "%d empty reads", empty_read);
 output:
 		if (error)
 			tst_resm (TFAIL, "1 FAIL %d data errors on pipe, read size = %d, %s %s",
@@ -652,6 +690,8 @@ output:
 			if( !quiet )
 				tst_resm (TPASS, "1 PASS %d pipe reads complete, read size = %d, %s %s",
 				          count+1,size,pipe_type,blk_type);
+
+		semctl(sem_id, 0, IPC_RMID);
 
 		if (!unpipe)
 			unlink(pname);

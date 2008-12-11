@@ -41,25 +41,33 @@
 #define LIO_IO_ATYPES           00077   /* all io types */
 #define LIO_IO_TYPES            00061   /* all io types, non-async */
 #endif /* sgi */
-#if defined(__linux__) || defined(__sun) || defined(__hpux) || defined(_AIX)
+#if defined(__linux__)
+#define LIO_IO_TYPES            00061   /* all io types */
+#define LIO_IO_ATYPES           00077   /* all io types */
+#endif
+#if defined(__sun) || defined(__hpux) || defined(_AIX)
 #define LIO_IO_TYPES            00021   /* all io types */
 #endif /* linux */
 #ifdef CRAY
 #define LIO_IO_TYPES            00017   /* all io types */
 #endif /* CRAY */
 
+#ifndef LIO_IO_ATYPES
+#define LIO_IO_ATYPES LIO_IO_TYPES
+#endif
+
 #define LIO_WAIT_NONE           00010000 /* return asap -- use with care */
 #define LIO_WAIT_ACTIVE         00020000 /* spin looking at iosw fields, or EINPROGRESS */
 #define LIO_WAIT_RECALL         00040000 /* call recall(2)/aio_suspend(3) */
 #define LIO_WAIT_SIGPAUSE       00100000 /* call pause */
 #define LIO_WAIT_SIGACTIVE      00200000 /* spin waiting for signal */
-#ifdef sgi
+#if defined(sgi) || defined(__linux__)
 #define LIO_WAIT_CBSUSPEND      00400000 /* aio_suspend waiting for callback */
 #define LIO_WAIT_SIGSUSPEND     01000000 /* aio_suspend waiting for signal */
 #define LIO_WAIT_ATYPES         01760000 /* all async wait types, except nowait */
 #define LIO_WAIT_TYPES          00020000 /* all sync wait types (sorta) */
 #endif /* sgi */
-#if defined(__linux__) || defined(__sun) || defined(__hpux) || defined(_AIX)
+#if defined(__sun) || defined(__hpux) || defined(_AIX)
 #define LIO_WAIT_TYPES          00300000 /* all wait types, except nowait */
 #endif /* linux */
 #ifdef CRAY
@@ -69,7 +77,7 @@
 /* meta wait io  */
 /*  00  000 0000 */
 
-#ifdef sgi
+#if defined(sgi) || defined(__linux__)
 /* all callback wait types */
 #define LIO_WAIT_CBTYPES	(LIO_WAIT_CBSUSPEND)
 /* all signal wait types */
@@ -77,7 +85,7 @@
 /* all aio_{read,write} or lio_listio */
 #define LIO_IO_ASYNC_TYPES	(LIO_IO_ASYNC|LIO_IO_SLISTIO|LIO_IO_ALISTIO)
 #endif /* sgi */
-#if defined(__linux__) || defined(__sun) || defined(__hpux) || defined(_AIX)
+#if defined(__sun) || defined(__hpux) || defined(_AIX)
 /* all signal wait types */
 #define LIO_WAIT_SIGTYPES	(LIO_WAIT_SIGPAUSE)
 #endif /* linux */
@@ -129,11 +137,16 @@ int  lio_random_methods(long mask);
 int  lio_wait4asyncio(int method, int fd, struct iosw **statptr);
 int  lio_check_asyncio(char *io_type, int size, struct iosw *status);
 #endif /* CRAY */
-#ifdef sgi
+#if defined (sgi)
 #include <aio.h>
 int  lio_wait4asyncio(int method, int fd, aiocb_t *aiocbp);
 int  lio_check_asyncio(char *io_type, int size, aiocb_t *aiocbp, int method);
 #endif /* sgi */
+#if defined(__linux__)
+#include <aio.h>
+int  lio_wait4asyncio(int method, int fd, struct aiocb *aiocbp);
+int  lio_check_asyncio(char *io_type, int size, struct aiocb *aiocbp, int method);
+#endif
 
 /*
  * Define the structure that contains the infomation that is used
