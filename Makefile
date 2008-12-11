@@ -126,3 +126,29 @@ ac-clean:
 ac-distclean: ac-clean
 ac-maintainer-clean: ac-distclean
 	rm -f configure
+
+#
+# Help
+#
+.PHONY: help
+help:
+	@echo
+	@echo 'About configuration'
+	@echo '-------------------'
+	@echo 'If you want to use auto configuration,   '
+	@echo 'be sure autoconf is installed. Then run: '
+	@echo '	$$ make autoconf '
+	@echo '	$$ ./configure   '
+	@echo '	$$ make all      '
+	@echo
+	@echo 'If you want to use default configuration,  '
+	@echo 'autoconf is not needed. Just run:          '
+	@echo '	$$ touch include/config.h.default '
+	@echo '	$$ make config.h                  '
+	@echo '	$$ make all                       '
+	@echo
+	@echo 'If make all is failed even if you use the '
+	@echo 'auto configuration, please, report it to  '
+	@echo 'ltp developers with config.log, generated '
+	@echo 'by running the configure script.          '
+	@echo
