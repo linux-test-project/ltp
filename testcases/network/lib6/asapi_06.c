@@ -153,6 +153,7 @@ union soval {
 #define IN6_LOOP	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 }
 #define IN6_ANY		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
 
+/* so_clrval and so_setval members are initilized in the body */
 struct soent {
 	char		*so_tname;
 	int		so_opt;
@@ -165,31 +166,31 @@ struct soent {
 } sotab[] = {
 /* RFC 3542, Section 4 */
 	{ "IPV6_RECVPKTINFO", IPV6_RECVPKTINFO, 1, IPV6_PKTINFO, 1,
-		.so_clrval.sou_bool=0, .so_setval.sou_bool=1, sizeof(int) },
+		{{{{{0}}}}}, {{{{{0}}}}}, sizeof(int) },
 	{ "IPV6_RECVHOPLIMIT", IPV6_RECVHOPLIMIT, 1, IPV6_HOPLIMIT, 1,
-		.so_clrval.sou_bool=0, .so_setval.sou_bool=1, sizeof(int) },
+		{{{{{0}}}}}, {{{{{0}}}}}, sizeof(int) },
 	{ "IPV6_RECVRTHDR", IPV6_RECVRTHDR, 0, IPV6_RTHDR, 1,
-		.so_clrval.sou_bool=0, .so_setval.sou_bool=1, sizeof(int) },
+		{{{{{0}}}}}, {{{{{0}}}}}, sizeof(int) },
 	{ "IPV6_RECVHOPOPTS", IPV6_RECVHOPOPTS, 0, IPV6_HOPOPTS, 1,
-		.so_clrval.sou_bool=0, .so_setval.sou_bool=1, sizeof(int) },
+		{{{{{0}}}}}, {{{{{0}}}}}, sizeof(int) },
 	{ "IPV6_RECVDSTOPTS", IPV6_RECVDSTOPTS, 0, IPV6_DSTOPTS, 1,
-		.so_clrval.sou_bool=0, .so_setval.sou_bool=1, sizeof(int) },
+		{{{{{0}}}}}, {{{{{0}}}}}, sizeof(int) },
 	{ "IPV6_RECVTCLASS", IPV6_RECVTCLASS, 1, IPV6_TCLASS, 1,
-		.so_clrval.sou_bool=0, .so_setval.sou_bool=1, sizeof(int) },
+		{{{{{0}}}}}, {{{{{0}}}}}, sizeof(int) },
 /* make sure TCLASS stays when setting another opt */
 	{ "IPV6_RECVTCLASS (2)", IPV6_RECVHOPLIMIT, 1, IPV6_TCLASS, 0,
-		.so_clrval.sou_bool=0, .so_setval.sou_bool=1, sizeof(int) },
+		{{{{{0}}}}}, {{{{{0}}}}}, sizeof(int) },
 /* OLD values */
 	{ "IPV6_2292PKTINFO", IPV6_2292PKTINFO, 1, IPV6_2292PKTINFO, 1,
-		.so_clrval.sou_bool=0, .so_setval.sou_bool=1, sizeof(int) },
+		{{{{{0}}}}}, {{{{{0}}}}}, sizeof(int) },
 	{ "IPV6_2292HOPLIMIT", IPV6_2292HOPLIMIT, 1, IPV6_2292HOPLIMIT, 1,
-		.so_clrval.sou_bool=0, .so_setval.sou_bool=1, sizeof(int) },
+		{{{{{0}}}}}, {{{{{0}}}}}, sizeof(int) },
 	{ "IPV6_2292RTHDR", IPV6_2292RTHDR, 0, IPV6_2292RTHDR, 1,
-		.so_clrval.sou_bool=0, .so_setval.sou_bool=1, sizeof(int) },
+		{{{{{0}}}}}, {{{{{0}}}}}, sizeof(int) },
 	{ "IPV6_2292HOPOPTS", IPV6_2292HOPOPTS, 0, IPV6_2292HOPOPTS, 1,
-		.so_clrval.sou_bool=0, .so_setval.sou_bool=1, sizeof(int) },
+		{{{{{0}}}}}, {{{{{0}}}}}, sizeof(int) },
 	{ "IPV6_2292DSTOPTS", IPV6_2292DSTOPTS, 0, IPV6_2292DSTOPTS, 1,
-		.so_clrval.sou_bool=0, .so_setval.sou_bool=1, sizeof(int) },
+		{{{{{0}}}}}, {{{{{0}}}}}, sizeof(int) },
 };
 
 #define SOCOUNT	(sizeof(sotab)/sizeof(sotab[0]))
@@ -225,8 +226,8 @@ struct cme {
 		uint32_t cmu_hops;
 	} cmu;
 } cmtab[] = {
-	{ sizeof(uint32_t), SOL_IPV6, IPV6_TCLASS, .cmu.cmu_tclass=0x12 },
-	{ sizeof(uint32_t), SOL_IPV6, IPV6_HOPLIMIT, .cmu.cmu_hops=0x21 },
+	{ sizeof(uint32_t), SOL_IPV6, IPV6_TCLASS, {0x12} },
+	{ sizeof(uint32_t), SOL_IPV6, IPV6_HOPLIMIT, {0x21} },
 };
 
 #define CMCOUNT	(sizeof(cmtab)/sizeof(cmtab[0]))
@@ -612,6 +613,8 @@ do_tests(void)
 	int	i;
 
 	for (i=0; i<SOCOUNT; ++i) {
+		sotab[i].so_clrval.sou_bool = 0;
+		sotab[i].so_setval.sou_bool = 1;
 		so_test(&sotab[i]);
 	}
 #ifdef notyet
