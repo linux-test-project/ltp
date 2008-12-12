@@ -22,3 +22,4 @@ __NR_fchmodat  (__NR_openat + 11)
 __NR_faccessat (__NR_openat + 12)
 __NR_eventfd 307
 __NR_fallocate 309
+__NR_utimensat 304
