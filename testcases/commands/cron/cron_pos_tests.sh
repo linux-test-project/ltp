@@ -4,6 +4,17 @@
 
 iam=`whoami`
 
+tvar=${MACHTYPE%-*}
+tvar=${tvar#*-}
+
+if [ $tvar = "redhat" -o $tvar = "redhat-linux" ] 
+then
+	CRON_ALLOW="/etc/cron.allow"
+else
+	CRON_ALLOW="/var/spool/cron/allow"
+fi
+
+
 if [ $iam = "root" ]; then
 	if [ $# -lt 1 ] ; then
 		echo Either do not run this script as root or start it like
@@ -11,7 +22,9 @@ if [ $iam = "root" ]; then
 		exit 1
 	fi
 
+	mv $CRON_ALLOW $CRON_ALLOW.old &> /dev/null
 	su $1 -c "$0 $*"
+	mv $CRON_ALLOW.old $CRON_ALLOW &> /dev/null
 	exit $?
 fi
 

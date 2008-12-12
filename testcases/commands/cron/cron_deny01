@@ -32,8 +32,10 @@ tvar=${tvar#*-}
 if [ $tvar = "redhat" -o $tvar = "redhat-linux" ] 
 then
 CRON_DENY="/etc/cron.deny"
+CRON_ALLOW="/etc/cron.allow"
 else
 CRON_DENY="/var/spool/cron/deny"
+CRON_ALLOW="/var/spool/cron/allow"
 fi
 
 TEST_USER1="cd_user1"
@@ -51,6 +53,7 @@ do_setup() {
         rm /tmp/cron_deny_test1 &> /dev/null
 	
 	mv $CRON_DENY $CRON_DENY.old &> /dev/null
+	mv $CRON_ALLOW $CRON_ALLOW.old &> /dev/null
 
 	#remove users for clean enviroment
         rm -rf /home/$TEST_USER1
@@ -88,6 +91,7 @@ do_cleanup(){
 	userdel $TEST_USER2
 	rm $CRON_DENY
 	mv $CRON_DENY.old $CRON_DENY &> /dev/null
+	mv $CRON_ALLOW.old $CRON_ALLOW &> /dev/null
 	rm /tmp/cron_allow_test &>/dev/null
 }
 
