@@ -43,6 +43,7 @@ FILE *temp;
 int TST_TOTAL = 1;
 extern int Tst_count;
 
+#if defined(__i386__) || defined(__x86_64__)
 int anyfail();
 void ok_exit();
 /*****  **      **      *****/
@@ -127,5 +128,13 @@ int anyfail()
   return(0);
 }
 
+#else /* defined(__i386__) || defined(__x86_64__) */
+int
+main (void)
+{
+  tst_resm (TCONF, "Test is only applicable for IA-32 and x86-64.");
+  tst_exit ();
+}
+#endif
 /*****  **      **      *****/
 
