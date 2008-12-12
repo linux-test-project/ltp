@@ -1,6 +1,10 @@
 /*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
+ * Copyright (c) 2008, Novell Inc. All rights reserved.
+ *
  * Created by:  julie.n.fleischer REMOVE-THIS AT intel DOT com
+ * Major fixes by: Brandon Philips <bphilips@suse.de>
+ *
  * This file is licensed under the GPL license.  For the full content
  * of this license, see the COPYING file at the top level of this
  * source tree.
@@ -42,13 +46,19 @@
 char gqname[NAMESIZE];
 mqd_t gqueue;
 
-/*
- * This handler is just used to catch the signal and stop sleep (so the
- * parent knows the child is still busy sending signals).
- */
-void stopsleep_handler(int signo)
+int sync_pipes[2];
+
+int cleanup_for_exit(int gqueue, char *gqname, int ret)
 {
-	return;
+	mq_close(gqueue);
+	mq_unlink(gqname);
+
+	if (ret == PTS_PASS)
+		printf("Test PASSED\n");
+	else if (ret == PTS_FAIL)
+		printf("Test FAILED\n");
+
+	return ret;
 }
 
 int main()
@@ -64,70 +74,70 @@ int main()
 
 	attr.mq_msgsize = BUFFER;
 	attr.mq_maxmsg = MAXMSG;
-        gqueue = mq_open(gqname, O_CREAT |O_RDWR, S_IRUSR | S_IWUSR, &attr);
+
+	/* Use O_CREAT + O_EXCL to avoid using a previously created queue */
+        gqueue = mq_open(gqname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR, &attr);
         if (gqueue == (mqd_t)-1) {
-                perror("mq_open() did not return success");
+		perror("mq_open() did not return success");
                 return PTS_UNRESOLVED;
         }
+
+	if (sync_pipe_create(sync_pipes) == -1) {
+		perror("sync_pipe_create() did not return success");
+		return cleanup_for_exit(gqueue, gqname, PTS_UNRESOLVED);
+	}
 
 	if ((pid = fork()) == 0) {
 		/* child here */
 		int i;
 
-		sleep(1);  // give parent time to set up handler
 		for (i=0; i<MAXMSG+1; i++) {
-        		mq_send(gqueue, msgptr, strlen(msgptr), 1);
-			/* send signal to parent each time message is sent */
-			kill(getppid(), SIGABRT);
+			mq_send(gqueue, msgptr, strlen(msgptr), 1);
+
+			if (sync_pipe_notify(sync_pipes) < 0) {
+				perror("sync_pipe_notify() did not return success");
+				return cleanup_for_exit(gqueue, gqname, PTS_UNRESOLVED);
+			}
 		}
 	} else {
 		/* parent here */
 		struct sigaction act;
 		int j;
+		int r;
 
-		/* parent runs stopsleep_handler when sleep is interrupted
-                   by child */
-		act.sa_handler=stopsleep_handler;
-		act.sa_flags=0;
-		sigemptyset(&act.sa_mask);
-		sigaction(SIGABRT, &act, 0);
-
-		for (j=0; j<MAXMSG+1; j++) {  // "infinite" loop
-			if (sleep(3) == 0) {
-			/* If sleep finished, child is probably blocking */
-				break;
+		/* wait for child to reach MAXMSG */
+		for (j = 0; j < MAXMSG; j++) {
+			/* set a long timeout since we are expecting success */
+			if (sync_pipe_wait_select(sync_pipes, 60) != 0) {
+				printf("sync_pipe_wait\n");
+				return cleanup_for_exit(gqueue, gqname, PTS_FAIL);
 			}
 		}
 
-		if (j == MAXMSG+1) {
+		/* if we don't timeout here then we got too many messages, child never blocked */
+		if (sync_pipe_wait_select(sync_pipes, 1) != -ETIMEDOUT) {
 			printf("Child never blocked\n");
 			kill(pid, SIGKILL); //kill child
-			return PTS_FAIL;
+			return cleanup_for_exit(gqueue, gqname, PTS_FAIL);
 		}
 
-		/* receive message and allow blocked send to complete */
+		/* receive one message and allow child's mq_send to complete */
 		if (mq_receive(gqueue, msgrcd, BUFFER, &pri) == -1) {
 			perror("mq_receive() did not return success");
 			unresolved = 1;
 		}
 
-                if (sleep(3) == 0) {
+		/* child has 5 seconds to call mq_send() again and notify us */
+		if (sync_pipe_wait_select(sync_pipes, 5) == -ETIMEDOUT) {
                         /*
-                         * mq_send didn't succeed and interrupt sleep()
-                         * with a signal
+                         * mq_send didn't unblock
                          */
                         kill(pid, SIGKILL); //kill child
                         printf("mq_send() didn't appear to complete\n");
-			mq_close(gqueue);
-			mq_unlink(gqname);
-                        printf("Test FAILED\n");
-                        return PTS_FAIL;
+			return cleanup_for_exit(gqueue, gqname, PTS_FAIL);
                 }
 
-		mq_close(gqueue);
-		mq_unlink(gqname);
-		printf("Test PASSED\n");
-		return PTS_PASS;
+		return cleanup_for_exit(gqueue, gqname, PTS_PASS);
 	}
 
 	return PTS_UNRESOLVED;
