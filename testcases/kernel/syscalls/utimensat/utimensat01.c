@@ -44,13 +44,14 @@
 #include <test.h>
 #include "linux_syscall_numbers.h"
 
+char *TCID="utimensat01";	/* Test program identifier.    */
+int TST_TOTAL = 0;              /* Total number of test cases. */
+
 #define cleanup tst_exit
 
 /* We use EXIT_FAILURE for an expected failure from utimensat()
    (e.g., EACCES and EPERM), and one of the following for unexpected
    failures (i.e., something broke in our test setup). */
-
-#ifdef __NR_utimensat
 
 #ifndef AT_FDCWD
   #define AT_FDCWD -100
@@ -283,14 +284,4 @@ main(int argc, char *argv[])
     exit(EXIT_SUCCESS);
 }
 
-#else
-char *TCID="utimensat01";	/* Test program identifier.    */
-int TST_TOTAL = 0;              /* Total number of test cases. */
-
-int main(){
-
-        tst_resm(TCONF, "This test needs a kernel that has utimensat syscall.");
-        return 0;
-}
-#endif
 
