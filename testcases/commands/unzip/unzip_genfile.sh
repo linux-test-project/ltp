@@ -41,10 +41,10 @@ RC=0                          # return value from commands
 while [ $dircnt -lt $numdirs ]
 do
 	dirname=$dirname/d.$dircnt
-	mkdir -p $dirname  >/dev/null 2>&1 || RC=$?
+	mkdir -p $dirname || RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "unzip_genfile.sh: ERROR: while creating $numdirs dirs."
+		echo "unzip_genfile.sh: ERROR: while creating $numdirs dirs." 1>&2
 		exit $RC
 	fi
 	fcnt=0
@@ -53,7 +53,7 @@ do
 		touch $dirname/f.$fcnt
 		if [ $RC -ne 0 ]
 		then
-			echo "unzip_genfile.sh: ERROR: creating $numdirs dirs."
+			echo "unzip_genfile.sh: ERROR: creating $numdirs dirs." 1>&2
 			exit $RC
 		fi
 		fcnt=$(($fcnt+1))
@@ -63,8 +63,18 @@ done
 
 # Create ZIP file.
 
-zip -r tst_unzip_file.zip /tmp/tst_unzip.dir >/dev/null 2>&1
+zip -r tst_unzip_file.zip /tmp/tst_unzip.dir || RC=$?
+if [ $RC -ne 0 ]
+then
+	echo "unzip_genfile.sh: ERROR: creating tst_unzip_file.zip archive." 1>&2
+	exit $RC
+fi
 
-rm -fr /tmp/tst_unzip.* >/dev/null 2>&1
+rm -fr /tmp/tst_unzip.* || RC=$?
+if [ $RC -ne 0 ]
+then
+	echo "unzip_genfile.sh: ERROR: deleting tempory files." 1>&2
+	exit $RC
+fi
 
 exit $RC
