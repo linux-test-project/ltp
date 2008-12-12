@@ -108,7 +108,7 @@ main(int argc, char **argv)
 	(void)time(&t);
 //	(void)printf("%s: Started %s", argv[0], ctime(&t));
 	/* Test fsync & mmap over a hole in a sparse file & extend fragment */
-	if (argc != 5) {
+	if (argc < 2 || argc > 5) {
 		fprintf(stderr, "Usage: mmapstress07 filename holesize e_pageskip sparseoff\n");
 		/*****	**	LTP Port 02/01/03	**	**** */
 		fprintf(stderr, "\t*holesize should be a multiple of pagesize\n");
@@ -120,17 +120,32 @@ main(int argc, char **argv)
 	}
 	tst_tmpdir();
 	tmpname = argv[1];
+
+	if (argc >= 3) {
 #ifdef LARGE_FILE
-	holesize = atoll(argv[2]);
+		holesize = atoll(argv[2]);
 #else /* LARGE_FILE */
-	holesize = atoi(argv[2]);
+		holesize = atoi(argv[2]);
 #endif /* LARGE_FILE */
-	e_pageskip = atoi(argv[3]);
+	}
+	else
+		holesize = pagesize;
+
+	if (argc >= 4)
+		e_pageskip = atoi(argv[3]);
+	else
+		e_pageskip = 1;
+
+	if (argc >= 5) {
 #ifdef LARGE_FILE
-	sparseoff = atoll(argv[4]);
+		sparseoff = atoll(argv[4]);
 #else /* LARGE_FILE */
-	sparseoff = atoi(argv[4]);
+		sparseoff = atoi(argv[4]);
 #endif /* LARGE_FILE */
+	}
+	else
+		sparseoff = pagesize*2;
+
         sa.sa_handler = cleanup;
         sa.sa_flags = 0;
         if (sigemptyset(&sa.sa_mask)) {
@@ -202,7 +217,7 @@ main(int argc, char **argv)
 		CLEANERROR("mmap tmp file failed");
 		anyfail(); /* LTP Port */
 	}
-	/* fill out remainder of page + one more page to extend mmapped frag */
+	/* fill out remainder of page + one more page to extend mmapped flag */
 	while (i < 2*pagesize && write(rwfd, "c", 1) == 1)
 		i++;
 	if (i != 2*pagesize) {
