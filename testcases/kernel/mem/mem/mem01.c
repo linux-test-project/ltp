@@ -228,6 +228,8 @@ size_t get_memsize()
     res = (unsigned long long)3*1024*1024*1024;
 #endif
 
+  /* Always reserve 16MB memory to avoid OOM Killer.*/
+  res -= 16*1024*1024;
   tst_resm(TINFO, "Total Tested:\t%llu Mb", res/1024/1024);
   return (size_t)res;
 }
