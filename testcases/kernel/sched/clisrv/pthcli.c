@@ -99,10 +99,9 @@ register int sockfd;
 int
 main(int argc, char *argv[])
 {
-    FILE *fi=NULL, *input;
+    FILE *input;
     int sockfd;
     struct sockaddr_in serv_addr;
-    char *errfilename;
 
     pname = argv[0];
     if (argc < 2) 
@@ -110,8 +109,6 @@ main(int argc, char *argv[])
   	printf("\nusage: %s ip#\n", pname);
   	exit(1);
     }
-
-    errfilename = argv[1];
 
     /* Fill in the structure */
     memset((char *) &serv_addr, 0x00, sizeof(serv_addr));
@@ -128,12 +125,8 @@ main(int argc, char *argv[])
     /* Open Internet stream socket */
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
     {
-	if ((fi = fopen(errfilename, "w")) != 0)
-	{
-	    fprintf(fi,"client: socket open failure, no = %d\n", errno);
-		     fclose(fi);
-            return(errno);
-	}
+	printf("client: socket open failure, no = %d\n", errno);
+	return(errno);
 	exit(1);
     }
     prtln();
@@ -143,19 +136,14 @@ main(int argc, char *argv[])
     if (connect(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0)
     {
         prtln();
-	if ((fi = fopen(errfilename, "w")) != 0)
-	{
-	    fprintf(fi,"client: connect failure, no = %d\n", errno);
-		     fclose(fi);
-            return(errno);
-	}
+	printf("client: connect failure, no = %d\n", errno);
+	return(errno);
 	exit(1);
     }
 #ifdef _LINUX
     if ((input = fopen("./data", "r")) == NULL) 
     {
 	perror("fopen");
-        fclose(fi);
         return(errno);
     }
     str_cli(input, sockfd); /* call the routines that do the work */
