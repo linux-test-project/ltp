@@ -11,3 +11,6 @@
 #define HAVE_SYS_SIGNALFD_H 1
 #define HAVE_SIGNALFD 1
 #define HAVE_SIGNALFD_SIGINFO_SSI_SIGNO 1
+
+/* ifaddrs.h is in glibc-2.3+ */
+#define HAVE_IFADDRS_H 1

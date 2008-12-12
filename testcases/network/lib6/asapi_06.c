@@ -34,6 +34,8 @@
  *
  */
 
+#include "config.h"
+
 #include <stdio.h>
 #include <unistd.h>
 #include <errno.h>
@@ -49,7 +51,9 @@
 #include <sys/socket.h>
 #include <net/if.h>
 #include <sys/ioctl.h>
+#ifdef HAVE_IFADDRS_H
 #include <ifaddrs.h>
+#endif
 #include <arpa/inet.h>
 
 #include "test.h"
@@ -426,6 +430,7 @@ so_test(struct soent *psoe)
 #define IPV6_ADDR_LINK		2
 #define IPV6_ADDR_GLOBAL	3
 
+#ifdef HAVE_IFADDRS_H
 static int ipv6_addr_scope(struct in6_addr *pin6)
 {
 	if ((ntohl(pin6->s6_addr32[0]) & 0xFFC00000) == 0xFE800000)
@@ -434,9 +439,11 @@ static int ipv6_addr_scope(struct in6_addr *pin6)
 		return IPV6_ADDR_NODE;
 	return IPV6_ADDR_GLOBAL;
 }
+#endif	/* HAVE_IFADDRS_H */
 
 int getsock(char *tname, struct sockaddr_in6 *psin6_arg, int scope)
 {
+#ifdef HAVE_IFADDRS_H
 	static struct ifaddrs *pifa_head;
 	struct ifaddrs *pifa;
 	struct sockaddr_in6 *psin6;
@@ -512,6 +519,9 @@ int getsock(char *tname, struct sockaddr_in6 *psin6_arg, int scope)
 				tname,  scopestr);
 	}
 	return -1;
+#else /* HAVE_IFADDRS_H */
+	return -1;
+#endif
 }
 
 #ifdef notyet
