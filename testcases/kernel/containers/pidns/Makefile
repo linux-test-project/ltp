@@ -20,7 +20,7 @@
 
 CFLAGS += -Wall
 CPPFLAGS += -I../../../../include -I../libclone
-LDLIBS += -L../../../../lib -L../libclone ../libclone/libclone.a -lltp
+LDLIBS += -L../../../../lib -L../libclone ../libclone/libclone.a -lltp -lrt
 
 SRCS    := $(wildcard *.c)
 TARGETS := $(SRCS:%.c=%)
