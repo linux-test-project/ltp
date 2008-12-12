@@ -122,17 +122,23 @@ main(int argc, char *argv[])
 	off_t			mapoff;
 #endif /* LARGE_FILE */
 
-	if (argc != 3) {
+	if (argc < 2 || argc > 3) {
 		(void)fprintf(stderr, "Usage: %s filename startoffset\n",
 			      argv[0]);
 		return 1;
 	}
 	filename = argv[1];
+
+	if (argc >= 3) {
 #ifdef LARGE_FILE
-	startoffset = atoll(argv[2]);
+		startoffset = atoll(argv[2]);
 #else /* LARGE_FILE */
-	startoffset = atoi(argv[2]);
+		startoffset = atoi(argv[2]);
 #endif /* LARGE_FILE */
+	}
+	else
+		startoffset = pagesize;
+
 	if (startoffset % pagesize != 0) {
 		fprintf(stderr, "pagesize=%ld\n", (long)pagesize);
 		fprintf(stderr, "startoffset must be a pagesize multiple\n");
