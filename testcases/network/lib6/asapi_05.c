@@ -40,6 +40,7 @@
 #include <errno.h>
 
 #include <sys/wait.h>
+#include <sys/socket.h>
 
 #include <netinet/in.h>
 #include <netinet/ip6.h>
