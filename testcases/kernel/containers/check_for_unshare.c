@@ -1,5 +1,5 @@
 /*
-* Copyright (c) International Business Machines Corp., 2007
+* Copyright (c) International Business Machines Corp., 2008
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation; either version 2 of the License, or
@@ -13,31 +13,43 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 *
-***************************************************************************/
-#include <stdio.h>
-#include "libclone/libclone.h"
-#include "test.h"
-
-int kernel_is_too_old(void) {
-	if (tst_kvercmp(2,6,16) < 0)
-		return 1;
-	return 0;
-}
-
+**************************************************************************/
 /*
- * yeah, to make the makefile coding easier, do_check returns 
- * 1 if unshare is not supported, 0 if it is
- */
-#if defined(SYS_unshare) || defined(__NR_unshare)
-int do_check(void)
-{
-	return kernel_is_too_old();
-}
-#else
-int do_check(void) { return 1; }
-#endif
+* Description:
+* This program verifies the kernel version to be no later than 2.6.16
+* And checks if the unshare() system call is defined using dlsym(),
+* in the Dynamically Linked Libraries.
+*
+* Date : 26-11-2008
+* Author : Veerendra C <vechandr@in.ibm.com>
+*/
 
-int main()
+#include <stdio.h>
+#include <stdlib.h>
+#include <dlfcn.h>
+#include <linux/version.h>
+
+int main(int argc, char **argv)
 {
-	return do_check();
+	void *handle;
+	void *ret;
+	char *error;
+	if (LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 16))
+	return 1;
+
+	handle = dlopen(NULL, RTLD_LAZY);
+	if (!handle) {
+		fprintf(stderr, "%s\n", dlerror());
+		exit(1);
+	}
+
+	dlerror();    /* Clear any existing error */
+	ret = dlsym(handle, "unshare");
+	if ((error = dlerror()) != NULL)  {
+		fprintf(stderr, "Error: %s\n", error);
+		exit(1);
+	}
+
+	dlclose(handle);
+	return 0;
 }
