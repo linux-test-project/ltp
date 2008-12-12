@@ -69,7 +69,7 @@ int msg_q_1 = -1;                      /* to hold the message queue id */
 
 struct msqid_ds qs_buf;
 
-unsigned short new_bytes;
+unsigned long int new_bytes;
 
 int main(int ac, char **av)
 {
