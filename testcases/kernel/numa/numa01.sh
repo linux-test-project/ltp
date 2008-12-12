@@ -765,7 +765,7 @@ test09()
     # Increase in numastat o/p is interms of pages
     Exp_incr=$[$MB/$page_size]
 
-        numa_node_size > $LTPTMP/avail_nodes
+        numactl --hardware > $LTPTMP/avail_nodes
     RC=$(awk '{ if ( NR == 1 ) {print $1;} }' $LTPTMP/avail_nodes)
     if [ $RC = "available:" ]
     then
