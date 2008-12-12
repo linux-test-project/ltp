@@ -115,7 +115,7 @@ my_yield()
     /* If you want this test to pass, don't define SPEW_SIGNALS,
      * as pthread_create is broken at moment, and fails if interrupted
      */
-    static const stuct timespec t0 = {0, 0};
+    static const struct timespec t0 = {0, 0};
     nanosleep(&t0, NULL);
 #endif
 }
