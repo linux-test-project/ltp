@@ -406,7 +406,8 @@ getuid03_16 getuid03_16
 #ioctl02 ioctl02 -D /dev/tty0
 
 # Introducing ioctl tests for all /dev/tty* devices
-ioctl test_ioctl
+ioctl01_02   test_ioctl
+ioctl03      ioctl03
 
 inotify01 inotify01
 inotify02 inotify02
