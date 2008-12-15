@@ -130,8 +130,43 @@ In this test one group has very less tasks while others have large number of
 tasks. This tests if fairness still remains.
 
 
+Test 11-12: LATENCY TESTS
+----------
+The latency tests refer to testing if the cpu is available(within a reasonable
+amount of time) to a task which woke up after a sleep(), when the system is
+having enough load.
+
+In the following two testcases we run n(NUM_TASKS set in script) tasks as the
+load tasks which simply hog the cpu by doing some sqrt calculation of a number
+of type double. A task named latency check task is launched after these tasks.
+This task sleeps frequently and measures the latency as the difference b/n
+the actual and expected sleep durations.
+
+In case of test 12 the tasks are running under different groups created
+dynamically depending on the number of cpus in the machine.(min 2, else 1.5 *
+NUM_CPUS). The tasks migrate to their groups automatically, before they start
+hogging the cpu. The latency check task also runs under any of the groups.
+
+Test 11:      cpuctl latency test 1
+-------
+This test adds one testcase for testing the latency when the group scheduler
+is not mounted, but compiled in kernel.(i.e. no task group is created)
+
+Test 12:      cpuctl latency test 2
+-------
+This test adds one testcase for testing the latency when the group scheduler
+is mounted, and has tasks in different groups.
+
+NOTE: There is no clear consensus on the maximum latency that the scheduler
+should guarantee. Latency may vary from few milliseconds in normal desktops
+to even a minute in virtaul guests. However a latency of more than 20 ms
+(under normal load, as it is load dependent) is not considered good.
+This test is to keep an eye on the max latency in different kernel versions
+with respect to further development of the group scheduler. So even if the
+test may show FAIL, it may not be an actual failure.
+
 (
- In all tests calc cpu time and exp cpu time should be same
+ In all(1-10) tests calc cpu time and exp cpu time should be same
  Time:: calc:- calculated cpu time obtained for a running task
  exp:- expected time as per the shares of the group and num of tasks in group.
 )
