@@ -51,6 +51,9 @@ then
 		$LTPROOT/testcases/bin/run_cpuctl_stress_test.sh 8;
 		$LTPROOT/testcases/bin/run_cpuctl_stress_test.sh 9;
 		$LTPROOT/testcases/bin/run_cpuctl_stress_test.sh 10;
+		# Add the latency testcase to be run
+		$LTPROOT/testcases/bin/run_cpuctl_latency_test.sh 1;
+		$LTPROOT/testcases/bin/run_cpuctl_latency_test.sh 2;
 		echo
 	else
 		echo "CONTROLLERS TESTCASES: WARNING";
