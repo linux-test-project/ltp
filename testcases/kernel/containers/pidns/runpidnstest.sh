@@ -73,6 +73,24 @@ if [ $rc -ne 0 ] && [ -z $err_code ]; then
 	err_code=$rc
 fi
 
+pidns12
+rc=$?
+if [ $rc -ne 0 ] && [ -z $err_code ]; then
+	err_code=$rc
+fi
+
+pidns13
+rc=$?
+if [ $rc -ne 0 ] && [ -z $err_code ]; then
+	err_code=$rc
+fi
+
+pidns17
+rc=$?
+if [ $rc -ne 0 ] && [ -z $err_code ]; then
+	err_code=$rc
+fi
+
 # If any test failed then exit with the value error-code.
 if ! [ -z $err_code ]; then
 	exit $err_code
