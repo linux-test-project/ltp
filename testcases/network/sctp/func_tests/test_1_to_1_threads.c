@@ -120,14 +120,15 @@ t_send(int id) {
         test_sendmsg(client_sk, &outmessage, 0, strlen(message)+1);
 }
 
-void * relay (int *id) {
-	if (*id == 0) {
-		t_send(*id);
-	} else if (*id == THREADS -1) {
-		t_send(*id);	
+void * relay (void* id_) {
+	int id=(int)id_;
+	if (id == 0) {
+		t_send(id);
+	} else if (id == THREADS -1) {
+		t_send(id);	
 	} else {
-		t_recv (*id);
-		t_send(*id);
+		t_recv (id);
+		t_send(id);
 	}
 
 	return 0;
@@ -174,7 +175,7 @@ main(void)
 	for ( i = 0; i < THREAD_SND_RCV_LOOPS; i++ ) {
 		for (cnt = 1; cnt < THREADS; cnt++) {
 			status = pthread_create(&thread[cnt], &attr,
-						(void *)relay, (void*)&cnt);
+						relay, (void*)cnt);
 			if (status)
 				tst_brkm(TBROK, tst_exit, "pthread_create "
                          		 "failed status:%d, errno:%d", status,

@@ -247,7 +247,7 @@ allocate_free(int    repeat,	/* number of times to repeat allocate/free    */
 /* Description:	Decide how fast to increase block sizes, then call            */
 /*              allocate_free() to actually to the test.                      */
 /*								              */
-/* Input:	*threadnum is the thread number, 0...N-1                      */
+/* Input:	threadnum is the thread number, 0...N-1                       */
 /*              global num_loop is how many iterations to run                 */
 /*								              */
 /* Return:	pthread_exit -1	on failure				      */
@@ -261,29 +261,19 @@ alloc_mem(void * threadnum)
     sop[0].sem_num = 0;
     sop[0].sem_op = 0;
     sop[0].sem_flg = 0;
-    int *err;
-
-    err = malloc(sizeof(int));
-    if (err == NULL) {
-        perror("malloc");
-        return NULL;
-    }
-
     /* waiting for other threads starting */
     if (semop(semid, sop, 1) == -1) {
         if (errno != EIDRM)
             perror("semop");
-        *err = -1;
-        return (void*)err;
+        return (void *) -1;
     }
 
     /* thread N will use growth scheme N mod 4 */
-    *err = allocate_free(num_loop, *(int *)threadnum % 4);
+    int err = allocate_free(num_loop, ((int)threadnum) % 4);
     fprintf(stdout, 
     "Thread [%d]: allocate_free() returned %d, %s.  Thread exiting.\n",
-    *(int *)threadnum, *err, (*err ? "failed" : "succeeded"));
-    *err = *err? -1 : 0;
-    return (void *)err;
+    (int)threadnum, err, (err ? "failed" : "succeeded"));
+    return (void *)(err ? -1 : 0);
 }
         
 
@@ -375,7 +365,7 @@ main(int	argc,		/* number of input parameters		      */
 
     for (thrd_ndx = 0; thrd_ndx < num_thrd; thrd_ndx++)
     {
-        if (pthread_create(&thrdid[thrd_ndx], NULL, alloc_mem, (void *)&thrd_ndx))
+        if (pthread_create(&thrdid[thrd_ndx], NULL, alloc_mem, (void *)thrd_ndx))
         {
 	    int err = errno;
 	    if (err == EINTR) {
@@ -399,8 +389,8 @@ main(int	argc,		/* number of input parameters		      */
    
     for (thrd_ndx = 0; thrd_ndx < num_thrd; thrd_ndx++)
     {
-        int *th_status;	/* exit status of LWP */
-        if (pthread_join(thrdid[thrd_ndx], (void *)&th_status) != 0)
+        void *th_status;	/* exit status of LWP */
+        if (pthread_join(thrdid[thrd_ndx], &th_status) != 0)
         {
             perror("main(): pthread_join()");
             ret = -1;
@@ -408,15 +398,13 @@ main(int	argc,		/* number of input parameters		      */
         }
         else
         {
-            if (th_status == NULL || *th_status == -1)
+            if ((intptr_t)th_status != 0)
             {
-                free(th_status);
                 fprintf(stderr,
                         "main(): thread [%d] - exited with errors\n", thrd_ndx);
                 ret = -1;
                 goto out;
             }
-            free(th_status);
             dprt(("main(): thread [%d]: exited without errors\n", thrd_ndx));
         }
         my_yield();

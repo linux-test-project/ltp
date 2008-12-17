@@ -89,7 +89,7 @@ int sockfd;
 int
 main(int argc, char *argv[])
 {
-    void new_thread();
+    void new_thread(void*);
     pthread_attr_t newattr;
     int newsockfd;
     socklen_t clilen;
@@ -154,7 +154,7 @@ main(int argc, char *argv[])
 	    }
 	    else /* create thread to handle client request */
 	    {
-	        if (pthread_create(&th, &newattr, (void *)&new_thread, (void *)&newsockfd))
+	        if (pthread_create(&th, &newattr, new_thread, (void *)newsockfd))
 		    printf("failure to create thread\n");
 #ifndef _LINUX
 	        yield();
@@ -167,13 +167,14 @@ main(int argc, char *argv[])
     close(sockfd); 	
 }
 
-void new_thread(int *arg)
+void new_thread(void* arg_)
     {
+    int arg=(int)arg_;
     if (pthread_mutex_lock (&current_mutex))
 	printf("mutex_lock failed");
-    if (str_echo(*arg) < 0) /* process the request */
+    if (str_echo(arg) < 0) /* process the request */
        printf("new_thread: str_echo returned error"); 
-    close(*arg); /* i.e. newsockfd*/ 	
+    close(arg); /* i.e. newsockfd*/ 	
     if (pthread_mutex_unlock (&current_mutex))
 	printf("mutex_unlock failed");
 #ifndef _LINUX

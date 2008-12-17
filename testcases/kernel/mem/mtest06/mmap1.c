@@ -602,7 +602,7 @@ main(int  argc,		/* number of input parameters.			      */
         {
             if (pthread_join(thid[thrd_ndx], (void *)&status[thrd_ndx]))
             {
-                perror("main(): pthread_create()");
+                perror("main(): pthread_join()");
                 exit(-1);
             }
             else

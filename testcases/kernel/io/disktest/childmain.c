@@ -22,7 +22,7 @@
 *
 *  Project Website:  TBD
 *
-* $Id: childmain.c,v 1.7 2008/10/20 06:30:33 subrata_modak Exp $
+* $Id: childmain.c,v 1.8 2008/12/17 06:26:28 subrata_modak Exp $
 *
 */
 
@@ -526,7 +526,7 @@ void *ChildMain(void *vtest)
 	if((MutexMISCOMP = OpenMutex(SYNCHRONIZE, TRUE, "gbl")) == NULL) {
 		pMsg(ERR, args, "Thread %d: Failed to open semaphore, error = %u\n", this_thread_id, GetLastError());
 		args->test_state = SET_STS_FAIL(args->test_state);
-		TEXIT(&GETLASTERROR());
+		TEXIT(GETLASTERROR());
 	}
 #else
 	static pthread_mutex_t MutexMISCOMP = PTHREAD_MUTEX_INITIALIZER; 
@@ -548,7 +548,7 @@ void *ChildMain(void *vtest)
 	if(INVALID_FD(fd)) {
 		pMsg(ERR, args, "Thread %d: could not open %s, errno = %u.\n", this_thread_id,args->device, GETLASTERROR());
 		args->test_state = SET_STS_FAIL(args->test_state);
-		TEXIT(&GETLASTERROR());
+		TEXIT(GETLASTERROR());
 	}
 
 	/* Create aligned memory buffers for sending IO. */
@@ -556,7 +556,7 @@ void *ChildMain(void *vtest)
 		pMsg(ERR, args, "Thread %d: Memory allocation failure for IO buffer, errno = %u\n", this_thread_id, GETLASTERROR());
 		args->test_state = SET_STS_FAIL(args->test_state);
 		CLOSE(fd);
-		TEXIT(&GETLASTERROR());
+		TEXIT(GETLASTERROR());
 	}
 	memset(buffer1, SET_CHAR, ((args->htrsiz*BLK_SIZE)+ALIGNSIZE));
 	buf1 = (char *) BUFALIGN(buffer1);
@@ -566,7 +566,7 @@ void *ChildMain(void *vtest)
 		FREE(buffer1);
 		args->test_state = SET_STS_FAIL(args->test_state);
 		CLOSE(fd);
-		TEXIT(&GETLASTERROR());
+		TEXIT(GETLASTERROR());
 	}
 	memset(buffer2, SET_CHAR, ((args->htrsiz*BLK_SIZE)+ALIGNSIZE));
 	buf2 = (char *) BUFALIGN(buffer2);
@@ -835,6 +835,6 @@ void *ChildMain(void *vtest)
 		args->test_state = SET_STS_FAIL(args->test_state);
 	}
 
-	TEXIT(&exit_code);
+	TEXIT(exit_code);
 }
 

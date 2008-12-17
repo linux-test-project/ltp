@@ -1,5 +1,5 @@
 /*
-* $Id: timer.c,v 1.3 2008/10/20 06:30:33 subrata_modak Exp $
+* $Id: timer.c,v 1.4 2008/12/17 06:26:28 subrata_modak Exp $
 * Disktest
 * Copyright (c) International Business Machines Corp., 2001
 *
@@ -23,7 +23,7 @@
 *
 *  Project Website:  TBD
 * 
-* $Id: timer.c,v 1.3 2008/10/20 06:30:33 subrata_modak Exp $
+* $Id: timer.c,v 1.4 2008/12/17 06:26:28 subrata_modak Exp $
 *
 */
 #include <stdio.h>
@@ -193,7 +193,7 @@ void *ChildTimer(void *vtest)
 		env->bContinue = FALSE;
 	}
 
-	TEXIT(&(GETLASTERROR()));
+	TEXIT(GETLASTERROR());
 }
 
 #ifdef _DEBUG
