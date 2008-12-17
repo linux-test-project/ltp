@@ -85,6 +85,18 @@ if [ $rc -ne 0 ] && [ -z $err_code ]; then
 	err_code=$rc
 fi
 
+pidns14
+rc=$?
+if [ $rc -ne 0 ] && [ -z $err_code ]; then
+	err_code=$rc
+fi
+
+pidns16
+rc=$?
+if [ $rc -ne 0 ] && [ -z $err_code ]; then
+	err_code=$rc
+fi
+
 pidns17
 rc=$?
 if [ $rc -ne 0 ] && [ -z $err_code ]; then
