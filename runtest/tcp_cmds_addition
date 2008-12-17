@@ -1,0 +1,7 @@
+#DESCRIPTION: addtional TCP/IP commands tests
+# The tests described in tcp_cmds are being in the default tests long time
+# New tests for TCP/IP should be in this command file
+#
+iproute ip_tests.sh
+traceroute traceroute_tests.sh
+xinetd xinetd_tests.sh
