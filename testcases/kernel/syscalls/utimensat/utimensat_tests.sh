@@ -70,7 +70,7 @@ setup_file()
 
     # Create file and make atime and mtime zero.
 
-    touch $FILE
+    sudo -u $user_tester touch $FILE
     if ! $TEST_PROG -q $FILE 0 0 0 0 > $RESULT_FILE; then
         echo "Failed to set up test file $FILE" 1>&2
         exit 1
@@ -208,18 +208,19 @@ run_test()
 
     echo "Pathname test"
     setup_file $FILE "$1" "$2" "$3"
-    CMD="$TEST_PROG -q $FILE $4"
+    cp $LTPROOT/testcases/bin/$TEST_PROG ./
+    CMD="./$TEST_PROG -q $FILE $4"
     echo "$CMD"
-    $CMD > $RESULT_FILE
+    sudo -u $user_tester $CMD > $RESULT_FILE
     check_result $? $5 $6 $7
     echo
 
     if test $do_read_fd_test -ne 0; then
         echo "Readable file descriptor (futimens(3)) test"
         setup_file $FILE "$1" "$2" "$3"
-        CMD="$TEST_PROG -q -d $FILE NULL $4"
+        CMD="./$TEST_PROG -q -d $FILE NULL $4"
         echo "$CMD"
-        $CMD > $RESULT_FILE
+        sudo -u $user_tester $CMD > $RESULT_FILE
         check_result $? $5 $6 $7
         echo
     fi
@@ -230,9 +231,9 @@ run_test()
     if test $do_write_fd_test -ne 0; then
         echo "Writable file descriptor (futimens(3)) test"
         setup_file $FILE "$1" "$2" "$3"
-        CMD="$TEST_PROG -q -w -d $FILE NULL $4"
+        CMD="./$TEST_PROG -q -w -d $FILE NULL $4"
         echo "$CMD"
-        $CMD > $RESULT_FILE
+        sudo -u $user_tester $CMD > $RESULT_FILE
         check_result $? $5 $6 $7
         echo
     fi
@@ -242,10 +243,12 @@ run_test()
 }
 #=====================================================================
 
-mkdir -p $TEST_DIR
+user_tester=utimensat_tester
+useradd $user_tester
+sudo -u $user_tester mkdir -p $TEST_DIR
 
-sudo chown root $TEST_PROG
-sudo chmod ugo+x,u+s $TEST_PROG
+chown root $LTPROOT/testcases/bin/$TEST_PROG
+chmod ugo+x,u+s $LTPROOT/testcases/bin/$TEST_PROG
 
 #=====================================================================
 
@@ -431,6 +434,8 @@ echo "============================================================"
 
 echo 
 
+userdel -r utimensat_tester
+rm -rf $TEST_PROG
 uname -a
 date
 echo "Total tests: $test_num; passed: $passed_cnt; failed: $failed_cnt"
