@@ -1,3 +1,4 @@
+
 /*
  * Cheesy program to create a "graph" of nodes, spawn threads and 
  * walk the graph.
@@ -21,7 +22,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
-
+#define _GNU_SOURCE
 #include <sys/mman.h>
 #include <malloc.h>
 #include <sys/sysinfo.h>
@@ -29,13 +30,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sched.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <signal.h>
 #include <sys/time.h>
 #include <strings.h>
 #include <time.h>
+//#define __USE_GNU
+#include <sched.h>
 
 static int seed_random(void);
 static void populate_graph(void *region, unsigned long long node_count);
@@ -235,9 +237,9 @@ and %d seconds between adding children.\n",
 		if (!fork()) {
 #ifdef __cpu_set_t_defined
 			if (affinity) {
-				__CPU_ZERO(&my_cpu_mask);
-				__CPU_SET(c, &my_cpu_mask);
-				if (0 != sched_setaffinity(0, &my_cpu_mask)) {
+				CPU_ZERO(&my_cpu_mask);
+				CPU_SET(c, &my_cpu_mask);
+				if (0 != sched_setaffinity(0,sizeof(cpu_set_t), &my_cpu_mask)) {
 					perror("sched_setaffinity");
 				}
 			}
@@ -253,9 +255,9 @@ and %d seconds between adding children.\n",
 	if (is_parent) {
 #ifdef __cpu_set_t_defined
 		if (affinity) {
-			__CPU_ZERO(&my_cpu_mask);
-			__CPU_SET(0, &my_cpu_mask);
-			if (0 != sched_setaffinity(0, &my_cpu_mask)) {
+			CPU_ZERO(&my_cpu_mask);
+			CPU_SET(0, &my_cpu_mask);
+			if (0 != sched_setaffinity(0,sizeof(cpu_set_t), &my_cpu_mask)) {
 				perror("sched_setaffinity");
 			}
 		}

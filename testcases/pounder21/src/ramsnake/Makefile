@@ -18,7 +18,7 @@
 # 02111-1307, USA.
 
 CC=gcc
-CFLAGS += -O3 -Wall
+CFLAGS += -O3 -Wall 
 bins = snake.exe
 
 all: ${bins}
