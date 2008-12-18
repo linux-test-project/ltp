@@ -1,4 +1,4 @@
-$Id: INSTALL,v 1.18 2008/12/11 10:30:33 subrata_modak Exp $
+$Id: INSTALL,v 1.19 2008/12/18 04:58:57 subrata_modak Exp $
 
 About configuration
 -------------------
@@ -78,10 +78,18 @@ contributions are welcome.
 	the LTP on this server machine also.
 
     ii) Second, the server must be setup to allow the client to connect using
-		 the "r" commands, such as rsh.  This is done by simply creating/editing
-		 the ".rhosts" file under /root.  Place the hostname of the client
-		 machine in this file to allow root to remotely connect without the use
-		 of a password.
+	the "r" commands, such as rsh.  This is done by simply creating/editing
+	the ".rhosts" file under /root.  Place the hostname of the client
+	machine in this file to allow root to remotely connect without the use
+	of a password. If server has the PAM system security tool, you need
+	to add the following lines to /etc/securetty:
+		rlogin
+		rsh
+		rexec
+		pts/0
+		pts/1
+		  :
+		pts/9
 
    iii) Next, certain services must be activated in order for certain tests to
 	execute.  The following services are activated via inetd/xinetd:
@@ -91,13 +99,23 @@ contributions are welcome.
 		echo (stream)
 		fingerd
 		rshd
-		 Also, because certain RPC programs are tested, the "portmapper" daemon
-		 MUST be started, as well as NFS server AND lock services.
+	 Also, because certain RPC programs are tested, the "portmapper" daemon
+	 MUST be started, as well as NFS server AND lock services.
 
     iv) Finally, before running the networktests.sh script, two variables must
-		 be set within the script file.  The "RHOST" variable should be set to
-		 the hostname of the server.  The "PASSWD" variable should be set to
-		 root's password on the server machine.  This is necessary for tests
-		 such as telnet01 and ftp01.
+	be set within the script file.  The "RHOST" variable should be set to
+	the hostname of the server.  The "PASSWD" variable should be set to
+	root's password on the server machine.  This is necessary for tests
+	such as telnet01 and ftp01.
 
    You can now successfully execute the networktests.sh script.
+   When you would like to run the whole network tests, specify -w option:
+   	# ./networktests.sh -w
+
+   When you would like to run the same tests which networktests.sh ran till
+   2008, specify no option or -d option:
+   	# ./networktests.sh
+
+   You can run the test category which you are interested in, -h option shows
+   the list of the test category:
+   	# ./netwoktests.sh -h
