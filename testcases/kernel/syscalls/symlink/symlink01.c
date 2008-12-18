@@ -29,7 +29,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: symlink01.c,v 1.9 2008/10/17 10:05:59 subrata_modak Exp $ */
+/* $Id: symlink01.c,v 1.10 2008/12/18 05:46:04 subrata_modak Exp $ */
 /**********************************************************
 * 
 *    OS Test - Silicon Graphics, Inc.
@@ -321,7 +321,9 @@ void do_open();
 #define SYMLINK "symlink01"
 #define READLINK "readlink01"
 #define STAT "stat04"
+#define STAT_64 "stat04_64"
 #define LSTAT "lstat01"
+#define LSTAT_64 "lstat01_64"
 #define MKDIR "mkdir05"
 #define RMDIR "rmdir03"
 #define CHDIR "chdir01"
@@ -408,9 +410,15 @@ struct all_test_cases
     {STAT, 0, 0, 6, creat_both, ck_both, {O_FILE, S_FILE, O_FILE}},
     {STAT, 1, ENOENT, 7, creat_symlink, ck_symlink, {O_FILE, S_FILE, NULL}},
     {STAT, 1, ELOOP, 28, creat_symlink, ck_symlink, {S_FILE, S_FILE, NULL}},
+    {STAT_64, 0, 0, 6, creat_both, ck_both, {O_FILE, S_FILE, O_FILE}},
+    {STAT_64, 1, ENOENT, 7, creat_symlink, ck_symlink, {O_FILE, S_FILE, NULL}},
+    {STAT_64, 1, ELOOP, 28, creat_symlink, ck_symlink, {S_FILE, S_FILE, NULL}},
     {LSTAT, 0, 0, 8, creat_symlink, ck_symlink, {O_FILE, S_FILE, NULL}},
     {LSTAT, 0, 0, 9, creat_both, ck_both, {O_FILE, S_FILE, O_FILE}},
     {LSTAT, 0, 0, 30, creat_object, ck_object, {O_FILE, NULL, NULL}},
+    {LSTAT_64, 0, 0, 8, creat_symlink, ck_symlink, {O_FILE, S_FILE, NULL}},
+    {LSTAT_64, 0, 0, 9, creat_both, ck_both, {O_FILE, S_FILE, O_FILE}},
+    {LSTAT_64, 0, 0, 30, creat_object, ck_object, {O_FILE, NULL, NULL}},
     {MKDIR, 1, EEXIST, 10, creat_symlink, ck_symlink, {O_FILE, S_FILE, NULL}},
     {RMDIR, 1, ENOTDIR, 11, creat_symlink, ck_symlink, {O_FILE, S_FILE, NULL}},
     {CHDIR, 0, 0, 12, creat_symlink, ck_symlink, {O_FILE, S_FILE, O_FILE}},
@@ -456,25 +464,29 @@ struct tcses
 		"Reads Value of a Symbolic Link" },
    { STAT,     "stat",     3, &test_objects[9],
 		"Gets File Status Indirectly From a Symbolic Link file" },
-   { LSTAT,    "lstat",    3, &test_objects[12],
+   { STAT_64,   "stat64",  3, &test_objects[12],
+		"Gets File Status Indirectly From a Symbolic Link file" },
+   { LSTAT,    "lstat",    3, &test_objects[15],
 		"Get file Status About a Symbolic Link File" },
-   { MKDIR,    "mkdir",    1, &test_objects[15],
-		"Fail When Making a Directory File Indirectly from a symlink" },
-   { RMDIR,    "rmdir",    1, &test_objects[16],
-		"Fail When Removing a Directory File Indirectly from a symlink" },
-   { CHDIR,    "chdir",    3, &test_objects[17],
+   { LSTAT_64,  "lstat64", 3, &test_objects[18],
+		"Get file Status About a Symbolic Link File" },
+   { MKDIR,    "mkdir",    1, &test_objects[21],
+	       "Fail When Making a Directory File Indirectly from a symlink" },
+   { RMDIR,    "rmdir",    1, &test_objects[22],
+	     "Fail When Removing a Directory File Indirectly from a symlink" },
+   { CHDIR,    "chdir",    3, &test_objects[23],
 		"Changes CWD Location Indirectly from a symlink" },
-   { LINK,     "link",     2, &test_objects[20],
+   { LINK,     "link",     2, &test_objects[26],
 		"Creates a Link To a File Indirectly From a Symbolic" },
-   { UNLINK,   "unlink",   1, &test_objects[23],
+   { UNLINK,   "unlink",   1, &test_objects[28],
 		"Removes a Link To a File but not the Object File" },
-   { CHMOD,    "chmod",    3, &test_objects[24],
+   { CHMOD,    "chmod",    3, &test_objects[29],
 		"Change Object File Permissions Indirectly From a Symbolic" },
-   { UTIME,    "utime",    3, &test_objects[27],
+   { UTIME,    "utime",    3, &test_objects[32],
 		"Set File Access And Modify Object File Times via symlink" },
-   { RENAME,   "rename",   2, &test_objects[30],
+   { RENAME,   "rename",   2, &test_objects[35],
 		"Rename a Symbolic Link File And Not Any Object file" },
-   { OPEN,     "open",     5, &test_objects[33],
+   { OPEN,     "open",     5, &test_objects[37],
 		"Create/Open a File For Reading Or Writing via symlink" },
 };
 
@@ -998,7 +1010,8 @@ struct tcses *tcs;
              /* Perform requested symbolic link system call test */
 
              if ((cktcsid(tc_ptr->tcid, SYMLINK)) ||
-				(cktcsid(tc_ptr->tcid, LSTAT))) {
+			(cktcsid(tc_ptr->tcid, LSTAT)) || 
+				(cktcsid(tc_ptr->tcid, LSTAT_64))) {
                 if (ret == 1)
                    tst_resm(TEST_RESULT, msgs[tc_ptr->pass_msg]);   
                 else
@@ -1009,6 +1022,8 @@ struct tcses *tcs;
              else if (cktcsid(tc_ptr->tcid, READLINK))
                 do_readlink(tc_ptr);
              else if (cktcsid(tc_ptr->tcid, STAT))
+                do_stat(tc_ptr);
+             else if (cktcsid(tc_ptr->tcid, STAT_64))
                 do_stat(tc_ptr);
              else if (cktcsid(tc_ptr->tcid, CHDIR))
                 do_chdir(tc_ptr);
@@ -1106,7 +1121,8 @@ void
 do_ENOENT(tc_ptr)
 struct all_test_cases *tc_ptr;
 {
-     if (cktcsid(tc_ptr->tcid, STAT)) {
+     if ((cktcsid(tc_ptr->tcid, STAT)) || 
+             (cktcsid(tc_ptr->tcid, STAT_64))){
 
         if ((stat(tc_ptr->fn_arg[1], &asymlink) == -1) && (errno == ENOENT))
 	   if ( TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST  )
@@ -1200,7 +1216,8 @@ void
 do_ELOOP(tc_ptr)
 struct all_test_cases *tc_ptr;
 {
-     if (cktcsid(tc_ptr->tcid, STAT)) {
+     if ((cktcsid(tc_ptr->tcid, STAT)) || 
+             (cktcsid(tc_ptr->tcid, STAT_64))){
 
 	TEST( stat(tc_ptr->fn_arg[1], &asymlink) );
 	errno=TEST_ERRNO;
