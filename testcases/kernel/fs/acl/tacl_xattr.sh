@@ -120,10 +120,10 @@ fi
 
 chmod 777 tacl/mount-ext2
 
-adduser -d `pwd`/tacl/tacluser1 tacluser1
-adduser -d `pwd`/tacl/tacluser2 tacluser2
-adduser -d `pwd`/tacl/tacluser3 tacluser3
-adduser -d `pwd`/tacl/tacluser4 tacluser4
+useradd -d `pwd`/tacl/tacluser1 tacluser1
+useradd -d `pwd`/tacl/tacluser2 tacluser2
+useradd -d `pwd`/tacl/tacluser3 tacluser3
+useradd -d `pwd`/tacl/tacluser4 tacluser4
 
 if [ ! -e tacl/mount-ext2/shared ]
 then
@@ -188,7 +188,7 @@ su - tacluser1 << TACL_USER1
 	fi
 	
 	touch $CUR_PATH/tacl/mount-ext2/shared/symlinkdir1/newfil2 2> /dev/null
-	if [ -e $CUR_PATH/tacl/mount-ext2/shared/team1/newfile1 ]
+	if [ -e $CUR_PATH/tacl/mount-ext2/shared/team1/newfile2 ]
 	then
 		echo ""
 		echo "FAILED:  [ touch ] Create file must be denied by file permission bits"
