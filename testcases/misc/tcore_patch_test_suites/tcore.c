@@ -126,7 +126,7 @@ producer (void *data)
  	{
 	char buf[16];
 	sprintf(buf, "%d%d\n", pid, pid);
-	__asm__ ("movups %0, %%xmm1;"::"m"(buf));
+        asm volatile ("movups (%0), %%xmm1;"::"r" (buf):"memory");
 	}
 	    sleep(1);
       }
@@ -163,8 +163,8 @@ consumer (void *data)
 	char buf1[16];
 	sprintf(buf, "%d%d\n", pid, pid);
 	sprintf(buf1,"%d",d2);
-	__asm__ ("movups %0,%%xmm2;"::"m"(buf));
-	__asm__ ("movups %0, %%xmm5;"::"m"(buf));
+        asm volatile ("movups (%0), %%xmm2;":: "r" (buf):"memory");
+        asm volatile ("movups (%0), %%xmm5;":: "r" (buf):"memory");
 	}
 	    *junk = 0;
       }
