@@ -47,7 +47,7 @@ len - length in bytes of the bitmask pointed to by user_mask_ptr.
 
 int HT_SetAffinity()
 {
-	unsigned long mask;
+	unsigned mask;
 	pid_t pid;
 	int result=1;
 	int cpu_count, i, j, k, cpuid;

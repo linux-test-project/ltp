@@ -539,7 +539,8 @@ main()
                          ${LTPROOT}/runtest/power_management_tests  \
                          ${LTPROOT}/runtest/numa                    \
                          ${LTPROOT}/runtest/hugetlb                 \
-                         ${LTPROOT}/runtest/commands
+                         ${LTPROOT}/runtest/commands                \
+                         ${LTPROOT}/runtest/hyperthreading
         do
             [ -e "$SCENFILES" ] || \
             {
