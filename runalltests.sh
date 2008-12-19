@@ -217,3 +217,8 @@ fi
 ## START => Test Series 7                             ##
 ./runltp -f tpm_tools
 ## END => Test Series 7                               ##
+
+## The next one i plan to run is tcore_patch_test_suites
+## START => Test Series 8                             ##
+./runltp -f tcore
+## END => Test Series 8                               ##
