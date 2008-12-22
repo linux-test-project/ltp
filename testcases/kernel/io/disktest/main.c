@@ -22,7 +22,7 @@
 *
 *  Project Website:  TBD
 *
-* $Id: main.c,v 1.7 2008/12/17 06:26:28 subrata_modak Exp $
+* $Id: main.c,v 1.8 2008/12/22 07:33:03 subrata_modak Exp $
 *
 */
 #include <stdio.h>
@@ -40,6 +40,7 @@
 #endif
 #include <stdlib.h>
 #include <stdarg.h>
+#include <stdint.h>
 #include <signal.h>
 #include <time.h>
 #include <errno.h>
@@ -255,15 +256,15 @@ void *threadedMain(void *vtest)
 
 	init_gbl_data(test->env);
 
-	if(make_assumptions(test->args) < 0) { TEXIT(GETLASTERROR()); }
-	if(check_conclusions(test->args) < 0) { TEXIT(GETLASTERROR()); }
+	if(make_assumptions(test->args) < 0) { TEXIT((uintptr_t)GETLASTERROR()); }
+	if(check_conclusions(test->args) < 0) { TEXIT((uintptr_t)GETLASTERROR()); }
 	if(test->args->flags & CLD_FLG_DUMP) {
 		/*
 		 * All we are doing is dumping filespec data to STDOUT, so
 		 * we will do this here and be done.
 		 */
 		do_dump(test->args);
-		TEXIT(GETLASTERROR());
+		TEXIT((uintptr_t)GETLASTERROR());
 	} else {
 		ulRV = init_data(test, &data_buffer_unaligned);
 		if(ulRV != 0) { TEXIT(ulRV); }
@@ -362,7 +363,7 @@ void *threadedMain(void *vtest)
 			pMsg(END, test->args, "Test Done (Failed)\n");
 		}
 	}
-	TEXIT(GETLASTERROR());
+	TEXIT((uintptr_t)GETLASTERROR());
 }
 
 /*

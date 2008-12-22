@@ -1,5 +1,5 @@
 /*
-* $Id: timer.c,v 1.4 2008/12/17 06:26:28 subrata_modak Exp $
+* $Id: timer.c,v 1.5 2008/12/22 07:33:03 subrata_modak Exp $
 * Disktest
 * Copyright (c) International Business Machines Corp., 2001
 *
@@ -23,7 +23,7 @@
 *
 *  Project Website:  TBD
 * 
-* $Id: timer.c,v 1.4 2008/12/17 06:26:28 subrata_modak Exp $
+* $Id: timer.c,v 1.5 2008/12/22 07:33:03 subrata_modak Exp $
 *
 */
 #include <stdio.h>
@@ -41,6 +41,7 @@
 #endif
 #include <stdlib.h>
 #include <stdarg.h>
+#include <stdint.h>
 #include <signal.h>
 #include <time.h>
 #include <errno.h>
@@ -193,7 +194,7 @@ void *ChildTimer(void *vtest)
 		env->bContinue = FALSE;
 	}
 
-	TEXIT(GETLASTERROR());
+	TEXIT((uintptr_t)GETLASTERROR());
 }
 
 #ifdef _DEBUG

@@ -56,6 +56,7 @@
 #include <sys/shm.h>    /* required by shmat() shmdt(), shmctl()              */
 #include <sys/mman.h>   /* required by mmap()                                 */
 #include <fcntl.h>	/* required by open()				      */
+#include <stdint.h>	/* required by uintptr_t			      */
 
 void noprintf(char* string, ...){
 }
@@ -69,7 +70,7 @@ void noprintf(char* string, ...){
 #define PTHREAD_EXIT(val)    do {\
 			exit_val = val; \
                         dprt("pid[%d]: exiting with %d\n", getpid(),exit_val); \
-			pthread_exit((void *)exit_val); \
+			pthread_exit((void *)(uintptr_t)exit_val); \
 				} while (0)
 
 #define OPT_MISSING(prog, opt)   do{\

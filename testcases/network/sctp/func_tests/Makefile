@@ -22,7 +22,7 @@
 INCLUDES += -I../../../../include -I../include -I../testlib
 LIBS += -L../../../../lib -L../lib -L../testlib
 
-CFLAGS += -g $(INCLUDES) -DLTP
+CFLAGS += -g $(INCLUDES) -DLTP -Wall
 
 LOADLIBES += $(LIBS) -lltp -lsctputil -lsctp -lpthread
 

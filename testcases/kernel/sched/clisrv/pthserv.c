@@ -39,6 +39,7 @@
 #include "inet.h"
 #include <stdlib.h>
 #include <unistd.h>
+#include <stdint.h>
 
 #define MAXLINE 1024
 void noprintf(char* string, ...){
@@ -89,7 +90,7 @@ int sockfd;
 int
 main(int argc, char *argv[])
 {
-    void new_thread(void*);
+    void *new_thread(void*);
     pthread_attr_t newattr;
     int newsockfd;
     socklen_t clilen;
@@ -154,7 +155,8 @@ main(int argc, char *argv[])
 	    }
 	    else /* create thread to handle client request */
 	    {
-	        if (pthread_create(&th, &newattr, new_thread, (void *)newsockfd))
+	        if (pthread_create(&th, &newattr, new_thread,
+			(void *)(uintptr_t)newsockfd))
 		    printf("failure to create thread\n");
 #ifndef _LINUX
 	        yield();
@@ -167,9 +169,10 @@ main(int argc, char *argv[])
     close(sockfd); 	
 }
 
-void new_thread(void* arg_)
+void *
+new_thread(void* arg_)
     {
-    int arg=(int)arg_;
+    int arg=(uintptr_t)arg_;
     if (pthread_mutex_lock (&current_mutex))
 	printf("mutex_lock failed");
     if (str_echo(arg) < 0) /* process the request */

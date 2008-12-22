@@ -47,6 +47,7 @@
 #include <errno.h>
 #include <netinet/sctp.h>
 #include <sys/uio.h>
+#include <stdint.h>
 #include <linux/socket.h>
 #include <sctputil.h>
 
@@ -121,7 +122,7 @@ t_send(int id) {
 }
 
 void * relay (void* id_) {
-	int id=(int)id_;
+	int id=(uintptr_t)id_;
 	if (id == 0) {
 		t_send(id);
 	} else if (id == THREADS -1) {
@@ -175,7 +176,7 @@ main(void)
 	for ( i = 0; i < THREAD_SND_RCV_LOOPS; i++ ) {
 		for (cnt = 1; cnt < THREADS; cnt++) {
 			status = pthread_create(&thread[cnt], &attr,
-						relay, (void*)cnt);
+						relay, (void*)(uintptr_t)cnt);
 			if (status)
 				tst_brkm(TBROK, tst_exit, "pthread_create "
                          		 "failed status:%d, errno:%d", status,

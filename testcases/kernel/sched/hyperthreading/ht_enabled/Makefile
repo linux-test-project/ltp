@@ -1,6 +1,6 @@
 # Check that the definitions below are correct for your system
 
-CFLAGS   +=	-I../../../../../include
+CFLAGS   +=	-I../../../../../include -Wall
 LOADLIBES+=	-L../../../../../lib -lltp
 TARGETS  := ht_enabled
 

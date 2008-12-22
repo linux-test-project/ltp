@@ -21,7 +21,6 @@ char buffer[BUFF_SIZE];
 int is_cmdline_para(const char *para)
 {
 	FILE *fp;
-	int i;
 
 	if((fp=fopen("/proc/cmdline","r"))!=NULL && para!=NULL)
 	{
@@ -42,7 +41,6 @@ int is_cmdline_para(const char *para)
 int is_ht_kernel()
 {
 	FILE *fp;
-	int i;
 
 	if((fp=fopen("/proc/cpuinfo","r"))!=NULL)
 	{

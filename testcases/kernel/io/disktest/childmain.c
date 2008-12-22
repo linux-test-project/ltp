@@ -22,13 +22,14 @@
 *
 *  Project Website:  TBD
 *
-* $Id: childmain.c,v 1.8 2008/12/17 06:26:28 subrata_modak Exp $
+* $Id: childmain.c,v 1.9 2008/12/22 07:33:03 subrata_modak Exp $
 *
 */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <stdint.h>
 #ifdef WINDOWS
 #include <windows.h>
 #include <winioctl.h>
@@ -548,7 +549,7 @@ void *ChildMain(void *vtest)
 	if(INVALID_FD(fd)) {
 		pMsg(ERR, args, "Thread %d: could not open %s, errno = %u.\n", this_thread_id,args->device, GETLASTERROR());
 		args->test_state = SET_STS_FAIL(args->test_state);
-		TEXIT(GETLASTERROR());
+		TEXIT((uintptr_t)GETLASTERROR());
 	}
 
 	/* Create aligned memory buffers for sending IO. */
@@ -556,7 +557,7 @@ void *ChildMain(void *vtest)
 		pMsg(ERR, args, "Thread %d: Memory allocation failure for IO buffer, errno = %u\n", this_thread_id, GETLASTERROR());
 		args->test_state = SET_STS_FAIL(args->test_state);
 		CLOSE(fd);
-		TEXIT(GETLASTERROR());
+		TEXIT((uintptr_t)GETLASTERROR());
 	}
 	memset(buffer1, SET_CHAR, ((args->htrsiz*BLK_SIZE)+ALIGNSIZE));
 	buf1 = (char *) BUFALIGN(buffer1);
@@ -566,7 +567,7 @@ void *ChildMain(void *vtest)
 		FREE(buffer1);
 		args->test_state = SET_STS_FAIL(args->test_state);
 		CLOSE(fd);
-		TEXIT(GETLASTERROR());
+		TEXIT((uintptr_t)GETLASTERROR());
 	}
 	memset(buffer2, SET_CHAR, ((args->htrsiz*BLK_SIZE)+ALIGNSIZE));
 	buf2 = (char *) BUFALIGN(buffer2);
@@ -835,6 +836,6 @@ void *ChildMain(void *vtest)
 		args->test_state = SET_STS_FAIL(args->test_state);
 	}
 
-	TEXIT(exit_code);
+	TEXIT((uintptr_t)exit_code);
 }
 

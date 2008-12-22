@@ -69,6 +69,7 @@
 #include <math.h>
 #include <assert.h>
 #include <errno.h>
+#include <stdint.h>
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/sem.h>
@@ -269,11 +270,11 @@ alloc_mem(void * threadnum)
     }
 
     /* thread N will use growth scheme N mod 4 */
-    int err = allocate_free(num_loop, ((int)threadnum) % 4);
+    int err = allocate_free(num_loop, ((uintptr_t)threadnum) % 4);
     fprintf(stdout, 
     "Thread [%d]: allocate_free() returned %d, %s.  Thread exiting.\n",
-    (int)threadnum, err, (err ? "failed" : "succeeded"));
-    return (void *)(err ? -1 : 0);
+    (int)(uintptr_t)threadnum, err, (err ? "failed" : "succeeded"));
+    return (void *)(uintptr_t)(err ? -1 : 0);
 }
         
 
@@ -365,7 +366,8 @@ main(int	argc,		/* number of input parameters		      */
 
     for (thrd_ndx = 0; thrd_ndx < num_thrd; thrd_ndx++)
     {
-        if (pthread_create(&thrdid[thrd_ndx], NULL, alloc_mem, (void *)thrd_ndx))
+        if (pthread_create(&thrdid[thrd_ndx], NULL, alloc_mem,
+		(void *)(uintptr_t)thrd_ndx))
         {
 	    int err = errno;
 	    if (err == EINTR) {

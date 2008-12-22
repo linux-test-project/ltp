@@ -94,6 +94,7 @@
 #include <sys/types.h>
 #include <sys/file.h>
 #include <signal.h>
+#include <stdint.h>
 #ifdef CRAY
 #include <sys/secparm.h>
 #include <sys/iosw.h>
@@ -699,7 +700,7 @@ long wrd;	/* to allow future features, use zero for now */
 		 */
 		aiocbp.aio_sigevent.sigev_notify = SIGEV_THREAD;
 		aiocbp.aio_sigevent.sigev_notify_function = lio_async_callback_handler;
-		aiocbp.aio_sigevent.sigev_notify_attributes = (void*)size;
+		aiocbp.aio_sigevent.sigev_notify_attributes = (void*)(uintptr_t)size;
 	}
 #endif
     /*
@@ -1249,7 +1250,7 @@ long wrd;	/* to allow future features, use zero for now */
 		/* sival_int just has to be something that I can use
 		 * to identify the callback, and "size" happens to be handy...
 		 */
-		aiocbp.aio_sigevent.sigev_notify_attributes = (void*)size;
+		aiocbp.aio_sigevent.sigev_notify_attributes = (void*)(uintptr_t)size;
 	}
 #endif
 
