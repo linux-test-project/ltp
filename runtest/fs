@@ -61,3 +61,6 @@ ftest08 ftest08
 lftest01	lftest 100
 writetest01	writetest
 
+#Also run the fs_di (Data Integrity tests)
+fs_di fs_di -d /tmp/
+
