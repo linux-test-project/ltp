@@ -256,7 +256,7 @@ test02()
 	ping -c 2 127.0.0.1 > $LTPTMP/tst_iptables.out 2>&1 || RC=$?
 	if [ $RC -ne 0 ]; then
 		tst_res TFAIL $LTPTMP/tst_iptables.out \
-			"$TCID: iptables blocking loopback. Reason:"
+			"$TCID: iptables blocking loopback. This is expected behaviour on certain distributions where enabling firewall drops all packets by default."
 		return $RC
 	else
 		tst_resm TINFO "$TCID: Ping succsess"
@@ -325,7 +325,7 @@ test03()
 	ping -c 2 127.0.0.1 > $LTPTMP/tst_iptables.out 2>&1 || RC=$?
 	if [ $RC -ne 0 ]; then
 		tst_res TFAIL $LTPTMP/tst_iptables.out \
-			"$TCID: iptables blocking ping requests. Reason:"
+			"$TCID: iptables blocking ping requests. This is expected behaviour on certain distributions where enabling firewall drops all packets by default."
 		return $RC
 	else
 		tst_resm TINFO "$TCID: Ping succsess"
@@ -522,7 +522,7 @@ test06()
 		fi
 	else
 		tst_res TFAIL $LTPTMP/tst_iptables.out \
-			"$TCID: ping to 127.0.0.1 failed."
+			"$TCID: ping to 127.0.0.1 failed. This is expected behaviour on certain distributions where enabling firewall drops all packets by default."
 		return $RC
 	fi
 
