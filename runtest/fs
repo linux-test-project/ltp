@@ -64,3 +64,5 @@ writetest01	writetest
 #Also run the fs_di (Data Integrity tests)
 fs_di fs_di -d /tmp/
 
+#Also run the fs_perms (File System Permission Tests)
+fs_perms fs_perms_simpletest.sh
