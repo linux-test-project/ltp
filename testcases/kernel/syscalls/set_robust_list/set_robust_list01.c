@@ -130,7 +130,7 @@ main(int argc, char **argv)
         }
 
         /*
-         * This call to get_robust_list function should be sucessful.
+         * This call to set_robust_list function should be sucessful.
          */
 
         TEST(retval = syscall(__NR_set_robust_list, &head, len));
