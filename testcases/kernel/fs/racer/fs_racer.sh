@@ -31,54 +31,72 @@ MAX_FILES=20
 CLEAR_SECS=30
 DIR="race"
 
+execute_test()
+{
 [ -e $DIR ] || mkdir $DIR
-./file_create.sh $DIR $MAX_FILES &
-./file_create.sh $DIR $MAX_FILES &
-./file_create.sh $DIR $MAX_FILES &
+./fs_racer_file_create.sh $DIR $MAX_FILES &
+./fs_racer_file_create.sh $DIR $MAX_FILES &
+./fs_racer_file_create.sh $DIR $MAX_FILES &
 
-./dir_create.sh $DIR $MAX_FILES &
-./dir_create.sh $DIR $MAX_FILES &
-./dir_create.sh $DIR $MAX_FILES &
+./fs_racer_dir_create.sh $DIR $MAX_FILES &
+./fs_racer_dir_create.sh $DIR $MAX_FILES &
+./fs_racer_dir_create.sh $DIR $MAX_FILES &
 
-./file_rename.sh $DIR $MAX_FILES &
-./file_rename.sh $DIR $MAX_FILES &
-./file_rename.sh $DIR $MAX_FILES &
+./fs_racer_file_rename.sh $DIR $MAX_FILES &
+./fs_racer_file_rename.sh $DIR $MAX_FILES &
+./fs_racer_file_rename.sh $DIR $MAX_FILES &
 
-./file_link.sh $DIR $MAX_FILES &
-./file_link.sh $DIR $MAX_FILES &
-./file_link.sh $DIR $MAX_FILES &
+./fs_racer_file_link.sh $DIR $MAX_FILES &
+./fs_racer_file_link.sh $DIR $MAX_FILES &
+./fs_racer_file_link.sh $DIR $MAX_FILES &
 
-./file_symlink.sh $DIR $MAX_FILES &
-./file_symlink.sh $DIR $MAX_FILES &
-./file_symlink.sh $DIR $MAX_FILES &
+./fs_racer_file_symlink.sh $DIR $MAX_FILES &
+./fs_racer_file_symlink.sh $DIR $MAX_FILES &
+./fs_racer_file_symlink.sh $DIR $MAX_FILES &
 
-./file_concat.sh $DIR $MAX_FILES &
-./file_concat.sh $DIR $MAX_FILES &
-./file_concat.sh $DIR $MAX_FILES &
+./fs_racer_file_concat.sh $DIR $MAX_FILES &
+./fs_racer_file_concat.sh $DIR $MAX_FILES &
+./fs_racer_file_concat.sh $DIR $MAX_FILES &
 
-./file_list.sh $DIR &
-./file_list.sh $DIR &
-./file_list.sh $DIR &
+./fs_racer_file_list.sh $DIR &
+./fs_racer_file_list.sh $DIR &
+./fs_racer_file_list.sh $DIR &
 
-./file_rm.sh $DIR $MAX_FILES &
-./file_rm.sh $DIR $MAX_FILES &
-./file_rm.sh $DIR $MAX_FILES &
+./fs_racer_file_rm.sh $DIR $MAX_FILES &
+./fs_racer_file_rm.sh $DIR $MAX_FILES &
+./fs_racer_file_rm.sh $DIR $MAX_FILES &
+}
 
-echo "CTRL-C to exit"
-trap "
+
+usage()
+{
+    echo usage: fs_racer.sh -t DURATION [Execute the testsuite for given DURATION seconds]
+    exit 0;
+}
+
+
+call_exit()
+{
     echo \"Cleaning up\" 
-    killall file_create.sh 
-    killall dir_create.sh
-    killall file_rm.sh 
-    killall file_rename.sh 
-    killall file_link.sh 
-    killall file_symlink.sh 
-    killall file_list.sh 
-    killall file_concat.sh
+    killall fs_racer_file_create.sh 
+    killall fs_racer_dir_create.sh
+    killall fs_racer_file_rm.sh 
+    killall fs_racer_file_rename.sh 
+    killall fs_racer_file_link.sh 
+    killall fs_racer_file_symlink.sh 
+    killall fs_racer_file_list.sh 
+    killall fs_racer_file_concat.sh
     exit 0
-" 2
+}
 
-while /bin/true ; do
-    read tmp
+while getopts :t: arg
+do  case $arg in
+    t)  execute_test
+        sleep $OPTARG
+        call_exit;;
+    \?) usage;;
+    esac
 done
+
+exit 0
 

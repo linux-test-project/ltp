@@ -72,3 +72,6 @@ fs_perms fs_perms_simpletest.sh
 # Was not sure why it should reside in runtest/crashme and won´t get tested ever
 proc01 proc01
 
+#Run the File System Race Condition Check tests as well
+fs_racer fs_racer.sh -t 5
+
