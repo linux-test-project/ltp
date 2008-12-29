@@ -1,0 +1,3 @@
+## Run the CPUHOTPLUG tests here
+
+CPUHOTPLUG (cd $LTPROOT/testcases/kernel/hotplug/cpu_hotplug/; ./runtests.sh)

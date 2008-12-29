@@ -75,6 +75,9 @@ export RUN_STRESS_FLOPPY=0
 ## Make sure you have CD inserted in your CD-ROM drive,
 export RUN_STRESS_CD=0
 
+##Set this to 1 if you wish to runthe CPUHOTPLUG tests
+export RUN_CPU_HOTPLUG=0
+
 export LTP_VERSION=`./runltp -e`
 export TEST_START_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
 export HARDWARE_TYPE=$(uname -i)
@@ -247,4 +250,12 @@ then
 ./runltp -f io_floppy
 fi
 ## END => Test Series 10                               ##
+
+## The next one i plan to run is CPUHOTPLUG tests
+## START => Test Series 11                             ##
+if [ $RUN_CPU_HOTPLUG -eq 1 ]
+then
+./runltp -f cpuhotplug
+fi
+## END => Test Series 11                               ##
 
