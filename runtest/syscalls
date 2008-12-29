@@ -411,6 +411,7 @@ ioctl03      ioctl03
 
 inotify01 inotify01
 inotify02 inotify02
+inotify03 inotify03 -D DEVICE -T DEVICE_FS_TYPE
 
 ioperm01 ioperm01
 ioperm02 ioperm02
