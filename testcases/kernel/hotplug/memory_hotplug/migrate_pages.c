@@ -12,7 +12,6 @@
 #ifdef _NEED_MIGRATE_PAGES
 #include <sys/types.h>
 
-#include <linux/sys.h>          /* For NR_syscalls */
 #include <stdio.h>
 #include <unistd.h>             /* For __NR_ni_syscall */
 #include <errno.h>

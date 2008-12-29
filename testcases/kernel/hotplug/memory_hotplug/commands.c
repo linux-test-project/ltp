@@ -47,6 +47,22 @@
 #define CMD_SUCCESS 0
 #define CMD_ERROR   1
 
+static inline int nodemask_isset(nodemask_t *mask, int node)
+{
+	if ((unsigned)node >= NUMA_NUM_NODES)
+		return 0;
+	if (mask->n[node / (8*sizeof(unsigned long))] & 
+		(1UL<<(node%(8*sizeof(unsigned long)))))
+		return 1;
+	return 0;	
+}
+
+static inline void nodemask_set(nodemask_t *mask, int node)
+{
+	mask->n[node / (8*sizeof(unsigned long))] |=
+		(1UL<<(node%(8*sizeof(unsigned long))));		
+} 
+
 static char *whitespace = " \t";
 
 /*
@@ -359,11 +375,13 @@ out_err:
 static int
 get_arg_nodeid_list(char *args, unsigned int *list)
 {
-	glctx_t    *gcp = &glctx;
+	glctx_t    *gcp;
 	char       *next;
-	nodemask_t  my_allowed_nodes = numa_get_membind();
+	nodemask_t  my_allowed_nodes;
 	int         node, count = 0;
 
+        gcp = &glctx;
+        my_allowed_nodes = numa_get_membind_compat();
 	while (*args != '\0') {
 		if (!isdigit(*args)) {
 			fprintf(stderr, "%s:  expected digit for <node/list>\n",
@@ -411,11 +429,13 @@ get_arg_nodeid_list(char *args, unsigned int *list)
 static int
 get_current_nodeid_list(unsigned int *fromids)
 {
-	glctx_t    *gcp = &glctx;
-	nodemask_t my_allowed_nodes = numa_get_membind();
+	glctx_t    *gcp;
+	nodemask_t my_allowed_nodes;
 	int        nr_nodes = 0, max_node = gcp->numa_max_node;
 	int        node;
 
+        gcp = &glctx;
+        my_allowed_nodes = numa_get_membind_compat();
 	for (node=0; node <= max_node; ++node) {
 		if (nodemask_isset(&my_allowed_nodes, node))
 			*(fromids + nr_nodes++) = node;
@@ -1083,7 +1103,7 @@ struct command {
 	{
 		.cmd_name="map",
 		.cmd_func=map_seg,
-		.cmd_help
+		.cmd_help=
 			"map <seg-name> [<offset>[k|m|g|p] <length>[k|m|g|p]] [<seg-share>] - \n"
 			"\tmmap()/shmat() a previously defined, currently unmapped() segment.\n"
 			"\t<offset> and <length> apply only to mapped files.\n"
