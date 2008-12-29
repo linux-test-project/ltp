@@ -185,7 +185,7 @@ int main(int ac, char **av){
 		struct inotify_event *event;
 		event = (struct inotify_event *) &event_buf[i];
 		if (test_num >= (TST_TOTAL - 1)) {
-			tst_resm(TINFO,
+			tst_resm(TFAIL,
 				"get unnecessary event: wd=%d mask=%x "
 				"cookie=%u len=%u",
 				event->wd, event->mask,
@@ -364,8 +364,8 @@ int
 main()
 {
 #ifndef __NR_inotify_init
-	tst_resm(TWARN, "This test needs a kernel that has inotify syscall.");
-	tst_resm(TWARN, "Inotify syscall can be found at kernel 2.6.13 or higher.");
+	tst_resm(TCONF, "This test needs a kernel that has inotify syscall.");
+	tst_resm(TCONF, "Inotify syscall can be found at kernel 2.6.13 or higher.");
 	return 0;
 #endif
 #ifndef HAS_SYS_INOTIFY
