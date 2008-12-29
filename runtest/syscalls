@@ -537,10 +537,10 @@ modify_ldt02 modify_ldt02
 # to run correctly. Please see individual test
 # code for more information.
 #
-#mount01 mount01 -D /dev/...
-#mount02 mount02 -D /dev/...
-#mount03 mount03 -D /dev/...
-#mount04 mount04 -D /dev/...
+mount01 mount01 -D DEVICE -T DEVICE_FS_TYPE
+mount02 mount02 -D DEVICE -T DEVICE_FS_TYPE
+mount03 mount03 -D DEVICE -T DEVICE_FS_TYPE
+mount04 mount04 -D DEVICE -T DEVICE_FS_TYPE
 
 mount1234 test_mount
 
@@ -1144,9 +1144,9 @@ unlinkat01 unlinkat01
 # to run correctly. Please see individual test
 # code for more information.
 #
-#umount01 umount01 -D /dev/...
-#umount02 umount02 -D /dev/...
-#umount03 umount03 -D /dev/...
+umount01 umount01 -D DEVICE -T DEVICE_FS_TYPE
+umount02 umount02 -D DEVICE -T DEVICE_FS_TYPE
+umount03 umount03 -D DEVICE -T DEVICE_FS_TYPE
 
 umount123 test_umount
 

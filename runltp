@@ -107,7 +107,7 @@ usage()
     [ -D NUM_PROCS,NUM_FILES,NUM_BYTES,CLEAN_FLAG ] -e [ -f CMDFILES(,...) ] [ -g HTMLFILE]
     [ -i NUM_PROCS ] [ -l LOGFILE ] [ -m NUM_PROCS,CHUNKS,BYTES,HANGUP_FLAG ] 
     -N -n [ -o OUTPUTFILE ] -p -q [ -r LTPROOT ] [ -s PATTERN ] [ -t DURATION ]
-    -v [ -w CMDFILEADDR ] [ -x INSTANCES ]
+    -v [ -w CMDFILEADDR ] [ -x INSTANCES ] [ -b DEVICE ] [-B DEVICE_FS_TYPE]
                 
     -a EMAIL_TO     EMAIL all your Reports to this E-mail Address
     -c NUM_PROCS    Run LTP under additional background CPU load
@@ -150,6 +150,10 @@ usage()
     -v              Print more verbose output to screen.                   
     -w CMDFILEADDR  Uses wget to get the user's list of testcases.
     -x INSTANCES    Run multiple instances of this testsuite.
+    -b DEVICE       Some tests require an unmounted block device
+                    to run correctly.
+    -B DEVICE_FS_TYPE The file system of test block devices.
+
 
     example: ./${0##*/} -c 2 -i 2 -m 2,4,10240,1 -D 2,10,10240,1 -p -q  -l /tmp/result-log.$$ -o /tmp/result-output.$$ -C /tmp/result-failed.$$ -d ${PWD}
 
@@ -189,7 +193,7 @@ main()
     local DEFAULT_FILE_NAME_GENERATION_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
     version_date=`head -n 1 $LTPROOT/ChangeLog`
 
-    while getopts a:c:C:d:D:f:ehi:g:l:m:Nno:pqr:s:t:T:vw:x: arg
+    while getopts a:c:C:d:D:f:ehi:g:l:m:Nno:pqr:s:t:T:vw:x:b:B: arg
     do  case $arg in
         a)  EMAIL_TO=$OPTARG
             ALT_EMAIL_OUT=1;;
@@ -371,7 +375,8 @@ main()
 	EOF
             sleep 10 
             INSTANCES="-x $OPTARG";;
-    
+        b) DEVICE=$OPTARG;;
+        B) DEVICE_FS_TYPE=$OPTARG;;
         \?) usage;;
         esac
     done
@@ -641,6 +646,54 @@ main()
             exit 1
     }
     }
+
+    if [ -n "$DEVICE" ]; then
+        sed -i "s|DEVICE|$DEVICE|"  ${TMP}/alltests
+    else
+        echo "remove test cases which require the block device."
+    echo "You can specified it by oprion -b"
+        sed -i "/DEVICE/d"  ${TMP}/alltests
+    fi
+
+    if [ $? -ne 0 ]; then
+            echo "FATAL: error during prcessing alltests file by sed"
+            exit 1
+    fi
+
+    if [ -n "$DEVICE" ]; then
+        mnt_pnt=`mktemp -d --tmpdir=${TMP} mnt_pnt.XXXXXX`
+        if [ -n "$DEVICE_FS_TYPE" ]; then
+            mount -t $DEVICE_FS_TYPE $DEVICE $mnt_pnt
+        else
+            mount $DEVICE $mnt_pnt
+        fi
+
+        if [ $? -ne 0 ]; then
+            echo "FATAL: can't mount block device $DEVICE."
+            exit 1
+        fi
+
+        if [ -z "$DEVICE_FS_TYPE" ]; then
+            DEVICE_FS_TYPE=`cat /proc/mounts | awk "{if (\\\$1 == \"$DEVICE\") print \\\$3; }"`
+            echo "determine file system $DEVICE_FS_TYPE on block device $DEVICE"
+        fi
+
+        umount $DEVICE
+        if [ $? -ne 0 ]; then
+            echo "FATAL: can't umount $DEVICE"
+            exit 1
+        fi
+        rm -rf $mnt_pnt
+    fi
+
+    if [ -n "$DEVICE" ]; then
+        sed -i "s|DEVICE_FS_TYPE|$DEVICE_FS_TYPE|"  ${TMP}/alltests
+    fi
+
+    if [ $? -ne 0 ]; then
+        echo "FATAL: error during prcessing alltests file by sed"
+        exit 1
+    fi
 
     if [ $RUN_REPEATED -gt 1 ]; then # You need to specify at least more than 1 sequential run, else it runs default
          echo "PAN will run these test cases $RUN_REPEATED times....."
