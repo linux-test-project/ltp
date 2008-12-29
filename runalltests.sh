@@ -66,6 +66,14 @@ export RUN_FILECAPS=0
 export LIBCAPS_INSTALLED=0
 export LIBATTR_INSTALLED=0
 
+## Set this to 1 if you wish to execute the stress_cd tests
+## Make sure you have FLOPPY inserted, be warned that you
+## will loose all data on it after the tests,
+export RUN_STRESS_FLOPPY=0
+
+## Set this to 1 if you wish to execute the stress_floppy tests
+## Make sure you have CD inserted in your CD-ROM drive,
+export RUN_STRESS_CD=0
 
 export LTP_VERSION=`./runltp -e`
 export TEST_START_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
@@ -222,3 +230,21 @@ fi
 ## START => Test Series 8                             ##
 ./runltp -f tcore
 ## END => Test Series 8                               ##
+
+
+## The next one i plan to run is stress_cd tests
+## START => Test Series 9                             ##
+if [ $RUN_STRESS_CD -eq 1 ]
+then
+./runltp -f io_cd
+fi
+## END => Test Series 9                               ##
+
+## The next one i plan to run is stress_floppy tests
+## START => Test Series 10                             ##
+if [ $RUN_STRESS_FLOPPY -eq 1 ]
+then
+./runltp -f io_floppy
+fi
+## END => Test Series 10                               ##
+
