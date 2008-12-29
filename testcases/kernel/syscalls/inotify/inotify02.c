@@ -42,6 +42,8 @@
  *
  * ***************************************************************************/
 
+#include "config.h"
+
 #include <stdio.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -52,7 +54,7 @@
 #include "test.h"
 #include "usctest.h"
 
-#if defined(__NR_inotify_init) && defined(HAS_SYS_INOTIFY)
+#if defined(__NR_inotify_init) && defined(HAVE_SYS_INOTIFY)
 #include <sys/inotify.h>
 
 #ifndef IN_MOVE_SELF
@@ -373,7 +375,7 @@ main()
     tst_resm(TCONF, "Inotify syscall can be found at kernel 2.6.13 or higher.");
     return 0;
 #endif
-#ifndef HAS_SYS_INOTIFY
+#ifndef HAVE_SYS_INOTIFY
     tst_resm(TBROK, "can't find header sys/inotify.h");
     return 1;
 #endif
