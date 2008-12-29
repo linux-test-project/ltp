@@ -1,4 +1,4 @@
-SUBDIRS = direct_io disktest stress_cd stress_floppy writetest
+SUBDIRS = direct_io disktest stress_cd stress_floppy writetest aio
 
 all:
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i ; done

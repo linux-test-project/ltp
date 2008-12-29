@@ -38,8 +38,8 @@ if [ ! -n "$this_test"  ]; then
   exit
 fi
 
-
-while [ $# -ge 1 ] ; do
+#Execute only once at present circumstances
+#while [ $# -ge 1 ] ; do
    echo "Starting $this_test"
    $this_test 
    res=$?
@@ -50,7 +50,7 @@ while [ $# -ge 1 ] ; do
    str=" -- FAILED";
    fails=$[fails +1];
    fi
-done
+#done
 
 echo "Pass: $passes Fail: $fails"
 echo "Test run complete at" `date`

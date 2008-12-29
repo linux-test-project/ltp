@@ -15,3 +15,5 @@ $(PROGS): %: %.c $(HARNESS_SRCS)
 clean:
 	rm -f $(PROGS) *.o runtests.out rofile wofile rwfile
 
+install:
+
