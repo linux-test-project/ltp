@@ -40,10 +40,12 @@
 #include "libclone.h"
 #include "test.h"
 
+
 int TST_TOTAL = 1;
 
 extern pid_t getpgid(pid_t pid);
 extern pid_t getsid(pid_t pid);
+static int child_fn(void *c1);
 
 int crtchild(char *s1 , char *s2)
 {
@@ -56,16 +58,42 @@ int crtchild(char *s1 , char *s2)
 
 int create_net_namespace(char *p1, char *c1)
 {
-    int pid, status = 0, ret;
-    long int flags = 0;
-    char *ltproot, *par, *child;
+	int pid, status = 0, ret;
+	char *ltproot, *par;
+	long int clone_flags = 0;
+	int stack_size = getpagesize() * 4;
+	void *childstack, *stack;
 
-    flags |= CLONE_NEWNS;
-    flags |= CLONE_NEWNET;
+	if (tst_kvercmp(2, 6, 19) < 0)
+		return 1;
 
-    if (tst_kvercmp(2,6,19) < 0)
-        return 1;
+	stack = malloc(stack_size);
+	if (!stack) {
+		perror("failled to malloc memory for stack...");
+		return -1;
+	}
+	childstack = stack + stack_size;
 
+	clone_flags |= CLONE_NEWNS;
+/* Enable other namespaces too optionally */
+#ifdef CLONE_NEWPID
+	clone_flags |= CLONE_NEWPID;
+#endif
+
+#ifdef __ia64__
+	pid = clone2(child_fn, childstack, getpagesize(), clone_flags | SIGCHLD,
+						(void *)c1, NULL, NULL, NULL);
+#else
+	pid = clone(child_fn, childstack, clone_flags | SIGCHLD, (void *)c1);
+#endif
+
+	if (pid == -1) {
+		perror("Failled to do clone...");
+		free(stack);
+		return -1;
+	}
+
+/* This code will be executed in parent */
     ltproot = getenv("LTPROOT");
 
     if ( !ltproot) {
@@ -75,30 +103,14 @@ int create_net_namespace(char *p1, char *c1)
     }
 
     par = malloc(FILENAME_MAX);
-    child = malloc(FILENAME_MAX);
 
-    if (par == NULL || child == NULL ) {
+    if (par == NULL) {
                 printf("FAIL: error while allocating memory");
                 exit(1);
         }
 
     sprintf(par, "%s/testcases/kernel/containers/netns/parentns.sh %s" , ltproot, p1);
-    sprintf(child, "%s/testcases/kernel/containers/netns/childns.sh" , ltproot);
 
-    if ((pid = fork()) == 0) {
-
-        // Child.
-        ret = unshare(flags);
-        if (ret < 0) {
-            perror("unshare");
-	    printf ("Error:Unshare syscall failed for network namespace\n");
-            return 1;
-        }
-    return crtchild(child, c1);
-    }
-    else{
-
-        //parent
         ret = system(par);
         status = WEXITSTATUS(ret);
         if ( ret == -1 || status != 0) {
@@ -113,6 +125,44 @@ int create_net_namespace(char *p1, char *c1)
         if ( ret  == -1 || status != 0)
             printf("Error: waitpid() returns %d, status %d\n", ret, status);
 
-    }
     return status;
+}
+
+/* The function to be executed in the child namespace */
+int child_fn(void *c1)
+{
+	char *ltproot, *child;
+	unsigned long flags = 0;
+	int ret;
+
+/* Flags to unshare different Namespaces */
+	flags |= CLONE_NEWNS;
+	flags |= CLONE_NEWNET;
+	flags |= CLONE_NEWUTS;
+	flags |= CLONE_FS;
+
+	ltproot = getenv("LTPROOT");
+
+	if (!ltproot) {
+		printf("LTPROOT env variable is not set\n");
+		printf("Please set LTPROOT and re-run the test.. Thankyou\n");
+		return -1;
+	}
+
+	child = malloc(FILENAME_MAX);
+	if (child == NULL) {
+		printf("FAIL: error while allocating memory");
+		exit(1);
+	}
+
+	sprintf(child, "%s/testcases/kernel/containers/netns/childns.sh",
+								 ltproot);
+
+	/* Unshare the network namespace in the child */
+	ret = unshare(flags);
+	if (ret < 0) {
+		perror("Failled to unshare for netns...");
+		return 1;
+	}
+	return crtchild(child, c1);
 }
