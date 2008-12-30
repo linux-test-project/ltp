@@ -85,14 +85,15 @@ int main(int argc, char **argv)
 	return 0;
 }
 
-#elif USE_OWNIMPL
+#else
+#if defined USE_OWNIMPL
 #include "linux_syscall_numbers.h"
 int signalfd(int fd, const sigset_t * mask, int flags)
 {
 	/* Taken from GLIBC. */
 	return (syscall(__NR_signalfd, fd, mask, _NSIG / 8));
 }
-#else
+#endif
 
 void cleanup(void);
 void setup(void);
