@@ -29,7 +29,7 @@ parent_1.sh parent_2.sh child_1.sh child_2.sh                   \
 delchild.sh rename_net.sh                                       \
 paripv6.sh childipv6.sh                                         \
 par_ftp.sh ch_ftp.sh container_ftp.pl                           \
-runnetnstest.sh							\
+runnetnstest.sh nw_under_ns.sh
 
 SRCS    = $(wildcard *.c)
 TARGETS = $(SRCS:%.c=%)
