@@ -52,7 +52,7 @@ install: move_page03.mode move_page11.mode
 	chmod 755 move_pages.sh; cp move_pages.sh ../../../bin/.
 
 clean:
-	rm -f $(TARGETS)
+	rm -f $(TARGETS) a.out move_pages_support.o
 
 move_page03.mode:
 	@/bin/sh ./move_pages03.mode.sh
