@@ -43,7 +43,7 @@ export TST_TOTAL
 status=0
 
     # Checks if any script is passed as argument.
-    if [ $# == 1 ]; then
+    if [ $# == 2 ]; then
         scrpt=$1
         debug "INFO: Script to be executed in parent NS is $scrpt"
     fi
@@ -69,7 +69,8 @@ status=0
     echo 1 > /proc/sys/net/ipv4/conf/$vnet0/proxy_arp
 
     # Waits for the Child-NS to get created and reads the PID
-    pid=`cat /tmp/FIFO1`
+    tmp=`cat /tmp/FIFO1`;
+    pid=$2;
     debug "INFO: the pid of child is $pid"
     ip link set $vnet1 netns $pid
 

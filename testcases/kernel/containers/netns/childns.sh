@@ -47,7 +47,7 @@ status=0
     fi
     
     # Passing the PID of child 
-    echo $$ > /tmp/FIFO1
+    echo "child ready" > /tmp/FIFO1;
     
     # waiting for the device name from parent
     vnet1=`cat /tmp/FIFO2`;

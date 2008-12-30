@@ -109,7 +109,9 @@ int create_net_namespace(char *p1, char *c1)
                 exit(1);
         }
 
-    sprintf(par, "%s/testcases/kernel/containers/netns/parentns.sh %s" , ltproot, p1);
+	/* We need to pass the child pid to the parentns.sh script */
+    sprintf(par, "%s/testcases/kernel/containers/netns/parentns.sh %s %u",
+							ltproot, p1, pid);
 
         ret = system(par);
         status = WEXITSTATUS(ret);
