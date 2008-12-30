@@ -217,7 +217,7 @@ test01()
 
 	$LTPBIN/tst_resm TINFO \
 	    "Test #1: comparing expected out and actual output file"
-	diff -w -B -q $LTPTMP/tst_ln.out $LTPTMP/tst_ln.exp > $LTPTMP/tst_ln.err 2>&1 \
+	diff -w -B $LTPTMP/tst_ln.out $LTPTMP/tst_ln.exp > $LTPTMP/tst_ln.err 2>&1 \
 		|| RC=$?
 	if [ $RC -ne 0 ]
 	then

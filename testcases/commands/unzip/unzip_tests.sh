@@ -172,7 +172,7 @@ test01()
 		diff -iwB $LTPTMP/tst_unzip.out $LTPTMP/tst_unzip.out.exp > $LTPTMP/tst_unzip.out.err || RC=$?
 		if [ $RC -ne 0 ]
 		then
-			tst_res TFAIL $LTPTMP/tst_unzip.err \
+			tst_res TFAIL $LTPTMP/tst_unzip.out.err \
 				"Test #1: unzip output differs from expected output. Details"
 		else
 			tst_resm TINFO "Test #1: check if $PWD/tmp/tst_unzip.dir exits."

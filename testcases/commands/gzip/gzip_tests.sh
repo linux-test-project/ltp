@@ -214,7 +214,7 @@ test01()
 	creat_expout $numdirs $numfiles $LTPTMP/tst_gzip.tmp .gz
 
 	tst_resm TINFO "Test #1: comparing expected out and actual output file"
-	diff -w -B -q $LTPTMP/tst_gzip.out $LTPTMP/tst_gzip.exp \
+	diff -w -B $LTPTMP/tst_gzip.out $LTPTMP/tst_gzip.exp \
 		> $LTPTMP/tst_gzip.err 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
@@ -284,7 +284,7 @@ test02()
 	creat_expout $numdirs $numfiles $LTPTMP/tst_gzip.tmp
 
 	tst_resm TINFO "Test #2: comparing expected out and actual output file"
-	diff -w -B -q $LTPTMP/tst_gzip.out $LTPTMP/tst_gzip.exp \
+	diff -w -B $LTPTMP/tst_gzip.out $LTPTMP/tst_gzip.exp \
 		> $LTPTMP/tst_gzip.err 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
