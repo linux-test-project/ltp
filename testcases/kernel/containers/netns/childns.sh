@@ -54,6 +54,10 @@ status=0
     debug "INFO: network dev name received $vnet1";
     # Assigning the dev addresses
     ifconfig $vnet1 $IP2/24 up > /dev/null 2>&1
+	if [ $? -ne 0 ]; then
+		debug "Failed to make interface $vnet1 up in child....."
+	fi
+
     ifconfig lo up ; 
     sleep 2
     
