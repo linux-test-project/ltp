@@ -1,0 +1,15 @@
+This file is to do the setup for running the Network Testcases under containers.
+The corresponding command file is nw_under_ns, hence a sample command will be
+./runltp -p -f nw_under_ns
+from the LTP root directory.
+Most of the requirements are common as for the NW testcases. For ex, xinetd
+and other packages should be installed on machine, /etc/securetty/ should have
+entry for the particular services, /root/.rhosts should allow the host (put a
+line having just + in /root/.rhosts, but remember the potential security risk).
+Also add the hostname container1 with 192.168.0.182 ip in /etc/hosts.
+
+The variables RHOSTS is automatically set up by script, however RUSER and PASSWD
+need to be setup. The variables are exported in the runallnetworktests_child.sh
+script and hence need to be updated manually there. However I will try any better
+way to do this. By default it will try with "root"/"linux" which will fail.
+Hence put the root password in the file runallnetworktests_child.sh (bad ;( )
