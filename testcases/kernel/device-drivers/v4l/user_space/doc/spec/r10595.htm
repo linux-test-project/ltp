@@ -1,0 +1,1154 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ioctl VIDIOC_G_FBUF, VIDIOC_S_FBUF</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Function Reference"
+HREF="r7624.htm"><LINK
+REL="PREVIOUS"
+TITLE="ioctl VIDIOC_G_EXT_CTRLS, VIDIOC_S_EXT_CTRLS,
+VIDIOC_TRY_EXT_CTRLS"
+HREF="r10386.htm"><LINK
+REL="NEXT"
+TITLE="ioctl VIDIOC_G_FMT, VIDIOC_S_FMT,
+VIDIOC_TRY_FMT"
+HREF="r10944.htm"></HEAD
+><BODY
+CLASS="REFENTRY"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="r10386.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="r10944.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="VIDIOC-G-FBUF"
+></A
+>ioctl VIDIOC_G_FBUF, VIDIOC_S_FBUF</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN10599"
+></A
+><H2
+>Name</H2
+>VIDIOC_G_FBUF, VIDIOC_S_FBUF&nbsp;--&nbsp;Get or set frame buffer overlay parameters</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN10603"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN10604"
+></A
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>int ioctl</CODE
+>(int fd, int request, struct v4l2_framebuffer *argp);</CODE
+></P
+><P
+></P
+></DIV
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN10614"
+></A
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>int ioctl</CODE
+>(int fd, int request, const struct v4l2_framebuffer *argp);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN10624"
+></A
+><H2
+>Arguments</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><CODE
+CLASS="PARAMETER"
+>fd</CODE
+></DT
+><DD
+><P
+>File descriptor returned by <A
+HREF="r14090.htm"
+><CODE
+CLASS="FUNCTION"
+>open()</CODE
+></A
+>.</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>request</CODE
+></DT
+><DD
+><P
+>VIDIOC_G_FBUF, VIDIOC_S_FBUF</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>argp</CODE
+></DT
+><DD
+><P
+></P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN10644"
+></A
+><H2
+>Description</H2
+><P
+>Applications can use the <CODE
+CLASS="CONSTANT"
+>VIDIOC_G_FBUF</CODE
+> and
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FBUF</CODE
+> ioctl to get and set the
+framebuffer parameters for a <A
+HREF="x6570.htm"
+>Video
+Overlay</A
+> or <A
+HREF="x6909.htm"
+>Video Output Overlay</A
+>
+(OSD). The type of overlay is implied by the device type (capture or
+output device) and can be determined with the <A
+HREF="r13105.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_QUERYCAP</CODE
+></A
+> ioctl.
+One <TT
+CLASS="FILENAME"
+>/dev/videoN</TT
+> device must not support both
+kinds of overlay.</P
+><P
+>The V4L2 API distinguishes destructive and non-destructive
+overlays. A destructive overlay copies captured video images into the
+video memory of a graphics card. A non-destructive overlay blends
+video images into a VGA signal or graphics into a video signal.
+<I
+CLASS="WORDASWORD"
+>Video Output Overlays</I
+> are always
+non-destructive.</P
+><P
+>To get the current parameters applications call the
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_G_FBUF</CODE
+> ioctl with a pointer to a
+<CODE
+CLASS="STRUCTNAME"
+>v4l2_framebuffer</CODE
+> structure. The driver fills
+all fields of the structure or returns an <SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+> error code when overlays are
+not supported.</P
+><P
+>To set the parameters for a <I
+CLASS="WORDASWORD"
+>Video Output
+Overlay</I
+>, applications must initialize the
+<CODE
+CLASS="STRUCTFIELD"
+>flags</CODE
+> field of a struct
+<CODE
+CLASS="STRUCTNAME"
+>v4l2_framebuffer</CODE
+>. Since the framebuffer is
+implemented on the TV card all other parameters are determined by the
+driver. When an application calls <CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FBUF</CODE
+>
+with a pointer to this structure, the driver prepares for the overlay
+and returns the framebuffer parameters as
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_G_FBUF</CODE
+> does, or it returns an error
+code.</P
+><P
+>To set the parameters for a <I
+CLASS="WORDASWORD"
+>non-destructive
+Video Overlay</I
+>, applications must initialize the
+<CODE
+CLASS="STRUCTFIELD"
+>flags</CODE
+> field, the
+<CODE
+CLASS="STRUCTFIELD"
+>fmt</CODE
+> substructure, and call
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FBUF</CODE
+>. Again the driver prepares for the
+overlay and returns the framebuffer parameters as
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_G_FBUF</CODE
+> does, or it returns an error
+code.</P
+><P
+>For a <I
+CLASS="WORDASWORD"
+>destructive Video Overlay</I
+>
+applications must additionally provide a
+<CODE
+CLASS="STRUCTFIELD"
+>base</CODE
+> address. Setting up a DMA to a
+random memory location can jeopardize the system security, its
+stability or even damage the hardware, therefore only the superuser
+can set the parameters for a destructive video overlay.</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-FRAMEBUFFER"
+></A
+><P
+><B
+>Table 1. struct <CODE
+CLASS="STRUCTNAME"
+>v4l2_framebuffer</CODE
+></B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="20%"
+TITLE="C1"><COL
+WIDTH="20%"
+TITLE="C2"><COL
+WIDTH="20%"
+TITLE="C3"><COL
+WIDTH="40%"
+TITLE="C4"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>capability</CODE
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>Overlay capability flags set by the driver, see
+<A
+HREF="r10595.htm#FRAMEBUFFER-CAP"
+>Table 2</A
+>.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>flags</CODE
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>Overlay control flags set by application and
+driver, see <A
+HREF="r10595.htm#FRAMEBUFFER-FLAGS"
+>Table 3</A
+></TD
+></TR
+><TR
+><TD
+>void *</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>base</CODE
+></TD
+><TD
+>&nbsp;</TD
+><TD
+><P
+>Physical base address of the framebuffer,
+that is the address of the pixel in the top left corner of the
+framebuffer.<SUP
+>a</SUP
+></P
+><P
+>This field is irrelevant to
+<I
+CLASS="WORDASWORD"
+>non-destructive Video Overlays</I
+>. For
+<I
+CLASS="WORDASWORD"
+>destructive Video Overlays</I
+> applications must
+provide a base address. The driver may accept only base addresses
+which are a multiple of two, four or eight bytes. For
+<I
+CLASS="WORDASWORD"
+>Video Output Overlays</I
+> the driver must return
+a valid base address, so applications can find the corresponding Linux
+framebuffer device (see <A
+HREF="x6909.htm"
+>Section 4.4</A
+>).</P
+></TD
+></TR
+><TR
+><TD
+>struct&nbsp;<A
+HREF="c2030.htm#V4L2-PIX-FORMAT"
+>v4l2_pix_format</A
+></TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>fmt</CODE
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>Layout of the frame buffer. The
+<CODE
+CLASS="STRUCTNAME"
+>v4l2_pix_format</CODE
+> structure is defined in <A
+HREF="c2030.htm"
+>Chapter 2</A
+>, for clarification the fields and acceptable values
+            are listed below:</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>width</CODE
+></TD
+><TD
+>Width of the frame buffer in pixels.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>height</CODE
+></TD
+><TD
+>Height of the frame buffer in pixels.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>pixelformat</CODE
+></TD
+><TD
+><P
+>The pixel format of the
+framebuffer.</P
+><P
+>For <I
+CLASS="WORDASWORD"
+>non-destructive Video
+Overlays</I
+> this field only defines a format for the
+struct&nbsp;<A
+HREF="x6570.htm#V4L2-WINDOW"
+>v4l2_window</A
+> <CODE
+CLASS="STRUCTFIELD"
+>chromakey</CODE
+>
+field.</P
+><P
+>For <I
+CLASS="WORDASWORD"
+>destructive Video
+Overlays</I
+> applications must initialize this field. For
+<I
+CLASS="WORDASWORD"
+>Video Output Overlays</I
+> the driver must return
+a valid format.</P
+><P
+>Usually this is an RGB format (for example
+<A
+HREF="r2492.htm#V4L2-PIX-FMT-RGB565"
+><CODE
+CLASS="CONSTANT"
+>V4L2_PIX_FMT_RGB565</CODE
+></A
+>) 
+but YUV formats (only packed YUV formats when chroma keying is used,
+not including <CODE
+CLASS="CONSTANT"
+>V4L2_PIX_FMT_YUYV</CODE
+> and
+<CODE
+CLASS="CONSTANT"
+>V4L2_PIX_FMT_UYVY</CODE
+>) and the
+<CODE
+CLASS="CONSTANT"
+>V4L2_PIX_FMT_PAL8</CODE
+> format are also permitted. The
+behavior of the driver when an application requests a compressed
+format is undefined. See <A
+HREF="c2030.htm"
+>Chapter 2</A
+> for information on
+pixel formats.</P
+></TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>enum&nbsp;<A
+HREF="x6386.htm#V4L2-FIELD"
+>v4l2_field</A
+></TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>field</CODE
+></TD
+><TD
+>Drivers and applications shall ignore this field.
+If applicable, the field order is selected with the <A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+></A
+>
+ioctl, using the <CODE
+CLASS="STRUCTFIELD"
+>field</CODE
+> field of
+struct&nbsp;<A
+HREF="x6570.htm#V4L2-WINDOW"
+>v4l2_window</A
+>.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>bytesperline</CODE
+></TD
+><TD
+>Distance in bytes between the leftmost pixels in
+two adjacent lines.</TD
+></TR
+><TR
+><TD
+COLSPAN="4"
+><P
+>This field is irrelevant to
+<I
+CLASS="WORDASWORD"
+>non-destructive Video
+Overlays</I
+>.</P
+><P
+>For <I
+CLASS="WORDASWORD"
+>destructive Video
+Overlays</I
+> both applications and drivers can set this field
+to request padding bytes at the end of each line. Drivers however may
+ignore the requested value, returning <CODE
+CLASS="STRUCTFIELD"
+>width</CODE
+>
+times bytes-per-pixel or a larger value required by the hardware. That
+implies applications can just set this field to zero to get a
+reasonable default.</P
+><P
+>For <I
+CLASS="WORDASWORD"
+>Video Output
+Overlays</I
+> the driver must return a valid
+value.</P
+><P
+>Video hardware may access padding bytes, therefore
+they must reside in accessible memory. Consider for example the case
+where padding bytes after the last line of an image cross a system
+page boundary. Capture devices may write padding bytes, the value is
+undefined. Output devices ignore the contents of padding
+bytes.</P
+><P
+>When the image format is planar the
+<CODE
+CLASS="STRUCTFIELD"
+>bytesperline</CODE
+> value applies to the largest
+plane and is divided by the same factor as the
+<CODE
+CLASS="STRUCTFIELD"
+>width</CODE
+> field for any smaller planes. For
+example the Cb and Cr planes of a YUV 4:2:0 image have half as many
+padding bytes following each line as the Y plane. To avoid ambiguities
+drivers must return a <CODE
+CLASS="STRUCTFIELD"
+>bytesperline</CODE
+> value
+rounded up to a multiple of the scale factor.</P
+></TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>sizeimage</CODE
+></TD
+><TD
+><P
+>This field is irrelevant to
+<I
+CLASS="WORDASWORD"
+>non-destructive Video Overlays</I
+>. For
+<I
+CLASS="WORDASWORD"
+>destructive Video Overlays</I
+> applications must
+initialize this field. For <I
+CLASS="WORDASWORD"
+>Video Output
+Overlays</I
+> the driver must return a valid
+format.</P
+><P
+>Together with <CODE
+CLASS="STRUCTFIELD"
+>base</CODE
+> it
+defines the framebuffer memory accessible by the
+driver.</P
+></TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>enum&nbsp;<A
+HREF="x2123.htm#V4L2-COLORSPACE"
+>v4l2_colorspace</A
+></TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>colorspace</CODE
+></TD
+><TD
+>This information supplements the
+<CODE
+CLASS="STRUCTFIELD"
+>pixelformat</CODE
+> and must be set by the driver,
+see <A
+HREF="x2123.htm"
+>Section 2.2</A
+>.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>priv</CODE
+></TD
+><TD
+>Reserved for additional information about custom
+(driver defined) formats. When not used drivers and applications must
+set this field to zero.</TD
+></TR
+></TBODY
+><TR
+><TD
+COLSPAN="4"
+>Notes:<BR><A
+NAME="FTN.AEN10706"
+>a. </A
+>A physical base address may not suit all
+platforms. GK notes in theory we should pass something like PCI device
++ memory region + offset instead. If you encounter problems please
+discuss on the Video4Linux mailing list:
+<A
+HREF="https://listman.redhat.com/mailman/listinfo/video4linux-list"
+TARGET="_top"
+>https://listman.redhat.com/mailman/listinfo/video4linux-list</A
+>.<BR></TD
+></TR
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="FRAMEBUFFER-CAP"
+></A
+><P
+><B
+>Table 2. Frame Buffer Capability Flags</B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="38%"
+TITLE="C1"><COL
+WIDTH="12%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_FBUF_CAP_EXTERNOVERLAY</CODE
+></TD
+><TD
+>0x0001</TD
+><TD
+>The device is capable of non-destructive overlays.
+When the driver clears this flag, only destructive overlays are
+supported. There are no drivers yet which support both destructive and
+non-destructive overlays.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_FBUF_CAP_CHROMAKEY</CODE
+></TD
+><TD
+>0x0002</TD
+><TD
+>The device supports clipping by chroma-keying the
+images. That is, image pixels replace pixels in the VGA or video
+signal only where the latter assume a certain color. Chroma-keying
+makes no sense for destructive overlays.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_FBUF_CAP_LIST_CLIPPING</CODE
+></TD
+><TD
+>0x0004</TD
+><TD
+>The device supports clipping using a list of clip
+rectangles.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_FBUF_CAP_BITMAP_CLIPPING</CODE
+></TD
+><TD
+>0x0008</TD
+><TD
+>The device supports clipping using a bit mask.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_FBUF_CAP_LOCAL_ALPHA</CODE
+></TD
+><TD
+>0x0010</TD
+><TD
+>The device supports clipping/blending using the
+alpha channel of the framebuffer or VGA signal. Alpha blending makes
+no sense for destructive overlays.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_FBUF_CAP_GLOBAL_ALPHA</CODE
+></TD
+><TD
+>0x0020</TD
+><TD
+>The device supports alpha blending using a global
+alpha value. Alpha blending makes no sense for destructive overlays.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_FBUF_CAP_LOCAL_INV_ALPHA</CODE
+></TD
+><TD
+>0x0040</TD
+><TD
+>The device supports clipping/blending using the
+inverted alpha channel of the framebuffer or VGA signal. Alpha
+blending makes no sense for destructive overlays.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="FRAMEBUFFER-FLAGS"
+></A
+><P
+><B
+>Table 3. Frame Buffer Flags</B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="38%"
+TITLE="C1"><COL
+WIDTH="12%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_FBUF_FLAG_PRIMARY</CODE
+></TD
+><TD
+>0x0001</TD
+><TD
+>The framebuffer is the primary graphics surface.
+In other words, the overlay is destructive. [?]</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_FBUF_FLAG_OVERLAY</CODE
+></TD
+><TD
+>0x0002</TD
+><TD
+>The frame buffer is an overlay surface the same
+size as the capture. [?]</TD
+></TR
+><TR
+><TD
+COLSPAN="3"
+>The purpose of
+<CODE
+CLASS="CONSTANT"
+>V4L2_FBUF_FLAG_PRIMARY</CODE
+> and
+<CODE
+CLASS="CONSTANT"
+>V4L2_FBUF_FLAG_OVERLAY</CODE
+> was never quite clear.
+Most drivers seem to ignore these flags. For compatibility with the
+<I
+CLASS="WORDASWORD"
+>bttv</I
+> driver applications should set the
+<CODE
+CLASS="CONSTANT"
+>V4L2_FBUF_FLAG_OVERLAY</CODE
+> flag.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_FBUF_FLAG_CHROMAKEY</CODE
+></TD
+><TD
+>0x0004</TD
+><TD
+>Use chroma-keying. The chroma-key color is
+determined by the <CODE
+CLASS="STRUCTFIELD"
+>chromakey</CODE
+> field of
+struct&nbsp;<A
+HREF="x6570.htm#V4L2-WINDOW"
+>v4l2_window</A
+> and negotiated with the <A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+></A
+> ioctl, see <A
+HREF="x6570.htm"
+>Section 4.2</A
+>
+and
+            <A
+HREF="x6909.htm"
+>Section 4.4</A
+>.</TD
+></TR
+><TR
+><TD
+COLSPAN="3"
+>There are no flags to enable
+clipping using a list of clip rectangles or a bitmap. These methods
+are negotiated with the <A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+></A
+> ioctl, see <A
+HREF="x6570.htm"
+>Section 4.2</A
+> and <A
+HREF="x6909.htm"
+>Section 4.4</A
+>.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_FBUF_FLAG_LOCAL_ALPHA</CODE
+></TD
+><TD
+>0x0008</TD
+><TD
+>Use the alpha channel of the framebuffer to clip or
+blend framebuffer pixels with video images. The blend
+function is: output = framebuffer pixel * alpha + video pixel * (1 -
+alpha). The actual alpha depth depends on the framebuffer pixel
+format.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_FBUF_FLAG_GLOBAL_ALPHA</CODE
+></TD
+><TD
+>0x0010</TD
+><TD
+>Use a global alpha value to blend the framebuffer
+with video images. The blend function is: output = (framebuffer pixel
+* alpha + video pixel * (255 - alpha)) / 255. The alpha value is
+determined by the <CODE
+CLASS="STRUCTFIELD"
+>global_alpha</CODE
+> field of
+struct&nbsp;<A
+HREF="x6570.htm#V4L2-WINDOW"
+>v4l2_window</A
+> and negotiated with the <A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+></A
+> ioctl, see <A
+HREF="x6570.htm"
+>Section 4.2</A
+>
+and <A
+HREF="x6909.htm"
+>Section 4.4</A
+>.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_FBUF_FLAG_LOCAL_INV_ALPHA</CODE
+></TD
+><TD
+>0x0020</TD
+><TD
+>Like
+<CODE
+CLASS="CONSTANT"
+>V4L2_FBUF_FLAG_LOCAL_ALPHA</CODE
+>, use the alpha channel
+of the framebuffer to clip or blend framebuffer pixels with video
+images, but with an inverted alpha value. The blend function is:
+output = framebuffer pixel * (1 - alpha) + video pixel * alpha. The
+actual alpha depth depends on the framebuffer pixel format.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN10920"
+></A
+><H2
+>Return Value</H2
+><P
+>On success <SPAN
+CLASS="RETURNVALUE"
+>0</SPAN
+> is returned, on error <SPAN
+CLASS="RETURNVALUE"
+>-1</SPAN
+> and the <CODE
+CLASS="VARNAME"
+>errno</CODE
+> variable is set appropriately:</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EPERM</SPAN
+></DT
+><DD
+><P
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FBUF</CODE
+> can only be called
+by a privileged user to negotiate the parameters for a destructive
+overlay.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EBUSY</SPAN
+></DT
+><DD
+><P
+>The framebuffer parameters cannot be changed at this
+time because overlay is already enabled, or capturing is enabled
+and the hardware cannot capture and overlay simultaneously.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+></DT
+><DD
+><P
+>The ioctl is not supported or the
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FBUF</CODE
+> parameters are unsuitable.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="r10386.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="r10944.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ioctl VIDIOC_G_EXT_CTRLS, VIDIOC_S_EXT_CTRLS,
+VIDIOC_TRY_EXT_CTRLS</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="r7624.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>ioctl VIDIOC_G_FMT, VIDIOC_S_FMT,
+VIDIOC_TRY_FMT</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

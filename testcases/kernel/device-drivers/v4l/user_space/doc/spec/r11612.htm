@@ -1,0 +1,315 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ioctl VIDIOC_G_OUTPUT, VIDIOC_S_OUTPUT</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Function Reference"
+HREF="r7624.htm"><LINK
+REL="PREVIOUS"
+TITLE="ioctl VIDIOC_G_MODULATOR, VIDIOC_S_MODULATOR"
+HREF="r11430.htm"><LINK
+REL="NEXT"
+TITLE="ioctl VIDIOC_G_PARM, VIDIOC_S_PARM"
+HREF="r11680.htm"></HEAD
+><BODY
+CLASS="REFENTRY"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="r11430.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="r11680.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="VIDIOC-G-OUTPUT"
+></A
+>ioctl VIDIOC_G_OUTPUT, VIDIOC_S_OUTPUT</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN11616"
+></A
+><H2
+>Name</H2
+>VIDIOC_G_OUTPUT, VIDIOC_S_OUTPUT&nbsp;--&nbsp;Query or select the current video output</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN11620"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN11621"
+></A
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>int ioctl</CODE
+>(int fd, int request, int *argp);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN11631"
+></A
+><H2
+>Arguments</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><CODE
+CLASS="PARAMETER"
+>fd</CODE
+></DT
+><DD
+><P
+>File descriptor returned by <A
+HREF="r14090.htm"
+><CODE
+CLASS="FUNCTION"
+>open()</CODE
+></A
+>.</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>request</CODE
+></DT
+><DD
+><P
+>VIDIOC_G_OUTPUT, VIDIOC_S_OUTPUT</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>argp</CODE
+></DT
+><DD
+><P
+></P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN11651"
+></A
+><H2
+>Description</H2
+><P
+>To query the current video output applications call the
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_G_OUTPUT</CODE
+> ioctl with a pointer to an integer
+where the driver stores the number of the output, as in the
+struct&nbsp;<A
+HREF="r9149.htm#V4L2-OUTPUT"
+>v4l2_output</A
+> <CODE
+CLASS="STRUCTFIELD"
+>index</CODE
+> field. This ioctl
+will fail only when there are no video outputs, returning the
+<SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+> error code.</P
+><P
+>To select a video output applications store the number of the
+desired output in an integer and call the
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_S_OUTPUT</CODE
+> ioctl with a pointer to this integer.
+Side effects are possible. For example outputs may support different
+video standards, so the driver may implicitly switch the current
+standard. It is good practice to select an output before querying or
+negotiating any other parameters.</P
+><P
+>Information about video outputs is available using the
+<A
+HREF="r9149.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_ENUMOUTPUT</CODE
+></A
+> ioctl.</P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN11663"
+></A
+><H2
+>Return Value</H2
+><P
+>On success <SPAN
+CLASS="RETURNVALUE"
+>0</SPAN
+> is returned, on error <SPAN
+CLASS="RETURNVALUE"
+>-1</SPAN
+> and the <CODE
+CLASS="VARNAME"
+>errno</CODE
+> variable is set appropriately:</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+></DT
+><DD
+><P
+>The number of the video output is out of bounds, or
+there are no video outputs at all and this ioctl is not
+supported.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EBUSY</SPAN
+></DT
+><DD
+><P
+>I/O is in progress, the output cannot be
+switched.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="r11430.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="r11680.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ioctl VIDIOC_G_MODULATOR, VIDIOC_S_MODULATOR</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="r7624.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>ioctl VIDIOC_G_PARM, VIDIOC_S_PARM</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

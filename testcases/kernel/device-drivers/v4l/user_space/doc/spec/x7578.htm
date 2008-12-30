@@ -1,0 +1,248 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Radio Interface</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Interfaces"
+HREF="c6488.htm"><LINK
+REL="PREVIOUS"
+TITLE="Teletext Interface"
+HREF="x7561.htm"><LINK
+REL="NEXT"
+TITLE="RDS Interface"
+HREF="x7607.htm"></HEAD
+><BODY
+CLASS="SECTION"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x7561.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 4. Interfaces</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x7607.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECTION"
+><H1
+CLASS="SECTION"
+><A
+NAME="RADIO"
+>4.10. Radio Interface</A
+></H1
+><P
+>This interface is intended for AM and FM (analog) radio
+receivers.</P
+><P
+>Conventionally V4L2 radio devices are accessed through
+character device special files named <TT
+CLASS="FILENAME"
+>/dev/radio</TT
+>
+and <TT
+CLASS="FILENAME"
+>/dev/radio0</TT
+> to
+<TT
+CLASS="FILENAME"
+>/dev/radio63</TT
+> with major number 81 and minor
+numbers 64 to 127.</P
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN7585"
+>4.10.1. Querying Capabilities</A
+></H2
+><P
+>Devices supporting the radio interface set the
+<CODE
+CLASS="CONSTANT"
+>V4L2_CAP_RADIO</CODE
+> and
+<CODE
+CLASS="CONSTANT"
+>V4L2_CAP_TUNER</CODE
+> flag in the
+<CODE
+CLASS="STRUCTFIELD"
+>capabilities</CODE
+> field of struct&nbsp;<A
+HREF="r13105.htm#V4L2-CAPABILITY"
+>v4l2_capability</A
+>
+returned by the <A
+HREF="r13105.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_QUERYCAP</CODE
+></A
+> ioctl. Other combinations of
+capability flags are reserved for future extensions.</P
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN7594"
+>4.10.2. Supplemental Functions</A
+></H2
+><P
+>Radio devices can support <A
+HREF="x542.htm"
+>controls</A
+>, and must support the <A
+HREF="x394.htm"
+>tuner</A
+> ioctls.</P
+><P
+>They do not support the video input or output, audio input
+or output, video standard, cropping and scaling, compression and
+streaming parameter, or overlay ioctls. All other ioctls and I/O
+methods are reserved for future extensions.</P
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN7600"
+>4.10.3. Programming</A
+></H2
+><P
+>Radio devices may have a couple audio controls (as discussed
+in <A
+HREF="x542.htm"
+>Section 1.8</A
+>) such as a volume control, possibly custom
+controls. Further all radio devices have one tuner (these are
+discussed in <A
+HREF="x394.htm"
+>Section 1.6</A
+>) with index number zero to select
+the radio frequency and to determine if a monaural or FM stereo
+program is received. Drivers switch automatically between AM and FM
+depending on the selected frequency. The <A
+HREF="r12342.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_G_TUNER</CODE
+></A
+> ioctl
+reports the supported frequency range.</P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x7561.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x7607.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Teletext Interface</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="c6488.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>RDS Interface</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

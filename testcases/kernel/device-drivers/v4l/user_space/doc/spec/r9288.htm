@@ -1,0 +1,942 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ioctl VIDIOC_ENUMSTD</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Function Reference"
+HREF="r7624.htm"><LINK
+REL="PREVIOUS"
+TITLE="ioctl VIDIOC_ENUMOUTPUT"
+HREF="r9149.htm"><LINK
+REL="NEXT"
+TITLE="ioctl VIDIOC_G_AUDIO, VIDIOC_S_AUDIO"
+HREF="r9539.htm"></HEAD
+><BODY
+CLASS="REFENTRY"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="r9149.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="r9539.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="VIDIOC-ENUMSTD"
+></A
+>ioctl VIDIOC_ENUMSTD</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN9292"
+></A
+><H2
+>Name</H2
+>VIDIOC_ENUMSTD&nbsp;--&nbsp;Enumerate supported video standards</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN9295"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN9296"
+></A
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>int ioctl</CODE
+>(int fd, int request, struct v4l2_standard *argp);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN9306"
+></A
+><H2
+>Arguments</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><CODE
+CLASS="PARAMETER"
+>fd</CODE
+></DT
+><DD
+><P
+>File descriptor returned by <A
+HREF="r14090.htm"
+><CODE
+CLASS="FUNCTION"
+>open()</CODE
+></A
+>.</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>request</CODE
+></DT
+><DD
+><P
+>VIDIOC_ENUMSTD</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>argp</CODE
+></DT
+><DD
+><P
+></P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN9326"
+></A
+><H2
+>Description</H2
+><P
+>To query the attributes of a video standard,
+especially a custom (driver defined) one, applications initialize the
+<CODE
+CLASS="STRUCTFIELD"
+>index</CODE
+> field of struct&nbsp;<A
+HREF="r9288.htm#V4L2-STANDARD"
+>v4l2_standard</A
+> and call the
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_ENUMSTD</CODE
+> ioctl with a pointer to this
+structure. Drivers fill the rest of the structure or return an
+<SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+> error code when the index is out of bounds. To enumerate all standards
+applications shall begin  at index zero, incrementing by one until the
+driver returns <SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+>. Drivers may enumerate a
+different set of standards after switching the video input or
+output.<A
+NAME="AEN9334"
+HREF="r9288.htm#FTN.AEN9334"
+><SPAN
+CLASS="footnote"
+>[1]</SPAN
+></A
+></P
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-STANDARD"
+></A
+><P
+><B
+>Table 1. struct <CODE
+CLASS="STRUCTNAME"
+>v4l2_standard</CODE
+></B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="25%"
+TITLE="C1"><COL
+WIDTH="25%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>index</CODE
+></TD
+><TD
+>Number of the video standard, set by the
+application.</TD
+></TR
+><TR
+><TD
+><A
+HREF="r9288.htm#V4L2-STD-ID"
+>v4l2_std_id</A
+></TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>id</CODE
+></TD
+><TD
+>The bits in this field identify the standard as
+one of the common standards listed in <A
+HREF="r9288.htm#V4L2-STD-ID"
+>Table 3</A
+>,
+or if bits 32 to 63 are set as custom standards. Multiple bits can be
+set if the hardware does not distinguish between these standards,
+however separate indices do not indicate the opposite. The
+<CODE
+CLASS="STRUCTFIELD"
+>id</CODE
+> must be unique. No other enumerated
+<CODE
+CLASS="STRUCTNAME"
+>v4l2_standard</CODE
+> structure, for this input or
+output anyway, can contain the same set of bits.</TD
+></TR
+><TR
+><TD
+>__u8</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>name</CODE
+>[24]</TD
+><TD
+>Name of the standard, a NUL-terminated ASCII
+string, for example: "PAL-B/G", "NTSC Japan". This information is
+intended for the user.</TD
+></TR
+><TR
+><TD
+>struct&nbsp;<A
+HREF="r9288.htm#V4L2-FRACT"
+>v4l2_fract</A
+></TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>frameperiod</CODE
+></TD
+><TD
+>The frame period (not field period) is numerator
+/ denominator. For example M/NTSC has a frame period of 1001 /
+30000 seconds.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>framelines</CODE
+></TD
+><TD
+>Total lines per frame including blanking,
+e.&nbsp;g. 625 for B/PAL.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>reserved</CODE
+>[4]</TD
+><TD
+>Reserved for future extensions. Drivers must set
+the array to zero.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-FRACT"
+></A
+><P
+><B
+>Table 2. struct <CODE
+CLASS="STRUCTNAME"
+>v4l2_fract</CODE
+></B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="25%"
+TITLE="C1"><COL
+WIDTH="25%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>numerator</CODE
+></TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>denominator</CODE
+></TD
+><TD
+>&nbsp;</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-STD-ID"
+></A
+><P
+><B
+>Table 3. typedef <CODE
+CLASS="STRUCTNAME"
+>v4l2_std_id</CODE
+></B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="25%"
+TITLE="C1"><COL
+WIDTH="25%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>__u64</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>v4l2_std_id</CODE
+></TD
+><TD
+>This type is a set, each bit representing another
+video standard as listed below and in <A
+HREF="r9288.htm#VIDEO-STANDARDS"
+>Table 4</A
+>. The 32 most significant bits are reserved
+for custom (driver defined) video standards.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+><PRE
+CLASS="PROGRAMLISTING"
+>#define V4L2_STD_PAL_B          ((v4l2_std_id)0x00000001)
+#define V4L2_STD_PAL_B1         ((v4l2_std_id)0x00000002)
+#define V4L2_STD_PAL_G          ((v4l2_std_id)0x00000004)
+#define V4L2_STD_PAL_H          ((v4l2_std_id)0x00000008)
+#define V4L2_STD_PAL_I          ((v4l2_std_id)0x00000010)
+#define V4L2_STD_PAL_D          ((v4l2_std_id)0x00000020)
+#define V4L2_STD_PAL_D1         ((v4l2_std_id)0x00000040)
+#define V4L2_STD_PAL_K          ((v4l2_std_id)0x00000080)
+
+#define V4L2_STD_PAL_M          ((v4l2_std_id)0x00000100)
+#define V4L2_STD_PAL_N          ((v4l2_std_id)0x00000200)
+#define V4L2_STD_PAL_Nc         ((v4l2_std_id)0x00000400)
+#define V4L2_STD_PAL_60         ((v4l2_std_id)0x00000800)</PRE
+></P
+><P
+><CODE
+CLASS="CONSTANT"
+>V4L2_STD_PAL_60</CODE
+> is
+a hybrid standard with 525 lines, 60 Hz refresh rate, and PAL color
+modulation with a 4.43 MHz color subcarrier. Some PAL video recorders
+can play back NTSC tapes in this mode for display on a 50/60 Hz agnostic
+PAL TV.</P
+><P
+><PRE
+CLASS="PROGRAMLISTING"
+>#define V4L2_STD_NTSC_M         ((v4l2_std_id)0x00001000)
+#define V4L2_STD_NTSC_M_JP      ((v4l2_std_id)0x00002000)
+#define V4L2_STD_NTSC_443       ((v4l2_std_id)0x00004000)</PRE
+></P
+><P
+><CODE
+CLASS="CONSTANT"
+>V4L2_STD_NTSC_443</CODE
+>
+is a hybrid standard with 525 lines, 60 Hz refresh rate, and NTSC
+color modulation with a 4.43 MHz color
+subcarrier.</P
+><P
+><PRE
+CLASS="PROGRAMLISTING"
+>#define V4L2_STD_NTSC_M_KR      ((v4l2_std_id)0x00008000)
+
+#define V4L2_STD_SECAM_B        ((v4l2_std_id)0x00010000)
+#define V4L2_STD_SECAM_D        ((v4l2_std_id)0x00020000)
+#define V4L2_STD_SECAM_G        ((v4l2_std_id)0x00040000)
+#define V4L2_STD_SECAM_H        ((v4l2_std_id)0x00080000)
+#define V4L2_STD_SECAM_K        ((v4l2_std_id)0x00100000)
+#define V4L2_STD_SECAM_K1       ((v4l2_std_id)0x00200000)
+#define V4L2_STD_SECAM_L        ((v4l2_std_id)0x00400000)
+#define V4L2_STD_SECAM_LC       ((v4l2_std_id)0x00800000)
+
+/* ATSC/HDTV */
+#define V4L2_STD_ATSC_8_VSB     ((v4l2_std_id)0x01000000)
+#define V4L2_STD_ATSC_16_VSB    ((v4l2_std_id)0x02000000)</PRE
+></P
+><P
+><CODE
+CLASS="CONSTANT"
+>V4L2_STD_ATSC_8_VSB</CODE
+> and
+<CODE
+CLASS="CONSTANT"
+>V4L2_STD_ATSC_16_VSB</CODE
+> are U.S. terrestrial digital
+TV standards. Presently the V4L2 API does not support digital TV. See
+also the Linux DVB API at <A
+HREF="http://linuxtv.org"
+TARGET="_top"
+>http://linuxtv.org</A
+>.</P
+><P
+><PRE
+CLASS="PROGRAMLISTING"
+>#define V4L2_STD_PAL_BG         (V4L2_STD_PAL_B         |\
+                                 V4L2_STD_PAL_B1        |\
+                                 V4L2_STD_PAL_G)
+#define V4L2_STD_B              (V4L2_STD_PAL_B         |\
+                                 V4L2_STD_PAL_B1        |\
+                                 V4L2_STD_SECAM_B)
+#define V4L2_STD_GH             (V4L2_STD_PAL_G         |\
+                                 V4L2_STD_PAL_H         |\
+                                 V4L2_STD_SECAM_G       |\
+                                 V4L2_STD_SECAM_H)
+#define V4L2_STD_PAL_DK         (V4L2_STD_PAL_D         |\
+                                 V4L2_STD_PAL_D1        |\
+                                 V4L2_STD_PAL_K)
+#define V4L2_STD_PAL            (V4L2_STD_PAL_BG        |\
+                                 V4L2_STD_PAL_DK        |\
+                                 V4L2_STD_PAL_H         |\
+                                 V4L2_STD_PAL_I)
+#define V4L2_STD_NTSC           (V4L2_STD_NTSC_M        |\
+                                 V4L2_STD_NTSC_M_JP     |\
+                                 V4L2_STD_NTSC_M_KR)
+#define V4L2_STD_MN             (V4L2_STD_PAL_M         |\
+                                 V4L2_STD_PAL_N         |\
+                                 V4L2_STD_PAL_Nc        |\
+                                 V4L2_STD_NTSC)
+#define V4L2_STD_SECAM_DK       (V4L2_STD_SECAM_D       |\
+                                 V4L2_STD_SECAM_K       |\
+                                 V4L2_STD_SECAM_K1)
+#define V4L2_STD_DK             (V4L2_STD_PAL_DK        |\
+                                 V4L2_STD_SECAM_DK)
+
+#define V4L2_STD_SECAM          (V4L2_STD_SECAM_B       |\
+                                 V4L2_STD_SECAM_G       |\
+                                 V4L2_STD_SECAM_H       |\
+                                 V4L2_STD_SECAM_DK      |\
+                                 V4L2_STD_SECAM_L       |\
+                                 V4L2_STD_SECAM_LC)
+
+#define V4L2_STD_525_60         (V4L2_STD_PAL_M         |\
+                                 V4L2_STD_PAL_60        |\
+                                 V4L2_STD_NTSC          |\
+                                 V4L2_STD_NTSC_443)
+#define V4L2_STD_625_50         (V4L2_STD_PAL           |\
+                                 V4L2_STD_PAL_N         |\
+                                 V4L2_STD_PAL_Nc        |\
+                                 V4L2_STD_SECAM)
+
+#define V4L2_STD_UNKNOWN        0
+#define V4L2_STD_ALL            (V4L2_STD_525_60        |\
+                                 V4L2_STD_625_50)</PRE
+></P
+><DIV
+CLASS="TABLE"
+><A
+NAME="VIDEO-STANDARDS"
+></A
+><P
+><B
+>Table 4. Video Standards (based on [<A
+HREF="b17127.htm#ITU470"
+><ABBR
+CLASS="ABBREV"
+>ITU&nbsp;BT.470</ABBR
+></A
+>])</B
+></P
+><TABLE
+BORDER="1"
+RULES="all"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="12%"
+ALIGN="LEFT"
+TITLE="C1"><COL
+WIDTH="12%"
+TITLE="C2"><COL
+WIDTH="12%"
+TITLE="C3"><COL
+WIDTH="12%"
+TITLE="C4"><COL
+WIDTH="12%"
+TITLE="C5"><COL><COL
+WIDTH="12%"
+TITLE="C7"><COL><COL
+WIDTH="12%"
+TITLE="C9"><COL><COL><COL
+WIDTH="12%"
+TITLE="C12"><THEAD
+><TR
+><TH
+>Characteristics</TH
+><TH
+><P
+>M/NTSC<SUP
+>a</SUP
+></P
+></TH
+><TH
+>M/PAL</TH
+><TH
+><P
+>N/PAL<SUP
+>b</SUP
+></P
+></TH
+><TH
+ALIGN="CENTER"
+>B, B1, G/PAL</TH
+><TH
+ALIGN="CENTER"
+>D, D1, K/PAL</TH
+><TH
+ALIGN="CENTER"
+>H/PAL</TH
+><TH
+ALIGN="CENTER"
+>I/PAL</TH
+><TH
+ALIGN="CENTER"
+>B, G/SECAM</TH
+><TH
+ALIGN="CENTER"
+>D, K/SECAM</TH
+><TH
+ALIGN="CENTER"
+>K1/SECAM</TH
+><TH
+ALIGN="CENTER"
+>L/SECAM</TH
+></TR
+></THEAD
+><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>Frame lines</TD
+><TD
+COLSPAN="2"
+ALIGN="CENTER"
+>525</TD
+><TD
+COLSPAN="9"
+ALIGN="CENTER"
+>625</TD
+></TR
+><TR
+><TD
+>Frame period (s)</TD
+><TD
+COLSPAN="2"
+ALIGN="CENTER"
+>1001/30000</TD
+><TD
+COLSPAN="9"
+ALIGN="CENTER"
+>1/25</TD
+></TR
+><TR
+><TD
+>Chrominance sub-carrier frequency (Hz)</TD
+><TD
+>3579545 &plusmn;&nbsp;10</TD
+><TD
+>3579611.49 &plusmn;&nbsp;10</TD
+><TD
+>4433618.75 &plusmn;&nbsp;5 (3582056.25
+&plusmn;&nbsp;5)</TD
+><TD
+COLSPAN="3"
+ALIGN="CENTER"
+>4433618.75 &plusmn;&nbsp;5</TD
+><TD
+>4433618.75 &plusmn;&nbsp;1</TD
+><TD
+COLSPAN="4"
+ALIGN="CENTER"
+>f<SUB
+>OR</SUB
+>&nbsp;=
+4406250 &plusmn;&nbsp;2000, f<SUB
+>OB</SUB
+>&nbsp;= 4250000
+&plusmn;&nbsp;2000</TD
+></TR
+><TR
+><TD
+>Nominal radio-frequency channel bandwidth
+(MHz)</TD
+><TD
+>6</TD
+><TD
+>6</TD
+><TD
+>6</TD
+><TD
+>B: 7; B1, G: 8</TD
+><TD
+>8</TD
+><TD
+>8</TD
+><TD
+>8</TD
+><TD
+>8</TD
+><TD
+>8</TD
+><TD
+>8</TD
+><TD
+>8</TD
+></TR
+><TR
+><TD
+>Sound carrier relative to vision carrier
+(MHz)</TD
+><TD
+>+&nbsp;4.5</TD
+><TD
+>+&nbsp;4.5</TD
+><TD
+>+&nbsp;4.5</TD
+><TD
+><P
+>+&nbsp;5.5 &plusmn;&nbsp;0.001
+<SUP
+>c</SUP
+> <SUP
+>d</SUP
+> <SUP
+>e</SUP
+> <SUP
+>f</SUP
+></P
+></TD
+><TD
+>+&nbsp;6.5 &plusmn;&nbsp;0.001</TD
+><TD
+>+&nbsp;5.5</TD
+><TD
+>+&nbsp;5.9996 &plusmn;&nbsp;0.0005</TD
+><TD
+>+&nbsp;5.5 &plusmn;&nbsp;0.001</TD
+><TD
+>+&nbsp;6.5 &plusmn;&nbsp;0.001</TD
+><TD
+>+&nbsp;6.5</TD
+><TD
+><P
+>+&nbsp;6.5 <SUP
+>g</SUP
+></P
+></TD
+></TR
+></TBODY
+><TR
+><TD
+COLSPAN="12"
+>Notes:<BR><A
+NAME="FTN.AEN9452"
+>a. </A
+>Japan uses a standard
+similar to M/NTSC
+(V4L2_STD_NTSC_M_JP).<BR><A
+NAME="FTN.AEN9457"
+>b. </A
+> The values in
+brackets apply to the combination N/PAL a.k.a.
+N<SUB
+>C</SUB
+> used in Argentina
+(V4L2_STD_PAL_Nc).<BR><A
+NAME="FTN.AEN9507"
+>c. </A
+>In the Federal Republic of Germany, Austria, Italy,
+the Netherlands, Slovakia and Switzerland a system of two sound
+carriers is used, the frequency of the second carrier being
+242.1875&nbsp;kHz above the frequency of the first sound carrier. For
+stereophonic sound transmissions a similar system is used in
+Australia.<BR><A
+NAME="FTN.AEN9509"
+>d. </A
+>New Zealand uses a sound
+carrier displaced 5.4996 &plusmn;&nbsp;0.0005 MHz from the vision
+carrier.<BR><A
+NAME="FTN.AEN9511"
+>e. </A
+>In Denmark, Finland, New
+Zealand, Sweden and Spain a system of two sound carriers is used. In
+Iceland, Norway and Poland the same system is being introduced. The
+second carrier is 5.85&nbsp;MHz above the vision carrier and is DQPSK
+modulated with 728&nbsp;kbit/s sound and data multiplex. (NICAM
+system)<BR><A
+NAME="FTN.AEN9513"
+>f. </A
+>In the United Kingdom, a
+system of two sound carriers is used. The second sound carrier is
+6.552&nbsp;MHz above the vision carrier and is DQPSK modulated with a
+728&nbsp;kbit/s sound and data multiplex able to carry two sound
+channels. (NICAM system)<BR><A
+NAME="FTN.AEN9523"
+>g. </A
+>In France, a
+digital carrier 5.85 MHz away from the vision carrier may be used in
+addition to the main sound carrier. It is modulated in differentially
+encoded QPSK with a 728 kbit/s sound and data multiplexer capable of
+carrying two sound channels. (NICAM
+system)<BR></TD
+></TR
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN9525"
+></A
+><H2
+>Return Value</H2
+><P
+>On success <SPAN
+CLASS="RETURNVALUE"
+>0</SPAN
+> is returned, on error <SPAN
+CLASS="RETURNVALUE"
+>-1</SPAN
+> and the <CODE
+CLASS="VARNAME"
+>errno</CODE
+> variable is set appropriately:</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+></DT
+><DD
+><P
+>The struct&nbsp;<A
+HREF="r9288.htm#V4L2-STANDARD"
+>v4l2_standard</A
+> <CODE
+CLASS="STRUCTFIELD"
+>index</CODE
+>
+is out of bounds.</P
+></DD
+></DL
+></DIV
+></DIV
+><H2
+CLASS="FOOTNOTES"
+>Notes</H2
+><TABLE
+BORDER="0"
+CLASS="FOOTNOTES"
+WIDTH="100%"
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="5%"
+><A
+NAME="FTN.AEN9334"
+HREF="r9288.htm#AEN9334"
+><SPAN
+CLASS="footnote"
+>[1]</SPAN
+></A
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="95%"
+><P
+>The supported standards may overlap and we need an
+unambiguous set to find the current standard returned by
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_G_STD</CODE
+>.</P
+></TD
+></TR
+></TABLE
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="r9149.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="r9539.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ioctl VIDIOC_ENUMOUTPUT</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="r7624.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>ioctl VIDIOC_G_AUDIO, VIDIOC_S_AUDIO</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

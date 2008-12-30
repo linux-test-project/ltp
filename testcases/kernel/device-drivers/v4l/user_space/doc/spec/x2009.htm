@@ -1,0 +1,210 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Streaming Parameters</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Common API Elements"
+HREF="c174.htm"><LINK
+REL="PREVIOUS"
+TITLE="Image Cropping, Insertion and Scaling"
+HREF="x1904.htm"><LINK
+REL="NEXT"
+TITLE="Image Formats"
+HREF="c2030.htm"></HEAD
+><BODY
+CLASS="SECTION"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x1904.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 1. Common API Elements</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="c2030.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECTION"
+><H1
+CLASS="SECTION"
+><A
+NAME="STREAMING-PAR"
+>1.12. Streaming Parameters</A
+></H1
+><P
+>Streaming parameters are intended to optimize the video
+capture process as well as I/O. Presently applications can request a
+high quality capture mode with the <A
+HREF="r11680.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_PARM</CODE
+></A
+> ioctl.</P
+><P
+>The current video standard determines a nominal number of
+frames per second. If less than this number of frames is to be
+captured or output, applications can request frame skipping or
+duplicating on the driver side. This is especially useful when using
+the <A
+HREF="r14264.htm"
+><CODE
+CLASS="FUNCTION"
+>read()</CODE
+></A
+> or <A
+HREF="r14496.htm"
+><CODE
+CLASS="FUNCTION"
+>write()</CODE
+></A
+>, which are not augmented by timestamps
+or sequence counters, and to avoid unneccessary data copying.</P
+><P
+>Finally these ioctls can be used to determine the number of
+buffers used internally by a driver in read/write mode. For
+implications see the section discussing the <A
+HREF="r14264.htm"
+><CODE
+CLASS="FUNCTION"
+>read()</CODE
+></A
+>
+function.</P
+><P
+>To get and set the streaming parameters applications call
+the <A
+HREF="r11680.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_G_PARM</CODE
+></A
+> and <A
+HREF="r11680.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_PARM</CODE
+></A
+> ioctl, respectively. They take
+a pointer to a struct&nbsp;<A
+HREF="r11680.htm#V4L2-STREAMPARM"
+>v4l2_streamparm</A
+>, which contains a union holding
+separate parameters for input and output devices.</P
+><P
+>These ioctls are optional, drivers need not implement
+them. If so, they return the <SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+> error code.</P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x1904.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="c2030.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Image Cropping, Insertion and Scaling</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="c174.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Image Formats</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

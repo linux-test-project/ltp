@@ -1,0 +1,674 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Image Cropping, Insertion and Scaling</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Common API Elements"
+HREF="c174.htm"><LINK
+REL="PREVIOUS"
+TITLE="Data Formats"
+HREF="x1859.htm"><LINK
+REL="NEXT"
+TITLE="Streaming Parameters"
+HREF="x2009.htm"></HEAD
+><BODY
+CLASS="SECTION"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x1859.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 1. Common API Elements</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x2009.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECTION"
+><H1
+CLASS="SECTION"
+><A
+NAME="CROP"
+>1.11. Image Cropping, Insertion and Scaling</A
+></H1
+><P
+>Some video capture devices can sample a subsection of the
+picture and shrink or enlarge it to an image of arbitrary size. We
+call these abilities cropping and scaling. Some video output devices
+can scale an image up or down and insert it at an arbitrary scan line
+and horizontal offset into a video signal.</P
+><P
+>Applications can use the following API to select an area in
+the video signal, query the default area and the hardware limits.
+<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>Despite their name, the <A
+HREF="r7771.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_CROPCAP</CODE
+></A
+>, <A
+HREF="r9994.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_G_CROP</CODE
+></A
+>
+and <A
+HREF="r9994.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_CROP</CODE
+></A
+> ioctls apply to input as well as output
+devices.</I
+></SPAN
+></P
+><P
+>Scaling requires a source and a target. On a video capture
+or overlay device the source is the video signal, and the cropping
+ioctls determine the area actually sampled. The target are images
+read by the application or overlaid onto the graphics screen. Their
+size (and position for an overlay) is negotiated with the
+<A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_G_FMT</CODE
+></A
+> and <A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+></A
+> ioctls.</P
+><P
+>On a video output device the source are the images passed in
+by the application, and their size is again negotiated with the
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_G/S_FMT</CODE
+> ioctls, or may be encoded in a
+compressed video stream. The target is the video signal, and the
+cropping ioctls determine the area where the images are
+inserted.</P
+><P
+>Source and target rectangles are defined even if the device
+does not support scaling or the <CODE
+CLASS="CONSTANT"
+>VIDIOC_G/S_CROP</CODE
+>
+ioctls. Their size (and position where applicable) will be fixed in
+this case. <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>All capture and output device must support the
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_CROPCAP</CODE
+> ioctl such that applications can
+determine if scaling takes place.</I
+></SPAN
+></P
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN1926"
+>1.11.1. Cropping Structures</A
+></H2
+><DIV
+CLASS="FIGURE"
+><A
+NAME="CROP-SCALE"
+></A
+><P
+><B
+>Figure 1-1. Image Cropping, Insertion and Scaling</B
+></P
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="crop.gif"></P
+></DIV
+></DIV
+><P
+>For capture devices the coordinates of the top left
+corner, width and height of the area which can be sampled is given by
+the <CODE
+CLASS="STRUCTFIELD"
+>bounds</CODE
+> substructure of the
+struct&nbsp;<A
+HREF="r7771.htm#V4L2-CROPCAP"
+>v4l2_cropcap</A
+> returned by the <CODE
+CLASS="CONSTANT"
+>VIDIOC_CROPCAP</CODE
+>
+ioctl. To support a wide range of hardware this specification does not
+define an origin or units. However by convention drivers should
+horizontally count unscaled samples relative to 0H (the leading edge
+of the horizontal sync pulse, see <A
+HREF="x7013.htm#VBI-HSYNC"
+>Figure 4-1</A
+>).
+Vertically ITU-R line
+numbers of the first field (<A
+HREF="x7013.htm#VBI-525"
+>Figure 4-2</A
+>, <A
+HREF="x7013.htm#VBI-625"
+>Figure 4-3</A
+>), multiplied by two if the driver can capture both
+fields.</P
+><P
+>The top left corner, width and height of the source
+rectangle, that is the area actually sampled, is given by struct&nbsp;<A
+HREF="r9994.htm#V4L2-CROP"
+>v4l2_crop</A
+>
+using the same coordinate system as struct&nbsp;<A
+HREF="r7771.htm#V4L2-CROPCAP"
+>v4l2_cropcap</A
+>. Applications can
+use the <CODE
+CLASS="CONSTANT"
+>VIDIOC_G_CROP</CODE
+> and
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_S_CROP</CODE
+> ioctls to get and set this
+rectangle. It must lie completely within the capture boundaries and
+the driver may further adjust the requested size and/or position
+according to hardware limitations.</P
+><P
+>Each capture device has a default source rectangle, given
+by the <CODE
+CLASS="STRUCTFIELD"
+>defrect</CODE
+> substructure of
+struct&nbsp;<A
+HREF="r7771.htm#V4L2-CROPCAP"
+>v4l2_cropcap</A
+>. The center of this rectangle shall align with the
+center of the active picture area of the video signal, and cover what
+the driver writer considers the complete picture. Drivers shall reset
+the source rectangle to the default when the driver is first loaded,
+but not later.</P
+><P
+>For output devices these structures and ioctls are used
+accordingly, defining the <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>target</I
+></SPAN
+> rectangle where
+the images will be inserted into the video signal.</P
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN1954"
+>1.11.2. Scaling Adjustments</A
+></H2
+><P
+>Video hardware can have various cropping, insertion and
+scaling limitations. It may only scale up or down, support only
+discrete scaling factors, or have different scaling abilities in
+horizontal and vertical direction. Also it may not support scaling at
+all. At the same time the struct&nbsp;<A
+HREF="r9994.htm#V4L2-CROP"
+>v4l2_crop</A
+> rectangle may have to be
+aligned, and both the source and target rectangles may have arbitrary
+upper and lower size limits. In particular the maximum
+<CODE
+CLASS="STRUCTFIELD"
+>width</CODE
+> and <CODE
+CLASS="STRUCTFIELD"
+>height</CODE
+>
+in struct&nbsp;<A
+HREF="r9994.htm#V4L2-CROP"
+>v4l2_crop</A
+> may be smaller than the
+struct&nbsp;<A
+HREF="r7771.htm#V4L2-CROPCAP"
+>v4l2_cropcap</A
+>.<CODE
+CLASS="STRUCTFIELD"
+>bounds</CODE
+> area. Therefore, as
+usual, drivers are expected to adjust the requested parameters and
+return the actual values selected.</P
+><P
+>Applications can change the source or the target rectangle
+first, as they may prefer a particular image size or a certain area in
+the video signal. If the driver has to adjust both to satisfy hardware
+limitations, the last requested rectangle shall take priority, and the
+driver should preferably adjust the opposite one. The <A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_TRY_FMT</CODE
+></A
+>
+ioctl however shall not change the driver state and therefore only
+adjust the requested rectangle.</P
+><P
+>Suppose scaling on a video capture device is restricted to
+a factor 1:1 or 2:1 in either direction and the target image size must
+be a multiple of 16&nbsp;&times;&nbsp;16 pixels. The source cropping
+rectangle is set to defaults, which are also the upper limit in this
+example, of 640&nbsp;&times;&nbsp;400 pixels at offset 0,&nbsp;0. An
+application requests an image size of 300&nbsp;&times;&nbsp;225
+pixels, assuming video will be scaled down from the "full picture"
+accordingly. The driver sets the image size to the closest possible
+values 304&nbsp;&times;&nbsp;224, then chooses the cropping rectangle
+closest to the requested size, that is 608&nbsp;&times;&nbsp;224
+(224&nbsp;&times;&nbsp;2:1 would exceed the limit 400). The offset
+0,&nbsp;0 is still valid, thus unmodified. Given the default cropping
+rectangle reported by <CODE
+CLASS="CONSTANT"
+>VIDIOC_CROPCAP</CODE
+> the
+application can easily propose another offset to center the cropping
+rectangle.</P
+><P
+>Now the application may insist on covering an area using a
+picture aspect ratio closer to the original request, so it asks for a
+cropping rectangle of 608&nbsp;&times;&nbsp;456 pixels. The present
+scaling factors limit cropping to 640&nbsp;&times;&nbsp;384, so the
+driver returns the cropping size 608&nbsp;&times;&nbsp;384 and adjusts
+the image size to closest possible 304&nbsp;&times;&nbsp;192.</P
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN1969"
+>1.11.3. Examples</A
+></H2
+><P
+>Source and target rectangles shall remain unchanged across
+closing and reopening a device, such that piping data into or out of a
+device will work without special preparations. More advanced
+applications should ensure the parameters are suitable before starting
+I/O.</P
+><DIV
+CLASS="EXAMPLE"
+><A
+NAME="AEN1972"
+></A
+><P
+><B
+>Example 1-10. Resetting the cropping parameters</B
+></P
+><P
+>(A video capture device is assumed; change
+<CODE
+CLASS="CONSTANT"
+>V4L2_BUF_TYPE_VIDEO_CAPTURE</CODE
+> for other
+devices.)</P
+><PRE
+CLASS="PROGRAMLISTING"
+>struct&nbsp;<A
+HREF="r7771.htm#V4L2-CROPCAP"
+>v4l2_cropcap</A
+> cropcap;
+struct&nbsp;<A
+HREF="r9994.htm#V4L2-CROP"
+>v4l2_crop</A
+> crop;
+
+memset (&amp;cropcap, 0, sizeof (cropcap));
+cropcap.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+
+if (-1 == ioctl (fd, <A
+HREF="r7771.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_CROPCAP</CODE
+></A
+>, &amp;cropcap)) {
+        perror ("VIDIOC_CROPCAP");
+        exit (EXIT_FAILURE);
+}
+
+memset (&amp;crop, 0, sizeof (crop));
+crop.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+crop.c = cropcap.defrect; 
+
+/* Ignore if cropping is not supported (EINVAL). */
+
+if (-1 == ioctl (fd, <A
+HREF="r9994.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_CROP</CODE
+></A
+>, &amp;crop)
+    &amp;&amp; errno != EINVAL) {
+        perror ("VIDIOC_S_CROP");
+        exit (EXIT_FAILURE);
+}
+      </PRE
+></DIV
+><DIV
+CLASS="EXAMPLE"
+><A
+NAME="AEN1983"
+></A
+><P
+><B
+>Example 1-11. Simple downscaling</B
+></P
+><P
+>(A video capture device is assumed.)</P
+><PRE
+CLASS="PROGRAMLISTING"
+>struct&nbsp;<A
+HREF="r7771.htm#V4L2-CROPCAP"
+>v4l2_cropcap</A
+> cropcap;
+struct&nbsp;<A
+HREF="r10944.htm#V4L2-FORMAT"
+>v4l2_format</A
+> format;
+
+reset_cropping_parameters ();
+
+/* Scale down to 1/4 size of full picture. */
+
+memset (&amp;format, 0, sizeof (format)); /* defaults */
+
+format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+
+format.fmt.pix.width = cropcap.defrect.width &gt;&gt; 1;
+format.fmt.pix.height = cropcap.defrect.height &gt;&gt; 1;
+format.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
+
+if (-1 == ioctl (fd, <A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+></A
+>, &amp;format)) {
+        perror ("VIDIOC_S_FORMAT");
+        exit (EXIT_FAILURE);
+}
+
+/* We could check the actual image size now, the actual scaling factor
+   or if the driver can scale at all. */
+        </PRE
+></DIV
+><DIV
+CLASS="EXAMPLE"
+><A
+NAME="AEN1991"
+></A
+><P
+><B
+>Example 1-12. Selecting an output area</B
+></P
+><PRE
+CLASS="PROGRAMLISTING"
+>struct&nbsp;<A
+HREF="r7771.htm#V4L2-CROPCAP"
+>v4l2_cropcap</A
+> cropcap;
+struct&nbsp;<A
+HREF="r9994.htm#V4L2-CROP"
+>v4l2_crop</A
+> crop;
+
+memset (&amp;cropcap, 0, sizeof (cropcap));
+cropcap.type = V4L2_BUF_TYPE_VIDEO_OUTPUT;
+
+if (-1 == ioctl (fd, VIDIOC_CROPCAP, &amp;cropcap)) {
+        perror ("VIDIOC_CROPCAP");
+        exit (EXIT_FAILURE);
+}
+
+memset (&amp;crop, 0, sizeof (crop));
+
+crop.type = V4L2_BUF_TYPE_VIDEO_OUTPUT;
+crop.c = cropcap.defrect;
+
+/* Scale the width and height to 50 % of their original size
+   and center the output. */
+
+crop.c.width /= 2;
+crop.c.height /= 2;
+crop.c.left += crop.c.width / 2;
+crop.c.top += crop.c.height / 2;
+
+/* Ignore if cropping is not supported (EINVAL). */
+
+if (-1 == ioctl (fd, VIDIOC_S_CROP, &amp;crop)
+    &#38;&#38; errno != EINVAL) {
+        perror ("VIDIOC_S_CROP");
+        exit (EXIT_FAILURE);
+}</PRE
+></DIV
+><DIV
+CLASS="EXAMPLE"
+><A
+NAME="AEN1996"
+></A
+><P
+><B
+>Example 1-13. Current scaling factor and pixel aspect</B
+></P
+><P
+>(A video capture device is assumed.)</P
+><PRE
+CLASS="PROGRAMLISTING"
+>struct&nbsp;<A
+HREF="r7771.htm#V4L2-CROPCAP"
+>v4l2_cropcap</A
+> cropcap;
+struct&nbsp;<A
+HREF="r9994.htm#V4L2-CROP"
+>v4l2_crop</A
+> crop;
+struct&nbsp;<A
+HREF="r10944.htm#V4L2-FORMAT"
+>v4l2_format</A
+> format;
+double hscale, vscale;
+double aspect;
+int dwidth, dheight;
+
+memset (&amp;cropcap, 0, sizeof (cropcap));
+cropcap.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+
+if (-1 == ioctl (fd, <A
+HREF="r7771.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_CROPCAP</CODE
+></A
+>, &amp;cropcap)) {
+        perror ("VIDIOC_CROPCAP");
+        exit (EXIT_FAILURE);
+}
+
+memset (&amp;crop, 0, sizeof (crop));
+crop.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+
+if (-1 == ioctl (fd, <A
+HREF="r9994.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_G_CROP</CODE
+></A
+>, &amp;crop)) {
+        if (errno != EINVAL) {
+                perror ("VIDIOC_G_CROP");
+                exit (EXIT_FAILURE);
+        }
+
+        /* Cropping not supported. */
+        crop.c = cropcap.defrect;
+}
+
+memset (&amp;format, 0, sizeof (format));
+format.fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+
+if (-1 == ioctl (fd, <A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_G_FMT</CODE
+></A
+>, &amp;format)) {
+        perror ("VIDIOC_G_FMT");
+        exit (EXIT_FAILURE);
+}
+
+/* The scaling applied by the driver. */
+
+hscale = format.fmt.pix.width / (double) crop.c.width;
+vscale = format.fmt.pix.height / (double) crop.c.height;
+
+aspect = cropcap.pixelaspect.numerator /
+         (double) cropcap.pixelaspect.denominator;
+aspect = aspect * hscale / vscale;
+
+/* Devices following ITU-R BT.601 do not capture
+   square pixels. For playback on a computer monitor
+   we should scale the images to this size. */
+
+dwidth = format.fmt.pix.width / aspect;
+dheight = format.fmt.pix.height;
+        </PRE
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x1859.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x2009.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Data Formats</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="c174.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Streaming Parameters</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,305 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ioctl VIDIOC_ENUMAUDOUT</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Function Reference"
+HREF="r7624.htm"><LINK
+REL="PREVIOUS"
+TITLE="ioctl VIDIOC_ENUMAUDIO"
+HREF="r8242.htm"><LINK
+REL="NEXT"
+TITLE="ioctl VIDIOC_ENUM_FMT"
+HREF="r8367.htm"></HEAD
+><BODY
+CLASS="REFENTRY"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="r8242.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="r8367.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="VIDIOC-ENUMAUDIOOUT"
+></A
+>ioctl VIDIOC_ENUMAUDOUT</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN8308"
+></A
+><H2
+>Name</H2
+>VIDIOC_ENUMAUDOUT&nbsp;--&nbsp;Enumerate audio outputs</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN8311"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN8312"
+></A
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>int ioctl</CODE
+>(int fd, int request, struct v4l2_audioout *argp);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN8322"
+></A
+><H2
+>Arguments</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><CODE
+CLASS="PARAMETER"
+>fd</CODE
+></DT
+><DD
+><P
+>File descriptor returned by <A
+HREF="r14090.htm"
+><CODE
+CLASS="FUNCTION"
+>open()</CODE
+></A
+>.</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>request</CODE
+></DT
+><DD
+><P
+>VIDIOC_ENUMAUDOUT</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>argp</CODE
+></DT
+><DD
+><P
+></P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN8342"
+></A
+><H2
+>Description</H2
+><P
+>To query the attributes of an audio output applications
+initialize the <CODE
+CLASS="STRUCTFIELD"
+>index</CODE
+> field and zero out the
+<CODE
+CLASS="STRUCTFIELD"
+>reserved</CODE
+> array of a struct&nbsp;<A
+HREF="r9688.htm#V4L2-AUDIOOUT"
+>v4l2_audioout</A
+> and
+call the <CODE
+CLASS="CONSTANT"
+>VIDIOC_G_AUDOUT</CODE
+> ioctl with a pointer
+to this structure. Drivers fill the rest of the structure or return an
+<SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+> error code when the index is out of bounds. To enumerate all audio
+outputs applications shall begin at index zero, incrementing by one
+until the driver returns <SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+>.</P
+><P
+>Note connectors on a TV card to loop back the received audio
+signal to a sound card are not audio outputs in this sense.</P
+><P
+>See <A
+HREF="r9688.htm"
+>ioctl VIDIOC_G_AUDOUT, VIDIOC_S_AUDOUT(2)</A
+> for a description of
+struct&nbsp;<A
+HREF="r9688.htm#V4L2-AUDIOOUT"
+>v4l2_audioout</A
+>.</P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN8355"
+></A
+><H2
+>Return Value</H2
+><P
+>On success <SPAN
+CLASS="RETURNVALUE"
+>0</SPAN
+> is returned, on error <SPAN
+CLASS="RETURNVALUE"
+>-1</SPAN
+> and the <CODE
+CLASS="VARNAME"
+>errno</CODE
+> variable is set appropriately:</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+></DT
+><DD
+><P
+>The number of the audio output is out of bounds, or
+there are no audio outputs at all and this ioctl is not
+supported.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="r8242.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="r8367.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ioctl VIDIOC_ENUMAUDIO</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="r7624.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>ioctl VIDIOC_ENUM_FMT</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

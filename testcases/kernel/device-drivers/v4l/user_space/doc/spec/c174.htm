@@ -1,0 +1,776 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Common API Elements</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="PREVIOUS"
+TITLE="Introduction"
+HREF="f163.htm"><LINK
+REL="NEXT"
+TITLE="Querying Capabilities"
+HREF="x282.htm"></HEAD
+><BODY
+CLASS="CHAPTER"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="f163.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x282.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="COMMON"
+></A
+>Chapter 1. Common API Elements</H1
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Table of Contents</B
+></DT
+><DT
+>1.1. <A
+HREF="c174.htm#OPEN"
+>Opening and Closing Devices</A
+></DT
+><DT
+>1.2. <A
+HREF="x282.htm"
+>Querying Capabilities</A
+></DT
+><DT
+>1.3. <A
+HREF="x294.htm"
+>Application Priority</A
+></DT
+><DT
+>1.4. <A
+HREF="x309.htm"
+>Video Inputs and Outputs</A
+></DT
+><DT
+>1.5. <A
+HREF="x341.htm"
+>Audio Inputs and Outputs</A
+></DT
+><DT
+>1.6. <A
+HREF="x394.htm"
+>Tuners and Modulators</A
+></DT
+><DT
+>1.7. <A
+HREF="x448.htm"
+>Video Standards</A
+></DT
+><DT
+>1.8. <A
+HREF="x542.htm"
+>User Controls</A
+></DT
+><DT
+>1.9. <A
+HREF="x802.htm"
+>Extended Controls</A
+></DT
+><DT
+>1.10. <A
+HREF="x1859.htm"
+>Data Formats</A
+></DT
+><DT
+>1.11. <A
+HREF="x1904.htm"
+>Image Cropping, Insertion and Scaling</A
+></DT
+><DT
+>1.12. <A
+HREF="x2009.htm"
+>Streaming Parameters</A
+></DT
+></DL
+></DIV
+><P
+>Programming a V4L2 device consists of these
+steps:</P
+><P
+></P
+><UL
+><LI
+><P
+>Opening the device</P
+></LI
+><LI
+><P
+>Changing device properties, selecting a video and audio
+input, video standard, picture brightness a.&nbsp;o.</P
+></LI
+><LI
+><P
+>Negotiating a data format</P
+></LI
+><LI
+><P
+>Negotiating an input/output method</P
+></LI
+><LI
+><P
+>The actual input/output loop</P
+></LI
+><LI
+><P
+>Closing the device</P
+></LI
+></UL
+><P
+>In practice most steps are optional and can be executed out of
+order. It depends on the V4L2 device type, you can read about the
+details in <A
+HREF="c6488.htm"
+>Chapter 4</A
+>. In this chapter we will discuss
+the basic concepts applicable to all devices.</P
+><DIV
+CLASS="SECTION"
+><H1
+CLASS="SECTION"
+><A
+NAME="OPEN"
+>1.1. Opening and Closing Devices</A
+></H1
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN194"
+>1.1.1. Device Naming</A
+></H2
+><P
+>V4L2 drivers are implemented as kernel modules, loaded
+manually by the system administrator or automatically when a device is
+first opened. The driver modules plug into the "videodev" kernel
+module. It provides helper functions and a common application
+interface specified in this document.</P
+><P
+>Each driver thus loaded registers one or more device nodes
+with major number 81 and a minor number between 0 and 255. Assigning
+minor numbers to V4L2 devices is entirely up to the system administrator,
+this is primarily intended to solve conflicts between devices.<A
+NAME="AEN198"
+HREF="c174.htm#FTN.AEN198"
+><SPAN
+CLASS="footnote"
+>[1]</SPAN
+></A
+> The module options to select minor numbers are named
+after the device special file with a "_nr" suffix. For example "video_nr"
+for <TT
+CLASS="FILENAME"
+>/dev/video</TT
+> video capture devices. The number is
+an offset to the base minor number associated with the device type.
+<A
+NAME="AEN201"
+HREF="c174.htm#FTN.AEN201"
+><SPAN
+CLASS="footnote"
+>[2]</SPAN
+></A
+> When the driver supports multiple devices of the same
+type more than one minor number can be assigned, separated by commas:
+<DIV
+CLASS="INFORMALEXAMPLE"
+><P
+></P
+><A
+NAME="AEN203"
+></A
+><PRE
+CLASS="SCREEN"
+>&gt; insmod mydriver.o video_nr=0,1 radio_nr=0,1</PRE
+><P
+></P
+></DIV
+></P
+><P
+>In <TT
+CLASS="FILENAME"
+>/etc/modules.conf</TT
+> this may be
+written as: <DIV
+CLASS="INFORMALEXAMPLE"
+><P
+></P
+><A
+NAME="AEN207"
+></A
+><PRE
+CLASS="SCREEN"
+>alias char-major-81-0 mydriver
+alias char-major-81-1 mydriver
+alias char-major-81-64 mydriver              <A
+NAME="ALIAS"
+><IMG
+SRC="../images/callouts/1.gif"
+HSPACE="0"
+VSPACE="0"
+BORDER="0"
+ALT="(1)"></A
+>
+options mydriver video_nr=0,1 radio_nr=0,1   <A
+NAME="OPTIONS"
+><IMG
+SRC="../images/callouts/2.gif"
+HSPACE="0"
+VSPACE="0"
+BORDER="0"
+ALT="(2)"></A
+>
+          </PRE
+><DIV
+CLASS="CALLOUTLIST"
+><DL
+COMPACT="COMPACT"
+><DT
+><A
+HREF="c174.htm#ALIAS"
+><IMG
+SRC="../images/callouts/1.gif"
+HSPACE="0"
+VSPACE="0"
+BORDER="0"
+ALT="(1)"></A
+></DT
+><DD
+>When an application attempts to open a device
+special file with major number 81 and minor number 0, 1, or 64, load
+"mydriver" (and the "videodev" module it depends upon).</DD
+><DT
+><A
+HREF="c174.htm#OPTIONS"
+><IMG
+SRC="../images/callouts/2.gif"
+HSPACE="0"
+VSPACE="0"
+BORDER="0"
+ALT="(2)"></A
+></DT
+><DD
+>Register the first two video capture devices with
+minor number 0 and 1 (base number is 0), the first two radio device
+with minor number 64 and 65 (base 64).</DD
+></DL
+></DIV
+><P
+></P
+></DIV
+> When no minor number is given as module
+option the driver supplies a default. <A
+HREF="c6488.htm"
+>Chapter 4</A
+>
+recommends the base minor numbers to be used for the various device
+types. Obviously minor numbers must be unique. When the number is
+already in use the <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>offending device</I
+></SPAN
+> will not be
+registered. </P
+><P
+>By convention system administrators create various
+character device special files with these major and minor numbers in
+the <TT
+CLASS="FILENAME"
+>/dev</TT
+> directory. The names recomended for the
+different V4L2 device types are listed in <A
+HREF="c6488.htm"
+>Chapter 4</A
+>.</P
+><P
+>The creation of character special files (with
+<SPAN
+CLASS="APPLICATION"
+>mknod</SPAN
+>) is a privileged operation and
+devices cannot be opened by major and minor number. That means
+applications cannot <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>reliable</I
+></SPAN
+> scan for loaded or
+installed drivers. The user must enter a device name, or the
+application can try the conventional device names.</P
+><P
+>Under the device filesystem (devfs) the minor number
+options are ignored. V4L2 drivers (or by proxy the "videodev" module)
+automatically create the required device files in the
+<TT
+CLASS="FILENAME"
+>/dev/v4l</TT
+> directory using the conventional device
+names above.</P
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="RELATED"
+>1.1.2. Related Devices</A
+></H2
+><P
+>Devices can support several related functions. For example
+video capturing, video overlay and VBI capturing are related because
+these functions share, amongst other, the same video input and tuner
+frequency. V4L and earlier versions of V4L2 used the same device name
+and minor number for video capturing and overlay, but different ones
+for VBI. Experience showed this approach has several problems<A
+NAME="AEN229"
+HREF="c174.htm#FTN.AEN229"
+><SPAN
+CLASS="footnote"
+>[3]</SPAN
+></A
+>, and to make things worse the V4L videodev module
+used to prohibit multiple opens of a device.</P
+><P
+>As a remedy the present version of the V4L2 API relaxed the
+concept of device types with specific names and minor numbers. For
+compatibility with old applications drivers must still register different
+minor numbers to assign a default function to the device. But if related
+functions are supported by the driver they must be available under all
+registered minor numbers. The desired function can be selected after
+opening the device as described in <A
+HREF="c6488.htm"
+>Chapter 4</A
+>.</P
+><P
+>Imagine a driver supporting video capturing, video
+overlay, raw VBI capturing, and FM radio reception. It registers three
+devices with minor number 0, 64 and 224 (this numbering scheme is
+inherited from the V4L API). Regardless if
+<TT
+CLASS="FILENAME"
+>/dev/video</TT
+> (81, 0) or
+<TT
+CLASS="FILENAME"
+>/dev/vbi</TT
+> (81, 224) is opened the application can
+select any one of the video capturing, overlay or VBI capturing
+functions. Without programming (e.&nbsp;g. reading from the device
+with <SPAN
+CLASS="APPLICATION"
+>dd</SPAN
+> or <SPAN
+CLASS="APPLICATION"
+>cat</SPAN
+>)
+<TT
+CLASS="FILENAME"
+>/dev/video</TT
+> captures video images, while
+<TT
+CLASS="FILENAME"
+>/dev/vbi</TT
+> captures raw VBI data.
+<TT
+CLASS="FILENAME"
+>/dev/radio</TT
+> (81, 64) is invariable a radio device,
+unrelated to the video functions. Being unrelated does not imply the
+devices can be used at the same time, however. The <A
+HREF="r14090.htm"
+><CODE
+CLASS="FUNCTION"
+>open()</CODE
+></A
+>
+function may very well return an <SPAN
+CLASS="ERRORCODE"
+>EBUSY</SPAN
+> error code.</P
+><P
+>Besides video input or output the hardware may also
+support audio sampling or playback. If so, these functions are
+implemented as OSS or ALSA PCM devices and eventually OSS or ALSA
+audio mixer. The V4L2 API makes no provisions yet to find these
+related devices. If you have an idea please write to the Video4Linux
+mailing list: <A
+HREF="https://listman.redhat.com/mailman/listinfo/video4linux-list"
+TARGET="_top"
+>https://listman.redhat.com/mailman/listinfo/video4linux-list</A
+>.</P
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN249"
+>1.1.3. Multiple Opens</A
+></H2
+><P
+>In general, V4L2 devices can be opened more than once.
+When this is supported by the driver, users can for example start a
+"panel" application to change controls like brightness or audio
+volume, while another application captures video and audio. In other words, panel
+applications are comparable to an OSS or ALSA audio mixer application.
+When a device supports multiple functions like capturing and overlay
+<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>simultaneously</I
+></SPAN
+>, multiple opens allow concurrent
+use of the device by forked processes or specialized applications.</P
+><P
+>Multiple opens are optional, although drivers should
+permit at least concurrent accesses without data exchange, i.&nbsp;e. panel
+applications. This implies <A
+HREF="r14090.htm"
+><CODE
+CLASS="FUNCTION"
+>open()</CODE
+></A
+> can return an <SPAN
+CLASS="ERRORCODE"
+>EBUSY</SPAN
+> error code when the
+device is already in use, as well as <A
+HREF="r7667.htm"
+><CODE
+CLASS="FUNCTION"
+>ioctl()</CODE
+></A
+> functions initiating
+data exchange (namely the <A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+></A
+> ioctl), and the <A
+HREF="r14264.htm"
+><CODE
+CLASS="FUNCTION"
+>read()</CODE
+></A
+>
+and <A
+HREF="r14496.htm"
+><CODE
+CLASS="FUNCTION"
+>write()</CODE
+></A
+> functions.</P
+><P
+>Mere opening a V4L2 device does not grant exclusive
+access.<A
+NAME="AEN266"
+HREF="c174.htm#FTN.AEN266"
+><SPAN
+CLASS="footnote"
+>[4]</SPAN
+></A
+> Initiating data exchange however assigns the right
+to read or write the requested type of data, and to change related
+properties, to this file descriptor. Applications can request
+additional access privileges using the priority mechanism described in
+<A
+HREF="x294.htm"
+>Section 1.3</A
+>.</P
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN270"
+>1.1.4. Shared Data Streams</A
+></H2
+><P
+>V4L2 drivers should not support multiple applications
+reading or writing the same data stream on a device by copying
+buffers, time multiplexing or similar means. This is better handled by
+a proxy application in user space. When the driver supports stream
+sharing anyway it must be implemented transparently. The V4L2 API does
+not specify how conflicts are solved. </P
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN273"
+>1.1.5. Functions</A
+></H2
+><P
+>To open and close V4L2 devices applications use the
+<A
+HREF="r14090.htm"
+><CODE
+CLASS="FUNCTION"
+>open()</CODE
+></A
+> and <A
+HREF="r7626.htm"
+><CODE
+CLASS="FUNCTION"
+>close()</CODE
+></A
+> function, respectively. Devices are
+programmed using the <A
+HREF="r7667.htm"
+><CODE
+CLASS="FUNCTION"
+>ioctl()</CODE
+></A
+> function as explained in the
+following sections.</P
+></DIV
+></DIV
+></DIV
+><H3
+CLASS="FOOTNOTES"
+>Notes</H3
+><TABLE
+BORDER="0"
+CLASS="FOOTNOTES"
+WIDTH="100%"
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="5%"
+><A
+NAME="FTN.AEN198"
+HREF="c174.htm#AEN198"
+><SPAN
+CLASS="footnote"
+>[1]</SPAN
+></A
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="95%"
+><P
+>Access permissions are associated with character
+device special files, hence we must ensure device numbers cannot
+change with the module load order. To this end minor numbers are no
+longer automatically assigned by the "videodev" module as in V4L but
+requested by the driver. The defaults will suffice for most people
+unless two drivers compete for the same minor numbers.</P
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="5%"
+><A
+NAME="FTN.AEN201"
+HREF="c174.htm#AEN201"
+><SPAN
+CLASS="footnote"
+>[2]</SPAN
+></A
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="95%"
+><P
+>In earlier versions of the V4L2 API the module options
+where named after the device special file with a "unit_" prefix, expressing
+the minor number itself, not an offset. Rationale for this change is unknown.
+Lastly the naming and semantics are just a convention among driver writers,
+the point to note is that minor numbers are not supposed to be hardcoded
+into drivers.</P
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="5%"
+><A
+NAME="FTN.AEN229"
+HREF="c174.htm#AEN229"
+><SPAN
+CLASS="footnote"
+>[3]</SPAN
+></A
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="95%"
+><P
+>Given a device file name one cannot reliable find
+related devices. For once names are arbitrary and in a system with
+multiple devices, where only some support VBI capturing, a
+<TT
+CLASS="FILENAME"
+>/dev/video2</TT
+> is not necessarily related to
+<TT
+CLASS="FILENAME"
+>/dev/vbi2</TT
+>. The V4L
+<CODE
+CLASS="CONSTANT"
+>VIDIOCGUNIT</CODE
+> ioctl would require a search for a
+device file with a particular major and minor number.</P
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="5%"
+><A
+NAME="FTN.AEN266"
+HREF="c174.htm#AEN266"
+><SPAN
+CLASS="footnote"
+>[4]</SPAN
+></A
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="95%"
+><P
+>Drivers could recognize the
+<CODE
+CLASS="CONSTANT"
+>O_EXCL</CODE
+> open flag. Presently this is not required,
+so applications cannot know if it really works.</P
+></TD
+></TR
+></TABLE
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="f163.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x282.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Introduction</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Querying Capabilities</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

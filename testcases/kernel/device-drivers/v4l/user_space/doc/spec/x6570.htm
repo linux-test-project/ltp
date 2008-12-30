@@ -1,0 +1,1107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Video Overlay Interface</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Interfaces"
+HREF="c6488.htm"><LINK
+REL="PREVIOUS"
+TITLE="Interfaces"
+HREF="c6488.htm"><LINK
+REL="NEXT"
+TITLE="Video Output Interface"
+HREF="x6831.htm"></HEAD
+><BODY
+CLASS="SECTION"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="c6488.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 4. Interfaces</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x6831.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECTION"
+><H1
+CLASS="SECTION"
+><A
+NAME="OVERLAY"
+>4.2. Video Overlay Interface</A
+></H1
+><FONT
+COLOR="RED"
+>Also known as Framebuffer Overlay or Previewing</FONT
+><P
+>Video overlay devices have the ability to genlock (TV-)video
+into the (VGA-)video signal of a graphics card, or to store captured
+images directly in video memory of a graphics card, typically with
+clipping. This can be considerable more efficient than capturing
+images and displaying them by other means. In the old days when only
+nuclear power plants needed cooling towers this used to be the only
+way to put live video into a window.</P
+><P
+>Video overlay devices are accessed through the same character
+special files as <A
+HREF="c6488.htm#CAPTURE"
+>video capture</A
+> devices.
+Note the default function of a <TT
+CLASS="FILENAME"
+>/dev/video</TT
+> device
+is video capturing. The overlay function is only available after
+calling the <A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+></A
+> ioctl.</P
+><P
+>The driver may support simultaneous overlay and capturing
+using the read/write and streaming I/O methods. If so, operation at
+the nominal frame rate of the video standard is not guaranteed. Frames
+may be directed away from overlay to capture, or one field may be used
+for overlay and the other for capture if the capture parameters permit
+this.</P
+><P
+>Applications should use different file descriptors for
+capturing and overlay. This must be supported by all drivers capable
+of simultaneous capturing and overlay. Optionally these drivers may
+also permit capturing and overlay with a single file descriptor for
+compatibility with V4L and earlier versions of V4L2.<A
+NAME="AEN6581"
+HREF="x6570.htm#FTN.AEN6581"
+><SPAN
+CLASS="footnote"
+>[1]</SPAN
+></A
+></P
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN6587"
+>4.2.1. Querying Capabilities</A
+></H2
+><P
+>Devices supporting the video overlay interface set the
+<CODE
+CLASS="CONSTANT"
+>V4L2_CAP_VIDEO_OVERLAY</CODE
+> flag in the
+<CODE
+CLASS="STRUCTFIELD"
+>capabilities</CODE
+> field of struct&nbsp;<A
+HREF="r13105.htm#V4L2-CAPABILITY"
+>v4l2_capability</A
+>
+returned by the <A
+HREF="r13105.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_QUERYCAP</CODE
+></A
+> ioctl. The overlay I/O method specified
+below must be supported. Tuners and audio inputs are optional.</P
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN6595"
+>4.2.2. Supplemental Functions</A
+></H2
+><P
+>Video overlay devices shall support <A
+HREF="x341.htm"
+>audio input</A
+>, <A
+HREF="x394.htm"
+>tuner</A
+>, <A
+HREF="x542.htm"
+>controls</A
+>,
+<A
+HREF="x1904.htm"
+>cropping and scaling</A
+> and <A
+HREF="x2009.htm"
+>streaming parameter</A
+> ioctls as needed.
+The <A
+HREF="x309.htm"
+>video input</A
+> and <A
+HREF="x448.htm"
+>video standard</A
+> ioctls must be supported by
+all video overlay devices.</P
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN6605"
+>4.2.3. Setup</A
+></H2
+><P
+>Before overlay can commence applications must program the
+driver with frame buffer parameters, namely the address and size of
+the frame buffer and the image format, for example RGB 5:6:5. The
+<A
+HREF="r10595.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_G_FBUF</CODE
+></A
+> and <A
+HREF="r10595.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FBUF</CODE
+></A
+> ioctls are available to get
+and set these parameters, respectively. The
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FBUF</CODE
+> ioctl is privileged because it
+allows to set up DMA into physical memory, bypassing the memory
+protection mechanisms of the kernel. Only the superuser can change the
+frame buffer address and size. Users are not supposed to run TV
+applications as root or with SUID bit set. A small helper application
+with suitable privileges should query the graphics system and program
+the V4L2 driver at the appropriate time.</P
+><P
+>Some devices add the video overlay to the output signal
+of the graphics card. In this case the frame buffer is not modified by
+the video device, and the frame buffer address and pixel format are
+not needed by the driver. The <CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FBUF</CODE
+> ioctl
+is not privileged. An application can check for this type of device by
+calling the <CODE
+CLASS="CONSTANT"
+>VIDIOC_G_FBUF</CODE
+> ioctl.</P
+><P
+>A driver may support any (or none) of five clipping/blending
+methods:<P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>Chroma-keying displays the overlaid image only where
+pixels in the primary graphics surface assume a certain color.</P
+></LI
+><LI
+><P
+>A bitmap can be specified where each bit corresponds
+to a pixel in the overlaid image. When the bit is set, the
+corresponding video pixel is displayed, otherwise a pixel of the
+graphics surface.</P
+></LI
+><LI
+><P
+>A list of clipping rectangles can be specified. In
+these regions <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>no</I
+></SPAN
+> video is displayed, so the
+graphics surface can be seen here.</P
+></LI
+><LI
+><P
+>The framebuffer has an alpha channel that can be used
+to clip or blend the framebuffer with the video.</P
+></LI
+><LI
+><P
+>A global alpha value can be specified to blend the
+framebuffer contents with video images.</P
+></LI
+></OL
+></P
+><P
+>When simultaneous capturing and overlay is supported and
+the hardware prohibits different image and frame buffer formats, the
+format requested first takes precedence. The attempt to capture
+(<A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+></A
+>) or overlay (<A
+HREF="r10595.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FBUF</CODE
+></A
+>) may fail with an
+<SPAN
+CLASS="ERRORCODE"
+>EBUSY</SPAN
+> error code or return accordingly modified parameters..</P
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN6635"
+>4.2.4. Overlay Window</A
+></H2
+><P
+>The overlaid image is determined by cropping and overlay
+window parameters. The former select an area of the video picture to
+capture, the latter how images are overlaid and clipped. Cropping
+initialization at minimum requires to reset the parameters to
+defaults. An example is given in <A
+HREF="x1904.htm"
+>Section 1.11</A
+>.</P
+><P
+>The overlay window is described by a struct&nbsp;<A
+HREF="x6570.htm#V4L2-WINDOW"
+>v4l2_window</A
+>. It
+defines the size of the image, its position over the graphics surface
+and the clipping to be applied. To get the current parameters
+applications set the <CODE
+CLASS="STRUCTFIELD"
+>type</CODE
+> field of a
+struct&nbsp;<A
+HREF="r10944.htm#V4L2-FORMAT"
+>v4l2_format</A
+> to <CODE
+CLASS="CONSTANT"
+>V4L2_BUF_TYPE_VIDEO_OVERLAY</CODE
+> and
+call the <A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_G_FMT</CODE
+></A
+> ioctl. The driver fills the
+<CODE
+CLASS="STRUCTNAME"
+>v4l2_window</CODE
+> substructure named
+<CODE
+CLASS="STRUCTFIELD"
+>win</CODE
+>. It is not possible to retrieve a
+previously programmed clipping list or bitmap.</P
+><P
+>To program the overlay window applications set the
+<CODE
+CLASS="STRUCTFIELD"
+>type</CODE
+> field of a struct&nbsp;<A
+HREF="r10944.htm#V4L2-FORMAT"
+>v4l2_format</A
+> to
+<CODE
+CLASS="CONSTANT"
+>V4L2_BUF_TYPE_VIDEO_OVERLAY</CODE
+>, initialize the
+<CODE
+CLASS="STRUCTFIELD"
+>win</CODE
+> substructure and call the
+<A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+></A
+> ioctl. The driver adjusts the parameters against
+hardware limits and returns the actual parameters as
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_G_FMT</CODE
+> does. Like
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+>, the <A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_TRY_FMT</CODE
+></A
+> ioctl can be
+used to learn about driver capabilities without actually changing
+driver state. Unlike <CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+> this also works
+after the overlay has been enabled.</P
+><P
+>The scaling factor of the overlaid image is implied by the
+width and height given in struct&nbsp;<A
+HREF="x6570.htm#V4L2-WINDOW"
+>v4l2_window</A
+> and the size of the cropping
+rectangle. For more information see <A
+HREF="x1904.htm"
+>Section 1.11</A
+>.</P
+><P
+>When simultaneous capturing and overlay is supported and
+the hardware prohibits different image and window sizes, the size
+requested first takes precedence. The attempt to capture or overlay as
+well (<A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+></A
+>) may fail with an <SPAN
+CLASS="ERRORCODE"
+>EBUSY</SPAN
+> error code or return accordingly
+modified parameters.</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-WINDOW"
+></A
+><P
+><B
+>Table 4-1. struct <CODE
+CLASS="STRUCTNAME"
+>v4l2_window</CODE
+></B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="25%"
+TITLE="C1"><COL
+WIDTH="25%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>struct&nbsp;<A
+HREF="x6570.htm#V4L2-RECT"
+>v4l2_rect</A
+></TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>w</CODE
+></TD
+><TD
+>Size and position of the window relative to the
+top, left corner of the frame buffer defined with <A
+HREF="r10595.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FBUF</CODE
+></A
+>. The
+window can extend the frame buffer width and height, the
+<CODE
+CLASS="STRUCTFIELD"
+>x</CODE
+> and <CODE
+CLASS="STRUCTFIELD"
+>y</CODE
+>
+coordinates can be negative, and it can lie completely outside the
+frame buffer. The driver clips the window accordingly, or if that is
+not possible, modifies its size and/or position.</TD
+></TR
+><TR
+><TD
+>enum&nbsp;<A
+HREF="x6386.htm#V4L2-FIELD"
+>v4l2_field</A
+></TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>field</CODE
+></TD
+><TD
+>Applications set this field to determine which
+video field shall be overlaid, typically one of
+<CODE
+CLASS="CONSTANT"
+>V4L2_FIELD_ANY</CODE
+> (0),
+<CODE
+CLASS="CONSTANT"
+>V4L2_FIELD_TOP</CODE
+>,
+<CODE
+CLASS="CONSTANT"
+>V4L2_FIELD_BOTTOM</CODE
+> or
+<CODE
+CLASS="CONSTANT"
+>V4L2_FIELD_INTERLACED</CODE
+>. Drivers may have to choose
+a different field order and return the actual setting here.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>chromakey</CODE
+></TD
+><TD
+>When chroma-keying has been negotiated with
+<A
+HREF="r10595.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FBUF</CODE
+></A
+> applications set this field to the desired pixel value
+for the chroma key. The format is the same as the pixel format of the
+framebuffer (struct&nbsp;<A
+HREF="r10595.htm#V4L2-FRAMEBUFFER"
+>v4l2_framebuffer</A
+>
+<CODE
+CLASS="STRUCTFIELD"
+>fmt.pixelformat</CODE
+> field), with bytes in host
+order. E.&nbsp;g. for <A
+HREF="r2492.htm#V4L2-PIX-FMT-BGR32"
+><CODE
+CLASS="CONSTANT"
+>V4L2_PIX_FMT_BGR24</CODE
+></A
+> 
+the value should be 0xRRGGBB on a little endian, 0xBBGGRR on a big
+endian host.</TD
+></TR
+><TR
+><TD
+>struct&nbsp;<A
+HREF="x6570.htm#V4L2-CLIP"
+>v4l2_clip</A
+> *</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>clips</CODE
+></TD
+><TD
+>When chroma-keying has <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>not</I
+></SPAN
+>
+been negotiated and <A
+HREF="r10595.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_G_FBUF</CODE
+></A
+> indicated this capability,
+applications can set this field to point to an array of
+clipping rectangles.</TD
+></TR
+><TR
+><TD
+COLSPAN="3"
+>Like the window coordinates
+<CODE
+CLASS="STRUCTFIELD"
+>w</CODE
+>, clipping rectangles are defined relative
+to the top, left corner of the frame buffer. However clipping
+rectangles must not extend the frame buffer width and height, and they
+must not overlap. If possible applications should merge adjacent
+rectangles. Whether this must create x-y or y-x bands, or the order of
+rectangles, is not defined. When clip lists are not supported the
+driver ignores this field. Its contents after calling <A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+></A
+>
+are undefined.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>clipcount</CODE
+></TD
+><TD
+>When the application set the
+<CODE
+CLASS="STRUCTFIELD"
+>clips</CODE
+> field, this field must contain the
+number of clipping rectangles in the list. When clip lists are not
+supported the driver ignores this field, its contents after calling
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+> are undefined. When clip lists are
+supported but no clipping is desired this field must be set to
+zero.</TD
+></TR
+><TR
+><TD
+>void *</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>bitmap</CODE
+></TD
+><TD
+>When chroma-keying has
+<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>not</I
+></SPAN
+> been negotiated and <A
+HREF="r10595.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_G_FBUF</CODE
+></A
+> indicated
+this capability, applications can set this field to point to a
+clipping bit mask.</TD
+></TR
+><TR
+><TD
+COLSPAN="3"
+><P
+>It must be of the same size
+as the window, <CODE
+CLASS="STRUCTFIELD"
+>w.width</CODE
+> and
+<CODE
+CLASS="STRUCTFIELD"
+>w.height</CODE
+>. Each bit corresponds to a pixel
+in the overlaid image, which is displayed only when the bit is
+<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>set</I
+></SPAN
+>. Pixel coordinates translate to bits like:
+<PRE
+CLASS="PROGRAMLISTING"
+>((__u8 *) <CODE
+CLASS="STRUCTFIELD"
+>bitmap</CODE
+>)[<CODE
+CLASS="STRUCTFIELD"
+>w.width</CODE
+> * y + x / 8] &amp; (1 &lt;&lt; (x &amp; 7))</PRE
+></P
+><P
+>where <CODE
+CLASS="STRUCTFIELD"
+>0</CODE
+> &le; x &lt;
+<CODE
+CLASS="STRUCTFIELD"
+>w.width</CODE
+> and <CODE
+CLASS="STRUCTFIELD"
+>0</CODE
+> &le;
+y &lt;<CODE
+CLASS="STRUCTFIELD"
+>w.height</CODE
+>.<SUP
+>a</SUP
+></P
+><P
+>When a clipping
+bit mask is not supported the driver ignores this field, its contents
+after calling <A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+></A
+> are undefined. When a bit mask is supported
+but no clipping is desired this field must be set to
+<CODE
+CLASS="CONSTANT"
+>NULL</CODE
+>.</P
+><P
+>Applications need not create a
+clip list or bit mask. When they pass both, or despite negotiating
+chroma-keying, the results are undefined. Regardless of the chosen
+method, the clipping abilities of the hardware may be limited in
+quantity or quality. The results when these limits are exceeded are
+undefined.<SUP
+>b</SUP
+></P
+></TD
+></TR
+><TR
+><TD
+>__u8</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>global_alpha</CODE
+></TD
+><TD
+><P
+>The global alpha value used to blend the
+framebuffer with video images, if global alpha blending has been
+negotiated (<CODE
+CLASS="CONSTANT"
+>V4L2_FBUF_FLAG_GLOBAL_ALPHA</CODE
+>, see
+<A
+HREF="r10595.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FBUF</CODE
+></A
+>, <A
+HREF="r10595.htm#FRAMEBUFFER-FLAGS"
+>Table 3</A
+>).</P
+><P
+>Note
+this field was added in Linux 2.6.23, extending the structure. However
+the <A
+HREF="r10944.htm"
+>VIDIOC_G/S/TRY_FMT</A
+> ioctls,
+which take a pointer to a <A
+HREF="r10944.htm#V4L2-FORMAT"
+>v4l2_format</A
+> parent structure with padding
+bytes at the end, are not affected.</P
+></TD
+></TR
+></TBODY
+><TR
+><TD
+COLSPAN="3"
+>Notes:<BR><A
+NAME="FTN.AEN6750"
+>a. </A
+>Should we require
+              <CODE
+CLASS="STRUCTFIELD"
+>w.width</CODE
+> to be a multiple of
+              eight?<BR><A
+NAME="FTN.AEN6758"
+>b. </A
+>When the image is written into frame buffer
+memory it will be undesirable if the driver clips out less pixels
+than expected, because the application and graphics system are not
+aware these regions need to be refreshed. The driver should clip out
+more pixels or not write the image at all.<BR></TD
+></TR
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-CLIP"
+></A
+><P
+><B
+>Table 4-2. struct <CODE
+CLASS="STRUCTNAME"
+>v4l2_clip</CODE
+><A
+NAME="AEN6776"
+HREF="x6570.htm#FTN.AEN6776"
+><SPAN
+CLASS="footnote"
+>[2]</SPAN
+></A
+></B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="25%"
+TITLE="C1"><COL
+WIDTH="25%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>struct&nbsp;<A
+HREF="x6570.htm#V4L2-RECT"
+>v4l2_rect</A
+></TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>c</CODE
+></TD
+><TD
+>Coordinates of the clipping rectangle, relative to
+the top, left corner of the frame buffer. Only window pixels
+<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>outside</I
+></SPAN
+> all clipping rectangles are
+displayed.</TD
+></TR
+><TR
+><TD
+>struct&nbsp;<A
+HREF="x6570.htm#V4L2-CLIP"
+>v4l2_clip</A
+> *</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>next</CODE
+></TD
+><TD
+>Pointer to the next clipping rectangle, NULL when
+this is the last rectangle. Drivers ignore this field, it cannot be
+used to pass a linked list of clipping rectangles.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-RECT"
+></A
+><P
+><B
+>Table 4-3. struct <CODE
+CLASS="STRUCTNAME"
+>v4l2_rect</CODE
+></B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="25%"
+TITLE="C1"><COL
+WIDTH="25%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>__s32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>left</CODE
+></TD
+><TD
+>Horizontal offset of the top, left corner of the
+rectangle, in pixels.</TD
+></TR
+><TR
+><TD
+>__s32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>top</CODE
+></TD
+><TD
+>Vertical offset of the top, left corner of the
+rectangle, in pixels. Offsets increase to the right and down.</TD
+></TR
+><TR
+><TD
+>__s32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>width</CODE
+></TD
+><TD
+>Width of the rectangle, in pixels.</TD
+></TR
+><TR
+><TD
+>__s32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>height</CODE
+></TD
+><TD
+>Height of the rectangle, in pixels. Width and
+height cannot be negative, the fields are signed for hysterical
+reasons. </TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN6826"
+>4.2.5. Enabling Overlay</A
+></H2
+><P
+>To start or stop the frame buffer overlay applications call
+the <A
+HREF="r12816.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_OVERLAY</CODE
+></A
+> ioctl.</P
+></DIV
+></DIV
+><H3
+CLASS="FOOTNOTES"
+>Notes</H3
+><TABLE
+BORDER="0"
+CLASS="FOOTNOTES"
+WIDTH="100%"
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="5%"
+><A
+NAME="FTN.AEN6581"
+HREF="x6570.htm#AEN6581"
+><SPAN
+CLASS="footnote"
+>[1]</SPAN
+></A
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="95%"
+><P
+>A common application of two file descriptors is the
+XFree86 <A
+HREF="x16430.htm#XVIDEO"
+>Xv/V4L</A
+> interface driver and
+a V4L2 application. While the X server controls video overlay, the
+application can take advantage of memory mapping and DMA.</P
+><P
+>In the opinion of the designers of this API, no driver
+writer taking the efforts to support simultaneous capturing and
+overlay will restrict this ability by requiring a single file
+descriptor, as in V4L and earlier versions of V4L2. Making this
+optional means applications depending on two file descriptors need
+backup routines to be compatible with all drivers, which is
+considerable more work than using two fds in applications which do
+not. Also two fd's fit the general concept of one file descriptor for
+each logical stream. Hence as a complexity trade-off drivers
+<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>must</I
+></SPAN
+> support two file descriptors and
+<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>may</I
+></SPAN
+> support single fd operation.</P
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="5%"
+><A
+NAME="FTN.AEN6776"
+HREF="x6570.htm#AEN6776"
+><SPAN
+CLASS="footnote"
+>[2]</SPAN
+></A
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="95%"
+><P
+>The X Window system defines "regions" which are
+vectors of struct BoxRec { short x1, y1, x2, y2; } with width = x2 -
+x1 and height = y2 - y1, so one cannot pass X11 clip lists
+directly.</P
+></TD
+></TR
+></TABLE
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="c6488.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x6831.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Interfaces</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="c6488.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Video Output Interface</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

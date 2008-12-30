@@ -1,0 +1,735 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ioctl VIDIOC_G_SLICED_VBI_CAP</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Function Reference"
+HREF="r7624.htm"><LINK
+REL="PREVIOUS"
+TITLE="ioctl VIDIOC_G_PRIORITY, VIDIOC_S_PRIORITY"
+HREF="r11946.htm"><LINK
+REL="NEXT"
+TITLE="ioctl VIDIOC_G_STD, VIDIOC_S_STD"
+HREF="r12265.htm"></HEAD
+><BODY
+CLASS="REFENTRY"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="r11946.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="r12265.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="VIDIOC-G-SLICED-VBI-CAP"
+></A
+>ioctl VIDIOC_G_SLICED_VBI_CAP</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN12055"
+></A
+><H2
+>Name</H2
+>VIDIOC_G_SLICED_VBI_CAP&nbsp;--&nbsp;Query sliced VBI capabilities</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN12058"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN12059"
+></A
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>int ioctl</CODE
+>(int fd, int request, struct v4l2_sliced_vbi_cap *argp);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN12069"
+></A
+><H2
+>Arguments</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><CODE
+CLASS="PARAMETER"
+>fd</CODE
+></DT
+><DD
+><P
+>File descriptor returned by <A
+HREF="r14090.htm"
+><CODE
+CLASS="FUNCTION"
+>open()</CODE
+></A
+>.</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>request</CODE
+></DT
+><DD
+><P
+>VIDIOC_G_SLICED_VBI_CAP</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>argp</CODE
+></DT
+><DD
+><P
+></P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN12089"
+></A
+><H2
+>Description</H2
+><P
+>To find out which data services are supported by a sliced
+VBI capture or output device, applications initialize the
+<CODE
+CLASS="STRUCTFIELD"
+>type</CODE
+> field of a struct&nbsp;<A
+HREF="r12051.htm#V4L2-SLICED-VBI-CAP"
+>v4l2_sliced_vbi_cap</A
+>,
+clear the <CODE
+CLASS="STRUCTFIELD"
+>reserved</CODE
+> array and
+call the <CODE
+CLASS="CONSTANT"
+>VIDIOC_G_SLICED_VBI_CAP</CODE
+> ioctl. The
+driver fills in the remaining fields or returns an <SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+> error code if the
+sliced VBI API is unsupported or <CODE
+CLASS="STRUCTFIELD"
+>type</CODE
+>
+is invalid.</P
+><P
+>Note the <CODE
+CLASS="STRUCTFIELD"
+>type</CODE
+> field was added,
+and the ioctl changed from read-only to write-read, in Linux 2.6.19.</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-SLICED-VBI-CAP"
+></A
+><P
+><B
+>Table 1. struct <CODE
+CLASS="STRUCTNAME"
+>v4l2_sliced_vbi_cap</CODE
+></B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="25%"
+TITLE="C1"><COL
+WIDTH="25%"
+TITLE="C2"><COL
+WIDTH="17%"
+TITLE="C3"><COL
+WIDTH="17%"
+TITLE="C4"><COL
+WIDTH="17%"
+TITLE="C5"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>__u16</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>service_set</CODE
+></TD
+><TD
+COLSPAN="3"
+>A set of all data services
+supported by the driver. Equal to the union of all elements of the
+<CODE
+CLASS="STRUCTFIELD"
+>service_lines </CODE
+> array.</TD
+></TR
+><TR
+><TD
+>__u16</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>service_lines</CODE
+>[2][24]</TD
+><TD
+COLSPAN="3"
+>Each element of this array
+contains a set of data services the hardware can look for or insert
+into a particular scan line. Data services are defined in <A
+HREF="r12051.htm#VBI-SERVICES"
+>Table 2</A
+>. Array indices map to ITU-R
+line numbers (see also <A
+HREF="x7013.htm#VBI-525"
+>Figure 4-2</A
+> and <A
+HREF="x7013.htm#VBI-625"
+>Figure 4-3</A
+>) as follows:</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>Element</TD
+><TD
+>525 line systems</TD
+><TD
+>625 line systems</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>service_lines</CODE
+>[0][1]</TD
+><TD
+ALIGN="CENTER"
+>1</TD
+><TD
+ALIGN="CENTER"
+>1</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>service_lines</CODE
+>[0][23]</TD
+><TD
+ALIGN="CENTER"
+>23</TD
+><TD
+ALIGN="CENTER"
+>23</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>service_lines</CODE
+>[1][1]</TD
+><TD
+ALIGN="CENTER"
+>264</TD
+><TD
+ALIGN="CENTER"
+>314</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>service_lines</CODE
+>[1][23]</TD
+><TD
+ALIGN="CENTER"
+>286</TD
+><TD
+ALIGN="CENTER"
+>336</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>The number of VBI lines the
+hardware can capture or output per frame, or the number of services it
+can identify on a given line may be limited. For example on PAL line
+16 the hardware may be able to look for a VPS or Teletext signal, but
+not both at the same time. Applications can learn about these limits
+using the <A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+></A
+> ioctl as described in <A
+HREF="x7236.htm"
+>Section 4.8</A
+>.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>Drivers must set
+<CODE
+CLASS="STRUCTFIELD"
+>service_lines</CODE
+>[0][0] and
+<CODE
+CLASS="STRUCTFIELD"
+>service_lines</CODE
+>[1][0] to zero.</TD
+></TR
+><TR
+><TD
+>enum&nbsp;<A
+HREF="x5953.htm#V4L2-BUF-TYPE"
+>v4l2_buf_type</A
+></TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>type</CODE
+></TD
+><TD
+>Type of the data stream, see <A
+HREF="x5953.htm#V4L2-BUF-TYPE"
+>Table 3-2</A
+>. Should be
+<CODE
+CLASS="CONSTANT"
+>V4L2_BUF_TYPE_SLICED_VBI_CAPTURE</CODE
+> or
+<CODE
+CLASS="CONSTANT"
+>V4L2_BUF_TYPE_SLICED_VBI_OUTPUT</CODE
+>.</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>reserved</CODE
+>[3]</TD
+><TD
+COLSPAN="3"
+>This array is reserved for future
+extensions. Applications and drivers must set it to zero.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="VBI-SERVICES"
+></A
+><P
+><B
+>Table 2. Sliced VBI services</B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="25%"
+TITLE="C1"><COL
+WIDTH="12%"
+TITLE="C2"><COL
+WIDTH="12%"
+TITLE="C3"><COL
+WIDTH="25%"
+TITLE="C4"><COL
+WIDTH="25%"
+TITLE="C5"><THEAD
+><TR
+><TH
+>Symbol</TH
+><TH
+>Value</TH
+><TH
+>Reference</TH
+><TH
+>Lines, usually</TH
+><TH
+>Payload</TH
+></TR
+></THEAD
+><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_SLICED_TELETEXT_B</CODE
+> (Teletext
+System B)</TD
+><TD
+>0x0001</TD
+><TD
+><A
+HREF="b17127.htm#ETS300706"
+><ABBR
+CLASS="ABBREV"
+>ETS&nbsp;300&nbsp;706</ABBR
+></A
+>, <A
+HREF="b17127.htm#ITU653"
+><ABBR
+CLASS="ABBREV"
+>ITU&nbsp;BT.653</ABBR
+></A
+></TD
+><TD
+>PAL/SECAM line 7-22, 320-335 (second field 7-22)</TD
+><TD
+>Last 42 of the 45 byte Teletext packet, that is
+without clock run-in and framing code, lsb first transmitted.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_SLICED_VPS</CODE
+></TD
+><TD
+>0x0400</TD
+><TD
+><A
+HREF="b17127.htm#ETS300231"
+><ABBR
+CLASS="ABBREV"
+>ETS&nbsp;300&nbsp;231</ABBR
+></A
+></TD
+><TD
+>PAL line 16</TD
+><TD
+>Byte number 3 to 15 according to Figure 9 of
+ETS&nbsp;300&nbsp;231, lsb first transmitted.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_SLICED_CAPTION_525</CODE
+></TD
+><TD
+>0x1000</TD
+><TD
+><A
+HREF="b17127.htm#EIA608"
+><ABBR
+CLASS="ABBREV"
+>EIA&nbsp;608-B</ABBR
+></A
+></TD
+><TD
+>NTSC line 21, 284 (second field 21)</TD
+><TD
+>Two bytes in transmission order, including parity
+bit, lsb first transmitted.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_SLICED_WSS_625</CODE
+></TD
+><TD
+>0x4000</TD
+><TD
+><A
+HREF="b17127.htm#EN300294"
+><ABBR
+CLASS="ABBREV"
+>EN&nbsp;300&nbsp;294</ABBR
+></A
+>, <A
+HREF="b17127.htm#ITU1119"
+><ABBR
+CLASS="ABBREV"
+>ITU&nbsp;BT.1119</ABBR
+></A
+></TD
+><TD
+>PAL/SECAM line 23</TD
+><TD
+><PRE
+CLASS="SCREEN"
+>Byte        0                 1
+     msb         lsb  msb           lsb
+Bit  7 6 5 4 3 2 1 0  x x 13 12 11 10 9</PRE
+></TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_SLICED_VBI_525</CODE
+></TD
+><TD
+>0x1000</TD
+><TD
+COLSPAN="3"
+>Set of services applicable to 525
+line systems.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_SLICED_VBI_625</CODE
+></TD
+><TD
+>0x4401</TD
+><TD
+COLSPAN="3"
+>Set of services applicable to 625
+line systems.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN12252"
+></A
+><H2
+>Return Value</H2
+><P
+>On success <SPAN
+CLASS="RETURNVALUE"
+>0</SPAN
+> is returned, on error <SPAN
+CLASS="RETURNVALUE"
+>-1</SPAN
+> and the <CODE
+CLASS="VARNAME"
+>errno</CODE
+> variable is set appropriately:</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+></DT
+><DD
+><P
+>The device does not support sliced VBI capturing or
+output, or the value in the <CODE
+CLASS="STRUCTFIELD"
+>type</CODE
+> field is
+wrong.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="r11946.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="r12265.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ioctl VIDIOC_G_PRIORITY, VIDIOC_S_PRIORITY</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="r7624.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>ioctl VIDIOC_G_STD, VIDIOC_S_STD</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

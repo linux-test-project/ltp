@@ -1,0 +1,184 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Querying Capabilities</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Common API Elements"
+HREF="c174.htm"><LINK
+REL="PREVIOUS"
+TITLE="Common API Elements"
+HREF="c174.htm"><LINK
+REL="NEXT"
+TITLE="Application Priority"
+HREF="x294.htm"></HEAD
+><BODY
+CLASS="SECTION"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="c174.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 1. Common API Elements</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x294.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECTION"
+><H1
+CLASS="SECTION"
+><A
+NAME="QUERYCAP"
+>1.2. Querying Capabilities</A
+></H1
+><P
+>Because V4L2 covers a wide variety of devices not all
+aspects of the API are equally applicable to all types of devices.
+Furthermore devices of the same type have different capabilities and
+this specification permits the omission of a few complicated and less
+important parts of the API.</P
+><P
+>The <A
+HREF="r13105.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_QUERYCAP</CODE
+></A
+> ioctl is available to check if the kernel
+device is compatible with this specification, and to query the <A
+HREF="c6488.htm"
+>functions</A
+> and <A
+HREF="c5742.htm"
+>I/O
+methods</A
+> supported by the device. Other features can be queried
+by calling the respective ioctl, for example <A
+HREF="r8936.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_ENUMINPUT</CODE
+></A
+>
+to learn about the number, types and names of video connectors on the
+device. Although abstraction is a major objective of this API, the
+ioctl also allows driver specific applications to reliable identify
+the driver.</P
+><P
+>All V4L2 drivers must support
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_QUERYCAP</CODE
+>. Applications should always call
+this ioctl after opening the device.</P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="c174.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x294.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Common API Elements</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="c174.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Application Priority</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

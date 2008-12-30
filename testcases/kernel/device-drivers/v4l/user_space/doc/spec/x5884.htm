@@ -1,0 +1,467 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Streaming I/O (User Pointers)</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Input/Output"
+HREF="c5742.htm"><LINK
+REL="PREVIOUS"
+TITLE="Streaming I/O (Memory Mapping)"
+HREF="x5791.htm"><LINK
+REL="NEXT"
+TITLE="Asynchronous I/O"
+HREF="x5950.htm"></HEAD
+><BODY
+CLASS="SECTION"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x5791.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 3. Input/Output</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x5950.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECTION"
+><H1
+CLASS="SECTION"
+><A
+NAME="USERP"
+>3.3. Streaming I/O (User Pointers)</A
+></H1
+><P
+>Input and output devices support this I/O method when the
+<CODE
+CLASS="CONSTANT"
+>V4L2_CAP_STREAMING</CODE
+> flag in the
+<CODE
+CLASS="STRUCTFIELD"
+>capabilities</CODE
+> field of struct&nbsp;<A
+HREF="r13105.htm#V4L2-CAPABILITY"
+>v4l2_capability</A
+>
+returned by the <A
+HREF="r13105.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_QUERYCAP</CODE
+></A
+> ioctl is set. If the particular user
+pointer method (not only memory mapping) is supported must be
+determined by calling the <A
+HREF="r13696.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_REQBUFS</CODE
+></A
+> ioctl.</P
+><P
+>This I/O method combines advantages of the read/write and
+memory mapping methods. Buffers are allocated by the application
+itself, and can reside for example in virtual or shared memory. Only
+pointers to data are exchanged, these pointers and meta-information
+are passed in struct&nbsp;<A
+HREF="x5953.htm#V4L2-BUFFER"
+>v4l2_buffer</A
+>. The driver must be switched
+into user pointer I/O mode by calling the <A
+HREF="r13696.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_REQBUFS</CODE
+></A
+> with the
+desired buffer type. No buffers are allocated beforehands,
+consequently they are not indexed and cannot be queried like mapped
+buffers with the <CODE
+CLASS="CONSTANT"
+>VIDIOC_QUERYBUF</CODE
+> ioctl.</P
+><DIV
+CLASS="EXAMPLE"
+><A
+NAME="AEN5899"
+></A
+><P
+><B
+>Example 3-2. Initiating streaming I/O with user pointers</B
+></P
+><PRE
+CLASS="PROGRAMLISTING"
+>struct&nbsp;<A
+HREF="r13696.htm#V4L2-REQUESTBUFFERS"
+>v4l2_requestbuffers</A
+> reqbuf;
+
+memset (&amp;reqbuf, 0, sizeof (reqbuf));
+reqbuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+reqbuf.memory = V4L2_MEMORY_USERPTR;
+
+if (ioctl (fd, <A
+HREF="r13696.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_REQBUFS</CODE
+></A
+>, &amp;reqbuf) == -1) {
+        if (errno == EINVAL)
+                printf ("Video capturing or user pointer streaming is not supported\n");
+        else
+                perror ("VIDIOC_REQBUFS");
+
+        exit (EXIT_FAILURE);
+}
+      </PRE
+></DIV
+><P
+>Buffer addresses and sizes are passed on the fly with the
+<A
+HREF="r12878.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_QBUF</CODE
+></A
+> ioctl. Although buffers are commonly cycled,
+applications can pass different addresses and sizes at each
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_QBUF</CODE
+> call. If required by the hardware the
+driver swaps memory pages within physical memory to create a
+continuous area of memory. This happens transparently to the
+application in the virtual memory subsystem of the kernel. When buffer
+pages have been swapped out to disk they are brought back and finally
+locked in physical memory for DMA.<A
+NAME="AEN5909"
+HREF="x5884.htm#FTN.AEN5909"
+><SPAN
+CLASS="footnote"
+>[1]</SPAN
+></A
+></P
+><P
+>Filled or displayed buffers are dequeued with the
+<A
+HREF="r12878.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_DQBUF</CODE
+></A
+> ioctl. The driver can unlock the memory pages at any
+time between the completion of the DMA and this ioctl. The memory is
+also unlocked when <A
+HREF="r13817.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_STREAMOFF</CODE
+></A
+> is called, <A
+HREF="r13696.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_REQBUFS</CODE
+></A
+>, or
+when the device is closed. Applications must take care not to free
+buffers without dequeuing. For once, the buffers remain locked until
+further, wasting physical memory. Second the driver will not be
+notified when the memory is returned to the application's free list
+and subsequently reused for other purposes, possibly completing the
+requested DMA and overwriting valuable data.</P
+><P
+>For capturing applications it is customary to enqueue a
+number of empty buffers, to start capturing and enter the read loop.
+Here the application waits until a filled buffer can be dequeued, and
+re-enqueues the buffer when the data is no longer needed. Output
+applications fill and enqueue buffers, when enough buffers are stacked
+up output is started. In the write loop, when the application
+runs out of free buffers it must wait until an empty buffer can be
+dequeued and reused. Two methods exist to suspend execution of the
+application until one or more buffers can be dequeued. By default
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_DQBUF</CODE
+> blocks when no buffer is in the
+outgoing queue. When the <CODE
+CLASS="CONSTANT"
+>O_NONBLOCK</CODE
+> flag was
+given to the <A
+HREF="r14090.htm"
+><CODE
+CLASS="FUNCTION"
+>open()</CODE
+></A
+> function, <CODE
+CLASS="CONSTANT"
+>VIDIOC_DQBUF</CODE
+>
+returns immediately with an <SPAN
+CLASS="ERRORCODE"
+>EAGAIN</SPAN
+> error code when no buffer is available. The
+<A
+HREF="r14390.htm"
+><CODE
+CLASS="FUNCTION"
+>select()</CODE
+></A
+> or <A
+HREF="r14169.htm"
+><CODE
+CLASS="FUNCTION"
+>poll()</CODE
+></A
+> function are always available.</P
+><P
+>To start and stop capturing or output applications call the
+<A
+HREF="r13817.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_STREAMON</CODE
+></A
+> and <A
+HREF="r13817.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_STREAMOFF</CODE
+></A
+> ioctl. Note
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_STREAMOFF</CODE
+> removes all buffers from both
+queues and unlocks all buffers as a side effect. Since there is no
+notion of doing anything "now" on a multitasking system, if an
+application needs to synchronize with another event it should examine
+the struct&nbsp;<A
+HREF="x5953.htm#V4L2-BUFFER"
+>v4l2_buffer</A
+> <CODE
+CLASS="STRUCTFIELD"
+>timestamp</CODE
+> of captured
+buffers, or set the field before enqueuing buffers for output.</P
+><P
+>Drivers implementing user pointer I/O must
+support the <CODE
+CLASS="CONSTANT"
+>VIDIOC_REQBUFS</CODE
+>,
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_QBUF</CODE
+>, <CODE
+CLASS="CONSTANT"
+>VIDIOC_DQBUF</CODE
+>,
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_STREAMON</CODE
+> and
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_STREAMOFF</CODE
+> ioctl, the
+<CODE
+CLASS="FUNCTION"
+>select()</CODE
+> and <CODE
+CLASS="FUNCTION"
+>poll()</CODE
+> function.<A
+NAME="AEN5945"
+HREF="x5884.htm#FTN.AEN5945"
+><SPAN
+CLASS="footnote"
+>[2]</SPAN
+></A
+></P
+></DIV
+><H3
+CLASS="FOOTNOTES"
+>Notes</H3
+><TABLE
+BORDER="0"
+CLASS="FOOTNOTES"
+WIDTH="100%"
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="5%"
+><A
+NAME="FTN.AEN5909"
+HREF="x5884.htm#AEN5909"
+><SPAN
+CLASS="footnote"
+>[1]</SPAN
+></A
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="95%"
+><P
+>We expect that frequently used buffers are typically not
+swapped out. Anyway, the process of swapping, locking or generating
+scatter-gather lists may be time consuming. The delay can be masked by
+the depth of the incoming buffer queue, and perhaps by maintaining
+caches assuming a buffer will be soon enqueued again. On the other
+hand, to optimize memory usage drivers can limit the number of buffers
+locked in advance and recycle the most recently used buffers first. Of
+course, the pages of empty buffers in the incoming queue need not be
+saved to disk. Output buffers must be saved on the incoming and
+outgoing queue because an application may share them with other
+processes.</P
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="5%"
+><A
+NAME="FTN.AEN5945"
+HREF="x5884.htm#AEN5945"
+><SPAN
+CLASS="footnote"
+>[2]</SPAN
+></A
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="95%"
+><P
+>At the driver level <CODE
+CLASS="FUNCTION"
+>select()</CODE
+> and
+<CODE
+CLASS="FUNCTION"
+>poll()</CODE
+> are the same, and
+<CODE
+CLASS="FUNCTION"
+>select()</CODE
+> is too important to be optional. The
+rest should be evident.</P
+></TD
+></TR
+></TABLE
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x5791.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x5950.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Streaming I/O (Memory Mapping)</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="c5742.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Asynchronous I/O</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

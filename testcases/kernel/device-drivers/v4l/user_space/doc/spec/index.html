@@ -1,0 +1,1650 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Video for Linux Two API Specification</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="NEXT"
+TITLE="Introduction"
+HREF="f163.htm"></HEAD
+><BODY
+CLASS="BOOK"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="BOOK"
+><A
+NAME="V4L2SPEC"
+></A
+><DIV
+CLASS="TITLEPAGE"
+><H1
+CLASS="TITLE"
+><A
+NAME="AEN2"
+>Video for Linux Two API Specification</A
+></H1
+><H2
+CLASS="SUBTITLE"
+>Revision 0.24</H2
+><H3
+CLASS="AUTHOR"
+><A
+NAME="AEN6"
+></A
+>Michael H Schimek</H3
+><DIV
+CLASS="AFFILIATION"
+><DIV
+CLASS="ADDRESS"
+><P
+CLASS="ADDRESS"
+>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<CODE
+CLASS="EMAIL"
+>&#60;<A
+HREF="mailto:mschimek@gmx.at"
+>mschimek@gmx.at</A
+>&#62;</CODE
+><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</P
+></DIV
+></DIV
+><H3
+CLASS="AUTHOR"
+><A
+NAME="AEN13"
+></A
+>Bill Dirks</H3
+><H3
+CLASS="AUTHOR"
+><A
+NAME="AEN17"
+></A
+>Hans Verkuil</H3
+><H3
+CLASS="AUTHOR"
+><A
+NAME="AEN21"
+></A
+>Martin Rubli</H3
+><P
+CLASS="COPYRIGHT"
+>Copyright &copy; 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008 Bill Dirks, Michael H. Schimek, Hans Verkuil, Martin
+Rubli</P
+><DIV
+CLASS="LEGALNOTICE"
+><P
+></P
+><A
+NAME="AEN37"
+></A
+><P
+>This document is copyrighted &copy; 1999-2008 by Bill
+Dirks, Michael H. Schimek, Hans Verkuil and Martin Rubli.</P
+><P
+>Permission is granted to copy, distribute and/or modify
+this document under the terms of the GNU Free Documentation License,
+Version 1.1 or any later version published by the Free Software
+Foundation; with no Invariant Sections, with no Front-Cover Texts, and
+with no Back-Cover Texts. A copy of the license is included in the
+appendix entitled "GNU Free Documentation License".</P
+><P
+>Programming examples can be used and distributed without
+restrictions.</P
+><P
+></P
+></DIV
+><HR></DIV
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Table of Contents</B
+></DT
+><DT
+><A
+HREF="f163.htm"
+>Introduction</A
+></DT
+><DT
+>1. <A
+HREF="c174.htm"
+>Common API Elements</A
+></DT
+><DD
+><DL
+><DT
+>1.1. <A
+HREF="c174.htm#OPEN"
+>Opening and Closing Devices</A
+></DT
+><DD
+><DL
+><DT
+>1.1.1. <A
+HREF="c174.htm#AEN194"
+>Device Naming</A
+></DT
+><DT
+>1.1.2. <A
+HREF="c174.htm#RELATED"
+>Related Devices</A
+></DT
+><DT
+>1.1.3. <A
+HREF="c174.htm#AEN249"
+>Multiple Opens</A
+></DT
+><DT
+>1.1.4. <A
+HREF="c174.htm#AEN270"
+>Shared Data Streams</A
+></DT
+><DT
+>1.1.5. <A
+HREF="c174.htm#AEN273"
+>Functions</A
+></DT
+></DL
+></DD
+><DT
+>1.2. <A
+HREF="x282.htm"
+>Querying Capabilities</A
+></DT
+><DT
+>1.3. <A
+HREF="x294.htm"
+>Application Priority</A
+></DT
+><DT
+>1.4. <A
+HREF="x309.htm"
+>Video Inputs and Outputs</A
+></DT
+><DT
+>1.5. <A
+HREF="x341.htm"
+>Audio Inputs and Outputs</A
+></DT
+><DT
+>1.6. <A
+HREF="x394.htm"
+>Tuners and Modulators</A
+></DT
+><DD
+><DL
+><DT
+>1.6.1. <A
+HREF="x394.htm#AEN396"
+>Tuners</A
+></DT
+><DT
+>1.6.2. <A
+HREF="x394.htm#AEN418"
+>Modulators</A
+></DT
+><DT
+>1.6.3. <A
+HREF="x394.htm#AEN437"
+>Radio Frequency</A
+></DT
+><DT
+>1.6.4. <A
+HREF="x394.htm#AEN445"
+>Satellite Receivers</A
+></DT
+></DL
+></DD
+><DT
+>1.7. <A
+HREF="x448.htm"
+>Video Standards</A
+></DT
+><DT
+>1.8. <A
+HREF="x542.htm"
+>User Controls</A
+></DT
+><DT
+>1.9. <A
+HREF="x802.htm"
+>Extended Controls</A
+></DT
+><DD
+><DL
+><DT
+>1.9.1. <A
+HREF="x802.htm#AEN804"
+>Introduction</A
+></DT
+><DT
+>1.9.2. <A
+HREF="x802.htm#AEN809"
+>The Extended Control API</A
+></DT
+><DT
+>1.9.3. <A
+HREF="x802.htm#AEN840"
+>Enumerating Extended Controls</A
+></DT
+><DT
+>1.9.4. <A
+HREF="x802.htm#AEN867"
+>Creating Control Panels</A
+></DT
+><DT
+>1.9.5. <A
+HREF="x802.htm#MPEG-CONTROLS"
+>MPEG Control Reference</A
+></DT
+><DT
+>1.9.6. <A
+HREF="x802.htm#CAMERA-CONTROLS"
+>Camera Control Reference</A
+></DT
+></DL
+></DD
+><DT
+>1.10. <A
+HREF="x1859.htm"
+>Data Formats</A
+></DT
+><DD
+><DL
+><DT
+>1.10.1. <A
+HREF="x1859.htm#AEN1861"
+>Data Format Negotiation</A
+></DT
+><DT
+>1.10.2. <A
+HREF="x1859.htm#AEN1894"
+>Image Format Enumeration</A
+></DT
+></DL
+></DD
+><DT
+>1.11. <A
+HREF="x1904.htm"
+>Image Cropping, Insertion and Scaling</A
+></DT
+><DD
+><DL
+><DT
+>1.11.1. <A
+HREF="x1904.htm#AEN1926"
+>Cropping Structures</A
+></DT
+><DT
+>1.11.2. <A
+HREF="x1904.htm#AEN1954"
+>Scaling Adjustments</A
+></DT
+><DT
+>1.11.3. <A
+HREF="x1904.htm#AEN1969"
+>Examples</A
+></DT
+></DL
+></DD
+><DT
+>1.12. <A
+HREF="x2009.htm"
+>Streaming Parameters</A
+></DT
+></DL
+></DD
+><DT
+>2. <A
+HREF="c2030.htm"
+>Image Formats</A
+></DT
+><DD
+><DL
+><DT
+>2.1. <A
+HREF="c2030.htm#AEN2113"
+>Standard Image Formats</A
+></DT
+><DT
+>2.2. <A
+HREF="x2123.htm"
+>Colorspaces</A
+></DT
+><DT
+>2.3. <A
+HREF="x2428.htm"
+>Indexed Format</A
+></DT
+><DT
+>2.4. <A
+HREF="x2490.htm"
+>RGB Formats</A
+></DT
+><DD
+><DL
+><DT
+><A
+HREF="r2492.htm"
+>Packed RGB formats</A
+>&nbsp;--&nbsp;Packed RGB formats</DT
+><DT
+><A
+HREF="r3735.htm"
+>V4L2_PIX_FMT_SBGGR8 ('BA81')</A
+>&nbsp;--&nbsp;Bayer RGB format</DT
+><DT
+><A
+HREF="r3796.htm"
+>V4L2_PIX_FMT_SBGGR16 ('BA82')</A
+>&nbsp;--&nbsp;Bayer RGB format</DT
+></DL
+></DD
+><DT
+>2.5. <A
+HREF="x3891.htm"
+>YUV Formats</A
+></DT
+><DD
+><DL
+><DT
+><A
+HREF="r3896.htm"
+>Packed YUV formats</A
+>&nbsp;--&nbsp;Packed YUV formats</DT
+><DT
+><A
+HREF="r4185.htm"
+>V4L2_PIX_FMT_GREY ('GREY')</A
+>&nbsp;--&nbsp;Grey-scale image</DT
+><DT
+><A
+HREF="r4246.htm"
+>V4L2_PIX_FMT_Y16 ('Y16 ')</A
+>&nbsp;--&nbsp;Grey-scale image</DT
+><DT
+><A
+HREF="r4339.htm"
+>V4L2_PIX_FMT_YUYV ('YUYV')</A
+>&nbsp;--&nbsp;Packed format with &frac12; horizontal chroma
+resolution, also known as YUV 4:2:2</DT
+><DT
+><A
+HREF="r4484.htm"
+>V4L2_PIX_FMT_UYVY ('UYVY')</A
+>&nbsp;--&nbsp;Variation of
+<CODE
+CLASS="CONSTANT"
+>V4L2_PIX_FMT_YUYV</CODE
+> with different order of samples
+in memory</DT
+><DT
+><A
+HREF="r4629.htm"
+>V4L2_PIX_FMT_Y41P ('Y41P')</A
+>&nbsp;--&nbsp;Format with &frac14; horizontal chroma
+resolution, also known as YUV 4:1:1</DT
+><DT
+><A
+HREF="r4850.htm"
+>V4L2_PIX_FMT_YVU420 ('YV12'), V4L2_PIX_FMT_YUV420 ('YU12')</A
+>&nbsp;--&nbsp;Planar formats with &frac12; horizontal and
+vertical chroma resolution, also known as YUV 4:2:0</DT
+><DT
+><A
+HREF="r5016.htm"
+>V4L2_PIX_FMT_YVU410 ('YVU9'), V4L2_PIX_FMT_YUV410 ('YUV9')</A
+>&nbsp;--&nbsp;Planar formats with &frac14; horizontal and
+vertical chroma resolution, also known as YUV 4:1:0</DT
+><DT
+><A
+HREF="r5154.htm"
+>V4L2_PIX_FMT_YUV422P ('422P')</A
+>&nbsp;--&nbsp;Format with &frac12; horizontal chroma resolution,
+also known as YUV 4:2:2. Planar layout as opposed to
+<CODE
+CLASS="CONSTANT"
+>V4L2_PIX_FMT_YUYV</CODE
+></DT
+><DT
+><A
+HREF="r5319.htm"
+>V4L2_PIX_FMT_YUV411P ('411P')</A
+>&nbsp;--&nbsp;Format with &frac14; horizontal chroma resolution,
+also known as YUV 4:1:1. Planar layout as opposed to
+<CODE
+CLASS="CONSTANT"
+>V4L2_PIX_FMT_Y41P</CODE
+></DT
+><DT
+><A
+HREF="r5470.htm"
+>V4L2_PIX_FMT_NV12 ('NV12'), V4L2_PIX_FMT_NV21 ('NV21')</A
+>&nbsp;--&nbsp;Formats with &frac12; horizontal and vertical
+chroma resolution, also known as YUV 4:2:0. One luminance and one
+chrominance plane with alternating chroma samples as opposed to
+<CODE
+CLASS="CONSTANT"
+>V4L2_PIX_FMT_YVU420</CODE
+></DT
+></DL
+></DD
+><DT
+>2.6. <A
+HREF="x5634.htm"
+>Compressed Formats</A
+></DT
+><DT
+>2.7. <A
+HREF="x5665.htm"
+>Reserved Format Identifiers</A
+></DT
+></DL
+></DD
+><DT
+>3. <A
+HREF="c5742.htm"
+>Input/Output</A
+></DT
+><DD
+><DL
+><DT
+>3.1. <A
+HREF="c5742.htm#RW"
+>Read/Write</A
+></DT
+><DT
+>3.2. <A
+HREF="x5791.htm"
+>Streaming I/O (Memory Mapping)</A
+></DT
+><DT
+>3.3. <A
+HREF="x5884.htm"
+>Streaming I/O (User Pointers)</A
+></DT
+><DT
+>3.4. <A
+HREF="x5950.htm"
+>Asynchronous I/O</A
+></DT
+><DT
+>3.5. <A
+HREF="x5953.htm"
+>Buffers</A
+></DT
+><DD
+><DL
+><DT
+>3.5.1. <A
+HREF="x5953.htm#AEN6266"
+>Timecodes</A
+></DT
+></DL
+></DD
+><DT
+>3.6. <A
+HREF="x6386.htm"
+>Field Order</A
+></DT
+></DL
+></DD
+><DT
+>4. <A
+HREF="c6488.htm"
+>Interfaces</A
+></DT
+><DD
+><DL
+><DT
+>4.1. <A
+HREF="c6488.htm#CAPTURE"
+>Video Capture Interface</A
+></DT
+><DD
+><DL
+><DT
+>4.1.1. <A
+HREF="c6488.htm#AEN6498"
+>Querying Capabilities</A
+></DT
+><DT
+>4.1.2. <A
+HREF="c6488.htm#AEN6510"
+>Supplemental Functions</A
+></DT
+><DT
+>4.1.3. <A
+HREF="c6488.htm#AEN6520"
+>Image Format Negotiation</A
+></DT
+><DT
+>4.1.4. <A
+HREF="c6488.htm#AEN6563"
+>Reading Images</A
+></DT
+></DL
+></DD
+><DT
+>4.2. <A
+HREF="x6570.htm"
+>Video Overlay Interface</A
+></DT
+><DD
+><DL
+><DT
+>4.2.1. <A
+HREF="x6570.htm#AEN6587"
+>Querying Capabilities</A
+></DT
+><DT
+>4.2.2. <A
+HREF="x6570.htm#AEN6595"
+>Supplemental Functions</A
+></DT
+><DT
+>4.2.3. <A
+HREF="x6570.htm#AEN6605"
+>Setup</A
+></DT
+><DT
+>4.2.4. <A
+HREF="x6570.htm#AEN6635"
+>Overlay Window</A
+></DT
+><DT
+>4.2.5. <A
+HREF="x6570.htm#AEN6826"
+>Enabling Overlay</A
+></DT
+></DL
+></DD
+><DT
+>4.3. <A
+HREF="x6831.htm"
+>Video Output Interface</A
+></DT
+><DD
+><DL
+><DT
+>4.3.1. <A
+HREF="x6831.htm#AEN6839"
+>Querying Capabilities</A
+></DT
+><DT
+>4.3.2. <A
+HREF="x6831.htm#AEN6849"
+>Supplemental Functions</A
+></DT
+><DT
+>4.3.3. <A
+HREF="x6831.htm#AEN6859"
+>Image Format Negotiation</A
+></DT
+><DT
+>4.3.4. <A
+HREF="x6831.htm#AEN6902"
+>Writing Images</A
+></DT
+></DL
+></DD
+><DT
+>4.4. <A
+HREF="x6909.htm"
+>Video Output Overlay Interface</A
+></DT
+><DD
+><DL
+><DT
+>4.4.1. <A
+HREF="x6909.htm#AEN6923"
+>Querying Capabilities</A
+></DT
+><DT
+>4.4.2. <A
+HREF="x6909.htm#AEN6932"
+>Framebuffer</A
+></DT
+><DT
+>4.4.3. <A
+HREF="x6909.htm#AEN6953"
+>Overlay Window and Scaling</A
+></DT
+><DT
+>4.4.4. <A
+HREF="x6909.htm#AEN6987"
+>Enabling Overlay</A
+></DT
+></DL
+></DD
+><DT
+>4.5. <A
+HREF="x6991.htm"
+>Codec Interface</A
+></DT
+><DT
+>4.6. <A
+HREF="x7002.htm"
+>Effect Devices Interface</A
+></DT
+><DT
+>4.7. <A
+HREF="x7013.htm"
+>Raw VBI Data Interface</A
+></DT
+><DD
+><DL
+><DT
+>4.7.1. <A
+HREF="x7013.htm#AEN7029"
+>Querying Capabilities</A
+></DT
+><DT
+>4.7.2. <A
+HREF="x7013.htm#AEN7038"
+>Supplemental Functions</A
+></DT
+><DT
+>4.7.3. <A
+HREF="x7013.htm#AEN7045"
+>Raw VBI Format Negotiation</A
+></DT
+><DT
+>4.7.4. <A
+HREF="x7013.htm#AEN7218"
+>Reading and writing VBI images</A
+></DT
+></DL
+></DD
+><DT
+>4.8. <A
+HREF="x7236.htm"
+>Sliced VBI Data Interface</A
+></DT
+><DD
+><DL
+><DT
+>4.8.1. <A
+HREF="x7236.htm#AEN7248"
+>Querying Capabilities</A
+></DT
+><DT
+>4.8.2. <A
+HREF="x7236.htm#AEN7258"
+>Supplemental Functions</A
+></DT
+><DT
+>4.8.3. <A
+HREF="x7236.htm#AEN7265"
+>Sliced VBI Format Negotiation</A
+></DT
+><DT
+>4.8.4. <A
+HREF="x7236.htm#AEN7483"
+>Reading and writing sliced VBI data</A
+></DT
+></DL
+></DD
+><DT
+>4.9. <A
+HREF="x7561.htm"
+>Teletext Interface</A
+></DT
+><DT
+>4.10. <A
+HREF="x7578.htm"
+>Radio Interface</A
+></DT
+><DD
+><DL
+><DT
+>4.10.1. <A
+HREF="x7578.htm#AEN7585"
+>Querying Capabilities</A
+></DT
+><DT
+>4.10.2. <A
+HREF="x7578.htm#AEN7594"
+>Supplemental Functions</A
+></DT
+><DT
+>4.10.3. <A
+HREF="x7578.htm#AEN7600"
+>Programming</A
+></DT
+></DL
+></DD
+><DT
+>4.11. <A
+HREF="x7607.htm"
+>RDS Interface</A
+></DT
+></DL
+></DD
+><DT
+>I. <A
+HREF="r7624.htm"
+>Function Reference</A
+></DT
+><DD
+><DL
+><DT
+><A
+HREF="r7626.htm"
+>V4L2 close()</A
+>&nbsp;--&nbsp;Close a V4L2 device</DT
+><DT
+><A
+HREF="r7667.htm"
+>V4L2 ioctl()</A
+>&nbsp;--&nbsp;Program a V4L2 device</DT
+><DT
+><A
+HREF="r7771.htm"
+>ioctl VIDIOC_CROPCAP</A
+>&nbsp;--&nbsp;Information about the video cropping and scaling abilities</DT
+><DT
+><A
+HREF="r7900.htm"
+>ioctl VIDIOC_DBG_G_REGISTER, VIDIOC_DBG_S_REGISTER</A
+>&nbsp;--&nbsp;Read or write hardware registers</DT
+><DT
+><A
+HREF="r8087.htm"
+>ioctl VIDIOC_ENCODER_CMD, VIDIOC_TRY_ENCODER_CMD</A
+>&nbsp;--&nbsp;Execute an encoder command</DT
+><DT
+><A
+HREF="r8242.htm"
+>ioctl VIDIOC_ENUMAUDIO</A
+>&nbsp;--&nbsp;Enumerate audio inputs</DT
+><DT
+><A
+HREF="r8304.htm"
+>ioctl VIDIOC_ENUMAUDOUT</A
+>&nbsp;--&nbsp;Enumerate audio outputs</DT
+><DT
+><A
+HREF="r8367.htm"
+>ioctl VIDIOC_ENUM_FMT</A
+>&nbsp;--&nbsp;Enumerate image formats</DT
+><DT
+><A
+HREF="r8494.htm"
+>ioctl VIDIOC_ENUM_FRAMESIZES</A
+>&nbsp;--&nbsp;Enumerate frame sizes</DT
+><DT
+><A
+HREF="r8724.htm"
+>ioctl VIDIOC_ENUM_FRAMEINTERVALS</A
+>&nbsp;--&nbsp;Enumerate frame intervals</DT
+><DT
+><A
+HREF="r8936.htm"
+>ioctl VIDIOC_ENUMINPUT</A
+>&nbsp;--&nbsp;Enumerate video inputs</DT
+><DT
+><A
+HREF="r9149.htm"
+>ioctl VIDIOC_ENUMOUTPUT</A
+>&nbsp;--&nbsp;Enumerate video outputs</DT
+><DT
+><A
+HREF="r9288.htm"
+>ioctl VIDIOC_ENUMSTD</A
+>&nbsp;--&nbsp;Enumerate supported video standards</DT
+><DT
+><A
+HREF="r9539.htm"
+>ioctl VIDIOC_G_AUDIO, VIDIOC_S_AUDIO</A
+>&nbsp;--&nbsp;Query or select the current audio input and its
+attributes</DT
+><DT
+><A
+HREF="r9688.htm"
+>ioctl VIDIOC_G_AUDOUT, VIDIOC_S_AUDOUT</A
+>&nbsp;--&nbsp;Query or select the current audio output</DT
+><DT
+><A
+HREF="r9804.htm"
+>ioctl VIDIOC_G_CHIP_IDENT</A
+>&nbsp;--&nbsp;Identify the chips on a TV card</DT
+><DT
+><A
+HREF="r9994.htm"
+>ioctl VIDIOC_G_CROP, VIDIOC_S_CROP</A
+>&nbsp;--&nbsp;Get or set the current cropping rectangle</DT
+><DT
+><A
+HREF="r10104.htm"
+>ioctl VIDIOC_G_CTRL, VIDIOC_S_CTRL</A
+>&nbsp;--&nbsp;Get or set the value of a control</DT
+><DT
+><A
+HREF="r10211.htm"
+>ioctl VIDIOC_G_ENC_INDEX</A
+>&nbsp;--&nbsp;Get meta data about a compressed video stream</DT
+><DT
+><A
+HREF="r10386.htm"
+>ioctl VIDIOC_G_EXT_CTRLS, VIDIOC_S_EXT_CTRLS,
+VIDIOC_TRY_EXT_CTRLS</A
+>&nbsp;--&nbsp;Get or set the value of several controls, try control
+values</DT
+><DT
+><A
+HREF="r10595.htm"
+>ioctl VIDIOC_G_FBUF, VIDIOC_S_FBUF</A
+>&nbsp;--&nbsp;Get or set frame buffer overlay parameters</DT
+><DT
+><A
+HREF="r10944.htm"
+>ioctl VIDIOC_G_FMT, VIDIOC_S_FMT,
+VIDIOC_TRY_FMT</A
+>&nbsp;--&nbsp;Get or set the data format, try a format</DT
+><DT
+><A
+HREF="r11094.htm"
+>ioctl VIDIOC_G_FREQUENCY, VIDIOC_S_FREQUENCY</A
+>&nbsp;--&nbsp;Get or set tuner or modulator radio
+frequency</DT
+><DT
+><A
+HREF="r11217.htm"
+>ioctl VIDIOC_G_INPUT, VIDIOC_S_INPUT</A
+>&nbsp;--&nbsp;Query or select the current video input</DT
+><DT
+><A
+HREF="r11285.htm"
+>ioctl VIDIOC_G_JPEGCOMP, VIDIOC_S_JPEGCOMP</A
+>&nbsp;--&nbsp;</DT
+><DT
+><A
+HREF="r11430.htm"
+>ioctl VIDIOC_G_MODULATOR, VIDIOC_S_MODULATOR</A
+>&nbsp;--&nbsp;Get or set modulator attributes</DT
+><DT
+><A
+HREF="r11612.htm"
+>ioctl VIDIOC_G_OUTPUT, VIDIOC_S_OUTPUT</A
+>&nbsp;--&nbsp;Query or select the current video output</DT
+><DT
+><A
+HREF="r11680.htm"
+>ioctl VIDIOC_G_PARM, VIDIOC_S_PARM</A
+>&nbsp;--&nbsp;Get or set streaming parameters</DT
+><DT
+><A
+HREF="r11946.htm"
+>ioctl VIDIOC_G_PRIORITY, VIDIOC_S_PRIORITY</A
+>&nbsp;--&nbsp;Query or request the access priority associated with a
+file descriptor</DT
+><DT
+><A
+HREF="r12051.htm"
+>ioctl VIDIOC_G_SLICED_VBI_CAP</A
+>&nbsp;--&nbsp;Query sliced VBI capabilities</DT
+><DT
+><A
+HREF="r12265.htm"
+>ioctl VIDIOC_G_STD, VIDIOC_S_STD</A
+>&nbsp;--&nbsp;Query or select the video standard of the current input</DT
+><DT
+><A
+HREF="r12342.htm"
+>ioctl VIDIOC_G_TUNER, VIDIOC_S_TUNER</A
+>&nbsp;--&nbsp;Get or set tuner attributes</DT
+><DT
+><A
+HREF="r12784.htm"
+>ioctl VIDIOC_LOG_STATUS</A
+>&nbsp;--&nbsp;Log driver status information</DT
+><DT
+><A
+HREF="r12816.htm"
+>ioctl VIDIOC_OVERLAY</A
+>&nbsp;--&nbsp;Start or stop video overlay</DT
+><DT
+><A
+HREF="r12878.htm"
+>ioctl VIDIOC_QBUF, VIDIOC_DQBUF</A
+>&nbsp;--&nbsp;Exchange a buffer with the driver</DT
+><DT
+><A
+HREF="r13022.htm"
+>ioctl VIDIOC_QUERYBUF</A
+>&nbsp;--&nbsp;Query the status of a buffer</DT
+><DT
+><A
+HREF="r13105.htm"
+>ioctl VIDIOC_QUERYCAP</A
+>&nbsp;--&nbsp;Query device capabilities</DT
+><DT
+><A
+HREF="r13317.htm"
+>ioctl VIDIOC_QUERYCTRL, VIDIOC_QUERYMENU</A
+>&nbsp;--&nbsp;Enumerate controls and menu control items</DT
+><DT
+><A
+HREF="r13641.htm"
+>ioctl VIDIOC_QUERYSTD</A
+>&nbsp;--&nbsp;Sense the video standard received by the current
+input</DT
+><DT
+><A
+HREF="r13696.htm"
+>ioctl VIDIOC_REQBUFS</A
+>&nbsp;--&nbsp;Initiate Memory Mapping or User Pointer I/O</DT
+><DT
+><A
+HREF="r13817.htm"
+>ioctl VIDIOC_STREAMON, VIDIOC_STREAMOFF</A
+>&nbsp;--&nbsp;Start or stop streaming I/O</DT
+><DT
+><A
+HREF="r13889.htm"
+>V4L2 mmap()</A
+>&nbsp;--&nbsp;Map device memory into application address space</DT
+><DT
+><A
+HREF="r14037.htm"
+>V4L2 munmap()</A
+>&nbsp;--&nbsp;Unmap device memory</DT
+><DT
+><A
+HREF="r14090.htm"
+>V4L2 open()</A
+>&nbsp;--&nbsp;Open a V4L2 device</DT
+><DT
+><A
+HREF="r14169.htm"
+>V4L2 poll()</A
+>&nbsp;--&nbsp;Wait for some event on a file descriptor</DT
+><DT
+><A
+HREF="r14264.htm"
+>V4L2 read()</A
+>&nbsp;--&nbsp;Read from a V4L2 device</DT
+><DT
+><A
+HREF="r14390.htm"
+>V4L2 select()</A
+>&nbsp;--&nbsp;Synchronous I/O multiplexing</DT
+><DT
+><A
+HREF="r14496.htm"
+>V4L2 write()</A
+>&nbsp;--&nbsp;Write to a V4L2 device</DT
+></DL
+></DD
+><DT
+>5. <A
+HREF="c14592.htm"
+>V4L2 Driver Programming</A
+></DT
+><DT
+>6. <A
+HREF="c14595.htm"
+>Changes</A
+></DT
+><DD
+><DL
+><DT
+>6.1. <A
+HREF="c14595.htm#DIFF-V4L"
+>Differences between V4L and V4L2</A
+></DT
+><DD
+><DL
+><DT
+>6.1.1. <A
+HREF="c14595.htm#AEN14602"
+>Opening and Closing Devices</A
+></DT
+><DT
+>6.1.2. <A
+HREF="c14595.htm#AEN14665"
+>Querying Capabilities</A
+></DT
+><DT
+>6.1.3. <A
+HREF="c14595.htm#AEN14821"
+>Video Sources</A
+></DT
+><DT
+>6.1.4. <A
+HREF="c14595.htm#AEN14877"
+>Tuning</A
+></DT
+><DT
+>6.1.5. <A
+HREF="c14595.htm#V4L-IMAGE-PROPERTIES"
+>Image Properties</A
+></DT
+><DT
+>6.1.6. <A
+HREF="c14595.htm#AEN15120"
+>Audio</A
+></DT
+><DT
+>6.1.7. <A
+HREF="c14595.htm#AEN15205"
+>Frame Buffer Overlay</A
+></DT
+><DT
+>6.1.8. <A
+HREF="c14595.htm#AEN15269"
+>Cropping</A
+></DT
+><DT
+>6.1.9. <A
+HREF="c14595.htm#AEN15302"
+>Reading Images, Memory Mapping</A
+></DT
+><DT
+>6.1.10. <A
+HREF="c14595.htm#AEN15385"
+>Reading Raw VBI Data</A
+></DT
+><DT
+>6.1.11. <A
+HREF="c14595.htm#AEN15438"
+>Miscellaneous</A
+></DT
+></DL
+></DD
+><DT
+>6.2. <A
+HREF="x15446.htm"
+>Changes of the V4L2 API</A
+></DT
+><DD
+><DL
+><DT
+>6.2.1. <A
+HREF="x15446.htm#AEN15449"
+>Early Versions</A
+></DT
+><DT
+>6.2.2. <A
+HREF="x15446.htm#AEN15499"
+>V4L2 Version 0.16 1999-01-31</A
+></DT
+><DT
+>6.2.3. <A
+HREF="x15446.htm#AEN15502"
+>V4L2 Version 0.18 1999-03-16</A
+></DT
+><DT
+>6.2.4. <A
+HREF="x15446.htm#AEN15505"
+>V4L2 Version 0.19 1999-06-05</A
+></DT
+><DT
+>6.2.5. <A
+HREF="x15446.htm#AEN15514"
+>V4L2 Version 0.20 (1999-09-10)</A
+></DT
+><DT
+>6.2.6. <A
+HREF="x15446.htm#AEN15575"
+>V4L2 Version 0.20 incremental changes</A
+></DT
+><DT
+>6.2.7. <A
+HREF="x15446.htm#AEN15628"
+>V4L2 Version 0.20 2000-11-23</A
+></DT
+><DT
+>6.2.8. <A
+HREF="x15446.htm#AEN15657"
+>V4L2 Version 0.20 2002-07-25</A
+></DT
+><DT
+>6.2.9. <A
+HREF="x15446.htm#AEN15660"
+>V4L2 in Linux 2.5.46, 2002-10</A
+></DT
+><DT
+>6.2.10. <A
+HREF="x15446.htm#AEN16046"
+>V4L2 2003-06-19</A
+></DT
+><DT
+>6.2.11. <A
+HREF="x15446.htm#AEN16089"
+>V4L2 2003-11-05</A
+></DT
+><DT
+>6.2.12. <A
+HREF="x15446.htm#AEN16131"
+>V4L2 in Linux 2.6.6, 2004-05-09</A
+></DT
+><DT
+>6.2.13. <A
+HREF="x15446.htm#AEN16139"
+>V4L2 in Linux 2.6.8</A
+></DT
+><DT
+>6.2.14. <A
+HREF="x15446.htm#AEN16149"
+>V4L2 spec erratum 2004-08-01</A
+></DT
+><DT
+>6.2.15. <A
+HREF="x15446.htm#AEN16170"
+>V4L2 in Linux 2.6.14</A
+></DT
+><DT
+>6.2.16. <A
+HREF="x15446.htm#AEN16176"
+>V4L2 in Linux 2.6.15</A
+></DT
+><DT
+>6.2.17. <A
+HREF="x15446.htm#AEN16203"
+>V4L2 spec erratum 2005-11-27</A
+></DT
+><DT
+>6.2.18. <A
+HREF="x15446.htm#AEN16212"
+>V4L2 spec erratum 2006-01-10</A
+></DT
+><DT
+>6.2.19. <A
+HREF="x15446.htm#AEN16223"
+>V4L2 spec erratum 2006-02-03</A
+></DT
+><DT
+>6.2.20. <A
+HREF="x15446.htm#AEN16231"
+>V4L2 spec erratum 2006-02-04</A
+></DT
+><DT
+>6.2.21. <A
+HREF="x15446.htm#AEN16241"
+>V4L2 in Linux 2.6.17</A
+></DT
+><DT
+>6.2.22. <A
+HREF="x15446.htm#AEN16261"
+>V4L2 spec erratum 2006-09-23 (Draft 0.15)</A
+></DT
+><DT
+>6.2.23. <A
+HREF="x15446.htm#AEN16297"
+>V4L2 in Linux 2.6.18</A
+></DT
+><DT
+>6.2.24. <A
+HREF="x15446.htm#AEN16319"
+>V4L2 in Linux 2.6.19</A
+></DT
+><DT
+>6.2.25. <A
+HREF="x15446.htm#AEN16338"
+>V4L2 spec erratum 2006-10-12 (Draft 0.17)</A
+></DT
+><DT
+>6.2.26. <A
+HREF="x15446.htm#AEN16345"
+>V4L2 in Linux 2.6.21</A
+></DT
+><DT
+>6.2.27. <A
+HREF="x15446.htm#AEN16351"
+>V4L2 in Linux 2.6.22</A
+></DT
+><DT
+>6.2.28. <A
+HREF="x15446.htm#AEN16378"
+>V4L2 in Linux 2.6.24</A
+></DT
+><DT
+>6.2.29. <A
+HREF="x15446.htm#AEN16388"
+>V4L2 in Linux 2.6.25</A
+></DT
+></DL
+></DD
+><DT
+>6.3. <A
+HREF="x16430.htm"
+>Relation of V4L2 to other Linux multimedia APIs</A
+></DT
+><DD
+><DL
+><DT
+>6.3.1. <A
+HREF="x16430.htm#XVIDEO"
+>X Video Extension</A
+></DT
+><DT
+>6.3.2. <A
+HREF="x16430.htm#AEN16446"
+>Digital Video</A
+></DT
+><DT
+>6.3.3. <A
+HREF="x16430.htm#AEN16450"
+>Audio Interfaces</A
+></DT
+></DL
+></DD
+><DT
+>6.4. <A
+HREF="x16453.htm"
+>Experimental API Elements</A
+></DT
+><DT
+>6.5. <A
+HREF="x16497.htm"
+>Obsolete API Elements</A
+></DT
+></DL
+></DD
+><DT
+>A. <A
+HREF="a16506.htm"
+>Video For Linux Two Header File</A
+></DT
+><DT
+>B. <A
+HREF="a16706.htm"
+>Video Capture Example</A
+></DT
+><DT
+>C. <A
+HREF="a16721.htm"
+>GNU Free Documentation License</A
+></DT
+><DD
+><DL
+><DT
+>C.1. <A
+HREF="a16721.htm#FDL-PREAMBLE"
+>0. PREAMBLE</A
+></DT
+><DT
+>C.2. <A
+HREF="x16743.htm"
+>1. APPLICABILITY AND DEFINITIONS</A
+></DT
+><DT
+>C.3. <A
+HREF="x16769.htm"
+>2. VERBATIM COPYING</A
+></DT
+><DT
+>C.4. <A
+HREF="x16775.htm"
+>3. COPYING IN QUANTITY</A
+></DT
+><DT
+>C.5. <A
+HREF="x16788.htm"
+>4. MODIFICATIONS</A
+></DT
+><DT
+>C.6. <A
+HREF="x16896.htm"
+>5. COMBINING DOCUMENTS</A
+></DT
+><DT
+>C.7. <A
+HREF="x16910.htm"
+>6. COLLECTIONS OF DOCUMENTS</A
+></DT
+><DT
+>C.8. <A
+HREF="x16915.htm"
+>7. AGGREGATION WITH INDEPENDENT WORKS</A
+></DT
+><DT
+>C.9. <A
+HREF="x16923.htm"
+>8. TRANSLATION</A
+></DT
+><DT
+>C.10. <A
+HREF="x16929.htm"
+>9. TERMINATION</A
+></DT
+><DT
+>C.11. <A
+HREF="x16933.htm"
+>10. FUTURE REVISIONS OF THIS LICENSE</A
+></DT
+><DT
+>C.12. <A
+HREF="x16941.htm"
+>Addendum</A
+></DT
+></DL
+></DD
+><DT
+><A
+HREF="i16960.htm"
+>List of Types</A
+></DT
+><DT
+><A
+HREF="b17127.htm"
+>References</A
+></DT
+></DL
+></DIV
+><DIV
+CLASS="LOT"
+><DL
+CLASS="LOT"
+><DT
+><B
+>List of Figures</B
+></DT
+><DT
+>1-1. <A
+HREF="x1904.htm#CROP-SCALE"
+>Image Cropping, Insertion and Scaling</A
+></DT
+><DT
+>3-1. <A
+HREF="x6386.htm#FIELDSEQ-TB"
+>Field Order, Top Field First Transmitted</A
+></DT
+><DT
+>3-2. <A
+HREF="x6386.htm#FIELDSEQ-BT"
+>Field Order, Bottom Field First Transmitted</A
+></DT
+><DT
+>4-1. <A
+HREF="x7013.htm#VBI-HSYNC"
+>Line synchronization</A
+></DT
+><DT
+>4-2. <A
+HREF="x7013.htm#VBI-525"
+>ITU-R 525 line numbering (M/NTSC and M/PAL)</A
+></DT
+><DT
+>4-3. <A
+HREF="x7013.htm#VBI-625"
+>ITU-R 625 line numbering</A
+></DT
+></DL
+></DIV
+><DIV
+CLASS="LOT"
+><DL
+CLASS="LOT"
+><DT
+><B
+>List of Examples</B
+></DT
+><DT
+>1-1. <A
+HREF="x309.htm#AEN328"
+>Information about the current video input</A
+></DT
+><DT
+>1-2. <A
+HREF="x309.htm#AEN336"
+>Switching to the first video input</A
+></DT
+><DT
+>1-3. <A
+HREF="x341.htm#AEN382"
+>Information about the current audio input</A
+></DT
+><DT
+>1-4. <A
+HREF="x341.htm#AEN388"
+>Switching to the first audio input</A
+></DT
+><DT
+>1-5. <A
+HREF="x448.htm#AEN510"
+>Information about the current video standard</A
+></DT
+><DT
+>1-6. <A
+HREF="x448.htm#AEN519"
+>Listing the video standards supported by the current
+input</A
+></DT
+><DT
+>1-7. <A
+HREF="x448.htm#AEN530"
+>Selecting a new video standard</A
+></DT
+><DT
+>1-8. <A
+HREF="x542.htm#AEN778"
+>Enumerating all controls</A
+></DT
+><DT
+>1-9. <A
+HREF="x542.htm#AEN789"
+>Changing controls</A
+></DT
+><DT
+>1-10. <A
+HREF="x1904.htm#AEN1972"
+>Resetting the cropping parameters</A
+></DT
+><DT
+>1-11. <A
+HREF="x1904.htm#AEN1983"
+>Simple downscaling</A
+></DT
+><DT
+>1-12. <A
+HREF="x1904.htm#AEN1991"
+>Selecting an output area</A
+></DT
+><DT
+>1-13. <A
+HREF="x1904.htm#AEN1996"
+>Current scaling factor and pixel aspect</A
+></DT
+><DT
+>2-1. <A
+HREF="x2123.htm#AEN2217"
+>ITU-R Rec. BT.601 color conversion</A
+></DT
+><DT
+>2-1. <A
+HREF="r2492.htm#AEN3061"
+><CODE
+CLASS="CONSTANT"
+>V4L2_PIX_FMT_BGR24</CODE
+> 4 &times; 4 pixel
+image</A
+></DT
+><DT
+>2-1. <A
+HREF="r3735.htm#AEN3746"
+><CODE
+CLASS="CONSTANT"
+>V4L2_PIX_FMT_SBGGR8</CODE
+> 4 &times; 4
+pixel image</A
+></DT
+><DT
+>2-1. <A
+HREF="r3796.htm#AEN3809"
+><CODE
+CLASS="CONSTANT"
+>V4L2_PIX_FMT_SBGGR16</CODE
+> 4 &times; 4
+pixel image</A
+></DT
+><DT
+>2-1. <A
+HREF="r4185.htm#AEN4196"
+><CODE
+CLASS="CONSTANT"
+>V4L2_PIX_FMT_GREY</CODE
+> 4 &times; 4
+pixel image</A
+></DT
+><DT
+>2-1. <A
+HREF="r4246.htm#AEN4257"
+><CODE
+CLASS="CONSTANT"
+>V4L2_PIX_FMT_Y16</CODE
+> 4 &times; 4
+pixel image</A
+></DT
+><DT
+>2-1. <A
+HREF="r4339.htm#AEN4351"
+><CODE
+CLASS="CONSTANT"
+>V4L2_PIX_FMT_YUYV</CODE
+> 4 &times; 4
+pixel image</A
+></DT
+><DT
+>2-1. <A
+HREF="r4484.htm#AEN4496"
+><CODE
+CLASS="CONSTANT"
+>V4L2_PIX_FMT_UYVY</CODE
+> 4 &times; 4
+pixel image</A
+></DT
+><DT
+>2-1. <A
+HREF="r4629.htm#AEN4645"
+><CODE
+CLASS="CONSTANT"
+>V4L2_PIX_FMT_Y41P</CODE
+> 8 &times; 4
+pixel image</A
+></DT
+><DT
+>2-1. <A
+HREF="r4850.htm#AEN4871"
+><CODE
+CLASS="CONSTANT"
+>V4L2_PIX_FMT_YVU420</CODE
+> 4 &times; 4
+pixel image</A
+></DT
+><DT
+>2-1. <A
+HREF="r5016.htm#AEN5032"
+><CODE
+CLASS="CONSTANT"
+>V4L2_PIX_FMT_YVU410</CODE
+> 4 &times; 4
+pixel image</A
+></DT
+><DT
+>2-1. <A
+HREF="r5154.htm#AEN5170"
+><CODE
+CLASS="CONSTANT"
+>V4L2_PIX_FMT_YUV422P</CODE
+> 4 &times; 4
+pixel image</A
+></DT
+><DT
+>2-1. <A
+HREF="r5319.htm#AEN5337"
+><CODE
+CLASS="CONSTANT"
+>V4L2_PIX_FMT_YUV411P</CODE
+> 4 &times; 4
+pixel image</A
+></DT
+><DT
+>2-1. <A
+HREF="r5470.htm#AEN5493"
+><CODE
+CLASS="CONSTANT"
+>V4L2_PIX_FMT_NV12</CODE
+> 4 &times; 4
+pixel image</A
+></DT
+><DT
+>3-1. <A
+HREF="x5791.htm#AEN5823"
+>Mapping buffers</A
+></DT
+><DT
+>3-2. <A
+HREF="x5884.htm#AEN5899"
+>Initiating streaming I/O with user pointers</A
+></DT
+><DT
+>4-1. <A
+HREF="x6909.htm#AEN6949"
+>Finding a framebuffer device for OSD</A
+></DT
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="f163.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Introduction</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

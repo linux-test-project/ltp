@@ -1,0 +1,288 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>V4L2 munmap()</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Function Reference"
+HREF="r7624.htm"><LINK
+REL="PREVIOUS"
+TITLE="V4L2 mmap()"
+HREF="r13889.htm"><LINK
+REL="NEXT"
+TITLE="V4L2 open()"
+HREF="r14090.htm"></HEAD
+><BODY
+CLASS="REFENTRY"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="r13889.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="r14090.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="FUNC-MUNMAP"
+></A
+>V4L2 munmap()</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN14041"
+></A
+><H2
+>Name</H2
+>v4l2-munmap&nbsp;--&nbsp;Unmap device memory</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN14044"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN14045"
+></A
+><PRE
+CLASS="FUNCSYNOPSISINFO"
+>#include &lt;unistd.h&gt;
+#include &lt;sys/mman.h&gt;</PRE
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>int munmap</CODE
+>(void *start, size_t length);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN14054"
+></A
+><H2
+>Arguments</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><CODE
+CLASS="PARAMETER"
+>start</CODE
+></DT
+><DD
+><P
+>Address of the mapped buffer as returned by the
+<A
+HREF="r13889.htm"
+><CODE
+CLASS="FUNCTION"
+>mmap()</CODE
+></A
+> function.</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>length</CODE
+></DT
+><DD
+><P
+>Length of the mapped buffer. This must be the same
+value as given to <CODE
+CLASS="FUNCTION"
+>mmap()</CODE
+> and returned by the
+driver in the struct&nbsp;<A
+HREF="x5953.htm#V4L2-BUFFER"
+>v4l2_buffer</A
+> <CODE
+CLASS="STRUCTFIELD"
+>length</CODE
+>
+field.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN14072"
+></A
+><H2
+>Description</H2
+><P
+>Unmaps a previously with the <A
+HREF="r13889.htm"
+><CODE
+CLASS="FUNCTION"
+>mmap()</CODE
+></A
+> function mapped
+buffer and frees it, if possible. </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN14077"
+></A
+><H2
+>Return Value</H2
+><P
+>On success <CODE
+CLASS="FUNCTION"
+>munmap()</CODE
+> returns 0, on
+failure -1 and the <CODE
+CLASS="VARNAME"
+>errno</CODE
+> variable is set
+appropriately:</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+></DT
+><DD
+><P
+>The <CODE
+CLASS="PARAMETER"
+>start</CODE
+> or
+<CODE
+CLASS="PARAMETER"
+>length</CODE
+> is incorrect, or no buffers have been
+mapped yet.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="r13889.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="r14090.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>V4L2 mmap()</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="r7624.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>V4L2 open()</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

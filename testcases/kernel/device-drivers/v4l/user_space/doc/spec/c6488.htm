@@ -1,0 +1,501 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Interfaces</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="PREVIOUS"
+TITLE="Field Order"
+HREF="x6386.htm"><LINK
+REL="NEXT"
+TITLE="Video Overlay Interface"
+HREF="x6570.htm"></HEAD
+><BODY
+CLASS="CHAPTER"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x6386.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x6570.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="DEVICES"
+></A
+>Chapter 4. Interfaces</H1
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Table of Contents</B
+></DT
+><DT
+>4.1. <A
+HREF="c6488.htm#CAPTURE"
+>Video Capture Interface</A
+></DT
+><DT
+>4.2. <A
+HREF="x6570.htm"
+>Video Overlay Interface</A
+></DT
+><DT
+>4.3. <A
+HREF="x6831.htm"
+>Video Output Interface</A
+></DT
+><DT
+>4.4. <A
+HREF="x6909.htm"
+>Video Output Overlay Interface</A
+></DT
+><DT
+>4.5. <A
+HREF="x6991.htm"
+>Codec Interface</A
+></DT
+><DT
+>4.6. <A
+HREF="x7002.htm"
+>Effect Devices Interface</A
+></DT
+><DT
+>4.7. <A
+HREF="x7013.htm"
+>Raw VBI Data Interface</A
+></DT
+><DT
+>4.8. <A
+HREF="x7236.htm"
+>Sliced VBI Data Interface</A
+></DT
+><DT
+>4.9. <A
+HREF="x7561.htm"
+>Teletext Interface</A
+></DT
+><DT
+>4.10. <A
+HREF="x7578.htm"
+>Radio Interface</A
+></DT
+><DT
+>4.11. <A
+HREF="x7607.htm"
+>RDS Interface</A
+></DT
+></DL
+></DIV
+><DIV
+CLASS="SECTION"
+><H1
+CLASS="SECTION"
+><A
+NAME="CAPTURE"
+>4.1. Video Capture Interface</A
+></H1
+><P
+>Video capture devices sample an analog video signal and store
+the digitized images in memory. Today nearly all devices can capture
+at full 25 or 30 frames/second. With this interface applications can
+control the capture process and move images from the driver into user
+space.</P
+><P
+>Conventionally V4L2 video capture devices are accessed through
+character device special files named <TT
+CLASS="FILENAME"
+>/dev/video</TT
+>
+and <TT
+CLASS="FILENAME"
+>/dev/video0</TT
+> to
+<TT
+CLASS="FILENAME"
+>/dev/video63</TT
+> with major number 81 and minor
+numbers 0 to 63. <TT
+CLASS="FILENAME"
+>/dev/video</TT
+> is typically a
+symbolic link to the preferred video device. Note the same device
+files are used for video output devices.</P
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN6498"
+>4.1.1. Querying Capabilities</A
+></H2
+><P
+>Devices supporting the video capture interface set the
+<CODE
+CLASS="CONSTANT"
+>V4L2_CAP_VIDEO_CAPTURE</CODE
+> flag in the
+<CODE
+CLASS="STRUCTFIELD"
+>capabilities</CODE
+> field of struct&nbsp;<A
+HREF="r13105.htm#V4L2-CAPABILITY"
+>v4l2_capability</A
+>
+returned by the <A
+HREF="r13105.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_QUERYCAP</CODE
+></A
+> ioctl. As secondary device functions
+they may also support the <A
+HREF="x6570.htm"
+>video overlay</A
+>
+(<CODE
+CLASS="CONSTANT"
+>V4L2_CAP_VIDEO_OVERLAY</CODE
+>) and the <A
+HREF="x7013.htm"
+>raw VBI capture</A
+>
+(<CODE
+CLASS="CONSTANT"
+>V4L2_CAP_VBI_CAPTURE</CODE
+>) interface. At least one of
+the read/write or streaming I/O methods must be supported. Tuners and
+audio inputs are optional.</P
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN6510"
+>4.1.2. Supplemental Functions</A
+></H2
+><P
+>Video capture devices shall support <A
+HREF="x341.htm"
+>audio input</A
+>, <A
+HREF="x394.htm"
+>tuner</A
+>, <A
+HREF="x542.htm"
+>controls</A
+>,
+<A
+HREF="x1904.htm"
+>cropping and scaling</A
+> and <A
+HREF="x2009.htm"
+>streaming parameter</A
+> ioctls as needed.
+The <A
+HREF="x309.htm"
+>video input</A
+> and <A
+HREF="x448.htm"
+>video standard</A
+> ioctls must be supported by
+all video capture devices.</P
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN6520"
+>4.1.3. Image Format Negotiation</A
+></H2
+><P
+>The result of a capture operation is determined by
+cropping and image format parameters. The former select an area of the
+video picture to capture, the latter how images are stored in memory,
+i.&nbsp;e. in RGB or YUV format, the number of bits per pixel or width and
+height. Together they also define how images are scaled in the
+process.</P
+><P
+>As usual these parameters are <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>not</I
+></SPAN
+> reset
+at <A
+HREF="r14090.htm"
+><CODE
+CLASS="FUNCTION"
+>open()</CODE
+></A
+> time to permit Unix tool chains, programming a device
+and then reading from it as if it was a plain file. Well written V4L2
+applications ensure they really get what they want, including cropping
+and scaling.</P
+><P
+>Cropping initialization at minimum requires to reset the
+parameters to defaults. An example is given in <A
+HREF="x1904.htm"
+>Section 1.11</A
+>.</P
+><P
+>To query the current image format applications set the
+<CODE
+CLASS="STRUCTFIELD"
+>type</CODE
+> field of a struct&nbsp;<A
+HREF="r10944.htm#V4L2-FORMAT"
+>v4l2_format</A
+> to
+<CODE
+CLASS="CONSTANT"
+>V4L2_BUF_TYPE_VIDEO_CAPTURE</CODE
+> and call the
+<A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_G_FMT</CODE
+></A
+> ioctl with a pointer to this structure. Drivers fill
+the struct&nbsp;<A
+HREF="c2030.htm#V4L2-PIX-FORMAT"
+>v4l2_pix_format</A
+> <CODE
+CLASS="STRUCTFIELD"
+>pix</CODE
+> member of the
+<CODE
+CLASS="STRUCTFIELD"
+>fmt</CODE
+> union.</P
+><P
+>To request different parameters applications set the
+<CODE
+CLASS="STRUCTFIELD"
+>type</CODE
+> field of a struct&nbsp;<A
+HREF="r10944.htm#V4L2-FORMAT"
+>v4l2_format</A
+> as above and
+initialize all fields of the struct&nbsp;<A
+HREF="c2030.htm#V4L2-PIX-FORMAT"
+>v4l2_pix_format</A
+>
+<CODE
+CLASS="STRUCTFIELD"
+>vbi</CODE
+> member of the
+<CODE
+CLASS="STRUCTFIELD"
+>fmt</CODE
+> union, or better just modify the
+results of <CODE
+CLASS="CONSTANT"
+>VIDIOC_G_FMT</CODE
+>, and call the
+<A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+></A
+> ioctl with a pointer to this structure. Drivers may
+adjust the parameters and finally return the actual parameters as
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_G_FMT</CODE
+> does.</P
+><P
+>Like <CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+> the
+<A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_TRY_FMT</CODE
+></A
+> ioctl can be used to learn about hardware limitations
+without disabling I/O or possibly time consuming hardware
+preparations.</P
+><P
+>The contents of struct&nbsp;<A
+HREF="c2030.htm#V4L2-PIX-FORMAT"
+>v4l2_pix_format</A
+> are discussed in <A
+HREF="c2030.htm"
+>Chapter 2</A
+>. See also the specification of the
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_G_FMT</CODE
+>, <CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+>
+and <CODE
+CLASS="CONSTANT"
+>VIDIOC_TRY_FMT</CODE
+> ioctls for details. Video
+capture devices must implement both the
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_G_FMT</CODE
+> and
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+> ioctl, even if
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+> ignores all requests and always
+returns default parameters as <CODE
+CLASS="CONSTANT"
+>VIDIOC_G_FMT</CODE
+> does.
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_TRY_FMT</CODE
+> is optional.</P
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN6563"
+>4.1.4. Reading Images</A
+></H2
+><P
+>A video capture device may support the <A
+HREF="c5742.htm#RW"
+>read() function</A
+> and/or streaming (<A
+HREF="x5791.htm"
+>memory mapping</A
+> or <A
+HREF="x5884.htm"
+>user pointer</A
+>) I/O. See <A
+HREF="c5742.htm"
+>Chapter 3</A
+> for details.</P
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x6386.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x6570.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Field Order</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Video Overlay Interface</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

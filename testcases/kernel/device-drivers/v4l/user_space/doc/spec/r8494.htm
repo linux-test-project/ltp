@@ -1,0 +1,781 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ioctl VIDIOC_ENUM_FRAMESIZES</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Function Reference"
+HREF="r7624.htm"><LINK
+REL="PREVIOUS"
+TITLE="ioctl VIDIOC_ENUM_FMT"
+HREF="r8367.htm"><LINK
+REL="NEXT"
+TITLE="ioctl VIDIOC_ENUM_FRAMEINTERVALS"
+HREF="r8724.htm"></HEAD
+><BODY
+CLASS="REFENTRY"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="r8367.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="r8724.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="VIDIOC-ENUM-FRAMESIZES"
+></A
+>ioctl VIDIOC_ENUM_FRAMESIZES</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN8498"
+></A
+><H2
+>Name</H2
+>VIDIOC_ENUM_FRAMESIZES&nbsp;--&nbsp;Enumerate frame sizes</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN8501"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN8502"
+></A
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>int ioctl</CODE
+>(int fd, int request, struct v4l2_frmsizeenum *argp);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN8512"
+></A
+><H2
+>Arguments</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><CODE
+CLASS="PARAMETER"
+>fd</CODE
+></DT
+><DD
+><P
+>File descriptor returned by <A
+HREF="r14090.htm"
+><CODE
+CLASS="FUNCTION"
+>open()</CODE
+></A
+>.</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>request</CODE
+></DT
+><DD
+><P
+>VIDIOC_ENUM_FRAMESIZES</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>argp</CODE
+></DT
+><DD
+><P
+>Pointer to a struct&nbsp;<A
+HREF="r8494.htm#V4L2-FRMSIZEENUM"
+>v4l2_frmsizeenum</A
+> that contains an index
+and pixel format and receives a frame width and height.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN8533"
+></A
+><H2
+>Description</H2
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>Experimental: </B
+>This is an <A
+HREF="x16453.htm"
+>experimental</A
+>
+interface and may change in the future.</P
+></BLOCKQUOTE
+></DIV
+><P
+>This ioctl allows applications to enumerate all frame sizes
+(i.&nbsp;e. width and height in pixels) that the device supports for the
+given pixel format.</P
+><P
+>The supported pixel formats can be obtained by using the
+<A
+HREF="r8367.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_ENUM_FMT</CODE
+></A
+> function.</P
+><P
+>The return value and the content of the
+<CODE
+CLASS="STRUCTFIELD"
+>v4l2_frmsizeenum.type</CODE
+> field depend on the
+type of frame sizes the device supports. Here are the semantics of the
+function for the different cases:</P
+><P
+></P
+><UL
+><LI
+><P
+><SPAN
+CLASS="bold"
+><B
+CLASS="EMPHASIS"
+>Discrete:</B
+></SPAN
+> The function
+returns success if the given index value (zero-based) is valid. The
+application should increase the index by one for each call until
+<CODE
+CLASS="CONSTANT"
+>EINVAL</CODE
+> is returned. The
+<CODE
+CLASS="STRUCTFIELD"
+>v4l2_frmsizeenum.type</CODE
+> field is set to
+<CODE
+CLASS="CONSTANT"
+>V4L2_FRMSIZE_TYPE_DISCRETE</CODE
+> by the driver. Of the
+union only the <CODE
+CLASS="STRUCTFIELD"
+>discrete</CODE
+> member is
+valid.</P
+></LI
+><LI
+><P
+><SPAN
+CLASS="bold"
+><B
+CLASS="EMPHASIS"
+>Step-wise:</B
+></SPAN
+> The function
+returns success if the given index value is zero and
+<CODE
+CLASS="CONSTANT"
+>EINVAL</CODE
+> for any other index value. The
+<CODE
+CLASS="STRUCTFIELD"
+>v4l2_frmsizeenum.type</CODE
+> field is set to
+<CODE
+CLASS="CONSTANT"
+>V4L2_FRMSIZE_TYPE_STEPWISE</CODE
+> by the driver. Of the
+union only the <CODE
+CLASS="STRUCTFIELD"
+>stepwise</CODE
+> member is
+valid.</P
+></LI
+><LI
+><P
+><SPAN
+CLASS="bold"
+><B
+CLASS="EMPHASIS"
+>Continuous:</B
+></SPAN
+> This is a
+special case of the step-wise type above. The function returns success
+if the given index value is zero and <CODE
+CLASS="CONSTANT"
+>EINVAL</CODE
+> for
+any other index value. The
+<CODE
+CLASS="STRUCTFIELD"
+>v4l2_frmsizeenum.type</CODE
+> field is set to
+<CODE
+CLASS="CONSTANT"
+>V4L2_FRMSIZE_TYPE_CONTINUOUS</CODE
+> by the driver. Of
+the union only the <CODE
+CLASS="STRUCTFIELD"
+>stepwise</CODE
+> member is valid
+and the <CODE
+CLASS="STRUCTFIELD"
+>step_width</CODE
+> and
+<CODE
+CLASS="STRUCTFIELD"
+>step_height</CODE
+> values are set to 1.</P
+></LI
+></UL
+><P
+>When the application calls the function with index zero, it
+must check the <CODE
+CLASS="STRUCTFIELD"
+>type</CODE
+> field to determine the
+type of frame size enumeration the device supports. Only for the
+<CODE
+CLASS="CONSTANT"
+>V4L2_FRMSIZE_TYPE_DISCRETE</CODE
+> type does it make
+sense to increase the index value to receive more frame sizes.</P
+><P
+>Note that the order in which the frame sizes are returned
+has no special meaning. In particular does it not say anything about
+potential default format sizes.</P
+><P
+>Applications can assume that the enumeration data does not
+change without any interaction from the application itself. This means
+that the enumeration data is consistent if the application does not
+perform any other ioctl calls while it runs the frame size
+enumeration.</P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN8574"
+></A
+><H2
+>Structs</H2
+><P
+>In the structs below, <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>IN</I
+></SPAN
+> denotes a
+value that has to be filled in by the application,
+<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>OUT</I
+></SPAN
+> denotes values that the driver fills in. The
+application should zero out all members except for the
+<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>IN</I
+></SPAN
+> fields.</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-FRMSIZE-DISCRETE"
+></A
+><P
+><B
+>Table 1. struct <CODE
+CLASS="STRUCTNAME"
+>v4l2_frmsize_discrete</CODE
+></B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="25%"
+TITLE="C1"><COL
+WIDTH="25%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>width</CODE
+></TD
+><TD
+>Width of the frame [pixel].</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>height</CODE
+></TD
+><TD
+>Height of the frame [pixel].</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-FRMSIZE-STEPWISE"
+></A
+><P
+><B
+>Table 2. struct <CODE
+CLASS="STRUCTNAME"
+>v4l2_frmsize_stepwise</CODE
+></B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="25%"
+TITLE="C1"><COL
+WIDTH="25%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>min_width</CODE
+></TD
+><TD
+>Minimum frame width [pixel].</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>max_width</CODE
+></TD
+><TD
+>Maximum frame width [pixel].</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>step_width</CODE
+></TD
+><TD
+>Frame width step size [pixel].</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>min_height</CODE
+></TD
+><TD
+>Minimum frame height [pixel].</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>max_height</CODE
+></TD
+><TD
+>Maximum frame height [pixel].</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>step_height</CODE
+></TD
+><TD
+>Frame height step size [pixel].</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-FRMSIZEENUM"
+></A
+><P
+><B
+>Table 3. struct <CODE
+CLASS="STRUCTNAME"
+>v4l2_frmsizeenum</CODE
+></B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="25%"
+TITLE="C1"><COL
+WIDTH="25%"
+TITLE="C2"><COL
+WIDTH="25%"
+TITLE="C3"><COL
+WIDTH="25%"
+TITLE="C4"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>index</CODE
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>IN: Index of the given frame size in the enumeration.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>pixel_format</CODE
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>IN: Pixel format for which the frame sizes are enumerated.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>type</CODE
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>OUT: Frame size type the device supports.</TD
+></TR
+><TR
+><TD
+>union</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>OUT: Frame size with the given index.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>struct&nbsp;<A
+HREF="r8494.htm#V4L2-FRMSIZE-DISCRETE"
+>v4l2_frmsize_discrete</A
+></TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>discrete</CODE
+></TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>struct&nbsp;<A
+HREF="r8494.htm#V4L2-FRMSIZE-STEPWISE"
+>v4l2_frmsize_stepwise</A
+></TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>stepwise</CODE
+></TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>reserved[2]</CODE
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>Reserved space for future use.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN8690"
+></A
+><H2
+>Enums</H2
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-FRMSIZETYPES"
+></A
+><P
+><B
+>Table 4. enum <CODE
+CLASS="STRUCTNAME"
+>v4l2_frmsizetypes</CODE
+></B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="38%"
+TITLE="C1"><COL
+WIDTH="12%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_FRMSIZE_TYPE_DISCRETE</CODE
+></TD
+><TD
+>1</TD
+><TD
+>Discrete frame size.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_FRMSIZE_TYPE_CONTINUOUS</CODE
+></TD
+><TD
+>2</TD
+><TD
+>Continuous frame size.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_FRMSIZE_TYPE_STEPWISE</CODE
+></TD
+><TD
+>3</TD
+><TD
+>Step-wise defined frame size.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN8716"
+></A
+><H2
+>Return Value</H2
+><P
+>On success <SPAN
+CLASS="RETURNVALUE"
+>0</SPAN
+> is returned, on error <SPAN
+CLASS="RETURNVALUE"
+>-1</SPAN
+> and the <CODE
+CLASS="VARNAME"
+>errno</CODE
+> variable is set appropriately:</P
+><P
+>See the description section above for a list of return
+values that <CODE
+CLASS="VARNAME"
+>errno</CODE
+> can have.</P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="r8367.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="r8724.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ioctl VIDIOC_ENUM_FMT</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="r7624.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>ioctl VIDIOC_ENUM_FRAMEINTERVALS</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,1077 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ioctl VIDIOC_QUERYCTRL, VIDIOC_QUERYMENU</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Function Reference"
+HREF="r7624.htm"><LINK
+REL="PREVIOUS"
+TITLE="ioctl VIDIOC_QUERYCAP"
+HREF="r13105.htm"><LINK
+REL="NEXT"
+TITLE="ioctl VIDIOC_QUERYSTD"
+HREF="r13641.htm"></HEAD
+><BODY
+CLASS="REFENTRY"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="r13105.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="r13641.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="VIDIOC-QUERYCTRL"
+></A
+>ioctl VIDIOC_QUERYCTRL, VIDIOC_QUERYMENU</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN13321"
+></A
+><H2
+>Name</H2
+>VIDIOC_QUERYCTRL, VIDIOC_QUERYMENU&nbsp;--&nbsp;Enumerate controls and menu control items</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN13325"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN13326"
+></A
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>int ioctl</CODE
+>(int fd, int request, struct v4l2_queryctrl *argp);</CODE
+></P
+><P
+></P
+></DIV
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN13336"
+></A
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>int ioctl</CODE
+>(int fd, int request, struct v4l2_querymenu *argp);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN13346"
+></A
+><H2
+>Arguments</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><CODE
+CLASS="PARAMETER"
+>fd</CODE
+></DT
+><DD
+><P
+>File descriptor returned by <A
+HREF="r14090.htm"
+><CODE
+CLASS="FUNCTION"
+>open()</CODE
+></A
+>.</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>request</CODE
+></DT
+><DD
+><P
+>VIDIOC_QUERYCTRL, VIDIOC_QUERYMENU</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>argp</CODE
+></DT
+><DD
+><P
+></P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN13366"
+></A
+><H2
+>Description</H2
+><P
+>To query the attributes of a control applications set the
+<CODE
+CLASS="STRUCTFIELD"
+>id</CODE
+> field of a struct&nbsp;<A
+HREF="r13317.htm#V4L2-QUERYCTRL"
+>v4l2_queryctrl</A
+> and call the
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_QUERYCTRL</CODE
+> ioctl with a pointer to this
+structure. The driver fills the rest of the structure or returns an
+<SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+> error code when the <CODE
+CLASS="STRUCTFIELD"
+>id</CODE
+> is invalid.</P
+><P
+>It is possible to enumerate controls by calling
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_QUERYCTRL</CODE
+> with successive
+<CODE
+CLASS="STRUCTFIELD"
+>id</CODE
+> values starting from
+<CODE
+CLASS="CONSTANT"
+>V4L2_CID_BASE</CODE
+> up to and exclusive
+<CODE
+CLASS="CONSTANT"
+>V4L2_CID_BASE_LASTP1</CODE
+>. Drivers may return
+<SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+> if a control in this range is not
+supported. Further applications can enumerate private controls, which
+are not defined in this specification, by starting at
+<CODE
+CLASS="CONSTANT"
+>V4L2_CID_PRIVATE_BASE</CODE
+> and incrementing
+<CODE
+CLASS="STRUCTFIELD"
+>id</CODE
+> until the driver returns
+<SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+>.</P
+><P
+>In both cases, when the driver sets the
+<CODE
+CLASS="CONSTANT"
+>V4L2_CTRL_FLAG_DISABLED</CODE
+> flag in the
+<CODE
+CLASS="STRUCTFIELD"
+>flags</CODE
+> field this control is permanently
+disabled and should be ignored by the application.<A
+NAME="AEN13386"
+HREF="r13317.htm#FTN.AEN13386"
+><SPAN
+CLASS="footnote"
+>[1]</SPAN
+></A
+></P
+><P
+>When the application ORs <CODE
+CLASS="STRUCTFIELD"
+>id</CODE
+> with
+<CODE
+CLASS="CONSTANT"
+>V4L2_CTRL_FLAG_NEXT_CTRL</CODE
+> the driver returns the
+next supported control, or <SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+> if there is
+none. Drivers which do not support this flag yet always return
+<SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+>.</P
+><P
+>Additional information is required for menu controls, the
+name of menu items. To query them applications set the
+<CODE
+CLASS="STRUCTFIELD"
+>id</CODE
+> and <CODE
+CLASS="STRUCTFIELD"
+>index</CODE
+>
+fields of struct&nbsp;<A
+HREF="r13317.htm#V4L2-QUERYMENU"
+>v4l2_querymenu</A
+> and call the
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_QUERYMENU</CODE
+> ioctl with a pointer to this
+structure. The driver fills the rest of the structure or returns an
+<SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+> error code when the <CODE
+CLASS="STRUCTFIELD"
+>id</CODE
+> or
+<CODE
+CLASS="STRUCTFIELD"
+>index</CODE
+> is invalid. Menu items are enumerated
+by calling <CODE
+CLASS="CONSTANT"
+>VIDIOC_QUERYMENU</CODE
+> with successive
+<CODE
+CLASS="STRUCTFIELD"
+>index</CODE
+> values from struct&nbsp;<A
+HREF="r13317.htm#V4L2-QUERYCTRL"
+>v4l2_queryctrl</A
+>
+<CODE
+CLASS="STRUCTFIELD"
+>minimum</CODE
+> (0) to
+<CODE
+CLASS="STRUCTFIELD"
+>maximum</CODE
+>, inclusive.</P
+><P
+>See also the examples in <A
+HREF="x542.htm"
+>Section 1.8</A
+>.</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-QUERYCTRL"
+></A
+><P
+><B
+>Table 1. struct <CODE
+CLASS="STRUCTNAME"
+>v4l2_queryctrl</CODE
+></B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="25%"
+TITLE="C1"><COL
+WIDTH="25%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>id</CODE
+></TD
+><TD
+>Identifies the control, set by the application. See
+<A
+HREF="x542.htm#CONTROL-ID"
+>Table 1-1</A
+> for predefined IDs. When the ID is ORed
+with V4L2_CTRL_FLAG_NEXT_CTRL the driver clears the flag and returns
+the first control with a higher ID. Drivers which do not support this
+flag yet always return an <SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+> error code.</TD
+></TR
+><TR
+><TD
+>enum&nbsp;<A
+HREF="r13317.htm#V4L2-CTRL-TYPE"
+>v4l2_ctrl_type</A
+></TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>type</CODE
+></TD
+><TD
+>Type of control, see <A
+HREF="r13317.htm#V4L2-CTRL-TYPE"
+>Table 3</A
+>.</TD
+></TR
+><TR
+><TD
+>__u8</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>name</CODE
+>[32]</TD
+><TD
+>Name of the control, a NUL-terminated ASCII
+string. This information is intended for the user.</TD
+></TR
+><TR
+><TD
+>__s32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>minimum</CODE
+></TD
+><TD
+>Minimum value, inclusive. This field gives a lower
+bound for <CODE
+CLASS="CONSTANT"
+>V4L2_CTRL_TYPE_INTEGER</CODE
+> controls. It may
+not be valid for any other type of control, including
+<CODE
+CLASS="CONSTANT"
+>V4L2_CTRL_TYPE_INTEGER64</CODE
+> controls. Note this is a
+signed value.</TD
+></TR
+><TR
+><TD
+>__s32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>maximum</CODE
+></TD
+><TD
+>Maximum value, inclusive. This field gives an upper
+bound for <CODE
+CLASS="CONSTANT"
+>V4L2_CTRL_TYPE_INTEGER</CODE
+> controls and the
+highest valid index for <CODE
+CLASS="CONSTANT"
+>V4L2_CTRL_TYPE_MENU</CODE
+>
+controls. It may not be valid for any other type of control, including
+<CODE
+CLASS="CONSTANT"
+>V4L2_CTRL_TYPE_INTEGER64</CODE
+> controls. Note this is a
+signed value.</TD
+></TR
+><TR
+><TD
+>__s32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>step</CODE
+></TD
+><TD
+><P
+>This field gives a step size for
+<CODE
+CLASS="CONSTANT"
+>V4L2_CTRL_TYPE_INTEGER</CODE
+> controls. It may not be
+valid for any other type of control, including
+<CODE
+CLASS="CONSTANT"
+>V4L2_CTRL_TYPE_INTEGER64</CODE
+>
+controls.</P
+><P
+>Generally drivers should not scale hardware
+control values. It may be necessary for example when the
+<CODE
+CLASS="STRUCTFIELD"
+>name</CODE
+> or <CODE
+CLASS="STRUCTFIELD"
+>id</CODE
+> imply
+a particular unit and the hardware actually accepts only multiples of
+said unit. If so, drivers must take care values are properly rounded
+when scaling, such that errors will not accumulate on repeated
+read-write cycles.</P
+><P
+>This field gives the smallest change of
+an integer control actually affecting hardware. Often the information
+is needed when the user can change controls by keyboard or GUI
+buttons, rather than a slider. When for example a hardware register
+accepts values 0-511 and the driver reports 0-65535, step should be
+128.</P
+><P
+>Note although signed, the step value is supposed to
+be always positive.</P
+></TD
+></TR
+><TR
+><TD
+>__s32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>default_value</CODE
+></TD
+><TD
+>The default value of a
+<CODE
+CLASS="CONSTANT"
+>V4L2_CTRL_TYPE_INTEGER</CODE
+>,
+<CODE
+CLASS="CONSTANT"
+>_BOOLEAN</CODE
+> or <CODE
+CLASS="CONSTANT"
+>_MENU</CODE
+> control.
+Not valid for other types of controls. Drivers reset controls only
+when the driver is loaded, not later, in particular not when the
+func-open; is called.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>flags</CODE
+></TD
+><TD
+>Control flags, see <A
+HREF="r13317.htm#CONTROL-FLAGS"
+>Table 4</A
+>.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>reserved</CODE
+>[2]</TD
+><TD
+>Reserved for future extensions. Drivers must set
+the array to zero.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-QUERYMENU"
+></A
+><P
+><B
+>Table 2. struct <CODE
+CLASS="STRUCTNAME"
+>v4l2_querymenu</CODE
+></B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="25%"
+TITLE="C1"><COL
+WIDTH="25%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>id</CODE
+></TD
+><TD
+>Identifies the control, set by the application
+from the respective struct&nbsp;<A
+HREF="r13317.htm#V4L2-QUERYCTRL"
+>v4l2_queryctrl</A
+>
+<CODE
+CLASS="STRUCTFIELD"
+>id</CODE
+>.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>index</CODE
+></TD
+><TD
+>Index of the menu item, starting at zero, set by
+            the application.</TD
+></TR
+><TR
+><TD
+>__u8</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>name</CODE
+>[32]</TD
+><TD
+>Name of the menu item, a NUL-terminated ASCII
+string. This information is intended for the user.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>reserved</CODE
+></TD
+><TD
+>Reserved for future extensions. Drivers must set
+the array to zero.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-CTRL-TYPE"
+></A
+><P
+><B
+>Table 3. enum v4l2_ctrl_type</B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="30%"><COL
+WIDTH="5%"
+ALIGN="CENTER"><COL
+WIDTH="5%"
+ALIGN="CENTER"><COL
+WIDTH="5%"
+ALIGN="CENTER"><COL
+WIDTH="55%"><THEAD
+><TR
+><TH
+>Type</TH
+><TH
+><CODE
+CLASS="STRUCTFIELD"
+>minimum</CODE
+></TH
+><TH
+><CODE
+CLASS="STRUCTFIELD"
+>step</CODE
+></TH
+><TH
+><CODE
+CLASS="STRUCTFIELD"
+>maximum</CODE
+></TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_CTRL_TYPE_INTEGER</CODE
+></TD
+><TD
+>any</TD
+><TD
+>any</TD
+><TD
+>any</TD
+><TD
+>An integer-valued control ranging from minimum to
+maximum inclusive. The step value indicates the increment between
+values which are actually different on the hardware.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_CTRL_TYPE_BOOLEAN</CODE
+></TD
+><TD
+>0</TD
+><TD
+>1</TD
+><TD
+>1</TD
+><TD
+>A boolean-valued control. Zero corresponds to
+"disabled", and one means "enabled".</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_CTRL_TYPE_MENU</CODE
+></TD
+><TD
+>0</TD
+><TD
+>1</TD
+><TD
+>N-1</TD
+><TD
+>The control has a menu of N choices. The names of
+the menu items can be enumerated with the
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_QUERYMENU</CODE
+> ioctl.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_CTRL_TYPE_BUTTON</CODE
+></TD
+><TD
+>0</TD
+><TD
+>0</TD
+><TD
+>0</TD
+><TD
+>A control which performs an action when set.
+Drivers must ignore the value passed with
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_S_CTRL</CODE
+> and return an <SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+> error code on a
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_G_CTRL</CODE
+> attempt.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_CTRL_TYPE_INTEGER64</CODE
+></TD
+><TD
+>n/a</TD
+><TD
+>n/a</TD
+><TD
+>n/a</TD
+><TD
+>A 64-bit integer valued control. Minimum, maximum
+and step size cannot be queried.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_CTRL_TYPE_CTRL_CLASS</CODE
+></TD
+><TD
+>n/a</TD
+><TD
+>n/a</TD
+><TD
+>n/a</TD
+><TD
+>This is not a control. When
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_QUERYCTRL</CODE
+> is called with a control ID
+equal to a control class code (see <A
+HREF="r10386.htm#CTRL-CLASS"
+>Table 3</A
+>), the
+ioctl returns the name of the control class and this control type.
+Older drivers which do not support this feature return an
+<SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+> error code.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="CONTROL-FLAGS"
+></A
+><P
+><B
+>Table 4. Control Flags</B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="38%"
+TITLE="C1"><COL
+WIDTH="12%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_CTRL_FLAG_DISABLED</CODE
+></TD
+><TD
+>0x0001</TD
+><TD
+>This control is permanently disabled and should be
+ignored by the application. Any attempt to change the control will
+result in an <SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+> error code.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_CTRL_FLAG_GRABBED</CODE
+></TD
+><TD
+>0x0002</TD
+><TD
+>This control is temporarily unchangeable, for
+example because another application took over control of the
+respective resource. Such controls may be displayed specially in a
+user interface. Attempts to change the control may result in an
+<SPAN
+CLASS="ERRORCODE"
+>EBUSY</SPAN
+> error code.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_CTRL_FLAG_READ_ONLY</CODE
+></TD
+><TD
+>0x0004</TD
+><TD
+>This control is permanently readable only. Any
+attempt to change the control will result in an <SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+> error code.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_CTRL_FLAG_UPDATE</CODE
+></TD
+><TD
+>0x0008</TD
+><TD
+>A hint that changing this control may affect the
+value of other controls within the same control class. Applications
+should update their user interface accordingly.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_CTRL_FLAG_INACTIVE</CODE
+></TD
+><TD
+>0x0010</TD
+><TD
+>This control is not applicable to the current
+configuration and should be displayed accordingly in a user interface.
+For example the flag may be set on a MPEG audio level 2 bitrate
+control when MPEG audio encoding level 1 was selected with another
+control.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_CTRL_FLAG_SLIDER</CODE
+></TD
+><TD
+>0x0020</TD
+><TD
+>A hint that this control is best represented as a
+slider-like element in a user interface.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN13624"
+></A
+><H2
+>Return Value</H2
+><P
+>On success <SPAN
+CLASS="RETURNVALUE"
+>0</SPAN
+> is returned, on error <SPAN
+CLASS="RETURNVALUE"
+>-1</SPAN
+> and the <CODE
+CLASS="VARNAME"
+>errno</CODE
+> variable is set appropriately:</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+></DT
+><DD
+><P
+>The struct&nbsp;<A
+HREF="r13317.htm#V4L2-QUERYCTRL"
+>v4l2_queryctrl</A
+> <CODE
+CLASS="STRUCTFIELD"
+>id</CODE
+>
+is invalid. The struct&nbsp;<A
+HREF="r13317.htm#V4L2-QUERYMENU"
+>v4l2_querymenu</A
+> <CODE
+CLASS="STRUCTFIELD"
+>id</CODE
+> or
+<CODE
+CLASS="STRUCTFIELD"
+>index</CODE
+> is invalid.</P
+></DD
+></DL
+></DIV
+></DIV
+><H2
+CLASS="FOOTNOTES"
+>Notes</H2
+><TABLE
+BORDER="0"
+CLASS="FOOTNOTES"
+WIDTH="100%"
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="5%"
+><A
+NAME="FTN.AEN13386"
+HREF="r13317.htm#AEN13386"
+><SPAN
+CLASS="footnote"
+>[1]</SPAN
+></A
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="95%"
+><P
+><CODE
+CLASS="CONSTANT"
+>V4L2_CTRL_FLAG_DISABLED</CODE
+> was
+intended for two purposes: Drivers can skip predefined controls not
+supported by the hardware (although returning EINVAL would do as
+well), or disable predefined and private controls after hardware
+detection without the trouble of reordering control arrays and indices
+(EINVAL cannot be used to skip private controls because it would
+prematurely end the enumeration).</P
+></TD
+></TR
+></TABLE
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="r13105.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="r13641.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ioctl VIDIOC_QUERYCAP</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="r7624.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>ioctl VIDIOC_QUERYSTD</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

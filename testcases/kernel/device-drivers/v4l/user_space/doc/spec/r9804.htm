@@ -1,0 +1,687 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ioctl VIDIOC_G_CHIP_IDENT</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Function Reference"
+HREF="r7624.htm"><LINK
+REL="PREVIOUS"
+TITLE="ioctl VIDIOC_G_AUDOUT, VIDIOC_S_AUDOUT"
+HREF="r9688.htm"><LINK
+REL="NEXT"
+TITLE="ioctl VIDIOC_G_CROP, VIDIOC_S_CROP"
+HREF="r9994.htm"></HEAD
+><BODY
+CLASS="REFENTRY"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="r9688.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="r9994.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="VIDIOC-G-CHIP-IDENT"
+></A
+>ioctl VIDIOC_G_CHIP_IDENT</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN9808"
+></A
+><H2
+>Name</H2
+>VIDIOC_G_CHIP_IDENT&nbsp;--&nbsp;Identify the chips on a TV card</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN9811"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN9812"
+></A
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>int ioctl</CODE
+>(int fd, int request, struct v4l2_chip_ident
+*argp);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN9822"
+></A
+><H2
+>Arguments</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><CODE
+CLASS="PARAMETER"
+>fd</CODE
+></DT
+><DD
+><P
+>File descriptor returned by <A
+HREF="r14090.htm"
+><CODE
+CLASS="FUNCTION"
+>open()</CODE
+></A
+>.</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>request</CODE
+></DT
+><DD
+><P
+>VIDIOC_G_CHIP_IDENT</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>argp</CODE
+></DT
+><DD
+><P
+></P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN9842"
+></A
+><H2
+>Description</H2
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>Experimental: </B
+>This is an <A
+HREF="x16453.htm"
+>experimental</A
+> interface and may change in
+the future.</P
+></BLOCKQUOTE
+></DIV
+><P
+>For driver debugging purposes this ioctl allows test
+applications to query the driver about the chips present on the TV
+card. Regular applications should not use it. When you found a chip
+specific bug, please contact the Video4Linux mailing list (<A
+HREF="https://listman.redhat.com/mailman/listinfo/video4linux-list"
+TARGET="_top"
+>https://listman.redhat.com/mailman/listinfo/video4linux-list</A
+>)
+so it can be fixed.</P
+><P
+>To query the driver applications must initialize the
+<CODE
+CLASS="STRUCTFIELD"
+>match_type</CODE
+> and
+<CODE
+CLASS="STRUCTFIELD"
+>match_chip</CODE
+> fields of a struct&nbsp;<A
+HREF="r9804.htm#V4L2-CHIP-IDENT"
+>v4l2_chip_ident</A
+>
+and call <CODE
+CLASS="CONSTANT"
+>VIDIOC_G_CHIP_IDENT</CODE
+> with a pointer to
+this structure. On success the driver stores information about the
+selected chip in the <CODE
+CLASS="STRUCTFIELD"
+>ident</CODE
+> and
+<CODE
+CLASS="STRUCTFIELD"
+>revision</CODE
+> fields. On failure the structure
+remains unchanged.</P
+><P
+>When <CODE
+CLASS="STRUCTFIELD"
+>match_type</CODE
+> is
+<CODE
+CLASS="CONSTANT"
+>V4L2_CHIP_MATCH_HOST</CODE
+>,
+<CODE
+CLASS="STRUCTFIELD"
+>match_chip</CODE
+> selects the nth non-I<SUP
+>2</SUP
+>C chip
+on the TV card. You can enumerate all chips by starting at zero and
+incrementing <CODE
+CLASS="STRUCTFIELD"
+>match_chip</CODE
+> by one until
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_G_CHIP_IDENT</CODE
+> fails with an <SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+> error code.
+Drivers may also interpret <CODE
+CLASS="STRUCTFIELD"
+>match_chip</CODE
+> as a
+random ID, but we recommend against that. The number zero always
+selects the host chip, e.&nbsp;g. the chip connected to the PCI bus.</P
+><P
+>When <CODE
+CLASS="STRUCTFIELD"
+>match_type</CODE
+> is
+<CODE
+CLASS="CONSTANT"
+>V4L2_CHIP_MATCH_I2C_DRIVER</CODE
+>,
+<CODE
+CLASS="STRUCTFIELD"
+>match_chip</CODE
+> contains a driver ID as defined
+in the <TT
+CLASS="FILENAME"
+>linux/i2c-id.h</TT
+> header file. For instance
+<CODE
+CLASS="CONSTANT"
+>I2C_DRIVERID_SAA7127</CODE
+> will match any chip
+supported by the saa7127 driver, regardless of its I<SUP
+>2</SUP
+>C bus address.
+When multiple chips supported by the same driver are present, the
+ioctl will return <CODE
+CLASS="CONSTANT"
+>V4L2_IDENT_AMBIGUOUS</CODE
+> in the
+<CODE
+CLASS="STRUCTFIELD"
+>ident</CODE
+> field.</P
+><P
+>When <CODE
+CLASS="STRUCTFIELD"
+>match_type</CODE
+> is
+<CODE
+CLASS="CONSTANT"
+>V4L2_CHIP_MATCH_I2C_ADDR</CODE
+>,
+<CODE
+CLASS="STRUCTFIELD"
+>match_chip</CODE
+> selects a chip by its 7 bit
+I<SUP
+>2</SUP
+>C bus address.</P
+><P
+>On success, the <CODE
+CLASS="STRUCTFIELD"
+>ident</CODE
+> field will
+contain a chip ID from the Linux
+<TT
+CLASS="FILENAME"
+>media/v4l2-chip-ident.h</TT
+> header file, and the
+<CODE
+CLASS="STRUCTFIELD"
+>revision</CODE
+> field will contain a driver
+specific value, or zero if no particular revision is associated with
+this chip.</P
+><P
+>When the driver could not identify the selected chip,
+<CODE
+CLASS="STRUCTFIELD"
+>ident</CODE
+> will contain
+<CODE
+CLASS="CONSTANT"
+>V4L2_IDENT_UNKNOWN</CODE
+>. When no chip matched
+<CODE
+CLASS="STRUCTFIELD"
+>match_type</CODE
+> and
+<CODE
+CLASS="STRUCTFIELD"
+>match_chip</CODE
+>, the ioctl will succeed but the
+<CODE
+CLASS="STRUCTFIELD"
+>ident</CODE
+> field will contain
+<CODE
+CLASS="CONSTANT"
+>V4L2_IDENT_NONE</CODE
+>. If multiple chips matched,
+<CODE
+CLASS="STRUCTFIELD"
+>ident</CODE
+> will contain
+<CODE
+CLASS="CONSTANT"
+>V4L2_IDENT_AMBIGUOUS</CODE
+>. In all these cases the
+<CODE
+CLASS="STRUCTFIELD"
+>revision</CODE
+> field remains unchanged.</P
+><P
+>This ioctl is optional, not all drivers may support it. It
+was introduced in Linux 2.6.21.</P
+><P
+>We recommended the <SPAN
+CLASS="APPLICATION"
+>v4l2-dbg</SPAN
+>
+utility over calling this ioctl directly. It is available from the
+LinuxTV v4l-dvb repository; see <A
+HREF="http://linuxtv.org/repo/"
+TARGET="_top"
+>http://linuxtv.org/repo/</A
+> for
+access instructions.</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-CHIP-IDENT"
+></A
+><P
+><B
+>Table 1. struct <CODE
+CLASS="STRUCTNAME"
+>v4l2_chip_ident</CODE
+></B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="25%"
+TITLE="C1"><COL
+WIDTH="25%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>match_type</CODE
+></TD
+><TD
+>See <A
+HREF="r9804.htm#IDENT-CHIP-MATCH-TYPES"
+>Table 2</A
+> for a list of
+possible types.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>match_chip</CODE
+></TD
+><TD
+>Match a chip by this number, interpreted according
+to the <CODE
+CLASS="STRUCTFIELD"
+>match_type</CODE
+> field.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>ident</CODE
+></TD
+><TD
+>A chip identifier as defined in the Linux
+<TT
+CLASS="FILENAME"
+>media/v4l2-chip-ident.h</TT
+> header file, or one of
+the values from <A
+HREF="r9804.htm#CHIP-IDS"
+>Table 3</A
+>.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>revision</CODE
+></TD
+><TD
+>A chip revision, chip and driver specific.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="IDENT-CHIP-MATCH-TYPES"
+></A
+><P
+><B
+>Table 2. Chip Match Types</B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="38%"
+TITLE="C1"><COL
+WIDTH="12%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_CHIP_MATCH_HOST</CODE
+></TD
+><TD
+>0</TD
+><TD
+>Match the nth chip on the card, zero for the
+            host chip. Does not match I<SUP
+>2</SUP
+>C chips.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_CHIP_MATCH_I2C_DRIVER</CODE
+></TD
+><TD
+>1</TD
+><TD
+>Match an I<SUP
+>2</SUP
+>C chip by its driver ID from the
+<TT
+CLASS="FILENAME"
+>linux/i2c-id.h</TT
+> header file.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_CHIP_MATCH_I2C_ADDR</CODE
+></TD
+><TD
+>2</TD
+><TD
+>Match a chip by its 7 bit I<SUP
+>2</SUP
+>C bus address.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="CHIP-IDS"
+></A
+><P
+><B
+>Table 3. Chip Identifiers</B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="38%"
+TITLE="C1"><COL
+WIDTH="12%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_IDENT_NONE</CODE
+></TD
+><TD
+>0</TD
+><TD
+>No chip matched.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_IDENT_AMBIGUOUS</CODE
+></TD
+><TD
+>1</TD
+><TD
+>Multiple chips matched.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_IDENT_UNKNOWN</CODE
+></TD
+><TD
+>2</TD
+><TD
+>A chip is present at this address, but the driver
+could not identify it.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN9981"
+></A
+><H2
+>Return Value</H2
+><P
+>On success <SPAN
+CLASS="RETURNVALUE"
+>0</SPAN
+> is returned, on error <SPAN
+CLASS="RETURNVALUE"
+>-1</SPAN
+> and the <CODE
+CLASS="VARNAME"
+>errno</CODE
+> variable is set appropriately:</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+></DT
+><DD
+><P
+>The driver does not support this ioctl, or the
+<CODE
+CLASS="STRUCTFIELD"
+>match_type</CODE
+> is invalid.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="r9688.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="r9994.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ioctl VIDIOC_G_AUDOUT, VIDIOC_S_AUDOUT</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="r7624.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>ioctl VIDIOC_G_CROP, VIDIOC_S_CROP</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

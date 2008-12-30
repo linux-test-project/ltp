@@ -1,0 +1,977 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Colorspaces</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Image Formats"
+HREF="c2030.htm"><LINK
+REL="PREVIOUS"
+TITLE="Image Formats"
+HREF="c2030.htm"><LINK
+REL="NEXT"
+TITLE="Indexed Format"
+HREF="x2428.htm"></HEAD
+><BODY
+CLASS="SECTION"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="c2030.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 2. Image Formats</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x2428.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECTION"
+><H1
+CLASS="SECTION"
+><A
+NAME="COLORSPACES"
+>2.2. Colorspaces</A
+></H1
+><P
+>[intro]</P
+><P
+>      <P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Gamma Correction</DT
+><DD
+><P
+>[to do]</P
+><P
+>E'<SUB
+>R</SUB
+> = f(R)</P
+><P
+>E'<SUB
+>G</SUB
+> = f(G)</P
+><P
+>E'<SUB
+>B</SUB
+> = f(B)</P
+></DD
+><DT
+>Construction of luminance and color-difference
+signals</DT
+><DD
+><P
+>[to do]</P
+><P
+>E'<SUB
+>Y</SUB
+> =
+Coeff<SUB
+>R</SUB
+> E'<SUB
+>R</SUB
+>
++ Coeff<SUB
+>G</SUB
+> E'<SUB
+>G</SUB
+>
++ Coeff<SUB
+>B</SUB
+> E'<SUB
+>B</SUB
+></P
+><P
+>(E'<SUB
+>R</SUB
+> - E'<SUB
+>Y</SUB
+>) = E'<SUB
+>R</SUB
+>
+- Coeff<SUB
+>R</SUB
+> E'<SUB
+>R</SUB
+>
+- Coeff<SUB
+>G</SUB
+> E'<SUB
+>G</SUB
+>
+- Coeff<SUB
+>B</SUB
+> E'<SUB
+>B</SUB
+></P
+><P
+>(E'<SUB
+>B</SUB
+> - E'<SUB
+>Y</SUB
+>) = E'<SUB
+>B</SUB
+>
+- Coeff<SUB
+>R</SUB
+> E'<SUB
+>R</SUB
+>
+- Coeff<SUB
+>G</SUB
+> E'<SUB
+>G</SUB
+>
+- Coeff<SUB
+>B</SUB
+> E'<SUB
+>B</SUB
+></P
+></DD
+><DT
+>Re-normalized color-difference signals</DT
+><DD
+><P
+>The color-difference signals are scaled back to unity
+range [-0.5;+0.5]:</P
+><P
+>K<SUB
+>B</SUB
+> = 0.5 / (1 - Coeff<SUB
+>B</SUB
+>)</P
+><P
+>K<SUB
+>R</SUB
+> = 0.5 / (1 - Coeff<SUB
+>R</SUB
+>)</P
+><P
+>P<SUB
+>B</SUB
+> =
+K<SUB
+>B</SUB
+> (E'<SUB
+>B</SUB
+> - E'<SUB
+>Y</SUB
+>) =
+  0.5 (Coeff<SUB
+>R</SUB
+> / Coeff<SUB
+>B</SUB
+>) E'<SUB
+>R</SUB
+>
++ 0.5 (Coeff<SUB
+>G</SUB
+> / Coeff<SUB
+>B</SUB
+>) E'<SUB
+>G</SUB
+>
++ 0.5 E'<SUB
+>B</SUB
+></P
+><P
+>P<SUB
+>R</SUB
+> =
+K<SUB
+>R</SUB
+> (E'<SUB
+>R</SUB
+> - E'<SUB
+>Y</SUB
+>) =
+  0.5 E'<SUB
+>R</SUB
+>
++ 0.5 (Coeff<SUB
+>G</SUB
+> / Coeff<SUB
+>R</SUB
+>) E'<SUB
+>G</SUB
+>
++ 0.5 (Coeff<SUB
+>B</SUB
+> / Coeff<SUB
+>R</SUB
+>) E'<SUB
+>B</SUB
+></P
+></DD
+><DT
+>Quantization</DT
+><DD
+><P
+>[to do]</P
+><P
+>Y' = (Lum. Levels - 1) &middot; E'<SUB
+>Y</SUB
+> + Lum. Offset</P
+><P
+>C<SUB
+>B</SUB
+> = (Chrom. Levels - 1)
+&middot; P<SUB
+>B</SUB
+> + Chrom. Offset</P
+><P
+>C<SUB
+>R</SUB
+> = (Chrom. Levels - 1)
+&middot; P<SUB
+>R</SUB
+> + Chrom. Offset</P
+><P
+>Rounding to the nearest integer and clamping to the range
+[0;255] finally yields the digital color components Y'CbCr
+stored in YUV images.</P
+></DD
+></DL
+></DIV
+>
+    </P
+><DIV
+CLASS="EXAMPLE"
+><A
+NAME="AEN2217"
+></A
+><P
+><B
+>Example 2-1. ITU-R Rec. BT.601 color conversion</B
+></P
+><P
+>Forward Transformation</P
+><PRE
+CLASS="PROGRAMLISTING"
+>int ER, EG, EB;         /* gamma corrected RGB input [0;255] */
+int Y1, Cb, Cr;         /* output [0;255] */
+
+double r, g, b;         /* temporaries */
+double y1, pb, pr;
+
+int
+clamp (double x)
+{
+        int r = x;      /* round to nearest */
+
+        if (r &lt; 0)         return 0;
+        else if (r &gt; 255)  return 255;
+        else               return r;
+}
+
+r = ER / 255.0;
+g = EG / 255.0;
+b = EB / 255.0;
+
+y1  =  0.299  * r + 0.587 * g + 0.114  * b;
+pb  = -0.169  * r - 0.331 * g + 0.5    * b;
+pr  =  0.5    * r - 0.419 * g - 0.081  * b;
+
+Y1 = clamp (219 * y1 + 16);
+Cb = clamp (224 * pb + 128);
+Cr = clamp (224 * pr + 128);
+
+/* or shorter */
+
+y1 = 0.299 * ER + 0.587 * EG + 0.114 * EB;
+
+Y1 = clamp ( (219 / 255.0)                    *       y1  + 16);
+Cb = clamp (((224 / 255.0) / (2 - 2 * 0.114)) * (EB - y1) + 128);
+Cr = clamp (((224 / 255.0) / (2 - 2 * 0.299)) * (ER - y1) + 128);
+      </PRE
+><P
+>Inverse Transformation</P
+><PRE
+CLASS="PROGRAMLISTING"
+>int Y1, Cb, Cr;         /* gamma pre-corrected input [0;255] */
+int ER, EG, EB;         /* output [0;255] */
+
+double r, g, b;         /* temporaries */
+double y1, pb, pr;
+
+int
+clamp (double x)
+{
+        int r = x;      /* round to nearest */
+
+        if (r &lt; 0)         return 0;
+        else if (r &gt; 255)  return 255;
+        else               return r;
+}
+
+y1 = (255 / 219.0) * (Y1 - 16);
+pb = (255 / 224.0) * (Cb - 128);
+pr = (255 / 224.0) * (Cr - 128);
+
+r = 1.0 * y1 + 0     * pb + 1.402 * pr;
+g = 1.0 * y1 - 0.344 * pb - 0.714 * pr;
+b = 1.0 * y1 + 1.772 * pb + 0     * pr;
+
+ER = clamp (r * 255); /* [ok? one should prob. limit y1,pb,pr] */
+EG = clamp (g * 255);
+EB = clamp (b * 255);
+      </PRE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-COLORSPACE"
+></A
+><P
+><B
+>Table 2-2. enum v4l2_colorspace</B
+></P
+><TABLE
+BORDER="1"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="9%"
+ALIGN="LEFT"><COL
+WIDTH="9%"
+ALIGN="CENTER"><COL
+WIDTH="9%"
+ALIGN="LEFT"><COL
+WIDTH="9%"
+TITLE="CR"><COL
+WIDTH="9%"
+TITLE="CG"><COL
+WIDTH="9%"
+TITLE="CB"><COL
+WIDTH="9%"
+TITLE="WP"><COL
+WIDTH="9%"
+TITLE="GC"><COL
+WIDTH="9%"
+TITLE="LUM"><COL
+WIDTH="9%"
+TITLE="QY"><COL
+WIDTH="9%"
+TITLE="QC"><THEAD
+><TR
+><TH
+ROWSPAN="2"
+>Identifier</TH
+><TH
+ROWSPAN="2"
+>Value</TH
+><TH
+ROWSPAN="2"
+>Description</TH
+><TH
+COLSPAN="3"
+>Chromaticities<A
+NAME="AEN2246"
+HREF="x2123.htm#FTN.AEN2246"
+><SPAN
+CLASS="footnote"
+>[a]</SPAN
+></A
+></TH
+><TH
+ROWSPAN="2"
+>White Point</TH
+><TH
+ROWSPAN="2"
+>Gamma Correction</TH
+><TH
+ROWSPAN="2"
+>Luminance E'<SUB
+>Y</SUB
+></TH
+><TH
+COLSPAN="2"
+>Quantization</TH
+></TR
+><TR
+><TH
+>Red</TH
+><TH
+>Green</TH
+><TH
+>Blue</TH
+><TH
+>Y'</TH
+><TH
+>Cb, Cr</TH
+></TR
+></THEAD
+><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_COLORSPACE_SMPTE170M</CODE
+></TD
+><TD
+>1</TD
+><TD
+>NTSC/PAL according to <A
+HREF="b17127.htm#SMPTE170M"
+><ABBR
+CLASS="ABBREV"
+>SMPTE&nbsp;170M</ABBR
+></A
+>,
+<A
+HREF="b17127.htm#ITU601"
+><ABBR
+CLASS="ABBREV"
+>ITU&nbsp;BT.601</ABBR
+></A
+></TD
+><TD
+>x&nbsp;=&nbsp;0.630, y&nbsp;=&nbsp;0.340</TD
+><TD
+>x&nbsp;=&nbsp;0.310, y&nbsp;=&nbsp;0.595</TD
+><TD
+>x&nbsp;=&nbsp;0.155, y&nbsp;=&nbsp;0.070</TD
+><TD
+>x&nbsp;=&nbsp;0.3127, y&nbsp;=&nbsp;0.3290,
+            Illuminant D<SUB
+>65</SUB
+></TD
+><TD
+>E' = 4.5&nbsp;I&nbsp;for&nbsp;I&nbsp;&le;0.018,
+1.099&nbsp;I<SUP
+>0.45</SUP
+>&nbsp;-&nbsp;0.099&nbsp;for&nbsp;0.018&nbsp;&lt;&nbsp;I</TD
+><TD
+>0.299&nbsp;E'<SUB
+>R</SUB
+>
++&nbsp;0.587&nbsp;E'<SUB
+>G</SUB
+>
++&nbsp;0.114&nbsp;E'<SUB
+>B</SUB
+></TD
+><TD
+>219&nbsp;E'<SUB
+>Y</SUB
+>&nbsp;+&nbsp;16</TD
+><TD
+>224&nbsp;P<SUB
+>B,R</SUB
+>&nbsp;+&nbsp;128</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_COLORSPACE_SMPTE240M</CODE
+></TD
+><TD
+>2</TD
+><TD
+>1125-Line (US) HDTV, see <A
+HREF="b17127.htm#SMPTE240M"
+><ABBR
+CLASS="ABBREV"
+>SMPTE&nbsp;240M</ABBR
+></A
+></TD
+><TD
+>x&nbsp;=&nbsp;0.630, y&nbsp;=&nbsp;0.340</TD
+><TD
+>x&nbsp;=&nbsp;0.310, y&nbsp;=&nbsp;0.595</TD
+><TD
+>x&nbsp;=&nbsp;0.155, y&nbsp;=&nbsp;0.070</TD
+><TD
+>x&nbsp;=&nbsp;0.3127, y&nbsp;=&nbsp;0.3290,
+            Illuminant D<SUB
+>65</SUB
+></TD
+><TD
+>E' = 4&nbsp;I&nbsp;for&nbsp;I&nbsp;&le;0.0228,
+1.1115&nbsp;I<SUP
+>0.45</SUP
+>&nbsp;-&nbsp;0.1115&nbsp;for&nbsp;0.0228&nbsp;&lt;&nbsp;I</TD
+><TD
+>0.212&nbsp;E'<SUB
+>R</SUB
+>
++&nbsp;0.701&nbsp;E'<SUB
+>G</SUB
+>
++&nbsp;0.087&nbsp;E'<SUB
+>B</SUB
+></TD
+><TD
+>219&nbsp;E'<SUB
+>Y</SUB
+>&nbsp;+&nbsp;16</TD
+><TD
+>224&nbsp;P<SUB
+>B,R</SUB
+>&nbsp;+&nbsp;128</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_COLORSPACE_REC709</CODE
+></TD
+><TD
+>3</TD
+><TD
+>HDTV and modern devices, see <A
+HREF="b17127.htm#ITU709"
+><ABBR
+CLASS="ABBREV"
+>ITU&nbsp;BT.709</ABBR
+></A
+></TD
+><TD
+>x&nbsp;=&nbsp;0.640, y&nbsp;=&nbsp;0.330</TD
+><TD
+>x&nbsp;=&nbsp;0.300, y&nbsp;=&nbsp;0.600</TD
+><TD
+>x&nbsp;=&nbsp;0.150, y&nbsp;=&nbsp;0.060</TD
+><TD
+>x&nbsp;=&nbsp;0.3127, y&nbsp;=&nbsp;0.3290,
+            Illuminant D<SUB
+>65</SUB
+></TD
+><TD
+>E' = 4.5&nbsp;I&nbsp;for&nbsp;I&nbsp;&le;0.018,
+1.099&nbsp;I<SUP
+>0.45</SUP
+>&nbsp;-&nbsp;0.099&nbsp;for&nbsp;0.018&nbsp;&lt;&nbsp;I</TD
+><TD
+>0.2125&nbsp;E'<SUB
+>R</SUB
+> 
++&nbsp;0.7154&nbsp;E'<SUB
+>G</SUB
+>
++&nbsp;0.0721&nbsp;E'<SUB
+>B</SUB
+></TD
+><TD
+>219&nbsp;E'<SUB
+>Y</SUB
+>&nbsp;+&nbsp;16</TD
+><TD
+>224&nbsp;P<SUB
+>B,R</SUB
+>&nbsp;+&nbsp;128</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_COLORSPACE_BT878</CODE
+></TD
+><TD
+>4</TD
+><TD
+>Broken Bt878 extents<A
+NAME="AEN2329"
+HREF="x2123.htm#FTN.AEN2329"
+><SPAN
+CLASS="footnote"
+>[b]</SPAN
+></A
+>, <A
+HREF="b17127.htm#ITU601"
+><ABBR
+CLASS="ABBREV"
+>ITU&nbsp;BT.601</ABBR
+></A
+></TD
+><TD
+>?</TD
+><TD
+>?</TD
+><TD
+>?</TD
+><TD
+>?</TD
+><TD
+>?</TD
+><TD
+>0.299&nbsp;E'<SUB
+>R</SUB
+>
++&nbsp;0.587&nbsp;E'<SUB
+>G</SUB
+>
++&nbsp;0.114&nbsp;E'<SUB
+>B</SUB
+></TD
+><TD
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>237</I
+></SPAN
+>&nbsp;E'<SUB
+>Y</SUB
+>&nbsp;+&nbsp;16</TD
+><TD
+>224&nbsp;P<SUB
+>B,R</SUB
+>&nbsp;+&nbsp;128 (probably)</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_COLORSPACE_470_SYSTEM_M</CODE
+></TD
+><TD
+>5</TD
+><TD
+>M/NTSC<A
+NAME="AEN2352"
+HREF="x2123.htm#FTN.AEN2352"
+><SPAN
+CLASS="footnote"
+>[c]</SPAN
+></A
+> according to <A
+HREF="b17127.htm#ITU470"
+><ABBR
+CLASS="ABBREV"
+>ITU&nbsp;BT.470</ABBR
+></A
+>, <A
+HREF="b17127.htm#ITU601"
+><ABBR
+CLASS="ABBREV"
+>ITU&nbsp;BT.601</ABBR
+></A
+></TD
+><TD
+>x&nbsp;=&nbsp;0.67, y&nbsp;=&nbsp;0.33</TD
+><TD
+>x&nbsp;=&nbsp;0.21, y&nbsp;=&nbsp;0.71</TD
+><TD
+>x&nbsp;=&nbsp;0.14, y&nbsp;=&nbsp;0.08</TD
+><TD
+>x&nbsp;=&nbsp;0.310, y&nbsp;=&nbsp;0.316, Illuminant C</TD
+><TD
+>?</TD
+><TD
+>0.299&nbsp;E'<SUB
+>R</SUB
+>
++&nbsp;0.587&nbsp;E'<SUB
+>G</SUB
+>
++&nbsp;0.114&nbsp;E'<SUB
+>B</SUB
+></TD
+><TD
+>219&nbsp;E'<SUB
+>Y</SUB
+>&nbsp;+&nbsp;16</TD
+><TD
+>224&nbsp;P<SUB
+>B,R</SUB
+>&nbsp;+&nbsp;128</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_COLORSPACE_470_SYSTEM_BG</CODE
+></TD
+><TD
+>6</TD
+><TD
+>625-line PAL and SECAM systems according to <A
+HREF="b17127.htm#ITU470"
+><ABBR
+CLASS="ABBREV"
+>ITU&nbsp;BT.470</ABBR
+></A
+>, <A
+HREF="b17127.htm#ITU601"
+><ABBR
+CLASS="ABBREV"
+>ITU&nbsp;BT.601</ABBR
+></A
+></TD
+><TD
+>x&nbsp;=&nbsp;0.64, y&nbsp;=&nbsp;0.33</TD
+><TD
+>x&nbsp;=&nbsp;0.29, y&nbsp;=&nbsp;0.60</TD
+><TD
+>x&nbsp;=&nbsp;0.15, y&nbsp;=&nbsp;0.06</TD
+><TD
+>x&nbsp;=&nbsp;0.313, y&nbsp;=&nbsp;0.329,
+Illuminant D<SUB
+>65</SUB
+></TD
+><TD
+>?</TD
+><TD
+>0.299&nbsp;E'<SUB
+>R</SUB
+>
++&nbsp;0.587&nbsp;E'<SUB
+>G</SUB
+>
++&nbsp;0.114&nbsp;E'<SUB
+>B</SUB
+></TD
+><TD
+>219&nbsp;E'<SUB
+>Y</SUB
+>&nbsp;+&nbsp;16</TD
+><TD
+>224&nbsp;P<SUB
+>B,R</SUB
+>&nbsp;+&nbsp;128</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_COLORSPACE_JPEG</CODE
+></TD
+><TD
+>7</TD
+><TD
+>JPEG Y'CbCr, see <A
+HREF="b17127.htm#JFIF"
+><ABBR
+CLASS="ABBREV"
+>JFIF</ABBR
+></A
+>, <A
+HREF="b17127.htm#ITU601"
+><ABBR
+CLASS="ABBREV"
+>ITU&nbsp;BT.601</ABBR
+></A
+></TD
+><TD
+>?</TD
+><TD
+>?</TD
+><TD
+>?</TD
+><TD
+>?</TD
+><TD
+>?</TD
+><TD
+>0.299&nbsp;E'<SUB
+>R</SUB
+>
++&nbsp;0.587&nbsp;E'<SUB
+>G</SUB
+>
++&nbsp;0.114&nbsp;E'<SUB
+>B</SUB
+></TD
+><TD
+>256&nbsp;E'<SUB
+>Y</SUB
+>&nbsp;+&nbsp;16<A
+NAME="AEN2408"
+HREF="x2123.htm#FTN.AEN2408"
+><SPAN
+CLASS="footnote"
+>[d]</SPAN
+></A
+></TD
+><TD
+>256&nbsp;P<SUB
+>B,R</SUB
+>&nbsp;+&nbsp;128</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_COLORSPACE_SRGB</CODE
+></TD
+><TD
+>8</TD
+><TD
+>[?]</TD
+><TD
+>x&nbsp;=&nbsp;0.640, y&nbsp;=&nbsp;0.330</TD
+><TD
+>x&nbsp;=&nbsp;0.300, y&nbsp;=&nbsp;0.600</TD
+><TD
+>x&nbsp;=&nbsp;0.150, y&nbsp;=&nbsp;0.060</TD
+><TD
+>x&nbsp;=&nbsp;0.3127, y&nbsp;=&nbsp;0.3290,
+            Illuminant D<SUB
+>65</SUB
+></TD
+><TD
+>E' = 4.5&nbsp;I&nbsp;for&nbsp;I&nbsp;&le;0.018,
+1.099&nbsp;I<SUP
+>0.45</SUP
+>&nbsp;-&nbsp;0.099&nbsp;for&nbsp;0.018&nbsp;&lt;&nbsp;I</TD
+><TD
+COLSPAN="3"
+>n/a</TD
+></TR
+></TBODY
+><TR
+><TD
+COLSPAN="11"
+>Notes:<BR><A
+NAME="FTN.AEN2246"
+>a. </A
+>The coordinates of the color primaries are
+given in the CIE system (1931)<BR><A
+NAME="FTN.AEN2329"
+>b. </A
+>The ubiquitous Bt878 video capture chip
+quantizes E'<SUB
+>Y</SUB
+> to 238 levels, yielding a range
+of Y' = 16 &hellip; 253, unlike Rec. 601 Y' = 16 &hellip;
+235. This is not a typo in the Bt878 documentation, it has been
+implemented in silicon. The chroma extents are unclear.<BR><A
+NAME="FTN.AEN2352"
+>c. </A
+>No identifier exists for M/PAL which uses
+the chromaticities of M/NTSC, the remaining parameters are equal to B and
+G/PAL.<BR><A
+NAME="FTN.AEN2408"
+>d. </A
+>Note JFIF quantizes
+Y'P<SUB
+>B</SUB
+>P<SUB
+>R</SUB
+> in range [0;+1] and
+[-0.5;+0.5] to <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>257</I
+></SPAN
+> levels, however Y'CbCr signals
+are still clamped to [0;255].<BR></TD
+></TR
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="c2030.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x2428.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Image Formats</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="c2030.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Indexed Format</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

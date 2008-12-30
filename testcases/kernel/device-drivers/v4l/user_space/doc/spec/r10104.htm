@@ -1,0 +1,424 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ioctl VIDIOC_G_CTRL, VIDIOC_S_CTRL</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Function Reference"
+HREF="r7624.htm"><LINK
+REL="PREVIOUS"
+TITLE="ioctl VIDIOC_G_CROP, VIDIOC_S_CROP"
+HREF="r9994.htm"><LINK
+REL="NEXT"
+TITLE="ioctl VIDIOC_G_ENC_INDEX"
+HREF="r10211.htm"></HEAD
+><BODY
+CLASS="REFENTRY"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="r9994.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="r10211.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="VIDIOC-G-CTRL"
+></A
+>ioctl VIDIOC_G_CTRL, VIDIOC_S_CTRL</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN10108"
+></A
+><H2
+>Name</H2
+>VIDIOC_G_CTRL, VIDIOC_S_CTRL&nbsp;--&nbsp;Get or set the value of a control</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN10112"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN10113"
+></A
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>int ioctl</CODE
+>(int fd, int request, struct v4l2_control
+*argp);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN10123"
+></A
+><H2
+>Arguments</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><CODE
+CLASS="PARAMETER"
+>fd</CODE
+></DT
+><DD
+><P
+>File descriptor returned by <A
+HREF="r14090.htm"
+><CODE
+CLASS="FUNCTION"
+>open()</CODE
+></A
+>.</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>request</CODE
+></DT
+><DD
+><P
+>VIDIOC_G_CTRL, VIDIOC_S_CTRL</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>argp</CODE
+></DT
+><DD
+><P
+></P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN10143"
+></A
+><H2
+>Description</H2
+><P
+>To get the current value of a control applications
+initialize the <CODE
+CLASS="STRUCTFIELD"
+>id</CODE
+> field of a struct
+<CODE
+CLASS="STRUCTNAME"
+>v4l2_control</CODE
+> and call the
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_G_CTRL</CODE
+> ioctl with a pointer to this
+structure. To change the value of a control applications initialize
+the <CODE
+CLASS="STRUCTFIELD"
+>id</CODE
+> and <CODE
+CLASS="STRUCTFIELD"
+>value</CODE
+>
+fields of a struct <CODE
+CLASS="STRUCTNAME"
+>v4l2_control</CODE
+> and call the
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_S_CTRL</CODE
+> ioctl.</P
+><P
+>When the <CODE
+CLASS="STRUCTFIELD"
+>id</CODE
+> is invalid drivers
+return an <SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+> error code. When the <CODE
+CLASS="STRUCTFIELD"
+>value</CODE
+> is out
+of bounds drivers can choose to take the closest valid value or return
+an <SPAN
+CLASS="ERRORCODE"
+>ERANGE</SPAN
+> error code, whatever seems more appropriate. However,
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_S_CTRL</CODE
+> is a write-only ioctl, it does not
+return the actual new value.</P
+><P
+>These ioctls work only with user controls. For other
+control classes the <A
+HREF="r10386.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_G_EXT_CTRLS</CODE
+></A
+>, <A
+HREF="r10386.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_EXT_CTRLS</CODE
+></A
+> or
+<A
+HREF="r10386.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_TRY_EXT_CTRLS</CODE
+></A
+> must be used.</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-CONTROL"
+></A
+><P
+><B
+>Table 1. struct <CODE
+CLASS="STRUCTNAME"
+>v4l2_control</CODE
+></B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="25%"
+TITLE="C1"><COL
+WIDTH="25%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>id</CODE
+></TD
+><TD
+>Identifies the control, set by the
+application.</TD
+></TR
+><TR
+><TD
+>__s32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>value</CODE
+></TD
+><TD
+>New value or current value.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN10185"
+></A
+><H2
+>Return Value</H2
+><P
+>On success <SPAN
+CLASS="RETURNVALUE"
+>0</SPAN
+> is returned, on error <SPAN
+CLASS="RETURNVALUE"
+>-1</SPAN
+> and the <CODE
+CLASS="VARNAME"
+>errno</CODE
+> variable is set appropriately:</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+></DT
+><DD
+><P
+>The struct&nbsp;<A
+HREF="r10104.htm#V4L2-CONTROL"
+>v4l2_control</A
+> <CODE
+CLASS="STRUCTFIELD"
+>id</CODE
+> is
+invalid.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>ERANGE</SPAN
+></DT
+><DD
+><P
+>The struct&nbsp;<A
+HREF="r10104.htm#V4L2-CONTROL"
+>v4l2_control</A
+> <CODE
+CLASS="STRUCTFIELD"
+>value</CODE
+>
+is out of bounds.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EBUSY</SPAN
+></DT
+><DD
+><P
+>The control is temporarily not changeable, possibly
+because another applications took over control of the device function
+this control belongs to.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="r9994.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="r10211.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ioctl VIDIOC_G_CROP, VIDIOC_S_CROP</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="r7624.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>ioctl VIDIOC_G_ENC_INDEX</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

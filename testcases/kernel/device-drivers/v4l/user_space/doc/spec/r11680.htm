@@ -1,0 +1,881 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ioctl VIDIOC_G_PARM, VIDIOC_S_PARM</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Function Reference"
+HREF="r7624.htm"><LINK
+REL="PREVIOUS"
+TITLE="ioctl VIDIOC_G_OUTPUT, VIDIOC_S_OUTPUT"
+HREF="r11612.htm"><LINK
+REL="NEXT"
+TITLE="ioctl VIDIOC_G_PRIORITY, VIDIOC_S_PRIORITY"
+HREF="r11946.htm"></HEAD
+><BODY
+CLASS="REFENTRY"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="r11612.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="r11946.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="VIDIOC-G-PARM"
+></A
+>ioctl VIDIOC_G_PARM, VIDIOC_S_PARM</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN11684"
+></A
+><H2
+>Name</H2
+>VIDIOC_G_PARM, VIDIOC_S_PARM&nbsp;--&nbsp;Get or set streaming parameters</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN11688"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN11689"
+></A
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>int ioctl</CODE
+>(int fd, int request, v4l2_streamparm *argp);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN11699"
+></A
+><H2
+>Arguments</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><CODE
+CLASS="PARAMETER"
+>fd</CODE
+></DT
+><DD
+><P
+>File descriptor returned by <A
+HREF="r14090.htm"
+><CODE
+CLASS="FUNCTION"
+>open()</CODE
+></A
+>.</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>request</CODE
+></DT
+><DD
+><P
+>VIDIOC_G_PARM, VIDIOC_S_PARM</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>argp</CODE
+></DT
+><DD
+><P
+></P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN11719"
+></A
+><H2
+>Description</H2
+><P
+>The current video standard determines a nominal number of
+frames per second. If less than this number of frames is to be
+captured or output, applications can request frame skipping or
+duplicating on the driver side. This is especially useful when using
+the <CODE
+CLASS="FUNCTION"
+>read()</CODE
+> or <CODE
+CLASS="FUNCTION"
+>write()</CODE
+>, which
+are not augmented by timestamps or sequence counters, and to avoid
+unneccessary data copying.</P
+><P
+>Further these ioctls can be used to determine the number of
+buffers used internally by a driver in read/write mode. For
+implications see the section discussing the <A
+HREF="r14264.htm"
+><CODE
+CLASS="FUNCTION"
+>read()</CODE
+></A
+>
+function.</P
+><P
+>To get and set the streaming parameters applications call
+the <CODE
+CLASS="CONSTANT"
+>VIDIOC_G_PARM</CODE
+> and
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_S_PARM</CODE
+> ioctl, respectively. They take a
+pointer to a struct <CODE
+CLASS="STRUCTNAME"
+>v4l2_streamparm</CODE
+> which
+contains a union holding separate parameters for input and output
+devices.</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-STREAMPARM"
+></A
+><P
+><B
+>Table 1. struct <CODE
+CLASS="STRUCTNAME"
+>v4l2_streamparm</CODE
+></B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="20%"
+TITLE="C1"><COL
+WIDTH="20%"
+TITLE="C2"><COL
+WIDTH="20%"
+TITLE="C3"><COL
+WIDTH="40%"
+TITLE="C4"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>enum&nbsp;<A
+HREF="x5953.htm#V4L2-BUF-TYPE"
+>v4l2_buf_type</A
+></TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>type</CODE
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>The buffer (stream) type, same as struct&nbsp;<A
+HREF="r10944.htm#V4L2-FORMAT"
+>v4l2_format</A
+>
+<CODE
+CLASS="STRUCTFIELD"
+>type</CODE
+>, set by the application.</TD
+></TR
+><TR
+><TD
+>union</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>parm</CODE
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>struct&nbsp;<A
+HREF="r11680.htm#V4L2-CAPTUREPARM"
+>v4l2_captureparm</A
+></TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>capture</CODE
+></TD
+><TD
+>Parameters for capture devices, used when
+<CODE
+CLASS="STRUCTFIELD"
+>type</CODE
+> is
+<CODE
+CLASS="CONSTANT"
+>V4L2_BUF_TYPE_VIDEO_CAPTURE</CODE
+>.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>struct&nbsp;<A
+HREF="r11680.htm#V4L2-OUTPUTPARM"
+>v4l2_outputparm</A
+></TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>output</CODE
+></TD
+><TD
+>Parameters for output devices, used when
+<CODE
+CLASS="STRUCTFIELD"
+>type</CODE
+> is
+<CODE
+CLASS="CONSTANT"
+>V4L2_BUF_TYPE_VIDEO_OUTPUT</CODE
+>.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>__u8</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>raw_data</CODE
+>[200]</TD
+><TD
+>A place holder for future extensions and custom
+(driver defined) buffer types <CODE
+CLASS="CONSTANT"
+>V4L2_BUF_TYPE_PRIVATE</CODE
+> and
+higher.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-CAPTUREPARM"
+></A
+><P
+><B
+>Table 2. struct <CODE
+CLASS="STRUCTNAME"
+>v4l2_captureparm</CODE
+></B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="25%"
+TITLE="C1"><COL
+WIDTH="25%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>capability</CODE
+></TD
+><TD
+>See <A
+HREF="r11680.htm#PARM-CAPS"
+>Table 4</A
+>.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>capturemode</CODE
+></TD
+><TD
+>Set by drivers and applications, see <A
+HREF="r11680.htm#PARM-FLAGS"
+>Table 5</A
+>.</TD
+></TR
+><TR
+><TD
+>struct&nbsp;<A
+HREF="r9288.htm#V4L2-FRACT"
+>v4l2_fract</A
+></TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>timeperframe</CODE
+></TD
+><TD
+><P
+>This is is the desired period between
+successive frames captured by the driver, in seconds. The
+field is intended to skip frames on the driver side, saving I/O
+bandwidth.</P
+><P
+>Applications store here the desired frame
+period, drivers return the actual frame period, which must be greater
+or equal to the nominal frame period determined by the current video
+standard (struct&nbsp;<A
+HREF="r9288.htm#V4L2-STANDARD"
+>v4l2_standard</A
+> <CODE
+CLASS="STRUCTFIELD"
+>frameperiod</CODE
+>
+field). Changing the video standard (also implicitly by switching the
+video input) may reset this parameter to the nominal frame period. To
+reset manually applications can just set this field to
+zero.</P
+><P
+>Drivers support this function only when they set the
+<CODE
+CLASS="CONSTANT"
+>V4L2_CAP_TIMEPERFRAME</CODE
+> flag in the
+<CODE
+CLASS="STRUCTFIELD"
+>capability</CODE
+> field.</P
+></TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>extendedmode</CODE
+></TD
+><TD
+>Custom (driver specific) streaming parameters. When
+unused, applications and drivers must set this field to zero.
+Applications using this field should check the driver name and
+version, see <A
+HREF="x282.htm"
+>Section 1.2</A
+>.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>readbuffers</CODE
+></TD
+><TD
+>Applications set this field to the desired number
+of buffers used internally by the driver in <A
+HREF="r14264.htm"
+><CODE
+CLASS="FUNCTION"
+>read()</CODE
+></A
+> mode. Drivers
+return the actual number of buffers. When an application requests zero
+buffers, drivers should just return the current setting rather than
+the minimum or an error code. For details see <A
+HREF="c5742.htm#RW"
+>Section 3.1</A
+>.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>reserved</CODE
+>[4]</TD
+><TD
+>Reserved for future extensions. Drivers and
+applications must set the array to zero.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-OUTPUTPARM"
+></A
+><P
+><B
+>Table 3. struct <CODE
+CLASS="STRUCTNAME"
+>v4l2_outputparm</CODE
+></B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="25%"
+TITLE="C1"><COL
+WIDTH="25%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>capability</CODE
+></TD
+><TD
+>See <A
+HREF="r11680.htm#PARM-CAPS"
+>Table 4</A
+>.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>outputmode</CODE
+></TD
+><TD
+>Set by drivers and applications, see <A
+HREF="r11680.htm#PARM-FLAGS"
+>Table 5</A
+>.</TD
+></TR
+><TR
+><TD
+>struct&nbsp;<A
+HREF="r9288.htm#V4L2-FRACT"
+>v4l2_fract</A
+></TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>timeperframe</CODE
+></TD
+><TD
+>This is is the desired period between
+successive frames output by the driver, in seconds.</TD
+></TR
+><TR
+><TD
+COLSPAN="3"
+><P
+>The field is intended to
+repeat frames on the driver side in <A
+HREF="r14496.htm"
+><CODE
+CLASS="FUNCTION"
+>write()</CODE
+></A
+> mode (in streaming
+mode timestamps can be used to throttle the output), saving I/O
+bandwidth.</P
+><P
+>Applications store here the desired frame
+period, drivers return the actual frame period, which must be greater
+or equal to the nominal frame period determined by the current video
+standard (struct&nbsp;<A
+HREF="r9288.htm#V4L2-STANDARD"
+>v4l2_standard</A
+> <CODE
+CLASS="STRUCTFIELD"
+>frameperiod</CODE
+>
+field). Changing the video standard (also implicitly by switching the
+video output) may reset this parameter to the nominal frame period. To
+reset manually applications can just set this field to
+zero.</P
+><P
+>Drivers support this function only when they set the
+<CODE
+CLASS="CONSTANT"
+>V4L2_CAP_TIMEPERFRAME</CODE
+> flag in the
+<CODE
+CLASS="STRUCTFIELD"
+>capability</CODE
+> field.</P
+></TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>extendedmode</CODE
+></TD
+><TD
+>Custom (driver specific) streaming parameters. When
+unused, applications and drivers must set this field to zero.
+Applications using this field should check the driver name and
+version, see <A
+HREF="x282.htm"
+>Section 1.2</A
+>.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>writebuffers</CODE
+></TD
+><TD
+>Applications set this field to the desired number
+of buffers used internally by the driver in
+<CODE
+CLASS="FUNCTION"
+>write()</CODE
+> mode. Drivers return the actual number of
+buffers. When an application requests zero buffers, drivers should
+just return the current setting rather than the minimum or an error
+code. For details see <A
+HREF="c5742.htm#RW"
+>Section 3.1</A
+>.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>reserved</CODE
+>[4]</TD
+><TD
+>Reserved for future extensions. Drivers and
+applications must set the array to zero.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="PARM-CAPS"
+></A
+><P
+><B
+>Table 4. Streaming Parameters Capabilites</B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="38%"
+TITLE="C1"><COL
+WIDTH="12%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_CAP_TIMEPERFRAME</CODE
+></TD
+><TD
+>0x1000</TD
+><TD
+>The frame skipping/repeating controlled by the
+<CODE
+CLASS="STRUCTFIELD"
+>timeperframe</CODE
+> field is supported.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="PARM-FLAGS"
+></A
+><P
+><B
+>Table 5. Capture Parameters Flags</B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="38%"
+TITLE="C1"><COL
+WIDTH="12%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MODE_HIGHQUALITY</CODE
+></TD
+><TD
+>0x0001</TD
+><TD
+><P
+>High quality imaging mode. High quality mode
+is intended for still imaging applications. The idea is to get the
+best possible image quality that the hardware can deliver. It is not
+defined how the driver writer may achieve that; it will depend on the
+hardware and the ingenuity of the driver writer. High quality mode is
+a different mode from the the regular motion video capture modes. In
+high quality mode:<P
+></P
+><UL
+><LI
+><P
+>The driver may be able to capture higher
+resolutions than for motion capture.</P
+></LI
+><LI
+><P
+>The driver may support fewer pixel formats
+than motion capture (eg; true color).</P
+></LI
+><LI
+><P
+>The driver may capture and arithmetically
+combine multiple successive fields or frames to remove color edge
+artifacts and reduce the noise in the video data.</P
+></LI
+><LI
+><P
+>The driver may capture images in slices like
+a scanner in order to handle larger format images than would otherwise
+be possible. </P
+></LI
+><LI
+><P
+>An image capture operation may be
+significantly slower than motion capture. </P
+></LI
+><LI
+><P
+>Moving objects in the image might have
+excessive motion blur. </P
+></LI
+><LI
+><P
+>Capture might only work through the
+<CODE
+CLASS="FUNCTION"
+>read()</CODE
+> call.</P
+></LI
+></UL
+></P
+></TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN11934"
+></A
+><H2
+>Return Value</H2
+><P
+>On success <SPAN
+CLASS="RETURNVALUE"
+>0</SPAN
+> is returned, on error <SPAN
+CLASS="RETURNVALUE"
+>-1</SPAN
+> and the <CODE
+CLASS="VARNAME"
+>errno</CODE
+> variable is set appropriately:</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+></DT
+><DD
+><P
+>This ioctl is not supported.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="r11612.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="r11946.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ioctl VIDIOC_G_OUTPUT, VIDIOC_S_OUTPUT</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="r7624.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>ioctl VIDIOC_G_PRIORITY, VIDIOC_S_PRIORITY</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

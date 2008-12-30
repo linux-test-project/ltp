@@ -1,0 +1,378 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>V4L2 write()</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Function Reference"
+HREF="r7624.htm"><LINK
+REL="PREVIOUS"
+TITLE="V4L2 select()"
+HREF="r14390.htm"><LINK
+REL="NEXT"
+TITLE="V4L2 Driver Programming"
+HREF="c14592.htm"></HEAD
+><BODY
+CLASS="REFENTRY"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="r14390.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="c14592.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="FUNC-WRITE"
+></A
+>V4L2 write()</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN14500"
+></A
+><H2
+>Name</H2
+>v4l2-write&nbsp;--&nbsp;Write to a V4L2 device</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN14503"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN14504"
+></A
+><PRE
+CLASS="FUNCSYNOPSISINFO"
+>#include &lt;unistd.h&gt;</PRE
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>ssize_t write</CODE
+>(int fd, void *buf, size_t count);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN14515"
+></A
+><H2
+>Arguments</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><CODE
+CLASS="PARAMETER"
+>fd</CODE
+></DT
+><DD
+><P
+>File descriptor returned by <A
+HREF="r14090.htm"
+><CODE
+CLASS="FUNCTION"
+>open()</CODE
+></A
+>.</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>buf</CODE
+></DT
+><DD
+><P
+></P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>count</CODE
+></DT
+><DD
+><P
+></P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN14535"
+></A
+><H2
+>Description</H2
+><P
+><CODE
+CLASS="FUNCTION"
+>write()</CODE
+> writes up to
+<CODE
+CLASS="PARAMETER"
+>count</CODE
+> bytes to the device referenced by the
+file descriptor <CODE
+CLASS="PARAMETER"
+>fd</CODE
+> from the buffer starting at
+<CODE
+CLASS="PARAMETER"
+>buf</CODE
+>. When the hardware outputs are not active
+yet, this function enables them. When <CODE
+CLASS="PARAMETER"
+>count</CODE
+> is
+zero, <CODE
+CLASS="FUNCTION"
+>write()</CODE
+> returns
+<SPAN
+CLASS="RETURNVALUE"
+>0</SPAN
+> without any other effect.</P
+><P
+>When the application does not provide more data in time, the
+previous video frame, raw VBI image, sliced VPS or WSS data is
+displayed again. Sliced Teletext or Closed Caption data is not
+repeated, the driver inserts a blank line instead.</P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN14546"
+></A
+><H2
+>Return Value</H2
+><P
+>On success, the number of bytes written are returned. Zero
+indicates nothing was written. On error, <SPAN
+CLASS="RETURNVALUE"
+>-1</SPAN
+>
+is returned, and the <CODE
+CLASS="VARNAME"
+>errno</CODE
+> variable is set
+appropriately. In this case the next write will start at the beginning
+of a new frame. Possible error codes are:</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EAGAIN</SPAN
+></DT
+><DD
+><P
+>Non-blocking I/O has been selected using the <A
+HREF="r14090.htm"
+><CODE
+CLASS="CONSTANT"
+>O_NONBLOCK</CODE
+></A
+> flag and no
+buffer space was available to write the data immediately.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EBADF</SPAN
+></DT
+><DD
+><P
+><CODE
+CLASS="PARAMETER"
+>fd</CODE
+> is not a valid file
+descriptor or is not open for writing.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EBUSY</SPAN
+></DT
+><DD
+><P
+>The driver does not support multiple write streams and the
+device is already in use.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EFAULT</SPAN
+></DT
+><DD
+><P
+><CODE
+CLASS="PARAMETER"
+>buf</CODE
+> references an inaccessible
+memory area.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EINTR</SPAN
+></DT
+><DD
+><P
+>The call was interrupted by a signal before any
+data was written.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EIO</SPAN
+></DT
+><DD
+><P
+>I/O error. This indicates some hardware problem.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+></DT
+><DD
+><P
+>The <CODE
+CLASS="FUNCTION"
+>write()</CODE
+> function is not
+supported by this driver, not on this device, or generally not on this
+type of device.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="r14390.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="c14592.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>V4L2 select()</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="r7624.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>V4L2 Driver Programming</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

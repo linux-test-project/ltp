@@ -241,4 +241,15 @@ CONFIG_HOTPLUG_PCI_CPCI_ZT5550=y
 CONFIG_HOTPLUG_PCI_CPCI_GENERIC=y
 CONFIG_HOTPLUG_PCI_SHPC=y
 ---------------------------------
+Video For Linux Two API testing Requirements:
+You need to have a video device (i.e. webcam, tuner card, etc.) connected to your system and available under /dev/video0. If you don't have any hardware device available, you can still test the "Virtual Video Driver". To compile this you need to compile your kernel with CONFIG_VIDEO_VIVI=m under:
+  -> Device Drivers
+    -> Multimedia devices
+      -> Video For Linux
+        -> Video capture adapters
+         -> Virtual Video Driver
+
+The tests also require CUnit Framework to be installed before compiling the tests. Download & Install the same from:
+http://sourceforge.net/projects/cunit/
+---------------------------------
 ---------------------------------

@@ -1,0 +1,345 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>V4L2 open()</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Function Reference"
+HREF="r7624.htm"><LINK
+REL="PREVIOUS"
+TITLE="V4L2 munmap()"
+HREF="r14037.htm"><LINK
+REL="NEXT"
+TITLE="V4L2 poll()"
+HREF="r14169.htm"></HEAD
+><BODY
+CLASS="REFENTRY"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="r14037.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="r14169.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="FUNC-OPEN"
+></A
+>V4L2 open()</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN14094"
+></A
+><H2
+>Name</H2
+>v4l2-open&nbsp;--&nbsp;Open a V4L2 device</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN14097"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN14098"
+></A
+><PRE
+CLASS="FUNCSYNOPSISINFO"
+>#include &lt;fcntl.h&gt;</PRE
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>int open</CODE
+>(const char *device_name, int flags);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN14107"
+></A
+><H2
+>Arguments</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><CODE
+CLASS="PARAMETER"
+>device_name</CODE
+></DT
+><DD
+><P
+>Device to be opened.</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>flags</CODE
+></DT
+><DD
+><P
+>Open flags. Access mode must be
+<CODE
+CLASS="CONSTANT"
+>O_RDWR</CODE
+>. This is just a technicality, input devices
+still support only reading and output devices only writing.</P
+><P
+>When the <CODE
+CLASS="CONSTANT"
+>O_NONBLOCK</CODE
+> flag is
+given, the read() function and the <A
+HREF="r12878.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_DQBUF</CODE
+></A
+> ioctl will return
+the <SPAN
+CLASS="ERRORCODE"
+>EAGAIN</SPAN
+> error code when no data is available or no buffer is in the driver
+outgoing queue, otherwise these functions block until data becomes
+available. All V4L2 drivers exchanging data with applications must
+support the <CODE
+CLASS="CONSTANT"
+>O_NONBLOCK</CODE
+> flag.</P
+><P
+>Other flags have no effect.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN14128"
+></A
+><H2
+>Description</H2
+><P
+>To open a V4L2 device applications call
+<CODE
+CLASS="FUNCTION"
+>open()</CODE
+> with the desired device name. This
+function has no side effects; all data format parameters, current
+input or output, control values or other properties remain unchanged.
+At the first <CODE
+CLASS="FUNCTION"
+>open()</CODE
+> call after loading the driver
+they will be reset to default values, drivers are never in an
+undefined state.</P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN14133"
+></A
+><H2
+>Return Value</H2
+><P
+>On success <CODE
+CLASS="FUNCTION"
+>open</CODE
+> returns the new file
+descriptor. On error -1 is returned, and the <CODE
+CLASS="VARNAME"
+>errno</CODE
+>
+variable is set appropriately. Possible error codes are:</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EACCES</SPAN
+></DT
+><DD
+><P
+>The caller has no permission to access the
+device.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EBUSY</SPAN
+></DT
+><DD
+><P
+>The driver does not support multiple opens and the
+device is already in use.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>ENXIO</SPAN
+></DT
+><DD
+><P
+>No device corresponding to this device special file
+exists.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>ENOMEM</SPAN
+></DT
+><DD
+><P
+>Not enough kernel memory was available to complete the
+request.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EMFILE</SPAN
+></DT
+><DD
+><P
+>The  process  already  has  the  maximum number of
+files open.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>ENFILE</SPAN
+></DT
+><DD
+><P
+>The limit on the total number of files open on the
+system has been reached.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="r14037.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="r14169.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>V4L2 munmap()</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="r7624.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>V4L2 poll()</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

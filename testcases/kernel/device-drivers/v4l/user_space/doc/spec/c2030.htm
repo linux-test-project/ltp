@@ -1,0 +1,488 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Image Formats</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="PREVIOUS"
+TITLE="Streaming Parameters"
+HREF="x2009.htm"><LINK
+REL="NEXT"
+TITLE="Colorspaces"
+HREF="x2123.htm"></HEAD
+><BODY
+CLASS="CHAPTER"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x2009.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x2123.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="PIXFMT"
+></A
+>Chapter 2. Image Formats</H1
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Table of Contents</B
+></DT
+><DT
+>2.1. <A
+HREF="c2030.htm#AEN2113"
+>Standard Image Formats</A
+></DT
+><DT
+>2.2. <A
+HREF="x2123.htm"
+>Colorspaces</A
+></DT
+><DT
+>2.3. <A
+HREF="x2428.htm"
+>Indexed Format</A
+></DT
+><DT
+>2.4. <A
+HREF="x2490.htm"
+>RGB Formats</A
+></DT
+><DT
+>2.5. <A
+HREF="x3891.htm"
+>YUV Formats</A
+></DT
+><DT
+>2.6. <A
+HREF="x5634.htm"
+>Compressed Formats</A
+></DT
+><DT
+>2.7. <A
+HREF="x5665.htm"
+>Reserved Format Identifiers</A
+></DT
+></DL
+></DIV
+><P
+>The V4L2 API was primarily designed for devices exchanging
+image data with applications. The
+<CODE
+CLASS="STRUCTNAME"
+>v4l2_pix_format</CODE
+> structure defines the format
+and layout of an image in memory. Image formats are negotiated with
+the <A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+></A
+> ioctl. (The explanations here focus on video
+capturing and output, for overlay frame buffer formats see also
+<A
+HREF="r10595.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_G_FBUF</CODE
+></A
+>.)</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-PIX-FORMAT"
+></A
+><P
+><B
+>Table 2-1. struct <CODE
+CLASS="STRUCTNAME"
+>v4l2_pix_format</CODE
+></B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="25%"
+TITLE="C1"><COL
+WIDTH="25%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>width</CODE
+></TD
+><TD
+>Image width in pixels.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>height</CODE
+></TD
+><TD
+>Image height in pixels.</TD
+></TR
+><TR
+><TD
+COLSPAN="3"
+>Applications set these fields to
+request an image size, drivers return the closest possible values. In
+case of planar formats the <CODE
+CLASS="STRUCTFIELD"
+>width</CODE
+> and
+<CODE
+CLASS="STRUCTFIELD"
+>height</CODE
+> applies to the largest plane. To
+avoid ambiguities drivers must return values rounded up to a multiple
+of the scale factor of any smaller planes. For example when the image
+format is YUV 4:2:0, <CODE
+CLASS="STRUCTFIELD"
+>width</CODE
+> and
+<CODE
+CLASS="STRUCTFIELD"
+>height</CODE
+> must be multiples of two.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>pixelformat</CODE
+></TD
+><TD
+>The pixel format or type of compression, set by the
+application. This is a little endian <A
+HREF="r8367.htm#V4L2-FOURCC"
+>four character code</A
+>. V4L2 defines
+standard RGB formats in <A
+HREF="r2492.htm#RGB-FORMATS"
+>Table 2-1</A
+>, YUV formats in <A
+HREF="x3891.htm"
+>Section 2.5</A
+>, and reserved codes in <A
+HREF="x5665.htm#RESERVED-FORMATS"
+>Table 2-8</A
+></TD
+></TR
+><TR
+><TD
+>enum&nbsp;<A
+HREF="x6386.htm#V4L2-FIELD"
+>v4l2_field</A
+></TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>field</CODE
+></TD
+><TD
+>Video images are typically interlaced. Applications
+can request to capture or output only the top or bottom field, or both
+fields interlaced or sequentially stored in one buffer or alternating
+in separate buffers. Drivers return the actual field order selected.
+For details see <A
+HREF="x6386.htm"
+>Section 3.6</A
+>.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>bytesperline</CODE
+></TD
+><TD
+>Distance in bytes between the leftmost pixels in two
+adjacent lines.</TD
+></TR
+><TR
+><TD
+COLSPAN="3"
+><P
+>Both applications and drivers
+can set this field to request padding bytes at the end of each line.
+Drivers however may ignore the value requested by the application,
+returning <CODE
+CLASS="STRUCTFIELD"
+>width</CODE
+> times bytes per pixel or a
+larger value required by the hardware. That implies applications can
+just set this field to zero to get a reasonable
+default.</P
+><P
+>Video hardware may access padding bytes,
+therefore they must reside in accessible memory. Consider cases where
+padding bytes after the last line of an image cross a system page
+boundary. Input devices may write padding bytes, the value is
+undefined. Output devices ignore the contents of padding
+bytes.</P
+><P
+>When the image format is planar the
+<CODE
+CLASS="STRUCTFIELD"
+>bytesperline</CODE
+> value applies to the largest
+plane and is divided by the same factor as the
+<CODE
+CLASS="STRUCTFIELD"
+>width</CODE
+> field for any smaller planes. For
+example the Cb and Cr planes of a YUV 4:2:0 image have half as many
+padding bytes following each line as the Y plane. To avoid ambiguities
+drivers must return a <CODE
+CLASS="STRUCTFIELD"
+>bytesperline</CODE
+> value
+rounded up to a multiple of the scale factor.</P
+></TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>sizeimage</CODE
+></TD
+><TD
+>Size in bytes of the buffer to hold a complete image,
+set by the driver. Usually this is
+<CODE
+CLASS="STRUCTFIELD"
+>bytesperline</CODE
+> times
+<CODE
+CLASS="STRUCTFIELD"
+>height</CODE
+>. When the image consists of variable
+length compressed data this is the maximum number of bytes required to
+hold an image.</TD
+></TR
+><TR
+><TD
+>enum&nbsp;<A
+HREF="x2123.htm#V4L2-COLORSPACE"
+>v4l2_colorspace</A
+></TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>colorspace</CODE
+></TD
+><TD
+>This information supplements the
+<CODE
+CLASS="STRUCTFIELD"
+>pixelformat</CODE
+> and must be set by the driver,
+see <A
+HREF="x2123.htm"
+>Section 2.2</A
+>.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>priv</CODE
+></TD
+><TD
+>Reserved for custom (driver defined) additional
+information about formats. When not used drivers and applications must
+set this field to zero.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="SECTION"
+><H1
+CLASS="SECTION"
+><A
+NAME="AEN2113"
+>2.1. Standard Image Formats</A
+></H1
+><P
+>In order to exchange images between drivers and
+applications, it is necessary to have standard image data formats
+which both sides will interpret the same way. V4L2 includes several
+such formats, and this section is intended to be an unambiguous
+specification of the standard image data formats in V4L2.</P
+><P
+>V4L2 drivers are not limited to these formats, however.
+Driver-specific formats are possible. In that case the application may
+depend on a codec to convert images to one of the standard formats
+when needed. But the data can still be stored and retrieved in the
+proprietary format. For example, a device may support a proprietary
+compressed format. Applications can still capture and save the data in
+the compressed format, saving much disk space, and later use a codec
+to convert the images to the X Windows screen format when the video is
+to be displayed.</P
+><P
+>Even so, ultimately, some standard formats are needed, so
+the V4L2 specification would not be complete without well-defined
+standard formats.</P
+><P
+>The V4L2 standard formats are mainly uncompressed formats. The
+pixels are always arranged in memory from left to right, and from top
+to bottom. The first byte of data in the image buffer is always for
+the leftmost pixel of the topmost row. Following that is the pixel
+immediately to its right, and so on until the end of the top row of
+pixels. Following the rightmost pixel of the row there may be zero or
+more bytes of padding to guarantee that each row of pixel data has a
+certain alignment. Following the pad bytes, if any, is data for the
+leftmost pixel of the second row from the top, and so on. The last row
+has just as many pad bytes after it as the other rows.</P
+><P
+>In V4L2 each format has an identifier which looks like
+<CODE
+CLASS="CONSTANT"
+>PIX_FMT_XXX</CODE
+>, defined in the <A
+HREF="a16506.htm"
+>videodev.h</A
+> header file. These identifiers
+represent <A
+HREF="r8367.htm#V4L2-FOURCC"
+>four character codes</A
+>
+which are also listed below, however they are not the same as those
+used in the Windows world.</P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x2009.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x2123.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Streaming Parameters</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Colorspaces</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

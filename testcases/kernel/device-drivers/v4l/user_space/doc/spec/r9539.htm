@@ -1,0 +1,537 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ioctl VIDIOC_G_AUDIO, VIDIOC_S_AUDIO</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Function Reference"
+HREF="r7624.htm"><LINK
+REL="PREVIOUS"
+TITLE="ioctl VIDIOC_ENUMSTD"
+HREF="r9288.htm"><LINK
+REL="NEXT"
+TITLE="ioctl VIDIOC_G_AUDOUT, VIDIOC_S_AUDOUT"
+HREF="r9688.htm"></HEAD
+><BODY
+CLASS="REFENTRY"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="r9288.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="r9688.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="VIDIOC-G-AUDIO"
+></A
+>ioctl VIDIOC_G_AUDIO, VIDIOC_S_AUDIO</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN9543"
+></A
+><H2
+>Name</H2
+>VIDIOC_G_AUDIO, VIDIOC_S_AUDIO&nbsp;--&nbsp;Query or select the current audio input and its
+attributes</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN9547"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN9548"
+></A
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>int ioctl</CODE
+>(int fd, int request, struct v4l2_audio *argp);</CODE
+></P
+><P
+></P
+></DIV
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN9558"
+></A
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>int ioctl</CODE
+>(int fd, int request, const struct v4l2_audio *argp);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN9568"
+></A
+><H2
+>Arguments</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><CODE
+CLASS="PARAMETER"
+>fd</CODE
+></DT
+><DD
+><P
+>File descriptor returned by <A
+HREF="r14090.htm"
+><CODE
+CLASS="FUNCTION"
+>open()</CODE
+></A
+>.</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>request</CODE
+></DT
+><DD
+><P
+>VIDIOC_G_AUDIO, VIDIOC_S_AUDIO</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>argp</CODE
+></DT
+><DD
+><P
+></P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN9588"
+></A
+><H2
+>Description</H2
+><P
+>To query the current audio input applications zero out the
+<CODE
+CLASS="STRUCTFIELD"
+>reserved</CODE
+> array of a struct&nbsp;<A
+HREF="r9539.htm#V4L2-AUDIO"
+>v4l2_audio</A
+>
+and call the <CODE
+CLASS="CONSTANT"
+>VIDIOC_G_AUDIO</CODE
+> ioctl with a pointer
+to this structure. Drivers fill the rest of the structure or return an
+<SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+> error code when the device has no audio inputs, or none which combine
+with the current video input.</P
+><P
+>Audio inputs have one writable property, the audio mode. To
+select the current audio input <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>and</I
+></SPAN
+> change the
+audio mode, applications initialize the
+<CODE
+CLASS="STRUCTFIELD"
+>index</CODE
+> and <CODE
+CLASS="STRUCTFIELD"
+>mode</CODE
+>
+fields, and the
+<CODE
+CLASS="STRUCTFIELD"
+>reserved</CODE
+> array of a
+<CODE
+CLASS="STRUCTNAME"
+>v4l2_audio</CODE
+> structure and call the
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_S_AUDIO</CODE
+> ioctl. Drivers may switch to a
+different audio mode if the request cannot be satisfied. However, this
+is a write-only ioctl, it does not return the actual new audio
+mode.</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-AUDIO"
+></A
+><P
+><B
+>Table 1. struct <CODE
+CLASS="STRUCTNAME"
+>v4l2_audio</CODE
+></B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="25%"
+TITLE="C1"><COL
+WIDTH="25%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>index</CODE
+></TD
+><TD
+>Identifies the audio input, set by the
+driver or application.</TD
+></TR
+><TR
+><TD
+>__u8</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>name</CODE
+>[32]</TD
+><TD
+>Name of the audio input, a NUL-terminated ASCII
+string, for example: "Line In". This information is intended for the
+user, preferably the connector label on the device itself.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>capability</CODE
+></TD
+><TD
+>Audio capability flags, see <A
+HREF="r9539.htm#AUDIO-CAPABILITY"
+>Table 2</A
+>.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>mode</CODE
+></TD
+><TD
+>Audio mode flags set by drivers and applications (on
+            <CODE
+CLASS="CONSTANT"
+>VIDIOC_S_AUDIO</CODE
+> ioctl), see <A
+HREF="r9539.htm#AUDIO-MODE"
+>Table 3</A
+>.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>reserved</CODE
+>[2]</TD
+><TD
+>Reserved for future extensions. Drivers and
+applications must set the array to zero.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="AUDIO-CAPABILITY"
+></A
+><P
+><B
+>Table 2. Audio Capability Flags</B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="38%"
+TITLE="C1"><COL
+WIDTH="12%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_AUDCAP_STEREO</CODE
+></TD
+><TD
+>0x00001</TD
+><TD
+>This is a stereo input. The flag is intended to
+automatically disable stereo recording etc. when the signal is always
+monaural. The API provides no means to detect if stereo is
+<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>received</I
+></SPAN
+>, unless the audio input belongs to a
+tuner.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_AUDCAP_AVL</CODE
+></TD
+><TD
+>0x00002</TD
+><TD
+>Automatic Volume Level mode is supported.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="AUDIO-MODE"
+></A
+><P
+><B
+>Table 3. Audio Mode Flags</B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="38%"
+TITLE="C1"><COL
+WIDTH="12%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_AUDMODE_AVL</CODE
+></TD
+><TD
+>0x00001</TD
+><TD
+>AVL mode is on.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN9671"
+></A
+><H2
+>Return Value</H2
+><P
+>On success <SPAN
+CLASS="RETURNVALUE"
+>0</SPAN
+> is returned, on error <SPAN
+CLASS="RETURNVALUE"
+>-1</SPAN
+> and the <CODE
+CLASS="VARNAME"
+>errno</CODE
+> variable is set appropriately:</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+></DT
+><DD
+><P
+>No audio inputs combine with the current video input,
+or the number of the selected audio input is out of bounds or it does
+not combine, or there are no audio inputs at all and the ioctl is not
+supported.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EBUSY</SPAN
+></DT
+><DD
+><P
+>I/O is in progress, the input cannot be
+switched.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="r9288.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="r9688.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ioctl VIDIOC_ENUMSTD</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="r7624.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>ioctl VIDIOC_G_AUDOUT, VIDIOC_S_AUDOUT</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,704 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ioctl VIDIOC_ENUMINPUT</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Function Reference"
+HREF="r7624.htm"><LINK
+REL="PREVIOUS"
+TITLE="ioctl VIDIOC_ENUM_FRAMEINTERVALS"
+HREF="r8724.htm"><LINK
+REL="NEXT"
+TITLE="ioctl VIDIOC_ENUMOUTPUT"
+HREF="r9149.htm"></HEAD
+><BODY
+CLASS="REFENTRY"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="r8724.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="r9149.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="VIDIOC-ENUMINPUT"
+></A
+>ioctl VIDIOC_ENUMINPUT</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN8940"
+></A
+><H2
+>Name</H2
+>VIDIOC_ENUMINPUT&nbsp;--&nbsp;Enumerate video inputs</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN8943"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN8944"
+></A
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>int ioctl</CODE
+>(int fd, int request, struct v4l2_input
+*argp);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN8954"
+></A
+><H2
+>Arguments</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><CODE
+CLASS="PARAMETER"
+>fd</CODE
+></DT
+><DD
+><P
+>File descriptor returned by <A
+HREF="r14090.htm"
+><CODE
+CLASS="FUNCTION"
+>open()</CODE
+></A
+>.</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>request</CODE
+></DT
+><DD
+><P
+>VIDIOC_ENUMINPUT</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>argp</CODE
+></DT
+><DD
+><P
+></P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN8974"
+></A
+><H2
+>Description</H2
+><P
+>To query the attributes of a video input applications
+initialize the <CODE
+CLASS="STRUCTFIELD"
+>index</CODE
+> field of struct&nbsp;<A
+HREF="r8936.htm#V4L2-INPUT"
+>v4l2_input</A
+>
+and call the <CODE
+CLASS="CONSTANT"
+>VIDIOC_ENUMINPUT</CODE
+> ioctl with a
+pointer to this structure. Drivers fill the rest of the structure or
+return an <SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+> error code when the index is out of bounds. To enumerate all
+inputs applications shall begin at index zero, incrementing by one
+until the driver returns <SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+>.</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-INPUT"
+></A
+><P
+><B
+>Table 1. struct <CODE
+CLASS="STRUCTNAME"
+>v4l2_input</CODE
+></B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="25%"
+TITLE="C1"><COL
+WIDTH="25%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>index</CODE
+></TD
+><TD
+>Identifies the input, set by the
+application.</TD
+></TR
+><TR
+><TD
+>__u8</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>name</CODE
+>[32]</TD
+><TD
+>Name of the video input, a NUL-terminated ASCII
+string, for example: "Vin (Composite 2)". This information is intended
+for the user, preferably the connector label on the device itself.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>type</CODE
+></TD
+><TD
+>Type of the input, see <A
+HREF="r8936.htm#INPUT-TYPE"
+>Table 2</A
+>.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>audioset</CODE
+></TD
+><TD
+><P
+>Drivers can enumerate up to 32 video and
+audio inputs. This field shows which audio inputs were selectable as
+audio source if this was the currently selected video input. It is a
+bit mask. The LSB corresponds to audio input 0, the MSB to input 31.
+Any number of bits can be set, or none.</P
+><P
+>When the driver
+does not enumerate audio inputs no bits must be set. Applications
+shall not interpret this as lack of audio support. Some drivers
+automatically select audio sources and do not enumerate them since
+there is no choice anyway.</P
+><P
+>For details on audio inputs and
+how to select the current input see <A
+HREF="x341.htm"
+>Section 1.5</A
+>.</P
+></TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>tuner</CODE
+></TD
+><TD
+>Capture devices can have zero or more tuners (RF
+demodulators). When the <CODE
+CLASS="STRUCTFIELD"
+>type</CODE
+> is set to
+<CODE
+CLASS="CONSTANT"
+>V4L2_INPUT_TYPE_TUNER</CODE
+> this is an RF connector and
+this field identifies the tuner. It corresponds to
+struct&nbsp;<A
+HREF="r12342.htm#V4L2-TUNER"
+>v4l2_tuner</A
+> field <CODE
+CLASS="STRUCTFIELD"
+>index</CODE
+>. For details on
+tuners see <A
+HREF="x394.htm"
+>Section 1.6</A
+>.</TD
+></TR
+><TR
+><TD
+><A
+HREF="r9288.htm#V4L2-STD-ID"
+>v4l2_std_id</A
+></TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>std</CODE
+></TD
+><TD
+>Every video input supports one or more different
+video standards. This field is a set of all supported standards. For
+details on video standards and how to switch see <A
+HREF="x448.htm"
+>Section 1.7</A
+>.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>status</CODE
+></TD
+><TD
+>This field provides status information about the
+input. See <A
+HREF="r8936.htm#INPUT-STATUS"
+>Table 3</A
+> for flags.
+<CODE
+CLASS="STRUCTFIELD"
+>status</CODE
+> is only valid when this is the
+current input.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>reserved</CODE
+>[4]</TD
+><TD
+>Reserved for future extensions. Drivers must set
+the array to zero.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="INPUT-TYPE"
+></A
+><P
+><B
+>Table 2. Input Types</B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="38%"
+TITLE="C1"><COL
+WIDTH="12%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_INPUT_TYPE_TUNER</CODE
+></TD
+><TD
+>1</TD
+><TD
+>This input uses a tuner (RF demodulator).</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_INPUT_TYPE_CAMERA</CODE
+></TD
+><TD
+>2</TD
+><TD
+>Analog baseband input, for example CVBS /
+Composite Video, S-Video, RGB.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="INPUT-STATUS"
+></A
+><P
+><B
+>Table 3. Input Status Flags</B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="33%"
+TITLE="C1"><COL
+WIDTH="33%"
+ALIGN="CENTER"
+TITLE="C2"><COL
+WIDTH="33%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+COLSPAN="3"
+ALIGN="LEFT"
+>General</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_IN_ST_NO_POWER</CODE
+></TD
+><TD
+>0x00000001</TD
+><TD
+>Attached device is off.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_IN_ST_NO_SIGNAL</CODE
+></TD
+><TD
+>0x00000002</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_IN_ST_NO_COLOR</CODE
+></TD
+><TD
+>0x00000004</TD
+><TD
+>The hardware supports color decoding, but does not
+detect color modulation in the signal.</TD
+></TR
+><TR
+><TD
+COLSPAN="3"
+ALIGN="LEFT"
+>Analog Video</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_IN_ST_NO_H_LOCK</CODE
+></TD
+><TD
+>0x00000100</TD
+><TD
+>No horizontal sync lock.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_IN_ST_COLOR_KILL</CODE
+></TD
+><TD
+>0x00000200</TD
+><TD
+>A color killer circuit automatically disables color
+decoding when it detects no color modulation. When this flag is set
+the color killer is enabled <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>and</I
+></SPAN
+> has shut off
+color decoding.</TD
+></TR
+><TR
+><TD
+COLSPAN="3"
+ALIGN="LEFT"
+>Digital Video</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_IN_ST_NO_SYNC</CODE
+></TD
+><TD
+>0x00010000</TD
+><TD
+>No synchronization lock.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_IN_ST_NO_EQU</CODE
+></TD
+><TD
+>0x00020000</TD
+><TD
+>No equalizer lock.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_IN_ST_NO_CARRIER</CODE
+></TD
+><TD
+>0x00040000</TD
+><TD
+>Carrier recovery failed.</TD
+></TR
+><TR
+><TD
+COLSPAN="3"
+ALIGN="LEFT"
+>VCR and Set-Top Box</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_IN_ST_MACROVISION</CODE
+></TD
+><TD
+>0x01000000</TD
+><TD
+>Macrovision is an analog copy prevention system
+mangling the video signal to confuse video recorders. When this
+flag is set Macrovision has been detected.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_IN_ST_NO_ACCESS</CODE
+></TD
+><TD
+>0x02000000</TD
+><TD
+>Conditional access denied.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_IN_ST_VTR</CODE
+></TD
+><TD
+>0x04000000</TD
+><TD
+>VTR time constant. [?]</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN9135"
+></A
+><H2
+>Return Value</H2
+><P
+>On success <SPAN
+CLASS="RETURNVALUE"
+>0</SPAN
+> is returned, on error <SPAN
+CLASS="RETURNVALUE"
+>-1</SPAN
+> and the <CODE
+CLASS="VARNAME"
+>errno</CODE
+> variable is set appropriately:</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+></DT
+><DD
+><P
+>The struct&nbsp;<A
+HREF="r8936.htm#V4L2-INPUT"
+>v4l2_input</A
+> <CODE
+CLASS="STRUCTFIELD"
+>index</CODE
+> is
+out of bounds.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="r8724.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="r9149.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ioctl VIDIOC_ENUM_FRAMEINTERVALS</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="r7624.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>ioctl VIDIOC_ENUMOUTPUT</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

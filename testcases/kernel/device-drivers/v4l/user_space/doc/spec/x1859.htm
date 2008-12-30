@@ -1,0 +1,365 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Data Formats</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Common API Elements"
+HREF="c174.htm"><LINK
+REL="PREVIOUS"
+TITLE="Extended Controls"
+HREF="x802.htm"><LINK
+REL="NEXT"
+TITLE="Image Cropping, Insertion and Scaling"
+HREF="x1904.htm"></HEAD
+><BODY
+CLASS="SECTION"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x802.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 1. Common API Elements</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x1904.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECTION"
+><H1
+CLASS="SECTION"
+><A
+NAME="FORMAT"
+>1.10. Data Formats</A
+></H1
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN1861"
+>1.10.1. Data Format Negotiation</A
+></H2
+><P
+>Different devices exchange different kinds of data with
+applications, for example video images, raw or sliced VBI data, RDS
+datagrams. Even within one kind many different formats are possible,
+in particular an abundance of image formats. Although drivers must
+provide a default and the selection persists across closing and
+reopening a device, applications should always negotiate a data format
+before engaging in data exchange. Negotiation means the application
+asks for a particular format and the driver selects and reports the
+best the hardware can do to satisfy the request. Of course
+applications can also just query the current selection.</P
+><P
+>A single mechanism exists to negotiate all data formats
+using the aggregate struct&nbsp;<A
+HREF="r10944.htm#V4L2-FORMAT"
+>v4l2_format</A
+> and the <A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_G_FMT</CODE
+></A
+> and
+<A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+></A
+> ioctls. Additionally the <A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_TRY_FMT</CODE
+></A
+> ioctl can be
+used to examine what the hardware <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>could</I
+></SPAN
+> do,
+without actually selecting a new data format. The data formats
+supported by the V4L2 API are covered in the respective device section
+in <A
+HREF="c6488.htm"
+>Chapter 4</A
+>. For a closer look at image formats see
+<A
+HREF="c2030.htm"
+>Chapter 2</A
+>.</P
+><P
+>The <CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+> ioctl is a major
+turning-point in the initialization sequence. Prior to this point
+multiple panel applications can access the same device concurrently to
+select the current input, change controls or modify other properties.
+The first <CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+> assigns a logical stream
+(video data, VBI data etc.) exclusively to one file descriptor.</P
+><P
+>Exclusive means no other application, more precisely no
+other file descriptor, can grab this stream or change device
+properties inconsistent with the negotiated parameters. A video
+standard change for example, when the new standard uses a different
+number of scan lines, can invalidate the selected image format.
+Therefore only the file descriptor owning the stream can make
+invalidating changes. Accordingly multiple file descriptors which
+grabbed different logical streams prevent each other from interfering
+with their settings. When for example video overlay is about to start
+or already in progress, simultaneous video capturing may be restricted
+to the same cropping and image size.</P
+><P
+>When applications omit the
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+> ioctl its locking side effects are
+implied by the next step, the selection of an I/O method with the
+<A
+HREF="r13696.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_REQBUFS</CODE
+></A
+> ioctl or implicit with the first <A
+HREF="r14264.htm"
+><CODE
+CLASS="FUNCTION"
+>read()</CODE
+></A
+> or
+<A
+HREF="r14496.htm"
+><CODE
+CLASS="FUNCTION"
+>write()</CODE
+></A
+> call.</P
+><P
+>Generally only one logical stream can be assigned to a
+file descriptor, the exception being drivers permitting simultaneous
+video capturing and overlay using the same file descriptor for
+compatibility with V4L and earlier versions of V4L2. Switching the
+logical stream or returning into "panel mode" is possible by closing
+and reopening the device. Drivers <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>may</I
+></SPAN
+> support a
+switch using <CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+>.</P
+><P
+>All drivers exchanging data with
+applications must support the <CODE
+CLASS="CONSTANT"
+>VIDIOC_G_FMT</CODE
+> and
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+> ioctl. Implementation of the
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_TRY_FMT</CODE
+> is highly recommended but
+optional.</P
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN1894"
+>1.10.2. Image Format Enumeration</A
+></H2
+><P
+>Apart of the generic format negotiation functions
+a special ioctl to enumerate all image formats supported by video
+capture, overlay or output devices is available.<A
+NAME="AEN1897"
+HREF="x1859.htm#FTN.AEN1897"
+><SPAN
+CLASS="footnote"
+>[1]</SPAN
+></A
+></P
+><P
+>The <A
+HREF="r8367.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_ENUM_FMT</CODE
+></A
+> ioctl must be supported
+by all drivers exchanging image data with applications.</P
+><DIV
+CLASS="IMPORTANT"
+><BLOCKQUOTE
+CLASS="IMPORTANT"
+><P
+><B
+>Important: </B
+>Drivers are not supposed to convert image formats in
+kernel space. They must enumerate only formats directly supported by
+the hardware. If necessary driver writers should publish an example
+conversion routine or library for integration into applications.</P
+></BLOCKQUOTE
+></DIV
+></DIV
+></DIV
+><H3
+CLASS="FOOTNOTES"
+>Notes</H3
+><TABLE
+BORDER="0"
+CLASS="FOOTNOTES"
+WIDTH="100%"
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="5%"
+><A
+NAME="FTN.AEN1897"
+HREF="x1859.htm#AEN1897"
+><SPAN
+CLASS="footnote"
+>[1]</SPAN
+></A
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="95%"
+><P
+>Enumerating formats an application has no a-priori
+knowledge of (otherwise it could explicitely ask for them and need not
+enumerate) seems useless, but there are applications serving as proxy
+between drivers and the actual video applications for which this is
+useful.</P
+></TD
+></TR
+></TABLE
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x802.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x1904.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Extended Controls</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="c174.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Image Cropping, Insertion and Scaling</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

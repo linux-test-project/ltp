@@ -1,0 +1,335 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ioctl VIDIOC_G_STD, VIDIOC_S_STD</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Function Reference"
+HREF="r7624.htm"><LINK
+REL="PREVIOUS"
+TITLE="ioctl VIDIOC_G_SLICED_VBI_CAP"
+HREF="r12051.htm"><LINK
+REL="NEXT"
+TITLE="ioctl VIDIOC_G_TUNER, VIDIOC_S_TUNER"
+HREF="r12342.htm"></HEAD
+><BODY
+CLASS="REFENTRY"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="r12051.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="r12342.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="VIDIOC-G-STD"
+></A
+>ioctl VIDIOC_G_STD, VIDIOC_S_STD</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN12269"
+></A
+><H2
+>Name</H2
+>VIDIOC_G_STD, VIDIOC_S_STD&nbsp;--&nbsp;Query or select the video standard of the current input</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN12273"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN12274"
+></A
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>int ioctl</CODE
+>(int fd, int request, v4l2_std_id
+*argp);</CODE
+></P
+><P
+></P
+></DIV
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN12284"
+></A
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>int ioctl</CODE
+>(int fd, int request, const v4l2_std_id
+*argp);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN12294"
+></A
+><H2
+>Arguments</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><CODE
+CLASS="PARAMETER"
+>fd</CODE
+></DT
+><DD
+><P
+>File descriptor returned by <A
+HREF="r14090.htm"
+><CODE
+CLASS="FUNCTION"
+>open()</CODE
+></A
+>.</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>request</CODE
+></DT
+><DD
+><P
+>VIDIOC_G_STD, VIDIOC_S_STD</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>argp</CODE
+></DT
+><DD
+><P
+></P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN12314"
+></A
+><H2
+>Description</H2
+><P
+>To query and select the current video standard applications
+use the <CODE
+CLASS="CONSTANT"
+>VIDIOC_G_STD</CODE
+> and <CODE
+CLASS="CONSTANT"
+>VIDIOC_S_STD</CODE
+> ioctls which take a pointer to a
+<A
+HREF="r9288.htm#V4L2-STD-ID"
+>v4l2_std_id</A
+> type as argument. <CODE
+CLASS="CONSTANT"
+>VIDIOC_G_STD</CODE
+> can
+return a single flag or a set of flags as in struct&nbsp;<A
+HREF="r9288.htm#V4L2-STANDARD"
+>v4l2_standard</A
+> field
+<CODE
+CLASS="STRUCTFIELD"
+>id</CODE
+>. The flags must be unambiguous such
+that they appear in only one enumerated <CODE
+CLASS="STRUCTNAME"
+>v4l2_standard</CODE
+> structure.</P
+><P
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_STD</CODE
+> accepts one or more
+flags, being a write-only ioctl it does not return the actual new standard as
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_G_STD</CODE
+> does. When no flags are given or
+the current input does not support the requested standard the driver
+returns an <SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+> error code. When the standard set is ambiguous drivers may
+return <SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+> or choose any of the requested
+standards.</P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN12329"
+></A
+><H2
+>Return Value</H2
+><P
+>On success <SPAN
+CLASS="RETURNVALUE"
+>0</SPAN
+> is returned, on error <SPAN
+CLASS="RETURNVALUE"
+>-1</SPAN
+> and the <CODE
+CLASS="VARNAME"
+>errno</CODE
+> variable is set appropriately:</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+></DT
+><DD
+><P
+>This ioctl is not supported, or the
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_S_STD</CODE
+> parameter was unsuitable.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="r12051.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="r12342.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ioctl VIDIOC_G_SLICED_VBI_CAP</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="r7624.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>ioctl VIDIOC_G_TUNER, VIDIOC_S_TUNER</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

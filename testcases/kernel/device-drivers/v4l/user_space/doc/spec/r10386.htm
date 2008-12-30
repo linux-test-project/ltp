@@ -1,0 +1,720 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ioctl VIDIOC_G_EXT_CTRLS, VIDIOC_S_EXT_CTRLS,
+VIDIOC_TRY_EXT_CTRLS</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Function Reference"
+HREF="r7624.htm"><LINK
+REL="PREVIOUS"
+TITLE="ioctl VIDIOC_G_ENC_INDEX"
+HREF="r10211.htm"><LINK
+REL="NEXT"
+TITLE="ioctl VIDIOC_G_FBUF, VIDIOC_S_FBUF"
+HREF="r10595.htm"></HEAD
+><BODY
+CLASS="REFENTRY"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="r10211.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="r10595.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="VIDIOC-G-EXT-CTRLS"
+></A
+>ioctl VIDIOC_G_EXT_CTRLS, VIDIOC_S_EXT_CTRLS,
+VIDIOC_TRY_EXT_CTRLS</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN10390"
+></A
+><H2
+>Name</H2
+>VIDIOC_G_EXT_CTRLS, VIDIOC_S_EXT_CTRLS, VIDIOC_TRY_EXT_CTRLS&nbsp;--&nbsp;Get or set the value of several controls, try control
+values</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN10395"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN10396"
+></A
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>int ioctl</CODE
+>(int fd, int request, struct v4l2_ext_controls
+*argp);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN10406"
+></A
+><H2
+>Arguments</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><CODE
+CLASS="PARAMETER"
+>fd</CODE
+></DT
+><DD
+><P
+>File descriptor returned by <A
+HREF="r14090.htm"
+><CODE
+CLASS="FUNCTION"
+>open()</CODE
+></A
+>.</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>request</CODE
+></DT
+><DD
+><P
+>VIDIOC_G_EXT_CTRLS, VIDIOC_S_EXT_CTRLS,
+VIDIOC_TRY_EXT_CTRLS</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>argp</CODE
+></DT
+><DD
+><P
+></P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN10426"
+></A
+><H2
+>Description</H2
+><P
+>These ioctls allow the caller to get or set multiple
+controls atomically. Control IDs are grouped into control classes (see
+<A
+HREF="r10386.htm#CTRL-CLASS"
+>Table 3</A
+>) and all controls in the control array
+must belong to the same control class.</P
+><P
+>Applications must always fill in the
+<CODE
+CLASS="STRUCTFIELD"
+>count</CODE
+>,
+<CODE
+CLASS="STRUCTFIELD"
+>ctrl_class</CODE
+>,
+<CODE
+CLASS="STRUCTFIELD"
+>controls</CODE
+> and
+<CODE
+CLASS="STRUCTFIELD"
+>reserved</CODE
+> fields of struct&nbsp;<A
+HREF="r10386.htm#V4L2-EXT-CONTROLS"
+>v4l2_ext_controls</A
+>, and
+initialize the struct&nbsp;<A
+HREF="r10386.htm#V4L2-EXT-CONTROL"
+>v4l2_ext_control</A
+> array pointed to by the
+<CODE
+CLASS="STRUCTFIELD"
+>controls</CODE
+> fields.</P
+><P
+>To get the current value of a set of controls applications
+initialize the <CODE
+CLASS="STRUCTFIELD"
+>id</CODE
+> field of each
+struct&nbsp;<A
+HREF="r10386.htm#V4L2-EXT-CONTROL"
+>v4l2_ext_control</A
+> and call the
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_G_EXT_CTRLS</CODE
+> ioctl.</P
+><P
+>To change the value of a set of controls applications
+initialize the <CODE
+CLASS="STRUCTFIELD"
+>id</CODE
+> and
+<CODE
+CLASS="STRUCTFIELD"
+>value</CODE
+> fields of a struct&nbsp;<A
+HREF="r10386.htm#V4L2-EXT-CONTROL"
+>v4l2_ext_control</A
+> and
+call the <CODE
+CLASS="CONSTANT"
+>VIDIOC_S_EXT_CTRLS</CODE
+> ioctl. The controls
+will only be set if <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>all</I
+></SPAN
+> control values are
+valid.</P
+><P
+>To check if the a set of controls have correct values
+applications initialize the <CODE
+CLASS="STRUCTFIELD"
+>id</CODE
+> and
+<CODE
+CLASS="STRUCTFIELD"
+>value</CODE
+> fields of a struct&nbsp;<A
+HREF="r10386.htm#V4L2-EXT-CONTROL"
+>v4l2_ext_control</A
+> and
+call the <CODE
+CLASS="CONSTANT"
+>VIDIOC_TRY_EXT_CTRLS</CODE
+> ioctl. It is up to
+the driver whether wrong values are automatically adjusted to a valid
+value or if an error is returned.</P
+><P
+>When the <CODE
+CLASS="STRUCTFIELD"
+>id</CODE
+> or
+<CODE
+CLASS="STRUCTFIELD"
+>ctrl_class</CODE
+> is invalid drivers return an
+<SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+> error code. When the value is out of bounds drivers can choose to take
+the closest valid value or return an <SPAN
+CLASS="ERRORCODE"
+>ERANGE</SPAN
+> error code, whatever seems more
+appropriate. In the first case the new value is set in
+struct&nbsp;<A
+HREF="r10386.htm#V4L2-EXT-CONTROL"
+>v4l2_ext_control</A
+>.</P
+><P
+>The driver will only set/get these controls if all control
+values are correct. This prevents the situation where only some of the
+controls were set/get. Only low-level errors (e.&nbsp;g. a failed i2c
+command) can still cause this situation.</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-EXT-CONTROL"
+></A
+><P
+><B
+>Table 1. struct <CODE
+CLASS="STRUCTNAME"
+>v4l2_ext_control</CODE
+></B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="20%"
+TITLE="C1"><COL
+WIDTH="20%"
+TITLE="C2"><COL
+WIDTH="20%"
+TITLE="C3"><COL
+WIDTH="40%"
+TITLE="C4"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>id</CODE
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>Identifies the control, set by the
+application.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>reserved2</CODE
+>[2]</TD
+><TD
+>&nbsp;</TD
+><TD
+>Reserved for future extensions. Drivers and
+applications must set the array to zero.</TD
+></TR
+><TR
+><TD
+>union</TD
+><TD
+>(anonymous)</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>__s32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>value</CODE
+></TD
+><TD
+>New value or current value.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>__s64</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>value64</CODE
+></TD
+><TD
+>New value or current value.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>void *</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>reserved</CODE
+></TD
+><TD
+>Reserved for future pointer-type controls. Currently unused.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-EXT-CONTROLS"
+></A
+><P
+><B
+>Table 2. struct <CODE
+CLASS="STRUCTNAME"
+>v4l2_ext_controls</CODE
+></B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="25%"
+TITLE="C1"><COL
+WIDTH="25%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>ctrl_class</CODE
+></TD
+><TD
+>The control class to which all controls belong, see
+<A
+HREF="r10386.htm#CTRL-CLASS"
+>Table 3</A
+>.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>count</CODE
+></TD
+><TD
+>The number of controls in the controls array. May
+also be zero.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>error_idx</CODE
+></TD
+><TD
+>Set by the driver in case of an error. It is the
+index of the control causing the error or equal to 'count' when the
+error is not associated with a particular control. Undefined when the
+ioctl returns 0 (success).</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>reserved</CODE
+>[2]</TD
+><TD
+>Reserved for future extensions. Drivers and
+applications must set the array to zero.</TD
+></TR
+><TR
+><TD
+>struct&nbsp;<A
+HREF="r10386.htm#V4L2-EXT-CONTROL"
+>v4l2_ext_control</A
+> *</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>controls</CODE
+></TD
+><TD
+>Pointer to an array of
+<CODE
+CLASS="STRUCTFIELD"
+>count</CODE
+> v4l2_ext_control structures. Ignored
+if <CODE
+CLASS="STRUCTFIELD"
+>count</CODE
+> equals zero.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="CTRL-CLASS"
+></A
+><P
+><B
+>Table 3. Control classes</B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="38%"
+TITLE="C1"><COL
+WIDTH="12%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_CTRL_CLASS_USER</CODE
+></TD
+><TD
+>0x980000</TD
+><TD
+>The class containing user controls. These controls
+are described in <A
+HREF="x542.htm"
+>Section 1.8</A
+>. All controls that can be set
+using the <A
+HREF="r10104.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_CTRL</CODE
+></A
+> and <A
+HREF="r10104.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_G_CTRL</CODE
+></A
+> ioctl belong to this
+class.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_CTRL_CLASS_MPEG</CODE
+></TD
+><TD
+>0x990000</TD
+><TD
+>The class containing MPEG compression controls.
+These controls are described in section <A
+HREF="x802.htm#MPEG-CONTROLS"
+>Section 1.9.5</A
+>.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN10565"
+></A
+><H2
+>Return Value</H2
+><P
+>On success <SPAN
+CLASS="RETURNVALUE"
+>0</SPAN
+> is returned, on error <SPAN
+CLASS="RETURNVALUE"
+>-1</SPAN
+> and the <CODE
+CLASS="VARNAME"
+>errno</CODE
+> variable is set appropriately:</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+></DT
+><DD
+><P
+>The struct&nbsp;<A
+HREF="r10386.htm#V4L2-EXT-CONTROL"
+>v4l2_ext_control</A
+> <CODE
+CLASS="STRUCTFIELD"
+>id</CODE
+>
+is invalid or the struct&nbsp;<A
+HREF="r10386.htm#V4L2-EXT-CONTROLS"
+>v4l2_ext_controls</A
+>
+<CODE
+CLASS="STRUCTFIELD"
+>ctrl_class</CODE
+> is invalid. This error code is
+also returned by the <CODE
+CLASS="CONSTANT"
+>VIDIOC_S_EXT_CTRLS</CODE
+> and
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_TRY_EXT_CTRLS</CODE
+> ioctls if two or more
+control values are in conflict.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>ERANGE</SPAN
+></DT
+><DD
+><P
+>The struct&nbsp;<A
+HREF="r10386.htm#V4L2-EXT-CONTROL"
+>v4l2_ext_control</A
+> <CODE
+CLASS="STRUCTFIELD"
+>value</CODE
+>
+is out of bounds.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EBUSY</SPAN
+></DT
+><DD
+><P
+>The control is temporarily not changeable, possibly
+because another applications took over control of the device function
+this control belongs to.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="r10211.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="r10595.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ioctl VIDIOC_G_ENC_INDEX</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="r7624.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>ioctl VIDIOC_G_FBUF, VIDIOC_S_FBUF</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

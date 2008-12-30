@@ -1,0 +1,677 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ioctl VIDIOC_DBG_G_REGISTER, VIDIOC_DBG_S_REGISTER</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Function Reference"
+HREF="r7624.htm"><LINK
+REL="PREVIOUS"
+TITLE="ioctl VIDIOC_CROPCAP"
+HREF="r7771.htm"><LINK
+REL="NEXT"
+TITLE="ioctl VIDIOC_ENCODER_CMD, VIDIOC_TRY_ENCODER_CMD"
+HREF="r8087.htm"></HEAD
+><BODY
+CLASS="REFENTRY"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="r7771.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="r8087.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="VIDIOC-DBG-G-REGISTER"
+></A
+>ioctl VIDIOC_DBG_G_REGISTER, VIDIOC_DBG_S_REGISTER</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN7904"
+></A
+><H2
+>Name</H2
+>VIDIOC_DBG_G_REGISTER, VIDIOC_DBG_S_REGISTER&nbsp;--&nbsp;Read or write hardware registers</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN7908"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN7909"
+></A
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>int ioctl</CODE
+>(int fd, int request, struct v4l2_register *argp);</CODE
+></P
+><P
+></P
+></DIV
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN7919"
+></A
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>int ioctl</CODE
+>(int fd, int request, const struct v4l2_register
+*argp);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN7929"
+></A
+><H2
+>Arguments</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><CODE
+CLASS="PARAMETER"
+>fd</CODE
+></DT
+><DD
+><P
+>File descriptor returned by <A
+HREF="r14090.htm"
+><CODE
+CLASS="FUNCTION"
+>open()</CODE
+></A
+>.</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>request</CODE
+></DT
+><DD
+><P
+>VIDIOC_DBG_G_REGISTER, VIDIOC_DBG_S_REGISTER</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>argp</CODE
+></DT
+><DD
+><P
+></P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN7949"
+></A
+><H2
+>Description</H2
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>Experimental: </B
+>This is an <A
+HREF="x16453.htm"
+>experimental</A
+>
+interface and may change in the future.</P
+></BLOCKQUOTE
+></DIV
+><P
+>For driver debugging purposes these ioctls allow test
+applications to access hardware registers directly. Regular
+applications should not use them.</P
+><P
+>Since writing or even reading registers can jeopardize the
+system security, its stability and damage the hardware, both ioctls
+require superuser privileges. Additionally the Linux kernel must be
+compiled with the <CODE
+CLASS="CONSTANT"
+>CONFIG_VIDEO_ADV_DEBUG</CODE
+> option
+to enable these ioctls.</P
+><P
+>To write a register applications must initialize all fields
+of a struct&nbsp;<A
+HREF="r7900.htm#V4L2-REGISTER"
+>v4l2_register</A
+> and call
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_DBG_S_REGISTER</CODE
+> with a pointer to this
+structure. The <CODE
+CLASS="STRUCTFIELD"
+>match_type</CODE
+> and
+<CODE
+CLASS="STRUCTFIELD"
+>match_chip</CODE
+> fields select a chip on the TV
+card, the <CODE
+CLASS="STRUCTFIELD"
+>reg</CODE
+> field specifies a register
+number and the <CODE
+CLASS="STRUCTFIELD"
+>val</CODE
+> field the value to be
+written into the register.</P
+><P
+>To read a register applications must initialize the
+<CODE
+CLASS="STRUCTFIELD"
+>match_type</CODE
+>,
+<CODE
+CLASS="STRUCTFIELD"
+>match_chip</CODE
+> and
+<CODE
+CLASS="STRUCTFIELD"
+>reg</CODE
+> fields, and call
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_DBG_G_REGISTER</CODE
+> with a pointer to this
+structure. On success the driver stores the register value in the
+<CODE
+CLASS="STRUCTFIELD"
+>val</CODE
+> field. On failure the structure remains
+unchanged.</P
+><P
+>When <CODE
+CLASS="STRUCTFIELD"
+>match_type</CODE
+> is
+<CODE
+CLASS="CONSTANT"
+>V4L2_CHIP_MATCH_HOST</CODE
+>,
+<CODE
+CLASS="STRUCTFIELD"
+>match_chip</CODE
+> selects the nth non-I<SUP
+>2</SUP
+>C chip
+on the TV card. Drivers may also interpret
+<CODE
+CLASS="STRUCTFIELD"
+>match_chip</CODE
+> as a random ID, but we recommend
+against that. The number zero always selects the host chip, e.&nbsp;g. the
+chip connected to the PCI bus. You can find out which chips are
+present with the <A
+HREF="r9804.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_G_CHIP_IDENT</CODE
+></A
+> ioctl.</P
+><P
+>When <CODE
+CLASS="STRUCTFIELD"
+>match_type</CODE
+> is
+<CODE
+CLASS="CONSTANT"
+>V4L2_CHIP_MATCH_I2C_DRIVER</CODE
+>,
+<CODE
+CLASS="STRUCTFIELD"
+>match_chip</CODE
+> contains a driver ID as defined
+in the <TT
+CLASS="FILENAME"
+>linux/i2c-id.h</TT
+> header file. For instance
+<CODE
+CLASS="CONSTANT"
+>I2C_DRIVERID_SAA7127</CODE
+> will match any chip
+supported by the saa7127 driver, regardless of its I<SUP
+>2</SUP
+>C bus address.
+When multiple chips supported by the same driver are present, the
+effect of these ioctls is undefined. Again with the
+<A
+HREF="r9804.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_G_CHIP_IDENT</CODE
+></A
+> ioctl you can find out which I<SUP
+>2</SUP
+>C chips are
+present.</P
+><P
+>When <CODE
+CLASS="STRUCTFIELD"
+>match_type</CODE
+> is
+<CODE
+CLASS="CONSTANT"
+>V4L2_CHIP_MATCH_I2C_ADDR</CODE
+>,
+<CODE
+CLASS="STRUCTFIELD"
+>match_chip</CODE
+> selects a chip by its 7 bit I<SUP
+>2</SUP
+>C
+bus address.</P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>Success not guaranteed: </B
+>Due to a flaw in the Linux I<SUP
+>2</SUP
+>C bus driver these ioctls may
+return successfully without actually reading or writing a register. To
+catch the most likely failure we recommend a <A
+HREF="r9804.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_G_CHIP_IDENT</CODE
+></A
+>
+call confirming the presence of the selected I<SUP
+>2</SUP
+>C chip.</P
+></BLOCKQUOTE
+></DIV
+><P
+>These ioctls are optional, not all drivers may support them.
+However when a driver supports these ioctls it must also support
+<A
+HREF="r9804.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_G_CHIP_IDENT</CODE
+></A
+>. Conversely it may support
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_G_CHIP_IDENT</CODE
+> but not these ioctls.</P
+><P
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_DBG_G_REGISTER</CODE
+> and
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_DBG_S_REGISTER</CODE
+> were introduced in Linux
+2.6.21.</P
+><P
+>We recommended the <SPAN
+CLASS="APPLICATION"
+>v4l2-dbg</SPAN
+>
+utility over calling these ioctls directly. It is available from the
+LinuxTV v4l-dvb repository; see <A
+HREF="http://linuxtv.org/repo/"
+TARGET="_top"
+>http://linuxtv.org/repo/</A
+> for
+access instructions.</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-REGISTER"
+></A
+><P
+><B
+>Table 1. struct <CODE
+CLASS="STRUCTNAME"
+>v4l2_register</CODE
+></B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="33%"
+TITLE="C1"><COL
+WIDTH="33%"
+TITLE="C2"><COL
+WIDTH="33%"
+TITLE="C4"><COL><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>match_type</CODE
+></TD
+><TD
+>See <A
+HREF="r7900.htm#CHIP-MATCH-TYPES"
+>Table 2</A
+> for a list of
+ possible types.</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>match_chip</CODE
+></TD
+><TD
+>Match a chip by this number, interpreted according
+to the <CODE
+CLASS="STRUCTFIELD"
+>match_type</CODE
+> field.</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>__u64</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>reg</CODE
+></TD
+><TD
+>A register number.</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>__u64</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>val</CODE
+></TD
+><TD
+>The value read from, or to be written into the
+register.</TD
+><TD
+>&nbsp;</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="CHIP-MATCH-TYPES"
+></A
+><P
+><B
+>Table 2. Chip Match Types</B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="38%"
+TITLE="C1"><COL
+WIDTH="12%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_CHIP_MATCH_HOST</CODE
+></TD
+><TD
+>0</TD
+><TD
+>Match the nth chip on the card, zero for the
+            host chip. Does not match I<SUP
+>2</SUP
+>C chips.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_CHIP_MATCH_I2C_DRIVER</CODE
+></TD
+><TD
+>1</TD
+><TD
+>Match an I<SUP
+>2</SUP
+>C chip by its driver ID from the
+<TT
+CLASS="FILENAME"
+>linux/i2c-id.h</TT
+> header file.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_CHIP_MATCH_I2C_ADDR</CODE
+></TD
+><TD
+>2</TD
+><TD
+>Match a chip by its 7 bit I<SUP
+>2</SUP
+>C bus address.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN8068"
+></A
+><H2
+>Return Value</H2
+><P
+>On success <SPAN
+CLASS="RETURNVALUE"
+>0</SPAN
+> is returned, on error <SPAN
+CLASS="RETURNVALUE"
+>-1</SPAN
+> and the <CODE
+CLASS="VARNAME"
+>errno</CODE
+> variable is set appropriately:</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+></DT
+><DD
+><P
+>The driver does not support this ioctl, or the kernel
+was not compiled with the <CODE
+CLASS="CONSTANT"
+>CONFIG_VIDEO_ADV_DEBUG</CODE
+>
+option, or the <CODE
+CLASS="STRUCTFIELD"
+>match_type</CODE
+> is invalid, or the
+selected chip or register does not exist.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EPERM</SPAN
+></DT
+><DD
+><P
+>Insufficient permissions. Root privileges are required
+to execute these ioctls.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="r7771.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="r8087.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ioctl VIDIOC_CROPCAP</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="r7624.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>ioctl VIDIOC_ENCODER_CMD, VIDIOC_TRY_ENCODER_CMD</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

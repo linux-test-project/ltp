@@ -1,0 +1,413 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>V4L2 poll()</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Function Reference"
+HREF="r7624.htm"><LINK
+REL="PREVIOUS"
+TITLE="V4L2 open()"
+HREF="r14090.htm"><LINK
+REL="NEXT"
+TITLE="V4L2 read()"
+HREF="r14264.htm"></HEAD
+><BODY
+CLASS="REFENTRY"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="r14090.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="r14264.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="FUNC-POLL"
+></A
+>V4L2 poll()</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN14173"
+></A
+><H2
+>Name</H2
+>v4l2-poll&nbsp;--&nbsp;Wait for some event on a file descriptor</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN14176"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN14177"
+></A
+><PRE
+CLASS="FUNCSYNOPSISINFO"
+>#include &lt;sys/poll.h&gt;</PRE
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>int poll</CODE
+>(struct pollfd *ufds, unsigned int nfds, int timeout);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN14188"
+></A
+><H2
+>Description</H2
+><P
+>With the <CODE
+CLASS="FUNCTION"
+>poll()</CODE
+> function applications
+can suspend execution until the driver has captured data or is ready
+to accept data for output.</P
+><P
+>When streaming I/O has been negotiated this function waits
+until a buffer has been filled or displayed and can be dequeued with
+the <A
+HREF="r12878.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_DQBUF</CODE
+></A
+> ioctl. When buffers are already in the outgoing
+queue of the driver the function returns immediately.</P
+><P
+>On success <CODE
+CLASS="FUNCTION"
+>poll()</CODE
+> returns the number of
+file descriptors that have been selected (that is, file descriptors
+for which the <CODE
+CLASS="STRUCTFIELD"
+>revents</CODE
+> field of the
+respective <CODE
+CLASS="STRUCTNAME"
+>pollfd</CODE
+> structure is non-zero).
+Capture devices set the <CODE
+CLASS="CONSTANT"
+>POLLIN</CODE
+> and
+<CODE
+CLASS="CONSTANT"
+>POLLRDNORM</CODE
+> flags in the
+<CODE
+CLASS="STRUCTFIELD"
+>revents</CODE
+> field, output devices the
+<CODE
+CLASS="CONSTANT"
+>POLLOUT</CODE
+> and <CODE
+CLASS="CONSTANT"
+>POLLWRNORM</CODE
+>
+flags. When the function timed out it returns a value of zero, on
+failure it returns <SPAN
+CLASS="RETURNVALUE"
+>-1</SPAN
+> and the
+<CODE
+CLASS="VARNAME"
+>errno</CODE
+> variable is set appropriately. When the
+application did not call <A
+HREF="r12878.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_QBUF</CODE
+></A
+> or <A
+HREF="r13817.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_STREAMON</CODE
+></A
+> yet the
+<CODE
+CLASS="FUNCTION"
+>poll()</CODE
+> function succeeds, but sets the
+<CODE
+CLASS="CONSTANT"
+>POLLERR</CODE
+> flag in the
+<CODE
+CLASS="STRUCTFIELD"
+>revents</CODE
+> field.</P
+><P
+>When use of the <CODE
+CLASS="FUNCTION"
+>read()</CODE
+> function has
+been negotiated and the driver does not capture yet, the
+<CODE
+CLASS="FUNCTION"
+>poll</CODE
+> function starts capturing. When that fails
+it returns a <CODE
+CLASS="CONSTANT"
+>POLLERR</CODE
+> as above. Otherwise it waits
+until data has been captured and can be read. When the driver captures
+continuously (as opposed to, for example, still images) the function
+may return immediately.</P
+><P
+>When use of the <CODE
+CLASS="FUNCTION"
+>write()</CODE
+> function has
+been negotiated the <CODE
+CLASS="FUNCTION"
+>poll</CODE
+> function just waits
+until the driver is ready for a non-blocking
+<CODE
+CLASS="FUNCTION"
+>write()</CODE
+> call.</P
+><P
+>All drivers implementing the <CODE
+CLASS="FUNCTION"
+>read()</CODE
+> or
+<CODE
+CLASS="FUNCTION"
+>write()</CODE
+> function or streaming I/O must also
+support the <CODE
+CLASS="FUNCTION"
+>poll()</CODE
+> function.</P
+><P
+>For more details see the
+<CODE
+CLASS="FUNCTION"
+>poll()</CODE
+> manual page.</P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN14227"
+></A
+><H2
+>Return Value</H2
+><P
+>On success, <CODE
+CLASS="FUNCTION"
+>poll()</CODE
+> returns the number
+structures which have non-zero <CODE
+CLASS="STRUCTFIELD"
+>revents</CODE
+>
+fields, or zero if the call timed out. On error
+<SPAN
+CLASS="RETURNVALUE"
+>-1</SPAN
+> is returned, and the
+<CODE
+CLASS="VARNAME"
+>errno</CODE
+> variable is set appropriately:</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EBADF</SPAN
+></DT
+><DD
+><P
+>One or more of the <CODE
+CLASS="PARAMETER"
+>ufds</CODE
+> members
+specify an invalid file descriptor.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EBUSY</SPAN
+></DT
+><DD
+><P
+>The driver does not support multiple read or write
+streams and the device is already in use.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EFAULT</SPAN
+></DT
+><DD
+><P
+><CODE
+CLASS="PARAMETER"
+>ufds</CODE
+> references an inaccessible
+memory area.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EINTR</SPAN
+></DT
+><DD
+><P
+>The call was interrupted by a signal.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+></DT
+><DD
+><P
+>The <CODE
+CLASS="PARAMETER"
+>nfds</CODE
+> argument is greater
+than <CODE
+CLASS="CONSTANT"
+>OPEN_MAX</CODE
+>.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="r14090.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="r14264.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>V4L2 open()</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="r7624.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>V4L2 read()</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

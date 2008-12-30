@@ -1,0 +1,270 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Relation of V4L2 to other Linux multimedia APIs</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Changes"
+HREF="c14595.htm"><LINK
+REL="PREVIOUS"
+TITLE="Changes of the V4L2 API"
+HREF="x15446.htm"><LINK
+REL="NEXT"
+TITLE="Experimental API Elements"
+HREF="x16453.htm"></HEAD
+><BODY
+CLASS="SECTION"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x15446.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 6. Changes</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x16453.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECTION"
+><H1
+CLASS="SECTION"
+><A
+NAME="OTHER"
+>6.3. Relation of V4L2 to other Linux multimedia APIs</A
+></H1
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="XVIDEO"
+>6.3.1. X Video Extension</A
+></H2
+><P
+>The X Video Extension (abbreviated XVideo or just Xv) is
+an extension of the X Window system, implemented for example by the
+XFree86 project. Its scope is similar to V4L2, an API to video capture
+and output devices for X clients. Xv allows applications to display
+live video in a window, send window contents to a TV output, and
+capture or output still images in XPixmaps<A
+NAME="AEN16435"
+HREF="x16430.htm#FTN.AEN16435"
+><SPAN
+CLASS="footnote"
+>[1]</SPAN
+></A
+>. With their implementation XFree86 makes the
+extension available across many operating systems and
+architectures.</P
+><P
+>Because the driver is embedded into the X server Xv has a
+number of advantages over the V4L2 <A
+HREF="x6570.htm"
+>video
+overlay interface</A
+>. The driver can easily determine the overlay
+target, i.&nbsp;e. visible graphics memory or off-screen buffers for a
+destructive overlay. It can program the RAMDAC for a non-destructive
+overlay, scaling or color-keying, or the clipping functions of the
+video capture hardware, always in sync with drawing operations or
+windows moving or changing their stacking order.</P
+><P
+>To combine the advantages of Xv and V4L a special Xv
+driver exists in XFree86 and XOrg, just programming any overlay capable
+Video4Linux device it finds. To enable it
+<TT
+CLASS="FILENAME"
+>/etc/X11/XF86Config</TT
+> must contain these lines:</P
+><P
+><PRE
+CLASS="SCREEN"
+>Section "Module"
+    Load "v4l"
+EndSection</PRE
+></P
+><P
+>As of XFree86 4.2 this driver still supports only V4L
+ioctls, however it should work just fine with all V4L2 devices through
+the V4L2 backward-compatibility layer. Since V4L2 permits multiple
+opens it is possible (if supported by the V4L2 driver) to capture
+video while an X client requested video overlay. Restrictions of
+simultaneous capturing and overlay are discussed in <A
+HREF="x6570.htm"
+>Section 4.2</A
+> apply.</P
+><P
+>Only marginally related to V4L2, XFree86 extended Xv to
+support hardware YUV to RGB conversion and scaling for faster video
+playback, and added an interface to MPEG-2 decoding hardware. This API
+is useful to display images captured with V4L2 devices.</P
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN16446"
+>6.3.2. Digital Video</A
+></H2
+><P
+>V4L2 does not support digital terrestrial, cable or
+satellite broadcast. A separate project aiming at digital receivers
+exists. You can find its homepage at <A
+HREF="http://linuxtv.org"
+TARGET="_top"
+>http://linuxtv.org</A
+>. The Linux DVB API
+has no connection to the V4L2 API except that drivers for hybrid
+hardware may support both.</P
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN16450"
+>6.3.3. Audio Interfaces</A
+></H2
+><P
+>[to do - OSS/ALSA]</P
+></DIV
+></DIV
+><H3
+CLASS="FOOTNOTES"
+>Notes</H3
+><TABLE
+BORDER="0"
+CLASS="FOOTNOTES"
+WIDTH="100%"
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="5%"
+><A
+NAME="FTN.AEN16435"
+HREF="x16430.htm#AEN16435"
+><SPAN
+CLASS="footnote"
+>[1]</SPAN
+></A
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="95%"
+><P
+>This is not implemented in XFree86.</P
+></TD
+></TR
+></TABLE
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x15446.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x16453.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Changes of the V4L2 API</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="c14595.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Experimental API Elements</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

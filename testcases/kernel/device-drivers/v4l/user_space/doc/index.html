@@ -1,0 +1,388 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html;charset=ISO-8859-2" http-equiv="Content-Type">
+  <title>v4l-test: Test environment for Video For Linux Two API</title>
+</head>
+<body>
+<a href="#what">What is this?</a> |
+<a href="#build">How to build?</a> |
+<a href="#run">How to run?</a> |
+<a href="#v4l2">V4L2</a> |
+<a href="#code_coverage">Code Coverage</a> |
+<a href="#status">Status</a> |
+<a href="#others">Similar projects</a> |
+<a href="#feedback">Feedback</a><br>
+<hr style="width: 100%; height: 2px;">
+<h1>v4l-test: Test environment for Video For Linux Two API</h1>
+Download <a href="http://sourceforge.net/project/showfiles.php?group_id=247983">v4l-test</a>
+or visit <a href="http://sourceforge.net/projects/v4l-test/">v4l-test project page</a> at
+<a href="http://sourceforge.net">sourceforge.net</a> .<br>
+<a name="what"></a>
+<h2>What is this?</h2>
+v4l-test is a test test environment for V4L2 drivers. The V4L2 drivers
+are running under Linux in kernel space. This test environment is
+running in userspace and tries what normal video application would do.
+It also tries some things which are supposed to test the error handling
+mechanisms of a V4L2 driver. These are the "invalid test cases".<br>
+<a name="build"></a>
+<h2>How to build?</h2>
+To build the test environment you will need a C compiler, "make" and
+the CUnit development files installed. Just type "make" and the test
+environment is ready.<br>
+<a name="run"></a>
+<h2>How to run?</h2>
+You need to have a video device (i.e. webcam, tuner card, etc.)
+connected to your system and available under /dev/video0. If you don't
+have any hardware device available, you can still test the "Virtual
+Video Driver". To compile this you need to compile your kernel with
+CONFIG_VIDEO_VIVI=m under:<br>
+<pre>  -&gt; Device Drivers<br>    -&gt; Multimedia devices<br>      -&gt; Video For Linux<br>        -&gt; Video capture adapters<br>         -&gt; Virtual Video Driver<br></pre>
+At this point you can execute v4l-test.<br>
+<a name="v4l2"></a>
+<h2>Video for Linux Two Specification</h2>
+The <a href="spec/index.html">V4L2 API specification</a>
+revision 0.24 is the base for this test environment. The most recent
+version can be found at
+<a href="http://v4l2spec.bytesex.org/spec/">http://v4l2spec.bytesex.org/spec/</a><br>
+<a name="code_coverage"></a>
+<h2>Code Coverage</h2>
+The code coverage shows which lines of the code were executed and how
+many times. The measurement results gives you a feedback about the
+quality of the test cases. You can measure the code coverage of a
+kernel module with the <a
+ href="http://ltp.sourceforge.net/coverage/gcov.php">gocv</a> and <a
+ href="http://ltp.sourceforge.net/coverage/lcov.php">lcov</a> softwares.<br>
+<a name="status"></a>
+<h2>Current status</h2>
+Currently all test are running and evaluated automatically. This might
+change in future if we want to test for example plugging and unplugging
+a USB video device or ask the user if a received picture make sense or
+not.<br>
+<br>
+The following table gives an overview about the current state of
+implemented<br>
+test cases.<br>
+<br>
+<table border="1" cellpadding="2"
+ cellspacing="0">
+  <thead>
+    <tr>
+      <td><b>V4L API element</b></td><td><b>Covered?</b></td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>V4L2 <a href="spec/r7626.htm">close()</a></td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td>V4L2 <a href="spec/r7667.htm">ioctl()</a></td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r7771.htm">VIDIOC_CROPCAP</a></td>
+      <td>yes, only when STREAM_OFF</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r7900.htm">VIDIOC_DBG_G_REGISTER</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r7900.htm">VIDIOC_DBG_S_REGISTER</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r8087.htm">VIDIOC_ENCODER_CMD</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r8087.htm">VIDIOC_TRY_ENCODER_CMD</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r8242.htm">VIDIOC_ENUMAUDIO</a></td>
+      <td>yes, only valid cases</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r8304.htm">VIDIOC_ENUMAUDOUT</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r8367.htm">VIDIOC_ENUM_FMT</a></td>
+      <td>yes, only when STREAM_OFF</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r8494.htm">VIDIOC_ENUM_FRAMESIZES</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r8724.htm">VIDIOC_ENUM_FRAMEINTERVALS</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r8936.htm">VIDIOC_ENUMINPUT</a></td>
+      <td>yes, only when STREAM_OFF</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r9149.htm">VIDIOC_ENUMOUTPUT</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r9288.htm">VIDIOC_ENUMSTD</a></td>
+      <td>yes, only when STREAM_OFF</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r9539.htm">VIDIOC_G_AUDIO</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r9539.htm">VIDIOC_S_AUDIO</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r9688.htm">VIDIOC_G_AUDOUT</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r9688.htm">VIDIOC_S_AUDOUT</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r9804.htm">VIDIOC_G_CHIP_IDENT</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r9994.htm">VIDIOC_G_CROP</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r9994.htm">VIDIOC_S_CROP</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r10104.htm">VIDIOC_G_CTRL</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r10104.htm">VIDIOC_S_CTRL</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r10211.htm">VIDIOC_G_ENC_INDEX</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r10386.htm">VIDIOC_G_EXT_CTRLS</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r10386.htm">VIDIOC_S_EXT_CTRLS</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r10386.htm">VIDIOC_TRY_EXT_CTRLS</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r10595.htm">VIDIOC_G_FBUF</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r10595.htm">VIDIOC_S_FBUF</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r10944.htm">VIDIOC_G_FMT</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r10944.htm">VIDIOC_S_FMT</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r10944.htm">VIDIOC_TRY_FMT</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r11094.htm">VIDIOC_G_FREQUENCY</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r11094.htm">VIDIOC_S_FREQUENCY</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r11217.htm">VIDIOC_G_INPUT</a></td>
+      <td>yes, only when STREAM_OFF</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r11217.htm">VIDIOC_S_INPUT</a></td>
+      <td>yes, only when STREAM_OFF</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r11285.htm">VIDIOC_G_JPEGCOMP</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r11285.htm">VIDIOC_S_JPEGCOMP</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r11430.htm">VIDIOC_G_MODULATOR</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r11430.htm">VIDIOC_S_MODULATOR</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r11612.htm">VIDIOC_G_OUTPUT</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r11612.htm">VIDIOC_S_OUTPUT</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r11680.htm">VIDIOC_G_PARM</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r11680.htm">VIDIOC_S_PARM</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r11946.htm">VIDIOC_G_PRIORITY</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r11946.htm">VIDIOC_S_PRIORITY</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r12051.htm">VIDIOC_G_SLICED_VBI_CAP</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r12265.htm">VIDIOC_G_STD</a></td>
+      <td>yes, only when STREAM_OFF</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r12265.htm">VIDIOC_S_STD</a></td>
+      <td>yes, only when STREAM_OFF</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r12342.htm">VIDIOC_G_TUNER</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r12342.htm">VIDIOC_S_TUNER</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r12784.htm">VIDIOC_LOG_STATUS</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r12816.htm">VIDIOC_OVERLAY</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r12878.htm">VIDIOC_QBUF</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r12878.htm">VIDIOC_DQBUF</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r13022.htm">VIDIOC_QUERYBUF</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r13105.htm">VIDIOC_QUERYCAP</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r13317.htm">VIDIOC_QUERYCTRL</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r13317.htm">VIDIOC_QUERYMENU</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r13641.htm">VIDIOC_QUERYSTD</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r13696.htm">VIDIOC_REQBUFS</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r13817.htm">VIDIOC_STREAMON</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>ioctl <a href="spec/r13817.htm">VIDIOC_STREAMOFF</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>V4L2 <a href="spec/r13889.htm">mmap()</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>V4L2 <a href="spec/r14037.htm">munmap()</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>V4L2 <a href="spec/r14090.htm">open()</a></td>
+      <td>yes, partly</td>
+    </tr>
+    <tr>
+      <td>V4L2 <a href="spec/r14169.htm">poll()</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>V4L2 <a href="spec/r14264.htm">read()</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>V4L2 <a href="spec/r14390.htm">select()</a></td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>V4L2 <a href="spec/r14496.htm">write()</a></td>
+      <td>no</td>
+    </tr>
+  </tbody>
+</table>
+
+
+<a name="others"></a>
+<h2>Similar projects</h2>
+There migth be similar projects which also tries to test the V4L2 API.
+So far I could find the following:<br>
+<ul>
+  <li><a href="http://www.linuxowl.com/v4ltest.html">v4ltest</a><br>
+  </li>
+</ul>
+Please let me know if this list misses other V4L or V4L2 test project.<br>
+<a name="feedback"></a>
+<h2 >Feedbacks</h2>
+Any feedbacks, comments, ideas, etc. are welcome at the author's<br>
+email address.<br>
+<hr style="width: 100%; height: 2px;">
+Last changed:
+Mon Dec 22 07:43:59 2008
+<br>
+<p>
+    <a href="http://validator.w3.org/check?uri=referer"><img
+        src="http://www.w3.org/Icons/valid-html401"
+        alt="Valid HTML 4.01 Transitional" height="31" width="88"></a>
+    <a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=247983&amp;type=4" width="125" height="37" border="0" alt="SourceForge.net Logo"></a>
+  </p>
+
+</body>
+</html>

@@ -1,0 +1,467 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Field Order</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Input/Output"
+HREF="c5742.htm"><LINK
+REL="PREVIOUS"
+TITLE="Buffers"
+HREF="x5953.htm"><LINK
+REL="NEXT"
+TITLE="Interfaces"
+HREF="c6488.htm"></HEAD
+><BODY
+CLASS="SECTION"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x5953.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 3. Input/Output</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="c6488.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECTION"
+><H1
+CLASS="SECTION"
+><A
+NAME="FIELD-ORDER"
+>3.6. Field Order</A
+></H1
+><P
+>We have to distinguish between progressive and interlaced
+video. Progressive video transmits all lines of a video image
+sequentially. Interlaced video divides an image into two fields,
+containing only the odd and even lines of the image, respectively.
+Alternating the so called odd and even field are transmitted, and due
+to a small delay between fields a cathode ray TV displays the lines
+interleaved, yielding the original frame. This curious technique was
+invented because at refresh rates similar to film the image would
+fade out too quickly. Transmitting fields reduces the flicker without
+the necessity of doubling the frame rate and with it the bandwidth
+required for each channel.</P
+><P
+>It is important to understand a video camera does not expose
+one frame at a time, merely transmitting the frames separated into
+fields. The fields are in fact captured at two different instances in
+time. An object on screen may well move between one field and the
+next. For applications analysing motion it is of paramount importance
+to recognize which field of a frame is older, the <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>temporal
+order</I
+></SPAN
+>.</P
+><P
+>When the driver provides or accepts images field by field
+rather than interleaved, it is also important applications understand
+how the fields combine to frames. We distinguish between top and
+bottom fields, the <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>spatial order</I
+></SPAN
+>: The first line
+of the top field is the first line of an interlaced frame, the first
+line of the bottom field is the second line of that frame.</P
+><P
+>However because fields were captured one after the other,
+arguing whether a frame commences with the top or bottom field is
+pointless. Any two successive top and bottom, or bottom and top fields
+yield a valid frame. Only when the source was progressive to begin
+with, e.&nbsp;g. when transferring film to video, two fields may come from
+the same frame, creating a natural order.</P
+><P
+>Counter to intuition the top field is not necessarily the
+older field. Whether the older field contains the top or bottom lines
+is a convention determined by the video standard. Hence the
+distinction between temporal and spatial order of fields. The diagrams
+below should make this clearer.</P
+><P
+>All video capture and output devices must report the current
+field order. Some drivers may permit the selection of a different
+order, to this end applications initialize the
+<CODE
+CLASS="STRUCTFIELD"
+>field</CODE
+> field of struct&nbsp;<A
+HREF="c2030.htm#V4L2-PIX-FORMAT"
+>v4l2_pix_format</A
+> before
+calling the <A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+></A
+> ioctl. If this is not desired it should
+have the value <CODE
+CLASS="CONSTANT"
+>V4L2_FIELD_ANY</CODE
+> (0).</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-FIELD"
+></A
+><P
+><B
+>Table 3-8. enum v4l2_field</B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="38%"
+TITLE="C1"><COL
+WIDTH="12%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_FIELD_ANY</CODE
+></TD
+><TD
+>0</TD
+><TD
+>Applications request this field order when any
+one of the <CODE
+CLASS="CONSTANT"
+>V4L2_FIELD_NONE</CODE
+>,
+<CODE
+CLASS="CONSTANT"
+>V4L2_FIELD_TOP</CODE
+>,
+<CODE
+CLASS="CONSTANT"
+>V4L2_FIELD_BOTTOM</CODE
+>, or
+<CODE
+CLASS="CONSTANT"
+>V4L2_FIELD_INTERLACED</CODE
+> formats is acceptable.
+Drivers choose depending on hardware capabilities or e.&nbsp;g. the
+requested image size, and return the actual field order. struct&nbsp;<A
+HREF="x5953.htm#V4L2-BUFFER"
+>v4l2_buffer</A
+>
+<CODE
+CLASS="STRUCTFIELD"
+>field</CODE
+> can never be
+<CODE
+CLASS="CONSTANT"
+>V4L2_FIELD_ANY</CODE
+>.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_FIELD_NONE</CODE
+></TD
+><TD
+>1</TD
+><TD
+>Images are in progressive format, not interlaced.
+The driver may also indicate this order when it cannot distinguish
+between <CODE
+CLASS="CONSTANT"
+>V4L2_FIELD_TOP</CODE
+> and
+<CODE
+CLASS="CONSTANT"
+>V4L2_FIELD_BOTTOM</CODE
+>.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_FIELD_TOP</CODE
+></TD
+><TD
+>2</TD
+><TD
+>Images consist of the top field only.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_FIELD_BOTTOM</CODE
+></TD
+><TD
+>3</TD
+><TD
+>Images consist of the bottom field only.
+Applications may wish to prevent a device from capturing interlaced
+images because they will have "comb" or "feathering" artefacts around
+moving objects.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_FIELD_INTERLACED</CODE
+></TD
+><TD
+>4</TD
+><TD
+>Images contain both fields, interleaved line by
+line. The temporal order of the fields (whether the top or bottom
+field is first transmitted) depends on the current video standard.
+M/NTSC transmits the bottom field first, all other standards the top
+field first.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_FIELD_SEQ_TB</CODE
+></TD
+><TD
+>5</TD
+><TD
+>Images contain both fields, the top field lines
+are stored first in memory, immediately followed by the bottom field
+lines. Fields are always stored in temporal order, the older one first
+in memory. Image sizes refer to the frame, not fields.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_FIELD_SEQ_BT</CODE
+></TD
+><TD
+>6</TD
+><TD
+>Images contain both fields, the bottom field
+lines are stored first in memory, immediately followed by the top
+field lines. Fields are always stored in temporal order, the older one
+first in memory. Image sizes refer to the frame, not fields.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_FIELD_ALTERNATE</CODE
+></TD
+><TD
+>7</TD
+><TD
+>The two fields of a frame are passed in separate
+buffers, in temporal order, i.&nbsp;e. the older one first. To indicate the field
+parity (whether the current field is a top or bottom field) the driver
+or application, depending on data direction, must set struct&nbsp;<A
+HREF="x5953.htm#V4L2-BUFFER"
+>v4l2_buffer</A
+>
+<CODE
+CLASS="STRUCTFIELD"
+>field</CODE
+> to
+<CODE
+CLASS="CONSTANT"
+>V4L2_FIELD_TOP</CODE
+> or
+<CODE
+CLASS="CONSTANT"
+>V4L2_FIELD_BOTTOM</CODE
+>. Any two successive fields pair
+to build a frame. If fields are successive, without any dropped fields
+between them (fields can drop individually), can be determined from
+the struct&nbsp;<A
+HREF="x5953.htm#V4L2-BUFFER"
+>v4l2_buffer</A
+> <CODE
+CLASS="STRUCTFIELD"
+>sequence</CODE
+> field. Image
+sizes refer to the frame, not fields. This format cannot be selected
+when using the read/write I/O method.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_FIELD_INTERLACED_TB</CODE
+></TD
+><TD
+>8</TD
+><TD
+>Images contain both fields, interleaved line by
+line, top field first. The top field is transmitted first.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_FIELD_INTERLACED_BT</CODE
+></TD
+><TD
+>9</TD
+><TD
+>Images contain both fields, interleaved line by
+line, top field first. The bottom field is transmitted first.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="FIGURE"
+><A
+NAME="FIELDSEQ-TB"
+></A
+><P
+><B
+>Figure 3-1. Field Order, Top Field First Transmitted</B
+></P
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="fieldseq_tb.gif"></P
+></DIV
+></DIV
+><DIV
+CLASS="FIGURE"
+><A
+NAME="FIELDSEQ-BT"
+></A
+><P
+><B
+>Figure 3-2. Field Order, Bottom Field First Transmitted</B
+></P
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="fieldseq_bt.gif"></P
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x5953.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="c6488.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Buffers</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="c5742.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Interfaces</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

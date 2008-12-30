@@ -1,0 +1,625 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ioctl VIDIOC_G_ENC_INDEX</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Function Reference"
+HREF="r7624.htm"><LINK
+REL="PREVIOUS"
+TITLE="ioctl VIDIOC_G_CTRL, VIDIOC_S_CTRL"
+HREF="r10104.htm"><LINK
+REL="NEXT"
+TITLE="ioctl VIDIOC_G_EXT_CTRLS, VIDIOC_S_EXT_CTRLS,
+VIDIOC_TRY_EXT_CTRLS"
+HREF="r10386.htm"></HEAD
+><BODY
+CLASS="REFENTRY"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="r10104.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="r10386.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="VIDIOC-G-ENC-INDEX"
+></A
+>ioctl VIDIOC_G_ENC_INDEX</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN10215"
+></A
+><H2
+>Name</H2
+>VIDIOC_G_ENC_INDEX&nbsp;--&nbsp;Get meta data about a compressed video stream</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN10218"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN10219"
+></A
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>int ioctl</CODE
+>(int fd, int request, struct v4l2_enc_idx *argp);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN10229"
+></A
+><H2
+>Arguments</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><CODE
+CLASS="PARAMETER"
+>fd</CODE
+></DT
+><DD
+><P
+>File descriptor returned by <A
+HREF="r14090.htm"
+><CODE
+CLASS="FUNCTION"
+>open()</CODE
+></A
+>.</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>request</CODE
+></DT
+><DD
+><P
+>VIDIOC_G_ENC_INDEX</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>argp</CODE
+></DT
+><DD
+><P
+></P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN10249"
+></A
+><H2
+>Description</H2
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>Experimental: </B
+>This is an <A
+HREF="x16453.htm"
+>experimental</A
+>
+interface and may change in the future.</P
+></BLOCKQUOTE
+></DIV
+><P
+>The <CODE
+CLASS="CONSTANT"
+>VIDIOC_G_ENC_INDEX</CODE
+> ioctl provides
+meta data about a compressed video stream the same or another
+application currently reads from the driver, which is useful for
+random access into the stream without decoding it.</P
+><P
+>To read the data applications must call
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_G_ENC_INDEX</CODE
+> with a pointer to a
+struct&nbsp;<A
+HREF="r10211.htm#V4L2-ENC-IDX"
+>v4l2_enc_idx</A
+>. On success the driver fills the
+<CODE
+CLASS="STRUCTFIELD"
+>entry</CODE
+> array, stores the number of elements
+written in the <CODE
+CLASS="STRUCTFIELD"
+>entries</CODE
+> field, and
+initializes the <CODE
+CLASS="STRUCTFIELD"
+>entries_cap</CODE
+> field.</P
+><P
+>Each element of the <CODE
+CLASS="STRUCTFIELD"
+>entry</CODE
+> array
+contains meta data about one picture. A
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_G_ENC_INDEX</CODE
+> call reads up to
+<CODE
+CLASS="CONSTANT"
+>V4L2_ENC_IDX_ENTRIES</CODE
+> entries from a driver
+buffer, which can hold up to <CODE
+CLASS="STRUCTFIELD"
+>entries_cap</CODE
+>
+entries. This number can be lower or higher than
+<CODE
+CLASS="CONSTANT"
+>V4L2_ENC_IDX_ENTRIES</CODE
+>, but not zero. When the
+application fails to read the meta data in time the oldest entries
+will be lost. When the buffer is empty or no capturing/encoding is in
+progress, <CODE
+CLASS="STRUCTFIELD"
+>entries</CODE
+> will be zero.</P
+><P
+>Currently this ioctl is only defined for MPEG-2 program
+streams and video elementary streams.</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-ENC-IDX"
+></A
+><P
+><B
+>Table 1. struct <CODE
+CLASS="STRUCTNAME"
+>v4l2_enc_idx</CODE
+></B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="25%"
+TITLE="C1"><COL
+WIDTH="25%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>entries</CODE
+></TD
+><TD
+>The number of entries the driver stored in the
+<CODE
+CLASS="STRUCTFIELD"
+>entry</CODE
+> array.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>entries_cap</CODE
+></TD
+><TD
+>The number of entries the driver can
+buffer. Must be greater than zero.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>reserved</CODE
+>[4]</TD
+><TD
+COLSPAN="3"
+>Reserved for future extensions.
+Drivers must set the array to zero.</TD
+></TR
+><TR
+><TD
+>struct&nbsp;<A
+HREF="r10211.htm#V4L2-ENC-IDX-ENTRY"
+>v4l2_enc_idx_entry</A
+></TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>entry</CODE
+>[<CODE
+CLASS="CONSTANT"
+>V4L2_ENC_IDX_ENTRIES</CODE
+>]</TD
+><TD
+>Meta data about a compressed video stream. Each
+element of the array corresponds to one picture, sorted in ascending
+order by their <CODE
+CLASS="STRUCTFIELD"
+>offset</CODE
+>.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-ENC-IDX-ENTRY"
+></A
+><P
+><B
+>Table 2. struct <CODE
+CLASS="STRUCTNAME"
+>v4l2_enc_idx_entry</CODE
+></B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="25%"
+TITLE="C1"><COL
+WIDTH="25%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>__u64</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>offset</CODE
+></TD
+><TD
+>The offset in bytes from the beginning of the
+compressed video stream to the beginning of this picture, that is a
+<I
+CLASS="WORDASWORD"
+>PES packet header</I
+> as defined in <A
+HREF="b17127.htm#MPEG2PART1"
+><ABBR
+CLASS="ABBREV"
+>ISO&nbsp;13818-1</ABBR
+></A
+> or a <I
+CLASS="WORDASWORD"
+>picture
+header</I
+> as defined in <A
+HREF="b17127.htm#MPEG2PART2"
+><ABBR
+CLASS="ABBREV"
+>ISO&nbsp;13818-2</ABBR
+></A
+>. When
+the encoder is stopped, the driver resets the offset to zero.</TD
+></TR
+><TR
+><TD
+>__u64</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>pts</CODE
+></TD
+><TD
+>The 33 bit <I
+CLASS="WORDASWORD"
+>Presentation Time
+Stamp</I
+> of this picture as defined in <A
+HREF="b17127.htm#MPEG2PART1"
+><ABBR
+CLASS="ABBREV"
+>ISO&nbsp;13818-1</ABBR
+></A
+>.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>length</CODE
+></TD
+><TD
+>The length of this picture in bytes.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>flags</CODE
+></TD
+><TD
+>Flags containing the coding type of this picture, see <A
+HREF="r10211.htm#ENC-IDX-FLAGS"
+>Table 3</A
+>.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>reserved</CODE
+>[2]</TD
+><TD
+>Reserved for future extensions.
+Drivers must set the array to zero.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="ENC-IDX-FLAGS"
+></A
+><P
+><B
+>Table 3. Index Entry Flags</B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="38%"
+TITLE="C1"><COL
+WIDTH="12%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_ENC_IDX_FRAME_I</CODE
+></TD
+><TD
+>0x00</TD
+><TD
+>This is an Intra-coded picture.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_ENC_IDX_FRAME_P</CODE
+></TD
+><TD
+>0x01</TD
+><TD
+>This is a Predictive-coded picture.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_ENC_IDX_FRAME_B</CODE
+></TD
+><TD
+>0x02</TD
+><TD
+>This is a Bidirectionally predictive-coded
+picture.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_ENC_IDX_FRAME_MASK</CODE
+></TD
+><TD
+>0x0F</TD
+><TD
+><I
+CLASS="WORDASWORD"
+>AND</I
+> the flags field with
+this mask to obtain the picture coding type.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN10374"
+></A
+><H2
+>Return Value</H2
+><P
+>On success <SPAN
+CLASS="RETURNVALUE"
+>0</SPAN
+> is returned, on error <SPAN
+CLASS="RETURNVALUE"
+>-1</SPAN
+> and the <CODE
+CLASS="VARNAME"
+>errno</CODE
+> variable is set appropriately:</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+></DT
+><DD
+><P
+>The driver does not support this ioctl.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="r10104.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="r10386.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ioctl VIDIOC_G_CTRL, VIDIOC_S_CTRL</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="r7624.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>ioctl VIDIOC_G_EXT_CTRLS, VIDIOC_S_EXT_CTRLS,
+VIDIOC_TRY_EXT_CTRLS</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

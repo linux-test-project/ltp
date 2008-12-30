@@ -1,0 +1,146 @@
+
+           v4l-test: Test environment for Video For Linux Two API
+
+22 Dec 2008  0.2  Test cases with NULL parameter added;
+                  Test cases for VIDIOC_CROPCAP added
+18 Dec 2008  0.1  First release
+
+Written by Márton Németh <nm127@freemail.hu>
+Released under GPL
+
+What is this?
+-------------
+v4l-test is a test test environment for V4L2 drivers. The V4L2 drivers
+are running under Linux in kernel space. This test environment is running
+in userspace and tries what normal video application would do. It also
+tries some things which are supposed to test the error handling mechanisms
+of a V4L2 driver. These are the "invalid test cases".
+
+How to build?
+-------------
+To build the test environment you will need a C compiler, "make" and the
+CUnit development files installed. Just type "make" and the test environment
+is ready. The CUnit framework can be downloaded & installed from:
+http://sourceforge.net/projects/cunit/
+
+How to run?
+-----------
+You need to have a video device (i.e. webcam, tuner card, etc.) connected
+to your system and available under /dev/video0. If you don't have any
+hardware device available, you can still test the "Virtual Video Driver".
+To compile this you need to compile your kernel with CONFIG_VIDEO_VIVI=m
+under:
+
+  -> Device Drivers
+    -> Multimedia devices
+      -> Video For Linux
+        -> Video capture adapters
+         -> Virtual Video Driver
+
+At this point you can execute v4l-test.
+
+Video for Linux Two Specification
+---------------------------------
+The V4L2 API specification can be found at http://v4l2spec.bytesex.org/spec/ .
+Revision 0.42 of V4L2 is the base for this test environment.
+
+Code Coverage
+-------------
+The code coverage shows which lines of the code were executed and how many
+times. The measurement results gives you a feedback about the quality of
+the test cases.
+You can measure the code coverage of a kernel module with the gocv and lcov
+softwares. See http://ltp.sourceforge.net/coverage/gcov.php and
+http://ltp.sourceforge.net/coverage/lcov.php for details.
+
+Current status
+--------------
+Currently all test are running and evaluated automatically. This might
+change in future if we want to test for example plugging and unplugging
+a USB video device or ask the user if a received picture make sense or not.
+
+The following table gives an overview about the current state of implemented
+test cases.
+
+ V4L API element                  | Covered?
+ ---------------------------------+---------------------------------------------
+ V4L2 open()                      | yes, partly
+ V4L2 close()                     | yes
+ V4L2 ioctl()                     | yes
+ ioctl VIDIOC_CROPCAP             | yes, only when STREAM_OFF
+ ioctl VIDIOC_DBG_G_REGISTER      | no
+ ioctl VIDIOC_DBG_S_REGISTER      | no
+ ioctl VIDIOC_ENCODER_CMD         | no
+ ioctl VIDIOC_TRY_ENCODER_CMD     | no
+ ioctl VIDIOC_ENUMAUDIO           | yes, only valid cases
+ ioctl VIDIOC_ENUMAUDOUT          | no
+ ioctl VIDIOC_ENUM_FMT            | yes, only when STREAM_OFF
+ ioctl VIDIOC_ENUM_FRAMESIZES     | no
+ ioctl VIDIOC_ENUM_FRAMEINTERVALS | no
+ ioctl VIDIOC_ENUMINPUT           | yes, only when STREAM_OFF
+ ioctl VIDIOC_ENUMOUTPUT          | no
+ ioctl VIDIOC_ENUMSTD             | yes, only when STREAM_OFF
+ ioctl VIDIOC_G_AUDIO             | no
+ ioctl VIDIOC_S_AUDIO             | no
+ ioctl VIDIOC_G_AUDOUT            | no
+ ioctl VIDIOC_S_AUDOUT            | no
+ ioctl VIDIOC_G_CHIP_IDENT        | no
+ ioctl VIDIOC_G_CROP              | no
+ ioctl VIDIOC_S_CROP              | no
+ ioctl VIDIOC_G_CTRL              | no
+ ioctl VIDIOC_S_CTRL              | no
+ ioctl VIDIOC_G_ENC_INDEX         | no
+ ioctl VIDIOC_G_EXT_CTRLS         | no
+ ioctl VIDIOC_S_EXT_CTRLS         | no
+ ioctl VIDIOC_TRY_EXT_CTRLS       | no
+ ioctl VIDIOC_G_FBUF              | no
+ ioctl VIDIOC_S_FBUF              | no
+ ioctl VIDIOC_G_FMT               | no
+ ioctl VIDIOC_S_FMT               | no
+ ioctl VIDIOC_TRY_FMT             | no
+ ioctl VIDIOC_G_FREQUENCY         | no
+ ioctl VIDIOC_S_FREQUENCY         | no
+ ioctl VIDIOC_G_INPUT             | yes, only when STREAM_OFF
+ ioctl VIDIOC_S_INPUT             | yes, only when STREAM_OFF
+ ioctl VIDIOC_G_JPEGCOMP          | no
+ ioctl VIDIOC_S_JPEGCOMP          | no
+ ioctl VIDIOC_G_MODULATOR         | no
+ ioctl VIDIOC_S_MODULATOR         | no
+ ioctl VIDIOC_G_OUTPUT            | no
+ ioctl VIDIOC_S_OUTPUT            | no
+ ioctl VIDIOC_G_PARM              | no
+ ioctl VIDIOC_S_PARM              | no
+ ioctl VIDIOC_G_PRIORITY          | no
+ ioctl VIDIOC_S_PRIORITY          | no
+ ioctl VIDIOC_G_SLICED_VBI_CAP    | no
+ ioctl VIDIOC_G_STD               | yes, only when STREAM_OFF
+ ioctl VIDIOC_S_STD               | yes, only when STREAM_OFF
+ ioctl VIDIOC_G_TUNER             | no
+ ioctl VIDIOC_S_TUNER             | no
+ ioctl VIDIOC_LOG_STATUS          | no
+ ioctl VIDIOC_OVERLAY             | no
+ ioctl VIDIOC_QBUF                | no
+ ioctl VIDIOC_DQBUF               | no
+ ioctl VIDIOC_QUERYBUF            | no
+ ioctl VIDIOC_QUERYCAP            | no
+ ioctl VIDIOC_QUERYCTRL           | no
+ ioctl VIDIOC_QUERYMENU           | no
+ ioctl VIDIOC_QUERYSTD            | no
+ ioctl VIDIOC_REQBUFS             | no
+ ioctl VIDIOC_STREAMON            | no
+ ioctl VIDIOC_STREAMOFF           | no
+ V4L2 mmap()                      | no
+ V4L2 munmap()                    | no
+ V4L2 poll()                      | no
+ V4L2 read()                      | no
+ V4L2 select()                    | no
+ V4L2 write()                     | no
+
+Similar projects
+----------------
+http://www.linuxowl.com/v4ltest.html
+
+Feedbacks
+---------
+Any feedbacks, comments, ideas, etc. are welcome at the author's
+email address: Márton Németh <nm127@freemail.hu>.

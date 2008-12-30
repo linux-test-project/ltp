@@ -1,0 +1,439 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ioctl VIDIOC_G_AUDOUT, VIDIOC_S_AUDOUT</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Function Reference"
+HREF="r7624.htm"><LINK
+REL="PREVIOUS"
+TITLE="ioctl VIDIOC_G_AUDIO, VIDIOC_S_AUDIO"
+HREF="r9539.htm"><LINK
+REL="NEXT"
+TITLE="ioctl VIDIOC_G_CHIP_IDENT"
+HREF="r9804.htm"></HEAD
+><BODY
+CLASS="REFENTRY"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="r9539.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="r9804.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="VIDIOC-G-AUDIOOUT"
+></A
+>ioctl VIDIOC_G_AUDOUT, VIDIOC_S_AUDOUT</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN9692"
+></A
+><H2
+>Name</H2
+>VIDIOC_G_AUDOUT, VIDIOC_S_AUDOUT&nbsp;--&nbsp;Query or select the current audio output</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN9696"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN9697"
+></A
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>int ioctl</CODE
+>(int fd, int request, struct v4l2_audioout *argp);</CODE
+></P
+><P
+></P
+></DIV
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN9707"
+></A
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>int ioctl</CODE
+>(int fd, int request, const struct v4l2_audioout *argp);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN9717"
+></A
+><H2
+>Arguments</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><CODE
+CLASS="PARAMETER"
+>fd</CODE
+></DT
+><DD
+><P
+>File descriptor returned by <A
+HREF="r14090.htm"
+><CODE
+CLASS="FUNCTION"
+>open()</CODE
+></A
+>.</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>request</CODE
+></DT
+><DD
+><P
+>VIDIOC_G_AUDOUT, VIDIOC_S_AUDOUT</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>argp</CODE
+></DT
+><DD
+><P
+></P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN9737"
+></A
+><H2
+>Description</H2
+><P
+>To query the current audio output applications zero out the
+<CODE
+CLASS="STRUCTFIELD"
+>reserved</CODE
+> array of a struct&nbsp;<A
+HREF="r9688.htm#V4L2-AUDIOOUT"
+>v4l2_audioout</A
+> and
+call the <CODE
+CLASS="CONSTANT"
+>VIDIOC_G_AUDOUT</CODE
+> ioctl with a pointer
+to this structure. Drivers fill the rest of the structure or return an
+<SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+> error code when the device has no audio inputs, or none which combine
+with the current video output.</P
+><P
+>Audio outputs have no writable properties. Nevertheless, to
+select the current audio output applications can initialize the
+<CODE
+CLASS="STRUCTFIELD"
+>index</CODE
+> field and
+<CODE
+CLASS="STRUCTFIELD"
+>reserved</CODE
+> array (which in the future may
+contain writable properties) of a
+<CODE
+CLASS="STRUCTNAME"
+>v4l2_audioout</CODE
+> structure and call the
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_S_AUDOUT</CODE
+> ioctl. Drivers switch to the
+requested output or return the <SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+> error code when the index is out of
+bounds. This is a write-only ioctl, it does not return the current
+audio output attributes as <CODE
+CLASS="CONSTANT"
+>VIDIOC_G_AUDOUT</CODE
+>
+does.</P
+><P
+>Note connectors on a TV card to loop back the received audio
+signal to a sound card are not audio outputs in this sense.</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-AUDIOOUT"
+></A
+><P
+><B
+>Table 1. struct <CODE
+CLASS="STRUCTNAME"
+>v4l2_audioout</CODE
+></B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="25%"
+TITLE="C1"><COL
+WIDTH="25%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>index</CODE
+></TD
+><TD
+>Identifies the audio output, set by the
+driver or application.</TD
+></TR
+><TR
+><TD
+>__u8</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>name</CODE
+>[32]</TD
+><TD
+>Name of the audio output, a NUL-terminated ASCII
+string, for example: "Line Out". This information is intended for the
+user, preferably the connector label on the device itself.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>capability</CODE
+></TD
+><TD
+>Audio capability flags, none defined yet. Drivers
+must set this field to zero.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>mode</CODE
+></TD
+><TD
+>Audio mode, none defined yet. Drivers and
+applications (on <CODE
+CLASS="CONSTANT"
+>VIDIOC_S_AUDOUT</CODE
+>) must set this
+field to zero.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>reserved</CODE
+>[2]</TD
+><TD
+>Reserved for future extensions. Drivers and
+applications must set the array to zero.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN9787"
+></A
+><H2
+>Return Value</H2
+><P
+>On success <SPAN
+CLASS="RETURNVALUE"
+>0</SPAN
+> is returned, on error <SPAN
+CLASS="RETURNVALUE"
+>-1</SPAN
+> and the <CODE
+CLASS="VARNAME"
+>errno</CODE
+> variable is set appropriately:</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+></DT
+><DD
+><P
+>No audio outputs combine with the current video
+output, or the number of the selected audio output is out of bounds or
+it does not combine, or there are no audio outputs at all and the
+ioctl is not supported.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EBUSY</SPAN
+></DT
+><DD
+><P
+>I/O is in progress, the output cannot be
+switched.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="r9539.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="r9804.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ioctl VIDIOC_G_AUDIO, VIDIOC_S_AUDIO</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="r7624.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>ioctl VIDIOC_G_CHIP_IDENT</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

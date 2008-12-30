@@ -1,0 +1,550 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>V4L2 mmap()</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Function Reference"
+HREF="r7624.htm"><LINK
+REL="PREVIOUS"
+TITLE="ioctl VIDIOC_STREAMON, VIDIOC_STREAMOFF"
+HREF="r13817.htm"><LINK
+REL="NEXT"
+TITLE="V4L2 munmap()"
+HREF="r14037.htm"></HEAD
+><BODY
+CLASS="REFENTRY"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="r13817.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="r14037.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="FUNC-MMAP"
+></A
+>V4L2 mmap()</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN13893"
+></A
+><H2
+>Name</H2
+>v4l2-mmap&nbsp;--&nbsp;Map device memory into application address space</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN13896"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN13897"
+></A
+><PRE
+CLASS="FUNCSYNOPSISINFO"
+>#include &lt;unistd.h&gt;
+#include &lt;sys/mman.h&gt;</PRE
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>void *mmap</CODE
+>(void *start, size_t length, int prot, int flags, int fd, off_t offset);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN13914"
+></A
+><H2
+>Arguments</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><CODE
+CLASS="PARAMETER"
+>start</CODE
+></DT
+><DD
+><P
+>Map the buffer to this address in the 
+application's address space. When the <CODE
+CLASS="CONSTANT"
+>MAP_FIXED</CODE
+>
+flag is specified, <CODE
+CLASS="PARAMETER"
+>start</CODE
+> must be a multiple of the
+pagesize and mmap will fail when the specified address
+cannot be used. Use of this option is discouraged; applications should
+just specify a <CODE
+CLASS="CONSTANT"
+>NULL</CODE
+> pointer here.</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>length</CODE
+></DT
+><DD
+><P
+>Length of the memory area to map. This must be the
+same value as returned by the driver in the struct&nbsp;<A
+HREF="x5953.htm#V4L2-BUFFER"
+>v4l2_buffer</A
+>
+<CODE
+CLASS="STRUCTFIELD"
+>length</CODE
+> field.</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>prot</CODE
+></DT
+><DD
+><P
+>The <CODE
+CLASS="PARAMETER"
+>prot</CODE
+> argument describes the
+desired memory protection. Regardless of the device type and the
+direction of data exchange it should be set to
+<CODE
+CLASS="CONSTANT"
+>PROT_READ</CODE
+> | <CODE
+CLASS="CONSTANT"
+>PROT_WRITE</CODE
+>,
+permitting read and write access to image buffers. Drivers should
+support at least this combination of flags. Note the Linux
+<TT
+CLASS="FILENAME"
+>video-buf</TT
+> kernel module, which is used by the
+bttv, saa7134, saa7146, cx88 and vivi driver supports only
+<CODE
+CLASS="CONSTANT"
+>PROT_READ</CODE
+> | <CODE
+CLASS="CONSTANT"
+>PROT_WRITE</CODE
+>. When
+the driver does not support the desired protection the
+<CODE
+CLASS="FUNCTION"
+>mmap()</CODE
+> function fails.</P
+><P
+>Note device memory accesses (e.&nbsp;g. the memory on a
+graphics card with video capturing hardware) may incur a performance
+penalty compared to main memory accesses, or reads may be
+significantly slower than writes or vice versa. Other I/O methods may
+be more efficient in this case.</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>flags</CODE
+></DT
+><DD
+><P
+>The <CODE
+CLASS="PARAMETER"
+>flags</CODE
+> parameter
+specifies the type of the mapped object, mapping options and whether
+modifications made to the mapped copy of the page are private to the
+process or are to be shared with other references.</P
+><P
+><CODE
+CLASS="CONSTANT"
+>MAP_FIXED</CODE
+> requests that the
+driver selects no other address than the one specified. If the
+specified address cannot be used, <CODE
+CLASS="FUNCTION"
+>mmap()</CODE
+> will fail. If
+<CODE
+CLASS="CONSTANT"
+>MAP_FIXED</CODE
+> is specified,
+<CODE
+CLASS="PARAMETER"
+>start</CODE
+> must be a multiple of the pagesize. Use
+of this option is discouraged.</P
+><P
+>One of the <CODE
+CLASS="CONSTANT"
+>MAP_SHARED</CODE
+> or
+<CODE
+CLASS="CONSTANT"
+>MAP_PRIVATE</CODE
+> flags must be set.
+<CODE
+CLASS="CONSTANT"
+>MAP_SHARED</CODE
+> allows applications to share the
+mapped memory with other (e.&nbsp;g. child-) processes. Note the Linux
+<TT
+CLASS="FILENAME"
+>video-buf</TT
+> module which is used by the bttv,
+saa7134, saa7146, cx88 and vivi driver supports only
+<CODE
+CLASS="CONSTANT"
+>MAP_SHARED</CODE
+>. <CODE
+CLASS="CONSTANT"
+>MAP_PRIVATE</CODE
+>
+requests copy-on-write semantics. V4L2 applications should not set the
+<CODE
+CLASS="CONSTANT"
+>MAP_PRIVATE</CODE
+>, <CODE
+CLASS="CONSTANT"
+>MAP_DENYWRITE</CODE
+>,
+<CODE
+CLASS="CONSTANT"
+>MAP_EXECUTABLE</CODE
+> or <CODE
+CLASS="CONSTANT"
+>MAP_ANON</CODE
+>
+flag.</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>fd</CODE
+></DT
+><DD
+><P
+>File descriptor returned by <A
+HREF="r14090.htm"
+><CODE
+CLASS="FUNCTION"
+>open()</CODE
+></A
+>.</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>offset</CODE
+></DT
+><DD
+><P
+>Offset of the buffer in device memory. This must be the
+same value as returned by the driver in the struct&nbsp;<A
+HREF="x5953.htm#V4L2-BUFFER"
+>v4l2_buffer</A
+>
+<CODE
+CLASS="STRUCTFIELD"
+>m</CODE
+> union <CODE
+CLASS="STRUCTFIELD"
+>offset</CODE
+> field.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN13982"
+></A
+><H2
+>Description</H2
+><P
+>The <CODE
+CLASS="FUNCTION"
+>mmap()</CODE
+> function asks to map
+<CODE
+CLASS="PARAMETER"
+>length</CODE
+> bytes starting at
+<CODE
+CLASS="PARAMETER"
+>offset</CODE
+> in the memory of the device specified by
+<CODE
+CLASS="PARAMETER"
+>fd</CODE
+> into the application address space,
+preferably at address <CODE
+CLASS="PARAMETER"
+>start</CODE
+>. This latter
+address is a hint only, and is usually specified as 0.</P
+><P
+>Suitable length and offset parameters are queried with the
+<A
+HREF="r13022.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_QUERYBUF</CODE
+></A
+> ioctl. Buffers must be allocated with the
+<A
+HREF="r13696.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_REQBUFS</CODE
+></A
+> ioctl before they can be queried.</P
+><P
+>To unmap buffers the <A
+HREF="r14037.htm"
+><CODE
+CLASS="FUNCTION"
+>munmap()</CODE
+></A
+> function is used.</P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN13998"
+></A
+><H2
+>Return Value</H2
+><P
+>On success <CODE
+CLASS="FUNCTION"
+>mmap()</CODE
+> returns a pointer to
+the mapped buffer. On error <CODE
+CLASS="CONSTANT"
+>MAP_FAILED</CODE
+> (-1) is
+returned, and the <CODE
+CLASS="VARNAME"
+>errno</CODE
+> variable is set
+appropriately. Possible error codes are:</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EBADF</SPAN
+></DT
+><DD
+><P
+><CODE
+CLASS="PARAMETER"
+>fd</CODE
+> is not a valid file
+descriptor.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EACCES</SPAN
+></DT
+><DD
+><P
+><CODE
+CLASS="PARAMETER"
+>fd</CODE
+> is
+not open for reading and writing.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+></DT
+><DD
+><P
+>The <CODE
+CLASS="PARAMETER"
+>start</CODE
+> or
+<CODE
+CLASS="PARAMETER"
+>length</CODE
+> or <CODE
+CLASS="PARAMETER"
+>offset</CODE
+> are not
+suitable. (E.&nbsp;g. they are too large, or not aligned on a
+<CODE
+CLASS="CONSTANT"
+>PAGESIZE</CODE
+> boundary.)</P
+><P
+>The <CODE
+CLASS="PARAMETER"
+>flags</CODE
+> or
+<CODE
+CLASS="PARAMETER"
+>prot</CODE
+> value is not supported.</P
+><P
+>No buffers have been allocated with the
+<A
+HREF="r13696.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_REQBUFS</CODE
+></A
+> ioctl.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>ENOMEM</SPAN
+></DT
+><DD
+><P
+>Not enough physical or virtual memory was available to
+complete the request.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="r13817.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="r14037.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ioctl VIDIOC_STREAMON, VIDIOC_STREAMOFF</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="r7624.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>V4L2 munmap()</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

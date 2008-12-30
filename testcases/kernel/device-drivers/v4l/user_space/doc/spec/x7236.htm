@@ -1,0 +1,1196 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Sliced VBI Data Interface</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Interfaces"
+HREF="c6488.htm"><LINK
+REL="PREVIOUS"
+TITLE="Raw VBI Data Interface"
+HREF="x7013.htm"><LINK
+REL="NEXT"
+TITLE="Teletext Interface"
+HREF="x7561.htm"></HEAD
+><BODY
+CLASS="SECTION"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x7013.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 4. Interfaces</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x7561.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECTION"
+><H1
+CLASS="SECTION"
+><A
+NAME="SLICED"
+>4.8. Sliced VBI Data Interface</A
+></H1
+><P
+>VBI stands for Vertical Blanking Interval, a gap in the
+sequence of lines of an analog video signal. During VBI no picture
+information is transmitted, allowing some time while the electron beam
+of a cathode ray tube TV returns to the top of the screen.</P
+><P
+>Sliced VBI devices use hardware to demodulate data transmitted
+in the VBI. V4L2 drivers shall <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>not</I
+></SPAN
+> do this by
+software, see also the <A
+HREF="x7013.htm"
+>raw VBI
+interface</A
+>. The data is passed as short packets of fixed size,
+covering one scan line each. The number of packets per video frame is
+variable.</P
+><P
+>Sliced VBI capture and output devices are accessed through the
+same character special files as raw VBI devices. When a driver
+supports both interfaces, the default function of a
+<TT
+CLASS="FILENAME"
+>/dev/vbi</TT
+> device is <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>raw</I
+></SPAN
+> VBI
+capturing or output, and the sliced VBI function is only available
+after calling the <A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+></A
+> ioctl as defined below. Likewise a
+<TT
+CLASS="FILENAME"
+>/dev/video</TT
+> device may support the sliced VBI API,
+however the default function here is video capturing or output.
+Different file descriptors must be used to pass raw and sliced VBI
+data simultaneously, if this is supported by the driver.</P
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN7248"
+>4.8.1. Querying Capabilities</A
+></H2
+><P
+>Devices supporting the sliced VBI capturing or output API
+set the <CODE
+CLASS="CONSTANT"
+>V4L2_CAP_SLICED_VBI_CAPTURE</CODE
+> or
+<CODE
+CLASS="CONSTANT"
+>V4L2_CAP_SLICED_VBI_OUTPUT</CODE
+> flag respectively, in
+the <CODE
+CLASS="STRUCTFIELD"
+>capabilities</CODE
+> field of struct&nbsp;<A
+HREF="r13105.htm#V4L2-CAPABILITY"
+>v4l2_capability</A
+>
+returned by the <A
+HREF="r13105.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_QUERYCAP</CODE
+></A
+> ioctl. At least one of the
+read/write, streaming or asynchronous <A
+HREF="c5742.htm"
+>I/O
+methods</A
+> must be supported. Sliced VBI devices may have a tuner
+or modulator.</P
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN7258"
+>4.8.2. Supplemental Functions</A
+></H2
+><P
+>Sliced VBI devices shall support <A
+HREF="x309.htm"
+>video
+input or output</A
+> and <A
+HREF="x394.htm"
+>tuner or
+modulator</A
+> ioctls if they have these capabilities, and they may
+support <A
+HREF="x542.htm"
+>control</A
+> ioctls. The <A
+HREF="x448.htm"
+>video standard</A
+> ioctls provide information
+vital to program a sliced VBI device, therefore must be
+supported.</P
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN7265"
+>4.8.3. Sliced VBI Format Negotiation</A
+></H2
+><P
+>To find out which data services are supported by the
+hardware applications can call the <A
+HREF="r12051.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_G_SLICED_VBI_CAP</CODE
+></A
+> ioctl.
+All drivers implementing the sliced VBI interface must support this
+ioctl. The results may differ from those of the <A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+></A
+> ioctl
+when the number of VBI lines the hardware can capture or output per
+frame, or the number of services it can identify on a given line are
+limited. For example on PAL line 16 the hardware may be able to look
+for a VPS or Teletext signal, but not both at the same time.</P
+><P
+>To determine the currently selected services applications
+set the <CODE
+CLASS="STRUCTFIELD"
+>type </CODE
+> field of struct&nbsp;<A
+HREF="r10944.htm#V4L2-FORMAT"
+>v4l2_format</A
+> to
+<CODE
+CLASS="CONSTANT"
+> V4L2_BUF_TYPE_SLICED_VBI_CAPTURE</CODE
+> or <CODE
+CLASS="CONSTANT"
+>V4L2_BUF_TYPE_SLICED_VBI_OUTPUT</CODE
+>, and the <A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_G_FMT</CODE
+></A
+>
+ioctl fills the <CODE
+CLASS="STRUCTFIELD"
+>fmt.sliced</CODE
+> member, a
+struct&nbsp;<A
+HREF="x7236.htm#V4L2-SLICED-VBI-FORMAT"
+>v4l2_sliced_vbi_format</A
+>.</P
+><P
+>Applications can request different parameters by
+initializing or modifying the <CODE
+CLASS="STRUCTFIELD"
+>fmt.sliced</CODE
+>
+member and calling the <A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+></A
+> ioctl with a pointer to the
+<CODE
+CLASS="STRUCTNAME"
+>v4l2_format</CODE
+> structure.</P
+><P
+>The sliced VBI API is more complicated than the raw VBI API
+because the hardware must be told which VBI service to expect on each
+scan line. Not all services may be supported by the hardware on all
+lines (this is especially true for VBI output where Teletext is often
+unsupported and other services can only be inserted in one specific
+line). In many cases, however, it is sufficient to just set the
+<CODE
+CLASS="STRUCTFIELD"
+>service_set</CODE
+> field to the required services
+and let the driver fill the <CODE
+CLASS="STRUCTFIELD"
+>service_lines</CODE
+>
+array according to hardware capabilities. Only if more precise control
+is needed should the programmer set the
+<CODE
+CLASS="STRUCTFIELD"
+>service_lines</CODE
+> array explicitly.</P
+><P
+>The <A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+></A
+> ioctl returns an <SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+> error code only when the
+given parameters are ambiguous, otherwise it modifies the parameters
+according to hardware capabilities. When the driver allocates
+resources at this point, it may return an <SPAN
+CLASS="ERRORCODE"
+>EBUSY</SPAN
+> error code if the required
+resources are temporarily unavailable. Other resource allocation
+points which may return <SPAN
+CLASS="ERRORCODE"
+>EBUSY</SPAN
+> can be the
+<A
+HREF="r13817.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_STREAMON</CODE
+></A
+> ioctl and the first <A
+HREF="r14264.htm"
+><CODE
+CLASS="FUNCTION"
+>read()</CODE
+></A
+>, <A
+HREF="r14496.htm"
+><CODE
+CLASS="FUNCTION"
+>write()</CODE
+></A
+> and
+<A
+HREF="r14390.htm"
+><CODE
+CLASS="FUNCTION"
+>select()</CODE
+></A
+> call.</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-SLICED-VBI-FORMAT"
+></A
+><P
+><B
+>Table 4-6. struct
+<CODE
+CLASS="STRUCTNAME"
+>v4l2_sliced_vbi_format</CODE
+></B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="25%"
+TITLE="C1"><COL
+WIDTH="25%"
+TITLE="C2"><COL
+WIDTH="17%"
+TITLE="C3"><COL
+WIDTH="17%"
+TITLE="C4"><COL
+WIDTH="17%"
+TITLE="C5"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>service_set</CODE
+></TD
+><TD
+COLSPAN="3"
+><P
+>If
+<CODE
+CLASS="STRUCTFIELD"
+>service_set</CODE
+> is non-zero when passed with
+<A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+></A
+> or <A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_TRY_FMT</CODE
+></A
+>, the
+<CODE
+CLASS="STRUCTFIELD"
+>service_lines</CODE
+> array will be filled by the
+driver according to the services specified in this field. For example,
+if <CODE
+CLASS="STRUCTFIELD"
+>service_set</CODE
+> is initialized with
+<CODE
+CLASS="CONSTANT"
+>V4L2_SLICED_TELETEXT_B | V4L2_SLICED_WSS_625</CODE
+>, a
+driver for the cx25840 video decoder sets lines 7-22 of both
+fields<SUP
+>a</SUP
+> to <CODE
+CLASS="CONSTANT"
+>V4L2_SLICED_TELETEXT_B</CODE
+>
+and line 23 of the first field to
+<CODE
+CLASS="CONSTANT"
+>V4L2_SLICED_WSS_625</CODE
+>. If
+<CODE
+CLASS="STRUCTFIELD"
+>service_set</CODE
+> is set to zero, then the values
+of <CODE
+CLASS="STRUCTFIELD"
+>service_lines</CODE
+> will be used instead.</P
+><P
+>On return the driver sets this field to the union of all
+elements of the returned <CODE
+CLASS="STRUCTFIELD"
+>service_lines</CODE
+>
+array. It may contain less services than requested, perhaps just one,
+if the hardware cannot handle more services simultaneously. It may be
+empty (zero) if none of the requested services are supported by the
+hardware.</P
+></TD
+></TR
+><TR
+><TD
+>__u16</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>service_lines</CODE
+>[2][24]</TD
+><TD
+COLSPAN="3"
+><P
+>Applications initialize this
+array with sets of data services the driver shall look for or insert
+on the respective scan line. Subject to hardware capabilities drivers
+return the requested set, a subset, which may be just a single
+service, or an empty set. When the hardware cannot handle multiple
+services on the same line the driver shall choose one. No assumptions
+can be made on which service the driver chooses.</P
+><P
+>Data
+services are defined in <A
+HREF="x7236.htm#VBI-SERVICES2"
+>Table 4-7</A
+>. Array indices
+map to ITU-R line numbers (see also <A
+HREF="x7013.htm#VBI-525"
+>Figure 4-2</A
+> and <A
+HREF="x7013.htm#VBI-625"
+>Figure 4-3</A
+>) as follows: </P
+></TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>Element</TD
+><TD
+>525 line systems</TD
+><TD
+>625 line systems</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>service_lines</CODE
+>[0][1]</TD
+><TD
+ALIGN="CENTER"
+>1</TD
+><TD
+ALIGN="CENTER"
+>1</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>service_lines</CODE
+>[0][23]</TD
+><TD
+ALIGN="CENTER"
+>23</TD
+><TD
+ALIGN="CENTER"
+>23</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>service_lines</CODE
+>[1][1]</TD
+><TD
+ALIGN="CENTER"
+>264</TD
+><TD
+ALIGN="CENTER"
+>314</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>service_lines</CODE
+>[1][23]</TD
+><TD
+ALIGN="CENTER"
+>286</TD
+><TD
+ALIGN="CENTER"
+>336</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>Drivers must set
+<CODE
+CLASS="STRUCTFIELD"
+>service_lines</CODE
+>[0][0] and
+<CODE
+CLASS="STRUCTFIELD"
+>service_lines</CODE
+>[1][0] to zero.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>io_size</CODE
+></TD
+><TD
+COLSPAN="3"
+>Maximum number of bytes passed by
+one <A
+HREF="r14264.htm"
+><CODE
+CLASS="FUNCTION"
+>read()</CODE
+></A
+> or <A
+HREF="r14496.htm"
+><CODE
+CLASS="FUNCTION"
+>write()</CODE
+></A
+> call, and the buffer size in bytes for
+the <A
+HREF="r12878.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_QBUF</CODE
+></A
+> and <A
+HREF="r12878.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_DQBUF</CODE
+></A
+> ioctl. Drivers set this field to
+the size of struct&nbsp;<A
+HREF="x7236.htm#V4L2-SLICED-VBI-DATA"
+>v4l2_sliced_vbi_data</A
+> times the number of non-zero
+elements in the returned <CODE
+CLASS="STRUCTFIELD"
+>service_lines</CODE
+>
+array (that is the number of lines potentially carrying data).</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>reserved</CODE
+>[2]</TD
+><TD
+COLSPAN="3"
+>This array is reserved for future
+extensions. Applications and drivers must set it to zero.</TD
+></TR
+></TBODY
+><TR
+><TD
+COLSPAN="5"
+>Notes:<BR><A
+NAME="FTN.AEN7329"
+>a. </A
+>According to <A
+HREF="b17127.htm#ETS300706"
+>ETS&nbsp;300&nbsp;706</A
+> lines 6-22 of the
+first field and lines 5-22 of the second field may carry Teletext
+data.<BR></TD
+></TR
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="VBI-SERVICES2"
+></A
+><P
+><B
+>Table 4-7. Sliced VBI services</B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="25%"
+TITLE="C1"><COL
+WIDTH="12%"
+TITLE="C2"><COL
+WIDTH="12%"
+TITLE="C3"><COL
+WIDTH="25%"
+TITLE="C4"><COL
+WIDTH="25%"
+TITLE="C5"><THEAD
+><TR
+><TH
+>Symbol</TH
+><TH
+>Value</TH
+><TH
+>Reference</TH
+><TH
+>Lines, usually</TH
+><TH
+>Payload</TH
+></TR
+></THEAD
+><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_SLICED_TELETEXT_B</CODE
+>
+(Teletext System B)</TD
+><TD
+>0x0001</TD
+><TD
+><A
+HREF="b17127.htm#ETS300706"
+><ABBR
+CLASS="ABBREV"
+>ETS&nbsp;300&nbsp;706</ABBR
+></A
+>, <A
+HREF="b17127.htm#ITU653"
+><ABBR
+CLASS="ABBREV"
+>ITU&nbsp;BT.653</ABBR
+></A
+></TD
+><TD
+>PAL/SECAM line 7-22, 320-335 (second field 7-22)</TD
+><TD
+>Last 42 of the 45 byte Teletext packet, that is
+without clock run-in and framing code, lsb first transmitted.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_SLICED_VPS</CODE
+></TD
+><TD
+>0x0400</TD
+><TD
+><A
+HREF="b17127.htm#ETS300231"
+><ABBR
+CLASS="ABBREV"
+>ETS&nbsp;300&nbsp;231</ABBR
+></A
+></TD
+><TD
+>PAL line 16</TD
+><TD
+>Byte number 3 to 15 according to Figure 9 of
+ETS&nbsp;300&nbsp;231, lsb first transmitted.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_SLICED_CAPTION_525</CODE
+></TD
+><TD
+>0x1000</TD
+><TD
+><A
+HREF="b17127.htm#EIA608"
+><ABBR
+CLASS="ABBREV"
+>EIA&nbsp;608-B</ABBR
+></A
+></TD
+><TD
+>NTSC line 21, 284 (second field 21)</TD
+><TD
+>Two bytes in transmission order, including parity
+bit, lsb first transmitted.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_SLICED_WSS_625</CODE
+></TD
+><TD
+>0x4000</TD
+><TD
+><A
+HREF="b17127.htm#ITU1119"
+><ABBR
+CLASS="ABBREV"
+>ITU&nbsp;BT.1119</ABBR
+></A
+>, <A
+HREF="b17127.htm#EN300294"
+><ABBR
+CLASS="ABBREV"
+>EN&nbsp;300&nbsp;294</ABBR
+></A
+></TD
+><TD
+>PAL/SECAM line 23</TD
+><TD
+><PRE
+CLASS="SCREEN"
+>Byte         0                 1
+      msb         lsb  msb           lsb
+ Bit  7 6 5 4 3 2 1 0  x x 13 12 11 10 9</PRE
+></TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_SLICED_VBI_525</CODE
+></TD
+><TD
+>0x1000</TD
+><TD
+COLSPAN="3"
+>Set of services applicable to 525
+line systems.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_SLICED_VBI_625</CODE
+></TD
+><TD
+>0x4401</TD
+><TD
+COLSPAN="3"
+>Set of services applicable to 625
+line systems.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>Drivers may return an <SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+> error code when applications attempt to
+read or write data without prior format negotiation, after switching
+the video standard (which may invalidate the negotiated VBI
+parameters) and after switching the video input (which may change the
+video standard as a side effect). The <A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+></A
+> ioctl may return
+an <SPAN
+CLASS="ERRORCODE"
+>EBUSY</SPAN
+> error code when applications attempt to change the format while i/o is
+in progress (between a <A
+HREF="r13817.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_STREAMON</CODE
+></A
+> and <A
+HREF="r13817.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_STREAMOFF</CODE
+></A
+> call,
+and after the first <A
+HREF="r14264.htm"
+><CODE
+CLASS="FUNCTION"
+>read()</CODE
+></A
+> or <A
+HREF="r14496.htm"
+><CODE
+CLASS="FUNCTION"
+>write()</CODE
+></A
+> call).</P
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN7483"
+>4.8.4. Reading and writing sliced VBI data</A
+></H2
+><P
+>A single <A
+HREF="r14264.htm"
+><CODE
+CLASS="FUNCTION"
+>read()</CODE
+></A
+> or <A
+HREF="r14496.htm"
+><CODE
+CLASS="FUNCTION"
+>write()</CODE
+></A
+> call must pass all data
+belonging to one video frame. That is an array of
+<CODE
+CLASS="STRUCTNAME"
+>v4l2_sliced_vbi_data</CODE
+> structures with one or
+more elements and a total size not exceeding
+<CODE
+CLASS="STRUCTFIELD"
+>io_size</CODE
+> bytes. Likewise in streaming I/O
+mode one buffer of <CODE
+CLASS="STRUCTFIELD"
+>io_size</CODE
+> bytes must
+contain data of one video frame. The <CODE
+CLASS="STRUCTFIELD"
+>id</CODE
+> of
+unused <CODE
+CLASS="STRUCTNAME"
+>v4l2_sliced_vbi_data</CODE
+> elements must be
+zero.</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-SLICED-VBI-DATA"
+></A
+><P
+><B
+>Table 4-8. struct
+<CODE
+CLASS="STRUCTNAME"
+>v4l2_sliced_vbi_data</CODE
+></B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="38%"
+TITLE="C1"><COL
+WIDTH="12%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>id</CODE
+></TD
+><TD
+>A flag from <A
+HREF="r12051.htm#VBI-SERVICES"
+>Table 2</A
+>
+identifying the type of data in this packet. Only a single bit must be
+set. When the <CODE
+CLASS="STRUCTFIELD"
+>id</CODE
+> of a captured packet is
+zero, the packet is empty and the contents of other fields are
+undefined. Applications shall ignore empty packets. When the
+<CODE
+CLASS="STRUCTFIELD"
+>id</CODE
+> of a packet for output is zero the
+contents of the <CODE
+CLASS="STRUCTFIELD"
+>data</CODE
+> field are undefined
+and the driver must no longer insert data on the requested
+<CODE
+CLASS="STRUCTFIELD"
+>field</CODE
+> and
+<CODE
+CLASS="STRUCTFIELD"
+>line</CODE
+>.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>field</CODE
+></TD
+><TD
+>The video field number this data has been captured
+from, or shall be inserted at. <CODE
+CLASS="CONSTANT"
+>0</CODE
+> for the first
+field, <CODE
+CLASS="CONSTANT"
+>1</CODE
+> for the second field.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>line</CODE
+></TD
+><TD
+>The field (as opposed to frame) line number this
+data has been captured from, or shall be inserted at. See <A
+HREF="x7013.htm#VBI-525"
+>Figure 4-2</A
+> and <A
+HREF="x7013.htm#VBI-625"
+>Figure 4-3</A
+> for valid
+values. Sliced VBI capture devices can set the line number of all
+packets to <CODE
+CLASS="CONSTANT"
+>0</CODE
+> if the hardware cannot reliably
+identify scan lines. The field number must always be valid.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>reserved</CODE
+></TD
+><TD
+>This field is reserved for future extensions.
+Applications and drivers must set it to zero.</TD
+></TR
+><TR
+><TD
+>__u8</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>data</CODE
+>[48]</TD
+><TD
+>The packet payload. See <A
+HREF="r12051.htm#VBI-SERVICES"
+>Table 2</A
+> for the contents and number of
+bytes passed for each data type. The contents of padding bytes at the
+end of this array are undefined, drivers and applications shall ignore
+them.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>Packets are always passed in ascending line number order,
+without duplicate line numbers. The <A
+HREF="r14496.htm"
+><CODE
+CLASS="FUNCTION"
+>write()</CODE
+></A
+> function and the
+<A
+HREF="r12878.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_QBUF</CODE
+></A
+> ioctl must return an <SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+> error code when applications violate
+this rule. They must also return an <SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+> error code when applications pass an
+incorrect field or line number, or a combination of
+<CODE
+CLASS="STRUCTFIELD"
+>field</CODE
+>, <CODE
+CLASS="STRUCTFIELD"
+>line</CODE
+> and
+<CODE
+CLASS="STRUCTFIELD"
+>id</CODE
+> which has not been negotiated with the
+<A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_G_FMT</CODE
+></A
+> or <A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+></A
+> ioctl. When the line numbers are
+unknown the driver must pass the packets in transmitted order. The
+driver can insert empty packets with <CODE
+CLASS="STRUCTFIELD"
+>id</CODE
+> set
+to zero anywhere in the packet array.</P
+><P
+>To assure synchronization and to distinguish from frame
+dropping, when a captured frame does not carry any of the requested
+data services drivers must pass one or more empty packets. When an
+application fails to pass VBI data in time for output, the driver
+must output the last VPS and WSS packet again, and disable the output
+of Closed Caption and Teletext data, or output data which is ignored
+by Closed Caption and Teletext decoders.</P
+><P
+>A sliced VBI device may support <A
+HREF="c5742.htm#RW"
+>read/write</A
+> and/or streaming (<A
+HREF="x5791.htm"
+>memory mapping</A
+> and/or <A
+HREF="x5884.htm"
+>user
+pointer</A
+>) I/O. The latter bears the possibility of synchronizing
+video and VBI data by using buffer timestamps.</P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x7013.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x7561.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Raw VBI Data Interface</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="c6488.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Teletext Interface</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

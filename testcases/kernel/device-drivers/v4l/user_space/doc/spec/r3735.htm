@@ -1,0 +1,290 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>V4L2_PIX_FMT_SBGGR8 ('BA81')</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="RGB Formats"
+HREF="x2490.htm"><LINK
+REL="PREVIOUS"
+TITLE="Packed RGB formats"
+HREF="r2492.htm"><LINK
+REL="NEXT"
+TITLE="V4L2_PIX_FMT_SBGGR16 ('BA82')"
+HREF="r3796.htm"></HEAD
+><BODY
+CLASS="REFENTRY"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="r2492.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="r3796.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="V4L2-PIX-FMT-SBGGR8"
+></A
+>V4L2_PIX_FMT_SBGGR8 ('BA81')</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN3739"
+></A
+><H2
+>Name</H2
+><CODE
+CLASS="CONSTANT"
+>V4L2_PIX_FMT_SBGGR8</CODE
+>&nbsp;--&nbsp;Bayer RGB format</DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN3743"
+></A
+><H2
+>Description</H2
+><P
+>This is commonly the native format of digital cameras,
+reflecting the arrangement of sensors on the CCD device. Only one red,
+green or blue value is given for each pixel. Missing components must
+be interpolated from neighbouring pixels. From left to right the first
+row consists of a blue and green value, the second row of a green and
+red value. This scheme repeats to the right and down for every two
+columns and rows.</P
+><DIV
+CLASS="EXAMPLE"
+><A
+NAME="AEN3746"
+></A
+><P
+><B
+>Example 2-1. <CODE
+CLASS="CONSTANT"
+>V4L2_PIX_FMT_SBGGR8</CODE
+> 4 &times; 4
+pixel image</B
+></P
+><DIV
+CLASS="FORMALPARA"
+><P
+><B
+>Byte Order. </B
+>Each cell is one byte.
+              <DIV
+CLASS="INFORMALTABLE"
+><P
+></P
+><A
+NAME="AEN3752"
+></A
+><TABLE
+BORDER="0"
+FRAME="void"
+CLASS="CALSTABLE"
+><COL
+WIDTH="2*"
+ALIGN="LEFT"><COL><COL><COL><COL><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>start&nbsp;+&nbsp;0:</TD
+><TD
+>B<SUB
+>00</SUB
+></TD
+><TD
+>G<SUB
+>01</SUB
+></TD
+><TD
+>B<SUB
+>02</SUB
+></TD
+><TD
+>G<SUB
+>03</SUB
+></TD
+></TR
+><TR
+><TD
+>start&nbsp;+&nbsp;4:</TD
+><TD
+>G<SUB
+>10</SUB
+></TD
+><TD
+>R<SUB
+>11</SUB
+></TD
+><TD
+>G<SUB
+>12</SUB
+></TD
+><TD
+>R<SUB
+>13</SUB
+></TD
+></TR
+><TR
+><TD
+>start&nbsp;+&nbsp;8:</TD
+><TD
+>B<SUB
+>20</SUB
+></TD
+><TD
+>G<SUB
+>21</SUB
+></TD
+><TD
+>B<SUB
+>22</SUB
+></TD
+><TD
+>G<SUB
+>23</SUB
+></TD
+></TR
+><TR
+><TD
+>start&nbsp;+&nbsp;12:</TD
+><TD
+>G<SUB
+>30</SUB
+></TD
+><TD
+>R<SUB
+>31</SUB
+></TD
+><TD
+>G<SUB
+>32</SUB
+></TD
+><TD
+>R<SUB
+>33</SUB
+></TD
+></TR
+></TBODY
+></TABLE
+><P
+></P
+></DIV
+>
+            </P
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="r2492.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="r3796.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Packed RGB formats</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="x2490.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>V4L2_PIX_FMT_SBGGR16 ('BA82')</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

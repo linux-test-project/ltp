@@ -1,0 +1,214 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Teletext Interface</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Interfaces"
+HREF="c6488.htm"><LINK
+REL="PREVIOUS"
+TITLE="Sliced VBI Data Interface"
+HREF="x7236.htm"><LINK
+REL="NEXT"
+TITLE="Radio Interface"
+HREF="x7578.htm"></HEAD
+><BODY
+CLASS="SECTION"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x7236.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 4. Interfaces</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x7578.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECTION"
+><H1
+CLASS="SECTION"
+><A
+NAME="TTX"
+>4.9. Teletext Interface</A
+></H1
+><P
+>This interface aims at devices receiving and demodulating
+Teletext data [<A
+HREF="b17127.htm#ETS300706"
+><ABBR
+CLASS="ABBREV"
+>ETS&nbsp;300&nbsp;706</ABBR
+></A
+>, <A
+HREF="b17127.htm#ITU653"
+><ABBR
+CLASS="ABBREV"
+>ITU&nbsp;BT.653</ABBR
+></A
+>], evaluating the
+Teletext packages and storing formatted pages in cache memory. Such
+devices are usually implemented as microcontrollers with serial
+interface (I<SUP
+>2</SUP
+>C) and can be found on older
+TV cards, dedicated Teletext decoding cards and home-brew devices
+connected to the PC parallel port.</P
+><P
+>The Teletext API was designed by Martin Buck. It is defined in
+the kernel header file <TT
+CLASS="FILENAME"
+>linux/videotext.h</TT
+>, the
+specification is available from <A
+HREF="http://home.pages.de/~videotext/"
+TARGET="_top"
+>http://home.pages.de/~videotext/</A
+>. (Videotext is the name of
+the German public television Teletext service.) Conventional character
+device file names are <TT
+CLASS="FILENAME"
+>/dev/vtx</TT
+> and
+<TT
+CLASS="FILENAME"
+>/dev/vttuner</TT
+>, with device number 83, 0 and 83, 16
+respectively. A similar interface exists for the Philips SAA5249
+Teletext decoder [specification?] with character device file names
+<TT
+CLASS="FILENAME"
+>/dev/tlkN</TT
+>, device number 102, N.</P
+><P
+>Eventually the Teletext API was integrated into the V4L API
+with character device file names <TT
+CLASS="FILENAME"
+>/dev/vtx0</TT
+> to
+<TT
+CLASS="FILENAME"
+>/dev/vtx31</TT
+>, device major number 81, minor numbers
+192 to 223. For reference the V4L Teletext API specification is
+reproduced here in full: "Teletext interfaces talk the existing VTX
+API." Teletext devices with major number 83 and 102 will be removed in
+Linux 2.6.</P
+><P
+>There are no plans to replace the Teletext API or to integrate
+it into V4L2. Please write to the Video4Linux mailing list: <A
+HREF="https://listman.redhat.com/mailman/listinfo/video4linux-list"
+TARGET="_top"
+>https://listman.redhat.com/mailman/listinfo/video4linux-list</A
+> 
+when the need arises.</P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x7236.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x7578.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Sliced VBI Data Interface</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="c6488.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Radio Interface</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

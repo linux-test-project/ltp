@@ -1,0 +1,665 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ioctl VIDIOC_G_MODULATOR, VIDIOC_S_MODULATOR</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Function Reference"
+HREF="r7624.htm"><LINK
+REL="PREVIOUS"
+TITLE="ioctl VIDIOC_G_JPEGCOMP, VIDIOC_S_JPEGCOMP"
+HREF="r11285.htm"><LINK
+REL="NEXT"
+TITLE="ioctl VIDIOC_G_OUTPUT, VIDIOC_S_OUTPUT"
+HREF="r11612.htm"></HEAD
+><BODY
+CLASS="REFENTRY"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="r11285.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="r11612.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="VIDIOC-G-MODULATOR"
+></A
+>ioctl VIDIOC_G_MODULATOR, VIDIOC_S_MODULATOR</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN11434"
+></A
+><H2
+>Name</H2
+>VIDIOC_G_MODULATOR, VIDIOC_S_MODULATOR&nbsp;--&nbsp;Get or set modulator attributes</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN11438"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN11439"
+></A
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>int ioctl</CODE
+>(int fd, int request, struct v4l2_modulator
+*argp);</CODE
+></P
+><P
+></P
+></DIV
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN11449"
+></A
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>int ioctl</CODE
+>(int fd, int request, const struct v4l2_modulator
+*argp);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN11459"
+></A
+><H2
+>Arguments</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><CODE
+CLASS="PARAMETER"
+>fd</CODE
+></DT
+><DD
+><P
+>File descriptor returned by <A
+HREF="r14090.htm"
+><CODE
+CLASS="FUNCTION"
+>open()</CODE
+></A
+>.</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>request</CODE
+></DT
+><DD
+><P
+>VIDIOC_G_MODULATOR, VIDIOC_S_MODULATOR</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>argp</CODE
+></DT
+><DD
+><P
+></P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN11479"
+></A
+><H2
+>Description</H2
+><P
+>To query the attributes of a modulator applications initialize
+the <CODE
+CLASS="STRUCTFIELD"
+>index</CODE
+> field and zero out the
+<CODE
+CLASS="STRUCTFIELD"
+>reserved</CODE
+> array of a struct&nbsp;<A
+HREF="r11430.htm#V4L2-MODULATOR"
+>v4l2_modulator</A
+> and
+call the <CODE
+CLASS="CONSTANT"
+>VIDIOC_G_MODULATOR</CODE
+> ioctl with a pointer
+to this structure. Drivers fill the rest of the structure or return an
+<SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+> error code when the index is out of bounds. To enumerate all modulators
+applications shall begin at index zero, incrementing by one until the
+driver returns <SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+>.</P
+><P
+>Modulators have two writable properties, an audio
+modulation set and the radio frequency. To change the modulated audio
+subprograms, applications initialize the <CODE
+CLASS="STRUCTFIELD"
+>index</CODE
+> and <CODE
+CLASS="STRUCTFIELD"
+>txsubchans</CODE
+> fields and the
+<CODE
+CLASS="STRUCTFIELD"
+>reserved</CODE
+> array and call the
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_S_MODULATOR</CODE
+> ioctl. Drivers may choose a
+different audio modulation if the request cannot be satisfied. However
+this is a write-only ioctl, it does not return the actual audio
+modulation selected.</P
+><P
+>To change the radio frequency the <A
+HREF="r11094.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FREQUENCY</CODE
+></A
+> ioctl
+is available.</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-MODULATOR"
+></A
+><P
+><B
+>Table 1. struct <CODE
+CLASS="STRUCTNAME"
+>v4l2_modulator</CODE
+></B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="25%"
+TITLE="C1"><COL
+WIDTH="25%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>index</CODE
+></TD
+><TD
+>Identifies the modulator, set by the
+application.</TD
+></TR
+><TR
+><TD
+>__u8</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>name</CODE
+>[32]</TD
+><TD
+>Name of the modulator, a NUL-terminated ASCII
+string. This information is intended for the user.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>capability</CODE
+></TD
+><TD
+>Modulator capability flags. No flags are defined
+for this field, the tuner flags in struct&nbsp;<A
+HREF="r12342.htm#V4L2-TUNER"
+>v4l2_tuner</A
+>
+are used accordingly. The audio flags indicate the ability
+to encode audio subprograms. They will <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>not</I
+></SPAN
+>
+change for example with the current video standard.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>rangelow</CODE
+></TD
+><TD
+>The lowest tunable frequency in units of 62.5
+KHz, or if the <CODE
+CLASS="STRUCTFIELD"
+>capability</CODE
+> flag
+<CODE
+CLASS="CONSTANT"
+>V4L2_TUNER_CAP_LOW</CODE
+> is set, in units of 62.5
+Hz.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>rangehigh</CODE
+></TD
+><TD
+>The highest tunable frequency in units of 62.5
+KHz, or if the <CODE
+CLASS="STRUCTFIELD"
+>capability</CODE
+> flag
+<CODE
+CLASS="CONSTANT"
+>V4L2_TUNER_CAP_LOW</CODE
+> is set, in units of 62.5
+Hz.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>txsubchans</CODE
+></TD
+><TD
+>With this field applications can determine how
+audio sub-carriers shall be modulated. It contains a set of flags as
+defined in <A
+HREF="r11430.htm#MODULATOR-TXSUBCHANS"
+>Table 2</A
+>. Note the tuner
+<CODE
+CLASS="STRUCTFIELD"
+>rxsubchans</CODE
+> flags are reused, but the
+semantics are different. Video output devices are assumed to have an
+analog or PCM audio input with 1-3 channels. The
+<CODE
+CLASS="STRUCTFIELD"
+>txsubchans</CODE
+> flags select one or more
+channels for modulation, together with some audio subprogram
+indicator, for example a stereo pilot tone.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>reserved</CODE
+>[4]</TD
+><TD
+>Reserved for future extensions. Drivers and
+applications must set the array to zero.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="MODULATOR-TXSUBCHANS"
+></A
+><P
+><B
+>Table 2. Modulator Audio Transmission Flags</B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="38%"
+TITLE="C1"><COL
+WIDTH="12%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_TUNER_SUB_MONO</CODE
+></TD
+><TD
+>0x0001</TD
+><TD
+>Modulate channel 1 as mono audio, when the input
+has more channels, a down-mix of channel 1 and 2. This flag does not
+combine with <CODE
+CLASS="CONSTANT"
+>V4L2_TUNER_SUB_STEREO</CODE
+> or
+<CODE
+CLASS="CONSTANT"
+>V4L2_TUNER_SUB_LANG1</CODE
+>.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_TUNER_SUB_STEREO</CODE
+></TD
+><TD
+>0x0002</TD
+><TD
+>Modulate channel 1 and 2 as left and right
+channel of a stereo audio signal. When the input has only one channel
+or two channels and <CODE
+CLASS="CONSTANT"
+>V4L2_TUNER_SUB_SAP</CODE
+> is also
+set, channel 1 is encoded as left and right channel. This flag does
+not combine with <CODE
+CLASS="CONSTANT"
+>V4L2_TUNER_SUB_MONO </CODE
+> or
+<CODE
+CLASS="CONSTANT"
+>V4L2_TUNER_SUB_LANG1</CODE
+>. When the driver does not
+support stereo audio it shall fall back to mono.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_TUNER_SUB_LANG1</CODE
+></TD
+><TD
+>0x0008</TD
+><TD
+>Modulate channel 1 and 2 as primary and secondary
+language of a bilingual audio signal. When the input has only one
+channel it is used for both languages. It is not possible to encode
+the primary or secondary language only. This flag does not combine
+with <CODE
+CLASS="CONSTANT"
+>V4L2_TUNER_SUB_MONO </CODE
+> or
+<CODE
+CLASS="CONSTANT"
+>V4L2_TUNER_SUB_STEREO</CODE
+>. If the hardware does not
+support the respective audio matrix, or the current video standard
+does not permit bilingual audio the
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_S_MODULATOR</CODE
+> ioctl shall return an <SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+> error code
+and the driver shall fall back to mono or stereo mode.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_TUNER_SUB_LANG2</CODE
+></TD
+><TD
+>0x0004</TD
+><TD
+>Same effect as
+<CODE
+CLASS="CONSTANT"
+>V4L2_TUNER_SUB_LANG1</CODE
+>.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_TUNER_SUB_SAP</CODE
+></TD
+><TD
+>0x0004</TD
+><TD
+>When combined with <CODE
+CLASS="CONSTANT"
+>V4L2_TUNER_SUB_MONO</CODE
+> the first channel is encoded as mono audio, the last
+channel as Second Audio Program. When the input has only one channel
+it is used for both audio tracks. When the input has three channels
+the mono track is a down-mix of channel 1 and 2. When combined with
+<CODE
+CLASS="CONSTANT"
+>V4L2_TUNER_SUB_STEREO </CODE
+> channel 1 and 2 are
+encoded as left and right stereo audio, channel 3 as Second Audio
+Program. When the input has only two channels, the first is encoded as
+left and right channel and the second as SAP. When the input has only
+one channel it is used for all audio tracks. It is not possible to
+encode a Second Audio Program only. This flag must combine with
+<CODE
+CLASS="CONSTANT"
+>V4L2_TUNER_SUB_MONO</CODE
+> or
+<CODE
+CLASS="CONSTANT"
+>V4L2_TUNER_SUB_STEREO</CODE
+>. If the hardware does not
+support the respective audio matrix, or the current video standard
+does not permit SAP the <CODE
+CLASS="CONSTANT"
+> VIDIOC_S_MODULATOR</CODE
+> ioctl
+shall return an <SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+> error code and driver shall fall back to mono or stereo
+mode.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN11598"
+></A
+><H2
+>Return Value</H2
+><P
+>On success <SPAN
+CLASS="RETURNVALUE"
+>0</SPAN
+> is returned, on error <SPAN
+CLASS="RETURNVALUE"
+>-1</SPAN
+> and the <CODE
+CLASS="VARNAME"
+>errno</CODE
+> variable is set appropriately:</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+></DT
+><DD
+><P
+>The struct&nbsp;<A
+HREF="r11430.htm#V4L2-MODULATOR"
+>v4l2_modulator</A
+>
+<CODE
+CLASS="STRUCTFIELD"
+>index</CODE
+> is out of bounds.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="r11285.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="r11612.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ioctl VIDIOC_G_JPEGCOMP, VIDIOC_S_JPEGCOMP</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="r7624.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>ioctl VIDIOC_G_OUTPUT, VIDIOC_S_OUTPUT</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

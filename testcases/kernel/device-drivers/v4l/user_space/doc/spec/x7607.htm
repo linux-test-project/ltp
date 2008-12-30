@@ -1,0 +1,197 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>RDS Interface</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Interfaces"
+HREF="c6488.htm"><LINK
+REL="PREVIOUS"
+TITLE="Radio Interface"
+HREF="x7578.htm"><LINK
+REL="NEXT"
+TITLE="Function Reference"
+HREF="r7624.htm"></HEAD
+><BODY
+CLASS="SECTION"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x7578.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 4. Interfaces</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="r7624.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECTION"
+><H1
+CLASS="SECTION"
+><A
+NAME="RDS"
+>4.11. RDS Interface</A
+></H1
+><P
+>The Radio Data System transmits supplementary
+information in binary format, for example the station name or travel
+information, on a inaudible audio subcarrier of a radio program. This
+interface aims at devices capable of receiving and decoding RDS
+information.</P
+><P
+>The V4L API defines its RDS API as follows.</P
+><P
+>From radio devices supporting it, RDS data can be read
+with the <A
+HREF="r14264.htm"
+><CODE
+CLASS="FUNCTION"
+>read()</CODE
+></A
+> function. The data is packed in groups of three,
+as follows:<P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>First Octet Least Significant Byte of RDS Block</P
+></LI
+><LI
+><P
+>Second Octet Most Significant Byte of RDS Block</P
+></LI
+><LI
+><P
+>Third Octet Bit 7: Error bit. Indicates that an
+uncorrectable error occurred during reception of this block. Bit 6:
+Corrected bit. Indicates that an error was corrected for this data
+block. Bits 5-3: Received Offset. Indicates the offset received by the
+sync system. Bits 2-0: Offset Name. Indicates the offset applied to
+this data.</P
+></LI
+></OL
+></P
+><P
+>It was argued  the RDS API should be
+extended before integration into V4L2, no new API has been devised yet.
+Please write to the Video4Linux mailing list for discussion: <A
+HREF="https://listman.redhat.com/mailman/listinfo/video4linux-list"
+TARGET="_top"
+>https://listman.redhat.com/mailman/listinfo/video4linux-list</A
+>. 
+Meanwhile no V4L2 driver should set the
+<CODE
+CLASS="CONSTANT"
+>V4L2_CAP_RDS_CAPTURE</CODE
+> capability flag.</P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x7578.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="r7624.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Radio Interface</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="c6488.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Function Reference</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

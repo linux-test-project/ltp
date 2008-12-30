@@ -1,0 +1,575 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ioctl VIDIOC_G_FMT, VIDIOC_S_FMT,
+VIDIOC_TRY_FMT</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Function Reference"
+HREF="r7624.htm"><LINK
+REL="PREVIOUS"
+TITLE="ioctl VIDIOC_G_FBUF, VIDIOC_S_FBUF"
+HREF="r10595.htm"><LINK
+REL="NEXT"
+TITLE="ioctl VIDIOC_G_FREQUENCY, VIDIOC_S_FREQUENCY"
+HREF="r11094.htm"></HEAD
+><BODY
+CLASS="REFENTRY"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="r10595.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="r11094.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="VIDIOC-G-FMT"
+></A
+>ioctl VIDIOC_G_FMT, VIDIOC_S_FMT,
+VIDIOC_TRY_FMT</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN10948"
+></A
+><H2
+>Name</H2
+>VIDIOC_G_FMT, VIDIOC_S_FMT, VIDIOC_TRY_FMT&nbsp;--&nbsp;Get or set the data format, try a format</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN10953"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN10954"
+></A
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>int ioctl</CODE
+>(int fd, int request, struct v4l2_format
+*argp);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN10964"
+></A
+><H2
+>Arguments</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><CODE
+CLASS="PARAMETER"
+>fd</CODE
+></DT
+><DD
+><P
+>File descriptor returned by <A
+HREF="r14090.htm"
+><CODE
+CLASS="FUNCTION"
+>open()</CODE
+></A
+>.</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>request</CODE
+></DT
+><DD
+><P
+>VIDIOC_G_FMT, VIDIOC_S_FMT, VIDIOC_TRY_FMT</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>argp</CODE
+></DT
+><DD
+><P
+></P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN10984"
+></A
+><H2
+>Description</H2
+><P
+>These ioctls are used to negotiate the format of data
+(typically image format) exchanged between driver and
+application.</P
+><P
+>To query the current parameters applications set the
+<CODE
+CLASS="STRUCTFIELD"
+>type</CODE
+> field of a struct
+<CODE
+CLASS="STRUCTNAME"
+>v4l2_format</CODE
+> to the respective buffer (stream)
+type. For example video capture devices use
+<CODE
+CLASS="CONSTANT"
+>V4L2_BUF_TYPE_VIDEO_CAPTURE</CODE
+>. When the application
+calls the <CODE
+CLASS="CONSTANT"
+>VIDIOC_G_FMT</CODE
+> ioctl with a pointer to
+this structure the driver fills the respective member of the
+<CODE
+CLASS="STRUCTFIELD"
+>fmt</CODE
+> union. In case of video capture devices
+that is the struct&nbsp;<A
+HREF="c2030.htm#V4L2-PIX-FORMAT"
+>v4l2_pix_format</A
+> <CODE
+CLASS="STRUCTFIELD"
+>pix</CODE
+> member.
+When the requested buffer type is not supported drivers return an
+<SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+> error code.</P
+><P
+>To change the current format parameters applications
+initialize the <CODE
+CLASS="STRUCTFIELD"
+>type</CODE
+> field and all
+fields of the respective <CODE
+CLASS="STRUCTFIELD"
+>fmt</CODE
+>
+union member. For details see the documentation of the various devices
+types in <A
+HREF="c6488.htm"
+>Chapter 4</A
+>. Good practice is to query the
+current parameters first, and to
+modify only those parameters not suitable for the application. When
+the application calls the <CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+> ioctl
+with a pointer to a <CODE
+CLASS="STRUCTNAME"
+>v4l2_format</CODE
+> structure
+the driver checks
+and adjusts the parameters against hardware abilities. Drivers
+should not return an error code unless the input is ambiguous, this is
+a mechanism to fathom device capabilities and to approach parameters
+acceptable for both the application and driver. On success the driver
+may program the hardware, allocate resources and generally prepare for
+data exchange.
+Finally the <CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+> ioctl returns the
+current format parameters as <CODE
+CLASS="CONSTANT"
+>VIDIOC_G_FMT</CODE
+> does.
+Very simple, inflexible devices may even ignore all input and always
+return the default parameters. However all V4L2 devices exchanging
+data with the application must implement the
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_G_FMT</CODE
+> and
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+> ioctl. When the requested buffer
+type is not supported drivers return an <SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+> error code on a
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+> attempt. When I/O is already in
+progress or the resource is not available for other reasons drivers
+return the <SPAN
+CLASS="ERRORCODE"
+>EBUSY</SPAN
+> error code.</P
+><P
+>The <CODE
+CLASS="CONSTANT"
+>VIDIOC_TRY_FMT</CODE
+> ioctl is equivalent
+to <CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+> with one exception: it does not
+change driver state. It can also be called at any time, never
+returning <SPAN
+CLASS="ERRORCODE"
+>EBUSY</SPAN
+>. This function is provided to
+negotiate parameters, to learn about hardware limitations, without
+disabling I/O or possibly time consuming hardware preparations.
+Although strongly recommended drivers are not required to implement
+this ioctl.</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-FORMAT"
+></A
+><P
+><B
+>Table 1. struct <CODE
+CLASS="STRUCTNAME"
+>v4l2_format</CODE
+></B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="25%"
+TITLE="C1"><COL
+WIDTH="25%"
+TITLE="C2"><COL
+WIDTH="25%"
+TITLE="C3"><COL
+WIDTH="25%"
+TITLE="C4"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>enum&nbsp;<A
+HREF="x5953.htm#V4L2-BUF-TYPE"
+>v4l2_buf_type</A
+></TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>type</CODE
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>Type of the data stream, see <A
+HREF="x5953.htm#V4L2-BUF-TYPE"
+>Table 3-2</A
+>.</TD
+></TR
+><TR
+><TD
+>union</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>fmt</CODE
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>struct&nbsp;<A
+HREF="c2030.htm#V4L2-PIX-FORMAT"
+>v4l2_pix_format</A
+></TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>pix</CODE
+></TD
+><TD
+>Definition of an image format, see <A
+HREF="c2030.htm"
+>Chapter 2</A
+>, used by video capture and output
+devices.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>struct&nbsp;<A
+HREF="x6570.htm#V4L2-WINDOW"
+>v4l2_window</A
+></TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>win</CODE
+></TD
+><TD
+>Definition of an overlaid image, see <A
+HREF="x6570.htm"
+>Section 4.2</A
+>, used by video overlay devices.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>struct&nbsp;<A
+HREF="x7013.htm#V4L2-VBI-FORMAT"
+>v4l2_vbi_format</A
+></TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>vbi</CODE
+></TD
+><TD
+>Raw VBI capture or output parameters. This is
+discussed in more detail in <A
+HREF="x7013.htm"
+>Section 4.7</A
+>. Used by raw VBI
+capture and output devices.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>struct&nbsp;<A
+HREF="x7236.htm#V4L2-SLICED-VBI-FORMAT"
+>v4l2_sliced_vbi_format</A
+></TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>sliced</CODE
+></TD
+><TD
+>Sliced VBI capture or output parameters. See
+<A
+HREF="x7236.htm"
+>Section 4.8</A
+> for details. Used by sliced VBI
+capture and output devices.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>__u8</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>raw_data</CODE
+>[200]</TD
+><TD
+>Place holder for future extensions and custom
+(driver defined) formats with <CODE
+CLASS="STRUCTFIELD"
+>type</CODE
+>
+<CODE
+CLASS="CONSTANT"
+>V4L2_BUF_TYPE_PRIVATE</CODE
+> and higher.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN11074"
+></A
+><H2
+>Return Value</H2
+><P
+>On success <SPAN
+CLASS="RETURNVALUE"
+>0</SPAN
+> is returned, on error <SPAN
+CLASS="RETURNVALUE"
+>-1</SPAN
+> and the <CODE
+CLASS="VARNAME"
+>errno</CODE
+> variable is set appropriately:</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EBUSY</SPAN
+></DT
+><DD
+><P
+>The data format cannot be changed at this
+time, for example because I/O is already in progress.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+></DT
+><DD
+><P
+>The struct&nbsp;<A
+HREF="r10944.htm#V4L2-FORMAT"
+>v4l2_format</A
+> <CODE
+CLASS="STRUCTFIELD"
+>type</CODE
+>
+field is invalid, the requested buffer type not supported, or
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_TRY_FMT</CODE
+> was called and is not
+supported with this buffer type.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="r10595.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="r11094.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ioctl VIDIOC_G_FBUF, VIDIOC_S_FBUF</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="r7624.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>ioctl VIDIOC_G_FREQUENCY, VIDIOC_S_FREQUENCY</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

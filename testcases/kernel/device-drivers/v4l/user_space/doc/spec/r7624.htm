@@ -1,0 +1,396 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Function Reference</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="PREVIOUS"
+TITLE="RDS Interface"
+HREF="x7607.htm"><LINK
+REL="NEXT"
+TITLE="V4L2 close()"
+HREF="r7626.htm"></HEAD
+><BODY
+CLASS="REFERENCE"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x7607.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="r7626.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="REFERENCE"
+><A
+NAME="USER-FUNC"
+></A
+><DIV
+CLASS="TITLEPAGE"
+><H1
+CLASS="TITLE"
+>I. Function Reference</H1
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Table of Contents</B
+></DT
+><DT
+><A
+HREF="r7626.htm"
+>V4L2 close()</A
+>&nbsp;--&nbsp;Close a V4L2 device</DT
+><DT
+><A
+HREF="r7667.htm"
+>V4L2 ioctl()</A
+>&nbsp;--&nbsp;Program a V4L2 device</DT
+><DT
+><A
+HREF="r7771.htm"
+>ioctl VIDIOC_CROPCAP</A
+>&nbsp;--&nbsp;Information about the video cropping and scaling abilities</DT
+><DT
+><A
+HREF="r7900.htm"
+>ioctl VIDIOC_DBG_G_REGISTER, VIDIOC_DBG_S_REGISTER</A
+>&nbsp;--&nbsp;Read or write hardware registers</DT
+><DT
+><A
+HREF="r8087.htm"
+>ioctl VIDIOC_ENCODER_CMD, VIDIOC_TRY_ENCODER_CMD</A
+>&nbsp;--&nbsp;Execute an encoder command</DT
+><DT
+><A
+HREF="r8242.htm"
+>ioctl VIDIOC_ENUMAUDIO</A
+>&nbsp;--&nbsp;Enumerate audio inputs</DT
+><DT
+><A
+HREF="r8304.htm"
+>ioctl VIDIOC_ENUMAUDOUT</A
+>&nbsp;--&nbsp;Enumerate audio outputs</DT
+><DT
+><A
+HREF="r8367.htm"
+>ioctl VIDIOC_ENUM_FMT</A
+>&nbsp;--&nbsp;Enumerate image formats</DT
+><DT
+><A
+HREF="r8494.htm"
+>ioctl VIDIOC_ENUM_FRAMESIZES</A
+>&nbsp;--&nbsp;Enumerate frame sizes</DT
+><DT
+><A
+HREF="r8724.htm"
+>ioctl VIDIOC_ENUM_FRAMEINTERVALS</A
+>&nbsp;--&nbsp;Enumerate frame intervals</DT
+><DT
+><A
+HREF="r8936.htm"
+>ioctl VIDIOC_ENUMINPUT</A
+>&nbsp;--&nbsp;Enumerate video inputs</DT
+><DT
+><A
+HREF="r9149.htm"
+>ioctl VIDIOC_ENUMOUTPUT</A
+>&nbsp;--&nbsp;Enumerate video outputs</DT
+><DT
+><A
+HREF="r9288.htm"
+>ioctl VIDIOC_ENUMSTD</A
+>&nbsp;--&nbsp;Enumerate supported video standards</DT
+><DT
+><A
+HREF="r9539.htm"
+>ioctl VIDIOC_G_AUDIO, VIDIOC_S_AUDIO</A
+>&nbsp;--&nbsp;Query or select the current audio input and its
+attributes</DT
+><DT
+><A
+HREF="r9688.htm"
+>ioctl VIDIOC_G_AUDOUT, VIDIOC_S_AUDOUT</A
+>&nbsp;--&nbsp;Query or select the current audio output</DT
+><DT
+><A
+HREF="r9804.htm"
+>ioctl VIDIOC_G_CHIP_IDENT</A
+>&nbsp;--&nbsp;Identify the chips on a TV card</DT
+><DT
+><A
+HREF="r9994.htm"
+>ioctl VIDIOC_G_CROP, VIDIOC_S_CROP</A
+>&nbsp;--&nbsp;Get or set the current cropping rectangle</DT
+><DT
+><A
+HREF="r10104.htm"
+>ioctl VIDIOC_G_CTRL, VIDIOC_S_CTRL</A
+>&nbsp;--&nbsp;Get or set the value of a control</DT
+><DT
+><A
+HREF="r10211.htm"
+>ioctl VIDIOC_G_ENC_INDEX</A
+>&nbsp;--&nbsp;Get meta data about a compressed video stream</DT
+><DT
+><A
+HREF="r10386.htm"
+>ioctl VIDIOC_G_EXT_CTRLS, VIDIOC_S_EXT_CTRLS,
+VIDIOC_TRY_EXT_CTRLS</A
+>&nbsp;--&nbsp;Get or set the value of several controls, try control
+values</DT
+><DT
+><A
+HREF="r10595.htm"
+>ioctl VIDIOC_G_FBUF, VIDIOC_S_FBUF</A
+>&nbsp;--&nbsp;Get or set frame buffer overlay parameters</DT
+><DT
+><A
+HREF="r10944.htm"
+>ioctl VIDIOC_G_FMT, VIDIOC_S_FMT,
+VIDIOC_TRY_FMT</A
+>&nbsp;--&nbsp;Get or set the data format, try a format</DT
+><DT
+><A
+HREF="r11094.htm"
+>ioctl VIDIOC_G_FREQUENCY, VIDIOC_S_FREQUENCY</A
+>&nbsp;--&nbsp;Get or set tuner or modulator radio
+frequency</DT
+><DT
+><A
+HREF="r11217.htm"
+>ioctl VIDIOC_G_INPUT, VIDIOC_S_INPUT</A
+>&nbsp;--&nbsp;Query or select the current video input</DT
+><DT
+><A
+HREF="r11285.htm"
+>ioctl VIDIOC_G_JPEGCOMP, VIDIOC_S_JPEGCOMP</A
+>&nbsp;--&nbsp;</DT
+><DT
+><A
+HREF="r11430.htm"
+>ioctl VIDIOC_G_MODULATOR, VIDIOC_S_MODULATOR</A
+>&nbsp;--&nbsp;Get or set modulator attributes</DT
+><DT
+><A
+HREF="r11612.htm"
+>ioctl VIDIOC_G_OUTPUT, VIDIOC_S_OUTPUT</A
+>&nbsp;--&nbsp;Query or select the current video output</DT
+><DT
+><A
+HREF="r11680.htm"
+>ioctl VIDIOC_G_PARM, VIDIOC_S_PARM</A
+>&nbsp;--&nbsp;Get or set streaming parameters</DT
+><DT
+><A
+HREF="r11946.htm"
+>ioctl VIDIOC_G_PRIORITY, VIDIOC_S_PRIORITY</A
+>&nbsp;--&nbsp;Query or request the access priority associated with a
+file descriptor</DT
+><DT
+><A
+HREF="r12051.htm"
+>ioctl VIDIOC_G_SLICED_VBI_CAP</A
+>&nbsp;--&nbsp;Query sliced VBI capabilities</DT
+><DT
+><A
+HREF="r12265.htm"
+>ioctl VIDIOC_G_STD, VIDIOC_S_STD</A
+>&nbsp;--&nbsp;Query or select the video standard of the current input</DT
+><DT
+><A
+HREF="r12342.htm"
+>ioctl VIDIOC_G_TUNER, VIDIOC_S_TUNER</A
+>&nbsp;--&nbsp;Get or set tuner attributes</DT
+><DT
+><A
+HREF="r12784.htm"
+>ioctl VIDIOC_LOG_STATUS</A
+>&nbsp;--&nbsp;Log driver status information</DT
+><DT
+><A
+HREF="r12816.htm"
+>ioctl VIDIOC_OVERLAY</A
+>&nbsp;--&nbsp;Start or stop video overlay</DT
+><DT
+><A
+HREF="r12878.htm"
+>ioctl VIDIOC_QBUF, VIDIOC_DQBUF</A
+>&nbsp;--&nbsp;Exchange a buffer with the driver</DT
+><DT
+><A
+HREF="r13022.htm"
+>ioctl VIDIOC_QUERYBUF</A
+>&nbsp;--&nbsp;Query the status of a buffer</DT
+><DT
+><A
+HREF="r13105.htm"
+>ioctl VIDIOC_QUERYCAP</A
+>&nbsp;--&nbsp;Query device capabilities</DT
+><DT
+><A
+HREF="r13317.htm"
+>ioctl VIDIOC_QUERYCTRL, VIDIOC_QUERYMENU</A
+>&nbsp;--&nbsp;Enumerate controls and menu control items</DT
+><DT
+><A
+HREF="r13641.htm"
+>ioctl VIDIOC_QUERYSTD</A
+>&nbsp;--&nbsp;Sense the video standard received by the current
+input</DT
+><DT
+><A
+HREF="r13696.htm"
+>ioctl VIDIOC_REQBUFS</A
+>&nbsp;--&nbsp;Initiate Memory Mapping or User Pointer I/O</DT
+><DT
+><A
+HREF="r13817.htm"
+>ioctl VIDIOC_STREAMON, VIDIOC_STREAMOFF</A
+>&nbsp;--&nbsp;Start or stop streaming I/O</DT
+><DT
+><A
+HREF="r13889.htm"
+>V4L2 mmap()</A
+>&nbsp;--&nbsp;Map device memory into application address space</DT
+><DT
+><A
+HREF="r14037.htm"
+>V4L2 munmap()</A
+>&nbsp;--&nbsp;Unmap device memory</DT
+><DT
+><A
+HREF="r14090.htm"
+>V4L2 open()</A
+>&nbsp;--&nbsp;Open a V4L2 device</DT
+><DT
+><A
+HREF="r14169.htm"
+>V4L2 poll()</A
+>&nbsp;--&nbsp;Wait for some event on a file descriptor</DT
+><DT
+><A
+HREF="r14264.htm"
+>V4L2 read()</A
+>&nbsp;--&nbsp;Read from a V4L2 device</DT
+><DT
+><A
+HREF="r14390.htm"
+>V4L2 select()</A
+>&nbsp;--&nbsp;Synchronous I/O multiplexing</DT
+><DT
+><A
+HREF="r14496.htm"
+>V4L2 write()</A
+>&nbsp;--&nbsp;Write to a V4L2 device</DT
+></DL
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x7607.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="r7626.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>RDS Interface</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>V4L2 close()</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,503 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>V4L2 read()</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Function Reference"
+HREF="r7624.htm"><LINK
+REL="PREVIOUS"
+TITLE="V4L2 poll()"
+HREF="r14169.htm"><LINK
+REL="NEXT"
+TITLE="V4L2 select()"
+HREF="r14390.htm"></HEAD
+><BODY
+CLASS="REFENTRY"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="r14169.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="r14390.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="FUNC-READ"
+></A
+>V4L2 read()</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN14268"
+></A
+><H2
+>Name</H2
+>v4l2-read&nbsp;--&nbsp;Read from a V4L2 device</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN14271"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN14272"
+></A
+><PRE
+CLASS="FUNCSYNOPSISINFO"
+>#include &lt;unistd.h&gt;</PRE
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>ssize_t read</CODE
+>(int fd, void *buf, size_t count);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN14283"
+></A
+><H2
+>Arguments</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><CODE
+CLASS="PARAMETER"
+>fd</CODE
+></DT
+><DD
+><P
+>File descriptor returned by <A
+HREF="r14090.htm"
+><CODE
+CLASS="FUNCTION"
+>open()</CODE
+></A
+>.</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>buf</CODE
+></DT
+><DD
+><P
+></P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>count</CODE
+></DT
+><DD
+><P
+></P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN14303"
+></A
+><H2
+>Description</H2
+><P
+><CODE
+CLASS="FUNCTION"
+>read()</CODE
+> attempts to read up to
+<CODE
+CLASS="PARAMETER"
+>count</CODE
+> bytes from file descriptor
+<CODE
+CLASS="PARAMETER"
+>fd</CODE
+> into the buffer starting at
+<CODE
+CLASS="PARAMETER"
+>buf</CODE
+>. The layout of the data in the buffer is
+discussed in the respective device interface section, see ##. If <CODE
+CLASS="PARAMETER"
+>count</CODE
+> is zero,
+<CODE
+CLASS="FUNCTION"
+>read()</CODE
+> returns zero and has no other results. If
+<CODE
+CLASS="PARAMETER"
+>count</CODE
+> is greater than
+<CODE
+CLASS="CONSTANT"
+>SSIZE_MAX</CODE
+>, the result is unspecified. Regardless
+of the <CODE
+CLASS="PARAMETER"
+>count</CODE
+> value each
+<CODE
+CLASS="FUNCTION"
+>read()</CODE
+> call will provide at most one frame (two
+fields) worth of data.</P
+><P
+>By default <CODE
+CLASS="FUNCTION"
+>read()</CODE
+> blocks until data
+becomes available. When the <CODE
+CLASS="CONSTANT"
+>O_NONBLOCK</CODE
+> flag was
+given to the <A
+HREF="r14090.htm"
+><CODE
+CLASS="FUNCTION"
+>open()</CODE
+></A
+> function it
+returns immediately with an <SPAN
+CLASS="ERRORCODE"
+>EAGAIN</SPAN
+> error code when no data is available. The
+<A
+HREF="r14390.htm"
+><CODE
+CLASS="FUNCTION"
+>select()</CODE
+></A
+> or <A
+HREF="r14169.htm"
+><CODE
+CLASS="FUNCTION"
+>poll()</CODE
+></A
+> functions
+can always be used to suspend execution until data becomes available. All
+drivers supporting the <CODE
+CLASS="FUNCTION"
+>read()</CODE
+> function must also
+support <CODE
+CLASS="FUNCTION"
+>select()</CODE
+> and
+<CODE
+CLASS="FUNCTION"
+>poll()</CODE
+>.</P
+><P
+>Drivers can implement read functionality in different
+ways, using a single or multiple buffers and discarding the oldest or
+newest frames once the internal buffers are filled.</P
+><P
+><CODE
+CLASS="FUNCTION"
+>read()</CODE
+> never returns a "snapshot" of a
+buffer being filled. Using a single buffer the driver will stop
+capturing when the application starts reading the buffer until the
+read is finished. Thus only the period of the vertical blanking
+interval is available for reading, or the capture rate must fall below
+the nominal frame rate of the video standard.</P
+><P
+>The behavior of
+<CODE
+CLASS="FUNCTION"
+>read()</CODE
+> when called during the active picture
+period or the vertical blanking separating the top and bottom field
+depends on the discarding policy. A driver discarding the oldest
+frames keeps capturing into an internal buffer, continuously
+overwriting the previously, not read frame, and returns the frame
+being received at the time of the <CODE
+CLASS="FUNCTION"
+>read()</CODE
+> call as
+soon as it is complete.</P
+><P
+>A driver discarding the newest frames stops capturing until
+the next <CODE
+CLASS="FUNCTION"
+>read()</CODE
+> call. The frame being received at
+<CODE
+CLASS="FUNCTION"
+>read()</CODE
+> time is discarded, returning the following
+frame instead. Again this implies a reduction of the capture rate to
+one half or less of the nominal frame rate. An example of this model
+is the video read mode of the bttv driver, initiating a DMA to user
+memory when <CODE
+CLASS="FUNCTION"
+>read()</CODE
+> is called and returning when
+the DMA finished.</P
+><P
+>In the multiple buffer model drivers maintain a ring of
+internal buffers, automatically advancing to the next free buffer.
+This allows continuous capturing when the application can empty the
+buffers fast enough. Again, the behavior when the driver runs out of
+free buffers depends on the discarding policy.</P
+><P
+>Applications can get and set the number of buffers used
+internally by the driver with the <A
+HREF="r11680.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_G_PARM</CODE
+></A
+> and <A
+HREF="r11680.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_PARM</CODE
+></A
+>
+ioctls. They are optional, however. The discarding policy is not
+reported and cannot be changed. For minimum requirements see <A
+HREF="c6488.htm"
+>Chapter 4</A
+>.</P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN14346"
+></A
+><H2
+>Return Value</H2
+><P
+>On success, the number of bytes read is returned. It is not
+an error if this number is smaller than the number of bytes requested,
+or the amount of data required for one frame. This may happen for
+example because <CODE
+CLASS="FUNCTION"
+>read()</CODE
+> was interrupted by a
+signal. On error, -1 is returned, and the <CODE
+CLASS="VARNAME"
+>errno</CODE
+>
+variable is set appropriately. In this case the next read will start
+at the beginning of a new frame. Possible error codes are:</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EAGAIN</SPAN
+></DT
+><DD
+><P
+>Non-blocking I/O has been selected using
+O_NONBLOCK and no data was immediately available for reading.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EBADF</SPAN
+></DT
+><DD
+><P
+><CODE
+CLASS="PARAMETER"
+>fd</CODE
+> is not a valid file
+descriptor or is not open for reading, or the process already has the
+maximum number of files open.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EBUSY</SPAN
+></DT
+><DD
+><P
+>The driver does not support multiple read streams and the
+device is already in use.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EFAULT</SPAN
+></DT
+><DD
+><P
+><CODE
+CLASS="PARAMETER"
+>buf</CODE
+> references an inaccessible
+memory area.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EINTR</SPAN
+></DT
+><DD
+><P
+>The call was interrupted by a signal before any
+data was read.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EIO</SPAN
+></DT
+><DD
+><P
+>I/O error. This indicates some hardware problem or a
+failure to communicate with a remote device (USB camera etc.).</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+></DT
+><DD
+><P
+>The <CODE
+CLASS="FUNCTION"
+>read()</CODE
+> function is not
+supported by this driver, not on this device, or generally not on this
+type of device.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="r14169.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="r14390.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>V4L2 poll()</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="r7624.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>V4L2 select()</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

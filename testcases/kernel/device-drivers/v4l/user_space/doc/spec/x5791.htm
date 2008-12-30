@@ -1,0 +1,642 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Streaming I/O (Memory Mapping)</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Input/Output"
+HREF="c5742.htm"><LINK
+REL="PREVIOUS"
+TITLE="Input/Output"
+HREF="c5742.htm"><LINK
+REL="NEXT"
+TITLE="Streaming I/O (User Pointers)"
+HREF="x5884.htm"></HEAD
+><BODY
+CLASS="SECTION"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="c5742.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 3. Input/Output</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x5884.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECTION"
+><H1
+CLASS="SECTION"
+><A
+NAME="MMAP"
+>3.2. Streaming I/O (Memory Mapping)</A
+></H1
+><P
+>Input and output devices support this I/O method when the
+<CODE
+CLASS="CONSTANT"
+>V4L2_CAP_STREAMING</CODE
+> flag in the
+<CODE
+CLASS="STRUCTFIELD"
+>capabilities</CODE
+> field of struct&nbsp;<A
+HREF="r13105.htm#V4L2-CAPABILITY"
+>v4l2_capability</A
+>
+returned by the <A
+HREF="r13105.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_QUERYCAP</CODE
+></A
+> ioctl is set. There are two
+streaming methods, to determine if the memory mapping flavor is
+supported applications must call the <A
+HREF="r13696.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_REQBUFS</CODE
+></A
+> ioctl.</P
+><P
+>Streaming is an I/O method where only pointers to buffers
+are exchanged between application and driver, the data itself is not
+copied. Memory mapping is primarily intended to map buffers in device
+memory into the application's address space. Device memory can be for
+example the video memory on a graphics card with a video capture
+add-on. However, being the most efficient I/O method available for a
+long time, many other drivers support streaming as well, allocating
+buffers in DMA-able main memory.</P
+><P
+>A driver can support many sets of buffers. Each set is
+identified by a unique buffer type value. The sets are independent and
+each set can hold a different type of data. To access different sets
+at the same time different file descriptors must be used.<A
+NAME="AEN5803"
+HREF="x5791.htm#FTN.AEN5803"
+><SPAN
+CLASS="footnote"
+>[1]</SPAN
+></A
+></P
+><P
+>To allocate device buffers applications call the
+<A
+HREF="r13696.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_REQBUFS</CODE
+></A
+> ioctl with the desired number of buffers and buffer
+type, for example <CODE
+CLASS="CONSTANT"
+>V4L2_BUF_TYPE_VIDEO_CAPTURE</CODE
+>.
+This ioctl can also be used to change the number of buffers or to free
+the allocated memory, provided none of the buffers are still
+mapped.</P
+><P
+>Before applications can access the buffers they must map
+them into their address space with the <A
+HREF="r13889.htm"
+><CODE
+CLASS="FUNCTION"
+>mmap()</CODE
+></A
+> function. The
+location of the buffers in device memory can be determined with the
+<A
+HREF="r13022.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_QUERYBUF</CODE
+></A
+> ioctl. The <CODE
+CLASS="STRUCTFIELD"
+>m.offset</CODE
+> and
+<CODE
+CLASS="STRUCTFIELD"
+>length</CODE
+> returned in a struct&nbsp;<A
+HREF="x5953.htm#V4L2-BUFFER"
+>v4l2_buffer</A
+> are
+passed as sixth and second parameter to the
+<CODE
+CLASS="FUNCTION"
+>mmap()</CODE
+> function. The offset and length values
+must not be modified. Remember the buffers are allocated in physical
+memory, as opposed to virtual memory which can be swapped out to disk.
+Applications should free the buffers as soon as possible with the
+<A
+HREF="r14037.htm"
+><CODE
+CLASS="FUNCTION"
+>munmap()</CODE
+></A
+> function.</P
+><DIV
+CLASS="EXAMPLE"
+><A
+NAME="AEN5823"
+></A
+><P
+><B
+>Example 3-1. Mapping buffers</B
+></P
+><PRE
+CLASS="PROGRAMLISTING"
+>struct&nbsp;<A
+HREF="r13696.htm#V4L2-REQUESTBUFFERS"
+>v4l2_requestbuffers</A
+> reqbuf;
+struct {
+        void *start;
+        size_t length;
+} *buffers;
+unsigned int i;
+
+memset (&amp;reqbuf, 0, sizeof (reqbuf));
+reqbuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+reqbuf.memory = V4L2_MEMORY_MMAP;
+reqbuf.count = 20;
+
+if (-1 == ioctl (fd, <A
+HREF="r13696.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_REQBUFS</CODE
+></A
+>, &amp;reqbuf)) {
+        if (errno == EINVAL)
+                printf ("Video capturing or mmap-streaming is not supported\n");
+        else
+                perror ("VIDIOC_REQBUFS");
+
+        exit (EXIT_FAILURE);
+}
+
+/* We want at least five buffers. */
+
+if (reqbuf.count &lt; 5) {
+        /* You may need to free the buffers here. */
+        printf ("Not enough buffer memory\n");
+        exit (EXIT_FAILURE);
+}
+
+buffers = calloc (reqbuf.count, sizeof (*buffers));
+assert (buffers != NULL);
+
+for (i = 0; i &lt; reqbuf.count; i++) {
+        struct&nbsp;<A
+HREF="x5953.htm#V4L2-BUFFER"
+>v4l2_buffer</A
+> buffer;
+
+        memset (&amp;buffer, 0, sizeof (buffer));
+        buffer.type = reqbuf.type;
+	buffer.memory = V4L2_MEMORY_MMAP;
+        buffer.index = i;
+
+        if (-1 == ioctl (fd, <A
+HREF="r13022.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_QUERYBUF</CODE
+></A
+>, &amp;buffer)) {
+                perror ("VIDIOC_QUERYBUF");
+                exit (EXIT_FAILURE);
+        }
+
+        buffers[i].length = buffer.length; /* remember for munmap() */
+
+        buffers[i].start = mmap (NULL, buffer.length,
+                                 PROT_READ | PROT_WRITE, /* recommended */
+                                 MAP_SHARED,             /* recommended */
+                                 fd, buffer.m.offset);
+
+        if (MAP_FAILED == buffers[i].start) {
+                /* If you do not exit here you should unmap() and free()
+                   the buffers mapped so far. */
+                perror ("mmap");
+                exit (EXIT_FAILURE);
+        }
+}
+
+/* Cleanup. */
+
+for (i = 0; i &lt; reqbuf.count; i++)
+        munmap (buffers[i].start, buffers[i].length);
+      </PRE
+></DIV
+><P
+>Conceptually streaming drivers maintain two buffer queues, an incoming
+and an outgoing queue. They separate the synchronous capture or output
+operation locked to a video clock from the application which is
+subject to random disk or network delays and preemption by
+other processes, thereby reducing the probability of data loss.
+The queues are organized as FIFOs, buffers will be
+output in the order enqueued in the incoming FIFO, and were
+captured in the order dequeued from the outgoing FIFO.</P
+><P
+>The driver may require a minimum number of buffers enqueued
+at all times to function, apart of this no limit exists on the number
+of buffers applications can enqueue in advance, or dequeue and
+process. They can also enqueue in a different order than buffers have
+been dequeued, and the driver can <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>fill</I
+></SPAN
+> enqueued
+<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>empty</I
+></SPAN
+> buffers in any order. <A
+NAME="AEN5836"
+HREF="x5791.htm#FTN.AEN5836"
+><SPAN
+CLASS="footnote"
+>[2]</SPAN
+></A
+> The index number of a buffer (struct&nbsp;<A
+HREF="x5953.htm#V4L2-BUFFER"
+>v4l2_buffer</A
+>
+<CODE
+CLASS="STRUCTFIELD"
+>index</CODE
+>) plays no role here, it only
+identifies the buffer.</P
+><P
+>Initially all mapped buffers are in dequeued state,
+inaccessible by the driver. For capturing applications it is customary
+to first enqueue all mapped buffers, then to start capturing and enter
+the read loop. Here the application waits until a filled buffer can be
+dequeued, and re-enqueues the buffer when the data is no longer
+needed. Output applications fill and enqueue buffers, when enough
+buffers are stacked up the output is started with
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_STREAMON</CODE
+>. In the write loop, when
+the application runs out of free buffers, it must wait until an empty
+buffer can be dequeued and reused.</P
+><P
+>To enqueue and dequeue a buffer applications use the
+<A
+HREF="r12878.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_QBUF</CODE
+></A
+> and <A
+HREF="r12878.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_DQBUF</CODE
+></A
+> ioctl. The status of a buffer being
+mapped, enqueued, full or empty can be determined at any time using the
+<A
+HREF="r13022.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_QUERYBUF</CODE
+></A
+> ioctl. Two methods exist to suspend execution of the
+application until one or more buffers can be dequeued. By default
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_DQBUF</CODE
+> blocks when no buffer is in the
+outgoing queue. When the <CODE
+CLASS="CONSTANT"
+>O_NONBLOCK</CODE
+> flag was
+given to the <A
+HREF="r14090.htm"
+><CODE
+CLASS="FUNCTION"
+>open()</CODE
+></A
+> function, <CODE
+CLASS="CONSTANT"
+>VIDIOC_DQBUF</CODE
+>
+returns immediately with an <SPAN
+CLASS="ERRORCODE"
+>EAGAIN</SPAN
+> error code when no buffer is available. The
+<A
+HREF="r14390.htm"
+><CODE
+CLASS="FUNCTION"
+>select()</CODE
+></A
+> or <A
+HREF="r14169.htm"
+><CODE
+CLASS="FUNCTION"
+>poll()</CODE
+></A
+> function are always available.</P
+><P
+>To start and stop capturing or output applications call the
+<A
+HREF="r13817.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_STREAMON</CODE
+></A
+> and <A
+HREF="r13817.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_STREAMOFF</CODE
+></A
+> ioctl. Note
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_STREAMOFF</CODE
+> removes all buffers from both
+queues as a side effect. Since there is no notion of doing anything
+"now" on a multitasking system, if an application needs to synchronize
+with another event it should examine the struct&nbsp;<A
+HREF="x5953.htm#V4L2-BUFFER"
+>v4l2_buffer</A
+>
+<CODE
+CLASS="STRUCTFIELD"
+>timestamp</CODE
+> of captured buffers, or set the
+field before enqueuing buffers for output.</P
+><P
+>Drivers implementing memory mapping I/O must
+support the <CODE
+CLASS="CONSTANT"
+>VIDIOC_REQBUFS</CODE
+>,
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_QUERYBUF</CODE
+>,
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_QBUF</CODE
+>, <CODE
+CLASS="CONSTANT"
+>VIDIOC_DQBUF</CODE
+>,
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_STREAMON</CODE
+> and
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_STREAMOFF</CODE
+> ioctl, the
+<CODE
+CLASS="FUNCTION"
+>mmap()</CODE
+>, <CODE
+CLASS="FUNCTION"
+>munmap()</CODE
+>,
+<CODE
+CLASS="FUNCTION"
+>select()</CODE
+> and <CODE
+CLASS="FUNCTION"
+>poll()</CODE
+>
+function.<A
+NAME="AEN5878"
+HREF="x5791.htm#FTN.AEN5878"
+><SPAN
+CLASS="footnote"
+>[3]</SPAN
+></A
+></P
+><P
+>[capture example]</P
+></DIV
+><H3
+CLASS="FOOTNOTES"
+>Notes</H3
+><TABLE
+BORDER="0"
+CLASS="FOOTNOTES"
+WIDTH="100%"
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="5%"
+><A
+NAME="FTN.AEN5803"
+HREF="x5791.htm#AEN5803"
+><SPAN
+CLASS="footnote"
+>[1]</SPAN
+></A
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="95%"
+><P
+>One could use one file descriptor and set the buffer
+type field accordingly when calling <A
+HREF="r12878.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_QBUF</CODE
+></A
+> etc., but it makes
+the <CODE
+CLASS="FUNCTION"
+>select()</CODE
+> function ambiguous. We also like the
+clean approach of one file descriptor per logical stream. Video
+overlay for example is also a logical stream, although the CPU is not
+needed for continuous operation.</P
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="5%"
+><A
+NAME="FTN.AEN5836"
+HREF="x5791.htm#AEN5836"
+><SPAN
+CLASS="footnote"
+>[2]</SPAN
+></A
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="95%"
+><P
+>Random enqueue order permits applications processing
+images out of order (such as video codecs) to return buffers earlier,
+reducing the probability of data loss. Random fill order allows
+drivers to reuse buffers on a LIFO-basis, taking advantage of caches
+holding scatter-gather lists and the like.</P
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="5%"
+><A
+NAME="FTN.AEN5878"
+HREF="x5791.htm#AEN5878"
+><SPAN
+CLASS="footnote"
+>[3]</SPAN
+></A
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="95%"
+><P
+>At the driver level <CODE
+CLASS="FUNCTION"
+>select()</CODE
+> and
+<CODE
+CLASS="FUNCTION"
+>poll()</CODE
+> are the same, and
+<CODE
+CLASS="FUNCTION"
+>select()</CODE
+> is too important to be optional. The
+rest should be evident.</P
+></TD
+></TR
+></TABLE
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="c5742.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x5884.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Input/Output</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="c5742.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Streaming I/O (User Pointers)</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

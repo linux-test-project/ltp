@@ -1,0 +1,346 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Tuners and Modulators</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Common API Elements"
+HREF="c174.htm"><LINK
+REL="PREVIOUS"
+TITLE="Audio Inputs and Outputs"
+HREF="x341.htm"><LINK
+REL="NEXT"
+TITLE="Video Standards"
+HREF="x448.htm"></HEAD
+><BODY
+CLASS="SECTION"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x341.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 1. Common API Elements</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x448.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECTION"
+><H1
+CLASS="SECTION"
+><A
+NAME="TUNER"
+>1.6. Tuners and Modulators</A
+></H1
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN396"
+>1.6.1. Tuners</A
+></H2
+><P
+>Video input devices can have one or more tuners
+demodulating a RF signal. Each tuner is associated with one or more
+video inputs, depending on the number of RF connectors on the tuner.
+The <CODE
+CLASS="STRUCTFIELD"
+>type</CODE
+> field of the respective
+struct&nbsp;<A
+HREF="r8936.htm#V4L2-INPUT"
+>v4l2_input</A
+> returned by the <A
+HREF="r8936.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_ENUMINPUT</CODE
+></A
+> ioctl is set to
+<CODE
+CLASS="CONSTANT"
+>V4L2_INPUT_TYPE_TUNER</CODE
+> and its
+<CODE
+CLASS="STRUCTFIELD"
+>tuner</CODE
+> field contains the index number of
+the tuner.</P
+><P
+>Radio devices have exactly one tuner with index zero, no
+video inputs.</P
+><P
+>To query and change tuner properties applications use the
+<A
+HREF="r12342.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_G_TUNER</CODE
+></A
+> and <A
+HREF="r12342.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_TUNER</CODE
+></A
+> ioctl, respectively. The
+struct&nbsp;<A
+HREF="r12342.htm#V4L2-TUNER"
+>v4l2_tuner</A
+> returned by <CODE
+CLASS="CONSTANT"
+>VIDIOC_G_TUNER</CODE
+> also
+contains signal status information applicable when the tuner of the
+current video input, or a radio tuner is queried. Note that
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_S_TUNER</CODE
+> does not switch the current tuner,
+when there is more than one at all. The tuner is solely determined by
+the current video input. Drivers must support both ioctls and set the
+<CODE
+CLASS="CONSTANT"
+>V4L2_CAP_TUNER</CODE
+> flag in the struct&nbsp;<A
+HREF="r13105.htm#V4L2-CAPABILITY"
+>v4l2_capability</A
+>
+returned by the <A
+HREF="r13105.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_QUERYCAP</CODE
+></A
+> ioctl when the device has one or
+more tuners.</P
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN418"
+>1.6.2. Modulators</A
+></H2
+><P
+>Video output devices can have one or more modulators, uh,
+modulating a video signal for radiation or connection to the antenna
+input of a TV set or video recorder. Each modulator is associated with
+one or more video outputs, depending on the number of RF connectors on
+the modulator. The <CODE
+CLASS="STRUCTFIELD"
+>type</CODE
+> field of the
+respective struct&nbsp;<A
+HREF="r9149.htm#V4L2-OUTPUT"
+>v4l2_output</A
+> returned by the <A
+HREF="r9149.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_ENUMOUTPUT</CODE
+></A
+> ioctl is
+set to <CODE
+CLASS="CONSTANT"
+>V4L2_OUTPUT_TYPE_MODULATOR</CODE
+> and its
+<CODE
+CLASS="STRUCTFIELD"
+>modulator</CODE
+> field contains the index number
+of the modulator. This specification does not define radio output
+devices.</P
+><P
+>To query and change modulator properties applications use
+the <A
+HREF="r11430.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_G_MODULATOR</CODE
+></A
+> and <A
+HREF="r11430.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_MODULATOR</CODE
+></A
+> ioctl. Note that
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_S_MODULATOR</CODE
+> does not switch the current
+modulator, when there is more than one at all. The modulator is solely
+determined by the current video output. Drivers must support both
+ioctls and set the <CODE
+CLASS="CONSTANT"
+>V4L2_CAP_TUNER</CODE
+> (sic) flag in
+the struct&nbsp;<A
+HREF="r13105.htm#V4L2-CAPABILITY"
+>v4l2_capability</A
+> returned by the <A
+HREF="r13105.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_QUERYCAP</CODE
+></A
+> ioctl when the
+device has one or more modulators.</P
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN437"
+>1.6.3. Radio Frequency</A
+></H2
+><P
+>To get and set the tuner or modulator radio frequency
+applications use the <A
+HREF="r11094.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_G_FREQUENCY</CODE
+></A
+> and <A
+HREF="r11094.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FREQUENCY</CODE
+></A
+>
+ioctl which both take a pointer to a struct&nbsp;<A
+HREF="r11094.htm#V4L2-FREQUENCY"
+>v4l2_frequency</A
+>. These ioctls
+are used for TV and radio devices alike. Drivers must support both
+ioctls when the tuner or modulator ioctls are supported, or
+when the device is a radio device.</P
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN445"
+>1.6.4. Satellite Receivers</A
+></H2
+><P
+>To be discussed. See also 
+proposals by Peter Schlaf, video4linux-list@redhat.com on 23 Oct 2002,
+subject: "Re: [V4L] Re: v4l2 api".</P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x341.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x448.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Audio Inputs and Outputs</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="c174.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Video Standards</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,723 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ioctl VIDIOC_QUERYCAP</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Function Reference"
+HREF="r7624.htm"><LINK
+REL="PREVIOUS"
+TITLE="ioctl VIDIOC_QUERYBUF"
+HREF="r13022.htm"><LINK
+REL="NEXT"
+TITLE="ioctl VIDIOC_QUERYCTRL, VIDIOC_QUERYMENU"
+HREF="r13317.htm"></HEAD
+><BODY
+CLASS="REFENTRY"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="r13022.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="r13317.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="VIDIOC-QUERYCAP"
+></A
+>ioctl VIDIOC_QUERYCAP</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN13109"
+></A
+><H2
+>Name</H2
+>VIDIOC_QUERYCAP&nbsp;--&nbsp;Query device capabilities</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN13112"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN13113"
+></A
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>int ioctl</CODE
+>(int fd, int request, struct v4l2_capability *argp);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN13123"
+></A
+><H2
+>Arguments</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><CODE
+CLASS="PARAMETER"
+>fd</CODE
+></DT
+><DD
+><P
+>File descriptor returned by <A
+HREF="r14090.htm"
+><CODE
+CLASS="FUNCTION"
+>open()</CODE
+></A
+>.</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>request</CODE
+></DT
+><DD
+><P
+>VIDIOC_QUERYCAP</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>argp</CODE
+></DT
+><DD
+><P
+></P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN13143"
+></A
+><H2
+>Description</H2
+><P
+>All V4L2 devices support the
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_QUERYCAP</CODE
+> ioctl. It is used to identify
+kernel devices compatible with this specification and to obtain
+information about driver and hardware capabilities. The ioctl takes a
+pointer to a struct&nbsp;<A
+HREF="r13105.htm#V4L2-CAPABILITY"
+>v4l2_capability</A
+> which is filled by the driver. When the
+driver is not compatible with this specification the ioctl returns an
+<SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+> error code.</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-CAPABILITY"
+></A
+><P
+><B
+>Table 1. struct <CODE
+CLASS="STRUCTNAME"
+>v4l2_capability</CODE
+></B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="25%"
+TITLE="C1"><COL
+WIDTH="25%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>__u8</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>driver</CODE
+>[16]</TD
+><TD
+><P
+>Name of the driver, a unique NUL-terminated
+ASCII string. For example: "bttv". Driver specific applications can
+use this information to verify the driver identity. It is also useful
+to work around known bugs, or to identify drivers in error reports.
+The driver version is stored in the <CODE
+CLASS="STRUCTFIELD"
+>version</CODE
+>
+field.</P
+><P
+>Storing strings in fixed sized arrays is bad
+practice but unavoidable here. Drivers and applications should take
+precautions to never read or write beyond the end of the array and to
+make sure the strings are properly NUL-terminated.</P
+></TD
+></TR
+><TR
+><TD
+>__u8</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>card</CODE
+>[32]</TD
+><TD
+>Name of the device, a NUL-terminated ASCII string.
+For example: "Yoyodyne TV/FM". One driver may support different brands
+or models of video hardware. This information is intended for users,
+for example in a menu of available devices. Since multiple TV cards of
+the same brand may be installed which are supported by the same
+driver, this name should be combined with the character device file
+name (e.&nbsp;g. <TT
+CLASS="FILENAME"
+>/dev/video2</TT
+>) or the
+<CODE
+CLASS="STRUCTFIELD"
+>bus_info</CODE
+> string to avoid
+ambiguities.</TD
+></TR
+><TR
+><TD
+>__u8</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>bus_info</CODE
+>[32]</TD
+><TD
+>Location of the device in the system, a
+NUL-terminated ASCII string. For example: "PCI Slot 4". This
+information is intended for users, to distinguish multiple
+identical devices. If no such information is available the field may
+simply count the devices controlled by the driver, or contain the
+empty string (<CODE
+CLASS="STRUCTFIELD"
+>bus_info</CODE
+>[0] = 0).</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>version</CODE
+></TD
+><TD
+><P
+>Version number of the driver. Together with
+the <CODE
+CLASS="STRUCTFIELD"
+>driver</CODE
+> field this identifies a
+particular driver. The version number is formatted using the
+<CODE
+CLASS="CONSTANT"
+>KERNEL_VERSION()</CODE
+> macro:</P
+></TD
+></TR
+><TR
+><TD
+COLSPAN="3"
+><P
+><PRE
+CLASS="PROGRAMLISTING"
+>#define KERNEL_VERSION(a,b,c) (((a) &lt;&lt; 16) + ((b) &lt;&lt; 8) + (c))
+
+__u32 version = KERNEL_VERSION(0, 8, 1);
+
+printf ("Version: %u.%u.%u\n",
+        (version &gt;&gt; 16) &amp; 0xFF,
+        (version &gt;&gt; 8) &amp; 0xFF,
+         version &amp; 0xFF);</PRE
+></P
+></TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>capabilities</CODE
+></TD
+><TD
+>Device capabilities, see <A
+HREF="r13105.htm#DEVICE-CAPABILITIES"
+>Table 2</A
+>.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>reserved</CODE
+>[4]</TD
+><TD
+>Reserved for future extensions. Drivers must set
+this array to zero.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="DEVICE-CAPABILITIES"
+></A
+><P
+><B
+>Table 2. Device Capabilities Flags</B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="38%"
+TITLE="C1"><COL
+WIDTH="12%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_CAP_VIDEO_CAPTURE</CODE
+></TD
+><TD
+>0x00000001</TD
+><TD
+>The device supports the <A
+HREF="c6488.htm#CAPTURE"
+>Video Capture</A
+> interface.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_CAP_VIDEO_OUTPUT</CODE
+></TD
+><TD
+>0x00000002</TD
+><TD
+>The device supports the <A
+HREF="x6831.htm"
+>Video Output</A
+> interface.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_CAP_VIDEO_OVERLAY</CODE
+></TD
+><TD
+>0x00000004</TD
+><TD
+>The device supports the <A
+HREF="x6570.htm"
+>Video Overlay</A
+> interface. A video overlay device
+typically stores captured images directly in the video memory of a
+graphics card, with hardware clipping and scaling.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_CAP_VBI_CAPTURE</CODE
+></TD
+><TD
+>0x00000010</TD
+><TD
+>The device supports the <A
+HREF="x7013.htm"
+>Raw
+VBI Capture</A
+> interface, providing Teletext and Closed Caption
+data.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_CAP_VBI_OUTPUT</CODE
+></TD
+><TD
+>0x00000020</TD
+><TD
+>The device supports the <A
+HREF="x7013.htm"
+>Raw VBI Output</A
+> interface.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_CAP_SLICED_VBI_CAPTURE</CODE
+></TD
+><TD
+>0x00000040</TD
+><TD
+>The device supports the <A
+HREF="x7236.htm"
+>Sliced VBI Capture</A
+> interface.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_CAP_SLICED_VBI_OUTPUT</CODE
+></TD
+><TD
+>0x00000080</TD
+><TD
+>The device supports the <A
+HREF="x7236.htm"
+>Sliced VBI Output</A
+> interface.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_CAP_RDS_CAPTURE</CODE
+></TD
+><TD
+>0x00000100</TD
+><TD
+>[to be defined]</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_CAP_VIDEO_OUTPUT_OVERLAY</CODE
+></TD
+><TD
+>0x00000200</TD
+><TD
+>The device supports the <A
+HREF="x6909.htm"
+>Video
+Output Overlay</A
+> (OSD) interface. Unlike the <I
+CLASS="WORDASWORD"
+>Video
+Overlay</I
+> interface, this is a secondary function of video
+output devices and overlays an image onto an outgoing video signal.
+When the driver sets this flag, it must clear the
+<CODE
+CLASS="CONSTANT"
+>V4L2_CAP_VIDEO_OVERLAY</CODE
+> flag and vice
+versa.<A
+NAME="AEN13265"
+HREF="r13105.htm#FTN.AEN13265"
+><SPAN
+CLASS="footnote"
+>[a]</SPAN
+></A
+></TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_CAP_TUNER</CODE
+></TD
+><TD
+>0x00010000</TD
+><TD
+>The device has some sort of tuner or modulator to
+receive or emit RF-modulated video signals. For more information about
+tuner and modulator programming see
+<A
+HREF="x394.htm"
+>Section 1.6</A
+>.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_CAP_AUDIO</CODE
+></TD
+><TD
+>0x00020000</TD
+><TD
+>The device has audio inputs or outputs. It may or
+may not support audio recording or playback, in PCM or compressed
+formats. PCM audio support must be implemented as ALSA or OSS
+interface. For more information on audio inputs and outputs see <A
+HREF="x341.htm"
+>Section 1.5</A
+>.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_CAP_RADIO</CODE
+></TD
+><TD
+>0x00040000</TD
+><TD
+>This is a radio receiver.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_CAP_READWRITE</CODE
+></TD
+><TD
+>0x01000000</TD
+><TD
+>The device supports the <A
+HREF="c5742.htm#RW"
+>read()</A
+> and/or <A
+HREF="c5742.htm#RW"
+>write()</A
+>
+I/O methods.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_CAP_ASYNCIO</CODE
+></TD
+><TD
+>0x02000000</TD
+><TD
+>The device supports the <A
+HREF="x5950.htm"
+>asynchronous</A
+> I/O methods.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_CAP_STREAMING</CODE
+></TD
+><TD
+>0x04000000</TD
+><TD
+>The device supports the <A
+HREF="x5791.htm"
+>streaming</A
+> I/O method.</TD
+></TR
+></TBODY
+><TR
+><TD
+COLSPAN="3"
+>Notes:<BR><A
+NAME="FTN.AEN13265"
+>a. </A
+>The struct&nbsp;<A
+HREF="r10595.htm#V4L2-FRAMEBUFFER"
+>v4l2_framebuffer</A
+> lacks an
+enum&nbsp;<A
+HREF="x5953.htm#V4L2-BUF-TYPE"
+>v4l2_buf_type</A
+> field, therefore the type of overlay is implied by the
+driver capabilities.<BR></TD
+></TR
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN13305"
+></A
+><H2
+>Return Value</H2
+><P
+>On success <SPAN
+CLASS="RETURNVALUE"
+>0</SPAN
+> is returned, on error <SPAN
+CLASS="RETURNVALUE"
+>-1</SPAN
+> and the <CODE
+CLASS="VARNAME"
+>errno</CODE
+> variable is set appropriately:</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+></DT
+><DD
+><P
+>The device is not compatible with this
+specification.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="r13022.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="r13317.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ioctl VIDIOC_QUERYBUF</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="r7624.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>ioctl VIDIOC_QUERYCTRL, VIDIOC_QUERYMENU</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

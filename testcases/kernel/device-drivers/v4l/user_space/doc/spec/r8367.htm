@@ -1,0 +1,483 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ioctl VIDIOC_ENUM_FMT</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Function Reference"
+HREF="r7624.htm"><LINK
+REL="PREVIOUS"
+TITLE="ioctl VIDIOC_ENUMAUDOUT"
+HREF="r8304.htm"><LINK
+REL="NEXT"
+TITLE="ioctl VIDIOC_ENUM_FRAMESIZES"
+HREF="r8494.htm"></HEAD
+><BODY
+CLASS="REFENTRY"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="r8304.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="r8494.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="VIDIOC-ENUM-FMT"
+></A
+>ioctl VIDIOC_ENUM_FMT</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN8371"
+></A
+><H2
+>Name</H2
+>VIDIOC_ENUM_FMT&nbsp;--&nbsp;Enumerate image formats</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN8374"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN8375"
+></A
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>int ioctl</CODE
+>(int fd, int request, struct v4l2_fmtdesc
+*argp);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN8385"
+></A
+><H2
+>Arguments</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><CODE
+CLASS="PARAMETER"
+>fd</CODE
+></DT
+><DD
+><P
+>File descriptor returned by <A
+HREF="r14090.htm"
+><CODE
+CLASS="FUNCTION"
+>open()</CODE
+></A
+>.</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>request</CODE
+></DT
+><DD
+><P
+>VIDIOC_ENUM_FMT</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>argp</CODE
+></DT
+><DD
+><P
+></P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN8405"
+></A
+><H2
+>Description</H2
+><P
+>To enumerate image formats applications initialize the
+<CODE
+CLASS="STRUCTFIELD"
+>type</CODE
+> and <CODE
+CLASS="STRUCTFIELD"
+>index</CODE
+>
+field of struct&nbsp;<A
+HREF="r8367.htm#V4L2-FMTDESC"
+>v4l2_fmtdesc</A
+> and call the
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_ENUM_FMT</CODE
+> ioctl with a pointer to this
+structure. Drivers fill the rest of the structure or return an
+<SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+> error code. All formats are enumerable by beginning at index zero and
+incrementing by one until <SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+> is
+returned.</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-FMTDESC"
+></A
+><P
+><B
+>Table 1. struct <CODE
+CLASS="STRUCTNAME"
+>v4l2_fmtdesc</CODE
+></B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="25%"
+TITLE="C1"><COL
+WIDTH="25%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>index</CODE
+></TD
+><TD
+>Number of the format in the enumeration, set by
+the application. This is in no way related to the <CODE
+CLASS="STRUCTFIELD"
+>pixelformat</CODE
+> field.</TD
+></TR
+><TR
+><TD
+>enum&nbsp;<A
+HREF="x5953.htm#V4L2-BUF-TYPE"
+>v4l2_buf_type</A
+></TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>type</CODE
+></TD
+><TD
+>Type of the data stream, set by the application.
+Only these types are valid here:
+<CODE
+CLASS="CONSTANT"
+>V4L2_BUF_TYPE_VIDEO_CAPTURE</CODE
+>,
+<CODE
+CLASS="CONSTANT"
+>V4L2_BUF_TYPE_VIDEO_OUTPUT</CODE
+>,
+<CODE
+CLASS="CONSTANT"
+>V4L2_BUF_TYPE_VIDEO_OVERLAY</CODE
+>, and custom (driver
+defined) types with code <CODE
+CLASS="CONSTANT"
+>V4L2_BUF_TYPE_PRIVATE</CODE
+>
+and higher.</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>flags</CODE
+></TD
+><TD
+>See <A
+HREF="r8367.htm#FMTDESC-FLAGS"
+>Table 2</A
+></TD
+></TR
+><TR
+><TD
+>__u8</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>description</CODE
+>[32]</TD
+><TD
+>Description of the format, a NUL-terminated ASCII
+string. This information is intended for the user, for example: "YUV
+4:2:2".</TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>pixelformat</CODE
+></TD
+><TD
+>The image format identifier. This is a
+four character code as computed by the v4l2_fourcc()
+macro:</TD
+></TR
+><TR
+><TD
+COLSPAN="3"
+><P
+><PRE
+CLASS="PROGRAMLISTING"
+>#define v4l2_fourcc(a,b,c,d) (((__u32)(a)&lt;&lt;0)|((__u32)(b)&lt;&lt;8)|((__u32)(c)&lt;&lt;16)|((__u32)(d)&lt;&lt;24))</PRE
+></P
+><P
+>Several image formats are already
+defined by this specification in <A
+HREF="c2030.htm"
+>Chapter 2</A
+>. Note these
+codes are not the same as those used in the Windows world.</P
+></TD
+></TR
+><TR
+><TD
+>__u32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>reserved</CODE
+>[4]</TD
+><TD
+>Reserved for future extensions. Drivers must set
+the array to zero.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="FMTDESC-FLAGS"
+></A
+><P
+><B
+>Table 2. Image Format Description Flags</B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="38%"
+TITLE="C1"><COL
+WIDTH="12%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_FMT_FLAG_COMPRESSED</CODE
+></TD
+><TD
+>0x0001</TD
+><TD
+>This is a compressed format.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN8479"
+></A
+><H2
+>Return Value</H2
+><P
+>On success <SPAN
+CLASS="RETURNVALUE"
+>0</SPAN
+> is returned, on error <SPAN
+CLASS="RETURNVALUE"
+>-1</SPAN
+> and the <CODE
+CLASS="VARNAME"
+>errno</CODE
+> variable is set appropriately:</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+></DT
+><DD
+><P
+>The struct&nbsp;<A
+HREF="r8367.htm#V4L2-FMTDESC"
+>v4l2_fmtdesc</A
+> <CODE
+CLASS="STRUCTFIELD"
+>type</CODE
+>
+is not supported or the <CODE
+CLASS="STRUCTFIELD"
+>index</CODE
+> is out of
+bounds.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="r8304.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="r8494.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ioctl VIDIOC_ENUMAUDOUT</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="r7624.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>ioctl VIDIOC_ENUM_FRAMESIZES</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

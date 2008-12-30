@@ -1,0 +1,3637 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Extended Controls</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Common API Elements"
+HREF="c174.htm"><LINK
+REL="PREVIOUS"
+TITLE="User Controls"
+HREF="x542.htm"><LINK
+REL="NEXT"
+TITLE="Data Formats"
+HREF="x1859.htm"></HEAD
+><BODY
+CLASS="SECTION"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x542.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 1. Common API Elements</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x1859.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECTION"
+><H1
+CLASS="SECTION"
+><A
+NAME="EXTENDED-CONTROLS"
+>1.9. Extended Controls</A
+></H1
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN804"
+>1.9.1. Introduction</A
+></H2
+><P
+>The control mechanism as originally designed was meant
+to be used for user settings (brightness, saturation, etc). However,
+it turned out to be a very useful model for implementing more
+complicated driver APIs where each driver implements only a subset of
+a larger API.</P
+><P
+>The MPEG encoding API was the driving force behind
+designing and implementing this extended control mechanism: the MPEG
+standard is quite large and the currently supported hardware MPEG
+encoders each only implement a subset of this standard. Further more,
+many parameters relating to how the video is encoded into an MPEG
+stream are specific to the MPEG encoding chip since the MPEG standard
+only defines the format of the resulting MPEG stream, not how the
+video is actually encoded into that format.</P
+><P
+>Unfortunately, the original control API lacked some
+features needed for these new uses and so it was extended into the
+(not terribly originally named) extended control API.</P
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN809"
+>1.9.2. The Extended Control API</A
+></H2
+><P
+>Three new ioctls are available: <A
+HREF="r10386.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_G_EXT_CTRLS</CODE
+></A
+>,
+<A
+HREF="r10386.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_EXT_CTRLS</CODE
+></A
+> and <A
+HREF="r10386.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_TRY_EXT_CTRLS</CODE
+></A
+>. These ioctls act on
+arrays of controls (as opposed to the <A
+HREF="r10104.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_G_CTRL</CODE
+></A
+> and
+<A
+HREF="r10104.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_CTRL</CODE
+></A
+> ioctls that act on a single control). This is needed
+since it is often required to atomically change several controls at
+once.</P
+><P
+>Each of the new ioctls expects a pointer to a
+struct&nbsp;<A
+HREF="r10386.htm#V4L2-EXT-CONTROLS"
+>v4l2_ext_controls</A
+>. This structure contains a pointer to the control
+array, a count of the number of controls in that array and a control
+class. Control classes are used to group similar controls into a
+single class. For example, control class
+<CODE
+CLASS="CONSTANT"
+>V4L2_CTRL_CLASS_USER</CODE
+> contains all user controls
+(i.&nbsp;e. all controls that can also be set using the old
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_S_CTRL</CODE
+> ioctl). Control class
+<CODE
+CLASS="CONSTANT"
+>V4L2_CTRL_CLASS_MPEG</CODE
+> contains all controls
+relating to MPEG encoding, etc.</P
+><P
+>All controls in the control array must belong to the
+specified control class. An error is returned if this is not the
+case.</P
+><P
+>It is also possible to use an empty control array (count
+== 0) to check whether the specified control class is
+supported.</P
+><P
+>The control array is a struct&nbsp;<A
+HREF="r10386.htm#V4L2-EXT-CONTROL"
+>v4l2_ext_control</A
+> array. The
+<CODE
+CLASS="STRUCTNAME"
+>v4l2_ext_control</CODE
+> structure is very similar to
+struct&nbsp;<A
+HREF="r10104.htm#V4L2-CONTROL"
+>v4l2_control</A
+>, except for the fact that it also allows for 64-bit
+values and pointers to be passed (although the latter is not yet used
+anywhere).</P
+><P
+>It is important to realize that due to the flexibility of
+controls it is necessary to check whether the control you want to set
+actually is supported in the driver and what the valid range of values
+is. So use the <A
+HREF="r13317.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_QUERYCTRL</CODE
+></A
+> and <A
+HREF="r13317.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_QUERYMENU</CODE
+></A
+> ioctls to
+check this. Also note that it is possible that some of the menu
+indices in a control of type <CODE
+CLASS="CONSTANT"
+>V4L2_CTRL_TYPE_MENU</CODE
+>
+may not be supported (<CODE
+CLASS="CONSTANT"
+>VIDIOC_QUERYMENU</CODE
+> will
+return an error). A good example is the list of supported MPEG audio
+bitrates. Some drivers only support one or two bitrates, others
+support a wider range.</P
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN840"
+>1.9.3. Enumerating Extended Controls</A
+></H2
+><P
+>The recommended way to enumerate over the extended
+controls is by using <A
+HREF="r13317.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_QUERYCTRL</CODE
+></A
+> in combination with the
+<CODE
+CLASS="CONSTANT"
+>V4L2_CTRL_FLAG_NEXT_CTRL</CODE
+> flag:</P
+><DIV
+CLASS="INFORMALEXAMPLE"
+><P
+></P
+><A
+NAME="AEN846"
+></A
+><PRE
+CLASS="PROGRAMLISTING"
+>struct&nbsp;<A
+HREF="r13317.htm#V4L2-QUERYCTRL"
+>v4l2_queryctrl</A
+> qctrl;
+
+qctrl.id = V4L2_CTRL_FLAG_NEXT_CTRL;
+while (0 == ioctl (fd, <A
+HREF="r13317.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_QUERYCTRL</CODE
+></A
+>, &amp;qctrl)) {
+        /* ... */
+        qctrl.id |= V4L2_CTRL_FLAG_NEXT_CTRL;
+}</PRE
+><P
+></P
+></DIV
+><P
+>The initial control ID is set to 0 ORed with the
+<CODE
+CLASS="CONSTANT"
+>V4L2_CTRL_FLAG_NEXT_CTRL</CODE
+> flag. The
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_QUERYCTRL</CODE
+> ioctl will return the first
+control with a higher ID than the specified one. When no such controls
+are found an error is returned.</P
+><P
+>If you want to get all controls within a specific control
+class, then you can set the initial
+<CODE
+CLASS="STRUCTFIELD"
+>qctrl.id</CODE
+> value to the control class and add
+an extra check to break out of the loop when a control of another
+control class is found:</P
+><DIV
+CLASS="INFORMALEXAMPLE"
+><P
+></P
+><A
+NAME="AEN856"
+></A
+><PRE
+CLASS="PROGRAMLISTING"
+>qctrl.id = V4L2_CTRL_CLASS_MPEG | V4L2_CTRL_FLAG_NEXT_CTRL;
+while (0 == ioctl (fd, <A
+HREF="r13317.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_QUERYCTRL</CODE
+></A
+>, &amp;qctrl)) {
+        if (V4L2_CTRL_ID2CLASS (qctrl.id) != V4L2_CTRL_CLASS_MPEG)
+                break;
+                /* ... */
+                qctrl.id |= V4L2_CTRL_FLAG_NEXT_CTRL;
+        }</PRE
+><P
+></P
+></DIV
+><P
+>The 32-bit <CODE
+CLASS="STRUCTFIELD"
+>qctrl.id</CODE
+> value is
+subdivided into three bit ranges: the top 4 bits are reserved for
+flags (e.&nbsp;g. <CODE
+CLASS="CONSTANT"
+>V4L2_CTRL_FLAG_NEXT_CTRL</CODE
+>) and are not
+actually part of the ID. The remaining 28 bits form the control ID, of
+which the most significant 12 bits define the control class and the
+least significant 16 bits identify the control within the control
+class. It is guaranteed that these last 16 bits are always non-zero
+for controls. The range of 0x1000 and up are reserved for
+driver-specific controls. The macro
+<CODE
+CLASS="CONSTANT"
+>V4L2_CTRL_ID2CLASS(id)</CODE
+> returns the control class
+ID based on a control ID.</P
+><P
+>If the driver does not support extended controls, then
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_QUERYCTRL</CODE
+> will fail when used in
+combination with <CODE
+CLASS="CONSTANT"
+>V4L2_CTRL_FLAG_NEXT_CTRL</CODE
+>. In
+that case the old method of enumerating control should be used (see
+1.8). But if it is supported, then it is guaranteed to enumerate over
+all controls, including driver-private controls.</P
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN867"
+>1.9.4. Creating Control Panels</A
+></H2
+><P
+>It is possible to create control panels for a graphical
+user interface where the user can select the various controls.
+Basically you will have to iterate over all controls using the method
+described above. Each control class starts with a control of type
+<CODE
+CLASS="CONSTANT"
+>V4L2_CTRL_TYPE_CTRL_CLASS</CODE
+>.
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_QUERYCTRL</CODE
+> will return the name of this
+control class which can be used as the title of a tab page within a
+control panel.</P
+><P
+>The flags field of struct&nbsp;<A
+HREF="r13317.htm#V4L2-QUERYCTRL"
+>v4l2_queryctrl</A
+> also contains hints on
+the behavior of the control. See the <A
+HREF="r13317.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_QUERYCTRL</CODE
+></A
+> documentation
+for more details.</P
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="MPEG-CONTROLS"
+>1.9.5. MPEG Control Reference</A
+></H2
+><P
+>Below all controls within the MPEG control class are
+described. First the generic controls, then controls specific for
+certain hardware.</P
+><DIV
+CLASS="SECTION"
+><H3
+CLASS="SECTION"
+><A
+NAME="AEN879"
+>1.9.5.1. Generic MPEG Controls</A
+></H3
+><DIV
+CLASS="TABLE"
+><A
+NAME="MPEG-CONTROL-ID"
+></A
+><P
+><B
+>Table 1-2. MPEG Control IDs</B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="7%"
+TITLE="C1"><COL
+WIDTH="40%"
+TITLE="C2"><COL
+WIDTH="13%"
+TITLE="C3"><COL
+WIDTH="40%"
+TITLE="C4"><THEAD
+><TR
+><TH
+COLSPAN="2"
+ALIGN="LEFT"
+>ID</TH
+><TH
+ALIGN="LEFT"
+>Type</TH
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TH
+>&nbsp;</TH
+><TH
+COLSPAN="3"
+ALIGN="LEFT"
+>Description</TH
+></TR
+></THEAD
+><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_CLASS</CODE
+>&nbsp;</TD
+><TD
+>class</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>The MPEG class
+descriptor. Calling <A
+HREF="r13317.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_QUERYCTRL</CODE
+></A
+> for this control will return a
+description of this control class. This description can be used as the
+caption of a Tab page in a GUI, for example.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_STREAM_TYPE</CODE
+>&nbsp;</TD
+><TD
+>enum</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>The MPEG-1, -2 or -4
+output stream type. One cannot assume anything here. Each hardware
+MPEG encoder tends to support different subsets of the available MPEG
+stream types. The currently defined stream types are:</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+><TABLE
+BORDER="0"
+CLASS="CALSTABLE"
+><COL><COL><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_STREAM_TYPE_MPEG2_PS</CODE
+>&nbsp;</TD
+><TD
+>MPEG-2 program stream</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_STREAM_TYPE_MPEG2_TS</CODE
+>&nbsp;</TD
+><TD
+>MPEG-2 transport stream</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_STREAM_TYPE_MPEG1_SS</CODE
+>&nbsp;</TD
+><TD
+>MPEG-1 system stream</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_STREAM_TYPE_MPEG2_DVD</CODE
+>&nbsp;</TD
+><TD
+>MPEG-2 DVD-compatible stream</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_STREAM_TYPE_MPEG1_VCD</CODE
+>&nbsp;</TD
+><TD
+>MPEG-1 VCD-compatible stream</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_STREAM_TYPE_MPEG2_SVCD</CODE
+>&nbsp;</TD
+><TD
+>MPEG-2 SVCD-compatible stream</TD
+></TR
+></TBODY
+></TABLE
+></TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_STREAM_PID_PMT</CODE
+>&nbsp;</TD
+><TD
+>integer</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>Program Map Table
+Packet ID for the MPEG transport stream (default 16)</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_STREAM_PID_AUDIO</CODE
+>&nbsp;</TD
+><TD
+>integer</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>Audio Packet ID for
+the MPEG transport stream (default 256)</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_STREAM_PID_VIDEO</CODE
+>&nbsp;</TD
+><TD
+>integer</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>Video Packet ID for
+the MPEG transport stream (default 260)</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_STREAM_PID_PCR</CODE
+>&nbsp;</TD
+><TD
+>integer</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>Packet ID for the
+MPEG transport stream carrying PCR fields (default 259)</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_STREAM_PES_ID_AUDIO</CODE
+>&nbsp;</TD
+><TD
+>integer</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>Audio ID for MPEG
+PES</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_STREAM_PES_ID_VIDEO</CODE
+>&nbsp;</TD
+><TD
+>integer</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>Video ID for MPEG
+PES</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_STREAM_VBI_FMT</CODE
+>&nbsp;</TD
+><TD
+>enum</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>Some cards can embed
+VBI data (e.&nbsp;g. Closed Caption, Teletext) into the MPEG stream. This
+control selects whether VBI data should be embedded, and if so, what
+embedding method should be used. The list of possible VBI formats
+depends on the driver. The currently defined VBI format types
+are:</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+><TABLE
+BORDER="0"
+CLASS="CALSTABLE"
+><COL><COL><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_STREAM_VBI_FMT_NONE</CODE
+>&nbsp;</TD
+><TD
+>No VBI in the MPEG stream</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_STREAM_VBI_FMT_IVTV</CODE
+>&nbsp;</TD
+><TD
+>VBI in private packets, IVTV format (documented
+in the kernel sources in the file <TT
+CLASS="FILENAME"
+>Documentation/video4linux/cx2341x/README.vbi</TT
+>)</TD
+></TR
+></TBODY
+></TABLE
+></TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_AUDIO_SAMPLING_FREQ</CODE
+>&nbsp;</TD
+><TD
+>enum</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>MPEG Audio sampling
+frequency. Possible values are:</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+><TABLE
+BORDER="0"
+CLASS="CALSTABLE"
+><COL><COL><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_SAMPLING_FREQ_44100</CODE
+>&nbsp;</TD
+><TD
+>44.1 kHz</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_SAMPLING_FREQ_48000</CODE
+>&nbsp;</TD
+><TD
+>48 kHz</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_SAMPLING_FREQ_32000</CODE
+>&nbsp;</TD
+><TD
+>32 kHz</TD
+></TR
+></TBODY
+></TABLE
+></TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_AUDIO_ENCODING</CODE
+>&nbsp;</TD
+><TD
+>enum</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>MPEG Audio encoding.
+Possible values are:</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+><TABLE
+BORDER="0"
+CLASS="CALSTABLE"
+><COL><COL><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_ENCODING_LAYER_1</CODE
+>&nbsp;</TD
+><TD
+>MPEG Layer I encoding</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_ENCODING_LAYER_2</CODE
+>&nbsp;</TD
+><TD
+>MPEG Layer II encoding</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_ENCODING_LAYER_3</CODE
+>&nbsp;</TD
+><TD
+>MPEG Layer III encoding</TD
+></TR
+></TBODY
+></TABLE
+></TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_AUDIO_L1_BITRATE</CODE
+>&nbsp;</TD
+><TD
+>enum</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>Layer I bitrate.
+Possible values are:</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+><TABLE
+BORDER="0"
+CLASS="CALSTABLE"
+><COL><COL><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L1_BITRATE_32K</CODE
+>&nbsp;</TD
+><TD
+>32 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L1_BITRATE_64K</CODE
+>&nbsp;</TD
+><TD
+>64 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L1_BITRATE_96K</CODE
+>&nbsp;</TD
+><TD
+>96 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L1_BITRATE_128K</CODE
+>&nbsp;</TD
+><TD
+>128 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L1_BITRATE_160K</CODE
+>&nbsp;</TD
+><TD
+>160 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L1_BITRATE_192K</CODE
+>&nbsp;</TD
+><TD
+>192 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L1_BITRATE_224K</CODE
+>&nbsp;</TD
+><TD
+>224 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L1_BITRATE_256K</CODE
+>&nbsp;</TD
+><TD
+>256 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L1_BITRATE_288K</CODE
+>&nbsp;</TD
+><TD
+>288 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L1_BITRATE_320K</CODE
+>&nbsp;</TD
+><TD
+>320 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L1_BITRATE_352K</CODE
+>&nbsp;</TD
+><TD
+>352 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L1_BITRATE_384K</CODE
+>&nbsp;</TD
+><TD
+>384 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L1_BITRATE_416K</CODE
+>&nbsp;</TD
+><TD
+>416 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L1_BITRATE_448K</CODE
+>&nbsp;</TD
+><TD
+>448 kbit/s</TD
+></TR
+></TBODY
+></TABLE
+></TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_AUDIO_L2_BITRATE</CODE
+>&nbsp;</TD
+><TD
+>enum</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>Layer II bitrate.
+Possible values are:</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+><TABLE
+BORDER="0"
+CLASS="CALSTABLE"
+><COL><COL><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L2_BITRATE_32K</CODE
+>&nbsp;</TD
+><TD
+>32 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L2_BITRATE_48K</CODE
+>&nbsp;</TD
+><TD
+>48 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L2_BITRATE_56K</CODE
+>&nbsp;</TD
+><TD
+>56 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L2_BITRATE_64K</CODE
+>&nbsp;</TD
+><TD
+>64 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L2_BITRATE_80K</CODE
+>&nbsp;</TD
+><TD
+>80 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L2_BITRATE_96K</CODE
+>&nbsp;</TD
+><TD
+>96 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L2_BITRATE_112K</CODE
+>&nbsp;</TD
+><TD
+>112 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L2_BITRATE_128K</CODE
+>&nbsp;</TD
+><TD
+>128 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L2_BITRATE_160K</CODE
+>&nbsp;</TD
+><TD
+>160 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L2_BITRATE_192K</CODE
+>&nbsp;</TD
+><TD
+>192 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L2_BITRATE_224K</CODE
+>&nbsp;</TD
+><TD
+>224 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L2_BITRATE_256K</CODE
+>&nbsp;</TD
+><TD
+>256 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L2_BITRATE_320K</CODE
+>&nbsp;</TD
+><TD
+>320 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L2_BITRATE_384K</CODE
+>&nbsp;</TD
+><TD
+>384 kbit/s</TD
+></TR
+></TBODY
+></TABLE
+></TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_AUDIO_L3_BITRATE</CODE
+>&nbsp;</TD
+><TD
+>enum</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>Layer III bitrate.
+Possible values are:</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+><TABLE
+BORDER="0"
+CLASS="CALSTABLE"
+><COL><COL><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L3_BITRATE_32K</CODE
+>&nbsp;</TD
+><TD
+>32 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L3_BITRATE_40K</CODE
+>&nbsp;</TD
+><TD
+>40 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L3_BITRATE_48K</CODE
+>&nbsp;</TD
+><TD
+>48 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L3_BITRATE_56K</CODE
+>&nbsp;</TD
+><TD
+>56 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L3_BITRATE_64K</CODE
+>&nbsp;</TD
+><TD
+>64 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L3_BITRATE_80K</CODE
+>&nbsp;</TD
+><TD
+>80 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L3_BITRATE_96K</CODE
+>&nbsp;</TD
+><TD
+>96 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L3_BITRATE_112K</CODE
+>&nbsp;</TD
+><TD
+>112 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L3_BITRATE_128K</CODE
+>&nbsp;</TD
+><TD
+>128 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L3_BITRATE_160K</CODE
+>&nbsp;</TD
+><TD
+>160 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L3_BITRATE_192K</CODE
+>&nbsp;</TD
+><TD
+>192 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L3_BITRATE_224K</CODE
+>&nbsp;</TD
+><TD
+>224 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L3_BITRATE_256K</CODE
+>&nbsp;</TD
+><TD
+>256 kbit/s</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_L3_BITRATE_320K</CODE
+>&nbsp;</TD
+><TD
+>320 kbit/s</TD
+></TR
+></TBODY
+></TABLE
+></TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_AUDIO_MODE</CODE
+>&nbsp;</TD
+><TD
+>enum</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>MPEG Audio mode.
+Possible values are:</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+><TABLE
+BORDER="0"
+CLASS="CALSTABLE"
+><COL><COL><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_MODE_STEREO</CODE
+>&nbsp;</TD
+><TD
+>Stereo</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_MODE_JOINT_STEREO</CODE
+>&nbsp;</TD
+><TD
+>Joint Stereo</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_MODE_DUAL</CODE
+>&nbsp;</TD
+><TD
+>Bilingual</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_MODE_MONO</CODE
+>&nbsp;</TD
+><TD
+>Mono</TD
+></TR
+></TBODY
+></TABLE
+></TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_AUDIO_MODE_EXTENSION</CODE
+>&nbsp;</TD
+><TD
+>enum</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>Joint Stereo
+audio mode extension. In Layer I and II they indicate which subbands
+are in intensity stereo. All other subbands are coded in stereo. Layer
+III is not (yet) supported. Possible values
+are:</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+><TABLE
+BORDER="0"
+CLASS="CALSTABLE"
+><COL><COL><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_MODE_EXTENSION_BOUND_4</CODE
+>&nbsp;</TD
+><TD
+>Subbands 4-31 in intensity stereo</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_MODE_EXTENSION_BOUND_8</CODE
+>&nbsp;</TD
+><TD
+>Subbands 8-31 in intensity stereo</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_MODE_EXTENSION_BOUND_12</CODE
+>&nbsp;</TD
+><TD
+>Subbands 12-31 in intensity stereo</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_MODE_EXTENSION_BOUND_16</CODE
+>&nbsp;</TD
+><TD
+>Subbands 16-31 in intensity stereo</TD
+></TR
+></TBODY
+></TABLE
+></TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_AUDIO_EMPHASIS</CODE
+>&nbsp;</TD
+><TD
+>enum</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>Audio Emphasis.
+Possible values are:</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+><TABLE
+BORDER="0"
+CLASS="CALSTABLE"
+><COL><COL><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_EMPHASIS_NONE</CODE
+>&nbsp;</TD
+><TD
+>None</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_EMPHASIS_50_DIV_15_uS</CODE
+>&nbsp;</TD
+><TD
+>50/15 microsecond emphasis</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_EMPHASIS_CCITT_J17</CODE
+>&nbsp;</TD
+><TD
+>CCITT J.17</TD
+></TR
+></TBODY
+></TABLE
+></TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_AUDIO_CRC</CODE
+>&nbsp;</TD
+><TD
+>enum</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>CRC method. Possible
+values are:</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+><TABLE
+BORDER="0"
+CLASS="CALSTABLE"
+><COL><COL><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_CRC_NONE</CODE
+>&nbsp;</TD
+><TD
+>None</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_AUDIO_CRC_CRC16</CODE
+>&nbsp;</TD
+><TD
+>16 bit parity check</TD
+></TR
+></TBODY
+></TABLE
+></TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_AUDIO_MUTE</CODE
+>&nbsp;</TD
+><TD
+>bool</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>Mutes the audio when
+capturing. This is not done by muting audio hardware, which can still
+produce a slight hiss, but in the encoder itself, guaranteeing a fixed
+and reproducable audio bitstream. 0 = unmuted, 1 = muted.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_VIDEO_ENCODING</CODE
+>&nbsp;</TD
+><TD
+>enum</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>MPEG Video encoding
+method. Possible values are:</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+><TABLE
+BORDER="0"
+CLASS="CALSTABLE"
+><COL><COL><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_VIDEO_ENCODING_MPEG_1</CODE
+>&nbsp;</TD
+><TD
+>MPEG-1 Video encoding</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_VIDEO_ENCODING_MPEG_2</CODE
+>&nbsp;</TD
+><TD
+>MPEG-2 Video encoding</TD
+></TR
+></TBODY
+></TABLE
+></TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_VIDEO_ASPECT</CODE
+>&nbsp;</TD
+><TD
+>enum</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>Video aspect.
+Possible values are:</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+><TABLE
+BORDER="0"
+CLASS="CALSTABLE"
+><COL><COL><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_VIDEO_ASPECT_1x1</CODE
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_VIDEO_ASPECT_4x3</CODE
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_VIDEO_ASPECT_16x9</CODE
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_VIDEO_ASPECT_221x100</CODE
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+></TBODY
+></TABLE
+></TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_VIDEO_B_FRAMES</CODE
+>&nbsp;</TD
+><TD
+>integer</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>Number of B-Frames
+(default 2)</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_VIDEO_GOP_SIZE</CODE
+>&nbsp;</TD
+><TD
+>integer</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>GOP size (default
+12)</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_VIDEO_GOP_CLOSURE</CODE
+>&nbsp;</TD
+><TD
+>bool</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>GOP closure (default
+1)</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_VIDEO_PULLDOWN</CODE
+>&nbsp;</TD
+><TD
+>bool</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>Enable 3:2 pulldown
+(default 0)</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_VIDEO_BITRATE_MODE</CODE
+>&nbsp;</TD
+><TD
+>enum</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>Video bitrate mode.
+Possible values are:</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+><TABLE
+BORDER="0"
+CLASS="CALSTABLE"
+><COL><COL><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_VIDEO_BITRATE_MODE_VBR</CODE
+>&nbsp;</TD
+><TD
+>Variable bitrate</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_VIDEO_BITRATE_MODE_CBR</CODE
+>&nbsp;</TD
+><TD
+>Constant bitrate</TD
+></TR
+></TBODY
+></TABLE
+></TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_VIDEO_BITRATE</CODE
+>&nbsp;</TD
+><TD
+>integer</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>Video bitrate in bits
+per second.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_VIDEO_BITRATE_PEAK</CODE
+>&nbsp;</TD
+><TD
+>integer</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>Peak video bitrate in
+bits per second. Must be larger or equal to the average video bitrate.
+It is ignored if the video bitrate mode is set to constant
+bitrate.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_VIDEO_TEMPORAL_DECIMATION</CODE
+>&nbsp;</TD
+><TD
+>integer</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>For every captured
+frame, skip this many subsequent frames (default 0).</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_VIDEO_MUTE</CODE
+>&nbsp;</TD
+><TD
+>bool</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>"Mutes" the video to a
+fixed color when capturing. This is useful for testing, to produce a
+fixed video bitstream. 0 = unmuted, 1 = muted.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_VIDEO_MUTE_YUV</CODE
+>&nbsp;</TD
+><TD
+>integer</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>Sets the "mute" color
+of the video. The supplied 32-bit integer is interpreted as follows (bit
+0 = least significant bit):</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+><TABLE
+BORDER="0"
+CLASS="CALSTABLE"
+><COL><COL><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>Bit 0:7</TD
+><TD
+>V chrominance information</TD
+></TR
+><TR
+><TD
+>Bit 8:15</TD
+><TD
+>U chrominance information</TD
+></TR
+><TR
+><TD
+>Bit 16:23</TD
+><TD
+>Y luminance information</TD
+></TR
+><TR
+><TD
+>Bit 24:31</TD
+><TD
+>Must be zero.</TD
+></TR
+></TBODY
+></TABLE
+></TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="SECTION"
+><H3
+CLASS="SECTION"
+><A
+NAME="AEN1509"
+>1.9.5.2. CX2341x MPEG Controls</A
+></H3
+><P
+>The following MPEG class controls deal with MPEG
+encoding settings that are specific to the Conexant CX23415 and
+CX23416 MPEG encoding chips.</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="CX2341X-CONTROL-ID"
+></A
+><P
+><B
+>Table 1-3. CX2341x Control IDs</B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="7%"
+TITLE="C1"><COL
+WIDTH="40%"
+TITLE="C2"><COL
+WIDTH="13%"
+TITLE="C3"><COL
+WIDTH="40%"
+TITLE="C4"><THEAD
+><TR
+><TH
+COLSPAN="2"
+ALIGN="LEFT"
+>ID</TH
+><TH
+ALIGN="LEFT"
+>Type</TH
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TH
+>&nbsp;</TH
+><TH
+COLSPAN="3"
+ALIGN="LEFT"
+>Description</TH
+></TR
+></THEAD
+><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_CX2341X_VIDEO_SPATIAL_FILTER_MODE</CODE
+>&nbsp;</TD
+><TD
+>enum</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>Sets the Spatial
+Filter mode (default <CODE
+CLASS="CONSTANT"
+>MANUAL</CODE
+>). Possible values
+are:</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+><TABLE
+BORDER="0"
+CLASS="CALSTABLE"
+><COL><COL><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_CX2341X_VIDEO_SPATIAL_FILTER_MODE_MANUAL</CODE
+>&nbsp;</TD
+><TD
+>Choose the filter manually</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_CX2341X_VIDEO_SPATIAL_FILTER_MODE_AUTO</CODE
+>&nbsp;</TD
+><TD
+>Choose the filter automatically</TD
+></TR
+></TBODY
+></TABLE
+></TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_CX2341X_VIDEO_SPATIAL_FILTER</CODE
+>&nbsp;</TD
+><TD
+>integer&nbsp;(0-15)</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>The setting for the
+Spatial Filter. 0 = off, 15 = maximum. (Default is 0.)</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_CX2341X_VIDEO_LUMA_SPATIAL_FILTER_TYPE</CODE
+>&nbsp;</TD
+><TD
+>enum</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>Select the algorithm
+to use for the Luma Spatial Filter (default
+<CODE
+CLASS="CONSTANT"
+>1D_HOR</CODE
+>). Possible values:</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+><TABLE
+BORDER="0"
+CLASS="CALSTABLE"
+><COL><COL><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_CX2341X_VIDEO_LUMA_SPATIAL_FILTER_TYPE_OFF</CODE
+>&nbsp;</TD
+><TD
+>No filter</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_CX2341X_VIDEO_LUMA_SPATIAL_FILTER_TYPE_1D_HOR</CODE
+>&nbsp;</TD
+><TD
+>One-dimensional horizontal</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_CX2341X_VIDEO_LUMA_SPATIAL_FILTER_TYPE_1D_VERT</CODE
+>&nbsp;</TD
+><TD
+>One-dimensional vertical</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_CX2341X_VIDEO_LUMA_SPATIAL_FILTER_TYPE_2D_HV_SEPARABLE</CODE
+>&nbsp;</TD
+><TD
+>Two-dimensional separable</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_CX2341X_VIDEO_LUMA_SPATIAL_FILTER_TYPE_2D_SYM_NON_SEPARABLE</CODE
+>&nbsp;</TD
+><TD
+>Two-dimensional symmetrical
+non-separable</TD
+></TR
+></TBODY
+></TABLE
+></TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_CX2341X_VIDEO_CHROMA_SPATIAL_FILTER_TYPE</CODE
+>&nbsp;</TD
+><TD
+>enum</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>Select the algorithm
+for the Chroma Spatial Filter (default <CODE
+CLASS="CONSTANT"
+>1D_HOR</CODE
+>).
+Possible values are:</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+><TABLE
+BORDER="0"
+CLASS="CALSTABLE"
+><COL><COL><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_CX2341X_VIDEO_CHROMA_SPATIAL_FILTER_TYPE_OFF</CODE
+>&nbsp;</TD
+><TD
+>No filter</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_CX2341X_VIDEO_CHROMA_SPATIAL_FILTER_TYPE_1D_HOR</CODE
+>&nbsp;</TD
+><TD
+>One-dimensional horizontal</TD
+></TR
+></TBODY
+></TABLE
+></TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_CX2341X_VIDEO_TEMPORAL_FILTER_MODE</CODE
+>&nbsp;</TD
+><TD
+>enum</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>Sets the Temporal
+Filter mode (default <CODE
+CLASS="CONSTANT"
+>MANUAL</CODE
+>). Possible values
+are:</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+><TABLE
+BORDER="0"
+CLASS="CALSTABLE"
+><COL><COL><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_CX2341X_VIDEO_TEMPORAL_FILTER_MODE_MANUAL</CODE
+>&nbsp;</TD
+><TD
+>Choose the filter manually</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_CX2341X_VIDEO_TEMPORAL_FILTER_MODE_AUTO</CODE
+>&nbsp;</TD
+><TD
+>Choose the filter automatically</TD
+></TR
+></TBODY
+></TABLE
+></TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_CX2341X_VIDEO_TEMPORAL_FILTER</CODE
+>&nbsp;</TD
+><TD
+>integer&nbsp;(0-31)</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>The setting for the
+Temporal Filter. 0 = off, 31 = maximum. (Default is 8 for full-scale
+capturing and 0 for scaled capturing.)</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_CX2341X_VIDEO_MEDIAN_FILTER_TYPE</CODE
+>&nbsp;</TD
+><TD
+>enum</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>Median Filter Type
+(default <CODE
+CLASS="CONSTANT"
+>OFF</CODE
+>). Possible values are:</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+><TABLE
+BORDER="0"
+CLASS="CALSTABLE"
+><COL><COL><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_CX2341X_VIDEO_MEDIAN_FILTER_TYPE_OFF</CODE
+>&nbsp;</TD
+><TD
+>No filter</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_CX2341X_VIDEO_MEDIAN_FILTER_TYPE_HOR</CODE
+>&nbsp;</TD
+><TD
+>Horizontal filter</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_CX2341X_VIDEO_MEDIAN_FILTER_TYPE_VERT</CODE
+>&nbsp;</TD
+><TD
+>Vertical filter</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_CX2341X_VIDEO_MEDIAN_FILTER_TYPE_HOR_VERT</CODE
+>&nbsp;</TD
+><TD
+>Horizontal and vertical filter</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_MPEG_CX2341X_VIDEO_MEDIAN_FILTER_TYPE_DIAG</CODE
+>&nbsp;</TD
+><TD
+>Diagonal filter</TD
+></TR
+></TBODY
+></TABLE
+></TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_CX2341X_VIDEO_LUMA_MEDIAN_FILTER_BOTTOM</CODE
+>&nbsp;</TD
+><TD
+>integer&nbsp;(0-255)</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>Threshold above which
+the luminance median filter is enabled (default 0)</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_CX2341X_VIDEO_LUMA_MEDIAN_FILTER_TOP</CODE
+>&nbsp;</TD
+><TD
+>integer&nbsp;(0-255)</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>Threshold below which
+the luminance median filter is enabled (default 255)</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_CX2341X_VIDEO_CHROMA_MEDIAN_FILTER_BOTTOM</CODE
+>&nbsp;</TD
+><TD
+>integer&nbsp;(0-255)</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>Threshold above which
+the chroma median filter is enabled (default 0)</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_CX2341X_VIDEO_CHROMA_MEDIAN_FILTER_TOP</CODE
+>&nbsp;</TD
+><TD
+>integer&nbsp;(0-255)</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>Threshold below which
+the chroma median filter is enabled (default 255)</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_MPEG_CX2341X_STREAM_INSERT_NAV_PACKETS</CODE
+>&nbsp;</TD
+><TD
+>bool</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>The CX2341X MPEG encoder
+can insert one empty MPEG-2 PES packet into the stream between every
+four video frames. The packet size is 2048 bytes, including the
+packet_start_code_prefix and stream_id fields. The stream_id is 0xBF
+(private stream 2). The payload consists of 0x00 bytes, to be filled
+in by the application. 0 = do not insert, 1 = insert packets.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="CAMERA-CONTROLS"
+>1.9.6. Camera Control Reference</A
+></H2
+><P
+>The Camera class includes controls for mechanical (or
+equivalent digital) features of a device such as controllable lenses
+or sensors.</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="CAMERA-CONTROL-ID"
+></A
+><P
+><B
+>Table 1-4. Camera Control IDs</B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="7%"
+TITLE="C1"><COL
+WIDTH="40%"
+TITLE="C2"><COL
+WIDTH="13%"
+TITLE="C3"><COL
+WIDTH="40%"
+TITLE="C4"><THEAD
+><TR
+><TH
+COLSPAN="2"
+ALIGN="LEFT"
+>ID</TH
+><TH
+ALIGN="LEFT"
+>Type</TH
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TH
+>&nbsp;</TH
+><TH
+COLSPAN="3"
+ALIGN="LEFT"
+>Description</TH
+></TR
+></THEAD
+><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_CAMERA_CLASS</CODE
+>&nbsp;</TD
+><TD
+>class</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>The Camera class
+descriptor. Calling <A
+HREF="r13317.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_QUERYCTRL</CODE
+></A
+> for this control will return a
+description of this control class.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_EXPOSURE_AUTO</CODE
+>&nbsp;</TD
+><TD
+>integer</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>Enables automatic
+adjustments of the exposure time and/or iris aperture. The effect of
+manual changes of the exposure time or iris aperture while these
+features are enabled is undefined, drivers should ignore such
+requests. Possible values are:</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+><TABLE
+BORDER="0"
+CLASS="CALSTABLE"
+><COL><COL><TBODY
+VALIGN="TOP"
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_EXPOSURE_AUTO</CODE
+>&nbsp;</TD
+><TD
+>Automatic exposure time, automatic iris
+aperture.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_EXPOSURE_MANUAL</CODE
+>&nbsp;</TD
+><TD
+>Manual exposure time, manual iris.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_EXPOSURE_SHUTTER_PRIORITY</CODE
+>&nbsp;</TD
+><TD
+>Manual exposure time, auto iris.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="CONSTANT"
+>V4L2_EXPOSURE_APERTURE_PRIORITY</CODE
+>&nbsp;</TD
+><TD
+>Auto exposure time, manual iris.</TD
+></TR
+></TBODY
+></TABLE
+></TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_EXPOSURE_ABSOLUTE</CODE
+>&nbsp;</TD
+><TD
+>integer</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>Determines the exposure
+time of the camera sensor. The exposure time is limited by the frame
+interval. Drivers should interpret the values as 100 &micro;s units,
+where the value 1 stands for 1/10000th of a second, 10000 for 1 second
+and 100000 for 10 seconds.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_EXPOSURE_AUTO_PRIORITY</CODE
+>&nbsp;</TD
+><TD
+>boolean</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>When
+<CODE
+CLASS="CONSTANT"
+>V4L2_CID_EXPOSURE_AUTO</CODE
+> is set to
+<CODE
+CLASS="CONSTANT"
+>AUTO</CODE
+> or <CODE
+CLASS="CONSTANT"
+>SHUTTER_PRIORITY</CODE
+>,
+this control determines if the device may dynamically vary the frame
+rate. By default this feature is disabled (0) and the frame rate must
+remain constant.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_PAN_RELATIVE</CODE
+>&nbsp;</TD
+><TD
+>integer</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>This control turns the
+camera horizontally by the specified amount. The unit is undefined. A
+positive value moves the camera to the right (clockwise when viewed
+from above), a negative value to the left. A value of zero does not
+cause motion.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_TILT_RELATIVE</CODE
+>&nbsp;</TD
+><TD
+>integer</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>This control turns the
+camera vertically by the specified amount. The unit is undefined. A
+positive value moves the camera up, a negative value down. A value of
+zero does not cause motion.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_PAN_RESET</CODE
+>&nbsp;</TD
+><TD
+>boolean</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>When this control is set
+to <CODE
+CLASS="CONSTANT"
+>TRUE</CODE
+> (1), the camera moves horizontally to the
+default position.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_TILT_RESET</CODE
+>&nbsp;</TD
+><TD
+>boolean</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>When this control is set
+to <CODE
+CLASS="CONSTANT"
+>TRUE</CODE
+> (1), the camera moves vertically to the
+default position.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_PAN_ABSOLUTE</CODE
+>&nbsp;</TD
+><TD
+>integer</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>This control
+turns the camera horizontally to the specified position. Positive
+values move the camera to the right (clockwise when viewed from above),
+negative values to the left. Drivers should interpret the values as arc
+seconds, with valid values between -180 * 3600 and +180 * 3600
+inclusive.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_TILT_ABSOLUTE</CODE
+>&nbsp;</TD
+><TD
+>integer</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>This control
+turns the camera vertically to the specified position. Positive values
+move the camera up, negative values down. Drivers should interpret the
+values as arc seconds, with valid values between -180 * 3600 and +180
+* 3600 inclusive.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_FOCUS_ABSOLUTE</CODE
+>&nbsp;</TD
+><TD
+>integer</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>This control sets the
+focal point of the camera to the specified position. The unit is
+undefined. Positive values set the focus closer to the camera,
+negative values towards infinity.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_FOCUS_RELATIVE</CODE
+>&nbsp;</TD
+><TD
+>integer</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>This control moves the
+focal point of the camera by the specified amount. The unit is
+undefined. Positive values move the focus closer to the camera,
+negative values towards infinity.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+><CODE
+CLASS="CONSTANT"
+>V4L2_CID_FOCUS_AUTO</CODE
+>&nbsp;</TD
+><TD
+>boolean</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+COLSPAN="3"
+>Enables automatic focus
+adjustments. The effect of manual focus adjustments while this feature
+is enabled is undefined, drivers should ignore such requests.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x542.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x1859.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>User Controls</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="c174.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Data Formats</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

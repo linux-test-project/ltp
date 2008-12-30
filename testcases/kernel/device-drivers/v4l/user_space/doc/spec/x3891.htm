@@ -1,0 +1,257 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>YUV Formats</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Image Formats"
+HREF="c2030.htm"><LINK
+REL="PREVIOUS"
+TITLE="V4L2_PIX_FMT_SBGGR16 ('BA82')"
+HREF="r3796.htm"><LINK
+REL="NEXT"
+TITLE="Packed YUV formats"
+HREF="r3896.htm"></HEAD
+><BODY
+CLASS="SECTION"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="r3796.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 2. Image Formats</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="r3896.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECTION"
+><H1
+CLASS="SECTION"
+><A
+NAME="YUV-FORMATS"
+>2.5. YUV Formats</A
+></H1
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Table of Contents</B
+></DT
+><DT
+><A
+HREF="r3896.htm"
+>Packed YUV formats</A
+>&nbsp;--&nbsp;Packed YUV formats</DT
+><DT
+><A
+HREF="r4185.htm"
+>V4L2_PIX_FMT_GREY ('GREY')</A
+>&nbsp;--&nbsp;Grey-scale image</DT
+><DT
+><A
+HREF="r4246.htm"
+>V4L2_PIX_FMT_Y16 ('Y16 ')</A
+>&nbsp;--&nbsp;Grey-scale image</DT
+><DT
+><A
+HREF="r4339.htm"
+>V4L2_PIX_FMT_YUYV ('YUYV')</A
+>&nbsp;--&nbsp;Packed format with &frac12; horizontal chroma
+resolution, also known as YUV 4:2:2</DT
+><DT
+><A
+HREF="r4484.htm"
+>V4L2_PIX_FMT_UYVY ('UYVY')</A
+>&nbsp;--&nbsp;Variation of
+<CODE
+CLASS="CONSTANT"
+>V4L2_PIX_FMT_YUYV</CODE
+> with different order of samples
+in memory</DT
+><DT
+><A
+HREF="r4629.htm"
+>V4L2_PIX_FMT_Y41P ('Y41P')</A
+>&nbsp;--&nbsp;Format with &frac14; horizontal chroma
+resolution, also known as YUV 4:1:1</DT
+><DT
+><A
+HREF="r4850.htm"
+>V4L2_PIX_FMT_YVU420 ('YV12'), V4L2_PIX_FMT_YUV420 ('YU12')</A
+>&nbsp;--&nbsp;Planar formats with &frac12; horizontal and
+vertical chroma resolution, also known as YUV 4:2:0</DT
+><DT
+><A
+HREF="r5016.htm"
+>V4L2_PIX_FMT_YVU410 ('YVU9'), V4L2_PIX_FMT_YUV410 ('YUV9')</A
+>&nbsp;--&nbsp;Planar formats with &frac14; horizontal and
+vertical chroma resolution, also known as YUV 4:1:0</DT
+><DT
+><A
+HREF="r5154.htm"
+>V4L2_PIX_FMT_YUV422P ('422P')</A
+>&nbsp;--&nbsp;Format with &frac12; horizontal chroma resolution,
+also known as YUV 4:2:2. Planar layout as opposed to
+<CODE
+CLASS="CONSTANT"
+>V4L2_PIX_FMT_YUYV</CODE
+></DT
+><DT
+><A
+HREF="r5319.htm"
+>V4L2_PIX_FMT_YUV411P ('411P')</A
+>&nbsp;--&nbsp;Format with &frac14; horizontal chroma resolution,
+also known as YUV 4:1:1. Planar layout as opposed to
+<CODE
+CLASS="CONSTANT"
+>V4L2_PIX_FMT_Y41P</CODE
+></DT
+><DT
+><A
+HREF="r5470.htm"
+>V4L2_PIX_FMT_NV12 ('NV12'), V4L2_PIX_FMT_NV21 ('NV21')</A
+>&nbsp;--&nbsp;Formats with &frac12; horizontal and vertical
+chroma resolution, also known as YUV 4:2:0. One luminance and one
+chrominance plane with alternating chroma samples as opposed to
+<CODE
+CLASS="CONSTANT"
+>V4L2_PIX_FMT_YVU420</CODE
+></DT
+></DL
+></DIV
+><P
+>YUV is the format native to TV broadcast and composite video
+signals. It separates the brightness information (Y) from the color
+information (U and V or Cb and Cr). The color information consists of
+red and blue <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>color difference</I
+></SPAN
+> signals, this way
+the green component can be reconstructed by subtracting from the
+brightness component. See <A
+HREF="x2123.htm"
+>Section 2.2</A
+> for conversion
+examples. YUV was chosen because early television would only transmit
+brightness information. To add color in a way compatible with existing
+receivers a new signal carrier was added to transmit the color
+difference signals. Secondary in the YUV format the U and V components
+usually have lower resolution than the Y component. This is an analog
+video compression technique taking advantage of a property of the
+human visual system, being more sensitive to brightness
+information.</P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="r3796.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="r3896.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>V4L2_PIX_FMT_SBGGR16 ('BA82')</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="c2030.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Packed YUV formats</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

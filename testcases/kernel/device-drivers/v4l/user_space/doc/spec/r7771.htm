@@ -1,0 +1,503 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ioctl VIDIOC_CROPCAP</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Function Reference"
+HREF="r7624.htm"><LINK
+REL="PREVIOUS"
+TITLE="V4L2 ioctl()"
+HREF="r7667.htm"><LINK
+REL="NEXT"
+TITLE="ioctl VIDIOC_DBG_G_REGISTER, VIDIOC_DBG_S_REGISTER"
+HREF="r7900.htm"></HEAD
+><BODY
+CLASS="REFENTRY"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="r7667.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="r7900.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="VIDIOC-CROPCAP"
+></A
+>ioctl VIDIOC_CROPCAP</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN7775"
+></A
+><H2
+>Name</H2
+>VIDIOC_CROPCAP&nbsp;--&nbsp;Information about the video cropping and scaling abilities</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN7778"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN7779"
+></A
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>int ioctl</CODE
+>(int fd, int request, struct v4l2_cropcap
+*argp);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN7789"
+></A
+><H2
+>Arguments</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><CODE
+CLASS="PARAMETER"
+>fd</CODE
+></DT
+><DD
+><P
+>File descriptor returned by <A
+HREF="r14090.htm"
+><CODE
+CLASS="FUNCTION"
+>open()</CODE
+></A
+>.</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>request</CODE
+></DT
+><DD
+><P
+>VIDIOC_CROPCAP</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>argp</CODE
+></DT
+><DD
+><P
+></P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN7809"
+></A
+><H2
+>Description</H2
+><P
+>Applications use this function to query the cropping
+limits, the pixel aspect of images and to calculate scale factors.
+They set the <CODE
+CLASS="STRUCTFIELD"
+>type</CODE
+> field of a v4l2_cropcap
+structure to the respective buffer (stream) type and call the
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_CROPCAP</CODE
+> ioctl with a pointer to this
+structure. Drivers fill the rest of the structure. The results are
+constant except when switching the video standard. Remember this
+switch can occur implicit when switching the video input or
+output.</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-CROPCAP"
+></A
+><P
+><B
+>Table 1. struct <CODE
+CLASS="STRUCTNAME"
+>v4l2_cropcap</CODE
+></B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="25%"
+TITLE="C1"><COL
+WIDTH="25%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>enum&nbsp;<A
+HREF="x5953.htm#V4L2-BUF-TYPE"
+>v4l2_buf_type</A
+></TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>type</CODE
+></TD
+><TD
+>Type of the data stream, set by the application.
+Only these types are valid here:
+<CODE
+CLASS="CONSTANT"
+>V4L2_BUF_TYPE_VIDEO_CAPTURE</CODE
+>,
+<CODE
+CLASS="CONSTANT"
+>V4L2_BUF_TYPE_VIDEO_OUTPUT</CODE
+>,
+<CODE
+CLASS="CONSTANT"
+>V4L2_BUF_TYPE_VIDEO_OVERLAY</CODE
+>, and custom (driver
+defined) types with code <CODE
+CLASS="CONSTANT"
+>V4L2_BUF_TYPE_PRIVATE</CODE
+>
+and higher.</TD
+></TR
+><TR
+><TD
+>struct <A
+HREF="r7771.htm#V4L2-RECT-CROP"
+>v4l2_rect</A
+></TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>bounds</CODE
+></TD
+><TD
+>Defines the window within capturing or output is
+possible, this may exclude for example the horizontal and vertical
+blanking areas. The cropping rectangle cannot exceed these limits.
+Width and height are defined in pixels, the driver writer is free to
+choose origin and units of the coordinate system in the analog
+domain.</TD
+></TR
+><TR
+><TD
+>struct <A
+HREF="r7771.htm#V4L2-RECT-CROP"
+>v4l2_rect</A
+></TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>defrect</CODE
+></TD
+><TD
+>Default cropping rectangle, it shall cover the
+"whole picture". Assuming pixel aspect 1/1 this could be for example a
+640&nbsp;&times;&nbsp;480 rectangle for NTSC, a
+768&nbsp;&times;&nbsp;576 rectangle for PAL and SECAM centered over
+the active picture area. The same co-ordinate system as for
+            <CODE
+CLASS="STRUCTFIELD"
+>bounds</CODE
+> is used.</TD
+></TR
+><TR
+><TD
+>struct&nbsp;<A
+HREF="r9288.htm#V4L2-FRACT"
+>v4l2_fract</A
+></TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>pixelaspect</CODE
+></TD
+><TD
+><P
+>This is the pixel aspect (y / x) when no
+scaling is applied, the ratio of the actual sampling
+frequency and the frequency required to get square
+pixels.</P
+><P
+>When cropping coordinates refer to square pixels,
+the driver sets <CODE
+CLASS="STRUCTFIELD"
+>pixelaspect</CODE
+> to 1/1. Other
+common values are 54/59 for PAL and SECAM, 11/10 for NTSC sampled
+according to [<A
+HREF="b17127.htm#ITU601"
+><ABBR
+CLASS="ABBREV"
+>ITU&nbsp;BT.601</ABBR
+></A
+>].</P
+></TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="V4L2-RECT-CROP"
+></A
+><P
+><B
+>Table 2. struct <CODE
+CLASS="STRUCTNAME"
+>v4l2_rect</CODE
+></B
+></P
+><TABLE
+BORDER="0"
+FRAME="void"
+WIDTH="100%"
+CLASS="CALSTABLE"
+><COL
+WIDTH="25%"
+TITLE="C1"><COL
+WIDTH="25%"
+TITLE="C2"><COL
+WIDTH="50%"
+TITLE="C3"><TBODY
+VALIGN="TOP"
+><TR
+><TD
+>__s32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>left</CODE
+></TD
+><TD
+>Horizontal offset of the top, left corner of the
+rectangle, in pixels.</TD
+></TR
+><TR
+><TD
+>__s32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>top</CODE
+></TD
+><TD
+>Vertical offset of the top, left corner of the
+rectangle, in pixels.</TD
+></TR
+><TR
+><TD
+>__s32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>width</CODE
+></TD
+><TD
+>Width of the rectangle, in pixels.</TD
+></TR
+><TR
+><TD
+>__s32</TD
+><TD
+><CODE
+CLASS="STRUCTFIELD"
+>height</CODE
+></TD
+><TD
+>Height of the rectangle, in pixels. Width
+and height cannot be negative, the fields are signed for
+hysterical reasons. </TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN7885"
+></A
+><H2
+>Return Value</H2
+><P
+>On success <SPAN
+CLASS="RETURNVALUE"
+>0</SPAN
+> is returned, on error <SPAN
+CLASS="RETURNVALUE"
+>-1</SPAN
+> and the <CODE
+CLASS="VARNAME"
+>errno</CODE
+> variable is set appropriately:</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+></DT
+><DD
+><P
+>The struct&nbsp;<A
+HREF="r7771.htm#V4L2-CROPCAP"
+>v4l2_cropcap</A
+> <CODE
+CLASS="STRUCTFIELD"
+>type</CODE
+> is
+invalid or the ioctl is not supported. This is not permitted for
+video capture, output and overlay devices, which must support
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_CROPCAP</CODE
+>.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="r7667.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="r7900.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>V4L2 ioctl()</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="r7624.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>ioctl VIDIOC_DBG_G_REGISTER, VIDIOC_DBG_S_REGISTER</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

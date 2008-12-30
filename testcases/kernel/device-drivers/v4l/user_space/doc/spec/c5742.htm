@@ -1,0 +1,414 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Input/Output</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="PREVIOUS"
+TITLE="Reserved Format Identifiers"
+HREF="x5665.htm"><LINK
+REL="NEXT"
+TITLE="Streaming I/O (Memory Mapping)"
+HREF="x5791.htm"></HEAD
+><BODY
+CLASS="CHAPTER"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x5665.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x5791.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="IO"
+></A
+>Chapter 3. Input/Output</H1
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Table of Contents</B
+></DT
+><DT
+>3.1. <A
+HREF="c5742.htm#RW"
+>Read/Write</A
+></DT
+><DT
+>3.2. <A
+HREF="x5791.htm"
+>Streaming I/O (Memory Mapping)</A
+></DT
+><DT
+>3.3. <A
+HREF="x5884.htm"
+>Streaming I/O (User Pointers)</A
+></DT
+><DT
+>3.4. <A
+HREF="x5950.htm"
+>Asynchronous I/O</A
+></DT
+><DT
+>3.5. <A
+HREF="x5953.htm"
+>Buffers</A
+></DT
+><DT
+>3.6. <A
+HREF="x6386.htm"
+>Field Order</A
+></DT
+></DL
+></DIV
+><P
+>The V4L2 API defines several different methods to read from or
+write to a device. All drivers exchanging data with applications must
+support at least one of them.</P
+><P
+>The classic I/O method using the <CODE
+CLASS="FUNCTION"
+>read()</CODE
+>
+and <CODE
+CLASS="FUNCTION"
+>write()</CODE
+> function is automatically selected
+after opening a V4L2 device. When the driver does not support this
+method attempts to read or write will fail at any time.</P
+><P
+>Other methods must be negotiated. To select the streaming I/O
+method with memory mapped or user buffers applications call the
+<A
+HREF="r13696.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_REQBUFS</CODE
+></A
+> ioctl. The asynchronous I/O method is not defined
+yet.</P
+><P
+>Video overlay can be considered another I/O method, although
+the application does not directly receive the image data. It is
+selected by initiating video overlay with the <A
+HREF="r10944.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+></A
+> ioctl.
+For more information see <A
+HREF="x6570.htm"
+>Section 4.2</A
+>.</P
+><P
+>Generally exactly one I/O method, including overlay, is
+associated with each file descriptor. The only exceptions are
+applications not exchanging data with a driver ("panel applications",
+see <A
+HREF="c174.htm#OPEN"
+>Section 1.1</A
+>) and drivers permitting simultaneous video capturing
+and overlay using the same file descriptor, for compatibility with V4L
+and earlier versions of V4L2.</P
+><P
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_FMT</CODE
+> and
+<CODE
+CLASS="CONSTANT"
+>VIDIOC_REQBUFS</CODE
+> would permit this to some degree,
+but for simplicity drivers need not support switching the I/O method
+(after first switching away from read/write) other than by closing
+and reopening the device.</P
+><P
+>The following sections describe the various I/O methods in
+more detail.</P
+><DIV
+CLASS="SECTION"
+><H1
+CLASS="SECTION"
+><A
+NAME="RW"
+>3.1. Read/Write</A
+></H1
+><P
+>Input and output devices support the
+<CODE
+CLASS="FUNCTION"
+>read()</CODE
+> and <CODE
+CLASS="FUNCTION"
+>write()</CODE
+> function,
+respectively, when the <CODE
+CLASS="CONSTANT"
+>V4L2_CAP_READWRITE</CODE
+> flag in
+the <CODE
+CLASS="STRUCTFIELD"
+>capabilities</CODE
+> field of struct&nbsp;<A
+HREF="r13105.htm#V4L2-CAPABILITY"
+>v4l2_capability</A
+>
+returned by the <A
+HREF="r13105.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_QUERYCAP</CODE
+></A
+> ioctl is set.</P
+><P
+>Drivers may need the CPU to copy the data, but they may also
+support DMA to or from user memory, so this I/O method is not
+necessarily less efficient than other methods merely exchanging buffer
+pointers. It is considered inferior though because no meta-information
+like frame counters or timestamps are passed. This information is
+necessary to recognize frame dropping and to synchronize with other
+data streams. However this is also the simplest I/O method, requiring
+little or no setup to exchange data. It permits command line stunts
+like this (the <SPAN
+CLASS="APPLICATION"
+>vidctrl</SPAN
+> tool is
+fictitious):</P
+><DIV
+CLASS="INFORMALEXAMPLE"
+><P
+></P
+><A
+NAME="AEN5773"
+></A
+><PRE
+CLASS="SCREEN"
+>&gt; vidctrl /dev/video --input=0 --format=YUYV --size=352x288
+&gt; dd if=/dev/video of=myimage.422 bs=202752 count=1</PRE
+><P
+></P
+></DIV
+><P
+>To read from the device applications use the
+<A
+HREF="r14264.htm"
+><CODE
+CLASS="FUNCTION"
+>read()</CODE
+></A
+> function, to write the <A
+HREF="r14496.htm"
+><CODE
+CLASS="FUNCTION"
+>write()</CODE
+></A
+> function.
+Drivers must implement one I/O method if they
+exchange data with applications, but it need not be this.<A
+NAME="AEN5780"
+HREF="c5742.htm#FTN.AEN5780"
+><SPAN
+CLASS="footnote"
+>[1]</SPAN
+></A
+> When reading or writing is supported, the driver
+must also support the <A
+HREF="r14390.htm"
+><CODE
+CLASS="FUNCTION"
+>select()</CODE
+></A
+> and <A
+HREF="r14169.htm"
+><CODE
+CLASS="FUNCTION"
+>poll()</CODE
+></A
+>
+function.<A
+NAME="AEN5786"
+HREF="c5742.htm#FTN.AEN5786"
+><SPAN
+CLASS="footnote"
+>[2]</SPAN
+></A
+></P
+></DIV
+></DIV
+><H3
+CLASS="FOOTNOTES"
+>Notes</H3
+><TABLE
+BORDER="0"
+CLASS="FOOTNOTES"
+WIDTH="100%"
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="5%"
+><A
+NAME="FTN.AEN5780"
+HREF="c5742.htm#AEN5780"
+><SPAN
+CLASS="footnote"
+>[1]</SPAN
+></A
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="95%"
+><P
+>It would be desirable if applications could depend on
+drivers supporting all I/O interfaces, but as much as the complex
+memory mapping I/O can be inadequate for some devices we have no
+reason to require this interface, which is most useful for simple
+applications capturing still images.</P
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="5%"
+><A
+NAME="FTN.AEN5786"
+HREF="c5742.htm#AEN5786"
+><SPAN
+CLASS="footnote"
+>[2]</SPAN
+></A
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="95%"
+><P
+>At the driver level <CODE
+CLASS="FUNCTION"
+>select()</CODE
+> and
+<CODE
+CLASS="FUNCTION"
+>poll()</CODE
+> are the same, and
+<CODE
+CLASS="FUNCTION"
+>select()</CODE
+> is too important to be optional.</P
+></TD
+></TR
+></TABLE
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x5665.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x5791.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Reserved Format Identifiers</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Streaming I/O (Memory Mapping)</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

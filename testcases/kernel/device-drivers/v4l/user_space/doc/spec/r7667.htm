@@ -1,0 +1,415 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>V4L2 ioctl()</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Video for Linux Two API Specification"
+HREF="book1.htm"><LINK
+REL="UP"
+TITLE="Function Reference"
+HREF="r7624.htm"><LINK
+REL="PREVIOUS"
+TITLE="V4L2 close()"
+HREF="r7626.htm"><LINK
+REL="NEXT"
+TITLE="ioctl VIDIOC_CROPCAP"
+HREF="r7771.htm"></HEAD
+><BODY
+CLASS="REFENTRY"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Video for Linux Two API Specification: Revision 0.24</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="r7626.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="r7771.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="FUNC-IOCTL"
+></A
+>V4L2 ioctl()</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN7671"
+></A
+><H2
+>Name</H2
+>v4l2-ioctl&nbsp;--&nbsp;Program a V4L2 device</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN7674"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN7675"
+></A
+><PRE
+CLASS="FUNCSYNOPSISINFO"
+>#include &lt;sys/ioctl.h&gt;</PRE
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>int ioctl</CODE
+>(int fd, int request, void *argp);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN7686"
+></A
+><H2
+>Arguments</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><CODE
+CLASS="PARAMETER"
+>fd</CODE
+></DT
+><DD
+><P
+>File descriptor returned by <A
+HREF="r14090.htm"
+><CODE
+CLASS="FUNCTION"
+>open()</CODE
+></A
+>.</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>request</CODE
+></DT
+><DD
+><P
+>V4L2 ioctl request code as defined in the <A
+HREF="a16506.htm"
+>videodev.h</A
+> header file, for example
+VIDIOC_QUERYCAP.</P
+></DD
+><DT
+><CODE
+CLASS="PARAMETER"
+>argp</CODE
+></DT
+><DD
+><P
+>Pointer to a function parameter, usually a structure.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN7707"
+></A
+><H2
+>Description</H2
+><P
+>The <CODE
+CLASS="FUNCTION"
+>ioctl()</CODE
+> function is used to program
+V4L2 devices. The argument <CODE
+CLASS="PARAMETER"
+>fd</CODE
+> must be an open
+file descriptor. An ioctl <CODE
+CLASS="PARAMETER"
+>request</CODE
+> has encoded
+in it whether the argument is an input, output or read/write
+parameter, and the size of the argument <CODE
+CLASS="PARAMETER"
+>argp</CODE
+> in
+bytes. Macros and defines specifying V4L2 ioctl requests are located
+in the <A
+HREF="a16506.htm"
+>videodev.h</A
+> header file.
+Applications should use their own copy, not include the version in the
+kernel sources on the system they compile on. All V4L2 ioctl requests,
+their respective function and parameters are specified in <A
+HREF="r7624.htm"
+>Reference I, <I
+>Function Reference</I
+></A
+>.</P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN7716"
+></A
+><H2
+>Return Value</H2
+><P
+>On success the <CODE
+CLASS="FUNCTION"
+>ioctl()</CODE
+> function returns
+<SPAN
+CLASS="RETURNVALUE"
+>0</SPAN
+> and does not reset the
+<CODE
+CLASS="VARNAME"
+>errno</CODE
+> variable. On failure
+<SPAN
+CLASS="RETURNVALUE"
+>-1</SPAN
+> is returned, when the ioctl takes an
+output or read/write parameter it remains unmodified, and the
+<CODE
+CLASS="VARNAME"
+>errno</CODE
+> variable is set appropriately. See below for
+possible error codes. Generic errors like <SPAN
+CLASS="ERRORCODE"
+>EBADF</SPAN
+>
+or <SPAN
+CLASS="ERRORCODE"
+>EFAULT</SPAN
+> are not listed in the sections
+discussing individual ioctl requests.</P
+><P
+>Note ioctls may return undefined error codes. Since errors
+may have side effects such as a driver reset applications should
+abort on unexpected errors.</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EBADF</SPAN
+></DT
+><DD
+><P
+><CODE
+CLASS="PARAMETER"
+>fd</CODE
+> is not a valid open file
+descriptor.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EBUSY</SPAN
+></DT
+><DD
+><P
+>The property cannot be changed right now. Typically
+this error code is returned when I/O is in progress or the driver
+supports multiple opens and another process locked the property.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EFAULT</SPAN
+></DT
+><DD
+><P
+><CODE
+CLASS="PARAMETER"
+>argp</CODE
+> references an inaccessible
+memory area.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>ENOTTY</SPAN
+></DT
+><DD
+><P
+><CODE
+CLASS="PARAMETER"
+>fd</CODE
+> is  not  associated  with  a
+character special device.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>EINVAL</SPAN
+></DT
+><DD
+><P
+>The <CODE
+CLASS="PARAMETER"
+>request</CODE
+> or the data pointed
+to by <CODE
+CLASS="PARAMETER"
+>argp</CODE
+> is not valid. This is a very common
+error code, see the individual ioctl requests listed in <A
+HREF="r7624.htm"
+>Reference I, <I
+>Function Reference</I
+></A
+> for actual causes.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>ENOMEM</SPAN
+></DT
+><DD
+><P
+>Not enough physical or virtual memory was available to
+complete the request.</P
+></DD
+><DT
+><SPAN
+CLASS="ERRORCODE"
+>ERANGE</SPAN
+></DT
+><DD
+><P
+>The application attempted to set a control with the
+<A
+HREF="r10104.htm"
+><CODE
+CLASS="CONSTANT"
+>VIDIOC_S_CTRL</CODE
+></A
+> ioctl to a value which is out of bounds.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="r7626.htm"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="book1.htm"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="r7771.htm"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>V4L2 close()</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="r7624.htm"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>ioctl VIDIOC_CROPCAP</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>
