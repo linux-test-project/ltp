@@ -47,7 +47,7 @@ extern pid_t getsid(pid_t pid);
 
 int crtchild(char *s1 , char *s2)
 {
-    char *cmd[] = { "/bin/bash", s1, s2, (char *)0 };
+    char *cmd[] = { "--", s1, s2, (char *)0 };
     execve("/bin/bash", cmd, __environ);
     printf("The code would not reach here on success\n");
     perror("execve");

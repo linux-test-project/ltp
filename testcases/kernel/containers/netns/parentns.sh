@@ -77,7 +77,7 @@ status=0
     echo $vnet1 > /tmp/FIFO2
 
     # Executes the script if it is passed as an argument.
-    if [ -f $scrpt ] ;  then
+    if [ ! -z $scrpt ] && [ -f $scrpt ] ;  then
         . $scrpt
     fi
 
