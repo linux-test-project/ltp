@@ -156,6 +156,15 @@ export RUN_FSNOLVM_TESTS=0
 #Note: Build scsi_debug as a module first before running the test
 export RUN_LTP_SCSI_DEBUG_TEST=0
 
+## Set this to 1 if you wish to run the LTP SYSFS tests
+#Note: Must have root access to execute this script. 
+#  USAGE       : sysfs.sh [ -k <kernel_module> ]
+#  DESCRIPTION : A script that will test sysfs on Linux system.
+#  REQUIREMENTS: CONFIG_DUMMY must have been used to build kernel, and the 
+#                dummy network module must exist.
+export RUN_LTP_SYSFS_TEST=0
+export KERNEL_MODULE1=xxxxxxx
+
 export LTP_VERSION=`./runltp -e`
 export TEST_START_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
 export HARDWARE_TYPE=$(uname -i)
@@ -446,5 +455,13 @@ then
 (cd $LTPROOT/testscripts/; ./ltp-scsi_debug.sh)
 fi
 ## END => Test Series 22                               ##
+
+## The next one i plan to run the LTP SYSFS tests
+## START => Test Series 23                             ##
+if [ $RUN_LTP_SYSFS_TEST -eq 1 ]
+then
+(cd $LTPROOT/testscripts/; ./sysfs.sh -k $KERNEL_MODULE1)
+fi
+## END => Test Series 23                               ##
 
 
