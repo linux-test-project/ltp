@@ -209,11 +209,10 @@ setup()
                 tst_brkm(TBROK, tst_exit, "Test must be run as root");
         }
         ltpuser = getpwnam(nobody_uid);
-        if (setuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "setuid failed to "
-                         "to set the effective uid to %d",
-                         ltpuser->pw_uid);
-                perror("setuid");
+        if (seteuid(ltpuser->pw_uid) == -1) {
+          tst_brkm(TBROK, NULL, "setuid failed to "
+                         "to set the effective uid to %d: %s",
+                   ltpuser->pw_uid, strerror(errno));
         }
 
 	/* Pause if that option was specified */
@@ -228,7 +227,7 @@ setup()
 	 * user and the test process.
 	 */
 	if (mkdir(DIR_TEMP, MODE_RWX) < 0) {
-		tst_brkm(TBROK, NULL, "mkdir(2) of %s failed", DIR_TEMP);
+		tst_brkm(TBROK, cleanup, "mkdir(2) of %s failed", DIR_TEMP);
 		tst_exit();
 	}
 
@@ -293,13 +292,8 @@ cleanup()
 	 */
 	TEST_CLEANUP;
 	
-	/* Change the directory back to temporary directory */
-	chdir("..");
-
-	/* Restore mode permissions on test directory created in setup2() */
-	if (chmod(DIR_TEMP, MODE_RWX) < 0) {
-		tst_brkm(TBROK, NULL, "chmod(2) of %s failed", DIR_TEMP);
-	}
+	if(seteuid(0)==-1)
+		tst_resm(TBROK, "Couldn't get root back: %s", strerror(errno));
 
 	/* Remove files and temporary directory created */
 	tst_rmdir();
