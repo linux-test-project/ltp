@@ -29,7 +29,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: symlink01.c,v 1.10 2008/12/18 05:46:04 subrata_modak Exp $ */
+/* $Id: symlink01.c,v 1.11 2008/12/31 05:33:36 subrata_modak Exp $ */
 /**********************************************************
 * 
 *    OS Test - Silicon Graphics, Inc.
@@ -408,6 +408,7 @@ struct all_test_cases
     {READLINK, 1, ENAMETOOLONG, 5, creat_path_max, ck_path_max, {O_FILE, S_FILE, NULL}},
     {READLINK, 1, EINVAL, 29, creat_object, ck_object, {O_FILE, NULL, NULL}},
     {STAT, 0, 0, 6, creat_both, ck_both, {O_FILE, S_FILE, O_FILE}},
+    /* 10 */
     {STAT, 1, ENOENT, 7, creat_symlink, ck_symlink, {O_FILE, S_FILE, NULL}},
     {STAT, 1, ELOOP, 28, creat_symlink, ck_symlink, {S_FILE, S_FILE, NULL}},
     {STAT_64, 0, 0, 6, creat_both, ck_both, {O_FILE, S_FILE, O_FILE}},
@@ -418,6 +419,7 @@ struct all_test_cases
     {LSTAT, 0, 0, 30, creat_object, ck_object, {O_FILE, NULL, NULL}},
     {LSTAT_64, 0, 0, 8, creat_symlink, ck_symlink, {O_FILE, S_FILE, NULL}},
     {LSTAT_64, 0, 0, 9, creat_both, ck_both, {O_FILE, S_FILE, O_FILE}},
+    /* 20 */
     {LSTAT_64, 0, 0, 30, creat_object, ck_object, {O_FILE, NULL, NULL}},
     {MKDIR, 1, EEXIST, 10, creat_symlink, ck_symlink, {O_FILE, S_FILE, NULL}},
     {RMDIR, 1, ENOTDIR, 11, creat_symlink, ck_symlink, {O_FILE, S_FILE, NULL}},
@@ -430,6 +432,7 @@ struct all_test_cases
     /* I don't have to change all the entries in the all_tcses array after link */
     {LINK, 1, -1, -1, creat_symlink, ck_symlink, {NULL, NULL, NULL}},
     {UNLINK, 0, 0, 16, creat_both, ck_both, {O_FILE, S_FILE, O_FILE}},
+    /* 30 */
     {CHMOD, 0, 0, 17, creat_both, ck_both, {O_FILE, S_FILE, O_FILE}},
     {CHMOD, 1, ENOENT, 18, creat_symlink, ck_symlink, {O_FILE, S_FILE, NULL}},
     {CHMOD, 1, ELOOP, 28, creat_symlink, ck_symlink, {S_FILE, S_FILE, NULL}},
@@ -440,6 +443,7 @@ struct all_test_cases
     {RENAME, 0, 0, 22, creat_both, ck_both, {O_FILE, S_FILE, O_FILE}},
     {RENAME, 1, EXDEV, 23, creat_both, ck_both, {O_FILE, S_FILE, O_FILE}},
     {OPEN, 0, 0, 24, creat_symlink, ck_symlink, {O_FILE, S_FILE, NULL}},
+    /* 40 */
     {OPEN, 0, 0, 25, creat_both, ck_both, {O_FILE, S_FILE, O_FILE}},
     {OPEN, 1, EEXIST, 26, creat_symlink, ck_symlink, {O_FILE, S_FILE, O_FILE}},
     {OPEN, 1, ENOENT, 27, creat_symlink, ck_symlink, {O_FILE, S_FILE, NULL}},
@@ -476,17 +480,17 @@ struct tcses
 	     "Fail When Removing a Directory File Indirectly from a symlink" },
    { CHDIR,    "chdir",    3, &test_objects[23],
 		"Changes CWD Location Indirectly from a symlink" },
-   { LINK,     "link",     2, &test_objects[26],
+   { LINK,     "link",     3, &test_objects[26],
 		"Creates a Link To a File Indirectly From a Symbolic" },
-   { UNLINK,   "unlink",   1, &test_objects[28],
+   { UNLINK,   "unlink",   1, &test_objects[29],
 		"Removes a Link To a File but not the Object File" },
-   { CHMOD,    "chmod",    3, &test_objects[29],
+   { CHMOD,    "chmod",    3, &test_objects[30],
 		"Change Object File Permissions Indirectly From a Symbolic" },
-   { UTIME,    "utime",    3, &test_objects[32],
+   { UTIME,    "utime",    3, &test_objects[33],
 		"Set File Access And Modify Object File Times via symlink" },
-   { RENAME,   "rename",   2, &test_objects[35],
+   { RENAME,   "rename",   3, &test_objects[36],
 		"Rename a Symbolic Link File And Not Any Object file" },
-   { OPEN,     "open",     5, &test_objects[37],
+   { OPEN,     "open",     5, &test_objects[39],
 		"Create/Open a File For Reading Or Writing via symlink" },
 };
 
