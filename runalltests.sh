@@ -168,6 +168,22 @@ export KERNEL_MODULE1=xxxxxxx
 ## Set this to 1 if you wish to run the LTP TIRPC tests
 export RUN_LTP_TIRPC_TEST=0
 
+##Set this to 1 if you wish to run the SE-Linux tests
+# These testcases test the SELinux Security Module.
+# A kernel with SELinux configured, and SELinux policy and userspace
+# tools installed, are required to build and run the SELinux testsuite.
+# Also, /usr/sbin should be included in PATH to ensure SELinux utilities
+# such as getenforce are found. The test_selinux.sh script adds /usr/sbin
+# to the PATH.
+# You must also have the line: 
+#	expand-check = 0
+# in your /etc/selinux/semanage.conf file as the test policy will violate some
+# of the neverallow rules in the base policy.  This line may already be present
+# depending on your distribution; if not, add it before running the test suite
+# and remove it when done. For more info, please refer to:
+# http://ltp.cvs.sourceforge.net/viewvc/ltp/ltp/testcases/kernel/security/selinux-testsuite/README
+export RUN_SE_LINUX_TESTS=0
+
 export LTP_VERSION=`./runltp -e`
 export TEST_START_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
 export HARDWARE_TYPE=$(uname -i)
@@ -475,4 +491,12 @@ then
 fi
 ## END => Test Series 24                               ##
 
+## The next one i plan to run the LTP SE-Linux tests
+## START => Test Series 25                             ##
+if [ $RUN_SE_LINUX_TESTS -eq 1 ]
+then
+    (cd $LTPROOT/testcases/kernel/security/selinux-testsuite; make && make install)
+    (cd $LTPROOT/testscripts/; ./test_selinux.sh)
+fi
+## END => Test Series 25                               ##
 
