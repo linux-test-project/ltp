@@ -120,6 +120,17 @@ export READ_ONLY_DIRECTORY1=xxxx
 #   Must have root access to execute this script
 export RUN_ISOFS_TESTS=0
 
+## Set this to 1 if you wish to run the DMMAPPER tests
+#Note: In order to run this test, you must turn on "device mapper"
+#      component in kernel (it is under device drivers item when you
+#      run make menuconfig); and you must install userspace supporting
+#      files (libdevmapper and dmsetup). They are in the device-mapper
+#      package. You can download it from http://www.sistina.com. Follow
+#      the README/INSTALL file within the package to install it.
+export RUN_DMMAPPER_TESTS=0
+export DISK_PARTITION2=xxxxx
+export DISK_PARTITION3=yyyyy
+
 export LTP_VERSION=`./runltp -e`
 export TEST_START_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
 export HARDWARE_TYPE=$(uname -i)
@@ -375,5 +386,15 @@ then
 (cd $LTPROOT/testscripts/; ./isofs.sh)
 fi
 ## END => Test Series 18                               ##
+
+
+## The next one i plan to run the DMMAPPER tests
+## START => Test Series 19                             ##
+if [ $RUN_DMMAPPER_TESTS -eq 1 ]
+then
+(cd $LTPROOT/testscripts/; ./ltpdmmapper.sh -a $DISK_PARTITION2 -b $DISK_PARTITION3)
+fi
+## END => Test Series 19                               ##
+
 
 
