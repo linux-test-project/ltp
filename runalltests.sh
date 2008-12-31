@@ -100,6 +100,16 @@ export RUN_LTP_AUTOFS1_TESTS=0
 export RUN_LTP_AUTOFS4_TESTS=0
 export DISK_PARTITION1=0
 
+## Set this to 1 if you wish to run the EXPORTFS tests
+#  DESCRIPTION : A script that will test exportfs on Linux system.
+#  REQUIREMENTS:
+#   1) NFS Server system with rsh enabled between client & server.
+#   2) 100MB Disk partition on NFS server.
+export RUN_EXPORTFS_TESTS=0
+export NFS_SERVER1=xxx
+export NFS_SERVER_DISK_PARTITION1=yyy
+export NFS_SERVER_FS_TYPE1=zzz
+
 export LTP_VERSION=`./runltp -e`
 export TEST_START_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
 export HARDWARE_TYPE=$(uname -i)
@@ -328,3 +338,12 @@ then
     fi
 fi
 ## END => Test Series 15                               ##
+
+
+## The next one i plan to run are the LTP EXPORTFS tests
+## START => Test Series 16                             ##
+if [ $RUN_EXPORTFS_TESTS -eq 1 ]
+then
+(cd $LTPROOT/testscripts/; ./exportfs.sh -h $NFS_SERVER1 -d $NFS_SERVER_DISK_PARTITION1 -t $NFS_SERVER_FS_TYPE1)
+fi
+## END => Test Series 16                               ##
