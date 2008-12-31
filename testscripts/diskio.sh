@@ -27,7 +27,7 @@ export PATH="${PATH}:${LTPROOT}/testcases/bin"
  
 ${LTPROOT}/ver_linux
 
-${LTPROOT}/pan/pan -e -l /tmp/diskiopan.log -S -a ltpdiskio -n ltpdiskio -f ${LTPROOT}/runtest/io
+${LTPROOT}/pan/pan -e -l /tmp/diskiopan.log -S -a ltpdiskio -n ltpdiskio -f ${LTPROOT}/runtest/io_floppy -f ${LTPROOT}/runtest/io_cd
 
 if [ $? -eq "0" ]; then
   echo pan reported PASS
