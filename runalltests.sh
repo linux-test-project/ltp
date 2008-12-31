@@ -144,6 +144,14 @@ export DISK_PARTITION6=zzzzzz
 export DISK_PARTITION7=iiiiii
 export NFS_PARTITION1=jjjjjj
 
+## Set this to 1 if you wish to run the FSNOLVM tests
+#Note: fdisk needs to be run and the 4 HD partitions marked as 0x8e -- Linux LVM
+#      - If this is run on a 2.4 kernel system then LVM must be configured and the kernel rebuilt. In a 2.5 environment
+#        you must configure Device Mapper and install LVM2 from www.systina.com for the testcase to run correctly.
+#      - These operations are destructive so do NOT point the tests to partitions where the data shouldn't be overwritten.
+#        Once these tests are started all data in the partitions you point to will be destroyed.
+export RUN_FSNOLVM_TESTS=0
+
 export LTP_VERSION=`./runltp -e`
 export TEST_START_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
 export HARDWARE_TYPE=$(uname -i)
@@ -417,5 +425,14 @@ then
 (cd $LTPROOT/testscripts/; ./ltpfslvm.sh -a $DISK_PARTITION4 -b $DISK_PARTITION5 -c $DISK_PARTITION6 -d $DISK_PARTITION7 -n $NFS_PARTITION1)
 fi
 ## END => Test Series 20                               ##
+
+
+## The next one i plan to run the FSNOLVM tests
+## START => Test Series 21                             ##
+if [ $RUN_FSNOLVM_TESTS -eq 1 ]
+then
+(cd $LTPROOT/testscripts/; ./ltpfsnolvm.sh -a $DISK_PARTITION4 -b $DISK_PARTITION5 -c $DISK_PARTITION6 -d $DISK_PARTITION7 -n $NFS_PARTITION1)
+fi
+## END => Test Series 21                               ##
 
 
