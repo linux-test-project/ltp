@@ -131,12 +131,25 @@ export RUN_DMMAPPER_TESTS=0
 export DISK_PARTITION2=xxxxx
 export DISK_PARTITION3=yyyyy
 
+## Set this to 1 if you wish to run the FSLVM tests
+#Note: fdisk needs to be run and the 4 HD partitions marked as 0x8e -- Linux LVM
+#      - If this is run on a 2.4 kernel system then LVM must be configured and the kernel rebuilt. In a 2.5 environment
+#        you must configure Device Mapper and install LVM2 from www.systina.com for the testcase to run correctly.
+#      - These operations are destructive so do NOT point the tests to partitions where the data shouldn't be overwritten.
+#        Once these tests are started all data in the partitions you point to will be destroyed.
+export RUN_FSLVM_TESTS=0
+export DISK_PARTITION4=xxxxxx
+export DISK_PARTITION5=yyyyyy
+export DISK_PARTITION6=zzzzzz
+export DISK_PARTITION7=iiiiii
+export NFS_PARTITION1=jjjjjj
+
 export LTP_VERSION=`./runltp -e`
 export TEST_START_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
 export HARDWARE_TYPE=$(uname -i)
 export HOSTNAME=$(uname -n)
 export KERNEL_VERSION=$(uname -r)
-export HTML_OUTPUT_FILE_NAME=$LTP_VERSION-$HOSTNAME-$KERNEL_VERSION-$HARDWARE_TYPE-$TEST_START_TIME.html
+export HTML_OUTPUT_FILE_NAME=$LTP_VERSION_$HOSTNAME_$KERNEL_VERSION_$HARDWARE_TYPE_$TEST_START_TIME.html
 
 
 ## The First one i plan to run is the default LTP run ##
@@ -396,5 +409,13 @@ then
 fi
 ## END => Test Series 19                               ##
 
+
+## The next one i plan to run the FSLVM tests
+## START => Test Series 20                             ##
+if [ $RUN_FSLVM_TESTS -eq 1 ]
+then
+(cd $LTPROOT/testscripts/; ./ltpfslvm.sh -a $DISK_PARTITION4 -b $DISK_PARTITION5 -c $DISK_PARTITION6 -d $DISK_PARTITION7 -n $NFS_PARTITION1)
+fi
+## END => Test Series 20                               ##
 
 
