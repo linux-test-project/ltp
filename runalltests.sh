@@ -89,6 +89,9 @@ export RUN_LTP_NETWORK_TESTS=0
 ## for more information on how to run the NETWORK-STRESS tests.
 export RUN_LTP_NETWORK_STRESS_TESTS=0
 
+## Set this to 1 if you wish to run the ltp/testscripts/adp tests
+export RUN_LTP_ADP_TESTS=0
+
 export LTP_VERSION=`./runltp -e`
 export TEST_START_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
 export HARDWARE_TYPE=$(uname -i)
@@ -286,3 +289,11 @@ then
 fi
 ## END => Test Series 13                               ##
 
+
+## The next one i plan to run are the LTP ADP tests
+## START => Test Series 14                             ##
+if [ $RUN_LTP_ADP_TESTS -eq 1 ]
+then
+(cd $LTPROOT/testscripts/; ./adp.sh -d 3 -n 100)
+fi
+## END => Test Series 14                               ##
