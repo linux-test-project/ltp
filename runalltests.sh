@@ -92,6 +92,14 @@ export RUN_LTP_NETWORK_STRESS_TESTS=0
 ## Set this to 1 if you wish to run the ltp/testscripts/adp tests
 export RUN_LTP_ADP_TESTS=0
 
+## Set this to 1 if you wish to run the AUTOFS tests
+#  REQUIREMENTS:
+#   1) System with a floppy device with a floppy disk in it.
+#   2) A spare (scratch) disk partition of 100MB or larger.
+export RUN_LTP_AUTOFS1_TESTS=0
+export RUN_LTP_AUTOFS4_TESTS=0
+export DISK_PARTITION1=0
+
 export LTP_VERSION=`./runltp -e`
 export TEST_START_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
 export HARDWARE_TYPE=$(uname -i)
@@ -297,3 +305,26 @@ then
 (cd $LTPROOT/testscripts/; ./adp.sh -d 3 -n 100)
 fi
 ## END => Test Series 14                               ##
+
+
+## The next one i plan to run are the LTP AUTOFS tests
+## START => Test Series 15                             ##
+if [ $RUN_LTP_AUTOFS1_TESTS -eq 1 ]
+then
+    if [ $DISK_PARTITION1 ]
+    then
+        (cd $LTPROOT/testscripts/; ./autofs1.sh $DISK_PARTITION1)
+    else
+        echo Disk Partition not set. Aborting running AUTOFS1
+    fi
+fi
+if [ $RUN_LTP_AUTOFS4_TESTS -eq 1 ]
+then
+    if [ $DISK_PARTITION1 ]
+    then
+        (cd $LTPROOT/testscripts/; ./autofs4.sh $DISK_PARTITION1)
+    else
+        echo Disk Partition not set. Aborting running AUTOFS4
+    fi
+fi
+## END => Test Series 15                               ##
