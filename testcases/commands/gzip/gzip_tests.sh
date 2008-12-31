@@ -145,7 +145,7 @@ creat_expout()
     fcnt=0      # index into files created in loop
 	RC=0        # return code from commands 
 	
-	echo "$dirname:"  1>>$LTPTMP/tst_gzip.exp
+	echo "$dirname:"  1>$LTPTMP/tst_gzip.exp
 	echo "d.$dircnt"  1>>$LTPTMP/tst_gzip.exp
 	while [ $dircnt -lt $numdirs ]
 	do
