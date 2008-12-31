@@ -1,3 +1,1123 @@
+LTP-20081231
+
+1) Log Message:
+fix from Jiri Palecek: Fix syntax errors (and bashisms) in some shell files.
+
+Modified File(s):
+ltp/testcases/commands/unzip/unzip_genfile.sh
+ltp/testcases/commands/unzip/unzip_tests.sh
+ltp/testcases/commands/fileutils/mkdir/mkdir_tests.sh
+ltp/testcases/commands/fileutils/cp/cp_tests.sh
+ltp/testcases/commands/fileutils/ln/ln_tests.sh
+ltp/testcases/commands/fileutils/mv/mv_tests.sh
+
+2) Log Message:
+Fix for failure in syscalls/stat04_64 and syscalls/lstat01A_64 testcases, by, Dmitry Guryanov <dguryanov@parallels.com>.
+
+Modified File(s):
+ltp/runtest/syscalls
+
+3) Log Message:
+Add _GNU_SOURCE for strsignal in spawn_ptrace_child.h. Mike Frysinger <vapier@users.sourceforge.net>
+
+Modified File(s):
+ltp/testcases/kernel/syscalls/ptrace/ptrace04.c
+ltp/testcases/kernel/syscalls/ptrace/ptrace06.c
+
+4) Log Message:
+I've added small help target to Makefile & INSTALL talking about the new configuration setups. Signed-off-by: Masatake YAMATO <yamato@redhat.com>.
+
+Modified File(s):
+ltp/INSTALL
+ltp/Makefile
+
+5) Log Message:
+sbrk has arguments of type intptr_t, which is long in on x86_64. There is following line in mmapstress03:
+        if (sbrk(-NUM_SEGS * pagesize) == NEG1) {
+Here the type of argument is int, because of constant NUM_SEGS, and this test fails here on x86_64. So let constants will be long. Signed-Off-By: Dmitry Guryanov <dguryanov@parallels.com>.
+
+Modified File(s):
+ltp/testcases/kernel/mem/mmapstress/mmapstress03.c
+
+6) Log Message:
+This test case requires write permission for the dummy program. It would fail for those who put LTP on an read-only environment. So this patch copies the dummy test program to and performs the test in a private directory. p.s. this patch copy the one Renaud Lottiaux sent for execve02.c. Signed-Off-By: Roy Lee <roylee17@gmail.com>.
+
+Modified File(s):
+ltp/testcases/kernel/syscalls/execve/execve05.c
+
+7) Log Message:
+The following patch fixes two problems in loop variables of gtod_latency test case :
+1) The loop variable 'k' could overflow on 32 bit systems, leading to a SEGV.
+2) The inner loop was not of constant duration. This meant the frequency of calls to usleep() depend on the number of total iterations. It is desirable to make this frequency a constant.
+Signed-off-by: Sripathi Kodi <sripathik@in.ibm.com>, Acked-by: Darren Hart <dvhltc@us.ibm.com>.
+
+Modified File(s):
+ltp/testcases/realtime/func/gtod_latency/gtod_latency.c
+
+8) Log Message:
+These patches enable AIO and listio in tlibio.c for linux, mostly by reusing code that is already in tlibio.c, and makes non-blocking read()/write() actually work. Also, they change pipeio.c to use this. Comments:
+1) Patch 0001 enables aio and other types of io in tlibio.c code. Note that this means programs using functions from tlibio need linking with libaio and librt,
+2) Patch 0002 changes non-blocking io in tlibio, so that it doesn't report EAGAIN to the client, but rather waits with select() for the io to become available (it would be possible extend this by adding more wait types). Also, it makes some minor changes to pipeio to make it work (eg. make opening the pipe always block, regardless of non-blocking setting).
+3) Patch 0003 adds a semaphore to pipeio, to ensure all children have opened their pipes before reading & writing takes place. This avoids situations where one child gets to open the pipe after the parent deleted it (eg. because of an error). Also, it should eliminate all empty reads.
+4) Patch 0004 changes error handling in pipeio to interpret every negative number as -errno.
+5) Patch 0005 changes the way the end of the test is handled - before, the test ended after the last child was dead, but possibly before all data was read. The new way is to read all data and only if no data can be read, see if the children are dead.
+The patches should be applied in sequence. Signed-Off-By: Jiří Paleček <jpalecek@web.de>,
+
+Modified File(s):
+ltp/include/tlibio.h ltp/lib/tlibio.c
+ltp/testcases/commands/eject/Makefile
+ltp/testcases/kernel/fs/doio/Makefile
+ltp/testcases/kernel/ipc/pipeio/Makefile
+ltp/testcases/kernel/ipc/pipeio/pipeio.c
+
+9) Log Message:
+The aiodio_sparse (and dio_sparse) tests use mmaped region of memory backed by a file, and populate the pages by writing to them. This can fail, eg. when Linux overcommits memory and the newly created pages do not fit; it results in the file not being properly deleted. This patch fixes that by trapping signals in these test (I used the standard libltp functions for that) and deleting the file in a cleanup function. Sorry that the patch may be little unclean - it was hand-edited. I will do something about that if it matters. Signed-Off-By: Jiří Paleček <jpalecek@web.de>.
+
+Modified File(s):
+ltp/testcases/kernel/io/ltp-aiodio/Makefile
+ltp/testcases/kernel/io/ltp-aiodio/aiodio_sparse.c
+ltp/testcases/kernel/io/ltp-aiodio/dio_sparse.c
+
+10) Log Message:
+The following patch removes a known failure that has been fixed in RHEL 5.3 and the fix also sent upstream, as well as adds missing copyright information. Signed-off-by: CAI Qian <caiqian@cclom.cn>.
+
+Modified File(s):
+ltp/testcases/kernel/fs/proc/proc01.c
+
+11) Log Message:
+Here is a new patch to be applied on the November Release (ltp-full-20081130.tgz). It fixes and improves build/install scripts in the Sun-RPC/TI RPC test suite. It takes care also about some portmap/rpcbind conflicts in the tests scripts. Signed-Off-By: Le Rouzic <aime.le-rouzic@bull.net>.
+
+Modified File(s):
+ltp/runtest/stress.part3
+ltp/testcases/network/rpc/basic_tests/rpcinfo/rpcinfo01
+ltp/testcases/network/rpc/rpc-tirpc-full-test-suite/README
+ltp/testcases/network/rpc/rpc-tirpc-full-test-suite/configure.auto
+ltp/testcases/network/rpc/rpc-tirpc-full-test-suite/configure.interactive
+ltp/testcases/network/rpc/rpc-tirpc-full-test-suite/inc/install.ftr
+ltp/testscripts/ltpstress.sh
+
+12) Log Message:
+This patch fixes compilation errors on RHEL5 introduced by addition of the bounds test to default test list. Signed-off-by: Ramon de Carvalho Valle <rcvalle@linux.vnet.ibm.com>.
+
+Modified File(s):
+ltp/testcases/kernel/security/selinux-testsuite/tests/Makefile
+
+13) Log Message:
+I report a bug of the msgctl02 testcase and a patch for it. When you set /proc/sys/kernel/msgmnb to a value larger than 65536, msgctl02 always results FAIL because of a bug itself. An example when /proc/sys/kernel/msgmnb == 4194304,
+# cd ./testcases/kernel/syscalls/ipc/msgctl
+# ./msgctl02
+msgctl02    1  FAIL  :  qs_buf.msg_qbytes value is not expected
+msgctl02    0  INFO  :  expected - 65535, received - 4194303
+#
+This is because the variable "new_bytes" storing "expected" value above is defined as "unsigned short" type and cannot hold a value larger than 65535. It should be "msglen_t" type as same as the member msg_qnum of struct msqid_ds, but msg_qnum seems to be declared as "unsigned long int" type on some architecture like ia64, I recommend you to use "unsigned long int" for new_bytes. Signed-off-by: Seiichi Ikarashi <s.ikarashi@jp.fujitsu.com>.
+
+Modified File(s):
+ltp/testcases/kernel/syscalls/ipc/msgctl/msgctl02.c
+
+14) Log Message:
+Veerendra <veeren@linux.vnet.ibm.com> reported: In the latest LTP release (LTP-full-20081130) the make is failing for Power machines for the 'utimensat' tests. Jiri Palecek <jpalecek@web.de> replied: This is because TCID is needed to call tst_brk if the syscall doesn't exist or optimization doesn't eliminate the call. At the first sight, it might seem that syscall() is not called when __NR_utimensat is undefined, because it is guarded by #ifdef, but it's not really so, because __NR_utimensat is stubbed in linux_syscall_numbers.h. To fix it, apply the first patch, which moves the definition of TCID outside the #ifdef block - it should be there anyway. The second patch removes the conditional compilation altogether, because it is never effective. The patches should be applied in sequence. Signed-Off-By: Jiri Palecek <jpalecek@web.de>.
+
+Modified File(s):
+ltp/testcases/kernel/syscalls/utimensat/utimensat01.c
+
+15) Log Message:
+The following patches fixes a useless error log and possible segmentation fault with fclose[1], a failure to report client and server failures[2], and missing data file installation[3]. Signed-off-by: CAI Qian <caiqian@cclom.cn>.
+
+Modified File(s):
+ltp/testcases/kernel/sched/clisrv/Makefile
+ltp/testcases/kernel/sched/clisrv/pthcli.c
+ltp/testcases/kernel/sched/clisrv/run_sched_cliserv.sh
+
+16) Log Message:
+Fixed typo when not defining SPEW_SIGNALS in my_yield(). Signed-Off-By: nobuhiro <nobuhiro@andestech.com>.
+
+Modified File(s):
+ltp/testcases/kernel/mem/mtest07/mallocstress.c
+
+17) Log Message:
+This series of patches fixes failures with mmapstress04, mmapstress07 and mmapstress08 test cases on IA-64, s390x and PPC64 mostly due to assuming page sizes on those architectures are 4K. This patch fixes mm testing list by removing hard-coded (4K alignment) arguments. Signed-off-by: CAI Qian <caiqian@cclom.cn>.
+
+Modified Files:
+ltp/runtest/mm
+
+18) Log Message:
+This series of patches fixes failures with mmapstress04, mmapstress07 and mmapstress08 test cases on IA-64, s390x and PPC64 mostly due to assuming page sizes on those architectures are 4K. This patch fixes mmapstress04 test case by obtaining default settings from default page size. It also preserve the possibility to use user-specified arguments. Signed-off-by: CAI Qian <caiqian@cclom.cn>.
+
+Modified Files:
+ltp/testcases/kernel/mem/mmapstress/mmapstress04.c
+
+19) Log Message:
+This series of patches fixes failures with mmapstress04, mmapstress07 and mmapstress08 test cases on IA-64, s390x and PPC64 mostly due to assuming page sizes on those architectures are 4K. This patch fixes mmapstress07 test case by obtaining default settings from default page size. It also preserve the possibility to use user-specified arguments. Signed-off-by: CAI Qian <caiqian@cclom.cn>.
+
+Modified Files:
+ltp/testcases/kernel/mem/mmapstress/mmapstress07.c
+
+20) Log Message:
+This series of patches fixes failures with mmapstress04, mmapstress07 and mmapstress08 test cases on IA-64, s390x and PPC64 mostly due to assuming page sizes on those architectures are 4K. This patch fixes mmapstress08 test case by limiting this test to run for x86 architecture only due to it makes several assumptions about 4K page size etc, and I don't see the obvious way to make it work for non-x86 architectures. Signed-off-by: CAI Qian <caiqian@cclom.cn>. 
+
+Modified Files:
+ltp/testcases/kernel/mem/mmapstress/mmapstress08.c
+
+21) Log Message:
+Mem01 test case sometimes trigger OOM Killer. As the result, the test failed with a non-error code. This patch reduces the chance of OOM Killer by always reserving 16MB memory. It is a trade-off between not testing all available memory and dealing with false failure (extra work to waive the failure in automated environment and clean up unexpected test leftovers). I prefer the formal. Signed-off-by: CAI Qian <caiqian@cclom.cn>.
+
+Modified File(s):
+ltp/testcases/kernel/mem/mem/mem01.c
+
+22) Log Message:
+commands/unzip: check exit code of all comands: 1. don't redirect all output to /dev/null. It's bad idea, because we can't investigate bugs without error messages. 2. check exit code of command "zip". If it failed, we get error during make install that can't found a zip file. Signed-Off-By: Andrew Vagin <avagin@parallels.com>.
+
+Modified File(s):
+ltp/testcases/commands/unzip/unzip_genfile.sh
+
+23) Log Message:
+Version 2: The test failed a few hours after I sent this off. I think it was caused by a pid collision which caused the test to use the same queue as an earlier failed test that didn't close out its queue. This version of the test uses O_EXCL to avoid this. And it cleans up the queue on every failure case. This test was racy. It relied on signals interrupting sleeps to do syncronization between processes. It also didn't cleanup the queue on the failure cases and assumed that its queue didn't already exist. This patch fixes these issues. Reported failures: https://bugzilla.novell.com/show_bug.cgi?id=375897. Instead use a syncronization pipe to have the child thread send messages to the parent thread (with reasonable timeouts since this is testing blocking calls).
+# Apply to root of ltp-full-20081031 tree
+$ cd testcases/open_posix_testsuite/
+$ make conformance/interfaces/mq_send/5-1.test
+$ conformance/interfaces/mq_send/5-1.test
+Signed-off-by: Brandon Philips <bphilips@suse.de>
+
+Modified File(s):
+ltp/testcases/open_posix_testsuite/conformance/interfaces/mq_send/5-1.c
+ltp/testcases/open_posix_testsuite/include/posixtest.h
+
+24) Log Message:
+This is a proposal for 2 new testcases in the pidns testcases. They are related to POSIX message queues and notification on message arrival. Could you please review them? If a process registers for asynchronous notification on a POSIX message queue, it gets a signal and a siginfo_t structure when a message arrives on the message queue. The si_pid in the siginfo_t structure is set to the PID of the process that sent the message. If the process that sent the message is not in the same namespace as the notified one, this should be taken into account. 
+pidns30 : notified process is in a descendant namespace wrt to the notifier. so the signal receiver doesn't know about the sender's pid.
+pidns31 : notified process is in an ancestor namespace wrt to the notifier. so the signal receiver should get the sender's PID in the signal receiver namespace.
+They currently fail, since the si_pid is not correctly set. But I just proposed a patch to fix this (see http://lkml.org/lkml/2008/12/5/13). This testcase checks if the si_pid is correctly set when a process that has registered for notification on a posix mqueue is in a descendant namespace wrt the process that sends a message to that posix mqueue. Signed-off-by: Nadia Derbey <Nadia.Derbey@bull.net>, Acked-By: <sukadev@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/testcases/kernel/containers/pidns/Makefile
+ltp/testcases/kernel/containers/pidns/runpidnstest.sh
+Added Files:
+ltp/testcases/kernel/containers/pidns/pidns30.c
+
+25) Log Message:
+This is a proposal for 2 new testcases in the pidns testcases. They are related to POSIX message queues and notification on message arrival. Could you please review them? If a process registers for asynchronous notification on a POSIX message queue, it gets a signal and a siginfo_t structure when a message arrives on the message queue. The si_pid in the siginfo_t structure is set to the PID of the process that sent the message. If the process that sent the message is not in the same namespace as the notified one, this should be taken into account.
+pidns30 : notified process is in a descendant namespace wrt to the notifier. so the signal receiver doesn't know about the sender's pid.
+pidns31 : notified process is in an ancestor namespace wrt to the notifier. so the signal receiver should get the sender's PID in the signal receiver namespace.
+They currently fail, since the si_pid is not correctly set. But I just proposed a patch to fix this (see http://lkml.org/lkml/2008/12/5/13). This testcase checks if the si_pid is correctly set when a process that has registered for notification on a posix mqueue is in an ancestor namespace wrt the process that sends a message to that posix mqueue. Signed-off-by: Nadia Derbey <Nadia.Derbey@bull.net>, Acked-By: <sukadev@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/testcases/kernel/containers/pidns/runpidnstest.sh
+Added Files:
+ltp/testcases/kernel/containers/pidns/pidns31.c
+
+26) Log Message:
+Tests in testcase/network/lib6 has been excluded because they occured build break on the earlier distributions. Now autoconf is introduced, we can include it again. Ths series of patches enable the lib6 tests. The initialization style of union, ".<member>=<value>", is one of the latest gcc extention. It's better not to use it. Signed-off-by: Mitsuru Chinen <mitch@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/testcases/network/lib6/asapi_01.c
+ltp/testcases/network/lib6/asapi_02.c
+ltp/testcases/network/lib6/asapi_03.c
+ltp/testcases/network/lib6/asapi_05.c
+ltp/testcases/network/lib6/asapi_06.c
+ltp/testcases/network/lib6/asapi_07.c
+
+27) Log Message:
+Tests in testcase/network/lib6 has been excluded because they occured build break on the earlier distributions. Now autoconf is introduced, we can include it again. Ths series of patches enable the lib6 tests. For socket related functions, sys/socket.h should be included. Signed-off-by: Mitsuru Chinen <mitch@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/testcases/network/lib6/asapi_04.c
+ltp/testcases/network/lib6/asapi_05.c
+
+28) Log Message:
+Tests in testcase/network/lib6 has been excluded because they occured build break on the earlier distributions. Now autoconf is introduced, we can include it again. Ths series of patches enable the lib6 tests. Signed-off-by: Mitsuru Chinen <mitch@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/configure.ac
+ltp/include/config.h.default
+ltp/testcases/network/Makefile
+ltp/testcases/network/lib6/asapi_06.c
+
+29) Log Message:
+Give others to use this file created by Root during Install.
+
+Modified Files:
+ltp/testcases/commands/unzip/Makefile
+
+30) Log Message:
+COMPILATION ERROR FIX for NETNS on ia64: Serge/Subrata, I have the patch , to fix the make problem for containers. Would you please review this ? In containers, it would dynamically check for the unshare() defn, in the linked libraries. This would not halt the make, if the unshare() is not found in the system. Signed-Off-By: Veerendra <veeren@linux.vnet.ibm.com>. 
+
+Modified File(s):
+ltp/testcases/kernel/containers/Makefile
+ltp/testcases/kernel/containers/check_for_unshare.c
+
+31) Log Message:
+Subrata Modak <subrata@linux.vnet.ibm.com> wrote: Hi Rusty, I found that you wrote a test program to verify whether all the valid IFF flags are implemented by TUNGETFEATURES ioctl (recently in 2.6.27: http://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=commit;h=07240fd0902c872f044f523893364a1a24c9f278). I ported the same into LTP format and created the first draft version. Yet to test it on the latest kernel, but the first draft works fine. If you do not have any issue(s), can we add this code to LTP with your permission ??. Rusty Russell <rusty@rustcorp.com.au> replied: Thanks, of course!. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>. Signed-Off-By: Rusty Russell <rusty@rustcorp.com.au>.
+
+Modified Files:
+ltp/runtest/syscalls
+ltp/testcases/kernel/syscalls/ioctl/test_ioctl
+Added Files:
+ltp/testcases/kernel/syscalls/ioctl/ioctl03.c
+
+32) Log Message:
+Please find the patch for the pidns14.c testcase. Test Assertion:
+** kill -USR1 container_init from outside a container,
+** $ Where init has not defined a custom handler for USR1,
+** $ Should kill the container,
+** $ else the test fails,
+Signed-off-by: Veerendra C <vechandr@in.ibm.com>,
+Results:
+# ./pidns14
+pidns14     1  PASS  :  container init is killed, as expected
+Sukadev, Included the changes suggested by you after doing waitpid() at the end.
+
+Added Files:
+ltp/testcases/kernel/containers/pidns/pidns14.c
+
+33) Log Message:
+Please find the testcase for the below scenario. Assertion:
+** kill - USR1 container_init,
+**      - from the parent process and also inside a container,
+**      - Where init has defined a custom handler for USR1,
+**      - Should call the handler, and,
+**      - Verify whether the signal handler is called from the proper process.
+Signed-off by: Veerendra C <vechandr@in.ibm.com>,
+Results:
+# ./pidns16
+pidns16     0  INFO  :  sig_handler is signalled from pid  29640
+pidns16     0  INFO  :  Container: Resumed after receiving SIGUSR1 from parentNS
+pidns16     0  INFO  :  sig_handler is signalled from pid  1
+pidns16     0  INFO  :  Container: Resumed after sending SIGUSR1 from container itself
+pidns16     1  PASS  :  container init continued successfuly, after handling signal -USR1
+Suka,
+After your comments, now I am checking in the signal handler the sending procee id. If it is from the parent ns and when it is from container init. Also made some small changes after doing waitpid() in main.
+
+Added Files:
+ltp/testcases/kernel/containers/pidns/pidns16.c
+
+34) Log Message:
+Just a few fixes I've done while running the complete LTP suite on a ppc64 system. The test fails while running command "numa_node_size" which is unknown to my system. This patch replaces numa_node_size by "numactl --hardware". Signed-off-by: Gilles Carry <gilles.carry@bull.net>.
+
+Modified Files:
+ltp/testcases/kernel/numa/numa01.sh
+
+35) Log Message:
+Just a few fixes I've done while running the complete LTP suite on a ppc64 system. This definition is missing on powerpc specific code. utimensat test fails without this patch. Signed-off-by: Gilles Carry <gilles.carry@bull.net>. 
+
+Modified Files:
+ltp/testcases/kernel/include/powerpc.in
+ltp/testcases/kernel/include/powerpc64.in
+
+36) Log Message:
+Just a few fixes I've done while running the complete LTP suite on a ppc64 system. Crontab command fail if user is not present in cron.allow file. This moves away cron.allow and restores it afterward. Signed-off-by: Gilles Carry <gilles.carry@bull.net>.
+
+Modified Files:
+ltp/testcases/commands/cron/cron_deny01
+
+37) Log Message:
+Just a few fixes I've done while running the complete LTP suite on a ppc64 system. Crontab command fail if user is not present in cron.allow file. This moves away cron.allow and restores it afterward. Signed-off-by: Gilles Carry <gilles.carry@bull.net>.
+
+Modified Files:
+ltp/testcases/commands/cron/cron_pos_tests.sh
+
+38) Log Message:
+CPU controller latency testcases v-4: Add some documentation with respect to test. Signed-off-by: Sudhir Kumar <skumar@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/testcases/kernel/controllers/cpuctl/cpuctl_testplan.txt
+
+39) Log Message:
+CPU controller latency testcases v-4: The patch adds a binary to be run as load on the machine. Signed-off-by: Sudhir Kumar <skumar@linux.vnet.ibm.com>.
+
+Added Files:
+ltp/testcases/kernel/controllers/cpuctl/cpuctl_latency_test.c
+
+40) Log Message:
+CPU controller latency testcases v-4: The patch adds a binary to be run as the latency check task. Signed-off-by: Sudhir Kumar <skumar@linux.vnet.ibm.com>.
+
+Added Files:
+ltp/testcases/kernel/controllers/cpuctl/cpuctl_latency_check_task.c
+
+41) Log Message:
+CPU controller latency testcases v-4: The patch adds a script which runs the load tasks and the latency check task. The script creates setup for both the tests(with and without cpu controller). Signed-off-by: Sudhir Kumar <skumar@linux.vnet.ibm.com>.
+
+Added Files:
+ltp/testcases/kernel/controllers/cpuctl/run_cpuctl_latency_test.sh
+
+42) Log Message:
+CPU controller latency testcases v-4: Edit the makefile. Signed-off-by: Sudhir Kumar <skumar@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/testcases/kernel/controllers/cpuctl/Makefile
+
+43) Log Message:
+CPU controller latency testcases v-4: Add the test to be run with other cpu controller testcases. Signed-off-by: Sudhir Kumar <skumar@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/testcases/kernel/controllers/test_controllers.sh
+
+44) Log Message:
+Testcase pidns10 on pidnamespace: The pidns10.c testcase verifies inside the container, if kill(-1, sig) fails with ESRCH when there are no processes in container besides container-init. Signed-off-by: Gowrishankar M <gowrishankar.m@in.ibm.com>, Acked-by: Sukadev Bhattiprolu <sukadev@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/testcases/kernel/containers/pidns/runpidnstest.sh
+Added Files:
+ltp/testcases/kernel/containers/pidns/pidns10.c
+
+45) Log Message:
+Please accept below testcase patches for pid namespace. 
+pidns12:
+Description:
+  The pidns12.c testcase verifies that siginfo->si_pid is set to 0 if sender (parent process) is not in receiver's namespace.
+pidns13:
+  The pidns13.c testcase checks container init, for async I/O triggered by peer namespace process.
+pidns17:
+  The pidns17.c testcase verifies inside the container, if kill(-1, SIGUSR1) terminates all children running inside.
+Signed-off-by: Gowrishankar M <gowrishankar.m@in.ibm.com>,
+Acked-by: Sukadev Bhattiprolu <sukadev@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/testcases/kernel/containers/pidns/runpidnstest.sh
+Added Files:
+ltp/testcases/kernel/containers/pidns/pidns12.c
+ltp/testcases/kernel/containers/pidns/pidns13.c
+ltp/testcases/kernel/containers/pidns/pidns17.c
+
+46) Log Message:
+Per request of Mike Frysinger, I resend this patch. The patch itself is  the same, but the explanation is extended. Hope it's better this time. 
+Hello,
+I'm sorry to say this, but some changes in the "Fix Warnings and Badness v2" patch[1] from October actually create bugs in the ltp tests. I think they should be reverted by applying the attached patch. The problems are of those types:
+1) Calling:
+pthread_create(&th, &newattr, (void *)&new_thread, (void *)&newsockfd) is wrong if eg. newsockfd is a variable subsequently modified by the parent thread, not protected by locking. This is because there is a data race between the read in the new thread and the write in the parent thread. Moreover, it is quite often meant to pass different values to more threads in the ltp tests, which results in the different threads actually sharing the variable, which leads to unpredictable results.
+2) Calling
+pthread_exit((void *)&exit_val); is wrong if exit_val is a local or thread-local variable, incl. errno. These variables cease to exist when the thread finishes, so subsequent dereferencing & read in the joining thread would read nonexistent variable. I think they should be reverted, because the warning (conversion pointer/integer) doesn't mean anything bad in this context (provided you use the same type on both sides, eg. the calling thread and the created thread) and other solutions just add unnecessary complexity. The patch goes a little further, while I was searching for related problems, I've found one typo and changed the signatures of some thread functions (they really should be (void* (*)(void*)), not (void* (*)(int))). I've discovered this when I debugged a deadlock in test_1_to_1_threads. BTW, shouldn't the first (or last) thread in this test call t_recv instead of t_send (see the relay function). Signed-Of-By: Jiří Paleček <jpalecek@web.de>.
+
+Modified File(s):
+ltp/testcases/kernel/fs/openfile/openfile.c
+ltp/testcases/kernel/io/disktest/childmain.c
+ltp/testcases/kernel/io/disktest/main.c
+ltp/testcases/kernel/io/disktest/timer.c
+ltp/testcases/kernel/mem/mtest06/mmap1.c
+ltp/testcases/kernel/mem/mtest07/mallocstress.c
+ltp/testcases/kernel/mem/mtest07/shm_test.c
+ltp/testcases/kernel/sched/clisrv/pthserv.c
+ltp/testcases/network/sctp/func_tests/test_1_to_1_threads.c
+
+47) Log Message:
+The test case "utimensat01" will test the function "utimensat" when the file is not owned by self. It excepts it will return some error code. But if the test user is "root", it has super property and can be success. Signed-off-by: Zhang Xiliang <zhangxiliang@cn.fujitsu.com>.
+
+Modified File(s):
+ltp/testcases/kernel/syscalls/utimensat/utimensat_tests.sh
+
+48) Log Message:
+This patch adds a menu to networktests.sh in order to select the network tests like networkstress.sh. For the backword compatibility, the default test sets are left as-is. Namely, networktests.sh doesn't run any additional tests when no option is specified. Signed-off-by: Mitsuru Chinen <mitch@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/testscripts/networktests.sh
+Added Files:
+ltp/runtest/tcp_cmds_addition
+
+49) Log Message:
+Adding the patch for running the tests pidns14.c and pidns16.c. Please accept this. Signed-Off-By: Veerendra <veeren@linux.vnet.ibm.com>.
+
+Modified File(s):
+ltp/testcases/kernel/containers/pidns/runpidnstest.sh
+
+50) Log Message:
+The description of the networktests.sh in INTALL file is a bit old. This patch adds the description regarding PAM and test menu. Signed-off-by: Mitsuru Chinen <mitch@linux.vnet.ibm.com>.
+
+Modified File(s):
+ltp/INSTALL
+
+51) Log Message:
+Please accept below testcase patches for pid namespace. They carry minor comments suggested by Suka and Nadia in lxc-dev.
+---
+pidns20:
+     The pidns20.c testcase verifies that signal handler of SIGUSR1 is called (and cinit is NOT terminated) when:
+        - container-init blocks SIGUSR1,
+        - parent queues SIGUSR1 and
+        - a handler is specified for SIGUSR1 before it is unblocked.
+ Change log:
+   version 2:
+     * added two pipes for reliable testing.
+   version 1:
+     * Submitted in lxc-dev
+pidns21:
+    The pidns21.c testcase verifies that container-init is terminated by
+SIGUSR1 when:
+       - a handler is specified for SIGUSR1,
+       - container-init blocks SIGUSR1,
+       - parent queues SIGUSR1 and
+       - handler for SIGUSR1 is set to system default before SIGUSR1 is
+         unblocked.
+Change log:
+   version 2:
+     * added two pipes for reliable testing.
+   version 1:
+    * Submitted in lxc-dev
+Signed-off-by: Gowrishankar M <gowrishankar.m@in.ibm.com>, Acked-by: Sukadev Bhattiprolu <sukadev@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/testcases/kernel/containers/pidns/runpidnstest.sh
+Added Files:
+ltp/testcases/kernel/containers/pidns/pidns20.c
+ltp/testcases/kernel/containers/pidns/pidns21.c
+
+52) Log Message:
+I made few changes to ltp/testcases/kernel/fs/acl/tacl_xattr.sh. It is not working perfectly still there are issues with this script. I have posted patch and logs.attached strace log file. Please cross check results. Signed-off-by: Naresh Kamboju<naresh.kernel@gmail.com>.
+
+Modified File(s):
+ltp/testcases/kernel/fs/acl/tacl_xattr.sh
+
+53) Log Message:
+The problem is noticed only for these 2 tests lstat01A_64 and stat04_64. Analysis of the problem showed that these tests are called from runtest/syscall file. The problem is noticed because the symlink01.c file doesn't have implementation to take care lstat01A_64 and stat04_64 arguments that are passed in the file runtest/syscall. Solution: Simple solution is to remove lines.
+lstat01A_64 symlink01 -T lstat01_64
+stat04_64 symlink01 -T stat04_64
+from runtest/syscall.
+Other option is to provide feature in symlink01.c so that it can execute these tests successfully. I worked on one such patch. Please have a look. This runs same tests for lstat01A_64 and stat04_64 as is run for lstat01 and stat04 respectively. Signed-Off-By: Sharyathi Nagesh <sharyath@in.ibm.com>.
+
+Modified File(s):
+ltp/runtest/syscalls
+ltp/testcases/kernel/syscalls/symlink/symlink01.c
+
+54) Log Message:
+Subrata Modak <subrata@linux.vnet.ibm.com> wrote:
+The tcore_patch_test_suite was added to LTP on Fri Jan 17 22:07:55 2003 UTC, with contribution from you. As i try to compile it today, i get the following error:
+[tcore_patch_test_suites]$ make
+ gcc  -o tcore tcore.c -lm -lpthread
+ tcore.c: In function ‘producer’:
+ tcore.c:129: error: memory input 0 is not directly addressable
+ tcore.c: In function ‘consumer’:
+ tcore.c:166: error: memory input 0 is not directly addressable
+ tcore.c:167: error: memory input 0 is not directly addressable
+ make: *** [tcore] Error 1
+Can you please let me know:
+ 1) Any fix for this Failure ?
+ 2) Relevance of this test case today, whether they need to be there in  LTP or not ?
+
+Gowrishankar <gomuthuk@linux.vnet.ibm.com> replied:
+I have made it to compile and run with below patch. Using proper extended asm stops this problem. Below patch uses gcc's extended asm instead of basic inlines on this test which stops compilation problem with newer gcc's (v4). Signed-off-by: Gowrishankar M <gowrishankar.m@linux.vnet.ibm.com>.
+
+Modified File(s):
+ltp/testcases/misc/tcore_patch_test_suites/tcore.c
+ltp/testcases/misc/tcore_patch_test_suites/tcore.sh
+
+55) Log Message:
+Small updates from Pradeep K Surisetty <pradeepkumars@in.ibm.com>.
+
+Modified File(s):
+ltp/testcases/pounder21/README
+ltp/testcases/pounder21/src/ramsnake/Makefile
+ltp/testcases/pounder21/src/ramsnake/snake.c
+
+56) Log Message:
+The attached patch fixes and then integrates the Hyperthreading tests to default LTP run. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified File(s):
+ltp/runltp
+ltp/testcases/kernel/sched/Makefile
+ltp/testcases/kernel/sched/hyperthreading/ht_affinity/HTaffinity.c
+ltp/testcases/kernel/sched/hyperthreading/ht_affinity/HTutils.c
+ltp/testcases/kernel/sched/hyperthreading/ht_affinity/Makefile
+ltp/testcases/kernel/sched/hyperthreading/ht_enabled/Makefile
+ltp/testcases/kernel/sched/hyperthreading/ht_interrupt/Makefile
+
+57) Log Message:
+Thanks very much for fixing this. Now i am able to build and install properly. As a fallout to your fix, i am adding this test to build & install default, however i am reserving to run it only through runalltests.sh, as it creates a core file of size > 20MB. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>,
+
+Modified Files:
+ltp/runalltests.sh
+ltp/testcases/misc/Makefile
+Added Files:
+ltp/runtest/tcore
+
+58) Log Message:
+The newly added test case ioctl03[1] introduces some problems. First, compilation errors. Second, test failures and misuse of TCONF. The following patch fixes them by changing an order of a header file and also checking IFF_VNET_HDR. It also tidy up the code and add some more information to test output.Signed-off-by: CAI Qian <caiqian@cclom.cn>.
+
+Modified File(s):
+ltp/testcases/kernel/syscalls/ioctl/ioctl03.c
+
+59) Log Message:
+This patch fix man miscellenous compilation warnings. Signed-off-by: CAI Qian <caiqian@cclom.cn>.
+
+Modified File(s):
+ltp/lib/tlibio.c
+ltp/testcases/kernel/fs/openfile/openfile.c
+ltp/testcases/kernel/io/disktest/childmain.c
+ltp/testcases/kernel/io/disktest/main.c
+ltp/testcases/kernel/io/disktest/timer.c
+ltp/testcases/kernel/mem/mtest07/mallocstress.c
+ltp/testcases/kernel/mem/mtest07/shm_test.c
+ltp/testcases/kernel/sched/clisrv/pthserv.c
+ltp/testcases/kernel/sched/hyperthreading/ht_enabled/HTutils.c
+ltp/testcases/kernel/sched/hyperthreading/ht_enabled/Makefile
+ltp/testcases/kernel/sched/hyperthreading/ht_interrupt/Makefile
+ltp/testcases/network/sctp/func_tests/Makefile
+ltp/testcases/network/sctp/func_tests/test_1_to_1_threads.c
+
+60) Log Message:
+I have reviewed test cases for set_robust_list and get_robust_list. These test cases are working fine and generating results as PASS. I have found a small correction in comment line. Here I am posting the same. Signed-Off-By: Naresh Kamboju <naresh.kernel@gmail.com>.
+
+Modified File(s):
+ltp/testcases/kernel/syscalls/set_robust_list/set_robust_list01.c
+
+61) Log Message:
+=========================================================
+Manas K. Nayak <maknayak@in.ibm.com> reported:
+=========================================================
+accept4_01 test cases are broken because the function accept04() is not implemented in testcase. Used ltp version: ltp-full-20081130.tgz. Manually executed the test as below:
+[accept4]# ./accept4_01
+accept04_01    1  BROK  :  accept4() Error: Function not implemented
+=========================================================
+Subrata Modak <subrata@linux.vnet.ibm.com> replied:
+=========================================================
+Fix on x86_64 as well, as it behaves properly on other Architectures. Supriya/Manas, accept4_01.c is a new test case for the new system call accept4() recently introduced in kernel-2.6.26 only for the x86_64 architecture. The test has the code to handle if it is not supported in some architecture. Interestingly it executes the expected way on x86 machines: 
+# uname -a
+Linux 2.6.25-gcov-nomodconfig-smp #1 SMP Thu Jun 12 06:29:27 EDT 2008 i686 i686 i386 GNU/Linux 
+# ./ltp-intermediate-20081216/testcases/bin/accept4_01
+accept04_01    1  CONF  :  syscall __NR_accept4 not supported on your arch
+But on x86_64, it behaves differently:
+# uname -a
+Linux 2.6.18-125.el5 #1 SMP Mon Dec 1 17:38:25 EST 2008 x86_64 x86_64 x86_64 GNU/Linux
+# ./accept4_01
+accept04_01    1  BROK  :  accept4() Error: Function not implemented
+It means though the interface calls for:
+syscall(__NR_socketcall, SYS_ACCEPT4, args)
+&
+syscall(__NR_accept4, fd, sockaddr, addrlen, flags)
+will execute as __NR_socketcall & __NR_accept4 are defined inside the system, the exact implementation of the interface is yet to come as the kernel < 2.6.26. So, i changed the code accordingly. Please verify the patch. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified File(s):
+ltp/testcases/kernel/syscalls/accept4/accept4_01.c
+
+62) Log Message:
+======================================================
+Manas K. Nayak <maknayak@in.ibm.com> reported:
+======================================================
+Ltp iptables testcases failed against sles with following ping failures. Looks like iptables chain rules set to block ping from loopback address.
+======================================================
+Sridhar Vinay Replied:
+======================================================
+Manas, This looks like default SLES behaviour. When all rules are flushed, the default behaviour for SUSE firewall is to drop all packets. This is not the case with RH where absence of any rule results in all packets accepted. So we may need to adjust the test accordingly. Modification to test case to indicate certain distributions dropping all packets when firewall is enabled and no rule is present.
+======================================================
+Manas K. Nayak <maknayak@in.ibm.com> reverted back:
+======================================================
+I verified the patch using ltp release "ltp-full-20081130" on SLES and it is generating expected information as mentioned. Subrata you can make this patch available in coming ltp release. Signed-Off-By: Vinay Sridhar <vinay@linux.vnet.ibm.com>.
+
+Modified File(s):
+ltp/testcases/network/iptables/iptables_tests.sh
+
+63) Log Message:
+Include File Systems Data Integrity Tests to Default  LTP run. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/runtest/fs
+
+64) Log Message:
+Increase the No. of Loops for the File System INOD tests. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/runtest/fs
+
+65) Log Message:
+Integrate the File System Permissions Tests in to Default LTP run. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/runtest/fs ltp/testcases/kernel/fs/fs_perms/Makefile
+Added Files:
+ltp/testcases/kernel/fs/fs_perms/fs_perms_simpletest.sh
+Removed Files:
+ltp/testcases/kernel/fs/fs_perms/simpletest.sh
+
+66) Log Message:
+Increase the No. of Soft & Hard Links Created by linktest.pl. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/runtest/fs
+
+67) Log Message:
+Integrate PROC File Systems tests into default LTP run. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/runtest/fs
+
+68) Log Message:
+Integrate File Systems Race Condition Check tests to  default LTP run. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/runtest/fs ltp/testcases/kernel/fs/Makefile
+Added Files:
+ltp/testcases/kernel/fs/racer/fs_racer.sh
+ltp/testcases/kernel/fs/racer/fs_racer_dir_create.sh
+ltp/testcases/kernel/fs/racer/fs_racer_dir_test.sh
+ltp/testcases/kernel/fs/racer/fs_racer_file_concat.sh
+ltp/testcases/kernel/fs/racer/fs_racer_file_create.sh
+ltp/testcases/kernel/fs/racer/fs_racer_file_link.sh
+ltp/testcases/kernel/fs/racer/fs_racer_file_list.sh
+ltp/testcases/kernel/fs/racer/fs_racer_file_rename.sh
+ltp/testcases/kernel/fs/racer/fs_racer_file_rm.sh
+ltp/testcases/kernel/fs/racer/fs_racer_file_symlink.sh
+Removed Files:
+ltp/testcases/kernel/fs/racer/dir_create.sh
+ltp/testcases/kernel/fs/racer/dir_test.sh
+ltp/testcases/kernel/fs/racer/file_concat.sh
+ltp/testcases/kernel/fs/racer/file_create.sh
+ltp/testcases/kernel/fs/racer/file_link.sh
+ltp/testcases/kernel/fs/racer/file_list.sh
+ltp/testcases/kernel/fs/racer/file_rename.sh
+ltp/testcases/kernel/fs/racer/file_rm.sh
+ltp/testcases/kernel/fs/racer/file_symlink.sh
+ltp/testcases/kernel/fs/racer/racer.sh
+
+69) Log Message:
+Integrate CD and FLOPPY tests to run with runalltests.sh. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/runalltests.sh
+Added Files:
+ltp/runtest/io_cd
+ltp/runtest/io_floppy
+Removed Files:
+ltp/runtest/io
+
+70) Log Message:
+Make io/aio tests to build & install with root level  make, and then run with runltp. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/runltp
+ltp/testcases/kernel/io/Makefile
+ltp/testcases/kernel/io/aio/aio02/Makefile
+ltp/testcases/kernel/io/aio/aio02/runfstests.sh
+Added Files:
+ltp/runtest/io
+
+71) Log Message:
+Run the CPU HOTPLUG tests through runalltests.sh. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/README
+ltp/runalltests.sh
+Added Files:
+ltp/runtest/cpuhotplug
+
+72) Log Message:
+Fix compilation issues in compiling the MEMORY HOTPLUG tests. Better ways to fix the compilation error(s) are always welcome. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/testcases/kernel/hotplug/memory_hotplug/commands.c
+ltp/testcases/kernel/hotplug/memory_hotplug/migrate_pages.c
+
+73) Log Message:
+Add options for block devices and turn on related testcases. Signed-Off-By: Andrew Vagin <avagin@gmail.com>.
+
+Modified Files:
+ltp/runltp
+ltp/runtest/syscalls
+
+74) Log Message:
+This testcase checked event IN_UNMOUNT. IN_UNMOUNT File system containing watched object was unmounted and check filesystem that it can't be unmounted if exist opened inotify descriptor. Example of execution:
+Running tests.......
+inotify03    0  INFO  :  mount /dev/loop0 to mnt_694 fstype=ext3
+inotify03    0  INFO  :  umount /dev/loop0
+<<<test_start>>>
+tag=inotify03 stime=1229332020
+cmdline="inotify03 -D /dev/loop0 -T ext3"
+contacts=""
+analysis=exit
+initiation_status="ok"
+<<<test_output>>>
+incrementing stop
+inotify03    1  PASS  :  get event: wd=1 mask=2000 cookie=0 len=0
+inotify03    2  PASS  :  get event: wd=1 mask=8000 cookie=0 len=0
+inotify03    3  PASS  :  inotify_rm_watch (5, 1) return -1 errno=22 : Invalid argument
+<<<execution_status>>>
+duration=0 termination_type=exited termination_id=0 corefile=no cutime=0 cstime=0
+<<<test_end>>>
+kernel: Linux avagin 2.6.25-rc6 #1 SMP Tue Jul 8 13:42:51 MSD 2008 i686 Intel(R) Celeron(R) CPU 2.53GHz GenuineIntel GNU/Linux. 
+Signed-Off-By: Andrew Vagin <avagin@gmail.com>. Acked-By: CAI Qian <caiqian@cclom.cn>.
+
+Modified Files:
+ltp/runtest/syscalls
+Added Files:
+ltp/testcases/kernel/syscalls/inotify/inotify03.c
+
+75) Log Message:
+Add TCONF if the tested kernel has version less than 2.6.13. Signed-Of-By: Andrew Vagin <avagin@gmail.com>. Acked-By: CAI Qian <caiqian@cclom.cn>.
+
+Modified Files:
+ltp/testcases/kernel/syscalls/inotify/inotify01.c
+ltp/testcases/kernel/syscalls/inotify/inotify02.c
+ltp/testcases/kernel/syscalls/inotify/inotify03.c
+
+76) Log Message:
+Introduce autoconf to inotify test case. Signed-off-by: Masatake YAMATO <yamato@redhat.com>.
+
+Modified File(s):
+ltp/configure.ac
+ltp/testcases/kernel/syscalls/inotify/Makefile
+ltp/testcases/kernel/syscalls/inotify/inotify01.c
+ltp/testcases/kernel/syscalls/inotify/inotify02.c
+
+77) Log Message:
+This patchset creates the basic infrastructure for running the existing network testcases under containers automatically. The patchset creates a command file named nw_under_ns for the purpose. Please review them and provide all your valuable feedback. I have addressed all the comments from lxc-dev list except one. The changelog looks like:
+1. Added verbose comments and patch description.
+2. Restructured the licensing text.
+3. Merged two patches into one touching runallnetworktest_child.sh file.
+
+TODO:
+1. Changing the kernel version to proper one
+2. unshare not needed as clone only is suffucient. I will do it in a separate patch as need to do extensive testing to ensure other testcases do not break.
+Signed-off-by: Sudhir Kumar <skumar@linux.vnet.ibm.com>. Acked-By: "Serge E. Hallyn" <serue@us.ibm.com>.
+
+Modified Files:
+ltp/testcases/kernel/containers/libclone/libnetns.c
+ltp/testcases/kernel/containers/netns/parentns.sh
+Modified Files:
+ltp/testcases/kernel/containers/libclone/libnetns.c
+Modified Files:
+ltp/testcases/kernel/containers/libclone/libnetns.c
+ltp/testcases/kernel/containers/netns/childns.sh
+ltp/testcases/kernel/containers/netns/parentns.sh
+Modified Files:
+ltp/testcases/kernel/containers/netns/childns.sh
+ltp/testcases/kernel/containers/netns/parentns.sh
+Added Files:
+ltp/testcases/kernel/containers/netns/create_container.c
+Added Files:
+ltp/testcases/kernel/containers/netns/runallnetworktests_parent.sh
+Added Files:
+ltp/testcases/kernel/containers/netns/runallnetworktests_child.sh
+Added Files:
+ltp/testcases/kernel/containers/netns/nw_under_ns.sh
+Modified Files:
+ltp/testcases/kernel/containers/netns/Makefile
+Added Files:
+ltp/runtest/nw_under_ns
+Modified Files:
+ltp/testcases/kernel/containers/netns/runallnetworktests_child.sh
+Added Files:
+ltp/testcases/kernel/containers/netns/readme
+
+78) Log Message:
+Linux drivers based on Video for Linux Two (V4L2) API, test addition:
+Németh Márton <nm127@freemail.hu> wrote:
+I started a project to test the Linux drivers based on Video for Linux Two (V4L2) API, release 0.24. This project is using the CUnit framework and is available at http://v4l-test.sourceforge.net/. I found your project at http://ltp.sourceforge.net/ . As far as I know the LTP currently do not have any tests for V4L2. Maybe test cases created for v4l-test project can be used for LTP also. What do you think? 
+Subrata Modak <subrata@linux.vnet.ibm.com> wrote back: 
+es, it can be. We have a rather old code base for Device Drivers testing. And time and again i was trying to revive the device drivers tests inside LTP, but, did not get sufficient volunteers to do the same. Your test code can be a starting point for us. I downloaded your testsuite and was able to compile the stuff, with some modification(s). However, i did not test it. Can you also share the logs of the run on your machine ?? More info is required in the documentation. I have prepared a patch(attached & embedded), which will integrate these tests inside LTP with minor modifications in documentation and some #defines in some source files (to be able to compile on machines not having respective header files containing the definition). Now, we have 2 choices:
+1) You can voluntarily allow us to maintain this code inside LTP. Send your patches/modifications to us, whenever you want to add/modify/remove any tests out of: ltp/testcases/kernel/device-drivers/v4l-test/, We will then do the needful. You benefit by showcasing your test code to a bigger LTP community, and hence can attract more contribution from them. We gain by re-introducing/re-starting device drivers testing, which can then move to other device drivers as well. If you agree, please reply to this mail with a DCO Sign-off:  Signed-Off-By: Németh Márton <nm127@freemail.hu>, I can then go ahead and include this patch.
+2) You can keep your project running at: http://v4l-test.sourceforge.net/, as well as agree to apply this patch to include in LTP. In such a case, send us updates whenever you update your project. In any case, i  would require a DCO Sign-off: Signed-Off-By: Németh Márton <nm127@freemail.hu>,  from you. I would like to thank you for deciding to contribute this to LTP, and would also request you to help us fix the  existing device drivers tests in LTP, so that we can start using them. If necessary we can delete the obsolete ones and add new ones: http://ltp.cvs.sourceforge.net/viewvc/ltp/ltp/testcases/kernel/device-drivers/. Do you think, you will also be able to help us here ?? 
+Németh Márton <nm127@freemail.hu> wrote back:
+Yes, sorry about that. I have had no access to my emails during the last days. I also wanted to think about this a little. I would like to choose the 2nd solution: I try to run my project forward and send you patches to include them  in LTP. The source code and the test design was created by me. However, the V4L2 API specification which is also included in the tarball is only downloaded and saved under the 'doc' directory so I always have a local copy of the V4L2 API revision 0.24. This you might not want to include in the LTP source code. I had some difficulties with the inline patch you sent me, it was not usable at my side because my email client was not able to handle it correctly. Could you please send it as an attachment? What I could recognised that the v4l-test project was placed in LTP source directory under ltp-intermediate-20081223.orig/testcases/kernel/device-drivers/v4l-test . However, if I look around in the "device-drivers" subdirectory I would use the subdirectory: ltp/testcases/kernel/device-drivers/v4l/user_space . What do you think? Signed-Off-By: Márton Németh <nm127@freemail.hu>.
+
+Modified Files:
+ltp/README
+Added Files:
+ltp/testcases/kernel/device-drivers/v4l/user_space/Makefile
+ltp/testcases/kernel/device-drivers/v4l/user_space/README
+ltp/testcases/kernel/device-drivers/v4l/user_space/dev_video.c
+ltp/testcases/kernel/device-drivers/v4l/user_space/dev_video.h
+ltp/testcases/kernel/device-drivers/v4l/user_space/test_VIDIOC_CROPCAP.c
+ltp/testcases/kernel/device-drivers/v4l/user_space/test_VIDIOC_CROPCAP.h
+ltp/testcases/kernel/device-drivers/v4l/user_space/test_VIDIOC_ENUMAUDIO.c
+ltp/testcases/kernel/device-drivers/v4l/user_space/test_VIDIOC_ENUMAUDIO.h
+ltp/testcases/kernel/device-drivers/v4l/user_space/test_VIDIOC_ENUMINPUT.c
+ltp/testcases/kernel/device-drivers/v4l/user_space/test_VIDIOC_ENUMINPUT.h
+ltp/testcases/kernel/device-drivers/v4l/user_space/test_VIDIOC_ENUMSTD.c
+ltp/testcases/kernel/device-drivers/v4l/user_space/test_VIDIOC_ENUMSTD.h
+ltp/testcases/kernel/device-drivers/v4l/user_space/test_VIDIOC_ENUM_FMT.c
+ltp/testcases/kernel/device-drivers/v4l/user_space/test_VIDIOC_ENUM_FMT.h
+ltp/testcases/kernel/device-drivers/v4l/user_space/test_VIDIOC_INPUT.c
+ltp/testcases/kernel/device-drivers/v4l/user_space/test_VIDIOC_INPUT.h
+ltp/testcases/kernel/device-drivers/v4l/user_space/test_VIDIOC_QUERYCAP.c
+ltp/testcases/kernel/device-drivers/v4l/user_space/test_VIDIOC_QUERYCAP.h
+ltp/testcases/kernel/device-drivers/v4l/user_space/test_VIDIOC_STD.c
+ltp/testcases/kernel/device-drivers/v4l/user_space/test_VIDIOC_STD.h
+ltp/testcases/kernel/device-drivers/v4l/user_space/test_invalid_ioctl.c
+ltp/testcases/kernel/device-drivers/v4l/user_space/test_invalid_ioctl.h
+ltp/testcases/kernel/device-drivers/v4l/user_space/v4l2_test.c
+ltp/testcases/kernel/device-drivers/v4l/user_space/v4l2_test.h
+ltp/testcases/kernel/device-drivers/v4l/user_space/video_limits.h
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/index.html
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/a16506.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/a16706.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/a16721.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/b17127.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/book1.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/c14592.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/c14595.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/c174.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/c2030.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/c5742.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/c6488.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/capture-example.html
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/f163.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/i16960.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/index.html
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r10104.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r10211.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r10386.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r10595.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r10944.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r11094.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r11217.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r11285.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r11430.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r11612.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r11680.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r11946.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r12051.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r12265.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r12342.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r12784.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r12816.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r12878.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r13022.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r13105.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r13317.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r13641.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r13696.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r13817.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r13889.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r14037.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r14090.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r14169.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r14264.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r14390.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r14496.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r2492.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r3735.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r3796.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r3896.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r4185.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r4246.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r4339.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r4484.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r4629.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r4850.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r5016.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r5154.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r5319.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r5470.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r7624.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r7626.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r7667.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r7771.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r7900.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r8087.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r8242.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r8304.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r8367.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r8494.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r8724.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r8936.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r9149.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r9288.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r9539.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r9688.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r9804.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/r9994.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x15446.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x16430.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x16453.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x16497.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x16743.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x16769.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x16775.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x16788.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x16896.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x16910.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x16915.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x16923.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x16929.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x16933.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x16941.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x1859.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x1904.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x2009.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x2123.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x2428.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x2490.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x282.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x294.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x309.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x341.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x3891.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x394.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x448.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x542.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x5634.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x5665.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x5791.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x5884.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x5950.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x5953.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x6386.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x6570.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x6831.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x6909.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x6991.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x7002.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x7013.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x7236.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x7561.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x7578.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x7607.htm
+ltp/testcases/kernel/device-drivers/v4l/user_space/doc/spec/x802.htm
+
+79) Log Message:
+Manas Kumar Nayak <maknayak@in.ibm.com> shared this wonderfull README to run LTP Network tests.
+
+Added File(s):
+ltp/testcases/network/LTP-Network-test_README.pdf
+
+80) Log Message:
+Use more descriptive diff format for reporting errors in ln_tests: the error output in some tests is not as useful as it could be. This patch amend that. Do not compare actual and expected output with the "quiet" switch, to get some info more useful than "The files xxx and yyy differ" in case of failure. Use the correct error output file in unzip_tests. Signed-Off-By: Jiri Palecek <jpalecek@web.de>.
+
+Modified Files:
+ltp/testcases/commands/fileutils/ln/ln_tests.sh
+ltp/testcases/commands/gzip/gzip_tests.sh
+ltp/testcases/commands/unzip/unzip_tests.sh
+
+81) Log Message:
+This patch fixes the logic of #ifdefs in the signalfd testcase. The problem was, that if our own syscall was used, no test would actually be compiled (because of #else between those two pieces of code). This patch also fixes this compile error:
+make[5]: Leaving directory `/tmp/buildd/ltp-20081130+dfsg/testcases/kernel/syscalls/signal'
+make[5]: Entering directory `/tmp/buildd/ltp-20081130+dfsg/testcases/kernel/syscalls/signalfd'
+cc -g -O2 -g -Wall -O2 -Wall -g -O2 -g -Wall -O2 -I../../include -g -Wall -I../../../../include -Wall    signalfd01.c-L../../../../lib -lltp -o signalfd01
+signalfd01.c:88:18: error: #if with no expression
+signalfd01.c: In function 'do_test1':
+signalfd01.c:117: warning: implicit declaration of function 'signalfd' by checking for "defined USE_OWNIMPL", not "USE_OWNIMPL".
+Signed-Off-By: Jiri Palecek <jpalecek@web.de>.
+
+Modified Files:
+ltp/testcases/kernel/syscalls/signalfd/signalfd01.c
+
+82) Log Message:
+Delete an a.out file in eventfd Makefile: the clean targets in ltp don't always clean all intermediate binary files. This patch fixes that. The a.out file is potentially created by the check for aio_eventfd (or other compile checks) in the makefile. The object files in getgroups Makefile are xxx_16.o. Signed-Off-By: Jiri Palecek <jpalecek@web.de>.
+
+Modified Files:
+ltp/testcases/kernel/syscalls/eventfd/Makefile
+ltp/testcases/kernel/syscalls/getgroups/Makefile
+ltp/testcases/kernel/syscalls/move_pages/Makefile
+
+83) Log Message:
+Integrate ltp network tests to runalltests. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/runalltests.sh
+
+84) Log Message:
+Integrate ltp network stress tests to runalltests. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/runalltests.sh
+
+85) Log Message:
+Integrate ltp adp tests to runalltests. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/runalltests.sh
+
+86) Log Message:
+Integrate ltp autofs tests to runalltests. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/runalltests.sh
+
+87) Log Message:
+Fix Diskio test. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/testscripts/diskio.sh
+
+88) Log Message:
+Integrate ltp exportfs tests to runalltests. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/runalltests.sh
+
+89) Log Message:
+Integrate ltp ro only fs tests to runalltests. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/runalltests.sh
+
+90) Log Message:
+Integrate ltp isofs tests to runalltests. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/runalltests.sh
+
+91) Log Message:
+Integrate ltp dmmapper tests to runalltests. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/runalltests.sh
+
+92) Log Message:
+Integrate ltp fslvm tests to runalltests. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/runalltests.sh
+
+93) Log Message:
+Integrate ltp fsnolvm tests to runalltests. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/runalltests.sh
+
+94) Log Message:
+Integrate ltp scsi_debug tests to runalltests. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/runalltests.sh
+
+95) Log Message:
+Integrate ltp sysfs tests to runalltests. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/runalltests.sh
+
+96) Log Message:
+Remove rpc tests from tirpc. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/runtest/rpctirpc
+
+97) Log Message:
+Integrate ltp tirpc tests to runalltests. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/runalltests.sh
+
+98) Log Message:
+Integrate ltp selinux tests to runalltests. Signed-Off-By: Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/runalltests.sh
+
+99) Log Message:
+Check for existing commands after LTPTMP has been defined in unzip_tests.sh: The chk_ifexist function in unzip_tests needs the variable LTPTMP, but it is called before this variable is initialized. This patch fixes that by moving the call after LTPTMP is initialized. Signed-Off-By: Jiri Palecek <jpalecek@web.de>.
+
+Modified Files:
+ltp/testcases/commands/unzip/unzip_tests.sh
+
+100) Log Message:
+Always create a new expected output file, not append to the previous in gzip_tests: The expected output file in gzip_tests is made always by appending data to the file. Because there are two tests in gzip_tests (each making its own exp file), the second test ends up with concatenation of the two exp files, which doesn't work well. This patch fixes that by truncating the file at the first write. Signed-Off-By: Jiri Palecek <jpalecek@web.de>.
+
+Modified Files:
+ltp/testcases/commands/gzip/gzip_tests.sh
+
+101) Log Message:
+Renumber testcases in the symlink01 file, reflecting some added tests: The indexes of tests in th symlink01 test are incorrect, which causes broken test results due to eg. unlink test invoked as part of the chmod tests. This patch fixes that. Signed-Off-By: Jiri Palecek <jpalecek@web.de>. 
+
+Modified Files:
+ltp/testcases/kernel/syscalls/symlink/symlink01.c
+
+102) Log Message:
+Amend cleanup procedure in mknod07: the cleanup in mknod07 didn't work for me, because the test yields root, removes search permission on its current directory and then tries to chdir("..") which fails due to the missing permission. This patch fixes that by re-gaining root before the cleanup.
+ - restore root privileges before tmp directory cleanup. This is needed, because as nonprivileged user, we don't have search permission on the current directory,
+ - because of that, do not drop root completely by setuid(), change effective uid instead,
+ - call cleanup in one case when setup fails,
+Signed-Off-By: Jiri Palecek <jpalecek@web.de>.
+
+Modified Files:
+ltp/testcases/kernel/syscalls/mknod/mknod07.c
+
 LTP-20081130
 
 1) Log Message:
