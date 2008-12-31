@@ -98,12 +98,6 @@ init()
 	# Inititalize cleanup function.
 	trap "cleanup" 0
 
-	# check if commands tst_*, unzip, awk, etc exists.
-	chk_ifexists INIT tst_resm  || return $RC
-	chk_ifexists INIT unzip     || return $RC
-	chk_ifexists INIT mkdir     || return $RC
-	chk_ifexists INIT awk       || return $RC
-
 	# create the temporary directory used by this testcase
 	if [ -d $TMP ]
 	then
@@ -112,6 +106,12 @@ init()
 	else
 		LTPTMP=$TMP/tst_unzip.$$
 	fi
+
+	# check if commands tst_*, unzip, awk, etc exists.
+	chk_ifexists INIT tst_resm  || return $RC
+	chk_ifexists INIT unzip     || return $RC
+	chk_ifexists INIT mkdir     || return $RC
+	chk_ifexists INIT awk       || return $RC
 
 	mkdir -p $LTPTMP >/dev/null || RC=$?
 	if [ $RC -ne 0 ]
