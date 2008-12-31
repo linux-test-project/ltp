@@ -110,6 +110,11 @@ export NFS_SERVER1=xxx
 export NFS_SERVER_DISK_PARTITION1=yyy
 export NFS_SERVER_FS_TYPE1=zzz
 
+
+## Set this to 1 if you wish to run the FS tests on READ ONLY File Systems. Refer to http://ltp.cvs.sourceforge.net/viewvc/ltp/ltp/testscripts/Readme_ROBind for more info
+export RUN_RO_ONLY_FS_TESTS=0
+export READ_ONLY_DIRECTORY1=xxxx
+
 export LTP_VERSION=`./runltp -e`
 export TEST_START_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
 export HARDWARE_TYPE=$(uname -i)
@@ -347,3 +352,14 @@ then
 (cd $LTPROOT/testscripts/; ./exportfs.sh -h $NFS_SERVER1 -d $NFS_SERVER_DISK_PARTITION1 -t $NFS_SERVER_FS_TYPE1)
 fi
 ## END => Test Series 16                               ##
+
+
+## The next one i plan to run the FS tests on READ ONLY File Systems
+## START => Test Series 17                             ##
+if [ $RUN_RO_ONLY_FS_TESTS -eq 1 ]
+then
+(cd $READ_ONLY_DIRECTORY1; sh $LTPROOT/testscripts/test_robind.sh)
+fi
+## END => Test Series 17                               ##
+
+
