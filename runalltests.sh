@@ -83,6 +83,12 @@ export RUN_CPU_HOTPLUG=0
 ## for more information on how to run the tests.
 export RUN_LTP_NETWORK_TESTS=0
 
+##Set this to 1 if you wish to run the LTP-NETWORK-STRESS tests. Please refer to:
+## http://ltp.cvs.sourceforge.net/viewvc/ltp/ltp/testcases/network/LTP-Network-test_README.pdf
+## and http://ltp.cvs.sourceforge.net/viewvc/ltp/ltp/testcases/network/stress/README
+## for more information on how to run the NETWORK-STRESS tests.
+export RUN_LTP_NETWORK_STRESS_TESTS=0
+
 export LTP_VERSION=`./runltp -e`
 export TEST_START_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
 export HARDWARE_TYPE=$(uname -i)
@@ -272,4 +278,11 @@ then
 fi
 ## END => Test Series 12                               ##
 
+## The next one i plan to run are the LTP Network Stress tests
+## START => Test Series 13                             ##
+if [ $RUN_LTP_NETWORK_STRESS_TESTS -eq 1 ]
+then
+(cd $LTPROOT/testscripts/; ./networkstress.sh)
+fi
+## END => Test Series 13                               ##
 
