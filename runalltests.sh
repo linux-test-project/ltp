@@ -75,8 +75,13 @@ export RUN_STRESS_FLOPPY=0
 ## Make sure you have CD inserted in your CD-ROM drive,
 export RUN_STRESS_CD=0
 
-##Set this to 1 if you wish to runthe CPUHOTPLUG tests
+##Set this to 1 if you wish to run the CPUHOTPLUG tests
 export RUN_CPU_HOTPLUG=0
+
+##Set this to 1 if you wish to run the LTP-NETWORK tests. Please refer to:
+## http://ltp.cvs.sourceforge.net/viewvc/ltp/ltp/testcases/network/LTP-Network-test_README.pdf
+## for more information on how to run the tests.
+export RUN_LTP_NETWORK_TESTS=0
 
 export LTP_VERSION=`./runltp -e`
 export TEST_START_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
@@ -258,4 +263,13 @@ then
 ./runltp -f cpuhotplug
 fi
 ## END => Test Series 11                               ##
+
+## The next one i plan to run are the LTP Network tests
+## START => Test Series 12                             ##
+if [ $RUN_LTP_NETWORK_TESTS -eq 1 ]
+then
+(cd $LTPROOT/testscripts/; ./networktests.sh)
+fi
+## END => Test Series 12                               ##
+
 
