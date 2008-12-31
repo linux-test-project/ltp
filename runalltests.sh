@@ -152,6 +152,10 @@ export NFS_PARTITION1=jjjjjj
 #        Once these tests are started all data in the partitions you point to will be destroyed.
 export RUN_FSNOLVM_TESTS=0
 
+## Set this to 1 if you wish to run the LTP SCSI DEBUG tests
+#Note: Build scsi_debug as a module first before running the test
+export RUN_LTP_SCSI_DEBUG_TEST=0
+
 export LTP_VERSION=`./runltp -e`
 export TEST_START_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
 export HARDWARE_TYPE=$(uname -i)
@@ -434,5 +438,13 @@ then
 (cd $LTPROOT/testscripts/; ./ltpfsnolvm.sh -a $DISK_PARTITION4 -b $DISK_PARTITION5 -c $DISK_PARTITION6 -d $DISK_PARTITION7 -n $NFS_PARTITION1)
 fi
 ## END => Test Series 21                               ##
+
+## The next one i plan to run the LTP SCSI DEBUG tests
+## START => Test Series 22                             ##
+if [ $RUN_LTP_SCSI_DEBUG_TEST -eq 1 ]
+then
+(cd $LTPROOT/testscripts/; ./ltp-scsi_debug.sh)
+fi
+## END => Test Series 22                               ##
 
 
