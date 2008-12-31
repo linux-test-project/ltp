@@ -115,6 +115,11 @@ export NFS_SERVER_FS_TYPE1=zzz
 export RUN_RO_ONLY_FS_TESTS=0
 export READ_ONLY_DIRECTORY1=xxxx
 
+## Set this to 1 if you wish to run the ISOFS tests
+#  REQUIREMENTS:
+#   Must have root access to execute this script
+export RUN_ISOFS_TESTS=0
+
 export LTP_VERSION=`./runltp -e`
 export TEST_START_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
 export HARDWARE_TYPE=$(uname -i)
@@ -361,5 +366,14 @@ then
 (cd $READ_ONLY_DIRECTORY1; sh $LTPROOT/testscripts/test_robind.sh)
 fi
 ## END => Test Series 17                               ##
+
+
+## The next one i plan to run the ISOFS tests
+## START => Test Series 18                             ##
+if [ $RUN_ISOFS_TESTS -eq 1 ]
+then
+(cd $LTPROOT/testscripts/; ./isofs.sh)
+fi
+## END => Test Series 18                               ##
 
 
