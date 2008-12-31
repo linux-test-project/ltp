@@ -165,6 +165,9 @@ export RUN_LTP_SCSI_DEBUG_TEST=0
 export RUN_LTP_SYSFS_TEST=0
 export KERNEL_MODULE1=xxxxxxx
 
+## Set this to 1 if you wish to run the LTP TIRPC tests
+export RUN_LTP_TIRPC_TEST=0
+
 export LTP_VERSION=`./runltp -e`
 export TEST_START_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
 export HARDWARE_TYPE=$(uname -i)
@@ -463,5 +466,13 @@ then
 (cd $LTPROOT/testscripts/; ./sysfs.sh -k $KERNEL_MODULE1)
 fi
 ## END => Test Series 23                               ##
+
+## The next one i plan to run the LTP TIRPC tests
+## START => Test Series 24                             ##
+if [ $RUN_LTP_TIRPC_TEST -eq 1 ]
+then
+./runltp -f rpctirpc
+fi
+## END => Test Series 24                               ##
 
 
