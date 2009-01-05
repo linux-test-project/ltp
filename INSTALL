@@ -1,4 +1,4 @@
-$Id: INSTALL,v 1.19 2008/12/18 04:58:57 subrata_modak Exp $
+$Id: INSTALL,v 1.20 2009/01/05 08:35:21 subrata_modak Exp $
 
 About configuration
 -------------------
@@ -10,6 +10,16 @@ Then run:
         $ make autoconf 
         $ ./configure   
         $ make all      
+
+If you get a build error, please report it to ltp-list@lists.sf.net with
+following information,
+
+ 1. the error output of build tools(make, gcc, etc...)
+ 2. the output of ./configure 
+ 3. include/config.h
+ 4. config.mk
+ 5. config.log
+
 
 If you want to use default configuration, autoconf is not needed. Just run:          
         $ touch include/config.h.default 
