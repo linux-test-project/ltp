@@ -196,7 +196,7 @@ int child_fn(void *arg)
 int main(int argc, char *argv[])
 {
 	int status, stack_size=getpagesize() * 4;
-	int *cinit_no;
+	int *cinit_no = malloc(sizeof(int));
 	void *stack1 = malloc(stack_size);
 	void *stack2 = malloc(stack_size);
 	void *childstack1, *childstack2;
@@ -209,8 +209,8 @@ int main(int argc, char *argv[])
 	}
 
 	/* container creation on PID namespace */
-	if (!stack1 || !stack2) {
-		tst_resm(TBROK, "parent: stack creation failed.");
+	if (!stack1 || !stack2 || !cinit_no) {
+		tst_resm(TBROK, "memory allocation failed.");
 		cleanup();
 	}
 
