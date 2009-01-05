@@ -1,6 +1,11 @@
-
-/* v4l-test: Test environment for Video For Linux Two API
+/*
+ * v4l-test: Test environment for Video For Linux Two API
  *
+ *  1 Jan 2009  0.4  Test cases for VIDIOC_ENUMOUTPUT, VIDIOC_ENUMAUDOUT,
+ *                   VIDIOC_QUERYCTRL added;
+ *                   New test cases for VIDIOC_ENUMAUDIO, VIDIOC_ENUM_FMT,
+ *                   VIDIOC_ENUM_STD
+ * 23 Dec 2008  0.3  Test cases for VIDIOC_LOG_STATUS added
  * 22 Dec 2008  0.2  Test cases with NULL parameter added;
  *                   Test cases for VIDIOC_CROPCAP added
  * 18 Dec 2008  0.1  First release
@@ -29,13 +34,19 @@
 #include "video_limits.h"
 
 #include "test_VIDIOC_QUERYCAP.h"
+#include "test_VIDIOC_QUERYCTRL.h"
 #include "test_VIDIOC_CROPCAP.h"
+
+#include "test_VIDIOC_ENUMAUDIO.h"
+#include "test_VIDIOC_ENUMAUDOUT.h"
 #include "test_VIDIOC_ENUMSTD.h"
 #include "test_VIDIOC_ENUM_FMT.h"
 #include "test_VIDIOC_ENUMINPUT.h"
-#include "test_VIDIOC_ENUMAUDIO.h"
+#include "test_VIDIOC_ENUMOUTPUT.h"
+
 #include "test_VIDIOC_STD.h"
 #include "test_VIDIOC_INPUT.h"
+#include "test_VIDIOC_LOG_STATUS.h"
 #include "test_invalid_ioctl.h"
 
 
@@ -50,23 +61,54 @@ static CU_TestInfo suite_querycap[] = {
 };
 
 static CU_TestInfo suite_enums[] = {
-  { "VIDIOC_ENUMSTD", test_VIDIOC_ENUMSTD_1 },
-  { "VIDIOC_ENUMSTD, index=U32_MAX", test_VIDIOC_ENUMSTD_2 },
-  { "VIDIOC_ENUMSTD, index=MAX_EM28XX_TVNORMS", test_VIDIOC_ENUMSTD_3 },
-  { "VIDIOC_ENUMSTD with NULL parameter", test_VIDIOC_ENUMSTD_NULL },
+  { "VIDIOC_ENUMAUDIO", test_VIDIOC_ENUMAUDIO },
+  { "VIDIOC_ENUMAUDIO, index=S32_MAX", test_VIDIOC_ENUMAUDIO_S32_MAX },
+  { "VIDIOC_ENUMAUDIO, index=S32_MAX+1", test_VIDIOC_ENUMAUDIO_S32_MAX_1 },
+  { "VIDIOC_ENUMAUDIO, index=U32_MAX", test_VIDIOC_ENUMAUDIO_U32_MAX },
+  { "VIDIOC_ENUMAUDIO with NULL parameter", test_VIDIOC_ENUMAUDIO_NULL },
 
-  { "VIDIOC_ENUMINPUT", test_VIDIOC_ENUMINPUT_1 },
-  { "VIDIOC_ENUMINPUT, index=U32_MAX", test_VIDIOC_ENUMINPUT_2 },
+  { "VIDIOC_ENUMAUDOUT", test_VIDIOC_ENUMAUDOUT },
+  { "VIDIOC_ENUMAUDOUT, index=S32_MAX", test_VIDIOC_ENUMAUDOUT_S32_MAX },
+  { "VIDIOC_ENUMAUDOUT, index=S32_MAX+1", test_VIDIOC_ENUMAUDOUT_S32_MAX_1 },
+  { "VIDIOC_ENUMAUDOUT, index=U32_MAX", test_VIDIOC_ENUMAUDOUT_U32_MAX },
+  { "VIDIOC_ENUMAUDOUT with NULL parameter", test_VIDIOC_ENUMAUDOUT_NULL },
+
+  { "VIDIOC_ENUM_FMT", test_VIDIOC_ENUM_FMT },
+  { "VIDIOC_ENUM_FMT, index=S32_MAX", test_VIDIOC_ENUM_FMT_S32_MAX },
+  { "VIDIOC_ENUM_FMT, index=S32_MAX+1", test_VIDIOC_ENUM_FMT_S32_MAX_1 },
+  { "VIDIOC_ENUM_FMT, index=U32_MAX", test_VIDIOC_ENUM_FMT_U32_MAX },
+  { "VIDIOC_ENUM_FMT, invalid type", test_VIDIOC_ENUM_FMT_invalid_type },
+  { "VIDIOC_ENUM_FMT with NULL parameter", test_VIDIOC_ENUM_FMT_NULL },
+
+  { "VIDIOC_ENUMINPUT", test_VIDIOC_ENUMINPUT },
+  { "VIDIOC_ENUMINPUT, index=S32_MAX", test_VIDIOC_ENUMINPUT_S32_MAX },
+  { "VIDIOC_ENUMINPUT, index=S32_MAX+1", test_VIDIOC_ENUMINPUT_S32_MAX_1 },
+  { "VIDIOC_ENUMINPUT, index=U32_MAX", test_VIDIOC_ENUMINPUT_U32_MAX },
   { "VIDIOC_ENUMINPUT, index=MAX_EM28XX_INPUT", test_VIDIOC_ENUMINPUT_3 },
   { "VIDIOC_ENUMINPUT with NULL parameter", test_VIDIOC_ENUMINPUT_NULL },
 
-  { "VIDIOC_ENUM_FMT", test_VIDIOC_ENUM_FMT_1 },
-  { "VIDIOC_ENUM_FMT, index=U32_MAX", test_VIDIOC_ENUM_FMT_2 },
-  { "VIDIOC_ENUM_FMT, invalid type", test_VIDIOC_ENUM_FMT_3 },
-  { "VIDIOC_ENUM_FMT with NULL parameter", test_VIDIOC_ENUM_FMT_NULL },
+  { "VIDIOC_ENUMOUTPUT", test_VIDIOC_ENUMOUTPUT },
+  { "VIDIOC_ENUMOUTPUT, index=S32_MAX", test_VIDIOC_ENUMOUTPUT_S32_MAX },
+  { "VIDIOC_ENUMOUTPUT, index=S32_MAX+1", test_VIDIOC_ENUMOUTPUT_S32_MAX_1 },
+  { "VIDIOC_ENUMOUTPUT, index=U32_MAX", test_VIDIOC_ENUMOUTPUT_U32_MAX },
+  { "VIDIOC_ENUMOUTPUT with NULL parameter", test_VIDIOC_ENUMOUTPUT_NULL },
 
-  { "VIDIOC_ENUMAUDIO", test_VIDIOC_ENUMAUDIO },
-  { "VIDIOC_ENUMAUDIO with NULL parameter", test_VIDIOC_ENUMAUDIO_NULL },
+  { "VIDIOC_ENUMSTD", test_VIDIOC_ENUMSTD },
+  { "VIDIOC_ENUMSTD, index=S32_MAX", test_VIDIOC_ENUMSTD_S32_MAX },
+  { "VIDIOC_ENUMSTD, index=S32_MAX+1", test_VIDIOC_ENUMSTD_S32_MAX_1 },
+  { "VIDIOC_ENUMSTD, index=U32_MAX", test_VIDIOC_ENUMSTD_U32_MAX },
+  { "VIDIOC_ENUMSTD, index=MAX_EM28XX_TVNORMS", test_VIDIOC_ENUMSTD_3 },
+  { "VIDIOC_ENUMSTD with NULL parameter", test_VIDIOC_ENUMSTD_NULL },
+
+  { "VIDIOC_QUERYCTRL", test_VIDIOC_QUERYCTRL },
+  { "VIDIOC_QUERYCTRL, id=V4L2_CID_BASE-1", test_VIDIOC_QUERYCTRL_BASE_1 },
+  { "VIDIOC_QUERYCTRL, id=V4L2_CID_LASTP1", test_VIDIOC_QUERYCTRL_LASTP1 },
+  { "VIDIOC_QUERYCTRL, id=V4L2_CID_LASTP1+1", test_VIDIOC_QUERYCTRL_LASTP1_1 },
+  { "VIDIOC_QUERYCTRL with V4L2_CTRL_FLAG_NEXT_CTRL", test_VIDIOC_QUERYCTRL_flag_NEXT_CTRL },
+  { "VIDIOC_QUERYCTRL, enumerate private controls", test_VIDIOC_QUERYCTRL_private },
+  { "VIDIOC_QUERYCTRL, V4L2_CID_PRIVATE_BASE-1", test_VIDIOC_QUERYCTRL_private_base_1 },
+  { "VIDIOC_QUERYCTRL, last private control+1", test_VIDIOC_QUERYCTRL_private_last_1 },
+  { "VIDIOC_QUERYCTRL with NULL parameter", test_VIDIOC_QUERYCTRL_NULL },
 
   CU_TEST_INFO_NULL,
 };
@@ -97,11 +139,17 @@ static CU_TestInfo suite_invalid_ioctl[] = {
   CU_TEST_INFO_NULL,
 };
 
+static CU_TestInfo suite_debug_ioctl[] = {
+  { "test_VIDIOC_LOG_STATUS", test_VIDIOC_LOG_STATUS },
+
+  CU_TEST_INFO_NULL,
+};
 
 static CU_SuiteInfo suites[] = {
   { "VIDIOC_QUERYCAP", open_video, close_video, suite_querycap },
   { "VIDIOC_ENUM* ioctl calls", open_video, close_video, suite_enums },
   { "VIDIOC_G_*, VIDIOC_S_* and VIDIOC_TRY_* ioctl calls", open_video, close_video, suite_get_set_try },
+  { "debug ioctl calls", open_video, close_video, suite_debug_ioctl },
   { "invalid ioctl calls", open_video, close_video, suite_invalid_ioctl },
   CU_SUITE_INFO_NULL,
 };

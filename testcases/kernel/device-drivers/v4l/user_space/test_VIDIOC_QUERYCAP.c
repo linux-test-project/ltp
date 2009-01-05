@@ -29,15 +29,6 @@
 
 #include "test_VIDIOC_QUERYCAP.h"
 
-#ifndef V4L2_CAP_VIDEO_OUTPUT_OVERLAY
-#define V4L2_CAP_VIDEO_OUTPUT_OVERLAY  0x00000200
-#endif
-
-#ifndef V4L2_BUF_TYPE_VIDEO_OUTPUT_OVERLAY
-#define V4L2_BUF_TYPE_VIDEO_OUTPUT_OVERLAY 8
-#endif
-
-
 int valid_capabilities(__u32 capabilities) {
 	int valid = 1;
 

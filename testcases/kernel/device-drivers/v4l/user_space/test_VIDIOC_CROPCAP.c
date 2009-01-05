@@ -27,10 +27,6 @@
 
 #include "test_VIDIOC_CROPCAP.h"
 
-#ifndef V4L2_BUF_TYPE_VIDEO_OUTPUT_OVERLAY
-#define V4L2_BUF_TYPE_VIDEO_OUTPUT_OVERLAY 8
-#endif
-
 static void do_ioctl_VIDIOC_CROPCAP(enum v4l2_buf_type buf_type, int expected_ret) {
 	int ret;
 	struct v4l2_cropcap cropcap;

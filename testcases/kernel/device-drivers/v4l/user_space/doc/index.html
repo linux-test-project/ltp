@@ -102,11 +102,11 @@ test cases.<br>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r8242.htm">VIDIOC_ENUMAUDIO</a></td>
-      <td>yes, only valid cases</td>
+      <td>yes, only when STREAM_OFF</td>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r8304.htm">VIDIOC_ENUMAUDOUT</a></td>
-      <td>no</td>
+      <td>yes, only when STREAM_OFF</td>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r8367.htm">VIDIOC_ENUM_FMT</a></td>
@@ -126,7 +126,7 @@ test cases.<br>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r9149.htm">VIDIOC_ENUMOUTPUT</a></td>
-      <td>no</td>
+      <td>yes, only when STREAM_OFF</td>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r9288.htm">VIDIOC_ENUMSTD</a></td>
@@ -162,7 +162,7 @@ test cases.<br>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r10104.htm">VIDIOC_G_CTRL</a></td>
-      <td>no</td>
+      <td>yes, only private and user controls; only user controls with V4L2_CTRL_FLAG_NEXT_CTRL</td>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r10104.htm">VIDIOC_S_CTRL</a></td>
@@ -282,7 +282,7 @@ test cases.<br>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r12784.htm">VIDIOC_LOG_STATUS</a></td>
-      <td>no</td>
+      <td>yes</td>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r12816.htm">VIDIOC_OVERLAY</a></td>
@@ -306,7 +306,8 @@ test cases.<br>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r13317.htm">VIDIOC_QUERYCTRL</a></td>
-      <td>no</td>
+      <td>yes, only private and user controls;
+          only user controls with V4L2_CTRL_FLAG_NEXT_CTRL</td>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r13317.htm">VIDIOC_QUERYMENU</a></td>
@@ -367,6 +368,13 @@ So far I could find the following:<br>
 <ul>
   <li><a href="http://www.linuxowl.com/v4ltest.html">v4ltest</a><br>
   </li>
+  <li>test cases in <a href="http://linuxtv.org/hg/dvb-apps/file">dvb-apps repository</a>, under /test directory
+  </li>
+  <li>test cases in <a href="http://linuxtv.org/hg/v4l-dvb/file">v4l-dvb repository</a>, under /v4l2-apps/test directory
+  </li>
+  <li>this test environment is also available under <a href="http://ltp.sourceforge.net/">Linux Test Project</a>
+      (LTP), under directory testcases/kernel/device-drivers/v4l/user_space
+  </li>
 </ul>
 Please let me know if this list misses other V4L or V4L2 test project.<br>
 <a name="feedback"></a>
@@ -375,7 +383,7 @@ Any feedbacks, comments, ideas, etc. are welcome at the author's<br>
 email address.<br>
 <hr style="width: 100%; height: 2px;">
 Last changed:
-Mon Dec 22 07:43:59 2008
+Sun Jan  4 13:06:07 CET 2009
 <br>
 <p>
     <a href="http://validator.w3.org/check?uri=referer"><img
@@ -386,3 +394,4 @@ Mon Dec 22 07:43:59 2008
 
 </body>
 </html>
+

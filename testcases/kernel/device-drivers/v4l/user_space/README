@@ -1,6 +1,13 @@
 
            v4l-test: Test environment for Video For Linux Two API
 
+Release History
+---------------
+
+ 4 Jan 2008  0.3  Test cases for VIDIOC_ENUMOUTPUT, VIDIOC_ENUMAUDOUT,
+                  VIDIOC_QUERYCTRL added;
+                  New test cases for VIDIOC_ENUMAUDIO, VIDIOC_ENUM_FMT,
+                  VIDIOC_ENUM_STD
 22 Dec 2008  0.2  Test cases with NULL parameter added;
                   Test cases for VIDIOC_CROPCAP added
 18 Dec 2008  0.1  First release
@@ -20,8 +27,7 @@ How to build?
 -------------
 To build the test environment you will need a C compiler, "make" and the
 CUnit development files installed. Just type "make" and the test environment
-is ready. The CUnit framework can be downloaded & installed from:
-http://sourceforge.net/projects/cunit/
+is ready.
 
 How to run?
 -----------
@@ -72,13 +78,13 @@ test cases.
  ioctl VIDIOC_DBG_S_REGISTER      | no
  ioctl VIDIOC_ENCODER_CMD         | no
  ioctl VIDIOC_TRY_ENCODER_CMD     | no
- ioctl VIDIOC_ENUMAUDIO           | yes, only valid cases
- ioctl VIDIOC_ENUMAUDOUT          | no
+ ioctl VIDIOC_ENUMAUDIO           | yes, only when STREAM_OFF
+ ioctl VIDIOC_ENUMAUDOUT          | yes, only when STREAM_OFF
  ioctl VIDIOC_ENUM_FMT            | yes, only when STREAM_OFF
  ioctl VIDIOC_ENUM_FRAMESIZES     | no
  ioctl VIDIOC_ENUM_FRAMEINTERVALS | no
  ioctl VIDIOC_ENUMINPUT           | yes, only when STREAM_OFF
- ioctl VIDIOC_ENUMOUTPUT          | no
+ ioctl VIDIOC_ENUMOUTPUT          | yes, only when STREAM_OFF
  ioctl VIDIOC_ENUMSTD             | yes, only when STREAM_OFF
  ioctl VIDIOC_G_AUDIO             | no
  ioctl VIDIOC_S_AUDIO             | no
@@ -117,13 +123,14 @@ test cases.
  ioctl VIDIOC_S_STD               | yes, only when STREAM_OFF
  ioctl VIDIOC_G_TUNER             | no
  ioctl VIDIOC_S_TUNER             | no
- ioctl VIDIOC_LOG_STATUS          | no
+ ioctl VIDIOC_LOG_STATUS          | yes
  ioctl VIDIOC_OVERLAY             | no
  ioctl VIDIOC_QBUF                | no
  ioctl VIDIOC_DQBUF               | no
  ioctl VIDIOC_QUERYBUF            | no
  ioctl VIDIOC_QUERYCAP            | no
- ioctl VIDIOC_QUERYCTRL           | no
+ ioctl VIDIOC_QUERYCTRL           | yes, only private and user controls;
+                                  | only user controls with V4L2_CTRL_FLAG_NEXT_CTRL
  ioctl VIDIOC_QUERYMENU           | no
  ioctl VIDIOC_QUERYSTD            | no
  ioctl VIDIOC_REQBUFS             | no
@@ -138,7 +145,12 @@ test cases.
 
 Similar projects
 ----------------
-http://www.linuxowl.com/v4ltest.html
+ - v4ltest: http://www.linuxowl.com/v4ltest.html
+ - test cases in dvb-apps repository, under /test directory: http://linuxtv.org/hg/dvb-apps/file
+ - test cases in v4l-dvb repository, under /v4l2-apps/test directory:
+http://linuxtv.org/hg/v4l-dvb/file
+ - this test environment is also available under Linux Test Project (LTP),
+   under directory testcases/kernel/device-drivers/v4l/user_space: http://ltp.sourceforge.net/
 
 Feedbacks
 ---------

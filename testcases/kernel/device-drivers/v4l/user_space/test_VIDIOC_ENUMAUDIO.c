@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ *  1 Jan 2009  0.3  Added index=S32_MAX, S32_MAX+1 and U32_MAX
  * 22 Dec 2008  0.2  Test case with NULL parameter added
  * 18 Dec 2008  0.1  First release
  *
@@ -82,6 +83,60 @@ void test_VIDIOC_ENUMAUDIO() {
 
 }
 
+void test_VIDIOC_ENUMAUDIO_S32_MAX() {
+	int ret;
+	struct v4l2_audio audio;
+	struct v4l2_audio audio2;
+
+	memset(&audio, 0xff, sizeof(audio));
+	audio.index = (__u32)S32_MAX;
+	ret = ioctl(get_video_fd(), VIDIOC_ENUMAUDIO, &audio);
+
+	CU_ASSERT_EQUAL(ret, -1);
+	CU_ASSERT_EQUAL(errno, EINVAL);
+
+	/* Check whether the original audio struct is untouched */
+	memset(&audio2, 0xff, sizeof(audio2));
+	audio2.index = (__u32)S32_MAX;
+	CU_ASSERT_EQUAL(memcmp(&audio, &audio2, sizeof(audio)), 0);
+}
+
+void test_VIDIOC_ENUMAUDIO_S32_MAX_1() {
+	int ret;
+	struct v4l2_audio audio;
+	struct v4l2_audio audio2;
+
+	memset(&audio, 0xff, sizeof(audio));
+	audio.index = ((__u32)S32_MAX)+1;
+	ret = ioctl(get_video_fd(), VIDIOC_ENUMAUDIO, &audio);
+
+	CU_ASSERT_EQUAL(ret, -1);
+	CU_ASSERT_EQUAL(errno, EINVAL);
+
+	/* Check whether the original audio struct is untouched */
+	memset(&audio2, 0xff, sizeof(audio2));
+	audio2.index = ((__u32)S32_MAX)+1;
+	CU_ASSERT_EQUAL(memcmp(&audio, &audio2, sizeof(audio)), 0);
+}
+
+
+void test_VIDIOC_ENUMAUDIO_U32_MAX() {
+	int ret;
+	struct v4l2_audio audio;
+	struct v4l2_audio audio2;
+
+	memset(&audio, 0xff, sizeof(audio));
+	audio.index = U32_MAX;
+	ret = ioctl(get_video_fd(), VIDIOC_ENUMAUDIO, &audio);
+
+	CU_ASSERT_EQUAL(ret, -1);
+	CU_ASSERT_EQUAL(errno, EINVAL);
+
+	/* Check whether the original audio struct is untouched */
+	memset(&audio2, 0xff, sizeof(audio2));
+	audio2.index = U32_MAX;
+	CU_ASSERT_EQUAL(memcmp(&audio, &audio2, sizeof(audio)), 0);
+}
 
 void test_VIDIOC_ENUMAUDIO_NULL() {
 	int ret;
