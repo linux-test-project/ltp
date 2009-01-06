@@ -67,6 +67,7 @@ void ok_exit();
 #define ERROR(M) (void)fprintf(stderr, "%s: errno = %d: " M "\n", progname, \
 			errno)
 #define NEG1	(char *)-1
+#define POINTER_SIZE	(sizeof(void *) << 3)
 
 extern long	sysconf(int name);
 extern void	exit(int);
@@ -157,8 +158,8 @@ main(int argc, char *argv[])
                 anyfail();
 	}
 	/* Ask for a ridiculously large mmap region at a high address */
-	if (mmap((caddr_t)(INT_MAX - INT_MAX%pagesize),
-		(size_t)(INT_MAX - INT_MAX%pagesize),
+	if (mmap((caddr_t)(1UL << (POINTER_SIZE  - 1)) - pagesize,
+		(size_t)((1UL << (POINTER_SIZE - 1)) - pagesize),
 		PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_FIXED|MAP_SHARED, 0, 0)
 		!= (caddr_t)-1)
 	{
