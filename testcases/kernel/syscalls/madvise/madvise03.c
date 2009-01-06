@@ -136,8 +136,8 @@ int main(int argc, char *argv[])
 		#define MADV_REMOVE     9  		/* kernel version < 2.6.16 don't have these */            
 		#define MADV_DONTFORK   10        	/* definitions. So explicitly declared them */
 		#define MADV_DOFORK     11
-		tst_resm(TWARN, "This test can only run on kernels that are ");
-		tst_resm(TWARN, "2.6.16 and higher");
+		tst_resm(TCONF, "This test can only run on kernels that are ");
+		tst_resm(TCONF, "2.6.16 and higher");
 		tst_exit(0);
         }
 
