@@ -116,6 +116,12 @@ void do_le_switch(void) {
 }
 
 int main4(int ac, char **av, char **envp, unsigned long *auxv) {
+
+        if((tst_kvercmp(2, 6, 26)) < 0)
+        {
+                tst_resm(TCONF, "This test can only run on kernels that are 2.6.26 and higher");
+                tst_exit();
+        }
         setup();
 	for (; *auxv != AT_NULL && *auxv != AT_HWCAP; auxv += 2)
 		;
