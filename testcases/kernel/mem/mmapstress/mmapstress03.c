@@ -159,8 +159,7 @@ main(int argc, char *argv[])
 	/* Ask for a ridiculously large mmap region at a high address */
 	if (mmap((caddr_t)(INT_MAX - INT_MAX%pagesize),
 		(size_t)(INT_MAX - INT_MAX%pagesize),
-		/*PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_FIXED|MAP_SHARED, 0, 0) 12/31/02 */
-		PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_SHARED, 0, 0)
+		PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_FIXED|MAP_SHARED, 0, 0)
 		!= (caddr_t)-1)
 	{
 		ERROR("really large mmap didn't fail");
