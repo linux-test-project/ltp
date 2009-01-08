@@ -37,10 +37,11 @@
 * *  04/11/08  Veerendra C  <vechandr@in.ibm.com> Verifying cont init kill -USR1
 *
 *******************************************************************************/
+#include "config.h"
+
 #define _GNU_SOURCE 1
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/capability.h>
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <signal.h>
@@ -50,6 +51,9 @@
 #include <libclone.h>
 #define CHILD_PID	1
 #define PARENT_PID	0
+
+#if defined(HAVE_SYS_CAPABILITY)
+#include <sys/capability.h>
 
 char *TCID = "pidns16";
 int TST_TOTAL = 1;
@@ -164,3 +168,16 @@ int main(int argc, char *argv[])
 	return 0;
 }	/* End main */
 
+#else
+
+char *TCID = "pidns16";
+int TST_TOTAL = 0;              /* Total number of test cases. */
+
+int
+main()
+{
+    tst_resm(TBROK, "can't find header sys/capability.h");
+    return 1;
+}
+
+#endif

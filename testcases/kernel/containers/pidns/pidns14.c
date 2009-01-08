@@ -31,8 +31,9 @@
 * *  14/11/08  Veerendra C  <vechandr@in.ibm.com> Verifying kill -USR1 in pidns
 *
 ******************************************************************************/
+#include "config.h"
+
 #define _GNU_SOURCE 1
-#include <sys/capability.h>
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <signal.h>
@@ -41,6 +42,9 @@
 #include <usctest.h>
 #include <test.h>
 #include <libclone.h>
+
+#if defined(HAVE_SYS_CAPABILITY)
+#include <sys/capability.h>
 
 char *TCID = "pidns14";
 int TST_TOTAL = 1;
@@ -128,3 +132,16 @@ int main(int argc, char *argv[])
 	return 0;
 }	/* End main */
 
+#else
+
+char *TCID = "pidns14";
+int TST_TOTAL = 0;              /* Total number of test cases. */
+
+int
+main()
+{
+    tst_resm(TBROK, "can't find header sys/capability.h");
+    return 1;
+}
+
+#endif
