@@ -20,6 +20,8 @@
 
 // Use gcc -o xmm xmm.c -pthread -lm to compile.
 
+#if defined __i386__ || defined(__x86_64__)
+
 #include <stdio.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -195,3 +197,17 @@ main (void)
   pthread_join (th_b, &retval);
   return 0;
 }
+
+#else /* Not __i386__ */
+
+#include "test.h"
+#include "usctest.h"
+
+int TST_TOTAL = 0;              /* Total number of test cases. */
+
+int main() {
+        tst_resm(TCONF, "tcore only works on x86 systems ...");
+        tst_exit();
+}
+
+#endif /* __i386__ */
