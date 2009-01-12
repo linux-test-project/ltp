@@ -218,10 +218,10 @@ static int vmsplice_test(void)
                 * check if the current filesystem is nfs
                 */
                 if(tst_is_cwd_nfs()) {
-				if (flag == 1)
-					printf("vmsplice01    1  PASS  :  vmplice() passes\n");
-				else
-					tst_brkm(TCONF, cleanup, "Cannot do splice() on a file located on an NFS filesystem");
+			if (flag == 1)
+				tst_resm(TINFO, "vmplice() passes");
+			tst_brkm(TCONF, cleanup, "Cannot do splice() "
+				"on a file located on an NFS filesystem");
 		}
 
 
