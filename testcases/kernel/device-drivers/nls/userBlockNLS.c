@@ -91,8 +91,8 @@ int open_block_device()
                                                     S_IROTH | S_IXOTH));
 		
             } else {
-                printf("ERROR: Problem with INC dev directory.  Error code from stat(
-			) is %d\n\n", errno);
+                printf("ERROR: Problem with INC dev directory.  Error code from stat() "
+			"is %d\n\n", errno);
             }
         } else {
 	    if (!(statbuf.st_mode & S_IFDIR)) {

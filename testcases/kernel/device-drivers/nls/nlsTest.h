@@ -42,10 +42,3 @@ typedef enum nlsdev_ioctl_cmds_s {
 } nlsdev_ioctl_cmds_t;
 
 #define NLSDEV_CMD              _IOR(NLSMAJOR, NLS_IOCTL_NUMBER, nlsdev_cmd_t**)
-
-/*
- * function prototypes
- */
-
-static void option1(void);
-

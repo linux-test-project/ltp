@@ -3,7 +3,7 @@
 #
 
 #KERNELDIR := /usr/src/linux-2.5.64-gcov
-CFLAGS := $(CFLAGS) -Wall
+EXTRA_CFLAGS := -Wall
 
 ifneq ($(KERNELRELEASE),)
 

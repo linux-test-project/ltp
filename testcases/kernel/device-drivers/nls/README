@@ -1,0 +1,3 @@
+
+Depends on "nls_base" kernel module.
+Depends on CONFIG_NLS.
