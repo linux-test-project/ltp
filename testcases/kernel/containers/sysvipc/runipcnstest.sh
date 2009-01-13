@@ -20,12 +20,23 @@
 ################################################################################
 
 exit_code=0
-echo "sysvipc tests"
+ret=0
+echo "****************** sysvipc tests ******************"
 for type in none clone unshare; do
-      echo "**sysvipc $type"
+      echo "sysvipc: SharedMemory $type"
       shmnstest $type
-      if [ $? -ne 0 ]; then
-              exit_code=$?
+      ret=$?
+      if [ $ret -ne 0 ]; then
+              exit_code=$ret
+      fi
+done
+echo
+for type in none clone unshare; do
+      echo "sysvipc: MesgQ $type"
+      mesgq_nstest $type
+	  ret=$?
+      if [ $exit_code -ne 0 ]; then
+              exit_code=$ret
       fi
 done
 exit $exit_code
