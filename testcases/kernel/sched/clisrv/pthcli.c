@@ -104,9 +104,9 @@ main(int argc, char *argv[])
     struct sockaddr_in serv_addr;
 
     pname = argv[0];
-    if (argc < 2) 
+    if (argc < 3) 
     {
-  	printf("\nusage: %s ip#\n", pname);
+  	printf("\nusage: %s ip data\n", pname);
   	exit(1);
     }
 
@@ -141,7 +141,7 @@ main(int argc, char *argv[])
 	exit(1);
     }
 #ifdef _LINUX
-    if ((input = fopen("./data", "r")) == NULL) 
+    if ((input = fopen(argv[2], "r")) == NULL) 
     {
 	perror("fopen");
         return(errno);
