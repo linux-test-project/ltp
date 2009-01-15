@@ -183,34 +183,34 @@ if [ $NO_NETWORK -eq 0 ];then
     echo "The RPC test suite is using portmap"
   fi
 
-  ps -p | grep nfs 
+  ps -e | grep nfsd
   if [ $? -eq 1 ];then
     /usr/sbin/rpc.nfsd 
   fi
   sleep 1
-  ps -p | grep nfs 
+  ps -e | grep nfsd
   if [ $? -eq 1 ];then
     echo "Error: Could not start nfs server daemon."
     exit 1
   fi
 
-  ps -p | grep status 
+  ps -e | grep rpc.statd
   if [ $? -eq 1 ];then
     /sbin/rpc.statd 
   fi
   sleep 1
-  ps -p | grep status 
+  ps -e | grep rpc.statd
   if [ $? -eq 1 ];then
     echo "Error: Could not start statd daemon."
     exit 1
   fi
 
-  ps -p | grep mount 
+  ps -e | grep rpc.mountd
   if [ $? -eq 1 ];then
     /usr/sbin/rpc.mountd 
   fi
   sleep 1
-  ps -p | grep mount 
+  ps -e | grep rpc.mountd
   if [ $? -eq 1 ];then
     echo "Error: Could not start mountd daemon."
     exit 1
