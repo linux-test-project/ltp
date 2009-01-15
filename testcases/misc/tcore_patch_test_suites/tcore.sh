@@ -17,6 +17,7 @@
 #    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 # Test suite for the t-core kernel patch 
+export TCID=tcore01
 PTHREAD_DIR="/lib/i686"
 TEST_DIR="."
 OSTYPE="redhat"
