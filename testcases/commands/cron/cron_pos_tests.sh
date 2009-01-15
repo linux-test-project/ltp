@@ -24,8 +24,9 @@ if [ $iam = "root" ]; then
 
 	mv $CRON_ALLOW $CRON_ALLOW.old &> /dev/null
 	su $1 -c "$0 $*"
+        RC=$?
 	mv $CRON_ALLOW.old $CRON_ALLOW &> /dev/null
-	exit $?
+	exit $RC
 fi
 
 function restorecrontab () {
