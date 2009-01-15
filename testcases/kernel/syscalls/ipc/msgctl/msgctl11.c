@@ -80,7 +80,7 @@ int TST_TOTAL=1;                /* Total number of test cases. */
 extern int Tst_count;           /* Test Case counter for tst_* routines */
 
 int exp_enos[]={0};     /* List must end with 0 */
-
+int maxnkids = MAXNKIDS;	/* Used if pid_max is exceeded */
 
 key_t	keyarray[MAXNPROCS];
 
@@ -148,7 +148,7 @@ char	*argv[];
 		/* Set default parameters */
 		nreps = MAXNREPS;
 		nprocs = MSGMNI;
-		nkids = MAXNKIDS;
+		nkids = maxnkids;
 	}
 	else if (argc == 4 )
 	{
@@ -170,10 +170,10 @@ char	*argv[];
 		{
 			nprocs = atoi(argv[2]);
 		}
-		if (atoi(argv[3]) > MAXNKIDS )
+		if (atoi(argv[3]) > maxnkids)
 		{
-			tst_resm(TCONF,"Requested number of read/write pairs too large; setting to Max. of %d", MAXNKIDS);
-			nkids = MAXNKIDS;
+			tst_resm(TCONF,"Requested number of read/write pairs too large; setting to Max. of %d", maxnkids);
+			nkids = maxnkids;
 		}
 		else
 		{
@@ -626,13 +626,14 @@ term(int sig)
 	}
 }
 
+
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  *****************************************************************/
 void
 setup()
 {
-	int nr_msgqs;
+	int nr_msgqs, free_pids;
 
 	tst_tmpdir();
 	/* You will want to enable some signal handling so you can capture
@@ -657,6 +658,27 @@ setup()
 		tst_resm(TBROK,"Max number of message queues already used, cannot create more.");
 		cleanup();
 	}
+	
+	free_pids = get_free_pids();
+	if (free_pids < 0) {
+		tst_resm(TBROK, "Can't obtain free_pid count");
+		tst_exit();
+	}
+
+	else if (!free_pids) {
+		tst_resm(TBROK, "No free pids");
+		tst_exit();
+	}
+
+	if ((MSGMNI * MAXNKIDS * 2) > (free_pids / 2)) {
+		maxnkids = ((free_pids / 4) / MSGMNI);
+		if (!maxnkids) {
+			tst_resm(TBROK, "Not enough free pids");
+			tst_exit();
+		}
+	}
+	
+	tst_resm(TINFO,"Using upto %d pids",free_pids/2);
 }
 
 
