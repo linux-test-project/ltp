@@ -1,3 +1,30 @@
 
-Depends on "nls_base" kernel module.
-Depends on CONFIG_NLS.
+Native language support (nls) testsuite
+---------------------------------------
+
+The nls testsuite consists of a kernel space and a user space part. Currently
+the kernel space part is compileable (tested with 2.6.27 & 2.6.28). Check the
+top level README file in LTP to find out the kernel configuration dependencies
+of this testsuite.
+
+Before loading nlsTest.ko the nls_base.ko module must already be loaded.
+
+Building
+--------
+To build nlsTest.ko you will need to have the the Linux kernel sources installed
+on your build environment. Execute "make" from the current directory should
+build the nlsTest.ko.
+
+Executing the testsuite
+-----------------------
+The whole testsuite is executed automatically at module load time. You can
+find the test results in the "dmesg" output.
+
+Cleaning up
+-----------
+To clean up your test system can unload the nlsTest.ko module with
+"rmmod nlsTest". To clean up your build system execute "make clean".
+
+Credits
+-------
+This README was written by Márton Németh <nm127@freemail.hu>, 14 Jan 2009

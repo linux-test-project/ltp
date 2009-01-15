@@ -253,3 +253,8 @@ The tests also require CUnit Framework to be installed before compiling the test
 http://sourceforge.net/projects/cunit/
 ---------------------------------
 ---------------------------------
+
+Native language support (nls) testsuite requirements
+----------------------------------------------------
+CONFIG_NLS=m
+CONFIG_BLOCK=y

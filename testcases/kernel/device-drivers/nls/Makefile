@@ -2,7 +2,6 @@
 # Makefile for GCOV profiling kernel module
 #
 
-#KERNELDIR := /usr/src/linux-2.5.66-gcov
 EXTRA_CFLAGS := -Wall -Wextra -Wno-unused-parameter
 
 ifneq ($(KERNELRELEASE),)
@@ -16,17 +15,10 @@ default:
 	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) modules
 	gcc $(EXTRA_CFLAGS) -o userBlockNLS userBlockNLS.c
 #	$(MAKE) -C $(KERNELDIR) SUBDIRS=$(PWD) modules
-endif
 
 clean:
+	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) clean
 	rm -f modules.order
-	rm -f Module.symvers
 	rm -f userBlockNLS
-	rm -f nlsTest.o
-	rm -f nlsTest.ko
-	rm -f nlsTest.mod.c
-	rm -f nlsTest.mod.o
-	rm -f .nlsTest.ko.cmd
-	rm -f .nlsTest.mod.o.cmd
-	rm -f .nlsTest.o.cmd
-	rm -rf .tmp_versions
+
+endif
