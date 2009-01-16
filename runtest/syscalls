@@ -416,6 +416,7 @@ ioctl01_02   test_ioctl
 ioctl03      ioctl03
 
 inotify_init1_01 inotify_init1_01
+inotify_init1_02 inotify_init1_02
 
 inotify01 inotify01
 inotify02 inotify02
