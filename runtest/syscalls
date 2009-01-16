@@ -1000,6 +1000,7 @@ sigsuspend01 sigsuspend01
 
 
 socket01 socket01
+socket02 socket02
 
 socketcall01 socketcall01
 socketcall02 socketcall02
