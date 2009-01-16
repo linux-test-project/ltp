@@ -107,6 +107,8 @@ dup203 dup203
 dup204 dup204
 dup205 dup205
 
+dup3_01 dup3_01
+
 epoll_create2_01 epoll_create2_01
 epoll01 epoll-ltp
 
