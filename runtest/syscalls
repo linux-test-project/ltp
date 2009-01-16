@@ -115,6 +115,7 @@ epoll01 epoll-ltp
 eventfd01 eventfd01
 
 eventfd2_01 eventfd2_01
+eventfd2_02 eventfd2_02
 
 execl01 execl01
 execle01 execle01
