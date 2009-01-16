@@ -107,6 +107,7 @@ dup203 dup203
 dup204 dup204
 dup205 dup205
 
+epoll_create2_01 epoll_create2_01
 epoll01 epoll-ltp
 
 eventfd01 eventfd01
