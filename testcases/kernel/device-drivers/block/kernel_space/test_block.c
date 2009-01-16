@@ -10,11 +10,20 @@
  *   3. insmod ./test_block.ko
  *   4. Check the test results in "dmesg"
  *   5. rmmod test_block
+ *
+ * Changes:
+ * 16 Jan 2009  0.2  Added "tc" parameter to run test cases separately
+ * 11 Jan 2009  0.1  First release
  */
 
 
 #include <linux/module.h>
 #include <linux/fs.h>
+
+static unsigned int __initdata tc;
+module_param_named(tc, tc, int, 0);
+MODULE_PARM_DESC(tc, "Test Case to run. Default is 0 which means that run all tests.");
+
 
 MODULE_AUTHOR("Márton Németh <nm127@freemail.hu>");
 MODULE_DESCRIPTION("Test block drivers");
@@ -249,15 +258,30 @@ static void tc10(void) {
 static int test_init_module(void)
 {
 	printk(KERN_INFO "Starting test_block module\n");
-	tc01();
-	tc02();
-	tc03();
-	tc04();
-	tc05();
-	tc06();
-	tc07();
 
-	tc10();
+	if (tc == 0 || tc == 1)
+		tc01();
+
+	if (tc == 0 || tc == 2)
+		tc02();
+
+	if (tc == 0 || tc == 3)
+		tc03();
+
+	if (tc == 0 || tc == 4)
+		tc04();
+
+	if (tc == 0 || tc == 5)
+		tc05();
+
+	if (tc == 0 || tc == 6)
+		tc06();
+
+	if (tc == 0 || tc == 7)
+		tc07();
+
+	if (tc == 0 || tc == 10)
+		tc10();
 
 	return 0;
 }

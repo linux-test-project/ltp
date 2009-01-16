@@ -13,6 +13,7 @@ modules:
 
 clean:
 	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) clean
+	rm -f modules.order
 
 help:
 	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) help
