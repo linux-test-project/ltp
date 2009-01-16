@@ -414,6 +414,8 @@ getuid03_16 getuid03_16
 ioctl01_02   test_ioctl
 ioctl03      ioctl03
 
+inotify_init1_01 inotify_init1_01
+
 inotify01 inotify01
 inotify02 inotify02
 inotify03 inotify03 -D DEVICE -T DEVICE_FS_TYPE
