@@ -992,6 +992,8 @@ signal05 signal05
 
 signalfd01 signalfd01
 
+signalfd4_01 signalfd4_01
+
 sigpending02 sigpending02
 
 sigprocmask01 sigprocmask01
