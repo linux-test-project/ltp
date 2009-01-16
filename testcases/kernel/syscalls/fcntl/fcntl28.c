@@ -112,7 +112,6 @@ main(int ac, char **av)
     int lc,expected_result = -1;       /* loop counter, expected resul*/
 				       /*   from system call */
     char *msg;		 	       /* message returned from parse_opts */
-    int results;                       /* stores result of kernel comparison */    
     /***************************************************************
      * parse standard options
      ***************************************************************/
@@ -127,24 +126,7 @@ main(int ac, char **av)
     /* set the expected errnos... */
     TEST_EXP_ENOS(exp_enos);
 
-    if ((results=tst_kvercmp(2,6,10)) >= 0)
-	  {
-	    expected_result = -1;
-	  }
-    else if( ((results=tst_kvercmp(2,4,0)) >= 0)&&\
-	     ((results=tst_kvercmp(2,6,0))< 0) )
-      {
-	    expected_result = 1;
-      }
-    else if( ((results=tst_kvercmp(2,6,0)) >= 0)&&\
-	 ((results=tst_kvercmp(2,6,10))< 0) )
-      {
-	    expected_result = 0;
-      }
-    else
-      {
-	     expected_result = -1;
-      }
+    expected_result = -1;
 
     /***************************************************************
      * check looping state if -c option given
