@@ -44,6 +44,8 @@
  *	None
  */
 
+#include "config.h"
+
 #include <sys/select.h>
 #include <sys/signal.h>
 #include <sys/types.h>
@@ -59,21 +61,27 @@
 #include <usctest.h>
 #include <linux_syscall_numbers.h>
 
-#ifdef HAS_AIO_EVENTFD
+#ifdef HAVE_LIBAIO_H
 #include <libaio.h>
 #endif
 
 static void setup(void);
 static void cleanup(void);
 
-char *TCID = "eventfd01";
+TCID_DEFINE(eventfd01);
 int TST_TOTAL = 15;
 extern int Tst_count;
 
 static int
 myeventfd(unsigned int initval, int flags)
 {
-	return syscall(__NR_eventfd, initval);
+  /* eventfd2 uses FLAGS but eventfd doesn't take FLAGS. */
+#if defined (__NR_eventfd)
+    return syscall(__NR_eventfd, initval);
+#else
+    errno = ENOSYS;
+    return -1;
+#endif
 }
 
 /*
@@ -512,7 +520,7 @@ child_inherit_test(int fd)
 	}
 }
 
-#ifdef HAS_AIO_EVENTFD
+#ifdef HAVE_IO_SET_EVENTFD
 /*
  * Test whether counter overflow is detected and handled correctly. 
  *
