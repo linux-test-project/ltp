@@ -108,24 +108,41 @@ package:
 #
 # Autotools related
 #
+.PHONY: autotools
+autotools: aclocal autoconf autoheader automake
+
+.PHONY: aclocal
+aclocal: aclocal.m4
+aclocal.m4: $(wildcard m4/*.m4)
+	aclocal -I m4
+
 .PHONY: autoconf
-autoconf: configure config.h.in config.h
-configure: configure.ac $(notdir $(wildcard m4/*.m4))
+autoconf: configure
+configure: configure.ac aclocal.m4
 	autoconf
 
-config.h.in: configure.ac $(notdir $(wildcard m4/*.m4))
+.PHONY: autoheader
+autoheader: config.h.in
+config.h.in: configure.ac $(wildcard m4/*.m4)
 	autoheader
-
+	touch include/$@
 config.h: config.h.default
 	cp include/config.h.default include/config.h
 
-.PHONY: ac-clean ac-distclean ac-ac-maintainer-clean
+.PHONY: automake
+AUTOMAKE_FILES = config.guess config.sub install-sh missing
+automake: aclocal $(AUTOMAKE_FILES)
+$(AUTOMAKE_FILES): m4/Makefile.in
+m4/Makefile.in: m4/Makefile.am
+	automake -c -a
+
+.PHONY: ac-clean ac-distclean ac-maintainer-clean
 ac-clean:
 	rm -rf autom4te.cache
 	rm -f config.log config.status
 ac-distclean: ac-clean
 ac-maintainer-clean: ac-distclean
-	rm -f configure
+	rm -f aclocal.m4 configure $(AUTOMAKE_FILES) m4/Makefile.in
 
 #
 # Help

@@ -1,24 +1,22 @@
 AC_PREREQ([2.61])
 AC_INIT([ltp], [cvs], [ltp-results@lists.sourceforge.net])
+AM_INIT_AUTOMAKE
 AC_CONFIG_HEADERS([include/config.h])
-AC_CONFIG_FILES([config.mk])
+AC_CONFIG_FILES([config.mk m4/Makefile])
 
+AC_CANONICAL_HOST
+AC_PROG_CC
+AC_PROG_AR
+AC_PROG_RANLIB
 
-m4_include([m4/ltp-signalfd.m4])
-LTP_CHECK_SYSCALL_SIGNALFD
+AC_CHECK_HEADERS_ONCE([ \
+ifaddrs.h \
+sys/capability.h \
+sys/inotify.h \
+])
 
-m4_include([m4/ltp-modify_ldt.m4])
-LTP_CHECK_SYSCALL_MODIFY_LDT
-
-AC_CHECK_HEADERS([sys/inotify.h])
-
-AC_CHECK_HEADERS([sys/capability.h])
-
-m4_include([m4/ltp-eventfd.m4])
 LTP_CHECK_SYSCALL_EVENTFD
-
-AC_CHECK_HEADERS([sys/inotify.h])
-
-AC_CHECK_HEADERS([ifaddrs.h])
+LTP_CHECK_SYSCALL_MODIFY_LDT
+LTP_CHECK_SYSCALL_SIGNALFD
 
 AC_OUTPUT
