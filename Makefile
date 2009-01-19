@@ -1,32 +1,4 @@
-# To cross compile, override one or more of CC, AR, CROSS_CFLAGS,
-# LOADLIBES, LDFLAGS, & LIB_DIR and be sure to always build from the top level.
-#
-# To override them from the make commandline, do something like this:
-# $ CROSS_COMPILER=/opt/cegl-1.4/hardhat/devkit/ppc/405/bin/powerpc-linux-
-# $ make \
-#     CROSS_CFLAGS="-mcpu=403 -D__PPC405__" \
-#     LDFLAGS=-static \
-#     LOADLIBES="-lpthread -lc -lresolv -lnss_dns -lnss_files -lm -lc"
-#
-# Alternately, to override them by editing this file, uncomment the 
-# following lines:
-#   CROSS_COMPILER=/opt/ppc64/powerpc64-linux/bin/powerpc64-linux-
-#   CROSS_CFLAGS= -mpowerpc64
-#   LDFLAGS=-static 
-#   LOADLIBES=-lpthread -lc -lresolv -lnss_dns -lnss_files -lm -lc
-#   LIB_DIR=/lib64
-#   export LOADLIBES LIB_DIR
-#
-# Or, you can save all your settings into the local 'config.mk' file.
-# The defaults will not be usable in that case; you will need to
-# override things explicitly.
-#
-# uClinux Users: make sure you add -DUCLINUX to your CFLAGS
-#
-# Note: If you override a variable from the commandline all
-# assignments to it in the Makefiles will be ignored. To set it both 
-# in the commandline and in the Makefiles use a dummy variable like in
-# CFLAGS
+# See toplevel INSTALL for build info
 
 ifdef CROSS_COMPILE
 CROSS_COMPILER = $(CROSS_COMPILE)
