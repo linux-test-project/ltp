@@ -49,7 +49,7 @@
  *			   - added option to create a command file with all failed tests.
  * 	
  */
-/* $Id: pan.c,v 1.28 2008/11/11 05:15:52 subrata_modak Exp $ */
+/* $Id: pan.c,v 1.29 2009/01/19 09:05:34 subrata_modak Exp $ */
 
 #include <errno.h>
 #include <string.h>
@@ -1031,11 +1031,11 @@ get_collection(char *file, int optind, int argc, char **argv)
 
     head = p = n = NULL;
     a = b = buf;
-    while (*b != '\0') {
+    while (a) {
 	/* set b to the start of the next line and add a NULL character
 	 * to separate the two lines */
 	if ((b = strchr(a, '\n')) != NULL)
-	    *b = '\0';
+            *b++ = '\0';
 
 	/* If this is line isn't a comment */
 	if ((*a != '#') && (*a != '\0') && (*a != ' ')) {
@@ -1056,8 +1056,7 @@ get_collection(char *file, int optind, int argc, char **argv)
 	    p = n;
 	    coll->cnt++;
 	}
-	a += strlen(a) + 1;
-	b = a;
+        a = b;
     }
     free(buf);
 
