@@ -30,6 +30,7 @@
  *
  * Author(s)
  *      Raghavendra P.G. <raghavendra.pg@hp.com>
+ *      Raghavendra M.S. <raghavendra.ms@hp.com>
  */
 
 #ifndef _OA_SOAP_SERVER_EVENT_H
@@ -57,11 +58,22 @@ SaErrorT process_server_insertion_event(struct oh_handler_state *oh_handler,
 SaErrorT process_server_extraction_event(struct oh_handler_state *oh_handler,
                                          struct eventInfo *oa_event);
 
-SaErrorT process_server_thermal_event(struct oh_handler_state *oh_handler,
-                                      struct eventInfo *oa_event);
-
 SaErrorT build_inserted_server_rpt(struct oh_handler_state *oh_handler,
                                    struct bladeInfo *response,
                                    SaHpiRptEntryT *rpt);
 
+void oa_soap_proc_server_status(struct oh_handler_state *oh_handler,
+				SOAP_CON *con,
+				struct bladeStatus *status);
+
+void oa_soap_serv_post_comp(struct oh_handler_state *oh_handler,
+			    SOAP_CON *con,
+			    SaHpiInt32T bay_number);
+ 
+SaErrorT oa_soap_set_thermal_sensor(struct oh_handler_state *oh_handler,
+ 				    SaHpiRptEntryT *rpt,
+ 				    struct bladeThermalInfoArrayResponse
+ 					*thermal_response,
+ 				    SaHpiBoolT enable_flag);
+ 
 #endif

@@ -608,6 +608,8 @@ SaErrorT SAHPI_API saHpiResourceFailedRemove (
         SaHpiHsStateT hsstate;
         SaErrorT (*get_hotswap_state)(void *hnd, SaHpiResourceIdT rid,
                                       SaHpiHsStateT *state);
+        SaErrorT (*resource_failed_remove)(void *hnd, SaHpiResourceIdT rid);
+                                     
 
         OH_CHECK_INIT_STATE(SessionId);
         OH_GET_DID(SessionId, did);
@@ -633,6 +635,16 @@ SaErrorT SAHPI_API saHpiResourceFailedRemove (
         OH_HANDLER_GET(d, ResourceId, h);        
         oh_release_domain(d);
         hid = h->id;
+
+       	resource_failed_remove = h ? h->abi->resource_failed_remove : NULL;
+        if (resource_failed_remove) {
+	        error = resource_failed_remove(h->hnd, ResourceId);
+       	        oh_release_handler(h);
+	        return error;
+       	}
+
+	/* If the resource_failed_remove ABI is not defined, then remove the
+	 * resource from rptcache */
         if (rpte->ResourceCapabilities & SAHPI_CAPABILITY_MANAGED_HOTSWAP) {
         	get_hotswap_state = h ? h->abi->get_hotswap_state : NULL;
 	        if (!get_hotswap_state) {
@@ -1841,6 +1853,19 @@ SaErrorT SAHPI_API saHpiSensorReadingGet (
         }
 
         rv = get_func(h->hnd, ResourceId, SensorNum, Reading, EventState);
+
+	/* If the Reading->IsSupported is set to False, then Reading->Type and
+	 * Reading->Value fields are not valid. Hence, these two fields may not
+	 * be modified by the plugin. But the marshalling code expects all
+	 * the fields of return structure to have proper values.
+	 * 
+	 * The below code is added to overcome the marshalling limitation.
+	 */
+	if (rv == SA_OK && Reading->IsSupported == SAHPI_FALSE) {
+		Reading->Type = 0;
+		memset(&(Reading->Value), 0, sizeof(SaHpiSensorReadingUnionT));
+	}
+
         oh_release_handler(h);
 
         return rv;

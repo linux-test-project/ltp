@@ -31,6 +31,7 @@
  * Author(s)
  *      Raghavendra M.S. <raghavendra.ms@hp.com>
  *      Shuah Khan <shuah.khan@hp.com>
+ *      Raghavendra P.G. <raghavendra.pg@hp.com>
  */
 
 #ifndef _OA_SOAP_INVENTORY_H
@@ -38,6 +39,7 @@
 
 /* Include files */
 #include "oa_soap.h"
+#include <SaHpiOaSoap.h>
 
 /* cClass resource inventory string */
 #define ENCLOSURE_INVENTORY_STRING "Enclosure Inventory"
@@ -75,6 +77,59 @@ struct oa_soap_inventory
         SaHpiInventoryRecT        inv_rec;
         struct oa_soap_inventory_info info;
         char *comment;
+};
+
+/* Maximum areas for a resource in OA SOAP
+ * 
+ * If a new area is added for a resource, then change the maximum inventory
+ * area value. Accordingly, add dummy elements into global inventory RDR array
+ * in oa_soap_resources.c
+ */
+#define OA_SOAP_MAX_INV_AREAS 3
+
+/* Maximum fields in an area in OA SOAP
+ * 
+ * If a new field in an area for a resource, then change the maximum inventory
+ * fields value. Accordingly, add dummy elements into global inventory RDR array
+ * in oa_soap_resources.c
+ */
+#define OA_SOAP_MAX_INV_FIELDS 3
+
+struct oa_soap_inv_area {
+	struct oa_soap_area area;
+	struct oa_soap_field field_array[OA_SOAP_MAX_INV_FIELDS];
+};
+
+struct oa_soap_inv_rdr {
+	SaHpiRdrT rdr;
+	struct oa_soap_inventory inventory;
+	struct oa_soap_inv_area area_array[OA_SOAP_MAX_INV_AREAS];
+};
+
+/* The maximum size of the fan zone inventory field data.
+ * In c3000, it can have the data "1,2,3,4,5,6,7,8" for device bays.
+ * 3 bytes of char array is enough to accomodate above information.
+ *
+ * On supporting new enclosure type, change the below #define value as
+ * appropriate
+ */
+#define	OA_SOAP_MAX_FZ_INV_SIZE 31
+
+/* Maximum size of fan zone number digits. In c7000, 4 fan zones are supported.
+ * 1 digit is required to represent the fan zone number.
+ *
+ * On supporting new enclosure type, change the below #define value as
+ * appropriate
+ */
+#define OA_SOAP_MAX_FZ_NUM_SIZE 1
+
+/* Structure for mapping the Fans to Fan zones with shared status information.
+ * This will be used to construct the inventory data field for Fan
+ */
+struct oa_soap_fz_map {
+	SaHpiInt32T zone;
+	SaHpiInt32T secondary_zone;
+	SaHpiBoolT shared;
 };
 
 /* Inventory function declarations */
@@ -248,5 +303,16 @@ SaErrorT fetch_idr_field(struct oa_soap_inventory_info *inv_ptr,
 
 SaErrorT free_inventory_info(struct oh_handler_state *handler,
              SaHpiResourceIdT resource_id);
+
+SaErrorT oa_soap_build_fz_inv(struct oh_handler_state *oh_handler,
+			      SaHpiResourceIdT resource_id,
+			      struct fanZone *fan_zone);
+
+SaErrorT oa_soap_build_fan_inv(struct oh_handler_state *oh_handler,
+			       SaHpiResourceIdT resource_id,
+			       struct fanInfo *fan_info);
+
+SaErrorT oa_soap_build_lcd_inv(struct oh_handler_state *oh_handler,
+			       SaHpiResourceIdT resource_id);
 
 #endif

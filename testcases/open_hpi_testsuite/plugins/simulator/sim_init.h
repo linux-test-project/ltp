@@ -64,5 +64,7 @@ SaErrorT sim_set_resource_tag(void *hnd,
 SaErrorT sim_set_resource_severity(void *hnd,
                                    SaHpiResourceIdT rid,
                                    SaHpiSeverityT sev);
+SaErrorT sim_resource_failed_remove(void *hnd,
+				    SaHpiResourceIdT rid);
 
 #endif

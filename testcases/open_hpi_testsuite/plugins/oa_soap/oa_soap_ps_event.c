@@ -39,6 +39,9 @@
  *      process_ps_extraction_event() - Processes the power supply unit
  *                                      extraction event
  *
+ *	oa_soap_proc_ps_subsys_info() - Processes the power subsystem info event
+ *
+ *	oa_soap_proc_ps_status()      - Processes the power supply status event
  */
 
 #include "oa_soap_ps_event.h"
@@ -150,3 +153,122 @@ SaErrorT process_ps_extraction_event(struct oh_handler_state *oh_handler,
         return SA_OK;
 }
 
+/**
+ * oa_soap_proc_ps_subsys_info
+ *      @oh_handler	: Pointer to openhpi handler structure
+ *      @info		: Pointer to power subsystem info structure
+ *
+ * Purpose:
+ *	Processes the power subsystem info event
+ *
+ * Detailed Description: NA
+ *
+ * Return values:
+ *	NONE
+ **/
+void oa_soap_proc_ps_subsys_info(struct oh_handler_state *oh_handler,
+				 struct powerSubsystemInfo *info)
+{
+        SaErrorT rv = SA_OK;
+        struct oa_soap_handler *oa_handler;
+	SaHpiResourceIdT resource_id;
+
+        if (oh_handler == NULL || info == NULL) {
+                err("Invalid parameters");
+                return;
+        }
+
+        oa_handler = (struct oa_soap_handler *) oh_handler->data;
+        resource_id = oa_handler->oa_soap_resources.power_subsystem_rid;
+
+	/* Process the operational status sensor */
+	OA_SOAP_PROCESS_SENSOR_EVENT(OA_SOAP_SEN_OPER_STATUS,
+				     info->operationalStatus, 0, 0);
+
+	/* Process the predictive failure status sensor */
+	OA_SOAP_PROCESS_SENSOR_EVENT(OA_SOAP_SEN_PRED_FAIL,
+				     info->operationalStatus, 0, 0);
+
+	/* Process the redundancy sensor */
+	OA_SOAP_PROCESS_SENSOR_EVENT(OA_SOAP_SEN_REDUND,
+				     info->redundancy, 0, 0);
+
+	return;
+}
+
+/**
+ * oa_soap_proc_ps_status
+ *      @oh_handler	: Pointer to openhpi handler structure
+ *      @status		: Pointer to power supply status structure
+ *
+ * Purpose:
+ *	Processes the power supply status event
+ *
+ * Detailed Description: NA
+ *
+ * Return values:
+ *	NONE
+ **/
+void oa_soap_proc_ps_status(struct oh_handler_state *oh_handler,
+			    struct powerSupplyStatus *status)
+{
+        SaErrorT rv = SA_OK;
+        struct oa_soap_handler *oa_handler;
+	SaHpiResourceIdT resource_id;
+	enum diagnosticStatus diag_ex_status[OA_SOAP_MAX_DIAG_EX];
+
+        if (oh_handler == NULL || status == NULL) {
+                err("Invalid parameters");
+                return;
+        }
+
+        oa_handler = (struct oa_soap_handler *) oh_handler->data;
+        resource_id = oa_handler->oa_soap_resources.ps_unit.
+			resource_id[status->bayNumber - 1];
+
+	/* Process the operational status sensor */
+	OA_SOAP_PROCESS_SENSOR_EVENT(OA_SOAP_SEN_OPER_STATUS,
+				     status->operationalStatus, 0, 0);
+
+	/* Process the predictive failure status sensor */
+	OA_SOAP_PROCESS_SENSOR_EVENT(OA_SOAP_SEN_PRED_FAIL,
+				     status->operationalStatus, 0, 0);
+
+	/* Process the redundancy sensor */
+	OA_SOAP_PROCESS_SENSOR_EVENT(OA_SOAP_SEN_INT_DATA_ERR,
+				    status->diagnosticChecks.
+					internalDataError, 0, 0)
+
+	/* Process the device location error sensor */
+	OA_SOAP_PROCESS_SENSOR_EVENT(OA_SOAP_SEN_DEV_LOC_ERR,
+				     status->diagnosticChecks.
+					deviceLocationError, 0, 0)
+
+	/* Process the device failure error sensor */
+	OA_SOAP_PROCESS_SENSOR_EVENT(OA_SOAP_SEN_DEV_FAIL,
+				     status->diagnosticChecks.deviceFailure,
+				     0, 0)
+
+	/* Process the device degraded error sensor */
+	OA_SOAP_PROCESS_SENSOR_EVENT(OA_SOAP_SEN_DEV_DEGRAD,
+				     status->diagnosticChecks.deviceDegraded,
+				     0, 0)
+
+	/* Process the AC failure sensor */
+	OA_SOAP_PROCESS_SENSOR_EVENT(OA_SOAP_SEN_AC_FAIL,
+				     status->diagnosticChecks.acFailure, 0, 0)
+
+	oa_soap_parse_diag_ex(status->diagnosticChecksEx, diag_ex_status);
+
+	/* Process device not supported sensor rdr */
+	OA_SOAP_PROCESS_SENSOR_EVENT(OA_SOAP_SEN_DEV_NOT_SUPPORT,
+				     diag_ex_status[DIAG_EX_DEV_NOT_SUPPORT],
+				     0, 0)
+
+	/* Process Device mix match sensor */
+	OA_SOAP_PROCESS_SENSOR_EVENT(OA_SOAP_SEN_DEV_MIX_MATCH,
+				     diag_ex_status[DIAG_EX_DEV_MIX_MATCH],
+				     0, 0)
+
+	return;
+}

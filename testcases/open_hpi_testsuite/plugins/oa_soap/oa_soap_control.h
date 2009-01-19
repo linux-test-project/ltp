@@ -37,8 +37,10 @@
 #define _OA_SOAP_CONTROL_H
 
 /* Include files */
+#include <SaHpiOaSoap.h>
 #include "oa_soap.h"
 #include "oa_soap_power.h"
+#include "oa_soap_resources.h"
 
 /* Tag for the control rdr */
 #define SERVER_CONTROL_STRING "Server Power Control"
@@ -57,11 +59,9 @@ SaErrorT oa_soap_set_control_state(void *oh_handler,
                                    SaHpiCtrlModeT mode,
                                    SaHpiCtrlStateT *state);
 
-SaErrorT build_server_control_rdr(struct oh_handler_state *oh_handler,
-                                  SaHpiInt32T rdr_num,
-                                  SaHpiRdrT *rdr);
+SaErrorT oa_soap_build_control_rdr(struct oh_handler_state *oh_handler,
+                           SaHpiRdrT *rdr,
+                           SaHpiResourceIdT resource_id,
+                           SaHpiCtrlNumT control_num);
 
-SaErrorT build_interconnect_control_rdr(struct oh_handler_state *oh_handler,
-                                        SaHpiInt32T rdr_num,
-                                        SaHpiRdrT *rdr);
 #endif

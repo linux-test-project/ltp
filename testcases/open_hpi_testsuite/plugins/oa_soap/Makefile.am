@@ -48,18 +48,24 @@ liboa_soap_la_SOURCES   = oa_soap.h \
                           oa_soap_hotswap.c \
                           oa_soap_utils.h \
                           oa_soap_utils.c \
+                          oa_soap_resources.h \
+                          oa_soap_resources.c \
                           oa_soap_discover.h \
                           oa_soap_discover.c \
                           oa_soap_re_discover.h \
                           oa_soap_re_discover.c \
                           oa_soap_event.h \
                           oa_soap_event.c \
+                          oa_soap_enclosure_event.h \
+                          oa_soap_enclosure_event.c \
                           oa_soap_oa_event.h \
                           oa_soap_oa_event.c \
                           oa_soap_ps_event.h \
                           oa_soap_ps_event.c \
                           oa_soap_fan_event.h \
                           oa_soap_fan_event.c \
+                          oa_soap_lcd_event.h \
+                          oa_soap_lcd_event.c \
                           oa_soap_server_event.h \
                           oa_soap_server_event.c \
                           oa_soap_interconnect_event.h \

@@ -214,6 +214,11 @@ struct oh_abi_v2 {
         SaErrorT (*set_resource_severity)(void *hnd,
 					  SaHpiResourceIdT id,
 					  SaHpiSeverityT sev);
+        /***
+         * saHpiResourceFailedRemove, passed down to plugin
+         **/
+	SaErrorT (*resource_failed_remove)(void *hnd,
+					   SaHpiResourceIdT rid);
 
         /*****************
          * EVENT LOG ABIs

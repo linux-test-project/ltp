@@ -28,7 +28,7 @@
 #include <oh_utils.h>
 #include <oh_clients.h>
 
-#define OH_SVN_REV "$Revision: 1.3 $"
+#define OH_SVN_REV "$Revision: 1.4 $"
 
 int fdebug = 0;
 int fshowthr = 0;

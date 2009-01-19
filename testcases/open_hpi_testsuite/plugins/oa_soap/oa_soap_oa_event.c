@@ -33,8 +33,6 @@
  *
  * This file has the OA related events handling
  *
- *      process_oa_insertion_event()    - Processes the OA insertion event
- *
  *      process_oa_extraction_event()   - Processes the OA extraction event
  *
  *      process_oa_failover_event()     - Processes the OA failover event
@@ -48,15 +46,10 @@
  *                                        insertion event, then it processed.
  *                                        Else, it is ignored
  *
- *      add_oa_inv_area()               - Adds the OA inventory area for newly
- *                                        inserted OA.  This function is called
- *                                        while processing the OA info event.
+ *	oa_soap_proc_oa_status()	- Porcesses the OA status event
  *
- *      build_inserted_oa_rdr()         - Builds the RDRs for the newly
- *                                        inserted OA
+ * 	oa_soap_proc_oa_network_info()	- Processes the OA network info event
  *
- *      build_inserted_oa_inv_rdr()     - Builds the bare minimum inventory
- *                                        RDR for newly inserted OA
  */
 
 #include "oa_soap_oa_event.h"
@@ -370,4 +363,126 @@ SaErrorT process_oa_info_event(struct oh_handler_state *oh_handler,
         }
 
         return rv;
+}
+
+/**
+ * oa_soap_proc_oa_status
+ *      @oh_handler	: Pointer to openhpi handler structure
+ *      @status		: Pointer to the OA status structure
+ *
+ * Purpose:
+ *      Processes the OA status event and generates the HPI sensor event.
+ *
+ * Detailed Description:
+ * 	NA
+ *
+ * Return values:
+ *	NONE
+ **/
+void oa_soap_proc_oa_status(struct oh_handler_state *oh_handler,
+			    struct oaStatus *status)
+{
+        SaErrorT rv = SA_OK;
+        SaHpiInt32T bay_number;
+        struct oa_soap_handler *oa_handler = NULL;
+	SaHpiResourceIdT resource_id;
+	enum diagnosticStatus diag_ex_status[OA_SOAP_MAX_DIAG_EX];
+
+        if (oh_handler == NULL || status == NULL) {
+                err("Invalid parameters");
+                return;
+        }
+
+        oa_handler = (struct oa_soap_handler *) oh_handler->data;
+        bay_number = status->bayNumber;
+	resource_id =
+		oa_handler->oa_soap_resources.oa.resource_id[bay_number - 1];
+
+	/* Process the operational status sensor */
+	OA_SOAP_PROCESS_SENSOR_EVENT(OA_SOAP_SEN_OPER_STATUS,
+				     status->operationalStatus, 0, 0)
+
+	/* Process the predictive failure status sensor */
+	OA_SOAP_PROCESS_SENSOR_EVENT(OA_SOAP_SEN_PRED_FAIL,
+				     status->operationalStatus, 0, 0)
+
+	/* Process the OA redundancy sensor */
+	OA_SOAP_PROCESS_SENSOR_EVENT(OA_SOAP_SEN_OA_REDUND,
+				     status->oaRedundancy, 0, 0)
+
+	/* Process the internal data error sensor */
+	OA_SOAP_PROCESS_SENSOR_EVENT(OA_SOAP_SEN_INT_DATA_ERR,
+				     status->diagnosticChecks.internalDataError,
+				     0, 0)
+
+	/* Process the management processor error sensor */
+	OA_SOAP_PROCESS_SENSOR_EVENT(OA_SOAP_SEN_MP_ERR,
+				     status->diagnosticChecks.
+					managementProcessorError, 0, 0)
+
+	/* Process the device failure sensor */
+	OA_SOAP_PROCESS_SENSOR_EVENT(OA_SOAP_SEN_DEV_FAIL,
+				     status->diagnosticChecks.deviceFailure,
+				     0, 0)
+
+	/* Process the device degraded sensor */
+	OA_SOAP_PROCESS_SENSOR_EVENT(OA_SOAP_SEN_DEV_DEGRAD,
+				     status->diagnosticChecks.deviceDegraded,
+				     0, 0)
+
+	/* Process the redundancy error sensor */
+	OA_SOAP_PROCESS_SENSOR_EVENT(OA_SOAP_SEN_REDUND_ERR,
+				     status->diagnosticChecks.redundancy, 0, 0)
+
+	oa_soap_parse_diag_ex(status->diagnosticChecksEx, diag_ex_status);
+
+	/* Process the firmware mismatch sensor */
+	OA_SOAP_PROCESS_SENSOR_EVENT(OA_SOAP_SEN_FW_MISMATCH,
+				     diag_ex_status[DIAG_EX_FW_MISMATCH], 0, 0);
+
+	/* Process the device not supported sensor */
+	OA_SOAP_PROCESS_SENSOR_EVENT(OA_SOAP_SEN_DEV_NOT_SUPPORT,
+				     diag_ex_status[DIAG_EX_DEV_NOT_SUPPORT],
+				     0, 0);
+
+        return;
+}
+
+/**
+ * oa_soap_proc_oa_network_info
+ *      @oh_handler	: Pointer to openhpi handler structure
+ *      @nw_info	: Pointer to the OA network info structure
+ *
+ * Purpose:
+ *      Processes the OA network info event and generates the HPI sensor event.
+ *
+ * Detailed Description:
+ * 	NA
+ *
+ * Return values:
+ *	NONE
+ **/
+void oa_soap_proc_oa_network_info(struct oh_handler_state *oh_handler,
+				  struct oaNetworkInfo *nw_info)
+{
+        SaErrorT rv = SA_OK;
+        SaHpiInt32T bay_number;
+        struct oa_soap_handler *oa_handler = NULL;
+	SaHpiResourceIdT resource_id;
+
+        if (oh_handler == NULL || nw_info == NULL) {
+                err("Invalid parameters");
+                return;
+        }
+
+        oa_handler = (struct oa_soap_handler *) oh_handler->data;
+        bay_number = nw_info->bayNumber;
+	resource_id =
+		oa_handler->oa_soap_resources.oa.resource_id[bay_number - 1];
+
+	/* Process the OA link status sensor */
+	OA_SOAP_PROCESS_SENSOR_EVENT(OA_SOAP_SEN_OA_LINK_STATUS,
+				     nw_info->linkActive, 0, 0)
+
+        return;
 }

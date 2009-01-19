@@ -48,4 +48,10 @@ SaErrorT process_oa_info_event(struct oh_handler_state *oh_handler,
                                SOAP_CON *con,
                                struct eventInfo *oa_event);
 
+void oa_soap_proc_oa_status(struct oh_handler_state *oh_handler,
+			    struct oaStatus *status);
+
+void oa_soap_proc_oa_network_info(struct oh_handler_state *oh_handler,
+				  struct oaNetworkInfo *nw_info);
+
 #endif

@@ -54,10 +54,11 @@ SaErrorT process_interconnect_extraction_event(struct oh_handler_state
                                                *oh_handler,
                                                struct eventInfo *oa_event);
 
-SaErrorT process_interconnect_status_event(struct oh_handler_state *oh_handler,
-                                           struct eventInfo *oa_event);
+void oa_soap_proc_interconnect_status(struct oh_handler_state *oh_handler,
+				      struct interconnectTrayStatus *status);
 
-SaErrorT process_interconnect_thermal_event(struct oh_handler_state *oh_handler,
-                                            struct eventInfo *oa_event);
+void oa_soap_proc_interconnect_thermal(struct oh_handler_state *oh_handler,
+				       SOAP_CON *con,
+				       struct interconnectTrayStatus *response);
 
 #endif

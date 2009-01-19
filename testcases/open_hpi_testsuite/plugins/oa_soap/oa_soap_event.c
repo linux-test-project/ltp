@@ -416,6 +416,13 @@ void process_oa_out_of_access(struct oh_handler_state *oh_handler,
                 return;
         }
 
+	/* Get the user_name and password from config file */
+	user_name =
+		(char *) g_hash_table_lookup(oh_handler->config,
+					     "OA_User_Name");
+	password =
+		(char *) g_hash_table_lookup(oh_handler->config, "OA_Password");
+
         oa_handler = (struct oa_soap_handler *) oh_handler->data;
         /* Start a timer */
         timer = g_timer_new();
@@ -496,13 +503,6 @@ void process_oa_out_of_access(struct oh_handler_state *oh_handler,
                  * inserted OA IP address
                  */
                 if (oa_was_removed == SAHPI_TRUE) {
-                        /* Get the user_name and password from config file */
-                        user_name = (char *)
-                                    g_hash_table_lookup(oh_handler->config,
-                                                        "OA_User_Name");
-                        password = (char *)
-                                   g_hash_table_lookup(oh_handler->config,
-                                                       "OA_Password");
                         /* Create the OA connection */
                         create_oa_connection(oa, user_name, password);
                         is_oa_reachable = SAHPI_TRUE;
@@ -570,13 +570,17 @@ void process_oa_events(struct oh_handler_state *oh_handler,
                                 dbg("HEART BEAT EVENT");
                                 break;
                         case EVENT_ENC_STATUS:
-                                dbg("EVENT_ENC_STATUS -- Not processed");
+				dbg("EVENT_ENC_STATUS");
+				oa_soap_proc_enc_status(oh_handler,
+					&(event.eventData.enclosureStatus));
                                 break;
                         case EVENT_ENC_UID:
                                 dbg("EVENT_ENC_UID -- Not processed");
                                 break;
                         case EVENT_ENC_SHUTDOWN:
-                                dbg("EVENT_ENC_SHUTDOWN -- Not processed");
+				dbg("EVENT_ENC_SHUTDOWN");
+				oa_soap_proc_enc_status(oh_handler,
+					&(event.eventData.enclosureStatus));
                                 break;
                         case EVENT_ENC_INFO:
                                 dbg("EVENT_ENC_INFO -- Not processed");
@@ -592,14 +596,17 @@ void process_oa_events(struct oh_handler_state *oh_handler,
                                     "-- Not processed");
                                 break;
                         case EVENT_ENC_SHUTDOWN_PENDING:
-                                dbg("EVENT_ENC_SHUTDOWN_PENDING "
-                                    "-- Not processed");
+				dbg("EVENT_ENC_SHUTDOWN_PENDING");
+				oa_soap_proc_enc_status(oh_handler,
+					&(event.eventData.enclosureStatus));
                                 break;
                         case EVENT_ENC_TOPOLOGY:
                                 dbg("EVENT_ENC_TOPOLOGY -- Not processed");
                                 break;
                         case EVENT_FAN_STATUS:
-                                dbg("EVENT_FAN_STATUS -- Not processed");
+				dbg("EVENT_FAN_STATUS");
+				oa_soap_proc_fan_status(oh_handler,
+						&(event.eventData.fanInfo));
                                 break;
 
                         case EVENT_FAN_INSERTED:
@@ -621,13 +628,19 @@ void process_oa_events(struct oh_handler_state *oh_handler,
                                 dbg("EVENT_THERMAL_STATUS -- Not processed");
                                 break;
                         case EVENT_COOLING_STATUS:
-                                dbg("EVENT_COOLING_STATUS -- Not processed");
+				dbg("EVENT_COOLING_STATUS");
+				oa_soap_proc_therm_subsys_info(oh_handler,
+				       &(event.eventData.thermalSubsystemInfo));
                                 break;
                         case EVENT_FAN_ZONE_STATUS:
-                                dbg("EVENT_FAN_ZONE_STATUS -- Not processed");
+				dbg("EVENT_FAN_ZONE_STATUS");
+				oa_soap_proc_fz_status(oh_handler,
+						&(event.eventData.fanZone));
                                 break;
                         case EVENT_PS_STATUS:
-                                dbg("EVENT_PS_STATUS -- Not processed");
+				dbg("EVENT_PS_STATUS");
+				oa_soap_proc_ps_status(oh_handler,
+					&(event.eventData.powerSupplyStatus));
                                 break;
                         case EVENT_PS_INSERTED:
                                 dbg("EVENT_PS_INSERTED");
@@ -642,10 +655,14 @@ void process_oa_events(struct oh_handler_state *oh_handler,
                                 break;
 
                         case EVENT_PS_REDUNDANT:
-                                dbg("EVENT_PS_REDUNDANT -- Not processed");
+				dbg("EVENT_PS_REDUNDANT");
+				oa_soap_proc_ps_subsys_info(oh_handler,
+				       &(event.eventData.powerSubsystemInfo));
                                 break;
                         case EVENT_PS_OVERLOAD:
-                                dbg("EVENT_PS_OVERLOAD -- Not processed");
+				dbg("EVENT_PS_OVERLOAD");
+				oa_soap_proc_ps_subsys_info(oh_handler,
+				       &(event.eventData.powerSubsystemInfo));
                                 break;
                         case EVENT_AC_FAILURE:
                                 dbg("EVENT_AC_FAILURE -- Not processed");
@@ -654,8 +671,9 @@ void process_oa_events(struct oh_handler_state *oh_handler,
                                 dbg("EVENT_PS_INFO -- Not processed");
                                 break;
                         case EVENT_PS_SUBSYSTEM_STATUS:
-                                dbg("EVENT_PS_SUBSYSTEM_STATUS "
-                                    "-- Not processed");
+				dbg("EVENT_PS_SUBSYSTEM_STATUS");
+				oa_soap_proc_ps_subsys_info(oh_handler,
+				       &(event.eventData.powerSubsystemInfo));
                                 break;
                         case EVENT_SERVER_POWER_REDUCTION_STATUS:
                                 dbg("EVENT_SERVER_POWER_REDUCTION_STATUS "
@@ -663,8 +681,8 @@ void process_oa_events(struct oh_handler_state *oh_handler,
                                 break;
                         case EVENT_INTERCONNECT_STATUS:
                                 dbg("EVENT_INTERCONNECT_STATUS");
-                                rv = process_interconnect_status_event(
-                                        oh_handler, &event);
+                                oa_soap_proc_interconnect_status(oh_handler,
+				     &(event.eventData.interconnectTrayStatus));
                                 break;
 
                         case EVENT_INTERCONNECT_RESET:
@@ -696,8 +714,9 @@ void process_oa_events(struct oh_handler_state *oh_handler,
                                 break;
                         case EVENT_INTERCONNECT_THERMAL:
                                 dbg("EVENT_INTERCONNECT_THERMAL");
-                                rv = process_interconnect_thermal_event(
-                                        oh_handler, &event);
+                                oa_soap_proc_interconnect_thermal(oh_handler,
+					con, &(event.eventData.
+						interconnectTrayStatus));
                                 break;
                         case EVENT_INTERCONNECT_CPUFAULT:
                                 dbg("EVENT_INTERCONNECT_CPUFAULT "
@@ -720,14 +739,17 @@ void process_oa_events(struct oh_handler_state *oh_handler,
                                     "-- Not processed");
                                 break;
                         case EVENT_INTERCONNECT_HEALTH_STATE:
-                                dbg("EVENT_INTERCONNECT_HEALTH_STATE "
-                                    "-- Not processed");
+                                dbg("EVENT_INTERCONNECT_HEALTH_STATE");
+                                oa_soap_proc_interconnect_status(oh_handler,
+				     &(event.eventData.interconnectTrayStatus));
                                 break;
                         case EVENT_DEMO_MODE:
                                 dbg("EVENT_DEMO_MODE -- Not processed");
                                 break;
                         case EVENT_BLADE_STATUS:
-                                dbg("EVENT_BLADE_STATUS -- Not processed");
+				dbg("EVENT_BLADE_STATUS");
+				oa_soap_proc_server_status(oh_handler, con,
+						&(event.eventData.bladeStatus));
                                 break;
 
                         case EVENT_BLADE_INSERTED:
@@ -741,8 +763,8 @@ void process_oa_events(struct oh_handler_state *oh_handler,
                                 break;
 
                         case EVENT_BLADE_POWER_STATE:
-                                dbg("EVENT_BLADE_POWER_STATE");
-                                rv = process_server_power_event(oh_handler,
+				dbg("EVENT_BLADE_POWER_STATE");
+                                process_server_power_event(oh_handler,
                                                                 con, &event);
                                 break;
 
@@ -753,15 +775,14 @@ void process_oa_events(struct oh_handler_state *oh_handler,
                                 dbg("EVENT_BLADE_UID -- Not processed");
                                 break;
                         case EVENT_BLADE_SHUTDOWN:
-                                dbg("EVENT_BLADE_SHUTDOWN -- Not processed");
+				dbg("EVENT_BLADE_SHUTDOWN");
+				oa_soap_proc_server_status(oh_handler, con,
+						&(event.eventData.bladeStatus));
                                 break;
                         case EVENT_BLADE_FAULT:
-                                dbg("EVENT_BLADE_FAULT -- Not processed");
-                                break;
-                        case EVENT_BLADE_THERMAL:
-                                dbg("EVENT_BLADE_THERMAL");
-                                rv = process_server_thermal_event(oh_handler,
-                                                                  &event);
+				dbg("EVENT_BLADE_FAULT");
+				oa_soap_proc_server_status(oh_handler, con,
+						&(event.eventData.bladeStatus));
                                 break;
                         case EVENT_BLADE_INFO:
                                 dbg("EVENT_BLADE_INFO -- Not processed");
@@ -785,7 +806,9 @@ void process_oa_events(struct oh_handler_state *oh_handler,
                                 dbg("EVENT_POWER_INFO -- Not processed");
                                 break;
                         case EVENT_LCD_STATUS:
-                                dbg("EVENT_LCD_STATUS -- Not processed");
+				dbg("EVENT_LCD_STATUS");
+				oa_soap_proc_lcd_status(oh_handler,
+						&(event.eventData.lcdStatus));
                                 break;
                         case EVENT_LCD_INFO:
                                 dbg("EVENT_LCD_INFO -- Not processed");
@@ -794,7 +817,9 @@ void process_oa_events(struct oh_handler_state *oh_handler,
                                 dbg("EVENT_REDUNDANCY -- Not processed");
                                 break;
                         case EVENT_ILO_DEAD:
-                                dbg("EVENT_ILO_DEAD -- Not processed");
+				dbg("EVENT_ILO_DEAD");
+				oa_soap_proc_server_status(oh_handler, con,
+						&(event.eventData.bladeStatus));
                                 break;
                         case EVENT_RACK_SERVICE_STARTED:
                                 dbg("EVENT_RACK_SERVICE_STARTED "
@@ -805,15 +830,18 @@ void process_oa_events(struct oh_handler_state *oh_handler,
                                     "-- Not processed");
                                 break;
                         case EVENT_ILO_ALIVE:
-                                dbg("EVENT_ILO_ALIVE -- Not processed");
+				dbg("EVENT_ILO_ALIVE");
+				oa_soap_proc_server_status(oh_handler, con,
+						&(event.eventData.bladeStatus));
                                 break;
                         case EVENT_PERSONALITY_CHECK:
                                 dbg("EVENT_PERSONALITY_CHECK -- Not processed");
                                 break;
 
                         case EVENT_BLADE_POST_COMPLETE:
-                                dbg("EVENT_BLADE_POST_COMPLETE "
-                                    "-- Not processed");
+                                dbg("EVENT_BLADE_POST_COMPLETE");
+				oa_soap_serv_post_comp(oh_handler, con, 
+						       event.numValue);
                                 break;
 
                         case EVENT_BLADE_SIGNATURE_CHANGED:
@@ -850,7 +878,9 @@ void process_oa_events(struct oh_handler_state *oh_handler,
                                 dbg("EVENT_OA_NAMES -- Not processed");
                                 break;
                         case EVENT_OA_STATUS:
-                                dbg("EVENT_OA_STATUS -- Not processed");
+				dbg("EVENT_OA_STATUS");
+				oa_soap_proc_oa_status(oh_handler,
+						&(event.eventData.oaStatus));
                                 break;
                         case EVENT_OA_UID:
                                 dbg("EVENT_OA_UID -- Not processed");
@@ -1047,8 +1077,9 @@ void process_oa_events(struct oh_handler_state *oh_handler,
                                 dbg("EVENT_BLADE_BOOT_CONFIG -- Not processed");
                                 break;
                         case EVENT_OA_NETWORK_CONFIG_CHANGED:
-                                dbg("EVENT_OA_NETWORK_CONFIG_CHANGED "
-                                    "-- Not processed");
+				dbg("EVENT_OA_NETWORK_CONFIG_CHANGED");
+				oa_soap_proc_oa_network_info(oh_handler,
+					 &(event.eventData.oaNetworkInfo));
                                 break;
                         case EVENT_HPSIM_XENAME_ADDED:
                                 dbg("EVENT_HPSIM_XENAME_ADDED "

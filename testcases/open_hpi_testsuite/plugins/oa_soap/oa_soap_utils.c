@@ -86,12 +86,6 @@
  *      delete_all_inventory_info()     - Frees the memory allocated for
  *                                        inventory areas for all the resources
  *
- *      populate_event()                - Populates the event structure
- *
- *      push_discovered_resource_events - Creates the event structure.
- *                                        Pushes the discovered resource events
- *                                        to OpenHPI infrastructure
- *
  *      cleanup_plugin_rptable()        - Frees the memory allocated for
  *                                        plugin RPTable
  *
@@ -1166,143 +1160,6 @@ SaErrorT delete_all_inventory_info(struct oh_handler_state *oh_handler)
 }
 
 /**
- * populate_event
- *       @oh_handler:  Pointer to openhpi handler
- *       @resource_id: Resource Id
- *       @event:       Pointer to event structure
- *
- * Purpose:
- *      Gets the rpt entry and RDR from plugin RPTable for
- *      the resource. Creates the hotswap event and pushes
- *      the event to openhpi infrastructure
- *
- * Detailed Description: NA
- *
- * Return values:
- *      SA_OK                     - on success.
- *      SA_ERR_HPI_OUT_OF_MEMORY  - on out of memory
- *      SA_ERR_HPI_INVALID_PARAMS - on wrong parameters
- *      SA_ERR_HPI_INTERNAL_ERROR - on failure.
- **/
-SaErrorT populate_event(struct oh_handler_state *oh_handler,
-                        SaHpiResourceIdT resource_id,
-                        struct oh_event *event)
-{
-        SaHpiRptEntryT *rpt = NULL;
-        SaHpiRdrT *temp, *rdr = NULL;
-
-        if (oh_handler == NULL || event == NULL) {
-                err("Invalid parameters");
-                return SA_ERR_HPI_INVALID_PARAMS;
-        }
-
-        rpt = oh_get_resource_by_id(oh_handler->rptcache, resource_id);
-
-        memset(event, 0, sizeof(struct oh_event));
-        event->event.Source = rpt->ResourceId;
-        oh_gettimeofday(&event->event.Timestamp);
-        event->event.Severity = rpt->ResourceSeverity;
-        event->resource = *rpt;
-        event->hid = oh_handler->hid;
-
-        /* Add all RDRs of this RPT entry */
-        rdr = oh_get_rdr_next(oh_handler->rptcache, rpt->ResourceId,
-                                    SAHPI_FIRST_ENTRY);
-        while (rdr) {
-                temp = g_memdup(rdr, sizeof(SaHpiRdrT));
-                if (temp == NULL) {
-                        err("Out of memory");
-                        return SA_ERR_HPI_OUT_OF_MEMORY;
-                }
-                event->rdrs = g_slist_append(event->rdrs, temp);
-                rdr = oh_get_rdr_next(oh_handler->rptcache, rpt->ResourceId,
-                                      rdr->RecordId);
-        }
-
-        return SA_OK;
-}
-
-/**
- * push_discovered_resource_events
- *       @oh_handler: Pointer to openhpi handler
- *
- * Purpose:
- *      Gets all the rpt entry and RDR from plugin RPTable.
- *      Creates the resource/hotswap event and pushes
- *      the events to openhpi infrastructure
- *
- * Detailed Description: NA
- *
- * Return values:
- *      SA_OK                     - on success.
- *      SA_ERR_HPI_OUT_OF_MEMORY  - on out of memory
- *      SA_ERR_HPI_INVALID_PARAMS - on wrong parameters
- *      SA_ERR_HPI_INTERNAL_ERROR - on failure.
- **/
-SaErrorT push_discovered_resource_events(struct oh_handler_state *oh_handler)
-{
-        SaErrorT rv = SA_OK;
-        SaHpiRptEntryT *rpt = NULL;
-        struct oh_event event;
-        struct oa_soap_hotswap_state *hotswap_state = NULL;
-
-        if (oh_handler == NULL) {
-                err("Invalid parameter");
-                return SA_ERR_HPI_INVALID_PARAMS;
-        }
-
-        rpt = oh_get_resource_next(oh_handler->rptcache, SAHPI_FIRST_ENTRY);
-        while (rpt) {
-                rv = populate_event(oh_handler, rpt->ResourceId, &event);
-
-                /* Check whether the resource has hotswap capability */
-                if (event.resource.ResourceCapabilities &
-                        SAHPI_CAPABILITY_MANAGED_HOTSWAP) {
-                        /* Get the hotswap state and fill the current
-                         * hotswap state
-                         */
-                        hotswap_state = (struct oa_soap_hotswap_state *)
-                                oh_get_resource_data(oh_handler->rptcache,
-                                                     event.resource.ResourceId);
-                        if (hotswap_state == NULL) {
-                                err("Failed to get server hotswap state");
-                                return SA_ERR_HPI_INTERNAL_ERROR;
-                        }
-                        event.event.EventType = SAHPI_ET_HOTSWAP;
-                        event.event.EventDataUnion.HotSwapEvent.HotSwapState =
-                                hotswap_state->currentHsState;
-                        event.event.EventDataUnion.HotSwapEvent.
-                                CauseOfStateChange = SAHPI_HS_CAUSE_UNKNOWN;
-                } else if (event.resource.ResourceCapabilities &
-                                SAHPI_CAPABILITY_FRU) {
-                        /* The resource is FRU, but does not have hotswap
-                         * capability Fill the current hotswap state as ACTIVE.
-                         */
-                        event.event.EventType = SAHPI_ET_HOTSWAP;
-                        event.event.EventDataUnion.HotSwapEvent.HotSwapState =
-                                SAHPI_HS_STATE_ACTIVE;
-                        event.event.EventDataUnion.HotSwapEvent.
-                                CauseOfStateChange = SAHPI_HS_CAUSE_UNKNOWN;
-                } else {
-                        /* The resource does not have FRU and hotswap
-                         * capabilities. Raise the resrouce event.
-                         */
-                        event.event.EventType = SAHPI_ET_RESOURCE;
-                        event.event.EventDataUnion.ResourceEvent.
-                                ResourceEventType = SAHPI_RESE_RESOURCE_ADDED;
-                }
-                /* Push the event to OpenHPI */
-                oh_evt_queue_push(oh_handler->eventq,
-                                  copy_oa_soap_event(&event));
-
-                rpt = oh_get_resource_next(oh_handler->rptcache,
-                                           rpt->ResourceId);
-        } /* End of while loop */
-
-        return SA_OK;
-}
-
-/**
  * cleanup_plugin_rptable
  *      @oh_handler: Pointer to the plugin handler
  *
@@ -1417,6 +1274,11 @@ void release_oa_soap_resources(struct oa_soap_handler *oa_handler)
         }
         if (oa_handler->oa_soap_resources.fan.resource_id != NULL) {
                 g_free(oa_handler->oa_soap_resources.fan.resource_id);
+        }
+
+        /* Release memory of fan zone resource id */
+        if (oa_handler->oa_soap_resources.fan_zone.resource_id != NULL) {
+                g_free(oa_handler->oa_soap_resources.fan_zone.resource_id);
         }
 
         /* Release memory of power supply presence and serial number array */

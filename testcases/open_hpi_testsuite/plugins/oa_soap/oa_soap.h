@@ -48,18 +48,65 @@
 
 #include "oa_soap_calls.h"
 
+/* The resource numbers in OA SOAP. The rpt and rdr arrays are indexed based on
+ * the entity numbers defined below.
+ * On supporting a new resource in OA SOAP plugin, please update the rpt and rdr
+ * arrays in oa_soap_resources.c
+ */ 
+/* Enclosure */
+#define OA_SOAP_ENT_ENC			0
+/* Server Blade */
+#define OA_SOAP_ENT_SERV		1
+/* IO Blade */
+#define OA_SOAP_ENT_IO			2
+/* Storage Blade */
+#define OA_SOAP_ENT_STORAGE		3
+/* Switch Blade */
+#define OA_SOAP_ENT_SWITCH		4
+/* Onboard Administrator */
+#define OA_SOAP_ENT_OA			5
+/* Power Subsystem */
+#define OA_SOAP_ENT_PS_SUBSYS		6
+/* Power supply */
+#define OA_SOAP_ENT_PS			7
+/* Thermal subsystem */
+#define OA_SOAP_ENT_THERM_SUBSYS 	8
+/* Fan Zone */
+#define OA_SOAP_ENT_FZ			9
+/* Fan */
+#define OA_SOAP_ENT_FAN			10
+/* LCD */
+#define OA_SOAP_ENT_LCD			11
+
+/* The different enclosure types supported by OA SOAP 
+ *
+ * If a new enclosure is added, please update the OA_SOAP_MAX_FAN. Add
+ * entries for the new enclosure in oa_soap_fz_map_arr in
+ * oa_soap_resources.c file.
+ */
+#define OA_SOAP_ENC_C7000       0
+#define OA_SOAP_ENC_C3000       1
+
+/* Max Blade in HP BladeSystem c7000 c-Class enclosure*/
+#define OA_SOAP_C7000_MAX_BLADE 16
+/* Max Blade in HP BladeSystem c3000 c-Class enclosure*/
+#define OA_SOAP_C3000_MAX_BLADE 8
+
+/* Maximum Fan Zones present in different HP BladeSystem c-Class enclosures */
+#define OA_SOAP_C7000_MAX_FZ 4
+#define OA_SOAP_C3000_MAX_FZ 1
+
+/* Maximum fans supported in an enclosure 
+ *
+ * If the max fan is changed, please update entries to
+ * oa_soap_fz_map_arr in oa_soap_resources.c file
+ */
+#define OA_SOAP_MAX_FAN         10
+
 /* Definitions for the different RDR instrument ids */
+/* TODO: Move below definitons to SaHpiOaSoap.h file */
 #define OA_SOAP_RES_INV_NUM                (SaHpiIdrIdT)     0x000
 #define OA_SOAP_RES_CNTRL_NUM              (SaHpiCtrlNumT)   0x001
-#define OA_SOAP_RES_SEN_TEMP_NUM           (SaHpiSensorNumT) 0x002
-#define OA_SOAP_RES_SEN_EXH_TEMP_NUM       (SaHpiSensorNumT) 0x003
-#define OA_SOAP_RES_SEN_FAN_NUM            (SaHpiSensorNumT) 0x004
-#define OA_SOAP_RES_SEN_POWER_NUM          (SaHpiSensorNumT) 0x005
-#define OA_SOAP_RES_SEN_PRES_NUM           (SaHpiSensorNumT) 0x006
-#define OA_SOAP_RES_SEN_OPR_NUM            (SaHpiSensorNumT) 0x007
-#define OA_SOAP_RES_SEN_IN_POWER_NUM       (SaHpiSensorNumT) 0x008
-#define OA_SOAP_RES_SEN_OUT_POWER_NUM      (SaHpiSensorNumT) 0x009
-#define OA_SOAP_RES_SEN_POWER_CAPACITY_NUM (SaHpiSensorNumT) 0x00a
 
 /* SOAP XML calls timeout values for event thread and hpi calls */
 #define HPI_CALL_TIMEOUT 10
@@ -132,9 +179,12 @@ struct oa_soap_resource_status
 {
         SaHpiResourceIdT enclosure_rid;
         SaHpiResourceIdT power_subsystem_rid;
+        SaHpiResourceIdT thermal_subsystem_rid;
+        SaHpiResourceIdT lcd_rid;
         struct resource_status oa;
         struct resource_status server;
         struct resource_status interconnect;
+        struct resource_status fan_zone;
         struct resource_status fan;
         struct resource_status ps_unit;
 };
@@ -147,6 +197,8 @@ struct oa_soap_handler
         SOAP_CON *active_con;
         struct oa_info *oa_1;
         struct oa_info *oa_2;
+	/* Type of the enclsoure */
+	SaHpiInt32T enc_type; 
         GMutex *mutex;
 };
 

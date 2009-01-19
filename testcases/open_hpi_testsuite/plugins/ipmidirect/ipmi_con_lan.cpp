@@ -931,6 +931,13 @@ cIpmiConLan::ReadResponse( int &seq, cIpmiAddr &addr, cIpmiMsg &msg )
 	    stdlog << "Dropped message because too small(2)\n";
 	    return eResponseTypeError;
 	  }
+       // not enoough data bytes
+       if ( data[13] <= 0 ) 
+	  {
+	    // Not enough data was supplied, reject the message.
+	    stdlog << "Dropped message because data len is <=0 (1)\n";
+	    return eResponseTypeError;
+          }
 
        data_len = data[13];
      }
@@ -950,6 +957,13 @@ cIpmiConLan::ReadResponse( int &seq, cIpmiAddr &addr, cIpmiMsg &msg )
 	    stdlog << "Dropped message because too small(4)\n";
 	    return eResponseTypeError;
 	  }
+       // not enoough data bytes
+       if ( data[29] <= 0 ) 
+	  {
+	    // Not enough data was supplied, reject the message.
+	    stdlog << "Dropped message because data len is <=0 (2)\n";
+	    return eResponseTypeError;
+          }
 
        data_len = data[29];
      }

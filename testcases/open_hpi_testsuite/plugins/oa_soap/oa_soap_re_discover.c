@@ -54,9 +54,59 @@
  *
  *      re_discover_oa()                - Re-discovers the onboard administrator
  *
+ *	oa_soap_re_disc_oa_sen()	- Re-discovers the OA sensor states
+ *
+ * 	oa_soap_re_disc_server_sen()	- Re-discovers the server sensor states
+ *
+ *	oa_soap_re_disc_interconct_sen()- Re-discovers the interconnect sensor
+ *					  states
+ *
+ *	oa_soap_re_disc_ps_sen()	- Re-discovers the power supply sensor
+ *					  states
+ *
+ *	oa_soap_re_disc_enc_sen()	- Re-discovers the enclosure sensor
+ *					  states
+ *
+ *	oa_soap_re_disc_ps_subsys_sen()	- Re-discovers the power subsystem
+ *					  sensor states
+ *
+ *	oa_soap_re_disc_lcd_sen()	- Re-discovers the LCD sensor states
+ *
+ *	oa_soap_re_disc_fz_sen()	- Re-discovers the fan zone sensor
+ *					  states
+ *
+ * 	oa_soap_re_disc_therm_subsys_sen()- Re-discovers the thermal subsystem
+ *					    sensor states
  */
 
 #include "oa_soap_re_discover.h"
+
+/* Forward declarations for static functions */
+static SaErrorT oa_soap_re_disc_oa_sen(struct oh_handler_state *oh_handler,
+				       SOAP_CON *con,
+				       SaHpiInt32T bay_number);
+static SaErrorT oa_soap_re_disc_server_sen(struct oh_handler_state *oh_handler,
+					   SOAP_CON *con,
+					   SaHpiInt32T bay_number);
+static SaErrorT oa_soap_re_disc_interconct_sen(struct oh_handler_state
+							*oh_handler,
+					      SOAP_CON *con,
+					      SaHpiInt32T bay_number);
+static SaErrorT oa_soap_re_disc_ps_sen(struct oh_handler_state *oh_handler,
+				       SOAP_CON *con,
+				       SaHpiInt32T bay_number);
+static SaErrorT oa_soap_re_disc_enc_sen(struct oh_handler_state *oh_handler,
+					SOAP_CON *con);
+static SaErrorT oa_soap_re_disc_ps_subsys_sen(struct oh_handler_state
+						*oh_handler,
+					      SOAP_CON *con);
+static SaErrorT oa_soap_re_disc_lcd_sen(struct oh_handler_state *oh_handler,
+					SOAP_CON *con);
+static SaErrorT oa_soap_re_disc_fz_sen(struct oh_handler_state *oh_handler,
+				       SOAP_CON *con);
+static SaErrorT oa_soap_re_disc_therm_subsys_sen(struct oh_handler_state
+							*oh_handler,
+						SOAP_CON *con);
 
 /**
  * oa_soap_re_discover_resources
@@ -113,6 +163,37 @@ SaErrorT oa_soap_re_discover_resources(struct oh_handler_state *oh_handler,
                 err("Re-discovery of OA failed");
                 return rv;
         }
+
+	rv = oa_soap_re_disc_enc_sen(oh_handler, con);
+        if (rv != SA_OK) {
+                err("Re-discovery of enclosure failed");
+                return rv;
+        }
+
+	rv = oa_soap_re_disc_ps_subsys_sen(oh_handler, con);
+        if (rv != SA_OK) {
+                err("Re-discovery of power subsystem failed");
+                return rv;
+        }
+
+	rv = oa_soap_re_disc_lcd_sen(oh_handler, con);
+        if (rv != SA_OK) {
+                err("Re-discovery of LCD failed");
+                return rv;
+        }
+
+	rv = oa_soap_re_disc_fz_sen(oh_handler, con);
+        if (rv != SA_OK) {
+                err("Re-discovery of fan zone failed");
+                return rv;
+        }
+
+	rv = oa_soap_re_disc_therm_subsys_sen(oh_handler, con);
+        if (rv != SA_OK) {
+                err("Re-discovery of thermal subsystem failed");
+                return rv;
+        }
+
 
         err("Re-discovery completed");
         return SA_OK;
@@ -205,8 +286,17 @@ SaErrorT re_discover_oa(struct oh_handler_state *oh_handler,
                                            serial_number[i - 1],
                                            info_response.serialNumber) != 0) {
                                         replace_resource = SAHPI_TRUE;
-                                } else
+                                } else {
+					/* Check the OA sensors state */
+					rv = oa_soap_re_disc_oa_sen(
+						oh_handler, con, i);
+					if (rv != SA_OK) {
+						err("Re-discover OA sensors "
+						    " failed");
+						return rv;
+					}
                                         continue;
+				}
                        } else
                                 state = RES_PRESENT;
                 }
@@ -363,6 +453,8 @@ SaErrorT add_oa(struct oh_handler_state *oh_handler,
         struct oa_info *temp = NULL;
         SaHpiResourceIdT resource_id;
         struct oh_event event;
+	GSList *asserted_sensors = NULL;
+	SaHpiRptEntryT *rpt;
 
         if (oh_handler == NULL || con == NULL) {
                 err("Invalid parameters");
@@ -463,7 +555,7 @@ SaErrorT add_oa(struct oh_handler_state *oh_handler,
         }
 
         /* Build the RDRs */
-        rv = build_oa_rdr(oh_handler, con, &response, resource_id);
+        rv = build_oa_rdr(oh_handler, con, bay_number, &response, resource_id);
         if (rv != SA_OK) {
                 err("Failed to build OA RDR");
                 /* Free the inventory info from inventory RDR */
@@ -480,7 +572,8 @@ SaErrorT add_oa(struct oh_handler_state *oh_handler,
                 return rv;
         }
 
-        rv = populate_event(oh_handler, resource_id, &event);
+        rv = oa_soap_populate_event(oh_handler, resource_id, &event,
+				    &asserted_sensors);
         if (rv != SA_OK) {
                 err("Populating event struct failed");
                 return rv;
@@ -501,6 +594,13 @@ SaErrorT add_oa(struct oh_handler_state *oh_handler,
         oh_evt_queue_push(oh_handler->eventq, copy_oa_soap_event(&event));
 
         oa_handler->oa_soap_resources.oa.presence[bay_number - 1] = RES_PRESENT;
+
+	/* Raise the assert sensor events */
+	if (asserted_sensors) {
+	        rpt = oh_get_resource_by_id(oh_handler->rptcache, resource_id);
+		oa_soap_assert_sen_evt(oh_handler, rpt, asserted_sensors);
+	}
+
         return SA_OK;
 }
 
@@ -580,6 +680,14 @@ SaErrorT re_discover_blade(struct oh_handler_state *oh_handler,
                                         return rv;
                                     }
                                 }
+				/* Check the server sensors state */
+				rv = oa_soap_re_disc_server_sen(oh_handler, con,
+								i);
+				if (rv != SA_OK) {
+					err("Re-discover server sensors "
+					    "failed");
+					return rv;
+				}
                                 continue;
                         }
                 } else
@@ -590,8 +698,7 @@ SaErrorT re_discover_blade(struct oh_handler_state *oh_handler,
                          * matrix, but server is removed.  Remove the server
                          * resource from RPTable.
                          */
-                        rv = remove_server_blade(oh_handler, i,
-                                response.bladeType);
+                        rv = remove_server_blade(oh_handler, i);
                         if (rv != SA_OK) {
                                 err("Server blade %d removal failed", i);
                                 return rv;
@@ -770,7 +877,6 @@ SaErrorT update_server_hotswap_state(struct oh_handler_state *oh_handler,
  * remove_server_blade
  *      @oh_handler: Pointer to openhpi handler
  *      @bay_number: Bay number of the removed blade
- *      @blade_type: Type of the blade
  * Purpose:
  *      Remove the Server Blade from the RPTable
  *
@@ -782,7 +888,7 @@ SaErrorT update_server_hotswap_state(struct oh_handler_state *oh_handler,
  *      SA_ERR_HPI_INTERNAL_ERROR - on failure.
  **/
 SaErrorT remove_server_blade(struct oh_handler_state *oh_handler,
-                             SaHpiInt32T bay_number, enum bladeType blade_type)
+                             SaHpiInt32T bay_number)
 {
         SaErrorT rv = SA_OK;
         struct oa_soap_handler *oa_handler;
@@ -815,12 +921,7 @@ SaErrorT remove_server_blade(struct oh_handler_state *oh_handler,
                 /* Simple hotswap */
                 event.event.EventDataUnion.HotSwapEvent.PreviousHotSwapState =
                         SAHPI_HS_STATE_ACTIVE;
-                event.event.EventDataUnion.HotSwapEvent.HotSwapState =
-                        SAHPI_HS_STATE_NOT_PRESENT;
-                event.event.EventDataUnion.HotSwapEvent.CauseOfStateChange =
-                        SAHPI_HS_CAUSE_OPERATOR_INIT;
-        }
-        else {
+        } else {
                 /* Managed hotswap */
                 hotswap_state = (struct oa_soap_hotswap_state *)
                         oh_get_resource_data(oh_handler->rptcache,
@@ -829,29 +930,27 @@ SaErrorT remove_server_blade(struct oh_handler_state *oh_handler,
                         err("Failed to get hotswap state of server blade");
                         event.event.EventDataUnion.HotSwapEvent.
                                 PreviousHotSwapState = SAHPI_HS_STATE_INACTIVE;
-                }
-
-                event.event.EventDataUnion.HotSwapEvent.PreviousHotSwapState =
-                        hotswap_state->currentHsState;
-                event.event.EventDataUnion.HotSwapEvent.HotSwapState =
-                        SAHPI_HS_STATE_NOT_PRESENT;
-
-                if (hotswap_state->currentHsState == SAHPI_HS_STATE_INACTIVE) {
-                        /* INACTIVE to NOT_PRESENT state change happened due to
-                         * operator action
-                         */
-                        event.event.EventDataUnion.HotSwapEvent.
-                                CauseOfStateChange =
-                                SAHPI_HS_CAUSE_OPERATOR_INIT;
                 } else {
-                        /* This state change happened due to a surprise
-                         * extraction
-                         */
-                        event.event.EventDataUnion.HotSwapEvent.
-                                CauseOfStateChange =
-                                SAHPI_HS_CAUSE_SURPRISE_EXTRACTION;
-                }
-        } /* End of hotswap type if conditional */
+                	event.event.EventDataUnion.HotSwapEvent.
+				PreviousHotSwapState =
+					hotswap_state->currentHsState;
+		}
+	}
+        event.event.EventDataUnion.HotSwapEvent.HotSwapState =
+                SAHPI_HS_STATE_NOT_PRESENT;
+
+        if (event.event.EventDataUnion.HotSwapEvent.PreviousHotSwapState ==
+            SAHPI_HS_STATE_INACTIVE) {
+                /* INACTIVE to NOT_PRESENT state change happened due to
+                 * operator action
+                 */
+                event.event.EventDataUnion.HotSwapEvent.CauseOfStateChange =
+                        SAHPI_HS_CAUSE_OPERATOR_INIT;
+        } else {
+                /* This state change happened due to a surprise extraction */
+                event.event.EventDataUnion.HotSwapEvent.CauseOfStateChange =
+                        SAHPI_HS_CAUSE_SURPRISE_EXTRACTION;
+        }
 
         /* Push the hotswap event to remove the resource from OpenHPI RPTable */
         oh_evt_queue_push(oh_handler->eventq, copy_oa_soap_event(&event));
@@ -903,6 +1002,8 @@ SaErrorT add_server_blade(struct oh_handler_state *oh_handler,
         struct oa_soap_handler *oa_handler;
         SaHpiResourceIdT resource_id;
         SaHpiRptEntryT *rpt;
+	GSList *asserted_sensors = NULL;
+	char blade_name[MAX_NAME_LEN];
 
         if (oh_handler == NULL || info == NULL || con == NULL) {
                 err("Invalid parameters");
@@ -921,6 +1022,10 @@ SaErrorT add_server_blade(struct oh_handler_state *oh_handler,
                 return SA_ERR_HPI_INTERNAL_ERROR;
         }
 
+	/* Copy the blade name from response for future processing */
+	convert_lower_to_upper(response.name, strlen(response.name),
+			       blade_name, MAX_NAME_LEN);
+
         /* Build the server RPR entry */
         rv = build_discovered_server_rpt(oh_handler, con, info, &resource_id);
         if (rv != SA_OK) {
@@ -936,7 +1041,8 @@ SaErrorT add_server_blade(struct oh_handler_state *oh_handler,
                       response.serialNumber, resource_id, RES_PRESENT);
 
         /* Build the server RDR */
-        rv = build_server_rdr(oh_handler, con, bay_number, resource_id);
+        rv = build_server_rdr(oh_handler, con, bay_number, resource_id, 
+			      blade_name);
         if (rv != SA_OK) {
                 err("build inserted server RDR failed");
                 /* Free the inventory info from inventory RDR */
@@ -953,7 +1059,8 @@ SaErrorT add_server_blade(struct oh_handler_state *oh_handler,
                 return rv;
         }
 
-        rv = populate_event(oh_handler, resource_id, &event);
+        rv = oa_soap_populate_event(oh_handler, resource_id, &event,
+				    &asserted_sensors);
         if (rv != SA_OK) {
                 err("Populating event struct failed");
                 return SA_ERR_HPI_INTERNAL_ERROR;
@@ -977,6 +1084,12 @@ SaErrorT add_server_blade(struct oh_handler_state *oh_handler,
                         SAHPI_HS_CAUSE_OPERATOR_INIT;
                 oh_evt_queue_push(oh_handler->eventq,
                         copy_oa_soap_event(&event));
+
+		/* Raise the assert sensor events */
+		if (asserted_sensors)
+			oa_soap_assert_sen_evt(oh_handler, rpt,
+						     asserted_sensors);
+
                 return(SA_OK);
         }
 
@@ -1055,6 +1168,10 @@ SaErrorT add_server_blade(struct oh_handler_state *oh_handler,
                         err("unknown power status");
                         return SA_ERR_HPI_INTERNAL_ERROR;
         }
+
+	/* Raise the assert sensor events */
+	if (asserted_sensors)
+		oa_soap_assert_sen_evt(oh_handler, rpt, asserted_sensors);
 
         return SA_OK;
 }
@@ -1147,6 +1264,14 @@ SaErrorT re_discover_interconnect(struct oh_handler_state *oh_handler,
                                             " state failed");
                                         return rv;
                                 }
+				/* Check the interconnect sensors state */
+				rv = oa_soap_re_disc_interconct_sen(
+							oh_handler, con, i);
+				if (rv != SA_OK) {
+					err("Re-discover interconnect sensors "
+					    "failed");
+					return rv;
+				}
                                 continue;
                         }
                 } else
@@ -1447,6 +1572,8 @@ SaErrorT add_interconnect(struct oh_handler_state *oh_handler,
         struct oh_event event;
         SaHpiPowerStateT state;
         SaHpiResourceIdT resource_id;
+	GSList *asserted_sensors = NULL;
+	SaHpiRptEntryT *rpt;
 
         if (oh_handler == NULL || con == NULL) {
                 err("Invalid parameters");
@@ -1498,7 +1625,8 @@ SaErrorT add_interconnect(struct oh_handler_state *oh_handler,
                 return rv;
         }
 
-        rv = populate_event(oh_handler, resource_id, &event);
+        rv = oa_soap_populate_event(oh_handler, resource_id, &event,
+				    &asserted_sensors);
         if (rv != SA_OK) {
                 err("Populating event struct failed");
                 return rv;
@@ -1579,6 +1707,12 @@ SaErrorT add_interconnect(struct oh_handler_state *oh_handler,
                         return SA_ERR_HPI_INTERNAL_ERROR;
         }
 
+	/* Raise the assert sensor events */
+	if (asserted_sensors) {
+	        rpt = oh_get_resource_by_id(oh_handler->rptcache, resource_id);
+		oa_soap_assert_sen_evt(oh_handler, rpt, asserted_sensors);
+	}
+
         return SA_OK;
 }
 
@@ -1636,9 +1770,11 @@ SaErrorT re_discover_fan(struct oh_handler_state *oh_handler,
                          * matrix
                          */
                         if (oa_handler->oa_soap_resources.fan.presence[i - 1] ==
-                            RES_PRESENT)
+                            RES_PRESENT) {
+				/* Check the fan sensors state */
+				oa_soap_proc_fan_status(oh_handler, &response);
                                 continue;
-                        else
+                        } else
                                 state = RES_PRESENT;
                 }
 
@@ -1766,6 +1902,8 @@ SaErrorT add_fan(struct oh_handler_state *oh_handler,
         struct oa_soap_handler *oa_handler = NULL;
         struct oh_event event;
         SaHpiResourceIdT resource_id;
+	GSList *asserted_sensors = NULL;
+	SaHpiRptEntryT *rpt;
 
         if (oh_handler == NULL || con == NULL || info == NULL) {
                 err("Invalid parameters");
@@ -1775,8 +1913,7 @@ SaErrorT add_fan(struct oh_handler_state *oh_handler,
         oa_handler = (struct oa_soap_handler *) oh_handler->data;
 
         /* Build the rpt entry */
-        rv = build_fan_rpt(oh_handler, info->name, info->bayNumber,
-                           &resource_id);
+        rv = oa_soap_build_fan_rpt(oh_handler, info->bayNumber, &resource_id);
         if (rv != SA_OK) {
                 err("Failed to populate fan RPT");
                 return rv;
@@ -1791,7 +1928,7 @@ SaErrorT add_fan(struct oh_handler_state *oh_handler,
                       NULL, resource_id, RES_PRESENT);
 
         /* Build the RDRs */
-        rv = build_fan_rdr(oh_handler, con, info, resource_id);
+        rv = oa_soap_build_fan_rdr(oh_handler, con, info, resource_id);
         if (rv != SA_OK) {
                 err("Failed to populate fan RDR");
                 /* Free the inventory info from inventory RDR */
@@ -1809,7 +1946,8 @@ SaErrorT add_fan(struct oh_handler_state *oh_handler,
                 return SA_ERR_HPI_INTERNAL_ERROR;
         }
 
-        rv = populate_event(oh_handler, resource_id, &event);
+        rv = oa_soap_populate_event(oh_handler, resource_id, &event,
+				    &asserted_sensors);
         if (rv != SA_OK) {
                 err("Populating event struct failed");
                 return rv;
@@ -1825,6 +1963,12 @@ SaErrorT add_fan(struct oh_handler_state *oh_handler,
                 SAHPI_HS_CAUSE_OPERATOR_INIT;
         /* Push the hotswap event to add the resource to OpenHPI RPTable */
         oh_evt_queue_push(oh_handler->eventq, copy_oa_soap_event(&event));
+
+	/* Raise the assert sensor events */
+	if (asserted_sensors) {
+	        rpt = oh_get_resource_by_id(oh_handler->rptcache, resource_id);
+		oa_soap_assert_sen_evt(oh_handler, rpt, asserted_sensors);
+	}
 
         return SA_OK;
 }
@@ -1902,8 +2046,19 @@ SaErrorT re_discover_ps_unit(struct oh_handler_state *oh_handler,
                                            ps_unit.serial_number[i - 1],
                                            response.serialNumber) != 0) {
                                         replace_resource = SAHPI_TRUE;
-                                 } else
+                                 } else {
+					/* Check the power supply sensors
+					 * state
+					 */
+				       rv = oa_soap_re_disc_ps_sen(
+							oh_handler, con, i);
+					if (rv != SA_OK) {
+						err("Re-discover power supply "
+						    "sensors failed");
+						return rv;
+					}
                                         continue;
+				}
                         } else
                                 state = RES_PRESENT;
                 }
@@ -2040,6 +2195,8 @@ SaErrorT add_ps_unit(struct oh_handler_state *oh_handler,
         SaHpiResourceIdT resource_id;
         struct getPowerSupplyInfo request;
         struct powerSupplyInfo response;
+	GSList *asserted_sensors = NULL;
+	SaHpiRptEntryT *rpt;
 
         if (oh_handler == NULL || con == NULL || info == NULL) {
                 err("Invalid parameters");
@@ -2091,7 +2248,8 @@ SaErrorT add_ps_unit(struct oh_handler_state *oh_handler,
                 return SA_ERR_HPI_INTERNAL_ERROR;
         }
 
-        rv = populate_event(oh_handler, resource_id, &event);
+        rv = oa_soap_populate_event(oh_handler, resource_id, &event,
+				    &asserted_sensors);
         if (rv != SA_OK) {
                 err("Populating event struct failed");
                 return rv;
@@ -2108,5 +2266,404 @@ SaErrorT add_ps_unit(struct oh_handler_state *oh_handler,
         /* Push the hotswap event to add the resource to OpenHPI RPTable */
         oh_evt_queue_push(oh_handler->eventq, copy_oa_soap_event(&event));
 
+	/* Raise the assert sensor events */
+	if (asserted_sensors) {
+	        rpt = oh_get_resource_by_id(oh_handler->rptcache, resource_id);
+		oa_soap_assert_sen_evt(oh_handler, rpt, asserted_sensors);
+	}
+
         return SA_OK;
+}
+
+/**
+ * oa_soap_re_disc_oa_sen
+ *      @oh_handler	: Pointer to openhpi handler
+ *      @con		: Pointer SOAP_CON structure
+ *      @bay_number	: OA bay nubmer
+ *
+ * Purpose:
+ *	Re-discovers the OA sensor states
+ *
+ * Detailed Description: NA
+ *
+ * Return values:
+ *      SA_OK                     - on success.
+ *      SA_ERR_HPI_INVALID_PARAMS - on wrong parameters
+ *      SA_ERR_HPI_INTERNAL_ERROR - on failure.
+ **/
+static SaErrorT oa_soap_re_disc_oa_sen(struct oh_handler_state *oh_handler,
+				       SOAP_CON *con,
+				       SaHpiInt32T bay_number)
+{
+	SaErrorT rv = SA_OK;
+	struct oa_soap_handler *oa_handler = NULL;
+	struct getOaStatus request;
+	struct oaStatus response;
+	struct getOaNetworkInfo nw_info_request;
+	struct oaNetworkInfo nw_info_response;
+
+	if (oh_handler == NULL || con == NULL) {
+		err("Invalid parameters");
+		return SA_ERR_HPI_INVALID_PARAMS;
+	}
+
+	oa_handler = (struct oa_soap_handler *) oh_handler->data;
+
+	request.bayNumber = bay_number;
+	rv = soap_getOaStatus(con, &request, &response);
+	if (rv != SOAP_OK) {
+		err("Get OA status SOAP call failed");
+		return SA_ERR_HPI_INTERNAL_ERROR;
+	}
+
+	/* Check the OA sensor states */
+	oa_soap_proc_oa_status(oh_handler, &response);
+
+	nw_info_request.bayNumber = bay_number;
+	rv = soap_getOaNetworkInfo(con, &nw_info_request, &nw_info_response);
+	if (rv != SOAP_OK) {
+		err("Get OA network info SOAP call failed");
+		return SA_ERR_HPI_INTERNAL_ERROR;
+	}
+
+	/* Check the OA link status state */
+	oa_soap_proc_oa_network_info(oh_handler, &nw_info_response);
+
+	return SA_OK;
+}
+
+/**
+ * oa_soap_re_disc_server_sen
+ *      @oh_handler	: Pointer to openhpi handler
+ *      @con		: Pointer SOAP_CON structure
+ *      @bay_number	: Server bay nubmer
+ *
+ * Purpose:
+ *	Re-discovers the server sensor states
+ *
+ * Detailed Description: NA
+ *
+ * Return values:
+ *      SA_OK                     - on success.
+ *      SA_ERR_HPI_INVALID_PARAMS - on wrong parameters
+ *      SA_ERR_HPI_INTERNAL_ERROR - on failure.
+ **/
+static SaErrorT oa_soap_re_disc_server_sen(struct oh_handler_state *oh_handler,
+					   SOAP_CON *con,
+					   SaHpiInt32T bay_number)
+{
+	SaErrorT rv = SA_OK;
+	struct getBladeStatus request;
+	struct bladeStatus response;
+
+	if (oh_handler == NULL || con == NULL) {
+		err("Invalid parameters");
+		return SA_ERR_HPI_INVALID_PARAMS;
+	}
+
+	request.bayNumber = bay_number;
+	rv = soap_getBladeStatus(con, &request, &response);
+	if (rv != SOAP_OK) {
+		err("Get OA status SOAP call failed");
+		return SA_ERR_HPI_INTERNAL_ERROR;
+	}
+
+	/* Check the server sensor states */
+	oa_soap_proc_server_status(oh_handler, con, &response);
+
+	return SA_OK;
+}
+
+/**
+ * oa_soap_re_disc_interconct_sen
+ *      @oh_handler	: Pointer to openhpi handler
+ *      @con		: Pointer SOAP_CON structure
+ *      @bay_number	: Interconnect bay nubmer
+ *
+ * Purpose:
+ *	Re-discovers the interconnect sensor states
+ *
+ * Detailed Description: NA
+ *
+ * Return values:
+ *      SA_OK                     - on success.
+ *      SA_ERR_HPI_INVALID_PARAMS - on wrong parameters
+ *      SA_ERR_HPI_INTERNAL_ERROR - on failure.
+ **/
+static SaErrorT oa_soap_re_disc_interconct_sen(struct oh_handler_state
+							*oh_handler,
+					      SOAP_CON *con,
+					      SaHpiInt32T bay_number)
+{
+	SaErrorT rv = SA_OK;
+	struct getInterconnectTrayStatus request;
+	struct interconnectTrayStatus response;
+
+	if (oh_handler == NULL || con == NULL) {
+		err("Invalid parameters");
+		return SA_ERR_HPI_INVALID_PARAMS;
+	}
+
+	request.bayNumber = bay_number;
+	rv = soap_getInterconnectTrayStatus(con, &request, &response);
+	if (rv != SOAP_OK) {
+		err("Get OA status SOAP call failed");
+		return SA_ERR_HPI_INTERNAL_ERROR;
+	}
+
+	/* Check the interconnect sensor states */
+	oa_soap_proc_interconnect_status(oh_handler, &response);
+
+	/* Check the interconnect thermal sensor state */
+	oa_soap_proc_interconnect_thermal(oh_handler, con, &response);
+
+	return SA_OK;
+}
+
+/**
+ * oa_soap_re_disc_ps_sen
+ *      @oh_handler	: Pointer to openhpi handler
+ *      @con		: Pointer SOAP_CON structure
+ *      @bay_number	: Power supply bay nubmer
+ *
+ * Purpose:
+ *	Re-discovers the power supply sensor states
+ *
+ * Detailed Description: NA
+ *
+ * Return values:
+ *      SA_OK                     - on success.
+ *      SA_ERR_HPI_INVALID_PARAMS - on wrong parameters
+ *      SA_ERR_HPI_INTERNAL_ERROR - on failure.
+ **/
+static SaErrorT oa_soap_re_disc_ps_sen(struct oh_handler_state *oh_handler,
+				       SOAP_CON *con,
+				       SaHpiInt32T bay_number)
+{
+	SaErrorT rv = SA_OK;
+	struct getPowerSupplyStatus request;
+	struct powerSupplyStatus response;
+
+	if (oh_handler == NULL || con == NULL) {
+		err("Invalid parameters");
+		return SA_ERR_HPI_INVALID_PARAMS;
+	}
+
+	request.bayNumber = bay_number;
+	rv = soap_getPowerSupplyStatus(con, &request, &response);
+	if (rv != SOAP_OK) {
+		err("Get OA status SOAP call failed");
+		return SA_ERR_HPI_INTERNAL_ERROR;
+	}
+
+	/* Check the power supply sensor states */
+	oa_soap_proc_ps_status(oh_handler, &response);
+
+	return SA_OK;
+}
+
+/**
+ * oa_soap_re_disc_enc_sen
+ *      @oh_handler	: Pointer to openhpi handler
+ *      @con		: Pointer SOAP_CON structure
+ *
+ * Purpose:
+ *	Re-discovers the enclosure sensor states
+ *
+ * Detailed Description: NA
+ *
+ * Return values:
+ *      SA_OK                     - on success.
+ *      SA_ERR_HPI_INVALID_PARAMS - on wrong parameters
+ *      SA_ERR_HPI_INTERNAL_ERROR - on failure.
+ **/
+static SaErrorT oa_soap_re_disc_enc_sen(struct oh_handler_state *oh_handler,
+					SOAP_CON *con)
+{
+	SaErrorT rv = SA_OK;
+	struct enclosureStatus response;
+
+	if (oh_handler == NULL || con == NULL) {
+		err("Invalid parameters");
+		return SA_ERR_HPI_INVALID_PARAMS;
+	}
+
+	rv = soap_getEnclosureStatus(con, &response);
+	if (rv != SOAP_OK) {
+		err("Get enclosure status SOAP call failed");
+		return SA_ERR_HPI_INTERNAL_ERROR;
+	}
+
+	/* Check the enclosure sensor states */
+	oa_soap_proc_enc_status(oh_handler, &response);
+
+	return SA_OK;
+}
+
+/**
+ * oa_soap_re_disc_ps_subsys_sen
+ *      @oh_handler	: Pointer to openhpi handler
+ *      @con		: Pointer SOAP_CON structure
+ *
+ * Purpose:
+ *	Re-discovers the power subsystem sensor states
+ *
+ * Detailed Description: NA
+ *
+ * Return values:
+ *      SA_OK                     - on success.
+ *      SA_ERR_HPI_INVALID_PARAMS - on wrong parameters
+ *      SA_ERR_HPI_INTERNAL_ERROR - on failure.
+ **/
+static SaErrorT oa_soap_re_disc_ps_subsys_sen(struct oh_handler_state
+							*oh_handler,
+					      SOAP_CON *con)
+{
+	SaErrorT rv = SA_OK;
+	struct powerSubsystemInfo response;
+
+	if (oh_handler == NULL || con == NULL) {
+		err("Invalid parameters");
+		return SA_ERR_HPI_INVALID_PARAMS;
+	}
+
+	rv = soap_getPowerSubsystemInfo(con, &response);
+	if (rv != SOAP_OK) {
+		err("Get enclosure status SOAP call failed");
+		return SA_ERR_HPI_INTERNAL_ERROR;
+	}
+
+	/* Check the power subsystem sensor states */
+	oa_soap_proc_ps_subsys_info(oh_handler, &response);
+
+	return SA_OK;
+}
+
+/**
+ * oa_soap_re_disc_lcd_sen
+ *      @oh_handler	: Pointer to openhpi handler
+ *      @con		: Pointer SOAP_CON structure
+ *
+ * Purpose:
+ *	Re-discovers the LCD sensor states
+ *
+ * Detailed Description: NA
+ *
+ * Return values:
+ *      SA_OK                     - on success.
+ *      SA_ERR_HPI_INVALID_PARAMS - on wrong parameters
+ *      SA_ERR_HPI_INTERNAL_ERROR - on failure.
+ **/
+static SaErrorT oa_soap_re_disc_lcd_sen(struct oh_handler_state *oh_handler,
+					SOAP_CON *con)
+{
+	SaErrorT rv = SA_OK;
+	struct lcdStatus response;
+
+	if (oh_handler == NULL || con == NULL) {
+		err("Invalid parameters");
+		return SA_ERR_HPI_INVALID_PARAMS;
+	}
+
+	rv = soap_getLcdStatus(con, &response);
+	if (rv != SOAP_OK) {
+		err("Get LCD status SOAP call failed");
+		return SA_ERR_HPI_INTERNAL_ERROR;
+	}
+
+	/* Check the LCD sensor states */
+	oa_soap_proc_lcd_status(oh_handler, &response);
+
+	return SA_OK;
+}
+
+/**
+ * oa_soap_re_disc_fz_sen
+ *      @oh_handler	: Pointer to openhpi handler
+ *      @con		: Pointer SOAP_CON structure
+ *
+ * Purpose:
+ *	Re-discovers the fan_zone sensor states
+ *
+ * Detailed Description: NA
+ *
+ * Return values:
+ *      SA_OK                     - on success.
+ *      SA_ERR_HPI_INVALID_PARAMS - on wrong parameters
+ *      SA_ERR_HPI_INTERNAL_ERROR - on failure.
+ **/
+static SaErrorT oa_soap_re_disc_fz_sen(struct oh_handler_state *oh_handler,
+				       SOAP_CON *con)
+{
+	SaErrorT rv = SA_OK;
+	struct oa_soap_handler *oa_handler = NULL;
+	struct getFanZoneArrayResponse response;
+	struct fanZone fan_zone;
+	SaHpiInt32T max_fz;
+
+	if (oh_handler == NULL || con == NULL) {
+		err("Invalid parameters");
+		return SA_ERR_HPI_INVALID_PARAMS;
+	}
+
+	oa_handler = (struct oa_soap_handler *) oh_handler->data;
+
+	max_fz = oa_handler->oa_soap_resources.fan_zone.max_bays;
+
+	/* Get the Fan Zone array information */
+	rv = oa_soap_get_fz_arr(oa_handler, max_fz, &response);
+	if (rv != SOAP_OK) {
+		err("Get fan zone array failed");
+		return rv;
+	}
+
+	while (response.fanZoneArray) {
+		soap_fanZone(response.fanZoneArray, &fan_zone);
+
+		/* Check the fan zone sensor states */
+		oa_soap_proc_fz_status(oh_handler, &fan_zone);
+
+		response.fanZoneArray = soap_next_node(response.fanZoneArray);
+	}
+
+	return SA_OK;
+}
+
+/**
+ * oa_soap_re_disc_therm_subsys_sen
+ *      @oh_handler	: Pointer to openhpi handler
+ *      @con		: Pointer SOAP_CON structure
+ *
+ * Purpose:
+ *	Re-discovers the thermal subsystem sensor states
+ *
+ * Detailed Description: NA
+ *
+ * Return values:
+ *      SA_OK                     - on success.
+ *      SA_ERR_HPI_INVALID_PARAMS - on wrong parameters
+ *      SA_ERR_HPI_INTERNAL_ERROR - on failure.
+ **/
+static SaErrorT oa_soap_re_disc_therm_subsys_sen(struct oh_handler_state
+							*oh_handler,
+						SOAP_CON *con)
+{
+	SaErrorT rv = SA_OK;
+	struct thermalSubsystemInfo response;
+
+	if (oh_handler == NULL || con == NULL) {
+		err("Invalid parameters");
+		return SA_ERR_HPI_INVALID_PARAMS;
+	}
+
+	rv = soap_getThermalSubsystemInfo(con, &response);
+	if (rv != SOAP_OK) {
+		err("Get thermal subsystem info SOAP call failed");
+		return SA_ERR_HPI_INTERNAL_ERROR;
+	}
+
+	/* Check the thermal subsystem sensor states */
+	oa_soap_proc_therm_subsys_info(oh_handler, &response);
+
+	return SA_OK;
 }

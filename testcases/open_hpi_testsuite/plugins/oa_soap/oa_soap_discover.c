@@ -72,11 +72,11 @@
  *      discover_interconnect()         - Discovers the interconnect blades
  *                                        along with their capabilities
  *
- *      discover_fan_rpt()              - Builds the fan RPT entry
+ *      oa_soap_discover_fan_rpt()      - Builds the fan RPT entry
  *
- *      discover_fan_rdr()              - Builds the fan RDRs
+ *      oa_soap_discover_fan_rdr()      - Builds the fan RDRs
  *
- *      discover_fan()                  - Discovers the fan along with
+ *      oa_soap_discover_fan()          - Discovers the fan along with
  *                                        its capabilities
  *
  *      discover_power_subsystem_rpt()  - Builds the power subsystem RPT entry
@@ -101,9 +101,59 @@
  *      discover_oa()                   - Discovers the onboard administrator
  *                                        along with its capabilities
  *
+ *	oa_soap_parse_diag_ex()		- Parses the diagnosticChecksEx
+ *					  structure
+ *
+ *	oa_soap_get_health_val()	- Gets the healthStatus value from
+ * 					  extraData structure
+ *
+ *	oa_soap_build_rpt()		- Generic function to build the RPT
+ *					  entry
+ *
+ *	oa_soap_build_therm_subsys_rdr()- Builds the thermal subsystem RDR
+ *
+ *	oa_soap_disc_therm_subsys()	- Discovers the thermal subsystem
+ *
+ *	oa_soap_build_fz_rdr()		- Builds the fan zone RDR
+ *
+ *	oa_soap_get_fz_arr()		- Gets the fan zone array information
+ *					  from OA
+ *
+ *	oa_soap_disc_fz()		- Discovers the fan zones
+ *
+ *	oa_soap_build_lcd_rdr()		- Builds the LCD RDR
+ *
+ *	oa_soap_disc_lcd()		- Discovers the LCD
+ *
+ *	oa_soap_populate_event()	- Populates the event structure with
+ *					  default values
+ *
+ *	oa_soap_push_disc_res()		- Pushes the discovered resources
+ *					  information to openhpi framework
+ *
+ *	oa_soap_build_blade_thermal_rdr() - Builds or Enables the thermal 
+ * 					    sensors of blade resource 
+ *
  */
 
 #include "oa_soap_discover.h"
+
+/* Forward declaration for static functions */
+static SaErrorT oa_soap_build_enc_info(struct oh_handler_state *oh_handler,
+				       struct enclosureInfo *info);
+static SaErrorT oa_soap_build_therm_subsys_rdr(struct oh_handler_state
+						*oh_handler,
+					       SaHpiResourceIdT resource_id);
+static SaErrorT oa_soap_build_fz_rdr(struct oh_handler_state *oh_handler,
+				     SaHpiResourceIdT resource_id,
+				     struct fanZone *fan_zone);
+static SaErrorT oa_soap_disc_therm_subsys(struct oh_handler_state *oh_handler);
+static SaErrorT oa_soap_disc_fz(struct oh_handler_state *oh_handler);
+static SaErrorT oa_soap_disc_fan(struct oh_handler_state *oh_handler);
+static SaErrorT oa_soap_build_lcd_rdr(struct oh_handler_state *oh_handler,
+				      SaHpiResourceIdT resource_id);
+static SaErrorT oa_soap_disc_lcd(struct oh_handler_state *oh_handler);
+static void oa_soap_push_disc_res(struct oh_handler_state *oh_handler);
 
 /**
  * oa_soap_discover_resources
@@ -347,8 +397,22 @@ SaErrorT discover_oa_soap_system(struct oh_handler_state *oh_handler)
                 return rv;
         }
 
+	dbg(" Discovering Thermal Subsystem ..............");
+	rv = oa_soap_disc_therm_subsys(oh_handler);
+	if (rv != SA_OK) {
+		err("Failed to discover Thermal Subsystem ");
+		return rv;
+	}
+
+	dbg(" Discovering Fan Zone .......................");
+	rv = oa_soap_disc_fz(oh_handler);
+	if (rv != SA_OK) {
+		err("Failed to discover Fan Zone ");
+		return rv;
+	}
+
         dbg(" Discovering Fan ............................");
-        rv = discover_fan(oh_handler);
+        rv = oa_soap_disc_fan(oh_handler);
         if (rv != SA_OK) {
                 err("Failed to discover Fan ");
                 return rv;
@@ -375,17 +439,20 @@ SaErrorT discover_oa_soap_system(struct oh_handler_state *oh_handler)
                 return rv;
         }
 
-        rv = push_discovered_resource_events(oh_handler);
-        if (rv != SA_OK) {
-                err("Failed to push the resources to openhpi RPTable");
-                return rv;
-        }
+	dbg(" Discovering LCD .............................");
+	rv = oa_soap_disc_lcd(oh_handler);
+	if (rv != SA_OK) {
+		err("Failed to discover LCD");
+		return rv;
+	}
+
+        oa_soap_push_disc_res(oh_handler);
 
         return SA_OK;
 }
 
 /**
- * build_enclosure_info
+ * oa_soap_build_enc_info
  *      @oh_handler: Pointer to openhpi handler
  *      @info:       Pointer to enclosure info structure
  *
@@ -396,17 +463,21 @@ SaErrorT discover_oa_soap_system(struct oh_handler_state *oh_handler)
  * Detailed Description:
  *      - Gets the maximum number bays for server blades, interconnect,
  *        OA, fans and power supply
+ *      - Creates the resource id matrix for the server blades, interconnect,
+ *        OA, thermal subsystem, fan zones, fans, power subsystem and
+ *        power supply
  *      - Creates the presence matrix for the server blades, interconnect,
  *        OA, fans and power supply
- *      - Initialize the presence matrix to ABSENT
+ *      - Initialize the presence matrix to ABSENT and resource id matrix to
+ *        UNSPECIFIED_ID
  *
  * Return values:
  *      SA_OK                     - on success.
  *      SA_ERR_HPI_INVALID_PARAMS - on wrong parameters
  *      SA_ERR_HPI_INTERNAL_ERROR - on failure.
  **/
-SaErrorT build_enclosure_info(struct oh_handler_state *oh_handler,
-                              struct enclosureInfo *info)
+static SaErrorT oa_soap_build_enc_info(struct oh_handler_state *oh_handler,
+				       struct enclosureInfo *info)
 {
         struct oa_soap_handler *oa_handler = NULL;
         SaHpiInt32T i;
@@ -422,10 +493,31 @@ SaErrorT build_enclosure_info(struct oh_handler_state *oh_handler,
                 return SA_ERR_HPI_INVALID_PARAMS;
         }
 
+	/* Find the enclosure type and max fan zones */
+	switch (info->bladeBays) {
+		case OA_SOAP_C7000_MAX_BLADE:
+			oa_handler->enc_type = OA_SOAP_ENC_C7000;
+			oa_handler->oa_soap_resources.fan_zone.max_bays =
+				OA_SOAP_C7000_MAX_FZ;
+			break;
+		case OA_SOAP_C3000_MAX_BLADE:
+			oa_handler->enc_type = OA_SOAP_ENC_C3000;
+			oa_handler->oa_soap_resources.fan_zone.max_bays =
+				OA_SOAP_C3000_MAX_FZ;
+			break;
+		default:
+			err("Invalid number (%d) of server bays detected",
+			    info->bladeBays);
+			return SA_ERR_HPI_INTERNAL_ERROR;
+	}
+
         oa_handler->oa_soap_resources.enclosure_rid =
             SAHPI_UNSPECIFIED_RESOURCE_ID;
         oa_handler->oa_soap_resources.power_subsystem_rid =
             SAHPI_UNSPECIFIED_RESOURCE_ID;
+        oa_handler->oa_soap_resources.thermal_subsystem_rid =
+            SAHPI_UNSPECIFIED_RESOURCE_ID;
+	oa_handler->oa_soap_resources.lcd_rid = SAHPI_UNSPECIFIED_RESOURCE_ID;
 
         /* Create the resource presence matrix for
          * server, interconnect, OA, power supply and fan unit.
@@ -571,6 +663,23 @@ SaErrorT build_enclosure_info(struct oh_handler_state *oh_handler,
                 }
         }
 
+        /* Build resource presence matrix for fan zone */
+	oa_handler->oa_soap_resources.fan_zone.resource_id =
+                (SaHpiResourceIdT *) g_malloc0((sizeof(SaHpiResourceIdT ) *
+                     oa_handler->oa_soap_resources.fan_zone.max_bays));
+        if (oa_handler->oa_soap_resources.fan_zone.resource_id == NULL) {
+                err("Out of memory");
+                release_oa_soap_resources(oa_handler);
+                return SA_ERR_HPI_OUT_OF_MEMORY;
+        }
+        /* Fan zones do not have serial number.  Therefore, the serial number
+         * array is not constructed.
+        */
+	for (i = 0; i < oa_handler->oa_soap_resources.fan_zone.max_bays; i++) {
+		oa_handler->oa_soap_resources.fan_zone.resource_id[i] =
+			SAHPI_UNSPECIFIED_RESOURCE_ID;
+	}
+
         /* Build resource presence matrix for fans */
         oa_handler->oa_soap_resources.fan.max_bays = info->fanBays;
         oa_handler->oa_soap_resources.fan.presence =
@@ -713,7 +822,8 @@ SaErrorT build_enclosure_rpt(struct oh_handler_state *oh_handler,
         rpt.ResourceCapabilities = SAHPI_CAPABILITY_RDR |
                                    SAHPI_CAPABILITY_RESOURCE |
                                    SAHPI_CAPABILITY_SENSOR |
-                                   SAHPI_CAPABILITY_INVENTORY_DATA;
+                                   SAHPI_CAPABILITY_INVENTORY_DATA |
+                                   SAHPI_CAPABILITY_CONTROL ;
         rpt.ResourceEntity.Entry[0].EntityType = SAHPI_ENT_ROOT;
         rpt.ResourceEntity.Entry[0].EntityLocation = 0;
         rv = oh_concat_ep(&(rpt.ResourceEntity), &entity_path);
@@ -772,7 +882,12 @@ SaErrorT build_enclosure_rpt(struct oh_handler_state *oh_handler,
  *      Populate the enclosure RDR.
  *      Pushes the RDR entry to plugin RPTable
  *
- * Detailed Description: NA
+ * Detailed Description:
+ * 	- Creates the enclosure inventory RDR
+ * 	- Creates the temperature, operational status, predictive failure,
+ * 	  internal data error, device failure error, device degraded error,
+ * 	  redundancy error and device not supported sensor RDR
+ * 	- Creates UID control RDR
  *
  * Return values:
  *      SA_OK                     - on success.
@@ -789,6 +904,12 @@ SaErrorT build_enclosure_rdr(struct oh_handler_state *oh_handler,
         SaHpiRdrT rdr;
         struct oa_soap_inventory *inventory = NULL;
         struct oa_soap_sensor_info *sensor_info = NULL;
+	struct enclosureStatus status_response;
+        struct getThermalInfo thermal_request;
+        struct thermalInfo thermal_response;
+	SaHpiBoolT event_support = SAHPI_FALSE;
+	SaHpiInt32T sensor_status;
+	enum diagnosticStatus diag_ex_status[OA_SOAP_MAX_DIAG_EX];
 
         if (oh_handler == NULL || con == NULL || response == NULL) {
                 err("Invalid parameters");
@@ -809,21 +930,65 @@ SaErrorT build_enclosure_rdr(struct oh_handler_state *oh_handler,
                 return rv;
         }
 
-        /* Build thermal sensor rdr for the enclosure */
-        memset(&rdr, 0, sizeof(SaHpiRdrT));
-        rv = build_enclosure_thermal_sensor_rdr(oh_handler, con,
-                                                1, &rdr, &sensor_info);
-        if (rv != SA_OK) {
-                err("Failed to get sensor rdr of enclosure");
-                return rv;
-        }
+	/* Make a soap call to OA requesting for the enclosure thermal status */
+	thermal_request.sensorType = SENSOR_TYPE_ENC;
+	thermal_request.bayNumber = 1;
 
-        rv = oh_add_rdr(oh_handler->rptcache, resource_id,
-                        &rdr, sensor_info, 0);
-        if (rv != SA_OK) {
-                err("Failed to add rdr");
-                return rv;
-        }
+	rv = soap_getThermalInfo(con, &thermal_request, &thermal_response);
+	if (rv != SOAP_OK) {
+		err("Get thermalInfo failed for enclosure");
+		return SA_ERR_HPI_INTERNAL_ERROR;
+	}
+
+        /* Build thermal sensor rdr for the enclosure */
+	OA_SOAP_BUILD_THRESHOLD_SENSOR_RDR(OA_SOAP_SEN_TEMP_STATUS,
+					   thermal_response)
+
+	/* Make a soap call to OA requesting for the enclosure status */
+	rv = soap_getEnclosureStatus(con, &status_response);
+	if (rv != SOAP_OK) {
+		err("Get enclosure status soap call failed");
+		return SA_ERR_HPI_INTERNAL_ERROR;
+	}
+
+	/* Build operational status sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_OPER_STATUS,
+					status_response.operationalStatus)
+
+	/* Build predictive failure sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_PRED_FAIL,
+					status_response.operationalStatus)
+
+	/* Build internal data error sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_INT_DATA_ERR,
+					status_response.diagnosticChecks.
+						internalDataError)
+
+	/* Build device failure error sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_DEV_FAIL,
+					status_response.diagnosticChecks.
+						deviceFailure)
+
+	/* Build device degraded error sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_DEV_DEGRAD,
+					status_response.diagnosticChecks.
+						deviceDegraded)
+
+	/* Build redundancy error sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_REDUND_ERR,
+					status_response.diagnosticChecks.
+						redundancy)
+
+	/* Parse the diganosticChecksEx */
+	oa_soap_parse_diag_ex(status_response.diagnosticChecksEx,
+			      diag_ex_status);
+
+	/* Build device not supported sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_DEV_NOT_SUPPORT,
+				diag_ex_status[DIAG_EX_DEV_NOT_SUPPORT])
+
+        /* Build UID control rdr for Enclosure */
+	OA_SOAP_BUILD_CONTROL_RDR(OA_SOAP_UID_CNTRL)
 
         return SA_OK;
 }
@@ -864,7 +1029,7 @@ SaErrorT discover_enclosure(struct oh_handler_state *oh_handler)
         }
 
         /* Retrieve the enclosure information */
-        rv = build_enclosure_info(oh_handler, &response);
+        rv = oa_soap_build_enc_info(oh_handler, &response);
         if (rv != SA_OK) {
                 err("build enclosure info failed");
                 return rv;
@@ -943,7 +1108,8 @@ SaErrorT build_oa_rpt(struct oh_handler_state *oh_handler,
                                    SAHPI_CAPABILITY_RESOURCE |
                                    SAHPI_CAPABILITY_FRU |
                                    SAHPI_CAPABILITY_SENSOR |
-                                   SAHPI_CAPABILITY_INVENTORY_DATA;
+                                   SAHPI_CAPABILITY_INVENTORY_DATA |
+                                   SAHPI_CAPABILITY_CONTROL ;
         rpt.ResourceEntity.Entry[1].EntityType = SAHPI_ENT_ROOT;
         rpt.ResourceEntity.Entry[1].EntityLocation = 0;
         rpt.ResourceEntity.Entry[0].EntityType = SAHPI_ENT_SYS_MGMNT_MODULE;
@@ -988,7 +1154,13 @@ SaErrorT build_oa_rpt(struct oh_handler_state *oh_handler,
  *      Populates the OA RDRs
  *      Pushes the RDR entry to plugin RPTable
  *
- * Detailed Description: NA
+ * Detailed Description:
+ * 	- Creates the inventory RDR
+ * 	- Creates the temperature, operational status, predictive failure,
+ * 	  internal data error, management processor error, device failure error,
+ * 	  device degraded error, redundancy error, device not supported and OA
+ * 	  link status sensor RDR
+ * 	- Creates UID control RDR
  *
  * Return values:
  *      SA_OK                     - on success.
@@ -998,6 +1170,7 @@ SaErrorT build_oa_rpt(struct oh_handler_state *oh_handler,
  **/
 SaErrorT build_oa_rdr(struct oh_handler_state *oh_handler,
                       SOAP_CON *con,
+                      SaHpiInt32T bay_number,
                       struct oaInfo *response,
                       SaHpiResourceIdT resource_id)
 {
@@ -1005,6 +1178,15 @@ SaErrorT build_oa_rdr(struct oh_handler_state *oh_handler,
         SaHpiRdrT rdr;
         struct oa_soap_inventory *inventory = NULL;
         struct oa_soap_sensor_info *sensor_info=NULL;
+        struct getThermalInfo thermal_request;
+        struct thermalInfo thermal_response;
+	SaHpiBoolT event_support = SAHPI_FALSE;
+	struct getOaStatus status_request;
+	struct oaStatus status_response;
+	struct getOaNetworkInfo nw_info_request;
+	struct oaNetworkInfo nw_info_response;
+	SaHpiInt32T sensor_status;
+	enum diagnosticStatus diag_ex_status[OA_SOAP_MAX_DIAG_EX];
 
         if (oh_handler == NULL || con == NULL || response == NULL) {
                 err("Invalid parameters");
@@ -1024,20 +1206,89 @@ SaErrorT build_oa_rdr(struct oh_handler_state *oh_handler,
                 return rv;
         }
 
-        /* Build thermal sensor rdr for OA */
-        memset(&rdr, 0, sizeof(SaHpiRdrT));
-        rv = build_oa_thermal_sensor_rdr(oh_handler, con, response->bayNumber,
-                                         &rdr, &sensor_info);
-        if (rv != SA_OK) {
-                err("Failed to get sensor rdr for OA");
-                return rv;
-        }
-        rv = oh_add_rdr(oh_handler->rptcache, resource_id, &rdr,
-                        sensor_info, 0);
-        if (rv != SA_OK) {
-                err("Failed to add rdr");
-                return rv;
-        }
+	/* Make a soap call to OA requesting for the OA thermal status */
+	thermal_request.sensorType = SENSOR_TYPE_OA;
+	thermal_request.bayNumber = bay_number;
+
+	rv = soap_getThermalInfo(con, &thermal_request, &thermal_response);
+	if (rv != SOAP_OK) {
+		err("Get thermalInfo failed for enclosure");
+		return SA_ERR_HPI_INTERNAL_ERROR;
+	}
+
+        /* Build thermal sensor rdr for the enclosure */
+	OA_SOAP_BUILD_THRESHOLD_SENSOR_RDR(OA_SOAP_SEN_TEMP_STATUS,
+					thermal_response)
+
+        /* Build UID control rdr for OA */
+	OA_SOAP_BUILD_CONTROL_RDR(OA_SOAP_UID_CNTRL)
+
+	status_request.bayNumber = response->bayNumber;
+	rv = soap_getOaStatus(con, &status_request, &status_response);
+	if (rv != SOAP_OK) {
+		err("Get OA status failed");
+		return SA_ERR_HPI_INTERNAL_ERROR;
+	}
+
+	/* Build operational status sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_OPER_STATUS,
+					status_response.operationalStatus)
+
+	/* Build predictive failure sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_PRED_FAIL,
+					status_response.operationalStatus)
+
+	/* Build OA redundancy sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_OA_REDUND,
+					status_response.oaRedundancy)
+
+	/* Build internal data error sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_INT_DATA_ERR,
+					status_response.diagnosticChecks.
+						internalDataError)
+
+	/* Build management processor error sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_MP_ERR,
+					status_response.diagnosticChecks.
+						managementProcessorError)
+
+	/* Build device failure error sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_DEV_FAIL,
+					status_response.diagnosticChecks.
+						deviceFailure)
+
+	/* Build device degraded error sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_DEV_DEGRAD,
+					status_response.diagnosticChecks.
+						deviceDegraded)
+
+	/* Build redundancy error sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_REDUND_ERR,
+					status_response.diagnosticChecks.
+						redundancy)
+
+	/* Parse the diganosticChecksEx */
+	oa_soap_parse_diag_ex(status_response.diagnosticChecksEx,
+			      diag_ex_status);
+
+	/* Build firmware mismatch sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_FW_MISMATCH,
+					diag_ex_status[DIAG_EX_FW_MISMATCH])
+
+	/* Build device not supported sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_DEV_NOT_SUPPORT,
+				diag_ex_status[DIAG_EX_DEV_NOT_SUPPORT])
+
+	nw_info_request.bayNumber = response->bayNumber;
+	rv = soap_getOaNetworkInfo(con, &nw_info_request, &nw_info_response);
+	if (rv != SOAP_OK) {
+		err("Get OA network info SOAP call failed");
+		return SA_ERR_HPI_INTERNAL_ERROR;
+	}
+
+	/* Build OA link status sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_OA_LINK_STATUS,
+					nw_info_response.linkActive)
 
         return SA_OK;
 }
@@ -1159,7 +1410,7 @@ SaErrorT discover_oa(struct oh_handler_state *oh_handler)
                       response.serialNumber, resource_id, RES_PRESENT);
 
                 /* Build RDRs for OA */
-                rv = build_oa_rdr(oh_handler, oa_handler->active_con,
+                rv = build_oa_rdr(oh_handler, oa_handler->active_con, i,
                                   &response, resource_id);
                 if (rv != SA_OK) {
                         err("Failed to build OA RDR");
@@ -1215,6 +1466,9 @@ SaErrorT build_discovered_server_rpt(struct oh_handler_state *oh_handler,
                 return SA_ERR_HPI_INTERNAL_ERROR;
         }
 
+	/* Set power status of discovered blade resource initially as POWER ON*/
+	oa_soap_bay_pwr_status[response->bayNumber -1] = SAHPI_POWER_ON;
+
         /* Get the power state of the server blade to determine the
          * hotswap state.  The hotswap state of the server will be
          * maintained in the private data area of the server RPT.
@@ -1243,6 +1497,12 @@ SaErrorT build_discovered_server_rpt(struct oh_handler_state *oh_handler,
                         case SAHPI_POWER_OFF:
                                 hotswap_state->currentHsState =
                                         SAHPI_HS_STATE_INACTIVE;
+
+				/* Change the power state to POWER OFF for 
+				 * blade entry in oa_soap_bay_pwr_status array
+				 */
+				oa_soap_bay_pwr_status[response->bayNumber -1] =
+								 SAHPI_POWER_OFF;
                                 break;
 
                         default:
@@ -1335,7 +1595,6 @@ SaErrorT build_server_rpt(struct oh_handler_state *oh_handler,
                         rpt->ResourceCapabilities &=
                                    ~(SAHPI_CAPABILITY_RESET |
                                      SAHPI_CAPABILITY_POWER |
-                                     SAHPI_CAPABILITY_CONTROL |
                                      SAHPI_CAPABILITY_MANAGED_HOTSWAP);
                 break;
                 case    BLADE_TYPE_STORAGE:
@@ -1344,7 +1603,6 @@ SaErrorT build_server_rpt(struct oh_handler_state *oh_handler,
                         rpt->ResourceCapabilities &=
                                    ~(SAHPI_CAPABILITY_RESET |
                                      SAHPI_CAPABILITY_POWER |
-                                     SAHPI_CAPABILITY_CONTROL |
                                      SAHPI_CAPABILITY_MANAGED_HOTSWAP);
                 break;
                 default:
@@ -1388,12 +1646,24 @@ SaErrorT build_server_rpt(struct oh_handler_state *oh_handler,
  *      @con:         Pointer to the soap client handler.
  *      @response:    Server blade info response structure
  *      @resource_id: Resource id
+ *      @name: Blade resource name
  *
  * Purpose:
  *      Populate the server blade RDR.
  *      Pushes the RDR entry to plugin RPTable
  *
- * Detailed Description: NA
+ * Detailed Description:
+ * 	- Creates the inventory RDR
+ * 	- Creates the temperature, power, operational status, predictive
+ * 	  failure, internal data error, management processor error, thermal
+ * 	  warning, thermal danger, IO configuration error, device power request
+ * 	  error, insufficient cooling, device location error, device failure
+ * 	  error, device degraded error, device missing, device bonding, device
+ * 	  power sequence, network configuration, profile unassigned error,
+ * 	  device not supported, too low power request, call HP, storage device
+ * 	  missing, power capping error, IML recorded errors, duplicate
+ * 	  management IP address sensor RDR
+ * 	- Creates UID and power control RDR
  *
  * Return values:
  *      SA_OK                     - on success.
@@ -1404,14 +1674,20 @@ SaErrorT build_server_rpt(struct oh_handler_state *oh_handler,
 SaErrorT build_server_rdr(struct oh_handler_state *oh_handler,
                           SOAP_CON *con,
                           SaHpiInt32T bay_number,
-                          SaHpiResourceIdT resource_id)
+                          SaHpiResourceIdT resource_id,
+			  char *name)
 {
         SaErrorT rv = SA_OK;
         SaHpiRdrT rdr;
         SaHpiRptEntryT *rpt = NULL;
         struct oa_soap_inventory *inventory = NULL;
-        struct oa_soap_sensor_info *sensor_thermal_info = NULL;
-        struct oa_soap_sensor_info *sensor_power_info = NULL;
+        struct oa_soap_sensor_info *sensor_info = NULL;
+        struct getBladeThermalInfoArray thermal_request;
+        struct bladeThermalInfoArrayResponse thermal_response;
+	struct getBladeStatus status_request;
+	struct bladeStatus status_response;
+	SaHpiInt32T sensor_status;
+	enum diagnosticStatus diag_ex_status[OA_SOAP_MAX_DIAG_EX];
 
         if (oh_handler == NULL || con == NULL) {
                 err("Invalid parameter");
@@ -1438,56 +1714,153 @@ SaErrorT build_server_rdr(struct oh_handler_state *oh_handler,
                 return rv;
         }
 
-        /* Build thermal sensor rdr for server */
-        memset(&rdr, 0, sizeof(SaHpiRdrT));
-        rv = build_server_thermal_sensor_rdr(oh_handler, con,
-                                             bay_number, &rdr,
-                                             &sensor_thermal_info);
-        if (rv != SA_OK) {
-                err("Failed to get server thermal sensor RDR");
-                return rv;
-        }
-        rv = oh_add_rdr(oh_handler->rptcache, resource_id, &rdr,
-                        sensor_thermal_info, 0);
-        if (rv != SA_OK) {
-                err("Failed to add rdr");
-                return rv;
-        }
+	/* Make a soap call to OA requesting for the server thermal status */
+	thermal_request.bayNumber = bay_number;
+
+	rv = soap_getBladeThermalInfoArray(con, &thermal_request,
+					   &thermal_response);
+	if (rv != SOAP_OK) {
+		err("getBladeThermalInfo failed for blade");
+		return SA_ERR_HPI_INTERNAL_ERROR;
+	}
+
+	/* Build the thermal sensors based on the blade name*/
+	rv = oa_soap_build_blade_thermal_rdr(oh_handler, thermal_response, rpt,
+					     name);
+	if (rv != SA_OK) {
+		err("Failed to build thermal rdr");
+		return SA_ERR_HPI_INTERNAL_ERROR;
+	}
 
         /* Build power sensor rdr for server */
-        memset(&rdr, 0, sizeof(SaHpiRdrT));
-        rv = build_server_power_sensor_rdr(oh_handler, con,
-                                           bay_number, &rdr,
-                                           &sensor_power_info);
-        if (rv != SA_OK) {
-                err("Failed to get server power sensor RDR");
-                return rv;
-        }
-        rv = oh_add_rdr(oh_handler->rptcache, resource_id, &rdr,
-                        sensor_power_info, 0);
-        if (rv != SA_OK) {
-                err("Failed to add rdr");
-                return rv;
-        }
+	OA_SOAP_BUILD_SENSOR_RDR(OA_SOAP_SEN_PWR_STATUS)
 
-        /* Create control RDR if capability is set for this blade.
+        /* Create power control RDR only for server blades.
            IO and Storage blades don't support power management. */
-        if (rpt->ResourceCapabilities & SAHPI_CAPABILITY_CONTROL) {
+	if (rpt->ResourceEntity.Entry[0].EntityType == 
+		SAHPI_ENT_SYSTEM_BLADE) {
+            /* Build power control rdr for server */
+	    OA_SOAP_BUILD_CONTROL_RDR(OA_SOAP_PWR_CNTRL)
+	}
+	/* Build UID control rdr for server */
+	OA_SOAP_BUILD_CONTROL_RDR(OA_SOAP_UID_CNTRL)
 
-            /* Build control rdr for server */
-            memset(&rdr, 0, sizeof(SaHpiRdrT));
-            rv = build_server_control_rdr(oh_handler, bay_number,
-                &rdr);
-            if (rv != SA_OK) {
-                err("Failed to get server control RDR");
-                return rv;
-            }
-            rv = oh_add_rdr(oh_handler->rptcache, resource_id, &rdr, NULL, 0);
-            if (rv != SA_OK) {
-                err("Failed to add rdr");
-                return rv;
-            }
-        }
+	status_request.bayNumber = bay_number;
+	rv = soap_getBladeStatus(con, &status_request, &status_response);
+	if (rv != SOAP_OK) {
+		err("Get thermalInfo failed for enclosure");
+		return SA_ERR_HPI_INTERNAL_ERROR;
+	}
+
+	/* Build operational status sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_OPER_STATUS,
+					status_response.operationalStatus)
+
+	/* Build predictive failure sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_PRED_FAIL,
+					status_response.operationalStatus)
+
+	/* Build internal data error sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_INT_DATA_ERR,
+					status_response.diagnosticChecks.
+						internalDataError)
+
+	/* Build management processor error sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_MP_ERR,
+					status_response.diagnosticChecks.
+						managementProcessorError)
+
+	/* Build thermal waring sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_THERM_WARN,
+					status_response.diagnosticChecks.
+						thermalWarning)
+
+	/* Build thermal danger sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_THERM_DANGER,
+					status_response.diagnosticChecks.
+						thermalDanger)
+
+	/* Build IO configuration error sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_IO_CONFIG_ERR,
+					status_response.diagnosticChecks.
+						ioConfigurationError)
+
+	/* Build device power request error sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_DEV_PWR_REQ,
+					status_response.diagnosticChecks.
+						devicePowerRequestError)
+
+	/* Build insufficient cooling sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_INSUF_COOL,
+					status_response.diagnosticChecks.
+						insufficientCooling)
+
+	/* Build device location error sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_DEV_LOC_ERR,
+					status_response.diagnosticChecks.
+						deviceLocationError)
+
+	/* Build device failure error sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_DEV_FAIL,
+					status_response.diagnosticChecks.
+						deviceFailure)
+
+	/* Build device degraded error sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_DEV_DEGRAD,
+					status_response.diagnosticChecks.
+						deviceDegraded)
+
+	/* Parse the diganosticChecksEx */
+	oa_soap_parse_diag_ex(status_response.diagnosticChecksEx,
+			      diag_ex_status);
+
+	/* Build device missing sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_DEV_MISS,
+					diag_ex_status[DIAG_EX_DEV_MISS])
+
+	/* Build device bonding sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_DEV_BOND,
+					diag_ex_status[DIAG_EX_DEV_BOND])
+
+	/* Build device power sequence sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_DEV_PWR_SEQ,
+					diag_ex_status[DIAG_EX_DEV_PWR_SEQ])
+
+	/* Build network configuration sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_NET_CONFIG,
+					diag_ex_status[DIAG_EX_NET_CONFIG])
+
+	/* Build profile unassigned error sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_PROF_UNASSIGN_ERR,
+				diag_ex_status[DIAG_EX_PROF_UNASSIGN_ERR])
+
+	/* Build Device not supported sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_DEV_NOT_SUPPORT,
+				diag_ex_status[DIAG_EX_DEV_NOT_SUPPORT])
+
+	/* Build Too low power request sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_TOO_LOW_PWR_REQ,
+				diag_ex_status[DIAG_EX_TOO_LOW_PWR_REQ])
+
+	/* Build Call HP sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_CALL_HP,
+					diag_ex_status[DIAG_EX_CALL_HP])
+
+	/* Build Storage device missing sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_STORAGE_DEV_MISS,
+				diag_ex_status[DIAG_EX_STORAGE_DEV_MISS])
+
+	/* Build Power capping error sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_GRPCAP_ERR,
+					diag_ex_status[DIAG_EX_GRPCAP_ERR])
+
+	/* Build IML recorded errors sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_IML_ERR,
+					diag_ex_status[DIAG_EX_IML_ERR])
+
+	/* Build Duplicate management IP address sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_DUP_MGMT_IP_ADDR,
+				diag_ex_status[DIAG_EX_DUP_MGMT_IP_ADDR])
 
         return SA_OK;
 }
@@ -1514,6 +1887,7 @@ SaErrorT discover_server(struct oh_handler_state *oh_handler)
         struct getBladeInfo request;
         struct bladeInfo response;
         SaHpiResourceIdT resource_id;
+	char blade_name[MAX_NAME_LEN];
 
         if (oh_handler == NULL) {
                 err("Invalid parameters");
@@ -1542,6 +1916,10 @@ SaErrorT discover_server(struct oh_handler_state *oh_handler)
                         continue;
                 }
 
+		/* Copy the blade name from response for future processing */
+        	convert_lower_to_upper(response.name, strlen(response.name),
+				       blade_name, MAX_NAME_LEN);
+
                 /* Build rpt entry for server */
                 rv = build_discovered_server_rpt(oh_handler,
                           oa_handler->active_con, &response, &resource_id);
@@ -1559,7 +1937,7 @@ SaErrorT discover_server(struct oh_handler_state *oh_handler)
 
                 /* Build rdr entry for server */
                 rv = build_server_rdr(oh_handler, oa_handler->active_con, i,
-                                      resource_id);
+                                      resource_id, blade_name);
                 if (rv != SA_OK) {
                         err("Failed to add Server rdr");
                         /* Reset resource_status structure to default values */
@@ -1753,7 +2131,16 @@ SaErrorT build_interconnect_rpt(struct oh_handler_state *oh_handler,
  *      Populate the interconnect blade RDR.
  *      Pushes the RDRs to plugin RPTable
  *
- * Detailed Description: NA
+ * Detailed Description:
+ * 	- Creates the inventory RDR
+ * 	- Creates the temperature, operational status, predictive failure,
+ * 	  interconnect CPU fault, interconnect health LED, internal data error,
+ * 	  management processor error, thermal warning, thermal danger, IO
+ * 	  configuration error, device power request error, device failure error,
+ * 	  device degraded error, device not supported, device informational,
+ * 	  device missing, duplicate management IP address, health operational
+ * 	  status and health predictive failure sensor RDR
+ * 	- Creates UID and power control RDR
  *
  * Return values:
  *      SA_OK                     - on success.
@@ -1769,6 +2156,14 @@ SaErrorT build_interconnect_rdr(struct oh_handler_state *oh_handler,
         struct oa_soap_inventory *inventory = NULL;
         struct oa_soap_sensor_info *sensor_info = NULL;
         SaHpiRdrT rdr;
+        struct getThermalInfo thermal_request;
+        struct thermalInfo thermal_response;
+	SaHpiBoolT event_support = SAHPI_FALSE;
+	struct getInterconnectTrayStatus status_request;
+	struct interconnectTrayStatus status_response;
+	enum oa_soap_extra_data_health status;
+	SaHpiInt32T sensor_status;
+	enum diagnosticStatus diag_ex_status[OA_SOAP_MAX_DIAG_EX];
 
         if (oh_handler == NULL || con == NULL) {
                 err("Invalid parameters");
@@ -1789,33 +2184,128 @@ SaErrorT build_interconnect_rdr(struct oh_handler_state *oh_handler,
                 return rv;
         }
 
-        /* Build thermal sensor rdr for interconnect */
-        memset(&rdr, 0, sizeof(SaHpiRdrT));
-        rv = build_interconnect_thermal_sensor_rdr(oh_handler, con, bay_number,
-                                                   &rdr, &sensor_info);
-        if (rv != SA_OK) {
-                err("Failed to get interconnect thermal sensor RDR");
-                return rv;
-        }
-        rv = oh_add_rdr(oh_handler->rptcache, resource_id, &rdr,
-                        sensor_info, 0);
-        if (rv != SA_OK) {
-                err("Failed to add rdr");
-                return rv;
-        }
+	/* Make a soap call to OA requesting for the interconnect 
+	 * thermal status 
+	 */
+	thermal_request.sensorType = SENSOR_TYPE_INTERCONNECT;
+	thermal_request.bayNumber = bay_number;
 
-        /* Build control rdr for interconnect */
-        memset(&rdr, 0, sizeof(SaHpiRdrT));
-        rv = build_interconnect_control_rdr(oh_handler, bay_number, &rdr);
-        if (rv != SA_OK) {
-                err("Failed to get interconnect control RDR");
-                return rv;
-        }
-        rv = oh_add_rdr(oh_handler->rptcache, resource_id, &rdr, NULL, 0);
-        if (rv != SA_OK) {
-                err("Failed to add rdr");
-                return rv;
-        }
+	rv = soap_getThermalInfo(con, &thermal_request, &thermal_response);
+	if (rv != SOAP_OK) {
+		err("Get thermalInfo failed for enclosure");
+		return SA_ERR_HPI_INTERNAL_ERROR;
+	}
+
+	/* Turn event support ON for thermal sensor. 
+	 * Interconnect is the only resource for which the OA supports 
+	 * thermal events
+	 */
+	 event_support = SAHPI_TRUE;
+
+        /* Build thermal sensor rdr for interconnect */
+	OA_SOAP_BUILD_THRESHOLD_SENSOR_RDR(OA_SOAP_SEN_TEMP_STATUS,
+					   thermal_response)
+
+        /* Build power control rdr for server */
+	OA_SOAP_BUILD_CONTROL_RDR(OA_SOAP_PWR_CNTRL)
+
+        /* Build UID control rdr for server */
+	OA_SOAP_BUILD_CONTROL_RDR(OA_SOAP_UID_CNTRL)
+
+	status_request.bayNumber = bay_number;
+	rv = soap_getInterconnectTrayStatus(con, &status_request,
+					    &status_response);
+	if (rv != SOAP_OK) {
+		err("Get Interconnect tray status SOAP call failed");
+		return SA_ERR_HPI_INTERNAL_ERROR;
+	}
+
+	/* Build operational status sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_OPER_STATUS,
+					status_response.operationalStatus)
+
+	/* Build predictive failure sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_PRED_FAIL,
+					status_response.operationalStatus)
+
+	/* Build interconnect CPU fault sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_CPU_FAULT,
+					status_response.cpuFault)
+
+	/* Build interconnect health LED sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_HEALTH_LED,
+					status_response.healthLed)
+
+	/* Build internal data error sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_INT_DATA_ERR,
+					status_response.diagnosticChecks.
+						internalDataError)
+
+	/* Build management processor error sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_MP_ERR,
+					status_response.diagnosticChecks.
+						managementProcessorError)
+
+	/* Build thermal waring sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_THERM_WARN,
+					status_response.diagnosticChecks.
+						thermalWarning)
+
+	/* Build thermal danger sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_THERM_DANGER,
+					status_response.diagnosticChecks.
+						thermalDanger)
+
+	/* Build IO configuration error sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_IO_CONFIG_ERR,
+					status_response.diagnosticChecks.
+						ioConfigurationError)
+
+	/* Build device power request error sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_DEV_PWR_REQ,
+					status_response.diagnosticChecks.
+						devicePowerRequestError)
+
+	/* Build device failure error sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_DEV_FAIL,
+					status_response.diagnosticChecks.
+						deviceFailure)
+
+	/* Build device degraded error sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_DEV_DEGRAD,
+					status_response.diagnosticChecks.
+						deviceDegraded)
+
+	/* Parse the diganosticChecksEx structure */
+	oa_soap_parse_diag_ex(status_response.diagnosticChecksEx,
+			      diag_ex_status);
+
+	/* Build device not supported sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_DEV_NOT_SUPPORT,
+				diag_ex_status[DIAG_EX_DEV_NOT_SUPPORT])
+
+	/* Build Device informational sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_DEV_INFO,
+					diag_ex_status[DIAG_EX_DEV_INFO])
+
+	/* Build Storage device missing sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_STORAGE_DEV_MISS,
+				diag_ex_status[DIAG_EX_STORAGE_DEV_MISS])
+
+	/* Build Duplicate management IP address sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_DUP_MGMT_IP_ADDR,
+				diag_ex_status[DIAG_EX_DUP_MGMT_IP_ADDR])
+
+	/* Get the healthStatus enum from extraData structure */
+	oa_soap_get_health_val(status_response.extraData, &status);
+
+	/* Build health status operational sensor */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_HEALTH_OPER,
+					status)
+
+	/* Build health status predictive failure sensor */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_HEALTH_PRED_FAIL,
+					status)
 
         return SA_OK;
 }
@@ -1910,248 +2400,6 @@ SaErrorT discover_interconnect(struct oh_handler_state *oh_handler)
 }
 
 /**
- * build_fan_rpt
- *      @oh_handler:  Pointer to openhpi handler
- *      @name:        Pointer to the name of the Fan
- *      @bay_number:  Bay number of the Fan
- *      @resource_id: Pointer to the resource id
- *
- * Purpose:
- *      Populate the fan RPT.
- *      Pushes the RPT entry to plugin RPTable
- *
- * Detailed Description: NA
- *
- * Return values:
- *      SA_OK                     - on success.
- *      SA_ERR_HPI_INVALID_PARAMS - on wrong parameters
- *      SA_ERR_HPI_INTERNAL_ERROR - on failure.
- **/
-SaErrorT build_fan_rpt(struct oh_handler_state *oh_handler,
-                       char *name,
-                       SaHpiInt32T bay_number,
-                       SaHpiResourceIdT *resource_id)
-{
-        SaErrorT rv = SA_OK;
-        SaHpiEntityPathT entity_path;
-        char *entity_root = NULL;
-        SaHpiRptEntryT rpt;
-        struct oa_soap_handler *oa_handler;
-
-        if (oh_handler == NULL || name == NULL || resource_id == NULL) {
-                err("Invalid parameters");
-                return SA_ERR_HPI_INVALID_PARAMS;
-        }
-
-        oa_handler = (struct oa_soap_handler *) oh_handler->data;
-        if(oa_handler == NULL) {
-                err("Invalid parameters");
-                return SA_ERR_HPI_INVALID_PARAMS;
-        }
-
-        entity_root = (char *) g_hash_table_lookup(oh_handler->config,
-                                                   "entity_root");
-        rv = oh_encode_entitypath(entity_root, &entity_path);
-        if (rv != SA_OK) {
-                err("Encoding entity path failed");
-                return SA_ERR_HPI_INTERNAL_ERROR;
-        }
-
-        /* Populate the rpt with the details of the fan */
-        memset(&rpt, 0, sizeof(SaHpiRptEntryT));
-        rpt.ResourceCapabilities = SAHPI_CAPABILITY_RDR |
-                                   SAHPI_CAPABILITY_RESOURCE |
-                                   SAHPI_CAPABILITY_FRU |
-                                   SAHPI_CAPABILITY_SENSOR |
-                                   SAHPI_CAPABILITY_INVENTORY_DATA;
-        rpt.ResourceEntity.Entry[1].EntityType = SAHPI_ENT_ROOT;
-        rpt.ResourceEntity.Entry[1].EntityLocation = 0;
-        rpt.ResourceEntity.Entry[0].EntityType= SAHPI_ENT_COOLING_DEVICE;
-        rpt.ResourceEntity.Entry[0].EntityLocation= bay_number;
-        rv = oh_concat_ep(&(rpt.ResourceEntity), &entity_path);
-        if (rv != SA_OK) {
-                err("concat of entity path failed");
-                return SA_ERR_HPI_INTERNAL_ERROR;
-        }
-
-        rpt.ResourceId = oh_uid_from_entity_path(&(rpt.ResourceEntity));
-        rpt.ResourceInfo.ManufacturerId = HP_MANUFACTURING_ID;
-        rpt.ResourceSeverity = SAHPI_OK;
-        rpt.ResourceFailed = SAHPI_FALSE;
-        rpt.HotSwapCapabilities = 0x0;
-        rpt.ResourceTag.DataType = SAHPI_TL_TYPE_TEXT;
-        rpt.ResourceTag.Language = SAHPI_LANG_ENGLISH;
-        rpt.ResourceTag.DataLength = strlen(name) + 1;
-        memset(rpt.ResourceTag.Data, 0, SAHPI_MAX_TEXT_BUFFER_LENGTH);
-        snprintf((char *) (rpt.ResourceTag.Data),
-                 rpt.ResourceTag.DataLength, "%s", name);
-
-        /* Add the fan rpt to the plugin RPTable */
-        rv = oh_add_resource(oh_handler->rptcache, &rpt, NULL, 0);
-        if (rv != SA_OK) {
-                err("Failed to add Fan RPT ");
-                return rv;
-        }
-
-        *resource_id = rpt.ResourceId;
-        return SA_OK;
-}
-
-/**
- * build_fan_rdr
- *      @oh_handler:  Pointer to openhpi handler
- *      @con:         Pointer to the soap client handler.
- *      @response:    Fan info response structure
- *      @resource_id: Resource id
- *
- * Purpose:
- *      Populate the oa_soap fan RDR.
- *      Pushes the RDR entry to plugin RPTable
- *
- * Detailed Description: NA
- *
- * Return values:
- *      SA_OK                     - on success.
- *      SA_ERR_HPI_INVALID_PARAMS - on wrong parameters
- *      SA_ERR_HPI_INTERNAL_ERROR - on failure.
- **/
-SaErrorT build_fan_rdr(struct oh_handler_state *oh_handler,
-                       SOAP_CON *con,
-                       struct fanInfo *response,
-                       SaHpiResourceIdT resource_id)
-{
-        SaErrorT rv = SA_OK;
-        SaHpiRdrT rdr;
-        struct oa_soap_inventory *inventory = NULL;
-        struct oa_soap_sensor_info *sensor_speed_info = NULL;
-        struct oa_soap_sensor_info *sensor_power_info = NULL;
-        SaHpiInt32T bay_number;
-
-        if (oh_handler == NULL || con == NULL || response == NULL) {
-                err("Invalid parameters");
-                return SA_ERR_HPI_INVALID_PARAMS;
-        }
-
-        /* Build inventory rdr for fan */
-        bay_number = response->bayNumber;
-        memset(&rdr, 0, sizeof(SaHpiRdrT));
-        rv = build_fan_inv_rdr(oh_handler, response, &rdr, &inventory);
-        if (rv != SA_OK) {
-                err("Failed to get fan inventory RDR");
-                return rv;
-        }
-        rv = oh_add_rdr(oh_handler->rptcache, resource_id, &rdr, inventory, 0);
-        if (rv != SA_OK) {
-                err("Failed to add rdr");
-                return rv;
-        }
-
-        /* Build fan speed sensor rdr for fan */
-        memset(&rdr, 0, sizeof(SaHpiRdrT));
-        rv = build_fan_speed_sensor_rdr(oh_handler, con,
-                                        bay_number, &rdr, &sensor_speed_info);
-        if (rv != SA_OK) {
-                err("Failed to get fan speed sensor RDR");
-                return rv;
-        }
-        rv = oh_add_rdr(oh_handler->rptcache, resource_id, &rdr,
-                        sensor_speed_info, 0);
-        if (rv != SA_OK) {
-                err("Failed to add rdr");
-                return rv;
-        }
-
-        /* Build power sensor rdr for fan */
-        memset(&rdr, 0, sizeof(SaHpiRdrT));
-        rv = build_fan_power_sensor_rdr(oh_handler, con,
-                                        bay_number, &rdr, &sensor_power_info);
-        if (rv != SA_OK) {
-                err("Failed to get fan power sensor RDR");
-                return rv;
-        }
-        rv = oh_add_rdr(oh_handler->rptcache, resource_id, &rdr,
-                        sensor_power_info, 0);
-        if (rv != SA_OK) {
-                err("Failed to add rdr");
-                return rv;
-        }
-
-        return SA_OK;
-}
-
-/**
- * discover_fan
- *      @oh_handler: Pointer to openhpi handler
- *
- * Purpose:
- *      Discover the fan.
- *
- * Detailed Description: NA
- *
- * Return values:
- *      SA_OK                     - on success.
- *      SA_ERR_HPI_INVALID_PARAMS - on wrong parameters
- *      SA_ERR_HPI_INTERNAL_ERROR - on failure.
- **/
-SaErrorT discover_fan(struct oh_handler_state *oh_handler)
-{
-        SaErrorT rv = SA_OK;
-        struct oa_soap_handler *oa_handler = NULL;
-        SaHpiInt32T i;
-        struct getFanInfo request;
-        struct fanInfo response;
-        SaHpiResourceIdT resource_id;
-
-        if (oh_handler == NULL) {
-                err("Invalid parameters");
-                return SA_ERR_HPI_INVALID_PARAMS;
-        }
-
-        oa_handler = (struct oa_soap_handler *) oh_handler->data;
-
-        for (i = 1; i <= oa_handler->oa_soap_resources.fan.max_bays; i++) {
-                request.bayNumber = i;
-                rv = soap_getFanInfo(oa_handler->active_con,
-                                     &request, &response);
-                if (rv != SOAP_OK) {
-                        err("Get Fan Info failed");
-                        return SA_ERR_HPI_INTERNAL_ERROR;
-                }
-
-                /* If resource not present, continue checking for next bay */
-                if (response.presence != PRESENT)
-                        continue;
-
-                /* Build rpt entry for fan */
-                rv = build_fan_rpt(oh_handler, response.name, i, &resource_id);
-                if (rv != SA_OK) {
-                        err("Failed to populate Fan RPT");
-                        return rv;
-                }
-                /* Update resource_status structure with resource_id,
-                 * serial_number, and presence status.  Fan doesn't have a
-                 * serial number, so pass in a null string.
-                 */
-                oa_soap_update_resource_status(
-                      &oa_handler->oa_soap_resources.fan, i,
-                      NULL, resource_id, RES_PRESENT);
-
-                rv = build_fan_rdr(oh_handler, oa_handler->active_con,
-                                   &response, resource_id);
-                if (rv != SA_OK) {
-                        err("Failed to populate Fan RDR");
-                        /* Reset resource_status structure to default values */
-                        oa_soap_update_resource_status(
-                              &oa_handler->oa_soap_resources.fan, i,
-                              NULL, SAHPI_UNSPECIFIED_RESOURCE_ID, RES_ABSENT);
-                        return rv;
-                }
-
-        }
-        return SA_OK;
-}
-
-/**
  * build_power_subsystem_rpt
  *      @oh_handler:  Pointer to openhpi handler
  *      @name:        Pointer to the name of the Power subsystem
@@ -2238,7 +2486,9 @@ SaErrorT build_power_subsystem_rpt(struct oh_handler_state *oh_handler,
  *      Populate the power supply RDR.
  *      Pushes the RDR entry to plugin RPTable
  *
- * Detailed Description: NA
+ * Detailed Description:
+ * 	- Creates the input power, output power, power status, power capacity,
+ * 	  operational status, predictive failure and redundancy sensor RDR
  *
  * Return values:
  *      SA_OK                     - on success.
@@ -2250,78 +2500,47 @@ SaErrorT build_power_subsystem_rdr(struct oh_handler_state *oh_handler,
 {
         SaErrorT rv = SA_OK;
         SaHpiRdrT rdr;
-        struct oa_soap_sensor_info *sensor_input_power_info = NULL;
-        struct oa_soap_sensor_info *sensor_output_power_info = NULL;
-        struct oa_soap_sensor_info *sensor_power_consumed_info = NULL;
-        struct oa_soap_sensor_info *sensor_power_capacity_info = NULL;
+        struct oa_soap_sensor_info *sensor_info = NULL;
+	struct oa_soap_handler *oa_handler;
+	struct powerSubsystemInfo response;
+	SaHpiInt32T sensor_status;
 
         if (oh_handler == NULL) {
                 err("Invalid parameter");
                 return SA_ERR_HPI_INVALID_PARAMS;
         }
 
+	oa_handler = (struct oa_soap_handler *) oh_handler->data;
+
         /* Build the input power sensor RDR */
-        memset(&rdr, 0, sizeof(SaHpiRdrT));
-        rv = build_ps_subsystem_input_power_sensor_rdr( oh_handler,
-                &rdr, &sensor_input_power_info);
-        if (rv != SA_OK) {
-                err("Failed to get input power sensor RDR for power subsystem");
-                return rv;
-        }
-        rv = oh_add_rdr(oh_handler->rptcache, resource_id, &rdr,
-                        sensor_input_power_info, 0);
-        if (rv != SA_OK) {
-                err("Failed to add rdr");
-                return rv;
-        }
+	OA_SOAP_BUILD_SENSOR_RDR(OA_SOAP_SEN_IN_PWR)
 
         /* Build the ouput power sensor RDR */
-        memset(&rdr, 0, sizeof(SaHpiRdrT));
-        rv = build_ps_subsystem_output_power_sensor_rdr(oh_handler,
-                &rdr, &sensor_output_power_info);
-        if (rv != SA_OK) {
-                err("Failed to get output power sensor RDR "
-                    "for power subsystem");
-                return rv;
-        }
-        rv = oh_add_rdr(oh_handler->rptcache, resource_id, &rdr,
-                        sensor_output_power_info, 0);
-        if (rv != SA_OK) {
-                err("Failed to add rdr");
-                return rv;
-        }
+	OA_SOAP_BUILD_SENSOR_RDR(OA_SOAP_SEN_OUT_PWR)
 
         /* Build the power consumed sensor RDR */
-        memset(&rdr, 0, sizeof(SaHpiRdrT));
-        rv = build_ps_subsystem_power_consumed_sensor_rdr(oh_handler,
-                &rdr, &sensor_power_consumed_info);
-        if (rv != SA_OK) {
-                err("Failed to get power consumed sensor RDR "
-                    "for power subsystem");
-                return rv;
-        }
-        rv = oh_add_rdr(oh_handler->rptcache, resource_id, &rdr,
-                        sensor_power_consumed_info, 0);
-        if (rv != SA_OK) {
-                err("Failed to add rdr");
-                return rv;
-        }
+	OA_SOAP_BUILD_SENSOR_RDR(OA_SOAP_SEN_PWR_STATUS)
 
         /* Build the power capacity sensor RDR */
-        memset(&rdr, 0, sizeof(SaHpiRdrT));
-        rv = build_ps_subsystem_power_capacity_sensor_rdr(oh_handler,
-                &rdr, &sensor_power_capacity_info);
-        if (rv != SA_OK) {
-                err("Failed to get power capacity sensor RDR "
-                    "for power subsystem");
-                return rv;
-        }
-        rv = oh_add_rdr(oh_handler->rptcache, resource_id, &rdr,
-                        sensor_power_capacity_info, 0);
-        if (rv != SA_OK) {
-                err("Failed to add rdr");
-                return rv;
-        }
+	OA_SOAP_BUILD_SENSOR_RDR(OA_SOAP_SEN_PWR_CAPACITY)
+
+	rv = soap_getPowerSubsystemInfo(oa_handler->active_con, &response);
+	if (rv != SOAP_OK) {
+		err("Get power subsystem info SOAP call failed");
+		return SA_ERR_HPI_INTERNAL_ERROR;
+	}
+
+	/* Build operational status sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_OPER_STATUS,
+					response.operationalStatus)
+
+	/* Build predictive failure sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_PRED_FAIL,
+					response.operationalStatus)
+
+	/* Build redundancy sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_REDUND,
+					response.redundancy)
 
         return SA_OK;
 }
@@ -2468,7 +2687,12 @@ SaErrorT build_power_supply_rpt(struct oh_handler_state *oh_handler,
  *      Populate the power supply unit RDR.
  *      Pushes the RDR entry to plugin RPTable
  *
- * Detailed Description: NA
+ * Detailed Description:
+ * 	- Creates the inventory RDR
+ * 	- Creates the power status, operational status, predictive failure,
+ * 	  internal data error, device location error, device failure error,
+ * 	  device degraded error, AC failure, device not supported and device mix
+ * 	  match sensor RDR
  *
  * Return values:
  *      SA_OK                     - on success.
@@ -2484,6 +2708,10 @@ SaErrorT build_power_supply_rdr(struct oh_handler_state *oh_handler,
         SaHpiRdrT rdr;
         struct oa_soap_inventory *inventory = NULL;
         struct oa_soap_sensor_info *sensor_info = NULL;
+	struct getPowerSupplyStatus status_request;
+	struct powerSupplyStatus status_response;
+	SaHpiInt32T sensor_status;
+	enum diagnosticStatus diag_ex_status[OA_SOAP_MAX_DIAG_EX];
 
         if (oh_handler == NULL || con == NULL || response == NULL) {
                 err("Invalid parameters");
@@ -2504,19 +2732,59 @@ SaErrorT build_power_supply_rdr(struct oh_handler_state *oh_handler,
         }
 
         /* Build power sensor rdr for power supply */
-        memset(&rdr, 0, sizeof(SaHpiRdrT));
-        rv = build_ps_power_sensor_rdr(oh_handler, con,
-                                       response->bayNumber, &rdr, &sensor_info);
-        if (rv != SA_OK) {
-                err("Failed to get power sensor RDR for power supply unit");
-                return rv;
-        }
-        rv = oh_add_rdr(oh_handler->rptcache, resource_id, &rdr,
-                        sensor_info, 0);
-        if (rv != SA_OK) {
-                err("Failed to add rdr");
-                return rv;
-        }
+	OA_SOAP_BUILD_SENSOR_RDR(OA_SOAP_SEN_PWR_STATUS)
+
+	status_request.bayNumber = response->bayNumber;
+	rv = soap_getPowerSupplyStatus(con, &status_request, &status_response);
+	if (rv != SOAP_OK) {
+		err("Get power supply status SOAP call failed");
+		return SA_ERR_HPI_INTERNAL_ERROR;
+	}
+
+	/* Build operational status sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_OPER_STATUS,
+					status_response.operationalStatus)
+
+	/* Build predictive failure sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_PRED_FAIL,
+					status_response.operationalStatus)
+
+	/* Build internal data error sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_INT_DATA_ERR,
+					status_response.diagnosticChecks.
+						internalDataError)
+
+	/* Build device location error sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_DEV_LOC_ERR,
+					status_response.diagnosticChecks.
+						deviceLocationError)
+
+	/* Build device failure error sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_DEV_FAIL,
+					status_response.diagnosticChecks.
+						deviceFailure)
+
+	/* Build device degraded error sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_DEV_DEGRAD,
+					status_response.diagnosticChecks.
+						deviceDegraded)
+
+	/* Build AC failure sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_AC_FAIL,
+					status_response.diagnosticChecks.
+						acFailure)
+
+	/* Parse the diganosticChecksEx */
+	oa_soap_parse_diag_ex(status_response.diagnosticChecksEx,
+			      diag_ex_status);
+
+	/* Build Device not supported sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_DEV_NOT_SUPPORT,
+				diag_ex_status[DIAG_EX_DEV_NOT_SUPPORT])
+
+	/* Build Device mix match sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_DEV_MIX_MATCH,
+					diag_ex_status[DIAG_EX_DEV_MIX_MATCH])
 
         return SA_OK;
 }
@@ -2604,6 +2872,1203 @@ SaErrorT discover_power_supply(struct oh_handler_state *oh_handler)
         }
         return SA_OK;
 }
+
+/**
+ * oa_soap_parse_diag_ex
+ *      @diag_ex	: Pointer to diganosticChecksEx structure
+ *	@diag_status_arr: Pointer to array of enum oa_soap_diag_ex
+ *
+ * Purpose:
+ *      Parses the diagnosticChecksEx structure and extracts the value.
+ *
+ * Detailed Description:
+ *	The fields of diagnosticChecksEx structure appear and disappear
+ *	depending on the resource configuration and status. If a field is not
+ *	available in the diagnosticChecksEx structure, then its value is
+ *	considered as NO_ERROR.
+ *	This function parses the diagnosticChecksEx structure and gets the value
+ *	for the avaiable fields.
+ *
+ * Return values:
+ *	NONE
+ **/
+void oa_soap_parse_diag_ex(xmlNode *diag_ex,
+			   enum diagnosticStatus *diag_status_arr)
+{
+	struct diagnosticData diag_data;
+	SaHpiInt32T i;
+
+	if (diag_status_arr == NULL) {
+		err("Invalid parameters");
+		return;
+	}
+
+	/* Initialize the value array to NO_ERROR.
+	 * The diagnosticChecksEx fields will change depending on the
+	 * configuration and status. Hence, if one of more fields are not
+	 * present, then it is considered not faulty
+	 */
+	for (i = 0; i < OA_SOAP_MAX_DIAG_EX; i++) {
+		diag_status_arr[i] = NO_ERROR;
+	}
+
+	while (diag_ex) {
+		soap_getDiagnosticChecksEx(diag_ex, &diag_data);
+		for (i = 0; i < OA_SOAP_MAX_DIAG_EX; i++) {
+			/* Compare the diagnosticChecksEx field name with field
+			 * names in the array. */
+			if (! strcmp(diag_data.name, oa_soap_diag_ex_arr[i])) {
+				diag_status_arr[i] = diag_data.value;
+				break;
+			}
+		}
+		diag_ex = soap_next_node(diag_ex);
+	}
+	return;
+}
+
+/**
+ * oa_soap_get_health_val
+ *      @extra_data: Pointer to extraData structure
+ *	@status	   : Pointer to enum oa_soap_extra_data_health
+ *
+ * Purpose:
+ *      Parses the healthStatus field in extraData structure and extracts the
+ *	value.
+ *
+ * Detailed Description:
+ *	The fields of extraData structure appear and disappear depending on the
+ *	resource configuration and status. If healthStatus field is not
+ *	available in the extraData structure, then its value is considered as OK
+ *	This function parses the extraData structure and gets the value
+ *	of the healthStatus field.
+ *
+ * Return values:
+ *	NONE
+ **/
+void oa_soap_get_health_val(xmlNode *extra_data,
+			    enum oa_soap_extra_data_health *status)
+{
+	struct extraDataInfo extra_data_info;
+	SaHpiInt32T i;
+
+	if (status == NULL) {
+		err("Invalid parameters");
+		return;
+	}
+
+	/* Initialize status to OK */
+	*status = HEALTH_OK;
+
+	while (extra_data) {
+		soap_getExtraData(extra_data, &extra_data_info);
+		/* Check for the healthStatus field */
+		if (! (strcmp(extra_data_info.name,
+		       OA_SOAP_HEALTH_STATUS_STR))) {
+			/* Got the healthStatus field */
+			for (i = 0; i < OA_SOAP_MAX_HEALTH_ENUM; i++) {
+				if (! strcmp(extra_data_info.value,
+					     oa_soap_health_arr[i])) {
+					/* Assign the healthStatus enum value */
+					*status = i;
+					break;
+				}
+			}
+		}
+		extra_data = soap_next_node(extra_data);
+	}
+	return;
+}
+
+/**
+ * oa_soap_build_rpt
+ *      @oh_handler	: Pointer to openhpi handler
+ *      @resource_type	: Type of resource
+ *      @location	: Device location
+ *      @rpt		: Pointer to RPT entry
+ *
+ * Purpose:
+ *	Generic function to build the RPT entry from the global rpt array
+ *
+ * Detailed Description:
+ * 	- Gets the RPT entry from the global rpt array
+ *	- Assigns the entity location in the entity path
+ *	- Generates the resource id
+ *
+ * Return values:
+ *      SA_OK                     - on success.
+ *      SA_ERR_HPI_INVALID_PARAMS - on wrong parameters
+ *      SA_ERR_HPI_INTERNAL_ERROR - on failure.
+ **/
+SaErrorT oa_soap_build_rpt(struct oh_handler_state *oh_handler,
+			   SaHpiInt32T resource_type,
+			   SaHpiInt32T location,
+                           SaHpiRptEntryT *rpt)
+{
+        SaErrorT rv = SA_OK;
+        SaHpiEntityPathT entity_path;
+        char *entity_root = NULL;
+
+        if (oh_handler == NULL || rpt == NULL) {
+                err("Invalid parameters");
+                return SA_ERR_HPI_INVALID_PARAMS;
+        }
+
+        entity_root = (char *) g_hash_table_lookup(oh_handler->config,
+                                                   "entity_root");
+        rv = oh_encode_entitypath(entity_root, &entity_path);
+        if (rv != SA_OK) {
+                err("Encoding entity path failed");
+                return SA_ERR_HPI_INTERNAL_ERROR;
+        }
+
+        /* Populate the rpt with the details of the thermal subsystem */
+        memset(rpt, 0, sizeof(SaHpiRptEntryT));
+        *rpt = oa_soap_rpt_arr[resource_type];
+        rv = oh_concat_ep(&(rpt->ResourceEntity), &entity_path);
+        if (rv != SA_OK) {
+                err("concatenation of entity path failed");
+                return SA_ERR_HPI_INTERNAL_ERROR;
+        }
+
+	/* Set the device location in RPT entry */
+	if (location) 
+		rpt->ResourceEntity.Entry[0].EntityLocation = location;
+
+        rpt->ResourceId = oh_uid_from_entity_path(&(rpt->ResourceEntity));
+
+        return SA_OK;
+}
+
+/**
+ * oa_soap_build_therm_subsys_rdr
+ *      @oh_handler:  Pointer to openhpi handler
+ *      @resource_id: Resource id
+ *
+ * Purpose:
+ *      Populate the thermal subsystem RDR.
+ *      Pushes the RDR entry to plugin RPTable
+ *
+ * Detailed Description:
+ *	Creates the operational status, predictive failure and redundancy
+ *	sensor RDR
+ *
+ * Return values:
+ *      SA_OK                     - on success.
+ *      SA_ERR_HPI_INVALID_PARAMS - on wrong parameters
+ *      SA_ERR_HPI_INTERNAL_ERROR - on failure.
+ **/
+static SaErrorT oa_soap_build_therm_subsys_rdr(struct oh_handler_state
+						*oh_handler,
+					       SaHpiResourceIdT resource_id)
+{
+        SaErrorT rv = SA_OK;
+        SaHpiRdrT rdr;
+	struct thermalSubsystemInfo response;
+	struct oa_soap_handler *oa_handler = NULL;
+        struct oa_soap_sensor_info *sensor_info = NULL;
+	SaHpiInt32T sensor_status;
+
+        if (oh_handler == NULL) {
+                err("Invalid parameters");
+                return SA_ERR_HPI_INVALID_PARAMS;
+        }
+
+	oa_handler = (struct oa_soap_handler *) oh_handler->data;
+
+	rv = soap_getThermalSubsystemInfo(oa_handler->active_con, &response);
+	if (rv != SOAP_OK) {
+		err("Get thermal subsystem info failed");
+		return SA_ERR_HPI_INTERNAL_ERROR;
+	}
+
+	/* Build operational status sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_OPER_STATUS,
+					response.operationalStatus)
+
+	/* Build predictive failure sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_PRED_FAIL,
+					response.operationalStatus)
+
+	/* Build internal data error sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_REDUND,
+					response.redundancy)
+
+        return SA_OK;
+}
+
+/**
+ * oa_soap_disc_therm_subsys
+ *      @oh_handler: Pointer to openhpi handler
+ *
+ * Purpose:
+ *      Discover the thermal subsystem.
+ *
+ * Detailed Description: NA
+ *
+ * Return values:
+ *      SA_OK                     - on success.
+ *      SA_ERR_HPI_INVALID_PARAMS - on wrong parameters
+ *      SA_ERR_HPI_INTERNAL_ERROR - on failure.
+ **/
+static SaErrorT oa_soap_disc_therm_subsys(struct oh_handler_state *oh_handler)
+{
+	SaErrorT rv = SA_OK;
+	struct oa_soap_handler *oa_handler = NULL;
+	SaHpiRptEntryT rpt;
+
+	if (oh_handler == NULL) {
+		err("Invalid parameters");
+		return SA_ERR_HPI_INVALID_PARAMS;
+	}
+
+	oa_handler = (struct oa_soap_handler *) oh_handler->data;
+
+	/* Build the rpt entry for thermal subsystem */
+	rv = oa_soap_build_rpt(oh_handler, OA_SOAP_ENT_THERM_SUBSYS, 0, &rpt);
+	if (rv != SA_OK) {
+		err("Build thermal subsystem rpt failed");
+		return rv;
+	}
+
+        /* Add the thermal subsystem rpt to the plugin RPTable */
+        rv = oh_add_resource(oh_handler->rptcache, &rpt, NULL, 0);
+        if (rv != SA_OK) {
+                err("Failed to add thermal subsystem RPT");
+                return rv;
+        }
+
+	/* Build the rdr entry for thermal subsystem */
+	rv = oa_soap_build_therm_subsys_rdr(oh_handler, rpt.ResourceId);
+	if (rv != SA_OK) {
+		err("Build thermal subsystem RDR failed");
+		return rv;
+	}
+
+	/* Update resource_status structure with resource_id */
+	oa_handler->oa_soap_resources.thermal_subsystem_rid = rpt.ResourceId; 
+	return SA_OK;
+}
+
+/**
+ * oa_soap_build_fz_rdr
+ *      @oh_handler:  Pointer to openhpi handler
+ *      @resource_id: Resource id
+ *      @fan_zone : Pointer to fanZone structure
+ *
+ * Purpose:
+ *      Populate the fan zone RDR.
+ *      Pushes the RDR entry to plugin RPTable
+ *
+ * Detailed Description:
+ * 	Creates the operational status, predictive failure and redundancy
+ * 	sensor RDR
+ *
+ * Return values:
+ *      SA_OK                     - on success.
+ *      SA_ERR_HPI_INVALID_PARAMS - on wrong parameters
+ *      SA_ERR_HPI_INTERNAL_ERROR - on failure.
+ **/
+static SaErrorT oa_soap_build_fz_rdr(struct oh_handler_state *oh_handler,
+				     SaHpiResourceIdT resource_id,
+				     struct fanZone *fan_zone)
+{
+        SaErrorT rv = SA_OK;
+        SaHpiRdrT rdr;
+	struct oa_soap_handler *oa_handler = NULL;
+        struct oa_soap_sensor_info *sensor_info = NULL;
+	SaHpiInt32T sensor_status;
+
+        if (oh_handler == NULL) {
+                err("Invalid parameters");
+                return SA_ERR_HPI_INVALID_PARAMS;
+        }
+
+	oa_handler = (struct oa_soap_handler *) oh_handler->data;
+
+	/* Build the fan zone inventory rdr */
+	rv = oa_soap_build_fz_inv(oh_handler, resource_id, fan_zone);
+	if (rv != SA_OK) {
+		err("Building inventory RDR for Fan Zone failed");
+		return rv;
+	}
+
+	/* Build operational status sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_OPER_STATUS,
+					fan_zone->operationalStatus)
+
+	/* Build predictive failure sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_PRED_FAIL,
+					fan_zone->operationalStatus)
+
+	/* Build redundancy sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_REDUND,
+					fan_zone->redundant)
+
+        return SA_OK;
+}
+
+/**
+ * oa_soap_get_fz
+ *      @oh_handler: Pointer to openhpi handler
+ *      @max_fz    : Maximum fan zone supported by the enclosure
+ *      @response  : Pointer to getFanZoneArrayResponse structure
+ *
+ * Purpose:
+ *	Gets the fan zone array information
+ *
+ * Detailed Description:
+ *	- Creates the request for getFanZoneArray SOAP call based on the maximum
+ *	  fan zones
+ *	- Makes the getFanZoneArray SOAP call
+ *
+ * Return values:
+ *      SA_OK                     - on success.
+ *      SA_ERR_HPI_INVALID_PARAMS - on wrong parameters
+ *      SA_ERR_HPI_INTERNAL_ERROR - on failure.
+ **/
+SaErrorT oa_soap_get_fz_arr(struct oa_soap_handler *oa_handler,
+			    SaHpiInt32T max_fz,
+			    struct getFanZoneArrayResponse *response)
+{
+	SaErrorT rv;
+	struct getFanZoneArray request;
+	struct bayArray bay_zones;
+	SaHpiInt32T i;
+	byte array[max_fz];
+
+	if (oa_handler == NULL || response == NULL) {
+		err("Invalid parameter");
+		return SA_ERR_HPI_INVALID_PARAMS;
+	}
+
+	/* Create the bayArray for fanZoneArray request */
+	for (i = 1; i <= max_fz; i++) {
+		array[i - 1] = i;
+	}
+
+	bay_zones.array = array;
+	bay_zones.size = max_fz;
+	request.bayArray = bay_zones;
+	rv = soap_getFanZoneArray(oa_handler->active_con, &request,
+				  response);
+	if (rv != SOAP_OK) {
+		err("Get fan zone array SOAP call failed");
+		return SA_ERR_HPI_INTERNAL_ERROR;
+	}
+	return SA_OK;
+}
+
+/**
+ * oa_soap_disc_fz
+ *      @oh_handler: Pointer to openhpi handler
+ *
+ * Purpose:
+ *      Discover the fan zone.
+ *
+ * Detailed Description: NA
+ *
+ * Return values:
+ *      SA_OK                     - on success.
+ *      SA_ERR_HPI_INVALID_PARAMS - on wrong parameters
+ *      SA_ERR_HPI_INTERNAL_ERROR - on failure.
+ **/
+static SaErrorT oa_soap_disc_fz(struct oh_handler_state *oh_handler)
+{
+	SaErrorT rv = SA_OK;
+	struct oa_soap_handler *oa_handler = NULL;
+	SaHpiRptEntryT rpt;
+	struct fanZone fan_zone;
+	struct getFanZoneArrayResponse response;
+	SaHpiInt32T max_fz, zone_number;
+
+	if (oh_handler == NULL) {
+		err("Invalid parameters");
+		return SA_ERR_HPI_INVALID_PARAMS;
+	}
+
+	oa_handler = (struct oa_soap_handler *) oh_handler->data;
+	max_fz = oa_handler->oa_soap_resources.fan_zone.max_bays;
+
+	/* Get the Fan Zone array information */
+	rv = oa_soap_get_fz_arr(oa_handler, max_fz, &response);
+	if (rv != SA_OK) {
+		err("Failed to get fan zone array");
+		return rv;
+	}
+
+	while (response.fanZoneArray) {
+		soap_fanZone(response.fanZoneArray, &fan_zone);
+
+		zone_number = fan_zone.zoneNumber;
+		/* Build the rpt entry for fan zone */
+		rv = oa_soap_build_rpt(oh_handler, OA_SOAP_ENT_FZ, zone_number,
+				       &rpt);
+		if (rv != SA_OK) {
+			err("Build fan zone rpt has failed");
+			return rv;
+		}
+
+		/* Add the fan zone rpt to the plugin RPTable */
+		rv = oh_add_resource(oh_handler->rptcache, &rpt, NULL, 0);
+		if (rv != SA_OK) {
+			err("Failed to add fan zone RPT");
+			return rv;
+		}
+
+		/* Build the rdr entry for fan zone */
+		rv = oa_soap_build_fz_rdr(oh_handler, rpt.ResourceId,
+					  &fan_zone);
+		if (rv != SA_OK) {
+			err("Build fan zone RDR failed");
+			return rv;
+		}
+
+		/* Update resource_status structure with resource_id */
+		oa_handler->oa_soap_resources.fan_zone.
+			resource_id[zone_number - 1] = rpt.ResourceId; 
+		response.fanZoneArray = soap_next_node(response.fanZoneArray);
+	}
+	return SA_OK;
+}
+
+/**
+ * oa_soap_build_fan_rpt
+ *      @oh_handler	: Pointer to openhpi handler
+ *      @bay_number	: Bay number of the Fan
+ *      @resource_id	: Pointer to the resource id
+ *
+ * Purpose:
+ *      Populate the fan RPT.
+ *      Pushes the RPT entry to plugin RPTable
+ *
+ * Detailed Description:
+ * 	- Creates the Fan RPT entry from the global array
+ * 	- Puts the primary fan zone number of this fan in entity path
+ * 	- Pushes the RPT entry to plugin RPTable
+ *
+ * Return values:
+ *      SA_OK                     - on success.
+ *      SA_ERR_HPI_INVALID_PARAMS - on wrong parameters
+ *      SA_ERR_HPI_INTERNAL_ERROR - on failure.
+ **/
+SaErrorT oa_soap_build_fan_rpt(struct oh_handler_state *oh_handler,
+			       SaHpiInt32T bay_number,
+			       SaHpiResourceIdT *resource_id)
+{
+        SaErrorT rv = SA_OK;
+	SaHpiRptEntryT rpt;
+	struct oa_soap_handler *oa_handler;
+
+        if (oh_handler == NULL || resource_id == NULL) {
+                err("Invalid parameters");
+                return SA_ERR_HPI_INVALID_PARAMS;
+        }
+
+	oa_handler = (struct oa_soap_handler *) oh_handler->data;
+
+	rv = oa_soap_build_rpt(oh_handler, OA_SOAP_ENT_FAN, bay_number, &rpt);
+	if (rv != SA_OK) {
+		err("Build fan rpt has failed");
+		return rv;
+	}
+
+	/* Set the fan zone location in RPT entry */
+	rpt.ResourceEntity.Entry[1].EntityLocation =
+		oa_soap_fz_map_arr[oa_handler->enc_type][bay_number].zone;
+
+	/* Add the fan rpt to the plugin RPTable */
+	rv = oh_add_resource(oh_handler->rptcache, &rpt, NULL, 0);
+	if (rv != SA_OK) {
+		err("Failed to add fan RPT");
+		return rv;
+	}
+
+	*resource_id = rpt.ResourceId;
+        return SA_OK;
+}
+
+/**
+ * oa_soap_build_fan_rdr
+ *      @oh_handler:  Pointer to openhpi handler
+ *      @con:         Pointer to the soap client handler.
+ *      @response:    Fan info response structure
+ *      @resource_id: Resource id
+ *
+ * Purpose:
+ *	- Creates the inventory RDR.
+ *	- Creates operational status, predictive failure, internal data error,
+ *	  device location error, device failure error, device degraded and
+ *	  device missing sensor RDR
+ *	- Pushes the RDRs to plugin RPTable
+ *
+ * Detailed Description: NA
+ *
+ * Return values:
+ *      SA_OK                     - on success.
+ *      SA_ERR_HPI_INVALID_PARAMS - on wrong parameters
+ *      SA_ERR_HPI_INTERNAL_ERROR - on failure.
+ **/
+SaErrorT oa_soap_build_fan_rdr(struct oh_handler_state *oh_handler,
+			       SOAP_CON *con,
+			       struct fanInfo *response,
+			       SaHpiResourceIdT resource_id)
+{
+        SaErrorT rv = SA_OK;
+        SaHpiRdrT rdr;
+        struct oa_soap_sensor_info *sensor_info = NULL;
+	SaHpiInt32T sensor_status;
+	enum diagnosticStatus diag_ex_status[OA_SOAP_MAX_DIAG_EX];
+
+        if (oh_handler == NULL || con == NULL || response == NULL) {
+                err("Invalid parameters");
+                return SA_ERR_HPI_INVALID_PARAMS;
+        }
+
+        /* Build inventory rdr for fan */
+        memset(&rdr, 0, sizeof(SaHpiRdrT));
+        rv = oa_soap_build_fan_inv(oh_handler, resource_id, response);
+        if (rv != SA_OK) {
+                err("Failed to build fan inventory RDR");
+                return rv;
+        }
+
+        /* Build fan speed sensor rdr for fan */
+	OA_SOAP_BUILD_SENSOR_RDR(OA_SOAP_SEN_FAN_SPEED)
+
+        /* Build power sensor rdr for fan */
+	OA_SOAP_BUILD_SENSOR_RDR(OA_SOAP_SEN_PWR_STATUS)
+
+	/* Build operational status sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_OPER_STATUS,
+					response->operationalStatus)
+
+	/* Build predictive failure sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_PRED_FAIL,
+					response->operationalStatus)
+
+	/* Build internal data error sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_INT_DATA_ERR,
+					response->diagnosticChecks.
+						internalDataError)
+
+	/* Build device location error sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_DEV_LOC_ERR,
+					response->diagnosticChecks.
+						deviceLocationError)
+
+	/* Build device failure error sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_DEV_FAIL,
+					response->diagnosticChecks.
+						deviceFailure)
+
+	/* Build device degraded error sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_DEV_DEGRAD,
+					response->diagnosticChecks.
+						deviceDegraded)
+
+	oa_soap_parse_diag_ex(response->diagnosticChecksEx, diag_ex_status);
+
+	/* Build device missing sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_DEV_MISS,
+					diag_ex_status[DIAG_EX_DEV_MISS])
+
+        return SA_OK;
+}
+
+/**
+ * oa_soap_disc_fan
+ *      @oh_handler: Pointer to openhpi handler
+ *
+ * Purpose:
+ *      Discover the fan.
+ *
+ * Detailed Description: NA
+ *
+ * Return values:
+ *      SA_OK                     - on success.
+ *      SA_ERR_HPI_INVALID_PARAMS - on wrong parameters
+ *      SA_ERR_HPI_INTERNAL_ERROR - on failure.
+ **/
+static SaErrorT oa_soap_disc_fan(struct oh_handler_state *oh_handler)
+{
+        SaErrorT rv = SA_OK;
+        struct oa_soap_handler *oa_handler = NULL;
+        SaHpiInt32T i;
+        struct getFanInfo request;
+        struct fanInfo response;
+        SaHpiResourceIdT resource_id;
+
+        if (oh_handler == NULL) {
+                err("Invalid parameters");
+                return SA_ERR_HPI_INVALID_PARAMS;
+        }
+
+        oa_handler = (struct oa_soap_handler *) oh_handler->data;
+
+        for (i = 1; i <= oa_handler->oa_soap_resources.fan.max_bays; i++) {
+                request.bayNumber = i;
+                rv = soap_getFanInfo(oa_handler->active_con,
+                                     &request, &response);
+                if (rv != SOAP_OK) {
+                        err("Get Fan Info SOAP call failed");
+                        return SA_ERR_HPI_INTERNAL_ERROR;
+                }
+
+                /* If resource not present, continue checking for next bay */
+                if (response.presence != PRESENT)
+                        continue;
+
+                rv = oa_soap_build_fan_rpt(oh_handler, i, &resource_id);
+                if (rv != SA_OK) {
+                        err("Failed to build fan RPT");
+			return rv;
+		}
+
+                /* Update resource_status structure with resource_id,
+                 * serial_number, and presence status.  Fan doesn't have a
+                 * serial number, so pass in a null string.
+                 */
+                oa_soap_update_resource_status(
+                      &oa_handler->oa_soap_resources.fan, i,
+                      NULL, resource_id, RES_PRESENT);
+
+                rv = oa_soap_build_fan_rdr(oh_handler, oa_handler->active_con,
+					   &response, resource_id);
+                if (rv != SA_OK) {
+                        err("Failed to build fan RDR");
+                        /* Reset resource_status structure to default values */
+                        oa_soap_update_resource_status(
+                              &oa_handler->oa_soap_resources.fan, i,
+                              NULL, SAHPI_UNSPECIFIED_RESOURCE_ID, RES_ABSENT);
+                        return rv;
+                }
+
+        }
+        return SA_OK;
+}
+
+/**
+ * oa_soap_build_lcd_rdr
+ *      @oh_handler:	Pointer to openhpi handler
+ *      @resource_id:	resource id
+ *
+ * Purpose:
+ * 	Builds the LCD RDR
+ *
+ * Detailed Description:
+ *	- Creates the inventory RDR
+ *	- Creates the operational status, predictive failure, internal data
+ *	  error, device failure error, device degraded error, enclosure
+ *	  aggregate operational status and enclosure aggregate  predictive
+ *	  failure sernsor RDR
+ *	- Pushes the RDR entry to plugin RPTable
+ *
+ * Return values:
+ *      SA_OK                     - on success.
+ *      SA_ERR_HPI_INVALID_PARAMS - on wrong parameters
+ *      SA_ERR_HPI_INTERNAL_ERROR - on failure.
+ **/
+static SaErrorT oa_soap_build_lcd_rdr(struct oh_handler_state *oh_handler,
+				      SaHpiResourceIdT resource_id)
+{
+        SaErrorT rv = SA_OK;
+        SaHpiRdrT rdr;
+	struct oa_soap_handler *oa_handler = NULL;
+        struct oa_soap_sensor_info *sensor_info = NULL;
+	struct lcdStatus status;
+	SaHpiInt32T sensor_status;
+
+        if (oh_handler == NULL) {
+                err("Invalid parameters");
+                return SA_ERR_HPI_INVALID_PARAMS;
+        }
+
+	oa_handler = (struct oa_soap_handler *) oh_handler->data;
+
+	/* Build the LCD inventory RDR */
+	rv = oa_soap_build_lcd_inv(oh_handler, resource_id);
+	if (rv != SA_OK) {
+		err("Building inventory RDR for LCD failed");
+		return rv;
+	}
+
+	/* Build LCD button lock control rdr */
+	OA_SOAP_BUILD_CONTROL_RDR(OA_SOAP_LCD_BUTN_LCK_CNTRL)
+
+	/* Build operational status sensor rdr */
+	rv = soap_getLcdStatus(oa_handler->active_con, &status);
+	if (rv != SOAP_OK) {
+		err("Get LCD status SOAP call has failed");
+		return SA_ERR_HPI_INTERNAL_ERROR;
+	}
+	
+	/* Build operational status sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_OPER_STATUS,
+					status.status)
+
+	/* Build predictive failure sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_PRED_FAIL,
+					status.status)
+
+	/* Build internal data error sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_INT_DATA_ERR,
+					status.diagnosticChecks.
+						internalDataError)
+
+	/* Build device failure error sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_DEV_FAIL,
+					status.diagnosticChecks.deviceFailure)
+
+	/* Build device degraded error sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_DEV_DEGRAD,
+					status.diagnosticChecks.deviceDegraded)
+
+	/* Build enclosure aggregate operational status sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_ENC_AGR_OPER,
+					status.lcdSetupHealth)
+
+	/* Build enclosure aggregate predictive failure sensor rdr */
+	OA_SOAP_BUILD_ENABLE_SENSOR_RDR(OA_SOAP_SEN_ENC_AGR_PRED_FAIL,
+					status.lcdSetupHealth)
+
+        return SA_OK;
+}
+
+/**
+ * oa_soap_disc_lcd
+ *      @oh_handler: Pointer to openhpi handler
+ *
+ * Purpose:
+ *      Discover the fan zone.
+ *
+ * Detailed Description: NA
+ *
+ * Return values:
+ *      SA_OK                     - on success.
+ *      SA_ERR_HPI_INVALID_PARAMS - on wrong parameters
+ *      SA_ERR_HPI_INTERNAL_ERROR - on failure.
+ **/
+static SaErrorT oa_soap_disc_lcd(struct oh_handler_state *oh_handler)
+{
+	SaErrorT rv = SA_OK;
+	struct oa_soap_handler *oa_handler = NULL;
+	SaHpiRptEntryT rpt;
+
+	if (oh_handler == NULL) {
+		err("Invalid parameters");
+		return SA_ERR_HPI_INVALID_PARAMS;
+	}
+
+	oa_handler = (struct oa_soap_handler *) oh_handler->data;
+
+	/* Build the rpt entry for lcd */
+	rv = oa_soap_build_rpt(oh_handler, OA_SOAP_ENT_LCD, 0, &rpt);
+	if (rv != SA_OK) {
+		err("Build LCD rpt has failed");
+		return rv;
+	}
+
+	/* Add the LCD rpt to the plugin RPTable */
+	rv = oh_add_resource(oh_handler->rptcache, &rpt, NULL, 0);
+	if (rv != SA_OK) {
+		err("Failed to add LCD RPT");
+		return rv;
+	}
+
+	/* Build the rdr entry for LCD */
+	rv = oa_soap_build_lcd_rdr(oh_handler, rpt.ResourceId);
+	if (rv != SA_OK) {
+		err("Build LCD RDR failed");
+		return rv;
+	}
+
+	/* Update resource_status structure with resource_id */
+	oa_handler->oa_soap_resources.lcd_rid = rpt.ResourceId; 
+	return SA_OK;
+}
+
+/**
+ * oa_soap_populate_event
+ *       @oh_handler:  Pointer to openhpi handler
+ *       @resource_id: Resource Id
+ *       @event:       Pointer to event structure
+ *       @assert_sensors: Pointer to GSList
+ *
+ * Purpose:
+ *      Populates the event structure with default values of the resource.
+ *	If sensor is in assert state, then pushes the asserted sensor RDR
+ *	to list.
+ *
+ * Detailed Description:
+ * 	- Populates the event structure with default values of the resource
+ * 	- If sensor is in assert state, then pushes the asserted sensor RDR to
+ * 	  assert sensor list. This list is used for generating the sensor assert
+ * 	  events
+ *
+ * Return values:
+ *      SA_OK                     - on success.
+ *      SA_ERR_HPI_INVALID_PARAMS - on wrong parameters
+ *      SA_ERR_HPI_INTERNAL_ERROR - on failure.
+ **/
+SaErrorT oa_soap_populate_event(struct oh_handler_state *oh_handler,
+				SaHpiResourceIdT resource_id,
+				struct oh_event *event,
+				GSList **assert_sensors)
+{
+        SaHpiRptEntryT *rpt = NULL;
+        SaHpiRdrT *rdr = NULL;
+	struct oa_soap_sensor_info *sensor_info;
+	SaHpiEventStateT state;
+	SaHpiEventCategoryT evt_catg;
+
+        if (oh_handler == NULL || event == NULL || assert_sensors == NULL) {
+                err("Invalid parameters");
+                return SA_ERR_HPI_INVALID_PARAMS;
+        }
+
+        rpt = oh_get_resource_by_id(oh_handler->rptcache, resource_id);
+
+        memset(event, 0, sizeof(struct oh_event));
+        event->event.Source = rpt->ResourceId;
+        oh_gettimeofday(&event->event.Timestamp);
+        event->event.Severity = rpt->ResourceSeverity;
+        event->resource = *rpt;
+        event->hid = oh_handler->hid;
+
+        /* Get the first RDR */
+        rdr = oh_get_rdr_next(oh_handler->rptcache, rpt->ResourceId,
+                                    SAHPI_FIRST_ENTRY);
+        while (rdr) {
+		/* Push the rdr to event rdrs list */
+                event->rdrs =
+			g_slist_append(event->rdrs, g_memdup(rdr,
+							sizeof(SaHpiRdrT)));
+
+		/* Check whether the RDR is of type sensor */
+		if (rdr->RdrType == SAHPI_SENSOR_RDR) {
+			sensor_info = (struct oa_soap_sensor_info*)
+				oh_get_rdr_data(oh_handler->rptcache,
+						resource_id,
+					       	rdr->RecordId);
+
+			/* Check whether the event is enabled or not */
+			if (sensor_info->event_enable == SAHPI_TRUE) {
+				state = sensor_info->current_state;
+				evt_catg = rdr->RdrTypeUnion.SensorRec.Category;
+				/* Check whether the sensor current state is
+				 * asserted or not. Sensor is considered to be
+				 * in assert state, if any one of the following
+				 * 3 conditions are met:
+				 *
+				 * 1. event category = ENABLE and state =
+				 * DISABLED
+				 * 2. event category = PRED_FAIL and state =
+				 * PRED_FAILURE_ASSERT
+				 * 3. event category = THRESHOLD and state =
+				 * UPPER_MAJOR or _UPPER_CRIT
+				 */
+				if ( (evt_catg == SAHPI_EC_ENABLE &&
+				      state == SAHPI_ES_DISABLED) ||
+				     (evt_catg == SAHPI_EC_PRED_FAIL &&
+				      state == SAHPI_ES_PRED_FAILURE_ASSERT) ||
+				     (evt_catg == SAHPI_EC_REDUNDANCY &&
+				      state == SAHPI_ES_REDUNDANCY_LOST) ||
+				     (evt_catg == SAHPI_EC_THRESHOLD &&
+				      (state == SAHPI_ES_UPPER_MAJOR ||
+				       state == SAHPI_ES_UPPER_CRIT)) ) {
+					/* Push the sensor rdr to assert sensor
+					 * list
+					 */
+					*assert_sensors =
+						g_slist_append(*assert_sensors,
+						       g_memdup(rdr,
+							    sizeof(SaHpiRdrT)));
+				}
+			}
+		}
+		/* Get the next RDR */
+		rdr = oh_get_rdr_next(oh_handler->rptcache, rpt->ResourceId,
+                                      rdr->RecordId);
+        }
+
+        return SA_OK;
+}
+
+/**
+ * oa_soap_push_disc_res
+ *       @oh_handler: Pointer to openhpi handler
+ *
+ * Purpose:
+ * 	Pushes the discovered resource entries to openhpi infrastructure
+ *
+ * Detailed Description:
+ *	- Get the rpt entry of the resources one by one.
+ *      - Creates the resource or hotswap event depending on the resource
+ *        hotswap capability
+ *      - Pushes the events to openhpi infrastructure
+ *
+ * Return values:
+ *      SA_OK                     - on success.
+ *      SA_ERR_HPI_OUT_OF_MEMORY  - on out of memory
+ *      SA_ERR_HPI_INVALID_PARAMS - on wrong parameters
+ *      SA_ERR_HPI_INTERNAL_ERROR - on failure.
+ **/
+static void oa_soap_push_disc_res(struct oh_handler_state *oh_handler)
+{
+        SaErrorT rv = SA_OK;
+        SaHpiRptEntryT *rpt = NULL;
+        struct oh_event event;
+        struct oa_soap_hotswap_state *hotswap_state = NULL;
+	GSList *assert_sensor_list = NULL;
+
+        if (oh_handler == NULL) {
+                err("Invalid parameter");
+                return;
+        }
+
+	/* Get the first resource */
+        rpt = oh_get_resource_next(oh_handler->rptcache, SAHPI_FIRST_ENTRY);
+        while (rpt) {
+		/* Populate the event structure with default values and get the
+		 * asserted sensor list 
+		 */
+                rv = oa_soap_populate_event(oh_handler, rpt->ResourceId, &event,
+					    &assert_sensor_list);
+
+                /* Check whether the resource has hotswap capability */
+                if (event.resource.ResourceCapabilities &
+                        SAHPI_CAPABILITY_MANAGED_HOTSWAP) {
+                        /* Get the hotswap state and fill the current
+                         * hotswap state
+                         */
+                        hotswap_state = (struct oa_soap_hotswap_state *)
+                                oh_get_resource_data(oh_handler->rptcache,
+                                                     event.resource.ResourceId);
+                        if (hotswap_state == NULL) {
+                                err("Failed to get server hotswap state");
+                                return;
+                        }
+                        event.event.EventType = SAHPI_ET_HOTSWAP;
+                        event.event.EventDataUnion.HotSwapEvent.HotSwapState =
+                                hotswap_state->currentHsState;
+                        event.event.EventDataUnion.HotSwapEvent.
+                                CauseOfStateChange = SAHPI_HS_CAUSE_UNKNOWN;
+                } else if (event.resource.ResourceCapabilities &
+                                SAHPI_CAPABILITY_FRU) {
+                        /* The resource is FRU, but does not have hotswap
+                         * capability Fill the current hotswap state as ACTIVE.
+                         */
+                        event.event.EventType = SAHPI_ET_HOTSWAP;
+                        event.event.EventDataUnion.HotSwapEvent.HotSwapState =
+                                SAHPI_HS_STATE_ACTIVE;
+                        event.event.EventDataUnion.HotSwapEvent.
+                                CauseOfStateChange = SAHPI_HS_CAUSE_UNKNOWN;
+                } else {
+                        /* The resource does not have FRU and hotswap
+                         * capabilities. Raise the resrouce event.
+                         */
+                        event.event.EventType = SAHPI_ET_RESOURCE;
+                        event.event.EventDataUnion.ResourceEvent.
+                                ResourceEventType = SAHPI_RESE_RESOURCE_ADDED;
+                }
+                /* Push the event to OpenHPI */
+                oh_evt_queue_push(oh_handler->eventq,
+                                  copy_oa_soap_event(&event));
+
+		/* If the assert sensro list is not empty, raise the assert
+		 * sensor events
+		 */
+		if (assert_sensor_list != NULL) {
+			/* Raise the assert sensor events */
+			oa_soap_assert_sen_evt(oh_handler, rpt,
+					       assert_sensor_list);
+			/* Initialize the assert sensor list to NULL */
+			assert_sensor_list = NULL;
+		}
+
+		/* Get the next resource */
+                rpt = oh_get_resource_next(oh_handler->rptcache,
+                                           rpt->ResourceId);
+        } /* End of while loop */
+
+        return;
+}
+
+/**
+ * oa_soap_build_blade_thermal_rdr:
+ *      @oh_handler		: Pointer to openhpi handler
+ *      @thermal_response	: bladeThermalInfoArrayResponse response 
+ *				  structure
+ *	@rpt			: Pointer to rpt structure
+ *	@name			: Blade name
+ *
+ * Purpose: Builds the thermal sensors of blade resource
+ *	
+ * Detailed Description: 
+ *	- Parses the bladethermalInfoArray responses
+ *	- For a particular blade type, then thermal sensor rdrs are built
+ *	  based on static information available in 
+ *	  "oa_soap_static_thermal_sensor_config" array for the blade type.
+ *	- While the sensors are being built, if the soap response is NULL then
+ *	  the sensor is left in the disable state, else the response is verified
+ *	  to check whether the sensor can be enabled for monitoring and is 
+ *	  enabled if monitoring is supported.
+ *	- The response contains thermal info for different components, zones
+ *	  inside the blade.
+ *	- In addition, the bladeThermalInfo sensor of same type in response can
+ *	  repeat (Like multiple system zones, cpu_zones, cpu information).
+ *	  When there is such multiple instance of the bladeThermalInfo structure
+ *	  in the response, sensor numbers are generated as follows:
+ *		For each sensor type, a base sensor number is defined
+ *		First occurrence of this sensor type in the response structure 
+ *		is modeled with 
+ *			sensor number = base sensor number
+ *		Any later occurrences of the same sensor type in response is
+ *		modeled with 
+ *			sensor number = sensor number of previous instance of
+ *					the same sensor type + 1 
+ *	- Currently plugin considers maximum 4 occurrences of thermal info of 
+ *	  same sensor type for thermal sensor modeling(For example only 4
+ *	  system zone thermal sensors will be modeled even if the blade is able
+ *	  to provide more than 4 thermal sensors of system zone type)
+ * 	- Finally the bladeThermalInfo structure instance does not contain
+ *	  any field identifier to unique distinguish itself into a particular
+ *	  sensor type, hence the description field in the bladeThermalInfo 
+ *	  structure is used as the key to distinguish into particular sensor
+ *	  type category.
+ *	- If this module is called during the discovery, then thermal sensors
+ * 	  rdr are built for sensors supported by blade
+ *
+ * Return values:
+ *      SA_OK                     - on success
+ *      SA_ERR_HPI_INTERNAL_ERROR - on failure
+ **/
+SaErrorT oa_soap_build_blade_thermal_rdr(struct oh_handler_state *oh_handler,
+					 struct bladeThermalInfoArrayResponse 
+						response,
+					 SaHpiRptEntryT *rpt,
+					 char *name)
+{
+	SaErrorT rv = SA_OK;
+	SaHpiBoolT bld_stable = SAHPI_FALSE;
+	SaHpiInt32T i, j, sen_num, sen_count;
+	enum oa_soap_blade_type bld_index = OTHER_BLADE_TYPE;
+	SaHpiRdrT rdr;
+	struct oa_soap_sensor_info *sensor_info = NULL;
+	struct bladeThermalInfoArrayResponse temp_response;
+	struct bladeThermalInfo bld_thrm_info;
+	struct extraDataInfo extra_data_info;
+	SaHpiSensorRecT *sensor = NULL;
+
+	if (response.bladeThermalInfoArray != NULL)
+		bld_stable = SAHPI_TRUE;
+
+	/* Resolve the blade name to blade type enum .
+	 * If the blade name did not match any of the existing blade type
+	 * string, then it is considered OTHER_BLADE_TYPE
+	 */
+	for (i=0; i< OA_SOAP_MAX_BLD_TYPE -1 ; i++) {
+		if (strstr(name, oa_soap_bld_type_str[i])) {
+			bld_index = i;
+			break;
+		}
+	}
+
+	/* Fetch the thermal sensor information from static thermal sensor
+	 * meant for blade type under discovery 
+	 */
+	for (i = 0; i < OA_SOAP_MAX_THRM_SEN; i++) {
+		sen_count = oa_soap_static_thrm_sen_config[bld_index]
+						[i].sensor_count;
+		/* Do not add any sensor rdr if the sensor count is zero */
+		if (sen_count == 0) 
+			continue;
+
+		for (j = 0; j< sen_count; j++) {
+			memset(&rdr, 0, sizeof(SaHpiRdrT));	
+			sen_num =
+				oa_soap_static_thrm_sen_config[bld_index][i].
+					base_sen_num + j;
+			rv = oa_soap_build_sen_rdr(oh_handler, rpt->ResourceId,
+						   &rdr, &sensor_info, sen_num);
+			if (rv != SA_OK) {
+				err("Failed to create rdr for sensor %x",
+				     sen_num);
+				return rv;
+			}
+			
+			/* Initialize the sensor enable state as disabled */	
+			sensor_info->sensor_enable = SAHPI_FALSE;
+			if (bld_stable == SAHPI_FALSE) {
+				dbg("Blade not in stable state, leaving sensor"
+				    " in disable state");
+			} else {
+				/* Call the following function to retrieve 
+				 * the correct instance of bladeThermalInfo 
+				 * response.
+				 */
+				temp_response = response;
+				rv = oa_soap_get_bld_thrm_sen_data(sen_num,
+								temp_response,
+								&bld_thrm_info);
+								
+				if (rv != SA_OK) {
+					err("Could not find the matching"
+					    " sensors info from blade");	
+					return SA_ERR_HPI_INTERNAL_ERROR;
+				}
+
+				/* Check for the "SensorPresent" value in 
+				 * bladeThermalInfo structure. 
+				 * If the value is true, then enable the sensor
+				 * built statically in previous step 
+				 */
+				soap_getExtraData(bld_thrm_info.extraData, 
+							&extra_data_info);
+
+				if ((extra_data_info.value != NULL) &&
+				    (!(strcasecmp(extra_data_info.value, 
+							"true")))) {
+					sensor_info->sensor_enable = SAHPI_TRUE;
+
+					sensor = &(rdr.RdrTypeUnion.SensorRec);
+					/* Updating the rdr with actual upper 
+					 * critical threshold value provided by
+					 * OA
+					 */
+					sensor->DataFormat.Range.Max.Value.
+								SensorFloat64 =
+					sensor_info->threshold.UpCritical.Value.
+								SensorFloat64 =
+						bld_thrm_info.criticalThreshold;
+			
+					/* Updating the rdr with actual upper 
+					 * caution threshold value provided by
+					 * OA
+					 */
+					sensor->DataFormat.Range.NormalMax.Value.
+								SensorFloat64 =
+					sensor_info->threshold.UpMajor.Value.
+								SensorFloat64 =
+					bld_thrm_info.cautionThreshold;
+				} else {
+					dbg("Sensor %s not enabled for blade",
+					    bld_thrm_info.description);
+				}
+			}
+			
+			rv = oh_add_rdr(oh_handler->rptcache, rpt->ResourceId,
+					&rdr, sensor_info, 0);
+			if (rv != SA_OK) {
+				err("Failed to add rdr");
+				return rv;
+			}
+		}
+	}
+	return SA_OK;
+}
+
 
 void * oh_discover_resources (void *)
                 __attribute__ ((weak, alias("oa_soap_discover_resources")));

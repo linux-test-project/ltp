@@ -349,6 +349,7 @@ static void oh_detect_oem_event_alarm(struct oh_domain *d, SaHpiEventT *event)
         }
 
         /* Severity is "alarming". Add/Create OEM alarm */
+        memset( &a, 0, sizeof( a ) );	/* Make sure alarm has valid fields */
         a.Severity = event->Severity;
         a.AlarmCond.Type = type;
         oh_entity_path_lookup(event->Source, &a.AlarmCond.Entity);
@@ -384,6 +385,9 @@ static void oh_detect_resource_event_alarm(struct oh_domain *d, SaHpiEventT *eve
         /* Failed resource.
            Add/Create resource alarm if severity is "alarming" */
         if (event->Severity <= SAHPI_MINOR) {
+                memset( &a, 0, sizeof( a ) ); /* Make sure alarm has valid
+					       * fields
+					       */
                 a.Severity = event->Severity;
                 a.AlarmCond.Type = type;
                 oh_entity_path_lookup(event->Source, &a.AlarmCond.Entity);
@@ -412,6 +416,9 @@ static void oh_detect_sensor_event_alarm(struct oh_domain *d, SaHpiEventT *event
                    event->EventDataUnion.SensorEvent.Assertion) {
                 /* Add sensor alarm to dat, since event is severe
                    enough and is asserted. */
+                memset( &a, 0, sizeof( a ) ); /* Make sure alarm has valid
+					       * fields
+					       */
                 a.Severity = event->Severity;
                 a.AlarmCond.Type = type;
                 oh_entity_path_lookup(event->Source, &a.AlarmCond.Entity);
@@ -496,6 +503,9 @@ static void oh_detect_resource_alarm(struct oh_domain *d, SaHpiRptEntryT *res)
                                 NULL, NULL, NULL, 1);
         } else if (res->ResourceSeverity <= SAHPI_MINOR && res->ResourceFailed) {
                 /* Otherwise, if sev is "alarming" and resource failed, create alarm. */
+                memset( &a, 0, sizeof( a ) ); /* Make sure alarm has valid
+					       * fields
+					       */
                 a.Severity = res->ResourceSeverity;
                 a.AlarmCond.Type = SAHPI_STATUS_COND_TYPE_RESOURCE;
                 oh_entity_path_lookup(res->ResourceId, &a.AlarmCond.Entity);

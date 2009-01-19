@@ -91,12 +91,6 @@ SaErrorT initialize_oa_con(struct oa_info *oa,
 
 SaErrorT delete_all_inventory_info(struct oh_handler_state *oh_handler);
 
-SaErrorT populate_event(struct oh_handler_state *oh_handler,
-                        SaHpiResourceIdT resource_id,
-                        struct oh_event *event);
-
-SaErrorT push_discovered_resource_events(struct oh_handler_state *oh_handler);
-
 void cleanup_plugin_rptable(struct oh_handler_state *oh_handler);
 
 void release_oa_soap_resources(struct oa_soap_handler * oa_handler);

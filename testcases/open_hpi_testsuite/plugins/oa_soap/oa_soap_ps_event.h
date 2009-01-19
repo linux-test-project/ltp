@@ -45,4 +45,10 @@ SaErrorT process_ps_insertion_event(struct oh_handler_state *oh_handler,
 SaErrorT process_ps_extraction_event(struct oh_handler_state *oh_handler,
                                      struct eventInfo *oa_event);
 
+void oa_soap_proc_ps_subsys_info(struct oh_handler_state *oh_handler,
+				 struct powerSubsystemInfo *info);
+
+void oa_soap_proc_ps_status(struct oh_handler_state *oh_handler,
+			    struct powerSupplyStatus *status);
+
 #endif

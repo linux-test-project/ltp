@@ -243,6 +243,61 @@ SaErrorT sim_set_resource_severity(void *hnd, SaHpiResourceIdT rid, SaHpiSeverit
 	return SA_OK;
 }
 
+SaErrorT sim_resource_failed_remove(void *hnd, SaHpiResourceIdT rid)
+{
+	struct oh_handler_state *h;
+	SaHpiRptEntryT *resource = NULL;
+	struct oh_event e;
+	SaHpiHsStateT hsstate = SAHPI_HS_STATE_ACTIVE;
+	SaErrorT rv;
+
+	if (hnd == NULL) {
+		err("Invalid parameter");
+		return SA_ERR_HPI_INVALID_PARAMS;
+	}
+
+	h = (struct oh_handler_state *) hnd;
+	resource = oh_get_resource_by_id(h->rptcache, rid);
+	if (resource == NULL) {
+		err("Failed to get the RPT entry");
+		return SA_ERR_HPI_NOT_PRESENT;
+	}
+
+	if (resource->ResourceCapabilities & SAHPI_CAPABILITY_MANAGED_HOTSWAP) {
+		rv = sim_get_hotswap_state(hnd, rid, &hsstate);
+		if (rv != SA_OK) {
+			err("Failed to get the hotswap state");
+			return rv;
+		}
+	}
+
+	/* Raise the resource removal hotswap event */
+	memset(&e, 0, sizeof(struct oh_event));
+	e.hid = h->hid;
+	e.resource = *resource;
+	e.rdrs = NULL;
+	e.event.Source = rid;
+	e.event.Severity = resource->ResourceSeverity;
+	oh_gettimeofday(&e.event.Timestamp);
+	e.event.EventType = SAHPI_ET_HOTSWAP;
+	e.event.EventDataUnion.HotSwapEvent.PreviousHotSwapState = hsstate;
+	e.event.EventDataUnion.HotSwapEvent.HotSwapState =
+		SAHPI_HS_STATE_NOT_PRESENT;
+	e.event.EventDataUnion.HotSwapEvent.CauseOfStateChange =
+		SAHPI_HS_CAUSE_USER_UPDATE;
+
+	oh_evt_queue_push(h->eventq, oh_dup_event(&e));
+
+	/* Remove the failed resource from plugin rptcache */
+	rv = oh_remove_resource(h->rptcache, rid);
+	if (rv != SA_OK) {
+		err("Resource removal from RPTable failed");
+		return rv;
+	}
+
+	return SA_OK;
+}
+
 /*
  * Simulator plugin interface
  *
@@ -264,4 +319,6 @@ void * oh_set_resource_tag (void *, SaHpiResourceIdT, SaHpiTextBufferT *)
 void * oh_set_resource_severity (void *, SaHpiResourceIdT, SaHpiSeverityT)
 		__attribute__ ((weak, alias("sim_set_resource_severity")));
 
+void * oh_resource_failed_remove (void *, SaHpiResourceIdT)
+		__attribute__ ((weak, alias("sim_resource_failed_remove")));
 

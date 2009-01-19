@@ -75,6 +75,29 @@
  * maintainability problems.
  */
 
+
+/* This tries to locate a string of diagnosticChecksEx notes within the
+ * current XML response tree.  If one is found, it's node is returned.  If
+ * not, returns NULL.
+ */
+static xmlNode  *locate_diagnosticChecksEx(xmlNode *node)
+{
+        xmlNode         *diag;          /* DiagnosticChecksEx node */
+
+        /* First, is there a diagnosticChecksEx node? */
+        diag = soap_walk_tree(node, "diagnosticChecksEx");
+        if (diag && diag->children) {   /* Real responses have children */
+                diag = diag->children;
+                if (! diag->properties) /* Skip formatting (empty) nodes */
+                        diag = soap_next_node(diag);
+        }
+        else
+                diag = NULL;            /* No children */
+
+        return(diag);
+}
+
+
 /* parse_xsdBoolean - Parses xsdBoolean strings, returning an hpoa_boolean */
 static enum hpoa_boolean parse_xsdBoolean(char *str)
 {
@@ -279,10 +302,7 @@ static void     parse_oaStatus(xmlNode *node, struct oaStatus *response)
                 parse_xsdBoolean(soap_tree_value(node, "oaRedundancy"));
         parse_diagnosticChecks(soap_walk_tree(node, "diagnosticChecks"),
                                & (response->diagnosticChecks));
-#if 0                                   /* TODO: Doesn't work yet */
-        response->diagnosticChecksEx =
-                soap_walk_tree(node, "diagnosticChecksEx");
-#endif
+        response->diagnosticChecksEx = locate_diagnosticChecksEx(node);
         response->extraData = soap_walk_tree(node, "extraData");
 }
 
@@ -328,10 +348,7 @@ static void     parse_bladeStatus(xmlNode *node, struct bladeStatus *response)
         response->powerConsumed = atoi(soap_tree_value(node, "powerConsumed"));
         parse_diagnosticChecks(soap_walk_tree(node, "diagnosticChecks"),
                                & (response->diagnosticChecks));
-#if 0                                   /* TODO: Doesn't work yet */
-        response->diagnosticChecksEx =
-                soap_walk_tree(node, "diagnosticChecksEx");
-#endif
+        response->diagnosticChecksEx = locate_diagnosticChecksEx(node);
         response->extraData = soap_walk_tree(node, "extraData");
 }
 
@@ -359,10 +376,7 @@ static void     parse_interconnectTrayStatus(xmlNode *node,
         response->ports = soap_walk_tree(node, "ports:port");
         parse_diagnosticChecks(soap_walk_tree(node, "diagnosticChecks"),
                                & (response->diagnosticChecks));
-#if 0                                   /* TODO: Doesn't work yet */
-        response->diagnosticChecksEx =
-                soap_walk_tree(node, "diagnosticChecksEx");
-#endif
+        response->diagnosticChecksEx = locate_diagnosticChecksEx(node);
         response->extraData = soap_walk_tree(node, "extraData");
 }
 
@@ -430,10 +444,7 @@ static void     parse_powerSupplyStatus(xmlNode *node,
                 soap_enum(opStatus_S, soap_tree_value(node, "inputStatus"));
         parse_diagnosticChecks(soap_walk_tree(node, "diagnosticChecks"),
                                & (response->diagnosticChecks));
-#if 0                                   /* TODO: Doesn't work yet */
-        response->diagnosticChecksEx =
-                soap_walk_tree(node, "diagnosticChecksEx");
-#endif
+        response->diagnosticChecksEx = locate_diagnosticChecksEx(node);
         response->extraData = soap_walk_tree(node, "extraData");
 }
 
@@ -589,10 +600,7 @@ static void      parse_enclosureStatus(xmlNode *node,
                           soap_tree_value(node, "wizardStatus"));
         parse_diagnosticChecks(soap_walk_tree(node, "diagnosticChecks"),
                                & (response->diagnosticChecks));
-#if 0                                   /* TODO: Doesn't work yet */
-        response->diagnosticChecksEx =
-                soap_walk_tree(node, "diagnosticChecksEx");
-#endif
+        response->diagnosticChecksEx = locate_diagnosticChecksEx(node);
         response->extraData = soap_walk_tree(node, "extraData");
 }
 
@@ -621,11 +629,19 @@ static void     parse_lcdStatus(xmlNode *node, struct lcdStatus *response)
                           soap_tree_value(node, "lcdSetupHealth"));
         parse_diagnosticChecks(soap_walk_tree(node, "diagnosticChecks"),
                                & (response->diagnosticChecks));
-#if 0                                   /* TODO: Doesn't work yet */
-        response->diagnosticChecksEx =
-                soap_walk_tree(node, "diagnosticChecksEx");
-#endif
+        response->diagnosticChecksEx = locate_diagnosticChecksEx(node);
         response->extraData = soap_walk_tree(node, "extraData");
+}
+
+/* parse_getBladeThermalInfoArray - Parses a bladeThermalInfoArrayResponse 
+ * structure */
+static void parse_getBladeThermalInfoArray(xmlNode *node, 
+				struct bladeThermalInfoArrayResponse *response)
+{
+	response->bladeThermalInfoArray =
+		soap_walk_tree(node, 
+			       "bladeThermalInfoArray:bladeThermalInfo");
+
 }
 
 /* parse_getAllEvents - Parses a getAllEventsResponse structure */
@@ -663,6 +679,27 @@ void    soap_getExtraData(xmlNode *extraData, struct extraDataInfo *result)
         else
                 result->name = NULL;
         result->value = soap_value(extraData);
+}
+
+/* soap_getDiagnosticChecksEx - Walks list of diagnosticChecksEx nodes,
+ *      providing the name and value for each.  Used after any SOAP call
+ *      that returns a diagnosticChecksEx xmlNode pointer.
+ *
+ * Outputs:
+ *      name:           String containing the diagnosticChecksEx node name
+ *      value:          diagnosticStatus enum value
+ */
+void    soap_getDiagnosticChecksEx(xmlNode *diag,
+                                   struct diagnosticData *result)
+
+{
+        if ((diag) &&
+            (diag->properties) &&
+            (diag->properties->children))
+                result->name = (char *)(diag->properties->children->content);
+        else
+                result->name = NULL;
+        result->value = soap_enum(diagnosticStatus_S, soap_value(diag));
 }
 
 /* soap_getBladeCpuInfo - Walks list of bladeCpuInfo nodes, providing details
@@ -909,11 +946,24 @@ void    soap_fanInfo(xmlNode *node, struct fanInfo *result)
                           soap_tree_value(node, "operationalStatus"));
         parse_diagnosticChecks(soap_walk_tree(node, "diagnosticChecks"),
                                & (result->diagnosticChecks));
-#if 0                                   /* TODO: Doesn't work yet */
-        result->diagnosticChecksEx =
-                soap_walk_tree(node, "diagnosticChecksEx");
-#endif
+        result->diagnosticChecksEx = locate_diagnosticChecksEx(node);
         result->extraData = soap_walk_tree(node, "extraData");
+}
+
+void	soap_bladeThermalInfo(xmlNode *node, struct bladeThermalInfo * result)
+{
+	result->sensorNumber = atoi(soap_tree_value(node, "sensorNumber"));
+	result->sensorType = atoi(soap_tree_value(node, "sensorType"));
+	result->entityId = atoi(soap_tree_value(node, "entityId"));
+	result->entityInstance = atoi(soap_tree_value(node, "entityInstance"));
+	result->criticalThreshold = 
+				atoi(soap_tree_value(node, "criticalThreshold"));
+	result->cautionThreshold = 
+				atoi(soap_tree_value(node, "cautionThreshold"));
+	result->temperatureC = atoi(soap_tree_value(node, "temperatureC"));
+	result->oem = atoi(soap_tree_value(node, "oem"));
+	result->description = soap_tree_value(node, "description");
+	result->extraData = soap_walk_tree(node, "extraData");
 }
 
 /* soap_getEventInfo - Walks list of eventInfo nodes, providing details
@@ -938,6 +988,9 @@ void    soap_getEventInfo(xmlNode *events, struct eventInfo *result)
                 result->queueSize = atoi(str);
         else
                 result->queueSize = -1;
+	if ((str = soap_tree_value(events, "numValue"))) {
+		result->numValue = atoi(str);
+	}
         result->extraData = soap_walk_tree(events, "extraData");
 
         /* The remainder depends on what sort of data is returned by the OA.
@@ -1635,4 +1688,25 @@ int soap_setInterconnectTrayUid(SOAP_CON *con,
         }
         return(soap_request(con, SET_INTERCONNECT_TRAY_UID, request->bayNumber,
                             uid));
+}
+
+int soap_setLcdButtonLock(SOAP_CON *con,
+			  enum hpoa_boolean buttonLock)
+{
+        return(soap_request(con, SET_LCD_BUTTON_LOCK, buttonLock));
+}
+
+int soap_getBladeThermalInfoArray(SOAP_CON *con,
+				  struct getBladeThermalInfoArray *request,
+				struct bladeThermalInfoArrayResponse *response)
+{
+	SOAP_PARM_CHECK
+	if (! (ret = soap_request(con, GET_BLADE_THERMAL_INFO_ARRAY,
+				  request->bayNumber))) {
+		parse_getBladeThermalInfoArray(soap_walk_doc(con->doc,
+					     "Body:"
+					     "getBladeThermalInfoArrayResponse"),
+					     response);
+	}
+	return(ret);
 }

@@ -322,17 +322,48 @@ xmlNode         *soap_next_node(xmlNode *node)
 int             soap_enum(const char *enums, char *value)
 {
         char            *found;
+        const char      *start = enums;
         int             n = 0;
-        int             len = strlen(value);
+        int             len;
 
-        found = strstr(enums, value);
-        if ((found) && ((*(found + len) == ',') || (*(found + len) == '\0'))) {
-                while (--found >= enums) {
-                        if (*found == ',')
-                                n++;
-                }
-                return(n);
+        if (! value) {                  /* Can't proceed without a string */
+                err("could not find enum (NULL value) in \"%s\"", enums);
+                return(-1);
         }
+
+        len = strlen(value);
+	/* We have to search repeatedly, in case the match is just a substring
+	 * of an enum value.
+	 */
+	while (start) {
+        	found = strstr(start, value);
+		/* To match, a value must be found, it must either be at the
+		 * start of the string or be preceeded by a space, and must
+		 * be at the end of the string or be followed by a ','
+		 */
+        	if ((found) &&
+		    ((found == start) || (*(found - 1) == ' ')) &&
+		    ((*(found + len) == ',') || (*(found + len) == '\0'))) {
+		    	/* Having found a match, count backwards to see which
+			 * enum value should be returned.
+			 */
+                	while (--found >= enums) {
+                        	if (*found == ',')
+                                	n++;
+                	}
+                	return(n);
+        	}
+		if (found) {
+			/* We found something but it was a substring.  We need
+			 * to search again, but starting further along in the
+			 * enums string.
+			 */
+			start = found + len;
+		}
+		else {
+			start = NULL;	/* We won't search any more */
+		}
+	}
 
         err("could not find enum value \"%s\" in \"%s\"", value, enums);
         return(-1);

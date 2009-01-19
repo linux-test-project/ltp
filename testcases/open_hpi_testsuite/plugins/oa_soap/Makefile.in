@@ -83,8 +83,10 @@ LTLIBRARIES = $(pkglib_LTLIBRARIES)
 liboa_soap_la_DEPENDENCIES = $(top_builddir)/utils/libopenhpiutils.la
 am_liboa_soap_la_OBJECTS = oa_soap.lo oa_soap_power.lo \
 	oa_soap_reset.lo oa_soap_hotswap.lo oa_soap_utils.lo \
-	oa_soap_discover.lo oa_soap_re_discover.lo oa_soap_event.lo \
-	oa_soap_oa_event.lo oa_soap_ps_event.lo oa_soap_fan_event.lo \
+	oa_soap_resources.lo oa_soap_discover.lo \
+	oa_soap_re_discover.lo oa_soap_event.lo \
+	oa_soap_enclosure_event.lo oa_soap_oa_event.lo \
+	oa_soap_ps_event.lo oa_soap_fan_event.lo oa_soap_lcd_event.lo \
 	oa_soap_server_event.lo oa_soap_interconnect_event.lo \
 	oa_soap_control.lo oa_soap_sensor.lo oa_soap_inventory.lo \
 	oa_soap_watchdog.lo oa_soap_sel.lo oa_soap_annunciator.lo \
@@ -132,6 +134,7 @@ CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
+DSYMUTIL = @DSYMUTIL@
 ECHO = @ECHO@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
@@ -165,6 +168,7 @@ MAKEINFO = @MAKEINFO@
 MAN = @MAN@
 MARSHALDIR = @MARSHALDIR@
 MKDIR_P = @MKDIR_P@
+NMEDIT = @NMEDIT@
 OA_SOAP = @OA_SOAP@
 OBJEXT = @OBJEXT@
 OH_SSL_INCLUDES = @OH_SSL_INCLUDES@
@@ -282,18 +286,24 @@ liboa_soap_la_SOURCES = oa_soap.h \
                           oa_soap_hotswap.c \
                           oa_soap_utils.h \
                           oa_soap_utils.c \
+                          oa_soap_resources.h \
+                          oa_soap_resources.c \
                           oa_soap_discover.h \
                           oa_soap_discover.c \
                           oa_soap_re_discover.h \
                           oa_soap_re_discover.c \
                           oa_soap_event.h \
                           oa_soap_event.c \
+                          oa_soap_enclosure_event.h \
+                          oa_soap_enclosure_event.c \
                           oa_soap_oa_event.h \
                           oa_soap_oa_event.c \
                           oa_soap_ps_event.h \
                           oa_soap_ps_event.c \
                           oa_soap_fan_event.h \
                           oa_soap_fan_event.c \
+                          oa_soap_lcd_event.h \
+                          oa_soap_lcd_event.c \
                           oa_soap_server_event.h \
                           oa_soap_server_event.c \
                           oa_soap_interconnect_event.h \
@@ -403,18 +413,21 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/oa_soap_control.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/oa_soap_dimi.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/oa_soap_discover.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/oa_soap_enclosure_event.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/oa_soap_event.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/oa_soap_fan_event.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/oa_soap_fumi.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/oa_soap_hotswap.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/oa_soap_interconnect_event.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/oa_soap_inventory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/oa_soap_lcd_event.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/oa_soap_load_id.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/oa_soap_oa_event.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/oa_soap_power.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/oa_soap_ps_event.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/oa_soap_re_discover.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/oa_soap_reset.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/oa_soap_resources.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/oa_soap_sel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/oa_soap_sensor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/oa_soap_server_event.Plo@am__quote@

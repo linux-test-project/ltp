@@ -32,6 +32,7 @@
  *      Raghavendra M.S. <raghavendra.ms@hp.com>
  *      Bhaskara Bhatt <bhaskara.hg@hp.com>
  *      Shuah Khan <shuah.khan@hp.com>
+ *      Raghavendra P.G. <raghavendra.pg@hp.com>
  *
  * This file supports the functions related to HPI Inventory Data repositories.
  * The file covers three general classes of function: IDR ABI functions,
@@ -97,6 +98,9 @@
  *      build_power_inv_rdr()           - Creates an inventory rdr for power
  *                                        supply
  *
+ *	oa_soap_build_fan_zone_inventory_rdr() - Creates inventory rdr for Fan
+ *						 Zone
+ *
  * IDR Utility functions:
  *
  *      add_product_area(),
@@ -129,9 +133,37 @@
  *      fetch_idr_field()               - Gets an IDR field from IDR area in
  *                                        Inventory repository
  *
+ *	oa_soap_inv_set_field()		- Sets the field during discovery
+ *
+ *	oa_soap_add_inv_fields()	- Adds the fields to area during
+ *					  discovery
+ *
+ *	oa_soap_add_inv_areas()		- Adds the area to area_list during
+ *					  discovery
+ *
+ * 	oa_soap_build_inventory_rdr()	- Creates the inventory RDR
+ *                                        
  */
 
 #include "oa_soap_inventory.h"
+
+/* Array defined in oa_soap_resources.c */
+extern const struct oa_soap_inv_rdr oa_soap_inv_arr[];
+extern const struct oa_soap_fz_map oa_soap_fz_map_arr[][OA_SOAP_MAX_FAN];
+
+/* Forward declarations for static functions */
+static void oa_soap_inv_set_field(struct oa_soap_area *area_list,
+				  SaHpiIdrAreaTypeT area_type,
+				  SaHpiIdrFieldTypeT field_type,
+				  const char *data);
+static void oa_soap_add_inv_fields(struct oa_soap_area *area,
+				   const struct oa_soap_field *field_list);
+static void oa_soap_add_inv_areas(struct oa_soap_inventory *inventory,
+				  SaHpiInt32T resource_type);
+static SaErrorT oa_soap_build_inv(struct oh_handler_state *oh_handler,
+				  SaHpiInt32T resource_type,
+				  SaHpiResourceIdT resource_id,
+				  struct oa_soap_inventory **inventory);
 
 /**
  * oa_soap_get_idr_info
@@ -3750,6 +3782,496 @@ SaErrorT free_inventory_info(struct oh_handler_state *handler,
         }
 
         return SA_OK;
+}
+
+/*
+ * oa_soap_inv_set_field
+ *	@area		: Pointer to the area list
+ *	@area_type	: Type of the area
+ *	@field_type	: Type of the field
+ *	@comment	: Pointer to the data
+ *
+ * Purpose:
+ *	Generic function to set field data
+ *
+ * Detailed Description:
+ * 	- Searches the field based on area type and field type.
+ * 	- Assigns the field data with inventory information.
+ *
+ * Return values:
+ *	NONE 
+ */
+static void oa_soap_inv_set_field(struct oa_soap_area *area_list,
+				  SaHpiIdrAreaTypeT area_type,
+				  SaHpiIdrFieldTypeT field_type,
+				  const char *data)
+{
+	struct oa_soap_area *area;
+	struct oa_soap_field *field;
+
+	if (area_list == NULL) {
+		err("Invalid parameter");
+		return;
+	} 
+	
+	/* Data can be NULL if the device is faulty */
+	if (data == NULL) {
+		dbg("Can not set the field data for the field type %d",
+		    field_type);
+		dbg("Data passed is NULL");
+		return;
+	}
+
+	area = area_list;
+	/* Traverse the areas till we get area_type */
+	while (area) {
+		if (area->idr_area_head.Type == area_type) {
+			field = area->field_list;
+			/* Traverse the fields till we get field_type */
+			while (field) {
+				if (field->field.Type == field_type) {
+					field->field.Field.DataLength =
+						strlen(data) + 1;
+					strcpy((char *) field->field.Field.Data,
+						data);
+					return;
+				}
+				field = field->next_field;
+			}
+		}
+		area = area->next_area;
+	}
+
+	err("Failed to find the field type %d in area %d", field_type,
+	    area_type);
+	return;
+}
+
+/*
+ * oa_soap_add_inv_fields
+ *	@area		: Pointer to the area
+ *	@field_list	: Pointer to the field list in the global array
+ *
+ * Purpose:
+ *	Generic function add the fields to the area
+ *
+ * Detailed Description:
+ *	- Gets the number of fields from the area
+ *	- Allocates the memory for the field and constructs the field list
+ *
+ * Return values:
+ *	NONE 
+ */
+static void oa_soap_add_inv_fields(struct oa_soap_area *area,
+				   const struct oa_soap_field field_array[])
+{
+	struct oa_soap_field **field;
+	SaHpiInt32T i;
+
+	if (area == NULL || field_array == NULL) {
+		err("Invalid parameters");
+		return;
+	}
+	
+	field = &(area->field_list);
+	for (i = 0; i < area->idr_area_head.NumFields; i++) {
+		*field = g_memdup(&(field_array[i].field),
+				  sizeof(struct oa_soap_field));
+		field = &((*field)->next_field);
+	}
+	
+	return;
+}
+
+/*
+ * oa_soap_add_inv_areas
+ *	@area		: Pointer to the inventory structure
+ *	@resource_type	: Resource type
+ *
+ * Purpose:
+ *	To add the areas to the area_list
+ *
+ * Detailed Description:
+ *	- Gets the number of areas from the IDR header
+ *	- Allocates the memory for the areas and constructs the area list
+ *
+ * Return values:
+ *	NONE 
+ */
+static void oa_soap_add_inv_areas(struct oa_soap_inventory *inventory,
+				  SaHpiInt32T resource_type)
+{
+	struct oa_soap_area **area;
+	SaHpiInt32T i, num_areas;
+
+	if (inventory == NULL) {
+		err("Invalid parameter");
+		return;
+	}
+
+	/* Point to the location of the area_list pointer of inventory */
+	area = &(inventory->info.area_list);
+	/* Get the number of areas supported for the resource type */
+	num_areas =
+		oa_soap_inv_arr[resource_type].inventory.info.idr_info.NumAreas;
+	for (i = 0; i < num_areas; i++) {
+		*area = g_memdup(&(oa_soap_inv_arr[resource_type].area_array[i].
+					area),
+				sizeof(struct oa_soap_area));
+		/* Add the fields to the newly added area */
+		oa_soap_add_inv_fields(*area,
+					oa_soap_inv_arr[resource_type].
+						area_array[i].field_array);
+		/* Point to the location of the next area pointer */
+		area = &((*area)->next_area);
+	}
+	
+	return;
+}
+
+/*
+ * oa_soap_build_inv
+ *	@oh_handler	: Pointer to the handler
+ *	@resource_type	: Resource type
+ *	@resource_id	: Resource Id
+ *	@rdr		: Pointer to the rdr structure
+ *
+ * Purpose:
+ *	Generic function to build the inventory RDR
+ *
+ * Detailed Description:
+ * 	- Allocates the memory for inventory info
+ * 	- Builds the area and field list from global inventory array
+ * 	- Copies the inventory RDR information from global inventory array
+ * 	- Pushes the inventory RDR to plugin rptcache
+ *
+ * Return values:
+ *	SA_OK                     - On success
+ *	SA_ERR_HPI_INVALID_PARAMS - On wrong parameters
+ *	SA_ERR_HPI_OUT_OF_MEMORY  - On memory allocatin failure
+ *	SA_ERR_HPI_NOT_PRESENT    - On wrong resource id
+ */
+static SaErrorT oa_soap_build_inv(struct oh_handler_state *oh_handler,
+				  SaHpiInt32T resource_type,
+				  SaHpiResourceIdT resource_id,
+				  struct oa_soap_inventory **inventory)
+{
+	SaHpiRdrT rdr;
+	SaHpiRptEntryT *rpt;
+	SaErrorT rv;
+
+	if (oh_handler == NULL || inventory == NULL) {
+		err("Invalid parameters");
+		return SA_ERR_HPI_INVALID_PARAMS;
+	}
+	
+	/* Get the rpt entry of the resource */
+	rpt = oh_get_resource_by_id(oh_handler->rptcache, resource_id);
+	if (rpt == NULL) {
+		err("resource RPT is NULL");
+		return SA_ERR_HPI_NOT_PRESENT;
+	}
+
+	/* Get the inventory from the global array */
+	*inventory =
+		g_memdup(&(oa_soap_inv_arr[resource_type].inventory),
+			 sizeof(struct oa_soap_inventory));
+
+	if (*inventory == NULL) {
+		err("Out of memory");
+		return SA_ERR_HPI_OUT_OF_MEMORY;
+	}
+	
+	rdr = oa_soap_inv_arr[resource_type].rdr;
+	rdr.Entity = rpt->ResourceEntity;
+
+	/* Populate the areas */
+	oa_soap_add_inv_areas(*inventory, resource_type);
+
+	rv = oh_add_rdr(oh_handler->rptcache, resource_id, 
+			&rdr, *inventory, 0); 
+	if (rv != SA_OK) { 
+		err("Failed to add rdr"); 
+		return rv; 
+	} 
+
+	return SA_OK;
+}
+
+/*
+ * oa_soap_build_fz_inv
+ *	@oh_handler	: Pointer to the handler
+ *	@resource_id	: Resource Id
+ *	@fanZone	: Pointer to structure fanZone
+ *
+ * Purpose:
+ *	Builds the inventory RDR for fan zone
+ *
+ * Detailed Description:
+ *	- Gets the fan inventory information
+ *	- Builds the inventory RDR
+ *	- Populates the device bays and fan bays
+ *
+ * Return values:
+ *	SA_OK                     - On success
+ *	SA_ERR_HPI_INVALID_PARAMS - On wrong parameters
+ *	SA_ERR_HPI_INERNAL_ERROR  - On soap call failure
+ */
+SaErrorT oa_soap_build_fz_inv(struct oh_handler_state *oh_handler,
+			      SaHpiResourceIdT resource_id,
+			      struct fanZone *fan_zone)
+{
+	SaErrorT rv;
+	struct oa_soap_handler *oa_handler;
+	struct oa_soap_inventory *inventory = NULL;
+	char *temp, field_data[MAX_BUF_SIZE]; 
+	SaHpiInt32T len, write_size = OA_SOAP_MAX_FZ_NUM_SIZE + 1;
+	struct fanInfo info;
+	byte bay;
+
+	if (oh_handler == NULL || fan_zone == NULL) {
+		err("Invalid Parameters");
+		return SA_ERR_HPI_INVALID_PARAMS;
+	}
+	
+	rv = oa_soap_build_inv(oh_handler, OA_SOAP_ENT_FZ, resource_id,
+			       &inventory);
+	if (rv != SA_OK) {
+		err("Building inventory RDR for Fan Zone failed");
+		return rv;
+	}
+	
+	oa_handler = (struct oa_soap_handler *) oh_handler->data;
+
+	/* Construct the device bays field data*/
+	/* Set the field_data to 0. This helps the strlen (5 lines down) to get
+	 * correct string length
+	 */
+	memset(field_data, 0, OA_SOAP_MAX_FZ_INV_SIZE);
+	temp = field_data;
+	while (fan_zone->deviceBayArray) {
+		soap_deviceBayArray(fan_zone->deviceBayArray, &bay);
+		/* Check whether we have reached the end of field_data array */
+		if ((strlen(field_data) + write_size) >=
+		     OA_SOAP_MAX_FZ_INV_SIZE) {
+			err("The field_data size smaller, it may lead to "
+			    "potential memory overflow problem");
+			return SA_ERR_HPI_INTERNAL_ERROR;
+		}
+		snprintf(temp, write_size, "%d,", bay);
+		/* Point the temp to end of data */
+		temp += strlen(temp);
+		fan_zone->deviceBayArray =
+			soap_next_node(fan_zone->deviceBayArray);
+	}
+	/* Remove the last ',' from data */
+	len = strlen(field_data);
+	field_data[len - 1] = '\0';
+
+	/* Set the device bays field data */
+	oa_soap_inv_set_field(inventory->info.area_list,
+			      SAHPI_IDR_AREATYPE_OEM,
+			      OA_SOAP_INV_FZ_DEV_BAY,
+			      field_data);
+
+	/* Construct the fan bays field data*/
+	/* Set the field_data to 0. This helps the strlen (5 lines down) to get
+	 * correct string length
+	 */
+	memset(field_data, 0, OA_SOAP_MAX_FZ_INV_SIZE);
+	temp = field_data;
+	while (fan_zone->fanInfoArray) {
+		soap_fanInfo(fan_zone->fanInfoArray, &info);
+		/* Check whether we have reached the end of field_data array */
+		if ((strlen(field_data) + write_size) >=
+		     OA_SOAP_MAX_FZ_INV_SIZE) {
+			err("The field_data size smaller, it may lead to "
+			    "potential memory overflow problem");
+			return SA_ERR_HPI_INTERNAL_ERROR;
+		}
+		snprintf(temp, write_size, "%d,", info.bayNumber);
+		/* Point the temp to end of data */
+		temp += strlen(temp);
+		fan_zone->fanInfoArray = soap_next_node(fan_zone->fanInfoArray);
+	}
+	/* Remove the last ',' from data */
+	len = strlen(field_data);
+	field_data[len - 1] = '\0';
+
+	/* Set the fan bays field data */
+	oa_soap_inv_set_field(inventory->info.area_list,
+			      SAHPI_IDR_AREATYPE_OEM,
+			      OA_SOAP_INV_FZ_FAN_BAY,
+			      field_data);
+
+	return SA_OK;
+}
+
+/*
+ * oa_soap_build_fan_inv
+ *	@oh_handler	: Pointer to the handler
+ *	@resource_id	: Resource Id
+ *	@fan_info	: Pointer to fanInfo structure
+ *
+ * Purpose:
+ *	Builds the inventory RDR for fan
+ *
+ * Detailed Description:
+ *	- Gets the fan inventory information
+ *	- Builds the inventory RDR
+ *	- Populates the inventory info with product name, part number, serial
+ *	  number, primary fan zone, secondary fan zone and shared status
+ *
+ * Return values:
+ *	SA_OK                     - On success
+ *	SA_ERR_HPI_INVALID_PARAMS - On wrong parameters
+ *	SA_ERR_HPI_INERNAL_ERROR  - On soap call failure
+ */
+SaErrorT oa_soap_build_fan_inv(struct oh_handler_state *oh_handler,
+			       SaHpiResourceIdT resource_id,
+			       struct fanInfo *fan_info)
+{
+	SaErrorT rv;
+	struct oa_soap_handler *oa_handler;
+	struct oa_soap_inventory *inventory = NULL;
+	char field_data[OA_SOAP_MAX_FZ_INV_SIZE];
+	SaHpiInt32T slot;
+
+	if (oh_handler == NULL || fan_info == NULL) {
+		err("Invalid Parameters");
+		return SA_ERR_HPI_INVALID_PARAMS;
+	}
+
+	oa_handler = (struct oa_soap_handler *) oh_handler->data;
+
+	rv = oa_soap_build_inv(oh_handler, OA_SOAP_ENT_FAN, resource_id,
+			       &inventory);
+	if (rv != SA_OK) {
+		err("Building inventory RDR for Fan failed");
+		return rv;
+	}
+
+
+	/* Set the product name */
+	oa_soap_inv_set_field(inventory->info.area_list,
+			      SAHPI_IDR_AREATYPE_PRODUCT_INFO,
+			      SAHPI_IDR_FIELDTYPE_PRODUCT_NAME,
+			      fan_info->name);
+	/* Set the part number */
+	oa_soap_inv_set_field(inventory->info.area_list,
+			      SAHPI_IDR_AREATYPE_BOARD_INFO,
+			      SAHPI_IDR_FIELDTYPE_PART_NUMBER,
+			      fan_info->partNumber);
+	/* Set the serial number */
+	oa_soap_inv_set_field(inventory->info.area_list,
+			      SAHPI_IDR_AREATYPE_PRODUCT_INFO,
+			      SAHPI_IDR_FIELDTYPE_SERIAL_NUMBER,
+			      fan_info->serialNumber);
+
+	memset(field_data, 0, OA_SOAP_MAX_FZ_INV_SIZE);
+	slot = fan_info->bayNumber;
+	/* Construct the fan shared field data */
+	if (oa_soap_fz_map_arr[oa_handler->enc_type][slot].shared == SAHPI_TRUE)
+		strcpy(field_data, "Shared=TRUE");
+	else
+		strcpy(field_data, "Shared=FALSE");
+
+	/* Set the fan shared field */
+	oa_soap_inv_set_field(inventory->info.area_list,
+			      SAHPI_IDR_AREATYPE_OEM,
+			      OA_SOAP_INV_FAN_SHARED,
+			      field_data);
+
+	/* Construct the fan zone number field data */
+	memset(field_data, 0, OA_SOAP_MAX_FZ_INV_SIZE);
+	if (oa_soap_fz_map_arr[oa_handler->enc_type][slot].secondary_zone) {
+		snprintf(field_data, 13, "Fan Zone=%d,%d",
+		 	oa_soap_fz_map_arr[oa_handler->enc_type][slot].zone,
+			oa_soap_fz_map_arr[oa_handler->enc_type][slot].
+				secondary_zone);
+	} else {
+		snprintf(field_data, 11, "Fan Zone=%d",
+		 	oa_soap_fz_map_arr[oa_handler->enc_type][slot].zone);
+	}
+
+	/* Set the shared field */
+	oa_soap_inv_set_field(inventory->info.area_list,
+			      SAHPI_IDR_AREATYPE_OEM,
+			      OA_SOAP_INV_FZ_NUM,
+			      field_data);
+	
+	return SA_OK;
+}
+
+/*
+ * oa_soap_build_lcd_inv
+ *	@oh_handler	: Pointer to the handler
+ *	@resource_id	: Resource Id
+ *
+ * Purpose:
+ *	Builds the inventory RDR for LCD
+ *
+ * Detailed Description:
+ *	- Gets the LCD inventory information
+ *	- Builds the inventory RDR
+ *	- Populates the inventory info with product name, manufacturer name,
+ *	  part number and firmware version
+ *
+ * Return values:
+ *	SA_OK                     - On success
+ *	SA_ERR_HPI_INVALID_PARAMS - On wrong parameters
+ *	SA_ERR_HPI_INERNAL_ERROR  - On soap call failure
+ */
+SaErrorT oa_soap_build_lcd_inv(struct oh_handler_state *oh_handler,
+			       SaHpiResourceIdT resource_id)
+{
+	SaErrorT rv;
+	struct oa_soap_handler *oa_handler;
+	struct oa_soap_inventory *inventory = NULL;
+	struct lcdInfo info;
+
+	if (oh_handler == NULL) {
+		err("Invalid Parameters");
+		return SA_ERR_HPI_INVALID_PARAMS;
+	}
+	
+	rv = oa_soap_build_inv(oh_handler, OA_SOAP_ENT_LCD,
+			       resource_id, &inventory);
+	if (rv != SA_OK) {
+		err("Building inventory RDR for LCD failed");
+		return rv;
+	}
+
+	
+	oa_handler = (struct oa_soap_handler *) oh_handler->data;
+	/* Get the LCD info */
+	rv = soap_getLcdInfo(oa_handler->active_con, &info);
+	if (rv != SOAP_OK) {
+		err("Get LCD Info SOAP call has failed");
+		return SA_ERR_HPI_INTERNAL_ERROR;
+	}
+
+	/* Set the product name */
+	oa_soap_inv_set_field(inventory->info.area_list,
+			      SAHPI_IDR_AREATYPE_PRODUCT_INFO,
+			      SAHPI_IDR_FIELDTYPE_PRODUCT_NAME,
+			      info.name);
+	/* Set the manufacturer name */
+	oa_soap_inv_set_field(inventory->info.area_list,
+			      SAHPI_IDR_AREATYPE_PRODUCT_INFO,
+			      SAHPI_IDR_FIELDTYPE_MANUFACTURER,
+			      info.manufacturer);
+	/* Set the part number */
+	oa_soap_inv_set_field(inventory->info.area_list,
+			      SAHPI_IDR_AREATYPE_BOARD_INFO,
+			      SAHPI_IDR_FIELDTYPE_PART_NUMBER,
+			      info.partNumber);
+	/* Set the firmware version */
+	oa_soap_inv_set_field(inventory->info.area_list,
+			      SAHPI_IDR_AREATYPE_PRODUCT_INFO,
+			      SAHPI_IDR_FIELDTYPE_PRODUCT_VERSION,
+			      info.fwVersion);
+	return SA_OK;
 }
 
 void * oh_get_idr_info(void *,

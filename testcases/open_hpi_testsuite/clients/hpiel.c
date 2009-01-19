@@ -19,7 +19,7 @@
 #include <oh_utils.h>
 #include <oh_clients.h>
 
-#define OH_SVN_REV "$Revision: 1.8 $"
+#define OH_SVN_REV "$Revision: 1.9 $"
 
 #define err(format, ...) \
         do { \

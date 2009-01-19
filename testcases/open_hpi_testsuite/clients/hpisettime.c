@@ -47,7 +47,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <oh_utils.h>
 #include <oh_clients.h>
 
-#define OH_SVN_REV "$Revision: 1.3 $"
+#define OH_SVN_REV "$Revision: 1.4 $"
 
 int fdebug = 0;
 int findate = 0;

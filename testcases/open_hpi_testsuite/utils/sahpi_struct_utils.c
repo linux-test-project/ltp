@@ -1666,7 +1666,7 @@ static SaErrorT oh_build_textbuffer(oh_big_textbuffer *buffer, const SaHpiTextBu
 SaErrorT oh_decode_capabilities(SaHpiCapabilitiesT ResourceCapabilities,
                                 SaHpiTextBufferT *buffer)
 {
-        int found, i;
+        int found;
         SaErrorT err;
         SaHpiTextBufferT working;
 
@@ -1766,10 +1766,8 @@ SaErrorT oh_decode_capabilities(SaHpiCapabilitiesT ResourceCapabilities,
         }
 
         if (found) {
-                for (i=0; i<OH_ENCODE_DELIMITER_LENGTH + 1; i++) {
-                        working.Data[working.DataLength - i] = 0x00;
-                }
-                working.DataLength = working.DataLength - (i+1);
+                working.DataLength -= OH_ENCODE_DELIMITER_LENGTH;
+                working.Data[working.DataLength] = 0;
         }
 
         oh_copy_textbuffer(buffer, &working);
@@ -1793,7 +1791,7 @@ SaErrorT oh_decode_capabilities(SaHpiCapabilitiesT ResourceCapabilities,
 SaErrorT oh_decode_hscapabilities(SaHpiHsCapabilitiesT HsCapabilities,
                                   SaHpiTextBufferT *buffer)
 {
-        int found, i;
+        int found;
         SaErrorT err;
         SaHpiTextBufferT working;
 
@@ -1818,10 +1816,8 @@ SaErrorT oh_decode_hscapabilities(SaHpiHsCapabilitiesT HsCapabilities,
         }
 
         if (found) {
-                for (i=0; i<OH_ENCODE_DELIMITER_LENGTH + 1; i++) {
-                        working.Data[working.DataLength - i] = 0x00;
-                }
-                working.DataLength = working.DataLength - (i+1);
+                working.DataLength -= OH_ENCODE_DELIMITER_LENGTH;
+                working.Data[working.DataLength] = 0;
         }
         else {
                 oh_append_textbuffer(&working, "None");
@@ -2366,7 +2362,7 @@ static SaErrorT oh_build_dimirec(oh_big_textbuffer *textbuff, const SaHpiDimiRec
 SaErrorT oh_decode_dimitestcapabilities(SaHpiDimiTestCapabilityT capabilities,
                                         SaHpiTextBufferT *buffer)
 {
-        int found, i;
+        int found;
         SaErrorT err; 
         SaHpiTextBufferT working;
         
@@ -2411,10 +2407,8 @@ SaErrorT oh_decode_dimitestcapabilities(SaHpiDimiTestCapabilityT capabilities,
         }       
 
         if (found) {
-                for (i=0; i<OH_ENCODE_DELIMITER_LENGTH + 1; i++) {
-                        working.Data[working.DataLength - i] = 0x00;
-                }
-                working.DataLength = working.DataLength - (i+1);
+                working.DataLength -= OH_ENCODE_DELIMITER_LENGTH;
+                working.Data[working.DataLength] = 0;
         }
         else {
                 oh_append_textbuffer(&working, "None");
@@ -2440,7 +2434,7 @@ SaErrorT oh_decode_dimitestcapabilities(SaHpiDimiTestCapabilityT capabilities,
 SaErrorT oh_decode_fumiprotocols(SaHpiFumiProtocolT protocols,
                                   SaHpiTextBufferT *buffer)
 {       
-        int found, i;
+        int found;
         SaErrorT err; 
         SaHpiTextBufferT working;
         
@@ -2490,10 +2484,8 @@ SaErrorT oh_decode_fumiprotocols(SaHpiFumiProtocolT protocols,
         }       
                 
         if (found) {
-                for (i=0; i<OH_ENCODE_DELIMITER_LENGTH + 1; i++) {
-                        working.Data[working.DataLength - i] = 0x00;
-                }
-                working.DataLength = working.DataLength - (i+1);
+                working.DataLength -= OH_ENCODE_DELIMITER_LENGTH;
+                working.Data[working.DataLength] = 0;
         }
         else {
                 oh_append_textbuffer(&working, "None");
@@ -2518,7 +2510,7 @@ SaErrorT oh_decode_fumiprotocols(SaHpiFumiProtocolT protocols,
 SaErrorT oh_decode_fumicapabilities(SaHpiFumiCapabilityT capabilities,
                                   SaHpiTextBufferT *buffer)
 {       
-        int found, i;
+        int found;
         SaErrorT err; 
         SaHpiTextBufferT working;
         
@@ -2558,10 +2550,8 @@ SaErrorT oh_decode_fumicapabilities(SaHpiFumiCapabilityT capabilities,
         }       
                 
         if (found) {
-                for (i=0; i<OH_ENCODE_DELIMITER_LENGTH + 1; i++) {
-                        working.Data[working.DataLength - i] = 0x00;
-                }
-                working.DataLength = working.DataLength - (i+1);
+                working.DataLength -= OH_ENCODE_DELIMITER_LENGTH;
+                working.Data[working.DataLength] = 0;
         }
         else {
                 oh_append_textbuffer(&working, "None");
@@ -3043,10 +3033,8 @@ SaErrorT oh_decode_sensoroptionaldata(SaHpiSensorOptionalDataT sensor_opt_data,
 
         /* Remove last delimiter */
         if (found) {
-                for (i=0; i<OH_ENCODE_DELIMITER_LENGTH + 1; i++) {
-                        working.Data[working.DataLength - i] = 0x00;
-                }
-                working.DataLength = working.DataLength - (i+1);
+                working.DataLength -= OH_ENCODE_DELIMITER_LENGTH;
+                working.Data[working.DataLength] = 0;
         }
         else {
                 err = oh_append_textbuffer(&working, "None");
@@ -3112,10 +3100,8 @@ SaErrorT oh_decode_sensorenableoptdata(SaHpiSensorEnableOptDataT sensor_enable_o
 
         /* Remove last delimiter */
         if (found) {
-                for (i=0; i<OH_ENCODE_DELIMITER_LENGTH + 1; i++) {
-                        working.Data[working.DataLength - i] = 0x00;
-                }
-                working.DataLength = working.DataLength - (i+1);
+                working.DataLength -= OH_ENCODE_DELIMITER_LENGTH;
+                working.Data[working.DataLength] = 0;
         }
         else {
                 err = oh_append_textbuffer(&working, "None");

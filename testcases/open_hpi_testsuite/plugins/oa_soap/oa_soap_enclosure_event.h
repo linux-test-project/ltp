@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2008, Hewlett-Packard Development Company, LLP
+ * Copyright (C) 2008, Hewlett-Packard Development Company, LLP
  *                     All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or
@@ -32,26 +32,15 @@
  *      Raghavendra P.G. <raghavendra.pg@hp.com>
  */
 
-#ifndef _OA_SOAP_FAN_EVENT_H
-#define _OA_SOAP_FAN_EVENT_H
+#ifndef _OA_SOAP_ENCLOSURE_EVENT_H
+#define _OA_SOAP_ENCLOSURE_EVENT_H
 
 /* Include files */
-#include "oa_soap_re_discover.h"
 
-SaErrorT process_fan_insertion_event(struct oh_handler_state *oh_handler,
-                                     SOAP_CON *con,
-                                      struct eventInfo *oa_event);
+#include "oa_soap_discover.h"
+#include <SaHpiOaSoap.h>
 
-SaErrorT process_fan_extraction_event(struct oh_handler_state *oh_handler,
-                                      struct eventInfo *oa_event);
-
-void oa_soap_proc_therm_subsys_info(struct oh_handler_state *oh_handler,
-				    struct thermalSubsystemInfo *info);
-
-void oa_soap_proc_fz_status(struct oh_handler_state *oh_handler,
-			    struct fanZone *fanZone);
-
-void oa_soap_proc_fan_status(struct oh_handler_state *oh_handler,
-			     struct fanInfo *info);
+void oa_soap_proc_enc_status(struct oh_handler_state *oh_handler,
+			     struct enclosureStatus *status);
 
 #endif

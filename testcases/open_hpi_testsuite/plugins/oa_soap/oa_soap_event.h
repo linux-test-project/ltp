@@ -41,6 +41,8 @@
 #include "oa_soap_interconnect_event.h"
 #include "oa_soap_fan_event.h"
 #include "oa_soap_ps_event.h"
+#include "oa_soap_enclosure_event.h"
+#include "oa_soap_lcd_event.h"
 
 int oa_soap_get_event(void *oh_handler);
 
