@@ -111,7 +111,7 @@ int main (ac, av)
 	int	child;
 	int	status;
 	int	count;
-	char	name[3];
+	char	name[128];
 
 
 	/*
