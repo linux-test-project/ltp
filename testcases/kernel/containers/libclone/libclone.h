@@ -55,7 +55,10 @@
 #define __NR_unshare SYS_unshare
 #endif
 
-#ifdef __ia64__
+#if defined (__s390__) || (__s390x__)
+#define clone __clone
+extern int __clone(int(void*),void*,int,void*);
+#elif defined(__ia64__)
 #define clone2 __clone2
 extern int  __clone2(int (*fn) (void *arg), void *child_stack_base,
                 size_t child_stack_size, int flags, void *arg,
@@ -88,6 +91,9 @@ extern int create_net_namespace(char *, char *);
  * Run fn1 in a unshared environmnent, and fn2 in the original context
  * Fn2 may be NULL.
  */
+
+int do_clone(unsigned long clone_flags,
+			int(*fn1)(void *arg), void *arg1);
 
 int do_clone_tests(unsigned long clone_flags,
 			int(*fn1)(void *arg), void *arg1,

@@ -93,18 +93,10 @@ void cleanup()
 
 int main(int argc, char *argv[])
 {
-	int status, stack_size = getpagesize() * 4 ;
-	void *stack = malloc(stack_size);
-	void *childstack;
+	int status;
 	pid_t cpid;
 
-	/* Container creation on PID namespace */
-	if (!stack) {
-		tst_resm(TBROK, "stack creation failed.");
-		cleanup();
-	}
-	childstack = stack + stack_size;
-	cpid = clone(child_fn, childstack, CLONE_NEWPID | SIGCHLD, NULL);
+	cpid = do_clone(CLONE_NEWPID | SIGCHLD, child_fn, NULL);
 
 	if (cpid < 0) {
 		tst_resm(TBROK, "clone() failed.");

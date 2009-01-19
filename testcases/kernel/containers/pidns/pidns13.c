@@ -195,11 +195,8 @@ int child_fn(void *arg)
 
 int main(int argc, char *argv[])
 {
-	int status, stack_size=getpagesize() * 4;
+	int status;
 	int *cinit_no = malloc(sizeof(int));
-	void *stack1 = malloc(stack_size);
-	void *stack2 = malloc(stack_size);
-	void *childstack1, *childstack2;
 	pid_t cpid1, cpid2;
 
 	/* create pipe */
@@ -209,21 +206,18 @@ int main(int argc, char *argv[])
 	}
 
 	/* container creation on PID namespace */
-	if (!stack1 || !stack2 || !cinit_no) {
+	if (!cinit_no) {
 		tst_resm(TBROK, "memory allocation failed.");
 		cleanup();
 	}
 
-	childstack1 = stack1 + stack_size;
-	childstack2 = stack2 + stack_size;
-
 	/* Create container 1 */
 	*cinit_no = 1;
-	cpid1 = clone(child_fn, childstack1, CLONE_NEWPID|SIGCHLD, cinit_no);
+	cpid1 = do_clone(CLONE_NEWPID|SIGCHLD, child_fn, cinit_no);
 
 	/* Create container 2 */
 	*cinit_no = 2;
-	cpid2 = clone(child_fn, childstack2, CLONE_NEWPID|SIGCHLD, cinit_no);
+	cpid2 = do_clone(CLONE_NEWPID|SIGCHLD, child_fn, cinit_no);
 	if (cpid1 < 0 || cpid2 < 0) {
 		tst_resm(TBROK, "parent: clone() failed.");
 		cleanup();

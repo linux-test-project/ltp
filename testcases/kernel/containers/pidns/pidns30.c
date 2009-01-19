@@ -274,19 +274,11 @@ int child_fn(void *arg)
 
 int main(int argc, char *argv[])
 {
-	int stack_size = getpagesize() * 4;
-	void *stack = malloc(stack_size);
-	void *childstack;
 	int status;
 	char buf[5];
 	pid_t cpid;
 	mqd_t mqd;
 	mqd_t rc;
-
-	if (!stack) {
-		tst_resm(TBROK, "parent: stack creation failed.");
-		cleanup(TBROK, NO_STEP, 0);
-	}
 
 	if (pipe(child_to_father) == -1) {
 		tst_resm(TBROK, "parent: pipe() failed. aborting!");
@@ -308,8 +300,7 @@ int main(int argc, char *argv[])
 	tst_resm(TINFO, "parent: successfully created posix mqueue");
 
 	/* container creation on PID namespace */
-	childstack = stack + stack_size;
-	cpid = clone(child_fn, childstack, CLONE_NEWPID|SIGCHLD, NULL);
+	cpid = do_clone(CLONE_NEWPID|SIGCHLD, child_fn, NULL);
 	if (cpid < 0) {
 		tst_resm(TBROK, "parent: clone() failed(%s)", strerror(errno));
 		cleanup(TBROK, F_STEP_2, mqd);

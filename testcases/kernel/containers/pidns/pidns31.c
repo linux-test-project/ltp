@@ -247,20 +247,12 @@ static void father_signal_handler(int sig, siginfo_t *si, void *unused)
 
 int main(int argc, char *argv[])
 {
-	int stack_size = getpagesize() * 4;
-	void *stack = malloc(stack_size);
-	void *childstack;
 	pid_t cpid;
 	mqd_t mqd;
 	struct sigevent notif;
 	struct sigaction sa;
 	int status;
 	struct notify_info info;
-
-	if (!stack) {
-		tst_resm(TBROK, "parent: stack creation failed.");
-		cleanup(TBROK, NO_STEP, 0);
-	}
 
 	if (pipe(father_to_child) == -1) {
 		tst_resm(TBROK, "parent: pipe() failed. aborting!");
@@ -277,8 +269,7 @@ int main(int argc, char *argv[])
 	tst_resm(TINFO, "parent: successfully created posix mqueue");
 
 	/* container creation on PID namespace */
-	childstack = stack + stack_size;
-	cpid = clone(child_fn, childstack, CLONE_NEWPID|SIGCHLD, NULL);
+	cpid = do_clone(CLONE_NEWPID|SIGCHLD, child_fn, NULL);
 	if (cpid < 0) {
 		tst_resm(TBROK, "parent: clone() failed(%s)", strerror(errno));
 		cleanup(TBROK, F_STEP_1, mqd);

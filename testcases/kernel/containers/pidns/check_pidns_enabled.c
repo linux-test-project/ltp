@@ -51,7 +51,6 @@ int dummy(void *v)
 /* MAIN */
 int main()
 {
-        void *childstack, *stack;
         int pid;
 
 	/* Test for the running kernel version
@@ -59,19 +58,8 @@ int main()
 	 */
         if (tst_kvercmp(2,6,24) < 0)
                 return 1;
-        stack = malloc(getpagesize());
-        if (!stack) {
-                perror("malloc");
-                return 2;
-        }
 
-        childstack = stack + getpagesize();
-
-#ifdef __ia64__
-        pid = clone2(dummy, childstack, getpagesize(), CLONE_NEWPID, NULL, NULL, NULL, NULL);
-#else
-        pid = clone(dummy, childstack, CLONE_NEWPID, NULL);
-#endif
+        pid = do_clone(CLONE_NEWPID, dummy, NULL);
 
 	/* Check for the clone function return value */
         if (pid == -1)

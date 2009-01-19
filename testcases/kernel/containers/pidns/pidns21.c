@@ -172,9 +172,6 @@ int child_fn(void *arg)
 
 int main(int argc, char *argv[])
 {
-	int stack_size=getpagesize() * 4;
-	void *stack = malloc (stack_size);
-	void *childstack;
 	int status;
 	char buf[5];
 	pid_t cpid;
@@ -185,14 +182,7 @@ int main(int argc, char *argv[])
 		cleanup();
 	}
 
-	/* container creation on PID namespace */
-	if (!stack) {
-		tst_resm(TBROK, "parent: stack creation failed.");
-		cleanup();
-	}
-
-	childstack = stack + stack_size;
-	cpid = clone(child_fn, childstack, CLONE_NEWPID|SIGCHLD, NULL);
+	cpid = do_clone(CLONE_NEWPID|SIGCHLD, child_fn, NULL);
 	if (cpid < 0) {
 		tst_resm(TBROK, "parent: clone() failed(%s)",\
 				strerror(errno));
