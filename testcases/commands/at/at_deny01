@@ -56,14 +56,14 @@ do_setup()
     userdel -r "${test_user2}" >/dev/null 2>&1
 
     # Create the 1st user.
-    useradd -g users -d "${test_user1_home}" "${test_user1}"
+    useradd -g users -d "${test_user1_home}" -m "${test_user1}"
     if [ $? != 0 ]; then
 	echo "Could not add test user ${test_user1} to system."
 	exit 1
     fi
 
     # Create the 2nd user.
-    useradd -g users -d "${test_user2_home}" "${test_user2}"
+    useradd -g users -d "${test_user2_home}" -m "${test_user2}"
     if [ $? != 0 ]; then
 	echo "Could not add test user ${test_user2} to system."
 	exit 1
