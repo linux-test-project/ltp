@@ -1,4 +1,4 @@
-$Id: INSTALL,v 1.21 2009/01/19 03:37:35 vapier Exp $
+$Id: INSTALL,v 1.22 2009/01/20 10:47:29 subrata_modak Exp $
 
 About configuration
 -------------------
@@ -6,8 +6,11 @@ If you want to use auto configuration, be sure autoconf-2.61 is installed.
 (Autoconf sources can be downloaded from:
 ftp://ftp.gnu.org/gnu/autoconf/autoconf-2.61.tar.gz
 ftp://ftp.gnu.org/gnu/autoconf/autoconf-2.61.tar.bz2).
+
+Also, be sure automake-xxx is installed.
+
 Then run: 
-        $ make autoconf 
+        $ make autotools 
         $ ./configure   
         $ make all      
 

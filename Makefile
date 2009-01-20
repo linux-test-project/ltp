@@ -125,8 +125,8 @@ help:
 	@echo 'About configuration'
 	@echo '-------------------'
 	@echo 'If you want to use auto configuration,   '
-	@echo 'be sure autoconf is installed. Then run: '
-	@echo '	$$ make autoconf '
+	@echo 'be sure autoconf and automake are installed. Then run: '
+	@echo '	$$ make autotools '
 	@echo '	$$ ./configure   '
 	@echo '	$$ make all      '
 	@echo
