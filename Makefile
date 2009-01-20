@@ -17,7 +17,7 @@ export CC AR RANLIB CPPFLAGS LDFLAGS HAS_NUMA
 -include config.mk
 
 VPATH += include m4
-all: config.h libltp.a 
+all: config.h config.mk libltp.a 
 	@$(MAKE) -C pan $@
 	@$(MAKE) -C testcases $@
 	@$(MAKE) -C tools $@
@@ -100,6 +100,8 @@ config.h.in: configure.ac $(wildcard m4/*.m4)
 	touch include/$@
 config.h: config.h.default
 	cp include/config.h.default include/config.h
+config.mk:
+	touch $@
 
 .PHONY: automake
 AUTOMAKE_FILES = config.guess config.sub install-sh missing
