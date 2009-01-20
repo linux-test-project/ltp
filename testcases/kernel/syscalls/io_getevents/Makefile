@@ -21,35 +21,19 @@
 #
 
 
+include ../../../../config.mk
+
+
 SRCS    = $(wildcard *.c)
 TARGETS = $(patsubst %.c,%,$(SRCS))
-SYSCALL = io_getevents
-
-
-check_header = $(shell \
-	if echo "\#include <$(1)>" | $(CC) -E - > /dev/null 2>&1 ; \
-	then echo yes ; \
-	else echo no ; fi)
-
-ifeq ($(call check_header,libaio.h),yes)
 
 CFLAGS += -I../../../../include -Wall
-LDLIBS += -laio -L../../../../lib -lltp
+LDLIBS += $(AIO_LIBS) -L../../../../lib -lltp
 
 all: $(TARGETS)
 
 install:
 	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
-	cp run-$(SYSCALL).sh ../../../bin/run-$(SYSCALL).sh
-
-else ### does not have libaio.h ###
-
-all:
-
-install:
-	cp run-$(SYSCALL).sh ../../../bin/run-$(SYSCALL).sh
-
-endif
 
 clean:
 	rm -f $(TARGETS)
