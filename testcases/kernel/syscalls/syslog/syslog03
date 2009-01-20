@@ -31,7 +31,6 @@
 #        *.crit           /usr/adm/critical                      #
 #         daemon.info        /usr/spool/adm/syslog               #
 ##################################################################
-DEBIAN=0
 #number of seconds to wait for another syslog test to complete
 wait_count=60
 
@@ -58,10 +57,6 @@ fi
   $syslog_cmd restart 2>&1 1>/dev/null
 sleep 2
 
-if [ $DEBIAN -eq 1 ];then
- rm -f /etc/init.d/syslog
-fi
-
 exit $status_flag
 }
 
@@ -83,16 +78,22 @@ syslog_case3()
 	if [ -e /sbin/syslogd  ]
 	then
 	    CONFIG_FILE="/etc/syslog.conf"
-	    syslog_cmd="/etc/init.d/syslog"
+	    syslog_cmd="/etc/init.d/sysklogd"
 	elif [ -e /sbin/syslog-ng ]
         then
 	    CONFIG_FILE="/etc/syslog-ng/syslog-ng.conf"
-	    syslog_cmd="/etc/init.d/syslog"
+	    syslog_cmd="/etc/init.d/syslog-ng"
+	elif [ -e /usr/sbin/rsyslogd ]
+        then
+	    CONFIG_FILE="/etc/rsyslog.conf"
+	    syslog_cmd="/etc/init.d/rsyslog"
+	    tst_resm TINFO "using rsyslogd; you have to set it to compatibility mode"
 	else
 	    tst_resm TBROK "syslogd or syslog-ng  no such command"
 	    status_flag=1
 	    cleanup	
 	fi
+	[ -x $syslog_cmd ] || syslog_cmd="/etc/init.d/syslog"
 
 #Back up configuration file
         if [ ! -e $CONFIG_FILE ]
@@ -117,20 +118,8 @@ syslog_case3()
 
          echo "Running tests"
 	
-	#Create symlink to /etc/init.d/sysklogd for Debian
-        find /etc/init.d/ |grep sysklogd 2>&1 1>/dev/null 
-	RC=$?
-        if [ $RC -eq 0 ]
-        then
-                ln -s /etc/init.d/sysklogd /etc/init.d/syslog
-                DEBIAN=1
-        fi
-
-
 	# check if /etc/init/syslog script exists
-	find /etc/init.d/ |grep syslog 2>&1 1>/dev/null 
-	RC=$?
-	if [ $RC -ne 0 ]
+	if ! [ -e "$syslog_cmd" ]
 	then
 		tst_resm TBROK "/etc/init.d/syslog no such script"
 		status_flag=1
@@ -139,29 +128,26 @@ syslog_case3()
 
 	
 	# Create the configuration file specific to this test case. 
-if [ $CONFIG_FILE = "/etc/syslog.conf" ]; then
-	echo "daemon.info      /var/log/messages" > /etc/syslog.conf
-else
+    case "$CONFIG_FILE" in
+		"/etc/syslog.conf" |\
+		"/etc/rsyslog.conf")
+			echo "daemon.info      /var/log/messages" > $CONFIG_FILE;;
 
-        echo "source src{ internal(); unix-dgram("/dev/log"); \
-              udp(ip("0.0.0.0") port(514)); };" > $CONFIG_FILE
-        echo " " >> $CONFIG_FILE
-        echo "# Added for syslog testcase"  >> $CONFIG_FILE
-        echo "filter f_syslog_daemon { level(info)      and facility(daemon); }\
-            ;" >> $CONFIG_FILE
-        echo "destination syslog-messages { file("/var/log/messages");};"\
-             >> $CONFIG_FILE
-        echo "log { source(src); filter(f_syslog_daemon); \
-                   destination(syslog-messages);};"  >> $CONFIG_FILE
-fi
+        "/etc/syslog-ng/syslog-ng.conf")
+			echo "source src{ internal(); unix-dgram(\"/dev/log\"); \
+			  udp(ip(\"0.0.0.0\") port(514)); };" > $CONFIG_FILE
+			echo " " >> $CONFIG_FILE
+			echo "# Added for syslog testcase"  >> $CONFIG_FILE
+			echo "filter f_syslog_daemon { level(info)      and facility(daemon); }\
+			  ;" >> $CONFIG_FILE
+			echo "destination syslog-messages { file(\"/var/log/messages\");};"\
+			  >> $CONFIG_FILE
+			echo "log { source(src); filter(f_syslog_daemon); \
+			  destination(syslog-messages);};"  >> $CONFIG_FILE
+	esac
 
-       if [ $CONFIG_FILE = "/etc/syslog.conf" ]; then
            #Restart syslog
-           $syslog_cmd restart 2>&1 1>/dev/null
-       else
-           #re-start syslog-ng
-           $syslog_cmd restart 2>&1 1>/dev/null
-       fi
+	$syslog_cmd restart 2>&1 1>/dev/null
 
 	# Grep for the ident prefix: SYSLOG_CASE3 in the log file.
         if [ -e /var/log/messages ]; then
@@ -180,9 +166,7 @@ fi
 
 
 	# check if /var/log/messages script exists
-	find /var/log/ |grep messages 2>&1 1>/dev/null 
-	RC=$?
-	if [ $RC -ne 0 ]
+	if ! [ -e /var/log/messages ]
 	then
 		tst_resm TBROK "/var/log/messages no such log file"
 		status_flag=1
@@ -199,12 +183,6 @@ fi
 export TST_TOTAL=1
 export TST_COUNT=1
 export TCID=$(basename $0)
-
-if ! [ -e /etc/init.d/syslog ]
-then
-	tst_resm TINFO "/etc/init.d/syslog is not installed"
-	exit 0
-fi
 
 RC=0
 status_flag=0
