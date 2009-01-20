@@ -1,6 +1,6 @@
 AC_PREREQ([2.61])
 AC_INIT([ltp], [cvs], [ltp-results@lists.sourceforge.net])
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([1.10])
 AC_CONFIG_HEADERS([include/config.h])
 AC_CONFIG_FILES([config.mk m4/Makefile])
 
