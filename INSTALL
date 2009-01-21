@@ -1,18 +1,25 @@
-$Id: INSTALL,v 1.22 2009/01/20 10:47:29 subrata_modak Exp $
+$Id: INSTALL,v 1.23 2009/01/21 11:30:52 subrata_modak Exp $
 
 About configuration
 -------------------
-If you want to use auto configuration, be sure autoconf-2.61 is installed.
-(Autoconf sources can be downloaded from:
-ftp://ftp.gnu.org/gnu/autoconf/autoconf-2.61.tar.gz
-ftp://ftp.gnu.org/gnu/autoconf/autoconf-2.61.tar.bz2).
+If you want to use auto configuration, be sure autoconf-2.61 & automake-1.10 are installed.
 
-Also, be sure automake-xxx is installed.
+(Latest automake sources can be downloaded from:
+ftp://ftp.gnu.org/gnu/automake/automake-1.10.2.tar.gz,
+
+Latest autoconf sources can be downloaded from:
+ftp://ftp.gnu.org/gnu/autoconf/autoconf-2.61.tar.gz,
+ftp://ftp.gnu.org/gnu/autoconf/autoconf-2.61.tar.bz2,
+
+Autoconf also requires certain higher version(s) of m4, which can be found from:
+http://ftp.gnu.org/gnu/m4/,
+http://ftp.gnu.org/gnu/m4/m4-1.4.12.tar.bz2).
 
 Then run: 
         $ make autotools 
         $ ./configure   
         $ make all      
+        $ make install
 
 If you get a build error, please report it to ltp-list@lists.sf.net with
 following information,
