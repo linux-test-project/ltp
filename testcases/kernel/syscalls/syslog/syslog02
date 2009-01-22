@@ -160,7 +160,7 @@ syslog_case2()
 		# Grepping pattern is as follows:
 		# syslogtst: mail $current test.
 		# check if /var/log/maillog script exists
-		if ! [ -e /var/log/maillog ]
+		if [ "$CONFIG_FILE" != "/etc/syslog-ng/syslog-ng.conf" ] && ! [ -e /var/log/maillog ]
 		then
 			tst_resm TBROK "/var/log/maillog no such log file"
 			status_flag=1

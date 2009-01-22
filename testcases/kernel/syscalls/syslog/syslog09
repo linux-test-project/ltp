@@ -151,7 +151,7 @@ syslog_case9()
        sleep 2
 
 	# check if /var/log/messages script exists
-	if ! [ -e /var/log/messages ]
+	if [ "$CONFIG_FILE" != "/etc/syslog-ng/syslog-ng.conf" ] && ! [ -e /var/log/messages ]
 	then
 		tst_resm TBROK "/var/log/messages no such log file"
 		status_flag=1
