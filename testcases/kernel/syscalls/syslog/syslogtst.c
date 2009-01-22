@@ -47,7 +47,6 @@ int main(int argc, char *argv[])
 {
 	int status, flag3, fd, ch, ch1;
 	int exit_flag = 0;	/* used for syslog test case 6. */
-        char* config_file;
 	time_t t;
 
 	signal(SIGINT, sig_handler);
