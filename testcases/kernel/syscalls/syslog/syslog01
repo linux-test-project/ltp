@@ -74,6 +74,7 @@ syslog_case1()
 
 	
 	RC=0
+	RSYSLOG_CONFIG=""
 	#set the trap to handle signals.
 	trap '
 		tst_resm TBROK "Testing is terminating due to a signal"
@@ -97,7 +98,7 @@ syslog_case1()
         then
 	    CONFIG_FILE="/etc/rsyslog.conf"
 	    syslog_cmd="/etc/init.d/rsyslog"
-	    tst_resm TINFO "using rsyslogd; you have to set it to compatibility mode"
+	    RSYSLOG_CONFIG='$ModLoad imuxsock.so'
 	else
 	    tst_resm TBROK "syslogd or syslog-ng  no such command"
 	    status_flag=1
@@ -143,7 +144,8 @@ syslog_case1()
 	case "$CONFIG_FILE" in
 			"/etc/syslog.conf" |\
 			"/etc/rsyslog.conf")
-					echo "*.crit		/var/log/messages" >  $CONFIG_FILE
+					echo "$RSYSLOG_CONFIG" > $CONFIG_FILE
+					echo "*.crit		/var/log/messages" >>  $CONFIG_FILE
 					echo "mail.info	/var/log/maillog" >>  $CONFIG_FILE;;
 
 			"/etc/syslog-ng/syslog-ng.conf")
