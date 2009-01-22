@@ -54,11 +54,13 @@ cleanup()
   fi
 
 #Restore syslog.conf
-  mv $CONFIG_FILE.ltpback $CONFIG_FILE
+  [ -f "$CONFIG_FILE.ltpback" ] && mv "$CONFIG_FILE.ltpback" "$CONFIG_FILE"
 
 #Restart syslog
-  tst_resm TINFO "restart syslog"
-  $syslog_cmd restart 2>&1 1>/dev/null
+  [ -x "$syslog_cmd" ] && {
+      tst_resm TINFO "restart $syslog_cmd"
+      "$syslog_cmd" restart 2>&1 1>/dev/null
+  }
 
 
   sleep 2
