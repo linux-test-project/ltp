@@ -243,6 +243,12 @@ void dochild()
 	int fd;
 	struct flock flocks;
 
+#ifdef UCLINUX
+#define PIPE_NAME	"ftruncate04"
+	if (sync_pipe_create(sync_pipes, PIPE_NAME) == -1)
+		tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
+#endif
+
 	if ((fd = open(filename, O_RDWR)) < 0) {
 		tst_resm(TFAIL,"child open");
 		tst_exit();
@@ -265,7 +271,7 @@ void dochild()
 	if (sync_pipe_notify(sync_pipes) == -1)
 		tst_brkm(TBROK, cleanup, "sync_pipe_notify failed");
 
-	if (sync_pipe_close(sync_pipes) == -1)
+	if (sync_pipe_close(sync_pipes, PIPE_NAME) == -1)
 		tst_brkm(TBROK, cleanup, "sync_pipe_close failed");
 	pause();
 	tst_exit();
@@ -362,7 +368,7 @@ int main( int ac, char **av)
 			 */
 			recstart = RECLEN + rand()%(len - 3*RECLEN);
 
-			if (sync_pipe_create(sync_pipes) == -1)
+			if (sync_pipe_create(sync_pipes, PIPE_NAME) == -1)
 				tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
 
 			if ((cpid = FORK_OR_VFORK()) < 0) {
@@ -392,7 +398,7 @@ int main( int ac, char **av)
 			if (sync_pipe_wait(sync_pipes) == -1)
 				tst_brkm(TBROK, cleanup, "sync_pipe_wait failed");
 
-			if (sync_pipe_close(sync_pipes) == -1)
+			if (sync_pipe_close(sync_pipes, PIPE_NAME) == -1)
 				tst_brkm(TBROK, cleanup, "sync_pipe_close failed");
 
 			doparent();

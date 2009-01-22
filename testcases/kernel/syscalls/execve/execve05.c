@@ -77,6 +77,15 @@ int end_sync_pipes[2];
 int Fflag = 0;
 char *test_name;
 
+#ifdef UCLINUX
+#define PIPE_NAME_START		"execve05_start"
+#define PIPE_NAME_END		"execve05_end"
+#else
+#define PIPE_NAME_START		NULL
+#define PIPE_NAME_END		NULL
+#endif
+
+
 /* for test specific parse_opts options - in this case "-F" */
 option_t options[] = {
 	{"F:", &Fflag, &test_name},
@@ -118,9 +127,9 @@ main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		if (sync_pipe_create(start_sync_pipes) == -1)
+		if (sync_pipe_create(start_sync_pipes, PIPE_NAME_START) == -1)
 			tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
-		if (sync_pipe_create(end_sync_pipes) == -1)
+		if (sync_pipe_create(end_sync_pipes, PIPE_NAME_END) == -1)
 			tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
 
 		/*
@@ -145,7 +154,7 @@ main(int ac, char **av)
 		if (sync_pipe_wait(start_sync_pipes) == -1)
 			tst_brkm(TBROK, cleanup, "sync_pipe_wait failed");
 
-		if (sync_pipe_close(start_sync_pipes) == -1)
+		if (sync_pipe_close(start_sync_pipes, PIPE_NAME_START) == -1)
 			tst_brkm(TBROK, cleanup, "sync_pipe_close failed");
 
 		if ((pid1 = FORK_OR_VFORK()) == -1)
@@ -157,7 +166,7 @@ main(int ac, char **av)
 
 			/* do not interfere with end synchronization of first
 			 * child */
-			sync_pipe_close(end_sync_pipes);
+			sync_pipe_close(end_sync_pipes, PIPE_NAME_END);
 
 			TEST(execve(test_name, argv, env));
 
@@ -292,6 +301,13 @@ do_child_1()
 {
 	int fildes;
 
+#ifdef UCLINUX
+        if (sync_pipe_create(start_sync_pipes, PIPE_NAME_START) == -1)
+                tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
+        if (sync_pipe_create(end_sync_pipes, PIPE_NAME_END) == -1)
+                tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
+#endif
+
 	if ((fildes = open(test_name, O_WRONLY)) == -1) {
 		tst_brkm(TBROK, NULL, "open(2) failed");
 		exit(1);	
@@ -302,7 +318,7 @@ do_child_1()
 		exit(1);
 	}
 
-	if (sync_pipe_close(start_sync_pipes) == -1) {
+	if (sync_pipe_close(start_sync_pipes, PIPE_NAME_START) == -1) {
 		tst_brkm(TBROK, NULL, "sync_pipe_close failed");
 		exit(1);
 	}

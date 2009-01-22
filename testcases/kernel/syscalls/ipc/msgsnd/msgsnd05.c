@@ -73,6 +73,7 @@ void cleanup(void);
 void setup(void);
 void sighandler(int);
 #ifdef UCLINUX
+#define PIPE_NAME	"msgsnd05"
 void do_child_uclinux(void);
 #endif
 
@@ -83,6 +84,9 @@ extern int Tst_count;
 int exp_enos[] = {EINTR, 0};	/* 0 terminated list of expected errnos */
 
 int msg_q_1 = -1;		/* The message queue id created in setup */
+
+int sync_pipes[2];
+
 MSGBUF msg_buf;
 
 int main(int ac, char **av)
@@ -90,7 +94,6 @@ int main(int ac, char **av)
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
 	pid_t c_pid;
-	int sync_pipes[2];
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
@@ -103,7 +106,7 @@ int main(int ac, char **av)
 
 	setup();			/* global setup */
 
-	if (sync_pipe_create(sync_pipes) == -1)
+	if (sync_pipe_create(sync_pipes, PIPE_NAME) == -1)
 		tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
 
 	/* The following loop checks looping state if -i option given */
@@ -126,11 +129,6 @@ int main(int ac, char **av)
 			 * Without the IPC_NOWAIT flag, the child sleeps
 			 */
 
-			if (sync_pipe_notify(sync_pipes) == -1)
-				tst_brkm(TBROK, cleanup, "sync_pipe_notify failed");
-
-			if (sync_pipe_close(sync_pipes) == -1)
-				tst_brkm(TBROK, cleanup, "sync_pipe_close failed");
 #ifdef UCLINUX
 			if (self_exec(av[0], "d", msg_q_1) < 0) {
 				tst_brkm(TBROK, cleanup, "could not self_exec");
@@ -143,7 +141,7 @@ int main(int ac, char **av)
 			if (sync_pipe_wait(sync_pipes) == -1)
 				tst_brkm(TBROK, cleanup, "sync_pipe_wait failed");
 
-			if (sync_pipe_close(sync_pipes) == -1)
+			if (sync_pipe_close(sync_pipes, PIPE_NAME) == -1)
 				tst_brkm(TBROK, cleanup, "sync_pipe_close failed");
 
 			/* After son has been created, give it a chance to execute the
@@ -173,6 +171,12 @@ int main(int ac, char **av)
 void
 do_child()
 {
+	if (sync_pipe_notify(sync_pipes) == -1)
+		tst_brkm(TBROK, cleanup, "sync_pipe_notify failed");
+
+	if (sync_pipe_close(sync_pipes, PIPE_NAME) == -1)
+		tst_brkm(TBROK, cleanup, "sync_pipe_close failed");
+
 	TEST(msgsnd(msg_q_1, &msg_buf, MSGSIZE, 0));
 
 	if (TEST_RETURN != -1) {
@@ -205,6 +209,9 @@ do_child_uclinux()
 {
 	/* initialize the message buffer */
 	init_buf(&msg_buf, MSGTYPE, MSGSIZE);
+
+	if (sync_pipe_create(sync_pipes, PIPE_NAME) == -1)
+		tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
 
 	tst_sig(FORK, sighandler, cleanup);
 

@@ -127,6 +127,7 @@ int TST_TOTAL = (sizeof(TC) / sizeof(*TC));
 #define NEWMODE	0066
 
 #ifdef UCLINUX
+#define PIPE_NAME	"shmctl01"
 static char *argv0;
 #endif
 
@@ -270,7 +271,7 @@ stat_setup()
 
 	tst_flush();
 	for (stat_i=0; stat_i<N_ATTACH; stat_i++) {
-		if (sync_pipe_create(sync_pipes) == -1)
+		if (sync_pipe_create(sync_pipes, PIPE_NAME) == -1)
 			tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
 
 		if ((pid = FORK_OR_VFORK()) == -1) {
@@ -293,7 +294,7 @@ stat_setup()
 			if (sync_pipe_wait(sync_pipes) == -1)
 				tst_brkm(TBROK, cleanup, "sync_pipe_wait failed");
 
-			if (sync_pipe_close(sync_pipes) == -1)
+			if (sync_pipe_close(sync_pipes, PIPE_NAME) == -1)
 				tst_brkm(TBROK, cleanup, "sync_pipe_close failed");
 		}
 	}
@@ -310,6 +311,11 @@ do_child()
 	int rval;
 	void *test;
 
+#ifdef UCLINUX
+	if (sync_pipe_create(sync_pipes, PIPE_NAME) == -1)
+		tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
+#endif
+
 	if (stat_time == FIRST) {
 		test = set_shmat();
 	} else {
@@ -319,7 +325,7 @@ do_child()
 	if (sync_pipe_notify(sync_pipes) == -1)
 		tst_brkm(TBROK, cleanup, "sync_pipe_notify failed");
 
-	if (sync_pipe_close(sync_pipes) == -1)
+	if (sync_pipe_close(sync_pipes, PIPE_NAME) == -1)
 		tst_brkm(TBROK, cleanup, "sync_pipe_close failed");
 
 	/* do an assignement for fun */

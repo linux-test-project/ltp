@@ -77,6 +77,9 @@ extern int Tst_count;
 int exp_enos[] = { EIDRM, 0 };	/* 0 terminated list of expected errnos */
 
 int msg_q_1 = -1;		/* The message queue id created in setup */
+
+int sync_pipes[2];
+
 MSGBUF msg_buf;
 
 int main(int ac, char **av)
@@ -85,7 +88,6 @@ int main(int ac, char **av)
     char *msg;			/* message returned from parse_opts */
     pid_t c_pid;
     int status, e_code;
-    int sync_pipes[2];
 
     /* parse standard options */
     if ((msg =
@@ -94,12 +96,13 @@ int main(int ac, char **av)
     }
 
 #ifdef UCLINUX
+#define PIPE_NAME	"msgsnd06"
     maybe_run_child(&do_child, "d", &msg_q_1);
 #endif
 
     setup();			/* global setup */
 
-    if (sync_pipe_create(sync_pipes) == -1)
+    if (sync_pipe_create(sync_pipes, PIPE_NAME) == -1)
 	    tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
 
     /* The following loop checks looping state if -i option given */
@@ -134,11 +137,6 @@ int main(int ac, char **av)
 
 	if (c_pid == 0) {	/* child */
 
-	    if (sync_pipe_notify(sync_pipes) == -1)
-		tst_brkm(TBROK, cleanup, "sync_pipe_notify failed");
-
-	    if (sync_pipe_close(sync_pipes) == -1)
-		tst_brkm(TBROK, cleanup, "sync_pipe_close failed");
 #ifdef UCLINUX
 	    if (self_exec(av[0], "d", msg_q_1) < 0) {
 		tst_brkm(TBROK, cleanup, "could not self_exec");
@@ -151,7 +149,7 @@ int main(int ac, char **av)
 	    if (sync_pipe_wait(sync_pipes) == -1)
 		tst_brkm(TBROK, cleanup, "sync_pipe_wait failed");
 
-	    if (sync_pipe_close(sync_pipes) == -1)
+	    if (sync_pipe_close(sync_pipes, PIPE_NAME) == -1)
 		tst_brkm(TBROK, cleanup, "sync_pipe_close failed");
 
 	    /* After son has been created, give it a chance to execute the
@@ -189,8 +187,16 @@ do_child()
 #ifdef UCLINUX
     /* initialize the message buffer */
     init_buf(&msg_buf, MSGTYPE, MSGSIZE);
+
+    if (sync_pipe_create(sync_pipes, PIPE_NAME) == -1)
+	tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
 #endif
 
+    if (sync_pipe_notify(sync_pipes) == -1)
+	tst_brkm(TBROK, cleanup, "sync_pipe_notify failed");
+
+    if (sync_pipe_close(sync_pipes, PIPE_NAME) == -1)
+	tst_brkm(TBROK, cleanup, "sync_pipe_close failed");
     /*
      * Attempt to write another message to the full queue.
      * Without the IPC_NOWAIT flag, the child sleeps

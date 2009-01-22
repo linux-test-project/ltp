@@ -76,6 +76,8 @@ int exp_enos[] = {EINTR, EIDRM, 0};  /* 0 terminated list of expected errnos */
 
 int sem_id_1 = -1;
 
+int sync_pipes[2];
+
 struct sembuf s_buf;
 
 struct test_case_t {
@@ -99,6 +101,7 @@ struct test_case_t {
 };
 
 #ifdef UCLINUX
+#define PIPE_NAME	"semop05"
 void do_child_uclinux();
 static int i_uclinux;
 #endif
@@ -129,9 +132,8 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		for (i=0; i<TST_TOTAL; i++) {
-			int sync_pipes[2];
 
-			if (sync_pipe_create(sync_pipes) == -1)
+			if (sync_pipe_create(sync_pipes, PIPE_NAME) == -1)
 				tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
 
 			/* initialize the s_buf buffer */
@@ -151,12 +153,6 @@ int main(int ac, char **av)
 
 			if (pid == 0) {		/* child */
 
-				if (sync_pipe_notify(sync_pipes) == -1)
-					tst_brkm(TBROK, cleanup, "sync_pipe_notify failed: %d", errno);
-
-				if (sync_pipe_close(sync_pipes) == -1)
-					tst_brkm(TBROK, cleanup, "sync_pipe_close failed: %d", errno);
-
 #ifdef UCLINUX
 				if (self_exec(av[0], "dd", i, sem_id_1) < 0) {
 					tst_brkm(TBROK, cleanup,
@@ -170,7 +166,7 @@ int main(int ac, char **av)
 				if (sync_pipe_wait(sync_pipes) == -1)
 					tst_brkm(TBROK, cleanup, "sync_pipe_wait failed: %d", errno);
 
-				if (sync_pipe_close(sync_pipes) == -1)
+				if (sync_pipe_close(sync_pipes, PIPE_NAME) == -1)
 					tst_brkm(TBROK, cleanup, "sync_pipe_close failed: %d", errno);
 
 				/* After son has been created, give it a chance to execute the
@@ -226,6 +222,16 @@ int main(int ac, char **av)
 void
 do_child(int i)
 {
+#ifdef UCLINUX
+	if (sync_pipe_create(sync_pipes, PIPE_NAME) == -1)
+		tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
+#endif
+	if (sync_pipe_notify(sync_pipes) == -1)
+		tst_brkm(TBROK, cleanup, "sync_pipe_notify failed: %d", errno);
+
+	if (sync_pipe_close(sync_pipes, PIPE_NAME) == -1)
+		tst_brkm(TBROK, cleanup, "sync_pipe_close failed: %d", errno);
+
 	/*
 	 * make the call with the TEST macro
 	 */
