@@ -100,8 +100,8 @@ syslog_case1()
 	    syslog_cmd="/etc/init.d/rsyslog"
 	    RSYSLOG_CONFIG='$ModLoad imuxsock.so'
 	else
-	    tst_resm TBROK "syslogd or syslog-ng  no such command"
-	    status_flag=1
+	    tst_resm TCONF "syslogd, syslog-ng or rsyslogd no such command"
+	    status_flag=0
 	    cleanup	
 	fi
 	[ -x $syslog_cmd ] || syslog_cmd="/etc/init.d/syslog"
