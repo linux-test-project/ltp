@@ -192,14 +192,14 @@ syslog_case10()
 
 	diff1=$(( $allow2 - $allow1 ))
 	if [ $diff1 -ne 1 ]; then
-			tst_resm TBROK "Expected message is not logged...."
+			tst_resm TFAIL "Expected message is not logged...."
 			status_flag=1
 			return
 	fi
 
 	diff2=$(( $donot_allow2 - $donot_allow1 ))
 	if [ $diff2 -ne 0 ]; then
-			tst_resm TBROK "Unexpected message is logged..."
+			tst_resm TFAIL "Unexpected message is logged..."
 			status_flag=1
 	fi
 
