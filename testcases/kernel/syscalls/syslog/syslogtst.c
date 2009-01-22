@@ -177,12 +177,8 @@ int main(int argc, char *argv[])
 		closelog();
 		break;
 	case 6:
-		config_file = "/etc/syslog.conf";
-		if (system("[ -e /sbin/syslog-ng ]") == 0)
-			config_file = "/etc/syslog-ng/syslog-ng.conf";
-
 		openlog("without log_ndelay", LOG_PID, LOG_USER);
-		fd = open(config_file, O_RDONLY);
+		fd = open("/dev/null", O_RDONLY);
 #ifdef DEBUG
 		tst_resm(TINFO, "openlog() without LOG_NDELAY option...");
 #endif
@@ -202,7 +198,7 @@ int main(int argc, char *argv[])
 		closelog();
 
 		openlog("with log_ndelay", LOG_NDELAY, LOG_USER);
-		fd = open(config_file, O_RDONLY);
+		fd = open("/dev/null", O_RDONLY);
 #ifdef DEBUG
 		tst_resm(TINFO, "openlog() with LOG_NDELAY option...");
 #endif
