@@ -84,11 +84,11 @@ syslog_case10()
 	then
 	    CONFIG_FILE="/etc/syslog.conf"
 	    syslog_cmd="/etc/init.d/sysklogd"
-	elif [ -e /sbin/syslog-ng ]
+	elif [ -e /sbin/syslog-ng ] || [ -e /usr/sbin/syslog-ng ]
         then
 	    CONFIG_FILE="/etc/syslog-ng/syslog-ng.conf"
 	    syslog_cmd="/etc/init.d/syslog-ng"
-	elif [ -e /usr/sbin/rsyslogd ]
+	elif [ -e /sbin/rsyslogd ] || [ -e /usr/sbin/rsyslogd ]
         then
 	    CONFIG_FILE="/etc/rsyslog.conf"
 	    syslog_cmd="/etc/init.d/rsyslog"

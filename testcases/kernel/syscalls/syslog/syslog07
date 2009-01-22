@@ -90,12 +90,12 @@ syslog_case7()
 	    syslog_cmd="/etc/init.d/sysklogd"
 	    tst_resm TINFO "o Add lowest prority level i.e debug level entry to" 
             tst_resm TINFO "  configuration file."
-	elif [ -e /sbin/syslog-ng ]
+	elif [ -e /sbin/syslog-ng ] || [ -e /usr/sbin/syslog-ng ]
         then
 	    tst_resm TINFO "o Ensure all priority levels can be logged"
 	    CONFIG_FILE="/etc/syslog-ng/syslog-ng.conf"
 	    syslog_cmd="/etc/init.d/syslog-ng"
-	elif [ -e /usr/sbin/rsyslogd ]
+	elif [ -e /sbin/rsyslogd ] || [ -e /usr/sbin/rsyslogd ]
         then
 	    tst_resm TINFO "o Add lowest prority level i.e debug level entry to"
 	    tst_resm TINFO "  configuration file."
