@@ -27,7 +27,9 @@ SRCS=$(wildcard *.c)
 TARGETS= asapi_01 asapi_02 asapi_03 asapi_04 asapi_05 asapi_06 asapi_07 \
 	getaddrinfo_01 in6_01 in6_02
 
-all: runcc.a $(TARGETS)
+all: $(TARGETS)
+
+$(TARGETS): %: %.c runcc.a
 
 install:
 	@set -e; for i in $(TARGETS); do ln -f $$i ../../bin/$$i ; done
