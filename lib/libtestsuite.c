@@ -38,8 +38,8 @@
 #include <stdlib.h>
 #include <pwd.h>
 #include <errno.h>
-#include <fcntl.h>
 
+#include "libtestsuite.h"
 #include "test.h"
 #include "usctest.h"
 
@@ -76,12 +76,44 @@ do_file_setup(char *fname)
 	}
 }
 
-int sync_pipe_create(int fd[])
+static char pipe_name[256];
+
+void generate_pipe_name(char *name)
 {
-	return pipe (fd);
+	char *p;
+
+	p = rindex(name, '/');
+	if (p == NULL)
+		p = name;
+	else
+		p++;
+	snprintf(pipe_name, 255, "%s/ltp_fifo_%s", P_tmpdir, p);
 }
 
-int sync_pipe_close(int fd[])
+int sync_pipe_create(int fd[], const char *name)
+{
+	int ret;
+
+	if (name != NULL) {
+		generate_pipe_name(name);
+
+		ret = open(pipe_name, O_RDWR);
+		if (ret != -1) {
+			fd[0] = ret;
+			fd[1] = open(pipe_name, O_RDWR);
+		} else {
+			ret = mkfifo(pipe_name, S_IRWXU);
+			if (!ret) {
+				fd[0] = open(pipe_name, O_RDWR);
+				fd[1] = open(pipe_name, O_RDWR);
+			}
+		}
+		return ret;
+	} else
+		return pipe(fd);
+}
+
+int sync_pipe_close(int fd[], const char *name)
 {
 	int r = 0;
 
@@ -89,6 +121,11 @@ int sync_pipe_close(int fd[])
 		r = close (fd[0]);
 	if (fd[1] != -1)
 		r |= close (fd[1]);
+
+	if (name != NULL) {
+		generate_pipe_name(name);
+		unlink(pipe_name);
+	}
 	return r;
 }
 

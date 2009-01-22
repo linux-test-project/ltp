@@ -7,7 +7,14 @@
  *
  * notify_startup: notify the father process a son has started its execution.
  */
-int sync_pipe_create( int fd[]);
+#include <sys/types.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+
+/* fifo_name is used to create named pipe. NULL means anonymous pipe. */
+#define PIPE_NAME	NULL
+int sync_pipe_create( int fd[], const char *pipe_name);
+int sync_pipe_close(int fd[], const char *pipe_name);
 int sync_pipe_wait( int fd[]);
 int sync_pipe_notify( int fd[]);
-int sync_pipe_close(int fd[]);
+
