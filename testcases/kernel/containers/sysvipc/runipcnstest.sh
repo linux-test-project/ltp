@@ -39,4 +39,14 @@ for type in none clone unshare; do
               exit_code=$ret
       fi
 done
+echo
+for type in none clone unshare; do
+      echo "sysvipc: Semaphore $type"
+      sem_nstest $type
+	  ret=$?
+      if [ $exit_code -ne 0 ]; then
+              exit_code=$ret
+      fi
+done
+echo
 exit $exit_code
