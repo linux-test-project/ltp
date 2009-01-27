@@ -1,6 +1,8 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ * 18 Jan 2009  0.5  Testa cases for MAX_EM28XX_INPUT and MAX_EM28XX_TVNORMS
+ *                   removed
  *  1 Jan 2009  0.4  Test cases for VIDIOC_ENUMOUTPUT, VIDIOC_ENUMAUDOUT,
  *                   VIDIOC_QUERYCTRL added;
  *                   New test cases for VIDIOC_ENUMAUDIO, VIDIOC_ENUM_FMT,
@@ -84,7 +86,6 @@ static CU_TestInfo suite_enums[] = {
   { "VIDIOC_ENUMINPUT, index=S32_MAX", test_VIDIOC_ENUMINPUT_S32_MAX },
   { "VIDIOC_ENUMINPUT, index=S32_MAX+1", test_VIDIOC_ENUMINPUT_S32_MAX_1 },
   { "VIDIOC_ENUMINPUT, index=U32_MAX", test_VIDIOC_ENUMINPUT_U32_MAX },
-  { "VIDIOC_ENUMINPUT, index=MAX_EM28XX_INPUT", test_VIDIOC_ENUMINPUT_3 },
   { "VIDIOC_ENUMINPUT with NULL parameter", test_VIDIOC_ENUMINPUT_NULL },
 
   { "VIDIOC_ENUMOUTPUT", test_VIDIOC_ENUMOUTPUT },
@@ -97,7 +98,6 @@ static CU_TestInfo suite_enums[] = {
   { "VIDIOC_ENUMSTD, index=S32_MAX", test_VIDIOC_ENUMSTD_S32_MAX },
   { "VIDIOC_ENUMSTD, index=S32_MAX+1", test_VIDIOC_ENUMSTD_S32_MAX_1 },
   { "VIDIOC_ENUMSTD, index=U32_MAX", test_VIDIOC_ENUMSTD_U32_MAX },
-  { "VIDIOC_ENUMSTD, index=MAX_EM28XX_TVNORMS", test_VIDIOC_ENUMSTD_3 },
   { "VIDIOC_ENUMSTD with NULL parameter", test_VIDIOC_ENUMSTD_NULL },
 
   { "VIDIOC_QUERYCTRL", test_VIDIOC_QUERYCTRL },

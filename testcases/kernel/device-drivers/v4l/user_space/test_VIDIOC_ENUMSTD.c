@@ -1,6 +1,8 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ * 18 Jan 2009  0.4  Test case for MAX_EM28XX_TVNORMS removed, test cases for
+ *                   S32_MAX & U32_MAX are enough
  *  1 Jan 2009  0.3  Added index=S32_MAX and S32_MAX+1
  * 22 Dec 2008  0.2  Test case with NULL parameter added
  * 18 Dec 2008  0.1  First release
@@ -34,8 +36,6 @@
 #include "video_limits.h"
 
 #include "test_VIDIOC_ENUMSTD.h"
-
-#define MAX_EM28XX_TVNORMS	10
 
 void test_VIDIOC_ENUMSTD() {
 	int ret;
@@ -147,24 +147,6 @@ void test_VIDIOC_ENUMSTD_U32_MAX() {
 
 	memset(&std2, 0xff, sizeof(std2));
 	std2.index = U32_MAX;
-	CU_ASSERT_EQUAL(memcmp(&std, &std2, sizeof(std)), 0);
-}
-
-
-void test_VIDIOC_ENUMSTD_3() {
-	int ret;
-	struct v4l2_standard std;
-	struct v4l2_standard std2;
-
-	memset(&std, 0xff, sizeof(std));
-	std.index = MAX_EM28XX_TVNORMS;
-	ret = ioctl(get_video_fd(), VIDIOC_ENUMSTD, &std);
-
-	CU_ASSERT_EQUAL(ret, -1);
-	CU_ASSERT_EQUAL(errno, EINVAL);
-
-	memset(&std2, 0xff, sizeof(std2));
-	std2.index = MAX_EM28XX_TVNORMS;
 	CU_ASSERT_EQUAL(memcmp(&std, &std2, sizeof(std)), 0);
 }
 

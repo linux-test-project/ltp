@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ * 18 Jan 2009  0.4  Typo corrected
  * 23 Dec 2008  0.3  Debug messages added
  * 22 Dec 2008  0.2  Test case with NULL parameter added
  * 18 Dec 2008  0.1  First release
@@ -101,7 +102,7 @@ static int do_set_video_standard(int f, v4l2_std_id id) {
 			CU_ASSERT( (id & std_id) == id);
 
 			if (std_id != id) {
-				dprintf("ret=%i, errno=%i, std_id=0x0x%llX, id=0x%llX\n", ret, errno, std_id, id);
+				dprintf("ret=%i, errno=%i, std_id=0x%llX, id=0x%llX\n", ret, errno, std_id, id);
 			}
 
 		}

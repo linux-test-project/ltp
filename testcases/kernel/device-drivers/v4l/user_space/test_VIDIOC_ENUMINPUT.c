@@ -1,6 +1,8 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ * 18 Jan 2009  0.4  Test case for MAX_EM28XX_INPUT removed, test cases with
+ *                   U32_MAX and S32_MAX are enough
  *  1 Jan 2009  0.3  Added index=S32_MAX and S32_MAX+1
  * 22 Dec 2008  0.2  Test case with NULL parameter added
  * 18 Dec 2008  0.1  First release
@@ -29,8 +31,6 @@
 #include "video_limits.h"
 
 #include "test_VIDIOC_ENUMINPUT.h"
-
-#define MAX_EM28XX_INPUT	4
 
 void test_VIDIOC_ENUMINPUT() {
 	int ret;
@@ -131,7 +131,6 @@ void test_VIDIOC_ENUMINPUT_S32_MAX_1() {
 	CU_ASSERT_EQUAL(memcmp(&input, &input2, sizeof(input)), 0);
 }
 
-
 void test_VIDIOC_ENUMINPUT_U32_MAX() {
 	int ret;
 	struct v4l2_input input;
@@ -146,23 +145,6 @@ void test_VIDIOC_ENUMINPUT_U32_MAX() {
 
 	memset(&input2, 0xff, sizeof(input2));
 	input2.index = U32_MAX;
-	CU_ASSERT_EQUAL(memcmp(&input, &input2, sizeof(input)), 0);
-}
-
-void test_VIDIOC_ENUMINPUT_3() {
-	int ret;
-	struct v4l2_input input;
-	struct v4l2_input input2;
-
-	memset(&input, 0xff, sizeof(input));
-	input.index = MAX_EM28XX_INPUT+1;
-	ret = ioctl(get_video_fd(), VIDIOC_ENUMINPUT, &input);
-
-	CU_ASSERT_EQUAL(ret, -1);
-	CU_ASSERT_EQUAL(errno, EINVAL);
-
-	memset(&input2, 0xff, sizeof(input2));
-	input2.index = MAX_EM28XX_INPUT+1;
 	CU_ASSERT_EQUAL(memcmp(&input, &input2, sizeof(input)), 0);
 }
 
