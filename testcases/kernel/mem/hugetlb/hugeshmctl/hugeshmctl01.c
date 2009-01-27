@@ -62,10 +62,12 @@
  */
 
 #include "ipcshm.h"
+#include "system_specific_hugepages_info.h"
 
 char *TCID = "hugeshmctl01";
 int TST_TOTAL = 4;
 extern int Tst_count;
+unsigned long huge_pages_shm_to_be_allocated;
 
 int shm_id_1 = -1;
 struct shmid_ds buf;
@@ -127,6 +129,11 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
+        if ( get_no_of_hugepages() <= 0 || hugepages_size() <= 0 ) 
+             tst_brkm(TBROK, cleanup, "Test cannot be continued owning to sufficient availability of Hugepages on the system");
+        else              
+             huge_pages_shm_to_be_allocated = ( get_no_of_hugepages() * hugepages_size() * 1024) / 2 ;
+
 	setup();			/* global setup */
 
 	/* The following loop checks looping state if -i option given */
@@ -143,7 +150,7 @@ int main(int ac, char **av)
 		 * permissions.  Do this here instead of in setup()
 		 * so that looping (-i) will work correctly.
 		 */
-		if ((shm_id_1 = shmget(shmkey, HUGE_SHM_SIZE, SHM_HUGETLB | IPC_CREAT | IPC_EXCL |
+		if ((shm_id_1 = shmget(shmkey, huge_pages_shm_to_be_allocated, SHM_HUGETLB | IPC_CREAT | IPC_EXCL |
 				SHM_RW)) == -1) {
 			tst_brkm(TBROK, cleanup, "couldn't create the shared"
 				 " memory segment");
@@ -333,7 +340,7 @@ func_stat()
 		fail = 1;
 	}
 
-	if (!fail && buf.shm_segsz != HUGE_SHM_SIZE) {
+	if (!fail && buf.shm_segsz != huge_pages_shm_to_be_allocated) {
 		tst_resm(TFAIL, "segment size is incorrect");
 		fail = 1;
 	}

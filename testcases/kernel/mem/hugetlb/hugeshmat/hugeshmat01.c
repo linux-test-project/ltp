@@ -57,10 +57,12 @@
  */
 
 #include "ipcshm.h"
+#include "system_specific_hugepages_info.h"
 
 char *TCID = "hugeshmat01";
 int TST_TOTAL = 3;
 extern int Tst_count;
+unsigned long huge_pages_shm_to_be_allocated;
 
 #define CASE0		10		/* values to write into the shared */
 #define CASE1		20		/* memory location.		   */
@@ -101,6 +103,11 @@ int main(int ac, char **av)
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
+
+        if ( get_no_of_hugepages() <= 0 || hugepages_size() <= 0 ) 
+             tst_brkm(TBROK, cleanup, "Test cannot be continued owning to sufficient availability of Hugepages on the system");
+        else              
+             huge_pages_shm_to_be_allocated = ( get_no_of_hugepages() * hugepages_size() * 1024) / 2 ;
 
 	setup();			/* global setup */
 
@@ -176,7 +183,7 @@ check_functionality(int i)
 	}
 
 	/* check the size of the segment */
-	if (buf.shm_segsz != HUGE_SHM_SIZE) {
+	if (buf.shm_segsz != huge_pages_shm_to_be_allocated) {
 		tst_resm(TFAIL, "segment size is incorrect");
 		return;
 	}
@@ -251,7 +258,7 @@ setup(void)
 	shmkey = getipckey();
 
 	/* create a shared memory resource with read and write permissions */
-	if ((shm_id_1 = shmget(shmkey++, HUGE_SHM_SIZE, SHM_HUGETLB | SHM_RW | IPC_CREAT |
+	if ((shm_id_1 = shmget(shmkey++, huge_pages_shm_to_be_allocated, SHM_HUGETLB | SHM_RW | IPC_CREAT |
 	     IPC_EXCL)) == -1) {
 		tst_brkm(TBROK, cleanup, "Failed to create shared memory "
 			 "resource 1 in setup()");

@@ -52,13 +52,14 @@
  */
 
 #include "ipcshm.h"
+#include "system_specific_hugepages_info.h"
 
 char *TCID = "hugeshmget03";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
 int exp_enos[] = {ENOSPC, 0};	/* 0 terminated list of expected errnos */
-
+void setup2(unsigned long huge_pages_shm_to_be_allocated);
 /*
  * The MAXIDS value is somewhat arbitrary and may need to be increased 
  * depending on the system being tested.
@@ -75,16 +76,22 @@ int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
+        unsigned long huge_pages_shm_to_be_allocated;
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
-
 	/* The following loop checks looping state if -i option given */
+        if ( get_no_of_hugepages() <= 0 || hugepages_size() <= 0 ) 
+             tst_brkm(TBROK, cleanup, "Test cannot be continued owning to sufficient availability of Hugepages on the system");
+        else              
+             huge_pages_shm_to_be_allocated = ( get_no_of_hugepages() * hugepages_size() * 1024) / 2 ;
 
+	setup2(huge_pages_shm_to_be_allocated);			/* local  setup */
+
+     
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
@@ -92,9 +99,8 @@ int main(int ac, char **av)
 		/*
 		 * use the TEST() macro to make the call
 		 */
-	
-		TEST(shmget(IPC_PRIVATE, HUGE_SHM_SIZE, SHM_HUGETLB | IPC_CREAT | IPC_EXCL
-			    | SHM_RW));
+	        
+		TEST(shmget(IPC_PRIVATE, huge_pages_shm_to_be_allocated, SHM_HUGETLB | IPC_CREAT | IPC_EXCL | SHM_RW));
 	
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "call succeeded when error expected");
@@ -123,11 +129,9 @@ int main(int ac, char **av)
 }
 
 /*
- * setup() - performs all the ONE TIME setup for this test.
+ * setup2() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
-{
+void setup2(unsigned long huge_pages_shm_to_be_allocated) {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
@@ -151,7 +155,7 @@ setup(void)
 	 * Use a while loop to create the maximum number of memory segments.
 	 * If the loop exceeds MAXIDS, then break the test and cleanup.
 	 */
-	while ((shm_id_1 = shmget(IPC_PRIVATE, HUGE_SHM_SIZE, SHM_HUGETLB | IPC_CREAT |
+	while ((shm_id_1 = shmget(IPC_PRIVATE, huge_pages_shm_to_be_allocated, SHM_HUGETLB | IPC_CREAT |
 	     IPC_EXCL | SHM_RW)) != -1) {
 		shm_id_arr[num_shms++] = shm_id_1;
 		if (num_shms == MAXIDS) {

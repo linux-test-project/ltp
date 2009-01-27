@@ -58,6 +58,7 @@
  */
 
 #include "ipcshm.h"
+#include "system_specific_hugepages_info.h"
 
 char *TCID = "hugeshmget01";
 int TST_TOTAL = 1;
@@ -70,6 +71,7 @@ int main(int ac, char **av)
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
 	struct shmid_ds buf;
+        unsigned long huge_pages_shm_to_be_allocated;
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
@@ -79,8 +81,12 @@ int main(int ac, char **av)
 	setup();			/* global setup */
 
 	/* The following loop checks looping state if -i option given */
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
+        if ( get_no_of_hugepages() <= 0 || hugepages_size() <= 0 ) 
+             tst_brkm(TBROK, cleanup, "Test cannot be continued owning to sufficient availability of Hugepages on the system");
+        else              
+              huge_pages_shm_to_be_allocated = ( get_no_of_hugepages() * hugepages_size() * 1024) / 2 ;
+         
+        for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
@@ -88,7 +94,7 @@ int main(int ac, char **av)
 		 * Use TEST macro to make the call
 		 */
 	
-		TEST(shmget(shmkey, HUGE_SHM_SIZE, (SHM_HUGETLB | IPC_CREAT | IPC_EXCL | SHM_RW)));
+                TEST(shmget(shmkey, huge_pages_shm_to_be_allocated, (SHM_HUGETLB | IPC_CREAT | IPC_EXCL | SHM_RW)));
 	
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "%s call failed - errno = %d : %s",
