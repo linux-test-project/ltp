@@ -47,6 +47,11 @@ for type in none clone unshare; do
       if [ $exit_code -ne 0 ]; then
               exit_code=$ret
       fi
+      semtest_2ns $type
+      ret=$?
+      if [ $ret -ne 0 ]; then
+              exit_code=$ret
+      fi
 done
 echo
 exit $exit_code
