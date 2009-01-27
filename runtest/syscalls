@@ -658,9 +658,6 @@ madvise01 madvise01
 madvise02 madvise02
 madvise03 madvise03
 
-paccept01 paccept01
-paccept02 paccept02
-
 pathconf01 pathconf01
 
 pause01 pause01
