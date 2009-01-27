@@ -1,0 +1,2 @@
+test_dma_thread_diotest7  mkdir -p /tmp/$$-work; cp -r $LTPROOT/testcases/bin/test_dma_thread_diotest7.sh $LTPROOT/testcases/bin/dma_thread_diotest7 /tmp/$$-work; (cd /tmp/$$-work; ./test_dma_thread_diotest7.sh); rm -rf /tmp/$$-work
+
