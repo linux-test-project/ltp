@@ -184,6 +184,9 @@ export RUN_LTP_TIRPC_TEST=0
 # http://ltp.cvs.sourceforge.net/viewvc/ltp/ltp/testcases/kernel/security/selinux-testsuite/README
 export RUN_SE_LINUX_TESTS=0
 
+##Set this to 1 if you wish to run the dma_thread_diotest7 test
+export RUN_DMA_THREAD_DIOTEST7=0
+
 export LTP_VERSION=`./runltp -e`
 export TEST_START_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
 export HARDWARE_TYPE=$(uname -i)
@@ -500,3 +503,10 @@ then
 fi
 ## END => Test Series 25                               ##
 
+## The next one i plan to run the DMA_THREAD_DIOTEST7 tests
+## START => Test Series 26                             ##
+if [ $RUN_DMA_THREAD_DIOTEST7 -eq 1 ]
+then
+     ./runltp -f test_dma_thread_diotest7
+fi
+## END => Test Series 26                               ##
