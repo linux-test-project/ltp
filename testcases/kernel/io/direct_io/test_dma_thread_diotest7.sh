@@ -27,7 +27,7 @@ tst_resm TINFO "Generating Test Files"
 for ((i = 512; i < 4096; i+=512))
 do
         tst_resm TINFO "i=$i"
-        ./dma_thread_diotest7 -a=`echo $i`
+        ./dma_thread_diotest7 -a="$i"
         if [ $? -ne 0 ]; then
              tst_res TFAIL "Test Failed"
              exit 1
