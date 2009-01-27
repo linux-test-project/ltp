@@ -111,7 +111,10 @@
 #endif
 
 #define PORT 57392
+
+#ifndef SOCK_CLOEXEC
 #define SOCK_CLOEXEC O_CLOEXEC
+#endif
 
 static pthread_barrier_t b;
 

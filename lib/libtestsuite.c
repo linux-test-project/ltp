@@ -78,13 +78,13 @@ do_file_setup(char *fname)
 
 static char pipe_name[256];
 
-void generate_pipe_name(char *name)
+void generate_pipe_name(const char *name)
 {
 	char *p;
 
 	p = rindex(name, '/');
 	if (p == NULL)
-		p = name;
+		p = (char *) name;
 	else
 		p++;
 	snprintf(pipe_name, 255, "%s/ltp_fifo_%s", P_tmpdir, p);

@@ -63,7 +63,6 @@ int get_free_pids(void)
 {
 	FILE *f;
 	int used_pids, max_pids;
-	char buf[BUFSIZE];
 
 	f = popen("ps -eT | wc -l", "r");
 	if (!f) {

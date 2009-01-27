@@ -51,6 +51,7 @@
 #include "test.h"
 #include "usctest.h"
 #include "ipcmsg.h"
+#include "system_specific_process_info.h"
 
 #define MAXNREPS	1000
 #ifndef CONFIG_COLDFIRE

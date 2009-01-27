@@ -74,7 +74,9 @@
 #endif
 
 /* For Linux these must be the same.  */
-#define SOCK_CLOEXEC O_CLOEXEC
+#ifndef SOCK_CLOEXEC
+# define SOCK_CLOEXEC O_CLOEXEC
+#endif
 
 /* Extern Global Variables */
 extern int  Tst_count;               /* counter for tst_xxx routines.         */

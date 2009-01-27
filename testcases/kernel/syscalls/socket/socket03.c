@@ -57,7 +57,9 @@
 #include "test.h"
 #include "usctest.h"
 
-#define SOCK_NONBLOCK O_NONBLOCK
+#ifndef SOCK_NONBLOCK
+# define SOCK_NONBLOCK O_NONBLOCK
+#endif
 
 /* Extern Global Variables */
 extern int  Tst_count;               /* counter for tst_xxx routines.         */

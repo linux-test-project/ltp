@@ -80,7 +80,9 @@
 
 #define PORT 57392
 
+#ifndef SOCK_NONBLOCK
 #define SOCK_NONBLOCK O_NONBLOCK
+#endif
 
 static pthread_barrier_t b;
 
