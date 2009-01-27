@@ -29,6 +29,11 @@ for type in none clone unshare; do
       if [ $ret -ne 0 ]; then
               exit_code=$ret
       fi
+      shmem_2nstest $type
+      ret=$?
+      if [ $ret -ne 0 ]; then
+              exit_code=$ret
+      fi
 done
 echo
 for type in none clone unshare; do
