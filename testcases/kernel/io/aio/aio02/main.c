@@ -7,6 +7,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include "test.h"
+
+#ifdef HAVE_LIBAIO_H
 
 #include <libaio.h>
 
@@ -25,3 +28,13 @@ int main(void)
 	fflush(stdout);
 	return res ? 1 : 0;
 }
+#else
+char *TCID = "aio02/" TEST_NAME;
+int TST_TOTAL=0;
+
+int main(void)
+{
+  tst_brkm(TCONF, tst_exit, "libaio missing");
+}
+
+#endif

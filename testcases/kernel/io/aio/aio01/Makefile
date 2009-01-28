@@ -20,8 +20,10 @@
 # name of file	: Makefile						  #
 # description	: make(1) description file                                #
 ###########################################################################
+include ../../../../../config.mk
+
 CFLAGS+=	-I../../../../../include -Wall
-LOADLIBES+=	-laio -L../../../../../lib -lltp
+LOADLIBES+=	$(AIO_LIBS) -L../../../../../lib -lltp
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))

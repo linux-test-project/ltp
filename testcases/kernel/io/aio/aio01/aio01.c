@@ -47,6 +47,14 @@
 
 #define _XOPEN_SOURCE 600
 
+#include "test.h"
+#include "usctest.h"
+
+char *TCID = "aio01";
+int TST_TOTAL=6;
+
+#ifdef HAVE_LIBAIO_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -58,8 +66,6 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/resource.h>
-#include "test.h"
-#include "usctest.h"
 
 void help();
 void setup();
@@ -67,8 +73,6 @@ void cleanup();
 
 #define mapsize (1 << 14)
 
-char *TCID = "aio01";
-int TST_TOTAL=6;
 extern int Tst_count;
 int fd;
 char *maddr;
@@ -417,3 +421,12 @@ void cleanup() {
 	tst_rmdir();
 	tst_exit();
 }
+
+#else
+
+int main(void)
+{
+  tst_brkm(TCONF, tst_exit, "libaio missing");
+}
+
+#endif
