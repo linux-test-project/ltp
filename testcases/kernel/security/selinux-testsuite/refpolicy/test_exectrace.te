@@ -28,7 +28,7 @@ typeattribute test_exectrace_notchild_t testdomain;
 
 # Allow all of these domains to be entered from the sysadm domain.
 miscfiles_domain_entry_test_files(exectracedomain)
-userdom_sysadm_entry_spec_domtrans_to(exectracedomain)
+sysadm_entry_spec_domtrans_to(exectracedomain)
 
 # Grant the necessary permissions for the child domain.
 domain_entry_file_spec_domtrans(test_exectrace_parent_t, test_exectrace_child_t)

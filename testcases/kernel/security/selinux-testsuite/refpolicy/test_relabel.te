@@ -40,5 +40,5 @@ allow test_norelabelto_t test_relabel_newtype_t:file { getattr };
 
 # Allow all of these domains to be entered from sysadm domain
 corecmd_bin_entry_type(test_relabel_domain)
-userdom_sysadm_bin_spec_domtrans_to(test_relabel_domain)
+sysadm_bin_spec_domtrans_to(test_relabel_domain)
 

@@ -26,7 +26,7 @@ typeattribute test_setsched_no_t testdomain;
 
 # Allow domain to be entered from the sysadm domain.
 miscfiles_domain_entry_test_files(test_setsched_d)
-userdom_sysadm_entry_spec_domtrans_to(test_setsched_d)
+sysadm_entry_spec_domtrans_to(test_setsched_d)
 
 # Allow these domains to execute renice.
 corecmd_bin_entry_type(test_setsched_d)

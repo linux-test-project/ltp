@@ -13,7 +13,7 @@ role system_r types testdomain;
 
 # Allow the test domains to access the sysadm terminal.
 # This allows read and write sysadm ttys and ptys.
-userdom_use_sysadm_terms(testdomain)
+userdom_use_user_terminals(testdomain)
 
 # Allow the test domains to access the test directory and files
 # even if they are not root owned.
@@ -64,9 +64,10 @@ require {
 	type null_device_t;
 	type zero_device_t;
 }
-allow testdomain { root_t etc_t bin_t sbin_t lib_t usr_t devpts_t }:dir r_dir_perms;
-allow testdomain lib_t:{ file lnk_file } r_file_perms;
-allow testdomain etc_t:file r_file_perms;
+allow testdomain { root_t etc_t bin_t sbin_t lib_t usr_t devpts_t }:dir list_dir_perms;
+allow testdomain lib_t:file read_file_perms;
+allow testdomain lib_t:lnk_file read_lnk_file_perms;
+allow testdomain etc_t:file read_file_perms;
 allow testdomain { devtty_t null_device_t zero_device_t }:chr_file rw_file_perms;
 miscfiles_read_localization(testdomain)
 domain_use_interactive_fds(testdomain)

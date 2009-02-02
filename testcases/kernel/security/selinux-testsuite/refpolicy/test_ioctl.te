@@ -23,7 +23,6 @@ files_type(test_ioctl_file_t)
 
 # Allow execution of helper programs.
 corecmd_exec_bin(ioctldomain)
-corecmd_exec_sbin(ioctldomain)
 domain_exec_all_entry_files(ioctldomain)
 files_exec_etc_files(ioctldomain)
 libs_use_ld_so(ioctldomain)
@@ -34,9 +33,9 @@ libs_exec_lib_files(ioctldomain)
 # Allow all of these domains to be entered from sysadm domain
 # via a shell script in the test directory or by....
 miscfiles_domain_entry_test_files(ioctldomain)
-userdom_sysadm_entry_spec_domtrans_to(ioctldomain)
+sysadm_entry_spec_domtrans_to(ioctldomain)
 corecmd_bin_entry_type(ioctldomain)
-userdom_sysadm_bin_spec_domtrans_to(ioctldomain)
+sysadm_bin_spec_domtrans_to(ioctldomain)
 
 # Allow the test domains some access to the temp file
 allow test_ioctl_t test_ioctl_file_t:file { read getattr setattr ioctl };

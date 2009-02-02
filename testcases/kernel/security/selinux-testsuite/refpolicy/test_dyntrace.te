@@ -28,7 +28,7 @@ typeattribute test_dyntrace_notchild_t testdomain;
 
 # Allow test_files_t to be entered from the sysadm domain.
 miscfiles_domain_entry_test_files(dyntracedomain)
-userdom_sysadm_entry_spec_domtrans_to(dyntracedomain)
+sysadm_entry_spec_domtrans_to(dyntracedomain)
 miscfiles_exec_test_files(dyntracedomain)
 
 # Grant the necessary permissions for the child domain.

@@ -35,7 +35,6 @@ domain_type(test_nofcap_t)
 
 # Allow execution of helper programs.
 corecmd_exec_bin(capabledomain)
-corecmd_exec_sbin(capabledomain)
 domain_exec_all_entry_files(capabledomain)
 files_exec_etc_files(capabledomain)
 libs_use_ld_so(capabledomain)
@@ -45,9 +44,9 @@ libs_exec_lib_files(capabledomain)
 
 # Allow test_file_t and bin_t to be entered from sysadm role
 miscfiles_domain_entry_test_files(capabledomain)
-userdom_sysadm_entry_spec_domtrans_to(capabledomain)
+sysadm_entry_spec_domtrans_to(capabledomain)
 corecmd_bin_entry_type(capabledomain)
-userdom_sysadm_bin_spec_domtrans_to(capabledomain)
+sysadm_bin_spec_domtrans_to(capabledomain)
 
 # Allow these domains to create a temporay file.
 allow capabledomain test_file_t:file { setattr rw_file_perms };

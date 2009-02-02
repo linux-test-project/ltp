@@ -103,5 +103,5 @@ allow test_norename6_t test_rename_dir_t:dir { getattr rename write };
 
 # Allow all of these domains to be entered from sysadm domain
 corecmd_bin_entry_type(test_rename_domain)
-userdom_sysadm_bin_spec_domtrans_to(test_rename_domain)
+sysadm_bin_spec_domtrans_to(test_rename_domain)
 

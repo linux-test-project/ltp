@@ -30,4 +30,4 @@ allow test_transition_fromdomain_t test_transition_todomain_t:fd use;
 allow test_transition_todomain_t test_transition_fromdomain_t:fd use;
 
 # Allow all of these domains to be entered from the sysadm domain.
-userdom_sysadm_entry_spec_domtrans_to(transitiondomain)
+sysadm_entry_spec_domtrans_to(transitiondomain)

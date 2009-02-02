@@ -28,5 +28,5 @@ allow test_dyntrans_fromdomain_t test_dyntrans_todomain_t:process dyntransition;
 
 # Allow all of these domains to be entered from the sysadm domain.
 miscfiles_domain_entry_test_files(dyntransdomain)
-userdom_sysadm_entry_spec_domtrans_to(dyntransdomain)
+sysadm_entry_spec_domtrans_to(dyntransdomain)
 

@@ -19,8 +19,8 @@ typeattribute test_nosysctl_t testdomain;
 
 # Allow all of these domains to be entered from sysadm domain
 # via /sbin/sysctl.
-corecmd_sbin_entry_type(sysctldomain)
-userdom_sysadm_sbin_spec_domtrans_to(sysctldomain)
+corecmd_bin_entry_type(sysctldomain)
+sysadm_bin_spec_domtrans_to(sysctldomain)
 
 # Allow the first domain to perform sysctl operations.
 kernel_rw_all_sysctls(test_sysctl_t)

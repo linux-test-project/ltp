@@ -28,7 +28,7 @@ corenet_udp_sendrecv_all_nodes(capabledomain)
 corenet_raw_sendrecv_all_nodes(capabledomain)
 corenet_tcp_sendrecv_all_ports(capabledomain)
 corenet_udp_sendrecv_all_ports(capabledomain)
-corenet_non_ipsec_sendrecv(capabledomain)
+corenet_all_recvfrom_unlabeled(capabledomain)
 corenet_tcp_bind_all_nodes(capabledomain)
 corenet_udp_bind_all_nodes(capabledomain)
 sysnet_read_config(capabledomain)
@@ -43,9 +43,9 @@ require {
 }
 allow capabledomain hi_reserved_port_t:tcp_socket name_bind;
 
-# Allow sbin_t to be entered from admin via certain utils.
-corecmd_sbin_entry_type(capabledomain)
-userdom_sysadm_sbin_spec_domtrans_to(capabledomain)
+# Allow bin_t to be entered from admin via certain utils.
+corecmd_bin_entry_type(capabledomain)
+sysadm_bin_spec_domtrans_to(capabledomain)
 
 require {
 	type ifconfig_exec_t;
