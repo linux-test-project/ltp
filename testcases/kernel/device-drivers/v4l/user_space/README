@@ -4,6 +4,8 @@
 Release History
 ---------------
 
+31 Jan 2009  0.5  Test cases added for VIDIOC_QUERYSTD, VIDIOC_G_FREQUENCY
+                  and VIDIOC_G_TUNER
 24 Jan 2009  0.4  Test cases for MAX_EM28XX_INPUT, MAX_EM28XX_TVNORMS removed;
                   some typos fixed
  4 Jan 2008  0.3  Test cases for VIDIOC_ENUMOUTPUT, VIDIOC_ENUMAUDOUT,
@@ -67,83 +69,8 @@ Currently all test are running and evaluated automatically. This might
 change in future if we want to test for example plugging and unplugging
 a USB video device or ask the user if a received picture make sense or not.
 
-The following table gives an overview about the current state of implemented
-test cases.
-
- V4L API element                  | Covered?
- ---------------------------------+---------------------------------------------
- V4L2 open()                      | yes, partly
- V4L2 close()                     | yes
- V4L2 ioctl()                     | yes
- ioctl VIDIOC_CROPCAP             | yes, only when STREAM_OFF
- ioctl VIDIOC_DBG_G_REGISTER      | no
- ioctl VIDIOC_DBG_S_REGISTER      | no
- ioctl VIDIOC_ENCODER_CMD         | no
- ioctl VIDIOC_TRY_ENCODER_CMD     | no
- ioctl VIDIOC_ENUMAUDIO           | yes, only when STREAM_OFF
- ioctl VIDIOC_ENUMAUDOUT          | yes, only when STREAM_OFF
- ioctl VIDIOC_ENUM_FMT            | yes, only when STREAM_OFF
- ioctl VIDIOC_ENUM_FRAMESIZES     | no
- ioctl VIDIOC_ENUM_FRAMEINTERVALS | no
- ioctl VIDIOC_ENUMINPUT           | yes, only when STREAM_OFF
- ioctl VIDIOC_ENUMOUTPUT          | yes, only when STREAM_OFF
- ioctl VIDIOC_ENUMSTD             | yes, only when STREAM_OFF
- ioctl VIDIOC_G_AUDIO             | no
- ioctl VIDIOC_S_AUDIO             | no
- ioctl VIDIOC_G_AUDOUT            | no
- ioctl VIDIOC_S_AUDOUT            | no
- ioctl VIDIOC_G_CHIP_IDENT        | no
- ioctl VIDIOC_G_CROP              | no
- ioctl VIDIOC_S_CROP              | no
- ioctl VIDIOC_G_CTRL              | no
- ioctl VIDIOC_S_CTRL              | no
- ioctl VIDIOC_G_ENC_INDEX         | no
- ioctl VIDIOC_G_EXT_CTRLS         | no
- ioctl VIDIOC_S_EXT_CTRLS         | no
- ioctl VIDIOC_TRY_EXT_CTRLS       | no
- ioctl VIDIOC_G_FBUF              | no
- ioctl VIDIOC_S_FBUF              | no
- ioctl VIDIOC_G_FMT               | no
- ioctl VIDIOC_S_FMT               | no
- ioctl VIDIOC_TRY_FMT             | no
- ioctl VIDIOC_G_FREQUENCY         | no
- ioctl VIDIOC_S_FREQUENCY         | no
- ioctl VIDIOC_G_INPUT             | yes, only when STREAM_OFF
- ioctl VIDIOC_S_INPUT             | yes, only when STREAM_OFF
- ioctl VIDIOC_G_JPEGCOMP          | no
- ioctl VIDIOC_S_JPEGCOMP          | no
- ioctl VIDIOC_G_MODULATOR         | no
- ioctl VIDIOC_S_MODULATOR         | no
- ioctl VIDIOC_G_OUTPUT            | no
- ioctl VIDIOC_S_OUTPUT            | no
- ioctl VIDIOC_G_PARM              | no
- ioctl VIDIOC_S_PARM              | no
- ioctl VIDIOC_G_PRIORITY          | no
- ioctl VIDIOC_S_PRIORITY          | no
- ioctl VIDIOC_G_SLICED_VBI_CAP    | no
- ioctl VIDIOC_G_STD               | yes, only when STREAM_OFF
- ioctl VIDIOC_S_STD               | yes, only when STREAM_OFF
- ioctl VIDIOC_G_TUNER             | no
- ioctl VIDIOC_S_TUNER             | no
- ioctl VIDIOC_LOG_STATUS          | yes
- ioctl VIDIOC_OVERLAY             | no
- ioctl VIDIOC_QBUF                | no
- ioctl VIDIOC_DQBUF               | no
- ioctl VIDIOC_QUERYBUF            | no
- ioctl VIDIOC_QUERYCAP            | no
- ioctl VIDIOC_QUERYCTRL           | yes, only private and user controls;
-                                  | only user controls with V4L2_CTRL_FLAG_NEXT_CTRL
- ioctl VIDIOC_QUERYMENU           | no
- ioctl VIDIOC_QUERYSTD            | no
- ioctl VIDIOC_REQBUFS             | no
- ioctl VIDIOC_STREAMON            | no
- ioctl VIDIOC_STREAMOFF           | no
- V4L2 mmap()                      | no
- V4L2 munmap()                    | no
- V4L2 poll()                      | no
- V4L2 read()                      | no
- V4L2 select()                    | no
- V4L2 write()                     | no
+See doc/index.html about how much of the specification is covered by the
+different test cases.
 
 Similar projects
 ----------------

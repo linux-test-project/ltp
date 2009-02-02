@@ -1,7 +1,8 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
- * 18 Jan 2009  0.5  Testa cases for MAX_EM28XX_INPUT and MAX_EM28XX_TVNORMS
+ * 31 Jan 2009  0.6  Test cases for VIDIOC_G_TUNER added
+ * 18 Jan 2009  0.5  Test cases for MAX_EM28XX_INPUT and MAX_EM28XX_TVNORMS
  *                   removed
  *  1 Jan 2009  0.4  Test cases for VIDIOC_ENUMOUTPUT, VIDIOC_ENUMAUDOUT,
  *                   VIDIOC_QUERYCTRL added;
@@ -36,6 +37,7 @@
 #include "video_limits.h"
 
 #include "test_VIDIOC_QUERYCAP.h"
+#include "test_VIDIOC_QUERYSTD.h"
 #include "test_VIDIOC_QUERYCTRL.h"
 #include "test_VIDIOC_CROPCAP.h"
 
@@ -48,12 +50,16 @@
 
 #include "test_VIDIOC_STD.h"
 #include "test_VIDIOC_INPUT.h"
+#include "test_VIDIOC_TUNER.h"
+#include "test_VIDIOC_FREQUENCY.h"
+
 #include "test_VIDIOC_LOG_STATUS.h"
 #include "test_invalid_ioctl.h"
 
 
 static CU_TestInfo suite_querycap[] = {
   { "VIDIOC_QUERYCAP", test_VIDIOC_QUERYCAP },
+  { "VIDIOC_QUERYCAP with NULL parameter", test_VIDIOC_QUERYCAP_NULL },
 
   { "VIDIOC_CROPCAP", test_VIDIOC_CROPCAP },
   { "VIDIOC_CROPCAP with different inputs", test_VIDIOC_CROPCAP_enum_INPUT },
@@ -127,8 +133,29 @@ static CU_TestInfo suite_get_set_try[] = {
   { "VIDIOC_G_INPUT with NULL parameter", test_VIDIOC_G_INPUT_NULL },
   { "VIDIOC_S_INPUT with NULL parameter", test_VIDIOC_S_INPUT_NULL },
 
+  { "VIDIOC_G_TUNER", test_VIDIOC_G_TUNER },
+  { "VIDIOC_G_TUNER, index=S32_MAX", test_VIDIOC_G_TUNER_S32_MAX },
+  { "VIDIOC_G_TUNER, index=S32_MAX+1", test_VIDIOC_G_TUNER_S32_MAX_1 },
+  { "VIDIOC_G_TUNER, index=U32_MAX", test_VIDIOC_G_TUNER_U32_MAX },
+  { "VIDIOC_G_TUNER with NULL parameter", test_VIDIOC_G_TUNER_NULL },
+
+  { "VIDIOC_G_FREQUENCY", test_VIDIOC_G_FREQUENCY },
+  { "VIDIOC_G_FREQUENCY, tuner=S32_MAX", test_VIDIOC_G_FREQUENCY_S32_MAX },
+  { "VIDIOC_G_FREQUENCY, tuner=S32_MAX+1", test_VIDIOC_G_FREQUENCY_S32_MAX_1 },
+  { "VIDIOC_G_FREQUENCY, tuner=U32_MAX", test_VIDIOC_G_FREQUENCY_U32_MAX },
+  { "VIDIOC_G_FREQUENCY with NULL parameter", test_VIDIOC_G_FREQUENCY_NULL },
+
   CU_TEST_INFO_NULL,
 };
+
+static CU_TestInfo suite_querystd[] = {
+  { "VIDIOC_QUERYSTD", test_VIDIOC_QUERYSTD },
+
+  { "VIDIOC_QUERYSTD with NULL parameter", test_VIDIOC_QUERYSTD_NULL },
+
+  CU_TEST_INFO_NULL,
+};
+
 
 static CU_TestInfo suite_invalid_ioctl[] = {
   { "invalid ioctl _IO(0, 0)", test_invalid_ioctl_1 },
@@ -149,6 +176,7 @@ static CU_SuiteInfo suites[] = {
   { "VIDIOC_QUERYCAP", open_video, close_video, suite_querycap },
   { "VIDIOC_ENUM* ioctl calls", open_video, close_video, suite_enums },
   { "VIDIOC_G_*, VIDIOC_S_* and VIDIOC_TRY_* ioctl calls", open_video, close_video, suite_get_set_try },
+  { "VIDIOC_QUERYSTD", open_video, close_video, suite_querystd },
   { "debug ioctl calls", open_video, close_video, suite_debug_ioctl },
   { "invalid ioctl calls", open_video, close_video, suite_invalid_ioctl },
   CU_SUITE_INFO_NULL,

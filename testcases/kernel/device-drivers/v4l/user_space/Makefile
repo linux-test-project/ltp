@@ -1,6 +1,10 @@
 #
 # v4l-test: Test environment for Video For Linux Two API
 #
+# 31 Jan 2009  0.5  test_VIDIOC_TUNER.c added,
+#                   test_VIDIOC_FREQUENCY.c added,
+#                   test_VIDIOC_QUERYSTD.c added,
+#                   v4l2_validator.c added
 #  1 Jan 2009  0.4  test_VIDIOC_ENUMOUTPUT.c added,
 #                   test_VIDIOC_QUERYCTRL.c added
 # 23 Dec 2008  0.3  test_VIDIOC_LOG_STATUS.c added
@@ -18,6 +22,7 @@ LDFLAGS = -lcunit
 # TODO: handle dependencies
 
 OBJS = dev_video.o \
+       v4l2_validator.o \
        test_VIDIOC_QUERYCAP.o \
        test_VIDIOC_ENUMAUDIO.o \
        test_VIDIOC_ENUMAUDOUT.o \
@@ -28,8 +33,11 @@ OBJS = dev_video.o \
        test_VIDIOC_LOG_STATUS.o \
        test_VIDIOC_CROPCAP.o \
        test_VIDIOC_QUERYCTRL.o \
+       test_VIDIOC_QUERYSTD.o \
        test_VIDIOC_STD.o \
        test_VIDIOC_INPUT.o \
+       test_VIDIOC_TUNER.o \
+       test_VIDIOC_FREQUENCY.o \
        test_invalid_ioctl.o \
        v4l2_test.o
 
