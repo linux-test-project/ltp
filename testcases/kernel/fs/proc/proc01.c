@@ -88,6 +88,13 @@ const Mapping known_issues[] =
     {"read", "/proc/xen/privcmd", EINVAL},
     {"read", "/proc/self/mem", EIO},
     {"read", "/proc/self/task/[0-9]*/mem", EIO},
+	{"read", "/proc/self/attr/*", EINVAL},
+	{"read", "/proc/self/task/[0-9]*/attr/*", EINVAL},
+	{"read", "/proc/fs/nfsd/unlock_filesystem", EINVAL},
+	{"read", "/proc/fs/nfsd/unlock_ip", EINVAL},
+	{"read", "/proc/fs/nfsd/filehandle", EINVAL},
+	{"read", "/proc/fs/nfsd/.getfs", EINVAL},
+	{"read", "/proc/fs/nfsd/.getfd", EINVAL},
     {"", "", 0}
   };
 
