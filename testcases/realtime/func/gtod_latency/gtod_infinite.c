@@ -52,6 +52,8 @@
 #include <sched.h>
 #include <librttest.h>
 #include <sys/mman.h>
+#include <unistd.h>
+#include <signal.h>
 
 #define CLOCK_TO_USE CLOCK_MONOTONIC
 
@@ -59,12 +61,15 @@
 #define REPORT_MIN	1000000
 
 static unsigned int max_window = 0; /* infinite, don't use a window */
+static unsigned int test_duration = 0; /* infinite duration */
+static int test_stop = 0; /* 1 to stop */
 
 void usage(void)
 {
 	rt_help();
 	printf("gtod_infinite specific options:\n");
 	printf("  -wWINDOW      iterations in max value window (default inf)\n");
+	printf("  -tDURATION    test duration in finite hours (default inf)\n");
 }
 
 int parse_args(int c, char *v)
@@ -77,11 +82,20 @@ int parse_args(int c, char *v)
 		case 'w':
 			max_window = atoi(v);
 			break;
+		case 't':
+			test_duration = atoi(v);
+			break;
 		default:
 			handled = 0;
 			break;
 	}
 	return handled;
+}
+
+void alarm_handler(int sig)
+{
+	/* Stop test execution */
+	test_stop = 1;
 }
 
 int main(int argc, char *argv[])
@@ -94,8 +108,18 @@ int main(int argc, char *argv[])
 	struct sched_param param;
 	time_t tt;
 	unsigned int wi;
+	struct sigaction sact;
 	setup();
 
+
+	/* Set signal handler for SIGALRM */
+	sigfillset(&sact.sa_mask);
+	sact.sa_handler = alarm_handler;
+	rc = sigaction(SIGALRM, &sact, NULL);
+	if (rc) {
+		perror("sigaction");
+		exit(1);
+	}
 /*
 	CPU_ZERO(&mask);
 	CPU_SET(0, &mask);
@@ -105,7 +129,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 */
-	rt_init("hw:", parse_args, argc, argv);
+	rt_init("hw:t:", parse_args, argc, argv);
 
 	mlockall(MCL_CURRENT|MCL_FUTURE);
 
@@ -127,8 +151,17 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
+	/* Set alarm for test duration, if specified */
+	if (test_duration > 0) {
+		rc = alarm(test_duration * 60 * 60 );
+		if (rc) {
+			perror("alarm");
+			exit(1);
+		}
+	}
+
 	wi = 0;
-	while(1) {
+	while(test_stop != 1) {
 		rc = clock_gettime(CLOCK_TO_USE, &p_ts);
 		rc = clock_gettime(CLOCK_TO_USE, &ts);
 		if (rc) {
