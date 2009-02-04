@@ -27,3 +27,9 @@ __NR_eventfd 284
 __NR_fallocate 285
 __NR_timerfd_settime 286
 __NR_timerfd_gettime 287
+__NR_signalfd4 289
+__NR_eventfd2 290
+__NR_epoll_create2 291
+__NR_dup3 292
+__NR_pipe2 293
+__NR_inotify_init1 294

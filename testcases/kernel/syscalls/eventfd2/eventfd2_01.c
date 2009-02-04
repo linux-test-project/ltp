@@ -61,19 +61,10 @@
 /* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
+#include "linux_syscall_numbers.h"
 
 #ifndef O_CLOEXEC
 # define O_CLOEXEC 02000000
-#endif
-
-#ifndef __NR_eventfd2
-# ifdef __x86_64__
-#  define __NR_eventfd2 290
-# elif defined __i386__
-#  define __NR_eventfd2 328
-# else
-#  error "need __NR_eventfd2"
-# endif
 #endif
 
 #define EFD_CLOEXEC O_CLOEXEC

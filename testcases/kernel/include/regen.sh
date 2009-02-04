@@ -20,6 +20,7 @@ cat << EOF > ${output}
 #ifndef __LINUX_SYSCALL_NUMBERS_H__
 #define __LINUX_SYSCALL_NUMBERS_H__
 
+#include <errno.h>
 #include <sys/syscall.h>
 
 static void cleanup(void);

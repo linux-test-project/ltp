@@ -59,16 +59,7 @@
 /* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
-
-#ifndef __NR_signalfd4
-# ifdef __x86_64__
-#  define __NR_signalfd4 289
-# elif defined __i386__
-#  define __NR_signalfd4 327
-# else
-#  error "need __NR_signalfd4"
-# endif
-#endif
+#include "linux_syscall_numbers.h"
 
 #define SFD_NONBLOCK O_NONBLOCK
 

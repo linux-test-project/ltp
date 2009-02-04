@@ -60,19 +60,10 @@
 /* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
+#include "linux_syscall_numbers.h"
 
 #ifndef O_CLOEXEC
 # define O_CLOEXEC 02000000
-#endif
-
-#ifndef __NR_dup3
-# ifdef __x86_64__
-#  define __NR_dup3 292
-# elif defined __i386__
-#  define __NR_dup3 330
-# else
-#  error "need __NR_dup3"
-# endif
 #endif
 
 /* Extern Global Variables */

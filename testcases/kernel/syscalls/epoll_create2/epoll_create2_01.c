@@ -62,16 +62,7 @@
 /* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
-
-#ifndef __NR_epoll_create2
-# ifdef __x86_64__
-#  define __NR_epoll_create2 291
-# elif defined __i386__
-#  define __NR_epoll_create2 329
-# else
-#  error "need __NR_epoll_create2"
-# endif
-#endif
+#include "linux_syscall_numbers.h"
 
 #ifndef O_CLOEXEC
 # define O_CLOEXEC 02000000
