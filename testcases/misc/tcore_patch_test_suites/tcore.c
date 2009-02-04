@@ -27,7 +27,6 @@ extern int  Tst_count;               /* counter for tst_xxx routines.         */
 extern char *TESTDIR;                /* temporary dir created by tst_tmpdir() */
 /* Global Variables */
 char *TCID     = "tcore";            /* test program identifier.              */
-int  TST_TOTAL = 1;                  /* total number of tests in this file.   */
 
 #if defined __i386__ || defined(__x86_64__)
 #include <stdio.h>
@@ -37,6 +36,8 @@ int  TST_TOTAL = 1;                  /* total number of tests in this file.   */
 #include <pthread.h>
 
 #define BUFFER_SIZE 16
+
+int  TST_TOTAL = 1;                  /* total number of tests in this file.   */
 
 /* Circular buffer of integers. */
 
