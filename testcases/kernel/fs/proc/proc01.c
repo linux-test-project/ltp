@@ -2,7 +2,7 @@
  * proc01.c - Tests Linux /proc file reading.
  *
  * Copyright (C) 2001 Stephane Fillod <f4cfe@free.fr>
- * Copyright (c) 2008 Red Hat, Inc.
+ * Copyright (c) 2008, 2009  Red Hat, Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
@@ -88,13 +88,14 @@ const Mapping known_issues[] =
     {"read", "/proc/xen/privcmd", EINVAL},
     {"read", "/proc/self/mem", EIO},
     {"read", "/proc/self/task/[0-9]*/mem", EIO},
-	{"read", "/proc/self/attr/*", EINVAL},
-	{"read", "/proc/self/task/[0-9]*/attr/*", EINVAL},
-	{"read", "/proc/fs/nfsd/unlock_filesystem", EINVAL},
-	{"read", "/proc/fs/nfsd/unlock_ip", EINVAL},
-	{"read", "/proc/fs/nfsd/filehandle", EINVAL},
-	{"read", "/proc/fs/nfsd/.getfs", EINVAL},
-	{"read", "/proc/fs/nfsd/.getfd", EINVAL},
+    {"read", "/proc/self/attr/*", EINVAL},
+    {"read", "/proc/self/task/[0-9]*/attr/*", EINVAL},
+    {"read", "/proc/ppc64/rtas/error_log", EINVAL},
+    {"read", "/proc/fs/nfsd/unlock_filesystem", EINVAL},
+    {"read", "/proc/fs/nfsd/unlock_ip", EINVAL},
+    {"read", "/proc/fs/nfsd/filehandle", EINVAL},
+    {"read", "/proc/fs/nfsd/.getfs", EINVAL},
+    {"read", "/proc/fs/nfsd/.getfd", EINVAL},
     {"", "", 0}
   };
 
