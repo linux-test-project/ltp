@@ -20,13 +20,13 @@
 /******************************************************************************/
 /******************************************************************************/
 /*                                                                            */
-/* File:        epoll_create2_01.c                                            */
+/* File:        epoll_create1_01.c                                            */
 /*                                                                            */
 /* Description: This Program tests the new system call introduced in 2.6.27.  */
 /*              Ulrich´s comment as in:                                       */
 /* http://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=commit;h=a0998b50c3f0b8fdd265c63e0032f86ebe377dbf */
 /*              says:                                                         */
-/* This patch adds the new epoll_create2 syscall.  It extends the old         */
+/* This patch adds the new epoll_create1 syscall.  It extends the old         */
 /* epoll_create syscall by one parameter which is meant to hold a flag value. */
 /* In this patch the only flag support is EPOLL_CLOEXEC which causes the      */
 /* close-on-exec flag for the returned file descriptor to be set. A new name  */
@@ -35,7 +35,7 @@
 /* other than x86 and x86-64 and in case the syscall numbers changed.         */
 /*                                                                            */
 /* Usage:  <for command-line>                                                 */
-/* epoll_create2_01 [-c n] [-e][-i n] [-I x] [-p x] [-t]                      */
+/* epoll_create1_01 [-c n] [-e][-i n] [-I x] [-p x] [-t]                      */
 /*      where,  -c n : Run n copies concurrently.                             */
 /*              -e   : Turn on errno logging.                                 */
 /*              -i n : Execute test n times.                                  */
@@ -45,7 +45,7 @@
 /*                                                                            */
 /* Total Tests: 1                                                             */
 /*                                                                            */
-/* Test Name:   epoll_create2_01                                              */
+/* Test Name:   epoll_create1_01                                              */
 /*                                                                            */
 /* Author:      Ulrich Drepper <drepper@redhat.com>                           */
 /*                                                                            */
@@ -75,7 +75,7 @@ extern int  Tst_count;               /* counter for tst_xxx routines.         */
 extern char *TESTDIR;                /* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
-char *TCID     = "epoll_create2_01"; /* test program identifier.              */
+char *TCID     = "epoll_create1_01"; /* test program identifier.              */
 int  testno;
 int  TST_TOTAL = 1;                  /* total number of tests in this file.   */
 
@@ -152,9 +152,9 @@ int main (int argc, char *argv[]) {
   for (lc = 0; TEST_LOOPING(lc); ++lc) {
        Tst_count = 0;
        for (testno=0; testno < TST_TOTAL; ++testno) {
-            fd = syscall (__NR_epoll_create2, 1, 0);
+            fd = syscall (__NR_epoll_create1, 0);
             if (fd == -1) {
-                tst_resm(TFAIL, "epoll_create2(0) failed");
+                tst_resm(TFAIL, "epoll_create1(0) failed");
                 cleanup();
                 tst_exit();
             }
@@ -164,14 +164,14 @@ int main (int argc, char *argv[]) {
                 tst_exit();
             }
             if (coe & FD_CLOEXEC) {
-                tst_resm(TFAIL, "epoll_create2(0) set close-on-exec flag");
+                tst_resm(TFAIL, "epoll_create1(0) set close-on-exec flag");
                 cleanup();
                 tst_exit();
             }
             close (fd);
-            fd = syscall (__NR_epoll_create2, 1, EPOLL_CLOEXEC);
+            fd = syscall (__NR_epoll_create1,  EPOLL_CLOEXEC);
             if (fd == -1) {
-                tst_resm(TFAIL, "epoll_create2(EPOLL_CLOEXEC) failed");
+                tst_resm(TFAIL, "epoll_create1(EPOLL_CLOEXEC) failed");
                 cleanup();
                 tst_exit();
             }
@@ -181,12 +181,12 @@ int main (int argc, char *argv[]) {
                 tst_exit();
             }
             if ((coe & FD_CLOEXEC) == 0) {
-                 tst_resm(TFAIL, "epoll_create2(EPOLL_CLOEXEC) set close-on-exec flag");
+                 tst_resm(TFAIL, "epoll_create1(EPOLL_CLOEXEC) set close-on-exec flag");
                  cleanup();
                  tst_exit();
             }
             close (fd);
-            tst_resm(TPASS, "epoll_create2(EPOLL_CLOEXEC) PASSED");
+            tst_resm(TPASS, "epoll_create1(EPOLL_CLOEXEC) PASSED");
             cleanup();
        }
   }
