@@ -25,6 +25,8 @@
  * 
  */
 
+#include "config.h"
+
 #include <errno.h>		/* for errno */
 #include <stdio.h>		/* for NULL */
 #include <stdlib.h>		/* for malloc() */
@@ -36,6 +38,10 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <fnmatch.h>
+
+#ifdef HAVE_SELINUX_SELINUX_H
+#include <selinux/selinux.h>
+#endif
 
 #include "test.h"
 #include "usctest.h"
@@ -99,18 +105,55 @@ const Mapping known_issues[] =
     {"", "", 0}
   };
 
+/* If a particular LSM is enabled, it is expected that some entries can
+   be read successfully. */
+#ifdef HAVE_SELINUX_SELINUX_H
+const char lsm_should_work[][PATH_MAX] =
+  {
+    "/proc/self/attr/*",
+    "/proc/self/task/[0-9]*/attr/*",
+    ""
+  };
+#else
+const char lsm_should_work[][PATH_MAX] =
+  {
+    ""
+  };
+#endif
+
 /* Known files that does not honor O_NONBLOCK, so they will hang
-   the test while being read.*/
+   the test while being read. */
 const char error_nonblock[][PATH_MAX] =
   {
     "/proc/xen/xenbus",
     ""
   };
 
+/* Check if a particular LSM is enabled. */
+int is_lsm_enabled(void)
+{
+#ifdef HAVE_SELINUX_SELINUX_H
+  return is_selinux_enabled();
+#else
+  return 0;
+#endif
+}
+
 /* Verify expected failures, and then let the test to continue. */
 int found_errno(const char *syscall, const char *obj, int tmperr)
 {
   int i;
+
+/* Should not see any error for certain entries if a LSM is enabled. */
+  if (is_lsm_enabled())
+    {
+      for (i = 0; lsm_should_work[i][0] != '\0'; i++)
+        {
+          if (!strcmp(obj, lsm_should_work[i])
+              || !fnmatch(lsm_should_work[i], obj, FNM_PATHNAME))
+            return 0;
+        }
+    }
 
   for (i = 0; known_issues[i].err != 0; i++)
     if (tmperr == known_issues[i].err
