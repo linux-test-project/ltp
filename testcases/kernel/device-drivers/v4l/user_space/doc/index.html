@@ -26,11 +26,20 @@ or visit <a href="http://sourceforge.net/projects/v4l-test/">v4l-test project pa
 
 <h2><a name="what">What is this?</a></h2>
 <p>
-v4l-test is a test test environment for V4L2 drivers. The V4L2 drivers
+v4l-test is a test environment for V4L2 drivers. The V4L2 drivers
 are running under Linux in kernel space. This test environment is
 running in userspace and tries what normal video application would do.
 It also tries some things which are supposed to test the error handling
 mechanisms of a V4L2 driver. These are the "invalid test cases".
+</p>
+<p>
+The V4L2 API only covers webcams and analog tuner cards. The digital
+broadcast is out of the scope of V4L2 API so it is also out of the
+scope of this test environment. See
+<a href="http://linuxtv.org/docs/dvbapi/dvbapi.html">Linux DVB API</a>
+for digital broadcast and
+<a href="spec/x16430.htm">Chapter 6.3 Relation of V4L2 to other Linux
+multimedia APIs</a> in V4L2 specification.
 </p>
 
 <h2><a name="build">How to build?</a></h2>
@@ -48,7 +57,13 @@ have any hardware device available, you can still test the "Virtual
 Video Driver". To compile this you need to compile your kernel with
 CONFIG_VIDEO_VIVI=m under:
 </p>
-<pre>  -&gt; Device Drivers<br>    -&gt; Multimedia devices<br>      -&gt; Video For Linux<br>        -&gt; Video capture adapters<br>         -&gt; Virtual Video Driver<br></pre>
+<pre>
+  -&gt; Device Drivers
+    -&gt; Multimedia devices
+      -&gt; Video For Linux
+        -&gt; Video capture adapters
+          -&gt; Virtual Video Driver
+</pre>
 <p>
 At this point you can execute v4l-test.
 </p>
@@ -130,46 +145,46 @@ implemented test cases.</p>
     <tr>
       <td>ioctl <a href="spec/r8242.htm">VIDIOC_ENUMAUDIO</a></td>
       <td>yes, only when STREAM_OFF</td>
-      <td>Opt.</td>
+      <td>Enum.</td>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r8304.htm">VIDIOC_ENUMAUDOUT</a></td>
       <td>yes, only when STREAM_OFF</td>
-      <td>Opt.</td>
+      <td>Enum.</td>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r8367.htm">VIDIOC_ENUM_FMT</a></td>
       <td>yes, only when STREAM_OFF</td>
-      <td>Opt.</td>
+      <td>Enum.</td>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r8494.htm">VIDIOC_ENUM_FRAMESIZES</a></td>
       <td>no</td>
-      <td><a href="spec/x16453.htm">Exp.</a></td>
+      <td><a href="spec/x16453.htm">Exp.</a> Enum.</td>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r8724.htm">VIDIOC_ENUM_FRAMEINTERVALS</a></td>
       <td>no</td>
-      <td><a href="spec/x16453.htm">Exp.</a></td>
+      <td><a href="spec/x16453.htm">Exp.</a> Enum.</td>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r8936.htm">VIDIOC_ENUMINPUT</a></td>
       <td>yes, only when STREAM_OFF</td>
-      <td>Opt.</td>
+      <td>Enum.</td>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r9149.htm">VIDIOC_ENUMOUTPUT</a></td>
       <td>yes, only when STREAM_OFF</td>
-      <td>Opt.</td>
+      <td>Enum.</td>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r9288.htm">VIDIOC_ENUMSTD</a></td>
       <td>yes, only when STREAM_OFF</td>
-      <td>Opt.</td>
+      <td>Enum.</td>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r9539.htm">VIDIOC_G_AUDIO</a></td>
-      <td>no</td>
+      <td>yes, only when STREAM_OFF</td>
       <td>Opt.</td>
     </tr>
     <tr>
@@ -179,7 +194,7 @@ implemented test cases.</p>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r9688.htm">VIDIOC_G_AUDOUT</a></td>
-      <td>no</td>
+      <td>yes, only when STREAM_OFF</td>
       <td>Opt.</td>
     </tr>
     <tr>
@@ -220,17 +235,17 @@ implemented test cases.</p>
     <tr>
       <td>ioctl <a href="spec/r10386.htm">VIDIOC_G_EXT_CTRLS</a></td>
       <td>no</td>
-      <td><br></td>
+      <td>Opt.</td>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r10386.htm">VIDIOC_S_EXT_CTRLS</a></td>
       <td>no</td>
-      <td><br></td>
+      <td>Opt.</td>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r10386.htm">VIDIOC_TRY_EXT_CTRLS</a></td>
       <td>no</td>
-      <td><br></td>
+      <td>Opt.</td>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r10595.htm">VIDIOC_G_FBUF</a></td>
@@ -259,13 +274,13 @@ implemented test cases.</p>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r11094.htm">VIDIOC_G_FREQUENCY</a></td>
-      <td>yes</td>
-      <td><br></td>
+      <td>yes, only when STREAM_OFF</td>
+      <td>Opt.</td>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r11094.htm">VIDIOC_S_FREQUENCY</a></td>
-      <td>no</td>
-      <td><br></td>
+      <td>yes, only when STREAM_OFF</td>
+      <td>Opt.</td>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r11217.htm">VIDIOC_G_INPUT</a></td>
@@ -289,13 +304,13 @@ implemented test cases.</p>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r11430.htm">VIDIOC_G_MODULATOR</a></td>
-      <td>no</td>
-      <td><br></td>
+      <td>yes, only when STREAM_OFF</td>
+      <td>Opt.</td>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r11430.htm">VIDIOC_S_MODULATOR</a></td>
       <td>no</td>
-      <td><br></td>
+      <td>Opt.</td>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r11612.htm">VIDIOC_G_OUTPUT</a></td>
@@ -319,12 +334,12 @@ implemented test cases.</p>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r11946.htm">VIDIOC_G_PRIORITY</a></td>
-      <td>no</td>
+      <td>yes, only when STREAM_OFF</td>
       <td>Opt.</td>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r11946.htm">VIDIOC_S_PRIORITY</a></td>
-      <td>no</td>
+      <td>yes, only when STREAM_OFF</td>
       <td>Opt.</td>
     </tr>
     <tr>
@@ -344,7 +359,7 @@ implemented test cases.</p>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r12342.htm">VIDIOC_G_TUNER</a></td>
-      <td>yes</td>
+      <td>yes, only when STREAM_OFF</td>
       <td><br></td>
     </tr>
     <tr>
@@ -354,7 +369,7 @@ implemented test cases.</p>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r12784.htm">VIDIOC_LOG_STATUS</a></td>
-      <td>yes</td>
+      <td>yes, only when STREAM_OFF</td>
       <td>Opt.</td>
     </tr>
     <tr>
@@ -386,16 +401,16 @@ implemented test cases.</p>
       <td>ioctl <a href="spec/r13317.htm">VIDIOC_QUERYCTRL</a></td>
       <td>yes, only private and user controls;
           only user controls with V4L2_CTRL_FLAG_NEXT_CTRL</td>
-      <td><br></td>
+      <td>Enum.</td>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r13317.htm">VIDIOC_QUERYMENU</a></td>
       <td>no</td>
-      <td><br></td>
+      <td>Enum.</td>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r13641.htm">VIDIOC_QUERYSTD</a></td>
-      <td>yes</td>
+      <td>yes, only when STREAM_OFF</td>
       <td><br></td>
     </tr>
     <tr>
@@ -454,6 +469,7 @@ implemented test cases.</p>
 <p>
 All: all drivers should support<br>
 Opt.: optional<br>
+Enum.: enumeration, will return EINVAL for the first unknown entry<br>
 Exp.: experimental, may change in future
 </p>
 
@@ -481,7 +497,7 @@ Please let me know if this list misses other V4L or V4L2 test project.
 <p>Any feedbacks, comments, ideas, etc. are welcome at the author's email address.</p>
 <hr style="width: 100%; height: 2px;">
 <p>Last changed:
-Sat Jan 31 11:49:12 2009
+Tue Feb  3 22:20:46 2009
 </p>
 <p>
   <a href="http://validator.w3.org/check?uri=referer"><img

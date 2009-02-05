@@ -4,6 +4,9 @@
 Release History
 ---------------
 
+ 4 Feb 2009  0.6  Test cases added for VIDIOC_G_AUDIO, VIDIOC_G_AUDOUT,
+                  VIDIOC_G_MODULATOR, VIDIOC_G_PRIORITY, VIDIOC_S_PRIORITY
+                  and VIDIOC_S_FREQUENCY
 31 Jan 2009  0.5  Test cases added for VIDIOC_QUERYSTD, VIDIOC_G_FREQUENCY
                   and VIDIOC_G_TUNER
 24 Jan 2009  0.4  Test cases for MAX_EM28XX_INPUT, MAX_EM28XX_TVNORMS removed;
@@ -21,11 +24,17 @@ Released under GPL
 
 What is this?
 -------------
-v4l-test is a test test environment for V4L2 drivers. The V4L2 drivers
+v4l-test is a test environment for V4L2 drivers. The V4L2 drivers
 are running under Linux in kernel space. This test environment is running
 in userspace and tries what normal video application would do. It also
 tries some things which are supposed to test the error handling mechanisms
 of a V4L2 driver. These are the "invalid test cases".
+
+The V4L2 API only covers webcams and analog tuner cards, the digital broadcast
+is out of the scope of V4L2 API so it is also out of the scope of this test
+environment. See Linux DVB API at http://linuxtv.org/docs/dvbapi/dvbapi.html
+for digital broadcast and Chapter 6.3 "Relation of V4L2 to other Linux multimedia APIs"
+in V4L2 specification.
 
 How to build?
 -------------

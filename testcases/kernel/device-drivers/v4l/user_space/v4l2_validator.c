@@ -60,3 +60,25 @@ int valid_v4l2_std_id(v4l2_std_id std_id) {
 	}
 	return valid;
 }
+
+int valid_tuner_capability(__u32 capability) {
+	int valid = 0;
+
+	if ( (capability & ~(V4L2_TUNER_CAP_LOW |
+			     V4L2_TUNER_CAP_NORM |
+			     V4L2_TUNER_CAP_STEREO |
+			     V4L2_TUNER_CAP_LANG1 |
+			     V4L2_TUNER_CAP_LANG2 |
+			     V4L2_TUNER_CAP_SAP))
+		== 0) {
+		valid = 1;
+	} else {
+		valid = 0;
+	}
+	return valid;
+}
+
+
+int valid_modulator_capability(__u32 capability) {
+	return valid_tuner_capability(capability);
+}

@@ -24,6 +24,7 @@
 #include "v4l2_test.h"
 #include "dev_video.h"
 #include "video_limits.h"
+#include "v4l2_validator.h"
 
 #include "test_VIDIOC_TUNER.h"
 
@@ -39,23 +40,6 @@ int valid_tuner_type(enum v4l2_tuner_type type) {
 			valid = 0;
 	}
 
-	return valid;
-}
-
-int valid_tuner_capability(__u32 capability) {
-	int valid = 0;
-
-	if ( (capability & ~(V4L2_TUNER_CAP_LOW |
-			     V4L2_TUNER_CAP_NORM |
-			     V4L2_TUNER_CAP_STEREO |
-			     V4L2_TUNER_CAP_LANG1 |
-			     V4L2_TUNER_CAP_LANG2 |
-			     V4L2_TUNER_CAP_SAP))
-		== 0) {
-		valid = 1;
-	} else {
-		valid = 0;
-	}
 	return valid;
 }
 

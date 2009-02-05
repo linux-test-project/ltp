@@ -1,6 +1,10 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ *  3 Feb 2009  0.9  Test cases for VIDIOC_G_AUDIO and VIDIOC_G_AUDOUT added
+ *  2 Feb 2009  0.8  Test cases for VIDIOC_G_MODULATOR, VIDIOC_G_PRIORITY
+ *                   and VIDIOC_S_PRIORITY added
+ *  1 Feb 2009  0.7  Test cases for VIDIOC_S_FREQUENCY added
  * 31 Jan 2009  0.6  Test cases for VIDIOC_G_TUNER added
  * 18 Jan 2009  0.5  Test cases for MAX_EM28XX_INPUT and MAX_EM28XX_TVNORMS
  *                   removed
@@ -51,7 +55,11 @@
 #include "test_VIDIOC_STD.h"
 #include "test_VIDIOC_INPUT.h"
 #include "test_VIDIOC_TUNER.h"
+#include "test_VIDIOC_MODULATOR.h"
 #include "test_VIDIOC_FREQUENCY.h"
+#include "test_VIDIOC_PRIORITY.h"
+#include "test_VIDIOC_AUDIO.h"
+#include "test_VIDIOC_AUDOUT.h"
 
 #include "test_VIDIOC_LOG_STATUS.h"
 #include "test_invalid_ioctl.h"
@@ -139,11 +147,33 @@ static CU_TestInfo suite_get_set_try[] = {
   { "VIDIOC_G_TUNER, index=U32_MAX", test_VIDIOC_G_TUNER_U32_MAX },
   { "VIDIOC_G_TUNER with NULL parameter", test_VIDIOC_G_TUNER_NULL },
 
+  { "VIDIOC_G_MODULATOR", test_VIDIOC_G_MODULATOR },
+  { "VIDIOC_G_MODULATOR, index=S32_MAX", test_VIDIOC_G_MODULATOR_S32_MAX },
+  { "VIDIOC_G_MODULATOR, index=S32_MAX+1", test_VIDIOC_G_MODULATOR_S32_MAX_1 },
+  { "VIDIOC_G_MODULATOR, index=U32_MAX", test_VIDIOC_G_MODULATOR_U32_MAX },
+  { "VIDIOC_G_MODULATOR with NULL parameter", test_VIDIOC_G_MODULATOR_NULL },
+
   { "VIDIOC_G_FREQUENCY", test_VIDIOC_G_FREQUENCY },
   { "VIDIOC_G_FREQUENCY, tuner=S32_MAX", test_VIDIOC_G_FREQUENCY_S32_MAX },
   { "VIDIOC_G_FREQUENCY, tuner=S32_MAX+1", test_VIDIOC_G_FREQUENCY_S32_MAX_1 },
   { "VIDIOC_G_FREQUENCY, tuner=U32_MAX", test_VIDIOC_G_FREQUENCY_U32_MAX },
   { "VIDIOC_G_FREQUENCY with NULL parameter", test_VIDIOC_G_FREQUENCY_NULL },
+
+  { "VIDIOC_S_FREQUENCY", test_VIDIOC_S_FREQUENCY },
+  { "VIDIOC_S_FREQUENCY with boundary values", test_VIDIOC_S_FREQUENCY_boundaries },
+  { "VIDIOC_S_FREQUENCY scan all possbile values", test_VIDIOC_S_FREQUENCY_scan },
+
+  { "VIDIOC_G_PRIORITY", test_VIDIOC_G_PRIORITY },
+  { "VIDIOC_G_PRIORITY with NULL parameter", test_VIDIOC_G_PRIORITY_NULL },
+  { "VIDIOC_S_PRIORITY", test_VIDIOC_S_PRIORITY },
+  { "VIDIOC_S_PRIORITY with invalid values", test_VIDIOC_S_PRIORITY_invalid },
+  { "VIDIOC_S_PRIORITY with NULL parameter", test_VIDIOC_S_PRIORITY_NULL },
+
+  { "VIDIOC_G_AUDIO", test_VIDIOC_G_AUDIO },
+  { "VIDIOC_G_AUDIO with NULL parameter", test_VIDIOC_G_AUDIO_NULL },
+
+  { "VIDIOC_G_AUDOUT", test_VIDIOC_G_AUDOUT },
+  { "VIDIOC_G_AUDOUT with NULL parameter", test_VIDIOC_G_AUDOUT_NULL },
 
   CU_TEST_INFO_NULL,
 };

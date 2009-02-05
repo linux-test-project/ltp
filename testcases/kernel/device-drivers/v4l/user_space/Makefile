@@ -1,6 +1,10 @@
 #
 # v4l-test: Test environment for Video For Linux Two API
 #
+#  3 Feb 2009  0.7  test_VIDIOC_AUDIO.c added,
+#                   test_VIDIOC_AUDOUT.c added,
+#  2 Feb 2009  0.6  test_VIDIOC_MODULATOR.c added,
+#                   test_VIDIOC_PRIORITY.c added
 # 31 Jan 2009  0.5  test_VIDIOC_TUNER.c added,
 #                   test_VIDIOC_FREQUENCY.c added,
 #                   test_VIDIOC_QUERYSTD.c added,
@@ -37,7 +41,11 @@ OBJS = dev_video.o \
        test_VIDIOC_STD.o \
        test_VIDIOC_INPUT.o \
        test_VIDIOC_TUNER.o \
+       test_VIDIOC_MODULATOR.o \
        test_VIDIOC_FREQUENCY.o \
+       test_VIDIOC_PRIORITY.o \
+       test_VIDIOC_AUDIO.o \
+       test_VIDIOC_AUDOUT.o \
        test_invalid_ioctl.o \
        v4l2_test.o
 

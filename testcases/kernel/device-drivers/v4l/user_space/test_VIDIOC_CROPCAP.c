@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ *  3 Feb 2009  0.2  Typo fixed
  * 21 Dec 2008  0.1  First release
  *
  * Written by Márton Németh <nm127@freemail.hu>
@@ -110,7 +111,7 @@ static void do_ioctl_VIDIOC_CROPCAP(enum v4l2_buf_type buf_type, int expected_re
 		memset(&cropcap2, 0xff, sizeof(cropcap2));
 		cropcap2.type = buf_type;
 		CU_ASSERT_EQUAL(memcmp(&cropcap, &cropcap2, sizeof(cropcap)), 0);
-		dprintf("\ttype=%i, ret=%i, errno=%i, exoected_ret=%i\n", buf_type, ret, errno, expected_ret);
+		dprintf("\ttype=%i, ret=%i, errno=%i, expected_ret=%i\n", buf_type, ret, errno, expected_ret);
 
 	}
 
