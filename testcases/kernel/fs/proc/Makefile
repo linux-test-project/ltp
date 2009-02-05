@@ -16,12 +16,10 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
 
-###########################################################################
-# name of file	: Makefile						  #
-# description	: make(1) description file for the send(2) tests.	  #
-###########################################################################
+include ../../../../config.mk
+
 CFLAGS+=	-I../../../../include
-LOADLIBES+=	-L../../../../lib -lltp
+LDLIBS+=	-L../../../../lib -lltp $(SELINUX_LIBS)
 
 SRCS=$(wildcard *.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
@@ -33,5 +31,3 @@ install:
 
 clean:
 	rm -f $(TARGETS)
-
-
