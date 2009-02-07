@@ -1,35 +1,48 @@
-__NR_accept4 288
-__NR_timer_create 222
-__NR_timer_settime 223
-__NR_timer_delete 226
-__NR_clock_settime 227
-__NR_clock_gettime 228
-__NR_openat 257
-__NR_mkdirat (__NR_openat + 1)
-__NR_mknodat (__NR_openat + 2)
-__NR_fchownat (__NR_openat + 3)
-__NR_futimesat (__NR_openat + 4)
-__NR_newfstatat (__NR_openat + 5)
-__NR_fstatat64 (__NR_openat + 5)
-__NR_unlinkat (__NR_openat + 6)
-__NR_renameat (__NR_openat + 7)
-__NR_linkat (__NR_openat + 8)
-__NR_symlinkat (__NR_openat + 9)
-__NR_readlinkat (__NR_openat + 10)
-__NR_fchmodat  (__NR_openat + 11)
-__NR_faccessat (__NR_openat + 12)
-__NR_splice 275
-__NR_tee 276
-__NR_vmsplice 278
-__NR_utimensat 296
-__NR_timerfd_create 283
-__NR_eventfd 284
-__NR_fallocate 285
-__NR_timerfd_settime 286
-__NR_timerfd_gettime 287
-__NR_signalfd4 289
-__NR_eventfd2 290
-__NR_epoll_create1 291
-__NR_dup3 292
-__NR_pipe2 293
-__NR_inotify_init1 294
+__NR_fork				57
+__NR_lchown				94
+__NR_setuid				105
+__NR_setgid				106
+__NR_getgid				104
+__NR_getegid				108
+__NR_setreuid				113
+__NR_setregid				114
+__NR_setgroups				116
+__NR_fchown				93
+__NR_setfsgid				123
+__NR_setresuid				117
+__NR_setresgid				119
+__NR_chown				92
+__NR_timer_create			222
+__NR_timer_settime			223
+__NR_timer_delete			226
+__NR_clock_settime			227
+__NR_clock_gettime			228
+__NR_openat				257
+__NR_mkdirat				258
+__NR_mknodat				259
+__NR_fchownat				260
+__NR_futimesat				261
+__NR_newfstatat				262
+__NR_unlinkat				263
+__NR_renameat				264
+__NR_linkat				265
+__NR_symlinkat				266
+__NR_readlinkat				267
+__NR_fchmodat				268
+__NR_faccessat				269
+__NR_splice				275
+__NR_tee				276
+__NR_vmsplice				278
+__NR_utimensat				280
+__NR_timerfd_create			283
+__NR_eventfd				284
+__NR_fallocate				285
+__NR_timerfd_settime			286
+__NR_timerfd_gettime			287
+__NR_accept4				288
+__NR_signalfd4				289
+__NR_eventfd2				290
+__NR_epoll_create1			291
+__NR_dup3				292
+__NR_pipe2				293
+__NR_inotify_init1			294

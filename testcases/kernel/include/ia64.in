@@ -1,23 +1,46 @@
-__NR_openat 1281
-__NR_mkdirat (__NR_openat + 1)
-__NR_mknodat (__NR_openat + 2)
-__NR_fchownat (__NR_openat + 3)
-__NR_futimesat (__NR_openat + 4)
-__NR_newfstatat (__NR_openat + 5)
-__NR_fstatat64 (__NR_openat + 5)
-__NR_unlinkat (__NR_openat + 6)
-__NR_renameat (__NR_openat + 7)
-__NR_linkat (__NR_openat + 8)
-__NR_symlinkat (__NR_openat + 9)
-__NR_readlinkat (__NR_openat + 10)
-__NR_fchmodat  (__NR_openat + 11)
-__NR_faccessat (__NR_openat + 12)
-__NR_splice 1297
-__NR_tee 1301
-__NR_vmsplice 1302
-__NR_fallocate 1303
-__NR_utimensat 1306
-__NR_eventfd 1309
-__NR_timerfd_create 1310
-__NR_timerfd_settime 1311
-__NR_timerfd_gettime 1312
+__NR_lchown			1124
+__NR_setuid			1045
+__NR_setgid			1061
+__NR_getgid			1062
+__NR_getegid			1063
+__NR_setreuid			1071
+__NR_setregid			1072
+__NR_setgroups			1078
+__NR_fchown			1100
+__NR_setfsgid			1143
+__NR_setresuid			1074
+__NR_setresgid			1076
+__NR_chown			1039
+__NR_timer_create		1248
+__NR_timer_settime		1249
+__NR_timer_delete		1252
+__NR_clock_settime		1253
+__NR_clock_gettime		1254
+__NR_openat			1281
+__NR_mkdirat			1282
+__NR_mknodat			1283
+__NR_fchownat			1284
+__NR_futimesat			1285
+__NR_newfstatat			1286
+__NR_unlinkat			1287
+__NR_renameat			1288
+__NR_linkat			1289
+__NR_symlinkat			1290
+__NR_readlinkat			1291
+__NR_fchmodat			1292
+__NR_faccessat			1293
+__NR_splice			1297
+__NR_tee			1301
+__NR_vmsplice			1302
+__NR_utimensat			1306
+__NR_timerfd_create		1310
+__NR_eventfd			1309
+__NR_fallocate			1303
+__NR_timerfd_settime		1311
+__NR_timerfd_gettime		1312
+__NR_signalfd4			1313
+__NR_eventfd2			1314
+__NR_epoll_create1		1315
+__NR_dup3			1316
+__NR_pipe2			1317
+__NR_inotify_init1		1318

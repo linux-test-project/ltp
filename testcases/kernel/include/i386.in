@@ -1,48 +1,47 @@
-__NR_timer_create 259
-__NR_timer_settime (__NR_timer_create + 1)
-__NR_timer_delete (__NR_timer_create + 4)
-__NR_clock_settime (__NR_timer_create + 5)
-__NR_clock_gettime (__NR_timer_create + 6)
-__NR_chown 182
-__NR_fchown 95
-__NR_fork 2
-__NR_getegid 50
-__NR_getgid 47
-__NR_lchown 16
-__NR_setfsgid 139
-__NR_setgid 46
-__NR_setgroups 81
-__NR_setregid 71
-__NR_setresgid 170
-__NR_setresuid 164
-__NR_setreuid 70
-__NR_setuid 23
-__NR_openat 295
-__NR_mkdirat (__NR_openat + 1)
-__NR_mknodat (__NR_openat + 2)
-__NR_fchownat (__NR_openat + 3)
-__NR_futimesat (__NR_openat + 4)
-__NR_newfstatat (__NR_openat + 5)
-__NR_fstatat64 (__NR_openat + 5)
-__NR_unlinkat (__NR_openat + 6)
-__NR_renameat (__NR_openat + 7)
-__NR_linkat (__NR_openat + 8)
-__NR_symlinkat (__NR_openat + 9)
-__NR_readlinkat (__NR_openat + 10)
-__NR_fchmodat  (__NR_openat + 11)
-__NR_faccessat (__NR_openat + 12)
-__NR_splice 313
-__NR_tee 315
-__NR_vmsplice 316
-__NR_utimensat 320
-__NR_timerfd_create 322
-__NR_eventfd 323
-__NR_fallocate 324
-__NR_timerfd_settime 325
-__NR_timerfd_gettime 326
-__NR_signalfd4 327
-__NR_eventfd2 328
-__NR_epoll_create1 329
-__NR_dup3 330
-__NR_pipe2 331
-__NR_inotify_init1 332
+__NR_fork		  2
+__NR_lchown		 16
+__NR_setuid		 23
+__NR_setgid		 46
+__NR_getgid		 47
+__NR_getegid		 50
+__NR_setreuid		 70
+__NR_setregid		 71
+__NR_setgroups		 81
+__NR_fchown		 95
+__NR_setfsgid		139
+__NR_setresuid		164
+__NR_setresgid		170
+__NR_chown		182
+__NR_timer_create	259
+__NR_timer_settime	(__NR_timer_create+1)
+__NR_timer_delete	(__NR_timer_create+4)
+__NR_clock_settime	(__NR_timer_create+5)
+__NR_clock_gettime	(__NR_timer_create+6)
+__NR_openat		295
+__NR_mkdirat		296
+__NR_mknodat		297
+__NR_fchownat		298
+__NR_futimesat		299
+__NR_fstatat64		300
+__NR_unlinkat		301
+__NR_renameat		302
+__NR_linkat		303
+__NR_symlinkat		304
+__NR_readlinkat		305
+__NR_fchmodat		306
+__NR_faccessat		307
+__NR_splice		313
+__NR_tee		315
+__NR_vmsplice		316
+__NR_utimensat		320
+__NR_timerfd_create	322
+__NR_eventfd		323
+__NR_fallocate		324
+__NR_timerfd_settime	325
+__NR_timerfd_gettime	326
+__NR_signalfd4		327
+__NR_eventfd2		328
+__NR_epoll_create1	329
+__NR_dup3		330
+__NR_pipe2		331
+__NR_inotify_init1	332
