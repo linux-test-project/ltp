@@ -36,7 +36,6 @@
 
 int NUM_OF_KEYS = PTHREAD_KEYS_MAX;
 
-static pthread_key_t keys[5];
 
 int main()
 {
@@ -45,6 +44,8 @@ int main()
 	for(i = 0;i<=NUM_OF_KEYS;i++)
 	{
 		rc = pthread_key_create(&keys[i], NULL);
+		pthread_key_t key;
+		rc = pthread_key_create(&key, NULL);
 		if(i == NUM_OF_KEYS)
 		{
 			if(rc != EAGAIN)
@@ -54,7 +55,7 @@ int main()
 			}
 		}
 			
-		if(rc != 0)
+		else if(rc != 0)
 		{
 			if(rc != EAGAIN)
 			{
