@@ -107,19 +107,12 @@ const Mapping known_issues[] =
 
 /* If a particular LSM is enabled, it is expected that some entries can
    be read successfully. */
-#ifdef HAVE_SELINUX_SELINUX_H
 const char lsm_should_work[][PATH_MAX] =
   {
     "/proc/self/attr/*",
     "/proc/self/task/[0-9]*/attr/*",
     ""
   };
-#else
-const char lsm_should_work[][PATH_MAX] =
-  {
-    ""
-  };
-#endif
 
 /* Known files that does not honor O_NONBLOCK, so they will hang
    the test while being read. */
@@ -132,7 +125,7 @@ const char error_nonblock[][PATH_MAX] =
 /* Check if a particular LSM is enabled. */
 int is_lsm_enabled(void)
 {
-#ifdef HAVE_SELINUX_SELINUX_H
+#if defined(HAVE_SELINUX_SELINUX_H) && defined(HAVE_LIBSELINUX)
   return is_selinux_enabled();
 #else
   return 0;
