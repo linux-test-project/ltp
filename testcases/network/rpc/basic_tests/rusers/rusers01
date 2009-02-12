@@ -93,16 +93,16 @@ rusers > /dev/null
 echo "Test rusers with options set...please be patient"
 # Go through matrix of rusers options:
 
-rusers $RHOST | grep $RHOST > /dev/null 
+rusers $RHOST > /dev/null
 [ $? -eq 0 ] || end_testcase "rusers $RHOST - failed"
 
-rusers -a $RHOST | grep $RHOST > /dev/null 
+rusers -a $RHOST > /dev/null
 [ $? -eq 0 ] || end_testcase "rusers -a $RHOST - failed"
 
 rusers -l > /dev/null 
 [ $? -eq 0 ] || end_testcase "rusers -l - failed" 
 
-rusers -l $RHOST | grep $RHOST > /dev/null
+rusers -l $RHOST > /dev/null
 [ $? -eq 0 ] || end_testcase "rusers -l $RHOST - failed"   
 
 echo "Test rusers with bad options"
