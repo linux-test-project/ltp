@@ -213,7 +213,7 @@ int setup_swap()
 {
         int j, fd;              /*j is loop counter, fd is file descriptor*/
         int pid;                    /* used for fork */
-        int *status = NULL;       /* used for fork */
+        int status;             /* used for fork */
         int res = 0, pagesize = getpagesize();
         int  bs, count;
         char filename[15];      /* array to store new filename*/
@@ -298,7 +298,12 @@ int setup_swap()
                 }
                 tst_exit();
         } else
-                waitpid(pid, status, 0);
+                waitpid(pid, &status, 0);
+
+	if(WEXITSTATUS(status)) {
+		tst_resm(TFAIL, "Failed to setup swaps");
+		exit(1);
+	}
 
 	/* Create all needed extra swapfiles for testing*/
 	for (j = 0; j < testfiles; j++) {
