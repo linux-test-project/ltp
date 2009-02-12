@@ -25,7 +25,7 @@ int main () {
     /* current time */
     time_t t = time(NULL);
     struct tm* local_t = localtime(&t);
-    char text[20];
+    char text[100];
     int result;
 
     setlocale(LC_TIME, "");
