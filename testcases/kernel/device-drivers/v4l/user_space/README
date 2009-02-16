@@ -4,6 +4,11 @@
 Release History
 ---------------
 
+ 9 Feb 2009  0.10 Test cases added for VIDIOC_G_AUDIO, VIDIOC_G_AUDOUT,
+                  VIDIOC_S_AUDIO and VIDIOC_G_CROP;
+                  Added video_dummy kernel driver to verify the test
+                  environment;
+                  Some cleanup
  4 Feb 2009  0.6  Test cases added for VIDIOC_G_AUDIO, VIDIOC_G_AUDOUT,
                   VIDIOC_G_MODULATOR, VIDIOC_G_PRIORITY, VIDIOC_S_PRIORITY
                   and VIDIOC_S_FREQUENCY

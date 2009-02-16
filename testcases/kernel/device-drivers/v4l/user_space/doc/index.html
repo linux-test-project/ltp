@@ -189,7 +189,7 @@ implemented test cases.</p>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r9539.htm">VIDIOC_S_AUDIO</a></td>
-      <td>no</td>
+      <td>yes, only when STREAM_OFF</td>
       <td>Opt.</td>
     </tr>
     <tr>
@@ -199,7 +199,7 @@ implemented test cases.</p>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r9688.htm">VIDIOC_S_AUDOUT</a></td>
-      <td>no</td>
+      <td>yes, only when STREAM_OFF</td>
       <td>Opt.</td>
     </tr>
     <tr>
@@ -219,7 +219,7 @@ implemented test cases.</p>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r10104.htm">VIDIOC_G_CTRL</a></td>
-      <td>yes, only private and user controls; only user controls with V4L2_CTRL_FLAG_NEXT_CTRL</td>
+      <td>no</td>
       <td><br></td>
     </tr>
     <tr>
@@ -364,7 +364,7 @@ implemented test cases.</p>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r12342.htm">VIDIOC_S_TUNER</a></td>
-      <td>no</td>
+      <td>yes, only when STREAM_OFF</td>
       <td><br></td>
     </tr>
     <tr>
@@ -492,12 +492,24 @@ So far I could find the following:
 <p>
 Please let me know if this list misses other V4L or V4L2 test project.
 </p>
+<p>
+The following documents and articles are useful if you are dealing with V4L2:
+</p>
+<ul>
+  <li>
+  <a href="http://v4l2spec.bytesex.org/spec/">Video for Linux Two API Specification</a>
+  </li>
+  <li>
+  <a href="http://lwn.net/Articles/203924/">The Video4Linux2 API series</a> at
+  <a href="http://lwn.net/">lwn.net</a>
+  </li>
+</ul>
 
 <h2><a name="feedback">Feedbacks</a></h2>
 <p>Any feedbacks, comments, ideas, etc. are welcome at the author's email address.</p>
 <hr style="width: 100%; height: 2px;">
 <p>Last changed:
-Tue Feb  3 22:20:46 2009
+Mon Feb  9 07:41:37 2009
 </p>
 <p>
   <a href="http://validator.w3.org/check?uri=referer"><img

@@ -1,6 +1,7 @@
 #
 # v4l-test: Test environment for Video For Linux Two API
 #
+#  7 Feb 2009  0.8  test_VIDIOC_CROP.c added
 #  3 Feb 2009  0.7  test_VIDIOC_AUDIO.c added,
 #                   test_VIDIOC_AUDOUT.c added,
 #  2 Feb 2009  0.6  test_VIDIOC_MODULATOR.c added,
@@ -36,6 +37,7 @@ OBJS = dev_video.o \
        test_VIDIOC_ENUMSTD.o \
        test_VIDIOC_LOG_STATUS.o \
        test_VIDIOC_CROPCAP.o \
+       test_VIDIOC_CROP.o \
        test_VIDIOC_QUERYCTRL.o \
        test_VIDIOC_QUERYSTD.o \
        test_VIDIOC_STD.o \

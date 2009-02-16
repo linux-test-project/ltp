@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ *  9 Feb 2009  0.3  Modify test cases to support drivers without any inputs
  * 22 Dec 2008  0.2  Test case with NULL parameter added
  * 18 Dec 2008  0.1  First release
  *
@@ -63,14 +64,17 @@ void test_VIDIOC_G_INPUT() {
 	memset(&index, 0xff, sizeof(index));
 	ret = ioctl(f, VIDIOC_G_INPUT, &index);
 
-	dprintf("VIDIOC_G_INPUT, ret=%i\n", ret);
+	dprintf("\tVIDIOC_G_INPUT, ret=%i, errno=%i\n", ret, errno);
 
-	CU_ASSERT_EQUAL(ret, 0);
 	if (ret == 0) {
+		CU_ASSERT_EQUAL(ret, 0);
 		CU_ASSERT(valid_input_index(f, index));
 
-		dprintf("index=0x%X\n", index);
+		dprintf("\tindex=0x%X\n", index);
 
+	} else {
+		CU_ASSERT_EQUAL(ret, -1);
+		CU_ASSERT_EQUAL(errno, EINVAL);
 	}
 
 }
@@ -87,8 +91,9 @@ void test_VIDIOC_S_INPUT_from_enum() {
 
 	memset(&input_index_orig, 0xff, sizeof(input_index_orig));
 	ret = ioctl(f, VIDIOC_G_INPUT, &input_index_orig);
-	CU_ASSERT_EQUAL(ret, 0);
 	if (ret == 0) {
+		CU_ASSERT_EQUAL(ret, 0);
+
 		i = 0;
 		do {
 			memset(&input, 0xff, sizeof(input));
@@ -110,6 +115,9 @@ void test_VIDIOC_S_INPUT_from_enum() {
 		/* Setting the original input_id should not fail */
 		ret = ioctl(f, VIDIOC_S_INPUT, &input_index_orig);
 		CU_ASSERT_EQUAL(ret, 0);
+	} else {
+		CU_ASSERT_EQUAL(ret, -1);
+		CU_ASSERT_EQUAL(errno, EINVAL);
 	}
 }
 
@@ -145,8 +153,8 @@ void test_VIDIOC_S_INPUT_invalid_inputs() {
 
 	memset(&input_index_orig, 0xff, sizeof(input_index_orig));
 	ret = ioctl(f, VIDIOC_G_INPUT, &input_index_orig);
-	CU_ASSERT_EQUAL(ret, 0);
 	if (ret == 0) {
+		CU_ASSERT_EQUAL(ret, 0);
 		i = 0;
 		do {
 			memset(&input, 0xff, sizeof(input));
@@ -181,15 +189,38 @@ void test_VIDIOC_S_INPUT_invalid_inputs() {
 		/* Setting the original input_id should not fail */
 		ret = ioctl(f, VIDIOC_S_INPUT, &input_index_orig);
 		CU_ASSERT_EQUAL(ret, 0);
+	} else {
+		CU_ASSERT_EQUAL(ret, -1);
+		CU_ASSERT_EQUAL(errno, EINVAL);
 	}
 }
 
 void test_VIDIOC_G_INPUT_NULL() {
-	int ret;
+	int ret1, errno1;
+	int ret2, errno2;
+	__u32 index;
 
-	ret = ioctl(get_video_fd(), VIDIOC_G_INPUT, NULL);
-	CU_ASSERT_EQUAL(ret, -1);
-	CU_ASSERT_EQUAL(errno, EFAULT);
+	memset(&index, 0xff, sizeof(index));
+	ret1 = ioctl(get_video_fd(), VIDIOC_G_INPUT, &index);
+	errno1 = errno;
+
+	dprintf("\tVIDIOC_G_INPUT, ret1=%i, errno1=%i\n", ret1, errno1);
+
+	ret2 = ioctl(get_video_fd(), VIDIOC_G_INPUT, NULL);
+	errno2 = errno;
+
+	dprintf("\tVIDIOC_G_INPUT: ret2=%i, errno2=%i\n", ret2, errno2);
+
+	if (ret1 == 0) {
+		CU_ASSERT_EQUAL(ret1, 0);
+		CU_ASSERT_EQUAL(ret2, -1);
+		CU_ASSERT_EQUAL(errno2, EFAULT);
+	} else {
+		CU_ASSERT_EQUAL(ret1, -1);
+		CU_ASSERT_EQUAL(errno1, EINVAL);
+		CU_ASSERT_EQUAL(ret2, -1);
+		CU_ASSERT_EQUAL(errno2, EINVAL);
+	}
 
 }
 

@@ -1,6 +1,8 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ *  9 Feb 2009  0.3  Modify test_VIDIOC_CROPCAP_enum_INPUT() to support drivers
+ *                   without any inputs
  *  3 Feb 2009  0.2  Typo fixed
  * 21 Dec 2008  0.1  First release
  *
@@ -151,8 +153,8 @@ void test_VIDIOC_CROPCAP_enum_INPUT() {
 
 	memset(&input_index_orig, 0xff, sizeof(input_index_orig));
 	ret = ioctl(f, VIDIOC_G_INPUT, &input_index_orig);
-	CU_ASSERT_EQUAL(ret, 0);
 	if (ret == 0) {
+		CU_ASSERT_EQUAL(ret, 0);
 		i = 0;
 		do {
 			memset(&input, 0xff, sizeof(input));
@@ -176,6 +178,9 @@ void test_VIDIOC_CROPCAP_enum_INPUT() {
 		/* Setting the original input_id should not fail */
 		ret = ioctl(f, VIDIOC_S_INPUT, &input_index_orig);
 		CU_ASSERT_EQUAL(ret, 0);
+	} else {
+		CU_ASSERT_EQUAL(ret, -1);
+		CU_ASSERT_EQUAL(errno, EINVAL);
 	}
 }
 

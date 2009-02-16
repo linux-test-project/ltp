@@ -1,6 +1,8 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ *  7 Feb 2009  0.10 Test cases added for VIDIOC_G_AUDIO, VIDIOC_G_AUDOUT,
+ *                   VIDIOC_S_AUDIO and VIDIOC_G_CROP
  *  3 Feb 2009  0.9  Test cases for VIDIOC_G_AUDIO and VIDIOC_G_AUDOUT added
  *  2 Feb 2009  0.8  Test cases for VIDIOC_G_MODULATOR, VIDIOC_G_PRIORITY
  *                   and VIDIOC_S_PRIORITY added
@@ -60,6 +62,7 @@
 #include "test_VIDIOC_PRIORITY.h"
 #include "test_VIDIOC_AUDIO.h"
 #include "test_VIDIOC_AUDOUT.h"
+#include "test_VIDIOC_CROP.h"
 
 #include "test_VIDIOC_LOG_STATUS.h"
 #include "test_invalid_ioctl.h"
@@ -147,6 +150,10 @@ static CU_TestInfo suite_get_set_try[] = {
   { "VIDIOC_G_TUNER, index=U32_MAX", test_VIDIOC_G_TUNER_U32_MAX },
   { "VIDIOC_G_TUNER with NULL parameter", test_VIDIOC_G_TUNER_NULL },
 
+  { "VIDIOC_S_TUNER", test_VIDIOC_S_TUNER },
+  { "VIDIOC_S_TUNER with invalid index and audmode parameters", test_VIDIOC_S_TUNER_invalid },
+  { "VIDIOC_S_TUNER with NULL parameter", test_VIDIOC_S_TUNER_NULL },
+
   { "VIDIOC_G_MODULATOR", test_VIDIOC_G_MODULATOR },
   { "VIDIOC_G_MODULATOR, index=S32_MAX", test_VIDIOC_G_MODULATOR_S32_MAX },
   { "VIDIOC_G_MODULATOR, index=S32_MAX+1", test_VIDIOC_G_MODULATOR_S32_MAX_1 },
@@ -170,10 +177,27 @@ static CU_TestInfo suite_get_set_try[] = {
   { "VIDIOC_S_PRIORITY with NULL parameter", test_VIDIOC_S_PRIORITY_NULL },
 
   { "VIDIOC_G_AUDIO", test_VIDIOC_G_AUDIO },
+  { "VIDIOC_G_AUDIO, ignore index value", test_VIDIOC_G_AUDIO_ignore_index },
   { "VIDIOC_G_AUDIO with NULL parameter", test_VIDIOC_G_AUDIO_NULL },
 
+  { "VIDIOC_S_AUDIO", test_VIDIOC_S_AUDIO },
+  { "VIDIOC_S_AUDIO, index=S32_MAX", test_VIDIOC_S_AUDIO_S32_MAX },
+  { "VIDIOC_S_AUDIO, index=S32_MAX+1", test_VIDIOC_S_AUDIO_S32_MAX_1 },
+  { "VIDIOC_S_AUDIO, index=U32_MAX", test_VIDIOC_S_AUDIO_U32_MAX },
+  { "VIDIOC_S_AUDIO with NULL parameter", test_VIDIOC_S_AUDIO_NULL },
+
   { "VIDIOC_G_AUDOUT", test_VIDIOC_G_AUDOUT },
+  { "VIDIOC_G_AUDOUT, ignore index value", test_VIDIOC_G_AUDOUT_ignore_index },
   { "VIDIOC_G_AUDOUT with NULL parameter", test_VIDIOC_G_AUDOUT_NULL },
+
+  { "VIDIOC_S_AUDOUT", test_VIDIOC_S_AUDOUT },
+  { "VIDIOC_S_AUDOUT, index=S32_MAX", test_VIDIOC_S_AUDOUT_S32_MAX },
+  { "VIDIOC_S_AUDOUT, index=S32_MAX+1", test_VIDIOC_S_AUDOUT_S32_MAX_1 },
+  { "VIDIOC_S_AUDOUT, index=U32_MAX", test_VIDIOC_S_AUDOUT_U32_MAX },
+  { "VIDIOC_S_AUDOUT with NULL parameter", test_VIDIOC_S_AUDOUT_NULL },
+
+  { "VIDIOC_G_CROP", test_VIDIOC_G_CROP },
+  { "VIDIOC_G_CROP with NULL parameter", test_VIDIOC_G_CROP_NULL },
 
   CU_TEST_INFO_NULL,
 };

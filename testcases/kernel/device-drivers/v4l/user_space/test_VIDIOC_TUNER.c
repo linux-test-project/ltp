@@ -1,6 +1,9 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ *  9 Feb 2009  0.2  Added test cases for VIDIOC_S_TUNER;
+ *                   Some typos corrected;
+ *                   Add some debug messages
  * 31 Jan 2009  0.1  First release
  *
  * Written by Márton Németh <nm127@freemail.hu>
@@ -236,6 +239,7 @@ void test_VIDIOC_G_TUNER_NULL() {
 	tuner.index = 0;
 	ret1 = ioctl(get_video_fd(), VIDIOC_G_TUNER, &tuner);
 	errno1 = errno;
+	dprintf("\t%s:%u: VIDIOC_G_TUNER: ret1=%i, errno1=%i\n", __FILE__, __LINE__, ret1, errno1);
 
 	ret2 = ioctl(get_video_fd(), VIDIOC_G_TUNER, NULL);
 
@@ -253,6 +257,232 @@ void test_VIDIOC_G_TUNER_NULL() {
 		dprintf("\t%s:%u: errno=%d (expected %d)\n", __FILE__, __LINE__, errno, EFAULT);
 		CU_ASSERT_EQUAL(ret2, -1);
 		CU_ASSERT_EQUAL(errno, EFAULT);
+	}
+
+}
+
+void do_set_tuner_audmode(__u32 index, __u32 audmode) {
+	int ret;
+	struct v4l2_tuner tuner;
+
+	memset(&tuner, 0xff, sizeof(tuner));
+	tuner.index = index;
+	tuner.audmode = audmode;
+	ret = ioctl(get_video_fd(), VIDIOC_S_TUNER, &tuner);
+
+	dprintf("VIDIOC_S_TUNER: index=%u, audmode=%u, "
+		"ret=%i (expected %i), errno=%i\n",
+		index, audmode, ret, 0, errno);
+
+	CU_ASSERT_EQUAL(ret, 0);
+
+}
+
+void do_set_tuner_audmode_invalid(__u32 index, __u32 audmode) {
+	int ret;
+	struct v4l2_tuner tuner;
+
+	memset(&tuner, 0xff, sizeof(tuner));
+	tuner.index = index;
+	tuner.audmode = audmode;
+	ret = ioctl(get_video_fd(), VIDIOC_S_TUNER, &tuner);
+
+	dprintf("VIDIOC_S_TUNER: index=%u, audmode=%u, "
+		"ret=%i (expected %i), errno=%i (expected %i)\n",
+		index, audmode, ret, -1, errno, EINVAL);
+
+	CU_ASSERT_EQUAL(ret, -1);
+	CU_ASSERT_EQUAL(errno, EINVAL);
+}
+
+void test_VIDIOC_S_TUNER() {
+	int ret1, errno1;
+	int ret_set, errno_set;
+	struct v4l2_tuner tuner_orig;
+	struct v4l2_tuner tuner_set;
+
+	/* remember the tuner settings */
+	memset(&tuner_orig, 0, sizeof(tuner_orig));
+	ret1 = ioctl(get_video_fd(), VIDIOC_G_TUNER, &tuner_orig);
+	errno1 = errno;
+
+	dprintf("VIDIOC_G_TUNER, ret1=%i, errno1=%i\n", ret1, errno1);
+
+	if (ret1 == 0) {
+		CU_ASSERT_EQUAL(ret1, 0);
+
+		do_set_tuner_audmode(tuner_orig.index, V4L2_TUNER_MODE_MONO);
+		do_set_tuner_audmode(tuner_orig.index, V4L2_TUNER_MODE_STEREO);
+		do_set_tuner_audmode(tuner_orig.index, V4L2_TUNER_MODE_LANG1);
+		do_set_tuner_audmode(tuner_orig.index, V4L2_TUNER_MODE_LANG2);
+		do_set_tuner_audmode(tuner_orig.index, V4L2_TUNER_MODE_SAP);
+		do_set_tuner_audmode(tuner_orig.index, V4L2_TUNER_MODE_LANG1_LANG2);
+
+	} else {
+		CU_ASSERT_EQUAL(ret1, -1);
+		CU_ASSERT_EQUAL(errno1, EINVAL);
+
+		/* if VIDIOC_G_TUNER is not supported then VIDIOC_S_TUNER shall also
+		 * not supported.
+		 */
+		do_set_tuner_audmode_invalid(tuner_orig.index, V4L2_TUNER_MODE_MONO);
+		do_set_tuner_audmode_invalid(tuner_orig.index, V4L2_TUNER_MODE_STEREO);
+		do_set_tuner_audmode_invalid(tuner_orig.index, V4L2_TUNER_MODE_LANG1);
+		do_set_tuner_audmode_invalid(tuner_orig.index, V4L2_TUNER_MODE_LANG2);
+		do_set_tuner_audmode_invalid(tuner_orig.index, V4L2_TUNER_MODE_SAP);
+		do_set_tuner_audmode_invalid(tuner_orig.index, V4L2_TUNER_MODE_LANG1_LANG2);
+
+	}
+
+	if (ret1 == 0) {
+
+		/* restore the tuner settings */
+		memset(&tuner_set, 0xff, sizeof(tuner_set));
+		tuner_set.index = tuner_orig.index;
+		tuner_set.audmode = tuner_orig.audmode;
+		ret_set = ioctl(get_video_fd(), VIDIOC_S_TUNER, &tuner_orig);
+		errno_set = errno;
+
+		dprintf("VIDIOC_S_TUNER, ret_set=%i, errno_set=%i\n", ret_set, errno_set);
+
+		CU_ASSERT_EQUAL(ret_set, 0);
+	}
+
+}
+
+void test_VIDIOC_S_TUNER_invalid() {
+	int ret1, errno1;
+	int ret_set, errno_set;
+	struct v4l2_tuner tuner_orig;
+	struct v4l2_tuner tuner_set;
+
+	/* remember the tuner settings */
+	memset(&tuner_orig, 0, sizeof(tuner_orig));
+	ret1 = ioctl(get_video_fd(), VIDIOC_G_TUNER, &tuner_orig);
+	errno1 = errno;
+
+	dprintf("VIDIOC_G_TUNER, ret1=%i, errno1=%i\n", ret1, errno1);
+
+	if (ret1 == 0) {
+		CU_ASSERT_EQUAL(ret1, 0);
+
+		/* try with invalid index */
+		do_set_tuner_audmode_invalid(tuner_orig.index+1, V4L2_TUNER_MODE_MONO);
+		do_set_tuner_audmode_invalid(tuner_orig.index-1, V4L2_TUNER_MODE_MONO);
+		do_set_tuner_audmode_invalid((__u32)S32_MAX, V4L2_TUNER_MODE_MONO);
+		do_set_tuner_audmode_invalid(((__u32)S32_MAX)+1, V4L2_TUNER_MODE_MONO);
+		do_set_tuner_audmode_invalid(U32_MAX, V4L2_TUNER_MODE_MONO);
+
+		do_set_tuner_audmode_invalid(tuner_orig.index+1, V4L2_TUNER_MODE_STEREO);
+		do_set_tuner_audmode_invalid(tuner_orig.index-1, V4L2_TUNER_MODE_STEREO);
+		do_set_tuner_audmode_invalid((__u32)S32_MAX, V4L2_TUNER_MODE_STEREO);
+		do_set_tuner_audmode_invalid(((__u32)S32_MAX)+1, V4L2_TUNER_MODE_STEREO);
+		do_set_tuner_audmode_invalid(U32_MAX, V4L2_TUNER_MODE_STEREO);
+
+		do_set_tuner_audmode_invalid(tuner_orig.index+1, V4L2_TUNER_MODE_LANG1);
+		do_set_tuner_audmode_invalid(tuner_orig.index-1, V4L2_TUNER_MODE_LANG1);
+		do_set_tuner_audmode_invalid((__u32)S32_MAX, V4L2_TUNER_MODE_LANG1);
+		do_set_tuner_audmode_invalid(((__u32)S32_MAX)+1, V4L2_TUNER_MODE_LANG1);
+		do_set_tuner_audmode_invalid(U32_MAX, V4L2_TUNER_MODE_LANG1);
+
+		do_set_tuner_audmode_invalid(tuner_orig.index+1, V4L2_TUNER_MODE_LANG2);
+		do_set_tuner_audmode_invalid(tuner_orig.index-1, V4L2_TUNER_MODE_LANG2);
+		do_set_tuner_audmode_invalid((__u32)S32_MAX, V4L2_TUNER_MODE_LANG2);
+		do_set_tuner_audmode_invalid(((__u32)S32_MAX)+1, V4L2_TUNER_MODE_LANG2);
+		do_set_tuner_audmode_invalid(U32_MAX, V4L2_TUNER_MODE_LANG2);
+
+		do_set_tuner_audmode_invalid(tuner_orig.index+1, V4L2_TUNER_MODE_SAP);
+		do_set_tuner_audmode_invalid(tuner_orig.index-1, V4L2_TUNER_MODE_SAP);
+		do_set_tuner_audmode_invalid((__u32)S32_MAX, V4L2_TUNER_MODE_SAP);
+		do_set_tuner_audmode_invalid(((__u32)S32_MAX)+1, V4L2_TUNER_MODE_SAP);
+		do_set_tuner_audmode_invalid(U32_MAX, V4L2_TUNER_MODE_SAP);
+
+		do_set_tuner_audmode_invalid(tuner_orig.index+1, V4L2_TUNER_MODE_LANG1_LANG2);
+		do_set_tuner_audmode_invalid(tuner_orig.index-1, V4L2_TUNER_MODE_LANG1_LANG2);
+		do_set_tuner_audmode_invalid((__u32)S32_MAX, V4L2_TUNER_MODE_LANG1_LANG2);
+		do_set_tuner_audmode_invalid(((__u32)S32_MAX)+1, V4L2_TUNER_MODE_LANG1_LANG2);
+		do_set_tuner_audmode_invalid(U32_MAX, V4L2_TUNER_MODE_LANG1_LANG2);
+
+	} else {
+		CU_ASSERT_EQUAL(ret1, -1);
+		CU_ASSERT_EQUAL(errno1, EINVAL);
+
+	}
+
+	/* try with invalid audmode */
+	do_set_tuner_audmode_invalid(tuner_orig.index, 5);
+	do_set_tuner_audmode_invalid(tuner_orig.index, (__u32)S32_MAX);
+	do_set_tuner_audmode_invalid(tuner_orig.index, ((__u32)S32_MAX)+1);
+	do_set_tuner_audmode_invalid(tuner_orig.index, U32_MAX);
+
+	if (ret1 == 0) {
+
+		/* restore the tuner settings */
+		memset(&tuner_set, 0xff, sizeof(tuner_set));
+		tuner_set.index = tuner_orig.index;
+		tuner_set.audmode = tuner_orig.audmode;
+		ret_set = ioctl(get_video_fd(), VIDIOC_S_TUNER, &tuner_orig);
+		errno_set = errno;
+
+		dprintf("VIDIOC_S_TUNER, ret_set=%i, errno_set=%i\n", ret_set, errno_set);
+
+		CU_ASSERT_EQUAL(ret_set, 0);
+	}
+
+}
+
+void test_VIDIOC_S_TUNER_NULL() {
+	int ret_orig, errno_orig;
+	int ret1, errno1;
+	int ret2, errno2;
+	int ret_set, errno_set;
+	struct v4l2_tuner tuner_orig;
+	struct v4l2_tuner tuner;
+	struct v4l2_tuner tuner_set;
+
+	/* remember the tuner settings */
+	memset(&tuner_orig, 0, sizeof(tuner_orig));
+	ret_orig = ioctl(get_video_fd(), VIDIOC_G_TUNER, &tuner_orig);
+	errno_orig = errno;
+
+	dprintf("\tVIDIOC_G_TUNER, ret_orig=%i, errno_orig=%i\n", ret_set, errno_set);
+
+	memset(&tuner, 0, sizeof(tuner));
+	tuner.index = tuner_orig.index;
+	tuner.audmode = tuner_orig.audmode;
+	ret1 = ioctl(get_video_fd(), VIDIOC_S_TUNER, &tuner);
+	errno1 = errno;
+
+	dprintf("\tVIDIOC_S_TUNER: ret1=%i, errno1=%i\n", ret1, errno1);
+
+	ret2 = ioctl(get_video_fd(), VIDIOC_S_TUNER, NULL);
+	errno2 = errno;
+
+	dprintf("\tVIDIOC_S_TUNER: ret2=%i, errno2=%i\n", ret1, errno1);
+
+	if (ret1 == 0) {
+		CU_ASSERT_EQUAL(ret1, 0);
+		CU_ASSERT_EQUAL(ret2, -1);
+		CU_ASSERT_EQUAL(errno2, EFAULT);
+	} else {
+		CU_ASSERT_EQUAL(ret1, -1);
+		CU_ASSERT_EQUAL(errno1, EINVAL);
+		CU_ASSERT_EQUAL(ret2, -1);
+		CU_ASSERT_EQUAL(errno2, EINVAL);
+	}
+
+	if (ret_orig == 0) {
+
+		/* restore the tuner settings */
+		memset(&tuner_set, 0xff, sizeof(tuner_set));
+		tuner_set.index = tuner_orig.index;
+		tuner_set.audmode = tuner_orig.audmode;
+		ret_set = ioctl(get_video_fd(), VIDIOC_S_TUNER, &tuner_orig);
+		errno_set = errno;
+
+		dprintf("\tVIDIOC_S_TUNER, ret_set=%i, errno_set=%i\n", ret_set, errno_set);
+
+		CU_ASSERT_EQUAL(ret_set, 0);
 	}
 
 }

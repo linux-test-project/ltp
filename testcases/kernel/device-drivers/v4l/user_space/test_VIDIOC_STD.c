@@ -1,6 +1,8 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ *  9 Feb 2009  0.3  Modify test cases to support drivers without any inputs;
+ *                   cleanup debug printouts
  * 30 Jan 2009  0.5  valid_v4l2_std_id() moved to v4l2_validator.c
  * 18 Jan 2009  0.4  Typo corrected
  * 23 Dec 2008  0.3  Debug messages added
@@ -39,13 +41,13 @@ void test_VIDIOC_G_STD() {
 	memset(&std_id, 0xff, sizeof(std_id));
 	ret = ioctl(get_video_fd(), VIDIOC_G_STD, &std_id);
 
-	dprintf("VIDIOC_G_STD, ret=%i\n", ret);
+	dprintf("\tVIDIOC_G_STD, ret=%i\n", ret);
 
 	CU_ASSERT_EQUAL(ret, 0);
 	if (ret == 0) {
 		CU_ASSERT(valid_v4l2_std_id(std_id));
 
-		dprintf("std_id=0x%llX\n", std_id);
+		dprintf("\tstd_id=0x%llX\n", std_id);
 
 	}
 
@@ -67,7 +69,7 @@ static int do_set_video_standard(int f, v4l2_std_id id) {
 			CU_ASSERT( (id & std_id) == id);
 
 			if (std_id != id) {
-				dprintf("ret=%i, errno=%i, std_id=0x%llX, id=0x%llX\n", ret, errno, std_id, id);
+				dprintf("\tret=%i, errno=%i, std_id=0x%llX, id=0x%llX\n", ret, errno, std_id, id);
 			}
 
 		}
@@ -76,7 +78,7 @@ static int do_set_video_standard(int f, v4l2_std_id id) {
 		CU_ASSERT_EQUAL(errno, EINVAL);
 
 		if (ret_set != -1) {
-			dprintf("ret_set=%i, errno=%i\n", ret_set, errno);
+			dprintf("\tret_set=%i, errno=%i\n", ret_set, errno);
 		}
 	}
 
@@ -92,8 +94,9 @@ void test_VIDIOC_S_STD() {
 
 	memset(&std_id_orig, 0xff, sizeof(std_id_orig));
 	ret = ioctl(f, VIDIOC_G_STD, &std_id_orig);
-	CU_ASSERT_EQUAL(ret, 0);
 	if (ret == 0) {
+		CU_ASSERT_EQUAL(ret, 0);
+
 		ret = do_set_video_standard(f, V4L2_STD_PAL_B);
 		ret = do_set_video_standard(f, V4L2_STD_PAL_B1);
 		ret = do_set_video_standard(f, V4L2_STD_PAL_G);
@@ -124,6 +127,9 @@ void test_VIDIOC_S_STD() {
 		/* Setting the original std_id should not fail */
 		ret = do_set_video_standard(f, std_id_orig);
 		CU_ASSERT_EQUAL(ret, 0);
+	} else {
+		CU_ASSERT_EQUAL(ret, -1);
+		CU_ASSERT_EQUAL(errno, EINVAL);
 	}
 
 }
@@ -148,19 +154,21 @@ void test_VIDIOC_S_STD_from_enum() {
 			std.index = i;
 			enum_ret = ioctl(f, VIDIOC_ENUMSTD, &std);
 
-			dprintf("ENUMSTD: i=%u, enum_ret=%i, errno=%i\n", i, enum_ret, errno);
+			dprintf("\tENUMSTD: i=%u, enum_ret=%i, errno=%i\n", i, enum_ret, errno);
 
 			if (enum_ret == 0) {
 				ret = do_set_video_standard(f, std.id);
 				CU_ASSERT_EQUAL(ret, 0);
 
-				dprintf("std.id=0x%llX, ret=%i\n", std.id, ret);
+				dprintf("\tstd.id=0x%llX, ret=%i\n", std.id, ret);
 			}
 			i++;
 		} while (enum_ret == 0 && i != 0);
 
 		/* Setting the original std_id should not fail */
 		ret = do_set_video_standard(f, std_id_orig);
+		dprintf("\tVIDIOC_S_STD: ret=%i (expected %i), errno=%i\n",
+			ret, 0, errno);
 		CU_ASSERT_EQUAL(ret, 0);
 	}
 
@@ -185,13 +193,14 @@ void test_VIDIOC_S_STD_invalid_standard() {
 				ret = do_set_video_standard(f, std_id);
 				CU_ASSERT_EQUAL(ret, -1);
 				CU_ASSERT_EQUAL(errno, EINVAL);
-				dprintf("ret=%i, errno=%i\n", ret, errno);
+				dprintf("\tVIDIOC_S_STD: ret=%i, errno=%i\n", ret, errno);
 			}
 			std_id = std_id<<1;
 		}
 
 		/* Setting the original std_id should not fail */
 		ret = do_set_video_standard(f, std_id_orig);
+		dprintf("\tVIDIOC_S_STD: ret=%i (expected 0), errno=%i\n", ret, errno);
 		CU_ASSERT_EQUAL(ret, 0);
 	}
 }
