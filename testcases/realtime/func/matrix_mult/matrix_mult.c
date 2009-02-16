@@ -264,6 +264,7 @@ void main_thread(void)
 
 
 	/* run matrix mult operation concurrently */
+	printf("\nRunning concurrent operations\n");
 	pthread_barrier_wait(&mult_start);
 	start = rt_gettime();
 	join_threads();
