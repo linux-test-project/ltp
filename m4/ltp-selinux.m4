@@ -22,6 +22,8 @@ dnl ----------------------------
 dnl
 AC_DEFUN([LTP_CHECK_SELINUX],
 [dnl
-AC_CHECK_HEADERS(selinux/selinux.h)
-LTP_CHECK_LIB(selinux,is_selinux_enabled)
+AC_CHECK_HEADERS(selinux/selinux.h,[
+        SELINUX_LIBS="-lselinux"],[
+        SELINUX_LIBS=""])
+AC_SUBST(SELINUX_LIBS)
 ])
