@@ -75,3 +75,5 @@ proc01 proc01
 #Run the File System Race Condition Check tests as well
 fs_racer fs_racer.sh -t 5
 
+#Run the Quota Remount Test introduced in linux-2.6.26
+quota_remount_test01 quota_remount_test01.sh
