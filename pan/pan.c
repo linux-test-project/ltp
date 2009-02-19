@@ -49,7 +49,7 @@
  *			   - added option to create a command file with all failed tests.
  * 	
  */
-/* $Id: pan.c,v 1.29 2009/01/19 09:05:34 subrata_modak Exp $ */
+/* $Id: pan.c,v 1.30 2009/02/19 07:13:24 subrata_modak Exp $ */
 
 #include <errno.h>
 #include <string.h>
@@ -164,6 +164,7 @@ main(int argc, char **argv)
 	int failcnt = 0;           /* count of total testcases that failed. */
     int err, i;
     int starts = -1;
+    int timed = 0;
     int run_time = -1; char modifier = 'm'; int ret = 0;
     int stop;
     int go_idle;
@@ -254,7 +255,7 @@ main(int argc, char **argv)
                }
                printf("PAN will run for %d seconds\n", run_time);
             }
-            starts = 0; //-t implies run as many starts as possible
+            timed = 1; //-t implies run as many starts as possible, by default
 	    break;
 	case 'x':	/* number of tags to keep running */
 	    keep_active = atoi(optarg);
@@ -347,7 +348,9 @@ main(int argc, char **argv)
     /* Supply a default for starts.  If we are in sequential mode, use
      * the number of commands available; otherwise 1.
      */
-    if (starts == -1) {
+    if (timed == 1 && starts == -1) {	/* timed, infinite by default */
+	starts = -1;
+    } else if (starts == -1) {
 	if (sequential) {
 	    starts = coll->cnt;
 	} else {
