@@ -179,11 +179,19 @@ sig_handler(int signal,		/* signal number, set to handle SIGALRM       */
 			"page fault at [%#lx] - ignore\n", scp->edi);
 	    siglongjmp(jmpbuf, 1);
         }
+        else if (scp->esi == (int)map_address )
+	{
+	    fprintf(stdout, 
+			"page fault at [%#lx] - ignore\n", scp->esi);
+	    siglongjmp(jmpbuf, 1);
+        }
 	else
         { 
-            fprintf(stderr, "address at which sigfault occured: [%#lx]\n"
-                            "address at which memory was shmat: [%p]\n",
-		        scp->edi, map_address);
+            fprintf(stderr, "address at which sigfault occured: [%lx]\n"
+                           "address at which sigfault occured: [%lx]\n"
+                           "address at which memory was shmat: [%p]\n",
+		        (unsigned long)scp->edi,(unsigned long) scp->esi, 
+			map_address);
 	    fprintf(stderr, "bad page fault exit test\n");
 	    exit (-1);
         }
@@ -362,7 +370,7 @@ write_to_mem(void *args)
         while(!done_shmat)
         usleep(0);
 
-        if (sigsetjmp(jmpbuf,0) == 1)
+        if (sigsetjmp(jmpbuf,1) == 1)
         {
             fprintf(stdout,
                 "page fault ocurred due a write after an shmdt from [%p]\n",
@@ -408,7 +416,7 @@ read_from_mem(void *args)
 	fprintf(stdout,
 		"%s[%#lx]: read_from_mem():  memory address: [%p]\n",
 		STR_READER, pthread_self(), map_address);
-	if (sigsetjmp(jmpbuf,0) == 1)
+	if (sigsetjmp(jmpbuf,1) == 1)
         {
             fprintf(stdout,
                 "page fault ocurred due a read after an shmdt from %p\n",
