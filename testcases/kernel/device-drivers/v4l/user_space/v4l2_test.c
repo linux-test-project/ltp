@@ -1,6 +1,8 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ * 22 Feb 2009  0.12 Test cases added for VIDIOC_S_CTRL
+ * 19 Feb 2009  0.11 Test cases added for VIDIOC_G_CTRL
  *  7 Feb 2009  0.10 Test cases added for VIDIOC_G_AUDIO, VIDIOC_G_AUDOUT,
  *                   VIDIOC_S_AUDIO and VIDIOC_G_CROP
  *  3 Feb 2009  0.9  Test cases for VIDIOC_G_AUDIO and VIDIOC_G_AUDOUT added
@@ -63,6 +65,7 @@
 #include "test_VIDIOC_AUDIO.h"
 #include "test_VIDIOC_AUDOUT.h"
 #include "test_VIDIOC_CROP.h"
+#include "test_VIDIOC_CTRL.h"
 
 #include "test_VIDIOC_LOG_STATUS.h"
 #include "test_invalid_ioctl.h"
@@ -131,6 +134,7 @@ static CU_TestInfo suite_enums[] = {
 };
 
 static CU_TestInfo suite_get_set_try[] = {
+#if 1
   { "VIDIOC_G_STD", test_VIDIOC_G_STD },
   { "VIDIOC_S_STD with the enumerated values", test_VIDIOC_S_STD_from_enum },
   { "VIDIOC_S_STD", test_VIDIOC_S_STD },
@@ -197,7 +201,21 @@ static CU_TestInfo suite_get_set_try[] = {
   { "VIDIOC_S_AUDOUT with NULL parameter", test_VIDIOC_S_AUDOUT_NULL },
 
   { "VIDIOC_G_CROP", test_VIDIOC_G_CROP },
+  { "VIDIOC_G_CROP with invalid type", test_VIDIOC_G_CROP_invalid },
   { "VIDIOC_G_CROP with NULL parameter", test_VIDIOC_G_CROP_NULL },
+#endif
+
+  { "VIDIOC_G_CTRL", test_VIDIOC_G_CTRL },
+  { "VIDIOC_G_CTRL with NULL parameter", test_VIDIOC_G_CTRL_NULL },
+
+  { "VIDIOC_S_CTRL", test_VIDIOC_S_CTRL },
+  { "VIDIOC_S_CTRL with invalid value parameter", test_VIDIOC_S_CTRL_invalid },
+  { "VIDIOC_S_CTRL, withe balance", test_VIDIOC_S_CTRL_white_balance },
+  { "VIDIOC_S_CTRL, white balance with invalid value parameter", test_VIDIOC_S_CTRL_white_balance_invalid },
+  { "VIDIOC_S_CTRL, gain control", test_VIDIOC_S_CTRL_gain },
+  { "VIDIOC_S_CTRL, gain control with invalid value parameter", test_VIDIOC_S_CTRL_gain_invalid },
+
+  { "VIDIOC_S_CTRL with NULL parameter", test_VIDIOC_S_CTRL_NULL },
 
   CU_TEST_INFO_NULL,
 };

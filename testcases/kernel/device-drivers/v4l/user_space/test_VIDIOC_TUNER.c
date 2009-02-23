@@ -445,7 +445,7 @@ void test_VIDIOC_S_TUNER_NULL() {
 	ret_orig = ioctl(get_video_fd(), VIDIOC_G_TUNER, &tuner_orig);
 	errno_orig = errno;
 
-	dprintf("\tVIDIOC_G_TUNER, ret_orig=%i, errno_orig=%i\n", ret_set, errno_set);
+	dprintf("\tVIDIOC_G_TUNER, ret_orig=%i, errno_orig=%i\n", ret_orig, errno_orig);
 
 	memset(&tuner, 0, sizeof(tuner));
 	tuner.index = tuner_orig.index;
