@@ -123,21 +123,19 @@ send_user "\nTEST: su with no parameters and correct password\n"
 set i_am_root 0
 # run "whoami" to test user ID inside su shell
 spawn /bin/su -c whoami
-sleep 1
+set i_am_root 0
 expect {
   "Password:" {
   	send "$PASSWD\r"
-	sleep 1
     expect {
       "root" { set i_am_root 1
 		set i_can_root 1
 	 }
-      "su: incorrect password" { set i_am_root 0 }
     }
   }
 }  
 
-close
+catch close
 # capture result code
 set codes [wait]
 set pid [lindex $codes 0]
@@ -148,14 +146,14 @@ set i_have_env 0
 set test_env_var " "
 if { $i_am_root==1 } {
 	spawn su -c "/bin/su root -c \"echo \"\\\$TEST_LINE > $TEST_ENV_FILE\"\"" 
-	sleep 1
 	expect {
 		 "Password:" {
 			send "$PASSWD\r"
-			sleep 1
 		}
 	}
-	expect success
+	expect eof
+	catch close
+	wait
 
 	set test_env_var [exec cat $TEST_ENV_FILE]
 
@@ -189,20 +187,18 @@ send_user "\nTEST: su with no parameters and incorrect password \n"
 set displayed_error 0
 # run "whoami" to test user ID inside su shell
 spawn /bin/su -c whoami
-sleep 1
+set displayed_error 0
 expect {
   "Password:" {
     send "wrong_$PASSWD\r"
-	sleep 1
     expect {
-      "root" { set displayed_error 0 }
-      "su: incorrect password" { set displayed_error 1 }
+				"su: incorrect password" { set displayed_error 1 }
+				"su: Authentication failure" { set displayed_error 1 }
     }
   }
 }
-close
 
-
+catch close
 # capture result code
 set codes [wait]
 set pid [lindex $codes 0]
@@ -232,19 +228,16 @@ send_user "\nTEST: su to root using name parameter and correct password. \n"
 set i_am_root 0
 # run "whoami" to test user ID inside su shell
 spawn /bin/su -l root -c whoami
-sleep 1
 expect {
   "Password:" {
     send "$PASSWD\r"
-	sleep 1
     expect {
-      "root" { set i_am_root 1 }
-      "su: incorrect password" { set i_am_root 0 }
+				"root" { set i_am_root 1 }
     }
   }
 }
 
-close
+catch close
 # capture result code
 set codes [wait]
 set pid [lindex $codes 0]
@@ -256,11 +249,9 @@ set i_have_env 0
 set test_env " "
 if { $i_am_root==1 } {
      	spawn /bin/sh -c "/bin/su -l root -c \"echo \"\\\$TEST_LINE > $TEST_ENV_FILE2\"\""   
-	sleep 1
         expect {
                  "Password:" {
 			send "$PASSWD\r"
-			sleep 1
                 }
         }
 
@@ -291,19 +282,17 @@ send_user "\nTEST: su to root with name parameter and incorrect password. \n"
 set displayed_error 0
 # run "whoami" to test user ID inside su shell
 spawn /bin/su -l root -c whoami
-sleep 1
 expect {
   "Password:" {
     send "wrong_$PASSWD\r"
-	sleep 1
     expect {
-      "root" { set displayed_error 0 }
-      "su: incorrect password" { set displayed_error 1 }
+				"su: incorrect password" { set displayed_error 1 }
+				"su: Authentication failure" { set displayed_error 1 }
     }
   }
 }
 
-close
+catch close
 # capture result code
 set codes [wait]
 set pid [lindex $codes 0]
@@ -327,19 +316,16 @@ send_user "TEST: su to user1 with name parameter and correct password.\n"
 
 set i_am_correct 0
 spawn /bin/su -l $USER1 -c whoami
-sleep 1
 expect {
   "Password:" {
     send "$USER1_PASSWORD\r"
-	sleep 1
     expect {
-      "$USER1" { set i_am_correct 1 }
-      "su: incorrect password" { set i_am_correct 0 }
+				"$USER1" { set i_am_correct 1 }
     }
   }
 }
 
-close
+catch close
 # capture result code
 set codes [wait]
 set pid [lindex $codes 0]
@@ -350,16 +336,12 @@ set test_env_var 0
 #Check to see that su user does not have the same enviroment
 if { $i_am_correct==1 } {
         spawn /bin/sh -c "/bin/su -l $USER1 -c \"echo \"\\\$TEST_LINE > $TEST_ENV_FILE_USER1\"\""
-	sleep 1
         expect {
                  "Password:" {
                                 send "$USER1_PASSWORD\r"
-                                sleep 1
                 }
         }
-        expect success
 
-	set test_env_var [exec cat $TEST_ENV_FILE_USER1]
 }
 
 set test_env_var [exec cat $TEST_ENV_FILE_USER1]
@@ -391,19 +373,18 @@ if { ($i_am_correct==1) && ($exit_code==0) && ($pid>0) && ($i_have_env==0) } {
 
 send_user "TEST: su to user1 with name parameter and incorrect password.\n"
 spawn /bin/su -l $USER1 -c whoami
-sleep 1
+set displayed_error 0
 expect {
   "Password:" {
     send "wrong_$USER1_PASSWORD\r"
-	sleep 1
     expect {
-      "$USER1" { set displayed_error 0 }
-      "su: incorrect password" { set displayed_error 1 }
+				"su: incorrect password" { set displayed_error 1 }
+				"su: Authentication failure" { set displayed_error 1 }
     }
   }
 }
 
-close
+catch close
 # capture result code
 set codes [wait]
 set pid [lindex $codes 0]
@@ -431,44 +412,40 @@ if { $test_one_passed==1} {
 send_user "TEST:  su to user1 with the user1 password expired.\n"
 
 spawn /bin/su -l root -c "passwd -e $USER1"
-sleep 1
 expect {
   "Password:" {
     send "$PASSWD\r"
-sleep 1
     expect {
-      "Password expiry information changed." {}
+				"Password expiry information changed."
     }
   }
 }
-close
 
 set i_am_correct 0
 spawn /bin/su -l $USER1 -c whoami
-sleep 1
 expect {
   "Password:" {
     send "$USER1_PASSWORD\r"
-	sleep 2
     expect {
-        "Old Password" {
+        -re "current.*password|Old Password" {
         send "wrong_$USER1_PASSWORD\r"
-	  sleep 2
         expect {
-       	  "Old Password" {
+       	  -re "current.*password|Old Password" {
           send "wrong_$USER1_PASSWORD\r"
-          sleep 2
             expect {
-              "su: incorrect password" { set i_am_correct 1 }
+								"su: incorrect password" { set i_am_correct 1 }
+								"su: Authentication failure" { set i_am_correct 1 }
             }
           }
+					"su: incorrect password" { set i_am_correct 1 }
+					"su: Authentication failure" { set i_am_correct 1 }
         }
       }
     }
   }
 }
 
-close
+catch close
 # capture result code
 set codes [wait]
 set pid [lindex $codes 0]
@@ -483,15 +460,12 @@ if { ($i_am_correct==1) && ($exit_code!=0) && ($pid>0) } {
 
 #Become root and set $USER1 password back to previous value
 spawn /bin/su -l root -c "passwd $USER1"
-sleep 1
 expect {
   "Password: " {
     send "$PASSWD\r"
-	sleep 1
     expect {
      "Enter new password: " {
         send "$USER1_NEW_PASSWORD\r"
-        sleep 1
         expect {
           "Re-type new password: " {
             send "$USER1_NEW_PASSWORD\r"
@@ -505,7 +479,7 @@ expect {
   }
 }
 
-close
+catch close
 } else {
 
 	send_user "TEST:  su to user1 with the user1 password expired. (FAILED),see more next line.\n"
