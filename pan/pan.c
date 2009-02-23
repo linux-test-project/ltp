@@ -49,7 +49,7 @@
  *			   - added option to create a command file with all failed tests.
  * 	
  */
-/* $Id: pan.c,v 1.31 2009/02/23 10:42:15 subrata_modak Exp $ */
+/* $Id: pan.c,v 1.32 2009/02/23 10:43:35 subrata_modak Exp $ */
 
 #include <errno.h>
 #include <string.h>
@@ -237,9 +237,9 @@ main(int argc, char **argv)
 	    break;
 	case 't':	/* run_time to run */
 	    ret = sscanf(optarg, "%d%c", &run_time, &modifier);
-            if (ret == 0) { printf("Need proper time input: ####x where"
+            if (ret == 0) { fprintf(stderr, "Need proper time input: ####x where"
                                     "x is one of s,m,h,d\n"); break; }
-            else if (ret == 1) { printf("Only got a time value of %d "
+            else if (ret == 1) { fprintf(stderr, "Only got a time value of %d "
                                  "modifiers need to come immediately after #"
                                  " assuming %c\n", run_time, modifier); }
             else
@@ -251,7 +251,7 @@ main(int argc, char **argv)
                   case 'h': run_time = run_time * 60 * 60; break; 
                   case 'd': run_time = run_time * 60 * 60 * 24; break;
                   default: 
-                     printf("Invalid time modifier, try: s|h|m|d\n"); exit(-1);
+                     fprintf(stderr, "Invalid time modifier, try: s|h|m|d\n"); exit(-1);
                }
 	       if (!quiet_mode)
                   printf("PAN will run for %d seconds\n", run_time);
