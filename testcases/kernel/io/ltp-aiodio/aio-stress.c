@@ -1470,7 +1470,11 @@ int main(int ac, char **av)
 	    open_fds++;
 
 	    rwfd = open(av[i], O_CREAT | O_RDWR | o_direct | o_sync, 0600);
-	    assert(rwfd != -1);
+	    if(rwfd == -1) {
+		fprintf(stderr, "error while creating file %s: %s", av[i], strerror(errno));
+		exit(1);
+	    }
+
 
 	    oper = create_oper(rwfd, first_stage, j * context_offset, 
 	                       file_size - j * context_offset, rec_len, 
