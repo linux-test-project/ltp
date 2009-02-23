@@ -64,6 +64,7 @@ runcc(char *tname, char *filename0, char *program)
 {
 	static char filename[1024];
 	int fd, es, saved_errno;
+	char * cflags;
 
 	fd = mkstemp(filename0);
 	if (fd < 0) {
@@ -84,8 +85,14 @@ runcc(char *tname, char *filename0, char *program)
 		return -1;
 	}
 	(void) close(fd);
-	snprintf(cmd, sizeof(cmd), "%s -o %s %s > /tmp/test 2>&1", "cc",
-		filename0, filename);
+
+	cflags = getenv("CFLAGS");
+	if (cflags == NULL){
+		tst_resm(TWARN, "CFLAGS not found, using default cc arch.");
+	}
+
+	snprintf(cmd, sizeof(cmd), "%s %s -o %s %s > /tmp/test 2>&1", "cc",
+		cflags, filename0, filename);
 	es = system(cmd);
 	if (WEXITSTATUS(es) == 127) {
 		tst_resm(TBROK, "%s: can't run C compiler: \"%s\"", cmd);
