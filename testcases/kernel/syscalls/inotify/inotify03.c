@@ -49,7 +49,7 @@
 #include "test.h"
 #include "usctest.h"
 
-#if defined(HAVE_SYS_INOTIFY) && defined(__NR_inotify_init)
+#if defined(HAVE_SYS_INOTIFY_H) && defined(__NR_inotify_init)
 #include <sys/inotify.h>
 
 #define EVENT_MAX 1024
@@ -369,7 +369,7 @@ main()
 	tst_resm(TCONF, "Inotify syscall can be found at kernel 2.6.13 or higher.");
 	return 0;
 #endif
-#ifndef HAVE_SYS_INOTIFY
+#ifndef HAVE_SYS_INOTIFY_H
 	tst_resm(TBROK, "can't find header sys/inotify.h");
 	return 1;
 #endif
