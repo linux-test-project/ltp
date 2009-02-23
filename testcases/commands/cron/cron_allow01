@@ -52,6 +52,8 @@ do_setup() {
 	mv $CRON_ALLOW $CRON_ALLOW.old &> /dev/null
 
 	#remove users for clean enviroment
+    su $TEST_USER1 -c "crontab -r"
+    su $TEST_USER2 -c "crontab -r"
         rm -rf /home/$TEST_USER1
         rm -rf /home/$TEST_USER2
 	userdel $TEST_USER1
@@ -81,6 +83,8 @@ do_setup() {
 # FUNCTION:  do_cleanup
 #-----------------------------------------------------------------------
 do_cleanup(){
+    su $TEST_USER1 -c "crontab -r"
+    su $TEST_USER2 -c "crontab -r"
         rm -rf /home/$TEST_USER1
         rm -rf /home/$TEST_USER2
 	userdel $TEST_USER1
