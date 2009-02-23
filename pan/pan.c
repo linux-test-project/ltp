@@ -49,7 +49,7 @@
  *			   - added option to create a command file with all failed tests.
  * 	
  */
-/* $Id: pan.c,v 1.30 2009/02/19 07:13:24 subrata_modak Exp $ */
+/* $Id: pan.c,v 1.31 2009/02/23 10:42:15 subrata_modak Exp $ */
 
 #include <errno.h>
 #include <string.h>
@@ -207,7 +207,7 @@ main(int argc, char **argv)
 	    filename = strdup(optarg);
 	    break;
 	case 'h':	/* help */
-	    fprintf(stdout, "Usage: pan -n name [ -SyAehp ] [ -s starts ]"
+	    fprintf(stdout, "Usage: pan -n name [ -SyAehpq ] [ -s starts ]"
 				 " [-t time[s|m|h|d] [ -x nactive ] [ -l logfile ]\n\t"
 				 "[ -a active-file ] [ -f command-file ] "
 				 "[ -C fail-command-file ] "
@@ -253,7 +253,8 @@ main(int argc, char **argv)
                   default: 
                      printf("Invalid time modifier, try: s|h|m|d\n"); exit(-1);
                }
-               printf("PAN will run for %d seconds\n", run_time);
+	       if (!quiet_mode)
+                  printf("PAN will run for %d seconds\n", run_time);
             }
             timed = 1; //-t implies run as many starts as possible, by default
 	    break;
