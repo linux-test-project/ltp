@@ -57,6 +57,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/syscall.h>
+#include <errno.h>
 
 /* Harness Specific Include Files. */
 #include "test.h"
