@@ -3,7 +3,7 @@
 #
 
 #KERNELDIR := /usr/src/linux-2.5.64-gcov
-CFLAGS := $(CFLAGS) -Wall
+EXTRA_CFLAGS := -Wall -Wextra -Wno-unused-parameter
 
 ifneq ($(KERNELRELEASE),)
 
@@ -15,8 +15,15 @@ PWD	:= $(shell pwd)
 default:
 	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) modules
 #	$(MAKE) -C $(KERNELDIR) SUBDIRS=$(PWD) modules
-endif
 
 clean:
-	rm -f tusb.o 2>/dev/null || true
+	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) clean
+	rm -f modules.order
 
+help:
+	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) help
+
+modules_install:
+	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) modules_install
+
+endif

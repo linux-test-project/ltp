@@ -38,7 +38,7 @@
  * tusb.c
  */
 	
-#include <linux/config.h>
+#include <linux/autoconf.h>
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/ioctl.h>
@@ -140,6 +140,7 @@ static struct usb_driver test_usb_driver = {
 	id_table:	tusb_id_table,
 };
 
+#if 0
 static int test_alloc_dev(struct usb_device *dev) {
 	printk("Entered test_alloc_dev\n");
 	return 0;
@@ -172,8 +173,7 @@ static struct usb_operations test_device_operations = {
 	.submit_urb = 			test_submit_urb,
 	.unlink_urb = 			test_unlink_urb,
 };
-
-
+#endif
 
 static int tusb_ioctl(struct inode *ino, struct file *f, 
 			unsigned int cmd, unsigned long l) {
@@ -285,6 +285,7 @@ static int test_find_usbdev() {
 	ltp_usb.dev = udev;
 	
 	/* allocate the usb_bus pointer */
+#if 0
 	bus = usb_alloc_bus(&test_device_operations);
 	if(!bus) {
 		printk("tusb: Did not allocate a bus\n");
@@ -310,6 +311,7 @@ static int test_find_usbdev() {
 	/* connect the new device and setup pointers */
 	usb_connect(udev);
 	usb_new_device(udev);
+#endif
 
 	return 0;
 }
@@ -328,6 +330,7 @@ static int test_find_hcd() {
 
 	ltp_usb.pdev = pdev;
 
+#if 0
 	/* try and get a usb hostcontroller if possible */
 	pdev = pci_find_class(PCI_CLASS_SERIAL_USB << 8, NULL);
 	if(pdev) {
@@ -346,6 +349,9 @@ static int test_find_hcd() {
 		printk("tusb: Check kernel options enabled\n");
 		return 1;
 	}
+#else
+	return 1;
+#endif
 
 }
 		
@@ -499,16 +505,14 @@ static int tusb_init_module(void) {
 }
 
 static void tusb_exit_module(void) {
-	int rc;
 
 	kfree(ltp_usb.dev);
-	usb_free_bus(ltp_usb.bus);
 
-	rc = unregister_chrdev(Major, DEVICE_NAME);
-	if(rc < 0) 
-		printk("tusb: unregister failed\n");
-	else
-		printk("tusb: unregister success\n");
+#if 0
+	usb_free_bus(ltp_usb.bus);
+#endif
+
+	unregister_chrdev(Major, DEVICE_NAME);
 
 	usb_deregister(&test_usb_driver);
 }

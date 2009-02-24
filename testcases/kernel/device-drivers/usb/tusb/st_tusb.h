@@ -17,7 +17,7 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
 */
-extern struct usb_bus *usb_alloc_bus(struct usb_operations *);
+//extern struct usb_bus *usb_alloc_bus(struct usb_operations *);
 extern void usb_connect(struct usb_device *dev);
 extern int usb_new_device(struct usb_device *dev);
 extern void usb_free_bus(struct usb_bus *bus);
