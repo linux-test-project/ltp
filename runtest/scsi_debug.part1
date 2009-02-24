@@ -96,8 +96,7 @@ gf721 growfiles -W gf721 -d /test/growfiles/ext3 -D 0 -b -i 0 -L 60 -u -B 1000b 
 gf722 growfiles -W gf722 -d /test/growfiles/ext3 -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -g 20480 -T 10 -t 20480 gf-bldf-$$
 gf723 growfiles -W gf723 -d /test/growfiles/ext3 -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -r 512-64000:1024 -R 1-384000 -T 4 gf-inf-$$
 gf724 growfiles -W gf724 -d /test/growfiles/ext3 -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -g 20480 gf-jbld-$$
-gf725 growfiles -W gf725 -d /test/growfiles/ext3 -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -r 1024000-2048000:2048 -R
-4095-2048000 -T 1 gf-large-gs-$$
+gf725 growfiles -W gf725 -d /test/growfiles/ext3 -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -r 1024000-2048000:2048 -R 4095-2048000 -T 1 gf-large-gs-$$
 gf726 growfiles -W gf726 -d /test/growfiles/ext3 -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -r 128-32768:128 -R 512-64000 -T 4 gfsmallio-$$
 gf727 growfiles -W gf727 -d /test/growfiles/ext3 -b -D 0 -w -g 8b -C 1 -b -i 1000 -u gfsparse-1-$$
 gf728 growfiles -W gf728 -d /test/growfiles/ext3 -b -D 0 -w -g 16b -C 1 -b -i 1000 -u gfsparse-2-$$
