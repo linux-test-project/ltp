@@ -294,7 +294,7 @@ symlink01 symlink01
 # 	5. Receive ENAMETOOLONG error when creating symbolic link which exceeds PATH_MAX in length
 symlink02 symlink02
 # Basic test for symlink(2)
-readlink01 symlink01 -T readlink01
+readlink01A symlink01 -T readlink01
 # Reads Value of a Symbolic Link
 #    TEST CASES
 # 	1. Read a symbolic link file which points at no object file
@@ -308,22 +308,22 @@ stat04 symlink01 -T stat04
 # 	1. Get object file status through symbolic link file
 # 	2. Receive ENOENT error when accessing non-existent object file through symbolic link file
 # 	3. Receive ELOOP error when nesting of symbolic links exceed maximum
-lstat01 symlink01 -T lstat01
+lstat01A symlink01 -T lstat01
 # Get file Status About a Symbolic Link File
 #    TEST CASES
 # 	1. Get symbolic link file status when pointing at no object file
 # 	2. Get symbolic link file status when pointing at an object file
 # 	3. Get object file status when argument is not a symbolic link
 # file.
-mkdir05 symlink01 -T mkdir05
+mkdir05A symlink01 -T mkdir05
 # Fail When Making a Directory File Indirectly From a Symbolic Link File
 #    TEST CASES
 # 	1. Receive EEXIST error when creating a directory through a symbolic link file
-rmdir03 symlink01 -T rmdir03
+rmdir03A symlink01 -T rmdir03
 # Fail When Removing a Directory File Indirectly From a Symbolic Link File
 #    TEST CASES
 # 	1. Receive ENOTDIR error when removing an existing directory through a symbolic link file
-chdir01 symlink01 -T chdir01
+chdir01A symlink01 -T chdir01
 # Changes Current Working DIrectory Location Indirectly From a Symbolic Link File
 #    TEST CASES
 # 	1. Change current working directory through a symbolic link file
@@ -339,25 +339,25 @@ unlink01 symlink01 -T unlink01
 # Removes a Link To a File And Not Any Object File Which Maybe Pointed At
 #    TEST CASES
 # 	1. Delete a symbolic link file and not the object file which it points at
-chmod01 symlink01 -T chmod01
+chmod01A symlink01 -T chmod01
 # Change Object File Permissions Indirectly From a Symbolic Link File
 #    TEST CASES
 # 	1. Change file permissions of object file through a symbolic link file
 # 	2. Receive ENOENT error when accessing non-existent directory through symbolic link file
 # 	3. Receive ELOOP error when nesting of symbolic links exceed maximum
-utime01 symlink01 -T utime01
+utime01A symlink01 -T utime01
 # Set File Access And Modify Object File Times Indirectly From a Symbolic Link File
 #    TEST CASES
 # 	1. Change inode times of object file through a symbolic link file
 # 	2. Receive ENOENT error when accessing non-existent directory through symbolic link file
 # 	3. Receive ELOOP error when nesting of symbolic links exceed maximum
-rename01 symlink01 -T rename01
+rename01A symlink01 -T rename01
 # Rename a Symbolic Link File And Not Any Object File
 #    TEST CASES
 # 	1. Rename a symbolic link file which points at no object file
 # 	2. Rename a symbolic link file which points at an object file without any object file alterations.
 # 	3. Receive EXDEV when trying to rename a symbolic link file to an address outside of current file system
-open01 symlink01 -T open01
+open01A symlink01 -T open01
 # Create/Open a File For Reading Or Writing Indirectly From a Symbolic Link File
 #    TEST CASES
 #  	1. Create an object file through a symbolic link file

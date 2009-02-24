@@ -164,16 +164,13 @@ gf216 growfiles -W gf216 -d /test/growfiles/reiser -b -e 1 -i 0 -L 120 -u -g 409
 gf217 growfiles -W gf217 -d /test/growfiles/reiser -b -e 1 -i 0 -L 120 -u -g 5000 -T 100 -t 499990 -l -C 10 -c 1000 -S 10 -f Lgf03_
 gf218 growfiles -W gf218 -d /test/growfiles/reiser -b -e 1 -i 0 -L 120 -w -u -r 10-5000 -I r -T 10 -l -S 2 -f Lgf04_
 gf219 growfiles -W gf219 -d /test/growfiles/reiser -b -e 1 -g 5000 -i 500 -t 49900 -T10 -c9 -I p -o O_RDWR,O_CREAT,O_TRUNC -u -f gf08i_
-gf220 growfiles -W gf220 -d /test/growfiles/reiser -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -r 1-256000:512 -R 512-256000
--T 4 gfbigio-$$
+gf220 growfiles -W gf220 -d /test/growfiles/reiser -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -r 1-256000:512 -R 512-256000 -T 4 gfbigio-$$
 gf221 growfiles -W gf221 -d /test/growfiles/reiser -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -g 20480 -T 10 -t 20480 gf-bld-$$
 gf222 growfiles -W gf222 -d /test/growfiles/reiser -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -g 20480 -T 10 -t 20480 gf-bldf-$$
-gf223 growfiles -W gf223 -d /test/growfiles/reiser -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -r 512-64000:1024 -R 1-384000
--T 4 gf-inf-$$
+gf223 growfiles -W gf223 -d /test/growfiles/reiser -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -r 512-64000:1024 -R 1-384000 -T 4 gf-inf-$$
 gf224 growfiles -W gf224 -d /test/growfiles/reiser -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -g 20480 gf-jbld-$$
 gf225 growfiles -W gf225 -d /test/growfiles/reiser -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -r 1024000-2048000:2048 -R 4095-2048000 -T 1 gf-large-gs-$$
-gf226 growfiles -W gf226 -d /test/growfiles/reiser -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -r 128-32768:128 -R 512-64000
--T 4 gfsmallio-$$
+gf226 growfiles -W gf226 -d /test/growfiles/reiser -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -r 128-32768:128 -R 512-64000 -T 4 gfsmallio-$$
 gf227 growfiles -W gf227 -d /test/growfiles/reiser -b -D 0 -w -g 8b -C 1 -b -i 1000 -u gfsparse-1-$$
 gf228 growfiles -W gf228 -d /test/growfiles/reiser -b -D 0 -w -g 16b -C 1 -b -i 1000 -u gfsparse-2-$$
 gf229 growfiles -W gf229 -d /test/growfiles/reiser -b -D 0 -r 1-4096 -R 0-33554432 -i 0 -L 60 -C 1 -u gfsparse-3-$$
