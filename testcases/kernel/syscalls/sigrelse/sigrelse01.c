@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: sigrelse01.c,v 1.9 2009/02/26 11:44:25 subrata_modak Exp $ */
+/* $Id: sigrelse01.c,v 1.10 2009/02/26 11:48:09 subrata_modak Exp $ */
 /*****************************************************************************
  * OS Test - Silicon Graphics, Inc.  Eagan, Minnesota
  * 
@@ -643,7 +643,7 @@ int fd;
     /* set timeout alarm in case the pipe is blocked */
     if (set_timeout() < 0) {
 	/* an error occured, message in mesg */
-	return(NULL);
+	return NULL;
     }
 
     ret = -1;
@@ -653,7 +653,7 @@ int fd;
 	        errno, strerror(errno));
 	
 	    clear_timeout();
-	    return(NULL);
+	    return NULL;
         }
     }
     clear_timeout();

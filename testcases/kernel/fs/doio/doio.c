@@ -3600,7 +3600,7 @@ int	patshift;
 		return errbuf;
 	}
 
-	return(NULL);
+	return NULL;
 }
 
 

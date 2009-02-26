@@ -29,7 +29,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: symlink01.c,v 1.13 2009/02/26 11:46:55 subrata_modak Exp $ */
+/* $Id: symlink01.c,v 1.14 2009/02/26 11:48:09 subrata_modak Exp $ */
 /**********************************************************
 * 
 *    OS Test - Silicon Graphics, Inc.
@@ -629,7 +629,7 @@ char *ptr;
        }
        
     }
-    return(NULL);
+    return NULL;
 }
 
 /***********************************************************************
