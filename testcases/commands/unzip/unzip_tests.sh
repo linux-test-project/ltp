@@ -21,18 +21,8 @@
 #
 # File :         unzip_tests.sh
 #
-# Description:   Test Basic functionality of unzip command.
-#                Test #1: Test that unzip -f <file.conf> rotates the logfile
-#                as per the specifications in the conf file. Create a file
-#                tst_logfile in /var/log/. Create a conf file such that this
-#                logfile is set for rotation every week. Execute the command
-#                unzip -f <file.conf>, check to see if it forced rotation.
-#                Test #2: Check if unzip running as a cronjob will rotate a
-#                logfile when it exceeds a specific size. Create two cronjobs 
-#                1. runs a command to log a string to a logfile. 2. runs
-#                unzip <file.conf> every minute. The conf file specifies
-#                that the rotation happen only if the log file exceeds 2k file
-#                size. 
+# Description:   Test Basic functionality of unzip command. Pass in the zip
+#		 file to test.
 #
 # Author:        Manoj Iyer, manjo@mail.utexas.edu
 #
@@ -54,7 +44,7 @@
 chk_ifexists()
 {
 	RC=0
-	which $2 > $LTPTMP/tst_unzip.err || RC=$?
+	which $2 > "$LTPTMP/tst_unzip.err" || RC=$?
 	if [ $? -ne 0 ]
 	then
 		tst_brkm TBROK NULL "$1: command $2 not found."
@@ -71,11 +61,10 @@ chk_ifexists()
 # 				- non-zero on failure.
 cleanup()
 {
+	popd
 	# remove all the temporary files created by this test.
-	tst_resm TINFO "CLEAN: removing $LTPTMP"
-	rm -fr $LTPTMP
-	tst_resm TINFO "CLEAN: removing $PWD/tmp"
-	rm -fr $PWD/tmp
+	tst_resm TINFO "CLEAN: removing \"$LTPTMP\""
+	rm -fr "$LTPTMP"
 }
 
 
@@ -96,16 +85,11 @@ init()
 	export TST_COUNT=0
 
 	# Inititalize cleanup function.
-	trap "cleanup" 0
 
 	# create the temporary directory used by this testcase
-	if [ -d $TMP ]
-	then
-		LTPTMP=/tmp/tst_unzip.$$
-		TMP=/tmp
-	else
-		LTPTMP=$TMP/tst_unzip.$$
-	fi
+	LTPTMP=`mktemp -d $$.XXXXXX` || tst_resm TBROK "Unable to create temporary directory with: mktemp -d $$.XXXXXX"
+	trap "cleanup" 0
+	pushd "$LTPTMP"
 
 	# check if commands tst_*, unzip, awk, etc exists.
 	chk_ifexists INIT tst_resm  || return $RC
@@ -113,29 +97,22 @@ init()
 	chk_ifexists INIT mkdir     || return $RC
 	chk_ifexists INIT awk       || return $RC
 
-	mkdir -p $LTPTMP >/dev/null || RC=$?
-	if [ $RC -ne 0 ]
-	then
-		 tst_brkm TBROK "INIT: Unable to create temporary directory"
-		 return $RC
-	fi
-
 	# create expected output files. tst_unzip.exp
 	cat > $LTPTMP/tst_unzip.out.exp <<-EOF
 	Archive:  $TMP/tst_unzip_file.zip
-    creating: tmp/tst_unzip.dir/
-    creating: tmp/tst_unzip.dir/d.0/
-    extracting: tmp/tst_unzip.dir/d.0/f.0  
-    extracting: tmp/tst_unzip.dir/d.0/f.1  
-    extracting: tmp/tst_unzip.dir/d.0/f.2  
-    creating: tmp/tst_unzip.dir/d.0/d.1/
-    extracting: tmp/tst_unzip.dir/d.0/d.1/f.0  
-    extracting: tmp/tst_unzip.dir/d.0/d.1/f.1  
-    extracting: tmp/tst_unzip.dir/d.0/d.1/f.2  
-    creating: tmp/tst_unzip.dir/d.0/d.1/d.2/
-    extracting: tmp/tst_unzip.dir/d.0/d.1/d.2/f.0  
-    extracting: tmp/tst_unzip.dir/d.0/d.1/d.2/f.1  
-    extracting: tmp/tst_unzip.dir/d.0/d.1/d.2/f.2  
+    creating: tst_unzip.dir/
+    creating: tst_unzip.dir/d.0/
+    extracting: tst_unzip.dir/d.0/f.0
+    extracting: tst_unzip.dir/d.0/f.1
+    extracting: tst_unzip.dir/d.0/f.2
+    creating: tst_unzip.dir/d.0/d.1/
+    extracting: tst_unzip.dir/d.0/d.1/f.0
+    extracting: tst_unzip.dir/d.0/d.1/f.1
+    extracting: tst_unzip.dir/d.0/d.1/f.2
+    creating: tst_unzip.dir/d.0/d.1/d.2/
+    extracting: tst_unzip.dir/d.0/d.1/d.2/f.0
+    extracting: tst_unzip.dir/d.0/d.1/d.2/f.1
+    extracting: tst_unzip.dir/d.0/d.1/d.2/f.2
 	EOF
 
 	return $RC
@@ -156,34 +133,35 @@ test01()
 	count=0
 	files=" "
 	filesize=0
+	zipfile="$1"
 
 	TCID=unzip01
 	TST_COUNT=1
 
 	tst_resm TINFO "Test #1: unzip command un-compresses a .zip file."
 
-	unzip $TMP/tst_unzip_file.zip >$LTPTMP/tst_unzip.out || RC=$?
+	unzip "${zipfile}" > "$LTPTMP/tst_unzip.out" || RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_res TFAIL $LTPTMP/tst_unzip.out \
+		tst_res TFAIL "$LTPTMP/tst_unzip.out" \
 			"Test #1: unzip command failed. Return value = $RC. Details:"
 		return $RC
 	else
-		diff -iwB $LTPTMP/tst_unzip.out $LTPTMP/tst_unzip.out.exp > $LTPTMP/tst_unzip.out.err || RC=$?
+		diff -iwB "$LTPTMP/tst_unzip.out" "$LTPTMP/tst_unzip.out.exp" > "$LTPTMP/tst_unzip.out.err" || RC=$?
 		if [ $RC -ne 0 ]
 		then
-			tst_res TFAIL $LTPTMP/tst_unzip.out.err \
+			tst_res TFAIL "$LTPTMP/tst_unzip.out.err" \
 				"Test #1: unzip output differs from expected output. Details"
 		else
-			tst_resm TINFO "Test #1: check if $PWD/tmp/tst_unzip.dir exits."
-			if ! [ -d $PWD/tmp/tst_unzip.dir ]
+			tst_resm TINFO "Test #1: check if \"$PWD/tst_unzip.dir\" exits."
+			if ! [ -d $PWD/tst_unzip.dir ]
 			then
 				tst_resm TFAIL \
 					"Test #1: unzip did not uncompress the .zip file"
 				$((RC+1))
 			else
 				tst_resm TINFO \
-					"Test #1: $PWD/tmp/tst_unzip.dir was created by unzip"
+					"Test #1: \"$PWD/tst_unzip.dir\" was created by unzip"
 				tst_resm TPASS \
 				   "Test #1: unzip can uncompress .zip file correctly."
 			fi
@@ -201,8 +179,9 @@ test01()
 #               - non-zero on failure.
 
 RC=0
+stat "$1" || exit $?
 init || exit $?
 
-test01 || RC=$?
+test01 "$1" || RC=$?
 
 exit $RC

@@ -1,12 +1,27 @@
-all:
-	./unzip_genfile.sh
+# Only build and install if we have the zip and unzip commands
+HAVE_ZIPTOOLS=$(shell which zip && which unzip && echo t)
+ifeq ($(HAVE_ZIPTOOLS),t)
+BINS := unzip_tests.sh
+DEPS := tst_unzip_file.zip $(BINS)
+else
+BINS :=
+DEPS :=
+endif
 
-install:
-	ln -f unzip_tests.sh ../../bin/unzip_tests.sh
-	ln -f tst_unzip_file.zip ../../bin/tst_unzip_file.zip
-	ln -fs $(PWD)/unzip/tst_unzip_file.zip /tmp/tst_unzip_file.zip
-	chmod 777 tst_unzip_file.zip
+all: $(DEPS)
+
+tst_unzip_file.zip: tst_unzip.dir
+	zip -r tst_unzip_file.zip tst_unzip.dir && chmod 777 tst_unzip_file.zip
+
+# This target should be auto-removed by Make
+.INTERMEDIATE: tst_unzip.dir
+tst_unzip.dir: unzip_genfile.sh
+	./unzip_genfile.sh tst_unzip.dir
+
+install: all
+	for i in $(BINS) ; do \
+		ln -f $$i ../../bin/$$i ; \
+	done
 
 clean:
-	rm -f tst_unzip_file.zip
-	rm -f /tmp/tst_unzip_file.zip
+	rm -rf tst_unzip.dir tst_unzip_file.zip

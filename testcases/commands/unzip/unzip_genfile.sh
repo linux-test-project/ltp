@@ -33,7 +33,7 @@
 
 numdirs=3                     # number of directories to create
 numfiles=3                    # number of file to create in each directory
-dirname=/tmp/tst_unzip.dir    # name of the base directory
+dirname=$1		      # name of the base directory
 dircnt=0                      # index into number of dirs created in loop
 fcnt=0                        # index into number of files created in loop
 RC=0                          # return value from commands
@@ -44,7 +44,7 @@ do
 	mkdir -p $dirname || RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "unzip_genfile.sh: ERROR: while creating $numdirs dirs." 1>&2
+		echo "$0: ERROR: while creating $numdirs dirs." 1>&2
 		exit $RC
 	fi
 	fcnt=0
@@ -53,28 +53,10 @@ do
 		touch $dirname/f.$fcnt
 		if [ $RC -ne 0 ]
 		then
-			echo "unzip_genfile.sh: ERROR: creating $numdirs dirs." 1>&2
+			echo "$0: ERROR: creating $numdirs dirs." 1>&2
 			exit $RC
 		fi
 		fcnt=$(($fcnt+1))
 	done
 	dircnt=$(($dircnt+1))
 done
-
-# Create ZIP file.
-
-zip -r tst_unzip_file.zip /tmp/tst_unzip.dir || RC=$?
-if [ $RC -ne 0 ]
-then
-	echo "unzip_genfile.sh: ERROR: creating tst_unzip_file.zip archive." 1>&2
-	exit $RC
-fi
-
-rm -fr /tmp/tst_unzip.* || RC=$?
-if [ $RC -ne 0 ]
-then
-	echo "unzip_genfile.sh: ERROR: deleting tempory files." 1>&2
-	exit $RC
-fi
-
-exit $RC
