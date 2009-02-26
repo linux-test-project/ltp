@@ -142,7 +142,7 @@ int  lio_check_asyncio(char *io_type, int size, struct iosw *status);
 int  lio_wait4asyncio(int method, int fd, aiocb_t *aiocbp);
 int  lio_check_asyncio(char *io_type, int size, aiocb_t *aiocbp, int method);
 #endif /* sgi */
-#if defined(__linux__)
+#if defined(__linux__) && !defined(__UCLIBC__)
 #include <aio.h>
 int  lio_wait4asyncio(int method, int fd, struct aiocb *aiocbp);
 int  lio_check_asyncio(char *io_type, int size, struct aiocb *aiocbp, int method);

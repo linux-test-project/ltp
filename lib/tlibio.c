@@ -139,7 +139,7 @@ struct lio_info_type  Lio_info1[] = {
     { "p", LIO_IO_ASYNC|LIO_WAIT_SIGACTIVE, "async i/o using a loop to wait for a signal" },
     { "b", LIO_IO_ASYNC|LIO_WAIT_SIGPAUSE, "async i/o using pause" },
     { "a", LIO_IO_ASYNC|LIO_WAIT_RECALL, "async i/o using recall/aio_suspend" },
-#if defined(sgi) || defined(__linux__)
+#if defined(sgi) || (defined(__linux__) && !defined(__UCLIBC__))
     { "r", 
 	LIO_RANDOM|LIO_IO_TYPES|LIO_WAIT_TYPES, "random sync i/o types and wait methods" },
     { "R", 
@@ -183,7 +183,7 @@ char Lio_SysCall[PATH_MAX];	/* string containing last i/o system call */
 
 static volatile int Received_signal = 0;	/* number of signals received */
 static volatile int Rec_signal;
-#if defined(sgi) || defined(__linux__)
+#if defined(sgi) || (defined(__linux__) && !defined(__UCLIBC__))
 static volatile int Received_callback = 0;	/* number of callbacks received */
 static volatile int Rec_callback;
 #endif
@@ -432,7 +432,7 @@ lio_async_signal_handler(int sig)
 	return;
 }
 
-#if defined(sgi) || defined(__linux__)
+#if defined(sgi) || (defined(__linux__) && !defined(__UCLIBC__))
 /***********************************************************************
  * This is an internal callback handler.
  * If the handler is called, it will increment the Received_callback
@@ -558,7 +558,7 @@ long wrd;	/* to allow future features, use zero for now */
     aiocb_t *aiolist[1]; /* list of aio control blocks for lio_listio */
     off64_t poffset;	/* pwrite(2) offset */
 #endif
-#if defined (__linux__)
+#if defined(__linux__) && !defined(__UCLIBC__)
 	struct aiocb aiocbp;	/* POSIX aio control block */
 	struct aiocb *aiolist[1]; /* list of aio control blocks for lio_listio */
 	off64_t poffset;	/* pwrite(2) offset */
@@ -578,7 +578,7 @@ long wrd;	/* to allow future features, use zero for now */
 	*errmsg = Errormsg;
 
     Rec_signal=Received_signal;	/* get the current number of signals received */
-#if defined(sgi) || defined(__linux__)
+#if defined(sgi) || (defined(__linux__) && !defined(__UCLIBC__))
     Rec_callback=Received_callback;	/* get the current number of callbacks received */
 #endif
 
@@ -592,7 +592,7 @@ long wrd;	/* to allow future features, use zero for now */
     iov.iov_base = buffer;
     iov.iov_len = size;
 #endif
-#if defined(sgi) || defined(__linux__)
+#if defined(sgi) || (defined(__linux__) && !defined(__UCLIBC__))
 #if defined(sgi)
     memset(&aiocbp, 0x00, sizeof(aiocb_t));
 #else
@@ -607,7 +607,7 @@ long wrd;	/* to allow future features, use zero for now */
 #ifdef sgi
     aiocbp.aio_sigevent.sigev_func = NULL;
     aiocbp.aio_sigevent.sigev_value.sival_int = 0;
-#elif defined(__linux__)
+#elif defined(__linux__) && !defined(__UCLIBC__)
 	aiocbp.aio_sigevent.sigev_notify_function = NULL;
 	aiocbp.aio_sigevent.sigev_notify_attributes = 0;
 #endif
@@ -641,7 +641,7 @@ long wrd;	/* to allow future features, use zero for now */
 		return -errno;
 	}
     }
-#if defined(sgi) || defined(__linux__)
+#if defined(sgi) || (defined(__linux__) && !defined(__UCLIBC__))
     poffset = (off64_t)ret;
 #endif
     aiocbp.aio_offset = ret;
@@ -660,7 +660,7 @@ long wrd;	/* to allow future features, use zero for now */
 	sig=0;	/* ignore signal parameter */
     }
 
-#if defined(sgi) || defined(__linux__)
+#if defined(sgi) || (defined(__linux__) && !defined(__UCLIBC__))
     if ( sig && (method & LIO_WAIT_CBTYPES) )
 	sig=0; /* ignore signal parameter */
 #endif
@@ -677,7 +677,7 @@ long wrd;	/* to allow future features, use zero for now */
 #ifdef CRAY
         sigctl(SCTL_REG, sig, lio_async_signal_handler);
 #endif
-#if defined(sgi) || defined(__linux__)
+#if defined(sgi) || (defined(__linux__) && !defined(__UCLIBC__))
         aiocbp.aio_sigevent.sigev_notify = SIGEV_SIGNAL;
 	aiocbp.aio_sigevent.sigev_signo = sig;
         sigset(sig, lio_async_signal_handler);
@@ -693,7 +693,7 @@ long wrd;	/* to allow future features, use zero for now */
 	aiocbp.aio_sigevent.sigev_value.sival_int = size;
     }
 #endif
-#if defined(__linux__)
+#if defined(__linux__) && !defined(__UCLIBC__)
 	else if( method & LIO_WAIT_CBTYPES ){
 		/* sival_int just has to be something that I can use
 		 * to identify the callback, and "size" happens to be handy...
@@ -775,7 +775,7 @@ long wrd;	/* to allow future features, use zero for now */
 	    return -errno;
 	}
 #endif
-#if defined(sgi) || defined(__linux__)
+#if defined(sgi) || (defined(__linux__) && !defined(__UCLIBC__))
 	sprintf(Lio_SysCall,
 	    "aio_write(fildes=%d, buf, nbytes=%d, signo=%d)", fd, size, sig);
 	io_type="aio_write";
@@ -838,7 +838,7 @@ long wrd;	/* to allow future features, use zero for now */
 	return ret;
 
 #endif
-#if defined(sgi) || defined(__linux__)
+#if defined(sgi) || (defined(__linux__) && !defined(__UCLIBC__))
 
 	aiocbp.aio_lio_opcode = LIO_WRITE;
 	listio_cmd=LIO_WAIT;
@@ -904,7 +904,7 @@ long wrd;	/* to allow future features, use zero for now */
             return -errno;
         }
 #endif
-#if defined (sgi) || defined(__linux__)
+#if defined (sgi) || (defined(__linux__) && !defined(__UCLIBC__))
 	aiocbp.aio_lio_opcode = LIO_WRITE;
 	listio_cmd=LIO_NOWAIT;
 	io_type="lio_listio(3) async write";
@@ -961,7 +961,7 @@ long wrd;	/* to allow future features, use zero for now */
     } /* LIO_IO_SYNCV */
 #endif
 
-#if defined(sgi) || defined(__linux__)
+#if defined(sgi) || (defined(__linux__) && !defined(__UCLIBC__))
     else if ( method & LIO_IO_SYNCP ) {
 	io_type="pwrite(2)";
 
@@ -1003,7 +1003,7 @@ long wrd;	/* to allow future features, use zero for now */
 #ifdef CRAY
     ret=lio_wait4asyncio(method, fd, statptr);
 #endif
-#if defined(sgi) || defined(__linux__)
+#if defined(sgi) || (defined(__linux__) && !defined(__UCLIBC__))
     ret=lio_wait4asyncio(method, fd, &aiocbp);
 #endif
 
@@ -1034,7 +1034,7 @@ long wrd;	/* to allow future features, use zero for now */
 #ifdef CRAY
     ret=lio_check_asyncio(io_type, size, &status);
 #endif
-#if defined(sgi) || defined(__linux__)
+#if defined(sgi) || (defined(__linux__) && !defined(__UCLIBC__))
     ret=lio_check_asyncio(io_type, size, &aiocbp, method);
 #endif
 
@@ -1107,7 +1107,7 @@ long wrd;	/* to allow future features, use zero for now */
     aiocb_t *aiolist[1]; /* list of aio control blocks for lio_listio */
     off64_t poffset;	/* pread(2) offset */
 #endif
-#ifdef __linux__
+#if defined (__linux__) && !defined(__UCLIBC__)
 	struct aiocb aiocbp;	/* POSIX aio control block */
 	struct aiocb *aiolist[1]; /* list of aio control blocks for lio_listio */
 	off64_t poffset;	/* pread(2) offset */
@@ -1128,7 +1128,7 @@ long wrd;	/* to allow future features, use zero for now */
 	*errmsg = Errormsg;
 
     Rec_signal=Received_signal;	/* get the current number of signals received */
-#if defined(sgi) || defined(__linux__)
+#if defined(sgi) || (defined(__linux__) && !defined(__UCLIBC__))
     Rec_callback=Received_callback;	/* get the current number of callbacks received */
 #endif
 
@@ -1142,7 +1142,7 @@ long wrd;	/* to allow future features, use zero for now */
     iov.iov_base = buffer;
     iov.iov_len = size;
 #endif
-#if defined(sgi) || defined(__linux__)
+#if defined(sgi) || (defined(__linux__) && !defined(__UCLIBC__))
 #if defined(sgi)
     memset(&aiocbp, 0x00, sizeof(aiocb_t));
 #else
@@ -1157,7 +1157,7 @@ long wrd;	/* to allow future features, use zero for now */
 #ifdef sgi
     aiocbp.aio_sigevent.sigev_func = NULL;
     aiocbp.aio_sigevent.sigev_value.sival_int = 0;
-#elif defined(__linux__)
+#elif defined(__linux__) && !defined(__UCLIBC__)
 	aiocbp.aio_sigevent.sigev_notify_function = NULL;
 	aiocbp.aio_sigevent.sigev_notify_attributes = 0;
 #endif
@@ -1191,7 +1191,7 @@ long wrd;	/* to allow future features, use zero for now */
 		return -errno;
 	}
     }
-#if defined(sgi) || defined(__linux__)
+#if defined(sgi) || (defined(__linux__) && !defined(__UCLIBC__))
     poffset = (off64_t)ret;
 #endif
     aiocbp.aio_offset = ret;
@@ -1210,7 +1210,7 @@ long wrd;	/* to allow future features, use zero for now */
         sig=0;  /* ignore signal parameter */
     }
 
-#if defined(sgi) || defined(__linux__)
+#if defined(sgi) || (defined(__linux__)&& !defined(__UCLIBC__))
     if ( sig && (method & LIO_WAIT_CBTYPES) )
 	sig=0; /* ignore signal parameter */
 #endif
@@ -1227,7 +1227,7 @@ long wrd;	/* to allow future features, use zero for now */
 #ifdef CRAY
 	    sigctl(SCTL_REG, sig, lio_async_signal_handler);
 #endif
-#if defined(sgi) || defined(__linux__)
+#if defined(sgi) || (defined(__linux__) && !defined(__UCLIBC__))
 	    aiocbp.aio_sigevent.sigev_notify = SIGEV_SIGNAL;
 	    aiocbp.aio_sigevent.sigev_signo = sig;
 	    sigset(sig, lio_async_signal_handler);
@@ -1243,7 +1243,7 @@ long wrd;	/* to allow future features, use zero for now */
 	    aiocbp.aio_sigevent.sigev_value.sival_int = size;
     }
 #endif
-#if defined(__linux__)
+#if defined(__linux__) && !defined(__UCLIBC__)
 	else if( method & LIO_WAIT_CBTYPES ){
 		aiocbp.aio_sigevent.sigev_notify = SIGEV_THREAD;
 		aiocbp.aio_sigevent.sigev_notify_function = lio_async_callback_handler;
@@ -1328,7 +1328,7 @@ long wrd;	/* to allow future features, use zero for now */
 	    return -errno;
 	}
 #endif
-#if defined(sgi) || defined(__linux__)
+#if defined(sgi) || (defined(__linux__) && !defined(__UCLIBC__))
 	sprintf(Lio_SysCall,
 	    "aio_read(fildes=%d, buf, nbytes=%d, signo=%d)", fd, size, sig);
 	io_type="aio_read";
@@ -1390,7 +1390,7 @@ long wrd;	/* to allow future features, use zero for now */
 	ret=lio_check_asyncio(io_type, size,  &status);
 	return ret;
 #endif
-#if defined(sgi) || defined(__linux__)
+#if defined(sgi) || (defined(__linux__) && !defined(__UCLIBC__))
 	aiocbp.aio_lio_opcode = LIO_READ;
 	listio_cmd=LIO_WAIT;
 	io_type="lio_listio(3) sync read";
@@ -1455,7 +1455,7 @@ long wrd;	/* to allow future features, use zero for now */
             return -errno;
         }
 #endif
-#if defined(sgi) || defined(__linux__)
+#if defined(sgi) || (defined(__linux__) && !defined(__UCLIBC__))
 	aiocbp.aio_lio_opcode = LIO_READ;
 	listio_cmd=LIO_NOWAIT;
 	io_type="lio_listio(3) async read";
@@ -1512,7 +1512,7 @@ long wrd;	/* to allow future features, use zero for now */
     } /* LIO_IO_SYNCV */
 #endif
 
-#if defined(sgi) || defined(__linux__)
+#if defined(sgi) || (defined(__linux__) && !defined(__UCLIBC__))
     else if ( method & LIO_IO_SYNCP ) {
 	io_type="pread(2)";
 
@@ -1555,7 +1555,7 @@ long wrd;	/* to allow future features, use zero for now */
 #ifdef CRAY
     ret=lio_wait4asyncio(method, fd, statptr);
 #endif
-#if defined(sgi) || defined(__linux__)
+#if defined(sgi) || (defined(__linux__) && !defined(__UCLIBC__))
     ret=lio_wait4asyncio(method, fd, &aiocbp);
 #endif
 
@@ -1586,7 +1586,7 @@ long wrd;	/* to allow future features, use zero for now */
 #ifdef CRAY
     ret=lio_check_asyncio(io_type, size, &status);
 #endif
-#if defined(sgi) || defined(__linux__)
+#if defined(sgi) || (defined(__linux__) && !defined(__UCLIBC__))
     ret=lio_check_asyncio(io_type, size, &aiocbp, method);
 #endif
 
@@ -1606,14 +1606,12 @@ long wrd;	/* to allow future features, use zero for now */
  *
  * (rrl 04/96)
  ***********************************************************************/
-int
 #ifdef CRAY
-lio_check_asyncio(char *io_type, int size, struct iosw *status)
+int lio_check_asyncio(char *io_type, int size, struct iosw *status)
 #elif defined(sgi)
-	lio_check_asyncio(char *io_type, int size, aiocb_t *aiocbp, int method)
-#elif defined(__linux__)
-	lio_check_asyncio(char *io_type, int size, struct aiocb *aiocbp, int method)
-#endif
+	int lio_check_asyncio(char *io_type, int size, aiocb_t *aiocbp, int method)
+#elif defined(__linux__) && !defined(__UCLIBC__)
+	int lio_check_asyncio(char *io_type, int size, struct aiocb *aiocbp, int method)
 {
     int ret;
 
@@ -1704,9 +1702,8 @@ lio_check_asyncio(char *io_type, int size, struct iosw *status)
     return ret;
 
 #endif
-
 } /* end of lio_check_asyncio */
-
+#endif
 
 /***********************************************************************
  *
@@ -1726,27 +1723,25 @@ lio_check_asyncio(char *io_type, int size, struct iosw *status)
  *
  * (rrl 04/96)
  ***********************************************************************/
-int
 #ifdef CRAY
-lio_wait4asyncio(int method, int fd, struct iosw **statptr)
+int lio_wait4asyncio(int method, int fd, struct iosw **statptr)
 #elif defined(sgi)
-	lio_wait4asyncio(int method, int fd, aiocb_t *aiocbp)
-#elif defined(__linux__)
-	lio_wait4asyncio(int method, int fd, struct aiocb *aiocbp)
-#endif
+	int lio_wait4asyncio(int method, int fd, aiocb_t *aiocbp)
+#elif defined(__linux__) && !defined(__UCLIBC__)
+	int lio_wait4asyncio(int method, int fd, struct aiocb *aiocbp)
 {
     int cnt;
 #ifdef sgi
     int ret;
     const aiocb_t *aioary[1]; 
 #endif
-#ifdef __linux__
+#if defined(__linux__)&& !defined(__UCLIBC__)
 	int ret;
 	const struct aiocb *aioary[1];
 #endif
 
     if ( (method & LIO_WAIT_RECALL)
-#if defined(sgi) || defined(__linux__)
+#if defined(sgi) || (defined(__linux__)&& !defined(__UCLIBC__))
 	|| (method & LIO_WAIT_CBSUSPEND) 
 	|| (method & LIO_WAIT_SIGSUSPEND) 
 #endif
@@ -1902,6 +1897,7 @@ lio_wait4asyncio(int method, int fd, struct iosw **statptr)
 } /* end of lio_wait4asyncio */
 
 #endif /* ifndef linux */
+#endif
 
 #if UNIT_TEST
 /***********************************************************************
