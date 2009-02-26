@@ -45,7 +45,7 @@ uclinux:
 
 uclinux_install:
 	@set -e; for i in $(UCLINUX_SUBDIR); do \
-		$(MAKE) -C $$i UCLINUX=1 all; \
+		$(MAKE) -C $$i UCLINUX=1 install; \
 	done
 
 clean:
