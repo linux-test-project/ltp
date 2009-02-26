@@ -84,7 +84,7 @@ extern void rm_shm(int);
 void cleanup(void);
 void setup(void);
 void do_child(void);
-void do_master_child(void);
+void do_master_child(char **av);
 
 char *TCID= "kill05";
 int TST_TOTAL = 1;
@@ -121,7 +121,7 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, cleanup, "Fork failed");
 	
 	if (pid == 0) {
-		do_master_child();
+		do_master_child(av);
 		return (0);
 	}
 	else {
@@ -138,7 +138,7 @@ int main(int ac, char **av)
  * do_master_child()
  */
 void
-do_master_child()
+do_master_child(char **av)
 {
 	int lc;                         /* loop counter */
 
