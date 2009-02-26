@@ -21,7 +21,8 @@
 OO_DESCRIPTION.txt
 ==================
 
-The contents of the bind directory:
+The contents of the rbind directory:
+test07-2 - create slave then mount master - slave still propagates
 test01 - shared child to shared parent.
 test02 - shared child to private parent.
 test03 - shared child to slave parent.
@@ -29,7 +30,6 @@ test04 - shared child to unclonable parent.
 test05 - private child to shared parent.
 test06 - private child to private parent.
 test07 - private child to slave parent.
-test07-2 - create slave then mount master - slave still propagates.
 test08 - private child to uncloneable parent.
 test09 - slave child to shared parent.
 test10 - slave child to private parent.
@@ -43,10 +43,25 @@ test17 - shared subtree with shared child to shared subtree.
 test18 - shared subtree with shared child to private subtree.
 test19 - shared subtree with shared child to slave subtree.
 test20 - shared subtree with shared child to uncloneable subtree.
-test21 - multi-level slave p-nodes.
-test22 - bind within same tree - root to child 
-test23 - shared child to shared parent.
-test24 - shared child to shared parent.
+test21 - shared subtree with  private child to shared subtree.
+test22 - shared subtree with  private child to slave subtree.
+test23 - shared subtree with  private child to private subtree.
+test24 - shared subtree with unclonable child to private subtree.
+test25 - shared subtree with slave child to shared subtree.
+test26 - shared subtree with slave child to private subtree.
+test27 - shared subtree with slave child to slave subtree.
+test28 - shared subtree with slave child to unclone subtree.
+test29 - shared subtree with uncloneable child to shared subtree.
+test30 - shared subtree with uncloneable child to private subtree.
+test31 - shared subtree with uncloneable child to slave subtree.
+test32 - shared subtree with uncloneable child to uncloneable subt
+test33 - multi-level slave p-nodes.
+test34 - rbind within same tree - root to child, child is shared
+test35 - rbind within same tree - root to child, child is private
+test36 - rbind within same tree - root to child, child is unclonea
+test37 - private to private - with shared children.
+test38 - private to private - with slave children.
+test39 - private to private - with unclonable children.
 
 
 test07-2:
@@ -156,21 +171,96 @@ shared subtree with shared child to uncloneable subtree.
 
 test21:
 =======
-multi-level slave p-nodes.
+shared subtree with  private child to shared subtree.
 
 
 test22:
 =======
-bind within same tree - root to child 
+shared subtree with  private child to slave subtree.
 
 
 test23:
 =======
-shared child to shared parent.
+shared subtree with  private child to private subtree.
 
 
 test24:
 =======
-shared child to shared parent.
+shared subtree with unclonable child to private subtree.
+
+
+test25:
+=======
+shared subtree with slave child to shared subtree.
+
+
+test26:
+=======
+shared subtree with slave child to private subtree.
+
+
+test27:
+=======
+shared subtree with slave child to slave subtree.
+
+
+test28:
+=======
+shared subtree with slave child to unclone subtree.
+
+
+test29:
+=======
+shared subtree with uncloneable child to shared subtree.
+
+
+test30:
+=======
+shared subtree with uncloneable child to private subtree.
+
+
+test31:
+=======
+shared subtree with uncloneable child to slave subtree.
+
+
+test32:
+=======
+shared subtree with uncloneable child to uncloneable subtree.
+
+
+test33:
+=======
+multi-level slave p-nodes.
+
+
+test34:
+=======
+rbind within same tree - root to child, child is shared
+
+
+test35:
+=======
+rbind within same tree - root to child, child is private
+
+
+test36:
+=======
+rbind within same tree - root to child, child is uncloneable
+
+
+test37:
+=======
+private to private - with shared children.
+
+
+test38:
+=======
+private to private - with slave children.
+
+
+test39:
+=======
+private to private - with unclonable children.
 
 

@@ -39,9 +39,9 @@ test14 - uncloneable subtree to private parent.
 test15 - uncloneable subtree to slave parent.
 test16 - uncloneable subtree to uncloneable parent.
 test17 - tree with shared parent - check ERROR.
-test18 - private to private - with shared children 
-test19 - private to private - with slave children 
-test20 - private to private - with unclonable children 
+test18 - private to private - with shared children
+test19 - private to private - with slave children
+test20 - private to private - with unclonable children
 test21 - shared tree within a tree it is bound to.
 test22 - shared tree within a tree it is bound to - and then move t
 
@@ -133,17 +133,17 @@ tree with shared parent - check ERROR.
 
 test18:
 =======
-private to private - with shared children 
+private to private - with shared children
 
 
 test19:
 =======
-private to private - with slave children 
+private to private - with slave children
 
 
 test20:
 =======
-private to private - with unclonable children 
+private to private - with unclonable children
 
 
 test21:

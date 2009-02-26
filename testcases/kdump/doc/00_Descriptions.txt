@@ -4,7 +4,7 @@ Kdump Test Description
 The test suite consists of two parts
 
     * crasher: This is a basic kdump functionality testing.
-    * lkdtm : These tests use kprobes / jprobes to put probes in different 
+    * lkdtm : These tests use kprobes / jprobes to put probes in different
       function for invoking a dump.
 
 Only one of the above is used for testing at a time. While building the scripts,
@@ -19,10 +19,10 @@ The crasher module tests kdump in following senarios.
     * ACE: invoke dump using panic_on_oops [ panic test 2 ].
     * ACL: invoke dump in a hang situation.
 
-On some type of hardware [ eg IBM System p and System i machines ] tests ACB 
-and ACE will require manual intervention. After running these tests machine 
-will drop into xmon. User will have to type X to get out of the xmon and 
-continue with the tests. As for the ACL test, user will have to invoke a dump 
+On some type of hardware [ eg IBM System p and System i machines ] tests ACB
+and ACE will require manual intervention. After running these tests machine
+will drop into xmon. User will have to type X to get out of the xmon and
+continue with the tests. As for the ACL test, user will have to invoke a dump
 using the Hardware Management Console via soft reset.
 
 The lkdtm module consists of following tests
@@ -53,19 +53,19 @@ The lkdtm module consists of following tests
     * KPTP : panic in hr_timer_start
 
 On certain type of hardware [ eg IBM system p and system i machines] tests with
-names ending in "B" and "E" might require manual intervention. After running 
-these tests machine will drop into debugger if one is configured. User will 
-have to type X to get out of the debugger and continue with the tests. For 
+names ending in "B" and "E" might require manual intervention. After running
+these tests machine will drop into debugger if one is configured. User will
+have to type X to get out of the debugger and continue with the tests. For
 tests with name ending in L [loop test] , user will have to invoke a dump using
 the Hardware Management Console via soft reset.
 
-While executing some loop testcases after invoking a dump via Hardware 
+While executing some loop testcases after invoking a dump via Hardware
 Management Console you might get following message
 
 Sending IPI to other cpus...
 done waiting: 1 cpu(s) not responding
 Activate soft-reset to stop other cpu(s)
 
-In such case you will have to re-trigger dump via Hardware Management Console 
-one more time. This is a normal senario and not a bug. 
+In such case you will have to re-trigger dump via Hardware Management Console
+one more time. This is a normal senario and not a bug.
 

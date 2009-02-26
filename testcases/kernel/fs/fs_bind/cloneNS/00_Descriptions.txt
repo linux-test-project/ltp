@@ -24,10 +24,10 @@ OO_DESCRIPTION.txt
 The contents of the cloneNS directory:
 test01 - namespace with shared dirs
 test02 - namespaces with parent-slave
-test03 - namespace with unclonable mount 
+test03 - namespace with unclonable mount
 test04 - namespace with private mount.
-test05 - namespace with multi-level 
-test06 - namespace with shared point bind mounted 
+test05 - namespace with multi-level
+test06 - namespace with shared point bind mounted
 test07 - slave child to slave parent.
 
 
@@ -43,7 +43,7 @@ namespaces with parent-slave
 
 test03:
 =======
-namespace with unclonable mount 
+namespace with unclonable mount
 
 
 test04:
@@ -53,13 +53,13 @@ namespace with private mount.
 
 test05:
 =======
-namespace with multi-level 
+namespace with multi-level
 chain of slaves
 
 
 test06:
 =======
-namespace with shared point bind mounted 
+namespace with shared point bind mounted
 within the same directory
 
 
