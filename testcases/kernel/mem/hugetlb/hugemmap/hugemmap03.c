@@ -81,7 +81,7 @@ main(int ac, char **av)
       	tst_resm(TCONF,"This test is only for 64bit");
 	tst_exit();
        	/*NOTREACHED*/
-       	return(1);
+       	return 1;
 #else	/* 64-bit compiled */
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */

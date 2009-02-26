@@ -108,22 +108,22 @@ int setup()
 	if(pipe(parent_pipe) < 0) {
 		tst_resm(TFAIL, "Couldn't create parent_pipe! errno = %d", 
 			 errno);
-		return(1);
+		return 1;
 	}
 	if(pipe(child_pipe1) < 0) {
 		tst_resm(TFAIL, "Couldn't create child_pipe1! errno = %d", 
 			 errno);
-		return(1);
+		return 1;
 	}
 	if(pipe(child_pipe2) < 0) {
 		tst_resm(TFAIL, "Couldn't create child_pipe2! errno = %d", 
 			 errno);
-		return(1);
+		return 1;
 	}
 	if(pipe(child_pipe3) < 0) {
 		tst_resm(TFAIL, "Couldn't create child_pipe3! errno = %d", 
 			 errno);
-		return(1);
+		return 1;
 	}
 	parent_pid = getpid();
 	snprintf(template, PATH_MAX, "fcntl17XXXXXX");
@@ -143,7 +143,7 @@ int setup()
 	if (sigaction(SIGALRM, &act, NULL) < 0) {
 		tst_resm(TFAIL, "SIGALRM signal setup failed, errno: %d",
 			 errno);
-		return(1);
+		return 1;
 	}
 
 	memset(&act, 0, sizeof(act));
@@ -153,7 +153,7 @@ int setup()
 	if (sigaction(SIGCLD, &act, NULL) < 0) {
 		tst_resm(TFAIL, "SIGCLD signal setup failed, errno: %d",
 			 errno);
-		return(1);
+		return 1;
 	}
 	return 0;
 }
@@ -290,37 +290,37 @@ do_test(struct flock *lock, pid_t pid)
 	if (fcntl(file_fd, F_GETLK, &fl) < 0) {
 		tst_resm(TFAIL, "fcntl on file failed, errno =%d", 
 			 errno);
-		return(1);
+		return 1;
 	}
 
 	if (fl.l_type != lock->l_type) {
 		tst_resm(TFAIL, "lock type is wrong should be %s is %s",
 			 str_type(lock->l_type), str_type(fl.l_type));
-		return(1);
+		return 1;
 	}
 
 	if (fl.l_whence != lock->l_whence) {
 		tst_resm(TFAIL, "lock whence is wrong should be %d is %d",
 			 lock->l_whence, fl.l_whence);
-		return(1);
+		return 1;
 	}
 
 	if (fl.l_start != lock->l_start) {
 		tst_resm(TFAIL, "region starts in wrong place, "
 			 "should be %d is %d", lock->l_start, fl.l_start);
-		return(1);
+		return 1;
 	}
 
 	if (fl.l_len != lock->l_len) {
 		tst_resm(TFAIL, "region length is wrong, should be %d is %d",
 			 lock->l_len, fl.l_len);
-		return(1);
+		return 1;
 	}
 
 	if (fl.l_pid != pid) {
 		tst_resm(TFAIL, "locking pid is wrong, should be %d is %d",
 			 pid, fl.l_pid);
-		return(1);
+		return 1;
 	}
 	return 0;
 }

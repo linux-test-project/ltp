@@ -485,7 +485,7 @@ int do_random_access_test(int maxNum)
 
     if ( maxNum < 1 || maxNum > MAXNUM ) {
         printf("out of size %d\n",maxNum);
-        return(1);
+        return 1;
     }
 
     time(&t);

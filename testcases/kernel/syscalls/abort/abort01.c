@@ -191,7 +191,7 @@ void setup()
 int instress()
 {
   tst_resm(TINFO, "System resources may be too low; fork(), select() etc are likely to fail.");
-  return(1);
+  return 1;
 }
 
 void terror(char * message)

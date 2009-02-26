@@ -490,7 +490,7 @@ run_test(int file_flag, int file_mode, int start, int end)
 			tst_resm(TFAIL, "Test case %d, errno = %d", test + 1,
 				 errno);
 			unlink(tmpname);
-			return(1);
+			return 1;
 		}
 
 		/* Initialize second parent lock structure */
@@ -503,7 +503,7 @@ run_test(int file_flag, int file_mode, int start, int end)
 				tst_resm(TFAIL, "Test case %d, errno = %d",
 					 test + 1, errno);
 				unlink(tmpname);
-				return(1);
+				return 1;
 			}
 		}
 
@@ -523,7 +523,7 @@ run_test(int file_flag, int file_mode, int start, int end)
 					if (self_exec(argv0, "ddddd", i, parent,
 						      test, thislock, fd) < 0) {
 						perror("self_exec failed");
-						return(1);
+						return 1;
 					}
 #else
 					dochild(i);
@@ -531,7 +531,7 @@ run_test(int file_flag, int file_mode, int start, int end)
 				}
 				if (child < 0) {
 					perror("Fork failed");
-					return(1);
+					return 1;
 				}
 				child_count++;
 				child_pid[i] = child;
@@ -573,7 +573,7 @@ run_test(int file_flag, int file_mode, int start, int end)
 			tst_resm(TFAIL, "Test case %d, errno = %d",
 				 test + 1, errno);
 			unlink(tmpname);
-			return(1);
+			return 1;
 		}
 
 		/* Initialize fourth parent lock structure */
@@ -586,7 +586,7 @@ run_test(int file_flag, int file_mode, int start, int end)
 				tst_resm(TINFO, "Test case %d, errno = %d",
 					 test + 1, errno);
 				unlink(tmpname);
-				return(1);
+				return 1;
 			}
 		}
 
@@ -660,7 +660,7 @@ run_test(int file_flag, int file_mode, int start, int end)
 	}
 	unlink(tmpname);
 	if (fail) {
-		return(1);
+		return 1;
 	} else {
 		return 0;
 	}

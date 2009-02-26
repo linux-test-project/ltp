@@ -29,7 +29,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: symlink01.c,v 1.12 2009/02/26 11:44:25 subrata_modak Exp $ */
+/* $Id: symlink01.c,v 1.13 2009/02/26 11:46:55 subrata_modak Exp $ */
 /**********************************************************
 * 
 *    OS Test - Silicon Graphics, Inc.
@@ -648,7 +648,7 @@ char *path;
       return(-1);
 
    if ((asymlink.st_mode & S_IFMT) == S_IFLNK)
-      return(1);
+      return 1;
    else
       return 0;
 }
@@ -692,7 +692,7 @@ char *path1, *path2;
 	tst_resm(TPASS, "symlink(%s, %s) was succesful.", path1, path2);
 #endif
    }
-   return(1);
+   return 1;
 }
 
 /***********************************************************************
@@ -728,7 +728,7 @@ char *path1;
 	path1, errno, strerror(errno));
       return 0;
    }
-   return(1);
+   return 1;
 }
 
 /***********************************************************************
@@ -748,7 +748,7 @@ char *path1, *path2, *path3;
       return 0;
    else if (creat_object(path3) == -1)
       return 0;
-   return(1);
+   return 1;
 }
 
 /***********************************************************************
@@ -780,7 +780,7 @@ char *path1, *path2, *path3;
 	path2, path1, path3);
       return 0;
    }
-   return(1);
+   return 1;
 }
 
 /***********************************************************************
@@ -816,7 +816,7 @@ char *path1, *path2, *path3;
 	path3, path2);
       return 0;
    }
-   return(1);
+   return 1;
    
 }
 
@@ -859,7 +859,7 @@ char *path1, *path2, *path3;
    for (ctr=0; ctr < to_go; ctr++)
        strcat(full_path, "Z");
 
-   return(1);
+   return 1;
 }
 
 /***********************************************************************
@@ -875,7 +875,7 @@ ck_path_max(path1, path2, path3)
 char *path1, *path2, *path3;
 {
    if (strlen(full_path) == (PATH_MAX+1))
-      return(1);
+      return 1;
    else
    {
       TEST_RESULT=TBROK;
@@ -927,7 +927,7 @@ char *path1, *path2, *path3;
        return 0;
         
     }
-    return(1);
+    return 1;
 }
 
 /***********************************************************************

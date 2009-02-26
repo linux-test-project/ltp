@@ -351,7 +351,7 @@ int read_file (int fd, char *filename)
 		total_bytes = 0;
 	}
 	if (debug) printf ("\n");
-	return(1);
+	return 1;
 }
 
 
@@ -416,7 +416,7 @@ int unlock_file (int fd, char *file)
 	if (fcntl (fd, F_SETLK, flock_ptr) < 0)
 		sys_error ("fcntl failed", __FILE__, __LINE__);
 
-	return(1);
+	return 1;
 }
   
 

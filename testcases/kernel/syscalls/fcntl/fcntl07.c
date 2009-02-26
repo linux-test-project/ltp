@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fcntl07.c,v 1.8 2006/02/11 04:57:56 vapier Exp $ */
+/* $Id: fcntl07.c,v 1.9 2009/02/26 11:46:55 subrata_modak Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -394,7 +394,7 @@ do_exec(char *prog, int fd, char *tcd)
 	if(WIFEXITED(stat_loc)) {
 	    return(WEXITSTATUS(stat_loc));
 	} else {
-	    return(1);
+	    return 1;
 	}
     }
 }

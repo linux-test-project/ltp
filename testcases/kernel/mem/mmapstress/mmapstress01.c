@@ -695,7 +695,7 @@ fileokay(char *file, uchar_t *expbuf)
 		}
 	}
 					
-	return(1);
+	return 1;
 }
 
 /*ARGSUSED*/

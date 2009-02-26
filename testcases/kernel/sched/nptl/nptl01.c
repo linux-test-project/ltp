@@ -276,7 +276,7 @@ int main(int argc, char** argv)
     tst_exit();
 #endif
     /* NOT REACHED */
-    return(1);
+    return 1;
 }
 
 /*

@@ -5807,7 +5807,7 @@ int show_scsi_info(char * device)
             fprintf(stderr, "file=%s, or no corresponding sg device found\n", device);
             fprintf(stderr, "Is sg driver loaded?\n");
         }
-        return(1);
+        return 1;
     }
 
 

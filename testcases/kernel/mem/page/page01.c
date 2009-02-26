@@ -294,7 +294,7 @@ instress()
 {
         tst_resm(TINFO, "System resource may be too low, fork() malloc()"
                                 " etc are likely to fail.\n");
-        return(1);
+        return 1;
 }
 
 

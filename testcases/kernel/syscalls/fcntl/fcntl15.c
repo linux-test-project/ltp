@@ -203,7 +203,7 @@ int dofork(int file_flag, int file_mode)
 	/* create child process */
 	if ((child1 = FORK_OR_VFORK()) < 0) {
 		perror("Fork failure");
-		return(1);
+		return 1;
 	}
 
 	/* child1 */
@@ -212,7 +212,7 @@ int dofork(int file_flag, int file_mode)
 		if (self_exec(argv0, "nddds", 1, file_flag, file_mode,
 			      parent, tmpname) < 0) {
 			perror("self_exec failure");
-			return(1);
+			return 1;
 		}
 #else
 		dochild1(file_flag, file_mode);
@@ -409,7 +409,7 @@ run_test(int file_flag, int file_mode, int dup_flag)
 	if ((fd_A = open(tmpname, file_flag, file_mode)) < 0) {
 		perror("open first parent file failed");
 		tst_rmdir();
-		return(1);
+		return 1;
 	}
 
 	/* write some data to the file */
@@ -422,7 +422,7 @@ run_test(int file_flag, int file_mode, int dup_flag)
 			if ((fd_B = open(tmpname, file_flag, file_mode)) < 0) {
 				perror("open second parent file failed");
 				tst_rmdir();
-				return(1);
+				return 1;
 			}
 		}
 	} else {
@@ -430,7 +430,7 @@ run_test(int file_flag, int file_mode, int dup_flag)
 		if ((fd_B = fcntl(fd_A, F_DUPFD, 0)) < 0) {
 			perror("dup of second parent file failed");
 			tst_rmdir();
-			return(1);
+			return 1;
 		}
 	}
 
@@ -447,7 +447,7 @@ run_test(int file_flag, int file_mode, int dup_flag)
 	if ((fcntl(fd_A, F_SETLK, &flock)) < 0) {
 		perror("Attempt to set first parent lock failed");
 		tst_rmdir();
-		return(1);
+		return 1;
 	}
 
 	if (dup_flag != FORK_) {
@@ -461,7 +461,7 @@ run_test(int file_flag, int file_mode, int dup_flag)
 		if ((fcntl(fd_B, F_SETLK, &flock)) < 0) {
 			perror("Attempt to set second parent lock failed");
 			tst_rmdir();
-			return(1);
+			return 1;
 		}
 	}
 
@@ -469,7 +469,7 @@ run_test(int file_flag, int file_mode, int dup_flag)
 	if ((child2 = FORK_OR_VFORK()) < 0) {	
 		perror("Fork failure");
 		tst_rmdir();
-		return(1);
+		return 1;
 	} else if (child2 == 0) {		/* child */
 		dochild2(file_flag, file_mode, dup_flag);
 	}
@@ -516,14 +516,14 @@ run_test(int file_flag, int file_mode, int dup_flag)
 	if ((kill(child2, SIGUSR2)) < 0) {
 		perror("Signal to child2 failed");
 		tst_rmdir();
-		return(1);
+		return 1;
 	}
 
 	if (dup_flag == FORK_) {
 		if ((kill(child1, SIGUSR2)) < 0) {
 			perror("Signal to child1 failed");
 			tst_rmdir();
-			return(1);
+			return 1;
 		}
 	}
 	/* wait for child to complete then cleanup */
@@ -531,7 +531,7 @@ run_test(int file_flag, int file_mode, int dup_flag)
 		if (status >> 8 != 0) {
 			tst_resm(TFAIL, "Expected 0 got %d", status >> 8);
 			tst_rmdir();
-			return(1);
+			return 1;
 		}
 	}
 	if (dup_flag != FORK_) {
