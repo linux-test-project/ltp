@@ -26,7 +26,7 @@ EXCLUDE_DIR=epoll
 # Commented this out since there are directories here we don't want built by default
 #
 SUBDIR = `ls */Makefile | sed "s/Makefile//g"` 
-UCLINUX_SUBDIR = `ls */Makefile | sed "s/Makefile//g" | grep -vE "^fork|epoll|capget|capset|chmod|chown|llseek|nftw|clone|profil|getcontext"`
+UCLINUX_SUBDIR = `ls */Makefile | sed "s/Makefile//g" | grep -vE "^fork|epoll|capget|capset|chmod|chown|llseek|nftw|clone|profil|getcontext|remap_file_pages"`
 
 all:
 	@set -e; for i in $(SUBDIR); do \
