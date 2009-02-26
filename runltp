@@ -651,7 +651,7 @@ main()
         sed -i "s|DEVICE|$DEVICE|"  ${TMP}/alltests
     else
         echo "remove test cases which require the block device."
-    echo "You can specified it by oprion -b"
+    echo "You can specify it with option -b"
         sed -i "/DEVICE/d"  ${TMP}/alltests
     fi
 

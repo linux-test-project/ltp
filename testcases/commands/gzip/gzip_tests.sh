@@ -25,7 +25,7 @@
 #				- Test #1:  Test that gzip -r will travel directories and 
 #						    compress all the files available.
 #
-#				- Test #2:  Test that guzip -r will travel directories and 
+#				- Test #2:  Test that gunzip -r will travel directories and
 #						    uncompress all the files available.
 #               
 # Author:       Manoj Iyer, manjo@mail.utexas.edu
