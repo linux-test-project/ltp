@@ -1,0 +1,76 @@
+==============================================================
+Test Suite for the Control Group Freezer and Signal Subsystems
+==============================================================
+Author: Matt Helsley
+Date: June, 2008
+Last update: January 19th, 2009
+
+About:
+------
+These tests exercise the freezer and signal subsystems (aka controllers)
+available since kernel 2.6.28 or later.
+
+These tests exercise the freezer control group controller. This controller is
+a useful for implementing container checkpointing or if you wish to gradually
+freeze tasks in cgroups before doing a suspend.
+
+The common case is embodied in the freeze_thaw.sh test file. However,
+the scripts are also designed to test a few obscure cases such as:
+	freeze self -- freeze the control group that the current process is
+		in
+	freeze cancellation -- freeze but then backout of the freeze processing
+		and issue a "thaw" command before reaching the frozen state
+	signalling freezing/frozen tasks -- this should delay delivery of the
+		signal until the task is unfrozen
+	vfork -- The vfork system call introduces an obscure special case for
+		the freezer kernel code. This test case attempts to trigger any
+		unanticipated corner cases involving vfork.
+
+
+NOTES:
+
+	Using the cgroup freezer prevents the tasks from being automatically
+		woken up upon a "Power Management Resume". You will need to
+		manually unfreeze cgroups.
+
+	These tests assume that most of the library functions in
+	libcgroup_subsys take much less than $sample_sleep time to execute. If
+	this assumption is incorrect then many of these tests may fail in
+	unusual ways. So make sure $sample_sleep is a "reasonable" amount of
+	time.
+
+Building:
+---------
+
+Run the command line:
+	make all
+
+
+Installing:
+-----------
+
+Run the command line:
+
+
+Cleaning:
+---------
+
+Run the command line:
+
+	make clean
+
+
+Running:
+--------
+
+Run the command line:
+
+	./run.sh
+
+Results:
+--------
+
+The results should show up as PASS/FAIL in the LTP logs for each script. The
+output frequently will be more specific (beyond which test script failed)
+about where and what failure occurred.
+

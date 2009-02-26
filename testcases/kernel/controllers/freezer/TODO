@@ -1,0 +1,84 @@
+Add Makefile rules to:
+	install freeze_*.sh scripts someplace?
+
+Generate sample results
+	Post these appropriately along with patch adding tests to LTP
+
+Generate patch adding these tests to the controllers (cgroup) suite
+	NOTE: How to clearly represent dependency of containers test
+		suite on the controllers suite once this is done?
+		Do nothing?
+
+Write new test scripts using Cedric's fork_exec_loop.c test.
+
+Add assert_sample_proc_died to lib.sh and call it from freeze_{sleep|kill}_thaw.sh
+
+Change all of the:
+	echo "ERROR: ..."
+	echo "INFO: ..."
+	echo "WARNING: ..."
+	(NOTE: some of these give options to the echo cmd)
+lines to use appropriate LTP API commands. This also entails replacing these
+with appropriate LTP API usage:
+
+./libcgroup_subsys:828:	assert_cgroup_freezer_state "FROZEN" "ERROR: failed to freeze cgroup"
+./libcgroup_subsys:846:	assert_cgroup_freezer_state "THAWED" "ERROR: Failed to thaw cgroup."
+./freezer/freeze_move_thaw.sh:22:			"ERROR: cgroup freezer started in non-THAWED state"
+./freezer/freeze_cancel.sh:18:			"ERROR: cgroup freezer started in non-THAWED state"
+./freezer/prereq.sh:10:tst_resm TINFO " It's ok if there's an ERROR before the next INFO."
+./freezer/prereq.sh:12:tst_resm TINFO " OK, resume worrying about ERRORS."
+./freezer/freeze_self_thaw.sh:31:		"ERROR: cgroup freezer started in non-THAWED state" && {
+./freezer/freeze_thaw.sh:17:			"ERROR: cgroup freezer started in non-THAWED state"
+./freezer/stop_freeze_thaw_cont.sh:18:			"ERROR: cgroup freezer started in non-THAWED state"
+./freezer/freeze_write_freezing.sh:16:			"ERROR: cgroup freezer started in non-THAWED state"
+./freezer/freeze_write_freezing.sh:21:	assert_cgroup_freezer_state "FROZEN" "ERROR: writing FREEZING to freezer.state should not change freezer state from FROZEN (expected IO error)"
+./freezer/stop_freeze_sleep_thaw_cont.sh:18:			"ERROR: cgroup freezer started in non-THAWED state"
+./freezer/TODO:3:		echo "ERROR: ..."
+./freezer/freeze_sleep_thaw.sh:21:			"ERROR: cgroup freezer started in non-THAWED state"
+./freezer/vfork_freeze.sh:10:	echo "ERROR: Failed to build vfork test binary." 1>&2
+./freezer/vfork_freeze.sh:36:		"ERROR: cgroup freezer started in non-THAWED state" && {
+./freezer/freeze_kill_thaw.sh:19:			"ERROR: cgroup freezer started in non-THAWED state"
+./freezer/vfork.c:37:perror("ERROR at " __FILE__ ":" str_expand(__LINE__) ": " s )
+./freezer/write_freezing.sh:16:			"ERROR: cgroup freezer started in non-THAWED state"
+./freezer/write_freezing.sh:19:	assert_cgroup_freezer_state "THAWED" "ERROR: writing FREEZING to freezer.state should not change freezer state (expected IO error)"
+Binary file ./freezer/vfork matches
+./testskel.c:53:		exit(EXIT_FAILURE);
+./testskel.c:61:			exit(EXIT_FAILURE);
+./freezer/vfork.c:58:			exit(EXIT_FAILURE);
+./freezer/vfork.c:180:				exit(EXIT_FAILURE);
+./freezer/vfork.c:186:			exit(EXIT_FAILURE);
+./freezer/vfork.c:268:			exit(EXIT_FAILURE);
+./freezer/vfork.c:287:			exit(EXIT_FAILURE);
+./freezer/vfork.c:300:		exit(EXIT_FAILURE);
+./freezer/vfork.c:306:		exit(EXIT_FAILURE);
+./freezer/vfork.c:323:			exit(EXIT_FAILURE);
+./freezer/vfork.c:327:			exit(EXIT_FAILURE);
+./signal/prereq.sh:9:tst_resm TINFO " It's ok if there's an ERROR before the next INFO."
+./signal/stop_kill.sh:21:	echo -n "INFO: Killing $sample_proc ..."
+./signal/TODO:4:		echo "INFO: ..."
+./signal/kill.sh:20:	echo -n "INFO: Killing $sample_proc ..."
+./signal/stop_sleep_cont.sh:26:	echo -n "INFO: Waiting until sleep command should have finished ($sample_proc) ... "
+./libcgroup_subsys:57:		tst_resm INFO "Failed to mount cgroup filesystem with ${cgroup_subsys} subsystem."
+./freezer/prereq.sh:10:tst_resm TINFO " It's ok if there's an ERROR before the next INFO."
+./freezer/stop_freeze_sleep_thaw_cont.sh:30:	echo -n "INFO: Waiting until sleep command should have finished ($sample_proc) ... "
+./freezer/TODO:4:		echo "INFO: ..."
+./freezer/freeze_sleep_thaw.sh:26:	echo -n "INFO: Waiting until sleep command should have finished ($sample_proc) ... "
+./freezer/freeze_kill_thaw.sh:29:	echo -n "INFO: Killing $sample_proc ..."
+./freezer/vfork.c:95:	if (ptrace(PTRACE_GETSIGINFO, child, NULL, &info) == -1) {
+./freezer/vfork.c:202:	if (ptrace(PTRACE_GETSIGINFO, gchild, NULL, &info) == -1) {
+	Port vfork.c and fork_exec_loop.c to use LTP APIs where appropriate?
+
+	Write a test using two sample cgroups (A and B). Freeze A. Move tasks
+		from A to B. Make sure the state of the moved task is concistent
+		with the state of the B group. Make sure it's possible to unfreeze
+		the moved tasks in a "user-friendly" way.
+
+Write new test scripts using Cedric's fork_exec_loop.c test.
+
+freeze_cancel.sh isn't guaranteed to try to thaw the cgroup while the cgroup is
+	in the freezing state. It might be nice to find a way to guarantee that
+	otherwise we aren't guaranteed to test the ability to cancel freezing.
+
+freeze_self_thaw.sh might have a race between starting 'exec sleep $sample_sleep' and killing the process. This would result in being unable to remove the "child" cgroup which in turn might cause subsequent tests to fail.
+
+Make use of TMPDIR and mktemp for tmp.txt in vfork_freeze.sh

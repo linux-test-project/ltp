@@ -1,0 +1,101 @@
+#!/bin/bash
+
+#
+# Copyright (c) International Business Machines  Corp., 2009
+# Author: Matt Helsley <matthltc@us.ibm.com>
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+
+###
+### LTP framework shim
+###
+export npassed=0
+export nfailed=0
+
+function tst_func ()
+{
+	local out_fd=1
+	local tag="<no tag>"
+	local cmd="<no cmd>"
+	local msg="<no msg>"
+
+	if [ $# -gt 0 ]; then
+		cmd="$1"
+		shift
+	fi
+	if [ $# -gt 0 ]; then
+		tag="$1"
+		shift
+	fi
+	if [ $# -gt 0 ]; then
+		msg="$*"
+	fi
+
+	case "$cmd" in
+	tst_resm|tst_brkm|tst_exit) ;;
+	*)
+		out_fd=2
+		msg="(LTP log violation: Uknown LTP cmd: $cmd) $msg"
+		;;
+	esac
+
+	case "$tag" in
+	TINFO)
+		;;
+	TPASS)
+		((npassed++))
+		;;
+	TWARN)
+		out_fd=2
+		;;
+	TBROK)
+		out_fd=2
+		;;
+	TFAIL)
+		((nfailed++))
+		;;
+	*)
+		out_fd=2
+		msg="(LTP log violation: Uknown LTP log tag: $tag) $msg"
+		;;
+	esac
+
+	#echo "LTP log: $cmd ${TCID} ${TST_COUNT}/${TST_TOTAL}: $tag $msg" 1>&$out_fd
+	echo "${TCID} ${TST_COUNT}/${TST_TOTAL}: $tag $msg" 1>&$out_fd
+}
+
+function tst_resm ()
+{
+	tst_func "tst_resm" "$@"
+}
+
+function tst_brkm ()
+{
+	tst_func "tst_brkm" "$@"
+}
+
+function tst_exit ()
+{
+	tst_func "tst_exit" "$@"
+	if ((nfailed > 0)); then
+		exit 1
+	else
+		exit 0
+	fi
+}
+
+export -f tst_func tst_resm tst_brkm tst_exit
+export TCID TST_COUNT TST_TOTAL

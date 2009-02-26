@@ -1,0 +1,994 @@
+#!/bin/bash
+# Copyright (c) International Business Machines  Corp., 2008
+# Author: Matt Helsley <matthltc@us.ibm.com>
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+#
+
+# A library of cgroup test functions for testing the cgroup freezer and,
+# if present, a cgroup signal subsystem.
+#
+# Most of these assume the current directory is the cgroup of interest.
+# mount_{freezer|signal} and make_sample_cgroup are the exceptions to this rule.
+#
+# On failure, a message indicating what failed is printed and the
+#    exit status of the failing command is returned. If "result" is unset
+#    then we assign the exit status of the failed command to it.
+#
+# The variable "result" holds the exit status of the first command that failed,
+#    $UNFINISHED if no command has failed yet, or $FINISHED if no command
+#    has failed and we've finished all significant parts of the test. Note:
+#    significant parts usually do not include the cleanup of the test.
+#
+
+
+# xargs 4.1.20 only accepts -i instead of -I
+# However -I is added and -i deprecated somewhere between (4.1.20, 4.2.32]
+XRGSV=$(xargs --version | sed -e 's/^[^[:digit:]]*//')
+export XARGS_REPL_STR="%"
+case ${XRGSV} in
+[456789].[23456789][0-9]*.*|[1-9][0-9][0-9]*.*.*) # version > 4.1.*
+	export XARGS_REPL_OPT="-I${XARGS_REPL_STR}"
+	;;
+4.1.*|*)
+	export XARGS_REPL_OPT="-i${XARGS_REPL_STR}"
+	;;
+esac
+unset XRGSV
+
+export UNFINISHED=""
+export FINISHED=0
+
+#
+# Tests are either running or cleaning up. Cleanup phases do not emit TFAIL.
+#
+export LIB_TEST_STATE="running"
+
+export max_state_samples=5 # number of times to sample
+export sample_state_period=1  # number of seconds between samplings
+export sample_sleep=5     # how long the sample program should sleep
+export result="$UNFINISHED"
+
+# These are echo'd to freezer.state.
+export FREEZE='FROZEN'
+export THAW='THAWED'
+
+# We use /bin/echo to write to cgroup files because it's exit status will not
+# hide write errors (bash's echo does not indicate if the write succeeded).
+export CG_FILE_WRITE=/bin/echo
+
+declare -r UNFINISHED FINISHED FREEZE THAW max_state_samples sample_state_period
+
+# When we're running we want to issue failure results when things go wrong.
+function running_cgroup_test()
+{
+	export LIB_TEST_STATE="TFAIL"
+}
+
+# But when we're cleaning up we want to issue warnings (if not TINFO).
+function cleanup_cgroup_test()
+{
+	export LIB_TEST_STATE="TWARN"
+}
+
+# Mounts the cgroup filesystem somewhere and pushes pwd onto the dir stack
+function mount_cgroup_subsys()
+{
+	local rc=0
+
+	mkdir -p /tmp/${cgroup_subsys}_test > /dev/null 2>&1
+	rc=$?
+
+	# Don't test status because we don't care if the directory already
+	# exists.
+
+	if [ ! -d /tmp/${cgroup_subsys}_test ]; then
+		result=${result:-$rc}
+		tst_brkm TBROK "Failed to make mount point for cgroup filesystem"
+		return $result
+	fi
+
+	mount -t cgroup -o${cgroup_subsys} test_cgroup_${cgroup_subsys} /tmp/${cgroup_subsys}_test
+	rc=$?
+	if [ $rc -ne 0 ]; then
+		result=${result:-$rc}
+		tst_resm TINFO "Failed to mount cgroup filesystem with ${cgroup_subsys} subsystem."
+		rmdir /tmp/${cgroup_subsys}_test 2> /dev/null
+		return $rc
+	fi
+
+	pushd /tmp/${cgroup_subsys}_test > /dev/null 2>&1
+	rc=$?
+	if [ $rc -ne 0 ]; then
+		result=${result:-$rc}
+		tst_brkm TBROK "Failed to change working directory into cgroup filesystem (pwd: \"$(pwd)\")"
+		umount /tmp/${cgroup_subsys}_test || umount -l /tmp/${cgroup_subsys}_test || tst_brkm TBROK "Failed to unmount cgroup filesystem with ${cgroup_subsys} subsystem"
+		rmdir /tmp/${cgroup_subsys}_test 2> /dev/null
+		return $rc
+	fi
+
+	return 0
+}
+
+function mount_freezer()
+{
+	export cgroup_subsys=freezer
+	mount_cgroup_subsys
+}
+
+function mount_signal()
+{
+	export cgroup_subsys=signal
+	mount_cgroup_subsys
+}
+
+# umounts the cgroup filesystem and pops the dir stack
+function umount_cgroup_subsys()
+{
+	popd > /dev/null 2>&1
+	local popd_result=$?
+	umount /tmp/${cgroup_subsys}_test > /dev/null 2>&1 \
+	  || umount -l /tmp/${cgroup_subsys}_test || \
+	    tst_brkm TBROK "Failed to unmount cgroup filesystem (umount exit status: $?)"
+	local umnt_result=$?
+	local rc=0
+
+	if [ $popd_result -ne 0 ]; then
+		result=${result:-$popd_result}
+		rc=$popd_result
+	elif [ $umnt_result -ne 0 ]; then
+		result=${result:-$umnt_result}
+		rc=$umnt_result
+	elif [ $umnt_result -eq 0 -a $popd_result -eq 0 ]; then
+		rmdir /tmp/${cgroup_subsys}_test
+		return 0
+	fi
+
+	return $rc
+}
+
+function umount_freezer()
+{
+	[ "${cgroup_subsys}" != "freezer" ] && {
+		result=${result:-5}
+		exit -1
+	}
+	umount_cgroup_subsys
+	unset cgroup_subsys
+}
+
+function cleanup_freezer()
+{
+	local save_result="${result}"
+	local save_pwd="$(pwd)"
+
+	mount_freezer && {
+		# Run these commands in bash because we need $(cmd subst) and
+		# we need to redirect to different freezer.state files for each
+		# group
+		# Kill any leftover tasks
+		disown -a
+		find /tmp/${cgroup_subsys}_test -mindepth 1 -depth -type d -print0 | \
+		xargs -0r -n 1 ${XARGS_REPL_OPT} /bin/bash -c 'kill $(cat "'"${XARGS_REPL_STR}"'/tasks") 2> /dev/null'
+
+		# For each group in the freezer hierarch, that its tasks
+		find /tmp/${cgroup_subsys}_test -mindepth 1 -depth -type d -print0 | \
+		xargs -0r -n 1 ${XARGS_REPL_OPT} /bin/bash -c "\"${CG_FILE_WRITE}\" \"${THAW}\" > '${XARGS_REPL_STR}/freezer.state'"
+
+		# Kill any leftover tasks
+		find /tmp/${cgroup_subsys}_test -mindepth 1 -depth -type d -print0 | \
+		xargs -0r -n 1 ${XARGS_REPL_OPT} /bin/bash -c 'kill $(cat "'"${XARGS_REPL_STR}"'/tasks") 2> /dev/null'
+
+		sleep 2
+
+		# Really kill any leftover tasks
+		find /tmp/${cgroup_subsys}_test -mindepth 1 -depth -type d -print0 | \
+		xargs -0r -n 1 ${XARGS_REPL_OPT} /bin/bash -c 'kill -s SIGKILL $(cat "'"${XARGS_REPL_STR}"'/tasks") 2> /dev/null'
+
+		# Don't need to run these xargs commands in bash since we want
+		# to see what's left on stdout
+		LINES=$(find /tmp/${cgroup_subsys}_test -mindepth 1 -depth -type d -print0 | \
+			xargs -0r -n 1 ${XARGS_REPL_OPT} cat "${XARGS_REPL_STR}/tasks" | wc -l)
+		if (( LINES == 0 )); then
+			# Remove the empty groups
+			find /tmp/${cgroup_subsys}_test -mindepth 1 -depth -type d -print0 | xargs -r0 rmdir
+		else
+			tst_resm TWARN "Could not cleanup:"
+			find /tmp/${cgroup_subsys}_test -mindepth 1 -depth -type d -print0 | xargs -0r -n 1 ${XARGS_REPL_OPT} ls -ld "${XARGS_REPL_STR}/tasks"
+		fi
+
+		umount_freezer
+	}
+
+	if [ "$save_pwd" != `pwd` ]; then
+		tst_resm TWARN "libcgroup_subsys: cleanup_freezer() is broken"
+		cd "$save_pwd"
+	fi
+
+	result="${save_result}"
+}
+
+function umount_signal()
+{
+	[ "${cgroup_subsys}" != "signal" ] && {
+		result=${result:-6}
+		exit -1
+	}
+	umount_cgroup_subsys
+	unset cgroup_subsys
+}
+
+function cleanup_signal()
+{
+	local save_result="${result}"
+	local save_pwd="$(pwd)"
+
+	mount_signal && {
+		find /tmp/${cgroup_subsys}_test -mindepth 1 -depth -type d -print0 | xargs -r0 rmdir
+		umount_signal
+	}
+
+	if [ "$save_pwd" != `pwd` ]; then
+		tst_resm TWARN "libcgroup_subsys: cleanup_signal() is broken"
+		cd "$save_pwd"
+	fi
+	result="${save_result}"
+}
+
+function assert_cgroup_rwfile()
+{
+	local file="$1"
+	local descr="$2"
+	local rc=0
+
+	if [ ! -e "${file}" ]; then
+		tst_resm ${LIB_TEST_STATE} "$descr missing"
+		rc=1
+	fi
+
+	if [ ! -f "${file}" ]; then
+		tst_resm ${LIB_TEST_STATE} "$descr is not a regular file"
+		rc=2
+	fi
+
+	if [ ! -r "${file}" ]; then
+		tst_resm ${LIB_TEST_STATE} "$descr is not readable"
+		rc=3
+	fi
+
+	if [ ! -w "${file}" ]; then
+		tst_resm ${LIB_TEST_STATE} "$descr is not writeable"
+		rc=4
+	fi
+
+	[ $rc -ne 0 ] && {
+		result=${result:-$rc}
+		local s="$(stat "${file}")"
+		tst_resm ${LIB_TEST_STATE} "${s}"
+	}
+
+	return $rc
+}
+
+function assert_cgroup_tasks_rwfile()
+{
+	assert_cgroup_rwfile "tasks" "task list"
+	return $?
+}
+
+function dump_named_cgroup_tasks()
+{
+	local cgroup_name="$1"
+	local tasks
+
+	tasks=( $(cat "${cgroup_name}/tasks") ) # don't assign directly (bash bug)
+	if [ -z "${tasks[*]}" ]; then
+		return 0
+	fi
+	ps -p "${tasks[*]}" -o 'pid,ppid,pgid,tid,tpgid,blocked,ignored,pending,stat,tty,args'
+}
+
+function dump_cgroup_tasks()
+{
+	dump_named_cgroup_tasks "$(pwd)"
+}
+
+function assert_cgroup_tasks_empty()
+{
+	local nlines=$(( `cat tasks | wc -l` + 0))
+	local rc=$?
+
+	[ $rc -eq 0 -a $nlines -eq 0 ] && return 0
+	rc=$?
+	result=${result:-$rc}
+	tst_resm ${LIB_TEST_STATE} "cgroup task list is not empty: "
+	dump_cgroup_tasks 1>&2
+	return $rc
+}
+
+function assert_task_in_named_cgroup()
+{
+	local task_pid=$1
+	local cgroup_name="$2"
+
+	cat "${cgroup_name}/tasks" | grep -E "^${task_pid}\$" > /dev/null 2>&1 && return 0
+	local rc=$?
+	result=${result:-$rc}
+	tst_resm ${LIB_TEST_STATE} "Expected pid ${task_pid} is not in \"${cgroup_name}\" task list"
+	dump_named_cgroup_tasks "${cgroup_name}" 1>&2
+	return $rc
+}
+
+function assert_task_not_in_named_cgroup()
+{
+	local task_pid=$1
+	local cgroup_name="$2"
+
+	cat "${cgroup_name}/tasks" | grep -E "^${task_pid}\$" > /dev/null 2>&1 || return 0
+	local rc=1 # $? == 0 is an error in this case
+	result=${result:-$rc}
+	tst_resm ${LIB_TEST_STATE} "Expected pid ${task_pid} is in \"${cgroup_name}\" task list"
+	dump_named_cgroup_tasks "${cgroup_name}" 1>&2
+	return $rc
+}
+
+function assert_task_in_cgroup()
+{
+	assert_task_in_named_cgroup $1 "$(pwd)"
+	return $?
+}
+
+function assert_task_not_in_cgroup()
+{
+	assert_task_not_in_named_cgroup $1 "$(pwd)"
+	return $?
+}
+
+function assert_sample_proc_in_cgroup()
+{
+	assert_task_in_cgroup $sample_proc
+	return $?
+}
+
+function assert_sample_proc_not_in_cgroup()
+{
+	assert_task_not_in_cgroup $sample_proc
+	return $?
+}
+
+function assert_sample_proc_in_named_cgroup()
+{
+	assert_task_in_named_cgroup $sample_proc "$1"
+	return $?
+}
+
+function assert_sample_proc_not_in_named_cgroup()
+{
+	assert_task_not_in_named_cgroup $sample_proc "$1"
+	return $?
+}
+
+function get_task_state()
+{
+	ps -p $1 -o 'state=' 2>/dev/null
+}
+
+# TODO Check: Do these need to ignore case differences?
+function assert_task_state()
+{
+	local task_pid=$1
+	local expected_state="$2"
+	local ps_state="$(get_task_state ${task_pid})"
+	local rc=$?
+
+	[ $rc -eq 0 -a "$ps_state" == "${expected_state}" ] && return 0
+	rc=$?
+	result=${result:-$rc}
+	tst_resm ${LIB_TEST_STATE} "Expected task ${task_pid} to be in state \"${expected_state}\""
+	return $rc
+}
+
+#
+# Check that the specified task is not in the specified state
+#
+function assert_task_not_in_state()
+{
+	local task_pid=$1
+	local expected_state="$2"
+	local ps_state="$(get_task_state ${task_pid})"
+ 	local rc=$?
+
+	[ $rc -eq 0 -a "$ps_state" != "${expected_state}" ] && return 0
+	rc=$?
+	result=${result:-$rc}
+	tst_resm ${LIB_TEST_STATE} "Expected task ${task_pid} to not be in state \"${expected_state}\""
+	return $rc
+}
+
+#
+# Frozen tasks are in the "D" state according to ps
+# tasks in "T" state may also be in a "frozen" state
+#
+function assert_task_not_frozen()
+{
+	local task_pid=$1
+	local ps_state="$(ps -p $task_pid -o 'state=')"
+	local rc=$?
+
+	[ $rc -eq 0 -a "$ps_state" != "D" ] && return 0
+	rc=$?
+	result=${result:-$rc}
+	tst_resm ${LIB_TEST_STATE} "Expected task ${task_pid} is not frozen (unexpected task state: \"$ps_state\")"
+	return $rc
+}
+
+function assert_task_is_frozen()
+{
+	local task_pid=$1
+	local ps_state="$(ps -p $task_pid -o 'state=')"
+	local rc=$?
+
+	[ $rc -eq 0 -a "$ps_state" == "D" -o "$ps_state" == "T" ] && return 0
+	rc=$?
+	result=${result:-$rc}
+	tst_resm ${LIB_TEST_STATE} "Expected task ${task_pid} to be frozen (unexpected task state: \"$ps_state\")"
+	return $rc
+}
+
+function assert_sample_proc_not_frozen()
+{
+	assert_task_not_frozen $sample_proc
+	return $?
+}
+
+function assert_sample_proc_is_frozen()
+{
+	assert_task_is_frozen $sample_proc
+	return $?
+}
+
+function assert_sample_proc_stopped()
+{
+	assert_task_state $sample_proc 'T'
+	return $?
+}
+
+function assert_sample_proc_not_stopped()
+{
+	assert_task_not_in_state $sample_proc 'T'
+	return $?
+}
+
+function assert_sample_proc_sleeping()
+{
+	assert_task_state $sample_proc 'S'
+	return $?
+}
+
+function assert_sample_proc_not_sleeping()
+{
+	assert_task_not_in_state $sample_proc 'S'
+	return $?
+}
+
+function assert_cgroup_subsys_state_rwfile()
+{
+	if [ "${cgroup_subsys}" == "freezer" ]; then
+		assert_cgroup_rwfile "freezer.state" "freezer state"
+		return $?
+	elif [ "${cgroup_subsys}" == "freezer" ]; then
+		assert_cgroup_rwfile "signal.kill" "signal file"
+		return $?
+	else
+		return -1
+	fi
+}
+
+function get_freezer_state()
+{
+	local state="$(cat freezer.state)"
+	local rc=$?
+
+	if [ $rc -ne 0 ]; then
+		result=${result:-$rc}
+		tst_resm ${LIB_TEST_STATE} "Failed to read freezer state."
+		return $rc
+	fi
+	echo "${state}"
+	return 0
+}
+
+function assert_cgroup_freezer_state()
+{
+	local goal_state="$1"
+	local state="$(get_freezer_state)"
+	local rc=$?
+
+	[ $rc -eq 0 -a "${state}" == "${goal_state}" ] && return 0
+	rc=$?
+	result=${result:-$rc}
+	tst_resm ${LIB_TEST_STATE} "Expected freezer state \"$2\" but found freezer state: \"$state\""
+	return $rc
+}
+
+function make_sample_cgroup_named()
+{
+	local name="$1"
+	mkdir "${name}"
+	local rc=$?
+
+	# So long as we made the directory we don't care
+	if [ ! -d "${name}" -a $rc -ne 0 ]; then
+		# But if it doesn't exist report the exit status of mkdir
+		result=${result:-$rc}
+		return $rc
+	fi
+
+	pushd "${name}" > /dev/null 2>&1
+	rc=$?
+	if [ $rc -ne 0 ]; then
+		result=${result:-$rc}
+		return $rc
+	fi
+
+	assert_cgroup_tasks_rwfile || {
+		popd > /dev/null 2>&1
+		return $?
+	}
+	assert_cgroup_tasks_empty || {
+		popd > /dev/null 2>&1
+		return $?
+	}
+	assert_cgroup_subsys_state_rwfile || {
+		popd > /dev/null 2>&1
+		return $?
+	}
+	popd > /dev/null 2>&1
+	return 0
+}
+
+function make_sample_cgroup()
+{
+	make_sample_cgroup_named "child"
+	local rc=$?
+
+	# So long as we made the directory we don't care
+	if [ $rc -ne 0 ]; then
+		return $rc
+	fi
+
+	cd "child" # we know this will succeed since make_sample_cgroup_named
+		   # tested this
+	return 0
+}
+
+function rm_sample_cgroup_named()
+{
+	local cgroup_name="$1"
+	local rc=0
+
+	pushd "${cgroup_name}" > /dev/null 2>&1 && {
+		assert_cgroup_tasks_rwfile || {
+			popd > /dev/null 2>&1
+			return $?
+		}
+		assert_cgroup_tasks_empty || {
+			popd > /dev/null 2>&1
+			return $?
+		}
+		assert_cgroup_subsys_state_rwfile || {
+			popd > /dev/null 2>&1
+			return $?
+		}
+		popd > /dev/null 2>&1
+	} || {
+		rc=$?
+		result=${result:-$rc}
+		return $rc
+	}
+
+	[ -d "${cgroup_name}" ] && rmdir "${cgroup_name}" && return 0
+	rc=$?
+	tst_resm TWARN "Failed to remove cgroup \"${cgroup_name}\""
+	result=${result:-$rc}
+	return $rc
+}
+
+function rm_sample_cgroup()
+{
+	local cgroup_name="$(basename $(pwd))"
+	local rc=0
+
+	cd .. || {
+		rc=$?
+		result=${result:-$rc}
+		return $rc
+	}
+	rm_sample_cgroup_named "${cgroup_name}"
+	return $?
+}
+
+function ls_pids()
+{
+	ps -e -o 'pid=' | sed -e 's/[[:space:]]\+//g'
+}
+
+function assert_task_exists()
+{
+	local task_pid=$1
+
+	ls_pids | grep -E "^${task_pid}\$" > /dev/null 2>&1 && return 0
+	local rc=$?
+
+	result=${result:-$rc}
+	tst_resm ${LIB_TEST_STATE} "Expected pid ${task_pid} does not exist"
+	return $rc
+}
+
+function assert_task_does_not_exist()
+{
+	local task_pid=$1
+
+	ls_pids | grep -E "^${task_pid}\$" > /dev/null 2>&1 || return 0
+	local rc=1 # $? == 0 is an error in this case
+
+	result=${result:-$rc}
+	tst_resm ${LIB_TEST_STATE} "Did not expect pid ${task_pid} to exist"
+	return $rc
+}
+
+function assert_sample_proc_exists()
+{
+	assert_task_exists $sample_proc
+	return $?
+}
+
+function assert_sample_proc_does_not_exist()
+{
+	assert_task_does_not_exist $sample_proc
+	return $rc
+}
+
+function start_sample_proc()
+{
+	local sample_cmd="/bin/sleep"
+	local args
+
+	args=( $sample_sleep ) # can't assign directly because of bash v2/v3 inconsistency
+	if [ $# -gt 0 ]; then
+		sample_cmd="$1"
+		shift 1
+		args=( "$@" )
+	fi
+
+	[ -n "$sample_proc" ] && assert_sample_proc_does_not_exist
+
+	"$sample_cmd" "${args[@]}" &
+	local rc=$?
+	export sample_proc=$!
+	assert_sample_proc_exists
+
+	return $rc
+}
+
+function add_sample_proc_to_named_cgroup()
+{
+	local cgroup_name="$1"
+
+	assert_sample_proc_exists
+	"${CG_FILE_WRITE}" $sample_proc > "${cgroup_name}/tasks"
+	local rc=$?
+	if [ $rc -ne 0 ]; then
+		result=${result:-$rc}
+		tst_resm ${LIB_TEST_STATE} "Failed to add sample process $sample_proc to cgroup \"${cgroup_name}\""
+		return $rc
+	fi
+	assert_task_in_named_cgroup $sample_proc "${cgroup_name}"
+	return $?
+}
+
+function add_sample_proc_to_cgroup()
+{
+	add_sample_proc_to_named_cgroup "$(pwd)"
+	return $?
+}
+
+function kill_sample_proc()
+{
+	if [ -z "$sample_proc" ]; then
+		# It's no longer running or never started.
+		# If it was supposed to have started but did not then that
+		# should be determined by checking start_sample_proc results.
+		return 0
+	fi
+
+	# Hey, bash, don't print out any of your messy job status notices
+	disown -a
+
+	if [ "$(get_task_state $sample_proc)" == "D" ]; then
+		tst_resm TWARN "sample process is frozen stiff"
+		kill $sample_proc
+		local rc=$?
+		result=${result:-$rc}
+		return $rc
+	fi
+
+	# kill child processes of the sample process
+	while pgrep -P $sample_proc ; do
+		pkill -SIGTERM -P $sample_proc
+		sleep 1
+		pkill -SIGKILL -P $sample_proc
+
+		ps -p $(pgrep -P $sample_proc) -o 'state=' | grep -v D && continue
+		# Give up if all the child processes are frozen in D state or
+		# if there aren't any more child processes
+		break
+	done
+	# DEBUG dump pstree under $sample_proc:
+	# pstree -A -p $sample_proc
+	kill $sample_proc > /dev/null 2>&1 || kill -s SIGKILL $sample_proc > /dev/null 2>&1 || {
+		local rc=$?
+
+		ps -p $sample_proc -o 'state=' > /dev/null 2>&1
+		if [ $? -eq 1 ]; then
+			# It's dead. We're OK.
+			return 0
+		fi
+		# It's still alive somehow! Give up.
+		result=${result:-$rc}
+		tst_resm TWARN "Failed to kill sample process $sample_proc (kill exit status: $rc)"
+	}
+	assert_sample_proc_not_in_cgroup
+	assert_sample_proc_does_not_exist
+	return $?
+}
+
+function issue_freeze_cmd()
+{
+	local goal_state="FROZEN"
+	local sample_state_count=1
+	local state="$(get_freezer_state)"
+	local rc=$?
+
+	if [ $rc -ne 0 ]; then
+		return $rc
+	fi
+
+	while [ "${state}" != "${goal_state}" ]; do
+		"${CG_FILE_WRITE}" "${FREEZE}" > freezer.state
+		sleep $sample_state_period
+		state="$(get_freezer_state)"
+		rc=$?
+		if [ $rc -ne 0 ]; then
+			break
+		fi
+
+		((sample_state_count++))
+		if [ "$sample_state_count" -ge "$max_state_samples" ]; then
+			break
+		fi
+	done
+
+	if [ "${state}" == "${goal_state}" ]; then
+		return 0
+	fi
+
+	result=${result:-$rc}
+	tst_resm ${LIB_TEST_STATE} "Failed to issue freeze command (freezer state: \"`get_freezer_state`\")."
+	return $rc
+}
+
+# If we're trying to "freeze" tasks with SIGTOP
+function issue_stop_as_freeze_cmd()
+{
+	local goal_state="T"
+	local sample_state_count=1
+	local ps_state="$(get_task_state ${task_pid})"
+	local rc=$?
+
+	if [ $rc -ne 0 ]; then
+		return $rc
+	fi
+
+	while [ "${ps_state}" != "${goal_state}" ]; do
+		kill -s SIGSTOP $sample_proc
+		sleep $sample_state_period
+		ps_state="$(get_task_state ${task_pid})"
+		rc=$?
+		if [ $rc -ne 0 ]; then
+			break
+		fi
+
+		((sample_state_count++))
+		if [ "$sample_state_count" -ge "$max_state_samples" ]; then
+			break
+		fi
+	done
+
+	if [ "${ps_state}" == "${goal_state}" ]; then
+		return 0
+	fi
+
+	result=${result:-$rc}
+	tst_resm ${LIB_TEST_STATE} "Failed to issue stop (freeze) command (task state: \"${ps_state}\")."
+	return $rc
+}
+
+function send_signal()
+{
+	"${CG_FILE_WRITE}" $1 > 'signal.kill' && return 0
+	local rc=$?
+	result=${result:-$rc}
+	tst_resm ${LIB_TEST_STATE} "Failed to send signal: $1 to tasks in cgroup (rc: $rc)"
+ 	return $rc
+}
+
+function wait_until_goal_state_or_timeout()
+{
+	local goal_state="$1"
+	local sample_state_count=1
+	local state="$(get_freezer_state)"
+	local rc=$?
+
+	if [ $rc -ne 0 ]; then
+		return $rc
+	fi
+
+	while [ "${state}" != "${goal_state}" ]; do
+		sleep $sample_state_period
+		state="$(get_freezer_state)"
+		rc=$?
+		if [ $rc -ne 0 ]; then
+			break
+		fi
+
+		((sample_state_count++))
+		if [ "$sample_state_count" -ge "$max_state_samples" ]; then
+			break
+		fi
+	done
+	return $rc
+}
+
+# TODO convert signal scripts -- insert task between until and goal
+function wait_until_sample_proc_goal_state_or_timeout()
+{
+	local goal_state="$1"
+	local sample_state_count=1
+	local ps_state="$(get_task_state ${sample_proc})"
+	local rc=$?
+
+	while [ $rc -eq 0 -a "${ps_state}" != "${goal_state}" -a \
+		"$sample_state_count" -lt "$max_state_samples" ]; do
+		sleep $sample_state_period
+		ps_state="$(get_task_state ${sample_proc})"
+		rc=$?
+		if [ $rc -ne 0 ]; then
+			result=${result:-$rc}
+			tst_resm ${LIB_TEST_STATE} "Failed to read process state."
+			break
+		fi
+
+		((sample_state_count++))
+	done
+	return $rc
+}
+
+# TODO convert signal scripts -- insert task between until and not
+function wait_until_sample_proc_not_goal_state_or_timeout()
+{
+	local goal_state="$1"
+	local sample_state_count=1
+	local ps_state="$(get_task_state ${sample_proc})"
+	local rc=$?
+
+	while [ $rc -eq 0 -a "${ps_state}" == "${goal_state}" -a \
+		"$sample_state_count" -lt "$max_state_samples" ]; do
+		sleep $sample_state_period
+		ps_state="$(get_task_state ${sample_proc})"
+		rc=$?
+		if [ $rc -ne 0 ]; then
+			result=${result:-$rc}
+			tst_resm ${LIB_TEST_STATE} "Failed to read process state."
+			break
+		fi
+
+		((sample_state_count++))
+	done
+	return $rc
+}
+
+function wait_until_frozen()
+{
+	wait_until_goal_state_or_timeout "FROZEN" || return $?
+	assert_cgroup_freezer_state "FROZEN" "ERROR: failed to freeze cgroup"
+	# TODO assert all tasks in cgroup are in 'D' or 'T' state
+	# TODO assert that trying to add a task to cgroup results in EBUSY
+	return $?
+}
+
+function issue_thaw_cmd()
+{
+	"${CG_FILE_WRITE}" "${THAW}" > freezer.state && return 0
+	local rc=$?
+	result=${result:-$rc}
+	tst_resm ${LIB_TEST_STATE} "Failed to issue thaw command."
+	return $rc
+}
+
+function issue_cont_as_thaw_cmd()
+{
+	local goal_state="T"
+	local sample_state_count=1
+	local ps_state="$(get_task_state ${task_pid})"
+	local rc=$?
+
+	if [ $rc -ne 0 ]; then
+		return $rc
+	fi
+
+	while [ "${ps_state}" == "${goal_state}" ]; do
+		kill -s SIGCONT $sample_proc
+		sleep $sample_state_period
+		ps_state="$(get_task_state ${task_pid})"
+		rc=$?
+		if [ $rc -ne 0 ]; then
+			break
+		fi
+
+		((sample_state_count++))
+		if [ "$sample_state_count" -ge "$max_state_samples" ]; then
+			break
+		fi
+	done
+
+	if [ "${ps_state}" != "${goal_state}" ]; then
+		return 0
+	fi
+
+	result=${result:-$rc}
+	tst_resm ${LIB_TEST_STATE} "Failed to issue continue (thaw) command (task state: \"${ps_state}\")."
+	return $rc
+}
+
+function wait_until_thawed()
+{
+	wait_until_goal_state_or_timeout "THAWED" || return $?
+	assert_cgroup_freezer_state "THAWED" "ERROR: Failed to thaw cgroup."
+	return $?
+}
+
+function wait_until_freezing()
+{
+	wait_until_goal_state_or_timeout "FREEZING"
+	# Time critical -- we race with the kernel as it freezes tasks in the
+	# cgroup. So rather than assert "FREEZING" we just return
+	return $?
+}
+
+function wait_until_sample_proc_stopped()
+{
+	wait_until_sample_proc_state_or_timeout 'T' || return $?
+	assert_sample_proc_stopped
+	return $?
+}
+
+function wait_until_sample_proc_not_stopped()
+{
+	wait_until_sample_proc_not_goal_state_or_timeout 'T' || return $?
+	assert_sample_proc_not_stopped
+	return $?
+}

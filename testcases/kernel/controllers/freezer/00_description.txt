@@ -1,0 +1,67 @@
+freeze_cancel.sh
+	This bash script tests freezer code by starting a long sleep process.
+	We initially try to freeze the cgroup but then try to cancel that.
+	After we cancel the sleep process should eventually reach the thawed
+	state. We expect the process to still be alive as we cleanup the test.
+
+freeze_kill_thaw.sh
+	This bash script tests freezer code by starting a long sleep process.
+	The sleep process is frozen. We then kill the sleep process.
+	Then we unfreeze the sleep process and see what happens. We expect the
+	sleep process to receive the kill signals and exit almost immediately
+	after the cgroup is thawed.
+
+freeze_move_thaw.sh
+	This bash script tests freezer code by starting a long sleep process.
+	The sleep process is frozen. We then move the sleep process to a THAWED
+	cgroup. We expect moving the sleep process to fail.
+
+freeze_self_thaw.sh
+	This bash script tests freezer code by starting a long subshell process.
+	The subshell process sleeps and then freezes the control group it is a
+	part of. We then thaw the subshell process. We expect the unthawed
+	subshell process to need cleanup afterwards (allows us to test
+	successfull thawing).
+
+freeze_sleep_thaw.sh
+	This bash script tests freezer code by starting a long sleep process.
+	The sleep process is frozen. We then wait until the sleep process should
+	have exited. Then we unfreeze the sleep process. We expect the
+	sleep process to wakeup almost immediately after the cgroup is thawed,
+	recognize that its expiration time has long since passed, and exit
+	before we get a chance to "see" it again.
+
+freeze_thaw.sh
+	This bash script tests freezer code by starting a long sleep process.
+	The sleep process is frozen. We then thaw the process before it exits.
+	We expect the process to still be alive as we cleanup the test.
+
+freeze_write_freezing.sh
+	Freeze the cgroup and then make sure that writing "FREEZING" into
+	freezer.state reports an error (EIO) and doesn't change the freezer's
+	state (which was "FROZEN").
+
+stop_freeze_sleep_thaw_cont.sh
+	This bash script tests freezer code by starting a long sleep process.
+	The sleep process is stopped and then frozen. We then thaw the process
+	after it normally would have exited.
+	We expect the process to still be around as we cleanup the test.
+
+stop_freeze_thaw_cont.sh
+	This bash script tests freezer code by starting a long sleep process.
+	The sleep process is stopped and then frozen. We then thaw the process
+	before it normally would have exited.
+	We expect the process to still be around as we cleanup the test.
+
+vfork_freeze.sh
+	This bash script tests freezer code by starting a process with vfork(2).
+	vfork causes the freezer to wait until the vfork call "returns" to the
+	parent. We need the vfork test binary -- ensure it's been built.
+
+write_freezing.sh
+	Try to write "FREEZING" into the freezer.state while freezer.state ==
+	"THAWED". This should result in an error (EIO) and should not change
+	the freezer state.
+
+fork_freeze.sh
+	A task within the cgroup to be frozen tries to fork.
