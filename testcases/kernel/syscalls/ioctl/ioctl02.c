@@ -214,7 +214,7 @@ int main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
-	return(0);
+	return 0;
 }
 
 void
@@ -291,7 +291,7 @@ run_ptest()
 		return(chk_tty_parms());
 	} else {
 		tst_resm(TINFO, "call succeeded");
-		return(0);
+		return 0;
 	}
 }
 
@@ -312,7 +312,7 @@ run_ctest()
 	if (close(childfd) == -1) {
 		tst_resm(TINFO, "close() in run_ctest() failed");
 	}
-	return(0);
+	return 0;
 }
 
 int

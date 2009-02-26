@@ -194,7 +194,7 @@ int main(argc, argv)
 
 	anyfail();
 	/** NOT REACHED **/
-	return(0);
+	return 0;
 }
 
 int bd_arg(str)

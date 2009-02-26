@@ -271,7 +271,7 @@ int main()
 
 	anyfail();
         /***** NOT REACHED ******/
-	return(0);
+	return 0;
 }
 
 int generate(string, level)
@@ -446,7 +446,7 @@ int level;    	/* the tree depth variable */
 		/*				*/
 		/********************************/
 
-		return(0);
+		return 0;
 } 
 int check()
 
@@ -478,7 +478,7 @@ int check()
 			printf("\nEnd of path_list file reached \n");
 #endif
 		
-			return(0);
+			return 0;
 		}
 
 #ifdef PRINT
@@ -590,7 +590,7 @@ int  get_next_name()
 					    /* position			    */
 					    /*				    */
 					    /********************************/
-	return(0);
+	return 0;
 }
 
 int increment_name(position)
@@ -623,7 +623,7 @@ int position;
 				  /*********************************/
 				  /*				   */
 	else name[position]++;    /* otherwise, increment this one */
-	return(0);		  /*				   */
+	return 0;		  /*				   */
 				  /*********************************/
 }
 
@@ -666,7 +666,7 @@ char string[];
 				ret_len, errno);
 		fail_exit();
 	}
-	return(0);
+	return 0;
 }
 
 int term()
@@ -688,7 +688,7 @@ int term()
 
 	ok_exit();
 	/***NOT REACHED***/
-	return(0);
+	return 0;
 
 }
 

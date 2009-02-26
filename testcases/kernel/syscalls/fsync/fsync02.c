@@ -156,7 +156,7 @@ int main(int ac, char **av)
 	sync();
 	cleanup();
 	/*NOTREACHED*/
-	return(0);
+	return 0;
 }
 
 /*

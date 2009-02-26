@@ -151,7 +151,7 @@ void *thread (void *parm)
 		pthread_join (th, (void *) NULL);
 	}
 
-	return(0);
+	return 0;
 	/*
 	pthread_exit(0);
 	*/

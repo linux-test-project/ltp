@@ -126,7 +126,7 @@ int main (ac, av)
 
 	} /* end for */
 	cleanup();
-	return(0);
+	return 0;
 }
 
 void init()
@@ -231,7 +231,7 @@ int runtest()
 	unlink(filename);
 
 	sync();				/* safeness */
-	return(0);
+	return 0;
 }
 
 /*
@@ -489,7 +489,7 @@ int dotest(testers, me, fd)
 		//	tst_resm(TINFO, "\t\tTest[%d]: %d %s's.", me, misc_cnt[i], m_str[i]);
 		val0 = val++;
 	}
-	return(0);
+	return 0;
 }
 
 /*
@@ -523,7 +523,7 @@ int domisc(me, fd, bits)
 		break;
 	}
 	++misc_cnt[(int)type];
-	return(0);
+	return 0;
 }
 
 int bfill(buf, val, size)
@@ -535,7 +535,7 @@ int bfill(buf, val, size)
 
 	for(i = 0; i < size; i++)
 		buf[i] = val;
-	return(0);
+	return 0;
 }
 
 /*
@@ -566,14 +566,14 @@ int dumpiov(iovptr)
 		}
 		if (nout > 10) {
 			tst_resm(TINFO, "\t ... more");
-			return(0);
+			return 0;
 		}
 	}
 	if (i == idx+1)
 		tst_resm(TINFO, "\t%x", ((char *)iovptr->iov_base)[idx] & 0xff);
 	else
 		tst_resm(TINFO, "\t%d*%x", i-idx, ((char *)iovptr->iov_base)[idx]);
-	return(0);
+	return 0;
 }
 
 
@@ -595,7 +595,7 @@ int dumpbits(bits, size)
 		tst_resm(TINFO, "%02x ", (int)*buf & 0xff);
 	}
 	printf("\n");
-	return(0);
+	return 0;
 }
 
 /*--------------------------------------------------------------*/
@@ -611,11 +611,11 @@ int term()
 		for (i=0; i < nchild; i++)
 			if (pidlist[i])		/* avoid embarassment */
 				kill(pidlist[i], SIGTERM);
-		return(0);
+		return 0;
 	}
 
 	tst_exit();
-	return(0);
+	return 0;
 }
 
 void

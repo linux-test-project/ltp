@@ -560,7 +560,7 @@ register int size;
 
 	for(i = 0; i < size; i++)
 		buf[i] = val;
-	return(0);
+	return 0;
 }
 
 

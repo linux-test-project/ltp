@@ -11,7 +11,7 @@
  * hereby transferred.
  */
 
-#ident "$Header: /cvsroot/ltp/ltp/testcases/kernel/syscalls/getitimer/getitimer03.c,v 1.2 2003/03/26 19:40:14 robbiew Exp $"
+#ident "$Header: /cvsroot/ltp/ltp/testcases/kernel/syscalls/getitimer/getitimer03.c,v 1.3 2009/02/26 11:43:55 subrata_modak Exp $"
 
 /*
  * NAME
@@ -134,7 +134,7 @@ int main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
-	return(0);
+	return 0;
 }
 
 /*

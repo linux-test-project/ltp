@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: sighold02.c,v 1.6 2005/08/31 20:27:16 robbiew Exp $ */
+/* $Id: sighold02.c,v 1.7 2009/02/26 11:44:25 subrata_modak Exp $ */
 /*****************************************************************************
  * OS Test - Silicon Graphics, Inc.  Eagan, Minnesota
  * 
@@ -516,7 +516,7 @@ printf("set_timeout()...\n");
 
     Timeout=0;
     (void) alarm(TIMEOUT);
-    return(0);
+    return 0;
 }
 
 /*****************************************************************************
@@ -581,7 +581,7 @@ setup_sigs()
 	    }
 	}
     }
-    return(0);
+    return 0;
 }
 
 /*****************************************************************************

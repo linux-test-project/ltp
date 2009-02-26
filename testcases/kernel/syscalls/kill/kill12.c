@@ -129,7 +129,7 @@ int main(int argc, char **argv)				/***** BEGINNING OF MAIN. *****/
 				tst_resm(TBROK, "self_exec FAILED - "
 					 "terminating test.");
 				tst_exit();
-				return(0);
+				return 0;
 			}
 #else
 			do_child();
@@ -212,7 +212,7 @@ int main(int argc, char **argv)				/***** BEGINNING OF MAIN. *****/
 
 /*--------------------------------------------------------------------*/
 	anyfail();	
-	return(0);
+	return 0;
 }					/******** END OF MAIN. ********/
 /*--------------------------------------------------------------------*/
 
@@ -226,7 +226,7 @@ int anyfail()
 {
   (local_flag == FAILED)? tst_resm(TFAIL, "Test failed"): tst_resm(TPASS, "Test passed");
   tst_exit();
-  return(0);
+  return 0;
 }
 
 void
@@ -258,7 +258,7 @@ int blenter()
 {
    //tst_resm(TINFO, "Enter block %d", block_number);
    local_flag = PASSED;
-   return(0);
+   return 0;
 }
 
 
@@ -278,7 +278,7 @@ int forkfail()
 {
         tst_resm(TBROK, "FORK FAILED - terminating test.");
         tst_exit();
-   return(0);
+   return 0;
 }
 /****** ** **   *******/
 

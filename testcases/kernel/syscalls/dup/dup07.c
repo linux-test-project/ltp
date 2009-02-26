@@ -160,5 +160,5 @@ struct	stat	dupbuf ;
 
 		tst_exit();
 	} /* end for */
-	return(0);
+	return 0;
 }

@@ -163,7 +163,7 @@ int main(int ac, char **av)
 		close(fd);
 	}
         cleanup();
-	return(0);
+	return 0;
 	/*NOTREACHED*/
 }
 
@@ -173,7 +173,7 @@ int
 main()
 {
 	tst_resm(TINFO, "Ignore this test on uClinux");
-	return(0);
+	return 0;
 }
 
 #endif /* UCLINUX */

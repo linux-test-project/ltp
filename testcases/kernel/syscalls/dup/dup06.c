@@ -128,6 +128,6 @@ char *av[];
 
 	} /* end for */
 	tst_exit();
-	return(0);
+	return 0;
 
 }

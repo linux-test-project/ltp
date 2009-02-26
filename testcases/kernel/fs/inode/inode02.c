@@ -221,7 +221,7 @@ int main(argc, argv)
 
 	anyfail();
 	/** NOT REACHED **/
-	return(0);
+	return 0;
 }
 
 
@@ -555,7 +555,7 @@ int level;    	/* the tree depth variable */
 		/*				*/
 		/********************************/
 
-		return(0);
+		return 0;
 } 
 int check()
 
@@ -587,7 +587,7 @@ int check()
 			tst_resm(TINFO,"\nEnd of path_list file reached \n");
 #endif
 		
-			return(0);
+			return 0;
 		}
 
 #ifdef DEBUG
@@ -703,7 +703,7 @@ int get_next_name()
 					    /* position			    */
 					    /*				    */
 					    /********************************/
-	return(0);
+	return 0;
 }
 
 int increment_name(position)
@@ -736,7 +736,7 @@ int position;
 				  /*********************************/
 				  /*				   */
 	else name[position]++;    /* otherwise, increment this one */
-	return(0);		  /*				   */
+	return 0;		  /*				   */
 				  /*********************************/
 }
 
@@ -779,7 +779,7 @@ char string[];
 				ret_len, errno);
 		exit(-2);
 	}
-	return(0);
+	return 0;
 } 
 
 int term()
@@ -804,7 +804,7 @@ int term()
 		}
 		exit(0);
 	}
-	return(0);
+	return 0;
 }
 int massmurder()
 {
@@ -816,7 +816,7 @@ int massmurder()
 			kill(allchild[i], SIGTERM);
 		}
 	}
-	return(0);
+	return 0;
 }
 
 /** LTP Port **/

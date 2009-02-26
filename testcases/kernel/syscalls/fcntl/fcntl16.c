@@ -662,9 +662,9 @@ run_test(int file_flag, int file_mode, int start, int end)
 	if (fail) {
 		return(1);
 	} else {
-		return(0);
+		return 0;
 	}
-	return(0);
+	return 0;
 }
 
 int main(int ac, char **av)
@@ -739,6 +739,6 @@ int main(int ac, char **av)
 		tst_resm(TINFO, "Exiting block 3");
 	}
 	cleanup();
-	return(0);
+	return 0;
 }
 

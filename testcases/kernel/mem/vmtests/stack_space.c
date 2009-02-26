@@ -80,7 +80,7 @@ int usage(char* prog)
 	tst_resm(TCONF,"Usage: %s <nchild> <chunk_size> <iterations>",prog);
         tst_resm(TCONF,"DEFAULTS: 20 1024 50", prog);
         tst_exit();
-        return(0);
+        return 0;
 }
 
 int main(argc, argv)
@@ -126,7 +126,7 @@ int main(argc, argv)
 	tst_tmpdir();
 	runtest();
 	/**NOT REACHED**/
-        return(0);
+        return 0;
 
 }
 
@@ -135,7 +135,7 @@ int bd_arg(str)
 {
 	tst_resm(TCONF,"Bad argument - %s - could not parse as number.\n", str);
         tst_exit();
-        return(0);
+        return 0;
 }
 
 
@@ -194,7 +194,7 @@ int runtest()
         tst_exit();
 
         /**NOT REACHED**/
-        return(0);
+        return 0;
 
 
 }
@@ -323,7 +323,7 @@ int dotest(int testers, int me)
 	free(val_buf);
 	free(zero_buf);
 
-	return(0);
+	return 0;
 }
 
 int bfill(buf, val, size)
@@ -335,7 +335,7 @@ int bfill(buf, val, size)
 
 	for(i = 0; i < size; i++)
 		buf[i] = val;
-	return(0);
+	return 0;
 }
 
 
@@ -380,7 +380,7 @@ int dumpbuf(buf)
 #ifdef DEBUG
                         tst_resm(TINFO, " ... more\n");
 #endif
-                        return(0);
+                        return 0;
                 }
         }
 #ifdef DEBUG
@@ -389,7 +389,7 @@ int dumpbuf(buf)
         else
                 tst_resm(TINFO, "%d*%x\n", i-idx, buf[idx]);
 #endif
-        return(0);
+        return 0;
 
 }
 

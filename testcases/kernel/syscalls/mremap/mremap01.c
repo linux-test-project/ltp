@@ -174,7 +174,7 @@ main(int ac, char **av)
 	tst_exit();
 
 	/*NOTREACHED*/
-	return(0);
+	return 0;
 }	/* End main */
 
 /*

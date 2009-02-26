@@ -29,7 +29,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: symlink01.c,v 1.11 2008/12/31 05:33:36 subrata_modak Exp $ */
+/* $Id: symlink01.c,v 1.12 2009/02/26 11:44:25 subrata_modak Exp $ */
 /**********************************************************
 * 
 *    OS Test - Silicon Graphics, Inc.
@@ -650,7 +650,7 @@ char *path;
    if ((asymlink.st_mode & S_IFMT) == S_IFLNK)
       return(1);
    else
-      return(0);
+      return 0;
 }
 
 /***********************************************************************
@@ -683,7 +683,7 @@ char *path1, *path2;
       sprintf(test_msg,
 	"symlink(2) Failure when creating setup %s object file: errno:%d %s",
 	path1, errno, strerror(errno));
-      return(0);
+      return 0;
    } 
    else {
 	sprintf(Buf, "symlink(%s, %s) was succesful.\n", path1, path2);
@@ -712,7 +712,7 @@ char *path1;
       sprintf(test_msg,
 	"creat(2) Failure when creating setup %s object file: errno:%d %s",
 	path1, errno, strerror(errno));
-      return(0);
+      return 0;
    } 
    else {
 	sprintf(Buf, "creat(%s, %#o) was succesful.\n", path1, MODE);
@@ -726,7 +726,7 @@ char *path1;
       sprintf(test_msg,
 	"close(2) Failure when closing setup %s object file: errno:%d %s",
 	path1, errno, strerror(errno));
-      return(0);
+      return 0;
    }
    return(1);
 }
@@ -745,9 +745,9 @@ creat_both(path1, path2, path3)
 char *path1, *path2, *path3;
 {
    if (creat_symlink(path1, path2) == -1)
-      return(0);
+      return 0;
    else if (creat_object(path3) == -1)
-      return(0);
+      return 0;
    return(1);
 }
 
@@ -771,14 +771,14 @@ char *path1, *path2, *path3;
       sprintf(test_msg,
 	"lstat(2) Failure when accessing %s symbolic link file which should contain %s path to %s file ",
 	path2, path1, path3);
-      return(0);
+      return 0;
    }
    else if (ret == 0) {
       TEST_RESULT=TBROK;
       sprintf(test_msg,
 	"%s is not a symbolic link file which contains %s path to %s file",
 	path2, path1, path3);
-      return(0);
+      return 0;
    }
    return(1);
 }
@@ -797,24 +797,24 @@ ck_both(path1, path2, path3)
 char *path1, *path2, *path3;
 {
    if (ck_symlink(path1, path2, path3) == 0)
-      return(0);
+      return 0;
    else if ((stat(path3, &statter) == -1) && (errno == ENOENT)) {
       TEST_RESULT=TBROK;
       sprintf(test_msg, "stat(2) Failure when accessing %s object file ", path3);
-      return(0);
+      return 0;
    }
    else if ((stat(path2, &asymlink) == -1) && (errno == ENOENT)) {
       TEST_RESULT=TBROK;
       sprintf(test_msg, "stat(2) Failure when accessing %s symbolic link file ",
 	path2);
-      return(0);
+      return 0;
    }
    else if (statter.st_ino != asymlink.st_ino) {
       TEST_RESULT=TBROK;
       sprintf(test_msg,
 	"stat(2) Failure when accessing %s object file through %s symbolic link file ",
 	path3, path2);
-      return(0);
+      return 0;
    }
    return(1);
    
@@ -841,7 +841,7 @@ char *path1, *path2, *path3;
       sprintf(test_msg,
 	"getcwd(3) Failure in setup of %s %s %s test case object elements",
 	path1, path2, path3);
-      return(0);
+      return 0;
    }
    cwd = getcwd((char *)NULL, 0);
    size = strlen(cwd);
@@ -883,7 +883,7 @@ char *path1, *path2, *path3;
 	"full_path character array length was not", (PATH_MAX+1),
 	"characters long for test case object elements",
 	path1, path2, path3);
-      return(0);
+      return 0;
    }
 }
 
@@ -906,25 +906,25 @@ char *path1, *path2, *path3;
        TEST_RESULT=TFAIL;
        sprintf(test_msg,
 	   "lstat(2) failed to return inode information for a regular object file");
-       return(0);
+       return 0;
     }
     else if (ret == 1) {
        TEST_RESULT=TFAIL;
        sprintf(test_msg, 
 	   "lstat(2) detected a regular object file as a symbolic link file");
-       return(0);
+       return 0;
     }
     else if (stat(path1, &statter) == -1) {
        TEST_RESULT=TBROK;
        sprintf(test_msg,
 	   "stat(2) failed to return inode information for a regular object file");
-       return(0);
+       return 0;
     }
     else if (memcmp((char *)&statter, (char *)&asymlink, sizeof(statter)) != 0) {
        TEST_RESULT=TFAIL;
        sprintf(test_msg,
 	   "lstat(2) and stat(2) do not return same inode information for an object file");
-       return(0);
+       return 0;
         
     }
     return(1);
@@ -1050,7 +1050,7 @@ struct tcses *tcs;
        else
           tst_resm(TBROK, "Test Case Declaration Error");
    }
-   return(0);
+   return 0;
 }
 
 /***********************************************************************

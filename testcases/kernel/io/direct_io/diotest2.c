@@ -119,7 +119,7 @@ runtest(int fd_r, int fd_w, int iter, off64_t offset, int action)
 			return(-1);
 		}
 	}
-	return(0);
+	return 0;
 }
 
 /*

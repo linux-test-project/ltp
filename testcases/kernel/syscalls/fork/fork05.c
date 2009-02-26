@@ -30,7 +30,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: fork05.c,v 1.5 2005/01/05 21:21:27 mridge Exp $ */
+/* $Id: fork05.c,v 1.6 2009/02/26 11:43:54 subrata_modak Exp $ */
 /**********************************************************
  *
  *    Linux Test Project - Silicon Graphics, Inc.
@@ -218,7 +218,7 @@ main()
   /*
    * should be successful on all non-ix86 platforms.
    */
-  return(0);
+  return 0;
 }
 
 #endif /* if defined(linux) && defined(__i386__) */

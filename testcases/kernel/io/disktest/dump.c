@@ -22,7 +22,7 @@
 *
 *  Project Website:  TBD
 *
-* $Id: dump.c,v 1.5 2008/10/20 06:30:33 subrata_modak Exp $
+* $Id: dump.c,v 1.6 2009/02/26 11:43:51 subrata_modak Exp $
 *
 */
 #include <stdio.h>	/* *printf() */
@@ -156,7 +156,7 @@ int dump_data(FILE *stream, const char *buff, const size_t buff_siz, const size_
 	}
 	FREE(ibuff);
 	FREE(obuff);
-	return(0);
+	return 0;
 }
 
 int do_dump(child_args_t *args)

@@ -116,7 +116,7 @@ int main(int ac, char **av)
 
 	cleanup ();
         /**NOT REACHED**/
-	return(0);
+	return 0;
 }
 
 /*

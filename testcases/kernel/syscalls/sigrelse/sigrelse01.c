@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: sigrelse01.c,v 1.8 2006/08/24 04:16:34 vapier Exp $ */
+/* $Id: sigrelse01.c,v 1.9 2009/02/26 11:44:25 subrata_modak Exp $ */
 /*****************************************************************************
  * OS Test - Silicon Graphics, Inc.  Eagan, Minnesota
  * 
@@ -577,7 +577,7 @@ setup_sigs()
 	    }
 	}
     }
-    return(0);
+    return 0;
 
 }	/* end of setup_sigs  */
 	
@@ -686,7 +686,7 @@ char *msg;		/* expected message from pipe */
 	
 	return(-1);
     }
-    return(0);
+    return 0;
 
 }	/* end of write_pipe */
 
@@ -706,7 +706,7 @@ set_timeout()
     }
 
     (void) alarm(TIMEOUT);
-    return(0);
+    return 0;
 
 }	/* end of set_timeout */
 
@@ -780,7 +780,7 @@ static int
 sighold(signo)
 int signo;
 {
-	return(0);
+	return 0;
 }
 
 
@@ -788,7 +788,7 @@ static int
 sigrelse(signo)
 int signo;
 {
-	return(0);
+	return 0;
 }
 #endif
 

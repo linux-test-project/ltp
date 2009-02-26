@@ -343,7 +343,7 @@ int runtest()
 	tst_resm(TPASS,"PASS");
 
 		
-	return(0);
+	return 0;
 }
 
 int getchild(group, child, children)
@@ -405,7 +405,7 @@ int group, child, children;
 		exit(1); /* If child gets here, something wrong */
 	}
 	pidlist[children] = pid;
-	return(0);
+	return 0;
 }
 
 void term()
@@ -520,7 +520,7 @@ int dochild2()
 		}
 	}
 	exit(0);
-	return(0);
+	return 0;
 }
 
 #ifdef UCLINUX
@@ -612,7 +612,7 @@ int massmurder()
 			}
 		}
 	}
-        return(0);
+        return 0;
 }
 
 

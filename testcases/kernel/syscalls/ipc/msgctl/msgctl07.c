@@ -255,7 +255,7 @@ int main(int argc, char* argv[])
 sighandler_t alrm(int sig)
 {
 	ready++;
-	return(0);
+	return 0;
 }
 /*--------------------------------------------------------------*/
 

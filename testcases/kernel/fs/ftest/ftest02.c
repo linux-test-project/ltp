@@ -256,7 +256,7 @@ int main (ac, av)
 
 	cleanup();
 
-	return(0);
+	return 0;
 
 }
 
@@ -440,7 +440,7 @@ int dotest(me, count)
 	}
 
 	//tst_resm(TINFO,"Test %d pid %d exiting.", me, getpid());
-	return(0);
+	return 0;
 }
 
 
@@ -470,7 +470,7 @@ int mkname(name, me, idx)
 	name[len+0] = 'A' + (me % 26);
 	name[len+1] = 'a' + (idx % 26);
 	name[len+2] = '\0';
-	return(0);
+	return 0;
 }
 
 /*--------------------------------------------------------------*/
@@ -490,12 +490,12 @@ int term()
 		for (i=0; i < nchild; i++)
 			if (pidlist[i])		/* avoid embarassment */
 				kill(pidlist[i], SIGTERM);
-		return(0);
+		return 0;
 	}
 	
 	tst_resm(TBROK, "Child process exiting.");
 	tst_exit();
-	return(0);
+	return 0;
 }
 
 void cleanup()

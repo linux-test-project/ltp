@@ -195,7 +195,7 @@ int main (int argc, char *argv[])
 /* Clean up any files created by test before call to anyfail.	*/
 
 	anyfail();	/* THIS CALL DOES NOT RETURN - EXITS!!	*/
-	return(0);
+	return 0;
 }
 /*--------------------------------------------------------------*/
 /* FUNCTIONS GO HERE */
@@ -229,7 +229,7 @@ int checkit(char *str)
 int anyfail()
 {
   tst_exit();
-  return(0);
+  return 0;
 }
 
 void setup()
@@ -240,13 +240,13 @@ void setup()
 int blenter()
 {
    local_flag = PASSED;
-   return(0);
+   return 0;
 }
 
 int blexit()
 {
    (local_flag == FAILED) ? tst_resm(TFAIL, "Test failed") : tst_resm(TPASS, "Test passed");
-   return(0);
+   return 0;
 }
 
 

@@ -146,7 +146,7 @@ runtest(int fd_r, int fd_w, int childnum, int action)
 			return(-1);
 		}
 	}
-	return(0);
+	return 0;
 }
 
 /*

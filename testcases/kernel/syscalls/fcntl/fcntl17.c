@@ -155,7 +155,7 @@ int setup()
 			 errno);
 		return(1);
 	}
-	return(0);
+	return 0;
 }
 
 void
@@ -322,7 +322,7 @@ do_test(struct flock *lock, pid_t pid)
 			 pid, fl.l_pid);
 		return(1);
 	}
-	return(0);
+	return 0;
 }
 
 char *
@@ -652,6 +652,6 @@ int main(int ac, char **av)
 	waitpid(child_pid2, &child_stat, 0);
 	waitpid(child_pid3, &child_stat, 0);
 	cleanup();
-	return(0);
+	return 0;
 }
 

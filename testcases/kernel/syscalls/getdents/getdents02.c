@@ -76,7 +76,7 @@ int main()
 	tst_resm(TINFO, "This test includes x86 asm and will not work on "
 	                "this machine");
 	tst_exit();
-	return(0);
+	return 0;
 }
 #else
 
@@ -175,7 +175,7 @@ int main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
-	return(0);
+	return 0;
 }
 
 /*

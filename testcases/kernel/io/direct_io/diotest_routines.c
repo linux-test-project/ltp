@@ -108,7 +108,7 @@ vbufcmp(struct iovec *iv1, struct iovec *iv2, int vcnt)
 			return(-1);
 		}
 	}
-	return(0);
+	return 0;
 }
 
 
@@ -161,7 +161,7 @@ filecmp(char *f1, char *f2)
 	}
 	close(fd1);
 	close(fd2);
-	return(0);
+	return 0;
 }
 
 
@@ -193,7 +193,7 @@ forkchldrn(int **pidlst, int numchld, int action, int (*chldfunc)())
 		if( cpid == 0 ) exit((*chldfunc)(i, action));
 		else *(*pidlst+i) = cpid;
 	}
-	return(0);
+	return 0;
 }
 
 /*

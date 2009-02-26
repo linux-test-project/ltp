@@ -91,7 +91,7 @@ int usage(prog)
 	tst_resm(TCONF,"Usage: %s <nchild> <size> <chunk_size> <iterations>",prog);
 	tst_resm(TCONF,"DEFAULTS: 10 1024*1024 4096 25", prog);
 	tst_exit();
-	return(0);
+	return 0;
 }
 
 int main(argc, argv)
@@ -145,7 +145,7 @@ int main(argc, argv)
 
 	runtest();
 	/**NOT REACHED**/
-        return(0);
+        return 0;
 }
 
 int bd_arg(str)
@@ -153,7 +153,7 @@ int bd_arg(str)
 {
 	tst_resm(TCONF,"Bad argument - %s - could not parse as number.\n", str);
 	tst_exit();
-	return(0);
+	return 0;
 }
 
 int runtest()
@@ -220,7 +220,7 @@ int runtest()
         tst_exit();
 
         /**NOT REACHED**/
-	return(0);
+	return 0;
 }
 
 /*
@@ -374,7 +374,7 @@ int dotest(testers, me)
 		++val;
 	}
 
-return(0);
+return 0;
 }
 
 
@@ -431,7 +431,7 @@ int dumpbuf(buf)
 #ifdef DEBUG
 			tst_resm(TINFO, " ... more\n");
 #endif
-			return(0);
+			return 0;
 		}
 	}
 #ifdef DEBUG
@@ -440,7 +440,7 @@ int dumpbuf(buf)
 	else
 		tst_resm(TINFO, "%d*%x\n", i-idx, buf[idx]);
 #endif
-	return(0);
+	return 0;
 }
 
 /*
@@ -482,7 +482,7 @@ int term()
 	if (parent_pid == getpid())
 	{
 		massmurder();
-		return(0);
+		return 0;
 	}
 
 	exit(0);
@@ -496,7 +496,7 @@ int chld()
 		exit(1);
 	}
 	chld_flag++;
-	return(0);
+	return 0;
 }
 int massmurder()
 {
@@ -508,7 +508,7 @@ int massmurder()
 			kill(allchild[i], SIGTERM);
 		}
 	}
-	return(0);
+	return 0;
 }
 
 int okexit(me)
@@ -526,6 +526,6 @@ int okexit(me)
                 tst_exit();
         }
 
-	return(0);
+	return 0;
 }
 

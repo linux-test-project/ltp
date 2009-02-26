@@ -153,7 +153,7 @@ runtest(int fd_r, int fd_w, int iter, off64_t offset, int action)
 	}
 	free(iov1);
 	free(iov2);
-	return(0);
+	return 0;
 }
 
 /*

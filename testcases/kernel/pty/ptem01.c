@@ -149,7 +149,7 @@ test1(void)
 	tst_resm(TPASS,"test1");	
 
 	/** NOT REACHED **/
-	return(0);	
+	return 0;	
 }
 
 /*
@@ -250,7 +250,7 @@ test2(void)
 	tst_resm(TPASS,"test2");
 
 	/** NOT REACHED **/
-	return(0);	
+	return 0;	
 }
 
 /*
@@ -311,7 +311,7 @@ test3(void)
 	tst_resm(TPASS,"test3");
 
 	/** NOT REACHED **/
-	return(0);	
+	return 0;	
 }
 
 
@@ -380,7 +380,7 @@ test4(void)
 	tst_resm(TPASS,"test4");
 
 	/** NOT REACHED **/
-	return(0);
+	return 0;
 }
 
 #define NUMOPENS 6
@@ -448,7 +448,7 @@ test5(void)
 	tst_resm(TPASS,"test5");
 
 	/** NOT REACHED **/
-	return(0);
+	return 0;
 }
 
 
@@ -513,7 +513,7 @@ test6(void)
 	tst_resm(TPASS,"test6");
 
 	/** NOT REACHED **/
-	return(0);
+	return 0;
 }
 
 /*
@@ -533,5 +533,5 @@ main(int argc, char **argv)
 	 */
 	tst_exit();
 	/*NOTREACHED*/
-	return(0);
+	return 0;
 }

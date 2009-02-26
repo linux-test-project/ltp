@@ -22,7 +22,7 @@
 *
 *  Project Website:  TBD
 *
-* $Id: sfunc.c,v 1.6 2008/02/14 08:22:23 subrata_modak Exp $
+* $Id: sfunc.c,v 1.7 2009/02/26 11:43:51 subrata_modak Exp $
 *
 */
 #include <sys/types.h>
@@ -185,7 +185,7 @@ int pMsg(lvl_t level, const child_args_t *args, char *Msg,...)
 #endif
 
 	if((glb_flags & GLB_FLG_QUIET) && (level == INFO))
-		return(0);
+		return 0;
 
 	va_start(l, Msg);
 

@@ -119,5 +119,5 @@ int main(int ac, char *av[])
 	} /* end for */
 	tst_rmdir();
 	tst_exit();
-        return(0);
+        return 0;
 }

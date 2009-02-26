@@ -326,5 +326,5 @@ main(int   ac,    /* number of command line parameters                      */
 		}
 	}
 	cleanup();
-	return(0);
+	return 0;
 }

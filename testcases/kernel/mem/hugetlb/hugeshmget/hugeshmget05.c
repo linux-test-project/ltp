@@ -120,7 +120,7 @@ int main(int ac, char **av)
 		/* Remove the temporary directory */
 		tst_rmdir();
 	}
-	return(0);
+	return 0;
 }
 
 /*

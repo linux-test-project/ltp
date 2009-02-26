@@ -129,7 +129,7 @@ int main (ac, av)
 		}
 	} /* end of for */
 	cleanup();
-	return(0);
+	return 0;
 }
 /*--------------------------------------------------------------*/
 
@@ -265,7 +265,7 @@ int runtest()
 	}
 
 	sync();				/* safeness */
-	return(0);
+	return 0;
 }
 
 /*
@@ -479,7 +479,7 @@ int dotest(testers, me, fd)
 		//	tst_resm(TINFO, "Test{%d}: {%d} %s's.", me, misc_cnt[i], m_str[i]);
 		++val;
 	}
-	return(0);
+	return 0;
 }
 
 /*
@@ -545,7 +545,7 @@ int domisc(me, fd, bits)
 	}
 	++misc_cnt[(int)type];
 	type = (enum m_type) ((int) type + 1);
-	return(0);
+	return 0;
 }
 
 int bfill(buf, val, size)
@@ -557,7 +557,7 @@ int bfill(buf, val, size)
 
 	for(i = 0; i < size; i++)
 		buf[i] = val;
-	return(0);
+	return 0;
 }
 
 /*
@@ -588,14 +588,14 @@ int dumpbuf(buf)
 		}
 		if (nout > 10) {
 			tst_resm(TINFO, "\t ... more");
-			return(0);
+			return 0;
 		}
 	}
 	if (i == idx+1)
 		tst_resm(TINFO, "\t%x", buf[idx] & 0xff);
 	else
 		tst_resm(TINFO, "\t%d*%x", i-idx, buf[idx]);
-	return(0);
+	return 0;
 }
 
 /*
@@ -616,7 +616,7 @@ int dumpbits(bits, size)
 		tst_resm(TINFO, "\t%02x ", (int)*buf & 0xff);
 	}
 	tst_resm(TINFO, "\t");
-	return(0);
+	return 0;
 }
 
 int orbits(hold, bits, count)
@@ -626,7 +626,7 @@ int orbits(hold, bits, count)
 {
 	while(count-- > 0)
 		*hold++ |= *bits++;
-	return(0);
+	return 0;
 }
 
 /* term()

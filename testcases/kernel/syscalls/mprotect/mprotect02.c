@@ -195,7 +195,7 @@ int main(int ac, char **av)
         }
         cleanup();
 	/*NOTREACHED*/
-	return(0);
+	return 0;
 }
 
 #else
@@ -204,7 +204,7 @@ int
 main()
 {
 	tst_resm(TINFO, "Ignore this test on uClinux");
-	return(0);
+	return 0;
 }
 
 #endif /* UCLINUX */

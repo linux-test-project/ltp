@@ -365,7 +365,7 @@ cleanup:
 	(void)time(&t);
 //	(void)printf("%s: Finished %s", argv[0], ctime(&t)); LTP POrt
 	ok_exit();
-	return(0);
+	return 0;
 }
 
 
@@ -507,7 +507,7 @@ int anyfail()
 {
   tst_resm(TFAIL, "Test failed\n");
   tst_exit();
-  return(0);
+  return 0;
 }
 
 /*****  **      **      *****/

@@ -820,6 +820,6 @@ int main(int ac, char **av)
 		close(fd);
 	}
 	cleanup();
-	return(0);
+	return 0;
 }
 

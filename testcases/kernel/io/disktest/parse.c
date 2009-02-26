@@ -22,7 +22,7 @@
 *
 *  Project Website:  TBD
 *
-* $Id: parse.c,v 1.6 2008/02/14 08:22:23 subrata_modak Exp $
+* $Id: parse.c,v 1.7 2009/02/26 11:43:51 subrata_modak Exp $
 *
 */
 #include <sys/types.h>
@@ -717,7 +717,7 @@ int fill_cld_args(int argc, char **argv, child_args_t *args)
 		return(-1);
 	}
 	strncpy(args->device, argv[optind], (DEV_NAME_LEN-1));
-	return(0);
+	return 0;
 }
 
 int make_assumptions(child_args_t *args)
@@ -869,7 +869,7 @@ int make_assumptions(child_args_t *args)
 		strncat(args->argstr, "(-o 0) ", (MAX_ARG_LEN-1)-strlen(args->argstr));
 	}
 
-	return(0);
+	return 0;
 }
 
 /*
@@ -1019,5 +1019,5 @@ int check_conclusions(child_args_t *args)
 		pMsg(ERR, args, LBAOTSGSLBA, args->offset, args->ltrsiz, args->stop_lba);
 		return(-1);
 	}
-	return(0);
+	return 0;
 }

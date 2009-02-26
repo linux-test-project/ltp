@@ -256,7 +256,7 @@ main(int argc, char *argv[])
 		}
 	}
 	cleanup();
-	return(0);
+	return 0;
 }	/* End main */
 
 pid_t

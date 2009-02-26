@@ -184,7 +184,7 @@ int main(int ac, char **av)
 	cleanup();
 
 	/*NOTREACHED*/
-	return(0);
+	return 0;
 }
 
 /*
@@ -278,7 +278,7 @@ init_buffs(char *pbufs[])
 			tst_brkm(TBROK, cleanup, "Error in init_buffs()");
 		}
 	}
-	return(0);
+	return 0;
 }
 
 int
@@ -293,7 +293,7 @@ fill_mem(char *c_ptr, int c1, int c2)
 			memset(c_ptr, c2, CHUNK);
 		}
 	}
-	return(0);
+	return 0;
 }
 
 long
@@ -302,5 +302,5 @@ l_seek(int fdesc, long offset, int whence)
 	if (lseek(fdesc, offset, whence) < 0) {
 		tst_brkm(TBROK, cleanup, "lseek Failed : errno = %d", errno);
 	}
-	return(0);
+	return 0;
 }

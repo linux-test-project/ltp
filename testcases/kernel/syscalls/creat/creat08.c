@@ -453,7 +453,7 @@ int main (int ac, char **av)
 		 *system("groupdel,group2");
 		 */
 	} /* end for */
-	return(0);
+	return 0;
 }
 
 int issu() {
@@ -469,11 +469,11 @@ int issu() {
         }
 
         if ( uid == 0) {
-                return(0);
+                return 0;
         } else {
                 tst_resm(TINFO,"*** NOT SUPERUSER must be root  %s",TCID);
                 return(uid);
         }
-	return(0);
+	return 0;
 }
 

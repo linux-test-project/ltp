@@ -413,5 +413,5 @@ int main( int ac, char **av)
 		tst_rmdir();
 		tst_exit();
 	} /* end for */
-	return(0);
+	return 0;
 }

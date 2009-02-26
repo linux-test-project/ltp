@@ -161,7 +161,7 @@ int main (int argc, char *argv[])
 
 	unlink("core");
 	anyfail();	/* THIS CALL DOES NOT RETURN - EXITS!!	*/
-  return(0);
+  return 0;
 }
 /*--------------------------------------------------------------*/
 
@@ -177,7 +177,7 @@ int anyfail()
   (local_flag == FAILED)? tst_resm(TFAIL, "Test failed"): tst_resm(TPASS, "Test passed");
   tst_rmdir();
   tst_exit();
-  return(0);
+  return 0;
 }
 
 
@@ -216,6 +216,6 @@ int forkfail()
 {
         fprintf(temp, "\t\tFORK FAILED - terminating test.\n");
         tst_exit();
-	return(0);
+	return 0;
 }
 /******	** **	*******/

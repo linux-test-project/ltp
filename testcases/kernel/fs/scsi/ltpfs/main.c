@@ -513,7 +513,7 @@ int do_random_access_test(int maxNum)
     }
     close(nullFileHandle);
     printf("Success:\t%d\nFail:\t%d\n",openlog[SUCCESS],openlog[FAIL]);
-    return(0);
+    return 0;
 }
 
 int open_read_close(char *fname)

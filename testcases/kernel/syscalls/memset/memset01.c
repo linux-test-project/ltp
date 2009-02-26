@@ -108,7 +108,7 @@ int main (int argc, char *argv[])
 	(local_flag == FAILED)? tst_resm(TFAIL, "Test failed"): tst_resm(TPASS, "Test passed");
 	tst_exit();
 	/* THIS CALL DOES NOT RETURN - EXITS!!	*/
-        return(0);
+        return 0;
 }
 /*--------------------------------------------------------------*/
 /* FUNCTIONS GO HERE */

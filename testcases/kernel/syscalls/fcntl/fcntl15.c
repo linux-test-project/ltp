@@ -253,7 +253,7 @@ int dofork(int file_flag, int file_mode)
 			exit(1);
 		}
 	}
-	return(0);
+	return 0;
 }
 
 int dochild2(int file_flag, int file_mode, int dup_flag)
@@ -539,7 +539,7 @@ run_test(int file_flag, int file_mode, int dup_flag)
 	}
 	unlink(tmpname);
 	tst_rmdir();
-	return(0);
+	return 0;
 }
 
 int main(int ac, char **av)
@@ -604,5 +604,5 @@ int main(int ac, char **av)
 		tst_resm(TINFO, "Exiting block 3");
 	}
 	cleanup();
-	return(0);
+	return 0;
 }

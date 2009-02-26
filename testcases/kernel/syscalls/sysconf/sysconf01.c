@@ -152,5 +152,5 @@ int main()
 	tst_exit();
 
 	/**NOT REACHED**/
-	return(0);
+	return 0;
 }

@@ -453,7 +453,7 @@ int main(int argc, char **argv)
 	close(fd[1]);
 	cleanup();
 	/*NOTREACHED*/
-	return(0);
+	return 0;
 }
 
 /*
@@ -534,7 +534,7 @@ init_buffs(char *pbufs[])
 			 /*NOTREACHED*/
 		}
 	}
-	return(0);
+	return 0;
 }
 
 int
@@ -549,7 +549,7 @@ fill_mem(char *c_ptr, int c1, int c2)
 			memset(c_ptr, c2, CHUNK);
 		}
 	}
-	return(0);
+	return 0;
 }
 
 void
@@ -583,5 +583,5 @@ l_seek(int fdesc, long offset, int whence)
 		tst_resm(TFAIL, "lseek Failed : errno = %d", errno);
 		fail = 1;
 	}
-	return(0);
+	return 0;
 }

@@ -221,5 +221,5 @@ int main(int ac, char *av[])
 	tst_rmdir();
 	tst_exit();
 	/* NOTREACHED */
-	return(0);
+	return 0;
 }

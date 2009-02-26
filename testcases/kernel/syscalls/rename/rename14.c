@@ -164,7 +164,7 @@ int main (argc, argv)
 /*--------------------------------------------------------------*/
 	tst_exit();	/* THIS CALL DOES NOT RETURN - EXITS!!	*/
 /*--------------------------------------------------------------*/
-	return(0);
+	return 0;
 }
 /* FUNCTIONS GO HERE */
 
@@ -176,7 +176,7 @@ int term()
 		return(kill(kidpid[0], SIGTERM));
 	if (kidpid[1])
 		return(kill(kidpid[1], SIGTERM));
-        return(0);
+        return 0;
 }
 
 int al()
@@ -185,7 +185,7 @@ int al()
 		return(kill(kidpid[0], SIGTERM));
 	if (kidpid[1])
 		return(kill(kidpid[1], SIGTERM));
-        return(0);
+        return 0;
 }
 
 void dochild1()

@@ -176,7 +176,7 @@ main(int argc, char *argv[]) {
 	(void)time(&t);
 //	(void)printf("%s: Finished %s", argv[0], ctime(&t));
 	ok_exit(); /* LTP Port */
-	return(0);
+	return 0;
 }
 
 /*****  LTP Port        *****/
@@ -193,7 +193,7 @@ int anyfail()
   tst_resm(TFAIL, "Test failed");
   tst_rmdir();
   tst_exit();
-  return(0);
+  return 0;
 }
 
 /*****  **      **      *****/

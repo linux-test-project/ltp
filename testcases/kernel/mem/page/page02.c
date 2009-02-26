@@ -215,7 +215,7 @@ int main(argc, argv)
     	tst_rmdir();
     	tst_exit();
 	/**NOT REACHED**/
-	return(0);
+	return 0;
 
 }
 
@@ -225,7 +225,7 @@ int bd_arg(str)
 	tst_resm(TCONF, "\tCannot parse %s as a number.\n", str);
 	tst_exit();
 	/**NOT REACHED**/
-	return(0);
+	return 0;
 }
 
 int chld()
@@ -235,5 +235,5 @@ int chld()
 		tst_exit();
 	}
 	chld_flag++;
-	return(0);
+	return 0;
 }

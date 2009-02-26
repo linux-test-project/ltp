@@ -814,7 +814,7 @@ fileokay(char *file, uchar_t *expbuf)
 		cnt = read(fd, (char *)readbuf, pagesize);
 		if (cnt == -1) {
 			perror("read error");
-			return(0);	
+			return 0;	
 		} else if (cnt != pagesize) {
 			/*
 			 *  Okay if at last page in file... 
@@ -822,7 +822,7 @@ fileokay(char *file, uchar_t *expbuf)
 			if ((i * pagesize) + cnt != mapsize) {
 				(void)fprintf(stderr, "read %d of %ld bytes\n",
 					(i*pagesize)+cnt, (long)mapsize);
-				return(0);
+				return 0;
 			}
 		}
 		/*
@@ -841,7 +841,7 @@ fileokay(char *file, uchar_t *expbuf)
 				(void)fprintf(stderr, ", pg %d off %d, "
 					"(fsize %ld)\n", i, j, statbuf.st_size);
 #endif /* LARGE_FILE */
-				return(0);
+				return 0;
 			}
 		}
 	}
@@ -902,7 +902,7 @@ int anyfail()
   tst_resm(TFAIL, "Test failed\n");
   tst_rmdir();
   tst_exit();
-  return(0);
+  return 0;
 }
 
 /*****  **      **      *****/

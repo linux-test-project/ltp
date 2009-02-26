@@ -112,5 +112,5 @@ int main (argc, argv)
 
 	tst_exit();	/* THIS CALL DOES NOT RETURN - EXITS!!	*/
 /*--------------------------------------------------------------*/
-	return(0);
+	return 0;
 }

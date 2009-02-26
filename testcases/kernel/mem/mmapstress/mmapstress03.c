@@ -173,7 +173,7 @@ main(int argc, char *argv[])
 	(void)time(&t);
 //	(void)printf("%s: Finished %s", argv[0], ctime(&t));
 	ok_exit();
-	return(0);
+	return 0;
 }
 
 /*
@@ -233,7 +233,7 @@ int anyfail()
 {
   tst_resm(TFAIL, "Test failed");
   tst_exit();
-  return(0);
+  return 0;
 }
 
 /*****  **      **      *****/

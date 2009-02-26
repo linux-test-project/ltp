@@ -168,7 +168,7 @@ main(int ac, char **av)
 	/*NOTREACHED*/
 
 
-  return(0);
+  return 0;
 
 }	/* End main */
 

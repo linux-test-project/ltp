@@ -132,7 +132,7 @@ parent(int masterfd, int childpid)
 	tst_exit();
 	
 	/*NOTREACHED*/
-	return(0);
+	return 0;
 }
 
 
@@ -234,5 +234,5 @@ int main(int argc, char **argv)
 /*--------------------------------------------------------------------*/
 	tst_exit();
 	/*NOTREACHED*/
-	return(0);
+	return 0;
 }

@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: getpid01.c,v 1.3 2006/05/26 06:26:39 vapier Exp $ */
+/* $Id: getpid01.c,v 1.4 2009/02/26 11:43:56 subrata_modak Exp $ */
 /**********************************************************
  * 
  *    OS Test - Silicon Graphics, Inc.
@@ -182,7 +182,7 @@ main(int ac, char **av)
      ***************************************************************/
     cleanup();
 
-    return(0);
+    return 0;
 }	/* End main */
 
 /***************************************************************

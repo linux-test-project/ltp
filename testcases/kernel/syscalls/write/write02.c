@@ -118,7 +118,7 @@ int main(int argc, char **argv)
 	}
 	cleanup();
 	/*NOTREACHED*/
-	return(0);
+	return 0;
 }
 
 /*

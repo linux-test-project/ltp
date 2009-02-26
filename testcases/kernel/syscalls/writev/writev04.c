@@ -165,7 +165,7 @@ int main(int argc, char **argv)
 				 f_name, errno);
 			cleanup();
 			/*NOTREACHED*/
-			return(0);
+			return 0;
 		}
 
 //block1:
@@ -283,7 +283,7 @@ int main(int argc, char **argv)
 	close(fd[0]);
 	close(fd[1]);
 	cleanup();
-	return(0);
+	return 0;
 }
 
 #else
@@ -386,5 +386,5 @@ l_seek(int fdesc, long offset, int whence)
 		tst_resm(TFAIL, "lseek Failed : errno = %d", errno);
 		fail = 1;
 	}
-	return(0);
+	return 0;
 }

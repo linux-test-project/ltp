@@ -254,20 +254,20 @@ void setup()
 int blenter()
 {
   local_flag = PASSED;
-  return(0);
+  return 0;
 }
 
 
 int blexit()
 {
   (local_flag == PASSED ) ? tst_resm(TPASS, "Test passed") : tst_resm(TFAIL, "Test failed");
-  return(0);
+  return 0;
 }
 
 int anyfail()
 {
   tst_exit();
-  return(0);
+  return 0;
 }
 
 /*****	**	**	*****/
@@ -444,5 +444,5 @@ int main (argc, argv)
 
 	blexit();
 	anyfail();
-  return(0);
+  return 0;
 }

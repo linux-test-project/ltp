@@ -349,5 +349,5 @@ for (lc=0; TEST_LOOPING(lc); lc++) {
 	}
 
 cleanup();
-return(0);
+return 0;
 }

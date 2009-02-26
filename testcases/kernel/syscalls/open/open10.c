@@ -91,12 +91,12 @@ int issu() {
         }
 
         if ( uid == 0) {
-                return(0);
+                return 0;
         } else {
                 fprintf(stderr,"*** NOT SUPERUSER must be root  %s\n",progname);
                 return(uid);
         }
-	return(0);
+	return 0;
 }
 
 /*--------------------------------------------------------------*/
@@ -491,6 +491,6 @@ int main (int ac, char *av[])
 
 	}
 	tst_exit();
-	return(0);
+	return 0;
 }
 

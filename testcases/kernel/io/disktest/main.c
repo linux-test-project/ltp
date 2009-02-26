@@ -22,7 +22,7 @@
 *
 *  Project Website:  TBD
 *
-* $Id: main.c,v 1.8 2008/12/22 07:33:03 subrata_modak Exp $
+* $Id: main.c,v 1.9 2009/02/26 11:43:51 subrata_modak Exp $
 *
 */
 #include <stdio.h>
@@ -229,7 +229,7 @@ unsigned long init_data(test_ll_t *test, unsigned char **data_buffer_unaligned)
 			return(-1);
 	}
 
-	return(0);
+	return 0;
 }
 
 #ifdef WINDOWS
