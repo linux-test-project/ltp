@@ -15,17 +15,17 @@
  *
  */
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER	: capset02
- * 
+ *
  *    EXECUTED BY	: anyone
- * 
+ *
  *    TEST TITLE	: Tests for error conditions.
- * 
+ *
  *    TEST CASE TOTAL	: 4
- * 
+ *
  *    AUTHOR		: Saji Kumar.V.R <saji.kumar@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -41,12 +41,12 @@
  *	4) capset() fails with errno set to EPERM the process does not
  *	   have enough privilege to set capabilities
  *	
- * 
+ *
  * 	Setup:
  * 	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
  *	  Call capget() to save current capability data
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  *	  do test specific setup.
@@ -56,10 +56,10 @@
  *	  Otherwise
  *		Test failed
  *	  do test specific cleanup
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  * capset02 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
  *			where,  -c n : Run n copies concurrently.
@@ -171,7 +171,7 @@ main(int ac, char **av)
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 			}
 			TEST_ERROR_LOG(TEST_ERRNO);
-		} 
+		}
 	}	/* End for TEST_LOOPING */
 
 	/* cleanup and exit */
@@ -265,7 +265,7 @@ test_setup(int i, char *argv0)
 		 * by default, CAP_SETPCAP is not enabled. So giving
 		 * a non-zero pid results in capset() failing with
 		 * errno EPERM
-		 * 
+		 *
 		 * Note: this seems to have changed with recent kernels
 		 * => create a child and try to set its capabilities
 		 */

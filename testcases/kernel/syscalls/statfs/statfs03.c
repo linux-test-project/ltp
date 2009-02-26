@@ -27,8 +27,8 @@
  *	search permission is denied for a component of the path prefix of path.
  *
  * ALGORITHM
- *	 Use a component of the pathname, where search permission 
- *	 is denied for a component of the path prefix of path. 
+ *	 Use a component of the pathname, where search permission
+ *	 is denied for a component of the path prefix of path.
  *
  * USAGE:  <for command-line>
  *  statfs03 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
@@ -137,7 +137,7 @@ setup()
 
 	/* make a temporary directory and cd to it */
 	tst_tmpdir();
-    if (chmod(TESTDIR, S_IRWXU) == -1) 
+    if (chmod(TESTDIR, S_IRWXU) == -1)
         tst_brkm(TBROK, cleanup, "chmod(%S,700) failed; errno %d: %s", TESTDIR, errno, strerror(errno));
 	
 	/* create a test file */

@@ -30,58 +30,58 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: access03.c,v 1.5 2006/05/12 15:44:11 vapier Exp $ */
+/* $Id: access03.c,v 1.6 2009/02/26 12:02:32 subrata_modak Exp $ */
 /**********************************************************
- * 
+ *
  *    OS Test - Silicon Graphics, Inc.
- * 
+ *
  *    TEST IDENTIFIER	: access03
- * 
+ *
  *    EXECUTED BY	: anyone
- * 
+ *
  *    TEST TITLE	: EFAULT error testing for access(2)
- * 
+ *
  *    PARENT DOCUMENT	: acstds01
- * 
+ *
  *    TEST CASE TOTAL	: 8
- * 
+ *
  *    WALL CLOCK TIME	: 1
- * 
+ *
  *    CPU TYPES		: ALL
- * 
+ *
  *    AUTHOR		: Kathy Olmsted
- * 
+ *
  *    CO-PILOT		: Tom Hampson
- * 
+ *
  *    DATE STARTED	: 05/13/92
- * 
+ *
  *    INITIAL RELEASE	: UNICOS 7.0
- * 
+ *
  *    TEST CASES
- * 
+ *
  * 	access(2) test for errno(s) EFAULT.
  *	
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
- * 
+ *
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
  *
  *    ENVIRONMENTAL NEEDS
  *      No run-time environmental needs.
- * 
+ *
  *    DETAILED DESCRIPTION
  *
  * 	Setup:
  * 	  Setup signal handling.
  *        Make and change to a temporary directory.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  * 	  Execute system call
@@ -89,19 +89,19 @@
  *		Log the errno.
  *        If doing functional test
  *            check the errno returned and print result message
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- *        Remove the temporary directory and exit. 
- * 
- * 
+ *        Remove the temporary directory and exit.
+ *
+ *
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
 
- 
+
 #include <unistd.h>
 #include <sys/mman.h>
 #include "test.h"
@@ -128,8 +128,8 @@ int main(int ac, char **av)
 {
     int lc;		/* loop counter */
     char *msg;		/* message returned from parse_opts */
+   
     
-     
 
     /***************************************************************
      * parse standard options
@@ -154,11 +154,11 @@ int main(int ac, char **av)
 	Tst_count=0;
 
 		
-	/* 
+	/*
 	 * TEST CASE:
 	 *  R_OK on low pointer (-1) for path
 	 */
-	 
+	
 
 	/* Call access(2) */
 	TEST(access( bad_addr,R_OK));
@@ -175,12 +175,12 @@ int main(int ac, char **av)
 	if ( STD_FUNCTIONAL_TEST ) {
 	  if ( TEST_RETURN == -1 ) {
 	    if (TEST_ERRNO == EFAULT) {
-	      tst_resm(TPASS, 
+	      tst_resm(TPASS,
 		       "access((char *)-1,R_OK) failed as expected with errno %d (EFAULT) : %s",
 		       TEST_ERRNO, strerror(TEST_ERRNO));
 	    }
 	    else {
-	      tst_resm(TFAIL, 
+	      tst_resm(TFAIL,
 		       "access((char *)-1,R_OK) failed with errno %d : %s but expected %d (EFAULT)",
 		       TEST_ERRNO, strerror(TEST_ERRNO),EFAULT);
 	    }
@@ -190,14 +190,14 @@ int main(int ac, char **av)
 		       "access((char *)-1,R_OK) succeeded unexpectedly.");
 
 	  }
-	} 
+	}
 	
 	
-	/* 
+	/*
 	 * TEST CASE:
 	 *  W_OK on low pointer (-1) for path
 	 */
-	 
+	
 
 	/* Call access(2) */
 	TEST(access( bad_addr,W_OK));
@@ -213,12 +213,12 @@ int main(int ac, char **av)
 	if ( STD_FUNCTIONAL_TEST ) {
 	  if ( TEST_RETURN == -1 ) {
 	    if (TEST_ERRNO == EFAULT) {
-	      tst_resm(TPASS, 
+	      tst_resm(TPASS,
 		       "access((char *)-1,W_OK) failed as expected with errno %d (EFAULT) : %s",
 		       TEST_ERRNO, strerror(TEST_ERRNO));
 	    }
 	    else {
-	      tst_resm(TFAIL, 
+	      tst_resm(TFAIL,
 		       "access((char *)-1,W_OK) failed with errno %d : %s but expected %d (EFAULT)",
 		       TEST_ERRNO, strerror(TEST_ERRNO),EFAULT);
 	    }
@@ -228,14 +228,14 @@ int main(int ac, char **av)
 		       "access((char *)-1,W_OK) succeeded unexpectedly.");
 
 	  }
-	} 
+	}
 	
 	
-	/* 
+	/*
 	 * TEST CASE:
 	 *  X_OK on low pointer (-1) for path
 	 */
-	 
+	
 
 	/* Call access(2) */
 	TEST(access( bad_addr,X_OK));
@@ -252,12 +252,12 @@ int main(int ac, char **av)
 	if ( STD_FUNCTIONAL_TEST ) {
 	  if ( TEST_RETURN == -1 ) {
 	    if (TEST_ERRNO == EFAULT) {
-	      tst_resm(TPASS, 
+	      tst_resm(TPASS,
 		       "access((char*)-1,X_OK) failed as expected with errno %d (EFAULT) : %s",
 		       TEST_ERRNO, strerror(TEST_ERRNO));
 	    }
 	    else {
-	      tst_resm(TFAIL, 
+	      tst_resm(TFAIL,
 		       "access((char*)-1,X_OK) failed with errno %d : %s but expected %d (EFAULT)",
 		       TEST_ERRNO, strerror(TEST_ERRNO),EFAULT);
 	    }
@@ -267,14 +267,14 @@ int main(int ac, char **av)
 		       "access((char*)-1,X_OK) succeeded unexpectedly.");
 
 	  }
-	} 
+	}
 	
 	
-	/* 
+	/*
 	 * TEST CASE:
 	 *  F_OK on low pointer (-1) for path
 	 */
-	 
+	
 
 	/* Call access(2) */
 	TEST(access( bad_addr,F_OK));
@@ -291,12 +291,12 @@ int main(int ac, char **av)
 	if ( STD_FUNCTIONAL_TEST ) {
 	  if ( TEST_RETURN == -1 ) {
 	    if (TEST_ERRNO == EFAULT) {
-	      tst_resm(TPASS, 
+	      tst_resm(TPASS,
 		       "access((char*)-1,F_OK) failed as expected with errno %d (EFAULT) : %s",
 		       TEST_ERRNO, strerror(TEST_ERRNO));
 	    }
 	    else {
-	      tst_resm(TFAIL, 
+	      tst_resm(TFAIL,
 		       "access((char*)-1,F_OK) failed with errno %d : %s but expected %d (EFAULT)",
 		       TEST_ERRNO, strerror(TEST_ERRNO),EFAULT);
 	    }
@@ -306,14 +306,14 @@ int main(int ac, char **av)
 		       "access((char*)-1,F_OK) succeeded unexpectedly.");
 
 	  }
-	} 
+	}
 	
 	
-	/* 
+	/*
 	 * TEST CASE:
 	 *  R_OK on high pointer (sbrk(0)+1) for path
 	 */
-	 
+	
 
 	/* Call access(2) */
 	TEST(access(get_high_address(),R_OK));
@@ -330,12 +330,12 @@ int main(int ac, char **av)
 	if ( STD_FUNCTIONAL_TEST ) {
 	  if ( TEST_RETURN == -1 ) {
 	    if (TEST_ERRNO == EFAULT) {
-	      tst_resm(TPASS, 
+	      tst_resm(TPASS,
 		       "access((char*)sbrk(0)+1,R_OK) failed as expected with errno %d (EFAULT) : %s",
 		       TEST_ERRNO, strerror(TEST_ERRNO));
 	    }
 	    else {
-	      tst_resm(TFAIL, 
+	      tst_resm(TFAIL,
 		       "access((char*)sbrk(0)+1,R_OK) failed with errno %d : %s but expected %d (EFAULT)",
 		       TEST_ERRNO, strerror(TEST_ERRNO),EFAULT);
 	    }
@@ -345,14 +345,14 @@ int main(int ac, char **av)
 		       "access((char*)sbrk(0)+1,R_OK) succeeded unexpectedly.");
 
 	  }
-	} 
+	}
 	
 	
-	/* 
+	/*
 	 * TEST CASE:
 	 *  W_OK on high pointer (sbrk(0)+1) for path
 	 */
-	 
+	
 
 	/* Call access(2) */
 	TEST(access(get_high_address(),W_OK));
@@ -369,12 +369,12 @@ int main(int ac, char **av)
 	if ( STD_FUNCTIONAL_TEST ) {
 	  if ( TEST_RETURN == -1 ) {
 	    if (TEST_ERRNO == EFAULT) {
-	      tst_resm(TPASS, 
+	      tst_resm(TPASS,
 		       "access((char*)sbrk(0)+1,W_OK) failed as expected with errno %d (EFAULT) : %s",
 		       TEST_ERRNO, strerror(TEST_ERRNO));
 	    }
 	    else {
-	      tst_resm(TFAIL, 
+	      tst_resm(TFAIL,
 		       "access((char*)sbrk(0)+1,W_OK) failed with errno %d : %s but expected %d (EFAULT)",
 		       TEST_ERRNO, strerror(TEST_ERRNO),EFAULT);
 	    }
@@ -384,14 +384,14 @@ int main(int ac, char **av)
 		       "access((char*)sbrk(0)+1,W_OK) succeeded unexpectedly.");
 
 	  }
-	} 
+	}
 	
 	
-	/* 
+	/*
 	 * TEST CASE:
 	 *  X_OK on high pointer (sbrk(0)+1) for path
 	 */
-	 
+	
 
 	/* Call access(2) */
 	TEST(access(get_high_address(),X_OK));
@@ -408,12 +408,12 @@ int main(int ac, char **av)
 	if ( STD_FUNCTIONAL_TEST ) {
 	  if ( TEST_RETURN == -1 ) {
 	    if (TEST_ERRNO == EFAULT) {
-	      tst_resm(TPASS, 
+	      tst_resm(TPASS,
 		       "access(high_address,X_OK) failed as expected with errno %d (EFAULT) : %s",
 		       TEST_ERRNO, strerror(TEST_ERRNO));
 	    }
 	    else {
-	      tst_resm(TFAIL, 
+	      tst_resm(TFAIL,
 		       "access(high_address,X_OK) failed with errno %d : %s but expected %d (EFAULT)",
 		       TEST_ERRNO, strerror(TEST_ERRNO),EFAULT);
 	    }
@@ -423,14 +423,14 @@ int main(int ac, char **av)
 		       "access(high_address,X_OK) succeeded unexpectedly.");
 
 	  }
-	} 
+	}
 	
 	
-	/* 
+	/*
 	 * TEST CASE:
 	 *  F_OK on high pointer (sbrk(0)+1) for path
 	 */
-	 
+	
 
 	/* Call access(2) */
 	TEST(access(get_high_address(),F_OK));
@@ -447,12 +447,12 @@ int main(int ac, char **av)
 	if ( STD_FUNCTIONAL_TEST ) {
 	  if ( TEST_RETURN == -1 ) {
 	    if (TEST_ERRNO == EFAULT) {
-	      tst_resm(TPASS, 
+	      tst_resm(TPASS,
 		       "access((char*)sbrk(0)+1,F_OK) failed as expected with errno %d (EFAULT) : %s",
 		       TEST_ERRNO, strerror(TEST_ERRNO));
 	    }
 	    else {
-	      tst_resm(TFAIL, 
+	      tst_resm(TFAIL,
 		       "access((char*)sbrk(0)+1,F_OK) failed with errno %d : %s but expected %d (EFAULT)",
 		       TEST_ERRNO, strerror(TEST_ERRNO),EFAULT);
 	    }
@@ -462,7 +462,7 @@ int main(int ac, char **av)
 		       "access((char*)sbrk(0)+1,F_OK) succeeded unexpectedly.");
 
 	  }
-	} 
+	}
 	
 
     }	/* End for TEST_LOOPING */
@@ -488,7 +488,7 @@ int main()
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void 
+void
 setup()
 {
     /* capture signals */
@@ -512,7 +512,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void 
+void
 cleanup()
 {
     /*
@@ -521,7 +521,7 @@ cleanup()
      */
     TEST_CLEANUP;
 
-    /* remove the temporary directory and exit with 
+    /* remove the temporary directory and exit with
        return code appropriate for results */
     tst_rmdir();
     tst_exit();

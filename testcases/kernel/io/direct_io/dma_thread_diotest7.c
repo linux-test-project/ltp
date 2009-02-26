@@ -36,7 +36,7 @@
 /*   which reliably reproduces the problem on ext3 and xfs is attached. The   */
 /*   program creates, patterns, reads, and verify a series of files. In the   */
 /*   read phase, a file is opened with O_DIRECT n times, where n is the       */
-/*   number of cpu's. A single buffer large enough to contain the file is     */   
+/*   number of cpu's. A single buffer large enough to contain the file is     */  
 /*   allocated and patterned with data not found in any of the files. The     */
 /*   alignment of the buffer is controlled by a command line option. Each file*/
 /*   is read in parallel by n threads, where n is the number of cpu's. Thread */
@@ -100,7 +100,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#define FILESIZE (12*1024*1024) 
+#define FILESIZE (12*1024*1024)
 #define READSIZE  (1024*1024)
 
 #define FILENAME    "_dma_thread_test_%.04d.tmp"
@@ -154,16 +154,16 @@ void *worker_thread(void * arg)
     unsigned char  *buffer  = worker->buffer;
     int		    pattern = worker->pattern;
     int		    length  = worker->length;
-    
+   
     if (lseek(fd, offset, SEEK_SET) < 0) {
-	fprintf(stderr, "Failed to lseek to %d on fd %d: %s.\n", 
+	fprintf(stderr, "Failed to lseek to %d on fd %d: %s.\n",
 			offset, fd, strerror(errno));
 	exit(1);
     }
 
     bytes_read = read(fd, buffer, length);
     if (bytes_read != length) {
-	fprintf(stderr, "read failed on fd %d: bytes_read %d, %s\n", 
+	fprintf(stderr, "read failed on fd %d: bytes_read %d, %s\n",
 			fd, bytes_read, strerror(errno));
 	exit(1);
     }
@@ -180,7 +180,7 @@ void *worker_thread(void * arg)
 		printf("%02x ", buffer[i - 8 + k]);
 		if (k == 7) {
 		    printf("\n");
-		}       
+		}      
 	    }
 
 	    printf("\n");
@@ -191,7 +191,7 @@ void *worker_thread(void * arg)
     return 0;
 }
 
-void *fork_thread (void *arg) 
+void *fork_thread (void *arg)
 {
     pid_t pid;
 
@@ -202,7 +202,7 @@ void *fork_thread (void *arg)
 	} else if (pid < 0) {
 	    fprintf(stderr, "Failed to fork child.\n");
 	    exit(1);
-	} 
+	}
 	waitpid(pid, NULL, 0 );
 	usleep(100);
     }
@@ -310,7 +310,7 @@ int main(int argc, char *argv[])
     }
 
     printf("Using alignment %d.\n", align);
-    
+   
     posix_memalign((void *)&buffer, PAGE_SIZE, READSIZE+ align);
     printf("Read buffer: %p.\n", buffer);
     for (n = 1; n <= FILECOUNT; n++) {
@@ -342,18 +342,18 @@ int main(int argc, char *argv[])
 
 	    rc = pthread_create(&fork_tid, NULL, fork_thread, NULL);
 	    if (rc != 0) {
-		fprintf(stderr, "Can't create fork thread: %s.\n", 
+		fprintf(stderr, "Can't create fork thread: %s.\n",
 				strerror(rc));
 		exit(1);
 	    }
 
 	    for (j = 0; j < workers; j++) {
-		rc = pthread_create(&worker[j].tid, 
-				    NULL, 
-				    worker_thread, 
+		rc = pthread_create(&worker[j].tid,
+				    NULL,
+				    worker_thread,
 				    worker + j);
 		if (rc != 0) {
-		    fprintf(stderr, "Can't create worker thread %d: %s.\n", 
+		    fprintf(stderr, "Can't create worker thread %d: %s.\n",
 				    j, strerror(rc));
 		    exit(1);
 		}

@@ -24,7 +24,7 @@
  *   03/21/2001 Paul Larson (plars@us.ibm.com)
  *     -Ported
  *   11/01/2001 Mnaoj Iyer (manjo@austin.ibm.com)
- *     - Modified. 
+ *     - Modified.
  *	 added #inclide <unistd.h>
  *
  */
@@ -38,7 +38,7 @@
 
 
 #define MAXFILES        32768
-#define MAXTHREADS      10 
+#define MAXTHREADS      10
 
 
 /* Control Structure */

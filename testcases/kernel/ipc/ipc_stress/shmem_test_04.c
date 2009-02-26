@@ -131,7 +131,7 @@ static void error (const char *, int);
 
 /*
  * Global variables
- * 
+ *
  * *flg: command line parsing variables
  * filename:
  * fd:
@@ -239,7 +239,7 @@ int main (int argc, char **argv)
         for (word = 0, wptr = (int *)region; word < nwords; word++, wptr++) {
 		if (Vflg) {
 			if (word && word % WPERMB == 0)
-				printf ("\t[%d] %ldMB initialized...\n", 
+				printf ("\t[%d] %ldMB initialized...\n",
 					pid, (long)word/WPERMB);
 		}
 		*wptr = word;
@@ -272,7 +272,7 @@ int main (int argc, char **argv)
 				}
                         }
 			if (Vflg) {
-				printf ("\t[%d][%d] Word = %d, Value = %d\n", 
+				printf ("\t[%d][%d] Word = %d, Value = %d\n",
 					pid, loop, word, *wptr);
 			}
                 }
@@ -300,7 +300,7 @@ int main (int argc, char **argv)
 	if ((rc = munmap(region, length)) != 0) {
 		sys_error ("munmap failed", __LINE__);
 	}
-	/* 
+	/*
 	 * Program completed successfully -- exit
 	 */
 	if (pid != parent_pid) exit (0);
@@ -465,7 +465,7 @@ static void bus_handler (int signal, int code, struct sigcontext *scp)
  */
 static void int_handler (int sig)
 {
-	cleanup(1); 
+	cleanup(1);
 }
 
 /*
@@ -523,7 +523,7 @@ static int mkemptyfile (uint size)
 |            SIGSEGV - segmentation violation                          |
 |                                                                      |
 +---------------------------------------------------------------------*/
-static void setup_signal_handlers () 
+static void setup_signal_handlers ()
 {
 	struct sigaction sigact;
 
@@ -615,7 +615,7 @@ static void parse_args (int argc, char **argv)
 	/*
 	 * Determine the number of processes to run.
  	 */
-	if (pflg) { 
+	if (pflg) {
 		if (nprocs > MAXPROCS)
 			nprocs = MAXPROCS;
 	} else {
@@ -645,7 +645,7 @@ static void parse_args (int argc, char **argv)
 #else
 	{
 		pgspblks = psdanger(SIGDANGER);
-		pgspblks -= 256;	// leave a little room 
+		pgspblks -= 256;	// leave a little room
 		if (pgspblks < 0)
 			pgspblks = 0;
 		bytes = pgspblks * PAGE_SIZE;

@@ -14,7 +14,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
  */
-/********************************************************** 
+/**********************************************************
  *
  *    TEST IDENTIFIER   : setdomainname03
  *
@@ -30,7 +30,7 @@
  *      Uses SIGUSR1 to pause before test if option set.
  *      (See the parse_opts(3) man page).
  *
- *    DESCRIPTION 
+ *    DESCRIPTION
  * 	Verify that, setdomainname(2) returns -1 and sets errno to EPERM
  * 	if the effective user id of the caller is not super-user.
  *

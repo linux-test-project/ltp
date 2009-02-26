@@ -31,7 +31,7 @@
 /******************************************************************************/
 
 /*
-    TCP server 
+    TCP server
 */
 
 #include <pthread.h>
@@ -47,7 +47,7 @@ void noprintf(char* string, ...){
 
 pthread_t	th;
 pthread_mutex_t current_mutex;
-int sockfd; 
+int sockfd;
 
 /* Read a stream socket one line at a time and write each line back
    to sender. Return when connection is terminated */
@@ -115,7 +115,7 @@ main(int argc, char *argv[])
     prtln();
     dprt2(("%s: main(): Binding local address for client to use\n"
      "serv_addr.sin_family = %d\n serv_addr.sin_addr.s_addr = %#x\n"
-     "serv_addr.sin_port = %d\n", __FILE__, serv_addr.sin_family, 
+     "serv_addr.sin_port = %d\n", __FILE__, serv_addr.sin_family,
       serv_addr.sin_addr.s_addr, serv_addr.sin_port));
 
     prtln();
@@ -127,7 +127,7 @@ main(int argc, char *argv[])
     }
 
     prtln();
-    if (pthread_mutex_init(&current_mutex, (pthread_mutexattr_t *)NULL) != 0) 
+    if (pthread_mutex_init(&current_mutex, (pthread_mutexattr_t *)NULL) != 0)
 	printf("current_mutex_init() failure");
     prtln();
 
@@ -176,7 +176,7 @@ new_thread(void* arg_)
     if (pthread_mutex_lock (&current_mutex))
 	printf("mutex_lock failed");
     if (str_echo(arg) < 0) /* process the request */
-       printf("new_thread: str_echo returned error"); 
+       printf("new_thread: str_echo returned error");
     close(arg); /* i.e. newsockfd*/ 	
     if (pthread_mutex_unlock (&current_mutex))
 	printf("mutex_unlock failed");

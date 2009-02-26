@@ -121,7 +121,7 @@ main(int ac, char **av)
 		/* Set the alarm timer */
 		alarm(5);
 
-		/* 
+		/*
 		 * Call sigsuspend() to replace current signal mask
 		 * of the process and suspend process execution till
 		 * receipt of a signal 'SIGALRM'.
@@ -139,7 +139,7 @@ main(int ac, char **av)
 			 * executed without (-f) option.
 			 */
 			if (STD_FUNCTIONAL_TEST) {
-				/* 
+				/*
 				 * Read the current signal mask of process,
 				 * Check whether previous signal mask preserved
 				 */
@@ -148,7 +148,7 @@ main(int ac, char **av)
 					tst_resm(TFAIL, "sigprocmask() Failed "
 						"to get previous signal mask "
 						"of process");
-				} else if (sigset2.__val[0] != 
+				} else if (sigset2.__val[0] !=
 						sigset1.__val[0]) {
 					tst_resm(TFAIL, "sigsuspend failed to "
 						"preserve signal mask");
@@ -186,7 +186,7 @@ main(int ac, char **av)
  * Set the signal handler to catch SIGALRM signal.
  * Get the current signal mask of test process using sigprocmask().
  */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -200,7 +200,7 @@ setup()
 	 * excludes/includes  all system-defined signals.
 	 */
 	if (sigemptyset(&sigset) == -1) {
-		tst_brkm(TFAIL, cleanup, 
+		tst_brkm(TFAIL, cleanup,
 			 "sigemptyset() failed, errno=%d : %s",
 			 errno, strerror(errno));
 		/*NOTREACHED*/
@@ -234,7 +234,7 @@ setup()
  * void
  * sig_handler(int sig) - Signal catching function.
  *   This function gets executed when the signal SIGALRM is delivered
- *   to the test process after the expiry of alarm time and the signal was 
+ *   to the test process after the expiry of alarm time and the signal was
  *   trapped by sigaction() to execute this function.
  *
  *   This function simply returns without doing anything.
@@ -249,7 +249,7 @@ sig_handler(int sig)
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

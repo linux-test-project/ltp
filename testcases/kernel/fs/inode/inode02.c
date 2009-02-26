@@ -36,13 +36,13 @@ CALLS:	mkdir, stat, open
 >BUGS:  <
 ======================================================================*/
 
-#define PATH_STRING_LENGTH  1024 
+#define PATH_STRING_LENGTH  1024
 #define NAME_LENGTH  8
 #define MAX_PATH_STRING_LENGTH  (PATH_STRING_LENGTH - NAME_LENGTH - 40)
 #define DIRECTORY_MODE  00777
 #define FILE_MODE       00777
 
-#define MKDIR_STRING_LENGTH  (MAX_PATH_STRING_LENGTH + 7) 
+#define MKDIR_STRING_LENGTH  (MAX_PATH_STRING_LENGTH + 7)
 
 /* #define DEBUG	 you can watch the generation with this flag */
 
@@ -304,7 +304,7 @@ int tree()
 	
 	/****************************************/
 	/*					*/
-	/*   and store its name in path_list	*/ 
+	/*   and store its name in path_list	*/
 	/*					*/
 	/****************************************/
 
@@ -419,7 +419,7 @@ int level;    	/* the tree depth variable */
 
 		/********************************/
 		/*				*/
-		/*   Maximum path name length	*/ 
+		/*   Maximum path name length	*/
 		/*     	    reached 		*/
 		/*				*/
 		/********************************/
@@ -428,7 +428,7 @@ int level;    	/* the tree depth variable */
 		return(-1);
 	}
 	else if(level < max_depth) {
-		for(i = 0; i <= max_breadth; i++) { 
+		for(i = 0; i <= max_breadth; i++) {
 			get_next_name();
 			strcpy(new_string, string);
 			strcat(new_string, slash);
@@ -469,10 +469,10 @@ int level;    	/* the tree depth variable */
 				/****************************************/
 
 				len = strlen(new_string);
-				for(j = 1; j <= file_length; j++) { 
+				for(j = 1; j <= file_length; j++) {
 					ret_len = write(file_id, new_string, len);
 					if(ret_len != len) {
-						fprintf(temp,"\nUnsuccessful write to file %s, errno=%d\n", 
+						fprintf(temp,"\nUnsuccessful write to file %s, errno=%d\n",
 						  new_string, errno);
 						return(-3);	
 					}		
@@ -481,7 +481,7 @@ int level;    	/* the tree depth variable */
 
 				/****************************************/
 				/*					*/
-				/*   and store its name in path_list	*/ 
+				/*   and store its name in path_list	*/
 				/*					*/
 				/****************************************/
 
@@ -507,7 +507,7 @@ int level;    	/* the tree depth variable */
 				ret_val = mkdir(new_string, DIRECTORY_MODE);
 
 				if(ret_val != 0) {
-					fprintf(temp,"\nImpossible to create directory %s, errno=%d\n", 
+					fprintf(temp,"\nImpossible to create directory %s, errno=%d\n",
 					 new_string, errno);
 					return(-5);
 				}
@@ -518,7 +518,7 @@ int level;    	/* the tree depth variable */
 
 				/****************************************/
 				/*					*/
-				/*     store its name in path_list	*/ 
+				/*     store its name in path_list	*/
 				/*					*/
 				/****************************************/
 
@@ -536,7 +536,7 @@ int level;    	/* the tree depth variable */
 
 				new_level = level + 1;
 				new_ret_val = generate(new_string, new_level);
-				if(new_ret_val < ret_val) 
+				if(new_ret_val < ret_val)
 					ret_val = new_ret_val;	
 			}
 		}
@@ -556,7 +556,7 @@ int level;    	/* the tree depth variable */
 		/********************************/
 
 		return 0;
-} 
+}
 int check()
 
 /****************************************/
@@ -624,7 +624,7 @@ int check()
 				for(j = 1; j <= file_length; j++) {
 					ret_len = read(file_id, read_string, len);
 					if(len != ret_len) {
-						fprintf(temp,"\nFile read error for file %s, errno=%d\n", 
+						fprintf(temp,"\nFile read error for file %s, errno=%d\n",
 						path_string, errno);
 						return(-3);
 					}
@@ -638,12 +638,12 @@ int check()
 				close(file_id);
 			}  /* else for */
 					if(ret_len <= 0) {
-						fprintf(temp,"\nImpossible to read file %s, errno=%d\n", 
+						fprintf(temp,"\nImpossible to read file %s, errno=%d\n",
 						path_string, errno);
 						return(-2);
 					}	
 		}
-		else { 
+		else {
 
 	     	/********************************/
 		/*				*/
@@ -655,14 +655,14 @@ int check()
 			path_string[len] = '\0';
 			path_mode = mode(path_string);
 			if(path_mode == -1) {
-				fprintf(temp,"\nPreviously created directory path %s was not open\n", 
+				fprintf(temp,"\nPreviously created directory path %s was not open\n",
 				path_string);
 				return(-4);
 			}
 			if((040000 & path_mode) != 040000){
-				fprintf(temp,"\nPath %s was not recognized to be a directory\n", 
+				fprintf(temp,"\nPath %s was not recognized to be a directory\n",
 				path_string);
-				fprintf(temp,"Its mode is %o\n", path_mode); 
+				fprintf(temp,"Its mode is %o\n", path_mode);
 				return(-5);
 			}
 		}
@@ -720,7 +720,7 @@ int position;
 {
 	int next_position;
 
-	if(name[position] == 'z') 
+	if(name[position] == 'z')
 		if(position == 0) {	
 			fprintf(temp,"ERROR: There are no more available names\n");
 			exit(-1);
@@ -780,7 +780,7 @@ char string[];
 		exit(-2);
 	}
 	return 0;
-} 
+}
 
 int term()
 {

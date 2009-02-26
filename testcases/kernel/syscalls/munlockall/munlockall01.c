@@ -15,17 +15,17 @@
  *
  */
 /**************************************************************************
- * 
+ *
  *    TEST IDENTIFIER	: munlockall01
- * 
+ *
  *    EXECUTED BY	: root / superuser
- * 
+ *
  *    TEST TITLE	: Basic test for munlockall(2)
- * 
+ *
  *    TEST CASE TOTAL	: 1
- * 
+ *
  *    AUTHOR		: sowmya adiga<sowmya.adiga@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -37,16 +37,16 @@
  * 	Setup:
  *	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *        Execute system call
  *	  Check return code, if system call failed (return=-1)
  *	  Log the errno and Issue a FAIL message.
  *	  Otherwise, Issue a PASS message.
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  *  munlockall01 [-c n] [-e] [-i n] [-I x] [-p x] [-t]
  *		where,		-c n : Run n copies concurrently

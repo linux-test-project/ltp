@@ -96,7 +96,7 @@ main(int ac, char **av)
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
 	char read_buffer[BUFSIZ];	/* buffer used to read data from file*/
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -112,7 +112,7 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 
-		/* 
+		/*
 		 * Call sync(2) to commit buffer data to disk.
 		 */
 		TEST_VOID(sync());
@@ -175,7 +175,7 @@ main(int ac, char **av)
  *  Create a test file under temporary directory and write some
  *  data into it.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -219,7 +219,7 @@ setup()
  *             completion or premature exit.
  *  Remove the test directory and testfile created in the setup.
  */
-void 
+void
 cleanup()
 {
 	/*

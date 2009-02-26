@@ -1,4 +1,4 @@
-/*************************************************************************************/ 
+/*************************************************************************************/
 /*                                                                                   */
 /* Copyright (C) 2008, Michael Kerrisk <mtk.manpages@gmail.com>,                     */
 /* Copyright (C) 2008, Linux Foundation                                              */
@@ -15,7 +15,7 @@
 /*                                                                                   */
 /* You should have received a copy of the GNU General Public License                 */
 /* along with this program;  if not, write to the Free Software                      */
-/* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA           */ 
+/* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA           */
 /*************************************************************************************/
 /*                                                                                   */
 /* File: utimnsat01.c                                                                */
@@ -37,7 +37,7 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <sys/syscall.h> 
+#include <sys/syscall.h>
 #include <fcntl.h>
 #include <string.h>
 #include <sys/stat.h>
@@ -151,7 +151,7 @@ main(int argc, char *argv[])
         }
     }
 
-    if ((optind + 5 != argc) && (optind + 1 != argc)) 
+    if ((optind + 5 != argc) && (optind + 1 != argc))
         usageError(argv[0]);
 
     if (dirfdPath != NULL) {
@@ -222,7 +222,7 @@ main(int argc, char *argv[])
             errExit("setresuid");
     }
 
-    /* Display information allowing user to verify arguments for call */ 
+    /* Display information allowing user to verify arguments for call */
 
     if (verbose) {
         printf("dirfd is %d\n", dirfd);

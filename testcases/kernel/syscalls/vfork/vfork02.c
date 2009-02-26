@@ -23,7 +23,7 @@
  * Test Description:
  *  Fork a process using vfork() and verify that, the pending signals in
  *  the parent are not pending in the child process.
- *   
+ *  
  * Expected Result:
  *  The signal which is pending in the parent should not be pending in the
  *  child process.
@@ -97,7 +97,7 @@ main(int ac, char **av)
 	pid_t cpid;		/* process id of the child process */
 	int exit_status;	/* exit status of child process */
 	sigset_t PendSig;	/* variable to hold pending signal */
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -116,7 +116,7 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 
-		/* 
+		/*
 		 * Call vfork(2) to create a child process without
 		 * fully copying the address space of parent.
 		 */
@@ -189,7 +189,7 @@ main(int ac, char **av)
  *   on hold and then sends the signal SIGUSR1 to itself so that it is in
  *   pending state.
  */
-void 
+void
 setup()
 {
 	sigset_t PendSig;		/* variable to hold pending signal */
@@ -233,7 +233,7 @@ setup()
 /*
  * void
  * sig_handler() - signal catching function for 'SIGUSR1' signal.
- *		   
+ *		  
  *   This is a null function and used only to catch the above signal
  *   generated in parent process.
  */
@@ -248,7 +248,7 @@ sig_handler()
  *             completion or premature exit.
  *  Release the signal 'SIGUSR1'  if still in pending state.
  */
-void 
+void
 cleanup()
 {
 	/*

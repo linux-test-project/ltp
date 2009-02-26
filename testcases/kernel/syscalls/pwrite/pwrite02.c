@@ -213,7 +213,7 @@ sighandler(sig)
  *  Initialize/allocate write buffer.
  *  Call individual setup function.
  */
-void 
+void
 setup()
 {
 	int i;		/* counter for setup functions */
@@ -321,7 +321,7 @@ init_buffers()
  * Close the temporary file.
  * Remove the temporary directory created.
  */
-void 
+void
 cleanup()
 {
 	int count;		/* index for the loop */

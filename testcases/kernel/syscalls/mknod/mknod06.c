@@ -26,7 +26,7 @@
  *	already exists.
  *   2) mknod(2) returns -1 and sets errno to EFAULT if pathname points
  *	outside user's accessible address space.
- *   3) mknod(2) returns -1 and sets errno to ENOENT if the directory 
+ *   3) mknod(2) returns -1 and sets errno to ENOENT if the directory
  *	component in pathname does not exist.
  *   4) mknod(2) returns -1 and sets errno to ENAMETOOLONG if the pathname
  *	component was too long.
@@ -332,7 +332,7 @@ cleanup()
 
 	/* Remove files and temporary directory created */
 	tst_rmdir();
-  
+ 
 	/* exit with return code appropriate for results */
 	tst_exit();
 }

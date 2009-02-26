@@ -15,7 +15,7 @@
 #include <linux/fs.h>
 
 /*
- * Test the FIBMAP ioctl() call on a file whose name is given as the first 
+ * Test the FIBMAP ioctl() call on a file whose name is given as the first
  * argument. This ioctl will result in a CAP_SYS_RAWIO capable check.
  */
 int main(int argc, char **argv) {
@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
   }
 
   fd = open(argv[1], O_RDONLY, 0);
-  
+ 
   if(fd == -1) {
     perror("test_rawio:open");
     exit(2);

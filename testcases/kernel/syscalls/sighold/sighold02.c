@@ -30,35 +30,35 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: sighold02.c,v 1.7 2009/02/26 11:44:25 subrata_modak Exp $ */
+/* $Id: sighold02.c,v 1.8 2009/02/26 12:04:57 subrata_modak Exp $ */
 /*****************************************************************************
  * OS Test - Silicon Graphics, Inc.  Eagan, Minnesota
- * 
+ *
  * TEST IDENTIFIER : sighold02 Holding all signals.
- * 
+ *
  * PARENT DOCUMENT : sghtds01  sighold system call (CRAY X-MP and CRAY-1 only)
- * 
+ *
  * AUTHOR          : Bob Clark
- * 
+ *
  * CO-PILOT        : Barrie Kletscher
- * 
+ *
  * DATE STARTED    : 9/26/86
- * 
+ *
  * TEST ITEMS
- * 
+ *
  * 	1. sighold action to turn off the receipt of all signals was done
  *	   without error.
  * 	2. After signals were held, and sent, no signals were trapped.
- * 
+ *
  * SPECIAL PROCEDURAL REQUIRMENTS
- * 
+ *
  * 	The program must be linked with tst_res.o and parse_opts.o.
- * 
+ *
  * DETAILED DESCRIPTION
- * 
+ *
  * 	set up pipe for parent/child communications
  * 	fork off a child process
- * 
+ *
  * 	PARENT:
  * 		set up for unexpected signals
  * 		wait for child to send ready message over pipe
@@ -67,14 +67,14 @@
  *	        write to pipe, tell child all signals sent
  *		read pipe to get result from child
  * 		wait for child to terminate
- * 
+ *
  * 	CHILD:
  * 		set up to catch all signals
  * 		hold signals with sighold()
  * 		send parent sighold results via pipe
  * 		wait for signals to arrive while reading pipe
  *		write to pipe telling parent which signals were received if any.
- * 
+ *
  ***************************************************************************/
 
 #include <errno.h>
@@ -240,7 +240,7 @@ main(int ac, char **av)
 	    }
 
 	    /*
-	     * send signals to child and see if it holds them 
+	     * send signals to child and see if it holds them
 	     */
 
 	    for (sig = 1; sig < NUMSIGS; sig++) {
@@ -248,14 +248,14 @@ main(int ac, char **av)
                         sig = 42;  /* skip over SIGPEFAILURE for non-CRAYT3E systems */
                 }
 		if ((sig != SIGCLD) && (sig != SIGKILL) &&
-		    (sig != SIGALRM) && (sig != SIGSTOP) 
+		    (sig != SIGALRM) && (sig != SIGSTOP)
 		    && (sig != SIGCANCEL)
 		    && (sig != SIGTIMER)
 #ifdef SIGRECOVERY
-		    && (sig != SIGRECOVERY) 
+		    && (sig != SIGRECOVERY)
 #endif
 #ifdef SIGRESTART
-		    && (sig != SIGRESTART) 
+		    && (sig != SIGRESTART)
 #endif
 #ifdef SIGNOBDM
 		    && (sig != SIGNOBDM)
@@ -294,15 +294,15 @@ main(int ac, char **av)
 	    if ( STD_FUNCTIONAL_TEST )
 	        tst_resm(p_p.result, p_p.mesg);
 
-	    else if ( p_p.result != TPASS ) 
+	    else if ( p_p.result != TPASS )
 	        tst_resm(p_p.result, p_p.mesg);
 
             else
 		Tst_count++;
-	   
+	  
 
 	    /*
-	     * wait for child 
+	     * wait for child
 	     */
 	    if (wait(&term_stat) < 0) {
 		(void) sprintf(mesg, "wait() failed. error:%d %s.",
@@ -431,11 +431,11 @@ do_child()
 
 /*****************************************************************************
  *  read_pipe() : read data from pipe and return in buf.  If an error occurs
- *      put message in mesg and return NULL.  Note: this routine sets a 
+ *      put message in mesg and return NULL.  Note: this routine sets a
  *      timeout signal in case the pipe is blocked.
  ****************************************************************************/
 
-int 
+int
 read_pipe(fd)
 int fd;
 {
@@ -443,7 +443,7 @@ int fd;
 
 #ifdef debug
     printf("read_pipe: %d entering, fd = %d...\n", getpid(), fd);
-#endif 
+#endif
 
     /* set timeout alarm in case the pipe is blocked */
     if (set_timeout() < 0) {
@@ -455,25 +455,25 @@ int fd;
 
 #ifdef debug
     printf("read_pipe: %d read() completed ret=%d\n", getpid(), ret);
-#endif 
+#endif
 
     clear_timeout();
 
     if ( Timeout ) {
-	(void) sprintf(p_p.mesg, 
+	(void) sprintf(p_p.mesg,
 		"read() pipe failed -timed out after %d seconds.", TIMEOUT);
 	return -1;
     }
 #ifdef debug
     printf("read_pipe: received %s.\n", p_p.mesg);
-#endif 
+#endif
 
     return 0;
 }
 
 
 /*****************************************************************************
- *  write_pipe(msg) : write p_p to pipe.  If it fails, put message in 
+ *  write_pipe(msg) : write p_p to pipe.  If it fails, put message in
  *         mesg and return -1, else return 0.
  ****************************************************************************/
 
@@ -531,13 +531,13 @@ clear_timeout()
 }
 
 /*****************************************************************************
- *  timeout() : this routine is executed when the SIGALRM signal is 
+ *  timeout() : this routine is executed when the SIGALRM signal is
  *      caught.  It does nothing but return - if executed during a read()
  *      system call, a -1 will be returned by the read().
  ****************************************************************************/
 
 static void
-timeout() 
+timeout()
 {
 #ifdef debug
     printf("timeout: sigalrm caught.\n");
@@ -559,7 +559,7 @@ setup_sigs()
     /* set up signal handler routine */
     for (sig = 1; sig < NUMSIGS; sig++) {
 	if ((sig != SIGCLD) && (sig != SIGKILL) &&
-	(sig != SIGALRM) && (sig != SIGSTOP) 
+	(sig != SIGALRM) && (sig != SIGSTOP)
 #ifdef SIGRESTART
 	&& (sig != SIGRESTART)
 #endif
@@ -640,7 +640,7 @@ setup()
   	    errno, strerror(errno));
 	tst_brkm(TBROK, cleanup, mesg);
     }
-    
+   
     /* set up pipe for parent sending to child communications */
     if (pipe(Fds2) < 0) {
 	(void) sprintf(mesg, "pipe() failed. error:%d %s.",

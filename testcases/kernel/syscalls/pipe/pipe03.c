@@ -22,7 +22,7 @@
  *	pipe03.c
  *
  * DESCRIPTION
- * 	Make sure that writing to the read end of a pipe and reading from 
+ * 	Make sure that writing to the read end of a pipe and reading from
  * 	the write end of a pipe both fail.
  *
  * ALGORITHM
@@ -100,7 +100,7 @@ int main(int ac, char **av)
 					"read end of pipe");
 		else
 			tst_resm(TFAIL, "success when writing to read "
-					"end of pipe ret=%d, errno=%d", 
+					"end of pipe ret=%d, errno=%d",
 					TEST_RETURN, TEST_ERRNO);
 
 		TEST(safe_read(fildes[1], rbuf, 1));
@@ -110,7 +110,7 @@ int main(int ac, char **av)
 		else
 			tst_resm(TFAIL, "success when reading from "
 					"write end of pipe ret=%d, "
-					"errno=%d", TEST_RETURN, 
+					"errno=%d", TEST_RETURN,
 					TEST_ERRNO);
 	}
 	cleanup();

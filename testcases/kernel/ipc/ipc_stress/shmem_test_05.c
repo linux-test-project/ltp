@@ -23,7 +23,7 @@
 | Title:        SHMBLA is treated as 0x1000                            |
 |                                                                      |
 | Purpose:      simultaneous attachment of more than ten shared        |
-|               memory regions to a process at adresses that are       | 
+|               memory regions to a process at adresses that are       |
 |		multiple of the value SHMBLA . EXTSHM=ON is set ,      |
 |               the value of SHMLBA is treated as 0x1000 internally    |
 |                                                                      |
@@ -97,17 +97,17 @@ off_t offsets[] = {
 int offsets_cnt = sizeof (offsets) /sizeof (offsets[0]);
 /* Defines
  *
- * MAX_SHMEM_SIZE: maximum shared memory segment size of 256MB 
+ * MAX_SHMEM_SIZE: maximum shared memory segment size of 256MB
  *
- * MAX_SHMEM_NUMBER: maximum number of simultaneous attached shared memory 
+ * MAX_SHMEM_NUMBER: maximum number of simultaneous attached shared memory
  * regions
  *
  * DEFAULT_SHMEM_SIZE: default shared memory size, unless specified with
  * -s command line option
- * 
+ *
  * SHMEM_MODE: shared memory access permissions (permit process to read
  * and write access)
- * 
+ *
  * USAGE: usage statement
  */
 #define MAX_SHMEM_SIZE		256*1024*1024
@@ -131,7 +131,7 @@ void error (const char *, int);
 
 /*
  * Global variables
- * 
+ *
  * shmem_size: shared memory segment size (in bytes)
  */
 int shmem_size = DEFAULT_SHMEM_SIZE;
@@ -182,7 +182,7 @@ int main (int argc, char **argv)
 	 */
 	parse_args (argc, argv);
 	printf ("%s: IPC Shared Memory TestSuite program\n", *argv);
-    
+   
 	for (i=0; i<offsets_cnt; i++) {
         /*
          * Create a key to uniquely identify the shared segment
@@ -213,7 +213,7 @@ int main (int argc, char **argv)
 
 #ifndef __64BIT__
          printf ("\n\toffset of the shared memory segment 0x%lx\n",offset);
-        if ((shmptr[i] = (char *) shmat (shmid[i], (const void *)offset, 0)) == (char *)-1) 
+        if ((shmptr[i] = (char *) shmat (shmid[i], (const void *)offset, 0)) == (char *)-1)
 #else
          printf ("\n\toffset of the shared memory is determined by the system\n"
 );
@@ -254,7 +254,7 @@ int main (int argc, char **argv)
 		sys_error ("shmctl failed", __LINE__);
 
 	}
-	/* 
+	/*
 	 * Program completed successfully -- exit
 	 */
 

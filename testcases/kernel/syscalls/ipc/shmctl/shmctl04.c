@@ -22,7 +22,7 @@
  *	shmctl04.c
  *
  * DESCRIPTION
- *	shmctl04 - test the SHM_INFO command 
+ *	shmctl04 - test the SHM_INFO command
  *		   they are used with shmctl() in ipcs
  *
  * USAGE:  <for command-line>

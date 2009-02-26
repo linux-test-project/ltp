@@ -24,7 +24,7 @@
  * DESCRIPTION
  *	Testcase to check execve sets the following errnos correctly:
  *	1.	ETXTBSY
- * 
+ *
  * ALGORITHM
  *	1.	Attempt to execve(2) a file which is being opened by another
  *		process for writing fails with ETXTBSY.

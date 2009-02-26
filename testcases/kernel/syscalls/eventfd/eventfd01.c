@@ -403,7 +403,7 @@ writefd_set_test(int fd)
 
 	ret = set_counter(fd, non_max);
 	if (ret == -1) {
-		tst_resm(TBROK, "error setting counter value to %lld", 
+		tst_resm(TBROK, "error setting counter value to %lld",
 			 non_max);
 		return;
 	}
@@ -522,7 +522,7 @@ child_inherit_test(int fd)
 
 #ifdef HAVE_IO_SET_EVENTFD
 /*
- * Test whether counter overflow is detected and handled correctly. 
+ * Test whether counter overflow is detected and handled correctly.
  *
  * It is not possible to directly overflow the counter using the
  * write() syscall. Overflows occur when the counter is incremented
@@ -546,7 +546,7 @@ child_inherit_test(int fd)
         eventfd.
  *   3. The counter value is UINT64_MAX.
  */
-static int 
+static int
 trigger_eventfd_overflow(int evfd, int *fd, io_context_t *ctx)
 {
 	int ret;
@@ -563,7 +563,7 @@ trigger_eventfd_overflow(int evfd, int *fd, io_context_t *ctx)
 
 	*fd = open("testfile", O_RDWR | O_CREAT, 0644);
 	if (*fd == -1) {
-		tst_resm(TINFO, "error creating tmp file: %s", 
+		tst_resm(TINFO, "error creating tmp file: %s",
 			 strerror(errno));
 		goto err_io_destroy;
 	}
@@ -621,7 +621,7 @@ overflow_select_test(int evfd)
 	FD_SET(evfd, &readfds);
 	ret = select(evfd + 1, &readfds, NULL, NULL, &timeout);
 	if (ret == -1) {
-		tst_resm(TBROK, "error getting evfd status with select: %s", 
+		tst_resm(TBROK, "error getting evfd status with select: %s",
 			 strerror(errno));
 		goto err_cleanup;
 	}
@@ -654,7 +654,7 @@ overflow_poll_test(int evfd)
 	pollfd.revents = 0;
 	ret = poll(&pollfd, 1, 10000);
 	if (ret == -1) {
-		tst_resm(TBROK, "error getting evfd status with poll: %s", 
+		tst_resm(TBROK, "error getting evfd status with poll: %s",
 			 strerror(errno));
 		goto err_cleanup;
 	}
@@ -681,7 +681,7 @@ overflow_read_test(int evfd)
 		return;
 	}
 	
-	ret = read(evfd, &count, sizeof(count)); 
+	ret = read(evfd, &count, sizeof(count));
 	if (ret == -1) {
 		tst_resm(TBROK, "error reading eventfd: %s", strerror(errno));
 		goto err_cleanup;

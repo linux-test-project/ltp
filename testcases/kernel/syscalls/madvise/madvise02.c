@@ -21,49 +21,49 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
- 
+
 /**********************************************************
- * 
+ *
  *    OS Test - International Business Machines Corp. 2004.
- * 
+ *
  *    TEST IDENTIFIER	: madvise02
- * 
+ *
  *    EXECUTED BY		: anyone
- * 
+ *
  *    TEST TITLE		: Basic test for madvise(2)
- * 
+ *
  *    TEST CASE TOTAL	: 7
- * 
+ *
  *    CPU TYPES			: Intel(R) XEON(TM)
- * 
+ *
  *    AUTHOR			: Sumit Sharma
- * 
- *    CO-PILOT			: 
- * 
+ *
+ *    CO-PILOT			:
+ *
  *    DATE STARTED		: 14/05/2004
- * 
+ *
  *    TEST CASES
- * 
+ *
  * 	1.) madvise(2) error conditions...(See Description)
  *	
  *	INPUT SPECIFICATIONS
  * 		The standard options for system call tests are accepted.
  *		(See the parse_opts(3) man page).
- * 
+ *
  *	OUTPUT SPECIFICATIONS
  *		Output describing whether test cases passed or failed.
  * 	
  *	ENVIRONMENTAL NEEDS		(??)
- *		None 
+ *		None
  *
  *	SPECIAL PROCEDURAL REQUIREMENTS
  * 		None
- * 
+ *
  *	DETAILED DESCRIPTION
  *		This is a test for the madvise(2) system call. It is intended
- *		to provide a complete exposure of the system call. It tests 
+ *		to provide a complete exposure of the system call. It tests
  *		madvise(2) for all error conditions to occur correctly.
- * 
+ *
  * 		(A) Test Case for EINVAL
  *       	1. start is not page-aligned
  *       	2. advice is not a valid value
@@ -85,18 +85,18 @@
  *	Setup:
  *		Setup signal handling.
  *		Pause for SIGUSR1 if option specified.
- * 
+ *
  *	Test:
  *		Loop if the proper options are given.
  *		Execute system call
  *		Check return code, if system call failed (return=-1)
  *		Log the errno and Issue a FAIL message.
  *		Otherwise, Issue a PASS message.
- * 
+ *
  *	Cleanup:
  *		Print errno log and/or timing stats if options given
- * 
- * 
+ *
+ *
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
 #include <stdio.h>
@@ -203,7 +203,7 @@ int main(int argc, char *argv[])
 		/* Test Case 1 */
 		TEST(madvise(file+100, stat.st_size, MADV_NORMAL));
 		check_and_print(EINVAL);
-        
+       
 		/* Test Case 2 */
 		TEST(madvise(file,stat.st_size,1212));
 		check_and_print(EINVAL);
@@ -235,7 +235,7 @@ int main(int argc, char *argv[])
 			tst_brkm(TBROK, cleanup, "Could not mmap file");
         	}
 		
-        	if ((high = 
+        	if ((high =
 			(char *) mmap (NULL, stat.st_size/2, PROT_READ, MAP_SHARED, fd, stat.st_size/2 )) == (char *)-1) {
 			tst_brkm(TBROK, cleanup, "Could not mmap file");
         	}
@@ -243,7 +243,7 @@ int main(int argc, char *argv[])
 		/* Swap if necessary to make low < high */
 		if (low > high) {
 			char* tmp;
-			tmp = high; 
+			tmp = high;
 			high = low;
 			low = tmp;
 		}
@@ -252,7 +252,7 @@ int main(int argc, char *argv[])
 		len = (high - low) + pagesize;
 
 		/* Now we have two maps. Unmap the map @ higher address (now @high) */
-		if(munmap(high,stat.st_size/2) < 0) 
+		if(munmap(high,stat.st_size/2) < 0)
 			tst_brkm(TBROK, cleanup, "Error %d in munmap : %s",
 				        errno, strerror(errno));
 
@@ -262,7 +262,7 @@ int main(int argc, char *argv[])
 
 		/* Test Case 5 */
 		/* Unmap the file map from low */
-		if(munmap(low,stat.st_size/2) < 0) 
+		if(munmap(low,stat.st_size/2) < 0)
 			tst_brkm(TBROK, cleanup, "Error %d in munmap : %s",
 				        errno, strerror(errno));
 		/* Create one memory segment using malloc */

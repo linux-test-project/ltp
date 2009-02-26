@@ -221,7 +221,7 @@ unlock_file()
 	struct flock fl;
 
 	if (do_lock(F_SETLK, (short)F_UNLCK, (short)0, 0, 0) < 0) {
-		tst_resm(TFAIL, "fcntl on file failed, errno =%d", 
+		tst_resm(TFAIL, "fcntl on file failed, errno =%d",
 			 errno);
 		fail = 1;
 	}
@@ -351,7 +351,7 @@ int main(int ac, char **av)
 		tst_resm(TINFO, "Enter block 1");
 
 		/*
-		 * Add a write lock to the middle of the file and a read 
+		 * Add a write lock to the middle of the file and a read
 		 * at the begining
 		 */
 		if (do_lock(F_SETLK, (short)F_WRLCK, (short)0, 10, 5) < 0) {

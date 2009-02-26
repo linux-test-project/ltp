@@ -104,7 +104,7 @@ struct test_case_t {
 
 	/*
 	 * Check for EACCES by trying to mark a section of memory
-	 * which has been mmap'ed as read-only, as PROT_WRITE 
+	 * which has been mmap'ed as read-only, as PROT_WRITE
 	 */
         {&addr3, PAGESIZE, PROT_WRITE, EACCES, setup3}
 };
@@ -198,7 +198,7 @@ setup2()
 	if (addr2 == NULL) {
 		tst_brkm(TINFO, cleanup, "malloc failed");
 		/*NOTREACHED*/
-	}        
+	}       
 	addr2++; /* Ensure addr2 is not page aligned */
 }
 

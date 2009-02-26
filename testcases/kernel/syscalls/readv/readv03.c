@@ -38,7 +38,7 @@
  *        issue a FAIL message
  *      call cleanup
  *
- * USAGE  
+ * USAGE 
  *	readv03
  *
  * HISTORY
@@ -60,9 +60,9 @@
 #define	K_1	1024
 #define MODES   S_IRWXU
 
-char buf1[K_1]; 
+char buf1[K_1];
 
-struct iovec rd_iovec[1] = { 
+struct iovec rd_iovec[1] = {
 	{buf1,			K_1}
 };
 

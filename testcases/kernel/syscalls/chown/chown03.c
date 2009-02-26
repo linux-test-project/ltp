@@ -17,19 +17,19 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-/* 
+/*
  * Test Name: chown03
  *
  * Test Description:
  *  Verify that, chown(2) succeeds to change the group of a file specified
  *  by path when called by non-root user with the following constraints,
- *	- euid of the process is equal to the owner of the file.	 
+ *	- euid of the process is equal to the owner of the file.	
  *	- the intended gid is either egid, or one of the supplementary gids
  *	  of the process.
  *  Also, verify that chown() clears the setuid/setgid bits set on the file.
  *
  * Expected Result:
- *  chown(2) should return 0 and the ownership set on the file should match 
+ *  chown(2) should return 0 and the ownership set on the file should match
  *  the numeric values contained in owner and group respectively.
  *	
  * Algorithm:
@@ -106,7 +106,7 @@ main(int ac, char **av)
 	gid_t Group_id;		/* Group id of the test file. */
 
 	STD_FUNCTIONAL_TEST=0;
- 
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -126,7 +126,7 @@ main(int ac, char **av)
 		User_id = geteuid();
 		Group_id = getegid();
 
-		/* 
+		/*
 		 * Call chown(2) with different user id and
 		 * group id (numeric values) to set it on testfile.
 		 */
@@ -196,7 +196,7 @@ main(int ac, char **av)
  *  Create a test file under temporary directory and close it
  *  Change the group ownership on testfile.
  */
-void 
+void
 setup()
 {
 	char test_home[PATH_MAX];	/* variable to hold TESTHOME env */
@@ -256,7 +256,7 @@ setup()
 
 
 	/*
-	 * Change mode permissions on testfile such that 
+	 * Change mode permissions on testfile such that
 	 * setuid/setgid bits are set on the testfile.
 	 */
 	if (chmod(TESTFILE, NEW_PERMS) < 0) {
@@ -303,7 +303,7 @@ setup()
  *	       completion or premature exit.
  *  Remove the test directory and testfile created in the setup.
  */
-void 
+void
 cleanup()
 {
 	/*

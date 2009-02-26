@@ -178,7 +178,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hanp)\n", szFuncName);
 			rc = dm_get_config_events((void *)INVALID_ADDR, hlen, DM_EVENT_MAX, &eventset, &nelem);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			dm_handle_free(hanp, hlen);
@@ -204,7 +204,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hlen)\n", szFuncName);
 			rc = dm_get_config_events(hanp, INVALID_ADDR, DM_EVENT_MAX, &eventset, &nelem);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			dm_handle_free(hanp, hlen);
@@ -273,7 +273,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid eventsetp)\n", szFuncName);
 			rc = dm_get_config_events(hanp, hlen, DM_EVENT_MAX, (dm_eventset_t *)INVALID_ADDR, &nelem);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			dm_handle_free(hanp, hlen);
@@ -298,7 +298,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid nelemp)\n", szFuncName);
 			rc = dm_get_config_events(hanp, hlen, DM_EVENT_MAX, &eventset, (u_int *)INVALID_ADDR);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			dm_handle_free(hanp, hlen);
@@ -449,7 +449,7 @@ int main(int argc, char **argv)
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
 		rc = dm_get_config_events(DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_EVENT_MAX, &eventset, &nelem);
-		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 		/* Variation clean up */
 	}
@@ -480,7 +480,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalidated handle)\n", szFuncName);
 			rc = dm_get_config_events(hanp, hlen, DM_EVENT_MAX, &eventset, &nelem);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			dm_handle_free(hanp, hlen);
@@ -512,7 +512,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(DM_NO_SESSION sid)\n", szFuncName);
 			rc = dm_set_disp(DM_NO_SESSION, hanp, hlen, DM_NO_TOKEN, &eventset, DM_EVENT_MAX);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
@@ -546,7 +546,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n", szFuncName);
 			rc = dm_set_disp(INVALID_ADDR, hanp, hlen, DM_NO_TOKEN, &eventset, DM_EVENT_MAX);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
@@ -614,7 +614,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hlen)\n", szFuncName);
 			rc = dm_set_disp(newsid, hanp, INVALID_ADDR, DM_NO_TOKEN, &eventset, DM_EVENT_MAX);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
@@ -648,7 +648,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid token)\n", szFuncName);
 			rc = dm_set_disp(newsid, hanp, hlen, INVALID_ADDR, &eventset, DM_EVENT_MAX);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
@@ -681,7 +681,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid eventsetp)\n", szFuncName);
 			rc = dm_set_disp(newsid, hanp, hlen, DM_NO_TOKEN, (dm_eventset_t *)INVALID_ADDR, DM_EVENT_MAX);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
@@ -715,7 +715,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid maxevent)\n", szFuncName);
 			rc = dm_set_disp(newsid, hanp, hlen, DM_NO_TOKEN, &eventset, DM_EVENT_MAX+1);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
@@ -939,7 +939,7 @@ int main(int argc, char **argv)
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(DM_NO_SESSION sid)\n", szFuncName);
 		rc = dm_getall_disp(DM_NO_SESSION, sizeof(buf), buf, &rlen);
-		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 		/* Variation clean up */
 	}
@@ -957,7 +957,7 @@ int main(int argc, char **argv)
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n", szFuncName);
 		rc = dm_getall_disp(INVALID_ADDR, sizeof(buf), buf, &rlen);
-		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 		/* Variation clean up */
 	}
@@ -991,7 +991,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalidated sid)\n", szFuncName);
 			rc = dm_getall_disp(newsid, sizeof(buf), buf, &rlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 	
 			/* Variation clean up */
 			dm_handle_free(hanp, hlen);
@@ -1025,7 +1025,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(NULL bufp)\n", szFuncName);
 			rc = dm_getall_disp(newsid, sizeof(buf), NULL, &rlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
@@ -1063,7 +1063,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid bufp)\n", szFuncName);
 			rc = dm_getall_disp(newsid, sizeof(buf), (void *)INVALID_ADDR, &rlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
@@ -1100,7 +1100,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(NULL rlenp)\n", szFuncName);
 			rc = dm_getall_disp(newsid, sizeof(buf), buf, NULL);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
@@ -1137,7 +1137,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid rlenp)\n", szFuncName);
 			rc = dm_getall_disp(newsid, sizeof(buf), buf, (size_t *)INVALID_ADDR);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
@@ -1178,7 +1178,7 @@ int main(int argc, char **argv)
 			if (rc == -1 && errno == E2BIG) {
 				DMLOG_PRINT(DMLVL_DEBUG, "rlen = %d\n", rlen);
 			}
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, E2BIG); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, E2BIG);
 	
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
@@ -1275,7 +1275,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(DM_NO_SESSION sid)\n", szFuncName);
 			rc = dm_set_eventlist(DM_NO_SESSION, hanp, hlen, DM_NO_TOKEN, &eventset, DM_EVENT_MAX);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
@@ -1309,7 +1309,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n", szFuncName);
 			rc = dm_set_eventlist(INVALID_ADDR, hanp, hlen, DM_NO_TOKEN, &eventset, DM_EVENT_MAX);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
@@ -1377,7 +1377,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hlen)\n", szFuncName);
 			rc = dm_set_eventlist(newsid, hanp, INVALID_ADDR, DM_NO_TOKEN, &eventset, DM_EVENT_MAX);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
@@ -1411,7 +1411,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid token)\n", szFuncName);
 			rc = dm_set_eventlist(newsid, hanp, hlen, INVALID_ADDR, &eventset, DM_EVENT_MAX);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
@@ -1444,7 +1444,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid eventsetp)\n", szFuncName);
 			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, (dm_eventset_t *)INVALID_ADDR, DM_EVENT_MAX);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
@@ -1478,7 +1478,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid maxevent)\n", szFuncName);
 			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &eventset, DM_EVENT_MAX+1);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
@@ -1594,10 +1594,10 @@ int main(int argc, char **argv)
 	}
 	
 	/*
-	 * Global handle dm_set_eventlist variations 
+	 * Global handle dm_set_eventlist variations
 	 *
 	 * This variation uncovered XFS BUG #15 (EBADF errno returned instead
-	 * of EINVAL)               
+	 * of EINVAL)              
 	 */
 	for (i = 0, varNum = SET_EVENTLIST_BASE + 10; i < DM_EVENT_MAX; i++, varNum++) {
 		if (DMVAR_EXEC(varNum)) {
@@ -1627,7 +1627,7 @@ int main(int argc, char **argv)
 	}
 
 	/*
-	 * File system handle dm_set_eventlist variations 
+	 * File system handle dm_set_eventlist variations
 	 */
 	for (i = 0; i < DM_EVENT_MAX; i++, varNum++) {
 		if (DMVAR_EXEC(varNum)) {
@@ -1667,7 +1667,7 @@ int main(int argc, char **argv)
 	}
 
 	/*
-	 * Directory handle dm_set_eventlist variations 
+	 * Directory handle dm_set_eventlist variations
 	 */
 	for (i = 0; i < DM_EVENT_MAX; i++, varNum++) {
 		if (DMVAR_EXEC(varNum)) {
@@ -1707,7 +1707,7 @@ int main(int argc, char **argv)
 	}
 
 	/*
-	 * File handle dm_set_eventlist variations 
+	 * File handle dm_set_eventlist variations
 	 */
 	for (i = 0; i < DM_EVENT_MAX; i++, varNum++) {
 		if (DMVAR_EXEC(varNum)) {
@@ -1778,7 +1778,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(DM_NO_SESSION sid)\n", szFuncName);
 			rc = dm_get_eventlist(DM_NO_SESSION, hanp, hlen, DM_NO_TOKEN, DM_EVENT_MAX, &outeventset, &nelem);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			DMEV_ZERO(ineventset);
@@ -1821,7 +1821,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n", szFuncName);
 			rc = dm_get_eventlist(INVALID_ADDR, hanp, hlen, DM_NO_TOKEN, DM_EVENT_MAX, &outeventset, &nelem);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			DMEV_ZERO(ineventset);
@@ -1864,7 +1864,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hanp)\n", szFuncName);
 			rc = dm_get_eventlist(newsid, (void *)INVALID_ADDR, hlen, DM_NO_TOKEN, DM_EVENT_MAX, &outeventset, &nelem);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			DMEV_ZERO(ineventset);
@@ -1950,7 +1950,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid token)\n", szFuncName);
 			rc = dm_get_eventlist(newsid, hanp, hlen, INVALID_ADDR, DM_EVENT_MAX, &outeventset, &nelem);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			DMEV_ZERO(ineventset);
@@ -1968,7 +1968,7 @@ int main(int argc, char **argv)
 	 * EXPECTED: rc = -1, errno = EINVAL
 	 *
 	 * This variation uncovered XFS BUG #16 (0 returned instead of -1 and
-	 * errno EINVAL)               
+	 * errno EINVAL)              
 	 */
 	if (DMVAR_EXEC(GET_EVENTLIST_BASE + 6)) {
 		dm_sessid_t newsid;
@@ -1996,7 +1996,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(dir handle)\n", szFuncName);
 			rc = dm_get_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, DM_EVENT_MAX, &outeventset, &nelem);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			DMEV_ZERO(ineventset);
@@ -2014,7 +2014,7 @@ int main(int argc, char **argv)
 	 * EXPECTED: rc = -1, errno = E2BIG
 	 *
 	 * This variation uncovered XFS BUG #17 (EINVAL errno returned instead
-	 * of E2BIG, nelemp not updated)               
+	 * of E2BIG, nelemp not updated)              
 	 */
 	if (DMVAR_EXEC(GET_EVENTLIST_BASE + 7)) {
 		dm_sessid_t newsid;
@@ -2160,7 +2160,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid eventsetp)\n", szFuncName);
 			rc = dm_get_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, DM_EVENT_MAX, (dm_eventset_t *)INVALID_ADDR, &nelem);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			DMEV_ZERO(ineventset);
@@ -2202,7 +2202,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid nelemp)\n", szFuncName);
 			rc = dm_get_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, DM_EVENT_MAX, &outeventset, (u_int *)INVALID_ADDR);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			DMEV_ZERO(ineventset);
@@ -2780,7 +2780,7 @@ int main(int argc, char **argv)
 			   ((rc = dm_set_region(newsid, hanp, hlen, DM_NO_TOKEN, 1, &region, &exactflag)) == -1)) {
 			dm_handle_free(hanp, hlen);
 			dm_destroy_session(newsid);
-		}  
+		} 
 		if (rc == -1) {
 			DMLOG_PRINT(DMLVL_DEBUG, "Unable to set up variation! (errno = %d)\n", errno);
 			DMVAR_SKIP();
@@ -2988,7 +2988,7 @@ void *Thread(void *parm)
 			DMLOG_PRINT(DMLVL_DEBUG, "  Media designator: %s\n", DM_GET_VALUE(me, me_name2, char *));
 			DMLOG_PRINT(DMLVL_DEBUG, "  Root handle: %p\n", DM_GET_VALUE(me, me_roothandle, void *));
 			DMLOG_PRINT(DMLVL_DEBUG, "  Root handle length: %d\n", DM_GET_LEN(me, me_roothandle));
-	    
+	   
     			bMounted = dm_handle_is_valid(lhanp, lhlen);
 
     			rc = dm_request_right(sid, lhanp, lhlen, token, DM_RR_WAIT, DM_RIGHT_EXCL);

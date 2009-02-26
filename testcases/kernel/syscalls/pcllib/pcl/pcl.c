@@ -101,13 +101,13 @@ static int co_set_context(co_ctx_t *ctx, void *func, char *stkbase, long stksiz)
 
 	if (getcontext(&ctx->cc))
 		return -1;
- 
+
 	ctx->cc.uc_link = NULL;
- 
+
 	ctx->cc.uc_stack.ss_sp = stkbase;
 	ctx->cc.uc_stack.ss_size = stksiz - sizeof(int);
 	ctx->cc.uc_stack.ss_flags = 0;
- 
+
 	makecontext(&ctx->cc, func, 1);
 
 	return 0;
@@ -146,12 +146,12 @@ static void co_switch_context(co_ctx_t *octx, co_ctx_t *nctx) {
 static void co_ctx_bootstrap(void) {
 	co_ctx_t * volatile ctx_starting;
 	void (* volatile ctx_starting_func)(void);
- 
+
 	/*
 	 * Switch to the final signal mask (inherited from parent)
 	 */
 	sigprocmask(SIG_SETMASK, &ctx_creating_sigs, NULL);
- 
+
 	/*
 	 * Move startup details from static storage to local auto
 	 * variables which is necessary because it has to survive in
@@ -159,7 +159,7 @@ static void co_ctx_bootstrap(void) {
 	 */
 	ctx_starting = ctx_creating;
 	ctx_starting_func = (void (*)(void)) ctx_creating_func;
- 
+
 	/*
 	 * Save current machine state (on new stack) and
 	 * go back to caller until we're scheduled for real...
@@ -193,7 +193,7 @@ static void co_ctx_trampoline(int sig) {
 		ctx_called = 1;
 		return;
 	}
- 
+
 	/*
 	 * Ok, the caller has longjmp'ed back to us, so now prepare
 	 * us for the real machine state switching. We have to jump
@@ -467,7 +467,7 @@ void co_exit_to(coroutine_t coro) {
 	}
 
 	co_dhelper = co;
- 
+
 	co_call((coroutine_t) dchelper);
 
 	fprintf(stderr, "[PCL] Stale coroutine called: curr=%p\n",

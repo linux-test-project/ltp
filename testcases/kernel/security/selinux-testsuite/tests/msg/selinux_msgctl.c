@@ -41,14 +41,14 @@ int main(int argc, char **argv)
 	error = msgctl(id, IPC_STAT, &buf);
 	printf ("%d", error);
 
-	/* 
+	/*
 	 * Equivalent: IPC_SET
 	 * Tests:      MSGQ__SETATTR
 	 */
 	error = msgctl(id, IPC_SET, &buf);
 	printf (" %d", error);
 	
-	/* 
+	/*
 	 * Equivalent: IPC_RMID
 	 * Tests:      MSGQ__DESTROY
 	 */

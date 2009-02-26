@@ -20,7 +20,7 @@
 /*
  * NAME
  *	open10.c - Verifies that the group ID and setgid bit are
- *		   set correctly when a new file is created using open. 
+ *		   set correctly when a new file is created using open.
  * 		  (ported from SPIE, section2/iosuite/open5.c, by
  * 		   Airong Zhang)
  *
@@ -32,7 +32,7 @@
  *	and the setgid bit not set, and the other with a group ID
  *	other than that of this process and with the setgid bit set.
  *	In each directory, create a file with and without the setgid
- *	bit set in the creation modes. Verify that the modes and group 
+ *	bit set in the creation modes. Verify that the modes and group
  *	ID are correct on each of the 4 files.	
  *	As root, create a file with the setgid bit on in the
  *	directory with the setgid bit.
@@ -109,7 +109,7 @@ int main (int ac, char *av[])
 	char  DIR_A[MSGSIZE], DIR_B[MSGSIZE];
 	char setgid_A[MSGSIZE], nosetgid_A[MSGSIZE];
 	char setgid_B[MSGSIZE], nosetgid_B[MSGSIZE], root_setgid_B[MSGSIZE];
-	gid_t group1_gid, group2_gid, mygid; 
+	gid_t group1_gid, group2_gid, mygid;
 	uid_t save_myuid, user1_uid;
 	pid_t mypid;
 
@@ -134,7 +134,7 @@ int main (int ac, char *av[])
 	}
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		local_flag = PASSED; 
+		local_flag = PASSED;
 
 		save_myuid = getuid();
 		mypid = getpid();
@@ -154,7 +154,7 @@ int main (int ac, char *av[])
 		user1_uid = user1->pw_uid;
 
 		/*
-		 * Get the group IDs of group1 and group2. 
+		 * Get the group IDs of group1 and group2.
 		 */
 		if ((group = getgrnam("nobody")) == NULL) {
 			if ((group = getgrnam("nogroup")) == NULL) {
@@ -175,7 +175,7 @@ int main (int ac, char *av[])
 
 		/*
 		 * Create a directory with group id the same as this process
-		 * and with no setgid bit. 
+		 * and with no setgid bit.
 		 */
 		if ((ret = mkdir(DIR_A, MODE_RWX)) < 0) {
 			tst_resm(TFAIL, "Creation dir of %s failed", DIR_A);
@@ -183,7 +183,7 @@ int main (int ac, char *av[])
 		}
 
 		if ((ret = chown(DIR_A, user1_uid, group2_gid)) < 0) {
-			tst_resm(TFAIL, "Chown of %d failed",DIR_A); 
+			tst_resm(TFAIL, "Chown of %d failed",DIR_A);
 			local_flag = FAILED;
 		}
 
@@ -194,7 +194,7 @@ int main (int ac, char *av[])
 
 		/* Verify modes */
 		if (buf.st_mode & S_ISGID) {
-			tst_resm(TFAIL, "%s: Incorrect modes, setgid bit set", 
+			tst_resm(TFAIL, "%s: Incorrect modes, setgid bit set",
 				DIR_A);
 			local_flag = FAILED;
 		}
@@ -208,7 +208,7 @@ int main (int ac, char *av[])
 
 		/*
 		 * Create a directory with group id different from that of
-		 * this process and with the setgid bit set. 
+		 * this process and with the setgid bit set.
 		 */
 		if ((ret = mkdir(DIR_B, MODE_RWX)) < 0) {
 			tst_resm(TFAIL, "Creation of %s failed", DIR_B);
@@ -232,7 +232,7 @@ int main (int ac, char *av[])
 
 		/* Verify modes */
 		if (!(buf.st_mode & S_ISGID)) {
-			tst_resm(TFAIL, "%s: Incorrect modes, setgid bit not set", 
+			tst_resm(TFAIL, "%s: Incorrect modes, setgid bit not set",
 				DIR_B);
 			local_flag = FAILED;
 		}
@@ -240,7 +240,7 @@ int main (int ac, char *av[])
 		/* Verify group ID */
 		if (buf.st_gid != group2_gid) {
 			tst_resm(TFAIL, "%s: Incorrect group", DIR_B);
-			tst_resm(TINFO, "got %ld and %ld",buf.st_gid, group2_gid); 
+			tst_resm(TINFO, "got %ld and %ld",buf.st_gid, group2_gid);
 			local_flag = FAILED;
 		}
 
@@ -260,10 +260,10 @@ int main (int ac, char *av[])
 	/*	   maintain the setgid bit as specified in the creation */
 	/*	   modes.						*/
 	/*--------------------------------------------------------------*/
-	//block1: 
+	//block1:
 
 		/*
-		 * Now become user1, group1 
+		 * Now become user1, group1
 		 */
 		if ((ret = setgid(group1_gid)) < 0) {
 			tst_resm(TINFO, 0, "Unable to set process group ID to group1");
@@ -274,8 +274,8 @@ int main (int ac, char *av[])
 		}
 		mygid = getgid();
 
-		/* 
-		 * Create the file with setgid not set 
+		/*
+		 * Create the file with setgid not set
 		 */
 		if ((ret = open(nosetgid_A, O_CREAT|O_EXCL|O_RDWR, MODE_RWX)) < 0) {
 			tst_resm(TFAIL, "Creation of %s failed", nosetgid_A);
@@ -300,8 +300,8 @@ int main (int ac, char *av[])
 			local_flag = FAILED;
 		}
 
-		/* 
-		 * Create the file with setgid set 
+		/*
+		 * Create the file with setgid set
 		 */
 		if ((ret = open(setgid_A, O_CREAT|O_EXCL|O_RDWR, MODE_SGID)) < 0) {
 			tst_resm(TFAIL, "Creation of %s failed", setgid_A);
@@ -315,7 +315,7 @@ int main (int ac, char *av[])
 
 		/* Verify modes */
 		if (!(buf.st_mode & S_ISGID)) {
-			tst_resm(TFAIL, "%s: Incorrect modes, setgid bit not set", 
+			tst_resm(TFAIL, "%s: Incorrect modes, setgid bit not set",
 				setgid_A);
 			local_flag = FAILED;
 		}
@@ -343,10 +343,10 @@ int main (int ac, char *av[])
 	/*	   directory, group2. Either file should have the segid */
 	/*	   bit set in the modes.				*/
 	/*--------------------------------------------------------------*/
-	//block2: 
+	//block2:
 
-		/* 
-		 * Create the file with setgid not set 
+		/*
+		 * Create the file with setgid not set
 		 */
 		if ((ret = open(nosetgid_B, O_CREAT|O_EXCL|O_RDWR, MODE_RWX)) < 0) {
 			tst_resm(TFAIL, "Creation of %s failed", nosetgid_B);
@@ -360,7 +360,7 @@ int main (int ac, char *av[])
 
 		/* Verify modes */
 		if (buf.st_mode & S_ISGID) {
-			tst_resm(TFAIL, "%s: Incorrect modes, setgid bit should be set", 
+			tst_resm(TFAIL, "%s: Incorrect modes, setgid bit should be set",
 				nosetgid_B);
 			local_flag = FAILED;
 		}
@@ -372,8 +372,8 @@ int main (int ac, char *av[])
 			local_flag = FAILED;
 		}
 
-		/* 
-		 * Create the file with setgid set 
+		/*
+		 * Create the file with setgid set
 		 */
 		if ((ret = open(setgid_B, O_CREAT|O_EXCL|O_RDWR, MODE_SGID)) < 0) {
 			tst_resm(TFAIL, "Creation of %s failed", setgid_B);
@@ -394,7 +394,7 @@ int main (int ac, char *av[])
 
 		/* Verify modes */
 		if (!(buf.st_mode & S_ISGID)) {
-			tst_resm(TFAIL, "%s: Incorrect modes, setgid bit not set", 
+			tst_resm(TFAIL, "%s: Incorrect modes, setgid bit not set",
 				setgid_B);
 			local_flag = FAILED;
 		}
@@ -414,7 +414,7 @@ int main (int ac, char *av[])
 	/*	   should inherit the group ID of the parent directory, */
 	/*	   group2 and should have the setgid bit set.		*/
 	/*--------------------------------------------------------------*/
-	//block3: 
+	//block3:
 
 		/* Become root again */
 		if ((ret = setreuid(-1, save_myuid)) < 0) {
@@ -423,7 +423,7 @@ int main (int ac, char *av[])
 		}
 
 		/* Create the file with setgid set */
-		if ((ret = open(root_setgid_B, O_CREAT|O_EXCL|O_RDWR, 
+		if ((ret = open(root_setgid_B, O_CREAT|O_EXCL|O_RDWR,
 				MODE_SGID)) < 0) {
 			tst_resm(TFAIL, "Creation of %s failed", root_setgid_B);
 			local_flag = FAILED;
@@ -436,7 +436,7 @@ int main (int ac, char *av[])
 
 		/* Verify modes */
 		if (!(buf.st_mode & S_ISGID)) {
-			tst_resm(TFAIL, "%s: Incorrect modes, setgid bit not set", 
+			tst_resm(TFAIL, "%s: Incorrect modes, setgid bit not set",
 				root_setgid_B);
 			local_flag = FAILED;
 		}

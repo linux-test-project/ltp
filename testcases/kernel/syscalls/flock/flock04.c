@@ -15,31 +15,31 @@
  *
  */
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER   : flock04
- * 
+ *
  *    EXECUTED BY       : anyone
- * 
- *    TEST TITLE        : Testing different locks on flock(2) 
- * 
+ *
+ *    TEST TITLE        : Testing different locks on flock(2)
+ *
  *    TEST CASE TOTAL   : 2
- * 
+ *
  *    AUTHOR            : Vatsal Avasthi <vatsal.avasthi@wipro.com>
- * 
+ *
  *    SIGNALS
  *      Uses SIGUSR1 to pause before test if option set.
  *      (See the parse_opts(3) man page).
  *
  *    DESCRIPTION
- * 	Tests to verify flock(2) behavior with different locking combinations along 
+ * 	Tests to verify flock(2) behavior with different locking combinations along
  *	with LOCK_SH.
- *      
+ *     
  *	Setup:
  *        Setup signal handling.
  *        Pause for SIGUSR1 if option specified.
  *        Create a temporary directory and chdir to it.
  * 	  Create a temporary file
- * 
+ *
  *	Test:
  *	Loop if proper options are given.
  *		Parent flocks(2) a file
@@ -52,13 +52,13 @@
  *      Cleanup:
  *        Print errno log and/or timing stats if options given
  *	  Deletes temporary directory.
- * 
+ *
  * USAGE:  <for command-line>
  *      flock04 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
  *                      where,  -c n : Run n copies concurrently.
  *                              -f   : Turn off functional testing
  *    				-e   : Turn on errno logging.
- *                              -h   : Show help screen                          
+ *                              -h   : Show help screen                         
  *				-i n : Execute test n times.
  *                              -I x : Execute test for x seconds.
  *                              -p   : Pause for SIGUSR1 before starting
@@ -79,12 +79,12 @@
 #include <fcntl.h>
 #include "test.h"
 #include "usctest.h"
- 
+
 void setup(void);
 void cleanup(void);
 
 /* 0 terminated list of expected errnos */
-int exp_enos[] = {EWOULDBLOCK, EAGAIN, 0};  
+int exp_enos[] = {EWOULDBLOCK, EAGAIN, 0}; 
 
 char *TCID = "flock04";			/* Test program identifier */
 int TST_TOTAL = 2;			/* Total number of test cases */

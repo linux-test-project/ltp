@@ -110,7 +110,7 @@ mkfile(int size) 		/* size of the file to be generated in GB     */
 
 
     /* fill the buffer with a's and open a temp file */
-    memset(buff, 'a', 4096); 
+    memset(buff, 'a', 4096);
     snprintf(template, PATH_MAX, "ashfileXXXXXX");
     if ((fd = mkstemp(template)) == -1)
     {
@@ -120,7 +120,7 @@ mkfile(int size) 		/* size of the file to be generated in GB     */
     else
     {
 	unlink(template);
-        fprintf(stdout, "creating tmp file and writing 'a' to it "); 
+        fprintf(stdout, "creating tmp file and writing 'a' to it ");
     }
 
     /* fill the file with the character a */
@@ -135,7 +135,7 @@ mkfile(int size) 		/* size of the file to be generated in GB     */
     }
     fprintf(stdout, "created file of size %d\n"
 		    "content of the file is 'a'\n", index);
-    
+   
     /* make sure a's are written to the file. */
     if (fsync(fd) == -1)
     {
@@ -211,7 +211,7 @@ set_timer(float run_time)         /* period for which test is intended to run   
 /******************************************************************************/
 static void
 usage(char *progname)           /* name of this program                       */{
-    fprintf(stderr, 
+    fprintf(stderr,
                "Usage: %s -h -s -x\n"
 	       "\t -a set map_flags to MAP_ANONYMOUS\n"
                "\t -h help, usage message.\n"
@@ -257,7 +257,7 @@ int main(int argc,	    /* number of input parameters.		      */
     {
         int  signum;	/* signal number that hasto be handled 		      */
 	char *signame;  /* name of the signal to be handled.		      */
-    } sig_info[] = 
+    } sig_info[] =
                    {
 			   {SIGHUP,"SIGHUP"},
 			   {SIGINT,"SIGINT"},
@@ -291,7 +291,7 @@ int main(int argc,	    /* number of input parameters.		      */
 		break;
             case 'x':
 		if ((exec_time = atof(optarg)) == 0)
-		    fprintf(stderr, "Using default exec time %f hrs", 
+		    fprintf(stderr, "Using default exec time %f hrs",
 		          exec_time = (float)24);
                 run_once = FALSE;
 		break;
@@ -308,7 +308,7 @@ int main(int argc,	    /* number of input parameters.		      */
 
     /* set up time for which test has to be run */
     set_timer(exec_time);
-    
+   
     /* set up signals */
     sigptr.sa_handler = (void (*)(int signal))sig_handler;
     sigfillset(&sigptr.sa_mask);
@@ -316,7 +316,7 @@ int main(int argc,	    /* number of input parameters.		      */
     for (sig_ndx = 0; sig_info[sig_ndx].signum != -1; sig_ndx++)
     {
         sigaddset(&sigptr.sa_mask, sig_info[sig_ndx].signum);
-        if (sigaction(sig_info[sig_ndx].signum, &sigptr, 
+        if (sigaction(sig_info[sig_ndx].signum, &sigptr,
 		(struct sigaction *)NULL) == -1 )
         {
             perror( "man(): sigaction()" );
@@ -330,10 +330,10 @@ int main(int argc,	    /* number of input parameters.		      */
     {
         if (!map_anon)
         {
-            /* create a new file of giga byte size */ 
+            /* create a new file of giga byte size */
             if ((fd = mkfile(fsize)) == -1)
             {
- 	        fprintf(stderr, 
+ 	        fprintf(stderr,
 			     "main(): mkfile(): Failed to create temp file.\n");
  	        exit (-1);
             }
@@ -344,8 +344,8 @@ int main(int argc,	    /* number of input parameters.		      */
             fd = -1;
 	    map_flags = map_flags|MAP_ANONYMOUS;
         }
-   
-        if ((memptr = (char *)mmap(0,(fsize * GB), PROT_READ|PROT_WRITE, 
+  
+        if ((memptr = (char *)mmap(0,(fsize * GB), PROT_READ|PROT_WRITE,
 		     map_flags, fd, 0)) == (char *)-1)
         {
             perror("main(): mmap()");
@@ -354,11 +354,11 @@ int main(int argc,	    /* number of input parameters.		      */
         else
 	    fprintf(stdout, "file mapped at %p\n"
 			    "changing file content to 'A'\n", memptr);
-   
+  
         /* Change the content of the file with A's, and commit changes */
         memset(memptr, 'A', ((fsize * GB)/sizeof(char)));
 
-        if (msync(memptr, ((fsize * GB)/sizeof(char)), 
+        if (msync(memptr, ((fsize * GB)/sizeof(char)),
 	                 MS_SYNC|MS_INVALIDATE) == -1)
         {
             perror("main(): msync()");

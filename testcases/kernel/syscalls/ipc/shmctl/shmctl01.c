@@ -233,7 +233,7 @@ set_shmat()
 	rval = shmat(shm_id_1, 0, 0);
 
 	/*
-	 * if shmat() fails, the only thing we can do is 
+	 * if shmat() fails, the only thing we can do is
 	 * print a message to that effect.
 	 */
 	if (rval == (void *)-1) {
@@ -456,7 +456,7 @@ func_set()
 		return;
 	}
 
-	if ((buf.shm_perm.mode & MODE_MASK) != 
+	if ((buf.shm_perm.mode & MODE_MASK) !=
 			((SHM_RW | NEWMODE) & MODE_MASK)) {
 		tst_resm(TFAIL, "new mode is incorrect");
 		fail = 1;

@@ -25,7 +25,7 @@
  *	Check that all children inherit parent's file descriptor
  *
  * ALGORITHM
- * 	Parent forks processes until -1 is returned.  
+ * 	Parent forks processes until -1 is returned. 
  * 	
  * USAGE
  * 	fork12
@@ -36,8 +36,8 @@
  *	07/2002 Split from fork07 as a test case to exhaust available pids.
  *
  * RESTRICTIONS
- * 	Should be run as root to avoid resource limits.  
- * 	Should not be run with other test programs because it tries to 
+ * 	Should be run as root to avoid resource limits. 
+ * 	Should not be run with other test programs because it tries to
  * 	  use all available pids.
  */
 

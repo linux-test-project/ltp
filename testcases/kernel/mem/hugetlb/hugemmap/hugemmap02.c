@@ -26,12 +26,12 @@
  * be used for hugepages.  When the kernel attempts to do a hugepage mapping in a
  * 32-bit process it will automatically attempt to open the low region.  However,
  * that will fail if there are any normal (non-hugepage) mappings in the region
- * already. 
+ * already.
  *   When run as a 64-bit process the kernel will still do a non-hugepage mapping
- * in the low region, but the following hugepage mapping will succeed. This is 
+ * in the low region, but the following hugepage mapping will succeed. This is
  * because it comes from the high region, which is available to the 64-bit process.
- *   This test case is checking this behavior. 
- * 
+ *   This test case is checking this behavior.
+ *
  * Usage:  <for command-line>
  *  hugemmap02 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
@@ -135,7 +135,7 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 
-		/* 
+		/*
 		 * Call mmap on /dev/zero 5 times
 		 */
 	       	for (i = 0; i < 5; i++) {
@@ -149,14 +149,14 @@ main(int ac, char **av)
 		addr = mmap(LOW_ADDR, PAGE_SIZE, PROT_READ,
 			    MAP_SHARED | MAP_FIXED, nfildes, 0);
 		if (addr == MAP_FAILED)
-			tst_brkm(TBROK, cleanup,"mmap failed on nfildes"); 
+			tst_brkm(TBROK, cleanup,"mmap failed on nfildes");
 
 		/* Attempt to mmap a huge page into a low memory address */
 		errno = 0;
 		addr2 = mmap(LOW_ADDR2, MAP_SIZE, PROT_READ | PROT_WRITE,
 			    MAP_SHARED, fildes, 0);
 		
-#if __WORDSIZE==64 /* 64-bit process */ 
+#if __WORDSIZE==64 /* 64-bit process */
 		if (addr2 == MAP_FAILED) {
 			tst_resm(TFAIL, "huge mmap() unexpectedly failed on %s for 64-bit, errno=%d : %s",
 				 TEMPFILE, errno, strerror(errno));
@@ -164,7 +164,7 @@ main(int ac, char **av)
 		} else {
 			tst_resm(TPASS, "huge mmap() correctly succeeded for 64-bit");
 		}
-#else /* 32-bit process */ 
+#else /* 32-bit process */
                 if (addr2 > 0){
                         tst_resm(TCONF, "huge mmap() failed to test the scenario");
                         continue;
@@ -214,7 +214,7 @@ main(int ac, char **av)
  * 	     Creat a temporary directory and a file under it.
  * 	     Write some known data into file and get the size of the file.
  */
-void 
+void
 setup()
 {
 	char mypid[40];
@@ -237,7 +237,7 @@ setup()
  *             completion or premature exit.
  * 	       Remove the temporary directory created.
  */
-void 
+void
 cleanup()
 {
 	/*

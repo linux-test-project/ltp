@@ -1,7 +1,7 @@
 /******************************************************************************/
 /*                                                                            */
 /* Copyright (C) 2008, Linux Foundation,                                      */
-/* written by Michael Kerrisk <mtk.manpages@gmail.com>                        */ 
+/* written by Michael Kerrisk <mtk.manpages@gmail.com>                        */
 /*                                                                            */
 /* Licensed under the GNU GPLv2 or later.                                     */
 /* This program is free software;  you can redistribute it and/or modify      */
@@ -152,7 +152,7 @@ accept4(int fd, struct sockaddr *sockaddr, socklen_t *addrlen, int flags)
 #ifdef DEBUG
    tst_resm(TINFO, "Calling accept4(): flags = %x", flags);
    if (flags != 0) {
-       tst_resm(TINFO," (");     
+       tst_resm(TINFO," (");    
        if (flags & SOCK_CLOEXEC)
            tst_resm(TINFO,"SOCK_CLOEXEC");
        if ((flags & SOCK_CLOEXEC) && (flags & SOCK_NONBLOCK))

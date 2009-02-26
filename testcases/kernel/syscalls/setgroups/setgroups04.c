@@ -17,7 +17,7 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-/* 
+/*
  * Test Name: setgroups04
  *
  * Test Description:
@@ -86,7 +86,7 @@ void cleanup();			/* cleanup function for the test */
 
 int
 main(int ac, char **av)
-{ 
+{
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	int gidsetsize;		/* total no. of groups */
@@ -105,7 +105,7 @@ main(int ac, char **av)
 	TEST_EXP_ENOS(exp_enos);
 
 	/* Check looping state if -i option given */
-	for (lc = 0; TEST_LOOPING(lc); lc++) { 
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
@@ -117,7 +117,7 @@ main(int ac, char **av)
 		 * Call setgroups() to test condition
 		 * verify that it fails with -1 return value and
 		 * sets appropriate errno.
-		 */ 
+		 */
 		 TEST(SETGROUPS(gidsetsize,sbrk(0)));
 		/* check return code of setgroups */
 		if (TEST_RETURN != -1) {
@@ -162,7 +162,7 @@ int main()
 /*
  * setup()
  */
-void 
+void
 setup()
 {
 
@@ -170,7 +170,7 @@ setup()
         if (geteuid() != 0) {
                 tst_brkm(TBROK, tst_exit, "Test must be run as root");
         }
-         
+        
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
@@ -181,7 +181,7 @@ setup()
 /*
  * cleanup()
  */
-void 
+void
 cleanup()
 {
 	/*

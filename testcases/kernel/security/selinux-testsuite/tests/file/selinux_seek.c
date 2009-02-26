@@ -17,8 +17,8 @@
 #include<linux/unistd.h>
 
 /*
- * Test the seek file operation on a file whose name is given as the first 
- * argument. 
+ * Test the seek file operation on a file whose name is given as the first
+ * argument.
  */
 int main(int argc, char **argv) {
 
@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
   }
 
   fd = open(argv[1], O_RDONLY, 0);
-  
+ 
   if(fd == -1) {
     perror("selinux_seek:open");
     exit(2);

@@ -21,7 +21,7 @@
  * Test Name: getpriority01
  *
  * Test Description:
- *  Verify that getpriority() succeeds get the scheduling priority of 
+ *  Verify that getpriority() succeeds get the scheduling priority of
  *  the current process, process group or user.
  *
  * Expected Result:
@@ -92,7 +92,7 @@ main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 	int ind;		/* counter for test case looping */
 	int which;		/* scheduling priority category */
-    
+   
 	TST_TOTAL = sizeof(prio_which) / sizeof(int);
 
 	/* Parse standard options given to run the test. */
@@ -113,7 +113,7 @@ main(int ac, char **av)
 		for (ind = 0; ind < TST_TOTAL; ind++) {
 			which = prio_which[ind];
 
-			/* 
+			/*
 			 * Invoke getpriority with the specified
 			 * 'which' argument for the calling process.
 			 */
@@ -143,7 +143,7 @@ main(int ac, char **av)
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -157,7 +157,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

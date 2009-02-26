@@ -121,8 +121,8 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-		/* 
-		 * Call pwrite() to write K1 bytes of data (0's) at offset 0 
+		/*
+		 * Call pwrite() to write K1 bytes of data (0's) at offset 0
 		 * of temporary file
 		 */
 		nwrite = pwrite(fildes, write_buf[0], K1, 0);
@@ -138,13 +138,13 @@ main(int ac, char **av)
 		l_seek(fildes, 0, SEEK_CUR, 0);
 
 		/*
-		 * Now, lseek() to a non K boundary, 
+		 * Now, lseek() to a non K boundary,
 		 * just to be different.
 		 */
 		l_seek(fildes, K1/2, SEEK_SET, K1/2);
 
 		/*
-		 * Again, pwrite() K1 of data (2's) at offset K2 of 
+		 * Again, pwrite() K1 of data (2's) at offset K2 of
 		 * temporary file.
 		 */
 		nwrite = pwrite(fildes, write_buf[2], K1, K2);
@@ -162,8 +162,8 @@ main(int ac, char **av)
 		l_seek(fildes, K3, SEEK_SET, K3);
 
 		/*
-		 * Using write(), write of K1 of data (3's) which 
-		 * should take place at an offset of K3, 
+		 * Using write(), write of K1 of data (3's) which
+		 * should take place at an offset of K3,
 		 * moving the file pointer to K4.
 		 */
 		nwrite = write(fildes, write_buf[3], K1);
@@ -217,7 +217,7 @@ main(int ac, char **av)
  *  Initialize/allocate read/write buffers.
  *  Create a temporary directory and a file under it and
  */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -283,7 +283,7 @@ l_seek(int fdesc, off_t offset, int whence, off_t checkoff)
 }
 
 /*
- * check_file_contents() - Check the contents of the file we wrote with 
+ * check_file_contents() - Check the contents of the file we wrote with
  *			   pwrite()'s.
  *  The contents of the file are verified by using a plain read() and
  *  Compare the data read with the original write_buf[] contents.
@@ -344,7 +344,7 @@ check_file_contents()
  * Close the temporary file.
  * Remove the temporary directory created.
  */
-void 
+void
 cleanup()
 {
 	int count;		/* index for the loop */

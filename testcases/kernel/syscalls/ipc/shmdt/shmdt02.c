@@ -77,7 +77,7 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		/*
-		 * make the call using the TEST() macro - attempt to 
+		 * make the call using the TEST() macro - attempt to
 		 * remove an invalid shared memory address
 		 */
 	

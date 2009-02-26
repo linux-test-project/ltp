@@ -18,13 +18,13 @@
  *
 
  * This example module shows how a test driver
- * can be driven through various ioctl calls in 
- * a user space program that has attained the 
- * appropriate file descriptor for this device. 
+ * can be driven through various ioctl calls in
+ * a user space program that has attained the
+ * appropriate file descriptor for this device.
  *
  * author: Sean Ruyle
  * date:   06/11/2003
- * 
+ *
  * module: tmod
  */
 
@@ -65,7 +65,7 @@ static struct file_operations tmod_fops = {
 
 
 /*
- * open and close operations, just return 0 for 
+ * open and close operations, just return 0 for
  * your test modules, need them for the file
  * operations structure
  */
@@ -86,7 +86,7 @@ static int tmod_close(struct inode *ino, struct file *f) {
  * 	
  * 	in user space the file descriptor that you attain
  * 	will represent the inode and file pointers in
- * 	the kernel ioctl function, and only 3 variables 
+ * 	the kernel ioctl function, and only 3 variables
  *	will be passed in, linux/ioctl.h should be
  *	included
  *
@@ -104,12 +104,12 @@ static int tmod_ioctl(struct inode *ino, struct file *f,
 	outparms = NULL;
 	rc = 0;
 
-	/* 
-	 * the following calls are used to setup the 
-	 * parameters that might need to be passed 
+	/*
+	 * the following calls are used to setup the
+	 * parameters that might need to be passed
 	 * between user and kernel space, using the tif
-	 * pointer that is passed in as the last 
-	 * parameter to the ioctl 
+	 * pointer that is passed in as the last
+	 * parameter to the ioctl
 	 *
 	 */
 	if (copy_from_user(&tif, (void *)l, sizeof(tif)) ) {
@@ -143,7 +143,7 @@ static int tmod_ioctl(struct inode *ino, struct file *f,
 	/*
 	 * Use a switch statement to determine which function
 	 * to call, based on the cmd flag that is specified
-	 * in user space. Pass in inparms or outparms as 
+	 * in user space. Pass in inparms or outparms as
 	 * needed
 	 *
 	 */
@@ -154,17 +154,17 @@ static int tmod_ioctl(struct inode *ino, struct file *f,
                         break;
         }
 
-	/* 
-	 * copy in the test return code, the reason we 
-	 * this is so that in user space we can tell the 
+	/*
+	 * copy in the test return code, the reason we
+	 * this is so that in user space we can tell the
 	 * difference between an error in one of our test
-	 * calls or an error in the ioctl function 
+	 * calls or an error in the ioctl function
 	 */
 	tif.out_rc = rc;
 	rc = 0;	
 
-	/* 
-	 * setup the rest of tif pointer for returning to 
+	/*
+	 * setup the rest of tif pointer for returning to
 	 * to user space, using copy_to_user if needed
 	 */
 
@@ -197,16 +197,16 @@ static int tmod_ioctl(struct inode *ino, struct file *f,
 
 
 /*
- * test functions can go here or in a seperate file, 
+ * test functions can go here or in a seperate file,
  * remember that the makefile will have to be  modified
- * as well as the header file will need the function 
+ * as well as the header file will need the function
  * prototypes if the test calls go in another file
  *
- * functions should be static so that they may not 
- * be called by outside functions, in the kernel 
- * if a function is non_static and the symbol is 
- * exported using EXPORT_SYMBOL(function_name) 
- * then other parts of the kernel such as modules 
+ * functions should be static so that they may not
+ * be called by outside functions, in the kernel
+ * if a function is non_static and the symbol is
+ * exported using EXPORT_SYMBOL(function_name)
+ * then other parts of the kernel such as modules
  * may use that function
  *
  */
@@ -271,7 +271,7 @@ static void tmod_exit_module(void) {
 }
 
 
-/* specify what that init is run when the module is first 
+/* specify what that init is run when the module is first
 loaded and that exit is run when it is removed */
 
 module_init(tmod_init_module)

@@ -73,15 +73,15 @@
  *
  * VALID_PACKET: value sent with each packet, used to verify that the
  * packets contents were not garbled.
- * 
+ *
  * DEFAULT_NUM_CHILDREN: default number of child processes spawned
- *  
+ * 
  * DEFAULT_PACKETS_TO_SEND: default number of packets sent to each child
  * process.
  *
  * MAXCHILD: maximum number of child processes which may be spawned
  * (based upon the number of file descriptors that a process may use)
- *  
+ * 
  * USAGE: usage statement
  */
 #define MB			(1024*1024)
@@ -99,7 +99,7 @@
 
 /*
  * Function Prototypes:
- *  
+ * 
  * setup (): Parse command line arguments and intialize variables
  * child (): Child process
  * cleanup (): Close all pipes and kill child processes
@@ -118,12 +118,12 @@ void handler (int, int, struct sigcontext *);
 
 /*
  * Structures & Global variables
- * 
- * num_children: number of child processes to be spawned 
- * 
+ *
+ * num_children: number of child processes to be spawned
+ *
  * num_packets: number of packets to be sent to each child process
  *
- * non_blocking_flag: uses NON-BLOCKING 
+ * non_blocking_flag: uses NON-BLOCKING
  *
  * pid: process id's of the spawned processes
  *
@@ -186,15 +186,15 @@ int main (int argc, char **argv)
 	setup (argc, argv);
 	printf ("%s: IPC Pipe TestSuite program\n", *argv);
 	fflush (stdout);
-    
-	/* 
-	 * Create two sets of half duplex pipes:  
-	 * 
-	 * p2child: for sending packets from the parent process to the child 
+   
+	/*
+	 * Create two sets of half duplex pipes: 
+	 *
+	 * p2child: for sending packets from the parent process to the child
 	 *          processes and
-	 * p2parent: for sending checksums from the child processes to the 
+	 * p2parent: for sending checksums from the child processes to the
 	 *           parent
-	 * 
+	 *
 	 * If the non-blocking command line option was specified, use fcntl ()
 	 * to set the O_NONBLOCK file descriptor status flags.  This will
 	 * prevent reads & and writes from blocking if the data is not yet
@@ -203,7 +203,7 @@ int main (int argc, char **argv)
 	printf ("\n\tCreating pipes...\n");
 	fflush (stdout);
 
-	if (pipe (p2parent) < 0) 
+	if (pipe (p2parent) < 0)
 		sys_error ("pipe failed", __LINE__);
 
 	if (non_blocking_flag) {
@@ -212,7 +212,7 @@ int main (int argc, char **argv)
 	}
 
 	for (i=0; i<num_children; i++) {
-		if (pipe (&p2child [i][0]) < 0) 
+		if (pipe (&p2child [i][0]) < 0)
 			sys_error ("pipe failed", __LINE__);
 		if (non_blocking_flag) {
 			if (fcntl (p2child [i][READ], F_SETFL, O_NONBLOCK) < 0)
@@ -224,13 +224,13 @@ int main (int argc, char **argv)
 
 	/*
 	 * Spawn num_children processes
-	 * 
+	 *
 	 * Fork of the child process & record the newly created process's
-	 * id for future reference.  
-	 *  
-	 * Then close the READ end of the p2child pipe, since the parent 
+	 * id for future reference. 
+	 * 
+	 * Then close the READ end of the p2child pipe, since the parent
 	 * process will be writing into this pipe rather than reading.
-	 * Also close the WRITE end of the p2parent pipe, for just the 
+	 * Also close the WRITE end of the p2parent pipe, for just the
 	 * the reverse reasons...
 	 */
 	printf ("\n\tSpawning %d child processes ... \n", num_children);
@@ -255,14 +255,14 @@ int main (int argc, char **argv)
 
 	/*
 	 * Send data packets to the child processes
-	 * 
+	 *
 	 * Build packets (initialize all of the packets fields) and then
 	 * send the packets to all of the child processes.
-	 * 
-	 * Might have to make several attempts with the NON-BLOCKING writes 
+	 *
+	 * Might have to make several attempts with the NON-BLOCKING writes
 	 * if the resource is not immediately available.
 	 */
-	printf ("\n\tParent: sending %ld packets (%ld bytes) to child processes ...\n", 
+	printf ("\n\tParent: sending %ld packets (%ld bytes) to child processes ...\n",
 		num_packets, num_packets * sizeof (struct data_packet));
 
 	packet.last = 0;
@@ -290,21 +290,21 @@ int main (int argc, char **argv)
 
 	/*
 	 * Send the last packet to the child processes
-	 * 
+	 *
 	 * [ Upon receiving this packet, the child process will know that all
-	 *   of the packets have been sent and that the parent process is 
+	 *   of the packets have been sent and that the parent process is
 	 *   expecting the child to send it's checksum back. ]
-	 * 
+	 *
 	 * After sending the last packet, close the WRITE end of the p2child
 	 * pipe as we are finish sending packets to the child processes.
-	 *  
-	 * Then wait for all of the child processes to send the checksum 
-	 * packets.  Upon receiving the checksum packets verify that the 
+	 * 
+	 * Then wait for all of the child processes to send the checksum
+	 * packets.  Upon receiving the checksum packets verify that the
 	 * child's checksum matches that of the parent.
-	 * 
-	 * Might have to make several attempts with the NON-BLOCKING writes 
+	 *
+	 * Might have to make several attempts with the NON-BLOCKING writes
 	 * if the resource is not immediately available.
-	 * 
+	 *
 	 * Finally, close READ end of p2parent pipe as we have finished
 	 * receiving checksums from the child.
 	 */
@@ -325,7 +325,7 @@ int main (int argc, char **argv)
 		if (read (p2parent [READ], &packet, sizeof (packet)) <= 0)
 			sys_error ("read failed", __LINE__);
 
-		if (packet.valid != VALID_PACKET) 
+		if (packet.valid != VALID_PACKET)
 			error ("received packet with corrupted data from child!",
 				__LINE__);
 
@@ -334,7 +334,7 @@ int main (int argc, char **argv)
 				"does not match checksum of data received by " \
 				"child [pid %d]\n"	\
 				"\tchild's checksum: %08lx\n" \
-				"\tparent's checksum: %08lx\n", 
+				"\tparent's checksum: %08lx\n",
 				packet.pid, packet.checksum, cksum_parent);
 			error (err_msg, __LINE__);
 		}
@@ -342,7 +342,7 @@ int main (int argc, char **argv)
 	if (close (p2parent [READ]) < 0)
 		sys_error ("close failed", __LINE__);
 
-	/* 
+	/*
 	 * Wait for all of the child processes to complete & check their
 	 * exit status.
 	 *
@@ -351,8 +351,8 @@ int main (int argc, char **argv)
 	for (i=0; i<num_children; i++) {
 		waitpid (pid [i], &status, 0);
 
-		if (!WIFEXITED (status)) 
-			sys_error ("child process terminated abnormally", 
+		if (!WIFEXITED (status))
+			sys_error ("child process terminated abnormally",
 				__LINE__);
 	}
 	printf ("\n\tParent: children received all packets & exited successfully\n");
@@ -384,7 +384,7 @@ void child (int p2child [], int p2parent [])
 	int	n;			/* Bytes read */
 	pid_t	pid = getpid ();	/* Process id of child */
 	int	end_of_transmission = 0;/* End of transaction flag */
-	long	packets_received = 0;	/* Number of packets received 
+	long	packets_received = 0;	/* Number of packets received
 					 * from parent
 					 */
 
@@ -392,9 +392,9 @@ void child (int p2child [], int p2parent [])
 	unsigned long 	cksum_child = 0;/* Checksum of data fields received */
 
 	/*
-	 * Close the WRITE end of the p2child pipe, since the child 
+	 * Close the WRITE end of the p2child pipe, since the child
 	 * process will be reading from this pipe rather than writing.
-	 * Also close the READ end of the p2parent pipe, for just the 
+	 * Also close the READ end of the p2parent pipe, for just the
 	 * the reverse reasons...
 	 */
 	if (close (p2child [WRITE]) < 0)
@@ -404,14 +404,14 @@ void child (int p2child [], int p2parent [])
 
 	/*
 	 * Receive packets from parent & insure packets are valid
-	 * 
+	 *
 	 * Read packets from the parent through p2child pipe.  Upon
 	 * recieving the packet, verify that it is valid, in sequence
 	 * and that both the parent's and child's checksums match.
-	 * 
+	 *
 	 * Might have to make several attempts with the NON-BLOCKING
 	 * reads if the resource is not immediately available.
-	 * 
+	 *
 	 * Continue reading packets until the "last" packet is received
 	 * from the parent.  Upon receiving the last packet, close
 	 * the p2child READ pipe, as we are finished receiving packets
@@ -429,12 +429,12 @@ void child (int p2child [], int p2parent [])
 		} else if (n > 0) {
 			/* Insure packet is valid */
 			if (packet.valid != VALID_PACKET) {
-				sprintf (err_msg, 
+				sprintf (err_msg,
 					"child received invalid packet " \
 					"from parent:\n\tpacket #: %ld\n",
 					packets_received);
 				error (err_msg, __LINE__);
-			} 
+			}
 			/* Received last packet */
 			if (packet.last) {
 				end_of_transmission = 1;
@@ -471,14 +471,14 @@ void child (int p2child [], int p2parent [])
 
 	/*
 	 * Send parent packet containing child's checksum
-	 * 
+	 *
 	 * Build a checksum packet (initialize packet fields) and then
 	 * send the packet to the parent.
-	 * 
+	 *
 	 * Then close the WRITE p2parent pipe as we have finished sending packets
 	 * to the parent.
 	 */
-	printf ("\t\tChild:  pid [%d] received %ld packets from parent\n", 
+	printf ("\t\tChild:  pid [%d] received %ld packets from parent\n",
 		pid, packets_received);
 
 	packet.pid = pid;
@@ -490,7 +490,7 @@ void child (int p2child [], int p2parent [])
 	if (close (p2parent [WRITE]) < 0)
 		sys_error ("close failed", __LINE__);
 }
-	    
+	   
 
 /*---------------------------------------------------------------------+
 |                               setup ()                               |
@@ -616,7 +616,7 @@ void handler (int sig, int code, struct sigcontext *scp)
 
 			cleanup ();
 		}
-		else 
+		else
 			exit (-1);
 	} else {
 		sprintf (msg, "Received an unexpected signal (%d)", sig);
@@ -639,7 +639,7 @@ void cleanup ()
 
 	if (getpid () == parent_pid) {
 		for (i=0; i<num_children; i++) {
-			if (pid [i] > (pid_t)0 && kill (pid [i], SIGKILL) < 0) 
+			if (pid [i] > (pid_t)0 && kill (pid [i], SIGKILL) < 0)
 				sys_error ("signal failed", __LINE__);
 
 			close (p2child [i][READ]);

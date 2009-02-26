@@ -16,7 +16,7 @@
 #include <selinux/selinux.h>
 #include <selinux/context.h>
 
-int main(int argc, char **argv) 
+int main(int argc, char **argv)
 {
 	char **childargv;
 	security_context_t context_s;

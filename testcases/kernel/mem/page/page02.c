@@ -176,7 +176,7 @@ int main(argc, argv)
 			down_pointer = up_pointer = memory_pointer +
 			  (memory_size / 2);
 
-			for(j = 1; j <= half_memory_size; j++) { 
+			for(j = 1; j <= half_memory_size; j++) {
 				if(*(up_pointer++) != j) error_count++;
 				if(*(down_pointer--) != j) error_count++;
 			}	

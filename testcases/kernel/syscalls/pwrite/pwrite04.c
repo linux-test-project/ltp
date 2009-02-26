@@ -26,7 +26,7 @@
  *	Test the pwrite() system call with O_APPEND.
  *
  * USAGE
- *  	pwrite04 
+ *  	pwrite04
  *
  */
 
@@ -65,7 +65,7 @@ void init_buffers(char*[]);
 void l_seek(int, off_t, int, off_t);
 static void cleanup(void);
 
-int main(int ac, char *av[]) 
+int main(int ac, char *av[])
 {
 	int	fd;
 	int	nbytes ;
@@ -226,7 +226,7 @@ int main(int ac, char *av[])
  */
 void init_buffers(char *wbuf[])
 {
-	int i; 
+	int i;
 
 	for (i = 0; i < NBUFS; i++)  {
 		wbuf[i] = (char *)malloc(K1);

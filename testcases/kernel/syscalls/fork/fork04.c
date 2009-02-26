@@ -30,51 +30,51 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fork04.c,v 1.1 2001/08/27 22:15:13 plars Exp $ */
+/* $Id: fork04.c,v 1.2 2009/02/26 12:02:56 subrata_modak Exp $ */
 /**********************************************************
- * 
+ *
  *    OS Test - Silicon Graphics, Inc.
- * 
+ *
  *    TEST IDENTIFIER	: fork04
- * 
+ *
  *    TEST TITLE	: Child inheritance of Environment Variables after fork()
- * 
+ *
  *    PARENT DOCUMENT	: frktds01
- * 
+ *
  *    TEST CASE TOTAL	: 3
- * 
+ *
  *    WALL CLOCK TIME	: 1
- * 
+ *
  *    CPU TYPES		: ALL
- * 
+ *
  *    AUTHOR		: Kathy Olmsted
- * 
+ *
  *    CO-PILOT		: Steve Shaw
- * 
+ *
  *    DATE STARTED	: 06/17/92
- * 
+ *
  *    INITIAL RELEASE	: UNICOS 7.0
- * 
+ *
  *    TEST CASES
  *       Test these environment variables correctly inherited by child:
- *       1. TERM 
+ *       1. TERM
  *       2. NoTSetzWq
- *       3. TESTPROG 
+ *       3. TESTPROG
  *	
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
- * 
+ *
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
  *
  *    ENVIRONMENTAL NEEDS
  *      No run-time environmental needs.
- * 
+ *
  *    DETAILED DESCRIPTION
  *
  * 	Setup:
@@ -82,7 +82,7 @@
  *        Make and change to a temporary directory.
  *	  Pause for SIGUSR1 if option specified.
  *        Add TESTPROG variable to the environment
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  *	 fork()
@@ -103,9 +103,9 @@
  *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- *        Remove the temporary directory and exit. 
- * 
- * 
+ *        Remove the temporary directory and exit.
+ *
+ *
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 #include <stdlib.h>
 #include <sys/types.h>
@@ -116,7 +116,7 @@
 #include <sys/param.h>
 #include <signal.h>		/*Includes signal information. */
 #include <errno.h>
-#include "test.h"    
+#include "test.h"   
 #include "usctest.h"
 
 char *TCID="fork04";		/* Test program identifier.    */
@@ -138,7 +138,7 @@ int TST_TOTAL=NUMBER_OF_ENVIRON;		/* Total number of test cases. */
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void 
+void
 cleanup()
 {
   /*
@@ -147,7 +147,7 @@ cleanup()
    */
   TEST_CLEANUP;
 
-  /* remove the temporary directory and exit with 
+  /* remove the temporary directory and exit with
        return code appropriate for results */
   tst_rmdir();
   tst_exit();
@@ -157,7 +157,7 @@ cleanup()
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void 
+void
 setup()
 {
     /* capture signals */
@@ -181,26 +181,26 @@ setup()
  ***************************************************************/
 void child_environment()
 {
-  
+ 
   int fildes;
   int index;
   char msg[MAX_LINE_LENGTH];
   char *var;
-  
+ 
   fildes = creat(OUTPUT_FILE,0700);
 
-  
+ 
   for (index=0;index<NUMBER_OF_ENVIRON;index++) {
       memset(msg, 0, MAX_LINE_LENGTH);
 
-      if ( (var=getenv(environ_list[index])) == NULL ) 
+      if ( (var=getenv(environ_list[index])) == NULL )
           (void)sprintf(msg,"%s:%s",environ_list[index], ENV_NOT_SET);
       else
           (void)sprintf(msg,"%s:%s",environ_list[index], var);
 
       write(fildes,msg,sizeof(msg));   /* includes extra null chars */
   }
-  
+ 
   close(fildes);
 
 }
@@ -221,7 +221,7 @@ cmp_env_strings(char *pstring, char *cstring)
     */
    penv=pstring;
    if ( (pvalue=strchr(pstring, ':'))  == NULL )  {
-       tst_resm(TBROK, 
+       tst_resm(TBROK,
            "internal error - parent's env string not in correct format:'%s'",
 	   pstring);
        return -1;
@@ -239,7 +239,7 @@ cmp_env_strings(char *pstring, char *cstring)
     */
    cenv=cstring;
    if ( (cvalue=strchr(cstring, ':'))  == NULL )  {
-       tst_resm(TBROK, 
+       tst_resm(TBROK,
            "internal error - parent's env string not in correct format:'%s'",
 	   cstring);
        return -1;
@@ -266,31 +266,31 @@ cmp_env_strings(char *pstring, char *cstring)
 	penv, cvalue);
    }
    return 0;
-   
+  
 }
 
 /***************************************************************
  * parent_environment - the parent side of the environment tests
  *        determine values for the variables
  *        read the values determined by the child
- *        compare values 
+ *        compare values
  ***************************************************************/
 void parent_environment()
 {
-  
+ 
   int fildes;
   char tmp_line[MAX_LINE_LENGTH];
   char parent_value[MAX_LINE_LENGTH];
   int index;
   int ret;
   char *var;
-  
+ 
   if ((fildes = open(OUTPUT_FILE,O_RDWR)) == -1) {
     tst_brkm(TBROK, cleanup,
 		 "fork() test. Parent open of temporary file failed. errno %d (%s)\n",
 		 errno, strerror(errno));
   }
-  for (index=0;index<NUMBER_OF_ENVIRON;index++) 
+  for (index=0;index<NUMBER_OF_ENVIRON;index++)
     {
       if ((ret=read(fildes,tmp_line,MAX_LINE_LENGTH)) == 0) {
 	tst_resm(TBROK,"fork() test. parent_environment: failed to read from file with %d (%s)",
@@ -298,7 +298,7 @@ void parent_environment()
       }
       else {
 
-	if ( (var=getenv(environ_list[index])) == NULL ) 
+	if ( (var=getenv(environ_list[index])) == NULL )
             sprintf(parent_value,"%s:%s", environ_list[index], ENV_NOT_SET);
 	else
             sprintf(parent_value,"%s:%s", environ_list[index], var);
@@ -375,18 +375,18 @@ main(int ac, char **av)
 	    if (wait_status == TEST_RETURN) {
 	      if (kid_status != KIDEXIT << 8) {
 		tst_brkm(TBROK, cleanup,
-			     "fork(): Incorrect child status returned on wait(): %d", 
+			     "fork(): Incorrect child status returned on wait(): %d",
 			     kid_status);
 		fails++;
 	      }
 	    }
 	    else {
 	      tst_brkm(TBROK, cleanup,
-		       "fork(): wait() for child status failed with %d errno: %d : %s", 
+		       "fork(): wait() for child status failed with %d errno: %d : %s",
 		       wait_status,errno,strerror(errno));
 	      fails++;
 	    }
-	  
+	 
 	    if (fails == 0 ) {
 	      /* verification tests */
 	      parent_environment();

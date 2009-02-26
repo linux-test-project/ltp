@@ -26,7 +26,7 @@
  * 	should all be refering to the same file.
  *
  * ALGORITHM
- *	Child reads several chars and exits. 
+ *	Child reads several chars and exits.
  *	Parent forks another child, have the child and parent attempt to use
  *	that location
  *

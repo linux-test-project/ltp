@@ -30,83 +30,83 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: link05.c,v 1.1 2001/08/27 22:15:14 plars Exp $ */
+/* $Id: link05.c,v 1.2 2009/02/26 12:03:44 subrata_modak Exp $ */
 /**********************************************************
- * 
+ *
  *    OS Test - Silicon Graphics, Inc.
- * 
+ *
  *    TEST IDENTIFIER	: link05
- * 
+ *
  *    EXECUTED BY	: anyone
- * 
+ *
  *    TEST TITLE	: multi links (EMLINK) negative test
- * 
+ *
  *    PARENT DOCUMENT	: usctpl01
- * 
+ *
  *    TEST CASE TOTAL	: 2
- * 
+ *
  *    WALL CLOCK TIME	: 3
- * 
+ *
  *    CPU TYPES		: ALL
- * 
+ *
  *    AUTHOR		: Richard Logan
- * 
+ *
  *    CO-PILOT		: William Roske
- * 
+ *
  *    DATE STARTED	: 03/31/94
- * 
+ *
  *    INITIAL RELEASE	: UNICOS 7.0
- * 
+ *
  *    TEST CASES
- * 
+ *
  * 	1.) link(2) returns...(See Description)
  *	
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
- * 
+ *
  *    OUTPUT SPECIFICATIONS
  * 	
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
  *
  *    RESOURCES
  * 	None
- * 
+ *
  *    ENVIRONMENTAL NEEDS
  *      No run-time environmental needs.
- * 
+ *
  *    SPECIAL PROCEDURAL REQUIREMENTS
  * 	None
- * 
+ *
  *    INTERCASE DEPENDENCIES
  * 	None
- * 
+ *
  *    DETAILED DESCRIPTION
  *	This is a Phase I test for the link(2) system call.  It is intended
  *	to provide a limited exposure of the system call, for now.  It
  *	should/will be extended when full functional tests are written for
  *	link(2).
- * 
+ *
  * 	Setup:
  * 	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  * 	  Execute system call
  *	  Check return code, if system call failed (return=-1)
  *		Log the errno and Issue a FAIL message.
  *	  Otherwise, Issue a PASS message.
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
- * 
+ *
+ *
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
 #include <sys/types.h>
@@ -172,7 +172,7 @@ main(int ac, char **av)
 	if ( sscanf(Noptlinks, "%i", &nlinks) != 1 ) {
 	    tst_brkm(TBROK, cleanup, "-N option invalid, must be numeric");
 	}
-    } 
+    }
 
     /***************************************************************
      * perform global setup for test
@@ -199,9 +199,9 @@ main(int ac, char **av)
 	    if ( TEST_RETURN == -1 ) {
 	        tst_resm(TFAIL, "link(%s, %s) Failed, errno=%d : %s",
 		     Fname, lname, TEST_ERRNO, strerror(TEST_ERRNO));
-	    } 
+	    }
 	}
-	    
+	   
 	/***************************************************************
 	 * only perform functional verification if flag set (-f not given)
 	 ***************************************************************/
@@ -228,7 +228,7 @@ main(int ac, char **av)
 		    Fname, Basename, nlinks, TEST_RETURN, nlinks,
 		    fbuf.st_nlink);
 	    }
-	} 
+	}
 	else
 	    Tst_count++;
 
@@ -258,7 +258,7 @@ main(int ac, char **av)
 		else {
 	            tst_resm(TFAIL,
 			"link(%s, %s) ret %d on %d link, errno:%d, expected -1, errno:%d",
-	                Fname, lname, TEST_RETURN, nlinks+1, 
+	                Fname, lname, TEST_RETURN, nlinks+1,
 			TEST_ERRNO, EMLINK);
 		}
 	    }
@@ -272,7 +272,7 @@ main(int ac, char **av)
 #endif /* CRAY */
 
 	for(cnt=1; cnt < nlinks; cnt++) {
-        
+       
             sprintf(lname, "%s%d", Basename, cnt);
 
 	    if (unlink(lname) == -1) {
@@ -303,7 +303,7 @@ help()
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void 
+void
 setup()
 {
     int fd;
@@ -334,7 +334,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void 
+void
 cleanup()
 {
     /*

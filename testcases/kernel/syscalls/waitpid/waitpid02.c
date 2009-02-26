@@ -26,7 +26,7 @@
  *	divide exception, the waiting parent is correctly notified.
  *
  * ALGORITHM
- *	Fork a child and send a SIGFPE to it. The parent waits for the 
+ *	Fork a child and send a SIGFPE to it. The parent waits for the
  *	death of the child and checks that SIGFPE was returned.
  *
  * USAGE:  <for command-line>
@@ -42,7 +42,7 @@
  *	07/2001 John George
  *		-Ported
  *	10/2002 Paul Larson
- *		Div by zero doesn't cause SIGFPE on some archs, fixed 
+ *		Div by zero doesn't cause SIGFPE on some archs, fixed
  *		to send the signal with kill
  *
  * Restrictions
@@ -160,7 +160,7 @@ int main(int argc, char **argv)
 }
 
 /*
- * do_child() 
+ * do_child()
  */
 void
 do_child()

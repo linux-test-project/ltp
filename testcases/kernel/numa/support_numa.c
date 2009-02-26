@@ -88,13 +88,13 @@ int main( int argc, char *argv[] )
 		return 0;
 	case 2:
 		buf = (char*) malloc(MB);
-               	if (!buf) 
+               	if (!buf)
 		{
 			tst_resm(TINFO, "#Memory is not available\n");
 			tst_exit();
 			exit(2);
 		}
-       		for (i=0; i<MB; i+= PAGE_SIZE) 
+       		for (i=0; i<MB; i+= PAGE_SIZE)
 		{
 			count++;
                		buf[i] = 'a';
@@ -107,7 +107,7 @@ int main( int argc, char *argv[] )
                 sa.sa_handler = sigfunc;
                 sa.sa_flags = SA_RESTART;
                 sigemptyset(&sa.sa_mask);
-                if( sigaction(SIGINT, &sa, 0) < 0 ) 
+                if( sigaction(SIGINT, &sa, 0) < 0 )
 		{
 			tst_brkm(TBROK, NULL, "#Sigaction SIGINT failed\n");
 			tst_exit();

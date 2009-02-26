@@ -53,7 +53,7 @@
 
 /*
  * Defines:
- * 
+ *
  * USAGE: usage statement
  *
  * DEFAULT_PRIORITY_TYPE: default priority
@@ -126,7 +126,7 @@ int main (int argc, char **argv)
 		printf ("\tlogfile:        %s\n", logfile);
 	}
 
-	/* 
+	/*
 	 * Adjust the priority of this process if the real time flag is set
 	 */
 	if (!strcmp (priority_type, "fixed")) {
@@ -142,7 +142,7 @@ int main (int argc, char **argv)
 			sys_error ("nice failed", __FILE__, __LINE__);
 	}
 
-	/* 
+	/*
 	 * Read from raw I/O device and record elapsed time...
 	 */
 	start_time = time ((time_t*)&timer_info);
@@ -161,7 +161,7 @@ int main (int argc, char **argv)
 
 	if (fclose (statfile) < 0)
 		sys_error ("fclose failed", __FILE__, __LINE__);
-   
+  
 	/*
 	 * Exit with success!
 	 */
@@ -185,8 +185,8 @@ void invert_matrix ()
 	float	matrix_1 [MATRIX_SIZE][MATRIX_SIZE];
 	float	matrix_2 [MATRIX_SIZE][MATRIX_SIZE];
 
-	/* 
-	 * Fill the first matrix to be inverted with random values 
+	/*
+	 * Fill the first matrix to be inverted with random values
 	 */
 printf("sched_tc5: invert_matrix: before first matrix inversion\n");
 	for (i = 0; i < MATRIX_SIZE; i++)
@@ -208,7 +208,7 @@ printf("sched_tc5: invert_matrix: before second matrix inversion\n");
 				matrix_2[i][j] = 0;
 
 printf("sched_tc5: invert_matrix: before form identity matrix\n");
-	/* 
+	/*
 	 * Form an identity matrix in the random matrix
 	 */
 	for ( i = 0; i < MATRIX_SIZE; i++ ) {
@@ -295,12 +295,12 @@ debug=1;
 	/*
 	 * Check percentage and process slots...
  	 */
-	if (tflg) { 
-		if (strcmp (priority_type, "fixed") && 
+	if (tflg) {
+		if (strcmp (priority_type, "fixed") &&
 		    strcmp (priority_type, "variable"))
 			errflag++;
 	}
-	if (pflg) { 
+	if (pflg) {
 		if (priority < 50 || priority > 100)
 			errflag++;
 	}

@@ -15,17 +15,17 @@
  *
  */
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER   : setresgid01
- * 
+ *
  *    EXECUTED BY       : root / superuser
- * 
+ *
  *    TEST TITLE        : Checking functionality of setresgid(2)
- * 
+ *
  *    TEST CASE TOTAL   : 5
- * 
+ *
  *    AUTHOR            : Madhu T L <madhu.tarikere@wipro.com>
- * 
+ *
  *    SIGNALS
  *      Uses SIGUSR1 to pause before test if option set.
  *      (See the parse_opts(3) man page).
@@ -37,13 +37,13 @@
  *	3. setresgid(2) is successful for setresgid(-1, nobody, -1)
  *	4. setresgid(2) is successful for setresgid(nobody, -1, -1)
  *	5. setresgid(2) is successful for setresgid(root, root, root)
- * 
+ *
  *      Setup:
  *	  Setup signal handling.
  *	  Test caller is superuser
  *	  Check existence of root and nobody user id's
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  *	Test:
  *	 Loop if the proper options are given.
  *	  Execute system call
@@ -51,10 +51,10 @@
  *		 Issue PASS message
  *	Otherwise,
  *		Issue FAIL message
- * 
+ *
  *	Cleanup:
  *	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  *  setresgid01 [-c n] [-e] [-f] [-h] [-i n] [-I x] [-p] [-P x] [-t]
  *		where,  -c n : Run n copies concurrently.
@@ -66,7 +66,7 @@
  *			-p   : Pause for SIGUSR1 before starting
  *			-P x : Pause for x seconds between iterations.
  *			-t   : Turn on syscall timing.
- * 
+ *
  ****************************************************************/
 
 #define _GNU_SOURCE 1
@@ -147,7 +147,7 @@ main(int argc, char **argv)
 					tdat[testno].exp_sgid->pw_gid) ) {
 
 					tst_resm(TPASS, "Test for %s "
-						"successful", 
+						"successful",
 						tdat[testno].desc);
 				} else {
 					tst_resm(TFAIL, "Functionality test "
@@ -173,7 +173,7 @@ test_functionality(uid_t exp_rgid, uid_t exp_egid, uid_t exp_sgid)
 {
 	uid_t cur_rgid, cur_egid, cur_sgid;
 
-	/* 
+	/*
 	 * Perform functional verification, if STD_FUNCTIONAL_TEST is
 	 * set (-f options is not used)
 	 */

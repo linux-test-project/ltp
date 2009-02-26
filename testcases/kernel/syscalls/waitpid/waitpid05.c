@@ -242,7 +242,7 @@ void
 do_child_uclinux()
 {
 	do_child(sig_uclinux);
-} 
+}
 #endif
 
 /*

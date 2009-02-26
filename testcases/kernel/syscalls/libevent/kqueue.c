@@ -174,7 +174,7 @@ kq_insert(struct kqop *kqop, struct kevent *kev)
 	memcpy(&kqop->changes[kqop->nchanges++], kev, sizeof(struct kevent));
 
 	LOG_DBG((LOG_MISC, 70, "%s: fd %d %s%s",
-		 __func__, kev->ident, 
+		 __func__, kev->ident,
 		 kev->filter == EVFILT_READ ? "EVFILT_READ" : "EVFILT_WRITE",
 		 kev->flags == EV_DELETE ? " (del)" : ""));
 
@@ -217,7 +217,7 @@ kq_dispatch(void *arg, struct timeval *tv)
 		int which = 0;
 
 		if (events[i].flags & EV_ERROR) {
-			/* 
+			/*
 			 * Error messages that can happen, when a delete fails.
 			 *   EBADF happens when the file discriptor has been
 			 *   closed,

@@ -126,9 +126,9 @@ main(int argc, char *argv[])
 		ERROR("couldn't find top of brk");
 		anyfail();
 	}
-       
+      
 	/* i changed the second argument to NULL
-	from argv[0]. otherwise it causes the 
+	from argv[0]. otherwise it causes the
 	open to fail
 	-- sreeni
 	*/

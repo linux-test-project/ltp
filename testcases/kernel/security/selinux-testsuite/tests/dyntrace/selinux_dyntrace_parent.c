@@ -61,7 +61,7 @@ int main(int argc, char **argv)
 		perror("fork");
 		exit(-1);
 	} else if (pid == 0) {
-		signal(SIGTRAP, SIG_IGN); 
+		signal(SIGTRAP, SIG_IGN);
 		rc =  ptrace(PTRACE_TRACEME, 0, 0, 0);
 		if (rc < 0) {
 			perror("ptrace: PTRACE_TRACEME");

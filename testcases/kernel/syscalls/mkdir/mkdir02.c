@@ -74,7 +74,7 @@
 #include <pwd.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include "test.h" 
+#include "test.h"
 #include "usctest.h"
 
 void setup();
@@ -120,13 +120,13 @@ main(int ac, char **av)
 	 * check looping state if -i option given
 	 */
 	for (lc=0; TEST_LOOPING(lc); lc++) {
-	  
+	 
 		/* reset Tst_count in case we are looping. */
 		Tst_count=0;
 		
 		/* check the inherited group ID */
 
-		/* 
+		/*
 		 * first, fork the first child, set to ltpuser1's uid and gid,
 		 * create a directory, with S_ISGID bit set
 		 */
@@ -150,7 +150,7 @@ main(int ac, char **av)
 				exit(1);
 				/* NOTREACHED */
 			}
-			/* being ltupuser1 */ 
+			/* being ltupuser1 */
 			rval = setreuid(ltpuser1->pw_uid, ltpuser1->pw_uid);
 			if (rval < 0) {
 				perror("setreuid");
@@ -162,21 +162,21 @@ main(int ac, char **av)
 				/* NOTREACHED */
 			}
 		
-			/* 
+			/*
 			 * create a direcoty with S_ISGID bit set
 			 * and the group ID is ltpuser1
 			 */
 			if (mkdir(tstdir1, PERMS) != 0) {
 				perror("mkdir");
 				tst_resm(TFAIL, "mkdir() failed to create"
-						" a directory with Set " 
+						" a directory with Set "
 						" group ID turn on ");
 				exit(1);
 				/* NOTREACHED */
 			}
 			if (stat(tstdir1, &buf1) == -1) {
 				perror("stat");
-				tst_resm(TFAIL, 
+				tst_resm(TFAIL,
 					"failed to stat the new directory"
 					"in mkdir()");
 				exit(1);
@@ -238,8 +238,8 @@ main(int ac, char **av)
 			
 			}
 			
-			/* 
-			 * create a sub direcoty 
+			/*
+			 * create a sub direcoty
 			 * under the directory just created
 			 * by ltpuser1
 			 */
@@ -250,20 +250,20 @@ main(int ac, char **av)
 				exit(1);
 				/* NOTREACHED */
 			}
-			/* 
-			 * check the group ID 
+			/*
+			 * check the group ID
 			 * should not be the same as the current processs's
 			 * since parent directory is set with S_ISGID bit
 			 */
 			if (stat(tstdir2, &buf) == -1) {
-				tst_resm(TFAIL, 
+				tst_resm(TFAIL,
 					"failed to stat the new directory"
 					"in mkdir()");
 				exit(1);
 				/* NOTREACHED */
 			}
 			if (stat(tstdir1, &buf1) == -1) {
-				tst_resm(TFAIL, 
+				tst_resm(TFAIL,
 					"failed to stat the new directory"
 					"in mkdir()");
 				exit(1);
@@ -271,7 +271,7 @@ main(int ac, char **av)
 			}
 			if (buf.st_gid != buf1.st_gid ) {
 				tst_resm(TFAIL, "mkdir() FAILED to inherit "
-						" the group ID %d from parent " 
+						" the group ID %d from parent "
 						" directory %d",
 					 buf.st_gid,buf1.st_gid );
 				exit(1);
@@ -281,7 +281,7 @@ main(int ac, char **av)
 			/* check the S_ISGID  bit */
 			if (!( buf.st_mode & S_ISGID)) {
 				tst_resm(TFAIL, "mkdir() FAILED to inherit "
-						" the S_ISGID bit from parent " 
+						" the S_ISGID bit from parent "
 						" directory");
 				exit(1);
 				/* NOTREACHED */	
@@ -316,7 +316,7 @@ main(int ac, char **av)
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void 
+void
 setup()
 {
 	/* must run as root */
@@ -344,7 +344,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

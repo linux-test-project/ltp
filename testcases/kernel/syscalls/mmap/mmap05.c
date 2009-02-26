@@ -124,7 +124,7 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 
-		/* 
+		/*
 		 * Call mmap to map the temporary file 'TEMPFILE'
 	 	 * with no access.
 		 */
@@ -147,12 +147,12 @@ main(int ac, char **av)
 		if (STD_FUNCTIONAL_TEST) {
 
 			/*
-			 * Try to access the mapped region.  This should 
+			 * Try to access the mapped region.  This should
 			 * generate a SIGSEGV which will be caught below.
 			 *
 			 * This is wrapped by the sigsetjmp() call that will
 			 * take care of restoring the program's context in an
-			 * elegant way in conjunction with the call to 
+			 * elegant way in conjunction with the call to
 			 * siglongjmp() in the signal handler.
 			 */
 			if (sigsetjmp(env, 1) == 0) {
@@ -192,7 +192,7 @@ main(int ac, char **av)
  *  	     Change the mode permissions on file to 0444
  *  	     Re-open the file for reading.
  */
-void 
+void
 setup()
 {
 	char *tst_buff;			/* test buffer to hold known data */
@@ -284,7 +284,7 @@ sig_handler(sig)
  *             completion or premature exit.
  * 	       Remove the temporary directory created.
  */
-void 
+void
 cleanup()
 {
 	/*

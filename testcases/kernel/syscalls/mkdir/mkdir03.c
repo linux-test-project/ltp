@@ -153,7 +153,7 @@ main(int ac, char **av)
 	 * check looping state if -i option given
 	 */
 	for (lc=0; TEST_LOOPING(lc); lc++) {
-	  
+	 
 		/* reset Tst_count in case we are looping. */
 		Tst_count=0;
 
@@ -198,7 +198,7 @@ main(int ac, char **av)
 /*
  * setup3() - performs all ONE TIME setup for this test case 3.
  */
-void 
+void
 setup3()
 {
 	char tstfile3[NAMELEN];
@@ -216,7 +216,7 @@ setup3()
 /*
  * setup4() - performs all ONE TIME setup for this test case 4.
  */
-void 
+void
 setup4()
 {
 	char tstdir[NAMELEN];
@@ -243,7 +243,7 @@ setup4()
 /*
  * setup5() - performs all ONE TIME setup for this test case 5.
  */
-void 
+void
 setup5()
 {
 	char tstfile5[NAMELEN];
@@ -262,7 +262,7 @@ setup5()
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -289,7 +289,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *              completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

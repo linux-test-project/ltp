@@ -22,11 +22,11 @@
  * Test description
  *  Verify that sysinfo() succeeds to get the system information and fills
  *  the structure passed.
- * 
+ *
  * Expected Result :
  *  sysinfo() returns value 0 on success and the sysinfo structure should
  *  be filled with the system information.
- * 
+ *
  * Algorithm:
  *  Setup :
  *   Setup for signal handling.
@@ -156,7 +156,7 @@ main(int ac, char **av)
 				tst_resm(TPASS, "Test to check the return code",
 					 "PASSED");
 			}
-		} 
+		}
 	}
 
 	cleanup();

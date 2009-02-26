@@ -32,7 +32,7 @@
  *
  * DESCRIPTION
  * 	Verify that,
- *      clone(2) returns -1 and sets errno to EINVAL if 
+ *      clone(2) returns -1 and sets errno to EINVAL if
  *	child stack is set to a zero value(NULL)
  *
  * ALGORITHM

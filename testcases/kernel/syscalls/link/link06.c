@@ -23,7 +23,7 @@
  *
  * Test Description:
  *  Verify that, link() fails with -1 and sets errno to EACCES when
- *	 	 Write access to the directory containing newpath is 
+ *	 	 Write access to the directory containing newpath is
  *		 not allowed for the process's effective uid.
  *
  * Expected Result:
@@ -108,7 +108,7 @@ main(int ac, char **av)
     int lc;		/* loop counter */
     char *msg;		/* message returned from parse_opts */
     char *test_desc;    /* test specific error message */
-    
+   
     /***************************************************************
      * parse standard options
      ***************************************************************/
@@ -167,7 +167,7 @@ main(int ac, char **av)
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void 
+void
 setup()
 {
 	char Path_name[PATH_MAX];       /* Buffer to hold current path */
@@ -191,7 +191,7 @@ setup()
         if (chmod(Path_name, MODE_TO) < 0) {
                 tst_brkm(TBROK, cleanup, "chmod(2) of %s failed", Path_name);
         }
-    
+   
         /* create regular file*/
         if ( (fd=creat("regfile", 0777)) == -1 ) {
             tst_brkm(TBROK, cleanup, "creat(regfile, 0777) failed, errno:%d %s",
@@ -202,12 +202,12 @@ setup()
 	/* set paths for test */
 	file1 = "regfile";
 	file2 = "new_test_file";
-    
+   
 	/* set effective user ID to NOBODY_USER using seteuid */
 	if (seteuid(NOBODY_USER) != 0) {
 		tst_resm(TFAIL, "seteuid to NOBODY_USER failed");
 		cleanup();
-	} 
+	}
 
 }	/* End setup() */
 
@@ -216,7 +216,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void 
+void
 cleanup()
 {
      /* set back effective user ID to ROOT_USER using seteuid */

@@ -1,32 +1,32 @@
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
- * 
+ *
  * This program is distributed in the hope that it would be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * 
+ *
  * Further, this software is distributed without any warranty that it is
  * free of the rightful claim of any third person regarding infringement
  * or the like.  Any license provided herein, whether implied or
  * otherwise, applies only to this software file.  Patent licenses, if
  * any, provided herein do not apply to combinations of this program with
  * other software, or any other product whatsoever.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston MA 02111-1307, USA.
- * 
+ *
  * Contact information: Silicon Graphics, Inc., 1600 Amphitheatre Pkwy,
  * Mountain View, CA  94043, or:
- * 
- * http://www.sgi.com 
- * 
- * For further information regarding this notice, see: 
- * 
+ *
+ * http://www.sgi.com
+ *
+ * For further information regarding this notice, see:
+ *
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 /*
@@ -683,7 +683,7 @@ doio()
 	 * a corefile at the point of error.  We put SIGQUIT in this list so
 	 * that ^\ will force a user core dump.
 	 *
-	 * Note:  the handler for these should be SIG_DFL, all of them 
+	 * Note:  the handler for these should be SIG_DFL, all of them
 	 * produce a corefile as the default action.
 	 */
 
@@ -953,7 +953,7 @@ doio_delay()
 	case DELAY_SELECT:
 		tv_delay.tv_sec = delaytime / 1000000;
 		tv_delay.tv_usec = delaytime % 1000000;
-		/*doio_fprintf(stdout, "delay_select: %d %d\n", 
+		/*doio_fprintf(stdout, "delay_select: %d %d\n",
 			    tv_delay.tv_sec, tv_delay.tv_usec);*/
 		select(0, NULL, NULL, NULL, &tv_delay);
 		break;
@@ -1361,7 +1361,7 @@ struct io_req	*req;
 		} else if (rval != nbytes) {
 			doio_fprintf(stderr,
 				     "read() request returned wrong # of bytes - expected %d, got %d\n%s\n",
-				     nbytes, rval, 
+				     nbytes, rval,
 				     format_rw(req, fd, addr, -1, NULL, NULL));
 			doio_upanic(U_RVAL);
 			return -1;
@@ -1504,7 +1504,7 @@ struct io_req	*req;
 
 		if (sswrite((long)Memptr, Sdsptr, btoc(nbytes)) == -1) {
 			doio_fprintf(stderr, "sswrite(%d, %d, %d) failed:  %s (%d)\n",
-				     (long)Memptr, Sdsptr, btoc(nbytes), 
+				     (long)Memptr, Sdsptr, btoc(nbytes),
 				     SYSERR, errno);
 			fflush(stderr);
 			return -1;
@@ -1925,7 +1925,7 @@ struct io_req	*req;
 	 * sure we get enough, based on the memstride.
 	 */
 
-	mem_needed = 
+	mem_needed =
 		stride_bounds(0, lio->r_memstride, lio->r_nstrides,
 			      lio->r_nbytes, NULL, NULL);
 
@@ -2064,7 +2064,7 @@ struct io_req	*req;
 		aio_unregister(aio_id);
 		doio_upanic(U_IOSW);
 		goto lio_done;
-	} 
+	}
 
 	aio_unregister(aio_id);
 
@@ -2230,14 +2230,14 @@ struct io_req	*req;
 
 
 /* ---------------------------------------------------------------------------
- * 
+ *
  * A new paradigm of doing the r/w system call where there is a "stub"
  * function that builds the info for the system call, then does the system
  * call; this is called by code that is common to all system calls and does
  * the syscall return checking, async I/O wait, iosw check, etc.
  *
  * Flags:
- *	WRITE, ASYNC, SSD/SDS, 
+ *	WRITE, ASYNC, SSD/SDS,
  *	FILE_LOCK, WRITE_LOG, VERIFY_DATA,
  */
 
@@ -2298,7 +2298,7 @@ fmt_ioreq(struct io_req *ioreq, struct syscall_info *sy, int fd)
 	if(sy->sy_flags & SY_WRITE) {
 		cp += sprintf(cp, "          write done at file offset %d - pattern is %c (%#o)\n",
 			      io->r_offset,
-			      (io->r_pattern == '\0') ? '?' : io->r_pattern, 
+			      (io->r_pattern == '\0') ? '?' : io->r_pattern,
 			      io->r_pattern);
 	} else {
 		cp += sprintf(cp, "          read done at file offset %d\n",
@@ -2826,7 +2826,7 @@ int rw;
 		memcpy(memaddr, addr, req->r_data.io.r_nbytes);
 	else
 		memcpy(addr, memaddr, req->r_data.io.r_nbytes);
-       if (v_opt) 
+       if (v_opt)
                msync(fdc->c_memaddr, (int)sbuf.st_size, MS_SYNC);
 	active_mmap_rw = 0;
 
@@ -2865,7 +2865,7 @@ fmt_mmrw(struct io_req *req, struct syscall_info *sy, int fd, char *addr)
 	cp += sprintf(cp, "\tfile-mem=0x%lx, length=%d, buffer=0x%lx\n",
 		      (unsigned long) memaddr, req->r_data.io.r_nbytes,
 		      (unsigned long) addr);
-		      
+		     
 	return(errbuf);
 }
 #endif /* !CRAY */
@@ -3082,7 +3082,7 @@ do_rw(req)
 
 			if (sswrite((long)Memptr, Sdsptr, btoc(mem_needed)) == -1) {
 				doio_fprintf(stderr, "sswrite(%d, %d, %d) failed:  %s (%d)\n",
-					     (long)Memptr, Sdsptr, 
+					     (long)Memptr, Sdsptr,
 					     btoc(mem_needed), SYSERR, errno);
 				fflush(stderr);
 				return -1;
@@ -3156,10 +3156,10 @@ do_rw(req)
 
 		if (lock_file_region(file, fd, F_WRLCK,
 				     min_byte, (max_byte-min_byte+1)) < 0) {
-		    doio_fprintf(stderr, 
+		    doio_fprintf(stderr,
 				"file lock failed:\n%s\n",
 				fmt_ioreq(req, sy, fd));
-		    doio_fprintf(stderr, 
+		    doio_fprintf(stderr,
 				"          buffer(req, %d, 0, 0x%x, 0x%x)\n",
 				offset, min_byte, max_byte);
 		    alloc_mem(-1);
@@ -3434,9 +3434,9 @@ do_fcntl(req)
 
 		if (lock_file_region(file, fd, F_WRLCK,
 				     min_byte, (nbytes+1)) < 0) {
-		    doio_fprintf(stderr, 
+		    doio_fprintf(stderr,
 				"file lock failed:\n");
-		    doio_fprintf(stderr, 
+		    doio_fprintf(stderr,
 				"          buffer(req, %d, 0, 0x%x, 0x%x)\n",
 				offset, min_byte, max_byte);
 		    alloc_mem(-1);
@@ -3460,8 +3460,8 @@ do_fcntl(req)
 		doio_fprintf(stderr,
 			     "fcntl %s request failed: %s (%d)\n\tfcntl(%d, %s %d, {%d %lld ==> %lld}\n",
 			     msg, SYSERR, errno,
-			     fd, msg, op, flk.l_whence, 
-			     (long long)flk.l_start, 
+			     fd, msg, op, flk.l_whence,
+			     (long long)flk.l_start,
 			     (long long)flk.l_len);
 
 		doio_upanic(U_RVAL);
@@ -3563,7 +3563,7 @@ int	patshift;
 				if ((unsigned int)nb > sizeof(expected)-1) {
 					nb = sizeof(expected)-1;
 				}
-			    
+			   
 				ep += sprintf(ep, "corrupt bytes starting at file offset %d\n", offset + (int)(cp-buf));
 
 				/*
@@ -3658,7 +3658,7 @@ int	fsa;
 	}
 
 	if (lseek(fd, offset, SEEK_SET) == -1) {
-		sprintf(errbuf, 
+		sprintf(errbuf,
 			"Could not lseek to offset %d in %s for verification:  %s (%d)\n",
 			offset, file, SYSERR, errno);
 		return errbuf;
@@ -3694,7 +3694,7 @@ int	fsa;
 			file, length, nb);
 		return errbuf;
 	}
-    
+   
 	if( (em = (*Data_Check)(buf, offset, length, pattern, pattern_length, patshift)) != NULL ) {
 		ep = errbuf;
 		ep += sprintf(ep, "*** DATA COMPARISON ERROR ***\n");
@@ -3742,7 +3742,7 @@ doio_fprintf(FILE *stream, char *format, ...)
 
 	flk.l_type = F_UNLCK;
 	fcntl(fileno(stream), F_SETLKW, &flk);
- 
+
 	return rval;
 }
 
@@ -3808,7 +3808,7 @@ int nbytes;
 					munpin(Memalloc[me].space,
 					       Memalloc[me].size);
 #endif
-				munmap(Memalloc[me].space, 
+				munmap(Memalloc[me].space,
 				       Memalloc[me].size);
 				close(Memalloc[me].fd);
 				if(Memalloc[me].flags & MEMF_FILE) {
@@ -3891,7 +3891,7 @@ int nbytes;
 
 			if( (M->fd = open(M->name, O_CREAT|O_RDWR, 0666)) == -1) {
 				doio_fprintf(stderr, "alloc_mmap: error %d (%s) opening '%s'\n",
-					     errno, SYSERR, 
+					     errno, SYSERR,
 					     M->name);
 				return(-1);
 			}
@@ -3985,7 +3985,7 @@ int nbytes;
 			M->fd = shmid;
 			M->space = shmat(shmid, NULL, SHM_RND);
 			if( M->space == (void *)-1 ) {
-				doio_fprintf(stderr, "shmat(0x%x, NULL, SHM_RND) failed: %s (%d)\n", 
+				doio_fprintf(stderr, "shmat(0x%x, NULL, SHM_RND) failed: %s (%d)\n",
 					     shmid, SYSERR, errno);
 				return(-1);
 			}
@@ -4219,7 +4219,7 @@ int	oflags;
 				free_slot = cp;
 			}
 		} else {
-			if (oldest_slot == NULL || 
+			if (oldest_slot == NULL ||
 			    cp->c_rtc < oldest_slot->c_rtc) {
 				oldest_slot = cp;
 			}
@@ -4346,7 +4346,7 @@ signal_info(int sig, siginfo_t *info, void *v)
 		case SI_USER:
 			doio_fprintf(stderr,
 				     "signal_info: si_signo %d si_errno %d si_code SI_USER pid %d uid %d\n",
-				     info->si_signo, info->si_errno, 
+				     info->si_signo, info->si_errno,
 				     info->si_pid, info->si_uid);
 			haveit = 1;
 			break;
@@ -4598,7 +4598,7 @@ int	aio_id;
 	}
 
 	if( aiop == NULL ){
-		doio_fprintf(stderr,"aio_slot(%d) not found.  Request %d\n", 
+		doio_fprintf(stderr,"aio_slot(%d) not found.  Request %d\n",
 			     aio_id, Reqno);
 		dump_aio();
 		alloc_mem(-1);
@@ -4756,7 +4756,7 @@ int	aio_id;
 			doio_fprintf(stderr, "aio_wait: callback wait took %d tries\n", cnt);
 #endif
 
-		/* 
+		/*
 		 * Note: cb_handler already calls aio_done
 		 */
 		break;
@@ -4913,7 +4913,7 @@ char	*opts;
 					break;
 			if (s->string == NULL && tok != NULL)  {
 				fprintf(stderr,
-					"%s%s:  Illegal -C arg (%s).  Must be one of: ", 
+					"%s%s:  Illegal -C arg (%s).  Must be one of: ",
 					Prog, TagName, tok);
 
 				for (s = checkmap; s->string != NULL; s++)
@@ -4929,7 +4929,7 @@ char	*opts;
 				break;
 			default:
 				fprintf(stderr,
-					"%s%s:  Unrecognised -C arg '%s' %d", 
+					"%s%s:  Unrecognised -C arg '%s' %d",
 					Prog, TagName, s->string, s->value);
 				exit(1);
 			}
@@ -5055,7 +5055,7 @@ char	*opts;
 
 				if (s->string == NULL) {
 					fprintf(stderr,
-						"%s%s:  Illegal -U arg (%s).  Must be one of: ", 
+						"%s%s:  Illegal -U arg (%s).  Must be one of: ",
 						Prog, TagName, tok);
 
 					for (s = Upanic_Args; s->string != NULL; s++)
@@ -5168,7 +5168,7 @@ parse_memalloc(char *arg)
 	struct memalloc	*M;
 
 	if(Nmemalloc >= NMEMALLOC) {
-		doio_fprintf(stderr, "Error - too many memory types (%d).\n", 
+		doio_fprintf(stderr, "Error - too many memory types (%d).\n",
 			Nmemalloc);
 		return;
 	}
@@ -5217,7 +5217,7 @@ parse_memalloc(char *arg)
 		if(nalloc > 2) {
 			if(!strcmp(allocargs[2], "devzero")) {
 				M->name = "/dev/zero";
-				if(M->flags & 
+				if(M->flags &
 				   ((MEMF_PRIVATE|MEMF_LOCAL) == 0))
 					M->flags |= MEMF_PRIVATE;
 			} else {
@@ -5225,7 +5225,7 @@ parse_memalloc(char *arg)
 			}
 		} else {
 			M->name = "/dev/zero";
-			if(M->flags & 
+			if(M->flags &
 			   ((MEMF_PRIVATE|MEMF_LOCAL) == 0))
 				M->flags |= MEMF_PRIVATE;
 		}

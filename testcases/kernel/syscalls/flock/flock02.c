@@ -15,27 +15,27 @@
  *
  */
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER   : flock02
- * 
+ *
  *    EXECUTED BY       : anyone
- * 
+ *
  *    TEST TITLE        : Error condition test for flock(2)
- * 
+ *
  *    TEST CASE TOTAL   : 3
- * 
+ *
  *    AUTHOR            : Vatsal Avasthi <vatsal.avasthi@wipro.com>
- * 
+ *
  *    SIGNALS
  *      Uses SIGUSR1 to pause before test if option set.
  *      (See the parse_opts(3) man page).
  *
  *    DESCRIPTION
- * 	This test verifies that 
+ * 	This test verifies that
  *	1)	flock(2) returns -1 and sets error number to EBADF
  *		if the file descriptor is invalid.	
  *      2)	flock(2) returns -1 and sets error number to EINVAL
- *		if the argument operation does not include LOCK_SH,LOCK_EX,LOCK_UN.  
+ *		if the argument operation does not include LOCK_SH,LOCK_EX,LOCK_UN. 
  *	3)	flock(2) returns -1 and sets error number to EINVAL
  *		if an invalid combination of locking modes is used i.e LOCK_SH with LOCK_EX
  *		
@@ -44,11 +44,11 @@
  *        Pause for SIGUSR1 if option specified.
  *        Create a temporary directory and chdir to it.
  * 	  Create a temporary file
- * 
+ *
  *	Test:
  *	Loop if proper options are given.
- *		Execute system call 
- *		Check return code, 
+ *		Execute system call
+ *		Check return code,
  *			if system call failed (return == -1) and errno == expected_errno
  *				Issue system call fails with expected return value and error number
  *			else
@@ -57,13 +57,13 @@
  *      Cleanup:
  *        Print errno log and/or timing stats if options given
  *	  Deletes temporary directory.
- * 
+ *
  * USAGE:  <for command-line>
  *      flock02 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
  *                      where,  -c n : Run n copies concurrently.
  *                              -f   : Turn off functional testing
  *    				-e   : Turn on errno logging.
- *                              -h   : Show help screen                          
+ *                              -h   : Show help screen                         
  *				-i n : Execute test n times.
  *                              -I x : Execute test for x seconds.
  *                              -p   : Pause for SIGUSR1 before starting
@@ -85,7 +85,7 @@ void setup(void);
 void cleanup(void);
 
 /* 0 terminated list of expected errnos */
-int exp_enos[] = {EBADF,EINVAL,0};  
+int exp_enos[] = {EBADF,EINVAL,0}; 
 
 char *TCID = "flock02";			/* Test program identifier */
 int TST_TOTAL = 3;			/* Total number of test cases */

@@ -17,7 +17,7 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-/* 
+/*
  * Test Name: getgroups03
  *
  * Test Description:
@@ -162,7 +162,7 @@ main(int ac, char **av)
  * setup() - performs all ONE TIME setup for this test.
  *	     Get the supplimentary gid(s) of root from /etc/group.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -171,7 +171,7 @@ setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	/* 
+	/*
 	 * Get the IDs of all the groups of "root"
 	 * from /etc/group file
 	 */
@@ -220,7 +220,7 @@ readgroups(gid_t groups[NGROUPS])
 	   an application should also call getegid(2) and add or
 	   remove the resulting value.).  So, add the value here if
 	   it's not in.  */
-	      
+	     
 	found = 0;
 	g = getegid ();
 
@@ -254,7 +254,7 @@ int ret_val;
 	fflag = 1;
 
 	/*
-	 * Loop through the array to verify the gids 
+	 * Loop through the array to verify the gids
 	 * returned by getgroups().
 	 * First, compare each element of the array
 	 * returned by getgroups() with that read from
@@ -324,7 +324,7 @@ int ret_val;
 	}
 	if (ngroups != ret_val) {
 		tst_resm(TFAIL, \
-		 "getgroups(2) returned incorrect no. of gids %d expect %d", 
+		 "getgroups(2) returned incorrect no. of gids %d expect %d",
 			ret_val);
 		fflag = 0;
 	}
@@ -337,7 +337,7 @@ int ret_val;
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

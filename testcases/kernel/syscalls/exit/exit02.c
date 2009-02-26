@@ -127,7 +127,7 @@ int main(int ac, char **av)
 
 			nsig = status % 256;
 
-			/* 
+			/*
 			 * to check if the core dump bit has been
 			 * set, bit # 7
 			 */

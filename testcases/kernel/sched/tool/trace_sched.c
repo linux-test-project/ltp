@@ -121,7 +121,7 @@ usage(char *progname)	/* name of this program				      */
         "\t -h Help!\n"
 	"\t -p Scheduling policy, choice: fifo, rr, other. Default: fifo\n"
         "\t -t Number of threads to create.                Default: %d\n"
-        "\t -v Verbose out put, print ugly!.               Default: OFF\n", 
+        "\t -v Verbose out put, print ugly!.               Default: OFF\n",
 	progname, MAXT);
    exit(-1);
 }
@@ -229,12 +229,12 @@ thread_func(void *args)		/* arguments to the thread function           */
         /* Set a random value between max_priority and min_priority */
         ftime(&tptr);
         srand((tptr.millitm)%1000);
-        set_priority = (min_priority + (int)((float)max_priority 
+        set_priority = (min_priority + (int)((float)max_priority
 		        * rand()/(RAND_MAX+1.0)));
         ssp.sched_priority = set_priority;
     }
-        
-    
+       
+   
     /* give other threads a chance */
     usleep(8);
 
@@ -253,7 +253,7 @@ thread_func(void *args)		/* arguments to the thread function           */
 	dprt("pid[%d]: exiting with -1\n", getpid());
         pthread_exit((void*)-1);
     }
-    
+   
     if ((get_priority = sched_getparam(getpid(), &gsp)) == -1)
     {
         perror("main(): sched_setscheduler()");
@@ -271,14 +271,14 @@ thread_func(void *args)		/* arguments to the thread function           */
 
     if (verbose)
     {
-        fprintf(stdout, 
-            "PID of this task         = %d\n" 
+        fprintf(stdout,
+            "PID of this task         = %d\n"
 	    "Max priority             = %d\n"
 	    "Min priority             = %d\n"
             "Expected priority        = %d\n"
             "Actual assigned priority = %d\n"
             "Processor last execed on = %d\n\n", getpid(),
-	     max_priority, min_priority, set_priority, 
+	     max_priority, min_priority, set_priority,
 	     gsp.sched_priority, procnum);
     }
 
@@ -329,18 +329,18 @@ main(int  argc,		/* number of input parameters.			      */
     if (getuid() != 0)
     {
         fprintf(stderr,
-            "ERROR: Only root user can run this program.\n"); 
+            "ERROR: Only root user can run this program.\n");
         usage(argv[0]);
     }
-    
+   
     if (argc < 2)
     {
         fprintf(stderr,
-            "ERROR: Enter a value for the number of CPUS\n"); 
+            "ERROR: Enter a value for the number of CPUS\n");
         usage(argv[0]);
     }
 
-    while ((c = getopt(argc, argv, "c:hp:t:v")) != -1)   
+    while ((c = getopt(argc, argv, "c:hp:t:v")) != -1)  
     {
         switch(c)
         {
@@ -363,7 +363,7 @@ main(int  argc,		/* number of input parameters.			      */
                 break;
             case 'p':   /* schedular policy. default SCHED_FIFO */
 	        if (strncmp(optarg, "fifo", 4) == 0)
-                    spcy = SCHED_FIFO; 
+                    spcy = SCHED_FIFO;
 		else
                 if (strncmp(optarg, "rr", 2) == 0)	
                     spcy = SCHED_RR;
@@ -388,7 +388,7 @@ main(int  argc,		/* number of input parameters.			      */
 			 num_thrd);
                     num_thrd = MAXT;
                 }
-		else 
+		else
                 if (num_thrd > PIDS)
                 {
                     fprintf(stderr,
@@ -404,9 +404,9 @@ main(int  argc,		/* number of input parameters.			      */
             default :
 	        usage(argv[0]);
  	        break;
-        }   
+        }  
     }
-                    
+                   
     /* create num_thrd number of threads. */
     args_table = malloc(num_thrd * sizeof(thread_sched_t*));
     if(!args_table)
@@ -424,7 +424,7 @@ main(int  argc,		/* number of input parameters.			      */
         }	
         chld_args = args_table[thrd_ndx];
 	chld_args->s_policy = spcy;
-        if (pthread_create(&thid[thrd_ndx], NULL, thread_func, 
+        if (pthread_create(&thid[thrd_ndx], NULL, thread_func,
 		chld_args))
         {
             fprintf(stderr, "ERROR: creating task number: %d\n", thrd_ndx);
@@ -462,7 +462,7 @@ main(int  argc,		/* number of input parameters.			      */
         {
             if (status == (thread_sched_t *)-1)
             {
-                fprintf(stderr, 
+                fprintf(stderr,
 		    "thread [%d] - process exited with errors %d\n",
                      thrd_ndx, WEXITSTATUS(status));
 	        exit(-1);
@@ -493,7 +493,7 @@ main(int  argc,		/* number of input parameters.			      */
 
     for (proc_ndx = 0; proc_ndx < num_cpus; proc_ndx++)
     {
-        fprintf(stdout, "For processor number = %d\n", proc_ndx); 
+        fprintf(stdout, "For processor number = %d\n", proc_ndx);
         fprintf(stdout, "%s\n", "===========================");
         for (pid_ndx = 0; pid_ndx < num_thrd; pid_ndx++)
         {

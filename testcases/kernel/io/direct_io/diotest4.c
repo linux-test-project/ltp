@@ -24,11 +24,11 @@
  *
  * DESCRIPTION
  *	The program generates error conditions and verifies the error
- *	code generated with the expected error value. The program also 
+ *	code generated with the expected error value. The program also
  *	tests some of the boundary condtions. The size of test file created
  *	is filesize_in_blocks * 4k.
  *	Test blocks:
- *	[1] Negative Offset 
+ *	[1] Negative Offset
  *	[2] Negative count - removed 08/01/2003 - robbiew
  *	[3] Odd count of read and write
  *	[4] Read beyond the file size
@@ -48,7 +48,7 @@
  *
  * USAGE
  *      diotest4 [-b filesize_in_blocks]
- * 
+ *
  * History
  *	04/22/2002	Narasimha Sharoff nsharoff@us.ibm.com
  *
@@ -101,7 +101,7 @@ runtest_f(int fd, char *buf, int   offset, int count, int errnum, int testnum, c
 	
 	if (lseek(fd, offset, SEEK_SET) < 0) {
 		if (errno != errnum) {
-			tst_resm(TFAIL, "lseek before read failed: %s", 
+			tst_resm(TFAIL, "lseek before read failed: %s",
 				strerror(errno));
 			l_fail = TRUE;
 		}
@@ -116,7 +116,7 @@ runtest_f(int fd, char *buf, int   offset, int count, int errnum, int testnum, c
 	}
 	if (lseek(fd, offset, SEEK_SET) < 0) {
 		if (errno != errnum) {
-			tst_resm(TFAIL, "lseek before write failed: %s", 
+			tst_resm(TFAIL, "lseek before write failed: %s",
 				strerror(errno));
 			l_fail = TRUE;
 		}
@@ -142,7 +142,7 @@ runtest_s(int fd, char *buf, int   offset, int count, int testnum, char *msg)
 	int l_fail = 0;
 	
 	if (lseek(fd, offset, SEEK_SET) < 0) {
-		tst_resm(TFAIL, "lseek before read failed: %s", 
+		tst_resm(TFAIL, "lseek before read failed: %s",
 			strerror(errno));
 		l_fail = TRUE;
 	}
@@ -154,7 +154,7 @@ runtest_s(int fd, char *buf, int   offset, int count, int testnum, char *msg)
 		}
 	}
 	if (lseek(fd, offset, SEEK_SET) < 0) {
-		tst_resm(TFAIL, "lseek before write failed: %s", 
+		tst_resm(TFAIL, "lseek before write failed: %s",
 			strerror(errno));
 		l_fail = TRUE;
 	}
@@ -183,7 +183,7 @@ main(int argc, char *argv[])
 {
 	int	fblocks = 1;		/* Iterations. Default 1 */
         int     bufsize = BUFSIZE;
-        int     count, ret; 
+        int     count, ret;
 	int     offset;
         int     fd, newfd, fd1;
         int     i, l_fail = 0, fail_count = 0, total = 0;
@@ -191,7 +191,7 @@ main(int argc, char *argv[])
 	int	shmsz = SHMLBA;
 	int	pagemask = ~(sysconf(_SC_PAGE_SIZE) - 1);
         char    *buf0, *buf1, *buf2;
-	char	filename[LEN]; 
+	char	filename[LEN];
 	caddr_t	shm_base;
 	struct	sigaction act;
 
@@ -210,7 +210,7 @@ main(int argc, char *argv[])
 	}
 	act.sa_handler = SIG_IGN;
 	(void) sigaction(SIGXFSZ, &act, NULL);
-        sprintf(filename,"testdata-4.%ld", syscall(__NR_gettid)); 
+        sprintf(filename,"testdata-4.%ld", syscall(__NR_gettid));
 
         /* Test for filesystem support of O_DIRECT */
         if ((fd1 = open(filename, O_DIRECT|O_CREAT, 0666)) < 0) {
@@ -222,7 +222,7 @@ main(int argc, char *argv[])
 
 	/* Open file and fill, allocate for buffer */
         if ((fd = open(filename, O_DIRECT|O_RDWR|O_CREAT, 0666)) < 0) {
-		tst_resm(TFAIL, "open failed for %s: %s", 
+		tst_resm(TFAIL, "open failed for %s: %s",
 			filename, strerror(errno));
                 tst_exit();
         }
@@ -275,7 +275,7 @@ main(int argc, char *argv[])
 	offset = 0;
 	count = 1;
 	lseek(fd, 0, SEEK_SET);
-	if (write(fd, buf2, 4096) == -1) { 
+	if (write(fd, buf2, 4096) == -1) {
 		tst_resm(TFAIL,"can't write to file %d",ret);
 	}
 	ret = runtest_f(fd, buf2, offset, count, EINVAL, 3, "odd count");
@@ -371,14 +371,14 @@ main(int argc, char *argv[])
 	count = bufsize;
 	if ((newfd = open("/dev/null", O_DIRECT|O_RDWR)) < 0) {
 		tst_resm(TCONF, "Direct I/O on /dev/null is not supported");
-	} else { 
+	} else {
 		ret = runtest_s(newfd, buf2, offset, count, 9, "/dev/null");
 		if (ret != 0) {
 			failed = TRUE;
 			fail_count++;
 			tst_resm (TFAIL, "character device read, write");
 		}
-		else 
+		else
 			tst_resm (TPASS, "character device read, write");
 	}
 	total++;
@@ -394,12 +394,12 @@ main(int argc, char *argv[])
 	offset = 4096;
 	count = bufsize;
 	if ((fd = open(filename, O_DIRECT|O_RDWR)) < 0) {
-		tst_resm(TFAIL, "can't open %s: %s", 
+		tst_resm(TFAIL, "can't open %s: %s",
 			filename, strerror(errno));
                 unlink(filename);
                 tst_exit();
         }
-	shm_base = mmap(shm_base, 0x100000, PROT_READ|PROT_WRITE, 
+	shm_base = mmap(shm_base, 0x100000, PROT_READ|PROT_WRITE,
 		        MAP_SHARED|MAP_FIXED, fd, 0);
         if (shm_base == (caddr_t)-1) {
                 tst_resm(TFAIL, "can't mmap file: %s", strerror(errno));
@@ -414,7 +414,7 @@ main(int argc, char *argv[])
 	}
 	else
 		tst_resm (TPASS, "read, write to a mmaped file");
-	total++;  
+	total++; 
 
 
 	/* Test-11: read, write to an unmaped file with munmap */

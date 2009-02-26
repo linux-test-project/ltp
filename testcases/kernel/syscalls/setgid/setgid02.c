@@ -94,9 +94,9 @@ int main(int ac, char **av)
 		}
 
 		if (!GID_SIZE_CHECK(rootpwent->pw_gid)) {
-		 tst_brkm(TBROK, 
-			  cleanup, 
-			  "gid for `%s' is too large for testing setgid16", 
+		 tst_brkm(TBROK,
+			  cleanup,
+			  "gid for `%s' is too large for testing setgid16",
 			  root);
 		}
 		
@@ -135,9 +135,9 @@ setup()
 	ltpuser = getpwnam(nobody_uid);
 
 	 if (!GID_SIZE_CHECK(ltpuser->pw_gid)) {
-		 tst_brkm(TBROK, 
-			  cleanup, 
-			  "gid for `%s' is too large for testing setgid16", 
+		 tst_brkm(TBROK,
+			  cleanup,
+			  "gid for `%s' is too large for testing setgid16",
 			  nobody_gid);
 	 }
 

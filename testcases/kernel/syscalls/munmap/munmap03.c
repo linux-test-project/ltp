@@ -116,7 +116,7 @@ main(int ac, char **av)
 		/* Perform global setup for test */
 		setup();
 
-		/* 
+		/*
 		 * Attempt to unmap the mapped region of the temporary file
 		 * from the address that points outside the process's
 		 * address space.
@@ -161,7 +161,7 @@ main(int ac, char **av)
  * write one byte data into it, map the open file for the specified
  * map length.
  */
-void 
+void
 setup()
 {
 		 struct rlimit brkval;		 /* variable to hold max. break val */
@@ -247,7 +247,7 @@ setup()
  *  	       Close the temporary file.
  *  	       Remove the temporary directory.
  */
-void 
+void
 cleanup()
 {
 	/*

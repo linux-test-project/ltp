@@ -110,9 +110,9 @@ int main (int argc, char **argv)
 	/* Print out program header */
 	printf ("%s: IPC TestSuite program\n\n", *argv);
 
-	/* 
-	 * Establish signal handler for each signal & reset "valid signals" 
-	 * array 
+	/*
+	 * Establish signal handler for each signal & reset "valid signals"
+	 * array
 	 */
 	init_sig ();
 	reset_valid_sig ();
@@ -127,10 +127,10 @@ int main (int argc, char **argv)
 	 * First indicate which signals the signal handler should expect
 	 * by setting the corresponding valid_sig[] array fields.
 	 *
-	 * Then send the signals to this process.  
+	 * Then send the signals to this process. 
 	 *
-	 * And finally verify that the signals were caught by the signal 
-	 * handler by checking to see if the corresponding valid_sig[] array 
+	 * And finally verify that the signals were caught by the signal
+	 * handler by checking to see if the corresponding valid_sig[] array
 	 * fields were reset.
 	 */
 	printf ("\tSend SIGILL, SIGALRM, SIGIOT signals to process\n");
@@ -149,16 +149,16 @@ int main (int argc, char **argv)
 	if (valid_sig [SIGIOT])
 		error ("failed to receive SIGIOT signal!", __LINE__);
 
-	/* 
+	/*
 	 * Block SIGILL, SIGALRM & SIGIOT signals:
 	 *
-	 * First initialize the signal set so that all signals are excluded, 
+	 * First initialize the signal set so that all signals are excluded,
 	 * then individually add the signals to block to the signal set.
 	 *
 	 * Then change the process signal mask with sigprocmask (SIG_SETMASK).
 	 *
 	 * Verify that the desired signals are blocked from interrupting the
-	 * process, by sending both blocked and unblocked signals to the 
+	 * process, by sending both blocked and unblocked signals to the
 	 * process.  Only the unblocked signals should interrupt the process.
 	 */
 	printf ("\n\tBlock SIGILL, SIGALRM, SIGIOT signals, " \
@@ -193,7 +193,7 @@ int main (int argc, char **argv)
 	if (valid_sig [SIGINT])
 		sys_error ("failed to receive SIGINT signal!", __LINE__);
 
-	/* 
+	/*
 	 * Block additional SIGFPE, SIGTERM & SIGINT signals:
 	 *
 	 * Create an other signal set to contain the additional signals to block
@@ -202,8 +202,8 @@ int main (int argc, char **argv)
 	 * Change the process signal mask to block the additional signals
 	 * with the sigprocmask (SIG_BLOCK) function.
 	 *
-	 * Verify that all of the desired signals are now blocked from 
-	 * interrupting the process.  None of the specified signals should 
+	 * Verify that all of the desired signals are now blocked from
+	 * interrupting the process.  None of the specified signals should
 	 * interrupt the process until the process signal mask is changed.
 	 */
 	printf ("\n\tBlock rest of signals\n");
@@ -223,7 +223,7 @@ int main (int argc, char **argv)
 	kill (pid, SIGTERM);
 	kill (pid, SIGINT);
 
-	/* 
+	/*
 	 * Wait two seconds just to make sure that none of the specified
 	 * signals interrupt the process (They should all be blocked).
 	 */
@@ -238,7 +238,7 @@ int main (int argc, char **argv)
 	 * in the signal set, then remove the SIGINT signal from the set with
 	 * sigdelset ().
 	 *
-	 * Force the  process to suspend execution until delivery of an 
+	 * Force the  process to suspend execution until delivery of an
 	 * unblocked signal (SIGINT in this case) with sigsuspend ().
 	 *
 	 * Additionally, verify that the SIGINT signal was received.

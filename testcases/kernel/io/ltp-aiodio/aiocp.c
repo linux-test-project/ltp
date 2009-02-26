@@ -3,11 +3,11 @@
  * From:	Stephen Hemminger <shemminger@osdl.org>
  * Modified by Daniel McNeil <daniel@osdl.org> for testing aio.
  *	- added -a alignment
- *	- added -b blksize option 
+ *	- added -b blksize option
  *	_ added -s size	option
  *	- added -f open_flag option
  *	- added -w (no write) option (reads from source only)
- *	- added -n (num aio) option 
+ *	- added -n (num aio) option
  *	- added -z (zero dest) opton (writes zeros to dest only)
  *	- added -D delay_ms option
  *
@@ -17,7 +17,7 @@
  * 3. When write completes decrement counter and free resources
  *
  *
- * Usage: aiocp [-b blksize] -n [num_aio] [-w] [-z] [-s filesize] 
+ * Usage: aiocp [-b blksize] -n [num_aio] [-w] [-z] [-s filesize]
  *		[-f DIRECT|TRUNC|CREAT|SYNC|LARGEFILE] src dest
  */
 
@@ -497,7 +497,7 @@ int main(int argc, char *const *argv)
 	exit(0);
 }
 
-/* 
+/*
  * Results look like:
  * [alanm@toolbox ~/MOT3]$ ../taio -d kernel-source-2.4.8-0.4g.ppc.rpm abc
  * rrrrrrrrrrrrrrrwwwrwrrwwrrwrwwrrwrwrwwrrwrwrrrrwwrwwwrrwrrrwwwwwwwwwwwwwwwww

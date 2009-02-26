@@ -187,7 +187,7 @@ rm_shm(int shm_id)
 	}
 
 	/*
-	 * check for # of attaches ? 
+	 * check for # of attaches ?
 	 */
 
 	if (shmctl(shm_id, IPC_RMID, NULL) == -1) {

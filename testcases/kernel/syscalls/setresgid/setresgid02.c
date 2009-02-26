@@ -15,18 +15,18 @@
  *
  */
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER   : setresgid02
- * 
+ *
  *    EXECUTED BY       : root / superuser
- * 
- *    TEST TITLE        : Checking functionality of setresgid(2) for 
+ *
+ *    TEST TITLE        : Checking functionality of setresgid(2) for
  *			  non-root group id.
- * 
+ *
  *    TEST CASE TOTAL   : 6
- * 
+ *
  *    AUTHOR            : Madhu T L <madhu.tarikere@wipro.com>
- * 
+ *
  *    SIGNALS
  *      Uses SIGUSR1 to pause before test if option set.
  *      (See the parse_opts(3) man page).
@@ -39,13 +39,13 @@
  *	4. setresgid(2) is successful for setresgid(bin, -1, -1)
  *	5. setresgid(2) is successful for setresgid(root, root, root)
  *	6. setresgid(2) is successful for setresgid(root, nobody, nobody)
- * 
+ *
  *      Setup:
  *	  Setup signal handling.
  *	  Test caller is superuser
  *	  Check existence of root, bin and nobody user id's
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  *	Test:
  *	 Loop if the proper options are given.
  *	  Execute system call
@@ -53,10 +53,10 @@
  *		 Issue PASS message
  *	Otherwise,
  *		Issue FAIL message
- * 
+ *
  *	Cleanup:
  *	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  *  setresgid02 [-c n] [-e] [-f] [-h] [-i n] [-I x] [-p] [-P x] [-t]
  *		where,  -c n : Run n copies concurrently.
@@ -70,8 +70,8 @@
  *			-t   : Turn on syscall timing.
  *
  * CHANGE:  Madhu T L <madhu.tarikere@wipro.com>
- * Date: April 9 2003 
- * Replaced setegid() by setresgid() in setup() 
+ * Date: April 9 2003
+ * Replaced setegid() by setresgid() in setup()
  ****************************************************************/
 
 #define _GNU_SOURCE 1
@@ -154,7 +154,7 @@ main(int argc, char **argv)
 					tdat[testno].exp_sgid->pw_gid) ) {
 
 					tst_resm(TPASS, "Test for %s "
-						"successful", 
+						"successful",
 						tdat[testno].desc);
 				} else {
 					tst_resm(TFAIL, "Functionality test "

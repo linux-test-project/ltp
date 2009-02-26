@@ -23,7 +23,7 @@
  *
  * DESCRIPTION
  * 	Test that setregid() fails and sets the proper errno values when a
- *	non-root user attemps to change the real or effective group id to a 
+ *	non-root user attemps to change the real or effective group id to a
  *	value other than the current gid or the current effective gid.
  *
  * ALGORITHM

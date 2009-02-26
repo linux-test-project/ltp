@@ -33,7 +33,7 @@
  *
  * USAGE:  <for command-line>
  *  sendfile04 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
- *     where,  
+ *     where, 
  *             -f   : Turn off functionality Testing.
  *             -i n : Execute test n times.
  *             -I x : Execute test for x seconds.
@@ -108,10 +108,10 @@ void do_sendfile(int prot, int pass_unmapped_buffer)
 	struct stat sb;
 
 
-	protected_buffer = mmap(NULL, 
-			       sizeof(*protected_buffer), 
-			       prot, 
-			       MAP_SHARED|MAP_ANONYMOUS, 
+	protected_buffer = mmap(NULL,
+			       sizeof(*protected_buffer),
+			       prot,
+			       MAP_SHARED|MAP_ANONYMOUS,
 			       -1, 0);
 	if (protected_buffer == MAP_FAILED) {
 		tst_brkm(TBROK, cleanup, "mmap failed: %d", errno);

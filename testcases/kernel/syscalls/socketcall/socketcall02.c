@@ -15,17 +15,17 @@
  *
  */
 /**************************************************************************
- * 
+ *
  *    TEST IDENTIFIER	: socketcall02
- * 
+ *
  *    EXECUTED BY	: All user
- * 
+ *
  *    TEST TITLE	: Error test for socketcall(2)
- * 
+ *
  *    TEST CASE TOTAL	: 1
- * 
+ *
  *    AUTHOR		: sowmya adiga<sowmya.adiga@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -38,7 +38,7 @@
  * 	Setup:
  *	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *        Loop if the proper option is given.
  *        Execute system call.
@@ -47,10 +47,10 @@
  *        Issue sys call pass with expected error
  *        otherwise
  *        Issue sys call fails with unexpected error
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  *  socketcall02 [-c n] [-e] [-i n] [-I x] [-p x] [-t]
  *		where,		-c n : Run n copies concurrently

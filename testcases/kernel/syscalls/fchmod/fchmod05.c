@@ -17,9 +17,9 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-/* 
+/*
  * Test Name: fchmod05
- * 
+ *
  * Test Description:
  *  Verify that, fchmod(2) will succeed to change the mode of a directory
  *  but fails to set the setgid bit on it if invoked by non-root (uid != 0)
@@ -108,7 +108,7 @@ main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	mode_t dir_mode;	/* mode permissions set on test directory */
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -124,8 +124,8 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-		/* 
-	 	 * Call fchmod(2) with mode argument 
+		/*
+	 	 * Call fchmod(2) with mode argument
 		 * to set setgid bit on TESTDIR.
 	 	 */
 
@@ -177,11 +177,11 @@ main(int ac, char **av)
  * setup() - performs all ONE TIME setup for this test.
  *  Create a temporary directory and cd to it.
  *  Create a test directory under temporary directory.
- *  Invoke setuid to root program to modify group ownership 
+ *  Invoke setuid to root program to modify group ownership
  *  on test directory.
  *  Open the test directory for reading.
  */
-void 
+void
 setup()
 {
 	char *test_home;		/* variable to hold TESTHOME env */
@@ -255,7 +255,7 @@ setup()
  *  Remove the test directory and temporary directory created in
  *  in the setup().
  */
-void 
+void
 cleanup()
 {
 	/*

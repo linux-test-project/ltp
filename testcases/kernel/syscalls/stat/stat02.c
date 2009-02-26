@@ -104,7 +104,7 @@ main(int ac, char **av)
 	struct stat stat_buf;	/* stat structure buffer */
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -118,12 +118,12 @@ main(int ac, char **av)
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Check looping state if -i option given */ 
+	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-		/* 
+		/*
 		 * Call stat(2) to get the status of
 		 * specified 'file' into stat structure.
 		 */
@@ -182,7 +182,7 @@ main(int ac, char **av)
  *  Modify the mode permissions of testfile such that test process
  *  has read-only access to testfile.
  */
-void 
+void
 setup()
 {
 	int i, fd;			/* counter, file handle for file */
@@ -263,7 +263,7 @@ setup()
  *	       completion or premature exit.
  *  Remove the temporary directory and file created.
  */
-void 
+void
 cleanup()
 {
 	/*

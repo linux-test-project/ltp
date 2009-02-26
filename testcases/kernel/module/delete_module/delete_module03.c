@@ -15,32 +15,32 @@
  *
  */
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER   : delete_module03
- * 
+ *
  *    EXECUTED BY       : root / superuser
- * 
+ *
  *    TEST TITLE        : Checking error conditions for delete_module(2)
- * 
+ *
  *    TEST CASE TOTAL   : 1
- * 
+ *
  *    AUTHOR            : Madhu T L <madhu.tarikere@wipro.com>
- * 
+ *
  *    SIGNALS
  *      Uses SIGUSR1 to pause before test if option set.
  *      (See the parse_opts(3) man page).
  *
  *    DESCRIPTION
- *      Verify that, delete_module(2) returns -1 and sets errno to EBUSY, if 
+ *      Verify that, delete_module(2) returns -1 and sets errno to EBUSY, if
  *		 tried to remove a module in-use.
- * 
+ *
  *      Setup:
  *        Setup signal handling.
  *        Test caller is super user
  *        Set expected errnos for logging
  *        Pause for SIGUSR1 if option specified.
  *		   Insert loadable modules
- * 
+ *
  *      Test:
  *       Loop if the proper options are given.
  *        Execute system call
@@ -48,10 +48,10 @@
  *                   Issue PASS message
  *        Otherwise,
  *                   Issue FAIL message
- * 
+ *
  *      Cleanup:
  *        Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  *  delete_module03 [-c n] [-e] [-f] [-h] [-i n] [-I x] [-p] [-P x] [-t]
  *		 		 where,  -c n : Run n copies concurrently. (no effect)
@@ -63,13 +63,13 @@
  *		 		 		 -p   : Pause for SIGUSR1 before starting
  *		 		 		 -P x : Pause for x seconds between iterations.
  *		 		 		 -t   : Turn on syscall timing.
- * 
+ *
  * RESTRICTIONS
- *		 -c option has no effect for this testcase, even if used allows only 
+ *		 -c option has no effect for this testcase, even if used allows only
  *		 one instance to run at a time.
  *
  * CHANGELOG
- *    
+ *   
  *  11/22/02 - Added "--force" to insmod options and redirected output to /dev/null.
  *             This was done to allow kernel mismatches, b/c it doesn't matter in
  *             this case.
@@ -115,7 +115,7 @@ main(int argc, char **argv)
 		 if(STD_COPIES != 1) {
 		 		 tst_resm(TINFO, "-c option has no effect for this testcase - "
 		 		 		 "doesn't allow running more than one instance "
-		 		 		 "at a time"); 
+		 		 		 "at a time");
 		 		 STD_COPIES = 1;
 		 }
 
@@ -153,7 +153,7 @@ main(int argc, char **argv)
 		 		 TEST(delete_module(DUMMY_MOD));
 
 		 		 TEST_ERROR_LOG(TEST_ERRNO);
-		 		 if ( (TEST_RETURN == (int) EXP_RET_VAL ) && 
+		 		 if ( (TEST_RETURN == (int) EXP_RET_VAL ) &&
 		 		 		 		 (TEST_ERRNO == EXP_ERRNO) ) {
 		 		 		 tst_resm(TPASS, "Expected failure for module in-use, "
 		 		 		 		 "errno: %d", TEST_ERRNO);

@@ -30,7 +30,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: fork05.c,v 1.6 2009/02/26 11:43:54 subrata_modak Exp $ */
+/* $Id: fork05.c,v 1.7 2009/02/26 12:02:56 subrata_modak Exp $ */
 /**********************************************************
  *
  *    Linux Test Project - Silicon Graphics, Inc.
@@ -61,7 +61,7 @@
  *>systems.  Either change all uses of %gs to %fs or skip the entire patch
  *>if %gs has a nonzero value.
  *>
- *>- -- 
+ *>- --
  *>- --------------.                        ,-.            444 Castro Street
  *>Ulrich Drepper \    ,-----------------'   \ Mountain View, CA 94041 USA
  *>Red Hat         `--' drepper at redhat.com `---------------------------
@@ -75,34 +75,34 @@
  *> seen an immediate candidate for the breakage.  It could be missing
  *> propagation of the LDT to the new process (and therefore an invalid
  *> segment descriptor) or simply clearing %gs.
- *> 
+ *>
  *> Anyway, this is what you should see and what you get with test5:
- *> 
+ *>
  *> ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *> a = 42
  *> %gs = 0x0007
  *> %gs = 0x0007
  *> a = 99
  *> ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *> 
+ *>
  *> This is what you get with test6:
- *> 
+ *>
  *> ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *> a = 42
  *> %gs = 0x0007
  *> %gs = 0x0000
  *> <SEGFAULT>
  *> ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *> 
+ *>
  *> If somebody is actually creating a test suite for the kernel, please
  *> add this program.  It's mostly self-contained.  The correct handling
  *> of %gs is really important since glibc 2.2 will make heavy use of it.
- *> 
- *> - -- 
+ *>
+ *> - --
  *> - ---------------.                          ,-.   1325 Chesapeake Terrace
  *> Ulrich Drepper  \    ,-------------------'   \  Sunnyvale, CA 94089 USA
  *> Red Hat          `--' drepper at redhat.com   `------------------------
- *> 
+ *>
  *> ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
  *

@@ -15,17 +15,17 @@
  *
  */
 /**************************************************************************
- * 
+ *
  *    TEST IDENTIFIER	: munlockall02
- * 
+ *
  *    EXECUTED BY	: root / superuser
- * 
+ *
  *    TEST TITLE	: test for EPERM error value when run as non superuser
- * 
+ *
  *    TEST CASE TOTAL	: 1
- * 
+ *
  *    AUTHOR		: sowmya adiga<sowmya.adiga@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -33,12 +33,12 @@
  *    DESCRIPTION
  *	Verify munlockall(2) returns -1 and sets errno to EPERM
  *	if the effective userid of the caller is not super-user.
- *	 	 
+ *	 	
  * 	Setup:
  *	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
  *        Change effective user id to "nobody" user
- *       
+ *      
  * 	Test:
  *	 Loop if the proper options are given.
  *	  Execute system call
@@ -48,11 +48,11 @@
  *	 otherwise,
  *	  Issue sys call fails with unexpected errno.
  *	
- * 
+ *
  * 	Cleanup:
  *      change effective user id to root
  * 	Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  *  munlockall02 [-c n] [-e] [-i n] [-I x] [-p x] [-t]
  *		where,		-c n : Run n copies concurrently
@@ -106,7 +106,7 @@ int main(int ac, char **av)
 		
 		TEST(munlockall());
 		
-                TEST_ERROR_LOG(TEST_ERRNO); 
+                TEST_ERROR_LOG(TEST_ERRNO);
 		/* check return code */
 		if ((TEST_RETURN == -1) && (TEST_ERRNO == EPERM)){
 				tst_resm(TPASS, "munlockall() failed"
@@ -117,7 +117,7 @@ int main(int ac, char **av)
 					"expected errno :%d Got : %d, %s. ***Some distros, such as Red Hat Enterprise Linux, support non-superuser munlockall calls.***",
 				EPERM,TEST_ERRNO,
 				strerror(TEST_ERRNO));
-					  
+					 
 			}
 		}
 				/* End for TEST_LOOPING */

@@ -17,11 +17,11 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
 
- * This is the main of your user space test program, 
- * which will open the correct kernel module, find the 
- * file descriptor value and use that value to make 
+ * This is the main of your user space test program,
+ * which will open the correct kernel module, find the
+ * file descriptor value and use that value to make
  * ioctl calls to the system
- * 
+ *
  *
  * author: Kai Zhao
  * date:   09/03/2003
@@ -43,7 +43,7 @@
 
 static int tdrm_fd = -1;		/* file descriptor */
 
-int 
+int
 tdrmopen() {
 
     dev_t devt;
@@ -116,7 +116,7 @@ tdrmopen() {
 
 }
 
-int 
+int
 tdrmclose() {
 
 	if (tdrm_fd != -1) {
@@ -154,7 +154,7 @@ int main() {
 	/*--------------------------------------------------------------
 	 *                      for drm read write ioctl test
 	 */
-	 
+	
 	printf("\tBegin read write ioctl test\n");
 	if(ioctl(tdrm_fd , DRM_IOCTL_IRQ_BUSID))
 		printf("Failed on drm ioctl DRM(irq_busid)\n");
@@ -201,21 +201,21 @@ int main() {
 	else
 		printf("Success on drm stub_register test\n");
 
-	// test drm DRM(agp_uninit) 
+	// test drm DRM(agp_uninit)
 	
 	if(ioctl(tdrm_fd, TDRM_UNINIT_AGP))
 		printf("Failed on DRM(agp_uninit) test\n");
 	else
 		printf("Success on DRM(agp_uninit) test\n");
 	
-	// test drm DRM(agp_init) 
+	// test drm DRM(agp_init)
 	
 	if(ioctl(tdrm_fd, TDRM_INIT_AGP))
 		printf("Failed on DRM(agp_init) test\n");
 	else
 		printf("Success on DRM(agp_init) test\n");
 	
-	// test drm stub_unregister 
+	// test drm stub_unregister
 	
 	if(ioctl(tdrm_fd, TDRM_STUB_UNREGISTER))
 		printf("Failed on drm stub_unregister test\n");
@@ -273,7 +273,7 @@ int main() {
 	else
 		printf("Success on drm authmagic test\n");
 	
-	//  test for drm_agpsupport.h 
+	//  test for drm_agpsupport.h
 	/*
 	if(ioctl(tdrm_fd, DRM_IOCTL_AGP_RELEASE))
 		printf("Failed on drm DRM(agp_release) test\n");

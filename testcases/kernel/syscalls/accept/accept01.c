@@ -172,7 +172,7 @@ cleanup(void)
 	tst_exit();
 }
 
-void 
+void
 setup0(void)
 {
 	if (tdat[testno].experrno == EBADF)

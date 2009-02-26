@@ -65,7 +65,7 @@ int TST_TOTAL=1;
 extern int Tst_count;
 
 /* This port needs to be a Privledged port */
-#define TCP_PRIVLEGED_COM_PORT 463 
+#define TCP_PRIVLEGED_COM_PORT 463
 
 struct passwd *pw;
 struct group  *gr;
@@ -142,7 +142,7 @@ int main(int argc,char *argv[]){
 	     tst_exit();	
     	   }
        }
-                                                                                
+                                                                               
     if ((gr = getgrgid(pw->pw_gid)) == NULL) {
         tst_brkm(TBROK,0,"Invalid group, %s",pw->pw_gid);
     	tst_exit();
@@ -158,4 +158,4 @@ int main(int argc,char *argv[]){
 
 	/* NOT REACHED */
 	return 0;
-} 
+}

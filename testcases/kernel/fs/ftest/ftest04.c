@@ -503,7 +503,7 @@ int domisc(me, fd, bits)
 		tst_resm(TFAIL, "\tTest[%d]: fsync error %d.", me, errno);
 		tst_exit();
 	}
-	 
+	
 	++misc_cnt[(int)1];
 	return 0;
 }

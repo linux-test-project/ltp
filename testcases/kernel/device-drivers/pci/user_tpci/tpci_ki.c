@@ -18,15 +18,15 @@
  *
 
  * This file will include user space functions that will drive
- * the kernel module tpci to test various pci functions 
+ * the kernel module tpci to test various pci functions
  * and kernel calls. Each function will need to setup the tif
- * structure so that the in parameters and out parameters 
+ * structure so that the in parameters and out parameters
  * are correctly initialized
  *	
- * use tif structure for passing params between user 
- * space and kernel space, in some tests it is really 
- * not needed but makes easy to maintain all tests if 
- * have the same process to read in params in the 
+ * use tif structure for passing params between user
+ * space and kernel space, in some tests it is really
+ * not needed but makes easy to maintain all tests if
+ * have the same process to read in params in the
  * kernel module no matter what the test is
  *
  * author: Sean Ruyle (srruyle@us.ibm.com)
@@ -81,8 +81,8 @@ int ki_probe_pci_dev(int fd) {
 	 */
 	tif.in_len = 0;
 	tif.in_data = 0;
-	tif.out_len = 0; 
-	tif.out_data = 0; 
+	tif.out_len = 0;
+	tif.out_data = 0;
 	tif.out_rc = 0;
 
 	/*

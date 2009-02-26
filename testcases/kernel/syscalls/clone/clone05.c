@@ -15,17 +15,17 @@
  *
  */
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER	: clone05
- * 
+ *
  *    EXECUTED BY	: anyone
- * 
+ *
  *    TEST TITLE	: test for CLONE_VFORK flag
- * 
+ *
  *    TEST CASE TOTAL	: 1
- * 
+ *
  *    AUTHOR		: Saji Kumar.V.R <saji.kumar@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -33,11 +33,11 @@
  *    DESCRIPTION
  *	Call clone() with CLONE_VFORK flag set. verify that
  *	execution of parent is suspended until child finishes
- * 
+ *
  * 	Setup:
  * 	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  * 	  Execute system call with CLONE_VM & CLONE_VFORK flags
@@ -51,7 +51,7 @@
  *			test failed
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  *  clone05 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
  *			where,  -c n : Run n copies concurrently.
@@ -138,7 +138,7 @@ main(int ac, char **av)
 		}
 
 		/* Reset parent_variable */
-		parent_variable = 0; 
+		parent_variable = 0;
 	}	/* End for TEST_LOOPING */
 
 	free (child_stack);
@@ -171,13 +171,13 @@ setup()
 void
 cleanup()
 {
- 
+
 	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
- 
+
 	/* exit with return code appropriate for results */
 	tst_exit();
 
@@ -191,7 +191,7 @@ int
 child_fn()
 {
 	/*
-	 * Sleep for a second, to ensure that child does not exit 
+	 * Sleep for a second, to ensure that child does not exit
 	 * immediately
 	 */
 	sleep(1);

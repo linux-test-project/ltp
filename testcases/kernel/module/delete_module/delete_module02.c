@@ -15,17 +15,17 @@
  *
  */
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER   : delete_module02
- * 
+ *
  *    EXECUTED BY       : root / superuser
- * 
+ *
  *    TEST TITLE        : Checking error conditions for delete_module(2)
- * 
+ *
  *    TEST CASE TOTAL   : 5
- * 
+ *
  *    AUTHOR            : Madhu T L <madhu.tarikere@wipro.com>
- * 
+ *
  *    SIGNALS
  *      Uses SIGUSR1 to pause before test if option set.
  *      (See the parse_opts(3) man page).
@@ -36,13 +36,13 @@
  *		    module entry.
  *      2. delete_module(2) returns -1 and sets errno to EINVAL, if module
  *         name parameter is null terminated (zero length) string.
- *      3. delete_module(2) returns -1 and sets errno to EFAULT, if 
+ *      3. delete_module(2) returns -1 and sets errno to EFAULT, if
  *         module name parameter is outside program's accessible address space.
- *      4. delete_module(2) returns -1 and sets errno to ENAMETOOLONG, if 
+ *      4. delete_module(2) returns -1 and sets errno to ENAMETOOLONG, if
  *         module name parameter is too long.
  *      5. delete_module(2) returns -1 and sets errno to EPERM, if effective
  *         user id of the caller is not superuser.
- * 
+ *
  *      Setup:
  *        Setup signal handling.
  *        Test caller is super user
@@ -51,7 +51,7 @@
  *        Set expected errnos for logging
  *        Pause for SIGUSR1 if option specified.
  *		   Initialize modname for each child process
- * 
+ *
  *      Test:
  *       Loop if the proper options are given.
  *		   Perform testcase specific setup (if needed)
@@ -61,10 +61,10 @@
  *        Otherwise,
  *                   Issue FAIL message
  *		   Perform testcase specific cleanup (if needed)
- * 
+ *
  *      Cleanup:
  *        Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  *  delete_module02 [-c n] [-e] [-f] [-h] [-i n] [-I x] [-p] [-P x] [-t]
  *		 		 where,  -c n : Run n copies concurrently.
@@ -76,7 +76,7 @@
  *		 		 		 -p   : Pause for SIGUSR1 before starting
  *		 		 		 -P x : Pause for x seconds between iterations.
  *		 		 		 -t   : Turn on syscall timing.
- * 
+ *
  ****************************************************************/
 
 #include <errno.h>
@@ -89,7 +89,7 @@
 #include "test.h"
 #include "usctest.h"
 
-#ifndef PAGE_SIZE 
+#ifndef PAGE_SIZE
 #define PAGE_SIZE sysconf(_SC_PAGE_SIZE)
 #endif
 

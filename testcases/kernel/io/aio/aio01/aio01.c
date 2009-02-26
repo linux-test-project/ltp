@@ -269,7 +269,7 @@ int main(int argc, char **argv) {
 		if (TEST_RETURN < 0) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "Test 5: write io_submit failed - "
-					"retval=%d, errno=%d", TEST_RETURN, 
+					"retval=%d, errno=%d", TEST_RETURN,
 					TEST_ERRNO);
 			failflag=1;
 			continue;
@@ -284,7 +284,7 @@ int main(int argc, char **argv) {
 		if (TEST_RETURN < 0) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "Test 5: read io_submit failed - "
-					"retval=%d, errno=%d", TEST_RETURN, 
+					"retval=%d, errno=%d", TEST_RETURN,
 					TEST_ERRNO);
 			failflag=1;
 			continue;
@@ -317,7 +317,7 @@ int main(int argc, char **argv) {
 		if (TEST_RETURN < 0) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "Test 6: write io_submit failed - "
-					"retval=%d, errno=%d", TEST_RETURN, 
+					"retval=%d, errno=%d", TEST_RETURN,
 					TEST_ERRNO);
 			failflag=1;
 			continue;
@@ -332,7 +332,7 @@ int main(int argc, char **argv) {
 		if (TEST_RETURN < 0) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "Test 6: read io_submit failed - "
-					"retval=%d, errno=%d", TEST_RETURN, 
+					"retval=%d, errno=%d", TEST_RETURN,
 					TEST_ERRNO);
 			failflag=1;
 			continue;
@@ -341,7 +341,7 @@ int main(int argc, char **argv) {
 		for (j = 0; j < bufsize; j++) {
 			if (srcbuf[j] != dstbuf[j])
 				tst_resm(TFAIL, "Test 6: compare failed - "
-						"read: %c, " "actual: %c", 
+						"read: %c, " "actual: %c",
 						dstbuf[j], srcbuf[j]);
 				break;
 		}

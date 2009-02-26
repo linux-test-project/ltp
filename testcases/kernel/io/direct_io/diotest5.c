@@ -32,14 +32,14 @@
  *	The bufsize should be in n*4k size for direct readv, writev. The offset
  *	value marks the starting position in file from where to start the
  *	write and read. (Using larger offset, larger files can be tested).
- *	The nvector gives vector array size.  Test data file can be 
- * 	specified through commandline and is useful for running test with 
+ *	The nvector gives vector array size.  Test data file can be
+ * 	specified through commandline and is useful for running test with
  * 	raw devices as a file.
  *
  * USAGE
- *      diotest5 [-b bufsize] [-o offset] [-i iterations] 
+ *      diotest5 [-b bufsize] [-o offset] [-i iterations]
  *			[-v nvector] [-f filename]
- * 
+ *
  * History
  *	04/29/2002	Narasimha Sharoff nsharoff@us.ibm.com
  *
@@ -223,12 +223,12 @@ main(int argc, char *argv[])
 	/* Testblock-1: Read with Direct IO, Write without */
 	action = READ_DIRECT;
 	if ((fd_w = open(filename, O_WRONLY|O_CREAT, 0666)) < 0) {
-		tst_resm(TFAIL, "fd_w open failed for %s: %s", 
+		tst_resm(TFAIL, "fd_w open failed for %s: %s",
 			filename, strerror(errno));
 		tst_exit();
 	}
 	if ((fd_r = open64(filename, O_DIRECT|O_RDONLY|O_CREAT, 0666)) < 0) {
-		tst_resm(TFAIL, "fd_r open failed for %s: %s", 
+		tst_resm(TFAIL, "fd_r open failed for %s: %s",
 			filename, strerror(errno));
 		close(fd_w);
 		tst_exit();
@@ -238,7 +238,7 @@ main(int argc, char *argv[])
 		fail_count++;
 		tst_resm (TFAIL, "Read with Direct IO, Write without");
 	}
-	else 
+	else
 		tst_resm (TPASS, "Read with Direct IO, Write without");
 
 	unlink(filename);
@@ -249,12 +249,12 @@ main(int argc, char *argv[])
 	/* Testblock-2: Write with Direct IO, Read without */
 	action = WRITE_DIRECT;
 	if ((fd_w = open(filename, O_DIRECT|O_WRONLY|O_CREAT, 0666)) < 0) {
-		tst_resm(TFAIL, "fd_w open failed for %s: %s", 
+		tst_resm(TFAIL, "fd_w open failed for %s: %s",
 			filename, strerror(errno));
 		tst_exit();
 	}
 	if ((fd_r = open64(filename, O_RDONLY|O_CREAT, 0666)) < 0) {
-		tst_resm(TFAIL, "fd_r open failed for %s: %s", 
+		tst_resm(TFAIL, "fd_r open failed for %s: %s",
 			filename, strerror(errno));
 		close (fd_w);
 		tst_exit();
@@ -274,12 +274,12 @@ main(int argc, char *argv[])
 	/* Testblock-3: Read, Write with Direct IO */
 	action = RDWR_DIRECT;
 	if ((fd_w = open(filename, O_DIRECT|O_WRONLY|O_CREAT, 0666)) < 0) {
-		tst_resm(TFAIL, "fd_w open failed for %s: %s", 
+		tst_resm(TFAIL, "fd_w open failed for %s: %s",
 			filename, strerror(errno));
 		tst_exit();
 	}
 	if ((fd_r = open64(filename, O_DIRECT|O_RDONLY|O_CREAT, 0666)) < 0) {
-		tst_resm(TFAIL, "fd_r open failed for %s: %s", 
+		tst_resm(TFAIL, "fd_r open failed for %s: %s",
 			filename, strerror(errno));
 		close (fd_w);
 		tst_exit();

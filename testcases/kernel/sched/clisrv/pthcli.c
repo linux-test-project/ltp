@@ -69,9 +69,9 @@ register int sockfd;
     while (fgets(sendline, MAXLINE, fp) != NULL)
         {
 	    n = strlen(sendline);
-	    
+	   
 	    dprt("%s: str_cli(): sendline = %s", __FILE__, sendline);
-	    
+	   
 	    if (writen(sockfd, sendline, n) != n)
 	        perror("str_cli: writen error on socket");
 	    /*
@@ -104,7 +104,7 @@ main(int argc, char *argv[])
     struct sockaddr_in serv_addr;
 
     pname = argv[0];
-    if (argc < 3) 
+    if (argc < 3)
     {
   	printf("\nusage: %s ip data\n", pname);
   	exit(1);
@@ -141,7 +141,7 @@ main(int argc, char *argv[])
 	exit(1);
     }
 #ifdef _LINUX
-    if ((input = fopen(argv[2], "r")) == NULL) 
+    if ((input = fopen(argv[2], "r")) == NULL)
     {
 	perror("fopen");
         return(errno);

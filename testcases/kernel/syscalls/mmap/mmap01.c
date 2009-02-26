@@ -122,7 +122,7 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 
-		/* 
+		/*
 		 * Call mmap to map the temporary file beyond EOF
 	 	 * with write access.
 		 */
@@ -210,7 +210,7 @@ main(int ac, char **av)
  * 	     Creat a temporary directory and a file under it.
  * 	     Write some known data into file and get the size of the file.
  */
-void 
+void
 setup()
 {
 	struct stat stat_buf;
@@ -241,7 +241,7 @@ setup()
 
 	/* Write some data into temporary file */
 	if (write(fildes, write_buf, strlen(write_buf)) != strlen(write_buf)) {
-		tst_brkm(TFAIL, cleanup, 
+		tst_brkm(TFAIL, cleanup,
 			 "write() on %s Failed, errno=%d : %s",
 			 TEMPFILE, errno, strerror(errno));
 	}
@@ -293,7 +293,7 @@ setup()
  * 	       Free the memory allocated to dummy variable.
  * 	       Remove the temporary directory created.
  */
-void 
+void
 cleanup()
 {
 	/*

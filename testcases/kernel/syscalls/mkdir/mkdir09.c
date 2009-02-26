@@ -155,9 +155,9 @@ char *argv[];
 
 	/* Get command line options */
 
-	while((c = getopt(argc, argv, goodopts)) != EOF) 
+	while((c = getopt(argc, argv, goodopts)) != EOF)
 	{
-		switch(c) 
+		switch(c)
 		{
 			case 'c':
 				  child_groups = atoi(optarg);
@@ -165,7 +165,7 @@ char *argv[];
 			case 't':
 				  test_time = atoi(optarg);
 				  break;
-			case 'd':  
+			case 'd': 
 				  nfiles = atoi(optarg);
 				  break;
 			case '?':
@@ -175,7 +175,7 @@ char *argv[];
 				  break;
 		}
 	}
-	if (errflg) 
+	if (errflg)
 	{
 		tst_resm(TINFO, "USAGE : mkdir09 -c #child_groups -t#test_time -d#directories");
 		tst_resm(TINFO, "Bad argument count.");
@@ -198,19 +198,19 @@ int runtest()
 
 	/* Create permanent directories with holes in directory structure */
 
-	for(j = 0; j < nfiles; j++) 
+	for(j = 0; j < nfiles; j++)
 	{
-		sprintf(tmpdir,DIR_NAME, j); 
-		TEST(mkdir(tmpdir, MODE_RWX)); 
+		sprintf(tmpdir,DIR_NAME, j);
+		TEST(mkdir(tmpdir, MODE_RWX));
 
 		if (TEST_RETURN < 0)
 		{
 			tst_brkm(TFAIL, cleanup, "Error creating permanent directories, ERRNO = %d", TEST_ERRNO);
 	        	tst_exit();
 		}
-		if ((j%NCHILD) != 0) 
+		if ((j%NCHILD) != 0)
 		{
-			if(rmdir(tmpdir) < 0) 
+			if(rmdir(tmpdir) < 0)
 			{
 				tst_brkm(TFAIL, cleanup, "Error removing directory, ERRNO = %d", errno);
 	        		tst_exit();
@@ -222,7 +222,7 @@ int runtest()
 
 	/* allocate space for list of child pid's */
 
-	if( (pidlist=(int *)malloc((child_groups * NCHILD) * sizeof(int))) == (int * )0 ) 
+	if( (pidlist=(int *)malloc((child_groups * NCHILD) * sizeof(int))) == (int * )0 )
 	{
 		tst_resm(TWARN, "\tMalloc failed (may be OK if under stress)");
 	       	tst_exit();
@@ -231,7 +231,7 @@ int runtest()
 	child_count = 0;
 	for(j = 0; j < child_groups; j++)
 	{
-		for( i = 0; i < NCHILD; i++) 
+		for( i = 0; i < NCHILD; i++)
 		{
 		getchild(j, i, child_count);
 			child_count++;
@@ -261,7 +261,7 @@ int runtest()
         }
 
         /* Reset signals since we are about to clean-up and to avoid
-	 * problem with wait call *                 
+	 * problem with wait call *                
 	 * */
 
         if (signal(SIGTERM, SIG_IGN) == SIG_ERR)
@@ -276,7 +276,7 @@ int runtest()
         }
 
 
-	if (test_time) 
+	if (test_time)
 		{
 			sleep(test_time);
 		}
@@ -288,20 +288,20 @@ int runtest()
 	 */
 
 	count = 0;
-	while(1) 
+	while(1)
 	{
-		if ((child = wait(&status)) > 0 ) 
+		if ((child = wait(&status)) > 0 )
 		{
-			if (status != 0) 
+			if (status != 0)
 			{
 			tst_resm(TWARN, "\tChild{%d} exited status = %0x", child, status);
 			tst_exit();
 			}
 			count++;
 		}
-		else 
+		else
 		{
-			if (errno != EINTR) 
+			if (errno != EINTR)
 			{
 				break;
 			}
@@ -313,7 +313,7 @@ int runtest()
 	 * Make sure correct number of children exited.
 	 */
 
-	if (count != child_count) 
+	if (count != child_count)
 	{
 		tst_resm(TWARN, "\tWrong number of children waited on!");
 		tst_resm(TWARN, "\tSaw %d, expected %d", count, NCHILD);
@@ -322,7 +322,7 @@ int runtest()
 
 	/* Check for core file in test directory. */
 
-	if (access("core", 0) == 0) 
+	if (access("core", 0) == 0)
 	{
 		tst_resm(TWARN, "\tCore file found in test directory.");
 		tst_exit();
@@ -330,10 +330,10 @@ int runtest()
 
 	/* Remove expected files */
 
-	for(j = 0; j < nfiles; j+= NCHILD) 
+	for(j = 0; j < nfiles; j+= NCHILD)
 	{
 		sprintf(tmpdir, DIR_NAME, j);
-		if (rmdir(tmpdir) < 0) 
+		if (rmdir(tmpdir) < 0)
 		{
 			tst_resm(TWARN, "\tError removing expected directory, ERRNO = %d", errno);
 			tst_exit();
@@ -353,16 +353,16 @@ int group, child, children;
 
 	pid = FORK_OR_VFORK();
 
-	if (pid < 0) 
+	if (pid < 0)
 	{
 		
 		massmurder(); /* kill the kids */
 		tst_brkm(TBROK, cleanup, "\tFork failed (may be OK if under stress)");
 		tst_exit();
 	}
-	else if (pid == 0 ) 
+	else if (pid == 0 )
 	{   /* child does this */
-		switch(children%NCHILD) 
+		switch(children%NCHILD)
 		{
 		case 0:
 #ifdef UCLINUX
@@ -412,7 +412,7 @@ void term()
 {
 	/* Routine to handle SIGTERM signal. */
 
-	if (parent_pid == getpid()) 
+	if (parent_pid == getpid())
 	{
 		tst_resm(TWARN, "\tsignal SIGTERM received by parent.");
 		tst_exit();
@@ -446,12 +446,12 @@ int dochild1()
 	int j;
 	char tmpdir[MAXPATHLEN];
 
-	while (!sigterm) 
+	while (!sigterm)
 	{
-		for(j = 0; j < nfiles; j+= NCHILD) 
+		for(j = 0; j < nfiles; j+= NCHILD)
 		{
 			sprintf(tmpdir, DIR_NAME, j);
-			TEST(mkdir(tmpdir, MODE_RWX)); 
+			TEST(mkdir(tmpdir, MODE_RWX));
 
 			if (TEST_RETURN < 0)
 			{
@@ -499,20 +499,20 @@ int dochild2()
 	int j;
 	char tmpdir[MAXPATHLEN];
 
-	while (!sigterm) 
+	while (!sigterm)
 	{
-		for(j = 1; j < nfiles; j+= NCHILD) 
+		for(j = 1; j < nfiles; j+= NCHILD)
 		{
 			sprintf(tmpdir, DIR_NAME, j);
-			if (rmdir(tmpdir) < 0) 
+			if (rmdir(tmpdir) < 0)
 			{
-				if (errno != ENOENT) 
+				if (errno != ENOENT)
 				{
 					tst_brkm(TFAIL, cleanup, "RMDIR %s, errno = %d; Wrong error detected.", tmpdir, errno);
 					exit(1);
-				} 
+				}
 			}
-			else 
+			else
 			{
 				tst_brkm(TFAIL, cleanup, "RMDIR %s succeded when it should have failed.", tmpdir);
 				exit(1);
@@ -552,15 +552,15 @@ int group;
 	char tmpdir[MAXPATHLEN];
 	char tmp[MAXPATHLEN];
 
-	while (!sigterm) 
+	while (!sigterm)
 	{
-		for(j = 2; j < nfiles; j+= NCHILD) 
+		for(j = 2; j < nfiles; j+= NCHILD)
 		{
 			strcpy(tmp, DIR_NAME);
 			strcat(tmp, ".%d");
 			sprintf(tmpdir, tmp, j, group);
 
-			TEST(mkdir(tmpdir, MODE_RWX)); 
+			TEST(mkdir(tmpdir, MODE_RWX));
 
 			if (TEST_RETURN < 0)
 			{
@@ -568,12 +568,12 @@ int group;
 				exit(1);
 			}
 		}
-		for(j = 2; j < nfiles; j+= NCHILD) 
+		for(j = 2; j < nfiles; j+= NCHILD)
 		{
 			strcpy(tmp, DIR_NAME);
 			strcat(tmp, ".%d");
 			sprintf(tmpdir, tmp, j, group);
-			if (rmdir(tmpdir) < 0) 
+			if (rmdir(tmpdir) < 0)
 			{
 				tst_brkm(TFAIL, cleanup, "RMDIR %s, errno = %d; Wrong error detected.", tmpdir, errno);
 				exit(1);

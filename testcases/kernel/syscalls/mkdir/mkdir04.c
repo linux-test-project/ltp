@@ -75,7 +75,7 @@
 #include <pwd.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include "test.h" 
+#include "test.h"
 #include "usctest.h"
 
 void setup();
@@ -127,7 +127,7 @@ main(int ac, char **av)
 	 * check looping state if -i option given
 	 */
 	for (lc=0; TEST_LOOPING(lc); lc++) {
-	  
+	 
 		/* reset Tst_count in case we are looping. */
 		Tst_count=0;
 
@@ -151,7 +151,7 @@ main(int ac, char **av)
 				perror("setreuid");
 				exit(1);
 				/*NOTREACHED*/
-			}		  
+			}		 
 			/* create the parent directory with 0700 permits */
 			if ( mkdir(tstdir1, PERMS) == -1 ) {
 				 tst_resm(TFAIL, "mkdir(%s, %#o) Failed",
@@ -228,7 +228,7 @@ main(int ac, char **av)
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void 
+void
 setup()
 {
 	/* must run as root */
@@ -257,7 +257,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

@@ -91,7 +91,7 @@ void create_or_delete(char *fname)
   }
 }
 
-create_file(char *filename) 
+create_file(char *filename)
 {
   int fd;
   int randomsize;
@@ -116,7 +116,7 @@ create_file(char *filename)
 #include <sys/stat.h>
 #include <unistd.h>
 
-delete_file(char *filename) 
+delete_file(char *filename)
 {
   struct stat buf;
   int st;

@@ -27,12 +27,12 @@
  *
  * ALGORITHM
  *	1.	create a child process, sets its uid to ltpuser1
- *	2.	this child creates a directory with perm 400, 
+ *	2.	this child creates a directory with perm 400,
  *	3.	this child opens the directory and gets a file descriptor
  *	4.	this child attempts to fchdir(2) to the directory created in 2.
  *		and expects to get an EACCES.
  *	5.	finally this child checks the return code,
- *		resets the process ID to root and calls cleanup. 
+ *		resets the process ID to root and calls cleanup.
  *
  * USAGE:  <for command-line>
  *  fchdir03 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
@@ -77,7 +77,7 @@ int exp_enos[] = {EACCES, 0};
 char good_dir[100];
 int fd;
 
-struct passwd *ltpuser1; 
+struct passwd *ltpuser1;
 
 extern struct passwd *my_getpwnam(char *);
 
@@ -86,7 +86,7 @@ int main(int ac, char **av)
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
 
-	pid_t pid; 
+	pid_t pid;
 	int status;
 
 	/* parse standard options */
@@ -133,7 +133,7 @@ int main(int ac, char **av)
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
 			} else if (TEST_ERRNO != EACCES) {
-				tst_resm(TFAIL, "expected EACCES - got %d", 
+				tst_resm(TFAIL, "expected EACCES - got %d",
 					 TEST_ERRNO);
 			} else {
 				TEST_ERROR_LOG(TEST_ERRNO);

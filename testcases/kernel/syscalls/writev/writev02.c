@@ -22,7 +22,7 @@
  *	writev02.c
  *
  * DESCRIPTION
- *	In these testcases, writev() is called with partially valid data 
+ *	In these testcases, writev() is called with partially valid data
  *	to be written in a sparse file.
  *
  * ALGORITHM
@@ -250,7 +250,7 @@ setup(void)
 
 	/* Pause if that option was specified.
 	 * TEST_PAUSE contains the code to fork the test with the -i option.
-	 * You want to make sure you do this before you create your temporary 
+	 * You want to make sure you do this before you create your temporary
 	 * directory.
 	 */
 	TEST_PAUSE;

@@ -15,17 +15,17 @@
  *
  */
 /******************************************************************************
- * 
+ *
  *    TEST IDENTIFIER	: mount04
- * 
+ *
  *    EXECUTED BY	: root / superuser
- * 
+ *
  *    TEST TITLE	: Test for checking EPERM
- * 
+ *
  *    TEST CASE TOTAL	: 1
- * 
+ *
  *    AUTHOR		: Nirmala Devi Dhanasekar <nirmala.devi@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -38,20 +38,20 @@
  *	  Setup signal handling.
  *	  Create a mount point.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  *	  Execute system call
- *	  Check return code, if system call failed and errno == EPERM 
+ *	  Check return code, if system call failed and errno == EPERM
  *		Issue sys call passed with expected return value and errno.
  *	  Otherwise,
  *		Issue sys call failed to produce expected error.
  *	  Do cleanup for each test.
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
  *	  Delete the temporary directory(s)/file(s) created.
- * 
+ *
  * USAGE:  <for command-line>
  *  mount04 [-T type] -D device [-e] [-i n] [-I x] [-p x] [-t]
  *			where,  -T type : specifies the type of filesystem to
@@ -173,7 +173,7 @@ main(int ac, char **av)
 			TEST(mount(device, mntpoint, Type, 0, NULL));
 
 			/* check return code */
-			if ((TEST_RETURN == -1) && 
+			if ((TEST_RETURN == -1) &&
 			    (TEST_ERRNO == testcases[i].exp_errno)) {
 				tst_resm(TPASS, "mount(2) expected failure; "
 					"Got errno - %s : %s",
@@ -209,7 +209,7 @@ main(int ac, char **av)
 
 
 /* setup() - performs all ONE TIME setup for this test */
-void 
+void
 setup()
 {
 	char    nobody_uid[] = "nobody";
@@ -230,7 +230,7 @@ setup()
 			 "errno = %d : %s", ltpuser->pw_uid, TEST_ERRNO,
 			 strerror(TEST_ERRNO));
 	}
-	/* make a temp directory */ 
+	/* make a temp directory */
 	tst_tmpdir();
 
 	(void)sprintf(mntpoint, "mnt_%d", getpid());
@@ -253,11 +253,11 @@ setup()
 }	/* End setup() */
 
 
-/* 
+/*
  *cleanup() -  performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	free(Type);

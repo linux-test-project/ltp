@@ -104,7 +104,7 @@ int main (argc, argv)
 	if (sigaction(SIGALRM, &act, 0)) {
 		tst_resm(TBROK,"Sigaction(SIGALRM)");
 		tst_exit();
-	} 
+	}
 	parent_pid = getpid();
 	tst_tmpdir();
 /*--------------------------------------------------------------*/
@@ -147,7 +147,7 @@ int main (argc, argv)
 	/* Collect child processes. */
 	/* Wait for timeout */
 	pause();
- 
+
 	kill(kidpid[0], SIGTERM);
 	kill(kidpid[1], SIGTERM);
 

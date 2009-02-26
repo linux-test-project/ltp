@@ -15,17 +15,17 @@
  *
  */
 /******************************************************************************
- * 
+ *
  *    TEST IDENTIFIER	: umount03
- * 
+ *
  *    EXECUTED BY	: root / superuser
- * 
+ *
  *    TEST TITLE	: Test for checking EPERM
- * 
+ *
  *    TEST CASE TOTAL	: 1
- * 
+ *
  *    AUTHOR		: Nirmala Devi Dhanasekar <nirmala.devi@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -38,20 +38,20 @@
  *	  Setup signal handling.
  *	  Create a mount point.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  *	  Execute system call
- *	  Check return code, if system call failed and errno == EPERM 
+ *	  Check return code, if system call failed and errno == EPERM
  *		Issue sys call passed with expected return value and errno.
  *	  Otherwise,
  *		Issue sys call failed to produce expected error.
  *	  Do cleanup for each test.
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
  *	  Delete the temporary directory(s)/file(s) created.
- * 
+ *
  * USAGE:  <for command-line>
  *  umount03 [-T type] -D device [-e] [-i n] [-I x] [-p x] [-t]
  *			where,  -T type : specifies the type of filesystem to
@@ -231,7 +231,7 @@ main(int ac, char **av)
 
 
 /* setup() - performs all ONE TIME setup for this test */
-void 
+void
 setup()
 {
 	char nobody_uid[] = "nobody";
@@ -262,7 +262,7 @@ setup()
 		tst_brkm(TBROK, tst_exit, "setuid failed to set the "
 			"effective uid to %d", ltpuser->pw_uid);
 	}
-	/* make a temp directory */ 
+	/* make a temp directory */
 	tst_tmpdir();
 
 	(void)sprintf(mntpoint, "mnt_%d", getpid());
@@ -294,10 +294,10 @@ setup()
 }	/* End setup() */
 
 
-/* 
+/*
  *cleanup1() -  performs cleanup for this test at premature exit.
  */
-void 
+void
 cleanup1()
 {
 	if (Type != NULL) {
@@ -319,11 +319,11 @@ cleanup1()
 	return;
 }	/* End cleanup() */
 
-/* 
+/*
  *cleanup() -  performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	TEST(umount(mntpoint));
@@ -344,7 +344,7 @@ cleanup()
 	TEST_CLEANUP;
 
 	/* Remove tmp dir and all files in it. */
-	tst_rmdir(); 
+	tst_rmdir();
 
 	/* exit with return code appropriate for results */
 	tst_exit();

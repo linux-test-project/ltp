@@ -103,7 +103,7 @@ char *av[];
 		    	for( ifile = 1 ; ifile < min+5 ; ifile++ ) {
 				if( (fildes[ifile] = dup( fildes[ifile-1] )) == -1 ) {
 					break ;
-				} 
+				}
 		
 			} /* end for */
 			if( ifile < freefds ) {

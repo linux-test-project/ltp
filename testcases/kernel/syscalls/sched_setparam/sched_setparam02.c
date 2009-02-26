@@ -15,17 +15,17 @@
  *
  */
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER	: sched_setparam02
- * 
+ *
  *    EXECUTED BY	: root / superuser
- * 
+ *
  *    TEST TITLE	: Checks functionality for sched_setparam(2)
- * 
+ *
  *    TEST CASE TOTAL	: 1
- * 
+ *
  *    AUTHOR		: Saji Kumar.V.R <saji.kumar@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -33,12 +33,12 @@
  *    DESCRIPTION
  *	This test changes the scheduling priority for current process
  *	and verifies it by calling sched_getparam().
- * 
+ *
  * 	Setup:
  * 	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
  *	  Change scheduling policy to SCHED_FIFO
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  * 	  Execute system call
@@ -46,10 +46,10 @@
  *		TEST passed
  *	  else
  *		TEST failed
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  *  sched_setparam02 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
  *			where,  -c n : Run n copies concurrently.
@@ -129,7 +129,7 @@ main(int ac, char **av)
 							 "  failed");
 			}
 			param.sched_priority = testcases[i].priority;
-			/* 
+			/*
 			 * Call sched_setparam(2) with pid=0 sothat it will
 			 * set the scheduling parameters for the calling process
 			 */

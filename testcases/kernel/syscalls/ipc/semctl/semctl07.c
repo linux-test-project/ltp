@@ -143,7 +143,7 @@ char *argv[];
 		tst_exit();
 	}
 	status = getpid();
-	if (status == 0) 
+	if (status == 0)
 	{
 		tst_resm(TFAIL, "error: unexpected pid %d", status);
 		tst_exit();

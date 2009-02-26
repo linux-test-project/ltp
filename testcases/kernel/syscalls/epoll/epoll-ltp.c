@@ -24,10 +24,10 @@
 
    Description:
      Test the epoll_* system calls. This test program attempts to
-     be very thorough in exercising epoll_* system calls. Large 
+     be very thorough in exercising epoll_* system calls. Large
      combinations of valid and invalid parameters are passed with
      valid and invalid sequences. Due to the combinatorial nature
-     of this test program the test may take a "long" time to 
+     of this test program the test may take a "long" time to
      execute.
 
    Total Tests: 2 (2 system calls are being tested for)
@@ -48,7 +48,7 @@
    Author:      Matt Helsley <matthltc@us.ibm.com>
 
    History:     Created - May 22 2003 - Matt Helsley <matthltc@us.ibm.com>
-                Added   - 
+                Added   -
 
    Notes: Currently we assume that the OS will never allocate an fd s.t.
           fd == INT_MAX and that it will instead choose to allocate fds
@@ -121,14 +121,14 @@ extern void cleanup (void)
 /*
   Define the beginning of a "protected region".
   This is a region where a wide variety of errors
-  could occur or signals could arrive (including 
-  SIGSEGV and SIGKILL). 
-  
+  could occur or signals could arrive (including
+  SIGSEGV and SIGKILL).
+ 
   The test program uses this to catch those
   conditions as best it can and continue testing.
 
   The region MUST be marked by a corresponding
-  PROTECT_REGION_END. 
+  PROTECT_REGION_END.
 
   DO NOT nest protected regions! i.e. Do not build
   code of the form:
@@ -170,7 +170,7 @@ do { \
 /*
    Call a function in a "protected" context.
    This protects the test program proper from segfaults
-   and allows for the extraction of an integer return 
+   and allows for the extraction of an integer return
    code.
 
    return only integer results.
@@ -297,7 +297,7 @@ int test_epoll_create (unsigned int num_rand_attempts)
 	}
   }
 
-  tst_resm(TINFO, "Summary: Of %d tests, epoll_create failed %d (%3.0f%% passed).", num_epoll_create_test_calls, num_epoll_create_test_fails, 
+  tst_resm(TINFO, "Summary: Of %d tests, epoll_create failed %d (%3.0f%% passed).", num_epoll_create_test_calls, num_epoll_create_test_fails,
 		   ((float)(num_epoll_create_test_calls - num_epoll_create_test_fails) * 100.0f / (float)num_epoll_create_test_calls));
   /* Return 0 on success. */
 
@@ -316,10 +316,10 @@ int test_epoll_create (unsigned int num_rand_attempts)
 			   *_RETV_MIS_* indicates the return value was either 0 or 1, but did
 			                not match the expected return value
 			   *_RETV_MAT_* indicates that the return value was 0 xor 1 and did
-			                match the expected value 
+			                match the expected value
 			   *_RETV_BAD_* the return value was neither 0 nor 1.
-			   *_ERRNO_MAT  the error number matched the expected number 
-			   *_ERRNO_MIS  the error number did not match the expected number 
+			   *_ERRNO_MAT  the error number matched the expected number
+			   *_ERRNO_MIS  the error number did not match the expected number
 			   *_ERRNO_IGN  no error number was expected and so errno was ignored
 
 			   Keep these values below 256 as only 1 byte gets passed as a
@@ -402,7 +402,7 @@ int test_epoll_ctl (int epoll_fd)
   struct epoll_event event;
   char event_mem[sizeof(struct epoll_event) * 2];
   struct epoll_event* unaligned_event_ptr;
-  
+ 
   /* Indices into lists */
   int index = 0;           /* multi-use index. First uses are to initialize
 							  lists. Second use is to iterate over the implicit
@@ -489,7 +489,7 @@ int test_epoll_ctl (int epoll_fd)
 			   the PROTECT_REGION hence we do not have a PROTECT_REGION_END
 			   here */
 
-			/* 
+			/*
 			   Test the results. Look for appropriate error conditions
 			*/
 
@@ -505,7 +505,7 @@ int test_epoll_ctl (int epoll_fd)
 			}
 
 			switch(epoll_ctl_ops[op_index]){
-			case EPOLL_CTL_ADD: 
+			case EPOLL_CTL_ADD:
 			case EPOLL_CTL_MOD:
 			case EPOLL_CTL_DEL:
 			  break;
@@ -558,7 +558,7 @@ int test_epoll_ctl (int epoll_fd)
 				  return RES_FAIL_RETV_MAT_ERRNO_MIS;
 				}
 			  } else {
-				/* We got a bad return code! Interpret this as 
+				/* We got a bad return code! Interpret this as
 				   getting an error and check errno. */
 				if (errno == expected_errno)
 				  return RES_FAIL_RETV_BAD_ERRNO_MAT;
@@ -574,19 +574,19 @@ int test_epoll_ctl (int epoll_fd)
 				if (errno == expected_errno){
 				  return RES_PASS; /* think of this as RETV_MAT_ERRNO_MAT */
 				} else {
-				  /* Ignore errno because the desired value is unknowable 
+				  /* Ignore errno because the desired value is unknowable
 					 without looking at the structure of the code. */
-				  return RES_PASS_RETV_MAT_ERRNO_IGN; 
+				  return RES_PASS_RETV_MAT_ERRNO_IGN;
 				}
 			  } else {
-				/* We got a bad return code! Interpret this as 
+				/* We got a bad return code! Interpret this as
 				   getting an error and check errno. */
 				if (errno == expected_errno)
-				  /* Don't Ignore errno because the desired value 
+				  /* Don't Ignore errno because the desired value
 				     happened to match what we expected. */
 				  return RES_FAIL_RETV_BAD_ERRNO_MAT;
 				else
-				  /* Ignore errno because the desired value is unknowable 
+				  /* Ignore errno because the desired value is unknowable
 					 without looking at the structure of the code. */
 				  return RES_FAIL_RETV_BAD_ERRNO_IGN;
 			  }
@@ -630,7 +630,7 @@ int test_epoll_ctl (int epoll_fd)
 	close(epoll_fd);
   }
 
-  tst_resm(TINFO, "Summary: Of %d tests, epoll_ctl failed %d (%3.0f%% passed).", num_epoll_ctl_test_calls, num_epoll_ctl_test_fails, 
+  tst_resm(TINFO, "Summary: Of %d tests, epoll_ctl failed %d (%3.0f%% passed).", num_epoll_ctl_test_calls, num_epoll_ctl_test_fails,
 		   ((float)(num_epoll_ctl_test_calls - num_epoll_ctl_test_fails) * 100.0f / (float)num_epoll_ctl_test_calls));
   return (num_epoll_ctl_test_fails / num_epoll_ctl_test_calls);
 }
@@ -640,7 +640,7 @@ int main (int argc, char** argv)
   int epoll_fd;
   struct timeval tv;
   int last_result;
-  
+ 
   tst_resm(TINFO, "testing if epoll() system call works");
 
   /* Get the current time */
@@ -660,8 +660,8 @@ int main (int argc, char** argv)
   last_result = PROTECT_FUNC(test_epoll_create, -1, NUM_RAND_ATTEMPTS);
   if (last_result != 0){
 	/* create test(s) failed */
-  }  
-  
+  } 
+ 
   /* Create an epoll_fd for testing epoll_ctl */
   epoll_fd = epoll_create(BACKING_STORE_SIZE_HINT);
   if (epoll_fd < 0){

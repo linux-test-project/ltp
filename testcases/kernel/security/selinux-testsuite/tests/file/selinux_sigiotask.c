@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
   char ex_name[255];
 
   fd = open(ctermid(NULL), O_RDWR, 0);
-  
+ 
   if(fd == -1) {
     perror("selinux_sigiotask:open");
     exit(2);

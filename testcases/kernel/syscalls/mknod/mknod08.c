@@ -21,7 +21,7 @@
  * Test Name: mknod08
  *
  * Test Description:
- *  Verify that mknod(2) succeeds when used to create a filesystem 
+ *  Verify that mknod(2) succeeds when used to create a filesystem
  *  node on a directory without set group-ID bit set. The node created
  *  should not have set group-ID bit set and its gid should be equal to that
  *  of its parent directory.
@@ -219,7 +219,7 @@ setup()
 
 	/* Check that the test process id is super/root  */
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Must be super/root for this test!"); 
+		tst_brkm(TBROK, NULL, "Must be super/root for this test!");
 		tst_exit();
 	}
 
@@ -285,8 +285,8 @@ setup()
 		tst_brkm(TBROK, cleanup, "%s: Incorrect group", DIR_TEMP);
 	}
 	
-   	/* 
-	 * Set the effective group id and user id of the test process 
+   	/*
+	 * Set the effective group id and user id of the test process
 	 * to that of guest user.
 	 */
 	if (setgid(group1_gid) < 0) {
@@ -338,7 +338,7 @@ cleanup()
 
 	/* Remove files and temporary directory created */
 	tst_rmdir();
-  
+ 
 	/* exit with return code appropriate for results */
 	tst_exit();
 }

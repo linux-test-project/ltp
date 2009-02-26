@@ -91,7 +91,7 @@ main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 	uid_t real_uid,		/* real/eff./saved user id from getresuid() */
 	      eff_uid, sav_uid;
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -107,7 +107,7 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 
-		/* 
+		/*
 		 * Call getresuid() to get the real/effective/saved
 		 * user id's of the calling process.
 		 */
@@ -154,7 +154,7 @@ main(int ac, char **av)
  * setup() - performs all ONE TIME setup for this test.
  *	     Get the real/effective/saved user id of the calling process.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -179,7 +179,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

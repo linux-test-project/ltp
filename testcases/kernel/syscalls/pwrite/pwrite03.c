@@ -22,7 +22,7 @@
  *
  * Test Description:
  *  Verify that,
- *      pwrite(2) fails when attempted to write with buf outside accessible 
+ *      pwrite(2) fails when attempted to write with buf outside accessible
  *      address space.
  *
  * Expected Result:
@@ -108,7 +108,7 @@ main(int ac, char **av)
 	}
 
 	/* Perform global setup for test */
-	setup(); 
+	setup();
 	
 	TEST_EXP_ENOS(exp_enos);
 	
@@ -176,7 +176,7 @@ int main()
  *
  *  Initialize/allocate write buffer.
  */
-void 
+void
 setup()
 {
 	
@@ -203,7 +203,7 @@ setup()
  * Close the temporary file.
  * Remove the temporary directory created.
  */
-void 
+void
 cleanup()
 {
 	

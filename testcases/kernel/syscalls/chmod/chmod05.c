@@ -17,9 +17,9 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-/* 
+/*
  * Test Name: chmod05
- * 
+ *
  * Test Description:
 //wjh
 //This test seems to be invalid see comments below
@@ -123,7 +123,7 @@ int main(int ac, char **av)
    int lc;			/* loop counter */
    char *msg;		/* message returned from parse_opts */
    mode_t dir_mode;	/* mode permissions set on test directory */
-    
+   
    /* Parse standard options given to run the test. */
    msg = parse_opts(ac, av, (option_t *) NULL, NULL);
    if (msg != (char *) NULL) {
@@ -135,19 +135,19 @@ int main(int ac, char **av)
    setup();
 
    /* Check looping state if -i option given */
-   for (lc = 0; TEST_LOOPING(lc); lc++) 
+   for (lc = 0; TEST_LOOPING(lc); lc++)
    {
       /* Reset Tst_count in case we are looping. */
       Tst_count = 0;
 
-      /* 
+      /*
        * Call chmod(2) with mode argument to
        * set setgid bit on TESTDIR.
        */
       TEST(chmod(TESTDIR, PERMS));
 	
       /* check return code of chmod(2) */
-      if (TEST_RETURN == -1) 
+      if (TEST_RETURN == -1)
       {
          tst_resm(TFAIL, "chmod(%s, %#o) Failed, errno=%d : %s",
          TESTDIR, PERMS, TEST_ERRNO,
@@ -159,13 +159,13 @@ int main(int ac, char **av)
        * Perform functional verification if test
        * executed without (-f) option.
        */
-      if (STD_FUNCTIONAL_TEST) 
+      if (STD_FUNCTIONAL_TEST)
       {
          /*
           * Get the directory information using
           * stat(2).
           */
-         if (stat(TESTDIR, &stat_buf) < 0) 
+         if (stat(TESTDIR, &stat_buf) < 0)
          {
             tst_brkm(TFAIL, cleanup,
             "stat() of %s failed, errno:%d",
@@ -178,18 +178,18 @@ int main(int ac, char **av)
          printf("PERMS = 0%03o\n", PERMS);
 	 printf("dir_mode = 0%03o\n", dir_mode);
 #endif
-         if ( PERMS != dir_mode) 
+         if ( PERMS != dir_mode)
          {
             tst_resm(TFAIL, "%s: Incorrect modes 0%03o, "
                             "Expected 0%03o", TESTDIR, dir_mode, PERMS);
          }
-         else 
+         else
          {
             tst_resm(TPASS, "Functionality of chmod(%s, %#o) successful",
                              TESTDIR, PERMS);
          }
-      } 
-      else 
+      }
+      else
       {
          tst_resm(TPASS, "call succeeded");
       }
@@ -197,7 +197,7 @@ int main(int ac, char **av)
 
    /* Call cleanup() to undo setup done for the test. */
    cleanup();
-  
+ 
    return 0;
    /*NOTREACHED*/
 }  /* End main */
@@ -208,7 +208,7 @@ int main(int ac, char **av)
  *  Create a temporary directory and cd to it.
  *  Create a test directory under temporary directory.
 //wjh we are root so do we really need this kluged helper program?
- *  Invoke setuid to root program to modify group ownership 
+ *  Invoke setuid to root program to modify group ownership
  *  on test directory.
  */
 void setup()
@@ -219,10 +219,10 @@ void setup()
 
    /* capture signals */
    tst_sig(FORK, DEF_HANDLER, cleanup);
-   
+  
 //wjh Improper comment! This makes sure we _are_ "root" not "nobody"
    /* Switch to nobody user for correct error code collection */
-   if (geteuid() != 0) 
+   if (geteuid() != 0)
    {
       tst_brkm(TBROK, tst_exit, "Test must be run as root");
    }
@@ -241,13 +241,13 @@ void setup()
 //wjh Improper comment! Ownership it changed to "nobody"
     * guest user2.
     */
-   if (mkdir(TESTDIR, MODE_RWX) < 0) 
+   if (mkdir(TESTDIR, MODE_RWX) < 0)
    {
       tst_brkm(TBROK, cleanup, "mkdir(2) of %s failed", TESTDIR);
    }
- 
+
    /* Get the current working directory of the process */
-   if (getcwd(Path_name, sizeof(Path_name)) == NULL) 
+   if (getcwd(Path_name, sizeof(Path_name)) == NULL)
    {
       tst_brkm(TBROK, cleanup,
                "getcwd(3) fails to get working directory of process");
@@ -266,7 +266,7 @@ void setup()
    strcat((char *)Cmd_buffer, " ");
    strcat((char *)Cmd_buffer, Path_name);
 
-   if (system((const char *)Cmd_buffer) != 0) 
+   if (system((const char *)Cmd_buffer) != 0)
    {
       tst_brkm(TBROK, cleanup,
                   "Fail to modify %s group ownership", TESTDIR);

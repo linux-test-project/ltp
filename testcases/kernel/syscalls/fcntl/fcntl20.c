@@ -20,7 +20,7 @@
 /*
  * NAME
  * 	fcntl20.c
- * 
+ *
  * DESCRIPTION
  * 	Check locking of regions of a file
  *
@@ -223,7 +223,7 @@ unlock_file()
 	struct flock fl;
 
 	if (do_lock(F_SETLK, (short)F_UNLCK, (short)0, 0, 0) < 0) {
-		tst_resm(TFAIL, "fcntl on file failed, errno =%d", 
+		tst_resm(TFAIL, "fcntl on file failed, errno =%d",
 			 errno);
 		fail = 1;
 	}

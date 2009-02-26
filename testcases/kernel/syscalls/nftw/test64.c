@@ -117,7 +117,7 @@ test2A(void)
 #endif
 
 	visit = 0;
-	if((ret = nftw64("./tmp/data/dirl", test_func1, MAX_FD, FTW_PHYS)) 
+	if((ret = nftw64("./tmp/data/dirl", test_func1, MAX_FD, FTW_PHYS))
 			== -1) {
 		perror("nftw64");
 		cleanup_function();
@@ -176,7 +176,7 @@ test3A(void)
 	if (visit != LINK_CNT-1)
 	{
 		fprintf(temp, "ERROR: Expected %d files to be visited.  nftw64() visited %d\n", LINK_CNT-1, visit);
-		cleanup_function(); 
+		cleanup_function();
 		fail_exit();
 	}
 }
@@ -380,7 +380,7 @@ test9A(void)
 	fprintf(temp, "TEST: nftw64 passes FTW_F as third arg to fn() for files\n");
 #endif
 
-	if((ret = nftw64("./tmp/data/dirg", test_func9, MAX_FD, FTW_PHYS)) 
+	if((ret = nftw64("./tmp/data/dirg", test_func9, MAX_FD, FTW_PHYS))
 			== -1) {
 		perror("nftw64");
 		cleanup_function();
@@ -412,7 +412,7 @@ test10A(void)
 	fprintf(temp, "TEST: nftw64 passes FTW_D as third arg to fn() when file is directory\n");
 #endif
 
-	if ((ret = nftw64("./tmp/data/dirg", test_func10, MAX_FD, FTW_PHYS)) 
+	if ((ret = nftw64("./tmp/data/dirg", test_func10, MAX_FD, FTW_PHYS))
 			== -1) {
 		perror("nftw64");
 		cleanup_function();
@@ -477,10 +477,10 @@ test12A(void)
 
 	temp=stderr;
 #ifdef DEBUG
-	fprintf(temp, 
+	fprintf(temp,
 		"TEST: nftw64 wth FTW_PHYS passes FTW_SL when file is symlink\n");
 #endif
-	if((ret = nftw64("./tmp/data/dirg", test_func12, MAX_FD, FTW_PHYS)) 
+	if((ret = nftw64("./tmp/data/dirg", test_func12, MAX_FD, FTW_PHYS))
 			== -1) {
 		perror("nftw64");
 		cleanup_function();
@@ -523,7 +523,7 @@ test13A(void)
 	fprintf(temp, " is symlink pointing \n to non-existent file\n");
 #endif
 
-	if((ret = nftw64("./tmp/data/dirg", test_func13, MAX_FD, FTW_PHYS)) 
+	if((ret = nftw64("./tmp/data/dirg", test_func13, MAX_FD, FTW_PHYS))
 			== -1) {
 		perror("nftw64");
 		cleanup_function();
@@ -586,7 +586,7 @@ test15A(void)
 	fprintf(temp, "TEST: nftw64(path, fn, depth, FTW_PHYS) passes FTW_NS when dir unsearchable\n");
 #endif
 
-	if((ret = nftw64("./tmp/data/d666", test_func15, MAX_FD,FTW_PHYS)) 
+	if((ret = nftw64("./tmp/data/d666", test_func15, MAX_FD,FTW_PHYS))
 			== -1) {
 		perror("nftw64");
 		cleanup_function();
@@ -677,7 +677,7 @@ test17A(void)
 	fprintf(temp, "TEST: nftw64 with FTW_PHYS passes FTW_SL for symlink\n");
 #endif
 
-	if((ret = nftw64("./tmp/data/dirl", test_func17, MAX_FD, FTW_PHYS)) 
+	if((ret = nftw64("./tmp/data/dirl", test_func17, MAX_FD, FTW_PHYS))
 			== -1) {
 		perror("nftw64");
 		cleanup_function();
@@ -730,7 +730,7 @@ test18A(void)
 	fprintf(temp, "TEST: nftw64 with FTW_PHYS does not pass FTW_SLN\n");
 #endif
 
-	if((ret = nftw64("./tmp/data/dirg", test_func18, MAX_FD, FTW_PHYS)) 
+	if((ret = nftw64("./tmp/data/dirg", test_func18, MAX_FD, FTW_PHYS))
 			== -1) {
 		perror("nftw64");
 		cleanup_function();
@@ -758,8 +758,8 @@ test18A(void)
 		if (ret == 999) {
 			/* Test is passed */
 			return;
-		} else { 
-			fprintf(temp, "ERROR: nftw64 passed FTW_SLN but did"); 
+		} else {
+			fprintf(temp, "ERROR: nftw64 passed FTW_SLN but did");
 			fprintf(temp, "not return value returned by fn()\n");
 			cleanup_function();
 			fail_exit();
@@ -1004,7 +1004,7 @@ test23A(void)
 	fprintf(temp, "TEST: The function nftw64 should return with value set by fn\n");
 #endif
 
-	if ((ret = nftw64("./tmp/data/dirh", test_func23, MAX_FD, FTW_PHYS)) 
+	if ((ret = nftw64("./tmp/data/dirh", test_func23, MAX_FD, FTW_PHYS))
 			== -1) {
 		perror("nftw64");
 		cleanup_function();
@@ -1034,7 +1034,7 @@ test23A(void)
 void
 test24A(void)
 {
-	test_ENAMETOOLONG_path("nftw64", callback, -1); 
+	test_ENAMETOOLONG_path("nftw64", callback, -1);
 }
 
 
@@ -1048,7 +1048,7 @@ test24A(void)
 void
 test25A(void)
 {
-	test_ENAMETOOLONG_name("nftw64", callback, -1); 
+	test_ENAMETOOLONG_name("nftw64", callback, -1);
 }
 
 
@@ -1067,7 +1067,7 @@ test26A(void)
 	fprintf(temp, "TEST: [ENOENT] && -1 returned by nftw64\n");
 #endif
 
-	test_ENOENT_nofile("nftw64", callback, -1); 
+	test_ENOENT_nofile("nftw64", callback, -1);
 }
 
 
@@ -1086,7 +1086,7 @@ test27A(void)
 	fprintf(temp, "TEST: The function nftw64 should return with a -1\n");
 #endif
 
-	test_ENOENT_empty("nftw64", callback, -1); 
+	test_ENOENT_empty("nftw64", callback, -1);
 }
 
 
@@ -1105,7 +1105,7 @@ test28A(void)
 	fprintf(temp, "TEST: [ENOTDIR] && -1 returned by nftw64\n");
 #endif
 
-	test_ENOTDIR("nftw64", callback, -1); 
+	test_ENOTDIR("nftw64", callback, -1);
 }
 
 
@@ -1131,7 +1131,7 @@ test29A(void)
 	fprintf(temp, "TEST: [EACCES] && -1 returned by nftw64\n");
 #endif
 
-	test_ENOTDIR("nftw64", callback, -1); 
+	test_ENOTDIR("nftw64", callback, -1);
 }
 
 
@@ -1156,7 +1156,7 @@ test30A(void)
 	fprintf(temp, "TEST: [EACCES] && -1 returned by nftw64\n");
 #endif
 
-	test_ENOTDIR("nftw64", callback, -1); 
+	test_ENOTDIR("nftw64", callback, -1);
 }
 
 

@@ -1,17 +1,17 @@
 
 /******************************************************************************
- *          			 fallocate03.c                                   
+ *          			 fallocate03.c                                  
  *	Mon Dec 24 2007
- *  	Copyright (c) International Business Machines  Corp., 2007             
+ *  	Copyright (c) International Business Machines  Corp., 2007            
  *	Emali : sharyathi@in.ibm.com
  ******************************************************************************/
 
 
 /***************************************************************************
-  * This program is free software;  you can redistribute it and/or modify      
-  * it under the terms of the GNU General Public License as published by       
-  * the Free Software Foundation; either version 2 of the License, or          
-  * (at your option) any later version.                                        
+  * This program is free software;  you can redistribute it and/or modify     
+  * it under the terms of the GNU General Public License as published by      
+  * the Free Software Foundation; either version 2 of the License, or         
+  * (at your option) any later version.                                       
   *
   * This program is distributed in the hope that it will be useful,
   * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -31,7 +31,7 @@
   *
   *    EXECUTED BY		: anyone
   *
-  *    TEST TITLE		: fallocate 
+  *    TEST TITLE		: fallocate
   *
   *    TEST CASE TOTAL	: 8
   *
@@ -45,7 +45,7 @@
   *
   *    TEST CASES
   *    (Working of fallocate on a sparse file)
-  * 	 
+  * 	
   *
   *	INPUT SPECIFICATIONS
   * 		No input needs to be specified
@@ -57,7 +57,7 @@
   *	ENVIRONMENTAL NEEDS
   *		Test Needs to be executed on file system supporting ext4
   *   LTP {TMP} Needs to be set to such a folder
-  *   
+  *  
   *	SPECIAL PROCEDURAL REQUIREMENTS
   * 		None
   *
@@ -74,9 +74,9 @@
   *		Set up a file with hole, created through lseek
   *
   *	Test:
-  *		Loop if the proper options are given 
+  *		Loop if the proper options are given
   *		Execute system call
-  *		Check return code, if system call failed 
+  *		Check return code, if system call failed
   *		TEST fails, PASS the test otherwise
   *
   *	Cleanup:
@@ -102,7 +102,7 @@
 #define BLOCKS_WRITTEN 12
 #define HOLE_SIZE_IN_BLOCKS 12
 #define DEFAULT_MODE 0
-#define FALLOC_FL_KEEP_SIZE 1 //Need to be removed once the glibce support is provided  
+#define FALLOC_FL_KEEP_SIZE 1 //Need to be removed once the glibce support is provided 
 #define TRUE 0
 
 #ifndef __NR_fallocate
@@ -116,7 +116,7 @@
 static inline long fallocate();
 void get_blocksize(int);
 void populate_file();
-void file_seek(off_t); 
+void file_seek(off_t);
 
 /* Extern Global Variables */
 extern int  Tst_count;               /* counter for tst_xxx routines.         */
@@ -130,8 +130,8 @@ struct test_data_t
 	int mode;
 	loff_t offset;
 	loff_t len;
-	int error; 
-}test_data[] = { 
+	int error;
+}test_data[] = {
 	{DEFAULT_MODE, 2, 1, TRUE},
 	{DEFAULT_MODE, BLOCKS_WRITTEN, 1, TRUE},
 	{DEFAULT_MODE, BLOCKS_WRITTEN + HOLE_SIZE_IN_BLOCKS/2 -1 , 1, TRUE},
@@ -146,10 +146,10 @@ int block_size;
 int buf_size;
 
 /******************************************************************************
- * Performs all one time clean up for this test on successful    
- * completion,  premature exit or  failure. Closes all temporary 
- * files, removes all temporary directories exits the test with  
- * appropriate return code by calling tst_exit() function.       
+ * Performs all one time clean up for this test on successful   
+ * completion,  premature exit or  failure. Closes all temporary
+ * files, removes all temporary directories exits the test with 
+ * appropriate return code by calling tst_exit() function.      
 ******************************************************************************/
 extern void
 cleanup()
@@ -170,7 +170,7 @@ cleanup()
 
 
 /*****************************************************************************
- * Performs all one time setup for this test. This function is   
+ * Performs all one time setup for this test. This function is  
  * used to create temporary dirs and temporary files
  * that may be used in the course of this test
  ******************************************************************************/
@@ -216,7 +216,7 @@ get_blocksize(int fd)
 /*****************************************************************************
  * Create a Hole in the file
  ******************************************************************************/
-void 
+void
 file_seek(off_t offset)
 {
 	offset *= block_size;
@@ -236,7 +236,7 @@ populate_file()
 	int data;
 	for (blocks = 0; blocks < BLOCKS_WRITTEN ; blocks++)
 	{
-		for (index = 0; index < buf_size; index++) 
+		for (index = 0; index < buf_size; index++)
                 	        buf[index] = 'A' + (index % 26);
 		buf[buf_size]='\0';
 		if (( data = write(fd, buf, buf_size)) < 0 )
@@ -287,7 +287,7 @@ main(int   ac,    /* number of command line parameters                      */
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	
 	/* This test needs kernel version > 2.6.23 and
-	 * either of x86, x86_64 or ppc architecture 
+	 * either of x86, x86_64 or ppc architecture
 	 */
 	if ( !arch_support || (tst_kvercmp(2,6,23) < 0)) {
 		tst_resm(TWARN," System doesn't support execution of the test");		
@@ -302,7 +302,7 @@ main(int   ac,    /* number of command line parameters                      */
         	Tst_count=0;
 		for(test_index = 0 ; test_index < TST_TOTAL; test_index ++)
 		{
-	        	TEST(fallocate(fd, test_data[test_index].mode, 
+	        	TEST(fallocate(fd, test_data[test_index].mode,
 				test_data[test_index].offset * block_size, test_data[test_index].len * block_size));
 
 			 /* check return code */
@@ -314,13 +314,13 @@ main(int   ac,    /* number of command line parameters                      */
 				}
 		            TEST_ERROR_LOG(TEST_ERRNO);
 		            tst_resm(TFAIL, "fallocate(%s, %d, %lld, %lld) Failed, errno=%d : %s",
-				fname,test_data[test_index].mode, test_data[test_index].offset * block_size, 
+				fname,test_data[test_index].mode, test_data[test_index].offset * block_size,
 				test_data[test_index].len * block_size, TEST_ERRNO, strerror(TEST_ERRNO));
 		        } else {
             		if ( STD_FUNCTIONAL_TEST ) {
 		        /* No Verification test, yet... */
 		        tst_resm(TPASS, "fallocate(%s, %d, %lld, %lld) returned %d ",
-				fname,test_data[test_index].mode, test_data[test_index].offset * block_size, 
+				fname,test_data[test_index].mode, test_data[test_index].offset * block_size,
 				test_data[test_index].len * block_size, TEST_RETURN); }	
         		}
 		}

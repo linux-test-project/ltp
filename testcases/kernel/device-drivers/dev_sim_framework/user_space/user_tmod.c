@@ -18,12 +18,12 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
 
- * This is the main of your user space test program, 
- * which will open the correct kernel module, find the 
- * file descriptor value and use that value to make 
+ * This is the main of your user space test program,
+ * which will open the correct kernel module, find the
+ * file descriptor value and use that value to make
  * ioctl calls to the system
  *
- * Use the ki_generic and other ki_testname functions 
+ * Use the ki_generic and other ki_testname functions
  * to abstract the calls from the main
  *
  * author: Sean Ruyle
@@ -49,7 +49,7 @@
 static int tmod_fd = -1;		/* file descriptor */
 
 
-int 
+int
 tmodopen() {
 
     dev_t devt;
@@ -123,7 +123,7 @@ tmodopen() {
 }
 
 
-int 
+int
 tmodclose() {
 
 	if (tmod_fd != -1) {

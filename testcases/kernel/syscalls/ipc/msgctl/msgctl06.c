@@ -103,12 +103,12 @@ int main(int argc, char* argv[])
 	 * Check contents of msqid_ds structure.
 	 */
 
-	if (buf.msg_qnum != 0) 
+	if (buf.msg_qnum != 0)
 	{
                 tst_resm(TFAIL, "error: unexpected nbr of messages %d", buf.msg_qnum);
 	        tst_exit();
 	}
-	if (buf.msg_perm.uid != getuid()) 
+	if (buf.msg_perm.uid != getuid())
 	{
                 tst_resm(TFAIL, "error: unexpected uid %d", buf.msg_perm.uid);
 	        tst_exit();
@@ -137,7 +137,7 @@ int main(int argc, char* argv[])
 	cleanup();
 
 	return 0;
-}       /* End main */    
+}       /* End main */   
 
 
 /***************************************************************

@@ -15,17 +15,17 @@
  *
  */
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER	: capget02
- * 
+ *
  *    EXECUTED BY	: anyone
- * 
+ *
  *    TEST TITLE	: Tests for error conditions.
- * 
+ *
  *    TEST CASE TOTAL	: 5
- * 
+ *
  *    AUTHOR		: Saji Kumar.V.R <saji.kumar@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -42,11 +42,11 @@
  *	5) capget() fails with errno set to ESRCH if the process with
  *	   pid, header->pid does not exit
  *	
- * 
+ *
  * 	Setup:
  * 	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  * 	  call capget with proper arguments
@@ -54,10 +54,10 @@
  *		Test passed
  *	  Otherwise
  *		Test failed
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  * capget02 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
  *			where,  -c n : Run n copies concurrently.
@@ -96,7 +96,7 @@ static void test_setup(int);
 
 char *TCID = "capget02";	/* Test program identifier.    */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-static int exp_enos[] = {EFAULT, EINVAL, ESRCH, 0}; 
+static int exp_enos[] = {EFAULT, EINVAL, ESRCH, 0};
 
 static struct __user_cap_header_struct header;
 static struct __user_cap_data_struct data;
@@ -156,7 +156,7 @@ main(int ac, char **av)
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 			}
 			TEST_ERROR_LOG(TEST_ERRNO);
-		} 
+		}
 	}	/* End for TEST_LOOPING */
 
 	/* cleanup and exit */

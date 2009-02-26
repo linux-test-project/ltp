@@ -22,7 +22,7 @@
  *	rmdir02
  *
  * DESCRIPTION
- *	This test will verify that rmdir(2) fail in 
+ *	This test will verify that rmdir(2) fail in
  *      1. ENOTEMPTY
  *      2. ENAMETOOLONG
  *      3. ENOENT
@@ -50,8 +50,8 @@
  *              4. pass a pathname containing a file component
  *                 to rmdir() and check the return value and errno (expect
  *                 ENOTDIR
- *     	        5. Attempt to pass an invalid pathname with an address 
- *                 pointing outside the address space of the process, 
+ *     	        5. Attempt to pass an invalid pathname with an address
+ *                 pointing outside the address space of the process,
  *                 as the argument to rmdir(), and expect to get EFAULT.
  *     	        6. Attempt to pass an invalid pathname with NULL
  *                 as the argument to rmdir(), and expect to get EFAULT.
@@ -81,7 +81,7 @@
 #include <sys/mman.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include "test.h" 
+#include "test.h"
 #include "usctest.h"
 
 void setup();
@@ -161,7 +161,7 @@ main(int ac, char **av)
 	 * check looping state if -i option given
 	 */
 	for (lc=0; TEST_LOOPING(lc); lc++) {
-	  
+	 
 		/* reset Tst_count in case we are looping. */
 		Tst_count=0;
 
@@ -275,20 +275,20 @@ create_longpath()
 	chdir(cwd);
 
 	while(strlen(longpath) < PATH_MAX) {
-		/* 
-	   	 * if the longpath is not long enough 
+		/*
+	   	 * if the longpath is not long enough
 	   	 * create a sub directory under it
 	   	 */
 	  	if (mkdir(longname, PERMS)== -1) {
 	  		tst_resm(TINFO, "mkdir failed in creae_longpath()");	
 	    		break;
 	  	}
-	  	/* 
-	   	 * save the path 
+	  	/*
+	   	 * save the path
 	   	 */
 	  	strcat(longpath,longname);
-	  
-	  	/* 
+	 
+	  	/*
 	   	 * cd to the sub directory
 	   	 */
 	  	if (chdir(longname) == -1 ) {
@@ -321,15 +321,15 @@ remove_longpath()
 	for ( i = (path_len/len)-1; i>=0 ; i--) {
 		for (j = 1; j<= i; j++) {
 			if (chdir(longname) == -1) {
-				tst_resm(TFAIL, 
+				tst_resm(TFAIL,
 					"failed in chdir %s, errno: %d "
 					, longname,errno);
 				break;
 			}	
 		}
 		if (rmdir(longname) == -1 ) {
-			tst_resm(TFAIL, 
-				"failed in clean %s, errno: %d", 
+			tst_resm(TFAIL,
+				"failed in clean %s, errno: %d",
 				longname,errno);
 			break;
 		}
@@ -342,7 +342,7 @@ remove_longpath()
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -368,7 +368,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *              completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

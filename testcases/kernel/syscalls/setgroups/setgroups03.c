@@ -17,7 +17,7 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-/* 
+/*
  * Test Name: setgroups03
  *
  * Test Description:
@@ -135,7 +135,7 @@ main(int ac, char **av)
 	TEST_EXP_ENOS(exp_enos);
 
 	/* Check looping state if -i option given */
-	for (lc = 0; TEST_LOOPING(lc); lc++) { 
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
@@ -152,7 +152,7 @@ main(int ac, char **av)
 			 * Call setgroups() to test different test conditions
 			 * verify that it fails with -1 return value and
 			 * sets appropriate errno.
-			 */ 
+			 */
 			 TEST(SETGROUPS(gidsetsize, groups_list));
 	
 			/* check return code of setgroups(2) */
@@ -191,7 +191,7 @@ main(int ac, char **av)
  *
  *  Call individual test specific setup functions.
  */
-void 
+void
 setup()
 {
 
@@ -245,7 +245,7 @@ setup1()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

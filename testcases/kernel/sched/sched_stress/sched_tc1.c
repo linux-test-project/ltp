@@ -51,7 +51,7 @@
 
 /*
  * Defines:
- * 
+ *
  * USAGE: usage statement
  *
  * DEFAULT_PRIORITY_TYPE: default priority
@@ -124,7 +124,7 @@ int main (int argc, char **argv)
 		printf ("\tpriority:       %s\n", priority);
 	}
 
-	/* 
+	/*
 	 * Adjust the priority of this process if the real time flag is set
 	 */
 	if (!strcmp (priority, "fixed")) {
@@ -137,7 +137,7 @@ int main (int argc, char **argv)
 #endif
 	}
 
-	/* 
+	/*
 	 * Continuously read through file until interrupted...
 	 */
 	while (!signaled)
@@ -164,20 +164,20 @@ void process_file (char *filename)
 	char   record[100];   /* holds each record of the file read */
 	FILE   *datafile;     /* file pointer to the open file */
 
-	/* 
+	/*
 	 * Try and open the datafile
 	 */
-	if ((datafile = fopen (filename, "r")) == NULL) 
+	if ((datafile = fopen (filename, "r")) == NULL)
 		sys_error ("fopen failed", __FILE__, __LINE__);
 
-	/* 
-	 * Read the first record of the datafile, then read until end-of-file 
+	/*
+	 * Read the first record of the datafile, then read until end-of-file
 	 */
 	while (fgets (record, 80, datafile)) {
 		if (feof (datafile)) break;
 	}
 
-	/* 
+	/*
 	 * Close the datafile
 	 */
 	if (fclose (datafile))
@@ -199,7 +199,7 @@ void signal_handler (int signal)
 		signaled++;
 		if (debug) printf ("\n\t<< caught SIGUSR1 interrupt>>\n");
 	} else if (signal == SIGALRM) {
-		error ("Failed to receive SIGUSR1 signal before timeout!", 
+		error ("Failed to receive SIGUSR1 signal before timeout!",
 			__FILE__, __LINE__);
 	} else
 		error ("received unexpected signal", __FILE__, __LINE__);
@@ -261,7 +261,7 @@ void parse_args (int argc, char **argv)
 	/*
 	 * Check percentage, execution time and process slots...
  	 */
-	if (pflg) { 
+	if (pflg) {
 		if (strcmp (priority, "fixed") && strcmp (priority, "variable"))
 			errflag++;
 	}

@@ -66,7 +66,7 @@
  *	07/2001 Ported by Wayne Boyer
  *
  * RESTRICTIONS:
- *  None.  
+ *  None. 
  */
 #include <errno.h>
 #include <unistd.h>
@@ -111,8 +111,8 @@ main(int ac, char **av)
 		/* Perform global setup for test */
 		setup();
 
-		/* 
-		 * Call munmap to unmap the mapped region of the 
+		/*
+		 * Call munmap to unmap the mapped region of the
 	 	 * temporary file from the calling process's address space.
 		 */
 		TEST(munmap(addr, map_len));
@@ -142,7 +142,7 @@ main(int ac, char **av)
 			 * to the first byte of region with
 			 * some arbitrary number.
 			 */
-			*addr = 50; 
+			*addr = 50;
 
 			/* This message is printed if no SIGSEGV */
 			tst_resm(TFAIL, "process succeeds to refer unmapped "
@@ -173,7 +173,7 @@ main(int ac, char **av)
  * write one byte data into it, map the open file for the specified
  * map length.
  */
-void 
+void
 setup()
 {
 	size_t page_sz;			/* system page size */
@@ -279,7 +279,7 @@ sig_handler()
  *  	       Close the temporary file.
  *  	       Remove the temporary directory.
  */
-void 
+void
 cleanup()
 {
 	/*

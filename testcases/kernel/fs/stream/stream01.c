@@ -26,7 +26,7 @@
 >HOW:   < 1) open a stream, write something to it, perform freopen and
 	<    write some more. Check that second write to stream went to
 	<    the file specified by freopen.
->BUGS:  < 
+>BUGS:  <
 ======================================================================*/
 
 #include <stdio.h>

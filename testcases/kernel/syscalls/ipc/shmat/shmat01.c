@@ -163,7 +163,7 @@ int main(int ac, char **av)
 }
 
 /*
- * check_functionality - check various conditions to make sure they 
+ * check_functionality - check various conditions to make sure they
  *			 are correct.
  */
 void

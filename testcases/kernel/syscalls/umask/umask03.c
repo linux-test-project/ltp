@@ -102,7 +102,7 @@ int main(int argc, char **argv)
 				} else {
 					low9mode = statbuf.st_mode & 0777;
 					if (low9mode != (~mskval & 0777)) {
-						tst_resm(TFAIL, 
+						tst_resm(TFAIL,
 							 "got %0 expected %o"
 							 "mask didnot take",
 							 low9mode,

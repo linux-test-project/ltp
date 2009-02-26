@@ -27,21 +27,21 @@
  *		Setup signal handling.
  *		Pause for SIGUSR1 if option specified.
  * 		Create MAX_SWAPFILES - 2 (to support latest kernels) swapfiles
- * 		  		 
+ * 		  		
  *	Test:
  *		Loop if the proper options are given.
  *		Execute system call.
  *		Check return code, if system call fails with errno == expected errno
  *	 	Issue syscall passed with expected errno
- *		Otherwise, 
+ *		Otherwise,
  *		Issue syscall failed to produce expected errno
- * 
+ *
  * 	Cleanup:
  * 		    Do cleanup for the test.
  *
  * USAGE:  <for command-line>
  *  swapon03 [-e] [-i n] [-I x] [-p x] [-t] [-h] [-f] [-p]
- *  where 
+ *  where
  *		  -e   : Turn on errno logging.
  *		  -i n : Execute test n times.
  *		  -I x : Execute test for x seconds.
@@ -51,7 +51,7 @@
  *
  * Author
  *	Ricardo Salveti de Araujo <rsalveti@linux.vnet.ibm.com> based on
- *	swapon02 created by Aniruddha Marathe 
+ *	swapon02 created by Aniruddha Marathe
  *
  * History
  *      16/08/2007      Created <rsalveti@linux.vnet.ibm.com>
@@ -77,7 +77,7 @@
 #include "usctest.h"
 
 /* This handle when we have MAX_SWAPFILES = 30 or 32 */
-#define TEST_MAX_SWAPFILES 30 
+#define TEST_MAX_SWAPFILES 30
 
 void setup();
 void cleanup();
@@ -163,7 +163,7 @@ int main(int ac, char **av)
 			/* Check return code (now we're expecting success) */
 			if (TEST_RETURN < 0) {
 				tst_resm(TFAIL, "swapon(2) got an unexpected failure;"
-						" Got errno = %d : %s", 
+						" Got errno = %d : %s",
 						TEST_ERRNO, strerror(TEST_ERRNO));
 			}
 			else {
@@ -200,7 +200,7 @@ int main(int ac, char **av)
 	 * cleanup and exit
 	 ***************************************************************/
 	cleanup();
-        
+       
 	return (0);
 
 } /* End of main */
@@ -341,7 +341,7 @@ int create_swapfile(char * swapfile, int bs, int count)
 		return -1;
 	}
 	if (system(cmd_buffer) != 0) {
-		tst_resm(TWARN, "failed to make swap file %s", swapfile); 
+		tst_resm(TWARN, "failed to make swap file %s", swapfile);
 		return -1;
 	}
 

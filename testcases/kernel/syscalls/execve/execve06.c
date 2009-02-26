@@ -33,7 +33,7 @@
  *
  * USAGE
  *	execve06 20 test1 test2 4
- * 
+ *
  * RESTRICTIONS
  * 	This program does not follow the LTP format - *PLEASE FIX*
  */

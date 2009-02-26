@@ -100,7 +100,7 @@ main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 	char read_buf[BUFSIZ];	/* data read from temp. file */
 	off_t offset;		/* byte position in temporary file */
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -119,7 +119,7 @@ main(int ac, char **av)
 		/* Set the offset position */
 		offset = file_size + (lc * strlen(write_buf2));
 
-		/* 
+		/*
 		 * Invoke lseek(2) to move the write file
 		 * pointer/handle by the specified offset value.
 		 */
@@ -177,7 +177,7 @@ main(int ac, char **av)
 			 * Now read all of the data.  The size should be the
 			 * offset + strlen(write_buf2).
 			 */
-			if (read(fildes, &read_buf, (offset + 
+			if (read(fildes, &read_buf, (offset +
 				  strlen(write_buf2))) < 0) {
 				tst_brkm(TFAIL, cleanup, "read() failed on %s, "
 					 "error=%d", TEMP_FILE, errno);
@@ -220,7 +220,7 @@ main(int ac, char **av)
  *	     data into it.
  *	     Get the size of the file using fstat().
  */
-void 
+void
 setup()
 {
 	struct stat stat_buf;		/* struct buffer for stat(2) */
@@ -266,7 +266,7 @@ setup()
  *             completion or premature exit.
  *	       Remove the test directory and testfile created in the setup.
  */
-void 
+void
 cleanup()
 {
 	/*

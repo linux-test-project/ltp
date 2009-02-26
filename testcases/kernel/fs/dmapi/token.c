@@ -112,7 +112,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n", szFuncName);
 			rc = dm_getall_tokens(INVALID_ADDR, TOKBUF_NUM, buf, &nelem);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = dm_respond_event(sid, token, DM_RESP_CONTINUE, 0, 0, NULL);
@@ -188,7 +188,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid tokenbufp)\n", szFuncName);
 			rc = dm_getall_tokens(sid, TOKBUF_NUM, (dm_token_t *)INVALID_ADDR, &nelem);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 	
 			/* Variation clean up */
 			rc = dm_respond_event(sid, token, DM_RESP_CONTINUE, 0, 0, NULL);
@@ -217,7 +217,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid nelemp)\n", szFuncName);
 			rc = dm_getall_tokens(sid, TOKBUF_NUM, buf, (u_int *)INVALID_ADDR);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = dm_respond_event(sid, token, DM_RESP_CONTINUE, 0, 0, NULL);
@@ -467,7 +467,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(DM_NO_SESSION, sid)\n", szFuncName);
 			rc = dm_getall_tokens(DM_NO_SESSION, TOKBUF_NUM, buf, &nelem);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = dm_respond_event(sid, token, DM_RESP_CONTINUE, 0, 0, NULL);
@@ -543,7 +543,7 @@ void *Thread(void *parm)
 			DMLOG_PRINT(DMLVL_DEBUG, "  Media designator: %s\n", DM_GET_VALUE(me, me_name2, char *));
 			DMLOG_PRINT(DMLVL_DEBUG, "  Root handle: %p\n", DM_GET_VALUE(me, me_roothandle, void *));
 			DMLOG_PRINT(DMLVL_DEBUG, "  Root handle length: %d\n", DM_GET_LEN(me, me_roothandle));
-	    
+	   
     			bMounted = dm_handle_is_valid(hanp, hlen);
 
     			rc = dm_request_right(sid, hanp, hlen, token, DM_RR_WAIT, DM_RIGHT_EXCL);

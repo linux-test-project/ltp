@@ -45,7 +45,7 @@ int main()
         pid = clone(dummy, childstack, CLONE_NEWIPC, NULL);
 #endif
 
-        if (pid == -1) 
+        if (pid == -1)
                 return 3;
         return 0;
 }

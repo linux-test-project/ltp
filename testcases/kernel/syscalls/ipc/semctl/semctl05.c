@@ -57,7 +57,7 @@ int TST_TOTAL = 3;
 extern int Tst_count;
 
 #ifdef _XLC_COMPILER
-#define SEMUN_CAST 
+#define SEMUN_CAST
 #else
 #define SEMUN_CAST (union semun)
 #endif
@@ -67,7 +67,7 @@ int exp_enos[] = {ERANGE, 0};	/* 0 terminated list of expected errnos */
 int sem_id_1 = -1;
 
 #define BIGV	65535		/* a number ((2^16)-1) that should be larger */
-				/* than the maximum for a semaphore value    */ 
+				/* than the maximum for a semaphore value    */
 
 #ifdef _XLC_COMPILER
 #define SEMUN_CAST

@@ -17,7 +17,7 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-/* 
+/*
  * Test Name: fchmod02
  *
  * Test Description:
@@ -122,7 +122,7 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-		/* 
+		/*
 	 	 * Call fchmod(2) with specified mode argument
 		 * (sticky-bit set) on testfile.
 	 	 */
@@ -177,7 +177,7 @@ main(int ac, char **av)
  *  Create a test file under temporary directory.
  *  Change the ownership of test file to that of "ltpuser1" user.
  */
-void 
+void
 setup()
 {
 	struct passwd *ltpuser;		/* password struct for ltpuser1 */
@@ -223,7 +223,7 @@ setup()
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %#o) Failed, errno=%d : %s",
 			 TESTFILE, FILE_MODE, errno, strerror(errno));
-	} 
+	}
 
 	if (chown(TESTFILE, user1_uid, group1_gid) < 0) {
 		tst_brkm(TBROK, cleanup, "chown(2) of %s failed", TESTFILE);
@@ -242,7 +242,7 @@ setup()
  *  Close the testfile created in the setup.
  *  Remove the test directory and testfile created in the setup.
  */
-void 
+void
 cleanup()
 {
 	/*

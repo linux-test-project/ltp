@@ -30,7 +30,7 @@
  *	check the errno value
  *	  if failure, log the errno and issue a FAIL message
  *	otherwise,
- *	  if doing functionality testing, 
+ *	  if doing functionality testing,
  *	    if the directory name of the first entry is "."
  *	      issue a PASS message
  *	    otherwise,

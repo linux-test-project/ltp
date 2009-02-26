@@ -11,7 +11,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-int main(void) 
+int main(void)
 {
   char buf[1];
   int rc;
@@ -26,7 +26,7 @@ int main(void)
   if (rc < 0) {
     perror("read");
     exit(-1);
-  }  
+  } 
   exit(0);
 }
 

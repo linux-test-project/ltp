@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: select01.c,v 1.2 2008/01/21 11:16:17 subrata_modak Exp $ */
+/* $Id: select01.c,v 1.3 2009/02/26 12:04:44 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -141,7 +141,7 @@ main(int ac, char **av)
 {
     int lc;		/* loop counter */
     char *msg;		/* message returned from parse_opts */
-    struct timeval timeout; 
+    struct timeval timeout;
     long test_time = 0;	/* in usecs */
 
 
@@ -216,7 +216,7 @@ main(int ac, char **av)
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void 
+void
 setup()
 {
     /* capture signals */
@@ -248,7 +248,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void 
+void
 cleanup()
 {
     /*

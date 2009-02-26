@@ -22,7 +22,7 @@
 
 /*
  * NAME
- *      lib.c - This file contains code for common failure conditions 
+ *      lib.c - This file contains code for common failure conditions
  */
 
 #define _USC_LIB_
@@ -36,7 +36,7 @@ static const char       *no_file = "./tmp/no_such_file";
 static const char       *is_a_file = "./tmp/is_a_file";
 
 extern FILE *temp;
-/* 
+/*
  * Cleanup the ./tmp
  */
 void
@@ -46,7 +46,7 @@ remove_test_ENOTDIR_files()
 }
 
 
-/* 
+/*
  * Cleanup the ./tmp
  */
 void
@@ -61,7 +61,7 @@ remove_test_ENOENT_files(void)
  *      characters.
  */
 
-static char * 
+static char *
 get_long_name_buffer(size_t *length, size_t extra)
 {
 	char	*buffer;
@@ -134,7 +134,7 @@ test_long_file_name(char *name, int (*callback)(const char *), int expected)
 	char	*ptr, *ptr_end, *buffer;
 	size_t	name_length;
 
-	buffer = get_long_name_buffer(&name_length, 1); 
+	buffer = get_long_name_buffer(&name_length, 1);
 
 	strcpy(buffer, tmp_path);
 	ptr = buffer + strlen(buffer);
@@ -152,7 +152,7 @@ test_long_file_name(char *name, int (*callback)(const char *), int expected)
 
 
 static void
-test_long_component_name(char *name, int (*callback)(const char *), 
+test_long_component_name(char *name, int (*callback)(const char *),
 	int expected)
 {
 	char	*ptr, *ptr_end, *buffer;
@@ -189,7 +189,7 @@ test_ENAMETOOLONG_path(char *name, int (*callback)(const char *), int expected)
 		fail_exit();
 	}
 #ifdef DEBUG
-	fprintf(temp, "INFO: pathconf(_PC_PATH_MAX) for %s is %lu\n", 
+	fprintf(temp, "INFO: pathconf(_PC_PATH_MAX) for %s is %lu\n",
 		tmp_path, pcPathMax);
 #endif
 
@@ -206,20 +206,20 @@ test_ENAMETOOLONG_path(char *name, int (*callback)(const char *), int expected)
 	pcPathMax = pcPathMax - tempPathLength - 5;
 
 	tmpPtr = path + strlen(path);
-	while (pathLength < pcPathMax) { 
+	while (pathLength < pcPathMax) {
 		tmpPtr += sprintf(tmpPtr, "/%s", tmp_path);
-		pathLength += tempPathLength; 
+		pathLength += tempPathLength;
 	}
 
 	/* reinstate pcPathMax correct value */
 	pcPathMax = pcPathMax + tempPathLength + 5;
 
 	tmpPtr = path + pathLength;
-	*tmpPtr++ = '/' ; 
+	*tmpPtr++ = '/' ;
 	pathLength++;
-	while (pathLength <= pcPathMax) { 
-		*tmpPtr++ = 'z'; 
-		pathLength++; 
+	while (pathLength <= pcPathMax) {
+		*tmpPtr++ = 'z';
+		pathLength++;
 	}
 	*tmpPtr = '\0';
 
@@ -266,9 +266,9 @@ test_ENOENT_empty(char *name, int (*callback)(const char *), int expected)
 		}
 	} else {
 		tst_resm(TFAIL, "%s did not return correct value; Expected=%d Received=%d", name, expected, s2);
-		cleanup_function(); 
-		fail_exit(); 
-	} 
+		cleanup_function();
+		fail_exit();
+	}
 }
 
 

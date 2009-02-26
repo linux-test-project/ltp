@@ -62,7 +62,7 @@
  * RESTRICTIONS
  *	None.
  */
- 
+
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
@@ -71,7 +71,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <pwd.h>
-#include "test.h" 
+#include "test.h"
 #include "usctest.h"
 
 void setup();
@@ -111,7 +111,7 @@ main(int ac, char **av)
 	 * check looping state if -i option given
 	 */
 	for (lc=0; TEST_LOOPING(lc); lc++) {
-	  
+	 
 		/* reset Tst_count in case we are looping. */
 		Tst_count=0;
 
@@ -172,7 +172,7 @@ main(int ac, char **av)
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void 
+void
 setup()
 {
 	 /* Switch to nobody user for correct error code collection */
@@ -202,7 +202,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

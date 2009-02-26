@@ -15,18 +15,18 @@
  *
  */
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER	: sched_setparam05
- * 
+ *
  *    EXECUTED BY	: root/superuser
- * 
+ *
  *    TEST TITLE	: verify that sched_setparam() fails if the user does
  *			  not have proper privilages
- * 
+ *
  *    TEST CASE TOTAL	: 1
- * 
+ *
  *    AUTHOR		: Saji Kumar.V.R <saji.kumar@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -34,11 +34,11 @@
  *    DESCRIPTION
  *	Verify that sched_setparam() fails if the user does
  *	not have proper privilages
- * 
+ *
  * 	Setup:
  * 	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  *	 Fork a child
@@ -48,15 +48,15 @@
  *	  Try to Change scheduling priority for parent
  *	  If call failed with errno = EPERM,
  *		Test passed
- *	  else 
+ *	  else
  *		Test failed
  *
  *	 PARENT:
  *		wait for child to finish
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  *  sched_setparam05 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
  *			where,  -c n : Run n copies concurrently.
@@ -99,7 +99,7 @@ main(int ac, char **av)
 	char *msg;	/* message returned from parse_opts */
 	int status;
 	pid_t child_pid;
-    
+   
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
 	     != (char *)NULL) {
@@ -116,12 +116,12 @@ main(int ac, char **av)
 		Tst_count = 0;
 
 		switch(child_pid = FORK_OR_VFORK()) {
- 
+
 		case -1:
 			/* fork() failed */
 			tst_resm(TFAIL, "fork() failed");
 			continue;
- 
+
 		case 0:
 			/* Child */
 
@@ -143,14 +143,14 @@ main(int ac, char **av)
 			TEST(sched_setparam(getppid(), &param));
 
 			if ((TEST_RETURN == -1) && (TEST_ERRNO == EPERM)) {
-				TEST_ERROR_LOG(TEST_ERRNO); 
+				TEST_ERROR_LOG(TEST_ERRNO);
 				exit(0);
 			}
 
 			tst_resm(TWARN, "Test failed, sched_setparam()"
 				" returned : %d, Error number: %d, %s",
 				TEST_RETURN, TEST_ERRNO, strerror(TEST_ERRNO));
-			TEST_ERROR_LOG(TEST_ERRNO); 
+			TEST_ERROR_LOG(TEST_ERRNO);
 			exit(1);
 
 		default :

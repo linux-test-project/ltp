@@ -261,7 +261,7 @@ cleanup()
 	/* remove files and temp dir */
 	tst_rmdir();
 
- 
+
 	/* exit with return code appropriate for results */
 	tst_exit();
 }

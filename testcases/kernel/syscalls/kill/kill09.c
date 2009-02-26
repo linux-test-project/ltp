@@ -30,83 +30,83 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: kill09.c,v 1.4 2005/07/11 22:28:29 robbiew Exp $ */
+/* $Id: kill09.c,v 1.5 2009/02/26 12:03:43 subrata_modak Exp $ */
 /**********************************************************
- * 
+ *
  *    OS Test - Silicon Graphics, Inc.
- * 
+ *
  *    TEST IDENTIFIER	: kill09
- * 
+ *
  *    EXECUTED BY	: anyone
- * 
+ *
  *    TEST TITLE	: Basic test for kill(2)
- * 
+ *
  *    PARENT DOCUMENT	: usctpl01
- * 
+ *
  *    TEST CASE TOTAL	: 1
- * 
+ *
  *    WALL CLOCK TIME	: 1
- * 
+ *
  *    CPU TYPES		: ALL
- * 
+ *
  *    AUTHOR		: William Roske
- * 
+ *
  *    CO-PILOT		: Dave Fenner
- * 
+ *
  *    DATE STARTED	: 03/30/92
- * 
+ *
  *    INITIAL RELEASE	: UNICOS 7.0
- * 
+ *
  *    TEST CASES
- * 
+ *
  * 	1.) kill(2) returns...(See Description)
  *	
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
- * 
+ *
  *    OUTPUT SPECIFICATIONS
  * 	
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
  *
  *    RESOURCES
  * 	None
- * 
+ *
  *    ENVIRONMENTAL NEEDS
  *      No run-time environmental needs.
- * 
+ *
  *    SPECIAL PROCEDURAL REQUIREMENTS
  * 	None
- * 
+ *
  *    INTERCASE DEPENDENCIES
  * 	None
- * 
+ *
  *    DETAILED DESCRIPTION
  *	This is a Phase I test for the kill(2) system call.  It is intended
  *	to provide a limited exposure of the system call, for now.  It
  *	should/will be extended when full functional tests are written for
  *	kill(2).
- * 
+ *
  * 	Setup:
  * 	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  * 	  Execute system call
  *	  Check return code, if system call failed (return=-1)
  *		Log the errno and Issue a FAIL message.
  *	  Otherwise, Issue a PASS message.
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
- * 
+ *
+ *
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
 #include <errno.h>
@@ -137,7 +137,7 @@ main(int ac, char **av)
     int lc;		/* loop counter */
     char *msg;		/* message returned from parse_opts */
     int status;
-    
+   
     /***************************************************************
      * parse standard options
      ***************************************************************/
@@ -184,7 +184,7 @@ main(int ac, char **av)
         }
 
 	/* PARENT */
-	/* 
+	/*
 	 * Call kill(2)
 	 */
 	TEST(kill(fork_pid, SIGKILL));
@@ -194,19 +194,19 @@ main(int ac, char **av)
 	    tst_resm(TFAIL, "kill(%d, SIGKILL) Failed, errno=%d : %s", fork_pid,
 	 	     TEST_ERRNO, strerror(TEST_ERRNO));
 	} else {
-	    
+	   
 	    /***************************************************************
 	     * only perform functional verification if flag set (-f not given)
 	     ***************************************************************/
 	    if ( STD_FUNCTIONAL_TEST ) {
 		/* No Verification test, yet... */
 		tst_resm(TPASS, "kill(%d, SIGKILL) returned %d", fork_pid, TEST_RETURN);
-	    } 
+	    }
 	}
 
 	/*
 	 * wait for process to cleanup zombies.
-	 * 
+	 *
 	 */
 	waitpid(0, &status, WNOHANG);
 
@@ -239,7 +239,7 @@ do_child()
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void 
+void
 setup()
 {
     /* capture signals */
@@ -258,7 +258,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void 
+void
 cleanup()
 {
     /*

@@ -15,13 +15,13 @@
 *
 ***************************************************************************/
 /*=========================================================================
-* This testcase creates the network namespace. 
+* This testcase creates the network namespace.
 * It creates veth pair . Also assigns IP addresses to the childNS.
 * Also it starts the sshd daemon @ port 7890
 *
 * Scripts Used: paripv6.sh childipv6.sh
-* 
-* Author: Veerendra C <vechandr@in.ibm.com> 
+*
+* Author: Veerendra C <vechandr@in.ibm.com>
 *                      31/07/2008
 =========================================================================*/
 
@@ -44,7 +44,7 @@
 
 char *TCID = "netns_ipv6";
 int TST_TOTAL=1;
- 
+
 extern pid_t getpgid(pid_t pid);
 extern pid_t getsid(pid_t pid);
 
@@ -65,7 +65,7 @@ int main()
 
     flags |= CLONE_NEWNS;
     flags |= CLONE_NEWNET;
- 
+
 
     if (tst_kvercmp(2,6,19) < 0)
 	return 1;
@@ -76,7 +76,7 @@ int main()
         tst_resm(TINFO,"LTPROOT env variable is not set\n");
         tst_resm(TINFO,"Please set LTPROOT and re-run the test.. Thankyou\n");
         return -1;
-    } 
+    }
 
     par = malloc (FILENAME_MAX);
     child = malloc (FILENAME_MAX);

@@ -51,7 +51,7 @@
 
 /*
  * Defines:
- * 
+ *
  * USAGE: usage statement
  *
  * DEFAULT_PRIORITY_TYPE: default priority
@@ -125,7 +125,7 @@ int main (int argc, char **argv)
 		printf ("\texecution_time: %ld (sec)\n", execution_time);
 	}
 
-	/* 
+	/*
 	 * Adjust the priority of this process if the real time flag is set
 	 */
 	if (!strcmp (priority, "fixed")) {
@@ -138,7 +138,7 @@ int main (int argc, char **argv)
 #endif
 	}
 
-	/* 
+	/*
 	 * Continuously multiply matrix as time permits...
 	 */
 	i = 0;
@@ -147,8 +147,8 @@ int main (int argc, char **argv)
 	if (debug) printf ("\n");
 	while  ( (time ((long *)0) - start_time) < execution_time) {
 		if (debug) {
-			printf ("\r\tmultiplying matrix [%d], time left: %ld", 
-				i++, 
+			printf ("\r\tmultiplying matrix [%d], time left: %ld",
+				i++,
 				execution_time - (time ((long *)0)-start_time));
 			fflush (stdout);
 		}
@@ -188,14 +188,14 @@ void multiply_matrices ()
 		}
 	}
 
-	/* 
-	 * Now multiply the two matrices 
+	/*
+	 * Now multiply the two matrices
 	 */
 	for (i=0; i < MATRIX_SIZE; i++) {
 		for ( j=0; j < MATRIX_SIZE; j++) {
 			matrix_3 [i][j] = 0.0;	/* clear the element first */
 			for (k=0; k < MATRIX_SIZE; k++)
-				matrix_3 [i][j] += 
+				matrix_3 [i][j] +=
 					matrix_1 [i][k] * matrix_2 [k][j];
 		}
 	}
@@ -262,11 +262,11 @@ void parse_args (int argc, char **argv)
 	/*
 	 * Check percentage, execution time and process slots...
  	 */
-	if (pflg) { 
+	if (pflg) {
 		if (strcmp (priority, "fixed") && strcmp (priority, "variable"))
 			errflag++;
 	}
-	if (tflg) { 
+	if (tflg) {
 		if (execution_time < 0.0 || execution_time > 360000)
 			errflag++;
 	}

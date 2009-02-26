@@ -23,7 +23,7 @@
  * Test Description :
  *  Verify that, readlink will succeed to read the contents of the symbolic
  *  link created the process.
- * 
+ *
  * Expected Result:
  *  readlink() should return the contents of symbolic link path in the buffer
  *  on success.
@@ -98,7 +98,7 @@ main(int ac, char **av)
 	char buffer[MAX_SIZE];	/* temporary buffer to hold symlink contents*/
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
 	if (msg != (char *)NULL) {
@@ -114,7 +114,7 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 	
-		/* 
+		/*
 		 * Call readlink(2) to read the contents of
 		 * symlink into a buffer.
 		 */
@@ -171,7 +171,7 @@ main(int ac, char **av)
  *  Create a test file under temporary directory and close it
  *  Create a symbolic link of testfile.
  */
-void 
+void
 setup()
 {
 	int fd;			/* file handle for testfile */
@@ -227,7 +227,7 @@ setup()
  *
  *  Remove the test directory and testfile created in the setup.
  */
-void 
+void
 cleanup()
 {
 	/*

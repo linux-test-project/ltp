@@ -97,7 +97,7 @@ main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	time_t pres_time;	/* system's present time */
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -117,7 +117,7 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 
-		/* 
+		/*
 		 * Invoke stime(2) to set the system's time
 		 * to the specified new_time.
 		 */
@@ -147,7 +147,7 @@ main(int ac, char **av)
 				}
 
 				/* Now do the actual verification */
-				if ((pres_time != new_time) && 
+				if ((pres_time != new_time) &&
 				   (pres_time != new_time + 1)) {
 					tst_resm(TFAIL, "stime() fails to set "
 						"system's time");
@@ -158,7 +158,7 @@ main(int ac, char **av)
 				}
 			} else {
 				tst_resm(TPASS, "Call succeeded");
-			} 
+			}
 		}
 		Tst_count++;			/* incr TEST_LOOP counter */
 	}	/* End for TEST_LOOPING */
@@ -177,7 +177,7 @@ main(int ac, char **av)
  * setup() - performs all ONE TIME setup for this test.
  *  Get the current time and system's new time to be set in the test.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -210,7 +210,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

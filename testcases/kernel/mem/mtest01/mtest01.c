@@ -142,7 +142,7 @@ int main(int argc, char* argv[]) {
     }
     else
       pre_mem = sstats.mem_unit*total_free;
-    
+   
 
     /* set maxbytes to the extra amount we want to allocate */
     maxbytes = D-C;
@@ -201,9 +201,9 @@ int main(int argc, char* argv[]) {
   else
     alloc_bytes=(unsigned long)maxbytes;
 #endif
-  
+ 
   if ( pid == 0)			/** CHILD **/
-  { 
+  {
     bytecount=chunksize;
     while(1) {
       if((mem = (char*)malloc(chunksize)) == NULL) {
@@ -232,13 +232,13 @@ int main(int argc, char* argv[]) {
 
     i=0;
     sysinfo(&sstats);
-    
-    if (dowrite) 
+   
+    if (dowrite)
     {
       /* Total Free Post-Test RAM */
       post_mem = (unsigned long long)sstats.mem_unit*sstats.freeram;
       post_mem = post_mem+((unsigned long long)sstats.mem_unit*sstats.freeswap);
-	    
+	   
       while ( (((unsigned long long)pre_mem - post_mem) < (unsigned long long)original_maxbytes) &&
               (pid_count < pid_cntr) )
       {
@@ -249,7 +249,7 @@ int main(int argc, char* argv[]) {
       }
     }
     while (pid_list[i]!=0)
-    { 
+    {
       kill(pid_list[i],SIGKILL);
       i++;
     }

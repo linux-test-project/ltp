@@ -17,7 +17,7 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-/* 
+/*
  * Test Name: truncate03
  *
  * Test Description:
@@ -75,7 +75,7 @@
  *
  * Restrictions:
  *  This test should be executed by 'non-super-user' only.
- * 
+ *
  */
 
 #include <stdio.h>
@@ -121,10 +121,10 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's*/
 	int exp_errno;
 	int (*setupfunc)();
 } Test_cases[] = {
-	{ TEST_FILE1, "No Search permissions to process", EACCES, setup1 }, 
+	{ TEST_FILE1, "No Search permissions to process", EACCES, setup1 },
 	{ TEST_FILE2, "Path contains regular file", ENOTDIR, setup2 },
 #if !defined(UCLINUX)
-	{ High_address_node, "Address beyond address space", EFAULT, no_setup}, 
+	{ High_address_node, "Address beyond address space", EFAULT, no_setup},
 	{ (char *)-1, "Negative address", EFAULT, no_setup },
 #endif
 	{ Longpathname, "Pathname too long", ENAMETOOLONG, longpath_setup },
@@ -144,7 +144,7 @@ main(int ac, char **av)
 	char *file_name;	/* testfile name */
 	char *test_desc;	/* test specific error message */
 	int ind;
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -176,7 +176,7 @@ main(int ac, char **av)
 			}
 #endif
 
-			/* 
+			/*
 			 * Call truncate(2) to test different test conditions.
 			 * verify that it fails with return code -1 and sets
 			 * appropriate errno.
@@ -224,7 +224,7 @@ main(int ac, char **av)
  *  into it, close it.
  *  Call individual test specific setup functions.
  */
-void 
+void
 setup()
 {
 	int fd, i, ind;			/* file handler for testfile */
@@ -392,7 +392,7 @@ longpath_setup()
  *	       completion or premature exit.
  *  Remove the test directory and testfile created in the setup.
  */
-void 
+void
 cleanup()
 {
 	/*

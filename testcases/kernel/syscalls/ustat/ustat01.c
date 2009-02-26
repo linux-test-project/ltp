@@ -15,17 +15,17 @@
  *
  */
 /**************************************************************************
- * 
+ *
  *    TEST IDENTIFIER	: ustat01
  *
  *    EXECUTED BY	: Anyone
- * 
+ *
  *    TEST TITLE	: Basic test for ustat(2)
- * 
+ *
  *    TEST CASE TOTAL	: 1
- * 
+ *
  *    AUTHOR		: Aniruddha Marathe <aniruddha.marathe@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -38,21 +38,21 @@
  *	 Setup signal handling.
  *	 Pause for SIGUSR1 if option specified.
  *	 Find out device number for a particular file.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  *	  Execute system call
  *	  Check return code, if system call failed (return=-1)
  *		Log the errno and Issue a FAIL message.
  *	  Otherwise, Issue a PASS message.
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  * ustat01 [-c n] [-e] [-i n] [-I x] [-p x] [-t] [-h] [-f] [-p]
  * where:
- * 	-c n : run the test for n number of times. 
+ * 	-c n : run the test for n number of times.
  *	-e   : Turn on errno logging.
  *	-i n : Execute test n times.
  *	-I x : Execute test for x seconds.
@@ -82,7 +82,7 @@ dev_t dev_num;
 struct ustat *ubuf;
 struct stat *buf;
 
-int 
+int
 main(int argc, char *argv[])
 {
 	int lc,i;
@@ -108,7 +108,7 @@ main(int argc, char *argv[])
 			if (TEST_RETURN == -1) {
 				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_resm(TFAIL, "ustat(2) failed and set"
-						 "the errno to %d : %s", 
+						 "the errno to %d : %s",
 						 TEST_ERRNO,
 						 strerror(TEST_ERRNO));
 			}
@@ -150,7 +150,7 @@ setup()
 		tst_brkm(TBROK, tst_exit, "Couldn't find device number");
 	}
 
-	dev_num = buf->st_dev; 
+	dev_num = buf->st_dev;
 }	/* End setup() */
 
 /*

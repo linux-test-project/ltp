@@ -15,18 +15,18 @@
  *
  */
 /**************************************************************************
- * 
+ *
  *    TEST IDENTIFIER	: mlockall02
- * 
+ *
  *    EXECUTED BY	: root / superuser
- * 
+ *
  *    TEST TITLE	: Test for checking basic error conditions for
  *    			   mlockall(2)
- * 
+ *
  *    TEST CASE TOTAL	: 3
- * 
+ *
  *    AUTHOR		: Nirmala Devi Dhanasekar <nirmala.devi@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -43,7 +43,7 @@
  * 	Setup:
  *	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  *	  Do necessary setup for each test.
@@ -56,7 +56,7 @@
  *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  *  mlockall02 [-c n] [-e] [-i n] [-I x] [-p x] [-t]
  *		where,

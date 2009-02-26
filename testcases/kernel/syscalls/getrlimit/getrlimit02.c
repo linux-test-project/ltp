@@ -35,16 +35,16 @@
  *
  * DESCRIPTION
  *      Verify that,
- *   1) getrlimit(2) returns -1 and sets errno to EFAULT if an invalid 
+ *   1) getrlimit(2) returns -1 and sets errno to EFAULT if an invalid
  *	address is given for address parameter.
  *   2) getrlimit(2) returns -1 and sets errno to EINVAL if an invalid
- *	resource type (RLIM_NLIMITS is a out of range resource type) is 
+ *	resource type (RLIM_NLIMITS is a out of range resource type) is
  *	passed.
  *
  * Setup:
  *   Setup signal handling.
  *   Pause for SIGUSR1 if option specified.
- * 
+ *
  *  Test:
  *   Loop if the proper options are given.
  *   Execute system call
@@ -127,10 +127,10 @@ main(int ac, char **av)
 			/*
 			 * Test the system call.
 			 */
-			TEST(getrlimit(testcases[i].res_type, 
+			TEST(getrlimit(testcases[i].res_type,
 				testcases[i].rlim));
- 
-			if ((TEST_RETURN == -1) && 
+
+			if ((TEST_RETURN == -1) &&
 			    (TEST_ERRNO == testcases[i].exp_errno)) {
 				tst_resm(TPASS, "expected failure; got %s",
 					testcases[i].exp_errval);

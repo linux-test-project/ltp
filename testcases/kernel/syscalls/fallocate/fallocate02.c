@@ -1,17 +1,17 @@
 
 /******************************************************************************
- *          			 fallocate02.c                                  
+ *          			 fallocate02.c                                 
  *	Mon Dec 24 2007
- *  	Copyright (c) International Business Machines  Corp., 2007        
+ *  	Copyright (c) International Business Machines  Corp., 2007       
  *	Emali : sharyathi@in.ibm.com
  ******************************************************************************/
 
 
 /***************************************************************************
-  * This program is free software;  you can redistribute it and/or modify      
-  * it under the terms of the GNU General Public License as published by       
-  * the Free Software Foundation; either version 2 of the License, or          
-  * (at your option) any later version.                                        
+  * This program is free software;  you can redistribute it and/or modify     
+  * it under the terms of the GNU General Public License as published by      
+  * the Free Software Foundation; either version 2 of the License, or         
+  * (at your option) any later version.                                       
   *
   * This program is distributed in the hope that it will be useful,
   * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -57,7 +57,7 @@
   *	ENVIRONMENTAL NEEDS
   *		Test Needs to be executed on file system supporting ext4
   *   LTP {TMP} Needs to be set to such a folder
-  *   
+  *  
   *	SPECIAL PROCEDURAL REQUIREMENTS
   * 		None
   *
@@ -140,8 +140,8 @@ struct test_data_t
 	int mode;
 	loff_t offset;
 	loff_t len;
-	int error; 
-} test_data[] = { 
+	int error;
+} test_data[] = {
                 {RFILE, DEFAULT_TEST_MODE, 0, 1, EBADF},
                 {WFILE, DEFAULT_TEST_MODE, -1, 1, EINVAL},
                 {WFILE, DEFAULT_TEST_MODE, 1, -1, EINVAL},
@@ -152,14 +152,14 @@ struct test_data_t
 };
 int  TST_TOTAL  = sizeof(test_data)/sizeof(test_data[0]);                  /* total number of tests in this file.   */
 int block_size;
-int buf_size; 
+int buf_size;
 
 
 /******************************************************************************
- * Performs all one time clean up for this test on successful    
- * completion,  premature exit or  failure. Closes all temporary 
- * files, removes all temporary directories exits the test with  
- * appropriate return code by calling tst_exit() function.       
+ * Performs all one time clean up for this test on successful   
+ * completion,  premature exit or  failure. Closes all temporary
+ * files, removes all temporary directories exits the test with 
+ * appropriate return code by calling tst_exit() function.      
 ******************************************************************************/
 extern void
 cleanup()
@@ -186,7 +186,7 @@ cleanup()
 }
 
 /*****************************************************************************
- * Performs all one time setup for this test. This function is   
+ * Performs all one time setup for this test. This function is  
  * used to create temporary dirs and temporary files
  * that may be used in the course of this test
  ******************************************************************************/
@@ -194,7 +194,7 @@ void
 setup()
 {
  	/* capture signals */
-    	tst_sig(FORK, DEF_HANDLER, cleanup); 
+    	tst_sig(FORK, DEF_HANDLER, cleanup);
 
     	/* Pause if that option was specified */
     	TEST_PAUSE;
@@ -226,7 +226,7 @@ get_blocksize(int fd)
 	 struct stat file_stat;
 	
 	if( fstat(fd, &file_stat) < 0 )
-           tst_resm(TFAIL, "fstat failed while getting block_size errno=%d : %s",  
+           tst_resm(TFAIL, "fstat failed while getting block_size errno=%d : %s", 
 		TEST_ERRNO, strerror(TEST_ERRNO));
 	
 	block_size = (int) file_stat.st_blksize;
@@ -298,7 +298,7 @@ main(int   ac,    /* number of command line parameters                      */
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	
 	/* This test needs kernel version > 2.6.23 and
-	 * either of x86, x86_64 or ppc architecture 
+	 * either of x86, x86_64 or ppc architecture
 	 */
 	if ( !arch_support || (tst_kvercmp(2,6,23) < 0)) {
 		tst_resm(TWARN," System doesn't support execution of the test");		
@@ -320,9 +320,9 @@ main(int   ac,    /* number of command line parameters                      */
 			case WFILE: fd = fdw;
 				strcpy(fname,fnamew);
 				break;
-			} 
+			}
 	        	
-		TEST(fallocate( fd, test_data[test_index].mode, 
+		TEST(fallocate( fd, test_data[test_index].mode,
 		test_data[test_index].offset * block_size, test_data[test_index].len * block_size));
 			 /* check return code */
 	        if ( TEST_ERRNO != test_data[test_index].error ) {
@@ -332,13 +332,13 @@ main(int   ac,    /* number of command line parameters                      */
 			}
 	            TEST_ERROR_LOG(TEST_ERRNO);
 	            tst_resm(TFAIL, "fallocate(%s:%d, %d, %lld, %lld) Failed, expected errno:%d \
-				instead errno=%d : %s", fname, fd,test_data[test_index].mode, 
-				test_data[test_index].offset * block_size, test_data[test_index].len * block_size, 
+				instead errno=%d : %s", fname, fd,test_data[test_index].mode,
+				test_data[test_index].offset * block_size, test_data[test_index].len * block_size,
 				test_data[test_index].error, TEST_ERRNO, strerror(TEST_ERRNO));
 		 } else {
 		        /* No Verification test, yet... */
 		        tst_resm(TPASS, "fallocate(%s:%d, %d, %lld, %lld) returned %d ",
-			fname, fd,test_data[test_index].mode, test_data[test_index].offset * block_size, 
+			fname, fd,test_data[test_index].mode, test_data[test_index].offset * block_size,
 			test_data[test_index].len * block_size, TEST_ERRNO);
         		}
 		}

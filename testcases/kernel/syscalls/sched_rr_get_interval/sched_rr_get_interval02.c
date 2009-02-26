@@ -15,17 +15,17 @@
  *
  */
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER	: sched_rr_get_interval02
- * 
+ *
  *    EXECUTED BY	: root / superuser
- * 
+ *
  *    TEST TITLE	: Functionality test
- * 
+ *
  *    TEST CASE TOTAL	: 1
- * 
+ *
  *    AUTHOR		: Saji Kumar.V.R <saji.kumar@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -47,7 +47,7 @@
  *		Test passed.
  *	  Otherwise
  *		Test failed
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
  *
@@ -119,7 +119,7 @@ main(int ac, char **av)
 				 " tp.tv_nsec = %d", TEST_RETURN, TEST_ERRNO,
 				 strerror(TEST_ERRNO), (int)tp.tv_sec,
 				 tp.tv_nsec);
-		} 
+		}
 	}	/* End for TEST_LOOPING */
 
 	/* cleanup and exit */

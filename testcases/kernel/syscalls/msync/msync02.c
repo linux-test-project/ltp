@@ -108,7 +108,7 @@ main(int ac, char **av)
 		/* Perform global setup for test */
 		setup();
 
-		/* 
+		/*
 		 * Call msync to synchronize the mapped region
 	 	 * with the specified file.
 		 */
@@ -133,7 +133,7 @@ main(int ac, char **av)
 			 * data written to the file.
 			 */
 			if (memcmp(addr + 100, write_buf,
-				   strlen(write_buf)) != 0) { 
+				   strlen(write_buf)) != 0) {
 				tst_resm(TFAIL,
 					 "memory region contains invalid data");
 			} else {
@@ -167,7 +167,7 @@ main(int ac, char **av)
  * Seek the file ptr to the specified offset pos (100) from beginning.
  * Write known data at the specified offset position.
  */
-void 
+void
 setup()
 {
 	int c_total = 0, nwrite = 0;	/* no. of bytes to be written */
@@ -243,7 +243,7 @@ setup()
  * 	       Close the temporary file.
  * 	       Remove the temporary directory created.
  */
-void 
+void
 cleanup()
 {
 	/*

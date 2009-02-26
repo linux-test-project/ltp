@@ -103,7 +103,7 @@ main(int ac, char **av)
 	struct stat stat_buf;	/* stat structure buffer */
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -114,12 +114,12 @@ main(int ac, char **av)
 	/* Perform global setup for test */
 	setup();
 
-	/* Check looping state if -i option given */ 
+	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
 	
-		/* 
+		/*
 		 * Call fstat(2) to get the status of
 		 * specified 'file' pointed to by 'fd'
 		 * into stat structure.
@@ -171,7 +171,7 @@ main(int ac, char **av)
  *  Creat a temporary file and write some known data into it.
  *  Get the effective uid/gid of test process.
  */
-void 
+void
 setup()
 {
 	int i;
@@ -181,7 +181,7 @@ setup()
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-    
+   
 	/* Switch to nobody user for correct error code collection */
         if (geteuid() != 0) {
                 tst_brkm(TBROK, tst_exit, "Test must be run as root");
@@ -197,10 +197,10 @@ setup()
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
-    
+   
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
-    
+   
 	if ((fildes = open(TESTFILE, O_WRONLY|O_CREAT, FILE_MODE)) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %#o) Failed, errno=%d : %s",
@@ -234,7 +234,7 @@ setup()
  *	       completion or premature exit.
  *  Close the test file and remove the test file and temporary directory.
  */
-void 
+void
 cleanup()
 {
 	/*

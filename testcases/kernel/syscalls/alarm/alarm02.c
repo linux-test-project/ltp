@@ -1,35 +1,35 @@
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
- * 
+ *
  * This program is distributed in the hope that it would be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * 
+ *
  * Further, this software is distributed without any warranty that it is
  * free of the rightful claim of any third person regarding infringement
  * or the like.  Any license provided herein, whether implied or
  * otherwise, applies only to this software file.  Patent licenses, if
  * any, provided herein do not apply to combinations of this program with
  * other software, or any other product whatsoever.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston MA 02111-1307, USA.
- * 
+ *
  * Contact information: Silicon Graphics, Inc., 1600 Amphitheatre Pkwy,
  * Mountain View, CA  94043, or:
- * 
- * http://www.sgi.com 
- * 
- * For further information regarding this notice, see: 
- * 
+ *
+ * http://www.sgi.com
+ *
+ * For further information regarding this notice, see:
+ *
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: alarm02.c,v 1.1 2001/08/27 22:15:12 plars Exp $ */
+/* $Id: alarm02.c,v 1.2 2009/02/26 12:02:33 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -55,7 +55,7 @@
  *    INITIAL RELEASE   : UNICOS 7.0
  *
  *    TEST CASES
- *      Test Case One - A call to alarm() shall not return an error if 
+ *      Test Case One - A call to alarm() shall not return an error if
  *       seconds is a -1.
  *       Test FAILS if a non-zero value is returned.
  *      Test Case Two - A call to alarm() shall not return an error if
@@ -121,8 +121,8 @@ main(int ac, char **av)
     char *buf[] = { "-1", "ULONG_MAX", "ULONG_MAX+1"};
     unsigned long int sec[] = {-1, ULONG_MAX, ULONG_MAX+1};
     int exp[]                   = {0,0,0};
-    int i;   
-     
+    int i;  
+    
 
     /***************************************************************
      * parse standard options
@@ -139,14 +139,14 @@ main(int ac, char **av)
     setup();
 
    /***************************************************************
-    * check looping state 
+    * check looping state
     ***************************************************************/
     for (lc=0; TEST_LOOPING(lc); lc++) {
-      
+     
         /* reset Tst_count in case we are looping. */
-      
+     
         Tst_count=0;
-      
+     
 	for (i=0;i<TST_TOTAL;i++) {
 
 	    /* capture an SIGALRM signal */
@@ -157,10 +157,10 @@ main(int ac, char **av)
 	    /* reset the alarm */
 	    alarm (0);
 	    if (TEST_RETURN != 0) {
-		tst_resm(TFAIL, 
-		    "alarm(%u) returned %u, when %u was expected for value %s.", 
+		tst_resm(TFAIL,
+		    "alarm(%u) returned %u, when %u was expected for value %s.",
 		     sec[i], TEST_RETURN, exp[i], buf[i]);
- 
+
 	    }
             /***************************************************************
              * only perform functional verification if flag set (-f not given)
@@ -171,8 +171,8 @@ main(int ac, char **av)
 			"alarm(%u) returned %u but an alarm signal was received for value %s.",
 			 sec[i], TEST_RETURN, buf[i]);
 		} else  {
-		    tst_resm (TPASS, 
-			"alarm(%u) returned %u as expected for value %s.", 
+		    tst_resm (TPASS,
+			"alarm(%u) returned %u as expected for value %s.",
 			sec[i], TEST_RETURN, buf[i]);
 		}
 
@@ -181,11 +181,11 @@ main(int ac, char **av)
         /*
          *  Reset alarm before cleanup.
          */
-      
+     
         alarm(0);
-      
+     
     }   /* End for TEST_LOOPING */
-    
+   
     cleanup();
 
     return 0;

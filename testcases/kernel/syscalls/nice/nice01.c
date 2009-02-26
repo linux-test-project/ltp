@@ -74,7 +74,7 @@
 #include "test.h"
 #include "usctest.h"
 
-#define	NICEINC		-12 
+#define	NICEINC		-12
 #define TEMPFILE	"temp_file"
 
 char *TCID="nice01";		/* Test program identifier.    */
@@ -94,7 +94,7 @@ main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 	int New_nice;		/* priority of process after nice() */
 	int rval;
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
 	if (msg != (char *)NULL) {
@@ -110,7 +110,7 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 
-		/* 
+		/*
 		 * Call nice(2) with an 'incr' parameter set
 		 * to a negative value.
 		 */
@@ -158,7 +158,7 @@ main(int ac, char **av)
  *  	     Make sure the test process uid is super user.
  *  	     Get the current priority value.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -180,7 +180,7 @@ setup()
  *             completion or premature exit.
  *  	       Remove the test directory and testfile created in the setup.
  */
-void 
+void
 cleanup()
 {
 	/*

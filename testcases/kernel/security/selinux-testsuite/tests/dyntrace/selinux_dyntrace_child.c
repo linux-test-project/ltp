@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <selinux/selinux.h>
 
-int main(int argc, char **argv) 
+int main(int argc, char **argv)
 {
 	int rc;
 

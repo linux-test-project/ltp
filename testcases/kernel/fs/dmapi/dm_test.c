@@ -108,7 +108,7 @@ void dm_ParseCommandLineOptions(int argc, char **argv) {
 				printf("\t-termlevel n: set terminal logging level to n\n");
 				printf("\t-logname s: set file log name to s\n");
 				exit(0);
-			} else if (i < argc - 1 && argv[i+1][0] != '-') 
+			} else if (i < argc - 1 && argv[i+1][0] != '-')
 				i++;
 		}
 	}
@@ -128,7 +128,7 @@ char *dm_GetCommandLineOption(char *option) {
 	for (i = 1; i < dm_argc; i++)
 		if (dm_argv[i][0] == '-' &&
 		    strcmp(&dm_argv[i][1], option) == 0 &&
-		    i < dm_argc - 1 && dm_argv[i+1][0] != '-') 
+		    i < dm_argc - 1 && dm_argv[i+1][0] != '-')
 			return dm_argv[i+1];
 	return NULL;
 
@@ -146,7 +146,7 @@ void dm_StartLogging(void) {
 	if (dm_fpLogFile)
 		dm_Error("Cannot start logging when log file already open");
 
-	dm_fdLogFile = open(dm_LogFileName, O_CREAT|O_APPEND|O_SYNC|O_WRONLY, 
+	dm_fdLogFile = open(dm_LogFileName, O_CREAT|O_APPEND|O_SYNC|O_WRONLY,
 			S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH);
 
 	if (dm_fdLogFile == -1)

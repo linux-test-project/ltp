@@ -41,7 +41,7 @@ char *fmt_mem(unsigned long long mem, char *buf)
         if (mem == -1L)
                 sprintf(buf, "<not available>");
         else
-                sprintf(buf, "%Lu MB", mem >> 20); 
+                sprintf(buf, "%Lu MB", mem >> 20);
         return buf;
 }
 void hardware(void)
@@ -75,4 +75,4 @@ int main()
 	hardware();
 	return numa_exit_on_error;
 }
-                   
+                  

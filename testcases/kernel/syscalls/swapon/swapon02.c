@@ -14,57 +14,57 @@
  *
  */
 /**************************************************************************
- * 
+ *
  *    TEST IDENTIFIER	  : swapon02
- * 
+ *
  *    EXECUTED BY	  : root / superuser
- * 
+ *
  *    TEST TITLE	  : Test checking for basic error conditions
  *    		            for swapon(2)
- * 
- *    TEST CASE TOTAL	  : 5 
- * 
+ *
+ *    TEST CASE TOTAL	  : 5
+ *
  *    AUTHOR	 	  : Aniruddha Marathe <aniruddha.marathe@wipro.com> and
  *                          Ricardo Salveti de Araujo <rsalveti@linux.vnet.ibm.com> for
  *                          the EBUSY test case
- * 
+ *
  *    SIGNALS
  * 		 Uses SIGUSR1 to pause before test if option set.
  * 		  (See the parse_opts(3) man page).
  *
  *    DESCRIPTION
- *		  This test case checks whether swapon(2) system call  returns 
+ *		  This test case checks whether swapon(2) system call  returns
  *		  1. ENOENT when the path does not exist
  *		  2. EINVAL when the path exists but is invalid
  *		  3. EPERM when user is not a superuser
  *		  4. EBUSY when the specified path is already being used as a swap area
- *		  
+ *		 
  * 		  Setup:
  *		    Setup signal handling.
  *		    Pause for SIGUSR1 if option specified.
  *		   1. For testing error on invalid user, change the effective uid
- * 		  		 
+ * 		  		
  * 		  Test:
  *		    Loop if the proper options are given.
  *		    Execute system call.
  *		    Check return code, if system call fails with errno == expected errno
  *	 	    Issue syscall passed with expected errno
- *		    Otherwise, 
+ *		    Otherwise,
  *		    Issue syscall failed to produce expected errno
- * 
+ *
  * 		  Cleanup:
  * 		    Do cleanup for the test.
- * 		    
+ * 		   
  * USAGE:  <for command-line>
  *  swapon02 [-e] [-i n] [-I x] [-p x] [-t] [-h] [-f] [-p]
- *  where 
+ *  where
  *		  -e   : Turn on errno logging.
  *		  -i n : Execute test n times.
  *		  -I x : Execute test for x seconds.
  *		  -p   : Pause for SIGUSR1 before starting
  *		  -P x : Pause for x seconds between iterations.
  *		  -t   : Turn on syscall timing.
- *		 		 
+ *		 		
  *RESTRICTIONS:
  *Incompatible with kernel versions below 2.1.35.
  *Incompatible if MAX_SWAPFILES definition in later kernels is changed
@@ -74,7 +74,7 @@
  * 2005/01/01  Add extra check to stop test if swap file is on tmpfs
  *             -Ricky Ng-Adam (rngadam@yahoo.com)
  * 01/02/03  Added fork to handle SIGSEGV generated when the intentional EPERM
- * error for hitting MAX_SWAPFILES is hit. 
+ * error for hitting MAX_SWAPFILES is hit.
  * -Robbie Williamson <robbiew@us.ibm.com>
  * 05/17/07  Fixing the test description and added the EBUSY test case
  *           - Ricardo Salveti de Araujo (rsalveti@linux.vnet.ibm.com)
@@ -102,7 +102,7 @@
 #include "usctest.h"
 
 #ifndef OLDER_DISTRO_RELEASE
-#define MAX_SWAPFILES 32 
+#define MAX_SWAPFILES 32
 #endif
 
 static void setup();
@@ -135,7 +135,7 @@ static struct test_case_t {
 } testcase[] = {
 	 {"Path does not exist", ENOENT, "ENOENT", "./abcd", NULL,  NULL},
 	 {"Invalid path", EINVAL, "EINVAL", "./nofile", setup02, NULL},
-	 {"Permission denied", EPERM, "EPERM", "./swapfile01", 
+	 {"Permission denied", EPERM, "EPERM", "./swapfile01",
 	   setup01, cleanup01},
          {"The specified path is already being used as a swap area",
            EBUSY, "EBUSY", "./alreadyused", setup03, cleanup03}
@@ -199,7 +199,7 @@ main(int ac, char **av)
                                         if(swapoff(testcase[i].path) != 0) {
                                                 tst_resm(TWARN, "Failed to"
                                                                 " turn off swapfile"
-                                                                " swapfile. System" 
+                                                                " swapfile. System"
                                                                 " reboot after"
                                                                 " execution of LTP"
                                                                 " test suite is"
@@ -279,7 +279,7 @@ cleanup01()
 }
 
 /*
- * setup02() - create a normal file, to be used with swapon 
+ * setup02() - create a normal file, to be used with swapon
  */
 int
 setup02()
@@ -341,7 +341,7 @@ setup03()
 int
 cleanup03()
 {
-        /* give swapoff to the test swap file */ 
+        /* give swapoff to the test swap file */
         if( swapoff("alreadyused") != 0) {
                 tst_resm(TWARN, "Failed to turn off swap files. system"
                                 " reboot after execution of LTP test"

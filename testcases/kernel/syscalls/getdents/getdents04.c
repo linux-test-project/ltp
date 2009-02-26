@@ -160,7 +160,7 @@ int main(int ac, char **av)
 
 		/*
 		 * here's a case where invoking the system call directly
-		 * doesn't seem to work.  getdents.h has an assembly 
+		 * doesn't seem to work.  getdents.h has an assembly
 		 * macro to do the job.
 		 *
 		 * equivalent to getdents(fd, dirp, count);

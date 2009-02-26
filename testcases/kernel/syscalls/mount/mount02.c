@@ -15,17 +15,17 @@
  *
  */
 /******************************************************************************
- * 
+ *
  *    TEST IDENTIFIER	: mount02
- * 
+ *
  *    EXECUTED BY	: root / superuser
- * 
+ *
  *    TEST TITLE	: Test for checking basic error conditions  for mount(2)
- * 
+ *
  *    TEST CASE TOTAL	: 13
- * 
+ *
  *    AUTHOR		: Nirmala Devi Dhanasekar <nirmala.devi@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -36,13 +36,13 @@
  *	Verify that mount(2) returns -1 and sets errno to
  *
  *	1) ENODEV if filesystem type not configured
- *	2) ENOTBLK if specialfile is not a block device 
+ *	2) ENOTBLK if specialfile is not a block device
  *	3) EBUSY if specialfile is already mounted or
  *		 it  cannot  be remounted read-only, because it still holds
  *		 files open for writing.
- *	4) EINVAL if specialfile or device is invalid or 
+ *	4) EINVAL if specialfile or device is invalid or
  *		 a remount was attempted, while source was not already
- *		 mounted on target. 
+ *		 mounted on target.
  *	5) EFAULT if specialfile or device file points to invalid address space.
  *	6) ENAMETOOLONG if pathname was longer than MAXPATHLEN.
  *	7) ENOENT if pathname was empty or has a nonexistent component.
@@ -52,7 +52,7 @@
  *	  Setup signal handling.
  *	  Create a mount point.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  *	  Do necessary setup for each test.
@@ -62,11 +62,11 @@
  *	  Otherwise,
  *		Issue sys call failed to produce expected error.
  *	  Do cleanup for each test.
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
  *	  Delete the temporary directory(s)/file(s) created.
- * 
+ *
  * USAGE:  <for command-line>
  *  mount02 [-T type] -D device [-e] [-i n] [-I x] [-p x] [-t]
  *			where,  -T type : specifies the type of filesystem to
@@ -224,7 +224,7 @@ main(int ac, char **av)
 			TEST(mount(Device, Mntpoint, Fstype, Flag, NULL));
 
 			/* check return code */
-			if ((TEST_RETURN == -1) && 
+			if ((TEST_RETURN == -1) &&
 			    (TEST_ERRNO == testcases[i].exp_errno)) {
 				tst_resm(TPASS, "mount(2) expected failure; "
 					"Got errno - %s : %s",
@@ -328,7 +328,7 @@ setup_test(int i, int cnt)
 				 " %s errno = %d : %s", Path, errno,
 				   strerror(errno));
 			return 1;
-		} 
+		}
 		Flag = MS_REMOUNT|MS_RDONLY;
 		return 0;
 	case 4:
@@ -440,7 +440,7 @@ cleanup_test(int i)
 		
 
 /* setup() - performs all ONE TIME setup for this test */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -452,7 +452,7 @@ setup()
 		tst_brkm(TBROK, tst_exit, "Test must be run as root");
 	}
 
-	/* make a temp directory */ 
+	/* make a temp directory */
 	tst_tmpdir();
 
 	(void)sprintf(mntpoint, "mnt_%d", getpid());
@@ -473,11 +473,11 @@ setup()
 }	/* End setup() */
 
 
-/* 
+/*
  *cleanup() -  performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	free(Type);

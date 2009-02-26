@@ -87,7 +87,7 @@
 #include <errno.h>
 
 #ifdef _LINUX_
-// bits/signum.h defines _NSIG as 64 
+// bits/signum.h defines _NSIG as 64
 #define SIGMAX 64
 #endif
 
@@ -123,11 +123,11 @@ int main (int argc, char **argv)
 	/* Print out program header */
 	printf ("%s: IPC TestSuite program\n\n", *argv);
 	fflush (stdout);
-    
+   
 	/* Set up our signal handler */
 	signal_init ();
 
-	/* 
+	/*
 	 * Spawn a child process & have the child process send SIGUSR1
 	 * signals to the parent.
 	 */
@@ -144,15 +144,15 @@ int main (int argc, char **argv)
 	}
 
 	/*
-	 * Interrupt the child process            
+	 * Interrupt the child process           
 	 *
 	 * Send SIGSTOP signal to child process (child process will
 	 * stop upon receiving the signal).
-	 * 
+	 *
 	 * Wait for the child process to receive the SIGSTOP signal
 	 * and send a corresponding SIGCLD interrupt to the parent.
-	 * 
-	 * Send SIGKILL signal to child process (child process 
+	 *
+	 * Send SIGKILL signal to child process (child process
 	 * will exit upon receiving the signal).
 	 */
 	printf ("\tWait for SIGUSR1 signal from child process\n");
@@ -186,15 +186,15 @@ int main (int argc, char **argv)
 	kill (cpid, SIGUSR2);
 
 	/*
-	 * Wait for the child process to abort 
-	 * 
+	 * Wait for the child process to abort
+	 *
 	 * Suspend execution of the parent process until the SIGCHLD signal
-	 * is received upon termination of the child process.  
-	 * 
-	 * Check the child process's exit status (with POSIX macros) to 
-	 * verify that the child process terminated due to the SIGKILL signal 
+	 * is received upon termination of the child process. 
+	 *
+	 * Check the child process's exit status (with POSIX macros) to
+	 * verify that the child process terminated due to the SIGKILL signal
 	 * from the parent.
-	 * 
+	 *
 	 * Additionally verify that the number of SIGCHLD signals received
 	 * has increased.
 	 */
@@ -202,7 +202,7 @@ int main (int argc, char **argv)
 
 	wait (&status);
 
-	if (WIFSIGNALED (status)) { 
+	if (WIFSIGNALED (status)) {
 		if (WTERMSIG (status) != SIGUSR2) {
 			sprintf (msg, "child process was killed with signal (%d)",
 				WTERMSIG (status));

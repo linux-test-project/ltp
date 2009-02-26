@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: kill02.c,v 1.6 2006/09/06 16:45:02 mreed10 Exp $ */
+/* $Id: kill02.c,v 1.7 2009/02/26 12:03:43 subrata_modak Exp $ */
 /***********************************************************************************
 
     OS Test -  Silicon Graphics, Inc.
@@ -132,11 +132,11 @@
 #include <sys/param.h>
 #include <signal.h>
 #include <sys/wait.h>
-#include <errno.h>   
+#include <errno.h>  
 #include <fcntl.h>
 #include <string.h>
 #include <stdlib.h>
-#include "test.h"    
+#include "test.h"   
 #include "usctest.h"
 
 #define MAXMESG 150		/*The maximum message that can be created.		*/
@@ -311,7 +311,7 @@ main(int ac, char **av)
 #ifdef UCLINUX
 	     if (self_exec(argv0, "ndddddd", 3, pipe1_fd[1], pipe2_fd[1],
 			   pipeA_fd[0], pipeA_fd[1], pipeB_fd[0], pipeB_fd[1]) < 0) {
-		     (void) sprintf(mesg,SYS_FAIL,"self_exec",errno, strerror(errno)); 
+		     (void) sprintf(mesg,SYS_FAIL,"self_exec",errno, strerror(errno));
 		     tst_brkm(TBROK,cleanup,mesg);
 	     }
 #else
@@ -322,7 +322,7 @@ main(int ac, char **av)
 	    /*
 	     * Fork failed.
 	     */
-	     (void) sprintf(mesg,SYS_FAIL,"fork",errno,strerror(errno)); 
+	     (void) sprintf(mesg,SYS_FAIL,"fork",errno,strerror(errno));
 	     tst_brkm(TBROK,cleanup,mesg);
 	 }
    }
@@ -394,7 +394,7 @@ void parent_rout()
    *  Setup passed, now send SIGUSR1 to process id of zero.
    */
    TEST( kill(0,SIGUSR1) );
-  
+ 
    if ( TEST_RETURN == -1)
    {
 	(void) sprintf(mesg,SYS_FAIL,"kill",errno,strerror(errno));
@@ -404,7 +404,7 @@ void parent_rout()
    }
 
   /*
-   *  Sleep for a while to allow the children to get a chance to 
+   *  Sleep for a while to allow the children to get a chance to
    *  catch the signal.
    */
    (void) sleep(SLEEP_TIME);
@@ -422,7 +422,7 @@ void parent_rout()
    readB_stat = read(pipeB_fd[0],pipe_buf,1);
    if (readB_stat == -1 && errno == EAGAIN) readB_stat = 0;
 
-   if (read1_stat == -1 || read2_stat == -1 || 
+   if (read1_stat == -1 || read2_stat == -1 ||
 		   readA_stat == -1 || readB_stat == -1) {
 	/*
 	 * The read system call failed.
@@ -523,7 +523,7 @@ void child1_rout()
 	     /* This is child B. */
 #ifdef UCLINUX
 	     if (self_exec(argv0, "nd", 2, pipeB_fd[1]) < 0) {
-		     (void) sprintf(mesg,SYS_FAIL,"self_exec",errno,strerror(errno)); 
+		     (void) sprintf(mesg,SYS_FAIL,"self_exec",errno,strerror(errno));
 		     tst_brkm(TBROK,NULL,mesg);
 		     (void) write(pipe1_fd[1],CHAR_SET_FAILED,1);
 		     exit(0);
@@ -539,7 +539,7 @@ void child1_rout()
 		 */
 		 if (kill(pidA,SIGKILL) == -1)
 			tst_resm(TWARN,"Child process may not have been killed.");
-		 (void) sprintf(mesg,SYS_FAIL,"fork",errno,strerror(errno)); 
+		 (void) sprintf(mesg,SYS_FAIL,"fork",errno,strerror(errno));
 		 tst_brkm(TBROK,NULL,mesg);
 		 (void) write(pipe2_fd[1],CHAR_SET_FAILED,1);
 		 exit(0);
@@ -550,7 +550,7 @@ void child1_rout()
 	/* This is child A. */
 #ifdef UCLINUX
 	if (self_exec(argv0, "nd", 1, pipeA_fd[1]) < 0) {
-		(void) sprintf(mesg,SYS_FAIL,"self_exec",errno,strerror(errno)); 
+		(void) sprintf(mesg,SYS_FAIL,"self_exec",errno,strerror(errno));
 		tst_brkm(TBROK,NULL,mesg);
 		(void) write(pipe1_fd[1],CHAR_SET_FAILED,1);
 		exit(0);
@@ -565,7 +565,7 @@ void child1_rout()
 	/*
 	 *  The fork of child A failed.
 	 */
-	 (void) sprintf(mesg,SYS_FAIL,"fork",errno,strerror(errno)); 
+	 (void) sprintf(mesg,SYS_FAIL,"fork",errno,strerror(errno));
 	 tst_brkm(TBROK,NULL,mesg);
 	 (void) write(pipe1_fd[1],CHAR_SET_FAILED,1);
 	 exit(0);
@@ -878,7 +878,7 @@ void notify_timeout()
 } /*End of notify_timeout*/
 
 /***********************************************************
- *  This routine handles the procedure for removing the 
+ *  This routine handles the procedure for removing the
  *  children forked off during this test.
  **********************************************************/
 void par_kill()

@@ -133,14 +133,14 @@ sig_handler(int signal,		/* signal number, set to handle SIGALRM       */
 #ifdef __i386__
     else
     {
-        except = scp->trapno; 
+        except = scp->trapno;
         fprintf(stderr, "signal caught - [%d] ", signal);
     }
 
     switch(except)
     {
         case 10:
-            fprintf(stderr, 
+            fprintf(stderr,
 	        "Exception - invalid TSS, exception #[%ld]\n", except);
 	    break;
 	case 11:
@@ -175,22 +175,22 @@ sig_handler(int signal,		/* signal number, set to handle SIGALRM       */
     {
         if (scp->edi == (int)map_address)
 	{
-	    fprintf(stdout, 
+	    fprintf(stdout,
 			"page fault at [%#lx] - ignore\n", scp->edi);
 	    siglongjmp(jmpbuf, 1);
         }
         else if (scp->esi == (int)map_address )
 	{
-	    fprintf(stdout, 
+	    fprintf(stdout,
 			"page fault at [%#lx] - ignore\n", scp->esi);
 	    siglongjmp(jmpbuf, 1);
         }
 	else
-        { 
+        {
             fprintf(stderr, "address at which sigfault occured: [%lx]\n"
                            "address at which sigfault occured: [%lx]\n"
                            "address at which memory was shmat: [%p]\n",
-		        (unsigned long)scp->edi,(unsigned long) scp->esi, 
+		        (unsigned long)scp->edi,(unsigned long) scp->esi,
 			map_address);
 	    fprintf(stderr, "bad page fault exit test\n");
 	    exit (-1);
@@ -246,7 +246,7 @@ set_timer(double run_time)      /* period for which test is intended to run   */
 /******************************************************************************/
 static void
 usage(char *progname)           /* name of this program                       */{
-    fprintf(stderr, 
+    fprintf(stderr,
                "Usage: %s -h -l -x\n"
                "\t -h help, usage message.\n"
                "\t -l number of map - write - unmap.    default: 1000\n"
@@ -270,7 +270,7 @@ usage(char *progname)           /* name of this program                       */
 /*               0 on errorless completion of the loop.                       */
 /*									      */
 /******************************************************************************/
-void * 
+void *
 shmat_shmdt(void *args)		/* arguments to the thread X function.	      */
 {
     int     shm_ndx  = 0;	/* index to number of shmat/shmdt             */
@@ -303,7 +303,7 @@ shmat_shmdt(void *args)		/* arguments to the thread X function.	      */
         if ((map_address = shmat(shmid, (void *)0, 0))
 			 ==  (void *)-1)
         {
-	    fprintf(stderr, "shmat_shmat(): map address = %p\n", 
+	    fprintf(stderr, "shmat_shmat(): map address = %p\n",
 		map_address);
             perror("shmat_shmdt(): shmat()");
             pthread_exit((void *)-1);
@@ -468,7 +468,7 @@ main(int  argc,		/* number of input parameters.			      */
     long         chld_args[3];	/* arguments to funcs execed by child process */
     extern  char *optarg;	/* arguments passed to each option	      */
     struct sigaction sigptr;	/* set up signal, for interval timer          */
-    
+   
     static struct signal_info
     {
        int  signum;    /* signal number that hasto be handled                */
@@ -589,7 +589,7 @@ main(int  argc,		/* number of input parameters.			      */
             }
             if (*status == -1)
             {
-                fprintf(stderr, 
+                fprintf(stderr,
 	              "thread [%#lx] - process exited with errors %d\n",
 		         thid[thrd_ndx], *status);
 	        exit (-1);

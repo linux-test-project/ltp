@@ -19,7 +19,7 @@
 
 /*
  * NAME
- * 	open01.c 
+ * 	open01.c
  *
  * DESCRIPTION
  * 	Open a file with oflag = O_CREAT set, does it set the sticky bit off?

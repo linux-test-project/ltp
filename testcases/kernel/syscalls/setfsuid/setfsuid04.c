@@ -126,7 +126,7 @@ void do_master_child()
 		Tst_count = 0;
 
 		if (setfsuid(ltpuser->pw_uid) == -1) {
-			tst_brkm(TBROK, cleanup, 
+			tst_brkm(TBROK, cleanup,
 				 "setfsuid failed to set the euid to %d",
 				 ltpuser->pw_uid);
 		}
@@ -157,7 +157,7 @@ void do_master_child()
 			tst_brkm(TBROK, cleanup, "Fork failed");
 
 		if (pid == 0) {
-			int tst_fd2; 
+			int tst_fd2;
 
 			/* Test to open the file in son process */
 			TEST(tst_fd2 = open(testfile, O_RDWR));
@@ -189,7 +189,7 @@ void do_master_child()
 		 */
 		Tst_count++;
 		if (setfsuid(0) == -1) {
-			tst_brkm(TBROK, cleanup, 
+			tst_brkm(TBROK, cleanup,
 				 "setfsuid failed to set the euid to 0");
 		}
 

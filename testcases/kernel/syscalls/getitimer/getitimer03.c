@@ -2,7 +2,7 @@
  * $Copyright: $
  * Copyright (c) 1984-2000
  * Sequent Computer Systems, Inc.   All rights reserved.
- *  
+ * 
  * This software is furnished under a license and may be used
  * only in accordance with the terms of that license and with the
  * inclusion of the above copyright notice.   This software may not
@@ -11,7 +11,7 @@
  * hereby transferred.
  */
 
-#ident "$Header: /cvsroot/ltp/ltp/testcases/kernel/syscalls/getitimer/getitimer03.c,v 1.3 2009/02/26 11:43:55 subrata_modak Exp $"
+#ident "$Header: /cvsroot/ltp/ltp/testcases/kernel/syscalls/getitimer/getitimer03.c,v 1.4 2009/02/26 12:02:56 subrata_modak Exp $"
 
 /*
  * NAME

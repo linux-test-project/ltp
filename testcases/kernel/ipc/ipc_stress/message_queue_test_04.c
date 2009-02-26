@@ -64,7 +64,7 @@
 
 /*
  * Defines
- * 
+ *
  * MAX_MSGS: maximum number of messages per queue (8192)
  */
 #define DEFAULT_PROJECT_NAME 	"/tmp/message_queue_test"
@@ -87,7 +87,7 @@ static void error (const char *, int);
 
 /*
  * Global variables
- * 
+ *
  * log_filename: Name of log file
  */
 int	verbose	= 0;
@@ -125,7 +125,7 @@ int main (int argc, char **argv)
 			sys_error ("msgget failed", __LINE__);
 	}
 
-	/* 
+	/*
 	 * Print out program header
 	 */
 	printf ("%s: IPC Message Queue TestSuite program\n\n", *argv);
@@ -148,7 +148,7 @@ int main (int argc, char **argv)
 	 * Determine message queue limits
 	 *
 	 * Determine the maximum number of bytes that the message
-	 * queue will hold.  Then determine the message size 
+	 * queue will hold.  Then determine the message size
 	 * (Max num of bytes per queue / maximum num of messages per queue)
 	 */
 	if (msgctl (msqid, IPC_STAT, &info) < 0)
@@ -176,7 +176,7 @@ int main (int argc, char **argv)
 
 	/*
 	 * Fill up the message queue
-	 * 
+	 *
 	 * Send bytes to the message queue until it fills up
 	 */
 	//	buf = (struct msgbuf *) calloc (msg_size + sizeof(struct msgbuf), sizeof (char));

@@ -22,7 +22,7 @@
  *
  * Test Description:
  *  Verify that any user can successfully increase the nice value of
- *  the process by passing an increment value (< max. applicable limits) to 
+ *  the process by passing an increment value (< max. applicable limits) to
  *  nice() system call.
  *
  * Expected Result:
@@ -91,7 +91,7 @@ main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	int New_nice;		/* priority of process after nice() */
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
 	if (msg != (char *)NULL) {
@@ -106,7 +106,7 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 
-		/* 
+		/*
 		 * Call nice(2) with an 'incr' parameter set
 		 * to a +ve value < max. applicable limit.
 		 * (Linux - 20)
@@ -155,7 +155,7 @@ main(int ac, char **av)
  *  Get the current nice value of test process and save it in a file.
  *  Read the nice value from file into a variable.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -172,7 +172,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

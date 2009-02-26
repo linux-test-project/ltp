@@ -17,7 +17,7 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <stdio.h> 
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
@@ -49,7 +49,7 @@ int main(int argc, char **argv)
         block_dev_handle = open(DEVICE_NAME, O_RDWR);
 
         if (block_dev_handle < 0) {
-            printf("ERROR: Open of device %s failed %d errno = %d\n", 
+            printf("ERROR: Open of device %s failed %d errno = %d\n",
 		DEVICE_NAME,block_dev_handle, errno);
         }
         else {

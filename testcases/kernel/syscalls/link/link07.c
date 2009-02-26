@@ -23,7 +23,7 @@
  *
  * Test Description:
  *  Verify that, link() fails with -1 and sets errno to EACCES when
- *	 	 one of  the  directories  in oldpath or newpath did 
+ *	 	 one of  the  directories  in oldpath or newpath did
  *		 not allow search (execute) permission.
  *
  * Expected Result:
@@ -115,7 +115,7 @@ main(int ac, char **av)
     int lc;		/* loop counter */
     char *msg;		/* message returned from parse_opts */
     char *test_desc;    /* test specific error message */
-    
+   
     /***************************************************************
      * parse standard options
      ***************************************************************/
@@ -174,7 +174,7 @@ main(int ac, char **av)
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void 
+void
 setup()
 {
         char Path_name[PATH_MAX];       /* Buffer to hold current path */
@@ -225,12 +225,12 @@ setup()
 	/* set paths for test */
 	file1 = TEST_FILE2;
 	file2 = NEW_TEST_FILE2;
-    
+   
 	/* set effective user ID to NOBODY_USER using seteuid */
 	if (seteuid(NOBODY_USER) != 0) {
 		tst_resm(TFAIL, "seteuid to NOBODY_USER failed");
 		cleanup();
-	} 
+	}
 
 }	/* End setup() */
 
@@ -239,7 +239,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void 
+void
 cleanup()
 {
      /* set back effective user ID to ROOT_USER using seteuid */
@@ -254,7 +254,7 @@ cleanup()
     TEST_CLEANUP;
     unlink(file1);   /*Delete this tempfile created by this process*/
     unlink(file2);   /*Delete this also, empties the following directory*/
-    rmdir(DIR_TEMP); /*Now go ahead and delete this empty temp directory, 
+    rmdir(DIR_TEMP); /*Now go ahead and delete this empty temp directory,
                        this directory was chdir() from tst_tmpdir() routine in lib/tst_tmpdir.c*/
     /* Remove tmp dir and all files in it */
     tst_rmdir();

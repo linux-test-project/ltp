@@ -21,44 +21,44 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
- 
+
 /**********************************************************
- * 
+ *
  *    OS Test - International Business Machines Corp. 2004.
- * 
+ *
  *    TEST IDENTIFIER	: madvise01
- * 
+ *
  *    EXECUTED BY		: anyone
- * 
+ *
  *    TEST TITLE		: Basic test for madvise(2)
- * 
+ *
  *    TEST CASE TOTAL	: 5
- * 
+ *
  *    CPU TYPES			: Intel(R) XEON(TM)
- * 
+ *
  *    AUTHOR			: Sumit Sharma
- * 
- *    CO-PILOT			: 
- * 
+ *
+ *    CO-PILOT			:
+ *
  *    DATE STARTED		: 13/05/2004
- * 
+ *
  *    TEST CASES
- * 
+ *
  * 	1.) madvise(2) advices...(See Description)
  *	
  *	INPUT SPECIFICATIONS
  * 		The standard options for system call tests are accepted.
  *		(See the parse_opts(3) man page).
- * 
+ *
  *	OUTPUT SPECIFICATIONS
  *		Output describing whether test cases passed or failed.
  * 	
  *	ENVIRONMENTAL NEEDS
- *		None 
+ *		None
  *
  *	SPECIAL PROCEDURAL REQUIREMENTS
  * 		None
- * 
+ *
  *	DETAILED DESCRIPTION
  *		This is a test case for madvise(2) system call.
  *		It tests madvise(2) with combinations of advice values.
@@ -70,22 +70,22 @@
  *		(3) Test Case for MADV_SEQUENTIAL
  *		(4) Test Case for MADV_WILLNEED
  *		(5) Test Case for MADV_DONTNEED
- * 
+ *
  *	Setup:
  *		Setup signal handling.
  *		Pause for SIGUSR1 if option specified.
- * 
+ *
  *	Test:
  *		Loop if the proper options are given.
  *		Execute system call
  *		Check return code, if system call failed (return=-1)
  *		Log the errno and Issue a FAIL message.
  *		Otherwise, Issue a PASS message.
- * 
+ *
  *	Cleanup:
  *		Print errno log and/or timing stats if options given
- * 
- * 
+ *
+ *
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
 #include <stdio.h>
@@ -127,7 +127,7 @@ int main(int argc, char *argv[])
 
 	if ((msg = parse_opts(argc, argv, (option_t *) NULL, NULL)) != (char *) NULL)
 	{
-		tst_brkm(TBROK, NULL, 
+		tst_brkm(TBROK, NULL,
 			"OPTION PARSING ERROR - %s",
 			msg);
 	}
@@ -208,7 +208,7 @@ int main(int argc, char *argv[])
 		TEST(madvise(file,stat.st_size,MADV_DONTNEED));
 		check_and_print("MADV_DONTNEED");
 
-		/* Finally Unmapping the whole file */   
+		/* Finally Unmapping the whole file */  
 		if(munmap(file, stat.st_size) < 0)
 		{
 			tst_brkm(TBROK, cleanup,

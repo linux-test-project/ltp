@@ -15,27 +15,27 @@
  *
  */
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER	: ioperm02
- * 
+ *
  *    EXECUTED BY	: superuser
- * 
+ *
  *    TEST TITLE	: Tests for error conditions
- * 
+ *
  *    TEST CASE TOTAL	: 2
- * 
+ *
  *    AUTHOR		: Subhab Biwas <subhabrata.biswas@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
  *
  *    DESCRIPTION
  *	Verify that
- *	1) ioperm(2) returns -1 and sets errno to EINVAL for I/O port 
- *	   address greater than 0x3ff. 
+ *	1) ioperm(2) returns -1 and sets errno to EINVAL for I/O port
+ *	   address greater than 0x3ff.
  *	2) ioperm(2) returns -1 and sets errno to EPERM if the current
- *	   user is not the super-user. 
+ *	   user is not the super-user.
  *
  * 	Setup:
  * 	  Setup signal handling.
@@ -106,7 +106,7 @@ struct test_cases_t {
 	int	turn_on;
 	char	*desc;		/* test case description */
 	int 	exp_errno;	/* expected error number */
-}; 
+};
 
 int TST_TOTAL = 2;
 struct test_cases_t* test_cases;
@@ -160,14 +160,14 @@ int main(int ac, char **av)
 					TEST_ERRNO, test_cases[i].exp_errno);
 			}
 
-			TEST_ERROR_LOG(TEST_ERRNO); 
+			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (i == 1) {
 				/* revert back to super user */
 				cleanup1();
 			} else {
 			}
-		} 
+		}
 
 	}	/* End for TEST_LOOPING */
 
@@ -221,7 +221,7 @@ setup()
 	}
 
 	/*
-	 * The value of IO_BITMAP_BITS (include/asm-i386/processor.h) changed 
+	 * The value of IO_BITMAP_BITS (include/asm-i386/processor.h) changed
 	 * from kernel 2.6.8 to permit 16-bits (65536) ioperm
 	 *
 	 * Ricky Ng-Adam, rngadam@yahoo.com
@@ -237,7 +237,7 @@ setup()
 	test_cases[1].exp_errno = EPERM;
 	if ((tst_kvercmp(2,6,8) < 0) || (tst_kvercmp(2,6,9) == 0)) {
 		/*try invalid ioperm on 1022, 1023, 1024*/
-		test_cases[0].from = (IO_BITMAP_BITS - NUM_BYTES) + 1; 
+		test_cases[0].from = (IO_BITMAP_BITS - NUM_BYTES) + 1;
 
 		/*try get valid ioperm on 1021, 1022, 1023*/
 		test_cases[1].from = IO_BITMAP_BITS - NUM_BYTES;

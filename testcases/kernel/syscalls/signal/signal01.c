@@ -30,136 +30,136 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: signal01.c,v 1.7 2006/02/14 02:53:01 vapier Exp $ */
+/* $Id: signal01.c,v 1.8 2009/02/26 12:04:57 subrata_modak Exp $ */
 /***********************************************************************************
- * 
+ *
  * OS Test   -  Silicon Graphics, Inc.  Eagan, Minnesota
- * 
+ *
  * TEST IDENTIFIER :  signal01  Boundary value and other invalid value checking
  * 				 of signal setup and signal sending.
- * 
+ *
  * PARENT DOCUMENT :  sgntds01  Signal System Call
  * 		
  * AUTHOR           :  Dave Baumgartner
  * 		    :  Rewrote 12/92 by Richard Logan
- * 
+ *
  * CO-PILOT         :  Barrie Kletscher
- * 
+ *
  * DATE STARTED     :  10/17/85
- * 
+ *
  * TEST ITEMS
- * 
+ *
  * 	1. SIGKILL can not be set to be caught, errno:EINVAL (POSIX).
  * 	2. SIGKILL can not be caught.
  * 	3. SIGKILL can not be set to be ignored, errno:EINVAL (POSIX).
  * 	4. SIGKILL can not be ignored.
  * 	5. SIGKILL can not be reset to default, errno:EINVAL (POSIX.
- * 
+ *
  * ENVIRONMENTAL NEEDS
- * 
+ *
  * 	NONE
- * 
+ *
  * SPECIAL PROCEDURAL REQUIREMENTS
- * 
+ *
  * 	None
- * 
+ *
  * INTERCASE DEPENDENCIES
- * 
+ *
  * 	2 depends on 1 and 4 on 3.
- * 
+ *
  * DETAILED DESCRIPTION
- * 
+ *
  * 	main()
  * 	Call catch_test to test setup and catching of SIGKILL.
- * 
- * 
+ *
+ *
  * 	Call ignore_test to test setup and ignoring of SIGKILL.
- * 
- * 
+ *
+ *
  * 	Call sigdfl_test to test setting SIGKILL to default.
- * 
+ *
  * 	* END OF MAIN *
- * 
- * 
+ *
+ *
  * 	catch_test()
- * 
+ *
  * 	fork a child
  * 	if this is the parent
  * 		sleep to let child start.
  * 		send sig to child.
  * 		wait for the child to terminate.
- * 
+ *
  * 		if the termination status of the child equals the signal sent to it
  * 			Test item 1 PASSED the child was killed.
  * 		else if status equals the exit value of SIG_CAUGHT
  * 			Test item 2 FAILED sig was caught.
- * 		else 
+ * 		else
  * 			Test item 2 FAILED because the child was not killed
  * 			but sig was not caught either.
- * 
+ *
  * 	else this the child
  * 		set exit_val to SIG_NOT_CAUGHT.
- * 		set to catch sig, where the interrupt routine just sets 
+ * 		set to catch sig, where the interrupt routine just sets
  * 		exit_val to SIG_CAUGHT.
- * 
+ *
  * 		If the return value and errno, after trying to set to catch sig,
  * 		do not indicate that an error has occurred.
  * 			Test item 1 FAILED bad return, return value:X, errno:X.
  * 		else
  * 			Test item 1 PASSED sig was not set to be caught.
- * 
+ *
  * 		pause until the parent sends a signal.
  * 		The child should be killed by the signal but if not exit
  * 		with exit_val.
- * 
+ *
  * 	* End of catch_test. *
- * 
- * 
+ *
+ *
  * 	ignore_test()
- * 
+ *
  * 	fork a child
  * 	if this is the parent
  * 		sleep to let child start.
  * 		send SIGKILL to child.
  * 		wait for the child to terminate.
- * 
+ *
  * 		if the termination status of the child equals SIGKILL
  * 			Test item 4 PASSED the child was killed.
  * 		else if the status equals the exit value of SIG_IGNORED
  * 			Test item 4 FAILED SIGKILL was ignored.
- * 
+ *
  * 	else this the child
- * 
+ *
  * 		If the return value and errno, after trying to set to ignore SIGKILL,
  * 		do not indicate that an error has occurred.
  * 			Test item 3 FAILED bad return, return value:X, errno:X.
  * 		else
  * 			Test item 3 PASSED SIGKILL was not set to be ignored.
- * 
+ *
  * 		pause until the parent sends SIGKILL.
  * 		The child should be killed by the signal but if not exit
  * 		with SIG_IGNORED.
- * 
+ *
  * 	* End of ignore_test. *
- * 
- * 
+ *
+ *
  * 	sigdfl_test()
- * 
+ *
  * 	If the return value and errno, after trying to set to SIGKILL to default,
  * 	do not indicate that an error has occurred.
  * 		Test item 5 FAILED bad return, return value:X, errno:X.
  * 	else
  * 		Test item 5 PASSED SIGKILL was not set to default.
- * 
+ *
  * 	* End of sigdfl_test. *
- * 
+ *
  * BUGS/NOTES
  * 	Since the system call under test is executed in the child, no
  *	timings on this system call will be reported.
- * 
+ *
 ***********************************************************************************/
 #include <signal.h>
-#include <errno.h>  
+#include <errno.h> 
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
@@ -179,7 +179,7 @@ void p_timeout_handler();
 void c_timeout_handler();
 void catchsig();
 
-#if defined(linux) 
+#if defined(linux)
 # define SIG_PF sig_t  /* This might need to be sighandler_t on some systems */
 #endif
 
@@ -202,7 +202,7 @@ void catchsig();
 
 int exit_val;		/* Global variable, used to tell whether the	*/
 			/* child exited instead of being killed.	*/
-char mesg[MAXMESG];	/* Holds messages to pass to tst_res.		*/ 
+char mesg[MAXMESG];	/* Holds messages to pass to tst_res.		*/
 
 struct ipc_t {
     int status;
@@ -309,7 +309,7 @@ int tst_count;
   if ( pipe(fd1) == -1 ) {
 	 sprintf(mesg,
 	 "pipe system call failed, Errno: %d, Error message: %s",
-			errno,strerror(errno)); 
+			errno,strerror(errno));
 	 tst_resm(TBROK,mesg);
 	 tst_resm(TBROK,mesg);
 	 return;
@@ -341,7 +341,7 @@ int tst_count;
 	/*
 	 * Deal with child's messages.
 	 * Only the GO_FLAG status will allow parent to
-	 * go on.  All pipe io will be in the ipc_t structure sizes 
+	 * go on.  All pipe io will be in the ipc_t structure sizes
 	 * to avoid reading part of next message.
 	 */
         while ( 1 ) {
@@ -379,7 +379,7 @@ int tst_count;
 	    else if ( Ipc_info.status == FAIL_FLAG ) {
 		tst_resm(TFAIL, "From child: %s", Ipc_info.mesg);
 		update_timings(Ipc_info.timings);
-            }   
+            }  
 	    else {
 		tst_resm(TINFO, "Unknown message from child: %s", mesg);
 	    }
@@ -395,7 +395,7 @@ int tst_count;
 		 */
 	       	 sprintf(mesg,
 		 "kill(Pid,SIGKILL) failed, Errno: %d, Error message: %s",
-				errno,strerror(errno)); 
+				errno,strerror(errno));
 		 tst_resm(TBROK,mesg);
 		 tst_resm(TBROK,mesg);
 		 close(fd1[0]);
@@ -411,7 +411,7 @@ int tst_count;
 		 */
 	       	 sprintf(mesg,
 		 "Wait system call failed. Errno: %d, Error message: %s",
-				errno,strerror(errno)); 
+				errno,strerror(errno));
 		 tst_resm(TBROK,mesg);
 		 tst_resm(TBROK,mesg);
 		 close(fd1[0]);
@@ -431,7 +431,7 @@ int tst_count;
 	    }
 	    else {
 	        if ((term_stat >> 8) == SIG_IGNORED && test_case == IGNORE_TEST ) {
-		    sprintf(mesg, 
+		    sprintf(mesg,
 		        "SIGKILL was ignored by child after sent by parent.");
 	        }
 	        else if ((term_stat >> 8) == SIG_CAUGHT && test_case == CATCH_TEST ) {
@@ -469,7 +469,7 @@ int tst_count;
 #else
 	do_child(test_case);
 #endif
-    
+   
     }	/* End of child. */
     else {
 	/*
@@ -477,7 +477,7 @@ int tst_count;
 	 */
 	 sprintf(mesg,
 		"Fork system call failed. Errno: %d, Error message: %s",
-			errno,strerror(errno)); 
+			errno,strerror(errno));
 	 tst_resm(TBROK,mesg);
 	 tst_resm(TBROK,mesg);
  	 close(fd1[0]);
@@ -528,7 +528,7 @@ int test_case;
     }
     else {
 	/*
-	 * The child was not allowed to set the signal to 
+	 * The child was not allowed to set the signal to
 	 * be ignored and errno was correct.
 	 */
 	sprintf(Ipc_info.mesg,
@@ -571,7 +571,7 @@ do_child_uclinux()
 #endif
 
 /***********************************************************************
- * sigdfl_test - test for attempt to set SIGKILL to default 
+ * sigdfl_test - test for attempt to set SIGKILL to default
  ***********************************************************************/
 void
 sigdfl_test()
@@ -646,7 +646,7 @@ cleanup()
 
     /*
      * remove the temporary directory and exit with
-     * return code appropriate for results 
+     * return code appropriate for results
      */
 
     tst_rmdir();

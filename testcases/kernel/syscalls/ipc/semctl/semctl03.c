@@ -63,7 +63,7 @@ int TST_TOTAL = 4;
 extern int Tst_count;
 
 #ifdef _XLC_COMPILER
-#define SEMUN_CAST 
+#define SEMUN_CAST
 #else
 #define SEMUN_CAST (union semun)
 #endif

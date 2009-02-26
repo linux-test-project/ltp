@@ -27,7 +27,7 @@
  *	The bufsize should be in n*4k size for direct read, write. The offset
  *	value marks the starting position in file from where to start the
  *	read and write. Larger files can be created using the offset parameter.
- *	Test data file can be specified through commandline and is useful 
+ *	Test data file can be specified through commandline and is useful
  *	for running test with raw devices as a file.
  *	Test blocks:
  *	[1] Direct read, Buffered write
@@ -36,7 +36,7 @@
  *
  * USAGE
  *      diotest2 [-b bufsize] [-o offset] [-i iterations] [-f filename]
- * 
+ *
  * History
  *	04/22/2002	Narasimha Sharoff nsharoff@us.ibm.com
  *
@@ -73,7 +73,7 @@ int TST_TOTAL=3;				/* Total number of test conditions */
 
 /*
  * runtest: write the data to the file. Read the data from the file and compare.
- *	For each iteration, write data starting at offse+iter*bufsize 
+ *	For each iteration, write data starting at offse+iter*bufsize
  *	location in the file and read from there.
 */
 int
@@ -97,7 +97,7 @@ runtest(int fd_r, int fd_w, int iter, off64_t offset, int action)
 	for (i = 0; i < iter; i++) {
 		fillbuf(buf1, bufsize, i);
 		if (lseek(fd_w, offset+iter*bufsize, SEEK_SET) < 0)  {
-			tst_resm(TFAIL, "lseek before write failed: %s", 
+			tst_resm(TFAIL, "lseek before write failed: %s",
 				strerror(errno));
 			return(-1);
 		}
@@ -106,7 +106,7 @@ runtest(int fd_r, int fd_w, int iter, off64_t offset, int action)
 			return(-1);
 		}
 		if (lseek(fd_r, offset+iter*bufsize, SEEK_SET) < 0) {
-			tst_resm(TFAIL, "lseek before read failed: %s", 
+			tst_resm(TFAIL, "lseek before read failed: %s",
 				strerror(errno));
 			return(-1);
 		}
@@ -267,10 +267,10 @@ main(int argc, char *argv[])
 	total++;
 
 	if (failed) {
-		tst_resm(TINFO, "%d/%d testblocks failed", 
+		tst_resm(TINFO, "%d/%d testblocks failed",
 			fail_count, total);
 	} else {
-		tst_resm(TINFO, "%d testblocks %d iterations completed", 
+		tst_resm(TINFO, "%d testblocks %d iterations completed",
 			total, iter);
 	}
 	tst_exit ();

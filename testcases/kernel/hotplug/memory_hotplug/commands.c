@@ -51,7 +51,7 @@ static inline int nodemask_isset(nodemask_t *mask, int node)
 {
 	if ((unsigned)node >= NUMA_NUM_NODES)
 		return 0;
-	if (mask->n[node / (8*sizeof(unsigned long))] & 
+	if (mask->n[node / (8*sizeof(unsigned long))] &
 		(1UL<<(node%(8*sizeof(unsigned long)))))
 		return 1;
 	return 0;	
@@ -61,7 +61,7 @@ static inline void nodemask_set(nodemask_t *mask, int node)
 {
 	mask->n[node / (8*sizeof(unsigned long))] |=
 		(1UL<<(node%(8*sizeof(unsigned long))));		
-} 
+}
 
 static char *whitespace = " \t";
 
@@ -186,7 +186,7 @@ get_shared(char *args)
 		segflag = MAP_SHARED;
 	else if (*args != '\0' && strcmp(args, "private")) {
 		fprintf(stderr, "%s:  anon seg access type must be one of:  "
-			"'private' or 'shared'\n", gcp->program_name); 
+			"'private' or 'shared'\n", gcp->program_name);
 		return -1;
 	}
 	return segflag;
@@ -423,7 +423,7 @@ get_arg_nodeid_list(char *args, unsigned int *list)
 
 /*
  * get_current_nodeid_list() - fill arg array with nodes from
- * current thread's allowed node mask.  return # of nodes in 
+ * current thread's allowed node mask.  return # of nodes in
  * mask.
  */
 static int
@@ -956,7 +956,7 @@ shmem_seg(char *args)
  * of specified range of segment.
  *
  * NOTE: if neither <offset> nor <length> specified, <offset> defaults
- * to 0 [start of segment], as usual, and length defaults to 64 pages 
+ * to 0 [start of segment], as usual, and length defaults to 64 pages
  * rather than the entire segment.  Suitable for a "quick look" at where
  * segment resides.
  */
@@ -983,7 +983,7 @@ where_seg(char *args)
 	 */
 	if (get_range(args, &range, &nextarg) == CMD_ERROR)
 		return CMD_ERROR;
-	if (args == nextarg) 
+	if (args == nextarg)
 		range.length = 64 * gcp->pagesize;	/* default length */
 
 	if(!segment_location(segname, &range))
@@ -1009,7 +1009,7 @@ command(char *args)
 typedef int (*cmd_func_t)(char *);
 
 struct command {
-	char       *cmd_name;    
+	char       *cmd_name;   
 	cmd_func_t  cmd_func;    /* */
 	char       *cmd_help;
 	
@@ -1056,7 +1056,7 @@ struct command {
 			"migrate <to-node-id[s]> [<from-node-id[s]>] - \n"
 			"\tmigrate this process' memory from <from-node-id[s]>\n"
 			"\tto <to-node-id[s]>.  Specify multiple node ids as a\n"
-			"\tcomma-separated list. TODO - more info\n" 
+			"\tcomma-separated list. TODO - more info\n"
 	},
 
 	{

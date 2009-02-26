@@ -71,12 +71,12 @@
 
 /*
  * Defines
- * 
+ *
  * MAX_MESSAGE_QUEUES: maximum number of message queues to create
- * 
+ *
  * DEFAULT_MESSAGE_QUEUES: default number of message queues to create
  * unless specified with [-n] command line option
- * 
+ *
  * USAGE: usage statement macro
  */
 
@@ -113,7 +113,7 @@ static void cleanup (int qnum);
 int	max_queues = DEFAULT_MESSAGE_QUEUES;
 int	msqid_array [MAX_MESSAGE_QUEUES];
 int	debug = 0;
-                                  
+                                 
 
 /*---------------------------------------------------------------------+
 |                               main                                   |
@@ -142,14 +142,14 @@ int main (int argc, char **argv)
 
 		for (i=0; i<3; i++) {
 			if (debug) printf ("\tcreating queue [%d]\n", nqueues);
-			if ((msqid_array [nqueues++] 
+			if ((msqid_array [nqueues++]
 				= msgget (IPC_PRIVATE, IPC_CREAT|mode)) < 0)
 			{
 				cleanup(nqueues);
 				sys_error ("msgget failed", __LINE__);
 			}
 
-			if (nqueues > MAX_MESSAGE_QUEUES) 
+			if (nqueues > MAX_MESSAGE_QUEUES)
 				break;
 		}
 

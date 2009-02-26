@@ -1,6 +1,6 @@
 /*
  *
- *   Copyright (c) Wipro Technologies, 2002.  All Rights Reserved. 
+ *   Copyright (c) Wipro Technologies, 2002.  All Rights Reserved.
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -62,7 +62,7 @@
  *		-i n : Execute test n times.
  *		-I x : Execute test for x seconds.
  *		-P x : Pause for x seconds between iterations.
- *		-p   : Pause for SIGUSR1 before starting 
+ *		-p   : Pause for SIGUSR1 before starting
  *		-t   : Turn on syscall timing.
  *
  *************************************************************************/
@@ -76,11 +76,11 @@
 #include "test.h"
 #include "usctest.h"
 
-#define MAX_LENGTH __NEW_UTS_LEN 
+#define MAX_LENGTH __NEW_UTS_LEN
 
 char *TCID = "sethostname03";
 int TST_TOTAL = 1;
-extern int Tst_count;		/* Test Case counter for tst_* routines */ 
+extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 static char ltpthost[] = "ltphost";
 static char hname[MAX_LENGTH];
@@ -199,7 +199,7 @@ cleanup()
 	if( (ret = sethostname (hname, strlen(hname))) < 0 ) {
 		tst_resm(TWARN, "sethostname() failed while restoring"
 			" hostname to \"%s\"", hname);
-	} 
+	}
 
 	/* exit with return code appropriate for results */
 	tst_exit();

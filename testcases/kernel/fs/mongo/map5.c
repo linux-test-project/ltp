@@ -30,7 +30,7 @@ int main (int argc, char ** argv)
 		  perror ("open failed");
 		  continue;
 	  }
-	  
+	 
 	  // printf ("file %s occupies blocks: \n", argv[1]);
 	  // printf ("START\tEND\tCOUNT\n");
 	  i = 0;
@@ -39,7 +39,7 @@ int main (int argc, char ** argv)
 	  last_block = 0;
 	  fragments = 0;
 	  totals_block = 0;
-  
+ 
 	  while (ioctl (fd, FIBMAP, &block) == 0) {
 		  if (first_block==0) {
 			  last_block = block-1;
@@ -55,16 +55,16 @@ int main (int argc, char ** argv)
 		  else {
 			  last_block++;
 		  }
-		  
+		 
 		  if (!block) {
-			  //printf ("Fragments: %d\tBlocks: %d\n",fragments,totals_block); 
+			  //printf ("Fragments: %d\tBlocks: %d\n",fragments,totals_block);
 			  //printf ("%d:%d\t",fragments,totals_block);
 			  //if (fragments == 1) printf(".",totals_block);
 			  //else printf("%d_",fragments,totals_block);
 			  printf ("%d\n",fragments);
 			  break;
 		  }
-		  
+		 
 		  i ++;
 		  block = i;
 	  }

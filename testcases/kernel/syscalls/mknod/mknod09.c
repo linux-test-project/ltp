@@ -20,7 +20,7 @@
  * Test Name: mknod09
  *
  * Test Description:
- *  Verify that, mknod() fails with -1 and sets errno to EINVAL if the mode is 
+ *  Verify that, mknod() fails with -1 and sets errno to EINVAL if the mode is
  *  different than a normal file, device special file or FIFO.
  *
  * Expected Result:
@@ -155,7 +155,7 @@ setup()
 
 	/* Check that the test process id is super/root  */
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Must be super/root for this test!"); 
+		tst_brkm(TBROK, NULL, "Must be super/root for this test!");
 		tst_exit();
 	}
 
@@ -180,7 +180,7 @@ cleanup()
 
 	/* Remove files and temporary directory created */
 	tst_rmdir();
-  
+ 
 	/* exit with return code appropriate for results */
 	tst_exit();
 }

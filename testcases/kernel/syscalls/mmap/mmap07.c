@@ -121,7 +121,7 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 
-		/* 
+		/*
 		 * Call mmap to map the temporary file 'TEMPFILE'
 	 	 * with write access.
 		 */
@@ -163,7 +163,7 @@ main(int ac, char **av)
  * 	     Create a temporary directory and a file under it.
  * 	     Write some known data into file.
  */
-void 
+void
 setup()
 {
 	char *tst_buff;			/* test buffer to hold known data */
@@ -219,7 +219,7 @@ setup()
  *             completion or premature exit.
  * 	       Remove the temporary directory created.
  */
-void 
+void
 cleanup()
 {
 	/*

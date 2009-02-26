@@ -52,7 +52,7 @@
 
 /*
  * Defines:
- * 
+ *
  * USAGE: usage statement
  *
  * DEFAULT_PRIORITY_TYPE: default priority
@@ -127,7 +127,7 @@ int main (int argc, char **argv)
 		printf ("\tpriority:       %s\n", priority);
 	}
 
-	/* 
+	/*
 	 * Adjust the priority of this process if the real time flag is set
 	 */
 	if (!strcmp (priority, "fixed")) {
@@ -140,14 +140,14 @@ int main (int argc, char **argv)
 #endif
 	}
 
-	/* 
+	/*
 	 * Continuously multiply matrix as time permits...
 	 */
 	i = 0;
 	start_time = time ((long *) 0);
 
 
-	/* 
+	/*
 	 * Continuously read through file until interrupted...
 	 */
 	if (debug) printf ("\n");
@@ -192,14 +192,14 @@ void multiply_matrices ()
 		}
 	}
 
-	/* 
-	 * Now multiply the two matrices 
+	/*
+	 * Now multiply the two matrices
 	 */
 	for (i=0; i < MATRIX_SIZE; i++) {
 		for ( j=0; j < MATRIX_SIZE; j++) {
 			matrix_3 [i][j] = 0.0;	/* clear the element first */
 			for (k=0; k < MATRIX_SIZE; k++)
-				matrix_3 [i][j] += 
+				matrix_3 [i][j] +=
 					matrix_1 [i][k] * matrix_2 [k][j];
 		}
 	}
@@ -219,7 +219,7 @@ void signal_handler (int signal)
 		signaled++;
 		if (debug) printf ("\n\t<< caught SIGUSR1 interrupt>>\n");
 	} else if (signal == SIGALRM) {
-		error ("Failed to receive SIGUSR1 signal before timeout!", 
+		error ("Failed to receive SIGUSR1 signal before timeout!",
 			__FILE__, __LINE__);
 	} else
 		error ("received unexpected signal", __FILE__, __LINE__);
@@ -281,7 +281,7 @@ void parse_args (int argc, char **argv)
 	/*
 	 * Check percentage, execution time and process slots...
  	 */
-	if (pflg) { 
+	if (pflg) {
 		if (strcmp (priority, "fixed") && strcmp (priority, "variable"))
 			errflag++;
 	}

@@ -24,12 +24,12 @@
 * Also it checks the sysfs contents of the child are visible from the parent NS.
 * On Success it returns PASS else returns FAIL
 *
-* Scripts used: parent_share.sh parent_view.sh child_propagate.sh 
+* Scripts used: parent_share.sh parent_view.sh child_propagate.sh
 *               parentns.sh childns.sh
 *
-* 
+*
 * Authors:      Poornima Nayak <poornima.nayak@in.ibm.com>
-*               Veerendra C <vechandr@in.ibm.com> 
+*               Veerendra C <vechandr@in.ibm.com>
 *                      31/07/2008
 * ============================================================================*/
 #include <stdio.h>

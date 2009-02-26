@@ -117,12 +117,12 @@ main(int ac, char **av)
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Check looping state if -i option given */ 
+	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
 	
-		/* 
+		/*
 		 * Call stat(2) to get the status of
 		 * specified 'file' into stat structure.
 		 */
@@ -180,7 +180,7 @@ main(int ac, char **av)
  *  Creat a testfile and write some known data into it.
  *  Get the effective uid/gid of test process.
  */
-void 
+void
 setup()
 {
 	int i, fd;
@@ -190,7 +190,7 @@ setup()
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-    
+   
 	/* Switch to nobody user for correct error code collection */
         if (geteuid() != 0) {
                 tst_brkm(TBROK, tst_exit, "Test must be run as root");
@@ -212,7 +212,7 @@ setup()
 
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
-    
+   
 	if ((fd = open(TESTFILE, O_RDWR|O_CREAT, FILE_MODE)) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %#o) Failed, errno=%d : %s",
@@ -254,7 +254,7 @@ setup()
  *		completion or premature exit.
  *  Remove the test file and temporary directory created.
  */
-void 
+void
 cleanup()
 {
 	/*

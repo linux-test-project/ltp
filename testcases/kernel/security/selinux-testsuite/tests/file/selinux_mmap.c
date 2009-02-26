@@ -17,7 +17,7 @@
 #include<selinux/selinux.h>
 
 /*
- * Test the mmap file operation on a file whose name is given as the first 
+ * Test the mmap file operation on a file whose name is given as the first
  * argument. The second argument must be the SID we are to use to test
  * the actual mmap() operation by changing the SID of the file we are
  * given.
@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
   }
 
   fd = open(argv[1], O_RDWR, 0);
-  
+ 
   if(fd == -1) {
     perror("selinux_mmap:open");
     exit(2);

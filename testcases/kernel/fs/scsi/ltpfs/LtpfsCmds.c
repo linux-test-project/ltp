@@ -3,9 +3,9 @@
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/types.h>
-#include <linux/fs.h>    
+#include <linux/fs.h>   
 #include <linux/ioctl.h>
-#include <linux/pm.h>    
+#include <linux/pm.h>   
 #include <linux/genhd.h>
 #include <linux/bio.h>
 #include <linux/mm.h>
@@ -47,7 +47,7 @@ ioctl:      ltpdev_ioctl,
 int ltp_fs_major = LTPMAJOR;
 int test_iteration = 0;
 
-static char genhd_flags = 0;   
+static char genhd_flags = 0;  
 static struct gendisk * gd_ptr;
 static spinlock_t bdev_lock __cacheline_aligned_in_smp = SPIN_LOCK_UNLOCKED;
 
@@ -103,7 +103,7 @@ static int ltpdev_ioctl ( struct inode *pinode, struct file *pfile, unsigned int
     printk(KERN_ALERT "ltpdev_ioctl fs tests\n");
 
     switch (cmd) {
-    
+   
     case LTPAIODEV_CMD:
         printk(KERN_ALERT "Running AIO FS tests \n");
         printk(KERN_ALERT "AIO FS tests complete\n");
@@ -192,7 +192,7 @@ int init_module(void)
 	ltp_pm_dev = pm_register(PM_UNKNOWN_DEV, 0, ltp_pm_callback);
 
 
-    result = register_blkdev(ltp_fs_major, LTP_FS_DEV_NAME); 
+    result = register_blkdev(ltp_fs_major, LTP_FS_DEV_NAME);
 
     printk(KERN_ALERT "LTP FS: register_blkdev result=%d major %d\n",result, ltp_fs_major);
 
@@ -227,12 +227,12 @@ int init_module(void)
     return 0;
 }
 
-void cleanup_module(void) 
-{ 
+void cleanup_module(void)
+{
 
     printk(KERN_ALERT "Exiting module and cleaning up \n");
 
-    pm_unregister(ltp_pm_dev); 
+    pm_unregister(ltp_pm_dev);
 
     put_disk(gd_ptr);
 

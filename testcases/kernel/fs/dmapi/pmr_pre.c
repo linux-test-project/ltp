@@ -23,8 +23,8 @@
  *
  * API'S TESTED	: dm_set_region
  *
- * NOTES	: The last variation of this test case, when run before 
- * 		  rebooting and pmr_post, verifies that persistent managed 
+ * NOTES	: The last variation of this test case, when run before
+ * 		  rebooting and pmr_post, verifies that persistent managed
  * 		  regions work
  */
 #include <string.h>

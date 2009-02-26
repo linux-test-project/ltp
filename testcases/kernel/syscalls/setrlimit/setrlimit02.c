@@ -72,7 +72,7 @@ struct test_case_t {
 	/* the resource is invalid - EINVAL */
 	{-1, &rlim, EINVAL},
 
-	/* a non-root user attemps to increase the rlim_max value - EPERM */ 
+	/* a non-root user attemps to increase the rlim_max value - EPERM */
 	{RLIMIT_NOFILE, &rlim, EPERM}
 };
 

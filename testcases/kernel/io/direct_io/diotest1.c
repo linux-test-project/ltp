@@ -23,15 +23,15 @@
  *      diotest1.c
  *
  * DESCRIPTION
- *	Copy the contents of the input file to output file using direct read 
- *	and direct write. The input file size is numblks*bufsize. 
- *	The read and write calls use bufsize to perform IO. Input and output 
- *	files can be specified through commandline and is useful for running 
+ *	Copy the contents of the input file to output file using direct read
+ *	and direct write. The input file size is numblks*bufsize.
+ *	The read and write calls use bufsize to perform IO. Input and output
+ *	files can be specified through commandline and is useful for running
  *	test with raw devices as files.
  *	
  * USAGE
  *	diotest1 [-b bufsize] [-n numblks] [-i infile] [-o outfile]
- * 
+ *
  * History
  *	04/22/2002	Narasimha Sharoff nsharoff@us.ibm.com
  *
@@ -63,7 +63,7 @@ int TST_TOTAL=1;		 		 /* Total number of test conditions */
 #define	LEN	30
 #define	TRUE 1
 
-/* 
+/*
  * prg_usage: display the program usage.
 */
 void
@@ -159,7 +159,7 @@ main(int argc, char *argv[])
 	}
 	for (i = 0; i < numblks; i++) {
 		fillbuf(buf, bufsize, (char)(i % 256));
-		if (write(fd1, buf, bufsize) < 0) { 
+		if (write(fd1, buf, bufsize) < 0) {
 			tst_resm(TFAIL, "write infile failed: %s", strerror(errno));
 			fail_clean(fd1, fd2, infile, outfile);
 		}
@@ -209,6 +209,6 @@ main(int argc, char *argv[])
 int
 main() {
 	tst_resm(TCONF,"O_DIRECT is not defined.");
-	tst_exit(); 
+	tst_exit();
 }
 #endif /* O_DIRECT */

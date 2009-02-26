@@ -24,7 +24,7 @@
  *  Verify that truncating a mmaped file works correctly.
  *
  * Expected Result:
- *  ftruncate should be allowed to increase, decrease, or zero the 
+ *  ftruncate should be allowed to increase, decrease, or zero the
  *  size of a file that has been mmaped
  *
  * Algorithm:
@@ -135,7 +135,7 @@ void setup() {
 		tst_brkm(TFAIL, cleanup, "failed to ftruncate "
 				"file, errno: %d", errno);
 
-	maddr = mmap(0, (size_t)mapsize, PROT_READ | PROT_WRITE, 
+	maddr = mmap(0, (size_t)mapsize, PROT_READ | PROT_WRITE,
 		MAP_FILE|MAP_SHARED, fd, (off_t)0);
 	if (maddr == MAP_FAILED)
 		tst_brkm(TFAIL, cleanup, "failed to mmap file, "

@@ -15,28 +15,28 @@
  *
  */
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER	: clone02
- * 
+ *
  *    EXECUTED BY	: anyone
- * 
+ *
  *    TEST TITLE	: Functionality tests for clone(2)
- * 
+ *
  *    TEST CASE TOTAL	: 2
- * 
+ *
  *    AUTHOR		: Saji Kumar.V.R <saji.kumar@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
  *
  *    DESCRIPTION
- * 
+ *
  * 	Setup:
  * 	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
  *	  generate a unique file name fore each test instance
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  *	 TEST1
@@ -54,7 +54,7 @@
  *			test passed
  *		else
  *			test failed
- * 
+ *
  *	 TEST2
  *	 -----
  *		Call clone() with no resources shared.
@@ -72,7 +72,7 @@
  *			test failed
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  *	clone02 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
  *				where,  -c n : Run n copies concurrently.
@@ -97,7 +97,7 @@
 #endif
 
 #include <errno.h>
-#include <sched.h> 
+#include <sched.h>
 #include <fcntl.h>
 #include <sys/wait.h>
 #include <sys/types.h>
@@ -106,7 +106,7 @@
 #include "test.h"
 #include "usctest.h"
 
-#define FLAG_ALL CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SIGHAND | SIGCHLD 
+#define FLAG_ALL CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SIGHAND | SIGCHLD
 #define FLAG_NONE SIGCHLD
 #define PARENT_VALUE 1
 #define CHILD_VALUE 2
@@ -163,7 +163,7 @@ main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 	void *child_stack;	/* stack for child */
 	int status, i;
-    
+   
 	/* parse standard options */
 	if ((msg=parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
@@ -256,7 +256,7 @@ main(int ac, char **av)
 }	/* End main */
 
 /* setup() - performs all ONE TIME setup for this test */
-void 
+void
 setup()
 {
 	
@@ -277,11 +277,11 @@ setup()
 }	/* End setup() */
 
 
-/* 
+/*
  *cleanup() -  performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 
@@ -376,7 +376,7 @@ child_fn()
 	/* save child pid */
     child_pid = syscall(__NR_gettid);
 
-	/*child_pid = getpid(); changed to above to work on POSIX threads -- NPTL */ 
+	/*child_pid = getpid(); changed to above to work on POSIX threads -- NPTL */
 
 	if (test_VM() && test_FILES() && test_FS() && test_SIG()) {
 		exit(1);

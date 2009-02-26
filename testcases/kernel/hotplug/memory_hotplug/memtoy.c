@@ -462,7 +462,7 @@ parse_command_line_args(int argc, char *argv[])
 done:
 
 	return(error);
-} 
+}
 
 int
 main(int argc, char *argv[])
@@ -497,7 +497,7 @@ main(int argc, char *argv[])
 	printf("memtoy pid:  %d\n", getpid());
 	vprint("%s:  pagesize = %d\n", gcp->program_name, gcp->pagesize);
 	if (gcp->numa_max_node >= 0)
-		vprint("%s:  NUMA available - max node: %d\n", 
+		vprint("%s:  NUMA available - max node: %d\n",
 			gcp->program_name, gcp->numa_max_node);
 
 	set_signals();

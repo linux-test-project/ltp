@@ -53,7 +53,7 @@
  *	03/2001 - Written by Wayne Boyer
  *
  *      06/03/2008 Renaud Lottiaux (Renaud.Lottiaux@kerlabs.com)
- *      - Fix wrong return value check on shmat system call (leading to 
+ *      - Fix wrong return value check on shmat system call (leading to
  *        segfault in case of error with this syscall).
  *
  * RESTRICTIONS
@@ -155,7 +155,7 @@ check_functionality()
 	 * with the call to siglongjmp() in the signal handler.
 	 *
 	 * An attempt to do the assignment without using the sigsetjmp()
-	 * and siglongjmp() calls will result in an infinite loop.  Program 
+	 * and siglongjmp() calls will result in an infinite loop.  Program
 	 * control is returned to the assignment statement after the execution
 	 * of the signal handler and another SIGSEGV will be generated.
 	 */
@@ -170,7 +170,7 @@ check_functionality()
 		tst_resm(TFAIL, "shared memory was not detached correctly");
 	}
 }
- 
+
 /*
  * sighandler()
  */

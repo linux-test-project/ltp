@@ -53,7 +53,7 @@
  *		-Ported
  *
  * Restrictions
- *	Must not be run as root 
+ *	Must not be run as root
  */
 
 #include <stdio.h>

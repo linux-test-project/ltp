@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * $Id: gettid01.c,v 1.2 2009/02/26 11:43:57 subrata_modak Exp $
+ * $Id: gettid01.c,v 1.3 2009/02/26 12:03:42 subrata_modak Exp $
  *
  */
 
@@ -102,7 +102,7 @@ int main(int ac, char **av)
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void 
+void
 setup()
 {
     /* capture signals */
@@ -118,7 +118,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void 
+void
 cleanup()
 {
     /*

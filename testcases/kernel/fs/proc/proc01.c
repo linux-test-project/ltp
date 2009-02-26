@@ -3,26 +3,26 @@
  *
  * Copyright (C) 2001 Stephane Fillod <f4cfe@free.fr>
  * Copyright (c) 2008, 2009  Red Hat, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
- * 
+ *
  * This program is distributed in the hope that it would be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * 
+ *
  * Further, this software is distributed without any warranty that it is
  * free of the rightful claim of any third person regarding infringement
  * or the like.  Any license provided herein, whether implied or
  * otherwise, applies only to this software file.  Patent licenses, if
  * any, provided herein do not apply to combinations of this program with
  * other software, or any other product whatsoever.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston MA 02111-1307, USA.
- * 
+ *
  */
 
 #include "config.h"
@@ -161,7 +161,7 @@ int found_errno(const char *syscall, const char *obj, int tmperr)
             || !fnmatch(known_issues[i].file, obj, FNM_PATHNAME))
         && !strcmp(syscall, known_issues[i].func))
       {
-        tst_resm(TINFO, "%s: %s: known issue: %s", obj, syscall, 
+        tst_resm(TINFO, "%s: %s: known issue: %s", obj, syscall,
                  strerror(tmperr));
         return 1;
       }
@@ -214,7 +214,7 @@ option_t options[] = {
 };
 
 /*
- * NB: this function is recursive 
+ * NB: this function is recursive
  * returns 0 if no error encountered, otherwise number of errors (objs)
  *
  * REM: Funny enough, while devloping this function (actually replacing
@@ -224,8 +224,8 @@ option_t options[] = {
  *	Okay, this might be due to a slight serial misconfiguration, but still.
  *	Analysis with strace showed up the difference was on the count size
  *	of read (1024 bytes vs 4096 bytes). So I tested further..
- *	read count of 512 bytes adds /proc/tty/drivers to the list 
- *	of broken proc files, while 64 bytes reads removes 
+ *	read count of 512 bytes adds /proc/tty/drivers to the list
+ *	of broken proc files, while 64 bytes reads removes
  *	/proc/tty/driver/serial from the list. Interresting, isn't it?
  *	Now, there's a -b option to this test, so you can try your luck. --SF
  *

@@ -59,7 +59,7 @@ extern int Tst_count;
 int exp_enos[] = {ENOSPC, 0};	/* 0 terminated list of expected errnos */
 
 /*
- * The MAXIDS value is somewhat arbitrary and may need to be increased 
+ * The MAXIDS value is somewhat arbitrary and may need to be increased
  * depending on the system being tested.
  */
 #define MAXIDS	8192

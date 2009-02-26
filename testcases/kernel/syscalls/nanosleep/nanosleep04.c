@@ -88,7 +88,7 @@ main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 	pid_t cpid;		/* Child process id */
 	int status;		/* child exit status */
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
 	if (msg != (char *)NULL) {
@@ -117,7 +117,7 @@ main(int ac, char **av)
 		}
 
 		if (cpid == 0) {		/* Child process */
-			/* 
+			/*
 			 * Call nanosleep() to suspend child process
 			 * for specified time 'tv_sec'.
 			 */
@@ -165,10 +165,10 @@ main(int ac, char **av)
 
 /*
  * setup() - performs all ONE TIME setup for this test.
- *  Initialise time structure elements, such that pause time 
+ *  Initialise time structure elements, such that pause time
  *  points to -ve value.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -187,7 +187,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

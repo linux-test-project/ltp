@@ -29,7 +29,7 @@
  * Expected Result:
  *  munmap call should succeed to unmap a part or all of mapped region of a
  *  file or anonymous shared memory from the process's address space and it
- *  returns with a value 0, 
+ *  returns with a value 0,
  *  further reference to the unmapped region should result in a segmentation
  *  fault (SIGSEGV).
  *
@@ -116,7 +116,7 @@ main(int ac, char **av)
 		/* Perform global setup for test */
 		setup();
 
-		/* 
+		/*
 		 * Call munmap to unmap the part of the mapped region of the
 		 * temporary file from the address and length that is part of
 		 * the mapped region.
@@ -140,7 +140,7 @@ main(int ac, char **av)
 			 * to the first byte of region with
 			 * some arbitrary number.
 			 */
-			*addr = 50; 
+			*addr = 50;
 
 			/* This message is printed if no SIGSEGV */
 			tst_resm(TFAIL, "process succeeds to refer unmapped "
@@ -179,7 +179,7 @@ int main()
  * write one byte data into it, map the open file for the specified
  * map length.
  */
-void 
+void
 setup()
 {
 
@@ -294,7 +294,7 @@ sig_handler()
  *  Close the temporary file.
  *  Remove the temporary directory.
  */
-void 
+void
 cleanup()
 {
 	/*

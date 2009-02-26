@@ -158,7 +158,7 @@ int main (int argc, char *argv[]) {
                    fl = fcntl (fds[i], F_GETFL);
                    if (fl == -1) {
                        tst_brkm(TBROK, cleanup, "fcntl failed");
-                       tst_exit(); 
+                       tst_exit();
                    }
                    if (fl & O_NONBLOCK) {
                        tst_resm(TFAIL, "pipe2(0) set non-blocking mode for fds[%d]", i);
@@ -177,7 +177,7 @@ int main (int argc, char *argv[]) {
                    fl = fcntl (fds[i], F_GETFL);
                    if (fl == -1) {
                        tst_brkm(TBROK, cleanup, "fcntl failed");
-                       tst_exit(); 
+                       tst_exit();
                    }
                    if ((fl & O_NONBLOCK) == 0) {
                         tst_resm(TFAIL, "pipe2(O_NONBLOCK) does not set non-blocking mode for fds[%d]\n", i);

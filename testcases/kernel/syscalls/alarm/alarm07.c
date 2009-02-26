@@ -90,7 +90,7 @@ main(int ac, char **av)
 	int time_sec = 3;	/* time for which alarm is set */
 	int sleep_time = 5;	/* waiting time for the SIGALRM signal */
 	pid_t cpid;		/* child process id */
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
 	if (msg != (char *)NULL) {
@@ -105,8 +105,8 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 
-		/* 
-		 * Call First alarm() with non-zero time parameter 
+		/*
+		 * Call First alarm() with non-zero time parameter
 		 * 'time_sec' to send SIGALRM to the process.
 		 */
 		TEST(alarm(time_sec));
@@ -121,7 +121,7 @@ main(int ac, char **av)
 		/* Wait for signal SIGALRM to be generated */
 		sleep(sleep_time);
 
-		if (STD_FUNCTIONAL_TEST) { 
+		if (STD_FUNCTIONAL_TEST) {
 			if (cpid == 0) {	/* Child process */
 				/*
 				 * For child process if almreceived is 0
@@ -156,7 +156,7 @@ main(int ac, char **av)
  * setup() - performs all ONE TIME setup for this test.
  *  Setup signal handler to catch SIGALRM signal.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -190,7 +190,7 @@ sigproc(int sig)
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

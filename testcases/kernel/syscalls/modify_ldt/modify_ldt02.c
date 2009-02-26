@@ -57,7 +57,7 @@ extern int Tst_count;
 
 #ifdef HAVE_ASM_LDT_H
 #include <asm/ldt.h>
-#endif 
+#endif
 extern int modify_ldt(int, void*, unsigned long);
 
 
@@ -70,7 +70,7 @@ extern int modify_ldt(int, void*, unsigned long);
 #ifdef HAVE_STRUCT_USER_DESC
 typedef struct user_desc modify_ldt_s;
 #elif  HAVE_STRUCT_MODIFY_LDT_LDT_S
-typedef struct modify_ldt_ldt_s modify_ldt_s; 
+typedef struct modify_ldt_ldt_s modify_ldt_s;
 #else
 typedef struct modify_ldt_ldt_t
 {

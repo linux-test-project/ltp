@@ -176,7 +176,7 @@
  *
  * parse_args (): Parse command line arguments
  * reader (): Thread program
- * writer (): "scratch" each and every shared memory segment 
+ * writer (): "scratch" each and every shared memory segment
  * sys_error (): System error message function
  * error (): Error message function
  * release (): Release the shared memory segments
@@ -219,7 +219,7 @@ pid_t	 parent_pid;			    /* process id of parent */
 int      num_readers = DEFAULT_NUM_READERS;
 int 	 buffer_size = DEFAULT_SHMEM_SIZE;
 int 	 num_writers = DEFAULT_NUM_WRITERS;
- 
+
 int 	 shmid[MAX_THREAD_NUMBER + MAX_WRITER_NUMBER];
 
 
@@ -236,7 +236,7 @@ int 	 shmid[MAX_THREAD_NUMBER + MAX_WRITER_NUMBER];
 +---------------------------------------------------------------------*/
 int main (int argc, char **argv)
 {
-	pthread_attr_t	newattr; 
+	pthread_attr_t	newattr;
 
 	int	i; 		/* Misc loop index */
 	int	j; 		/* Misc loop index */
@@ -361,19 +361,19 @@ int main (int argc, char **argv)
 	}
 
 	/*
-	 * Creates a thread attributes object and initializes it 
+	 * Creates a thread attributes object and initializes it
 	 * with default values.
 	*/
         if (pthread_attr_init(&newattr))
                 sys_error ("attr_init(&newattr) failed", __LINE__);
 	/*
-	 * Sets the value of the detachstate attribute of a thread attributes 
-	 * object : 
-	 * PTHREAD_CREATE_UNDETACHED	Specifies that the thread will be 
+	 * Sets the value of the detachstate attribute of a thread attributes
+	 * object :
+	 * PTHREAD_CREATE_UNDETACHED	Specifies that the thread will be
 	 * created in undetached state.	
 	*/
 #ifdef _LINUX_
-	// the DEFAULT state for linux pthread_create is to be "undetatched" or joinable 
+	// the DEFAULT state for linux pthread_create is to be "undetatched" or joinable
 	/* if (pthread_attr_setdetachstate (&newattr, PTHREAD_CREATE_JOINABLE))
                 sys_error ("attr_setdetachstate(&newattr) failed", __LINE__);*/
 #else
@@ -382,7 +382,7 @@ int main (int argc, char **argv)
 #endif
 
         /*
-         * Create all num_writers threads .  Each writer thread will fill 
+         * Create all num_writers threads .  Each writer thread will fill
 	 * the "scratch" shared memory segment (shmptr) up with data and
          * will store the result in cksum array accessible by the main.
          */
@@ -439,8 +439,8 @@ int main (int argc, char **argv)
 	ulptr=checksum[i];
 	for (j=0; j<num_readers; j++) {
 
-		if (cksum[i] != *ulptr ) 
-			error ("checksums do not match", __LINE__); 
+		if (cksum[i] != *ulptr )
+			error ("checksums do not match", __LINE__);
 		
 		}
 	}
@@ -524,7 +524,7 @@ void *reader (void *parm)
 	
 	/*
 	 * Wait for a READ_COUNT lock on the shared memory segment, then
-	 * compute the checksum and release the READ_COUNT lock.      
+	 * compute the checksum and release the READ_COUNT lock.     
 	 */
 
 	num_r=num_p % num_readers;
@@ -569,7 +569,7 @@ void *reader (void *parm)
 	 */
 	
 	*ulptr_r = cksum_r;
-	printf ("\t\treader (%03d) of writer (%03d): checksum %08lx\n", num_r, num_w, cksum_r); 
+	printf ("\t\treader (%03d) of writer (%03d): checksum %08lx\n", num_r, num_w, cksum_r);
 	return NULL;
 }
 

@@ -48,7 +48,7 @@ char DummySubdir[FILENAME_MAX];
 char DummyTmp[FILENAME_MAX];
 char DummyString[DUMMY_STRLEN];
 
-/* Variables for thread communications */ 
+/* Variables for thread communications */
 dm_eventtype_t eventReceived;
 void *hanp1;
 size_t hlen1;
@@ -78,7 +78,7 @@ void LogStat(struct stat *statfs)
 
 }	
 
-/* 
+/*
  * StatCmp is used instead of memcmp because some of the pad fields or unused
  * fields may not be the same even though the pertinent info may be the same
  */
@@ -234,7 +234,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n", szFuncName);
 			rc = dm_read_invis(INVALID_ADDR, hanp, hlen, DM_NO_TOKEN, inoff, inlen, buf);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = remove(DummyFile);
@@ -270,7 +270,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hanp)\n", szFuncName);
 			rc = dm_read_invis(sid, (void *)INVALID_ADDR, hlen, DM_NO_TOKEN, inoff, inlen, buf);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = remove(DummyFile);
@@ -306,7 +306,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hlen)\n", szFuncName);
 			rc = dm_read_invis(sid, hanp, INVALID_ADDR, DM_NO_TOKEN, inoff, inlen, buf);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			rc = remove(DummyFile);
@@ -342,7 +342,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid token)\n", szFuncName);
 			rc = dm_read_invis(sid, hanp, hlen, INVALID_ADDR, inoff, inlen, buf);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = remove(DummyFile);
@@ -381,7 +381,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid off)\n", szFuncName);
 			rc = dm_read_invis(sid, hanp, hlen, DM_NO_TOKEN, inoff, inlen, buf);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = remove(DummyFile);
@@ -416,7 +416,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid bufp)\n", szFuncName);
 			rc = dm_read_invis(sid, hanp, hlen, DM_NO_TOKEN, inoff, inlen, (void *)INVALID_ADDR);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = remove(DummyFile);
@@ -452,7 +452,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 			remove(DummyFile);
 		} else if (((rc = dm_set_eventlist(sid, fshanp, fshlen, DM_NO_TOKEN, &maxFileEvents, DM_EVENT_MAX)) == -1) ||
-			   ((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, numRegions, maxRegions, &exactflag)) == -1) || 
+			   ((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, numRegions, maxRegions, &exactflag)) == -1) ||
 			   ((rc = stat(DummyFile, &statfs1)) == -1)) {
 			dm_handle_free(fshanp, fshlen);
 			dm_handle_free(hanp, hlen);
@@ -537,7 +537,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 			remove(DummyFile);
 		} else if (((rc = dm_set_eventlist(sid, fshanp, fshlen, DM_NO_TOKEN, &maxFileEvents, DM_EVENT_MAX)) == -1) ||
-			   ((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, numRegions, maxRegions, &exactflag)) == -1) || 
+			   ((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, numRegions, maxRegions, &exactflag)) == -1) ||
 			   ((rc = stat(DummyFile, &statfs1)) == -1)) {
 			dm_handle_free(fshanp, fshlen);
 			dm_handle_free(hanp, hlen);
@@ -622,7 +622,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 			remove(DummyFile);
 		} else if (((rc = dm_set_eventlist(sid, fshanp, fshlen, DM_NO_TOKEN, &maxFileEvents, DM_EVENT_MAX)) == -1) ||
-			   ((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, numRegions, maxRegions, &exactflag)) == -1) || 
+			   ((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, numRegions, maxRegions, &exactflag)) == -1) ||
 			   ((rc = stat(DummyFile, &statfs1)) == -1)) {
 			dm_handle_free(fshanp, fshlen);
 			dm_handle_free(hanp, hlen);
@@ -707,7 +707,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 			remove(DummyFile);
 		} else if (((rc = dm_set_eventlist(sid, fshanp, fshlen, DM_NO_TOKEN, &maxFileEvents, DM_EVENT_MAX)) == -1) ||
-			   ((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, numRegions, maxRegions, &exactflag)) == -1) || 
+			   ((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, numRegions, maxRegions, &exactflag)) == -1) ||
 			   ((rc = stat(DummyFile, &statfs1)) == -1)) {
 			dm_handle_free(fshanp, fshlen);
 			dm_handle_free(hanp, hlen);
@@ -792,7 +792,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(DM_NO_SESSION sid)\n", szFuncName);
 			rc = dm_read_invis(DM_NO_SESSION, hanp, hlen, DM_NO_TOKEN, inoff, inlen, buf);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = remove(DummyFile);
@@ -827,7 +827,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(directory handle)\n", szFuncName);
 			rc = dm_read_invis(sid, hanp, hlen, DM_NO_TOKEN, inoff, inlen, buf);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = rmdir(DummySubdir);
@@ -862,7 +862,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(fs handle)\n", szFuncName);
 			rc = dm_read_invis(sid, hanp, hlen, DM_NO_TOKEN, inoff, inlen, buf);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = rmdir(DummySubdir);
@@ -887,7 +887,7 @@ int main(int argc, char **argv)
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
 		rc = dm_read_invis(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, inoff, inlen, buf);
-		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 		/* Variation clean up */
 	}
@@ -920,7 +920,7 @@ int main(int argc, char **argv)
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalidated hanp)\n", szFuncName);
 			rc = dm_read_invis(sid, hanp, hlen, DM_NO_TOKEN, inoff, inlen, buf);
 			DMLOG_PRINT(DMLVL_DEBUG, "GOT %d, %s\n", rc, buf);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			dm_handle_free(hanp, hlen);
@@ -954,7 +954,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n", szFuncName);
 			rc = dm_write_invis(INVALID_ADDR, hanp, hlen, DM_NO_TOKEN, 0, outoff, outlen, buf);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = remove(DummyFile);
@@ -990,7 +990,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hanp)\n", szFuncName);
 			rc = dm_write_invis(sid, (void *)INVALID_ADDR, hlen, DM_NO_TOKEN, 0, outoff, outlen, buf);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = remove(DummyFile);
@@ -1026,7 +1026,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hlen)\n", szFuncName);
 			rc = dm_write_invis(sid, hanp, INVALID_ADDR, DM_NO_TOKEN, 0, outoff, outlen, buf);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			rc = remove(DummyFile);
@@ -1062,7 +1062,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid token)\n", szFuncName);
 			rc = dm_write_invis(sid, hanp, hlen, INVALID_ADDR, 0, outoff, outlen, buf);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = remove(DummyFile);
@@ -1098,7 +1098,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid off+len)\n", szFuncName);
 			rc = dm_write_invis(sid, hanp, hlen, DM_NO_TOKEN, 0, outoff, outlen, buf);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFBIG); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFBIG);
 
 			/* Variation clean up */
 			rc = remove(DummyFile);
@@ -1133,7 +1133,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid bufp)\n", szFuncName);
 			rc = dm_write_invis(sid, hanp, hlen, DM_NO_TOKEN, 0, outoff, outlen, (void *)INVALID_ADDR);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = remove(DummyFile);
@@ -1174,7 +1174,7 @@ int main(int argc, char **argv)
 			close(fd);
 			remove(DummyFile);
 		} else if (((rc = dm_set_eventlist(sid, fshanp, fshlen, DM_NO_TOKEN, &maxFileEvents, DM_EVENT_MAX)) == -1) ||
-			   ((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, numRegions, maxRegions, &exactflag)) == -1) || 
+			   ((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, numRegions, maxRegions, &exactflag)) == -1) ||
 			   ((rc = stat(DummyFile, &statfs1)) == -1)) {
 			dm_handle_free(fshanp, fshlen);
 			dm_handle_free(hanp, hlen);
@@ -1201,7 +1201,7 @@ int main(int argc, char **argv)
 					DMLOG_PRINT(DMLVL_DEBUG, "buffer contents [%.*s]\n", rc, buf);
 					if (eventReceived == DM_EVENT_INVALID) {
 						DMLOG_PRINT(DMLVL_DEBUG, "no event received\n");
-						if (StatCmp(&statfs1, &statfs2) == 0) { 
+						if (StatCmp(&statfs1, &statfs2) == 0) {
 							DMLOG_PRINT(DMLVL_DEBUG, "stat info same\n");
 							DMVAR_PASS();
 						} else {
@@ -1266,7 +1266,7 @@ int main(int argc, char **argv)
 			close(fd);
 			remove(DummyFile);
 		} else if (((rc = dm_set_eventlist(sid, fshanp, fshlen, DM_NO_TOKEN, &maxFileEvents, DM_EVENT_MAX)) == -1) ||
-			   ((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, numRegions, maxRegions, &exactflag)) == -1) || 
+			   ((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, numRegions, maxRegions, &exactflag)) == -1) ||
 			   ((rc = stat(DummyFile, &statfs1)) == -1)) {
 			dm_handle_free(fshanp, fshlen);
 			dm_handle_free(hanp, hlen);
@@ -1293,7 +1293,7 @@ int main(int argc, char **argv)
 					DMLOG_PRINT(DMLVL_DEBUG, "buffer contents [%.*s]\n", rc, buf);
 					if (eventReceived == DM_EVENT_INVALID) {
 						DMLOG_PRINT(DMLVL_DEBUG, "no event received\n");
-						if (StatCmp(&statfs1, &statfs2) == 0) { 
+						if (StatCmp(&statfs1, &statfs2) == 0) {
 							DMLOG_PRINT(DMLVL_DEBUG, "stat info same\n");
 							DMVAR_PASS();
 						} else {
@@ -1358,7 +1358,7 @@ int main(int argc, char **argv)
 			close(fd);
 			remove(DummyFile);
 		} else if (((rc = dm_set_eventlist(sid, fshanp, fshlen, DM_NO_TOKEN, &maxFileEvents, DM_EVENT_MAX)) == -1) ||
-			   ((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, numRegions, maxRegions, &exactflag)) == -1) || 
+			   ((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, numRegions, maxRegions, &exactflag)) == -1) ||
 			   ((rc = stat(DummyFile, &statfs1)) == -1)) {
 			dm_handle_free(fshanp, fshlen);
 			dm_handle_free(hanp, hlen);
@@ -1385,7 +1385,7 @@ int main(int argc, char **argv)
 					DMLOG_PRINT(DMLVL_DEBUG, "buffer contents [%.*s]\n", rc, buf);
 					if (eventReceived == DM_EVENT_INVALID) {
 						DMLOG_PRINT(DMLVL_DEBUG, "no event received\n");
-						if (StatCmp(&statfs1, &statfs2) == 0) { 
+						if (StatCmp(&statfs1, &statfs2) == 0) {
 							DMLOG_PRINT(DMLVL_DEBUG, "stat info same\n");
 							DMVAR_PASS();
 						} else {
@@ -1450,7 +1450,7 @@ int main(int argc, char **argv)
 			close(fd);
 			remove(DummyFile);
 		} else if (((rc = dm_set_eventlist(sid, fshanp, fshlen, DM_NO_TOKEN, &maxFileEvents, DM_EVENT_MAX)) == -1) ||
-			   ((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, numRegions, maxRegions, &exactflag)) == -1) || 
+			   ((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, numRegions, maxRegions, &exactflag)) == -1) ||
 			   ((rc = stat(DummyFile, &statfs1)) == -1)) {
 			dm_handle_free(fshanp, fshlen);
 			dm_handle_free(hanp, hlen);
@@ -1477,7 +1477,7 @@ int main(int argc, char **argv)
 					DMLOG_PRINT(DMLVL_DEBUG, "buffer contents [%.*s]\n", rc, buf);
 					if (eventReceived == DM_EVENT_INVALID) {
 						DMLOG_PRINT(DMLVL_DEBUG, "no event received\n");
-						if (StatCmp(&statfs1, &statfs2) == 0) { 
+						if (StatCmp(&statfs1, &statfs2) == 0) {
 							DMLOG_PRINT(DMLVL_DEBUG, "stat info same\n");
 							DMVAR_PASS();
 						} else {
@@ -1542,7 +1542,7 @@ int main(int argc, char **argv)
 			close(fd);
 			remove(DummyFile);
 		} else if (((rc = dm_set_eventlist(sid, fshanp, fshlen, DM_NO_TOKEN, &maxFileEvents, DM_EVENT_MAX)) == -1) ||
-			   ((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, numRegions, maxRegions, &exactflag)) == -1) || 
+			   ((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, numRegions, maxRegions, &exactflag)) == -1) ||
 			   ((rc = stat(DummyFile, &statfs1)) == -1)) {
 			dm_handle_free(fshanp, fshlen);
 			dm_handle_free(hanp, hlen);
@@ -1569,7 +1569,7 @@ int main(int argc, char **argv)
 					DMLOG_PRINT(DMLVL_DEBUG, "buffer contents [%.*s]\n", rc, buf);
 					if (eventReceived == DM_EVENT_INVALID) {
 						DMLOG_PRINT(DMLVL_DEBUG, "no event received\n");
-						if (StatCmp(&statfs1, &statfs2) == 0) { 
+						if (StatCmp(&statfs1, &statfs2) == 0) {
 							DMLOG_PRINT(DMLVL_DEBUG, "stat info same\n");
 							DMVAR_PASS();
 						} else {
@@ -1634,7 +1634,7 @@ int main(int argc, char **argv)
 			close(fd);
 			remove(DummyFile);
 		} else if (((rc = dm_set_eventlist(sid, fshanp, fshlen, DM_NO_TOKEN, &maxFileEvents, DM_EVENT_MAX)) == -1) ||
-			   ((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, numRegions, maxRegions, &exactflag)) == -1) || 
+			   ((rc = dm_set_region(sid, hanp, hlen, DM_NO_TOKEN, numRegions, maxRegions, &exactflag)) == -1) ||
 			   ((rc = stat(DummyFile, &statfs1)) == -1)) {
 			dm_handle_free(fshanp, fshlen);
 			dm_handle_free(hanp, hlen);
@@ -1661,7 +1661,7 @@ int main(int argc, char **argv)
 					DMLOG_PRINT(DMLVL_DEBUG, "buffer contents [%.*s]\n", rc, buf);
 					if (eventReceived == DM_EVENT_INVALID) {
 						DMLOG_PRINT(DMLVL_DEBUG, "no event received\n");
-						if (StatCmp(&statfs1, &statfs2) == 0) { 
+						if (StatCmp(&statfs1, &statfs2) == 0) {
 							DMLOG_PRINT(DMLVL_DEBUG, "stat info same\n");
 							DMVAR_PASS();
 						} else {
@@ -1721,7 +1721,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(DM_NO_SESSION sid)\n", szFuncName);
 			rc = dm_write_invis(DM_NO_SESSION, hanp, hlen, DM_NO_TOKEN, 0, outoff, outlen, buf);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = remove(DummyFile);
@@ -1756,7 +1756,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(directory handle)\n", szFuncName);
 			rc = dm_write_invis(sid, hanp, hlen, DM_NO_TOKEN, 0, outoff, outlen, buf);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = rmdir(DummySubdir);
@@ -1791,7 +1791,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(fs handle)\n", szFuncName);
 			rc = dm_write_invis(sid, hanp, hlen, DM_NO_TOKEN, 0, outoff, outlen, buf);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = rmdir(DummySubdir);
@@ -1816,7 +1816,7 @@ int main(int argc, char **argv)
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
 		rc = dm_write_invis(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, 0, inoff, inlen, buf);
-		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 		/* Variation clean up */
 	}
@@ -1848,7 +1848,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalidated hanp)\n", szFuncName);
 			rc = dm_write_invis(sid, hanp, hlen, DM_NO_TOKEN, 0, inoff, inlen, buf);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			dm_handle_free(hanp, hlen);
@@ -1923,7 +1923,7 @@ void *Thread(void *parm)
 			DMLOG_PRINT(DMLVL_DEBUG, "  Media designator: %s\n", DM_GET_VALUE(me, me_name2, char *));
 			DMLOG_PRINT(DMLVL_DEBUG, "  Root handle: %p\n", DM_GET_VALUE(me, me_roothandle, void *));
 			DMLOG_PRINT(DMLVL_DEBUG, "  Root handle length: %d\n", DM_GET_LEN(me, me_roothandle));
-	    
+	   
     			bMounted = dm_handle_is_valid(lhanp, lhlen);
 
     			rc = dm_request_right(sid, lhanp, lhlen, token, DM_RR_WAIT, DM_RIGHT_EXCL);

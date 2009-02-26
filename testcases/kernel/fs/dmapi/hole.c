@@ -75,7 +75,7 @@ int main(int argc, char **argv)
 		DMLOG_PRINT(DMLVL_ERR, "dm_create_session failed! (rc = %d, errno = %d)\n", rc, errno);
 		DM_EXIT();
 	} else {
-		int fd; 
+		int fd;
 
 		fd = open(DUMMY_TMP, O_RDWR | O_CREAT | O_TRUNC, DUMMY_FILE_RW_MODE);
 		if (fd != -1) {
@@ -130,7 +130,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n", szFuncName);
 			rc = dm_get_allocinfo(INVALID_ADDR, hanp, hlen, DM_NO_TOKEN, &off, NUM_EXTENTS, Extents, &nelem);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -170,7 +170,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hanp)\n", szFuncName);
 			rc = dm_get_allocinfo(sid, (void *)INVALID_ADDR, hlen, DM_NO_TOKEN, &off, NUM_EXTENTS, Extents, &nelem);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -186,7 +186,7 @@ int main(int argc, char **argv)
 	 * TEST    : dm_get_allocinfo - directory handle
 	 * EXPECTED: rc = -1, errno = EINVAL
 	 *
-	 * This variation uncovered XFS BUG #7 (EOPNOTSUPP errno returned 
+	 * This variation uncovered XFS BUG #7 (EOPNOTSUPP errno returned
 	 * instead of EINVAL)
 	 */
 	if (DMVAR_EXEC(GET_ALLOCINFO_BASE + 3)) {
@@ -208,7 +208,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(dir handle)\n", szFuncName);
 			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN, &off, NUM_EXTENTS, Extents, &nelem);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = rmdir(DUMMY_SUBDIR);
@@ -247,7 +247,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hlen)\n", szFuncName);
 			rc = dm_get_allocinfo(sid, hanp, INVALID_ADDR, DM_NO_TOKEN, &off, NUM_EXTENTS, Extents, &nelem);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -287,7 +287,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid token)\n", szFuncName);
 			rc = dm_get_allocinfo(sid, hanp, hlen, INVALID_ADDR, &off, NUM_EXTENTS, Extents, &nelem);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -326,7 +326,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid offp)\n", szFuncName);
 			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN, (dm_off_t *)INVALID_ADDR, NUM_EXTENTS, Extents, &nelem);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -366,7 +366,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(unaligned offp)\n", szFuncName);
 			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN, &off, NUM_EXTENTS, Extents, &nelem);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -406,7 +406,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(off past EOF)\n", szFuncName);
 			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN, &off, NUM_EXTENTS, Extents, &nelem);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -446,7 +446,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(nelem zero)\n", szFuncName);
 			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN, &off, 0, Extents, &nelem);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -486,7 +486,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid extentp)\n", szFuncName);
 			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN, &off, NUM_EXTENTS, (dm_extent_t *)INVALID_ADDR, &nelem);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -525,7 +525,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid nelemp)\n", szFuncName);
 			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN, &off, NUM_EXTENTS, Extents, (u_int *)INVALID_ADDR);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -744,10 +744,10 @@ int main(int argc, char **argv)
 
 					DMLOG_PRINT(DMLVL_DEBUG, "  nelem = %d\n", nelem);
 					LogExtents(Extents, nelem);
-					if ((i=1) && (Extents[0].ex_length + Extents[1].ex_length == TMP_FILELEN) && 
-					    (i=2) && (Extents[0].ex_offset == 0) && 
+					if ((i=1) && (Extents[0].ex_length + Extents[1].ex_length == TMP_FILELEN) &&
+					    (i=2) && (Extents[0].ex_offset == 0) &&
 					    (i=3) && (Extents[0].ex_length == Extents[1].ex_offset) &&
-					    (i=4) && (Extents[0].ex_type == DM_EXTENT_HOLE) && 
+					    (i=4) && (Extents[0].ex_type == DM_EXTENT_HOLE) &&
 					    (i=5) && (Extents[1].ex_type == DM_EXTENT_RES)
 					   ) {
 						DMLOG_PRINT(DMLVL_DEBUG, "%s extent information correct\n", szFuncName);
@@ -813,10 +813,10 @@ int main(int argc, char **argv)
 
 					DMLOG_PRINT(DMLVL_DEBUG, "  nelem = %d\n", nelem);
 					LogExtents(Extents, nelem);
-					if ((i=1) && (Extents[0].ex_length + Extents[1].ex_length == ((TMP_FILELEN/2)&(~(BLK_SIZE-1)))) && 
-					    (i=2) && (Extents[0].ex_offset == 0) && 
+					if ((i=1) && (Extents[0].ex_length + Extents[1].ex_length == ((TMP_FILELEN/2)&(~(BLK_SIZE-1)))) &&
+					    (i=2) && (Extents[0].ex_offset == 0) &&
 					    (i=3) && (Extents[0].ex_length == Extents[1].ex_offset) &&
-					    (i=4) && (Extents[0].ex_type == DM_EXTENT_RES) && 
+					    (i=4) && (Extents[0].ex_type == DM_EXTENT_RES) &&
 					    (i=5) && (Extents[1].ex_type == DM_EXTENT_HOLE)
 					   ) {
 						DMLOG_PRINT(DMLVL_DEBUG, "%s extent information correct\n", szFuncName);
@@ -881,12 +881,12 @@ int main(int argc, char **argv)
 				if (nelem == 3) {
 					DMLOG_PRINT(DMLVL_DEBUG, "  nelem = %d\n", nelem);
 					LogExtents(Extents, nelem);
-					if ((i=1) && (Extents[0].ex_length + Extents[1].ex_length + Extents[2].ex_length == TMP_FILELEN) && 
-					    (i=2) && (Extents[0].ex_offset == 0) && 
+					if ((i=1) && (Extents[0].ex_length + Extents[1].ex_length + Extents[2].ex_length == TMP_FILELEN) &&
+					    (i=2) && (Extents[0].ex_offset == 0) &&
 					    (i=3) && (Extents[0].ex_length == Extents[1].ex_offset) &&
 					    (i=4) && (Extents[1].ex_length + Extents[1].ex_offset == Extents[2].ex_offset) &&
-					    (i=5) && (Extents[0].ex_type == DM_EXTENT_RES) && 
-					    (i=6) && (Extents[1].ex_type == DM_EXTENT_HOLE) && 
+					    (i=5) && (Extents[0].ex_type == DM_EXTENT_RES) &&
+					    (i=6) && (Extents[1].ex_type == DM_EXTENT_HOLE) &&
 					    (i=7) && (Extents[2].ex_type == DM_EXTENT_RES)
 					   ) {
 						DMLOG_PRINT(DMLVL_DEBUG, "%s extent information correct\n", szFuncName);
@@ -928,7 +928,7 @@ int main(int argc, char **argv)
 
 		/* Variation set up */
 		fd = open(DUMMY_FILE, O_RDWR | O_CREAT, DUMMY_FILE_RW_MODE);
-		for (i = 0, rc = 0; rc == 0 && i < TMP_FILELEN; i += TMP_FILELEN/(NUM_EXTENTS+2)) { 
+		for (i = 0, rc = 0; rc == 0 && i < TMP_FILELEN; i += TMP_FILELEN/(NUM_EXTENTS+2)) {
 			if ((rc = (write(fd, DUMMY_STRING, DUMMY_STRLEN) != DUMMY_STRLEN) ? -1 : 0) != -1) {
 				if ((off = lseek(fd, i, SEEK_SET)) != off) {
 					rc = -1;
@@ -958,7 +958,7 @@ int main(int argc, char **argv)
 				if (nelem == NUM_EXTENTS) {
 					DMLOG_PRINT(DMLVL_DEBUG, "  nelem = %d\n", nelem);
 					LogExtents(Extents, nelem);
-					if ((i=1) && (Extents[0].ex_offset == 0) && 
+					if ((i=1) && (Extents[0].ex_offset == 0) &&
 					    (i=2) && (Extents[0].ex_length == Extents[1].ex_offset) &&
 					    (i=3) && (Extents[1].ex_length + Extents[1].ex_offset == Extents[2].ex_offset) &&
 					    (i=4) && (Extents[2].ex_length + Extents[2].ex_offset == Extents[3].ex_offset) &&
@@ -967,12 +967,12 @@ int main(int argc, char **argv)
 					    (i=7) && (Extents[5].ex_length + Extents[5].ex_offset == Extents[6].ex_offset) &&
 					    (i=8) && (Extents[6].ex_length + Extents[6].ex_offset == Extents[7].ex_offset) &&
 					    (i=9) && (Extents[7].ex_length + Extents[7].ex_offset == off) &&
-					    (i=10) && (Extents[0].ex_type == DM_EXTENT_RES) && 
-					    (i=11) && (Extents[1].ex_type == DM_EXTENT_HOLE) && 
+					    (i=10) && (Extents[0].ex_type == DM_EXTENT_RES) &&
+					    (i=11) && (Extents[1].ex_type == DM_EXTENT_HOLE) &&
 					    (i=12) && (Extents[2].ex_type == DM_EXTENT_RES) &&
-					    (i=13) && (Extents[3].ex_type == DM_EXTENT_HOLE) && 
+					    (i=13) && (Extents[3].ex_type == DM_EXTENT_HOLE) &&
 					    (i=14) && (Extents[4].ex_type == DM_EXTENT_RES) &&
-					    (i=15) && (Extents[5].ex_type == DM_EXTENT_HOLE) && 
+					    (i=15) && (Extents[5].ex_type == DM_EXTENT_HOLE) &&
 					    (i=16) && (Extents[6].ex_type == DM_EXTENT_RES) &&
 					    (i=17) && (Extents[7].ex_type == DM_EXTENT_HOLE)
 					   ) {
@@ -1045,7 +1045,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(DM_NO_SESSION sid)\n", szFuncName);
 			rc = dm_get_allocinfo(DM_NO_SESSION, hanp, hlen, DM_NO_TOKEN, &off, NUM_EXTENTS, Extents, &nelem);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -1080,7 +1080,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(fs handle)\n", szFuncName);
 			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN, &off, NUM_EXTENTS, Extents, &nelem);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = rmdir(DUMMY_SUBDIR);
@@ -1104,7 +1104,7 @@ int main(int argc, char **argv)
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
 		rc = dm_get_allocinfo(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, &off, NUM_EXTENTS, Extents, &nelem);
-		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 		/* Variation clean up */
 	}
@@ -1142,7 +1142,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalidated hanp)\n", szFuncName);
 			rc = dm_get_allocinfo(sid, hanp, hlen, DM_NO_TOKEN, &off, NUM_EXTENTS, Extents, &nelem);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			dm_handle_free(hanp, hlen);
@@ -1179,7 +1179,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n", szFuncName);
 			rc = dm_probe_hole(INVALID_ADDR, hanp, hlen, DM_NO_TOKEN, inoff, inlen, &outoff, &outlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -1219,7 +1219,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hanp)\n", szFuncName);
 			rc = dm_probe_hole(sid, (void *)INVALID_ADDR, hlen, DM_NO_TOKEN, inoff, inlen, &outoff, &outlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -1254,7 +1254,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(dir handle)\n", szFuncName);
 			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff, inlen, &outoff, &outlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = rmdir(DUMMY_SUBDIR);
@@ -1293,7 +1293,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hlen)\n", szFuncName);
 			rc = dm_probe_hole(sid, hanp, INVALID_ADDR, DM_NO_TOKEN, inoff, inlen, &outoff, &outlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -1333,7 +1333,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid token)\n", szFuncName);
 			rc = dm_probe_hole(sid, hanp, hlen, INVALID_ADDR, inoff, inlen, &outoff, &outlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -1373,7 +1373,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid off)\n", szFuncName);
 			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff, inlen, &outoff, &outlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, E2BIG); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, E2BIG);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -1416,7 +1416,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid len)\n", szFuncName);
 			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff, inlen, &outoff, &outlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, E2BIG); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, E2BIG);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -1456,7 +1456,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid roffp)\n", szFuncName);
 			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff, inlen, (dm_off_t *)INVALID_ADDR, &outlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -1496,7 +1496,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid rlenp)\n", szFuncName);
 			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff, inlen, &outoff, (dm_size_t *)INVALID_ADDR);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -1900,7 +1900,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(middle of file with rounding, no hole)\n", szFuncName);
 			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff, inlen, &outoff, &outlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -1944,7 +1944,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(DM_NO_SESSION sid)\n", szFuncName);
 			rc = dm_probe_hole(DM_NO_SESSION, hanp, hlen, DM_NO_TOKEN, inoff, inlen, &outoff, &outlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -1979,7 +1979,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(fs handle)\n", szFuncName);
 			rc = dm_probe_hole(sid, hanp, hlen, DM_NO_TOKEN, inoff, inlen, &outoff, &outlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = rmdir(DUMMY_SUBDIR);
@@ -2003,7 +2003,7 @@ int main(int argc, char **argv)
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
 		rc = dm_probe_hole(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, inoff, inlen, &outoff, &outlen);
-		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 		/* Variation clean up */
 	}
@@ -2078,7 +2078,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n", szFuncName);
 			rc = dm_punch_hole(INVALID_ADDR, hanp, hlen, DM_NO_TOKEN, off, len);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -2118,7 +2118,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hanp)\n", szFuncName);
 			rc = dm_punch_hole(sid, (void *)INVALID_ADDR, hlen, DM_NO_TOKEN, off, len);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -2153,7 +2153,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(dir handle)\n", szFuncName);
 			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = rmdir(DUMMY_SUBDIR);
@@ -2192,7 +2192,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hlen)\n", szFuncName);
 			rc = dm_punch_hole(sid, hanp, INVALID_ADDR, DM_NO_TOKEN, off, len);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -2232,7 +2232,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid token)\n", szFuncName);
 			rc = dm_punch_hole(sid, hanp, hlen, INVALID_ADDR, off, len);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -2272,7 +2272,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid off)\n", szFuncName);
 			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, E2BIG); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, E2BIG);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -2312,7 +2312,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid len)\n", szFuncName);
 			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, E2BIG); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, E2BIG);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -2352,7 +2352,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(unaligned off)\n", szFuncName);
 			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EAGAIN); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EAGAIN);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -2392,7 +2392,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(unaligned len)\n", szFuncName);
 			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EAGAIN); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EAGAIN);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -2432,7 +2432,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(unaligned off and len)\n", szFuncName);
 			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EAGAIN); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EAGAIN);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -2798,7 +2798,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n", szFuncName);
 			rc = dm_punch_hole(DM_NO_SESSION, hanp, hlen, DM_NO_TOKEN, off, len);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -2833,7 +2833,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(fs handle)\n", szFuncName);
 			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = rmdir(DUMMY_SUBDIR);
@@ -2857,7 +2857,7 @@ int main(int argc, char **argv)
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
 		rc = dm_punch_hole(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, off, len);
-		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 		/* Variation clean up */
 	}
@@ -2895,7 +2895,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalidated hanp)\n", szFuncName);
 			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			dm_handle_free(hanp, hlen);
@@ -2935,7 +2935,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(private read mmap overlap hole)\n", szFuncName);
 			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY);
 
 			/* Variation clean up */
 			munmap(memmap, PAGE_SIZE);
@@ -2981,7 +2981,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(private write mmap overlap hole)\n", szFuncName);
 			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY);
 
 			/* Variation clean up */
 			munmap(memmap, PAGE_SIZE);
@@ -3027,7 +3027,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(private exec mmap overlap hole)\n", szFuncName);
 			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY);
 
 			/* Variation clean up */
 			munmap(memmap, PAGE_SIZE);
@@ -3073,7 +3073,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(private r/w mmap overlap hole)\n", szFuncName);
 			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY);
 
 			/* Variation clean up */
 			munmap(memmap, PAGE_SIZE);
@@ -3119,7 +3119,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(shared read mmap overlap hole)\n", szFuncName);
 			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY);
 
 			/* Variation clean up */
 			munmap(memmap, PAGE_SIZE);
@@ -3165,7 +3165,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(shared write mmap overlap hole)\n", szFuncName);
 			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY);
 
 			/* Variation clean up */
 			munmap(memmap, PAGE_SIZE);
@@ -3211,7 +3211,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(shared exec mmap overlap hole)\n", szFuncName);
 			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY);
 
 			/* Variation clean up */
 			munmap(memmap, PAGE_SIZE);
@@ -3257,7 +3257,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(shared r/w mmap overlap hole)\n", szFuncName);
 			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY);
 
 			/* Variation clean up */
 			munmap(memmap, PAGE_SIZE);
@@ -3303,7 +3303,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(private read mmap not overlap hole)\n", szFuncName);
 			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
-			DMVAR_ENDPASSEXP(szFuncName, 0, rc); 
+			DMVAR_ENDPASSEXP(szFuncName, 0, rc);
 
 			/* Variation clean up */
 			munmap(memmap, PAGE_SIZE);
@@ -3349,7 +3349,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(private write mmap not overlap hole)\n", szFuncName);
 			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
-			DMVAR_ENDPASSEXP(szFuncName, 0, rc); 
+			DMVAR_ENDPASSEXP(szFuncName, 0, rc);
 
 			/* Variation clean up */
 			munmap(memmap, PAGE_SIZE);
@@ -3395,7 +3395,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(private exec mmap not overlap hole)\n", szFuncName);
 			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY);
 
 			/* Variation clean up */
 			munmap(memmap, PAGE_SIZE);
@@ -3441,7 +3441,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(private r/w mmap not overlap hole)\n", szFuncName);
 			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
-			DMVAR_ENDPASSEXP(szFuncName, 0, rc); 
+			DMVAR_ENDPASSEXP(szFuncName, 0, rc);
 
 			/* Variation clean up */
 			munmap(memmap, PAGE_SIZE);
@@ -3487,7 +3487,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(shared read mmap not overlap hole)\n", szFuncName);
 			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
-			DMVAR_ENDPASSEXP(szFuncName, 0, rc); 
+			DMVAR_ENDPASSEXP(szFuncName, 0, rc);
 
 			/* Variation clean up */
 			munmap(memmap, PAGE_SIZE);
@@ -3533,7 +3533,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(shared write mmap not overlap hole)\n", szFuncName);
 			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
-			DMVAR_ENDPASSEXP(szFuncName, 0, rc); 
+			DMVAR_ENDPASSEXP(szFuncName, 0, rc);
 
 			/* Variation clean up */
 			munmap(memmap, PAGE_SIZE);
@@ -3579,7 +3579,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(shared exec mmap not overlap hole)\n", szFuncName);
 			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY);
 
 			/* Variation clean up */
 			munmap(memmap, PAGE_SIZE);
@@ -3625,7 +3625,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(shared r/w mmap not overlap hole)\n", szFuncName);
 			rc = dm_punch_hole(sid, hanp, hlen, DM_NO_TOKEN, off, len);
-			DMVAR_ENDPASSEXP(szFuncName, 0, rc); 
+			DMVAR_ENDPASSEXP(szFuncName, 0, rc);
 
 			/* Variation clean up */
 			munmap(memmap, PAGE_SIZE);

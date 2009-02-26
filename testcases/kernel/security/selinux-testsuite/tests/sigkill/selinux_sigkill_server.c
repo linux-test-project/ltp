@@ -17,7 +17,7 @@ void handler(int sig)
 	return;
 }
 
-int main(void) 
+int main(void)
 {
   struct sigaction sa;
   int i;

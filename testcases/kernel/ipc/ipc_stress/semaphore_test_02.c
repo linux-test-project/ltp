@@ -110,7 +110,7 @@ static void parse_args (int, char **);
 
 /*
  * Structures and Global variables:
- * 
+ *
  * nsems: number of semaphores to create (per process)
  * nprocs: number of child processes to spawn
  * childpid: array containing process id's of the child processes
@@ -123,9 +123,9 @@ int	errors = 0;
 pid_t   parent_pid;
 
 union semun {
-	      int val; 
-	      struct semid_ds *buf; 
-	      unsigned short *array; 
+	      int val;
+	      struct semid_ds *buf;
+	      unsigned short *array;
 	    } arg;
 
 /*---------------------------------------------------------------------+
@@ -220,9 +220,9 @@ static void test_commands (pid_t pid)
 	struct sembuf sops;
 	union  semun semunptr;		/* This union has struct semid_ds *buf*/
 	/*
-	 * Test semget () with IPC_PRIVATE command 
+	 * Test semget () with IPC_PRIVATE command
 	 *
-	 * Create nsems semaphores and store the returned unique 
+	 * Create nsems semaphores and store the returned unique
 	 * semaphore identifier as semid.
 	 */
 	if (pid == parent_pid)
@@ -231,7 +231,7 @@ static void test_commands (pid_t pid)
 		error ("semget failed", __LINE__);
 
 	/*
-	 * Test semctl () with IPC_SET command 
+	 * Test semctl () with IPC_SET command
 	 *
 	 * Set the uid, gid and mode fields
 	 */
@@ -252,7 +252,7 @@ static void test_commands (pid_t pid)
 
 
 	/*
-	 * Test semctl () with IPC_STAT command 
+	 * Test semctl () with IPC_STAT command
 	 *
 	 * Get the semid_ds structure and verify it's fields.
 	 */
@@ -265,16 +265,16 @@ static void test_commands (pid_t pid)
 		sys_error ("semctl: uid was not set", __LINE__);
 	if (semunptr.buf->sem_perm.gid != gid)
 		sys_error ("semctl: gid was not set", __LINE__);
-	if ((semunptr.buf->sem_perm.mode & 0777) != mode) 
+	if ((semunptr.buf->sem_perm.mode & 0777) != mode)
 		sys_error ("semctl: mode was not set", __LINE__);
-	if (semunptr.buf->sem_nsems != nsems) 
-		sys_error ("semctl: nsems (number of semaphores) was not set", 
+	if (semunptr.buf->sem_nsems != nsems)
+		sys_error ("semctl: nsems (number of semaphores) was not set",
 			__LINE__);
 	SAFE_FREE(semunptr.buf);
 
 	/*
 	 * Test semctl () with SETVAL command
-	 * 
+	 *
 	 * Loop through all the semaphores and set the semaphore value
 	 * to the loop index (i).
 	 */
@@ -288,7 +288,7 @@ static void test_commands (pid_t pid)
 
 	/*
 	 * Test semctl () with GETVAL command
-	 * 
+	 *
 	 * Loop through all the semaphores and retrieve the semaphore values
 	 * and compare with the expected value, the loop index (i).
 	 */
@@ -332,8 +332,8 @@ static void test_commands (pid_t pid)
 	 * Test semctl () with GETNCNT command
 	 *
 	 * Get semncnt (the number of processes awaiting semval > currval)
-	 * and insure that this value is 0...  
-	 * 
+	 * and insure that this value is 0... 
+	 *
 	 * Note: A better test would include forking off a process that
 	 *       waits for the semaphore so that semncnt would be nonzero.
 	 */
@@ -343,7 +343,7 @@ static void test_commands (pid_t pid)
 		if ((val = semctl (semid, i, GETNCNT, arg)) < 0)
 			sys_error ("semctl failed", __LINE__);
 		if (val != 0)
-			sys_error ("semctl (GETNCNT) returned wrong value", 
+			sys_error ("semctl (GETNCNT) returned wrong value",
 				__LINE__);
 	}
 
@@ -351,8 +351,8 @@ static void test_commands (pid_t pid)
 	 * Test semctl () with GETZCNT command
 	 *
 	 * Get semzcnt (the number of processes awaiting semval = currval)
-	 * and insure that this value is 0...  
-	 * 
+	 * and insure that this value is 0... 
+	 *
 	 * Note: A better test would include forking off a process that
 	 *       waits for the semaphore so that semzcnt would be nonzero.
 	 */
@@ -362,7 +362,7 @@ static void test_commands (pid_t pid)
 		if ((val = semctl (semid, i, GETZCNT, arg)) < 0)
 			sys_error ("semctl failed", __LINE__);
 		if (val != 0)
-			sys_error ("semctl (GETZCNT) returned wrong value", 
+			sys_error ("semctl (GETZCNT) returned wrong value",
 				__LINE__);
 	}
 
@@ -383,7 +383,7 @@ static void test_commands (pid_t pid)
 
 	/*
 	 * Test semctl () with GETALL command
-	 * 
+	 *
 	 * Get all of the semaphore values in the set, and verify that
 	 * they are all correct.
 	 */
@@ -393,13 +393,13 @@ static void test_commands (pid_t pid)
 		sys_error ("semctl failed", __LINE__);
 	for (i = 0; i < nsems; i++) {
 		if (arg.array [i] != i)
-			sys_error ("semaphore does not match expected value", 
+			sys_error ("semaphore does not match expected value",
 				__LINE__);
 	}
 
 	/*
 	 * Test semctl () with IPC_RMID command
-	 * 
+	 *
 	 * Remove the semaphores
 	 */
 	if (pid == parent_pid)

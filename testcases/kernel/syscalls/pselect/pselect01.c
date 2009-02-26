@@ -68,7 +68,7 @@ int main()
  unsigned start,end;
 
  setup();
- 
+
  fd = open(FILENAME,O_CREAT | O_RDWR, 0777);
  if (fd < 0)
  {
@@ -90,7 +90,7 @@ int main()
  close(fd);
  remove(FILENAME);
 
- 
+
  for( total_sec=1; total_sec<=LOOP_COUNT; total_sec++)
  {
           FD_ZERO(&readfds);
@@ -103,7 +103,7 @@ int main()
   start = time(&t);
    retval = pselect(0, &readfds, NULL, NULL, (struct timespec *)&tv,NULL);
   end = time(&t);
-  
+ 
   if(total_sec >= (end - start))
   tst_resm(TPASS,"Sleep time was correct");
   else
@@ -125,9 +125,9 @@ int main()
   start = time(&t);
    retval = pselect(0, &readfds, NULL, NULL, (struct timespec *)&tv,NULL);
   end = time(&t);
- 
+
   /* Changed total_sec compare to an at least vs an exact compare */
- 
+
   if(((end - start) >= total_sec) && ((end - start) <= total_sec + 1))
   tst_resm(TPASS,"Sleep time was correct");
   else

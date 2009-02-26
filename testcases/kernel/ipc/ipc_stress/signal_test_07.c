@@ -97,13 +97,13 @@ int main (int argc, char **argv)
 	/* Print out program header */
 	printf ("%s: IPC TestSuite program\n\n", *argv);
 	fflush (stdout);
-    
+   
 	/* Set up our signal handler */
 	init_sig ();
 
 	/*
 	 * Send MAXSIG signals to the process
-	 * 
+	 *
 	 * Using raise, send MAX signals to the process.  Then loop until
 	 * every signal is caught by the signal handler (or the timer expires).
 	 */

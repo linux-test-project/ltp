@@ -15,17 +15,17 @@
  *
  */
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER   : flock01
- * 
+ *
  *    EXECUTED BY       : anyone
- * 
+ *
  *    TEST TITLE        : Basic test for flock(2)
- * 
+ *
  *    TEST CASE TOTAL   : 3
- * 
+ *
  *    AUTHOR            : Vatsal Avasthi <vatsal.avasthi@wipro.com>
- * 
+ *
  *    SIGNALS
  *      Uses SIGUSR1 to pause before test if option set.
  *      (See the parse_opts(3) man page).
@@ -33,13 +33,13 @@
  *    DESCRIPTION
  * 	Test to verify flock(2) succeds with all kind of locks.
  *	Intends to provide a limited exposure of system call.
- *      
+ *     
  *	Setup:
  *        Setup signal handling.
  *        Pause for SIGUSR1 if option specified.
  *        Create a temporary directory and chdir to it.
  * 	  Create a temporary file
- * 
+ *
  *	Test:
  *	Loop if proper options are given.
  *		Execute system call
@@ -50,13 +50,13 @@
  *      Cleanup:
  *        Print errno log and/or timing stats if options given
  *	  Deletes temporary directory.
- * 
+ *
  * USAGE:  <for command-line>
  *      flock01 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
  *                      where,  -c n : Run n copies concurrently.
  *                              -f   : Turn off functional testing
  *    				-e   : Turn on errno logging.
- *                              -h   : Show help screen                          
+ *                              -h   : Show help screen                         
  *				-i n : Execute test n times.
  *                              -I x : Execute test for x seconds.
  *                              -p   : Pause for SIGUSR1 before starting
@@ -78,7 +78,7 @@ void setup(void);
 void cleanup(void);
 
 /* 0 terminated list of expected errnos */
-int exp_enos[] = {EWOULDBLOCK, EAGAIN, EINVAL, 0};  
+int exp_enos[] = {EWOULDBLOCK, EAGAIN, EINVAL, 0}; 
 
 char *TCID = "flock01";			/* Test program identifier */
 int TST_TOTAL = 3;			/* Total number of test cases */
@@ -121,7 +121,7 @@ int main(int argc, char **argv)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 		
-		for( i = 0; i< TST_TOTAL; ++i) 
+		for( i = 0; i< TST_TOTAL; ++i)
 		{
 			
 		/* Testing system call */
@@ -187,7 +187,7 @@ setup(void)
 		/* Removing temp directory */
 		tst_rmdir();
 		
-		/* exit with resturn code appropriate for result */ 
+		/* exit with resturn code appropriate for result */
 		tst_exit();
 		
 	}

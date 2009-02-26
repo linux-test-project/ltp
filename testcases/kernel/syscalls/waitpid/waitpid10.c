@@ -182,7 +182,7 @@ int main(int ac, char **av)
 			intintr = 0;
 			ret_val = FORK_OR_VFORK();
 			if (ret_val == 0) {		/* child 0 */
-			//    	intintr = 0;  
+			//    	intintr = 0; 
 #ifdef UCLINUX
 				if (self_exec(argv0, "n", 1) < 0) {
 					tst_resm(TFAIL, "self_exec 0 failed");
@@ -214,7 +214,7 @@ int main(int ac, char **av)
 #endif
 			}
 			if (ret_val < 0) {
-				tst_resm(TFAIL, "Fork kid 1 failed. errno = " 
+				tst_resm(TFAIL, "Fork kid 1 failed. errno = "
 					 "%d", errno);
 				tst_exit();
 			}
@@ -367,7 +367,7 @@ int main(int ac, char **av)
 				}
 			}
 
-			/* Wait till all kids have terminated. */ 
+			/* Wait till all kids have terminated. */
 			kid_count = 0;
 			errno = 0;
 			for (i = 0; i < nkids; i++) {

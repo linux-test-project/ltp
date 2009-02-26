@@ -227,8 +227,8 @@ int main(int argc, char **argv)
 
 //block2:
 	/* This testcases doesn't look like what it intent to do
-        * 1. it is not using the wr_iovec initialized 
-        * 2. read() and following message is not consistent 
+        * 1. it is not using the wr_iovec initialized
+        * 2. read() and following message is not consistent
         */
 		tst_resm(TINFO, "Enter block 2");
 		fail = 0;

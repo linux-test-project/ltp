@@ -105,7 +105,7 @@ main(int ac, char **av)
 	 * check looping state if -i option given
 	 */
 	for (lc=0; TEST_LOOPING(lc); lc++) {
-	  
+	 
 		/* reset Tst_count in case we are looping. */
 		Tst_count=0;
 
@@ -141,14 +141,14 @@ main(int ac, char **av)
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Pause if that option was specified */
-	TEST_PAUSE; 
+	TEST_PAUSE;
 
 	/* Create a temporary directory and make it current. */
 	tst_tmpdir();
@@ -187,7 +187,7 @@ setup()
 
 	/* save "new"'s dev and ino */
 	olddev1 = buf2.st_dev;
-	oldino1 = buf2.st_ino; 
+	oldino1 = buf2.st_ino;
 }
 
 
@@ -195,7 +195,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *              completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

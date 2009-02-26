@@ -32,14 +32,14 @@
  *
  *	Test:
  *		Loop if the proper options are given.
- *              1. create a directory tstdir1 and set the sticky bit, then 
- *                 create directory tstdir2 under tstdir1. Fork a 
+ *              1. create a directory tstdir1 and set the sticky bit, then
+ *                 create directory tstdir2 under tstdir1. Fork a
  *                 child , set to be user nobody. Pass tstdir2 to rmdir(2).
  *                 Verify the return value is not 0 and the errno is EPERM
  *                 or EACCES.
- *              2. Fork a child, set to be user nobody. Create a directory 
+ *              2. Fork a child, set to be user nobody. Create a directory
  *                 tstdir1 and only give write permission to nobody.
- *                 Create directory tstdir2 under tstdir1. Fork the second 
+ *                 Create directory tstdir2 under tstdir1. Fork the second
  *                 child , set to be user nobody. Pass tstdir2 to rmdir(2).
  *                 Verify the return value is not 0 and the errno is EACCES.
  *
@@ -71,7 +71,7 @@
 #include <fcntl.h>
 #include <pwd.h>
 #include <unistd.h>
-#include "test.h" 
+#include "test.h"
 #include "usctest.h"
 
 void dochild1();
@@ -128,25 +128,25 @@ main(int ac, char **av)
 	 * check looping state if -i option given
 	 */
 	for (lc=0; TEST_LOOPING(lc); lc++) {
-	  
+	 
 		/* reset Tst_count in case we are looping. */
 		Tst_count=0;
 
 //test1:		
-		/* 
-		 * attempt to rmdir a file whose parent directory has 
+		/*
+		 * attempt to rmdir a file whose parent directory has
 		 * the sticky bit set without the root right
 		 * or effective uid
 		 */
 
 		if (stat(tstdir1, &buf1) != -1) {
-			tst_brkm(TBROK, cleanup, 
+			tst_brkm(TBROK, cleanup,
 				 "tmp directory %s found!", tstdir1);
 			/*NOTREACHED*/
 		}
 		/* create a directory */
 		if (mkdir(tstdir1, PERMS) == -1) {
-			tst_brkm(TBROK, cleanup, 
+			tst_brkm(TBROK, cleanup,
 				 "Couldnot create directory %s",tstdir1);
 			/*NOTREACHED*/
 		}
@@ -165,7 +165,7 @@ main(int ac, char **av)
 			}
 		/* create a sub directory under tstdir1 */
 		if (mkdir(tstdir2, PERMS) == -1) {
-			tst_brkm(TBROK, cleanup, 
+			tst_brkm(TBROK, cleanup,
 				 "Could not create directory %s", tstdir2);
 		}
 
@@ -264,7 +264,7 @@ dochild1()
 		tst_brkm(TBROK, cleanup, "setreuid failed to "
 			 "set effective uid to %d", nobody->pw_uid);
 		/*NOTREACHED*/
-	}		  
+	}		 
 	
 	/* rmdir tstdir2 */
 	TEST(rmdir(tstdir2));
@@ -335,7 +335,7 @@ dochild2()
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void 
+void
 setup()
 {
 	/* test must be run as root */
@@ -367,7 +367,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *              completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

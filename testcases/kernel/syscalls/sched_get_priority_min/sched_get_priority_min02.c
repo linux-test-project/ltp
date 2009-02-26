@@ -15,17 +15,17 @@
  *
  */
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER	: sched_get_priority_min02
- * 
+ *
  *    EXECUTED BY	: anyone
- * 
+ *
  *    TEST TITLE	: Test for error conditions
- * 
+ *
  *    TEST CASE TOTAL	: 1
- * 
+ *
  *    AUTHOR		: Saji Kumar.V.R <saji.kumar@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -33,11 +33,11 @@
  *    DESCRIPTION
  *	Verify that given an invalid scheduling policy,
  *	sched_get_priority_min() returns -1 with errno EINVAL
- * 
+ *
  * 	Setup:
  * 	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  * 	  Execute system call
@@ -45,10 +45,10 @@
  *		Test Passed
  *	  Otherwise
  *		Test Failed
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  *  sched_get_priority_min02 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f]
  * 			     [-p]
@@ -85,7 +85,7 @@ main(int ac, char **av)
 
 	int lc;		/* loop counter */
 	char *msg;	/* message returned from parse_opts */
-    
+   
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
 	     != (char *)NULL) {
@@ -101,7 +101,7 @@ main(int ac, char **av)
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-		/* 
+		/*
 		 * Call sched_get_priority_min(2)
 		 */
 		TEST(sched_get_priority_min(SCHED_INVALID));
@@ -125,7 +125,7 @@ main(int ac, char **av)
 }	/* End main */
 
 /* setup() - performs all ONE TIME setup for this test */
-void 
+void
 setup()
 {
 	
@@ -138,11 +138,11 @@ setup()
 }	/* End setup() */
 
 
-/* 
+/*
  *cleanup() -  performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 

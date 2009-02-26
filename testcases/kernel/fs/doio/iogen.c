@@ -1,32 +1,32 @@
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
- * 
+ *
  * This program is distributed in the hope that it would be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * 
+ *
  * Further, this software is distributed without any warranty that it is
  * free of the rightful claim of any third person regarding infringement
  * or the like.  Any license provided herein, whether implied or
  * otherwise, applies only to this software file.  Patent licenses, if
  * any, provided herein do not apply to combinations of this program with
  * other software, or any other product whatsoever.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston MA 02111-1307, USA.
- * 
+ *
  * Contact information: Silicon Graphics, Inc., 1600 Amphitheatre Pkwy,
  * Mountain View, CA  94043, or:
- * 
- * http://www.sgi.com 
- * 
- * For further information regarding this notice, see: 
- * 
+ *
+ * http://www.sgi.com
+ *
+ * For further information regarding this notice, see:
+ *
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 /*
@@ -382,7 +382,7 @@ char	**argv;
     int	    	    rseed, outfd, infinite;
     time_t  	    start_time;
     struct io_req   req;
-    
+   
     umask(0);
 
 #ifdef CRAY
@@ -395,7 +395,7 @@ char	**argv;
     parse_cmdline(argc, argv, OPTS);
 
     /*
-     * Initialize output descriptor.  
+     * Initialize output descriptor. 
      */
     if (! p_opt) {
 	outfd = 1;
@@ -453,7 +453,7 @@ startup_info(FILE *stream, int seed)
     fprintf(stream, "iogen%s starting up with the following:\n", TagName);
     fprintf(stream, "\n");
 
-    fprintf(stream, "Out-pipe:              %s\n", 
+    fprintf(stream, "Out-pipe:              %s\n",
 	    p_opt ? Outpipe : "stdout");
 
     if (Iterations) {
@@ -483,7 +483,7 @@ startup_info(FILE *stream, int seed)
 	    "Maxtrans:              %-11d (%d blocks)\n",
 	    Maxtrans, (Maxtrans+BSIZE-1)/BSIZE);
 
-    if (! r_opt) 
+    if (! r_opt)
 	fprintf(stream,
 		"O_RAW/O_SSD Multiple:  (Determined by device)\n");
     else
@@ -516,7 +516,7 @@ startup_info(FILE *stream, int seed)
 	fprintf(stream,
 		"Path                                          Length    iou   raw iou file\n");
 	fprintf(stream,
-		"                                              (bytes) (bytes) (bytes) type\n"); 
+		"                                              (bytes) (bytes) (bytes) type\n");
 	fprintf(stream,
 		"-----------------------------------------------------------------------------\n");
 
@@ -714,7 +714,7 @@ struct io_req   *req;
 	    offset -= offset % mult;
 
 	break;
-    
+   
     case M_RANDOM:
 	length = random_range(Mintrans, Maxtrans, mult, NULL);
 
@@ -1135,7 +1135,7 @@ int 	nbytes;
 		close(fd);
 		return -1;
 	    } else {
-		fprintf(stderr, "get: fsx_xflags = 0x%x\n", 
+		fprintf(stderr, "get: fsx_xflags = 0x%x\n",
 			xattr.fsx_xflags);
 	    }
 #endif
@@ -1151,7 +1151,7 @@ int 	nbytes;
 	    f.l_whence = SEEK_SET;
 	    f.l_start = 0;
 	    f.l_len = nbytes;
-	    
+	   
 	    /*fprintf(stderr,
 		    "create_file: fcntl(%d, F_RESVSP, { %d, %lld, %lld })\n",
 		   fd, f.l_whence, (long long)f.l_start, (long long)f.l_len);*/
@@ -1202,7 +1202,7 @@ int 	nbytes;
 			    TagName, SYSERR, errno, path);
 		    return -1;
 		} else {
-		    /*fprintf(stderr, "%s: miniosz=%d\n", 
+		    /*fprintf(stderr, "%s: miniosz=%d\n",
 			    path, finfo.d_miniosz);*/
 		}
 	    } else {
@@ -1214,8 +1214,8 @@ int 	nbytes;
 	    /*
 	     * nb is nbytes adjusted down by an even d_miniosz block
 	     *
-	     * Note: the first adjustment can cause iogen to print a warning 
-	     * 	about not being able to create a file of <nbytes> length, 
+	     * Note: the first adjustment can cause iogen to print a warning
+	     * 	about not being able to create a file of <nbytes> length,
 	     *	since the file will be shorter.
 	     */
 	    nb = nbytes-finfo.d_miniosz;
@@ -1239,7 +1239,7 @@ int 	nbytes;
 	    if( ((long)buf % finfo.d_mem != 0) ) {
 		buf += finfo.d_mem - ((long)buf % finfo.d_mem);
 	    }
-	    
+	   
 	    memset(buf, 0, finfo.d_miniosz);
 
 	    if ( (rval=write(fd, buf, finfo.d_miniosz)) != finfo.d_miniosz) {
@@ -1313,7 +1313,7 @@ char	    	*str;
 
     return mp->m_value;
 }
-    
+   
 /*
  * Function to convert a string to its corresponding entry in a strmap array.
  * If the string is not found in the array, a NULL is returned.
@@ -1332,7 +1332,7 @@ char	    	*str;
 
     return((mp->m_string == NULL) ? NULL : mp);
 }
-    
+   
 
 /*
  * Function to convert a value to its corresponding string in a strmap array.
@@ -1467,7 +1467,7 @@ char	*opts;
 	    fprintf(stderr, "iogen%s:  Unrecognized option -L on this platform\n", TagName);
 	    exit(2);
 #else
-	    if( parse_ranges(optarg, 1, 255, 1, NULL, &ranges, 
+	    if( parse_ranges(optarg, 1, 255, 1, NULL, &ranges,
 			     &errmsg ) == -1 ) {
 		    fprintf(stderr, "iogen%s: error parsing listio range '%s': %s\n",
 			    TagName, optarg, errmsg);
@@ -1648,7 +1648,7 @@ char	*opts;
     if (! T_opt)
 	Maxtrans = 256 * BSIZE;
 
-    if( ! O_opt) 
+    if( ! O_opt)
 	Oflags = Ocbits = Ocblks = 0;
 
     /*
@@ -1729,7 +1729,7 @@ char	*opts;
 	}
 
 	/*
-	 * Initialize File_List[] - only necessary if doing file io.  First 
+	 * Initialize File_List[] - only necessary if doing file io.  First
 	 * space for the File_List array, then fill it in.
 	 */
 	
@@ -1856,7 +1856,7 @@ char	*opts;
 			fptr->f_lastlength = 0;
 			break;
 		    }
-		    
+		   
 		    Nfiles++;
 		}
 	    }

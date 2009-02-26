@@ -85,7 +85,7 @@ char stackarray [STACKSIZE];
 
 #ifdef _LINUX_
 stack_t stack = {
-    ss_sp: stackarray+STACKSIZE,    // stack pointer 
+    ss_sp: stackarray+STACKSIZE,    // stack pointer
     ss_flags: 0, //SS_ONSTACK,      // flags
     ss_size: STACKSIZE              // size
 };
@@ -128,14 +128,14 @@ int main (int argc, char **argv)
 	     newmask, 		/* Second process signal mask */
 	     oldmask;		/* Signal mask returned by sigblock */
     pid_t pid = getpid ();	/* Process ID (of this process) */
-    
-    
+   
+   
 	/* Print out program header */
 	printf ("%s: IPC Signals TestSuite program\n\n", *argv);
-    
+   
 	/*
-	 * Establish signal handler for each signal & reset "valid signals" 
-	 * array, and setup alternative stack for processing signals 
+	 * Establish signal handler for each signal & reset "valid signals"
+	 * array, and setup alternative stack for processing signals
 	 */
 	init_sig_vec ();
 	reset_valid_sig ();
@@ -153,10 +153,10 @@ int main (int argc, char **argv)
 	 * First indicate which signals the signal handler should expect
 	 * by setting the corresponding valid_sig[] array fields.
 	 *
-	 * Then send the signals to this process.  
+	 * Then send the signals to this process. 
 	 *
-	 * And finally verify that the signals were caught by the signal 
-	 * handler by checking to see if the corresponding valid_sig[] array 
+	 * And finally verify that the signals were caught by the signal
+	 * handler by checking to see if the corresponding valid_sig[] array
 	 * fields were reset.
 	 */
 	printf ("\tSend SIGILL, SIGALRM, SIGIOT signals to process\n");
@@ -175,7 +175,7 @@ int main (int argc, char **argv)
 	if (valid_sig [SIGIOT])
 		error ("failed to receive SIGIOT signal!", __LINE__);
 
-	/* 
+	/*
 	 * Block SIGILL, SIGALRM & SIGIOT signals:
 	 *
 	 * First create the process signal mask by ORing together the
@@ -184,7 +184,7 @@ int main (int argc, char **argv)
 	 * Then change the process signal mask with sigsetmask ().
 	 *
 	 * Verify that the desired signals are blocked from interrupting the
-	 * process, by sending both blocked and unblocked signals to the 
+	 * process, by sending both blocked and unblocked signals to the
 	 * process. Only the unblocked signals should interrupt the process.
 	 */
 	printf ("\n\tBlock SIGILL, SIGALRM, SIGIOT signals, " \
@@ -209,7 +209,7 @@ int main (int argc, char **argv)
 	kill (pid, SIGFPE);
 	kill (pid, SIGTERM);
 	kill (pid, SIGINT);
-		 
+		
 	if (valid_sig [SIGFPE])
 		error ("failed to receive SIGFPE signal!", __LINE__);
 	if (valid_sig [SIGTERM])
@@ -217,7 +217,7 @@ int main (int argc, char **argv)
 	if (valid_sig [SIGINT])
 		error ("failed to receive SIGINT signal!", __LINE__);
 
-	/* 
+	/*
 	 * Block additional SIGFPE, SIGTERM & SIGINT signals:
 	 *
 	 * Create a signal mask containing the additional signals to block.
@@ -225,8 +225,8 @@ int main (int argc, char **argv)
 	 * Change the process signal mask to block the additional signals
 	 * with the sigprocmask () function.
 	 *
-	 * Verify that all of the desired signals are now blocked from 
-	 * interrupting the process.  None of the specified signals should 
+	 * Verify that all of the desired signals are now blocked from
+	 * interrupting the process.  None of the specified signals should
 	 * interrupt the process until the process signal mask is changed.
 	 */
 	printf ("\n\tBlock rest of signals\n");

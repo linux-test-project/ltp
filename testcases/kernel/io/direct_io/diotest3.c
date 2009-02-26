@@ -27,7 +27,7 @@
  *	uses its own file descriptiors. The child does writes and reads from
  *	its segment in the file. The segment to which the child writes is
  *	determined by childnumber * bufsize. There is no need to use any locks.
- *	Program tests the combinations of buffered/buffered read(), write() 
+ *	Program tests the combinations of buffered/buffered read(), write()
  *	calls.
  *	Test blocks:
  *	[1] Direct Read, Buffered write
@@ -37,7 +37,7 @@
  * USAGE
  *	diotest3 [-b bufsize] [-o offset] [-n numchild]
  *			[-i iterations [-f filename]
- * 
+ *
  * History
  *	04/22/2002	Narasimha Sharoff nsharoff@us.ibm.com
  *
@@ -88,7 +88,7 @@ prg_usage()
 
 /*
  * runtest: write the data to the file. Read the data from the file and compare.
- *	For each iteration, write data starting at offse+iter*bufsize 
+ *	For each iteration, write data starting at offse+iter*bufsize
  *	location in the file and read from there.
 */
 int
@@ -115,7 +115,7 @@ runtest(int fd_r, int fd_w, int childnum, int action)
 	for (i = 0; i < iter; i++) {
 		fillbuf(buf1, bufsize, childnum+i);
 		if (lseek(fd_w, seekoff, SEEK_SET) < 0) {
-			tst_resm(TFAIL, "lseek before write failed: %s", 
+			tst_resm(TFAIL, "lseek before write failed: %s",
 				strerror(errno));
 			return(-1);
 		}
@@ -132,7 +132,7 @@ runtest(int fd_r, int fd_w, int childnum, int action)
 			}
 		}
 		if (lseek(fd_r, seekoff, SEEK_SET) < 0) {
-			tst_resm(TFAIL, "lseek before read failed: %s", 
+			tst_resm(TFAIL, "lseek before read failed: %s",
 				strerror(errno));
 			return(-1);
 		}
@@ -141,7 +141,7 @@ runtest(int fd_r, int fd_w, int childnum, int action)
 			return(-1);
 		}
 		if (bufcmp(buf1, buf2, bufsize) != 0) {
-			tst_resm(TFAIL, "comparsion failed. Child=%d offset=%d", 
+			tst_resm(TFAIL, "comparsion failed. Child=%d offset=%d",
 				childnum, (int)seekoff);
 			return(-1);
 		}
@@ -344,11 +344,11 @@ main(int argc, char *argv[])
 	total++;
 
 	if (failed) {
-		tst_resm(TINFO, "%d/%d testblocks failed", 
+		tst_resm(TINFO, "%d/%d testblocks failed",
 			fail_count, total);
 		tst_exit();
 	}
-	tst_resm(TINFO, "%d testblocks %d iterations with %d children completed", 
+	tst_resm(TINFO, "%d testblocks %d iterations with %d children completed",
 			total, iter, numchild);
 	tst_exit();
 	return 0;

@@ -25,8 +25,8 @@
  *
  *    TEST CASE TOTAL   : 1
  *
- *    AUTHOR            : Prashant P Yendigeri 
- *                        <prashant.yendigeri@wipro.com> 
+ *    AUTHOR            : Prashant P Yendigeri
+ *                        <prashant.yendigeri@wipro.com>
  *			  Robbie Williamson
  *			  <robbiew@us.ibm.com>
  *

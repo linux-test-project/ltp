@@ -25,67 +25,67 @@
  *
  */
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER	: mem01
- * 
+ *
  *    EXECUTED BY	: anyone
- * 
+ *
  *    TEST TITLE	: Basic memory and swapper stress test
- * 
+ *
  *    PARENT DOCUMENT	: ??
- * 
+ *
  *    TEST CASE TOTAL	: 1
- * 
+ *
  *    WALL CLOCK TIME	: 1
- * 
+ *
  *    CPU TYPES		: ALL
- * 
+ *
  *    AUTHOR		: Stephane Fillod
- * 
+ *
  *    CO-PILOT		: ??
- * 
+ *
  *    DATE STARTED	: 03/24/01
- * 
+ *
  *    INITIAL RELEASE	: Linux 2.2
- * 
+ *
  *    TEST CASES
- * 
+ *
  * 	1.) malloc(3) returns...(See Description)
  *	
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
- * 
+ *
  *    OUTPUT SPECIFICATIONS
  * 	
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
  *
  *    RESOURCES
  * 	None
- * 
+ *
  *    ENVIRONMENTAL NEEDS
  *      No run-time environmental needs.
- * 
+ *
  *    SPECIAL PROCEDURAL REQUIREMENTS
  * 	None
- * 
+ *
  *    INTERCASE DEPENDENCIES
  * 	None
- * 
+ *
  *    DETAILED DESCRIPTION
  *	This is a Phase ?? test for exercising virtual memory allocation
- *	and usage. It is intended to provide a limited exposure of the 
+ *	and usage. It is intended to provide a limited exposure of the
  *	system swapper, for now.
- * 
+ *
  * 	Setup:
  * 	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  * 	  Execute memory allocation (sbrk(2) involved)
@@ -93,11 +93,11 @@
  *		Log the failure and Issue a FAIL message.
  *	  Otherwise, dirty all the virtual pages to force physical allocation
  *	  And issue a PASS message, provided loop completed.
- * 
+ *
  * 	Cleanup:
  * 	  Print timing stats if options given
- * 
- * 
+ *
+ *
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
 /* TODO: catch signal when "Processus arrete!" (OOM killer?) */
@@ -108,7 +108,7 @@
 #include <sys/types.h>
 #include <sys/sysinfo.h>
 #include <stdio.h>
-#include <stdlib.h>    
+#include <stdlib.h>   
 #include <sys/user.h>	/* getpagesize() */
 #include <time.h>
 #include <limits.h>
@@ -147,7 +147,7 @@ struct sysinfo info;
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void 
+void
 setup()
 {
     /* capture signals */
@@ -165,7 +165,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void 
+void
 cleanup()
 {
     /*
@@ -187,7 +187,7 @@ void help()
 {
   printf("  -m x    size of malloc in MB (default from /proc/meminfo)\n");
   printf("  -r      random touching versus linear\n");
-  printf("  -v      verbose progress indication\n"); 
+  printf("  -v      verbose progress indication\n");
 }
 
 
@@ -206,18 +206,18 @@ size_t get_memsize()
   if (retcode != 0) {
     tst_resm(TFAIL,"Could not retrieve memory information using sysinfo()");
     cleanup();
-  } 
-  
-  freeram = (unsigned long long)info.freeram * (unsigned long long)info.mem_unit;      
+  }
+ 
+  freeram = (unsigned long long)info.freeram * (unsigned long long)info.mem_unit;     
   tst_resm(TINFO, "Free Mem:\t%llu Mb", freeram/1024/1024);
-  res=freeram; 
+  res=freeram;
 
-  freeswap = (unsigned long long)info.freeswap * (unsigned long long)info.mem_unit;      
+  freeswap = (unsigned long long)info.freeswap * (unsigned long long)info.mem_unit;     
   tst_resm(TINFO, "Free Swap:\t%llu Mb", freeswap/1024/1024);
   res=res+freeswap;
 
   tst_resm(TINFO, "Total Free:\t%llu Mb", res/1024/1024);
-#if defined (__s390__) 
+#if defined (__s390__)
   if ( res > 1*1024*1024*1024 )
     res = 500*1024*1024;  /* s390's unique 31bit architecture needs smaller default */
 #elif __WORDSIZE == 32
@@ -238,7 +238,7 @@ size_t get_memsize()
  * add the -m option whose parameter is the
  * memory size (MB) to allocate.
  */
-option_t options[] = 
+option_t options[] =
 {
   { "m:", &m_opt, &m_copt },
   { "r", &r_opt, NULL },
@@ -275,7 +275,7 @@ main(int argc, char *argv[])
     {
       tst_brkm(TBROK, cleanup, "Invalid arg for -m: %s",m_copt);
     }
-  } 
+  }
 
 	if (r_opt)
 		srand(time(NULL));	/* fair enough */
@@ -302,7 +302,7 @@ main(int argc, char *argv[])
 		    }
   	}
 
-	/* 
+	/*
 	 * TEST CASE:
 	 * Allocate (virtual) memory (thru sbrk)
 	 */
@@ -315,7 +315,7 @@ main(int argc, char *argv[])
     	    cleanup();
 	}
 	
-	/* 
+	/*
 	 * TEST CASE:
 	 * Dirty all the pages, to force physical RAM allocation
 	 * and exercise eventually the swapper
@@ -344,7 +344,7 @@ main(int argc, char *argv[])
 		*(int*)p = 0xdeadbeef^i;
 
 		if (r_opt) {
-			p = bigmalloc + 
+			p = bigmalloc +
 				(size_t) ((double)(memsize-sizeof(int))*rand()/(RAND_MAX+1.0) );
 		} else {
 			p += pagesize;

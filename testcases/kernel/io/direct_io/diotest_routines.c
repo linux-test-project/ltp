@@ -24,11 +24,11 @@
  *
  * DESCRIPTION
  *	Functions that are used in diotest programs.
- *	fillbuf(), bufcmp(), filecmp() 
+ *	fillbuf(), bufcmp(), filecmp()
  *	forkchldrn(), waitchldrn(), killchldrn()
  *
  * History
- *	04/10/2002	Narasimha Sharoff 
+ *	04/10/2002	Narasimha Sharoff
  *
  * RESTRICTIONS
  *	None
@@ -103,7 +103,7 @@ vbufcmp(struct iovec *iv1, struct iovec *iv2, int vcnt)
 	
 	for (i = 0; i < vcnt; iv1++, iv2++, i++) {
 		if (bufcmp(iv1->iov_base, iv2->iov_base, iv1->iov_len) < 0) {
-			fprintf(stderr, "Vector: %d, iv1base=%s, iv2base=%s\n", 
+			fprintf(stderr, "Vector: %d, iv1base=%s, iv2base=%s\n",
 				i, (char *)iv1->iov_base, (char *)iv2->iov_base);
 			return(-1);
 		}
@@ -126,12 +126,12 @@ filecmp(char *f1, char *f2)
 
 	/* Open the file for read */
 	if ((fd1 = open(f1, O_RDONLY)) == -1) {
-		fprintf(stderr, "compare_files: open failed %s: %s", 
+		fprintf(stderr, "compare_files: open failed %s: %s",
 			f1, strerror(errno));
 		return(-1);
 	}
 	if ((fd2 = open(f2, O_RDONLY)) == -1) {
-		fprintf(stderr, "compare_files: open failed %s: %s", 
+		fprintf(stderr, "compare_files: open failed %s: %s",
 			f2, strerror(errno));
 		close(fd1);
 		return(-1);
@@ -168,7 +168,7 @@ filecmp(char *f1, char *f2)
 /* **** Routines to create, wait and destroy child processes **** */
 
 /*
- * forkchldrn: fork the given number of children and set the function 
+ * forkchldrn: fork the given number of children and set the function
  *		that child should execute.
 */
 int
@@ -231,7 +231,7 @@ waitchldrn(int **pidlst, int numchld)
 		cpid= *(*pidlst+i);
 		if(cpid == 0) continue;
 		if((ret=waitpid(cpid, &status, 0)) != cpid) {
-			fprintf(stderr,"waitchldrn: wait failed for child %d, pid %d: %s\n", 
+			fprintf(stderr,"waitchldrn: wait failed for child %d, pid %d: %s\n",
 				i, cpid, strerror(errno));
 			errflag--;
 		}

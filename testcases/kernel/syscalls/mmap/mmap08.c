@@ -21,7 +21,7 @@
  * Test Name: mmap08
  *
  * Test Description:
- *  Verify that mmap() fails to map a file creating a mapped region 
+ *  Verify that mmap() fails to map a file creating a mapped region
  *  when the file specified by file descriptor is not valid.
  *
  * Expected Result:
@@ -116,7 +116,7 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 
-		/* 
+		/*
 		 * Call mmap to map the temporary file 'TEMPFILE'
 	 	 * which is already closed. so, fildes is not valid.
 		 */
@@ -158,7 +158,7 @@ main(int ac, char **av)
  *	     Create a temporary directory and a file under it.
  *	     Write some known data into file and close it.
  */
-void 
+void
 setup()
 {
 	char *tst_buff;			/* test buffer to hold known data */
@@ -219,7 +219,7 @@ setup()
  *             completion or premature exit.
  *	       Remove the temporary directory created.
  */
-void 
+void
 cleanup()
 {
 	/*

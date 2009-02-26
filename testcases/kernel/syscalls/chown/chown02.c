@@ -17,7 +17,7 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-/* 
+/*
  * Test Name: chown02
  *
  * Test Description:
@@ -28,7 +28,7 @@
  *	- preserves setgid bit set on a non-group-executable file.
  *
  * Expected Result:
- *  chown(2) should return 0 and the ownership set on the file should match 
+ *  chown(2) should return 0 and the ownership set on the file should match
  *  the numeric values contained in owner and group respectively.
  *	
  * Algorithm:
@@ -123,7 +123,7 @@ main(int ac, char **av)
 	int test_flag;		/* test condition specific flag variable */
 	char *file_name;	/* ptr. for test file name */
 	char *test_desc;	/* test specific message */
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -147,7 +147,7 @@ main(int ac, char **av)
 			Group_id = Test_cases[ind].group_id;
 			test_flag = Test_cases[ind].test_flag;
 
-			/* 
+			/*
 			 * Call chown(2) with different user id and
 			 * group id (numeric values) to set it on testfile.
 		 	 */
@@ -229,7 +229,7 @@ main(int ac, char **av)
  *  Create a temporary directory and change directory to it.
  *  Create a test file under temporary directory and close it
  */
-void 
+void
 setup()
 {
 	int ind;
@@ -259,7 +259,7 @@ setup()
  * int
  * setup1() - Setup function for chown(2) to verify setuid/setgid bits
  *	      set on an executable file will not be cleared.
- *  Creat a testfile and set setuid/setgid bits on the mode of file.  
+ *  Creat a testfile and set setuid/setgid bits on the mode of file. 
  */
 int
 setup1()
@@ -337,7 +337,7 @@ no_setup()
  *	       completion or premature exit.
  *  Remove the test directory and testfile created in the setup.
  */
-void 
+void
 cleanup()
 {
 	/*

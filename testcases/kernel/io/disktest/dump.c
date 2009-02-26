@@ -22,7 +22,7 @@
 *
 *  Project Website:  TBD
 *
-* $Id: dump.c,v 1.6 2009/02/26 11:43:51 subrata_modak Exp $
+* $Id: dump.c,v 1.7 2009/02/26 12:02:22 subrata_modak Exp $
 *
 */
 #include <stdio.h>	/* *printf() */
@@ -64,7 +64,7 @@ int format_str(size_t iBytes, const char *ibuff, size_t ibuff_siz, char *obuff, 
 		if((i%8) == 0) strncat(obuff, " ", (obuff_siz-1)-strlen(obuff));
 		strncat(obuff, "   ", (obuff_siz-1)-strlen(obuff));
 	}
-	strncat(obuff, " ", (obuff_siz-1)-strlen(obuff)); 
+	strncat(obuff, " ", (obuff_siz-1)-strlen(obuff));
 	for(i=0;i<iBytes;i++) {
 		sprintf(buff, "%c", (isprint(*(ibuff+i))) ? *(ibuff+i) : '.');
 		strncat(obuff, buff, (obuff_siz-1)-strlen(obuff));

@@ -55,7 +55,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <errno.h>
- 
+
 #include "test.h"
 #include "usctest.h"
 
@@ -153,7 +153,7 @@ void setup()
 	
 	if( -1 == (file_desc = mkstemp(tmpfilename)) ) {
 		tst_brkm(TBROK, cleanup,  "Unable to create temporary file: %s", strerror(errno));
-	} 
+	}
 	
 	/* fill the temporary file with two pages of data */
 	
@@ -182,7 +182,7 @@ int main(int argc, char **argv)
 	setup();
 
         if( -1 == mincore((void *)position,num_pages*p_size,vec) ) {
-               tst_brkm(TBROK, cleanup, "Unable to execute mincore system call: %s",strerror(errno)); 
+               tst_brkm(TBROK, cleanup, "Unable to execute mincore system call: %s",strerror(errno));
         }
 		
 	/* check status of pages */

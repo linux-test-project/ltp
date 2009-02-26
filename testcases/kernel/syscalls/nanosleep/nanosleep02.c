@@ -110,7 +110,7 @@ main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 	pid_t cpid;		/* Child process id */
 	int status;		/* child exit status */
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
 	if (msg != (char *)NULL) {
@@ -191,7 +191,7 @@ do_child()
 
 	/* Note down the current time */
 	gettimeofday(&otime, NULL);
-	/* 
+	/*
 	 * Call nanosleep() to suspend child process
 	 * for specified time 'tv_sec'.
 	 * Call should return before suspending execution
@@ -247,7 +247,7 @@ do_child()
 	 */
 	if (STD_FUNCTIONAL_TEST) {
 		/*
-		 * Verify whether child execution was 
+		 * Verify whether child execution was
 		 * actually suspended for the remaining
 		 * sleep time specified by 'timerem'
 		 * structure.
@@ -272,7 +272,7 @@ do_child()
  *  to child process.
  *  Initialise time structure elements.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -299,7 +299,7 @@ setup()
 /*
  * sig_handler() - signal catching function.
  *   This function gets executed when a parnet sends a signal 'SIGINT'
- *   to child to awake it from sleep. 
+ *   to child to awake it from sleep.
  *   This function just returns without doing anything.
  */
 void
@@ -312,7 +312,7 @@ sig_handler()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

@@ -38,7 +38,7 @@
 #include <sys/tree.h>
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
-#else 
+#else
 #include <sys/_time.h>
 #endif
 #include <sys/queue.h>
@@ -167,8 +167,8 @@ event_init(void)
 	if (evbase == NULL)
 		errx(1, "%s: no event mechanism available", __func__);
 
-	if (getenv("EVENT_SHOW_METHOD")) 
-		fprintf(stderr, "libevent using: %s\n", evsel->name); 
+	if (getenv("EVENT_SHOW_METHOD"))
+		fprintf(stderr, "libevent using: %s\n", evsel->name);
 
 #if defined(USE_LOG) && defined(USE_DEBUG)
 	log_to(stderr);

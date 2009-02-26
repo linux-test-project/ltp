@@ -23,7 +23,7 @@
  * Test Description :
  *  Verify that, symlink will succeed to creat a symbolic link of an existing
  *  object name path.
- * 
+ *
  * Expected Result:
  *  symlink() should return value 0 on success and symbolic link of an
  *  existing object should be created.
@@ -116,8 +116,8 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 	
-		/* 
-		 * Call symlink(2) to create a symlink of 
+		/*
+		 * Call symlink(2) to create a symlink of
 		 * testfile.
 		 */
 		TEST(symlink(TESTFILE, SYMFILE));
@@ -185,7 +185,7 @@ main(int ac, char **av)
  *  Create a temporary directory and change directory to it.
  *  Create a test file under temporary directory and close it
  */
-void 
+void
 setup()
 {
 	int fd;			/* file handle for testfile */
@@ -225,7 +225,7 @@ setup()
  *             completion or premature exit.
  *  Remove the test directory and testfile created in the setup.
  */
-void 
+void
 cleanup()
 {
 	/*

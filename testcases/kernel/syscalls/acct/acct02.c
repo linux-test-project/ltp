@@ -90,7 +90,7 @@ int main (argc, argv)
                         tst_resm(TCONF,"Test will not run.");
                         tst_exit();
                 }else{
-			tst_resm(TBROK, "Non-root acct disable - errno expect: %d got: %d", 
+			tst_resm(TBROK, "Non-root acct disable - errno expect: %d got: %d",
 					EPERM, errno );
 			tst_exit();
                 }
@@ -103,7 +103,7 @@ int main (argc, argv)
 	}
 		
 	if( errno != EPERM ) {
-		tst_resm(TFAIL, "Non-root acct enable - errno expect: %d got: %d", 
+		tst_resm(TFAIL, "Non-root acct enable - errno expect: %d got: %d",
 				EPERM, errno );
 		tst_exit();
 	} else tst_resm(TPASS, "Received expected error: EPERM");

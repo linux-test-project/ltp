@@ -136,7 +136,7 @@ void DoTest(dm_token_t token, void *hanp, size_t hlen)
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n", szFuncName);
 		rc = dm_obj_ref_hold(INVALID_ADDR, token, hanp, hlen);
-		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 		/* Variation clean up */
 	}
@@ -152,7 +152,7 @@ void DoTest(dm_token_t token, void *hanp, size_t hlen)
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid token)\n", szFuncName);
 		rc = dm_obj_ref_hold(sid, INVALID_ADDR, hanp, hlen);
-		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 		/* Variation clean up */
 	}
@@ -168,7 +168,7 @@ void DoTest(dm_token_t token, void *hanp, size_t hlen)
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hanp)\n", szFuncName);
 		rc = dm_obj_ref_hold(sid, token, (void *)INVALID_ADDR, hlen);
-		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 		/* Variation clean up */
 	}
@@ -184,7 +184,7 @@ void DoTest(dm_token_t token, void *hanp, size_t hlen)
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hlen)\n", szFuncName);
 		rc = dm_obj_ref_hold(sid, token, hanp, INVALID_ADDR);
-		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 		/* Variation clean up */
 	}
@@ -204,7 +204,7 @@ void DoTest(dm_token_t token, void *hanp, size_t hlen)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(multiple holds)\n", szFuncName);
 			rc = dm_obj_ref_hold(sid, token, hanp, hlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBUSY);
 
 			/* Variation clean up */
 			rc = dm_obj_ref_rele(sid, token, hanp, hlen);
@@ -254,7 +254,7 @@ void DoTest(dm_token_t token, void *hanp, size_t hlen)
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(DM_NO_SESSION sid)\n", szFuncName);
 		rc = dm_obj_ref_hold(DM_NO_SESSION, token, hanp, hlen);
-		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 		/* Variation clean up */
 	}
@@ -288,7 +288,7 @@ void DoTest(dm_token_t token, void *hanp, size_t hlen)
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n", szFuncName);
 		rc = dm_obj_ref_rele(INVALID_ADDR, token, hanp, hlen);
-		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 		/* Variation clean up */
 	}
@@ -304,7 +304,7 @@ void DoTest(dm_token_t token, void *hanp, size_t hlen)
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid token)\n", szFuncName);
 		rc = dm_obj_ref_rele(sid, INVALID_ADDR, hanp, hlen);
-		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 		/* Variation clean up */
 	}
@@ -320,7 +320,7 @@ void DoTest(dm_token_t token, void *hanp, size_t hlen)
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hanp)\n", szFuncName);
 		rc = dm_obj_ref_rele(sid, token, (void *)INVALID_ADDR, hlen);
-		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 		/* Variation clean up */
 	}
@@ -336,7 +336,7 @@ void DoTest(dm_token_t token, void *hanp, size_t hlen)
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hlen)\n", szFuncName);
 		rc = dm_obj_ref_rele(sid, token, hanp, INVALID_ADDR);
-		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 		/* Variation clean up */
 	}
@@ -399,7 +399,7 @@ void DoTest(dm_token_t token, void *hanp, size_t hlen)
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(DM_NO_SESSION sid)\n", szFuncName);
 		rc = dm_obj_ref_rele(DM_NO_SESSION, token, hanp, hlen);
-		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 		/* Variation clean up */
 	}
@@ -433,7 +433,7 @@ void DoTest(dm_token_t token, void *hanp, size_t hlen)
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n", szFuncName);
 		rc = dm_obj_ref_query(INVALID_ADDR, token, hanp, hlen);
-		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 		/* Variation clean up */
 	}
@@ -449,7 +449,7 @@ void DoTest(dm_token_t token, void *hanp, size_t hlen)
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid token)\n", szFuncName);
 		rc = dm_obj_ref_query(sid, INVALID_ADDR, hanp, hlen);
-		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 		/* Variation clean up */
 	}
@@ -465,7 +465,7 @@ void DoTest(dm_token_t token, void *hanp, size_t hlen)
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hanp)\n", szFuncName);
 		rc = dm_obj_ref_query(sid, token, (void *)INVALID_ADDR, hlen);
-		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 		/* Variation clean up */
 	}
@@ -481,7 +481,7 @@ void DoTest(dm_token_t token, void *hanp, size_t hlen)
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hlen)\n", szFuncName);
 		rc = dm_obj_ref_query(sid, token, hanp, INVALID_ADDR);
-		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 		/* Variation clean up */
 	}
@@ -497,7 +497,7 @@ void DoTest(dm_token_t token, void *hanp, size_t hlen)
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(not held)\n", szFuncName);
 		rc = dm_obj_ref_query(sid, token, hanp, hlen);
-		DMVAR_ENDPASSEXP(szFuncName, 0, rc); 
+		DMVAR_ENDPASSEXP(szFuncName, 0, rc);
 
 		/* Variation clean up */
 	}
@@ -517,7 +517,7 @@ void DoTest(dm_token_t token, void *hanp, size_t hlen)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(held)\n", szFuncName);
 			rc = dm_obj_ref_query(sid, token, hanp, hlen);
-			DMVAR_ENDPASSEXP(szFuncName, 1, rc); 
+			DMVAR_ENDPASSEXP(szFuncName, 1, rc);
 
 			/* Variation clean up */
 		}
@@ -534,7 +534,7 @@ void DoTest(dm_token_t token, void *hanp, size_t hlen)
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(DM_NO_SESSION sid)\n", szFuncName);
 		rc = dm_obj_ref_query(DM_NO_SESSION, token, hanp, hlen);
-		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 		/* Variation clean up */
 	}
@@ -606,7 +606,7 @@ void *Thread(void *parm)
 			DMLOG_PRINT(DMLVL_DEBUG, "  Media designator: %s\n", DM_GET_VALUE(me, me_name2, char *));
 			DMLOG_PRINT(DMLVL_DEBUG, "  Root handle: %p\n", DM_GET_VALUE(me, me_roothandle, void *));
 			DMLOG_PRINT(DMLVL_DEBUG, "  Root handle length: %d\n", DM_GET_LEN(me, me_roothandle));
-	    
+	   
     			bMounted = dm_handle_is_valid(lhanp, lhlen);
 
     			rc = dm_request_right(sid, lhanp, lhlen, token, DM_RR_WAIT, DM_RIGHT_EXCL);

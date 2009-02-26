@@ -6,7 +6,7 @@
  * Written by Márton Németh <nm127@freemail.hu>
  * Released under GPL
  */
- 
+
 /*
  * Note: V4L2_CID_LASTP1 != V4L2_CID_BASE_LASTP1
  */
@@ -123,7 +123,7 @@ void test_VIDIOC_QUERYCTRL() {
 				/* These parameters are defined as n/a by V4L2, so
 				 * they should be filled with zeros, the same like
 				 * the reserved fields.
-				 */ 
+				 */
 				CU_ASSERT_EQUAL(queryctrl.minimum, 0);
 				CU_ASSERT_EQUAL(queryctrl.maximum, 0);
 				CU_ASSERT_EQUAL(queryctrl.step, 0);
@@ -305,7 +305,7 @@ void test_VIDIOC_QUERYCTRL_flag_NEXT_CTRL() {
 				CU_ASSERT_EQUAL(memcmp(&queryctrl, &controls[queryctrl.id-V4L2_CID_BASE], sizeof(queryctrl)), 0);
 			}
 
-			/* "The VIDIOC_QUERYCTRL ioctl will return the first 
+			/* "The VIDIOC_QUERYCTRL ioctl will return the first
 			 *  control with a higher ID than the specified one."
 			 */
 			CU_ASSERT(i < queryctrl.id);
@@ -346,7 +346,7 @@ void test_VIDIOC_QUERYCTRL_flag_NEXT_CTRL() {
 			CU_ASSERT_EQUAL(errno, EINVAL);
 		}
 
-		/* Check whether the same controls are reported if using 
+		/* Check whether the same controls are reported if using
 		 * V4L2_CTRL_FLAG_NEXT_CTRL and without using it.
 		 * This also checks if one control is not reported twice.
 		 */
@@ -440,7 +440,7 @@ void test_VIDIOC_QUERYCTRL_private() {
 				/* These parameters are defined as n/a by V4L2, so
 				 * they should be filled with zeros, the same like
 				 * the reserved fields.
-				 */ 
+				 */
 				CU_ASSERT_EQUAL(queryctrl.minimum, 0);
 				CU_ASSERT_EQUAL(queryctrl.maximum, 0);
 				CU_ASSERT_EQUAL(queryctrl.step, 0);

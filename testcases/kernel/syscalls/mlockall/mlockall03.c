@@ -1,5 +1,5 @@
 /*
- * Copyright (C) Bull S.A. 2005.   
+ * Copyright (C) Bull S.A. 2005.  
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
@@ -15,18 +15,18 @@
  *
  */
 /**************************************************************************
- * 
+ *
  *    TEST IDENTIFIER	: mlockall03
- * 
+ *
  *    EXECUTED BY	: root / superuser
- * 
+ *
  *    TEST TITLE	: Test for checking basic error conditions for
  *    			   mlockall(2)
- * 
+ *
  *    TEST CASE TOTAL	: 3
- * 
- *    AUTHOR		: Jacky Malcles 
- * 
+ *
+ *    AUTHOR		: Jacky Malcles
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -37,14 +37,14 @@
  *
  *	1) ENOMEM - If the caller had a non-zero RLIMIT_MEMLOCK
  *		    and tried to lock more memory than the limit permitted.
- *	2) EPERM  - If the  caller  was  not  privileged 
- *		    and its RLIMIT_MEMLOCK soft resource limit was 0. 
+ *	2) EPERM  - If the  caller  was  not  privileged
+ *		    and its RLIMIT_MEMLOCK soft resource limit was 0.
  *	3) EINVAL - Unknown flags were specified.
  *
  * 	Setup:
  *	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  *	  Do necessary setup for each test.
@@ -57,7 +57,7 @@
  *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  *  mlockall03 [-c n] [-e] [-i n] [-I x] [-p x] [-t]
  *		where,
@@ -203,20 +203,20 @@ void setup()
 	return;
 }
 
-int compare(char s1[], char s2[]) 
+int compare(char s1[], char s2[])
 {
         int i=0;
         while (s1[i]==s2[i] && s1[i])
         i++;
 
         if (i < 4)  return s2[i]-s1[i];
-        if ((i == 4) && (isalnum(s2[i+1]))) 
+        if ((i == 4) && (isalnum(s2[i+1])))
 	{
         	return 1;
         } else {
 		/* it is not an alphanumeric character */
         	return s2[i]-s1[i];
-        } 
+        }
 	return 0;
 }
 

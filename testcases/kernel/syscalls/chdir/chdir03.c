@@ -139,7 +139,7 @@ int main(int ac, char **av)
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
 			} else if (TEST_ERRNO != EACCES) {
-				tst_resm(TFAIL, "expected EACCES - got %d", 
+				tst_resm(TFAIL, "expected EACCES - got %d",
 					 TEST_ERRNO);
 			} else {
 				TEST_ERROR_LOG(TEST_ERRNO);

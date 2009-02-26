@@ -20,7 +20,7 @@
 /*
  * NAME
  *	rename01
- * 
+ *
  * DESCRIPTION
  *	This test will verify the rename(2) syscall basic functionality.
  *	Verify rename() works when the "new" file or directory does not exist.
@@ -34,17 +34,17 @@
  *	Test:
  *		Loop if the proper options are given.
  *              1.  "old" is plain file, new does not exists
- *                  create the "old" file, make sure the "new" file 
+ *                  create the "old" file, make sure the "new" file
  *                  dose not exist
  *                  rename the "old" to the "new" file
  *                  verify the "new" file points to the "old" file
  *                  verify the "old" file does not exist
  *
  *              2.  "old" is a directory,"new" does not exists
- *                  create the "old" directory, make sure "new" 
+ *                  create the "old" directory, make sure "new"
  *                  dose not exist
  *                  rename the "old" to the "new"
- *                  verify the "new" points to the "old" 
+ *                  verify the "new" points to the "old"
  *                  verify the "old" does not exist
  *	Cleanup:
  *		Print errno log and/or timing stats if options given
@@ -101,7 +101,7 @@ struct test_case_t {
 	/* comment goes here */
 	{fdir, mdir, "directory", &d_olddev, &d_oldino}
 };
- 
+
 int
 main(int ac, char **av)
 {
@@ -125,7 +125,7 @@ main(int ac, char **av)
 	 * check looping state if -i option given
 	 */
 	for (lc=0; TEST_LOOPING(lc); lc++) {
-	  
+	 
 		/* reset Tst_count in case we are looping. */
 		Tst_count=0;
 
@@ -144,13 +144,13 @@ main(int ac, char **av)
 					tst_brkm(TBROK, cleanup, "stat of %s "
 				 		"failed", TC[i].desc);
 					/* NOTREACHED */
-				} 
+				}
 
 				/*
 				 * verify the new file or directory is the
 				 * same as the old one
 				 */
-				if (buf1.st_dev != *TC[i].olddev || 
+				if (buf1.st_dev != *TC[i].olddev ||
 						buf1.st_ino != *TC[i].oldino) {
 					tst_resm(TFAIL, "rename() failed: the "
 						"new %s points to a different "
@@ -162,10 +162,10 @@ main(int ac, char **av)
 				 * does not exist
 				 */
 				if (stat(fname, &buf1) != -1) {
-					tst_resm(TFAIL, "the old %s still " 
+					tst_resm(TFAIL, "the old %s still "
 						 "exists", TC[i].desc);
 					continue;
-				} 
+				}
 
 				tst_resm(TPASS, "functionality is correct "
 					 "for renaming a %s", TC[i].desc);
@@ -197,14 +197,14 @@ main(int ac, char **av)
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Pause if that option was specified */
-	TEST_PAUSE; 
+	TEST_PAUSE;
 
 	/* Create a temporary directory and make it current. */
 	tst_tmpdir();
@@ -221,7 +221,7 @@ setup()
 		tst_brkm(TBROK,cleanup, "failed to stat file %s"
 			 "in setup()", fname);
 		/* NOTREACHED */
-	} 
+	}
 
 	f_olddev = buf1.st_dev;
 	f_oldino = buf1.st_ino;
@@ -246,7 +246,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

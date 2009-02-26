@@ -15,28 +15,28 @@
  *
  */
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER	: clone03
- * 
+ *
  *    EXECUTED BY	: anyone
- * 
+ *
  *    TEST TITLE	: test for clone(2)
- * 
+ *
  *    TEST CASE TOTAL	: 1
- * 
+ *
  *    AUTHOR		: Saji Kumar.V.R <saji.kumar@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
  *
  *    DESCRIPTION
  *	Check for equality of pid of child & return value of clone(2)
- * 
+ *
  * 	Setup:
  * 	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Open a pipe.
  *	 Loop if the proper options are given.
@@ -52,7 +52,7 @@
  *			test failed
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  *  clone03 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
  *			where,  -c n : Run n copies concurrently.
@@ -100,7 +100,7 @@ main(int ac, char **av)
 	void *child_stack;	/* stack for child */
 	char buff[10];
 	int child_pid;
-    
+   
 	/* parse standard options */
 	if ((msg=parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
@@ -125,7 +125,7 @@ main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "pipe() failed");
 		}
 
-		/* 
+		/*
 		 * Call clone(2)
 		 */
 #if defined(__hppa__)
@@ -181,7 +181,7 @@ main(int ac, char **av)
 }	/* End main */
 
 /* setup() - performs all ONE TIME setup for this test */
-void 
+void
 setup()
 {
 	
@@ -194,11 +194,11 @@ setup()
 }	/* End setup() */
 
 
-/* 
+/*
  *cleanup() -  performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	

@@ -15,17 +15,17 @@
  *
  */
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER	: sched_get_priority_min01
- * 
+ *
  *    EXECUTED BY	: anyone
- * 
+ *
  *    TEST TITLE	: Basic test for sched_get_priority_min(2)
- * 
+ *
  *    TEST CASE TOTAL	: 3
- * 
+ *
  *    AUTHOR		: Saji Kumar.V.R <saji.kumar@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -33,21 +33,21 @@
  *    DESCRIPTION
  *	This is a Phase I test for the sched_get_priority_min(2) system call.
  *	It is intended to provide a limited exposure of the system call.
- * 
+ *
  * 	Setup:
  * 	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  * 	  Execute system call
  *	  Check return code, if system call failed (return=-1)
  *		Log the errno and Issue a FAIL message.
  *	  Otherwise, Issue a PASS message.
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  *  sched_get_priority_min01 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f]
  * 			     [-p]
@@ -84,7 +84,7 @@ static struct test_case_t {
 	{ "Test for SCHED_RR", SCHED_RR, 1 }
 };
 
-int TST_TOTAL = sizeof(test_cases) / sizeof(test_cases[0]); 
+int TST_TOTAL = sizeof(test_cases) / sizeof(test_cases[0]);
 
 int
 main(int ac, char **av)
@@ -92,7 +92,7 @@ main(int ac, char **av)
 
 	int lc, ind;		/* loop counter */
 	char *msg;	/* message returned from parse_opts */
-    
+   
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
 	     != (char *)NULL) {
@@ -109,7 +109,7 @@ main(int ac, char **av)
 		Tst_count = 0;
 
 		for (ind =0; ind < TST_TOTAL; ind++) {
-			/* 
+			/*
 			 * Call sched_get_priority_min(2)
 		 	 */
 			TEST(sched_get_priority_min(test_cases[ind].policy));
@@ -124,7 +124,7 @@ main(int ac, char **av)
 					 test_cases[ind].desc, TEST_RETURN,
 					 TEST_ERRNO, strerror(TEST_ERRNO));
 			}
-		} 
+		}
 	}	/* End for TEST_LOOPING */
 
 	/* cleanup and exit */
@@ -136,7 +136,7 @@ main(int ac, char **av)
 }	/* End main */
 
 /* setup() - performs all ONE TIME setup for this test */
-void 
+void
 setup()
 {
 	
@@ -149,11 +149,11 @@ setup()
 }	/* End setup() */
 
 
-/* 
+/*
  *cleanup() -  performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 

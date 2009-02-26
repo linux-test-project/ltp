@@ -61,7 +61,7 @@ int	s;	/* socket descriptor */
 struct sockaddr_in sin0, fsin1;
 socklen_t	sinlen;
 
-void setup(void), setup0(void), setup1(void), 
+void setup(void), setup0(void), setup1(void),
 	cleanup(void), cleanup0(void), cleanup1(void);
 
 struct test_case_t {		/* test case structure */
@@ -166,7 +166,7 @@ cleanup(void)
 }
 
 
-void 
+void
 setup0(void)
 {
 	if (tdat[testno].experrno == EBADF)

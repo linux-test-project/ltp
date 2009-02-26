@@ -15,17 +15,17 @@
  *
  */
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER   : fdatasync02
- * 
+ *
  *    EXECUTED BY       : Any user
- * 
+ *
  *    TEST TITLE        : Checking error conditions for fdatasync(2)
- * 
+ *
  *    TEST CASE TOTAL   : 2
- * 
+ *
  *    AUTHOR            : Madhu T L <madhu.tarikere@wipro.com>
- * 
+ *
  *    SIGNALS
  *      Uses SIGUSR1 to pause before test if option set.
  *      (See the parse_opts(3) man page).
@@ -36,12 +36,12 @@
  *	   file descriptor.
  *      2. fdatasync(2) returns -1 and sets errno to EINVAL for file
  *         descriptor to a special file.
- * 
+ *
  *      Setup:
  *        Setup signal handling.
  *        Set expected errnos for logging
  *        Pause for SIGUSR1 if option specified.
- * 
+ *
  *      Test:
  *       Loop if the proper options are given.
  *	  Perform testcase specific setup (if needed)
@@ -51,10 +51,10 @@
  *        Otherwise,
  *                   Issue FAIL message
  *	  Perform testcase specific cleanup (if needed)
- * 
+ *
  *      Cleanup:
  *        Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  *  fdatasync02 [-c n] [-e] [-f] [-h] [-i n] [-I x] [-p] [-P x] [-t]
  *		where,  -c n : Run n copies concurrently.
@@ -66,7 +66,7 @@
  *			-p   : Pause for SIGUSR1 before starting
  *			-P x : Pause for x seconds between iterations.
  *			-t   : Turn on syscall timing.
- * 
+ *
  ****************************************************************/
 
 #include <errno.h>
@@ -139,7 +139,7 @@ main(int argc, char **argv)
 			if ( (TEST_RETURN == EXP_RET_VAL) &&
 				(TEST_ERRNO == tdat[testno].experrno) ) {
 				tst_resm(TPASS, "Expected failure for %s, "
-					"errno: %d", tdat[testno].desc, 
+					"errno: %d", tdat[testno].desc,
 					TEST_ERRNO);
 			} else {
 				tst_resm(TFAIL, "Unexpected results for %s ; "
@@ -173,7 +173,7 @@ setup2(void)
 	if ((fd = open(SPL_FILE, O_RDONLY)) == -1) {
 		tst_resm(TBROK, "Failed to open %s", SPL_FILE);
 		return 1;
-	} 
+	}
 	return 0;
 }
 

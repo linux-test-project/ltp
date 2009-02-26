@@ -15,17 +15,17 @@
  *
  */
 /******************************************************************************
- * 
+ *
  *    TEST IDENTIFIER	: umount02
- * 
+ *
  *    EXECUTED BY	: root / superuser
- * 
+ *
  *    TEST TITLE	: Test for checking basic error conditions for umount(2)
- * 
+ *
  *    TEST CASE TOTAL	: 5
- * 
+ *
  *    AUTHOR		: Nirmala Devi Dhanasekar <nirmala.devi@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -38,14 +38,14 @@
  *	1) EBUSY if it cannot be umounted, because dir is still busy.
  *	2) EFAULT if specialfile or device file points to invalid address space.
  *	3) ENOENT if pathname was empty or has a nonexistent component.
- *	4) EINVAL if specialfile or device is invalid or not a mount point. 
+ *	4) EINVAL if specialfile or device is invalid or not a mount point.
  *	5) ENAMETOOLONG if pathname was longer than MAXPATHLEN.
  *	
  * 	Setup:
  *	  Setup signal handling.
  *	  Create a mount point.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  *	  Do necessary setup for each test.
@@ -55,11 +55,11 @@
  *	  Otherwise,
  *		Issue sys call failed to produce expected error.
  *	  Do cleanup for each test.
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
  *	  Delete the temporary directory(s)/file(s) created.
- * 
+ *
  * USAGE:  <for command-line>
  *  umount02 [-T type] -D device [-e] [-i n] [-I x] [-p x] [-t]
  *			where,  -T type : specifies the type of filesystem to
@@ -209,7 +209,7 @@ main(int ac, char **av)
 			TEST(umount(Mntpoint));
 
 			/* check return code */
-			if ((TEST_RETURN == -1) && 
+			if ((TEST_RETURN == -1) &&
 			    (TEST_ERRNO == testcases[i].exp_errno)) {
 				tst_resm(TPASS, "umount(2) expected failure; "
 					"Got errno - %s : %s",
@@ -339,7 +339,7 @@ cleanup_test(int i)
 		
 
 /* setup() - performs all ONE TIME setup for this test */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -353,7 +353,7 @@ setup()
 		tst_brkm(TBROK, tst_exit, "Test must be run as root");
 	}
 
-	/* make a temp directory */ 
+	/* make a temp directory */
 	tst_tmpdir();
 
 	(void)sprintf(mntpoint, "mnt_%d", getpid());
@@ -374,11 +374,11 @@ setup()
 }	/* End setup() */
 
 
-/* 
+/*
  *cleanup() -  performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	if (Type != NULL) {

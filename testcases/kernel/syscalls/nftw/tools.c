@@ -22,7 +22,7 @@
 
 /*
  * NAME
- *	tools.c - Supporting functions for nftw.c 
+ *	tools.c - Supporting functions for nftw.c
  */
 
 #define _USC_LIB_
@@ -51,7 +51,7 @@ cleanup_function(void)
 {
 	chmod("./tmp/data/d333", (mode_t)S_IRWXU | S_IRWXG | S_IRWXO);
 	chmod("./tmp/data/d666", (mode_t)S_IRWXU | S_IRWXG | S_IRWXO);
-	chmod("./tmp/data/dirg/dir_right.1", (mode_t)S_IRWXU | S_IRWXG | 
+	chmod("./tmp/data/dirg/dir_right.1", (mode_t)S_IRWXU | S_IRWXG |
 		S_IRWXO);
 	system("rm -rf ./tmp");
 	wait(NULL);
@@ -69,7 +69,7 @@ cleanup_function(void)
  *	Nothing
  */
 
-void 
+void
 setup_path(void)
 {
 	int	i, fd;
@@ -84,7 +84,7 @@ setup_path(void)
 	for(i = 0; i < npathdats; i++) {
 		if(pathdat[i].type == DIR) {
 			if(mkdir(pathdat[i].name, pathdat[i].mode) == -1){
-				sprintf(ebuf, "Can't mkdir %s %d", 
+				sprintf(ebuf, "Can't mkdir %s %d",
 					pathdat[i].name, i);
 				perror(ebuf);
 				fprintf(temp, "ERROR: setup_path function failed\n");
@@ -93,7 +93,7 @@ setup_path(void)
 			}
 		} else if(pathdat[i].type == SYM) {
 			if(symlink(pathdat[i].contents, pathdat[i].name) == -1){
-				sprintf(ebuf, "Can't symlink %s ", 
+				sprintf(ebuf, "Can't symlink %s ",
 					pathdat[i].name);
 				perror(ebuf);
 				fprintf(temp, "ERROR: setup_path function failed\n");
@@ -101,7 +101,7 @@ setup_path(void)
 				fail_exit();
 			}
 		} else {
-			if((fd = open(pathdat[i].name, O_WRONLY | O_CREAT, 
+			if((fd = open(pathdat[i].name, O_WRONLY | O_CREAT,
 					pathdat[i].mode)) == -1) {
 				sprintf(ebuf, "Can't open %s", pathdat[i].name);
 				perror(ebuf);
@@ -109,7 +109,7 @@ setup_path(void)
 				cleanup_function();
 				fail_exit();
 			}
-			if(write(fd, pathdat[i].contents, 
+			if(write(fd, pathdat[i].contents,
 					strlen(pathdat[i].contents)) == -1){
 				perror("Can't write");
 				close(fd);
@@ -122,7 +122,7 @@ setup_path(void)
 	}
 
 	if(chmod("./tmp/data/d333", (mode_t)S_IWUSR | S_IXUSR | S_IWGRP |
-			S_IXGRP | S_IWOTH|S_IXOTH) == -1){ 
+			S_IXGRP | S_IWOTH|S_IXOTH) == -1){
 		sprintf(ebuf, "Can't chmod %s ", "./tmp/data/d333");
 		perror(ebuf);
 		fprintf(temp, "ERROR: setup_path function failed\n");
@@ -138,7 +138,7 @@ setup_path(void)
 		fail_exit();
 	}
 	if(chmod("./tmp/data/dirg/dir_right.1", (mode_t)S_IWUSR | S_IXUSR |
-			S_IWGRP | S_IXGRP | S_IWOTH|S_IXOTH) == -1){ 
+			S_IWGRP | S_IXGRP | S_IWOTH|S_IXOTH) == -1){
 		sprintf(ebuf, "Can't chmod %s ", "./tmp/data/dirg/dir_right.1");
 		perror(ebuf);
 		fprintf(temp, "ERROR: setup_path function failed\n");
@@ -258,7 +258,7 @@ getlev(const char *s)
  *	Nothing	
  */
 
-void 
+void
 do_info(const char *path_name)
 {
 

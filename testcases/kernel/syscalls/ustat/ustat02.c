@@ -15,49 +15,49 @@
  *
  */
 /**************************************************************************
- * 
+ *
  *    TEST IDENTIFIER	: ustat02
  *
- * 
- *    EXECUTED BY	: Anyone 
- * 
+ *
+ *    EXECUTED BY	: Anyone
+ *
  *    TEST TITLE	: Test checking for basic error conditions
  *    				 for ustat(2)
- * 
+ *
  *    TEST CASE TOTAL	: 2
- *         
+ *        
  *    AUTHOR		: Aniruddha Marathe <aniruddha.marathe@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
  *
  *    DESCRIPTION
- *	This test case checks whether ustat(2) system call  returns 
+ *	This test case checks whether ustat(2) system call  returns
  *	appropriate error number for invalid
- *	dev_t parameter. Next, it checks for bad address paramater. 
- * 
+ *	dev_t parameter. Next, it checks for bad address paramater.
+ *
  * 	Setup:
  *	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
  *	  For testing error on invalid parameter, set dev_num to -1
- * 
+ *
  * 	Test:
  *	  Loop if the proper options are given.
  *	  Execute system call with invaid flag parameter
  *	  and then for invalid user
  *	  Check return code, if system call fails with errno == expected errno
  *		Issue syscall passed with expected errno
- *	  Otherwise, 
+ *	  Otherwise,
  *	  Issue syscall failed to produce expected errno
- * 
+ *
  * 	Cleanup:
  * 	  Do cleanup for the test.
- * 	   
+ * 	  
  * USAGE:  <for command-line>
  *  ustat02 [-c n] [-e] [-i n] [-I x] [-p x] [-t] [-h] [-f] [-p]
- *  where 
- *  	-c n: run n copies simultaneously 
+ *  where
+ *  	-c n: run n copies simultaneously
  *	-e   : Turn on errno logging.
  *	-i n : Execute test n times.
  *	-I x : Execute test for x seconds.
@@ -133,15 +133,15 @@ main(int ac, char **av)
 			if ((TEST_RETURN == -1) && (TEST_ERRNO == testcase[i].
 			exp_errno)) {
 				tst_resm(TPASS, "ustat(2) expected failure;"
-						" Got errno - %s : %s", 
-						testcase[i].exp_errval, 
+						" Got errno - %s : %s",
+						testcase[i].exp_errval,
 						testcase[i].err_desc);
 			} else {
 				tst_resm(TFAIL,"ustat(2) failed to produce"
-						" expected error; %d, errno" 
-					       ": %s and got %d", 
-						testcase[i].exp_errno, 
-						testcase[i].exp_errval, 
+						" expected error; %d, errno"
+					       ": %s and got %d",
+						testcase[i].exp_errno,
+						testcase[i].exp_errval,
 						TEST_ERRNO);
 			}
 

@@ -25,7 +25,7 @@
  *	Check that all children inherit parent's file descriptor
  *
  * ALGORITHM
- * 	Parent opens a file, writes to it; forks Nforks children. 
+ * 	Parent opens a file, writes to it; forks Nforks children.
  * 	Each child attempts to read the file then returns.
  * 	Parent reports PASS if all children succeed.
  *
@@ -123,7 +123,7 @@ main(int ac, char **av)
 		fflush(writ);
 		sleep(1);
 
-		if ((getc(rea)) != 'a') 
+		if ((getc(rea)) != 'a')
 			tst_resm(TFAIL, "getc from read side was confused");
 
 		/* fork off the children */

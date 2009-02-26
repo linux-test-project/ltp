@@ -23,7 +23,7 @@
  *
  * DESCRIPTION
  *	Testcase to test whether chdir(2) sets errno correctly.
- * 
+ *
  * ALGORITHM
  *	1.	Test for ENAMETOOLONG:
  *		Create a bad directory name with length more than
@@ -66,7 +66,7 @@ extern int Tst_count;
 
 int exp_enos[] = {ENAMETOOLONG, ENOENT, EFAULT, 0};
 
-char bad_dir[] = "abcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyz"; 
+char bad_dir[] = "abcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyz";
 
 char noexist_dir[] = "/tmp/noexistdir";
 

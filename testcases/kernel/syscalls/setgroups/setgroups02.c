@@ -17,7 +17,7 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-/* 
+/*
  * Test Name: setgroups02
  *
  * Test Description:
@@ -129,7 +129,7 @@ main(int ac, char **av)
 		 */
 		if (STD_FUNCTIONAL_TEST) {
 			/*
-			 * Call getgroups(2) to verify that 
+			 * Call getgroups(2) to verify that
 			 * setgroups(2) successfully set the
 			 * supp. gids of TESTUSER.
 			 */
@@ -144,7 +144,7 @@ main(int ac, char **av)
 					 "(%d, groups_list) successful",
 					 gidsetsize);
 				PASS_FLAG=1;
-			  } 
+			  }
 			}
 			if (PASS_FLAG == 0) {
 				tst_resm(TFAIL, "Supplimentary gid %d not set "
@@ -168,7 +168,7 @@ main(int ac, char **av)
  *  Make sure the test process uid is root.
  *  Get the supplimentrary group id of test user from /etc/passwd file.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -192,7 +192,7 @@ setup()
 			 cleanup,
 			 "gid returned from getpwnam is too large for testing setgroups16");
 	}
-	  
+	 
 	groups_list[0] = user_info->pw_gid;
 }
 
@@ -200,7 +200,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

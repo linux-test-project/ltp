@@ -71,7 +71,7 @@ int main(int argc, char **argv)
 	pid_t pid;
 	int retval, status;
 
-	struct passwd *nobody; 
+	struct passwd *nobody;
 
 	/* parse standard options */
 	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) !=

@@ -124,8 +124,8 @@ int main(int ac, char **av)
 		cleanup();
         }
 
-        if (geteuid() != 0) { 	 
-	                 tst_brkm(TBROK, tst_exit, "Test must be run as root"); 	 
+        if (geteuid() != 0) { 	
+	                 tst_brkm(TBROK, tst_exit, "Test must be run as root"); 	
 	}
 
 	setup();

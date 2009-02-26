@@ -22,11 +22,11 @@
  *
  * Test Description:
  *  Verify that, lchown(2) succeeds to change the owner and group of a file
- *  specified by path to any numeric owner(uid)/group(gid) values when invoked 
+ *  specified by path to any numeric owner(uid)/group(gid) values when invoked
  *  by super-user.
  *
  * Expected Result:
- *  lchown(2) should return 0 and the ownership set on the file should match 
+ *  lchown(2) should return 0 and the ownership set on the file should match
  *  the numeric values contained in owner and group respectively.
  *	
  * Algorithm:
@@ -113,7 +113,7 @@ main(int ac, char **av)
 	uid_t User_id;		/* user id of the user set for testfile */
 	gid_t Group_id;		/* group id of the user set for testfile */
 	char *test_desc;	/* test specific message */
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -134,7 +134,7 @@ main(int ac, char **av)
 			User_id = Test_cases[ind].user_id;
 			Group_id = Test_cases[ind].group_id;
 
-			/* 
+			/*
 			 * Call lchwon(2) with different user id and
 			 * group id (numeric values) to set it on
 			 * symlink of testfile.
@@ -202,7 +202,7 @@ main(int ac, char **av)
  *	     Create a test file under temporary directory and close it
  *	     Create a symlink of testfile under temporary directory.
  */
-void 
+void
 setup()
 {
 	int fd;
@@ -246,7 +246,7 @@ setup()
  *	       completion or premature exit.
  *	       Remove the test directory and testfile created in the setup.
  */
-void 
+void
 cleanup()
 {
 	/*

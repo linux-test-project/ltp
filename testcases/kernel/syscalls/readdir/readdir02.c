@@ -78,7 +78,7 @@
 #include "test.h"
 #include "usctest.h"
 
-void setup(); 
+void setup();
 void cleanup();
 
 char *TCID="readdir02";		/* Test program identifier.    */
@@ -115,10 +115,10 @@ main(int ac, char **av)
     TEST_EXP_ENOS(exp_enos);
 
     /***************************************************************
-     * check looping state 
+     * check looping state
      ***************************************************************/
     /* TEST_LOOPING() is a macro that will make sure the test continues
-     * looping according to the standard command line args. 
+     * looping according to the standard command line args.
      */
     for (lc=0; TEST_LOOPING(lc); lc++) {
 
@@ -172,14 +172,14 @@ sigsegv_handler(int sig)
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void 
+void
 setup()
 {
 
     struct sigaction act;
-    
+   
     /* You will want to enable some signal handling so you can capture
-     * unexpected signals like SIGSEGV. 
+     * unexpected signals like SIGSEGV.
      */
     tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
@@ -202,7 +202,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void 
+void
 cleanup()
 {
     /*
@@ -212,7 +212,7 @@ cleanup()
     TEST_CLEANUP;
 
     /* If you use a temporary directory, you need to be sure you remove it. Use
-     * tst_rmdir() to do it automatically.  
+     * tst_rmdir() to do it automatically. 
      */
     tst_rmdir();
 

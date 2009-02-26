@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 		exit(-1);
 	}
 	pid = (pid_t) atol(argv[1]);
-	printf("pid = %d \n",pid); 
+	printf("pid = %d \n",pid);
 	if ((session_id = getsid(pid)) < 0) {
 		perror("getsid");
 		exit(1);

@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
 		exit(-1);
 	}
 	pid = (pid_t) atol(argv[1]);
-	printf("pid = %d \n",pid); 
+	printf("pid = %d \n",pid);
 	if ((policy = sched_getscheduler(pid)) < 0) {
 		perror("sched_getscheduler");
 		exit(1);

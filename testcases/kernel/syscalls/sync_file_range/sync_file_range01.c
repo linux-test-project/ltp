@@ -1,6 +1,6 @@
 /******************************************************************************
  *				sync_file_range01.c
- *            Copyright (c) International Business Machines  Corp., 2008 
+ *            Copyright (c) International Business Machines  Corp., 2008
  *			    Email: bnpoorni@in.ibm.com
  *****************************************************************************/				
 
@@ -24,9 +24,9 @@
 
 
 /*****************************************************************************
- *    TEST IDENTIFIER  		: sync_file_range01			    
- *                                                                            
- *    EXECUTED BY               : anyone                                      
+ *    TEST IDENTIFIER  		: sync_file_range01			   
+ *                                                                           
+ *    EXECUTED BY               : anyone                                     
  *
  *    TEST TITLE                : Checks for Errors from sync_file_range()
  *
@@ -47,7 +47,7 @@
  *               sync_file_data() in-puts are specified through test_data
  *
  *     OUTPUT SPECIFICATIONS
- *             sync_file_data() error message matches with the expected error 
+ *             sync_file_data() error message matches with the expected error
  *		message.
  *
  *     ENVIRONMENTAL NEEDS
@@ -79,7 +79,7 @@
  *     Cleanup:
  *             Cleanup the temporary folder
  *
- ******************************************************************************/                                                                                                                                
+ ******************************************************************************/                                                                                                                               
 #define _GNU_SOURCE
 
 /* Standard Include Files */
@@ -115,7 +115,7 @@
 #endif
 
 
-#ifndef SYNC_FILE_RANGE_WAIT_BEFORE 
+#ifndef SYNC_FILE_RANGE_WAIT_BEFORE
 #define SYNC_FILE_RANGE_WAIT_BEFORE 1
 #define SYNC_FILE_RANGE_WRITE 2			//DUMMY VALUES
 #define SYNC_FILE_RANGE_WAIT_AFTER 4
@@ -141,7 +141,7 @@ struct test_data_t
         off64_t nbytes;
         unsigned int flags;
         int error;
-} test_data[] = { 
+} test_data[] = {
 		  {&bfd, 0, 1, SYNC_FILE_RANGE_WRITE, EBADF},
 		  {&sfd, 0, 1, SYNC_FILE_RANGE_WAIT_AFTER, ESPIPE},
 		  {&filed, -1, 1, SYNC_FILE_RANGE_WAIT_BEFORE, EINVAL},
@@ -151,7 +151,7 @@ struct test_data_t
 
 int TST_TOTAL = sizeof(test_data) / sizeof(test_data[0]);
 
- 
+
 
 
 /* Extern Global Functions */
@@ -250,16 +250,16 @@ static inline long syncfilerange(int fd, off64_t offset, off64_t nbytes, unsigne
 	       	  return syscall(__NR_sync_file_range2, fd, flags, (int)(offset >>32), \
 					(int)offset, (int)(nbytes >>32), (int)nbytes);
 
-	#elif (defined(__powerpc64__) || defined(__powerpc__)) && (__WORDSIZE==64)  
-		         
+	#elif (defined(__powerpc64__) || defined(__powerpc__)) && (__WORDSIZE==64) 
+		        
 		  return syscall(__NR_sync_file_range2, fd, flags, offset, nbytes);
 	#else
 
 		  return syscall(__NR_sync_file_range, fd, offset, nbytes, flags);
 	#endif
 
-	return 0;	          
-}  
+	return 0;	         
+} 
 
 
 
@@ -294,7 +294,7 @@ main(int   ac,    	/* number of command line parameters                      */
 	char *msg;
 
  /***************************************************************
-              parse standard options  
+              parse standard options 
   ********************************************************************/
         if ( (msg=parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL )
                 tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
@@ -323,7 +323,7 @@ for (lc=0; TEST_LOOPING(lc); lc++) {
                 Tst_count=0;
 
                 for(test_index = 0 ; test_index < TST_TOTAL; test_index ++)
-                {  
+                { 
 	   	  TEST(syncfilerange(*(test_data[test_index].fd), test_data[test_index].offset, \
 		        test_data[test_index].nbytes, test_data[test_index].flags));	
 				

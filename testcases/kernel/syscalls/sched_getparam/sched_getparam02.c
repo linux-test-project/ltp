@@ -15,17 +15,17 @@
  *
  */
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER	: sched_getparam02
- * 
+ *
  *    EXECUTED BY	: anyone
- * 
+ *
  *    TEST TITLE	: Get scheduling parametes for parent process
- * 
+ *
  *    TEST CASE TOTAL	: 1
- * 
+ *
  *    AUTHOR		: Saji Kumar.V.R <saji.kumar@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -34,11 +34,11 @@
  *	Verifies functionality of sched_getparam() for a process other than
  *	current process (ie, pid != 0). Here we get the scheduling parameters
  *	for parent process.
- * 
+ *
  * 	Setup:
  * 	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  *	 fork a child
@@ -52,10 +52,10 @@
  *
  *	 PARENT:
  *	  wait for child to finish
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  *  sched_getparam02 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
  *			where,  -c n : Run n copies concurrently.
@@ -121,7 +121,7 @@ main(int ac, char **av)
 			/* Child */
 			param.sched_priority = 100;
 
-			/* 
+			/*
 			 * Call sched_getparam(2) with pid = getppid() sothat
 			 * it will get the scheduling parameters for parent
 			 * process

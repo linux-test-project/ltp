@@ -30,52 +30,52 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: rmdir05.c,v 1.5 2007/02/09 20:48:23 vapier Exp $ */
+/* $Id: rmdir05.c,v 1.6 2009/02/26 12:04:43 subrata_modak Exp $ */
 /**********************************************************
- * 
+ *
  *    OS Test - Silicon Graphics, Inc.
- * 
+ *
  *    TEST IDENTIFIER	: rmdir05
- * 
+ *
  *    EXECUTED BY	: anyone
- * 
+ *
  *    TEST TITLE	: Functionality Tests for rmdir(2)
- * 
+ *
  *    PARENT DOCUMENT	: rmstds02
- * 
+ *
  *    TEST CASE TOTAL	: 6
- * 
+ *
  *    WALL CLOCK TIME	: 2
- * 
+ *
  *    CPU TYPES		: ALL
- * 
+ *
  *    AUTHOR		: Bill Branum
- * 
+ *
  *    CO-PILOT		: Steve Shaw
- * 
+ *
  *    DATE STARTED	: 4/23/92
- * 
+ *
  *    INITIAL RELEASE	: UNICOS 7.0
- * 
+ *
  *    TEST CASES
  * 	rmdir(2) test for errno(s) EINVAL, EMLINK, EFAULT
  *	
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
- * 
+ *
  *    ENVIRONMENTAL NEEDS
  *      No run-time environmental needs.
- * 
+ *
  *    DETAILED DESCRIPTION
  *	Verify that rmdir(2) returns a value of -1 and sets errno
  *	to indicate the error.
- * 
+ *
  * 	Setup:
  * 	  Setup signal handling.
  *	  Create a temporary directory and make it current.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  * 	  Execute system call
@@ -83,13 +83,13 @@
  *		Log the errno.
  *        If doing functional test
  *            check the errno returned and print result message
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given.
  *	  Remove the temporary directory.
  *	  Exit.
- * 
- * 
+ *
+ *
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
 #include <errno.h>
@@ -126,7 +126,7 @@ main(int argc, char **argv)
 {
     int lc;		/* loop counter */
     char *msg;		/* message returned from parse_opts */
-    
+   
 
     /***************************************************************
      * parse standard options
@@ -149,7 +149,7 @@ main(int argc, char **argv)
 	/* reset Tst_count in case we are looping. */
 	Tst_count=0;
 
-	/* 
+	/*
 	 * TEST CASE: 1
 	 * path points to the current directory
 	 */
@@ -174,7 +174,7 @@ main(int argc, char **argv)
 	    if (TEST_ERRNO & (EBUSY | ENOTEMPTY)) {
 #endif
 
-	      /* For functionality tests, verify that the 
+	      /* For functionality tests, verify that the
 	       * directory wasn't removed.
 	       */
 	      if (stat(".",&stat_buf) == -1){
@@ -192,12 +192,12 @@ main(int argc, char **argv)
 	  } else {
 	    tst_resm(TFAIL,"rmdir(\".\") succeeded unexpectedly.");
 	  }
-	} 
+	}
 	
 	
-	/* 
+	/*
 	 * TEST CASE: 2
-	 * path points to the "." (dot) entry of a directory 
+	 * path points to the "." (dot) entry of a directory
 	 */
 #if defined(linux)
         tst_resm(TCONF, "rmdir on \"dir/.\" supported on Linux");
@@ -218,7 +218,7 @@ main(int argc, char **argv)
 	  if ( TEST_RETURN == -1 ) {
 	    if (TEST_ERRNO == EINVAL) {
 
-	      /* For functionality tests, verify that the 
+	      /* For functionality tests, verify that the
 	       * directory wasn't removed.
 	       */
 	      if (stat("dir1/.",&stat_buf) == -1){
@@ -232,11 +232,11 @@ main(int argc, char **argv)
 	  } else {
 	    tst_resm(TFAIL,"rmdir(\"dir1/.\") - path points to the \".\" entry of a directory succeeded unexpectedly.");
 	  }
-	} 
+	}
 #endif
 	
 #if defined(sgi)
-	/* 
+	/*
 	 * TEST CASE: 3
 	 * the directory has been linked
 	 */
@@ -275,11 +275,11 @@ main(int argc, char **argv)
 	  } else {
 	    tst_resm(TFAIL,"rmdir(\"dir2\") - the directory has been linked succeeded unexpectedly.");
 	  }
-	} 
+	}
 #endif  /* linux */
 	
 	
-	/* 
+	/*
 	 * TEST CASE: 4
 	 * path argument points below the minimum allocated address space
 	 */
@@ -308,9 +308,9 @@ main(int argc, char **argv)
 	  } else {
 	    tst_resm(TFAIL,"rmdir() - path argument points below the minimum allocated address space succeeded unexpectedly.");
 	  }
-	} 
+	}
 
-	/* 
+	/*
 	 * TEST CASE: 5
 	 * path argument points above the maximum allocated address space
 	 */
@@ -341,7 +341,7 @@ main(int argc, char **argv)
 	}
 #endif
 
-	/* 
+	/*
 	 * TEST CASE: 6
 	 * able to remove a directory
 	 */
@@ -371,7 +371,7 @@ main(int argc, char **argv)
 	    } else {
 	      tst_resm(TFAIL,"rmdir(\"%s\") returned a zero exit status but failed to remove the directory.",dir_name);
 	    }
-	  } 
+	  }
 	}
 	
     }	/* End for TEST_LOOPING */
@@ -450,12 +450,12 @@ void cleanup()
     }
 #endif
 
-    /* 
+    /*
      * Remove the temporary directory.
      */
     tst_rmdir();
 
-    /* 
+    /*
      * Exit with a return value appropriate for the results.
      */
     tst_exit();

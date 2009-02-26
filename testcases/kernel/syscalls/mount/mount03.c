@@ -15,24 +15,24 @@
  *
  */
 /**************************************************************************
- * 
+ *
  *    TEST IDENTIFIER	: mount03
- * 
+ *
  *    EXECUTED BY	: root / superuser
- * 
+ *
  *    TEST TITLE	: Test for checking mount(2) flags
- * 
+ *
  *    TEST CASE TOTAL	: 6
- * 
+ *
  *    AUTHOR		: Nirmala Devi Dhanasekar <nirmala.devi@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
  *
  *    DESCRIPTION
  *	Check for basic mount(2) system call flags.
- * 
+ *
  *	Verify that mount(2) syscall passes for each flag setting and validate
  *	the flags
  *	1) MS_RDONLY - mount read-only.
@@ -46,7 +46,7 @@
  *	  Setup signal handling.
  *	  Create a mount point.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  *	  Execute mount system call for each flag
@@ -55,11 +55,11 @@
  *		Log the errno and Issue a FAIL message.
  *	  Delete the mount point.
  *	  Otherwise, Issue a PASS message.
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
  *	  Delete the temporary directory(s)/file(s) created.
- * 
+ *
  * USAGE:  <for command-line>
  *  mount03 [-T type] -D device [-e] [-i n] [-I x] [-p x] [-t]
  *			where,  -T type : specifies the type of filesystem to

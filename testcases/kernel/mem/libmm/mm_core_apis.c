@@ -106,11 +106,11 @@ mm_core_test01()
 
     tst_resm(TINFO, "test01: Testing Memory Segment Access\n");
     tst_resm(TINFO, "test01: Creating 16KB shared memory core area\n");
-    
+   
     if ((alloc_mem_ptr = (unsigned char *)mm_core_create(16*1024, NULL)) == NULL)
     {
         mm_err = (char *)mm_error();
-        tst_brkm(TBROK, cleanup, "test01: mm_core_create: %s\n", 
+        tst_brkm(TBROK, cleanup, "test01: mm_core_create: %s\n",
                 mm_err != NULL ? mm_err : "Unknown error");
         return -1;
     }
@@ -118,7 +118,7 @@ mm_core_test01()
     {
         if ((alloc_size = mm_core_size(alloc_mem_ptr)) < 16*1024)
         {
-            tst_brkm(TBROK, cleanup, "test01: asked for %d got %d\n", 
+            tst_brkm(TBROK, cleanup, "test01: asked for %d got %d\n",
                     16*1024, alloc_size);
             return -1;
         }
@@ -126,19 +126,19 @@ mm_core_test01()
         {
             tst_resm(TINFO, "test01: created shared mem of size: %d\n",
                     alloc_size);
-            tst_resm(TINFO, 
+            tst_resm(TINFO,
                     "test01: Writing 0xf5 bytes to memory area\n");
             for (index = 0; index < alloc_size; index++)
                 alloc_mem_ptr[index] = 0xf5;
 
-            tst_resm(TINFO, 
+            tst_resm(TINFO,
                     "test01: Reading 0xf5 bytes from memory area\n");
             for (index = 0; index < alloc_size; index++)
             {
                 if (alloc_mem_ptr[index] != 0xf5)
                 {
-                    tst_resm(TFAIL, 
-                            "At offset %d: alloc_mem_ptr[index] = %#x", 
+                    tst_resm(TFAIL,
+                            "At offset %d: alloc_mem_ptr[index] = %#x",
                                 index, alloc_mem_ptr[index]);
                     return -1;
                 }
@@ -149,7 +149,7 @@ mm_core_test01()
         }
     }
 }
- 
+
 
 /******************************************************************************/
 /*                                                                            */
@@ -202,7 +202,7 @@ mm_core_test02()
     if ((alloc_mem_ptr = (unsigned char *)mm_core_create(16*1024, NULL)) == NULL)
     {
         mm_err = (char *)mm_error();
-        tst_brkm(TBROK, cleanup, "test02: mm_core_create: %s\n", 
+        tst_brkm(TBROK, cleanup, "test02: mm_core_create: %s\n",
                 mm_err != NULL ? mm_err : "Unknown error");
         return -1;
     }
@@ -210,14 +210,14 @@ mm_core_test02()
     {
         if ((alloc_size = mm_core_size(alloc_mem_ptr)) < 16*1024)
         {
-            tst_brkm(TBROK, cleanup, "test01: asked for %d got %d\n", 
+            tst_brkm(TBROK, cleanup, "test01: asked for %d got %d\n",
                     16*1024, alloc_size);
             return -1;
         }
         if ((pid = fork()) == 0)
         {
             /* CHILD CODE */
-            tst_resm(TINFO, 
+            tst_resm(TINFO,
                 "test02: child: locking shared memory\n");
             if (!mm_core_lock(alloc_mem_ptr, MM_LOCK_RW))
             {
@@ -239,7 +239,7 @@ mm_core_test02()
                     {
                         if (alloc_mem_ptr[indexchld] == 0xf5)
                         {
-                            tst_resm(TFAIL, 
+                            tst_resm(TFAIL,
                              "test02: child: can read mem locked by parent\n");
                              exit(-1);
                         }
@@ -261,7 +261,7 @@ mm_core_test02()
                 {
                     if (alloc_mem_ptr[indexchld] != 0xf4)
                     {
-                        tst_resm(TFAIL, 
+                        tst_resm(TFAIL,
                          "test02: child: parent wrote mem locked by child\n");
                         exit(-1);
                     }
@@ -282,7 +282,7 @@ mm_core_test02()
             }
         }
         /* PARENT CODE */
-        tst_resm(TINFO, 
+        tst_resm(TINFO,
             "test02: parent: locking shared memory\n");
         if (!mm_core_lock(alloc_mem_ptr, MM_LOCK_RW))
         {
@@ -306,10 +306,10 @@ mm_core_test02()
                 {
                     if (alloc_mem_ptr[indexprnt] == 0xf5)
                     {
-                        tst_resm(TFAIL, 
+                        tst_resm(TFAIL,
                          "test02: parent: can read mem locked by child\n");
                         kill(pid, SIGTERM);
-                        tst_resm(TINFO, 
+                        tst_resm(TINFO,
                                 "test02: Deleting shared memory core area\n");
                         mm_core_delete(alloc_mem_ptr);
                         return -1;
@@ -332,10 +332,10 @@ mm_core_test02()
             {
                 if (alloc_mem_ptr[indexprnt] != 0xf5)
                 {
-                    tst_resm(TFAIL, 
+                    tst_resm(TFAIL,
                      "test02: parent: child wrote mem locked by parent\n");
                     kill(pid, SIGTERM);
-                    tst_resm(TINFO, 
+                    tst_resm(TINFO,
                             "test02: Deleting shared memory core area\n");
                     mm_core_delete(alloc_mem_ptr);
                     return -1;
@@ -358,7 +358,7 @@ mm_core_test02()
             waitpid(pid, &exitstat, 0);
             if (WEXITSTATUS(exitstat))
             {
-                tst_resm(TINFO, "test02: parent: child exited with: %d\n", 
+                tst_resm(TINFO, "test02: parent: child exited with: %d\n",
                         WEXITSTATUS(exitstat));
                 return -1;
             }
@@ -378,7 +378,7 @@ mm_core_test02()
 /*                                                                            */
 /******************************************************************************/
 
-int 
+int
 main(int  argc,            /* argument count                                  */
          char *argv[])     /* argument array                                  */
 {
@@ -390,14 +390,14 @@ main(int  argc,            /* argument count                                  */
     TCID = "mm_core_test01";    /* identify the first testcase                */
     if ((ret = mm_core_test01()) == 0)
     {
-        tst_resm(TPASS, 
+        tst_resm(TPASS,
                 "mm_core_test01: Testing Memory Segment Access success");
     }
-    
+   
     TCID = "mm_core_test02";    /* identify the first testcase                */
     if ((ret = mm_core_test02()) == 0)
     {
-        tst_resm(TPASS, 
+        tst_resm(TPASS,
                 "mm_core_test01: Testing Memory Locking success");
     }
     exit(ret);

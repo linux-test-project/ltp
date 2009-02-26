@@ -35,7 +35,7 @@
  *     the former  approach  does  not require the kernel to create
  *     additional VMA (Virtual Memory Area) data structures.
  *
- *     Runs remap_file_pages agains a mmaped area and check the results 
+ *     Runs remap_file_pages agains a mmaped area and check the results
  *
  *     Setup:
  *       Create a temp directory, open a file and get the file descriptor
@@ -44,10 +44,10 @@
  *       Test with a normal file and with /dev/shm/cache_<pid>
  *       1. Set up the cache
  *       2. Write the cache to the file
- *       3. Runs mmap at the same file 
+ *       3. Runs mmap at the same file
  *       4. Runs remap_file_pages at the mapped memory
  *       5. Check the results
- *     
+ *    
  *     Cleanup:
  *       Remove the file and erase the tmp directory
  *
@@ -175,8 +175,8 @@ static void test_nonlinear(int fd)
 
 	data = mmap((void *)WINDOW_START,
 			window_sz,
-			PROT_READ|PROT_WRITE, 
-			MAP_FIXED | MAP_SHARED, 
+			PROT_READ|PROT_WRITE,
+			MAP_FIXED | MAP_SHARED,
 			fd, 0);
 
 	if (data == MAP_FAILED) {
@@ -210,7 +210,7 @@ again:
 			if (data[i*page_sz] != window_pages-i-2) {
 				tst_resm(TFAIL,"hm, mapped incorrect data, data[%d]=%d, (window_pages-%d-2)=%d",
 					 (i*page_sz), data[i*page_sz], i, (window_pages-i-2));
-				cleanup(data);                            
+				cleanup(data);                           
 			}
 		}
 	}

@@ -28,7 +28,7 @@
 #include <time.h>
 #include <unistd.h>
 
-#ifndef _LINUX 
+#ifndef _LINUX
 			/* LINUX INCLUDES */
 #include <sys/mode.h>
 #include <sys/timers.h>
@@ -71,7 +71,7 @@
 #define dprt(fmt, args...) printf(fmt, args...)
 #else
 #define prtln()
-#define dprt(fmt, args...) 
+#define dprt(fmt, args...)
 #endif
 
 
@@ -112,7 +112,7 @@ union semun {	/* to fix problem with 4th arg of semctl in 64 bits MARIOG */
 
 
 /* structure of all environment variable used by program */
-struct envstruct { 
+struct envstruct {
 	char *env_name;
 	union {
 		char *chptr;
@@ -491,7 +491,7 @@ int notify(int slot)
 /*
  * Calculates semaphore number and sets semaphore (lock).
  */
-int semoper(int slot, int smid, int opval) 
+int semoper(int slot, int smid, int opval)
 {
 	int pslot;			/* parent slot */
 	struct sembuf smop;		/* semaphore operator */
@@ -513,9 +513,9 @@ int semoper(int slot, int smid, int opval)
  * received communication from all of her siblings she will reduce
  * the semaphore count and exit.  Meanwhile all parents are waiting
  * to hear from their children through the use of semaphores.  When
- * the semaphore count reaches zero then the parent knows all the 
+ * the semaphore count reaches zero then the parent knows all the
  * children have talked to one another.  Locking of the connter semaphore
- * is provided by the use of another (binary) semaphore. 
+ * is provided by the use of another (binary) semaphore.
  */
 int spawn(int val)
 {
@@ -559,11 +559,11 @@ int spawn(int val)
 					if ( spawn(tval) == -1 ) {
 						pslot = semoper(tval, sem_lock, -1);
 						semarg.val = 0; /* to fix problem with 4th arg of semctl in 64 bits MARIOG */
-						semval = semctl(sem_count, pslot, GETVAL, semarg); 
+						semval = semctl(sem_count, pslot, GETVAL, semarg);
 						semarg.val = --semval; /* to fix problem with 4th arg of semctl in 64 bits MARIOG */
-						semctl(sem_count, pslot, SETVAL, semarg); 
+						semctl(sem_count, pslot, SETVAL, semarg);
 						semarg.val = 1; /* to fix problem with 4th arg of semctl in 64 bits MARIOG */
-						semctl(sem_lock, pslot, SETVAL, semarg); 
+						semctl(sem_lock, pslot, SETVAL, semarg);
 					}
 					lvlflg++;
 				}
@@ -580,11 +580,11 @@ int spawn(int val)
                                 pslot = semoper(tval, sem_count, 0);
 				pslot = semoper(pslot, sem_lock, -1);
 				semarg.val = 0; /* to fix problem with 4th arg of semctl in 64 bits MARIOG */
-				semval = semctl(sem_count, pslot, GETVAL, semarg); 
+				semval = semctl(sem_count, pslot, GETVAL, semarg);
 				semarg.val = --semval; /* to fix problem with 4th arg of semctl in 64 bits MARIOG */
-				semctl(sem_count, pslot, SETVAL, semarg); 
+				semctl(sem_count, pslot, SETVAL, semarg);
 				semarg.val = 1; /* to fix problem with 4th arg of semctl in 64 bits MARIOG */
-				semctl(sem_lock, pslot, SETVAL, semarg); 
+				semctl(sem_lock, pslot, SETVAL, semarg);
 				(shmaddr+val)->msg++;
 			}
 #ifdef __64LDT__
@@ -706,7 +706,7 @@ void setup_shm(void)
 				nodesum);
 
 	/* Get shared memory id */
-	shmid = shmget(IPC_PRIVATE, 
+	shmid = shmget(IPC_PRIVATE,
 		       sizeof(Pinfo) * nodesum + (nodesum * BVAL * sizeof(int)),
 		       IPC_CREAT|IPC_EXCL|S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP);
 	if (shmid < 0) {
@@ -738,7 +738,7 @@ void setup_shm(void)
 		pinfo->err = -1;
 
 		/* Changed 10/9/97 */
-                /* pinfo->list = (int *)((ulong)shmad + nodesum * sizeof(Pinfo) 
+                /* pinfo->list = (int *)((ulong)shmad + nodesum * sizeof(Pinfo)
 		   + (sizeof(int) * BVAL * i)); */
 		pinfo->list = (int *)((long)shmad + nodesum * sizeof(Pinfo) + (sizeof(int) * BVAL * i));
 		for (j = 0; j < BVAL; j++)
@@ -767,7 +767,7 @@ void set_signals(void *sighandler())
 	    {SIGQUIT,	"SIGQUIT"},
 	    {SIGABRT,	"SIGABRT"},
 	    {SIGBUS,	"SIGBUS"},
-	    {SIGSEGV,	"SIGSEGV"},         
+	    {SIGSEGV,	"SIGSEGV"},        
 	    {SIGALRM,	"SIGALRM"},
 	    {SIGUSR1,	"SIGUSR1"},
 	    {SIGUSR2,	"SIGUSR2"},
@@ -973,7 +973,7 @@ int getenv_val(void)
 
 	/*
 	 * Loop through envdata, set default first then set environment
-	 * variable value if present. 
+	 * variable value if present.
 	 */
 	for (; *envd->env_name != '\0'; envd++) {
 		if ( (val.chptr = getenv(envd->env_name) ) == NULL)
@@ -1000,14 +1000,14 @@ int getenv_val(void)
  * an error execption is received.  In addition messenger() is sent the
  * process group id of the children so it can terminate all children.
  * This routine uses message queues to receive all communications.
- */ 
+ */
 void messenger(void) /* AKA Assassin */
 {
 	Msgbuf rcvbuf;
 
 	int discrim = 0;
 	int rc;			/* generic return code var */
-	int sig = -1;		/* type of signal received */ 
+	int sig = -1;		/* type of signal received */
 	extern int msgerr;	/* message queue used to send error messages */
 	extern int procgrp;	/* process group of children (used to kill them) */	
 
@@ -1052,7 +1052,7 @@ void messenger(void) /* AKA Assassin */
 				sscanf(rcvbuf.mtext,"%d",&sig);
 
 				switch(sig) {
-				case SIGALRM: 
+				case SIGALRM:
 				/* a process is hung, we will terminate */
 					killpg(procgrp, sig);
 					fprintf(errfp, "ALERT! ALERT! WE HAVE TIMED OUT\n");
@@ -1065,7 +1065,7 @@ void messenger(void) /* AKA Assassin */
 					discrim=1;	
 					break;
 
-				default: 
+				default:
 				/* somebody sent a signal, we will terminate */
 					killpg(procgrp, sig);
 					fprintf(errfp, "We received signal %d\n", sig);
@@ -1092,7 +1092,7 @@ void messenger(void) /* AKA Assassin */
 	}
 }
 
-/* 
+/*
  *  This routine spawns off the first child (node 0) of the process tree.
  *  This child set up the signal handler for all of the children and also
  *  sets up a process group so that all children can be terminated easily.
@@ -1122,8 +1122,8 @@ void doit(void)
 		procgrp = setpgrp();
 #endif
 		if (AUSDEBUG) {
-			fprintf(stderr, "process group: %d\n", procgrp);    
-	        	fflush(stderr);     
+			fprintf(stderr, "process group: %d\n", procgrp);   
+	        	fflush(stderr);    
 		}
 		if (procgrp == -1) {
 			perror("setpgid failed");

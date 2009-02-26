@@ -37,7 +37,7 @@
  *
  *     Setup:
  *       1. Global:
- *       2. Create a file, do a normal mmap with MAP_SHARED flag 
+ *       2. Create a file, do a normal mmap with MAP_SHARED flag
  *
  *     Test:
  *       1. Test with a valid mmap but without MAP_SHARED flag
@@ -62,7 +62,7 @@
  *     02/11/2008 - Removed the pgoff test case, as the latest kernels doesn't
  *     verify the page offset (http://lkml.org/lkml/2007/11/29/325) - Ricardo
  *     Salveti de Araujo, <rsalvetidev@gmail.com>
- * 
+ *
  *     19/10/2007 - Created by Ricardo Salveti de Araujo, <rsalvetidev@gmail.com>
  */
 

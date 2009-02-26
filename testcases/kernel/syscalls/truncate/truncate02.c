@@ -17,16 +17,16 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-/* 
+/*
  * Test Name: truncate02
  *
  * Test Description:
  *  Verify that, truncate(2) succeeds to truncate a file to a certain length,
- *  but the attempt to read past the truncated length will fail.  
+ *  but the attempt to read past the truncated length will fail. 
  *
  * Expected Result:
- *  truncate(2) should return a value 0 and the attempt to read past the 
- *  truncated length will fail. In case where the file before truncation was 
+ *  truncate(2) should return a value 0 and the attempt to read past the
+ *  truncated length will fail. In case where the file before truncation was
  *  shorter, the bytes between the old and new should  be all zeroes.
  *	
  * Algorithm:
@@ -107,7 +107,7 @@ main(int ac, char **av)
 	int rbytes;		/* bytes read from testfile */
 	int read_len = 0;	/* total no. of bytes read from testfile */
 	int err_flag = 0;	/* error indicator flag */
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -126,8 +126,8 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-		/* 
-		 * Call truncate(2) to truncate a test file to a 
+		/*
+		 * Call truncate(2) to truncate a test file to a
 		 * specified length (TRUNC_LEN1).
 		 */
 		TEST(truncate(TESTFILE, TRUNC_LEN1));
@@ -158,7 +158,7 @@ main(int ac, char **av)
 				file_length1 = stat_buf.st_size;
 
 				/*
-				 * Set the file pointer of testfile to the 
+				 * Set the file pointer of testfile to the
 				 * beginning of the file.
 				 */
 				if (lseek(fd, 0, SEEK_SET) < 0) {
@@ -203,7 +203,7 @@ main(int ac, char **av)
 				file_length2 = stat_buf.st_size;
 
 				/*
-				 * Set the file pointer of testfile to the 
+				 * Set the file pointer of testfile to the
 				 * offset TRUNC_LEN1 of testfile.
 				 */
 				if (lseek(fd, TRUNC_LEN1, SEEK_SET) < 0) {
@@ -262,7 +262,7 @@ main(int ac, char **av)
  *  Create a test file under temporary directory and write some
  *  data into it.
  */
-void 
+void
 setup()
 {
 	int i;			/* counter variable */
@@ -315,7 +315,7 @@ setup()
  *  Close the temporary file opened for reading/writing.
  *  Remove the test directory and testfile created in the setup.
  */
-void 
+void
 cleanup()
 {
 	/*

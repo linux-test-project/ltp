@@ -56,7 +56,7 @@ cleanup(void)
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void 
+void
 setup()
 {
     /* capture signals */
@@ -145,15 +145,15 @@ main(int argc, char** argv)
 		}
 
 		/* Special case EFAULT or EINVAL (indetermination)
-		  
+		 
 		  The errno depends on the per architecture implementation
 		  of io_submit. On the architecture using compat_sys_io_submit
 		  as its implementation, errno is set to -EINVAL. */
 		{
-			long expected_fault  = -EFAULT;  
-			long expected_inval  = -EINVAL;  
+			long expected_fault  = -EFAULT; 
+			long expected_inval  = -EINVAL; 
 
-		  
+		 
 			TEST(io_submit( ctx, 0, (void*)-1 ));
 			if (TEST_RETURN == 0) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");

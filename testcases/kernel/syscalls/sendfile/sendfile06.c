@@ -23,12 +23,12 @@
  *	sendfile06.c
  *
  * DESCRIPTION
- *	Testcase to test that sendfile(2) system call updates file 
+ *	Testcase to test that sendfile(2) system call updates file
  *	position of in_fd correctly when passing NULL as offset.
  *
  * USAGE:  <for command-line>
  *  sendfile06 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
- *     where,  
+ *     where, 
  *             -f   : Turn off functionality Testing.
  *             -i n : Execute test n times.
  *             -I x : Execute test for x seconds.

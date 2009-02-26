@@ -67,7 +67,7 @@
 #include <signal.h>
 #include <errno.h>
 #include <stdlib.h>
-#include <unistd.h> 
+#include <unistd.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -140,7 +140,7 @@ handler(int sig, siginfo_t *sip, void *ucp)
 	case 2:
 		/*
 		 * In Linux, SA_RESETHAND doesn't imply SA_NODEFER; sig
-		 * should not be masked.  The testcase should pass if 
+		 * should not be masked.  The testcase should pass if
 		 * SA_NODEFER is not masked, ie. if SA_NODEFER is a member
 		 * of the signal list
 		 */

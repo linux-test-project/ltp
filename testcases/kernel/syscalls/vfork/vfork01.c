@@ -23,9 +23,9 @@
  * Test Description:
  *  Fork a process using vfork() and verify that, the attribute values like
  *  euid, ruid, suid, egid, rgid, sgid, umask, inode and device number of
- *  root and current working directories are same as that of the parent 
+ *  root and current working directories are same as that of the parent
  *  process.
- *   
+ *  
  * Expected Result:
  *  The attribute values like euid, ruid, suid, egid, rgid, sgid, umask, inode
  *  and device number of root and current working directory of the parent and
@@ -114,7 +114,7 @@ main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 	pid_t cpid;		/* process id of the child process */
 	int exit_status;	/* exit status of child process */
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -133,7 +133,7 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 
-		/* 
+		/*
 		 * Call vfork(2) to create a child process without
 		 * fully copying the address space of parent.
 		 */
@@ -311,7 +311,7 @@ main(int ac, char **av)
  *  This function gets real/effective/saved uid/gid, umask, the device/inode
  *  number of '/' and current working directory for the parent process.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -373,7 +373,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

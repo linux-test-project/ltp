@@ -14,7 +14,7 @@
 *
 *  You should have received a copy of the GNU General Public License
 *  along with this program;  if not, write to the Free Software
-*  Foundation, 
+*  Foundation,
 *
 *  FILE        : aio_tio
 *  USAGE       : runfstest case/aio_tio
@@ -26,8 +26,8 @@
 *  HISTORY     :
 *      11/03/2003 Kai Zhao (ltcd3@cn.ibm.com)
 *
-*  CODE COVERAGE: 
-*                 68.3% - fs/aio.c 
+*  CODE COVERAGE:
+*                 68.3% - fs/aio.c
 *
 ************************************************************************************/
 
@@ -39,8 +39,8 @@ static int wait_count = 0;
 
 
 /*
- * write work done 
- * 
+ * write work done
+ *
  */
 static void work_done(io_context_t ctx, struct iocb *iocb, long res, long res2)
 {
@@ -136,12 +136,12 @@ int io_tio(char *pathname , int flag , int n , int operation)
 			  break;
 			case IO_CMD_POLL :
 			  {
-			  
+			 
 			  }
 			  break;
 			case IO_CMD_NOOP :
 			  {
-			  
+			 
 			  }
 			  break;
 			default:
@@ -175,7 +175,7 @@ int io_tio(char *pathname , int flag , int n , int operation)
 		  {
 			while ( wait_count ) {
 				res = io_wait_run( myctx , &timeout );
-				if ( res < 0 ) 
+				if ( res < 0 )
 					io_error("io_wait_run", res);
 			}
 		  }
@@ -202,7 +202,7 @@ int io_tio(char *pathname , int flag , int n , int operation)
 		  break;
 		default :
 		  {
-		  
+		 
 		  }
 		  break;
 	}
@@ -263,14 +263,14 @@ int test_main(void)
 	}
 	
     printf("running test 7 \n");
-	status = io_tio( "testdir/file2" , O_TRUNC | O_DIRECT | O_WRONLY | O_CREAT | O_LARGEFILE , 
+	status = io_tio( "testdir/file2" , O_TRUNC | O_DIRECT | O_WRONLY | O_CREAT | O_LARGEFILE ,
 				AIO_MAXIO , IO_CMD_FSYNC);
 	if ( status ) {
 		return status;
 	}
 	
     printf("running test 8 \n");
-	status = io_tio( "testdir/file2" , O_TRUNC | O_DIRECT | O_WRONLY | O_CREAT | O_LARGEFILE , 
+	status = io_tio( "testdir/file2" , O_TRUNC | O_DIRECT | O_WRONLY | O_CREAT | O_LARGEFILE ,
 				AIO_MAXIO , IO_CMD_FDSYNC);
 	if ( status ) {
 		return status;

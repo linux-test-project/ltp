@@ -80,7 +80,7 @@ pathdata        pathdat[] = {
             DIR,        ""
         }, {
 	    "./tmp/data/d666",
-	    S_IRWXU|S_IRWXG|S_IRWXO, 
+	    S_IRWXU|S_IRWXG|S_IRWXO,
 	    DIR,	""
 	}, {
 	    "./tmp/data/d777",
@@ -256,10 +256,10 @@ blenter();
 	fprintf(temp, "char *, const struct stat *, int, struct FTW *), int\n");
 	fprintf(temp, "depth, int flags) shall recursively descend the\n");
 	fprintf(temp, "directory hierarchy rooted in path until it has\n");
-	fprintf(temp, 
+	fprintf(temp,
 		"traversed the whole tree, calling the function fn for\n");
 	fprintf(temp, "each object in the directory tree, and return 0.\n\n");
-#endif 
+#endif
         test1A();
         blexit();
 /*--------------- EXIT BLOCK 0 ---------------------------------*/
@@ -282,14 +282,14 @@ blenter();
 blenter();
 #ifdef DEBUG
 	fprintf(temp, "A call to int nftw(const char *path, int (*fn)(const\n");
-	fprintf(temp, "char *, const struct stat *, int, struct FTW *), int\n"); 
-	fprintf(temp, 
+	fprintf(temp, "char *, const struct stat *, int, struct FTW *), int\n");
+	fprintf(temp,
 		"depth, int flags) when flags does not contain FTW_PHYS\n");
-	fprintf(temp, 
+	fprintf(temp,
 		"shall follow links instead of reporting them and shall\n");
 	fprintf(temp, "not report the same file twice.\n\n");
 #endif
-        test3A();  
+        test3A(); 
         blexit();
 /*--------------- EXIT BLOCK 2 ---------------------------------*/
 
@@ -299,7 +299,7 @@ blenter();
 #ifdef DEBUG
  	fprintf(temp, "A call to int nftw(const char *path, int (*fn)(const\n");
  	fprintf(temp, "char *, const struct stat *, int, struct FTW *), int\n");
- 	fprintf(temp, 
+ 	fprintf(temp,
 		"depth, int flags) when flags contains FTW_DEPTH shall\n");
  	fprintf(temp, "report all files in a directory before reporting the\n");
  	fprintf(temp, "directory.\n\n");
@@ -327,11 +327,11 @@ blenter();
 blenter();
 #ifdef DEBUG
 	fprintf(temp, "A call to int nftw(const char *path, int (*fn)(const\n");
-	fprintf(temp, 
-		"char *, const struct stat *, int, struct FTW *), int\n"); 
-	fprintf(temp, 
+	fprintf(temp,
+		"char *, const struct stat *, int, struct FTW *), int\n");
+	fprintf(temp,
 		"depth, int flags) when flags contains FTW_CHDIR shall\n");
-	fprintf(temp, 
+	fprintf(temp,
 		"change the current working directory to each directory\n");
 	fprintf(temp, "as it reports files in that directory.\n\n");
 #endif
@@ -371,12 +371,12 @@ blenter();
 /*---------------- ENTER BLOCK 8 --------------------------------*/
 blenter();
 #ifdef DEBUG
-	 fprintf(temp, 
+	 fprintf(temp,
 		"A call to int nftw(const char *path, int (*fn)(const\n");
-	 fprintf(temp, 
-		"char *, const struct stat *, int, struct FTW *), int\n"); 
+	 fprintf(temp,
+		"char *, const struct stat *, int, struct FTW *), int\n");
 	 fprintf(temp, "depth, int flags) shall pass FTW_F as the third\n");
-	 fprintf(temp, 
+	 fprintf(temp,
 		"argument of the function fn when the object is a file.\n\n");	
 #endif
 	 test9A();
@@ -387,15 +387,15 @@ blenter();
 /*---------------- ENTER BLOCK 9 --------------------------------*/
 blenter();
 #ifdef DEBUG
-	 fprintf(temp, 
+	 fprintf(temp,
 		"A call to int nftw(const char *path, int (*fn)(const\n");
-	 fprintf(temp, 
+	 fprintf(temp,
 		"char *, const struct stat *, int, struct FTW *), int\n");
 	 fprintf(temp, "depth, int flags) shall pass FTW_D as the third\n");
 	 fprintf(temp, "argument of the function fn when the object is a\n");
 	 fprintf(temp, "directory.\n\n");
 #endif
-	 test10A(); 
+	 test10A();
          blexit();
 /*--------------- EXIT BLOCK 9 ---------------------------------*/
 
@@ -403,15 +403,15 @@ blenter();
 /*---------------- ENTER BLOCK 10 --------------------------------*/
  blenter();
 #ifdef DEBUG
-	 fprintf(temp, 
+	 fprintf(temp,
 		"A call to int nftw(const char *path, int (*fn)(const\n");
-	 fprintf(temp, 
+	 fprintf(temp,
 		"char *, const struct stat *, int, struct FTW *), int\n");
 	 fprintf(temp, "depth, int flags) shall pass FTW_DP as the third\n");
 	 fprintf(temp, "argument of the function fn when the object is a\n");
 	 fprintf(temp, "directory and subdirectories have been visited.\n\n");
 #endif
-	 test11A(); 
+	 test11A();
          blexit();
 /*--------------- EXIT BLOCK 10 ---------------------------------*/
 
@@ -419,9 +419,9 @@ blenter();
 /*---------------- ENTER BLOCK 11 --------------------------------*/
  blenter();
 #ifdef DEBUG
-	 fprintf(temp, 
+	 fprintf(temp,
 		"A call to int nftw(const char *path, int (*fn)(const\n");
-	 fprintf(temp, 
+	 fprintf(temp,
 		"char *, const struct stat *, int, struct FTW *), int\n");
 	 fprintf(temp, "depth, int flags) shall pass FTW_SL as the third\n");
 	 fprintf(temp, "argument of the function fn when the object is a\n");
@@ -435,13 +435,13 @@ blenter();
 /*---------------- ENTER BLOCK 12 --------------------------------*/
  blenter();
 #ifdef DEBUG
-	 fprintf(temp, 
+	 fprintf(temp,
 		"A call to int nftw(const char *path, int (*fn)(const\n");
-	 fprintf(temp, 
+	 fprintf(temp,
 		"char *, const struct stat *, int, struct FTW *), int\n");
 	 fprintf(temp, "depth, int flags) shall pass FTW_SLN as the third\n");
 	 fprintf(temp, "argument of the function fn when the object is a\n");
-	 fprintf(temp, 
+	 fprintf(temp,
 		"symbolic link that does not name an existing file.\n\n");
 #endif
 	 test13A();
@@ -452,9 +452,9 @@ blenter();
 /*---------------- ENTER BLOCK 13 --------------------------------*/
  blenter();
 #ifdef DEBUG
-	 fprintf(temp, 
+	 fprintf(temp,
 		"A call to int nftw(const char *path, int (*fn)(const\n");
-	 fprintf(temp, 
+	 fprintf(temp,
 		"char *, const struct stat *, int, struct FTW *), int\n");
 	 fprintf(temp, "depth, int flags) shall pass FTW_DNR as the third\n");
 	 fprintf(temp, "argument of the function fn when the object is a\n");
@@ -468,12 +468,12 @@ blenter();
 /*---------------- ENTER BLOCK 14 --------------------------------*/
  blenter();
 #ifdef DEBUG
- 	 fprintf(temp, 
+ 	 fprintf(temp,
 		"A call to int nftw(const char *path, int (*fn)(const\n");
- 	 fprintf(temp, 
+ 	 fprintf(temp,
 		"char *, const struct stat *, int, struct FTW *), int\n");
  	 fprintf(temp, "depth, int flags) shall pass FTW_NS as the third\n");
- 	 fprintf(temp, 
+ 	 fprintf(temp,
 		"argument of the function fn when stat() failed on the\n");
  	 fprintf(temp, "object because of lack of appropriate permission.\n\n");
 #endif
@@ -485,14 +485,14 @@ blenter();
 /*---------------- ENTER BLOCK 15 --------------------------------*/
  blenter();
 #ifdef DEBUG
-	 fprintf(temp, 
+	 fprintf(temp,
 		"A call to int nftw(const char *path, int (*fn)(const\n");
-	 fprintf(temp, 
+	 fprintf(temp,
 		"char *, const struct stat *, int, struct FTW *), int\n");
 	 fprintf(temp, "depth, int flags) shall pass a structure which\n");
 	 fprintf(temp, "contains the offset into the pathname of the object\n");
 	 fprintf(temp, "and the depth relative to the root of the walk\n");
-	 fprintf(temp, 
+	 fprintf(temp,
 		"starting from 0 as the fourth argument of the function\n");
 	 fprintf(temp, "fn.\n\n");
 #endif
@@ -504,9 +504,9 @@ blenter();
 /*---------------- ENTER BLOCK 16 --------------------------------*/
  blenter();
 #ifdef DEBUG
-	 fprintf(temp, 
+	 fprintf(temp,
 		"A call to int nftw(const char *path, int (*fn)(const\n");
-	 fprintf(temp, 
+	 fprintf(temp,
 		"char *, const struct stat *, int, struct FTW *), int\n");
 	 fprintf(temp, "depth, int flags) shall pass FTW_SL as the third\n");
 	 fprintf(temp, "argument to the function fn if and only if the\n");
@@ -520,15 +520,15 @@ blenter();
 /*---------------- ENTER BLOCK 17 --------------------------------*/
  blenter();
 #ifdef DEBUG
-	 fprintf(temp, 
+	 fprintf(temp,
 		"A call to int nftw(const char *path, int (*fn)(const\n");
-	 fprintf(temp, 
+	 fprintf(temp,
 		"char *, const struct stat *, int, struct FTW *), int\n");
 	 fprintf(temp, "depth, int flags) shall pass FTW_SLN as the third\n");
 	 fprintf(temp, "argument to the function fn if and only if the\n");
 	 fprintf(temp, "FTW_PHYS flag is not included in flags.\n\n");
 #endif
-	 test18A();  
+	 test18A(); 
          blexit();
 /*--------------- EXIT BLOCK 17 ---------------------------------*/
 
@@ -536,17 +536,17 @@ blenter();
 /*---------------- ENTER BLOCK 18 --------------------------------*/
  blenter();
 #ifdef DEBUG
- 	 fprintf(temp, 
+ 	 fprintf(temp,
 		"On a call to int nftw(const char *path, int\n");
- 	 fprintf(temp, 
+ 	 fprintf(temp,
 		"(*fn)(const char *, const struct stat *, int, struct\n");
- 	 fprintf(temp, 
+ 	 fprintf(temp,
 		"FTW *), int depth, int flags) when the third argument\n");
  	 fprintf(temp, "passed to the function fn is FTW_DNR then the\n");
- 	 fprintf(temp, 
+ 	 fprintf(temp,
 		"descendants of the directory shall not be processed.\n\n");
 #endif
-	 test19A();  
+	 test19A(); 
          blexit();
 /*--------------- EXIT BLOCK 18 ---------------------------------*/
 
@@ -554,16 +554,16 @@ blenter();
 /*---------------- ENTER BLOCK 19 --------------------------------*/
  blenter();
 #ifdef DEBUG
-	 fprintf(temp, 
+	 fprintf(temp,
 		"A call to int nftw(const char *path, int (*fn)(const\n");
-	 fprintf(temp, 
-		"char *, const struct stat *, int, struct FTW *), int\n"); 
-	 fprintf(temp, 
+	 fprintf(temp,
+		"char *, const struct stat *, int, struct FTW *), int\n");
+	 fprintf(temp,
 		"depth, int flags) shall close any file descriptors or\n");
-	 fprintf(temp, 
+	 fprintf(temp,
 		"directory streams used to traverse the directory tree.\n\n");
 #endif
-	 test20A();  
+	 test20A(); 
          blexit();
 /*--------------- EXIT BLOCK 19 ---------------------------------*/
 
@@ -572,13 +572,13 @@ blenter();
  blenter();
 #ifdef DEBUG
 	 fprintf(temp, "On a call to int nftw(const char *path, int\n");
-	 fprintf(temp, 
+	 fprintf(temp,
 		"(*fn)(const char *, const struct stat *, int, struct\n");
 	 fprintf(temp, "FTW *), int depth, int flags) depth shall be the\n");
-	 fprintf(temp, 
+	 fprintf(temp,
 		"maximum number of file descriptors used for the search.\n\n");
 #endif
-	 test21A();  
+	 test21A(); 
          blexit();
 /*--------------- EXIT BLOCK 20 ---------------------------------*/
 
@@ -586,14 +586,14 @@ blenter();
 /*---------------- ENTER BLOCK 21 --------------------------------*/
  blenter();
 #ifdef DEBUG
-	 fprintf(temp, 
+	 fprintf(temp,
 		"A call to int nftw(const char *path, int (*fn)(const\n");
-	 fprintf(temp, 
+	 fprintf(temp,
 		"char *, const struct stat *, int, struct FTW *), int\n");
 	 fprintf(temp, "depth, int flags) shall use at most one file\n");
 	 fprintf(temp, "descriptor for each directory level.\n\n");
 #endif
-	 test22A();  
+	 test22A(); 
          blexit();
 /*--------------- EXIT BLOCK 21 ---------------------------------*/
 
@@ -601,16 +601,16 @@ blenter();
 /*---------------- ENTER BLOCK 22 --------------------------------*/
  blenter();
 #ifdef DEBUG
-	 fprintf(temp, 
+	 fprintf(temp,
 		"A call to int nftw(const char *path, int (*fn)(const\n");
-	 fprintf(temp, 
+	 fprintf(temp,
 		"char *, const struct stat *, int, struct FTW *), int\n");
-	 fprintf(temp, 
+	 fprintf(temp,
 		"depth, int flags) when the function fn returns a\n");
 	 fprintf(temp, "non-zero value shall stop and return the value\n");
 	 fprintf(temp, "returned by fn.\n\n");
 #endif
-	 test23A();  
+	 test23A(); 
          blexit();
 /*--------------- EXIT BLOCK 22 ---------------------------------*/
 
@@ -618,14 +618,14 @@ blenter();
 /*---------------- ENTER BLOCK 23 --------------------------------*/
  blenter();
 #ifdef DEBUG
-	 fprintf(temp, 
+	 fprintf(temp,
 		"ENAMETOOLONG in errno and return -1 on a call to int\n");
-	 fprintf(temp, 
+	 fprintf(temp,
 		"nftw(const char *path, int (*fn)(const char *, const\n");
 	 fprintf(temp, "struct stat *, int, struct FTW *), int depth, int\n");
 	 fprintf(temp, "flags) when the length of path exceeds PATH_MAX.\n\n");
 #endif
-	 test24A();  
+	 test24A(); 
          blexit();
 /*--------------- EXIT BLOCK 23 ---------------------------------*/
 	
@@ -633,14 +633,14 @@ blenter();
 /*---------------- ENTER BLOCK 24 --------------------------------*/
  blenter();
 #ifdef DEBUG
-	 fprintf(temp, 
+	 fprintf(temp,
 		"ENAMETOOLONG in errno and return -1 on a call to int\n");
-	 fprintf(temp, 
+	 fprintf(temp,
 		"nftw(const char *path, int (*fn)(const char *, const\n");
 	 fprintf(temp, "struct stat *, int, struct FTW *), int depth, int\n");
 	 fprintf(temp, "flags) when a component of path exceeds NAME_MAX.\n\n");
 #endif
-	 test25A();  
+	 test25A(); 
          blexit();
 /*--------------- EXIT BLOCK 24 ---------------------------------*/
 
@@ -648,14 +648,14 @@ blenter();
 /*---------------- ENTER BLOCK 25 --------------------------------*/
  blenter();
 #ifdef DEBUG
-	 fprintf(temp, "ENOENT in errno and return -1 on a call to int\n"); 
-	 fprintf(temp, 
+	 fprintf(temp, "ENOENT in errno and return -1 on a call to int\n");
+	 fprintf(temp,
 		"nftw(const char *path, int (*fn)(const char *, const\n");
-	 fprintf(temp, "struct stat *, int, struct FTW *), int depth, int\n"); 
-	 fprintf(temp, 
+	 fprintf(temp, "struct stat *, int, struct FTW *), int depth, int\n");
+	 fprintf(temp,
 		"flags) when path points to a file which does not exist.\n\n");
 #endif
-	 test26A();  
+	 test26A(); 
          blexit();
 /*--------------- EXIT BLOCK 25 ---------------------------------*/
 
@@ -664,12 +664,12 @@ blenter();
  blenter();
 #ifdef DEBUG
 	 fprintf(temp, "ENOENT in errno and return -1 on a call to int\n");
-	 fprintf(temp, 
+	 fprintf(temp,
 		"nftw(const char *path, int (*fn)(const char *, const\n");
 	 fprintf(temp, "struct stat *, int, struct FTW *), int depth, int\n");
 	 fprintf(temp, "flags) when path points to an empty string.\n\n");
 #endif
-	 test27A();  
+	 test27A(); 
          blexit();
 /*--------------- EXIT BLOCK 26 ---------------------------------*/
 
@@ -678,12 +678,12 @@ blenter();
  blenter();
 #ifdef DEBUG
 	 fprintf(temp, "ENOTDIR in errno and return -1 on a call to int\n");
-	 fprintf(temp, 
+	 fprintf(temp,
 		"nftw(const char *path, int (*fn)(const char *, const\n");
 	 fprintf(temp, "struct stat *, int, struct FTW *), int depth, int\n");
 	 fprintf(temp, "flags) when path is not a directory.\n\n");
 #endif
-	 test28A();  
+	 test28A(); 
          blexit();
 /*--------------- EXIT BLOCK 27 ---------------------------------*/
 
@@ -692,13 +692,13 @@ blenter();
  blenter();
 #ifdef DEBUG
 	 fprintf(temp, "EACCES in errno and return -1 on a call to int\n");
-	 fprintf(temp, 
+	 fprintf(temp,
 		"nftw(const char *path, int (*fn)(const char *, const\n");
 	 fprintf(temp, "struct stat *, int, struct FTW *), int depth, int\n");
 	 fprintf(temp, "flags) when search permission is denied for any\n");
 	 fprintf(temp, "component of path.\n\n");
 #endif
-	 test29A();  
+	 test29A(); 
          blexit();
 /*--------------- EXIT BLOCK 28 ---------------------------------*/
 
@@ -707,12 +707,12 @@ blenter();
  blenter();
 #ifdef DEBUG
 	 fprintf(temp, "EACCES in errno and return -1 on a call to int\n");
-	 fprintf(temp, 
+	 fprintf(temp,
 		"nftw(const char *path, int (*fn)(const char *, const\n");
 	 fprintf(temp, "struct stat *, int, struct FTW *), int depth, int\n");
 	 fprintf(temp, "flags) when read permission is denied for path.\n\n");
 #endif
-	 test30A();  
+	 test30A(); 
          blexit();
 /*--------------- EXIT BLOCK 29 ---------------------------------*/
 
@@ -745,7 +745,7 @@ setup()
 
     /* Switch to "nobody" */
     setuid(ltpuser->pw_uid);
-    
+   
     /* make a temp directory and cd to it */
     tst_tmpdir();
 }

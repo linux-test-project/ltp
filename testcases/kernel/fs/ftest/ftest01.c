@@ -397,9 +397,9 @@ int dotest(testers, me, fd)
 					tst_exit();
 				}
 				if (memcmp(buf, zero_buf, csize)) {
-					tst_resm(TFAIL, "Test[%d] bad verify @ 0x%x for val %d " 
+					tst_resm(TFAIL, "Test[%d] bad verify @ 0x%x for val %d "
 						"count %d xfr %d file_max 0x%x, should be %d.",
-						me, CHUNK(chunk), val, count, xfr, file_max, 
+						me, CHUNK(chunk), val, count, xfr, file_max,
 						zero_buf[0]);
 					tst_resm(TFAIL, "Test[%d]: last_trunc = 0x%x.",
 						me, last_trunc);
@@ -407,7 +407,7 @@ int dotest(testers, me, fd)
 					dumpbuf(buf);
 					dumpbits(bits, (nchunks+7)/8);
 					orbits(hold_bits, bits, (nchunks+7)/8);
-					tst_resm(TINFO, "Hold "); 
+					tst_resm(TINFO, "Hold ");
 					dumpbits(hold_bits, (nchunks+7)/8);
 					tst_exit();
 				}
@@ -430,7 +430,7 @@ int dotest(testers, me, fd)
 					dumpbuf(buf);
 					dumpbits(bits, (nchunks+7)/8);
 					orbits(hold_bits, bits, (nchunks+7)/8);
-					tst_resm(TINFO, "Hold "); 
+					tst_resm(TINFO, "Hold ");
 					dumpbits(hold_bits, (nchunks+7)/8);
 					tst_exit();
 				}
@@ -510,14 +510,14 @@ int domisc(me, fd, bits)
 		last_trunc = file_max;
 		if (tr_flag) {
 			if (ftruncate(fd, file_max) < 0) {
-				tst_resm(TFAIL, "Test[%d]: ftruncate error %d @ 0x%x.", 
+				tst_resm(TFAIL, "Test[%d]: ftruncate error %d @ 0x%x.",
 						me, errno, file_max);
 				tst_exit();
 			}
 			tr_flag = 0;
 		} else {
 			if (truncate(test_name, file_max) < 0) {
-				tst_resm(TFAIL, "Test[%d]: truncate error %d @ 0x%x.", 
+				tst_resm(TFAIL, "Test[%d]: truncate error %d @ 0x%x.",
 						me, errno, file_max);
 				tst_exit();
 			}

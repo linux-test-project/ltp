@@ -95,15 +95,15 @@ int main (int argc, char **argv)
 	 */
 	setup_handler ();
 
-	/* 
+	/*
 	 * Create a Pipe for data transfer between the two child
 	 * processes.
 	 */
-	if (pipe (fd) < 0) 
+	if (pipe (fd) < 0)
 			sys_error ("pipe failed", __LINE__);
 	
-	/* 
-	 * Create child process, run command and write info into pipe. 
+	/*
+	 * Create child process, run command and write info into pipe.
 	 *
 	 * Close the read end of the pipe and dup the stdout to the write
 	 * end of the pipe, so the the output of the exec'd command will
@@ -112,7 +112,7 @@ int main (int argc, char **argv)
 	if ((pid [childA] = fork()) < 0)
 		sys_error ("fork failed", __LINE__);
 
-	if (pid [childA] == 0) {  
+	if (pid [childA] == 0) { 
 		/* Child process */
 
 		close (fd [READ]);
@@ -129,7 +129,7 @@ int main (int argc, char **argv)
 		sys_error ("execl failed (should not reach this line) ", __LINE__);
 	}	
 
-	/* 
+	/*
 	 * Create another child process and run command on data passed though
 	 * the pipe.
 	 *
@@ -154,7 +154,7 @@ int main (int argc, char **argv)
 		sys_error ("execl failed (should not reach this line) ", __LINE__);
 	}
 
-	/* 
+	/*
 	 * Close both ends of the pipe and wait for the child processes
 	 * to complete.
 	 */

@@ -54,7 +54,7 @@ extern FILE *logfile;
 int openlog (char *filename)
 {
 
-	if (filename == NULL) 
+	if (filename == NULL)
 		error ("passed bad file name to openlog()", __FILE__, __LINE__);
 
 	/*

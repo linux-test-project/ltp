@@ -35,7 +35,7 @@
  *      -t   : Turn on syscall timing.
  *
  * Author
- *	Yi Yang <yyangcdl@cn.ibm.com> 
+ *	Yi Yang <yyangcdl@cn.ibm.com>
  *
  * History
  *      08/24/2006      Created first by Yi Yang <yyangcdl@cn.ibm.com>
@@ -97,7 +97,7 @@ int myfstatat(int dirfd, const char *filename, struct stat *statbuf, int flags)
 {
 	return syscall(__NR_newfstatat, dirfd, filename, statbuf, flags);
 }
-#else 
+#else
 /* stub - will never run */
 int myfstatat(int dirfd, const char *filename, struct stat *statbuf, int flags)
 {
@@ -123,7 +123,7 @@ int main(int ac, char **av)
 #ifdef __NR_fstatat64
         if(__NR_fstatat64 == 0)
 #endif
-#ifdef __NR_newfstatat 
+#ifdef __NR_newfstatat
         if(__NR_newfstatat == 0)
 #endif
 	  {
@@ -152,8 +152,8 @@ int main(int ac, char **av)
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-		/* 
-		 * Call openat 
+		/*
+		 * Call openat
 		 */
 		for (i = 0; i < TST_TOTAL; i++) {
 			TEST(myfstatat

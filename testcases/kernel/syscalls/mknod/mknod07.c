@@ -297,7 +297,7 @@ cleanup()
 
 	/* Remove files and temporary directory created */
 	tst_rmdir();
-  
+ 
 	/* exit with return code appropriate for results */
 	tst_exit();
 }

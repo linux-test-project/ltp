@@ -139,7 +139,7 @@ int main(int ac, char **av)
 			kill(pid, SIGUSR2);
 			wait(&status);
 
-			if (WIFSIGNALED(status)) 
+			if (WIFSIGNALED(status))
 				sig = WTERMSIG(status);
 			if (sig != SIGPIPE)
 				tst_resm(TFAIL, "SIGPIPE not returned by "

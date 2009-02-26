@@ -16,7 +16,7 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-/* 
+/*
  * TEST CASE	: attr.c - DMAPI attributes
  *
  * VARIATIONS	: 204
@@ -56,7 +56,7 @@
  * that will just fill up the buffer passed to jfs_get_dirents; NUM_FILES
  * should be at least 3 times DIRENTS_FILES; ATTR_LISTLEN needs to be large
  * enough to contain 3 files (., .. and dummy.txt) worth of information while
- * ATTR_BIGLISTLEN needs to be large enough to contain NUM_FILES files worth 
+ * ATTR_BIGLISTLEN needs to be large enough to contain NUM_FILES files worth
  * of information
  */
 #define DIRENTS_FILES 5
@@ -190,7 +190,7 @@ int main(int argc, char **argv)
 		DMLOG_PRINT(DMLVL_ERR, "dm_create_session failed! (rc = %d, errno = %d)\n", rc, errno);
 		DM_EXIT();
 	} else {
-		int fd; 
+		int fd;
 		void *fshanp;
 		size_t fshlen;
 
@@ -286,7 +286,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n", szFuncName);
 			rc = dm_set_dmattr(INVALID_ADDR, hanp, hlen, DM_NO_TOKEN, &attrname, 0, sizeof(buf), buf);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -329,7 +329,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hanp)\n", szFuncName);
 			rc = dm_set_dmattr(sid, (void *)INVALID_ADDR, hlen, DM_NO_TOKEN, &attrname, 0, sizeof(buf), buf);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -372,7 +372,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hlen)\n", szFuncName);
 			rc = dm_set_dmattr(sid, hanp, INVALID_ADDR, DM_NO_TOKEN, &attrname, 0, sizeof(buf), buf);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -415,7 +415,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid token)\n", szFuncName);
 			rc = dm_set_dmattr(sid, hanp, hlen, INVALID_ADDR, &attrname, 0, sizeof(buf), buf);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -461,7 +461,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid attrnamep)\n", szFuncName);
 			rc = dm_set_dmattr(sid, hanp, hlen, DM_NO_TOKEN, (dm_attrname_t *)INVALID_ADDR, 0, sizeof(buf), buf);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -504,7 +504,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid buflen)\n", szFuncName);
 			rc = dm_set_dmattr(sid, hanp, hlen, DM_NO_TOKEN, &attrname, 0, INVALID_ADDR, buf);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, E2BIG); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, E2BIG);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -547,7 +547,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid bufp)\n", szFuncName);
 			rc = dm_set_dmattr(sid, hanp, hlen, DM_NO_TOKEN, &attrname, 0, sizeof(buf), (void *)INVALID_ADDR);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -589,7 +589,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(empty attrname)\n", szFuncName);
 			rc = dm_set_dmattr(sid, hanp, hlen, DM_NO_TOKEN, &attrname, 0, sizeof(buf), buf);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -761,7 +761,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(buflen too big)\n", szFuncName);
 			rc = dm_set_dmattr(sid, hanp, hlen, DM_NO_TOKEN, &attrname, 0, maxAttrSize+1, buf);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, E2BIG); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, E2BIG);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -929,7 +929,7 @@ int main(int argc, char **argv)
 				memcpy(attrname.an_chars, ATTR_NAME2, DM_ATTR_NAME_SIZE);
 				rc = dm_set_dmattr(sid, hanp, hlen, DM_NO_TOKEN, &attrname, 0, sizeof(buf2), (void *)&buf2);
 			}
-			DMVAR_ENDPASSEXP(szFuncName, 0, rc); 
+			DMVAR_ENDPASSEXP(szFuncName, 0, rc);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -977,7 +977,7 @@ int main(int argc, char **argv)
 				DMLOG_PRINT(DMLVL_DEBUG, "%s(%.*s)\n", szFuncName, DM_ATTR_NAME_SIZE, attrname.an_chars);
 				rc = dm_set_dmattr(sid, hanp, hlen, DM_NO_TOKEN, &attrname, 0, sizeof(buf), buf);
 			}
-			DMVAR_ENDPASSEXP(szFuncName, 0, rc); 
+			DMVAR_ENDPASSEXP(szFuncName, 0, rc);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -1189,7 +1189,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(fs handle)\n", szFuncName);
 			rc = dm_set_dmattr(sid, hanp, hlen, DM_NO_TOKEN, &attrname, 0, sizeof(buf), buf);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = remove(DUMMY_FILE);
@@ -1231,7 +1231,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(DM_NO_SESSION sid)\n", szFuncName);
 			rc = dm_set_dmattr(DM_NO_SESSION, hanp, hlen, DM_NO_TOKEN, &attrname, 0, sizeof(buf), buf);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -1259,7 +1259,7 @@ int main(int argc, char **argv)
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
 		rc = dm_set_dmattr(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, &attrname, 0, sizeof(buf), buf);
-		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 		/* Variation clean up */
 	}
@@ -1300,7 +1300,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalidated hanp)\n", szFuncName);
 			rc = dm_set_dmattr(sid, hanp, hlen, DM_NO_TOKEN, &attrname, 0, sizeof(buf), buf);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			dm_handle_free(hanp, hlen);
@@ -1345,7 +1345,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n", szFuncName);
 			rc = dm_get_dmattr(INVALID_ADDR, hanp, hlen, DM_NO_TOKEN, &attrname, sizeof(buf), buf, &rlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -1393,7 +1393,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hanp)\n", szFuncName);
 			rc = dm_get_dmattr(sid, (void *)INVALID_ADDR, hlen, DM_NO_TOKEN, &attrname, sizeof(buf), buf, &rlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -1489,7 +1489,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid token)\n", szFuncName);
 			rc = dm_get_dmattr(sid, hanp, hlen, INVALID_ADDR, &attrname, sizeof(buf), buf, &rlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -1537,7 +1537,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid attrnamep)\n", szFuncName);
 			rc = dm_get_dmattr(sid, hanp, hlen, DM_NO_TOKEN, (dm_attrname_t *)INVALID_ADDR, sizeof(buf), buf, &rlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -1585,7 +1585,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid buflen)\n", szFuncName);
 			rc = dm_get_dmattr(sid, hanp, hlen, DM_NO_TOKEN, &attrname, 1, buf, &rlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, E2BIG); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, E2BIG);
 			DMLOG_PRINT(DMLVL_DEBUG, "rlen %d\n");
 
 			/* Variation clean up */
@@ -1597,7 +1597,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
- 
+
 	/*
 	 * TEST    : dm_get_dmattr - invalid bufp
 	 * EXPECTED: rc = -1, errno = EFAULT
@@ -1637,7 +1637,7 @@ int main(int argc, char **argv)
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid bufp)\n", szFuncName);
 			rc = dm_get_dmattr(sid, hanp, hlen, DM_NO_TOKEN, &attrname, sizeof(buf), (void *)INVALID_ADDR, &rlen);
 		DMLOG_PRINT(DMLVL_DEBUG, "rc = %d, %s", rc, &attrname);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -1648,7 +1648,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
- 
+
 	/*
 	 * TEST    : dm_get_dmattr - invalid rlenp
 	 * EXPECTED: rc = -1, errno = EFAULT
@@ -1684,7 +1684,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid rlenp)\n", szFuncName);
 			rc = dm_get_dmattr(sid, hanp, hlen, DM_NO_TOKEN, &attrname, sizeof(buf), buf, (size_t *)INVALID_ADDR);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -1695,7 +1695,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
- 
+
 	/*
 	 * TEST    : dm_get_dmattr - zero buflen, zero attribute length
 	 * EXPECTED: rc = 0
@@ -1733,7 +1733,7 @@ int main(int argc, char **argv)
 			if (rc == 0) {
 				DMLOG_PRINT(DMLVL_DEBUG, "rlen = %d\n", rlen);
 			}
-			DMVAR_ENDPASSEXP(szFuncName, 0, rc); 
+			DMVAR_ENDPASSEXP(szFuncName, 0, rc);
 	
 			/* Variation clean up */
 			rc = close(fd);
@@ -1744,7 +1744,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
- 
+
 	/*
 	 * TEST    : dm_get_dmattr - zero buflen, non-zero attribute length
 	 * EXPECTED: rc = -1, errno = E2BIG
@@ -1809,7 +1809,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
- 
+
 	/*
 	 * TEST    : dm_get_dmattr - attribute not exist
 	 * EXPECTED: rc = -1, errno = ENOENT
@@ -1852,7 +1852,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
- 
+
 	/*
 	 * TEST    : dm_get_dmattr - buf too small
 	 * EXPECTED: rc = -1, errno = E2BIG
@@ -1903,7 +1903,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
- 
+
 	/*
 	 * TEST    : dm_get_dmattr - file handle
 	 * EXPECTED: rc = 0
@@ -1968,7 +1968,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
- 
+
 	/*
 	 * TEST    : dm_get_dmattr - maximum buflen
 	 * EXPECTED: rc = 0
@@ -2092,7 +2092,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
- 
+
 	/*
 	 * TEST    : dm_get_dmattr - fs handle
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -2121,7 +2121,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(fs handle)\n", szFuncName);
 			rc = dm_get_dmattr(sid, hanp, hlen, DM_NO_TOKEN, &attrname, sizeof(buf), buf, &rlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = remove(DUMMY_FILE);
@@ -2168,7 +2168,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(DM_NO_SESSION sid)\n", szFuncName);
 			rc = dm_get_dmattr(DM_NO_SESSION, hanp, hlen, DM_NO_TOKEN, &attrname, sizeof(buf), buf, &rlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -2197,7 +2197,7 @@ int main(int argc, char **argv)
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
 		rc = dm_get_dmattr(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, &attrname, sizeof(buf), buf, &rlen);
-		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 		/* Variation clean up */
 	}
@@ -2243,13 +2243,13 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalidated hanp)\n", szFuncName);
 			rc = dm_get_dmattr(sid, hanp, hlen, DM_NO_TOKEN, &attrname, sizeof(buf), buf, &rlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			dm_handle_free(hanp, hlen);
 		}
 	}
- 
+
 	szFuncName = "dm_remove_dmattr";
 	
 	/*
@@ -2281,7 +2281,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n", szFuncName);
 			rc = dm_remove_dmattr(INVALID_ADDR, hanp, hlen, DM_NO_TOKEN, 0, &attrname);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -2322,7 +2322,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hanp)\n", szFuncName);
 			rc = dm_remove_dmattr(sid, (void *)INVALID_ADDR, hlen, DM_NO_TOKEN, 0, &attrname);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -2363,7 +2363,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hlen)\n", szFuncName);
 			rc = dm_remove_dmattr(sid, hanp, INVALID_ADDR, DM_NO_TOKEN, 0, &attrname);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -2404,7 +2404,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid token)\n", szFuncName);
 			rc = dm_remove_dmattr(sid, hanp, hlen, INVALID_ADDR, 0, &attrname);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -2445,7 +2445,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid attrnamep)\n", szFuncName);
 			rc = dm_remove_dmattr(sid, hanp, hlen, DM_NO_TOKEN, 0, (dm_attrname_t *)INVALID_ADDR);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -2486,7 +2486,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(attr not exist)\n", szFuncName);
 			rc = dm_remove_dmattr(sid, hanp, hlen, DM_NO_TOKEN, 0, &attrname);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, ENOENT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, ENOENT);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -2785,7 +2785,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(fs handle)\n", szFuncName);
 			rc = dm_remove_dmattr(sid, hanp, hlen, DM_NO_TOKEN, 0, &attrname);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = remove(DUMMY_FILE);
@@ -2825,7 +2825,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(DM_NO_SESSION sid)\n", szFuncName);
 			rc = dm_remove_dmattr(DM_NO_SESSION, hanp, hlen, DM_NO_TOKEN, 0, &attrname);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -2853,7 +2853,7 @@ int main(int argc, char **argv)
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
 		rc = dm_remove_dmattr(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, 0, &attrname);
-		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 		/* Variation clean up */
 	}
@@ -2898,7 +2898,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalidated handle)\n", szFuncName);
 			rc = dm_remove_dmattr(sid, hanp, hlen, DM_NO_TOKEN, 0, &attrname);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			dm_handle_free(hanp, hlen);
@@ -2943,7 +2943,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n", szFuncName);
 			rc = dm_getall_dmattr(INVALID_ADDR, hanp, hlen, DM_NO_TOKEN, sizeof(buf), buf, &rlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -2991,7 +2991,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hanp)\n", szFuncName);
 			rc = dm_getall_dmattr(sid, (void *)INVALID_ADDR, hlen, DM_NO_TOKEN, sizeof(buf), buf, &rlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -3039,7 +3039,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hlen)\n", szFuncName);
 			rc = dm_getall_dmattr(sid, hanp, INVALID_ADDR, DM_NO_TOKEN, sizeof(buf), buf, &rlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -3087,7 +3087,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid token)\n", szFuncName);
 			rc = dm_getall_dmattr(sid, hanp, hlen, INVALID_ADDR, sizeof(buf), buf, &rlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -3138,7 +3138,7 @@ int main(int argc, char **argv)
 			if (rc == -1 && errno == E2BIG) {
 				DMLOG_PRINT(DMLVL_DEBUG, "rlen = %d\n", rlen);
 			}
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, E2BIG); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, E2BIG);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -3186,7 +3186,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid bufp)\n", szFuncName);
 			rc = dm_getall_dmattr(sid, hanp, hlen, DM_NO_TOKEN, sizeof(buf), (void *)INVALID_ADDR, &rlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -3233,7 +3233,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid rlenp)\n", szFuncName);
 			rc = dm_getall_dmattr(sid, hanp, hlen, DM_NO_TOKEN, sizeof(buf), buf, (size_t *)INVALID_ADDR);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -3618,7 +3618,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-  
+ 
 	/*
 	 * TEST    : dm_getall_dmattr - fs handle
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -3647,7 +3647,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(fs handle)\n", szFuncName);
 			rc = dm_getall_dmattr(sid, hanp, hlen, DM_NO_TOKEN, sizeof(buf), buf, &rlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = remove(DUMMY_FILE);
@@ -3694,7 +3694,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(DM_NO_SESSION sid)\n", szFuncName);
 			rc = dm_getall_dmattr(DM_NO_SESSION, hanp, hlen, DM_NO_TOKEN, sizeof(buf), buf, &rlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -3723,7 +3723,7 @@ int main(int argc, char **argv)
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
 		rc = dm_getall_dmattr(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, sizeof(buf), buf, &rlen);
-		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 		/* Variation clean up */
 	}
@@ -3769,7 +3769,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalidated handle)\n", szFuncName);
 			rc = dm_getall_dmattr(sid, hanp, hlen, DM_NO_TOKEN, sizeof(buf), buf, &rlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			dm_handle_free(hanp, hlen);
@@ -3806,7 +3806,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n", szFuncName);
 			rc = dm_set_fileattr(INVALID_ADDR, hanp, hlen, DM_NO_TOKEN, DM_AT_UID, &fileattr);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -3886,7 +3886,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hlen)\n", szFuncName);
 			rc = dm_set_fileattr(sid, hanp, INVALID_ADDR, DM_NO_TOKEN, DM_AT_UID, &fileattr);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -3926,7 +3926,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid token)\n", szFuncName);
 			rc = dm_set_fileattr(sid, hanp, hlen, INVALID_ADDR, DM_AT_UID, &fileattr);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -3969,7 +3969,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid mask)\n", szFuncName);
 			rc = dm_set_fileattr(sid, hanp, hlen, DM_NO_TOKEN, DM_AT_HANDLE, &fileattr);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -4009,7 +4009,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid attrp)\n", szFuncName);
 			rc = dm_set_fileattr(sid, hanp, hlen, DM_NO_TOKEN, DM_AT_UID, (dm_fileattr_t *)INVALID_ADDR);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -5055,7 +5055,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(DM_NO_SESSION sid)\n", szFuncName);
 			rc = dm_set_fileattr(DM_NO_SESSION, hanp, hlen, DM_NO_TOKEN, DM_AT_UID, &fileattr);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -5154,7 +5154,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n", szFuncName);
 			rc = dm_get_fileattr(INVALID_ADDR, hanp, hlen, DM_NO_TOKEN, DM_AT_EMASK, &stat);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -5232,7 +5232,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hlen)\n", szFuncName);
 			rc = dm_get_fileattr(sid, hanp, INVALID_ADDR, DM_NO_TOKEN, DM_AT_EMASK, &stat);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -5271,7 +5271,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid token)\n", szFuncName);
 			rc = dm_get_fileattr(sid, hanp, hlen, INVALID_ADDR, DM_AT_EMASK, &stat);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -5313,7 +5313,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid mask)\n", szFuncName);
 			rc = dm_get_fileattr(sid, hanp, hlen, DM_NO_TOKEN, DM_AT_HANDLE, &stat);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -5351,7 +5351,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid statp)\n", szFuncName);
 			rc = dm_get_fileattr(sid, hanp, hlen, DM_NO_TOKEN, DM_AT_EMASK, (dm_stat_t *)INVALID_ADDR);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -6271,7 +6271,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(fs handle)\n", szFuncName);
 			rc = dm_get_fileattr(sid, hanp, hlen, DM_NO_TOKEN, DM_AT_EMASK, &stat);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = remove(DUMMY_FILE);
@@ -6309,7 +6309,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(DM_NO_SESSION sid)\n", szFuncName);
 			rc = dm_get_fileattr(DM_NO_SESSION, hanp, hlen, DM_NO_TOKEN, DM_AT_EMASK, &stat);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -6405,7 +6405,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n", szFuncName);
 			rc = dm_init_attrloc(INVALID_ADDR, hanp, hlen, DM_NO_TOKEN, &loc);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = remove(DUMMY_SUBDIR_FILE);
@@ -6443,7 +6443,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hanp)\n", szFuncName);
 			rc = dm_init_attrloc(sid, (void *)INVALID_ADDR, hlen, DM_NO_TOKEN, &loc);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = remove(DUMMY_SUBDIR_FILE);
@@ -6481,7 +6481,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hlen)\n", szFuncName);
 			rc = dm_init_attrloc(sid, hanp, INVALID_ADDR, DM_NO_TOKEN, &loc);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			rc = remove(DUMMY_SUBDIR_FILE);
@@ -6519,7 +6519,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid token)\n", szFuncName);
 			rc = dm_init_attrloc(sid, hanp, hlen, INVALID_ADDR, &loc);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = remove(DUMMY_SUBDIR_FILE);
@@ -6556,7 +6556,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid locp)\n", szFuncName);
 			rc = dm_init_attrloc(sid, hanp, hlen, DM_NO_TOKEN, (dm_attrloc_t *)INVALID_ADDR);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = remove(DUMMY_SUBDIR_FILE);
@@ -6591,7 +6591,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(file handle)\n", szFuncName);
 			rc = dm_init_attrloc(sid, hanp, hlen, DM_NO_TOKEN, &loc);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = remove(DUMMY_FILE);
@@ -6631,7 +6631,7 @@ int main(int argc, char **argv)
 			if (rc == 0) {
 				DMLOG_PRINT(DMLVL_DEBUG, "loc = %lld\n", loc);
 			}				
-			DMVAR_ENDPASSEXP(szFuncName, 0, rc); 
+			DMVAR_ENDPASSEXP(szFuncName, 0, rc);
 
 			/* Variation clean up */
 			rc = remove(DUMMY_SUBDIR_FILE);
@@ -6672,7 +6672,7 @@ int main(int argc, char **argv)
 			if (rc == 0) {
 				DMLOG_PRINT(DMLVL_DEBUG, "loc = %lld\n", loc);
 			}				
-			DMVAR_ENDPASSEXP(szFuncName, 0, rc); 
+			DMVAR_ENDPASSEXP(szFuncName, 0, rc);
 
 			/* Variation clean up */
 			rc = remove(DUMMY_SUBDIR_FILE);
@@ -6710,7 +6710,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(DM_NO_SESSION sid)\n", szFuncName);
 			rc = dm_init_attrloc(DM_NO_SESSION, hanp, hlen, DM_NO_TOKEN, &loc);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = remove(DUMMY_SUBDIR_FILE);
@@ -6734,7 +6734,7 @@ int main(int argc, char **argv)
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
 		rc = dm_init_attrloc(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, &loc);
-		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+		DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 		/* Variation clean up */
 	}
@@ -6763,7 +6763,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalidated hanp)\n", szFuncName);
 			rc = dm_init_attrloc(sid, hanp, hlen, DM_NO_TOKEN, &loc);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			dm_handle_free(hanp, hlen);
@@ -6801,7 +6801,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n", szFuncName);
 			rc = dm_get_dirattrs(INVALID_ADDR, hanp, hlen, DM_NO_TOKEN, DM_AT_EMASK, &loc, sizeof(buf), buf, &rlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = remove(DUMMY_SUBDIR_FILE);
@@ -6842,7 +6842,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hanp)\n", szFuncName);
 			rc = dm_get_dirattrs(sid, (void *)INVALID_ADDR, hlen, DM_NO_TOKEN, DM_AT_EMASK, &loc, sizeof(buf), buf, &rlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = remove(DUMMY_SUBDIR_FILE);
@@ -6883,7 +6883,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hlen)\n", szFuncName);
 			rc = dm_get_dirattrs(sid, hanp, INVALID_ADDR, DM_NO_TOKEN, DM_AT_EMASK, &loc, sizeof(buf), buf, &rlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			rc = remove(DUMMY_SUBDIR_FILE);
@@ -6924,7 +6924,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid token)\n", szFuncName);
 			rc = dm_get_dirattrs(sid, hanp, hlen, INVALID_ADDR, DM_AT_EMASK, &loc, sizeof(buf), buf, &rlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = remove(DUMMY_SUBDIR_FILE);
@@ -6968,7 +6968,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid mask)\n", szFuncName);
 			rc = dm_get_dirattrs(sid, hanp, hlen, DM_NO_TOKEN, DM_AT_SIZE, &loc, sizeof(buf), buf, &rlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = remove(DUMMY_SUBDIR_FILE);
@@ -7007,7 +7007,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid locp)\n", szFuncName);
 			rc = dm_get_dirattrs(sid, hanp, hlen, DM_NO_TOKEN, DM_AT_EMASK, (dm_attrloc_t *)INVALID_ADDR, sizeof(buf), buf, &rlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = remove(DUMMY_SUBDIR_FILE);
@@ -7049,7 +7049,7 @@ int main(int argc, char **argv)
 			loc = INVALID_ADDR;
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid loc)\n", szFuncName);
 			rc = dm_get_dirattrs(sid, hanp, hlen, DM_NO_TOKEN, DM_AT_EMASK, &loc, sizeof(buf), buf, &rlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = remove(DUMMY_SUBDIR_FILE);
@@ -7094,7 +7094,7 @@ int main(int argc, char **argv)
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid buflen)\n", szFuncName);
 			rc = dm_get_dirattrs(sid, hanp, hlen, DM_NO_TOKEN, DM_AT_EMASK, &loc, 0, buf, &rlen);
 			DMLOG_PRINT(DMLVL_DEBUG, "call: rc %d, loc %lld, rlen %d\n", rc, loc, rlen);
-			DMVAR_ENDPASSEXP(szFuncName, 1, rc); 
+			DMVAR_ENDPASSEXP(szFuncName, 1, rc);
 
 			/* Variation clean up */
 			rc = remove(DUMMY_SUBDIR_FILE);
@@ -7135,7 +7135,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid bufp)\n", szFuncName);
 			rc = dm_get_dirattrs(sid, hanp, hlen, DM_NO_TOKEN, DM_AT_EMASK, &loc, sizeof(buf), (void *)INVALID_ADDR, &rlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = remove(DUMMY_SUBDIR_FILE);
@@ -7175,7 +7175,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid rlenp)\n", szFuncName);
 			rc = dm_get_dirattrs(sid, hanp, hlen, DM_NO_TOKEN, DM_AT_EMASK, &loc, sizeof(buf), buf, (size_t *)INVALID_ADDR);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = remove(DUMMY_SUBDIR_FILE);
@@ -8589,7 +8589,7 @@ int main(int argc, char **argv)
 	}
 
 	/*
-	 * TEST    : dm_get_dirattrs - DM_AT_STAT with one buffer (files 
+	 * TEST    : dm_get_dirattrs - DM_AT_STAT with one buffer (files
 	 * 		returned from jfs_readdir > files fit in buffer)
 	 * EXPECTED: rc = 1
 	 */
@@ -8668,7 +8668,7 @@ int main(int argc, char **argv)
 	}
 
 	/*
-	 * TEST    : dm_get_dirattrs - DM_AT_STAT with one buffer (files 
+	 * TEST    : dm_get_dirattrs - DM_AT_STAT with one buffer (files
 	 * 		returned from jfs_readdir > files fit in buffer)
 	 * EXPECTED: rc = 1
 	 */
@@ -8747,7 +8747,7 @@ int main(int argc, char **argv)
 	}
 
 	/*
-	 * TEST    : dm_get_dirattrs - DM_AT_STAT with one buffer (files 
+	 * TEST    : dm_get_dirattrs - DM_AT_STAT with one buffer (files
 	 * 		returned from jfs_readdir > files fit in buffer)
 	 * EXPECTED: rc = 1
 	 */
@@ -8826,7 +8826,7 @@ int main(int argc, char **argv)
 	}
 
 	/*
-	 * TEST    : dm_get_dirattrs - DM_AT_STAT with one buffer (files 
+	 * TEST    : dm_get_dirattrs - DM_AT_STAT with one buffer (files
 	 * 		returned from jfs_readdir > files fit in buffer)
 	 * EXPECTED: rc = 1
 	 */
@@ -8905,7 +8905,7 @@ int main(int argc, char **argv)
 	}
 
 	/*
-	 * TEST    : dm_get_dirattrs - DM_AT_STAT with one buffer (files 
+	 * TEST    : dm_get_dirattrs - DM_AT_STAT with one buffer (files
 	 * 		returned from jfs_readdir > files fit in buffer)
 	 * EXPECTED: rc = 1
 	 */
@@ -8984,7 +8984,7 @@ int main(int argc, char **argv)
 	}
 
 	/*
-	 * TEST    : dm_get_dirattrs - DM_AT_STAT with one buffer (files 
+	 * TEST    : dm_get_dirattrs - DM_AT_STAT with one buffer (files
 	 * 		returned from jfs_readdir > files fit in buffer)
 	 * EXPECTED: rc = 1
 	 */
@@ -9063,7 +9063,7 @@ int main(int argc, char **argv)
 	}
 
 	/*
-	 * TEST    : dm_get_dirattrs - DM_AT_STAT with one buffer (files 
+	 * TEST    : dm_get_dirattrs - DM_AT_STAT with one buffer (files
 	 * 		returned from jfs_readdir < files fit in buffer)
 	 * EXPECTED: rc = 0
 	 */
@@ -9236,7 +9236,7 @@ int main(int argc, char **argv)
 	 * TEST    : dm_get_dirattrs - DM_AT_EMASK (verify no handle)
 	 * EXPECTED: rc = 0
 	 *
-	 * This variation uncovered XFS BUG #28 (handle returned when       
+	 * This variation uncovered XFS BUG #28 (handle returned when      
 	 * DM_AT_HANDLE not set in mask)
 	 */
 	if (DMVAR_EXEC(GET_DIRATTRS_BASE + 36)) {
@@ -9361,7 +9361,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(DM_NO_SESSION sid)\n", szFuncName);
 			rc = dm_get_dirattrs(DM_NO_SESSION, hanp, hlen, DM_NO_TOKEN, DM_AT_EMASK, &loc, sizeof(buf), buf, &rlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = remove(DUMMY_SUBDIR_FILE);
@@ -9400,7 +9400,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
 			rc = dm_get_dirattrs(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, DM_AT_EMASK, &loc, sizeof(buf), buf, &rlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			rc = rmdir(DUMMY_SUBDIR);
@@ -9440,7 +9440,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalidated hanp)\n", szFuncName);
 			rc = dm_get_dirattrs(sid, hanp, hlen, DM_NO_TOKEN, DM_AT_EMASK, &loc, sizeof(buf), buf, &rlen);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			dm_handle_free(hanp, hlen);
@@ -9478,7 +9478,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n", szFuncName);
 			rc = dm_set_inherit(INVALID_ADDR, hanp, hlen, DM_NO_TOKEN, &attrname, 0);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -9519,7 +9519,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hanp)\n", szFuncName);
 			rc = dm_set_inherit(sid, (void *)INVALID_ADDR, hlen, DM_NO_TOKEN, &attrname, 0);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -9560,7 +9560,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hlen)\n", szFuncName);
 			rc = dm_set_inherit(sid, hanp, INVALID_ADDR, DM_NO_TOKEN, &attrname, 0);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -9601,7 +9601,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid token)\n", szFuncName);
 			rc = dm_set_inherit(sid, hanp, hlen, INVALID_ADDR, &attrname, 0);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -9642,7 +9642,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid attrnamep)\n", szFuncName);
 			rc = dm_set_inherit(sid, hanp, hlen, DM_NO_TOKEN, (dm_attrname_t *)INVALID_ADDR, 0);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, persInheritAttr ? EFAULT : ENOSYS); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, persInheritAttr ? EFAULT : ENOSYS);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -9683,7 +9683,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(DM_NO_SESSION sid)\n", szFuncName);
 			rc = dm_set_inherit(DM_NO_SESSION, hanp, hlen, DM_NO_TOKEN, &attrname, 0);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -9821,7 +9821,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n", szFuncName);
 			rc = dm_clear_inherit(INVALID_ADDR, hanp, hlen, DM_NO_TOKEN, &attrname);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -9862,7 +9862,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hanp)\n", szFuncName);
 			rc = dm_clear_inherit(sid, (void *)INVALID_ADDR, hlen, DM_NO_TOKEN, &attrname);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -9903,7 +9903,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hlen)\n", szFuncName);
 			rc = dm_clear_inherit(sid, hanp, INVALID_ADDR, DM_NO_TOKEN, &attrname);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -9944,7 +9944,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid token)\n", szFuncName);
 			rc = dm_clear_inherit(sid, hanp, hlen, INVALID_ADDR, &attrname);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -9985,7 +9985,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid attrnamep)\n", szFuncName);
 			rc = dm_clear_inherit(sid, hanp, hlen, DM_NO_TOKEN, (dm_attrname_t *)INVALID_ADDR);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, persInheritAttr ? EFAULT : ENOSYS); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, persInheritAttr ? EFAULT : ENOSYS);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -10026,7 +10026,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(DM_NO_SESSION sid)\n", szFuncName);
 			rc = dm_clear_inherit(DM_NO_SESSION, hanp, hlen, DM_NO_TOKEN, &attrname);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -10163,7 +10163,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid sid)\n", szFuncName);
 			rc = dm_getall_inherit(INVALID_ADDR, hanp, hlen, DM_NO_TOKEN, 1, &inheritbuf, &nelem);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -10203,7 +10203,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hanp)\n", szFuncName);
 			rc = dm_getall_inherit(sid, (void *)INVALID_ADDR, hlen, DM_NO_TOKEN, 1, &inheritbuf, &nelem);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -10243,7 +10243,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid hlen)\n", szFuncName);
 			rc = dm_getall_inherit(sid, hanp, INVALID_ADDR, DM_NO_TOKEN, 1, &inheritbuf, &nelem);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -10283,7 +10283,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid token)\n", szFuncName);
 			rc = dm_getall_inherit(sid, hanp, hlen, INVALID_ADDR, 1, &inheritbuf, &nelem);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -10322,7 +10322,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid inheritbufp)\n", szFuncName);
 			rc = dm_getall_inherit(sid, hanp, hlen, DM_NO_TOKEN, 1, (dm_inherit_t *)INVALID_ADDR, &nelem);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, persInheritAttr ? EFAULT : ENOSYS); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, persInheritAttr ? EFAULT : ENOSYS);
 
 			/* Variation clean up */
 			rc = close(fd);
@@ -10362,7 +10362,7 @@ int main(int argc, char **argv)
 			/* Variation */
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(DM_NO_SESSION sid)\n", szFuncName);
 			rc = dm_getall_inherit(DM_NO_SESSION, hanp, hlen, DM_NO_TOKEN, 1, &inheritbuf, &nelem);
-			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL); 
+			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
 
 			/* Variation clean up */
 			rc = close(fd);

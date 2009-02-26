@@ -15,17 +15,17 @@
  *
  */
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER	: ioperm01
- * 
+ *
  *    EXECUTED BY	: superuser
- * 
+ *
  *    TEST TITLE	: Basic test for ioperm(2)
- * 
+ *
  *    TEST CASE TOTAL	: 1
  *
  *    AUTHOR		: Subhab Biswas <subhabrata.biswas@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -38,17 +38,17 @@
  * 	  Setup signal handling.
  *	  Test caller is superuser
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  * 	  Execute system call
  *        Check return code, if system call failed (return=-1)
- *              Issue FAIL message with errno. 
+ *              Issue FAIL message with errno.
  *        Otherwise, Issue PASS message.
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  * ioperm01 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
  *			where,  -c n : Run n copies concurrently.
@@ -65,7 +65,7 @@
 
 char *TCID = "ioperm01";	/* Test program identifier.    */
 
-#if defined __i386__ || defined(__x86_64__) 
+#if defined __i386__ || defined(__x86_64__)
 
 #include <errno.h>
 #include <unistd.h>
@@ -124,7 +124,7 @@ main(int ac, char **av)
 			tst_resm(TPASS, "ioperm() passed for port "
 				 "address %ld, returned %d",
 				  io_addr, TEST_RETURN);
-		} 
+		}
 	}	/* End for TEST_LOOPING */
 
 	/* cleanup and exit */
@@ -150,7 +150,7 @@ setup()
 	}
 
 	/*
-	 * The value of IO_BITMAP_BITS (include/asm-i386/processor.h) changed 
+	 * The value of IO_BITMAP_BITS (include/asm-i386/processor.h) changed
 	 * from kernel 2.6.8 to permit 16-bits ioperm
 	 *
 	 * Ricky Ng-Adam, rngadam@yahoo.com

@@ -124,7 +124,7 @@ int main (argc, argv)
 	sprintf(tmpbuf, "./%s.%d", TCID, getpid() );
 	
 	if( (i=creat( tmpbuf, 0777)) == -1) {
-		tst_resm(TBROK,"Failure %d on opening %s", 
+		tst_resm(TBROK,"Failure %d on opening %s",
 			errno, tmpbuf );
 		tst_exit();
 	}
@@ -135,7 +135,7 @@ int main (argc, argv)
 		tst_resm(TBROK,"Failure %d on enabling acct file= %d",
 			errno, tmpbuf );
 		tst_exit();
-	} 
+	}
 
 
 	/* now check for busy error return
@@ -148,8 +148,8 @@ int main (argc, argv)
 		tst_exit();
 	}
 
-	/* 
-	 * acct() confirms to SVr4, but not POSIX in LINUX as of 03 Dec 2002 
+	/*
+	 * acct() confirms to SVr4, but not POSIX in LINUX as of 03 Dec 2002
 	 * In the above case, file doesn't exist and should get ENOENT.
          */
 	if( errno != ENOENT ) {

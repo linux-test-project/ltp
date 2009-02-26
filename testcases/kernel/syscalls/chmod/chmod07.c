@@ -17,7 +17,7 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-/* 
+/*
  * Test Name: chmod07
  *
  * Test Description:
@@ -105,7 +105,7 @@ main(int ac, char **av)
 	struct stat stat_buf;	/* stat(2) struct contents */
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -121,7 +121,7 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-		/* 
+		/*
 	 	 * Call chmod(2) with specified mode argument
 		 * (sticky-bit set) on testfile.
 	 	 */
@@ -177,7 +177,7 @@ main(int ac, char **av)
  *  Create a test file under temporary directory and close it
  *  Change the ownership of test file to that of "ltpuser1" user.
  */
-void 
+void
 setup()
 {
 	struct passwd *ltpuser;		/* password struct for ltpuser1 */
@@ -224,7 +224,7 @@ setup()
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %#o) Failed, errno=%d : %s",
 			 TESTFILE, FILE_MODE, errno, strerror(errno));
-	} 
+	}
 	if (close(fd) == -1) {
 		tst_brkm(TBROK, cleanup, "close(%s) Failed, errno=%d : %s",
 			 TESTFILE, errno, strerror(errno));
@@ -246,7 +246,7 @@ setup()
  *	       completion or premature exit.
  *  Remove the test directory and testfile created in the setup.
  */
-void 
+void
 cleanup()
 {
 	/*

@@ -15,17 +15,17 @@
  *
  */
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER   : query_module02
- * 
+ *
  *    EXECUTED BY       : anyone
- * 
+ *
  *    TEST TITLE        : Checking error conditions for query_module(2)
- * 
+ *
  *    TEST CASE TOTAL   : 5
- * 
+ *
  *    AUTHOR            : Madhu T L <madhu.tarikere@wipro.com>
- * 
+ *
  *    SIGNALS
  *	Uses SIGUSR1 to pause before test if option set.
  *	(See the parse_opts(3) man page).
@@ -40,15 +40,15 @@
  *	   module name and valid which argument.
  *      4. query_module(2) returns -1 and sets errno to EINVAL, if module
  *         name parameter is null terminated (zero length) string.
- *	5. query_module(2) returns -1 and sets errno to ENAMETOOLONG for long 
+ *	5. query_module(2) returns -1 and sets errno to ENAMETOOLONG for long
  *	   module name.
- * 
+ *
  *	Setup:
  *	  Setup signal handling.
  *	  Initialize  long module name
  *	  Set expected errnos for logging
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  *	Test:
  *	 Loop if the proper options are given.
  *	  Execute system call
@@ -56,10 +56,10 @@
  *		Issue PASS message
  *	  Otherwise,
  *		Issue FAIL message
- * 
+ *
  *	Cleanup:
  *	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  *  query_module02 [-c n] [-e] [-f] [-h] [-i n] [-I x] [-p] [-P x] [-t]
  *		where,  -c n : Run n copies concurrently.
@@ -71,7 +71,7 @@
  *			-p   : Pause for SIGUSR1 before starting
  *			-P x : Pause for x seconds between iterations.
  *			-t   : Turn on syscall timing.
- * 
+ *
  ****************************************************************/
 
 #include <errno.h>
@@ -84,7 +84,7 @@
 #include "test.h"
 #include "usctest.h"
 
-#ifndef PAGE_SIZE 
+#ifndef PAGE_SIZE
 #define PAGE_SIZE sysconf(_SC_PAGE_SIZE)
 #endif
 
@@ -157,7 +157,7 @@ main(int argc, char **argv)
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 
 			TEST(query_module(tdat[testno].modname,
-				tdat[testno].which, tdat[testno].buf, 
+				tdat[testno].which, tdat[testno].buf,
 				tdat[testno].bufsize, &ret_size));
 			TEST_ERROR_LOG(TEST_ERRNO);
 			if ( (TEST_RETURN == EXP_RET_VAL) &&

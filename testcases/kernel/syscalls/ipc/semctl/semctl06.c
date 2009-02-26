@@ -342,20 +342,20 @@ dosemas(int id)
 			semops[j].sem_flg = SEM_UNDO;
 
 			do {
-				semops[j].sem_op = 
+				semops[j].sem_op =
 					( - /*CASTOK*/(short)(rand() % (maxsemvals[j]/2)));
 			} while (semops[j].sem_op == 0);
 		}
 		if (semop(id, semops, NSEMS) < 0) {
 			tst_resm(TFAIL, "\tsemop1 failed errno %d", errno);
-			exit(1); 
+			exit(1);
 		}
 		for (j = 0; j < NSEMS; j++) {
 			semops[j].sem_op = ( - semops[j].sem_op);
 		}
 		if (semop(id, semops, NSEMS) < 0) {
 			tst_resm(TFAIL, "\tsemop2 failed errno %d", errno);
-			exit(1); 
+			exit(1);
 		}
 	}
 	exit(0);

@@ -68,7 +68,7 @@ int read_eof(char *filename)
                fprintf(stderr, "can't open file %s \n",filename);
                exit(1);
 	}
-       
+      
 	for (i = 0 ; i < 100000; i++) {
 		off_t offset;
 		char *bufoff;

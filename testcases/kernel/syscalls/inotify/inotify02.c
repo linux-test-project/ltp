@@ -34,7 +34,7 @@
  *     Execute sequence file's operation and check return events
  *
  * HISTORY
- *     01/06/2007 - Fix to compile inotify test case with kernel that does 
+ *     01/06/2007 - Fix to compile inotify test case with kernel that does
  *     not support it. Ricardo Salveti de Araujo <rsalveti@linux.vnet.ibm.com>
  *
  *     03/27/2008 - Fix the test failure due to event coalescence. Also add
@@ -147,7 +147,7 @@ int main(int ac, char **av){
                 "creat(\"%s\", 755) Failed, errno=%d : %s",
                 FILE_NAME1, errno, strerror(errno));
         }
-        
+       
         event_set[Tst_count].mask = IN_CREATE;
         strcpy(event_set[Tst_count].name, FILE_NAME1);
         Tst_count++;
@@ -156,19 +156,19 @@ int main(int ac, char **av){
         Tst_count++;
 
         if (close(fd) == -1) {
-            tst_brkm(TBROK, cleanup, 
-                    "close(%s) Failed, errno=%d : %s", 
+            tst_brkm(TBROK, cleanup,
+                    "close(%s) Failed, errno=%d : %s",
                     FILE_NAME1, errno, strerror(errno));
         }
         event_set[Tst_count].mask = IN_CLOSE_WRITE;
         strcpy(event_set[Tst_count].name, FILE_NAME1);
         Tst_count++;
 
-        
+       
 
 
         if (rename(FILE_NAME1, FILE_NAME2) == -1){
-            tst_brkm(TBROK, cleanup, 
+            tst_brkm(TBROK, cleanup,
                     "rename(%s, %s) Failed, errno=%d : %s",
                     FILE_NAME1, FILE_NAME2,
                     errno, strerror(errno));
@@ -181,7 +181,7 @@ int main(int ac, char **av){
         Tst_count++;
 
         if (getcwd(fname1, BUF_SIZE) == NULL){
-            tst_brkm(TBROK, cleanup, 
+            tst_brkm(TBROK, cleanup,
                     "getcwd(%x, %d) Failed, errno=%d : %s",
                     fname1, BUF_SIZE,
                     errno, strerror(errno));
@@ -189,7 +189,7 @@ int main(int ac, char **av){
 
         snprintf(fname2, BUF_SIZE, "%s.rename1", fname1);
         if (rename(fname1, fname2) == -1){
-            tst_brkm(TBROK, cleanup, 
+            tst_brkm(TBROK, cleanup,
                     "rename(%s, %s) Failed, errno=%d : %s",
                     fname1, fname2,
                     errno, strerror(errno));
@@ -221,7 +221,7 @@ int main(int ac, char **av){
         }
 
         if (rename(fname3, fname1) == -1){
-            tst_brkm(TBROK, cleanup, 
+            tst_brkm(TBROK, cleanup,
                     "rename(%s, %s) Failed, errno=%d : %s",
                     fname3, fname1,
                     errno, strerror(errno));
@@ -231,17 +231,17 @@ int main(int ac, char **av){
         Tst_count++;
 
         if (Tst_count != TST_TOTAL) {
-            tst_brkm(TBROK, cleanup, 
+            tst_brkm(TBROK, cleanup,
                 "Tst_count and TST_TOTAL are not equal");
         }
-        
+       
         Tst_count = 0;
 
         int len, i = 0, test_num = 0;
         if ((len = read(fd_notify, event_buf, EVENT_BUF_LEN)) < 0) {
             tst_brkm(TBROK, cleanup,
                 "read(%d, buf, %d) Failed, errno=%d : %s",
-                fd_notify, EVENT_BUF_LEN, 
+                fd_notify, EVENT_BUF_LEN,
                 errno, strerror(errno));
 
         }
@@ -253,27 +253,27 @@ int main(int ac, char **av){
                 tst_resm(TFAIL, "get unnecessary event: "
                     "wd=%d mask=%x cookie=%u len=%u"
                     "name=\"%s\"",event->wd, event->mask,
-                    event->cookie, event->len, 
+                    event->cookie, event->len,
                             event->name);
 
             } else     if ((event_set[test_num].mask == event->mask) &&
                     (! strncmp( event_set[test_num].name,
                         event->name, event->len))) {
-                tst_resm(TPASS, "get event: wd=%d mask=%x" 
+                tst_resm(TPASS, "get event: wd=%d mask=%x"
                         " cookie=%u len=%u name=\"%s\"",
                         event->wd, event->mask,
-                        event->cookie, event->len, 
+                        event->cookie, event->len,
                         event->name);
 
             } else {
                 tst_resm(TFAIL, "get event: wd=%d mask=%x "
                     "(expected %x) cookie=%u len=%u "
                     "name=\"%s\" (expected \"%s\") %d",
-                    event->wd, event->mask,    
+                    event->wd, event->mask,   
                     event_set[test_num].mask,
                     event->cookie, event->len, event->name,
-                    event_set[test_num].name, 
-                    strcmp(event_set[test_num].name, 
+                    event_set[test_num].name,
+                    strcmp(event_set[test_num].name,
                         event->name));
             }
             test_num++;
@@ -323,7 +323,7 @@ void setup(){
 
     if ((wd = myinotify_add_watch (fd_notify, ".", IN_ALL_EVENTS)) < 0){
         tst_brkm(TBROK, cleanup,
-                "inotify_add_watch (%d, \".\", IN_ALL_EVENTS)" 
+                "inotify_add_watch (%d, \".\", IN_ALL_EVENTS)"
                 "Failed, errno=%d : %s",
                 fd_notify, errno, strerror(errno));
     };
@@ -344,7 +344,7 @@ void cleanup(){
     }
 
     if (close(fd_notify) == -1) {
-        tst_resm(TWARN, "close(%d) Failed, errno=%d : %s", 
+        tst_resm(TWARN, "close(%d) Failed, errno=%d : %s",
                 fd_notify, errno, strerror(errno));
     }
 

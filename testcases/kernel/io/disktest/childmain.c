@@ -22,7 +22,7 @@
 *
 *  Project Website:  TBD
 *
-* $Id: childmain.c,v 1.9 2008/12/22 07:33:03 subrata_modak Exp $
+* $Id: childmain.c,v 1.10 2009/02/26 12:02:22 subrata_modak Exp $
 *
 */
 
@@ -80,7 +80,7 @@ unsigned short action_in_use(const test_env_t *env, const action_t target)
 			switch(target.oper) {
 				case WRITER : /* if we want to write, we can't */
 					return TRUE;
-				case READER : /* if we want to read, and a write is in progress, we can't */ 
+				case READER : /* if we want to read, and a write is in progress, we can't */
 					if(env->action_list[i].oper == WRITER) { return TRUE; }
 					/* otherwise allow multiple readers */
 					return FALSE;
@@ -134,7 +134,7 @@ void remove_action(test_env_t *env, const action_t target)
 
 void decrement_io_count(const child_args_t *args, test_env_t *env, const action_t target)
 {
-	if(args->flags & CLD_FLG_LBA_SYNC) { 
+	if(args->flags & CLD_FLG_LBA_SYNC) {
 		remove_action(env, target);
 	}
 	if(target.oper == WRITER) {
@@ -530,7 +530,7 @@ void *ChildMain(void *vtest)
 		TEXIT(GETLASTERROR());
 	}
 #else
-	static pthread_mutex_t MutexMISCOMP = PTHREAD_MUTEX_INITIALIZER; 
+	static pthread_mutex_t MutexMISCOMP = PTHREAD_MUTEX_INITIALIZER;
 #endif
 
 	/*
@@ -607,7 +607,7 @@ void *ChildMain(void *vtest)
 			
 			if(args->delayTimeMin == args->delayTimeMax) { /* static delay time */
 				/* only sleep if delay is greater then zero */
-				if(args->delayTimeMin > 0) { Sleep(args->delayTimeMin); } 
+				if(args->delayTimeMin > 0) { Sleep(args->delayTimeMin); }
 			} else { /* random delay time between min & max */
 				do {
 					delayTime = (unsigned long)(rand()&delayMask) + args->delayTimeMin;

@@ -40,7 +40,7 @@ int
 main (int argc, char **argv)
 {
 	struct event signal_int;
- 
+
 	/* Initalize the event library */
 	event_init();
 

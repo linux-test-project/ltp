@@ -71,7 +71,7 @@ void sighandler(int);
 
 char filename[40] = "";
 struct rlimit save_rlim, rlim, rlim1;
-int nofiles, fd, bytes, i, status, fail = 0; 
+int nofiles, fd, bytes, i, status, fail = 0;
 char *buf = "abcdefghijklmnopqrstuvwxyz";
 pid_t pid;
 

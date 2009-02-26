@@ -247,7 +247,7 @@ exp_cpu_time, fmyshares, delta_time);
 					tst_brkm (TFAIL, cleanup, "Could not migrate task 1 ");
 				else
 					fprintf (stdout, "TASK 1 MIGRATED FROM GROUP 1 TO GROUP 2\n");
-				strcpy (mytaskfile, "/dev/cpuctl/group_2/tasks"); 
+				strcpy (mytaskfile, "/dev/cpuctl/group_2/tasks");
 			}
 			/*
 			 * Read the shares files and again calculate the cpu fraction

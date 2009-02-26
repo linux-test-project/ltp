@@ -135,7 +135,7 @@ my_yield()
 static void
 usage(char *progname)           /* name of this program                       */
 {
-    fprintf(stderr, 
+    fprintf(stderr,
                "Usage: %s -d NUMDIR -f NUMFILES -h -t NUMTHRD\n"
                "\t -h Help!\n"
                "\t -l Number of loops:               Default: 1000\n"
@@ -174,7 +174,7 @@ allocate_free(int    repeat,	/* number of times to repeat allocate/free    */
         long    *ptrs[MAXPTRS];     /* the pointers allocated in this loop    */
         int     num_alloc;	    /* number of elements in ptrs[] so far    */
         int     i;
- 
+
         dprt(("pid[%d]: allocate_free: loop %d of %d\n", getpid(), loop, repeat));
 
 	/* loop terminates in one of three ways:
@@ -186,7 +186,7 @@ allocate_free(int    repeat,	/* number of times to repeat allocate/free    */
         {
             size_t  newsize = 0;
 
-            dprt(("pid[%d]: loop %d/%d; num_alloc=%d; size=%u\n", 
+            dprt(("pid[%d]: loop %d/%d; num_alloc=%d; size=%u\n",
 		getpid(), loop, repeat, num_alloc, size));
 
 	    /* Malloc the next block */
@@ -271,12 +271,12 @@ alloc_mem(void * threadnum)
 
     /* thread N will use growth scheme N mod 4 */
     int err = allocate_free(num_loop, ((uintptr_t)threadnum) % 4);
-    fprintf(stdout, 
+    fprintf(stdout,
     "Thread [%d]: allocate_free() returned %d, %s.  Thread exiting.\n",
     (int)(uintptr_t)threadnum, err, (err ? "failed" : "succeeded"));
     return (void *)(uintptr_t)(err ? -1 : 0);
 }
-        
+       
 
 /******************************************************************************/
 /*								 	      */
@@ -340,7 +340,7 @@ main(int	argc,		/* number of input parameters		      */
 		break;
 	}
     }
-    
+   
     dprt(("number of times to loop in the thread = %d\n", num_loop));
 
     thrdid = malloc(sizeof(pthread_t) * num_thrd);
@@ -381,14 +381,14 @@ main(int	argc,		/* number of input parameters		      */
         }
     }
     my_yield();
- 
+
     sop[0].sem_op = -1;
     if (semop(semid, sop, 1) == -1) {
         perror("semop");
         ret = -1;
         goto out;
     }
-   
+  
     for (thrd_ndx = 0; thrd_ndx < num_thrd; thrd_ndx++)
     {
         void *th_status;	/* exit status of LWP */

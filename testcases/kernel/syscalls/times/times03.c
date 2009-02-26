@@ -84,10 +84,10 @@ int main(int argc, char **argv)
 
 	setup();
 
-	/* 
+	/*
 	 * We spend time in userspace using the following mechanism :
 	 * Setup an alarm() for 3 secs and do some simple loop operations
-	 * until we get the signal. This makes the test independent of 
+	 * until we get the signal. This makes the test independent of
 	 * processor speed.
 	 */
 	sa.sa_sigaction = sighandler;
@@ -251,7 +251,7 @@ int main(int argc, char **argv)
 
 void sighandler (int signal, siginfo_t *info, void *uc)
 {
-	if (signal == SIGALRM) 
+	if (signal == SIGALRM)
 		timeout = 1;
 	else
 		tst_brkm (TBROK, cleanup, "Unexpected signal %d\n", signal);

@@ -22,7 +22,7 @@
 *
 *  Project Website:  TBD
 *
-* $Id: globals.c,v 1.5 2008/02/14 08:22:23 subrata_modak Exp $
+* $Id: globals.c,v 1.6 2009/02/26 12:02:22 subrata_modak Exp $
 *
 */
 
@@ -68,16 +68,16 @@ void init_gbl_data(test_env_t *env)
 void PrintLastSystemError(unsigned long ulErrorNum)
 {
 	LPVOID lpMsgBuf;
-	FormatMessage( 
-		FORMAT_MESSAGE_ALLOCATE_BUFFER | 
-	    FORMAT_MESSAGE_FROM_SYSTEM | 
+	FormatMessage(
+		FORMAT_MESSAGE_ALLOCATE_BUFFER |
+	    FORMAT_MESSAGE_FROM_SYSTEM |
 		FORMAT_MESSAGE_IGNORE_INSERTS,
 	    NULL,
 		ulErrorNum,
 	    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
 		(LPTSTR) &lpMsgBuf,
 	    0,
-		NULL 
+		NULL
 	);
 	pMsg(INFO,"%s",lpMsgBuf);
 	LocalFree(lpMsgBuf);
@@ -87,15 +87,15 @@ void PrintLastSystemError(unsigned long ulErrorNum)
 void GetSystemErrorString(unsigned long ulErrorNum, void *buffer)
 {
 	/* Use Default language */
-	FormatMessage( 
-	    FORMAT_MESSAGE_FROM_SYSTEM | 
+	FormatMessage(
+	    FORMAT_MESSAGE_FROM_SYSTEM |
 		FORMAT_MESSAGE_IGNORE_INSERTS,
 	    NULL,
 		ulErrorNum,
 	    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
 		(LPTSTR) &buffer,
 	    0,
-		NULL 
+		NULL
 	);
 }
 #endif

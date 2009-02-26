@@ -112,7 +112,7 @@ main(int ac, char **av)
 	char *test_desc; 	/* test specific error message */
 	int which;		/* process priority category */
 	uid_t who;		/* process uid of the test process */
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -141,7 +141,7 @@ main(int ac, char **av)
 				who = getuid();
 			}
 
-			/* 
+			/*
 			 * Invoke getpriority with the specified
 			 * 'which' and 'who' arguments and verify
 			 * that it fails with expected errno.
@@ -180,7 +180,7 @@ main(int ac, char **av)
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -194,7 +194,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

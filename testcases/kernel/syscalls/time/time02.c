@@ -17,7 +17,7 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-/* 
+/*
  * Test Name: time02
  *
  * Test Description:
@@ -65,7 +65,7 @@
  * Restrictions:
  *  None.
  *
- */ 
+ */
 
 #include <stdio.h>
 #include <errno.h>
@@ -92,7 +92,7 @@ main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 	time_t tloc;		/* time_t variables for time(2) */
 
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -105,14 +105,14 @@ main(int ac, char **av)
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
-    
+   
 	/* Check looping state if -i option given */
 	for (lc=0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 	
-		/* 
-		 * Call time() to get the time in seconds  
+		/*
+		 * Call time() to get the time in seconds 
 		 * since Epoch.
 		 */
 		TEST(time(&tloc));
@@ -157,7 +157,7 @@ main(int ac, char **av)
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -172,7 +172,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  * 	       completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

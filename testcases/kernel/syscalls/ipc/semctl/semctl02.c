@@ -85,7 +85,7 @@ int main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 	
-		un_arg.buf = &sem_ds; 
+		un_arg.buf = &sem_ds;
 
 		/*
 		 * use the TEST macro to make the call

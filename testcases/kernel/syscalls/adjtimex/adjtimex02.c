@@ -15,17 +15,17 @@
  *
  */
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER	: adjtimex02
- * 
+ *
  *    EXECUTED BY	: root / superuser
- * 
+ *
  *    TEST TITLE	: Tests for error conditions
- * 
+ *
  *    TEST CASE TOTAL	: 6
- * 
+ *
  *    AUTHOR		: Saji Kumar.V.R <saji.kumar@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -48,12 +48,12 @@
  *	    is 2.6.25 or below)
  *	6) adjtimex(2) fails with errno set to EPERM if buf.mode is
  *	   non-zero and the user is not super-user.
- * 
+ *
  * 	Setup:
  * 	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
  *	  Save current parameters in tim_save
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  *	  Call test case specific setup if needed
@@ -63,10 +63,10 @@
  *	  Otherwise
  *		Test failed
  *	  Call test case specific cleanup if needed
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  * adjtimex02 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
  *			where,  -c n : Run n copies concurrently.
@@ -89,7 +89,7 @@
 #include <errno.h>
 #include <sys/timex.h>
 #include <unistd.h>
-#include <pwd.h> 
+#include <pwd.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -162,7 +162,7 @@ main(int ac, char **av)
 			 * since Linux 2.6.26, if buf.offset value is outside
 			 * the acceptable range, it is simply normalized instead
 			 * of letting the syscall fail. so just skip this test
-			 * case. 
+			 * case.
 			 */
 			if ((i == 3 || i == 4) && tst_kvercmp(2,6,25) > 0) {
 				tst_resm(TCONF, "this kernel normalizes buf."
@@ -197,7 +197,7 @@ main(int ac, char **av)
 			if (test_cases[i].cleanup) {
 				test_cases[i].cleanup();
 			}
-		} 
+		}
 	}	/* End for TEST_LOOPING */
 
 	/* cleanup and exit */

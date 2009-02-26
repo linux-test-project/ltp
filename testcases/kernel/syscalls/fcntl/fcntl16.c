@@ -104,9 +104,9 @@ static testcase testcases[] = {
 			{F_RDLCK, 0, 0L, 5L, WILLBLOCK},
 				/* Child_b read lock on byte 6 to byte 10 */
 				{F_RDLCK, 0, 6L, 5L, WILLBLOCK},
-					/* 
+					/*
 					 * Parent_c write lock on entire
-					 * file 
+					 * file
 					 */
 					{F_WRLCK, 0, 0L, 0L, IGNORED},
 						/* Parent_d skipped */
@@ -120,7 +120,7 @@ static testcase testcases[] = {
 			{F_RDLCK, 0, 2L, 3L, WILLBLOCK},
 				/* Child_b read lock on byte 6 to byte 8 */
 				{F_RDLCK, 0, 6L, 3L, WILLBLOCK},
-					/* 
+					/*
 					 * Parent_c read lock on byte 3 to
 					 * byte 7
 					 */
@@ -152,7 +152,7 @@ static testcase testcases[] = {
 			{F_RDLCK, 0, 3L, 5L, NOBLOCK},
 				/* Child_b read lock on byte 5 to byte 10 */
 				{F_RDLCK, 0, 5L, 6L, WILLBLOCK},
-					/* 
+					/*
 					 * Parent_c read lock on byte 2 to
 					 * byte 8
 					 */
@@ -181,7 +181,7 @@ static testcase testcases[] = {
 			{F_RDLCK, 0, 2L, 3L, NOBLOCK},
 				/* Child_b read lock on byte 6 to byte 8 */
 				{F_RDLCK, 0, 6L, 3L, NOBLOCK},
-					/* 
+					/*
 					 * Parent_c read lock on byte 1 to
 					 * byte 9
 					 */
@@ -197,7 +197,7 @@ static testcase testcases[] = {
 			{F_RDLCK, 0, 3L, 5L, NOBLOCK},
 				/* Child_b skipped */
 				{SKIP},
-					/* 
+					/*
 					 * Parent_c read lock on byte 1 to
 					 * byte 5
 					 */
@@ -237,7 +237,7 @@ static testcase testcases[] = {
 			{F_RDLCK, 0, 2L, 3L, NOBLOCK},
 				/* Child_b read lock on byte 6 to byte 8 */
 				{F_RDLCK, 0, 6L, 3L, NOBLOCK},
-					/* 
+					/*
 					 * Parent_c read lock on byte 1 to
 					 * byte 7
 					 */
@@ -692,7 +692,7 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 /* //block1: */
-		/* 
+		/*
 		 * Check file locks on an ordinary file without
 		 * mandatory locking
 		 */

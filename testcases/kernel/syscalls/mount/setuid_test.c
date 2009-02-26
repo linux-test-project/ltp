@@ -29,20 +29,20 @@
 #include <stdlib.h>
 #include <stdlib.h>
 #include <errno.h>
-        
-        
+       
+       
 /* Save the effective and real UIDs. */
-        
+       
 static uid_t euid, ruid;
-        
-        
+       
+       
 /* Restore the effective UID to its original value. */
-        
+       
 int
 do_setuid (void)
 {
 	int status;
-        
+       
 	status = setreuid (ruid, 0);
 	if (status < 0) {
 		return 1;
@@ -51,9 +51,9 @@ do_setuid (void)
 	}
 	return 0;
 }
-        
+       
 /* Main program. */
-        
+       
 int
 main (void)
 {

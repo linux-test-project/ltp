@@ -33,7 +33,7 @@
 	<    file and ensure feof returns non-zero.
 	< 4) after 3) above use clearerr and then use feof to ensure
 	<    clearerr worked
->BUGS:  < 
+>BUGS:  <
 ======================================================================*/
 
 #include <unistd.h>

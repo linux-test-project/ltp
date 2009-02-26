@@ -41,7 +41,7 @@
 /* Author:       Manoj Iyer - manjo@mail.utexas.edu                           */
 /*                                                                            */
 /******************************************************************************/
- 
+
 /******************************************************************************/
 /*                                                                            */
 /* Apr-13-2001    Created: Manoj Iyer, IBM Austin.                            */
@@ -195,7 +195,7 @@ sig_handler(int signal) /* signal number, set to handle SIGALRM               */
 /* Synopsis:    void usage(char *progname);                                   */
 /*                                                                            */
 /******************************************************************************/
-static void 
+static void
 usage(char *progname)        /* name of this program                       */
 {
     fprintf(stderr, "usage:%s -h -n test -t time -v [-V]\n", progname);
@@ -268,9 +268,9 @@ thread_fault(void *args)         /* pointer to the arguments passed to routine*/
                                  /* local_args[FLTIPE]  - fault type          */
     int     pgnum_ndx    = 0;    /* index to the number of pages              */
     caddr_t start_addr           /* start address of the page                 */
-                         = (caddr_t)(local_args[MAPADDR] 
-                                     + (int)local_args[THNUM] 
-                                     * (pages_num/NUMTHREAD) 
+                         = (caddr_t)(local_args[MAPADDR]
+                                     + (int)local_args[THNUM]
+                                     * (pages_num/NUMTHREAD)
                                      * local_args[PAGESIZ]);
     char    read_from_addr = 0;  /* address to which read from page is done   */
     char    write_to_addr[] = {'a'}; /* character to be writen to the page    */
@@ -286,7 +286,7 @@ thread_fault(void *args)         /* pointer to the arguments passed to routine*/
      */
     thread_begin = FALSE;
 
-    while (wait_thread) 
+    while (wait_thread)
         sched_yield();
 
     for (; pgnum_ndx < (pages_num/NUMTHREAD); pgnum_ndx++)
@@ -295,7 +295,7 @@ thread_fault(void *args)         /* pointer to the arguments passed to routine*/
         /* else write a character to the page.                                */
         ((int)local_args[3] == READ_FAULT) ? (read_from_addr = *start_addr)
                                            : (*start_addr = write_to_addr[0]);
-        start_addr += local_args[PAGESIZ]; 
+        start_addr += local_args[PAGESIZ];
         if (verbose_print)
 	    tst_resm(TINFO, "thread_fault(): generating fault type %ld"
                             " @page address %p", local_args[3], start_addr);
@@ -339,8 +339,8 @@ remove_files(char *filename, char * addr)    /* name of the file that is to be r
     {
         if (verbose_print)
             tst_resm(TINFO, "file %s removed", filename);
-        
-    }      
+       
+    }     
     return SUCCESS;
 }
 
@@ -374,7 +374,7 @@ map_and_thread(
     int    fault_type,           /* type of fault to be generated             */
     int    num_thread,           /* number of threads to create               */
     RETINFO_t *retinfo)          /* return map address and oper status        */
-           
+          
 {
     int  fd         = 0;         /* file descriptor of the file created       */
     int  thrd_ndx   = 0;         /* index to the number of threads created    */
@@ -383,17 +383,17 @@ map_and_thread(
     long th_args[5];     	/* argument list passed to  thread_fault()   */
     char *empty_buf = NULL;      /* empty buffer used to fill temp file       */
     long pagesize                /* contains page size at runtime             */
-                    = sysconf(_SC_PAGESIZE);        
+                    = sysconf(_SC_PAGESIZE);       
     static pthread_t pthread_ids[NUMTHREAD];
                                  /* contains ids of the threads created       */
     caddr_t map_addr = NULL;     /* address where the file is mapped          */
-                
+               
     /* Create a file with permissions 0666, and open it with RDRW perms       */
     /* if the name is not a NULL                                              */
 
     if (strcmp(tmpfile, "NULL"))
     {
-        if ((fd = open(tmpfile, O_RDWR|O_CREAT, S_IRWXO|S_IRWXU|S_IRWXG)) 
+        if ((fd = open(tmpfile, O_RDWR|O_CREAT, S_IRWXO|S_IRWXU|S_IRWXG))
                 == -1 )
         {
             perror("map_and_thread(): open()");
@@ -415,17 +415,17 @@ map_and_thread(
             retinfo->status = FAILED;
             return retinfo;
         }
-        map_type = (fault_type == COW_FAULT) ? MAP_PRIVATE : MAP_SHARED; 
+        map_type = (fault_type == COW_FAULT) ? MAP_PRIVATE : MAP_SHARED;
 
         /* Map the file, if the required fault type is COW_FAULT map the file */
         /* private, else map the file shared. if READ_FAULT is required to be */
         /* generated map the file with read protection else map with read -   */
         /* write protection.                               */
-    
-        if ((map_addr = (caddr_t)mmap(0, pagesize*pages_num, 
-                        ((fault_type == READ_FAULT) ? 
+   
+        if ((map_addr = (caddr_t)mmap(0, pagesize*pages_num,
+                        ((fault_type == READ_FAULT) ?
 			PROT_READ : PROT_READ|PROT_WRITE),
-                        map_type, fd, 0)) 
+                        map_type, fd, 0))
 		      == MAP_FAILED)
         {
             perror("map_and_thread(): mmap()");
@@ -448,7 +448,7 @@ map_and_thread(
 
     /* As long as wait is set to TRUE, the thread that will be created will */
     /* loop in its exec routine */
-    
+   
     wait_thread = TRUE;
 
     /* Create a few threads, ideally number of threads equals number of CPU'S */
@@ -462,7 +462,7 @@ map_and_thread(
     {
         th_args[0] = thrd_ndx;
         th_args[4] = (long)0;
-    
+   
        /*************************************************************/
        /*   The way it was, args could be overwritten by subsequent uses
         *   of it before the called routine had a chance to fully initialize.
@@ -495,9 +495,9 @@ map_and_thread(
 
     if (verbose_print)
         tst_resm(TINFO, "map_and_thread(): pthread_create() success");
-    wait_thread = FALSE; 
+    wait_thread = FALSE;
     th_status = malloc(sizeof(int *));
-    
+   
     /* suspend the execution of the calling thread till the execution of the  */
     /* other thread has been terminated.                                      */
 
@@ -520,14 +520,14 @@ map_and_thread(
                 tst_resm(TINFO,
                         "thread [%ld] - process exited with errors",
                 (long)pthread_ids[thrd_ndx]);
-                free(empty_buf);                          
+                free(empty_buf);                         
                 remove_files(tmpfile, map_addr);
                 close(fd);
                 exit(1);
             }
-        }   
+        }  
     }
-    
+   
     /* remove the temporary file that was created. - clean up                 */
     /* but dont try to remove special files.                                  */
 
@@ -571,13 +571,13 @@ map_and_thread(
 /*                                                                            */
 /******************************************************************************/
 static int
-test1() 
+test1()
 {
     RETINFO_t retval;    /* contains info relating to test status          */
 
     tst_resm(TINFO, "test1: Test case tests the race condition between "
            "simultaneous read faults in the same address space.");
-    map_and_thread("./tmp.file.1", thread_fault, READ_FAULT, NUMTHREAD, 
+    map_and_thread("./tmp.file.1", thread_fault, READ_FAULT, NUMTHREAD,
                    &retval);
     return (retval.status);
 }
@@ -600,13 +600,13 @@ test1()
 /*                                                                            */
 /******************************************************************************/
 static int
-test2() 
+test2()
 {
     RETINFO_t retval;    /* contains test stats information               */
 
     tst_resm(TINFO, "test2: Test case tests the race condition between "
        "simultaneous write faults in the same address space.");
-    map_and_thread("./tmp.file.2", thread_fault, WRITE_FAULT, NUMTHREAD, 
+    map_and_thread("./tmp.file.2", thread_fault, WRITE_FAULT, NUMTHREAD,
                    &retval);
     return (retval.status);
 }
@@ -629,10 +629,10 @@ test2()
 /*                                                                            */
 /******************************************************************************/
 static int
-test3() 
+test3()
 {
     RETINFO_t retval;    /* contains test stats information                   */
- 
+
     tst_resm(TINFO, "test3: Test case tests the race condition between "
            "simultaneous COW faults in the same address space.");
     map_and_thread("./tmp.file.3", thread_fault, COW_FAULT, NUMTHREAD, &retval);
@@ -657,7 +657,7 @@ test3()
 /*                                                                            */
 /******************************************************************************/
 static int
-test4() 
+test4()
 {
     RETINFO_t retval;     /* contains test status information                 */
 
@@ -685,7 +685,7 @@ test4()
 /*                                                                            */
 /******************************************************************************/
 static int
-test5() 
+test5()
 {
     int    fork_ndx = 0;    /* index to the number of processes forked        */
     pid_t  pid      = 0;    /* process id, returned by fork system call.      */
@@ -715,9 +715,9 @@ test5()
             if (pid != -1)
                 wait(&wait_status);
         }
-        
+       
     } while (fork_ndx++ < NUMTHREAD);
-    
+   
     if (sbrk(-BRKSZ) == (caddr_t)-1)
     {
         tst_resm(TINFO, "test5(): rollback sbrk failed");
@@ -760,7 +760,7 @@ test6()
            "simultaneous fork -exec - exit faults in the same address space.");
 
     /* increment the  program's  data  space  by 200*1024 (BRKSZ) bytes       */
-    
+   
     if (sbrk(BRKSZ) == (caddr_t)-1)
     {
         perror("test6(): sbrk()");
@@ -797,7 +797,7 @@ test6()
             /*************************************************/
             /*   Dummy uses exit 0.
              *   Capture exit of child and set res accordingly.
-             *   It defaults to SUCCESS.  Only gets set if 
+             *   It defaults to SUCCESS.  Only gets set if
              *   child fails.
              */
             if (WEXITSTATUS(wait_status) != 0)
@@ -805,7 +805,7 @@ test6()
         }
 
     } while (fork_ndx++ < NUMTHREAD);
-   
+  
     if (sbrk(-BRKSZ) == (caddr_t)-1)
     {
         tst_resm(TINFO, "test6(): rollback sbrk failed");
@@ -821,7 +821,7 @@ test6()
     return res;
 }
 
-    
+   
 /******************************************************************************/
 /*                                                                            */
 /* Function:    main                                                          */
@@ -851,7 +851,7 @@ main(int   argc,     /* number of command line parameters                     */
 
     static char *version_info = "mmstress V1.00 04/17/2001";
                           /* version of this program                          */
-    int    (*(test_ptr)[])() =    
+    int    (*(test_ptr)[])() =   
                                {NULL, test1, test2, test3, test4, test5, test6};
                                     /* pointer to the array of test names     */
     int    ch;                      /* command line flag character            */
@@ -869,7 +869,7 @@ main(int   argc,     /* number of command line parameters                     */
     {
         int  signum;    /* signal number that hasto be handled                */
         char *signame;  /* name of the signal to be handled.                  */
-    } 
+    }
     sig_info[] =  {     {SIGHUP,"SIGHUP"},
                         {SIGINT,"SIGINT"},
                         {SIGQUIT,"SIGQUIT"},
@@ -881,7 +881,7 @@ main(int   argc,     /* number of command line parameters                     */
                         {SIGUSR2,"SIGUSR2"},
                         {SIGENDSIG,"ENDSIG"}
                    };
-    
+   
     setvbuf(stdout, NULL, _IONBF, 0);
     setvbuf(stderr, NULL, _IONBF, 0);
 
@@ -897,7 +897,7 @@ main(int   argc,     /* number of command line parameters                     */
         {
             case 'h': usage(argv[0]);
                       break;
-            case 'n': if (optarg) 
+            case 'n': if (optarg)
                           test_num = atoi(optarg);
                       else
                           OPT_MISSING(prog_name, optopt);
@@ -914,7 +914,7 @@ main(int   argc,     /* number of command line parameters                     */
                           run_once = FALSE;
                       }
                       else
-                          OPT_MISSING(prog_name, optopt);               
+                          OPT_MISSING(prog_name, optopt);              
                       break;
             case 'v': verbose_print = TRUE;
                       break;
@@ -927,7 +927,7 @@ main(int   argc,     /* number of command line parameters                     */
             case '?': if (argc < optind)
                           OPT_MISSING(prog_name, optopt);
                       else
-                          fprintf(stderr, 
+                          fprintf(stderr,
                               "%s: unknown option - %c ignored\n", prog_name,
                               optopt);
                       break;
@@ -939,7 +939,7 @@ main(int   argc,     /* number of command line parameters                     */
     /* duration for which the tests have to be run. test_time is converted to */
     /* corresponding seconds and the tests are run as long as the current time*/
     /* is less than the required time and test are successul (ie rc = 0)      */
-    
+   
     set_timer(test_time);
 
     /* set up signals */
@@ -984,7 +984,7 @@ main(int   argc,     /* number of command line parameters                     */
         else
         {
             global_rc = (test_num > MAXTEST) ?
-		  fprintf(stderr, 
+		  fprintf(stderr,
                             "Invalid test number, must be in range [1 - %d]\n",
                              MAXTEST):
                   test_ptr[test_num]();

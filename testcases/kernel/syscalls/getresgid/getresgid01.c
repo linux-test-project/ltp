@@ -2,7 +2,7 @@
  * $Copyright: $
  * Copyright (c) 1984-2000
  * Sequent Computer Systems, Inc.   All rights reserved.
- *  
+ * 
  * This software is furnished under a license and may be used
  * only in accordance with the terms of that license and with the
  * inclusion of the above copyright notice.   This software may not
@@ -86,7 +86,7 @@ main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 	gid_t real_gid,		/* real/eff./saved user id from getresgid() */
 	      eff_gid, sav_gid;
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -102,7 +102,7 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 
-		/* 
+		/*
 		 * Call getresgid() to get the real/effective/saved
 		 * user id's of the calling process.
 		 */
@@ -148,7 +148,7 @@ main(int ac, char **av)
  * setup() - performs all ONE TIME setup for this test.
  *	     Get the real/effective/saved user id of the calling process.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -173,7 +173,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

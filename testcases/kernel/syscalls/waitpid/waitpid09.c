@@ -47,7 +47,7 @@
  *		
  * History
  *	07/2001 John George
- *		-Ported 
+ *		-Ported
  *      04/2002 wjhuie sigset cleanups
  *
  * Restrictions

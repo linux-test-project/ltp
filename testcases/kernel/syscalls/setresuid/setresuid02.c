@@ -100,7 +100,7 @@ struct test_data_t {
 	{ &bin_pw_uid, &neg_one, &neg_one, &bin, &nobody, &bin, "After setresuid(bin, -1 -1)," },
 };
 
-int TST_TOTAL = sizeof(test_data)/sizeof(test_data[0]); 
+int TST_TOTAL = sizeof(test_data)/sizeof(test_data[0]);
 
 void setup(void);
 void cleanup(void);

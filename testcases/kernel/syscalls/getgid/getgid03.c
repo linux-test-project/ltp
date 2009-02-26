@@ -109,8 +109,8 @@ int main(int ac, char **av)
 				tst_brkm(TBROK, cleanup, "getuid() returned "
 					 "unexpected value %d", uid);
 			} else if (!GID_SIZE_CHECK(pwent->pw_gid)) {
-				tst_brkm(TBROK, 
-					 cleanup, 
+				tst_brkm(TBROK,
+					 cleanup,
 					 "gid for uid %d is too large for testing getgid16",
 					uid);
 			} else {

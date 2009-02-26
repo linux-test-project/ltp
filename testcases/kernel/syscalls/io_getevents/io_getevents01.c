@@ -56,7 +56,7 @@ cleanup(void)
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void 
+void
 setup()
 {
     /* capture signals */
@@ -127,7 +127,7 @@ main(int argc, char** argv)
 		}
 		/*
 		  EFAULT Either events or timeout is an invalid pointer.
-		  
+		 
 		  ENOSYS io_getevents is not implemented on this architecture.
 		*/
 		/* Crackerjack has a test case for ENOSYS. But Testing for ENOSYS

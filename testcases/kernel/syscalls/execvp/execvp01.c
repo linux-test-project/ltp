@@ -30,83 +30,83 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: execvp01.c,v 1.3 2006/05/26 06:26:38 vapier Exp $ */
+/* $Id: execvp01.c,v 1.4 2009/02/26 12:02:34 subrata_modak Exp $ */
 /**********************************************************
- * 
+ *
  *    OS Test - Silicon Graphics, Inc.
- * 
+ *
  *    TEST IDENTIFIER	: execvp01
- * 
+ *
  *    EXECUTED BY	: anyone
- * 
+ *
  *    TEST TITLE	: Basic test for execvp(2)
- * 
+ *
  *    PARENT DOCUMENT	: usctpl01
- * 
+ *
  *    TEST CASE TOTAL	: 1
- * 
+ *
  *    WALL CLOCK TIME	: 1
- * 
+ *
  *    CPU TYPES		: ALL
- * 
+ *
  *    AUTHOR		: William Roske
- * 
+ *
  *    CO-PILOT		: Dave Fenner
- * 
+ *
  *    DATE STARTED	: 06/01/02
- * 
+ *
  *    INITIAL RELEASE	: UNICOS 7.0
- * 
+ *
  *    TEST CASES
- * 
+ *
  * 	1.) execvp(2) returns...(See Description)
  *	
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
- * 
+ *
  *    OUTPUT SPECIFICATIONS
  * 	
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
  *
  *    RESOURCES
  * 	None
- * 
+ *
  *    ENVIRONMENTAL NEEDS
  *      No run-time environmental needs.
- * 
+ *
  *    SPECIAL PROCEDURAL REQUIREMENTS
  * 	None
- * 
+ *
  *    INTERCASE DEPENDENCIES
  * 	None
- * 
+ *
  *    DETAILED DESCRIPTION
  *	This is a Phase I test for the execvp(2) system call.  It is intended
  *	to provide a limited exposure of the system call, for now.  It
  *	should/will be extended when full functional tests are written for
  *	execvp(2).
- * 
+ *
  * 	Setup:
  * 	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  * 	  Execute system call
  *	  Check return code, if system call failed (return=-1)
  *		Log the errno and Issue a FAIL message.
  *	  Otherwise, Issue a PASS message.
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
- * 
+ *
+ *
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
 #include <errno.h>
@@ -141,7 +141,7 @@ main(int ac, char **av)
 {
     int lc;		/* loop counter */
     char *msg;		/* message returned from parse_opts */
-    
+   
     Tst_nobuf=1;	/* turn off buffering in tst_ routines */
 
     /***************************************************************
@@ -167,9 +167,9 @@ main(int ac, char **av)
 	Tst_count=0;
 
 		
-	/* 
+	/*
 	 * TEST CASE:
-	 *   fork, then call execvp from child 
+	 *   fork, then call execvp from child
 	 */
 	switch(pid=FORK_OR_VFORK()) {
 	case 0: 	/* CHILD - Call execvp(2) */
@@ -177,7 +177,7 @@ main(int ac, char **av)
 	    /* should not get here!! if we do, the parent will fail the Test Case */
 	    exit(errno);	
 	case -1:	/* ERROR!!! exit now!!*/
-	    tst_brkm(TBROK, cleanup, 
+	    tst_brkm(TBROK, cleanup,
 			"Unable to fork a child process to exec over!  Errno:%d,:%s",
 			errno, strerror(errno));
 	    break;
@@ -190,7 +190,7 @@ main(int ac, char **av)
 		if ( STD_FUNCTIONAL_TEST ) {
 		    /* No Verification test, yet... */
 		    tst_resm(TPASS, "execvp - properly exec's a simple program..");
-		} 
+		}
 	    } else {
 		TEST_ERROR_LOG(WEXITSTATUS(status));
 		tst_resm(TFAIL, "Child process did not terminate properly, status=%d", status);
@@ -211,12 +211,12 @@ main(int ac, char **av)
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void 
+void
 setup()
 {
     /* capture signals */
     tst_sig(FORK, DEF_HANDLER, cleanup);
-    
+   
     /*
      * Send out info message that timing and errnolog info is not
      * available because of the use of a child process for each exec
@@ -239,7 +239,7 @@ The TEST macro is NOT used.");
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void 
+void
 cleanup()
 {
     /*

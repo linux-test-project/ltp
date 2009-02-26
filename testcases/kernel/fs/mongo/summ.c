@@ -1,12 +1,12 @@
 /*
- * Copyright 2000 by Hans Reiser, licensing governed by reiserfs/README 
+ * Copyright 2000 by Hans Reiser, licensing governed by reiserfs/README
  */
- 
+
 #include <stdio.h>
 #include <stdlib.h>
 char str[100];
 
-int main(int argc, char **argv) {    
+int main(int argc, char **argv) {   
 char c, *p;
 int sum=0, n=0;
 
@@ -20,6 +20,6 @@ int sum=0, n=0;
 	    sum += n;
 	    printf("%i\n", sum);
 	    p = str; *p = '\0';
-	} 
+	}
     }
 }

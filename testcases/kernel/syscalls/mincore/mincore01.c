@@ -31,7 +31,7 @@
  *	test2:
  *		Invoke mincore() when the vector points to an invalid address. EFAULT
  *	test3:
- *		Invoke mincore() when the starting address + length contained unmapped 
+ *		Invoke mincore() when the starting address + length contained unmapped
  *		memory. ENOMEM
  *
  * USAGE:  <for command-line>
@@ -45,7 +45,7 @@
  *
  * HISTORY
  *  Author: Rajeev Tiwari: rajeevti@in.ibm.com
- *	08/2004 Rajeev Tiwari : does a basic sanity check for the various error 
+ *	08/2004 Rajeev Tiwari : does a basic sanity check for the various error
  *  conditions possible with the mincore system call.
  *
  * 	2004/09/10 Gernot Payer <gpayer@suse.de>
@@ -97,7 +97,7 @@ static struct test_case_t {
 		  { NULL,0,NULL,EINVAL,setup1 },
 		  { NULL,0,NULL,EFAULT,setup2 },
 		  { NULL,0,NULL,ENOMEM,setup3 },
-}; 
+};
 
 int main(int ac, char **av)
 {
@@ -150,7 +150,7 @@ int main(int ac, char **av)
 }
 
 /*
- * setup1() - sets up conditions for the first test. the start address is not 
+ * setup1() - sets up conditions for the first test. the start address is not
  * multiple of page size
  */
 void
@@ -192,10 +192,10 @@ setup2()
 
 /*
  *  setup3() - performs the setup for test3(the starting address + length
- *  contained unmapped memory). we give the length of mapped file equal to 5 
+ *  contained unmapped memory). we give the length of mapped file equal to 5
  *  times the mapped file size.
  */
-void 
+void
 setup3()
 {
 	TC[2].addr = global_pointer;

@@ -159,7 +159,7 @@ main(int argc, char **argv)
     exit(EXIT_SUCCESS);
 }
 
-void 
+void
 setup(void)
 {
 	TEST_EXP_ENOS(exp_enos);
@@ -167,7 +167,7 @@ setup(void)
     TEST_PAUSE;
 }
 
-void 
+void
 cleanup(void)
 {
     TEST_CLEANUP;

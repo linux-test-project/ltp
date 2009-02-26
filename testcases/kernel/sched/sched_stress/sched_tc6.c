@@ -61,7 +61,7 @@
 
 /*
  * Defines:
- * 
+ *
  * USAGE: usage statement
  *
  * DEFAULT_PRIORITY_TYPE: default priority
@@ -184,12 +184,12 @@ int main (int argc, char **argv)
 		error ("lock_file failed", __FILE__, __LINE__);
 
 	/* If fork flag set, fork a real process */
-	if (fork_flag) 
+	if (fork_flag)
 		pid = fork_realtime (argv);
 
 	/* Read file */
 	if (debug) {
-		printf ("\tprocess id %d successfully locked %s\n", 
+		printf ("\tprocess id %d successfully locked %s\n",
 			getpid(), filename);
 		printf ("\tprocess id %d starting to read %s\n",
 			getpid(), filename);
@@ -213,13 +213,13 @@ int main (int argc, char **argv)
 		sys_error ("fclose failed", __FILE__, __LINE__);
 
 
-	/* Unlock file at latest possible time to prevent real time child from 
+	/* Unlock file at latest possible time to prevent real time child from
 	 * writing throughput results before user process parent */
 	unlock_file (fd, filename);
 	close (fd);
 
-	if (debug) 
-	    printf ("\tprocess id %d completed read and unlocked file\n", 
+	if (debug)
+	    printf ("\tprocess id %d completed read and unlocked file\n",
 			    	getpid());
 
 
@@ -231,21 +231,21 @@ int main (int argc, char **argv)
 	    if (debug)
 	       printf ("parent waiting on child process %d to complete\n", pid);
 
-	    while ((rc=wait ((void *) 0)) != pid) 
+	    while ((rc=wait ((void *) 0)) != pid)
 	       if (rc == -1)
 	          sys_error ("wait failed", __FILE__, __LINE__);
 /*
 DARA: which one to use
 1st -- hangs
-2nd -- ERROR message 
+2nd -- ERROR message
 
 	    while (wait((void *) 0) != pid) ;
-	    while ((rc=wait ((void *) 0)) != pid) 
+	    while ((rc=wait ((void *) 0)) != pid)
 	       if (rc == -1)
 	          sys_error ("wait failed", __FILE__, __LINE__);
-*/		 
+*/		
 	}
-   
+  
 	/* Exit with success! */
 	if (verbose) printf ("\nsuccessful!\n");
 	return (0);
@@ -276,7 +276,7 @@ int open_file (char *file, int open_mode)
 | Function:  ...                                                       |
 |                                                                      |
 +---------------------------------------------------------------------*/
-int fork_realtime (char **args) 
+int fork_realtime (char **args)
 {
 	int pid;
 	char *results_file = args[2];
@@ -284,27 +284,27 @@ int fork_realtime (char **args)
 
 
 	/* fork process then determine if process is parent or child */
-	pid = fork();     
-	switch(pid)     
+	pid = fork();    
+	switch(pid)    
 	{
 		/* fork failed  */
-		case -1:  
+		case -1: 
 			sys_error ("fork failed", __FILE__, __LINE__);
 
 		/* child process */
-		case 0:   
-			if (execl(*args, *args, REAL_TIME, results_file, priority, 
-			NO_FORK, (char *) NULL) < 0) 
+		case 0:  
+			if (execl(*args, *args, REAL_TIME, results_file, priority,
+			NO_FORK, (char *) NULL) < 0)
 				sys_error ("execl failed", __FILE__, __LINE__);
 
 		/* parent process */
-		default:  
+		default: 
 			#ifdef DEBUG
 			printf ("\tparent process id = %d\n", getpid());
 			printf ("\tchild process id = %d\n\n", pid);
 			#endif
 
-		break;            
+		break;           
 	}
 	return(pid);
 }
@@ -318,7 +318,7 @@ int fork_realtime (char **args)
 | Function:  ...                                                       |
 |                                                                      |
 +---------------------------------------------------------------------*/
-int read_file (int fd, char *filename) 
+int read_file (int fd, char *filename)
 {
 	int bytes_read;
 	int loop_count;
@@ -339,7 +339,7 @@ int read_file (int fd, char *filename)
 			{
 				sys_error ("read failed", __FILE__, __LINE__);
 			} else
-				total_bytes = total_bytes + bytes_read; 
+				total_bytes = total_bytes + bytes_read;
 		}
 		if  (lseek (fd, file_offset, whence) < 0)
 			sys_error ("lseek failed", __FILE__, __LINE__);
@@ -374,8 +374,8 @@ int lock_file (int fd, short lock_type, char *file)
 		lock_mode = F_SETLKW;     /* set lock and use system wait */
 	#endif
 
-	/* file segment locking set data type flock - information 
-	 * passed to system by user -- 
+	/* file segment locking set data type flock - information
+	 * passed to system by user --
 	 *   l_whence:  starting point of relative offset of file
 	 *   l_start:   defines relative offset in bytes from l_whence
 	 *   l_len:     number of consecutive bytes to be locked
@@ -396,7 +396,7 @@ int lock_file (int fd, short lock_type, char *file)
 				return (0);
 			}
 		} else
-			return (0); 
+			return (0);
 	}
 	return (1);
 }
@@ -418,7 +418,7 @@ int unlock_file (int fd, char *file)
 
 	return 1;
 }
-  
+ 
 
 /*---------------------------------------------------------------------+
 |                                 main                                 |
@@ -444,7 +444,7 @@ int lock_error (int fd, char *file)
 #endif
 			break;
 
-		/* 
+		/*
 		 * This was a DS error code, and DS does not exist V3.1
 		 */
 #ifndef __linux__
@@ -455,7 +455,7 @@ int lock_error (int fd, char *file)
 			break;
 #endif
 
-		case EAGAIN:                      /* server too busy */ 
+		case EAGAIN:                      /* server too busy */
 			printf ("ERROR:  Server too busy to accept the request\n");
 			break;
 
@@ -552,15 +552,15 @@ void parse_args (int argc, char **argv)
 	/*
 	 * Check percentage and process slots...
  	 */
-	if (tflg) { 
-		if (strcmp (priority_type, "fixed") && 
+	if (tflg) {
+		if (strcmp (priority_type, "fixed") &&
 		    strcmp (priority_type, "variable")) {
 			errflag++;
 			fprintf (stderr, "Error: priority type must be: " \
 					 "\'fixed\' or \'variable\'\n");
 		}
 	}
-	if (pflg) { 
+	if (pflg) {
 		if (priority < 50 || priority > 100) {
 			errflag++;
 			fprintf (stderr, "Error: priority range [50..100]\n");

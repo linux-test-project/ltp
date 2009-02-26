@@ -21,14 +21,14 @@
  * Test Name: lseek08
  *
  * Test Description:
- *  Verify that, lseek() call succeeds to set the file pointer position 
+ *  Verify that, lseek() call succeeds to set the file pointer position
  *  to the end of the file when 'whence' value set to SEEK_END and any
  *  attempts to read from that position should fail.
  *
  * Expected Result:
- *  lseek() should return the offset which is set to the file size measured 
+ *  lseek() should return the offset which is set to the file size measured
  *  in bytes. read() attempt should fail with -1 return value.
- *   
+ *  
  * Algorithm:
  *  Setup:
  *   Setup signal handling.
@@ -97,7 +97,7 @@ main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	char read_buf[1];	/* data read from temp. file */
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -113,7 +113,7 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 
-		/* 
+		/*
 		 * Invoke lseek(2) to move the read/write file
 		 * pointer/handle to the END of the file.
 		 */
@@ -172,7 +172,7 @@ main(int ac, char **av)
  *	     data into it.
  *	     Get the size of the file using fstat().
  */
-void 
+void
 setup()
 {
 	struct stat stat_buf;		/* struct. buffer for stat(2) */
@@ -219,7 +219,7 @@ setup()
  *             completion or premature exit.
  *	       Remove the test directory and testfile created in the setup.
  */
-void 
+void
 cleanup()
 {
 	/*

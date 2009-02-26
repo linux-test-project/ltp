@@ -183,7 +183,7 @@ void create_child_thread(char* buf, size_t buf_len)
 	tst_brkm(TBROK, cleanup, "pthread_attr_init failed: %s",
 		strerror_r(ret, buf, buf_len));
     }
-    if ((ret = pthread_attr_setdetachstate(&attr, 
+    if ((ret = pthread_attr_setdetachstate(&attr,
 					   PTHREAD_CREATE_DETACHED)) != 0) {
 	tst_brkm(TBROK, cleanup, "pthread_attr_setdetachstate failed: %s",
 		strerror_r(ret, buf, buf_len));
@@ -224,14 +224,14 @@ int main(int argc, char** argv)
             if (optarg)
                 numloops = atoi(optarg);
             else
-                fprintf(stderr, "%s: option -l requires an argument\n", argv[0]);    
+                fprintf(stderr, "%s: option -l requires an argument\n", argv[0]);   
             break;
         default:
             usage(argv[0]);
             exit(1);
         }
     }
-         
+        
     signal(SIGALRM, trap_alarm);
     alarm(MAXTIME);
 
@@ -242,7 +242,7 @@ int main(int argc, char** argv)
     call_cond_init(&child, buf, sizeof(buf));
 
     call_mutex_lock(&ack, buf, sizeof(buf));
-    
+   
     create_child_thread(buf, sizeof(buf));
 
     tst_resm(TINFO,"Starting test, please wait.");

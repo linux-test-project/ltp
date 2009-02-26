@@ -17,15 +17,15 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-/* 
+/*
  * Test Name: chmod01
  *
  * Test Description:
  *  Verify that, chmod(2) succeeds when used to change the mode permissions
- *  of a file. 
+ *  of a file.
  *
  * Expected Result:
- *  chmod(2) should return 0 and the mode permissions set on file should match 
+ *  chmod(2) should return 0 and the mode permissions set on file should match
  *  the specified mode.
  *	
  * Algorithm:
@@ -98,7 +98,7 @@ main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 	int ind;		/* counter variable for chmod(2) tests */
 	int mode;		/* file mode permission */
-    
+   
 	TST_TOTAL = sizeof(Modes) / sizeof(int);
 
 	/* Parse standard options given to run the test. */
@@ -119,7 +119,7 @@ main(int ac, char **av)
 		for (ind = 0; ind < TST_TOTAL; ind++) {
 			mode = Modes[ind];
 
-			/* 
+			/*
 			 * Call chmod(2) with different mode permission
 			 * bits to set it for "testfile".
 		 	 */
@@ -182,7 +182,7 @@ main(int ac, char **av)
  *  Create a temporary directory and change directory to it.
  *  Create a test file under temporary directory and close it
  */
-void 
+void
 setup()
 {
 	int fd;
@@ -216,7 +216,7 @@ setup()
  *	       completion or premature exit.
  *  Remove the test directory and testfile created in the setup.
  */
-void 
+void
 cleanup()
 {
 	/*

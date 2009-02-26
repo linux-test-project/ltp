@@ -391,12 +391,12 @@ int dotest(testers, me, fd)
 	 */
 	val = (64/testers) * me + 1;
 
-	/* 
-	 * For each iteration: 
-	 *	zap bits array 
-	 *	loop 
-	 *		pick random chunk, read it.  
-	 *		if corresponding bit off { 
+	/*
+	 * For each iteration:
+	 *	zap bits array
+	 *	loop
+	 *		pick random chunk, read it. 
+	 *		if corresponding bit off {
 	 *			verify = 0. (sparse file)
 	 *			++count;
 	 *		} else
@@ -465,7 +465,7 @@ int dotest(testers, me, fd)
 						dumpiov(&r_iovec[i]);
 						dumpbits(bits, (nchunks+7)/8);
 						orbits(hold_bits, bits, (nchunks+7)/8);
-						tst_resm(TINFO, "\tHold "); 
+						tst_resm(TINFO, "\tHold ");
 						dumpbits(hold_bits, (nchunks+7)/8);
 						tst_exit();
 					}
@@ -489,7 +489,7 @@ int dotest(testers, me, fd)
 						dumpiov(&r_iovec[i]);
 						dumpbits(bits, (nchunks+7)/8);
 						orbits(hold_bits, bits, (nchunks+7)/8);
-						tst_resm(TINFO, "\tHold "); 
+						tst_resm(TINFO, "\tHold ");
 						dumpbits(hold_bits, (nchunks+7)/8);
 						tst_exit();
 					}

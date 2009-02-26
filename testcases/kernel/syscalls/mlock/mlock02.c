@@ -69,7 +69,7 @@ struct test_case_t {
 	int error;
 	void (*setupfunc) ();
 } TC[] = {
-	/* mlock should return ENOMEM when some or all of the address 
+	/* mlock should return ENOMEM when some or all of the address
 	 * range pointed to by addr and len are not valid mapped pages
 	 * in the address space of the process
 	 */
@@ -100,10 +100,10 @@ int main(int ac, char **av)
 	TEST_EXP_ENOS(exp_enos);
 
     /***************************************************************
-     * check looping state 
+     * check looping state
      ***************************************************************/
 	/* TEST_LOOPING() is a macro that will make sure the test continues
-	 * looping according to the standard command line args. 
+	 * looping according to the standard command line args.
 	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 

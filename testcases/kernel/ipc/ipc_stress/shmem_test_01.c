@@ -61,15 +61,15 @@
 
 /* Defines
  *
- * MAX_SHMEM_SIZE: maximum shared memory segment size of 256MB 
+ * MAX_SHMEM_SIZE: maximum shared memory segment size of 256MB
  * (reference 3.2.5 man pages)
  *
  * DEFAULT_SHMEM_SIZE: default shared memory size, unless specified with
  * -s command line option
- * 
+ *
  * SHMEM_MODE: shared memory access permissions (permit process to read
  * and write access)
- * 
+ *
  * USAGE: usage statement
  */
 #define MAX_SHMEM_SIZE		256*1024*1024
@@ -92,7 +92,7 @@ void error (const char *, int);
 
 /*
  * Global variables
- * 
+ *
  * shmem_size: shared memory segment size (in bytes)
  */
 int shmem_size = DEFAULT_SHMEM_SIZE;
@@ -121,10 +121,10 @@ int main (int argc, char **argv)
 	 */
 	parse_args (argc, argv);
 	printf ("%s: IPC Shared Memory TestSuite program\n", *argv);
-    
+   
 	/*
 	 * Obtain a unique shared memory identifier with shmget ().
-	 * Attach the shared memory segment to the process with shmat (), 
+	 * Attach the shared memory segment to the process with shmat (),
 	 * index through the shared memory segment, and then release the
 	 * shared memory segment with shmctl ().
 	 */
@@ -144,7 +144,7 @@ int main (int argc, char **argv)
 	if (shmctl (shmid, IPC_RMID, 0) < 0)
 		sys_error ("shmctl failed", __LINE__);
 
-	/* 
+	/*
 	 * Program completed successfully -- exit
 	 */
 	printf ("\nsuccessful!\n");

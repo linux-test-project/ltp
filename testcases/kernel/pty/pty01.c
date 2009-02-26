@@ -389,7 +389,7 @@ test4(void)
 /*
  * test opening/closing lots of ptys in parallel.  We may run out
  * of ptys for this test depending on how the system is configured,
- * but that's not a fatal error.  
+ * but that's not a fatal error. 
  */
 static int
 test5(void)

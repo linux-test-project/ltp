@@ -105,7 +105,7 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 
-		/* 
+		/*
 		 * Call msync to synchronize the specified memory region
 	 	 * which was not mapped previously.
 		 */
@@ -176,7 +176,7 @@ setup()
  *             completion or premature exit.
  *  	       Exit the program with proper exit code.
  */
-void 
+void
 cleanup()
 {
 	/*

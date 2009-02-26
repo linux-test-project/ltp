@@ -19,7 +19,7 @@
 
 /*
  *  FILE        : LtpAcpiCmds.c
- *  DESCRIPTION : 
+ *  DESCRIPTION :
  *  HISTORY:
  *    06/09/2003 Initial creation mridge@us.ibm.com
  *      -Ported
@@ -31,9 +31,9 @@
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/types.h>
-#include <linux/fs.h>    
+#include <linux/fs.h>   
 #include <linux/ioctl.h>
-#include <linux/pm.h>    
+#include <linux/pm.h>   
 #include <linux/acpi.h>
 #include <linux/genhd.h>
 #include <asm/uaccess.h>
@@ -68,7 +68,7 @@ ioctl:      ltpdev_ioctl,
 int ltp_acpi_major = LTPMAJOR;
 int test_iteration = 0;
 
-static char genhd_flags = 0;   
+static char genhd_flags = 0;  
 static struct gendisk * gd_ptr;
 
 struct acpi_ec {
@@ -198,7 +198,7 @@ static int ltpdev_ioctl ( struct inode *pinode, struct file *pfile, unsigned int
 
         printk(KERN_ALERT "TEST -- acpi_get_firmware_table \n");
 
-        status = acpi_get_firmware_table("ECDT", 1, ACPI_LOGICAL_ADDRESSING, 
+        status = acpi_get_firmware_table("ECDT", 1, ACPI_LOGICAL_ADDRESSING,
             (struct acpi_table_header **) &dsdt);
 
         printk(KERN_ALERT "TEST -- acpi_install_notify_handler \n");
@@ -274,7 +274,7 @@ static int ltpdev_ioctl ( struct inode *pinode, struct file *pfile, unsigned int
             printk(KERN_ALERT "TEST -- acpi_remove_gpe_handler \n");
             acpi_remove_gpe_handler(device, ec->gpe_bit, &acpi_ec_gpe_handler);
         }
-     
+    
         printk(KERN_ALERT "TEST -- acpi_get_current_resources \n");
         status = acpi_get_current_resources (next_child_handle, &buffer);
 
@@ -339,7 +339,7 @@ static int ltpdev_ioctl ( struct inode *pinode, struct file *pfile, unsigned int
         }
 
         printk(KERN_ALERT "TEST -- acpi_get_register \n");
-		acpi_get_register(ACPI_BITREG_BUS_MASTER_STATUS, 
+		acpi_get_register(ACPI_BITREG_BUS_MASTER_STATUS,
 			&bm_status, ACPI_MTX_DO_NOT_LOCK);
 
         if (!bm_status) {
@@ -354,7 +354,7 @@ static int ltpdev_ioctl ( struct inode *pinode, struct file *pfile, unsigned int
 
         printk(KERN_ALERT "TEST -- acpi_get_system_info \n");
         status = acpi_get_system_info(&buffer);
-        
+       
 
         if (status) {
             printk(KERN_ALERT "Failed get_system_info %d\n",status);
@@ -550,7 +550,7 @@ int init_module(void)
 	ltp_pm_dev = pm_register(PM_UNKNOWN_DEV, 0, ltp_pm_callback);
 
 
-    result = register_blkdev(ltp_acpi_major, LTP_ACPI_DEV_NAME); 
+    result = register_blkdev(ltp_acpi_major, LTP_ACPI_DEV_NAME);
 
     printk(KERN_ALERT "LTP ACPI: register_blkdev result=%d major %d\n",result, ltp_acpi_major);
 
@@ -589,12 +589,12 @@ int init_module(void)
     return 0;
 }
 
-void cleanup_module(void) 
-{ 
+void cleanup_module(void)
+{
 
     printk(KERN_ALERT "Exiting module and cleaning up \n");
 
-    pm_unregister(ltp_pm_dev); 
+    pm_unregister(ltp_pm_dev);
 
     put_disk(gd_ptr);
 

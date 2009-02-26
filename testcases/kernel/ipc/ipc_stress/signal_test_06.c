@@ -98,15 +98,15 @@ int main (int argc, char **argv)
 
 	/* Print out program header */
 	printf ("%s: IPC TestSuite program\n\n", *argv);
-    
+   
 	/* Set up our signal handler */
 	init_sig ();
 
-	/* 
+	/*
 	 * Block ALL signals from interrupting the process
 	 */
 	printf ("\tBlock all signals from interrupting the process\n");
-	if (sigfillset (&newmask) < 0) 
+	if (sigfillset (&newmask) < 0)
 		error ("sigfillset failed", __LINE__);
 	if (sigprocmask (SIG_SETMASK, &newmask, &oldmask) < 0)
 		error ("sigprocmask failed", __LINE__);
@@ -121,12 +121,12 @@ int main (int argc, char **argv)
 
 	/*
 	 *  Sleep for a short time and the check to ensure that a SIGUSR1
-	 *  signal is pending 
+	 *  signal is pending
 	 */
 	sleep (2);
 
 	printf ("\n\tEnsure at least one SIGUSR1 signal is pending\n");
-	if (sigpending (&pendmask) < 0) 
+	if (sigpending (&pendmask) < 0)
 		error ("sigpending failed", __LINE__);
 
 	if (sigismember (&pendmask, SIGUSR1) == 0)
@@ -136,7 +136,7 @@ int main (int argc, char **argv)
 	/*
 	 * Change the signal mask to allow signals to interrupt the process
 	 * and then suspend execution until a signal reaches the process
-	 * 
+	 *
 	 * Then verify that at least one signal was received
 	 */
 	printf ("\n\tChange signal mask & wait for SIGUSR1 signal\n");

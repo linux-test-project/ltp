@@ -15,49 +15,49 @@
  *
  */
 /**************************************************************************
- * 
+ *
  *    TEST IDENTIFIER	: reboot02
  *
- * 
+ *
  *    EXECUTED BY	: root / superuser
- * 
+ *
  *    TEST TITLE	: Test checking for basic error conditions
  *    				 for reboot(2)
- * 
- *    TEST CASE TOTAL	: 2 
- * 
+ *
+ *    TEST CASE TOTAL	: 2
+ *
  *    AUTHOR		: Aniruddha Marathe <aniruddha.marathe@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
  *
  *    DESCRIPTION
- *	This test case checks whether reboot(2) system call  returns 
+ *	This test case checks whether reboot(2) system call  returns
  *	appropriate error number for invalid
  *	flag parameter or invalid user.
- * 
+ *
  * 	Setup:
  *	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
  *	  For testing error on invalid user, change the effective uid
- * 
+ *
  * 	Test:
  *	  Loop if the proper options are given.
  *	  Execute system call with invaid flag parameter
  *	  and then for invalid user
  *	  Check return code, if system call fails with errno == expected errno
  *		Issue syscall passed with expected errno
- *	  Otherwise, 
+ *	  Otherwise,
  *	  Issue syscall failed to produce expected errno
- * 
+ *
  * 	Cleanup:
  * 	  Do cleanup for the test.
- * 	   
+ * 	  
  * USAGE:  <for command-line>
  *  reboot02 [-c n] [-e] [-i n] [-I x] [-p x] [-t] [-h] [-f] [-p]
- *  where 
- *  	-c n: run n copies simultaneously 
+ *  where
+ *  	-c n: run n copies simultaneously
  *	-e   : Turn on errno logging.
  *	-i n : Execute test n times.
  *	-I x : Execute test for x seconds.
@@ -133,7 +133,7 @@ main(int ac, char **av)
 					TEST(reboot(LINUX_REBOOT_CMD_CAD_ON));
 					/* Set effective user id back to root */
 					if (seteuid(0) == -1) {
-						tst_brkm(TBROK, cleanup, 
+						tst_brkm(TBROK, cleanup,
 							"seteuid failed to "
 							"set the effective uid"
 							" to root");
@@ -148,15 +148,15 @@ main(int ac, char **av)
 			if ((TEST_RETURN == -1) && (TEST_ERRNO == testcase[i].
 					exp_errno)) {
 				tst_resm(TPASS, "reboot(2) expected failure;"
-						" Got errno - %s : %s", 
-						testcase[i].exp_errval, 
+						" Got errno - %s : %s",
+						testcase[i].exp_errval,
 						testcase[i].err_desc);
 			} else {
 				tst_resm(TFAIL,"reboot(2) failed to produce"
-						" expected error; %d, errno" 
-					       ": %s and got %d", 
-						testcase[i].exp_errno, 
-						testcase[i].exp_errval, 
+						" expected error; %d, errno"
+					       ": %s and got %d",
+						testcase[i].exp_errno,
+						testcase[i].exp_errval,
 						TEST_ERRNO);
 			}
 

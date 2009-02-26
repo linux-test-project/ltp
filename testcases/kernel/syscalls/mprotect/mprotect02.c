@@ -162,7 +162,7 @@ int main(int ac, char **av)
 					/*NOTREACHED*/
 				}
 				/*
-				 * if we get a SIGSEGV, the exit status 
+				 * if we get a SIGSEGV, the exit status
 				 * will be 1.
 				 */
 				if (WEXITSTATUS(status) != 0) {

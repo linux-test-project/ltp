@@ -56,7 +56,7 @@
  *	07/2001 Ported by Wayne Boyer
  *
  *      26/02/2008 Renaud Lottiaux (Renaud.Lottiaux@kerlabs.com)
- *      - Fix wrong return value check on shmat system call (leading to 
+ *      - Fix wrong return value check on shmat system call (leading to
  *        segfault in case of error with this syscall).
  *      - Fix deletion of IPC memory segment. Segment was not correctly
  *        deleted due to the change of uid during the test.

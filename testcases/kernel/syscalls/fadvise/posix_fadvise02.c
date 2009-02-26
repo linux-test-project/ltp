@@ -59,7 +59,7 @@ void cleanup();
 TCID_DEFINE(posix_fadvise02);	/* Test program identifier.    */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-#define WRONG_FD       42	/* The number has no meaning. 
+#define WRONG_FD       42	/* The number has no meaning.
 				   Just used as something wrong fd */
 
 struct test_case_t {
@@ -86,7 +86,7 @@ main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 	int i;
 
-       /* Check this system has fadvise64 system which is used 
+       /* Check this system has fadvise64 system which is used
           in posix_fadvise. */
        if ((_FILE_OFFSET_BITS != 64) && (__NR_fadvise64 == 0)) {
                tst_resm(TWARN, "This test can only run on kernels that implements ");
@@ -148,7 +148,7 @@ main(int ac, char **av)
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -165,8 +165,8 @@ setup()
 		  ;			/* Good. Do nothing. */
 		if (errno == EINTR)
 		  goto retry;
-		else if (errno == EIO) 
-		  tst_brkm(TBROK, cleanup, 
+		else if (errno == EIO)
+		  tst_brkm(TBROK, cleanup,
 			   "Unable to close a file descriptor(%d): %s\n",
 			   WRONG_FD, strerror(EIO));
 	}
@@ -178,7 +178,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

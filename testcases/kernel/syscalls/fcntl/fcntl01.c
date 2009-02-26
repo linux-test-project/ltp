@@ -9,7 +9,7 @@
  * 	fcntl
  *
  * ALGORITHM
- * 
+ *
  * 	1. Testing F_DUPFD cmd with arg less than, equal to, and greater
  * 	   than the next available file descriptor.
  *

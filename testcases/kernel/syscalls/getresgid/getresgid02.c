@@ -24,7 +24,7 @@
  *  Verify that getresgid() will be successful to get the real, effective
  *  and saved user ids after calling process invokes setregid() to change
  *  the effective/saved gids to that of specified user.
- *   
+ *  
  * Expected Result:
  *  getresgid() should return with 0 value and the real/effective/saved
  *  user ids should match the expected values.
@@ -112,9 +112,9 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 
-		/* 
+		/*
 		 * Call getresgid() to get the real/effective/saved
-		 * user id's of the calling process after 
+		 * user id's of the calling process after
 		 * setregid() in setup.
 		 */
 		TEST(getresgid(&real_gid, &eff_gid, &sav_gid));
@@ -160,7 +160,7 @@ main(int ac, char **av)
  * setup() - performs all ONE TIME setup for this test.
  *	     Get the real/effective/saved user id of the calling process.
  */
-void 
+void
 setup()
 {
 	struct passwd *user_id;		/* passwd struct for test user*/
@@ -207,7 +207,7 @@ setup()
  *             completion or premature exit.
  *	       Restore the test process gid to root.
  */
-void 
+void
 cleanup()
 {
 	/*

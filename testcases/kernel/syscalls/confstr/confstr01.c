@@ -22,7 +22,7 @@
 
 /*
  * NAME
- *	confstr1.c - test for confstr(3C) - Get configuration-defined string 
+ *	confstr1.c - test for confstr(3C) - Get configuration-defined string
  *	values.
  *
  * CALLS
@@ -90,7 +90,7 @@ int confstr_var_vals[] = { _CS_PATH, _CS_XBS5_ILP32_OFF32_CFLAGS,
                          "XBS5_LPBIG_OFFBIG_LINTFLAGS",
                          "XXX5_MYBIG_VERBIG_MYFLAGS",
                          0 };
- 
+
 int main()
 {
 	size_t len = 0, retval;		/* return values for confstr(3C) */

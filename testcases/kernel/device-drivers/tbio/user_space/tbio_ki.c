@@ -20,17 +20,17 @@
  * This file will include user space functions that will drive
  * the kernel module to test various functions and kernel
  * calls. Each function will need to setup the tif structure
- * so that the in parameters and out parameters are correctly 
+ * so that the in parameters and out parameters are correctly
  * initialized
- * 
+ *
  * use bif structure for passing params between user
- * space and kernel space, in some tests it is really not 
- * needed, and if nothing is needed to pass in utilize 
- * the ki_generic function below. the tif structure makes 
- * it easy to maintain all the tests if they have the same 
- * process in kernel space to read in params in the kernel 
+ * space and kernel space, in some tests it is really not
+ * needed, and if nothing is needed to pass in utilize
+ * the ki_generic function below. the tif structure makes
+ * it easy to maintain all the tests if they have the same
+ * process in kernel space to read in params in the kernel
  * module no matter what the test is
- * 
+ *
   * module: tbio
  *  Copyright (c) International Business Machines  Corp., 2003
  *
@@ -45,7 +45,7 @@
  *  the GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program;  
+ *  along with this program; 
  *
  *  FILE        : tbio_ki.c
  *  USAGE       : kernel_space:./load_tbio.sh
@@ -63,9 +63,9 @@
  */
 
 
- 
- 
- 
+
+
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/ioctl.h>
@@ -75,7 +75,7 @@ int ki_generic(int fd, int flag)
 {
 	int                     rc;
 	tbio_interface_t        bif;
-        
+       
 	rc = ioctl(fd, flag, &bif);
 	if(rc) {
 		printf("Ioctl error\n");

@@ -22,7 +22,7 @@
  * 	ftrunc04.c - test truncate and mandatory record locking
  * 		    (ported from SPIE, section2/filesuite/ftrunc2.c and
  * 		     ftrunc3.c, by Airong Zhang)
- *		   - Modified to use fcntl() instead of lockf, 
+ *		   - Modified to use fcntl() instead of lockf,
  *		     Robbie Williamson <robbiew@us.ibm.com>
  *		   - Fix concurrency issue
  *		     Roy Lee <roylee@andestech.com>
@@ -200,7 +200,7 @@ void  doparent()
 		local_flag = FAILED;
 		cleanup();
 	}
-        if (ftruncate(fd, RECLEN) < 0) {	                
+        if (ftruncate(fd, RECLEN) < 0) {	               
 		tst_resm(TFAIL,"truncate failure case 5");
 	        local_flag = FAILED;
 	        cleanup();

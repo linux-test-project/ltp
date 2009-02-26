@@ -208,7 +208,7 @@ cleanup(void)
 }
 
 
-void 
+void
 setup0(void)
 {
 	if (tdat[testno].experrno == EBADF)
@@ -322,7 +322,7 @@ do_child()
 			int newfd;
 
 			fromlen = sizeof(fsin);
-			newfd = accept(sfd, (struct  sockaddr  *)&fsin, 
+			newfd = accept(sfd, (struct  sockaddr  *)&fsin,
 				       &fromlen);
 			if (newfd >= 0)
 				FD_SET(newfd, &afds);

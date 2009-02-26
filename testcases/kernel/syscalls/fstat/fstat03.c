@@ -2,7 +2,7 @@
  * Test Name: fstat03
  *
  * Test Description:
- *   Verify that, fstat(2) returns -1 and sets errno to EBADF if the file 
+ *   Verify that, fstat(2) returns -1 and sets errno to EBADF if the file
  *   pointed to by file descriptor is not valid.
  *
  * Expected Result:
@@ -133,7 +133,7 @@ main(int ac, char **av)
 }	/* End main */
 
 /*
- * void 
+ * void
  * setup(void) - performs all ONE TIME setup for this test.
  * 	Exit the test program on receipt of unexpected signals.
  *	Create a temporary directory and change directory to it.
@@ -187,7 +187,7 @@ cleanup()
 	
 	/* Remove files and temporary directory created */
 	tst_rmdir();
-  
+ 
 	/* exit with return code appropriate for results */
 	tst_exit();
 }	/* End cleanup() */

@@ -30,83 +30,83 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fcntl09.c,v 1.4 2006/05/26 06:26:38 vapier Exp $ */
+/* $Id: fcntl09.c,v 1.5 2009/02/26 12:02:55 subrata_modak Exp $ */
 /**********************************************************
- * 
+ *
  *    OS Test - Silicon Graphics, Inc.
- * 
+ *
  *    TEST IDENTIFIER	: fcntl09
- * 
+ *
  *    EXECUTED BY	: anyone
- * 
+ *
  *    TEST TITLE	: Basic test for fcntl(2) using F_SETLK argument.
- * 
+ *
  *    PARENT DOCUMENT	: usctpl01
- * 
+ *
  *    TEST CASE TOTAL	: 2
- * 
+ *
  *    WALL CLOCK TIME	: 1
- * 
+ *
  *    CPU TYPES		: ALL
- * 
+ *
  *    AUTHOR		: William Roske
- * 
+ *
  *    CO-PILOT		: Dave Fenner
- * 
+ *
  *    DATE STARTED	: 03/30/92
- * 
+ *
  *    INITIAL RELEASE	: UNICOS 7.0
- * 
+ *
  *    TEST CASES
- * 
+ *
  * 	1.) fcntl(2) returns...(See Description)
  *	
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
- * 
+ *
  *    OUTPUT SPECIFICATIONS
  * 	
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
  *
  *    RESOURCES
  * 	None
- * 
+ *
  *    ENVIRONMENTAL NEEDS
  *      No run-time environmental needs.
- * 
+ *
  *    SPECIAL PROCEDURAL REQUIREMENTS
  * 	None
- * 
+ *
  *    INTERCASE DEPENDENCIES
  * 	None
- * 
+ *
  *    DETAILED DESCRIPTION
  *	This is a Phase I test for the fcntl(2) system call.  It is intended
  *	to provide a limited exposure of the system call, for now.  It
  *	should/will be extended when full functional tests are written for
  *	fcntl(2).
- * 
+ *
  * 	Setup:
  * 	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  * 	  Execute system call
  *	  Check return code, if system call failed (return=-1)
  *		Log the errno and Issue a FAIL message.
  *	  Otherwise, Issue a PASS message.
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
- * 
+ *
+ *
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
 #include <sys/types.h>
@@ -139,7 +139,7 @@ main(int ac, char **av)
 {
     int lc;		/* loop counter */
     char *msg;		/* message returned from parse_opts */
-    
+   
     /***************************************************************
      * parse standard options
      ***************************************************************/
@@ -166,7 +166,7 @@ main(int ac, char **av)
 
 	flocks.l_type = type ? F_RDLCK : F_WRLCK;
 
-	/* 
+	/*
 	 * Call fcntl(2) with F_SETLK argument on fname
 	 */
 	TEST(fcntl(fd, F_SETLK, &flocks));
@@ -178,7 +178,7 @@ main(int ac, char **av)
 		     "fcntl(%s, F_SETLK, &flocks) flocks.l_type = %s Failed, errno=%d : %s",
 		     fname, type ? "F_RDLCK" : "F_WRLCK", TEST_ERRNO, strerror(TEST_ERRNO));
 	} else {
-	    
+	   
 	    /***************************************************************
 	     * only perform functional verification if flag set (-f not given)
 	     ***************************************************************/
@@ -187,11 +187,11 @@ main(int ac, char **av)
 		tst_resm(TPASS,
 			 "fcntl(%s, F_SETLK, &flocks) flocks.l_type = %s returned %d",
 			 fname, type ? "F_RDLCK" : "F_WRLCK" ,TEST_RETURN);
-	    } 
+	    }
 	}
 
 	flocks.l_type = F_UNLCK;
-	/* 
+	/*
 	 * Call fcntl(2) with F_SETLK argument on fname
 	 */
 	TEST(fcntl(fd, F_SETLK, &flocks));
@@ -203,7 +203,7 @@ main(int ac, char **av)
 		     "fcntl(%s, F_SETLK, &flocks) flocks.l_type = F_UNLCK Failed, errno=%d : %s",
 		      fname, TEST_ERRNO, strerror(TEST_ERRNO));
 	} else {
-	    
+	   
 	    /***************************************************************
 	     * only perform functional verification if flag set (-f not given)
 	     ***************************************************************/
@@ -212,7 +212,7 @@ main(int ac, char **av)
 		tst_resm(TPASS,
 			 "fcntl(%s, F_SETLK, &flocks) flocks.l_type = F_UNLCK returned %d",
 			 fname, TEST_RETURN);
-	    } 
+	    }
 	}
      }
 
@@ -229,7 +229,7 @@ main(int ac, char **av)
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void 
+void
 setup()
 {
     /* capture signals */
@@ -260,7 +260,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void 
+void
 cleanup()
 {
     /*
@@ -273,7 +273,7 @@ cleanup()
        tst_resm(TWARN, "close(%s) Failed, errno=%d : %s", fname, errno, strerror(errno));
     } else if (unlink(fname) == -1) {
        tst_resm(TWARN, "unlink(%s) Failed, errno=%d : %s", fname, errno, strerror(errno));
-      
+     
     }
 
     /* Remove tmp dir and all files in it */

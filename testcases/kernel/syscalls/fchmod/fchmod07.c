@@ -17,15 +17,15 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-/* 
+/*
  * Test Name: fchmod07
  *
  * Test Description:
  *  Verify that, fchmod(2) succeeds when used to change the mode permissions
- *  of a file specified by file descriptor. 
+ *  of a file specified by file descriptor.
  *
  * Expected Result:
- *  fchmod(2) should return 0 and the mode permissions set on file should match 
+ *  fchmod(2) should return 0 and the mode permissions set on file should match
  *  the specified mode.
  *	
  * Algorithm:
@@ -118,7 +118,7 @@ main(int ac, char **av)
 		for (ind = 0; ind < TST_TOTAL; ind++) {
 			mode = Modes[ind];
 
-			/* 
+			/*
 			 * Call fchmod(2) with different mode permission
 			 * bits to set it for "testfile".
 		 	 */
@@ -178,7 +178,7 @@ main(int ac, char **av)
  *  Create a temporary directory and change directory to it.
  *  Create a test file under temporary directory.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -204,7 +204,7 @@ setup()
  *  Close the testfile created in the setup.
  *  Remove the test directory and testfile created in the setup.
  */
-void 
+void
 cleanup()
 {
 	/*

@@ -27,7 +27,7 @@
 * 2. When parent clone a process with flag CLONE_NEWPID, the parent process ID
 * of should be zero.
 *
-* 3. The container init process (one), should not get killed by the SIGKILL in 
+* 3. The container init process (one), should not get killed by the SIGKILL in
 * the childNS
 *
 * Total Tests:
@@ -36,8 +36,8 @@
 *
 * Test Assertion & Strategy:
 *
-* From main() clone a new child process with passing the clone_flag as 
-* CLONE_NEWPID. 
+* From main() clone a new child process with passing the clone_flag as
+* CLONE_NEWPID.
 * The container init, should not get killed by the SIGKILL inside the child NS.
 * Usage: <for command-line>
 * pidns04

@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
 	close(fd);
 
 	if (ret_val != 0) {
-		fprintf(temp, "fmtmsg returned %d, expected 0\n\n", ret_val); 
+		fprintf(temp, "fmtmsg returned %d, expected 0\n\n", ret_val);
 		local_flag = FAILED;
 	}
 

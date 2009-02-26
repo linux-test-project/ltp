@@ -30,81 +30,81 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: readdir01.c,v 1.4 2002/11/14 16:16:16 plars Exp $ */
+/* $Id: readdir01.c,v 1.5 2009/02/26 12:04:42 subrata_modak Exp $ */
 /**********************************************************
- * 
+ *
  *    OS Test - Silicon Graphics, Inc.
- * 
+ *
  *    TEST IDENTIFIER	: readdir01
- * 
+ *
  *    EXECUTED BY	: anyone
- * 
+ *
  *    TEST TITLE	: write multiple files and try to find them with readdir
- * 
+ *
  *    TEST CASE TOTAL	:
- * 
+ *
  *    WALL CLOCK TIME	:
- * 
+ *
  *    CPU TYPES		: ALL
- * 
+ *
  *    AUTHOR		: Nate Straz
- * 
+ *
  *    CO-PILOT		:
- * 
+ *
  *    DATE STARTED	: 02/16/2001
- * 
+ *
  *    INITIAL RELEASE	: Linux 2.4.x
- * 
+ *
  *    TEST CASES
- * 
+ *
  * 	1.) Create n files and check that readdir() finds n files
  *	
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
- * 
+ *
  *    OUTPUT SPECIFICATIONS
  * 	
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
  *
  *    RESOURCES
  * 	None
- * 
+ *
  *    ENVIRONMENTAL NEEDS
  *      No run-time environmental needs.
- * 
+ *
  *    SPECIAL PROCEDURAL REQUIREMENTS
  * 	None
- * 
+ *
  *    INTERCASE DEPENDENCIES
  * 	None
- * 
+ *
  *    DETAILED DESCRIPTION
  *	This is a Phase I test for the readdir(2) system call.  It is intended
  *	to provide a limited exposure of the system call, for now.  It
  *	should/will be extended when full functional tests are written for
  *	readdir(2).
- * 
+ *
  * 	Setup:
  * 	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  * 	  Execute system call
  *	  Check return code, if system call failed (return=-1)
  *		Log the errno and Issue a FAIL message.
  *	  Otherwise, Issue a PASS message.
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
- * 
+ *
+ *
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
 #include <sys/types.h>
@@ -126,7 +126,7 @@
   * steps are usually put in separate functions for clarity.  The help function
   * is only needed when you are adding new command line options.
   */
-void setup(); 
+void setup();
 void help();
 void cleanup();
 
@@ -148,7 +148,7 @@ int Nfiles=0;
  * the string that should be added to optstring in getopt(3), an integer that
  * will be used as a flag if the option is given, and a pointer to a string that
  * should receive the optarg parameter from getopt(3).  Here we add a -N
- * option.  Long options are not supported at this time. 
+ * option.  Long options are not supported at this time.
  */
 char *Nfilearg;
 int Nflag=0;
@@ -206,10 +206,10 @@ main(int ac, char **av)
     TEST_EXP_ENOS(exp_enos);
 
     /***************************************************************
-     * check looping state 
+     * check looping state
      ***************************************************************/
     /* TEST_LOOPING() is a macro that will make sure the test continues
-     * looping according to the standard command line args. 
+     * looping according to the standard command line args.
      */
     for (lc=0; TEST_LOOPING(lc); lc++) {
 
@@ -268,7 +268,7 @@ main(int ac, char **av)
 	/* Here we clean up after the test case so we can do another iteration.
 	 */
 	for(cnt=0; cnt < nfiles; cnt++) {
-        
+       
             sprintf(fname, "%s%d", Basename, cnt);
 
 	    if (unlink(fname) == -1) {
@@ -303,11 +303,11 @@ help()
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void 
+void
 setup()
 {
     /* You will want to enable some signal handling so you can capture
-     * unexpected signals like SIGSEGV. 
+     * unexpected signals like SIGSEGV.
      */
     tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
@@ -332,7 +332,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void 
+void
 cleanup()
 {
     /*
@@ -342,7 +342,7 @@ cleanup()
     TEST_CLEANUP;
 
     /* If you use a temporary directory, you need to be sure you remove it. Use
-     * tst_rmdir() to do it automatically.  
+     * tst_rmdir() to do it automatically. 
      */
     tst_rmdir();
 

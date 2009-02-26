@@ -18,13 +18,13 @@
  *
 
  * This example module shows how a test driver
- * can be driven through various ioctl calls in 
- * a user space program that has attained the 
- * appropriate file descriptor for this device. 
+ * can be driven through various ioctl calls in
+ * a user space program that has attained the
+ * appropriate file descriptor for this device.
  *
  * author: Kai Zhao
  * date:   09/03/2003
- * 
+ *
  * module: tdrm
  */
 

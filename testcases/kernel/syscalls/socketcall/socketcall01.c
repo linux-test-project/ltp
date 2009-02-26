@@ -15,17 +15,17 @@
  *
  */
 /**************************************************************************
- * 
+ *
  *    TEST IDENTIFIER	: socketcall01
- * 
+ *
  *    EXECUTED BY	: All user
- * 
+ *
  *    TEST TITLE	: Basic test for socketcall(2) for socket(2)
- * 
+ *
  *    TEST CASE TOTAL	: 4
- * 
+ *
  *    AUTHOR		: sowmya adiga<sowmya.adiga@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -37,16 +37,16 @@
  * 	Setup:
  *	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *        Execute system call
  *	  Check return code, if system call failed (return=-1)
  *	  Log the errno and Issue a FAIL message.
  *	  Otherwise, Issue a PASS message.
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  *  socketcall01 [-c n] [-e] [-i n] [-I x] [-p x] [-t]
  *		where,		-c n : Run n copies concurrently
@@ -132,12 +132,12 @@ int main(int ac, char **av)
 			} else {
 				tst_resm(TPASS, "socketcall() passed for"
 					" :%s with return=%d ",
-					TC[i].desc,TEST_RETURN);          
+					TC[i].desc,TEST_RETURN);         
 				close(TEST_RETURN);
 			}
 		}			/* End for TEST_LOOPING */
 	}
-              
+             
 	/* cleanup and exit */
 	cleanup();
 

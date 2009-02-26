@@ -22,7 +22,7 @@
  *    TEST IDENTIFIER	: getrlimit01
  *
  *    TEST TITLE	: test for checking functionality of getrlimit(2)
- *    
+ *   
  *    EXECUTED BY	: anyone
  *
  *    TEST CASE TOTAL	: 11
@@ -40,11 +40,11 @@
  * Setup:
  *   Setup signal handling.
  *   Pause for SIGUSR1 if option specified.
- * 
+ *
  *  Test:
  *   Loop if the proper options are given.
  *   Execute system call
- *   Check return code, if system call failed 
+ *   Check return code, if system call failed
  *		Issue sys call failed to get resource limits.
  *      Otherwise,
  *		Issue sys call is successful and got resource limits.
@@ -125,15 +125,15 @@ main(int ac, char **av)
 			 * with codes 0 to 10
 			 */
 			TEST(getrlimit(testcases[i].res, &rlim));
- 
+
 			if (TEST_RETURN == -1) {
 				tst_resm(TFAIL, "getrlimit() failed to get %s "
-					"values. errno is %d", 
+					"values. errno is %d",
 					testcases[i].res_str, TEST_ERRNO);
 			}
 			else {
 				tst_resm(TPASS, "getrlimit() returned %d; "
-					"got %s values ", 
+					"got %s values ",
 					TEST_ERRNO, testcases[i].res_str);
 			}
 		}

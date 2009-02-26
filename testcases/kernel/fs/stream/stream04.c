@@ -27,7 +27,7 @@
 >HOW:   < 1) Open a file, write to it, and then check it.
 	< 2) Fwrite a know quanity, check return value.
 	<    Fread a know quanity, check return value.
->BUGS:  < 
+>BUGS:  <
 ======================================================================*/
 
 #include <stdio.h>

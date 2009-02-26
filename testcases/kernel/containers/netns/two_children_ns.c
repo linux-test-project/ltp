@@ -22,8 +22,8 @@
 * On Success returns PASS else returns FAIL.
 *
 * scripts used: parent_1.sh parent_2.sh child_1.sh child_2.sh
-* 
-* Authors: Veerendra C <vechandr@in.ibm.com> , 
+*
+* Authors: Veerendra C <vechandr@in.ibm.com> ,
            Munipradeep <mbeeraka@in.ibm.com>
 *                      31/07/2008
 *******************************************************************************/
@@ -51,7 +51,7 @@ int TST_TOTAL=1;
 int crtchild(char *s)
 {
     char *cmd[] = { "/bin/bash", s, (char *)0 };
-    
+   
     execve("/bin/bash", cmd, __environ);
     tst_resm(TINFO, "The code never reaches here on success\n");
     perror("execve");
@@ -84,7 +84,7 @@ int main()
     par[0] = malloc (FILENAME_MAX);
     par[1] = malloc (FILENAME_MAX);
     if (child[0] == NULL || child[1] == NULL || \
-	par[0] == NULL || par[1] == NULL) 
+	par[0] == NULL || par[1] == NULL)
     {
         	tst_resm(TFAIL, "error while allocating mem");
         	exit(1);

@@ -81,11 +81,11 @@ int main(int ac, char **av)
 	setup();			/* global setup */
 
 	/* The following loop checks looping state if -i option given */
-        if ( get_no_of_hugepages() <= 0 || hugepages_size() <= 0 ) 
+        if ( get_no_of_hugepages() <= 0 || hugepages_size() <= 0 )
              tst_brkm(TBROK, cleanup, "Test cannot be continued owning to sufficient availability of Hugepages on the system");
-        else              
+        else             
               huge_pages_shm_to_be_allocated = ( get_no_of_hugepages() * hugepages_size() * 1024) / 2 ;
-         
+        
         for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;

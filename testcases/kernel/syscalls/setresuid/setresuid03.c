@@ -109,7 +109,7 @@ struct test_data_t {
 	{ &neg_one, &inval_user, &neg_one, EPERM, &root, &bin, &bin, "After setresuid(-1, -1, bin)," },
 };
 
-int TST_TOTAL = sizeof(test_data)/sizeof(test_data[0]); 
+int TST_TOTAL = sizeof(test_data)/sizeof(test_data[0]);
 
 void setup(void);
 void cleanup(void);
@@ -160,7 +160,7 @@ int main(int ac, char **av)
 					*test_data[i].eff_uid,
 					*test_data[i].sav_uid));
 
-				if (TEST_RETURN == -1 && TEST_ERRNO == 
+				if (TEST_RETURN == -1 && TEST_ERRNO ==
 						test_data[i].exp_errno) {
 					tst_resm(TPASS, "setresuid(%d, %d, %d) "
 						"failed as expected.",

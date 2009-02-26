@@ -117,7 +117,7 @@ void do_master_child()
 	int status;
 
 	if (setuid(ltpuser->pw_uid) == -1) {
-		tst_brkm(TBROK, cleanup, 
+		tst_brkm(TBROK, cleanup,
 			 "setuid failed to set the effective uid to %d",
 			 ltpuser->pw_uid);
 	}
@@ -149,7 +149,7 @@ void do_master_child()
 			tst_brkm(TBROK, cleanup, "Fork failed");
 
 		if (pid == 0) {
-			int tst_fd2; 
+			int tst_fd2;
 
 			/* Test to open the file in son process */
 			TEST(tst_fd2 = open(testfile, O_RDWR));

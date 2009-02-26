@@ -15,17 +15,17 @@
  *
  */
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER	: getrusage01
- * 
+ *
  *    EXECUTED BY	: anyone
- * 
+ *
  *    TEST TITLE	: Basic test for getrusage(2)
- * 
+ *
  *    TEST CASE TOTAL	: 2
- * 
+ *
  *    AUTHOR		: Saji Kumar.V.R <saji.kumar@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -33,11 +33,11 @@
  *    DESCRIPTION
  *	This is a Phase I test for the getrusage(2) system call.
  *	It is intended to provide a limited exposure of the system call.
- * 
+ *
  * 	Setup:
  * 	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  * 	  Execute system call
@@ -45,10 +45,10 @@
  *		Test Passed
  *	  else
  *		Test Failed
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  *  getrusage01 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f]
  * 			     [-p]
@@ -66,7 +66,7 @@
 
 #include <errno.h>
 #include <sched.h>
-#include <sys/resource.h> 
+#include <sys/resource.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -85,7 +85,7 @@ main(int ac, char **av)
 	int lc, ind;		/* loop counter */
 	char *msg;	/* message returned from parse_opts */
 	struct rusage usage;
-    
+   
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
 	     != (char *)NULL) {
@@ -102,7 +102,7 @@ main(int ac, char **av)
 		Tst_count = 0;
 
 		for (ind = 0; ind < TST_TOTAL; ind++) {
-			/* 
+			/*
 			 * Call getrusage(2)
 		 	 */
 			TEST(getrusage(who[ind], &usage));
@@ -115,7 +115,7 @@ main(int ac, char **av)
 					 " errno = %d : %s", TEST_RETURN,
 					 TEST_ERRNO, strerror(TEST_ERRNO));
 			}
-		} 
+		}
 	}	/* End for TEST_LOOPING */
 
 	/* cleanup and exit */
@@ -127,7 +127,7 @@ main(int ac, char **av)
 }	/* End main */
 
 /* setup() - performs all ONE TIME setup for this test */
-void 
+void
 setup()
 {
 
@@ -140,11 +140,11 @@ setup()
 }	/* End setup() */
 
 
-/* 
+/*
  *cleanup() -  performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 

@@ -17,13 +17,13 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
 
- * This test is meant to hit 
+ * This test is meant to hit
  * many of the inline functions
  * in various include files.
  *
  * Author: David Cruz <cruzd@us.ibm.com>
  * Module: includeTest
- * 
+ *
  */
 
 #include <linux/types.h>
@@ -181,7 +181,7 @@ static int test_init_module(void) {
 }
 
 static void test_exit_module(void) {
-        
+       
 	int rc;
 	
         pm_unregister(ltp_pm_dev);

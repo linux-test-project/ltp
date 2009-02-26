@@ -75,7 +75,7 @@ end:
 
 int showchar[]={124,47,45,92,124,47,45,92};
 static int mkdir_counter=0;
-makedir(char *dir1) 
+makedir(char *dir1)
 {
   if (mkdir(dir1, S_IRWXU) < 0) {
     perror(dir1);
@@ -90,7 +90,7 @@ changedir(char *dir) {
 }
 
 
-create_file(char *filename) 
+create_file(char *filename)
 {
   int fd;
   int randomsize;

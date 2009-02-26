@@ -1,17 +1,17 @@
 
 /******************************************************************************
- *          			 fallocate01.c                                  
+ *          			 fallocate01.c                                 
  *	Mon Dec 24 2007
- *  	Copyright (c) International Business Machines  Corp., 2007          
+ *  	Copyright (c) International Business Machines  Corp., 2007         
  *	Emali : sharyathi@in.ibm.com
  ******************************************************************************/
 
 
 /***************************************************************************
-  * This program is free software;  you can redistribute it and/or modify      
-  * it under the terms of the GNU General Public License as published by       
-  * the Free Software Foundation; either version 2 of the License, or          
-  * (at your option) any later version.                                        
+  * This program is free software;  you can redistribute it and/or modify     
+  * it under the terms of the GNU General Public License as published by      
+  * the Free Software Foundation; either version 2 of the License, or         
+  * (at your option) any later version.                                       
   *
   * This program is distributed in the hope that it will be useful,
   * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -58,7 +58,7 @@
   *	ENVIRONMENTAL NEEDS
   *		Test Needs to be executed on file system supporting ext4
   *   LTP {TMP} Needs to be set to such a folder
-  *   
+  *  
   *	SPECIAL PROCEDURAL REQUIREMENTS
   * 		None
   *
@@ -78,7 +78,7 @@
   *	Test:
   *		Loop if the proper options are given.
   *		Execute system call
-  *		Check return code, if system call did fail 
+  *		Check return code, if system call did fail
   *		lseek to some random location with in allocate block
   *		write data into the locattion Report if any error encountered
   *		PASS the test otherwise
@@ -133,10 +133,10 @@ int block_size;
 int buf_size;
 
 /******************************************************************************
- * Performs all one time clean up for this test on successful    
- * completion,  premature exit or  failure. Closes all temporary 
- * files, removes all temporary directories exits the test with  
- * appropriate return code by calling tst_exit() function.       
+ * Performs all one time clean up for this test on successful   
+ * completion,  premature exit or  failure. Closes all temporary
+ * files, removes all temporary directories exits the test with 
+ * appropriate return code by calling tst_exit() function.      
 ******************************************************************************/
 extern void
 cleanup()
@@ -162,7 +162,7 @@ cleanup()
 
 
 /*****************************************************************************
- * Performs all one time setup for this test. This function is   
+ * Performs all one time setup for this test. This function is  
  * used to create temporary dirs and temporary files
  * that may be used in the course of this test
  ******************************************************************************/
@@ -223,14 +223,14 @@ populate_files(int fd)
 	int blocks;
 	int data;
 
-	if( fd == fd_mode1 ) 
+	if( fd == fd_mode1 )
 		fname = fname_mode1;
 	else
 		fname = fname_mode2;
 
 	for (blocks = 0; blocks < BLOCKS_WRITTEN ; blocks++)
 	{
-		for (index = 0; index < buf_size; index++) 
+		for (index = 0; index < buf_size; index++)
                 	        buf[index] = 'A' + (index % 26);
 		buf[buf_size]='\0';
 		if (( data = write(fd, buf, buf_size)) < 0 )
@@ -263,7 +263,7 @@ main(int   ac,    /* number of command line parameters                      */
 	
 	
 	/* This test needs kernel version > 2.6.23 and
-	 * either of x86, x86_64 or ppc architecture 
+	 * either of x86, x86_64 or ppc architecture
 	 */
 	if ( !arch_support || (tst_kvercmp(2,6,23) < 0)) {
 		tst_resm(TWARN," System doesn't support execution of the test");
@@ -284,10 +284,10 @@ main(int   ac,    /* number of command line parameters                      */
 		{
 			switch(mode){
 			case DEFAULT: fd = fd_mode1;
-				expected_size = BLOCKS_WRITTEN * block_size + block_size; 
+				expected_size = BLOCKS_WRITTEN * block_size + block_size;
 				break;
 			case FALLOC_FL_KEEP_SIZE: fd = fd_mode2;
-				expected_size = BLOCKS_WRITTEN * block_size; 
+				expected_size = BLOCKS_WRITTEN * block_size;
 				break;
 			} 	
 			runtest(mode, fd, expected_size);
@@ -322,7 +322,7 @@ static inline long fallocate(int fd, int mode, loff_t offset, loff_t len)
 /*****************************************************************************
  * Calls the system call, with appropriate parameters and writes data
  ******************************************************************************/
-void 
+void
 runtest(int mode, int fd, loff_t expected_size)
 {
 	loff_t offset;
@@ -340,19 +340,19 @@ runtest(int mode, int fd, loff_t expected_size)
 				" is not implemented");
 		}
           TEST_ERROR_LOG(TEST_ERRNO);
-           tst_resm(TFAIL, "fallocate(%d, %d, %lld, %lld) Failed, errno=%d : %s", 
+           tst_resm(TFAIL, "fallocate(%d, %d, %lld, %lld) Failed, errno=%d : %s",
 		fd, mode, offset, len, TEST_ERRNO, strerror(TEST_ERRNO));
 	return ;
         } else {
           if ( STD_FUNCTIONAL_TEST ) {
           /* No Verification test, yet... */
-            tst_resm(TPASS, "fallocate(%d, %d, %lld, %lld) returned %d ", 
+            tst_resm(TPASS, "fallocate(%d, %d, %lld, %lld) returned %d ",
 		fd, mode, offset, len, TEST_RETURN);
         	}
 	}
 	
 	if( fstat(fd, &file_stat) < 0 )
-           tst_resm(TFAIL, "fstat failed after fallocate() errno=%d : %s",  
+           tst_resm(TFAIL, "fstat failed after fallocate() errno=%d : %s", 
 		TEST_ERRNO, strerror(TEST_ERRNO));
 	
 	if ( file_stat.st_size != expected_size)
@@ -363,7 +363,7 @@ runtest(int mode, int fd, loff_t expected_size)
 	lseek_offset =  lseek(fd,write_offset,SEEK_CUR);
 	if ( lseek_offset != offset + write_offset)
 	{
-           tst_resm(TFAIL, "lseek fails in fallocate(%d, %d, %lld, %lld) Failed, errno=%d : %s", 
+           tst_resm(TFAIL, "lseek fails in fallocate(%d, %d, %lld, %lld) Failed, errno=%d : %s",
 		fd,mode, offset,len, TEST_ERRNO, strerror(TEST_ERRNO));
 		return;
 	}
@@ -378,7 +378,7 @@ runtest(int mode, int fd, loff_t expected_size)
         } else {
           if ( STD_FUNCTIONAL_TEST ) {
           /* No Verification test, yet... */
-            tst_resm(TPASS, "write operation on fallocated(%d, %d, %lld, %lld) returned %d ", 
+            tst_resm(TPASS, "write operation on fallocated(%d, %d, %lld, %lld) returned %d ",
 		fd,mode, offset,len, TEST_RETURN);
         	}
 	}

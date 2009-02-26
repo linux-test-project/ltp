@@ -19,7 +19,7 @@
 
 /*
  * NAME
- *	ftest07.c -- test file I/O with readv and writev (ported from SPIE, 
+ *	ftest07.c -- test file I/O with readv and writev (ported from SPIE,
  *		    section2/filesuite/ftest9.c
  *
  * 	this is the same as ftest4, except that it uses lseek64
@@ -390,12 +390,12 @@ int dotest(testers, me, fd)
 	 */
 	val = (64/testers) * me + 1;
 
-	/* 
-	 * For each iteration: 
-	 *	zap bits array 
-	 *	loop 
-	 *		pick random chunk, read it.  
-	 *		if corresponding bit off { 
+	/*
+	 * For each iteration:
+	 *	zap bits array
+	 *	loop
+	 *		pick random chunk, read it. 
+	 *		if corresponding bit off {
 	 *			verify = 0. (sparse file)
 	 *			++count;
 	 *		} else

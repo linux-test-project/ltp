@@ -30,38 +30,38 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fcntl07.c,v 1.9 2009/02/26 11:46:55 subrata_modak Exp $ */
+/* $Id: fcntl07.c,v 1.10 2009/02/26 12:02:55 subrata_modak Exp $ */
 /**********************************************************
- * 
+ *
  *    OS Test - Silicon Graphics, Inc.
- * 
+ *
  *    TEST IDENTIFIER	: fcntl07
- * 
+ *
  *    EXECUTED BY	: anyone
- * 
+ *
  *    TEST TITLE	: Close-On-Exec functional test
- * 
+ *
  *    PARENT DOCUMENT	: none
- * 
+ *
  *    TEST CASE TOTAL	: 2
- * 
+ *
  *    WALL CLOCK TIME	: 5
- * 
+ *
  *    CPU TYPES		: ALL
- * 
+ *
  *    AUTHOR		: Glen Overby
- * 
+ *
  *    CO-PILOT		: William Roske
- * 
+ *
  *    DATE STARTED	: 08/11/93
- * 
+ *
  *    INITIAL RELEASE	: UNICOS 7.0
- * 
+ *
  *    TEST CASES
- * 
+ *
  * 	1.) test close-on-exec with a regular file
  * 	2.) test close-on-exec with a system pipe
- * 
+ *
  *    INPUT SPECIFICATIONS
  *	
  *	Standard arguments accepted by parse_opts(3).
@@ -90,31 +90,31 @@
  * 	
  *    DURATION
  * 	Terminates
- * 
+ *
  *    SIGNALS
  * 	None
- * 
+ *
  *    RESOURCES
  * 	None
- * 
+ *
  *    ENVIRONMENTAL NEEDS
  *      No run-time environmental needs.
  *
  *	If this test is not called with a full pathname, it must be able
  *	to find itself on $PATH
- * 
+ *
  *    INTERCASE DEPENDENCIES
  *	none
- * 
+ *
  *    DETAILED DESCRIPTION
- * 
+ *
  * 	Setup:
  * 	  Setup signal handling.
  * 	  Create and make current a temporary directory.
  * 	  Open a regular file for writing
  *	  Create a system pipe
  *	  Create a named pipe and open it for writing
- * 
+ *
  * 	Test:
  *	  Set the file descriptor for close-on-exec
  *	  Fork
@@ -122,13 +122,13 @@
  *		If the exec fails, exit "2"
  *	        Parent waits
  * 	  Report results.
- * 
+ *
  * 	Cleanup:
  * 	  Close file and pipes
- * 	  Remove the temporary directory  
- * 
+ * 	  Remove the temporary directory 
+ *
  *    BUGS
- * 
+ *
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
 #include <errno.h>
@@ -199,11 +199,11 @@ main(int ac, char **av)
 {
     int lc;		/* loop counter */
     char *msg;		/* message returned from parse_opts */
-    
+   
     int exec_return;	/* return from do_exec */
     int **tcp;		/* testcase pointer (pointer to FD) */
     char **tcd;		/* testcase description pointer */
-    
+   
     /***************************************************************
      * parse standard options, and exit if there is an error
      ***************************************************************/
@@ -211,10 +211,10 @@ main(int ac, char **av)
 	tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	tst_exit();
     }
-    
+   
     if(fflag)		/* -F option */
 	File1 = fopt;
-    
+   
     if(Tflag) {		/* -T option */
 	exit(test_open(Topt));
     }
@@ -223,7 +223,7 @@ main(int ac, char **av)
      * perform global setup for test
      ***************************************************************/
     setup(av[0]);
-    
+   
     /***************************************************************
      * check looping state if -c option given
      ***************************************************************/
@@ -244,16 +244,16 @@ main(int ac, char **av)
 	    } else {
 		
 		/*************************************************************
-		 * only perform functional verification if flag set 
+		 * only perform functional verification if flag set
 		 * (-f not given)
 		 *************************************************************/
 		if ( STD_FUNCTIONAL_TEST ) {
-		    
+		   
 		    exec_return = do_exec(subprog_path, **tcp, *tcd);
-		    
+		   
 		    switch(exec_return) {
 		    case -1:
-			tst_resm(TBROK, "fork failed.  Errno %s [%d]", 
+			tst_resm(TBROK, "fork failed.  Errno %s [%d]",
 				 strerror(errno), errno);
 			break;
 		    case 1:
@@ -267,7 +267,7 @@ main(int ac, char **av)
 				 *tcd);
 			break;
 		    default:
-			tst_resm(TFAIL, "%s child exited non-zero, %d", *tcd, 
+			tst_resm(TFAIL, "%s child exited non-zero, %d", *tcd,
 				 exec_return);
 			break;
 		    }
@@ -275,7 +275,7 @@ main(int ac, char **av)
 	    }
 	}
     }	/* End for TEST_LOOPING */
-    
+   
     /***************************************************************
      * cleanup and exit
      ***************************************************************/
@@ -287,7 +287,7 @@ main(int ac, char **av)
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void 
+void
 setup(char *path)
 {
     search_path(path, subprog_path, X_OK, 1);
@@ -315,7 +315,7 @@ setup(char *path)
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void 
+void
 cleanup()
 {
     /*
@@ -409,7 +409,7 @@ test_open(char *arg)
 {
     int fd, rc;
     int status;
-    
+   
     fd = atoi(arg);
 
     rc = fcntl(fd, F_GETFD, &status);

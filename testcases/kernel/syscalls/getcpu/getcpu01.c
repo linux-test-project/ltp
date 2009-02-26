@@ -25,12 +25,12 @@
  *	getcpu01 - call getcpu() and make sure it succeeds
  *
  * ALGORITHM
- *	set cpu affinity of the process 
+ *	set cpu affinity of the process
  *	If setaffinity() fails exit from the test suite
  *	Store the node ID of the cpu which has been set in previous step
  *	Make a call to getcpu() system call
  *	Verify the returned valued with the set value
- *	if they match 
+ *	if they match
  *	  test is considered PASS
  *	else
  *	  test is considered FAIL
@@ -63,7 +63,7 @@
 #if defined(__i386__) || defined(__x86_64__)
 	#if __GLIBC_PREREQ(2,6)
 	#if defined(__x86_64__)
-		#include <utmpx.h> 
+		#include <utmpx.h>
 	#endif
 	int sys_support = 1;
 	#elif defined(__i386__)
@@ -81,7 +81,7 @@ static inline int getcpu(unsigned int *, unsigned int *, void *);
 unsigned int set_cpu_affinity();
 unsigned int get_nodeid(unsigned int);
 unsigned int max_cpuid(cpu_set_t *);
- 
+
 char *TCID= "getcpu01";
 int TST_TOTAL = 1;
 extern int Tst_count;
@@ -132,7 +132,7 @@ int main(int ac, char **av)
 				" expected cpuid:%d, returned value cpuid: %d",
 				cpu_set,cpu_id);
 				tst_exit();
-			} 
+			}
 			#ifdef __i386__
 			else if( node_id != node_set ){
 				tst_resm(TFAIL, "getcpu() returned wrong value"\
@@ -145,7 +145,7 @@ int main(int ac, char **av)
 				tst_resm(TPASS, "getcpu() returned proper"\
 				" cpuid:%d, node id:%d", cpu_id,node_id);
 		} else {
-			tst_resm(TFAIL, "getcpu() Failed, errno=%d:%s", 
+			tst_resm(TFAIL, "getcpu() Failed, errno=%d:%s",
 				TEST_ERRNO,strerror(TEST_ERRNO));
 				tst_exit();
 		}
@@ -157,7 +157,7 @@ int main(int ac, char **av)
 	return 0;
 }
 
-/* 
+/*
  * getcpu() - calls the system call
  */
 static inline int getcpu(unsigned *cpu_id, unsigned *node_id, void *cache_struct)
@@ -187,20 +187,20 @@ setup(void)
  * This will set the affinity to max cpu on which process can run
  * and return that cpu id to the calling process
  */
-unsigned int 
+unsigned int
 set_cpu_affinity()
 {
 	unsigned cpu_max;
 	cpu_set_t set;
 	if ( sched_getaffinity(0, sizeof(cpu_set_t), &set) < 0 ){
-			tst_resm(TFAIL,"sched_getaffinity:errno:%d",errno); 
+			tst_resm(TFAIL,"sched_getaffinity:errno:%d",errno);
 			tst_exit();
 	}
 	cpu_max = max_cpuid(&set);	
 	CPU_ZERO(&set);
 	CPU_SET(cpu_max,&set);
 	if ( sched_setaffinity(0, sizeof(cpu_set_t), &set) < 0 ){
-			tst_resm(TFAIL,"sched_setaffinity:errno:%d",errno); 
+			tst_resm(TFAIL,"sched_setaffinity:errno:%d",errno);
 			tst_exit();
 	}
 	return cpu_max;	
@@ -221,9 +221,9 @@ max_cpuid(cpu_set_t *set)
 
 
 /*
- * get_nodeid(cpuid) - This will return the node to which selected cpu belongs 
+ * get_nodeid(cpuid) - This will return the node to which selected cpu belongs
  */
-unsigned int 
+unsigned int
 get_nodeid(unsigned int cpu_id)
 {
  	DIR *directory_parent, *directory_node;
@@ -237,7 +237,7 @@ get_nodeid(unsigned int cpu_id)
                 tst_resm(TWARN,
                    "/sys not mounted or not a numa system. Assuming one node: %s",
                         strerror(errno));
-               	return 0; //By Default assume it to belong to node Zero 
+               	return 0; //By Default assume it to belong to node Zero
         } else {
                 while ((de = readdir(directory_parent)) != NULL) {
                         if (strncmp(de->d_name, "node", 4))

@@ -15,17 +15,17 @@
  *
  */
 /**************************************************************************
- * 
- *    TEST IDENTIFIER	: swapoff01 
- * 
+ *
+ *    TEST IDENTIFIER	: swapoff01
+ *
  *    EXECUTED BY	: root / superuser
- * 
+ *
  *    TEST TITLE	: Basic test for swapoff(2)
- * 
+ *
  *    TEST CASE TOTAL	: 1
- * 
+ *
  *    AUTHOR		: Aniruddha Marathe <aniruddha.marathe@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -33,8 +33,8 @@
  *    DESCRIPTION
  *    This is a Phase I test for the swapoff(2) system call.
  *    It is intended to provide a limited exposure of the system call.
- *     
- * 
+ *    
+ *
  * 	Setup:
  *	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
@@ -42,17 +42,17 @@
  *	  Create file of size 40K ( minimum swapfile size).
  *	  Make this file as swap file using mkswap(8)
  *	  Turn on the swap file.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  *	  Execute system call
  *	  Check return code, if system call failed (return=-1)
  *		Log the errno and Issue a FAIL message.
  *	  Otherwise, Issue a PASS message.
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  * swapoff01 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
  * where:

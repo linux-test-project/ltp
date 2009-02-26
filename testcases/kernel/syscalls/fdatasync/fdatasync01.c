@@ -15,17 +15,17 @@
  *
  */
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER   : fdatasync01
- * 
+ *
  *    EXECUTED BY       : Any user
- * 
+ *
  *    TEST TITLE        : Basic test for fdatasync(2)
- * 
+ *
  *    TEST CASE TOTAL   : 1
- * 
+ *
  *    AUTHOR            : Madhu T L <madhu.tarikere@wipro.com>
- * 
+ *
  *    SIGNALS
  *	Uses SIGUSR1 to pause before test if option set.
  *	(See the parse_opts(3) man page).
@@ -33,24 +33,24 @@
  *    DESCRIPTION
  *	This is a Phase I test for the fdatasync(2) system call.
  *	It is intended to provide a limited exposure of the system call.
- * 
+ *
  *	Setup:
  *	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
  *	  Create a temp directory and cd to it
  *	  Initialize filename and open it in write mode for each child process.
- * 
+ *
  *	Test:
  *	 Loop if the proper options are given.
  *	  Execute system call
  *	  Check return code, if system call failed (return=-1)
  *		Issue FAIL message with errno.
  *	  Otherwise, Issue PASS message.
- * 
+ *
  *	Cleanup:
  *	  Print errno log and/or timing stats if options given
  *	  Remove temporary directory and all files in it.
- * 
+ *
  * USAGE:  <for command-line>
  *  fdatasync01 [-c n] [-e] [-f] [-h] [-i n] [-I x] [-p] [-P x] [-t]
  *		where,  -c n : Run n copies concurrently.
@@ -62,7 +62,7 @@
  *			-p   : Pause for SIGUSR1 before starting
  *			-P x : Pause for x seconds between iterations.
  *			-t   : Turn on syscall timing.
- * 
+ *
  ****************************************************************/
 #include <errno.h>
 #include <sys/types.h>

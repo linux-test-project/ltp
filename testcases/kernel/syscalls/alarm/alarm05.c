@@ -25,7 +25,7 @@
  *  parameter is non zero.
  *
  * Expected Result:
- *  The return value of the alarm system call should be equal to the 
+ *  The return value of the alarm system call should be equal to the
  *  amount previously remaining in the alarm clock.
  *  A SIGALRM signal should be received after the specified amount of
  *  time has elapsed.
@@ -96,7 +96,7 @@ main(int ac, char **av)
 	int ret_val3;
 	int sleep_time1 = 3;	/* waiting time for the signal */
 	int sleep_time2 = 6;	/* waiting time for the signal */
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
 	if (msg != (char *)NULL) {
@@ -116,8 +116,8 @@ main(int ac, char **av)
 		 * a value of zero */
 		almreceived=0;
 
-		/* 
-		 * Call First alarm() with non-zero time parameter 
+		/*
+		 * Call First alarm() with non-zero time parameter
 		 * 'time_sec1' to send SIGALRM to the calling process.
 		 */
 		TEST(alarm(time_sec1));
@@ -139,7 +139,7 @@ main(int ac, char **av)
 		/*
 		 * Check whether the second alarm() call returned
 		 * the amount of time previously remaining in the
-		 * alarm clock of the calling process, and 
+		 * alarm clock of the calling process, and
 		 * sigproc() executed when SIGALRM received by the
 		 * process, the variable almreceived is set.
 		 */
@@ -147,8 +147,8 @@ main(int ac, char **av)
 			if ((almreceived == 1) &&
 			    (ret_val2 == (time_sec1 - sleep_time1))) {
 
-				/* 
-				 *  Make sure the system cleaned up the alarm 
+				/*
+				 *  Make sure the system cleaned up the alarm
 				 *  after it delivered it.
 				 */
 				TEST(alarm(0));
@@ -184,7 +184,7 @@ main(int ac, char **av)
  * setup() - performs all ONE TIME setup for this test.
  *  Setup the signal handler to catch SIGALRM.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -219,7 +219,7 @@ sigproc(int sig)
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

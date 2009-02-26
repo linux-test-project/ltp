@@ -41,7 +41,7 @@ extern int Tst_count;           /* Test Case counter for tst_* routines */
 int exp_enos[]={0};             /* List must end with 0 */
 
 
-void sig_handler(int signal); 
+void sig_handler(int signal);
 
 int main(int argc, char *argv[])
 {
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
 		tst_resm(TINFO, "\nrandom numbers were generated for the case numbers : %d, %d\n", ch, ch1);
 	}
 
-	else if(argc == 2) { 
+	else if(argc == 2) {
 		ch = atoi(argv[1]);
 		if(atoi(argv[1]) == 2 || atoi(argv[1]) == 8) {
 			if(ch == 2) ch1 = random() % 8;
@@ -232,19 +232,19 @@ int main(int argc, char *argv[])
 		 */
 		case 1:
 			syslog(LOG_USER | LOG_INFO, "syslogtst: user info test.");
-			break;       
+			break;      
 		case 2:
 			syslog(LOG_MAIL | LOG_INFO, "syslogtst: mail info test.");
-			break;       
+			break;      
 		case 3:
 			syslog(LOG_DAEMON | LOG_INFO, "syslogtst: daemon info test.");
-			break;       
+			break;      
 		case 4:
 			syslog(LOG_AUTH | LOG_INFO, "syslogtst: auth info test.");
-			break;       
+			break;      
 		case 5:
 			syslog(LOG_LPR | LOG_INFO, "syslogtst: lpr info test.");
-			break;       
+			break;      
 		}
 		break;
 	case 9:

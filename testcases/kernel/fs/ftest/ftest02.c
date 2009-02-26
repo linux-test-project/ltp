@@ -76,7 +76,7 @@ int dotest(int, int);
 void Warn(int, char*, char*);
 int mkname(char*, int, int);
 int term();
-void cleanup(); 
+void cleanup();
 
 /*--------------------------------------------------------------*/
 

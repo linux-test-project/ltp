@@ -93,7 +93,7 @@ int main(int argc, char **argv)
 	if (pid < 0) {
 		perror("clone");
 		exit(-1);
-	} 
+	}
 
 	pid = wait(&status);
 	if (pid < 0) {

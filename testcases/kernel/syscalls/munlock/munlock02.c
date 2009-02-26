@@ -15,18 +15,18 @@
  *
  */
 /**************************************************************************
- * 
+ *
  *    TEST IDENTIFIER	: munlock02
- * 
+ *
  *    EXECUTED BY	: root / superuser
- * 
+ *
  *    TEST TITLE	: Test for checking basic error conditions for
  * 	   		  munlock(2)
- * 
+ *
  *    TEST CASE TOTAL	: 2
- * 
+ *
  *    AUTHOR		: Nirmala Devi Dhanasekar <nirmala.devi@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -38,11 +38,11 @@
  *
  * 	1) ENOMEM - Some of the specified address range does not correspond to
  *			mapped pages in the address space of the process.
- * 
+ *
  * 	Setup:
  *	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  *	  Do necessary setup for each test.
@@ -50,10 +50,10 @@
  *	  Check return code, if system call failed (return=-1)
  *		Log the errno and Issue a FAIL message.
  *	  Otherwise, Issue a PASS message.
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  *  munlock02 [-c n] [-e] [-i n] [-I x] [-p x] [-t]
  *		where,		-c n : Run n copies concurrently
@@ -182,7 +182,7 @@ void setup()
 			TEST_ERRNO, strerror(TEST_ERRNO));
 	}
 	TC[0].addr = address;
-	/* 
+	/*
 	 * unmap part of the area, to create the condition for ENOMEM
 	*/
 	address += 2 * getpagesize();

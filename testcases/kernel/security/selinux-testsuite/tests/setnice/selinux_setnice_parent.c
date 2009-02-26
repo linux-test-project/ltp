@@ -24,35 +24,35 @@ int main(int argc, char **argv)
   int pid, rc, rc2, len, status, fd[2], fd2[2];
   security_context_t context_s;
   context_t context;
-  
+ 
   if (argc != 3) {
     fprintf(stderr, "usage:  %s newdomain program\n", argv[0]);
     exit(-1);
   }
-  
+ 
   rc = getcon(&context_s);
   if (rc < 0) {
     fprintf(stderr, "%s:  unable to get my context\n", argv[0]);
     exit(-1);
-    
+   
   }
-  
+ 
   context = context_new(context_s);
   if (!context) {
     fprintf(stderr, "%s:  unable to create context structure\n", argv[0]);
     exit(-1);
   }
-  
+ 
   if (context_type_set(context, argv[1])) {
     fprintf(stderr, "%s:  unable to set new type\n", argv[0]);
     exit(-1);
   }
-  
+ 
   freecon(context_s);
   context_s = context_str(context);
   if (!context_s) {
     fprintf(stderr, "%s:  unable to obtain new context string\n", argv[0]);
-    exit(-1); 
+    exit(-1);
   }
 
   rc = setexeccon(context_s);
@@ -60,7 +60,7 @@ int main(int argc, char **argv)
     fprintf(stderr, "%s:  unable to set exec context to %s\n", argv[0], context_s);
     exit(-1);
   }
-  
+ 
   rc = pipe(fd);
   if (rc < 0) {
     perror("pipe");
@@ -92,20 +92,20 @@ int main(int argc, char **argv)
     perror("read");
     exit(-1);
   }
-  
+ 
   if (buf[0]) {
     fprintf(stderr, "%s:  child died unexpectedly\n");
     exit(-1);
   }
-    
-  
+   
+ 
   rc =  setpriority(0,pid,10);
   rc2 = write(fd[1], buf, sizeof buf);
 
   if (rc2 < 0) {
     perror("write");
     exit(-1);
-  } 
+  }
   if (rc < 0) {
     perror("setnice: setnice(pid,pid)");
     exit(1);

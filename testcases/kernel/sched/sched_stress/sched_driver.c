@@ -39,7 +39,7 @@
 |                  - Perform throughput tests with new priority        |
 |                  - Kill short-term tests                             |
 |                  - Increase priority                                 |
-|                                                                      | 
+|                                                                      |
 | Usage:        sched_driver [-s n] [-p n] [-t n] [-d] [-v]            |
 |                                                                      |
 |               where:                                                 |
@@ -74,21 +74,21 @@
 
 /*
  * Defines:
- * 
+ *
  * MAXPROCS: maximum number of processes
- * 
+ *
  * PRIINC: priority step value
- * 
+ *
  * MAX_PRI: highest priority to use
- * 
+ *
  * MIN_PRI: lowest priority to use
- * 
+ *
  * DEFAULT_STRESS_PERCENTAGE: stress percentage (process slot multiplier)
- * 
+ *
  * DEFAULT_PROCESS_SLOTS: number of processes test driver will try and create
- * 
+ *
  * DEFAULT_TIME: time (hours) for which this test driver will run
- * 
+ *
  * USAGE: usage statement
  */
 #define MAXPROCS   100
@@ -107,13 +107,13 @@
 
 /*
  * Global variables:
- * 
+ *
  * stress_percent: stress percentage
- * 
+ *
  * :
- * 
+ *
  * execution_time: execution time in hours
- * 
+ *
  * debug: (option flag) enables debugging messages
  */
 int	numprocs,          /* number of process id's in table             */
@@ -182,7 +182,7 @@ int main (int argc, char **argv)
 
 	startup (start_time);
 
-	/* 
+	/*
 	 * Calculate available workslots, long-term, and short-term slots
 	 */
 	workslots = available_user_process_slots() * stress_percent;
@@ -190,34 +190,34 @@ int main (int argc, char **argv)
 	if (debug) {
 		printf ("available slots:      %d\n", available_user_process_slots ());
 		printf ("workslots available:  %d\n", workslots);
-		printf ("stress_percent:       %f\n", stress_percent); 
-		printf ("run-hours:            %f (hrs)\n", execution_time); 
-		 		 printf ("runseconds:           %ld (sec)\n", runseconds); 
+		printf ("stress_percent:       %f\n", stress_percent);
+		printf ("run-hours:            %f (hrs)\n", execution_time);
+		 		 printf ("runseconds:           %ld (sec)\n", runseconds);
 	}
 
-	/* 
-	 * Run the first set of tests with an average priority 
+	/*
+	 * Run the first set of tests with an average priority
 	 */
 	perform_throughput_tests ( (MAX_PRI + MIN_PRI) / 2);
 	fflush (stdout);
 
-	/* 
+	/*
 	 * Start the long-term testcases running
 	 */
 	start_long_term_testcases (long_term_slot_total, argv[2]);
 	short_term_slot_total = workslots / 2;
 	fflush (stdout);
 
-	/* 
+	/*
 	 * Loop while there is still time
 	 */
 	current_priority=MAX_PRI;
-	while ((time(0) - start_time) < runseconds) { 
+	while ((time(0) - start_time) < runseconds) {
 
 		if (debug) printf ("current priority: %d\n", current_priority);
 		if (debug) printf ("starting short term tests\n");
 
-		start_short_term_testcases (short_term_slot_total, 
+		start_short_term_testcases (short_term_slot_total,
 			stress_percent, current_priority);
 		fflush (stdout);
 
@@ -235,7 +235,7 @@ int main (int argc, char **argv)
 			current_priority += PRIINC;
 	}
 
-	/* 
+	/*
 	 * Exit with success...
 	 */
 	finishup (start_time);
@@ -254,7 +254,7 @@ void startup (long start_time)
 {
 	char   tempbuffer[50];   /* temporary buffer to hold names */
 
-	/* 
+	/*
 	 * Now output some diagnostic information
 	 */
 	printf ("start time    = %s\n", ctime (&start_time));
@@ -268,7 +268,7 @@ void startup (long start_time)
 
 	printf ("test stress   = %4.2f%%%%\n\n", 100 * stress_percent);
 
-	/* 
+	/*
 	 * Initialize the global variables
 	 */
 	numprocs = 0;
@@ -301,18 +301,18 @@ void startup (long start_time)
 int start_testcase (char *name1, char *name2, char *param1, char *param2, char *param3, char *param4)
 {
 	int   pid,        /* pid of currently running process */
-	pid_save;   /* saved pid of process */   
+	pid_save;   /* saved pid of process */  
 
-	/* 
+	/*
 	 * Fork a process that will run testcase and save the pid
 	 */
-	if (debug) 
+	if (debug)
 		printf ("test: %s %s p1[%s] p2[%s] p3[%s] p4[%s]\n",
 			name1, name2, param1, param2, param3, param4);
 
 	pid_save = pid = fork();
 
-	/* 
+	/*
 	 * If the pid returned is -1, fork failed.  If the pid returned is
 	 * 0, then the process running is the child process, and we need
 	 * to do an 'execl' to run the testcase.  If the pid returned is
@@ -331,7 +331,7 @@ int start_testcase (char *name1, char *name2, char *param1, char *param2, char *
 	if (debug)
 		printf ("testcase %s started -- pid is %d\n", name2, pid_save);
 
-	/* 
+	/*
 	 * If the process just forked is for a short-term testcase, then
 	 * add the process id to the table.
 	 */
@@ -361,32 +361,32 @@ int process_slots_in_use()
 	FILE   *psfile;     /* temporary file to hold output of 'ps' command */
 	int    usedslots;   /* holds the number of used process slots */
 
-	/* 
+	/*
 	 * Call the 'ps' command and write the number of process slots to a file
 	 */
 	if  (system ("ps -e | wc -l > ps.out") < 0)
 		sys_error ("system failed", __FILE__, __LINE__);
 
-	/* 
+	/*
 	 * Open the output file
 	 */
 	if  ( (psfile = fopen ("ps.out", "r")) == (FILE *) NULL) {
 		exit (-1);
 	}
 
-	/* 
+	/*
 	 * Read the number of process slots in use from the file
 	 */
 	fscanf (psfile, "%d", &usedslots);
 
-	/* 
+	/*
 	 * Close the output file
 	 */
 	if  (fclose (psfile) == -1) {
 		exit (-1);
 	}
 
-	/* 
+	/*
 	 * Remove the output file
 	 */
 	if  (system ("/bin/rm ps.out") < 0)
@@ -427,40 +427,40 @@ float *t2;       /* if sched_tc6:  second time returned from testcase */
 	int	saved_pid;	/* process id of forked process */
 	FILE	*datafile;	/* file pointer for temporary file */
 
-	/* 
-	 * Create the path name to be passed to the start_testcase() function 
+	/*
+	 * Create the path name to be passed to the start_testcase() function
 	 */
 	sprintf (temp, "./%s", name);
 
-	/* 
+	/*
 	 * Send all the parameters, and start the testcase
 	 */
 	saved_pid = start_testcase (temp, name, param1,
         	"-lsch.measure", param2, param3);
 
-	/* 
+	/*
 	 * Wait for the testcase to finish
 	 */
 	if (debug) printf ("waiting on child %d\n", saved_pid);
 	while (wait((void *) 0) != saved_pid) ;
 
-	/* 
-	 * Open the temporary file to get the returned number of seconds 
+	/*
+	 * Open the temporary file to get the returned number of seconds
 	 */
 
 	if ( (datafile = fopen ("sch.measure", "r")) == (FILE *) NULL) {
 		sys_error ("cannot open sch.measure", __FILE__, __LINE__);
 	}
 
-	/* 
-	 * Read the number of seconds 
+	/*
+	 * Read the number of seconds
 	 */
 	fgets (temp, 50, datafile);
 	/*added by mpt
 	printf("sched+driver: measure_test: number of seconds=%s\n",temp)
          *********** */
 
-	/* 
+	/*
 	 * If this is sched_tc6, then there is another number we must return
 	 */
 
@@ -469,14 +469,14 @@ float *t2;       /* if sched_tc6:  second time returned from testcase */
 		*t2 = atof (t2asc);
 	}
 
-	/* 
+	/*
 	 * Close the temporary file
 	 */
 	if  (fclose (datafile) != 0) {
 		exit (-1);
 	}
 
-	/* 
+	/*
 	 * Now try to remove the temporary file
 	 */
 	/*added by MPT
@@ -501,7 +501,7 @@ void display_line (char *tcname, int pri, int f, float et, float *pet, int ff)
 	float	pc;               /* holds percent change */
 
 
-	/* 
+	/*
 	 * Print header every eight lines...
 	 */
 	if (display_header-- == 0) {
@@ -514,7 +514,7 @@ void display_line (char *tcname, int pri, int f, float et, float *pet, int ff)
 		display_header = 6;
 	}
 
-	/* 
+	/*
 	 * Calculate the percent change in time
 	 */
 	pc = (*pet == 0.0)? 0.0 : 100.0 *  ( (et - *pet) / *pet) + 0.05;
@@ -522,7 +522,7 @@ void display_line (char *tcname, int pri, int f, float et, float *pet, int ff)
 	printf ("%-12s %2d    %2d      %2d      %4s   %06.4f  %+06.4f  %s\n",
 		tcname, long_running, short_running, pri,
 		(f == 0) ? "user" : "real",
-		et, pc, 
+		et, pc,
 		(ff) ? "forked child" : " ");
 
 	fflush (stdout);
@@ -577,11 +577,11 @@ void perform_throughput_tests (int current_priority)
 	display_line ("sched_tc6", current_priority, 0, esecs, &e6user1, 1);
 #endif
 
-	/* 
+	/*
 	 * Manually build the display line for the second part of sched_tc6
 	 */
 
-	/* 
+	/*
 	 * Calculate the percent change in time
 	 */
 	pc = (e6child == 0.0) ? 0.0 : 100 * ((esecs2 - e6child)/e6child) + 0.05;
@@ -676,7 +676,7 @@ void kill_short_term_testcases()
 {
 	int   i;   /* loop counter to step through the list of process id's */
 
-        /* 
+        /*
 	 * Loop through the array of process id's one at a time, and
 	 * attempt to kill each one.  If kill fails, report error and
 	 * continue.
@@ -688,12 +688,12 @@ void kill_short_term_testcases()
 		kill (procs[i], SIGUSR1);
 	}
 
-	/* 
-	 * Adjust the number of short_term_testcases 
+	/*
+	 * Adjust the number of short_term_testcases
 	 */
 	short_running -= numprocs;
 
-	/* 
+	/*
 	 * Clear the table by setting number of entries to zero
 	 */
 	numprocs = 0;
@@ -709,7 +709,7 @@ long start_time;   /* starting time to calculate elapsed time */
 {
 	long   end_time;       /* time when program finished */
 
-	/* 
+	/*
 	 * Get the end time and calculate elapsed time; write all this out
 	 */
 	end_time = time ((long *) 0);
@@ -775,19 +775,19 @@ void parse_args (int argc, char **argv)
 	/*
 	 * Check percentage, execution time and process slots...
  	 */
-	if (sflg) { 
+	if (sflg) {
 		if (stress_percent < 0.0 || stress_percent > 1.0)
 			errflag++;
 	}
-	if (pflg) { 
+	if (pflg) {
 		if (process_slots < 0 || process_slots > MAXPROCS)
 			errflag++;
 	}
-	if (tflg) { 
+	if (tflg) {
 		if (execution_time < 0.0 || execution_time > 100.0)
 			errflag++;
 	}
-	if (debug) 
+	if (debug)
 		printf ("\n(debugging messages enabled)\n\n");
 	if (errflag) {
 		fprintf (stderr, USAGE, program_name);

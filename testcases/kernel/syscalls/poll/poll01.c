@@ -94,7 +94,7 @@ main(int ac, char **av)
 	char read_buf[BUF_SIZE];	/* buffer for read-end of pipe */
 	int status;			/* exit status of child process */
 	int rval;
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
 	if (msg != (char *)NULL) {
@@ -111,7 +111,7 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-		/* 
+		/*
 		 * Call poll() with the TEST macro.
 		 */
 		TEST(poll(fds, 1, -1));
@@ -139,7 +139,7 @@ main(int ac, char **av)
 
 		if (cpid == 0) {	/* Child process */
 			/*
-			 * close writing end of pipe and read from 
+			 * close writing end of pipe and read from
 			 * the pipe
 			 */
 			if (close(fildes[1]) == -1) {
@@ -212,7 +212,7 @@ main(int ac, char **av)
  * 	     Creat read/write pipe using pipe().
  * 	     Set poll data structures to check writing to the pipe.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -237,7 +237,7 @@ setup()
  *             completion or premature exit.
  * 	       close read end of pipe if still open.
  */
-void 
+void
 cleanup()
 {
 	/*

@@ -75,7 +75,7 @@ int main(int ac, char **av)
 
 	int fd[2];			/* fds for pipe read/write */
 	char wrbuf[BUFSIZ], rebuf[BUFSIZ];
-	int red, written;		/* no of chars read and */ 
+	int red, written;		/* no of chars read and */
 					/* written to pipe */
 	int length, greater, forkstat;
 	int retval=0, status, e_code;

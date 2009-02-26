@@ -83,17 +83,17 @@
 int offsets_cnt = 11;
 /* Defines
  *
- * MAX_SHMEM_SIZE: maximum shared memory segment size of 256MB 
+ * MAX_SHMEM_SIZE: maximum shared memory segment size of 256MB
  *
- * MAX_SHMEM_NUMBER: maximum number of simultaneous attached shared memory 
+ * MAX_SHMEM_NUMBER: maximum number of simultaneous attached shared memory
  * regions
  *
  * DEFAULT_SHMEM_SIZE: default shared memory size, unless specified with
  * -s command line option
- * 
+ *
  * SHMEM_MODE: shared memory access permissions (permit process to read
  * and write access)
- * 
+ *
  * USAGE: usage statement
  */
 #define MAX_SHMEM_SIZE		256*1024*1024
@@ -119,7 +119,7 @@ void error (const char *, int);
 
 /*
  * Global variables
- * 
+ *
  * shmem_size: shared memory segment size (in bytes)
  */
 int shmem_size = DEFAULT_SHMEM_SIZE;
@@ -139,47 +139,47 @@ int shmem_size = DEFAULT_SHMEM_SIZE;
 int main (int argc, char **argv)
 {
   int i;
-  
+ 
   int shmid[MAX_SHMEM_NUMBER];	/* (Unique) Shared memory identifier */
-  
+ 
   char *shmptr[MAX_SHMEM_NUMBER];	/* Shared memory segment address */
   char	*ptr;		/* Index into shared memory segment */
-  
+ 
   int value = 0;	/* Value written into shared memory segment */
-  
+ 
   key_t mykey[MAX_SHMEM_NUMBER];
   char * null_file = "/dev/null";
   char  proj[MAX_SHMEM_NUMBER] = {
     '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'E'
   };
-  
-  
+ 
+ 
   /*
    * Parse command line arguments and print out program header
    */
   parse_args (argc, argv);
   printf ("%s: IPC Shared Memory TestSuite program\n", *argv);
-  
-  for (i=0; i<offsets_cnt; i++) 
+ 
+  for (i=0; i<offsets_cnt; i++)
     {
       char tmpstr[256];
       /*
        * Create a key to uniquely identify the shared segment
        */
-      
+     
       mykey[i] = ftok(null_file,proj[i]);
-      
+     
       printf ("\n\tmykey to uniquely identify the shared memory segment 0x%x\n",mykey[i]);
-      
+     
       printf ("\n\tGet shared memory segment (%d bytes)\n", shmem_size);
       /*
        * Obtain a unique shared memory identifier with shmget ().
        */
-      
+     
       if ((long)(shmid[i]= shmget (mykey[i], shmem_size, IPC_CREAT | 0666 )) < 0)
 	sys_error ("shmget failed", __LINE__);
-      
-      
+     
+     
       printf ("\n\tAttach shared memory segment to process\n");
 
       if ((long)(shmptr[i] = (char *) shmat (shmid[i], NULL, 0)) == -1)
@@ -194,44 +194,44 @@ int main (int argc, char **argv)
 	  sys_error (tmpstr, __LINE__);
 	}
 
-      
+     
       printf ("\n\tShared memory segment address : %p \n",shmptr[i]);
-      
+     
       printf ("\n\tIndex through shared memory segment ...\n");
-      
+     
       /*
        * Index through the shared memory segment
        */
-      
+     
       for (ptr=shmptr[i]; ptr < (shmptr[i] + shmem_size); ptr++)
 	*ptr = value++;
-      
+     
     } // for 1..11
 
   printf ("\n\tDetach from the segment using the shmdt subroutine\n");
-  
+ 
   printf ("\n\tRelease shared memory\n");
-  
-  for (i=0; i<offsets_cnt; i++) 
+ 
+  for (i=0; i<offsets_cnt; i++)
     {
       // Detach from the segment
-      
+     
       shmdt( shmptr[i] );
-      
+     
       // Release shared memory
-      
+     
       if (shmctl (shmid[i], IPC_RMID, 0) < 0)
 	sys_error ("shmctl failed", __LINE__);
-      
+     
     } // 2nd for 1..11
-  /* 
+  /*
    * Program completed successfully -- exit
    */
-  
+ 
   printf ("\nsuccessful!\n");
-  
+ 
   return (0);
-  
+ 
 }
 
 
@@ -253,7 +253,7 @@ void parse_args (int argc, char **argv)
   int	errflag = 0;
   char	*program_name = *argv;
   extern char 	*optarg;	/* Command line option */
-  
+ 
   while ((i = getopt(argc, argv, "s:?")) != EOF) {
     switch (i) {
     case 's':
@@ -264,10 +264,10 @@ void parse_args (int argc, char **argv)
       break;
     }
   }
-  
+ 
   if (shmem_size < 1 || shmem_size > MAX_SHMEM_SIZE)
     errflag++;
-  
+ 
   if (errflag) {
     fprintf (stderr, USAGE, program_name);
     exit (2);
@@ -285,7 +285,7 @@ void parse_args (int argc, char **argv)
 void sys_error (const char *msg, int line)
 {
   char syserr_msg [256];
-  
+ 
   sprintf (syserr_msg, "%s: %s\n", msg, strerror (errno));
   error (syserr_msg, line);
 }

@@ -17,7 +17,7 @@
 #include<selinux/selinux.h>
 
 /*
- * Test the mprotect file operation on a file whose name is given as the first 
+ * Test the mprotect file operation on a file whose name is given as the first
  * argument. The second argument must be the SID we are to use to test
  * the actual mprotect() operation by changing the SID of the file we are
  * given.
@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
   }
 
   fd = open(argv[1], O_RDONLY, 0);
-  
+ 
   if(fd == -1) {
     perror("selinux_mprotect:open");
     exit(2);

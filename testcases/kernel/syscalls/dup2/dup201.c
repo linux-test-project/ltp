@@ -20,22 +20,22 @@
 /*
  * NAME
  *	dup201.c
- * 
+ *
  * DESCRIPTION
  *	Negative tests for dup2() with bad fd (EBADF)
- * 
+ *
  * ALGORITHM
  * 	Setup:
  *	a.	Setup signal handling.
  *	b.	Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	a.	Loop if the proper options are given.
  *	b.	Loop through the test cases
  * 	c.	Execute dup2() system call
  *	d.	Check return code, if system call failed (return=-1), test
  *		for EBADF.
- * 
+ *
  * 	Cleanup:
  * 	a.	Print errno log and/or timing stats if options given
  *
@@ -167,7 +167,7 @@ int main(int ac, char **av)
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -188,7 +188,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

@@ -131,7 +131,7 @@ setup()
 		 		  sprintf(test_dir, "%s.%d", cur_dir, getpid());
 
         /*
-         * create a temporary directory 
+         * create a temporary directory
          */
         if (mkdir(test_dir, 0222) != 0) {
                 tst_resm(TFAIL, "mkdir() failed to create"
@@ -144,8 +144,8 @@ setup()
         if (geteuid() != 0) {
                 tst_brkm(TBROK, tst_exit, "Test must be run as root");
         }
-         ltpuser = getpwnam(nobody_uid); 
-         if (seteuid(ltpuser->pw_uid) == -1) { 
+         ltpuser = getpwnam(nobody_uid);
+         if (seteuid(ltpuser->pw_uid) == -1) {
                 tst_resm(TINFO, "seteuid failed to "
                          "to set the effective uid to %d",
                          ltpuser->pw_uid);

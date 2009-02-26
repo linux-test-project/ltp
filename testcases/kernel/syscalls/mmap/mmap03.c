@@ -127,7 +127,7 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 
-		/* 
+		/*
 		 * Call mmap to map the temporary file 'TEMPFILE'
 	 	 * with execute access.
 		 */
@@ -168,7 +168,7 @@ main(int ac, char **av)
 				tst_resm(TFAIL, "mapped memory region contains "
 					 "invalid data");
 			   } else {
-				tst_resm(TPASS, 
+				tst_resm(TPASS,
 					 "Functionality of mmap() successful");
 			   }
 			}
@@ -210,7 +210,7 @@ main(int ac, char **av)
  *	     Change the mode permissions on file to 0555.
  *	     Re-open the file for reading.
  */
-void 
+void
 setup()
 {
 	char *tst_buff;			/* test buffer to hold known data */
@@ -310,7 +310,7 @@ sig_handler(sig)
 	       Free the memory allocated to dummy variable.
  * 	       Remove the temporary directory created.
  */
-void 
+void
 cleanup()
 {
 	/*

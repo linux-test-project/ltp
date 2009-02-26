@@ -39,7 +39,7 @@
  *   Check return code, if system call failed (return=-1)
  *    Issue a FAIL message.
  *   Otherwise,
- *    Verify the Functionality of system call 
+ *    Verify the Functionality of system call
  *      if successful,
  *       Issue Functionality-Pass message.
  *      Otherwise,
@@ -91,7 +91,7 @@ main(int ac, char **av)
  struct timeval otime;  /* time before child execution suspended */
  struct timeval ntime;  /* time after child resumes execution */
  int retval=0, e_code, status;
-    
+   
  /* Parse standard options given to run the test. */
  msg = parse_opts(ac, av, (option_t *) NULL, NULL);
  if (msg != (char *) NULL) {
@@ -121,7 +121,7 @@ main(int ac, char **av)
   if (cpid == 0) {  /* Child process */
    /* Note down the current time */
       gettimeofday(&otime, 0);
-   /* 
+   /*
     * Call nanosleep() to suspend child process
     * for specified time.
     */
@@ -145,7 +145,7 @@ main(int ac, char **av)
      */
    if (STD_FUNCTIONAL_TEST) {
     /*
-     * Verify whether child execution was 
+     * Verify whether child execution was
      * actually suspended to desired interval.
      */
        long want_ms, got_ms;
@@ -186,7 +186,7 @@ main(int ac, char **av)
  * setup() - performs all ONE TIME setup for this test.
  *        Initialize time structure elements.
  */
-void 
+void
 setup()
 {
  /* capture signals */
@@ -205,7 +205,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void 
+void
 cleanup()
 {
  /*

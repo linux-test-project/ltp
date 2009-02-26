@@ -15,17 +15,17 @@
  *
  */
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER	: iopl02
- * 
+ *
  *    EXECUTED BY	: superuser
- * 
+ *
  *    TEST TITLE	: Tests for error conditions
- * 
+ *
  *    TEST CASE TOTAL	: 2
- * 
+ *
  *    AUTHOR		: Subhab Biwas <subhabrata.biswas@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -33,9 +33,9 @@
  *    DESCRIPTION
  *	Verify that
  *	1) iopl(2) returns -1 and sets errno to EINVAL for privilege
- *	   level greater than 3. 
+ *	   level greater than 3.
  *	2) iopl(2) returns -1 and sets errno to EPERM if the current
- *	   user is not the super-user. 
+ *	   user is not the super-user.
  *
  * 	Setup:
  * 	  Setup signal handling.
@@ -156,14 +156,14 @@ main(int ac, char **av)
 					TEST_ERRNO, test_cases[i].exp_errno);
 			}
 
-			TEST_ERROR_LOG(TEST_ERRNO); 
+			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (i == 1) {
 				/* revert back to super user */
 				cleanup1();
 			}
 
-		} 
+		}
 	}	/* End for TEST_LOOPING */
 
 	/* cleanup and exit */
@@ -175,16 +175,16 @@ main(int ac, char **av)
 }	/* End main */
 
 /* setup1() - set up non-super user for second test case */
-int  
+int 
 setup1(void)
 {
 	/* switch to "nobody" user */
-	if (seteuid(ltpuser->pw_uid) == -1) { 
+	if (seteuid(ltpuser->pw_uid) == -1) {
 		tst_resm(TWARN, "Failed to set effective"
 				"uid to %d", ltpuser->pw_uid);
 		return 1;
 	}
-	return 0; 
+	return 0;
 }
 
 /* cleanup1() - reset to super user for first test case */
@@ -192,9 +192,9 @@ void
 cleanup1()
 {
 	/* reset user as root */
-	if (seteuid(0) == -1) { 
-		tst_brkm(TBROK, tst_exit, "Failed to set uid as root"); 
-	} 
+	if (seteuid(0) == -1) {
+		tst_brkm(TBROK, tst_exit, "Failed to set uid as root");
+	}
 }
 
 /* setup() - performs all ONE TIME setup for this test */

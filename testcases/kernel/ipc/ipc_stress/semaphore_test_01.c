@@ -139,7 +139,7 @@ int main (int argc, char **argv)
 	exp_semdata.sem_perm.cgid = exp_semdata.sem_perm.gid  = gid;
 	exp_semdata.sem_perm.mode = 0660;
 	exp_semdata.sem_nsems     = nsems;
- 
+
 	/*
 	 * Create a semaphore, set the semaphore fields and then
 	 * retrieve the fields.

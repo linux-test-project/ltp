@@ -88,7 +88,7 @@ int main(int ac, char **av)
 				if (pwent->pw_uid != TEST_RETURN) {
 					tst_resm(TFAIL, "getpwuid() value, %d, "
 						 "does not match getuid() "
-						 "value, %d", pwent->pw_uid, 
+						 "value, %d", pwent->pw_uid,
 						 TEST_RETURN);
 				} else {
 					tst_resm(TPASS, "values from getuid()"

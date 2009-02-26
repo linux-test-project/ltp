@@ -24,7 +24,7 @@
  * DESCRIPTION
  *	This test will verify that rmdir(2) syscall basic functionality.
  *	verify rmdir(2) returns a value of 0 and the directory being
- *	removed 
+ *	removed
  *
  * ALGORITHM
  *	Setup:
@@ -62,7 +62,7 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include "test.h" 
+#include "test.h"
 #include "usctest.h"
 
 void setup();
@@ -99,7 +99,7 @@ main(int ac, char **av)
 	 * check looping state if -i option given
 	 */
 	for (lc=0; TEST_LOOPING(lc); lc++) {
-	  
+	 
 		/* reset Tst_count in case we are looping. */
 		Tst_count=0;
 
@@ -129,7 +129,7 @@ main(int ac, char **av)
 			if (stat(tstdir, &buf) != -1) {
 		      		tst_resm(TFAIL, "directory %s still exists",
 					 tstdir);
-				continue;  
+				continue; 
 			} else {
 				tst_resm(TPASS, "directory has been removed");
 			}
@@ -153,7 +153,7 @@ main(int ac, char **av)
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -172,7 +172,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *              completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

@@ -18,17 +18,17 @@
  */
 
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER   : flock03
- * 
+ *
  *    EXECUTED BY       : anyone
- * 
+ *
  *    TEST TITLE        : Error condition test for flock(2)
- * 
+ *
  *    TEST CASE TOTAL   : 1
- * 
+ *
  *    AUTHOR            : Paul Larson <plars@linuxtestproject.org>
- * 
+ *
  *    SIGNALS
  *      Uses SIGUSR1 to pause before test if option set.
  *      (See the parse_opts(3) man page).
@@ -44,8 +44,8 @@
  * 		it is locked.  Child then tries to unlock the file. If
  *		the unlock succeeds, the child attempts to lock the
  *		file with LOCK_EX. The test passes if the child is
- *		able to lock the file. 
- * 
+ *		able to lock the file.
+ *
  * USAGE:  <for command-line>
  *      flock03 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
  *                      where,  -c n : Run n copies concurrently
@@ -140,7 +140,7 @@ int main(int argc, char **argv)
 		TEST(flock(fd, LOCK_EX | LOCK_NB));
 		if(TEST_RETURN != 0)
 			tst_resm(TFAIL, "Parent: Initial attempt to flock() failed, "
-				 "errno %d",TEST_ERRNO); 
+				 "errno %d",TEST_ERRNO);
 		else
 			tst_resm(TPASS, "Parent: Initial attempt to flock() passed");
 

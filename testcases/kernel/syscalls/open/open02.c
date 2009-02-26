@@ -19,7 +19,7 @@
 
 /*
  * NAME
- * 	open02.c 
+ * 	open02.c
  *
  * DESCRIPTION
  * 	Test if open without O_CREAT returns -1 if a file does not exist.

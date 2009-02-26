@@ -88,7 +88,7 @@ main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 	int New_nice;		/* priority of process after nice() */
 	int max_val;		/* Maximum nice value per OS. */
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
 	if (msg != (char *)NULL) {
@@ -104,7 +104,7 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 
-		/* 
+		/*
 		 * Call nice(2) with an 'incr' parameter set
 		 * to a higher +ve value.
 		 */
@@ -161,7 +161,7 @@ main(int ac, char **av)
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -176,7 +176,7 @@ setup()
  *             completion or premature exit.
  *  Remove the test directory and testfile created in the setup.
  */
-void 
+void
 cleanup()
 {
 	/*

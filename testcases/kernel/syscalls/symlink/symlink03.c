@@ -25,17 +25,17 @@
  *   1) symlink(2) returns -1 and sets errno to EACCES if search/write
  *	permission is denied in the directory where the symbolic link is
  *	being created.
- *   2) symlink(2) returns -1 and sets errno to EEXIST if the specified 
+ *   2) symlink(2) returns -1 and sets errno to EEXIST if the specified
  *	symbolic link already exists.
  *   3) symlink(2) returns -1 and sets errno to EFAULT if the specified
  *	file or symbolic link points to invalid address.
- *   4) symlink(2) returns -1 and sets errno to ENAMETOOLONG if the 
+ *   4) symlink(2) returns -1 and sets errno to ENAMETOOLONG if the
  *	pathname component of symbolic link is too long (ie, > PATH_MAX).
  *   5) symlink(2) returns -1 and sets errno to ENOTDIR if the directory
  *	component in pathname of symbolic link is not a directory.
  *   6) symlink(2) returns -1 and sets errno to ENOENT if the component of
  *	symbolic link points to an empty string.
- * 
+ *
  * Expected Result:
  *  symlink() should fail with return value -1 and set expected errno.
  *
@@ -182,7 +182,7 @@ main(int ac, char **av)
 				sym_file = (char *)get_high_address();
 			}
 #endif
-			/* 
+			/*
 			 * Call symlink(2) to test different test conditions.
 	 		 * verify that it fails with -1 return value and sets
 			 * appropriate errno.
@@ -231,7 +231,7 @@ main(int ac, char **av)
  *  Create a temporary directory and change directory to it.
  *  Call test specific setup functions.
  */
-void 
+void
 setup()
 {
 	int ind;
@@ -414,7 +414,7 @@ setup3()
  *  Restore the mode permissions on test directory.
  *  Remove the temporary directory created in the setup.
  */
-void 
+void
 cleanup()
 {
 	/*

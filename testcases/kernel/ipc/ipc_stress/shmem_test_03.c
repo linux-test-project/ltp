@@ -175,7 +175,7 @@ int main (int argc, char **argv)
 	printf ("%s: IPC Shared Memory TestSuite program\n", *argv);
 
 	/*
-	 * Setup the signal handlers (in case user aborts program). 
+	 * Setup the signal handlers (in case user aborts program).
 	 *
 	 * Create the semaphores to insure exclusive writes to the
 	 * shared memory segment.
@@ -192,13 +192,13 @@ int main (int argc, char **argv)
 
 	/*
 	 * Create a shared memory segment for storing the read count
-	 * (number of child processes reading shared data) 
+	 * (number of child processes reading shared data)
 	 * After creating the shared memory segment, initialize it.
 	 */
 	if ((fd = open ("/dev/zero", O_RDWR)) < 0)
 		sys_error ("open failed", __LINE__);
-	if ((read_count = (int *) 
-		mmap (0, sizeof (int), PROT_READ | PROT_WRITE, 
+	if ((read_count = (int *)
+		mmap (0, sizeof (int), PROT_READ | PROT_WRITE,
 			MAP_SHARED, fd, 0)) < 0)
 		sys_error ("mmap failed", __LINE__);
 	close (fd);
@@ -212,8 +212,8 @@ int main (int argc, char **argv)
 	if ((fd = open ("/dev/zero", O_RDWR)) < 0)
 		sys_error ("open failed", __LINE__);
 	shmem_size = sizeof (unsigned long) * num_children;
-	if ((checksum = (unsigned long *) 
-		mmap (0, shmem_size, PROT_READ | PROT_WRITE, 
+	if ((checksum = (unsigned long *)
+		mmap (0, shmem_size, PROT_READ | PROT_WRITE,
 			MAP_SHARED, fd, 0)) < 0)
 		sys_error ("mmap failed", __LINE__);
 	close (fd);
@@ -229,7 +229,7 @@ int main (int argc, char **argv)
 		sys_error ("open failed", __LINE__);
 
 	printf ("\n\tGet shared memory segment (%d bytes)\n", buffer_size);
-	if ((shmptr = mmap (0, buffer_size, PROT_READ | PROT_WRITE, 
+	if ((shmptr = mmap (0, buffer_size, PROT_READ | PROT_WRITE,
 		MAP_SHARED, fd, 0)) < 0)
 		sys_error ("mmap failed", __LINE__);
 	close (fd);
@@ -282,17 +282,17 @@ int main (int argc, char **argv)
 	for (i=0; i<num_children; i++) {
 		waitpid (pid [i], &status, 0);
 
-		if (!WIFEXITED (status)) 
-			sys_error ("child process terminated abnormally", 
+		if (!WIFEXITED (status))
+			sys_error ("child process terminated abnormally",
 				__LINE__);
 		if (cksum != *(checksum + (sizeof (unsigned long) * i))) {
 			printf ("checksum [%d] = %08lx\n", i, checksum [i]);
-			error ("checksums do not match", __LINE__); 
+			error ("checksums do not match", __LINE__);
 		}
 	}
 	printf ("\n\tParent: children calculated segment successfully\n");
 
-	/* 
+	/*
 	 * Program completed successfully, cleanup semaphores and exit.
 	 */
 	delete_semaphores ();
@@ -321,11 +321,11 @@ static void child (int num, unsigned char *shmptr)
 	
 	/*
 	 * Wait for a READ_COUNT lock on the shared memory segment, then
-	 * compute the checksum and release the READ_COUNT lock.      
+	 * compute the checksum and release the READ_COUNT lock.     
 	 */
 	lock_resource (READ_COUNT);
 	(*read_count)++;
-	if (*read_count == 1) 
+	if (*read_count == 1)
 		lock_resource (WRITE);
 	unlock_resource (READ_COUNT);
 
@@ -334,7 +334,7 @@ static void child (int num, unsigned char *shmptr)
 
 	lock_resource (READ_COUNT);
 	(*read_count)--;
-	if (*read_count == 0) 
+	if (*read_count == 0)
 		unlock_resource (WRITE);
 	unlock_resource (READ_COUNT);
 
@@ -343,7 +343,7 @@ static void child (int num, unsigned char *shmptr)
 	 */
 	checksum [num] = cksum;
 	*(checksum + (sizeof (unsigned long) * num)) = cksum;
-	printf ("\t\tchild (%02d): checksum %08lx\n", num, 
+	printf ("\t\tchild (%02d): checksum %08lx\n", num,
 		*(checksum + (sizeof (unsigned long) * num)));
 }
 
@@ -531,7 +531,7 @@ void handler (int sig, int code, struct sigcontext *scp)
 
 			cleanup ();
 		}
-		else 
+		else
 			exit (-1);
 	} else {
 		sprintf (msg, "Received an unexpected signal (%d)", sig);
@@ -555,7 +555,7 @@ void cleanup ()
 	if (getpid () == parent_pid) {
 		delete_semaphores ();
 		for (i=0; i<num_children; i++) {
-			if (pid [i] > (pid_t)0 && kill (pid [i], SIGKILL) < 0) 
+			if (pid [i] > (pid_t)0 && kill (pid [i], SIGKILL) < 0)
 				sys_error ("signal failed", __LINE__);
 		}
 	}

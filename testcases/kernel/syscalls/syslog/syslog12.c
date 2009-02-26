@@ -40,14 +40,14 @@
  *	5. syslog(2) fails with EPERM for non-root user.
  *	6. syslog(2) fails with EINVAL for console level less than 0.
  *	7. syslog(2) fails with EINVAL for console level greater than 8.
- * 
+ *
  *      Setup:
  *	  Setup signal handling.
  *	  Test caller is superuser
  *	  Check existence of user nobody
  *	  Set expected errnos
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  *	Test:
  *	 Loop if the proper options are given.
  *	  Execute system call
@@ -55,10 +55,10 @@
  *		 Issue PASS message
  *	  Otherwise,
  *		Issue FAIL message
- * 
+ *
  *	Cleanup:
  *	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  *  syslog12 [-c n] [-e] [-f] [-h] [-i n] [-I x] [-p] [-P x] [-t]
  *		where,  -c n : Run n copies concurrently.
@@ -70,7 +70,7 @@
  *			-p   : Pause for SIGUSR1 before starting
  *			-P x : Pause for x seconds between iterations.
  *			-t   : Turn on syscall timing.
- * 
+ *
  ****************************************************************/
 
 #include <errno.h>
@@ -91,7 +91,7 @@ struct test_case_t {			/* test case structure */
 	char *buf;			/* 2nd arg */
 	int len;			/* 3rd arg */
 	int exp_errno;			/* Expected errno */
-	int (*setup) (void);		/* Individual setup routine */ 
+	int (*setup) (void);		/* Individual setup routine */
 	void (*cleanup) (void);		/* Individual cleanup routine */
 	char	*desc;			/* Test description */
 };
@@ -125,7 +125,7 @@ timeout(int sig)
 {
 	tst_resm(TWARN, "syslog() timeout after 1s"
 		 " for %s", tdat[testno].desc);
-} 
+}
 
 int
 main(int argc, char **argv)
@@ -145,7 +145,7 @@ main(int argc, char **argv)
 
 	memset(&sa, 0, sizeof(struct sigaction));
 	sa.sa_handler = timeout;
-	sa.sa_flags = 0; 
+	sa.sa_flags = 0;
 	sigaction(SIGALRM, &sa, NULL);
 
 	/* check looping state if -i option is given */
@@ -160,7 +160,7 @@ main(int argc, char **argv)
 				continue;
 			}
 
-			alarm(1); 
+			alarm(1);
 
 			TEST(syslog(tdat[testno].type, tdat[testno].buf,
 					tdat[testno].len));

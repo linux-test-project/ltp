@@ -21,14 +21,14 @@
  * Test Name: lseek06
  *
  * Test Description:
- *  Verify that, lseek() call succeeds to set the file pointer position 
+ *  Verify that, lseek() call succeeds to set the file pointer position
  *  to less  than  or equal to the file size, when a file is opened for
  *  read or write.
  *
  * Expected Result:
  *  lseek() should return the offset from the beginning of the file measured
  *  in bytes. Also check if able to read valid data from this location.
- *   
+ *  
  * Algorithm:
  *  Setup:
  *   Setup signal handling.
@@ -97,7 +97,7 @@ main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	char read_buf[1];	/* data read from temp. file */
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -113,7 +113,7 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 
-		/* 
+		/*
 		 * Invoke lseek(2) to move the read/write file
 		 * pointer/handle by OFFSET bytes.
 		 */
@@ -177,9 +177,9 @@ main(int ac, char **av)
  * setup() - performs all ONE TIME setup for this test.
  *	     Create a temporary directory and change directory to it.
  *	     Create a test file under temporary directory and write some
- *	     data into it. 
+ *	     data into it.
  */
-void 
+void
 setup()
 {
 	char write_buf[BUFSIZ];		/* buffer to hold data */
@@ -215,7 +215,7 @@ setup()
  *             completion or premature exit.
  *	       Remove the test directory and testfile created in the setup.
  */
-void 
+void
 cleanup()
 {
 	/*

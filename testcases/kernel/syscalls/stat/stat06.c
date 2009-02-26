@@ -30,85 +30,85 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: stat06.c,v 1.6 2007/02/09 20:48:24 vapier Exp $ */
+/* $Id: stat06.c,v 1.7 2009/02/26 12:05:43 subrata_modak Exp $ */
 /**********************************************************
- * 
+ *
  *    OS Test - Silicon Graphics, Inc.
- * 
+ *
  *    TEST IDENTIFIER	: stat06
- * 
+ *
  *    EXECUTED BY	: anyone
- * 
+ *
  *    TEST TITLE	: stat(2) negative path testcases
- * 
+ *
  *    PARENT DOCUMENT	: None
- * 
+ *
  *    TEST CASE TOTAL	: 7
- * 
+ *
  *    WALL CLOCK TIME	: 1
- * 
+ *
  *    CPU TYPES		: ALL
- * 
+ *
  *    AUTHOR		: Richard Logan
- * 
+ *
  *    CO-PILOT		: William Roske
- * 
+ *
  *    DATE STARTED	: 03/30/94
- * 
+ *
  *    INITIAL RELEASE	: UNICOS 7.0
- * 
+ *
  *    TEST CASES
- * 
+ *
  * 	1-7) See Testcases structure below.
  *	
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
  *      -h  : print help and exit
- * 
+ *
  *    OUTPUT SPECIFICATIONS
  * 	
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
  *
  *    RESOURCES
  * 	None
- * 
+ *
  *    ENVIRONMENTAL NEEDS
- * 	The libcuts.a and libsys.a libraries must be included in 
+ * 	The libcuts.a and libsys.a libraries must be included in
  *	the compilation of this test.
- * 
+ *
  *    SPECIAL PROCEDURAL REQUIREMENTS
  * 	None
- * 
+ *
  *    INTERCASE DEPENDENCIES
  * 	None
- * 
+ *
  *    DETAILED DESCRIPTION
  *	This is a Phase I test for the stat(2) system call.  It is intended
  *	to provide a limited exposure of the system call, for now.  It
  *	should/will be extended when full functional tests are written for
  *	stat(2).
- * 
+ *
  * 	Setup:
  * 	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  * 	  Execute system call
  *	  Check return code, if system call failed (return=-1)
  *		Log the errno and Issue a FAIL message.
  *	  Otherwise, Issue a PASS message.
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
- * 
+ *
+ *
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
 #include <sys/types.h>
@@ -180,7 +180,7 @@ main(int ac, char **av)
     int ind;
     struct stat *stbuf;
     struct sigaction sa, osa;
-    
+   
     /***************************************************************
      * parse standard options
      ***************************************************************/
@@ -211,7 +211,7 @@ main(int ac, char **av)
 	    fname = Test_cases[ind].pathname;
 	    desc = Test_cases[ind].desc;
 	    stbuf = Test_cases[ind].stbuf;
-       
+      
 	    if (stbuf == (struct stat *)-1) {
 		/* special sig11 case */
 		sa.sa_handler = &sig11_handler;
@@ -269,7 +269,7 @@ main(int ac, char **av)
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void 
+void
 setup()
 {
     int ind;
@@ -303,7 +303,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void 
+void
 cleanup()
 {
     /*
@@ -385,7 +385,7 @@ filepath_setup()
 /******************************************************************
  * sig11_handler() - our segfault recover hack
  ******************************************************************/
-void 
+void
 sig11_handler(int sig)
 {
     longjmp(sig11_recover, 1);

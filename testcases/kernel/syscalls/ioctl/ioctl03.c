@@ -28,7 +28,7 @@
 /*                                                                            */
 /* Total Tests: 1                                                             */
 /*                                                                            */
-/* Test Name:   ioctl03                                                       */ 
+/* Test Name:   ioctl03                                                       */
 /*                                                                            */
 /* Author:      Rusty Russell <rusty@rustcorp.com.au>                         */
 /*                                                                            */

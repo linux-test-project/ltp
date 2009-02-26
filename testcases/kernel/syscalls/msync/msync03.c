@@ -105,7 +105,7 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 
-		/* 
+		/*
 		 * Call msync to synchronize the memory region which
 	 	 * points to outside the user address space.
 		 */
@@ -147,7 +147,7 @@ main(int ac, char **av)
  * 	     Get system page size,
  * 	     Get an address outside the process address space.
  */
-void 
+void
 setup()
 {
 		 struct rlimit brkval;		 /* variable to hold max. break val */
@@ -176,7 +176,7 @@ setup()
  *             completion or premature exit.
  * 	       Exit the test with appropriate exit code.
  */
-void 
+void
 cleanup()
 {
 	/*

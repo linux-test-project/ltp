@@ -27,7 +27,7 @@
  *
  * Expected Result:
  *  mremap() should succeed returning the address of new virtual memory area.
- *  The expanded mapped memory region should be accessible and able to 
+ *  The expanded mapped memory region should be accessible and able to
  *  synchronize with the file.
  *
  * Algorithm:
@@ -119,8 +119,8 @@ main(int ac, char **av)
 		/* Perform global setup for test */
 		setup();
 
-		/* 
-		 * Call mremap to expand the existing mapped 
+		/*
+		 * Call mremap to expand the existing mapped
 		 * memory region (memsize) by newsize limits.
 		 */
 		errno = 0;
@@ -188,7 +188,7 @@ main(int ac, char **av)
  * write 1 byte (\0). Map the temporary file for the length of virtual
  * memory (memsize) into memory.
  */
-void 
+void
 setup()
 {
 	int pagesz;			/* system's page size */
@@ -232,7 +232,7 @@ setup()
 			 TEMPFILE, errno, strerror(errno));
 	}
 	
-	/* 
+	/*
 	 * Call mmap to map virtual memory (memsize bytes) from the
 	 * beginning of temporary file (offset is 0) into memory.
 	 */
@@ -265,7 +265,7 @@ setup()
  * 	       Close the temporary file.
  * 	       Remove the temporary directory.
  */
-void 
+void
 cleanup()
 {
 	/*

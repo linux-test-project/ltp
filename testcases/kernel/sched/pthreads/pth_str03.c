@@ -21,7 +21,7 @@
 
 /*
  *  FILE        : pth_str03.c
- *  DESCRIPTION : create a tree of threads does calculations, and 
+ *  DESCRIPTION : create a tree of threads does calculations, and
  *                returns result to parent
  *  HISTORY:
  *    05/l6/2001 Paul Larson (plars@us.ibm.com)
@@ -154,7 +154,7 @@ static void parse_args( int argc, char *argv[] )
 }
 
 
-/*--------------------------------------------------------------------------------* 
+/*--------------------------------------------------------------------------------*
  * num_nodes
  *
  * Caculate the number of child nodes for a given breadth and depth tree.
@@ -179,7 +179,7 @@ int num_nodes( int b, int d )
 }
 
 
-/*--------------------------------------------------------------------------------* 
+/*--------------------------------------------------------------------------------*
  * synchronize_children
  *
  * Register the child with the parent and then wait for all of the children
@@ -312,7 +312,7 @@ int synchronize_children( c_info *parent )
 }
 
 
-/*--------------------------------------------------------------------------------* 
+/*--------------------------------------------------------------------------------*
  * doit
  *
  * Do it.
@@ -412,7 +412,7 @@ void *doit( void *param )
 		    /* Add all childrens indexes to your index value */
 		    info_p->sum += info_p->child_ptrs[child]->sum;
 		    tst_resm(TINFO, "thread %d adding child thread %d to sum = %ld",
-			   my_index, info_p->child_ptrs[child]->index, (long int)info_p->sum); 
+			   my_index, info_p->child_ptrs[child]->index, (long int)info_p->sum);
 		}
 	    }
 
@@ -491,7 +491,7 @@ void *doit( void *param )
 
 
 
-/*--------------------------------------------------------------------------------* 
+/*--------------------------------------------------------------------------------*
  * main
  *--------------------------------------------------------------------------------*/
 int main( int argc, char *argv[] )

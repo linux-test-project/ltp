@@ -76,7 +76,7 @@
 #include <errno.h>
 
 #ifdef _LINUX_
-// bits/signum.h defines _NSIG as 64 
+// bits/signum.h defines _NSIG as 64
 #define SIGMAX 64
 #endif
 
@@ -107,7 +107,7 @@ int main (int argc, char **argv)
 
 	/* Print out program header */
 	printf ("%s: IPC TestSuite program\n\n", *argv);
-    
+   
 	/* Set up our signal handler */
 	ignore_signals ();
 
@@ -129,14 +129,14 @@ int main (int argc, char **argv)
 
 	/*
 	 * Wait for the child process to complete
-	 * 
+	 *
 	 * Suspend execution of the parent process until either a signal
-	 * that is not blocked or ignored, or until the child process 
-	 * completes.  
-	 * 
+	 * that is not blocked or ignored, or until the child process
+	 * completes. 
+	 *
 	 * Use the POSIX macro to insure that the child process exited
 	 * normally.
-	 * 
+	 *
 	 * Check to insure that the SIGCHLD signal was caught.
 	 */
 	wait (&status);

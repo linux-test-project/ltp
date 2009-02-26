@@ -113,12 +113,12 @@ main(int ac, char **av)
 	/* Perform global setup for test */
 	setup();
 
-	/* Check looping state if -i option given */ 
+	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
 	
-		/* 
+		/*
 		 * Call lstat(2) to get the status of
 		 * symlink file into stat structure.
 		 */
@@ -170,7 +170,7 @@ main(int ac, char **av)
  *	      temporary directory.
  *	      Get uid/gid of test process.
  */
-void 
+void
 setup()
 {
 	int i, fd;				/* file handle for test file*/
@@ -242,7 +242,7 @@ setup()
  *	       completion or premature exit.
  *	       Remove the symlink file, test file and temporary directory.
  */
-void 
+void
 cleanup()
 {
 	/*

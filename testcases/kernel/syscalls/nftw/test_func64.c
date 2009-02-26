@@ -22,7 +22,7 @@
 
 /*
  * NAME
- *	test_func64.c - nftw64() calls these functions. 
+ *	test_func64.c - nftw64() calls these functions.
  */
 
 #define _USC_LIB_
@@ -131,7 +131,7 @@ test_func5(const char *path_name, const struct stat64 * stat_pointer,
 	}
 
 	if (strstr(path_name, pathcwd) == 0) {
-		fprintf(temp, "ERROR: For file %s cwd is %s\n", path_name, 
+		fprintf(temp, "ERROR: For file %s cwd is %s\n", path_name,
 			pathcwd);
 		return 999;
 	}
@@ -165,7 +165,7 @@ test_func7(const char *path_name, const struct stat64 * stat_pointer,
 	}
 
 	if (!found) {
-		fprintf(temp, "ERROR: Should not have traversed %s\n", 
+		fprintf(temp, "ERROR: Should not have traversed %s\n",
 			path_name);
 		return 999;
 	}
@@ -192,9 +192,9 @@ test_func8(const char *path_name, const struct stat64 * stat_pointer,
 	}
 
 	for (i = 0; i < nbads; i++) {
-		if (ftw_integer == FTW_D || ftw_integer == FTW_F || 
+		if (ftw_integer == FTW_D || ftw_integer == FTW_F ||
 				ftw_integer == FTW_SL) {
-			if ( (((ftw_integer == FTW_D) || (ftw_integer == 
+			if ( (((ftw_integer == FTW_D) || (ftw_integer ==
 					FTW_F))? stat(path_name, &st_buf) :
 					lstat(path_name, &st_buf))  == -1) {
 				perror("stat");
@@ -479,16 +479,16 @@ test_func16(const char *path_name, const struct stat64 * stat_pointer,
 	}
 
 	if (ftwp->level !=  getlev(p)) {
-		fprintf(temp, "ERROR: Incorrect value of level for %s\n", 
+		fprintf(temp, "ERROR: Incorrect value of level for %s\n",
 			path_name);
-		fprintf(temp, "       Expected %d, received %d\n",  
+		fprintf(temp, "       Expected %d, received %d\n", 
 			getlev(p), ftwp->level);
 		return 999;
 	}
 	if(ftwp->base != getbase(path_name)){
-		fprintf(temp, "ERROR: Incorrect value of base for %s\n", 
+		fprintf(temp, "ERROR: Incorrect value of base for %s\n",
 			path_name);
-		fprintf(temp, "       Expected %d, received %d\n",  
+		fprintf(temp, "       Expected %d, received %d\n", 
 			getbase(path_name), ftwp->base);
 		return 999;
 	}
@@ -588,7 +588,7 @@ test_func21(const char *path_name, const struct stat64 * stat_pointer,
 
 
 
-int 
+int
 test_func22(const char *path_name, const struct stat64 * stat_pointer,
 		 int  ftw_integer, struct FTW *ftwp)
 {
@@ -614,7 +614,7 @@ test_func22(const char *path_name, const struct stat64 * stat_pointer,
 
 
 	fprintf(temp, "ERROR: At the start of the traversal the next four fds were: %d, %d, %d, and %d\n", next_fd[0], next_fd[1], next_fd[2], next_fd[3]);
-	fprintf(temp, "       Traversing level %d the next fd is %d\n", 
+	fprintf(temp, "       Traversing level %d the next fd is %d\n",
 		ftwp->level, fd);
 	return 999;
 }

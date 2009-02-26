@@ -30,71 +30,71 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: brk01.c,v 1.4 2006/02/27 04:29:21 vapier Exp $ */
+/* $Id: brk01.c,v 1.5 2009/02/26 12:02:33 subrata_modak Exp $ */
 /**********************************************************
- * 
+ *
  *    OS Test - Silicon Graphics, Inc.
- * 
+ *
  *    TEST IDENTIFIER	: brk01
- * 
+ *
  *    EXECUTED BY	: anyone
- * 
+ *
  *    TEST TITLE	: Basic test for brk(2)
- * 
+ *
  *    PARENT DOCUMENT	: usctpl01
- * 
+ *
  *    TEST CASE TOTAL	: 1
- * 
+ *
  *    WALL CLOCK TIME	: 1
- * 
+ *
  *    CPU TYPES		: ALL
- * 
+ *
  *    AUTHOR		: William Roske
- * 
+ *
  *    CO-PILOT		: Dave Fenner
- * 
+ *
  *    DATE STARTED	: 03/30/92
- * 
+ *
  *    INITIAL RELEASE	: UNICOS 7.0
- * 
+ *
  *    TEST CASES
- * 
+ *
  * 	1.) brk(2) returns...(See Description)
  *	
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
- * 
+ *
  *    OUTPUT SPECIFICATIONS
  * 	
  *    ENVIRONMENTAL NEEDS
- * 	The libcuts.a and libsys.a libraries must be included in 
+ * 	The libcuts.a and libsys.a libraries must be included in
  *	the compilation of this test.
- * 
+ *
  *    SPECIAL PROCEDURAL REQUIREMENTS
  * 	None
- * 
+ *
  *    DETAILED DESCRIPTION
  *	This is a Phase I test for the brk(2) system call.  It is intended
  *	to provide a limited exposure of the system call, for now.  It
  *	should/will be extended when full functional tests are written for
  *	brk(2).
- * 
+ *
  * 	Setup:
  * 	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  * 	  Execute system call
  *	  Check return code, if system call failed (return=-1)
  *		Log the errno and Issue a FAIL message.
  *	  Otherwise, Issue a PASS message.
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
- * 
+ *
+ *
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
 #include <unistd.h>
@@ -202,7 +202,7 @@ main(int ac, char **av)
 	cur_brk_val, nbrkpt, incr, lc);
 ****/
 
-	/* 
+	/*
 	 * Call brk(2)
 	 */
 	TEST(brk((char *)nbrkpt));
@@ -235,7 +235,7 @@ main(int ac, char **av)
 			"brk(%d) returned %d, sbrk before %d, after %d",
 		        nbrkpt, TEST_RETURN, cur_brk_val, aft_brk_val);
 		}
-	    } 
+	    }
 	}
 
     }	/* End for TEST_LOOPING */
@@ -251,7 +251,7 @@ main(int ac, char **av)
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void 
+void
 setup()
 {
     unsigned long max_size;
@@ -279,7 +279,7 @@ setup()
 
     usr_mem_sz *= 8;	/* convert to bytes */
 #else
-    /* 
+    /*
      * On IRIX, which is a demand paged system, memory is managed
      * different than on Crays systems.  For now, pick some value.
      */
@@ -291,7 +291,7 @@ setup()
 #define _SC_NPROC_ONLN _SC_NPROCESSORS_ONLN
 #endif
     if ((ncpus=sysconf(_SC_NPROC_ONLN)) == -1)
-	tst_brkm(TBROK, cleanup, 
+	tst_brkm(TBROK, cleanup,
 	    "sysconf(_SC_NPROC_ONLN) Failed, errno=%d : %s",
 	    errno, strerror(errno));
 
@@ -305,7 +305,7 @@ setup()
     else
 	max_size = usr_mem_sz;
 
-    max_size = max_size / (2 * ncpus); 
+    max_size = max_size / (2 * ncpus);
 
     if ( max_size > (usr_mem_sz/4) )
 	max_size = usr_mem_sz/4;	/* only fourth mem by single test */
@@ -342,7 +342,7 @@ int main()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void 
+void
 cleanup()
 {
     /*

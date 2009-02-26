@@ -29,7 +29,7 @@
  *		- The file is owned by the user ID of the process.
  *
  * Expected Result:
- *  utime succeeds returning zero and sets the access and modification 
+ *  utime succeeds returning zero and sets the access and modification
  *  times of the file to that specified by the times argument.
  *
  * Algorithm:
@@ -110,7 +110,7 @@ main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 	time_t modf_time, access_time;
 				/* file modification/access time */
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -129,7 +129,7 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 
-		/* 
+		/*
 		 * Invoke utime(2) to set TEMP_FILE access and
 		 * modification times to that specified by
 		 * times argument.
@@ -193,7 +193,7 @@ main(int ac, char **av)
  *  Create a temporary directory and change directory to it.
  *  Create a test file under temporary directory and close it
  */
-void 
+void
 setup()
 {
 	int fildes;			/* file handle for temp file */
@@ -246,7 +246,7 @@ setup()
  *		completion or premature exit.
  *		Remove the test directory and testfile created in the setup.
  */
-void 
+void
 cleanup()
 {
 	/*

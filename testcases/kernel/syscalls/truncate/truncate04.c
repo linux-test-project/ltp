@@ -18,7 +18,7 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-/* 
+/*
  * Test Name: truncate04
  *
  * Test Description:
@@ -66,7 +66,7 @@
  *
  * Restrictions:
  *  This test should be executed by 'non-super-user' only.
- * 
+ *
  */
 
 #include <stdio.h>
@@ -105,7 +105,7 @@ main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	char *file_name;	/* testfile name */
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -114,7 +114,7 @@ main(int ac, char **av)
 	}
 
 	/*
-	 * Perform global setup 
+	 * Perform global setup
 	 */
 	setup();
 
@@ -126,8 +126,8 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-			/* 
-			 * Call truncate(2) 
+			/*
+			 * Call truncate(2)
 			 * verify that it fails with return code -1 and sets
 			 * appropriate errno.
 			 */
@@ -167,9 +167,9 @@ main(int ac, char **av)
  * void
  * setup() - performs all ONE TIME setup for this test.
  *  Create a temporary directory and change directory to it.
- *  Create a test directory under temporary directory and open it 
+ *  Create a test directory under temporary directory and open it
  */
-void 
+void
 setup()
 {
 
@@ -219,7 +219,7 @@ setup()
  *	       completion or premature exit.
  *  Remove the test directory and testfile created in the setup.
  */
-void 
+void
 cleanup()
 {
 	/*

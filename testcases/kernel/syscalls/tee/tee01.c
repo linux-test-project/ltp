@@ -35,7 +35,7 @@
  *      -t   : Turn on syscall timing.
  *
  * Author
- *	Yi Yang <yyangcdl@cn.ibm.com> 
+ *	Yi Yang <yyangcdl@cn.ibm.com>
  *
  * History
  *      08/18/2006      Created first by Yi Yang <yyangcdl@cn.ibm.com>
@@ -91,7 +91,7 @@ int main(int ac, char **av)
 	     tst_resm(TWARN, "2.6.17 and higher");
 	     exit(0);
           }
-  
+ 
 	/*
 	 * parse standard options
 	 */
@@ -103,7 +103,7 @@ int main(int ac, char **av)
 	 */
 	setup();
 	
-	/* 
+	/*
          * check if the current filesystem is nfs
          */
         if(tst_is_cwd_nfs()) {
@@ -119,8 +119,8 @@ int main(int ac, char **av)
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-		/* 
-		 * Call tee_test 
+		/*
+		 * Call tee_test
 		 */
 		TEST(tee_test());
 

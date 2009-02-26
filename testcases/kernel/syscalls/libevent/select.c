@@ -168,7 +168,7 @@ select_dispatch(void *arg, struct timeval *tv)
 	if (evsignal_deliver(&sop->evsigmask) == -1)
 		return (-1);
 
-	res = select(sop->event_fds + 1, sop->event_readset, 
+	res = select(sop->event_fds + 1, sop->event_readset,
 	    sop->event_writeset, NULL, tv);
 
 	if (evsignal_recalc(&sop->evsigmask) == -1)
@@ -219,7 +219,7 @@ select_add(void *arg, struct event *ev)
 	if (ev->ev_events & EV_SIGNAL)
 		return (evsignal_add(&sop->evsigmask, ev));
 
-	/* 
+	/*
 	 * Keep track of the highest fd, so that we can calculate the size
 	 * of the fd_sets for select(2)
 	 */

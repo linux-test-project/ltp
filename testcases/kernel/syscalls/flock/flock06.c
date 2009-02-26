@@ -18,17 +18,17 @@
  */
 
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER   : flock06
- * 
+ *
  *    EXECUTED BY       : anyone
- * 
+ *
  *    TEST TITLE        : Error condition test for flock(2)
- * 
+ *
  *    TEST CASE TOTAL   : 1
- * 
+ *
  *    AUTHOR            : Matthew Wilcox <willy@debian.org>
- * 
+ *
  *    SIGNALS
  *      Uses SIGUSR1 to pause before test if option set.
  *      (See the parse_opts(3) man page).
@@ -36,7 +36,7 @@
  *    DESCRIPTION
  * 		 This test verifies that flock locks held on one fd conflict with
  * 		 flock locks held on a different fd.
- *		 		 
+ *		 		
  *		 Test:
  * 		 		 The process opens two file descriptors on the same file.
  * 		 		 It acquires an exclusive flock on the first descriptor,
@@ -44,7 +44,7 @@
  * 		 		 descriptor fails.  Then it removes the first descriptor's
  * 		 		 lock and attempts to acquire an exclusive lock on the
  * 		 		 second descriptor.
- * 
+ *
  * USAGE:  <for command-line>
  *      flock06 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
  *                      where,  -c n : Run n copies concurrently
@@ -110,7 +110,7 @@ int main(int argc, char **argv)
 			 TEST(flock(fd1, LOCK_EX | LOCK_NB));
 			 if (TEST_RETURN != 0)
 				 tst_resm(TFAIL, "First attempt to flock() failed, "
-									 "errno %d",TEST_ERRNO); 
+									 "errno %d",TEST_ERRNO);
 			 else
 				 tst_resm(TPASS, "First attempt to flock() passed");
 
@@ -175,7 +175,7 @@ void setup(void)
 		fd = creat(filename, 0666);
 		if (fd < 0) {
 			tst_resm(TFAIL, "creating a new file failed");
-				 
+				
 			TEST_CLEANUP;
 
 			/* Removing temp dir */

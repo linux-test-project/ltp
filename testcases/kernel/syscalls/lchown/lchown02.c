@@ -310,7 +310,7 @@ no_setup()
 /*
  * setup1() - setup function for a test condition for which chown(2)
  *	      returns -1 and sets errno to EPERM.
- * 
+ *
  *  Create a testfile under temporary directory and invoke setuid to root
  *  program to change the ownership of testfile to that of "ltpuser2" user,
  *  create a symlink file of it with ownership as ltpuser2.
@@ -415,7 +415,7 @@ setup2()
 /*
  * setup3() - setup function for a test condition for which chown(2)
  *	     returns -1 and sets errno to ENOTDIR.
- * 
+ *
  *  Create a test file under temporary directory so that test tries to
  *  change mode of a testfile "tfile_3" under "t_file" which happens to be
  *  another regular file.
@@ -481,7 +481,7 @@ cleanup()
 
 	/* Remove files and temporary directory created */
 	tst_rmdir();
-  
+ 
 	/* exit with return code appropriate for results */
 	tst_exit();
 }

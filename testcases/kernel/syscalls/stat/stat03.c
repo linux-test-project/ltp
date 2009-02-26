@@ -221,7 +221,7 @@ main(int ac, char **av)
 }	/* End main */
 
 /*
- * void 
+ * void
  * setup(void) - performs all ONE TIME setup for this test.
  * 	Exit the test program on receipt of unexpected signals.
  *	Create a temporary directory and change directory to it.
@@ -335,7 +335,7 @@ setup1()
  * int
  * setup2() - setup function for a test condition for which stat(2)
  *	     returns -1 and sets errno to ENOTDIR.
- * 
+ *
  *  Create a test file under temporary directory so that test tries to
  *  change mode of a testfile "tfile_2" under "t_file" which happens to be
  *  another regular file.
@@ -404,7 +404,7 @@ cleanup()
 
 	/* Remove files and temporary directory created */
 	tst_rmdir();
-  
+ 
 	/* exit with return code appropriate for results */
 	tst_exit();
 }	/* End cleanup() */

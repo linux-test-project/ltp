@@ -52,7 +52,7 @@ extern int Tst_count;
 
 #ifndef HAVE_SIGNALFD
 #define  USE_STUB
-#endif 
+#endif
 
 #if defined HAVE_SYS_SIGNALFD_H
 #include <sys/signalfd.h>

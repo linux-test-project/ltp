@@ -22,7 +22,7 @@
  *
  *  DESCRIPTION : The application creates several threads using pthread_create().
  *  One thread performs a semop() with the SEM_UNDO flag set. The change in
- *  sempaphore value performed by that semop should be "undone" only when the 
+ *  sempaphore value performed by that semop should be "undone" only when the
  *  last pthread exits.
  *
  *  EXPECTED OUTPUT:
@@ -57,7 +57,7 @@
 
 #define NUMTHREADS 2
 
-void *retval[NUMTHREADS]; 
+void *retval[NUMTHREADS];
 void * waiter(void *);
 void * poster(void *);
 void cleanup(void);
@@ -84,7 +84,7 @@ int main(int argc, char **argv)
     int i, rc;
     char *msg;
     union semun semunion;
-    
+   
     pthread_t pt[NUMTHREADS];
     pthread_attr_t attr;
 
@@ -102,14 +102,14 @@ int main(int argc, char **argv)
     semunion.val = 1;
     semctl(sem_id, 0, SETVAL, semunion);
 
-    
+   
     /* setup the attributes of the thread        */
     /* set the scope to be system to make sure the threads compete on a  */
     /* global scale for cpu   */
     pthread_attr_init(&attr);
     pthread_attr_setscope(&attr, PTHREAD_SCOPE_SYSTEM);
 
-    err_ret=1;  /* Set initial error value to 1 */ 
+    err_ret=1;  /* Set initial error value to 1 */
     /* Create the threads */
     for (i=0; i<NUMTHREADS; i++)
     {
@@ -159,13 +159,13 @@ void * waiter(void * foo)
 void * poster(void * foo)
 {
     int pid;
-   
+  
     pid = getpid();
     tst_resm(TINFO, "Poster, pid = %d, posting", pid);
     semop(sem_id, &Vsembuf, 1);
     tst_resm(TINFO, "Poster posted");
     tst_resm(TINFO, "Poster exiting");
-    
+   
     pthread_exit(0);
 }
 

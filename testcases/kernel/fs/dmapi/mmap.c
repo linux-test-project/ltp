@@ -47,7 +47,7 @@ char *deviceNm;
 char DummyFile[FILENAME_MAX];
 char DummyTmp[FILENAME_MAX];
 
-/* Variables for thread communications */ 
+/* Variables for thread communications */
 dm_eventtype_t eventExpected;
 dm_eventtype_t eventReceived;
 dm_response_t eventResponse;
@@ -291,7 +291,7 @@ int main(int argc, char **argv)
 	 * TEST    : mmap - one region, DM_EVENT_READ, DM_RESP_CONTINUE
 	 * EXPECTED: DM_EVENT_READ
 	 *
-	 * This variation uncovered XFS BUG #33 (entire file returned instead 
+	 * This variation uncovered XFS BUG #33 (entire file returned instead
 	 * of mapped region only)
 	 */
 	if (DMVAR_EXEC(MMAP_READ_BASE + 4)) {
@@ -1251,7 +1251,7 @@ void *Thread(void *parm)
 			DMLOG_PRINT(DMLVL_DEBUG, "  Media designator: %s\n", DM_GET_VALUE(me, me_name2, char *));
 			DMLOG_PRINT(DMLVL_DEBUG, "  Root handle: %p\n", DM_GET_VALUE(me, me_roothandle, void *));
 			DMLOG_PRINT(DMLVL_DEBUG, "  Root handle length: %d\n", DM_GET_LEN(me, me_roothandle));
-	    
+	   
     			bMounted = dm_handle_is_valid(lhanp, lhlen);
 
     			rc = dm_request_right(sid, lhanp, lhlen, token, DM_RR_WAIT, DM_RIGHT_EXCL);

@@ -15,17 +15,17 @@
  *
  */
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER	: sched_rr_get_interval03
- * 
+ *
  *    EXECUTED BY	: root / superuser
- * 
+ *
  *    TEST TITLE	: Tests for error conditions
- * 
+ *
  *    TEST CASE TOTAL	: 3
- * 
+ *
  *    AUTHOR		: Saji Kumar.V.R <saji.kumar@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -138,8 +138,8 @@ main(int ac, char **av)
 					" errno = %d : %s", TEST_RETURN,
 				 	TEST_ERRNO, strerror(TEST_ERRNO));
 			}
-			TEST_ERROR_LOG(TEST_ERRNO); 
-		} 
+			TEST_ERROR_LOG(TEST_ERRNO);
+		}
 	}	/* End for TEST_LOOPING */
 
 	/* cleanup and exit */

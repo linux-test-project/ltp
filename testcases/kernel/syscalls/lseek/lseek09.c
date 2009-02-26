@@ -21,16 +21,16 @@
  * Test Name: lseek09
  *
  * Test Description:
- *  Verify that, lseek() call succeeds to set the file pointer position 
+ *  Verify that, lseek() call succeeds to set the file pointer position
  *  to the current specified location, when 'whence' value is set to
  *  SEEK_CUR and the data read from the specified location should match
  *  the expected data.
  *
  * Expected Result:
- *  lseek() should return the specified offset from the beginning of the file 
+ *  lseek() should return the specified offset from the beginning of the file
  *  measured in bytes. The data read from this location should match the
  *  expected data.
- *  
+ * 
  * Algorithm:
  *  Setup:
  *   Setup signal handling.
@@ -99,7 +99,7 @@ main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	char read_buf[BUFSIZ];	/* data read from temp. file */
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -115,7 +115,7 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 
-		/* 
+		/*
 		 * Invoke lseek(2) to set the file
 		 * pointer/handle from the current location
 		 * of the file descriptor + specified offset.
@@ -192,7 +192,7 @@ main(int ac, char **av)
  *	     data into it.
  *	     Get the size of the file using fstat().
  */
-void 
+void
 setup()
 {
 	struct stat stat_buf;		/* buffer to hold stat info. */
@@ -246,7 +246,7 @@ setup()
  *             completion or premature exit.
  *	       Remove the test directory and testfile created in the setup.
  */
-void 
+void
 cleanup()
 {
 	/*

@@ -23,9 +23,9 @@
  * Test Description :
  *  Verify that, symlink will succeed to creat a symbolic link of an
  *  non-existing object name path.
- * 
+ *
  * Expected Result:
- *  symlink() should return value 0 on success and symlink of an 
+ *  symlink() should return value 0 on success and symlink of an
  *  non-existing object should be created.
  *
  * Algorithm:
@@ -96,7 +96,7 @@ main(int ac, char **av)
 	struct stat stat_buf;	/* stat structure buffer */
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -116,8 +116,8 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 	
-		/* 
-		 * Call symlink(2) to create a symlink of 
+		/*
+		 * Call symlink(2) to create a symlink of
 		 * an non-existing testfile.
 		 */
 		TEST(symlink(TESTFILE, SYMFILE));
@@ -184,7 +184,7 @@ main(int ac, char **av)
  * setup() - performs all ONE TIME setup for this test.
  *  Create a temporary directory and change directory to it.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -209,7 +209,7 @@ setup()
  *             completion or premature exit.
  *  Remove the temporary directory created in the setup.
  */
-void 
+void
 cleanup()
 {
 	/*

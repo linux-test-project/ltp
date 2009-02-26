@@ -142,7 +142,7 @@ int main (int argc, char *argv[]) {
     if((tst_kvercmp(2, 6, 27)) < 0) {
         tst_resm(TCONF, "This test can only run on kernels that are 2.6.27 and higher");
         tst_exit();
-    }  
+    } 
     setup();
 
     /* Check looping state if -i option given */

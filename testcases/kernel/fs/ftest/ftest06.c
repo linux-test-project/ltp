@@ -142,7 +142,7 @@ int main (ac, av)
 
 	/* use the default values for run conditions */
 
-	for (lc = 0; TEST_LOOPING(lc); lc++) { 
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		local_flag = PASSED;
 		/*
@@ -276,7 +276,7 @@ int main (ac, av)
 
 		cleanup();
 
-	} /* end for */ 
+	} /* end for */
 	if (local_flag == FAILED) {
                 tst_resm(TFAIL, "Test failed.");
         } else {

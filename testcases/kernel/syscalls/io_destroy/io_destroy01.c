@@ -56,7 +56,7 @@ cleanup(void)
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void 
+void
 setup()
 {
     /* capture signals */

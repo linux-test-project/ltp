@@ -134,7 +134,7 @@ main(int ac, char **av)
 	char *test_desc;	/* test specific error message */
 	int ind;		/* counter to test different test conditions */
 	int pid;
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -233,7 +233,7 @@ main(int ac, char **av)
  *  Invoke individual test setup functions according to the order
  *  set in test struct. definition.
  */
-void 
+void
 setup()
 {
 	int ind;			/* counter for setup functions */
@@ -319,7 +319,7 @@ setup1()
  *             completion or premature exit.
  *  Remove the test directory and testfile created in the setup.
  */
-void 
+void
 cleanup()
 {
 	seteuid(0);

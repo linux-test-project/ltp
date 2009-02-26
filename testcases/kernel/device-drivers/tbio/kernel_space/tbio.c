@@ -33,7 +33,7 @@
  *  the GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program;  
+ *  along with this program; 
  *
  *  FILE        : tbio.c
  *  USAGE       : kernel_space:./load_tbio.sh
@@ -85,7 +85,7 @@ static struct bio *tbiop = NULL , *tbiop_dup = NULL;
 static struct request_queue Queue;
 
 static struct tbio_device {
-	unsigned long size ; 
+	unsigned long size ;
 	spinlock_t lock;
 	u8 *data;
 	struct gendisk *gd;
@@ -185,7 +185,7 @@ static int tbio_io(struct block_device *bdev,
 				break;
 		}
 	
-		bio = bio_map_user(bdev , (unsigned long )inter.data , 
+		bio = bio_map_user(bdev , (unsigned long )inter.data ,
 					inter.data_len , reading);
 		
 		if(!bio) {
@@ -356,7 +356,7 @@ static int test_bio_split(struct block_device *bdev,
 				break;
 		}
 	
-		bio = bio_map_user(bdev , (unsigned long )inter.data , 
+		bio = bio_map_user(bdev , (unsigned long )inter.data ,
 					inter.data_len , reading);
 		
 		if(!bio) {
@@ -447,7 +447,7 @@ static int tbio_ioctl(struct inode *ino, struct file *file,
 	  case LTP_TBIO_ALLOC:            err = test_bio_alloc(); break;
 	  case LTP_TBIO_GET_NR_VECS:      err = test_bio_get_nr_vecs();break;
 	  case LTP_TBIO_PUT:              err = test_bio_put(tbiop);break;
-	  case LTP_TBIO_SPLIT:            
+	  case LTP_TBIO_SPLIT:           
 	    {
 	    	err = bd_claim(Device.bdev, current);
 		if (err) {
@@ -457,7 +457,7 @@ static int tbio_ioctl(struct inode *ino, struct file *file,
 		
 		err = test_bio_split( Device.bdev, (struct tbio_interface *) arg);
 		bd_release(Device.bdev);
-	    
+	   
 	    }
 	    break;
 	  //case LTP_TBIO_PAIR_RELEASE:     err = test_bio_pair_release();break;
@@ -533,7 +533,7 @@ static struct block_device_operations tbio_ops = {
 
 static int __init tbio_init(void)
 {
-	Device.size = nsectors*hardsect_size ; 
+	Device.size = nsectors*hardsect_size ;
     int result;
 	spin_lock_init(&Device.lock);
 	Device.data = vmalloc(Device.size);

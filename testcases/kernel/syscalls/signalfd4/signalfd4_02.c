@@ -166,7 +166,7 @@ int main (int argc, char *argv[]) {
                 tst_exit();
             }
             close (fd);
-     
+    
             fd = syscall (__NR_signalfd4, -1, &ss, 8, SFD_NONBLOCK);
             if (fd == -1) {
                 tst_resm(TFAIL, "signalfd4(SFD_NONBLOCK) failed");

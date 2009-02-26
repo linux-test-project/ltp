@@ -26,7 +26,7 @@
  *    11/08/2001 Manoj Iyer (manjo@austin.ibm.com)
  *      - Modified.
  *	- removed compiler warnings.
- *	- Added #include <sys/types.h>, #include <unistd.h> and 
+ *	- Added #include <sys/types.h>, #include <unistd.h> and
  *	  #include <string.h>
  *	- print unsigned long correctly in printf() use "lx" instead of "x"
  *	- added missing parameter in usage message.
@@ -109,7 +109,7 @@ int main (int argc, char **argv)
 
 	/* Read data from CDROM & compute checksum */
 	read_data (0, checksum);
-	if (debug) 
+	if (debug)
 	   printf("Thread [main] checksum: %-#12lx \n", checksum);
 
 	if (pthread_attr_init (&attr))
@@ -124,25 +124,25 @@ int main (int argc, char **argv)
 	arg = (int *) malloc (sizeof (int) * num_threads);
 	assert (array);
 	assert (arg);
-	for (i=0; i < num_threads; i++) 
+	for (i=0; i < num_threads; i++)
         {
-	    if (debug) 
+	    if (debug)
 	       printf("\tThread [main]: creating thread %d\n", i + 1);
 	    arg[i] = i + 1;
-	    if (pthread_create ((pthread_t *) &array [i], &attr, (void *)thread, (void *) &arg[i])) 
+	    if (pthread_create ((pthread_t *) &array [i], &attr, (void *)thread, (void *) &arg[i]))
 	    {
-	       if (errno == EAGAIN) 
+	       if (errno == EAGAIN)
 		  fprintf(stderr, "\tThread [main]: unable to create thread %d\n", i);
 	       else
 		  sys_error ("pthread_create failed", __LINE__);
 	    }
-	    if (debug) 
-	       printf("\tThread [main]: created thread %d\n", i+1); 
+	    if (debug)
+	       printf("\tThread [main]: created thread %d\n", i+1);
 	}
 	if (pthread_attr_destroy (&attr))
 	   sys_error ("pthread_attr_destroy failed", __LINE__);
 
-	for (i=0; i<num_threads; i++) 
+	for (i=0; i<num_threads; i++)
         {
 	    int exit_value;
 	    printf("\tThread [main]: waiting for thread: %d\n", i+1);
@@ -158,7 +158,7 @@ int main (int argc, char **argv)
 	free(arg);
 
 	/* One or more of the threads did not complete sucessfully! */
-	if (rc != 0) 
+	if (rc != 0)
         {
 	   printf("test failed!\n");
 	   exit (-1);
@@ -183,17 +183,17 @@ void *thread (int *parm)
 	unsigned long cksum = 0;
 
 	
-	if (debug) 
+	if (debug)
            printf("\tThread [%d]: begin\n", num);
 
 	read_data (num, cksum);
-	if (checksum != cksum) 
+	if (checksum != cksum)
         {
 	   fprintf(stderr, "\tThread [%d]: checksum mismatch!\n", num);
 	   pthread_exit ((void *) -1);
 	}
 
-	if (debug) 
+	if (debug)
            printf("\tThread [%d]: done\n", num);
 
 	pthread_exit ((void *) 0);
@@ -218,17 +218,17 @@ int read_data (int num, unsigned long cksum)
 	char *p;
 
 	
-	if (debug) 
+	if (debug)
 	   printf("\tThread [%d]: read_data()\n", num);
 
-	if ((fd = open (file, O_RDONLY, NULL)) < 0) 
+	if ((fd = open (file, O_RDONLY, NULL)) < 0)
 	   sys_error ("open failed", __LINE__);
 	
         buffer = (char *) malloc (sizeof(char) * bufSize);
 	assert (buffer);
 
 	lseek(fd,1024*36,SEEK_SET);
-	while (bytes_read < num_bytes) 
+	while (bytes_read < num_bytes)
         {
 	   if ((n = read (fd, buffer, bufSize)) < 0)
 	      sys_error ("read failed", __LINE__);
@@ -243,14 +243,14 @@ int read_data (int num, unsigned long cksum)
 	}
 	free(buffer);
 
-	if (debug) 
+	if (debug)
 	   printf("\tThread [%d] bytes read: %5d checksum: %-#12lx\n",
 		  num, bytes_read, cksum);
 
-	if (close (fd) < 0) 
+	if (close (fd) < 0)
 	   sys_error ("close failed", __LINE__);
 
-	if (debug) 
+	if (debug)
 	   printf("\tThread [%d]: done\n", num);
 
 	return (0);
@@ -279,9 +279,9 @@ static void parse_args (int argc, char **argv)
 	extern char 	*optarg;	/* Command line option */
 
 
-	while ((i = getopt(argc, argv, "df:n:b:m:?")) != EOF) 
+	while ((i = getopt(argc, argv, "df:n:b:m:?")) != EOF)
         {
-	   switch (i) 
+	   switch (i)
  	   {
 		case 'd':	/* debug option */
 				debug++;
@@ -303,21 +303,21 @@ static void parse_args (int argc, char **argv)
 				break;
 	   }
 	}
-	if (num_bytes < 0) 
+	if (num_bytes < 0)
         {
 	   errflag++;
 	   fprintf(stderr, "ERROR: num_bytes must be greater than 0");
 	}
 
-	if (errflag) 
+	if (errflag)
         {
-	   fprintf(stderr, "\nUsage: %s" 
-		   " [-n xx] [-m|b xx] [-d]\n\n" 
-		   "\t-n xx    Number of threads to create (up to %d)\n" 
+	   fprintf(stderr, "\nUsage: %s"
+		   " [-n xx] [-m|b xx] [-d]\n\n"
+		   "\t-n xx    Number of threads to create (up to %d)\n"
 		   "\t-f file  File to read from\n"
-		   "\t-m xx    Number of MB to read\n" 
-		   "\t-b xx    Number of bytes to read\n" 
-		   "\t-d       Debug option\n", program_name, 
+		   "\t-m xx    Number of MB to read\n"
+		   "\t-b xx    Number of bytes to read\n"
+		   "\t-d       Debug option\n", program_name,
 			       DEFAULT_NUM_THREADS);
 	   exit (2);
 	}

@@ -165,7 +165,7 @@ int main(int ac, char **av)
 					/*NOTREACHED*/
 				} else {
 					tst_resm(TINFO, "Child opened new "
-						 "file #%d", nfiles); 
+						 "file #%d", nfiles);
 					unlink(childfile);
 					exit(0);
 				}

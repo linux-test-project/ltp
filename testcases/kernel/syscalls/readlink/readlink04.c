@@ -24,7 +24,7 @@
  *  Verify that, readlink call will succeed to read the contents of the
  *  symbolic link if invoked by non-root user who is not the owner of the
  *  symbolic link.
- * 
+ *
  * Expected Result:
  *  readlink() should return the contents of symbolic link path in the
  *  specified buffer on success.
@@ -101,7 +101,7 @@ main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
 	if (msg != (char *)NULL) {
@@ -117,7 +117,7 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 	
-		/* 
+		/*
 		 * Call readlink(2) to read the contents of
 		 * symlink into a buffer.
 		 */
@@ -174,7 +174,7 @@ main(int ac, char **av)
  *
  *  execvp() the creat_slink program as bin to creat a file and symlink.
  */
-void 
+void
 setup()
 {
 	int pid;
@@ -286,7 +286,7 @@ setup()
  *
  *  Remove the test directory and testfile created in the setup.
  */
-void 
+void
 cleanup()
 {
 	/*

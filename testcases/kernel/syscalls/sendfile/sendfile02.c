@@ -30,7 +30,7 @@
  *
  * USAGE:  <for command-line>
  *  sendfile02 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
- *     where,  
+ *     where, 
  *             -f   : Turn off functionality Testing.
  *             -i n : Execute test n times.
  *             -I x : Execute test for x seconds.
@@ -142,13 +142,13 @@ void do_sendfile(OFF_T offset, int i)
 		} else if (offset != testcases[i].exp_updated_offset) {
 			tst_resm(TFAIL, "sendfile(2) failed to update "
 				 "OFFSET parameter to expected value, "
-				 "expected: %d, got: %d", 
+				 "expected: %d, got: %d",
 				 testcases[i].exp_updated_offset,
 				 offset);
 		} else if (before_pos != after_pos) {
 			tst_resm(TFAIL, "sendfile(2) updated the file position "
 				 " of in_fd unexpectedly, expected file position: %d, "
-				 " actual file position %d", 
+				 " actual file position %d",
 				 before_pos, after_pos);
 		} else {
 			tst_resm(TPASS, "functionality of sendfile() is "

@@ -25,7 +25,7 @@
 >WHAT:  < 1) Ensure ftell reports the correct current byte offset.
 >HOW:   < 1) Open a file, write to it, reposition the file pointer and
 	     check it.
->BUGS:  < 
+>BUGS:  <
 ======================================================================*/
 #define _XOPEN_SOURCE 500
 #include <stdio.h>

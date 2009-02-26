@@ -28,7 +28,7 @@
  *
  * USAGE:  <for command-line>
  *  sendfile05 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
- *     where,  
+ *     where, 
  *             -f   : Turn off functionality Testing.
  *             -i n : Execute test n times.
  *             -I x : Execute test for x seconds.

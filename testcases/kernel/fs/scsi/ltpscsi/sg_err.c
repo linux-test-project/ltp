@@ -152,14 +152,14 @@ void sg_print_command (const unsigned char * command) {
     fprintf(OUTP, "]\n");
 }
 
-void sg_print_status(int masked_status) 
+void sg_print_status(int masked_status)
 {
     int scsi_status = (masked_status << 1) & 0x7e;
 
     sg_print_scsi_status(scsi_status);
 }
 
-void sg_print_scsi_status(int scsi_status) 
+void sg_print_scsi_status(int scsi_status)
 {
     const char * ccp;
 
@@ -268,40 +268,40 @@ static struct error_info additional[] =
   {0x03,0x01,T,"No write current"},
   {0x03,0x02,T,"Excessive write errors"},
   {0x04,0x00,SC_ALL_DEVS,SC_LOGICAL_UNIT SC_NOT_READY "cause not reportable"},
-  {0x04,0x01,SC_ALL_DEVS,SC_LOGICAL_UNIT "is" SC_IN_PROGRESS 
+  {0x04,0x01,SC_ALL_DEVS,SC_LOGICAL_UNIT "is" SC_IN_PROGRESS
   		"of becoming ready"},
-  {0x04,0x02,SC_ALL_DEVS,SC_LOGICAL_UNIT SC_NOT_READY 
+  {0x04,0x02,SC_ALL_DEVS,SC_LOGICAL_UNIT SC_NOT_READY
   		"initializing cmd. required"},
-  {0x04,0x03,SC_ALL_DEVS,SC_LOGICAL_UNIT SC_NOT_READY 
+  {0x04,0x03,SC_ALL_DEVS,SC_LOGICAL_UNIT SC_NOT_READY
   		"manual intervention required"},
   {0x04,0x04,D|T|L|R|O|B,SC_LOGICAL_UNIT SC_NOT_READY "format" SC_IN_PROGRESS},
-  {0x04,0x05,D|T|W|O|M|C|A|B|K,SC_LOGICAL_UNIT SC_NOT_READY 
+  {0x04,0x05,D|T|W|O|M|C|A|B|K,SC_LOGICAL_UNIT SC_NOT_READY
   		"rebuild" SC_IN_PROGRESS},
-  {0x04,0x06,D|T|W|O|M|C|A|B|K,SC_LOGICAL_UNIT SC_NOT_READY 
+  {0x04,0x06,D|T|W|O|M|C|A|B|K,SC_LOGICAL_UNIT SC_NOT_READY
   		"recalculation" SC_IN_PROGRESS},
-  {0x04,0x07,SC_ALL_DEVS,SC_LOGICAL_UNIT SC_NOT_READY 
+  {0x04,0x07,SC_ALL_DEVS,SC_LOGICAL_UNIT SC_NOT_READY
   		SC_OPERATION SC_IN_PROGRESS},
   {0x04,0x08,R,SC_LOGICAL_UNIT SC_NOT_READY "long write" SC_IN_PROGRESS},
-  {0x04,0x09,SC_ALL_DEVS,SC_LOGICAL_UNIT SC_NOT_READY "self-test" 
+  {0x04,0x09,SC_ALL_DEVS,SC_LOGICAL_UNIT SC_NOT_READY "self-test"
 		SC_IN_PROGRESS},
-  {0x04,0x0a,SC_ALL_DEVS,SC_LOGICAL_UNIT 
+  {0x04,0x0a,SC_ALL_DEVS,SC_LOGICAL_UNIT
   		"not accessible, asymmetric access state transition"},
-  {0x04,0x0b,SC_ALL_DEVS,SC_LOGICAL_UNIT 
+  {0x04,0x0b,SC_ALL_DEVS,SC_LOGICAL_UNIT
   		"not accessible, target port in standby state"},
-  {0x04,0x0c,SC_ALL_DEVS,SC_LOGICAL_UNIT 
+  {0x04,0x0c,SC_ALL_DEVS,SC_LOGICAL_UNIT
   		"not accessible, target port in unavailable state"},
   {0x04,0x10,SC_ALL_DEVS,SC_LOGICAL_UNIT SC_NOT_READY
   		"auxiliary memory not accessible"},
-  {0x05,0x00,D|T|L|W|R|S|O|M|C|A|E|B|K,SC_LOGICAL_UNIT 
+  {0x05,0x00,D|T|L|W|R|S|O|M|C|A|E|B|K,SC_LOGICAL_UNIT
   		"does not respond to selection"},
   {0x06,0x00,D|W|R|O|M|B|K,"No reference position found"},
   {0x07,0x00,D|T|L|W|R|S|O|M|B|K,"Multiple peripheral devices selected"},
   {0x08,0x00,D|T|L|W|R|S|O|M|C|A|E|B|K,SC_LOGICAL_UNIT "communication failure"},
-  {0x08,0x01,D|T|L|W|R|S|O|M|C|A|E|B|K,SC_LOGICAL_UNIT 
+  {0x08,0x01,D|T|L|W|R|S|O|M|C|A|E|B|K,SC_LOGICAL_UNIT
   		"communication time-out"},
-  {0x08,0x02,D|T|L|W|R|S|O|M|C|A|E|B|K,SC_LOGICAL_UNIT 
+  {0x08,0x02,D|T|L|W|R|S|O|M|C|A|E|B|K,SC_LOGICAL_UNIT
   		"communication parity error"},
-  {0x08,0x03,D|T|R|O|M|B|K,SC_LOGICAL_UNIT 
+  {0x08,0x03,D|T|R|O|M|B|K,SC_LOGICAL_UNIT
   		"communication CRC error (Ultra-DMA/32)"},
   {0x08,0x04,D|T|L|P|W|R|S|O|C|K,"Unreachable copy target"},
   {0x09,0x00,D|T|W|R|O|B,"Track following error"},
@@ -373,7 +373,7 @@ static struct error_info additional[] =
   {0x16,0x02,D|W|O|B|K,"Data sync error - recommend rewrite"},
   {0x16,0x03,D|W|O|B|K,"Data sync error - data auto-reallocated"},
   {0x16,0x04,D|W|O|B|K,"Data sync error - recommend reassignment"},
-  {0x17,0x00,D|T|W|R|S|O|B|K,SC_RECOVERED_DATA 
+  {0x17,0x00,D|T|W|R|S|O|B|K,SC_RECOVERED_DATA
 		"with no error correction applied"},
   {0x17,0x01,D|T|W|R|S|O|B|K,SC_RECOVERED_DATA "with retries"},
   {0x17,0x02,D|T|W|R|O|B|K,SC_RECOVERED_DATA "with positive head offset"},
@@ -381,12 +381,12 @@ static struct error_info additional[] =
   {0x17,0x04,W|R|O|B,SC_RECOVERED_DATA "with retries and/or circ applied"},
   {0x17,0x05,D|W|R|O|B|K,SC_RECOVERED_DATA "using previous sector id"},
   {0x17,0x06,D|W|O|B|K,SC_RECOVERED_DATA "without ecc - data auto-reallocated"},
-  {0x17,0x07,D|W|R|O|B|K,SC_RECOVERED_DATA 
+  {0x17,0x07,D|W|R|O|B|K,SC_RECOVERED_DATA
 		"without ecc - recommend reassignment"},
   {0x17,0x08,D|W|R|O|B|K,SC_RECOVERED_DATA "without ecc - recommend rewrite"},
   {0x17,0x09,D|W|R|O|B|K,SC_RECOVERED_DATA "without ecc - data rewritten"},
   {0x18,0x00,D|T|W|R|O|B|K,SC_RECOVERED_DATA "with error correction applied"},
-  {0x18,0x01,D|W|R|O|B|K,SC_RECOVERED_DATA 
+  {0x18,0x01,D|W|R|O|B|K,SC_RECOVERED_DATA
 		"with error corr. & retries applied"},
   {0x18,0x02,D|W|R|O|B|K,SC_RECOVERED_DATA "- data auto-reallocated"},
   {0x18,0x03,R,SC_RECOVERED_DATA "with CIRC"},
@@ -973,12 +973,12 @@ void sg_print_sense(const char * leadin, const unsigned char * sense_buffer,
         if (leadin)
             fprintf(OUTP, "%s: ", leadin);
         if (sense_buffer[0] < 15)
-            fprintf(OUTP, 
+            fprintf(OUTP,
 	    	    "old sense: key %s\n", snstext[sense_buffer[0] & 0x0f]);
         else
             fprintf(OUTP, "sns = %2x %2x\n", sense_buffer[0], sense_buffer[2]);
 
-        fprintf(OUTP, "Non-extended sense class %d code 0x%0x ", 
+        fprintf(OUTP, "Non-extended sense class %d code 0x%0x ",
 		sense_class, code);
         s = 4;
     }
@@ -1127,7 +1127,7 @@ int sg_err_category(int masked_status, int host_status,
     			       sense_buffer, sb_len);
 }
 
-int sg_err_category_new(int scsi_status, int host_status, int driver_status, 
+int sg_err_category_new(int scsi_status, int host_status, int driver_status,
 			const unsigned char * sense_buffer, int sb_len)
 {
     scsi_status &= 0x7e;

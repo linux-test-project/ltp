@@ -22,7 +22,7 @@
  *
  * Test Description:
  *  Verify that sigprocmask() succeeds to examine and change the calling
- *  process's signal mask. 
+ *  process's signal mask.
  *  Also, verify that sigpending() succeeds to store signal mask that are
  *  blocked from delivery and pending for the calling process.
  *
@@ -102,7 +102,7 @@ main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	pid_t my_pid;		/* test process id */
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -122,7 +122,7 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 
-		/* 
+		/*
 		 * Call sigprocmask() to block (SIGINT) signal
 		 * so that, signal will not be delivered to
 		 * the test process.
@@ -233,7 +233,7 @@ main(int ac, char **av)
  * Add the signal SIGINT to the exclude list of system-defined
  * signals for the test process.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -247,7 +247,7 @@ setup()
 	 * excludes/includes  all system-defined signals.
 	 */
 	if (sigemptyset(&sigset) == -1) {
-		tst_brkm(TFAIL, cleanup, 
+		tst_brkm(TFAIL, cleanup,
 			 "sigemptyset() failed, errno=%d : %s",
 			 errno, strerror(errno));
 		/*NOTREACHED*/
@@ -301,7 +301,7 @@ sig_handler(int sig)
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

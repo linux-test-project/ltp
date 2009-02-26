@@ -21,12 +21,12 @@
  * Test Name :	sysinfo02
  *
  * Test description
- *  Verify that sysinfo() returns the correct error for an invalid address structure. 
- * 
+ *  Verify that sysinfo() returns the correct error for an invalid address structure.
+ *
  * Expected Result :
  *  sysinfo() returns value 0 on success and the sysinfo structure should
  *  be filled with the system information.
- * 
+ *
  * Algorithm:
  *  Setup :
  *   Setup for signal handling.

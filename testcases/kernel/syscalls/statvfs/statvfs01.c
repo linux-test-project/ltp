@@ -24,8 +24,8 @@
  *
  *    TEST CASE TOTAL   : 1
  *
- *    AUTHOR            : Prashant P Yendigeri 
- *                        <prashant.yendigeri@wipro.com> 
+ *    AUTHOR            : Prashant P Yendigeri
+ *                        <prashant.yendigeri@wipro.com>
  *
  *    DESCRIPTION
  *      This is a Phase I test for the statvfs(2) system call.

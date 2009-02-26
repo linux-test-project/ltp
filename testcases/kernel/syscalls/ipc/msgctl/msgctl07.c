@@ -142,7 +142,7 @@ int main(int argc, char* argv[])
 		alarm(SECS);
 		while (!ready)		/* make the child wait */
 			;
-		for (i=0; i<BYTES; i++) 
+		for (i=0; i<BYTES; i++)
 			p1_msgp.text[i] = 'i';
 		p1_msgp.type = 1;
 		if (msgsnd(msqid, &p1_msgp, BYTES, 0) == -1) {
@@ -193,7 +193,7 @@ int main(int argc, char* argv[])
 		alarm(SECS);
 		while (!ready)		/* make the child wait */
 			;
-		for (i=0; i<BYTES; i++) 
+		for (i=0; i<BYTES; i++)
 			p1_msgp.text[i] = 'i';
 		p1_msgp.type = 1;
 		if (msgsnd(msqid, &p1_msgp, BYTES, 0) == -1) {
@@ -202,7 +202,7 @@ int main(int argc, char* argv[])
 			(void)msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
                 	tst_exit();
 		}
-		for (j=0; j<BYTES; j++) 
+		for (j=0; j<BYTES; j++)
 			p2_msgp.text[j] = 'j';
 		p2_msgp.type = 2;
 		if (msgsnd(msqid, &p2_msgp, BYTES, 0) == -1) {
@@ -211,7 +211,7 @@ int main(int argc, char* argv[])
 			(void)msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
                 	tst_exit();
 		}
-		for (k=0; k<BYTES; k++) 
+		for (k=0; k<BYTES; k++)
 			p3_msgp.text[k] = 'k';
 		p3_msgp.type = 3;
 		if (msgsnd(msqid, &p3_msgp, BYTES, 0) == -1) {
@@ -270,13 +270,13 @@ do_child_1()
 		tst_resm(TFAIL, "msgrcv() failed errno = %d", errno);
 		tst_exit();
 	}
-	if (size != BYTES) 
+	if (size != BYTES)
 	{
 		tst_resm(TFAIL, "error: received %d bytes expected %d", size, BYTES);
 		tst_exit();
 	}
-	for (i=0; i<BYTES; i++) 
-		if (c1_msgp.text[i] != 'i') 
+	for (i=0; i<BYTES; i++)
+		if (c1_msgp.text[i] != 'i')
 		{
 			tst_resm(TFAIL, "error: corrup message");
 			tst_exit();
@@ -298,7 +298,7 @@ do_child_2()
 		tst_resm(TFAIL, "error: received %d bytes expected %d", size, BYTES);
 		tst_exit();
 	}
-	for (k=0; k<BYTES; k++) 
+	for (k=0; k<BYTES; k++)
 		if (c3_msgp.text[k] != 'k') {
 			tst_resm(TFAIL, "error: corrupt message");
 			tst_exit();
@@ -311,7 +311,7 @@ do_child_2()
 		tst_resm(TFAIL, "error: received %d bytes expected %d", size, BYTES);
 		tst_exit();
 	}
-	for (j=0; j<BYTES; j++) 
+	for (j=0; j<BYTES; j++)
 		if (c2_msgp.text[j] != 'j') {
 			tst_resm(TFAIL, "error: corrupt message");
 			tst_exit();
@@ -324,7 +324,7 @@ do_child_2()
 		tst_resm(TFAIL, "error: received %d bytes expected %d", size, BYTES);
 		tst_exit();
 	}
-	for (i=0; i<BYTES; i++) 
+	for (i=0; i<BYTES; i++)
 		if (c1_msgp.text[i] != 'i') {
 			tst_resm(TFAIL, "error: corrupt message");
 			tst_exit();

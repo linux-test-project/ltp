@@ -35,7 +35,7 @@
  *      -t   : Turn on syscall timing.
  *
  * Author
- *	Yi Yang <yyangcdl@cn.ibm.com> 
+ *	Yi Yang <yyangcdl@cn.ibm.com>
  *
  * History
  *      08/28/2006      Created first by Yi Yang <yyangcdl@cn.ibm.com>
@@ -117,8 +117,8 @@ int main(int ac, char **av)
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-		/* 
-		 * Call faccessat 
+		/*
+		 * Call faccessat
 		 */
 		for (i = 0; i < TST_TOTAL; i++) {
 			TEST(myfaccessat(fds[i], filenames[i], R_OK));

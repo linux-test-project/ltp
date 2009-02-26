@@ -22,7 +22,7 @@
 *
 *  Project Website:  TBD
 *
-* $Id: parse.c,v 1.7 2009/02/26 11:43:51 subrata_modak Exp $
+* $Id: parse.c,v 1.8 2009/02/26 12:02:23 subrata_modak Exp $
 *
 */
 #include <sys/types.h>
@@ -286,13 +286,13 @@ int fill_cld_args(int argc, char **argv, child_args_t *args)
 				args->wperc = atoi((char *)(strchr(optarg,':')+1));
 				args->flags |= CLD_FLG_DUTY;
 				break;
-			case 'r' : 
+			case 'r' :
 				args->flags |= CLD_FLG_R;
 				break;
-			case 'w' : 
+			case 'w' :
 				args->flags |= CLD_FLG_W;
 				break;
-			case 'o' : 
+			case 'o' :
 				if(optarg == NULL) {
 					pMsg(WARN, args, "-%c option requires an argument.\n", c);
 					return(-1);
@@ -300,7 +300,7 @@ int fill_cld_args(int argc, char **argv, child_args_t *args)
 				args->offset = atol(optarg);
 				args->flags |= CLD_FLG_OFFSET;
 				break;
-			case 'R' : 
+			case 'R' :
 				if(optarg == NULL) {
 					pMsg(WARN, args, "-%c option requires an argument.\n", c);
 					return(-1);
@@ -452,7 +452,7 @@ int fill_cld_args(int argc, char **argv, child_args_t *args)
 					args->flags |= CLD_FLG_WFSYNC;
 				}
 				break;
-			case 't' : 
+			case 't' :
 				if(optarg == NULL) {
 					pMsg(WARN, args, "-%c option requires an argument.\n", c);
 					return(-1);

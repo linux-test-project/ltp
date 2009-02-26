@@ -17,16 +17,16 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-/* 
+/*
  * Test Name: chown05
  *
  * Test Description:
  *  Verify that, chown(2) succeeds to change the owner and group of a file
- *  specified by path to any numeric owner(uid)/group(gid) values when invoked 
+ *  specified by path to any numeric owner(uid)/group(gid) values when invoked
  *  by super-user.
  *
  * Expected Result:
- *  chown(2) should return 0 and the ownership set on the file should match 
+ *  chown(2) should return 0 and the ownership set on the file should match
  *  the numeric values contained in owner and group respectively.
  *	
  * Algorithm:
@@ -111,7 +111,7 @@ main(int ac, char **av)
 	uid_t User_id;		/* user id of the user set for testfile */
 	gid_t Group_id;		/* group id of the user set for testfile */
 	char *test_desc;	/* test specific message */
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -132,7 +132,7 @@ main(int ac, char **av)
 			User_id = Test_cases[ind].user_id;
 			Group_id = Test_cases[ind].group_id;
 
-			/* 
+			/*
 			 * Call chwon(2) with different user id and
 			 * group id (numeric values) to set it on
 			 * testfile.
@@ -201,7 +201,7 @@ main(int ac, char **av)
  *  Create a temporary directory and change directory to it.
  *  Create a test file under temporary directory and close it
  */
-void 
+void
 setup()
 {
 	int fd;
@@ -240,7 +240,7 @@ setup()
  *	       completion or premature exit.
  *  Remove the test directory and testfile created in the setup.
  */
-void 
+void
 cleanup()
 {
 	/*

@@ -115,7 +115,7 @@ int main (argc, argv)
 	extern int __start;
 	int lotext = (int)&__start;
  #endif
-#elif defined(__powerpc64__) 
+#elif defined(__powerpc64__)
 	extern long int _start;
 	long int *lotextptr = (long*)&_start;
         long int lotext = *lotextptr;

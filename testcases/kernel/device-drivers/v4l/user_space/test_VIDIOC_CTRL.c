@@ -241,11 +241,11 @@ int do_set_control(__u32 id) {
 						 * S32_MIN <= queryctrl.minimum-queryctrl.step and
 						 * queryctrl.maximum+queryctrl.step <= S32_MAX
 						 */
-						 
+						
 /*
  * If we try to set the new control value to "value" then the possible results can be
  * "x" and "x-step". These two values can be expressed with the range
- * (value-step, value+step) where the ranges are not included. 
+ * (value-step, value+step) where the ranges are not included.
  *
  *           value-step        value         value+step
  *              |                |                |

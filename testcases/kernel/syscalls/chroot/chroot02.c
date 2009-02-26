@@ -145,7 +145,7 @@ setup()
 	tst_tmpdir();
 	sprintf(tmpbuf, "%s%s", TESTDIR, "/chroot02_testfile");
 	if ((fileHandle = creat(tmpbuf, 0777)) == -1)
-		 tst_brkm(TBROK, cleanup, "failed to create tmporary file %s", 
+		 tst_brkm(TBROK, cleanup, "failed to create tmporary file %s",
 				 tmpbuf);
 	if (stat(tmpbuf, &buf) != 0) {
 		tst_brkm(TBROK, cleanup, "%s does not exist", tmpbuf);

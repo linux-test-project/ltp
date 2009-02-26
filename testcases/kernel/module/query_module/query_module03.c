@@ -15,17 +15,17 @@
  *
  */
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER   : query_module03
- * 
+ *
  *    EXECUTED BY       : root / superuser
- * 
+ *
  *    TEST TITLE        : Checking error conditions for query_module(2)
- * 
+ *
  *    TEST CASE TOTAL   : 4
- * 
+ *
  *    AUTHOR            : Madhu T L <madhu.tarikere@wipro.com>
- * 
+ *
  *    SIGNALS
  *	Uses SIGUSR1 to pause before test if option set.
  *	(See the parse_opts(3) man page).
@@ -40,13 +40,13 @@
  *	   argument outside program's accessible address space.
  *	4. query_module(2) returns -1 and sets errno to ENOSPC for too small
  *	   buffer size.
- * 
+ *
  *	Setup:
  *	  Setup signal handling.
  *	  Test caller is superuser
  *	  Set expected errnos for logging
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  *	Test:
  *	 Loop if the proper options are given.
  *	  Execute system call
@@ -54,10 +54,10 @@
  *		Issue PASS message
  *	  Otherwise,
  *		Issue FAIL message
- * 
+ *
  *	Cleanup:
  *	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  *  query_module03 [-c n] [-e] [-f] [-h] [-i n] [-I x] [-p] [-P x] [-t]
  *		where,  -c n : Run n copies concurrently.
@@ -69,9 +69,9 @@
  *			-p   : Pause for SIGUSR1 before starting
  *			-P x : Pause for x seconds between iterations.
  *			-t   : Turn on syscall timing.
- * 
+ *
  * RESTRICTIONS
- *	-c option has no effect for this testcase, even if used allows only 
+ *	-c option has no effect for this testcase, even if used allows only
  *	one instance to run at a time.
  *
  * CHANGES
@@ -93,7 +93,7 @@
 #include "test.h"
 #include "usctest.h"
 
-#ifndef PAGE_SIZE 
+#ifndef PAGE_SIZE
 #define PAGE_SIZE sysconf(_SC_PAGE_SIZE)
 #endif
 
@@ -134,7 +134,7 @@ static struct test_case_t  tdat[] = {
 		EFAULT, "results for module name argument outside program's "
 		"accessible address space", NULL, NULL },
 
-	{ NULL, QM_MODULES, (void *)out_buf, sizeof(out_buf), (size_t *)-1, 
+	{ NULL, QM_MODULES, (void *)out_buf, sizeof(out_buf), (size_t *)-1,
 		EFAULT, "results for return size argument outside program's "
 		"accessible address space", NULL, NULL },
 
@@ -163,10 +163,10 @@ main(int argc, char **argv)
 	if(STD_COPIES != 1) {
 		tst_resm(TINFO, "-c option has no effect for this testcase - "
 			"doesn't allow running more than one instance "
-			"at a time"); 
+			"at a time");
 		STD_COPIES = 1;
 	}
-        
+       
 	tst_tmpdir();
 	setup();
 
@@ -182,7 +182,7 @@ main(int argc, char **argv)
 				continue;
 			}
 			TEST(query_module(tdat[testno].modname,
-				tdat[testno].which, tdat[testno].buf, 
+				tdat[testno].which, tdat[testno].buf,
 				tdat[testno].bufsize, tdat[testno].ret_size));
 			TEST_ERROR_LOG(TEST_ERRNO);
 			if ( (TEST_RETURN == EXP_RET_VAL) &&

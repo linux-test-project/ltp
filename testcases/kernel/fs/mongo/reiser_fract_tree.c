@@ -1,7 +1,7 @@
-/* 
- * Copyright 2000 by Hans Reiser, licensing governed by reiserfs/README 
+/*
+ * Copyright 2000 by Hans Reiser, licensing governed by reiserfs/README
  */
- 
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -70,7 +70,7 @@ int fsz_100k_1m  =0;
 int fsz_1m_10m    =0;
 int fsz_10m_larger    =0;
 
-void chngdir(char *name) 
+void chngdir(char *name)
 {
   int i;
 
@@ -105,7 +105,7 @@ int determine_size(double median_size,
 
      /* this code does poorly when max_size is not a lot more than median size,
 	and that needs fixing */
-     
+    
      /* THE NEXT 2 LINES ARE THE HEART OF THE PROGRAM */
 
 
@@ -134,7 +134,7 @@ void get_name_by_number(long this_files_number, char * str)
 
 /* make a file of a specified size */
 void make_file(int size)
-{ 
+{
   char string [128] = {0};
   char * str = string;
   char fname[256];
@@ -151,15 +151,15 @@ void make_file(int size)
   else if (size <= 1000*1000) fsz_100k_1m++;
   else if (size <= 10*1000*1000) fsz_1m_10m++;
   else fsz_10m_larger++;
-   
+  
   /* construct a name for the file */
   get_name_by_number(this_files_number++, str);
   strcpy(fname, path);
   strcat(fname, "/");
   strcat(fname, str);
-  
-  /* open the file, and deal with the various errors that can occur */
  
+  /* open the file, and deal with the various errors that can occur */
+
   if ((fd = open(fname, O_CREAT|O_EXCL|O_RDWR, 0777)) == -1 ) {
     if (errno == ENOSPC) {
       if (!already_whined) {
@@ -181,7 +181,7 @@ void make_file(int size)
   }
   /* write to the file until it is the right size, handling the various error
      conditions appropriately */
-  
+ 
   while (size > 0) {
     size -= (error = write(fd, write_buffer, (size < write_buffer_size - 1) ? size : (write_buffer_size - 1)));
     if (error == -1) {
@@ -197,7 +197,7 @@ void make_file(int size)
       exit(errno);
     }
   }
-  
+ 
   /* close the file */
   if (close(fd)) {
     perror("close() failed");
@@ -210,18 +210,18 @@ void make_file(int size)
 void print_stats()
 {
   if (!stats) return;
-  
+ 
   printf("\n");
   printf("File stats: Units are decimal (1k = 1000)\n");
   printf("files 0-100    : %i\n",fsz_0_100);
   printf("files 100-1K   : %i\n",fsz_100_1k);
-  printf("files 1K-10K   : %i\n",fsz_1k_10k); 
-  printf("files 10K-100K : %i\n",fsz_10k_100k); 
-  printf("files 100K-1M  : %i\n",fsz_100k_1m);   
-  printf("files 1M-10M    : %i\n",fsz_1m_10m);     
-  printf("files 10M-larger    : %i\n",fsz_10m_larger);  
-  printf("total bytes written    : %lu\n",byte_total);  
-     
+  printf("files 1K-10K   : %i\n",fsz_1k_10k);
+  printf("files 10K-100K : %i\n",fsz_10k_100k);
+  printf("files 100K-1M  : %i\n",fsz_100k_1m);  
+  printf("files 1M-10M    : %i\n",fsz_1m_10m);    
+  printf("files 10M-larger    : %i\n",fsz_10m_larger); 
+  printf("total bytes written    : %lu\n",byte_total); 
+    
 }
 /* predict the number of files that will be created before max_bytes total
    length of files is reached */
@@ -263,7 +263,7 @@ void fill_this_directory(long nr_files_this_directory, long median_file_size, lo
 		size = determine_size(median_file_size, maximum_size);
 		byte_total += size;
 		make_file(size);
-    } 
+    }
 }
 
 
@@ -274,11 +274,11 @@ void fill_this_directory(long nr_files_this_directory, long median_file_size, lo
 int make_directory(char * dirname)
 {
   static long this_directory_number = 0;
-  
+ 
   strcpy(tdir, path);
   strcat(tdir, "/");
   strcat(tdir, dirname);
-     
+    
   if (mkdir(tdir, 0755) == -1) {
     if (errno == ENOSPC) {
       if (!already_whined) {
@@ -307,7 +307,7 @@ int make_directory(char * dirname)
    at.  Fills the directory with files and subdirectories, cd's into those
    subdirectories, and recurses upon itself */
 
-void  do_subtree( 
+void  do_subtree(
 		 /* the start and end of the portion of the directory sizes
                     array which corresponds to the sizes of the directories
                     composing this subtree */
@@ -342,10 +342,10 @@ void  do_subtree(
      beforehand. I'll code that later.  */
   /* worry about whether 0 or 1 is a problem value */
   this_directory_branching = determine_size(median_dir_branching, max_dir_branching) + 1;
-  
+ 
   /* create an array holding the number of directories assigned to each
      potential subdirectory */
-  dirs_in_subtrees = calloc(this_directory_branching, sizeof(long)); 
+  dirs_in_subtrees = calloc(this_directory_branching, sizeof(long));
   while (sizes_index <= sizes_end)
     {
       index_subdirectory_to_add_directory_to=(rand() % this_directory_branching);
@@ -404,7 +404,7 @@ void make_fractal_tree (long median_file_size, long maximum_file_size, long medi
     {
     *sizes_index = determine_size(median_dir_nr_files, max_dir_nr_files);
     // we alloc space for nr_files, so we should avoid
-    // number of files in directory = 0 -grev. 
+    // number of files in directory = 0 -grev.
     if (*sizes_index == 0)
       *sizes_index = 1;
     *sizes_index = (*sizes_index < remaining_files) ? *sizes_index : remaining_files;
@@ -427,11 +427,11 @@ void make_fractal_tree (long median_file_size, long maximum_file_size, long medi
 int main(int argc, char * argv[])
 {
   /* initialized from argv[] */
-  long median_file_size, 
-    median_dir_branching,  
+  long median_file_size,
+    median_dir_branching, 
     median_dir_nr_files,
     max_dir_nr_files,
-    max_dir_branching, 
+    max_dir_branching,
     max_file_size;
   long nr_of_files = 0;  /* files to be created */
 
@@ -448,16 +448,16 @@ int main(int argc, char * argv[])
   /* the number of bytes that we desire this tree to consume.  It will actually
      consume more, because the last file will overshoot by a random amount, and
      because the directories and metadata will consume space.  */
-  bytes_to_consume = atol(argv[1]); 
+  bytes_to_consume = atol(argv[1]);
   max_file_size = atol(argv[3]);
-  median_file_size = atol(argv[2]); 
+  median_file_size = atol(argv[2]);
   /* Figure out how many random files will fit into bytes_to_consume bytes. We
      depend on resetting rand() to get the same result later. */
   nr_of_files = determine_nr_of_files(median_file_size, max_file_size, bytes_to_consume);
-  
+ 
   strcpy(path, argv[9]);
-  mkdir(path, 0755); 
-  stats = atol(argv[10]);       
+  mkdir(path, 0755);
+  stats = atol(argv[10]);      
   median_dir_branching = atol(argv[6]);
   max_dir_branching = atol(argv[7]);
   median_dir_nr_files = atol(argv[4]);
@@ -465,7 +465,7 @@ int main(int argc, char * argv[])
   make_fractal_tree(median_file_size, max_file_size, median_dir_nr_files, max_dir_nr_files, median_dir_branching, max_dir_branching, nr_of_files);
   print_stats();
   if (stats) printf("\nreiser_fract_tree finished\n");
-        
+       
   return 0;
 }
 

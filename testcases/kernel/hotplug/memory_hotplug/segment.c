@@ -178,7 +178,7 @@ free_seg_slot(segment_t *segp)
 	glctx_t   *gcp = &glctx;
 	int        slot = segp->seg_slot;
 
-	if (segp->seg_name != NULL) 
+	if (segp->seg_name != NULL)
 		free(segp->seg_name);
 
 	if (segp->seg_path != NULL)
@@ -416,7 +416,7 @@ map_file_segment(segment_t *segp)
 	memp = (char *)mmap(0, segp->seg_length,
 	                    segp->seg_prot,
 	                    flags,
-	                    fd,            
+	                    fd,           
 	                    segp->seg_offset);
 
 	if (memp == MAP_FAILED) {
@@ -582,7 +582,7 @@ segment_register(seg_type_t type, char *name, range_t *range, int flags)
 }
 
 static char *segment_header =
-"  _____address______ ____length____ ____offset____ prot  share  name\n"; 
+"  _____address______ ____length____ ____offset____ prot  share  name\n";
 
 static char seg_type[] = { '.', 'a', 'f', 's' };
 
@@ -698,7 +698,7 @@ segment_remove(char *name)
 }
 
 /*
- * segment_touch() - "touch" [read or write] each page of specified range 
+ * segment_touch() - "touch" [read or write] each page of specified range
  *                   -- from offset to offset+length -- to fault in or to
  *                   test protection.
  * NOTE:  offset is relative to start of mapping, not start of file!
@@ -752,7 +752,7 @@ segment_touch(char *name, range_t *range, int rw)
 
 /*
  * segment_unmap() -  unmap the specified segment, if any, from seg_start
- *                    to seg_start+seg_lenth.  Leave the segment in the 
+ *                    to seg_start+seg_lenth.  Leave the segment in the
  *                    table;
  */
 int

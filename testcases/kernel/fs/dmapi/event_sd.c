@@ -26,8 +26,8 @@
  * 		  DM_EVENT_TRUNCATE
  *
  * NOTES	: The EVENT_DELIVERY_DELAY_LOOP macro is needed prior to
- * 		  invoking the routine (i.e. read) that generates the event 
- * 		  being tested because the system("cp DUMMY_FILE DummyFile") 
+ * 		  invoking the routine (i.e. read) that generates the event
+ * 		  being tested because the system("cp DUMMY_FILE DummyFile")
  * 		  call will generate DM_EVENT_WRITE events that can interfere
  * 		  with the results of the test.
  */
@@ -52,7 +52,7 @@ char *mountPt;
 char *deviceNm;
 char DummyFile[FILENAME_MAX];
 
-/* Variables for thread communications */ 
+/* Variables for thread communications */
 dm_eventtype_t eventExpected;
 dm_eventtype_t eventReceived;
 dm_response_t eventResponse;
@@ -161,9 +161,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile);
 			rc = read(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				if (strcmp(name1, DUMMY_FILE) != 0) {
 					DMLOG_PRINT(DMLVL_ERR, "Entry name NOT correct! (%s vs %s)\n", name1, DUMMY_FILE);
@@ -213,9 +213,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile);
 			rc = read(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -275,9 +275,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_ABORT;
 
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile);
 			rc = read(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d\n", DummyFile, rc);
 			eventResponse = DM_RESP_CONTINUE;
 			if ((varStatus = DMVAR_CHKFAILEXP(-1, rc, ABORT_ERRNO, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
@@ -338,9 +338,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile);
 			rc = read(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				if (strcmp(name1, DUMMY_FILE) != 0) {
 					DMLOG_PRINT(DMLVL_ERR, "Entry name NOT correct! (%s vs %s)\n", name1, DUMMY_FILE);
@@ -390,9 +390,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile);
 			rc = read(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				if (strcmp(name1, DUMMY_FILE) != 0) {
 					DMLOG_PRINT(DMLVL_ERR, "Entry name NOT correct! (%s vs %s)\n", name1, DUMMY_FILE);
@@ -449,9 +449,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile);
 			rc = read(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -518,9 +518,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_ABORT;
 
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile);
 			rc = read(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d\n", DummyFile, rc);
 			eventResponse = DM_RESP_CONTINUE;
 			if ((varStatus = DMVAR_CHKFAILEXP(-1, rc, ABORT_ERRNO, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
@@ -584,9 +584,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile);
 			rc = read(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				if (strcmp(name1, DUMMY_FILE) != 0) {
 					DMLOG_PRINT(DMLVL_ERR, "Entry name NOT correct! (%s vs %s)\n", name1, DUMMY_FILE);
@@ -643,9 +643,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile);
 			rc = read(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				if (strcmp(name1, DUMMY_FILE) != 0) {
 					DMLOG_PRINT(DMLVL_ERR, "Entry name NOT correct! (%s vs %s)\n", name1, DUMMY_FILE);
@@ -705,9 +705,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile);
 			rc = read(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -777,9 +777,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_ABORT;
 
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile);
 			rc = read(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d\n", DummyFile, rc);
 			eventResponse = DM_RESP_CONTINUE;
 			if ((varStatus = DMVAR_CHKFAILEXP(-1, rc, ABORT_ERRNO, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
@@ -850,9 +850,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile);
 			rc = read(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				if (strcmp(name1, DUMMY_FILE) != 0) {
 					DMLOG_PRINT(DMLVL_ERR, "Entry name NOT correct! (%s vs %s)\n", name1, DUMMY_FILE);
@@ -912,9 +912,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile);
 			rc = read(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -984,9 +984,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_ABORT;
 
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile);
 			rc = read(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d\n", DummyFile, rc);
 			eventResponse = DM_RESP_CONTINUE;
 			if ((varStatus = DMVAR_CHKFAILEXP(-1, rc, ABORT_ERRNO, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
@@ -1051,9 +1051,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile);
 			rc = read(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				if (strcmp(name1, DUMMY_FILE) != 0) {
 					DMLOG_PRINT(DMLVL_ERR, "Entry name NOT correct! (%s vs %s)\n", name1, DUMMY_FILE);
@@ -1107,9 +1107,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile);
 			rc = read(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -1173,9 +1173,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile);
 			rc = read(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -1239,9 +1239,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile);
 			rc = read(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				if (strcmp(name1, DUMMY_FILE) != 0) {
 					DMLOG_PRINT(DMLVL_ERR, "Entry name NOT correct! (%s vs %s)\n", name1, DUMMY_FILE);
@@ -1291,9 +1291,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile);
 			rc = read(fd, buf, 1);
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, 1, buf); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, 1, buf);
 			if ((varStatus = DMVAR_CHKPASSEXP(1, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				if (strcmp(name1, DUMMY_FILE) != 0) {
 					DMLOG_PRINT(DMLVL_ERR, "Entry name NOT correct! (%s vs %s)\n", name1, DUMMY_FILE);
@@ -1347,9 +1347,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile);
 			rc = read(fd, buf, 1);
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, 1, buf); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, 1, buf);
 			if ((varStatus = DMVAR_CHKPASSEXP(1, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -1413,9 +1413,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile);
 			rc = read(fd, buf, 1);
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, 1, buf); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, 1, buf);
 			if ((varStatus = DMVAR_CHKPASSEXP(1, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -1479,9 +1479,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile);
 			rc = read(fd, buf, 1);
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, 1, buf); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, 1, buf);
 			if ((varStatus = DMVAR_CHKPASSEXP(1, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				if (strcmp(name1, DUMMY_FILE) != 0) {
 					DMLOG_PRINT(DMLVL_ERR, "Entry name NOT correct! (%s vs %s)\n", name1, DUMMY_FILE);
@@ -1531,9 +1531,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile);
 			rc = read(fd, buf, 1);
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, 1, buf); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, 1, buf);
 			if ((varStatus = DMVAR_CHKPASSEXP(1, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				if (strcmp(name1, DUMMY_FILE) != 0) {
 					DMLOG_PRINT(DMLVL_ERR, "Entry name NOT correct! (%s vs %s)\n", name1, DUMMY_FILE);
@@ -1587,9 +1587,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile);
 			rc = read(fd, buf, 1);
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, 1, buf); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, 1, buf);
 			if ((varStatus = DMVAR_CHKPASSEXP(1, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -1653,9 +1653,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile);
 			rc = read(fd, buf, 1);
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, 1, buf); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, 1, buf);
 			if ((varStatus = DMVAR_CHKPASSEXP(1, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				if (strcmp(name1, DUMMY_FILE) != 0) {
 					DMLOG_PRINT(DMLVL_ERR, "Entry name NOT correct! (%s vs %s)\n", name1, DUMMY_FILE);
@@ -1705,9 +1705,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile);
 			rc = read(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -1773,9 +1773,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile);
 			rc = read(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -1835,9 +1835,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile);
 			rc = read(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				if (strcmp(name1, DUMMY_FILE) != 0) {
 					DMLOG_PRINT(DMLVL_ERR, "Entry name NOT correct! (%s vs %s)\n", name1, DUMMY_FILE);
@@ -1887,10 +1887,10 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile);
 			fd2 = open(DummyFile, O_RDWR);
 			rc = fd2 == -1 ? -1 : read(fd2, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -1951,11 +1951,11 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile);
 			eventPending = 1;
 			rc = read(fd, buf, DUMMY_STRLEN);
 			eventPending = 0;
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -2018,11 +2018,11 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s)\n", DummyFile);
 			eventPending = 1;
 			rc = read(fd, buf, DUMMY_STRLEN);
 			eventPending = 0;
-			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "read(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKFAILEXP(-1, rc, EAGAIN, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -2080,9 +2080,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile);
 			rc = write(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				if (strcmp(name1, DUMMY_FILE) != 0) {
 					DMLOG_PRINT(DMLVL_ERR, "Entry name NOT correct! (%s vs %s)\n", name1, DUMMY_FILE);
@@ -2133,9 +2133,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile);
 			rc = write(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -2196,9 +2196,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_ABORT;
 
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile);
 			rc = write(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc);
 			eventResponse = DM_RESP_CONTINUE;
 			if ((varStatus = DMVAR_CHKFAILEXP(-1, rc, ABORT_ERRNO, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
@@ -2260,9 +2260,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile);
 			rc = write(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				if (strcmp(name1, DUMMY_FILE) != 0) {
 					DMLOG_PRINT(DMLVL_ERR, "Entry name NOT correct! (%s vs %s)\n", name1, DUMMY_FILE);
@@ -2313,9 +2313,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile);
 			rc = write(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				if (strcmp(name1, DUMMY_FILE) != 0) {
 					DMLOG_PRINT(DMLVL_ERR, "Entry name NOT correct! (%s vs %s)\n", name1, DUMMY_FILE);
@@ -2373,9 +2373,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile);
 			rc = write(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -2443,9 +2443,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_ABORT;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile);
 			rc = write(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc);
 			eventResponse = DM_RESP_CONTINUE;
 			if ((varStatus = DMVAR_CHKFAILEXP(-1, rc, ABORT_ERRNO, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
@@ -2510,9 +2510,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile);
 			rc = write(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				if (strcmp(name1, DUMMY_FILE) != 0) {
 					DMLOG_PRINT(DMLVL_ERR, "Entry name NOT correct! (%s vs %s)\n", name1, DUMMY_FILE);
@@ -2570,9 +2570,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile);
 			rc = write(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				if (strcmp(name1, DUMMY_FILE) != 0) {
 					DMLOG_PRINT(DMLVL_ERR, "Entry name NOT correct! (%s vs %s)\n", name1, DUMMY_FILE);
@@ -2633,9 +2633,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile);
 			rc = write(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -2706,9 +2706,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_ABORT;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile);
 			rc = write(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc);
 			eventResponse = DM_RESP_CONTINUE;
 			if ((varStatus = DMVAR_CHKFAILEXP(-1, rc, ABORT_ERRNO, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
@@ -2780,9 +2780,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile);
 			rc = write(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				if (strcmp(name1, DUMMY_FILE) != 0) {
 					DMLOG_PRINT(DMLVL_ERR, "Entry name NOT correct! (%s vs %s)\n", name1, DUMMY_FILE);
@@ -2843,9 +2843,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile);
 			rc = write(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -2916,9 +2916,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_ABORT;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile);
 			rc = write(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc);
 			eventResponse = DM_RESP_CONTINUE;
 			if ((varStatus = DMVAR_CHKFAILEXP(-1, rc, ABORT_ERRNO, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
@@ -2984,9 +2984,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile);
 			rc = write(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				if (strcmp(name1, DUMMY_FILE) != 0) {
 					DMLOG_PRINT(DMLVL_ERR, "Entry name NOT correct! (%s vs %s)\n", name1, DUMMY_FILE);
@@ -3041,9 +3041,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile);
 			rc = write(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -3108,9 +3108,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile);
 			rc = write(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -3175,9 +3175,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile);
 			rc = write(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				if (strcmp(name1, DUMMY_FILE) != 0) {
 					DMLOG_PRINT(DMLVL_ERR, "Entry name NOT correct! (%s vs %s)\n", name1, DUMMY_FILE);
@@ -3228,9 +3228,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile);
 			rc = write(fd, buf, 1);
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(1, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				if (strcmp(name1, DUMMY_FILE) != 0) {
 					DMLOG_PRINT(DMLVL_ERR, "Entry name NOT correct! (%s vs %s)\n", name1, DUMMY_FILE);
@@ -3285,9 +3285,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile);
 			rc = write(fd, buf, 1);
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(1, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -3352,9 +3352,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile);
 			rc = write(fd, buf, 1);
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(1, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -3419,9 +3419,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile);
 			rc = write(fd, buf, 1);
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(1, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				if (strcmp(name1, DUMMY_FILE) != 0) {
 					DMLOG_PRINT(DMLVL_ERR, "Entry name NOT correct! (%s vs %s)\n", name1, DUMMY_FILE);
@@ -3472,9 +3472,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile);
 			rc = write(fd, buf, 1);
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(1, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				if (strcmp(name1, DUMMY_FILE) != 0) {
 					DMLOG_PRINT(DMLVL_ERR, "Entry name NOT correct! (%s vs %s)\n", name1, DUMMY_FILE);
@@ -3529,9 +3529,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile);
 			rc = write(fd, buf, 1);
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(1, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -3596,9 +3596,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile);
 			rc = write(fd, buf, 1);
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(1, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				if (strcmp(name1, DUMMY_FILE) != 0) {
 					DMLOG_PRINT(DMLVL_ERR, "Entry name NOT correct! (%s vs %s)\n", name1, DUMMY_FILE);
@@ -3649,9 +3649,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile);
 			rc = write(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -3718,9 +3718,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile);
 			rc = write(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -3781,9 +3781,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile);
 			rc = write(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				if (strcmp(name1, DUMMY_FILE) != 0) {
 					DMLOG_PRINT(DMLVL_ERR, "Entry name NOT correct! (%s vs %s)\n", name1, DUMMY_FILE);
@@ -3838,9 +3838,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile);
 			rc = write(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -3905,9 +3905,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile);
 			rc = write(fd, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				if (strcmp(name1, DUMMY_FILE) != 0) {
 					DMLOG_PRINT(DMLVL_ERR, "Entry name NOT correct! (%s vs %s)\n", name1, DUMMY_FILE);
@@ -3958,10 +3958,10 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile);
 			fd2 = open(DummyFile, O_RDWR);
 			rc = fd2 == -1 ? -1 : write(fd2, buf, DUMMY_STRLEN);
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -4023,11 +4023,11 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile);
 			eventPending = 1;
 			rc = write(fd, buf, DUMMY_STRLEN);
 			eventPending = 0;
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(DUMMY_STRLEN, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -4088,11 +4088,11 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s)\n", DummyFile);
 			eventPending = 1;
 			rc = write(fd, buf, DUMMY_STRLEN);
 			eventPending = 0;
-			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "write(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKFAILEXP(-1, rc, EAGAIN, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -4150,9 +4150,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile);
 			rc = ftruncate(fd, 5000);
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				if (strcmp(name1, DUMMY_FILE) != 0) {
 					DMLOG_PRINT(DMLVL_ERR, "Entry name NOT correct! (%s vs %s)\n", name1, DUMMY_FILE);
@@ -4203,9 +4203,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile);
 			rc = ftruncate(fd, 5000);
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -4263,9 +4263,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_ABORT;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile);
 			rc = ftruncate(fd, 5000);
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc);
 			eventResponse = DM_RESP_CONTINUE;
 			if ((varStatus = DMVAR_CHKFAILEXP(-1, rc, ABORT_ERRNO, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
@@ -4324,9 +4324,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile);
 			rc = ftruncate(fd, 5000);
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				if (strcmp(name1, DUMMY_FILE) != 0) {
 					DMLOG_PRINT(DMLVL_ERR, "Entry name NOT correct! (%s vs %s)\n", name1, DUMMY_FILE);
@@ -4377,9 +4377,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile);
 			rc = ftruncate(fd, 5000);
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				if (strcmp(name1, DUMMY_FILE) != 0) {
 					DMLOG_PRINT(DMLVL_ERR, "Entry name NOT correct! (%s vs %s)\n", name1, DUMMY_FILE);
@@ -4433,9 +4433,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile);
 			rc = ftruncate(fd, 2222);
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -4496,9 +4496,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_ABORT;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile);
 			rc = ftruncate(fd, 2222);
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc);
 			eventResponse = DM_RESP_CONTINUE;
 			if ((varStatus = DMVAR_CHKFAILEXP(-1, rc, ABORT_ERRNO, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
@@ -4560,9 +4560,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile);
 			rc = ftruncate(fd, 0);
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				if (strcmp(name1, DUMMY_FILE) != 0) {
 					DMLOG_PRINT(DMLVL_ERR, "Entry name NOT correct! (%s vs %s)\n", name1, DUMMY_FILE);
@@ -4616,9 +4616,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile);
 			rc = ftruncate(fd, 2222);
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d, buffer contents [%.*s]\n", DummyFile, rc, DUMMY_STRLEN, buf);
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				if (strcmp(name1, DUMMY_FILE) != 0) {
 					DMLOG_PRINT(DMLVL_ERR, "Entry name NOT correct! (%s vs %s)\n", name1, DUMMY_FILE);
@@ -4675,9 +4675,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile);
 			rc = ftruncate(fd, 4444);
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -4741,9 +4741,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_ABORT;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile);
 			rc = ftruncate(fd, 4444);
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc);
 			eventResponse = DM_RESP_CONTINUE;
 			if ((varStatus = DMVAR_CHKFAILEXP(-1, rc, ABORT_ERRNO, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
@@ -4808,9 +4808,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile);
 			rc = ftruncate(fd, 6000);
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				if (strcmp(name1, DUMMY_FILE) != 0) {
 					DMLOG_PRINT(DMLVL_ERR, "Entry name NOT correct! (%s vs %s)\n", name1, DUMMY_FILE);
@@ -4867,9 +4867,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile);
 			rc = ftruncate(fd, 2997);
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -4931,9 +4931,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_ABORT;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile);
 			rc = ftruncate(fd, 2997);
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc);
 			eventResponse = DM_RESP_CONTINUE;
 			if ((varStatus = DMVAR_CHKFAILEXP(-1, rc, ABORT_ERRNO, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
@@ -4996,9 +4996,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile);
 			rc = ftruncate(fd, 1997);
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -5060,9 +5060,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_ABORT;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile);
 			rc = ftruncate(fd, 1997);
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc);
 			eventResponse = DM_RESP_CONTINUE;
 			if ((varStatus = DMVAR_CHKFAILEXP(-1, rc, ABORT_ERRNO, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
@@ -5119,9 +5119,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile);
 			rc = ftruncate(fd, 0);
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -5177,9 +5177,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile);
 			rc = ftruncate(fd, 1);
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -5235,9 +5235,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile);
 			rc = ftruncate(fd, 2);
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				if (strcmp(name1, DUMMY_FILE) != 0) {
 					DMLOG_PRINT(DMLVL_ERR, "Entry name NOT correct! (%s vs %s)\n", name1, DUMMY_FILE);
@@ -5286,9 +5286,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile);
 			rc = ftruncate(fd, DUMMY_STRLEN/2);
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -5350,9 +5350,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile);
 			rc = ftruncate(fd, DUMMY_STRLEN/2);
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
 			        if (rc != 0) {
@@ -5408,9 +5408,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s)\n", DummyFile);
 			rc = ftruncate(fd, DUMMY_STRLEN/2);
-			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc); 
+			DMLOG_PRINT(DMLVL_DEBUG, "ftruncate(%s) returned %d\n", DummyFile, rc);
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				if (strcmp(name1, DUMMY_FILE) != 0) {
 					DMLOG_PRINT(DMLVL_ERR, "Entry name NOT correct! (%s vs %s)\n", name1, DUMMY_FILE);
@@ -5455,9 +5455,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "open(%s, O_TRUNC)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "open(%s, O_TRUNC)\n", DummyFile);
 			fd = open(DummyFile, O_RDWR | O_CREAT | O_TRUNC, DUMMY_FILE_RW_MODE);
-			DMLOG_PRINT(DMLVL_DEBUG, "open(%s, O_TRUNC) returned %d\n", DummyFile, fd); 
+			DMLOG_PRINT(DMLVL_DEBUG, "open(%s, O_TRUNC) returned %d\n", DummyFile, fd);
 			rc = fd == -1 ? -1 : 0;
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
@@ -5510,9 +5510,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "open(%s, O_TRUNC)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "open(%s, O_TRUNC)\n", DummyFile);
 			fd = open(DummyFile, O_RDWR | O_CREAT | O_TRUNC, DUMMY_FILE_RW_MODE);
-			DMLOG_PRINT(DMLVL_DEBUG, "open(%s, O_TRUNC) returned %d\n", DummyFile, fd); 
+			DMLOG_PRINT(DMLVL_DEBUG, "open(%s, O_TRUNC) returned %d\n", DummyFile, fd);
 			rc = fd == -1 ? -1 : 0;
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
@@ -5565,9 +5565,9 @@ int main(int argc, char **argv)
 			eventReceived = DM_EVENT_INVALID;
 			eventResponse = DM_RESP_CONTINUE;
 			
-			DMLOG_PRINT(DMLVL_DEBUG, "creat(%s)\n", DummyFile); 
+			DMLOG_PRINT(DMLVL_DEBUG, "creat(%s)\n", DummyFile);
 			fd = creat(DummyFile, S_IRWXU);
-			DMLOG_PRINT(DMLVL_DEBUG, "creat(%s) returned %d\n", DummyFile, fd); 
+			DMLOG_PRINT(DMLVL_DEBUG, "creat(%s) returned %d\n", DummyFile, fd);
 			rc = fd == -1 ? -1 : 0;
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				rc = dm_handle_cmp(hanp1, hlen1, hanp2, hlen2);
@@ -5662,7 +5662,7 @@ void *Thread(void *parm)
 			DMLOG_PRINT(DMLVL_DEBUG, "  Media designator: %s\n", DM_GET_VALUE(me, me_name2, char *));
 			DMLOG_PRINT(DMLVL_DEBUG, "  Root handle: %p\n", DM_GET_VALUE(me, me_roothandle, void *));
 			DMLOG_PRINT(DMLVL_DEBUG, "  Root handle length: %d\n", DM_GET_LEN(me, me_roothandle));
-	    
+	   
     			bMounted = dm_handle_is_valid(lhanp, lhlen);
 
     			rc = dm_request_right(sid, lhanp, lhlen, token, DM_RR_WAIT, DM_RIGHT_EXCL);

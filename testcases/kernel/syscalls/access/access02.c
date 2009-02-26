@@ -153,7 +153,7 @@ main(int ac, char **av)
 			access_mode = Test_cases[ind].a_mode;
 			test_desc = Test_cases[ind].desc;
 
-			/* 
+			/*
 			 * Call access(2) to check the test file
 			 * for specified access mode permissions.
 			 */
@@ -178,7 +178,7 @@ main(int ac, char **av)
 
 				/*
 				 * Call a function to verify whether
-				 * the specified file has specified 
+				 * the specified file has specified
 				 * access mode.
 				 */
 				fflag = Access_verify(ind, fflag);
@@ -206,7 +206,7 @@ main(int ac, char **av)
  *  Create a temporary directory and change directory to it.
  *  Call individual test specific setup functions.
  */
-void 
+void
 setup()
 {
 	int ind;			/* counter for testsetup functions */
@@ -403,7 +403,7 @@ Access_verify(int ind, int fflag)
 	case 2: /*
 		 * The specified file has execute access.
 		 * Attempt to execute the specified executable
-		 * file, if successful, access() behaviour is correct. 
+		 * file, if successful, access() behaviour is correct.
 		 */
 		if (system("./"TEST_FILE3) != 0) {
 			tst_resm(TFAIL, "Fail to execute the %s", TEST_FILE3);
@@ -411,7 +411,7 @@ Access_verify(int ind, int fflag)
 		}
 		break;
 	case 3:	/*
-		 * The file pointed to by symbolic link has 
+		 * The file pointed to by symbolic link has
 		 * write access.
 		 * Attempt to write some data to this temporary file
 		 * pointed to by symlink. if successful, access() bahaviour
@@ -436,7 +436,7 @@ Access_verify(int ind, int fflag)
  *
  *  Remove the test directory and testfile created in the setup.
  */
-void 
+void
 cleanup()
 {
 	/*

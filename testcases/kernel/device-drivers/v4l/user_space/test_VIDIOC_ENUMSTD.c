@@ -13,7 +13,7 @@
 
 /* TODO: from V4L2 Spec:
  * "Drivers may enumerate a different set of standards after switching the video input or output."
- * 
+ *
  */
 
 #include <stdio.h>

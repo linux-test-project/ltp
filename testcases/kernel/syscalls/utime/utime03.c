@@ -71,7 +71,7 @@
  * Restrictions:
  *  This test should be run by root only.
  *  nobody and bin must be valid users.
- * 
+ *
  */
 
 #include <errno.h>
@@ -120,7 +120,7 @@ main(int ac, char **av)
 	time_t modf_time, access_time;
 	time_t pres_time;	/* file modification/access/present time */
 	pid_t pid;
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -161,7 +161,7 @@ main(int ac, char **av)
 			/* Reset Tst_count in case we are looping. */
 			Tst_count=0;
 
-			/* 
+			/*
 			 * Invoke utime(2) to set TEMP_FILE access and
 			 * modification times to the current time.
 			 */
@@ -263,7 +263,7 @@ main(int ac, char **av)
  *  Change the ownership of testfile to that of "bin" user.
  *  Record the current time.
  */
-void 
+void
 setup()
 {
 	int fildes;			/* file handle for temp file */
@@ -365,7 +365,7 @@ setup()
  *             completion or premature exit.
  *  Remove the test directory and testfile created in the setup.
  */
-void 
+void
 cleanup()
 {
 	seteuid(0);

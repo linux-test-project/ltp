@@ -99,7 +99,7 @@ int main (int argc, char *argv[])
 		printinfo();
 		flag = 0;
 	}
-	free(buf); 
+	free(buf);
 
 	/*
 	 * Test mallopt's M_MXFAST and M_NLBLKS cmds.

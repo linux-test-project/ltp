@@ -24,7 +24,7 @@
     =================== TESTPLAN SEGMENT ===================
 >KEYS:  < dup()
 >WHAT:  < Is the access mode the same for both file descriptors?
-        < 0: read only? 
+        < 0: read only?
         < 1: write only?
         < 2: read/write?
 >HOW:   < Creat a file with each access mode; dup each file descriptor;	

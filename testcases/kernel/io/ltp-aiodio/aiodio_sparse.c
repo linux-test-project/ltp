@@ -110,7 +110,7 @@ int read_sparse(char *filename, int filesize)
 		char *badbuf;
 
 		if (debug > 1 && (i % 10) == 0) {
-			fprintf(stderr, "child %d, read loop count %d\n", 
+			fprintf(stderr, "child %d, read loop count %d\n",
 				getpid(), i);
 		}
 		lseek(fd, SEEK_SET, 0);
@@ -221,7 +221,7 @@ void aiodio_sparse(char *filename, int align, int writesize, int filesize, int n
 		);
 		return;
 	}
-	if (debug) 
+	if (debug)
 		fprintf(stderr, "io_submit() return %d\n", w);
 
 	/*
@@ -272,7 +272,7 @@ void aiodio_sparse(char *filename, int align, int writesize, int filesize, int n
 			perror("");
 			break;
 		}
-		if (debug) 
+		if (debug)
 			fprintf(stderr, "io_submit() return %d\n", w);
 		aio_inflight++;
 	}

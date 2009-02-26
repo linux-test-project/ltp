@@ -24,7 +24,7 @@ int kernel_is_too_old(void) {
 }
 
 /*
- * yeah, to make the makefile coding easier, do_check returns 
+ * yeah, to make the makefile coding easier, do_check returns
  * 1 if unshare is not supported, 0 if it is
  */
 #ifdef __i386__

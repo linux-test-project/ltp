@@ -106,7 +106,7 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		if (pipe(fildes) == -1)
-			tst_brkm(TBROK, cleanup, "pipe() failed - errno %d", 
+			tst_brkm(TBROK, cleanup, "pipe() failed - errno %d",
 					errno);
 
 		if ((c1pid = FORK_OR_VFORK()) == -1)

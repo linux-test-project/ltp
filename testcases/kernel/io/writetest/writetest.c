@@ -171,7 +171,7 @@ void parse_args(int argc, char **argv)
 {
     int c;
     ProgramName = argv[0];
-    
+   
     while(1) {
         int option_index = 0;
         static struct option long_options[] = {
@@ -183,7 +183,7 @@ void parse_args(int argc, char **argv)
             { 0, 0, 0, 0 }
         };
         c = getopt_long(argc, argv, "hvb:o:s:", long_options, &option_index);
-        if( c == -1 ) 
+        if( c == -1 )
             break;
         switch(c) {
             case 'b':

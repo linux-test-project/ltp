@@ -94,7 +94,7 @@ main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 	int status;		/* child process exit status */
 	int rval;		/* return value for wait() */
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
 	if (msg != (char *)NULL) {
@@ -162,7 +162,7 @@ main(int ac, char **av)
 
 		/*
 		 * Verify that, wait() returned due to normal
-		 * or abnormal termination of child due to 
+		 * or abnormal termination of child due to
 		 * receipt of signal SIGKILL.
 		 * Receipt of SIGKILL indicates that pause()
 		 * didn't returned after receipt of SIGINT.
@@ -230,7 +230,7 @@ do_child_uclinux()
  * setup() - performs all ONE TIME setup for this test.
  *  	     Set the signal handler to catch SIGINT signal.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -277,7 +277,7 @@ kill_handle(int sig)
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

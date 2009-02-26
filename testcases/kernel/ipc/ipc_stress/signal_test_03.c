@@ -70,7 +70,7 @@
 #define MAXTIME	2			/* MAX timeout (minutes) */
 
 #ifdef _LINUX_
-// bits/signum.h defines _NSIG as 64 
+// bits/signum.h defines _NSIG as 64
 #define SIGMAX 64
 #endif
 
@@ -106,14 +106,14 @@ int main (int argc, char **argv)
 
 	/*
 	 * Critical section - block SIGILL signal
-	 *  
+	 * 
 	 * Block the SIGILL interrupt from interrupting the process
 	 * with the sigprocmask () system function call.
-	 *  
-	 * Send the SIGILL interrupt to the process in an attempt to 
+	 * 
+	 * Send the SIGILL interrupt to the process in an attempt to
 	 * disrupt the critial section -- the signal should be blocked.
 	 * Wait one second to insure that the signal has plenty of time
-	 * to reach the process.  
+	 * to reach the process. 
 	 */
 #ifdef _LINUX_
 	sigset_t mask;
@@ -132,10 +132,10 @@ int main (int argc, char **argv)
 
 	/*
 	 * End of critical section - ensure SIGILL signal was not received
-	 * 
+	 *
 	 * Check to insure that the signal handler has not caught any signals,
-	 * and then unblock all of the signals with the sigsetmask system 
-	 * function call.  
+	 * and then unblock all of the signals with the sigsetmask system
+	 * function call. 
 	 */
 	if (signals_received > 0)
 		error ("received an unexpected signal during the critical section",
@@ -147,7 +147,7 @@ int main (int argc, char **argv)
 	sigemptyset (&mask);
 	sigprocmask (SIG_SETMASK, &mask, NULL);
 #else
-	if (sigsetmask (0) < 0) 
+	if (sigsetmask (0) < 0)
 		sys_error ("sigsetmask failed", __LINE__);
 #endif
 	raise (SIGILL);
@@ -163,8 +163,8 @@ int main (int argc, char **argv)
 		sleep (1);
 	  }
 
-	if (timeout == 0) 
-		error ("failed to receive SIGILL signal after unblocking signals", 
+	if (timeout == 0)
+		error ("failed to receive SIGILL signal after unblocking signals",
 			__LINE__);
 
 	/* Program completed successfully -- exit */

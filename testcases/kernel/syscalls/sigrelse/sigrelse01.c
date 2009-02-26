@@ -30,52 +30,52 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: sigrelse01.c,v 1.10 2009/02/26 11:48:09 subrata_modak Exp $ */
+/* $Id: sigrelse01.c,v 1.11 2009/02/26 12:05:43 subrata_modak Exp $ */
 /*****************************************************************************
  * OS Test - Silicon Graphics, Inc.  Eagan, Minnesota
- * 
+ *
  * TEST IDENTIFIER : sigrelse01 Releasing held signals.
- * 
+ *
  * PARENT DOCUMENT : sgrtds01  sigrelse system call
- * 
+ *
  * AUTHOR          : Bob Clark
  *		   : Rewrote 12/92 by Richard Logan
- * 
+ *
  * CO-PILOT        : Dave Baumgartner
- * 
+ *
  * DATE STARTED    : 10/08/86
- * 
+ *
  * TEST ITEMS
- * 
+ *
  * 	1. sigrelse turns on the receipt of signals held by sighold.
- * 
+ *
  * SPECIAL PROCEDURAL REQUIRMENTS
  * 	None
- * 
+ *
  * DETAILED DESCRIPTION
  * 	set up pipe for parent/child communications
  * 	fork off a child process
- * 
+ *
  * 	parent():
  * 		set up for unexpected signals
  * 		wait for child to send ready message over pipe
  * 		send all catchable signals to child process
  *		send alarm signal to speed up timeout
  * 		wait for child to terminate and check exit value
- * 
+ *
  * 		if exit value is EXIT_OK
  * 		  get message from pipe (contains array of signal counters)
  * 		  loop through array of signal counters and record any
  * 			signals which were not caught once.
  * 		  record PASS or FAIL depending on what was found in the array.
- * 
+ *
  * 		else if exit is SIG_CAUGHT then BROK (signal caught
  *		  before released)
  * 		else if exit is WRITE_BROK then BROK (write() to pipe failed)
  * 		else if exit is HANDLE_ERR then BROK (error in child's
  *		  signal handler)
  * 		else unexpected exit value - BROK
- * 
+ *
  * 	child():
  * 	  phase 1:
  * 		set up to catch all catchable signals (exit SIG_CAUGHT
@@ -83,19 +83,19 @@
  * 		hold each signal with sighold()
  * 		send parent ready message if setup went ok.
  * 		wait for signals to arrive - timeout if they don't
- * 
+ *
  * 	  phase 2:
  * 		release each signal and wait a second for the handler to
  *		  catch it.
- * 		(the handler will record each signal it catches in an array 
+ * 		(the handler will record each signal it catches in an array
  * 		and exit HANDLE_ERR if an error occurs)
- * 
+ *
  * 		send array of counters back to parent for processing.
  * 		exit EXIT_OK
  * NOTES
  *	since child is executing system calls under test, no
  *	system call times are printed.
- * 
+ *
 ***************************************************************************/
 
 #include <errno.h>
@@ -279,7 +279,7 @@ parent()
     }
 
     /*
-     * send signals to child and see if it holds them 
+     * send signals to child and see if it holds them
      */
 
     for (sig = 1; sig < NUMSIGS; sig++) {
@@ -302,13 +302,13 @@ UT kill(%d, SIGTERM) was successful\n",
 		        pid, sig, errno, strerror(errno));
 		}
 		tst_brkm(TBROK, getout, mesg);
-	    } 
+	    }
 	}
     }
 
     if (write_pipe(pipe_fd2[1], READY) < 0) {
 	/*
-	 * write_pipe() failed.  
+	 * write_pipe() failed. 
 	 */
 	(void) sprintf(mesg, "Unable to tell child to go, write to pipe failed");
 	tst_brkm(TBROK, getout, mesg);
@@ -638,7 +638,7 @@ int fd;
 
 #if DEBUG > 0
     printf("read_pipe: pid=%d waiting...\n", getpid());
-#endif 
+#endif
 
     /* set timeout alarm in case the pipe is blocked */
     if (set_timeout() < 0) {
@@ -649,7 +649,7 @@ int fd;
     ret = -1;
     while ( ret == -1 ) { 	/* while empty reads */
         if ((ret=read(fd, buf, MAXMESG)) == 0) {
-	    (void) sprintf(mesg, "read() pipe failed. error:%d %s.", 
+	    (void) sprintf(mesg, "read() pipe failed. error:%d %s.",
 	        errno, strerror(errno));
 	
 	    clear_timeout();
@@ -721,12 +721,12 @@ clear_timeout()
 }	/* end of clear_timeout */
 
 /*****************************************************************************
- *  timeout() : this routine is executed when the SIGALRM signal is 
+ *  timeout() : this routine is executed when the SIGALRM signal is
  *      caught.  It does nothing but return - the read() on the pipe
  *      will fail.
  ****************************************************************************/
 static void
-timeout() 
+timeout()
 {
 #if DEBUG > 0
 	printf("timeout: pid=%d sigalrm caught.\n", getpid());

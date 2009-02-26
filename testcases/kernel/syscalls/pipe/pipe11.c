@@ -197,7 +197,7 @@ do_child()
 	}
 }
 
-/* 
+/*
  * do_child_uclinux() - as above, but mallocs rdbuf first
  */
 void

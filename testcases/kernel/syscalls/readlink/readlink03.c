@@ -29,11 +29,11 @@
  *	is not positive.
  *   3) readlink(2) returns -1 and sets errno to EINVAL if the specified
  *	file is not a symbolic link file.
- *   4) readlink(2) returns -1 and sets errno to ENAMETOOLONG if the 
+ *   4) readlink(2) returns -1 and sets errno to ENAMETOOLONG if the
  *	pathname component of symbolic link is too long (ie, > PATH_MAX).
  *   5) readlink(2) returns -1 and sets errno to ENOENT if the component of
  *	symbolic link points to an empty string.
- * 
+ *
  * Expected Result:
  *  readlink() should fail with return value -1 and set expected errno.
  *
@@ -121,7 +121,7 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's*/
 	{ SYM_FILE1, "No Search permissions to process", EACCES, 1, setup1 },
 	/* Don't test with bufsize -1, since this cause a fortify-check-fail when
 	   using glibc and -D_FORITY_SOURCE=2
-           
+          
            Discussion: http://lkml.org/lkml/2008/10/23/229
 	   Conclusion: Only test with 0 as non-positive bufsize.
 
@@ -177,7 +177,7 @@ main(int ac, char **av)
 				buf_size = sizeof(buffer);
 			}
 
-			/* 
+			/*
 			 * Call readlink(2) to test different test conditions.
 	 		 * verify that it fails with -1 return value and sets
 			 * appropriate errno.
@@ -219,7 +219,7 @@ main(int ac, char **av)
  *  Create a temporary directory and change directory to it.
  *  Call test specific setup functions.
  */
-void 
+void
 setup()
 {
 	int i;
@@ -357,7 +357,7 @@ lpath_setup()
  *  Restore the mode permissions on test directory.
  *  Remove the temporary directory created in the setup.
  */
-void 
+void
 cleanup()
 {
 	/*

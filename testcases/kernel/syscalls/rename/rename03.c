@@ -37,7 +37,7 @@
  *                  create the "old" file and the "new" file
  *                  rename the "old" to the "new" file
  *                  verify the "new" file points to the "old" file
- *                  verify the "old" file does not exists 
+ *                  verify the "old" file does not exists
  *              2.  both old file and new directory exist
  *                  create the "old" and the "new" directory
  *                  rename the "old" to the "new" directory
@@ -123,7 +123,7 @@ main(int ac, char **av)
 	 * check looping state if -i option given
 	 */
 	for (lc=0; TEST_LOOPING(lc); lc++) {
-	  
+	 
 		/* reset Tst_count in case we are looping. */
 		Tst_count=0;
 
@@ -146,7 +146,7 @@ main(int ac, char **av)
 					tst_brkm(TBROK, cleanup, "stat of %s "
 						 "failed", TC[i].desc);	
 					/* NOTREACHED */
-				} 
+				}
 
 				/*
 				 * verify the new file or directory is the
@@ -167,7 +167,7 @@ main(int ac, char **av)
 					tst_resm(TFAIL, "the old %s still "
 						 "exists", TC[i].desc);
 					continue;
-				} 
+				}
 
 				tst_resm(TPASS, "functionality is correct "
 					 "for renaming a %s", TC[i].desc);
@@ -205,14 +205,14 @@ main(int ac, char **av)
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Pause if that option was specified */
-	TEST_PAUSE; 
+	TEST_PAUSE;
 
 	/* Create a temporary directory and make it current. */
 	tst_tmpdir();
@@ -243,7 +243,7 @@ setup2()
 	f_oldino = buf1.st_ino;
 
 	/* create another file */
-	do_file_setup(mname);	      
+	do_file_setup(mname);	     
 
 	/* create "old" directory */
 	if (mkdir(fdir, 00770) == -1) {
@@ -270,7 +270,7 @@ setup2()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

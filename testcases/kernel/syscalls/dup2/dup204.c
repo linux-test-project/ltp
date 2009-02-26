@@ -123,7 +123,7 @@ int main(int ac, char **av)
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void 
+void
 setup()
 {
 	/* Initialize Fd in case we get a quick signal */
@@ -148,7 +148,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	int i;

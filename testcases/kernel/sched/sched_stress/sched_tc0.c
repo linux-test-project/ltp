@@ -50,7 +50,7 @@
 
 /*
  * Defines:
- * 
+ *
  * USAGE: usage statement
  *
  * DEFAULT_PRIORITY_TYPE: default priority
@@ -123,7 +123,7 @@ int main (int argc, char **argv)
 		printf ("\texecution_time: %ld (sec)\n", execution_time);
 	}
 
-	/* 
+	/*
 	 * Adjust the priority of this process if the real time flag is set
 	 */
 	if (!strcmp (priority, "fixed")) {
@@ -136,7 +136,7 @@ int main (int argc, char **argv)
 #endif
 	}
 
-	/* 
+	/*
 	 * Continuously read through file as time permits...
 	 */
 	i = 0;
@@ -145,8 +145,8 @@ int main (int argc, char **argv)
 	if (debug) printf ("\n");
 	while  ( (time ((long *)0) - start_time) < execution_time) {
 		if (debug) {
-			printf ("\r\tprocessing file [%d], time left: %ld", 
-				i++, 
+			printf ("\r\tprocessing file [%d], time left: %ld",
+				i++,
 				execution_time - (time ((long *)0)-start_time));
 			fflush (stdout);
 		}
@@ -175,20 +175,20 @@ void process_file (char *filename)
 	char   record[100];   /* holds each record of the file read */
 	FILE   *datafile;     /* file pointer to the open file */
 
-	/* 
+	/*
 	 * Try and open the datafile
 	 */
-	if ((datafile = fopen (filename, "r")) == NULL) 
+	if ((datafile = fopen (filename, "r")) == NULL)
 		sys_error ("fopen failed", __FILE__, __LINE__);
 
-	/* 
-	 * Read the first record of the datafile, then read until end-of-file 
+	/*
+	 * Read the first record of the datafile, then read until end-of-file
 	 */
 	while (fgets (record, 80, datafile)) {
 		if (feof (datafile)) break;
 	}
 
-	/* 
+	/*
 	 * Close the datafile
 	 */
 	if (fclose (datafile))
@@ -255,11 +255,11 @@ void parse_args (int argc, char **argv)
 	/*
 	 * Check percentage, execution time and process slots...
  	 */
-	if (pflg) { 
+	if (pflg) {
 		if (strcmp (priority, "fixed") && strcmp (priority, "variable"))
 			errflag++;
 	}
-	if (tflg) { 
+	if (tflg) {
 		if (execution_time < 0.0 || execution_time > 360000)
 			errflag++;
 	}

@@ -55,7 +55,7 @@
 
 /*
  * Defines:
- * 
+ *
  * USAGE: usage statement
  *
  * DEFAULT_PRIORITY_TYPE: default priority
@@ -129,7 +129,7 @@ int main (int argc, char **argv)
 		printf ("\tlogfile:        %s\n", logfile);
 	}
 
-	/* 
+	/*
 	 * Adjust the priority of this process if the real time flag is set
 	 */
 	if (!strcmp (priority_type, "fixed")) {
@@ -145,7 +145,7 @@ int main (int argc, char **argv)
 			sys_error ("nice failed", __FILE__, __LINE__);
 	}
 
-	/* 
+	/*
 	 * Read from raw I/O device and record elapsed time...
 	 */
 	start_time = time ((time_t *)&timer_info);
@@ -163,7 +163,7 @@ int main (int argc, char **argv)
 
 	if (fclose (statfile) < 0)
 		sys_error ("fclose failed", __FILE__, __LINE__);
-   
+  
 	/*
 	 * Exit with success!
 	 */
@@ -200,25 +200,25 @@ void read_raw_device()
 	}
 #endif
 
-	/* 
+	/*
 	 * Open the raw disk file
 	 */
 	if ((fd = open (raw_dev, 0)) < 0)
 		sys_error ("open failed", __FILE__, __LINE__);
 
-	/* 
+	/*
 	 * Read through predefined number of blocks TIMES number of times.
 	 * (Seek back to beginning of raw device after reading 10MB)
 	 */
 	for (i=0; i < TIMES; i++) {
 		if (read (fd, readbuf, BLOCK_SIZE) != BLOCK_SIZE)
 			sys_error ("read failed", __FILE__, __LINE__);
-		if (blocks == 10000) 
+		if (blocks == 10000)
 			if (lseek (fd, 0, 0) < 0)
 				sys_error ("lseek failed", __FILE__, __LINE__);
 	}
 
-	/* 
+	/*
 	 * Close the raw disk file
 	 */
 	if (close (fd) < 0)
@@ -290,15 +290,15 @@ void parse_args (int argc, char **argv)
 	/*
 	 * Check percentage and process slots...
  	 */
-	if (tflg) { 
-		if (strcmp (priority_type, "fixed") && 
+	if (tflg) {
+		if (strcmp (priority_type, "fixed") &&
 		    strcmp (priority_type, "variable")) {
 			errflag++;
 			fprintf (stderr, "Error: priority type must be: " \
 					 "\'fixed\' or \'variable\'\n");
 		}
 	}
-	if (pflg) { 
+	if (pflg) {
 		if (priority < 50 || priority > 100) {
 			errflag++;
 			fprintf (stderr, "Error: priority range [50..100]\n");

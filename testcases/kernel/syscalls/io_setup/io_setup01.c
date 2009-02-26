@@ -56,7 +56,7 @@ cleanup(void)
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void 
+void
 setup()
 {
     /* capture signals */
@@ -177,7 +177,7 @@ main(int argc, char** argv)
 
 		/*
 		  ENOMEM Insufficient kernel resources are available.
-		  
+		 
 		  EAGAIN The  specified  nr_events exceeds the user's limit of available
 		         events.
 		*/

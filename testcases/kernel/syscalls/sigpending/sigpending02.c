@@ -56,7 +56,7 @@
 #include "usctest.h"
 
 
-void setup(); 
+void setup();
 void help();
 void cleanup();
 
@@ -94,10 +94,10 @@ main(int ac, char **av)
     TEST_EXP_ENOS(exp_enos);
 
     /***************************************************************
-     * check looping state 
+     * check looping state
      ***************************************************************/
     /* TEST_LOOPING() is a macro that will make sure the test continues
-     * looping according to the standard command line args. 
+     * looping according to the standard command line args.
      */
     for (lc=0; TEST_LOOPING(lc); lc++) {
 
@@ -109,9 +109,9 @@ main(int ac, char **av)
  	/* check return code */
 	if ( TEST_RETURN == -1 ) {
 	    TEST_ERROR_LOG(TEST_ERRNO);
-	        if (TEST_ERRNO != EFAULT) 
+	        if (TEST_ERRNO != EFAULT)
 	            tst_brkm(TFAIL, cleanup, "sigpending() Failed with wrong "
-                             "errno, expected errno=%d, got errno=%d : %s", 
+                             "errno, expected errno=%d, got errno=%d : %s",
 			     EFAULT, TEST_ERRNO, strerror(TEST_ERRNO));
 		else
 		    tst_resm(TPASS, "expected failure - errno = %d : %s",
@@ -119,7 +119,7 @@ main(int ac, char **av)
 	} else {
 	        tst_brkm(TFAIL, cleanup, "sigpending() Failed, expected "
 			 "return value=-1, got %d", TEST_RETURN);
-	} 
+	}
     }	/* End for TEST_LOOPING */
 
     /***************************************************************
@@ -142,7 +142,7 @@ help()
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void 
+void
 setup()
 {
     TEST_PAUSE;
@@ -152,7 +152,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void 
+void
 cleanup()
 {
     TEST_CLEANUP;

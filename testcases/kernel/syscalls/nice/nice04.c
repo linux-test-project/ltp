@@ -99,7 +99,7 @@ main(int ac, char **av)
 	int i;			/* counter variable for test case looping */
 	int incr_val;		/* nice value for the process */
 	char *test_desc; 	/* test specific error message */
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
 	if (msg != (char *)NULL) {
@@ -121,7 +121,7 @@ main(int ac, char **av)
 			incr_val = Test_cases[i].nice_val;
 			test_desc = Test_cases[i].desc;
 
-			/* 
+			/*
 			 * Call nice(2) with different 'incr' parameter
 			 * values and verify that it fails as expected.
 			 */
@@ -150,7 +150,7 @@ main(int ac, char **av)
  * setup() - performs all ONE TIME setup for this test.
  *  Make sure the test process uid is non-root only.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -177,7 +177,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

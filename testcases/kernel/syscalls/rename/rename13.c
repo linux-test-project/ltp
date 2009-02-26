@@ -33,7 +33,7 @@
  *
  *	Test:
  *		Loop if the proper options are given.
- *                  create the "old" file 
+ *                  create the "old" file
  *                  link the "new" file to the "old" file
  *                  rename the "old" to the "new" file
  *                  verify the "new" file points to the original file
@@ -103,7 +103,7 @@ main(int ac, char **av)
 	 * check looping state if -i option given
 	 */
 	for (lc=0; TEST_LOOPING(lc); lc++) {
-	  
+	 
 		/* reset Tst_count in case we are looping. */
 		Tst_count=0;
 
@@ -126,14 +126,14 @@ main(int ac, char **av)
 				tst_brkm(TBROK, cleanup, "failed to stat file "
 					 "%s in rename()", mname);	
 				/* NOTREACHED */
-			} 
+			}
 
 			/* check the existence of "old", and get the status */
 			if (stat(fname, &buf1)== -1) {
 				tst_brkm(TBROK, cleanup, "failed to stat file "
 					 "%s in rename()", fname);	
 				/* NOTREACHED */
-			} 
+			}
 	
 			/* verify the new file is the same as the original */
 			if (buf2.st_dev != olddev || buf2.st_ino != oldino) {
@@ -170,14 +170,14 @@ main(int ac, char **av)
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Pause if that option was specified */
-	TEST_PAUSE; 
+	TEST_PAUSE;
 
 	/* Create a temporary directory and make it current. */
 	tst_tmpdir();
@@ -200,7 +200,7 @@ setup()
 
 	/* link the "new" file to the "old" file */
 	if (link(fname,mname) == -1) {
-		tst_brkm(TBROK, cleanup, 
+		tst_brkm(TBROK, cleanup,
 			 "link from %s to %s failed!", fname, mname);
 		/*NOTREACHED*/
 	}
@@ -210,7 +210,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

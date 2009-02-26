@@ -43,7 +43,7 @@ main (int argc, char **argv)
 {
 	struct event timeout;
 	struct timeval tv;
- 
+
 	/* Initalize the event library */
 	event_init();
 

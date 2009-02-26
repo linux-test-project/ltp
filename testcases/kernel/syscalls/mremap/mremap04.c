@@ -21,8 +21,8 @@
  * Test Name: mremap04
  *
  * Test Description:
- *  Verify that, 
- *   mremap() fails when used to expand the existing virtual memory mapped 
+ *  Verify that,
+ *   mremap() fails when used to expand the existing virtual memory mapped
  *   region to the requested size, if the memory area cannot be expanded at
  *   the current virtual address and MREMAP_MAYMOVE flag not set.
  *
@@ -129,8 +129,8 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 
-		/* 
-		 * Attempt to expand the existing shared 
+		/*
+		 * Attempt to expand the existing shared
 		 * memory region of newsize by newsize limits
 		 * using mremap() should fail as specified
 		 * memory area already locked and MREMAP_MAYMOVE
@@ -180,12 +180,12 @@ main(int ac, char **av)
  * newsize after resize,
  * Create a named shared memory segment SHMKEY of newsize and mode SHM_MODE
  * by using shmget() which returns a shared memory identifier associated
- * with the created shared memory segment. 
- * Call shmat() to attach the shared memory segment to the data segment of the 
+ * with the created shared memory segment.
+ * Call shmat() to attach the shared memory segment to the data segment of the
  * calling process. The segment is attached at the first available address as
  * selected by the system.
  */
-void 
+void
 setup()
 {
 	key_t shmkey;
@@ -240,7 +240,7 @@ setup()
  *	       Detach the shared memory segment and remove the shared memory
  *	       identifier associated with the shared memory.
  */
-void 
+void
 cleanup()
 {
 	/*

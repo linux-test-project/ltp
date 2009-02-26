@@ -99,7 +99,7 @@ main(int ac, char **av)
 	struct stat stat_buf;	/* struct buffer for stat(2) */
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
 	if (msg != (char *)NULL) {
@@ -114,7 +114,7 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 
-		/* 
+		/*
 		 * Call access(2) to check the existence of a
 		 * file under specified path.
 		 */
@@ -164,7 +164,7 @@ main(int ac, char **av)
  *  Create a test directory and a file under test directory.
  *  Modify the mode permissions of testfile.
  */
-void 
+void
 setup()
 {
 	int fd;			/* File handle for testfile */
@@ -233,7 +233,7 @@ setup()
  *
  *  Remove the test directory and testfile created in the setup.
  */
-void 
+void
 cleanup()
 {
 	/*

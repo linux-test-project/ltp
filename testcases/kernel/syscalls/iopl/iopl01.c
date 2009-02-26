@@ -15,17 +15,17 @@
  *
  */
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER	: iopl01
- * 
+ *
  *    EXECUTED BY	: superuser
- * 
+ *
  *    TEST TITLE	: Basic test for iopl(2)
- * 
+ *
  *    TEST CASE TOTAL	: 4
  *
  *    AUTHOR		: Subhab Biswas <subhabrata.biswas@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -38,17 +38,17 @@
  * 	  Setup signal handling.
  *	  Test caller is superuser
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  * 	  Execute system call
  *        Check return code, if system call failed (return=-1)
- *              Issue FAIL message with errno. 
+ *              Issue FAIL message with errno.
  *        Otherwise, Issue PASS message.
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  * iopl01 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
  *			where,  -c n : Run n copies concurrently.
@@ -106,7 +106,7 @@ main(int ac, char **av)
 
 		/*
 		 * Test the system call for possible privelege levels.
-		 * As the privelge level for a normal process is 0, 
+		 * As the privelge level for a normal process is 0,
 		 * start by setting/changing the level to 0.
 		 */
 		for (level = 0; level < TST_TOTAL; ++level) {
@@ -121,7 +121,7 @@ main(int ac, char **av)
 				tst_resm(TPASS, "iopl() passed for level %d, "
 					 "returned %d", level,
 				 	 TEST_RETURN);
-			} 
+			}
 		}
 	}	/* End for TEST_LOOPING */
 

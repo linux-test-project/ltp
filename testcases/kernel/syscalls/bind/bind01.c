@@ -189,7 +189,7 @@ cleanup(void)
 }
 
 
-void 
+void
 setup0(void)
 {
 	s = socket(tdat[testno].domain, tdat[testno].type, tdat[testno].proto);

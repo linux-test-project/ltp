@@ -104,7 +104,7 @@ tpciopen() {
 
 }
 
-int 
+int
 tpciclose() {
 
 	if (tpci_fd != -1) {

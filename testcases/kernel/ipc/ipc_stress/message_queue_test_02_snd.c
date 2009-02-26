@@ -69,7 +69,7 @@
 
 /*
  * Defines
- * 
+ *
  * BUF_SIZE: size of message buffer...
  */
 #define BUF_SIZE		256
@@ -95,7 +95,7 @@ static void error (const char *, int);
 
 /*
  * Global variables
- * 
+ *
  * message:	 Message to store in queue
  * project_name: Unique path used to create key (ftok)
  * project_id:   Unique number used to create key (ftok)

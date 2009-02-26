@@ -22,9 +22,9 @@
 
                            /*kill1.c*/
 /*======================================================================
->KEYS:  < kill(), wait() 
->WHAT:  < Check that when a child is killed by its parent, it returns 
-        < the correct values to the waiting parent--default behaviour 
+>KEYS:  < kill(), wait()
+>WHAT:  < Check that when a child is killed by its parent, it returns
+        < the correct values to the waiting parent--default behaviour
 	< assumed by child
 >HOW:   < For each signal: send that signal to a child, check that the
 	< child returns the correct value to the waiting parent.
@@ -156,7 +156,7 @@ int main(int argc, char **argv)				/***** BEGINNING OF MAIN. *****/
 		//fprintf(temp, "Testing signal %d\n", sig); 12/12/02
 		kill (pid, sig);
 		npid = wait(&status);
-   
+  
 		if (npid != pid)  {
 			fprintf(temp, "wait error: unexpected pid returned\n");
 			ret_val = 1;
@@ -173,25 +173,25 @@ int main(int argc, char **argv)				/***** BEGINNING OF MAIN. *****/
                 #endif
                 nexno = WIFEXITED(status);
                 /*****  **      **      *****/
- 
+
 		//printf("nsig=%x, core=%x, status=%x\n", nsig,core, status); 12/12/2002
 
 	/* to check if the core dump bit has been set, bit # 7 */
 	/*****	LTP Port	*****/
 	/*  12/12/02: avenkat@us.ibm.com
-	 *  SIGILL when is not caught or not ignored it causes 
+	 *  SIGILL when is not caught or not ignored it causes
 	 *  a core dump and program termination.  So moved the condition to
 	 *  else part of the program.
 	 *  SIGQUIT like SIGABRT normally causes a program to quit and
 	 *  and dumps core.  So moved the condition to else part of the
-	 *  program.	 
+	 *  program.	
 	 */
 	/*****	**	**	*****/
 		if (core) {
 			if ((sig == 1) || (sig == 2) /*|| (sig == 3) ||*/
 			   /*(sig == 4)*/ || (sig == 9) ||
 			   (sig == 13) || (sig == 14) || (sig == 15)) {
-				fprintf(temp, "signal error: core dump bit set for exception number %d\n", sig); 
+				fprintf(temp, "signal error: core dump bit set for exception number %d\n", sig);
 				ret_val = 1;
 			}
 		} else {

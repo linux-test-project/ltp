@@ -119,7 +119,7 @@ test2A(void)
 #endif
 
 	visit = 0;
-	if((ret = nftw("./tmp/data/dirl", test_func1, MAX_FD, FTW_PHYS)) 
+	if((ret = nftw("./tmp/data/dirl", test_func1, MAX_FD, FTW_PHYS))
 			== -1) {
 		perror("nftw");
 		cleanup_function();
@@ -177,7 +177,7 @@ test3A(void)
 	if (visit != LINK_CNT-1)
 	{
 		fprintf(temp, "ERROR: Expected %d files to be visited.  nftw() visited %d\n", LINK_CNT-1, visit);
-		cleanup_function(); 
+		cleanup_function();
 		fail_exit();
 	}
 }
@@ -375,7 +375,7 @@ test9A(void)
 	fprintf(temp, "TEST: nftw passes FTW_F as third arg to fn() for files\n");
 #endif
 
-	if((ret = nftw("./tmp/data/dirg", test_func9, MAX_FD, 
+	if((ret = nftw("./tmp/data/dirg", test_func9, MAX_FD,
 			FTW_PHYS)) == -1) {
 		perror("nftw");
 		cleanup_function();
@@ -406,7 +406,7 @@ test10A(void)
 	fprintf(temp, "TEST: nftw passes FTW_D as third arg to fn() when file is directory\n");
 #endif
 
-	if ((ret = nftw("./tmp/data/dirg", test_func10, MAX_FD, 
+	if ((ret = nftw("./tmp/data/dirg", test_func10, MAX_FD,
 			FTW_PHYS)) == -1) {
 		perror("nftw");
 		cleanup_function();
@@ -469,11 +469,11 @@ test12A(void)
 	int	ret;
 
 #ifdef DEBUG
-	fprintf(temp, 
+	fprintf(temp,
 		"TEST: nftw wth FTW_PHYS passes FTW_SL when file is symlink\n");
 #endif
 
-	if((ret = nftw("./tmp/data/dirg", test_func12, MAX_FD, 
+	if((ret = nftw("./tmp/data/dirg", test_func12, MAX_FD,
 			FTW_PHYS)) == -1) {
 		perror("nftw");
 		cleanup_function();
@@ -716,7 +716,7 @@ test18A(void)
 	fprintf(temp, "TEST: nftw with FTW_PHYS does not pass FTW_SLN\n");
 #endif
 
-	if((ret = nftw("./tmp/data/dirg", test_func18, MAX_FD, 
+	if((ret = nftw("./tmp/data/dirg", test_func18, MAX_FD,
 			FTW_PHYS)) == -1) {
 		perror("nftw");
 		cleanup_function();
@@ -744,8 +744,8 @@ test18A(void)
 		if (ret == 999) {
 			/* Test is passed */
 			return;
-		} else { 
-			fprintf(temp, "ERROR: nftw passed FTW_SLN but did"); 
+		} else {
+			fprintf(temp, "ERROR: nftw passed FTW_SLN but did");
 			fprintf(temp, "not return value returned by fn()\n");
 			cleanup_function();
 			fail_exit();
@@ -1014,7 +1014,7 @@ test23A(void)
 void
 test24A(void)
 {
-	test_ENAMETOOLONG_path("nftw", callback, -1); 
+	test_ENAMETOOLONG_path("nftw", callback, -1);
 }
 
 
@@ -1028,7 +1028,7 @@ test24A(void)
 void
 test25A(void)
 {
-	test_ENAMETOOLONG_name("nftw", callback, -1); 
+	test_ENAMETOOLONG_name("nftw", callback, -1);
 }
 
 
@@ -1046,7 +1046,7 @@ test26A(void)
 	fprintf(temp, "TEST: [ENOENT] && -1 returned by nftw\n");
 #endif
 
-	test_ENOENT_nofile("nftw", callback, -1); 
+	test_ENOENT_nofile("nftw", callback, -1);
 }
 
 
@@ -1064,7 +1064,7 @@ test27A(void)
 	fprintf(temp, "TEST: The function nftw should return with a -1\n");
 #endif
 
-	test_ENOENT_empty("nftw", callback, -1); 
+	test_ENOENT_empty("nftw", callback, -1);
 }
 
 
@@ -1082,7 +1082,7 @@ test28A(void)
 	fprintf(temp, "TEST: [ENOTDIR] && -1 returned by nftw\n");
 #endif
 
-	test_ENOTDIR("nftw", callback, -1); 
+	test_ENOTDIR("nftw", callback, -1);
 }
 
 
@@ -1107,7 +1107,7 @@ test29A(void)
 	fprintf(temp, "TEST: [EACCES] && -1 returned by nftw\n");
 #endif
 
-	test_ENOTDIR("nftw", callback, -1); 
+	test_ENOTDIR("nftw", callback, -1);
 }
 
 
@@ -1130,7 +1130,7 @@ test30A(void)
 #ifdef DEBUG
 	fprintf(temp, "TEST: [EACCES] && -1 returned by nftw\n");
 #endif
-	test_ENOTDIR("nftw", callback, -1); 
+	test_ENOTDIR("nftw", callback, -1);
 }
 
 

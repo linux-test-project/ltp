@@ -23,42 +23,42 @@
  */
 
 /**********************************************************
- * 
+ *
  *    OS Test - International Business Machines Corp. 2004.
- * 
+ *
  *    TEST IDENTIFIER	: madvise03
- * 
+ *
  *    EXECUTED BY		: anyone
- * 
+ *
  *    TEST TITLE		: Basic test for madvise(2)
- * 
+ *
  *    TEST CASE TOTAL	: 3
- * 
+ *
  *    CPU TYPES			: Intel(R) XEON(TM)
- * 
+ *
  *    AUTHOR			: Pavan Naregundi
- * 
- *    CO-PILOT			: 
- * 
+ *
+ *    CO-PILOT			:
+ *
  *    DATE STARTED		: 23/11/2007
- * 
+ *
  *    TEST CASES
- * 
+ *
  * 	1.) madvise(2) advices...(See Description)
  *	
  *	INPUT SPECIFICATIONS
  * 		The standard options for system call tests are accepted.
  *		(See the parse_opts(3) man page).
- * 
+ *
  *	OUTPUT SPECIFICATIONS
  *		Output describing whether test cases passed or failed.
  * 	
  *	ENVIRONMENTAL NEEDS
- *		None 
+ *		None
  *
  *	SPECIAL PROCEDURAL REQUIREMENTS
  * 		None
- * 
+ *
  *	DETAILED DESCRIPTION
  *		This is a test case for madvise(2) system call.
  *		It tests madvise(2) with combinations of advice values.
@@ -68,22 +68,22 @@
  *		(1) Test Case for MADV_REMOVE
  *		(2) Test Case for MADV_DONTFORK
  *		(3) Test Case for MADV_DOFORK
- * 
+ *
  *	Setup:
  *		Setup signal handling.
  *		Pause for SIGUSR1 if option specified.
- * 
+ *
  *	Test:
  *		Loop if the proper options are given.
  *		Execute system call
  *		Check return code, if system call failed (return=-1)
  *		Log the errno and Issue a FAIL message.
  *		Otherwise, Issue a PASS message.
- * 
+ *
  *	Cleanup:
  *		Print errno log and/or timing stats if options given
- * 
- * 
+ *
+ *
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
 #include <stdio.h>
@@ -133,7 +133,7 @@ int main(int argc, char *argv[])
        /* Disable test if the version of the kernel is less than 2.6.16 */
         if((tst_kvercmp(2,6,16)) < 0)
         {
-		#define MADV_REMOVE     9  		/* kernel version < 2.6.16 don't have these */            
+		#define MADV_REMOVE     9  		/* kernel version < 2.6.16 don't have these */           
 		#define MADV_DONTFORK   10        	/* definitions. So explicitly declared them */
 		#define MADV_DOFORK     11
 		tst_resm(TCONF, "This test can only run on kernels that are ");
@@ -229,7 +229,7 @@ int main(int argc, char *argv[])
 		TEST(madvise(file,(stat.st_size/2),MADV_DOFORK));
 		check_and_print("MADV_DOFORK");
 
-		/* Finally Unmapping the whole file */   
+		/* Finally Unmapping the whole file */  
 		if(munmap(file, stat.st_size) < 0)
 		{
 			tst_brkm(TBROK, cleanup,
@@ -309,7 +309,7 @@ void check_and_print(char *advice)
 	}
 }
 /***************************************************************
- * get_shmmax() - Reads the size of share memory size 
+ * get_shmmax() - Reads the size of share memory size
  *                     from /proc/sys/kernel/shmmax
  ***************************************************************/
 long get_shmmax(void)

@@ -125,7 +125,7 @@ int main(int ac, char **av)
 		sigstk.ss_flags = 0;
 		TEST(sigaltstack(&sigstk, &osigstk));
 
-		/* check return code of sigaltstack */      
+		/* check return code of sigaltstack */     
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, \
@@ -158,7 +158,7 @@ int main(int ac, char **av)
 
 				/*
 				 * First,
-				 * Check that alt_stk is within the 
+				 * Check that alt_stk is within the
 				 * alternate stk boundaries
 				 *
 				 * Second,
@@ -170,7 +170,7 @@ int main(int ac, char **av)
 				     (sigstk.ss_sp + SIGSTKSZ))) {
 					tst_resm(TFAIL, \
 						"alt. stack is not within the "
-						"alternate stk boundaries"); 
+						"alternate stk boundaries");
 				} else if ((main_stk >= sigstk.ss_sp) && \
 					   (main_stk <= \
 					    (sigstk.ss_sp + SIGSTKSZ))) {

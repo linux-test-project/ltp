@@ -85,7 +85,7 @@ main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 	int i;
 
-        /* Check this system has fadvise64 system which is used 
+        /* Check this system has fadvise64 system which is used
           in posix_fadvise. */
         if ((_FILE_OFFSET_BITS != 64) && (__NR_fadvise64 == 0)) {
                tst_resm(TWARN, "This test can only run on kernels that implements ");
@@ -128,7 +128,7 @@ main(int ac, char **av)
 				tst_resm(TFAIL, "call succeeded unexpectedly");
 				continue;
 			}
-	  
+	
 			/* Man page says:
 			   "On error, an error number is returned." */
 			if (TEST_RETURN == TC[i].error) {
@@ -154,7 +154,7 @@ main(int ac, char **av)
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void 
+void
 setup()
 {
 	int pipedes[2];
@@ -173,11 +173,11 @@ setup()
 	} else {
 		int i;
 		
-		/* Close write side first. 
+		/* Close write side first.
 		   I don't use it in test. */
 		close(pipedes[1]);
 
-		/* Fill fd field of all test cases 
+		/* Fill fd field of all test cases
 		   with read side of pipe. */
 		for (i = 0; i < TST_TOTAL; i++) {
 			TC[i].fd = pipedes[0];
@@ -190,7 +190,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

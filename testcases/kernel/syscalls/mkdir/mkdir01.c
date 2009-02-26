@@ -30,62 +30,62 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: mkdir01.c,v 1.4 2006/05/12 15:44:11 vapier Exp $ */
+/* $Id: mkdir01.c,v 1.5 2009/02/26 12:04:00 subrata_modak Exp $ */
 /**********************************************************
- * 
+ *
  *    OS Test - Silicon Graphics, Inc.
- * 
+ *
  *    TEST IDENTIFIER	: mkdir01
- * 
+ *
  *    EXECUTED BY	: anyone
- * 
+ *
  *    TEST TITLE	: Basic errno test for mkdir(2)
- * 
+ *
  *    PARENT DOCUMENT	: mkstds02
- * 
+ *
  *    TEST CASE TOTAL	: 2
- * 
+ *
  *    WALL CLOCK TIME	: 1
- * 
+ *
  *    CPU TYPES		: ALL
- * 
+ *
  *    AUTHOR		: Bill Branum
- * 
+ *
  *    CO-PILOT		: Kathy Olmsted
- * 
+ *
  *    DATE STARTED	: 4/15/92
- * 
+ *
  *    INITIAL RELEASE	: UNICOS 7.0
- * 
+ *
  *    TEST CASES
- * 
+ *
  * 	mkdir(2) test for errno(s) EFAULT.
  *	
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
- * 
+ *
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
  *
  *    ENVIRONMENTAL NEEDS
  *      No run-time environmental needs.
- * 
+ *
  *    DETAILED DESCRIPTION
  *	This test will verify that mkdir(2) returns a value of
  *	-1 and sets errno to EFAULT when the path argument points
  *	outside (above/below) the allocated address space of the
  *	process.
- * 
+ *
  * 	Setup:
  * 	  Setup signal handling.
  *	  Create and make current a temporary directory.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  * 	  Execute system call
@@ -93,13 +93,13 @@
  *		Log the errno.
  *        If doing functional test
  *            check the errno returned and print result message
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
  *	  Remove the temporary directory.
  *	  Exit.
- * 
- * 
+ *
+ *
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
 #include <errno.h>
@@ -134,7 +134,7 @@ main(int ac, char **av)
 {
     int lc;		/* loop counter */
     char *msg;		/* message returned from parse_opts */
-    
+   
 
     /***************************************************************
      * parse standard options
@@ -158,7 +158,7 @@ main(int ac, char **av)
 	/* reset Tst_count in case we are looping. */
 	Tst_count=0;
 
-	/* 
+	/*
 	 * TEST CASE: 1
 	 * mkdir() call with pointer below allocated address space.
 	 */
@@ -187,10 +187,10 @@ main(int ac, char **av)
 	    tst_resm(TFAIL, "mkdir - path argument pointing below allocated address space succeeded unexpectedly.");
 
 	  }
-	} 
+	}
 	
 #if !defined(UCLINUX)
-	/* 
+	/*
 	 * TEST CASE: 2
 	 * mkdir() call with pointer above allocated address space.
 	 */
@@ -219,7 +219,7 @@ main(int ac, char **av)
 	    tst_resm(TFAIL, "mkdir - path argument pointing above allocated address space succeeded unexpectedly.");
 
 	  }
-	} 
+	}
 #endif /* if !defined(UCLINUX) */
 
     }	/* End for TEST_LOOPING */
@@ -235,7 +235,7 @@ main(int ac, char **av)
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void 
+void
 setup()
 {
     /* capture signals */
@@ -259,7 +259,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void 
+void
 cleanup()
 {
     /*

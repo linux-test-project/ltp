@@ -24,15 +24,15 @@
                            /*kill2.c*/
 /*======================================================================
 >KEYS:  < kill(), wait(), signal()
->WHAT:  < Check that when a child is killed by its parent, it returns the 
-   	< correct values to the waiting parent--the child sets signal to 
+>WHAT:  < Check that when a child is killed by its parent, it returns the
+   	< correct values to the waiting parent--the child sets signal to
    	< ignore the kill							
 >HOW:   < For each signal: Send that signal to a child that has elected
 	< to catch the signal, check that the correct status was returned
 	< to the waiting parent.
 	< NOTE: Signal 9 (kill) is not catchable, and must be dealt with
 	< separately.
->BUGS:  < None known 
+>BUGS:  < None known
 ======================================================================*/
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE 1
@@ -169,10 +169,10 @@ int main(int argc, char **argv)				/***** BEGINNING OF MAIN. *****/
                 	/*****  **      **      *****/
 
 
-		/* nsig is the signal number returned by wait 
+		/* nsig is the signal number returned by wait
                    it should be 0, except when sig = 9		*/
 
-			if ((sig == 9) && (nsig != sig)) { 
+			if ((sig == 9) && (nsig != sig)) {
 				fprintf(temp, "wait error: unexpected signal"
 					" returned when the signal sent was 9"
 				        " The status of the process is %d \n",	
@@ -180,7 +180,7 @@ int main(int argc, char **argv)				/***** BEGINNING OF MAIN. *****/
 				ret_val = 1;
 			}
 			if ((sig != 9) && (nsig != 0)) {
-				fprintf(temp, "wait error: unexpected signal " 
+				fprintf(temp, "wait error: unexpected signal "
 				       "returned, the status of the process is "
 					"%d  \n",status);
 				ret_val = 1;
@@ -189,16 +189,16 @@ int main(int argc, char **argv)				/***** BEGINNING OF MAIN. *****/
 		/* nexno is the exit number returned by wait
 		   it should be 1, except when sig = 9          */
 
-			if (sig == 9) 
+			if (sig == 9)
 				if (nexno != 0) {
 					fprintf(temp, "signal error: unexpected"
-						" exit number returned when" 
+						" exit number returned when"
 						" signal sent was 9, the status"
 						" of the process is %d \n",
 						status);
 				       ret_val = 1;
 				}
-				else; 
+				else;
 			else if (nexno != 1) {
 				fprintf(temp, "signal error: unexpected exit "
 					"number returned,the status of the"

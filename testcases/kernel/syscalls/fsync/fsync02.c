@@ -129,9 +129,9 @@ int main(int ac, char **av)
 		}
 
 		if (STD_FUNCTIONAL_TEST) {
-			if (time_end < time_start) { 
+			if (time_end < time_start) {
 				tst_resm(TFAIL, "timer broken end %ld < start %ld",
-						time_end, time_start); 
+						time_end, time_start);
 			}
 	
 

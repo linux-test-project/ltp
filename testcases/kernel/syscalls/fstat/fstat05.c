@@ -22,7 +22,7 @@
  * Test Name: fstat05
  *
  * Test Description:
- *   Verify that, 
+ *   Verify that,
  *   if buffer points outside user's accessible address space fstat(2)
  *	either returns -1 and sets errno to EFAULT
  *	or SIGSEGV is returned instead of EFAULT
@@ -55,7 +55,7 @@
  *
  *  Sighandler:
  *	if signal == SIGSEGV
- *		Issue sys call fails with expected signal 
+ *		Issue sys call fails with expected signal
  *      Otherwise,
  *              Issue sys call fails with unexpected signal.
  *
@@ -115,13 +115,13 @@ void sighandler(int sig);	/* signals handler function for the test */
 
 int siglist[] = { SIGHUP, SIGINT, SIGQUIT, SIGILL, SIGTRAP, SIGABRT, SIGIOT,
                 SIGBUS, SIGFPE, SIGUSR1, SIGSEGV, SIGUSR2, SIGPIPE, SIGALRM,
-                SIGTERM, 
+                SIGTERM,
 #ifdef SIGSTKFLT
-SIGSTKFLT, 
+SIGSTKFLT,
 #endif
 		SIGCHLD, SIGCONT, SIGTSTP, SIGTTIN,
                 SIGTTOU, SIGURG, SIGXCPU, SIGXFSZ, SIGVTALRM, SIGPROF,
-                SIGWINCH, SIGIO, SIGPWR, SIGSYS, 
+                SIGWINCH, SIGIO, SIGPWR, SIGSYS,
 #ifdef SIGUNUSED
 SIGUNUSED
 #endif
@@ -153,7 +153,7 @@ main(int ac, char **av)
 	ptr_str=(void *)sbrk(0) + (4 * getpagesize());
 
 	/*
-	 * Invoke setup function 
+	 * Invoke setup function
 	 */
 	setup();
 
@@ -209,7 +209,7 @@ int main()
 #endif /* if !defined(UCLINUX) */
 
 /*
- * void 
+ * void
  * setup(void) - performs all ONE TIME setup for this test.
  * 	Exit the test program on receipt of unexpected signals.
  *	Create a temporary directory and change directory to it.
@@ -219,9 +219,9 @@ setup()
 {
 	int i;
 
-	/* 
+	/*
 	 * Capture unexpected signals SIGSEGV included
-	 * SIGSEGV being considered as acceptable as returned value 
+	 * SIGSEGV being considered as acceptable as returned value
 	*/
         for (i=0; i<SIG_SEEN; i++) {
 
@@ -289,7 +289,7 @@ cleanup()
 
 	/* Remove files and temporary directory created */
 	tst_rmdir();
-  
+ 
 	/* exit with return code appropriate for results */
 	tst_exit();
 }	/* End cleanup() */

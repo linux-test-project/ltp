@@ -22,8 +22,11 @@
 *
 *  Project Website:  TBD
 *
-* $Id: threading.c,v 1.5 2008/02/14 08:22:24 subrata_modak Exp $
+* $Id: threading.c,v 1.6 2009/02/26 12:02:23 subrata_modak Exp $
 * $Log: threading.c,v $
+* Revision 1.6  2009/02/26 12:02:23  subrata_modak
+* Clear Trailing Whitespace. Signed-off-by: Michal Simek <monstr@monstr.eu>.
+*
 * Revision 1.5  2008/02/14 08:22:24  subrata_modak
 * Disktest application update to version 1.4.2, by, Brent Yardley <yardleyb@us.ibm.com>
 *
@@ -123,7 +126,7 @@
 void cleanUpTestChildren(test_ll_t *test)
 {
 	thread_struct_t *pTmpThread = NULL, *pTmpThreadLast = NULL;
- 
+
 	while(test->env->pThreads) {
 		pTmpThread = test->env->pThreads->next;
 		pTmpThreadLast = test->env->pThreads;

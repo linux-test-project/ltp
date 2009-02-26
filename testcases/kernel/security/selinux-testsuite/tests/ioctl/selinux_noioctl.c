@@ -18,7 +18,7 @@
 #include<linux/ext2_fs.h>
 
 /*
- * Test the ioctl() calls on a file whose name is given as the first 
+ * Test the ioctl() calls on a file whose name is given as the first
  * argument. This version of the program expects some of the ioctl()
  * calls to fail, so if one does succeed, we exit with a bad return code.
  * This program expects the domain it is running as to have only read
@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
   int val;
 
   fd = open(argv[1], O_RDONLY, 0);
-  
+ 
   if(fd == -1) {
     perror("test_noioctl:open");
     exit(1);

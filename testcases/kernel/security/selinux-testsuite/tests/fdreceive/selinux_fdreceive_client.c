@@ -90,7 +90,7 @@ int main(int argc, char **argv)
 		exit(-1);
 	}
 	printf("client: Received reply, code=%d\n", buf[0]);
-	if (buf[0]) 
+	if (buf[0])
 		printf("client: ...This implies the descriptor was not received\n");
 	else
 		printf("client: ...This implies the descriptor was received\n");

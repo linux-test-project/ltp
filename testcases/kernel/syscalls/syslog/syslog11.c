@@ -32,13 +32,13 @@
  *
  *    DESCRIPTION
  *	Verify that, syslog(2) is successful for type ranging from 1 to 8
- * 
+ *
  *	Setup:
  *	  Setup signal handling.
  *	  Test caller is superuser
  *	  Check existence of user nobody
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  *	Test:
  *	 Loop if the proper options are given.
  *	  Execute system call
@@ -46,10 +46,10 @@
  *		 Issue FAIL message
  *	  Otherwise,
  *		Issue PASS message
- * 
+ *
  *	Cleanup:
  *	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  *  syslog11 [-c n] [-e] [-f] [-h] [-i n] [-I x] [-p] [-P x] [-t]
  *		where,  -c n : Run n copies concurrently.
@@ -61,7 +61,7 @@
  *			-p   : Pause for SIGUSR1 before starting
  *			-P x : Pause for x seconds between iterations.
  *			-t   : Turn on syscall timing.
- * 
+ *
  ****************************************************************/
 
 #include <errno.h>
@@ -80,7 +80,7 @@ struct test_case_t {			/* test case structure */
 	int type;			/* 1st arg. */
 	char *buf;			/* 2nd arg. */
 	int len;			/* 3rd arg. */
-	int (*setup) (void);		/* Individual setup routine */ 
+	int (*setup) (void);		/* Individual setup routine */
 	void (*cleanup) (void);		/* Individual cleanup routine */
 	char	*desc;			/* Test description */
 };
@@ -154,7 +154,7 @@ main(int argc, char **argv)
 						"%d (%s)", tdat[testno].desc, TEST_ERRNO, strerror(errno));
 				}
 			} else {
-				tst_resm(TPASS, "syslog() successful for %s", 
+				tst_resm(TPASS, "syslog() successful for %s",
 					tdat[testno].desc);
 			}
 

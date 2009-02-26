@@ -125,7 +125,7 @@ int main(int argc, char **argv)
 		{
 			tst_resm(TBROK, "sigaction(): Failed");
 			cleanup();
-		}   
+		}  
 
 
 //block1:

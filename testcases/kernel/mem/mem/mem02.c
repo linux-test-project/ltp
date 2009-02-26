@@ -34,7 +34,7 @@
 	< In the case of valloc, allocate memory and free it (do this for
 	< several iterations). Check if valloc returns unaligned pointers.
 	< If valloc causes a SIGSEGV, that means a failure has occured.
->BUGS:	< 
+>BUGS:	<
 ======================================================================*/
 
 
@@ -89,7 +89,7 @@ int main(int argc, char **argv)			/***** BEGINNING OF MAIN. *****/
 
 	while ((ch = getopt(argc, argv, "m:")) != -1) {
 		switch(ch) {
-		case 'm': 
+		case 'm':
 			if (optarg)
 				memsize = atoi(optarg) * 1024 * 1024;
 			else
@@ -107,7 +107,7 @@ int main(int argc, char **argv)			/***** BEGINNING OF MAIN. *****/
 
 		tst_resm(TFAIL, "calloc - alloc of %dMB failed", memsize/1024/1024);
 		             tst_exit();
-	} 
+	}
 
 	for(i=0; i<memsize; i++)
 		if(*pm2++ != 0) {
@@ -139,17 +139,17 @@ int main(int argc, char **argv)			/***** BEGINNING OF MAIN. *****/
 		             tst_exit();
 	}
 	free(pm1);
-	 
+	
         tst_resm(TPASS,"calloc - calloc of %uMB of memory succeeded",
 	                     memsize/1024/1024);
-	 
+	
 /*--------------------------------------------------------------------*/
 
 	/* check out malloc/free */
 	if((pm2=pm1=(char *)malloc(memsize)) == NULL) {
 		tst_resm(TFAIL, "malloc did not alloc memory ");
 		             tst_exit();
-	}	      
+	}	     
 
 	for(i=0; i<memsize; i++)
 		*pm2++ = 'X';
@@ -176,7 +176,7 @@ int main(int argc, char **argv)			/***** BEGINNING OF MAIN. *****/
 
         tst_resm(TPASS,"malloc - malloc of %uMB of memory succeeded",
 	                     memsize/1024/1024);
-	 
+	
 /*--------------------------------------------------------------------*/
 
 	/* check out realloc */
@@ -198,7 +198,7 @@ int main(int argc, char **argv)			/***** BEGINNING OF MAIN. *****/
 	}
 
         tst_resm(TPASS,"realloc - realloc of 5 bytes succeeded");
-	 
+	
 	/* realloc with increased size after fragmenting memory */
 	pm4=(char *)realloc(pm3,15);
 	pm6=(long)pm3;

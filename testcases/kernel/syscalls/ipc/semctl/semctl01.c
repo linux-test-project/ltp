@@ -100,7 +100,7 @@ struct sembuf sops;
 #define SEM4	4	/* semaphore to use for GETNCNT and GETZCNT */
 #define ONE	1
 #ifdef _XLC_COMPILER
-#define SEMUN_CAST 
+#define SEMUN_CAST
 #else
 #define SEMUN_CAST (union semun)
 #endif
@@ -446,7 +446,7 @@ pid_setup()
 	}
 
 	/*
-	 * Fork a child to do a semop that will pass. 
+	 * Fork a child to do a semop that will pass.
 	 */
 	if ((pid = FORK_OR_VFORK()) == -1) {
 		tst_brkm(TBROK, cleanup, "fork failed in pid_setup()");

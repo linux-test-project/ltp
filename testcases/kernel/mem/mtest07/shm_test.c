@@ -96,7 +96,7 @@ void noprintf(char* string, ...){
 /******************************************************************************/
 static void
 usage(char *progname)           /* name of this program                       */{
-    fprintf(stderr, 
+    fprintf(stderr,
                "Usage: %s -d NUMDIR -f NUMFILES -h -t NUMTHRD\n"
                "\t -h Help!\n"
                "\t -l Number of repatetions to execute:       Default: 1000\n"
@@ -195,19 +195,19 @@ shmat_rd_wr(void *args)	/* arguments to the thread function	      */
 
     reader = (int)locargs[3];
     while (shmndx++ < (int)locargs[0])
-    { 
-        dprt("pid[%d]: shmat_rd_wr(): locargs[1] = %#x\n", 
+    {
+        dprt("pid[%d]: shmat_rd_wr(): locargs[1] = %#x\n",
 	    getpid(), (int)locargs[1]);
 
 	/* get shared memory id */
-        if ((shm_id = shmget((int)locargs[1], (int)locargs[2], IPC_CREAT|0666)) 
+        if ((shm_id = shmget((int)locargs[1], (int)locargs[2], IPC_CREAT|0666))
 		    == -1)
         {
 	    dprt("pid[%d]: shmat_rd_wr(): shmget failed\n", getpid());
             perror("do_shmat_shmadt(): shmget()");
             PTHREAD_EXIT(-1);
         }
-        
+       
         fprintf(stdout, "pid[%d]: shmat_rd_wr(): shmget():"
 			"success got segment id %d\n",
                            getpid(), shm_id);
@@ -216,14 +216,14 @@ shmat_rd_wr(void *args)	/* arguments to the thread function	      */
         if ((shmat_addr = (char *)shmat(shm_id, NULL, 0)) ==  (void *)-1)
         {
             rm_shared_mem(shm_id, shmat_addr, 0);
-            fprintf(stderr, "pid[%d]: do_shmat_shmadt(): shmat_addr = %#lx\n", 
+            fprintf(stderr, "pid[%d]: do_shmat_shmadt(): shmat_addr = %#lx\n",
 		 		 		 getpid(), (long)shmat_addr);
             perror("do_shmat_shmadt(): shmat()");
             PTHREAD_EXIT(-1);
         }
 	dprt("pid[%d]: do_shmat_shmadt(): content of memory shmat_addr = %s\n",
             getpid(), shmat_addr);
-        
+       
         fprintf(stdout, "pid[%d]: do_shmat_shmadt(): got shmat address = %#lx\n",
             getpid(), (long)shmat_addr);
 
@@ -301,7 +301,7 @@ main(int	argc,		/* number of input parameters		      */
     int		shmkey   = 1969;/* key used to generate shmid by shmget()     */
     pthread_t	thrdid[30];	/* maxinum of 30 threads allowed              */
     long	chld_args[4];   /* arguments to the thread function           */
-    char        *map_address=NULL; 
+    char        *map_address=NULL;
 				/* address in memory of the mapped file       */
     extern int	 optopt;	/* options to the program		      */
 
@@ -339,7 +339,7 @@ main(int	argc,		/* number of input parameters		      */
 		break;
 	}
     }
-    
+   
     chld_args[0] = num_reps;
 
     for (thrd_ndx = 0; thrd_ndx < num_thrd; thrd_ndx+=2)
@@ -369,7 +369,7 @@ main(int	argc,		/* number of input parameters		      */
             exit(-1);
         }
     }
-    
+   
     sync();
 
     for (thrd_ndx = 0; thrd_ndx < num_thrd; thrd_ndx++)

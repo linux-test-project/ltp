@@ -15,29 +15,29 @@
  *
  */
 /**************************************************************************
- * 
+ *
  *    TEST IDENTIFIER	: swapoff02
  *
- * 
+ *
  *    EXECUTED BY	: root / superuser
- * 
+ *
  *    TEST TITLE	: Test checking for basic error conditions
  *    				 for swapoff(2)
- * 
- *    TEST CASE TOTAL	: 3 
- * 
+ *
+ *    TEST CASE TOTAL	: 3
+ *
  *    AUTHOR		: Aniruddha Marathe <aniruddha.marathe@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
  *
  *    DESCRIPTION
- *	This test case checks whether swapoff(2) system call  returns 
+ *	This test case checks whether swapoff(2) system call  returns
  *	1. EINVAL when the path does not exist
  *	2. ENOENT when the path exists but is invalid
  *	3. EPERM when user is not a superuser
- *	 
+ *	
  * 	Setup:
  *	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
@@ -48,15 +48,15 @@
  *	  Execute system call.
  *	  Check return code, if system call fails with errno == expected errno
  *		Issue syscall passed with expected errno
- *	  Otherwise, 
+ *	  Otherwise,
  *	  Issue syscall failed to produce expected errno
- * 
+ *
  * 	Cleanup:
  * 	  Do cleanup for the test.
- * 	   
+ * 	  
  * USAGE:  <for command-line>
  *  swapoff02 [-c n] [-e] [-i n] [-I x] [-p x] [-t] [-h] [-f] [-p]
- *  where 
+ *  where
  *  	-c n : Run n copies simultaneously
  *	-e   : Turn on errno logging.
  *	-i n : Execute test n times.
@@ -110,10 +110,10 @@ static struct test_case_t {
 	int (*setupfunc)();	/* Test setup function */
 	int (*cleanfunc)();	/* Test cleanup function */
 } testcase[] = {
-	{"path does not exist", ENOENT, "ENOENT", "./abcd", 
+	{"path does not exist", ENOENT, "ENOENT", "./abcd",
 		NULL,  NULL},
 	{"Invalid path", EINVAL, "EINVAL ", "./nofile", setup02, NULL},
-	{"Permission denied", EPERM, "EPERM ", "./swapfile01", 
+	{"Permission denied", EPERM, "EPERM ", "./swapfile01",
 		setup01, cleanup01}
 };
 
@@ -142,7 +142,7 @@ main(int ac, char **av)
 		for(i = 0; i < TST_TOTAL; i++) {
 
 
-			if(testcase[i].setupfunc && 
+			if(testcase[i].setupfunc &&
 			   testcase[i].setupfunc() == -1) {
 				tst_resm(TWARN, "Failed to setup test %d."
 						" Skipping test", i);
@@ -151,7 +151,7 @@ main(int ac, char **av)
 				TEST(swapoff(testcase[i].path));
 			}
 
-			if(testcase[i].cleanfunc && 
+			if(testcase[i].cleanfunc &&
 			   testcase[i].cleanfunc() == -1) {
 			       tst_brkm(TBROK, cleanup, "cleanup failed,"
 				       			" quitting the test");
@@ -167,7 +167,7 @@ main(int ac, char **av)
 				
 			} else {
 				tst_resm(TFAIL, "swapoff(2) failed to produce"
-						" expected error; %d, errno" 
+						" expected error; %d, errno"
 					       ": %s and got %d",
 						testcase[i].exp_errno,
 						testcase[i].exp_errval,

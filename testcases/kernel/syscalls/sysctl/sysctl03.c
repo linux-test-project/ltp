@@ -104,7 +104,7 @@ int main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		strcpy(osname, "Linux"); 
+		strcpy(osname, "Linux");
 		osnamelth = SIZE(osname);
 
 		TEST(sysctl(name, SIZE(name), 0, 0, osname, osnamelth));

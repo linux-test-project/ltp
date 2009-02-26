@@ -15,17 +15,17 @@
  *
  */
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER	: adjtimex01
- * 
+ *
  *    EXECUTED BY	: root / superuser
- * 
+ *
  *    TEST TITLE	: Basic test for adjtimex(2)
- * 
+ *
  *    TEST CASE TOTAL	: 1
- * 
+ *
  *    AUTHOR		: Saji Kumar.V.R <saji.kumar@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -33,12 +33,12 @@
  *    DESCRIPTION
  *	This is a Phase I test for the adjtimex(2) system call.
  *	It is intended to provide a limited exposure of the system call.
- * 
+ *
  * 	Setup:
  * 	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
  *	  Save current parameters in tim_save
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  * 	  call adjtimex with saved timex structure
@@ -46,10 +46,10 @@
  *		Test passed
  *	  Otherwise
  *		Test failed
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  * adjtimex01 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
  *			where,  -c n : Run n copies concurrently.
@@ -119,7 +119,7 @@ main(int ac, char **av)
 			tst_resm(TFAIL, "Test Failed, adjtimex()"
 				 "returned %d, errno = %d : %s", TEST_RETURN,
 				 TEST_ERRNO, strerror(TEST_ERRNO));
-		} 
+		}
 	}	/* End for TEST_LOOPING */
 
 	/* cleanup and exit */

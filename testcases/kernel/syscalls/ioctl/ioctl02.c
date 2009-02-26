@@ -128,8 +128,8 @@ int main(int ac, char **av)
 		cleanup();
 	}
 
-        if (geteuid() != 0) { 	 
-	                 tst_brkm(TBROK, tst_exit, "Test must be run as root"); 	 
+        if (geteuid() != 0) { 	
+	                 tst_brkm(TBROK, tst_exit, "Test must be run as root"); 	
 	}
 
 	setup();
@@ -176,7 +176,7 @@ int main(int ac, char **av)
 
 		/* run the parent test */
 		if ((rval = run_ptest()) == -1) {
-			/* 
+			/*
 			 * Parent cannot set/get ioctl parameters.
 			 * SIGTERM the child and cleanup.
 			 */
@@ -344,7 +344,7 @@ chk_tty_parms()
 			} else {
 				tst_resm(TINFO, "control char %d has "
 					 "incorrect value %d %d", i,
-					 termio.c_cc[i], CNUL); 
+					 termio.c_cc[i], CNUL);
 				flag++;
 				continue;
 			}

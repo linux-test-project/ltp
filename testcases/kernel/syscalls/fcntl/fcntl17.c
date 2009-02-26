@@ -34,7 +34,7 @@
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
- *      04/2002 Minor fixes by William Jay Huie (testcase name 
+ *      04/2002 Minor fixes by William Jay Huie (testcase name
 		fcntl05 => fcntl17, check signal return for SIG_ERR)
  *
  * RESTRICTIONS
@@ -106,22 +106,22 @@ int setup()
 	tst_tmpdir();			/* make temp dir and cd to it */
 
 	if(pipe(parent_pipe) < 0) {
-		tst_resm(TFAIL, "Couldn't create parent_pipe! errno = %d", 
+		tst_resm(TFAIL, "Couldn't create parent_pipe! errno = %d",
 			 errno);
 		return 1;
 	}
 	if(pipe(child_pipe1) < 0) {
-		tst_resm(TFAIL, "Couldn't create child_pipe1! errno = %d", 
+		tst_resm(TFAIL, "Couldn't create child_pipe1! errno = %d",
 			 errno);
 		return 1;
 	}
 	if(pipe(child_pipe2) < 0) {
-		tst_resm(TFAIL, "Couldn't create child_pipe2! errno = %d", 
+		tst_resm(TFAIL, "Couldn't create child_pipe2! errno = %d",
 			 errno);
 		return 1;
 	}
 	if(pipe(child_pipe3) < 0) {
-		tst_resm(TFAIL, "Couldn't create child_pipe3! errno = %d", 
+		tst_resm(TFAIL, "Couldn't create child_pipe3! errno = %d",
 			 errno);
 		return 1;
 	}
@@ -288,7 +288,7 @@ do_test(struct flock *lock, pid_t pid)
 	fl.l_len = lock->l_len;
 	fl.l_pid = (short) 0;
 	if (fcntl(file_fd, F_GETLK, &fl) < 0) {
-		tst_resm(TFAIL, "fcntl on file failed, errno =%d", 
+		tst_resm(TFAIL, "fcntl on file failed, errno =%d",
 			 errno);
 		return 1;
 	}
@@ -414,12 +414,12 @@ catch_alarm()
 	 * Timer has runout and the children have not detected the deadlock.
 	 * Need to kill the kids and exit
 	 */
-        if (child_pid1 != 0 && 
+        if (child_pid1 != 0 &&
             (kill(child_pid1, SIGKILL)) < 0) {
 		tst_resm(TFAIL, "Attempt to signal child 1 failed.");
 	}
 
-	if (child_pid2 != 0 && 
+	if (child_pid2 != 0 &&
             (kill(child_pid2, SIGKILL)) < 0) {
 		tst_resm(TFAIL, "Attempt to signal child 2 failed.");
 	}

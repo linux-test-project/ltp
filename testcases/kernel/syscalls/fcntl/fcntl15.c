@@ -167,7 +167,7 @@ int dochild1(int file_flag, int file_mode)
 	 * parent ready
 	 */
 	alarm(60);
-	while (parent_flag == 0 && alarm_flag == 0) 
+	while (parent_flag == 0 && alarm_flag == 0)
 		sigsuspend(&zeromask);
 	alarm((unsigned)0);
 	if (parent_flag != 1) {
@@ -238,7 +238,7 @@ int dofork(int file_flag, int file_mode)
 		 * parent ready
 		 */
 		alarm(60);
-		while (child_flag == 0 && alarm_flag == 0) 
+		while (child_flag == 0 && alarm_flag == 0)
 			sigsuspend(&zeromask);
 		alarm((unsigned)0);
 		if (child_flag != 1) {
@@ -315,7 +315,7 @@ int dochild2(int file_flag, int file_mode, int dup_flag)
 	 * parent ready
 	 */
 	alarm(60);
-	while (parent_flag == 0 && alarm_flag == 0) 
+	while (parent_flag == 0 && alarm_flag == 0)
 		sigsuspend(&zeromask);
 	alarm((unsigned)0);
 	if (parent_flag != 1) {
@@ -434,7 +434,7 @@ run_test(int file_flag, int file_mode, int dup_flag)
 		}
 	}
 
-	/* 
+	/*
 	 * initialize lock structure for first lock on first
 	 * 5 bytes of file
 	 */
@@ -496,7 +496,7 @@ run_test(int file_flag, int file_mode, int dup_flag)
 	 * parent ready
 	 */
 	alarm(60);
-	while (child_flag == 0 && alarm_flag == 0) 
+	while (child_flag == 0 && alarm_flag == 0)
 		sigsuspend(&zeromask);
 	alarm((unsigned)0);
 	if (child_flag != 1) {

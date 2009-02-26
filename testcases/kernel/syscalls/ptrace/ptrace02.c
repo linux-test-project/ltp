@@ -15,17 +15,17 @@
  *
  */
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER	: ptrace02
- * 
+ *
  *    EXECUTED BY	: anyone
- * 
+ *
  *    TEST TITLE	: functionality test for ptrace(2)
- * 
+ *
  *    TEST CASE TOTAL	: 2
- * 
+ *
  *    AUTHOR		: Saji Kumar.V.R <saji.kumar@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -43,11 +43,11 @@
  *			2) By installing a signal handler for child for SIGUSR2
  *		In both cases, child should stop & notify parent on reception
  *		of SIGUSR2
- * 
+ *
  * 	Setup:
  * 	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  *	 setup signal handler for SIGUSR2 signal
@@ -72,7 +72,7 @@
  *		
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  *  ptrace02 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
  *			where,  -c n : Run n copies concurrently.
@@ -118,7 +118,7 @@ main(int ac, char **av)
 	pid_t child_pid;
 	int status;
 	struct sigaction parent_act;
-    
+   
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
 	     != (char *)NULL) {
@@ -215,7 +215,7 @@ main(int ac, char **av)
 				}
 
 			}
-		} 
+		}
 	}	/* End for TEST_LOOPING */
 
 	/* cleanup and exit */

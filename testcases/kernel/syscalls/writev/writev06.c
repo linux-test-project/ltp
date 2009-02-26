@@ -201,7 +201,7 @@ setup(void)
 			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
 	bad_addr[2] = mmap(NULL, page_size * 3, PROT_NONE,
 			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
-        
+       
 	if (good_addr[0] <= 0 || good_addr[1] <= 0 ||
 			bad_addr[0] <= 0 || bad_addr[0] <= 0 ||
 			bad_addr[2] <= 0) {

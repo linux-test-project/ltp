@@ -66,11 +66,11 @@ int  fd      = -1;		/* initialized in open */
 int  expected_return = 0;
 
 int defined_advise[] = {
-	POSIX_FADV_NORMAL, 
-        POSIX_FADV_SEQUENTIAL, 
-        POSIX_FADV_RANDOM, 
-        POSIX_FADV_NOREUSE, 
-        POSIX_FADV_WILLNEED, 
+	POSIX_FADV_NORMAL,
+        POSIX_FADV_SEQUENTIAL,
+        POSIX_FADV_RANDOM,
+        POSIX_FADV_NOREUSE,
+        POSIX_FADV_WILLNEED,
         POSIX_FADV_DONTNEED,
 };
 #define defined_advise_total (sizeof(defined_advise) / sizeof(defined_advise[0]))
@@ -84,7 +84,7 @@ main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 	int i;
 
-       /* Check this system has fadvise64 system which is used 
+       /* Check this system has fadvise64 system which is used
           in posix_fadvise. */
        if ((_FILE_OFFSET_BITS != 64) && (__NR_fadvise64 == 0)) {
                tst_resm(TWARN, "This test can only run on kernels that implements ");
@@ -123,9 +123,9 @@ main(int ac, char **av)
 			} else {
 				tst_resm(TFAIL,
 					 "unexpected return value - %d : %s, advise %d - "
-					 "expected %d", 
+					 "expected %d",
 					 TEST_RETURN,
-					 strerror(TEST_RETURN), 
+					 strerror(TEST_RETURN),
 					 defined_advise[i],
 					 expected_return);
 			}
@@ -143,7 +143,7 @@ main(int ac, char **av)
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -154,10 +154,10 @@ setup()
 
 	fd = open(fname, O_RDONLY);
 	if (fd < 0) {
-		tst_brkm(TBROK, cleanup, 
+		tst_brkm(TBROK, cleanup,
 			 "Unable to open a file(\"%s\") for test: %s\n",
 			 fname,strerror(errno));
-	} 
+	}
 }	/* End setup() */
 
 
@@ -165,7 +165,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

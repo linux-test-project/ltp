@@ -173,7 +173,7 @@ int main (int argc, char **argv)
 	 */
 	shmem_size = sizeof (unsigned long) * num_children;
         if ((checksum = (unsigned long *)
-		mmap (0, shmem_size, PROT_READ | PROT_WRITE, 
+		mmap (0, shmem_size, PROT_READ | PROT_WRITE,
 		      MAP_ANON | MAP_SHARED, -1, 0)) == MAP_FAILED )
 		sys_error ("mmap failed", __LINE__);
 
@@ -184,13 +184,13 @@ int main (int argc, char **argv)
 	 * Get chunk of memory for writing scratch data
 	 */
 	printf ("\n\tGet shared memory segment (%d bytes)\n", buffer_size);
-	if ((shmptr = mmap (0, buffer_size, PROT_READ | PROT_WRITE, 
+	if ((shmptr = mmap (0, buffer_size, PROT_READ | PROT_WRITE,
 		MAP_ANON | MAP_SHARED, -1, 0)) == MAP_FAILED)
 		sys_error ("mmap failed", __LINE__);
 
 	/*
 	 * Parent:
-	 * 
+	 *
 	 * Fill buffer with data..
 	 */
 	cksum = value = 0;
@@ -220,16 +220,16 @@ int main (int argc, char **argv)
 	for (i=0; i<num_children; i++) {
 		waitpid (pid [i], &status, 0);
 
-		if (!WIFEXITED (status)) 
-			sys_error ("child process terminated abnormally", 
+		if (!WIFEXITED (status))
+			sys_error ("child process terminated abnormally",
 				__LINE__);
 		if (cksum != *(checksum + (sizeof (unsigned long) * i))) {
 			printf ("checksum [%d] = %08lx\n", i, checksum [i]);
-			error ("checksums do not match", __LINE__); 
+			error ("checksums do not match", __LINE__);
 		}
 	}
 	printf ("\n\tParent: children calculated segment successfully\n");
-	/* 
+	/*
 	 * Program completed successfully -- exit
 	 */
 	printf ("\nsuccessful!\n");
@@ -248,7 +248,7 @@ static void child (int num, unsigned char *shmptr)
 	unlock_file (lockfd);
 
 	*(checksum + (sizeof (unsigned long) * num)) = cksum;
-	printf ("\t\tchild (%02d): checksum %08lx\n", num, 
+	printf ("\t\tchild (%02d): checksum %08lx\n", num,
 		*(checksum + (sizeof (unsigned long) * num)));
 }
 
@@ -317,7 +317,7 @@ void handler (int sig, int code, struct sigcontext *scp)
 
 			cleanup ();
 		}
-		else 
+		else
 			exit (-1);
 	} else {
 		sprintf (msg, "Received an unexpected signal (%d)", sig);
@@ -340,7 +340,7 @@ void cleanup ()
 
 	if (getpid () == parent_pid) {
 		for (i=0; i<num_children; i++) {
-			if (pid [i] > (pid_t)0 && kill (pid [i], SIGKILL) < 0) 
+			if (pid [i] > (pid_t)0 && kill (pid [i], SIGKILL) < 0)
 				sys_error ("signal failed", __LINE__);
 		}
 	}

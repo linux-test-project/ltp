@@ -29,7 +29,7 @@
  *	4.	EFAULT
  *	5.	EACCES
  *	6.	ENOEXEC
- * 
+ *
  * ALGORITHM
  *	1.	Attempt to execve(2) a file whose name is more than
  *		VFS_MAXNAMLEN fails with ENAMETOOLONG.

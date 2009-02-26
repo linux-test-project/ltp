@@ -106,7 +106,7 @@ static	testcase	testcases[] = {
 	/* Test case: start boundary */
 	/* #5 Parent making a write lock on entire file */
 	{ F_WRLCK, 0, 0L, 0L, SKIP, 0, 0L, 0L,
-	/* 
+	/*
 	 * Child attempting a read lock from beginning of
 	 * file for 5 bytes
 	 */
@@ -114,15 +114,15 @@ static	testcase	testcases[] = {
 
 	/* #6 Parent making a write lock on entire file */
 	{ F_WRLCK, 0, 0L, 0L, SKIP, 0, 0L, 0L,
-	/* 
+	/*
 	 * Child attempting a write lock from beginning of
-	 * file for 5 bytes 
+	 * file for 5 bytes
 	 */
 		 F_WRLCK, 0, 0L, 5L, WILLBLOCK },
 
 	/* #7 Parent making a read lock on entire file */
 	{ F_RDLCK, 0, 0L, 0L, SKIP, 0, 0L, 0L,
-	/* 
+	/*
 	 * Child attempting a read lock from beginning of
 	 * file for 5 bytes
 	 */
@@ -130,7 +130,7 @@ static	testcase	testcases[] = {
 
 	/* #8 Parent making a read lock on entire file */
 	{ F_RDLCK, 0, 0L, 0L, SKIP, 0, 0L, 0L,
-	/* 
+	/*
 	 * Child attempting a write lock from beginning of
 	 * file for 5 bytes
 	 */
@@ -158,12 +158,12 @@ static	testcase	testcases[] = {
 		F_WRLCK, 0, 7L, 0L, WILLBLOCK },
 
 	/* Test cases: entire boundary ( less than entire file) */
-	/* 
+	/*
 	 * #13 Parent making a write lock from beginning of
 	 * file for 5 bytes
 	 */
 	{ F_WRLCK, 0, 0L, 5L, SKIP, 0, 0L, 0L,
-	/* 
+	/*
 	 * Child attempting a read lock from beginning of
 	 * file for 5 bytes
 	 */
@@ -185,7 +185,7 @@ static	testcase	testcases[] = {
 	 * file for 5 bytes
 	 */
 	{ F_RDLCK, 0, 0L, 5L, SKIP, 0, 0L, 0L,
-	/* 
+	/*
 	 * Child attempting a read lock from beginning of
 	 * file for 5 bytes
 	 */
@@ -244,7 +244,7 @@ static	testcase	testcases[] = {
 	/* Child attempting a read lock from byte 3 to byte 7 */
 		F_RDLCK, 0, 2L, 5L, WILLBLOCK },
 
-	/* 
+	/*
 	 * #22 Parent making a write lock from beginning
 	 * of file for 5 bytes
 	 */
@@ -346,7 +346,7 @@ static	testcase	testcases[] = {
 		F_WRLCK, 0, 2L, 5L, WILLBLOCK },
 
 	/* Start of negative L_start and L_len test cases */
-	/* 
+	/*
 	 * #37 Parent making write lock from byte 2 to byte 3
 	 * with L_start = -3
 	 */
@@ -999,7 +999,7 @@ int main(int ac, char **av)
 
 	setup();			/* global setup */
 
-	/* 
+	/*
          * check if the current filesystem is nfs
          */
         if(tst_is_cwd_nfs()) {
@@ -1015,7 +1015,7 @@ int main(int ac, char **av)
 /* //block1: */
 		tst_resm(TINFO, "Enter block 1: without mandatory locking");
 		fail = 0;
-		/* 
+		/*
 	 	 * try various file locks on an ordinary file without
 		 * mandatory locking
 		 */
@@ -1041,7 +1041,7 @@ int main(int ac, char **av)
 /* //block2: */
 		tst_resm(TINFO, "Enter block 2: with mandatory locking");
 		fail = 0;
-		/* 
+		/*
 		 * Try various locks on a file with mandatory record locking
 		 * this should behave the same as an ordinary file
 		 */

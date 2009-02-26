@@ -29,7 +29,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: symlink01.c,v 1.14 2009/02/26 11:48:09 subrata_modak Exp $ */
+/* $Id: symlink01.c,v 1.15 2009/02/26 12:05:44 subrata_modak Exp $ */
 /**********************************************************
 * 
 *    OS Test - Silicon Graphics, Inc.
@@ -195,7 +195,7 @@
 *         3. Create symbolic link with path to an existing object file
 *         4. Receive EEXIST error when creating an already existing symbolic link file.
 *         5. Receive ENAMETOOLONG error when creating symbolic link which exceeds PATH_MAX in length
-* 
+*
 *       For readlink
 *
 *         1. Read a symbolic link file which points at no object file
@@ -203,15 +203,15 @@
 *         3. Receive ENAMETOOLONG error when reading symbolic link which exceeds PATH_MAX in length
 *         4. Receive an EINVAL error when reading a file which is not a symbolic
 *            link file.
-* 
+*
 *       For stat
-* 
+*
 *         1. Get object file status through symbolic link file
 *         2. Receive ENOENT error when accessing non-existent object file through symbolic link file
 *         3. Receive ELOOP error when nesting of symbolic links exceed maximum
 *
 *       For lstat
-* 
+*
 *         1. Get symbolic link file status when pointing at no object file
 *         2. Get symbolic link file status when pointing at an object file
 *         3. Get object file status when argument is not a symbolic link
@@ -220,19 +220,19 @@
 *       For mkdir
 *
 *         1. Receive EEXIST error when creating a directory through a symbolic link file
-* 
+*
 *       For rmdir
 *
 *         1. Receive ENOTDIR error when removing an existing directory through a symbolic link file
-* 
+*
 *       For chdir
 *
 *         1. Change current working directory through a symbolic link file
 *         2. Receive ENOENT error when accessing non-existent directory through symbolic link file
 *         3. Receive ELOOP error when nesting of symbolic links exceed maximum
-* 
+*
 *       For link
-* 
+*
 *         1. Link an object file to a new file through symbolic link file
 *         2. Receive ENOENT error when accessing non-existent object file through symbolic link file
 *         3. Receive ELOOP error when nesting of symbolic links exceed maximum
@@ -240,19 +240,19 @@
 *       For unlink
 *
 *         1. Delete a symbolic link file and not the object file which it points at
-* 
+*
 *       For chmod
-* 
+*
 *         1. Change file permissions of object file through a symbolic link file
 *         2. Receive ENOENT error when accessing non-existent directory through symbolic link file
 *         3. Receive ELOOP error when nesting of symbolic links exceed maximum
-* 
+*
 *       For utime
 *
 *         1. Change inode times of object file through a symbolic link file
 *         2. Receive ENOENT error when accessing non-existent directory through symbolic link file
 *         3. Receive ELOOP error when nesting of symbolic links exceed maximum
-* 
+*
 *       For rename
 *
 *         1. Rename a symbolic link file which points at no object file
@@ -269,7 +269,7 @@
 *
 *    ENVIRONMENTAL NEEDS
 *	None
-* 
+*
 *    DETAILED DESCRIPTION
 *
 *       Self-documenting code so see below
@@ -344,8 +344,8 @@ void do_open();
  */
 char *msgs[] = {
  "Creation of symbolic link file to no object file is ok",
- "Creation of symbolic link file and object file via symbolic link is ok", 
- "Creating an existing symbolic link file error is caught", 
+ "Creation of symbolic link file and object file via symbolic link is ok",
+ "Creating an existing symbolic link file error is caught",
  "Creating a symbolic link which exceeds maximum pathname error is caught",
  "Reading of symbolic link file contents checks out ok",
  "Reading a symbolic link which exceeds maximum pathname error is caught",
@@ -353,10 +353,10 @@ char *msgs[] = {
  "Stat(2) error when accessing non-existent object through symbolic link is caught",
  "lstat(2) of symbolic link file which points to no object file is ok",
  "lstat(2) of symbolic link file which points at an object file is ok",
- "mkdir(2) of object file through symbolic link file failed as expected", 
- "rmdir(2) of object file through symbolic link file failed as expected", 
- "chdir(2) to object file location through symbolic link file is ok", 
- "chdir(2) to non-existent object file location through symbolic link file failed as expected", 
+ "mkdir(2) of object file through symbolic link file failed as expected",
+ "rmdir(2) of object file through symbolic link file failed as expected",
+ "chdir(2) to object file location through symbolic link file is ok",
+ "chdir(2) to non-existent object file location through symbolic link file failed as expected",
  "link(2) to a symbolic link, which is pointing to an existing object file worked - file created and link count adjusted",
  "link(2) to a symbolic link, which is pointing to a non-existing object file worked ok - file created and link count adjusted.",
  "unlink(2) of symbolic link file with no object file removal is ok",
@@ -396,7 +396,7 @@ struct all_test_cases
     int (*test_setup)();
     int (*ck_test)();
     char *fn_arg[3];
-    
+   
 } test_objects[] = {
     {SYMLINK, 0, 0, 0, creat_symlink, ck_symlink, {"%bc+eFhi!k", S_FILE, NULL}},
     {SYMLINK, 0, 0, 0, creat_symlink, ck_symlink,  {O_FILE, S_FILE, NULL}},
@@ -618,16 +618,16 @@ char *ptr;
     }
 #endif
 
-    
+   
     for(ctr=0; ctr < (sizeof(all_tcses)/sizeof(struct tcses)); ctr++) {
-       if ( strcmp(ptr, all_tcses[ctr].tcid) == 0 || 
+       if ( strcmp(ptr, all_tcses[ctr].tcid) == 0 ||
 	    strcmp(ptr, all_tcses[ctr].syscall) == 0 ) {
           tcs_ptr = &all_tcses[ctr];
 	  TCID = all_tcses[ctr].tcid;
           TST_TOTAL=tcs_ptr->test_cases;
           return(tcs_ptr);
        }
-       
+      
     }
     return NULL;
 }
@@ -684,7 +684,7 @@ char *path1, *path2;
 	"symlink(2) Failure when creating setup %s object file: errno:%d %s",
 	path1, errno, strerror(errno));
       return 0;
-   } 
+   }
    else {
 	sprintf(Buf, "symlink(%s, %s) was succesful.\n", path1, path2);
 	strcat(Buffer, Buf);
@@ -713,7 +713,7 @@ char *path1;
 	"creat(2) Failure when creating setup %s object file: errno:%d %s",
 	path1, errno, strerror(errno));
       return 0;
-   } 
+   }
    else {
 	sprintf(Buf, "creat(%s, %#o) was succesful.\n", path1, MODE);
 	strcat(Buffer, Buf);
@@ -817,7 +817,7 @@ char *path1, *path2, *path3;
       return 0;
    }
    return 1;
-   
+  
 }
 
 /***********************************************************************
@@ -910,7 +910,7 @@ char *path1, *path2, *path3;
     }
     else if (ret == 1) {
        TEST_RESULT=TFAIL;
-       sprintf(test_msg, 
+       sprintf(test_msg,
 	   "lstat(2) detected a regular object file as a symbolic link file");
        return 0;
     }
@@ -925,7 +925,7 @@ char *path1, *path2, *path3;
        sprintf(test_msg,
 	   "lstat(2) and stat(2) do not return same inode information for an object file");
        return 0;
-        
+       
     }
     return 1;
 }
@@ -968,7 +968,7 @@ struct tcses *tcs;
        }
        TEST_RESULT=TPASS;
        delete_files(S_FILE, O_FILE);
-       /* 
+       /*
         * Perform test case setup
         */
        ret = (tc_ptr->test_setup)(tc_ptr->fn_arg[0], tc_ptr->fn_arg[1],
@@ -977,7 +977,7 @@ struct tcses *tcs;
        /* If an expected error, try it out */
 
        if (tc_ptr->test_fail) {
-          /* 
+          /*
            * Try to perform test verification function
            */
           if (! (tc_ptr->ck_test)(tc_ptr->fn_arg[0], tc_ptr->fn_arg[1],
@@ -1001,11 +1001,11 @@ struct tcses *tcs;
              tst_resm(TBROK, "Test Case Declaration Error");
        }
        else if (ret == 1) {  /*  No setup function error */
- 
+
           if (tc_ptr->errno_val != 0)
              tst_resm(TBROK, "Test Case Declaration Error");
           else {
-             /* 
+             /*
               * Perform test verification function
               */
              ret=(tc_ptr->ck_test)(tc_ptr->fn_arg[0], tc_ptr->fn_arg[1],
@@ -1014,10 +1014,10 @@ struct tcses *tcs;
              /* Perform requested symbolic link system call test */
 
              if ((cktcsid(tc_ptr->tcid, SYMLINK)) ||
-			(cktcsid(tc_ptr->tcid, LSTAT)) || 
+			(cktcsid(tc_ptr->tcid, LSTAT)) ||
 				(cktcsid(tc_ptr->tcid, LSTAT_64))) {
                 if (ret == 1)
-                   tst_resm(TEST_RESULT, msgs[tc_ptr->pass_msg]);   
+                   tst_resm(TEST_RESULT, msgs[tc_ptr->pass_msg]);  
                 else
                    tst_resm(TEST_RESULT, test_msg);
              }
@@ -1125,7 +1125,7 @@ void
 do_ENOENT(tc_ptr)
 struct all_test_cases *tc_ptr;
 {
-     if ((cktcsid(tc_ptr->tcid, STAT)) || 
+     if ((cktcsid(tc_ptr->tcid, STAT)) ||
              (cktcsid(tc_ptr->tcid, STAT_64))){
 
         if ((stat(tc_ptr->fn_arg[1], &asymlink) == -1) && (errno == ENOENT))
@@ -1220,7 +1220,7 @@ void
 do_ELOOP(tc_ptr)
 struct all_test_cases *tc_ptr;
 {
-     if ((cktcsid(tc_ptr->tcid, STAT)) || 
+     if ((cktcsid(tc_ptr->tcid, STAT)) ||
              (cktcsid(tc_ptr->tcid, STAT_64))){
 
 	TEST( stat(tc_ptr->fn_arg[1], &asymlink) );
@@ -1432,7 +1432,7 @@ struct all_test_cases *tc_ptr;
 
 	ret=readlink(full_path, scratch, strlen(full_path));
         if (( ret == -1) && (errno == ENAMETOOLONG))
-	   if ( TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST  ) 
+	   if ( TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST  )
                tst_resm(TEST_RESULT, msgs[tc_ptr->pass_msg]);
 	   else
 		Tst_count++;
@@ -1508,7 +1508,7 @@ struct all_test_cases *tc_ptr;
         /* Must null terminate scratch because readlink(2) doesn't */
 
         scratch[strlen(tc_ptr->fn_arg[0])] = '\0';
- 
+
         tst_resm(TFAIL,
 	   "readlink(2) Error : Expected %s symbolic link file contents but %s actual contents were returned",
 	   tc_ptr->fn_arg[0], scratch);
@@ -1673,7 +1673,7 @@ struct all_test_cases *tc_ptr;
                 } else {
 		   lstat(tc_ptr->fn_arg[2], &stbuf);
 
-                   tst_resm(TFAIL, 
+                   tst_resm(TFAIL,
 		       "%slink(%s, %s) failed to adjust link count.\n\
 		count for nick is %d, count for %s is %d, count for %s is %d.",
 		       Buffer, tc_ptr->fn_arg[1], "nick",
@@ -1681,7 +1681,7 @@ struct all_test_cases *tc_ptr;
 			tc_ptr->fn_arg[2], stbuf.st_nlink);
 		}
 	    } else {
-		tst_resm(TFAIL, 
+		tst_resm(TFAIL,
 		    "%sA lstat of %s (ino:%d) and of\n\t\t\
 %s (ino:%d), does not show them being the same ino.", Buffer,
 		   tc_ptr->fn_arg[1], asymlink.st_ino, "nick", statter.st_ino);
@@ -1748,12 +1748,12 @@ struct all_test_cases *tc_ptr;
     if (stat(tc_ptr->fn_arg[2], &asymlink) == -1)
         tst_resm(TBROK,
 	    "stat(2) Failure when accessing %s object file", tc_ptr->fn_arg[2]);
-    else if (chmod(tc_ptr->fn_arg[1], (MODE | MASK)) == -1) 
+    else if (chmod(tc_ptr->fn_arg[1], (MODE | MASK)) == -1)
         tst_resm(TFAIL, "%s%s %s", Buffer,
 	    "chmod(2) failed when changing file permission",
 	    "through symbolic link file");
-    else { 
-	sprintf(Buf, "chmod(%s, %#o) was successful\n", tc_ptr->fn_arg[1], 
+    else {
+	sprintf(Buf, "chmod(%s, %#o) was successful\n", tc_ptr->fn_arg[1],
 		(MODE | MASK));
 	strcat(Buffer, Buf);
 
@@ -1797,7 +1797,7 @@ struct all_test_cases *tc_ptr;
 
         utimes.actime = asymlink.st_atime + a_time_value;
         utimes.modtime = asymlink.st_mtime + a_time_value;
-       
+      
         /* Now hand off to utime(2) via symbolic link file*/
 
         if (utime(tc_ptr->fn_arg[1], &utimes) == -1)
@@ -1817,7 +1817,7 @@ struct all_test_cases *tc_ptr;
               temp = statter.st_atime - asymlink.st_atime;
               diff = (statter.st_mtime - asymlink.st_mtime) - temp;
 
-              if (! diff) 
+              if (! diff)
 		 if ( TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST  )
                      tst_resm(TEST_RESULT, msgs[tc_ptr->pass_msg]);
 		 else
@@ -1845,7 +1845,7 @@ struct all_test_cases *tc_ptr;
 {
      int pts_at_object = 0;
 
-     
+    
      if (stat(tc_ptr->fn_arg[2], &statter) != -1)
         pts_at_object=1;
 
@@ -1862,7 +1862,7 @@ struct all_test_cases *tc_ptr;
 		Tst_count++;
         else
            tst_resm(TFAIL, test_msg);
-     else if ( ! ck_symlink(tc_ptr->fn_arg[0], A_S_FILE, NULL)) 
+     else if ( ! ck_symlink(tc_ptr->fn_arg[0], A_S_FILE, NULL))
         tst_resm(TFAIL, test_msg);
      else if (stat(tc_ptr->fn_arg[1], &asymlink) != -1)
         tst_resm(TFAIL,
@@ -1889,7 +1889,7 @@ struct all_test_cases *tc_ptr;
      int ret, pts_at_object = 0;
      char scratch[PATH_MAX];
 
-     
+    
      if (stat(tc_ptr->fn_arg[2], &statter) != -1)
         pts_at_object=1;
 

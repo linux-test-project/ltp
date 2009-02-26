@@ -111,7 +111,7 @@ mkfile(int  *size) 		/* size of the file to be generated in GB     */
     char template[PATH_MAX];    /* template for temp file name                */
 
     /* fill the buffer with a's and open a temp file */
-    memset(buff, 'a', 4096); 
+    memset(buff, 'a', 4096);
     snprintf(template, PATH_MAX, "ashfileXXXXXX");
     if ((fd = mkstemp(template)) == -1)
     {
@@ -133,7 +133,7 @@ mkfile(int  *size) 		/* size of the file to be generated in GB     */
 	    return -1;
 	}
     }
-    
+   
     /* make sure a's are written to the file. */
     if (fsync(fd) == -1)
     {
@@ -209,7 +209,7 @@ set_timer(float run_time)         /* period for which test is intended to run   
 /******************************************************************************/
 static void
 usage(char *progname)           /* name of this program                       */{
-    fprintf(stderr, 
+    fprintf(stderr,
                "Usage: %s -h -l -n -p -x\n"
                "\t -h help, usage message.\n"
                "\t -l number of map - write - unmap.    default: 1000\n"
@@ -237,7 +237,7 @@ usage(char *progname)           /* name of this program                       */
 /*              MWU_SUCCESS on error less completion of the loop.             */
 /*									      */
 /******************************************************************************/
-void * 
+void *
 map_write_unmap(void *args)	/* file descriptor of the file to be mapped.  */
 {
     int	    fsize;		/* size of the file to be created.	      */
@@ -254,15 +254,15 @@ map_write_unmap(void *args)	/* file descriptor of the file to be mapped.  */
         {
             fprintf(stderr,
             	"main(): mkfile(): Failed to create temp file.\n");
-	    pthread_exit((void *)-1); 
+	    pthread_exit((void *)-1);
         }
 
         if ((int)mwuargs[1])
 	    map_type = MAP_PRIVATE;
 	else
 	    map_type = MAP_SHARED;
-        if ((map_address = mmap(0, (size_t)fsize,  PROT_WRITE|PROT_READ, 
-				map_type, (int)fd, 0)) 
+        if ((map_address = mmap(0, (size_t)fsize,  PROT_WRITE|PROT_READ,
+				map_type, (int)fd, 0))
 			 == (caddr_t *) -1)
         {
             perror("map_write_unmap(): mmap()");
@@ -271,7 +271,7 @@ map_write_unmap(void *args)	/* file descriptor of the file to be mapped.  */
 
         memset(map_address, 'A', fsize);
 
-        fprintf(stdout, 
+        fprintf(stdout,
 		"Map address = %p\nNum iter: [%d]\nTotal Num Iter: [%d]",
 		map_address, mwu_ndx, (int)mwuargs[0]);
 	usleep(1);
@@ -317,7 +317,7 @@ main(int  argc,		/* number of input parameters.			      */
     struct sigaction sigptr;	/* set up signal, for interval timer          */
     int          map_private =  /* if TRUE mapping is private, ie, MAP_PRIVATE*/
 			       FALSE;
-    
+   
     static struct signal_info
     {
         int  signum;    /* signal number that hasto be handled                */        char *signame;  /* name of the signal to be handled.                  */    } sig_info[] =
@@ -391,7 +391,7 @@ main(int  argc,		/* number of input parameters.			      */
 		    "\tDuration of test: [%f]hrs\n"
 		    "\tNumber of threads created: [%d]\n"
 		    "\tnumber of map-write-unmaps: [%d]\n"
- 		    "\tmap_private?(T=1 F=0): [%d]\n\n\n\n", exec_time, 
+ 		    "\tmap_private?(T=1 F=0): [%d]\n\n\n\n", exec_time,
 			num_thrd, num_iter, map_private);
 
     for(;;)
@@ -399,7 +399,7 @@ main(int  argc,		/* number of input parameters.			      */
         /* create num_thrd number of threads. */
         for (thrd_ndx = 0; thrd_ndx<num_thrd; thrd_ndx++)
         {
-            if (pthread_create(&thid[thrd_ndx], NULL, map_write_unmap, 
+            if (pthread_create(&thid[thrd_ndx], NULL, map_write_unmap,
 			chld_args))
             {
                 perror("main(): pthread_create()");
@@ -420,7 +420,7 @@ main(int  argc,		/* number of input parameters.			      */
             {
                 if (status)
                 {
-                    fprintf(stderr, 
+                    fprintf(stderr,
 			    "thread [%d] - process exited with errors %d\n",
 			        WEXITSTATUS(status), status);
 	            exit(-1);

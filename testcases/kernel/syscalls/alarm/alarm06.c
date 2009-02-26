@@ -61,7 +61,7 @@
  *
  * RESTRICTIONS:
  *  None.
- * 
+ *
  */
 
 #include <stdio.h>
@@ -93,7 +93,7 @@ main(int ac, char **av)
 	int ret_val1, ret_val2;	/* return values for alarm() calls */
 	int sleep_time1 = 5;	/* waiting time for the 1st signal */
 	int sleep_time2 = 10;	/* waiting time for the 2nd signal */
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
 	if (msg != (char *)NULL) {
@@ -108,8 +108,8 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 
-		/* 
-		 * Call First alarm() with non-zero time parameter 
+		/*
+		 * Call First alarm() with non-zero time parameter
 		 * 'time_sec1' to send SIGALRM to the calling process.
 		 */
 		TEST(alarm(time_sec1));
@@ -161,7 +161,7 @@ main(int ac, char **av)
  * setup() - performs all ONE TIME setup for this test.
  *  Setup signal handler to catch SIGALRM.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -195,7 +195,7 @@ sigproc(int sig)
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

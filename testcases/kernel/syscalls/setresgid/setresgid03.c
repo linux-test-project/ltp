@@ -15,17 +15,17 @@
  *
  */
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER   : setresgid03
- * 
+ *
  *    EXECUTED BY       : root / superuser
- * 
+ *
  *    TEST TITLE        : Checking error conditions for setresgid(2)
- * 
+ *
  *    TEST CASE TOTAL   : 4
- * 
+ *
  *    AUTHOR            : Madhu T L <madhu.tarikere@wipro.com>
- * 
+ *
  *    SIGNALS
  *      Uses SIGUSR1 to pause before test if option set.
  *      (See the parse_opts(3) man page).
@@ -40,7 +40,7 @@
  *	   real group id.
  *	4. setresgid(2) fails with EPERM for unprivileged user in setting
  *	   real/effective/saved group id.
- * 
+ *
  *      Setup:
  *	  Setup signal handling.
  *	  Test caller is superuser
@@ -48,7 +48,7 @@
  *	  Set real/effective/saved gid to nobody
  *	  Set effective uid to nobody
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  *	Test:
  *	 Loop if the proper options are given.
  *	  Execute system call
@@ -56,10 +56,10 @@
  *		 Issue PASS message
  *	Otherwise,
  *		Issue FAIL message
- * 
+ *
  *	Cleanup:
  *	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  *  setresgid03 [-c n] [-e] [-f] [-h] [-i n] [-I x] [-p] [-P x] [-t]
  *		where,  -c n : Run n copies concurrently.
@@ -71,7 +71,7 @@
  *			-p   : Pause for SIGUSR1 before starting
  *			-P x : Pause for x seconds between iterations.
  *			-t   : Turn on syscall timing.
- * 
+ *
  ****************************************************************/
 
 #define _GNU_SOURCE 1
@@ -179,7 +179,7 @@ test_functionality(uid_t exp_rgid, uid_t exp_egid, uid_t exp_sgid)
 {
 	uid_t cur_rgid, cur_egid, cur_sgid;
 
-	/* 
+	/*
 	 * Perform functional verification, if STD_FUNCTIONAL_TEST is
 	 * set (-f options is not used)
 	 */

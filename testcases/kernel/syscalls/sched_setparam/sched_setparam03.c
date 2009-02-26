@@ -15,29 +15,29 @@
  *
  */
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER	: sched_setparam03
- * 
+ *
  *    EXECUTED BY	: root / superuser
- * 
+ *
  *    TEST TITLE	: Checks functionality for sched_setparam(2) for pid!=0
- * 
+ *
  *    TEST CASE TOTAL	: 1
- * 
+ *
  *    AUTHOR		: Saji Kumar.V.R <saji.kumar@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
  *
  *    DESCRIPTION
  *	This test forks a child & changes its parent's scheduling priority
- * 
+ *
  * 	Setup:
  * 	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
  *	  Change scheduling policy to SCHED_FIFO
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  *	 Fork a child
@@ -50,10 +50,10 @@
  *		TEST passed
  *	  else
  *		TEST failed
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  *  sched_setparam03 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
  *			where,  -c n : Run n copies concurrently.
@@ -111,12 +111,12 @@ main(int ac, char **av)
 		Tst_count = 0;
 
 		switch(child_pid = FORK_OR_VFORK()) {
- 
+
 		case -1:
 			/* fork() failed */
 			tst_resm(TFAIL, "fork() failed");
 			continue;
- 
+
 		case 0:
 			/* Child */
 

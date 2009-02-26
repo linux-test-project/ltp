@@ -21,7 +21,7 @@
  * Test Name: hugemmap04
  *
  * Test Description:
- *  Verify that, a hugetlb mmap() succeeds when used to map the largest size possible. 
+ *  Verify that, a hugetlb mmap() succeeds when used to map the largest size possible.
  *
  * Expected Result:
  *  mmap() should succeed returning the address of the hugetlb mapped region.
@@ -73,7 +73,7 @@
 #include "test.h"
 #include "usctest.h"
 
-#define BUFFER_SIZE  256 
+#define BUFFER_SIZE  256
 
 char* TEMPFILE="mmapfile";
 
@@ -153,7 +153,7 @@ main(int ac, char **av)
 		if ( freepages > 128 )
 		  freepages=128;
 #endif
-		/* 
+		/*
 		 * Call mmap
 		 */
 		errno = 0;
@@ -206,7 +206,7 @@ main(int ac, char **av)
  * 	     Creat a temporary directory and a file under it.
  * 	     Write some known data into file and get the size of the file.
  */
-void 
+void
 setup()
 {
 	char mypid[40];
@@ -235,7 +235,7 @@ getfreehugepages()
 	char buff[BUFFER_SIZE];
 
         f = fopen("/proc/meminfo", "r");
-	if (!f) 	 
+	if (!f) 	
      		tst_brkm(TFAIL, cleanup, "Could not open /proc/meminfo for reading");
 
 	while(fgets(buff,BUFFER_SIZE, f) != NULL){
@@ -243,8 +243,8 @@ getfreehugepages()
 			break;
 	}
 
-        if (retcode != 1) { 	 
-        	fclose(f); 	 
+        if (retcode != 1) { 	
+        	fclose(f); 	
        		tst_brkm(TFAIL, cleanup, "Failed reading number of huge pages free.");
      	}	
 	fclose(f);	
@@ -263,7 +263,7 @@ get_huge_pagesize()
 	char buff[BUFFER_SIZE];
 
         f = fopen("/proc/meminfo", "r");
-	if (!f) 	 
+	if (!f) 	
      		tst_brkm(TFAIL, cleanup, "Could not open /proc/meminfo for reading");
 
 	while(fgets(buff,BUFFER_SIZE, f) != NULL){
@@ -271,8 +271,8 @@ get_huge_pagesize()
 			break;
 	}
 
-        if (retcode != 1) { 	 
-        	fclose(f); 	 
+        if (retcode != 1) { 	
+        	fclose(f); 	
        		tst_brkm(TFAIL, cleanup, "Failed reading size of huge page.");
      	}	
 	fclose(f);	
@@ -284,7 +284,7 @@ get_huge_pagesize()
  *             completion or premature exit.
  * 	       Remove the temporary directory created.
  */
-void 
+void
 cleanup()
 {
 	/*

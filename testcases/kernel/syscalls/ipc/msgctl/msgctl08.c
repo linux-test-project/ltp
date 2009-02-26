@@ -25,7 +25,7 @@
  *	msgctl08
  *
  * CALLS
- *	msgget(2) msgctl(2) 
+ *	msgget(2) msgctl(2)
  *
  * ALGORITHM
  *	Get and manipulate a message queue.
@@ -74,7 +74,7 @@ int exp_enos[]={0};     /* List must end with 0 */
 #define FAIL		1
 #define PASS		0
 
-key_t	keyarray[MAXNPROCS];    
+key_t	keyarray[MAXNPROCS];   
 
 struct {
 	long	type;
@@ -175,7 +175,7 @@ char	*argv[];
 	act.sa_handler = sig_handler;
 	sigemptyset(&act.sa_mask);
 	sigaddset(&act.sa_mask, SIGTERM);
-	if (sigaction(SIGTERM, &act, NULL) < 0) 
+	if (sigaction(SIGTERM, &act, NULL) < 0)
 	{
                 tst_resm(TFAIL, "Sigset SIGTERM failed");
                 tst_exit();
@@ -183,22 +183,22 @@ char	*argv[];
 	/* Set up array of unique keys for use in allocating message
 	 * queues
 	 */
-	for (i = 0; i < nprocs; i++) 
+	for (i = 0; i < nprocs; i++)
 	{
 		ok = 1;
-		do 
+		do
 		{
 			/* Get random key */
 			keyarray[i] = (key_t)rand();
 			/* Make sure key is unique and not private */
-			if (keyarray[i] == IPC_PRIVATE) 
+			if (keyarray[i] == IPC_PRIVATE)
 			{
 				ok = 0;
 				continue;
 			}
-			for (j = 0; j < i; j++) 
+			for (j = 0; j < i; j++)
 			{
-				if (keyarray[j] == keyarray[i]) 
+				if (keyarray[j] == keyarray[i])
 				{
 					ok = 0;
 					break;
@@ -207,23 +207,23 @@ char	*argv[];
 			}
 		} while (ok == 0);
 	}
-	 
+	
 	/* Fork a number of processes, each of which will
 	 * create a message queue with one reader/writer
 	 * pair which will read and write a number (iterations)
 	 * of random length messages with specific values.
 	 */
 
-	for (i = 0; i <  nprocs; i++) 
+	for (i = 0; i <  nprocs; i++)
 	{
 		fflush(stdout);
-		if ((pid = FORK_OR_VFORK()) < 0) 
+		if ((pid = FORK_OR_VFORK()) < 0)
 		{
 	                tst_resm(TFAIL, "\tFork failed (may be OK if under stress)");
         	        tst_exit();
 		}
 		/* Child does this */
-		if (pid == 0) 
+		if (pid == 0)
 		{
 #ifdef UCLINUX
 			if (self_exec(argv[0], "ndd", 1, keyarray[i], i) < 0)
@@ -270,7 +270,7 @@ char	*argv[];
 	}
 
         tst_resm(TPASS,"msgctl08 ran successfully!");
-	 
+	
 	cleanup();
         return (0);
 								
@@ -309,7 +309,7 @@ int	child_process;
 	sigrelse(SIGTERM);
 
 	fflush(stdout);
-	if ((pid = FORK_OR_VFORK()) < 0) 
+	if ((pid = FORK_OR_VFORK()) < 0)
 	{
                 tst_resm(TWARN, "\tFork failed (may be OK if under stress)");
 		TEST(msgctl(tid, IPC_RMID, 0));
@@ -320,7 +320,7 @@ int	child_process;
        	        tst_exit();
 	}
 	/* Child does this */
-	if (pid == 0) 
+	if (pid == 0)
 	{
 #ifdef UCLINUX
 		if (self_exec(argv0, "nddd", 2, id, key, child_process) < 0) {
@@ -357,20 +357,20 @@ long key;
 {
 	int i, size;
 
-	for (i = 0; i < nreps; i++) 
+	for (i = 0; i < nreps; i++)
 	{
-		if ((size = msgrcv(id, &buffer, 100, 0, 0)) < 0) 
+		if ((size = msgrcv(id, &buffer, 100, 0, 0)) < 0)
 		{
                 	tst_brkm(TBROK, cleanup, "Msgrcv error in child %d, read # = %d, errno = %d", (i + 1), child, errno);
 	       	        tst_exit();
 		}
-		if (buffer.data.len + 1 != size)  
+		if (buffer.data.len + 1 != size) 
 		{
         	       	tst_resm(TFAIL, "Size mismatch in child %d, read # = %d", child, (i + 1));
         	       	tst_resm(TFAIL, "for message size got  %d expected  %d %s",size ,buffer.data.len);
 	       	        tst_exit();
 		}
-		if ( verify(buffer.data.pbytes, key, size - 1, child) ) 
+		if ( verify(buffer.data.pbytes, key, size - 1, child) )
 		{
                 	tst_resm(TFAIL, "in read # = %d,key =  %x", (i + 1), child, key);
 	       	        tst_exit();
@@ -386,9 +386,9 @@ long key;
 {
 	int i, size;
 
-	for (i = 0; i < nreps; i++) 
+	for (i = 0; i < nreps; i++)
 	{
-		do 
+		do
 		{
 			size = (rand() % 99);
 		} while (size == 0);
@@ -464,12 +464,12 @@ setup()
 	int nr_msgqs;
 
 	tst_tmpdir();
- 
+
         /* You will want to enable some signal handling so you can capture
 	 * unexpected signals like SIGSEGV.
 	 */
         tst_sig(FORK, DEF_HANDLER, cleanup);
- 
+
 
         /* Pause if that option was specified */
         /* One cavet that hasn't been fixed yet.  TEST_PAUSE contains the code to
@@ -485,7 +485,7 @@ setup()
 	nr_msgqs -= get_used_msgqueues();
 	if (nr_msgqs <= 0){
 		tst_resm(TBROK,"Max number of message queues already used, cannot create more.");
-		cleanup(); 
+		cleanup();
 	}	
 
 	/*

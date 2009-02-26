@@ -20,9 +20,9 @@
 /*
  * Test Name: hugemmap03
  *
- * Test Description: Test that a normal page cannot be mapped into a high 
+ * Test Description: Test that a normal page cannot be mapped into a high
  * memory region.
- * 
+ *
  * Usage:  <for command-line>
  *  hugemmap03 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
@@ -153,7 +153,7 @@ main(int ac, char **av)
  * 	     Creat a temporary directory and a file under it.
  * 	     Write some known data into file and get the size of the file.
  */
-void 
+void
 setup()
 {
 	char mypid[40];
@@ -176,7 +176,7 @@ setup()
  *             completion or premature exit.
  * 	       Remove the temporary directory created.
  */
-void 
+void
 cleanup()
 {
 	/*

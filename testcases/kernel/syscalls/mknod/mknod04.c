@@ -21,9 +21,9 @@
  * Test Name: mknod04
  *
  * Test Description:
- *  Verify that mknod(2) succeeds when used to create a filesystem 
+ *  Verify that mknod(2) succeeds when used to create a filesystem
  *  node on a directory with set group-ID bit set.
- *  The node created should not have group-ID bit set and its gid should be 
+ *  The node created should not have group-ID bit set and its gid should be
  *  equal to the effective gid of the process.
  *
  * Expected Result:
@@ -126,7 +126,7 @@ main(int ac, char **av)
 		Tst_count=0;
 
 		/*
-		 * TEST CASE CONDITION: 
+		 * TEST CASE CONDITION:
 		 *  Attempt to create a filesystem node on a directory
 		 *  with group id (sgid) bit set such that,
 		 *  the node created by mknod(2) should not have group id
@@ -203,13 +203,13 @@ main(int ac, char **av)
 }	/* End main */
 
 /*
- * void 
+ * void
  * setup(void) - performs all ONE TIME setup for this test.
  * 	Exit the test program on receipt of unexpected signals.
  *	Create a temporary directory used to hold test directories created
  *	and change the directory to it.
  *	Verify that pid of process executing the test is root.
- *	Create a test directory on temporary directory and set the ownership 
+ *	Create a test directory on temporary directory and set the ownership
  *	of test directory to guest user and process, change mode permissions
  *	to set group-id bit on it.
  *	Set the effective uid/gid of the process to that of guest user.
@@ -223,7 +223,7 @@ setup()
 
 	/* Check that the test process id is super/root  */
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Must be super/root for this test!"); 
+		tst_brkm(TBROK, NULL, "Must be super/root for this test!");
 		tst_exit();
 	}
 
@@ -291,8 +291,8 @@ setup()
 		tst_brkm(TBROK, cleanup, "%s: Incorrect group", DIR_TEMP);
 	}
 	
-   	/* 
-	 * Set the effective group id and user id of the test process 
+   	/*
+	 * Set the effective group id and user id of the test process
 	 * to that of guest user (nobody)
 	 */
 	if (setgid(group1_gid) < 0) {
@@ -344,7 +344,7 @@ cleanup()
 
 	/* Remove files and temporary directory created */
 	tst_rmdir();
-  
+ 
 	/* exit with return code appropriate for results */
 	tst_exit();
 }

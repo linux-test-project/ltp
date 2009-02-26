@@ -51,7 +51,7 @@
 #define DEBUG 0
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h> 
+#include <unistd.h>
 #include <signal.h>
 #include <errno.h>
 #include "test.h"
@@ -127,7 +127,7 @@ main(int ac, char **av)
 	testcase_no = 1;
 
 	if (DEBUG)
-		tst_resm(TINFO, "Enter test %d: set handler for SIGKILL", 
+		tst_resm(TINFO, "Enter test %d: set handler for SIGKILL",
 				testcase_no);
 	if ((ret = set_handler(SIGKILL, 0, 0)) == 0) {
 		tst_resm(TFAIL, "sigaction() succeeded, should have failed");
@@ -143,7 +143,7 @@ main(int ac, char **av)
 	testcase_no++;
 
 	if (DEBUG)
-		tst_resm(TINFO, "Enter test %d: set handler for SIGSTOP", 
+		tst_resm(TINFO, "Enter test %d: set handler for SIGSTOP",
 				testcase_no);
 	if ((ret = set_handler(SIGSTOP, 0, 0)) == 0) {
 		tst_resm(TFAIL, "sigaction() succeeded, should have failed");

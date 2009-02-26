@@ -15,17 +15,17 @@
  *
  */
 /**************************************************************************
- * 
- *    TEST IDENTIFIER	: swapon1 
- * 
+ *
+ *    TEST IDENTIFIER	: swapon1
+ *
  *    EXECUTED BY	: root / superuser
- * 
+ *
  *    TEST TITLE	: Basic test for swapon(2)
- * 
+ *
  *    TEST CASE TOTAL	: 1
- * 
+ *
  *    AUTHOR		: Aniruddha Marathe <aniruddha.marathe@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -33,14 +33,14 @@
  *    DESCRIPTION
  *    This is a Phase I test for the swapon(2) system call.
  *    It is intended to provide a limited exposure of the system call.
- * 
+ *
  * 	Setup:
  *	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
  *	  Create a temporary directory.
  *	  Create file of size 32Mb .
  *	  Make this file as swap file using mkswap(8)
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  *	 Turn on the swapfile to test the system call
@@ -48,10 +48,10 @@
  *	  Check return code, if system call failed (return=-1)
  *		Log the errno and Issue a FAIL message.
  *	  Otherwise, Issue a PASS message.
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  * swapon01 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
  * where:

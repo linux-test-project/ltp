@@ -54,7 +54,7 @@
  */
 #define _GNU_SOURCE 1
 
-/* 
+/*
  * When attempting to build on SUSE 10, the make fails trying to compile
  * because CONFIG_BASE_SMALL is undefined.
  */
@@ -78,7 +78,7 @@
 /*
  * This is a workaround for ppc64 kernels that do not have PID_MAX defined.
  */
-#if defined(__powerpc__) || defined(__powerpc64__) 
+#if defined(__powerpc__) || defined(__powerpc64__)
 #define PID_MAX 0x8000
 #endif
 

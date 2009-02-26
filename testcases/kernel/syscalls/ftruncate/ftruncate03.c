@@ -64,7 +64,7 @@ int main()
    //used for the 2nd test
    //make str > trunc_size characters long
    char str[] = "THIS IS JAYS TEST FILE DATA";
-   int trunc_size = 4; 
+   int trunc_size = 4;
    int flag = O_RDONLY;
 
 #ifdef DEBUG
@@ -88,11 +88,11 @@ int main()
 #endif
    if (wjh_ret == -1 && errno == EINVAL)
    {   tst_resm(TPASS, "Test Passed"); }
-   else 
+   else
    {   tst_resm(TFAIL, "ftruncate(socket)=%i (wanted -1), errno=%i (wanted EINVAL %i)",
                 wjh_ret, errno, EINVAL);
    }
-   close(wjh_f); errno = 0; wjh_ret = 0; wjh_f = -1; 
+   close(wjh_f); errno = 0; wjh_ret = 0; wjh_f = -1;
 
 //TEST2: ftruncate on fd not open for writing should be EINVAL
 
@@ -106,10 +106,10 @@ int main()
    if (wjh_f == -1) { tst_resm(TFAIL, "open(%s) failed: %s", TESTFILE, strerror(errno)); tst_rmdir(); tst_exit(); }
    while (count < strlen(str) )
    {
-      if ((count += write(wjh_f, str, strlen(str))) == -1) 
+      if ((count += write(wjh_f, str, strlen(str))) == -1)
         { tst_resm(TFAIL, "write() failed: %s", strerror(errno)); close(wjh_f); tst_rmdir(); tst_exit(); }
    }
-   close(wjh_f); errno = 0; 
+   close(wjh_f); errno = 0;
 
 //Uncomment below if you want it to succeed, O_RDWR => success
 // flag = O_RDWR;
@@ -135,7 +135,7 @@ int main()
    {   tst_resm(TFAIL, "ftruncate(rd_only_fd)=%i (wanted -1), errno=%i (wanted %i EINVAL)",
                 wjh_ret, errno, EINVAL);
    }
-   close(wjh_f); errno = 0; wjh_ret = 0; wjh_f = -1; 
+   close(wjh_f); errno = 0; wjh_ret = 0; wjh_f = -1;
 
 //TEST3: invalid socket descriptor should fail w/ EBADF
 

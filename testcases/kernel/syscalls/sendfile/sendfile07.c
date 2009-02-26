@@ -176,16 +176,16 @@ setup()
 			if (errno == EAGAIN) {
 				break;
 			} else {
-				tst_brkm(TBROK, cleanup, 
-					 "write failed to fill out_fd, errno: %d", 
+				tst_brkm(TBROK, cleanup,
+					 "write failed to fill out_fd, errno: %d",
 					 errno);
 			}
 		}
 		i--;
 	}
 	if (i == 0) {
-		tst_brkm(TBROK, cleanup, 
-			 "fail to fill out_fd, write %d bytes but EAGAIN it not returned.", 
+		tst_brkm(TBROK, cleanup,
+			 "fail to fill out_fd, write %d bytes but EAGAIN it not returned.",
 			 MAX_FILL_DATA_LENGTH);
 	}
 }

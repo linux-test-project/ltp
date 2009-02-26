@@ -15,17 +15,17 @@
  *
  */
 /**************************************************************************
- * 
- *    TEST IDENTIFIER	: reboot01 
- * 
+ *
+ *    TEST IDENTIFIER	: reboot01
+ *
  *    EXECUTED BY	: root / superuser
- * 
+ *
  *    TEST TITLE	: Basic test for reboot(2)
- * 
+ *
  *    TEST CASE TOTAL	: 2
- * 
+ *
  *    AUTHOR		: Aniruddha Marathe <aniruddha.marathe@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -33,28 +33,28 @@
  *    DESCRIPTION
  *    This is a Phase I test for the reboot(2) system call.
  *    It is intended to provide a limited exposure of the system call.
- *     
- * 
+ *    
+ *
  * 	Setup:
  *	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
  *	  setting the flag value for two tests.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
- *	 for two test cases for two flag values 
+ *	 for two test cases for two flag values
  *	  Execute system call
  *	  Check return code, if system call failed (return=-1)
  *		Log the errno and Issue a FAIL message.
  *	  Otherwise, Issue a PASS message.
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  * reboot01 [-c n] [-e] [-i n] [-I x] [-p x] [-t] [-h] [-f] [-p]
  * where:
- * 	-c n : run the test for n number of times. 
+ * 	-c n : run the test for n number of times.
  *	-e   : Turn on errno logging.
  *	-i n : Execute test n times.
  *	-I x : Execute test for x seconds.
@@ -63,9 +63,9 @@
  *	-t   : Turn on syscall timing.
  *
  *RESTRICTIONS:
- *for lib4 and lib5 reboot(2) system call is implemented as 
+ *for lib4 and lib5 reboot(2) system call is implemented as
  *int reboot(int magic, int magic2, int flag, void *arg); This test case
- *is written for int reboot(int flag); which is implemented under glibc 
+ *is written for int reboot(int flag); which is implemented under glibc
  *Therefore this testcase may not work under libc4 and libc5 libraries
  *****************************************************************************/
 
@@ -84,7 +84,7 @@ int TST_TOTAL = 2;       /* Total number of test cases. */
 extern int Tst_count;    /* Test Case counter for tst_* routines */
 
 static int flag[2] = {LINUX_REBOOT_CMD_CAD_ON, LINUX_REBOOT_CMD_CAD_OFF};
-static const char *option_message[] = {"LINUX_REBOOT_CMD_CAD_ON", 
+static const char *option_message[] = {"LINUX_REBOOT_CMD_CAD_ON",
 					"LINUX_REBOOT_CMD_CAD_OFF"};
 
 int

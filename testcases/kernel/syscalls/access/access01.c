@@ -1,64 +1,64 @@
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
- * 
+ *
  * This program is distributed in the hope that it would be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * 
+ *
  * Further, this software is distributed without any warranty that it is
  * free of the rightful claim of any third person regarding infringement
  * or the like.  Any license provided herein, whether implied or
  * otherwise, applies only to this software file.  Patent licenses, if
  * any, provided herein do not apply to combinations of this program with
  * other software, or any other product whatsoever.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston MA 02111-1307, USA.
- * 
+ *
  * Contact information: Silicon Graphics, Inc., 1600 Amphitheatre Pkwy,
  * Mountain View, CA  94043, or:
- * 
- * http://www.sgi.com 
- * 
- * For further information regarding this notice, see: 
- * 
+ *
+ * http://www.sgi.com
+ *
+ * For further information regarding this notice, see:
+ *
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: access01.c,v 1.3 2006/02/11 04:46:33 vapier Exp $ */
+/* $Id: access01.c,v 1.4 2009/02/26 12:02:32 subrata_modak Exp $ */
 /**********************************************************
- * 
+ *
  *    OS Test - Silicon Graphics, Inc.
- * 
+ *
  *    TEST IDENTIFIER	: access01
- * 
+ *
  *    EXECUTED BY	: anyone
- * 
+ *
  *    TEST TITLE	: Basic test for access(2) using F_OK,
  *                        R_OK, W_OK and X_OK arguments.
- * 
+ *
  *    PARENT DOCUMENT	: usctpl01
- * 
+ *
  *    TEST CASE TOTAL	: 6
- * 
+ *
  *    WALL CLOCK TIME	: 1
- * 
+ *
  *    CPU TYPES		: ALL
- * 
+ *
  *    AUTHOR		: William Roske
- * 
+ *
  *    CO-PILOT		: Dave Fenner
- * 
+ *
  *    DATE STARTED	: 03/30/92
- * 
+ *
  *    INITIAL RELEASE	: UNICOS 7.0
- * 
+ *
  *    TEST CASES
- * 
+ *
  * 	1.) access(2) returns 0 for F_OK...(See Description)
  * 	2.) access(2) returns 0 for R_OK...(See Description)
  * 	3.) access(2) returns 0 for W_OK...(See Description)
@@ -67,41 +67,41 @@
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
- * 
+ *
  *    OUTPUT SPECIFICATIONS
  * 	
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
  *
  *    RESOURCES
  * 	None
- * 
+ *
  *    ENVIRONMENTAL NEEDS
- * 	The libcuts.a and libsys.a libraries must be included in 
+ * 	The libcuts.a and libsys.a libraries must be included in
  *	the compilation of this test.
- * 
+ *
  *    SPECIAL PROCEDURAL REQUIREMENTS
  * 	None
- * 
+ *
  *    INTERCASE DEPENDENCIES
  * 	None
- * 
+ *
  *    DETAILED DESCRIPTION
  *	This is a Phase I test for the access(2) system call.  It is intended
  *	to provide a limited exposure of the system call, for now.  It
  *	should/will be extended when full functional tests are written for
  *	access(2).
- * 
+ *
  * 	Setup:
  * 	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
  *	  Create a temp directory and cd to it.
  *	  Creat a temp file wil read, write and execute permissions.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  *	  Execute system call with F_OK on tmp file
@@ -111,11 +111,11 @@
  *	  Execute system call with X_OK on tmp file...
  *	  Execute system call with W_OK on tmp file...
  * 	  Execute system call with R_OK on tmp file...
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log
- * 
- * 
+ *
+ *
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
 #include <string.h>
@@ -161,7 +161,7 @@ int main(int ac, char **av)
     int tc;
 
     TST_TOTAL=Ntc;
-    
+   
     /***************************************************************
      * parse standard options
      ***************************************************************/
@@ -184,15 +184,15 @@ int main(int ac, char **av)
 	Tst_count=0;
 
 	for (tc=0; tc<Ntc; tc++) {
-	    /* 
-	     * Call access(2) 
+	    /*
+	     * Call access(2)
 	     */
 	    TEST(access(Test_cases[tc].file, Test_cases[tc].mode));
 	
 	    /* check return code */
 	    if ( TEST_RETURN == -1 && Test_cases[tc].experrno == 0 ) {
-	        tst_resm(TFAIL, "access(%s, %s) Failed, errno=%d : %s", 
-		     Test_cases[tc].file, Test_cases[tc].string, 
+	        tst_resm(TFAIL, "access(%s, %s) Failed, errno=%d : %s",
+		     Test_cases[tc].file, Test_cases[tc].string,
 		     TEST_ERRNO, strerror(TEST_ERRNO));
 
 	    } else if ( TEST_RETURN != -1 && Test_cases[tc].experrno != 0 ) {
@@ -206,10 +206,10 @@ int main(int ac, char **av)
 	         ***************************************************************/
 	        if ( STD_FUNCTIONAL_TEST ) {
 		    /* No Verification test, yet... */
-		    tst_resm(TPASS, "access(%s, %s) returned %d", 
-			Test_cases[tc].file, Test_cases[tc].string, 
+		    tst_resm(TPASS, "access(%s, %s) returned %d",
+			Test_cases[tc].file, Test_cases[tc].string,
 		        TEST_RETURN);
-	        } 
+	        }
 	    }
 	}
 
@@ -226,9 +226,9 @@ int main(int ac, char **av)
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void 
+void
 setup()
-{ 
+{
     int fd;
     struct stat stbuf;
 
@@ -243,7 +243,7 @@ setup()
     /* make a temp directory and cd to it */
     tst_tmpdir();
 
-    /* 
+    /*
      * Since files inherit group ids, make sure our dir has a valid grp
      * to us.
      */
@@ -283,7 +283,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void 
+void
 cleanup()
 {
     /*

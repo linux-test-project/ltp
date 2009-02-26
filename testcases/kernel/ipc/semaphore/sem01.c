@@ -19,7 +19,7 @@
 
 /*
  *  FILE        : sem01.c
- *  DESCRIPTION : Creates a semaphore and two processes.  The processes 
+ *  DESCRIPTION : Creates a semaphore and two processes.  The processes
  *                each go through a loop where they semdown, delay for a
  *                random amount of time, and semup, so they will almost
  *                always be fighting for control of the semaphore.
@@ -28,7 +28,7 @@
  *      -written
  *    11/09/2001 Manoj Iyer (manjo@ausin.ibm.com)
  *    Modified.
- *    - Removed compiler warnings. 
+ *    - Removed compiler warnings.
  *      added exit to the end of function main()
  *
  */

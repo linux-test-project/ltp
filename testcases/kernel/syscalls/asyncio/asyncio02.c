@@ -30,19 +30,19 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: asyncio02.c,v 1.2 2003/03/04 18:34:01 robbiew Exp $ */
+/* $Id: asyncio02.c,v 1.3 2009/02/26 12:02:33 subrata_modak Exp $ */
 /************************************************************
  * OS Test - Silicon Graphics, Inc.
  * Mendota Heights, Minnesota
- * 
+ *
  * TEST IDENTIFIER:  aiotcs02:  write/close flushes data to the file
- * 
+ *
  * PARENT DOCUMENT:  aiotds01:  kernel i/o
- * 
+ *
  * AUTHOR: Barrie Kletscher
- * 
+ *
  * CO-PILOT: Dave Baumgartner
- * 
+ *
  * TEST ITEMS:
  * 	for each open flags set used:
  * 	1. Multiple writes to a file work as specified for
@@ -51,24 +51,24 @@
  * 	   BUFSIZ bytes.
  * 	3. Multiple writes to a file work as specified for
  * 	   lower than BUFSIZ bytes.
- * 
+ *
  * INPUT SPECIFICATIONS:
  * 	Standard parse_opts supported options.
- *  
+ * 
  * OUTPUT SPECIFICATIONS
  * 	Standard tst_res output format
- * 
+ *
  * ENVIRONMENTAL NEEDS:
  * 	This program uses the environment variable TMPDIR for the location
  * 	of the temporary directory.
- * 
- * 
+ *
+ *
  * SPECIAL PROCEDURAL REQUIREMENTS:
  * 	The program must be linked with tst_*.o and parse_opts.o.
- * 
+ *
  * INTERCASE DEPENDENCIES:
  * 	NONE.
- * 
+ *
  * DETAILED DESCRIPTION:
  * 	Attempt to get some memory to work with.
  * 	Call testrun writing (BUFSIZ + 1) bytes
@@ -76,7 +76,7 @@
  * 	Repeated call to testrun() with decreasing write sizes
  * 		less than BUFSIZ
  * 	End
- * 
+ *
  * 	Start testrun()
  * 	Attempt to open a temporary file.
  * 	Write the memory to the file.
@@ -84,10 +84,10 @@
  * 	Now check to see if the number of bytes written is the
  * 		same as the number of bytes in the file.
  * 	Cleanup
- * 
+ *
  * BUGS:
  * 	NONE.
- * 
+ *
 ************************************************************/
 
 #include <fcntl.h>
@@ -222,7 +222,7 @@ main(int ac, char **av)
 	    }
 	}
 
-	if ( eok && STD_FUNCTIONAL_TEST ) 
+	if ( eok && STD_FUNCTIONAL_TEST )
 	    tst_resm(TPASS,
 		"Less than BUFSIZE bytes multiple synchronous writes to a file checks out ok");
 

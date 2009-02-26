@@ -21,8 +21,8 @@
  * Test Name: mremap03
  *
  * Test Description:
- *  Verify that, 
- *   mremap() fails when used to expand the existing virtual memory mapped 
+ *  Verify that,
+ *   mremap() fails when used to expand the existing virtual memory mapped
  *   region to the requested size, if there already exists mappings that
  *   cover the whole address space requsted or the old address specified was
  *   not mapped.
@@ -119,8 +119,8 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 
-		/* 
-		 * Attempt to expand the existing mapped 
+		/*
+		 * Attempt to expand the existing mapped
 		 * memory region (memsize) by newsize limits
 		 * using mremap() should fail as specifed old
 		 * virtual address was not mapped.
@@ -169,7 +169,7 @@ main(int ac, char **av)
  * Get system page size.
  * Set the old address point some high address which is not mapped.
  */
-void 
+void
 setup()
 {
 	int page_sz;				/* system page size */
@@ -203,7 +203,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

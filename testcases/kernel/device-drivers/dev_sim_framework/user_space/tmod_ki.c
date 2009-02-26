@@ -20,17 +20,17 @@
  * This file will include user space functions that will drive
  * the kernel module to test various functions and kernel
  * calls. Each function will need to setup the tif structure
- * so that the in parameters and out parameters are correctly 
+ * so that the in parameters and out parameters are correctly
  * initialized
- * 
+ *
  * use tif structure for passing params between user
- * space and kernel space, in some tests it is really not 
- * needed, and if nothing is needed to pass in utilize 
- * the ki_generic function below. the tif structure makes 
- * it easy to maintain all the tests if they have the same 
- * process in kernel space to read in params in the kernel 
+ * space and kernel space, in some tests it is really not
+ * needed, and if nothing is needed to pass in utilize
+ * the ki_generic function below. the tif structure makes
+ * it easy to maintain all the tests if they have the same
+ * process in kernel space to read in params in the kernel
  * module no matter what the test is
- * 
+ *
  * author: Sean Ruyle
  * date:   06/11/2003
  *
@@ -82,7 +82,7 @@ ki_write_t      wif;
 tmod_interface_t tif;
 
 
-//fill out wif structure 
+//fill out wif structure
 
 /*
  * build interface structure
@@ -94,7 +94,7 @@ tif.out_data = 0;
 tif.out_rc = 0;
 
 
-//make ioctl call 
+//make ioctl call
 
 
 
@@ -104,7 +104,7 @@ tif.out_rc = 0;
 
 An example of using out_data to get back a structure:
 
-ki_read_t       rif;       
+ki_read_t       rif;      
 tmod_interface_t tif;
 
 //fill out rif structure

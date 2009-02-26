@@ -37,16 +37,16 @@
  *      Verify that,
  *   1) sethostname(2) returns -1 and sets errno to EINVAL if the parameter,
  *	len is less than zero.
- *   2) sethostname(2) returns -1 and sets errno to EINVAL if len is greater 
+ *   2) sethostname(2) returns -1 and sets errno to EINVAL if len is greater
  *	than the maximum allowed size.
- *   3) sethostname(2) returns -1 and sets errno to EFAULT if an invalid 
+ *   3) sethostname(2) returns -1 and sets errno to EFAULT if an invalid
  *	address is given for name.
  *
  * Setup:
  *   Setup signal handling.
  *   Save current hostname
  *   Pause for SIGUSR1 if option specified.
- * 
+ *
  *  Test:
  *   Loop if the proper options are given.
  *   Execute system call
@@ -60,8 +60,8 @@
  *	Print errno log and/or timing stats if options given
  *
  *   Side Effects :
- *	sethostname() is resetting value to NULL, if an invalid address 
- *	is given for name. So, to overcome this problem, hostname is 
+ *	sethostname() is resetting value to NULL, if an invalid address
+ *	is given for name. So, to overcome this problem, hostname is
  *	resetting to original value as part of cleanup() routine.
  *
  * USAGE:  <for command-line>
@@ -103,7 +103,7 @@ static struct test_case_t {
 	int len;		/* length 			*/
 } testcases[] = {
 	{ "Length is -ve", EINVAL, "EINVAL", hostname, -1 },
-	{ "Length > max allowed size", EINVAL, "EINVAL", largehost, 
+	{ "Length > max allowed size", EINVAL, "EINVAL", largehost,
 		sizeof(largehost)},
 #ifndef UCLINUX
 	/* Skip since uClinux does not implement memory protection */
@@ -141,8 +141,8 @@ main(int ac, char **av)
 			 * Test the system call.
 			 */
 			TEST(sethostname(testcases[i].name, testcases[i].len));
- 
-			if ((TEST_RETURN == -1) && 
+
+			if ((TEST_RETURN == -1) &&
 			    (TEST_ERRNO == testcases[i].exp_errno)) {
 				tst_resm(TPASS, "expected failure; Got %s",
 					testcases[i].exp_errval);
@@ -209,7 +209,7 @@ cleanup()
 	if( (ret = sethostname (hname, strlen(hname))) < 0 ) {
 		tst_resm(TWARN, "sethostname() failed while restoring"
 			" hostname to \"%s\"", hname);
-	} 
+	}
 
 	/* exit with return code appropriate for results */
 	tst_exit();

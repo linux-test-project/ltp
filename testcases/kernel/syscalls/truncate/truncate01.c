@@ -17,7 +17,7 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-/* 
+/*
  * Test Name: truncate01
  *
  * Test Description:
@@ -25,7 +25,7 @@
  *  length.
  *
  * Expected Result:
- *  truncate(2) should return a value 0 and the length of the file after 
+ *  truncate(2) should return a value 0 and the length of the file after
  *  truncation should be equal to the length it is truncated to.
  *	
  * Algorithm:
@@ -99,7 +99,7 @@ main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	off_t file_length;	/* test file length */
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -118,8 +118,8 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-		/* 
-		 * Call truncate(2) to truncate a test file to a 
+		/*
+		 * Call truncate(2) to truncate a test file to a
 		 * specified length.
 		 */
 		TEST(truncate(TESTFILE, TRUNC_LEN));
@@ -188,7 +188,7 @@ main(int ac, char **av)
  *  Create a test file under temporary directory and close it
  *  write arbitrary data into testfile.
  */
-void 
+void
 setup()
 {
 	int fd, i;			/* file handler for testfile */
@@ -249,7 +249,7 @@ setup()
  *	       completion or premature exit.
  *  Remove the test directory and testfile created in the setup.
  */
-void 
+void
 cleanup()
 {
 	/*

@@ -129,7 +129,7 @@ main(int ac, char **av)
 	int whence;		/* position of file handle in the file */
 	char *test_desc;	/* test specific error message */
 	int ind;		/* counter to test different test conditions */
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -161,7 +161,7 @@ main(int ac, char **av)
 			} else {
 				fildes = fd3;
 			}
-			/* 
+			/*
 		 	 * Invoke lseek(2) to test different test conditions.
 		 	 * Verify that it fails with -1 return value and
 			 * sets appropriate errno.
@@ -200,7 +200,7 @@ main(int ac, char **av)
  *	     Invoke individual test setup functions according to the order
  *	     set in test struct. definition.
  */
-void 
+void
 setup()
 {
 	int ind;			/* counter for test setup function */
@@ -230,7 +230,7 @@ no_setup()
 }
 
 /*
- * setup1() - setup function for a test condition for which lseek(2) 
+ * setup1() - setup function for a test condition for which lseek(2)
  *	      returns -1 and sets errno to ESPIPE.
  *	      Creat a named pipe/fifo using mknod() and open it for
  *	      reading/writing.
@@ -319,7 +319,7 @@ setup3()
  *             completion or premature exit.
  *	       Remove the test directory and testfile(s) created in the setup.
  */
-void 
+void
 cleanup()
 {
 	/*

@@ -32,11 +32,11 @@
  *	if SIGKILL is caught set the shared memory flag.
  *	fork a child
  *	execute the kill system call
- *	check the return value 
+ *	check the return value
  *	if return value is -1
  *		issue a FAIL message, break remaining tests and cleanup
  *	if we are doing functional testing
- *		if the process was terminated with the expected signal and the 
+ *		if the process was terminated with the expected signal and the
  *		signal was not caught.
  *			issue a PASS message
  *		otherwise

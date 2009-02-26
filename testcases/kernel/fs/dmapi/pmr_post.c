@@ -23,8 +23,8 @@
  *
  * API'S TESTED	: dm_get_region
  *
- * NOTES	: The first variation of this test case, when run after 
- * 		  pmr_pre and rebooting, verifies that persistent managed 
+ * NOTES	: The first variation of this test case, when run after
+ * 		  pmr_pre and rebooting, verifies that persistent managed
  * 		  regions work
  */
 #include <string.h>
@@ -208,7 +208,7 @@ void DoTest()
 					if (regbuf[i].rg_offset != dm_PMR_regbuf[i].rg_offset) {
 						DMLOG_PRINT(DMLVL_ERR, "region %d offset NOT correct! (%lld vs %d)\n", i, regbuf[i].rg_offset, dm_PMR_regbuf[i].rg_offset);
 						varStatus = DMSTAT_FAIL;
-					} 
+					}
 					if (regbuf[i].rg_size != dm_PMR_regbuf[i].rg_size) {
 						DMLOG_PRINT(DMLVL_ERR, "region %d size NOT correct! (%lld vs %d)\n", i, regbuf[i].rg_size, dm_PMR_regbuf[i].rg_size);
 						varStatus = DMSTAT_FAIL;

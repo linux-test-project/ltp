@@ -75,7 +75,7 @@
 #include <stdlib.h>
 /*
  * Defines
- * 
+ *
  * BUF_SIZE: size of message buffer...
  */
 

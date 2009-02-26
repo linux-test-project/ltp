@@ -67,7 +67,7 @@ int TST_TOTAL = 3;
 extern int Tst_count;
 
 struct test_case_t {
-        int error;      
+        int error;     
         int msgkey;
         int flags;
 } TC[] = {

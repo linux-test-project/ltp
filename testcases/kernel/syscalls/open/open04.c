@@ -133,7 +133,7 @@ setup()
 		tst_brkm(TBROK, cleanup, "Cannot open first file");
 	}
 
-	close(fd); 
+	close(fd);
 	close(first);
 	unlink(fname);
 

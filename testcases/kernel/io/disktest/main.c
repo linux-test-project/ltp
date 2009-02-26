@@ -22,7 +22,7 @@
 *
 *  Project Website:  TBD
 *
-* $Id: main.c,v 1.9 2009/02/26 11:43:51 subrata_modak Exp $
+* $Id: main.c,v 1.10 2009/02/26 12:02:22 subrata_modak Exp $
 *
 */
 #include <stdio.h>
@@ -407,7 +407,7 @@ test_ll_t *run() {
 	
 	if(cleanArgs.flags & CLD_FLG_FSLIST) {
 		char *filespec = cleanArgs.device;
-		char *aFilespec = NULL; 
+		char *aFilespec = NULL;
 		FILE *file = NULL;
 
 		if((aFilespec = (char *)ALLOC(80)) == NULL) {
@@ -465,9 +465,9 @@ int main(int argc, char **argv)
 	WORD wVersionRequested;
 	WSADATA wsaData;
 	int err;
- 
+
 	wVersionRequested = MAKEWORD( 2, 2 );
- 
+
 	err = WSAStartup( wVersionRequested, &wsaData );
 	if(err != 0) {
 		pMsg(WARN, &cleanArgs, "Windows setup of Winsock failed, can't retrieve host name, continuing");

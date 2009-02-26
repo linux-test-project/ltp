@@ -3,17 +3,17 @@
  *
  * Copyright (C) 2000 Juan Quintela <quintela@fi.udc.es>
  *                    Aaron Laffin <alaffin@sgi.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -81,7 +81,7 @@ void help()
  * add the -m option whose parameter is the
  * pages that should be mapped.
  */
-option_t options[] = 
+option_t options[] =
 {
   { "m:", &m_opt, &m_copt },
   { NULL, NULL, NULL }
@@ -129,7 +129,7 @@ int main(int argc, char * argv[])
     fd = open(filename, O_RDWR | O_CREAT, 0666);
     if ((fd == -1))
       tst_brkm(TBROK, cleanup, "Problems opening files");
-        
+       
     if (lseek(fd, memsize, SEEK_SET) != memsize)
     {
       close(fd);
@@ -143,7 +143,7 @@ int main(int argc, char * argv[])
       tst_brkm(TBROK, cleanup, "Problems writing: %d: %s",
         errno,strerror(errno));
     }
- 
+
     array = mmap(0, memsize, PROT_WRITE, MAP_SHARED,fd,0);
     if (array == (char *)MAP_FAILED)
     {
@@ -163,8 +163,8 @@ int main(int argc, char * argv[])
       for(i = 0; i < memsize; i++)
       {
        array[i] = (char) i;
-      } 
- 
+      }
+
       /*
       * seems that if the map area was bad, we'd get SEGV, hence we can
       * indicate a PASS.

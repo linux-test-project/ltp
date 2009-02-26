@@ -97,7 +97,7 @@ main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -116,7 +116,7 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 
-		/* 
+		/*
 		 * Invoke stime(2) to set the system's time
 		 * to the specified new_time as non-root user.
 		 */
@@ -154,7 +154,7 @@ main(int ac, char **av)
  * setup() - performs all ONE TIME setup for this test.
  *  Get the current time and system's new time.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -192,7 +192,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

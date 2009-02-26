@@ -46,7 +46,7 @@ int main(int argc, char **argv)
 	error = shmctl(id, IPC_STAT, &buf);
 	printf ("%d", error);
 
-	/* 
+	/*
 	 * Equivalent: IPC_SET
 	 * Tests:      SHM__SETATTR
 	 */
@@ -54,14 +54,14 @@ int main(int argc, char **argv)
 	printf (" %d", error);
 
 
-	/* 
+	/*
 	 * Equivalent: SHM_LOCK, SHM_UNLOCK
 	 * Tests:      SHM__LOCK
 	 */
 	error = shmctl(id, SHM_LOCK, NULL);
 	printf (" %d", error);
 
-	/* 
+	/*
 	 * Equivalent: IPC_RMID
 	 * Tests:      SHM__DESTROY
 	 */

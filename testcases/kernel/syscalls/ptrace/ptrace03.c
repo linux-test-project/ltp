@@ -15,17 +15,17 @@
  *
  */
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER	: ptrace03
- * 
+ *
  *    EXECUTED BY	: anyone
- * 
+ *
  *    TEST TITLE	: Tests for error conditions
- * 
+ *
  *    TEST CASE TOTAL	: 3
- * 
+ *
  *    AUTHOR		: Saji Kumar.V.R <saji.kumar@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -44,7 +44,7 @@
  * 	Setup:
  * 	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  *	 setup signal handler for SIGUSR2 signal
@@ -67,7 +67,7 @@
  *		
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  *  ptrace03 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
  *			where,  -c n : Run n copies concurrently.
@@ -86,7 +86,7 @@
 #include <signal.h>
 #include <sys/ptrace.h>
 #include <sys/wait.h>
-#include <pwd.h> 
+#include <pwd.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -213,7 +213,7 @@ void
 setup()
 {
 	
-	/* capture signals 
+	/* capture signals
 	tst_sig(FORK, DEF_HANDLER, cleanup); */
 
 	/* set the expected errnos... */

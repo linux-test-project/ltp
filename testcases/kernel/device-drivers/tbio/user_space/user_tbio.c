@@ -17,12 +17,12 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
  *
- * This is the main of your user space test program, 
- * which will open the correct kernel bioule, find the 
- * file descriptor value and use that value to make 
+ * This is the main of your user space test program,
+ * which will open the correct kernel bioule, find the
+ * file descriptor value and use that value to make
  * ioctl calls to the system
  *
- * Use the ki_generic and other ki_testname functions 
+ * Use the ki_generic and other ki_testname functions
  * to abstract the calls from the main
  *
  * bioule: tbio
@@ -39,7 +39,7 @@
  *  the GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program;  
+ *  along with this program; 
  *
  *  FILE        : user_tbio.c
  *  USAGE       : kernel_space:./load_tbio.sh
@@ -73,7 +73,7 @@
 static int tbio_fd = -1;		/* file descriptor */
 
 
-int 
+int
 tbioopen() {
 
     dev_t devt;
@@ -147,7 +147,7 @@ tbioopen() {
 }
 
 
-int 
+int
 tbioclose() {
 
 	if (tbio_fd != -1) {
@@ -325,7 +325,7 @@ int main()
 		printf("Success on LTP_TBIO_SPLIT:write to dev\n");
 	
 	
-	if(tbio_to_dev(tbio_fd , LTP_TBIO_DO_IO)) 
+	if(tbio_to_dev(tbio_fd , LTP_TBIO_DO_IO))
 		printf("Failed on LTP_TBIO_DO_IO:write to dev\n");
 	else
 		printf("Success on LTP_TBIO_DO_IO:write to dev\n");

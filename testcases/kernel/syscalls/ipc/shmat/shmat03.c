@@ -186,7 +186,7 @@ setup(void)
 	shmkey = getipckey();
 
 	/* create a shared memory segment with read and write permissions */
-	if ((shm_id_1 = shmget(shmkey, SHM_SIZE, 
+	if ((shm_id_1 = shmget(shmkey, SHM_SIZE,
 			       SHM_RW | IPC_CREAT | IPC_EXCL)) == -1) {
 		tst_brkm(TBROK, cleanup, "Failed to create shared memory "
 			 "segment in setup");

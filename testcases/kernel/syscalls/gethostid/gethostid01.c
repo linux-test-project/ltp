@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: gethostid01.c,v 1.21 2008/10/15 17:16:14 subrata_modak Exp $ */
+/* $Id: gethostid01.c,v 1.22 2009/02/26 12:02:56 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -203,8 +203,8 @@ main(int ac, char **av)
 
             if(strstr(hostid,"000000")) {
                tst_resm(TCONF, "Host ID has not been set.");
-               tst_exit();   
-            } 
+               tst_exit();  
+            }
 
 
 	    if (strcmp(name, hostid) == 0) {

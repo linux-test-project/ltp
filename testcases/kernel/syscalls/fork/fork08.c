@@ -22,7 +22,7 @@
  * 	fork08.c
  *
  * DESCRIPTION
- *	Check if the parent's file descriptors are affected by 
+ *	Check if the parent's file descriptors are affected by
  * 	actions in the child; they should not be.
  *
  * ALGORITHM
@@ -97,7 +97,7 @@ int main(int ac, char **av)
 		fflush(writ);
 		sleep(1);
 
-		if ((getc(rea)) != 'a') 
+		if ((getc(rea)) != 'a')
 			tst_resm(TFAIL, "getc from read side was confused");
 
 		forks = 0;
@@ -112,7 +112,7 @@ forkone:
 				goto forkone;
 			else if (pid1 < 0) {
 				tst_resm(TINFO, "Fork failed");
-			} 
+			}
 		} else {			/* child */
 			/*
 			 * If first child close the file descriptor for the

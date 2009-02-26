@@ -200,7 +200,7 @@ cleanup(void)
 }
 
 
-void 
+void
 setup0(void)
 {
 	if (tdat[testno].experrno == EBADF)
@@ -224,7 +224,7 @@ setup1(void)
         fd_set rdfds;
         struct timeval timeout;
         int n;
- 
+
 	s = socket(tdat[testno].domain, tdat[testno].type, tdat[testno].proto);
 	if (s < 0) {
 		tst_brkm(TBROK, cleanup, "socket setup failed: %s",

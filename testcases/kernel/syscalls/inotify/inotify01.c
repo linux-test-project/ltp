@@ -34,7 +34,7 @@
  *     Execute sequence file's operation and check return events
  *
  * HISTORY
- *     01/06/2007 - Fix to compile inotify test case with kernel that does 
+ *     01/06/2007 - Fix to compile inotify test case with kernel that does
  *     not support it. Ricardo Salveti de Araujo <rsalveti@linux.vnet.ibm.com>
  *
  */
@@ -94,7 +94,7 @@ static long myinotify_rm_watch(int fd, int wd)
 int main(int ac, char **av){
     int lc;        /* loop counter */
     char *msg;        /* message returned from parse_opts */
-    
+   
     /*
      * parse standard options
      */
@@ -130,7 +130,7 @@ int main(int ac, char **av){
               "open(%s, O_RDWR|O_CREAT,0700) Failed, errno=%d : %s",
               fname, errno, strerror(errno));
         }
-        event_set[Tst_count] = IN_OPEN; 
+        event_set[Tst_count] = IN_OPEN;
         Tst_count++;
 
         if (read(fd, buf, BUF_SIZE) == -1) {
@@ -142,8 +142,8 @@ int main(int ac, char **av){
         Tst_count++;
 
         if (close(fd) == -1) {
-            tst_brkm(TBROK, cleanup, 
-                    "close(%s) Failed, errno=%d : %s", 
+            tst_brkm(TBROK, cleanup,
+                    "close(%s) Failed, errno=%d : %s",
                     fname, errno, strerror(errno));
         }
         event_set[Tst_count] = IN_CLOSE_NOWRITE;
@@ -167,13 +167,13 @@ int main(int ac, char **av){
         Tst_count++;
 
         if (close(fd) == -1) {
-            tst_brkm(TBROK, cleanup, 
-                    "close(%s) Failed, errno=%d : %s", 
+            tst_brkm(TBROK, cleanup,
+                    "close(%s) Failed, errno=%d : %s",
                     fname, errno, strerror(errno));
         }
         event_set[Tst_count] = IN_CLOSE_WRITE;
         Tst_count++;
-        
+       
         if (TST_TOTAL != Tst_count) {
             tst_brkm(TBROK, cleanup,
                     "TST_TOTAL and Tst_count are not equal");
@@ -191,7 +191,7 @@ int main(int ac, char **av){
                 strerror(errno));
 
         }
-            
+           
         /*
          * check events
          */
@@ -205,7 +205,7 @@ int main(int ac, char **av){
                     event->wd, event->mask,
                     event->cookie, event->len);
             } else if (event_set[test_num] == event->mask){
-                tst_resm(TPASS, "get event: wd=%d mask=%x" 
+                tst_resm(TPASS, "get event: wd=%d mask=%x"
                     " cookie=%u len=%u",
                     event->wd, event->mask,
                     event->cookie, event->len);
@@ -213,7 +213,7 @@ int main(int ac, char **av){
             } else {
                 tst_resm( TFAIL, "get event: wd=%d mask=%x "
                     "(expected %x) cookie=%u len=%u",
-                    event->wd, event->mask,    
+                    event->wd, event->mask,   
                     event_set[test_num],
                     event->cookie, event->len);
             }
@@ -264,7 +264,7 @@ void setup(){
     /* close the file we have open */
     if (close(fd) == -1) {
         tst_brkm(TBROK, cleanup,
-                "close(%s) Failed, errno=%d : %s", 
+                "close(%s) Failed, errno=%d : %s",
                 fname, errno, strerror(errno));
     }
     if ((fd_notify = myinotify_init ()) < 0) {
@@ -281,7 +281,7 @@ void setup(){
 
     if ((wd = myinotify_add_watch (fd_notify, fname, IN_ALL_EVENTS)) < 0){
         tst_brkm(TBROK, cleanup,
-                "inotify_add_watch (%d, %s, IN_ALL_EVENTS)" 
+                "inotify_add_watch (%d, %s, IN_ALL_EVENTS)"
                 "Failed, errno=%d : %s",
                 fd_notify, fname, errno, strerror(errno));
     };
@@ -302,7 +302,7 @@ void cleanup(){
     }
 
     if (close(fd_notify) == -1) {
-        tst_resm(TWARN, "close(%d) Failed, errno=%d : %s", 
+        tst_resm(TWARN, "close(%d) Failed, errno=%d : %s",
                 fd_notify, errno, strerror(errno));
     }
 

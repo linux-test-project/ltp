@@ -20,13 +20,13 @@
 
 /*********************************************************************
  *    TEST IDENTIFIER	: sethostname01
- * 
+ *
  *    EXECUTED BY	: root / superuser
- * 
+ *
  *    TEST TITLE	: Basic test for sethostname(2)
  *
  *    TEST CASE TOTAL	: 1
- * 
+ *
  *    AUTHOR		: Suresh Babu V. <suresh.babu@wipro.com>
  *
  *    SIGNALS
@@ -57,7 +57,7 @@
  *	where,  -c n : Run n copies concurrently.
  *		-i n : Execute test n times.
  *		-I x : Execute test for x seconds.
- *		-p   : Pause for SIGUSR1 before starting 
+ *		-p   : Pause for SIGUSR1 before starting
  *		-P x : Pause for x seconds between iterations.
  *		-t   : Turn on syscall timing.
  *		-h   : Display usage information
@@ -114,7 +114,7 @@ main(int ac, char **av)
 		tst_resm(TFAIL, "sethostname() failed , errno=%d : %s",
 		TEST_ERRNO, strerror(TEST_ERRNO));
 	} else {
-		tst_resm(TPASS, "sethostname() returned %d," 
+		tst_resm(TPASS, "sethostname() returned %d,"
 		" Hostname set to \"%s\"", TEST_RETURN, ltphost);
 	}
 
@@ -127,9 +127,9 @@ main(int ac, char **av)
 } /* End main */
 
 /*
- * setup() - performs all one time setup for this test. 
+ * setup() - performs all one time setup for this test.
  */
-void 
+void
 setup()
 {
 	int ret;
@@ -146,18 +146,18 @@ setup()
 	if((ret = gethostname (hname, sizeof(hname))) < 0 ) {
 		tst_brkm(TBROK, tst_exit, "gethostname() failed while getting"
 			" current host name");
-	} 
+	}
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 } /* End setup() */
 
-/* 
- * cleanup() -	performs all one time cleanup for this test 
- *		completion or premature exit. 
+/*
+ * cleanup() -	performs all one time cleanup for this test
+ *		completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	int ret;
@@ -172,7 +172,7 @@ cleanup()
 	if( (ret = sethostname (hname, strlen(hname))) < 0 ) {
 		tst_resm(TWARN, "sethostname() failed while restoring"
 				" hostname to \"%s\": %s", hname, strerror(errno));
-	} 
+	}
 
 	/* exit with return code appropriate for results */
 	tst_exit();

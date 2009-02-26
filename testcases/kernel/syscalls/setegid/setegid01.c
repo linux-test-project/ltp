@@ -16,7 +16,7 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-/* 
+/*
  * Test Name: setegid01
  *
  * Test Description:
@@ -41,7 +41,7 @@ option_t options[] = {
     { NULL, NULL, NULL }        /* NULL required to end array */
 };
 
-void help() 
+void help()
 {
     printf("  -v       verbose\n");
 }
@@ -99,7 +99,7 @@ int main(int argc, char **argv)
         tst_exit();
     }
 
-    /* SUSv3 says the real group ID and saved set-gid must 
+    /* SUSv3 says the real group ID and saved set-gid must
      * remain unchanged by setgid.  See
      * http://www.opengroup.org/onlinepubs/007904975/functions/setegid.html
      */

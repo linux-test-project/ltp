@@ -17,7 +17,7 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-/* 
+/*
  * Test Name: fchmod03
  *
  * Test Description:
@@ -124,7 +124,7 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-		/* 
+		/*
 	 	 * Call fchmod(2) with specified mode permissions
 		 * (to set sticky bit) on testfile.
 	 	 */
@@ -178,7 +178,7 @@ main(int ac, char **av)
  *  Create a temporary directory and cd to it.
  *  Create a testfile under test directory.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -221,7 +221,7 @@ setup()
  *  Close the testfile created in the setup.
  *  Delete the testfile and temporary directory created in setup().
  */
-void 
+void
 cleanup()
 {
 	/*

@@ -174,7 +174,7 @@ void test_VIDIOC_ENUM_FMT_invalid_type() {
 	struct v4l2_fmtdesc format2;
 	int i;
 
-	/* In this test case the .index is valid (0) and only the .type 
+	/* In this test case the .index is valid (0) and only the .type
 	 * is invalid. The .type filed is an enum which is stored in an 'int'.
 	 */
 

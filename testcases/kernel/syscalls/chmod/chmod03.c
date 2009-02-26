@@ -16,7 +16,7 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-/* 
+/*
  * Test Name: chmod03
  *
  * Test Description:
@@ -106,7 +106,7 @@ main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	mode_t file_mode;	/* mode permissions set on testfile */
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -122,7 +122,7 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-		/* 
+		/*
 	 	 * Call chmod(2) with specified mode permissions
 		 * (to set sticky bit) on testfile.
 	 	 */
@@ -179,7 +179,7 @@ main(int ac, char **av)
  *  Create a temporary directory and cd to it.
  *  Create a testfile under test directory.
  */
-void 
+void
 setup()
 {
 	int fd;			/* file descriptor for testfile */
@@ -229,7 +229,7 @@ setup()
  *		completion or premature exit.
  *  Delete the testfile and temporary directory created in setup().
  */
-void 
+void
 cleanup()
 {
 	/*

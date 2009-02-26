@@ -15,17 +15,17 @@
  *
  */
 /**********************************************************
- * 
+ *
  *    TEST IDENTIFIER   : query_module01
- * 
+ *
  *    EXECUTED BY       : root / superuser
- * 
+ *
  *    TEST TITLE        : Checking functionality of query_module(2)
- * 
+ *
  *    TEST CASE TOTAL   : 6
- * 
+ *
  *    AUTHOR            : Madhu T L <madhu.tarikere@wipro.com>
- * 
+ *
  *    SIGNALS
  *      Uses SIGUSR1 to pause before test if option set.
  *      (See the parse_opts(3) man page).
@@ -44,13 +44,13 @@
  *	   set to QM_INFO.
  *	6. query_module(2) is successful for valid module name, which argument
  *	   set to QM_SYMBOLS.
- * 
+ *
  *      Setup:
  *	  Setup signal handling.
  *	  Test caller is superuser
  *	  Initialize  long module name
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  *	Test:
  *	 Loop if the proper options are given.
  *	  Execute system call
@@ -58,10 +58,10 @@
  *		 Issue PASS message
  *	Otherwise,
  *		Issue FAIL message
- * 
+ *
  *	Cleanup:
  *	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  *  query_module01 [-c n] [-e] [-f] [-h] [-i n] [-I x] [-p] [-P x] [-t]
  *		where,  -c n : Run n copies concurrently.
@@ -73,16 +73,16 @@
  *			-p   : Pause for SIGUSR1 before starting
  *			-P x : Pause for x seconds between iterations.
  *			-t   : Turn on syscall timing.
- * 
+ *
  * RESTRICTIONS
- *	-c option has no effect for this testcase, even if used allows only 
+ *	-c option has no effect for this testcase, even if used allows only
  *	one instance to run at a time.
- * 
+ *
  * CHANGES
  *
  * 12/03/02 Added "force" to insmod to ignore kernel version.
  *          -Robbie Williamson <robbiew@us.ibm.com>
- * 
+ *
  ****************************************************************/
 
 #include <errno.h>
@@ -95,7 +95,7 @@
 #include "test.h"
 #include "usctest.h"
 
-#ifndef PAGE_SIZE 
+#ifndef PAGE_SIZE
 #define PAGE_SIZE sysconf(_SC_PAGE_SIZE)
 #endif
 
@@ -136,19 +136,19 @@ static void cleanup2(void);
 static struct test_case_t  tdat[] = {
 	{ NULL, 0, "module name: NULL, which: 0", NULL, NULL},
 
-	{ NULL, QM_MODULES, "NULL module name, which: QM_MODULES", 
+	{ NULL, QM_MODULES, "NULL module name, which: QM_MODULES",
 		setup1, cleanup1},
 
-	{ DUMMY_MOD_DEP, QM_DEPS, "valid module name, which: QM_DEPS", 
+	{ DUMMY_MOD_DEP, QM_DEPS, "valid module name, which: QM_DEPS",
 		setup2, cleanup2},
 
-	{ DUMMY_MOD, QM_REFS, "valid module name, which: QM_REFS", 
+	{ DUMMY_MOD, QM_REFS, "valid module name, which: QM_REFS",
 		setup2, cleanup2},
 
-	{ DUMMY_MOD, QM_INFO, "valid module name, which: QM_INFO", 
+	{ DUMMY_MOD, QM_INFO, "valid module name, which: QM_INFO",
 		setup1, cleanup1},
 
-	{ DUMMY_MOD, QM_SYMBOLS, "valid module name, which: QM_SYMBOLS", 
+	{ DUMMY_MOD, QM_SYMBOLS, "valid module name, which: QM_SYMBOLS",
 		setup1, cleanup1},
 };
 
@@ -170,7 +170,7 @@ main(int argc, char **argv)
 	if(STD_COPIES != 1) {
 		tst_resm(TINFO, "-c option has no effect for these testcases - "
 			"doesn't allow running more than one instance "
-			"at a time"); 
+			"at a time");
 		STD_COPIES = 1;
 	}
 
@@ -192,8 +192,8 @@ main(int argc, char **argv)
 				tdat[testno].which, (void *)out_buf, buflen,
 				&ret));
 
-			if ( (TEST_RETURN == EXP_RET_VAL) && 
-				!test_functionality(tdat[testno].which, 
+			if ( (TEST_RETURN == EXP_RET_VAL) &&
+				!test_functionality(tdat[testno].which,
 				out_buf, buflen, ret) ) {
 				tst_resm(TPASS, "query_module() successful "
 					"for %s", tdat[testno].desc);
@@ -222,9 +222,9 @@ test_functionality(int which, char *buf, size_t bufsize, size_t ret)
 	char *modname;
 	unsigned long *vals;
 
-	/* 
+	/*
 	 * Don't perform functional verification, if STD_FUNCTIONAL_TEST is
-	 * turned off 
+	 * turned off
 	 */
 	if(STD_FUNCTIONAL_TEST == 0) {
 		return 0;
@@ -248,8 +248,8 @@ test_functionality(int which, char *buf, size_t bufsize, size_t ret)
 
 		case QM_INFO:
 			/*
-			 * Since module is already loaded, flags should show 
-			 * MOD_RUNNING 
+			 * Since module is already loaded, flags should show
+			 * MOD_RUNNING
 			 */
 			if(((struct module_info *) buf) -> flags &
 					MOD_RUNNING) {
@@ -260,9 +260,9 @@ test_functionality(int which, char *buf, size_t bufsize, size_t ret)
 		case QM_SYMBOLS:
 			vals = (unsigned long *)buf;
 
-			/* 
+			/*
 			 * Find entry for atleast one symbol, checking for
-			 * EXP_FUNC_NAME symbol, if found return SUCCESS. 
+			 * EXP_FUNC_NAME symbol, if found return SUCCESS.
 			 */
 			for( i = 0; i < ret; i++, vals +=2) {
 
@@ -351,7 +351,7 @@ cleanup1(void)
 {
 	/* Remove the loadable module - DUMMY_MOD */
 	if(system("rmmod "DUMMY_MOD) != 0) {
-		tst_brkm(TBROK, cleanup, "Failed to unload module %s", 
+		tst_brkm(TBROK, cleanup, "Failed to unload module %s",
 			DUMMY_MOD);
 	}
 }
@@ -361,7 +361,7 @@ cleanup2(void)
 {
 	/* Remove the loadable module - DUMMY_MOD_DEP */
 	if(system("rmmod "DUMMY_MOD_DEP) != 0) {
-		tst_brkm(TBROK, cleanup, "Failed to unload module %s", 
+		tst_brkm(TBROK, cleanup, "Failed to unload module %s",
 			DUMMY_MOD_DEP);
 	}
 	/* Remove the loadable module - DUMMY_MOD */

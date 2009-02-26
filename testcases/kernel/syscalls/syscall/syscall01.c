@@ -148,7 +148,7 @@ int main (int argc, char *argv[])
 #else
 	         fprintf(temp,"\tgetgid syscall failed.\n");
 		 fprintf(temp,"\tSYS_getgid and SYS_getgid32 not defined\n");
-                 local_flag = FAILED; 
+                 local_flag = FAILED;
 #endif
 
 	blexit();

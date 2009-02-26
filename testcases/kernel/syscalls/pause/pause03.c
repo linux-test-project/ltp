@@ -21,7 +21,7 @@
  * Test Name: pause03
  *
  * Test Description:
- *  Verify that a process is no longer accessible on receipt of SIGKILL 
+ *  Verify that a process is no longer accessible on receipt of SIGKILL
  *  signal after being suspended by pause().
  *
  * Expected Result:
@@ -89,7 +89,7 @@ main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 	int status;		/* child process exit status */
 	int ret_val;		/* return value for wait() */
-    
+   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
 	if (msg != (char *)NULL) {
@@ -208,7 +208,7 @@ do_child()
  * setup() - performs all ONE TIME setup for this test.
  *  	     Setup signal handler to catch SIGCLD signal.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -228,7 +228,7 @@ setup()
  * sig_handle(int sig)
  *    This is the signal handler to handle the SIGCLD signal.
  *    When the child terminates and the parent gets the SIGCLD signal
- *    the handler gets executed and then the cflag variable is set to 
+ *    the handler gets executed and then the cflag variable is set to
  *    indicate the child has terminated.
  */
 void
@@ -242,7 +242,7 @@ sig_handle(int sig)
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

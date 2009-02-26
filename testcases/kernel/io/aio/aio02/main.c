@@ -22,7 +22,7 @@ int main(void)
 	int res;
 
 	res = test_main();
-	printf("test %s completed %s.\n", test_name, 
+	printf("test %s completed %s.\n", test_name,
 		res ? "FAILED" : "PASSED"
 		);
 	fflush(stdout);

@@ -190,7 +190,7 @@ char	*argv[];
 	tid = -1;
 
 	/* Setup signal handleing routine */
-	if (sigset(SIGTERM, term) == SIG_ERR) 
+	if (sigset(SIGTERM, term) == SIG_ERR)
 	{
                 tst_resm(TFAIL, "Sigset SIGTERM failed");
                 tst_exit();
@@ -198,22 +198,22 @@ char	*argv[];
 	/* Set up array of unique keys for use in allocating message
 	 * queues
 	 */
-	for (i = 0; i < nprocs; i++) 
+	for (i = 0; i < nprocs; i++)
 	{
 		ok = 1;
-		do 
+		do
 		{
 			/* Get random key */
 			keyarray[i] = (key_t)lrand48();
 			/* Make sure key is unique and not private */
-			if (keyarray[i] == IPC_PRIVATE) 
+			if (keyarray[i] == IPC_PRIVATE)
 			{
 				ok = 0;
 				continue;
 			}
-			for (j = 0; j < i; j++) 
+			for (j = 0; j < i; j++)
 			{
-				if (keyarray[j] == keyarray[i]) 
+				if (keyarray[j] == keyarray[i])
 				{
 					ok = 0;
 					break;
@@ -229,16 +229,16 @@ char	*argv[];
 	 * of random length messages with specific values (keys).
 	 */
 
-	for (i = 0; i <  nprocs; i++) 
+	for (i = 0; i <  nprocs; i++)
 	{
 		fflush(stdout);
-		if ((pid = FORK_OR_VFORK()) < 0) 
+		if ((pid = FORK_OR_VFORK()) < 0)
 		{
 	                tst_resm(TFAIL, "\tFork failed (may be OK if under stress)");
         	        tst_exit();
 		}
 		/* Child does this */
-		if (pid == 0) 
+		if (pid == 0)
 		{
 #ifdef UCLINUX
 			if (self_exec(argv[0], "ndd", 1, keyarray[i], i) < 0)
@@ -363,14 +363,14 @@ int	child_process;
 	for (i=0; i < nkids; i++)
 	{
 		fflush(stdout);
-		if ((pid = FORK_OR_VFORK()) < 0) 
+		if ((pid = FORK_OR_VFORK()) < 0)
 		{
 	                tst_resm(TWARN, "Fork failure in first child of child group %d", child_process);
 			cleanup_msgqueue(i, tid);
 			tst_exit();
 		}
 		/* First child does this */
-		if (pid == 0) 
+		if (pid == 0)
 		{
 #ifdef UCLINUX
 			if (self_exec(argv0, "nddd", 2, key, getpid(),
@@ -386,7 +386,7 @@ int	child_process;
 		}
 		rkidarray[i] = pid;
 		fflush(stdout);
-		if ((pid = FORK_OR_VFORK()) < 0) 
+		if ((pid = FORK_OR_VFORK()) < 0)
 		{
 	                tst_resm(TWARN, "Fork failure in first child of child group %d", child_process);
 			/*
@@ -398,7 +398,7 @@ int	child_process;
                		tst_exit();
 		}
 		/* Second child does this */
-		if (pid == 0) 
+		if (pid == 0)
 		{
 #ifdef UCLINUX
 			if (self_exec(argv0, "nddd", 3, key, rkidarray[i],
@@ -429,7 +429,7 @@ int	child_process;
 			if (status>>8 != PASS )
 			{
                                 tst_resm(TFAIL, "Child exit status = %d from child group %d", status>>8, child_process);
-				for (i = 0; i < nkids; i++) 
+				for (i = 0; i < nkids; i++)
 				{
 					kill(rkidarray[i], SIGTERM);
 					kill(wkidarray[i], SIGTERM);
@@ -483,9 +483,9 @@ long key;
 		tst_resm(TFAIL, "Message queue mismatch in reader of child group %d for message queue id %d", child, id);
 		tst_exit();
 	}
-	for (i = 0; i < nreps; i++) 
+	for (i = 0; i < nreps; i++)
 	{
-		if ((size = msgrcv(id, &buffer, 100, type, 0)) < 0) 
+		if ((size = msgrcv(id, &buffer, 100, type, 0)) < 0)
 		{
 			tst_resm(TFAIL, "Msgrcv error in child %d, read # = %d, errno = %d", (i + 1), child, errno);
 	                tst_exit();
@@ -496,12 +496,12 @@ long key;
                         tst_resm(TFAIL, "\tfor message size got  %d expected  %d %s",size ,buffer.data.len);
                         tst_exit();
 		}
-		if (buffer.data.len + 1 != size)  
+		if (buffer.data.len + 1 != size) 
 		{
 			tst_resm(TFAIL, "Size mismatch in child %d, read # = %d, size = %d, expected = %d", child, (i + 1), buffer.data.len, size);
 	                tst_exit();
 		}
-		if ( verify(buffer.data.pbytes, (key % 255), size - 1, child) ) 
+		if ( verify(buffer.data.pbytes, (key % 255), size - 1, child) )
 		{
                         tst_resm(TFAIL, "in read # = %d,key =  %x", (i + 1), child, key);
                         tst_exit();
@@ -530,9 +530,9 @@ long key;
                 tst_exit();
 	}
 
-	for (i = 0; i < nreps; i++) 
+	for (i = 0; i < nreps; i++)
 	{
-		do 
+		do
 		{
 			size = (lrand48() % 99);
 		} while (size == 0);
@@ -588,12 +588,12 @@ term(int sig)
 {
 	int i;
 
-	if (procstat == 0) 
+	if (procstat == 0)
 	{
 #ifdef DEBUG
 	        tst_resm(TINFO,"SIGTERM signal received, test killing kids");
 #endif
-		for (i = 0; i < nprocs; i++) 
+		for (i = 0; i < nprocs; i++)
 		{
 			if ( pidarray[i] > 0){
 				if ( kill(pidarray[i], SIGTERM) < 0)
@@ -606,17 +606,17 @@ term(int sig)
 		return;
 	}
 
-	if (procstat == 2) 
+	if (procstat == 2)
 	{
 		fflush(stdout);
 		exit(PASS);
 	}
 
-	if (tid == -1) 
+	if (tid == -1)
 	{
 		exit(FAIL);
 	}
-	for (i = 0; i < nkids; i++) 
+	for (i = 0; i < nkids; i++)
 	{
 		if (rkidarray[i] > 0)
 			kill(rkidarray[i], SIGTERM);

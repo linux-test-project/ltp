@@ -35,7 +35,7 @@
  *      -t   : Turn on syscall timing.
  *
  * Author
- *	Yi Yang <yyangcdl@cn.ibm.com> 
+ *	Yi Yang <yyangcdl@cn.ibm.com>
  *
  * History
  *      09/01/2006      Created first by Yi Yang <yyangcdl@cn.ibm.com>
@@ -118,8 +118,8 @@ int main(int ac, char **av)
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-		/* 
-		 * Call vmsplice_test 
+		/*
+		 * Call vmsplice_test
 		 */
 		TEST(vmsplice_test());
 
@@ -232,7 +232,7 @@ static int vmsplice_test(void)
 			close(pipes[0]);
 			close(pipes[1]);
 			return ret;
-		} 
+		}
 		//printf("offset = %lld\n", (long long)offset);
 
 	}

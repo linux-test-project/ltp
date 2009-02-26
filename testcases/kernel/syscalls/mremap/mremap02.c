@@ -21,9 +21,9 @@
  * Test Name: mremap02
  *
  * Test Description:
- *  Verify that, 
- *   mremap() fails when used to expand the existing virtual memory mapped 
- *   region to the requested size, if the virtual memory area previously 
+ *  Verify that,
+ *   mremap() fails when used to expand the existing virtual memory mapped
+ *   region to the requested size, if the virtual memory area previously
  *   mapped was not page aligned or invalid argument specified.
  *
  * Expected Result:
@@ -117,8 +117,8 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 
-		/* 
-		 * Attempt to expand the existing mapped 
+		/*
+		 * Attempt to expand the existing mapped
 		 * memory region (memsize) by newsize limits using
 		 * mremap() should fail as old virtual address is not
 		 * page aligned.
@@ -167,7 +167,7 @@ main(int ac, char **av)
  * new size after resize, Set the virtual memory address such that it
  * is not aligned.
  */
-void 
+void
 setup()
 {
 	/* capture signals */
@@ -193,7 +193,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 	/*

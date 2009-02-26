@@ -30,69 +30,69 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fork01.c,v 1.2 2006/05/26 06:26:39 vapier Exp $ */
+/* $Id: fork01.c,v 1.3 2009/02/26 12:02:56 subrata_modak Exp $ */
 /**********************************************************
- * 
+ *
  *    OS Test - Silicon Graphics, Inc.
- * 
+ *
  *    TEST IDENTIFIER	: fork01
- * 
+ *
  *    EXECUTED BY	: anyone
- * 
+ *
  *    TEST TITLE	: Basic test for fork(2)
- * 
+ *
  *    PARENT DOCUMENT	: frktds02
- * 
+ *
  *    TEST CASE TOTAL	: 2
- * 
+ *
  *    WALL CLOCK TIME	: 1
- * 
+ *
  *    CPU TYPES		: ALL
- * 
+ *
  *    AUTHOR		: Kathy Olmsted
- * 
+ *
  *    CO-PILOT		: Steve Shaw
- * 
+ *
  *    DATE STARTED	: 06/17/92
- * 
+ *
  *    INITIAL RELEASE	: UNICOS 7.0
- * 
+ *
  *    TEST CASES
- * 
+ *
  * 	1.) fork returns without error
  *      2.) fork returns the pid of the child
  *	
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
- * 
+ *
  *    OUTPUT SPECIFICATIONS
  * 	
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
  *
  *    RESOURCES
  * 	None
- * 
+ *
  *    ENVIRONMENTAL NEEDS
  *      No run-time environmental needs.
- * 
+ *
  *    SPECIAL PROCEDURAL REQUIREMENTS
  * 	None
- * 
+ *
  *    INTERCASE DEPENDENCIES
  * 	None
- * 
+ *
  *    DETAILED DESCRIPTION
- * 
+ *
  * 	Setup:
  * 	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  *        fork()
@@ -108,11 +108,11 @@
  *           read child PID from file
  *           compare child PID to fork() return code and report
  *           results
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
- * 
+ *
+ *
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
 #include <errno.h>
@@ -144,10 +144,10 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
  ***************************************************************/
 void child_pid()
 {
-  
+ 
   int fildes;
   char tmp_line[LINE_SZ];
-  
+ 
   fildes = creat(FILENAME,0700);
   sprintf(tmp_line,"%d\n",getpid());
   write(fildes,tmp_line,LINE_SZ);
@@ -162,7 +162,7 @@ void child_pid()
  ***************************************************************/
 void parent_pid()
 {
-  
+ 
   int fildes;
   char tmp_line[LINE_SZ];
   pid_t child_id;
@@ -201,8 +201,8 @@ main(int ac, char **av)
     int lc;		/* loop counter */
     char *msg;		/* message returned from parse_opts */
     int fails;
-    int kid_status, wait_status; 
-    
+    int kid_status, wait_status;
+   
     /***************************************************************
      * parse standard options
      ***************************************************************/
@@ -223,12 +223,12 @@ main(int ac, char **av)
       /* reset Tst_count in case we are looping. */
       Tst_count=0;
       fails = 0;
-      
-      /* 
+     
+      /*
        * Call fork(2)
        */
       TEST(fork());
-      
+     
       /* check return code */
       if ( TEST_RETURN == -1 ) {
 	TEST_ERROR_LOG(TEST_ERRNO);
@@ -237,7 +237,7 @@ main(int ac, char **av)
 		   TEST_ERRNO, strerror(TEST_ERRNO));
 	  tst_resm(TBROK,"unable to continue");
 	}
-      } 
+      }
       if (TEST_RETURN == 0) {
 	/* child */
 	if ( STD_FUNCTIONAL_TEST ) {
@@ -255,14 +255,14 @@ main(int ac, char **av)
 	  if (wait_status == TEST_RETURN) {
 	    if (kid_status != KIDEXIT << 8) {
 	      tst_resm(TBROK,
-		       "incorrect child status returned on wait(): %d", 
+		       "incorrect child status returned on wait(): %d",
 		       kid_status);
 	      fails++;
 	    }
 	  }
 	  else {
-	    tst_resm(TBROK, 
-		     "wait() for child status failed with %d errno: %d : %s", 
+	    tst_resm(TBROK,
+		     "wait() for child status failed with %d errno: %d : %s",
 		     wait_status,errno,strerror(errno));
 	    fails++;
 	  }
@@ -273,7 +273,7 @@ main(int ac, char **av)
 	}	 	  /* STD_FUNCTIONAL_TEST */
       }  /* TEST_RETURN */
     }	/* End for TEST_LOOPING */
-    
+   
     /***************************************************************
      * cleanup and exit
      ***************************************************************/
@@ -285,7 +285,7 @@ main(int ac, char **av)
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void 
+void
   setup()
 {
   /* capture signals */
@@ -293,7 +293,7 @@ void
 
   /* Pause if that option was specified */
   TEST_PAUSE;
-  
+ 
   tst_tmpdir();
 }	/* End setup() */
 
@@ -302,7 +302,7 @@ void
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void 
+void
   cleanup()
 {
   /*

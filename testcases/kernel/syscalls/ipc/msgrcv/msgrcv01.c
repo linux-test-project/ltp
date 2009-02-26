@@ -151,7 +151,7 @@ do_child()
     int retval = 0;
 
     TEST(msgrcv(msg_q_1, &rcv_buf, MSGSIZE, 1, 0));
-    
+   
     if (TEST_RETURN == -1) {
 	retval = 1;
 	tst_resm(TFAIL, "%s call failed - errno = %d : %s",
@@ -163,7 +163,7 @@ do_child()
 	     * with the one received.
 	     */
 	    init_buf(&cmp_buf, MSGTYPE, MSGSIZE);
-	    
+	   
 	    if (strcmp(rcv_buf.mtext, cmp_buf.mtext) == 0) {
 		tst_resm(TPASS,
 			 "message received = " "message sent");

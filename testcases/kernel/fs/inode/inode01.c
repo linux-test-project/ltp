@@ -37,7 +37,7 @@ CALLS:	mkdir, stat, open
 /* modified by dale 25-Jul-84 */
 
 /************************************************/
-#define PATH_STRING_LENGTH  100 
+#define PATH_STRING_LENGTH  100
 #define NAME_LENGTH  8
 #define MAX_PATH_STRING_LENGTH  (PATH_STRING_LENGTH - NAME_LENGTH)
 #define MAX_DEPTH   3
@@ -175,7 +175,7 @@ int main()
 	
 	/****************************************/
 	/*					*/
-	/*   and store its name in path_list	*/ 
+	/*   and store its name in path_list	*/
 	/*					*/
 	/****************************************/
 
@@ -314,7 +314,7 @@ int level;    	/* the tree depth variable */
 
 		/********************************/
 		/*				*/
-		/*   Maximum path name length	*/ 
+		/*   Maximum path name length	*/
 		/*     	    reached 		*/
 		/*				*/
 		/********************************/
@@ -323,7 +323,7 @@ int level;    	/* the tree depth variable */
 		return(-1);
 	}
 	else if(level < MAX_DEPTH) {
-		for(i = 0; i <= MAX_BREADTH; i++) { 
+		for(i = 0; i <= MAX_BREADTH; i++) {
 			get_next_name();
 			strcpy(new_string, string);
 			strcat(new_string, slash);
@@ -364,7 +364,7 @@ int level;    	/* the tree depth variable */
 				/****************************************/
 
 				len = strlen(new_string);
-				for(j = 1; j <= FILE_LENGTH; j++) { 
+				for(j = 1; j <= FILE_LENGTH; j++) {
 					ret_len = write(file_id, new_string, len);
 					if(ret_len != len) {
 						fprintf(temp,"\tUnsuccessful write to file %s, expected return of %d, got %d, errno=%d\n",
@@ -376,7 +376,7 @@ int level;    	/* the tree depth variable */
 
 				/****************************************/
 				/*					*/
-				/*   and store its name in path_list	*/ 
+				/*   and store its name in path_list	*/
 				/*					*/
 				/****************************************/
 
@@ -409,7 +409,7 @@ int level;    	/* the tree depth variable */
 
 				/****************************************/
 				/*					*/
-				/*     store its name in path_list	*/ 
+				/*     store its name in path_list	*/
 				/*					*/
 				/****************************************/
 
@@ -427,7 +427,7 @@ int level;    	/* the tree depth variable */
 
 				new_level = level + 1;
 				new_ret_val = generate(new_string, new_level);
-				if(new_ret_val < ret_val) 
+				if(new_ret_val < ret_val)
 					ret_val = new_ret_val;	
 			}
 		}
@@ -447,7 +447,7 @@ int level;    	/* the tree depth variable */
 		/********************************/
 
 		return 0;
-} 
+}
 int check()
 
 /****************************************/
@@ -532,7 +532,7 @@ int check()
 						return(-2);
 					}	
 		}
-		else { 
+		else {
 
 	     	/********************************/
 		/*				*/
@@ -549,7 +549,7 @@ int check()
 			}
 			if((040000 & path_mode) != 040000){
 				fprintf(temp,"\tPath %s was not recognized to be a directory\n", path_string);
-				fprintf(temp,"\tIts mode is %o\n", path_mode); 
+				fprintf(temp,"\tIts mode is %o\n", path_mode);
 				return(-5);
 			}
 		}
@@ -607,7 +607,7 @@ int position;
 {
 	int next_position;
 
-	if(name[position] == 'z') 
+	if(name[position] == 'z')
 		if(position == 0) {	
 			fprintf(temp,"\tERROR: There are no more available names\n");
 			fail_exit();

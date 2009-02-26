@@ -1,5 +1,5 @@
 /*
-* $Id: timer.c,v 1.5 2008/12/22 07:33:03 subrata_modak Exp $
+* $Id: timer.c,v 1.6 2009/02/26 12:02:23 subrata_modak Exp $
 * Disktest
 * Copyright (c) International Business Machines Corp., 2001
 *
@@ -22,8 +22,8 @@
 *  questions or comments.
 *
 *  Project Website:  TBD
-* 
-* $Id: timer.c,v 1.5 2008/12/22 07:33:03 subrata_modak Exp $
+*
+* $Id: timer.c,v 1.6 2009/02/26 12:02:23 subrata_modak Exp $
 *
 */
 #include <stdio.h>
@@ -105,7 +105,7 @@ void *ChildTimer(void *vtest)
 			} else {
 				env->hbeat_stats.wtime++;
 			}
-		} 
+		}
 		if(args->flags & CLD_FLG_R) {
 			if((args->flags & CLD_FLG_LINEAR) && !(args->flags & CLD_FLG_NTRLVD)) {
 				if(TST_OPER(args->test_state) == READER) {
@@ -162,7 +162,7 @@ void *ChildTimer(void *vtest)
 #ifdef _DEBUG
 			PDBG3(DBUG, args, "io timeout reset\n");
 #endif
-		} 
+		}
 
 		if(((args->hbeat > 0) && ((run_time % args->hbeat) == 0)) || (signal_action & SIGNAL_STAT)) {
 			print_stats(args, env, HBEAT);

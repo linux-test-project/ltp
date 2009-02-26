@@ -18,7 +18,7 @@
 #include<linux/ext2_fs.h>
 
 /*
- * Test the ioctl() calls on a file whose name is given as the first 
+ * Test the ioctl() calls on a file whose name is given as the first
  * argument. This program expects the domain it is running under to have
  * wide access to the given file.
  */
@@ -29,7 +29,7 @@ int main(int argc, char **argv) {
   int val = 0;
 
   fd = open(argv[1], O_RDONLY, 0);
-  
+ 
   if(fd == -1) {
     perror("test_ioctl:open");
     exit(1);

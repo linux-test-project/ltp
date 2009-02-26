@@ -111,7 +111,7 @@ main(int ac, char **av)
 		/* Perform global setup for test */
 		setup();
 
-		/* 
+		/*
 		 * Call msync to synchronize the mapped region
 	 	 * with the specified file using invalid flag.
 		 * INV_SYNC.
@@ -160,7 +160,7 @@ main(int ac, char **av)
  * Write 1 page size char data into file.
  * Map the file to the specified page size region.
  */
-void 
+void
 setup()
 {
 	int c_total = 0, nwrite = 0;	/* no. of bytes to be written */
@@ -223,7 +223,7 @@ setup()
  * 	       Close the temporary file.
  * 	       Remove the temporary directory created.
  */
-void 
+void
 cleanup()
 {
 	/*

@@ -73,7 +73,7 @@
  *
  * RESTRICTIONS:
  *  This test should be run by 'non-super-user' only.
- * 
+ *
  */
 
 #include <stdio.h>
@@ -144,7 +144,7 @@ struct passwd *ltpuser;
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 
-char * bad_addr = 0;  
+char * bad_addr = 0; 
 
 int
 main(int ac, char **av)
@@ -184,7 +184,7 @@ main(int ac, char **av)
 			}
 #endif
 
-			/* 
+			/*
 			 * Call access(2) to test different test conditions.
 			 * verify that it fails with -1 return value and
 			 * sets appropriate errno.
@@ -202,7 +202,7 @@ main(int ac, char **av)
 
 			/*
 			 * Call a function to verify whether
-			 * the specified file has specified 
+			 * the specified file has specified
 			 * access mode.
 			 */
 			if (TEST_ERRNO == Test_cases[ind].exp_errno) {
@@ -229,7 +229,7 @@ main(int ac, char **av)
  *  Create a temporary directory and change directory to it.
  *  Call individual test specific setup functions.
  */
-void 
+void
 setup()
 {
 	int ind;			/* counter for testsetup functions */
@@ -308,7 +308,7 @@ setup1()
 	}
 
 	/* Change mode permissions on testfile */
-	if (chmod(TEST_FILE1, 0333) < 0) { 
+	if (chmod(TEST_FILE1, 0333) < 0) {
 		tst_brkm(TBROK, cleanup, "chmod() failed on %s, errno=%d",
 			 TEST_FILE1, errno);
 	}
@@ -343,7 +343,7 @@ setup2()
 	}
 
 	/* Change mode permissions on testfile */
-	if (chmod(TEST_FILE2, 0555) < 0) { 
+	if (chmod(TEST_FILE2, 0555) < 0) {
 		tst_brkm(TBROK, cleanup, "chmod() failed on %s, errno=%d",
 			 TEST_FILE2, errno);
 	}
@@ -378,7 +378,7 @@ setup3()
 	}
 
 	/* Change mode permissions on testfile */
-	if (chmod(TEST_FILE3, 0666) < 0) { 
+	if (chmod(TEST_FILE3, 0666) < 0) {
 		tst_brkm(TBROK, cleanup, "chmod() failed on %s, errno=%d",
 			 TEST_FILE3, errno);
 	}
@@ -437,7 +437,7 @@ longpath_setup()
  *
  *  Remove the test directory and testfile created in the setup.
  */
-void 
+void
 cleanup()
 {
 	/*

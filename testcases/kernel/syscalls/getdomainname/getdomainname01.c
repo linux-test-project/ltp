@@ -15,17 +15,17 @@
  *
  */
 /**********************************************************
- * 
- *    TEST IDENTIFIER	: getdomainname01 
- * 
+ *
+ *    TEST IDENTIFIER	: getdomainname01
+ *
  *    EXECUTED BY	: anyone
- * 
+ *
  *    TEST TITLE	: Basic test for getdomainname(2)
- * 
+ *
  *    TEST CASE TOTAL	: 1
- * 
+ *
  *    AUTHOR		: Saji Kumar.V.R <saji.kumar@wipro.com>
- * 
+ *
  *    SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
@@ -33,21 +33,21 @@
  *    DESCRIPTION
  *	This is a Phase I test for the getdomainname(2) system call.
  *	It is intended to provide a limited exposure of the system call.
- * 
+ *
  * 	Setup:
  * 	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
- * 
+ *
  * 	Test:
  *	 Loop if the proper options are given.
  * 	  Execute system call
  *	  Check return code, if system call failed (return=-1)
  *		Log the errno and Issue a FAIL message.
  *	  Otherwise, Issue a PASS message.
- * 
+ *
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
- * 
+ *
  * USAGE:  <for command-line>
  *  getdomainname01  [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
  *			where,  -c n : Run n copies concurrently.
@@ -84,7 +84,7 @@ main(int ac, char **av)
 
 	int lc;		/* loop counter */
 	char *msg;	/* message returned from parse_opts */
-    
+   
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
 	     != (char *)NULL) {
@@ -100,7 +100,7 @@ main(int ac, char **av)
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-		/* 
+		/*
 		 * Call getdomainname(2)
 		 */
 		TEST(getdomainname(domain_name, sizeof(domain_name)));
@@ -112,7 +112,7 @@ main(int ac, char **av)
 		} else {
 			tst_resm(TPASS, "getdomainname() returned %d ",
 				 TEST_RETURN);
-		} 
+		}
 
 
 	}	/* End for TEST_LOOPING */
@@ -126,7 +126,7 @@ main(int ac, char **av)
 }	/* End main */
 
 /* setup() - performs all ONE TIME setup for this test */
-void 
+void
 setup()
 {
 	
@@ -139,11 +139,11 @@ setup()
 }	/* End setup() */
 
 
-/* 
+/*
  *cleanup() -  performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void 
+void
 cleanup()
 {
 

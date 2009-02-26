@@ -209,7 +209,7 @@ main(int ac, char **av)
 }	/* End main */
 
 /*
- * void 
+ * void
  * setup(void) - performs all ONE TIME setup for this test.
  * 	Exit the test program on receipt of unexpected signals.
  *	Create a temporary directory and change directory to it.
@@ -254,10 +254,10 @@ setup()
  * int
  * setup1() - setup function for a test condition for which fchmod(2)
  *	      returns -1 and sets errno to EPERM.
- * 
+ *
  *  Create a test file under temporary directory.
  *  Get the current working directory of the process and invoke setuid
- *  to root program to change the ownership of testfile to that of 
+ *  to root program to change the ownership of testfile to that of
  *  "ltpuser" user.
  *
  */
@@ -362,7 +362,7 @@ cleanup()
 
 	/* Remove files and temporary directory created */
 	tst_rmdir();
-  
+ 
 	/* exit with return code appropriate for results */
 	tst_exit();
 }	/* End cleanup() */
