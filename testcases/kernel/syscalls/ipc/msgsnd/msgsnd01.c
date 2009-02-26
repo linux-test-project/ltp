@@ -95,9 +95,9 @@ int main(int ac, char **av)
 		/*
 		 * Use TEST macro to make the call
 		 */
-	
+
 		TEST(msgsnd(msg_q_1, &msg_buf, MSGSIZE, 0));
-	
+
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "%s call failed - errno = %d : %s",
 				 TCID, TEST_ERRNO, strerror(TEST_ERRNO));
@@ -121,7 +121,7 @@ int main(int ac, char **av)
 			}
 
 			tst_resm(TPASS, "queue bytes = MSGSIZE and "
-				 "queue messages = 1");	
+				 "queue messages = 1");
 		} else {
 			tst_resm(TPASS, "call succeeded");
 		}

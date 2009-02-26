@@ -119,7 +119,7 @@ main(int ac, char **av)
 
 		/* reset Tst_count in case we are looping. */
 		Tst_count=0;
-		
+	
 		/* Open a pipe */
 		if ((pipe(pfd)) == -1) {
 			tst_brkm(TBROK, cleanup, "pipe() failed");
@@ -137,7 +137,7 @@ main(int ac, char **av)
 #else
 		TEST(clone(child_fn, child_stack + CHILD_STACK_SIZE, 0, NULL));
 #endif
-	
+
 		/* check return code */
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "clone() Failed, errno = %d :"
@@ -184,7 +184,7 @@ main(int ac, char **av)
 void
 setup()
 {
-	
+
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
@@ -201,7 +201,7 @@ setup()
 void
 cleanup()
 {
-	
+
 	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
@@ -219,10 +219,10 @@ cleanup()
 int
 child_fn(void)
 {
-	
+
 	char pid[10];
 
-	/* Close read end from child */	
+	/* Close read end from child */
 	if ((close(pfd[0])) == -1) {
 		tst_brkm(TBROK, cleanup, "close(pfd[0]) failed");
 	}

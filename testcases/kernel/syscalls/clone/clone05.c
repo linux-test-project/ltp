@@ -129,7 +129,7 @@ main(int ac, char **av)
 #else
 		TEST(clone(child_fn, child_stack + CHILD_STACK_SIZE, FLAG, NULL));
 #endif
-	
+
 		/* check return code & parent_variable*/
 		if ((TEST_RETURN != -1) && (parent_variable)) {
 			tst_resm(TPASS, "Test Passed");
@@ -155,13 +155,13 @@ main(int ac, char **av)
 void
 setup()
 {
-	
+
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
-	
+
 }	/* End setup() */
 
 /*

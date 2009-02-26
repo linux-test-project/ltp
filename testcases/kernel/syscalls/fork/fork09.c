@@ -68,7 +68,7 @@ int mypid, nfiles;
 int main(int ac, char **av)
 {
 	int pid, status, nf;
-	
+
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
@@ -191,7 +191,7 @@ int main(int ac, char **av)
 	/*NOTREACHED*/
 	return 0;
 }
-	
+
 /*
  * setup() - performs all ONE TIME setup for this test
  */

@@ -53,7 +53,7 @@ struct evbuffer *
 evbuffer_new(void)
 {
 	struct evbuffer *buffer;
-	
+
 	buffer = calloc(1, sizeof(struct evbuffer));
 
 	return (buffer);
@@ -94,7 +94,7 @@ evbuffer_add_printf(struct evbuffer *buf, char *fmt, ...)
 
 	if (vasprintf(&msg, fmt, ap) == -1)
 		goto end;
-	
+
 	res = strlen(msg);
 	if (evbuffer_add(buf, msg, res) == -1)
 		res = -1;
@@ -162,7 +162,7 @@ evbuffer_read(struct evbuffer *buffer, int fd, int howmuch)
 {
 	u_char inbuf[4096];
 	int n;
-	
+
 	if (howmuch < 0 || howmuch > sizeof(inbuf))
 		howmuch = sizeof(inbuf);
 

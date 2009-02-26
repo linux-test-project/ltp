@@ -36,7 +36,7 @@
  *    DESCRIPTION
  * 	This test verifies that flock cannot unlock a file locked
  * 	by another task
- *		
+ *	
  *	Test:
  * 		Fork a child processes
  * 		The parent flocks a file with LOCK_EX
@@ -152,7 +152,7 @@ int main(int argc, char **argv)
 			tst_resm(TPASS, "flock03 Passed");
 		else
 			tst_resm(TFAIL, "flock03 Failed");
-	
+
 		close(fd);
 
 	}/* End of TEST_LOOPING */
@@ -229,7 +229,7 @@ void setup(void)
 	fd = creat(filename, 0666);
 	if (fd < 0) {
 		tst_resm(TFAIL, "creating a new file failed");
-		
+	
 		TEST_CLEANUP;
 
 		/* Removing temp dir */

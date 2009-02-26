@@ -156,7 +156,7 @@ int main(int ac, char **av)
 			}
 
 			cleanup();
-	
+
 		} else {			/* parent */
 			/* wait for the child to finish */
 			wait(&status);

@@ -89,7 +89,7 @@ int main(int ac, char **av)
 		 */
 
 		TEST(semget(semkey, PSEMS, IPC_CREAT | IPC_EXCL | SEM_RA));
-	
+
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "%s call failed - errno = %d : %s",
 				 TCID, TEST_ERRNO, strerror(TEST_ERRNO));
@@ -98,7 +98,7 @@ int main(int ac, char **av)
 			sem_id_1 = TEST_RETURN;
 
 			if (STD_FUNCTIONAL_TEST) {
-				check_functionality();	
+				check_functionality();
 			} else {
 				tst_resm(TPASS, "semaphore was created");
 			}

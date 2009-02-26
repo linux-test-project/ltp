@@ -48,7 +48,7 @@
  * CAUTION!!
  *	If a file is supplied to this program with the "-f" option
  *	it will be removed with a system("rm -rf filename") call.
- *	
+ *
  */
 
 #define _XOPEN_SOURCE 500
@@ -122,7 +122,7 @@ int main (ac, av)
         }
 
 	setup();
-	
+
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		local_flag = PASSED;
@@ -134,7 +134,7 @@ int main (ac, av)
                 } else {
                         tst_resm(TFAIL, "Test failed.");
                 }
-	
+
 		tst_rmdir();
 		tst_exit();
 	} /* end for */
@@ -170,7 +170,7 @@ setup()
 		tst_exit() ;
 	}
 
-	
+
 	/*
 	 * Default values for run conditions.
 	 */
@@ -279,7 +279,7 @@ int runtest()
 		tst_resm(TINFO, "CAUTION - ftest03, '%s' may not be removed",
 		  fuss);
 	}
-	
+
 	sync();				/* safeness */
 	return 0;
 }
@@ -370,7 +370,7 @@ int dotest(testers, me, fd)
 			tst_exit();
 		}
 		val_iovec[i].iov_len = w_ioveclen;
-		
+	
 		if(malloc((i+1)*8) == 0) {
 			tst_resm(TBROK, "\tmalloc failed");
 			tst_exit();

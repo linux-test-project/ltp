@@ -118,12 +118,12 @@ int main(int ac, char **av)
 
 			TEST(semctl(*(TC[i].sem_id), 0, TC[i].ipc_cmd,
 			     TC[i].arg));
-	
+
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
 				continue;
 			}
-	
+
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO == TC[i].error) {

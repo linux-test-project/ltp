@@ -26,7 +26,7 @@
  *
  * ALGORITHM
  * 	Parent forks processes until -1 is returned. 
- * 	
+ * 
  * USAGE
  * 	fork12
  * 	** CAUTION ** Can hang your machine, esp prior to 2.4.19

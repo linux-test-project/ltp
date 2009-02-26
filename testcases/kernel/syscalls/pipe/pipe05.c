@@ -97,7 +97,7 @@ int main(int ac, char **av)
 		TEST(pipe((int *)pipes));
                 }
                 sigaction(SIGSEGV, &osa, NULL);
-	
+
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "call succeeded unexpectedly");
 		}

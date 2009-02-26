@@ -169,7 +169,7 @@ do_child()
 
 	while(1)
 		usleep(10);
-	
+
 	exit(exno);
 }
 

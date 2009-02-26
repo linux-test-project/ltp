@@ -120,10 +120,10 @@ main(int ac, char **av)
 	 * perform global setup for test
 	 */
 	setup();
-	
+
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
-	
+
 	/*
 	 * check looping state if -i option given
 	 */
@@ -132,7 +132,7 @@ main(int ac, char **av)
 		/* reset Tst_count in case we are looping. */
 		Tst_count=0;
 
-//test1:		
+//test1:	
 		/*
 		 * attempt to rmdir a file whose parent directory has
 		 * the sticky bit set without the root right
@@ -157,7 +157,7 @@ main(int ac, char **av)
 			/* NOTREACHED */
 		}
 		/* set the sticky bit */
-		if (chmod(tstdir1,buf1.st_mode|S_ISVTX)!= 0) {	
+		if (chmod(tstdir1,buf1.st_mode|S_ISVTX)!= 0) {
 			perror("chmod");
 			tst_brkm(TBROK, cleanup,
 				 "failed to set the S_ISVTX bit");
@@ -185,7 +185,7 @@ main(int ac, char **av)
 		}
 		/* Parent */
 
-//test2:		
+//test2:	
 		/* create the a directory with 0700 permits */
 		if (mkdir(tstdir3, 0700) == -1) {
 		       	 tst_brkm(TBROK, cleanup, "mkdir(%s, %#o) Failed",
@@ -237,12 +237,12 @@ main(int ac, char **av)
 		(void)rmdir(tstdir3);
 
 	}   /* End for TEST_LOOPING */
-	
+
 	/*
 	 * cleanup and exit
 	 */
 	cleanup();
-	
+
 	/*NOTREACHED*/
 
   return 0;
@@ -265,14 +265,14 @@ dochild1()
 			 "set effective uid to %d", nobody->pw_uid);
 		/*NOTREACHED*/
 	}		 
-	
+
 	/* rmdir tstdir2 */
 	TEST(rmdir(tstdir2));
-	
+
 	if (TEST_ERRNO) {
 		TEST_ERROR_LOG(TEST_ERRNO);
 	}
-	
+
 	if (TEST_RETURN != -1) {
 		retval=1;
 		tst_resm(TFAIL, "call succeeded unexpectedly");
@@ -282,7 +282,7 @@ dochild1()
 	} else {
 		tst_resm(TPASS, "rmdir() produced EPERM or EACCES");
 	}
-	
+
 	if (seteuid(0) == -1) {
 		retval=1;
 		tst_brkm(TBROK, cleanup, "seteuid(0) failed");
@@ -307,14 +307,14 @@ dochild2()
 			 "set effective uid to %d", nobody->pw_uid);
 		/*NOTREACHED*/
 	}
-	
+
 	/* rmdir tstdir4*/
 	TEST(rmdir(tstdir4));
-	
+
 	if (TEST_ERRNO) {
 		TEST_ERROR_LOG(TEST_ERRNO);
 	}
-	
+
 	if (TEST_RETURN != -1) {
 		retval = 1;
 		tst_resm(TFAIL, "call succeeded unexpectedly");
@@ -324,7 +324,7 @@ dochild2()
 	} else {
 		tst_resm(TPASS, "rmdir() produced EACCES");
 	}
-	
+
 	if (seteuid(0) == -1) {
 		retval = 1;
 		tst_brkm(TBROK, cleanup, "seteuid(0) failed");
@@ -356,7 +356,7 @@ setup()
 	chmod(".", 0777);
 
 	umask(0);
-	
+
 	sprintf(tstdir1,"./tstdir1_%d",getpid());
 	sprintf(tstdir2,"%s/tstdir2_%d",tstdir1,getpid());
 	sprintf(tstdir3,"./tstdir3_%d",getpid());
@@ -380,7 +380,7 @@ cleanup()
 	 * Remove the temporary directory.
 	 */
 	tst_rmdir();
-	
+
 	/*
 	 * Exit with return code appropriate for results.
 	 */

@@ -27,7 +27,7 @@
  *	- the process is not the owner of the file/directory.
  *	- the effective group ID or one of the supplementary group ID's of the
  *	  process is equal to the group ID of the file/directory.
- *	
+ *
  * Expected Result:
  *  fchmod() should return value 0 on success and succeeds to set sticky bit
  *  on the specified file.
@@ -44,7 +44,7 @@
  *   Check return code, if system call failed (return=-1)
  *   	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call	
+ *   	Verify the Functionality of system call
  *      if successful,
  *      	Issue Functionality-Pass message.
  *      Otherwise,
@@ -61,7 +61,7 @@
  *	       -I x : Execute test for x seconds.
  *	       -P x : Pause for x seconds between iterations.
  *	       -t   : Turn on syscall timing.
- *		
+ *	
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
  *
@@ -127,7 +127,7 @@ main(int ac, char **av)
 		 * (sticky-bit set) on testfile.
 	 	 */
 		TEST(fchmod(fd, PERMS));
-	
+
 		/* check return code of fchmod(2) */
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "fchmod(%d, %#o) Failed, errno=%d : %s",
@@ -228,7 +228,7 @@ setup()
 	if (chown(TESTFILE, user1_uid, group1_gid) < 0) {
 		tst_brkm(TBROK, cleanup, "chown(2) of %s failed", TESTFILE);
 	}
-	
+
 	/* Set the effective gid of the process to that of user */
 	if (setgid(group1_gid) < 0) {
 		tst_brkm(TBROK, cleanup, "setgid(2) to %d failed", group1_gid);

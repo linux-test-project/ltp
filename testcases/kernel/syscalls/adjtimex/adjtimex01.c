@@ -140,7 +140,7 @@ setup()
 	}
 
 	tim_save.modes = 0;
-	
+
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 

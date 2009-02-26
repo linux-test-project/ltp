@@ -184,7 +184,7 @@ int main(int argc, char **argv)				/***** BEGINNING OF MAIN. *****/
 	 *  else part of the program.
 	 *  SIGQUIT like SIGABRT normally causes a program to quit and
 	 *  and dumps core.  So moved the condition to else part of the
-	 *  program.	
+	 *  program.
 	 */
 	/*****	**	**	*****/
 		if (core) {
@@ -241,7 +241,7 @@ do_child()
 {
 	register int i;
 	int exno = 1;
-	
+
 	for (i=0; i < 180; i++)
 		sleep(1);
 	fprintf(temp, "\tChild missed sig %d\n", sig);

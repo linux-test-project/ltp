@@ -130,7 +130,7 @@ tmodclose() {
 		close (tmod_fd);
 		tmod_fd = -1;
 	}
-		
+	
 	return 0;
 }
 
@@ -145,7 +145,7 @@ int main() {
                 exit(1);
         }
 
-	
+
 
 	/* make test calls */
 	if(ki_generic(tmod_fd, LTP_OPTION1))

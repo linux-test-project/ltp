@@ -37,7 +37,7 @@
  *
  * tusb.c
  */
-	
+
 #include <linux/autoconf.h>
 #include <linux/types.h>
 #include <linux/kernel.h>
@@ -113,7 +113,7 @@ static void tusb_disconnect(struct usb_interface *intf) {
 static int tusb_probe(struct usb_interface *intf,  const struct usb_device_id *id) {
         printk("tusb: Entered probe function\n");
         return 0;
-	
+
 }
 
 
@@ -180,11 +180,11 @@ static int tusb_ioctl(struct inode *ino, struct file *f,
 	int 			rc;
 	tusb_interface_t	tif;
 	caddr_t			*inparms;
-	caddr_t			*outparms;	
+	caddr_t			*outparms;
 
 	printk("tusb: Entered the ioctl call\n");
-	
-	rc = 0;		
+
+	rc = 0;	
 	inparms = NULL;
 	outparms = NULL;
 
@@ -215,7 +215,7 @@ static int tusb_ioctl(struct inode *ino, struct file *f,
                         return(-ENOMEM);
                 }
         }
-	
+
 	switch(cmd) {
 		case FIND_DEV:		rc = test_find_usbdev(); break;
 		case TEST_FIND_HCD:	rc = test_find_hcd(); break;
@@ -225,7 +225,7 @@ static int tusb_ioctl(struct inode *ino, struct file *f,
 		case TEST_HCD_RESUME:	rc = test_hcd_resume(); break;
 		default:
 			printk("Mismatching ioctl command\n");
-			rc = 1;	
+			rc = 1;
 			break;
 	}
 
@@ -283,7 +283,7 @@ static int test_find_usbdev() {
 
 	ltp_usb.bus = bus;
 	ltp_usb.dev = udev;
-	
+
 	/* allocate the usb_bus pointer */
 #if 0
 	bus = usb_alloc_bus(&test_device_operations);
@@ -336,12 +336,12 @@ static int test_find_hcd() {
 	if(pdev) {
 		printk("tusb: WOOT! Found a usb host controller!\n");
 		printk("tusb: Slot number: %d\n", pdev->devfn);
-		
+	
 		memcpy(ltp_usb.pdev, pdev, sizeof(struct pci_dev));
 
 		if(pdev->driver->id_table)
 			printk("tusb: id_table exists\n");
-		
+	
 		return 0;
 	}
 	else {
@@ -354,7 +354,7 @@ static int test_find_hcd() {
 #endif
 
 }
-		
+	
 /*
  * test_hcd_probe
  * 	make call to usb_hcd_pci_probe which will
@@ -379,7 +379,7 @@ static int test_hcd_probe() {
 
 	/* release regions before probe call */
 	hcd = pci_get_drvdata(pdev);
-	
+
 	if(!hcd) {
 		printk("tusb: hcd pointer not found\n");
 		return 1;
@@ -395,10 +395,10 @@ static int test_hcd_probe() {
 		printk("tusb: retval hcd probe = %d\n", rc);
 	else
 		printk("tusb: Success for usb_hcd_pci_probe\n");
-	
+
 	return rc;
-}	
-	
+}
+
 /*
  * test_hcd_remove
  *	make call to usb_hcd_pci_remove which will
@@ -421,14 +421,14 @@ static int test_hcd_remove() {
 		pdev = ltp_usb.pdev;
 		hcd = pci_get_drvdata(pdev);
 	}
-		
+	
 	if(!hdrv->stop) {
 		printk("tusb: stop function not found\n");
 		return 1;
 	}
 	else
 		hcd->driver->stop(hcd);
-		
+	
 	return 0;
 }
 
@@ -441,22 +441,22 @@ static int test_hcd_remove() {
 static int test_hcd_suspend() {
 	int rc;
 	struct pci_dev *pdev = NULL;
-	
+
 	/* check that pdev is set */
 	if(!(pdev = ltp_usb.pdev)) {
 		printk("tusb: Cant find host controller pci_dev pointer\n");
 		return 1;
 	}
-	
+
 	/* make call and check return value */
 	rc = usb_hcd_pci_suspend(pdev, (u32) 2);
 	if(rc)
 		printk("tusb: Suspend retval failure\n");
-	else	
+	else
 		printk("tusb: Suspend success\n");
 
 	return rc;
-}	
+}
 
 /*
  * test_hcd_resume
@@ -473,7 +473,7 @@ static int test_hcd_resume() {
                 printk("tusb: Cant find host controller pci_dev pointer\n");
                 return 1;
         }
-	
+
         /* make call and check return value */
         rc = usb_hcd_pci_resume(pdev);
         if(rc)
@@ -482,7 +482,7 @@ static int test_hcd_resume() {
                 printk("tusb: Resume success\n");
 
         return rc;
-}		
+}	
 
 
 

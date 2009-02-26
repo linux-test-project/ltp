@@ -104,7 +104,7 @@ main(int ac, char **av)
 		 * Call getdomainname(2)
 		 */
 		TEST(getdomainname(domain_name, sizeof(domain_name)));
-	
+
 		/* check return code */
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "getdomainname() Failed, errno = %d :"
@@ -129,7 +129,7 @@ main(int ac, char **av)
 void
 setup()
 {
-	
+
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 

@@ -33,7 +33,7 @@
  *	other than that of this process and with the setgid bit set.
  *	In each directory, create a file with and without the setgid
  *	bit set in the creation modes. Verify that the modes and group
- *	ID are correct on each of the 4 files.	
+ *	ID are correct on each of the 4 files.
  *	As root, create a file with the setgid bit on in the
  *	directory with the setgid bit.
  *	This tests the SVID3 create group semantics.

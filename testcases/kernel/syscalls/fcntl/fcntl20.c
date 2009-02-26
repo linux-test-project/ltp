@@ -481,7 +481,7 @@ int main(int ac, char **av)
 /* //block4: */
 		tst_resm(TINFO, "Enter blcok 4");
 		fail = 0;
-		
+	
 		/*
 		 * Set a read lock in the middle of a file and unlock a
 		 * section in the middle of it
@@ -575,7 +575,7 @@ int main(int ac, char **av)
 /* //block6: */
 		tst_resm(TINFO, "Enter block 6");
 		fail = 0;
-		
+	
 		/*
 		 * Set read lock in the middle of the file and do an unlock
 		 * starting at the last byte of the read lock

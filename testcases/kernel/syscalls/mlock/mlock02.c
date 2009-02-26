@@ -23,7 +23,7 @@
  *
  * DESCRIPTION
  * 	Test to see the proper errors are returned by mlock
- * 	
+ * 
  * ALGORITHM
  * 	test 1:
  *		Call mlock with a NULL address.  ENOMEM should be returned

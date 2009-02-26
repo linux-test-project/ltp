@@ -121,10 +121,10 @@ main(int ac, char **av)
 	 * perform global setup for test
 	 */
 	setup();
-	
+
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
-	
+
 	/*
 	 * check looping state if -i option given
 	 */
@@ -168,7 +168,7 @@ main(int ac, char **av)
 		/* wait for child to exit */
 		wait(&status);
 		if (!WIFEXITED(status) || (WEXITSTATUS(status) != 0)) {
-			tst_brkm(TBROK, cleanup, "First child failed to set "	
+			tst_brkm(TBROK, cleanup, "First child failed to set "
 				 "up conditions for the test");
 		}
 
@@ -194,7 +194,7 @@ main(int ac, char **av)
 				 /*NOTREACHED*/
 			}
 
-			/* create the new file */			
+			/* create the new file */		
 			do_file_setup(mname);
 
 			/* rename "old" to "new" */
@@ -213,7 +213,7 @@ main(int ac, char **av)
 			} else {
 				tst_resm(TPASS, "rename() returned EACCES");
 			}
-			
+		
 			/* set the process id back to root */
 			if (seteuid(0) == -1) {
 				tst_resm(TWARN, "seteuid(0) failed");
@@ -243,12 +243,12 @@ main(int ac, char **av)
 			}
 		}
 	}   /* End for TEST_LOOPING */
-	
+
 	/*
 	 * cleanup and exit
 	 */
 	cleanup();
-	
+
 	/*NOTREACHED*/
 
   return 0;
@@ -266,7 +266,7 @@ setup()
 		tst_brkm(TBROK, tst_exit, "Must run test as root");
 		/*NOTREACHED*/
 	}
-	
+
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
@@ -280,7 +280,7 @@ setup()
 	chmod(".", 0777);
 
 	umask(0);
-	
+
 	sprintf(fdir,"tdir_%d",getpid());
 	sprintf(mdir,"rndir_%d",getpid());
 	sprintf(fname,"%s/tfile_%d",fdir,getpid());
@@ -307,7 +307,7 @@ cleanup()
 	 * Remove the temporary directory.
 	 */
 	tst_rmdir();
-	
+
 	/*
 	 * Exit with return code appropriate for results.
 	 */

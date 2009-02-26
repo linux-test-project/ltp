@@ -134,12 +134,12 @@ do_child()
 		errno = 0;
 		addr = shmat(shm_id_1, (const void *)0, 0);
 		TEST_ERRNO = errno;
-	
+
 		if (addr != (char *)-1) {
 			tst_resm(TFAIL, "call succeeded when error expected");
 			continue;
 		}
-	
+
 		TEST_ERROR_LOG(TEST_ERRNO);
 
 		switch(TEST_ERRNO) {
@@ -153,7 +153,7 @@ do_child()
 				 "unexpected error - %d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 			break;
-		}			
+		}		
 	}
 }
 

@@ -28,7 +28,7 @@ int main(int argc, char *argv[]){
 		printf ("Unable to open file %s !", file);
 		return -1;
 	}
-	
+
        if(-1 == (s = flistxattr(fd, list, 1024)) ) {
                perror("flistxattr");
                return 1;
@@ -63,7 +63,7 @@ int main(int argc, char *argv[]){
                 printf("errno = %i\n", errno);
                 rc = 1;
         }
-	
-	close (fd);	
-	return  rc;		
+
+	close (fd);
+	return  rc;	
 }

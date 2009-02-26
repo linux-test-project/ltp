@@ -61,7 +61,7 @@ void *Thread(void *);
 
 void LogStat(struct stat *statfs)
 {
-	
+
 	DMLOG_PRINT(DMLVL_DEBUG, "  st_dev %d\n", statfs->st_dev);
 	DMLOG_PRINT(DMLVL_DEBUG, "  st_ino %d\n", statfs->st_ino);
 	DMLOG_PRINT(DMLVL_DEBUG, "  st_mode 0x%x\n", statfs->st_mode);
@@ -76,7 +76,7 @@ void LogStat(struct stat *statfs)
 	DMLOG_PRINT(DMLVL_DEBUG, "  st_mtime %d\n", statfs->st_mtime);
 	DMLOG_PRINT(DMLVL_DEBUG, "  st_ctime %d\n", statfs->st_ctime);
 
-}	
+}
 
 /*
  * StatCmp is used instead of memcmp because some of the pad fields or unused
@@ -84,7 +84,7 @@ void LogStat(struct stat *statfs)
  */
 int StatCmp(struct stat *stat1, struct stat *stat2)
 {
-	
+
 	if ((stat1->st_dev != stat2->st_dev) ||
 	    (stat1->st_ino != stat2->st_ino) ||
 	    (stat1->st_mode != stat2->st_mode) ||
@@ -103,7 +103,7 @@ int StatCmp(struct stat *stat1, struct stat *stat2)
 		return 0;
 	}
 
-}	
+}
 
 int main(int argc, char **argv)
 {
@@ -120,7 +120,7 @@ int main(int argc, char **argv)
 
 	DMEV_ZERO(events);
 	DMEV_SET(DM_EVENT_MOUNT, events);
-	
+
 	/* CANNOT DO ANYTHING WITHOUT SUCCESSFUL INITIALIZATION!!! */
 	if ((rc = dm_init_service(&varstr)) != 0) {
 		DMLOG_PRINT(DMLVL_ERR, "dm_init_service failed! (rc = %d, errno = %d)\n", rc, errno);
@@ -142,7 +142,7 @@ int main(int argc, char **argv)
 		DM_EXIT();
 	} else {
 		int fd;
-		
+	
 		sprintf(DummyFile, "%s/%s", mountPt, DUMMY_FILE);
 		sprintf(DummySubdir, "%s/%s", mountPt, DUMMY_SUBDIR);
 		sprintf(DummyTmp, "%s/%s", mountPt, DUMMY_TMP);
@@ -159,7 +159,7 @@ int main(int argc, char **argv)
 				if (write(fd, DUMMY_STRING, DUMMY_STRLEN) != DUMMY_STRLEN) {
 					rc = -1;
 					break;
-				}					
+				}				
 			}
 		} else {
 			rc = -1;
@@ -200,15 +200,15 @@ int main(int argc, char **argv)
 	DMEV_SET(DM_EVENT_SYMLINK, maxFileEvents);
 	DMEV_SET(DM_EVENT_POSTSYMLINK, maxFileEvents);
 	DMEV_SET(DM_EVENT_ATTRIBUTE, maxFileEvents);
-	
+
 	DMEV_ZERO(minFileEvents);
 	DMEV_SET(DM_EVENT_PREUNMOUNT, minFileEvents);
 	DMEV_SET(DM_EVENT_UNMOUNT, minFileEvents);
 
 	DMLOG_PRINT(DMLVL_DEBUG, "Starting DMAPI invisible read/write tests\n") ;
-	
+
 	szFuncName = "dm_read_invis";
-	
+
 	/*
 	 * TEST    : dm_read_invis - invalid sid
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -474,7 +474,7 @@ int main(int argc, char **argv)
 			dm_set_eventlist(sid, fshanp, fshlen, DM_NO_TOKEN, &minFileEvents, DM_EVENT_MAX);
 			if (rc == inlen) {
 				DMLOG_PRINT(DMLVL_DEBUG, "read %d bytes\n", rc);
-				if (memcmp(buf, DUMMY_STRING, DUMMY_STRLEN) == 0) {	
+				if (memcmp(buf, DUMMY_STRING, DUMMY_STRLEN) == 0) {
 					DMLOG_PRINT(DMLVL_DEBUG, "buffer contents [%.*s]\n", rc, buf);
 					if (eventReceived == DM_EVENT_INVALID) {
 						DMLOG_PRINT(DMLVL_DEBUG, "no event received\n");
@@ -488,7 +488,7 @@ int main(int argc, char **argv)
 							DMLOG_PRINT(DMLVL_DEBUG, "stat info after:\n");
 							LogStat(&statfs2);
 							DMVAR_FAIL();
-						}			
+						}		
 					} else {
 						DMLOG_PRINT(DMLVL_ERR, "event %d received!\n", eventReceived);
 						DMVAR_FAIL();
@@ -559,7 +559,7 @@ int main(int argc, char **argv)
 			dm_set_eventlist(sid, fshanp, fshlen, DM_NO_TOKEN, &minFileEvents, DM_EVENT_MAX);
 			if (rc == inlen) {
 				DMLOG_PRINT(DMLVL_DEBUG, "read %d bytes\n", rc);
-				if (memcmp(buf, DUMMY_STRING, DUMMY_STRLEN) == 0) {	
+				if (memcmp(buf, DUMMY_STRING, DUMMY_STRLEN) == 0) {
 					DMLOG_PRINT(DMLVL_DEBUG, "buffer contents [%.*s]\n", rc, buf);
 					if (eventReceived == DM_EVENT_INVALID) {
 						DMLOG_PRINT(DMLVL_DEBUG, "no event received\n");
@@ -573,7 +573,7 @@ int main(int argc, char **argv)
 							DMLOG_PRINT(DMLVL_DEBUG, "stat info after:\n");
 							LogStat(&statfs2);
 							DMVAR_FAIL();
-						}			
+						}		
 					} else {
 						DMLOG_PRINT(DMLVL_ERR, "event %d received!\n", eventReceived);
 						DMVAR_FAIL();
@@ -596,7 +596,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_read_invis - file end
 	 * EXPECTED: rc = DUMMY_STRLEN
@@ -644,7 +644,7 @@ int main(int argc, char **argv)
 			dm_set_eventlist(sid, fshanp, fshlen, DM_NO_TOKEN, &minFileEvents, DM_EVENT_MAX);
 			if (rc == inlen) {
 				DMLOG_PRINT(DMLVL_DEBUG, "read %d bytes\n", rc);
-				if (memcmp(buf, DUMMY_STRING, DUMMY_STRLEN) == 0) {	
+				if (memcmp(buf, DUMMY_STRING, DUMMY_STRLEN) == 0) {
 					DMLOG_PRINT(DMLVL_DEBUG, "buffer contents [%.*s]\n", rc, buf);
 					if (eventReceived == DM_EVENT_INVALID) {
 						DMLOG_PRINT(DMLVL_DEBUG, "no event received\n");
@@ -658,7 +658,7 @@ int main(int argc, char **argv)
 							DMLOG_PRINT(DMLVL_DEBUG, "stat info after:\n");
 							LogStat(&statfs2);
 							DMVAR_FAIL();
-						}			
+						}		
 					} else {
 						DMLOG_PRINT(DMLVL_ERR, "event %d received!\n", eventReceived);
 						DMVAR_FAIL();
@@ -681,7 +681,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_read_invis - overlaps file end
 	 * EXPECTED: rc = DUMMY_STRLEN/2
@@ -729,7 +729,7 @@ int main(int argc, char **argv)
 			dm_set_eventlist(sid, fshanp, fshlen, DM_NO_TOKEN, &minFileEvents, DM_EVENT_MAX);
 			if (rc == DUMMY_STRLEN/2) {
 				DMLOG_PRINT(DMLVL_DEBUG, "read %d bytes\n", rc);
-				if (memcmp(buf, DummyString+(DUMMY_STRLEN/2), DUMMY_STRLEN/2) == 0) {	
+				if (memcmp(buf, DummyString+(DUMMY_STRLEN/2), DUMMY_STRLEN/2) == 0) {
 					DMLOG_PRINT(DMLVL_DEBUG, "buffer contents [%.*s]\n", rc, buf);
 					if (eventReceived == DM_EVENT_INVALID) {
 						DMLOG_PRINT(DMLVL_DEBUG, "no event received\n");
@@ -743,7 +743,7 @@ int main(int argc, char **argv)
 							DMLOG_PRINT(DMLVL_DEBUG, "stat info after:\n");
 							LogStat(&statfs2);
 							DMVAR_FAIL();
-						}			
+						}		
 					} else {
 						DMLOG_PRINT(DMLVL_ERR, "event %d received!\n", eventReceived);
 						DMVAR_FAIL();
@@ -766,7 +766,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_read_invis - DM_NO_SESSION sid
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -883,7 +883,7 @@ int main(int argc, char **argv)
 		char buf[DUMMY_STRLEN];
 
 		/* Variation set up */
-		
+	
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
 		rc = dm_read_invis(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, inoff, inlen, buf);
@@ -928,7 +928,7 @@ int main(int argc, char **argv)
 	}
 
 	szFuncName = "dm_write_invis";
-	
+
 	/*
 	 * TEST    : dm_write_invis - invalid sid
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -1197,7 +1197,7 @@ int main(int argc, char **argv)
 			dm_set_eventlist(sid, fshanp, fshlen, DM_NO_TOKEN, &minFileEvents, DM_EVENT_MAX);
 			if (rc == outlen) {
 				DMLOG_PRINT(DMLVL_DEBUG, "wrote %d bytes\n", rc);
-				if ((rc2 == 0) && (lseek(fd, outoff, SEEK_SET) == outoff) && (read(fd, buf, DUMMY_STRLEN) == outlen) && (memcmp(buf, DUMMY_STRING2, DUMMY_STRLEN) == 0)) {	
+				if ((rc2 == 0) && (lseek(fd, outoff, SEEK_SET) == outoff) && (read(fd, buf, DUMMY_STRLEN) == outlen) && (memcmp(buf, DUMMY_STRING2, DUMMY_STRLEN) == 0)) {
 					DMLOG_PRINT(DMLVL_DEBUG, "buffer contents [%.*s]\n", rc, buf);
 					if (eventReceived == DM_EVENT_INVALID) {
 						DMLOG_PRINT(DMLVL_DEBUG, "no event received\n");
@@ -1211,7 +1211,7 @@ int main(int argc, char **argv)
 							DMLOG_PRINT(DMLVL_DEBUG, "stat info after:\n");
 							LogStat(&statfs2);
 							DMVAR_FAIL();
-						}			
+						}		
 					} else {
 						DMLOG_PRINT(DMLVL_ERR, "event %d received!\n", eventReceived);
 						DMVAR_FAIL();
@@ -1289,7 +1289,7 @@ int main(int argc, char **argv)
 			dm_set_eventlist(sid, fshanp, fshlen, DM_NO_TOKEN, &minFileEvents, DM_EVENT_MAX);
 			if (rc == outlen) {
 				DMLOG_PRINT(DMLVL_DEBUG, "wrote %d bytes\n", rc);
-				if ((rc2 == 0) && (lseek(fd, outoff, SEEK_SET) == outoff) && (read(fd, buf, DUMMY_STRLEN) == outlen) && (memcmp(buf, DUMMY_STRING2, DUMMY_STRLEN) == 0)) {	
+				if ((rc2 == 0) && (lseek(fd, outoff, SEEK_SET) == outoff) && (read(fd, buf, DUMMY_STRLEN) == outlen) && (memcmp(buf, DUMMY_STRING2, DUMMY_STRLEN) == 0)) {
 					DMLOG_PRINT(DMLVL_DEBUG, "buffer contents [%.*s]\n", rc, buf);
 					if (eventReceived == DM_EVENT_INVALID) {
 						DMLOG_PRINT(DMLVL_DEBUG, "no event received\n");
@@ -1303,7 +1303,7 @@ int main(int argc, char **argv)
 							DMLOG_PRINT(DMLVL_DEBUG, "stat info after:\n");
 							LogStat(&statfs2);
 							DMVAR_FAIL();
-						}			
+						}		
 					} else {
 						DMLOG_PRINT(DMLVL_ERR, "event %d received!\n", eventReceived);
 						DMVAR_FAIL();
@@ -1327,7 +1327,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_write_invis - file end, async
 	 * EXPECTED: rc = DUMMY_STRLEN
@@ -1381,7 +1381,7 @@ int main(int argc, char **argv)
 			dm_set_eventlist(sid, fshanp, fshlen, DM_NO_TOKEN, &minFileEvents, DM_EVENT_MAX);
 			if (rc == outlen) {
 				DMLOG_PRINT(DMLVL_DEBUG, "wrote %d bytes\n", rc);
-				if ((rc2 == 0) && (lseek(fd, outoff, SEEK_SET) == outoff) && (read(fd, buf, DUMMY_STRLEN) == outlen) && (memcmp(buf, DUMMY_STRING2, DUMMY_STRLEN) == 0)) {	
+				if ((rc2 == 0) && (lseek(fd, outoff, SEEK_SET) == outoff) && (read(fd, buf, DUMMY_STRLEN) == outlen) && (memcmp(buf, DUMMY_STRING2, DUMMY_STRLEN) == 0)) {
 					DMLOG_PRINT(DMLVL_DEBUG, "buffer contents [%.*s]\n", rc, buf);
 					if (eventReceived == DM_EVENT_INVALID) {
 						DMLOG_PRINT(DMLVL_DEBUG, "no event received\n");
@@ -1395,7 +1395,7 @@ int main(int argc, char **argv)
 							DMLOG_PRINT(DMLVL_DEBUG, "stat info after:\n");
 							LogStat(&statfs2);
 							DMVAR_FAIL();
-						}			
+						}		
 					} else {
 						DMLOG_PRINT(DMLVL_ERR, "event %d received!\n", eventReceived);
 						DMVAR_FAIL();
@@ -1419,7 +1419,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_write_invis - file start, sync
 	 * EXPECTED: rc = DUMMY_STRLEN
@@ -1473,7 +1473,7 @@ int main(int argc, char **argv)
 			dm_set_eventlist(sid, fshanp, fshlen, DM_NO_TOKEN, &minFileEvents, DM_EVENT_MAX);
 			if (rc == outlen) {
 				DMLOG_PRINT(DMLVL_DEBUG, "wrote %d bytes\n", rc);
-				if ((rc2 == 0) && (lseek(fd, outoff, SEEK_SET) == outoff) && (read(fd, buf, DUMMY_STRLEN) == outlen) && (memcmp(buf, DUMMY_STRING2, DUMMY_STRLEN) == 0)) {	
+				if ((rc2 == 0) && (lseek(fd, outoff, SEEK_SET) == outoff) && (read(fd, buf, DUMMY_STRLEN) == outlen) && (memcmp(buf, DUMMY_STRING2, DUMMY_STRLEN) == 0)) {
 					DMLOG_PRINT(DMLVL_DEBUG, "buffer contents [%.*s]\n", rc, buf);
 					if (eventReceived == DM_EVENT_INVALID) {
 						DMLOG_PRINT(DMLVL_DEBUG, "no event received\n");
@@ -1487,7 +1487,7 @@ int main(int argc, char **argv)
 							DMLOG_PRINT(DMLVL_DEBUG, "stat info after:\n");
 							LogStat(&statfs2);
 							DMVAR_FAIL();
-						}			
+						}		
 					} else {
 						DMLOG_PRINT(DMLVL_ERR, "event %d received!\n", eventReceived);
 						DMVAR_FAIL();
@@ -1565,7 +1565,7 @@ int main(int argc, char **argv)
 			dm_set_eventlist(sid, fshanp, fshlen, DM_NO_TOKEN, &minFileEvents, DM_EVENT_MAX);
 			if (rc == outlen) {
 				DMLOG_PRINT(DMLVL_DEBUG, "wrote %d bytes\n", rc);
-				if ((rc2 == 0) && (lseek(fd, outoff, SEEK_SET) == outoff) && (read(fd, buf, DUMMY_STRLEN) == outlen) && (memcmp(buf, DUMMY_STRING2, DUMMY_STRLEN) == 0)) {	
+				if ((rc2 == 0) && (lseek(fd, outoff, SEEK_SET) == outoff) && (read(fd, buf, DUMMY_STRLEN) == outlen) && (memcmp(buf, DUMMY_STRING2, DUMMY_STRLEN) == 0)) {
 					DMLOG_PRINT(DMLVL_DEBUG, "buffer contents [%.*s]\n", rc, buf);
 					if (eventReceived == DM_EVENT_INVALID) {
 						DMLOG_PRINT(DMLVL_DEBUG, "no event received\n");
@@ -1579,7 +1579,7 @@ int main(int argc, char **argv)
 							DMLOG_PRINT(DMLVL_DEBUG, "stat info after:\n");
 							LogStat(&statfs2);
 							DMVAR_FAIL();
-						}			
+						}		
 					} else {
 						DMLOG_PRINT(DMLVL_ERR, "event %d received!\n", eventReceived);
 						DMVAR_FAIL();
@@ -1603,7 +1603,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_write_invis - file end, sync
 	 * EXPECTED: rc = DUMMY_STRLEN
@@ -1657,7 +1657,7 @@ int main(int argc, char **argv)
 			dm_set_eventlist(sid, fshanp, fshlen, DM_NO_TOKEN, &minFileEvents, DM_EVENT_MAX);
 			if (rc == outlen) {
 				DMLOG_PRINT(DMLVL_DEBUG, "wrote %d bytes\n", rc);
-				if ((rc2 == 0) && (lseek(fd, outoff, SEEK_SET) == outoff) && (read(fd, buf, DUMMY_STRLEN) == outlen) && (memcmp(buf, DUMMY_STRING2, DUMMY_STRLEN) == 0)) {	
+				if ((rc2 == 0) && (lseek(fd, outoff, SEEK_SET) == outoff) && (read(fd, buf, DUMMY_STRLEN) == outlen) && (memcmp(buf, DUMMY_STRING2, DUMMY_STRLEN) == 0)) {
 					DMLOG_PRINT(DMLVL_DEBUG, "buffer contents [%.*s]\n", rc, buf);
 					if (eventReceived == DM_EVENT_INVALID) {
 						DMLOG_PRINT(DMLVL_DEBUG, "no event received\n");
@@ -1671,7 +1671,7 @@ int main(int argc, char **argv)
 							DMLOG_PRINT(DMLVL_DEBUG, "stat info after:\n");
 							LogStat(&statfs2);
 							DMVAR_FAIL();
-						}			
+						}		
 					} else {
 						DMLOG_PRINT(DMLVL_ERR, "event %d received!\n", eventReceived);
 						DMVAR_FAIL();
@@ -1812,7 +1812,7 @@ int main(int argc, char **argv)
 		char buf[DUMMY_STRLEN];
 
 		/* Variation set up */
-		
+	
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
 		rc = dm_write_invis(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, 0, inoff, inlen, buf);
@@ -1856,7 +1856,7 @@ int main(int argc, char **argv)
 	}
 
 	remove(DummyTmp);
-	
+
 	rc = umount(mountPt);
 	if (rc == -1) {
 		DMLOG_PRINT(DMLVL_ERR, "umount failed! (rc = %d, errno = %d)\n", rc, errno);
@@ -1870,7 +1870,7 @@ int main(int argc, char **argv)
 	}
 
 	DMLOG_STOP();
-			
+		
 	return 0;
 }
 
@@ -1947,7 +1947,7 @@ void *Thread(void *parm)
 			DMEV_SET(DM_EVENT_POSTLINK, events);
 			DMEV_SET(DM_EVENT_SYMLINK, events);
 			DMEV_SET(DM_EVENT_POSTSYMLINK, events);
-			DMEV_SET(DM_EVENT_READ, events);	
+			DMEV_SET(DM_EVENT_READ, events);
 			DMEV_SET(DM_EVENT_WRITE, events);
 			DMEV_SET(DM_EVENT_TRUNCATE, events);
 			DMEV_SET(DM_EVENT_ATTRIBUTE, events);
@@ -1991,7 +1991,7 @@ void *Thread(void *parm)
 		} else if (type == DM_EVENT_UNMOUNT) {
 			/* SPECIAL CASE: need to set response and bMounted */
 			dm_namesp_event_t *nse = DM_GET_VALUE(dmMsg, ev_data, dm_namesp_event_t *);
-			
+		
 			DMLOG_PRINT(DMLVL_DEBUG, "Message is DM_EVENT_UNMOUNT\n");
 			DMLOG_PRINT(DMLVL_DEBUG, "  Unmount mode: %x\n", nse->ne_mode);
 			DMLOG_PRINT(DMLVL_DEBUG, "  File system handle: %p\n", DM_GET_VALUE(nse, ne_handle1, void *));
@@ -2075,7 +2075,7 @@ void *Thread(void *parm)
 			case DM_EVENT_CLOSE:
 				response = DM_RESP_INVALID;
 				break;
-				
+			
 			default:
 			{
 				DMLOG_PRINT(DMLVL_ERR, "Message is unexpected!\n");
@@ -2092,4 +2092,4 @@ void *Thread(void *parm)
 	} while (bMounted);
 
 	pthread_exit(0);
-}	
+}

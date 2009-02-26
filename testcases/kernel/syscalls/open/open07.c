@@ -23,7 +23,7 @@
  *
  * DESCRIPTION
  *	Test the open(2) system call to ensure that it sets ELOOP correctly.
- * 	
+ * 
  * CALLS
  * 	open()
  *

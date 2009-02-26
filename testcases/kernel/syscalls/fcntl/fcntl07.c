@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fcntl07.c,v 1.10 2009/02/26 12:02:55 subrata_modak Exp $ */
+/* $Id: fcntl07.c,v 1.11 2009/02/26 12:14:56 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -63,7 +63,7 @@
  * 	2.) test close-on-exec with a system pipe
  *
  *    INPUT SPECIFICATIONS
- *	
+ *
  *	Standard arguments accepted by parse_opts(3).
  *
  *	The -t (timing) and -e options apply to the fcntl(.., F_SETFD, ..)
@@ -87,7 +87,7 @@
  *
  *        the message will tell what type of test and, if it failed, indicate
  *        what the failure was.
- * 	
+ * 
  *    DURATION
  * 	Terminates
  *
@@ -228,10 +228,10 @@ main(int ac, char **av)
      * check looping state if -c option given
      ***************************************************************/
     for (lc=0; TEST_LOOPING(lc); lc++) {
-	
+
 	/* reset Tst_count in case we are looping. */
 	Tst_count=0;
-	
+
 	for(tcp = testfds, tcd = testfdtypes; *tcp; tcp++, tcd++) {
 
 	    TEST(fcntl(**tcp, F_SETFD, FD_CLOEXEC));
@@ -242,7 +242,7 @@ main(int ac, char **av)
 		tst_resm(TFAIL, "fcntl(%s[%d], F_SETFD, FD_CLOEXEC) Failed, errno=%d : %s",
 			 *tcd, **tcp, TEST_ERRNO, strerror(TEST_ERRNO));
 	    } else {
-		
+	
 		/*************************************************************
 		 * only perform functional verification if flag set
 		 * (-f not given)
@@ -359,7 +359,7 @@ help()
  *	<else>	????	exit code from child:
  *	2	BROK	exec failed
  *	0	PASS	fd was properly closed
- *	
+ *
  */
 
 int

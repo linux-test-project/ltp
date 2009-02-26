@@ -71,7 +71,7 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 		/*NOTREACHED*/
 	}
-	
+
 	setup();
 
 	/* Check for looping state if -i option is given */
@@ -145,7 +145,7 @@ setup()
 			 root);
 	}
 	 
-	
+
 }
 
 /*

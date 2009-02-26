@@ -129,13 +129,13 @@ main(int ac, char **av)
 				NULL, NULL, NULL));
 #else
 		TEST(clone(do_child, child_stack + CHILD_STACK_SIZE, SIGCHLD, NULL));
-#endif	
+#endif
 
 		if ((child_pid = wait(&status)) == -1) {
 			tst_brkm(TBROK, cleanup, "wait() failed; error no ="
 				 " %d, %s", errno, strerror(errno));
 		}
-	
+
 		/* check return code */
 		if (TEST_RETURN == child_pid) {
 			tst_resm(TPASS, "clone() returned %d", TEST_RETURN);
@@ -161,7 +161,7 @@ main(int ac, char **av)
 void
 setup()
 {
-	
+
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 

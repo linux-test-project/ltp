@@ -389,7 +389,7 @@ test_rwflag(int i, int cnt)
 			}
 		case 5:
 			/* Validate MS_NOSUID flag of mount call */
-			
+		
 			setup_uid();
 			if ((pid = fork()) == 0) {
 				sprintf(file, "%ssetuid_test", Path_name);

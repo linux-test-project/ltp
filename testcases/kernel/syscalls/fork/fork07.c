@@ -219,7 +219,7 @@ setup()
 	 * make a temp directory and cd to it
 	 */
 	tst_tmpdir();
-	
+
 	strcpy(fnamebuf, "fork07.");
 	sprintf(pbuf, "%d", getpid());
 	strcat(fnamebuf, pbuf);

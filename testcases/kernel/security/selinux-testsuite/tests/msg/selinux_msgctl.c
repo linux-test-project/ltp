@@ -47,7 +47,7 @@ int main(int argc, char **argv)
 	 */
 	error = msgctl(id, IPC_SET, &buf);
 	printf (" %d", error);
-	
+
 	/*
 	 * Equivalent: IPC_RMID
 	 * Tests:      MSGQ__DESTROY

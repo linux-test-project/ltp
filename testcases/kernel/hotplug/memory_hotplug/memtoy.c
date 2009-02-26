@@ -224,7 +224,7 @@ set_signals()
 	glctx_t *gcp = &glctx;
 	int *sigp = signals_to_handle;
 	char **namep = sig_names;
-	
+
 	struct sigaction act = {
 		.sa_sigaction = signal_handler,
 		.sa_flags	 = SA_SIGINFO
@@ -375,7 +375,7 @@ touch_memory(bool rw, unsigned long *memp, size_t memlen)
 void
 init_glctx(glctx_t *gcp)
 {
-	
+
 	bzero(gcp, sizeof(glctx_t));
 
 	gcp->pagesize = (size_t)sysconf(_SC_PAGESIZE);

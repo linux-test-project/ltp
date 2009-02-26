@@ -101,16 +101,16 @@ int main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "%s - getcwd() in main() "
 				 "failed", TCID);
 		}
-	
+
 		/*
 		 * create a new directory and open it
 		 */
-	
+
 		if ((r_val = mkdir(TEST_DIR, MODES)) == -1){
 			tst_brkm(TBROK, cleanup, "%s - mkdir() in main() "
 				 "failed", TCID);
 		}
-	
+
 		if ((fd = open(TEST_DIR, O_RDONLY)) == -1) {
 			tst_brkm(TBROK, cleanup, "open of directory failed");
 		}
@@ -118,9 +118,9 @@ int main(int ac, char **av)
 		/*
 		 * Use TEST macro to make the call
 		 */
-	
+
 		TEST(fchdir(fd));
-	
+
 		if (TEST_RETURN == -1) {
 			tst_brkm(TFAIL, cleanup, "%s call failed - errno = %d :"
 				 " %s", TCID, TEST_ERRNO, strerror(TEST_ERRNO));

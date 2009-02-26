@@ -120,7 +120,7 @@ main(int ac, char **av)
 	 * perform global setup for test
 	 */
 	setup();
-	
+
 	/*
 	 * check looping state if -i option given
 	 */
@@ -183,12 +183,12 @@ main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "directory rename failed");
 		}
 	}   /* End for TEST_LOOPING */
-	
+
 	/*
 	 * cleanup and exit
 	 */
 	cleanup();
-	/*NOTREACHED*/	
+	/*NOTREACHED*/
 
   return 0;
 
@@ -208,7 +208,7 @@ setup()
 
 	/* Create a temporary directory and make it current. */
 	tst_tmpdir();
-	
+
 	sprintf(fname,"./tfile_%d",getpid());
 	sprintf(mname,"./rnfile_%d",getpid());
 	sprintf(fdir,"./tdir_%d",getpid());
@@ -231,7 +231,7 @@ setup()
 		tst_brkm(TBROK, cleanup, "Could not create directory %s", fdir);
 		/*NOTREACHED*/
 	}
-						
+					
 	if (stat(fdir, &buf1) == -1) {
 		tst_brkm(TBROK, cleanup, "failed to stat directory %s"
 			 "in setup()", fname);
@@ -259,7 +259,7 @@ cleanup()
 	 * Remove the temporary directory.
 	 */
 	tst_rmdir();
-	
+
 	/*
 	 * Exit with return code appropriate for results.
 	 */

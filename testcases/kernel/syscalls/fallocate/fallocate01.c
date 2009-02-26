@@ -21,7 +21,7 @@
   * You should have received a copy of the GNU General Public License
   * along with this program; if not, write to the Free Software
   * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-***************************************************************************/ 	
+***************************************************************************/ 
 
 
 /*****************************************************************************
@@ -113,7 +113,7 @@
 	int arch_support = 0;    //Architecure is not supported
 #else
 	int arch_support = 1;   //Architecture is supported
-#endif	
+#endif
 
 
 /* Local Function */
@@ -148,7 +148,7 @@ cleanup()
 		tst_resm(TWARN, "close(%s) Failed, errno=%d : %s",
 		fname_mode1, errno, strerror(errno));
 	}
-	
+
 	if(close(fd_mode2) == -1)
 	{
 		tst_resm(TWARN, "close(%s) Failed, errno=%d : %s",
@@ -174,25 +174,25 @@ setup()
 	TEST_PAUSE;
 
 	tst_tmpdir();
-	
+
 	sprintf(fname_mode1,"tfile_mode1_%d",getpid());
 	if ((fd_mode1 = open(fname_mode1, O_RDWR|O_CREAT, 0700)) == -1 )
-	{	
+	{
 		tst_brkm(TBROK, cleanup, "Unable to open %s for read/write.  Error:%d, %s\n", \
 		fname_mode1, errno, strerror(errno));
 	}
-	
+
 	get_blocksize(fd_mode1);
-	
+
 	populate_files(fd_mode1);
 	sprintf(fname_mode2,"tfile_mode2_%d",getpid());
 	if ((fd_mode2 = open(fname_mode2, O_RDWR|O_CREAT, 0700)) == -1 )
-	{	
+	{
 		tst_brkm(TBROK, cleanup, "Unable to open %s for read/write.  Error:%d, %s\n", \
 		fname_mode2, errno, strerror(errno));
 	}
 	populate_files(fd_mode2);
-	
+
 }
 
 /*****************************************************************************
@@ -254,14 +254,14 @@ main(int   ac,    /* number of command line parameters                      */
 
 	TST_TOTAL = 2;
 
-	
+
     	/***************************************************************
     	 * parse standard options
      	***************************************************************/
     	if ( (msg=parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL )
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-	
-	
+
+
 	/* This test needs kernel version > 2.6.23 and
 	 * either of x86, x86_64 or ppc architecture
 	 */
@@ -270,11 +270,11 @@ main(int   ac,    /* number of command line parameters                      */
 
 		exit(0);
 	}
-	
-	
+
+
 	/* perform global test setup, call setup() function. */
 	setup();
-	
+
 
 	for (lc=0; TEST_LOOPING(lc); lc++) {
 	 /* reset Tst_count in case we are looping. */
@@ -289,10 +289,10 @@ main(int   ac,    /* number of command line parameters                      */
 			case FALLOC_FL_KEEP_SIZE: fd = fd_mode2;
 				expected_size = BLOCKS_WRITTEN * block_size;
 				break;
-			} 	
+			} 
 			runtest(mode, fd, expected_size);
 		}
-	}	
+	}
 
 	cleanup();
 	return 0;
@@ -328,10 +328,10 @@ runtest(int mode, int fd, loff_t expected_size)
 	loff_t offset;
 	loff_t len = block_size;
 	loff_t write_offset, lseek_offset;
-	offset = lseek(fd,0,SEEK_END);	
+	offset = lseek(fd,0,SEEK_END);
 	struct stat file_stat;
 	errno = 0;
-		
+	
 	TEST(fallocate(fd, mode, offset,len));
          /* check return code */
          if ( TEST_RETURN != 0 ) {
@@ -350,15 +350,15 @@ runtest(int mode, int fd, loff_t expected_size)
 		fd, mode, offset, len, TEST_RETURN);
         	}
 	}
-	
+
 	if( fstat(fd, &file_stat) < 0 )
            tst_resm(TFAIL, "fstat failed after fallocate() errno=%d : %s", 
 		TEST_ERRNO, strerror(TEST_ERRNO));
-	
+
 	if ( file_stat.st_size != expected_size)
            tst_resm(TFAIL, "fstat test fails on fallocate (%d, %d, %lld, %lld) Failed on mode:%d, errno=%d : %s",
 		 fd, mode, offset,len, TEST_ERRNO, strerror(TEST_ERRNO));
-	
+
 	write_offset = random() % len;
 	lseek_offset =  lseek(fd,write_offset,SEEK_CUR);
 	if ( lseek_offset != offset + write_offset)
@@ -367,7 +367,7 @@ runtest(int mode, int fd, loff_t expected_size)
 		fd,mode, offset,len, TEST_ERRNO, strerror(TEST_ERRNO));
 		return;
 	}
-	
+
 	//Write a character to file at random location
 	TEST(write(fd,"A",1));
          /* check return code */
@@ -382,5 +382,5 @@ runtest(int mode, int fd, loff_t expected_size)
 		fd,mode, offset,len, TEST_RETURN);
         	}
 	}
-	
+
 }

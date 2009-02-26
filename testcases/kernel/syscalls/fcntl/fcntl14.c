@@ -87,7 +87,7 @@ static	testcase	testcases[] = {
 	{ F_WRLCK, 0, 0L, 0L, SKIP, 0, 0L, 0L,
 	/* Child attempting a read lock on entire file */
 		F_RDLCK, 0, 0L, 0L, WILLBLOCK },
-		
+	
 	/* #2 Parent making a write lock on entire file */
 	{ F_WRLCK, 0, 0L, 0L, SKIP, 0, 0L, 0L,
 	/* Child attempting a write lock on entire file */
@@ -313,7 +313,7 @@ static	testcase	testcases[] = {
 	{ F_WRLCK, 0, 2L, 5L, SKIP, 0, 0L, 0L,
 	/* Child attempting a write lock from beginning of file to byte 2 */
 		F_WRLCK, 0, 0L, 2L, NOBLOCK },
-	
+
 	/* #31 Parent making a write lock from byte 3 to byte 7 */
 	{ F_RDLCK, 0, 2L, 5L, SKIP, 0, 0L, 0L,
 	/* Child attempting a read lock from beginning of file to byte 2 */

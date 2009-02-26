@@ -112,7 +112,7 @@ int main(int ac, char **av)
 		/*
 		 * loop through the test cases
 		 */
-	
+
 		for (i=0; i<TST_TOTAL; i++) {
 
 			/* set the message type */
@@ -121,12 +121,12 @@ int main(int ac, char **av)
 			/* make the call with the TEST macro */
 			TEST(msgsnd(*(TC[i].queue_id), TC[i].buffer,
 			     TC[i].msg_size, 0));
-	
+
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
 				continue;
 			}
-	
+
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO == TC[i].error) {

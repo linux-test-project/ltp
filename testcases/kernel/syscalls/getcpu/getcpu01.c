@@ -74,7 +74,7 @@
 #else
 int sys_support = 0;
 #endif
-	
+
 void cleanup(void);
 void setup(void);
 static inline int getcpu(unsigned int *, unsigned int *, void *);
@@ -110,7 +110,7 @@ int main(int ac, char **av)
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL)
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-	
+
 
 	setup();			/* global setup */
 
@@ -139,7 +139,7 @@ int main(int ac, char **av)
 				" expected  node id:%d returned  node id:%d",
 				node_set,node_id);
 				tst_exit();
-			}		
+			}	
 			#endif
 			else
 				tst_resm(TPASS, "getcpu() returned proper"\
@@ -153,7 +153,7 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/	
+	/*NOTREACHED*/
 	return 0;
 }
 
@@ -178,7 +178,7 @@ void
 setup(void)
 {
 	/* capture signals */
-	/* ?? */	
+	/* ?? */
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 }
@@ -196,15 +196,15 @@ set_cpu_affinity()
 			tst_resm(TFAIL,"sched_getaffinity:errno:%d",errno);
 			tst_exit();
 	}
-	cpu_max = max_cpuid(&set);	
+	cpu_max = max_cpuid(&set);
 	CPU_ZERO(&set);
 	CPU_SET(cpu_max,&set);
 	if ( sched_setaffinity(0, sizeof(cpu_set_t), &set) < 0 ){
 			tst_resm(TFAIL,"sched_setaffinity:errno:%d",errno);
 			tst_exit();
 	}
-	return cpu_max;	
-}	
+	return cpu_max;
+}
 
 /*
  * Return the maximum cpu id
@@ -215,7 +215,7 @@ max_cpuid(cpu_set_t *set)
 {
 	unsigned int index, max = 0;
 	for ( index = 0; index < sizeof(cpu_set_t) * BITS_PER_BYTE; index++)
-		if(CPU_ISSET(index,set)) max = index;	
+		if(CPU_ISSET(index,set)) max = index;
 	return max;
 }
 
@@ -257,7 +257,7 @@ get_nodeid(unsigned int cpu_id)
                 }
                 closedir(directory_parent);
         }
-	return node_id;	
+	return node_id;
 }
 
 /*

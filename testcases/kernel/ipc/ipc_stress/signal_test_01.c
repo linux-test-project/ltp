@@ -209,7 +209,7 @@ int main (int argc, char **argv)
 	kill (pid, SIGFPE);
 	kill (pid, SIGTERM);
 	kill (pid, SIGINT);
-		
+	
 	if (valid_sig [SIGFPE])
 		error ("failed to receive SIGFPE signal!", __LINE__);
 	if (valid_sig [SIGTERM])

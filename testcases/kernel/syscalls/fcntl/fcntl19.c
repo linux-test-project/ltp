@@ -104,7 +104,7 @@ setup()
 	parent_pid = getpid();
 
 	tst_tmpdir();
-	
+
 	snprintf(template, PATH_MAX, "fcntl19XXXXXX");
 
 	if ((fd = mkstemp(template)) < 0) {
@@ -486,7 +486,7 @@ int main(int ac, char **av)
 /* //block4: */
 		tst_resm(TINFO, "Enter blcok 4");
 		fail = 0;
-		
+	
 		/*
 		 * Set a write a lock in the middle of a file and unlock a
 		 * section in the middle of it
@@ -580,7 +580,7 @@ int main(int ac, char **av)
 /* //block6: */
 		tst_resm(TINFO, "Enter block 6");
 		fail = 0;
-		
+	
 		/*
 		 * Set write lock in the middle of the file and do an unlock
 		 * starting at the last byte of the write lock

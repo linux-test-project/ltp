@@ -23,7 +23,7 @@
  *
  * DESCRIPTION
  *	Test functionality of chroot(2)
- *	
+ *
  * ALGORITHM
  *	Change root directory and then stat a file.
  *

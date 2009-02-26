@@ -132,7 +132,7 @@ char	*argv[];
 	{
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
-	
+
 	maybe_run_child(&do_child_1_uclinux, "ndd", 1, &key_uclinux, &i_uclinux);
 	maybe_run_child(&do_child_2_uclinux, "nddd", 2, &key_uclinux,
 			&pid_uclinux, &child_process_uclinux);
@@ -265,11 +265,11 @@ char	*argv[];
                                 tst_exit();
 			}
 			count++;
-		}	
+		}
 		else
 		{
 			if (errno != EINTR)
-			{	
+			{
 				break;
 			}
 #ifdef DEBUG
@@ -287,7 +287,7 @@ char	*argv[];
         tst_resm(TPASS,"msgctl09 ran successfully!");
 
 	cleanup();
-	
+
         return (0);
 
 
@@ -440,11 +440,11 @@ int	child_process;
                                 tst_exit();
 			}
 			count++;
-		}	
+		}
 		else
 		{
 			if (errno != EINTR)
-			{	
+			{
 				break;
 			}
 		}
@@ -547,7 +547,7 @@ long key;
 		key++;
 	}
 	exit(PASS);
-}	
+}
 
 int fill_buffer(buf, val, size)
 register char *buf;

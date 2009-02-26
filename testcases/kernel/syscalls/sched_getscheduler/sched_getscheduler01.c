@@ -79,7 +79,7 @@ int main(int ac, char **av)
 
 	int i;
 	struct sched_param param;
-	
+
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);

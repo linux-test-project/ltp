@@ -127,10 +127,10 @@ main(int ac, char **av)
 			/* Call sched_getparam(2) to test different test
 			 * conditions. verify that it fails with -1 return
 			 * value and sets appropriate errno.
-			 */	
+			 */
 			TEST(sched_getparam(test_cases[ind].pid,
 					   test_cases[ind].p));
-	
+
 			if ((TEST_RETURN == -1) &&
 			    (TEST_ERRNO == test_cases[ind].exp_errno)) {
 				tst_resm(TPASS, "expected failure; Got %s",
@@ -147,7 +147,7 @@ main(int ac, char **av)
 	}
 
 	cleanup();
-	
+
 	/*NOTREACHED*/
 	return 0;
 }

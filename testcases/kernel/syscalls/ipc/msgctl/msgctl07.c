@@ -158,7 +158,7 @@ int main(int argc, char* argv[])
        	        tst_resm(TFAIL, "test failed. status = %d", (status >> 8));
                	tst_exit();
 	}
-	
+
 	pid = FORK_OR_VFORK();
 	if (pid < 0) {
 		(void) msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
@@ -261,7 +261,7 @@ sighandler_t alrm(int sig)
 
 void
 do_child_1()
-{	
+{
 	int i;
 	int size;
 
@@ -329,7 +329,7 @@ do_child_2()
 			tst_resm(TFAIL, "error: corrupt message");
 			tst_exit();
 		}
-	
+
 	exit(0);
 }
 

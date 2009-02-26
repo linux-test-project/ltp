@@ -33,7 +33,7 @@
  *    DESCRIPTION
  *	This is a phase I test for the socketcall(2) system call.
  *	It is intended to provide a limited exposure of the system call.
- *	
+ *
  * 	Setup:
  *	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
@@ -149,7 +149,7 @@ void setup1(void)
 		tst_brkm(TBROK, tst_exit, "socket creation failed");
 	}
 	args[0] = s;
-	args[1] = 1;	
+	args[1] = 1;
  }
 
 /* setup() - performs all ONE TIME setup for this test. */

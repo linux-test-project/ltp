@@ -41,7 +41,7 @@
  *   Check return code, if system call failed (return=-1)
  *   	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call	
+ *   	Verify the Functionality of system call
  *      if successful,
  *      	Issue Functionality-Pass message.
  *      Otherwise,
@@ -60,7 +60,7 @@
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
- *	05/2004 Changed USEC_PRECISION from 100 to 2000 to get around glibc failure	
+ *	05/2004 Changed USEC_PRECISION from 100 to 2000 to get around glibc failure
  *		that's years old.
  *
  * RESTRICTIONS:
@@ -207,7 +207,7 @@ do_child()
 	 * in 'timerem' structure.
 	 * The time remaining should be equal to the
 	 * Total time for sleep - time spent on sleep bfr signal
-         * Change precision from msec to usec.	
+         * Change precision from msec to usec.
 	 */
        req = timereq.tv_sec * 1000000 + timereq.tv_nsec / 1000;
        rem = timerem.tv_sec * 1000000 + timerem.tv_nsec / 1000;
@@ -229,7 +229,7 @@ do_child()
 	 * 'timereq' structure.
 	 */
 	TEST(nanosleep(&timereq, &timerem));
-			
+		
 	/* Record the time after suspension */
 	gettimeofday(&ntime, NULL);
 

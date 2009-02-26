@@ -51,7 +51,7 @@
  * CAUTION!!
  *	If a file is supplied to this program with the "-f" option
  *	it will be removed with a system("rm -rf filename") call.
- *	
+ *
  *
  */
 
@@ -277,7 +277,7 @@ int runtest()
 	if (status) {
 		tst_resm(TINFO, "CAUTION - ftest07, '%s' may not be removed", fuss);
 	}
-	
+
 	sync();				/* safeness */
 	return 0;
 }
@@ -369,7 +369,7 @@ int dotest(testers, me, fd)
 			exit(1);
 		}
 		val_iovec[i].iov_len = w_ioveclen;
-		
+	
 		if(malloc((i+1)*8) == 0) {
 			tst_resm(TBROK, "\tmalloc failed((i+1)*8)");
 			tst_exit();

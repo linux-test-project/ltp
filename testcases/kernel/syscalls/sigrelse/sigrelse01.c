@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: sigrelse01.c,v 1.11 2009/02/26 12:05:43 subrata_modak Exp $ */
+/* $Id: sigrelse01.c,v 1.12 2009/02/26 12:16:40 subrata_modak Exp $ */
 /*****************************************************************************
  * OS Test - Silicon Graphics, Inc.  Eagan, Minnesota
  *
@@ -580,7 +580,7 @@ setup_sigs()
     return 0;
 
 }	/* end of setup_sigs  */
-	
+
 /*****************************************************************************
  *  handler() : child's interrupt handler for all signals.  The phase variable
  *      is set in the child process indicating what action is to be taken.
@@ -651,7 +651,7 @@ int fd;
         if ((ret=read(fd, buf, MAXMESG)) == 0) {
 	    (void) sprintf(mesg, "read() pipe failed. error:%d %s.",
 	        errno, strerror(errno));
-	
+
 	    clear_timeout();
 	    return NULL;
         }
@@ -683,7 +683,7 @@ char *msg;		/* expected message from pipe */
     if (write(fd, msg, MAXMESG) < 0) {
 	(void) sprintf(mesg, "write() pipe failed. error:%d %s.",
 	    errno, strerror(errno));
-	
+
 	return(-1);
     }
     return 0;
@@ -732,7 +732,7 @@ timeout()
 	printf("timeout: pid=%d sigalrm caught.\n", getpid());
 #endif
 }
-	
+
 
 /*****************************************************************************
  *  wait_a_while() : wait a while before returning.

@@ -33,7 +33,7 @@ int main(int argc, char **argv)
 	if (argc != 3) {
 		fprintf(stderr, "usage:  %s testfile address\n");
 		exit(-1);
-	}	
+	}
 
 	myfd = open(argv[1], O_RDWR);
 	if (myfd < 0) {
@@ -94,6 +94,6 @@ int main(int argc, char **argv)
 		printf("client: ...This implies the descriptor was not received\n");
 	else
 		printf("client: ...This implies the descriptor was received\n");
-		
+	
 	exit(buf[0]);
 }

@@ -110,7 +110,7 @@ main(int ac, char **av)
 		 * start by setting/changing the level to 0.
 		 */
 		for (level = 0; level < TST_TOTAL; ++level) {
-		
+	
 			TEST(iopl(level));
 
 			if (TEST_RETURN == -1) {
@@ -137,7 +137,7 @@ main(int ac, char **av)
 void
 setup()
 {
-	
+
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
@@ -167,7 +167,7 @@ cleanup()
 	if (iopl(0) == -1) {
 		tst_resm(TWARN, "iopl() cleanup failed");
 	}
-	
+
 	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.

@@ -106,49 +106,49 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		/* get the current working directory */
-	
+
 		if ((dir_name = getcwd(dir_name, size)) == NULL) {
 			tst_brkm(TBROK, cleanup, "Can not get current "
 				 "directory name");
 		}
-	
+
 		/* allocate some space for the dirent structure */
-	
+
 		if ((dirp =
 		     (struct dirent *)malloc(sizeof(struct dirent))) == NULL) {
 			tst_brkm(TBROK, cleanup, "malloc failed");
 		}
-	
+
 		/*
 		 * Set up count to be equal to the sizeof struct dirent,
 		 * just to pick a decent size.
 		 */
-	
+
 		count = (int)sizeof(struct dirent);
-	
+
 		/* open the directory and get a file descriptor */
-	
+
 		if ((fd = open(dir_name, O_RDONLY)) == -1) {
 			tst_brkm(TBROK, cleanup, "open of directory failed");
 		}
 
 		rval = getdents(fd, dirp, count);
 		if (rval < 0) {		/* call returned an error */
-	
+
 			rval *= -1;
 			TEST_ERROR_LOG(rval);
-	
+
 			tst_resm(TFAIL, "%s call failed - errno = %d "
 				 ": %s", TCID, rval, strerror(rval));
 			continue;
 		}
-	
+
 		if (rval == 0) {	/* call returned end of directory */
 			tst_resm(TFAIL, "%s call failed - returned "
 				 "end of directory", TCID);
 			continue;
 		}
-	
+
 	/* Removed this b/c there isn't any documentation on its validity
          */
 	//	if (STD_FUNCTIONAL_TEST) {
@@ -156,12 +156,12 @@ int main(int ac, char **av)
 	//		 * Now we have dirp pointing to the "base" dirent
 	//		 * structure for the directory that we opened.
 	//		 */
-	//	
+	//
 	//		/*
 	//		 * The first dirent structure returned should point
 	//		 * to the current directory, AKA "."
 	//		 */
-	//	
+	//
 	//		if (strcmp(".", dirp->d_name) == 0) {
 	//			tst_resm(TPASS, "%s call succeeded", TCID);
 	//		} else {

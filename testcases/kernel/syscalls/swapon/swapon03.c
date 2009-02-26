@@ -27,7 +27,7 @@
  *		Setup signal handling.
  *		Pause for SIGUSR1 if option specified.
  * 		Create MAX_SWAPFILES - 2 (to support latest kernels) swapfiles
- * 		  		
+ * 		  	
  *	Test:
  *		Loop if the proper options are given.
  *		Execute system call.
@@ -105,7 +105,7 @@ static struct swap_testfile_t {
 	{"secondswapfile"},
 	{"thirdswapfile"}
 };
-	
+
 int expected_errno = EPERM; /* Expected errno when doing the test */
 
 int main(int ac, char **av)

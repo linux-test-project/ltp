@@ -314,7 +314,7 @@ void dochild(int kid)
 	struct sigaction sact;
 	sact.sa_flags=0;
 	sact.sa_handler=catch_int;
-	(void)sigaction(SIGUSR1, &sact, NULL);	
+	(void)sigaction(SIGUSR1, &sact, NULL);
 
 	/* Lock should succeed after blocking and parent releases lock */
 	if (kid) {
@@ -432,7 +432,7 @@ setup(void)
 	parent = getpid();
 
 	tst_tmpdir();
-	
+
 	/* set up temp filename */
 	sprintf(tmpname, "fcntl4.%d", parent);
 
@@ -669,7 +669,7 @@ run_test(int file_flag, int file_mode, int start, int end)
 
 int main(int ac, char **av)
 {
-	
+
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
 

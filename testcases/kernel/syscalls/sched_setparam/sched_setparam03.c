@@ -141,7 +141,7 @@ main(int ac, char **av)
 				tst_resm(TFAIL, "wait() failed");
 				continue;
 			}
-		
+	
 			/*
 			 * Verify that parent's scheduling priority has
 			 * changed.
@@ -168,7 +168,7 @@ void
 setup()
 {
 	struct sched_param p = { 1 };
-	
+
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
@@ -204,7 +204,7 @@ cleanup()
 /*
  * verify_priority() -  This function checks whether the priority is
  *			set correctly
- */		
+ */	
 int
 verify_priority()
 {

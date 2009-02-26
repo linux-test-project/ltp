@@ -237,7 +237,7 @@ setup()
 	if (res == -1) {
 		tst_brkm(TBROK, tst_exit, "Cannot copy file %s", fname);
 	}
-	
+
 	fname = bname;
 
 	umask(0);

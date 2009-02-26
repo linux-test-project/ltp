@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: rmdir05.c,v 1.6 2009/02/26 12:04:43 subrata_modak Exp $ */
+/* $Id: rmdir05.c,v 1.7 2009/02/26 12:16:34 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -59,7 +59,7 @@
  *
  *    TEST CASES
  * 	rmdir(2) test for errno(s) EINVAL, EMLINK, EFAULT
- *	
+ *
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
@@ -156,7 +156,7 @@ main(int argc, char **argv)
 
 	/* Call rmdir(2) */
 	TEST(rmdir("."));
-	
+
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
 	    TEST_ERROR_LOG(TEST_ERRNO);
@@ -193,8 +193,8 @@ main(int argc, char **argv)
 	    tst_resm(TFAIL,"rmdir(\".\") succeeded unexpectedly.");
 	  }
 	}
-	
-	
+
+
 	/*
 	 * TEST CASE: 2
 	 * path points to the "." (dot) entry of a directory
@@ -204,7 +204,7 @@ main(int argc, char **argv)
 #elif defined(sgi)
 	/* Call rmdir(2) */
 	TEST(rmdir("dir1/."));
-	
+
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
 	    TEST_ERROR_LOG(TEST_ERRNO);
@@ -234,7 +234,7 @@ main(int argc, char **argv)
 	  }
 	}
 #endif
-	
+
 #if defined(sgi)
 	/*
 	 * TEST CASE: 3
@@ -248,7 +248,7 @@ main(int argc, char **argv)
 
 	/* Call rmdir(2) */
 	TEST(rmdir("dir2"));
-	
+
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
 	    TEST_ERROR_LOG(TEST_ERRNO);
@@ -258,7 +258,7 @@ main(int argc, char **argv)
 	 * only perform functional verification if flag set (-f not given)
 	 ***************************************************************/
 	if ( STD_FUNCTIONAL_TEST ) {
-	
+
 	  if ( TEST_RETURN == -1 ) {
 	    if (TEST_ERRNO == EMLINK) {
 	      /* For functionality tests, verify that the directory wasn't
@@ -277,18 +277,18 @@ main(int argc, char **argv)
 	  }
 	}
 #endif  /* linux */
-	
-	
+
+
 	/*
 	 * TEST CASE: 4
 	 * path argument points below the minimum allocated address space
 	 */
 
 
-#if !defined(UCLINUX)	
+#if !defined(UCLINUX)
 	/* Call rmdir(2) */
 	TEST(rmdir(bad_addr));
-	
+
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
 	    TEST_ERROR_LOG(TEST_ERRNO);
@@ -298,7 +298,7 @@ main(int argc, char **argv)
 	 * only perform functional verification if flag set (-f not given)
 	 ***************************************************************/
 	if ( STD_FUNCTIONAL_TEST ) {
-	
+
 	  if ( TEST_RETURN == -1 ) {
 	    if (TEST_ERRNO == EFAULT) {
 	      tst_resm(TPASS,"rmdir() - path argument points below the minimum allocated address space failed as expected with errno %d : %s",TEST_ERRNO,strerror(TEST_ERRNO));
@@ -318,7 +318,7 @@ main(int argc, char **argv)
 
 	/* Call rmdir(2) */
 	TEST(rmdir( get_high_address()));
-	
+
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
 	    TEST_ERROR_LOG(TEST_ERRNO);
@@ -328,7 +328,7 @@ main(int argc, char **argv)
 	 * only perform functional verification if flag set (-f not given)
 	 ***************************************************************/
 	if ( STD_FUNCTIONAL_TEST ) {
-	
+
 	  if ( TEST_RETURN == -1 ) {
 	    if (TEST_ERRNO == EFAULT) {
 	      tst_resm(TPASS,"rmdir() - path argument points above the maximum allocated address space failed as expected with errno %d : %s",TEST_ERRNO,strerror(TEST_ERRNO));
@@ -353,7 +353,7 @@ main(int argc, char **argv)
 
 	/* Call rmdir(2) */
 	TEST(rmdir(dir_name));
-	
+
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
 	    TEST_ERROR_LOG(TEST_ERRNO);
@@ -364,7 +364,7 @@ main(int argc, char **argv)
 	   * only perform functional verification if flag set (-f not given)
 	   ***************************************************************/
 	  if ( STD_FUNCTIONAL_TEST ) {
-	
+
 	    /* Verify the directory was removed. */
 	    if (stat(dir_name,&stat_buf) != 0){
 	      tst_resm(TPASS,"rmdir(\"%s\") removed the directory as expected.",dir_name);
@@ -373,7 +373,7 @@ main(int argc, char **argv)
 	    }
 	  }
 	}
-	
+
     }	/* End for TEST_LOOPING */
 
     /***************************************************************

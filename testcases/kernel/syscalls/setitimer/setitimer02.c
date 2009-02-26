@@ -95,26 +95,26 @@ int main(int ac, char **av)
 		}
 
 		/* set up some reasonable values */
-	
+
 		value->it_value.tv_sec = 30;
 		value->it_value.tv_usec = 0;
 	  	value->it_interval.tv_sec = 0;
- 		value->it_interval.tv_usec = 0;	
+ 		value->it_interval.tv_usec = 0;
 		/*
 		 * issue the system call with the TEST() macro
 		 * ITIMER_REAL = 0, ITIMER_VIRTUAL = 1 and ITIMER_PROF = 2
 		 */
-	
+
 		/* call with a bad address */
 		TEST(setitimer(ITIMER_REAL, value, (struct itimerval *)-1));
-	
+
 		if (TEST_RETURN == 0) {
 			tst_resm(TFAIL, "call failed to produce EFAULT error "
 					"- errno = %d - %s", TEST_ERRNO,
 					 strerror(TEST_ERRNO));
 			continue;
 		}
-	
+
 		TEST_ERROR_LOG(TEST_ERRNO);
 
 		switch (TEST_ERRNO) {

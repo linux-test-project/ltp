@@ -142,7 +142,7 @@ main(int argc, char *argv[])
 
 			if (TEST_RETURN == -1) {
 				TEST_ERROR_LOG(TEST_ERRNO);
-			}	
+			}
 
 			if (TEST_RETURN != tdat[testno].retval ||
 			    (TEST_RETURN < 0 &&

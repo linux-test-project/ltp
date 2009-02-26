@@ -576,7 +576,7 @@ trigger_eventfd_overflow(int evfd, int *fd, io_context_t *ctx)
 
 	io_prep_pwrite(&iocb, *fd, buf, sizeof(buf), 0);
 	io_set_eventfd(&iocb, evfd);
-	
+
 	iocbap[0] = &iocb;
 	ret = io_submit(*ctx, 1, iocbap);
 	if (ret < 0) {
@@ -589,7 +589,7 @@ trigger_eventfd_overflow(int evfd, int *fd, io_context_t *ctx)
  err_close_file:
 	close(*fd);
 
- err_io_destroy:	
+ err_io_destroy:
 	io_destroy(*ctx);
 
 	return -1;
@@ -616,7 +616,7 @@ overflow_select_test(int evfd)
 		tst_resm(TBROK, "error triggering eventfd overflow");
 		return;
 	}
-	
+
 	FD_ZERO(&readfds);
 	FD_SET(evfd, &readfds);
 	ret = select(evfd + 1, &readfds, NULL, NULL, &timeout);
@@ -680,7 +680,7 @@ overflow_read_test(int evfd)
 		tst_resm(TBROK, "error triggering eventfd overflow");
 		return;
 	}
-	
+
 	ret = read(evfd, &count, sizeof(count));
 	if (ret == -1) {
 		tst_resm(TBROK, "error reading eventfd: %s", strerror(errno));

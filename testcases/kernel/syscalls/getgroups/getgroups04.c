@@ -128,14 +128,14 @@ main(int ac, char **av)
 		for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
 			gidsetsize = Test_cases[ind].gsize;
 			test_desc = Test_cases[ind].desc;
-			
+		
 			/*
 			 * Call getgroups() to test different test conditions
 			 * verify that it fails with -1 return value and
 			 * sets appropriate errno.
 			 */
 			 TEST(getgroups(gidsetsize, groups_list));
-	
+
 			/* check return code of getgroups(2) */
 			if (TEST_RETURN == -1) {
 				TEST_ERROR_LOG(TEST_ERRNO);

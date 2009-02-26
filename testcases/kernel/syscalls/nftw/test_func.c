@@ -45,7 +45,7 @@ test_func1(const char *path_name, const struct stat * stat_pointer,
 {
 	char	*s;
 	const char *p;
-	
+
 	temp = stderr;
 
 	if ((s = (char *)malloc((size_t)(strlen((char *)path_name) + 1)))
@@ -53,7 +53,7 @@ test_func1(const char *path_name, const struct stat * stat_pointer,
 		perror("malloc in test_func1");
 		return 999;
 	}
-	
+
 	if ((p = strstr(path_name, NFTW)) != (char *)NULL){
 		p += strlen(NFTW);
 	} else {

@@ -109,7 +109,7 @@ main(int ac, char **av)
 
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
-	
+
 		switch(child_pid = FORK_OR_VFORK()) {
 
 		case -1:
@@ -127,7 +127,7 @@ main(int ac, char **av)
 			 * process
 			 */
 			TEST(sched_getparam(getppid(), &param));
-	
+
 			/*
 		 	 * Check return code & priority. For normal process,
 			 * scheduling policy is SCHED_OTHER. For this

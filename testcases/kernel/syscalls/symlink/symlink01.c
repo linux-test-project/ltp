@@ -29,7 +29,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: symlink01.c,v 1.15 2009/02/26 12:05:44 subrata_modak Exp $ */
+/* $Id: symlink01.c,v 1.16 2009/02/26 12:17:05 subrata_modak Exp $ */
 /**********************************************************
 * 
 *    OS Test - Silicon Graphics, Inc.
@@ -1715,7 +1715,7 @@ struct all_test_cases *tc_ptr;
             tst_resm(TFAIL,"%s %s",
 	        "unlink(2) failed because it not only removed symbolic link",
 	        "file which pointed at object file, but object file as well");
-	
+
         else
             if ((statter.st_ino == asymlink.st_ino) &&
 		(statter.st_dev == asymlink.st_dev) &&

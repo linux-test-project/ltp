@@ -43,7 +43,7 @@
  *		    Setup signal handling.
  *		    Pause for SIGUSR1 if option specified.
  *		   1. For testing error on invalid user, change the effective uid
- * 		  		
+ * 		  	
  * 		  Test:
  *		    Loop if the proper options are given.
  *		    Execute system call.
@@ -64,7 +64,7 @@
  *		  -p   : Pause for SIGUSR1 before starting
  *		  -P x : Pause for x seconds between iterations.
  *		  -t   : Turn on syscall timing.
- *		 		
+ *		 	
  *RESTRICTIONS:
  *Incompatible with kernel versions below 2.1.35.
  *Incompatible if MAX_SWAPFILES definition in later kernels is changed

@@ -123,14 +123,14 @@ int main(int ac, char **av)
 					 strerror(TEST_ERRNO));
 				continue;
 			}
-	
+
 			if (STD_FUNCTIONAL_TEST) {
 				/*
 				 * Send the signals and make sure they are
 				 * handled in our handler.
 				 */
 				pid = getpid();
-	
+
 				if ((rval = kill(pid, siglist[i])) != 0) {
 					tst_brkm(TBROK, cleanup,
 						 "call to kill failed");

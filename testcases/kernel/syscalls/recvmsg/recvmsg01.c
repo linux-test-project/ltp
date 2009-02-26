@@ -112,7 +112,7 @@ struct test_case_t {		/* test case structure */
 	void	*buf;	/* recv data buffer */
 	int	buflen;	/* recv buffer length */
 	struct msghdr *msg;
-	unsigned flags;	
+	unsigned flags;
 	struct sockaddr *from;	/* from address */
 	int	fromlen;	/* from address value/result buffer length */
 	int	retval;		/* syscall return value */

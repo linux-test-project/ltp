@@ -26,7 +26,7 @@
  *
  * CALLS
  *	fsync, sync, lseek64, read, write
- *	
+ *
  *
  * ALGORITHM
  *	Several child processes doing random seeks, read/write
@@ -36,7 +36,7 @@
  * RESTRICTIONS
  *	Runs a long time with default args - can take others on input
  *	line.  Use with "term mode".
- *	
+ *
  */
 
 #define _XOPEN_SOURCE 500
@@ -276,7 +276,7 @@ int dotest(testers, me, fd)
 	int	r_ioveclen;
 
 	/* Stuff for the writev call */
-							
+						
 	struct	iovec	val0_iovec[MAXIOVCNT];
 	struct	iovec	val_iovec[MAXIOVCNT];
 	int	w_ioveclen;
@@ -290,7 +290,7 @@ int dotest(testers, me, fd)
 		tst_resm(TBROK, "\tmalloc failed(buf)");
 		tst_exit();
 	}
-	
+
 	/*Allocate memory for the iovec buffers and init the iovec arrays
 	 */
 	r_ioveclen = w_ioveclen = csize / MAXIOVCNT;
@@ -319,7 +319,7 @@ int dotest(testers, me, fd)
 			tst_exit();
 		}
 		val0_iovec[i].iov_len = w_ioveclen;
-		
+	
 		if(malloc((i+1)*8) == 0) {
 			tst_resm(TBROK, "\tmalloc failed((i+1)*8)");
 			tst_exit();

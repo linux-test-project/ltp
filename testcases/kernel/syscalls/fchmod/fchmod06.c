@@ -173,9 +173,9 @@ main(int ac, char **av)
 			 * verify that it fails with -1 return value and
 			 * sets appropriate errno.
 			 */
-			
+		
 			TEST(fchmod(fd, mode));
-	
+
 			/* Check return code from fchmod(2) */
 			if (TEST_RETURN == -1) {
 				TEST_ERROR_LOG(TEST_ERRNO);
@@ -237,7 +237,7 @@ setup()
          }
 
 	test_home = get_current_dir_name();
-	
+
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
@@ -266,7 +266,7 @@ setup1()
 {
 	char Path_name[PATH_MAX];       /* Buffer to hold command string */
 	char Cmd_buffer[BUFSIZ];        /* Buffer to hold command string */
-	
+
 
 	/* Create a testfile under temporary directory */
 	if ((fd1 = open(TEST_FILE1, O_RDWR|O_CREAT, 0666)) == -1) {
@@ -353,7 +353,7 @@ cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-	
+
 	if (close(fd1) == -1) {
 		tst_brkm(TBROK, NULL,
 		 	 "close(%s) Failed, errno=%d : %s",

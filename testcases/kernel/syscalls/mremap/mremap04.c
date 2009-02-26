@@ -110,7 +110,7 @@ main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-	
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
 	if (msg != (char *)NULL) {
@@ -165,7 +165,7 @@ main(int ac, char **av)
 				 "Unexpected errno %d", TEST_ERRNO);
 		}
 	}	/* End of TEST_LOOPING */
-				
+			
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 

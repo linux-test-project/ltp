@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: setreuid01.c,v 1.3 2009/02/26 12:04:56 subrata_modak Exp $ */
+/* $Id: setreuid01.c,v 1.4 2009/02/26 12:16:38 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -60,13 +60,13 @@
  *    TEST CASES
  *
  * 	1.) setreuid(2) returns...(See Description)
- *	
+ *
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
  *
  *    OUTPUT SPECIFICATIONS
- * 	
+ * 
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
  *
@@ -160,7 +160,7 @@ main(int ac, char **av)
 	/* reset Tst_count in case we are looping. */
 	Tst_count=0;
 
-		
+	
 	/*
 	 * TEST CASE:
 	 *  Don't change either real or effective uid
@@ -171,7 +171,7 @@ euid=geteuid();		/* get effective uid */
 
 	/* Call setreuid(2) */
 	TEST(setreuid(-1, -1));
-	
+
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
 	    TEST_ERROR_LOG(TEST_ERRNO);
@@ -186,17 +186,17 @@ euid=geteuid();		/* get effective uid */
 		tst_resm(TPASS, "setreuid -  Don't change either real or effective uid returned %d", TEST_RETURN);
 	    }
 	}
-	
-	
+
+
 	/*
 	 * TEST CASE:
 	 *  change effective to effective uid
 	 */
-	
+
 
 	/* Call setreuid(2) */
 	TEST(setreuid(-1, euid));
-	
+
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
 	    TEST_ERROR_LOG(TEST_ERRNO);
@@ -211,17 +211,17 @@ euid=geteuid();		/* get effective uid */
 		tst_resm(TPASS, "setreuid -  change effective to effective uid returned %d", TEST_RETURN);
 	    }
 	}
-	
-	
+
+
 	/*
 	 * TEST CASE:
 	 *  change real to real uid
 	 */
-	
+
 
 	/* Call setreuid(2) */
 	TEST(setreuid(ruid, -1));
-	
+
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
 	    TEST_ERROR_LOG(TEST_ERRNO);
@@ -236,17 +236,17 @@ euid=geteuid();		/* get effective uid */
 		tst_resm(TPASS, "setreuid -  change real to real uid returned %d", TEST_RETURN);
 	    }
 	}
-	
-	
+
+
 	/*
 	 * TEST CASE:
 	 *  change effective to real uid
 	 */
-	
+
 
 	/* Call setreuid(2) */
 	TEST(setreuid(-1, ruid));
-	
+
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
 	    TEST_ERROR_LOG(TEST_ERRNO);
@@ -261,17 +261,17 @@ euid=geteuid();		/* get effective uid */
 		tst_resm(TPASS, "setreuid -  change effective to real uid returned %d", TEST_RETURN);
 	    }
 	}
-	
-	
+
+
 	/*
 	 * TEST CASE:
 	 *  try to change real to current real
 	 */
-	
+
 
 	/* Call setreuid(2) */
 	TEST(setreuid(ruid, ruid));
-	
+
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
 	    TEST_ERROR_LOG(TEST_ERRNO);
@@ -286,7 +286,7 @@ euid=geteuid();		/* get effective uid */
 		tst_resm(TPASS, "setreuid -  try to change real to current real returned %d", TEST_RETURN);
 	    }
 	}
-	
+
 
     }	/* End for TEST_LOOPING */
 

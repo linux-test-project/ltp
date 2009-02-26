@@ -47,7 +47,7 @@
  *	6) ENAMETOOLONG if pathname was longer than MAXPATHLEN.
  *	7) ENOENT if pathname was empty or has a nonexistent component.
  *	8) ENOTDIR if not a directory.
- *	
+ *
  * 	Setup:
  *	  Setup signal handling.
  *	  Create a mount point.
@@ -280,7 +280,7 @@ setup_test(int i, int cnt)
 		strncpy(Type, "error", 5);
 		Fstype = Type;
 		return 0;
-	case 1:	
+	case 1:
 		/* Setup for mount(2) returning errno ENOTBLK. */
 
 		sprintf(Path, "./mydev_%d_%d", getpid(), cnt);
@@ -437,7 +437,7 @@ cleanup_test(int i)
 	}
 	return 0;
 }
-		
+	
 
 /* setup() - performs all ONE TIME setup for this test */
 void

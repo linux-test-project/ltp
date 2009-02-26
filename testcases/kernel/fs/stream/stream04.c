@@ -77,7 +77,7 @@ int main(int ac, char *av[])
 
 		sprintf(tempfile1, "stream04.%d", getpid());
 	/*--------------------------------------------------------------------*/
-	//block0:	
+	//block0:
 		if((stream=fopen(tempfile1,"a+")) == NULL) {
 			tst_resm(TFAIL,"fopen(%s) a+ failed: %s", tempfile1, strerror(errno));
 			tst_rmdir();

@@ -108,7 +108,7 @@ kq_init(void)
 	memset(&kqueueop, 0, sizeof(kqueueop));
 
 	/* Initalize the kernel queue */
-	
+
 	if ((kq = kqueue()) == -1) {
 		log_error("kqueue");
 		return (NULL);
@@ -275,7 +275,7 @@ kq_add(void *arg, struct event *ev)
 		if (!(ev->ev_events & EV_PERSIST))
 			kev.flags |= EV_ONESHOT;
 		kev.udata = INTPTR(ev);
-		
+	
 		if (kq_insert(kqop, &kev) == -1)
 			return (-1);
 
@@ -298,7 +298,7 @@ kq_add(void *arg, struct event *ev)
 		if (!(ev->ev_events & EV_PERSIST))
 			kev.flags |= EV_ONESHOT;
 		kev.udata = INTPTR(ev);
-		
+	
 		if (kq_insert(kqop, &kev) == -1)
 			return (-1);
 
@@ -313,7 +313,7 @@ kq_add(void *arg, struct event *ev)
 		if (!(ev->ev_events & EV_PERSIST))
 			kev.flags |= EV_ONESHOT;
 		kev.udata = INTPTR(ev);
-		
+	
 		if (kq_insert(kqop, &kev) == -1)
 			return (-1);
 
@@ -339,7 +339,7 @@ kq_del(void *arg, struct event *ev)
 		kev.ident = (int)signal;
 		kev.filter = EVFILT_SIGNAL;
 		kev.flags = EV_DELETE;
-		
+	
 		if (kq_insert(kqop, &kev) == -1)
 			return (-1);
 
@@ -355,7 +355,7 @@ kq_del(void *arg, struct event *ev)
 		kev.ident = ev->ev_fd;
 		kev.filter = EVFILT_READ;
 		kev.flags = EV_DELETE;
-		
+	
 		if (kq_insert(kqop, &kev) == -1)
 			return (-1);
 
@@ -367,7 +367,7 @@ kq_del(void *arg, struct event *ev)
 		kev.ident = ev->ev_fd;
 		kev.filter = EVFILT_WRITE;
 		kev.flags = EV_DELETE;
-		
+	
 		if (kq_insert(kqop, &kev) == -1)
 			return (-1);
 

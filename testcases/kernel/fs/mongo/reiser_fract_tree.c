@@ -89,7 +89,7 @@ void chngdir(char *name)
 
 /* this is the core statistical distribution function, and it is used for file
    sizes, directory sizes, etc. */
-int determine_size(double median_size, 			
+int determine_size(double median_size, 		
 		   double max_size	/* The maximal value of size */ )
 {
   /* when x is half of its random range (max_size/median_size), result is
@@ -292,7 +292,7 @@ int make_directory(char * dirname)
 	already exist.  Thus we ignore EEXIST, and pay attention to all else. */
     if ( errno != EEXIST ) {
       perror ("mkdir");
-      exit (errno);			
+      exit (errno);		
     }
   }
   sprintf(dirname, "d%lu", this_directory_number++);

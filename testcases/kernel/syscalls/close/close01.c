@@ -38,7 +38,7 @@
  *	      issue a FAIL message
  *	else
  *	   issue a PASS message
- *	
+ *
  *
  * USAGE:  <for command-line>
  *  close01 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
@@ -147,7 +147,7 @@ main(int ac, char **av)
 
 	}
 	cleanup();
-	
+
 	return 0;
 	/*NOTREACHED*/
 }

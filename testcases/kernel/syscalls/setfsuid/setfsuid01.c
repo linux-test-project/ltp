@@ -66,7 +66,7 @@ int main(int ac, char **av)
 	char *msg;			/* message returned from parse_opts */
 
 	uid_t uid;
-	
+
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);

@@ -50,7 +50,7 @@
  *
  * 	2004/09/10 Gernot Payer <gpayer@suse.de>
  * 		code cleanup
- * 	
+ * 
  * RESTRICTIONS
  *	None
  */
@@ -211,42 +211,42 @@ void
 setup()
 {
 	char *buf;
-	
+
 	PAGESIZE = getpagesize();
-	
+
 	/* global_pointer will point to a mmapped area of global_len bytes */
 	global_len = PAGESIZE*2;
-	
+
 	buf = (char*)malloc(global_len);
 	memset(buf,42,global_len);
-	
+
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
-	
+
 	/* create a temporary file */
 	if( -1 == (file_desc = mkstemp(file_name)) )
 	{
 		tst_brkm(TBROK, cleanup, "Error while creating temporary file: %s", strerror(errno));
 	}
-	
+
 	/* fill the temporary file with two pages of data */
 	if( -1 == write(file_desc,buf,global_len) )
 	{
 		tst_brkm(TBROK, cleanup, "Error while writing to temporary file: %s", strerror(errno));
 	}
 	free(buf);
-	
+
 	/* map the file in memory */
 	if( MAP_FAILED == (global_pointer = (char *)mmap(NULL,global_len*2,PROT_READ|PROT_WRITE|PROT_EXEC,MAP_SHARED,file_desc,0)) )
 	{
 		tst_brkm(TBROK, cleanup, "Temporary file could not be mmapped: %s", strerror(errno));
 	}
-	
+
 	/* initialize the vector buffer to collect the page info */
-	global_vec = malloc( (global_len+PAGESIZE-1) / PAGESIZE );	
+	global_vec = malloc( (global_len+PAGESIZE-1) / PAGESIZE );
 }
 
 /*
@@ -261,7 +261,7 @@ cleanup()
 	 * print errno log if that option was specified
 	 */
 	TEST_CLEANUP;
-	
+
 	free(global_vec);
 	munmap(global_pointer,global_len);
 	close(file_desc);

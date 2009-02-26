@@ -399,7 +399,7 @@ int main(int ac, char **av)
 /* //block2: */
 		tst_resm(TINFO, "Enter block 2");
 		fail = 0;
-		
+	
 		/*
 		 * Set a write lock at the middle of the file and a
 		 * read lock just before

@@ -22,7 +22,7 @@
 *
 *  Project Website:  TBD
 *
-* $Id: main.c,v 1.10 2009/02/26 12:02:22 subrata_modak Exp $
+* $Id: main.c,v 1.11 2009/02/26 12:14:53 subrata_modak Exp $
 *
 */
 #include <stdio.h>
@@ -179,7 +179,7 @@ unsigned long init_data(test_ll_t *test, unsigned char **data_buffer_unaligned)
 		pMsg(ERR,test->args,  "Failed to allocate static data buffer memory.\n");
 		return(-1);
 	}
-	
+
 	test->env->data_buffer = (unsigned char *) BUFALIGN(*data_buffer_unaligned);
 
 	if((test->env->shared_mem = (void *) ALLOC(test->env->bmp_siz+BMP_OFFSET)) == NULL) {
@@ -404,7 +404,7 @@ test_ll_t *getNewTest(test_ll_t *testList) {
 
 test_ll_t *run() {
 	test_ll_t *newTest = NULL, *lastTest = NULL;
-	
+
 	if(cleanArgs.flags & CLD_FLG_FSLIST) {
 		char *filespec = cleanArgs.device;
 		char *aFilespec = NULL;
@@ -442,7 +442,7 @@ test_ll_t *run() {
 				}
 			}
 		}
-	
+
 		fclose(file);
 		FREE(aFilespec);
 	} else {

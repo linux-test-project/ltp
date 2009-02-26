@@ -98,7 +98,7 @@ runtest_f(int fd, char *buf, int   offset, int count, int errnum, int testnum, c
 {
 	int ret;
 	int l_fail = 0;
-	
+
 	if (lseek(fd, offset, SEEK_SET) < 0) {
 		if (errno != errnum) {
 			tst_resm(TFAIL, "lseek before read failed: %s",
@@ -140,7 +140,7 @@ runtest_s(int fd, char *buf, int   offset, int count, int testnum, char *msg)
 {
 	int ret;
 	int l_fail = 0;
-	
+
 	if (lseek(fd, offset, SEEK_SET) < 0) {
 		tst_resm(TFAIL, "lseek before read failed: %s",
 			strerror(errno));
@@ -287,7 +287,7 @@ main(int argc, char *argv[])
 	else
 		tst_resm (TPASS, "Odd count of read and write");
 	total++;
-	
+
 	/* Test-4: Read beyond the file size */
 	offset = BUFSIZE * (fblocks + 10);
 	count = bufsize;
@@ -382,7 +382,7 @@ main(int argc, char *argv[])
 			tst_resm (TPASS, "character device read, write");
 	}
 	total++;
-	
+
 
 	/* Test-10: read, write to a mmaped file */
 	shm_base = (char *)(((long)sbrk(0) + (shmsz-1)) & ~(shmsz-1));

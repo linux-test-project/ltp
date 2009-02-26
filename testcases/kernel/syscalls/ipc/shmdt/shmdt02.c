@@ -80,13 +80,13 @@ int main(int ac, char **av)
 		 * make the call using the TEST() macro - attempt to
 		 * remove an invalid shared memory address
 		 */
-	
+
 		TEST(shmdt(&unshared));
-	
+
 		if (TEST_RETURN != -1) {
 			tst_brkm(TFAIL, cleanup, "call succeeded unexpectedly");
 		}
-	
+
 		TEST_ERROR_LOG(TEST_ERRNO);
 
 		switch(TEST_ERRNO) {
@@ -97,7 +97,7 @@ int main(int ac, char **av)
 		default:
 			tst_resm(TFAIL, "call failed with an unexpected error "
 				 "- %d : %s", TEST_ERRNO, strerror(TEST_ERRNO));
-			
+		
 		}
 	}
 

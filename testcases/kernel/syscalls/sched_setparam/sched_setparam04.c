@@ -135,7 +135,7 @@ main(int ac, char **av)
 		 	 */
 			TEST(sched_setparam(test_cases[ind].pid,
 					   test_cases[ind].p));
-	
+
 			if ((TEST_RETURN == -1) &&
 			    (TEST_ERRNO == test_cases[ind].exp_errno)) {
 				tst_resm(TPASS, "expected failure; Got %s",
@@ -152,7 +152,7 @@ main(int ac, char **av)
 	}
 
 	cleanup();
-	
+
 	/*NOTREACHED*/
 	return 0;
 }
@@ -182,7 +182,7 @@ setup(void)
 void
 cleanup(void)
 {
-	
+
 	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.

@@ -91,14 +91,14 @@ int main(int ac, char **av)
 		/*
 		 * Look for a failure by using an invalid number for fd
 		 */
-	
+
 		TEST(fchdir(bad_fd));
-	
+
 		if (TEST_RETURN != -1) {
 			tst_brkm(TFAIL, cleanup, "call succeeded with bad "
 				 "file descriptor");
 		}
-	
+
 		TEST_ERROR_LOG(TEST_ERRNO);
 
 		switch(TEST_ERRNO) {

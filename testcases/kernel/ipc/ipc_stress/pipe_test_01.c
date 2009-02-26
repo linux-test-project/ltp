@@ -101,7 +101,7 @@ int main (int argc, char **argv)
 	 */
 	if (pipe (fd) < 0)
 			sys_error ("pipe failed", __LINE__);
-	
+
 	/*
 	 * Create child process, run command and write info into pipe.
 	 *
@@ -127,7 +127,7 @@ int main (int argc, char **argv)
 /* Vernon Mauery 6/1/2001 changed path and file to work will more flavors of unix */
 		execl ("/bin/cat", "cat", "/etc/inittab", NULL);
 		sys_error ("execl failed (should not reach this line) ", __LINE__);
-	}	
+	}
 
 	/*
 	 * Create another child process and run command on data passed though

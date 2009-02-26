@@ -204,7 +204,7 @@ main(int ac, char **av)
 			 * sets appropriate errno.
 			 */
 			TEST(chmod(file_name, mode));
-	
+
 			/* Check return code from chmod(2) */
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "chmod() returned %d, "
@@ -307,7 +307,7 @@ setup1()
 	char Path_name[PATH_MAX];       /* Buffer to hold command string */
 	char Cmd_buffer[BUFSIZ];        /* Buffer to hold command string */
 
-	
+
 	/* open/creat a test file and close it */
 	if ((fd = open(TEST_FILE1, O_RDWR|O_CREAT, 0666)) == -1) {
 		tst_brkm(TBROK, cleanup,
@@ -398,7 +398,7 @@ int
 setup3()
 {
 	int fd;
-	
+
 	/* Creat a test file under temporary directory and close it */
 	if ((fd = open("t_file", O_RDWR|O_CREAT, MODE_RWX)) == -1) {
 		tst_brkm(TBROK, cleanup,
@@ -447,7 +447,7 @@ cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-	
+
 	/* Restore mode permissions on test directory created in setup2() */
 	if (chmod(DIR_TEMP, MODE_RWX) < 0) {
 		tst_resm(TBROK, "chmod(2) of %s failed", DIR_TEMP);

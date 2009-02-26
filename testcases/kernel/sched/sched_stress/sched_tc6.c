@@ -140,7 +140,7 @@ int main (int argc, char **argv)
 	clock_t	stop_time;
 	float	elapsed_time;
 #ifdef __linux__
-	time_t  timer_info;	
+	time_t  timer_info;
 #else
 	struct tms timer_info;		/* time accounting info */
 #endif
@@ -243,7 +243,7 @@ DARA: which one to use
 	    while ((rc=wait ((void *) 0)) != pid)
 	       if (rc == -1)
 	          sys_error ("wait failed", __FILE__, __LINE__);
-*/		
+*/	
 	}
   
 	/* Exit with success! */

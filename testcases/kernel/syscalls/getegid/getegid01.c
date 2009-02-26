@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: getegid01.c,v 1.5 2009/02/26 12:02:56 subrata_modak Exp $ */
+/* $Id: getegid01.c,v 1.6 2009/02/26 12:15:38 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -60,7 +60,7 @@
  *    TEST CASES
  *
  * 	1.) getegid(2) returns...(See Description)
- *	
+ *
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
@@ -158,7 +158,7 @@ main(int ac, char **av)
 	/* reset Tst_count in case we are looping. */
 	Tst_count=0;
 
-		
+	
 	/*
 	 * TEST CASE:
 	 *  Get effective group id.
@@ -167,7 +167,7 @@ main(int ac, char **av)
 
 	/* Call getegid(2) */
 	TEST(GETEGID( ));
-	
+
 	/* check return code */
 	if ( TEST_RETURN < 0 ) {
 	    TEST_ERROR_LOG(TEST_ERRNO);

@@ -62,7 +62,7 @@ int main(int argc, char **argv)
 
 	DMEV_ZERO(events);
 	DMEV_SET(DM_EVENT_MOUNT, events);
-	
+
 	/* CANNOT DO ANYTHING WITHOUT SUCCESSFUL INITIALIZATION!!! */
 	if ((rc = dm_init_service(&varstr)) != 0) {
 		DMLOG_PRINT(DMLVL_ERR, "dm_init_service failed! (rc = %d, errno = %d)\n", rc, errno);
@@ -89,9 +89,9 @@ int main(int argc, char **argv)
 	}
 
 	DMLOG_PRINT(DMLVL_DEBUG, "Starting DMAPI tokens tests\n") ;
-	
+
 	szFuncName = "dm_getall_tokens";
-	
+
 	/*
 	 * TEST    : dm_getall_tokens - invalid sid
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -121,7 +121,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_getall_tokens - invalid nelem
 	 * EXPECTED: rc = -1, errno = E2BIG
@@ -168,7 +168,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_getall_tokens - invalid tokenbufp
 	 * EXPECTED: rc = -1, errno = EFAULT
@@ -189,7 +189,7 @@ int main(int argc, char **argv)
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid tokenbufp)\n", szFuncName);
 			rc = dm_getall_tokens(sid, TOKBUF_NUM, (dm_token_t *)INVALID_ADDR, &nelem);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EFAULT);
-	
+
 			/* Variation clean up */
 			rc = dm_respond_event(sid, token, DM_RESP_CONTINUE, 0, 0, NULL);
 			if (rc == -1) {
@@ -197,7 +197,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_getall_tokens - invalid nelemp
 	 * EXPECTED: rc = -1, errno = EFAULT
@@ -226,7 +226,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_getall_tokens - one userevent token
 	 * EXPECTED: rc = 0
@@ -274,7 +274,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_getall_tokens - two userevent tokens
 	 * EXPECTED: rc = 0
@@ -333,7 +333,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_getall_tokens - one event token
 	 * EXPECTED: rc = 0
@@ -381,7 +381,7 @@ int main(int argc, char **argv)
 			pthread_join(tidToken, NULL);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_getall_tokens - one event token, one userevent token
 	 * EXPECTED: rc = 0
@@ -446,7 +446,7 @@ int main(int argc, char **argv)
 			pthread_join(tidToken, NULL);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_getall_tokens - DM_NO_SESSION sid
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -476,7 +476,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	
+
 	rc = umount(mountPt);
 	if (rc == -1) {
 		DMLOG_PRINT(DMLVL_ERR, "umount failed! (rc = %d, errno = %d)\n", rc, errno);
@@ -490,7 +490,7 @@ int main(int argc, char **argv)
 	}
 
 	DMLOG_STOP();
-			
+		
 	return 0;
 }
 
@@ -591,7 +591,7 @@ void *Thread(void *parm)
 			case DM_EVENT_PREUNMOUNT:
 				response = DM_RESP_CONTINUE;
 				break;
-				
+			
 			case DM_EVENT_CREATE:
 			{
 				dm_namesp_event_t *nse = DM_GET_VALUE(dmMsg, ev_data, dm_namesp_event_t *);
@@ -604,10 +604,10 @@ void *Thread(void *parm)
 
 				createToken = token;
 				DMLOG_PRINT(DMLVL_DEBUG, "  Token: %d\n", createToken);
-				
+			
 				/* Wait for main thread to call dm_getall_tokens */
 				sleep(3);
-				
+			
 				response = DM_RESP_CONTINUE;
 				break;
 			}
@@ -628,7 +628,7 @@ void *Thread(void *parm)
 	} while (bMounted);
 
 	pthread_exit(0);
-}	
+}
 
 void *TokenThread(void *parm)
 {

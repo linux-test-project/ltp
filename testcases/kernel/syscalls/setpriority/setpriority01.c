@@ -94,33 +94,33 @@ int main(int ac, char **av)
 		 * to a new value of 2.  Then read the value using getpriority()
 		 * to verify the change.
 		 */
-	
+
 		/*
 		 * We need to be careful here. We could possibly set our
 		 * priority lower using PRIO_USER and then have no way
 		 * to set it back.  So, let's use PRIO_PROCESS and make
 		 * sure we affect this test only.
 		 */
-	
+
 		/* call the system call with the TEST() macro */
 		TEST(setpriority(PRIO_PROCESS, 0, new_val));
-	
+
 		if (TEST_RETURN != 0) {
 			tst_resm(TFAIL, "call failed - errno = %d - "
 				 "%s", TEST_ERRNO, strerror(TEST_ERRNO));
 			continue;
 		}
-	
+
 		if (STD_FUNCTIONAL_TEST) {
 			/* get the priority that we just set */
 			priority = getpriority(PRIO_PROCESS, 0);
-	
+
 			if (errno == -1) {
 				tst_brkm(TBROK, cleanup, "getpriority call "
 					 "failed - errno = %d - %s", errno,
 					 strerror(errno));
 			}
-	
+
 			if (priority == new_val) {
 				tst_resm(TPASS, "functionality is correct");
 			} else {

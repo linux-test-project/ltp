@@ -40,7 +40,7 @@
  *   Check return code, if system call failed (return=-1)
  *   	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call	
+ *   	Verify the Functionality of system call
  *      if successful,
  *      	Issue Functionality-Pass message.
  *      Otherwise,
@@ -117,14 +117,14 @@ main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
-	
+
 		/*
 		 * Call fstat(2) to get the status of
 		 * specified 'file' pointed to 'fd'
 		 * into stat structure.
 		 */
 		TEST(fstat(fildes, &stat_buf));
-	
+
 		/* check return code of fstat(2) */
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL,
@@ -210,7 +210,7 @@ setup()
 	for (i = 0; i < BUF_SIZE; i++) {
 		tst_buff[i] = 'a';
 	}
-	
+
 	/* Write to the file 1k data from the buffer */
 	while (write_len < FILE_SIZE) {
 		if ((wbytes = write(fildes, tst_buff, sizeof(tst_buff))) <= 0) {

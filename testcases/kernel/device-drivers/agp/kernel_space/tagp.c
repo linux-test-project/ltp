@@ -111,7 +111,7 @@ static int tagp_close(struct inode *ino, struct file *f) {
  *      a user space program can drive the test functions
  *      through a call to ioctl once the correct file
  *      descriptor has been attained
- * 	
+ * 
  * 	in user space the file descriptor that you attain
  * 	will represent the inode and file pointers in
  * 	the kernel ioctl function, and only 3 variables
@@ -168,7 +168,7 @@ static int tagp_ioctl(struct inode *ino, struct file *f,
                 }
         }
 
-	
+
 	/*
 	 * Use a switch statement to determine which function
 	 * to call, based on the cmd flag that is specified
@@ -176,7 +176,7 @@ static int tagp_ioctl(struct inode *ino, struct file *f,
 	 * needed
 	 *
 	 */
- 	switch(cmd) {		
+ 	switch(cmd) {	
 		case TEST_PCI_FIND_DEV: 		rc = test_pci_find_device();break;
 		case TEST_BACKEND_ACQUIRE:		rc = test_agp_backend_acquire();break;
 		case TEST_BACKEND_RELEASE:		rc = test_agp_backend_release();break;
@@ -197,7 +197,7 @@ static int tagp_ioctl(struct inode *ino, struct file *f,
 		case TEST_ENABLE:			rc = test_agp_enable();break;
 		case TEST_GLOBAL_CACHE_FLUSH:		rc = test_global_cache_flush();break;
 		case TEST_GENERIC_MASK_MEMORY:		rc = test_agp_generic_mask_memory();break;
-			
+		
 		default:
 			printk("Mismatching ioctl command\n");
                         break;
@@ -210,7 +210,7 @@ static int tagp_ioctl(struct inode *ino, struct file *f,
 	 * calls or an error in the ioctl function
 	 */
 	tif.out_rc = rc;
-	rc = 0;	
+	rc = 0;
 
 	/*
 	 * setup the rest of tif pointer for returning to
@@ -256,16 +256,16 @@ static struct aper_size_info_fixed test_core_agp_sizes[] =
 
 static int test_fetch_size(void)
 {
-	printk("<1> tagp : Enter test fetch size\n");		
+	printk("<1> tagp : Enter test fetch size\n");	
 	return 0;
-	
+
 }
 
 static int test_configure(void)
 {
 	/* Do not config test_core_agp_size */
 	printk("<1> tagp : Enter test configure\n");
-	return 0;	
+	return 0;
 }
 
 static void test_cleanup(void)
@@ -346,7 +346,7 @@ static int test_agp_put_bridge(void)
 {
 	agp_put_bridge (tmp_bridge);
 	tmp_bridge = NULL;
-	return 0;	
+	return 0;
 }
 
 static int test_agp_create_and_free_memory(void)
@@ -392,7 +392,7 @@ static int test_agp_copy_info(void)
 {
 	struct agp_kern_info *info;
 	int ret ;
-	
+
 	info  = (struct agp_kern_info *) kmalloc(sizeof(struct agp_kern_info),GFP_KERNEL);
 	if(!info)
 	{
@@ -406,7 +406,7 @@ static int test_agp_copy_info(void)
 		return 1;
 	}
 	kfree(info);
-	
+
 	return 0;
 }
 /*
@@ -414,9 +414,9 @@ static int test_agp_allocate_memory(void)
 {
 	struct agp_memory * local_agp_memory = NULL;
 	int ret = 0 , i = 0;
-	
+
 	local_agp_memory = agp_allocate_memory(8,AGP_NORMAL_MEMORY);
-	
+
 	if(local_agp_memory == NULL)
 	{
 		printk("<1> tagp : agp_allocate_memory failed\n");
@@ -437,7 +437,7 @@ static int test_agp_allocate_memory(void)
 		agp_free_memory(local_agp_memory);
 		printk("<1> tagp : agp unband memory failed\n");
 	}
-	
+
 	for (i = 0; i < 8; i++) {
 		phys_to_virt(local_agp_memory->memory[i]);//virt_to_phys(addr);
 		local_agp_memory->page_count--;
@@ -445,7 +445,7 @@ static int test_agp_allocate_memory(void)
 
 	agp_free_memory(local_agp_memory);
 	printk("<1> tagp : agp unband memory success\n");
-	
+
 	return 0;
 }
 */
@@ -543,13 +543,13 @@ static int test_pci_find_device()
 {
 	struct pci_dev *pdev;// = (struct pci_dev *)kmalloc(sizeof(struct pci_dev), GFP_KERNEL);
 	struct agp_bridge_data *bridge = NULL;
-	
+
 	pdev = pci_find_device (PCI_VENDOR_ID_ATI, PCI_ANY_ID, NULL);
-	
+
 	if(pdev)
 	{
 		printk("<1> tagp : pci find device success\n");
-		
+	
 		u8 cap_ptr;
 
 		cap_ptr = pci_find_capability(pdev, PCI_CAP_ID_AGP);
@@ -580,10 +580,10 @@ static int test_pci_find_device()
 		printk("<1> tagp : agp set drvdata  success\n");
 		return agp_add_bridge(bridge);
 	}
-		
+	
 
-	
-	
+
+
 	return 1;
 }
 
@@ -650,17 +650,17 @@ static int __init tagp_init_module(void) {
 
         if(Major == 0)
                 Major = rc;
-	
+
 	rc = pci_module_init(&agp_test_pci_driver);
-	
+
 	if (rc < 0) {
 		printk("tagp: pci_module_init failed.\n");
 		return rc;
 	}
-	
+
 	printk("tagp: PCI module init success.\n");
 	printk("tagp: Registration success.\n");
-	
+
         return 0;
 }
 

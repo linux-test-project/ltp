@@ -111,7 +111,7 @@ int main(int ac, char **av)
 	int lc;				/* loop counter */
 	int i;
 	char *msg;			/* message returned from parse_opts */
-	
+
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, options, &help)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
@@ -124,8 +124,8 @@ int main(int ac, char **av)
 		cleanup();
         }
 
-        if (geteuid() != 0) { 	
-	                 tst_brkm(TBROK, tst_exit, "Test must be run as root"); 	
+        if (geteuid() != 0) { 
+	                 tst_brkm(TBROK, tst_exit, "Test must be run as root"); 
 	}
 
 	setup();

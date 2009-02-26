@@ -36,7 +36,7 @@
  *	by root.   Use the TERM flag, to clean up files.
  */
 
-#include <stdio.h>		
+#include <stdio.h>	
 #include <errno.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -101,7 +101,7 @@ int main (argc, argv)
 		tst_resm(TBROK, "Non-root attempting to enable acct: didn't fail", errno );
 		tst_exit();
 	}
-		
+	
 	if( errno != EPERM ) {
 		tst_resm(TFAIL, "Non-root acct enable - errno expect: %d got: %d",
 				EPERM, errno );

@@ -123,7 +123,7 @@ main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "-H option is REQUIRED for this test, use -h for options help");
 		tst_exit();
 	}
-	
+
 	/* Perform global setup for test */
 	setup();
 
@@ -172,7 +172,7 @@ main(int ac, char **av)
 			/* force to allocate page and change HugePages_Free */
 			*(int*)addr = 0;
 		}
-		
+	
 		/* Make sure the number of free huge pages AFTER testing decreased */
 		aftertest = getfreehugepages();
 		hugepagesmapped = beforetest - aftertest;
@@ -224,7 +224,7 @@ setup()
 }
 
 /*
- * getfreehugepages() - Reads the number of free huge pages from /proc/meminfo	
+ * getfreehugepages() - Reads the number of free huge pages from /proc/meminfo
  */
 int
 getfreehugepages()
@@ -235,7 +235,7 @@ getfreehugepages()
 	char buff[BUFFER_SIZE];
 
         f = fopen("/proc/meminfo", "r");
-	if (!f) 	
+	if (!f) 
      		tst_brkm(TFAIL, cleanup, "Could not open /proc/meminfo for reading");
 
 	while(fgets(buff,BUFFER_SIZE, f) != NULL){
@@ -243,16 +243,16 @@ getfreehugepages()
 			break;
 	}
 
-        if (retcode != 1) { 	
-        	fclose(f); 	
+        if (retcode != 1) { 
+        	fclose(f); 
        		tst_brkm(TFAIL, cleanup, "Failed reading number of huge pages free.");
-     	}	
-	fclose(f);	
+     	}
+	fclose(f);
 	return(hugefree);
 }
 
 /*
- * get_huge_pagesize() - Reads the size of huge page size from /proc/meminfo	
+ * get_huge_pagesize() - Reads the size of huge page size from /proc/meminfo
 */
 int
 get_huge_pagesize()
@@ -263,7 +263,7 @@ get_huge_pagesize()
 	char buff[BUFFER_SIZE];
 
         f = fopen("/proc/meminfo", "r");
-	if (!f) 	
+	if (!f) 
      		tst_brkm(TFAIL, cleanup, "Could not open /proc/meminfo for reading");
 
 	while(fgets(buff,BUFFER_SIZE, f) != NULL){
@@ -271,11 +271,11 @@ get_huge_pagesize()
 			break;
 	}
 
-        if (retcode != 1) { 	
-        	fclose(f); 	
+        if (retcode != 1) { 
+        	fclose(f); 
        		tst_brkm(TFAIL, cleanup, "Failed reading size of huge page.");
-     	}	
-	fclose(f);	
+     	}
+	fclose(f);
 	return(hugesize);
 }
 

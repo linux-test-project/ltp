@@ -115,7 +115,7 @@ main(int ac, char **av)
 
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
-		
+	
 		for (i = 0; i < TST_TOTAL; ++i) {
 
 			if (i == 2) {

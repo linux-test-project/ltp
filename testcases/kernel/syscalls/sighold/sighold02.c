@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: sighold02.c,v 1.8 2009/02/26 12:04:57 subrata_modak Exp $ */
+/* $Id: sighold02.c,v 1.9 2009/02/26 12:16:39 subrata_modak Exp $ */
 /*****************************************************************************
  * OS Test - Silicon Graphics, Inc.  Eagan, Minnesota
  *
@@ -344,7 +344,7 @@ do_child()
     int cnt;
 
     p_p.result=TPASS;
-	
+
     /* set up signal handlers for the signals */
     if (setup_sigs() < 0) {
 	p_p.result=TBROK;
@@ -417,7 +417,7 @@ do_child()
 	p_p.result = TFAIL;
 	sprintf(p_p.mesg, "signals received: %s", signals_received);
     }
-		
+	
     if (write_pipe(CHILDSWRITEFD) < 0 ) {
 	exit(2);
     }
@@ -543,7 +543,7 @@ timeout()
     printf("timeout: sigalrm caught.\n");
 #endif
     Timeout=1;
-	
+
 }
 
 /*****************************************************************************
@@ -607,7 +607,7 @@ int sig;	/* the signal causing the execution of this handler */
     return;
 }
 
-	
+
 /*****************************************************************************
  *  getout() : attempt to kill child process and call cleanup().
  ****************************************************************************/

@@ -92,9 +92,9 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		/* call the system call with the TEST() macro */
-	
+
 		TEST(getsid(0));
-	
+
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "call failed - errno = %d "
 				 "- %s", TEST_ERRNO, strerror(TEST_ERRNO));
@@ -147,7 +147,7 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/	
+	/*NOTREACHED*/
 	return 0;
 }
 
@@ -159,7 +159,7 @@ setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-	
+
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 }

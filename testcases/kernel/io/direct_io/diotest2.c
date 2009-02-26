@@ -212,7 +212,7 @@ main(int argc, char *argv[])
 	unlink(filename);
 	total++;
 
-	
+
 
 	/* Testblock-2: Write with Direct IO, Read without */
 	action = WRITE_DIRECT;

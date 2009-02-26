@@ -34,7 +34,7 @@
  *              -I x : Execute test for x seconds.
  *              -P x : Pause for x seconds between iterations.
  *              -t   : Turn on syscall timing.
- *	
+ *
  * History
  *	07/2001 John George
  *		-Ported

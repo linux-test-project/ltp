@@ -70,7 +70,7 @@ void
 vfillbuf(struct iovec *iv, int vcnt, char value)
 {
 	int i;
-	
+
 	for (i = 0; i < vcnt; iv++, i++) {
 		fillbuf(iv->iov_base, iv->iov_len, (char)value);
 	}
@@ -100,7 +100,7 @@ int
 vbufcmp(struct iovec *iv1, struct iovec *iv2, int vcnt)
 {
 	int i;
-	
+
 	for (i = 0; i < vcnt; iv1++, iv2++, i++) {
 		if (bufcmp(iv1->iov_base, iv2->iov_base, iv1->iov_len) < 0) {
 			fprintf(stderr, "Vector: %d, iv1base=%s, iv2base=%s\n",
@@ -198,7 +198,7 @@ forkchldrn(int **pidlst, int numchld, int action, int (*chldfunc)())
 
 /*
  * killchldrn: signal the children listed in pidlst with the given signal
- *	
+ *
 */
 int
 killchldrn(int **pidlst, int numchld, int sig)

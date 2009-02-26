@@ -150,7 +150,7 @@ int main() {
                 printf("Failed to find from bus pointer\n");
         else
                 printf("Found device from bus pointer\n");
-	
+
 	/* test find from device */
 	if(ki_generic(tpci_fd, FIND_DEVICE))
                 printf("Failed to find device from device info\n");
@@ -161,14 +161,14 @@ int main() {
 	if(ki_generic(tpci_fd, FIND_CLASS))
                 printf("Failed to find device from class\n");
         else
-                printf("Found device from class \n");	
+                printf("Found device from class \n");
 
 	/* test find subsys */
 	if(ki_generic(tpci_fd, FIND_SUBSYS))
                 printf("Failed to find device from subsys info\n");
         else
                 printf("Found device from subsys info\n");
-	
+
 	/* test scan bus */
 	if(ki_generic(tpci_fd, BUS_SCAN))
                 printf("Failed on bus scan call\n");
@@ -236,18 +236,18 @@ int main() {
                 printf("Failed on max bus call\n");
         else
                 printf("Success max bus \n");
-	
+
 	if(ki_generic(tpci_fd, FIND_CAP))
 		printf("Does not have tested capability\n");
 	else
 		printf("Device has tested capability\n");
 
-	
+
 	rc = tpciclose();
 	if (rc ) {
                 printf("Test PCI Driver may not be closed\n");
                 exit(1);
-        }	
+        }
 
 	return 0;
 }

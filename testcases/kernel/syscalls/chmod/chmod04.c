@@ -27,7 +27,7 @@
  *	- the process is the owner of the directory.
  *	- the effective group ID or one of the supplementary group ID's of the
  *	  process is equal to the group ID of the directory.
- *	
+ *
  * Expected Result:
  *  chmod() should return value 0 on success and succeeds to set sticky bit
  *  on the specified directory.
@@ -44,7 +44,7 @@
  *   Check return code, if system call failed (return=-1)
  *   	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call	
+ *   	Verify the Functionality of system call
  *      if successful,
  *      	Issue Functionality-Pass message.
  *      Otherwise,
@@ -126,7 +126,7 @@ main(int ac, char **av)
 		 * set sticky bit on TESTDIR
 	 	 */
 		TEST(chmod(TESTDIR, PERMS));
-	
+
 		/* check return code of chmod(2) */
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "chmod(%s, %#o) Failed, errno=%d : %s",

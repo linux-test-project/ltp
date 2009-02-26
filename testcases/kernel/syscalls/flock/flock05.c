@@ -47,8 +47,8 @@
  * 		Child tries to flock() the already flocked file with different types of locks
  *		Check return code, if system call failed (return == -1)
  *				Log the error number and issue a FAIL message
- *		otherwise issue a PASS message	
- *		
+ *		otherwise issue a PASS message
+ *	
  *      Cleanup:
  *        Print errno log and/or timing stats if options given
  *	  Deletes temporary directory.
@@ -92,10 +92,10 @@ extern int Tst_count;
 char filename[100];
 int fd,fd1,status;
 
-	
+
 int main(int argc, char **argv)
 {
-	int lc,retval;	
+	int lc,retval;
 	/* loop counter */
 	char *msg;			/* message returned from parse_opts */
 	pid_t pid;
@@ -110,7 +110,7 @@ int main(int argc, char **argv)
 	/* global setup */
 	setup();
 
-	
+
 
 	/* The following loop checks looping state if -i option given */
 
@@ -118,14 +118,14 @@ int main(int argc, char **argv)
 
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
-		
-		/* Testing Shared lock on Exclusive Locked file */	
-		TEST(flock(fd,LOCK_EX));	
-		if(TEST_RETURN == 0){
 	
+		/* Testing Shared lock on Exclusive Locked file */
+		TEST(flock(fd,LOCK_EX));
+		if(TEST_RETURN == 0){
+
 			pid = FORK_OR_VFORK();
 			if(pid == 0){
-			fd1 = open(filename, O_RDWR);	
+			fd1 = open(filename, O_RDWR);
 			retval= flock(fd1,LOCK_SH|LOCK_NB);
 			if(retval == -1){
 				tst_resm(TPASS, "flock() failed to acquire shared lock on an already"
@@ -141,12 +141,12 @@ int main(int argc, char **argv)
 			/* parent waiting */
 			wait(&status);
 		}
-		
+	
 		/* Testing Exclusive lock on a Exclusive Locked file */
 		pid = FORK_OR_VFORK();
-	
+
 		if(pid == 0){
-			fd1 = open(filename, O_RDWR);	
+			fd1 = open(filename, O_RDWR);
 			retval= flock(fd1,LOCK_EX|LOCK_NB);
 			if(retval == -1){
 				tst_resm(TPASS, "flock() failed to acquire exclusive lock on existing "
@@ -209,12 +209,12 @@ setup(void)
 	fd = creat(filename, 0666);
 	if (fd == -1) {
 		tst_resm(TFAIL, "creating a new file failed");
-		
+	
 		TEST_CLEANUP;
-		
+	
 		/* Removing temp dir */
 		tst_rmdir();
-		
+	
 		/* exit with return code appropriate for results */
 		tst_exit();
 	}

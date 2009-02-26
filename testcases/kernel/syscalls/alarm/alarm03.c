@@ -29,7 +29,7 @@
  *
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: alarm03.c,v 1.7 2009/02/26 12:02:33 subrata_modak Exp $ */
+/* $Id: alarm03.c,v 1.8 2009/02/26 12:14:54 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -59,7 +59,7 @@
  *
  * 	1.) alarm(100), fork, child's alarm(0) shall return 0;
  *	2.) alarm(100), fork, parent's alarm(0) shall return non-zero.
- *	
+ *
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
@@ -140,7 +140,7 @@ main(int ac, char **av)
 	 * Call alarm(2)
 	 */
 	TEST(alarm(100));
-	
+
         switch ( FORK_OR_VFORK()) {
 	case -1:
 		tst_brkm(TBROK, cleanup, "fork failed, errno:%d %s",
@@ -187,7 +187,7 @@ main(int ac, char **av)
 	    }
 
         }
-	
+
     }	/* End for TEST_LOOPING */
 
     /***************************************************************

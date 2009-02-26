@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
 	if(argc < 2) {
 		ch = (random() % 10) + 1;
 		if(ch == 2) ch1 = random() % 8;
-		if(ch == 8) ch1 = (random() % 5) + 1;	
+		if(ch == 8) ch1 = (random() % 5) + 1;
 		tst_resm(TINFO, "\nrandom numbers were generated for the case numbers : %d, %d\n", ch, ch1);
 	}
 
@@ -74,12 +74,12 @@ int main(int argc, char *argv[])
 			tst_resm(TINFO, "\nrandom number was generated for case %d : %d\n", ch, ch1);
 		}
 	}
-	
+
 	else {
 		ch = atoi(argv[1]);
 		if(argc > 2) ch1 = atoi(argv[2]);
 	}
-		
+	
 	/*
 	 * Send syslog messages according to the case number, which
 	 * we will know from command line.
@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
 		case 7:
 			syslog(LOG_MAIL | LOG_DEBUG, "syslogtst: mail debug test.");
 			break;
-			
+		
 		}
 		break;
 	case 3:
@@ -258,7 +258,7 @@ int main(int argc, char *argv[])
 		syslog(LOG_USER | LOG_WARNING, "syslogtst:10 warning level not to be logged");
 		break;
 	}
-	
+
 
 	/*
 	 * Check the exit_flag and if it is set,
@@ -266,13 +266,13 @@ int main(int argc, char *argv[])
 	 */
 	if (exit_flag == 1) exit(1);
 	else exit(0);
-		
+	
 }
 
 
 void sig_handler(int signal)
 {
-	
+
 	switch(signal) {
 	case SIGINT:
 #ifdef DEBUG
@@ -305,6 +305,6 @@ void sig_handler(int signal)
 #endif
 		break;
 	}
-	
+
 	exit(signal);
 }

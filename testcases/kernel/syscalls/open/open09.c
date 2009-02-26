@@ -74,7 +74,7 @@ int main(int ac, char *av[])
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		local_flag = PASSED;
 
-	//block0:	
+	//block0:
 		if( (fildes = creat(tempfile,0600)) == -1) {
 			tst_resm(TBROK,"\t\t\tcan't create '%s'", tempfile);
 			tst_exit();
@@ -101,7 +101,7 @@ int main(int ac, char *av[])
 
                 local_flag = PASSED;
 	/*--------------------------------------------------------------------*/
-	//block1:	
+	//block1:
 		if( (fildes = open( tempfile, 0 )) == -1 ) {
 			tst_resm( TFAIL, "\t\t\topen failed" ) ;
 			local_flag = FAILED ;

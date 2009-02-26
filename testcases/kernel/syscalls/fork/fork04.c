@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fork04.c,v 1.2 2009/02/26 12:02:56 subrata_modak Exp $ */
+/* $Id: fork04.c,v 1.3 2009/02/26 12:15:38 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -60,7 +60,7 @@
  *       1. TERM
  *       2. NoTSetzWq
  *       3. TESTPROG
- *	
+ *
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
@@ -304,7 +304,7 @@ void parent_environment()
             sprintf(parent_value,"%s:%s", environ_list[index], var);
 
         cmp_env_strings(parent_value, tmp_line);
-	
+
       }
     }
   close(fildes);
@@ -313,7 +313,7 @@ void parent_environment()
 
 /***************************************************************
  * main() - performs tests
- *	
+ *
  ***************************************************************/
 
 int
@@ -349,7 +349,7 @@ main(int ac, char **av)
 
 	/* make the call to fork */
 	TEST(fork());
-	
+
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
 	  /* fork failed */

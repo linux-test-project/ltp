@@ -24,7 +24,7 @@
  *
  * DESCRIPTION
  * 	Test to see the the proper errors are returned by sigpending
- * 	
+ * 
  * ALGORITHM
  * 	test 1:
  * 	Call sigpending(sigset_t*=-1), it should return -1 with errno EFAULT

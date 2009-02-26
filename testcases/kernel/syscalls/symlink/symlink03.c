@@ -172,7 +172,7 @@ main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
-	
+
 		for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
 			test_file = Test_cases[ind].file;
 			sym_file = Test_cases[ind].link;
@@ -188,7 +188,7 @@ main(int ac, char **av)
 			 * appropriate errno.
 			 */
 			TEST(symlink(test_file, sym_file));
-	
+
 			/* Check return code of symlink(2) */
 			if (TEST_RETURN == -1) {
 				/*
@@ -203,7 +203,7 @@ main(int ac, char **av)
 				} else {
 					tst_resm(TFAIL, "symlink() Fails, %s, "
 						"errno=%d, expected errno=%d",
-						test_desc, TEST_ERRNO,	
+						test_desc, TEST_ERRNO,
 						Test_cases[ind].exp_errno);
 				}
 			} else {
@@ -351,7 +351,7 @@ setup2()
 				TEST_FILE2, errno, strerror(errno));
 		/*NOTREACHED*/
 		}
-	
+
 	if (symlink(TEST_FILE2, SYM_FILE2) < 0) {
 		tst_brkm(TBROK, cleanup,
 			 "symlink() Fails to create %s in setup2, error=%d",

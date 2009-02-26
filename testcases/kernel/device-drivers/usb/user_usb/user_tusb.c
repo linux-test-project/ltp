@@ -111,7 +111,7 @@ tusbclose() {
 		close (tusb_fd);
 		tusb_fd = -1;
 	}
-	
+
 	return 0;
 }
 
@@ -130,7 +130,7 @@ int main() {
 		printf("Failed to find usb device pointer\n");
 	else
 		printf("Found usb device pointer\n");
-	
+
 	/* test find usb hostcontroller */
 	if(ki_generic(tusb_fd, TEST_FIND_HCD))
                 printf("Failed to find usb hcd pointer\n");

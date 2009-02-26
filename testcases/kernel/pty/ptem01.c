@@ -70,7 +70,7 @@ test1(void)
 		tst_resm(TBROK,"%s",MASTERCLONE);
 		tst_exit();
 	}
-	
+
 	slavename = ptsname(masterfd);
 	if (slavename == (char *)0) {
 		tst_resm(TBROK,"ptsname() call failed");
@@ -146,10 +146,10 @@ test1(void)
 		tst_resm(TBROK,"close master");
 		tst_exit();
 	}
-	tst_resm(TPASS,"test1");	
+	tst_resm(TPASS,"test1");
 
 	/** NOT REACHED **/
-	return 0;	
+	return 0;
 }
 
 /*
@@ -169,7 +169,7 @@ test2(void)
 		tst_resm(TBROK,"%s",MASTERCLONE);
 		tst_exit();
 	}
-	
+
 	slavename = ptsname(masterfd);
 	if (slavename == (char *)0) {
 		tst_resm(TBROK,"ptsname() call failed");
@@ -250,7 +250,7 @@ test2(void)
 	tst_resm(TPASS,"test2");
 
 	/** NOT REACHED **/
-	return 0;	
+	return 0;
 }
 
 /*
@@ -267,7 +267,7 @@ test3(void)
 		tst_resm(TBROK,"%s",MASTERCLONE);
 		tst_exit();
 	}
-	
+
 	slavename = ptsname(masterfd);
 	if (slavename == (char *)0) {
 		tst_resm(TBROK,"ptsname() call failed");
@@ -311,7 +311,7 @@ test3(void)
 	tst_resm(TPASS,"test3");
 
 	/** NOT REACHED **/
-	return 0;	
+	return 0;
 }
 
 
@@ -474,17 +474,17 @@ test6(void)
 		tst_resm(TBROK,"ptsname() call failed");
 		tst_exit();
 	}
-	
+
 	if (grantpt(masterfd) != 0) {
 		tst_resm(TBROK,"grantpt() call failed");
 		tst_exit();
 	}
-	
+
 	if (unlockpt(masterfd) != 0) {
 		tst_resm(TBROK,"unlockpt() call failed");
 		tst_exit();
 	}
-	
+
 	if ((slavefd = open(slavename, O_RDWR)) < 0) {
 		tst_resm(TBROK,"Could not open %s",slavename);
 		tst_exit();

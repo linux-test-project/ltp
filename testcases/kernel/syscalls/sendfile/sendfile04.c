@@ -264,7 +264,7 @@ int create_server(void) {
 		if(self_exec(argv0, "") < 0) {
 			tst_brkm(TBROK, cleanup, "self_exec failed");
 			return -1;
-			
+		
 		}
 #else
 		do_child();

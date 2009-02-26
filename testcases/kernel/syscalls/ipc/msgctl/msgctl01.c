@@ -90,16 +90,16 @@ int main(int ac, char **av)
 		/*
 		 * Get the msqid_ds structure values for the queue
 		 */
-	
+
 		TEST(msgctl(msg_q_1, IPC_STAT, &qs_buf));
-	
+
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "%s call failed - errno = %d"
 				 " : %s", TCID, TEST_ERRNO,
 				 strerror(TEST_ERRNO));
 		} else {
 			if (STD_FUNCTIONAL_TEST) {
-				if (qs_buf.msg_qbytes > 0) {	
+				if (qs_buf.msg_qbytes > 0) {
 					tst_resm(TPASS, "qs_buf.msg_qbytes is"
 						 " a positive value");
 				} else {

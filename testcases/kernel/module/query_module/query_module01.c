@@ -295,7 +295,7 @@ int
 insert_mod(char *mod)
 {
 	char cmd[80];
-	
+
 	if( sprintf(cmd, "cp `which %s.o` ./", mod) == -1) {
 		tst_resm(TBROK, "sprintf failed");
 		return 1;
@@ -304,7 +304,7 @@ insert_mod(char *mod)
 		tst_resm(TBROK, "Failed to copy %s module", mod);
 		return 1;
 	}
-	
+
         /* Should use force to ignore kernel version & insure loading  */
         /* -RW                                                         */
 	/* if( sprintf(cmd, "insmod %s.o", mod) == -1) {               */

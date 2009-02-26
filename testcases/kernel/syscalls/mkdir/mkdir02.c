@@ -26,7 +26,7 @@
  *	by mkdir(2) inherites the group ID from the parent
  *      directory and S_ISGID bit, if the S_ISGID bit is set
  *	in the parent directory.
- *	
+ *
  * ALGORITHM
  *	Setup:
  *		Setup signal handling.
@@ -98,7 +98,7 @@ main(int ac, char **av)
 {
 	int lc;             /* loop counter */
 	char *msg;          /* message returned from parse_opts */
-	struct stat buf,buf1;	
+	struct stat buf,buf1;
 	pid_t pid, pid1;
 	struct passwd *ltpuser1;
 	struct passwd *ltpuser2;
@@ -115,7 +115,7 @@ main(int ac, char **av)
 	 * perform global setup for test
 	 */
 	setup();
-	
+
 	/*
 	 * check looping state if -i option given
 	 */
@@ -123,7 +123,7 @@ main(int ac, char **av)
 	 
 		/* reset Tst_count in case we are looping. */
 		Tst_count=0;
-		
+	
 		/* check the inherited group ID */
 
 		/*
@@ -132,11 +132,11 @@ main(int ac, char **av)
 		 */
 
 		ltpuser1 = my_getpwnam(user1name);
-		sprintf(tstdir1, "tstdir1.%d", getpid());	
+		sprintf(tstdir1, "tstdir1.%d", getpid());
 
 		if ((pid = FORK_OR_VFORK()) < 0) {
 			tst_brkm(TFAIL, cleanup, "fork() failed");
-			/* NOTREACHED */	
+			/* NOTREACHED */
 		}
 
 		if (pid == 0) {		/* first child */
@@ -161,7 +161,7 @@ main(int ac, char **av)
 				exit(1);
 				/* NOTREACHED */
 			}
-		
+	
 			/*
 			 * create a direcoty with S_ISGID bit set
 			 * and the group ID is ltpuser1
@@ -182,13 +182,13 @@ main(int ac, char **av)
 				exit(1);
 				/* NOTREACHED */
 			}
-			if (chmod(tstdir1,buf1.st_mode|S_ISGID)!= 0) {	
+			if (chmod(tstdir1,buf1.st_mode|S_ISGID)!= 0) {
 				perror("chmod");
 				tst_resm(TFAIL, "failed to set S_ISGID bit");
 				exit(1);
 				/* NOTREACHED */
 			}
-			
+		
 			/* Successfully create the parent directory */
 			exit(0);
 			/* NOTREACHED */
@@ -235,9 +235,9 @@ main(int ac, char **av)
 				perror("setreuid");
 				exit(1);
 				/* NOTREACHED */
-			
+		
 			}
-			
+		
 			/*
 			 * create a sub direcoty
 			 * under the directory just created
@@ -275,22 +275,22 @@ main(int ac, char **av)
 						" directory %d",
 					 buf.st_gid,buf1.st_gid );
 				exit(1);
-				/* NOTREACHED */		
+				/* NOTREACHED */	
 			}
-			
+		
 			/* check the S_ISGID  bit */
 			if (!( buf.st_mode & S_ISGID)) {
 				tst_resm(TFAIL, "mkdir() FAILED to inherit "
 						" the S_ISGID bit from parent "
 						" directory");
 				exit(1);
-				/* NOTREACHED */	
+				/* NOTREACHED */
 			}
 			/* PASS */
 			exit(0);
 			/* NOTREACHED */
 		}
-		
+	
 		waitpid(pid1, &status, 0);
 		if (WEXITSTATUS(status) == 0) {
 			tst_resm(TPASS, "Test to attempt to make a directory"
@@ -301,14 +301,14 @@ main(int ac, char **av)
 			cleanup();
 			/*NOTREACHED*/
 		}
-			
+		
 	}   /* End for TEST_LOOPING */
-	
+
 	/*
 	 * cleanup and exit
 	 */
 	cleanup();
-	
+
 	/*NOTREACHED*/
 	return 0;
 }       /* End main */
@@ -323,16 +323,16 @@ setup()
 	if (geteuid() != 0) {
 		tst_brkm(TBROK, cleanup, "Must run this as root");
 	}
-	
+
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
-	
+
 	/* Create a temporary directory and make it current. */
 	tst_tmpdir();
-	
+
 	/* make it writeable */
 	chmod(".", 0777);
 
@@ -357,7 +357,7 @@ cleanup()
 	 * Remove the temporary directory.
 	 */
 	tst_rmdir();
-	
+
 	/*
 	 * Exit with return code appropriate for results.
 	 */

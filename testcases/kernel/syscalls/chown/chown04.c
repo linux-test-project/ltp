@@ -151,7 +151,7 @@ main(int ac, char **av)
 		 int ind;		 		 /* counter to test different test conditions */
 		 uid_t User_id;		 		 /* Effective user id of a test process */
 		 gid_t Group_id;		 		 /* Effective group id of a test process */
-		
+	
 		 /* Parse standard options given to run the test. */
 		 msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 		 if (msg != (char *) NULL) {
@@ -191,7 +191,7 @@ main(int ac, char **av)
 		 		 		  * sets appropriate errno.
 		 		 		  */
 		 		 		 TEST(chown(file_name, User_id, Group_id));
-		
+	
 		 		 		 /* Check return code from chown(2) */
 		 		 		 if (TEST_RETURN != -1) {
 		 		 		 		 tst_resm(TFAIL, "chown() returned %d, expected "
@@ -244,7 +244,7 @@ setup()
                 tst_brkm(TBROK, cleanup,
                          "getcwd(3) fails to get working directory of process");
         }
-		
+	
 		 /* Switch to nobody user for correct error code collection */
         if (geteuid() != 0) {
                 tst_brkm(TBROK, tst_exit, "Test must be run as root");
@@ -304,7 +304,7 @@ setup1()
 		 int fd;		 		 		 		 /* file handle for testfile */
 		 char Path_name[PATH_MAX];       /* Buffer to hold command string */
 		 char Cmd_buffer[BUFSIZ];        /* Buffer to hold command string */
-		
+	
 
 		 if ((fd = open(TEST_FILE1, O_RDWR|O_CREAT, 0666)) == -1) {
 		 		 tst_brkm(TBROK, cleanup,
@@ -393,7 +393,7 @@ int
 setup3()
 {
 		 int fd;		 		 		 /* file handle for test file */
-		
+	
 		 /* Creat a testfile under temporary directory */
 		 if ((fd = open("t_file", O_RDWR|O_CREAT, MODE_RWX)) == -1) {
 		 		 tst_brkm(TBROK, cleanup,
@@ -443,7 +443,7 @@ cleanup()
 		  * print errno log if that option was specified.
 		  */
 		 TEST_CLEANUP;
-		
+	
 		 /* Restore mode permissions on test directory created in setup2() */
 		 if (chmod(DIR_TEMP, MODE_RWX) < 0) {
 		 		 tst_resm(TBROK, "chmod(2) of %s failed", DIR_TEMP);

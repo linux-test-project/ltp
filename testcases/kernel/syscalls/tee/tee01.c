@@ -102,7 +102,7 @@ int main(int ac, char **av)
 	 * perform global setup for test
 	 */
 	setup();
-	
+
 	/*
          * check if the current filesystem is nfs
          */

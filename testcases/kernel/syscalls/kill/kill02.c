@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: kill02.c,v 1.7 2009/02/26 12:03:43 subrata_modak Exp $ */
+/* $Id: kill02.c,v 1.8 2009/02/26 12:16:08 subrata_modak Exp $ */
 /***********************************************************************************
 
     OS Test -  Silicon Graphics, Inc.
@@ -38,7 +38,7 @@
     TEST IDENTIFIER :  kill02  Sending a signal to processes with the same process group ID.
 
     PARENT DOCUMENT :  kiltds01  Kill System Call.
-		
+	
     AUTHOR          :  Dave Baumgartner
 
     CO-PILOT        :  Barrie Kletscher
@@ -80,7 +80,7 @@
 	**Setup**
 	Set up unexpected signal handling.
 	Set up one pipe for each process to be created with no blocking for read.
-	
+
 	**MAIN**
 	If setup fails exit.
 	Fork 2 children(1 & 2).
@@ -408,7 +408,7 @@ void parent_rout()
    *  catch the signal.
    */
    (void) sleep(SLEEP_TIME);
-	
+
   /*
    *  The signal was sent above and time has run out for child response,
    *  check the outcomes.
@@ -490,7 +490,7 @@ void parent_rout()
   	strncpy(buf_tmp1,pipe_buf,1);
 
 
-  return;	
+  return;
 }  /*End of parent_rout*/
 
 /*******************************************************************************
@@ -904,7 +904,7 @@ void par_kill()
 
    wait(&status);
   return;
-	
+
 } /*End of par_kill*/
 
 

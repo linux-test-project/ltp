@@ -91,7 +91,7 @@ int main(int ac, char **av)
 	pid = FORK_OR_VFORK();
 	if (pid < 0)
 		tst_brkm(TBROK, cleanup, "Fork failed");
-	
+
 	if (pid == 0) {
 		do_master_child();
 	}
@@ -160,7 +160,7 @@ void do_master_child()
 			}
 
 			TEST_ERROR_LOG(TEST_ERRNO);
-			
+		
 			if (TEST_ERRNO == EACCES) {
 				tst_resm(TPASS, "open returned errno EACCES");
 			} else {
@@ -188,7 +188,7 @@ setup(void)
                 tst_brkm(TBROK, tst_exit, "Test must be run as root");
         }
 
-	ltpuser = getpwnam(nobody_uid);	
+	ltpuser = getpwnam(nobody_uid);
 
 	sprintf(testfile, "setuid04file%d.tst", getpid());
 

@@ -23,7 +23,7 @@
  *
  * DESCRIPTION
  *	Check that child can use a large text space and do a large
- *	number of operations.	
+ *	number of operations.
  *
  * ALGORITHM
  * 	Fork one process, check for pid == 0 in child.

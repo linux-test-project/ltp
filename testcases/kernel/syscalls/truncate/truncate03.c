@@ -245,7 +245,7 @@ setup()
                          ltpuser->pw_uid);
                 perror("setuid");
          }
-		
+	
 
 	/* Pause if that option was specified
 	 * TEST_PAUSE contains the code to fork the test with the -i option.

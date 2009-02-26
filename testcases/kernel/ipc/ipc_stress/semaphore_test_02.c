@@ -373,7 +373,7 @@ static void test_commands (pid_t pid)
 	 */
 	arg.array = malloc(sizeof(int) * nsems);
 	if(!arg.array)
-		error ("malloc failed", __LINE__);	
+		error ("malloc failed", __LINE__);
 	if (pid == parent_pid)
 		printf ("\n\tTesting semctl (SETALL) command operation\n");
 	for (i = 0; i < nsems; i++)

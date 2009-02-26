@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: pause01.c,v 1.3 2009/02/26 12:04:40 subrata_modak Exp $ */
+/* $Id: pause01.c,v 1.4 2009/02/26 12:16:34 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -60,13 +60,13 @@
  *    TEST CASES
  *
  * 	1.) pause(2) returns...(See Description)
- *	
+ *
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
  *
  *    OUTPUT SPECIFICATIONS
- * 	
+ * 
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
  *
@@ -160,7 +160,7 @@ main(int ac, char **av)
 	 * Call pause(2)
 	 */
 	TEST(pause());
-	
+
 	/* check return code.  Pause returns -1 and EINTR errno */
 	if (TEST_RETURN != -1) {
 	    tst_resm(TFAIL,

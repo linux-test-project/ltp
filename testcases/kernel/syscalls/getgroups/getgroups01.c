@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: getgroups01.c,v 1.4 2006/10/30 16:16:07 vapier Exp $ */
+/* $Id: getgroups01.c,v 1.5 2009/02/26 12:15:38 subrata_modak Exp $ */
 /***********************************************************************
 TEST IDENTIFIER:  getgroups01 :	Getgroups system call critical test
 
@@ -141,7 +141,7 @@ main(int ac, char **av)
          * Check to see if getgroups() fails on erraneous condition.
          */
 	TEST( getgroups(-1,gidset) );
-	
+
 	if((ret=TEST_RETURN) != -1) {
 		sprintf(msg,
 		    "getgroups(-1,gidset) returned %d, expected -1 and errno = EINVAL",
@@ -205,7 +205,7 @@ main(int ac, char **av)
 	 * Check to see that is -1 is returned and errno is set to EINVAL when
 	 * ngroups is not big enough to hold all groups.
 	 */
-	
+
 	if ( ret <= 1 ) {
 	    sprintf(msg, "getgroups(0,gidset) returned %d, Unable to test that\nusing ngrps >=1 but less than number of grps", ret);
 	    tst_resm(TCONF, msg);

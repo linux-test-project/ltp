@@ -100,13 +100,13 @@ int main(int ac, char **av)
 			 */
 
 			TEST(msgget(msgkey, test_flags[i]));
-	
+
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "call succeeded "
 					 "when EACCES error expected");
 				continue;
 			}
-	
+
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			switch(TEST_ERRNO) {

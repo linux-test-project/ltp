@@ -448,7 +448,7 @@ int notify(int slot)
 			exit(1);
 		}
 	}
-	
+
 	while (cldcnt < BVAL) {
 		rc = msgrcv(msgid,&rcvbuf, sizeof(struct messagebuf), slot, 0);
 		if (rc == -1) {
@@ -841,7 +841,7 @@ void set_timer(void)
 void set_timer(void)
 {
 	struct itimerval itimer;
-	
+
 	memset(&itimer, 0, sizeof(struct itimerval));
 	/*
 	 * Start the timer.
@@ -1009,7 +1009,7 @@ void messenger(void) /* AKA Assassin */
 	int rc;			/* generic return code var */
 	int sig = -1;		/* type of signal received */
 	extern int msgerr;	/* message queue used to send error messages */
-	extern int procgrp;	/* process group of children (used to kill them) */	
+	extern int procgrp;	/* process group of children (used to kill them) */
 
 	/*
 	 *  Infinite loop used to receive error messages from children and
@@ -1060,9 +1060,9 @@ void messenger(void) /* AKA Assassin */
 					shmaddr->err++;
 					break;
 
-				case SIGUSR1:	
+				case SIGUSR1:
 				/* Special: means everything went ok */
-					discrim=1;	
+					discrim=1;
 					break;
 
 				default:
@@ -1105,7 +1105,7 @@ void doit(void)
 	pid_t pid;		/* process id */
 	int rc;
 	char  mtext[80];	/* message text */
-	extern int msgerr;	
+	extern int msgerr;
 	extern int procgrp;
 
 	pid = fork();
@@ -1152,7 +1152,7 @@ void doit(void)
 		printf("Test exiting with SUCCESS\n");
 		exit(0);
         }
-	
+
 #ifdef __64LDT__
         else if (pid > (pid_t)0) {
 #else
@@ -1203,7 +1203,7 @@ dprt("value of BVAL = %d, value of DVAL = %d\n", BVAL, DVAL);
 	}
 #endif
 
-		
+	
 dprt("value of nodesum is initiallized to: %d\n", nodesum);
 
 	prtln();

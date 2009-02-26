@@ -79,7 +79,7 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		TEST(pipe(pipes));
-	
+
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "call succeeded unexpectedly");
 		}

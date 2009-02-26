@@ -370,7 +370,7 @@ int main (int argc, char **argv)
 	 * Sets the value of the detachstate attribute of a thread attributes
 	 * object :
 	 * PTHREAD_CREATE_UNDETACHED	Specifies that the thread will be
-	 * created in undetached state.	
+	 * created in undetached state.
 	*/
 #ifdef _LINUX_
 	// the DEFAULT state for linux pthread_create is to be "undetatched" or joinable
@@ -441,7 +441,7 @@ int main (int argc, char **argv)
 
 		if (cksum[i] != *ulptr )
 			error ("checksums do not match", __LINE__);
-		
+	
 		}
 	}
 	printf ("\n\tMain: readers calculated segment successfully\n");
@@ -521,7 +521,7 @@ void *reader (void *parm)
 	int	num_w;			/* Misc index */
 	unsigned char * ptr;	  /* Misc pointer */
 	unsigned long *ulptr_r;   /* Misc pointer */
-	
+
 	/*
 	 * Wait for a READ_COUNT lock on the shared memory segment, then
 	 * compute the checksum and release the READ_COUNT lock.     
@@ -567,7 +567,7 @@ void *reader (void *parm)
 	/*
 	 * Store the resulting checksum and print out a message
 	 */
-	
+
 	*ulptr_r = cksum_r;
 	printf ("\t\treader (%03d) of writer (%03d): checksum %08lx\n", num_r, num_w, cksum_r);
 	return NULL;

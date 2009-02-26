@@ -84,21 +84,21 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		/* allocate space for the itimerval structure */
-	
+
 		if ((value = (struct itimerval *)malloc((size_t)
 		     sizeof(struct itimerval))) == NULL) {
 			tst_brkm(TBROK, cleanup, "value malloc failed");
 		}
-	
+
 		/* call the system call with the TEST() macro */
-	
+
 		TEST(getitimer(ITIMER_REAL, value));
-	
+
 		if (TEST_RETURN != 0) {
 			tst_resm(TFAIL, "call failed - errno = %d - %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		}
-	
+
 		if (STD_FUNCTIONAL_TEST) {
 
 			/*

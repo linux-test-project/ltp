@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: unlink07.c,v 1.5 2009/02/26 12:05:46 subrata_modak Exp $ */
+/* $Id: unlink07.c,v 1.6 2009/02/26 12:17:06 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -60,13 +60,13 @@
  *    TEST CASES
  *
  * 	1-8) See Testcases structure below.
- *	
+ *
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
  *
  *    OUTPUT SPECIFICATIONS
- * 	
+ * 
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
  *
@@ -200,7 +200,7 @@ main(int ac, char **av)
 
 	/* reset Tst_count in case we are looping. */
 	Tst_count=0;
-	
+
 
         for (ind=0; Test_cases[ind].desc != NULL; ind++ ) {
 
@@ -215,7 +215,7 @@ main(int ac, char **av)
 	     *  Call unlink(2)
 	     */
 	    TEST(unlink(fname));
-	
+
 	    /* check return code */
 	    if ( TEST_RETURN == -1 ) {
 	        if ( STD_FUNCTIONAL_TEST ) {
@@ -235,7 +235,7 @@ main(int ac, char **av)
 		    desc, TEST_RETURN, Test_cases[ind].exp_errno);
 	    }
 	}
-	
+
     }	/* End for TEST_LOOPING */
 
     /***************************************************************

@@ -81,7 +81,7 @@ int main(argc, argv)
 
 	parent_pid = getpid();
         tst_tmpdir();
-	
+
 
 	if (signal(SIGUSR1, (void (*)())chld) == SIG_ERR) {
 		tst_resm(TBROK,"signal failed");
@@ -144,12 +144,12 @@ int main(argc, argv)
 					_exit(0);
 				}
 				tst_resm(TBROK,"malloc fail");
-				tst_resm(TFAIL, "\t\nImpossible to allocate memory of size %d in process %d\n", memory_size, i);	
+				tst_resm(TFAIL, "\t\nImpossible to allocate memory of size %d in process %d\n", memory_size, i);
 				kill(parent_pid, SIGUSR1);
-				tst_exit();	
+				tst_exit();
 			}
 			kill(parent_pid, SIGUSR1);
-			
+		
 			down_pointer = up_pointer = memory_pointer +
 			  (memory_size / 2);
 
@@ -179,7 +179,7 @@ int main(argc, argv)
 			for(j = 1; j <= half_memory_size; j++) {
 				if(*(up_pointer++) != j) error_count++;
 				if(*(down_pointer--) != j) error_count++;
-			}	
+			}
 			exit(error_count);
 		}
 		while (!chld_flag)

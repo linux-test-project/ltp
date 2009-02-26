@@ -33,7 +33,7 @@
  *
  *    DESCRIPTION
  * 	Check for basic errors returned by mount(2) system call.
- * 	
+ * 
  * 	Verify that mount(2) returns -1 and sets errno to
  *
  *	1) ENOMEM - If process exceed maximum  number of locked pages.
@@ -177,7 +177,7 @@ void setup()
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-	
+
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 

@@ -116,12 +116,12 @@ int main(int ac, char **av)
 		 */
 
 		TEST(getsid(pid_max + 1));
-	
+
   	        if (TEST_RETURN == 0) {
 			tst_resm(TFAIL, "call succeed when failure expected");
 			continue;
 		}
-	
+
 		TEST_ERROR_LOG(TEST_ERRNO);
 
 		switch (TEST_ERRNO) {
@@ -167,7 +167,7 @@ setup(void)
     else
         {
          tst_resm(TFAIL, "Cannot open /proc/sys/kernel/pid_max");
-         exit(0);	
+         exit(0);
 	}
 #endif
 	/* capture signals */

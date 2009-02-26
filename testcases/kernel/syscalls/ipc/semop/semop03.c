@@ -103,7 +103,7 @@ int main(int ac, char **av)
 				tst_resm(TFAIL, "call succeeded unexpectedly");
 				continue;
 			}
-	
+
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			switch(TEST_ERRNO) {

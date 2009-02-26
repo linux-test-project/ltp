@@ -241,7 +241,7 @@ int do_set_control(__u32 id) {
 						 * S32_MIN <= queryctrl.minimum-queryctrl.step and
 						 * queryctrl.maximum+queryctrl.step <= S32_MAX
 						 */
-						
+					
 /*
  * If we try to set the new control value to "value" then the possible results can be
  * "x" and "x-step". These two values can be expressed with the range
@@ -508,7 +508,7 @@ int do_set_control_invalid(__u32 id) {
 		case V4L2_CTRL_TYPE_BOOLEAN:
 		case V4L2_CTRL_TYPE_MENU:
 			if (S32_MIN < queryctrl.minimum) {
-			
+		
 				value = S32_MIN;
 				memset(&control, 0xff, sizeof(control));
 				control.id = id;
@@ -568,7 +568,7 @@ int do_set_control_invalid(__u32 id) {
 			}
 
 			if (S32_MIN < queryctrl.minimum) {
-			
+		
 				value = queryctrl.minimum-1;
 				memset(&control, 0xff, sizeof(control));
 				control.id = id;
@@ -619,7 +619,7 @@ int do_set_control_invalid(__u32 id) {
 			}
 
 			if (queryctrl.maximum < S32_MAX) {
-			
+		
 				value = queryctrl.maximum+1;
 				memset(&control, 0xff, sizeof(control));
 				control.id = id;
@@ -674,7 +674,7 @@ int do_set_control_invalid(__u32 id) {
 			}
 
 			if (queryctrl.maximum < S32_MAX) {
-			
+		
 				value = S32_MAX;
 				memset(&control, 0xff, sizeof(control));
 				control.id = id;

@@ -85,13 +85,13 @@ int tdrm_test_stub_register(struct inode *inode,struct file *filp,
 	minor = DRM(stub_register)(DEVICE_NAME,&DRM(fops),dev);
 	printk("tdrm stub register : minor = %d\n",minor);
 	return 0;
-	
+
 }
 
 int tdrm_test_stub_unregister(struct inode *inode,struct file *filp,
 		unsigned int cmd , unsigned long arg)
 {
-	DRM(stub_unregister)(minor);	
+	DRM(stub_unregister)(minor);
 	return 0;
 }
 

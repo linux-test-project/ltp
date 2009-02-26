@@ -109,29 +109,29 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		/* get the current working directory */
-	
+
 		if ((dir_name = getcwd(dir_name, size)) == NULL) {
 			tst_brkm(TBROK, cleanup, "Can not get current "
 				 "directory name");
 		}
-	
+
 		/* allocate some space for the dirent structure */
-	
+
 		if ((dirp =
 		     (struct dirent *)malloc(sizeof(struct dirent))) == NULL) {
 			tst_brkm(TBROK, cleanup, "malloc failed");
 		}
-	
+
 		/* Set count to be very small.  The result should be EINVAL */
-	
+
 		count = 1;
-	
+
 		/* open the directory and get a file descriptor */
-	
+
 		if ((fd = open(dir_name, O_RDONLY)) == -1) {
 			tst_brkm(TBROK, cleanup, "open of directory failed");
 		}
-	
+
 		/*
 		 * here's a case where invoking the system call directly
 		 * doesn't seem to work.  getdents.h has an assembly
@@ -140,17 +140,17 @@ int main(int ac, char **av)
 		 * equivalent to  - getdents(fd, dirp, count)
 		 * if we could call getdents that way.
 		 */
-	
+
 		rval = GETDENTS_ASM();
-	
+
 		/*
 		 * Hopefully we get an error due to the small buffer.
 		 */
-	
+
 		if (rval < 0) {		/* call returned an error */
 			rval *= -1;
 			TEST_ERROR_LOG(rval);
-	
+
 			switch(rval) {
 			case EINVAL:
 				tst_resm(TPASS, "expected failure - errno = %d "

@@ -85,7 +85,7 @@ char *av[];
 			tst_resm(TBROK,"malloc error");
 			tst_exit();
     		}
-	
+
     		sprintf(pfilname, "./dup205.%d\n", getpid());
     		unlink(pfilname) ;
 	    	serrno = 0;

@@ -41,7 +41,7 @@
  *   Check return code, if system call failed (return=-1)
  *   	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call	
+ *   	Verify the Functionality of system call
  *      if successful,
  *      	Issue Functionality-Pass message.
  *      Otherwise,
@@ -95,7 +95,7 @@ main(int ac, char **av)
 	char *msg;			/* message returned from parse_opts */
 	char read_buf[BUF_SIZE];	/* buffer to hold data read from file */
 	int nread = 0, count, err_flg = 0;
-	
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
 	if (msg != (char *)NULL) {
@@ -236,7 +236,7 @@ setup()
 			c_total += nwrite;
 		}
 	}
-	
+
 	/*
 	 * Call mmap to map virtual memory (mul. of page size bytes) from the
 	 * beginning of temporary file (offset is 0) into memory.

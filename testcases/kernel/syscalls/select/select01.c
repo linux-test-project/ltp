@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: select01.c,v 1.3 2009/02/26 12:04:44 subrata_modak Exp $ */
+/* $Id: select01.c,v 1.4 2009/02/26 12:16:34 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -177,14 +177,14 @@ main(int ac, char **av)
 
 	if ( test_time > 1000000 * 60 )
 	    test_time = test_time % (1000000 * 60);
-	
+
         timeout.tv_sec = test_time / 1000000;
         timeout.tv_usec = test_time - (timeout.tv_sec * 1000000);
 
 
 	/* Call the system call being tested. */
 	TEST(select(4, &Readfds, 0, 0, &timeout));
-	
+
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
 	    TEST_ERROR_LOG(TEST_ERRNO);

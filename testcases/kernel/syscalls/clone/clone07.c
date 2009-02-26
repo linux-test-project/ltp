@@ -137,7 +137,7 @@ main(int ac, char **av)
 #else
 		child_pid=(clone(do_child, child_stack + CHILD_STACK_SIZE, SIGCHLD, NULL));
 #endif
-		wait(NULL);	
+		wait(NULL);
 		free(child_stack);
 	}	/* End for TEST_LOOPING */
 
@@ -148,7 +148,7 @@ main(int ac, char **av)
         }
   
 	cleanup();
-	
+
 	return 0;
 
 }	/* End main */
@@ -163,7 +163,7 @@ setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	act.sa_handler = sigsegv_handler;	
+	act.sa_handler = sigsegv_handler;
 	act.sa_flags = SA_RESTART;
         if ((sigaction(SIGSEGV, &act, NULL)) == -1) {
                 tst_resm(TWARN, "sigaction() for SIGSEGV failed in test_setup()");

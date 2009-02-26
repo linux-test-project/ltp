@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: mknod01.c,v 1.2 2009/02/26 12:04:00 subrata_modak Exp $ */
+/* $Id: mknod01.c,v 1.3 2009/02/26 12:16:09 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -60,13 +60,13 @@
  *    TEST CASES
  *
  * 	1.) mknod(2) returns...(See Description)
- *	
+ *
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
  *
  *    OUTPUT SPECIFICATIONS
- * 	
+ * 
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
  *
@@ -183,7 +183,7 @@ main(int ac, char **av)
 	/* reset Tst_count in case we are looping. */
 	Tst_count=0;
 
-		
+	
 	/*
 	 * TEST CASES:
 	 *  Make nodes in tcases array

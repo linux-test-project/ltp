@@ -69,7 +69,7 @@
  * 				TEST failed
  *		else
  *			TEST failed
- *		
+ *	
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
  *
@@ -137,10 +137,10 @@ main(int ac, char **av)
 
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
-		
+	
 		for (i = 0; i < TST_TOTAL; ++i) {
 			got_signal = 0;
-		
+	
 			/* Setup signal handler for parent */
 			if (i == 1) {
 				parent_act.sa_handler = parent_handler;
@@ -155,7 +155,7 @@ main(int ac, char **av)
 			}
 
 			switch (child_pid = FORK_OR_VFORK()) {
-	
+
 			case -1:
 				/* fork() failed */
 				tst_resm(TFAIL, "fork() failed");
@@ -184,7 +184,7 @@ main(int ac, char **av)
 				 * normally with exit value 1) OR (child came
 				 * through signal handler), Test Failed
 				 */
-				
+			
 				if (((WIFEXITED(status)) &&
 				    (WEXITSTATUS(status))) ||
 				    (got_signal == 1)) {
@@ -238,12 +238,12 @@ do_child()
 		child_act.sa_handler = child_handler;
 	}
 	child_act.sa_flags = SA_RESTART;
-	
+
 	if ((sigaction(SIGUSR2, &child_act, NULL)) == -1) {
 		tst_resm(TWARN, "sigaction() failed in child");
 		exit(1);
 	}
-	
+
 	if ((ptrace(PTRACE_TRACEME, 0, 0 ,0)) == -1) {
 		tst_resm(TWARN, "ptrace() failed in child");
 		exit(1);
@@ -255,12 +255,12 @@ do_child()
 	}
 	exit(1);
 }
-		
+	
 /* setup() - performs all ONE TIME setup for this test */
 void
 setup()
 {
-	
+
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 

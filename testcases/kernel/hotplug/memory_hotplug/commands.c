@@ -54,13 +54,13 @@ static inline int nodemask_isset(nodemask_t *mask, int node)
 	if (mask->n[node / (8*sizeof(unsigned long))] &
 		(1UL<<(node%(8*sizeof(unsigned long)))))
 		return 1;
-	return 0;	
+	return 0;
 }
 
 static inline void nodemask_set(nodemask_t *mask, int node)
 {
 	mask->n[node / (8*sizeof(unsigned long))] |=
-		(1UL<<(node%(8*sizeof(unsigned long))));		
+		(1UL<<(node%(8*sizeof(unsigned long))));	
 }
 
 static char *whitespace = " \t";
@@ -221,7 +221,7 @@ static bool
 numa_supported(void)
 {
 	glctx_t      *gcp = &glctx;
-	
+
 	if (gcp->numa_max_node <= 0) {
 		fprintf(stderr, "%s:  no NUMA support on this platform\n",
 			gcp->program_name);
@@ -473,7 +473,7 @@ static int
 show_pid(char *args)
 {
 	glctx_t *gcp = &glctx;
-	
+
 	printf("%s:  pid = %d\n", gcp->program_name, getpid());
 
 	return CMD_SUCCESS;
@@ -483,7 +483,7 @@ static int
 pause_me(char *args)
 {
 	// glctx_t *gcp = &glctx;
-	
+
 	pause();
 	reset_signal();
 
@@ -499,7 +499,7 @@ numa_info(char *args)
 	unsigned int *nodeids;
 	int           nr_nodes, i;
 	bool          do_header = true;
-	
+
 	if (!numa_supported())
 		return CMD_ERROR;
 
@@ -548,7 +548,7 @@ migrate_process(char *args)
 	int            nr_to, nr_from;
 	int            nr_migrated;
 	int            ret = CMD_ERROR;
-	
+
 	if (!numa_supported())
 		return CMD_ERROR;
 
@@ -642,9 +642,9 @@ static int
 show_seg(char *args)
 {
 	glctx_t *gcp = &glctx;
-	
+
 	char *segname = NULL, *nextarg;
-	
+
 	args += strspn(args, whitespace);
 	if (*args != '\0')
 		segname = strtok_r(args, whitespace, &nextarg);
@@ -662,7 +662,7 @@ static int
 anon_seg(char *args)
 {
 	glctx_t *gcp = &glctx;
-	
+
 	char    *segname, *nextarg;
 	range_t  range = { 0L, 0L };
 	int      segflag = 0;
@@ -701,7 +701,7 @@ static int
 file_seg(char *args)
 {
 	glctx_t *gcp = &glctx;
-	
+
 	char *pathname, *nextarg;
 	range_t range = { 0L, 0L };
 	int  segflag = MAP_PRIVATE;
@@ -752,7 +752,7 @@ remove_seg(char *args)
 
 		segment_remove(segname);
 	}
-	
+
 }
 
 /*
@@ -807,7 +807,7 @@ unmap_seg(char *args)
 
 	if(!segment_unmap(segname))
 		return CMD_ERROR;
-	
+
 
 	return CMD_SUCCESS;
 }
@@ -882,7 +882,7 @@ mbind_seg(char *args)
 	if (get_range(args, &range, &nextarg) == CMD_ERROR)
 		return CMD_ERROR;
 	args = nextarg;
-	
+
 
 	if(!required_arg(args, "<policy>"))
 		return CMD_ERROR;
@@ -926,7 +926,7 @@ static int
 shmem_seg(char *args)
 {
 	glctx_t *gcp = &glctx;
-	
+
 	char *segname, *nextarg;
 	range_t range = { 0L, 0L };
 
@@ -964,7 +964,7 @@ static int
 where_seg(char *args)
 {
 	glctx_t *gcp = &glctx;
-	
+
 	char  *segname, *nextarg;
 	range_t range = { 0L, 0L };
 	int    ret;
@@ -997,7 +997,7 @@ static int
 command(char *args)
 {
 	glctx_t *gcp = &glctx;
-	
+
 
 	return CMD_SUCCESS;
 }
@@ -1012,7 +1012,7 @@ struct command {
 	char       *cmd_name;   
 	cmd_func_t  cmd_func;    /* */
 	char       *cmd_help;
-	
+
 } cmd_table[] = {
 	{
 		.cmd_name="quit",
@@ -1253,7 +1253,7 @@ process_commands()
 		char  *cmdline;
 		size_t cmdlen;
 
-		
+	
 		if(is_option(INTERACTIVE))
 			printf("%s>", gcp->program_name);
 

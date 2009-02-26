@@ -89,7 +89,7 @@ static struct test_case_t {
 	char *exp_errval;	/* Expected error value string 	*/
 	struct rlimit *rlim;	/* rlimit structure 		*/
 	int res_type;		/* resource type 		*/
-	
+
 } testcases[] = {
 #ifndef UCLINUX
 	/* Skip since uClinux does not implement memory protection */

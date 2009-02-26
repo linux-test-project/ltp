@@ -137,7 +137,7 @@ int main(int ac, char **av)
 			sigstk.ss_size = Test_cases[ind].size;
 			sigstk.ss_flags = Test_cases[ind].flag;
 			test_desc = Test_cases[ind].desc;
-			
+		
 			/* Verify sigaltstack() fails and sets errno */
 			TEST(sigaltstack(&sigstk, (stack_t *)0));
 

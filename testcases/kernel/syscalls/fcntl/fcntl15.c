@@ -30,7 +30,7 @@
  * 	Case 1: Parent opens a file and duplicates it, places locks using
  * 	both file descriptors then closes one descriptor, all locks should
  * 	be removed.
- * 	
+ * 
  * 	Case 2: Open same file twice using(open), place locks using both
  * 	descriptors then close on descriptor, locks on the file should be
  * 	lost
@@ -181,7 +181,7 @@ int dochild1(int file_flag, int file_mode)
 		perror("child1 sigprocmask SIG_SETMASK fail");
 		exit(1);
 	}
-	
+
 
 	/* wait for child2 to complete then cleanup */
 	sleep(10);
@@ -284,7 +284,7 @@ int dochild2(int file_flag, int file_mode, int dup_flag)
 	flock.l_whence = 0;
 	flock.l_start = 5L;
 	flock.l_len = 5L;
-	
+
 	/* set lock on child file descriptor */
 	if ((fcntl(fd_C, F_SETLK, &flock)) >= 0) {
 		tst_resm(TFAIL, "second child2 lock succeeded should have "
@@ -466,7 +466,7 @@ run_test(int file_flag, int file_mode, int dup_flag)
 	}
 
 	/* create child process */
-	if ((child2 = FORK_OR_VFORK()) < 0) {	
+	if ((child2 = FORK_OR_VFORK()) < 0) {
 		perror("Fork failure");
 		tst_rmdir();
 		return 1;

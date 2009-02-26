@@ -28,7 +28,7 @@
  *  The call succeeds in setting all the supplementary group IDs of the
  *  calling process. The new group should be set in the process  supplemental
  *  group list.
- *	
+ *
  * Algorithm:
  *  Setup:
  *   Setup signal handling.
@@ -40,7 +40,7 @@
  *   Check return code, if system call failed (return=-1)
  *   	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call	
+ *   	Verify the Functionality of system call
  *      if successful,
  *      	Issue Functionality-Pass message.
  *      Otherwise,
@@ -93,7 +93,7 @@ main(int ac, char **av)
 	char *msg;			/* message returned from parse_opts */
 	int gidsetsize = 1;		/* only one GID, the GID of TESTUSER */
 	int PASS_FLAG = 0;		/* used for checking group array */
-	
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
 	if (msg != (char *)NULL) {
@@ -114,7 +114,7 @@ main(int ac, char **av)
 		 * the calling super-user process to gid of TESTUSER.
 		 */
 		TEST(SETGROUPS(gidsetsize, groups_list));
-	
+
 		/* check return code of setgroups(2) */
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "setgroups(%d, groups_list) Failed, "

@@ -132,7 +132,7 @@ int main(int ac, char **av)
 			addr = shmat(*(tc.shmid), base_addr + tc.offset,
 				   tc.flags);
 			TEST_ERRNO = errno;
-	
+
 			if (addr == (void *)-1) {
 				tst_brkm(TFAIL, cleanup, "%s call failed - "
 					 "errno = %d : %s", TCID, TEST_ERRNO,

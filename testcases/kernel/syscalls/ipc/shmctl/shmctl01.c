@@ -321,7 +321,7 @@ do_child()
 	} else {
 		test = set_shared;
 	}
-	
+
 	if (sync_pipe_notify(sync_pipes) == -1)
 		tst_brkm(TBROK, cleanup, "sync_pipe_notify failed");
 
@@ -330,10 +330,10 @@ do_child()
 
 	/* do an assignement for fun */
 	*(int *)test = stat_i;
-	
+
 	/* pause until we get a signal from stat_cleanup() */
 	rval = pause();
-	
+
 	/* now we're back - detach the memory and exit */
 	if (shmdt(test) == -1) {
 		tst_resm(TBROK, "shmdt() failed - %d", errno);

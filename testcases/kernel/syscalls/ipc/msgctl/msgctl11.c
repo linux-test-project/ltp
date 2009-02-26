@@ -659,7 +659,7 @@ setup()
 		tst_resm(TBROK,"Max number of message queues already used, cannot create more.");
 		cleanup();
 	}
-	
+
 	free_pids = get_free_pids();
 	if (free_pids < 0) {
 		tst_resm(TBROK, "Can't obtain free_pid count");
@@ -678,7 +678,7 @@ setup()
 			tst_exit();
 		}
 	}
-	
+
 	tst_resm(TINFO,"Using upto %d pids",free_pids/2);
 }
 

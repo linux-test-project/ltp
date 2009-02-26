@@ -326,7 +326,7 @@ shmat_shmdt(void *args)		/* arguments to the thread X function.	      */
 			 STR_SHMAT, pthread_self(), shm_ndx, (int)locargs[0]);
 	usleep(0);
 	sched_yield();
-	
+
 	/* put the threads to sleep before un-shmatting 		      */
         done_shmat = 0;
         if (shmdt((void *)map_address) == -1)

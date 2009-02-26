@@ -190,7 +190,7 @@ poll_dispatch(void *arg, struct timeval *tv)
 
 	for (i = 0; i < nfds; i++) {
                 int what = pop->event_set[i].revents;
-		
+	
 		res = 0;
 
 		/* If the file gets closed notify */
@@ -212,7 +212,7 @@ poll_dispatch(void *arg, struct timeval *tv)
 			if (!(ev->ev_events & EV_PERSIST))
 				event_del(ev);
 			event_active(ev, res, 1);
-		}	
+		}
 	}
 
 	return (0);

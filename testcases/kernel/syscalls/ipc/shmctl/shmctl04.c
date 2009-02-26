@@ -73,7 +73,7 @@ int main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 		TEST(shmctl(0, SHM_INFO, (struct shmid_ds *)&shm_info));
-		
+	
 		if (TEST_RETURN != -1) {
 			tst_resm(TPASS, "SHM_INFO call succeeded");
 			continue;

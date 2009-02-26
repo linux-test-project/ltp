@@ -40,7 +40,7 @@
  *	3) ENOENT if pathname was empty or has a nonexistent component.
  *	4) EINVAL if specialfile or device is invalid or not a mount point.
  *	5) ENAMETOOLONG if pathname was longer than MAXPATHLEN.
- *	
+ *
  * 	Setup:
  *	  Setup signal handling.
  *	  Create a mount point.
@@ -336,7 +336,7 @@ cleanup_test(int i)
 	}
 	return 0;
 }
-		
+	
 
 /* setup() - performs all ONE TIME setup for this test */
 void

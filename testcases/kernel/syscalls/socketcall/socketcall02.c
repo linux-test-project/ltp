@@ -33,8 +33,8 @@
  *    DESCRIPTION
  *	verify socketcall(2) returns -1 and sets errno
  *	appropriately if argument passed is invalid.
- *	
- *	
+ *
+ *
  * 	Setup:
  *	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
@@ -134,7 +134,7 @@ int main(int ac, char **av)
 				" Failed with wrong experrno"
 				" =%d got: errno=%d : %s",
 				TC.experrno,TEST_ERRNO,
-				strerror(TEST_ERRNO));	
+				strerror(TEST_ERRNO));
 		}
 	}
 

@@ -87,19 +87,19 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		/* allocate some space for timer structures */
-	
+
 		if ((value = (struct itimerval *)malloc((size_t)
 			      sizeof(struct itimerval))) == NULL) {
 			tst_brkm(TBROK, cleanup, "value malloc failed");
 		}
-	
+
 		if ((ovalue = (struct itimerval *)malloc((size_t)
 			       sizeof(struct itimerval))) == NULL) {
 			tst_brkm(TBROK, cleanup, "value malloc failed");
 		}
-	
+
 		/* set up some reasonable values */
-	
+
 		value->it_value.tv_sec = 30;
 		value->it_value.tv_usec = 0;
 		value->it_interval.tv_sec = 0;
@@ -109,17 +109,17 @@ int main(int ac, char **av)
 		 * issue the system call with the TEST() macro
 		 * ITIMER_REAL = 0, ITIMER_VIRTUAL = 1 and ITIMER_PROF = 2
 		 */
-	
+
 		/* make the first value negative to get a failure */
 		TEST(setitimer(-ITIMER_PROF, value, ovalue));
-	
+
 		if (TEST_RETURN == 0) {
 			tst_resm(TFAIL, "call failed to produce expected error "
 				 "- errno = %d - %s", TEST_ERRNO,
 				 strerror(TEST_ERRNO));
 			continue;
 		}
-	
+
 		TEST_ERROR_LOG(TEST_ERRNO);
 
 		switch (TEST_ERRNO) {

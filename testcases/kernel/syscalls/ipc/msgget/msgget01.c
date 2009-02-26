@@ -87,9 +87,9 @@ int main(int ac, char **av)
 		/*
 		 * Use TEST macro to make the call to create the message queue
 		 */
-	
+
 		TEST(msgget(msgkey, IPC_CREAT | IPC_EXCL | MSG_RD | MSG_WR));
-	
+
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "%s call failed - errno = %d : %s",
 				 TCID, TEST_ERRNO, strerror(TEST_ERRNO));

@@ -27,7 +27,7 @@
  * ALGORITHM
  *	create a semaphore set without read or alter permissions
  *	loop if that option was specified
- *	call semget() using two different invalid cases	
+ *	call semget() using two different invalid cases
  *	check the errno value
  *	  issue a PASS message if we get EACCES or EEXIST
  *	otherwise, the tests fails
@@ -98,7 +98,7 @@ int main(int ac, char **av)
 
 		for (i=0; i<TST_TOTAL; i++) {
 			/* use the TEST macro to make the call */
-	
+
 			TEST(semget(semkey, PSEMS, TC[i].flags));
 
 			if (TEST_RETURN != -1) {
@@ -106,7 +106,7 @@ int main(int ac, char **av)
 				tst_resm(TFAIL, "call succeeded");
 				continue;
 			}
-	
+
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO == TC[i].error) {
@@ -143,9 +143,9 @@ setup(void)
 	                 ltpuser->pw_uid);
 	        perror("setreuid");
 	 }
-			
-	
-	
+		
+
+
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 

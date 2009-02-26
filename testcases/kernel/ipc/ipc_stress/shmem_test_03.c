@@ -318,7 +318,7 @@ static void child (int num, unsigned char *shmptr)
 {
 	unsigned long cksum = 0;	/* Shared memory regions checksum */
 	int	i;			/* Misc index */
-	
+
 	/*
 	 * Wait for a READ_COUNT lock on the shared memory segment, then
 	 * compute the checksum and release the READ_COUNT lock.     
@@ -407,7 +407,7 @@ static void delete_semaphores ()
 |                                                                      |
 +---------------------------------------------------------------------*/
 static void lock_resource (int semaphore)
-{	
+{
 	struct sembuf	buf;
 
 	buf.sem_op = -1;		/* Obtain resource */

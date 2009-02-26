@@ -153,7 +153,7 @@ main(int ac, char **av)
 			 * sets appropriate errno.
 			 */
 			TEST(mknod(node_name, mode, 0));
-	
+
 			/* Check return code from mknod(2) */
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "mknod() returned %d, expected "
@@ -291,7 +291,7 @@ cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-	
+
 	if(seteuid(0)==-1)
 		tst_resm(TBROK, "Couldn't get root back: %s", strerror(errno));
 

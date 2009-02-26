@@ -91,15 +91,15 @@ int main(int ac, char **av)
 		/*
 		 * use the TEST() macro to make the call
 		 */
-	
+
 		TEST(shmget(IPC_PRIVATE, SHM_SIZE, IPC_CREAT | IPC_EXCL
 			    | SHM_RW));
-	
+
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "call succeeded when error expected");
 			continue;
 		}
-	
+
 		TEST_ERROR_LOG(TEST_ERRNO);
 
 		switch(TEST_ERRNO) {
@@ -112,7 +112,7 @@ int main(int ac, char **av)
 				 "unexpected error - %d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 			break;
-		}			
+		}		
 	}
 
 	cleanup();

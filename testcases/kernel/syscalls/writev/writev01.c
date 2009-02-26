@@ -150,7 +150,7 @@ int main(int argc, char **argv)
 	/* The following loop checks looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		
+	
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
@@ -522,10 +522,10 @@ init_buffs(char *pbufs[])
 	for (i = 0; pbufs[i] != (char *)NULL; i++) {
 		switch (i) {
 		case 0:
-			
+		
 		case 1:	fill_mem(pbufs[i], 0, 1);
 			break;
-			
+		
 		case 2:	fill_mem(pbufs[i], 1, 0);
 			break;
 

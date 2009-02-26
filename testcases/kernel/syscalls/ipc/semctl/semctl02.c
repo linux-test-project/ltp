@@ -84,7 +84,7 @@ int main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
-	
+
 		un_arg.buf = &sem_ds;
 
 		/*
@@ -92,12 +92,12 @@ int main(int ac, char **av)
 		 */
 
 		TEST(semctl(sem_id_1, 0, IPC_STAT, un_arg));
-	
+
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "call succeeded when error expected");
 			continue;
 		}
-	
+
 		TEST_ERROR_LOG(TEST_ERRNO);
 
 		switch(TEST_ERRNO) {

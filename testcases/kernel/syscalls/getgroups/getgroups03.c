@@ -27,7 +27,7 @@
  * Expected Result:
  *  The call succeeds in getting all the supplementary group IDs of the
  *  calling process. The effective group ID may or may not be returned.
- *	
+ *
  * Algorithm:
  *  Setup:
  *   Setup signal handling.
@@ -39,7 +39,7 @@
  *   Check return code, if system call failed (return=-1)
  *   	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call	
+ *   	Verify the Functionality of system call
  *      if successful,
  *      	Issue Functionality-Pass message.
  *      Otherwise,
@@ -101,7 +101,7 @@ main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 	int ret_val;		/* getgroups(2) return value */
 	int gidsetsize = NGROUPS;	/* total groups */
-	
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -122,7 +122,7 @@ main(int ac, char **av)
 		 * TESTUSER ("root").
 		 */
 		TEST(getgroups(gidsetsize, groups_list));
-	
+
 		/* check return code of getgroups(2) */
 		if ((ret_val = TEST_RETURN) == -1) {
 			tst_resm(TFAIL, "getgroups(%d, groups_list) Failed, "
@@ -176,7 +176,7 @@ setup()
 	 * from /etc/group file
 	 */
 	ngroups=readgroups(groups);
-	
+
 	/* Setgroups is called by the login(1) process
          * if the testcase is executed via an ssh session this
          * testcase will fail. So execute setgroups() before executing
@@ -203,7 +203,7 @@ readgroups(gid_t groups[NGROUPS])
 	int i;
 	int found;
 	gid_t g;
-	
+
 	setgrent();
 
 	while ((grp = getgrent()) != 0) {
@@ -230,7 +230,7 @@ readgroups(gid_t groups[NGROUPS])
 	}
 	if (found == 0)
 	  groups [ngrps++] = g;
-	
+
 	endgrent();
 	return(ngrps);
 }
@@ -332,7 +332,7 @@ int ret_val;
 	/* Return the status of functionality */
 	return(fflag);
 }
-	
+
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.

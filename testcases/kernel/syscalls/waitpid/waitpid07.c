@@ -171,7 +171,7 @@ do_child_1(void)
 	int wait_kid_pid[MAXKIDS], status;
 
 	setup_sigint();
-	
+
 	group1 = getpgrp();
 
 	for (kid_count = 0; kid_count < MAXKIDS; kid_count++) {

@@ -127,15 +127,15 @@ main(int ac, char **av)
      ***************************************************************/
     for (lc=0; TEST_LOOPING(lc); lc++) {
 	test_desc = "EACCES";
-	
+
 	/* reset Tst_count in case we are looping. */
 	Tst_count=0;
-	
+
 	/*
  	 *  Call link(2)
   	 */
 	TEST(link(file1, file2));
-	
+
 	/* Check return code from link(2) */
 	if (TEST_RETURN != -1) {
 		tst_resm(TFAIL,"link() returned %d,"
@@ -143,7 +143,7 @@ main(int ac, char **av)
 			exp_enos[0]);
 	} else {
 		TEST_ERROR_LOG(TEST_ERRNO);
-		
+	
 		if (TEST_ERRNO == exp_enos[0]) {
 			tst_resm(TPASS,"link() fails with expected "
 			"error EACCES errno:%d",TEST_ERRNO);

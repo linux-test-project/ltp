@@ -138,7 +138,7 @@ main(int ac, char **av)
 	struct stat * ptr_str;
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-	
+
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
@@ -171,7 +171,7 @@ main(int ac, char **av)
 			 * sets appropriate errno.
 			 */
 			TEST(fstat(fildes, ptr_str));
-	
+
                 /* Check return code from fstat(2) */
                 if (TEST_RETURN == -1) {
                         TEST_ERROR_LOG(TEST_ERRNO);
@@ -279,7 +279,7 @@ cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-	
+
         if (close(fildes) == -1) {
                 tst_brkm(TBROK, cleanup,
                          "close(%s) Failed, errno=%d : %s",

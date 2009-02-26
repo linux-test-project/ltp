@@ -33,7 +33,7 @@
  *    DESCRIPTION
  *	This is a phase I test for the socketcall(2) system call.
  *	It is intended to provide a limited exposure of the system call.
- *	
+ *
  * 	Setup:
  *	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
@@ -97,7 +97,7 @@ struct test_case_t {
 	{ SYS_SOCKET,{PF_INET, SOCK_DGRAM, 17}, "UDP dgram"}
 };
 
-int TST_TOTAL = sizeof(TC) / sizeof(TC[0]);	
+int TST_TOTAL = sizeof(TC) / sizeof(TC[0]);
 
 int main(int ac, char **av)
 {

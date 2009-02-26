@@ -70,7 +70,7 @@ int main(int argc, char **argv)
 
 	DMEV_ZERO(events);
 	DMEV_SET(DM_EVENT_MOUNT, events);
-	
+
 	/* CANNOT DO ANYTHING WITHOUT SUCCESSFUL INITIALIZATION!!! */
 	if ((rc = dm_init_service(&varstr)) != 0) {
 		DMLOG_PRINT(DMLVL_ERR, "dm_init_service failed! (rc = %d, errno = %d)\n", rc, errno);
@@ -108,7 +108,7 @@ int main(int argc, char **argv)
 				if (write(fd, DUMMY_STRING, DUMMY_STRLEN) != DUMMY_STRLEN) {
 					rc = -1;
 					break;
-				}					
+				}				
 			}
 		} else {
 			rc = -1;
@@ -124,14 +124,14 @@ int main(int argc, char **argv)
 			dm_destroy_session(sid);
 			DM_EXIT();
 		}
-		
+	
 		rc = mkdir(DummySubdir, DUMMY_DIR_RW_MODE);
 		if (rc == -1) {
 			DMLOG_PRINT(DMLVL_ERR, "creating dummy dir failed! (rc = %d, errno = %d)\n", rc, errno);
 			dm_destroy_session(sid);
 			DM_EXIT();
 		}
-		
+	
 		DMEV_ZERO(maxEvents);
 		DMEV_SET(DM_EVENT_PREUNMOUNT, maxEvents);
 		DMEV_SET(DM_EVENT_UNMOUNT, maxEvents);
@@ -149,14 +149,14 @@ int main(int argc, char **argv)
 		DMEV_SET(DM_EVENT_ATTRIBUTE, maxEvents);
 		DMEV_SET(DM_EVENT_DESTROY, maxEvents);
 		DMEV_SET(DM_EVENT_NOSPACE, maxEvents);
-	
+
 		DMEV_ZERO(minEvents);
 		DMEV_SET(DM_EVENT_PREUNMOUNT, minEvents);
 		DMEV_SET(DM_EVENT_UNMOUNT, minEvents);
 	}
 
 	DMLOG_PRINT(DMLVL_DEBUG, "Starting DMAPI disposition/eventlist tests\n") ;
-	
+
 	szFuncName = "dm_get_config_events";
 
 	/*
@@ -184,7 +184,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_config_events - invalid hlen
 	 * EXPECTED: rc = -1, errno = EBADF
@@ -210,7 +210,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_config_events - invalid nelem
 	 * EXPECTED: rc = -1, errno = E2BIG
@@ -254,7 +254,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_config_events - invalid eventsetp
 	 * EXPECTED: rc = -1, errno = EFAULT
@@ -279,7 +279,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_config_events - invalid nelemp
 	 * EXPECTED: rc = -1, errno = EFAULT
@@ -304,7 +304,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_config_events - fs handle
 	 * EXPECTED: rc = 0
@@ -349,7 +349,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_config_events - file handle
 	 * EXPECTED: rc = 0
@@ -392,7 +392,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_config_events - dir handle
 	 * EXPECTED: rc = 0
@@ -435,7 +435,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_config_events - global handle
 	 * EXPECTED: rc = -1, errno = EBADF
@@ -445,7 +445,7 @@ int main(int argc, char **argv)
 		u_int nelem;
 
 		/* Variation set up */
-		
+	
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
 		rc = dm_get_config_events(DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_EVENT_MAX, &eventset, &nelem);
@@ -453,7 +453,7 @@ int main(int argc, char **argv)
 
 		/* Variation clean up */
 	}
-	
+
 	/*
 	 * TEST    : dm_get_config_events - invalidated handle
 	 * EXPECTED: rc = -1, errno = EBADF
@@ -486,7 +486,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	szFuncName = "dm_set_disp";
 
 	/*
@@ -522,7 +522,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_set_disp - invalid sid
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -556,7 +556,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_set_disp - invalid hanp
 	 * EXPECTED: rc = -1, errno = EFAULT
@@ -590,7 +590,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_set_disp - invalid hlen
 	 * EXPECTED: rc = -1, errno = EBADF
@@ -624,7 +624,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_set_disp - invalid token
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -658,7 +658,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_set_disp - invalid eventsetp
 	 * EXPECTED: rc = -1, errno = EFAULT
@@ -691,7 +691,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_set_disp - invalid maxevent
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -725,7 +725,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_set_disp - file handle
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -759,7 +759,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_set_disp - directory handle
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -793,7 +793,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_set_disp - invalid global handle event
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -822,7 +822,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_set_disp - invalid fs handle event
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -858,7 +858,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_set_disp - valid global handle event
 	 * EXPECTED: rc = 0
@@ -887,7 +887,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_set_disp - valid fs handle event
 	 * EXPECTED: rc = 0
@@ -923,7 +923,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	szFuncName = "dm_getall_disp";
 
 	/*
@@ -961,7 +961,7 @@ int main(int argc, char **argv)
 
 		/* Variation clean up */
 	}
-	
+
 	/*
 	 * TEST    : dm_getall_disp - invalidated sid
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -992,7 +992,7 @@ int main(int argc, char **argv)
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(invalidated sid)\n", szFuncName);
 			rc = dm_getall_disp(newsid, sizeof(buf), buf, &rlen);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EINVAL);
-	
+
 			/* Variation clean up */
 			dm_handle_free(hanp, hlen);
 		}
@@ -1179,7 +1179,7 @@ int main(int argc, char **argv)
 				DMLOG_PRINT(DMLVL_DEBUG, "rlen = %d\n", rlen);
 			}
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, E2BIG);
-	
+
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
 			if (rc == -1) {
@@ -1240,7 +1240,7 @@ int main(int argc, char **argv)
 				DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d (errno = %d)\n", szFuncName, rc, errno);
 				DMVAR_FAIL();
 			}
-	
+
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
 			if (rc == -1) {
@@ -1285,7 +1285,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_set_eventlist - invalid sid
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -1319,7 +1319,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_set_eventlist - invalid hanp
 	 * EXPECTED: rc = -1, errno = EFAULT
@@ -1353,7 +1353,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_set_eventlist - invalid hlen
 	 * EXPECTED: rc = -1, errno = EBADF
@@ -1387,7 +1387,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_set_eventlist - invalid token
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -1421,7 +1421,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_set_eventlist - invalid eventsetp
 	 * EXPECTED: rc = -1, errno = EFAULT
@@ -1454,7 +1454,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_set_eventlist - invalid maxevent
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -1488,7 +1488,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_set_eventlist - maxevent < high set event
 	 * EXPECTED: rc = 0
@@ -1540,7 +1540,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_set_eventlist - maxevent > high set event
 	 * EXPECTED: rc = 0
@@ -1592,7 +1592,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * Global handle dm_set_eventlist variations
 	 *
@@ -1833,7 +1833,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_eventlist - invalid hanp
 	 * EXPECTED: rc = -1, errno = EFAULT
@@ -1876,7 +1876,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_eventlist - invalid hlen
 	 * EXPECTED: rc = -1, errno = EBADF
@@ -1919,7 +1919,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_eventlist - invalid token
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -1962,7 +1962,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_eventlist - directory handle
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -2008,7 +2008,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_eventlist - invalid nelem, fs handle
 	 * EXPECTED: rc = -1, errno = E2BIG
@@ -2059,7 +2059,7 @@ int main(int argc, char **argv)
 	  			DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d\n", szFuncName, rc);
 				DMVAR_FAIL();
 			}
-	
+
 			/* Variation clean up */
 			DMEV_ZERO(ineventset);
 			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &ineventset, DM_EVENT_MAX);
@@ -2070,7 +2070,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_eventlist - invalid nelem, file handle
 	 * EXPECTED: rc = -1, errno = E2BIG
@@ -2118,7 +2118,7 @@ int main(int argc, char **argv)
 	  			DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d\n", szFuncName, rc);
 				DMVAR_FAIL();
 			}
-	
+
 			/* Variation clean up */
 			DMEV_ZERO(ineventset);
 			rc = dm_set_eventlist(newsid, hanp, hlen, DM_NO_TOKEN, &ineventset, DM_EVENT_MAX);
@@ -2129,7 +2129,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_eventlist - invalid eventsetp
 	 * EXPECTED: rc = -1, errno = EFAULT
@@ -2172,7 +2172,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_eventlist - invalid nelemp
 	 * EXPECTED: rc = -1, errno = EFAULT
@@ -2214,7 +2214,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_eventlist - zero event, fs handle
 	 * EXPECTED: rc = 0
@@ -2268,7 +2268,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_eventlist - zero event, file handle
 	 * EXPECTED: rc = 0
@@ -2322,7 +2322,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_eventlist - one event, fs handle
 	 * EXPECTED: rc = 0
@@ -2382,7 +2382,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_eventlist - one event, file handle
 	 * EXPECTED: rc = 0
@@ -2442,7 +2442,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_eventlist - multi event, fs handle
 	 * EXPECTED: rc = 0
@@ -2504,7 +2504,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_eventlist - multi event, file handle
 	 * EXPECTED: rc = 0
@@ -2566,7 +2566,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_eventlist - read event
 	 * EXPECTED: rc = 0
@@ -2628,7 +2628,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_eventlist - write event
 	 * EXPECTED: rc = 0
@@ -2690,7 +2690,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_eventlist - truncate event
 	 * EXPECTED: rc = 0
@@ -2752,7 +2752,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_eventlist - event union, file handle
 	 * EXPECTED: rc = 0
@@ -2818,7 +2818,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_eventlist - global handle
 	 * EXPECTED: rc = -1, errno = EBADF
@@ -2839,7 +2839,7 @@ int main(int argc, char **argv)
 			DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
 			rc = dm_get_eventlist(newsid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, DM_EVENT_MAX, &outeventset, &nelem);
 			DMVAR_ENDFAILEXP(szFuncName, -1, rc, EBADF);
-		
+	
 			/* Variation clean up */
 			rc = dm_destroy_session(newsid);
 			if (rc == -1) {
@@ -2847,7 +2847,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_eventlist - invalidated file handle
 	 * EXPECTED: rc = -1, errno = EBADF
@@ -2892,7 +2892,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/* We now need to repoint preunmount/unmount back to original session */
 	DMEV_ZERO(events);
 	DMEV_SET(DM_EVENT_PREUNMOUNT, events);
@@ -2935,7 +2935,7 @@ int main(int argc, char **argv)
 	}
 
 	DMLOG_STOP();
-			
+		
 	return 0;
 }
 
@@ -3046,7 +3046,7 @@ void *Thread(void *parm)
 			case DM_EVENT_CLOSE:
 				response = DM_RESP_INVALID;
 				break;
-				
+			
 			default:
 			{
 				DMLOG_PRINT(DMLVL_ERR, "Message is unexpected!\n");
@@ -3063,4 +3063,4 @@ void *Thread(void *parm)
 	} while (bMounted);
 
 	pthread_exit(0);
-}	
+}

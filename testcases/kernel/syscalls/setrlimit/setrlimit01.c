@@ -87,7 +87,7 @@ int main(int ac, char **av)
 	}
 
 	setup();			/* set "tstdir", and "fname" vars */
-	
+
 	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
@@ -140,7 +140,7 @@ test1()
 			 "100, got %d", nofiles);
 		return;
 	}
-	
+
 	tst_resm(TPASS, "RLIMIT_NOFILE functionality is correct");
 }
 

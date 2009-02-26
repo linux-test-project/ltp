@@ -40,7 +40,7 @@
  *   Check return code, if system call failed (return=-1)
  *   	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call	
+ *   	Verify the Functionality of system call
  *      if successful,
  *      	Issue Functionality-Pass message.
  *      Otherwise,
@@ -185,7 +185,7 @@ setup()
 		tst_brkm(TBROK, cleanup,
 			 "getpwnam(%s) Failed", LTPUSER);
 	}
-		
+	
 	/* Effective user-id of the test-user LTPUSER */
 	pe_uid = user_id->pw_uid;
 

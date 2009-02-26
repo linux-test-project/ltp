@@ -100,10 +100,10 @@ main(int ac, char **av)
 	 * perform global setup for test
 	 */
 	setup();
-	
+
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
-	
+
 	/*
 	 * check looping state if -i option given
 	 */
@@ -135,12 +135,12 @@ main(int ac, char **av)
 		}
 
 	}   /* End for TEST_LOOPING */
-	
+
 	/*
 	 * cleanup and exit
 	 */
 	cleanup();
-	/*NOTREACHED*/	
+	/*NOTREACHED*/
 
   return 0;
 
@@ -160,9 +160,9 @@ setup()
 
 	/* Create a temporary directory and make it current. */
 	tst_tmpdir();
-	
+
 	sprintf(fdir,"./tdir_%d",getpid());
-	sprintf(mdir,"./rndir_%d",getpid());	
+	sprintf(mdir,"./rndir_%d",getpid());
 	sprintf(tstfile,"%s/tstfile_%d",mdir,getpid());
 
 	/* create "old" directory */
@@ -186,13 +186,13 @@ setup()
 		tst_brkm(TBROK, cleanup, "Could not create directory %s", mdir);
 		/*NOTREACHED*/
 	}
-		
+	
 	/* create a file under "new" directory */
 	do_file_setup(tstfile);
 
 	if (stat(mdir, &buf2) == -1) {
 		tst_brkm(TBROK, cleanup, "failed to stat directory %s "
-			 "in rename()", mdir);	
+			 "in rename()", mdir);
 		/* NOTREACHED */
 	}
 
@@ -218,7 +218,7 @@ cleanup()
 	 * Remove the temporary directory.
 	 */
 	tst_rmdir();
-	
+
 	/*
 	 * Exit with return code appropriate for results.
 	 */

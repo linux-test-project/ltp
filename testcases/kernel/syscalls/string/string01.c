@@ -36,7 +36,7 @@
  *
  */
 
-#include <stdio.h>		
+#include <stdio.h>	
 #include <sys/types.h>
 #include <string.h>
 
@@ -185,7 +185,7 @@ struct t_strncmp {
 	{ yat,	tiat,	8,	0,1 },
 	{ yat,	tiat,	9,	'y'-'a',1 },
 	{NULL,NULL,0,0,0}
-	
+
 };
 
 /*	Strncat	(strcmp( strncat(s1, s2, n),  s1ns2 ) == e_res)	*/
@@ -210,7 +210,7 @@ struct t_strncat {
 	{ dst2,	longstr,1,		"t",	0 },
 	{ dst2,	longstr,LONGSTR-1,	longstr,0 },
 	{NULL,NULL,0,NULL,0}
-	
+
 };
 
 

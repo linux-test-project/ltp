@@ -45,7 +45,7 @@
  *   Check return code, if system call failed (return=-1)
  *   	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call	
+ *   	Verify the Functionality of system call
  *      if successful,
  *      	Issue Functionality-Pass message.
  *      Otherwise,
@@ -214,7 +214,7 @@ main(int ac, char **av)
 					}
 					modf_time = stat_buf.st_mtime;
 					access_time = stat_buf.st_atime;
-	
+
 					/* Now do the actual verification */
 					if (modf_time <= curr_time || \
 						modf_time >= pres_time || \
@@ -343,7 +343,7 @@ setup()
 			TEMP_FILE, errno);
 		/*NOTREACHED*/
 	}
-			
+		
 	/* Get the current time */
 	if ((curr_time = time(&tloc)) < 0) {
 		tst_brkm(TBROK, cleanup,
@@ -356,7 +356,7 @@ setup()
 	 * different from the current time
 	 */
 	sleep(2);	/* sleep(1) on IA64 sometimes sleeps < 1 sec!! */
-		
+	
 }	/* End setup() */
 
 /*

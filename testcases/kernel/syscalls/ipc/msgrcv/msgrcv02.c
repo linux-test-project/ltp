@@ -116,15 +116,15 @@ int main(int ac, char **av)
 			/*
 			 * Use the TEST macro to make the call
 			 */
-	
+
 			TEST(msgrcv(*(TC[i].queue_id), TC[i].mbuf, MSGSIZE,
 			     1, IPC_NOWAIT));
-	
+
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
 				continue;
 			}
-	
+
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO == TC[i].error) {
@@ -135,7 +135,7 @@ int main(int ac, char **av)
 				tst_resm(TFAIL, "call failed with an "
 					 "unexpected error - %d : %s",
 					 TEST_ERRNO, strerror(TEST_ERRNO));
-			}			
+			}		
 		}
 	}
 

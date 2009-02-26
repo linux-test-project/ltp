@@ -22,7 +22,7 @@
 *
 *  Project Website:  TBD
 *
-* $Id: childmain.c,v 1.10 2009/02/26 12:02:22 subrata_modak Exp $
+* $Id: childmain.c,v 1.11 2009/02/26 12:14:53 subrata_modak Exp $
 *
 */
 
@@ -209,7 +209,7 @@ void print_lba_bitmap(const test_env_t *env)
 
 action_t get_next_action(child_args_t *args, test_env_t *env, const OFF_T mask)
 {
-	
+
 	OFF_T *pVal1 = (OFF_T *)env->shared_mem;
 	OFF_T *tmpLBA;
 	OFF_T guessLBA;
@@ -423,7 +423,7 @@ action_t get_next_action(child_args_t *args, test_env_t *env, const OFF_T mask)
 		env->lastAction = target;
 		if(args->flags & CLD_FLG_LBA_SYNC) { add_action(env, args, target); }
 	}
-	
+
 	return target;
 }
 
@@ -604,7 +604,7 @@ void *ChildMain(void *vtest)
 			 * Delay delayTime msecs before continuing, for simulated
 			 * processing time, requested by user
 			 */
-			
+		
 			if(args->delayTimeMin == args->delayTimeMax) { /* static delay time */
 				/* only sleep if delay is greater then zero */
 				if(args->delayTimeMin > 0) { Sleep(args->delayTimeMin); }

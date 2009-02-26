@@ -99,7 +99,7 @@ int main(int ac, char **av)
 			  "gid for `%s' is too large for testing setgid16",
 			  root);
 		}
-		
+	
 		TEST(SETGID(rootpwent->pw_gid));
 
 		if (TEST_RETURN != -1) {

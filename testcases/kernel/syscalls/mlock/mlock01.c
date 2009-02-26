@@ -23,7 +23,7 @@
  *
  * DESCRIPTION
  * 	Test to see that mlock works
- * 	
+ * 
  * ALGORITHM
  * 	test 1:
  *		Call mlock with various valid addresses and lengths.  No

@@ -2,7 +2,7 @@
  *				sync_file_range01.c
  *            Copyright (c) International Business Machines  Corp., 2008
  *			    Email: bnpoorni@in.ibm.com
- *****************************************************************************/				
+ *****************************************************************************/			
 
 /******************************************************************************/
 /*                                                                            */
@@ -299,7 +299,7 @@ main(int   ac,    	/* number of command line parameters                      */
         if ( (msg=parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL )
                 tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 
-		
+	
 #if defined(__powerpc__) || defined(__powerpc64__)     /* for PPC, kernel version > 2.6.21 needed */
                 if ( !arch_support || (tst_kvercmp(2,16,22) < 0)) {
                         tst_resm(TCONF, "System doesn't support execution of the test");
@@ -314,7 +314,7 @@ main(int   ac,    	/* number of command line parameters                      */
         }
 
 #endif
-	
+
 /* perform global test setup, call setup() function. */
 setup();
 
@@ -325,8 +325,8 @@ for (lc=0; TEST_LOOPING(lc); lc++) {
                 for(test_index = 0 ; test_index < TST_TOTAL; test_index ++)
                 { 
 	   	  TEST(syncfilerange(*(test_data[test_index].fd), test_data[test_index].offset, \
-		        test_data[test_index].nbytes, test_data[test_index].flags));	
-				
+		        test_data[test_index].nbytes, test_data[test_index].flags));
+			
 
 			 if (TEST_RETURN != -1) {
                                 tst_resm(TFAIL, "call succeeded unexpectedly");

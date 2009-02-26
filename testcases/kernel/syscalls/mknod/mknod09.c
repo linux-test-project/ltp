@@ -98,14 +98,14 @@ main(int ac, char **av)
 
 	/* Perform global setup for test */
 	setup();
-	
+
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		test_desc = "EINVAL";
-		
+	
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 
@@ -115,7 +115,7 @@ main(int ac, char **av)
 		* sets appropriate errno.
 		*/
 		TEST(mknod(TNODE, MODE_RWX, 0));
-		
+	
 		/* Check return code from mknod(2) */
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL,"mknod() returned %d,"
@@ -124,7 +124,7 @@ main(int ac, char **av)
 		}
 		else{
 			TEST_ERROR_LOG(TEST_ERRNO);
-			
+		
 			if (TEST_ERRNO == exp_enos[0]) {
 				tst_resm(TPASS,"mknod() fails with expected "
 				"error EINVAL errno:%d",TEST_ERRNO);

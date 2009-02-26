@@ -78,7 +78,7 @@ int ki_generic(int fd, int flag) {
 #if 0
 An example of using in_data to pass in a structure:
 
-ki_write_t      wif;	
+ki_write_t      wif;
 tagp_interface_t tif;
 
 

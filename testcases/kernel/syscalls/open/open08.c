@@ -10,7 +10,7 @@
  *	4.	ENAMETOOLONG
  *	5.	EACCES
  *	6.	EFAULT
- * 	
+ * 
  * ALGORITHM
  * 	1. Open a file with O_CREAT and O_EXCL, when the file already
  *	   exists. Check the errno for EEXIST

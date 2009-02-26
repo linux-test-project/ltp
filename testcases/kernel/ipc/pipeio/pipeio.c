@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Header: /cvsroot/ltp/ltp/testcases/kernel/ipc/pipeio/pipeio.c,v 1.16 2009/02/26 12:02:25 subrata_modak Exp $ */
+/* $Header: /cvsroot/ltp/ltp/testcases/kernel/ipc/pipeio/pipeio.c,v 1.17 2009/02/26 12:14:53 subrata_modak Exp $ */
 /*
  *  This tool can be used to beat on system or named pipes.
  *  See the help() function below for user information.
@@ -424,14 +424,14 @@ char *av[];
 		tst_resm (TINFO, "adjusting i/o size to %d", PIPE_BUF);
 	    }
 	    size=PIPE_BUF;
-	
+
 	}
 
 	if ((writebuf = (char *) malloc(size)) == NULL ||
 	    (readbuf = (char *) malloc(size)) == NULL) {
 		tst_resm (TFAIL, "malloc() failed: %s", strerror(errno));
   		SAFE_FREE(writebuf);
-		SAFE_FREE(readbuf);	
+		SAFE_FREE(readbuf);
 		exit(1);
 	}
 
@@ -557,7 +557,7 @@ printf("child after fork pid = %d\n", getpid());
 
 			*count_word = j;
 			*pid_word = getpid();
-			
+		
                         if ((nb = lio_write_buffer(write_fd, iotype, writebuf, size,
                                                         SIGUSR1, &cp, 0)) < 0 ) {
 			/*
@@ -698,7 +698,7 @@ output:
 	}
 
  	SAFE_FREE(writebuf);
-	SAFE_FREE(readbuf);	
+	SAFE_FREE(readbuf);
 	return (error);
 }
 

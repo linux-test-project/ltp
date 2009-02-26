@@ -132,7 +132,7 @@ int main(int ac, char **av)
 					 strerror(TEST_ERRNO));
 				/*NOTREACHED*/
 			}
-	
+
 			if (STD_FUNCTIONAL_TEST) {
 				/* now set the handler back to our own */
 				if ((rval = signal(siglist[i], &sighandler))

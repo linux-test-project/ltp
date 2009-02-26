@@ -120,7 +120,7 @@ test_func5(const char *path_name, const struct stat64 * stat_pointer,
 		int  ftw_integer, struct FTW *ftwp)
 {
 	char  pathcwd[PATH_MAX];
-		
+	
 	temp=stderr;
 	if (ftw_integer == FTW_D)
 		return (0);
@@ -452,7 +452,7 @@ test_func15(const char *path_name, const struct stat64 * stat_pointer,
 		 int  ftw_integer, struct FTW *ftwp)
 {
 
-	temp=stderr;	
+	temp=stderr;
 	do_info(path_name);
 	if (strcmp(path_name, "./tmp/data/d666/errs") == 0) {
 		if (ftw_integer != FTW_NS) {
@@ -470,7 +470,7 @@ test_func16(const char *path_name, const struct stat64 * stat_pointer,
 		 int  ftw_integer, struct FTW *ftwp)
 {
 	const char	*p;
-	temp=stderr;	
+	temp=stderr;
 
 	if ((p = strstr(path_name, NFTW2)) != (char *)NULL) {
 		p += strlen(NFTW2) +1;
@@ -531,7 +531,7 @@ test_func19(const char *path_name, const struct stat64 * stat_pointer,
 		 int  ftw_integer, struct FTW *ftwp)
 {
 	do_info(path_name);
-	temp=stderr;	
+	temp=stderr;
 	visit++;
 	if (ftw_integer == FTW_DNR) {
 		if (strcmp(path_name, "./tmp/data/d333") == 0) {
@@ -566,7 +566,7 @@ test_func21(const char *path_name, const struct stat64 * stat_pointer,
 	int fd;
 
 	do_info(path_name);
-	temp=stderr;	
+	temp=stderr;
 	/* get next file descriptor available */
 	if((fd = open(path_name, O_RDONLY)) == -1) {
 		perror("open");
@@ -626,7 +626,7 @@ test_func23(const char *path_name, const struct stat64 * stat_pointer,
 		 int  ftw_integer, struct FTW *ftwp)
 {
 	visit++;
-	temp=stderr;	
+	temp=stderr;
 	do_info(path_name);
 
 	if (ftw_integer == FTW_F) {

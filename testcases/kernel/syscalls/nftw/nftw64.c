@@ -237,7 +237,7 @@ void
 main (void)
 {
         setup();                /* temp file is now open        */
-	
+
 	npathdats = (sizeof(pathdat) / sizeof(pathdat[0]));
 	ngoods    = (sizeof(goodlist) / sizeof(goodlist[0]));
 	nbads     = (sizeof(badlist) / sizeof(badlist[0]));
@@ -374,13 +374,13 @@ blenter();
 		"char *, const struct stat *, int, struct FTW *), int\n");
 	 fprintf(temp, "depth, int flags) shall pass FTW_F as the third\n");
 	 fprintf(temp,
-		"argument of the function fn when the object is a file.\n\n");	
+		"argument of the function fn when the object is a file.\n\n");
 #endif
 	 test9A();
          blexit();
 /*--------------- EXIT BLOCK 8 ---------------------------------*/
 
-	
+
 /*---------------- ENTER BLOCK 9 --------------------------------*/
 blenter();
 #ifdef DEBUG
@@ -396,7 +396,7 @@ blenter();
          blexit();
 /*--------------- EXIT BLOCK 9 ---------------------------------*/
 
-	
+
 /*---------------- ENTER BLOCK 10 --------------------------------*/
  blenter();
 #ifdef DEBUG
@@ -412,7 +412,7 @@ blenter();
          blexit();
 /*--------------- EXIT BLOCK 10 ---------------------------------*/
 
-	
+
 /*---------------- ENTER BLOCK 11 --------------------------------*/
  blenter();
 #ifdef DEBUG
@@ -428,7 +428,7 @@ blenter();
          blexit();
 /*--------------- EXIT BLOCK 11 ---------------------------------*/
 
-	
+
 /*---------------- ENTER BLOCK 12 --------------------------------*/
  blenter();
 #ifdef DEBUG
@@ -445,7 +445,7 @@ blenter();
          blexit();
 /*--------------- EXIT BLOCK 12 ---------------------------------*/
 
-	
+
 /*---------------- ENTER BLOCK 13 --------------------------------*/
  blenter();
 #ifdef DEBUG
@@ -461,7 +461,7 @@ blenter();
          blexit();
 /*--------------- EXIT BLOCK 13 ---------------------------------*/
 
-	
+
 /*---------------- ENTER BLOCK 14 --------------------------------*/
  blenter();
 #ifdef DEBUG
@@ -478,7 +478,7 @@ blenter();
          blexit();
 /*--------------- EXIT BLOCK 14 ---------------------------------*/
 
-	
+
 /*---------------- ENTER BLOCK 15 --------------------------------*/
  blenter();
 #ifdef DEBUG
@@ -497,7 +497,7 @@ blenter();
          blexit();
 /*--------------- EXIT BLOCK 15 ---------------------------------*/
 
-	
+
 /*---------------- ENTER BLOCK 16 --------------------------------*/
  blenter();
 #ifdef DEBUG
@@ -513,7 +513,7 @@ blenter();
          blexit();
 /*--------------- EXIT BLOCK 16 ---------------------------------*/
 
-	
+
 /*---------------- ENTER BLOCK 17 --------------------------------*/
  blenter();
 #ifdef DEBUG
@@ -529,7 +529,7 @@ blenter();
          blexit();
 /*--------------- EXIT BLOCK 17 ---------------------------------*/
 
-	
+
 /*---------------- ENTER BLOCK 18 --------------------------------*/
  blenter();
 #ifdef DEBUG
@@ -547,7 +547,7 @@ blenter();
          blexit();
 /*--------------- EXIT BLOCK 18 ---------------------------------*/
 
-	
+
 /*---------------- ENTER BLOCK 19 --------------------------------*/
  blenter();
 #ifdef DEBUG
@@ -564,7 +564,7 @@ blenter();
          blexit();
 /*--------------- EXIT BLOCK 19 ---------------------------------*/
 
-	
+
 /*---------------- ENTER BLOCK 20 --------------------------------*/
  blenter();
 #ifdef DEBUG
@@ -579,7 +579,7 @@ blenter();
          blexit();
 /*--------------- EXIT BLOCK 20 ---------------------------------*/
 
-	
+
 /*---------------- ENTER BLOCK 21 --------------------------------*/
  blenter();
 #ifdef DEBUG
@@ -594,7 +594,7 @@ blenter();
          blexit();
 /*--------------- EXIT BLOCK 21 ---------------------------------*/
 
-	
+
 /*---------------- ENTER BLOCK 22 --------------------------------*/
  blenter();
 #ifdef DEBUG
@@ -611,7 +611,7 @@ blenter();
          blexit();
 /*--------------- EXIT BLOCK 22 ---------------------------------*/
 
-	
+
 /*---------------- ENTER BLOCK 23 --------------------------------*/
  blenter();
 #ifdef DEBUG
@@ -625,8 +625,8 @@ blenter();
 	 test24A(); 
          blexit();
 /*--------------- EXIT BLOCK 23 ---------------------------------*/
-	
-	
+
+
 /*---------------- ENTER BLOCK 24 --------------------------------*/
  blenter();
 #ifdef DEBUG
@@ -641,7 +641,7 @@ blenter();
          blexit();
 /*--------------- EXIT BLOCK 24 ---------------------------------*/
 
-	
+
 /*---------------- ENTER BLOCK 25 --------------------------------*/
  blenter();
 #ifdef DEBUG
@@ -656,7 +656,7 @@ blenter();
          blexit();
 /*--------------- EXIT BLOCK 25 ---------------------------------*/
 
-	
+
 /*---------------- ENTER BLOCK 26 --------------------------------*/
  blenter();
 #ifdef DEBUG
@@ -670,7 +670,7 @@ blenter();
          blexit();
 /*--------------- EXIT BLOCK 26 ---------------------------------*/
 
-	
+
 /*---------------- ENTER BLOCK 27 --------------------------------*/
  blenter();
 #ifdef DEBUG
@@ -684,7 +684,7 @@ blenter();
          blexit();
 /*--------------- EXIT BLOCK 27 ---------------------------------*/
 
-	
+
 /*---------------- ENTER BLOCK 28 --------------------------------*/
  blenter();
 #ifdef DEBUG
@@ -699,7 +699,7 @@ blenter();
          blexit();
 /*--------------- EXIT BLOCK 28 ---------------------------------*/
 
-	
+
 /*---------------- ENTER BLOCK 29 --------------------------------*/
  blenter();
 #ifdef DEBUG
@@ -713,7 +713,7 @@ blenter();
          blexit();
 /*--------------- EXIT BLOCK 29 ---------------------------------*/
 
-	cleanup_function();	
+	cleanup_function();
 
         anyfail();      /* THIS CALL DOES NOT RETURN - EXITS!!  */
 

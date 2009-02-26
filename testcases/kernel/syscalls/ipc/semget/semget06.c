@@ -86,7 +86,7 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		/* loop through the test cases */
-	
+
 		for (i=0; i<TST_TOTAL; i++) {
 			TEST(semget(semkey, num_sems[i],
 				    IPC_CREAT | IPC_EXCL | SEM_RA));
@@ -96,7 +96,7 @@ int main(int ac, char **av)
 				tst_resm(TFAIL, "call succeeded");
 				continue;
 			}
-	
+
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			switch(TEST_ERRNO) {

@@ -45,15 +45,15 @@ dm_extent_t bigExtents[20];
 
 void LogExtents(dm_extent_t *pext, u_int nelem)
 {
-	
+
 	int i;
-	
+
 	DMLOG_PRINT(DMLVL_DEBUG, "Extents:\n");
 	for (i = 0; i < nelem; i++, pext++) {
 		DMLOG_PRINT(DMLVL_DEBUG, "  extent %d: type %d, offset %lld, length %lld\n", i + 1, pext->ex_type, pext->ex_offset, pext->ex_length);
 	}
-	
-}		
+
+}	
 
 int main(int argc, char **argv)
 {
@@ -83,7 +83,7 @@ int main(int argc, char **argv)
 				if (write(fd, DUMMY_STRING, DUMMY_STRLEN) != DUMMY_STRLEN) {
 					rc = -1;
 					break;
-				}					
+				}				
 			}
 		} else {
 			rc = -1;
@@ -99,9 +99,9 @@ int main(int argc, char **argv)
 	}
 
 	DMLOG_PRINT(DMLVL_DEBUG, "Starting DMAPI file hole tests\n") ;
-	
+
 	szFuncName = "dm_get_allocinfo";
-	
+
 	/*
 	 * TEST    : dm_get_allocinfo - invalid sid
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -1016,7 +1016,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_allocinfo - DM_NO_SESSION sid
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -1100,7 +1100,7 @@ int main(int argc, char **argv)
 		u_int nelem;
 
 		/* Variation set up */
-		
+	
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
 		rc = dm_get_allocinfo(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, &off, NUM_EXTENTS, Extents, &nelem);
@@ -1150,7 +1150,7 @@ int main(int argc, char **argv)
 	}
 
 	szFuncName = "dm_probe_hole";
-	
+
 	/*
 	 * TEST    : dm_probe_hole - invalid sid
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -1623,7 +1623,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_probe_hole - end of file with rounding
 	 * EXPECTED: rc = 0
@@ -1681,7 +1681,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_probe_hole - middle of file without rounding
 	 * EXPECTED: rc = 0
@@ -1741,10 +1741,10 @@ int main(int argc, char **argv)
 		}
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with INTERIOR_HOLES defined\n");
-		DMVAR_SKIP();		
+		DMVAR_SKIP();	
 #endif
 	}
-	
+
 	/*
 	 * TEST    : dm_probe_hole - middle of file with rounding, large
 	 * EXPECTED: rc = 0
@@ -1804,10 +1804,10 @@ int main(int argc, char **argv)
 		}
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with INTERIOR_HOLES defined\n");
-		DMVAR_SKIP();		
+		DMVAR_SKIP();	
 #endif
 	}
-	
+
 	/*
 	 * TEST    : dm_probe_hole - middle of file with rounding, small
 	 * EXPECTED: rc = 0
@@ -1867,10 +1867,10 @@ int main(int argc, char **argv)
 		}
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with INTERIOR_HOLES defined\n");
-		DMVAR_SKIP();		
+		DMVAR_SKIP();	
 #endif
 	}
-	
+
 	/*
 	 * TEST    : dm_probe_hole - middle of file with rounding, no hole
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -1912,7 +1912,7 @@ int main(int argc, char **argv)
 		}
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with INTERIOR_HOLES defined\n");
-		DMVAR_SKIP();		
+		DMVAR_SKIP();	
 #endif
 	}
 
@@ -1999,7 +1999,7 @@ int main(int argc, char **argv)
 		dm_size_t inlen = 0, outlen;
 
 		/* Variation set up */
-		
+	
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
 		rc = dm_probe_hole(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, inoff, inlen, &outoff, &outlen);
@@ -2049,7 +2049,7 @@ int main(int argc, char **argv)
 	}
 
 	szFuncName = "dm_punch_hole";
-	
+
 	/*
 	 * TEST    : dm_punch_hole - invalid sid
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -2443,7 +2443,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_punch_hole - truncate entire file
 	 * EXPECTED: rc = 0, nelem = 0
@@ -2634,7 +2634,7 @@ int main(int argc, char **argv)
 	 * EXPECTED: rc = 0, nelem = 3
 	 */
 	if (DMVAR_EXEC(PUNCH_HOLE_BASE + 14)) {
-#ifdef INTERIOR_HOLES	
+#ifdef INTERIOR_HOLES
 		int fd;
 		void *hanp;
 		size_t hlen;
@@ -2699,7 +2699,7 @@ int main(int argc, char **argv)
 		}
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with INTERIOR_HOLES defined\n");
-		DMVAR_SKIP();		
+		DMVAR_SKIP();	
 #endif
 	}
 
@@ -2708,7 +2708,7 @@ int main(int argc, char **argv)
 	 * EXPECTED: rc = 0, nelem = 3
 	 */
 	if (DMVAR_EXEC(PUNCH_HOLE_BASE + 15)) {
-#ifdef INTERIOR_HOLES	
+#ifdef INTERIOR_HOLES
 		int fd;
 		void *hanp;
 		size_t hlen;
@@ -2766,7 +2766,7 @@ int main(int argc, char **argv)
 		}
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with INTERIOR_HOLES defined\n");
-		DMVAR_SKIP();		
+		DMVAR_SKIP();	
 #endif
 	}
 
@@ -2853,7 +2853,7 @@ int main(int argc, char **argv)
 		dm_size_t len = 0;
 
 		/* Variation set up */
-		
+	
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
 		rc = dm_punch_hole(sid, DM_GLOBAL_HANP, DM_GLOBAL_HLEN, DM_NO_TOKEN, off, len);
@@ -3646,6 +3646,6 @@ int main(int argc, char **argv)
 	remove(DUMMY_TMP);
 
 	DMLOG_STOP();
-			
+		
 	return 0;
 }

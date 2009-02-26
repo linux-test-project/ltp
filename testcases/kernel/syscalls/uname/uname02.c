@@ -92,13 +92,13 @@ int main(int ac, char **av)
 		 * call the system call with the TEST() macro
 		 * send -1 for an illegal address
 		 */
-	
+
 		TEST(uname((struct utsname *)-1));
-	
+
 		if (TEST_RETURN == 0) {
 			tst_resm(TFAIL, "call succeed when failure expected");
 		}
-	
+
 		TEST_ERROR_LOG(TEST_ERRNO);
 
 		switch (TEST_ERRNO) {

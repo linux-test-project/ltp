@@ -91,7 +91,7 @@ main(int argc, char *argv[]) {
 	int			i;
         struct sigaction        sa;
 
-	tst_tmpdir();	
+	tst_tmpdir();
 	if (!argc) {
 		(void)fprintf(stderr, "argc == 0\n");
 		return 1;

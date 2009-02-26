@@ -105,7 +105,7 @@ int main(int ac, char **av)
 					 strerror(TEST_ERRNO));
 				/*NOTREACHED*/
 			}
-	
+
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			switch (TEST_ERRNO){

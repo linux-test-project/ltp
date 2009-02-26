@@ -152,7 +152,7 @@ int main (argc, argv)
 
 /*--------------------------------------------------------------*/
 	blenter();
-	
+
 	if ((pbuf = (u_short *) malloc(bsize*(sizeof(u_short))) ) == (u_short *) 0) {
 		fprintf(temp, "\tcannot malloc buffer.\n");
 		fail_exit();

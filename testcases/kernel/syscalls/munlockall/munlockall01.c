@@ -33,7 +33,7 @@
  *    DESCRIPTION
  *	This is a phase I test for the munlockall(2) system call.
  *	It is intended to provide a limited exposure of the system call.
- *	
+ *
  * 	Setup:
  *	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
@@ -94,9 +94,9 @@ int main(int ac, char **av)
 
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
-						
+					
 		TEST(munlockall());
-			
+		
 		/* check return code */
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "munlockall() Failed with"
@@ -105,15 +105,15 @@ int main(int ac, char **av)
 				strerror(TEST_ERRNO));
 		} else {
 			tst_resm(TPASS, "munlockall() passed with"
-				" return=%d ",TEST_RETURN);                     			
-				
+				" return=%d ",TEST_RETURN);                     		
+			
 			}
 		}
 				/* End for TEST_LOOPING */
 
 	/* cleanup and exit */
 	cleanup();
-	
+
 	return 0;
 }				/* End main */
 
@@ -131,17 +131,17 @@ int main()
 /* setup() - performs all ONE TIME setup for this test. */
 void setup()
 {
-	
+
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/*set the expected errnos*/
 	TEST_EXP_ENOS(exp_enos);
-	
+
 	if(geteuid() != 0) {
 		tst_brkm(TBROK,tst_exit, "Test must be tested as root");
 	 }
-	
+
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 }

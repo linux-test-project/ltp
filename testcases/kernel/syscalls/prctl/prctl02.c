@@ -57,7 +57,7 @@
  *			Test passed
  *		else
  *			Test Failed
- *		
+ *	
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
  *
@@ -101,7 +101,7 @@ struct test_cases_t {
 	{ OPTION_INVALID, 0, EINVAL },
 	{ PR_SET_PDEATHSIG, INVALID_ARG, EINVAL }
 };
-	
+
 int TST_TOTAL = sizeof(test_cases) / sizeof(test_cases[0]);
 
 int
@@ -187,7 +187,7 @@ setup()
 
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-	
+
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 

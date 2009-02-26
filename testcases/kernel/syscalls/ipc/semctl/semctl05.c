@@ -86,7 +86,7 @@ struct test_case_t {
 } TC[] = {
 	/* ERANGE - the value to set is less than zero - SETVAL */
 	{5, SETVAL, SEMUN_CAST -1},
-	
+
 	/* ERANGE - the values to set are too large, > semaphore max value */
 	{0, SETALL, SEMUN_CAST big_arr},
 
@@ -117,12 +117,12 @@ int main(int ac, char **av)
 
 			TEST(semctl(sem_id_1, TC[i].count,
 				    TC[i].cmd, TC[i].t_arg));
-	
+
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
 				continue;
 			}
-	
+
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			switch(TEST_ERRNO) {

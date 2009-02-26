@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fork01.c,v 1.3 2009/02/26 12:02:56 subrata_modak Exp $ */
+/* $Id: fork01.c,v 1.4 2009/02/26 12:15:38 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -61,13 +61,13 @@
  *
  * 	1.) fork returns without error
  *      2.) fork returns the pid of the child
- *	
+ *
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
  *
  *    OUTPUT SPECIFICATIONS
- * 	
+ * 
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
  *
@@ -166,7 +166,7 @@ void parent_pid()
   int fildes;
   char tmp_line[LINE_SZ];
   pid_t child_id;
-		
+	
   if ((fildes = open(FILENAME,O_RDWR)) == -1) {
     tst_brkm(TBROK, cleanup,
 	     "parent open failed. errno: %d (%s)\n",
@@ -192,7 +192,7 @@ void parent_pid()
 
 /***************************************************************
  * main() - performs tests
- *	
+ *
  ***************************************************************/
 
 int

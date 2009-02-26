@@ -101,18 +101,18 @@ int main(int ac, char **av)
     int lc;                             /* loop counter */
     char *msg;                  /* message returned from parse_opts */
     char *test_desc;                 /* test specific error message */
-		
+	
     /* parse standard options */
     if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
         tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
     }
-		
+	
     /* setup */
-    setup();		 		 		
+    setup();		 		 	
 
     /* set the expected errnos... */
     TEST_EXP_ENOS(exp_enos);
-    		
+    	
     /* Check for looping state if -i option is given */
     for (lc = 0; TEST_LOOPING(lc); lc++) {
 #ifdef __hpux
@@ -120,10 +120,10 @@ int main(int ac, char **av)
 #else
         test_desc = "EAGAIN";
 #endif
-		 		
+		 	
         /* reset Tst_count in case we are looping */
         Tst_count = 0;
-		 		
+		 	
         /* duplicate process */
         if ((child_pid = FORK_OR_VFORK()) == 0) {
             /* child */
@@ -131,7 +131,7 @@ int main(int ac, char **av)
              * Call fcntl(2) with F_SETLK   argument on file
              */
             TEST(fcntl(file, F_SETLK, &fl));
-		 		
+		 	
             /* Check return code from fcntl(2) */
             if (TEST_RETURN != -1) {
                 tst_resm(TFAIL,"fcntl() returned %d,"
@@ -140,7 +140,7 @@ int main(int ac, char **av)
             }
             else{
                 TEST_ERROR_LOG(TEST_ERRNO);
-		 		 		 		
+		 		 		 	
                 if (TEST_ERRNO == exp_enos[0]) {
                     tst_resm(TPASS,"fcntl() fails with expected "
                              "error %s errno:%d",
@@ -165,7 +165,7 @@ int main(int ac, char **av)
             }
         }
 
-    }/* end for */		 		
+    }/* end for */		 	
     return 0;
 }
 
@@ -176,16 +176,16 @@ int main(int ac, char **av)
 void
 setup()
 {
-		
+	
 		 /* capture signals */
 		 tst_sig(FORK, DEF_HANDLER, cleanup);
 
 		 /* Pause if that option was specified */
 		 TEST_PAUSE;
-		
+	
 		 /* Make a temp dir and cd to it */
 		 tst_tmpdir();
-		
+	
 		 /* create regular file*/
 		 if ( (file=creat("regfile", 0777)) == -1 ) {
     		     tst_brkm(TBROK, cleanup, "creat(regfile, 0777) failed, errno:%d %s",

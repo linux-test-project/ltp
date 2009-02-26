@@ -21,7 +21,7 @@
   * You should have received a copy of the GNU General Public License
   * along with this program; if not, write to the Free Software
   * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-***************************************************************************/ 	
+***************************************************************************/ 
 
 
 /*****************************************************************************
@@ -166,17 +166,17 @@ cleanup()
 {
 	/* Close all open file descriptors. */
 	if(close(fdw) == -1)
-	{	
+	{
 		tst_resm(TWARN, "close(%s) Failed, errno=%d : %s",
 		fnamew, errno, strerror(errno));
 	}
-	
+
 	if(close(fdr) == -1)
-	{	
+	{
 		tst_resm(TWARN, "close(%s) Failed, errno=%d : %s",
 		fnamer, errno, strerror(errno));
 	}
-	
+
     	/* Remove tmp dir and all files in it */
     	tst_rmdir();
 
@@ -224,15 +224,15 @@ void
 get_blocksize(int fd)
 {
 	 struct stat file_stat;
-	
+
 	if( fstat(fd, &file_stat) < 0 )
            tst_resm(TFAIL, "fstat failed while getting block_size errno=%d : %s", 
 		TEST_ERRNO, strerror(TEST_ERRNO));
-	
+
 	block_size = (int) file_stat.st_blksize;
 	buf_size = block_size;
 }
-	
+
 /*****************************************************************************
  * Writes data into the file
  ******************************************************************************/
@@ -290,18 +290,18 @@ main(int   ac,    /* number of command line parameters                      */
 	int lc;
 	int fd;
 	char fname[255], *msg;
-	
+
     	/***************************************************************
 	     * parse standard options
      	***************************************************************/
     	if ( (msg=parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL )
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-	
+
 	/* This test needs kernel version > 2.6.23 and
 	 * either of x86, x86_64 or ppc architecture
 	 */
 	if ( !arch_support || (tst_kvercmp(2,6,23) < 0)) {
-		tst_resm(TWARN," System doesn't support execution of the test");		
+		tst_resm(TWARN," System doesn't support execution of the test");	
 		exit(0);
 	}
 
@@ -321,7 +321,7 @@ main(int   ac,    /* number of command line parameters                      */
 				strcpy(fname,fnamew);
 				break;
 			}
-	        	
+	        
 		TEST(fallocate( fd, test_data[test_index].mode,
 		test_data[test_index].offset * block_size, test_data[test_index].len * block_size));
 			 /* check return code */

@@ -73,12 +73,12 @@ int
 evsignal_add(sigset_t *evsigmask, struct event *ev)
 {
 	int evsignal;
-	
+
 	if (ev->ev_events & (EV_READ|EV_WRITE))
 		errx(1, "%s: EV_SIGNAL incompatible use", __func__);
 	evsignal = EVENT_SIGNAL(ev);
 	sigaddset(evsigmask, evsignal);
-	
+
 	return (0);
 }
 
@@ -117,13 +117,13 @@ evsignal_recalc(sigset_t *evsigmask)
 
 	if (sigprocmask(SIG_BLOCK, evsigmask, NULL) == -1)
 		return (-1);
-	
+
 	/* Reinstall our signal handler. */
 	memset(&sa, 0, sizeof(sa));
 	sa.sa_handler = evsignal_handler;
 	sa.sa_mask = *evsigmask;
 	sa.sa_flags |= SA_RESTART;
-	
+
 	TAILQ_FOREACH(ev, &signalqueue, ev_signal_next) {
 		if (sigaction(EVENT_SIGNAL(ev), &sa, NULL) == -1)
 			return (-1);

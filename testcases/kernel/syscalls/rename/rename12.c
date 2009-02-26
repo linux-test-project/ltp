@@ -115,10 +115,10 @@ main(int ac, char **av)
 	 * perform global setup for test
 	 */
 	setup();
-	
+
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
-	
+
 	/*
 	 * check looping state if -i option given
 	 */
@@ -181,12 +181,12 @@ main(int ac, char **av)
 
 		}
 	}   /* End for TEST_LOOPING */
-	
+
 	/*
 	 * cleanup and exit
 	 */
 	cleanup();
-	
+
 	/*NOTREACHED*/
 
   return 0;
@@ -204,7 +204,7 @@ setup()
 		tst_brkm(TBROK, tst_exit, "Must run this as root");
 		/*NOTREACHED*/
 	}
-	
+
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
@@ -218,7 +218,7 @@ setup()
 	chmod(".",0777);
 
 	umask(0);
-	
+
 	sprintf(fdir,"./tdir_%d",getpid());
 	sprintf(fname,"%s/tfile_%d",fdir,getpid());
 	sprintf(mname,"%s/rnfile_%d",fdir,getpid());
@@ -235,7 +235,7 @@ setup()
 	}
 
 	/* set the sticky bit */
-	if (chmod(fdir,buf1.st_mode|S_ISVTX)!= 0) {	
+	if (chmod(fdir,buf1.st_mode|S_ISVTX)!= 0) {
 		tst_brkm(TBROK, cleanup, "failed to set the S_ISVTX bit");
 		/* NOTREACHED */
 	}
@@ -264,7 +264,7 @@ cleanup()
 	 * Remove the temporary directory.
 	 */
 	tst_rmdir();
-	
+
 	/*
 	 * Exit with return code appropriate for results.
 	 */

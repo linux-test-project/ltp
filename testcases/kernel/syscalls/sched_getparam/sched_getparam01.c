@@ -105,7 +105,7 @@ main(int ac, char **av)
 		 * get the scheduling parameters for the calling process
 		 */
 		TEST(sched_getparam(0, &param));
-	
+
 		/*
 		 * Check return code & priority. For normal process,
 		 * scheduling policy is SCHED_OTHER. For this scheduling
@@ -136,7 +136,7 @@ main(int ac, char **av)
 void
 setup()
 {
-	
+
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 

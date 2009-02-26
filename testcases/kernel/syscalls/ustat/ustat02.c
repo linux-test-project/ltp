@@ -64,7 +64,7 @@
  *	-p   : Pause for SIGUSR1 before starting
  *	-P x : Pause for x seconds between iterations.
  *	-t   : Turn on syscall timing.
- *		
+ *	
  *RESTRICTIONS: None
  *****************************************************************************/
 #include <errno.h>
@@ -124,7 +124,7 @@ main(int ac, char **av)
 		Tst_count = 0;
 
 		for(i = 0; i < TST_TOTAL; i++) {
-			if(i == 0) {	
+			if(i == 0) {
 				TEST(ustat(dev_num[i], ubuf));
 			} else {
 				TEST(ustat(dev_num[i], (struct ustat *) -1));
@@ -188,7 +188,7 @@ setup()
        		tst_brkm(TBROK, tst_exit, "stat(2) failed. Exiting without"
 				"invoking ustat(2)");
 	}
-	dev_num[1] = buf->st_dev;	
+	dev_num[1] = buf->st_dev;
 }	/* End setup() */
 
 /*

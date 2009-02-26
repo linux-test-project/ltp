@@ -32,7 +32,7 @@
  *	other than that of this process and with the setgid bit set.
  *	In each directory, create a file with and without the setgid
  *	bit set in the creation modes. Verify that the modes and group
- *	ID are correct on each of the 4 files.	
+ *	ID are correct on each of the 4 files.
  *	As root, create a file with the setgid bit on in the
  *	directory with the setgid bit.
  *	This tests the SVID3 create group semantics.
@@ -118,7 +118,7 @@ int main (int ac, char **av)
 		sprintf(setgid_B, "%s/%s", DIR_B, SETGID);
 		sprintf(nosetgid_B, "%s/%s", DIR_B, NOSETGID);
 		sprintf(root_setgid_B, "%s/%s", DIR_B, ROOT_SETGID);
-	
+
 		/* Get the uid of user1 */
 		if ((user1 = getpwnam("nobody")) == NULL) {
 			tst_resm(TBROK, "nobody not in /etc/passwd");
@@ -126,7 +126,7 @@ int main (int ac, char **av)
 		}
 
 		user1_uid = user1->pw_uid;
-	
+
 		/*
 		 * Get the group IDs of group1 and group2.
 		 */
@@ -155,17 +155,17 @@ int main (int ac, char **av)
 			tst_resm(TFAIL, "Creation of %s failed", DIR_A);
 			local_flag = FAILED;
 		}
-	
+
 		if ((ret = chown(DIR_A, user1_uid, group2_gid)) < 0) {
 			tst_resm(TFAIL, "Chown of %s failed", DIR_A);
 			local_flag = FAILED;
 		}
-	
+
 		if ((ret = stat(DIR_A, &buf)) < 0) {
 			tst_resm(TFAIL, "Stat of %s failed", DIR_A);
 			local_flag = FAILED;
 		}
-	
+
 		/* Verify modes */
 		if (buf.st_mode & S_ISGID) {
 			tst_resm(TFAIL, "%s: Incorrect modes, setgid bit set", DIR_A);
@@ -178,7 +178,7 @@ int main (int ac, char **av)
 			tst_resm(TINFO,"got %ld and %ld", buf.st_gid, group2_gid);
 			local_flag = FAILED;
 		}
-	
+
 		/*
 		 * Create a directory with group id different from that of
 		 * this process and with the setgid bit set.
@@ -187,12 +187,12 @@ int main (int ac, char **av)
 			tst_resm(TFAIL, "Creation of %s failed", DIR_B);
 			local_flag = FAILED;
 		}
-	
+
 		if ((ret = chown(DIR_B, user1_uid, group2_gid)) < 0) {
 			tst_resm(TFAIL, "Chown of %s failed", DIR_B);
 			local_flag = FAILED;
 		}
-	
+
 		if ((ret = chmod(DIR_B, MODE_SGID)) < 0) {
 			tst_resm(TFAIL, "Chmod of %s failed", DIR_B);
 			local_flag = FAILED;
@@ -202,28 +202,28 @@ int main (int ac, char **av)
 			tst_resm(TFAIL, "Stat of %s failed", DIR_B);
 			local_flag = FAILED;
 		}
-	
+
 		/* Verify modes */
 		if (!(buf.st_mode & S_ISGID)) {
 			tst_resm(TFAIL, "%s: Incorrect modes, setgid bit not set",
 				DIR_B);
 			local_flag = FAILED;
 		}
-	
+
 		/* Verify group ID */
 		if (buf.st_gid != group2_gid) {
 			tst_resm(TFAIL, "%s: Incorrect group", DIR_B);
 			tst_resm(TINFO,"got %ld and %ld",buf.st_gid, group2_gid);
 			local_flag = FAILED;
 		}
-	
+
 		if (local_flag == PASSED) {
        		         tst_resm(TPASS, "Test passed in block0.");
        		 } else {
                		 tst_resm(TFAIL, "Test failed in block0.");
 			fail_count++;
        		 }
-	
+
 		local_flag = PASSED;
 
 /*--------------------------------------------------------------*/
@@ -239,12 +239,12 @@ int main (int ac, char **av)
 		if ((ret = setgid(group1_gid)) < 0) {
 			tst_resm(TINFO,"Unable to set process group ID to group1");
 		}
-	
+
 		if ((ret = setreuid(-1, user1_uid)) < 0) {
 			tst_resm(TINFO, "Unable to set process uid to user1");
 		}
 		mygid = getgid();
-	
+
 		/*
 		 * Create the file with setgid not set
 		 */
@@ -252,7 +252,7 @@ int main (int ac, char **av)
 			tst_resm(TFAIL, "Creation of %s failed", nosetgid_A);
 			local_flag = FAILED;
 		}
-	
+
 		if ((ret = stat(nosetgid_A, &buf)) < 0) {
 			tst_resm(TFAIL, "Stat of %s failed", nosetgid_A);
 			local_flag = FAILED;
@@ -282,14 +282,14 @@ int main (int ac, char **av)
 			tst_resm(TFAIL, "Stat of %s failed", setgid_A);
 			local_flag = FAILED;
 		}
-	
+
 		/* Verify modes */
 		if (!(buf.st_mode & S_ISGID)) {
 			tst_resm(TFAIL, "%s: Incorrect modes, setgid bit not set",
 				setgid_A);
 			local_flag = FAILED;
 		}
-	
+
 		/* Verify group ID */
 		if (buf.st_gid != mygid) {
 			tst_resm(TFAIL, "%s: Incorrect group", setgid_A);
@@ -302,7 +302,7 @@ int main (int ac, char **av)
                		 tst_resm(TFAIL, "Test failed in block1.");
 			fail_count++;
        		 }
-	
+
 		local_flag = PASSED;
 
 /*--------------------------------------------------------------*/
@@ -336,7 +336,7 @@ int main (int ac, char **av)
 			tst_resm(TFAIL, "%s: Incorrect group", nosetgid_B);
 			local_flag = FAILED;
 		}
-	
+
 		/*
 		 * Create the file with setgid set
 		 */
@@ -344,12 +344,12 @@ int main (int ac, char **av)
 			tst_resm(TFAIL, "Creation of %s failed", setgid_B);
 			local_flag = FAILED;
 		}
-	
+
 		if ((ret = stat(setgid_B, &buf)) < 0) {
 			tst_resm(TFAIL, "Stat of %s failed", setgid_B);
 			local_flag = FAILED;
 		}
-	
+
 		/* Verify group ID */
 		if (buf.st_gid != group2_gid) {
 			tst_resm(TFAIL, "%s: Incorrect group", setgid_B);
@@ -363,7 +363,7 @@ int main (int ac, char **av)
 				setgid_B);
 			local_flag = FAILED;
 		}
-	
+
 		if (local_flag == PASSED) {
        		         tst_resm(TPASS, "Test passed in block2.");
         	} else {
@@ -389,19 +389,19 @@ int main (int ac, char **av)
 			tst_resm(TFAIL, "Creation of %s failed", root_setgid_B);
 			local_flag = FAILED;
 		}
-	
+
 		if ((ret = stat(root_setgid_B, &buf)) < 0) {
 			tst_resm(TFAIL, "Stat of %s failed", root_setgid_B);
 			local_flag = FAILED;
 		}
-	
+
 		/* Verify modes */
 		if (!(buf.st_mode & S_ISGID)) {
 			tst_resm(TFAIL, "%s: Incorrect modes, setgid bit not set",
 				root_setgid_B);
 			local_flag = FAILED;
 		}
-	
+
 		/* Verify group ID */
 		if (buf.st_gid != group2_gid) {
 			tst_resm(TFAIL, "%s: Incorrect group", root_setgid_B);
@@ -442,7 +442,7 @@ int main (int ac, char **av)
 		if ((ret = rmdir(DIR_B)) < 0) {
 			tst_resm(TBROK, "Warning: %s not removed", DIR_B);
 		}
-	
+
 		if (fail_count == 0 ) {
        		         tst_resm(TPASS, "Test passed.");
 	        } else {

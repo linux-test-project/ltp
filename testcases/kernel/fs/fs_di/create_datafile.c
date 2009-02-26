@@ -22,7 +22,7 @@
  *  PURPOSE	: Creates a file of specified size.
  *  HISTORY	:
  *  	10/17/2003 Robbie Williamson
- *	  -Written  	
+ *	  -Written  
  */
 
 #include <stdio.h>

@@ -86,7 +86,7 @@ int main(int ac, char **av)
 	double time_delta;
 	int data_blocks=0;
 	long int random_number;
-	
+
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
@@ -133,7 +133,7 @@ int main(int ac, char **av)
 				tst_resm(TFAIL, "timer broken end %ld < start %ld",
 						time_end, time_start);
 			}
-	
+
 
 			if((time_delta = difftime(time_end,time_start)) > TIME_LIMIT) {
 				tst_resm(TFAIL, "fsync took too long: %d "

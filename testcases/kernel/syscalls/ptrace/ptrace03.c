@@ -64,7 +64,7 @@
  *			Test Passed
  *	 	else
  *			Test failed
- *		
+ *	
  * 	Cleanup:
  * 	  Print errno log and/or timing stats if options given
  *
@@ -212,7 +212,7 @@ main(int ac, char **av)
 void
 setup()
 {
-	
+
 	/* capture signals
 	tst_sig(FORK, DEF_HANDLER, cleanup); */
 
@@ -221,7 +221,7 @@ setup()
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
-	
+
 }	/* End setup() */
 
 

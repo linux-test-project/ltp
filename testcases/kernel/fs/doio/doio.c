@@ -404,7 +404,7 @@ char	**argv;
 
 	random_range_seed(getpid());       /* initialize random number generator */
 
-	/*	
+	/*
 	 * If this is a re-exec of doio, jump directly into the doio function.
 	 */
 
@@ -503,10 +503,10 @@ char	**argv;
 					     i+1, SYSERR, errno);
 				exit(E_SETUP);
 			}
-			
+		
 			Children[Nchildren] = pid;
 			Nchildren++;
-			
+		
 			if (pid == 0) {
 				if (e_opt) {
 					char *exec_path;
@@ -530,21 +530,21 @@ char	**argv;
 		/*
 		 * Parent spins on wait(), until all children exit.
 		 */
-		
+	
 		ex_stat = E_NORMAL;
-		
+	
 		while (Nprocs) {
 			if ((pid = wait(&stat)) == -1) {
 				if (errno == EINTR)
 					continue;
 			}
-			
+		
 			for (i = 0; i < Nchildren; i++)
 				if (Children[i] == pid)
 					Children[i] = -1;
-			
+		
 			Nprocs--;
-			
+		
 			if (WIFEXITED(stat)) {
 				switch (WEXITSTATUS(stat)) {
 				case E_NORMAL:
@@ -596,10 +596,10 @@ char	**argv;
 				doio_fprintf(stderr,
 					     "(parent) pid %d terminated by signal %d\n",
 					     pid, WTERMSIG(stat));
-				
+			
 				ex_stat |= E_SIGNAL;
 			}
-			
+		
 			fflush(NULL);
 		}
 	}
@@ -653,7 +653,7 @@ doio()
 	if (w_opt) {
 
 		strcpy(Wlog.w_file, Write_Log);
-	
+
 		if (wlog_open(&Wlog, 0, 0666) == -1) {
 			doio_fprintf(stderr,
 				     "Could not open write log file (%s): wlog_open() failed\n",
@@ -1032,7 +1032,7 @@ struct smap sysnames[] = {
 	{ "FDATASYNC",	FDATASYNC	},
 
 	{ "unknown",	-1		},
-};	
+};
 
 struct smap aionames[] = {
 	{ "poll",	A_POLL		},
@@ -1867,7 +1867,7 @@ format_listio(
 		case LO_WRITE:	opcode = "LO_WRITE";	break;
 		default:	opcode = "???";		break;
 		}
-			
+		
 		cp += sprintf(cp, "          li_opcode =    %s\n", opcode);
 		cp += sprintf(cp, "          li_drvr =      %#o\n", listreq->li_drvr);
 		cp += sprintf(cp, "          li_flags =     %#o\n", listreq->li_flags);
@@ -2332,7 +2332,7 @@ fmt_ioreq(struct io_req *ioreq, struct syscall_info *sy, int fd)
 #endif
 #ifdef sgi
 	if(io->r_oflags & O_DIRECT) {
-		
+	
 		if(fcntl(fd, F_DIOINFO, &finfo) == -1) {
 			cp += sprintf(cp, "          Error %s (%d) getting direct I/O info\n",
 				      strerror(errno), errno);
@@ -3940,7 +3940,7 @@ int nbytes;
 			}
 		}
 		break;
-		
+	
 	case MEM_SHMEM:
 		if( nbytes > M->size ) {
 			if( M->space != NULL ) {
@@ -4169,7 +4169,7 @@ int	oflags;
 #ifdef sgi
 	struct dioattr		finfo;
 #endif
-	
+
 	/*
 	 * If file is NULL, it means to free up the fd cache.
 	 */
@@ -4420,7 +4420,7 @@ sigbus_handler(int sig, siginfo_t *info, void *v)
 	   stronger.)
 	 */
 
-	
+
 	if( active_mmap_rw && havesigint && (info->si_errno == EINTR) ){
 		cleanup_handler( sig, info, v );
 	}
@@ -4892,13 +4892,13 @@ char	*opts;
 		argv[0]++;
 		Execd = 1;
 	}
-	
+
 	if ((Prog = strrchr(argv[0], '/')) == NULL) {
 		Prog = argv[0];
 	} else {
 		Prog++;
 	}
-	
+
 	opterr = 0;
 	while ((c = getopt(argc, argv, opts)) != EOF) {
 		switch ((char)c) {
@@ -5079,11 +5079,11 @@ char	*opts;
 			break;
 		}
 	}
-	
+
 	/*
 	 * Supply defaults
 	 */
-	
+
 	if (! C_opt) {
 		Data_Fill = doio_pat_fill;
 		Data_Check = doio_pat_check;
@@ -5094,7 +5094,7 @@ char	*opts;
 
 	if (! n_opt)
 		Nprocs = 1;
-	
+
 	if (! r_opt)
 		Release_Interval = DEF_RELEASE_INTERVAL;
 
@@ -5122,7 +5122,7 @@ char	*opts;
 	}
 
 	return 0;
-}	
+}
 
 
 
@@ -5455,5 +5455,5 @@ FILE	*stream;
 	fprintf(stream, "\t                     of io_req structures (see doio.h).  Currently\n");
 	fprintf(stream, "\t                     only the iogen program generates the proper\n");
 	fprintf(stream, "\t                     format\n");
-}	
+}
 

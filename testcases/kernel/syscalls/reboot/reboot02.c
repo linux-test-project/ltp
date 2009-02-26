@@ -64,7 +64,7 @@
  *	-p   : Pause for SIGUSR1 before starting
  *	-P x : Pause for x seconds between iterations.
  *	-t   : Turn on syscall timing.
- *		
+ *	
  *RESTRICTIONS:
  *for lib4 and lib5 reboot(2) system call is implemented as
  *int reboot(int magic, int magic2, int flag, void *arg); This test case

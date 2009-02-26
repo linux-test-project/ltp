@@ -79,7 +79,7 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		/* use the TEST macro to make the call */
-	
+
 		TEST(semget(semkey, PSEMS, SEM_RA));
 
 		if (TEST_RETURN != -1) {
@@ -87,7 +87,7 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "call succeeded when error expected");
 			continue;
 		}
-	
+
 		TEST_ERROR_LOG(TEST_ERRNO);
 
 		switch(TEST_ERRNO) {

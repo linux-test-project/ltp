@@ -95,16 +95,16 @@ int main(int ac, char **av)
 		 * Try to access the init process.
 		 * This should give an EPERM error.
 		 */
-	
+
 		/* call the system call with the TEST() macro */
 		TEST(setpriority(PRIO_PROCESS, init_val, new_val));
-	
+
 		if (TEST_RETURN == 0) {
 	                tst_resm(TFAIL, "call failed to produce expected error "
 				 "- errno = %d - %s", TEST_ERRNO,
 				 strerror(TEST_ERRNO));
 		}
-	
+
 		TEST_ERROR_LOG(TEST_ERRNO);
 
 		switch (TEST_ERRNO) {

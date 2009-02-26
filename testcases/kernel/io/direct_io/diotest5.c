@@ -185,7 +185,7 @@ main(int argc, char *argv[])
 				fprintf(stderr, "bufsize must be > 0");
 				prg_usage();
 			}
-			break;	
+			break;
 		case 'o':
 			if ((offset = atoll(optarg)) <= 0) {
 				fprintf(stderr, "offset must be > 0");

@@ -30,7 +30,7 @@
  *
  * 	test 3:
  * 	Check if read sets EFAULT, if buf is -1.
- * 	
+ * 
  * ALGORITHM
  * 	test 1:
  * 	Read with an invalid file descriptor, and expect an EBADF
@@ -41,7 +41,7 @@
  *
  * 	test 3:
  * 	Pass buf = -1 as a parmeter to read, expect an EFAULT.
- * 	
+ * 
  * USAGE:  <for command-line>
  *  read02 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.

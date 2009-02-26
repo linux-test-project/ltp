@@ -41,7 +41,7 @@
  *   Check return code, if system call failed (return=-1)
  *   	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call	
+ *   	Verify the Functionality of system call
  *      if successful,
  *      	Issue Functionality-Pass message.
  *      Otherwise,
@@ -226,7 +226,7 @@ setup()
 	for (i = 0; i < BUF_SIZE; i++) {
 		tst_buff[i] = 'a';
 	}
-	
+
 	/* Write to the file 1k data from the buffer */
 	while (write_len < FILE_SIZE) {
 		if ((wbytes = write(fd, tst_buff, sizeof(tst_buff))) <= 0) {
@@ -251,7 +251,7 @@ setup()
 			 TESTFILE, errno, strerror(errno));
 		/*NOTREACHED*/
 	}
-			
+		
 	/* Get the uid/gid of the process */
 	User_id = getuid();
 	Group_id = getgid();

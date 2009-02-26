@@ -26,7 +26,7 @@
 >KEYS:  < kill(), wait(), signal()
 >WHAT:  < Check that when a child is killed by its parent, it returns the
    	< correct values to the waiting parent--the child sets signal to
-   	< ignore the kill							
+   	< ignore the kill						
 >HOW:   < For each signal: Send that signal to a child that has elected
 	< to catch the signal, check that the correct status was returned
 	< to the waiting parent.
@@ -175,7 +175,7 @@ int main(int argc, char **argv)				/***** BEGINNING OF MAIN. *****/
 			if ((sig == 9) && (nsig != sig)) {
 				fprintf(temp, "wait error: unexpected signal"
 					" returned when the signal sent was 9"
-				        " The status of the process is %d \n",	
+				        " The status of the process is %d \n",
 					 status);
 				ret_val = 1;
 			}
@@ -211,7 +211,7 @@ int main(int argc, char **argv)				/***** BEGINNING OF MAIN. *****/
 		local_flag = FAILED;
 
 /*--------------------------------------------------------------------*/
-	anyfail();	
+	anyfail();
 	return 0;
 }					/******** END OF MAIN. ********/
 /*--------------------------------------------------------------------*/
@@ -245,7 +245,7 @@ do_child()
 	kill(getppid(), SIGCLD);	/* tell parent we are ready */
 	while (!chflag)
 		sleep(1);		/* wait for parent */
-	
+
 	exit(exno);
 }
 

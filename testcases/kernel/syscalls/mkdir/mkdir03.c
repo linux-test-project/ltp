@@ -145,10 +145,10 @@ main(int ac, char **av)
 	 * perform global setup for test
 	 */
 	setup();
-	
+
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
-	
+
 	/*
 	 * check looping state if -i option given
 	 */
@@ -185,12 +185,12 @@ main(int ac, char **av)
 			}
 		}
 	}   /* End for TEST_LOOPING */
-	
+
 	/*
 	 * cleanup and exit
 	 */
 	cleanup();
-	
+
 	/*NOTREACHED*/
 	return 0;
 }       /* End main */
@@ -305,7 +305,7 @@ cleanup()
 	 * Remove the temporary directory.
 	 */
 	tst_rmdir();
-	
+
 	/*
 	 * Exit with return code appropriate for results.
 	 */

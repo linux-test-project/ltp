@@ -26,7 +26,7 @@
  *
  * ALGORITHM
  *	create a message queue as root
- *	fork a child process and change its ID to nobody	
+ *	fork a child process and change its ID to nobody
  *	loop if that option was specified
  *	try to remove the queue in the child process with msgctl()
  *	check the errno value
@@ -98,7 +98,7 @@ int main(int ac, char **av)
 			tst_resm(TBROK, "setuid() failed");
 			exit(1);
 		}
-	
+
 		do_child();
 	} else {		/* parent */
 		if (waitpid(pid, NULL, 0) == -1) {

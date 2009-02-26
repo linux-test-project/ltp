@@ -98,7 +98,7 @@ main(int ac, char **av)
 	 * perform global setup for test
 	 */
 	setup();
-	
+
 	/*
 	 * check looping state if -i option given
 	 */
@@ -124,17 +124,17 @@ main(int ac, char **av)
 			/* check the existence of "new", and get the status */
 			if (stat(mname, &buf2) == -1) {
 				tst_brkm(TBROK, cleanup, "failed to stat file "
-					 "%s in rename()", mname);	
+					 "%s in rename()", mname);
 				/* NOTREACHED */
 			}
 
 			/* check the existence of "old", and get the status */
 			if (stat(fname, &buf1)== -1) {
 				tst_brkm(TBROK, cleanup, "failed to stat file "
-					 "%s in rename()", fname);	
+					 "%s in rename()", fname);
 				/* NOTREACHED */
 			}
-	
+
 			/* verify the new file is the same as the original */
 			if (buf2.st_dev != olddev || buf2.st_ino != oldino) {
 				tst_resm(TFAIL,"rename() failed: new file does "
@@ -142,7 +142,7 @@ main(int ac, char **av)
 					"file");
 				continue;
 			}
-			
+		
 			/* verify the old file is unchanged */
 			if (buf1.st_dev != olddev || buf1.st_ino != oldino) {
 				tst_resm(TFAIL,"rename() failed: old file does "
@@ -155,13 +155,13 @@ main(int ac, char **av)
 			tst_resm(TPASS, "call succeeded");
 		}
 	}   /* End for TEST_LOOPING */
-	
+
 	/*
 	 * cleanup and exit
 	 */
 	cleanup();
-	/*NOTREACHED*/	
-	
+	/*NOTREACHED*/
+
 
   return 0;
 
@@ -181,7 +181,7 @@ setup()
 
 	/* Create a temporary directory and make it current. */
 	tst_tmpdir();
-	
+
 	sprintf(fname,"./tfile_%d",getpid());
 	sprintf(mname,"./rnfile_%d",getpid());
 
@@ -223,7 +223,7 @@ cleanup()
 	 * Remove the temporary directory.
 	 */
 	tst_rmdir();
-	
+
 	/*
 	 * Exit with return code appropriate for results.
 	 */

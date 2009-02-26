@@ -135,7 +135,7 @@ void do_timedwait(pthread_cond_t* cond, pthread_mutex_t* mutex,
 	tst_brkm(TBROK, cleanup, "gettimeofday failed: %s",
 		strerror_r(errno, buf, buf_len));
     }
-	
+
     ts.tv_sec = tv.tv_sec;
     ts.tv_nsec = (tv.tv_usec * 1000) + NSECS_TO_WAIT;
     ts.tv_sec += ts.tv_nsec / 1000000000;
@@ -163,7 +163,7 @@ void* run(void* arg)
 	call_cond_signal(&parent, buf, sizeof(buf));
 	call_mutex_lock(&req, buf, sizeof(buf));
 	call_mutex_unlock(&ack, buf, sizeof(buf));
-	
+
 	call_mutex_lock(&wait, buf, sizeof(buf));
 	call_cond_signal(&parent, buf, sizeof(buf));
 	call_mutex_unlock(&wait, buf, sizeof(buf));

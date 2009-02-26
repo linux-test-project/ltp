@@ -125,7 +125,7 @@ main (int argc, char **argv)
 
 	/* Add it to the active events, without a timeout */
 	event_add(&evfifo, NULL);
-	
+
 	event_dispatch();
 #ifdef WIN32
 	CloseHandle(socket);

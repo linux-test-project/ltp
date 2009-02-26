@@ -51,13 +51,13 @@
  *    TEST CASES
  *
  * 	1.) malloc(3) returns...(See Description)
- *	
+ *
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
  *
  *    OUTPUT SPECIFICATIONS
- * 	
+ * 
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
  *
@@ -314,7 +314,7 @@ main(int argc, char *argv[])
 	    tst_resm(TFAIL, "malloc - alloc of %dMB failed", memsize/1024/1024);
     	    cleanup();
 	}
-	
+
 	/*
 	 * TEST CASE:
 	 * Dirty all the pages, to force physical RAM allocation

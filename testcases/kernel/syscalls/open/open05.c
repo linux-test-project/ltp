@@ -124,7 +124,7 @@ int main(int ac, char **av)
 				tst_resm(TWARN, "seteuid(0) failed");
 			}
 			exit(retval);
-	
+
 		} else {		/* parent */
 			/* wait for the child to finish */
             		wait(&status);
@@ -135,7 +135,7 @@ int main(int ac, char **av)
             		}
 
 			close(fd);
-			cleanup();	
+			cleanup();
 
 		}
 	}

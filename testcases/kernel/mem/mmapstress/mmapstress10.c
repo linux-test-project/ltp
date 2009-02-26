@@ -104,7 +104,7 @@ void ok_exit();
 #define MAXLOOPS	500	/* max pages for map children to write */
 #define GROWSIZE	20	/* # bytes to write per write call */
 #define SLEEPTIME	1	/* # secs to sleep between writes */
-#define	FILESIZE	4096	/* initial filesize set up by parent */	
+#define	FILESIZE	4096	/* initial filesize set up by parent */
 #ifdef roundup
 #undef roundup
 #endif
@@ -409,7 +409,7 @@ main(int argc, char *argv[])
 	/*
 	 *  Now wait for children and refork them as needed.
 	 */
-	
+
 	while (!finished) {
 		pid = wait(&wait_stat);
 		/*
@@ -473,7 +473,7 @@ main(int argc, char *argv[])
 			goto cleanup;
 		}
 	}
-	
+
 	/*
 	 *  Finished!  Check the file for sanity, then kill all
 	 *  the children and done!.
@@ -503,7 +503,7 @@ cleanup:
 		}
 	} else
 		(void)printf("  leaving file <%s>\n", filename);
-	
+
 	(void)time(&t);
 //	(void)printf("%s: Finished %s", argv[0], ctime(&t)); LTP Port
 	ok_exit();
@@ -670,7 +670,7 @@ child_mapper(char *file, unsigned procno, unsigned nprocs)
  *	supporting mapping of fragments.  The map children are
  *	constantly reforking and will pick up the map changes, etc.
  *	This process executes until signalled (i.e. has no exit!)
- *	unless error.	
+ *	unless error.
  */
 void
 child_writer(char *file, uchar_t *buf)	/* buf already set up in main */
@@ -814,7 +814,7 @@ fileokay(char *file, uchar_t *expbuf)
 		cnt = read(fd, (char *)readbuf, pagesize);
 		if (cnt == -1) {
 			perror("read error");
-			return 0;	
+			return 0;
 		} else if (cnt != pagesize) {
 			/*
 			 *  Okay if at last page in file...
@@ -845,7 +845,7 @@ fileokay(char *file, uchar_t *expbuf)
 			}
 		}
 	}
-					
+				
 	return 1;
 }
 

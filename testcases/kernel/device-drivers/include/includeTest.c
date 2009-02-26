@@ -164,9 +164,9 @@ static int test_init_module(void) {
 
 	sprintf(gd_ptr->disk_name, DEVICE_NAME);
 	add_disk(gd_ptr);
-	
+
 	printk("major = %d\n",Major);
-	
+
 	test_acpi();
 	test_vga();
 	test_lockd();
@@ -183,13 +183,13 @@ static int test_init_module(void) {
 static void test_exit_module(void) {
        
 	int rc;
-	
+
         pm_unregister(ltp_pm_dev);
         put_disk(gd_ptr);
         del_gendisk(gd_ptr);
-	
+
 	rc = unregister_blkdev(INCLUDEMAJOR, DEVICE_NAME);
-		
+	
         if(rc < 0) {
                 printk("unregister failed %d\n",rc);
         }
@@ -200,10 +200,10 @@ static void test_exit_module(void) {
 
 static void test_acpi(void) {
 	u32 flag;
-	
+
 	for(flag=0; flag<=4; flag++)
 		acpi_set_debug(flag);
-	
+
 	printk("finished acpi test\n");
 }
 
@@ -230,7 +230,7 @@ static void test_nfsfh(void){
 	ino_t ino=0;
 	struct svc_fh A1;
 	int i=20;
-	
+
 	u32_to_dev_t((__u32)unfs);
 	ino_t_to_u32(ino);
 	u32_to_ino_t((__u32)unfs);
@@ -248,7 +248,7 @@ static void test_lockd(void){
 	struct nlm_file file;
 	struct sockaddr_in sin1, sin2;
 	struct file_lock fl1, fl2;
-			
+		
 	nlm_compare_locks(&fl1, &fl2);
 	nlm_cmp_addr(&sin1,&sin2);
 	nlmsvc_file_inode(&file);
@@ -270,12 +270,12 @@ static void test_sunrpc_svc(void){
 	struct svc_rqst rqstp;
         char name[50];
         struct iovec iov;
-	int bits=0, bits2=0;	
+	int bits=0, bits2=0;
 	rqstp.rq_resused=1;
-	
+
 	svc_getu32(&iov);
 //	svc_putu32(&iov, val);
-	
+
 	xdr_argsize_check(&rqstp,&val);
 	xdr_ressize_check(&rqstp,&val);
 	svc_take_page(&rqstp);
@@ -285,7 +285,7 @@ static void test_sunrpc_svc(void){
 	hash_str(name, bits);
 	hash_mem(name, bits, bits2);
 	printk("finished svc test\n");
-	
+
 }
 
 static void test_sunrpc_timer(){

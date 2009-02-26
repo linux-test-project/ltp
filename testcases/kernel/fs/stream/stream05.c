@@ -79,7 +79,7 @@ int main(int ac, char *av[])
 
 		sprintf(tempfile, "stream05.%d", getpid());
 	/*--------------------------------------------------------------------*/
-	//block0:	
+	//block0:
 		if((stream=fopen(tempfile,"a+")) == NULL) {
 			tst_resm(TFAIL,"fopen(%s) a+ failed: %s", tempfile, strerror(errno));
 			tst_exit();
@@ -107,7 +107,7 @@ int main(int ac, char *av[])
 		local_flag = PASSED;
 
 	/*--------------------------------------------------------------------*/
-	//block1:	
+	//block1:
 
 		/* check that fileno returns valid file descriptor */
 		fd=fileno(stream);
@@ -131,7 +131,7 @@ int main(int ac, char *av[])
 
 		local_flag = PASSED;
 	/*--------------------------------------------------------------------*/
-	//block2:	
+	//block2:
 
 		/* read to EOF and ensure feof returns non-zero */
 		fclose(stream);
@@ -158,7 +158,7 @@ int main(int ac, char *av[])
 
 		local_flag = PASSED;
 	/*--------------------------------------------------------------------*/
-	//block3:	
+	//block3:
 		/* ensure clearerr works */
 		clearerr(stream);
 		if(feof(stream) != 0) {
@@ -173,7 +173,7 @@ int main(int ac, char *av[])
 
 		local_flag = PASSED;
 	/*--------------------------------------------------------------------*/
-	//block4:	
+	//block4:
 
 		/* test fopen "b" flags -- should be allowed but ignored */
 		(void) fclose(stream);

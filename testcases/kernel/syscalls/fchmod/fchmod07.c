@@ -27,7 +27,7 @@
  * Expected Result:
  *  fchmod(2) should return 0 and the mode permissions set on file should match
  *  the specified mode.
- *	
+ *
  * Algorithm:
  *  Setup:
  *   Setup signal handling.
@@ -40,7 +40,7 @@
  *   Check return code, if system call failed (return=-1)
  *   	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call	
+ *   	Verify the Functionality of system call
  *      if successful,
  *      	Issue Functionality-Pass message.
  *      Otherwise,

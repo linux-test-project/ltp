@@ -149,7 +149,7 @@ int main (int argc, char **argv)
 	    /*if (pthread_join ((pthread_t*) array [i], (void **) &exit_value))*/
 	    if (pthread_join ((pthread_t) array [i], (void **) &exit_value))
 	       sys_error ("pthread_join failed", __LINE__);
-		
+	
 	    if (debug)
 	       printf("\tThread [%d]: return %d\n", i + 1, exit_value);
 	    rc += exit_value;
@@ -182,7 +182,7 @@ void *thread (int *parm)
 	int num = *parm;
 	unsigned long cksum = 0;
 
-	
+
 	if (debug)
            printf("\tThread [%d]: begin\n", num);
 
@@ -217,13 +217,13 @@ int read_data (int num, unsigned long cksum)
 	int n;
 	char *p;
 
-	
+
 	if (debug)
 	   printf("\tThread [%d]: read_data()\n", num);
 
 	if ((fd = open (file, O_RDONLY, NULL)) < 0)
 	   sys_error ("open failed", __LINE__);
-	
+
         buffer = (char *) malloc (sizeof(char) * bufSize);
 	assert (buffer);
 

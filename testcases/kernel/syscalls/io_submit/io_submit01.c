@@ -81,7 +81,7 @@ main(int argc, char** argv)
 	struct iocb iocb;
 	struct iocb *iocbs[1];
 
-	
+
 	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) != (char *)NULL){
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 		/*NOTREACHED*/

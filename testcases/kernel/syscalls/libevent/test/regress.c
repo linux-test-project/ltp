@@ -252,7 +252,7 @@ test1(void)
 
 	/* Very simple read test */
 	setup_test("Simple read: ");
-	
+
 	write(pair[0], TEST1, strlen(TEST1)+1);
 	shutdown(pair[0], SHUT_WR);
 
@@ -270,7 +270,7 @@ test2(void)
 
 	/* Very simple write test */
 	setup_test("Simple write: ");
-	
+
 	event_set(&ev, pair[0], EV_WRITE, simple_write_cb, &ev);
 	event_add(&ev, NULL);
 	event_dispatch();

@@ -23,7 +23,7 @@
  * Test Description:
  *  Verify that time(2) returns the value of time in seconds since
  *  the Epoch and stores this value in the memory pointed to by the parameter.
- *	
+ *
  * Expected Result:
  *  time() should return the time (seconds) since the Epoch and this value
  *  should be equal to the value stored in the specified parameter.
@@ -40,7 +40,7 @@
  *   Check return code, if system call failed (return=-1)
  *   	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call	
+ *   	Verify the Functionality of system call
  *      if successful,
  *      	Issue Functionality-Pass message.
  *      Otherwise,
@@ -110,13 +110,13 @@ main(int ac, char **av)
 	for (lc=0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
-	
+
 		/*
 		 * Call time() to get the time in seconds 
 		 * since Epoch.
 		 */
 		TEST(time(&tloc));
-	
+
 		/* Check return code from time(2) */
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);

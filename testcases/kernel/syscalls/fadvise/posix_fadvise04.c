@@ -128,7 +128,7 @@ main(int ac, char **av)
 				tst_resm(TFAIL, "call succeeded unexpectedly");
 				continue;
 			}
-	
+
 			/* Man page says:
 			   "On error, an error number is returned." */
 			if (TEST_RETURN == TC[i].error) {
@@ -158,7 +158,7 @@ void
 setup()
 {
 	int pipedes[2];
-	
+
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
@@ -172,7 +172,7 @@ setup()
 			 strerror(errno));
 	} else {
 		int i;
-		
+	
 		/* Close write side first.
 		   I don't use it in test. */
 		close(pipedes[1]);

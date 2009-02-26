@@ -67,7 +67,7 @@ int main(int argc, char **argv)
 {
 	int lc;
 	char *msg;
-	
+
 	struct stat statbuf;
 	int mskval = 0000;
 	int failcnt = 0;
@@ -134,7 +134,7 @@ setup()
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	
+
 	/* Pause if that option was specified
 	 * TEST_PAUSE contains the code to fork the test with the -i option.
 	 * You want to make sure you do this before you create your temporary

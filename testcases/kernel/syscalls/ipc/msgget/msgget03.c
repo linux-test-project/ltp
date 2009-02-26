@@ -86,7 +86,7 @@ int main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
-		
+	
 		/*
 		 * Use a while loop to create the maximum number of queues.
 		 * When we get an error, check for ENOSPC.
@@ -111,7 +111,7 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "call failed with an "
 				 "unexpected error - %d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
-			break;		
+			break;	
 		}
 	}
 

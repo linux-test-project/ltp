@@ -119,7 +119,7 @@ int main(int ac, char **av)
 	pid = FORK_OR_VFORK();
 	if (pid < 0)
 		tst_brkm(TBROK, cleanup, "Fork failed");
-	
+
 	if (pid == 0) {
 		do_master_child(av);
 		return (0);

@@ -96,7 +96,7 @@ int main(int ac, char **av)
 	int i, j, k, found;
 	int fork_kid_pid[MAXKIDS], wait_kid_pid[MAXKIDS];
 	int runtime;			/* time(sec) to run this process */
-	
+
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
 
@@ -115,7 +115,7 @@ int main(int ac, char **av)
 	maybe_run_child(&do_sleep, "n", 4);
 	maybe_run_child(&do_mkdir, "n", 5);
 #endif
-	
+
 	/*
 	 * process the arg -- If there is one arg, it is the
 	 * number of seconds to run.  If there is no arg the program

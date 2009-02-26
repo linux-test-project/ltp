@@ -185,7 +185,7 @@ main(int ac, char **av)
 			 * sets appropriate errno.
 			 */
 			TEST(stat(file_name, &stat_buf));
-	
+
 			/* Check return code from stat(2) */
 			if (TEST_RETURN == -1) {
 				TEST_ERROR_LOG(TEST_ERRNO);
@@ -344,7 +344,7 @@ int
 setup2()
 {
 	int fd;				/* File handle for test file */
-	
+
 	/* Creat a test file under temporary directory */
 	if ((fd = open("t_file", O_RDWR|O_CREAT, MODE_RWX)) == -1) {
 		tst_brkm(TBROK, cleanup,
@@ -396,7 +396,7 @@ cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-	
+
 	/* Restore mode permissions on test directory created in setup2() */
 	if (chmod(DIR_TEMP, MODE_RWX) < 0) {
 		tst_brkm(TFAIL, NULL, "chmod(2) of %s failed", DIR_TEMP);

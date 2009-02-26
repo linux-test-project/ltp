@@ -44,7 +44,7 @@
  * CAUTION!!
  *	If a file is supplied to this program with the "-f" option
  *	it will be removed with a system("rm -rf filename") call.
- *	
+ *
  */
 #define _GNU_SOURCE 1
 #include <stdio.h>		/* needed by testhead.h		*/

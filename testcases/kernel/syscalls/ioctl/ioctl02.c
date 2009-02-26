@@ -128,8 +128,8 @@ int main(int ac, char **av)
 		cleanup();
 	}
 
-        if (geteuid() != 0) { 	
-	                 tst_brkm(TBROK, tst_exit, "Test must be run as root"); 	
+        if (geteuid() != 0) { 
+	                 tst_brkm(TBROK, tst_exit, "Test must be run as root"); 
 	}
 
 	setup();
@@ -235,7 +235,7 @@ do_child_uclinux()
 	act.sa_handler = (void *)sigterm_handler;
 	act.sa_flags = 0;
 	(void)sigaction(SIGTERM, &act, 0);
-	
+
 	/* Run the normal child */
 	do_child();
 }
@@ -396,7 +396,7 @@ do_parent_setup()
 
 	/* unset the closed flag */
 	closed = 0;
-	
+
 	/* flush tty queues to remove old output */
 	if (ioctl(pfd, TCFLSH, 2) < 0) {
 		tst_brkm(TBROK, cleanup, "ioctl TCFLSH failed : "
@@ -473,7 +473,7 @@ setup()
 		tst_brkm(TBROK, _exit, "Could not open %s in "
 			 "setup(), errno = %d", devname, errno);
 	}
-	
+
 	/* Save the current device information - to be restored in cleanup() */
 	if (ioctl(fd, TCGETA, &save_io) < 0) {
 		tst_brkm(TBROK, cleanup, "TCGETA ioctl failed in "

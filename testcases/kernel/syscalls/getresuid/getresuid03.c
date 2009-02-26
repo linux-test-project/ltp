@@ -41,7 +41,7 @@
  *   Check return code, if system call failed (return=-1)
  *   	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call	
+ *   	Verify the Functionality of system call
  *      if successful,
  *      	Issue Functionality-Pass message.
  *      Otherwise,
@@ -191,7 +191,7 @@ setup()
 			 "getpwnam(nobody) Failed, errno=%d",
 			 errno);
 	}
-		
+	
 	/* Effective user-id of the test-user "ltpuser1" */
 	pe_uid = user_id->pw_uid;
 

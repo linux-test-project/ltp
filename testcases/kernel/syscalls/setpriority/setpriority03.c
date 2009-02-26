@@ -94,16 +94,16 @@ int main(int ac, char **av)
 		 * This should give an EINVAL error.
 		 * PRIO_PROCESS = 0, PRIO_PGRP = 1, PRIO_USER = 2
 		 */
-	
+
 		/* call the system call with the TEST() macro */
 		TEST(setpriority(-PRIO_PGRP, 0, new_val));
-	
+
 		if (TEST_RETURN == 0) {
 			tst_resm(TFAIL, "call failed to produce expected error "
 				 "- errno = %d - %s", TEST_ERRNO,
 				 strerror(TEST_ERRNO));
 		}
-	
+
 		TEST_ERROR_LOG(TEST_ERRNO);
 
 		switch (TEST_ERRNO) {

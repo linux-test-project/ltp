@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: access03.c,v 1.6 2009/02/26 12:02:32 subrata_modak Exp $ */
+/* $Id: access03.c,v 1.7 2009/02/26 12:14:54 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -60,7 +60,7 @@
  *    TEST CASES
  *
  * 	access(2) test for errno(s) EFAULT.
- *	
+ *
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
@@ -153,16 +153,16 @@ int main(int ac, char **av)
 	/* reset Tst_count in case we are looping. */
 	Tst_count=0;
 
-		
+	
 	/*
 	 * TEST CASE:
 	 *  R_OK on low pointer (-1) for path
 	 */
-	
+
 
 	/* Call access(2) */
 	TEST(access( bad_addr,R_OK));
-	
+
 
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
@@ -191,17 +191,17 @@ int main(int ac, char **av)
 
 	  }
 	}
-	
-	
+
+
 	/*
 	 * TEST CASE:
 	 *  W_OK on low pointer (-1) for path
 	 */
-	
+
 
 	/* Call access(2) */
 	TEST(access( bad_addr,W_OK));
-	
+
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
 	    TEST_ERROR_LOG(TEST_ERRNO);
@@ -229,17 +229,17 @@ int main(int ac, char **av)
 
 	  }
 	}
-	
-	
+
+
 	/*
 	 * TEST CASE:
 	 *  X_OK on low pointer (-1) for path
 	 */
-	
+
 
 	/* Call access(2) */
 	TEST(access( bad_addr,X_OK));
-	
+
 
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
@@ -268,17 +268,17 @@ int main(int ac, char **av)
 
 	  }
 	}
-	
-	
+
+
 	/*
 	 * TEST CASE:
 	 *  F_OK on low pointer (-1) for path
 	 */
-	
+
 
 	/* Call access(2) */
 	TEST(access( bad_addr,F_OK));
-	
+
 
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
@@ -307,17 +307,17 @@ int main(int ac, char **av)
 
 	  }
 	}
-	
-	
+
+
 	/*
 	 * TEST CASE:
 	 *  R_OK on high pointer (sbrk(0)+1) for path
 	 */
-	
+
 
 	/* Call access(2) */
 	TEST(access(get_high_address(),R_OK));
-	
+
 
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
@@ -346,17 +346,17 @@ int main(int ac, char **av)
 
 	  }
 	}
-	
-	
+
+
 	/*
 	 * TEST CASE:
 	 *  W_OK on high pointer (sbrk(0)+1) for path
 	 */
-	
+
 
 	/* Call access(2) */
 	TEST(access(get_high_address(),W_OK));
-	
+
 
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
@@ -385,17 +385,17 @@ int main(int ac, char **av)
 
 	  }
 	}
-	
-	
+
+
 	/*
 	 * TEST CASE:
 	 *  X_OK on high pointer (sbrk(0)+1) for path
 	 */
-	
+
 
 	/* Call access(2) */
 	TEST(access(get_high_address(),X_OK));
-	
+
 
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
@@ -424,17 +424,17 @@ int main(int ac, char **av)
 
 	  }
 	}
-	
-	
+
+
 	/*
 	 * TEST CASE:
 	 *  F_OK on high pointer (sbrk(0)+1) for path
 	 */
-	
+
 
 	/* Call access(2) */
 	TEST(access(get_high_address(),F_OK));
-	
+
 
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
@@ -463,7 +463,7 @@ int main(int ac, char **av)
 
 	  }
 	}
-	
+
 
     }	/* End for TEST_LOOPING */
 

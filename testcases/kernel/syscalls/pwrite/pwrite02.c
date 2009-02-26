@@ -120,7 +120,7 @@ main(int ac, char **av)
 	size_t nbytes;		/* no. of bytes to be written */
 	off_t offset;		/* offset position in the specified file */
 	char *test_desc;	/* test specific error message */
-	
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
 	if (msg != (char *)NULL) {
@@ -151,7 +151,7 @@ main(int ac, char **av)
 			} else {
 				fildes = -1;
 			}
-				
+			
 			/*
 			 * Call pwrite() with the specified file descriptor,
 			 * no. of bytes to be written at specified offset.

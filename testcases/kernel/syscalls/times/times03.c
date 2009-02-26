@@ -93,12 +93,12 @@ int main(int argc, char **argv)
 	sa.sa_sigaction = sighandler;
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = SA_SIGINFO;
-	
+
 	if (sigaction(SIGALRM, &sa, NULL) < 0) {
 		tst_brkm(TBROK, cleanup, "Sigaction failed !\n");
 		/* NOT REACHED */
 	}
-	
+
 	timeout = 0;
 	alarm(3);
 
@@ -159,12 +159,12 @@ int main(int argc, char **argv)
 				tst_brkm(TFAIL, cleanup, "Fork failed");
 				/*NOTREACHED*/
 			} else if (pid2 == 0) {
-				
+			
 				/* Spend some cycles in userspace */
 
 				timeout = 0;
 				alarm(3);
-				
+			
 				work();
 
 
@@ -199,7 +199,7 @@ int main(int argc, char **argv)
 				tst_resm(TFAIL, "Call to times(2) "
 						"failed in child");
 			}
-			if (times(&buf2) == -1) {	
+			if (times(&buf2) == -1) {
 				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_resm(TFAIL, "Call to times failed "
 						"errno = %d", errno);
@@ -232,7 +232,7 @@ int main(int argc, char **argv)
 				tst_resm(TPASS, "%s: Functionality "
 				"test passed", TCID);
 			}
-					
+				
 		} else {
 			tst_resm(TPASS, "%s call succeeded", TCID);
 		}

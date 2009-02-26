@@ -71,17 +71,17 @@ int main(int argc, char **argv)
 	char *szSessionInfo = "dm_test session info";
 	void *mtpthanp, *curdirhanp;
 	size_t mtpthlen, curdirhlen;
-	
+
 	DMOPT_PARSE(argc, argv);
 	DMLOG_START();
-	
+
 	if ((mountPt = DMOPT_GET("mtpt")) == NULL) {
 		DMLOG_PRINT(DMLVL_ERR, "Missing mount point, use -mtpt (for example, -mtpt /dmapidir)\n");
 		DM_EXIT();
 	} else {
 		DMLOG_PRINT(DMLVL_DEBUG, "Mount point is %s\n", mountPt);
 	}
-	
+
 	/* CANNOT DO ANYTHING WITHOUT SUCCESSFUL INITIALIZATION!!! */
 	if ((rc = dm_init_service(&varstr)) != 0) {
 		DMLOG_PRINT(DMLVL_ERR, "dm_init_service failed! (rc = %d, errno = %d)\n", rc, errno);
@@ -114,7 +114,7 @@ int main(int argc, char **argv)
 	}
 
 	DMLOG_PRINT(DMLVL_DEBUG, "Starting DMAPI handle tests\n") ;
-	
+
 	szFuncName = "dm_path_to_handle";
 
 	/*
@@ -155,7 +155,7 @@ int main(int argc, char **argv)
 
 		/* Variation clean up */
 	}
-	
+
 	/*
 	 * TEST    : dm_path_to_handle - file in current directory
 	 * EXPECTED: rc = 0
@@ -229,7 +229,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_path_to_handle - directory in current directory
 	 * EXPECTED: rc = 0
@@ -287,7 +287,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_path_to_handle - file in subdirectory
 	 * EXPECTED: rc = 0
@@ -482,7 +482,7 @@ int main(int argc, char **argv)
 	 * EXPECTED: rc = -1, errno = EFAULT
 	 */
 	if (DMVAR_EXEC(PATH_TO_HANDLE_BASE + 13)) {
-#ifdef USER_SPACE_FAULTS	
+#ifdef USER_SPACE_FAULTS
 		int	fd;
 		size_t	hlen;
 
@@ -506,8 +506,8 @@ int main(int argc, char **argv)
 		}
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with USER_SPACE_FAULTS defined\n");
-		DMVAR_SKIP();		
-#endif	
+		DMVAR_SKIP();	
+#endif
 	}
 
 	/*
@@ -537,7 +537,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_path_to_handle - different paths to same file
 	 * EXPECTED: rc = 0
@@ -760,7 +760,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_fd_to_handle - directory fd in current directory
 	 * EXPECTED: rc = 0
@@ -966,7 +966,7 @@ int main(int argc, char **argv)
 	 * EXPECTED: rc = -1, errno = EFAULT
 	 */
 	if (DMVAR_EXEC(FD_TO_HANDLE_BASE + 9)) {
-#ifdef USER_SPACE_FAULTS	
+#ifdef USER_SPACE_FAULTS
 		int	fd;
 		size_t	hlen;
 
@@ -990,8 +990,8 @@ int main(int argc, char **argv)
 		}
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with USER_SPACE_FAULTS defined\n");
-		DMVAR_SKIP();		
-#endif	
+		DMVAR_SKIP();	
+#endif
 	}
 
 	/*
@@ -1146,7 +1146,7 @@ int main(int argc, char **argv)
 
 		/* Variation clean up */
 	}
-	
+
 	/*
 	 * TEST    : dm_path_to_fshandle - file in current directory
 	 * EXPECTED: rc = 0
@@ -1220,7 +1220,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_path_to_fshandle - directory in current directory
 	 * EXPECTED: rc = 0
@@ -1279,7 +1279,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_path_to_fshandle - file in subdirectory
 	 * EXPECTED: rc = 0
@@ -1474,7 +1474,7 @@ int main(int argc, char **argv)
 	 * EXPECTED: rc = -1, errno = EFAULT
 	 */
 	if (DMVAR_EXEC(PATH_TO_FSHANDLE_BASE + 13)) {
-#ifdef USER_SPACE_FAULTS	
+#ifdef USER_SPACE_FAULTS
 		int	fd;
 		size_t	hlen;
 
@@ -1498,8 +1498,8 @@ int main(int argc, char **argv)
 		}
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with USER_SPACE_FAULTS defined\n");
-		DMVAR_SKIP();		
-#endif	
+		DMVAR_SKIP();	
+#endif
 	}
 
 	/*
@@ -1583,7 +1583,7 @@ int main(int argc, char **argv)
 	 * EXPECTED: rc = -1, errno = EFAULT
 	 */
 	if (DMVAR_EXEC(HANDLE_TO_FSHANDLE_BASE + 1)) {
-#ifdef USER_SPACE_FAULTS	
+#ifdef USER_SPACE_FAULTS
 		int	fd;
 		void	*hanp, *fshanp;
 		size_t	hlen, fshlen;
@@ -1614,8 +1614,8 @@ int main(int argc, char **argv)
 		}
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with USER_SPACE_FAULTS defined\n");
-		DMVAR_SKIP();		
-#endif	
+		DMVAR_SKIP();	
+#endif
 	}
 
 	/*
@@ -1775,7 +1775,7 @@ int main(int argc, char **argv)
 	 * EXPECTED: rc = -1, errno = EFAULT
 	 */
 	if (DMVAR_EXEC(HANDLE_TO_FSHANDLE_BASE + 6)) {
-#ifdef USER_SPACE_FAULTS	
+#ifdef USER_SPACE_FAULTS
 		int	fd;
 		void	*hanp;
 		size_t	hlen, fshlen;
@@ -1806,8 +1806,8 @@ int main(int argc, char **argv)
 		}
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with USER_SPACE_FAULTS defined\n");
-		DMVAR_SKIP();		
-#endif	
+		DMVAR_SKIP();	
+#endif
 	}
 
 	/*
@@ -1815,7 +1815,7 @@ int main(int argc, char **argv)
 	 * EXPECTED: rc = -1, errno = EFAULT
 	 */
 	if (DMVAR_EXEC(HANDLE_TO_FSHANDLE_BASE + 7)) {
-#ifdef USER_SPACE_FAULTS	
+#ifdef USER_SPACE_FAULTS
 		int	fd;
 		void	*hanp, *fshanp;
 		size_t	hlen;
@@ -1846,8 +1846,8 @@ int main(int argc, char **argv)
 		}
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with USER_SPACE_FAULTS defined\n");
-		DMVAR_SKIP();		
-#endif	
+		DMVAR_SKIP();	
+#endif
 	}
 
 	/*
@@ -1859,7 +1859,7 @@ int main(int argc, char **argv)
 		size_t	fshlen;
 
 		/* Variation set up */
-		
+	
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
 		rc = dm_handle_to_fshandle(DM_GLOBAL_HANP, DM_GLOBAL_HLEN, &fshanp, &fshlen);
@@ -1875,7 +1875,7 @@ int main(int argc, char **argv)
 	 * EXPECTED: rc != 0
 	 */
 	if (DMVAR_EXEC(HANDLE_CMP_BASE + 1)) {
-#ifdef USER_SPACE_FAULTS	
+#ifdef USER_SPACE_FAULTS
 		int	fd;
 		void	*hanp;
 		size_t	hlen;
@@ -1912,8 +1912,8 @@ int main(int argc, char **argv)
 		}
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with USER_SPACE_FAULTS defined\n");
-		DMVAR_SKIP();		
-#endif	
+		DMVAR_SKIP();	
+#endif
 	}
 
 	/*
@@ -1962,7 +1962,7 @@ int main(int argc, char **argv)
 	 * EXPECTED: rc != 0
 	 */
 	if (DMVAR_EXEC(HANDLE_CMP_BASE + 3)) {
-#ifdef USER_SPACE_FAULTS	
+#ifdef USER_SPACE_FAULTS
 		int	fd;
 		void	*hanp;
 		size_t	hlen;
@@ -1999,8 +1999,8 @@ int main(int argc, char **argv)
 		}
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with USER_SPACE_FAULTS defined\n");
-		DMVAR_SKIP();		
-#endif	
+		DMVAR_SKIP();	
+#endif
 	}
 
 	/*
@@ -2125,7 +2125,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_handle_cmp - hanp1 == hanp2 (same fs handles)
 	 * EXPECTED: rc = 0
@@ -2572,7 +2572,7 @@ int main(int argc, char **argv)
 	 * EXPECTED: return
 	 */
 	if (DMVAR_EXEC(HANDLE_FREE_BASE + 1)) {
-#ifdef USER_SPACE_FAULTS	
+#ifdef USER_SPACE_FAULTS
 		/* Variation set up */
 
 		/* Variation */
@@ -2584,8 +2584,8 @@ int main(int argc, char **argv)
 		/* Variation clean up */
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with USER_SPACE_FAULTS defined\n");
-		DMVAR_SKIP();		
-#endif	
+		DMVAR_SKIP();	
+#endif
 	}
 
 	/*
@@ -2622,7 +2622,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_handle_free - file handle from fd
 	 * EXPECTED: return
@@ -2657,7 +2657,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_handle_free - fs handle from path
 	 * EXPECTED: return
@@ -2692,7 +2692,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_handle_free - fs handle from handle
 	 * EXPECTED: return
@@ -2732,7 +2732,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp1, hlen1);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_handle_free - file handle from make
 	 * EXPECTED: return
@@ -2779,7 +2779,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp2, hlen2);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_handle_free - fs handle from make
 	 * EXPECTED: return
@@ -2827,7 +2827,7 @@ int main(int argc, char **argv)
 	 * EXPECTED: return
 	 */
 	if (DMVAR_EXEC(HANDLE_FREE_BASE + 8)) {
-#ifdef USER_SPACE_FAULTS	
+#ifdef USER_SPACE_FAULTS
 		/* Variation set up */
 
 		/* Variation */
@@ -2839,8 +2839,8 @@ int main(int argc, char **argv)
 		/* Variation clean up */
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with USER_SPACE_FAULTS defined\n");
-		DMVAR_SKIP();		
-#endif	
+		DMVAR_SKIP();	
+#endif
 	}
 
 	szFuncName = "dm_handle_is_valid";
@@ -2850,7 +2850,7 @@ int main(int argc, char **argv)
 	 * EXPECTED: rc = DM_FALSE
 	 */
 	if (DMVAR_EXEC(HANDLE_IS_VALID_BASE + 1)) {
-#ifdef USER_SPACE_FAULTS	
+#ifdef USER_SPACE_FAULTS
 		/* Variation set up */
 
 		/* Variation */
@@ -2861,8 +2861,8 @@ int main(int argc, char **argv)
 		/* Variation clean up */
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with USER_SPACE_FAULTS defined\n");
-		DMVAR_SKIP();		
-#endif	
+		DMVAR_SKIP();	
+#endif
 	}
 
 	/*
@@ -2899,7 +2899,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-		
+	
 	/*
 	 * TEST    : dm_handle_is_valid - file handle, hlen too small
 	 * EXPECTED: rc = DM_FALSE
@@ -3040,7 +3040,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-		
+	
 	/*
 	 * TEST    : dm_handle_is_valid - fs handle, hlen too small
 	 * EXPECTED: rc = DM_FALSE
@@ -3153,7 +3153,7 @@ int main(int argc, char **argv)
 	 */
 	if (DMVAR_EXEC(HANDLE_IS_VALID_BASE + 10)) {
 		/* Variation set up */
-		
+	
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
 		bRC = dm_handle_is_valid(DM_GLOBAL_HANP, DM_GLOBAL_HLEN);
@@ -3168,7 +3168,7 @@ int main(int argc, char **argv)
 	 */
 	if (DMVAR_EXEC(HANDLE_IS_VALID_BASE + 11)) {
 		/* Variation set up */
-		
+	
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(invalid handle)\n", szFuncName);
 		bRC = dm_handle_is_valid(DM_INVALID_HANP, DM_INVALID_HLEN);
@@ -3184,7 +3184,7 @@ int main(int argc, char **argv)
 	 * EXPECTED: rc = ?
 	 */
 	if (DMVAR_EXEC(HANDLE_HASH_BASE + 1)) {
-#ifdef USER_SPACE_FAULTS	
+#ifdef USER_SPACE_FAULTS
 		/* Variation set up */
 
 		/* Variation */
@@ -3196,8 +3196,8 @@ int main(int argc, char **argv)
 		/* Variation clean up */
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with USER_SPACE_FAULTS defined\n");
-		DMVAR_SKIP();		
-#endif	
+		DMVAR_SKIP();	
+#endif
 	}
 
 	/*
@@ -3277,9 +3277,9 @@ int main(int argc, char **argv)
 	 * EXPECTED: rc = ?
 	 */
 	if (DMVAR_EXEC(HANDLE_HASH_BASE + 4)) {
-#ifdef USER_SPACE_FAULTS	
+#ifdef USER_SPACE_FAULTS
 		/* Variation set up */
-		
+	
 		/* Variation */
 		DMLOG_PRINT(DMLVL_DEBUG, "%s(global handle)\n", szFuncName);
 		rc = dm_handle_hash(DM_GLOBAL_HANP, DM_GLOBAL_HLEN);
@@ -3289,8 +3289,8 @@ int main(int argc, char **argv)
 		/* Variation clean up */
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with USER_SPACE_FAULTS defined\n");
-		DMVAR_SKIP();		
-#endif	
+		DMVAR_SKIP();	
+#endif
 	}
 
 	szFuncName = "dm_handle_to_fsid";
@@ -3300,7 +3300,7 @@ int main(int argc, char **argv)
 	 * EXPECTED: rc = -1, errno = EFAULT
 	 */
 	if (DMVAR_EXEC(HANDLE_TO_FSID_BASE + 1)) {
-#ifdef USER_SPACE_FAULTS	
+#ifdef USER_SPACE_FAULTS
 		dm_fsid_t fsidp;
 
 		/* Variation set up */
@@ -3313,8 +3313,8 @@ int main(int argc, char **argv)
 		/* Variation clean up */
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with USER_SPACE_FAULTS defined\n");
-		DMVAR_SKIP();		
-#endif	
+		DMVAR_SKIP();	
+#endif
 	}
 
 	/*
@@ -3322,7 +3322,7 @@ int main(int argc, char **argv)
 	 * EXPECTED: rc = -1, errno = EFAULT
 	 */
 	if (DMVAR_EXEC(HANDLE_TO_FSID_BASE + 2)) {
-#ifdef USER_SPACE_FAULTS	
+#ifdef USER_SPACE_FAULTS
 		int	fd;
 		void	*hanp;
 		size_t	hlen;
@@ -3353,8 +3353,8 @@ int main(int argc, char **argv)
 		}
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with USER_SPACE_FAULTS defined\n");
-		DMVAR_SKIP();		
-#endif	
+		DMVAR_SKIP();	
+#endif
 	}
 
 	/*
@@ -3408,7 +3408,7 @@ int main(int argc, char **argv)
 			dm_handle_free(fshanp, fshlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_handle_to_fsid - fs handle
 	 * EXPECTED: rc = 0
@@ -3460,7 +3460,7 @@ int main(int argc, char **argv)
 			dm_handle_free(fshanp, fshlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_handle_to_fsid - global handle
 	 * EXPECTED: rc = -1, errno = EBADF
@@ -3485,7 +3485,7 @@ int main(int argc, char **argv)
 	 * EXPECTED: rc = -1, errno = EFAULT
 	 */
 	if (DMVAR_EXEC(HANDLE_TO_IGEN_BASE + 1)) {
-#ifdef USER_SPACE_FAULTS	
+#ifdef USER_SPACE_FAULTS
 		dm_igen_t igen;
 
 		/* Variation set up */
@@ -3498,8 +3498,8 @@ int main(int argc, char **argv)
 		/* Variation clean up */
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with USER_SPACE_FAULTS defined\n");
-		DMVAR_SKIP();		
-#endif	
+		DMVAR_SKIP();	
+#endif
 	}
 
 	/*
@@ -3507,7 +3507,7 @@ int main(int argc, char **argv)
 	 * EXPECTED: rc = -1, errno = EFAULT
 	 */
 	if (DMVAR_EXEC(HANDLE_TO_IGEN_BASE + 2)) {
-#ifdef USER_SPACE_FAULTS	
+#ifdef USER_SPACE_FAULTS
 		int	fd;
 		void	*hanp;
 		size_t	hlen;
@@ -3538,10 +3538,10 @@ int main(int argc, char **argv)
 		}
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with USER_SPACE_FAULTS defined\n");
-		DMVAR_SKIP();		
-#endif	
+		DMVAR_SKIP();	
+#endif
 	}
-	
+
 	/*
 	 * TEST    : dm_handle_to_igen - file handle
 	 * EXPECTED: rc = 0
@@ -3577,7 +3577,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_handle_to_igen - directory handle
 	 * EXPECTED: rc = 0
@@ -3610,7 +3610,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_handle_to_igen - fs handle from file
 	 * EXPECTED: rc = -1, errno = EBADF
@@ -3646,7 +3646,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_handle_to_igen - fs handle from directory
 	 * EXPECTED: rc = -1, errno = EBADF
@@ -3679,7 +3679,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_handle_to_igen - global handle
 	 * EXPECTED: rc = -1, errno = EBADF
@@ -3704,7 +3704,7 @@ int main(int argc, char **argv)
 	 * EXPECTED: rc = -1, errno = EFAULT
 	 */
 	if (DMVAR_EXEC(HANDLE_TO_INO_BASE + 1)) {
-#ifdef USER_SPACE_FAULTS	
+#ifdef USER_SPACE_FAULTS
 		dm_ino_t ino;
 
 		/* Variation set up */
@@ -3717,8 +3717,8 @@ int main(int argc, char **argv)
 		/* Variation clean up */
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with USER_SPACE_FAULTS defined\n");
-		DMVAR_SKIP();		
-#endif	
+		DMVAR_SKIP();	
+#endif
 	}
 
 	/*
@@ -3726,7 +3726,7 @@ int main(int argc, char **argv)
 	 * EXPECTED: rc = -1, errno = EFAULT
 	 */
 	if (DMVAR_EXEC(HANDLE_TO_INO_BASE + 2)) {
-#ifdef USER_SPACE_FAULTS	
+#ifdef USER_SPACE_FAULTS
 		int	fd;
 		void	*hanp;
 		size_t	hlen;
@@ -3757,8 +3757,8 @@ int main(int argc, char **argv)
 		}
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with USER_SPACE_FAULTS defined\n");
-		DMVAR_SKIP();		
-#endif	
+		DMVAR_SKIP();	
+#endif
 	}
 
 	/*
@@ -3962,7 +3962,7 @@ int main(int argc, char **argv)
 	 * EXPECTED: rc = -1, errno = EFAULT
 	 */
 	if (DMVAR_EXEC(MAKE_HANDLE_BASE + 1)) {
-#ifdef USER_SPACE_FAULTS	
+#ifdef USER_SPACE_FAULTS
 		void	*hanp;
 		size_t	hlen;
 		dm_ino_t ino;
@@ -3978,16 +3978,16 @@ int main(int argc, char **argv)
 		/* Variation clean up */
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with USER_SPACE_FAULTS defined\n");
-		DMVAR_SKIP();		
-#endif	
+		DMVAR_SKIP();	
+#endif
 	}
-	
+
 	/*
 	 * TEST    : dm_make_handle - invalid inop
 	 * EXPECTED: rc = -1, errno = EFAULT
 	 */
 	if (DMVAR_EXEC(MAKE_HANDLE_BASE + 2)) {
-#ifdef USER_SPACE_FAULTS	
+#ifdef USER_SPACE_FAULTS
 		void	*hanp;
 		size_t	hlen;
 		dm_fsid_t fsid;
@@ -4003,8 +4003,8 @@ int main(int argc, char **argv)
 		/* Variation clean up */
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with USER_SPACE_FAULTS defined\n");
-		DMVAR_SKIP();		
-#endif	
+		DMVAR_SKIP();	
+#endif
 	}
 
 	/*
@@ -4012,7 +4012,7 @@ int main(int argc, char **argv)
 	 * EXPECTED: rc = -1, errno = EFAULT
 	 */
 	if (DMVAR_EXEC(MAKE_HANDLE_BASE + 3)) {
-#ifdef USER_SPACE_FAULTS	
+#ifdef USER_SPACE_FAULTS
 		void	*hanp;
 		size_t	hlen;
 		dm_fsid_t fsid;
@@ -4028,8 +4028,8 @@ int main(int argc, char **argv)
 		/* Variation clean up */
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with USER_SPACE_FAULTS defined\n");
-		DMVAR_SKIP();		
-#endif	
+		DMVAR_SKIP();	
+#endif
 	}
 
 	/*
@@ -4037,7 +4037,7 @@ int main(int argc, char **argv)
 	 * EXPECTED: rc = -1, errno = EFAULT
 	 */
 	if (DMVAR_EXEC(MAKE_HANDLE_BASE + 4)) {
-#ifdef USER_SPACE_FAULTS	
+#ifdef USER_SPACE_FAULTS
 		size_t	hlen;
 		dm_fsid_t fsid;
 		dm_igen_t igen;
@@ -4053,8 +4053,8 @@ int main(int argc, char **argv)
 		/* Variation clean up */
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with USER_SPACE_FAULTS defined\n");
-		DMVAR_SKIP();		
-#endif	
+		DMVAR_SKIP();	
+#endif
 	}
 
 	/*
@@ -4062,7 +4062,7 @@ int main(int argc, char **argv)
 	 * EXPECTED: rc = -1, errno = EFAULT
 	 */
 	if (DMVAR_EXEC(MAKE_HANDLE_BASE + 5)) {
-#ifdef USER_SPACE_FAULTS	
+#ifdef USER_SPACE_FAULTS
 		void	*hanp;
 		dm_fsid_t fsid;
 		dm_igen_t igen;
@@ -4078,8 +4078,8 @@ int main(int argc, char **argv)
 		/* Variation clean up */
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with USER_SPACE_FAULTS defined\n");
-		DMVAR_SKIP();		
-#endif	
+		DMVAR_SKIP();	
+#endif
 	}
 
 	/*
@@ -4141,7 +4141,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp2, hlen2);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_make_handle - directory
 	 * EXPECTED: rc = 0
@@ -4205,7 +4205,7 @@ int main(int argc, char **argv)
 	 * EXPECTED: rc = -1, errno = EFAULT
 	 */
 	if (DMVAR_EXEC(MAKE_FSHANDLE_BASE + 1)) {
-#ifdef USER_SPACE_FAULTS	
+#ifdef USER_SPACE_FAULTS
 		void	*hanp;
 		size_t	hlen;
 
@@ -4219,16 +4219,16 @@ int main(int argc, char **argv)
 		/* Variation clean up */
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with USER_SPACE_FAULTS defined\n");
-		DMVAR_SKIP();		
-#endif	
+		DMVAR_SKIP();	
+#endif
 	}
-	
+
 	/*
 	 * TEST    : dm_make_fshandle - invalid hanpp
 	 * EXPECTED: rc = -1, errno = EFAULT
 	 */
 	if (DMVAR_EXEC(MAKE_FSHANDLE_BASE + 2)) {
-#ifdef USER_SPACE_FAULTS	
+#ifdef USER_SPACE_FAULTS
 		size_t	hlen;
 		dm_fsid_t fsid;
 
@@ -4242,16 +4242,16 @@ int main(int argc, char **argv)
 		/* Variation clean up */
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with USER_SPACE_FAULTS defined\n");
-		DMVAR_SKIP();		
-#endif	
+		DMVAR_SKIP();	
+#endif
 	}
-	
+
 	/*
 	 * TEST    : dm_make_fshandle - invalid hlenp
 	 * EXPECTED: rc = -1, errno = EFAULT
 	 */
 	if (DMVAR_EXEC(MAKE_FSHANDLE_BASE + 3)) {
-#ifdef USER_SPACE_FAULTS	
+#ifdef USER_SPACE_FAULTS
 		void	*hanp;
 		dm_fsid_t fsid;
 
@@ -4265,10 +4265,10 @@ int main(int argc, char **argv)
 		/* Variation clean up */
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with USER_SPACE_FAULTS defined\n");
-		DMVAR_SKIP();		
-#endif	
+		DMVAR_SKIP();	
+#endif
 	}
-	
+
 	/*
 	 * TEST    : dm_make_fshandle - file handle
 	 * EXPECTED: rc = 0
@@ -4419,7 +4419,7 @@ int main(int argc, char **argv)
 			dm_handle_free(targhanp, targhlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_handle_to_path - invalid dirhlen
 	 * EXPECTED: rc = -1, errno = EBADF
@@ -4460,7 +4460,7 @@ int main(int argc, char **argv)
 			dm_handle_free(targhanp, targhlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_handle_to_path - invalid targhanp
 	 * EXPECTED: rc = -1, errno = EFAULT
@@ -4501,7 +4501,7 @@ int main(int argc, char **argv)
 			dm_handle_free(targhanp, targhlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_handle_to_path - invalid targhlen
 	 * EXPECTED: rc = -1, errno = EBADF
@@ -4841,7 +4841,7 @@ int main(int argc, char **argv)
 			rc = dm_handle_to_path(dirhanp, dirhlen, targhanp, targhlen, sizeof(pathbuf), pathbuf, &rlen);
 			if (rc == 0) {
 				DMLOG_PRINT(DMLVL_DEBUG, "rlen = %d, pathbuf = \"%s\"\n", rlen, pathbuf);
-				
+			
 				if (strncmp(pathbuf, DUMMY_FILE, rlen) == 0) {
 					*(pathbuf+rlen) = 0;
 				  	DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc = %d and path = %s (length %d)\n", szFuncName, rc, pathbuf, rlen);
@@ -4900,7 +4900,7 @@ int main(int argc, char **argv)
 			rc = dm_handle_to_path(dirhanp, dirhlen, targhanp, targhlen, sizeof(pathbuf), pathbuf, &rlen);
 			if (rc == 0) {
 				DMLOG_PRINT(DMLVL_DEBUG, "rlen = %d, pathbuf = \"%s\"\n", rlen, pathbuf);
-				
+			
 				if (strncmp(pathbuf, DUMMY_SUBDIR_FILE, rlen) == 0) {
 					*(pathbuf+rlen) = 0;
 				  	DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc = %d and path = %s (length %d)\n", szFuncName, rc, pathbuf, rlen);
@@ -4966,7 +4966,7 @@ int main(int argc, char **argv)
 			rc = dm_handle_to_path(dirhanp, dirhlen, targhanp, targhlen, sizeof(pathbuf), pathbuf, &rlen);
 			if (rc == 0) {
 				DMLOG_PRINT(DMLVL_DEBUG, "rlen = %d, pathbuf = \"%s\"\n", rlen, pathbuf);
-				
+			
 				if (strncmp(pathbuf, DUMMY_SUBDIR_LINK, rlen) == 0) {
 					*(pathbuf+rlen) = 0;
 				  	DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc = %d and path = %s (length %d)\n", szFuncName, rc, pathbuf, rlen);
@@ -5045,7 +5045,7 @@ int main(int argc, char **argv)
 			rc = dm_handle_to_path(dirhanp, dirhlen, targhanp, targhlen, sizeof(pathbuf), pathbuf, &rlen);
 			if (rc == 0) {
 				DMLOG_PRINT(DMLVL_DEBUG, "rlen = %d, pathbuf = \"%s\"\n", rlen, pathbuf);
-				
+			
 				if (strncmp(pathbuf, FILE_LEVEL4, rlen) == 0) {
 					*(pathbuf+rlen) = 0;
 				  	DMLOG_PRINT(DMLVL_DEBUG, "%s passed with expected rc = %d and path = %s (length %d)\n", szFuncName, rc, pathbuf, rlen);
@@ -5181,7 +5181,7 @@ int main(int argc, char **argv)
 			dm_handle_free(targhanp, targhlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_handle_to_path - fs targhanp
 	 * EXPECTED: rc = -1, errno = EBADF
@@ -5222,7 +5222,7 @@ int main(int argc, char **argv)
 			dm_handle_free(targhanp, targhlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_handle_to_path - global dirhanp
 	 * EXPECTED: rc = -1, errno = EBADF
@@ -5259,7 +5259,7 @@ int main(int argc, char **argv)
 			dm_handle_free(targhanp, targhlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_handle_to_path - global targhanp
 	 * EXPECTED: rc = -1, errno = EBADF
@@ -5285,7 +5285,7 @@ int main(int argc, char **argv)
 			dm_handle_free(dirhanp, dirhlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_handle_to_path - invalidated dirhanp
 	 * EXPECTED: rc = -1, errno = EBADF
@@ -5390,7 +5390,7 @@ int main(int argc, char **argv)
 	}
 
 	szFuncName = "dm_sync_by_handle";
-	
+
 	/*
 	 * TEST    : dm_sync_by_handle - invalid sid
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -5726,7 +5726,7 @@ int main(int argc, char **argv)
 	dm_handle_free(curdirhanp, curdirhlen);
 
 	DMLOG_STOP();
-			
+		
 	return 0;
 
-}	
+}

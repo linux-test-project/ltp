@@ -130,13 +130,13 @@ main(int ac, char **av)
 		Tst_count = 0;
 
 		for (ind =0; ind < TST_TOTAL; ind++) {
-			
+		
 			/*
 			 * call the system call with the TEST() macro
 		 	 */
 			TEST(setdomainname(test_cases[ind].name,
 					   (size_t) test_cases[ind].len));
-	
+
 			if ((TEST_RETURN == -1) &&
 			    (TEST_ERRNO == test_cases[ind].exp_errno)) {
 				tst_resm(TPASS, "expected failure; Got %s",
@@ -153,7 +153,7 @@ main(int ac, char **av)
 	}
 
 	cleanup();
-	
+
 	/*NOTREACHED*/
 	return 0;
 
@@ -195,7 +195,7 @@ setup(void)
 void
 cleanup(void)
 {
-	
+
 	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
@@ -208,7 +208,7 @@ cleanup(void)
 		tst_resm(TWARN, "setdomainname() failed while restoring"
 				" domainname to \"%s\"", old_domain_name);
 	}
-	
+
 	/* exit with return code appropriate for results */
 	tst_exit();
 }

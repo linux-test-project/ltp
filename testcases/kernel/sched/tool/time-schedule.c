@@ -112,7 +112,7 @@ int main (int argc, char **argv)
     sigset_t set;
     static char *usage =
         "time-schedule [-h] [-thread] [-notest] [-pipe] [-fpu] [num_running]";
-	
+
     setpgrp();
     /*  First create pipe used to sychronise low priority processes  */
     if (pipe (fds) != 0)

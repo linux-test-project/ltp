@@ -180,7 +180,7 @@ int main (int argc, char **argv)
 
 	setup_signal_handlers ();
 	parent_pid = getpid ();
-	
+
 	/*
 	 * Show options in effect.
 	 */
@@ -638,7 +638,7 @@ static void parse_args (int argc, char **argv)
 	 * region that will use the amount of paging space available
 	 * close to the paging space warning level.
 	 */
-	
+
         if (Wflg)
 #ifdef _LINUX_
 	        printf("Option 'W' not implemented in Linux (psdanger() and SIGDANGER)\n");

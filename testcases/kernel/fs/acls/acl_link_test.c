@@ -17,7 +17,7 @@ int main(int argc, char *argv[]){
 		printf ("Please enter a file name as argument.\n");
 		return -1;
 	}
-	
+
        if(-1 == (s = listxattr(argv[1], list, 1024)) ) {
                perror("listxattr");
                return 1;
@@ -47,6 +47,6 @@ int main(int argc, char *argv[]){
                 printf("errno = %i\n", errno);
                 rc = 1;
         }
-	
-	return  rc;		
+
+	return  rc;	
 }

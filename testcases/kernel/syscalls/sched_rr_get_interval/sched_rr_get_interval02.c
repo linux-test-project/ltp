@@ -139,7 +139,7 @@ setup()
 	 * sched_setscheduler()
 	 */
 	struct sched_param p = { 1 };
-	
+
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 

@@ -11,7 +11,7 @@
  * hereby transferred.
  */
 
-#ident "$Header: /cvsroot/ltp/ltp/testcases/kernel/syscalls/getitimer/getitimer03.c,v 1.4 2009/02/26 12:02:56 subrata_modak Exp $"
+#ident "$Header: /cvsroot/ltp/ltp/testcases/kernel/syscalls/getitimer/getitimer03.c,v 1.5 2009/02/26 12:15:39 subrata_modak Exp $"
 
 /*
  * NAME
@@ -89,27 +89,27 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		/* allocate some space for the timer structure */
-	
+
 		if ((value = (struct itimerval *)malloc((size_t)
 		     sizeof(struct itimerval))) == NULL) {
 			tst_brkm(TBROK, cleanup, "value malloc failed");
 		}
-	
+
 		/*
 		 * issue the system call with the TEST() macro
 		 * ITIMER_REAL = 0, ITIMER_VIRTUAL = 1 and ITIMER_PROF = 2
 		 */
-	
+
 		/* make the first value negative to get a failure */
 		TEST(getitimer(-ITIMER_PROF, value));
-	
+
 		if (TEST_RETURN == 0) {
 			tst_resm(TFAIL, "call failed to produce expected error "
 				 "- errno = %d - %s", TEST_ERRNO,
 				 strerror(TEST_ERRNO));
 			continue;
 		}
-	
+
 		TEST_ERROR_LOG(TEST_ERRNO);
 
 		switch (TEST_ERRNO) {

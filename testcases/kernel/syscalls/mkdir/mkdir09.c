@@ -60,7 +60,7 @@
 #include <string.h>
 
 
-#define NCHILD		3	
+#define NCHILD		3
 
 #define MODE_RWX	07770
 #define DIR_NAME	"./X.%d"
@@ -148,7 +148,7 @@ char *argv[];
 	}
 
 	/* Default argument settings. */
-	
+
 	child_groups = 2;
 	test_time = 5;     /* 0 = run forever or till signal */
 	nfiles = 5;
@@ -183,7 +183,7 @@ char *argv[];
 	}
 
 
-	
+
 	runtest();
 	cleanup();
 	return 0;
@@ -342,7 +342,7 @@ int runtest()
 
 	tst_resm(TPASS,"PASS");
 
-		
+	
 	return 0;
 }
 
@@ -355,7 +355,7 @@ int group, child, children;
 
 	if (pid < 0)
 	{
-		
+	
 		massmurder(); /* kill the kids */
 		tst_brkm(TBROK, cleanup, "\tFork failed (may be OK if under stress)");
 		tst_exit();
@@ -434,7 +434,7 @@ void chld()
 		longjmp(env_buf, 1);
 	}
 }
-	
+
 int dochild1()
 {
 	/* Child routine which attempts to create directories in the test
@@ -548,7 +548,7 @@ int group;
 	 */
 
 	int j;
-		
+	
 	char tmpdir[MAXPATHLEN];
 	char tmp[MAXPATHLEN];
 

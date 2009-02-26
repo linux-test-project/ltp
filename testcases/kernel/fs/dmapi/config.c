@@ -38,10 +38,10 @@ int main(int argc, char **argv)
 	char *varstr;
 	int   rc;
 	int   i;
-	
+
 	DMOPT_PARSE(argc, argv);
 	DMLOG_START();
-	
+
 	/* CANNOT DO ANYTHING WITHOUT SUCCESSFUL INITIALIZATION AND NO PREEXISTING FILES!!! */
 	if ((rc = dm_init_service(&varstr)) != 0) {
 		DMLOG_PRINT(DMLVL_ERR, "dm_init_service failed! (rc = %d, errno = %d)\n", rc, errno);
@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 	}
 
 	DMLOG_PRINT(DMLVL_DEBUG, "Starting DMAPI configuration tests\n") ;
-	
+
 	szFuncName = "dm_get_config";
 
 	/*
@@ -404,7 +404,7 @@ int main(int argc, char **argv)
 	}
 
 	DMLOG_STOP();
-			
+		
 	return 0;
 
-}	
+}

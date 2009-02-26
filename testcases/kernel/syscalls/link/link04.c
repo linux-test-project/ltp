@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: link04.c,v 1.6 2009/02/26 12:03:44 subrata_modak Exp $ */
+/* $Id: link04.c,v 1.7 2009/02/26 12:16:08 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -60,14 +60,14 @@
  *    TEST CASES
  *
  * 	1-14.) link(2) returns...(See Test_cases structure below)
- *	
+ *
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
  *
  *    OUTPUT SPECIFICATIONS
  *	Standard tst_res output formt.
- * 	
+ * 
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
  *
@@ -242,7 +242,7 @@ main(int ac, char **av)
 
 	/* reset Tst_count in case we are looping. */
 	Tst_count=0;
-	
+
         for (ind=0; Test_cases[ind].desc1 != NULL; ind++ ) {
 
             fname1 = Test_cases[ind].file1;
@@ -371,7 +371,7 @@ longpath_setup()
     if ( alreadycalled )
 	return 0;
     alreadycalled++;
-	
+
     for(ind=0; ind<= PATH_MAX+1; ind++) {
         Longpathname[ind] = 'a';
     }

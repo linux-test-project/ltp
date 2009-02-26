@@ -79,7 +79,7 @@ main(int ac, char **av)
 
 	int lc;
 	char *msg;
-	
+
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
@@ -238,6 +238,6 @@ void
 cleanup(void)
 {
 	TEST_CLEANUP;
-	
+
 	tst_exit();
 }

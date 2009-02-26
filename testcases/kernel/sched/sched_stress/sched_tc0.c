@@ -115,7 +115,7 @@ int main (int argc, char **argv)
 	/*
 	 * Process command line arguments...
 	 */
-	
+
 	parse_args (argc, argv);
 	if (verbose) printf ("%s: Scheduler TestSuite program\n\n", *argv);
 	if (debug) {

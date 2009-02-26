@@ -121,14 +121,14 @@ void do_sendfile(OFF_T offset, int i)
 		tst_brkm(TBROK, cleanup, "lseek before invoking sendfile failed: %d", errno);
 		/*NOTREACHED*/
 	}
-	
+
 	TEST(sendfile(out_fd, in_fd, &offset, sb.st_size - offset));
 
 	if ((after_pos = lseek(in_fd, 0, SEEK_CUR)) < 0) {
 		tst_brkm(TBROK, cleanup, "lseek after invoking sendfile failed: %d", errno);
 		/*NOTREACHED*/
 	}
-	
+
 	if (STD_FUNCTIONAL_TEST) {
 		/* Close the sockets */
 		shutdown(sockfd, SHUT_RDWR);
@@ -270,7 +270,7 @@ int create_server(void) {
 		if(self_exec(argv0, "") < 0) {
 			tst_brkm(TBROK, cleanup, "self_exec failed");
 			return -1;
-			
+		
 		}
 #else
 		do_child();

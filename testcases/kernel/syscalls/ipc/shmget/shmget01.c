@@ -86,9 +86,9 @@ int main(int ac, char **av)
 		/*
 		 * Use TEST macro to make the call
 		 */
-	
+
 		TEST(shmget(shmkey, SHM_SIZE, (IPC_CREAT | IPC_EXCL | SHM_RW)));
-	
+
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "%s call failed - errno = %d : %s",
 				 TCID, TEST_ERRNO, strerror(TEST_ERRNO));

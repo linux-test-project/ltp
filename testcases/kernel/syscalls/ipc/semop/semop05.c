@@ -209,7 +209,7 @@ int main(int ac, char **av)
 			}
 		}
 	}
-	
+
 	cleanup();
 
 	/*NOTREACHED*/
@@ -242,7 +242,7 @@ do_child(int i)
 		tst_resm(TFAIL, "call succeeded when error expected");
 		exit(-1);
 	}
-	
+
 	TEST_ERROR_LOG(TEST_ERRNO);
 
 	if (TEST_ERRNO == TC[i].error) {

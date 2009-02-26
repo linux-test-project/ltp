@@ -38,7 +38,7 @@ int main(int argc, char **argv)
 	id = shmget(key, 2048, IPC_CREAT|0777);
 	if (id == -1)
 	  return 1;
-	
+
 	/*
 	 * Equivalent: IPC_STAT, SHM_STAT
 	 * Tests:      SHM__GETATTR | SHM__ASSOCIATE

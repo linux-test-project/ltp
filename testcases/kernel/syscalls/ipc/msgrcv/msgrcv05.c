@@ -179,9 +179,9 @@ do_child()
 		tst_resm(TFAIL, "call succeeded when error expected");
 		exit(-1);
 	}
-	
+
 	TEST_ERROR_LOG(TEST_ERRNO);
-	
+
 	switch(TEST_ERRNO) {
 	case EINTR:
 		tst_resm(TPASS, "expected failure - errno = %d : %s", TEST_ERRNO,
@@ -191,7 +191,7 @@ do_child()
 		tst_resm(TFAIL, "call failed with an unexpected error - %d : %s",
 			 TEST_ERRNO, strerror(TEST_ERRNO));
 		break;
-	}			
+	}		
 
 	exit(0);
 }

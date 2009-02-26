@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: signal01.c,v 1.8 2009/02/26 12:04:57 subrata_modak Exp $ */
+/* $Id: signal01.c,v 1.9 2009/02/26 12:16:39 subrata_modak Exp $ */
 /***********************************************************************************
  *
  * OS Test   -  Silicon Graphics, Inc.  Eagan, Minnesota
@@ -39,7 +39,7 @@
  * 				 of signal setup and signal sending.
  *
  * PARENT DOCUMENT :  sgntds01  Signal System Call
- * 		
+ * 	
  * AUTHOR           :  Dave Baumgartner
  * 		    :  Rewrote 12/92 by Richard Logan
  *
@@ -369,7 +369,7 @@ int tst_count;
 	 	return;
 	    }
 	    else if ( Ipc_info.status == PASS_FLAG ) {
-		
+	
 		if ( STD_FUNCTIONAL_TEST )
 		    tst_resm(TPASS, "From child: %s", Ipc_info.mesg);
 		else
@@ -452,7 +452,7 @@ int tst_count;
 	close(fd1[0]);
 
     }	/* End of parent. */
-    else if (Pid == 0) {	
+    else if (Pid == 0) {
 	/*
 	 * This is the child.
 	 * Set up to ignore/catch SIGKILL and check the return values.
@@ -499,7 +499,7 @@ int test_case;
     if ( test_case == IGNORE_TEST ) {
 	exit_val = SIG_IGNORED;
 	strcpy(string, "signal(SIGKILL, SIG_IGN)");
-	
+
 	Tret=signal(SIGKILL, SIG_IGN);
 	TEST_ERRNO=errno;
     }
@@ -509,7 +509,7 @@ int test_case;
 	Tret=signal(SIGKILL, catchsig);
 	TEST_ERRNO=errno;
     }
-    Ipc_info.timings=tblock;	
+    Ipc_info.timings=tblock;
 
     if ( Tret == SIG_ERR  ) {
 	if ( TEST_ERRNO == EINVAL ) {
@@ -523,7 +523,7 @@ int test_case;
 		    string, Tret, TEST_ERRNO, (long)SIG_ERR, EINVAL);
 	    Ipc_info.status = FAIL_FLAG;
 	}
-		
+	
 	write(fd1[1], (char *)&Ipc_info, sizeof(Ipc_info));
     }
     else {

@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: select03.c,v 1.4 2009/02/26 12:04:44 subrata_modak Exp $ */
+/* $Id: select03.c,v 1.5 2009/02/26 12:16:34 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -172,7 +172,7 @@ main(int ac, char **av)
          */
 
 	test_time = ((lc%2000)*100000);	/* 100 milli-seconds */
-	
+
         /*
          * Bound the time to a value less than 60 seconds
          */
@@ -189,7 +189,7 @@ main(int ac, char **av)
 	/* Call the system call being tested. */
 
         TEST(select(5, &Readfds, &Writefds, 0, &timeout));
-	
+
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
 	    TEST_ERROR_LOG(TEST_ERRNO);

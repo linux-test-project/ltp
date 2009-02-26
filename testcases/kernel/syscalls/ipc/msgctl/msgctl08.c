@@ -126,14 +126,14 @@ char	*argv[];
 	{
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
-	
+
 	maybe_run_child(&do_child_1_uclinux, "ndd", 1, &key_uclinux, &i_uclinux);
 	maybe_run_child(&do_child_2_uclinux, "nddd", 2, &id_uclinux, &key_uclinux,
 			&child_process_uclinux);
 #endif
 
 	setup();
-	
+
 	if (argc == 1 )
 	{
 		/* Set default parameters */
@@ -207,7 +207,7 @@ char	*argv[];
 			}
 		} while (ok == 0);
 	}
-	
+
 	/* Fork a number of processes, each of which will
 	 * create a message queue with one reader/writer
 	 * pair which will read and write a number (iterations)
@@ -250,11 +250,11 @@ char	*argv[];
 	        	        tst_exit();
 			}
 			count++;
-		}	
+		}
 		else
 		{
 			if (errno != EINTR)
-			{	
+			{
 				break;
 			}
 #ifdef DEBUG
@@ -270,10 +270,10 @@ char	*argv[];
 	}
 
         tst_resm(TPASS,"msgctl08 ran successfully!");
-	
+
 	cleanup();
         return (0);
-								
+							
 }
 /*--------------------------------------------------------------------*/
 
@@ -403,7 +403,7 @@ long key;
 		key++;
 	}
 	return (0);
-}	
+}
 
 int fill_buffer(buf, val, size)
 register char *buf;
@@ -486,7 +486,7 @@ setup()
 	if (nr_msgqs <= 0){
 		tst_resm(TBROK,"Max number of message queues already used, cannot create more.");
 		cleanup();
-	}	
+	}
 
 	/*
 	 * Since msgmni scales to the memory size, it may reach huge values

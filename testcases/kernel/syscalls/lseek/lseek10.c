@@ -23,7 +23,7 @@
  * Test Description:
  *  Verify that,
  *  1. lseek() returns -1 and sets errno to ESPIPE, if the file handle of
- *     the specified file is associated with a pipe, socket, or  FIFO.	
+ *     the specified file is associated with a pipe, socket, or  FIFO.
  *  2. lseek() returns -1 and sets errno to EINVAL, if the 'Whence' argument
  *     is not a proper value.
  *  3. lseek() returns -1 and sets errno to EBADF, if the file handle of
@@ -152,7 +152,7 @@ main(int ac, char **av)
 			fildes = Test_cases[ind].fd;
 			test_desc = Test_cases[ind].desc;
 			whence = Test_cases[ind].Whence;
-	
+
 			/* Assign the 'fd' values appropriatly */
 			if (fildes == 1) {
 				fildes = fd1;

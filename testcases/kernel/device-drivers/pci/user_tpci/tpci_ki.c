@@ -22,7 +22,7 @@
  * and kernel calls. Each function will need to setup the tif
  * structure so that the in parameters and out parameters
  * are correctly initialized
- *	
+ *
  * use tif structure for passing params between user
  * space and kernel space, in some tests it is really
  * not needed but makes easy to maintain all tests if
@@ -97,7 +97,7 @@ int ki_probe_pci_dev(int fd) {
 		printf("Specific error in ioctl call\n");
 		return tif.out_rc;
 	}
-	
+
 	return rc;
 }
 

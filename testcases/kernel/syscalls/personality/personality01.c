@@ -105,7 +105,7 @@ int main(int ac, char **av)
 		 * value is the previous one.
 		 */
 		for(i=0; i<TST_TOTAL; i++) {
-			
+		
 			TEST(personality(pers[i]));
 
 			if (TEST_RETURN == -1) {

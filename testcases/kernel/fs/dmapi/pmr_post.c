@@ -52,7 +52,7 @@ char DummySubdir[FILENAME_MAX];
 void *Thread(void *);
 
 void LogRegions(dm_region_t *rgns, u_int nelem)
-{	
+{
 	int i;
 
 	DMLOG_PRINT(DMLVL_DEBUG, "Regions:\n");
@@ -76,7 +76,7 @@ int main(int argc, char **argv)
 
 	DMEV_ZERO(events);
 	DMEV_SET(DM_EVENT_MOUNT, events);
-	
+
 	/* CANNOT DO ANYTHING WITHOUT SUCCESSFUL INITIALIZATION */
 	if ((rc = dm_init_service(&varstr)) != 0) {
 		DMLOG_PRINT(DMLVL_ERR, "dm_init_service failed! (rc = %d, errno = %d)\n", rc, errno);
@@ -111,7 +111,7 @@ int main(int argc, char **argv)
 				if (write(fd, DUMMY_STRING, DUMMY_STRLEN) != DUMMY_STRLEN) {
 					rc = -1;
 					break;
-				}					
+				}				
 			}
 		} else {
 			rc = -1;
@@ -148,7 +148,7 @@ int main(int argc, char **argv)
 	remove(DUMMY_FILE);
 
 	DMLOG_STOP();
-			
+		
 	return 0;
 }
 
@@ -161,7 +161,7 @@ void DoTest()
 	DMLOG_PRINT(DMLVL_DEBUG, "Starting DMAPI persistent managed regions test\n") ;
 
 	szFuncName = "dm_get_region";
-	
+
 	/*
 	 * TEST    : dm_get_region - persistent, Part II
 	 * EXPECTED: rc = 0, nelem = 5
@@ -891,7 +891,7 @@ void DoTest()
 		}
 #else
 		DMLOG_PRINT(DMLVL_WARN, "Test case not built with MULTIPLE_REGIONS defined\n");
-		DMVAR_SKIP();		
+		DMVAR_SKIP();	
 #endif
 	}
 
@@ -916,12 +916,12 @@ void DoTest()
 		regbufin[1].rg_offset = 2000;
 		regbufin[1].rg_size = 1000;
 		regbufin[1].rg_flags = DM_REGION_WRITE;
-#else		
+#else	
 		nelemin = 1;
 		regbufin[0].rg_offset = 0;
 		regbufin[0].rg_size = 1000;
 		regbufin[0].rg_flags = DM_REGION_READ;
-#endif		
+#endif	
 
 		sprintf(command, "cp %s %s", DUMMY_FILE, DummyFile);
 		if ((rc = system(command)) == -1) {
@@ -961,7 +961,7 @@ void DoTest()
 	  			DMLOG_PRINT(DMLVL_ERR, "%s failed with unexpected rc = %d\n", szFuncName, rc);
 				DMVAR_FAIL();
 			}
-	
+
 			/* Variation clean up */
 			rc = close(fd);
 			rc |= remove(DummyFile);
@@ -1049,7 +1049,7 @@ void *Thread(void *parm)
 		} else if (type == DM_EVENT_UNMOUNT) {
 			/* SPECIAL CASE: need to set response and bMounted */
 			dm_namesp_event_t *nse = DM_GET_VALUE(dmMsg, ev_data, dm_namesp_event_t *);
-			
+		
 			if (nse->ne_retcode == 0) {
 				bMounted = DM_FALSE;
 			}
@@ -1059,7 +1059,7 @@ void *Thread(void *parm)
 			DMLOG_PRINT(DMLVL_DEBUG, "Message is DM_EVENT_USER\n");
 
 			DoTest();
-			
+		
 			response = DM_RESP_CONTINUE;
 		} else {
 			DMLOG_PRINT(DMLVL_ERR, "Message is unexpected!\n");
@@ -1073,4 +1073,4 @@ void *Thread(void *parm)
 	} while (bMounted);
 
 	pthread_exit(0);
-}	
+}

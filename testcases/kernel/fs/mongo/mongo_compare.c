@@ -98,18 +98,18 @@ main(int argc, char **argv)
     write_html_head(f4);
     i=0;
     while( fgets(line1, 100, f1) ){
-	   fgets(line2, 100, f2);	
-	
+	   fgets(line2, 100, f2);
+
 	 if ( p=strstr(line1,"\n")) *(p+1)=0;
 	 if ( p=strstr(line2,"\n")) *(p+1)=0;
-	
+
 	 strcpy(line3,line1);
 	 line3[strlen(line3)-1]=0;
-	
+
 	 while ( strlen(line3) < 40 ){
 	     strcat(line3," ");
 	 }
-	
+
 	 if (strstr(line3,"MONGO_")){
 	    fprintf(f4,"</table>\n<table BORDER NOSAVE >\n");
 	    fprintf(f4,"<tr BGCOLOR=\"#CCFFFF\" NOSAVE>");
@@ -117,7 +117,7 @@ main(int argc, char **argv)
 	    i=0;
 	 }
 	 if(i<20) strcpy(tmp_str[i],line2);
-	
+
 	 if (strstr(line3,"FSYS=")) {
 	     fprintf(f4, "</td><td>\n");
 	     for (k=0; k<i; k++){
@@ -127,7 +127,7 @@ main(int argc, char **argv)
 	     i=20;
 	 }    
 	 else if ( NULL == strstr(line3, " :" )) {
-	
+
 	     if (strstr(line3, "(time") ) fprintf(f4,"<br><tt><center>%s</center></tt>\n",line3);
 	     else {
 	         k=0; p=line3;
@@ -136,27 +136,27 @@ main(int argc, char **argv)
 	         }
 	         if (k > 0) {
 	             fprintf(f4, "<tt>%s</tt><br>\n", line3);
-	             if (i<20) i++;    	
+	             if (i<20) i++;    
 	         }
 	    }
 	 }  
-	
+
 	 else if (strstr(line3,"Create")) fprintf (f4, "</td>\n");
-	
-	 line2[strlen(line2)-1]=0;	
+
+	 line2[strlen(line2)-1]=0;
 	 while ( strlen(line2) < 40 ){
 	     strcat(line2," ");
 	 }
-	
+
 	 strcat(line3,line2);
-	
-	
+
+
 	 strcpy(out_line, line3);
-	 strcat(out_line, "\n"); 	 	
+	 strcat(out_line, "\n"); 	 
 	 name_str1[0]=0;
-	
+
 	 if ( p1=strstr(line1, " :" )) {
-	      strcpy(time_str1, p1+2);	      	 		
+	      strcpy(time_str1, p1+2);	      	 	
 	      strncpy(name_str1, line1, p1-line1);
 	     
 	      if ( p2=strstr(line2, " :" )) {
@@ -177,8 +177,8 @@ main(int argc, char **argv)
 		  	 
 	      }
 	 }
-	
-         fprintf (f3, "%s", out_line);	
+
+         fprintf (f3, "%s", out_line);
 	 line1[0] = 0;
 	 line2[0] = 0;
 	 line3[0] = 0;

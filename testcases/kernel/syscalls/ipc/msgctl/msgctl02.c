@@ -92,9 +92,9 @@ int main(int ac, char **av)
 		/*
 		 * Set the msqid_ds structure values for the queue
 		 */
-	
+
 		TEST(msgctl(msg_q_1, IPC_SET, &qs_buf));
-	
+
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "%s call failed - errno = %d"
 				 " : %s", TCID, TEST_ERRNO,
@@ -108,7 +108,7 @@ int main(int ac, char **av)
 					continue;
 				}
 
-				if (qs_buf.msg_qbytes == new_bytes) {	
+				if (qs_buf.msg_qbytes == new_bytes) {
 					tst_resm(TPASS, "qs_buf.msg_qbytes is"
 						 " the new value - %d",
 						 qs_buf.msg_qbytes);

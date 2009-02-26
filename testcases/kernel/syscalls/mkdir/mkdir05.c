@@ -93,7 +93,7 @@ main(int ac, char **av)
 {
 	int lc;             /* loop counter */
 	char *msg;          /* message returned from parse_opts */
-	struct stat buf;	
+	struct stat buf;
 
 	/*
 	 * parse standard options
@@ -106,7 +106,7 @@ main(int ac, char **av)
 	 * perform global setup for test
 	 */
 	setup();
-	
+
 	/*
 	 * check looping state if -i option given
 	 */
@@ -158,15 +158,15 @@ main(int ac, char **av)
 		if (rmdir(tstdir1) == -1) {
 			tst_brkm(TBROK, cleanup, "could not remove directory");
 		}
-	
+
 	}   /* End for TEST_LOOPING */
-	
+
 	/*
 	 * cleanup and exit
 	 */
 	cleanup();
-	/*NOTREACHED*/	
-	return 0;	
+	/*NOTREACHED*/
+	return 0;
 }       /* End main */
 
 /*
@@ -192,7 +192,7 @@ setup()
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
-	
+
 	/* Create a temporary directory and make it current. */
 	tst_tmpdir();
 }
@@ -215,7 +215,7 @@ cleanup()
 	 * Remove the temporary directory.
 	 */
 	tst_rmdir();
-	
+
 	/*
 	 * Exit with return code appropriate for results.
 	 */

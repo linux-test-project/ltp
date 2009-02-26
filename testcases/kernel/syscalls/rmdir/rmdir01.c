@@ -81,7 +81,7 @@ main(int ac, char **av)
 {
 	int lc;             /* loop counter */
 	char *msg;          /* message returned from parse_opts */
-	struct stat buf;	
+	struct stat buf;
 
 	/*
 	 * parse standard options
@@ -94,7 +94,7 @@ main(int ac, char **av)
 	 * perform global setup for test
 	 */
 	setup();
-	
+
 	/*
 	 * check looping state if -i option given
 	 */
@@ -136,15 +136,15 @@ main(int ac, char **av)
 		} else {
 			tst_resm(TPASS, "call succeeded");
 		}
-	
+
 	}   /* End for TEST_LOOPING */
-	
+
 	/*
 	 * cleanup and exit
 	 */
 	cleanup();
 
-	/*NOTREACHED*/	
+	/*NOTREACHED*/
 
   return 0;
 
@@ -164,8 +164,8 @@ setup()
 
 	/* Create a temporary directory and make it current. */
 	tst_tmpdir();
-	
-	sprintf(tstdir,"./tstdir_%d",getpid());	
+
+	sprintf(tstdir,"./tstdir_%d",getpid());
 }
 
 /*
@@ -185,7 +185,7 @@ cleanup()
 	 * Remove the temporary directory.
 	 */
 	tst_rmdir();
-	
+
 	/*
 	 * Exit with return code appropriate for results.
 	 */

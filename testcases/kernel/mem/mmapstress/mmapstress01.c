@@ -91,7 +91,7 @@ void ok_exit();
  */
 
 #define MAXLOOPS	500	/* max pages for map children to write */
-#define	FILESIZE	4096	/* initial filesize set up by parent */	
+#define	FILESIZE	4096	/* initial filesize set up by parent */
 
 #ifdef roundup
 #undef roundup
@@ -353,7 +353,7 @@ main(int argc, char *argv[])
 	/*
 	 *  Now wait for children and refork them as needed.
 	 */
-	
+
 	while (!finished) {
 		pid = wait(&wait_stat);
 		/*
@@ -410,7 +410,7 @@ main(int argc, char *argv[])
 			goto cleanup;
 		}
 	}
-	
+
 	/*
 	 *  Finished!  Check the file for sanity, then kill all
 	 *  the children and done!.
@@ -445,7 +445,7 @@ cleanup:
 		}
 	} else
 		(void)printf("  leaving file <%s>\n", filename);
-	
+
 	(void)time(&t);
 	//(void)printf("%s: Finished %s", argv[0], ctime(&t)); LTP Port
 	ok_exit();
@@ -623,7 +623,7 @@ fileokay(char *file, uchar_t *expbuf)
 		local_flag = FAILED;
 		anyfail();
 		/*****	**	*****/
-		return 0;	
+		return 0;
 	}
 #ifdef LARGE_FILE
 	if (fstat64(fd, &statbuf) == -1) {
@@ -663,7 +663,7 @@ fileokay(char *file, uchar_t *expbuf)
 			local_flag = FAILED;
 			anyfail();
 			/*****	**	*****/
-			return 0;	
+			return 0;
 		} else if (cnt != pagesize) {
 			/*
 			 *  Okay if at last page in file...
@@ -694,7 +694,7 @@ fileokay(char *file, uchar_t *expbuf)
 			}
 		}
 	}
-					
+				
 	return 1;
 }
 

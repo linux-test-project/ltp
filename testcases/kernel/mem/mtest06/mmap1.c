@@ -236,7 +236,7 @@ int
 mkfile(int size	/* size of the temp file that needs to be created.    */ )
 {
     int  fd;			/* file descriptor of the temp file created.  */
-    char template[PATH_MAX];    /* template for temp file name		      */	
+    char template[PATH_MAX];    /* template for temp file name		      */
 
     snprintf(template, PATH_MAX, "ashfileXXXXXX");
 

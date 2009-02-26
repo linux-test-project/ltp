@@ -83,7 +83,7 @@ static int tmod_close(struct inode *ino, struct file *f) {
  *      a user space program can drive the test functions
  *      through a call to ioctl once the correct file
  *      descriptor has been attained
- * 	
+ * 
  * 	in user space the file descriptor that you attain
  * 	will represent the inode and file pointers in
  * 	the kernel ioctl function, and only 3 variables
@@ -139,7 +139,7 @@ static int tmod_ioctl(struct inode *ino, struct file *f,
                 }
         }
 
-	
+
 	/*
 	 * Use a switch statement to determine which function
 	 * to call, based on the cmd flag that is specified
@@ -161,7 +161,7 @@ static int tmod_ioctl(struct inode *ino, struct file *f,
 	 * calls or an error in the ioctl function
 	 */
 	tif.out_rc = rc;
-	rc = 0;	
+	rc = 0;
 
 	/*
 	 * setup the rest of tif pointer for returning to
@@ -212,14 +212,14 @@ static int tmod_ioctl(struct inode *ino, struct file *f,
  */
 
 static int test_option() {
-	
+
 	/* setup test parameters and make the call here */
 
 	printk("tmod: this is option1 example\n");
 
 	/* remember that printk does not show up on the console,
 	check /var/log/messages to see your what is printed */
-	
+
 	return 0;
 }
 

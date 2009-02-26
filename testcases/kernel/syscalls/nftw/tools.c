@@ -40,7 +40,7 @@ void fail_exit(void);
  * Function: void cleanup_function(void)
  *
  * Description:
- *	Cleans the residues 	
+ *	Cleans the residues 
  *
  * Returns :
  *	Nothing
@@ -154,7 +154,7 @@ setup_path(void)
  *      Dummy function for errno tests
  *
  * Returns :
- *	0	
+ *	0
  */
 
 int
@@ -171,7 +171,7 @@ nftw_fn(const char *path, const struct stat *st, int ival, struct FTW *FTWS)
  *      Dummy function for errno tests
  *
  * Returns :
- *	nftw()	
+ *	nftw()
  */
 
 int
@@ -255,7 +255,7 @@ getlev(const char *s)
  *	print the file being visited
  *
  * Returns:
- *	Nothing	
+ *	Nothing
  */
 
 void

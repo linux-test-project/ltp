@@ -90,17 +90,17 @@ int main(int ac, char **av)
 		 * issue the system call with the TEST() macro
 		 * ITIMER_REAL = 0, ITIMER_VIRTUAL = 1 and ITIMER_PROF = 2
 		 */
-	
+
 		/* call with a bad address */
 		TEST(getitimer(ITIMER_REAL, (struct itimerval *)-1));
-	
+
 		if (TEST_RETURN == 0) {
 			tst_resm(TFAIL, "call failed to produce "
 				 "expected error - errno = %d - %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 			continue;
 		}
-	
+
 		TEST_ERROR_LOG(TEST_ERRNO);
 
 		switch (TEST_ERRNO) {

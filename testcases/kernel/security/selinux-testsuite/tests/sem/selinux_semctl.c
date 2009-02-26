@@ -88,7 +88,7 @@ int main(int argc, char **argv)
 	arg.buf = &semid_buf;
 	error = semctl(id, 0, IPC_SET, arg);
 	printf (" %d", error);
-	
+
 	/*
 	 * Equivalent: IPC_RMID
 	 * Tests:      SEM__DESTROY

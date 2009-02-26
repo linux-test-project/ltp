@@ -45,8 +45,8 @@
  *		Execute system call
  *		Check return code, if system call failed (return == -1)
  *				Log the error number and issue a FAIL message
- *		otherwise issue a PASS message	
- *		
+ *		otherwise issue a PASS message
+ *	
  *      Cleanup:
  *        Print errno log and/or timing stats if options given
  *	  Deletes temporary directory.
@@ -94,10 +94,10 @@ struct test_case_t{
 	{ LOCK_UN, "Unlock"         },
 	{ LOCK_EX, "Exclusive Lock" },
 };
-	
+
 int main(int argc, char **argv)
 {
-	int lc,i;	
+	int lc,i;
 	/* loop counter */
 	char *msg;			/* message returned from parse_opts */
 
@@ -112,7 +112,7 @@ int main(int argc, char **argv)
 	/* global setup */
 	setup();
 
-	
+
 
 	/* The following loop checks looping state if -i option given */
 
@@ -120,13 +120,13 @@ int main(int argc, char **argv)
 
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
-		
+	
 		for( i = 0; i< TST_TOTAL; ++i)
 		{
-			
+		
 		/* Testing system call */
 		TEST(flock(fd,test_cases[i].operation));
-		
+	
 		if(TEST_RETURN == -1){
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL,"flock() failed to get %s, error number=%d : %s",
@@ -137,9 +137,9 @@ int main(int argc, char **argv)
 			tst_resm(TPASS, "flock() succeded with %s, returned error number=%d",
 					test_cases[i].opt,TEST_ERRNO);
 		}
-		
+	
 	  }
-		
+	
 	}/* End of TEST_LOOPING */
 
 	close(fd);
@@ -181,15 +181,15 @@ setup(void)
 	fd = creat(filename, 0644);
 	if (fd < 0) {
 		tst_resm(TFAIL, "creating a new file failed");
-		
+	
 		TEST_CLEANUP;
-		
+	
 		/* Removing temp directory */
 		tst_rmdir();
-		
+	
 		/* exit with resturn code appropriate for result */
 		tst_exit();
-		
+	
 	}
 }
 

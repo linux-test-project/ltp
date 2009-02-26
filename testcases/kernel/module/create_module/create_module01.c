@@ -81,7 +81,7 @@ static void cleanup(void);
 char *TCID = "create_module01";	/* Test program identifier.    */
 int TST_TOTAL=1;		/* Total number of test cases. */
 static char modname[20];	/* Name of the module */
-	
+
 
 int
 main(int argc, char **argv)

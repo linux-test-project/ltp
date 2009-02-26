@@ -75,7 +75,7 @@ int main(int ac, char *av[])
 
 		sprintf(tempfile1, "stream03.%d", getpid());
 	/*--------------------------------------------------------------------*/
-	//block0:	
+	//block0:
 		if((stream=fopen(tempfile1,"a+")) == NULL) {
 			tst_resm(TBROK,"fopen(%s) a+ failed: %s", tempfile1, strerror(errno));
 			tst_exit();
@@ -154,7 +154,7 @@ int main(int ac, char *av[])
 
 		unlink(tempfile1);
 	/*--------------------------------------------------------------------*/
-	//block1:	
+	//block1:
 		if((stream=fopen(tempfile1,"a+")) == NULL) {
 			tst_resm(TFAIL,"fopen(%s) a+ failed: %s", tempfile1, strerror(errno));
 			tst_exit();

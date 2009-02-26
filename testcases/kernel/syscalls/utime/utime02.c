@@ -44,7 +44,7 @@
  *   Check return code, if system call failed (return=-1)
  *   	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call	
+ *   	Verify the Functionality of system call
  *      if successful,
  *      	Issue Functionality-Pass message.
  *      Otherwise,
@@ -239,7 +239,7 @@ setup()
                          ltpuser->pw_uid);
                 perror("setuid");
          }
-	
+
 
 	/* Pause if that option was specified
 	 * TEST_PAUSE contains the code to fork the test with the -i option.
@@ -280,7 +280,7 @@ setup()
 	 * different from the current time
 	 */
 	sleep(2);	/* sleep(1) on IA64 sometimes sleeps < 1 sec!! */
-		
+	
 }	/* End setup() */
 
 /*

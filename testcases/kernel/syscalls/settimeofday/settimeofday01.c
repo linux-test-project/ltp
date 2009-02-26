@@ -120,7 +120,7 @@ int main(int argc, char **argv)
 		} else {
 			delta=(suseconds_t)(tp.tv_sec-tp2.tv_sec)*1000+(tp.tv_usec-tp2.tv_usec)/1000;
 		}
-			
+		
 		if(delta>-ACCEPTABLE_DELTA && delta < ACCEPTABLE_DELTA) {
 			tst_resm(TPASS, "Test condition %d successful",
 				 condition_number++);

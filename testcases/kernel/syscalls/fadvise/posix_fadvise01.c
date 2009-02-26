@@ -115,7 +115,7 @@ main(int ac, char **av)
 		for (i = 0; i < defined_advise_total; i++) {
 
 			TEST(posix_fadvise(fd, 0, 0, defined_advise[i]));
-	
+
 			/* Man page says:
 			   "On error, an error number is returned." */
 			if (TEST_RETURN == expected_return) {

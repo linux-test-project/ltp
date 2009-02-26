@@ -138,7 +138,7 @@ void aiodio_append(char *filename)
 	for (; i < 1000; i++) {
 		int n = 0;
 		struct iocb *iocbp;
-	
+
 		n = io_getevents(myctx, 1, 1, &event, &timeout);
                 if (n > 0) {
 		  iocbp = (struct iocb *)event.obj;

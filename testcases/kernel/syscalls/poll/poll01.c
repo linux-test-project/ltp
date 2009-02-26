@@ -39,7 +39,7 @@
  *   Check return code, if system call failed (return=-1)
  *   	Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call	
+ *   	Verify the Functionality of system call
  *      if successful,
  *      	Issue Functionality-Pass message.
  *      Otherwise,
@@ -168,7 +168,7 @@ main(int ac, char **av)
 					 TEST_ERRNO, strerror(errno));
 				exit(1);
 			}
-			
+		
 			/* Read data from read end of pipe */
 			if (read(fildes[0], read_buf, sizeof(read_buf)) !=
 				     sizeof(write_buf)) {

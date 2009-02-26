@@ -91,7 +91,7 @@ main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 	int gidsetsize;		/* total no. of groups */
 	char *test_desc;        /* test specific error message */
-	
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
 	if (msg != (char *)NULL) {
@@ -112,7 +112,7 @@ main(int ac, char **av)
 
 		gidsetsize = NGROUPS;
 		test_desc = "EFAULT";
-					
+				
 		/*
 		 * Call setgroups() to test condition
 		 * verify that it fails with -1 return value and
@@ -126,9 +126,9 @@ main(int ac, char **av)
 				 exp_enos);
 		}
 		else{
-		
+	
 			TEST_ERROR_LOG(TEST_ERRNO);
-			
+		
 			if (TEST_ERRNO == exp_enos[0]) {
 				tst_resm(TPASS, "setgroups() fails with expected "
 				"error EFAULT errno:%d",TEST_ERRNO);

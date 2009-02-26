@@ -117,7 +117,7 @@ main(int ac, char **av)
 		}
 
 		TEST(swapoff("./swapfile01"));
-		
+	
 		/* check return code */
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);

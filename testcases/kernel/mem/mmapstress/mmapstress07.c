@@ -206,7 +206,7 @@ main(int argc, char **argv)
 	/* At this point fd contains 1 page of a's, holesize bytes skipped,
 	 * 1/2 page of b's.
 	 */
-	
+
 #ifdef LARGE_FILE
 	if ((mapaddr = mmap64((caddr_t)0, pagesize*2 + holesize, PROT_READ,
 		MAP_SHARED|MAP_FILE, rofd, sparseoff)) == (caddr_t)-1) {

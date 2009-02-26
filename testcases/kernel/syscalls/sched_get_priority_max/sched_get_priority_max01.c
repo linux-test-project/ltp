@@ -113,14 +113,14 @@ main(int ac, char **av)
 			 * Call sched_get_priority_max(2)
 		 	 */
 			TEST(sched_get_priority_max(test_cases[ind].policy));
-	
+
 			if (TEST_RETURN == test_cases[ind].retval) {
 				tst_resm(TPASS, "%s Passed",
 					 test_cases[ind].desc);
 			} else {
 				tst_resm(TFAIL, "%s Failed,"
 					 "sched_get_priority_max() returned %d"
-					 " errno = %d : %s",	
+					 " errno = %d : %s",
 					 test_cases[ind].desc, TEST_RETURN,
 					 TEST_ERRNO, strerror(TEST_ERRNO));
 			}
@@ -139,7 +139,7 @@ main(int ac, char **av)
 void
 setup()
 {
-	
+
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 

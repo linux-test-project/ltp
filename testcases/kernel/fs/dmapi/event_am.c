@@ -75,7 +75,7 @@ int main(int argc, char **argv)
 
 	DMEV_ZERO(events);
 	DMEV_SET(DM_EVENT_MOUNT, events);
-	
+
 	/* CANNOT DO ANYTHING WITHOUT SUCCESSFUL INITIALIZATION!!! */
 	if ((rc = dm_init_service(&varstr)) != 0) {
 		DMLOG_PRINT(DMLVL_ERR, "dm_init_service failed! (rc = %d, errno = %d)\n", rc, errno);
@@ -104,7 +104,7 @@ int main(int argc, char **argv)
 	}
 
 	DMLOG_PRINT(DMLVL_DEBUG, "Starting DMAPI asynchronous metadata event tests\n") ;
-	
+
 	/*
 	 *  First batch of tests will be with events enabled on file system,
 	 *  so set up events on fs accordingly
@@ -115,7 +115,7 @@ int main(int argc, char **argv)
 		dm_destroy_session(sid);
 		DM_EXIT();
 	}
-	
+
 	DMEV_ZERO(events);
 	DMEV_SET(DM_EVENT_PREUNMOUNT, events);
 	DMEV_SET(DM_EVENT_UNMOUNT, events);
@@ -153,7 +153,7 @@ int main(int argc, char **argv)
 			EVENT_DELIVERY_DELAY;
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				struct stat statfs;
-			
+		
 				rc = dm_handle_to_ino(ahanp1, ahlen1, &ino);
 				rc |= stat(DummySubdir, &statfs);
 		        	if (rc == -1) {
@@ -183,7 +183,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	
+
 	/*
 	 * TEST    : chown - enabled on fs
 	 * EXPECTED: DM_EVENT_ATTRIBUTE
@@ -208,7 +208,7 @@ int main(int argc, char **argv)
 			EVENT_DELIVERY_DELAY;
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				struct stat statfs;
-			
+		
 				rc = dm_handle_to_ino(ahanp1, ahlen1, &ino);
 				rc |= stat(DummySubdir, &statfs);
 		        	if (rc == -1) {
@@ -241,7 +241,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	
+
 	/*
 	 * TEST    : close - enabled on fs
 	 * EXPECTED: DM_EVENT_CLOSE
@@ -322,7 +322,7 @@ int main(int argc, char **argv)
 			EVENT_DELIVERY_DELAY;
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				struct stat statfs;
-			
+		
 				rc = dm_handle_to_ino(ahanp1, ahlen1, &ino);
 				rc |= stat(DummyFile, &statfs);
 		        	if (rc == -1) {
@@ -382,7 +382,7 @@ int main(int argc, char **argv)
 			EVENT_DELIVERY_DELAY;
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				struct stat statfs;
-			
+		
 				rc = dm_handle_to_ino(ahanp1, ahlen1, &ino);
 				rc |= stat(DummyFile, &statfs);
 		        	if (rc == -1) {
@@ -415,7 +415,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-		
+	
 	/*
 	 * TEST    : close - enabled on fs
 	 * EXPECTED: DM_EVENT_CLOSE
@@ -478,7 +478,7 @@ int main(int argc, char **argv)
 		dm_destroy_session(sid);
 		DM_EXIT();
 	}
-	
+
 	DMEV_ZERO(events);
 	DMEV_SET(DM_EVENT_PREUNMOUNT, events);
 	DMEV_SET(DM_EVENT_UNMOUNT, events);
@@ -527,7 +527,7 @@ int main(int argc, char **argv)
 			EVENT_DELIVERY_DELAY;
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				struct stat statfs;
-			
+		
 				rc = dm_handle_to_ino(ahanp1, ahlen1, &ino);
 				rc |= stat(DummySubdir, &statfs);
 		        	if (rc == -1) {
@@ -558,7 +558,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : chown - enabled on directory
 	 * EXPECTED: DM_EVENT_ATTRIBUTE
@@ -592,7 +592,7 @@ int main(int argc, char **argv)
 			EVENT_DELIVERY_DELAY;
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				struct stat statfs;
-			
+		
 				rc = dm_handle_to_ino(ahanp1, ahlen1, &ino);
 				rc |= stat(DummySubdir, &statfs);
 		        	if (rc == -1) {
@@ -626,7 +626,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : close - enabled on directory
 	 * EXPECTED: DM_EVENT_CLOSE
@@ -726,7 +726,7 @@ int main(int argc, char **argv)
 			EVENT_DELIVERY_DELAY;
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				struct stat statfs;
-			
+		
 				rc = dm_handle_to_ino(ahanp1, ahlen1, &ino);
 				rc |= stat(DummyFile, &statfs);
 		        	if (rc == -1) {
@@ -793,7 +793,7 @@ int main(int argc, char **argv)
 			EVENT_DELIVERY_DELAY;
 			if ((varStatus = DMVAR_CHKPASSEXP(0, rc, eventExpected, eventReceived)) == DMSTAT_PASS) {
 				struct stat statfs;
-			
+		
 				rc = dm_handle_to_ino(ahanp1, ahlen1, &ino);
 				rc |= stat(DummyFile, &statfs);
 		        	if (rc == -1) {
@@ -826,7 +826,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-		
+	
 	/*
 	 * TEST    : close - enabled on file
 	 * EXPECTED: DM_EVENT_CLOSE
@@ -928,7 +928,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	
+
 	/*
 	 * TEST    : chown - disabled
 	 * EXPECTED: DM_EVENT_ATTRIBUTE
@@ -962,7 +962,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	
+
 	/*
 	 * TEST    : close - disabled
 	 * EXPECTED: DM_EVENT_CLOSE
@@ -1092,7 +1092,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-		
+	
 	/*
 	 * TEST    : close - disabled
 	 * EXPECTED: DM_EVENT_CLOSE
@@ -1154,7 +1154,7 @@ int main(int argc, char **argv)
 		dm_destroy_session(sid);
 		DM_EXIT();
 	}
-	
+
 	rc = dm_get_config(fshanp, fshlen, DM_CONFIG_MAX_ATTR_ON_DESTROY, &maxAttrSize);
 	if (rc == -1) {
 		DMLOG_PRINT(DMLVL_ERR, "dm_get_config failed! (rc = %d, errno = %d)\n", rc, errno);
@@ -1163,7 +1163,7 @@ int main(int argc, char **argv)
 	} else {
 		DMLOG_PRINT(DMLVL_DEBUG, "DM_CONFIG_MAX_ATTR_ON_DESTROY %d\n", maxAttrSize);
 	}
-	
+
 	szFuncName = "dm_set_return_on_destroy";
 
 	/*
@@ -1212,7 +1212,7 @@ int main(int argc, char **argv)
 			dm_handle_free(fshanp, fshlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_set_return_on_destroy - invalid hanp
 	 * EXPECTED: rc = -1, errno = EFAULT
@@ -1259,7 +1259,7 @@ int main(int argc, char **argv)
 			dm_handle_free(fshanp, fshlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_set_return_on_destroy - invalid hlen
 	 * EXPECTED: rc = -1, errno = EBADF
@@ -1306,7 +1306,7 @@ int main(int argc, char **argv)
 			dm_handle_free(fshanp, fshlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_set_return_on_destroy - invalid token
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -1403,7 +1403,7 @@ int main(int argc, char **argv)
 			dm_handle_free(fshanp, fshlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_set_return_on_destroy - DM_NO_SESSION sid
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -1450,7 +1450,7 @@ int main(int argc, char **argv)
 			dm_handle_free(fshanp, fshlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_set_return_on_destroy - different sid
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -1504,7 +1504,7 @@ int main(int argc, char **argv)
 			dm_handle_free(fshanp, fshlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_set_return_on_destroy - file handle
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -1549,7 +1549,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_set_return_on_destroy - directory handle
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -1590,7 +1590,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_set_return_on_destroy - global handle
 	 * EXPECTED: rc = -1, errno = EBADF
@@ -1610,7 +1610,7 @@ int main(int argc, char **argv)
 
 		/* Variation clean up */
 	}
-	
+
 	/*
 	 * TEST    : dm_set_return_on_destroy - valid
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -1657,7 +1657,7 @@ int main(int argc, char **argv)
 			dm_handle_free(fshanp, fshlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_set_return_on_destroy - zero length attribute
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -1702,7 +1702,7 @@ int main(int argc, char **argv)
 			dm_handle_free(fshanp, fshlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_set_return_on_destroy - attribute too big
 	 * EXPECTED: rc = 0
@@ -1757,7 +1757,7 @@ int main(int argc, char **argv)
 	}
 
 	dm_handle_free(fshanp, fshlen);
-	
+
 	/* Wait for all pending messages to be handled */
 	EVENT_DELIVERY_DELAY_LOOP;
 
@@ -1774,7 +1774,7 @@ int main(int argc, char **argv)
 	}
 
 	DMLOG_STOP();
-			
+		
 	return 0;
 }
 
@@ -1874,7 +1874,7 @@ void *Thread(void *parm)
 		} else if (type == DM_EVENT_UNMOUNT) {
 			/* SPECIAL CASE: need to set response and bMounted */
 			dm_namesp_event_t *nse = DM_GET_VALUE(dmMsg, ev_data, dm_namesp_event_t *);
-			
+		
 			DMLOG_PRINT(DMLVL_DEBUG, "Message is DM_EVENT_UNMOUNT\n");
 			DMLOG_PRINT(DMLVL_DEBUG, "  Unmount mode: %x\n", nse->ne_mode);
 			DMLOG_PRINT(DMLVL_DEBUG, "  File system handle: %p\n", DM_GET_VALUE(nse, ne_handle1, void *));
@@ -1976,4 +1976,4 @@ void *Thread(void *parm)
 	} while (bMounted);
 
 	pthread_exit(0);
-}	
+}

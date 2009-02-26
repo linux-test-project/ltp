@@ -291,7 +291,7 @@ setup(void)
 	TEST_PAUSE;			/* Pause if that option is specified */
 	tst_tmpdir();			/* make temp dir and cd to it */
 }
-	
+
 /*
  * cleanup
  * 	performs all the ONE TIME cleanup for this test at completion or

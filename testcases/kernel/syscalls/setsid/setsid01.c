@@ -44,7 +44,7 @@
 #define INVAL_FLAG	-1
 #define USER2		301
 #define INVAL_MAXGRP	NGROUPS_MAX + 1
-#define INVAL_USER	999999	
+#define INVAL_USER	999999
 #define INVAL_PID	999999
 
 char *TCID = "setsid01";
@@ -160,12 +160,12 @@ do_child_1()
 	int pid;
 
 	sleep(1);
-	
+
 	if (setpgid(0, 0) < 0) {
 		tst_resm(TFAIL, "setpgid(0,0) failed: %s", strerror(errno));
 		exno = 1;
 	}
-	
+
 	if ((pid = FORK_OR_VFORK()) == -1) {
 		tst_resm(TFAIL, "Fork failed");
 		tst_exit();
@@ -185,9 +185,9 @@ do_child_1()
 			tst_resm(TFAIL, "setpgid failed, errno :%d", errno);
 			exno = 2;
 		}
-		
+	
 		retval = setsid();
-		
+	
 		if (errno == EPERM) {
 			tst_resm(TPASS, "setsid SUCCESS to set "
 				 "errno to EPERM");

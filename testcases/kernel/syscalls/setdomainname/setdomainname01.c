@@ -109,7 +109,7 @@ main(int ac, char **av)
 		 */
 		TEST(setdomainname(test_domain_name,
 				   sizeof(test_domain_name)));
-	
+
 		/* check return code */
 		if ( TEST_RETURN == -1 ) {
 			tst_resm(TFAIL, "setdomainname() Failed, errno = %d :"
@@ -135,7 +135,7 @@ main(int ac, char **av)
 void
 setup()
 {
-	
+
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
@@ -147,7 +147,7 @@ setup()
 	/* Save current domain name */
 	if((getdomainname(old_domain_name, sizeof(old_domain_name))) < 0 ) {
 		tst_brkm(TBROK, tst_exit, "getdomainname() failed while"
-			 " getting current domain name");	
+			 " getting current domain name");
 	}
 
 	/* Pause if that option was specified */

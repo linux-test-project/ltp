@@ -33,7 +33,7 @@
  *    DESCRIPTION
  *	Verify munlockall(2) returns -1 and sets errno to EPERM
  *	if the effective userid of the caller is not super-user.
- *	 	
+ *	 
  * 	Setup:
  *	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
@@ -47,7 +47,7 @@
  *	 Issue sys call pass with expected return value and errno.
  *	 otherwise,
  *	  Issue sys call fails with unexpected errno.
- *	
+ *
  *
  * 	Cleanup:
  *      change effective user id to root
@@ -103,17 +103,17 @@ int main(int ac, char **av)
 
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
-		
+	
 		TEST(munlockall());
-		
+	
                 TEST_ERROR_LOG(TEST_ERRNO);
 		/* check return code */
 		if ((TEST_RETURN == -1) && (TEST_ERRNO == EPERM)){
 				tst_resm(TPASS, "munlockall() failed"
 				" as expected for non-superuser"
-				":GOT EPERM");			
+				":GOT EPERM");		
 		} else {
-	  		tst_resm(TCONF, "munlockall() failed to produce "	
+	  		tst_resm(TCONF, "munlockall() failed to produce "
 					"expected errno :%d Got : %d, %s. ***Some distros, such as Red Hat Enterprise Linux, support non-superuser munlockall calls.***",
 				EPERM,TEST_ERRNO,
 				strerror(TEST_ERRNO));
@@ -137,23 +137,23 @@ void setup()
 
 	/*set the expected errnos*/
 	TEST_EXP_ENOS(exp_enos);
-	
+
 	/* switch to nobody user*/
 	if(geteuid()!=0){
 		tst_brkm(TBROK,tst_exit,
 			"Test must be run as root");
 	}
-	
+
        	if((ltpuser = getpwnam(nobody_uid)) == NULL) {
 		 tst_brkm(TBROK, tst_exit, "\"nobody\"user not present");
 	 }
-	
+
 	 if(seteuid(ltpuser->pw_uid) == -1) {
 		 tst_brkm(TBROK, tst_exit ,"seteuid failed to "
 			"to set the effective uid to %d",
 		       	ltpuser->pw_uid);
 	 }
-		
+	
 
 /* Pause if that option was specified */
 
@@ -177,14 +177,14 @@ int main()
 void cleanup()
 {
 	TEST_CLEANUP;
-	
+
 	/*set effective userid back to root*/
 	if (seteuid(0) == -1) {
 		tst_resm(TWARN , "seteuid failed to "
 			"to set the effective uid to root");
 		perror("setuid");
 	}
-	
+
 
 	/* exit with return code appropriate for results */
 	tst_exit();

@@ -64,7 +64,7 @@ void *threads(void* thread_id);
 /* **************************************************************************
    *                              MAIN PROCEDURE                            *
    ************************************************************************** */
-	
+
 int main(int argc, char *argv[])
 {
 	int 	   i,opt,badopts=0;
@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
 	}
 
 	/* Create files */
-	if ((fd=fopen(filename,"w")) == NULL){	
+	if ((fd=fopen(filename,"w")) == NULL){
 		perror ("FAIL - Could not create file");
 		_exit(1);
 	}
@@ -210,7 +210,7 @@ void * threads(void* thread_id_)
 		unlink(filename);
 		pthread_exit((void*)1);
 	}
-	
+
 	/* Check if you should wake up main thread */
         if (++c.thr_sleeping == numthreads)
                 if (pthread_cond_signal(&c.init_cv)){

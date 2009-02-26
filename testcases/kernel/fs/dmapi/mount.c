@@ -62,7 +62,7 @@ int main(int argc, char **argv)
 
 	DMEV_ZERO(events);
 	DMEV_SET(DM_EVENT_MOUNT, events);
-	
+
 	/* CANNOT DO ANYTHING WITHOUT SUCCESSFUL INITIALIZATION!!! */
 	if ((rc = dm_init_service(&varstr)) != 0) {
 		DMLOG_PRINT(DMLVL_ERR, "dm_init_service failed! (rc = %d, errno = %d)\n", rc, errno);
@@ -91,9 +91,9 @@ int main(int argc, char **argv)
 	}
 
 	DMLOG_PRINT(DMLVL_DEBUG, "Starting DMAPI mount tests\n") ;
-	
+
 	szFuncName = "dm_set_dmattr";
-	
+
 	/*
 	 * TEST    : dm_get_mountinfo - invalid sid
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -130,7 +130,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_mountinfo - invalid hanp
 	 * EXPECTED: rc = -1, errno = EFAULT
@@ -167,7 +167,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_mountinfo - invalid hlen
 	 * EXPECTED: rc = -1, errno = EBADF
@@ -204,7 +204,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_mountinfo - invalid token
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -241,7 +241,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_mountinfo - invalid buflen
 	 * EXPECTED: rc = -1, errno = E2BIG
@@ -295,7 +295,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_mountinfo - invalid bufp
 	 * EXPECTED: rc = -1, errno = EFAULT
@@ -332,7 +332,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_mountinfo - invalid rlenp
 	 * EXPECTED: rc = -1, errno = EFAULT
@@ -368,7 +368,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_mountinfo - valid
 	 * EXPECTED: rc = 0
@@ -458,7 +458,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_mountinfo - global handle
 	 * EXPECTED: rc = -1, errno = EBADF
@@ -476,7 +476,7 @@ int main(int argc, char **argv)
 
 		/* Variation clean up */
 	}
-	
+
 	/*
 	 * TEST    : dm_get_mountinfo - file handle
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -513,7 +513,7 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_get_mountinfo - dir handle
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -547,11 +547,11 @@ int main(int argc, char **argv)
 			dm_handle_free(hanp, hlen);
 		}
 	}
-	
+
 	if (me_ptr != NULL) {
 		free(me_ptr);
 	}
-	
+
 	rc = umount(mountPt);
 	if (rc == -1) {
 		DMLOG_PRINT(DMLVL_ERR, "umount failed! (rc = %d, errno = %d)\n", rc, errno);
@@ -565,7 +565,7 @@ int main(int argc, char **argv)
 	}
 
 	DMLOG_STOP();
-			
+		
 	return 0;
 }
 
@@ -673,7 +673,7 @@ void *Thread(void *parm)
 			case DM_EVENT_PREUNMOUNT:
 				response = DM_RESP_CONTINUE;
 				break;
-				
+			
 			default:
 			{
 				DMLOG_PRINT(DMLVL_ERR, "Message is unexpected!\n");
@@ -690,4 +690,4 @@ void *Thread(void *parm)
 	} while (bMounted);
 
 	pthread_exit(0);
-}	
+}

@@ -79,7 +79,7 @@ char bad_file[] = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghi
 	char fname[30] = "testfile";
 	struct statfs fsbuf;
 	char fname1[30];
-	
+
 struct test_case_t {
 	char *path;
 	struct statfs *buf;

@@ -64,7 +64,7 @@ void noprintf(char* string, ...){
 #ifdef DEBUG
 #define dprt	printf
 #else
-#define dprt	noprintf	
+#define dprt	noprintf
 #endif
 
 #define PTHREAD_EXIT(val)    do {\
@@ -228,12 +228,12 @@ shmat_rd_wr(void *args)	/* arguments to the thread function	      */
             getpid(), (long)shmat_addr);
 
 	if (!reader)
-        {	
+        {
 	    /* write character 'Y' to that memory area */
 	    index = 0;
 	    write_to_mem = shmat_addr;
 	    while (index < (int)locargs[2])
-            {	
+            {
 	        dprt("pid[%d]: do_shmat_shmatd(): write_to_mem = %#x\n",
                     getpid(), write_to_mem);
 	        *write_to_mem = 'Y';

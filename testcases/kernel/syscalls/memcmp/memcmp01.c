@@ -221,7 +221,7 @@ int checkit(char *str)
 	for (i=0; i < LEN; i++)
 		if (*str++ != 'a')
 			return(-1);
-	
+
 	return (0);
 }
 

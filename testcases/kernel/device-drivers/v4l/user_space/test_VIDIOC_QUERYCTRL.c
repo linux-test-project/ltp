@@ -351,7 +351,7 @@ void test_VIDIOC_QUERYCTRL_flag_NEXT_CTRL() {
 		 * This also checks if one control is not reported twice.
 		 */
 		CU_ASSERT_EQUAL(memcmp(count_controls1, count_controls2, sizeof(count_controls1)), 0);
-		
+	
 		dprintf1("count_controls1 = { ");
 		for (i=0; i<sizeof(count_controls1)/sizeof(*count_controls1); i++) {
 		    dprintf("%i ", count_controls1[i]);
@@ -363,7 +363,7 @@ void test_VIDIOC_QUERYCTRL_flag_NEXT_CTRL() {
 		    dprintf("%i ", count_controls2[i]);
 		}
 		dprintf1("}\n");
-	
+
 	} else {
 		dprintf1("V4L2_CTRL_FLAG_NEXT_CTRL is not supported or no control is available\n");
 		/* The flag V4L2_CTRL_FLAG_NEXT_CTRL is not supported
@@ -523,7 +523,7 @@ void test_VIDIOC_QUERYCTRL_private_last_1() {
 		memset(&queryctrl, 0xff, sizeof(queryctrl));
 		queryctrl.id = i;
 		ret = ioctl(get_video_fd(), VIDIOC_QUERYCTRL, &queryctrl);
-		
+	
 		i++;
 	} while (ret == 0);
 

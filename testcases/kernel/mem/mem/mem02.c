@@ -139,10 +139,10 @@ int main(int argc, char **argv)			/***** BEGINNING OF MAIN. *****/
 		             tst_exit();
 	}
 	free(pm1);
-	
+
         tst_resm(TPASS,"calloc - calloc of %uMB of memory succeeded",
 	                     memsize/1024/1024);
-	
+
 /*--------------------------------------------------------------------*/
 
 	/* check out malloc/free */
@@ -176,7 +176,7 @@ int main(int argc, char **argv)			/***** BEGINNING OF MAIN. *****/
 
         tst_resm(TPASS,"malloc - malloc of %uMB of memory succeeded",
 	                     memsize/1024/1024);
-	
+
 /*--------------------------------------------------------------------*/
 
 	/* check out realloc */
@@ -184,7 +184,7 @@ int main(int argc, char **argv)			/***** BEGINNING OF MAIN. *****/
 	pm4=pm3=(char *)malloc(10);
 	for(i=0; i<10; i++)
 		*pm4++ = 'X';
-	
+
 	/* realloc with reduced size */
 	pm4=(char *)realloc(pm3,5);
 	pm6=(long)pm4;
@@ -198,7 +198,7 @@ int main(int argc, char **argv)			/***** BEGINNING OF MAIN. *****/
 	}
 
         tst_resm(TPASS,"realloc - realloc of 5 bytes succeeded");
-	
+
 	/* realloc with increased size after fragmenting memory */
 	pm4=(char *)realloc(pm3,15);
 	pm6=(long)pm3;
@@ -210,7 +210,7 @@ int main(int argc, char **argv)			/***** BEGINNING OF MAIN. *****/
 		             tst_exit();
 		}
 	}
-	
+
         tst_resm(TPASS,"realloc - realloc of 15 bytes succeeded");
         free(pm4);
 

@@ -115,7 +115,7 @@ int main (int argc, char **argv)
 	size_t 	max_bytes;	/* Num bytes sent to message queue */
 	size_t 	msg_size;	/* Num bytes sent to message queue */
 	unsigned long	bytes_sent;	/* Num bytes sent to message queue */
-	
+
 	/*
 	 * Parse command line options
 	 */
@@ -214,11 +214,11 @@ int main (int argc, char **argv)
 		fprintf (logfile, "\nsuccessful!\n");
 		fclose (logfile);
 	}
-	
+
 
 	return (0);
 }
-	
+
 
 /*---------------------------------------------------------------------+
 |                             parse_args ()                            |

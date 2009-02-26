@@ -50,7 +50,7 @@
  *   Check return code, if system call failed (return=-1)
  *   	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call	
+ *   	Verify the Functionality of system call
  *      if successful,
  *      	Issue Functionality-Pass message.
  *      Otherwise,
@@ -111,7 +111,7 @@ main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-	
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *) NULL) {
@@ -163,7 +163,7 @@ main(int ac, char **av)
                          *
                          */
 
-			if (sigsetjmp(env, 1) == 0) {	
+			if (sigsetjmp(env, 1) == 0) {
 			   if (memcmp(dummy, addr, page_sz)) {
 				tst_resm(TFAIL, "mapped memory region contains "
 					 "invalid data");

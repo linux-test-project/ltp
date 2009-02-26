@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: lseek03.c,v 1.3 2009/02/26 12:04:00 subrata_modak Exp $ */
+/* $Id: lseek03.c,v 1.4 2009/02/26 12:16:08 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -60,13 +60,13 @@
  *    TEST CASES
  *
  * 	1.) lseek(2) returns...(See Description)
- *	
+ *
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
  *
  *    OUTPUT SPECIFICATIONS
- * 	
+ * 
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
  *
@@ -168,7 +168,7 @@ main(int ac, char **av)
 	Tst_count=0;
 
 	for (ind=0; ind<sizeof(Whences)/sizeof(int); ind++) {
-		
+	
 	    whence=Whences[ind];
 
 	    /*
@@ -180,7 +180,7 @@ main(int ac, char **av)
              *  Call lseek(2)
              */
 	    TEST(lseek(fd, (long)1, whence));
-	
+
 	    /* check return code */
 	    if ( TEST_RETURN == -1 ) {
 		if ( STD_FUNCTIONAL_TEST ) {
@@ -209,7 +209,7 @@ But SIGSYS signal was NOT received.",
 		        fname, whence, TEST_ERRNO, strerror(TEST_ERRNO),
 			EINVAL);
 		}
-	
+
 		else
 		    Tst_count++;
 	    } else {

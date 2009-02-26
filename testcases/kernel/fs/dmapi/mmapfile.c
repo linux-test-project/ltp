@@ -60,7 +60,7 @@ int main(int argc, char **argv)
 	int passflag;
 	int flags;
 	void *memmap;
-	
+
 	if (--argc != 5) {
 		printf("usage: %s filename openflags offset length passflag\n", argv[0]);
 		exit(-1);
@@ -71,7 +71,7 @@ int main(int argc, char **argv)
 		printf("%s error: invalid passflag %s\n", argv[0], argv[5]);
 		exit(-1);
 	}
-	
+
 	length = atoi(argv[4]);
 	if (length < 0) {
 		printf("%s error: invalid length %s\n", argv[0], argv[4]);
@@ -127,5 +127,5 @@ int main(int argc, char **argv)
 	close(fd);
 
 	_exit(0);
-	return 0;	
+	return 0;
 }

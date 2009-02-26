@@ -75,8 +75,8 @@ main(int argc, char** argv)
 
 	io_context_t ctx;
 	int expected_return;
-	
-	
+
+
 	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) != (char *)NULL){
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 		/*NOTREACHED*/
@@ -110,7 +110,7 @@ main(int argc, char** argv)
 				 "expected %d", TEST_RETURN,
 				 expected_return);
 		}
-		
+	
 		/*
 		RETURN VALUE
 		       io_setup  returns 0 on success; otherwise, one of the errors listed in
@@ -137,7 +137,7 @@ main(int argc, char** argv)
 				 expected_return);
 		}
 
-		
+	
 		memset( &ctx, 0, sizeof(io_context_t ) );
 		expected_return = -EINVAL;
 		TEST(io_setup( -1, &ctx ));

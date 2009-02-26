@@ -27,7 +27,7 @@
  * ALGORITHM
  *	create a large shared memory resource
  *	attach it to the current process and give it a value
- *	call shmdt() using the TEST macro	
+ *	call shmdt() using the TEST macro
  *	check the return code
  *	  if failure, issue a FAIL message.
  *	otherwise,

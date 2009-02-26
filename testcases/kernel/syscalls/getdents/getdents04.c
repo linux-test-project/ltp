@@ -116,16 +116,16 @@ int main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "Can not get current "
 				 "directory name");
 		}
-	
+
 		/* allocate some space for the dirent structure */
 		if ((dirp =
 		     (struct dirent *)malloc(sizeof(struct dirent))) == NULL) {
 			tst_brkm(TBROK, cleanup, "malloc failed");
 		}
-	
+
 		/* set up count to be equal to the sizeof struct dirent */
 		count = (int)sizeof(struct dirent);
-	
+
 		/* Now create a new file and get its file descriptor. */
 
 		/* set up some space for a file name */
@@ -165,18 +165,18 @@ int main(int ac, char **av)
 		 *
 		 * equivalent to getdents(fd, dirp, count);
 		 */
-	
+
 		rval = GETDENTS_ASM();
-	
+
 		/*
 		 * Calling with a non directory file descriptor should give
 		 * an ENOTDIR error.
 		 */
-	
+
 		if (rval < 0) {		/* call returned an error */
 			rval *= -1;
 			TEST_ERROR_LOG(rval);
-	
+
 			switch(rval) {
 			case ENOTDIR:
 				tst_resm(TPASS, "expected failure - errno = %d "
@@ -244,7 +244,7 @@ cleanup(void)
 {
 	/* remove the test directory */
 	tst_rmdir();
-	
+
 	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.

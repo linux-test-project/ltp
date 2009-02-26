@@ -33,7 +33,7 @@
  *    DESCRIPTION
  *	This is a phase I test for the socketcall(2) system call.
  *	It is intended to provide a limited exposure of the system call.
- *	
+ *
  * 	Setup:
  *	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
@@ -99,7 +99,7 @@ struct test_case_t {
 	void (*setupfunc)(void);
 	char *desc;
 }TC = { AF_INET, SOCK_STREAM, 6, SYS_BIND, setup1, "bind call"};
-		
+	
 int main(int ac, char **av) {
 	int lc;		 		/* loop counter */
 	char *msg;			/* message returned from parse_opts */
@@ -162,7 +162,7 @@ void setup1(void)
 /* setup() - performs all ONE TIME setup for this test. */
 void setup()
 {
-	
+
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 

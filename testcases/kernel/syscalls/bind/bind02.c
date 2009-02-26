@@ -125,7 +125,7 @@ void try_bind(){
            tst_brkm(TBROK,0,"Unable to reset process user id.");
            tst_exit();
         }
-	
+
 }
 
 int main(int argc,char *argv[]){
@@ -139,7 +139,7 @@ int main(int argc,char *argv[]){
            */
            if ((pw = getpwnam(argv[1])) == NULL) {
 	     tst_brkm(TBROK,0,"User %s not found",argv[1]);
-	     tst_exit();	
+	     tst_exit();
     	   }
        }
                                                                                
@@ -153,7 +153,7 @@ int main(int argc,char *argv[]){
 
 	tst_resm(TINFO,"Socket will try to be bind by user: %s, group: %s",pw->pw_name,gr->gr_name);
 
-	try_bind();		
+	try_bind();	
 	tst_exit();
 
 	/* NOT REACHED */

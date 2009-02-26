@@ -41,7 +41,7 @@
  *   Check return code, if system call failed (return=-1)
  *   	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call	
+ *   	Verify the Functionality of system call
  *      if successful,
  *      	Issue Functionality-Pass message.
  *      Otherwise,
@@ -63,7 +63,7 @@
  *	07/2001 Ported by Wayne Boyer
  *
  * RESTRICTIONS:
- *	
+ *
  */
 
 #include <stdio.h>
@@ -212,7 +212,7 @@ main(int ac, char **av)
 			 * to a smaller file failed, then don't check.
 			 * Both results are allowed according to the SUS.
 			 */
-			
+		
 			/* check return code of ftruncate(2) */
 			if (TEST_RETURN != -1) {
 			  if ((file_length1 != TRUNC_LEN1) ||

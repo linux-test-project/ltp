@@ -97,14 +97,14 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		/* Now make the system call with the TEST() macro */
-	
+
 		TEST(uname(buf));
-	
+
 		if (TEST_RETURN != 0) {
 			tst_resm(TFAIL, "%s failed - errno = %d - %s",
 					TCID, TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
-	
+
 			if (STD_FUNCTIONAL_TEST) {
 				if ((strcmp(buf->sysname, LINUX)) == 0) {
 					tst_resm(TPASS, "%s functionality test "
@@ -138,7 +138,7 @@ setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-	
+
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 }

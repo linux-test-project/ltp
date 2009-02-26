@@ -40,7 +40,7 @@
  *	   is given for header->version
  *	4) capset() fails with errno set to EPERM the process does not
  *	   have enough privilege to set capabilities
- *	
+ *
  *
  * 	Setup:
  * 	  Setup signal handling.

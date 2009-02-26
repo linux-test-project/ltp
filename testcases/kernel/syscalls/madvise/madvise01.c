@@ -45,14 +45,14 @@
  *    TEST CASES
  *
  * 	1.) madvise(2) advices...(See Description)
- *	
+ *
  *	INPUT SPECIFICATIONS
  * 		The standard options for system call tests are accepted.
  *		(See the parse_opts(3) man page).
  *
  *	OUTPUT SPECIFICATIONS
  *		Output describing whether test cases passed or failed.
- * 	
+ * 
  *	ENVIRONMENTAL NEEDS
  *		None
  *
@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
 	int lc, fd;
 	char *file=NULL;
 	struct stat stat;
-	
+
 	char *msg=NULL;
 	char filename[64];
 	char *progname=NULL;
@@ -131,16 +131,16 @@ int main(int argc, char *argv[])
 			"OPTION PARSING ERROR - %s",
 			msg);
 	}
-	
+
 	/**************************************************
 	 *	Perform global setup for test
 	 **************************************************/
 	setup();
-	
+
 	/* Creating file in tmp directory for testing */
 	progname = *argv;
 	sprintf(filename, "%s-out.%d", progname, getpid());
-	
+
 	for(lc = 0; TEST_LOOPING(lc); lc++)
 	{
 		/* Reset Tst_count in case we are looping */
@@ -162,7 +162,7 @@ int main(int argc, char *argv[])
 		/* Writing 40 KB of random data into this file
 		   [32 * 1280 = 40960] */
 		for(i=0; i<1280; i++)
-		{	
+		{
 			if(write(fd, str_for_file, strlen(str_for_file)) < 0)
 			{
 				tst_brkm(TBROK, cleanup,
@@ -170,7 +170,7 @@ int main(int argc, char *argv[])
 					filename);
 			}
 		}
-	
+
 		/* Get file status for its size */
 		if(fstat(fd, &stat) < 0)
 		{
@@ -203,7 +203,7 @@ int main(int argc, char *argv[])
 		/*(4) Test case for MADV_WILLNEED */
 		TEST(madvise(file,stat.st_size,MADV_WILLNEED));
 		check_and_print("MADV_WILLNEED");
-	
+
 		/*(5) Test case for MADV_DONTNEED */
 		TEST(madvise(file,stat.st_size,MADV_DONTNEED));
 		check_and_print("MADV_DONTNEED");
@@ -214,7 +214,7 @@ int main(int argc, char *argv[])
 			tst_brkm(TBROK, cleanup,
 				"Could not unmap memory");
 		}
-		
+	
 		close(fd);
 	}
 
@@ -250,7 +250,7 @@ void cleanup(void)
      * print errno log if that option was specified.
      */
     TEST_CLEANUP;
-	
+
 	/* Remove temp directory and files */
 	tst_rmdir();
 

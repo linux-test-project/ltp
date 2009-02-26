@@ -94,17 +94,17 @@ int main(int ac, char **av)
 		 * Try to raise the priority of this process from a default of
 		 * 0 to a new value of -2.  This should give an EACCES error.
 		 */
-	
+
 		/* call the system call with the TEST() macro */
 		TEST(setpriority(PRIO_PROCESS, 0, new_val));
-	
+
 		if (TEST_RETURN == 0) {
 	                tst_resm(TFAIL, "call failed to produce expected error "
 				 "- errno = %d - %s", TEST_ERRNO,
 				 strerror(TEST_ERRNO));
 			continue;
 		}
-	
+
 		TEST_ERROR_LOG(TEST_ERRNO);
 
 		switch (TEST_ERRNO) {

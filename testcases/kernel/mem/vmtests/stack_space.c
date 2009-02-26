@@ -97,7 +97,7 @@ int main(argc, argv)
 	if (signal(SIGTERM,term) == SIG_ERR) {
 		tst_resm(TBROK,"first sigset failed");
                 tst_exit();
-	
+
 	}
 
 	if (argc == 1) {

@@ -29,7 +29,7 @@
  *
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: access01.c,v 1.4 2009/02/26 12:02:32 subrata_modak Exp $ */
+/* $Id: access01.c,v 1.5 2009/02/26 12:14:54 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -63,13 +63,13 @@
  * 	2.) access(2) returns 0 for R_OK...(See Description)
  * 	3.) access(2) returns 0 for W_OK...(See Description)
  * 	4.) access(2) returns 0 for X_OK...(See Description)
- *	
+ *
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
  *
  *    OUTPUT SPECIFICATIONS
- * 	
+ * 
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
  *
@@ -188,7 +188,7 @@ int main(int ac, char **av)
 	     * Call access(2)
 	     */
 	    TEST(access(Test_cases[tc].file, Test_cases[tc].mode));
-	
+
 	    /* check return code */
 	    if ( TEST_RETURN == -1 && Test_cases[tc].experrno == 0 ) {
 	        tst_resm(TFAIL, "access(%s, %s) Failed, errno=%d : %s",

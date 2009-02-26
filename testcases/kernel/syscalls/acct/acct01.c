@@ -86,7 +86,7 @@ int main (argc, argv)
 			tst_exit();
 		}
 	}
-	
+
 	tst_tmpdir();
 
 	/* now try to use a device, and it should fail */
@@ -122,7 +122,7 @@ int main (argc, argv)
 	/* now do a valid acct enable call
 	*/
 	sprintf(tmpbuf, "./%s.%d", TCID, getpid() );
-	
+
 	if( (i=creat( tmpbuf, 0777)) == -1) {
 		tst_resm(TBROK,"Failure %d on opening %s",
 			errno, tmpbuf );

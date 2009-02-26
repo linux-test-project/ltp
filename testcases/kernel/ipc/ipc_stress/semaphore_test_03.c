@@ -168,7 +168,7 @@ int main (int argc, char **argv)
 	fflush (stdout);
 	setup_signal_handler ();
 	errpid = parent_pid = getpid ();
-	
+
 	if (nsems < 8) nsems = 8;
 
 	/*
@@ -606,7 +606,7 @@ static void test_commands (pid_t proc_pid)
 		exit (0);
 	} else if (pid < (pid_t)0) {
 		sys_error ("fork failed", __LINE__);
-	}	
+	}
 
 	/*
 	 * Wait for child process's semaphore request before proceeding...
@@ -662,7 +662,7 @@ static void test_commands (pid_t proc_pid)
 		exit (0);
 	} else if (pid < (pid_t)0) {
 		sys_error ("fork failed", __LINE__);
-	}	
+	}
 
 	/*
 	 * Wait for child process's semaphore request before deleting the
@@ -870,7 +870,7 @@ static void test_commands (pid_t proc_pid)
 		sys_error ("child process terminated abnormally", __LINE__);
 
 	expected_value = 0;
-	arg.val = 0;	
+	arg.val = 0;
 	if ((val = semctl (semid, 0, GETVAL, arg)) < 0)
 		sys_error ("semctl (GETVAL) failed", __LINE__);
 	if (val != expected_value)
@@ -905,7 +905,7 @@ static void test_commands (pid_t proc_pid)
 		exit (0);
 	} else if (pid < 0) {
 		sys_error ("fork failed", __LINE__);
-	}	
+	}
 
 	/*
 	 * Wait for child process's semaphore request before proceeding...

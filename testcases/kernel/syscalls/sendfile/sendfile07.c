@@ -128,7 +128,7 @@ setup()
 	char buf[100];
 	int  p[2];
 	int  i, r;
-	
+
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
@@ -154,13 +154,13 @@ setup()
 		tst_brkm(TBROK, cleanup, "open failed, errno: %d", errno);
 		/*NOTREACHED*/
 	}
-	
+
 	/* Make fulfilled out_fd. */
 	if (socketpair(PF_UNIX, SOCK_DGRAM, 0, p) < 0) {
 		tst_brkm(TBROK, cleanup, "socketpair failed, errno: %d", errno);
 		/*NOTREACHED*/
 	}
-	
+
 	/* Don't close.
 	   You cannot write nothing on out_fd if ignored_fd is closed.*/
 	ignored_fd = p[0];
@@ -168,7 +168,7 @@ setup()
 	if (fcntl(out_fd, F_SETFL, O_WRONLY|O_NONBLOCK) < 0) {
 		tst_brkm(TBROK, cleanup, "fcntl failed, errno: %d", errno);
 	}
-	
+
 	i = MAX_FILL_DATA_LENGTH;
 	while (i > 0) {
 		r = write(out_fd, buf, 1);

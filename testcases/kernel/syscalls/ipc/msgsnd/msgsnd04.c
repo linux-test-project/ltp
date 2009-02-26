@@ -90,14 +90,14 @@ int main(int ac, char **av)
 		/*
 		 * Attempt to write another message to the full queue.
 		 */
-	
+
 		TEST(msgsnd(msg_q_1, &msg_buf, MSGSIZE, IPC_NOWAIT));
-	
+
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "call succeeded when error expected");
 			continue;
 		}
-	
+
 		TEST_ERROR_LOG(TEST_ERRNO);
 
 		switch(TEST_ERRNO) {

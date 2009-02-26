@@ -171,7 +171,7 @@ int main(int argc, char **argv)
 //block1:
 		tst_resm(TINFO, "Enter block 1");
 		fail = 0;
-		
+	
 		/*
 		 * In this block we are trying to call writev() with
 		 * partially valid data. This should return the valid number
@@ -317,7 +317,7 @@ setup(void)
 
 	strcpy(name, DATA_FILE);
 	sprintf(f_name, "%s.%d", name, getpid());
-	
+
         bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
         if (bad_addr == MAP_FAILED) {
                 tst_brkm(TBROK, cleanup, "mmap failed");

@@ -28,7 +28,7 @@ int main(void)
   for (i = 0; i < 32; i++) {
 	  sigaction(i, &sa, NULL);
   }
-	
+
   while (1)
 	  ;
 }

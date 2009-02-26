@@ -75,7 +75,7 @@ void ok_exit();
  */
 
 #define MAXLOOPS	500	/* max pages for map children to write */
-#define	MAPSIZE		(64*1024)   /* default mapsize set up by parent */	
+#define	MAPSIZE		(64*1024)   /* default mapsize set up by parent */
 #ifdef roundup
 #undef roundup
 #endif
@@ -273,7 +273,7 @@ main(int argc, char *argv[])
 	/*
 	 *  Now wait for children and refork them as needed.
 	 */
-	
+
 	while (!finished) {
 		do {
 			pid = wait(&wait_stat);
@@ -333,7 +333,7 @@ main(int argc, char *argv[])
 			goto cleanup;
 		}
 	}
-	
+
 	/*
 	 *  Finished!  Check the map for sanity, then kill all
 	 *  the children and done!.
@@ -361,7 +361,7 @@ cleanup:
 		else
 			(void)printf("map data okay\n");
 	}
-	
+
 	(void)time(&t);
 //	(void)printf("%s: Finished %s", argv[0], ctime(&t)); LTP POrt
 	ok_exit();
@@ -462,7 +462,7 @@ mapokay(uchar_t *expbuf)
 			ptr++;
 		}
 	}
-					
+				
 	return 1;
 }
 

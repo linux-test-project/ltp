@@ -83,7 +83,7 @@ struct test_case_t {
 	/* EFAULT - the message buffer address is invalid */
 	{&msg_q_1, NULL, EFAULT},
 };
-	
+
 int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
@@ -106,15 +106,15 @@ int main(int ac, char **av)
 		/*
 		 * loop through the test cases
 		 */
-	
+
 		for (i=0; i<TST_TOTAL; i++) {
 			TEST(msgsnd(*(TC[i].queue_id), TC[i].buffer, 1, 0));
-	
+
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
 				continue;
 			}
-	
+
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO == TC[i].error) {

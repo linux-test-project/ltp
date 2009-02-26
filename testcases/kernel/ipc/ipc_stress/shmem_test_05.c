@@ -175,7 +175,7 @@ int main (int argc, char **argv)
 		'C',
 		'E'
 	};
-	
+
 
 	/*
 	 * Parse command line arguments and print out program header
@@ -244,7 +244,7 @@ int main (int argc, char **argv)
          */
 
 	shmdt( shmptr[i] );
-	
+
         /*
          * Release shared memory
          */

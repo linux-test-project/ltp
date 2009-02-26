@@ -88,7 +88,7 @@
 #define	DEFAULT_MESSAGE_QUEUES 1000
 #endif
 
-#define USAGE	"\nUsage: %s [-n num_message_queues] [-d]\n\n"	
+#define USAGE	"\nUsage: %s [-n num_message_queues] [-d]\n\n"
 
 
 /*

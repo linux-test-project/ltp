@@ -76,7 +76,7 @@ char *TCID = "ioperm01";	/* Test program identifier.    */
 
 int io_addr;     /*kernel version dependant io start address */
 #define NUM_BYTES 3		/* number of bytes from start address */
-#define TURN_ON 1		
+#define TURN_ON 1	
 #define TURN_OFF 0
 #ifndef IO_BITMAP_BITS
 #define IO_BITMAP_BITS 1024
@@ -139,7 +139,7 @@ main(int ac, char **av)
 void
 setup()
 {
-	
+
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
@@ -183,7 +183,7 @@ cleanup()
 	if ((ioperm(io_addr, NUM_BYTES, TURN_OFF)) == -1) {
 		tst_brkm(TBROK, tst_exit, "ioperm() cleanup failed");
 	}
-	
+
 	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.

@@ -140,7 +140,7 @@ int main()
 		if ( strncmp(str2, mm2, strlen(str2)) )
 			tst_brkm(TFAIL, cleanup, "failed on compare %s",
 				 tmp2);
-		
+	
 		munmap(mm1, 64);
 		munmap(mm2, 64);
 	}

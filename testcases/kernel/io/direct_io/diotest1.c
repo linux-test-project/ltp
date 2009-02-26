@@ -28,7 +28,7 @@
  *	The read and write calls use bufsize to perform IO. Input and output
  *	files can be specified through commandline and is useful for running
  *	test with raw devices as files.
- *	
+ *
  * USAGE
  *	diotest1 [-b bufsize] [-n numblks] [-i infile] [-o outfile]
  *

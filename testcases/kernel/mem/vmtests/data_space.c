@@ -274,7 +274,7 @@ int dotest(testers, me)
 	mondobuf = (char*)malloc(max_size);
 		if (mondobuf == 0)
 			okexit(me);
-	
+
 	kill(parent_pid, SIGUSR1);
 
 	/*

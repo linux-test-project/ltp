@@ -310,7 +310,7 @@ void signal_init ()
 #else
 #  ifdef _LINUX_
        		if ((i == SIGKILL) || (i == SIGSTOP) || ((i>=32)&&(i<=34))) continue;
-#  else		
+#  else	
                 if ((i == SIGKILL) || (i == SIGSTOP) || (i == SIGCONT)) continue;
 #  endif
 #endif

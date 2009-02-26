@@ -87,22 +87,22 @@ int io_tio(char *pathname , int flag , int n , int operation)
 	void * bufptr = NULL;
 	off_t offset = 0;
 	struct timespec timeout;
-	
+
 	io_context_t myctx;
 	struct iocb iocb_array[AIO_MAXIO];
 	struct iocb *iocbps[AIO_MAXIO];
-	
+
 	fd = open ( pathname , flag, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 	if ( fd <= 0 ) {
 		perror ( " open : file " );
 		return -1;
 	}
-	
+
 	res = io_queue_init(n, &myctx);
 	//printf ( " res = %d \n", res);
-	
+
 	for ( i = 0 ; i < AIO_MAXIO ; i ++ ) {
-		
+	
 		switch (operation) {
 			case IO_CMD_FSYNC :
 			case IO_CMD_FDSYNC :
@@ -113,7 +113,7 @@ int io_tio(char *pathname , int flag , int n , int operation)
 					return -1;
 				}
 				memset ( bufptr , 0 , AIO_BLKSIZE );
-				
+			
 				io_prep_pwrite ( &iocb_array[i] , fd , bufptr , AIO_BLKSIZE , offset );
 				io_set_callback( &iocb_array[i] , work_done );
 				iocbps[i] = &iocb_array[i];
@@ -127,7 +127,7 @@ int io_tio(char *pathname , int flag , int n , int operation)
 					return -1;
 				}
 				memset ( bufptr , 0 , AIO_BLKSIZE );
-				
+			
 				io_prep_pread ( &iocb_array[i] , fd , bufptr , AIO_BLKSIZE , offset );
 				io_set_callback( &iocb_array[i] , work_done );
 				iocbps[i] = &iocb_array[i];
@@ -152,23 +152,23 @@ int io_tio(char *pathname , int flag , int n , int operation)
 			  break;
 		}
 	}
-	
+
 	do {
 		res = io_submit(myctx , AIO_MAXIO , iocbps);
 	} while (res == -EAGAIN);
 	if (res < 0 ) {
 		io_error("io_submit tio", res);
 	}
-	
+
 	/*
 	 * We have submitted all the i/o requests. Wait for at least one to complete
 	 * and call the callbacks.
 	 */
 	wait_count = AIO_MAXIO;
-	
+
 	timeout.tv_sec = 30;
 	timeout.tv_nsec = 0;
-	
+
 	switch ( operation ) {
 		case IO_CMD_PREAD :
 		case IO_CMD_PWRITE :
@@ -206,18 +206,18 @@ int io_tio(char *pathname , int flag , int n , int operation)
 		  }
 		  break;
 	}
-	
-	
+
+
 	close ( fd );
-	
+
 	for ( i = 0 ; i < AIO_MAXIO ; i ++ ) {
 		if ( iocb_array[i].u.c.buf != NULL ) {
 			free ( iocb_array[i].u.c.buf );
 		}
 	}
-	
+
 	io_queue_release ( myctx );
-	
+
 	return 0;
 }
 
@@ -225,57 +225,57 @@ int test_main(void)
 {
 	int	status = 0 ;
 	//char *filepath = "testdir/file1";
-	
+
     printf("running test 1 \n");
 	status = io_tio( "testdir/file1" , O_TRUNC | O_DIRECT | O_WRONLY | O_CREAT | O_LARGEFILE , AIO_MAXIO , IO_CMD_PWRITE);
 	if ( status ) {
 		return status;
 	}
-	
+
     printf("running test 2 \n");
 	status = io_tio( "testdir/file1" , O_RDONLY | O_DIRECT | O_LARGEFILE , AIO_MAXIO , IO_CMD_PREAD);
 	if ( status ) {
 		return status;
 	}
-	
+
     printf("running test 3 \n");
 	status = io_tio( "testdir/file1" , O_TRUNC | O_RDWR , AIO_MAXIO , IO_CMD_PWRITE );
 	if ( status ) {
 		return status;
 	}
-	
+
     printf("running test 4 \n");
 	status = io_tio( "testdir/file1" , O_RDWR , AIO_MAXIO , IO_CMD_PREAD );
 	if ( status ) {
 		return status;
 	}
-		
+	
     printf("running test 5 \n");
 	status = io_tio( "testdir/file1" , O_TRUNC | O_WRONLY , AIO_MAXIO , IO_CMD_PWRITE );
 	if ( status ) {
 		return status;
 	}
-	
+
     printf("running test 6 \n");
 	status = io_tio( "testdir/file1" , O_RDONLY , AIO_MAXIO , IO_CMD_PREAD );
 	if ( status ) {
 		return status;
 	}
-	
+
     printf("running test 7 \n");
 	status = io_tio( "testdir/file2" , O_TRUNC | O_DIRECT | O_WRONLY | O_CREAT | O_LARGEFILE ,
 				AIO_MAXIO , IO_CMD_FSYNC);
 	if ( status ) {
 		return status;
 	}
-	
+
     printf("running test 8 \n");
 	status = io_tio( "testdir/file2" , O_TRUNC | O_DIRECT | O_WRONLY | O_CREAT | O_LARGEFILE ,
 				AIO_MAXIO , IO_CMD_FDSYNC);
 	if ( status ) {
 		return status;
 	}
-	
+
 	return status;
 }
 

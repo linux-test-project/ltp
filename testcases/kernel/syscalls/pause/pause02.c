@@ -144,7 +144,7 @@ main(int ac, char **av)
 
 		/* Sleep to ensure the signal sent is effected */
 		sleep(1);
-			
+		
 		/*
 		 * In case pause() doesn't return witin 2 seconds,
 		 * set the alarm to send SIGKILL for the child.
@@ -222,7 +222,7 @@ do_child_uclinux()
 		tst_brkm(TBROK, cleanup,
 			 "signal() fails to catch SIGINT");
 	}
-	
+
 	do_child();
 }
 

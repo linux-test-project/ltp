@@ -70,7 +70,7 @@ char *TCID     = "mincore02";	/* test program identifier. */
 int  TST_TOTAL = 1;	/* total number of tests in this file.   */
 
 static int file_desc=0;	/* this is for the file descriptor */
-static char *position=NULL;				
+static char *position=NULL;			
 static int p_size;		/* page size obtained via getpagesize() */
 static int num_pages = 4;	/* four pages are used in this test */
 static unsigned char * vec=NULL;
@@ -102,7 +102,7 @@ void cleanup()
 
 	/* Close all open file descriptors. */
 	/* Exit with appropriate return code. */
-	
+
 	free(vec);
 	munlock(position,p_size*num_pages);
 	munmap(position,p_size*num_pages);
@@ -138,32 +138,32 @@ void setup()
 	char *buf;
 	int size;
 	int status;
-	
+
 	if( -1 == (p_size = getpagesize()) ) {
 		tst_brkm(TBROK, cleanup,  "Unable to get page size: %s", strerror(errno));
 	}
-		
+	
 	size = p_size*num_pages;
 	buf = (char*)malloc(p_size*num_pages);
-	
+
 	memset(buf,42,size);
 	vec = malloc((size+p_size-1) / p_size);
-	
+
 	/* create a temporary file to be used */
-	
+
 	if( -1 == (file_desc = mkstemp(tmpfilename)) ) {
 		tst_brkm(TBROK, cleanup,  "Unable to create temporary file: %s", strerror(errno));
 	}
-	
+
 	/* fill the temporary file with two pages of data */
-	
+
 	if( -1 == write(file_desc,buf,size) ) {
 		tst_brkm(TBROK, cleanup, "Error in writing to the file: %s", strerror(errno));
 	}
 	free(buf);
 
 	/* mmap the file in virtual address space in read , write and execute mode , the mapping should be shared  */
-	
+
 	if( MAP_FAILED == (position = (char *)mmap(0,size,PROT_READ|PROT_WRITE|PROT_EXEC,MAP_SHARED,file_desc,0)) ) {
 		tst_brkm(TBROK, cleanup,  "Unable to map file for read/write.  Error: %d (%s)", errno, strerror(errno));
 	}
@@ -178,17 +178,17 @@ void setup()
 int main(int argc, char **argv)
 {
 	int lock_pages,counter;
-	
+
 	setup();
 
         if( -1 == mincore((void *)position,num_pages*p_size,vec) ) {
                tst_brkm(TBROK, cleanup, "Unable to execute mincore system call: %s",strerror(errno));
         }
-		
+	
 	/* check status of pages */
-	
+
         lock_pages = 0;
-	
+
         for(counter = 0; counter < num_pages; counter++) {
                 if(vec[counter] & 1)
 	                lock_pages++;

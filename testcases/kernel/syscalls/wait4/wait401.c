@@ -95,18 +95,18 @@ int main(int ac, char **av)
 		/*
 		 * Allocate some space for the rusage structure
 		 */
-	
+
 		if ((rusage = (struct rusage *)malloc(sizeof(struct rusage)))
 				== NULL) {
 			tst_brkm(TBROK, cleanup, "malloc() failed");
 		}
-	
+
 		pid = FORK_OR_VFORK();
-	
+
 		if (pid == -1) {
 			tst_brkm(TBROK, cleanup, "fork() failed");
 		}
-	
+
 		if (pid == 0) {		/* this is the child */
 			/*
 			 * sleep for a moment to let us do the test
@@ -114,16 +114,16 @@ int main(int ac, char **av)
 			sleep(1);
 			exit(0);
 		} else {		/* this is the parent */
-	
+
 			/* call wait4 with the TEST() macro */
 			TEST(wait4(pid, &status, 0, rusage));
 		}
-	
+
 		if (TEST_RETURN == -1) {
 			tst_brkm(TFAIL, cleanup, "%s call failed - errno = %d "
 				": %s", TCID, TEST_ERRNO, strerror(TEST_ERRNO));
 		}
-	
+
 		if (STD_FUNCTIONAL_TEST) {
 			/*
 			 * The return from this call should be non-zero.
@@ -137,7 +137,7 @@ int main(int ac, char **av)
 						"expected value. %d", TCID,
 						TEST_RETURN);
 			} else {
-	
+
 				tst_resm(TPASS, "Received child pid as expected.");
 			}
 		}

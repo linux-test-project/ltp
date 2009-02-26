@@ -45,14 +45,14 @@
  *    TEST CASES
  *
  * 	1.) madvise(2) error conditions...(See Description)
- *	
+ *
  *	INPUT SPECIFICATIONS
  * 		The standard options for system call tests are accepted.
  *		(See the parse_opts(3) man page).
  *
  *	OUTPUT SPECIFICATIONS
  *		Output describing whether test cases passed or failed.
- * 	
+ * 
  *	ENVIRONMENTAL NEEDS		(??)
  *		None
  *
@@ -141,22 +141,22 @@ int main(int argc, char *argv[])
 	char filename[64];
 	char *progname=NULL;
 	char *str_for_file="abcdefghijklmnopqrstuvwxyz12345\n";	/* 32-byte string */
-	
-	
+
+
 	if ((msg = parse_opts(argc, argv, (option_t *) NULL, NULL)) != (char *) NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
-	
+
 	/**************************************************
 	 *	Perform global setup for test
 	 **************************************************/
 	setup();
-	
+
 	/* Creating file in tmp directory for testing */
 	progname = *argv;
 	sprintf(filename, "%s-out.%d", progname, getpid());
-	
+
 	for(lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping */
 		Tst_count = 0;
@@ -175,7 +175,7 @@ int main(int argc, char *argv[])
 		pagesize = getpagesize();
 
 		/* Writing 16 pages of random data into this file */
-		for(i=0; i < (pagesize/2); i++) {	
+		for(i=0; i < (pagesize/2); i++) {
 			if(write(fd, str_for_file, strlen(str_for_file)) < 0) {
 				tst_brkm(TBROK, cleanup,
 					"Could not write data to file \"%s\"",
@@ -214,7 +214,7 @@ int main(int argc, char *argv[])
 			tst_brkm(TBROK, cleanup, "Error in getting memory "
 				"lock for the requested page(s)");
 		}
-	
+
         	TEST(madvise(file,stat.st_size,MADV_DONTNEED));
 		check_and_print(EINVAL);
 
@@ -230,11 +230,11 @@ int main(int argc, char *argv[])
 		 * So, we will create two maps(of the same file), unmap the map at higher address.
 		 * Now issue an madvise() on a region covering the region which we unmapped.
 		 */
-		
+	
         	if ((low = (char *) mmap (NULL, stat.st_size/2, PROT_READ, MAP_SHARED, fd, 0)) == (char *)-1) {
 			tst_brkm(TBROK, cleanup, "Could not mmap file");
         	}
-		
+	
         	if ((high =
 			(char *) mmap (NULL, stat.st_size/2, PROT_READ, MAP_SHARED, fd, stat.st_size/2 )) == (char *)-1) {
 			tst_brkm(TBROK, cleanup, "Could not mmap file");
@@ -274,7 +274,7 @@ int main(int argc, char *argv[])
 		TEST(madvise(tmp_memory_allocated, 5 * pagesize, MADV_WILLNEED));
 		check_and_print(EBADF);
 		free((void *)ptr_memory_allocated);
-		
+	
 		close(fd);
 	}
 	cleanup();

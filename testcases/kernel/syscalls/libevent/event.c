@@ -151,12 +151,12 @@ event_init(void)
 	event_sigcb = NULL;
 	event_gotsig = 0;
 	gettimeofday(&event_tv, NULL);
-	
+
 	RB_INIT(&timetree);
 	TAILQ_INIT(&eventqueue);
 	TAILQ_INIT(&activequeue);
 	TAILQ_INIT(&signalqueue);
-	
+
 	evbase = NULL;
 	for (i = 0; eventops[i] && !evbase; i++) {
 		evsel = eventops[i];
@@ -192,7 +192,7 @@ event_process_active(void)
 	for (ev = TAILQ_FIRST(&activequeue); ev;
 	    ev = TAILQ_FIRST(&activequeue)) {
 		event_queue_remove(ev, EVLIST_ACTIVE);
-		
+	
 		/* Allows deletes to work */
 		ncalls = ev->ev_ncalls;
 		ev->ev_pncalls = &ncalls;
@@ -272,7 +272,7 @@ event_loop(int flags)
 			timeout_next(&tv);
 		else
 			timerclear(&tv);
-		
+	
 		/* If we have no events, we just exit */
 		if (!event_haveevents())
 			return (1);
@@ -434,7 +434,7 @@ event_add(struct event *ev, struct timeval *tv)
 				/* Abort loop */
 				*ev->ev_pncalls = 0;
 			}
-			
+		
 			event_queue_remove(ev, EVLIST_ACTIVE);
 		}
 

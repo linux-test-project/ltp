@@ -129,7 +129,7 @@ main(int argc, char **argv)
 
 	prog = argv[0];
 	nwait = 0;
-	setup();		
+	setup();	
 /*--------------------------------------------------------------*/
 	tid = -1;
 
@@ -180,7 +180,7 @@ main(int argc, char **argv)
 	if (local_flag != FAILED)
 		tst_resm(TPASS, "semctl06 ran successfully!");
 	else tst_resm(TFAIL, "semctl06 failed");
-	
+
 /*--------------------------------------------------------------*/
 /* Clean up any files created by test before call to anyfail.	*/
 
@@ -218,7 +218,7 @@ dotest(key_t key)
 		tst_resm(TFAIL, "\tfirst semop() failed errno %d", errno);
 		exit(1);
 	}
-			
+		
 	for (i = 0; i < NKIDS; i++) {
 		if ((pid = FORK_OR_VFORK()) < 0) {
 			tst_resm(TFAIL, "\tfork failed");
@@ -248,7 +248,7 @@ dotest(key_t key)
 			nwait++;
 		}
 	}
-			
+		
 
 	procstat = 2;
 	/*

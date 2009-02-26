@@ -90,7 +90,7 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 int exp_enos[] = {EINVAL, EPERM, 0};
 
 GID_T *groups_list; 		/* Array to hold gids for getgroups() */
-	
+
 int setup1();			/* setup function to test error EPERM */
 void setup();			/* setup function for the test */
 void cleanup();			/* cleanup function for the test */
@@ -121,7 +121,7 @@ main(int ac, char **av)
 	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
-	
+
 	groups_list = malloc(ngroups_max * sizeof(GID_T));
 	if (groups_list == NULL) {
 		tst_brkm(TBROK, NULL, "malloc failed to alloc %d errno "
@@ -147,14 +147,14 @@ main(int ac, char **av)
 
 			gidsetsize = ngroups_max + Test_cases[i].gsize_add;
 			test_desc = Test_cases[i].desc;
-			
+		
 			/*
 			 * Call setgroups() to test different test conditions
 			 * verify that it fails with -1 return value and
 			 * sets appropriate errno.
 			 */
 			 TEST(SETGROUPS(gidsetsize, groups_list));
-	
+
 			/* check return code of setgroups(2) */
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "setgroups(%d) returned %d, "

@@ -510,7 +510,7 @@ test13A(void)
 	if(unlink("./tmp/byebye") == -1){
 		perror("unlink");
 		cleanup_function();
-		fail_exit();	
+		fail_exit();
 	}
 
 	for (i = 0; i < nbads; i++)
@@ -753,7 +753,7 @@ test18A(void)
 		cleanup_function();
 		fail_exit();
 	}
-	
+
 	if (visit == 1) {
 		if (ret == 999) {
 			/* Test is passed */

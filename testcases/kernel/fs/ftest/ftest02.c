@@ -24,7 +24,7 @@
  * CALLS
  *	open, close,  read, write, lseek,
  *	unlink, chdir
- *	
+ *
  *
  * ALGORITHM
  *
@@ -129,7 +129,7 @@ int main (ac, av)
 	/*
 	 * Make a directory to do this in; ignore error if already exists.
 	 */
-	
+
 
 	local_flag = PASSED;
 	parent_pid = getpid();
@@ -485,14 +485,14 @@ int term()
 	register int i;
 
 	//tst_resm(TINFO, "term -[%d]- got sig term.", getpid());
-	
+
 	if (parent_pid == getpid()) {
 		for (i=0; i < nchild; i++)
 			if (pidlist[i])		/* avoid embarassment */
 				kill(pidlist[i], SIGTERM);
 		return 0;
 	}
-	
+
 	tst_resm(TBROK, "Child process exiting.");
 	tst_exit();
 	return 0;

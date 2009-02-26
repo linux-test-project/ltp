@@ -184,7 +184,7 @@ int open_flags = O_RDWR|O_CREAT;	/* open flags */
  *	________________________________________________________________
  *	<    pid       >< offset in file of this word  ><    pid       >
  */
-	
+
 #define PATTERN_OFFSET	3	/* Like PATTERN_PID but has a fixed number */
 				/* (STATIC_NUM) instead of pid. */
 				/* Allows multiple processes to write/read */
@@ -786,7 +786,7 @@ struct timeval tv1;
 			break;
 
 		case 's':	/* format: seed[,seed...] */
-			
+		
 			/* count the number of seeds */
 			cptr=optarg;
 			for(Nseeds=1; *cptr ; Nseeds++) {
@@ -1009,7 +1009,7 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 	    else if ( Pattern == PATTERN_ZEROS )
 		printf("%s: %d DEBUG3 all zeros pattern - allows multiple writers\n",
 		    Progname, Pid);
-	
+
 	    else
 		printf("%s: %d DEBUG3 unknown pattern\n",
 		    Progname, Pid);
@@ -1133,7 +1133,7 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 		gettimeofday(&ts,NULL);
 	    Seed=ts.tv_sec + Pid;  /* default random seed */
 	    //Seed=time(0) + Pid;  /* default random seed */
-		
+	
 	}
 
 	random_range_seed(Seed);
@@ -1225,7 +1225,7 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 	/*
 	 * construct auto filename and insert them into filenames space
 	 */
-		
+	
 	for(ind=0;ind<num_auto_files; ind++, num++) {
 		gettimeofday(&tv1,NULL);
 		sprintf((char *)filenames+(num*PATH_MAX), "%s/%s%ld%ld%d.%d",
@@ -1243,7 +1243,7 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 /**** end filename stuff ****/
 
 	if ( time_iterval > 0 )
-	{	
+	{
 		struct timeval ts;
 		gettimeofday(&ts,NULL);
 		start_time=ts.tv_sec;
@@ -1465,7 +1465,7 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 		 * Unlink the file if that is desired
 		 */
 		if ( unlink_inter && (Iter_cnt % unlink_inter == 0) ) {
-		
+	
 		    if ( Debug > 4 )
 			printf("%s: %d DEBUG5 %s/%d: %d Unlinking file %s\n",
 			    Progname, Pid, __FILE__, __LINE__, Iter_cnt, filename);
@@ -1477,7 +1477,7 @@ no whole file checking will be performed!\n", Progname, TagName, getpid());
 	         * delay while staying active for "delaysecs" seconds.
 	         */
 	        if ( delaytime ) {
-		
+	
 		    int ct, end;
 #ifdef CRAY
 		    ct=_rtc();
@@ -1546,7 +1546,7 @@ set_sig()
 {
    int sig;
 
-	
+
         /*
          * now loop through all signals and set the handlers
          */
@@ -1823,7 +1823,7 @@ prt_examples(FILE *stream)
     fprintf(stream,
 	 "# writes 4096 to files until 50 blocks are written\n\
 %s -i 0 -g 4096 -B 50b file1 file2\n\n", Progname);
-	
+
     fprintf(stream,
 	 "# write one byte to 750 files in gdir then unlinks them\n\
 %s -g 1 -C 0 -d gdir -u -S 750\n\n", Progname);
@@ -1944,7 +1944,7 @@ long *curr_size_ptr;	/* BUG:14136 */
 		}
 
 		lkfile(fd, LOCK_EX, LKLVL0);	 /* get exclusive lock */
-		
+	
 #if NEWIO
 		ret=lio_write_buffer(fd, io_type, "w", 1, SIGUSR1, &errmsg,0);
 #else
@@ -1991,7 +1991,7 @@ long *curr_size_ptr;	/* BUG:14136 */
         	    } else {
             		fprintf(stderr, "%s%s: %d %s/%d: Unable to fstat(%d, &buf), errno:%d %s\n",
                 	Progname, TagName, Pid, __FILE__, __LINE__, fd, errno, strerror(errno));
-	
+
 			lkfile(fd, LOCK_UN, LKLVL0);     /* release lock */
             		return -1;
         	    }
@@ -2003,12 +2003,12 @@ long *curr_size_ptr;	/* BUG:14136 */
 		} else if ( Mode & MODE_RAND_LSEEK ) {
                    if ( max_lseek == LSK_EOF ) {	/* within file size */
                         noffset=random_range(min_lseek, fsize, 1, NULL);
-                   }		
-		   else if ( max_lseek == LSK_EOFPLUSGROW ) {	
+                   }	
+		   else if ( max_lseek == LSK_EOFPLUSGROW ) {
 		        /* max to beyond file size */
 			noffset=random_range(min_lseek, fsize+grow_incr, 1, NULL);
 		   }
-		   else if ( max_lseek == LSK_EOFMINUSGROW ) {	
+		   else if ( max_lseek == LSK_EOFMINUSGROW ) {
 		        /*
 			 * Attempt to not grow the file.
 			 * If the i/o will fit from min_lseek to EOF,
@@ -2086,7 +2086,7 @@ long *curr_size_ptr;	/* BUG:14136 */
 
 		tmp=tell(fd);
 
-		lkfile(fd, LOCK_UN, LKLVL0);	
+		lkfile(fd, LOCK_UN, LKLVL0);
 
 		if ( ret != grow_incr) {
 			fprintf(stderr, "%s: %s/%d: write failed: %s\n",
@@ -2136,7 +2136,7 @@ long *curr_size_ptr;	/* BUG:14136 */
 		}
 		*curr_size_ptr=tmp;	/* BUG:14136 */
 
-		lkfile(fd, LOCK_UN, LKLVL0);	
+		lkfile(fd, LOCK_UN, LKLVL0);
 
 		if ( ret != grow_incr ) {
 			fprintf(stderr, "%s%s: %d %s/%d: %d %s\n",
@@ -2163,7 +2163,7 @@ long *curr_size_ptr;	/* BUG:14136 */
 		     * The pattern written to the file will be considered corrupted.
 		     */
 		    if ( Debug > 0 && lockfile ) {
-		        printf("%s%s: %d DEBUG1 %s/%d: offset after write(%ld) not as exp(%ld+%d=%ld)\n", 	
+		        printf("%s%s: %d DEBUG1 %s/%d: offset after write(%ld) not as exp(%ld+%d=%ld)\n", 
 			    Progname, TagName, Pid, __FILE__, __LINE__, tmp, Woffset, grow_incr, Woffset+grow_incr);
 			printf("%s%s: %d DEBUG1 %s/%d: %d Assuming file changed by another process, resetting offset:%ld (expect pattern mismatch)\n",
 				Progname, TagName, Pid, __FILE__, __LINE__, Iter_cnt, tmp-grow_incr);
@@ -2260,7 +2260,7 @@ int just_trunc;		/* lseek has already been done for you */
 	            lkfile(fd, LOCK_UN, LKLVL0);
 		    return -1;
 		}
-			
+		
 		if ( new_offset < min_lseek )
 		    new_offset=min_lseek;
 		else
@@ -2290,7 +2290,7 @@ int just_trunc;		/* lseek has already been done for you */
 
 	    if ( new_offset < 0 )
 		new_offset=0;
-	
+
 #ifdef CRAY
 	    if (  lseek(fd, new_offset, SEEK_SET) == -1 ) {
 		fprintf(stderr, "%s%s: %d %s/%d: lseek(fd, %d, SEEK_SET) l4 failed: %s\n",
@@ -2332,7 +2332,7 @@ int just_trunc;		/* lseek has already been done for you */
 	    printf("%s: %d DEBUG2 %s/%d: trunc file by %d bytes, to size of = %d bytes\n",
 		Progname, Pid, __FILE__, __LINE__, cur_offset-new_offset, new_offset);
 	}
-	
+
 
         bytes_consumed -= (cur_offset - new_offset);
 	return 0;
@@ -2374,7 +2374,7 @@ int mode;       /* write mode */
 
 
    
-    /*	
+    /*
      * Get the shared file lock.  We need to hold the lock from before
      * we do the stat until after the read.
      */
@@ -2485,7 +2485,7 @@ int mode;       /* write mode */
 	    return 1;
 	}
 	return 0;   /* all is well */
-	
+
     }
     else if ( Pattern == PATTERN_OFFSET )
 	ret=datapidchk(STATIC_NUM, Buffer, Grow_incr, Woffset, &errmsg);
@@ -2574,7 +2574,7 @@ int no_file_check;	/* if set, do not do file content check */
 	 * a trunc/truncate from "corrupting" our data.
 	 */
 	lkfile(fd, LOCK_SH, LKLVL0);
-	
+
 	if ((fsize=file_size(fd)) == -1 )  {
 	    lkfile(fd, LOCK_UN, LKLVL0);
 	    return -1;
@@ -2615,7 +2615,7 @@ int no_file_check;	/* if set, do not do file content check */
 		    rd_size=MAX_FC_READ;
 	        else
 		    rd_size=fsize - rd_cnt;
-				
+			
 #if NEWIO
 	        ret=lio_read_buffer(fd, io_type, buf, rd_size,
 		    SIGUSR1, &errmsg,0);
@@ -2654,7 +2654,7 @@ int no_file_check;	/* if set, do not do file content check */
 	            ret=databinchk('o', buf, rd_size, rd_cnt, &errmsg);
 	        else
 	            ret=dataasciichk(NULL, buf, rd_size, rd_cnt, &errmsg);
-		
+	
 		   
 	        if ( ret >= 0 ) {
 		    fprintf(stderr,
@@ -2752,7 +2752,7 @@ file_size(int fd)
             fprintf(stderr, "%s%s: %d %s/%d: Unable to fstat(%d, &buf), errno:%d %s\n",
                 Progname, TagName, Pid, __FILE__, __LINE__, fd, errno, strerror(errno));
 	    return -1;
-	
+
         }
 
         return sb.st_size;
@@ -2768,7 +2768,7 @@ lkfile(int fd, int operation, int lklevel)
 
    
     if ( lockfile == lklevel) {
-	
+
         if ( Debug > 5 ) {
 	    switch (operation) {
  	    case LOCK_UN:
@@ -2818,7 +2818,7 @@ lkfile(int fd, int operation, int lklevel)
 	        printf("%s: %d DEBUG3 %s/%d: Got write/exclusive lock on fd %d\n",
 		    Progname, Pid, __FILE__, __LINE__, fd);
 		break;
-	
+
 	    default:
 	        printf("%s: %d DEBUG3 %s/%d: Completed action %d on fd %d\n",
 		    Progname, Pid, __FILE__, __LINE__, operation, fd);

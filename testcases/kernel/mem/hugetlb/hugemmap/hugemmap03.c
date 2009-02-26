@@ -103,20 +103,20 @@ main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "-H option is REQUIRED for this test, use -h for options help");
 		tst_exit();
 	}
-	
+
 	/* Perform global setup for test */
 	setup();
 
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-	
+
 	        /* Creat a temporary file used for huge mapping */
 		if ((fildes = open(TEMPFILE, O_RDWR | O_CREAT, 0666)) < 0) {
 			tst_brkm(TFAIL, cleanup,
 				 "open() on %s Failed, errno=%d : %s",
 				 TEMPFILE, errno, strerror(errno));
 		}
-		
+	
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 

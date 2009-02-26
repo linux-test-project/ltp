@@ -253,7 +253,7 @@ int get_current_cpu(pid_t pid)
 	}
 
 	fclose(pfile);
-	
+
 	return cpu;
 }
 

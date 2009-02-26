@@ -163,7 +163,7 @@ int main(argc, argv)
 			number_pointer = memory_pointer;
 			for(j = 1; j <= memory_size; j++) {
 				if(*(number_pointer++) != j) error_count++;
-			}	
+			}
 			exit(error_count);
 		}
 	}

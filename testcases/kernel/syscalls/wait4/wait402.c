@@ -117,18 +117,18 @@ main(int ac, char **av)
 		/*
 		 * Allocate some space for the rusage structure.
 		 */
-	
+
 		if ((rusage = (struct rusage *)malloc(sizeof(struct rusage)))
 				== NULL) {
 			tst_brkm(TBROK, cleanup, "malloc() failed");
 		}
-	
+
 		pid = FORK_OR_VFORK();
-	
+
 		if (pid == -1) {
 			tst_brkm(TBROK, cleanup, "fork() failed");
 		}
-	
+
 		if (pid == 0) {		/* this is the child */
 			/*
 			 * sleep for a moment to let us do the test
@@ -143,13 +143,13 @@ main(int ac, char **av)
 			 */
 			TEST(wait4(epid, &status, 0, rusage));
 		}
-	
+
 		if (TEST_RETURN == 0) {
 			tst_brkm(TFAIL, cleanup, "call failed to produce expected error - errno = %d - %s", TEST_ERRNO, strerror(TEST_ERRNO));
 		}
 
 		TEST_ERROR_LOG(TEST_ERRNO);
-	
+
 		switch (TEST_ERRNO) {
 		case ECHILD:
 			tst_resm(TPASS, "received expected failure - errno = %d - %s",

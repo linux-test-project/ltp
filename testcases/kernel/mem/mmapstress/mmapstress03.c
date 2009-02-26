@@ -138,7 +138,7 @@ main(int argc, char *argv[])
                 anyfail();
 	}
 	/* sbrked over about half the holes */
-	
+
 	hole_addr = hole_start + pagesize; /* munmap the other pages */
 	while (hole_addr + pagesize < brk_max_addr) {
 		if (munmap(hole_addr, pagesize) == -1) {

@@ -111,14 +111,14 @@ int main(int ac, char **av)
 
 		/* call the system call with the TEST() macro */
 		TEST(setpriority(PRIO_PROCESS, pid_max + 1, new_val));
-	
+
 		if (TEST_RETURN == 0) {
 			tst_resm(TFAIL, "call failed to produce expected error "
 				 "- errno = %d - %s", TEST_ERRNO,
 				 strerror(TEST_ERRNO));
 			continue;
 		}
-	
+
 		TEST_ERROR_LOG(TEST_ERRNO);
 
 		switch (TEST_ERRNO) {

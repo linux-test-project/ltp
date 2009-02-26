@@ -258,7 +258,7 @@ thread_func(void *args)		/* arguments to the thread function           */
     {
         perror("main(): sched_setscheduler()");
 	dprt("pid[%d]: exiting with -1\n", getpid());
-        pthread_exit((void*)-1);	
+        pthread_exit((void*)-1);
     }
 
     /* processor number this process last executed on */
@@ -266,7 +266,7 @@ thread_func(void *args)		/* arguments to the thread function           */
     {
         fprintf(stderr, "main(): get_proc_num() failed\n");
 	dprt("pid[%d]: exiting with -1\n", getpid());
-        pthread_exit((void*)-1);	
+        pthread_exit((void*)-1);
     }
 
     if (verbose)
@@ -365,7 +365,7 @@ main(int  argc,		/* number of input parameters.			      */
 	        if (strncmp(optarg, "fifo", 4) == 0)
                     spcy = SCHED_FIFO;
 		else
-                if (strncmp(optarg, "rr", 2) == 0)	
+                if (strncmp(optarg, "rr", 2) == 0)
                     spcy = SCHED_RR;
 		else
                 if (strncmp(optarg, "other", 5) == 0)
@@ -413,7 +413,7 @@ main(int  argc,		/* number of input parameters.			      */
     {
             perror("main(): malloc failed");
             exit(-1);
-    }	
+    }
     for (thrd_ndx = 0; thrd_ndx < num_thrd; thrd_ndx++)
     {
         args_table[thrd_ndx] = malloc(sizeof(thread_sched_t));
@@ -421,7 +421,7 @@ main(int  argc,		/* number of input parameters.			      */
         {
             perror("main(): malloc failed");
             exit(-1);
-        }	
+        }
         chld_args = args_table[thrd_ndx];
 	chld_args->s_policy = spcy;
         if (pthread_create(&thid[thrd_ndx], NULL, thread_func,
@@ -443,7 +443,7 @@ main(int  argc,		/* number of input parameters.			      */
     {
             perror("main(): malloc failed");
             exit(-1);
-    }	
+    }
     for (thrd_ndx = 0; thrd_ndx<num_thrd; thrd_ndx++)
     {
         status_table[thrd_ndx] = malloc(sizeof(thread_sched_t));
@@ -451,7 +451,7 @@ main(int  argc,		/* number of input parameters.			      */
         {
             perror("main(): malloc failed");
             exit(-1);
-        }	
+        }
         status = status_table[thrd_ndx];
         if (pthread_join(thid[thrd_ndx], (void **)&status))
         {

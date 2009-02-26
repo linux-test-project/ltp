@@ -55,7 +55,7 @@
  *
  * Restrictions:
  *	The filesystem containing /tmp MUST have "mand" specified as
- *	a mount option.  This option allows the use of mandatory locks. 	
+ *	a mount option.  This option allows the use of mandatory locks. 
  *
  */
 #include <signal.h>
@@ -117,7 +117,7 @@ void  doparent()
 	int fd;
 	struct stat sb;
 
-	
+
 	sigemptyset(&set);
 	sigsuspend(&set);
 	if ((fd = open(filename, O_RDWR | O_NONBLOCK)) < 0) {
@@ -161,7 +161,7 @@ void  doparent()
                 local_flag = FAILED;
                 cleanup();
         }
-					
+				
 	/* kill off child, freeing record lock */
 	if (kill(cpid, SIGKILL) < 0) {
 		tst_resm(TFAIL,"kill child");
@@ -262,7 +262,7 @@ void dochild()
 		tst_resm(TFAIL,"child fcntl failed");
 		tst_exit();
 	}
-	
+
 	if (kill(ppid, SIGUSR1) < 0) {
 		tst_resm(TFAIL,"child kill");
 		tst_exit();

@@ -29,7 +29,7 @@
  *	initialize a message buffer with a known message and type
  *	enqueue the message
  *	loop if that option was specified
- *	call msgrcv() using two different invalid cases	
+ *	call msgrcv() using two different invalid cases
  *	check the errno value
  *	  issue a PASS message if we get E2BIG or ENOMSG
  *	otherwise, the tests fails
@@ -115,15 +115,15 @@ int main(int ac, char **av)
 			/*
 			 * Use the TEST macro to make the call
 			 */
-	
+
 			TEST(msgrcv(msg_q_1, &rcv_buf, TC[i].size, TC[i].type,
 			     TC[i].flags));
-	
+
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
 				continue;
 			}
-	
+
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO == TC[i].error) {
@@ -134,7 +134,7 @@ int main(int ac, char **av)
 				tst_resm(TFAIL, "call failed with an "
 					 "unexpected error - %d : %s",
 					 TEST_ERRNO, strerror(TEST_ERRNO));
-			}			
+			}		
 		}
 	}
 

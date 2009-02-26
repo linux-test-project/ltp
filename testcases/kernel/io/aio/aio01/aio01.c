@@ -357,7 +357,7 @@ int main(int argc, char **argv) {
 		tst_resm(TPASS, "Test 6: %d read,write,verify in %d.%06d sec",
 				i, sec, usec);
 	}
-	
+
 	cleanup();
 
 	return 0;

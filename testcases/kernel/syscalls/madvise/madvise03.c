@@ -45,14 +45,14 @@
  *    TEST CASES
  *
  * 	1.) madvise(2) advices...(See Description)
- *	
+ *
  *	INPUT SPECIFICATIONS
  * 		The standard options for system call tests are accepted.
  *		(See the parse_opts(3) man page).
  *
  *	OUTPUT SPECIFICATIONS
  *		Output describing whether test cases passed or failed.
- * 	
+ * 
  *	ENVIRONMENTAL NEEDS
  *		None
  *
@@ -124,7 +124,7 @@ int main(int argc, char *argv[])
 	struct stat stat;
 	void *addr1;
         long shm_size = 0;
-	
+
 	char *msg=NULL;
 	char filename[64];
 	char *progname=NULL;
@@ -141,22 +141,22 @@ int main(int argc, char *argv[])
 		tst_exit(0);
         }
 
-	
+
 	if ((msg = parse_opts(argc, argv, (option_t *) NULL, NULL)) != (char *) NULL)
 	{
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s",msg);
 		tst_exit(0);
 	}
-	
+
 	/**************************************************
 	 *	Perform global setup for test
 	 **************************************************/
 	setup();
-	
+
 	/* Creating file in tmp directory for testing */
 	progname = *argv;
 	sprintf(filename, "%s-out.%d", progname, getpid());
-	
+
 	for(lc = 0; TEST_LOOPING(lc); lc++)
 	{
 		/* Reset Tst_count in case we are looping */
@@ -178,7 +178,7 @@ int main(int argc, char *argv[])
 		/* Writing 40 KB of random data into this file
 		   [32 * 1280 = 40960] */
 		for(i=0; i<1280; i++)
-		{	
+		{
 			if(write(fd, str_for_file, strlen(str_for_file)) < 0)
 			{
 				tst_brkm(TBROK, cleanup,
@@ -186,7 +186,7 @@ int main(int argc, char *argv[])
 					filename);
 			}
 		}
-	
+
 		/* Get file status for its size */
 		if(fstat(fd, &stat) < 0)
 		{
@@ -204,7 +204,7 @@ int main(int argc, char *argv[])
 				filename);
 		}
 
-		/* Allocate shared memory segment */	
+		/* Allocate shared memory segment */
                 shm_size = get_shmmax();
 		if ((shmid1 = shmget(IPC_PRIVATE, 1024*1024*1024>shm_size? shm_size:1024*1024*1024, IPC_CREAT|IPC_EXCL|0701)) == -1)
                 {
@@ -235,7 +235,7 @@ int main(int argc, char *argv[])
 			tst_brkm(TBROK, cleanup,
 				"Could not unmap memory");
 		}
-		
+	
 		close(fd);
 	}
 
@@ -276,7 +276,7 @@ void cleanup(void)
      * print errno log if that option was specified.
      */
     TEST_CLEANUP;
-	
+
 	/* Remove temp directory and files */
 	tst_rmdir();
 

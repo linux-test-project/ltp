@@ -33,7 +33,7 @@
  *
  */
 
-#include <stdio.h>	
+#include <stdio.h>
 #include <errno.h>
 #include <signal.h>
 #include <stdlib.h>
@@ -112,7 +112,7 @@ int main (argc, argv)
 	pid = FORK_OR_VFORK();
 	if (pid < 0) {
 		tst_resm(TBROK,"fork() returned %d", pid);
-		tst_exit();	
+		tst_exit();
 	}
 	if (pid == 0) {
 #ifdef UCLINUX
@@ -129,7 +129,7 @@ int main (argc, argv)
 		(void)kill(kidpid[0], SIGTERM);
 		(void)unlink("./rename14");
 		tst_resm(TBROK,"fork() returned %d", pid);
-		tst_exit();	
+		tst_exit();
 	}
 	if (pid == 0) {
 #ifdef UCLINUX

@@ -71,7 +71,7 @@ int main()
     	 }
 	nodemask_zero(&nodemask);
 	nodemask_set(&nodemask,1);
-	numa_bind(&nodemask);	
+	numa_bind(&nodemask);
 	hardware();
 	return numa_exit_on_error;
 }

@@ -1357,7 +1357,7 @@ static void show_ascii_page(unsigned char * resp, int len)
 	break;
     }
 }
-	
+
 static int fetchTemperature(int sg_fd, int do_hex, unsigned char * resp,
 			    int max_len)
 {
@@ -2634,7 +2634,7 @@ int do_scsi_inquiry(char * device, int hex_flag)
 	    printf("standard INQUIRY:\n");
 	if (num_opcode > 0)
 	    printf(" <<given opcode or page_code is being ignored>>\n");
-	
+
         if (0 == do_scsi_inq(sg_fd, 0, 0, 0, rsp_buff, 36, 1)) {
 	    len = rsp_buff[4] + 5;
 	    ansi_version = rsp_buff[2] & 0x7;
@@ -3063,7 +3063,7 @@ static void scan_dev_type(const char * leadin, int max_dev, int do_numeric,
         if (res < 0) {
             snprintf(ebuff, EBUFF_SZ, "Error closing %s ", fname);
             perror("sg_map: close error");
-#ifndef IGN_CLOSE_ERR		
+#ifndef IGN_CLOSE_ERR	
             return;
 #else
             ++num_errors;
@@ -4272,7 +4272,7 @@ static void do_start_stop(int fd, int start, int immed, int loej,
 			printf (" %02x", cmdblk[k]);
 		printf("\n");
 	}
-	
+
 	if (ioctl(fd, SG_IO, &io_hdr) < 0) {
 		perror("start_stop (SG_IO) error");
 		return;
@@ -4317,7 +4317,7 @@ static void do_sync_cache(int fd)
 	io_hdr.cmdp = cmdblk;
 	io_hdr.sbp = sense_b;
 	io_hdr.timeout = DEF_START_TIMEOUT;
-	
+
 	if (ioctl(fd, SG_IO, &io_hdr) < 0) {
 		perror("sync_cache (SG_IO) error");
 		return;
@@ -4347,11 +4347,11 @@ int do_scsi_start_stop(char * device, int startstop)
 	int immed = 1;
 	int loej = 0;
 	int power_conds = 0;
-	
+
     print_msg(TEST_BREAK, __FUNCTION__);
 
     file_name  = device;
-		
+	
 	fd = open(file_name, O_RDWR | O_NONBLOCK);
 	if (fd < 0) {
 		fprintf(stderr, "Error trying to open %s\n", file_name);
@@ -4365,15 +4365,15 @@ int do_scsi_start_stop(char * device, int startstop)
 		close(fd);
 		return 3;
 	}
-	
+
 	if (synccache)
 		do_sync_cache(fd);
-	
+
 	if (power_conds > 0)
 		do_start_stop(fd, 0, immed, 0, power_conds);
 	else if (startstop != -1)
 		do_start_stop(fd, startstop, immed, loej, 0);
-	
+
 	close (fd);
 	return 0;
 }
@@ -4508,7 +4508,7 @@ void do_fill_buffer (int *buf, int len)
 	for (i = 0; i < len/BPI - 1; i++)
 	{
 		/* we rely on rand() giving full range of int */
-		buf[i] = rand ();	
+		buf[i] = rand ();
 		sum += buf[i];
 	}
 	while (rln%BPI)
@@ -4532,7 +4532,7 @@ int read_buffer (int sg_fd, unsigned size)
 	int res;
 	unsigned char * rbBuff = malloc(OFF + sizeof(rbCmdBlk) + size);
 	struct sg_header * rsghp = (struct sg_header *)rbBuff;
-	
+
         int rbInLen = OFF + size;
 	int rbOutLen = OFF + sizeof (rbCmdBlk);
 	memset(rbBuff, 0, OFF + sizeof(rbCmdBlk) + size);
@@ -4586,7 +4586,7 @@ int write_buffer (int sg_fd, unsigned size)
    
         int rbInLen = OFF;
 	int rbOutLen = OFF + sizeof (rbCmdBlk) + size;
-	
+
 	do_fill_buffer ((int*)(rbBuff + OFF + sizeof(rbCmdBlk)), size);
         rsghp->pack_len = 0;                /* don't care */
         rsghp->reply_len = rbInLen;
@@ -4632,7 +4632,7 @@ int do_scsi_read_write_buffer (char * device)
 	int block_dev = 0;
   
     print_msg(TEST_BREAK, __FUNCTION__);
-	
+
 	sg_fd = open(file_name, O_RDWR);
 	if (sg_fd < 0) {
 		perror("sg_test_rwbuf: open error");
@@ -4652,7 +4652,7 @@ int do_scsi_read_write_buffer (char * device)
 		return 1;
 	}
 	if (find_out_about_buffer (sg_fd, &buf_capacity, file_name)) return 1;
-	
+
 	cmpbuf = malloc (buf_capacity);
 	if (write_buffer (sg_fd, buf_capacity)) return 3;
 	res = read_buffer (sg_fd, buf_capacity);
@@ -4666,7 +4666,7 @@ int do_scsi_read_write_buffer (char * device)
 	printf ("Success\n");
 	return 0;
 }
-	
+
 int do_scsi_test_unit_ready(char * device)
 {
     int sg_fd, k;
@@ -7087,7 +7087,7 @@ int do_scsi_sgp_read_write(char * device)
         if (FT_SG == rcoll.out_type) {
             res = read_capacity(rcoll.outfd, &out_num_sect, &out_sect_sz);
             if (2 == res) {
-                fprintf(stderr, 	
+                fprintf(stderr, 
 			"Unit attention, media changed(out), continuing\n");
                 res = read_capacity(rcoll.outfd, &out_num_sect, &out_sect_sz);
             }

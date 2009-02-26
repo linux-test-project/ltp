@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fcntl10.c,v 1.5 2009/02/26 12:02:55 subrata_modak Exp $ */
+/* $Id: fcntl10.c,v 1.6 2009/02/26 12:14:56 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -60,13 +60,13 @@
  *    TEST CASES
  *
  * 	1.) fcntl(2) returns...(See Description)
- *	
+ *
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
  *
  *    OUTPUT SPECIFICATIONS
- * 	
+ * 
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
  *
@@ -170,7 +170,7 @@ main(int ac, char **av)
 	 * Call fcntl(2) with F_SETLKW flocks.l_type = F_UNLCK argument on fname
 	 */
 	TEST(fcntl(fd, F_SETLKW, &flocks));
-	
+
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
 	    TEST_ERROR_LOG(TEST_ERRNO);
@@ -195,7 +195,7 @@ main(int ac, char **av)
 	 * Call fcntl(2) with F_SETLKW flocks.l_type = F_UNLCK argument on fname
 	 */
 	TEST(fcntl(fd, F_SETLKW, &flocks));
-	
+
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
 	    TEST_ERROR_LOG(TEST_ERRNO);
@@ -214,7 +214,7 @@ main(int ac, char **av)
 			 fname, TEST_RETURN);
 	    }
 	}
-	
+
      }
     }	/* End for TEST_LOOPING */
 

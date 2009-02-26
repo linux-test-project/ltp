@@ -113,13 +113,13 @@ main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "-H option is REQUIRED for this test, use -h for options help");
 		tst_exit();
 	}
-	
+
 	/* Perform global setup for test */
 	setup();
 
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-	
+
 	        /* Creat a temporary file used for huge mapping */
 		if ((fildes = open(TEMPFILE, O_RDWR | O_CREAT, 0666)) < 0) {
 			tst_brkm(TFAIL, cleanup,
@@ -143,7 +143,7 @@ main(int ac, char **av)
                         	MAP_SHARED, nfildes, 0);
                 	addrlist[i] = addr;
         	}
-		
+	
 		/* mmap using normal pages and a low memory address */
 		errno = 0;
 		addr = mmap(LOW_ADDR, PAGE_SIZE, PROT_READ,
@@ -155,7 +155,7 @@ main(int ac, char **av)
 		errno = 0;
 		addr2 = mmap(LOW_ADDR2, MAP_SIZE, PROT_READ | PROT_WRITE,
 			    MAP_SHARED, fildes, 0);
-		
+	
 #if __WORDSIZE==64 /* 64-bit process */
 		if (addr2 == MAP_FAILED) {
 			tst_resm(TFAIL, "huge mmap() unexpectedly failed on %s for 64-bit, errno=%d : %s",
@@ -181,7 +181,7 @@ main(int ac, char **av)
                 	if (munmap(addrlist[i], 256*1024*1024))
                         	tst_resm(TBROK,"munmap of addrlist[%d] failed",i);
         	}
-		
+	
 #if __WORDSIZE==64
 		if (munmap(addr2, MAP_SIZE) != 0) {
 			tst_brkm(TFAIL, NULL, "huge munmap() fails to unmap the "
@@ -192,7 +192,7 @@ main(int ac, char **av)
 			tst_brkm(TFAIL, NULL, "munmap() fails to unmap the "
 				 "memory, errno=%d", errno);
 		}
-		
+	
 
 		close(fildes);
 	}	/* End for TEST_LOOPING */

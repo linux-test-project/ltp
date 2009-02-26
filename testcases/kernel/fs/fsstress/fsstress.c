@@ -47,9 +47,9 @@ typedef enum {
 	OP_DREAD,
 	OP_DWRITE,
 	OP_FDATASYNC,
-#ifndef NO_XFS	
+#ifndef NO_XFS
 	OP_FREESP,
-#endif	
+#endif
 	OP_FSYNC,
 	OP_GETDENTS,
 	OP_LINK,
@@ -58,18 +58,18 @@ typedef enum {
 	OP_READ,
 	OP_READLINK,
 	OP_RENAME,
-#ifndef NO_XFS	
+#ifndef NO_XFS
 	OP_RESVSP,
-#endif	
+#endif
 	OP_RMDIR,
 	OP_STAT,
 	OP_SYMLINK,
 	OP_SYNC,
 	OP_TRUNCATE,
 	OP_UNLINK,
-#ifndef NO_XFS	
+#ifndef NO_XFS
 	OP_UNRESVSP,
-#endif	
+#endif
 	OP_WRITE,
 	OP_LAST
 } opty_t;
@@ -295,9 +295,9 @@ int main(int argc, char **argv)
 	ptrdiff_t	srval;
 #endif
         int             nousage=0;
-#ifndef NO_XFS		
+#ifndef NO_XFS	
 	xfs_error_injection_t	err_inj;
-#endif	
+#endif
 
 	errrange = errtag = 0;
 	umask(0);
@@ -389,7 +389,7 @@ int main(int argc, char **argv)
 					ops[i].freq = 0;
 			}
 		}
-       	
+       
        	 	if (!dirname) {
        	     	/* no directory specified */
     	        	if (!nousage) usage();
@@ -415,7 +415,7 @@ int main(int argc, char **argv)
 			seed = (int)t.tv_sec ^ (int)t.tv_usec;
 			printf("seed = %ld\n", seed);
 		}
-#ifndef NO_XFS	
+#ifndef NO_XFS
 		if (!no_xfs) {
 		i = ioctl(fd, XFS_IOC_FSGEOMETRY, &geom);
 		if (i >= 0 && geom.rtblocks)
@@ -455,7 +455,7 @@ int main(int argc, char **argv)
 				exit(1);
 			}
 		} else
-#endif	
+#endif
 			close(fd);
 		unlink(buf);
 		if (nproc == 1) {
@@ -472,7 +472,7 @@ int main(int argc, char **argv)
 			while (wait(&stat) > 0)
 				continue;
 		}
-#ifndef NO_XFS		
+#ifndef NO_XFS	
 		if (errtag != 0) {
 			err_inj.errtag = 0;
 			err_inj.fd = fd;
@@ -489,7 +489,7 @@ int main(int argc, char **argv)
 	{
 	  sprintf(cmd,"rm -rf %s/*",dirname);
 	  system(cmd);
-	}	
+	}
         loopcntr++;
 	}
 	return 0;
@@ -724,7 +724,7 @@ doproc(void)
 		p = &ops[freq_table[random() % freq_table_size]];
 		if ((unsigned long)p->func < 4096) abort();
 
-		
+	
 		p->func(opno, random());
 		/*
 		 * test for forced shutdown by stat'ing the test
@@ -1492,7 +1492,7 @@ attr_remove_f(int opno, long r)
 	if (aname == NULL) {
 		if (v)
 			printf(
-			"%d/%d: attr_remove - name %d not found at %s\n",	
+			"%d/%d: attr_remove - name %d not found at %s\n",
 				procid, opno, which, f.path);
 		free_pathname(&f);
 		return;
@@ -1690,7 +1690,7 @@ creat_f(int opno, long r)
 	check_cwd();
 	esz = 0;
 	if (fd >= 0) {
-#ifndef NO_XFS	
+#ifndef NO_XFS
 		struct fsxattr	a;
 		if (extsize && ioctl(fd, XFS_IOC_FSGETXATTR, &a) >= 0) {
 			a.fsx_xflags |= XFS_XFLAG_REALTIME;
@@ -1699,9 +1699,9 @@ creat_f(int opno, long r)
 			if (ioctl(fd, XFS_IOC_FSSETXATTR, &a) < 0)
 				e1 = errno;
 			esz = a.fsx_estsize;
-			
+		
 		}
-#endif		
+#endif	
 		 		 add_to_flist(type, id, parid);
 		close(fd);
 	}
@@ -1791,13 +1791,13 @@ dread_f(int opno, long r)
 		close(fd);
 		return;
 	}
-	
+
 	if (no_xfs) {
 		diob.d_miniosz = stb.st_blksize;
 		diob.d_maxiosz = stb.st_blksize * 256;  /* good number ? */
 		diob.d_mem = stb.st_blksize;
 	}
-#ifndef NO_XFS	
+#ifndef NO_XFS
 	   else 	if (ioctl(fd, XFS_IOC_DIOINFO, &diob) < 0) {
 		if (v)
 			printf(
@@ -1807,7 +1807,7 @@ dread_f(int opno, long r)
 		close(fd);
 		return;
 	}
-#endif	
+#endif
 	align = (__int64_t)diob.d_miniosz;
 	lr = ((__int64_t)random() << 32) + random();
 	off = (off64_t)(lr % stb.st_size);
@@ -1877,7 +1877,7 @@ dwrite_f(int opno, long r)
 		diob.d_maxiosz = stb.st_blksize * 256;  /* good number ? */
 		diob.d_mem = stb.st_blksize;
 	}
-#ifndef NO_XFS	
+#ifndef NO_XFS
 	else if (ioctl(fd, XFS_IOC_DIOINFO, &diob) < 0) {
 		if (v)
 			printf(
@@ -1887,7 +1887,7 @@ dwrite_f(int opno, long r)
 		close(fd);
 		return;
 	}
-#endif	
+#endif
 	align = (__int64_t)diob.d_miniosz;
 	lr = ((__int64_t)random() << 32) + random();
 	off = (off64_t)(lr % MIN(stb.st_size + (1024 * 1024), MAXFSIZE));

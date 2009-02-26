@@ -36,7 +36,7 @@
  *    DESCRIPTION
  * 		 This test verifies that flock locks held on one fd conflict with
  * 		 flock locks held on a different fd.
- *		 		
+ *		 	
  *		 Test:
  * 		 		 The process opens two file descriptors on the same file.
  * 		 		 It acquires an exclusive flock on the first descriptor,
@@ -175,7 +175,7 @@ void setup(void)
 		fd = creat(filename, 0666);
 		if (fd < 0) {
 			tst_resm(TFAIL, "creating a new file failed");
-				
+			
 			TEST_CLEANUP;
 
 			/* Removing temp dir */

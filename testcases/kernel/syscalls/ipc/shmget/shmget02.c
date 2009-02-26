@@ -78,13 +78,13 @@ struct test_case_t {
 
 	/* EINVAL - size is negative */
 //	{&shmkey2, -1, IPC_CREAT | IPC_EXCL | SHM_RW, EINVAL},
-	
+
 	/* EINVAL - size is larger than created segment */
 	{&shmkey, SHM_SIZE * 2, SHM_RW, EINVAL},
-	
+
 	/* EEXIST - the segment exists and IPC_CREAT | IPC_EXCL is given */
 	{&shmkey, SHM_SIZE, IPC_CREAT | IPC_EXCL | SHM_RW, EEXIST},
-	
+
 	/* ENOENT - no segment exists for the key and IPC_CREAT is not given */
 	/* use shm_id_2 (-1) as the key */
 	{&shm_nonexisting_key, SHM_SIZE, SHM_RW, ENOENT}
@@ -114,14 +114,14 @@ int main(int ac, char **av)
 			/*
 			 * Look for a failure ...
 			 */
-	
+
 			TEST(shmget(*(TC[i].skey), TC[i].size, TC[i].flags));
-	
+
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
 				continue;
 			}
-	
+
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO == TC[i].error) {
@@ -132,7 +132,7 @@ int main(int ac, char **av)
 				tst_resm(TFAIL, "call failed with an "
 					 "unexpected error - %d : %s",
 					 TEST_ERRNO, strerror(TEST_ERRNO));
-			}			
+			}		
 		}
 	}
 

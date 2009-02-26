@@ -135,19 +135,19 @@ main(int ac, char **av)
 
 		/* loop through the test cases */
 		for (advise = 0; advise < advise_limit; advise++) {
-			
+		
 			/* Don't use defiend advise as an argument. */
 			if (is_defined_advise(advise)) {
 				continue;
 			}
-			
+		
 			TEST(posix_fadvise(fd, 0, 0, advise));
 
 			if (TEST_RETURN == 0) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
 				continue;
 			}
-	
+
 			/* Man page says:
 			   "On error, an error number is returned." */
 			if (TEST_RETURN == expected_error) {

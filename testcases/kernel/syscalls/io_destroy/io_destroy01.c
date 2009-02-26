@@ -76,7 +76,7 @@ main(int argc, char** argv)
 	io_context_t ctx;
 	long expected_return;
 
-	
+
 	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) != (char *)NULL){
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 		/*NOTREACHED*/

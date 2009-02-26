@@ -39,7 +39,7 @@
  *   Check return code, if system call failed (return=-1)
  *   	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call	
+ *   	Verify the Functionality of system call
  *      if successful,
  *      	Issue Functionality-Pass message.
  *      Otherwise,
@@ -164,7 +164,7 @@ int main(int ac, char **av)
 				 * Second,
 				 * Check that main_stk is outside the
 				 * alternate stk boundaries.
-				 */	
+				 */
 				if ((alt_stk < sigstk.ss_sp) && \
 				    (alt_stk > \
 				     (sigstk.ss_sp + SIGSTKSZ))) {

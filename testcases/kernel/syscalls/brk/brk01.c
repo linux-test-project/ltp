@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: brk01.c,v 1.5 2009/02/26 12:02:33 subrata_modak Exp $ */
+/* $Id: brk01.c,v 1.6 2009/02/26 12:14:54 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -60,13 +60,13 @@
  *    TEST CASES
  *
  * 	1.) brk(2) returns...(See Description)
- *	
+ *
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
  *
  *    OUTPUT SPECIFICATIONS
- * 	
+ * 
  *    ENVIRONMENTAL NEEDS
  * 	The libcuts.a and libsys.a libraries must be included in
  *	the compilation of this test.
@@ -160,7 +160,7 @@ main(int ac, char **av)
     incr = (Max_brk_byte_size - Beg_brk_val)/(MAX_SIZE_LC/2);
 
     if ( (incr * 2) < 4096 )	/* make sure that process will grow */
-	incr += 4096/2;	
+	incr += 4096/2;
 
     /***************************************************************
      * check looping state if -c option given
@@ -206,7 +206,7 @@ main(int ac, char **av)
 	 * Call brk(2)
 	 */
 	TEST(brk((char *)nbrkpt));
-	
+
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
 
@@ -225,7 +225,7 @@ main(int ac, char **av)
 
 		aft_brk_val=(long)sbrk(0);
 		if ( aft_brk_val == nbrkpt ) {
-		
+	
 		    tst_resm(TPASS,
 			"brk(%d) returned %d, new size verified by sbrk",
 		        nbrkpt, TEST_RETURN);
@@ -317,7 +317,7 @@ setup()
      * This will override above code.
      */
     if ( max_size < Beg_brk_val*4 )	/* running on small mem and/or high # cpus */
-	max_size = Beg_brk_val*4;	
+	max_size = Beg_brk_val*4;
 
     Max_brk_byte_size = max_size;
 

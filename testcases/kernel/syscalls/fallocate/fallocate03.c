@@ -21,7 +21,7 @@
   * You should have received a copy of the GNU General Public License
   * along with this program; if not, write to the Free Software
   * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-***************************************************************************/ 	
+***************************************************************************/ 
 
 /*****************************************************************************
   *
@@ -45,7 +45,7 @@
   *
   *    TEST CASES
   *    (Working of fallocate on a sparse file)
-  * 	
+  * 
   *
   *	INPUT SPECIFICATIONS
   * 		No input needs to be specified
@@ -156,7 +156,7 @@ cleanup()
 {
 	/* Close all open file descriptors. */
 	if(close(fd) == -1)
-	{	
+	{
 		tst_resm(TWARN, "close(%s) Failed, errno=%d : %s",
 		fname, errno, strerror(errno));
 	}
@@ -183,14 +183,14 @@ setup()
 	TEST_PAUSE;
 
 	tst_tmpdir();
-	
+
 	sprintf(fname,"tfile_sparse_%d",getpid());
 	if ((fd = open(fname, O_RDWR|O_CREAT, 0700)) == -1 )
-	{	
+	{
 		tst_brkm(TBROK, cleanup, "Unable to open %s for read/write.  Error:%d, %s\n", \
 		fname, errno, strerror(errno));
 	}
-	get_blocksize(fd);	
+	get_blocksize(fd);
 	populate_file();
 	file_seek(BLOCKS_WRITTEN + HOLE_SIZE_IN_BLOCKS); //create holes
 	populate_file();
@@ -223,7 +223,7 @@ file_seek(off_t offset)
 	lseek(fd,offset,SEEK_SET);
 }
 
-	
+
 /*****************************************************************************
  * Writes data into the file
  ******************************************************************************/
@@ -285,12 +285,12 @@ main(int   ac,    /* number of command line parameters                      */
      	***************************************************************/
     	if ( (msg=parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL )
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-	
+
 	/* This test needs kernel version > 2.6.23 and
 	 * either of x86, x86_64 or ppc architecture
 	 */
 	if ( !arch_support || (tst_kvercmp(2,6,23) < 0)) {
-		tst_resm(TWARN," System doesn't support execution of the test");		
+		tst_resm(TWARN," System doesn't support execution of the test");	
 		exit(0);
 	}
 
@@ -321,7 +321,7 @@ main(int   ac,    /* number of command line parameters                      */
 		        /* No Verification test, yet... */
 		        tst_resm(TPASS, "fallocate(%s, %d, %lld, %lld) returned %d ",
 				fname,test_data[test_index].mode, test_data[test_index].offset * block_size,
-				test_data[test_index].len * block_size, TEST_RETURN); }	
+				test_data[test_index].len * block_size, TEST_RETURN); }
         		}
 		}
 	}

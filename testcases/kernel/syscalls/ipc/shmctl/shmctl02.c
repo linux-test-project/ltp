@@ -125,14 +125,14 @@ int main(int ac, char **av)
 			/*
 			 * use the TEST() macro to make the call
 			 */
-	
+
 			TEST(shmctl(*(TC[i].shmid), TC[i].cmd, TC[i].sbuf));
-	
+
 			if ((TEST_RETURN != -1)&&(i < 5)) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
 				continue;
 			}
-	
+
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO == TC[i].error) {
@@ -147,7 +147,7 @@ int main(int ac, char **av)
 					tst_resm(TFAIL, "call failed with an "
 						 "unexpected error - %d : %s",
 					 	TEST_ERRNO, strerror(TEST_ERRNO));
-			}			
+			}		
 		}
 	}
 

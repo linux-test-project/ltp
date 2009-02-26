@@ -41,7 +41,7 @@
  *	4) capget() fails with errno set to EINVAL if header->pid < 0
  *	5) capget() fails with errno set to ESRCH if the process with
  *	   pid, header->pid does not exit
- *	
+ *
  *
  * 	Setup:
  * 	  Setup signal handling.

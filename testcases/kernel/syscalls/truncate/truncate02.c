@@ -28,7 +28,7 @@
  *  truncate(2) should return a value 0 and the attempt to read past the
  *  truncated length will fail. In case where the file before truncation was
  *  shorter, the bytes between the old and new should  be all zeroes.
- *	
+ *
  * Algorithm:
  *  Setup:
  *   Setup signal handling.
@@ -41,7 +41,7 @@
  *   Check return code, if system call failed (return=-1)
  *   	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call	
+ *   	Verify the Functionality of system call
  *      if successful,
  *      	Issue Functionality-Pass message.
  *      Otherwise,

@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: sbrk01.c,v 1.5 2009/02/26 12:04:43 subrata_modak Exp $ */
+/* $Id: sbrk01.c,v 1.6 2009/02/26 12:16:34 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -60,13 +60,13 @@
  *    TEST CASES
  *
  * 	1.) sbrk(2) returns...(See Description)
- *	
+ *
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
  *
  *    OUTPUT SPECIFICATIONS
- * 	
+ * 
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
  *
@@ -159,7 +159,7 @@ main(int ac, char **av)
 	/* reset Tst_count in case we are looping. */
 	Tst_count=0;
 
-		
+	
 	/*
 	 * TEST CASE:
 	 * Increase by 8192 bytes
@@ -170,7 +170,7 @@ main(int ac, char **av)
 	errno = 0;
 	tret=sbrk(Increment);   /* Remove -64 IRIX compiler warning */
 	TEST_ERRNO=errno;
-	
+
 	/* check return code */
 	if ( tret == (void *)-1 ) {
 	    TEST_ERROR_LOG(TEST_ERRNO);
@@ -186,8 +186,8 @@ main(int ac, char **av)
 		    tret);
 	    }
 	}
-	
-	
+
+
 	/*
 	 * TEST CASE:
 	 * Decrease to original size
@@ -198,7 +198,7 @@ main(int ac, char **av)
 	errno = 0;
 	tret=sbrk(Increment);
 	TEST_ERRNO=errno;
-	
+
 	/* check return code */
 	if ( tret == (void *)-1 ) {
 	    TEST_ERROR_LOG(TEST_ERRNO);
@@ -213,7 +213,7 @@ main(int ac, char **av)
 		tst_resm(TPASS, "sbrk - Decrease to original size returned %p", tret);
 	    }
 	}
-	
+
 
     }	/* End for TEST_LOOPING */
 

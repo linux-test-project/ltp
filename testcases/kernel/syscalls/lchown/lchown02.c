@@ -153,7 +153,7 @@ main(int ac, char **av)
 	int ind;		/* counter to test different test conditions */
 	uid_t User_id;		/* Effective user id of a test process */
 	gid_t Group_id;		/* Effective group id of a test process */
-	
+
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
@@ -194,7 +194,7 @@ main(int ac, char **av)
 			 * sets appropriate errno.
 			 */
 			TEST(lchown(file_name, User_id, Group_id));
-	
+
 			/* Check return code from lchown(2) */
 			if (TEST_RETURN == -1) {
 				TEST_ERROR_LOG(TEST_ERRNO);
@@ -245,7 +245,7 @@ setup()
  	if (getcwd(EXEC_DIR, sizeof(EXEC_DIR)) == NULL) {
                 tst_brkm(TBROK, cleanup,
                          "getcwd(3) fails to get working directory of process");        }
-	
+
 
 	/* Switch to nobody user for correct error code collection */
         if (geteuid() != 0) {
@@ -424,7 +424,7 @@ int
 setup3()
 {
 	int fd;
-	
+
 	/* Creat a testfile under temporary directory */
 	if ((fd = open("t_file", O_RDWR|O_CREAT, MODE_RWX)) == -1) {
 		tst_brkm(TBROK, cleanup,
@@ -473,7 +473,7 @@ cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-	
+
 	/* Restore mode permissions on test directory created in setup2() */
 	if (chmod(DIR_TEMP, MODE_RWX) < 0) {
 		tst_brkm(TBROK, NULL, "chmod(2) of %s failed", DIR_TEMP);

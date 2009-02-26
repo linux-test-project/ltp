@@ -104,7 +104,7 @@ char *av[];
 				if( (fildes[ifile] = dup( fildes[ifile-1] )) == -1 ) {
 					break ;
 				}
-		
+	
 			} /* end for */
 			if( ifile < freefds ) {
 				tst_resm(TFAIL, "Not enough files duped");
@@ -116,7 +116,7 @@ char *av[];
     		}
 /*-----	---------------------------------------------------------------*/
 		unlink(pfilname) ;
-	
+
 		if (ifile > 0)
 			close(fildes[ifile-1]);
 

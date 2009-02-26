@@ -81,7 +81,7 @@ int main(int ac, char **av)
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
 	int val = 1;			/* value for SETVAL */
-	
+
 	int i;
 
 	/* parse standard options */
@@ -121,7 +121,7 @@ int main(int ac, char **av)
 				tst_resm(TFAIL, "call succeeded unexpectedly");
 				continue;
 			}
-	
+
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO == TC[i].error) {

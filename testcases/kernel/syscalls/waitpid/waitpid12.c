@@ -20,10 +20,10 @@
 /*
  * NAME
  *	waitpid12.c
- *	
+ *
  * DESCRIPTION
  *	Tests to see if pid's returned from fork and waitpid are same
- *	
+ *
  * ALGORITHM
  * 	Check proper functioning of waitpid with pid = -1 and arg = WNOHANG
  *
@@ -175,7 +175,7 @@ int main(int argc, char **argv)
 		 */
 		sleep(3);
 #endif
-		
+	
 		/* Now send all the kids a SIGINT to tell them to proceed */
 		for (i = 0; i < MAXKIDS; i++) {
 			if (kill(fork_kid_pid[i], SIGINT) < 0) {

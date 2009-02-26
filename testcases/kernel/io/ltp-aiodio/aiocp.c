@@ -226,7 +226,7 @@ void usage()
 		"This does sequential AIO reads (no writes).\n\n"
 		"Usage: aiocp [options] -z DEST\n"
 		"This does sequential AIO writes of zeros.\n");
-		
+	
 	exit(1);
 }
 
@@ -326,7 +326,7 @@ int main(int argc, char *const *argv)
 
 	argc -= optind;
 	argv += optind;
-	
+
 	if (argc < 1) {
 		usage();
 	}

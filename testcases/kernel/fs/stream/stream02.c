@@ -114,7 +114,7 @@ int main(int ac, char *av[])
 		} else {
 		         tst_resm(TFAIL, "Test failed in block1.");
 	        }
-			
+		
 	/*--------------------------------------------------------------------*/
 	} /* end for */
 	tst_rmdir();

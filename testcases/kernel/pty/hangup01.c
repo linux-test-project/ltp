@@ -130,7 +130,7 @@ parent(int masterfd, int childpid)
 	}
 	tst_resm(TPASS,"Pass");
 	tst_exit();
-	
+
 	/*NOTREACHED*/
 	return 0;
 }

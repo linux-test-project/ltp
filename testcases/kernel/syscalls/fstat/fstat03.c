@@ -105,7 +105,7 @@ main(int ac, char **av)
 		 * sets appropriate errno.
 		 */
 		TEST(fstat(fildes, &stat_buf));
-	
+
 		/* Check return code from fstat(2) */
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);
@@ -184,7 +184,7 @@ cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-	
+
 	/* Remove files and temporary directory created */
 	tst_rmdir();
  

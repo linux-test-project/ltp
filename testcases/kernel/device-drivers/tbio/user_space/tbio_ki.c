@@ -81,7 +81,7 @@ int ki_generic(int fd, int flag)
 		printf("Ioctl error\n");
 		return rc;
 	}
-		
+	
 	return rc;
 }
 

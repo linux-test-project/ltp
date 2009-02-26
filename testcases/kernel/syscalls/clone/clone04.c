@@ -131,7 +131,7 @@ main(int ac, char **av)
 			} else {
 				test_stack = child_stack;
 			}
-			
+		
 			/*
 			 * call the system call with the TEST() macro
 		 	 */
@@ -147,7 +147,7 @@ main(int ac, char **av)
 			TEST(clone(test_cases[ind].child_fn, test_stack,
 				   0, NULL));
 #endif
-	
+
 			if ((TEST_RETURN == -1) &&
 			    (TEST_ERRNO == test_cases[ind].exp_errno)) {
 				tst_resm(TPASS, "expected failure; Got %s",
@@ -164,7 +164,7 @@ main(int ac, char **av)
 	}
 
 	cleanup();
-	
+
 	/*NOTREACHED*/
 	return 0;
 
@@ -198,7 +198,7 @@ setup(void)
 void
 cleanup(void)
 {
-	
+
 	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.

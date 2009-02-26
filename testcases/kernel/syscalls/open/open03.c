@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: open03.c,v 1.3 2009/02/26 12:04:40 subrata_modak Exp $ */
+/* $Id: open03.c,v 1.4 2009/02/26 12:16:33 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -60,13 +60,13 @@
  *    TEST CASES
  *
  * 	1.) open(2) returns...(See Description)
- *	
+ *
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
  *
  *    OUTPUT SPECIFICATIONS
- * 	
+ * 
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
  *
@@ -163,7 +163,7 @@ main(int ac, char **av)
 	 * Call open(2)
 	 */
 	TEST(open(fname,O_RDWR|O_CREAT,0700));
-	
+
 	fd=TEST_RETURN;
 
 	/* check return code */

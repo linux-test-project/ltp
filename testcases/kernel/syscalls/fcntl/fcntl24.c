@@ -36,13 +36,13 @@
  *    TEST CASES
  *
  * 	1.) fcntl(2) returns...(See Description)
- *	
+ *
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
  *
  *    OUTPUT SPECIFICATIONS
- * 	
+ * 
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
  *
@@ -149,7 +149,7 @@ main(int ac, char **av)
 	 * Call fcntl(2) with F_SETLEASE & F_WRLCK argument on fname
 	 */
 	TEST(fcntl(fd, F_SETLEASE, F_WRLCK));
-	
+
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
 	    TEST_ERROR_LOG(TEST_ERRNO);

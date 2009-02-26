@@ -142,7 +142,7 @@ main(int ac, char **av)
 #else
 		TEST(clone(child_environ, child_stack + CHILD_STACK_SIZE, 0, NULL));
 #endif
-	
+
 		/* check return code */
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "clone() Failed, errno = %d :"
@@ -228,7 +228,7 @@ child_environ(void)
 	if ((close(pfd[0])) == -1) {
 		tst_brkm(TBROK, cleanup, "close(pfd[0]) failed");
 	}
-	
+
 	if ((sprintf(var, getenv("TERM"))) <= 0){
 		tst_resm(TWARN, "sprintf() failed");
 	}
@@ -241,7 +241,7 @@ child_environ(void)
 	if ((close(pfd[1])) == -1) {
 		tst_resm(TWARN, "close(pfd[1]) failed");
 	}
-	
+
 	exit(0);
 }
 

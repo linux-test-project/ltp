@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: mkdir01.c,v 1.5 2009/02/26 12:04:00 subrata_modak Exp $ */
+/* $Id: mkdir01.c,v 1.6 2009/02/26 12:16:09 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -60,7 +60,7 @@
  *    TEST CASES
  *
  * 	mkdir(2) test for errno(s) EFAULT.
- *	
+ *
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
@@ -165,7 +165,7 @@ main(int ac, char **av)
 
 	/* Call mkdir(2) */
 	TEST(mkdir(bad_addr,0777));
-	
+
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
 	    TEST_ERROR_LOG(TEST_ERRNO);
@@ -188,7 +188,7 @@ main(int ac, char **av)
 
 	  }
 	}
-	
+
 #if !defined(UCLINUX)
 	/*
 	 * TEST CASE: 2
@@ -197,7 +197,7 @@ main(int ac, char **av)
 
 	/* Call mkdir(2) */
 	TEST(mkdir(get_high_address(),0777));
-	
+
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
 	    TEST_ERROR_LOG(TEST_ERRNO);

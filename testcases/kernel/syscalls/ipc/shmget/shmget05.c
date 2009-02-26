@@ -132,14 +132,14 @@ do_child()
 		/*
 		 * Look for a failure ...
 		 */
-	
+
 		TEST(shmget(shmkey, SHM_SIZE, SHM_RW));
-	
+
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "call succeeded when error expected");
 			continue;
 		}
-	
+
 		TEST_ERROR_LOG(TEST_ERRNO);
 
 		switch(TEST_ERRNO) {
@@ -152,7 +152,7 @@ do_child()
 				 "unexpected error - %d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 			break;
-		}			
+		}		
 	}
 }
 

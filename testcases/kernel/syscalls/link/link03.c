@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: link03.c,v 1.2 2009/02/26 12:03:44 subrata_modak Exp $ */
+/* $Id: link03.c,v 1.3 2009/02/26 12:16:08 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -60,14 +60,14 @@
  *    TEST CASES
  *
  * 	1.) link(2) returns...(See Description)
- *	
+ *
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
  *	-N #links : Use #links links every iteration
  *
  *    OUTPUT SPECIFICATIONS
- * 	
+ * 
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
  *
@@ -205,13 +205,13 @@ main(int ac, char **av)
 	    nlinks = (lc%90)+10;
 
 	for(cnt=1; cnt < nlinks; cnt++) {
-	
+
 	    sprintf(lname, "%s%d", Basename, cnt);
             /*
 	     *  Call link(2)
 	     */
 	    TEST(link(Fname, lname));
-	
+
 	    /* check return code */
 	    if ( TEST_RETURN == -1 ) {
 	        TEST_ERROR_LOG(TEST_ERRNO);

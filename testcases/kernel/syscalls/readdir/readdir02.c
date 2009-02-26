@@ -49,7 +49,7 @@
  * NOTE
  *	The POSIX standard says:
  *	  The readdir() function may fail if:
- *	  [EBADF] The dirp argument does not refer to an open directory stream.	
+ *	  [EBADF] The dirp argument does not refer to an open directory stream.
  *	  (Note that readdir() is not _required_ to fail in this case.)
  *
  * HISTORY

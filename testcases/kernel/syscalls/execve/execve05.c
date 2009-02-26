@@ -181,7 +181,7 @@ main(int ac, char **av)
 				tst_resm(TPASS, "call generated expected "
 					 "ETXTBSY error");
 			}
-			exit(retval);	
+			exit(retval);
 		} else {	/* parent */
 			 /* wait for the child to finish */
                         waitpid(pid1,&status,0);
@@ -310,7 +310,7 @@ do_child_1()
 
 	if ((fildes = open(test_name, O_WRONLY)) == -1) {
 		tst_brkm(TBROK, NULL, "open(2) failed");
-		exit(1);	
+		exit(1);
 	}
 
 	if (sync_pipe_notify(start_sync_pipes) == -1) {

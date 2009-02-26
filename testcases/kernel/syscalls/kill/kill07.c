@@ -225,7 +225,7 @@ setup(void)
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
-	
+
 	/* get an IPC resource key */
 	semkey = getipckey();
 

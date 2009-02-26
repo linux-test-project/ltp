@@ -31,7 +31,7 @@
  *	if child
  *	  set the ID of the child process to that of "nobody"
  *	  loop if that option was specified
- *	    call semctl() with two different invalid cases	
+ *	    call semctl() with two different invalid cases
  *	    check the errno value
  *	      issue a PASS message if we get EPERM
  *	    otherwise, the tests fails
@@ -148,12 +148,12 @@ do_child()
 
 
 			TEST(semctl(sem_id_1, 0, TC[i], arg));
-	
+
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
 				continue;
 			}
-	
+
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			switch(TEST_ERRNO) {

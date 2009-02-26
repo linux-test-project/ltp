@@ -26,7 +26,7 @@
  *	- the process is the owner of the file.
  *	- the effective group ID or one of the supplementary group ID's of the
  *	  process is equal to the group ID of the file.
- *	
+ *
  * Expected Result:
  *  chmod() should return value 0 on success and succeeds to change
  *  the mode of specified file with sticky bit set on it.
@@ -43,7 +43,7 @@
  *   Check return code, if system call failed (return=-1)
  *   	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call	
+ *   	Verify the Functionality of system call
  *      if successful,
  *      	Issue Functionality-Pass message.
  *      Otherwise,
@@ -127,7 +127,7 @@ main(int ac, char **av)
 		 * (to set sticky bit) on testfile.
 	 	 */
 		TEST(chmod(TESTFILE, PERMS));
-	
+
 		/* check return code of chmod(2) */
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "chmod(%s, %#o) Failed, errno=%d : %s",
@@ -197,7 +197,7 @@ setup()
                          "to set the effective uid to %d",
                          ltpuser->pw_uid);
                 perror("setuid");
-         }	
+         }
 
         /* Pause if that option was specified */
         TEST_PAUSE;

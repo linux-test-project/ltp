@@ -139,7 +139,7 @@ setup()
 	tst_tmpdir();
     if (chmod(TESTDIR, S_IRWXU) == -1)
         tst_brkm(TBROK, cleanup, "chmod(%S,700) failed; errno %d: %s", TESTDIR, errno, strerror(errno));
-	
+
 	/* create a test file */
         sprintf(fname, "%s.%d", fname, getpid());
 	if (mkdir(fname, 0444) == -1) {

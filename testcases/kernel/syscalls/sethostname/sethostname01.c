@@ -33,7 +33,7 @@
  *	Uses SIGUSR1 to pause before test if option set.
  *	(See the parse_opts(3) man page).
  *
- *    DESCRIPTION 	
+ *    DESCRIPTION 
  *      This is a Phase I test for the sethostname(2) system call.
  *      It is intended to provide a limited exposure of the system call.
  *

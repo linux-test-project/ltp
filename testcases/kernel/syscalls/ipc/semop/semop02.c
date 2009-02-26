@@ -123,14 +123,14 @@ int main(int ac, char **av)
 			/*
 			 * use the TEST macro to make the call
 			 */
-	
+
 			TEST(semop(*(TC[i].semid), TC[i].t_sbuf, TC[i].t_ops));
 
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
 				continue;
 			}
-	
+
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO == TC[i].error) {
@@ -199,7 +199,7 @@ setup(void)
 
 	/* Get an new IPC resource key. */
 	semkey2 = getipckey();
-	
+
 	/* create a semaphore set without read and alter permissions */
 	if ((sem_id_2 = semget(semkey2, PSEMS, IPC_CREAT | IPC_EXCL)) == -1) {
 		tst_brkm(TBROK, cleanup, "couldn't create semaphore in setup");

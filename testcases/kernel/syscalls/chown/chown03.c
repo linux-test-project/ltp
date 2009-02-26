@@ -23,7 +23,7 @@
  * Test Description:
  *  Verify that, chown(2) succeeds to change the group of a file specified
  *  by path when called by non-root user with the following constraints,
- *	- euid of the process is equal to the owner of the file.	
+ *	- euid of the process is equal to the owner of the file.
  *	- the intended gid is either egid, or one of the supplementary gids
  *	  of the process.
  *  Also, verify that chown() clears the setuid/setgid bits set on the file.
@@ -31,7 +31,7 @@
  * Expected Result:
  *  chown(2) should return 0 and the ownership set on the file should match
  *  the numeric values contained in owner and group respectively.
- *	
+ *
  * Algorithm:
  *  Setup:
  *   Setup signal handling.
@@ -44,7 +44,7 @@
  *   Check return code, if system call failed (return=-1)
  *   	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call	
+ *   	Verify the Functionality of system call
  *      if successful,
  *      	Issue Functionality-Pass message.
  *      Otherwise,
@@ -289,7 +289,7 @@ setup()
 	strcat((char *)Cmd_buffer, " ");
 	strcat((char *)Cmd_buffer, Path_name);
 
-	
+
 
 	if (system((const char *)Cmd_buffer) != 0) {
 		tst_brkm(TBROK, cleanup,

@@ -185,7 +185,7 @@ main(int ac, char **av)
 			 * sets appropriate errno.
 			 */
 			TEST(lstat(file_name, &stat_buf));
-	
+
 			/* Check return code from lstat(2) */
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "lstat(2) returned %d, expected"
@@ -331,7 +331,7 @@ int
 setup2()
 {
 	int fd;				/* file handle */
-	
+
 	if ((fd = open("t_file", O_RDWR|O_CREAT, MODE_RWX)) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "open(2) on t_file failed, errno=%d : %s",
@@ -373,7 +373,7 @@ cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-	
+
 	/* Restore mode permissions on test directory created in setup2() */
 	if (chmod(DIR_TEMP, MODE_RWX) < 0) {
 		tst_brkm(TBROK, NULL, "chmod(2) of %s failed", DIR_TEMP);

@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: lseek05.c,v 1.2 2009/02/26 12:04:00 subrata_modak Exp $ */
+/* $Id: lseek05.c,v 1.3 2009/02/26 12:16:08 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -60,13 +60,13 @@
  *    TEST CASES
  *
  * 	1.) lseek(2) returns...(See Description)
- *	
+ *
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
  *
  *    OUTPUT SPECIFICATIONS
- * 	
+ * 
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
  *
@@ -168,7 +168,7 @@ main(int ac, char **av)
          *  Call lseek(2)
          */
 	TEST(lseek(Fd, (long)1, SEEK_SET));
-	
+
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
 	    if ( STD_FUNCTIONAL_TEST ) {

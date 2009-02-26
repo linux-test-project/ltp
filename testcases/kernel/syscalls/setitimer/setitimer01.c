@@ -88,36 +88,36 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		/* allocate some space for the timer structures */
-	
+
 		if ((value = (struct itimerval *)malloc((size_t)
 			      sizeof(struct itimerval))) == NULL) {
 			tst_brkm(TBROK, cleanup, "value malloc failed");
 		}
-	
+
 		if ((ovalue = (struct itimerval *)malloc((size_t)
 			       sizeof(struct itimerval))) == NULL) {
 			tst_brkm(TBROK, cleanup, "ovalue malloc failed");
 		}
-	
+
 		/* set up some reasonable values */
-	
+
 		value->it_value.tv_sec = SEC1;
 		value->it_value.tv_usec = SEC0;
 		value->it_interval.tv_sec = 0;
-		value->it_interval.tv_usec = 0;	
+		value->it_interval.tv_usec = 0;
 		/*
 		 * issue the system call with the TEST() macro
 		 * ITIMER_REAL = 0, ITIMER_VIRTUAL = 1 and ITIMER_PROF = 2
 		 */
-	
+
 		TEST(setitimer(ITIMER_REAL, value, ovalue));
-	
+
 		if (TEST_RETURN != 0) {
 			tst_resm(TFAIL, "call failed - errno = %d - %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 			continue;
 		}
-	
+
 		if (STD_FUNCTIONAL_TEST) {
 			/*
 			 * call setitimer again with new values.

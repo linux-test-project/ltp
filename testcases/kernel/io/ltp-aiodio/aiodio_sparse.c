@@ -262,7 +262,7 @@ void aiodio_sparse(char *filename, int align, int writesize, int filesize, int n
 		if (debug)
 			fprintf(stderr, "aiodio_sparse: io_getevent() res %ld res2 %ld\n",
 				event.res, event.res2);
-		
+	
 		/* start next write */
 		io_prep_pwrite(iocbp, fd, iocbp->u.c.buf, writesize, offset);
 		offset += writesize;

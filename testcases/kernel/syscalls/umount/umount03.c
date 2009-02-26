@@ -33,7 +33,7 @@
  *    DESCRIPTION
  *	Verify that umount(2) returns -1 and sets errno to  EPERM if the user
  *	is not the super-user.
- *	
+ *
  * 	Setup:
  *	  Setup signal handling.
  *	  Create a mount point.
@@ -280,7 +280,7 @@ setup()
 	TEST_EXP_ENOS(exp_enos);
 
 	TEST(mount(device, mntpoint, Type, 0, NULL));
-	
+
 	if (TEST_RETURN != 0) {
 		tst_brkm(TBROK, cleanup1, "mount(2) failed to mount device %s "
 			"errno = %d : %s", device, TEST_ERRNO,

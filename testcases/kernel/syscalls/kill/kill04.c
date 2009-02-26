@@ -173,7 +173,7 @@ void
 do_child()
 {
 	int exno = 1;
-	
+
 	pause();
 	/*NOTREACHED*/
 	exit(exno);

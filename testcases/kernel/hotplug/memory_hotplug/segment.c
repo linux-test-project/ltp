@@ -120,7 +120,7 @@ get_seg_slot(void)
 		gcp->seg_avail = NULL;
 		return segp;
 	}
-	
+
 	/*
 	 * simple linear scan for first available slot
 	 */
@@ -197,7 +197,7 @@ free_seg_slot(segment_t *segp)
 	segp->seg_slot = slot;
 	if (gcp->seg_avail == NULL)
 		gcp->seg_avail = segp;
-	
+
 }
 
 /*
@@ -208,7 +208,7 @@ void
 segment_cleanup(struct global_context *gcp)
 {
 	segment_t *segp, **segpp;
-	
+
 	segpp = gcp->seglist;
 	if (segpp == NULL)
 		return;
@@ -498,7 +498,7 @@ segment_get(char *name)
 {
 	glctx_t   *gcp = &glctx;
 	segment_t *segp, **segpp;
-	
+
 	for (segpp = gcp->seglist; segp = *segpp; ++segpp) {
 		if (segp->seg_type == SEGT_NONE) {
 			if (gcp->seg_avail == NULL)
@@ -634,7 +634,7 @@ show_one_segment(segment_t *segp, bool header)
 			segp->seg_offset,
 			protection, share, name );
 	}
-	
+
 	return SEG_OK;
 }
 
@@ -746,7 +746,7 @@ segment_touch(char *name, range_t *range, int rw)
 	printf("%s:  touched %d pages in %6.3f secs\n",
 		gcp->program_name, length/gcp->pagesize,
 		(float)(tv_diff_usec(&t_start, &t_end))/1000000.0);
-	
+
 	return SEG_OK;
 }
 

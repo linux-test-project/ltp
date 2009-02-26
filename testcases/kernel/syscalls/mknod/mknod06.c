@@ -175,7 +175,7 @@ main(int ac, char **av)
 			 * sets appropriate errno.
 			 */
 			TEST(mknod(node_name, MODE_RWX, 0));
-	
+
 			/* Check return code from mknod(2) */
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "mknod() returned %d, expected "
@@ -275,7 +275,7 @@ longpath_setup()
 	}
 	return 0;
 }
-	
+
 /*
  * setup1() - setup function for a test condition for which mknod(2)
  *	      returns -1 and sets errno to EEXIST.

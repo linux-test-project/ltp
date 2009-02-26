@@ -100,7 +100,7 @@ main(int ac, char **av)
 	size_t nbytes;		/* no. of bytes to be written */
 	off_t offset;		/* offset position in the specified file */
 	char *test_desc;	/* test specific error message */
-	
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
 	if (msg != (char *)NULL) {
@@ -109,12 +109,12 @@ main(int ac, char **av)
 
 	/* Perform global setup for test */
 	setup();
-	
+
 	TEST_EXP_ENOS(exp_enos);
-	
+
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-			
+		
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
 
@@ -122,7 +122,7 @@ main(int ac, char **av)
 		nbytes = 1024;
 		offset = 1;
 		write_buf[0]= sbrk(0);
-		
+	
 		/*
 		 * Call pwrite() with the specified file descriptor,
 		 * no. of bytes to be written at specified offset.
@@ -130,7 +130,7 @@ main(int ac, char **av)
 		 * errno. set.
 		 */
 		TEST(pwrite(fd1,write_buf[0] , nbytes, offset));
-						
+					
 		/* Check for the return code of pwrite() */
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "pwrite() returned %d, "
@@ -151,12 +151,12 @@ main(int ac, char **av)
 				 "errno:%d, expected:%d\n", test_desc,
 				 TEST_ERRNO, exp_enos[0]);
 		}
-		
+	
 	}	/* End of TEST_LOOPING. */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
-	
+
 	return 0;
 }	/* End main */
 
@@ -179,16 +179,16 @@ int main()
 void
 setup()
 {
-	
+
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
-	
+
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
-	
+
 	/* Creat a temporary file used for mapping */
 	if ((fd1 = open(TEMPFILE, O_RDWR | O_CREAT, 0777)) < 0) {
 		tst_brkm(TBROK, cleanup, "open() on %s Failed, errno=%d : %s",
@@ -206,7 +206,7 @@ setup()
 void
 cleanup()
 {
-	
+
 	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.

@@ -33,12 +33,12 @@
  *    DESCRIPTION
  * 	This test verifies that
  *	1)	flock(2) returns -1 and sets error number to EBADF
- *		if the file descriptor is invalid.	
+ *		if the file descriptor is invalid.
  *      2)	flock(2) returns -1 and sets error number to EINVAL
  *		if the argument operation does not include LOCK_SH,LOCK_EX,LOCK_UN. 
  *	3)	flock(2) returns -1 and sets error number to EINVAL
  *		if an invalid combination of locking modes is used i.e LOCK_SH with LOCK_EX
- *		
+ *	
  *	Setup:
  *        Setup signal handling.
  *        Pause for SIGUSR1 if option specified.
@@ -53,7 +53,7 @@
  *				Issue system call fails with expected return value and error number
  *			else
  *				Issue system call failed to produce expected error.
- *		
+ *	
  *      Cleanup:
  *        Print errno log and/or timing stats if options given
  *	  Deletes temporary directory.
@@ -95,7 +95,7 @@ int fd;
 
 int main(int argc, char **argv)
 {
-	int lc;	
+	int lc;
 	/* loop counter */
 	char *msg;			/* message returned from parse_opts */
 
@@ -110,7 +110,7 @@ int main(int argc, char **argv)
 	/* global setup */
 	setup();
 
-	
+
 
 	/* The following loop checks looping state if -i option given */
 
@@ -118,7 +118,7 @@ int main(int argc, char **argv)
 
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
-		
+	
 		/* Testing system call with negative file descriptor */
 		TEST(flock(-1,LOCK_SH));
 
@@ -138,12 +138,12 @@ int main(int argc, char **argv)
 					(TEST_ERRNO == EINVAL)){
 			tst_resm(TPASS,"flock() shows expected failure,error number=%d : %s",
 					TEST_ERRNO,strerror(TEST_ERRNO));
-			
+		
 		}
 		else{
 			tst_resm(TFAIL, "flock() unexpectedly succeds, returned error number=%d",TEST_ERRNO);
 		}
-		
+	
 		/* Test system call with invalid combination of arguments */
 		TEST(flock(fd,LOCK_SH|LOCK_EX));
 
@@ -157,7 +157,7 @@ int main(int argc, char **argv)
 			tst_resm(TFAIL, "flock() unexpectedly succeds, returned error number=%d",TEST_ERRNO);
 		}
 
-		
+	
 	}/* End of TEST_LOOPING */
 
 	close(fd);
@@ -199,7 +199,7 @@ setup(void)
 	fd = creat(filename, 0666);
 	if (fd < 0) {
 		tst_resm(TFAIL, "creating a new file failed");
-		
+	
 		TEST_CLEANUP;
 
 		/* Removing temp dir */

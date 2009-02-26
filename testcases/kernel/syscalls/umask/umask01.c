@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: umask01.c,v 1.3 2009/02/26 12:05:46 subrata_modak Exp $ */
+/* $Id: umask01.c,v 1.4 2009/02/26 12:17:05 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -60,13 +60,13 @@
  *    TEST CASES
  *
  * 	1.) umask(2) returns...(See Description)
- *	
+ *
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
  *
  *    OUTPUT SPECIFICATIONS
- * 	
+ * 
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
  *
@@ -152,15 +152,15 @@ main(int ac, char **av)
      * check looping state if -c option given
      ***************************************************************/
     for (lc=0; TEST_LOOPING(lc); lc++) {
-	
+
 	/* reset Tst_count in case we are looping. */
 	Tst_count=0;
-	
+
 	/*
 	 * Call umask(2)
 	 */
 	TEST(umask(022));
-	
+
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
 	    TEST_ERROR_LOG(TEST_ERRNO);

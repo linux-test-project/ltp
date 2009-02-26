@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: execve01.c,v 1.4 2009/02/26 12:02:34 subrata_modak Exp $ */
+/* $Id: execve01.c,v 1.5 2009/02/26 12:14:56 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -60,13 +60,13 @@
  *    TEST CASES
  *
  * 	1.) execve(2) returns...(See Description)
- *	
+ *
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
  *
  *    OUTPUT SPECIFICATIONS
- * 	
+ * 
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
  *
@@ -167,7 +167,7 @@ main(int ac, char **av)
 	/* reset Tst_count in case we are looping. */
 	Tst_count=0;
 
-		
+	
 	/*
 	 * TEST CASE:
 	 *   fork, then call execve from child
@@ -176,7 +176,7 @@ main(int ac, char **av)
 	case 0: 	/* CHILD - Call execve(2) */
 	    execve("/usr/bin/test", args, environ);
 	    /* should not get here!! if we do, the parent will fail the Test Case */
-	    exit(errno);	
+	    exit(errno);
 	case -1:	/* ERROR!!! exit now!!*/
 	    tst_brkm(TBROK, cleanup,
 			"Unable to fork a child process to exec over!  Errno:%d,:%s",

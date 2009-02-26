@@ -128,7 +128,7 @@ int main(int ac, char **av)
 		/* Remove the temporary directory */
 		tst_rmdir();
 	}
-	
+
 	cleanup ();
 	return 0;
 }
@@ -152,14 +152,14 @@ do_child()
 			/*
 			 * use the TEST() macro to make the call
 			 */
-	
+
 			TEST(shmctl(*(TC[i].shmid), TC[i].cmd, TC[i].sbuf));
-	
+
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
 				continue;
 			}
-	
+
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO == TC[i].error) {
@@ -170,7 +170,7 @@ do_child()
 				tst_resm(TFAIL, "call failed with an "
 					 "unexpected error - %d : %s",
 					 TEST_ERRNO, strerror(TEST_ERRNO));
-			}			
+			}		
 		}
 	}
 }

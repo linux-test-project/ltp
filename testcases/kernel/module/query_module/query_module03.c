@@ -220,7 +220,7 @@ setup1(void)
                 tst_resm(TBROK, "Failed to copy %s module", DUMMY_MOD);
                 return 1;
         }
-	
+
 	/* Should use force to ignore kernel version & insure loading  */
         /* -RW                                                         */
         /* if( sprintf(cmd, "insmod %s.o", DUMMY_MOD) == -1) {         */
@@ -233,7 +233,7 @@ setup1(void)
 		return 1;
 	}
 	return 0;
-}	
+}
 
 void
 cleanup1(void)

@@ -38,7 +38,7 @@
  *		-Ported
  *
  * Restrictions
- *      Must be ran as non-root user - nobody recommended.	
+ *      Must be ran as non-root user - nobody recommended.
  */
 
 #include <wait.h>

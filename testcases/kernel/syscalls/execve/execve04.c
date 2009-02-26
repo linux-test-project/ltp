@@ -179,7 +179,7 @@ setup()
 	} else {
 		strncpy(test_name, fname1, sizeof(test_name)-1);
 	}
-	
+
 	/* make temp dir and cd to it */
 	tst_tmpdir();
 

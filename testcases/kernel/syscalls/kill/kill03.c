@@ -79,7 +79,7 @@ int main(int ac, char **av)
 {
 	int lc;                         /* loop counter */
 	char *msg;                      /* message returned from parse_opts */
-	pid_t pid;			
+	pid_t pid;		
 	int exno, status;
 
 	/* parse standard options */
@@ -157,7 +157,7 @@ void
 do_child()
 {
 	int exno = 1;
-	
+
 	pause();
 	/*NOTREACHED*/
 	exit(exno);

@@ -153,10 +153,10 @@ main(int ac, char **av)
 	 * perform global setup for test
 	 */
 	setup();
-	
+
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
-	
+
 	/*
 	 * check looping state if -i option given
 	 */
@@ -205,13 +205,13 @@ main(int ac, char **av)
 		(void)rmdir(tstdir3);
 
 	}   /* End for TEST_LOOPING */
-	
+
 	/*
 	 * cleanup and exit
 	 */
 	cleanup();
-	/*NOTREACHED*/	
-	
+	/*NOTREACHED*/
+
 
   return 0;
 
@@ -228,7 +228,7 @@ set_condition(int num)
 	case 1:
 		/* set up for first test */
 		sprintf(tstdir1,"./tstdir1_%d",getpid());
-		sprintf(tstfile,"%s/tstfile_%d",tstdir1,getpid());	
+		sprintf(tstfile,"%s/tstfile_%d",tstdir1,getpid());
 
 		/* create a directory */
 		if (mkdir(tstdir1, PERMS) == -1) {
@@ -239,7 +239,7 @@ set_condition(int num)
 
 		/* create a file under tstdir1 */
 		do_file_setup(tstfile);
-						
+					
 		break;
 	case 2:
 		create_longpath();
@@ -252,7 +252,7 @@ set_condition(int num)
 	case 4:
 		/* Initialize the test directory name and file name */
 		sprintf(tstdir3, "%s/tstdir3", tstfile);
-		
+	
 		/* create a file */
 		if ((fd = creat(tstfile, PERMS)) == -1) {
 			tst_brkm(TBROK, cleanup, "creat() failed");
@@ -271,7 +271,7 @@ int
 create_longpath()
 {
 	sprintf(longname,"abcdefghivwxyzabcdefgmopqrsqrsrsthmopqrsqrsrstijklmnopjklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdabcdefghijklmopqrsqrsrstmnopqrqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyz_%d/",getpid());
-	
+
 	chdir(cwd);
 
 	while(strlen(longpath) < PATH_MAX) {
@@ -280,7 +280,7 @@ create_longpath()
 	   	 * create a sub directory under it
 	   	 */
 	  	if (mkdir(longname, PERMS)== -1) {
-	  		tst_resm(TINFO, "mkdir failed in creae_longpath()");	
+	  		tst_resm(TINFO, "mkdir failed in creae_longpath()");
 	    		break;
 	  	}
 	  	/*
@@ -292,11 +292,11 @@ create_longpath()
 	   	 * cd to the sub directory
 	   	 */
 	  	if (chdir(longname) == -1 ) {
-	    		tst_resm(TINFO, "chdir failed in create_longpath()");	
+	    		tst_resm(TINFO, "chdir failed in create_longpath()");
 	    		break;
 	  	}
 	}
-	
+
 	/* resume original working directory */
 	chdir(cwd);
 
@@ -313,7 +313,7 @@ remove_longpath()
 
 	len = strlen(longname);
 	path_len = strlen(longpath);
-	
+
 	/*
 	 * Since we can't rm directory with long pathname directly,
 	 * we remove it's sub directories one by one.
@@ -325,7 +325,7 @@ remove_longpath()
 					"failed in chdir %s, errno: %d "
 					, longname,errno);
 				break;
-			}	
+			}
 		}
 		if (rmdir(longname) == -1 ) {
 			tst_resm(TFAIL,
@@ -333,7 +333,7 @@ remove_longpath()
 				longname,errno);
 			break;
 		}
-		chdir(cwd);	
+		chdir(cwd);
 	}
 	/* resume original working directory */
 	chdir(cwd);
@@ -383,7 +383,7 @@ cleanup()
 	 * Remove the temporary directory.
 	 */
 	tst_rmdir();
-	
+
 	/*
 	 * Exit with return code appropriate for results.
 	 */

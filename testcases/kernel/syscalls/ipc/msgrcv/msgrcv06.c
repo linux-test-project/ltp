@@ -185,14 +185,14 @@ do_child()
 		tst_resm(TFAIL, "call succeeded when error expected");
 		exit(-1);
 	}
-	
+
 	TEST_ERROR_LOG(TEST_ERRNO);
-	
+
 	switch(TEST_ERRNO) {
 	case EIDRM:
 		tst_resm(TPASS, "expected failure - errno = %d : %s", TEST_ERRNO,
 			 strerror(TEST_ERRNO));
-		
+	
 		/* mark the queue as invalid as it was removed */
 		msg_q_1 = -1;
 		break;
@@ -200,8 +200,8 @@ do_child()
 		tst_resm(TFAIL, "call failed with an unexpected error - %d : %s",
 			 TEST_ERRNO, strerror(TEST_ERRNO));
 		break;
-	}			
-	
+	}		
+
 	/* if it exists, remove the message queue that was created */
 	rm_queue(msg_q_1);
 

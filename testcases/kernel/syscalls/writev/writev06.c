@@ -34,7 +34,7 @@
  *              -I x : Execute test for x seconds.
  *              -P x : Pause for x seconds between iterations.
  *              -t   : Turn on syscall timing.
- *	
+ *
  * History
  *
  * Restrictions
@@ -123,7 +123,7 @@ int main(int argc, char **argv)
 			cleanup();
 			/*NOTREACHED*/
 		}
-		
+	
  		/*
 		 * Iovecs passed to writev points to valid (readable) regions,
  		 * so all bytes must be successfully written.
@@ -132,7 +132,7 @@ int main(int argc, char **argv)
 
 		tst_resm(TINFO, "Enter block 1");
 		fail = 0;
-		
+	
 		TEST(writev(fd[0], wr_iovec, 2));
 		if (TEST_RETURN  >= 0) {
 			if (TEST_RETURN == 2) {
@@ -207,7 +207,7 @@ setup(void)
 			bad_addr[2] <= 0) {
             printf("mmap failed\n");
         }
-	
+
 	/* force page fault for writable mappings*/
 	memset(good_addr[0],'a', page_size);
 	memset(good_addr[1],'b', page_size);

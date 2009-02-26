@@ -39,7 +39,7 @@
  *   Check return code, if system call failed (return=-1)
  *   	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call	
+ *   	Verify the Functionality of system call
  *      if successful,
  *      	Issue Functionality-Pass message.
  *      Otherwise,
@@ -87,7 +87,7 @@ int exp_enos[]={0};
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
-void sig_handler();		/* signal catching function */	
+void sig_handler();		/* signal catching function */
 
 int
 main(int ac, char **av)

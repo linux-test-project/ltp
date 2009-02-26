@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: lstat01.c,v 1.4 2009/02/26 12:04:00 subrata_modak Exp $ */
+/* $Id: lstat01.c,v 1.5 2009/02/26 12:16:08 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -60,13 +60,13 @@
  *    TEST CASES
  *
  * 	1.) lstat(2) returns...(See Description)
- *	
+ *
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
  *
  *    OUTPUT SPECIFICATIONS
- * 	
+ * 
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
  *
@@ -160,12 +160,12 @@ main(int ac, char **av)
 
 	/* reset Tst_count in case we are looping. */
 	Tst_count=0;
-	
+
         /*
 	 *  Call lstat(2)
 	 */
 	TEST(lstat(symlnk, &statter));
-	
+
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
 	    TEST_ERROR_LOG(TEST_ERRNO);

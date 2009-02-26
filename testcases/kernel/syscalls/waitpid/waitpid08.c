@@ -20,10 +20,10 @@
 /*
  * NAME
  *	waitpid08.c
- *	
+ *
  * DESCRIPTION
  *	Tests to see if pid's returned from fork and waitpid are same
- *	
+ *
  * ALGORITHM
  * 	Check proper functioning of waitpid with pid = -1 and arg =
  * 	WUNTRACED
@@ -201,7 +201,7 @@ do_child_1(void)
 		/* parent */
 		fork_kid_pid[kid_count] = ret_val;
 	}
-		
+	
 	/* Check that waitpid with WNOHANG|WUNTRACED returns
 	 * zero
 	 */
@@ -218,7 +218,7 @@ do_child_1(void)
 	 */
 	sleep(3);
 #endif
-		
+	
 	/* Now send all the kids a SIGINT to tell them to
 	 * proceed
 	 */

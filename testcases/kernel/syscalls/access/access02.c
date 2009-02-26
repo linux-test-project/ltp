@@ -43,7 +43,7 @@
  *   Check return code, if system call failed (return=-1)
  *   	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call	
+ *   	Verify the Functionality of system call
  *      if successful,
  *      	Issue Functionality-Pass message.
  *      Otherwise,
@@ -226,7 +226,7 @@ setup()
 	        perror("setuid");
 	}
 
-	
+
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
@@ -425,11 +425,11 @@ Access_verify(int ind, int fflag)
 		break;
 	default:
 		break;
-	}	
+	}
 
 	return(fflag);
 }
-			
+		
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.

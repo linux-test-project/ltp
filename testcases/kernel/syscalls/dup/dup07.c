@@ -27,7 +27,7 @@
         < 0: read only?
         < 1: write only?
         < 2: read/write?
->HOW:   < Creat a file with each access mode; dup each file descriptor;	
+>HOW:   < Creat a file with each access mode; dup each file descriptor;
         < stat each file descriptor and compare mode of each pair
 >BUGS:  <
 ======================================================================*/
@@ -120,7 +120,7 @@ struct	stat	dupbuf ;
 				}
 			}
     		}
-	
+
 		if (local_flag == PASSED) {
        		         tst_resm(TPASS, "Test passed in write mode.");
 	        } else {

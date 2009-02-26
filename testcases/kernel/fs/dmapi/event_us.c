@@ -73,7 +73,7 @@ int main(int argc, char **argv)
 
 	DMEV_ZERO(events);
 	DMEV_SET(DM_EVENT_MOUNT, events);
-	
+
 	/* CANNOT DO ANYTHING WITHOUT SUCCESSFUL INITIALIZATION!!! */
 	if ((rc = dm_init_service(&varstr)) != 0) {
 		DMLOG_PRINT(DMLVL_ERR, "dm_init_service failed! (rc = %d, errno = %d)\n", rc, errno);
@@ -106,7 +106,7 @@ int main(int argc, char **argv)
 	DMLOG_PRINT(DMLVL_DEBUG, "Starting DMAPI user event tests\n") ;
 
 	szFuncName = "dm_create_userevent";
-	
+
 	/*
 	 * TEST    : dm_create_uservent - invalid sid
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -124,7 +124,7 @@ int main(int argc, char **argv)
 
 		/* Variation clean up */
 	}
-	
+
 	/*
 	 * TEST    : dm_create_uservent - invalid msglen
 	 * EXPECTED: rc = -1, errno = E2BIG
@@ -142,7 +142,7 @@ int main(int argc, char **argv)
 
 		/* Variation clean up */
 	}
-	
+
 	/*
 	 * TEST    : dm_create_uservent - invalid msgdatap
 	 * EXPECTED: rc = -1, errno = EFAULT
@@ -159,7 +159,7 @@ int main(int argc, char **argv)
 
 		/* Variation clean up */
 	}
-	
+
 	/*
 	 * TEST    : dm_create_uservent - invalid tokenp
 	 * EXPECTED: rc = -1, errno = EFAULT
@@ -178,7 +178,7 @@ int main(int argc, char **argv)
 
 		/* Variation clean up */
 	}
-	
+
 	/*
 	 * TEST    : dm_create_uservent - valid
 	 * EXPECTED: rc = 0
@@ -201,7 +201,7 @@ int main(int argc, char **argv)
 			DMLOG_PRINT(DMLVL_DEBUG, "Unable to clean up variation! (errno = %d)\n", errno);
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_create_uservent - DM_NO_SESSION sid
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -219,9 +219,9 @@ int main(int argc, char **argv)
 
 		/* Variation clean up */
 	}
-	
+
 	szFuncName = "dm_send_msg";
-	
+
 	/*
 	 * TEST    : dm_send_msg - invalid targetsid
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -238,7 +238,7 @@ int main(int argc, char **argv)
 
 		/* Variation clean up */
 	}
-	
+
 	/*
 	 * TEST    : dm_send_msg - invalid msgtype
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -255,7 +255,7 @@ int main(int argc, char **argv)
 
 		/* Variation clean up */
 	}
-	
+
 	/*
 	 * TEST    : dm_send_msg - invalid buflen
 	 * EXPECTED: rc = -1, errno = E2BIG
@@ -272,7 +272,7 @@ int main(int argc, char **argv)
 
 		/* Variation clean up */
 	}
-	
+
 	/*
 	 * TEST    : dm_send_msg - invalid bufp
 	 * EXPECTED: rc = -1, errno = EFAULT
@@ -287,7 +287,7 @@ int main(int argc, char **argv)
 
 		/* Variation clean up */
 	}
-	
+
 	/*
 	 * TEST    : dm_send_msg - DM_RESP_CONTINUE
 	 * EXPECTED: rc = 0
@@ -321,7 +321,7 @@ int main(int argc, char **argv)
 
 		/* Variation clean up */
 	}
-	
+
 	/*
 	 * TEST    : dm_send_msg - DM_RESP_ABORT
 	 * EXPECTED: rc = -1, errno = ABORT_ERRNO
@@ -393,7 +393,7 @@ int main(int argc, char **argv)
 
 		/* Variation clean up */
 	}
-	
+
 	/*
 	 * TEST    : dm_send_msg - DM_NO_SESSION targetsid
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -410,9 +410,9 @@ int main(int argc, char **argv)
 
 		/* Variation clean up */
 	}
-	
+
 	szFuncName = "dm_find_eventmsg";
-	
+
 	/*
 	 * TEST    : dm_find_eventmsg - invalid sid
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -441,7 +441,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_find_eventmsg - invalid token
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -470,7 +470,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_find_eventmsg - invalid buflen
 	 * EXPECTED: rc = -1, errno = E2BIG
@@ -516,7 +516,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_find_eventmsg - invalid bufp
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -545,7 +545,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_find_eventmsg - invalid rlenp
 	 * EXPECTED: rc = -1, errno = EFAULT
@@ -619,7 +619,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	
+
 	/*
 	 * TEST    : dm_find_eventmsg - DM_NO_SESSION sid
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -648,7 +648,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	
+
 	rc = umount(mountPt);
 	if (rc == -1) {
 		DMLOG_PRINT(DMLVL_ERR, "umount failed! (rc = %d, errno = %d)\n", rc, errno);
@@ -663,7 +663,7 @@ int main(int argc, char **argv)
 	}
 
 	DMLOG_STOP();
-			
+		
 	return 0;
 }
 
@@ -770,7 +770,7 @@ void *Thread(void *parm)
 		} else if (type == DM_EVENT_UNMOUNT) {
 			/* SPECIAL CASE: need to set response and bMounted */
 			dm_namesp_event_t *nse = DM_GET_VALUE(dmMsg, ev_data, dm_namesp_event_t *);
-			
+		
 			DMLOG_PRINT(DMLVL_DEBUG, "Message is DM_EVENT_UNMOUNT\n");
 			DMLOG_PRINT(DMLVL_DEBUG, "  Unmount mode: %x\n", nse->ne_mode);
 			DMLOG_PRINT(DMLVL_DEBUG, "  File system handle: %p\n", DM_GET_VALUE(nse, ne_handle1, void *));
@@ -835,4 +835,4 @@ void *Thread(void *parm)
 	} while (bMounted);
 
 	pthread_exit(0);
-}	
+}

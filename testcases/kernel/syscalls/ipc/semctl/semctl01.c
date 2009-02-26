@@ -199,7 +199,7 @@ int main(int ac, char **av)
 
 			TEST(semctl(sem_id_1, TC[i].semnum, TC[i].cmd,
 				    TC[i].arg));
-	
+
 			if (TEST_RETURN == -1) {
 				tst_resm(TFAIL, "%s call failed - errno = %d "
 					 ": %s", TCID, TEST_ERRNO,
@@ -358,7 +358,7 @@ cnt_setup(int opval)
 		/* fork five children to wait */
 		if ((pid = FORK_OR_VFORK()) == -1)
 			tst_brkm(TBROK, cleanup, "fork failed in cnt_setup");
-	
+
 		if (pid == 0) {		/* child */
 #ifdef UCLINUX
 			sem_op = sops.sem_op;

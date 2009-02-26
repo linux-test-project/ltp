@@ -152,7 +152,7 @@ struct test_case_t {
 };
 
 int TST_TOTAL = sizeof(test_cases) / sizeof(test_cases[0]);
-	
+
 
 
 int
@@ -184,14 +184,14 @@ main(int ac, char **av)
 		Tst_count=0;
 
 		for (i=0; i<TST_TOTAL; ++i) {
-		
-			/*Do test specific setup */	
+	
+			/*Do test specific setup */
 			if (!(test_setup())) {
 				tst_resm(TWARN, "test_setup() failed,"
 					 "skipping this test case");
 				continue;
 			}
-			
+		
 			/* Test the system call */
 #if defined(__hppa__)
 			TEST(clone(child_fn, child_stack,
@@ -223,16 +223,16 @@ main(int ac, char **av)
 				test_cleanup();
 				continue;
 			}
-			
+		
 			if (WTERMSIG(status)) {
                                 tst_resm(TWARN, "child exitied with signal %d", WTERMSIG(status));
-                        }			
+                        }		
 
 			/*
 			 * Check the return value from child function  and
 			 * parent function. If both functions returned
 			 * successfully, test passed, else failed
-			 */	
+			 */
 			if ((WIFEXITED(status)) && (WEXITSTATUS(status)) &&
 			    (test_cases[i].parent_fn())) {
 				tst_resm(TPASS, "Test Passed");
@@ -246,7 +246,7 @@ main(int ac, char **av)
 	}	/* End for TEST_LOOPING */
 
 	free(child_stack);
-	
+
 	/* cleanup and exit */
 	cleanup();
 
@@ -259,7 +259,7 @@ main(int ac, char **av)
 void
 setup()
 {
-	
+
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
@@ -268,7 +268,7 @@ setup()
 
 	/* Create temporary directory and 'cd' to it. */
 	tst_tmpdir();
-	
+
 	/* Get unique file name for each child process */
 	if ((sprintf(file_name, "parent_file_%ld", syscall(__NR_gettid))) <= 0 ) {
 		tst_brkm(TBROK, cleanup, "sprintf() failed");
@@ -290,14 +290,14 @@ cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-	
+
 	/* Remove temperory file */
 	if ((unlink(file_name)) == -1 ) {
 		tst_resm(TWARN, "Couldn't delete file, %s", file_name);
 	}
 	chdir("/tmp");
 	remove(cwd_parent);
-	
+
 	/* exit with return code appropriate for results */
 	tst_exit();
 }	/* End cleanup() */
@@ -346,7 +346,7 @@ test_setup()
 		tst_resm(TWARN, "sigaction() failed in test_setup()");
 		return 0;
 	}
-	
+
 	/* test_setup() returns success*/
 	return 1;
 }
@@ -390,7 +390,7 @@ child_fn()
 int
 parent_test1()
 {
-	
+
 	/*
 	 * For first test case (with all flags set), all resources are
 	 * shared between parent and child. So whatever changes made by
@@ -398,7 +398,7 @@ parent_test1()
 	 * functions check this. All of them should return 1 for
 	 * parent_test1() to return 1
 	 */
-	
+
 	if(modified_VM() && modified_FILES() && modified_FS() &&
 	   modified_SIG()) {
 		return 1;
@@ -481,10 +481,10 @@ test_SIG()
 {
 
 	struct sigaction new_act;
-	
+
 	new_act.sa_handler = sig_child_defined_handler;
 	new_act.sa_flags = SA_RESTART;
-	
+
 	/* Set signal handler to sig_child_defined_handler */
 	if ((sigaction(SIGUSR2, &new_act, NULL)) == -1) {
 		tst_resm(TWARN, "signal() failed in test_SIG()");
@@ -524,18 +524,18 @@ int
 modified_FILES()
 {
 	char buff[20];
-	
+
 	if (((read(fd_parent, buff, sizeof(buff))) == -1) &&
 	    (errno == EBADF)) {
 		/* Child has closed this file descriptor */
 		return 1;
 	}
 
-	/* close fd_parent*/	
+	/* close fd_parent*/
 	if ((close(fd_parent)) == -1) {
 		tst_resm(TWARN, "close() failed in modified_FILES()");
 	}
-	
+
 	return 0;
 }
 
@@ -547,11 +547,11 @@ int
 modified_FS()
 {
 	char cwd[FILENAME_MAX];
-	
+
 	if ((getcwd(cwd, sizeof(cwd))) == NULL) {
 		tst_resm(TWARN, "getcwd() failed");
 	}
-	
+
 	if ( !(strcmp(cwd, cwd_parent) )) {
 		/* cwd hasn't changed */
 		return 0;
@@ -566,7 +566,7 @@ modified_FS()
 int
 modified_SIG()
 {
-	
+
 	if (parent_got_signal) {
 		/*
 		 * parent came through sig_child_defined_handler()

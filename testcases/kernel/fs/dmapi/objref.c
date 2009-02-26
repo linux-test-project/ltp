@@ -59,7 +59,7 @@ int main(int argc, char **argv)
 
 	DMEV_ZERO(events);
 	DMEV_SET(DM_EVENT_MOUNT, events);
-	
+
 	/* CANNOT DO ANYTHING WITHOUT SUCCESSFUL INITIALIZATION!!! */
 	if ((rc = dm_init_service(&varstr)) != 0) {
 		DMLOG_PRINT(DMLVL_ERR, "dm_init_service failed! (rc = %d, errno = %d)\n", rc, errno);
@@ -111,7 +111,7 @@ int main(int argc, char **argv)
 	}
 
 	DMLOG_STOP();
-			
+		
 	return 0;
 }
 
@@ -122,9 +122,9 @@ void DoTest(dm_token_t token, void *hanp, size_t hlen)
 	int   rc;
 
 	DMLOG_PRINT(DMLVL_DEBUG, "Starting DMAPI object reference tests\n") ;
-	
+
 	szFuncName = "dm_obj_ref_hold";
-	
+
 	/*
 	 * TEST    : dm_obj_ref_hold - invalid sid
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -140,7 +140,7 @@ void DoTest(dm_token_t token, void *hanp, size_t hlen)
 
 		/* Variation clean up */
 	}
-	
+
 	/*
 	 * TEST    : dm_obj_ref_hold - invalid token
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -156,7 +156,7 @@ void DoTest(dm_token_t token, void *hanp, size_t hlen)
 
 		/* Variation clean up */
 	}
-	
+
 	/*
 	 * TEST    : dm_obj_ref_hold - invalid hanp
 	 * EXPECTED: rc = -1, errno = EFAULT
@@ -172,7 +172,7 @@ void DoTest(dm_token_t token, void *hanp, size_t hlen)
 
 		/* Variation clean up */
 	}
-	
+
 	/*
 	 * TEST    : dm_obj_ref_hold - invalid hlen
 	 * EXPECTED: rc = -1, errno = EBADF
@@ -258,7 +258,7 @@ void DoTest(dm_token_t token, void *hanp, size_t hlen)
 
 		/* Variation clean up */
 	}
-	
+
 	/*
 	 * TEST    : dm_obj_ref_hold - global handle
 	 * EXPECTED: rc = -1, errno = EBADF
@@ -274,9 +274,9 @@ void DoTest(dm_token_t token, void *hanp, size_t hlen)
 
 		/* Variation clean up */
 	}
-	
+
 	szFuncName = "dm_obj_ref_rele";
-	
+
 	/*
 	 * TEST    : dm_obj_ref_rele - invalid sid
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -292,7 +292,7 @@ void DoTest(dm_token_t token, void *hanp, size_t hlen)
 
 		/* Variation clean up */
 	}
-	
+
 	/*
 	 * TEST    : dm_obj_ref_rele - invalid token
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -308,7 +308,7 @@ void DoTest(dm_token_t token, void *hanp, size_t hlen)
 
 		/* Variation clean up */
 	}
-	
+
 	/*
 	 * TEST    : dm_obj_ref_rele - invalid hanp
 	 * EXPECTED: rc = -1, errno = EFAULT
@@ -324,7 +324,7 @@ void DoTest(dm_token_t token, void *hanp, size_t hlen)
 
 		/* Variation clean up */
 	}
-	
+
 	/*
 	 * TEST    : dm_obj_ref_rele - invalid hlen
 	 * EXPECTED: rc = -1, errno = EBADF
@@ -340,7 +340,7 @@ void DoTest(dm_token_t token, void *hanp, size_t hlen)
 
 		/* Variation clean up */
 	}
-	
+
 	/*
 	 * TEST    : dm_obj_ref_rele - no hold
 	 * EXPECTED: rc = -1, errno = EACCES
@@ -403,7 +403,7 @@ void DoTest(dm_token_t token, void *hanp, size_t hlen)
 
 		/* Variation clean up */
 	}
-	
+
 	/*
 	 * TEST    : dm_obj_ref_rele - global handle
 	 * EXPECTED: rc = -1, errno = EBADF
@@ -419,9 +419,9 @@ void DoTest(dm_token_t token, void *hanp, size_t hlen)
 
 		/* Variation clean up */
 	}
-	
+
 	szFuncName = "dm_obj_ref_query";
-	
+
 	/*
 	 * TEST    : dm_obj_ref_query - invalid sid
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -437,7 +437,7 @@ void DoTest(dm_token_t token, void *hanp, size_t hlen)
 
 		/* Variation clean up */
 	}
-	
+
 	/*
 	 * TEST    : dm_obj_ref_query - invalid token
 	 * EXPECTED: rc = -1, errno = EINVAL
@@ -453,7 +453,7 @@ void DoTest(dm_token_t token, void *hanp, size_t hlen)
 
 		/* Variation clean up */
 	}
-	
+
 	/*
 	 * TEST    : dm_obj_ref_query - invalid hanp
 	 * EXPECTED: rc = -1, errno = EFAULT
@@ -469,7 +469,7 @@ void DoTest(dm_token_t token, void *hanp, size_t hlen)
 
 		/* Variation clean up */
 	}
-	
+
 	/*
 	 * TEST    : dm_obj_ref_query - invalid hlen
 	 * EXPECTED: rc = -1, errno = EBADF
@@ -538,7 +538,7 @@ void DoTest(dm_token_t token, void *hanp, size_t hlen)
 
 		/* Variation clean up */
 	}
-	
+
 	/*
 	 * TEST    : dm_obj_ref_query - global handle
 	 * EXPECTED: rc = -1, errno = EBADF
@@ -554,7 +554,7 @@ void DoTest(dm_token_t token, void *hanp, size_t hlen)
 
 		/* Variation clean up */
 	}
-	
+
 }
 
 void *Thread(void *parm)
@@ -664,7 +664,7 @@ void *Thread(void *parm)
 			case DM_EVENT_PREUNMOUNT:
 				response = DM_RESP_CONTINUE;
 				break;
-				
+			
 			default:
 			{
 				DMLOG_PRINT(DMLVL_ERR, "Message is unexpected!\n");
@@ -681,4 +681,4 @@ void *Thread(void *parm)
 	} while (bMounted);
 
 	pthread_exit(0);
-}	
+}

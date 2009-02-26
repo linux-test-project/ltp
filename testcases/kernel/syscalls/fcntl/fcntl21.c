@@ -99,7 +99,7 @@ setup()
 	pipe(child_pipe);
 	parent_pid = getpid();
 
-	tst_tmpdir();	
+	tst_tmpdir();
 
 	snprintf(template, PATH_MAX, "fcntl21XXXXXX");
 
@@ -310,7 +310,7 @@ catch_child()
 int main(int ac, char **av)
 {
 	struct flock tl;
-	
+
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
 
@@ -372,7 +372,7 @@ int main(int ac, char **av)
 		 * remove the lock set above
 		 */
 		unlock_file();
-		
+	
 		if (fail) {
 			tst_resm(TINFO, "Test block 1: FAILED");
 		} else {
@@ -415,7 +415,7 @@ int main(int ac, char **av)
 /* //block3: */
 		tst_resm(TINFO, "Enter block 3");
 		fail = 0;
-		
+	
 		/*
 		 * Add a read lock to the middle of the file and a write
 		 * at the begining
@@ -465,7 +465,7 @@ int main(int ac, char **av)
 /* //block4: */
 		tst_resm(TINFO, "Enter block 4");
 		fail = 0;
-	
+
 		/*
 		 * Set a read lock at the middle of the file and a
 		 * write lock just before

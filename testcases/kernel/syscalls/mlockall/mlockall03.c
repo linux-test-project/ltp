@@ -32,7 +32,7 @@
  * 	(See the parse_opts(3) man page).
  *
  *    DESCRIPTION
- * 	
+ * 
  * 	Verify that mlockall(2) returns -1 and sets errno to
  *
  *	1) ENOMEM - If the caller had a non-zero RLIMIT_MEMLOCK
@@ -194,7 +194,7 @@ void setup()
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-	
+
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 

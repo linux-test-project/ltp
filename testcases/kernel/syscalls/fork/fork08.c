@@ -174,7 +174,7 @@ forkone:
 	/*NOTREACHED*/
 	return 0;
 }
-	
+
 /*
  * setup() - performs all ONE TIME setup for this test
  */
@@ -197,7 +197,7 @@ setup()
 	 * make a temp directory and cd to it
 	 */
 	tst_tmpdir();
-	
+
 	strcpy(fnamebuf, "fork07.");
 	sprintf(pbuf, "%d", getpid());
 	strcat(fnamebuf, pbuf);

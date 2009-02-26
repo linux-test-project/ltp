@@ -101,7 +101,7 @@ int main(int ac, char **av)
 	char *msg;			/* message returned from parse_opts */
 
 	int i;
-	
+
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
@@ -141,7 +141,7 @@ int main(int ac, char **av)
 					 strerror(TEST_ERRNO), TC[i].error);
 			}
 		}
-	}	
+	}
 	cleanup();
 
 	/*NOTREACHED*/

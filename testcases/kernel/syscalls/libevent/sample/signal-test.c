@@ -32,7 +32,7 @@ signal_cb(int fd, short event, void *arg)
 
 	if (called >= 2)
 		event_del(signal);
-	
+
 	called++;
 }
 

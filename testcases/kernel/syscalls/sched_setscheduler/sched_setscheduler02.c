@@ -77,7 +77,7 @@ int main(int ac, char **av)
 	pid_t pid;
 	struct sched_param param;
 	int status;
-	
+
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
@@ -135,7 +135,7 @@ int main(int ac, char **av)
 		if (seteuid(0) == -1) {
 			tst_brkm(TBROK, cleanup, "seteuid(0) failed");
 		}
-	}	
+	}
 	cleanup();
 	/*NOTREACHED*/
 

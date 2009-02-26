@@ -20,10 +20,10 @@
 /*
  * NAME
  *	waitpid11.c
- *	
+ *
  * DESCRIPTION
  *	Tests to see if pid's returned from fork and waitpid are same
- *	
+ *
  * ALGORITHM
  * 	Check proper functioning of waitpid with pid = -1 and arg = 0
  *
@@ -71,7 +71,7 @@ int main(int ac, char **av)
 {
 	int lc;				/* loop counter */
 	char *msg;			/* message returned from parse_opts */
-	
+
 	int kid_count, ret_val, status;
 	int i, j, k, found;
 	int group1, group2;
@@ -168,7 +168,7 @@ int main(int ac, char **av)
 		 */
 		sleep(3);
 #endif
-		
+	
 		/* Now send all the kids a SIGINT to tell them to proceed */
 		for (i = 0; i < MAXKIDS; i++) {
 			if (kill(fork_kid_pid[i], SIGINT) < 0) {

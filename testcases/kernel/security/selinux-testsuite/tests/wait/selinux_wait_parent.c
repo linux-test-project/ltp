@@ -40,12 +40,12 @@ int main(int argc, char **argv)
 		fprintf(stderr, "%s:  unable to create context structure\n", argv[0]);
 		exit(-1);
 	}
-	
+
 	if (context_type_set(context, argv[1])) {
 		fprintf(stderr, "%s:  unable to set new type\n", argv[0]);
 		exit(-1);
 	}
-	
+
 	freecon(context_s);
 	context_s = context_str(context);
 	if (!context_s) {

@@ -459,7 +459,7 @@ int test_epoll_ctl (int epoll_fd)
 	  ev_ptr = NULL;
 	  break;
 	}
-	
+
 	for(epfd_index = 0; epfd_index < (sizeof(epoll_fds)/sizeof(int)); epfd_index++){
 	  for(event_index = 0; event_index < (sizeof(epoll_events)/sizeof(int)); event_index++){
 		for(fd_index = 0; fd_index < (sizeof(fds)/sizeof(int)); fd_index++){
@@ -469,10 +469,10 @@ int test_epoll_ctl (int epoll_fd)
 			int result;
 			int expected_errno = 0;
 			int num_errors_expected = 0;
-			
+		
 			if (ev_ptr != NULL)
 			  ev_ptr->events = epoll_events[event_index];
-	
+
 			/* Perform the call itself. Put it in a protected region which
 			   returns -1 in the variable result if a protection violation
 			   occurs (see PROTECT_REGION_END for the result) */

@@ -190,7 +190,7 @@ int main(int ac, char *av[])
 		 *	-The file pointer should still be at K2.
 		 *	-The data should have been written to the end
 		 *	 of the file (O_APPEND) and should be K5 in size.
-		 */	
+		 */
 		if ((nbytes = pwrite(fd, wbuf[0], K1, 0)) != K1) {
 			tst_resm(TFAIL, "pwrite at 0 failed: nbytes=%d, errno=%d",
 					nbytes, errno) ;

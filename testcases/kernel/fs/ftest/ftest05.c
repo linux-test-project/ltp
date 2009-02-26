@@ -46,7 +46,7 @@
  * CAUTION!!
  *	If a file is supplied to this program with the "-f" option
  *	it will be removed with a system("rm -rf filename") call.
- *	
+ *
  */
 
 #define _XOPEN_SOURCE 500
@@ -160,7 +160,7 @@ setup()
 		tst_exit();
 	}
 
-	
+
 	/*
 	 * Default values for run conditions.
 	 */
@@ -175,7 +175,7 @@ setup()
 		perror("sigset failed");
 		exit(3);
 	}
-	
+
 	local_flag = PASSED;
 
 	return;

@@ -89,7 +89,7 @@
 #define DEFAULT_NUM_CHILDREN	1
 #define OPEN_MAX		256
 #define MAXCHILD 		(OPEN_MAX/2 - 2)
-#define VALID_PACKET		0xabcdef01	
+#define VALID_PACKET		0xabcdef01
 #define USAGE	"\nUsage: %s [-n] [-p nprocs] [{-m totmegs | -b totbytes}]\n\n" \
 		"\t-n          transfer data with NON-BLOCKING reads & writes\n" \
 		"\t-p nprocs   number of child processes to spawn\n" \
@@ -321,7 +321,7 @@ int main (int argc, char **argv)
 		}
 		if (close (p2child [i][WRITE]) < 0)
 			sys_error ("close failed", __LINE__);
-		
+	
 		if (read (p2parent [READ], &packet, sizeof (packet)) <= 0)
 			sys_error ("read failed", __LINE__);
 

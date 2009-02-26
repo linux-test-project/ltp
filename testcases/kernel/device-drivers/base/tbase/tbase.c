@@ -98,7 +98,7 @@ struct device_driver test_driver;
 struct device test_device;
 
 static int test_device_match (struct device *dev, struct device_driver *drv) {
-	
+
 	printk("tbase: driver is %s\n", drv->name);
 //	printk("tbase: device is %s\n", dev->name);
 
@@ -283,7 +283,7 @@ static int tbase_ioctl(struct inode *ino, struct file *f,
                 }
         }
 
-	
+
 	/*
 	 * Use a switch statement to determine which function
 	 * to call, based on the cmd flag that is specified
@@ -325,7 +325,7 @@ static int tbase_ioctl(struct inode *ino, struct file *f,
 	 * calls or an error in the ioctl function
 	 */
 	tif.out_rc = rc;
-	rc = 0;	
+	rc = 0;
 
 	/*
 	 * setup the rest of tif pointer for returning to
@@ -381,7 +381,7 @@ static int test_device_register() {
 
 
 	driver_unregister(drv);
-	
+
 
 	/* check if driver_register returns an error */
 	if (driver_register(drv)) {
@@ -394,7 +394,7 @@ static int test_device_register() {
 	return 0;
 
 }
-		
+	
 
 /*
  * test_device_unregister
@@ -418,7 +418,7 @@ static int test_device_unregister() {
 	return 0;
 }
 
-	
+
 
 
 /*
@@ -438,7 +438,7 @@ static int test_bus_add() {
                 return 0;
         }
 }
-		
+	
 
 /*
  * test_get_drv
@@ -451,7 +451,7 @@ static int test_get_drv() {
 	int a, rc;
 	struct device_driver    *drv = &test_driver,
 				*tmp = NULL;
-		
+	
 	/* get reference count before test call */
 	a = atomic_read(&drv->kobj.refcount);
 
@@ -477,7 +477,7 @@ static int test_get_drv() {
 
 	return rc;
 }
-		
+	
 /*
  * test_class_get
  *	make test call to class_get which should return
@@ -498,7 +498,7 @@ static int test_class_get() {
 		printk("tbase: Failure get class\n");
 		rc = 1;
 	}
-	
+
 	class_put(&test_class);
  	return rc;
 }
@@ -564,7 +564,7 @@ static int test_reg_firm() {
 		return 0;
 	}
 
-}		
+}	
 
 /*
  * test_create_file
@@ -661,7 +661,7 @@ static int test_bus_rescan() {
 
 	return 0;
 }
-	
+
 /*
  * test_bus_file
  *      make test call to bus_create_file
@@ -713,13 +713,13 @@ static int test_class_file() {
  */
 static int test_class_reg() {
 	int error;
-	
+
 	error = class_register(&test_class);
 	if (error)
 		printk("tbase: class register failed\n");
 	else
 		printk("tbase: class register succeeded\n");
-	
+
 	return error;
 }
 
@@ -739,7 +739,7 @@ static int test_classdev_reg() {
 	}
 	else {
 		printk("tbase: Registered class device\n");
-		
+	
 		/* make class device sysfs file */
 		if (class_device_create_file(&test_class_dev, &class_device_attr_test_id)) {
 			rc = 1;
@@ -749,10 +749,10 @@ static int test_classdev_reg() {
 			printk("tbase: Created class device sysfs file\n");
 			class_device_remove_file(&test_class_dev, &class_device_attr_test_id);
 		}
-		
+	
 		class_device_unregister(&test_class_dev);
 	}
-	
+
 	return rc;
 }
 
@@ -775,7 +775,7 @@ static int test_classint_reg() {
 		return 0;
 	}
 
-}	
+}
 
 /*
  * test_sysdev_cls_reg
@@ -785,7 +785,7 @@ static int test_classint_reg() {
  *	the return code
  */
 static int test_sysdev_cls_reg() {
-	
+
 	if (sysdev_class_register(&test_sysclass)) {
 		printk("tbase: Failed to register sysdev class\n");
 		return 1;
@@ -862,9 +862,9 @@ static void tbase_exit_module(void) {
         int rc;
 
 	device_unregister(&test_device);
-	driver_unregister(&test_driver);	
+	driver_unregister(&test_driver);
 	bus_unregister(&test_bus_type);
-	
+
 	/* free any pointers still allocated, using kfree*/
 
 	rc = unregister_chrdev(Major, DEVICE_NAME);

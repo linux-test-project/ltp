@@ -1732,10 +1732,10 @@ char	*opts;
 	 * Initialize File_List[] - only necessary if doing file io.  First
 	 * space for the File_List array, then fill it in.
 	 */
-	
+
 	File_List = (struct file_info *)
 	    malloc((argc-optind) * sizeof(struct file_info));
-	
+
 	if (File_List == NULL) {
 	    fprintf(stderr, "iogen%s:  Could not malloc space for %d file_info structures\n", TagName, argc-optind);
 	    exit(2);
@@ -1845,12 +1845,12 @@ char	*opts;
 			fptr->f_lastoffset = 0;
 			fptr->f_lastlength = 0;
 			break;
-			
+		
 		    case M_REVERSE:
 			fptr->f_lastoffset = fptr->f_length;
 			fptr->f_lastlength = 0;
 			break;
-			
+		
 		    case M_RANDOM:
 			fptr->f_lastoffset = fptr->f_length / 2;
 			fptr->f_lastlength = 0;

@@ -120,7 +120,7 @@ int main (int argc, char **argv)
 	 * Parse command line options
 	 */
 	parse_args (argc, argv);
-	
+
 	if ((key = ftok (project_name, project_id)) < 0)
 		sys_error ("ftok failed", __LINE__);
 

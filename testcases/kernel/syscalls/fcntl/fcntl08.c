@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fcntl08.c,v 1.3 2009/02/26 12:02:55 subrata_modak Exp $ */
+/* $Id: fcntl08.c,v 1.4 2009/02/26 12:14:56 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -60,13 +60,13 @@
  *    TEST CASES
  *
  * 	1.) fcntl(2) returns...(See Description)
- *	
+ *
  *    INPUT SPECIFICATIONS
  * 	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
  *
  *    OUTPUT SPECIFICATIONS
- * 	
+ * 
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
  *
@@ -162,7 +162,7 @@ main(int ac, char **av)
 	 * Call fcntl(2) with F_SETFL argument on fname
 	 */
 	TEST(fcntl(fd, F_SETFL, arg));
-	
+
 	/* check return code */
 	if ( TEST_RETURN == -1 ) {
 	    tst_resm(TFAIL, "fcntl(%s, F_SETFL, %d) Failed, errno=%d : %s",

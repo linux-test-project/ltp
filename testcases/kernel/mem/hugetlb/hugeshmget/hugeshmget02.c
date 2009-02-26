@@ -115,14 +115,14 @@ int main(int ac, char **av) {
 			/*
 			 * Look for a failure ...
 			 */
-	
+
 			TEST(shmget(*(TC[i].skey), TC[i].size, TC[i].flags));
-	
+
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
 				continue;
 			}
-	
+
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO == TC[i].error) {
@@ -133,7 +133,7 @@ int main(int ac, char **av) {
 				tst_resm(TFAIL, "call failed with an "
 					 "unexpected error - %d : %s",
 					 TEST_ERRNO, strerror(TEST_ERRNO));
-			}			
+			}		
 		}
 	}
 

@@ -241,7 +241,7 @@ static void child (int num, unsigned char *shmptr)
 {
 	unsigned long cksum = 0;
 	int	i;
-	
+
 	read_lock (lockfd);
 	for (i=0; i<buffer_size; i++)
 		cksum += *shmptr++;

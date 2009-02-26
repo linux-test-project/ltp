@@ -103,7 +103,7 @@ main(int ac, char **av)
 		 * set the scheduling parameters for the calling process
 		 */
 		TEST(sched_setparam(0, &param));
-	
+
 		if (TEST_RETURN == 0) {
 			tst_resm(TPASS, "sched_setparam() returned %d",
 				 TEST_RETURN);
@@ -126,7 +126,7 @@ main(int ac, char **av)
 void
 setup()
 {
-	
+
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
@@ -134,7 +134,7 @@ setup()
 	TEST_PAUSE;
 
 	param.sched_priority = 0;
-	
+
 
 }	/* End setup() */
 

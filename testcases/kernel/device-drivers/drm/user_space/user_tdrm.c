@@ -128,14 +128,14 @@ tdrmclose() {
 
 int main() {
 	int rc;
-	
+
 	/* open the module */
 	rc = tdrmopen();
         if (rc ) {
                 printf("Test DRM Driver may not be loaded\n");
                 exit(1);
         }
-	
+
 	printf("\tBegin drm read system ioctl\n");
 	//
 	drm_auth_t auth;
@@ -154,7 +154,7 @@ int main() {
 	/*--------------------------------------------------------------
 	 *                      for drm read write ioctl test
 	 */
-	
+
 	printf("\tBegin read write ioctl test\n");
 	if(ioctl(tdrm_fd , DRM_IOCTL_IRQ_BUSID))
 		printf("Failed on drm ioctl DRM(irq_busid)\n");
@@ -192,42 +192,42 @@ int main() {
 		printf("Failed on drm ioctl DRM(rmdraw)\n");
 	else
 		printf("Success on drm ioctl DRM(rmdraw)\n");
-	
-	
+
+
 	/* test drm stub_register */
-	
+
 	if(ioctl(tdrm_fd, TDRM_STUB_REGISTER))
 		printf("Failed on drm stub_register test\n");
 	else
 		printf("Success on drm stub_register test\n");
 
 	// test drm DRM(agp_uninit)
-	
+
 	if(ioctl(tdrm_fd, TDRM_UNINIT_AGP))
 		printf("Failed on DRM(agp_uninit) test\n");
 	else
 		printf("Success on DRM(agp_uninit) test\n");
-	
+
 	// test drm DRM(agp_init)
-	
+
 	if(ioctl(tdrm_fd, TDRM_INIT_AGP))
 		printf("Failed on DRM(agp_init) test\n");
 	else
 		printf("Success on DRM(agp_init) test\n");
-	
+
 	// test drm stub_unregister
-	
+
 	if(ioctl(tdrm_fd, TDRM_STUB_UNREGISTER))
 		printf("Failed on drm stub_unregister test\n");
 	else
 		printf("Success on drm stub_unregister test\n");
-	// test drm add magic	
+	// test drm add magic
 		if(ioctl(tdrm_fd, TDRM_ADD_MAGIC))
 		printf("Failed on drm DRM(add_magic) test\n");
 	else
 		printf("Success on drm DRM(add_magic) test\n");
-	
-	
+
+
 	// test drm remove magic
 	if(ioctl(tdrm_fd, TDRM_REMOVE_MAGIC))
 		printf("Failed on drm DRM(remove_magic) test\n");
@@ -249,14 +249,14 @@ int main() {
 		printf("Failed on drm DRM(ctxbitmap_cleanup) test\n");
 	else
 		printf("Success on drm DRM(ctxbitmap_cleanup) test\n");
-	
+
 	// test drm ctxbitmap init
 	if(ioctl(tdrm_fd, TDRM_CTXBITMAP_INIT))
 		printf("Failed on drm DRM(ctxbitmap_init) test\n");
 	else
 		printf("Success on drm DRM(ctxbitmap_init) test\n");
-	
-	static drm_version_t version;	
+
+	static drm_version_t version;
 	if(ioctl(tdrm_fd, DRM_IOCTL_VERSION,&version))
 		printf("Failed on drm DRM(version) test\n");
 	else
@@ -272,7 +272,7 @@ int main() {
 		printf("Failed on drm authmagic test\n");
 	else
 		printf("Success on drm authmagic test\n");
-	
+
 	//  test for drm_agpsupport.h
 	/*
 	if(ioctl(tdrm_fd, DRM_IOCTL_AGP_RELEASE))
@@ -284,40 +284,40 @@ int main() {
 		printf("Failed on drm DRM(agp_acquire) test\n");
 	else
 		printf("Success on drm DRM(agp_acquire) test\n");
-	
+
 	if(ioctl(tdrm_fd, DRM_IOCTL_AGP_RELEASE))
 		printf("Failed on drm DRM(agp_release) test\n");
 	else
 		printf("Success on drm DRM(agp_release) test\n");
-	
+
 	if(ioctl(tdrm_fd, DRM_IOCTL_AGP_ACQUIRE))
 		printf("Failed on drm DRM(agp_acquire) test\n");
 	else
 		printf("Success on drm DRM(agp_acquire) test\n");
 
-	
-	static drm_agp_info_t agp_info;	
+
+	static drm_agp_info_t agp_info;
 	if(ioctl(tdrm_fd, DRM_IOCTL_AGP_INFO,&agp_info))
 		printf("Failed on drm DRM(agp_info) test\n");
 	else
 		printf("Success on drm DRM(agp_info) test\n");
 
 	static drm_agp_buffer_t agp_buffer;
-	agp_buffer.size = 64;	
+	agp_buffer.size = 64;
 	if(ioctl(tdrm_fd, DRM_IOCTL_AGP_ALLOC,&agp_buffer))
 		printf("Failed on drm DRM(agp_alloc) test\n");
 	else
 		printf("Success on drm DRM(agp_alloc) test\n");
-	
+
 	static drm_agp_binding_t bind_buffer;
 	bind_buffer.handle = agp_buffer.handle;
 	bind_buffer.offset = 64;
-	
+
 	if(ioctl(tdrm_fd, DRM_IOCTL_AGP_BIND,&bind_buffer))
 		printf("Failed on drm DRM(agp_bind) test\n");
 	else
 		printf("Success on drm DRM(agp_bind) test\n");
-	
+
 	if(ioctl(tdrm_fd, DRM_IOCTL_AGP_UNBIND,&bind_buffer))
 		printf("Failed on drm DRM(agp_unbind) test\n");
 	else
@@ -327,24 +327,24 @@ int main() {
 	else
 		printf("Success on drm DRM(agp_free) test\n");
 
-	// test drm_ctxbitmap.h 	
+	// test drm_ctxbitmap.h 
 	static drm_ctx_t getctx;
 	if(ioctl(tdrm_fd, DRM_IOCTL_GET_CTX,&getctx))
 		printf("Failed on drm DRM(getctx) test\n");
 	else
 		printf("Success on drm DRM(getctx) test\n");
 
-	static drm_ctx_t ctx;	
+	static drm_ctx_t ctx;
 	if(ioctl(tdrm_fd, DRM_IOCTL_ADD_CTX,&ctx))
 		printf("Failed on drm DRM(addctx) test\n");
 	else
 		printf("Success on drm DRM(addctx) test\n");
-	
+
 	if(ioctl(tdrm_fd, DRM_IOCTL_RM_CTX,&ctx))
 		printf("Failed on drm DRM(rmctx) test\n");
 	else
 		printf("Success on drm DRM(rmctx) test\n");
-	
+
 	/*
 	static drm_ctx_priv_map_t map;
 	memset(&map,0,sizeof(drm_ctx_priv_map_t));
@@ -359,19 +359,19 @@ int main() {
 		printf("Failed on drm DRM(adddraw) test\n");
 	else
 		printf("Success on drm DRM(adddraw) test\n");
-	
+
 	if(ioctl(tdrm_fd, DRM_IOCTL_RM_DRAW,&draw))
 		printf("Failed on drm DRM(rmdraw) test\n");
 	else
 		printf("Success on drm DRM(rmdraw) test\n");
-	
+
 	//for drm_ioctl.h//
 	static drm_stats_t status;
 	if(ioctl(tdrm_fd, DRM_IOCTL_GET_STATS,&status))
 		printf("Failed on drm DRM(getstatus) test\n");
 	else
 		printf("Success on drm DRM(getstatus) test\n");
-	
+
 	static drm_client_t client;
 	if(ioctl(tdrm_fd, DRM_IOCTL_GET_CLIENT,&client))
 		printf("Failed on drm DRM(getclient) test\n");
@@ -394,15 +394,15 @@ int main() {
 	/*
 	if(ioctl(tdrm_fd, DRM_IOCTL_SET_UNIQUE,&unique))
 		printf("Failed on drm DRM(setunique) test\n");
-	
+
 	else
 		printf("Success on drm DRM(setunique) test\n");
-	
+
 	*/
 	rc = tdrmclose();
 	if (rc ) {
                 printf("Test MOD Driver may not be closed\n");
                 exit(1);
         }
-	
+
 }

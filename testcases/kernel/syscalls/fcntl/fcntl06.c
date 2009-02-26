@@ -81,7 +81,7 @@ int main(int ac, char **av)
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
-	
+
 	setup();			/* global setup */
 
 /* //block1:	*/				/* Error: when no lock is set */
@@ -152,7 +152,7 @@ setup()
 	tst_tmpdir();
 
 	snprintf(template, PATH_MAX, "fcntl06XXXXXX");
-	
+
 	if ((fd = mkstemp(template)) < 0) {
 		tst_resm(TFAIL, "Couldn't open temp file! errno = %d", errno);
 	}

@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: asyncio02.c,v 1.3 2009/02/26 12:02:33 subrata_modak Exp $ */
+/* $Id: asyncio02.c,v 1.4 2009/02/26 12:14:54 subrata_modak Exp $ */
 /************************************************************
  * OS Test - Silicon Graphics, Inc.
  * Mendota Heights, Minnesota
@@ -266,7 +266,7 @@ testrun(int flag, int bytes, int ti)
 
 	for(i = 0; i < WRITES; i++) {
 		TEST( write(fildes,dp,(unsigned)bytes) );
-		
+	
 		if( TEST_RETURN == -1) {
 		    sprintf(mesg, "write failed, errno:%d", errno);
             	    tst_brkm(TBROK, cleanup, mesg);

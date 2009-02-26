@@ -154,7 +154,7 @@ main(int ac, char **av)
 void
 setup()
 {
-	
+
 	/* Capture unexpected signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
@@ -211,7 +211,7 @@ cleanup()
 		tst_resm(TWARN, "setdomainname() failed while restoring"
 				" domainname to \"%s\"", old_domain_name);
 	}
-	
+
 	/* exit with return code appropriate for results */
 	tst_exit();
 }

@@ -167,7 +167,7 @@ main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
 		Tst_count=0;
-	
+
 		for (i = 0; Test_cases[i].desc != NULL; i++) {
 			sym_file = Test_cases[i].link;
 			test_desc = Test_cases[i].desc;
@@ -183,7 +183,7 @@ main(int ac, char **av)
 			 * appropriate errno.
 			 */
 			TEST(readlink(sym_file, buffer, buf_size));
-	
+
 			/* Check return code of readlink(2) */
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "readlink() returned %d, "
@@ -202,7 +202,7 @@ main(int ac, char **av)
 			} else {
 				tst_resm(TFAIL, "readlink() failed, %s, "
 					 "errno=%d, expected errno=%d",
-					 test_desc, TEST_ERRNO,	
+					 test_desc, TEST_ERRNO,
 					 Test_cases[i].exp_errno);
 			}
 		}	/* End of TEST CASE LOOPING. */
@@ -326,7 +326,7 @@ setup2()
                 tst_brkm(TBROK, cleanup, "close(%s) failed, errno=%d : %s",
                          TEST_FILE2, errno, strerror(errno));
         }
-	
+
 	/* Creat a symlink of testfile created above */
 	if (symlink(TEST_FILE2, SYM_FILE2) < 0) {
 		tst_brkm(TBROK, cleanup, "symlink() failed to create %s in "

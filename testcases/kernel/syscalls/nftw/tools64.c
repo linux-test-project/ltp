@@ -39,7 +39,7 @@ extern FILE *temp;
  * Function: void cleanup_function(void)
  *
  * Description:
- *	Cleans the residues 	
+ *	Cleans the residues 
  *
  * Returns :
  *	Nothing
@@ -153,7 +153,7 @@ setup_path(void)
  *      Dummy function for errno tests
  *
  * Returns :
- *	0	
+ *	0
  */
 
 int
@@ -170,7 +170,7 @@ nftw64_fn(const char *path, const struct stat64 *st, int ival, struct FTW *FTWS)
  *      Dummy function for errno tests
  *
  * Returns :
- *	nftw64()	
+ *	nftw64()
  */
 
 int
@@ -254,7 +254,7 @@ getlev(const char *s)
  *	print the file being visited
  *
  * Returns:
- *	Nothing	
+ *	Nothing
  */
 
 void

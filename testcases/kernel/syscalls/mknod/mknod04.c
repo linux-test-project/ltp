@@ -43,7 +43,7 @@
  *   Check return code, if system call failed (return=-1)
  *   	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call	
+ *   	Verify the Functionality of system call
  *      if successful,
  *      	Issue Functionality-Pass message.
  *      Otherwise,
@@ -134,7 +134,7 @@ main(int ac, char **av)
 		 *  effective gid of the process.
 		 */
 		TEST(mknod(node_name, MODE_RWX, 0));
-	
+
 		/* Check return code from mknod(2) */
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "mknod(%s, %#o, 0)  failed, errno=%d : "
@@ -290,7 +290,7 @@ setup()
 	if (buf.st_gid != group2_gid) {
 		tst_brkm(TBROK, cleanup, "%s: Incorrect group", DIR_TEMP);
 	}
-	
+
    	/*
 	 * Set the effective group id and user id of the test process
 	 * to that of guest user (nobody)

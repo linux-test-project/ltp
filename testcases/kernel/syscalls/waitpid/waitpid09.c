@@ -25,7 +25,7 @@
  *	Check ability of parent to wait until child returns, and that the
  *	child's process id is returned through the waitpid. Check that
  *	waitpid returns immediately if no child is present.
- *	
+ *
  * ALGORITHM
  *	case 0:
  *		Parent forks a child and waits. Parent should do nothing
@@ -35,7 +35,7 @@
  *	case 1:
  *		Parent calls a waitpid with no children waiting. Waitpid
  *		should return a -1 since there are no children to wait for.
- *		
+ *	
  * USAGE:  <for command-line>
  *      waitpid09 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
  *      where,  -c n : Run n copies concurrently.
@@ -44,7 +44,7 @@
  *              -I x : Execute test for x seconds.
  *              -P x : Pause for x seconds between iterations.
  *              -t   : Turn on syscall timing.
- *		
+ *	
  * History
  *	07/2001 John George
  *		-Ported
@@ -134,8 +134,8 @@ int main(int argc, char **argv)
 #else
 			do_exit();
 #endif
-		} else {			/* parent */	
-		
+		} else {			/* parent */
+	
 			/*
 			 *Check that waitpid with WNOHANG returns zero
 			 */
@@ -206,7 +206,7 @@ int main(int argc, char **argv)
 						"match", pid, ret);
 					fail = 1;
 				}
-				
+			
 				if (status != 0) {
 					tst_resm(TFAIL, "non zero "
 						"status received %d",
