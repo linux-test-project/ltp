@@ -7,7 +7,7 @@ TARGETS = ht_interrupt
 all: $(TARGETS)
 
 ht_interrupt:
-	gcc -o ht_interrupt HTinterrupt.c HTutils.c $(CFLAGS) $(LOADLIBES) 
+	${CC} -o ht_interrupt HTinterrupt.c HTutils.c $(CFLAGS) $(LOADLIBES) 
 
 install:
 	@set -e; for i in $(TARGETS) ; do ln -f $$i ../../../../bin/$$i ; done

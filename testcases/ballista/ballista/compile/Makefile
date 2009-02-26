@@ -19,14 +19,14 @@ dFLAGS=-g -DDEBUG
 FLAGS= -O -Wall
 PFLAGS= -p -g3
 
-CPPCOMP= g++
+CPPCOMP= ${CXX}
 
 #
 # The following is "boilerplate" to set up the standard compilation
 # commands:
 .SUFFIXES:
 .SUFFIXES: .cpp .c .cc .h .o
-.c.o:  ; gcc $(FLAGS) -c $*.c
+.c.o:  ; ${CC} $(FLAGS) -c $*.c
 .cc.o:  ; $(CPPCOMP) $(FLAGS) -c $*.cc
 .cpp.o:  ; $(CPPCOMP) $(FLAGS) $(INC) -c $*.cpp
 .cxx.o:  ; $(CPPCOMP) $(FLAGS) $(INC) -c $*.cxx
@@ -41,10 +41,10 @@ all: blexer bparser
 	chmod 700 ../templates/do_parse
 
 blexer: jlist.o butil.o lex.yy.o blexer.o
-	gcc $(FLAGS)  -o blexer jlist.o butil.o lex.yy.o blexer.o 
+	${CC} $(FLAGS)  -o blexer jlist.o butil.o lex.yy.o blexer.o 
 
 bparser: bparser.o 
-	g++ $(FLAGS) -o bparser bparser.o butil.c
+	${CXX} $(FLAGS) -o bparser bparser.o butil.c
 
 jlist.o: jlist.c butil.h jlist.h
 

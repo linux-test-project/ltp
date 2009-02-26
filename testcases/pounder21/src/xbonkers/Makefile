@@ -17,7 +17,7 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 
-CC=gcc
+
 CFLAGS += -O3 -Wall
 LDFLAGS=-lX11 -L/usr/X11R6/lib -L/usr/X11R6/lib64
 bins = xbonkers

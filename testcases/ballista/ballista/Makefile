@@ -24,7 +24,7 @@
 ########################
 
 # compiler info for the host
-CC = g++ -Wno-deprecated
+CC=${CXX} -Wno-deprecated
 CFLAGS += -w ${TARGET_DEF}
 CLIBS = -lpthread -ldl -lnsl -rdynamic
 TEST_MAN_FILE = selfHost
@@ -33,7 +33,6 @@ TARGET_DEF    = -DB_SELFHOST
 OBJS = match.o line.o hack.o ballistaRPC.o ballistaXDR.o ${TEST_MAN_FILE}.o \
 	ballistaUtil.o marshal.o testCaseIterator.o\
 	serverCommunication.o parseArguments.o ballistaError.o
-	
 
 # build everything by default
 all : callGen callGen_standAlone genCodeCreator replacer ballista

@@ -6,13 +6,13 @@ all: ${EXECS}
 	@echo done
 
 cr: create-files.o ${UTILS}
-	gcc ${UTILS} create-files.o -lm -o cr
+	${CC} ${UTILS} create-files.o -lm -o cr
 
 ra: random-access.o
-	gcc random-access.o -o ra
+	${CC} random-access.o -o ra
 
 radc: random-del-create.o ${UTILS}
-	gcc  ${UTILS} random-del-create.o -lm -o radc
+	${CC}  ${UTILS} random-del-create.o -lm -o radc
 
 install:
 	 @set -e; for i in $(EXECS) $(SCRIPTS); do ln -f $$i ../../../bin/$$i ; done

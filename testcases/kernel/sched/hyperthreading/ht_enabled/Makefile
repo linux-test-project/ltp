@@ -7,7 +7,7 @@ TARGETS  := ht_enabled
 all: $(TARGETS)
 
 ht_enabled:
-	gcc -o ht_enabled HTenabled.c HTutils.c $(CFLAGS) $(LOADLIBES)
+	${CC} -o ht_enabled HTenabled.c HTutils.c $(CFLAGS) $(LOADLIBES)
 
 install:
 	@set -e; for i in $(TARGETS) ; do ln -f $$i ../../../../bin/$$i ; done

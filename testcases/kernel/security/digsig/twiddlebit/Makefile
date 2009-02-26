@@ -1,4 +1,3 @@
-CC=gcc
 
 
 all: hw_signed swapbit

@@ -15,7 +15,7 @@ PWD	:= $(shell pwd)
 
 default:
 	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) modules
-	gcc  $(CFLAGS) -o LtpAcpiMain  LtpAcpiMain.c
+	${CC}  $(CFLAGS) -o LtpAcpiMain  LtpAcpiMain.c
 #	$(MAKE) -C $(KERNELDIR) SUBDIRS=$(PWD) modules
 endif
 

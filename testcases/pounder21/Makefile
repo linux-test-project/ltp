@@ -20,7 +20,6 @@
 # Quickie makefile to do pounder stuff.
 NAME=ltpounder
 CFLAGS=-O3 -Wall -g
-CC=gcc
 HELPERS=timed_loop infinite_loop run-helper fancy_timed_loop
 
 install:;

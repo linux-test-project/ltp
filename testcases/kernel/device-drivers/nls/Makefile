@@ -13,7 +13,7 @@ PWD	:= $(shell pwd)
 
 default:
 	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) modules
-	gcc $(EXTRA_CFLAGS) -o userBlockNLS userBlockNLS.c
+	${CC} $(EXTRA_CFLAGS) -o userBlockNLS userBlockNLS.c
 #	$(MAKE) -C $(KERNELDIR) SUBDIRS=$(PWD) modules
 
 clean:

@@ -15,7 +15,7 @@ PWD	:= $(shell pwd)
 
 default:
 	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) modules
-	gcc  $(CFLAGS) -o ltpfstest -lm  main.c 
+	${CC}  $(CFLAGS) -o ltpfstest -lm  main.c 
 #	$(MAKE) -C $(KERNELDIR) SUBDIRS=$(PWD) modules
 endif
 

@@ -14,7 +14,7 @@ PWD	:= $(shell pwd)
 
 default:
 	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) modules
-	gcc -Wall -o userBlockInclude userBlockInclude.c
+	${CC} -Wall -o userBlockInclude userBlockInclude.c
 #	$(MAKE) -C $(KERNELDIR) SUBDIRS=$(PWD) modules
 endif
 

@@ -4,8 +4,6 @@ PREFIX=/usr/local
 INSTDIR=$(DESTDIR)/$(PREFIX)/bin
 MANDIR=$(DESTDIR)/$(PREFIX)/man
 
-CC = gcc
-LD = gcc
 
 EXECS = scsimain
 

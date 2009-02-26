@@ -16,7 +16,6 @@ SRCDIR = .
 INCLUDE = -I- -I. -I../include -I/usr/src/linux/include
 LIBS = -L../lib -lepoll -lpcl
 
-CC = gcc
 
 ifeq ($(EPOLLCFG), release)
 CFLAGS = -O3 $(INCLUDE) -DUNIX

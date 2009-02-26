@@ -1,5 +1,5 @@
 LIBS= -ldl
-CC=gcc
+
 
 all: shared.so libwritetest
 	@bsign=`which bsign`; \
