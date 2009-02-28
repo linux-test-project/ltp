@@ -76,3 +76,7 @@ or
 Power Management    1  FAIL  :  Required kernel configuration for CPU_FREQ NOT set
 
 Then either configuration is not set or the system won't support.
+
+For CPU consolidation verification ebizzy is included in utils directory of LTP.
+To run cpu consolidation test user has to provide -w <workload> -l <sched_mc_level>.
+Refer to README in LTPROOT/utils/benchmark/ebizzy-0.2 directory for details of ebizzy.
