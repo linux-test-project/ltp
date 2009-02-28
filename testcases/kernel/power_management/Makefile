@@ -18,8 +18,11 @@
 ##                                                                            ##
 ################################################################################
 
-all:
-	@set -e; $(MAKE) check_kv_arch ;
+SUBDIRS := 
+
+all: 
+	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i $@; done;
+	$(MAKE) check_kv_arch ;
 
 check_kv_arch: check_kv_arch.c
 	$(CC) -o $@ $< ../../../lib/tst_kvercmp.c -I../../../include
@@ -38,7 +41,9 @@ install:
 	ln -f  config_cpu_idle ../../bin/config_cpu_idle; \
 	ln -f  config_sched_mc ../../bin/config_sched_mc;
 	ln -f  check_cpuidle_sysfs_files.sh ../../bin/check_cpuidle_sysfs_files.sh;
+	ln -f  cpu_consolidation.py ../../bin/cpu_consolidation.py
 	chmod ugo+x *.sh
 clean:
+	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i $@ ; done
 	rm -f check_kv_arch
 

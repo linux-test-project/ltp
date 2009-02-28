@@ -33,7 +33,6 @@
 
 export TST_TOTAL=1
 LTPTMP=${TMP}
-LTPROOT=../../bin
 export PATH=${PATH}:.
 export TCID="Power Management"
 export TST_COUNT=0
@@ -50,7 +49,8 @@ RC=0		#Return status
 # Checking required kernel version and architecture
 check_kv_arch || RC=$?
 if [ $RC -eq 1 ] ; then
-	tst_resm TCONF "Kernel version or Architecture not supported: Not running testcases"
+	tst_resm TCONF "Kernel version or Architecture not supported:\
+	Not running testcases"
 	exit 0
 fi
 
@@ -60,6 +60,19 @@ if [ -f /sys/devices/system/cpu/sched_mc_power_savings ] ; then
 	test_sched_mc.sh || RC=$?
 	if [ $RC -eq 1 ] ; then
 		tst_resm TFAIL "SCHED_MC sysfs tests failed"
+	fi
+	# Test CPU consolidation for corresponding sched_mc
+	which python > /dev/null
+	if [ $? -ne 0 ] ; then
+    	tst_resm TCONF "Python is not installed, CPU Consoldation test not run"
+	else
+		# Trigger ebizzy workload for sched_mc_power_saving 1
+		cpu_consolidation.py -w ebizzy -l 1 || RC=$?
+		if [ $RC -eq 1 ] ; then
+        	tst_resm TFAIL "cpu consolidation test failed"
+		else
+	        tst_resm TPASS "cpu consolidation test for sched_mc_power set to 1"
+		fi
 	fi
 else
 	tst_resm TCONF "Required kernel configuration for SCHED_MC NOT set"
@@ -89,11 +102,11 @@ if [ -d /sys/devices/system/cpu/cpu0/cpufreq ] ; then
 	# Loading and Unloading governor related kernel modules
 	pwkm_load_unload.sh || RC=$?
 	if [ $RC -eq 1 ] ; then
-		tst_resm TFAIL "Loading and Unloading of governor kernel modules got failed"
+		tst_resm TFAIL "Loading and Unloading of governor kernel \
+		modules got failed"
 	fi
 else
        tst_resm TCONF "Required kernel configuration for CPU_FREQ NOT set"
-       exit 0
 fi
 
 # Checking cpuidle sysfs interface files
@@ -101,4 +114,3 @@ check_cpuidle_sysfs_files.sh || RC=$?
 if [ $RC -eq 1 ] ; then
 	tst_resm TFAIL "CPUIDLE sysfs tests failed"
 fi
- 
