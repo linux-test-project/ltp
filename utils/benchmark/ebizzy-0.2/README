@@ -1,0 +1,62 @@
+ebizzy
+------
+
+ebizzy is designed to generate a workload resembling common web
+application server workloads.  It is highly threaded, has a large
+in-memory working set with low locality, and allocates and deallocates
+memory frequently.  When running most efficiently, it will max out the
+CPU.
+
+Compiling
+---------
+
+First configure ebizzy for your platform by typing "./configure".
+Currently Linux and Solaris anre supported.  Then type "make".  The
+resulting binary will be named "ebizzy".
+
+Running
+-------
+
+ebizzy does not require any command line arguments.  To get
+results, just run it:
+
+$ ./ebizzy
+2569 records/s
+real 10.00 s
+user  2.74 s
+sys   7.24 s
+
+The records per second rate should be as high as possible, and the
+system time as low as possible.  Play with the various options to try
+to increase this time to see where overhead is coming from.  Note that
+the default number of threads is 2 per number of cpus.
+
+An interesting part of this app is difference between memory
+allocation using the "always mmap" and "never mmap" flags.  -m is
+"always mmap" and -M is "never mmap":
+
+$ ./ebizzy -M
+3997 records/s
+real 10.00 s
+user  3.70 s
+sys   5.65 s
+$ ./ebizzy -m
+2577 records/s
+real 10.00 s
+user  2.40 s
+sys   7.43 s
+
+The output of the above two commands should be quite different.
+
+ebizzy has many command line arguments.  To get a list of them and
+their descriptions, type:
+
+$ ./ebizzy -?
+
+Support
+-------
+
+There is none.  However, you can try emailing the author with
+questions and suggestions.
+
+Val Henson <val@nmt.edu>
