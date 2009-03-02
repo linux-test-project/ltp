@@ -1,0 +1,22 @@
+These tests were originally picked up from:
+http://svn.berlios.de/wsvn/socketcan/trunk/test/?rev=877&amp;sc=1
+
+and then ported/integrated to LTP on 27th Feb 2009, by,
+Subrata Modak <subrata@linux.vnet.ibm.com>.
+
+You should have linux-2.6.25 and above kernel installed in your
+system to run these tests. For Kernel config options needed to
+enable CAN protocol, please see ltp/README file.
+
+1) To Build the tests, do:
+$ make
+
+2) To Run the tests from this directory, do:
+$ ./run_ltp-can_tests.sh 
+
+3) To let LTP run the tests from $LTPROOT, execute:
+$ ./runltp -f can
+ 
+4) Clean up using:
+$ make clean
+
