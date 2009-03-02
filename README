@@ -258,3 +258,14 @@ Native language support (nls) testsuite requirements
 ----------------------------------------------------
 CONFIG_NLS=m
 CONFIG_BLOCK=y
+---------------------------------
+Enabling Controller area network (CAN) protocol support for your Kernels
+---------------------------------
+CONFIG_NET=y
+CONFIG_CAN=m
+CONFIG_CAN_RAW=m
+CONFIG_CAN_BCM=m
+# CAN Device Drivers
+CONFIG_CAN_VCAN=m
+---------------------------------
+
