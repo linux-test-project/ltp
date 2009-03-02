@@ -1,0 +1,1 @@
+CONTROLLER_AREA_NETWORK_01 ( cd $LTPROOT/testcases/network/can/filter-tests/; make && ./run_ltp-can_tests.sh )
