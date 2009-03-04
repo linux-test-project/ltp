@@ -1,9 +1,12 @@
 #
 # Makefile for GCOV profiling kernel module
 #
+#  1 Mar 2009 Márton Németh <nm127@freemail.hu>
+#   - Updated for Linux kernel 2.6.28
+#
 
 #KERNELDIR := /usr/src/linux-2.5.64-gcov
-CFLAGS := $(CFLAGS) -Wall -g
+EXTRA_CFLAGS := -Wall -g -Wextra -Wno-unused-parameter
 
 ifneq ($(KERNELRELEASE),)
 
@@ -13,12 +16,19 @@ else
 KDIR	:= /lib/modules/$(shell uname -r)/build
 PWD	:= $(shell pwd)
 
-default:
+modules:
 	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) modules
 	${CC}  $(CFLAGS) -o LtpAcpiMain  LtpAcpiMain.c
-#	$(MAKE) -C $(KERNELDIR) SUBDIRS=$(PWD) modules
-endif
 
 clean:
-	rm -f LtpAcpiCmds.o 2>/dev/null || true
+	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) clean
+	rm -f modules.order
+	rm -f LtpAcpiMain
 
+help:
+	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) help
+
+modules_install:
+	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) modules_install
+
+endif

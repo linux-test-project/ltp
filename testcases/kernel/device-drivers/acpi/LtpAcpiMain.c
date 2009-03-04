@@ -39,7 +39,6 @@
 #include <sys/ioctl.h>
 #include <linux/kd.h>
 #include <linux/errno.h>
-#include <linux/netdevice.h>
 
 #include "LtpAcpi.h"
 

@@ -25,29 +25,41 @@
  *      -Ported
  *  updated - 01/09/2005 Updates from Intel to add functionality
  *
+ *  01/03/2009 Márton Németh <nm127@freemail.hu>
+ *   - Updated for Linux kernel 2.6.28
+ *
  */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/types.h>
-#include <linux/fs.h>   
+#include <linux/fs.h>
+#include <linux/blkdev.h>
 #include <linux/ioctl.h>
-#include <linux/pm.h>   
+#include <linux/pm.h>
 #include <linux/acpi.h>
 #include <linux/genhd.h>
 #include <asm/uaccess.h>
 #include "LtpAcpi.h"
 
-static int     ltpdev_open( struct inode *inode, struct file *pfile);
-static int     ltpdev_release( struct inode *inode, struct file *pfile);
-static int     ltpdev_ioctl ( struct inode *pinode, struct file *pfile, unsigned int cmd, unsigned long arg );
-static int	ltp_test_sleep_button_ev_handler (void	*context);
-static int	ltp_test_power_button_ev_handler (void	*context);
+#ifndef ACPI_EC_UDELAY_GLK
+#define ACPI_EC_UDELAY_GLK	1000	/* Wait 1ms max. to get global lock */
+#endif
+
+static int ltpdev_open(struct block_device *bdev, fmode_t mode);
+static int ltpdev_release(struct gendisk *disk, fmode_t mode);
+static int ltpdev_ioctl(struct block_device *bdev, fmode_t mode, unsigned cmd, unsigned long arg);
+
+
+static u32 ltp_test_sleep_button_ev_handler(void *context);
+static u32 ltp_test_power_button_ev_handler(void *context);
+static u32 acpi_ec_gpe_handler(void *context);
+
 static void acpi_bus_notify (acpi_handle             handle, u32 type, void *data);
-static void acpi_ec_gpe_handler (void			*data);
 static acpi_status ltp_get_dev_callback (acpi_handle obj, u32 depth, void *context, void **ret);
 static acpi_status acpi_ec_io_ports (struct acpi_resource	*resource,   void			*context);
+#if 0
 static acpi_status acpi_ec_space_setup (acpi_handle		region_handle,
 	                                    u32			    function,
 	                                    void			*handler_context,
@@ -58,6 +70,7 @@ static acpi_status acpi_ec_space_handler (u32			function,
 	                                      acpi_integer		*value,
 	                                      void			*handler_context,
 	                                      void			*region_context);
+#endif
 
 static struct block_device_operations blkops = {
 open:       ltpdev_open,
@@ -74,7 +87,7 @@ static struct gendisk * gd_ptr;
 struct acpi_ec {
 	acpi_handle			handle;
 	unsigned long			uid;
-	unsigned long			gpe_bit;
+	unsigned long long		gpe_bit;
 	struct acpi_generic_address	status_addr;
 	struct acpi_generic_address	command_addr;
 	struct acpi_generic_address	data_addr;
@@ -93,37 +106,34 @@ MODULE_LICENSE("GPL");
  */
 
 
-static struct pm_dev *ltp_pm_dev = NULL;
-
 extern struct acpi_device		*acpi_root;
 
-
-static int ltpdev_open (struct inode *pinode, struct file *pfile)
+static int ltpdev_open(struct block_device *dev, fmode_t mode)
 {
     printk(KERN_ALERT "ltpdev_open \n");
     return 0;
 }
 
-static int ltpdev_release (struct inode *pinode, struct file *pfile)
+static int ltpdev_release(struct gendisk *disk, fmode_t mode)
 {
 
     printk(KERN_ALERT "ltpdev_release \n");
     return 0;
 }
 
-static int ltp_test_power_button_ev_handler (void *context)
+static u32 ltp_test_power_button_ev_handler(void *context)
 {
 	printk(KERN_ALERT "ltp_test_power_button_ev_handler \n");
 	return 1;
 }
 
-static int ltp_test_sleep_button_ev_handler (void *context)
+static u32 ltp_test_sleep_button_ev_handler(void *context)
 {
 	printk(KERN_ALERT "ltp_test_sleep_button_ev_handler \n");
 	return 1;
 }
 
-static int ltpdev_ioctl ( struct inode *pinode, struct file *pfile, unsigned int cmd, unsigned long arg )
+static int ltpdev_ioctl(struct block_device *bdev, fmode_t mode, unsigned cmd, unsigned long arg)
 {
     acpi_status        status;
 //	acpi_handle        sys_bus_handle;
@@ -131,20 +141,24 @@ static int ltpdev_ioctl ( struct inode *pinode, struct file *pfile, unsigned int
     acpi_handle        parent_handle;
     acpi_handle        child_handle;
     acpi_handle        next_child_handle;
-    acpi_handle        tmp_handle;
     acpi_status        level;
-	struct acpi_buffer	dsdt = {ACPI_ALLOCATE_BUFFER, NULL};
-	struct acpi_table_ecdt 	*ecdt_ptr;
 	struct acpi_ec		*ec;
-    struct acpi_device  *device;
+	struct acpi_device  *device;
 	struct acpi_buffer	buffer = {ACPI_ALLOCATE_BUFFER, NULL};
+
+#if 0
+	acpi_handle        tmp_handle;
+	struct acpi_table_ecdt 	*ecdt_ptr;
+	struct acpi_buffer	dsdt = {ACPI_ALLOCATE_BUFFER, NULL};
 	struct acpi_buffer	batt_buffer = {ACPI_ALLOCATE_BUFFER, NULL};
 	struct acpi_buffer	format = {sizeof(ACPI_BATTERY_FORMAT_BIF),
 						ACPI_BATTERY_FORMAT_BIF};
 	struct acpi_buffer	data = {0, NULL};
 	union acpi_object	*package = NULL;
+	u32                 start_ticks, stop_ticks, total_ticks;
+#endif
 
-    u32                 start_ticks, stop_ticks, total_ticks, i, bm_status;
+    u32                 i, bm_status;
     u8                  type_a, type_b;
     u32			global_lock = 0;
     int 		state = 0;
@@ -196,10 +210,12 @@ static int ltpdev_ioctl ( struct inode *pinode, struct file *pfile, unsigned int
 //        status = acpi_get_table(ACPI_TABLE_SSDT, 1, &dsdt);
 //        status = acpi_get_table(ACPI_TABLE_XSDT, 1, &dsdt);
 
+#if 0
         printk(KERN_ALERT "TEST -- acpi_get_firmware_table \n");
 
         status = acpi_get_firmware_table("ECDT", 1, ACPI_LOGICAL_ADDRESSING,
             (struct acpi_table_header **) &dsdt);
+#endif
 
         printk(KERN_ALERT "TEST -- acpi_install_notify_handler \n");
 
@@ -239,8 +255,10 @@ static int ltpdev_ioctl ( struct inode *pinode, struct file *pfile, unsigned int
 
         status = acpi_bus_get_device(next_child_handle, &device);
 
+#if 0
 	printk(KERN_ALERT "TEST -- acpi_bus_find_driver \n");
 	status = acpi_bus_find_driver(device);
+#endif
 
 	printk(KERN_ALERT "TEST -- acpi_bus_get_power \n");
 	status = acpi_bus_get_power(next_child_handle, &state);
@@ -258,7 +276,7 @@ static int ltpdev_ioctl ( struct inode *pinode, struct file *pfile, unsigned int
 
             printk(KERN_ALERT "TEST -- acpi_install_gpe_handler \n");
             ec->status_addr = ec->command_addr;
-            status = acpi_install_gpe_handler(device, ec->gpe_bit, ACPI_EVENT_EDGE_TRIGGERED, &acpi_ec_gpe_handler, ec);
+            status = acpi_install_gpe_handler(device, ec->gpe_bit, ACPI_GPE_EDGE_TRIGGERED, &acpi_ec_gpe_handler, ec);
 /*
             status = acpi_install_address_space_handler (ACPI_ROOT_OBJECT,
                     ACPI_ADR_SPACE_EC, &acpi_ec_space_handler,
@@ -282,13 +300,14 @@ static int ltpdev_ioctl ( struct inode *pinode, struct file *pfile, unsigned int
             printk(KERN_ALERT "Failed get_current_resources %d\n",status);
         }
 
+#ifdef ACPI_FUTURE_USAGE
         printk(KERN_ALERT "TEST -- acpi_get_possible_resources \n");
         status = acpi_get_possible_resources (next_child_handle, &buffer);
 
         if (status) {
             printk(KERN_ALERT "Failed get_possible_resources %d\n",status);
         }
-
+#endif
 
         printk(KERN_ALERT "TEST -- acpi_walk_resources \n");
         status = acpi_walk_resources(ec->handle, METHOD_NAME__CRS,
@@ -303,6 +322,7 @@ static int ltpdev_ioctl ( struct inode *pinode, struct file *pfile, unsigned int
 	if(status)
 	printk(KERN_ALERT "Error obtaining GPE bit assignment\n");
 
+#if 0
         printk(KERN_ALERT "TEST -- acpi_get_timer \n");
         status = acpi_get_timer(&total_ticks);
 
@@ -325,6 +345,7 @@ static int ltpdev_ioctl ( struct inode *pinode, struct file *pfile, unsigned int
         else {
             printk(KERN_ALERT "get_timer_duration total_ticks %d\n",total_ticks);
         }
+#endif
 
         for (i = 0; i < ACPI_S_STATE_COUNT; i++) {
             printk(KERN_ALERT "TEST -- acpi_get_sleep_type_data \n");
@@ -339,8 +360,13 @@ static int ltpdev_ioctl ( struct inode *pinode, struct file *pfile, unsigned int
         }
 
         printk(KERN_ALERT "TEST -- acpi_get_register \n");
-		acpi_get_register(ACPI_BITREG_BUS_MASTER_STATUS,
-			&bm_status, ACPI_MTX_DO_NOT_LOCK);
+
+/*
+ * ACPICA: Remove obsolete Flags parameter.
+ * http://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=commitdiff;h=d8c71b6d3b21cf21ad775e1cf6da95bf87bd5ad4
+ *
+ */
+	acpi_get_register(ACPI_BITREG_BUS_MASTER_STATUS, &bm_status);
 
         if (!bm_status) {
             printk(KERN_ALERT "Failed get_register [%d]\n",bm_status);
@@ -352,9 +378,9 @@ static int ltpdev_ioctl ( struct inode *pinode, struct file *pfile, unsigned int
 //        Puts system to sleep, permenately !!!
 //        status = acpi_enter_sleep_state(ACPI_STATE_S1);
 
+#if 0
         printk(KERN_ALERT "TEST -- acpi_get_system_info \n");
         status = acpi_get_system_info(&buffer);
-       
 
         if (status) {
             printk(KERN_ALERT "Failed get_system_info %d\n",status);
@@ -368,6 +394,7 @@ static int ltpdev_ioctl ( struct inode *pinode, struct file *pfile, unsigned int
                 acpi_os_free(buffer.pointer);
             }
         }
+#endif
 
         printk(KERN_ALERT "TEST -- acpi_get_devices \n");
         status = acpi_get_devices(NULL, ltp_get_dev_callback, "LTP0001", NULL);
@@ -388,6 +415,7 @@ static int ltpdev_ioctl ( struct inode *pinode, struct file *pfile, unsigned int
 
         }
 
+#if 0
         printk(KERN_ALERT "TEST -- acpi_get_system_info \n");
         status = acpi_get_system_info(&batt_buffer);
 
@@ -420,6 +448,7 @@ static int ltpdev_ioctl ( struct inode *pinode, struct file *pfile, unsigned int
 
 //            acpi_os_free(buffer.pointer);
         }
+#endif
 
         printk(KERN_ALERT "-- IOCTL ACPI tests Complete -- Iteration:%d\n",test_iteration);
 
@@ -432,7 +461,6 @@ static int ltpdev_ioctl ( struct inode *pinode, struct file *pfile, unsigned int
 
 static acpi_status ltp_get_dev_callback (acpi_handle obj, u32 depth, void *context, void **ret)
 {
-	acpi_status status;
 	char *name = context;
 	char fullname[20];
 
@@ -449,11 +477,6 @@ static acpi_status ltp_get_dev_callback (acpi_handle obj, u32 depth, void *conte
 	return 0;
 }
 
-static int ltp_pm_callback(struct pm_dev *dev, pm_request_t rqst, void *data)
-{
-    return 0;
-}
-
 /**
  * acpi_bus_notify
  * ---------------
@@ -468,9 +491,10 @@ static void acpi_bus_notify (acpi_handle             handle,
 
 }
 
-static void acpi_ec_gpe_handler (void			*data)
+static u32 acpi_ec_gpe_handler(void *context)
 {
-    printk(KERN_ALERT "Register ACPI ec_gpe_handler callback function \n");
+	printk(KERN_ALERT "Register ACPI ec_gpe_handler callback function \n");
+	return 1;
 }
 
 static acpi_status acpi_ec_io_ports (struct acpi_resource	*resource,   void			*context)
@@ -478,6 +502,7 @@ static acpi_status acpi_ec_io_ports (struct acpi_resource	*resource,   void			*c
   return 0;
 }
 
+#if 0
 static acpi_status acpi_ec_space_handler (u32			function,
 	acpi_physical_address	address,
 	u32			bit_width,
@@ -524,6 +549,7 @@ static acpi_status acpi_ec_space_handler (u32			function,
 	}
 
 }
+
 static acpi_status acpi_ec_space_setup (
 	acpi_handle		region_handle,
 	u32			function,
@@ -538,6 +564,7 @@ static acpi_status acpi_ec_space_setup (
 
 	return AE_OK;
 }
+#endif
 
 int init_module(void)
 {
@@ -546,8 +573,6 @@ int init_module(void)
 
 
     printk(KERN_ALERT "ltpdev_init_module \n");
-
-	ltp_pm_dev = pm_register(PM_UNKNOWN_DEV, 0, ltp_pm_callback);
 
 
     result = register_blkdev(ltp_acpi_major, LTP_ACPI_DEV_NAME);
@@ -577,7 +602,6 @@ int init_module(void)
     gd_ptr->fops = &blkops;
 //    gd_ptr->minor_shift = MINOR_SHIFT_BITS;
     gd_ptr->driverfs_dev = NULL;
-    gd_ptr->capacity = MAX_NUM_DISKS;
 //    gd_ptr->disk_de = NULL;
     gd_ptr->flags = genhd_flags;
 
@@ -593,8 +617,6 @@ void cleanup_module(void)
 {
 
     printk(KERN_ALERT "Exiting module and cleaning up \n");
-
-    pm_unregister(ltp_pm_dev);
 
     put_disk(gd_ptr);
 
