@@ -9,5 +9,6 @@
 
 #define DEV_MQUEUE "/dev/mqueue"
 #define SLASH_MQ1 "/MQ1"
+#define SLASH_MQ2 "/MQ2"
 
 #endif /* __MQNS_H */
