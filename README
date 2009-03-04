@@ -133,6 +133,12 @@ CONFIG_NET_NS=y
 CONFIG_VETH=y
 CONFIG_MACVLAN=y
 
+The IPC namespaces do not automatically enable IPC, so you may
+also want to have:
+
+CONFIG_SYSVIPC=y
+CONFIG_SYSVIPC_SYSCTL=y
+CONFIG_POSIX_MQUEUE=y
 
 ---------------------------------
 Enabling Kernel Configuration to test Controllers

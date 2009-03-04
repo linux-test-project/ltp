@@ -1,6 +1,8 @@
+#!/bin/sh
 ################################################################################
 ##                                                                            ##
-## Copyright (c) International Business Machines  Corp., 2007                 ##
+## Copyright (c) International Business Machines  Corp., 2009                 ##
+## Copyright (c) Nadia Derbey, 2009                                           ##
 ##                                                                            ##
 ## This program is free software;  you can redistribute it and#or modify      ##
 ## it under the terms of the GNU General Public License as published by       ##
@@ -18,20 +20,21 @@
 ##                                                                            ##
 ################################################################################
 
-SUBDIRS := libclone utsname sysvipc pidns netns mqns
+exit_code=0
+tests_list='mqns_01'
 
-all: check_for_unshare
-	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i $@; done
+for t in $tests_list
+do
+	$t
+	if [ $? -ne 0 ]; then
+		exit_code="$?"
+		exit $exit_code
+	fi
+	$t -clone
+	if [ $? -ne 0 ]; then
+		exit_code="$?"
+		exit $exit_code
+	fi
+done
 
-check_for_unshare: check_for_unshare.c
-	$(CC) $(CFLAGS) -rdynamic -o $@ $< ../../../lib/tst_kvercmp.c -I../../../include -ldl
-
-install: check_for_unshare
-	@set -e; ln -f check_for_unshare ../../bin/check_for_unshare; \
-	ln -f container_test.sh ../../bin/container_test.sh; \
-	for i in $(SUBDIRS); do $(MAKE) -C $$i $@ ; done; \
-	chmod ugo+x container_test.sh
-
-clean:
-	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i $@ ; done
-	rm -f check_for_unshare
+exit $exit_code

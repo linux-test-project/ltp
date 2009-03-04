@@ -54,6 +54,15 @@ else
 	echo "Process id namespaces not enabled in kernel.  Not running pidns tests."
 fi
 
+check_mqns_enabled
+if [ $? -eq 0 ]; then
+	echo "Running POSIX message queue tests."
+	runmqnstest.sh
+else
+	echo "Posix message queues or ipc namespaces not enabled in kernel."
+	echo "Not running mqns tests."
+fi
+
 check_netns_enabled
 if [ $? -eq 0 ]; then
 	echo "Running netns tests."

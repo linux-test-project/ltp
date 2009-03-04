@@ -37,6 +37,10 @@ each functionality README file for detail:
 
 sysvipc/*
 	Contains all the testcases related to IPC NS tests.
+posixmq/*
+	Contains all the testcases related to POSIX MQ NS tests.  These
+	are strictly speaking a part of the ipc namespaces, but can be
+	enabled in the kernel without SYSV IPC support.
 utsname/*
 	Contains all the testcases related to utsname tests.
 libclone/*
