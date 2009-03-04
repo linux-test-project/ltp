@@ -21,7 +21,7 @@
 ################################################################################
 
 exit_code=0
-tests_list='mqns_01'
+tests_list='mqns_01 mqns_02'
 
 for t in $tests_list
 do
