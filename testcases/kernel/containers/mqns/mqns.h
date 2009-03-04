@@ -8,6 +8,7 @@
 
 
 #define DEV_MQUEUE "/dev/mqueue"
+#define DEV_MQUEUE2 "/dev/mqueue2"
 #define SLASH_MQ1 "/MQ1"
 #define SLASH_MQ2 "/MQ2"
 
