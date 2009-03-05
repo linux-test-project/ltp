@@ -230,7 +230,7 @@ int main(int argc, char *argv[])
 {
 	tst_resm(TINFO, "Begin: HyperThreading Affinity");
 
-#ifndef ARCH_i386
+#ifndef __i386__
 	tst_brkm(TCONF, NULL, "This test suite can only excute on i386 architecture.");
 #else
 	if (!check_ht_capability())

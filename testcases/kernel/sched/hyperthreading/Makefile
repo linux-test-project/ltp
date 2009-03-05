@@ -1,11 +1,3 @@
-
-OSV := $(shell uname -m|grep i[3-6]86)
-ifeq (,$(OSV))
-else
-export CFLAGS+= -DARCH_i386
-endif
-
-
 SUBDIRS = ht_enabled ht_affinity ht_interrupt
 
 all:
