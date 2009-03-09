@@ -24,13 +24,12 @@ if __name__ == "__main__":
 
     try:
         set_sched_mc_power(options.mc_level)
-     print "INFO: sched mc power saving set to %s" %options.mc_level
+	print "INFO: sched mc power saving set to %s" %options.mc_level
         count_num_cpu()
         map_cpuid_pkgid()
         print "INFO: Created table mapping cpu to package"
         trigger_workld(options.workload)
         generate_report()
-        validate_cpu_consolidation()
-        sys.exit(0)
+        validate_cpu_consolidation(options.mc_level)
     except:
         sys.exit(1)
