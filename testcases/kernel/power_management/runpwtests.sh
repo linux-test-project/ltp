@@ -73,6 +73,15 @@ if [ -f /sys/devices/system/cpu/sched_mc_power_savings ] ; then
 		else
 	        tst_resm TPASS "cpu consolidation test for sched_mc_power set to 1"
 		fi
+        # Validate CPU level sched domain topology validation
+        sched_domain.py || RC=$?
+        if [ $RC -eq 1 ] ; then
+            tst_resm TFAIL "sched domain topology validation test failed"
+        else    
+            tst_resm TPASS "sched domain topology validation test passed"
+        fi      
+
+        
 	fi
 else
 	tst_resm TCONF "Required kernel configuration for SCHED_MC NOT set"
@@ -114,3 +123,4 @@ check_cpuidle_sysfs_files.sh || RC=$?
 if [ $RC -eq 1 ] ; then
 	tst_resm TFAIL "CPUIDLE sysfs tests failed"
 fi
+

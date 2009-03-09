@@ -42,6 +42,7 @@ install:
 	ln -f  config_sched_mc ../../bin/config_sched_mc;
 	ln -f  check_cpuidle_sysfs_files.sh ../../bin/check_cpuidle_sysfs_files.sh;
 	ln -f  cpu_consolidation.py ../../bin/cpu_consolidation.py
+	ln -f  sched_domain.py ../../bin/sched_domain.py
 	chmod ugo+x *.sh
 clean:
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i $@ ; done
