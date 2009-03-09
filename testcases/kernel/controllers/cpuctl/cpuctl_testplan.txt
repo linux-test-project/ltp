@@ -162,8 +162,16 @@ should guarantee. Latency may vary from few milliseconds in normal desktops
 to even a minute in virtaul guests. However a latency of more than 20 ms
 (under normal load, as it is load dependent) is not considered good.
 This test is to keep an eye on the max latency in different kernel versions
-with respect to further development of the group scheduler. So even if the
-test may show FAIL, it may not be an actual failure.
+with respect to further development of the group scheduler.
+
+The threshold for this test is calculated based on the value exported by the
+kernel in /proc/sys/kernel/sched_wakeup_granularity_ns. In case the kernel is
+not compiled to reflect the same, we use the same logic as by the kernel.
+sysctl_sched_wakeup_granularity = (1 + ln(nr_cpus))*default_gran_logic.
+For making the allowed latency to be more practical we multiply it by 2.
+
+ So even if the test may show FAIL, it may not be an actual failure.
+
 
 (
  In all(1-10) tests calc cpu time and exp cpu time should be same

@@ -61,14 +61,8 @@
 #define NUM_TIMES 200 /* How many intervals you want to check*/
 #define INTERVALS 1  /* How many milliseconds interval in iterations*/
 #define USECONDS  1000  /* microseconds to sleep*/
-/*
- * There is no single criterion for max latency, so pass or fail is only
- * intuitive. Here we keep 10 ms as the test criterion. The aim of the test
- * is to keep track on group schedular latency among diff kernel versions
- */
-#define ALLOWED	  10000  /* max latency allowed in us */
 #define info	printf("The results FAIL is just intuitive and not exact" \
-		" failure. Please look at the readme in the test directory.\n");
+		" failure. Please look at cpuctl_testplan.txt in the test directory.\n");
 
 extern int Tst_count;
 char *TCID = "cpuctl_latency_tests";
@@ -84,7 +78,7 @@ extern void cleanup()
 int main(int argc, char *argv[])
 {
 	int count, i = 0, iteration = 0;
-	int fail = 0;
+	int fail = 0, ALLOWED;
 	char mytaskfile[FILENAME_MAX];
 	int test_num;
 	struct timeval prev_time, cur_time;
@@ -92,20 +86,21 @@ int main(int argc, char *argv[])
 	unsigned int delta, delta_max = 0;
 	pid_t script_pid;
 
-	if ((argc < 3) || (argc > 4)) {
+	if ((argc < 4) || (argc > 5)) {
 		printf("Invalid #args received from script. Exiting test..\n");
 		exit(1);
 		}
 
 	test_num = atoi(argv[1]);
 	script_pid = (pid_t) atoi(argv[2]);
-	if ((test_num < 0) || (script_pid < 0)) {
+	ALLOWED = atoi(argv[3]);
+	if ((test_num < 0) || (script_pid < 0) || (ALLOWED < 0)) {
 		printf("Invalid args received from script. Exiting test..\n");
 		exit(1);
 		}
 
 	if (test_num == 2) {
-		strncpy(mytaskfile, argv[3], FILENAME_MAX);
+		strncpy(mytaskfile, argv[4], FILENAME_MAX);
 		strncat(mytaskfile, "/tasks",
 					 FILENAME_MAX - strlen(mytaskfile) - 1);
 		write_to_file(mytaskfile, "a", getpid());

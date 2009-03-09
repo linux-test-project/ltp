@@ -44,6 +44,7 @@ NUM_TASKS=100;
 NUM_GROUPS=2;	#for default
 check_task="";
 declare -a pid;
+allowed_latency=10;
 
 export TCID="cpuctl_latency_test";
 export TST_COUNT=1;
@@ -78,6 +79,37 @@ latency_cleanup()
 	echo
 }
 
+log2()
+{
+        local x=$1 n=2 l=-1;
+        while((x));do
+                let l+=1
+                let x/=n;
+        done;
+        return $l;
+}
+
+# There is no single criterion for max latency, so pass or fail is only
+# intuitive. Here we use the same logic as by the kernel
+calc_allowed_latency()
+{
+	# default sched granularity=5ms if not exported by kernel
+	def_gran=5000 #in microseconds
+	if [ -f /proc/sys/kernel/sched_wakeup_granularity_ns ]; then
+		sys_latency=`cat /proc/sys/kernel/sched_wakeup_granularity_ns`
+		allowed_latency=`expr $sys_latency / 1000` # in microseconds
+	else
+		num_cpus=`cat /proc/cpuinfo | grep -w processor | wc -l`
+		log2 $num_cpus;
+		ln_num_cpus=$?
+		ln_num_cpus=`expr $ln_num_cpus + 1`
+		allowed_latency=`expr $ln_num_cpus \* $def_gran`
+	fi
+
+	# To be more practical we will take our criterio as double of this value
+	allowed_latency=`expr $allowed_latency \* 2`
+}
+
 PWD=`pwd`
 
 ################################
@@ -104,6 +136,9 @@ PWD=`pwd`
 	# Keep the signal handler ready
 	trap 'echo "Doing cleanup"; latency_cleanup;' 0;
 
+	# Calculate the alowed latency value
+	calc_allowed_latency;
+
 	case $TEST_NUM in
 	"1")	#without creating any groups
 		# Run the load creating tasks
@@ -122,7 +157,7 @@ PWD=`pwd`
 		done
 
 		# Run the latency checking task
-		./cpuctl_latency_check_task $TEST_NUM $$ &
+		./cpuctl_latency_check_task $TEST_NUM $$ $allowed_latency &
 		if [ $? -ne 0 ]
 		then
 			echo "TBROK Failed to execute main binary"
@@ -152,8 +187,8 @@ PWD=`pwd`
 			fi;
 		done;
 
-		# Run the latency checking task in any group
-		./cpuctl_latency_check_task $TEST_NUM $$ $group &
+		# Calculate the alowed latency value
+		./cpuctl_latency_check_task $TEST_NUM $$ $allowed_latency $group &
 		if [ $? -ne 0 ]
 		then
 			echo "TBROK Failed to execute main binary";
