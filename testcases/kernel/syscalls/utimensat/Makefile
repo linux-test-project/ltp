@@ -23,10 +23,8 @@ SRCS    = $(wildcard *.c)
 TARGETS = $(patsubst %.c,%,$(SRCS))
 
 all:
-	@set -e; $(MAKE) check_for_utimensat_support; \
-	if './check_for_utimensat_support' > /dev/null 2>&1; then \
-		$(MAKE) utimensat01; \
-	else echo "System does not support utimensat syscall support"; true; fi
+	@set -e; $(MAKE) check_for_utimensat_support;
+	$(MAKE) utimensat01;
 
 check_for_utimensat_support: check_for_utimensat_support.c
 	$(CC) $(CFLAGS) -o $@ $< ../../../../lib/tst_kvercmp.c -I../../../../include
@@ -35,9 +33,7 @@ install:
 	@set -e; \
 	chmod 755 utimensat_tests.sh; \
 	ln -f utimensat_tests.sh ../../../bin/utimensat_tests.sh; \
-	if './check_for_utimensat_support' > /dev/null 2>&1; then \
-		for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done \
-	else echo "System does not support utimensat syscall support"; true; fi
+	for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
 
 clean:
 	rm -f $(TARGETS)
