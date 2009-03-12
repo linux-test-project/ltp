@@ -210,7 +210,9 @@ int main(int ac, char **av){
 
         /*
          * test that duplicate events will be coalesced into
-         * a single event
+         * a single event. This test case should be last, that
+	 * we can correct determine kernel bug which exist before
+	 * 2.6.25. See comment below.
          */
         snprintf(fname3, BUF_SIZE, "%s.rename2", fname1);
         if (rename(fname2, fname3) == -1){
@@ -250,6 +252,19 @@ int main(int ac, char **av){
             struct inotify_event *event;
             event = (struct inotify_event *) &event_buf[i];
             if (test_num >= TST_TOTAL){
+		if (tst_kvercmp(2,6,25) < 0 && \
+				event_set[TST_TOTAL - 1].mask == event->mask)
+			tst_resm(TWARN, "This may be kernel bug. "		\
+				"Before kernel 2.6.25, a kernel bug "		\
+				"meant that the kernel code that was "		\
+				"intended to coalesce successive identical "	\
+				"events (i.e., the two most recent "		\
+				"events could potentially be coalesced "	\
+				"if the older had not yet been read) "		\
+				"instead checked if the most recent event "	\
+				"could be coalesced with the oldest "		\
+				"unread event. This has been fixed by commit"	\
+				"1c17d18e3775485bf1e0ce79575eb637a94494a2.");
                 tst_resm(TFAIL, "get unnecessary event: "
                     "wd=%d mask=%x cookie=%u len=%u"
                     "name=\"%s\"",event->wd, event->mask,
