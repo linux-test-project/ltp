@@ -300,7 +300,7 @@ int main( int ac, char **av)
 
 	local_flag = PASSED;
 	tst_tmpdir();
-	if (system("mount | grep `df . | grep -v Filesystem | awk {'print $1'}` | grep mand >/dev/null") != 0){
+	if (system("mount | grep `df . | grep ^/ | awk {'print $1'}` | grep mand >/dev/null") != 0){
 		tst_resm(TCONF,"The filesystem where /tmp is mounted does"
 			       " not support mandatory locks. Cannot run this test.");
 		tst_rmdir();

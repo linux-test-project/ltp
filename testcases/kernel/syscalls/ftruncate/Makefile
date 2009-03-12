@@ -29,7 +29,10 @@ TARGETS += $(patsubst %.c,%,$(SRCS))
 all: $(TARGETS)
 
 install:
-	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
+	@set -e; \
+	ln -f ftruncate.sh ../../../bin/ftruncate.sh; \
+	ln -f ftruncate_64.sh ../../../bin/ftruncate_64.sh; \
+	for i in $(TARGETS); do install -m 755  $$i ../../../bin/$$i ; done
 
 clean:
 	rm -f $(TARGETS)
