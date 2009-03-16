@@ -214,6 +214,9 @@ do_child()
        elapsed = (ntime.tv_sec - otime.tv_sec) * 1000000 + ntime.tv_usec - otime.tv_usec;
 
        if (rem - (req - elapsed) > USEC_PRECISION) {
+               tst_resm(TWARN,"This test could fail if the system was under load");
+               tst_resm(TWARN,"due to the limitation of the way it calculates the");
+               tst_resm(TWARN,"system call execution time.");
                tst_resm(TFAIL, "Remaining sleep time %lu usec doesn't "
                         "match with the expected %lu usec time",
 			 rem, (req - elapsed));
@@ -255,6 +258,9 @@ do_child()
                req = timereq.tv_sec * 1000000 + timereq.tv_nsec / 1000;
                elapsed = (ntime.tv_sec - otime.tv_sec) * 1000000 + ntime.tv_usec - otime.tv_usec;
                if (elapsed - req > USEC_PRECISION) {
+			tst_resm(TWARN,"This test could fail if the system was under load");
+			tst_resm(TWARN,"due to the limitation of the way it calculates the");
+			tst_resm(TWARN,"system call execution time.");
 			tst_resm(TFAIL, "Child execution not "
                                 "suspended for %d seconds %lu nanoseconds",
                                 timereq.tv_sec, timereq.tv_nsec);
