@@ -4,6 +4,8 @@
 Release History
 ---------------
 
+14 Mar 2009  0.9  Test cases added for VIDIOC_S_CROP;
+                  Test steps added for VIDIOC_S_CTRL
 22 Feb 2009  0.8  Test cases added for VIDIOC_G_CROP, VIDIOC_G_CTRL and VIDIOC_S_CTRL
  9 Feb 2009  0.7  Test cases added for VIDIOC_G_AUDIO, VIDIOC_G_AUDOUT,
                   VIDIOC_S_AUDIO and VIDIOC_G_CROP;

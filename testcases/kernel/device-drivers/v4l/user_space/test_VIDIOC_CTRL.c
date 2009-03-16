@@ -1,6 +1,9 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ * 14 Mar 2009  0.4  Added test steps for S16_MIN, S16_MAX, U16_MIN and U16_MAX
+ *  6 Mar 2009  0.3  Check whether the newly set value is converted to the
+ *                   closest valid value when setting out of bounds value
  * 22 Feb 2009  0.2  Added test cases for VIDIOC_S_CTRL
  * 19 Feb 2009  0.1  First release
  *
@@ -241,11 +244,11 @@ int do_set_control(__u32 id) {
 						 * S32_MIN <= queryctrl.minimum-queryctrl.step and
 						 * queryctrl.maximum+queryctrl.step <= S32_MAX
 						 */
-					
+						 
 /*
  * If we try to set the new control value to "value" then the possible results can be
  * "x" and "x-step". These two values can be expressed with the range
- * (value-step, value+step) where the ranges are not included.
+ * (value-step, value+step) where the ranges are not included. 
  *
  *           value-step        value         value+step
  *              |                |                |
@@ -449,6 +452,72 @@ int do_set_control(__u32 id) {
 	return ret1;
 }
 
+static void do_set_control_value(__u32 id, __s32 value, struct v4l2_queryctrl *queryctrl);
+static void do_set_control_value(__u32 id, __s32 value, struct v4l2_queryctrl *queryctrl) {
+	int ret_set, errno_set;
+	int ret_get, errno_get;
+	struct v4l2_control control;
+	struct v4l2_control control_new;
+
+	memset(&control, 0xff, sizeof(control));
+	control.id = id;
+	control.value = value;
+	ret_set = ioctl(get_video_fd(), VIDIOC_S_CTRL, &control);
+	errno_set = errno;
+
+	dprintf("\t%s:%u: VIDIOC_S_CTRL, id=%u (V4L2_CID_BASE+%i), value=%i, ret_set=%i, errno_set=%i\n",
+		__FILE__, __LINE__, id, id-V4L2_CID_BASE, value, ret_set, errno_set);
+
+	/* The driver can decide if it returns ERANGE or
+	 * accepts the value and converts it to
+	 * the nearest limit
+	 */
+	if (ret_set == -1) {
+		CU_ASSERT_EQUAL(ret_set, -1);
+		if (!(queryctrl->flags & V4L2_CTRL_FLAG_DISABLED) &&
+		    !(queryctrl->flags & V4L2_CTRL_FLAG_READ_ONLY)) {
+			CU_ASSERT_EQUAL(errno_set, ERANGE);
+		} else {
+			CU_ASSERT_EQUAL(errno_set, EINVAL);
+		}
+
+		/* check whether the new value is not out of bounds */
+		memset(&control_new, 0, sizeof(control_new));
+		control_new.id = id;
+		ret_get = ioctl(get_video_fd(), VIDIOC_G_CTRL, &control_new);
+		errno_get = errno;
+
+		dprintf("\t%s:%u: VIDIOC_G_CTRL, id=%u (V4L2_CID_BASE+%i), ret_get=%i, errno_get=%i, control_new.value=%i\n",
+			__FILE__, __LINE__, id, id-V4L2_CID_BASE, ret_get, errno_get, control_new.value);
+
+		CU_ASSERT_EQUAL(ret_get, 0);
+		if (ret_get == 0) {
+			CU_ASSERT(queryctrl->minimum <= control_new.value);
+			CU_ASSERT(control_new.value <= queryctrl->maximum);
+		}
+
+	} else {
+		CU_ASSERT_EQUAL(ret_set, 0);
+
+		/* check whether the new value is not out of bounds */
+		memset(&control_new, 0, sizeof(control_new));
+		control_new.id = id;
+		ret_get = ioctl(get_video_fd(), VIDIOC_G_CTRL, &control_new);
+		errno_get = errno;
+
+		dprintf("\t%s:%u: VIDIOC_G_CTRL, id=%u (V4L2_CID_BASE+%i), ret_get=%i, errno_get=%i, control_new.value=%i\n",
+			__FILE__, __LINE__, id, id-V4L2_CID_BASE, ret_get, errno_get, control_new.value);
+
+		CU_ASSERT_EQUAL(ret_get, 0);
+		if (ret_get == 0) {
+			CU_ASSERT(queryctrl->minimum <= control_new.value);
+			CU_ASSERT(control_new.value <= queryctrl->maximum);
+			CU_ASSERT_EQUAL(control_new.value, queryctrl->minimum);
+		}
+	}
+}
+
+
 int do_set_control_invalid(__u32 id) {
 	int ret1, errno1;
 	int ret_set, errno_set;
@@ -508,222 +577,36 @@ int do_set_control_invalid(__u32 id) {
 		case V4L2_CTRL_TYPE_BOOLEAN:
 		case V4L2_CTRL_TYPE_MENU:
 			if (S32_MIN < queryctrl.minimum) {
-		
-				value = S32_MIN;
-				memset(&control, 0xff, sizeof(control));
-				control.id = id;
-				control.value = value;
-				ret_set = ioctl(get_video_fd(), VIDIOC_S_CTRL, &control);
-				errno_set = errno;
-
-				dprintf("\t%s:%u: VIDIOC_S_CTRL, id=%u (V4L2_CID_BASE+%i), value=%i, ret_set=%i, errno_set=%i\n",
-					__FILE__, __LINE__, id, id-V4L2_CID_BASE, value, ret_set, errno_set);
-
-				/* The driver can decide if it returns ERANGE or
-				 * accepts the value and converts it to
-				 * the nearest limit
-				 */
-				if (ret_set == -1) {
-					CU_ASSERT_EQUAL(ret_set, -1);
-					if (!(queryctrl.flags & V4L2_CTRL_FLAG_DISABLED) &&
-					    !(queryctrl.flags & V4L2_CTRL_FLAG_READ_ONLY)) {
-						CU_ASSERT_EQUAL(errno_set, ERANGE);
-					} else {
-						CU_ASSERT_EQUAL(errno_set, EINVAL);
-					}
-
-					/* check whether the new value is not out of bounds */
-					memset(&control_new, 0, sizeof(control_new));
-					control_new.id = id;
-					ret_get = ioctl(get_video_fd(), VIDIOC_G_CTRL, &control_new);
-					errno_get = errno;
-
-					dprintf("\t%s:%u: VIDIOC_G_CTRL, id=%u (V4L2_CID_BASE+%i), ret_get=%i, errno_get=%i, control_new.value=%i\n",
-						__FILE__, __LINE__, id, id-V4L2_CID_BASE, ret_get, errno_get, control_new.value);
-
-					CU_ASSERT_EQUAL(ret_get, 0);
-					if (ret_get == 0) {
-						CU_ASSERT(queryctrl.minimum <= control_new.value);
-						CU_ASSERT(control_new.value <= queryctrl.maximum);
-					}
-
-				} else {
-					CU_ASSERT_EQUAL(ret_set, 0);
-
-					/* check whether the new value is not out of bounds */
-					memset(&control_new, 0, sizeof(control_new));
-					control_new.id = id;
-					ret_get = ioctl(get_video_fd(), VIDIOC_G_CTRL, &control_new);
-					errno_get = errno;
-
-					dprintf("\t%s:%u: VIDIOC_G_CTRL, id=%u (V4L2_CID_BASE+%i), ret_get=%i, errno_get=%i, control_new.value=%i\n",
-						__FILE__, __LINE__, id, id-V4L2_CID_BASE, ret_get, errno_get, control_new.value);
-
-					CU_ASSERT_EQUAL(ret_get, 0);
-					if (ret_get == 0) {
-						CU_ASSERT(queryctrl.minimum <= control_new.value);
-						CU_ASSERT(control_new.value <= queryctrl.maximum);
-					}
-				}
+				do_set_control_value(id, S32_MIN, &queryctrl);
 			}
 
 			if (S32_MIN < queryctrl.minimum) {
-		
-				value = queryctrl.minimum-1;
-				memset(&control, 0xff, sizeof(control));
-				control.id = id;
-				control.value = value;
-				ret_set = ioctl(get_video_fd(), VIDIOC_S_CTRL, &control);
-				errno_set = errno;
+				do_set_control_value(id, queryctrl.minimum-1, &queryctrl);
+			}
 
-				dprintf("\t%s:%u: VIDIOC_S_CTRL, id=%u (V4L2_CID_BASE+%i), value=%i, ret_set=%i, errno_set=%i\n",
-					__FILE__, __LINE__, id, id-V4L2_CID_BASE, value, ret_set, errno_set);
+			if (S16_MIN < queryctrl.minimum) {
+				do_set_control_value(id, S16_MIN, &queryctrl);
+			}
 
-				if (ret_set == -1) {
-					CU_ASSERT_EQUAL(ret_set, -1);
-					CU_ASSERT_EQUAL(errno_set, ERANGE);
+			if (U16_MIN < queryctrl.minimum) {
+				do_set_control_value(id, U16_MIN, &queryctrl);
+			}
 
-					/* check whether the new value is not out of bounds */
-					memset(&control_new, 0, sizeof(control_new));
-					control_new.id = id;
-					ret_get = ioctl(get_video_fd(), VIDIOC_G_CTRL, &control_new);
-					errno_get = errno;
+			if (queryctrl.maximum < S16_MAX) {
+				do_set_control_value(id, S16_MAX, &queryctrl);
+			}
 
-					dprintf("\t%s:%u: VIDIOC_G_CTRL, id=%u (V4L2_CID_BASE+%i), ret_get=%i, errno_get=%i, control_new.value=%i\n",
-						__FILE__, __LINE__, id, id-V4L2_CID_BASE, ret_get, errno_get, control_new.value);
-
-					CU_ASSERT_EQUAL(ret_get, 0);
-					if (ret_get == 0) {
-						CU_ASSERT(queryctrl.minimum <= control_new.value);
-						CU_ASSERT(control_new.value <= queryctrl.maximum);
-					}
-
-				} else {
-					CU_ASSERT_EQUAL(ret_set, 0);
-
-					/* check whether the new value is not out of bounds */
-					memset(&control_new, 0, sizeof(control_new));
-					control_new.id = id;
-					ret_get = ioctl(get_video_fd(), VIDIOC_G_CTRL, &control_new);
-					errno_get = errno;
-
-					dprintf("\t%s:%u: VIDIOC_G_CTRL, id=%u (V4L2_CID_BASE+%i), ret_get=%i, errno_get=%i, control_new.value=%i\n",
-						__FILE__, __LINE__, id, id-V4L2_CID_BASE, ret_get, errno_get, control_new.value);
-
-					CU_ASSERT_EQUAL(ret_get, 0);
-					if (ret_get == 0) {
-						CU_ASSERT(queryctrl.minimum <= control_new.value);
-						CU_ASSERT(control_new.value <= queryctrl.maximum);
-					}
-				}
+			if (queryctrl.maximum < (__s32)U16_MAX) {
+				do_set_control_value(id, (__s32)U16_MAX, &queryctrl);
 			}
 
 			if (queryctrl.maximum < S32_MAX) {
-		
-				value = queryctrl.maximum+1;
-				memset(&control, 0xff, sizeof(control));
-				control.id = id;
-				control.value = value;
-				ret_set = ioctl(get_video_fd(), VIDIOC_S_CTRL, &control);
-				errno_set = errno;
-
-				dprintf("\t%s:%u: VIDIOC_S_CTRL, id=%u (V4L2_CID_BASE+%i), value=%i, ret_set=%i, errno_set=%i\n",
-					__FILE__, __LINE__, id, id-V4L2_CID_BASE, value, ret_set, errno_set);
-
-				/* The driver can decide if it returns ERANGE or
-				 * accepts the value and converts it to
-				 * the nearest limit
-				 */
-				if (ret_set == -1) {
-					CU_ASSERT_EQUAL(ret_set, -1);
-					CU_ASSERT_EQUAL(errno_set, ERANGE);
-
-					/* check whether the new value is not out of bounds */
-					memset(&control_new, 0, sizeof(control_new));
-					control_new.id = id;
-					ret_get = ioctl(get_video_fd(), VIDIOC_G_CTRL, &control_new);
-					errno_get = errno;
-
-					dprintf("\t%s:%u: VIDIOC_G_CTRL, id=%u (V4L2_CID_BASE+%i), ret_get=%i, errno_get=%i, control_new.value=%i\n",
-						__FILE__, __LINE__, id, id-V4L2_CID_BASE, ret_get, errno_get, control_new.value);
-
-					CU_ASSERT_EQUAL(ret_get, 0);
-					if (ret_get == 0) {
-						CU_ASSERT(queryctrl.minimum <= control_new.value);
-						CU_ASSERT(control_new.value <= queryctrl.maximum);
-					}
-
-				} else {
-					CU_ASSERT_EQUAL(ret_set, 0);
-
-					/* check whether the new value is not out of bounds */
-					memset(&control_new, 0, sizeof(control_new));
-					control_new.id = id;
-					ret_get = ioctl(get_video_fd(), VIDIOC_G_CTRL, &control_new);
-					errno_get = errno;
-
-					dprintf("\t%s:%u: VIDIOC_G_CTRL, id=%u (V4L2_CID_BASE+%i), ret_get=%i, errno_get=%i, control_new.value=%i\n",
-						__FILE__, __LINE__, id, id-V4L2_CID_BASE, ret_get, errno_get, control_new.value);
-
-					CU_ASSERT_EQUAL(ret_get, 0);
-					if (ret_get == 0) {
-						CU_ASSERT(queryctrl.minimum <= control_new.value);
-						CU_ASSERT(control_new.value <= queryctrl.maximum);
-					}
-				}
+				do_set_control_value(id, queryctrl.maximum+1, &queryctrl);
 			}
 
 			if (queryctrl.maximum < S32_MAX) {
-		
-				value = S32_MAX;
-				memset(&control, 0xff, sizeof(control));
-				control.id = id;
-				control.value = value;
-				ret_set = ioctl(get_video_fd(), VIDIOC_S_CTRL, &control);
-				errno_set = errno;
-
-				dprintf("\t%s:%u: VIDIOC_S_CTRL, id=%u (V4L2_CID_BASE+%i), value=%i, ret_set=%i, errno_set=%i\n",
-					__FILE__, __LINE__, id, id-V4L2_CID_BASE, value, ret_set, errno_set);
-
-				if (ret_set == -1) {
-					CU_ASSERT_EQUAL(ret_set, -1);
-					CU_ASSERT_EQUAL(errno_set, ERANGE);
-
-					/* check whether the new value is not out of bounds */
-					memset(&control_new, 0, sizeof(control_new));
-					control_new.id = id;
-					ret_get = ioctl(get_video_fd(), VIDIOC_G_CTRL, &control_new);
-					errno_get = errno;
-
-					dprintf("\t%s:%u: VIDIOC_G_CTRL, id=%u (V4L2_CID_BASE+%i), ret_get=%i, errno_get=%i, control_new.value=%i\n",
-						__FILE__, __LINE__, id, id-V4L2_CID_BASE, ret_get, errno_get, control_new.value);
-
-					CU_ASSERT_EQUAL(ret_get, 0);
-					if (ret_get == 0) {
-						CU_ASSERT(queryctrl.minimum <= control_new.value);
-						CU_ASSERT(control_new.value <= queryctrl.maximum);
-					}
-
-				} else {
-					CU_ASSERT_EQUAL(ret_set, 0);
-
-					/* check whether the new value is not out of bounds */
-					memset(&control_new, 0, sizeof(control_new));
-					control_new.id = id;
-					ret_get = ioctl(get_video_fd(), VIDIOC_G_CTRL, &control_new);
-					errno_get = errno;
-
-					dprintf("\t%s:%u: VIDIOC_G_CTRL, id=%u (V4L2_CID_BASE+%i), ret_get=%i, errno_get=%i, control_new.value=%i\n",
-						__FILE__, __LINE__, id, id-V4L2_CID_BASE, ret_get, errno_get, control_new.value);
-
-					CU_ASSERT_EQUAL(ret_get, 0);
-					if (ret_get == 0) {
-						CU_ASSERT(queryctrl.minimum <= control_new.value);
-						CU_ASSERT(control_new.value <= queryctrl.maximum);
-					}
-				}
+				do_set_control_value(id, S32_MAX, &queryctrl);
 			}
-
 
 			break;
 

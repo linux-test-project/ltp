@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ *  7 Mar 2009  0.13 Test cases added for VIDIOC_S_CROP
  * 22 Feb 2009  0.12 Test cases added for VIDIOC_S_CTRL
  * 19 Feb 2009  0.11 Test cases added for VIDIOC_G_CTRL
  *  7 Feb 2009  0.10 Test cases added for VIDIOC_G_AUDIO, VIDIOC_G_AUDOUT,
@@ -203,6 +204,11 @@ static CU_TestInfo suite_get_set_try[] = {
   { "VIDIOC_G_CROP", test_VIDIOC_G_CROP },
   { "VIDIOC_G_CROP with invalid type", test_VIDIOC_G_CROP_invalid },
   { "VIDIOC_G_CROP with NULL parameter", test_VIDIOC_G_CROP_NULL },
+
+  { "VIDIOC_S_CROP", test_VIDIOC_S_CROP },
+  { "VIDIOC_S_CROP with invalid type", test_VIDIOC_S_CROP_invalid},
+  { "VIDIOC_S_CROP with NULL parameter", test_VIDIOC_S_CROP_NULL },
+
 #endif
 
   { "VIDIOC_G_CTRL", test_VIDIOC_G_CTRL },

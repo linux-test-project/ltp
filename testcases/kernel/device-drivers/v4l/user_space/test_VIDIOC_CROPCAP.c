@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ *  7 Mar 2009  0.4  Typo corrected
  *  9 Feb 2009  0.3  Modify test_VIDIOC_CROPCAP_enum_INPUT() to support drivers
  *                   without any inputs
  *  3 Feb 2009  0.2  Typo fixed
@@ -54,7 +55,7 @@ static void do_ioctl_VIDIOC_CROPCAP(enum v4l2_buf_type buf_type, int expected_re
 	/*     |    | +------- defrect ---------+ |  |        */
 	/*     |    | |                         | |  |        */
 	/*     |    | |                         | |  |        */
-	/*     |    | |                         | |  | heigth */
+	/*     |    | |                         | |  | height */
 	/*     |    | +-------------------------+ |  |        */
 	/*     |    |                             |  |        */
 	/*     |    |                             |  |        */
@@ -85,8 +86,8 @@ static void do_ioctl_VIDIOC_CROPCAP(enum v4l2_buf_type buf_type, int expected_re
 		CU_ASSERT_NOT_EQUAL(cropcap.pixelaspect.denominator, 0);
 
 		dprintf("\tcropcap = { .type = %i, "
-			".bounds = { .left = %i, .top = %i, .width = %i, .heigth = %i }, "
-			".defrect = { .left = %i, .top = %i, .width = %i, .heigth = %i }, "
+			".bounds = { .left = %i, .top = %i, .width = %i, .height = %i }, "
+			".defrect = { .left = %i, .top = %i, .width = %i, .height = %i }, "
 			".pixelaspect = { .numerator = %u, .denominator = %u } "
 			"}\n",
 			cropcap.type,
