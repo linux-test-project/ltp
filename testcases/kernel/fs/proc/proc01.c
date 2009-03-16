@@ -39,7 +39,7 @@
 #include <fcntl.h>
 #include <fnmatch.h>
 
-#ifdef HAVE_SELINUX_SELINUX_H
+#ifdef HAVE_LIBSELINUX_DEVEL
 #include <selinux/selinux.h>
 #endif
 
@@ -105,15 +105,24 @@ const Mapping known_issues[] =
     {"", "", 0}
   };
 
-/* If a particular LSM is enabled, it is expected that some entries can
-   be read successfully. */
-#ifdef HAVE_SELINUX_SELINUX_H
+/*
+ * If a particular LSM is enabled, it is expected that some entries can
+ * be read successfully. Otherwise, those entries will retrun some
+ * failures listed above. Here to add any LSM specific entries.
+ */
+
+/*
+ * Test macro to indicate that SELinux libraries and headers are
+ * installed.
+ */
+#ifdef HAVE_LIBSELINUX_DEVEL
 const char lsm_should_work[][PATH_MAX] =
   {
     "/proc/self/attr/*",
     "/proc/self/task/[0-9]*/attr/*",
     ""
   };
+/* Place holder for none of LSM is detected. */
 #else
 const char lsm_should_work[][PATH_MAX] =
   {
@@ -129,10 +138,13 @@ const char error_nonblock[][PATH_MAX] =
     ""
   };
 
-/* Check if a particular LSM is enabled. */
+/*
+ * Here to add any function to check if a particular LSM is enabled.
+ * Return non-zero if enabled, and zero otherwise.
+ */
 int is_lsm_enabled(void)
 {
-#ifdef HAVE_SELINUX_SELINUX_H
+#ifdef HAVE_LIBSELINUX_DEVEL
   return is_selinux_enabled();
 #else
   return 0;
