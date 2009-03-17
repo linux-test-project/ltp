@@ -134,17 +134,18 @@ int main()
 
 	/* 56 */
 	{
-		int retval;
+		int retval, actual;
 		errno = 0;
 		retval = sysconf(INVAL_FLAG);
+		actual = errno;
 		if (retval != -1)
 			tst_resm(TFAIL,
 				"sysconf succeeded for invalid flag (%i), retval=%d errno=%d: %s",
-				INVAL_FLAG, retval, errno, strerror(errno));
-		else if (errno != EINVAL)
+				INVAL_FLAG, retval, actual, strerror(actual));
+		else if (actual != EINVAL)
 			tst_resm(TFAIL,
 				"sysconf correctly failed, but expected errno (%i) != actual (%i)\n",
-				EINVAL, retval);
+				EINVAL, actual);
 		else
 			tst_resm(TPASS, "using invalid name");
 	}
