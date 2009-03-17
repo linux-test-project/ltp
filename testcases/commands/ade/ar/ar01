@@ -495,10 +495,10 @@ fi
 rm -rf $TCtmp/lib.a;cd $TCdat
 ar -cr $TCtmp/lib.a file1.o
 crtest
-size1=`ls -s $TCtmp/lib.a|(read a b; echo $a)`
+size1=`ls -l $TCtmp/lib.a|awk '{print $5}'`
 strip $TCtmp/lib.a 2>&1 1>/dev/null
 ar -ts $TCtmp/lib.a 2>&1 1>/dev/null
-size2=`ls -s $TCtmp/lib.a|(read a b; echo $a)`
+size2=`ls -l $TCtmp/lib.a|awk '{print $5}'`
 
 if [ $size1 -eq $size2 ]
 then
