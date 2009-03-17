@@ -29,7 +29,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: symlink01.c,v 1.16 2009/02/26 12:17:05 subrata_modak Exp $ */
+/* $Id: symlink01.c,v 1.17 2009/03/17 08:41:34 subrata_modak Exp $ */
 /**********************************************************
 * 
 *    OS Test - Silicon Graphics, Inc.
@@ -430,6 +430,7 @@ struct all_test_cases
     {LINK, 0, 0, 15, creat_symlink, ck_symlink, {O_FILE, S_FILE, NULL}},
     /* The following link test case is invalid - leaving it defined so */
     /* I don't have to change all the entries in the all_tcses array after link */
+    /* It has been disabled at the moment. */
     {LINK, 1, -1, -1, creat_symlink, ck_symlink, {NULL, NULL, NULL}},
     {UNLINK, 0, 0, 16, creat_both, ck_both, {O_FILE, S_FILE, O_FILE}},
     /* 30 */
@@ -441,6 +442,9 @@ struct all_test_cases
     {UTIME, 1, ELOOP, 28, creat_symlink, ck_symlink, {S_FILE, S_FILE, NULL}},
     {RENAME, 0, 0, 21, creat_symlink, ck_symlink, {O_FILE, S_FILE, NULL}},
     {RENAME, 0, 0, 22, creat_both, ck_both, {O_FILE, S_FILE, O_FILE}},
+    /* The following rename test makes assumption that the link and target */
+    /* files are located in different filesystems, which is incorrect. */
+    /* It has been disabled at the moment. */
     {RENAME, 1, EXDEV, 23, creat_both, ck_both, {O_FILE, S_FILE, O_FILE}},
     {OPEN, 0, 0, 24, creat_symlink, ck_symlink, {O_FILE, S_FILE, NULL}},
     /* 40 */
@@ -480,7 +484,7 @@ struct tcses
 	     "Fail When Removing a Directory File Indirectly from a symlink" },
    { CHDIR,    "chdir",    3, &test_objects[23],
 		"Changes CWD Location Indirectly from a symlink" },
-   { LINK,     "link",     3, &test_objects[26],
+   { LINK,     "link",     2, &test_objects[26],
 		"Creates a Link To a File Indirectly From a Symbolic" },
    { UNLINK,   "unlink",   1, &test_objects[29],
 		"Removes a Link To a File but not the Object File" },
@@ -488,7 +492,7 @@ struct tcses
 		"Change Object File Permissions Indirectly From a Symbolic" },
    { UTIME,    "utime",    3, &test_objects[33],
 		"Set File Access And Modify Object File Times via symlink" },
-   { RENAME,   "rename",   3, &test_objects[36],
+   { RENAME,   "rename",   2, &test_objects[36],
 		"Rename a Symbolic Link File And Not Any Object file" },
    { OPEN,     "open",     5, &test_objects[39],
 		"Create/Open a File For Reading Or Writing via symlink" },
