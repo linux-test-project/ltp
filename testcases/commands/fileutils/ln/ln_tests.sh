@@ -147,8 +147,7 @@ creat_expout()
     fcnt=0      # index into files created in loop
 	RC=0        # return code from commands 
 	
-	echo -n "$dirname"  1>>$LTPTMP/tst_ln.exp
-	echo "1:"  1>>$LTPTMP/tst_ln.exp
+	echo "$dirname:"  1>>$LTPTMP/tst_ln.exp
 	echo "d.$dircnt"  1>>$LTPTMP/tst_ln.exp
 	while [ $dircnt -lt $numdirs ]
 	do
@@ -213,7 +212,7 @@ test01()
 	ls -R $LTPTMP/tst_ln.tmp1 > $LTPTMP/tst_ln.out 2>&1
 
 	$LTPBIN/tst_resm TINFO "Test #1: creating expected output file"
-	creat_expout $numdirs $numfiles $LTPTMP/tst_ln.tmp
+	creat_expout $numdirs $numfiles $LTPTMP/tst_ln.tmp1
 
 	$LTPBIN/tst_resm TINFO \
 	    "Test #1: comparing expected out and actual output file"

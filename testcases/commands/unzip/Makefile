@@ -1,5 +1,6 @@
 # Only build and install if we have the zip and unzip commands
-HAVE_ZIPTOOLS=$(shell which zip && which unzip && echo t)
+HAVE_ZIPTOOLS=$(shell which zip >/dev/null 2>&1\
+ && which unzip >/dev/null 2>&1 && echo t)
 ifeq ($(HAVE_ZIPTOOLS),t)
 BINS := unzip_tests.sh
 DEPS := tst_unzip_file.zip $(BINS)
