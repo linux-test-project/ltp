@@ -211,11 +211,6 @@ setup(void)
 	if (good_addr[1] == MAP_FAILED)
 		tst_brkm(TBROK, cleanup, "mmap failed for good_addr[1]");
 
-	bad_addr[2] = mmap(NULL, page_size * 3, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
-	if (bad_addr[2] == MAP_FAILED)
-		tst_brkm(TBROK, cleanup, "mmap failed for bad_addr[2]");
-
 	/* force page fault for writable mappings*/
 	memset(good_addr[0],'a', page_size);
 	memset(good_addr[1],'b', page_size);
