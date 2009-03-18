@@ -240,23 +240,6 @@ int test_epoll_create (unsigned int num_rand_attempts)
 	}
   }
 
-  /* Zero set sizes */
-  errno = 0;
-  fd_set_size = 0;
-  num_epoll_create_test_calls++;
-  epoll_fd = epoll_create(fd_set_size);
-  if (epoll_fd >= 0){
-	tst_resm(TFAIL, "epoll_create with zero set size returned a valid fd (errno = %d:%s)", errno, strerror(errno));
-	num_epoll_create_test_fails++;
-	close(epoll_fd);
-  } else {
-	if (errno != EINVAL){
-	  tst_resm(TFAIL, "epoll_create with zero set size failed to set errno to EINVAL (%d:%s)", errno, strerror(errno));
-	  num_epoll_create_test_fails++;
-	} else {
-	  tst_resm(TPASS, "epoll_create with zero set size");
-	}
-  }
 
   /* Large set sizes -- try several less than or equal to INT_MAX by some
      small amount (expect num_rand_attempts to be approximately the
