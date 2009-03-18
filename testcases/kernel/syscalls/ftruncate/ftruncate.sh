@@ -2,8 +2,10 @@
 
 cd /tmp
 DEV=`df . |grep ^/|awk '{print $1}'` 
-mount ${DEV} -o remount,mand || exit 2
+MOUNT_POINT=`df .| tail -1 |awk '{print $NF}'`
+FLAG=`mount| grep ${DEV} | sed 's/.*(\(.*\)).*/\1/g'`
+mount ${DEV} -o remount,mand || { echo "the ${DEV} remount,mand failed" ; exit 2;}
 ftruncate04
 ret=$?
-mount ${DEV} -o remount || exit 2
+mount -o remount,${FLAG}  ${DEV} ${MOUNT_POINT} || { echo "the ${DEV} remount,${FLAG} failed" ; exit 2; }
 exit $ret
