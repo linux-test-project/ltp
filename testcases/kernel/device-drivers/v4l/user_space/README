@@ -3,7 +3,9 @@
 
 Release History
 ---------------
-
+18 Mar 2009  0.10 Test cases added for VIDIOC_G_PARM;
+                  Duplicated test for V4L2_BUF_TYPE_VIDEO_CAPTURE removed in
+                  VIDIOC_ENUM_FMT test
 14 Mar 2009  0.9  Test cases added for VIDIOC_S_CROP;
                   Test steps added for VIDIOC_S_CTRL
 22 Feb 2009  0.8  Test cases added for VIDIOC_G_CROP, VIDIOC_G_CTRL and VIDIOC_S_CTRL

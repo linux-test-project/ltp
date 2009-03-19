@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ * 18 Mar 2009  0.4  Duplicated test for V4L2_BUF_TYPE_VIDEO_CAPTURE removed
  *  1 Jan 2009  0.3  Test cases added for index=S32_MAX and S32_MAX+1;
  *                   Test functions renamed
  * 22 Dec 2008  0.2  Test case with NULL parameter added
@@ -92,7 +93,6 @@ static void do_enumerate_formats(enum v4l2_buf_type type) {
 }
 
 void test_VIDIOC_ENUM_FMT() {
-	do_enumerate_formats(V4L2_BUF_TYPE_VIDEO_CAPTURE);
 	do_enumerate_formats(V4L2_BUF_TYPE_VIDEO_CAPTURE);
 	do_enumerate_formats(V4L2_BUF_TYPE_VIDEO_OUTPUT);
 	do_enumerate_formats(V4L2_BUF_TYPE_VIDEO_OVERLAY);

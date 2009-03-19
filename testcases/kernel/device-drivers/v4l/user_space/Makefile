@@ -1,6 +1,7 @@
 #
 # v4l-test: Test environment for Video For Linux Two API
 #
+# 18 Mar 2009  0.10 test_VIDIOC_PARM.c added
 # 19 Feb 2009  0.9  test_VIDIOC_CTRL.c added
 #  7 Feb 2009  0.8  test_VIDIOC_CROP.c added
 #  3 Feb 2009  0.7  test_VIDIOC_AUDIO.c added,
@@ -50,6 +51,7 @@ OBJS = dev_video.o \
        test_VIDIOC_AUDIO.o \
        test_VIDIOC_AUDOUT.o \
        test_VIDIOC_CTRL.o \
+       test_VIDIOC_PARM.o \
        test_invalid_ioctl.o \
        v4l2_test.o
 

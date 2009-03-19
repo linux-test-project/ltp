@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ * 18 Mar 2009  0.14 Test cases added for VIDIOC_G_PARM
  *  7 Mar 2009  0.13 Test cases added for VIDIOC_S_CROP
  * 22 Feb 2009  0.12 Test cases added for VIDIOC_S_CTRL
  * 19 Feb 2009  0.11 Test cases added for VIDIOC_G_CTRL
@@ -67,6 +68,7 @@
 #include "test_VIDIOC_AUDOUT.h"
 #include "test_VIDIOC_CROP.h"
 #include "test_VIDIOC_CTRL.h"
+#include "test_VIDIOC_PARM.h"
 
 #include "test_VIDIOC_LOG_STATUS.h"
 #include "test_invalid_ioctl.h"
@@ -135,7 +137,6 @@ static CU_TestInfo suite_enums[] = {
 };
 
 static CU_TestInfo suite_get_set_try[] = {
-#if 1
   { "VIDIOC_G_STD", test_VIDIOC_G_STD },
   { "VIDIOC_S_STD with the enumerated values", test_VIDIOC_S_STD_from_enum },
   { "VIDIOC_S_STD", test_VIDIOC_S_STD },
@@ -209,8 +210,6 @@ static CU_TestInfo suite_get_set_try[] = {
   { "VIDIOC_S_CROP with invalid type", test_VIDIOC_S_CROP_invalid},
   { "VIDIOC_S_CROP with NULL parameter", test_VIDIOC_S_CROP_NULL },
 
-#endif
-
   { "VIDIOC_G_CTRL", test_VIDIOC_G_CTRL },
   { "VIDIOC_G_CTRL with NULL parameter", test_VIDIOC_G_CTRL_NULL },
 
@@ -222,6 +221,10 @@ static CU_TestInfo suite_get_set_try[] = {
   { "VIDIOC_S_CTRL, gain control with invalid value parameter", test_VIDIOC_S_CTRL_gain_invalid },
 
   { "VIDIOC_S_CTRL with NULL parameter", test_VIDIOC_S_CTRL_NULL },
+
+  { "VIDIOC_G_PARM", test_VIDIOC_G_PARM },
+  { "VIDIOC_G_PARM with invalid type parameter", test_VIDIOC_G_PARM_invalid },
+  { "VIDIOC_G_PARM with NULL parameter", test_VIDIOC_G_PARM_NULL },
 
   CU_TEST_INFO_NULL,
 };
