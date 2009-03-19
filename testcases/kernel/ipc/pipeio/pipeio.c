@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Header: /cvsroot/ltp/ltp/testcases/kernel/ipc/pipeio/pipeio.c,v 1.17 2009/02/26 12:14:53 subrata_modak Exp $ */
+/* $Header: /cvsroot/ltp/ltp/testcases/kernel/ipc/pipeio/pipeio.c,v 1.18 2009/03/19 07:10:02 subrata_modak Exp $ */
 /*
  *  This tool can be used to beat on system or named pipes.
  *  See the help() function below for user information.
@@ -155,7 +155,13 @@ char *av[];
 	char *toutput;		/* for getenv() */
 	int sem_id;
 	struct sembuf sem_op;
-
+	union semun {		/* for semctl() */
+	  int val;
+	  struct semid_ds *buf;
+	  unsigned short int *array;
+	} u;
+	
+	u.val = 0;
 	format = HEX;
 	blk_type = NON_BLOCKING_IO;
 	dir[0] = '\0';
@@ -443,7 +449,7 @@ char *av[];
 		tst_brkm(TBROK, tst_exit, "Couldn't allocate semaphore: %s", strerror(errno));
 	}
 
-	if(semctl(sem_id, 0, SETVAL, 0) == -1)
+	if(semctl(sem_id, 0, SETVAL, u) == -1)
 		tst_brkm(TBROK, tst_exit, "Couldn't initialize semaphore value: %s", strerror(errno));
 
 	if ( background ) {
