@@ -1,0 +1,26 @@
+These testcases test the Smack Security Module. And they are not part of
+default LTP build/install/run.
+
+A kernel with Smack configured is required to run the Smack testsuite.
+(Please see ltp/README for all those config options)
+The smackfs filesystem must be mounted at /smack. One way to accomplish
+this is to:
+1) Create a directory first:
+	mkdir -p /smack
+
+2) Include this line in the /etc/fstab file:
+	smackfs /smack smackfs defaults 0 0
+
+3) Do:
+	mount -a
+
+4) Building/Installing the tests:
+	Each test is designed to be independent. The tests can be built
+using the default make target.
+	(cd testcases/kernel/security/smack; make && make install)
+
+5) Running the tests:
+	./runltp -f smack
+
+Each test exits with 0 on success and an error code on failure.
+

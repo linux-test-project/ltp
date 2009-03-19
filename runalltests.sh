@@ -192,6 +192,11 @@ export RUN_DMA_THREAD_DIOTEST7=0
 ##config options need to be set for this at ltp/README
 export RUN_CONTROLLER_AREA_NETWORK_TESTS=0
 
+##Set this to 1 if you wish to run the SMACK Security tests
+## Remember that you cannot run both the SELINUX and SMACK tests at a time,
+## as both of them cannot be tested in the same running kernel
+export RUN_SMACK_SECURITY_TESTS=0
+
 export LTP_VERSION=`./runltp -e`
 export TEST_START_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
 export HARDWARE_TYPE=$(uname -i)
@@ -524,3 +529,12 @@ then
      ./runltp -f can
 fi
 ## END => Test Series 27                               ##
+
+## The next one i plan to run the SMACK SECURITY tests
+## START => Test Series 28                             ##
+if [ $RUN_SMACK_SECURITY_TESTS -eq 1 ]
+then
+     ./runltp -f smack
+fi
+## END => Test Series 28                               ##
+

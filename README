@@ -213,6 +213,19 @@ explicit internal "stacking" e.g. as is done for combining SELinux or
 Smack with capabilities).  Unless you use the security= option to select
 one at boot.  SELinux and Smack will honor the security= option.
 ---------------------------------
+---------------------------------
+Enabling Kernel Configuration to test SMACK security feature
+---------------------------------
+CONFIG_NETLABEL=y
+CONFIG_SECURITY=y
+CONFIG_SECURITY_NETWORK=y
+CONFIG_SECURITY_SMACK=y
+CONFIG_SECURITY_SELINUX should not be set
+
+For more information to build/install/run these tests, look through:
+ltp/testcases/kernel/security/smack/README
+---------------------------------
+---------------------------------
 Enablement for Enhancement to kexec/kdump for implementing the following features:
 - Backup/restore memory used by the original kernel before/after kexec.
 - Save/restore CPU state before/after kexec.

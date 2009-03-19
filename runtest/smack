@@ -1,0 +1,10 @@
+smack_set_ambient	smack_set_ambient.sh
+smack_set_current	smack_set_current.sh
+smack_set_doi		smack_set_doi.sh
+smack_set_netlabel	smack_set_netlabel.sh
+smack_set_socket_labels	smack_set_socket_labels
+smack_set_cipso		smack_set_cipso.sh
+smack_set_direct	smack_set_direct.sh
+smack_set_load		smack_set_load.sh
+smack_set_onlycap	smack_set_onlycap.sh
+smack_file_access	smack_file_access.sh
