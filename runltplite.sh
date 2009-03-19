@@ -293,6 +293,8 @@ main()
       fi
     fi
     #$PAN_COMMAND #Duplicated code here, because otherwise if we fail, only "PAN_COMMAND" gets output
+    # Some tests need to run inside the "bin" directory.
+    cd "${LTPROOT}/testcases/bin"
     ${LTPROOT}/pan/pan $QUIET_MODE -e -S $INSTANCES $DURATION -a $$ \
     -n $$ $PRETTY_PRT -f ${TMP}/alltests $LOGFILE $OUTPUTFILE
     
@@ -303,6 +305,7 @@ main()
       echo "INFO: pan reported some tests FAIL"
       VALUE=1
     fi
+    cd ..
     [ ! -z "$QUIET_MODE" ] && { echo "INFO: Test end time: $(date)" ; }
     
     [ "$GENLOAD" -eq 1 ] && { killall -9 genload ; }

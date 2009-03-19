@@ -736,6 +736,9 @@ main()
 
     echo "Running tests......."
     test_start_time=$(date)
+
+    # Some tests need to run inside the "bin" directory.
+    cd "${LTPROOT}/testcases/bin"
     ${LTPROOT}/pan/pan $QUIET_MODE -e -S $INSTANCES $DURATION -a $$ -n $$ $PRETTY_PRT -f ${TMP}/alltests $LOGFILE $OUTPUTFILE $FAILCMDFILE
      
     if [ $? -eq 0 ]; then
@@ -747,6 +750,7 @@ main()
       VALUE=1
       export LTP_EXIT_VALUE=1;
     fi
+    cd ..
     echo "LTP Version: $version_date"
 
     if [ "$ALT_HTML_OUT" -eq 1 ] ; then        #User wants the HTML output to be created, it then needs to be generated
