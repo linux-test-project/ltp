@@ -3,7 +3,7 @@ CPPFLAGS += -I../../../../include
 LDLIBS += -lltp
 LDFLAGS += -L../../../../lib
 
-TARGETS = fs_perms
+TARGETS = fs_perms testx
 
 all: fs_perms testx
 
