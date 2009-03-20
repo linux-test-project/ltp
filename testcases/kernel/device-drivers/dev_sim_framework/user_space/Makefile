@@ -1,8 +1,9 @@
-test_mod: tmod_ki.o user_tmod.o
-	${CC} tmod_ki.o user_tmod.o -o test_mod
 
-tmod_ki.o: tmod_ki.c
-	${CC} -c tmod_ki.c
+CFLAGS += -Wall
+OBJS = tmod_ki.o user_tmod.o
 
-user_tmod.o: user_tmod.c
-	${CC} -c user_tmod.c
+test_mod: $(OBJS)
+	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@
+
+clean:
+	rm -f $(OBJS) test_mod
