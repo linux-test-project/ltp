@@ -54,6 +54,8 @@ class TestPi2(Log):
 			 prev_line=line
 		if count>=2:
 			return True
+		else:
+			return False
 
 def main():
 	if len(sys.argv) < 2:
