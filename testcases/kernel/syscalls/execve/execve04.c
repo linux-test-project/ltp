@@ -65,7 +65,7 @@ void help(void);
 
 int mypid;
 char fname[40] = "";
-char test_name[80] = "";
+char test_name[PATH_MAX] = "";
 int ifile, nfile, first;
 
 int exp_enos[] = {EMFILE, 0};
