@@ -266,7 +266,7 @@ main(int   ac,    /* number of command line parameters                      */
 	 * either of x86, x86_64 or ppc architecture
 	 */
 	if ( !arch_support || (tst_kvercmp(2,6,23) < 0)) {
-		tst_resm(TWARN," System doesn't support execution of the test");
+		tst_resm(TCONF," System doesn't support execution of the test");
 
 		exit(0);
 	}
