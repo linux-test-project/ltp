@@ -47,13 +47,13 @@ static int testsetup(mode_t mode, int cuserId, int cgroupId)
 	int ret;
 
 	ret = unlink("test.file");
-	if (ret && errno != ENOENT) 
+	if (ret && errno != ENOENT)
 		goto done;
-	ret = system("cp $LTPROOT/testcases/bin/testx test.file");
-	if (ret) 
+	ret = system("cp testx test.file");
+	if (ret)
 		goto done;
 	ret = chmod("test.file", mode);
-	if (ret) 
+	if (ret)
 		goto done;
 	ret = chown("test.file", cuserId, cgroupId);
 
