@@ -80,12 +80,12 @@ struct kqop {
 	int kq;
 } kqueueop;
 
-void *kq_init	(void);
-int kq_add	(void *, struct event *);
-int kq_del	(void *, struct event *);
-int kq_recalc	(void *, int);
-int kq_dispatch	(void *, struct timeval *);
-int kq_insert	(struct kqop *, struct kevent *);
+void *kq_init(void);
+int kq_add(void *, struct event *);
+int kq_del(void *, struct event *);
+int kq_recalc(void *, int);
+int kq_dispatch(void *, struct timeval *);
+int kq_insert(struct kqop *, struct kevent *);
 
 const struct eventop kqops = {
 	"kqueue",
@@ -96,8 +96,7 @@ const struct eventop kqops = {
 	kq_dispatch
 };
 
-void *
-kq_init(void)
+void *kq_init(void)
 {
 	int kq;
 
@@ -122,7 +121,7 @@ kq_init(void)
 		return (NULL);
 	kqueueop.events = malloc(NEVENT * sizeof(struct kevent));
 	if (kqueueop.events == NULL) {
-		free (kqueueop.changes);
+		free(kqueueop.changes);
 		return (NULL);
 	}
 	kqueueop.nevents = NEVENT;
@@ -130,14 +129,12 @@ kq_init(void)
 	return (&kqueueop);
 }
 
-int
-kq_recalc(void *arg, int max)
+int kq_recalc(void *arg, int max)
 {
 	return (0);
 }
 
-int
-kq_insert(struct kqop *kqop, struct kevent *kev)
+int kq_insert(struct kqop *kqop, struct kevent *kev)
 {
 	int nevents = kqop->nevents;
 
@@ -181,14 +178,12 @@ kq_insert(struct kqop *kqop, struct kevent *kev)
 	return (0);
 }
 
-static void
-kq_sighandler(int sig)
+static void kq_sighandler(int sig)
 {
 	/* Do nothing here */
 }
 
-int
-kq_dispatch(void *arg, struct timeval *tv)
+int kq_dispatch(void *arg, struct timeval *tv)
 {
 	struct kqop *kqop = arg;
 	struct kevent *changes = kqop->changes;
@@ -200,7 +195,7 @@ kq_dispatch(void *arg, struct timeval *tv)
 	TIMEVAL_TO_TIMESPEC(tv, &ts);
 
 	res = kevent(kqop->kq, changes, kqop->nchanges,
-	    events, kqop->nevents, &ts);
+		     events, kqop->nevents, &ts);
 	kqop->nchanges = 0;
 	if (res == -1) {
 		if (errno != EINTR) {
@@ -227,8 +222,7 @@ kq_dispatch(void *arg, struct timeval *tv)
 			 * an event we are still processing.  In that case
 			 * the data field is set to ENOENT.
 			 */
-			if (events[i].data == EBADF ||
-			    events[i].data == ENOENT)
+			if (events[i].data == EBADF || events[i].data == ENOENT)
 				continue;
 			return (-1);
 		}
@@ -252,15 +246,13 @@ kq_dispatch(void *arg, struct timeval *tv)
 		}
 
 		event_active(ev, which,
-		    ev->ev_events & EV_SIGNAL ? events[i].data : 1);
+			     ev->ev_events & EV_SIGNAL ? events[i].data : 1);
 	}
 
 	return (0);
 }
 
-
-int
-kq_add(void *arg, struct event *ev)
+int kq_add(void *arg, struct event *ev)
 {
 	struct kqop *kqop = arg;
 	struct kevent kev;
@@ -268,14 +260,14 @@ kq_add(void *arg, struct event *ev)
 	if (ev->ev_events & EV_SIGNAL) {
 		int nsignal = EVENT_SIGNAL(ev);
 
- 		memset(&kev, 0, sizeof(kev));
+		memset(&kev, 0, sizeof(kev));
 		kev.ident = nsignal;
 		kev.filter = EVFILT_SIGNAL;
 		kev.flags = EV_ADD;
 		if (!(ev->ev_events & EV_PERSIST))
 			kev.flags |= EV_ONESHOT;
 		kev.udata = INTPTR(ev);
-	
+
 		if (kq_insert(kqop, &kev) == -1)
 			return (-1);
 
@@ -287,7 +279,7 @@ kq_add(void *arg, struct event *ev)
 	}
 
 	if (ev->ev_events & EV_READ) {
- 		memset(&kev, 0, sizeof(kev));
+		memset(&kev, 0, sizeof(kev));
 		kev.ident = ev->ev_fd;
 		kev.filter = EVFILT_READ;
 #ifdef NOTE_EOF
@@ -298,7 +290,7 @@ kq_add(void *arg, struct event *ev)
 		if (!(ev->ev_events & EV_PERSIST))
 			kev.flags |= EV_ONESHOT;
 		kev.udata = INTPTR(ev);
-	
+
 		if (kq_insert(kqop, &kev) == -1)
 			return (-1);
 
@@ -306,14 +298,14 @@ kq_add(void *arg, struct event *ev)
 	}
 
 	if (ev->ev_events & EV_WRITE) {
- 		memset(&kev, 0, sizeof(kev));
+		memset(&kev, 0, sizeof(kev));
 		kev.ident = ev->ev_fd;
 		kev.filter = EVFILT_WRITE;
 		kev.flags = EV_ADD;
 		if (!(ev->ev_events & EV_PERSIST))
 			kev.flags |= EV_ONESHOT;
 		kev.udata = INTPTR(ev);
-	
+
 		if (kq_insert(kqop, &kev) == -1)
 			return (-1);
 
@@ -323,8 +315,7 @@ kq_add(void *arg, struct event *ev)
 	return (0);
 }
 
-int
-kq_del(void *arg, struct event *ev)
+int kq_del(void *arg, struct event *ev)
 {
 	struct kqop *kqop = arg;
 	struct kevent kev;
@@ -335,11 +326,11 @@ kq_del(void *arg, struct event *ev)
 	if (ev->ev_events & EV_SIGNAL) {
 		int nsignal = EVENT_SIGNAL(ev);
 
- 		memset(&kev, 0, sizeof(kev));
+		memset(&kev, 0, sizeof(kev));
 		kev.ident = (int)signal;
 		kev.filter = EVFILT_SIGNAL;
 		kev.flags = EV_DELETE;
-	
+
 		if (kq_insert(kqop, &kev) == -1)
 			return (-1);
 
@@ -351,11 +342,11 @@ kq_del(void *arg, struct event *ev)
 	}
 
 	if (ev->ev_events & EV_READ) {
- 		memset(&kev, 0, sizeof(kev));
+		memset(&kev, 0, sizeof(kev));
 		kev.ident = ev->ev_fd;
 		kev.filter = EVFILT_READ;
 		kev.flags = EV_DELETE;
-	
+
 		if (kq_insert(kqop, &kev) == -1)
 			return (-1);
 
@@ -363,11 +354,11 @@ kq_del(void *arg, struct event *ev)
 	}
 
 	if (ev->ev_events & EV_WRITE) {
- 		memset(&kev, 0, sizeof(kev));
+		memset(&kev, 0, sizeof(kev));
 		kev.ident = ev->ev_fd;
 		kev.filter = EVFILT_WRITE;
 		kev.flags = EV_DELETE;
-	
+
 		if (kq_insert(kqop, &kev) == -1)
 			return (-1);
 

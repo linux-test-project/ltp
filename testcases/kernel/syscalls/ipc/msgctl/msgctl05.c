@@ -60,14 +60,13 @@
 #include "test.h"
 #include "usctest.h"
 
-
 #include "ipcmsg.h"
 
 char *TCID = "msgctl05";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-int exp_enos[] = {EPERM, 0};	/* 0 terminated list of expected errnos */
+int exp_enos[] = { EPERM, 0 };	/* 0 terminated list of expected errnos */
 
 int msg_q_1 = -1;		/* The message queue id created in setup */
 uid_t ltp_uid;			/* The user ID for a non root user */
@@ -77,16 +76,16 @@ struct msqid_ds q_buf;
 
 int main(int ac, char **av)
 {
-	char *msg;			/* message returned from parse_opts */
+	char *msg;		/* message returned from parse_opts */
 	pid_t pid;
 	void do_child(void);
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	if ((pid = FORK_OR_VFORK()) == -1) {
 		tst_brkm(TBROK, cleanup, "could not fork");
@@ -114,18 +113,17 @@ int main(int ac, char **av)
 		tst_rmdir();
 	}
 
-	cleanup ();
-        /**NOT REACHED**/
+	cleanup();
+	/**NOT REACHED**/
 	return 0;
 }
 
 /*
  * do_child - make the TEST call as the child process
  */
-void
-do_child()
+void do_child()
 {
-	int lc;				/* loop counter */
+	int lc;			/* loop counter */
 	int i;
 
 	/* The following loop checks looping state if -i option given */
@@ -136,7 +134,7 @@ do_child()
 
 		/* loop through the test cases */
 
-		for (i=0; i<TST_TOTAL; i++) {
+		for (i = 0; i < TST_TOTAL; i++) {
 			TEST(msgctl(msg_q_1, IPC_RMID, NULL));
 
 			if (TEST_RETURN != -1) {
@@ -147,7 +145,7 @@ do_child()
 
 			TEST_ERROR_LOG(TEST_ERRNO);
 
-			switch(TEST_ERRNO) {
+			switch (TEST_ERRNO) {
 			case EPERM:
 				tst_resm(TPASS, "expected error = %d : %s",
 					 TEST_ERRNO, strerror(TEST_ERRNO));
@@ -165,8 +163,7 @@ do_child()
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	/* check for root as user id of process */
 	check_root();
@@ -191,7 +188,7 @@ setup(void)
 
 	/* now we have a key, so let's create a message queue */
 	if ((msg_q_1 = msgget(msgkey, IPC_CREAT | IPC_EXCL | MSG_RW)) == -1) {
-		tst_brkm(TBROK, cleanup, "Can't create message queue #1" );
+		tst_brkm(TBROK, cleanup, "Can't create message queue #1");
 	}
 
 	/* get the user ID for a non root user */
@@ -202,8 +199,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -214,4 +210,3 @@ cleanup(void)
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

@@ -71,26 +71,25 @@ void setup();
 void cleanup();
 extern void do_file_setup(char *);
 
-char *TCID="rename13";		/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "rename13";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int fd;
 char fname[255], mname[255];
 struct stat buf1, buf2;
-dev_t   olddev;
-ino_t   oldino;
+dev_t olddev;
+ino_t oldino;
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	int lc;             /* loop counter */
-	char *msg;          /* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/*
 	 * parse standard options
 	 */
-	if ((msg=parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -102,10 +101,10 @@ main(int ac, char **av)
 	/*
 	 * check looping state if -i option given
 	 */
-	for (lc=0; TEST_LOOPING(lc); lc++) {
-	 
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+
 		/* reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/*
 		 * TEST rename()works when
@@ -129,7 +128,7 @@ main(int ac, char **av)
 			}
 
 			/* check the existence of "old", and get the status */
-			if (stat(fname, &buf1)== -1) {
+			if (stat(fname, &buf1) == -1) {
 				tst_brkm(TBROK, cleanup, "failed to stat file "
 					 "%s in rename()", fname);
 				/* NOTREACHED */
@@ -137,16 +136,18 @@ main(int ac, char **av)
 
 			/* verify the new file is the same as the original */
 			if (buf2.st_dev != olddev || buf2.st_ino != oldino) {
-				tst_resm(TFAIL,"rename() failed: new file does "
-					"not point to the same file as old "
-					"file");
+				tst_resm(TFAIL,
+					 "rename() failed: new file does "
+					 "not point to the same file as old "
+					 "file");
 				continue;
 			}
-		
+
 			/* verify the old file is unchanged */
 			if (buf1.st_dev != olddev || buf1.st_ino != oldino) {
-				tst_resm(TFAIL,"rename() failed: old file does "
-					"not point to the original file");
+				tst_resm(TFAIL,
+					 "rename() failed: old file does "
+					 "not point to the original file");
 				continue;
 			}
 
@@ -154,24 +155,20 @@ main(int ac, char **av)
 		} else {
 			tst_resm(TPASS, "call succeeded");
 		}
-	}   /* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/*
 	 * cleanup and exit
 	 */
 	cleanup();
-	/*NOTREACHED*/
+	 /*NOTREACHED*/ return 0;
 
-
-  return 0;
-
-}       /* End main */
+}				/* End main */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -182,15 +179,15 @@ setup()
 	/* Create a temporary directory and make it current. */
 	tst_tmpdir();
 
-	sprintf(fname,"./tfile_%d",getpid());
-	sprintf(mname,"./rnfile_%d",getpid());
+	sprintf(fname, "./tfile_%d", getpid());
+	sprintf(mname, "./rnfile_%d", getpid());
 
 	/* create the "old" file */
 	do_file_setup(fname);
 
-	if (stat(fname, &buf1)== -1) {
+	if (stat(fname, &buf1) == -1) {
 		tst_brkm(TBROK, cleanup, "failed to stat file %s"
-			 "in rename()",fname);
+			 "in rename()", fname);
 		/* NOTREACHED */
 	}
 
@@ -199,19 +196,17 @@ setup()
 	oldino = buf1.st_ino;
 
 	/* link the "new" file to the "old" file */
-	if (link(fname,mname) == -1) {
+	if (link(fname, mname) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "link from %s to %s failed!", fname, mname);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 }
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

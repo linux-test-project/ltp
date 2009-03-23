@@ -50,65 +50,68 @@
 
 int local_flag = PASSED;
 
-char *TCID="confstr01";            /* Test program identifier.    */
-int TST_TOTAL=1;                /* Total number of test cases. */
-extern int Tst_count;           /* Test Case counter for tst_* routines */
+char *TCID = "confstr01";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
+extern int Tst_count;		/* Test Case counter for tst_* routines */
 /**************/
 
 int confstr_var_vals[] = { _CS_PATH, _CS_XBS5_ILP32_OFF32_CFLAGS,
-                           _CS_XBS5_ILP32_OFF32_LDFLAGS,
-                           _CS_XBS5_ILP32_OFF32_LIBS,
-                           _CS_XBS5_ILP32_OFF32_LINTFLAGS,
-                           _CS_XBS5_ILP32_OFFBIG_CFLAGS,
-                           _CS_XBS5_ILP32_OFFBIG_LDFLAGS,
-                           _CS_XBS5_ILP32_OFFBIG_LIBS,
-                           _CS_XBS5_ILP32_OFFBIG_LINTFLAGS,
-                           _CS_XBS5_LP64_OFF64_CFLAGS,
-                           _CS_XBS5_LP64_OFF64_LDFLAGS,
-                           _CS_XBS5_LP64_OFF64_LIBS,
-                           _CS_XBS5_LP64_OFF64_LINTFLAGS,
-                           _CS_XBS5_LPBIG_OFFBIG_CFLAGS,
-                           _CS_XBS5_LPBIG_OFFBIG_LDFLAGS,
-                           _CS_XBS5_LPBIG_OFFBIG_LIBS,
-                           _CS_XBS5_LPBIG_OFFBIG_LINTFLAGS,
-                           0 };
+	_CS_XBS5_ILP32_OFF32_LDFLAGS,
+	_CS_XBS5_ILP32_OFF32_LIBS,
+	_CS_XBS5_ILP32_OFF32_LINTFLAGS,
+	_CS_XBS5_ILP32_OFFBIG_CFLAGS,
+	_CS_XBS5_ILP32_OFFBIG_LDFLAGS,
+	_CS_XBS5_ILP32_OFFBIG_LIBS,
+	_CS_XBS5_ILP32_OFFBIG_LINTFLAGS,
+	_CS_XBS5_LP64_OFF64_CFLAGS,
+	_CS_XBS5_LP64_OFF64_LDFLAGS,
+	_CS_XBS5_LP64_OFF64_LIBS,
+	_CS_XBS5_LP64_OFF64_LINTFLAGS,
+	_CS_XBS5_LPBIG_OFFBIG_CFLAGS,
+	_CS_XBS5_LPBIG_OFFBIG_LDFLAGS,
+	_CS_XBS5_LPBIG_OFFBIG_LIBS,
+	_CS_XBS5_LPBIG_OFFBIG_LINTFLAGS,
+	0
+};
 
- char *confstr_vars[] = { "PATH","XBS5_ILP32_OFF32_CFLAGS",
-                         "XBS5_ILP32_OFF32_LDFLAGS", "XBS5_ILP32_OFF32_LIBS",
-                         "XBS5_ILP32_OFF32_LINTFLAGS",
-                         "XBS5_ILP32_OFFBIG_CFLAGS",
-                         "XBS5_ILP32_OFFBIG_LDFLAGS",
-                         "XBS5_ILP32_OFFBIG_LIBS",
-                         "XBS5_ILP32_OFFBIG_LINTFLAGS",
-                         "XBS5_LP64_OFF64_CFLAGS",
-                         "XBS5_LP64_OFF64_LDFLAGS",
-                         "XBS5_LP64_OFF64_LIBS",
-                         "XBS5_LP64_OFF64_LINTFLAGS",
-                         "XBS5_LPBIG_OFFBIG_CFLAGS",
-                         "XBS5_LPBIG_OFFBIG_LDFLAGS",
-                         "XBS5_LPBIG_OFFBIG_LIBS",
-                         "XBS5_LPBIG_OFFBIG_LINTFLAGS",
-                         "XXX5_MYBIG_VERBIG_MYFLAGS",
-                         0 };
+char *confstr_vars[] = { "PATH", "XBS5_ILP32_OFF32_CFLAGS",
+	"XBS5_ILP32_OFF32_LDFLAGS", "XBS5_ILP32_OFF32_LIBS",
+	"XBS5_ILP32_OFF32_LINTFLAGS",
+	"XBS5_ILP32_OFFBIG_CFLAGS",
+	"XBS5_ILP32_OFFBIG_LDFLAGS",
+	"XBS5_ILP32_OFFBIG_LIBS",
+	"XBS5_ILP32_OFFBIG_LINTFLAGS",
+	"XBS5_LP64_OFF64_CFLAGS",
+	"XBS5_LP64_OFF64_LDFLAGS",
+	"XBS5_LP64_OFF64_LIBS",
+	"XBS5_LP64_OFF64_LINTFLAGS",
+	"XBS5_LPBIG_OFFBIG_CFLAGS",
+	"XBS5_LPBIG_OFFBIG_LDFLAGS",
+	"XBS5_LPBIG_OFFBIG_LIBS",
+	"XBS5_LPBIG_OFFBIG_LINTFLAGS",
+	"XXX5_MYBIG_VERBIG_MYFLAGS",
+	0
+};
 
 int main()
 {
-	size_t len = 0, retval;		/* return values for confstr(3C) */
+	size_t len = 0, retval;	/* return values for confstr(3C) */
 	int i;
-	char *buf=NULL;
+	char *buf = NULL;
 
-	tst_tmpdir();			/* Now temp file is open */
+	tst_tmpdir();		/* Now temp file is open */
 
 /*--------------------------------------------------------------------------*/
 
 	errno = 0;
 	for (i = 0; confstr_vars[i]; i++) {
-		len = confstr(confstr_var_vals[i], (char *)NULL, (size_t)0);
+		len = confstr(confstr_var_vals[i], (char *)NULL, (size_t) 0);
 		if (len != 0) {
 			/* Allocate space for the buffer with size len */
 			if ((buf = (char *)malloc(len)) == NULL) {
 				tst_resm(TFAIL,
-					"\tmalloc() fails, error= %d\n", errno);
+					 "\tmalloc() fails, error= %d\n",
+					 errno);
 				local_flag = FAILED;
 				break;
 			}
@@ -119,7 +122,8 @@ int main()
 			retval = confstr(confstr_var_vals[i], buf, len);
 			if (retval != len) {
 				tst_resm(TFAIL,
-					"\tconfstr returns invalid value :%s for variable: %s\n", buf, confstr_vars[i]);
+					 "\tconfstr returns invalid value :%s for variable: %s\n",
+					 buf, confstr_vars[i]);
 				local_flag = FAILED;
 
 				/* Free the memory and exit from loop */
@@ -134,29 +138,30 @@ int main()
 		} else {
 			if (!buf) {
 				if ((!strcmp("XXX5_MYBIG_VERBIG_MYFLAGS",
-					    confstr_vars[i])) &&
+					     confstr_vars[i])) &&
 				    (errno != EINVAL)) {
 					tst_resm(TFAIL,
-						"\tconfstr returns invalid error %d\n", errno);
+						 "\tconfstr returns invalid error %d\n",
+						 errno);
 					local_flag = FAILED;
 					break;
 				}
 			} else {
 				tst_resm(TFAIL,
-					"\tconfstr returns string value: %s for variable %s\n", buf, confstr_vars[i]);
+					 "\tconfstr returns string value: %s for variable %s\n",
+					 buf, confstr_vars[i]);
 				local_flag = FAILED;
 				break;
 			}
 		}
 	}
-        (local_flag == PASSED) ?
-            tst_resm(TPASS, "Test Passed")
-        :   tst_resm(TFAIL, "Test Failed");
+	(local_flag == PASSED) ? tst_resm(TPASS, "Test Passed")
+	    : tst_resm(TFAIL, "Test Failed");
 
-        tst_rmdir();
+	tst_rmdir();
 /*--------------------------------------------------------------*/
-        tst_exit();     /* THIS CALL DOES NOT RETURN - EXITS!!  */
+	tst_exit();		/* THIS CALL DOES NOT RETURN - EXITS!!  */
 /*--------------------------------------------------------------*/
-        return 0;
+	return 0;
 
 }

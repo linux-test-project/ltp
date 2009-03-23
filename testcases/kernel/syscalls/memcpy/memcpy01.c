@@ -20,7 +20,6 @@
 /* 01/02/2003	Port to LTP	avenkat@us.ibm.com */
 /* 06/30/2001	Port to Linux	nsharoff@us.ibm.com */
 
-
 /*
  * NAME
  *	memcpy  --  test memcpy
@@ -64,7 +63,7 @@ int local_flag = PASSED;
 int block_number;
 int errno;
 FILE *temp;
-int TST_TOTAL =1;
+int TST_TOTAL = 1;
 /*****	**	**	*****/
 char buf[BSIZE];
 
@@ -82,11 +81,11 @@ void fill(char *str);
 int checkit(char *str);
 
 /*--------------------------------------------------------------*/
-int main (int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	char *p, *q;
 
-	setup();		/* temp file is now open	*/
+	setup();		/* temp file is now open        */
 /*--------------------------------------------------------------*/
 	blenter();
 
@@ -139,7 +138,6 @@ int main (int argc, char *argv[])
 		fprintf(temp, "\tcopy failed - 'from' bounds\n");
 		local_flag = FAILED;
 	}
-
 
 	blexit();
 /*--------------------------------------------------------------*/
@@ -199,9 +197,10 @@ int main (int argc, char *argv[])
 /*--------------------------------------------------------------*/
 /* Clean up any files created by test before call to anyfail.	*/
 
-	anyfail();	/* THIS CALL DOES NOT RETURN - EXITS!!	*/
+	anyfail();		/* THIS CALL DOES NOT RETURN - EXITS!!  */
 	return 0;
 }
+
 /*--------------------------------------------------------------*/
 /* FUNCTIONS GO HERE */
 
@@ -209,48 +208,51 @@ void clearit()
 {
 	register int i;
 
-	for (i=0; i < BSIZE; i++)
+	for (i = 0; i < BSIZE; i++)
 		buf[i] = 0;
 }
 
 void fill(char *str)
 {
 	register int i;
-	for (i=0; i < LEN; i++)
+	for (i = 0; i < LEN; i++)
 		*str++ = 'a';
 }
 
 int checkit(char *str)
 {
 	register int i;
-	for (i=0; i < LEN; i++)
+	for (i = 0; i < LEN; i++)
 		if (*str++ != 'a')
-			return(-1);
+			return (-1);
 
 	return (0);
 }
 
 int anyfail()
 {
-  (local_flag == FAILED)? tst_resm(TFAIL, "Test failed"): tst_resm(TPASS, "Test passed");
-  tst_exit();
-  return 0;
+	(local_flag == FAILED) ? tst_resm(TFAIL,
+					  "Test failed") : tst_resm(TPASS,
+								    "Test passed");
+	tst_exit();
+	return 0;
 }
 
 void setup()
 {
- temp = stderr;
+	temp = stderr;
 }
 
 int blenter()
 {
-   local_flag = PASSED;
-   return 0;
+	local_flag = PASSED;
+	return 0;
 }
 
 int blexit()
 {
-   (local_flag == FAILED) ? tst_resm(TFAIL, "Test failed") : tst_resm(TPASS, "Test passed");
-   return 0;
+	(local_flag == FAILED) ? tst_resm(TFAIL,
+					  "Test failed") : tst_resm(TPASS,
+								    "Test passed");
+	return 0;
 }
-

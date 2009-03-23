@@ -67,7 +67,7 @@ void cleanup(void);
 void setup(void);
 void do_child(void);
 
-char *TCID= "kill06";
+char *TCID = "kill06";
 int TST_TOTAL = 1;
 
 extern int Tst_count;
@@ -76,21 +76,20 @@ extern int Tst_count;
 
 int main(int ac, char **av)
 {
-	int lc;                         /* loop counter */
-	char *msg;                      /* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	pid_t pid1, pid2;
 	int exno, status, nsig, i;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
-
 #ifdef UCLINUX
 	maybe_run_child(&do_child, "");
 #endif
 
-	setup();                        /* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -127,16 +126,16 @@ int main(int ac, char **av)
 			/* Kill all processes in this process group */
 			TEST(kill(-getpgrp(), TEST_SIG));
 			sleep(300);
-			/*NOTREACHED*/
-                        tst_resm(TINFO, "%d never recieved a"
-				" signal", getpid());
+			 /*NOTREACHED*/
+			    tst_resm(TINFO, "%d never recieved a"
+				     " signal", getpid());
 			exit(exno);
 		} else {
 			waitpid(pid1, &status, 0);
 			if (TEST_RETURN != 0) {
 				tst_brkm(TFAIL, cleanup, "%s failed - errno = "
-						"%d : %s", TCID, TEST_ERRNO,
-						strerror(TEST_ERRNO));
+					 "%d : %s", TCID, TEST_ERRNO,
+					 strerror(TEST_ERRNO));
 			}
 		}
 
@@ -146,42 +145,40 @@ int main(int ac, char **av)
 			 * expected signal.
 			 */
 			nsig = WTERMSIG(status);
-			if (! nsig) {
+			if (!nsig) {
 				tst_resm(TFAIL, "Did not receive any signal");
 			} else if (nsig == TEST_SIG) {
 				tst_resm(TPASS, "received expected signal %d",
-					nsig);
+					 nsig);
 			} else {
-				tst_resm(TFAIL, "expected signal %d received %d"
-					,TEST_SIG,nsig);
+				tst_resm(TFAIL,
+					 "expected signal %d received %d",
+					 TEST_SIG, nsig);
 			}
 		}
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * do_child()
  */
-void
-do_child()
+void do_child()
 {
 	int exno = 1;
 
 	sleep(299);
-	/*NOTREACHED*/
-	tst_resm(TINFO, "%d never recieved a" " signal", getpid());
+	 /*NOTREACHED*/
+	    tst_resm(TINFO, "%d never recieved a" " signal", getpid());
 	exit(exno);
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* Setup default signal handling */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -194,8 +191,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing status if that option was specified.

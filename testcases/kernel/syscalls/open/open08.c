@@ -1,25 +1,25 @@
 /*
  * NAME
- * 	open08.c
+ *	open08.c
  *
  * DESCRIPTION
  *	Check for the following errors:
- * 	1.	EEXIST
- * 	2.	EISDIR
- * 	3.	ENOTDIR
+ *	1.	EEXIST
+ *	2.	EISDIR
+ *	3.	ENOTDIR
  *	4.	ENAMETOOLONG
  *	5.	EACCES
  *	6.	EFAULT
- * 
+ *
  * ALGORITHM
- * 	1. Open a file with O_CREAT and O_EXCL, when the file already
+ *	1. Open a file with O_CREAT and O_EXCL, when the file already
  *	   exists. Check the errno for EEXIST
  *
- * 	2. Pass a directory as the pathname and request a write access,
- * 	   check for errno for EISDIR
+ *	2. Pass a directory as the pathname and request a write access,
+ *	   check for errno for EISDIR
  *
- * 	3. Specify O_DIRECTORY as a parameter to open and pass a file as the
- * 	   pathname, check errno for ENOTDIR
+ *	3. Specify O_DIRECTORY as a parameter to open and pass a file as the
+ *	   pathname, check errno for ENOTDIR
  *
  *	4. Attempt to open() a filename which is more than VFS_MAXNAMLEN, and
  *	   check for errno to be ENAMETOOLONG.
@@ -44,7 +44,7 @@
  *	07/2001 Ported by Wayne Boyer
  *
  * RESTRICTIONS
- * 	None
+ *	None
  */
 #define _GNU_SOURCE		/* for O_DIRECTORY */
 #include <stdio.h>
@@ -66,26 +66,29 @@ extern int Tst_count;
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
-int exp_enos[]={EEXIST, EISDIR, ENOTDIR, ENAMETOOLONG, EACCES, EFAULT, 0};
+int exp_enos[] = { EEXIST, EISDIR, ENOTDIR, ENAMETOOLONG, EACCES, EFAULT, 0 };
 
-char * bad_addr = 0;
+char *bad_addr = 0;
 
 char filename[40] = "";
-char fname[] = "/bin/cat";		/* test executable to open */
-char bad_file[] = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyz";
+char fname[] = "/bin/cat";	/* test executable to open */
+char bad_file[] =
+    "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyz";
 
 struct test_case_t {
 	char *fname;
 	int flags;
 	int error;
 } TC[] = {
-	{filename, O_CREAT | O_EXCL, EEXIST},
-	{"/tmp", O_RDWR, EISDIR},
-	{filename, O_DIRECTORY, ENOTDIR},
-	{bad_file, O_RDWR, ENAMETOOLONG},
-	{fname, O_WRONLY, EACCES},
+	{
+	filename, O_CREAT | O_EXCL, EEXIST}, {
+	"/tmp", O_RDWR, EISDIR}, {
+	filename, O_DIRECTORY, ENOTDIR}, {
+	bad_file, O_RDWR, ENAMETOOLONG}, {
+	fname, O_WRONLY, EACCES},
 #if !defined(UCLINUX)
-	{(char *)-1, O_CREAT, EFAULT}
+	{
+	(char *)-1, O_CREAT, EFAULT}
 #endif
 };
 
@@ -93,12 +96,12 @@ int TST_TOTAL = sizeof(TC) / sizeof(TC[0]);
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int i;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -139,15 +142,13 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	int fildes;
 
@@ -159,24 +160,21 @@ setup(void)
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	 /* Switch to nobody user for correct error code collection */
-        if (geteuid() != 0) {
-                tst_brkm(TBROK, tst_exit, "Test must be run as root");
-        }
-        ltpuser = getpwnam(nobody_uid);
-        if (setgid(ltpuser->pw_gid) == -1) {
-                tst_resm(TINFO, "setgid failed to "
-                         "to set the effective uid to %d",
-                         ltpuser->pw_gid);
-                perror("setgid");
-        }
-        if (setuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "setuid failed to "
-                         "to set the effective uid to %d",
-                         ltpuser->pw_uid);
-                perror("setuid");
-        }
-
+	/* Switch to nobody user for correct error code collection */
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+	}
+	ltpuser = getpwnam(nobody_uid);
+	if (setgid(ltpuser->pw_gid) == -1) {
+		tst_resm(TINFO, "setgid failed to "
+			 "to set the effective uid to %d", ltpuser->pw_gid);
+		perror("setgid");
+	}
+	if (setuid(ltpuser->pw_uid) == -1) {
+		tst_resm(TINFO, "setuid failed to "
+			 "to set the effective uid to %d", ltpuser->pw_uid);
+		perror("setuid");
+	}
 
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
@@ -190,7 +188,7 @@ setup(void)
 
 #if !defined(UCLINUX)
 	bad_addr = mmap(0, 1, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
+			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
 	if (bad_addr == MAP_FAILED) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}
@@ -200,10 +198,9 @@ setup(void)
 
 /*
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
- * 	       or premature exit.
+ *	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing status if that option was specified.

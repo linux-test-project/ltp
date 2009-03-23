@@ -65,7 +65,6 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
-
 void cleanup(void);
 void setup(void);
 
@@ -73,13 +72,13 @@ char *TCID = "getdents04";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-int exp_enos[] = {ENOTDIR, 0};	/* 0 terminated list of expected errnos */
+int exp_enos[] = { ENOTDIR, 0 };	/* 0 terminated list of expected errnos */
 
 #ifndef __i386__
 int main()
 {
 	tst_resm(TINFO, "This test includes x86 asm and will not work on "
-	                "this machine");
+		 "this machine");
 	tst_exit();
 	return 0;
 }
@@ -87,8 +86,8 @@ int main()
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int count, rval, fd;
 	const int cnum = 141;
 	size_t size = 0;
@@ -97,13 +96,12 @@ int main(int ac, char **av)
 	struct stat *sbuf;
 	char *newfile;
 
-
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -144,8 +142,7 @@ int main(int ac, char **av)
 		}
 
 		/* set up some space for the stat buffer */
-		if ((sbuf =
-		     (struct stat *)malloc(sizeof(struct stat))) == NULL) {
+		if ((sbuf = (struct stat *)malloc(sizeof(struct stat))) == NULL) {
 			tst_brkm(TBROK, cleanup, "stat malloc failed");
 		}
 
@@ -173,11 +170,11 @@ int main(int ac, char **av)
 		 * an ENOTDIR error.
 		 */
 
-		if (rval < 0) {		/* call returned an error */
+		if (rval < 0) {	/* call returned an error */
 			rval *= -1;
 			TEST_ERROR_LOG(rval);
 
-			switch(rval) {
+			switch (rval) {
 			case ENOTDIR:
 				tst_resm(TPASS, "expected failure - errno = %d "
 					 "- %s", rval, strerror(rval));
@@ -212,15 +209,13 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -237,10 +232,9 @@ setup(void)
 
 /*
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
- * 	       or premature exit.
+ *	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/* remove the test directory */
 	tst_rmdir();

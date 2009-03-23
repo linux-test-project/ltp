@@ -19,13 +19,13 @@
 
 /*
  * NAME
- * 	setpgrp02.c
+ *	setpgrp02.c
  *
  * DESCRIPTION
  *	Testcase to check the basic functionality of the setpgrp(2) syscall.
  *
  * ALGORITHM
- * 	Check the values that setpgrp() and getpgrp() return. The setpgrp()
+ *	Check the values that setpgrp() and getpgrp() return. The setpgrp()
  *	returns 0 on success in Linux, but, in DYNIX/ptx this call returns
  *	the new pgid.
  *
@@ -42,7 +42,7 @@
  *	07/2001 Ported by Wayne Boyer
  *
  * RESTRICTIONS
- * 	None
+ *	None
  */
 #include <errno.h>
 #include <wait.h>
@@ -58,15 +58,14 @@ void cleanup(void);
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned by parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned by parse_opts */
 
 	int pid, oldpgrp;
-	int e_code, status, retval=0;
-
+	int e_code, status, retval = 0;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -82,13 +81,13 @@ int main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "fork() failed");
 		}
 
-		if (pid == 0) {			/* child */
+		if (pid == 0) {	/* child */
 			oldpgrp = getpgrp();
 
 			TEST(setpgrp());
 
 			if (TEST_RETURN != 0) {
-				retval=1;
+				retval = 1;
 				tst_resm(TFAIL, "setpgrp() FAILED, errno:%d",
 					 errno);
 				continue;
@@ -100,7 +99,7 @@ int main(int ac, char **av)
 			}
 
 			if (getpgrp() == oldpgrp) {
-				retval=1;
+				retval = 1;
 				tst_resm(TFAIL, "setpgrp() FAILED to set "
 					 "new group id");
 				continue;
@@ -108,27 +107,25 @@ int main(int ac, char **av)
 				tst_resm(TPASS, "functionality is correct");
 			}
 			exit(retval);
-		} else {			/* parent */
+		} else {	/* parent */
 			/* wait for the child to finish */
-            		wait(&status);
-            		/* make sure the child returned a good exit status */
-            		e_code = status >> 8;
-            		if ((e_code != 0) || (retval != 0)) {
-                	tst_resm(TFAIL, "Failures reported above");
-            		}
+			wait(&status);
+			/* make sure the child returned a good exit status */
+			e_code = status >> 8;
+			if ((e_code != 0) || (retval != 0)) {
+				tst_resm(TFAIL, "Failures reported above");
+			}
 			cleanup();
 		}
 	}
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -141,8 +138,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

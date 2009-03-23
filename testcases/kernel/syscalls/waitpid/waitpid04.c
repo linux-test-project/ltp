@@ -52,7 +52,7 @@ void setup(void);
 void cleanup(void);
 
 /* 0 terminated list of expected errnos */
-int exp_enos[] = {10,22,0};
+int exp_enos[] = { 10, 22, 0 };
 
 char *TCID = "waitpid04";
 int TST_TOTAL = 1;
@@ -66,16 +66,14 @@ int main(int ac, char **av)
 {
 	int pid, status, ret;
 
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) !=
-	    (char *) NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	setup();
 
@@ -87,7 +85,7 @@ int main(int ac, char **av)
 		ret = waitpid(pid, &status, WNOHANG);
 		flag = 0;
 		condition_number = 1;
-		if( ret != -1) {
+		if (ret != -1) {
 			tst_resm(TFAIL, "condition %d test failed",
 				 condition_number);
 		} else {
@@ -98,7 +96,7 @@ int main(int ac, char **av)
 					 errno);
 			} else {
 				tst_resm(TPASS, "condition %d test passed",
-					condition_number);
+					 condition_number);
 			}
 		}
 		condition_number++;
@@ -109,7 +107,7 @@ int main(int ac, char **av)
 		pid = 1;
 		ret = waitpid(pid, &status, WUNTRACED);
 		flag = 0;
-		if( ret != -1) {
+		if (ret != -1) {
 			tst_resm(TFAIL, "condition %d test failed",
 				 condition_number);
 		} else {
@@ -120,15 +118,15 @@ int main(int ac, char **av)
 					 errno);
 			} else {
 				tst_resm(TPASS, "condition %d test passed",
-					condition_number);
+					 condition_number);
 			}
 		}
 		condition_number++;
 
 		/* Option is Inval = INVAL_FLAG */
-		ret =  waitpid(pid, &status, INVAL_FLAG);
+		ret = waitpid(pid, &status, INVAL_FLAG);
 		flag = 0;
-		if( ret != -1) {
+		if (ret != -1) {
 			tst_resm(TFAIL, "condition %d test failed",
 				 condition_number);
 		} else {
@@ -138,16 +136,14 @@ int main(int ac, char **av)
 					 "errno, expected EINVAL, got: %d",
 					 errno);
 			} else {
-				 tst_resm(TPASS, "condition %d test passed",
-					condition_number);
+				tst_resm(TPASS, "condition %d test passed",
+					 condition_number);
 			}
 		}
 		condition_number++;
 	}
 	cleanup();
-	/*NOTREACHED*/
-
-  return 0;
+	 /*NOTREACHED*/ return 0;
 
 }
 
@@ -155,16 +151,15 @@ int main(int ac, char **av)
  * setup()
  *	performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* Set up the expected error numbers for -e option */
 	TEST_EXP_ENOS(exp_enos)
 
-	/* Pause if that option was specified
-	 * TEST_PAUSE contains the code to fork the test with the -c option.
-	 */
-	TEST_PAUSE;
+	    /* Pause if that option was specified
+	     * TEST_PAUSE contains the code to fork the test with the -c option.
+	     */
+	    TEST_PAUSE;
 }
 
 /*
@@ -172,8 +167,7 @@ setup(void)
  *	performs all ONE TIME cleanup for this test at
  *	completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -183,5 +177,4 @@ cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}

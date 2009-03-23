@@ -20,114 +20,100 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * $Id: gettid01.c,v 1.3 2009/02/26 12:03:42 subrata_modak Exp $
+ * $Id: gettid01.c,v 1.4 2009/03/23 13:35:45 subrata_modak Exp $
  *
  */
 
 /* Porting from Crackerjack to LTP is done
    by Masatake YAMATO <yamato@redhat.com> */
 
-
 #include <sys/types.h>
 #include <linux/unistd.h>
 #include <errno.h>
 
-
 #include "test.h"
 #include "usctest.h"
 
-
 void setup();
 void cleanup();
-
 
 char *TCID = "gettid01";	/* Test program identifier.    */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int TST_TOTAL = 1;
 
-
-pid_t
-my_gettid (void)
+pid_t my_gettid(void)
 {
-    return (pid_t)syscall(__NR_gettid);
+	return (pid_t) syscall(__NR_gettid);
 }
 
 int main(int ac, char **av)
 {
-    int lc;			/* loop counter */
-    char *msg;			/* parse_opts() return message */
+	int lc;			/* loop counter */
+	char *msg;		/* parse_opts() return message */
 
-    if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
-	tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-	/*NOTREACHED*/
-    }
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
+		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+	 /*NOTREACHED*/}
 
-    setup();
+	setup();
 
-    /*
-     * The following loop checks looping state if -c option given
-     */
-    for (lc = 0; TEST_LOOPING(lc); lc++) {
+	/*
+	 * The following loop checks looping state if -c option given
+	 */
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-	Tst_count = 0;
+		Tst_count = 0;
 
+		TEST(my_gettid());
 
-	TEST(my_gettid());
-
-
-	if ( TEST_RETURN == -1 ) {
-	    TEST_ERROR_LOG(TEST_ERRNO);
-	    tst_resm(TFAIL, "gettid() Failed, errno=%d: %s",
-		     TEST_ERRNO, strerror(TEST_ERRNO));
-	} else {
+		if (TEST_RETURN == -1) {
+			TEST_ERROR_LOG(TEST_ERRNO);
+			tst_resm(TFAIL, "gettid() Failed, errno=%d: %s",
+				 TEST_ERRNO, strerror(TEST_ERRNO));
+		} else {
 	    /***************************************************************
 	     * only perform functional verification if flag set (-f not given)
 	     ***************************************************************/
-	    if ( STD_FUNCTIONAL_TEST ) {
-		/* No Verification test, yet... */
-		tst_resm(TPASS, "gettid() returned %d", TEST_RETURN);
-	    }
+			if (STD_FUNCTIONAL_TEST) {
+				/* No Verification test, yet... */
+				tst_resm(TPASS, "gettid() returned %d",
+					 TEST_RETURN);
+			}
+		}
 	}
-    }
 
-    cleanup();
+	cleanup();
 
-    /*NOTREACHED*/
-    return 0;
+	 /*NOTREACHED*/ return 0;
 }
-
-
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
-    /* capture signals */
-    tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	/* capture signals */
+	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-    /* Pause if that option was specified */
-    TEST_PAUSE;
+	/* Pause if that option was specified */
+	TEST_PAUSE;
 
-}	/* End setup() */
-
+}				/* End setup() */
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
-    /*
-     * print timing stats if that option was specified.
-     * print errno log if that option was specified.
-     */
-    TEST_CLEANUP;
+	/*
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
+	TEST_CLEANUP;
 
-    /* exit with return code appropriate for results */
-    tst_exit();
+	/* exit with return code appropriate for results */
+	tst_exit();
 
-}	/* End cleanup() */
+}				/* End cleanup() */

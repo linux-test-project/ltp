@@ -82,16 +82,15 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int level;			/* I/O privilege level of the process */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 
-	int lc;		/* loop counter */
-	char *msg;	/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
-	     != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL))
+	    != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -110,7 +109,7 @@ main(int ac, char **av)
 		 * start by setting/changing the level to 0.
 		 */
 		for (level = 0; level < TST_TOTAL; ++level) {
-	
+
 			TEST(iopl(level));
 
 			if (TEST_RETURN == -1) {
@@ -119,23 +118,20 @@ main(int ac, char **av)
 					 TEST_ERRNO, strerror(TEST_ERRNO));
 			} else {
 				tst_resm(TPASS, "iopl() passed for level %d, "
-					 "returned %d", level,
-				 	 TEST_RETURN);
+					 "returned %d", level, TEST_RETURN);
 			}
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* cleanup and exit */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 
-}	/* End main */
+}				/* End main */
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup()
+void setup()
 {
 
 	/* capture signals */
@@ -144,21 +140,18 @@ setup()
 	/* Check whether we are root  */
 	if (geteuid() != 0) {
 		tst_brkm(TBROK, tst_exit, "Must be root for this test!");
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-}	/* End setup() */
-
+}				/* End setup() */
 
 /*
  *cleanup() -  performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 
 	/*
@@ -177,7 +170,7 @@ cleanup()
 	/* exit with return code appropriate for results */
 	tst_exit();
 
-}	/* End cleanup() */
+}				/* End cleanup() */
 
 #else /* __i386__ */
 
@@ -186,10 +179,10 @@ cleanup()
 
 int TST_TOTAL = 0;		/* Total number of test cases. */
 
-int
-main()
+int main()
 {
-	tst_resm(TPASS, "LSB v1.3 does not specify iopl() for this architecture.");
+	tst_resm(TPASS,
+		 "LSB v1.3 does not specify iopl() for this architecture.");
 	tst_exit();
 	return 0;
 }

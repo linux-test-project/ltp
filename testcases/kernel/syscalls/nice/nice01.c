@@ -77,8 +77,8 @@
 #define	NICEINC		-12
 #define TEMPFILE	"temp_file"
 
-char *TCID="nice01";		/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "nice01";		/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int Org_nice;			/* original priority of the test process */
@@ -87,16 +87,15 @@ FILE *fp;
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	int New_nice;		/* priority of process after nice() */
 	int rval;
-   
+
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
@@ -108,7 +107,7 @@ main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/*
 		 * Call nice(2) with an 'incr' parameter set
@@ -145,21 +144,20 @@ main(int ac, char **av)
 		/* return the process to the original priority */
 		rval = nice(-NICEINC);
 
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
 	return 0;
-}	/* End main */
+}				/* End main */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  *  	     Make sure the test process uid is super user.
  *  	     Get the current priority value.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -180,8 +178,7 @@ setup()
  *             completion or premature exit.
  *  	       Remove the test directory and testfile created in the setup.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

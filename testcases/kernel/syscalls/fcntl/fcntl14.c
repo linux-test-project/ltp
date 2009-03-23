@@ -19,16 +19,16 @@
 
 /*
  * NAME
- * 	fcntl14.c
+ *	fcntl14.c
  *
  * DESCRIPTION
- * 	File locking test cases for fcntl. In Linux, S_ENFMT is not implemented
+ *	File locking test cases for fcntl. In Linux, S_ENFMT is not implemented
  *	in the kernel. However all standard Unix kernels define S_ENFMT as
  *	S_ISGID. So this test defines S_ENFMT as S_ISGID.
  *
  * ALGORITHM
- * 	Various test cases are used to lock a file opened without mandatory
- * 	locking, with mandatory locking and mandatory locking with NOBLOCK
+ *	Various test cases are used to lock a file opened without mandatory
+ *	locking, with mandatory locking and mandatory locking with NOBLOCK
  *
  * USAGE
  *	fcntl14
@@ -37,7 +37,7 @@
  *	07/2001 Ported by Wayne Boyer
  *
  * RESTRICTIONS
- * 	None
+ *	None
  */
 #define _GNU_SOURCE 1
 #include <fcntl.h>
@@ -70,7 +70,7 @@ typedef struct {
 	short a_whence;
 	long a_start;
 	long a_len;
-	short b_type;			/* SKIP means suppress fcntl call */
+	short b_type;		/* SKIP means suppress fcntl call */
 	short b_whence;
 	long b_start;
 	long b_len;
@@ -79,194 +79,194 @@ typedef struct {
 	long c_start;
 	long c_len;
 	short c_flag;
-}	testcase;
+} testcase;
 
-static	testcase	testcases[] = {
+static testcase testcases[] = {
 	/* Test cases: entire boundary */
 	/* #1 Parent making a write lock on entire file */
-	{ F_WRLCK, 0, 0L, 0L, SKIP, 0, 0L, 0L,
-	/* Child attempting a read lock on entire file */
-		F_RDLCK, 0, 0L, 0L, WILLBLOCK },
-	
+	{F_WRLCK, 0, 0L, 0L, SKIP, 0, 0L, 0L,
+	 /* Child attempting a read lock on entire file */
+	 F_RDLCK, 0, 0L, 0L, WILLBLOCK},
+
 	/* #2 Parent making a write lock on entire file */
-	{ F_WRLCK, 0, 0L, 0L, SKIP, 0, 0L, 0L,
-	/* Child attempting a write lock on entire file */
-		F_WRLCK, 0, 0L, 0L, WILLBLOCK },
+	{F_WRLCK, 0, 0L, 0L, SKIP, 0, 0L, 0L,
+	 /* Child attempting a write lock on entire file */
+	 F_WRLCK, 0, 0L, 0L, WILLBLOCK},
 
 	/* #3 Parent making a read lock on entire file */
-	{ F_RDLCK, 0, 0L, 0L, SKIP, 0, 0L, 0L,
-	/* Child attempting a read lock on entire file */
-		F_RDLCK, 0, 0L, 0L, NOBLOCK },
+	{F_RDLCK, 0, 0L, 0L, SKIP, 0, 0L, 0L,
+	 /* Child attempting a read lock on entire file */
+	 F_RDLCK, 0, 0L, 0L, NOBLOCK},
 
 	/* #4 Parent making a read lock on entire file */
-	{ F_RDLCK, 0, 0L, 0L, SKIP, 0, 0L, 0L,
-	/* Child attempting a write lock on entire file */
-		F_WRLCK, 0, 0L, 0L, WILLBLOCK },
+	{F_RDLCK, 0, 0L, 0L, SKIP, 0, 0L, 0L,
+	 /* Child attempting a write lock on entire file */
+	 F_WRLCK, 0, 0L, 0L, WILLBLOCK},
 
 	/* Test case: start boundary */
 	/* #5 Parent making a write lock on entire file */
-	{ F_WRLCK, 0, 0L, 0L, SKIP, 0, 0L, 0L,
-	/*
-	 * Child attempting a read lock from beginning of
-	 * file for 5 bytes
-	 */
-		F_RDLCK, 0, 0L, 5L, WILLBLOCK },
+	{F_WRLCK, 0, 0L, 0L, SKIP, 0, 0L, 0L,
+	 /*
+	  * Child attempting a read lock from beginning of
+	  * file for 5 bytes
+	  */
+	 F_RDLCK, 0, 0L, 5L, WILLBLOCK},
 
 	/* #6 Parent making a write lock on entire file */
-	{ F_WRLCK, 0, 0L, 0L, SKIP, 0, 0L, 0L,
-	/*
-	 * Child attempting a write lock from beginning of
-	 * file for 5 bytes
-	 */
-		 F_WRLCK, 0, 0L, 5L, WILLBLOCK },
+	{F_WRLCK, 0, 0L, 0L, SKIP, 0, 0L, 0L,
+	 /*
+	  * Child attempting a write lock from beginning of
+	  * file for 5 bytes
+	  */
+	 F_WRLCK, 0, 0L, 5L, WILLBLOCK},
 
 	/* #7 Parent making a read lock on entire file */
-	{ F_RDLCK, 0, 0L, 0L, SKIP, 0, 0L, 0L,
-	/*
-	 * Child attempting a read lock from beginning of
-	 * file for 5 bytes
-	 */
-		F_RDLCK, 0, 0L, 5L, NOBLOCK },
+	{F_RDLCK, 0, 0L, 0L, SKIP, 0, 0L, 0L,
+	 /*
+	  * Child attempting a read lock from beginning of
+	  * file for 5 bytes
+	  */
+	 F_RDLCK, 0, 0L, 5L, NOBLOCK},
 
 	/* #8 Parent making a read lock on entire file */
-	{ F_RDLCK, 0, 0L, 0L, SKIP, 0, 0L, 0L,
-	/*
-	 * Child attempting a write lock from beginning of
-	 * file for 5 bytes
-	 */
-		F_WRLCK, 0, 0L, 5L, WILLBLOCK },
+	{F_RDLCK, 0, 0L, 0L, SKIP, 0, 0L, 0L,
+	 /*
+	  * Child attempting a write lock from beginning of
+	  * file for 5 bytes
+	  */
+	 F_WRLCK, 0, 0L, 5L, WILLBLOCK},
 
 	/* Test cases: end boundary */
 	/* #9 Parent making a write lock on entire file */
-	{ F_WRLCK, 0, 0L, 0L, SKIP, 0, 0L, 0L,
-	/* Child attempting a read lock from byte 7 to end of file */
-		F_RDLCK, 0, 7L, 0L, WILLBLOCK },
+	{F_WRLCK, 0, 0L, 0L, SKIP, 0, 0L, 0L,
+	 /* Child attempting a read lock from byte 7 to end of file */
+	 F_RDLCK, 0, 7L, 0L, WILLBLOCK},
 
 	/* #10 Parent making a write lock on entire file */
-	{ F_WRLCK, 0, 0L, 0L, SKIP, 0, 0L, 0L,
-	/* Child attempting a write lock from byte 7 to end of file */
-		F_WRLCK, 0, 7L, 0L, WILLBLOCK },
+	{F_WRLCK, 0, 0L, 0L, SKIP, 0, 0L, 0L,
+	 /* Child attempting a write lock from byte 7 to end of file */
+	 F_WRLCK, 0, 7L, 0L, WILLBLOCK},
 
 	/* #11 Parent making a read lock on entire file */
-	{ F_RDLCK, 0, 0L, 0L, SKIP, 0, 0L, 0L,
-	/* Child attempting a read lock from byte 7 to end of file */
-		F_RDLCK, 0, 7L, 0L, NOBLOCK },
+	{F_RDLCK, 0, 0L, 0L, SKIP, 0, 0L, 0L,
+	 /* Child attempting a read lock from byte 7 to end of file */
+	 F_RDLCK, 0, 7L, 0L, NOBLOCK},
 
 	/* #12 Parent making a read lock on entire file */
-	{ F_RDLCK, 0, 0L, 0L, SKIP, 0, 0L, 0L,
-	/* Child attempting a write lock from byte 7 to end of file */
-		F_WRLCK, 0, 7L, 0L, WILLBLOCK },
+	{F_RDLCK, 0, 0L, 0L, SKIP, 0, 0L, 0L,
+	 /* Child attempting a write lock from byte 7 to end of file */
+	 F_WRLCK, 0, 7L, 0L, WILLBLOCK},
 
 	/* Test cases: entire boundary ( less than entire file) */
 	/*
 	 * #13 Parent making a write lock from beginning of
 	 * file for 5 bytes
 	 */
-	{ F_WRLCK, 0, 0L, 5L, SKIP, 0, 0L, 0L,
-	/*
-	 * Child attempting a read lock from beginning of
-	 * file for 5 bytes
-	 */
-		F_RDLCK, 0, 0L, 5L, WILLBLOCK },
+	{F_WRLCK, 0, 0L, 5L, SKIP, 0, 0L, 0L,
+	 /*
+	  * Child attempting a read lock from beginning of
+	  * file for 5 bytes
+	  */
+	 F_RDLCK, 0, 0L, 5L, WILLBLOCK},
 
 	/*
 	 * #14 Parent making a write lock from beginning of file
 	 * for 5 bytes
 	 */
-	{ F_WRLCK, 0, 0L, 5L, SKIP, 0, 0L, 0L,
-	/*
-	 * Child attempting a write lock from beginning of
-	 * file for 5 bytes
-	 */
-		F_WRLCK, 0, 0L, 5L, WILLBLOCK },
+	{F_WRLCK, 0, 0L, 5L, SKIP, 0, 0L, 0L,
+	 /*
+	  * Child attempting a write lock from beginning of
+	  * file for 5 bytes
+	  */
+	 F_WRLCK, 0, 0L, 5L, WILLBLOCK},
 
 	/*
 	 * #15 Parent making a read lock from beginning of
 	 * file for 5 bytes
 	 */
-	{ F_RDLCK, 0, 0L, 5L, SKIP, 0, 0L, 0L,
-	/*
-	 * Child attempting a read lock from beginning of
-	 * file for 5 bytes
-	 */
-		F_RDLCK, 0, 0L, 5L, NOBLOCK },
+	{F_RDLCK, 0, 0L, 5L, SKIP, 0, 0L, 0L,
+	 /*
+	  * Child attempting a read lock from beginning of
+	  * file for 5 bytes
+	  */
+	 F_RDLCK, 0, 0L, 5L, NOBLOCK},
 
 	/*
 	 * #16 Parent making a read lock from beginning of
 	 * file for 5 bytes
 	 */
-	{ F_RDLCK, 0, 0L, 5L, SKIP, 0, 0L, 0L,
-	/*
-	 * Child attempting a write lock from beginning
-	 * of file for 5 bytes
-	 */
-		F_WRLCK, 0, 0L, 5L, WILLBLOCK },
+	{F_RDLCK, 0, 0L, 5L, SKIP, 0, 0L, 0L,
+	 /*
+	  * Child attempting a write lock from beginning
+	  * of file for 5 bytes
+	  */
+	 F_WRLCK, 0, 0L, 5L, WILLBLOCK},
 
 	/* Test cases: inside boundary */
 	/*
 	 * #17 Parent making a write lock from beginning
 	 * of file for 5 bytes
 	 */
-	{ F_WRLCK, 0, 0L, 5L, SKIP, 0, 0L, 0L,
-	/* Child attempting a read lock from byte 2 to byte 4 */
-		F_RDLCK, 0, 1L, 3L, WILLBLOCK },
+	{F_WRLCK, 0, 0L, 5L, SKIP, 0, 0L, 0L,
+	 /* Child attempting a read lock from byte 2 to byte 4 */
+	 F_RDLCK, 0, 1L, 3L, WILLBLOCK},
 
 	/*
 	 * #18 Parent making a write lock from beginning of
 	 * file for 5 bytes
 	 */
-	{ F_WRLCK, 0, 0L, 5L, SKIP, 0, 0L, 0L,
-	/* Child attempting a write lock from byte 2 to byte 4 */
-		F_WRLCK, 0, 1L, 3L, WILLBLOCK },
+	{F_WRLCK, 0, 0L, 5L, SKIP, 0, 0L, 0L,
+	 /* Child attempting a write lock from byte 2 to byte 4 */
+	 F_WRLCK, 0, 1L, 3L, WILLBLOCK},
 
 	/*
 	 * #19 Parent making a read lock from beginning of
 	 * file for 5 bytes
 	 */
-	{ F_RDLCK, 0, 0L, 5L, SKIP, 0, 0L, 0L,
-	/* Child attempting a read lock from byte 2 to byte 4 */
-		F_RDLCK, 0, 1L, 3L, NOBLOCK },
+	{F_RDLCK, 0, 0L, 5L, SKIP, 0, 0L, 0L,
+	 /* Child attempting a read lock from byte 2 to byte 4 */
+	 F_RDLCK, 0, 1L, 3L, NOBLOCK},
 
 	/*
 	 * #20 Parent making a read lock from beginning of
 	 * file for 5 bytes
 	 */
-	{ F_RDLCK, 0, 0L, 5L, SKIP, 0, 0L, 0L,
-	/* Child attempting a write lock from byte 2 to byte 4 */
-		F_WRLCK, 0, 1L, 3L, WILLBLOCK },
+	{F_RDLCK, 0, 0L, 5L, SKIP, 0, 0L, 0L,
+	 /* Child attempting a write lock from byte 2 to byte 4 */
+	 F_WRLCK, 0, 1L, 3L, WILLBLOCK},
 
 	/* Test cases: cross boundary (inside to after) */
 	/*
 	 * #21 Parent making a write lock from beginning of
 	 * file for 5 bytes
 	 */
-	{ F_WRLCK, 0, 0L, 5L, SKIP, 0, 0L, 0L,
-	/* Child attempting a read lock from byte 3 to byte 7 */
-		F_RDLCK, 0, 2L, 5L, WILLBLOCK },
+	{F_WRLCK, 0, 0L, 5L, SKIP, 0, 0L, 0L,
+	 /* Child attempting a read lock from byte 3 to byte 7 */
+	 F_RDLCK, 0, 2L, 5L, WILLBLOCK},
 
 	/*
 	 * #22 Parent making a write lock from beginning
 	 * of file for 5 bytes
 	 */
-	{ F_WRLCK, 0, 0L, 5L, SKIP, 0, 0L, 0L,
-	/* Child attempting a write lock from byte 3 to byte 7 */
-		F_WRLCK, 0, 2L, 5L, WILLBLOCK },
+	{F_WRLCK, 0, 0L, 5L, SKIP, 0, 0L, 0L,
+	 /* Child attempting a write lock from byte 3 to byte 7 */
+	 F_WRLCK, 0, 2L, 5L, WILLBLOCK},
 
 	/*
 	 * #23 Parent making a read lock from beginning of
 	 * file for 5 bytes
 	 */
-	{ F_RDLCK, 0, 0L, 5L, SKIP, 0, 0L, 0L,
-	/* Child attempting a read lock from byte 3 to byte 7 */
-		F_RDLCK, 0, 2L, 5L, NOBLOCK },
+	{F_RDLCK, 0, 0L, 5L, SKIP, 0, 0L, 0L,
+	 /* Child attempting a read lock from byte 3 to byte 7 */
+	 F_RDLCK, 0, 2L, 5L, NOBLOCK},
 
 	/*
 	 * #24 Parent making a read lock from beginning of
 	 * file for 5 bytes
 	 */
-	{ F_RDLCK, 0, 0L, 5L, SKIP, 0, 0L, 0L,
-	/* Child attempting a write lock from byte 3 to byte 7 */
-		F_WRLCK, 0, 2L, 5L, WILLBLOCK },
+	{F_RDLCK, 0, 0L, 5L, SKIP, 0, 0L, 0L,
+	 /* Child attempting a write lock from byte 3 to byte 7 */
+	 F_WRLCK, 0, 2L, 5L, WILLBLOCK},
 
 	/* Test cases: outside boundary (after) */
 
@@ -274,273 +274,273 @@ static	testcase	testcases[] = {
 	 * #25 Parent making a write lock from beginning of
 	 * file for 5 bytes
 	 */
-	{ F_WRLCK, 0, 0L, 5L, SKIP, 0, 0L, 0L,
-	/*  Child attempting a read lock from byte 7 to end of file */
-		F_RDLCK, 0, 6L, 0L, NOBLOCK },
+	{F_WRLCK, 0, 0L, 5L, SKIP, 0, 0L, 0L,
+	 /*  Child attempting a read lock from byte 7 to end of file */
+	 F_RDLCK, 0, 6L, 0L, NOBLOCK},
 
 	/*
 	 * #26 Parent making a write lock from beginning of
 	 * file for 5 bytes
 	 */
-	{ F_WRLCK, 0, 0L, 5L, SKIP, 0, 0L, 0L,
-	/* Child attempting a write lock from byte 7 to end of file */
-		F_WRLCK, 0, 6L, 0L, NOBLOCK },
+	{F_WRLCK, 0, 0L, 5L, SKIP, 0, 0L, 0L,
+	 /* Child attempting a write lock from byte 7 to end of file */
+	 F_WRLCK, 0, 6L, 0L, NOBLOCK},
 
 	/*
 	 * #27 Parent making a read lock from beginning of
 	 * file for 5 bytes
 	 */
-	{ F_RDLCK, 0, 0L, 5L, SKIP, 0, 0L, 0L,
-	/* Child attempting a read lock from byte 7 to end of file */
-		F_RDLCK, 0, 6L, 0L, NOBLOCK },
+	{F_RDLCK, 0, 0L, 5L, SKIP, 0, 0L, 0L,
+	 /* Child attempting a read lock from byte 7 to end of file */
+	 F_RDLCK, 0, 6L, 0L, NOBLOCK},
 
 	/*
 	 * #28 Parent making a read lock from beginning of
 	 * file for 5 bytes
 	 */
-	{ F_RDLCK, 0, 0L, 5L, SKIP, 0, 0L, 0L,
-	/* Child attempting a write lock from byte 7 to end of file */
-		F_WRLCK, 0, 6L, 0L, NOBLOCK },
+	{F_RDLCK, 0, 0L, 5L, SKIP, 0, 0L, 0L,
+	 /* Child attempting a write lock from byte 7 to end of file */
+	 F_WRLCK, 0, 6L, 0L, NOBLOCK},
 
 	/* Test cases: outside boundary (before) */
 
 	/* #29 Parent making a write lock from byte 3 to byte 7 */
-	{ F_WRLCK, 0, 2L, 5L, SKIP, 0, 0L, 0L,
-	/* Child attempting a read lock from beginning of file to byte 2 */
-		F_RDLCK, 0, 0L, 2L, NOBLOCK },
+	{F_WRLCK, 0, 2L, 5L, SKIP, 0, 0L, 0L,
+	 /* Child attempting a read lock from beginning of file to byte 2 */
+	 F_RDLCK, 0, 0L, 2L, NOBLOCK},
 
 	/* #30 Parent making a write lock from byte 3 to byte 7 */
-	{ F_WRLCK, 0, 2L, 5L, SKIP, 0, 0L, 0L,
-	/* Child attempting a write lock from beginning of file to byte 2 */
-		F_WRLCK, 0, 0L, 2L, NOBLOCK },
+	{F_WRLCK, 0, 2L, 5L, SKIP, 0, 0L, 0L,
+	 /* Child attempting a write lock from beginning of file to byte 2 */
+	 F_WRLCK, 0, 0L, 2L, NOBLOCK},
 
 	/* #31 Parent making a write lock from byte 3 to byte 7 */
-	{ F_RDLCK, 0, 2L, 5L, SKIP, 0, 0L, 0L,
-	/* Child attempting a read lock from beginning of file to byte 2 */
-		F_RDLCK, 0, 0L, 2L, NOBLOCK },
+	{F_RDLCK, 0, 2L, 5L, SKIP, 0, 0L, 0L,
+	 /* Child attempting a read lock from beginning of file to byte 2 */
+	 F_RDLCK, 0, 0L, 2L, NOBLOCK},
 
 	/* #32 Parent making a write lock from byte 3 to byte 7 */
-	{ F_RDLCK, 0, 2L, 5L, SKIP, 0, 0L, 0L,
-	/* Child attempting a write lock from beginning of file to byte 2 */
-		F_WRLCK, 0, 0L, 2L, NOBLOCK },
+	{F_RDLCK, 0, 2L, 5L, SKIP, 0, 0L, 0L,
+	 /* Child attempting a write lock from beginning of file to byte 2 */
+	 F_WRLCK, 0, 0L, 2L, NOBLOCK},
 
 	/* Test cases: cross boundary (before to inside) */
 	/* #33 Parent making a write lock from byte 5 to end of file */
-	{ F_WRLCK, 0, 4L, 0L, SKIP, 0, 0L, 0L,
-	/* Child attempting a read lock from byte 3 to byte 7 */
-		F_RDLCK, 0, 2L, 5L, WILLBLOCK },
+	{F_WRLCK, 0, 4L, 0L, SKIP, 0, 0L, 0L,
+	 /* Child attempting a read lock from byte 3 to byte 7 */
+	 F_RDLCK, 0, 2L, 5L, WILLBLOCK},
 
 	/* #34 Parent making a write lock from byte 5 to end of file */
-	{ F_WRLCK, 0, 4L, 0L, SKIP, 0, 0L, 0L,
-	/* Child attempting a write lock from byte 3 to byte 7 */
-		F_WRLCK, 0, 2L, 5L, WILLBLOCK },
+	{F_WRLCK, 0, 4L, 0L, SKIP, 0, 0L, 0L,
+	 /* Child attempting a write lock from byte 3 to byte 7 */
+	 F_WRLCK, 0, 2L, 5L, WILLBLOCK},
 
 	/* #35 Parent making a read lock from byte 5 to end of file */
-	{ F_RDLCK, 0, 4L, 0L, SKIP, 0, 0L, 0L,
-	/* Child attempting a read lock from byte 3 to byte 7 */
-		F_RDLCK, 0, 2L, 5L, NOBLOCK },
+	{F_RDLCK, 0, 4L, 0L, SKIP, 0, 0L, 0L,
+	 /* Child attempting a read lock from byte 3 to byte 7 */
+	 F_RDLCK, 0, 2L, 5L, NOBLOCK},
 
 	/* #36 Parent making a read lock from byte 5 to end of file */
-	{ F_RDLCK, 0, 4L, 0L, SKIP, 0, 0L, 0L,
-	/* Child attempting a write lock from byte 3 to byte 7 */
-		F_WRLCK, 0, 2L, 5L, WILLBLOCK },
+	{F_RDLCK, 0, 4L, 0L, SKIP, 0, 0L, 0L,
+	 /* Child attempting a write lock from byte 3 to byte 7 */
+	 F_WRLCK, 0, 2L, 5L, WILLBLOCK},
 
 	/* Start of negative L_start and L_len test cases */
 	/*
 	 * #37 Parent making write lock from byte 2 to byte 3
 	 * with L_start = -3
 	 */
-	{ F_WRLCK, 1, -3L, 2L, SKIP, 0, 0L, 0L,
-	/* Child attempting write lock on byte 1 */
-		F_WRLCK, 0, 1L, 1L, NOBLOCK },
+	{F_WRLCK, 1, -3L, 2L, SKIP, 0, 0L, 0L,
+	 /* Child attempting write lock on byte 1 */
+	 F_WRLCK, 0, 1L, 1L, NOBLOCK},
 
 	/*
 	 * #38 Parent making write lock from byte 2 to byte 3
 	 * with L_start = -3
 	 */
-	{ F_WRLCK, 1, -3L, 2L, SKIP, 0, 0L, 0L,
-	/* Child attempting write lock on byte 4 */
-		F_WRLCK, 0, 4L, 1L, NOBLOCK },
+	{F_WRLCK, 1, -3L, 2L, SKIP, 0, 0L, 0L,
+	 /* Child attempting write lock on byte 4 */
+	 F_WRLCK, 0, 4L, 1L, NOBLOCK},
 
 	/*
 	 * #39 Parent making write lock from byte 2 to byte 3
 	 * with L_start = -3
 	 */
-	{ F_WRLCK, 1, -3L, 2L, SKIP, 0, 0L, 0L,
-	/* Child attempting write lock on byte 2 */
-		F_WRLCK, 0, 2L, 1L, WILLBLOCK },
+	{F_WRLCK, 1, -3L, 2L, SKIP, 0, 0L, 0L,
+	 /* Child attempting write lock on byte 2 */
+	 F_WRLCK, 0, 2L, 1L, WILLBLOCK},
 
 	/*
 	 * #40 Parent making write lock from byte 2 to byte 3
 	 * with L_start = -3
 	 */
-	{ F_WRLCK, 1, -3L, 2L, SKIP, 0, 0L, 0L,
-	/* Child attempting write lock on byte 3 */
-		F_WRLCK, 0, 3L, 1L, WILLBLOCK },
+	{F_WRLCK, 1, -3L, 2L, SKIP, 0, 0L, 0L,
+	 /* Child attempting write lock on byte 3 */
+	 F_WRLCK, 0, 3L, 1L, WILLBLOCK},
 
 	/*
 	 * #41 Parent making write lock from byte 2 to byte 6
 	 * with L_start = -3
 	 */
-	{ F_WRLCK, 1, -3L, 5L, SKIP, 0, 0L, 0L,
-	/* Child attempting write lock on byte 1 */
-		F_WRLCK, 0, 1L, 1L, NOBLOCK },
+	{F_WRLCK, 1, -3L, 5L, SKIP, 0, 0L, 0L,
+	 /* Child attempting write lock on byte 1 */
+	 F_WRLCK, 0, 1L, 1L, NOBLOCK},
 
 	/*
 	 * #42 Parent making write lock from byte 2 to byte 6
 	 * with L_start = -3
 	 */
-	{ F_WRLCK, 1, -3L, 5L, SKIP, 0, 0L, 0L,
-	/* Child attempting write lock on byte 7 */
-		F_WRLCK, 0, 1L, 1L, NOBLOCK },
+	{F_WRLCK, 1, -3L, 5L, SKIP, 0, 0L, 0L,
+	 /* Child attempting write lock on byte 7 */
+	 F_WRLCK, 0, 1L, 1L, NOBLOCK},
 
 	/*
 	 * #43 Parent making write lock from byte 2 to byte 6
 	 * with L_start = -3
 	 */
-	{ F_WRLCK, 1, -3L, 5L, SKIP, 0, 0L, 0L,
-	/* Child attempting write lock on byte 2 */
-		F_WRLCK, 0, 2L, 1L, WILLBLOCK },
+	{F_WRLCK, 1, -3L, 5L, SKIP, 0, 0L, 0L,
+	 /* Child attempting write lock on byte 2 */
+	 F_WRLCK, 0, 2L, 1L, WILLBLOCK},
 
 	/*
 	 * #44 Parent making write lock from byte 2 to byte 6
 	 * with L_start = -3
 	 */
-	{ F_WRLCK, 1, -3L, 5L, SKIP, 0, 0L, 0L,
-	/* Child attempting write lock on byte 5 */
-		F_WRLCK, 0, 5L, 1L, WILLBLOCK },
+	{F_WRLCK, 1, -3L, 5L, SKIP, 0, 0L, 0L,
+	 /* Child attempting write lock on byte 5 */
+	 F_WRLCK, 0, 5L, 1L, WILLBLOCK},
 
 	/*
 	 * #45 Parent making write lock from byte 2 to byte 6
 	 * with L_start = -3
 	 */
-	{ F_WRLCK, 1, -3L, 5L, SKIP, 0, 0L, 0L,
-	/* Child attempting write lock on byte 6 */
-		F_WRLCK, 0, 6L, 1L, WILLBLOCK },
+	{F_WRLCK, 1, -3L, 5L, SKIP, 0, 0L, 0L,
+	 /* Child attempting write lock on byte 6 */
+	 F_WRLCK, 0, 6L, 1L, WILLBLOCK},
 
 	/*
 	 * #46 Parent making write lock from byte 2 to byte 3 with
 	 * L_start = -2 and L_len = -2
 	 */
-	{ F_WRLCK, 1, 2L, -2L, SKIP, 0, 0L, 0L,
-	/* Child attempting write lock on byte 1 */
-		F_WRLCK, 0, 1L, 1L, NOBLOCK },
+	{F_WRLCK, 1, 2L, -2L, SKIP, 0, 0L, 0L,
+	 /* Child attempting write lock on byte 1 */
+	 F_WRLCK, 0, 1L, 1L, NOBLOCK},
 
 	/*
 	 * #47 Parent making write lock from byte 2 to byte 3 with
 	 * L_start = -2 and L_len = -2
 	 */
-	{ F_WRLCK, 1, -2L, -2L, SKIP, 0, 0L, 0L,
-	/* Child attempting write lock on byte 4 */
-		F_WRLCK, 0, 4L, 1L, NOBLOCK },
+	{F_WRLCK, 1, -2L, -2L, SKIP, 0, 0L, 0L,
+	 /* Child attempting write lock on byte 4 */
+	 F_WRLCK, 0, 4L, 1L, NOBLOCK},
 
 	/*
 	 * #48 Parent making write lock from byte 2 to byte 3 with
 	 * L_start = -2 and L_len = -2
 	 */
-	{ F_WRLCK, 1, -2L, -2L, SKIP, 0, 0L, 0L,
-	/* Child attempting write lock on byte 2 */
-		F_WRLCK, 0, 2L, 1L, WILLBLOCK },
+	{F_WRLCK, 1, -2L, -2L, SKIP, 0, 0L, 0L,
+	 /* Child attempting write lock on byte 2 */
+	 F_WRLCK, 0, 2L, 1L, WILLBLOCK},
 
 	/*
 	 * #49 Parent making write lock from byte 2 to byte 3 with
 	 * L_start = -2 and L_len = -2
 	 */
-	{ F_WRLCK, 1, -2L, -2L, SKIP, 0, 0L, 0L,
-	/* Child attempting write lock on byte 3 */
-		F_WRLCK, 0, 3L, 1L, WILLBLOCK },
+	{F_WRLCK, 1, -2L, -2L, SKIP, 0, 0L, 0L,
+	 /* Child attempting write lock on byte 3 */
+	 F_WRLCK, 0, 3L, 1L, WILLBLOCK},
 
 	/*
 	 * #50 Parent making write lock from byte 6 to byte 7 with
 	 * L_start = 2 and L_len = -2
 	 */
-	{ F_WRLCK, 1, 2L, -2L, SKIP, 0, 0L, 0L,
-	/* Child attempting write lock on byte 5 */
-		F_WRLCK, 0, 5L, 1L, NOBLOCK },
+	{F_WRLCK, 1, 2L, -2L, SKIP, 0, 0L, 0L,
+	 /* Child attempting write lock on byte 5 */
+	 F_WRLCK, 0, 5L, 1L, NOBLOCK},
 
 	/*
 	 * #51 Parent making write lock from byte 6 to byte 7 with
 	 * L_start = 2 and L_len = -2
 	 */
-	{ F_WRLCK, 1, 2L, -2L, SKIP, 0, 0L, 0L,
-	/* Child attempting write lock on byte 8 */
-		F_WRLCK, 0, 8L, 1L, NOBLOCK },
+	{F_WRLCK, 1, 2L, -2L, SKIP, 0, 0L, 0L,
+	 /* Child attempting write lock on byte 8 */
+	 F_WRLCK, 0, 8L, 1L, NOBLOCK},
 
 	/*
 	 * #52 Parent making write lock from byte 6 to byte 7 with
 	 * L_start = 2 and L_len = -2
 	 */
-	{ F_WRLCK, 1, 2L, -2L, SKIP, 0, 0L, 0L,
-	/* Child attempting write lock on byte 6 */
-		F_WRLCK, 0, 6L, 1L, WILLBLOCK },
+	{F_WRLCK, 1, 2L, -2L, SKIP, 0, 0L, 0L,
+	 /* Child attempting write lock on byte 6 */
+	 F_WRLCK, 0, 6L, 1L, WILLBLOCK},
 
 	/*
 	 * #53 Parent making write lock from byte 6 to byte 7 with
 	 * L_start = 2 and L_len = -2
 	 */
-	{ F_WRLCK, 1, 2L, -2L, SKIP, 0, 0L, 0L,
-	/* Child attempting write lock on byte 7 */
-		F_WRLCK, 0, 7L, 1L, WILLBLOCK },
+	{F_WRLCK, 1, 2L, -2L, SKIP, 0, 0L, 0L,
+	 /* Child attempting write lock on byte 7 */
+	 F_WRLCK, 0, 7L, 1L, WILLBLOCK},
 
 	/*
 	 * #54 Parent making write lock from byte 3 to byte 7 with
 	 * L_start = 2 and L_len = -5
 	 */
-	{ F_WRLCK, 1, 2L, -5L, SKIP, 0, 0L, 0L,
-	/* Child attempting write lock on byte 2 */
-		F_WRLCK, 0, 2L, 1L, NOBLOCK },
+	{F_WRLCK, 1, 2L, -5L, SKIP, 0, 0L, 0L,
+	 /* Child attempting write lock on byte 2 */
+	 F_WRLCK, 0, 2L, 1L, NOBLOCK},
 
 	/*
 	 * #55 Parent making write lock from byte 3 to byte 7 with
 	 * L_start = 2 and L_len = -5
 	 */
-	{ F_WRLCK, 1, 2L, -5L, SKIP, 0, 0L, 0L,
-	/* Child attempting write lock on byte 8 */
-		F_WRLCK, 0, 8L, 1L, NOBLOCK },
+	{F_WRLCK, 1, 2L, -5L, SKIP, 0, 0L, 0L,
+	 /* Child attempting write lock on byte 8 */
+	 F_WRLCK, 0, 8L, 1L, NOBLOCK},
 
 	/*
 	 * #56 Parent making write lock from byte 3 to byte 7 with
 	 * L_start = 2 and L_len = -5
 	 */
-	{ F_WRLCK, 1, 2L, -5L, SKIP, 0, 0L, 0L,
-	/* Child attempting write lock on byte 3 */
-		F_WRLCK, 0, 3L, 1L, WILLBLOCK },
+	{F_WRLCK, 1, 2L, -5L, SKIP, 0, 0L, 0L,
+	 /* Child attempting write lock on byte 3 */
+	 F_WRLCK, 0, 3L, 1L, WILLBLOCK},
 
 	/*
 	 * #57 Parent making write lock from byte 3 to byte 7 with
 	 * L_start = 2 and L_len = -5
 	 */
-	{ F_WRLCK, 1, 2L, -5L, SKIP, 0, 0L, 0L,
-	/* Child attempting write lock on byte 5 */
-		F_WRLCK, 0, 5L, 1L, WILLBLOCK },
+	{F_WRLCK, 1, 2L, -5L, SKIP, 0, 0L, 0L,
+	 /* Child attempting write lock on byte 5 */
+	 F_WRLCK, 0, 5L, 1L, WILLBLOCK},
 
 	/*
 	 * #58 Parent making write lock from byte 3 to byte 7 with
 	 * L_start = 2 and L_len = -5
 	 */
-	{ F_WRLCK, 1, 2L, -5L, SKIP, 0, 0L, 0L,
-	/* Child attempting write lock on byte 7 */
-		F_WRLCK, 0, 7L, 1L, WILLBLOCK },
+	{F_WRLCK, 1, 2L, -5L, SKIP, 0, 0L, 0L,
+	 /* Child attempting write lock on byte 7 */
+	 F_WRLCK, 0, 7L, 1L, WILLBLOCK},
 
 	/* Test case for block 4 */
 	/* #59 Parent making write lock on entire file */
-	{ F_WRLCK, 0, 0L, 0L, SKIP, 0, 0L, 0L,
-	/* Child attempting write lock on byte 15 to end of file */
-		F_WRLCK, 0, 15L, 0L, WILLBLOCK },
+	{F_WRLCK, 0, 0L, 0L, SKIP, 0, 0L, 0L,
+	 /* Child attempting write lock on byte 15 to end of file */
+	 F_WRLCK, 0, 15L, 0L, WILLBLOCK},
 };
 
-static	testcase	*thiscase;
-static	struct	flock	flock;
-static	int	parent, child, status, fail = 0;
-static	int	got1 = 0;
-static	int	fd;
-static	int	test;
-static	char	tmpname[40];
+static testcase *thiscase;
+static struct flock flock;
+static int parent, child, status, fail = 0;
+static int got1 = 0;
+static int fd;
+static int test;
+static char tmpname[40];
 
 #define FILEDATA	"ten bytes!"
 
-extern	void	catch1();		/* signal catching subroutine */
-extern	void	catch_alarm();
+extern void catch1();		/* signal catching subroutine */
+extern void catch_alarm();
 
 char *TCID = "fcntl14";		/* Test program identifier */
 int TST_TOTAL = 1;		/* Total number of test cases */
@@ -552,11 +552,10 @@ static char *argv0;		/* Set by main(), passed to self_exec() */
 
 /*
  * cleanup()
- * 	performs all the ONE TIME cleanup for this test at completion or
- * 	premature exit
+ *	performs all the ONE TIME cleanup for this test at completion or
+ *	premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing status if that option was specified
@@ -571,18 +570,17 @@ cleanup(void)
 
 /*
  * setup
- * 	performs all ONE TIME setup for this test
+ *	performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	struct sigaction act;
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);	/* capture signals */
 	signal(SIGHUP, SIG_IGN);
 	umask(0);
-	TEST_PAUSE;			/* Pause if that option is specified */
-	tst_tmpdir();			/* make temp dir and cd to it */
+	TEST_PAUSE;		/* Pause if that option is specified */
+	tst_tmpdir();		/* make temp dir and cd to it */
 	parent = getpid();
 
 	/* setup temporary file name */
@@ -597,8 +595,7 @@ setup(void)
 		tst_resm(TFAIL, "SIGUSR1 signal setup failed, errno = %d",
 			 errno);
 		cleanup();
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	memset(&act, 0, sizeof(act));
 	act.sa_handler = catch_alarm;
@@ -607,33 +604,29 @@ setup(void)
 	if ((sigaction(SIGALRM, &act, NULL)) < 0) {
 		tst_resm(TFAIL, "SIGALRM signal setup failed");
 		cleanup();
-		/*NOTREACHED*/
+	 /*NOTREACHED*/}
+}
+
+void wake_parent(void)
+{
+	if ((kill(parent, SIGUSR1)) < 0) {
+		tst_resm(TFAIL, "Attempt to send signal to parent " "failed");
+		tst_resm(TFAIL, "Test case %d, errno = %d", test + 1, errno);
+		fail = 1;
 	}
 }
 
-void
-wake_parent(void)
+void do_usleep_child()
 {
-                    if ((kill(parent, SIGUSR1)) < 0) {
-			tst_resm(TFAIL, "Attempt to send signal to parent "
-				 "failed");
-			tst_resm(TFAIL, "Test case %d, errno = %d", test + 1,
-				 errno);
-			fail = 1;
-                    }
-}
-
-void do_usleep_child() {
-	usleep(100000); /* XXX how long is long enough? */
+	usleep(100000);		/* XXX how long is long enough? */
 	wake_parent();
 	exit(0);
 }
 
-
 void dochild()
-{					/* child process */
-        int rc;
-        pid_t pid;
+{				/* child process */
+	int rc;
+	pid_t pid;
 
 	/* Initialize the child lock structure */
 	flock.l_type = thiscase->c_type;
@@ -651,62 +644,69 @@ void dochild()
 	 */
 	if ((rc = fcntl(fd, F_GETLK, &flock)) < 0) {
 		tst_resm(TFAIL, "Attempt to check lock status failed");
-		tst_resm(TFAIL, "Test case %d, errno = %d",
-			 test + 1, errno);
+		tst_resm(TFAIL, "Test case %d, errno = %d", test + 1, errno);
 		fail = 1;
 	} else {
 
-	if ((thiscase->c_flag) == NOBLOCK) {
-		if (flock.l_type != F_UNLCK) {
-			tst_resm(TFAIL, "Test case %d, GETLK: type = %d, "
-				 "%d was expected", test + 1, flock.l_type,
-				 F_UNLCK);
-			fail = 1;
-		}
+		if ((thiscase->c_flag) == NOBLOCK) {
+			if (flock.l_type != F_UNLCK) {
+				tst_resm(TFAIL,
+					 "Test case %d, GETLK: type = %d, "
+					 "%d was expected", test + 1,
+					 flock.l_type, F_UNLCK);
+				fail = 1;
+			}
 
-		if (flock.l_whence != thiscase->c_whence) {
-			tst_resm(TFAIL, "Test case %d, GETLK: whence = %d, "
-				 "should have remained %d", test + 1,
-				 flock.l_whence, thiscase->c_whence);
-			fail = 1;
-		}
+			if (flock.l_whence != thiscase->c_whence) {
+				tst_resm(TFAIL,
+					 "Test case %d, GETLK: whence = %d, "
+					 "should have remained %d", test + 1,
+					 flock.l_whence, thiscase->c_whence);
+				fail = 1;
+			}
 
-		if (flock.l_start != thiscase->c_start) {
-			tst_resm(TFAIL, "Test case %d, GETLK: start = %d, "
-				 "should have remained %d", test + 1,
-				 flock.l_start, thiscase->c_start);
-			fail = 1;
-		}
+			if (flock.l_start != thiscase->c_start) {
+				tst_resm(TFAIL,
+					 "Test case %d, GETLK: start = %d, "
+					 "should have remained %d", test + 1,
+					 flock.l_start, thiscase->c_start);
+				fail = 1;
+			}
 
-		if (flock.l_len != thiscase->c_len) {
-			tst_resm(TFAIL, "Test case %d, GETLK: len = %d, "
-				 "should have remained %d", test + 1,
-				 flock.l_len, thiscase->c_len);
-			fail = 1;
-		}
+			if (flock.l_len != thiscase->c_len) {
+				tst_resm(TFAIL,
+					 "Test case %d, GETLK: len = %d, "
+					 "should have remained %d", test + 1,
+					 flock.l_len, thiscase->c_len);
+				fail = 1;
+			}
 
-		if (flock.l_pid != 0) {
-			tst_resm(TFAIL, "Test case %d, GETLK: pid = %d, "
-				 "should have remained 0", test + 1,
-				 flock.l_pid);
-			fail = 1;
-		}
-	} else {
-		if (flock.l_pid != parent) {
-			tst_resm(TFAIL, "Test case %d, GETLK: pid = %d, "
-				 "should be parent's id of %d", test + 1,
-				 flock.l_pid, parent);
-			fail = 1;
-		}
+			if (flock.l_pid != 0) {
+				tst_resm(TFAIL,
+					 "Test case %d, GETLK: pid = %d, "
+					 "should have remained 0", test + 1,
+					 flock.l_pid);
+				fail = 1;
+			}
+		} else {
+			if (flock.l_pid != parent) {
+				tst_resm(TFAIL,
+					 "Test case %d, GETLK: pid = %d, "
+					 "should be parent's id of %d",
+					 test + 1, flock.l_pid, parent);
+				fail = 1;
+			}
 
-		if (flock.l_type != thiscase->a_type) {
-			tst_resm(TFAIL, "Test case %d, GETLK: type = %d, "
-				 "should be parent's first lock type of %d",
-				 test + 1, flock.l_type, thiscase->a_type);
-			fail = 1;
+			if (flock.l_type != thiscase->a_type) {
+				tst_resm(TFAIL,
+					 "Test case %d, GETLK: type = %d, "
+					 "should be parent's first lock type of %d",
+					 test + 1, flock.l_type,
+					 thiscase->a_type);
+				fail = 1;
+			}
 		}
 	}
-        }
 
 	/*
 	 * now try to set the lock, nonblocking
@@ -733,55 +733,55 @@ void dochild()
 		/* Check for proper errno condition */
 		if (rc != -1 || (errno != EACCES && errno != EAGAIN)) {
 			tst_resm(TFAIL,
-                                 "SETLK: rc = %d, errno = %d, -1/EAGAIN or EACCES "
+				 "SETLK: rc = %d, errno = %d, -1/EAGAIN or EACCES "
 				 "was expected", rc, errno);
 			fail = 1;
 		}
-                if (rc == 0) {
-                    /* accidentally got the lock */
-                    /* XXX how to clean up? */
-                    (void) fcntl(fd, F_UNLCK, &flock);
-                }
+		if (rc == 0) {
+			/* accidentally got the lock */
+			/* XXX how to clean up? */
+			(void)fcntl(fd, F_UNLCK, &flock);
+		}
 		/*
 		 * Lock should succeed after blocking and parent releases
 		 * lock, tell the parent to release the locks.
-                 * Do the lock in this process, send the signal in a child
-                 * process, so that the SETLKW actually uses the blocking
-                 * mechanism in the kernel.
-                 *
-                 * XXX inherent race: we want to wait until the
-                 * F_SETLKW has started, but we don't have a way to
-                 * check that reliably in the child.  (We'd
-                 * need some way to have fcntl() atomically unblock a
-                 * signal and wait for the lock.)
+		 * Do the lock in this process, send the signal in a child
+		 * process, so that the SETLKW actually uses the blocking
+		 * mechanism in the kernel.
+		 *
+		 * XXX inherent race: we want to wait until the
+		 * F_SETLKW has started, but we don't have a way to
+		 * check that reliably in the child.  (We'd
+		 * need some way to have fcntl() atomically unblock a
+		 * signal and wait for the lock.)
 		 */
-                pid = FORK_OR_VFORK();
-                switch (pid) {
-                  case -1:
-                    tst_resm(TFAIL, "Fork failed");
-                    break;
-                  case 0: /* child */
+		pid = FORK_OR_VFORK();
+		switch (pid) {
+		case -1:
+			tst_resm(TFAIL, "Fork failed");
+			break;
+		case 0:	/* child */
 #ifdef UCLINUX
-		    if (self_exec(argv0, "n", 1) < 0) {
-		      tst_resm(TFAIL, "self_exec failed");
-		      break;
-		    }
+			if (self_exec(argv0, "n", 1) < 0) {
+				tst_resm(TFAIL, "self_exec failed");
+				break;
+			}
 #else
-		    do_usleep_child();
+			do_usleep_child();
 #endif
-                    break;
+			break;
 
-                  default:
-                    if ((rc = fcntl(fd, F_SETLKW, &flock)) < 0) {
-                        tst_resm(TFAIL, "Attempt to set child BLOCKING "
-				 "lock failed");
-			tst_resm(TFAIL, "Test case %d, errno = %d", test + 1,
-				 errno);
-			fail = 1;
-                    }
-                    waitpid(pid, &status, 0);
-                    break;
-                }
+		default:
+			if ((rc = fcntl(fd, F_SETLKW, &flock)) < 0) {
+				tst_resm(TFAIL, "Attempt to set child BLOCKING "
+					 "lock failed");
+				tst_resm(TFAIL, "Test case %d, errno = %d",
+					 test + 1, errno);
+				fail = 1;
+			}
+			waitpid(pid, &status, 0);
+			break;
+		}
 	}
 	if (fail) {
 		exit(1);
@@ -790,13 +790,12 @@ void dochild()
 	}
 }
 
-
 void run_test(int file_flag, int file_mode, int seek, int start, int end)
 {
 	extern long time();
 
-        /* reset fail to 0 for each run_test call */
-         fail = 0;
+	/* reset fail to 0 for each run_test call */
+	fail = 0;
 
 	/* loop thru all test cases */
 	for (test = start; test < end; test++) {
@@ -804,21 +803,18 @@ void run_test(int file_flag, int file_mode, int seek, int start, int end)
 		fd = open(tmpname, file_flag, file_mode);
 		if (fd < 0) {
 			tst_brkm(TBROK, cleanup, "open() failed");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		/* write some dummy data to the file */
-		if (write (fd, FILEDATA, 10) < 0) {
+		if (write(fd, FILEDATA, 10) < 0) {
 			tst_brkm(TBROK, cleanup, "write() failed");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		/* seek into file if indicated */
 		if (seek) {
 			if (lseek(fd, seek, 0) < 0) {
 				tst_brkm(TBROK, cleanup, "lseek() failed");
-				/*NOTREACHED*/
-			}
+			 /*NOTREACHED*/}
 		}
 
 		/* Initialize first parent lock structure */
@@ -829,7 +825,7 @@ void run_test(int file_flag, int file_mode, int seek, int start, int end)
 		flock.l_len = thiscase->a_len;
 
 		/* set the initial parent lock on the file */
-		if ((fcntl (fd, F_SETLK, &flock)) < 0) {
+		if ((fcntl(fd, F_SETLK, &flock)) < 0) {
 			tst_resm(TFAIL, "First parent lock failed");
 			tst_resm(TFAIL, "Test case %d, errno = %d",
 				 test + 1, errno);
@@ -874,8 +870,7 @@ void run_test(int file_flag, int file_mode, int seek, int start, int end)
 				      thiscase->a_type, fd, test, parent) < 0) {
 				tst_resm(TFAIL, "self_exec failed");
 				cleanup();
-				/*NOTREACHED*/
-			}
+			 /*NOTREACHED*/}
 #else
 			dochild();
 #endif
@@ -883,8 +878,7 @@ void run_test(int file_flag, int file_mode, int seek, int start, int end)
 		if (child < 0) {
 			tst_resm(TFAIL, "Fork failed");
 			cleanup();
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 		/* parent process */
 		if ((thiscase->c_flag) == WILLBLOCK) {
 			/*
@@ -942,8 +936,7 @@ void run_test(int file_flag, int file_mode, int seek, int start, int end)
 	unlink(tmpname);
 }
 
-void
-catch_alarm()
+void catch_alarm()
 {
 	/*
 	 * Timer has runout and child has not signaled, need
@@ -958,9 +951,8 @@ catch_alarm()
 	}
 }
 
-void
-catch1()				/* invoked on catching SIGUSR1 */
-{
+void catch1()
+{				/* invoked on catching SIGUSR1 */
 	struct sigaction act;
 
 	/*
@@ -977,14 +969,13 @@ catch1()				/* invoked on catching SIGUSR1 */
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
-
 #ifdef UCLINUX
 	argv0 = av[0];
 
@@ -997,15 +988,15 @@ int main(int ac, char **av)
 			&fd, &test, &parent);
 #endif
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/*
-         * check if the current filesystem is nfs
-         */
-        if(tst_is_cwd_nfs()) {
-                          tst_brkm(TCONF, cleanup, "Cannot do fcntl on a file located on an NFS filesystem");
-        }
-
+	 * check if the current filesystem is nfs
+	 */
+	if (tst_is_cwd_nfs()) {
+		tst_brkm(TCONF, cleanup,
+			 "Cannot do fcntl on a file located on an NFS filesystem");
+	}
 
 	/* Check for looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -1016,7 +1007,7 @@ int main(int ac, char **av)
 		tst_resm(TINFO, "Enter block 1: without mandatory locking");
 		fail = 0;
 		/*
-	 	 * try various file locks on an ordinary file without
+		 * try various file locks on an ordinary file without
 		 * mandatory locking
 		 */
 		(void)run_test(O_CREAT | O_RDWR | O_TRUNC, 0777, 0, 0, 36);
@@ -1035,7 +1026,6 @@ int main(int ac, char **av)
 			tst_resm(TPASS, "Block 1, test 2 PASSED");
 		}
 
-
 		tst_resm(TINFO, "Exit block 1");
 
 /* //block2: */
@@ -1052,7 +1042,6 @@ int main(int ac, char **av)
 		} else {
 			tst_resm(TPASS, "Block 2, test 1 PASSED");
 		}
-
 
 		/* Now try negative values for L_start and L_len */
 		(void)run_test(O_CREAT | O_RDWR | O_TRUNC, S_ENFMT | S_IRUSR |
@@ -1077,14 +1066,12 @@ int main(int ac, char **av)
 		fd = open(tmpname, O_CREAT | O_RDWR | O_TRUNC, 0777);
 		if (fd < 0) {
 			tst_brkm(TBROK, cleanup, "open failed");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		/* Write some dummy data to the file */
 		if (write(fd, FILEDATA, 10) < 0) {
 			tst_brkm(TBROK, cleanup, "write failed");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		/* Initialize lock structure */
 		flock.l_type = F_WRLCK;
@@ -1130,14 +1117,12 @@ int main(int ac, char **av)
 		fd = open(tmpname, O_CREAT | O_RDWR | O_TRUNC, 0777);
 		if (fd < 0) {
 			tst_brkm(TBROK, cleanup, "open failed");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		/* Write some dummy data to the file */
 		if (write(fd, FILEDATA, 10) < 0) {
 			tst_brkm(TBROK, cleanup, "write failed");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		/* Initialize first parent lock structure */
 		thiscase = &testcases[58];
@@ -1156,14 +1141,12 @@ int main(int ac, char **av)
 		/* Write some additional data to end of file */
 		if (write(fd, FILEDATA, 10) < 0) {
 			tst_brkm(TBROK, cleanup, "write failed");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		/* Mask signal to avoid race */
 		if (sighold(SIGUSR1) < 0) {
 			tst_brkm(TBROK, cleanup, "sighold failed");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		/* spawn a child process */
 		if ((child = FORK_OR_VFORK()) == 0) {
@@ -1174,8 +1157,7 @@ int main(int ac, char **av)
 				      thiscase->a_type, fd, test, parent) < 0) {
 				tst_resm(TFAIL, "self_exec failed");
 				cleanup();
-				/*NOTREACHED*/
-			}
+			 /*NOTREACHED*/}
 #else
 			dochild();
 #endif
@@ -1183,8 +1165,7 @@ int main(int ac, char **av)
 		if (child < 0) {
 			tst_resm(TFAIL, "Fork failed");
 			cleanup();
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		/* parent process */
 
@@ -1204,7 +1185,7 @@ int main(int ac, char **av)
 			tst_resm(TINFO, "Pause terminated without signal "
 				 "SIGUSR1 from child");
 		}
-		got1 = 0;		/* reset flag */
+		got1 = 0;	/* reset flag */
 
 		/*
 		 * Set up lock structure for parent to delete

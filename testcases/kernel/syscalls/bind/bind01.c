@@ -54,66 +54,68 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID="bind01";		/* Test program identifier.    */
+char *TCID = "bind01";		/* Test program identifier.    */
 int testno;
 
-int	s;	/* socket descriptor */
+int s;				/* socket descriptor */
 struct sockaddr_in sin1, sin2, sin3;
 struct sockaddr_un sun1;
 
 void setup(void), setup0(void), setup1(void), setup2(void),
-	cleanup(void), cleanup0(void), cleanup1(void);
+cleanup(void), cleanup0(void), cleanup1(void);
 
 struct test_case_t {		/* test case structure */
-	int	domain;	/* PF_INET, PF_UNIX, ... */
-	int	type;	/* SOCK_STREAM, SOCK_DGRAM ... */
-	int	proto;	/* protocol number (usually 0 = default) */
+	int domain;		/* PF_INET, PF_UNIX, ... */
+	int type;		/* SOCK_STREAM, SOCK_DGRAM ... */
+	int proto;		/* protocol number (usually 0 = default) */
 	struct sockaddr *sockaddr;	/* socket address buffer */
-	int	salen;	/* bind's 3rd argument */
-	int	retval;		/* syscall return value */
-	int	experrno;	/* expected errno */
-	void	(*setup)(void);
-	void	(*cleanup)(void);
+	int salen;		/* bind's 3rd argument */
+	int retval;		/* syscall return value */
+	int experrno;		/* expected errno */
+	void (*setup) (void);
+	void (*cleanup) (void);
 	char *desc;
 } tdat[] = {
 #ifndef UCLINUX
 /* Skip since uClinux does not implement memory protection */
-	{ PF_INET, SOCK_STREAM, 0, (struct sockaddr *)-1,
-		sizeof(struct sockaddr_in), -1, EFAULT, setup0, cleanup0,
-		"invalid sockaddr" },
+	{
+	PF_INET, SOCK_STREAM, 0, (struct sockaddr *)-1,
+		    sizeof(struct sockaddr_in), -1, EFAULT, setup0,
+		    cleanup0, "invalid sockaddr"},
 #endif
-	{ PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&sin1,
-		3, -1, EINVAL, setup0, cleanup0,
-		"invalid salen" },
-	{ 0, 0, 0, (struct sockaddr *)&sin1,
-		sizeof(sin1), -1, ENOTSOCK, setup1, cleanup1,
-		"invalid socket" },
-	{ PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&sin2,
-		sizeof(sin2), 0, 0, setup0, cleanup0,
-		"INADDR_ANYPORT" },
-	{ PF_UNIX, SOCK_STREAM, 0, (struct sockaddr *)&sun1,
-		sizeof(sun1), -1, EADDRINUSE, setup0, cleanup0,
-		"UNIX-domain of current directory" },
-	{ PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&sin3,
-		sizeof(sin3), -1, EADDRNOTAVAIL, setup0, cleanup0,
-		"non-local address" },
-};
+	{
+	PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&sin1,
+		    3, -1, EINVAL, setup0, cleanup0, "invalid salen"}, {
+	0, 0, 0, (struct sockaddr *)&sin1,
+		    sizeof(sin1), -1, ENOTSOCK, setup1, cleanup1,
+		    "invalid socket"}
+	, {
+	PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&sin2,
+		    sizeof(sin2), 0, 0, setup0, cleanup0, "INADDR_ANYPORT"}
+	, {
+	PF_UNIX, SOCK_STREAM, 0, (struct sockaddr *)&sun1,
+		    sizeof(sun1), -1, EADDRINUSE, setup0, cleanup0,
+		    "UNIX-domain of current directory"}
+	, {
+	PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&sin3,
+		    sizeof(sin3), -1, EADDRNOTAVAIL, setup0, cleanup0,
+		    "non-local address"}
+,};
 
-int TST_TOTAL=sizeof(tdat)/sizeof(tdat[0]); /* Total number of test cases. */
+int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);	/* Total number of test cases. */
 
-int exp_enos[] = {EFAULT, EINVAL, ENOTSOCK, EADDRINUSE, EADDRNOTAVAIL, 0};
+int exp_enos[] = { EFAULT, EINVAL, ENOTSOCK, EADDRINUSE, EADDRNOTAVAIL, 0 };
 
 extern int Tst_count;
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(argc, argv, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, 0, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -124,10 +126,11 @@ main(int argc, char *argv[])
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		Tst_count = 0;
 
-		for (testno=0; testno < TST_TOTAL; ++testno) {
+		for (testno = 0; testno < TST_TOTAL; ++testno) {
 			tdat[testno].setup();
 
-			TEST(bind(s, tdat[testno].sockaddr,tdat[testno].salen));
+			TEST(bind
+			     (s, tdat[testno].sockaddr, tdat[testno].salen));
 			if (TEST_RETURN > 0) {
 				TEST_RETURN = 0;
 			} else {
@@ -137,13 +140,13 @@ main(int argc, char *argv[])
 			    (TEST_RETURN < 0 &&
 			     TEST_ERRNO != tdat[testno].experrno)) {
 				tst_resm(TFAIL, "%s ; returned"
-					" %d (expected %d), errno %d (expected"
-					" %d)", tdat[testno].desc,
-					TEST_RETURN, tdat[testno].retval,
-					TEST_ERRNO, tdat[testno].experrno);
+					 " %d (expected %d), errno %d (expected"
+					 " %d)", tdat[testno].desc,
+					 TEST_RETURN, tdat[testno].retval,
+					 TEST_ERRNO, tdat[testno].experrno);
 			} else {
 				tst_resm(TPASS, "%s successful",
-					tdat[testno].desc);
+					 tdat[testno].desc);
 			}
 			tdat[testno].cleanup();
 		}
@@ -151,20 +154,19 @@ main(int argc, char *argv[])
 	cleanup();
 
 	return 0;
-}	/* End main */
+}				/* End main */
 
-void
-setup(void)
+void setup(void)
 {
 	/* set expected errnos for -e option */
 	TEST_EXP_ENOS(exp_enos);
 
-	TEST_PAUSE;	/* if -p option specified */
+	TEST_PAUSE;		/* if -p option specified */
 
 	/* initialize sockaddr's */
 	sin1.sin_family = AF_INET;
-		/* this port must be unused! */
-	sin1.sin_port = htons((getpid() % 32768) +10000);
+	/* this port must be unused! */
+	sin1.sin_port = htons((getpid() % 32768) + 10000);
 	sin1.sin_addr.s_addr = INADDR_ANY;
 
 	sin2.sin_family = AF_INET;
@@ -173,7 +175,7 @@ setup(void)
 
 	sin3.sin_family = AF_INET;
 	sin3.sin_port = 0;
-		/* assumes 10.255.254.253 is not a local interface address! */
+	/* assumes 10.255.254.253 is not a local interface address! */
 	sin3.sin_addr.s_addr = htonl(0x0AFFFEFD);
 
 	sun1.sun_family = AF_UNIX;
@@ -181,42 +183,36 @@ setup(void)
 
 }
 
-void
-cleanup(void)
+void cleanup(void)
 {
 	TEST_CLEANUP;
 	tst_exit();
 }
 
-
-void
-setup0(void)
+void setup0(void)
 {
 	s = socket(tdat[testno].domain, tdat[testno].type, tdat[testno].proto);
 	if (s < 0) {
 		tst_brkm(TBROK, cleanup, "socket setup failed for bind "
-			"test %d: %s", testno, strerror(errno));
+			 "test %d: %s", testno, strerror(errno));
 	}
 }
 
-void
-cleanup0(void)
+void cleanup0(void)
 {
-	(void) close(s);
+	(void)close(s);
 }
 
-void
-setup1(void)
+void setup1(void)
 {
 	/* setup for the "not a socket" case */
-	if((s = open("/dev/null", O_WRONLY)) == -1)
+	if ((s = open("/dev/null", O_WRONLY)) == -1)
 		tst_brkm(TBROK, cleanup, "error opening /dev/null - "
-		"errno: %s", strerror(errno));
+			 "errno: %s", strerror(errno));
 
 }
 
-void
-cleanup1(void)
+void cleanup1(void)
 {
 	s = -1;
 }

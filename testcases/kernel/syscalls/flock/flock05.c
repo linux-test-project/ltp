@@ -33,7 +33,7 @@
  *    DESCRIPTION
  * 	Tests to verify flock(2) behavior with different locking combinations along
  *	with LOCK_EX.
- *     
+ *    $
  *	Setup:
  *        Setup signal handling.
  *        Pause for SIGUSR1 if option specified.
@@ -58,7 +58,7 @@
  *                      where,  -c n : Run n copies concurrently.
  *                              -f   : Turn off functional testing
  *    				-e   : Turn on errno logging.
- *                              -h   : Show help screen                         
+ *                              -h   : Show help screen                        $
  *				-i n : Execute test n times.
  *                              -I x : Execute test for x seconds.
  *                              -p   : Pause for SIGUSR1 before starting
@@ -66,8 +66,6 @@
  *                              -t   : Turn on syscall timing.
  *
  ****************************************************************/
-
-
 
 #include <errno.h>
 #include <stdio.h>
@@ -84,33 +82,29 @@ void setup(void);
 void cleanup(void);
 
 /* 0 terminated list of expected errnos */
-int exp_enos[] = {EWOULDBLOCK, EAGAIN, 0}; 
+int exp_enos[] = { EWOULDBLOCK, EAGAIN, 0 };
 
-char *TCID = "flock05";			/* Test program identifier */
-int TST_TOTAL = 2;			/* Total number of test cases */
+char *TCID = "flock05";		/* Test program identifier */
+int TST_TOTAL = 2;		/* Total number of test cases */
 extern int Tst_count;
 char filename[100];
-int fd,fd1,status;
-
+int fd, fd1, status;
 
 int main(int argc, char **argv)
 {
-	int lc,retval;
+	int lc, retval;
 	/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	char *msg;		/* message returned from parse_opts */
 	pid_t pid;
 
 	/* parse standard options */
-	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) !=
-	    (char *) NULL) {
+	if ((msg = parse_opts(argc, argv, (option_t *) NULL, NULL)) !=
+	    (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/* global setup */
 	setup();
-
-
 
 	/* The following loop checks looping state if -i option given */
 
@@ -118,77 +112,72 @@ int main(int argc, char **argv)
 
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
-	
+
 		/* Testing Shared lock on Exclusive Locked file */
-		TEST(flock(fd,LOCK_EX));
-		if(TEST_RETURN == 0){
+		TEST(flock(fd, LOCK_EX));
+		if (TEST_RETURN == 0) {
 
 			pid = FORK_OR_VFORK();
-			if(pid == 0){
-			fd1 = open(filename, O_RDWR);
-			retval= flock(fd1,LOCK_SH|LOCK_NB);
-			if(retval == -1){
-				tst_resm(TPASS, "flock() failed to acquire shared lock on an already"
-					       "exclusive locked file as expected");
+			if (pid == 0) {
+				fd1 = open(filename, O_RDWR);
+				retval = flock(fd1, LOCK_SH | LOCK_NB);
+				if (retval == -1) {
+					tst_resm(TPASS,
+						 "flock() failed to acquire shared lock on an already"
+						 "exclusive locked file as expected");
+				} else {
+					tst_resm(TFAIL,
+						 "flock() unexpectedly PASSED in acquiring shared lock on "
+						 "an already exclusive locked file");
+				}
+				exit(0);
+			} else {
+				/* parent waiting */
+				wait(&status);
 			}
-			else{
-				tst_resm(TFAIL, "flock() unexpectedly PASSED in acquiring shared lock on "
-						"an already exclusive locked file");
-			}
-			exit(0);
-		}
-		else{
-			/* parent waiting */
-			wait(&status);
-		}
-	
-		/* Testing Exclusive lock on a Exclusive Locked file */
-		pid = FORK_OR_VFORK();
 
-		if(pid == 0){
-			fd1 = open(filename, O_RDWR);
-			retval= flock(fd1,LOCK_EX|LOCK_NB);
-			if(retval == -1){
-				tst_resm(TPASS, "flock() failed to acquire exclusive lock on existing "
-					" exclusive locked file as expected");
+			/* Testing Exclusive lock on a Exclusive Locked file */
+			pid = FORK_OR_VFORK();
+
+			if (pid == 0) {
+				fd1 = open(filename, O_RDWR);
+				retval = flock(fd1, LOCK_EX | LOCK_NB);
+				if (retval == -1) {
+					tst_resm(TPASS,
+						 "flock() failed to acquire exclusive lock on existing "
+						 " exclusive locked file as expected");
+				} else {
+					tst_resm(TFAIL,
+						 "flock() unexpectedly passed in acquiring exclusive lock on "
+						 "an exclusive locked file");
+				}
+				exit(0);
+			} else {
+				/* parent waiting */
+				wait(&status);
 			}
-			else{
-				tst_resm(TFAIL, "flock() unexpectedly passed in acquiring exclusive lock on "
-						"an exclusive locked file");
-			}
-			exit(0);
-		}
-		else{
-			/* parent waiting */
-			wait(&status);
-		}
-		TEST(flock(fd,LOCK_UN));
-	}
-		else{
-			tst_resm(TFAIL,"flock() failed to acquire exclusive lock");
+			TEST(flock(fd, LOCK_UN));
+		} else {
+			tst_resm(TFAIL,
+				 "flock() failed to acquire exclusive lock");
 		}
 
-	}/* End of TEST_LOOPING */
+	}			/* End of TEST_LOOPING */
 
 	close(fd);
 	close(fd1);
 	cleanup();
 	return 0;
-	/*NOTREACHED*/
-
-}
-
+ /*NOTREACHED*/}
 
 /*
  * setup()
  *	performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-
 
 	/* Set up the expected error numbers for -e option */
 	TEST_EXP_ENOS(exp_enos);
@@ -209,12 +198,12 @@ setup(void)
 	fd = creat(filename, 0666);
 	if (fd == -1) {
 		tst_resm(TFAIL, "creating a new file failed");
-	
+
 		TEST_CLEANUP;
-	
+
 		/* Removing temp dir */
 		tst_rmdir();
-	
+
 		/* exit with return code appropriate for results */
 		tst_exit();
 	}
@@ -225,8 +214,7 @@ setup(void)
  *	performs all ONE TIME cleanup for this test at
  * 	completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -240,5 +228,4 @@ cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}

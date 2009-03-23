@@ -57,38 +57,38 @@ char *TCID = "semget02";
 int TST_TOTAL = 2;
 extern int Tst_count;
 
-int exp_enos[] = {EACCES, EEXIST, 0};
+int exp_enos[] = { EACCES, EEXIST, 0 };
 
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
-
 
 int sem_id_1 = -1;
 
 struct test_case_t {
 	int flags;
 	int error;
-} TC [] = {
+} TC[] = {
 	/* EACCES - the semaphore has no read or alter permissions */
-	{SEM_RA, EACCES},
-
-	/* EEXIST - the semaphore id exists and semget() was called with  */
-	/* IPC_CREAT and IPC_EXCL  					  */
-	{IPC_CREAT | IPC_EXCL, EEXIST}
+	{
+	SEM_RA, EACCES},
+	    /* EEXIST - the semaphore id exists and semget() was called with  */
+	    /* IPC_CREAT and IPC_EXCL                                         */
+	{
+	IPC_CREAT | IPC_EXCL, EEXIST}
 };
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int i;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -96,7 +96,7 @@ int main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		for (i=0; i<TST_TOTAL; i++) {
+		for (i = 0; i < TST_TOTAL; i++) {
 			/* use the TEST macro to make the call */
 
 			TEST(semget(semkey, PSEMS, TC[i].flags));
@@ -122,29 +122,24 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	/* Switch to nobody user for correct error code collection */
 	if (geteuid() != 0) {
-                tst_brkm(TBROK, tst_exit, "Test must be run as root");
-        }
-	 ltpuser = getpwnam(nobody_uid);
-         if (seteuid(ltpuser->pw_uid) == -1) {
-	 	tst_resm(TINFO, "setreuid failed to "
-	                 "to set the effective uid to %d",
-	                 ltpuser->pw_uid);
-	        perror("setreuid");
-	 }
-		
-
+		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+	}
+	ltpuser = getpwnam(nobody_uid);
+	if (seteuid(ltpuser->pw_uid) == -1) {
+		tst_resm(TINFO, "setreuid failed to "
+			 "to set the effective uid to %d", ltpuser->pw_uid);
+		perror("setreuid");
+	}
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -175,8 +170,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/* if it exists, remove the semaphore resource */
 	rm_sema(sem_id_1);
@@ -193,4 +187,3 @@ cleanup(void)
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

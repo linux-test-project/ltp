@@ -88,7 +88,7 @@ setup_file()
     if test -n "$2"; then
         sudo chown $2 $FILE
     fi
-    
+   $
     sudo chmod $3 $FILE
 
     if test -n "$4"; then
@@ -126,7 +126,7 @@ check_result()
     fi
 
     read res atime mtime < $RESULT_FILE
-    
+   $
     echo "EXPECTED: $EXPECTED_RESULT $EXPECT_ATIME_CHANGED "\
          "$EXPECT_MTIME_CHANGED"
     echo "RESULT:   $res $atime $mtime"
@@ -135,7 +135,7 @@ check_result()
         test_failed
         return
     fi
-    
+   $
     passed=1
 
     # If the test program exited successfully, then check that atime and
@@ -153,7 +153,7 @@ check_result()
                 passed=0
             fi
         fi
-    
+   $
         if test $EXPECT_MTIME_CHANGED = "y"; then
             if test $mtime -eq 0; then
                 echo "mtime should have changed, but did not"
@@ -165,7 +165,7 @@ check_result()
                 passed=0
             fi
         fi
-    
+   $
         if test $passed -eq 0; then
             test_failed
             return
@@ -226,7 +226,7 @@ run_test()
     fi
 
     # Can't do the writable file descriptor test for immutable files
-    # (even root can't open an immutable file for writing) 
+    # (even root can't open an immutable file for writing)$
 
     if test $do_write_fd_test -ne 0; then
         echo "Writable file descriptor (futimens(3)) test"
@@ -255,9 +255,9 @@ chmod ugo+x,u+s $LTPROOT/testcases/bin/$TEST_PROG
 
 echo "============================================================"
 
-echo 
+echo$
 echo "Testing read-only file, owned by self"
-echo 
+echo$
 
 echo "***** Testing times==NULL case *****"
 run_test "" 400 "" "" SUCCESS y y
@@ -279,9 +279,9 @@ run_test "" 400 "" "1 1 1 1" SUCCESS y y
 
 echo "============================================================"
 
-echo 
+echo$
 echo "Testing read-only file, not owned by self"
-echo 
+echo$
 
 echo "***** Testing times==NULL case *****"
 run_test root 400 "" "" EACCES
@@ -303,9 +303,9 @@ run_test root 400 "" "1 1 1 1" EPERM
 
 echo "============================================================"
 
-echo 
+echo$
 echo "Testing writable file, not owned by self"
-echo 
+echo$
 
 echo "***** Testing times==NULL case *****"
 run_test root 666 "" "" SUCCESS y y
@@ -327,9 +327,9 @@ run_test root 666 "" "1 1 1 1" EPERM
 
 echo "============================================================"
 
-echo 
+echo$
 echo "Testing append-only file, owned by self"
-echo 
+echo$
 
 echo "***** Testing times==NULL case *****"
 run_test "" 600 "+a" "" SUCCESS y y
@@ -351,9 +351,9 @@ run_test "" 600 "+a" "1 1 1 1" EPERM
 
 echo "============================================================"
 
-echo 
+echo$
 echo "Testing immutable file, owned by self"
-echo 
+echo$
 
 echo "***** Testing times==NULL case *****"
 run_test -W "" 600 "+i" "" EACCES
@@ -377,9 +377,9 @@ echo "============================================================"
 
 # Immutable+append-only should have same results as immutable
 
-echo 
+echo$
 echo "Testing immutable append-only file, owned by self"
-echo 
+echo$
 
 echo "***** Testing times==NULL case *****"
 run_test -W "" 600 "+ai" "" EACCES
@@ -401,7 +401,7 @@ run_test -W "" 600 "+ai" "1 1 1 1" EPERM
 
 echo "============================================================"
 
-echo 
+echo$
 
 # EINVAL should result, if pathname is NULL, dirfd is not
 # AT_FDCWD, and flags contains AT_SYMLINK_NOFOLLOW.
@@ -417,7 +417,7 @@ echo
 
 echo "============================================================"
 
-echo 
+echo$
 
 # If UTIME_NOW / UTIME_OMIT in tv_nsec field, the tv_sec should
 # be ignored.
@@ -432,7 +432,7 @@ run_test -RW "" 600 "" "1 o 1 o" SUCCESS n n
 
 echo "============================================================"
 
-echo 
+echo$
 
 userdel -r utimensat_tester
 rm -rf $TEST_PROG

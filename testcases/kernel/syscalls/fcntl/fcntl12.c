@@ -57,14 +57,14 @@ void cleanup(void);
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	pid_t pid;
 	int fd, i, status, max_files;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -85,12 +85,11 @@ int main(int ac, char **av)
 		if (pid < 0) {
 			tst_resm(TFAIL, "Fork failed");
 			cleanup();
-			/*NOTREACHED*/
-		} else if (pid == 0) {		/* child */
+		 /*NOTREACHED*/} else if (pid == 0) {	/* child */
 			max_files = getdtablesize();
-			for(i = 0; i < max_files; i++) {
+			for (i = 0; i < max_files; i++) {
 				if ((fd = open(fname, O_CREAT | O_RDONLY,
-				    0444)) == -1) {
+					       0444)) == -1) {
 					break;
 				}
 			}
@@ -114,16 +113,14 @@ int main(int ac, char **av)
 		tst_resm(TINFO, "Exit block 1");
 	}
 	cleanup();
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup()
  *	performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -140,8 +137,7 @@ setup(void)
  *	performs all ONE TIME cleanup for this test at
  *	completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -152,6 +148,6 @@ cleanup(void)
 	unlink(fname);
 	tst_rmdir();
 
-        /* exit with return code appropriate for results */
-        tst_exit();
+	/* exit with return code appropriate for results */
+	tst_exit();
 }

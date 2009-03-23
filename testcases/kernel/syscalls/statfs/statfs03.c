@@ -63,7 +63,7 @@ int TST_TOTAL = 1;
 int fileHandle = 0;
 extern int Tst_count;
 
-int exp_enos[]={EACCES, 0};
+int exp_enos[] = { EACCES, 0 };
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
@@ -76,14 +76,13 @@ void cleanup(void);
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	setup();
 
@@ -117,16 +116,14 @@ int main(int ac, char **av)
 		}
 	}
 	cleanup();
-	/*NOTREACHED*/
-
-  return 0;
+	 /*NOTREACHED*/ return 0;
 
 }
+
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 
 	/* capture signals */
@@ -137,11 +134,12 @@ setup()
 
 	/* make a temporary directory and cd to it */
 	tst_tmpdir();
-    if (chmod(TESTDIR, S_IRWXU) == -1)
-        tst_brkm(TBROK, cleanup, "chmod(%S,700) failed; errno %d: %s", TESTDIR, errno, strerror(errno));
+	if (chmod(TESTDIR, S_IRWXU) == -1)
+		tst_brkm(TBROK, cleanup, "chmod(%S,700) failed; errno %d: %s",
+			 TESTDIR, errno, strerror(errno));
 
 	/* create a test file */
-        sprintf(fname, "%s.%d", fname, getpid());
+	sprintf(fname, "%s.%d", fname, getpid());
 	if (mkdir(fname, 0444) == -1) {
 		tst_resm(TFAIL, "creat(2) FAILED to creat temp file");
 	} else {
@@ -151,40 +149,36 @@ setup()
 		}
 	}
 
+	/* Switch to nobody user for correct error code collection */
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+	}
 
-        /* Switch to nobody user for correct error code collection */
-        if (geteuid() != 0) {
-                tst_brkm(TBROK, tst_exit, "Test must be run as root");
-        }
-
-         ltpuser = getpwnam(nobody_uid);
-         if (seteuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "seteuid failed to "
-                         "to set the effective uid to %d",
-                         ltpuser->pw_uid);
-                perror("seteuid");
-         }
+	ltpuser = getpwnam(nobody_uid);
+	if (seteuid(ltpuser->pw_uid) == -1) {
+		tst_resm(TINFO, "seteuid failed to "
+			 "to set the effective uid to %d", ltpuser->pw_uid);
+		perror("seteuid");
+	}
 
 }
-
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
-        /* reset the process ID to the saved ID (root) */
-        if (setuid(0) == -1) {
-                        tst_resm(TINFO, "setuid(0) failed");
-        }
+	/* reset the process ID to the saved ID (root) */
+	if (setuid(0) == -1) {
+		tst_resm(TINFO, "setuid(0) failed");
+	}
 
 	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
 	 */
-    close(fileHandle);
+	close(fileHandle);
 
 	TEST_CLEANUP;
 
@@ -194,4 +188,3 @@ cleanup()
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

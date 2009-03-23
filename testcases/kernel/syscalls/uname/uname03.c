@@ -61,7 +61,7 @@
 void cleanup(void);
 void setup(void);
 
-char *TCID= "uname03";
+char *TCID = "uname03";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
@@ -69,26 +69,23 @@ extern int Tst_count;
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	struct utsname *buf;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) !=
-				(char *) NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* allocate some space for buf */
 
 	if ((buf = (struct utsname *)malloc((size_t)
-			sizeof(struct utsname))) == NULL) {
+					    sizeof(struct utsname))) == NULL) {
 		tst_brkm(TBROK, cleanup, "malloc failed for buf");
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/* The following loop checks looping state if -i option given */
 
@@ -102,16 +99,16 @@ int main(int ac, char **av)
 
 		if (TEST_RETURN != 0) {
 			tst_resm(TFAIL, "%s failed - errno = %d - %s",
-					TCID, TEST_ERRNO, strerror(TEST_ERRNO));
+				 TCID, TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
 
 			if (STD_FUNCTIONAL_TEST) {
 				if ((strcmp(buf->sysname, LINUX)) == 0) {
 					tst_resm(TPASS, "%s functionality test "
-							 "succeeded", TCID);
+						 "succeeded", TCID);
 				} else {
 					tst_resm(TFAIL, "%s functionality test "
-							"failed", TCID);
+						 "failed", TCID);
 				}
 			} else {
 				tst_resm(TPASS, "%s call succeeded", TCID);
@@ -124,17 +121,14 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/
-
-  return 0;
+	 /*NOTREACHED*/ return 0;
 
 }
 
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -147,8 +141,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -159,4 +152,3 @@ cleanup(void)
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

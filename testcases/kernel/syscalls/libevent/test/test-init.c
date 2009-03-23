@@ -16,12 +16,10 @@
 
 #include <event.h>
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	/* Initalize the event library */
 	event_init();
 
 	return (0);
 }
-

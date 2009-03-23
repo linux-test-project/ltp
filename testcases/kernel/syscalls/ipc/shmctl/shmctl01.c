@@ -74,7 +74,7 @@ long save_time;
 
 #define FIRST	0
 #define SECOND	1
-int stat_time;		/* set to either FIRST or SECOND for IPC_STAT tests */
+int stat_time;			/* set to either FIRST or SECOND for IPC_STAT tests */
 
 void *set_shared;
 
@@ -105,21 +105,21 @@ void do_child(void);
 
 struct test_case_t {
 	int cmd;		/* the command to test */
-	void (*func_test)();	/* the test function */
-	void (*func_setup)();	/* the setup function if necessary */
+	void (*func_test) ();	/* the test function */
+	void (*func_setup) ();	/* the setup function if necessary */
 } TC[] = {
 
-	{IPC_STAT, func_stat, stat_setup},
-
+	{
+	IPC_STAT, func_stat, stat_setup},
 #ifndef UCLINUX
-	/* The second test is not applicable to uClinux; shared memory segments
-	   are detached on exec(), so cannot be passed to uClinux children. */
-	{IPC_STAT, func_stat, stat_setup},
+	    /* The second test is not applicable to uClinux; shared memory segments
+	       are detached on exec(), so cannot be passed to uClinux children. */
+	{
+	IPC_STAT, func_stat, stat_setup},
 #endif
-
-	{IPC_SET, func_set, set_setup},
-
-	{IPC_RMID, func_rmid, NULL}
+	{
+	IPC_SET, func_set, set_setup}, {
+	IPC_RMID, func_rmid, NULL}
 };
 
 int TST_TOTAL = (sizeof(TC) / sizeof(*TC));
@@ -131,26 +131,25 @@ int TST_TOTAL = (sizeof(TC) / sizeof(*TC));
 static char *argv0;
 #endif
 
-static int stat_i;	/* Shared between do_child and stat_setup */
+static int stat_i;		/* Shared between do_child and stat_setup */
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int i;
 	void check_functionality(void);
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
-
 #ifdef UCLINUX
 	argv0 = av[0];
 	maybe_run_child(do_child, "ddd", &stat_i, &stat_time, &shm_id_1);
 #endif
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -167,20 +166,20 @@ int main(int ac, char **av)
 		 * so that looping (-i) will work correctly.
 		 */
 		if ((shm_id_1 = shmget(shmkey, SHM_SIZE, IPC_CREAT | IPC_EXCL |
-				SHM_RW)) == -1) {
+				       SHM_RW)) == -1) {
 			tst_brkm(TBROK, cleanup, "couldn't create the shared"
 				 " memory segment");
 		}
 
 		/* loop through the test cases */
-		for (i=0; i<TST_TOTAL; i++) {
+		for (i = 0; i < TST_TOTAL; i++) {
 
 			/*
 			 * if needed, set up any required conditions by
 			 * calling the appropriate setup function
 			 */
 			if (TC[i].func_setup != NULL) {
-				(*TC[i].func_setup)();
+				(*TC[i].func_setup) ();
 			}
 
 			/*
@@ -196,12 +195,12 @@ int main(int ac, char **av)
 				continue;
 			}
 			if (STD_FUNCTIONAL_TEST) {
-				(*TC[i].func_test)();
+				(*TC[i].func_test) ();
 			} else {
 				tst_resm(TPASS, "call succeeded");
 
 				/* now perform command related cleanup */
-				switch(TC[i].cmd) {
+				switch (TC[i].cmd) {
 				case IPC_STAT:
 					stat_cleanup();
 					break;
@@ -215,8 +214,7 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
@@ -224,8 +222,7 @@ int main(int ac, char **av)
  *		 this seperate routine to avoid code duplication in
  *		 stat_setup() below.
  */
-void *
-set_shmat()
+void *set_shmat()
 {
 	void *rval;
 
@@ -249,8 +246,7 @@ set_shmat()
  *		  Make things interesting by forking some children
  *		  that will either attach or inherit the shared memory.
  */
-void
-stat_setup()
+void stat_setup()
 {
 	void *set_shmat();
 	pid_t pid;
@@ -270,7 +266,7 @@ stat_setup()
 	}
 
 	tst_flush();
-	for (stat_i=0; stat_i<N_ATTACH; stat_i++) {
+	for (stat_i = 0; stat_i < N_ATTACH; stat_i++) {
 		if (sync_pipe_create(sync_pipes, PIPE_NAME) == -1)
 			tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
 
@@ -278,7 +274,7 @@ stat_setup()
 			tst_brkm(TBROK, cleanup, "could not fork");
 		}
 
-		if (pid == 0) {		/* child */
+		if (pid == 0) {	/* child */
 #ifdef UCLINUX
 			if (self_exec(argv0, "ddd", stat_i, stat_time,
 				      shm_id_1) < 0) {
@@ -288,14 +284,16 @@ stat_setup()
 			do_child();
 #endif
 
-		} else {		/* parent */
+		} else {	/* parent */
 			/* save the child's pid for cleanup later */
 			pid_arr[stat_i] = pid;
 			if (sync_pipe_wait(sync_pipes) == -1)
-				tst_brkm(TBROK, cleanup, "sync_pipe_wait failed");
+				tst_brkm(TBROK, cleanup,
+					 "sync_pipe_wait failed");
 
 			if (sync_pipe_close(sync_pipes, PIPE_NAME) == -1)
-				tst_brkm(TBROK, cleanup, "sync_pipe_close failed");
+				tst_brkm(TBROK, cleanup,
+					 "sync_pipe_close failed");
 		}
 	}
 	/* Wait 1 second to be sure all sons are in the pause function. */
@@ -305,8 +303,7 @@ stat_setup()
 /*
  * do_child
  */
-void
-do_child()
+void do_child()
 {
 	int rval;
 	void *test;
@@ -346,8 +343,7 @@ do_child()
  *		 by looking at the pid of the creator, the segement size,
  *		 the number of attaches and the mode.
  */
-void
-func_stat()
+void func_stat()
 {
 	int fail = 0;
 	pid_t pid;
@@ -402,14 +398,13 @@ func_stat()
  *		    have the parent make dessert, er, um, make that remove
  *		    the shared memory that is no longer needed.
  */
-void
-stat_cleanup()
+void stat_cleanup()
 {
 	int i;
 
 	/* wake up the childern so they can detach the memory and exit */
-	for (i=0; i<N_ATTACH; i++) {
-		if(kill(pid_arr[i], SIGUSR1) == -1) {
+	for (i = 0; i < N_ATTACH; i++) {
+		if (kill(pid_arr[i], SIGUSR1) == -1) {
 			tst_brkm(TBROK, cleanup, "kill failed");
 		}
 	}
@@ -421,9 +416,9 @@ stat_cleanup()
 		}
 	}
 
-	for (i=0; i<N_ATTACH; i++) {
+	for (i = 0; i < N_ATTACH; i++) {
 		if (waitpid(pid_arr[i], NULL, 0) == -1)
-                        tst_brkm(TBROK, cleanup, "waitpid failed");
+			tst_brkm(TBROK, cleanup, "waitpid failed");
 	}
 
 	stat_time++;
@@ -432,8 +427,7 @@ stat_cleanup()
 /*
  * set_setup() - set up for the IPC_SET command with shmctl()
  */
-void
-set_setup()
+void set_setup()
 {
 	/* set up a new mode for the shared memory segment */
 	buf.shm_perm.mode = SHM_RW | NEWMODE;
@@ -445,8 +439,7 @@ set_setup()
 /*
  * func_set() - check the functionality of the IPC_SET command with shmctl()
  */
-void
-func_set()
+void func_set()
 {
 	int fail = 0;
 
@@ -456,8 +449,7 @@ func_set()
 		return;
 	}
 
-	if ((buf.shm_perm.mode & MODE_MASK) !=
-			((SHM_RW | NEWMODE) & MODE_MASK)) {
+	if ((buf.shm_perm.mode & MODE_MASK) != ((SHM_RW | NEWMODE) & MODE_MASK)) {
 		tst_resm(TFAIL, "new mode is incorrect");
 		fail = 1;
 	}
@@ -477,8 +469,7 @@ func_set()
 /*
  * func_rmid() - check the functionality of the IPC_RMID command with shmctl()
  */
-void
-func_rmid()
+void func_rmid()
 {
 	/* Do another shmctl() - we should get EINVAL */
 	if (shmctl(shm_id_1, IPC_STAT, &buf) != -1) {
@@ -497,8 +488,7 @@ func_rmid()
 /*
  * sighandler() - handle signals, in this case SIGUSR1 is the only one expected
  */
-void
-sighandler(sig)
+void sighandler(sig)
 {
 	if (sig != SIGUSR1) {
 		tst_resm(TINFO, "received unexpected signal %d", sig);
@@ -508,8 +498,7 @@ sighandler(sig)
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, sighandler, cleanup);
@@ -532,8 +521,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/* if it exists, remove the shared memory segment */
 	rm_shm(shm_id_1);
@@ -550,4 +538,3 @@ cleanup(void)
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

@@ -73,8 +73,8 @@
 
 #define BUF_SIZE	512
 
-char *TCID="poll01";		/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "poll01";		/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int fildes[2];			/* file descriptors of the pipe. */
@@ -83,27 +83,25 @@ struct pollfd fds[1];		/* struct. for poll() */
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	int lc;				/* loop counters */
-	int length;			/* length of character string */
-	char *msg;			/* message returned from parse_opts */
-	pid_t cpid;			/* child process id */
+	int lc;			/* loop counters */
+	int length;		/* length of character string */
+	char *msg;		/* message returned from parse_opts */
+	pid_t cpid;		/* child process id */
 	char write_buf[] = "Testing";	/* buffer string for write */
 	char read_buf[BUF_SIZE];	/* buffer for read-end of pipe */
-	int status;			/* exit status of child process */
+	int status;		/* exit status of child process */
 	int rval;
-   
+
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
 	/* Perform global setup for test */
 	setup();
-
 
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -125,12 +123,12 @@ main(int ac, char **av)
 
 		/* write the message to the pipe */
 		if (write(fildes[1], write_buf, sizeof(write_buf))
-						< sizeof(write_buf)) {
+		    < sizeof(write_buf)) {
 			tst_brkm(TBROK, cleanup, "write() failed on write "
 				 "to pipe, error:%d", errno);
 		}
 
-		length=sizeof(write_buf);
+		length = sizeof(write_buf);
 
 		/* Fork child process */
 		if ((cpid = FORK_OR_VFORK()) == -1) {
@@ -168,10 +166,10 @@ main(int ac, char **av)
 					 TEST_ERRNO, strerror(errno));
 				exit(1);
 			}
-		
+
 			/* Read data from read end of pipe */
 			if (read(fildes[0], read_buf, sizeof(read_buf)) !=
-				     sizeof(write_buf)) {
+			    sizeof(write_buf)) {
 				tst_brkm(TFAIL, NULL, "read() failed - "
 					 "error:%d", errno);
 				exit(1);
@@ -181,13 +179,15 @@ main(int ac, char **av)
 			if (strcmp(read_buf, write_buf)) {
 				tst_resm(TFAIL, "Data from reading pipe "
 					 "are different");
-				printf(" read_buf is %s\n write_buf is %s\n length is %d\n",read_buf,write_buf,length);
+				printf
+				    (" read_buf is %s\n write_buf is %s\n length is %d\n",
+				     read_buf, write_buf, length);
 				exit(1);
 			}
 
 			/* Everything is fine, exit normally */
 			exit(0);
-		} else {		/* Parent process */
+		} else {	/* Parent process */
 			/* Wait for child to complete execution */
 			wait(&status);
 
@@ -198,22 +198,20 @@ main(int ac, char **av)
 					 "Functionality of poll() successful");
 			}
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
-}	/* End main */
+	 /*NOTREACHED*/ return 0;
+}				/* End main */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  * 	     Creat read/write pipe using pipe().
  * 	     Set poll data structures to check writing to the pipe.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -237,8 +235,7 @@ setup()
  *             completion or premature exit.
  * 	       close read end of pipe if still open.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

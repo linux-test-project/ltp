@@ -27,8 +27,8 @@
  *    AUTHOR		: Saji Kumar.V.R <saji.kumar@wipro.com>
  *
  *    SIGNALS
- * 	Uses SIGUSR1 to pause before test if option set.
- * 	(See the parse_opts(3) man page).
+ *	Uses SIGUSR1 to pause before test if option set.
+ *	(See the parse_opts(3) man page).
  *
  *    DESCRIPTION
  *	Verify that
@@ -39,22 +39,22 @@
  *	2) sched_rr_get_interval() fails with errno set to EFAULT if the
  *	   address specified as &tp is invalid
  *
- * 	Setup:
- * 	  Setup signal handling.
+ *	Setup:
+ *	  Setup signal handling.
  *	  Set expected errors for logging.
  *	  Pause for SIGUSR1 if option specified.
  *	  Change scheduling policy to SCHED_RR
  *
- * 	Test:
+ *	Test:
  *	 Loop if the proper options are given.
- * 	  Execute system call
+ *	  Execute system call
  *	  if call fails with expected errno,
  *		Test passed.
  *	  Otherwise
  *		Test failed
  *
- * 	Cleanup:
- * 	  Print errno log and/or timing stats if options given
+ *	Cleanup:
+ *	  Print errno log and/or timing stats if options given
  *
  * USAGE:  <for command-line>
  * sched_rr_get_interval03 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
@@ -83,33 +83,34 @@ static void cleanup();
 char *TCID = "sched_rr_get_interval03";	/* Test program identifier.    */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 struct timespec tp;
-static int exp_enos[] = {EINVAL, ESRCH, EFAULT, 0};
+static int exp_enos[] = { EINVAL, ESRCH, EFAULT, 0 };
 
 struct test_cases_t {
 	pid_t pid;
 	struct timespec *tp;
 	int exp_errno;
 } test_cases[] = {
-	{ -1, &tp, EINVAL },
-	{ PID_DONT_EXISTS, &tp, ESRCH },
+	{
+	-1, &tp, EINVAL}, {
+	PID_DONT_EXISTS, &tp, ESRCH},
 #ifndef UCLINUX
-	/* Skip since uClinux does not implement memory protection */
-	{ 0, (struct timespec *)-1, EFAULT}
+	    /* Skip since uClinux does not implement memory protection */
+	{
+	0, (struct timespec *)-1, EFAULT}
 #endif
 };
 
 int TST_TOTAL = sizeof(test_cases) / sizeof(test_cases[0]);
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 
 	int lc, i;		/* loop counter */
-	char *msg;	/* message returned from parse_opts */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
-	     != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL))
+	    != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -134,25 +135,23 @@ main(int ac, char **av)
 				tst_resm(TPASS, "Test Passed");
 			} else {
 				tst_resm(TFAIL, "Test Failed,"
-					" sched_rr_get_interval() returned %d,"
-					" errno = %d : %s", TEST_RETURN,
-				 	TEST_ERRNO, strerror(TEST_ERRNO));
+					 " sched_rr_get_interval() returned %d,"
+					 " errno = %d : %s", TEST_RETURN,
+					 TEST_ERRNO, strerror(TEST_ERRNO));
 			}
 			TEST_ERROR_LOG(TEST_ERRNO);
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* cleanup and exit */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 
-}	/* End main */
+}				/* End main */
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup()
+void setup()
 {
 	/*
 	 * Initialize scheduling parameter structure to use with
@@ -173,15 +172,13 @@ setup()
 	if ((sched_setscheduler(0, SCHED_RR, &p)) == -1) {
 		tst_brkm(TBROK, cleanup, "sched_setscheduler() failed");
 	}
-}	/* End setup() */
-
+}				/* End setup() */
 
 /*
  *cleanup() -  performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 
 	/*
@@ -192,4 +189,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

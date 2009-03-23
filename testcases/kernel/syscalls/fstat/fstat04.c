@@ -38,11 +38,11 @@
  *   Loop if the proper options are given.
  *   Execute system call
  *   Check return code, if system call failed (return=-1)
- *   	Log the errno and Issue a FAIL message.
+ *	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call
+ *	Verify the Functionality of system call
  *      if successful,
- *      	Issue Functionality-Pass message.
+ *		Issue Functionality-Pass message.
  *      Otherwise,
  *		Issue Functionality-Fail message.
  *  Cleanup:
@@ -82,8 +82,8 @@
 #define BUF_SIZE	256
 #define MASK		0777
 
-char *TCID="fstat04"; 		/* Test program identifier.    */
-int TST_TOTAL=1;    		/* Total number of test cases. */
+char *TCID = "fstat04";		/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 uid_t User_id;			/* user id/group id of test process */
 gid_t Group_id;
@@ -92,20 +92,18 @@ int fildes;			/* File descriptor of testfile */
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
-
 void setup();			/* Setup function for the test */
 void cleanup();			/* Cleanup function for the test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	struct stat stat_buf;	/* stat structure buffer */
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-   
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -154,14 +152,13 @@ main(int ac, char **av)
 		} else {
 			tst_resm(TPASS, "call succeeded");
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
-}	/* End main */
+	 /*NOTREACHED*/ return 0;
+}				/* End main */
 
 /*
  * void
@@ -170,37 +167,34 @@ main(int ac, char **av)
  *  Creat a test file and write some data into it.
  *  Get the user/group id info. of test process.
  */
-void
-setup()
+void setup()
 {
-	int i;					/* counter */
-	char tst_buff[BUF_SIZE];		/* data buffer */
-	int wbytes;				/* no. of bytes written */
-	int write_len = 0;			/* data length */
+	int i;			/* counter */
+	char tst_buff[BUF_SIZE];	/* data buffer */
+	int wbytes;		/* no. of bytes written */
+	int write_len = 0;	/* data length */
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-   
-	/* Switch to nobody user for correct error code collection */
-        if (geteuid() != 0) {
-                tst_brkm(TBROK, tst_exit, "Test must be run as root");
-        }
-         ltpuser = getpwnam(nobody_uid);
-         if (setuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "setuid failed to "
-                         "to set the effective uid to %d",
-                         ltpuser->pw_uid);
-                perror("setuid");
-         }
 
+	/* Switch to nobody user for correct error code collection */
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+	}
+	ltpuser = getpwnam(nobody_uid);
+	if (setuid(ltpuser->pw_uid) == -1) {
+		tst_resm(TINFO, "setuid failed to "
+			 "to set the effective uid to %d", ltpuser->pw_uid);
+		perror("setuid");
+	}
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
-   
+
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
-   
-	if ((fildes = open(TESTFILE, O_RDWR|O_CREAT, FILE_MODE)) == -1) {
+
+	if ((fildes = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %#o) Failed, errno=%d : %s",
 			 TESTFILE, FILE_MODE, errno, strerror(errno));
@@ -226,7 +220,7 @@ setup()
 	User_id = getuid();
 	Group_id = getgid();
 
-}	/* End setup() */
+}				/* End setup() */
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -234,8 +228,7 @@ setup()
  *  Close the testfile opened for reading/writing.
  *  Delete the testfile and temporary directory.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -254,4 +247,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

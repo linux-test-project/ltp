@@ -23,8 +23,7 @@
 
 int called = 0;
 
-void
-signal_cb(int fd, short event, void *arg)
+void signal_cb(int fd, short event, void *arg)
 {
 	struct event *signal = arg;
 
@@ -36,8 +35,7 @@ signal_cb(int fd, short event, void *arg)
 	called++;
 }
 
-int
-main (int argc, char **argv)
+int main(int argc, char **argv)
 {
 	struct event signal_int;
 
@@ -45,8 +43,8 @@ main (int argc, char **argv)
 	event_init();
 
 	/* Initalize one event */
-	event_set(&signal_int, SIGINT, EV_SIGNAL|EV_PERSIST, signal_cb,
-	    &signal_int);
+	event_set(&signal_int, SIGINT, EV_SIGNAL | EV_PERSIST, signal_cb,
+		  &signal_int);
 
 	event_add(&signal_int, NULL);
 
@@ -54,4 +52,3 @@ main (int argc, char **argv)
 
 	return (0);
 }
-

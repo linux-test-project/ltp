@@ -94,41 +94,41 @@ static void cleanup(void);
 static int setup_test(int, int);
 static int cleanup_test(int);
 
-
-char	*TCID = "umount02";		/* Test program identifier.    */
-extern int Tst_count;			/* TestCase counter for tst_* routine */
+char *TCID = "umount02";	/* Test program identifier.    */
+extern int Tst_count;		/* TestCase counter for tst_* routine */
 
 #define DEFAULT_FSTYPE "ext2"
 #define FSTYPE_LEN	20
 #define DIR_MODE	S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH
 #define FILE_MODE	S_IRWXU | S_IRWXG | S_IRWXO
 
-static char	*Einval = "nonexixstent";
-static char	Longpathname[PATH_MAX+2];
-static char	Path[PATH_MAX];
-static char	*Type;
-static char	*Fstype;
-static char	*Device;
-static char	*Mntpoint;
+static char *Einval = "nonexixstent";
+static char Longpathname[PATH_MAX + 2];
+static char Path[PATH_MAX];
+static char *Type;
+static char *Fstype;
+static char *Device;
+static char *Mntpoint;
 static unsigned long Flag;
 
-static int	fd;
-static char	mntpoint[PATH_MAX];
-static char	*fstype;
-static char	*device;
-static int	Tflag = 0;
-static int	Dflag = 0;
+static int fd;
+static char mntpoint[PATH_MAX];
+static char *fstype;
+static char *device;
+static int Tflag = 0;
+static int Dflag = 0;
 
 static struct test_case_t {
-	char	*err_desc;	/* error description		*/
-	int	exp_errno;	/* Expected error no		*/
-	char	*exp_errval;	/* Expected error value string  */
+	char *err_desc;		/* error description            */
+	int exp_errno;		/* Expected error no            */
+	char *exp_errval;	/* Expected error value string  */
 } testcases[] = {
-  { "Already mounted/busy", EBUSY, "EBUSY"},
-  { "Invalid address space", EFAULT, "EFAULT"},
-  { "Directory not found", ENOENT, "ENOENT"},
-  { "Invalid  device ", EINVAL, "EINVAL"},
-  { "Pathname too long", ENAMETOOLONG, "ENAMETOOLONG"}
+	{
+	"Already mounted/busy", EBUSY, "EBUSY"}, {
+	"Invalid address space", EFAULT, "EFAULT"}, {
+	"Directory not found", ENOENT, "ENOENT"}, {
+	"Invalid  device ", EINVAL, "EINVAL"}, {
+	"Pathname too long", ENAMETOOLONG, "ENAMETOOLONG"}
 };
 
 /* Total number of test cases. */
@@ -136,17 +136,16 @@ int TST_TOTAL = sizeof(testcases) / sizeof(testcases[0]);
 
 static int exp_enos[] = { EBUSY, EINVAL, EFAULT, ENAMETOOLONG, ENOENT, 0 };
 
-static option_t options[] = {		/* options supported by umount02 test */
-	{ "T:", &Tflag, &fstype },	/* -T type of filesystem	*/
-	{ "D:", &Dflag, &device },	/* -D device used for mounting	*/
-	{ NULL, NULL, NULL }
+static option_t options[] = {	/* options supported by umount02 test */
+	{"T:", &Tflag, &fstype},	/* -T type of filesystem        */
+	{"D:", &Dflag, &device},	/* -D device used for mounting  */
+	{NULL, NULL, NULL}
 };
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	int	lc, i;			/* loop counter */
-	char	*msg;			/* message returned from parse_opts */
+	int lc, i;		/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, options, &help)) != (char *)NULL) {
@@ -162,7 +161,7 @@ main(int ac, char **av)
 		tst_exit();
 	}
 
-	Type = (char *) malloc(FSTYPE_LEN);
+	Type = (char *)malloc(FSTYPE_LEN);
 	if (!Type) {
 		tst_brkm(TBROK, NULL, "malloc - alloc of %d failed",
 			 FSTYPE_LEN);
@@ -171,12 +170,13 @@ main(int ac, char **av)
 
 	if (Tflag == 1) {
 		strncpy(Type, fstype,
-		   (FSTYPE_LEN < strlen(fstype)) ? FSTYPE_LEN : strlen(fstype));
+			(FSTYPE_LEN <
+			 strlen(fstype)) ? FSTYPE_LEN : strlen(fstype));
 	} else {
 		strncpy(Type, DEFAULT_FSTYPE, strlen(DEFAULT_FSTYPE));
 	}
 
-	if(STD_COPIES != 1) {
+	if (STD_COPIES != 1) {
 		tst_resm(TINFO, "-c option has no effect for this testcase - "
 			 "%s doesn't allow running more than one instance "
 			 "at a time", TCID);
@@ -185,7 +185,6 @@ main(int ac, char **av)
 
 	/* perform global setup for test */
 	setup();
-
 
 	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -212,47 +211,45 @@ main(int ac, char **av)
 			if ((TEST_RETURN == -1) &&
 			    (TEST_ERRNO == testcases[i].exp_errno)) {
 				tst_resm(TPASS, "umount(2) expected failure; "
-					"Got errno - %s : %s",
+					 "Got errno - %s : %s",
 					 testcases[i].exp_errval,
 					 testcases[i].err_desc);
 			} else {
 				tst_resm(TFAIL, "umount(2) failed to produce "
-					"expected error; %d, errno:%s got %d",
+					 "expected error; %d, errno:%s got %d",
 					 testcases[i].exp_errno,
 					 testcases[i].exp_errval, TEST_ERRNO);
 			}
 
 			TEST_ERROR_LOG(TEST_ERRNO);
 
-			(void) cleanup_test(i);
+			(void)cleanup_test(i);
 
-		}	/* End of TEST CASE LOOPING. */
-	}	/* End for TEST_LOOPING */
+		}		/* End of TEST CASE LOOPING. */
+	}			/* End for TEST_LOOPING */
 
 	/* cleanup and exit */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 
-}	/* End main */
+}				/* End main */
 
 /*
  * int
  * setup_test() - Setup function for test cases based on the error values
  *		  to be returned.
  */
-int
-setup_test(int i, int cnt)
+int setup_test(int i, int cnt)
 {
-	char	temp[20];
+	char temp[20];
 
 	Device = device;
 	Fstype = Type;
 	Mntpoint = mntpoint;
 	Flag = 0;
 
-	switch(i) {
+	switch (i) {
 	case 0:
 		/* Setup for umount(2) returning errno EBUSY. */
 
@@ -268,16 +265,16 @@ setup_test(int i, int cnt)
 
 		if (getcwd(Path, PATH_MAX) == NULL) {
 			tst_resm(TWARN, "getcwd() failed to get current working"
-				 " directory errno = %d : %s",errno,
-				   strerror(errno));
+				 " directory errno = %d : %s", errno,
+				 strerror(errno));
 			return 1;
 		}
-		sprintf(temp,"/%s/t_%d", Mntpoint, cnt);
+		sprintf(temp, "/%s/t_%d", Mntpoint, cnt);
 		strcat(Path, temp);
-		if (( fd = open(Path, O_CREAT|O_RDWR, S_IRWXU)) == -1) {
+		if ((fd = open(Path, O_CREAT | O_RDWR, S_IRWXU)) == -1) {
 			tst_resm(TWARN, "open() failed to create a file "
 				 " %s errno = %d : %s", Path, errno,
-				   strerror(errno));
+				 strerror(errno));
 			return 1;
 		} else {
 			return 0;
@@ -298,8 +295,8 @@ setup_test(int i, int cnt)
 
 		if (getcwd(Path, PATH_MAX) == NULL) {
 			tst_resm(TWARN, "getcwd() failed to get current working"
-				 " directory errno = %d : %s",errno,
-				   strerror(errno));
+				 " directory errno = %d : %s", errno,
+				 strerror(errno));
 			return 1;
 		}
 		Mntpoint = Path;
@@ -307,45 +304,41 @@ setup_test(int i, int cnt)
 	case 4:
 		/* Setup for umount(2) returning errno ENAMETOOLONG. */
 
-		memset(Longpathname, 'a', PATH_MAX+2);
+		memset(Longpathname, 'a', PATH_MAX + 2);
 		Mntpoint = Longpathname;
 		break;
 	}
 	return 0;
 }
 
-
 /*
  * int
  * cleanup_test() - Setup function for test cases based on the error values
  *		  to be returned.
  */
-int
-cleanup_test(int i)
+int cleanup_test(int i)
 {
-	switch(i) {
+	switch (i) {
 	case 0:
 		close(fd);
 		TEST(umount(mntpoint));
 		if (TEST_RETURN != 0) {
 			tst_resm(TWARN, "umount(2) Failed while unmounting"
 				 " errno %d for testcase %s", TEST_ERRNO,
-				  testcases[i].exp_errval);
+				 testcases[i].exp_errval);
 		}
 		break;
 	}
 	return 0;
 }
-	
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Check whether we are root*/
+	/* Check whether we are root */
 	if (geteuid() != 0) {
 		if (Type != NULL) {
 			free(Type);
@@ -361,7 +354,7 @@ setup()
 	if (mkdir(mntpoint, DIR_MODE)) {
 		tst_brkm(TBROK, cleanup, "mkdir(%s, %#o) failed; "
 			 "errno = %d: %s", mntpoint, DIR_MODE, errno,
-			  strerror(errno));
+			 strerror(errno));
 	}
 
 	/* set up expected error numbers */
@@ -371,15 +364,13 @@ setup()
 	TEST_PAUSE;
 
 	return;
-}	/* End setup() */
-
+}				/* End setup() */
 
 /*
  *cleanup() -  performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	if (Type != NULL) {
 		free(Type);
@@ -398,15 +389,14 @@ cleanup()
 	tst_exit();
 
 	return;
-}	/* End cleanup() */
+}				/* End cleanup() */
 
 /*
  * issue a help message
  */
-void
-help()
+void help()
 {
 	printf("-T type	  : specifies the type of filesystem to be mounted."
-		" Default ext2. \n");
+	       " Default ext2. \n");
 	printf("-D device : device used for mounting \n");
 }

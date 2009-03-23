@@ -25,15 +25,14 @@
  *	Check the value that posix_fadvise returns for wrong file descriptor.
  *
  * USAGE
- * 	posix_fadvise02
+ *	posix_fadvise02
  *
  * HISTORY
  *	11/2007 Initial version by Masatake YAMATO <yamato@redhat.com>
  *
  * RESTRICTIONS
- * 	None
+ *	None
  */
-
 
 #define _XOPEN_SOURCE 600
 #include <fcntl.h>
@@ -55,7 +54,6 @@
 void setup();
 void cleanup();
 
-
 TCID_DEFINE(posix_fadvise02);	/* Test program identifier.    */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
@@ -63,42 +61,42 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 				   Just used as something wrong fd */
 
 struct test_case_t {
-	int   fd;
+	int fd;
 	off_t offset;
 	off_t len;
-	int   advice;
-	int   error;
+	int advice;
+	int error;
 } TC[] = {
-	{WRONG_FD,       0, 0, POSIX_FADV_NORMAL,     EBADF},
-	{WRONG_FD,       0, 0, POSIX_FADV_SEQUENTIAL, EBADF},
-	{WRONG_FD,       0, 0, POSIX_FADV_RANDOM,     EBADF},
-	{WRONG_FD,       0, 0, POSIX_FADV_NOREUSE,    EBADF},
-	{WRONG_FD,       0, 0, POSIX_FADV_WILLNEED,   EBADF},
-	{WRONG_FD,       0, 0, POSIX_FADV_DONTNEED,   EBADF},
-};
+	{
+	WRONG_FD, 0, 0, POSIX_FADV_NORMAL, EBADF}, {
+	WRONG_FD, 0, 0, POSIX_FADV_SEQUENTIAL, EBADF}, {
+	WRONG_FD, 0, 0, POSIX_FADV_RANDOM, EBADF}, {
+	WRONG_FD, 0, 0, POSIX_FADV_NOREUSE, EBADF}, {
+	WRONG_FD, 0, 0, POSIX_FADV_WILLNEED, EBADF}, {
+WRONG_FD, 0, 0, POSIX_FADV_DONTNEED, EBADF},};
 
 int TST_TOTAL = sizeof(TC) / sizeof(TC[0]);
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	int i;
 
-       /* Check this system has fadvise64 system which is used
-          in posix_fadvise. */
-       if ((_FILE_OFFSET_BITS != 64) && (__NR_fadvise64 == 0)) {
-               tst_resm(TWARN, "This test can only run on kernels that implements ");
-               tst_resm(TWARN, "fadvise64 which is used from posix_fadvise");
-               exit(0);
-       }
+	/* Check this system has fadvise64 system which is used
+	   in posix_fadvise. */
+	if ((_FILE_OFFSET_BITS != 64) && (__NR_fadvise64 == 0)) {
+		tst_resm(TWARN,
+			 "This test can only run on kernels that implements ");
+		tst_resm(TWARN, "fadvise64 which is used from posix_fadvise");
+		exit(0);
+	}
 
 	/*
 	 * parse standard options
 	 */
-	if ( (msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL )
-	  tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL)
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 
 	/*
 	 * perform global setup for test
@@ -108,15 +106,16 @@ main(int ac, char **av)
 	/*
 	 * check looping state if -i option given on the command line
 	 */
-	for (lc=0; TEST_LOOPING(lc); lc++) {
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/* loop through the test cases */
 		for (i = 0; i < TST_TOTAL; i++) {
 
-			TEST(posix_fadvise(TC[i].fd, TC[i].offset, TC[i].len, TC[i].advice));
+			TEST(posix_fadvise
+			     (TC[i].fd, TC[i].offset, TC[i].len, TC[i].advice));
 
 			if (TEST_RETURN == 0) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
@@ -127,15 +126,16 @@ main(int ac, char **av)
 			   "On error, an error number is returned." */
 			if (TEST_RETURN == TC[i].error) {
 				tst_resm(TPASS, "expected failure - "
-					 "returned value = %d : %s", TEST_RETURN,
-					 strerror(TEST_RETURN));
+					 "returned value = %d : %s",
+					 TEST_RETURN, strerror(TEST_RETURN));
 			} else {
-				tst_resm(TFAIL, "unexpected returnd value - %d : %s - "
+				tst_resm(TFAIL,
+					 "unexpected returnd value - %d : %s - "
 					 "expected %d", TEST_RETURN,
 					 strerror(TEST_RETURN), TC[i].error);
 			}
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/*
 	 * cleanup and exit
@@ -143,13 +143,12 @@ main(int ac, char **av)
 	cleanup();
 
 	return 0;
-}	/* End main */
+}				/* End main */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -158,28 +157,25 @@ setup()
 	TEST_PAUSE;
 
 	/* Make WRONG_FD really wrong. */
- retry:
+      retry:
 	errno = 0;
 	if (close(WRONG_FD) != 0) {
-		if (errno == EBADF)
-		  ;			/* Good. Do nothing. */
+		if (errno == EBADF) ;	/* Good. Do nothing. */
 		if (errno == EINTR)
-		  goto retry;
+			goto retry;
 		else if (errno == EIO)
-		  tst_brkm(TBROK, cleanup,
-			   "Unable to close a file descriptor(%d): %s\n",
-			   WRONG_FD, strerror(EIO));
+			tst_brkm(TBROK, cleanup,
+				 "Unable to close a file descriptor(%d): %s\n",
+				 WRONG_FD, strerror(EIO));
 	}
 
-}	/* End setup() */
-
+}				/* End setup() */
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -189,4 +185,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

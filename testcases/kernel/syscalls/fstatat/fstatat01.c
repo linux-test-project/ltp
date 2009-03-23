@@ -101,7 +101,7 @@ int myfstatat(int dirfd, const char *filename, struct stat *statbuf, int flags)
 /* stub - will never run */
 int myfstatat(int dirfd, const char *filename, struct stat *statbuf, int flags)
 {
-        return syscall(0, dirfd, filename, statbuf, flags);
+	return syscall(0, dirfd, filename, statbuf, flags);
 }
 #endif
 
@@ -111,26 +111,26 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 	int i;
 
-       /* Disable test if the version of the kernel is less than 2.6.16 */
-        if((tst_kvercmp(2,6,16)) < 0)
-          {
-             tst_resm(TWARN, "This test can only run on kernels that are ");
-             tst_resm(TWARN, "2.6.16 and higher");
-             exit(0);
-          }
+	/* Disable test if the version of the kernel is less than 2.6.16 */
+	if ((tst_kvercmp(2, 6, 16)) < 0) {
+		tst_resm(TWARN, "This test can only run on kernels that are ");
+		tst_resm(TWARN, "2.6.16 and higher");
+		exit(0);
+	}
 
 	/* report failure if run with stubs */
 #ifdef __NR_fstatat64
-        if(__NR_fstatat64 == 0)
+	if (__NR_fstatat64 == 0)
 #endif
 #ifdef __NR_newfstatat
-        if(__NR_newfstatat == 0)
+		if (__NR_newfstatat == 0)
 #endif
-	  {
-	     tst_resm(TFAIL, "fstatat() Failed, neither __NR_fstatat64 "
-	                     "no __NR_newfstatat is implemented ");
-	     exit(0);
-	  }
+		{
+			tst_resm(TFAIL,
+				 "fstatat() Failed, neither __NR_fstatat64 "
+				 "no __NR_newfstatat is implemented ");
+			exit(0);
+		}
 
 	/***************************************************************
 	 * parse standard options

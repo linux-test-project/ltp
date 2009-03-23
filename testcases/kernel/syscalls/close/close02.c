@@ -62,25 +62,23 @@
 void cleanup(void);
 void setup(void);
 
-int exp_enos[] = {EBADF, 0};
+int exp_enos[] = { EBADF, 0 };
 
 char *TCID = "close02";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* set up expected errnos */
 	TEST_EXP_ENOS(exp_enos);
@@ -110,14 +108,12 @@ main(int ac, char **av)
 	cleanup();
 
 	return 0;
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}
 
 /*
  * setup() - performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -132,8 +128,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing status if that option was specified.

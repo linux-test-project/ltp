@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: lseek03.c,v 1.4 2009/02/26 12:16:08 subrata_modak Exp $ */
+/* $Id: lseek03.c,v 1.5 2009/03/23 13:35:54 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -66,7 +66,7 @@
  *	(See the parse_opts(3) man page).
  *
  *    OUTPUT SPECIFICATIONS
- * 
+ *$
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
  *
@@ -122,8 +122,8 @@ void setup();
 void cleanup();
 void rec_sigsys(int);
 
-char *TCID="lseek03"; 		/* Test program identifier.    */
-int TST_TOTAL=3;    		/* Total number of test cases. */
+char *TCID = "lseek03";		/* Test program identifier.    */
+int TST_TOTAL = 3;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 char fname[255];
@@ -132,159 +132,157 @@ int Rec_sigsys = 0;
 
 int Whences[] = { 4, -1, 7 };
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-    int lc;		/* loop counter */
-    char *msg;		/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
-    int ind;
-    int whence;
+	int ind;
+	int whence;
 
-    TST_TOTAL=sizeof(Whences)/sizeof(int);
-   
+	TST_TOTAL = sizeof(Whences) / sizeof(int);
+
     /***************************************************************
      * parse standard options
      ***************************************************************/
-    if ( (msg=parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL ) {
-	tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	tst_exit();
-    }
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+		tst_exit();
+	}
 
     /***************************************************************
      * perform global setup for test
      ***************************************************************/
-    setup();
+	setup();
 
-
-    signal(SIGSYS, rec_sigsys);
+	signal(SIGSYS, rec_sigsys);
 
     /***************************************************************
      * check looping state if -c option given
      ***************************************************************/
-    for (lc=0; TEST_LOOPING(lc); lc++) {
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-	/* reset Tst_count in case we are looping. */
-	Tst_count=0;
+		/* reset Tst_count in case we are looping. */
+		Tst_count = 0;
 
-	for (ind=0; ind<sizeof(Whences)/sizeof(int); ind++) {
-	
-	    whence=Whences[ind];
+		for (ind = 0; ind < sizeof(Whences) / sizeof(int); ind++) {
 
-	    /*
-	     * On IRIX systems, the SIGSYS signal is also sent.
-	     */
-	    Rec_sigsys=0;
+			whence = Whences[ind];
 
-            /*
-             *  Call lseek(2)
-             */
-	    TEST(lseek(fd, (long)1, whence));
+			/*
+			 * On IRIX systems, the SIGSYS signal is also sent.
+			 */
+			Rec_sigsys = 0;
 
-	    /* check return code */
-	    if ( TEST_RETURN == -1 ) {
-		if ( STD_FUNCTIONAL_TEST ) {
+			/*
+			 *  Call lseek(2)
+			 */
+			TEST(lseek(fd, (long)1, whence));
 
-	          if ( TEST_ERRNO == EINVAL )
+			/* check return code */
+			if (TEST_RETURN == -1) {
+				if (STD_FUNCTIONAL_TEST) {
+
+					if (TEST_ERRNO == EINVAL)
 #if defined(sgi)
-		    if ( Rec_sigsys ) {
-	                tst_resm(TPASS,
-			    "lseek(%s, 1, %d) Failed as expected, errno=%d : %s\n\
-and SIGSYS signal was received.",
-		            fname, whence, TEST_ERRNO, strerror(TEST_ERRNO));
-		    } else {
-	                tst_resm(TFAIL,
-			    "lseek(%s, 1, %d) Failed as expected, errno=%d : %s\n\
-But SIGSYS signal was NOT received.",
-		            fname, whence, TEST_ERRNO, strerror(TEST_ERRNO));
-		    }
+						if (Rec_sigsys) {
+							tst_resm(TPASS,
+								 "lseek(%s, 1, %d) Failed as expected, errno=%d : %s\n\
+and SIGSYS signal was received.", fname, whence, TEST_ERRNO, strerror(TEST_ERRNO));
+						} else {
+							tst_resm(TFAIL,
+								 "lseek(%s, 1, %d) Failed as expected, errno=%d : %s\n\
+But SIGSYS signal was NOT received.", fname, whence, TEST_ERRNO, strerror
+								 (TEST_ERRNO));
+						}
 #elif defined(__linux__)
-	            tst_resm(TPASS,
-			    "lseek(%s, 1, %d) Failed, errno=%d : %s",
-		            fname, whence, TEST_ERRNO, strerror(TEST_ERRNO));
+						tst_resm(TPASS,
+							 "lseek(%s, 1, %d) Failed, errno=%d : %s",
+							 fname, whence,
+							 TEST_ERRNO,
+							 strerror(TEST_ERRNO));
 #endif
-		  else
-	            tst_resm(TFAIL,
-			"lseek(%s, 1, %d) Failed, errno=%d %s, expected %d(EINVAL)",
-		        fname, whence, TEST_ERRNO, strerror(TEST_ERRNO),
-			EINVAL);
+					else
+						tst_resm(TFAIL,
+							 "lseek(%s, 1, %d) Failed, errno=%d %s, expected %d(EINVAL)",
+							 fname, whence,
+							 TEST_ERRNO,
+							 strerror(TEST_ERRNO),
+							 EINVAL);
+				}
+
+				else
+					Tst_count++;
+			} else {
+
+				tst_resm(TFAIL, "lseek(%s, 1, %d) returned %d",
+					 fname, whence, TEST_RETURN);
+			}
 		}
 
-		else
-		    Tst_count++;
-	    } else {
-	   
-	        tst_resm(TFAIL, "lseek(%s, 1, %d) returned %d",
-		    fname, whence, TEST_RETURN);
-	    }
-	}
-
-    }	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
     /***************************************************************
      * cleanup and exit
      ***************************************************************/
-    cleanup();
+	cleanup();
 
-    return 0;
-}	/* End main */
+	return 0;
+}				/* End main */
 
 /*
  * signal handler for the SIGSYS signal.
  */
-void
-rec_sigsys(int sig)
+void rec_sigsys(int sig)
 {
-    Rec_sigsys++;
+	Rec_sigsys++;
 
-    signal(sig, rec_sigsys);
+	signal(sig, rec_sigsys);
 }
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void
-setup()
+void setup()
 {
-    /* capture signals */
-    tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	/* capture signals */
+	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-    /* Pause if that option was specified */
-    TEST_PAUSE;
+	/* Pause if that option was specified */
+	TEST_PAUSE;
 
-    /* make a temp directory and cd to it */
-    tst_tmpdir();
+	/* make a temp directory and cd to it */
+	tst_tmpdir();
 
-    sprintf(fname,"tfile_%d",getpid());
-    if ((fd = open(fname,O_RDWR|O_CREAT,0700)) == -1) {
-       tst_brkm(TBROK, cleanup,
-		"open(%s, O_RDWR|O_CREAT,0700) Failed, errno=%d : %s",
-		fname, errno, strerror(errno));
-    }
-}	/* End setup() */
-
+	sprintf(fname, "tfile_%d", getpid());
+	if ((fd = open(fname, O_RDWR | O_CREAT, 0700)) == -1) {
+		tst_brkm(TBROK, cleanup,
+			 "open(%s, O_RDWR|O_CREAT,0700) Failed, errno=%d : %s",
+			 fname, errno, strerror(errno));
+	}
+}				/* End setup() */
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void
-cleanup()
+void cleanup()
 {
-    /*
-     * print timing stats if that option was specified.
-     * print errno log if that option was specified.
-     */
-    TEST_CLEANUP;
+	/*
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
+	TEST_CLEANUP;
 
-    /* close the file we have open */
-    if (close(fd) == -1) {
-       tst_resm(TWARN, "close(%s) Failed, errno=%d : %s", fname, errno, strerror(errno));
-    }
+	/* close the file we have open */
+	if (close(fd) == -1) {
+		tst_resm(TWARN, "close(%s) Failed, errno=%d : %s", fname, errno,
+			 strerror(errno));
+	}
 
-    /* Remove tmp dir and all files in it */
-    tst_rmdir();
+	/* Remove tmp dir and all files in it */
+	tst_rmdir();
 
-    /* exit with return code appropriate for results */
-    tst_exit();
-}	/* End cleanup() */
+	/* exit with return code appropriate for results */
+	tst_exit();
+}				/* End cleanup() */

@@ -60,19 +60,18 @@ extern int Tst_count;
 void setup();
 void cleanup();
 
-int exp_enos[]={EPERM, 0};
+int exp_enos[] = { EPERM, 0 };
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	struct rlimit rlim;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	setup();
 
@@ -87,7 +86,7 @@ int main(int ac, char **av)
 
 		if (getrlimit(RLIMIT_NOFILE, &rlim) != 0)
 			tst_brkm(TFAIL, cleanup, "getrlimit failed, "
-					"errno = %d", errno);
+				 "errno = %d", errno);
 		rlim.rlim_max = NR_OPEN + 1;
 
 		TEST(setrlimit(RLIMIT_NOFILE, &rlim));
@@ -106,15 +105,13 @@ int main(int ac, char **av)
 		}
 	}
 	cleanup();
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* must run test as root */
 	if (geteuid() != 0) {
@@ -132,8 +129,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

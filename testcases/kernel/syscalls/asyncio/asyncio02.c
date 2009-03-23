@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: asyncio02.c,v 1.4 2009/02/26 12:14:54 subrata_modak Exp $ */
+/* $Id: asyncio02.c,v 1.5 2009/03/23 13:35:39 subrata_modak Exp $ */
 /************************************************************
  * OS Test - Silicon Graphics, Inc.
  * Mendota Heights, Minnesota
@@ -54,7 +54,7 @@
  *
  * INPUT SPECIFICATIONS:
  * 	Standard parse_opts supported options.
- * 
+ *$
  * OUTPUT SPECIFICATIONS
  * 	Standard tst_res output format
  *
@@ -100,11 +100,11 @@
 #include "usctest.h"
 
 #define FLAG O_RDWR | O_CREAT | O_TRUNC	/* Flags used when opening temp tile */
-#define MODE  0777			/* Mode to open file with */
-#define WRITES 10			/* Number of times buffer is written */
-#define DECR 1000			/* Number of bytes decremented between */
+#define MODE  0777		/* Mode to open file with */
+#define WRITES 10		/* Number of times buffer is written */
+#define DECR 1000		/* Number of bytes decremented between */
 					/* Calls to testrun() */
-#define OK -1				/* Return value from testrun() */
+#define OK -1			/* Return value from testrun() */
 
 #define FNAME1	"aio02.1"
 #define FNAME2	"aio02.2"
@@ -113,19 +113,18 @@
 #define ERR_MSG1 "Bytes in file not equal to bytes written."
 #define ERR_MSG2 "Bytes in file (%d) not equal to bytes written (%d)."
 
-char	*dp;	/* pointer to area of memory */
+char *dp;			/* pointer to area of memory */
 
 void setup();
 void cleanup();
 int testrun(int flag, int bytes, int ti);
 
-char *TCID="asyncio02";         /* Test program identifier.    */
-int TST_TOTAL=6;                /* Total number of test cases. */
-extern int Tst_count;           /* Test Case counter for tst_* routines */
-extern int Tst_nobuf;           /* variable used to turn off tst_res buffering */
+char *TCID = "asyncio02";	/* Test program identifier.    */
+int TST_TOTAL = 6;		/* Total number of test cases. */
+extern int Tst_count;		/* Test Case counter for tst_* routines */
+extern int Tst_nobuf;		/* variable used to turn off tst_res buffering */
 
-
-int exp_enos[]={0};             /* Array of expected errnos */
+int exp_enos[] = { 0 };		/* Array of expected errnos */
 char mesg[150];
 char *filename;			/* name of the temporary file */
 
@@ -142,223 +141,216 @@ int Num_flags;
 /***********************************************************************
  * MAIN
  ***********************************************************************/
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 
-    int	i;		/* counter */
-    int ret_val;	/* return value from testrun call */
-    int eok;		/* everything is ok flag */
-    int lc;             /* loop counter */
-    char *msg;          /* message returned from parse_opts */
-    int flag_cnt;
+	int i;			/* counter */
+	int ret_val;		/* return value from testrun call */
+	int eok;		/* everything is ok flag */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
+	int flag_cnt;
 
-    Tst_nobuf=1;
-    Num_flags = sizeof(Flags)/sizeof(int);
-    TST_TOTAL= 3 * Num_flags;
+	Tst_nobuf = 1;
+	Num_flags = sizeof(Flags) / sizeof(int);
+	TST_TOTAL = 3 * Num_flags;
 
     /***************************************************************
      * parse standard options, and exit if there is an error
      ***************************************************************/
-    if ( (msg=parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL ) {
-        tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-        tst_exit();
-    }
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+		tst_exit();
+	}
 
     /***************************************************************
      * perform global setup for test
      ***************************************************************/
-    setup();
+	setup();
 
     /***************************************************************
      * check looping state if -c option given
      ***************************************************************/
-    for (lc=0; TEST_LOOPING(lc); lc++) {
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-        /* reset Tst_count in case we are looping. */
-        Tst_count=0;
+		/* reset Tst_count in case we are looping. */
+		Tst_count = 0;
 
-	for (flag_cnt=0; flag_cnt<Num_flags; flag_cnt++) {
+		for (flag_cnt = 0; flag_cnt < Num_flags; flag_cnt++) {
 
-	/*
- 	 * call testrun writing (BUFSIZ + 1) byte chunks
- 	 */
+			/*
+			 * call testrun writing (BUFSIZ + 1) byte chunks
+			 */
 
-	filename=FNAME1;
-	if( testrun(Flags[flag_cnt],BUFSIZ+1,1) != OK)
-	    tst_resm(TFAIL,ERR_MSG1);
+			filename = FNAME1;
+			if (testrun(Flags[flag_cnt], BUFSIZ + 1, 1) != OK)
+				tst_resm(TFAIL, ERR_MSG1);
 
-	else if ( STD_FUNCTIONAL_TEST ) {
-	        tst_resm(TPASS,
-		    "More than BUFSIZE bytes multiple synchronous writes to a file check out ok");
+			else if (STD_FUNCTIONAL_TEST) {
+				tst_resm(TPASS,
+					 "More than BUFSIZE bytes multiple synchronous writes to a file check out ok");
+			}
+
+			/*
+			 * call testrun writing BUFSIZ byte chunks
+			 */
+
+			filename = FNAME2;
+			if (testrun(Flags[flag_cnt], BUFSIZ, 2) != OK) {
+				tst_resm(TFAIL, ERR_MSG1);
+			} else if (STD_FUNCTIONAL_TEST) {
+				tst_resm(TPASS,
+					 "BUFSIZE bytes multiple synchronous writes to a file checks out ok");
+			}
+
+			/*
+			 * while the byte chunks are greater than 0
+			 *      call testrun() with decreasing chunk sizes
+			 */
+
+			filename = FNAME3;
+			eok = 1;
+			for (i = BUFSIZ - 1; i >= 0; i -= DECR) {
+				if ((ret_val =
+				     testrun(Flags[flag_cnt], i, 3)) != OK) {
+					char output[80];	/* local output char string */
+
+					(void)sprintf(output, ERR_MSG2, ret_val,
+						      i * WRITES);
+					tst_resm(TFAIL, output);
+				}
+			}
+
+			if (eok && STD_FUNCTIONAL_TEST)
+				tst_resm(TPASS,
+					 "Less than BUFSIZE bytes multiple synchronous writes to a file checks out ok");
+
+		}
 	}
+	cleanup();
 
-	/*
- 	 * call testrun writing BUFSIZ byte chunks
- 	 */
-
-	filename=FNAME2;
-	if(testrun(Flags[flag_cnt],BUFSIZ,2) != OK) {
-	    tst_resm(TFAIL,ERR_MSG1);
-	}
-	else if ( STD_FUNCTIONAL_TEST ) {
-	    tst_resm(TPASS,
-		"BUFSIZE bytes multiple synchronous writes to a file checks out ok");
-	}
-
-	/*
- 	 * while the byte chunks are greater than 0
- 	 *	call testrun() with decreasing chunk sizes
- 	 */
-
-	filename=FNAME3;
-	eok=1;
-	for(i = BUFSIZ-1; i >= 0; i -= DECR) {
-	    if((ret_val = testrun(Flags[flag_cnt],i,3)) != OK) {
-		char output[80];	/* local output char string */
-
-		(void)sprintf(output,ERR_MSG2,ret_val,i*WRITES);
-		tst_resm(TFAIL,output);
-	    }
-	}
-
-	if ( eok && STD_FUNCTIONAL_TEST )
-	    tst_resm(TPASS,
-		"Less than BUFSIZE bytes multiple synchronous writes to a file checks out ok");
-
-	}
-    }
-    cleanup();
-
-    return 0;
-}	/* end main() */
+	return 0;
+}				/* end main() */
 
 /***********************************************************
  *
  *	This function does the actual running of the tests.
  *
  ***********************************************************/
-int
-testrun(int flag, int bytes, int ti)
+int testrun(int flag, int bytes, int ti)
 {
 
 	void cleanup();
 
-	int	fildes,		/* temporary file's descriptor */
-		i;		/* counter */
+	int fildes,		/* temporary file's descriptor */
+	 i;			/* counter */
 
 	int ret;
 
-	struct	stat buffer;	/* buffer of memory required for stat command */
+	struct stat buffer;	/* buffer of memory required for stat command */
 
 	/*
- 	 *	Attempt to open a temporary file.
- 	 */
+	 *      Attempt to open a temporary file.
+	 */
 
-	if((fildes = open(filename,flag,MODE)) == -1) {
-	    sprintf(mesg, "open failed, errno:%d", errno);
-                    tst_brkm(TBROK, cleanup, mesg);
+	if ((fildes = open(filename, flag, MODE)) == -1) {
+		sprintf(mesg, "open failed, errno:%d", errno);
+		tst_brkm(TBROK, cleanup, mesg);
 	}
 
 	/*
- 	 *	Write the memory to the file.
- 	 */
+	 *      Write the memory to the file.
+	 */
 
-	for(i = 0; i < WRITES; i++) {
-		TEST( write(fildes,dp,(unsigned)bytes) );
-	
-		if( TEST_RETURN == -1) {
-		    sprintf(mesg, "write failed, errno:%d", errno);
-            	    tst_brkm(TBROK, cleanup, mesg);
+	for (i = 0; i < WRITES; i++) {
+		TEST(write(fildes, dp, (unsigned)bytes));
+
+		if (TEST_RETURN == -1) {
+			sprintf(mesg, "write failed, errno:%d", errno);
+			tst_brkm(TBROK, cleanup, mesg);
 		}
-	}	/* end for() */
+	}			/* end for() */
 
 	/*
- 	 *	Attempt to close the file which also flushes the buffers.
- 	 */
+	 *      Attempt to close the file which also flushes the buffers.
+	 */
 
-	if(close(fildes) == -1) {
-	    sprintf(mesg, "close failed, errno:%d", errno);
-            tst_brkm(TBROK, cleanup, mesg);
+	if (close(fildes) == -1) {
+		sprintf(mesg, "close failed, errno:%d", errno);
+		tst_brkm(TBROK, cleanup, mesg);
 	}
 
-        ret=OK;
-	if ( STD_FUNCTIONAL_TEST ) {
+	ret = OK;
+	if (STD_FUNCTIONAL_TEST) {
 
-	    /*
- 	     *	Now check to see if the number of bytes written is the
- 	     *	same as the number of bytes in the file.
- 	     */
+		/*
+		 *  Now check to see if the number of bytes written is the
+		 *  same as the number of bytes in the file.
+		 */
 
-	    if(stat(filename,&buffer) == -1) {
-	        sprintf(mesg, "stat failed, errno:%d", errno);
-	        tst_brkm(TBROK, cleanup, mesg);
-	    }
+		if (stat(filename, &buffer) == -1) {
+			sprintf(mesg, "stat failed, errno:%d", errno);
+			tst_brkm(TBROK, cleanup, mesg);
+		}
 
-
-	    if(buffer.st_size != (off_t)(bytes * WRITES)) {
-		    ret=(int)buffer.st_size;
-	    }
+		if (buffer.st_size != (off_t) (bytes * WRITES)) {
+			ret = (int)buffer.st_size;
+		}
 	}
 
-	if ( unlink(filename) == -1 ) {
-	    sprintf(mesg, "unlink failed, errno:%d", errno);
-	    tst_brkm(TBROK, cleanup, mesg);
-        }
+	if (unlink(filename) == -1) {
+		sprintf(mesg, "unlink failed, errno:%d", errno);
+		tst_brkm(TBROK, cleanup, mesg);
+	}
 
 	return ret;
 
-}	/* end testrun() */
+}				/* end testrun() */
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void
-setup()
+void setup()
 {
-    /* capture signals */
-    tst_sig(FORK, DEF_HANDLER, cleanup);
+	/* capture signals */
+	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-    /* Pause if that option was specified */
-    TEST_PAUSE;
+	/* Pause if that option was specified */
+	TEST_PAUSE;
 
-    /* create a temporary directory and go to it */
-    tst_tmpdir();
+	/* create a temporary directory and go to it */
+	tst_tmpdir();
 
-    /* Indicate which errnos are expected */
-    TEST_EXP_ENOS(exp_enos);
+	/* Indicate which errnos are expected */
+	TEST_EXP_ENOS(exp_enos);
 
-    /*
-     *	Attempt to get some memory to work with.
-     */
+	/*
+	 *  Attempt to get some memory to work with.
+	 */
 
-    if((dp = (char *)malloc((unsigned)BUFSIZ+1)) == NULL) {
-        sprintf(mesg, "malloc failed, errno:%d", errno);
-        tst_brkm(TBROK, cleanup, mesg);
-    }
+	if ((dp = (char *)malloc((unsigned)BUFSIZ + 1)) == NULL) {
+		sprintf(mesg, "malloc failed, errno:%d", errno);
+		tst_brkm(TBROK, cleanup, mesg);
+	}
 
-
-}       /* End setup() */
+}				/* End setup() */
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
  *              completion or premature exit.
  ***************************************************************/
-void
-cleanup()
+void cleanup()
 {
-    /*
-     * print timing stats if that option was specified.
-     * print errno log if that option was specified.
-     */
-    TEST_CLEANUP;
+	/*
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
+	TEST_CLEANUP;
 
-    /* remove temporary directory and all files in it. */
-    tst_rmdir();
+	/* remove temporary directory and all files in it. */
+	tst_rmdir();
 
-    /* exit with return code appropriate for results */
-    tst_exit();
+	/* exit with return code appropriate for results */
+	tst_exit();
 
-}       /* End cleanup() */
-
-
+}				/* End cleanup() */

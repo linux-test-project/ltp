@@ -17,7 +17,6 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-
 /* 01/02/2003	Port to LTP avenkat@us.ibm.com */
 /* 06/30/2001	Port to Linux	nsharoff@us.ibm.com */
 
@@ -65,7 +64,6 @@
 #define PASSED 1
 /*****	**	**	*****/
 
-
 #define P_TIME		10	/* profile for this many  seconds */
 
 extern int etext;
@@ -91,34 +89,32 @@ void terror();
 void fail_exit();
 /*****	**	**	*****/
 
-
 u_short *pbuf;
 int stuff[11];
 int loops_completed;
 int ucount, scount;
 
-
 /*--------------------------------------------------------------*/
-int main (argc, argv)
-        int  argc;
-        char *argv[];
+int main(argc, argv)
+int argc;
+char *argv[];
 {
 	register int i;
 	int count, loc;
 	long int bsize;
 	void alrm();
 #ifdef __mips__
- #if _MIPS_SIM == _MIPS_SIM_ABI64
+#if _MIPS_SIM == _MIPS_SIM_ABI64
 	extern long int __start;
-	long int lotext = (long int)& __start;
- #else
+	long int lotext = (long int)&__start;
+#else
 	extern int __start;
 	int lotext = (int)&__start;
- #endif
+#endif
 #elif defined(__powerpc64__)
 	extern long int _start;
-	long int *lotextptr = (long*)&_start;
-        long int lotext = *lotextptr;
+	long int *lotextptr = (long *)&_start;
+	long int lotext = *lotextptr;
 #elif __WORDSIZE == 64
 	extern long int _start;
 	long int lotext = (long)&_start;
@@ -127,38 +123,36 @@ int main (argc, argv)
 	int lotext = (int)&_start;
 #endif
 
-	bsize = (long int) &etext;
+	bsize = (long int)&etext;
 	bsize -= lotext & ~4096;
 
 	count = loc = 0;
 
-	setup();		/* temp file is now open	*/
+	setup();		/* temp file is now open        */
 	/*
-	if ((sigset(SIGALRM, alrm)) == SIG_ERR) {
-		fprintf(temp,"signal failed. errno = %d\n",errno);
+	   if ((sigset(SIGALRM, alrm)) == SIG_ERR) {
+	   fprintf(temp,"signal failed. errno = %d\n",errno);
+	   fail_exit();
+	   } */
+	sigptr.sa_handler = (void (*)(int signal))alrm;
+	sigfillset(&sigptr.sa_mask);
+	sigptr.sa_flags = 0;
+	sigaddset(&sigptr.sa_mask, SIGALRM);
+	if (sigaction(SIGALRM, &sigptr, (struct sigaction *)NULL) == -1) {
+		fprintf(temp, "Signal SIGALRM failed, errno = %d \n", errno);
 		fail_exit();
-	}*/
-        sigptr.sa_handler = (void (*) (int signal))alrm;
-        sigfillset(&sigptr.sa_mask);
-        sigptr.sa_flags = 0;
-        sigaddset(&sigptr.sa_mask, SIGALRM);
-        if (sigaction(SIGALRM, &sigptr, (struct sigaction *)NULL) == -1)
-        {
-            fprintf(temp,"Signal SIGALRM failed, errno = %d \n", errno);
-	    fail_exit();
-        }
-
-
+	}
 
 /*--------------------------------------------------------------*/
 	blenter();
 
-	if ((pbuf = (u_short *) malloc(bsize*(sizeof(u_short))) ) == (u_short *) 0) {
+	if ((pbuf =
+	     (u_short *) malloc(bsize * (sizeof(u_short)))) == (u_short *) 0) {
 		fprintf(temp, "\tcannot malloc buffer.\n");
 		fail_exit();
 	}
 
-	for (i=0; i < bsize; i++)
+	for (i = 0; i < bsize; i++)
 		pbuf[i] = 0;
 
 	if (profil(pbuf, bsize, ADDRESS_OFFSET, 0x10000)) {
@@ -197,7 +191,7 @@ int main (argc, argv)
 /*--------------------------------------------------------------*/
 	blenter();
 
-	for (i=0; i < bsize; i++) {
+	for (i = 0; i < bsize; i++) {
 		count += pbuf[i];
 		if (pbuf[i])
 			loc++;
@@ -209,12 +203,12 @@ int main (argc, argv)
 	blenter();
 
 	if ((sigset(SIGCLD, SIG_IGN)) == SIG_ERR) {
-		fprintf(temp,"signal failed. errno = %d\n",errno);
+		fprintf(temp, "signal failed. errno = %d\n", errno);
 		fail_exit();
 	}
 	t_flag = 0;
 	setpgrp();
-	for (i=0; i < bsize; i++)
+	for (i = 0; i < bsize; i++)
 		pbuf[i] = 0;
 
 	if (profil(pbuf, bsize, ADDRESS_OFFSET, 0x10000)) {
@@ -240,13 +234,12 @@ int main (argc, argv)
 	}
 
 	count = 0;
-	for (i=0; i < bsize; i++) {
+	for (i = 0; i < bsize; i++) {
 		count += pbuf[i];
 		if (pbuf[i])
 			loc++;
 	}
 	scount = count;
-
 
 	if (scount > ucount) {
 		fprintf(temp, "\tUnexpected profiling results.\n");
@@ -256,13 +249,13 @@ int main (argc, argv)
 
 	blexit();
 /*--------------------------------------------------------------*/
-	anyfail();	/* THIS CALL DOES NOT RETURN - EXITS!!	*/
+	anyfail();		/* THIS CALL DOES NOT RETURN - EXITS!!  */
 	return 0;
 }
+
 /*--------------------------------------------------------------*/
 
-void
-alrm()
+void alrm()
 {
 	t_flag++;
 }
@@ -270,40 +263,43 @@ alrm()
 /*****	LTP Port	*****/
 int anyfail()
 {
-  (local_flag == FAILED)? tst_resm(TFAIL, "Test failed"): tst_resm(TPASS, "Test passed");
-  tst_exit();
-  return 0;
+	(local_flag == FAILED) ? tst_resm(TFAIL,
+					  "Test failed") : tst_resm(TPASS,
+								    "Test passed");
+	tst_exit();
+	return 0;
 }
 
 void setup()
 {
- temp = stderr;
+	temp = stderr;
 }
 
 int blenter()
 {
-   //tst_resm(TINFO, "Enter block %d", block_number);
-   local_flag = PASSED;
-   return 0;
+	//tst_resm(TINFO, "Enter block %d", block_number);
+	local_flag = PASSED;
+	return 0;
 }
 
 int blexit()
 {
-   //tst_resm(TINFO, "Exitng test");
-   (local_flag == FAILED) ? tst_resm(TFAIL, "Test failed") : tst_resm(TPASS, "Test passed");
-   return 0;
+	//tst_resm(TINFO, "Exitng test");
+	(local_flag == FAILED) ? tst_resm(TFAIL,
+					  "Test failed") : tst_resm(TPASS,
+								    "Test passed");
+	return 0;
 }
 
-
-void terror(char * message)
+void terror(char *message)
 {
-  tst_resm(TBROK, "Reason: %s:%s", message, strerror(errno));
+	tst_resm(TBROK, "Reason: %s:%s", message, strerror(errno));
 }
 
 void fail_exit()
 {
-  local_flag = FAILED;
-  anyfail();
+	local_flag = FAILED;
+	anyfail();
 
 }
 

@@ -90,10 +90,10 @@
 #define PIPE_MODE	S_IFIFO | S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
 #define SEEK_TOP	10
 
-char *TCID="lseek10";		/* Test program identifier.    */
-int TST_TOTAL=3;		/* Total number of test cases. */
+char *TCID = "lseek10";		/* Test program identifier.    */
+int TST_TOTAL = 3;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-int exp_enos[]={ESPIPE, EINVAL, EBADF, 0};
+int exp_enos[] = { ESPIPE, EINVAL, EBADF, 0 };
 
 int no_setup();
 int setup1();			/* setup function to test lseek() for ESPIPE */
@@ -104,24 +104,25 @@ int fd1;			/* file handle for testfile1  */
 int fd2;			/* file handle for testfile2  */
 int fd3;			/* file handle for testfile3  */
 
-struct test_case_t {		/* test case struct. to hold ref. test cond's*/
+struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	int fd;
 	int Whence;
 	char *desc;
 	int exp_errno;
-	int (*setupfunc)();
+	int (*setupfunc) ();
 } Test_cases[] = {
-	{ 1, SEEK_SET, "'fd' associated with a pipe/fifo", ESPIPE, setup1 },
-	{ 2, SEEK_TOP, "'whence' argument is not valid", EINVAL, setup2 },
-	{ 3, SEEK_SET, "'fd' is not an open file descriptor", EBADF, setup3 },
-	{ 0, 0, NULL, 0, no_setup }
+	{
+	1, SEEK_SET, "'fd' associated with a pipe/fifo", ESPIPE, setup1}, {
+	2, SEEK_TOP, "'whence' argument is not valid", EINVAL, setup2}, {
+	3, SEEK_SET, "'fd' is not an open file descriptor", EBADF, setup3},
+	{
+	0, 0, NULL, 0, no_setup}
 };
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
@@ -129,10 +130,10 @@ main(int ac, char **av)
 	int whence;		/* position of file handle in the file */
 	char *test_desc;	/* test specific error message */
 	int ind;		/* counter to test different test conditions */
-   
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -146,7 +147,7 @@ main(int ac, char **av)
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
 			fildes = Test_cases[ind].fd;
@@ -162,14 +163,14 @@ main(int ac, char **av)
 				fildes = fd3;
 			}
 			/*
-		 	 * Invoke lseek(2) to test different test conditions.
-		 	 * Verify that it fails with -1 return value and
+			 * Invoke lseek(2) to test different test conditions.
+			 * Verify that it fails with -1 return value and
 			 * sets appropriate errno.
-		 	 */
+			 */
 			TEST(lseek(fildes, 0, whence));
 
 			/* check return code of lseek(2) */
-			if (TEST_RETURN != (off_t)-1) {
+			if (TEST_RETURN != (off_t) - 1) {
 				tst_resm(TFAIL, "lseek() returned %d, expected "
 					 "-1, errno:%d", TEST_RETURN,
 					 Test_cases[ind].exp_errno);
@@ -190,9 +191,8 @@ main(int ac, char **av)
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
-}	/* End main */
+	 /*NOTREACHED*/ return 0;
+}				/* End main */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -200,10 +200,9 @@ main(int ac, char **av)
  *	     Invoke individual test setup functions according to the order
  *	     set in test struct. definition.
  */
-void
-setup()
+void setup()
 {
-	int ind;			/* counter for test setup function */
+	int ind;		/* counter for test setup function */
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -223,8 +222,7 @@ setup()
 /*
  * no_setup() - This is a dummy function which simply returns 0.
  */
-int
-no_setup()
+int no_setup()
 {
 	return 0;
 }
@@ -236,8 +234,7 @@ no_setup()
  *	      reading/writing.
  *	      This function returns 0 on success.
  */
-int
-setup1()
+int setup1()
 {
 	/* Creat a named pipe/fifo using mknod() */
 	if (mknod(TEMP_FILE1, PIPE_MODE, 0) < 0) {
@@ -263,8 +260,7 @@ setup1()
  *	      into it.
  *	      This function returns 0 on success.
  */
-int
-setup2()
+int setup2()
 {
 	char write_buff[BUFSIZ];	/* buffer to hold data */
 
@@ -279,7 +275,7 @@ setup2()
 	}
 
 	/* Write data into temporary file */
-	if(write(fd2, write_buff, sizeof(write_buff)) <= 0) {
+	if (write(fd2, write_buff, sizeof(write_buff)) <= 0) {
 		tst_brkm(TBROK, cleanup,
 			 "write(2) on %s Failed, errno=%d : %s",
 			 TEMP_FILE2, errno, strerror(errno));
@@ -294,8 +290,7 @@ setup2()
  *	      Creat a temporary file for reading/writing and close it.
  *	      This function returns 0 on success.
  */
-int
-setup3()
+int setup3()
 {
 	/* Creat/open a temporary file under above directory */
 	if ((fd3 = open(TEMP_FILE3, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
@@ -319,8 +314,7 @@ setup3()
  *             completion or premature exit.
  *	       Remove the test directory and testfile(s) created in the setup.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -328,7 +322,7 @@ cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* Close the temporary file(s) created in setup1/setup2*/
+	/* Close the temporary file(s) created in setup1/setup2 */
 	if (close(fd1) < 0) {
 		tst_brkm(TFAIL, NULL,
 			 "close(%s) Failed, errno=%d : %s:",

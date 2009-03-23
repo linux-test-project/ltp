@@ -84,8 +84,8 @@
 #define K4              (K1 * 4)
 #define NBUFS           4
 
-char *TCID="pread01";		/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "pread01";		/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int fildes;			/* file descriptor for tempfile */
@@ -94,19 +94,18 @@ char *read_buf[NBUFS];		/* buffer to hold data read from file */
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
-void l_seek(int, off_t, int, off_t); /* function to call lseek() */
+void l_seek(int, off_t, int, off_t);	/* function to call lseek() */
 void init_buffers();		/* function to initialize/allocate buffers */
 void compare_bufers();		/* function to compare o/p of pread/pwrite */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	int nread;		/* no. of bytes read by pread() */
 
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
@@ -118,7 +117,7 @@ main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* Reset Tst_count in case we are looping */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/*
 		 * Call pread() of K1 data (should be 2's) at offset K2.
@@ -163,7 +162,7 @@ main(int ac, char **av)
 		/* We should now be at an offset of K1. */
 		l_seek(fildes, 0, SEEK_CUR, K1);
 
-		/* pread() of K1 data (should be 1's) at offset K1.*/
+		/* pread() of K1 data (should be 1's) at offset K1. */
 		nread = pread(fildes, read_buf[1], K1, K1);
 		if (nread != K1) {
 			tst_brkm(TFAIL, cleanup, "pread() at off. K1 failed: "
@@ -190,13 +189,12 @@ main(int ac, char **av)
 
 		/* reset our location to offset K4 in case we are looping */
 		l_seek(fildes, K4, SEEK_SET, K4);
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
-}	/* End main */
+	 /*NOTREACHED*/ return 0;
+}				/* End main */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -205,10 +203,9 @@ main(int ac, char **av)
  *  Create a temporary directory and a file under it and
  *  write know data at different offset positions.
  */
-void
-setup()
+void setup()
 {
-	int nwrite = 0;			/* no. of bytes written by pwrite() */
+	int nwrite = 0;		/* no. of bytes written by pwrite() */
 
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -238,7 +235,7 @@ setup()
 	l_seek(fildes, 0, SEEK_CUR, 0);
 
 	/* Now, lseek() to a non K boundary, just to be different. */
-	l_seek(fildes, K1/2, SEEK_SET, K1/2);
+	l_seek(fildes, K1 / 2, SEEK_SET, K1 / 2);
 
 	/* Again, pwrite() K1 of data (2's) at offset K2 of temporary file */
 	if ((nwrite = pwrite(fildes, write_buf[2], K1, K2)) != K1) {
@@ -248,7 +245,7 @@ setup()
 	}
 
 	/* We should still be at our non K boundary. */
-	l_seek(fildes, 0, SEEK_CUR, K1/2);
+	l_seek(fildes, 0, SEEK_CUR, K1 / 2);
 
 	/* lseek() to an offset of K3. */
 	l_seek(fildes, K3, SEEK_SET, K3);
@@ -281,8 +278,7 @@ setup()
  *    write_buf[0] has 0's, write_buf[1] has 1's, write_buf[2] has 2's
  *    write_buf[3] has 3's.
  */
-void
-init_buffers()
+void init_buffers()
 {
 	int count;		/* counter variable for loop */
 
@@ -305,8 +301,7 @@ init_buffers()
  *  "checkoff" is the offset at which we believe we should be at.
  *  Used to validate pread/pwrite don't move the offset.
  */
-void
-l_seek(int fdesc, off_t offset, int whence, off_t checkoff)
+void l_seek(int fdesc, off_t offset, int whence, off_t checkoff)
 {
 	off_t offloc;		/* offset ret. from lseek() */
 
@@ -327,8 +322,7 @@ l_seek(int fdesc, off_t offset, int whence, off_t checkoff)
  *  This function does memcmp of read/write buffer and display message
  *  about the functionality of pread().
  */
-void
-compare_bufers()
+void compare_bufers()
 {
 	int count;		/* index for the loop */
 	int err_flg = 0;	/* flag to indicate error */
@@ -354,8 +348,7 @@ compare_bufers()
  *             Close the temporary file.
  *             Remove the temporary directory created.
  */
-void
-cleanup()
+void cleanup()
 {
 	int count;		/* index for the loop */
 

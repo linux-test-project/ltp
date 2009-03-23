@@ -83,32 +83,31 @@
 
 #define MODES   	S_IRWXU
 #define TEST_DIR	"testdir"
-#define TRUNC_LEN	256			/* truncation length */
+#define TRUNC_LEN	256	/* truncation length */
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
 TCID_DEFINE(truncate04);	/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test conditions */
+int TST_TOTAL = 1;		/* Total number of test conditions */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 char test_desc[] = "File is a directory";
-int exp_enos[] = {EISDIR, 0};
+int exp_enos[] = { EISDIR, 0 };
 int r_val;
 int fd;
 
 void setup();			/* Main setup function for the test */
 void cleanup();			/* Main cleanup function for the test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	char *file_name;	/* testfile name */
-   
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -126,42 +125,36 @@ main(int ac, char **av)
 		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-			/*
-			 * Call truncate(2)
-			 * verify that it fails with return code -1 and sets
-			 * appropriate errno.
-			 */
-			file_name=TEST_DIR;
-			TEST(truncate(file_name, TRUNC_LEN));
+		/*
+		 * Call truncate(2)
+		 * verify that it fails with return code -1 and sets
+		 * appropriate errno.
+		 */
+		file_name = TEST_DIR;
+		TEST(truncate(file_name, TRUNC_LEN));
 
-			/* check return code of truncate(2) */
-			if (TEST_RETURN == -1) {
-				TEST_ERROR_LOG(TEST_ERRNO);
-				if (TEST_ERRNO == EISDIR) {
-					tst_resm(TPASS, "truncate() fails, %s, "
-						"errno=%d", test_desc,
-						TEST_ERRNO);
-				} else {
-					tst_resm(TFAIL, "truncate() fails, %s, "
-						"errno=%d, expected errno:%d",
-						 test_desc, TEST_ERRNO,
-						 exp_enos);
-				}
+		/* check return code of truncate(2) */
+		if (TEST_RETURN == -1) {
+			TEST_ERROR_LOG(TEST_ERRNO);
+			if (TEST_ERRNO == EISDIR) {
+				tst_resm(TPASS, "truncate() fails, %s, "
+					 "errno=%d", test_desc, TEST_ERRNO);
 			} else {
-				tst_resm(TFAIL, "truncate() returned %d, "
-					"expected -1, errno EISDIR",
-					TEST_RETURN);
+				tst_resm(TFAIL, "truncate() fails, %s, "
+					 "errno=%d, expected errno:%d",
+					 test_desc, TEST_ERRNO, exp_enos);
 			}
-	}	/* End for TEST_LOOPING */
+		} else {
+			tst_resm(TFAIL, "truncate() returned %d, "
+				 "expected -1, errno EISDIR", TEST_RETURN);
+		}
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
-	/*NOTREACHED*/
+	 /*NOTREACHED*/ return 0;
 
-
-  return 0;
-
-}	/* End main */
+}				/* End main */
 
 /*
  * void
@@ -169,24 +162,22 @@ main(int ac, char **av)
  *  Create a temporary directory and change directory to it.
  *  Create a test directory under temporary directory and open it
  */
-void
-setup()
+void setup()
 {
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Switch to nobody user for correct error code collection */
-        if (geteuid() != 0) {
-                tst_brkm(TBROK, tst_exit, "Test must be run as root");
-        }
-         ltpuser = getpwnam(nobody_uid);
-         if (setuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "setuid failed to "
-                         "to set the effective uid to %d",
-                         ltpuser->pw_uid);
-                perror("setuid");
-         }
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+	}
+	ltpuser = getpwnam(nobody_uid);
+	if (setuid(ltpuser->pw_uid) == -1) {
+		tst_resm(TINFO, "setuid failed to "
+			 "to set the effective uid to %d", ltpuser->pw_uid);
+		perror("setuid");
+	}
 
 	/*
 	 * Pause if that option was specified
@@ -196,22 +187,20 @@ setup()
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
-        /*
-         * create a new directory and open it
-         */
+	/*
+	 * create a new directory and open it
+	 */
 
-        if ((r_val = mkdir(TEST_DIR, MODES)) == -1){
-                tst_brkm(TBROK, cleanup, "%s - mkdir() in main() "
-                         "failed", TCID);
-        }
+	if ((r_val = mkdir(TEST_DIR, MODES)) == -1) {
+		tst_brkm(TBROK, cleanup, "%s - mkdir() in main() "
+			 "failed", TCID);
+	}
 
-        if ((fd = open(TEST_DIR, O_RDONLY)) == -1) {
-                tst_brkm(TBROK, cleanup, "open of directory failed");
-        }
+	if ((fd = open(TEST_DIR, O_RDONLY)) == -1) {
+		tst_brkm(TBROK, cleanup, "open of directory failed");
+	}
 
-
-}	/* End setup() */
-
+}				/* End setup() */
 
 /*
  * void
@@ -219,21 +208,20 @@ setup()
  *	       completion or premature exit.
  *  Remove the test directory and testfile created in the setup.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
 	 */
 	TEST_CLEANUP;
 
-        if (close(fd) < 0) {
-                tst_brkm(TBROK, cleanup, "close failed: errno = %d", errno);
-        }
+	if (close(fd) < 0) {
+		tst_brkm(TBROK, cleanup, "close failed: errno = %d", errno);
+	}
 
 	/* Remove tmp dir and all files in it */
 	tst_rmdir();
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

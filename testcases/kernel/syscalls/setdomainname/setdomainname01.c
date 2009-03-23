@@ -75,22 +75,21 @@
 static void setup();
 static void cleanup();
 
-char *TCID="setdomainname01";	/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "setdomainname01";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-static char  *test_domain_name = "test_dom";
-static char  old_domain_name[MAX_NAME_LEN];
+static char *test_domain_name = "test_dom";
+static char old_domain_name[MAX_NAME_LEN];
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 
-	int lc;		/* loop counter */
-	char *msg;	/* message returned from parse_opts */
-   
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
+
 	/* parse standard options */
-	if ((msg=parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -99,53 +98,49 @@ main(int ac, char **av)
 	setup();
 
 	/* check looping state if -c option given */
-	for (lc=0; TEST_LOOPING(lc); lc++) {
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/*
 		 * Call setdomainname(2)
 		 */
-		TEST(setdomainname(test_domain_name,
-				   sizeof(test_domain_name)));
+		TEST(setdomainname(test_domain_name, sizeof(test_domain_name)));
 
 		/* check return code */
-		if ( TEST_RETURN == -1 ) {
+		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "setdomainname() Failed, errno = %d :"
-				" %s", TEST_ERRNO, strerror(TEST_ERRNO));
+				 " %s", TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
 			tst_resm(TPASS, "setdomainname() returned %d, "
 				 "Domain name set to \"%s\"", TEST_RETURN,
 				 test_domain_name);
 		}
 
-
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* cleanup and exit */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 
-}	/* End main */
+}				/* End main */
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup()
+void setup()
 {
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Check whether we are root*/
+	/* Check whether we are root */
 	if (geteuid() != 0) {
 		tst_brkm(TBROK, tst_exit, "Test must be run as root");
 	}
 
 	/* Save current domain name */
-	if((getdomainname(old_domain_name, sizeof(old_domain_name))) < 0 ) {
+	if ((getdomainname(old_domain_name, sizeof(old_domain_name))) < 0) {
 		tst_brkm(TBROK, tst_exit, "getdomainname() failed while"
 			 " getting current domain name");
 	}
@@ -153,15 +148,13 @@ setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-}	/* End setup() */
-
+}				/* End setup() */
 
 /*
  *cleanup() -  performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 
 	/*
@@ -171,11 +164,11 @@ cleanup()
 	TEST_CLEANUP;
 
 	/* Restore domain name */
-	if((setdomainname(old_domain_name, strlen(old_domain_name))) < 0 ) {
+	if ((setdomainname(old_domain_name, strlen(old_domain_name))) < 0) {
 		tst_resm(TWARN, "setdomainname() failed while restoring"
-				" domainname to \"%s\"", old_domain_name);
+			 " domainname to \"%s\"", old_domain_name);
 	}
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

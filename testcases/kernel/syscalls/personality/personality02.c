@@ -73,7 +73,7 @@ extern int personality(unsigned long);
 void cleanup(void);
 void setup(void);
 
-char *TCID= "personality02";
+char *TCID = "personality02";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
@@ -81,22 +81,22 @@ extern int Tst_count;
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
-        int start_pers;
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
+	int start_pers;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
-        start_pers = personality(PER_LINUX);
-        if (start_pers == -1) {
-           printf("personality01:  Test Failed\n");
-           exit(-1);
-        }
+	start_pers = personality(PER_LINUX);
+	if (start_pers == -1) {
+		printf("personality01:  Test Failed\n");
+		exit(-1);
+	}
 
 	/* The following checks the looping state if -i option given */
 
@@ -111,7 +111,7 @@ int main(int ac, char **av)
 				 "- %s", TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
 			tst_resm(TPASS, "call to personality() with a "
-					"bad personality passed");
+				 "bad personality passed");
 		}
 
 		TEST_ERROR_LOG(TEST_ERRNO);
@@ -126,15 +126,13 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -147,8 +145,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

@@ -33,13 +33,11 @@
  *These globals must be defined in the test.
  */
 
+char *TCID = "syslogtst";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
+extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-char *TCID="syslogtst";         /* Test program identifier.    */
-int TST_TOTAL=1;                /* Total number of test cases. */
-extern int Tst_count;           /* Test Case counter for tst_* routines */
-
-int exp_enos[]={0};             /* List must end with 0 */
-
+int exp_enos[] = { 0 };		/* List must end with 0 */
 
 void sig_handler(int signal);
 
@@ -57,64 +55,81 @@ int main(int argc, char *argv[])
 	signal(SIGQUIT, sig_handler);
 
 	time(&t);
-	srandom((unsigned int)getpid()^(((unsigned int)t<<16)| (unsigned int)t>>16));
+	srandom((unsigned int)getpid() ^
+		(((unsigned int)t << 16) | (unsigned int)t >> 16));
 
-	if(argc < 2) {
+	if (argc < 2) {
 		ch = (random() % 10) + 1;
-		if(ch == 2) ch1 = random() % 8;
-		if(ch == 8) ch1 = (random() % 5) + 1;
-		tst_resm(TINFO, "\nrandom numbers were generated for the case numbers : %d, %d\n", ch, ch1);
+		if (ch == 2)
+			ch1 = random() % 8;
+		if (ch == 8)
+			ch1 = (random() % 5) + 1;
+		tst_resm(TINFO,
+			 "\nrandom numbers were generated for the case numbers : %d, %d\n",
+			 ch, ch1);
 	}
 
-	else if(argc == 2) {
+	else if (argc == 2) {
 		ch = atoi(argv[1]);
-		if(atoi(argv[1]) == 2 || atoi(argv[1]) == 8) {
-			if(ch == 2) ch1 = random() % 8;
-			if(ch == 8) ch1 = (random() % 5) + 1;
-			tst_resm(TINFO, "\nrandom number was generated for case %d : %d\n", ch, ch1);
+		if (atoi(argv[1]) == 2 || atoi(argv[1]) == 8) {
+			if (ch == 2)
+				ch1 = random() % 8;
+			if (ch == 8)
+				ch1 = (random() % 5) + 1;
+			tst_resm(TINFO,
+				 "\nrandom number was generated for case %d : %d\n",
+				 ch, ch1);
 		}
 	}
 
 	else {
 		ch = atoi(argv[1]);
-		if(argc > 2) ch1 = atoi(argv[2]);
+		if (argc > 2)
+			ch1 = atoi(argv[2]);
 	}
-	
+
 	/*
 	 * Send syslog messages according to the case number, which
 	 * we will know from command line.
 	 */
-	switch(ch) {
+	switch (ch) {
 	case 1:
 		syslog(LOG_MAIL | LOG_INFO, "syslogtst: mail info test.");
 		break;
 	case 2:
-		switch(ch1) {
+		switch (ch1) {
 		case 0:
-			syslog(LOG_MAIL | LOG_EMERG, "syslogtst: mail emerg test.");
+			syslog(LOG_MAIL | LOG_EMERG,
+			       "syslogtst: mail emerg test.");
 			break;
 		case 1:
-			syslog(LOG_MAIL | LOG_ALERT, "syslogtst: mail alert test.");
+			syslog(LOG_MAIL | LOG_ALERT,
+			       "syslogtst: mail alert test.");
 			break;
 		case 2:
-			syslog(LOG_MAIL | LOG_CRIT, "syslogtst: mail crit test.");
+			syslog(LOG_MAIL | LOG_CRIT,
+			       "syslogtst: mail crit test.");
 			break;
 		case 3:
 			syslog(LOG_MAIL | LOG_ERR, "syslogtst: mail err test.");
 			break;
 		case 4:
-			syslog(LOG_MAIL | LOG_WARNING, "syslogtst: mail warning test.");
+			syslog(LOG_MAIL | LOG_WARNING,
+			       "syslogtst: mail warning test.");
 			break;
 		case 5:
-			syslog(LOG_MAIL | LOG_NOTICE, "syslogtst: mail notice test.");
+			syslog(LOG_MAIL | LOG_NOTICE,
+			       "syslogtst: mail notice test.");
 			break;
 		case 6:
-			syslog(LOG_MAIL | LOG_INFO, "syslogtst: mail info test.");
+			syslog(LOG_MAIL | LOG_INFO,
+			       "syslogtst: mail info test.");
 			break;
 		case 7:
-			syslog(LOG_MAIL | LOG_DEBUG, "syslogtst: mail debug test.");
+			syslog(LOG_MAIL | LOG_DEBUG,
+			       "syslogtst: mail debug test.");
 			break;
-		
+
 		}
 		break;
 	case 3:
@@ -136,18 +151,21 @@ int main(int argc, char *argv[])
 		 * console.
 		 */
 #ifdef DEBUG2
-		status = system("/bin/mv -f /var/log/messages /var/log/messages.tmp");
+		status =
+		    system
+		    ("/bin/mv -f /var/log/messages /var/log/messages.tmp");
 #else
-        status = 0;
+		status = 0;
 #endif
 		if (status == 0) {
 #ifdef DEBUG
-			tst_resm(TINFO,"/var/log/messages is moved to /var/log/messages.tmp...");
+			tst_resm(TINFO,
+				 "/var/log/messages is moved to /var/log/messages.tmp...");
 #endif
 			flag3 = 1;
-		}
-		else {
-			tst_resm(TFAIL, "Cannot move /var/log/messages. Setup failed...exiting...");
+		} else {
+			tst_resm(TFAIL,
+				 "Cannot move /var/log/messages. Setup failed...exiting...");
 			tst_exit();
 		}
 		sleep(10);
@@ -160,12 +178,15 @@ int main(int argc, char *argv[])
 		 */
 		if (flag3 == 1) {
 #ifdef DEBUG2
-			status = system("/bin/mv -f /var/log/messages.tmp /var/log/messages");
+			status =
+			    system
+			    ("/bin/mv -f /var/log/messages.tmp /var/log/messages");
 #else
-        status = 0;
+			status = 0;
 #endif
 			if (status != 0) {
-				tst_resm(TFAIL, "Restoring /var/log/messages failed...");
+				tst_resm(TFAIL,
+					 "Restoring /var/log/messages failed...");
 				tst_exit();
 			}
 #ifdef DEBUG
@@ -183,11 +204,12 @@ int main(int argc, char *argv[])
 #endif
 		if (fd >= 3) {
 #ifdef DEBUG
-			tst_resm(TINFO, "open() has returned the expected fd: %d", fd);
+			tst_resm(TINFO,
+				 "open() has returned the expected fd: %d", fd);
 #endif
-		}
-		else {
-			tst_resm(TFAIL, "open() has returned unexpected fd: %d", fd);
+		} else {
+			tst_resm(TFAIL, "open() has returned unexpected fd: %d",
+				 fd);
 			exit_flag = 1;
 			close(fd);
 			closelog();
@@ -202,14 +224,17 @@ int main(int argc, char *argv[])
 		tst_resm(TINFO, "openlog() with LOG_NDELAY option...");
 #endif
 		if (fd <= 3) {
-			tst_resm(TFAIL, "open() returned unexpected fd: %d", fd);
+			tst_resm(TFAIL, "open() returned unexpected fd: %d",
+				 fd);
 			exit_flag = 1;
 			close(fd);
 			closelog();
 			break;
 		}
 #ifdef DEBUG
-		else tst_resm(TINFO, "open() has returned expected fd: %d", fd);
+		else
+			tst_resm(TINFO, "open() has returned expected fd: %d",
+				 fd);
 #endif
 		close(fd);
 		closelog();
@@ -225,55 +250,62 @@ int main(int argc, char *argv[])
 		syslog(LOG_USER | LOG_DEBUG, "syslogtst: debug log");
 		break;
 	case 8:
-		switch(ch1) {
-		/*
-		 * Kernel messages cannot be send by user, so skipping the
-		 * LOG_KERN facility.
-		 */
+		switch (ch1) {
+			/*
+			 * Kernel messages cannot be send by user, so skipping the
+			 * LOG_KERN facility.
+			 */
 		case 1:
-			syslog(LOG_USER | LOG_INFO, "syslogtst: user info test.");
-			break;      
+			syslog(LOG_USER | LOG_INFO,
+			       "syslogtst: user info test.");
+			break;
 		case 2:
-			syslog(LOG_MAIL | LOG_INFO, "syslogtst: mail info test.");
-			break;      
+			syslog(LOG_MAIL | LOG_INFO,
+			       "syslogtst: mail info test.");
+			break;
 		case 3:
-			syslog(LOG_DAEMON | LOG_INFO, "syslogtst: daemon info test.");
-			break;      
+			syslog(LOG_DAEMON | LOG_INFO,
+			       "syslogtst: daemon info test.");
+			break;
 		case 4:
-			syslog(LOG_AUTH | LOG_INFO, "syslogtst: auth info test.");
-			break;      
+			syslog(LOG_AUTH | LOG_INFO,
+			       "syslogtst: auth info test.");
+			break;
 		case 5:
 			syslog(LOG_LPR | LOG_INFO, "syslogtst: lpr info test.");
-			break;      
+			break;
 		}
 		break;
 	case 9:
 		setlogmask(LOG_UPTO(LOG_ERR));
 		syslog(LOG_USER | LOG_ERR, "syslogtst: error level is logged");
-		syslog(LOG_USER | LOG_WARNING, "syslogtst: warning level not to be logged");
+		syslog(LOG_USER | LOG_WARNING,
+		       "syslogtst: warning level not to be logged");
 		break;
 	case 10:
 		setlogmask(LOG_MASK(LOG_ERR));
-		syslog(LOG_USER | LOG_ERR, "syslogtst:10 error level is logged");
-		syslog(LOG_USER | LOG_WARNING, "syslogtst:10 warning level not to be logged");
+		syslog(LOG_USER | LOG_ERR,
+		       "syslogtst:10 error level is logged");
+		syslog(LOG_USER | LOG_WARNING,
+		       "syslogtst:10 warning level not to be logged");
 		break;
 	}
-
 
 	/*
 	 * Check the exit_flag and if it is set,
 	 * exit with status 1, indicating failure.
 	 */
-	if (exit_flag == 1) exit(1);
-	else exit(0);
-	
-}
+	if (exit_flag == 1)
+		exit(1);
+	else
+		exit(0);
 
+}
 
 void sig_handler(int signal)
 {
 
-	switch(signal) {
+	switch (signal) {
 	case SIGINT:
 #ifdef DEBUG
 		tst_resm(TINFO, "SIGINT is received.");

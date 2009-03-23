@@ -52,21 +52,22 @@
 void setup(void);
 void cleanup(void);
 
-int fd[2];		/* fd's for the pipe() call in setup()  */
-int pfd;		/* holds the value for fd[1]		*/
-int bfd = -1;		/* an invalid fd			*/
+int fd[2];			/* fd's for the pipe() call in setup()  */
+int pfd;			/* holds the value for fd[1]            */
+int bfd = -1;			/* an invalid fd                        */
 
-int exp_enos[] = {EBADF, EINVAL, 0};
+int exp_enos[] = { EBADF, EINVAL, 0 };
 
 struct test_case_t {
-        int *fd;
-        int error;
+	int *fd;
+	int error;
 } TC[] = {
 	/* EBADF - fd is invalid (-1) */
-        { &bfd, EBADF},
-
-	/* EINVAL - fsync() on pipe should not succeed. */
-        { &pfd, EINVAL}
+	{
+	&bfd, EBADF},
+	    /* EINVAL - fsync() on pipe should not succeed. */
+	{
+	&pfd, EINVAL}
 };
 
 char *TCID = "fsync03";
@@ -75,12 +76,12 @@ extern int Tst_count;
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
+	int lc;			/* loop counter */
 	int i;
-	char *msg;			/* message returned from parse_opts */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -100,35 +101,33 @@ int main(int ac, char **av)
 
 			TEST(fsync(*(TC[i].fd)));
 
-                        if (TEST_RETURN != -1) {
-                                tst_resm(TFAIL, "call succeeded unexpectedly");
-                                continue;
-                        }
+			if (TEST_RETURN != -1) {
+				tst_resm(TFAIL, "call succeeded unexpectedly");
+				continue;
+			}
 
-                        TEST_ERROR_LOG(TEST_ERRNO);
+			TEST_ERROR_LOG(TEST_ERRNO);
 
-                        if (TEST_ERRNO == TC[i].error) {
-                                tst_resm(TPASS, "expected failure - "
-                                         "errno = %d : %s", TEST_ERRNO,
-                                         strerror(TEST_ERRNO));
-                        } else {
-                                tst_resm(TFAIL, "unexpected error - %d : %s - "
-                                         "expected %d", TEST_ERRNO,
-                                         strerror(TEST_ERRNO), TC[i].error);
+			if (TEST_ERRNO == TC[i].error) {
+				tst_resm(TPASS, "expected failure - "
+					 "errno = %d : %s", TEST_ERRNO,
+					 strerror(TEST_ERRNO));
+			} else {
+				tst_resm(TFAIL, "unexpected error - %d : %s - "
+					 "expected %d", TEST_ERRNO,
+					 strerror(TEST_ERRNO), TC[i].error);
 			}
 		}
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -146,13 +145,11 @@ setup()
 	pfd = fd[1];
 }
 
-
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -166,4 +163,3 @@ cleanup()
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

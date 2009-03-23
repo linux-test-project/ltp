@@ -92,23 +92,22 @@
 				 */
 #define TESTFILE	"testfile"
 
-char *TCID="chmod07"; 		/* Test program identifier.    */
-int TST_TOTAL=1;    		/* Total number of test cases. */
+char *TCID = "chmod07";		/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 void setup();			/* Main setup function for the test */
 void cleanup();			/* Main cleanup function for the test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	struct stat stat_buf;	/* stat(2) struct contents */
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-   
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -122,9 +121,9 @@ main(int ac, char **av)
 		Tst_count = 0;
 
 		/*
-	 	 * Call chmod(2) with specified mode argument
+		 * Call chmod(2) with specified mode argument
 		 * (sticky-bit set) on testfile.
-	 	 */
+		 */
 		TEST(chmod(TESTFILE, PERMS));
 
 		/* check return code of chmod(2) */
@@ -140,12 +139,12 @@ main(int ac, char **av)
 		 */
 		if (STD_FUNCTIONAL_TEST) {
 			/*
-		 	 * Get the testfile information using
+			 * Get the testfile information using
 			 * stat(2).
 			 */
 			if (stat(TESTFILE, &stat_buf) < 0) {
 				tst_brkm(TFAIL, cleanup, "stat(2) of %s failed,"
- 					 " errno:%d", TESTFILE, TEST_ERRNO);
+					 " errno:%d", TESTFILE, TEST_ERRNO);
 			}
 
 			/* Check for expected mode permissions */
@@ -161,14 +160,13 @@ main(int ac, char **av)
 		} else {
 			tst_resm(TPASS, "call succeeded");
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
 	return 0;
-	/*NOTREACHED*/
-}	/* End main */
+ /*NOTREACHED*/}		/* End main */
 
 /*
  * void
@@ -177,20 +175,19 @@ main(int ac, char **av)
  *  Create a test file under temporary directory and close it
  *  Change the ownership of test file to that of "ltpuser1" user.
  */
-void
-setup()
+void setup()
 {
-	struct passwd *ltpuser;		/* password struct for ltpuser1 */
-	struct group *ltpgroup;		/* group struct for ltpuser1 */
-	int fd;				/* file descriptor variable */
-	gid_t group1_gid;		/* user and process group id's */
+	struct passwd *ltpuser;	/* password struct for ltpuser1 */
+	struct group *ltpgroup;	/* group struct for ltpuser1 */
+	int fd;			/* file descriptor variable */
+	gid_t group1_gid;	/* user and process group id's */
 	uid_t user1_uid;
 
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-        /* Pause if that option was specified */
-        TEST_PAUSE;
+	/* Pause if that option was specified */
+	TEST_PAUSE;
 
 	/* Check that the test process id is super/root  */
 	if (geteuid() != 0) {
@@ -203,15 +200,13 @@ setup()
 
 	/* Get the uid of guest user - ltpuser1 */
 	if ((ltpuser = getpwnam(LTPUSER)) == NULL) {
-		tst_brkm(TBROK, cleanup, "%s not in /etc/passwd",
-			 LTPUSER);
+		tst_brkm(TBROK, cleanup, "%s not in /etc/passwd", LTPUSER);
 	}
 	user1_uid = ltpuser->pw_uid;
 
 	/* Get the group id of guest user - ltpuser1 */
 	if ((ltpgroup = getgrnam(LTPGRP)) == NULL) {
-		tst_brkm(TBROK, cleanup, "%s not in /etc/group",
-			 LTPGRP);
+		tst_brkm(TBROK, cleanup, "%s not in /etc/group", LTPGRP);
 	}
 	group1_gid = ltpgroup->gr_gid;
 
@@ -220,7 +215,7 @@ setup()
 	 * mode permissios and set the ownership of the test file to the
 	 * uid/gid of guest user.
 	 */
-	if ((fd = open(TESTFILE, O_RDWR|O_CREAT, FILE_MODE)) == -1) {
+	if ((fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %#o) Failed, errno=%d : %s",
 			 TESTFILE, FILE_MODE, errno, strerror(errno));
@@ -237,8 +232,7 @@ setup()
 	if (setgid(group1_gid) < 0) {
 		tst_brkm(TBROK, cleanup, "setgid(2) to %d failed", group1_gid);
 	}
-}	/* End setup() */
-
+}				/* End setup() */
 
 /*
  * void
@@ -246,8 +240,7 @@ setup()
  *	       completion or premature exit.
  *  Remove the test directory and testfile created in the setup.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -259,4 +252,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

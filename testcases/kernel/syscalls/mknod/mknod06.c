@@ -91,46 +91,49 @@
 
 int setup1();			/* setup function to test mknod for EEXIST */
 int setup3();			/* setup function to test mknod for ENOTDIR */
-int longpath_setup();	/* setup function to test mknod for ENAMETOOLONG */
+int longpath_setup();		/* setup function to test mknod for ENAMETOOLONG */
 int no_setup();			/* simply returns 0 to the caller */
-char Longpathname[PATH_MAX+2];
+char Longpathname[PATH_MAX + 2];
 char High_address_node[64];
 
-struct test_case_t {		/* test case struct. to hold ref. test cond's*/
+struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	char *pathname;
 	char *desc;
 	int exp_errno;
-	int (*setupfunc)();
+	int (*setupfunc) ();
 } Test_cases[] = {
-	{ "tnode_1",  "Specified node already exists", EEXIST, setup1 },
+	{
+	"tnode_1", "Specified node already exists", EEXIST, setup1},
 #if !defined(UCLINUX)
-	{ (char *)-1, "Negative address", EFAULT, no_setup },
-	{ High_address_node, "Address beyond address space", EFAULT, no_setup },
+	{
+	(char *)-1, "Negative address", EFAULT, no_setup}, {
+	High_address_node, "Address beyond address space", EFAULT,
+		    no_setup},
 #endif
-	{ "testdir_2/tnode_2", "Non-existent file", ENOENT, no_setup },
-	{ "", "Pathname is empty", ENOENT, no_setup },
-	{ Longpathname, "Pathname too long", ENAMETOOLONG, longpath_setup },
-	{ "tnode/tnode_3", "Path contains regular file",  ENOTDIR, setup3 },
-	{ NULL, NULL, 0, no_setup }
+	{
+	"testdir_2/tnode_2", "Non-existent file", ENOENT, no_setup}, {
+	"", "Pathname is empty", ENOENT, no_setup}, {
+	Longpathname, "Pathname too long", ENAMETOOLONG, longpath_setup}, {
+	"tnode/tnode_3", "Path contains regular file", ENOTDIR, setup3}, {
+	NULL, NULL, 0, no_setup}
 };
 
-char *TCID="mknod06";           /* Test program identifier.    */
-int TST_TOTAL = (sizeof(Test_cases)/sizeof(*Test_cases));
-extern int Tst_count;           /* Test Case counter for tst_* routines */
+char *TCID = "mknod06";		/* Test program identifier.    */
+int TST_TOTAL = (sizeof(Test_cases) / sizeof(*Test_cases));
+extern int Tst_count;		/* Test Case counter for tst_* routines */
 #if !defined(UCLINUX)
 extern char *get_high_address();
-int exp_enos[]={EEXIST, EFAULT, ENOENT, ENAMETOOLONG, ENOTDIR, 0};
+int exp_enos[] = { EEXIST, EFAULT, ENOENT, ENAMETOOLONG, ENOTDIR, 0 };
 #else
-int exp_enos[]={EEXIST, ENOENT, ENAMETOOLONG, ENOTDIR, 0};
+int exp_enos[] = { EEXIST, ENOENT, ENAMETOOLONG, ENOTDIR, 0 };
 #endif
 
-char * bad_addr = 0;
+char *bad_addr = 0;
 
 void setup();			/* setup function for the tests */
 void cleanup();			/* cleanup function for the tests */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
@@ -140,7 +143,7 @@ main(int ac, char **av)
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -157,7 +160,7 @@ main(int ac, char **av)
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
 			node_name = Test_cases[ind].pathname;
@@ -194,9 +197,9 @@ main(int ac, char **av)
 					 "expected errno:%d", test_desc,
 					 TEST_ERRNO, Test_cases[ind].exp_errno);
 			}
-		}	/* End of TEST CASE LOOPING. */
+		}		/* End of TEST CASE LOOPING. */
 
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/*
 	 * Invoke cleanup() to delete the test directories created
@@ -204,9 +207,8 @@ main(int ac, char **av)
 	 */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
-}	/* End main */
+	 /*NOTREACHED*/ return 0;
+}				/* End main */
 
 /*
  * setup(void) - performs all ONE TIME setup for this test.
@@ -216,10 +218,9 @@ main(int ac, char **av)
  *	Invoke individual test setup functions according to the order
  *	set in struct. definition.
  */
-void
-setup()
+void setup()
 {
-	int ind;			/* counter for setup functions */
+	int ind;		/* counter for setup functions */
 
 	/* Capture unexpected signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -238,7 +239,7 @@ setup()
 
 #if !defined(UCLINUX)
 	bad_addr = mmap(0, 1, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
+			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
 	if (bad_addr == MAP_FAILED) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}
@@ -254,8 +255,7 @@ setup()
  * no_setup() - Some test conditions for mknod(2) do not any setup.
  *		Hence, this function just returns 0.
  */
-int
-no_setup()
+int no_setup()
 {
 	return 0;
 }
@@ -265,8 +265,7 @@ no_setup()
  *		      the MAX. length of PATH_MAX.
  *   This function retruns 0.
  */
-int
-longpath_setup()
+int longpath_setup()
 {
 	int ind;		/* counter variable */
 
@@ -283,8 +282,7 @@ longpath_setup()
  *  same node in the test and fails with above errno.
  *  This function returns 0.
  */
-int
-setup1()
+int setup1()
 {
 	/* Create a node using mknod */
 	if (mknod("tnode_1", MODE_RWX, 0) < 0) {
@@ -302,8 +300,7 @@ setup1()
  *  with ENOTDIR as the node created here is a regular file.
  *  This function returns 0.
  */
-int
-setup3()
+int setup3()
 {
 	/* Create a node using mknod */
 	if (mknod("tnode", MODE_RWX, 0) < 0) {
@@ -321,8 +318,7 @@ setup3()
  *	created during setup().
  *	Exit the test program with normal exit code.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -332,7 +328,7 @@ cleanup()
 
 	/* Remove files and temporary directory created */
 	tst_rmdir();
- 
+
 	/* exit with return code appropriate for results */
 	tst_exit();
 }

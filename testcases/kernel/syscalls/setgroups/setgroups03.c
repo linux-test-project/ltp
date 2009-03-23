@@ -82,42 +82,41 @@
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
-
 TCID_DEFINE(setgroups03);	/* Test program identifier.    */
-int TST_TOTAL=2;		/* Total number of test conditions */
+int TST_TOTAL = 2;		/* Total number of test conditions */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-int exp_enos[] = {EINVAL, EPERM, 0};
+int exp_enos[] = { EINVAL, EPERM, 0 };
 
-GID_T *groups_list; 		/* Array to hold gids for getgroups() */
+GID_T *groups_list;		/* Array to hold gids for getgroups() */
 
 int setup1();			/* setup function to test error EPERM */
 void setup();			/* setup function for the test */
 void cleanup();			/* cleanup function for the test */
 
-struct test_case_t {		/* test case struct. to hold ref. test cond's*/
+struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	size_t gsize_add;
 	int list;
 	char *desc;
 	int exp_errno;
-	int (*setupfunc)();
+	int (*setupfunc) ();
 } Test_cases[] = {
-	{1, 1, "Size is > sysconf(_SC_NGROUPS_MAX)", EINVAL, NULL},
-	{0, 2, "Permission denied, not super-user", EPERM, setup1}
+	{
+	1, 1, "Size is > sysconf(_SC_NGROUPS_MAX)", EINVAL, NULL}, {
+	0, 2, "Permission denied, not super-user", EPERM, setup1}
 };
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	int gidsetsize;		/* total no. of groups */
 	int i;			/* counter to test different test conditions */
-	char *test_desc;        /* test specific error message */
+	char *test_desc;	/* test specific error message */
 	int ngroups_max = sysconf(_SC_NGROUPS_MAX);	/* max no. of groups in the current system */
 
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
@@ -141,25 +140,25 @@ main(int ac, char **av)
 		Tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; i++) {
-			if(Test_cases[i].setupfunc != NULL) {
+			if (Test_cases[i].setupfunc != NULL) {
 				Test_cases[i].setupfunc();
 			}
 
 			gidsetsize = ngroups_max + Test_cases[i].gsize_add;
 			test_desc = Test_cases[i].desc;
-		
+
 			/*
 			 * Call setgroups() to test different test conditions
 			 * verify that it fails with -1 return value and
 			 * sets appropriate errno.
 			 */
-			 TEST(SETGROUPS(gidsetsize, groups_list));
+			TEST(SETGROUPS(gidsetsize, groups_list));
 
 			/* check return code of setgroups(2) */
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "setgroups(%d) returned %d, "
-					 "expected -1, errno=%d", gidsetsize, TEST_RETURN,
-					 Test_cases[i].exp_errno);
+					 "expected -1, errno=%d", gidsetsize,
+					 TEST_RETURN, Test_cases[i].exp_errno);
 				continue;
 			}
 
@@ -167,23 +166,22 @@ main(int ac, char **av)
 
 			if (TEST_ERRNO == Test_cases[i].exp_errno) {
 				tst_resm(TPASS,
-					 "setgroups(%d) fails, %s, errno=%d", gidsetsize,
-					 test_desc, TEST_ERRNO);
+					 "setgroups(%d) fails, %s, errno=%d",
+					 gidsetsize, test_desc, TEST_ERRNO);
 			} else {
 				tst_resm(TFAIL, "setgroups(%d) fails, %s, "
-					 "errno=%d, expected errno=%d", gidsetsize,
-					 test_desc, TEST_ERRNO,
+					 "errno=%d, expected errno=%d",
+					 gidsetsize, test_desc, TEST_ERRNO,
 					 Test_cases[i].exp_errno);
 			}
-		}	/* End of TEST CASE LOOPING. */
+		}		/* End of TEST CASE LOOPING. */
 
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
@@ -191,13 +189,12 @@ main(int ac, char **av)
  *
  *  Call individual test specific setup functions.
  */
-void
-setup()
+void setup()
 {
 
-        if (geteuid() != 0) {
-                tst_brkm(TBROK, tst_exit, "Test must be run as root");
-        }
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+	}
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -214,19 +211,17 @@ setup()
  *  Get the user info. from /etc/passwd file.
  *  This function returns 0 on success.
  */
-int
-setup1()
+int setup1()
 {
 	struct passwd *user_info;	/* struct. to hold test user info */
 
 /* Switch to nobody user for correct error code collection */
-         ltpuser = getpwnam(nobody_uid);
-         if (seteuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "setreuid failed to "
-                         "to set the effective uid to %d",
-                         ltpuser->pw_uid);
-                perror("setreuid");
-         }
+	ltpuser = getpwnam(nobody_uid);
+	if (seteuid(ltpuser->pw_uid) == -1) {
+		tst_resm(TINFO, "setreuid failed to "
+			 "to set the effective uid to %d", ltpuser->pw_uid);
+		perror("setreuid");
+	}
 
 	if ((user_info = getpwnam(TESTUSER)) == NULL) {
 		tst_brkm(TFAIL, cleanup, "getpwnam(2) of %s Failed", TESTUSER);
@@ -245,8 +240,7 @@ setup1()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

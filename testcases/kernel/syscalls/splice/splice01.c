@@ -75,17 +75,14 @@ int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-        int results;
+	int results;
 
 	/* Disable test if the version of the kernel is less than 2.6.17 */
-	if(((results=tst_kvercmp(2,6,17)) < 0))
-          {
-	     tst_resm(TINFO, "This test can only run on kernels that are ");
-	     tst_resm(TINFO, "2.6.17 and higher");
-	     exit(0);
-          }
-
-
+	if (((results = tst_kvercmp(2, 6, 17)) < 0)) {
+		tst_resm(TINFO, "This test can only run on kernels that are ");
+		tst_resm(TINFO, "2.6.17 and higher");
+		exit(0);
+	}
 
 	/*
 	 * parse standard options
@@ -99,12 +96,12 @@ int main(int ac, char **av)
 	setup();
 
 	/*
-	* check if the current filesystem is nfs
-	*/
-	if(tst_is_cwd_nfs()) {
-                tst_brkm(TCONF, cleanup, "Cannot do splice on a file located on an NFS filesystem");
-        }
-
+	 * check if the current filesystem is nfs
+	 */
+	if (tst_is_cwd_nfs()) {
+		tst_brkm(TCONF, cleanup,
+			 "Cannot do splice on a file located on an NFS filesystem");
+	}
 
 	/*
 	 * check looping state if -c option given
@@ -129,9 +126,9 @@ int main(int ac, char **av)
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
 
-		/*
-		 * only perform functional verification if flag set (-f not given)
-		 */
+			/*
+			 * only perform functional verification if flag set (-f not given)
+			 */
 			if (STD_FUNCTIONAL_TEST) {
 				/* No Verification test, yet... */
 				tst_resm(TPASS, "splice() returned %d",
@@ -158,8 +155,8 @@ static int splice_test(void)
 	int i, len;
 	int fd_in, fd_out;
 
-        /* Make a temp directory and cd to it */
-        tst_tmpdir();
+	/* Make a temp directory and cd to it */
+	tst_tmpdir();
 
 	for (i = 0; i < SPLICE_TEST_BLOCK_SIZE; i++) {
 		buffer[i] = i & 0xff;
@@ -271,9 +268,8 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-        /* Remove tmp dir and all files in it */
-        tst_rmdir();
-
+	/* Remove tmp dir and all files in it */
+	tst_rmdir();
 
 	/* exit with return code appropriate for results */
 	tst_exit();

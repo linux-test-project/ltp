@@ -70,7 +70,7 @@ void help(void);
 void do_child_1(void);
 void do_child_2(void);
 
-int exp_enos[] = {ETXTBSY, 0};
+int exp_enos[] = { ETXTBSY, 0 };
 int start_sync_pipes[2];
 int end_sync_pipes[2];
 
@@ -85,27 +85,24 @@ char *test_name;
 #define PIPE_NAME_END		NULL
 #endif
 
-
 /* for test specific parse_opts options - in this case "-F" */
 option_t options[] = {
 	{"F:", &Fflag, &test_name},
 	{NULL, NULL, NULL}
 };
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	pid_t pid, pid1;
-	int e_code, status, retval=3;
+	int e_code, status, retval = 3;
 	char *argv[1], *env[1];
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, options, &help)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, options, &help)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
-
 #ifdef UCLINUX
 	maybe_run_child(&do_child_1, "nS", 1, &test_name);
 #endif
@@ -115,7 +112,7 @@ main(int ac, char **av)
 			 "the -F option.");
 		tst_resm(TWARN, "Run '%s -h' for option information.", TCID);
 		cleanup();
-        }
+	}
 
 	setup();
 
@@ -141,7 +138,7 @@ main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "fork #1 failed");
 		}
 
-		if (pid == 0) {		/* first child */
+		if (pid == 0) {	/* first child */
 #ifdef UCLINUX
 			if (self_exec(av[0], "nS", 1, test_name) < 0) {
 				tst_brkm(TBROK, cleanup, "self_exec failed");
@@ -160,7 +157,7 @@ main(int ac, char **av)
 		if ((pid1 = FORK_OR_VFORK()) == -1)
 			tst_brkm(TBROK, cleanup, "fork #2 failed");
 
-		if (pid1 == 0) {		/* second child */
+		if (pid1 == 0) {	/* second child */
 			argv[0] = 0;
 			env[0] = 0;
 
@@ -173,7 +170,7 @@ main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO != ETXTBSY) {
-				retval=1;
+				retval = 1;
 				tst_resm(TFAIL, "expected ETXTBSY, received "
 					 "%d : %s", TEST_ERRNO,
 					 strerror(TEST_ERRNO));
@@ -183,35 +180,33 @@ main(int ac, char **av)
 			}
 			exit(retval);
 		} else {	/* parent */
-			 /* wait for the child to finish */
-                        waitpid(pid1,&status,0);
-                        /* make sure the child returned a good exit status */
-                        e_code = status >> 8;
+			/* wait for the child to finish */
+			waitpid(pid1, &status, 0);
+			/* make sure the child returned a good exit status */
+			e_code = status >> 8;
 			/* If execve() succeeds, child cannot report the error */
 			if (status == 0)
 				tst_resm(TFAIL, "execve succeeded, "
 					 "expected failure");
-                        if ((e_code != 3) || (retval != 3)) {
-                          tst_resm(TFAIL, "Failures reported above");
-                        }
+			if ((e_code != 3) || (retval != 3)) {
+				tst_resm(TFAIL, "Failures reported above");
+			}
 
 			/*  terminate first child */
 			sync_pipe_notify(end_sync_pipes);
-			waitpid(pid,NULL,0);
+			waitpid(pid, NULL, 0);
 			cleanup();
 		}
 	}
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * help() - Prints out the help message for the -D option defined
  *          by this test.
  */
-void
-help()
+void help()
 {
 	printf("  -F <test name> : for example, 'execve05 -F test3'\n");
 }
@@ -219,8 +214,7 @@ help()
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	char *cmd, *dirc, *basec, *bname, *dname, *path, *pwd = NULL;
 	int res;
@@ -241,28 +235,29 @@ setup()
 		path = dname;
 	else {
 		if ((pwd = getcwd(NULL, 0)) == NULL) {
-			tst_brkm(TBROK, tst_exit, "Could not get current directory");
+			tst_brkm(TBROK, tst_exit,
+				 "Could not get current directory");
 		}
-		path = malloc (strlen(pwd) + strlen(dname) +  2);
+		path = malloc(strlen(pwd) + strlen(dname) + 2);
 		if (path == NULL) {
 			tst_brkm(TBROK, tst_exit, "Cannot alloc path string");
 		}
-		sprintf (path, "%s/%s", pwd, dname);
+		sprintf(path, "%s/%s", pwd, dname);
 	}
 
 	/* make a temp dir and cd to it */
 	tst_tmpdir();
 
 	/* Copy the given test file to the private temp directory.
-	*/
-	cmd = malloc (strlen(path) + strlen(bname) + 15);
-	if (cmd == NULL){
+	 */
+	cmd = malloc(strlen(path) + strlen(bname) + 15);
+	if (cmd == NULL) {
 		tst_brkm(TBROK, tst_exit, "Cannot alloc command string");
 	}
 
-	sprintf (cmd, "cp -p %s/%s .", path, bname);
-	res = system (cmd);
-	free (cmd);
+	sprintf(cmd, "cp -p %s/%s .", path, bname);
+	res = system(cmd);
+	free(cmd);
 	if (res == -1) {
 		tst_brkm(TBROK, tst_exit, "Cannot copy file %s", test_name);
 	}
@@ -272,13 +267,11 @@ setup()
 	TEST_PAUSE;
 }
 
-
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -296,16 +289,15 @@ cleanup()
 /*
  * do_child_1()
  */
-void
-do_child_1()
+void do_child_1()
 {
 	int fildes;
 
 #ifdef UCLINUX
-        if (sync_pipe_create(start_sync_pipes, PIPE_NAME_START) == -1)
-                tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
-        if (sync_pipe_create(end_sync_pipes, PIPE_NAME_END) == -1)
-                tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
+	if (sync_pipe_create(start_sync_pipes, PIPE_NAME_START) == -1)
+		tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
+	if (sync_pipe_create(end_sync_pipes, PIPE_NAME_END) == -1)
+		tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
 #endif
 
 	if ((fildes = open(test_name, O_WRONLY)) == -1) {

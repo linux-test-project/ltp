@@ -79,26 +79,25 @@
 
 void setup();
 void cleanup();
-extern struct passwd * my_getpwnam(char *);
+extern struct passwd *my_getpwnam(char *);
 
 #define PERMS		0777
 
-char *TCID="mkdir02";           /* Test program identifier.    */
-int TST_TOTAL=1;                /* Total number of test cases. */
-extern int Tst_count;           /* Test Case counter for tst_* routines */
+char *TCID = "mkdir02";		/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
+extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-char tstdir1 [100];
-char tstdir2 [100];
+char tstdir1[100];
+char tstdir2[100];
 
 char user1name[] = "nobody";
 char user2name[] = "bin";
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	int lc;             /* loop counter */
-	char *msg;          /* message returned from parse_opts */
-	struct stat buf,buf1;
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
+	struct stat buf, buf1;
 	pid_t pid, pid1;
 	struct passwd *ltpuser1;
 	struct passwd *ltpuser2;
@@ -107,7 +106,7 @@ main(int ac, char **av)
 	/*
 	 * parse standard options
 	 */
-	if ((msg=parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -119,11 +118,11 @@ main(int ac, char **av)
 	/*
 	 * check looping state if -i option given
 	 */
-	for (lc=0; TEST_LOOPING(lc); lc++) {
-	 
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+
 		/* reset Tst_count in case we are looping. */
-		Tst_count=0;
-	
+		Tst_count = 0;
+
 		/* check the inherited group ID */
 
 		/*
@@ -139,7 +138,7 @@ main(int ac, char **av)
 			/* NOTREACHED */
 		}
 
-		if (pid == 0) {		/* first child */
+		if (pid == 0) {	/* first child */
 			rval = setregid(ltpuser1->pw_gid, ltpuser1->pw_gid);
 			if (rval < 0) {
 				perror("setregid");
@@ -161,7 +160,7 @@ main(int ac, char **av)
 				exit(1);
 				/* NOTREACHED */
 			}
-	
+
 			/*
 			 * create a direcoty with S_ISGID bit set
 			 * and the group ID is ltpuser1
@@ -169,26 +168,26 @@ main(int ac, char **av)
 			if (mkdir(tstdir1, PERMS) != 0) {
 				perror("mkdir");
 				tst_resm(TFAIL, "mkdir() failed to create"
-						" a directory with Set "
-						" group ID turn on ");
+					 " a directory with Set "
+					 " group ID turn on ");
 				exit(1);
 				/* NOTREACHED */
 			}
 			if (stat(tstdir1, &buf1) == -1) {
 				perror("stat");
 				tst_resm(TFAIL,
-					"failed to stat the new directory"
-					"in mkdir()");
+					 "failed to stat the new directory"
+					 "in mkdir()");
 				exit(1);
 				/* NOTREACHED */
 			}
-			if (chmod(tstdir1,buf1.st_mode|S_ISGID)!= 0) {
+			if (chmod(tstdir1, buf1.st_mode | S_ISGID) != 0) {
 				perror("chmod");
 				tst_resm(TFAIL, "failed to set S_ISGID bit");
 				exit(1);
 				/* NOTREACHED */
 			}
-		
+
 			/* Successfully create the parent directory */
 			exit(0);
 			/* NOTREACHED */
@@ -213,7 +212,7 @@ main(int ac, char **av)
 			perror("fork failed");
 			tst_brkm(TFAIL, cleanup, "fork() failed");
 			/* NOTREACHED */
-		} else if (pid1 == 0) {		/* second child */
+		} else if (pid1 == 0) {	/* second child */
 
 			/* being user ltpuser2 */
 			rval = setregid(ltpuser2->pw_gid, ltpuser2->pw_gid);
@@ -235,9 +234,9 @@ main(int ac, char **av)
 				perror("setreuid");
 				exit(1);
 				/* NOTREACHED */
-		
+
 			}
-		
+
 			/*
 			 * create a sub direcoty
 			 * under the directory just created
@@ -245,8 +244,8 @@ main(int ac, char **av)
 			 */
 			if (mkdir(tstdir2, PERMS) != 0) {
 				tst_resm(TFAIL, "mkdir() failed to create"
-						" a directory %s under %s "
-						,tstdir2, tstdir1);
+					 " a directory %s under %s ", tstdir2,
+					 tstdir1);
 				exit(1);
 				/* NOTREACHED */
 			}
@@ -257,32 +256,32 @@ main(int ac, char **av)
 			 */
 			if (stat(tstdir2, &buf) == -1) {
 				tst_resm(TFAIL,
-					"failed to stat the new directory"
-					"in mkdir()");
+					 "failed to stat the new directory"
+					 "in mkdir()");
 				exit(1);
 				/* NOTREACHED */
 			}
 			if (stat(tstdir1, &buf1) == -1) {
 				tst_resm(TFAIL,
-					"failed to stat the new directory"
-					"in mkdir()");
+					 "failed to stat the new directory"
+					 "in mkdir()");
 				exit(1);
 				/* NOTREACHED */
 			}
-			if (buf.st_gid != buf1.st_gid ) {
+			if (buf.st_gid != buf1.st_gid) {
 				tst_resm(TFAIL, "mkdir() FAILED to inherit "
-						" the group ID %d from parent "
-						" directory %d",
-					 buf.st_gid,buf1.st_gid );
+					 " the group ID %d from parent "
+					 " directory %d",
+					 buf.st_gid, buf1.st_gid);
 				exit(1);
-				/* NOTREACHED */	
+				/* NOTREACHED */
 			}
-		
+
 			/* check the S_ISGID  bit */
-			if (!( buf.st_mode & S_ISGID)) {
+			if (!(buf.st_mode & S_ISGID)) {
 				tst_resm(TFAIL, "mkdir() FAILED to inherit "
-						" the S_ISGID bit from parent "
-						" directory");
+					 " the S_ISGID bit from parent "
+					 " directory");
 				exit(1);
 				/* NOTREACHED */
 			}
@@ -290,7 +289,7 @@ main(int ac, char **av)
 			exit(0);
 			/* NOTREACHED */
 		}
-	
+
 		waitpid(pid1, &status, 0);
 		if (WEXITSTATUS(status) == 0) {
 			tst_resm(TPASS, "Test to attempt to make a directory"
@@ -299,25 +298,22 @@ main(int ac, char **av)
 			tst_resm(TFAIL, "Test to attempt to make a directory"
 				 " inherits group ID FAILED");
 			cleanup();
-			/*NOTREACHED*/
-		}
-		
-	}   /* End for TEST_LOOPING */
+		 /*NOTREACHED*/}
+
+	}			/* End for TEST_LOOPING */
 
 	/*
 	 * cleanup and exit
 	 */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
-}       /* End main */
+	 /*NOTREACHED*/ return 0;
+}				/* End main */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* must run as root */
 	if (geteuid() != 0) {
@@ -339,13 +335,11 @@ setup()
 	umask(0);
 }
 
-
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

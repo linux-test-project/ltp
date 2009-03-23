@@ -22,15 +22,15 @@
  *    EXECUTED BY	: anyone
  *
  *    TEST TITLE	: Test checking for basic error conditions
- *    				 for sysfs(2)
+ *				 for sysfs(2)
  *
  *    TEST CASE TOTAL	: 3
  *
  *    AUTHOR		: Aniruddha Marathe <aniruddha.marathe@wipro.com>
  *
  *    SIGNALS
- * 	Uses SIGUSR1 to pause before test if option set.
- * 	(See the parse_opts(3) man page).
+ *	Uses SIGUSR1 to pause before test if option set.
+ *	(See the parse_opts(3) man page).
  *
  *    DESCRIPTION
  *	This test case checks whether sysfs(2) system call returns
@@ -38,11 +38,11 @@
  *	option and for invalid filesystem index and when
  *	buffer is out of address space
  *
- * 	Setup:
+ *	Setup:
  *	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
  *
- * 	Test:
+ *	Test:
  *	  Loop if the proper options are given.
  *	  Execute system call with invaid option parameter and for
  *	  invalid filesystem index
@@ -51,13 +51,13 @@
  *	  Otherwise,
  *	  Issue syscall failed to produce expected errno
  *
- * 	Cleanup:
- * 	  Do cleanup for the test.
+ *	Cleanup:
+ *	  Do cleanup for the test.
  *
  * USAGE:  <for command-line>
  *  sysfs06 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
  *  where:
- *  	-c n : Run n copies simultaneously
+ *	-c n : Run n copies simultaneously
  *	-e   : Turn on errno logging.
  *	-i n : Execute test n times.
  *	-I x : Execute test for x seconds.
@@ -89,11 +89,12 @@ static struct test_case_t {
 	int exp_errno;		/* expected error number */
 	char *exp_errval;	/*Expected errorvalue string */
 } testcase[] = {
-	{"Invalid option", EINVAL, "EINVAL"},
-    {"fs_index is out of bounds", EINVAL, "EINVAL"},
-    {"buf is outside your accessible address space", EFAULT, "EFAULT"}
+	{
+	"Invalid option", EINVAL, "EINVAL"}, {
+	"fs_index is out of bounds", EINVAL, "EINVAL"}, {
+	"buf is outside your accessible address space", EFAULT, "EFAULT"}
 };
-int TST_TOTAL = sizeof(testcase)/sizeof(*testcase);
+int TST_TOTAL = sizeof(testcase) / sizeof(*testcase);
 
 char *bad_addr = 0;
 
@@ -117,11 +118,14 @@ int main(int ac, char **av)
 
 			/* reset Tst_count in case we are looping. */
 			Tst_count = 0;
-			TEST(syscall(__NR_sysfs, option[i], fsindex[i], bad_addr));
+			TEST(syscall
+			     (__NR_sysfs, option[i], fsindex[i], bad_addr));
 
 			/* check return code */
-			if ((TEST_RETURN == -1) && (TEST_ERRNO == testcase[i].exp_errno)) {
-				tst_resm(TPASS, "sysfs(2) expected failure;"
+			if ((TEST_RETURN == -1)
+			    && (TEST_ERRNO == testcase[i].exp_errno)) {
+				tst_resm(TPASS,
+					 "sysfs(2) expected failure;"
 					 " Got errno - %s : %s",
 					 testcase[i].exp_errval,
 					 testcase[i].err_desc);
@@ -136,7 +140,8 @@ int main(int ac, char **av)
 		}		/*End of TEST LOOPS */
 	}			/* End of TEST_LOOPING */
 #else
-	tst_resm(TWARN, "This test can only run on kernels that support the sysfs system call");
+	tst_resm(TWARN,
+		 "This test can only run on kernels that support the sysfs system call");
 #endif
 
 	/*Clean up and exit */
@@ -157,7 +162,9 @@ void setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
+	bad_addr =
+	    mmap(0, 1, PROT_NONE, MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0,
+		 0);
 	if (bad_addr == MAP_FAILED)
 		tst_brkm(TBROK, cleanup, "mmap failed");
 }				/* End setup() */

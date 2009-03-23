@@ -69,10 +69,9 @@ int main(int ac, char **av)
 	/*
 	 * parse standard options
 	 */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/*
 	 * perform global setup for the test
@@ -93,7 +92,7 @@ int main(int ac, char **av)
 		if ((rea = fopen(fnamebuf, "r")) == NULL)
 			tst_resm(TFAIL, "failed to fopen file for read");
 
-		fprintf(writ,"abcdefghijklmnopqrstuv") ;
+		fprintf(writ, "abcdefghijklmnopqrstuv");
 		fflush(writ);
 		sleep(1);
 
@@ -102,7 +101,7 @@ int main(int ac, char **av)
 
 		forks = 0;
 
-forkone:
+	      forkone:
 		++forks;
 
 		if ((pid1 = fork()) != 0) {	/* parent */
@@ -113,7 +112,7 @@ forkone:
 			else if (pid1 < 0) {
 				tst_resm(TINFO, "Fork failed");
 			}
-		} else {			/* child */
+		} else {	/* child */
 			/*
 			 * If first child close the file descriptor for the
 			 * read stream
@@ -137,8 +136,7 @@ forkone:
 					tst_resm(TPASS, "Test passed in child"
 						 "number %d", forks);
 					exit(0);
-				}
-				else if (ch_r_stat == EOF) {
+				} else if (ch_r_stat == EOF) {
 					tst_resm(TFAIL, "Second child got "
 						 "EOF");
 					exit(-1);
@@ -147,7 +145,7 @@ forkone:
 						 "no %d", forks);
 					exit(-1);
 				}
-			} else {		/* end of second child */
+			} else {	/* end of second child */
 				tst_resm(TINFO, "forksnumber: %d", forks);
 				exit(3);
 			}
@@ -171,15 +169,13 @@ forkone:
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test
  */
-void
-setup()
+void setup()
 {
 	/*
 	 * capture signals
@@ -207,8 +203,7 @@ setup()
  * cleanup() -	performs all ONE TIME cleanup for this test at
  * 	        completion or premature exit
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

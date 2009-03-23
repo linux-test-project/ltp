@@ -57,18 +57,18 @@ char *TCID = "sysctl04";
 int TST_TOTAL = 2;
 extern int Tst_count;
 
-int sysctl(int *name, int nlen, void *oldval, size_t *oldlenp,
-           void *newval, size_t newlen)
+int sysctl(int *name, int nlen, void *oldval, size_t * oldlenp,
+	   void *newval, size_t newlen)
 {
-	struct __sysctl_args args={name,nlen,oldval,oldlenp,newval,newlen};
+	struct __sysctl_args args =
+	    { name, nlen, oldval, oldlenp, newval, newlen };
 	return syscall(__NR__sysctl, &args);
 }
-
 
 #define SIZE(x) sizeof(x)/sizeof(x[0])
 #define OSNAMESZ 100
 
-int exp_enos[] = {ENOTDIR, 0};
+int exp_enos[] = { ENOTDIR, 0 };
 
 void setup(void);
 void cleanup(void);
@@ -78,10 +78,11 @@ struct test_case_t {
 	int error;
 } TC[] = {
 	/* comment goes here */
-	{0, ENOTDIR},
-
-	/* comment goes here */
-	{CTL_MAXNAME + 1, ENOTDIR}
+	{
+	0, ENOTDIR},
+	    /* comment goes here */
+	{
+	CTL_MAXNAME + 1, ENOTDIR}
 };
 
 int main(int ac, char **av)
@@ -95,7 +96,7 @@ int main(int ac, char **av)
 	int name[] = { CTL_KERN, KERN_OSREV };
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -137,15 +138,13 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -158,8 +157,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

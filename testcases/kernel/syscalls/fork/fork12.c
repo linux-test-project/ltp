@@ -25,8 +25,8 @@
  *	Check that all children inherit parent's file descriptor
  *
  * ALGORITHM
- * 	Parent forks processes until -1 is returned. 
- * 
+ * 	Parent forks processes until -1 is returned.$
+ *$
  * USAGE
  * 	fork12
  * 	** CAUTION ** Can hang your machine, esp prior to 2.4.19
@@ -36,7 +36,7 @@
  *	07/2002 Split from fork07 as a test case to exhaust available pids.
  *
  * RESTRICTIONS
- * 	Should be run as root to avoid resource limits. 
+ * 	Should be run as root to avoid resource limits.$
  * 	Should not be run with other test programs because it tries to
  * 	  use all available pids.
  */
@@ -58,8 +58,7 @@ void fork12_sigs(int signum);
 
 char pbuf[10];
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int forks, pid1, fork_errno, waitstatus;
 	int ret, status;
@@ -69,10 +68,9 @@ main(int ac, char **av)
 	/*
 	 * parse standard options
 	 */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/*
 	 * perform global setup for the test
@@ -91,47 +89,46 @@ main(int ac, char **av)
 		tst_resm(TINFO, "Forking as many kids as possible");
 		forks = 0;
 		while ((pid1 = fork()) != -1) {
-		    if (pid1 == 0) { /* child */
-			pause();
-			exit(0);
-		    }
-		    forks++;
-		    ret = waitpid(-1, &status, WNOHANG);
-		    if (ret < 0)
-			tst_brkm(TBROK, cleanup, "waitpid failed %d: %s\n", \
-					errno, strerror(errno));
-                    if (ret > 0) {
-			/* a child may be killed by OOM killer */
-		        if (WTERMSIG(status) == SIGKILL)
-			    break;
-                        tst_brkm(TBROK, cleanup, \
-				"child exit with error code %d or signal %d", \
-				WEXITSTATUS(status), WTERMSIG(status));
-                    }
+			if (pid1 == 0) {	/* child */
+				pause();
+				exit(0);
+			}
+			forks++;
+			ret = waitpid(-1, &status, WNOHANG);
+			if (ret < 0)
+				tst_brkm(TBROK, cleanup,
+					 "waitpid failed %d: %s\n", errno,
+					 strerror(errno));
+			if (ret > 0) {
+				/* a child may be killed by OOM killer */
+				if (WTERMSIG(status) == SIGKILL)
+					break;
+				tst_brkm(TBROK, cleanup,
+					 "child exit with error code %d or signal %d",
+					 WEXITSTATUS(status), WTERMSIG(status));
+			}
 		}
 		fork_errno = errno;
 
 		/* parent */
 		tst_resm(TINFO, "Number of processes forked is %d", forks);
 		tst_resm(TPASS, "fork() eventually failed with %d: %s",
-				fork_errno, strerror(fork_errno));
+			 fork_errno, strerror(fork_errno));
 		/* collect our kids */
-                sleep(3); //Introducing a sleep(3) to make sure all children are at pause() when SIGQUIT is sent to them
+		sleep(3);	//Introducing a sleep(3) to make sure all children are at pause() when SIGQUIT is sent to them
 		kill(0, SIGQUIT);
-		while (wait(&waitstatus) > 0);
+		while (wait(&waitstatus) > 0) ;
 
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test
  */
-void
-setup()
+void setup()
 {
 	/*
 	 * capture signals
@@ -148,14 +145,13 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit
  */
-void
-cleanup()
+void cleanup()
 {
 	int waitstatus;
 
 	/* collect our kids */
 	kill(0, SIGQUIT);
-	while (wait(&waitstatus) > 0);
+	while (wait(&waitstatus) > 0) ;
 	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
@@ -165,16 +161,13 @@ cleanup()
 	tst_exit();
 }
 
-void
-fork12_sigs(int signum)
+void fork12_sigs(int signum)
 {
-    if (signum == SIGQUIT) {
-	/* Children will continue, parent will ignore */
-    } else {
-	tst_brkm(TBROK, 0, "Unexpected signal %d received.", signum);
-	cleanup();
-	tst_exit();
-    }
+	if (signum == SIGQUIT) {
+		/* Children will continue, parent will ignore */
+	} else {
+		tst_brkm(TBROK, 0, "Unexpected signal %d received.", signum);
+		cleanup();
+		tst_exit();
+	}
 }
-
-

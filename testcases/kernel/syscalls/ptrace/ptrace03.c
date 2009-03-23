@@ -96,7 +96,7 @@
 static void setup(void);
 static void cleanup(void);
 
-static int exp_enos[] = {EPERM, ESRCH, 0};
+static int exp_enos[] = { EPERM, ESRCH, 0 };
 
 char *TCID = "ptrace03";	/* Test program identifier.    */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
@@ -106,25 +106,24 @@ struct test_case_t {
 	pid_t pid;
 	int exp_errno;
 } test_cases[] = {
-	{ PTRACE_ATTACH, 1, EPERM },
-	{ PTRACE_ATTACH, INVALID_PID, ESRCH},
-	{ PTRACE_TRACEME, 0, EPERM },
-};
+	{
+	PTRACE_ATTACH, 1, EPERM}, {
+	PTRACE_ATTACH, INVALID_PID, ESRCH}, {
+PTRACE_TRACEME, 0, EPERM},};
 
 int TST_TOTAL = sizeof(test_cases) / sizeof(test_cases[0]);
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 
-	int lc, i;			/* loop counter */
+	int lc, i;		/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	pid_t child_pid;
 	int status;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
-	     != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL))
+	    != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -141,7 +140,7 @@ main(int ac, char **av)
 
 			/* since Linux 2.6.26, it's allowed to trace init,
 			   so just skip this test case */
-			if (i == 0 && tst_kvercmp(2,6,25) > 0) {
+			if (i == 0 && tst_kvercmp(2, 6, 25) > 0) {
 				tst_resm(TCONF,
 					 "this kernel allows to trace init");
 				continue;
@@ -161,10 +160,11 @@ main(int ac, char **av)
 				/* setup for third test case */
 				if (i == 2) {
 					if ((ptrace(PTRACE_TRACEME, 0,
-						   NULL, NULL)) == -1) {
+						    NULL, NULL)) == -1) {
 						tst_resm(TWARN, "ptrace()"
-						" falied with errno, %d : %s",
-						errno, strerror(errno));
+							 " falied with errno, %d : %s",
+							 errno,
+							 strerror(errno));
 						exit(0);
 					}
 				}
@@ -172,13 +172,14 @@ main(int ac, char **av)
 				TEST(ptrace(test_cases[i].request,
 					    test_cases[i].pid, NULL, NULL));
 				if ((TEST_RETURN == -1) && (TEST_ERRNO ==
-						    test_cases[i].exp_errno)) {
+							    test_cases[i].
+							    exp_errno)) {
 					exit(TEST_ERRNO);
 				} else {
 					tst_resm(TWARN, "ptrace() returned %d;"
-						" errno: %d, %s", TEST_RETURN,
-						TEST_ERRNO,
-						strerror(TEST_ERRNO));
+						 " errno: %d, %s", TEST_RETURN,
+						 TEST_ERRNO,
+						 strerror(TEST_ERRNO));
 					exit(TEST_ERRNO);
 				}
 
@@ -189,8 +190,8 @@ main(int ac, char **av)
 					continue;
 				}
 				if ((WIFEXITED(status)) &&
-				   (WEXITSTATUS(status) ==
-				    test_cases[i].exp_errno)) {
+				    (WEXITSTATUS(status) ==
+				     test_cases[i].exp_errno)) {
 					tst_resm(TPASS, "Test Passed");
 				} else {
 					tst_resm(TFAIL, "Test Failed");
@@ -203,18 +204,16 @@ main(int ac, char **av)
 	/* cleanup and exit */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 
-}/* End main */
+}				/* End main */
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup()
+void setup()
 {
 
 	/* capture signals
-	tst_sig(FORK, DEF_HANDLER, cleanup); */
+	   tst_sig(FORK, DEF_HANDLER, cleanup); */
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
@@ -222,15 +221,13 @@ setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-}	/* End setup() */
-
+}				/* End setup() */
 
 /*
  *cleanup() -  performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 
 	/*
@@ -241,4 +238,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

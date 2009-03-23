@@ -57,35 +57,34 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID = "chdir01";			/* Test program identifier */
-int TST_TOTAL = 1;			/* Total number of test cases */
-extern int Tst_count;			/* Test case counter */
+char *TCID = "chdir01";		/* Test program identifier */
+int TST_TOTAL = 1;		/* Total number of test cases */
+extern int Tst_count;		/* Test case counter */
 
-int exp_enos[] = {ENOTDIR, 0};
+int exp_enos[] = { ENOTDIR, 0 };
 
 void setup(void);
 void cleanup(void);
-static void checknames(char**, int, DIR*);
+static void checknames(char **, int, DIR *);
 
 char testdir[40] = "";
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	DIR *ddir, *opendir();
 	int fd, ret;
 	char *filname = "chdirtest";
-       char *filenames[3];
+	char *filenames[3];
 
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* set up expected errnos */
 	TEST_EXP_ENOS(exp_enos);
@@ -99,21 +98,18 @@ main(int ac, char **av)
 		if ((ret = chdir(testdir)) != 0) {
 			perror("chdir");
 			tst_brkm(TBROK, cleanup, "chdir failed");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 		if ((fd = creat(filname, 0000)) == -1) {
 			tst_brkm(TBROK, cleanup, "Cannot create %s", filname);
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 		if ((ddir = opendir(".")) == NULL) {
 			tst_brkm(TBROK, cleanup, "Cannot open . ");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
-               filenames[0] = ".";
-               filenames[1] = "..";
-               filenames[2] = filname;
-               checknames(filenames, 3, ddir);
+		filenames[0] = ".";
+		filenames[1] = "..";
+		filenames[2] = filname;
+		checknames(filenames, 3, ddir);
 
 		TEST(chdir(filname));
 
@@ -143,14 +139,12 @@ main(int ac, char **av)
 	cleanup();
 
 	return 0;
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}
 
 /*
  * setup() - performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -174,8 +168,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing status if that option was specified
@@ -190,26 +183,26 @@ cleanup(void)
 	tst_exit();
 }
 
-void
-checknames(pfilnames, fnamecount, ddir)
+void checknames(pfilnames, fnamecount, ddir)
 char **pfilnames;
 int fnamecount;
 DIR *ddir;
 {
 	struct dirent *dir;
-       int i, found;
+	int i, found;
 
-       found = 0;
-       while ((dir = readdir(ddir)) != (struct dirent *) 0) {
-               for(i = 0; i < fnamecount; i++) {
-                       /* if dir->d_name is not null terminated it is a bug anyway */
-                       if (strcmp(pfilnames[i], dir->d_name) == 0) {
-                               tst_resm(TINFO, "Found file %s", dir->d_name);
-                               found++;
-                       }
+	found = 0;
+	while ((dir = readdir(ddir)) != (struct dirent *)0) {
+		for (i = 0; i < fnamecount; i++) {
+			/* if dir->d_name is not null terminated it is a bug anyway */
+			if (strcmp(pfilnames[i], dir->d_name) == 0) {
+				tst_resm(TINFO, "Found file %s", dir->d_name);
+				found++;
+			}
 		}
 	}
-       if(found < fnamecount) {
-               tst_brkm(TFAIL, cleanup, "Some files do not exist, but they must exist");
-       }
+	if (found < fnamecount) {
+		tst_brkm(TFAIL, cleanup,
+			 "Some files do not exist, but they must exist");
+	}
 }

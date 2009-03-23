@@ -93,15 +93,14 @@
 #define TESTFILE	"testfile"
 
 int fd;				/* file descriptor variable */
-char *TCID="fchmod02"; 		/* Test program identifier.    */
-int TST_TOTAL=1;    		/* Total number of test cases. */
+char *TCID = "fchmod02";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 void setup();			/* Main setup function for the test */
 void cleanup();			/* Main cleanup function for the test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	struct stat stat_buf;	/* stat(2) struct contents */
 	int lc;			/* loop counter */
@@ -109,7 +108,7 @@ main(int ac, char **av)
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -123,9 +122,9 @@ main(int ac, char **av)
 		Tst_count = 0;
 
 		/*
-	 	 * Call fchmod(2) with specified mode argument
+		 * Call fchmod(2) with specified mode argument
 		 * (sticky-bit set) on testfile.
-	 	 */
+		 */
 		TEST(fchmod(fd, PERMS));
 
 		/* check return code of fchmod(2) */
@@ -140,7 +139,7 @@ main(int ac, char **av)
 		 */
 		if (STD_FUNCTIONAL_TEST) {
 			/*
-		 	 * Get the testfile information using
+			 * Get the testfile information using
 			 * fstat(2).
 			 */
 			if (fstat(fd, &stat_buf) < 0) {
@@ -161,14 +160,13 @@ main(int ac, char **av)
 		} else {
 			tst_resm(TPASS, "call succeeded");
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
-}	/* End main */
+	 /*NOTREACHED*/ return 0;
+}				/* End main */
 
 /*
  * void
@@ -177,12 +175,11 @@ main(int ac, char **av)
  *  Create a test file under temporary directory.
  *  Change the ownership of test file to that of "ltpuser1" user.
  */
-void
-setup()
+void setup()
 {
-	struct passwd *ltpuser;		/* password struct for ltpuser1 */
-	struct group *ltpgroup;		/* group struct for ltpuser1 */
-	gid_t group1_gid;		/* user and process group id's */
+	struct passwd *ltpuser;	/* password struct for ltpuser1 */
+	struct group *ltpgroup;	/* group struct for ltpuser1 */
+	gid_t group1_gid;	/* user and process group id's */
 	uid_t user1_uid;
 
 	/* capture signals */
@@ -202,15 +199,13 @@ setup()
 
 	/* Get the uid of guest user - ltpuser1 */
 	if ((ltpuser = getpwnam(LTPUSER)) == NULL) {
-		tst_brkm(TBROK, cleanup, "%s not in /etc/passwd",
-			 LTPUSER);
+		tst_brkm(TBROK, cleanup, "%s not in /etc/passwd", LTPUSER);
 	}
 	user1_uid = ltpuser->pw_uid;
 
 	/* Get the group id of guest user - ltpuser1 */
 	if ((ltpgroup = getgrnam(LTPGRP)) == NULL) {
-		tst_brkm(TBROK, cleanup, "%s not in /etc/group",
-			 LTPGRP);
+		tst_brkm(TBROK, cleanup, "%s not in /etc/group", LTPGRP);
 	}
 	group1_gid = ltpgroup->gr_gid;
 
@@ -219,7 +214,7 @@ setup()
 	 * mode permissios and set the ownership of the test file to the
 	 * uid/gid of guest user user1.
 	 */
-	if ((fd = open(TESTFILE, O_RDWR|O_CREAT, FILE_MODE)) == -1) {
+	if ((fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %#o) Failed, errno=%d : %s",
 			 TESTFILE, FILE_MODE, errno, strerror(errno));
@@ -233,7 +228,7 @@ setup()
 	if (setgid(group1_gid) < 0) {
 		tst_brkm(TBROK, cleanup, "setgid(2) to %d failed", group1_gid);
 	}
-}	/* End setup() */
+}				/* End setup() */
 
 /*
  * void
@@ -242,8 +237,7 @@ setup()
  *  Close the testfile created in the setup.
  *  Remove the test directory and testfile created in the setup.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -261,4 +255,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

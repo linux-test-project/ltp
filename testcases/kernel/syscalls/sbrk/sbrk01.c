@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: sbrk01.c,v 1.6 2009/02/26 12:16:34 subrata_modak Exp $ */
+/* $Id: sbrk01.c,v 1.7 2009/03/23 13:36:01 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -66,7 +66,7 @@
  *	(See the parse_opts(3) man page).
  *
  *    OUTPUT SPECIFICATIONS
- * 
+ *$
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
  *
@@ -121,109 +121,108 @@
 void setup();
 void cleanup();
 
-
-
-char *TCID="sbrk01";		/* Test program identifier.    */
-int TST_TOTAL=2;		/* Total number of test cases. */
+char *TCID = "sbrk01";		/* Test program identifier.    */
+int TST_TOTAL = 2;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-int Increment;		/* Amount to make change size by */
+int Increment;			/* Amount to make change size by */
 
 #if !defined(UCLINUX)
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-    int lc;		/* loop counter */
-    char *msg;		/* message returned from parse_opts */
-    void *tret;
-   
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
+	void *tret;
+
     /***************************************************************
      * parse standard options
      ***************************************************************/
-    if ( (msg=parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL ) {
-	tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	tst_exit(0);
-    }
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+		tst_exit(0);
+	}
 
     /***************************************************************
      * perform global setup for test
      ***************************************************************/
-    setup();
+	setup();
 
     /***************************************************************
      * check looping state if -c option given
      ***************************************************************/
-    for (lc=0; TEST_LOOPING(lc); lc++) {
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-	/* reset Tst_count in case we are looping. */
-	Tst_count=0;
+		/* reset Tst_count in case we are looping. */
+		Tst_count = 0;
 
-	
-	/*
-	 * TEST CASE:
-	 * Increase by 8192 bytes
-	 */
-	Increment = 8192;
+		/*
+		 * TEST CASE:
+		 * Increase by 8192 bytes
+		 */
+		Increment = 8192;
 
-	/* Call sbrk(2) */
-	errno = 0;
-	tret=sbrk(Increment);   /* Remove -64 IRIX compiler warning */
-	TEST_ERRNO=errno;
+		/* Call sbrk(2) */
+		errno = 0;
+		tret = sbrk(Increment);	/* Remove -64 IRIX compiler warning */
+		TEST_ERRNO = errno;
 
-	/* check return code */
-	if ( tret == (void *)-1 ) {
-	    TEST_ERROR_LOG(TEST_ERRNO);
-	    tst_resm(TFAIL, "sbrk - Increase by 8192 bytes failed, errno=%d : %s",
-		     TEST_ERRNO, strerror(TEST_ERRNO));
-	} else {
+		/* check return code */
+		if (tret == (void *)-1) {
+			TEST_ERROR_LOG(TEST_ERRNO);
+			tst_resm(TFAIL,
+				 "sbrk - Increase by 8192 bytes failed, errno=%d : %s",
+				 TEST_ERRNO, strerror(TEST_ERRNO));
+		} else {
 	    /***************************************************************
 	     * only perform functional verification if flag set (-f not given)
 	     ***************************************************************/
-	    if ( STD_FUNCTIONAL_TEST ) {
-		/* No Verification test, yet... */
-		tst_resm(TPASS, "sbrk - Increase by 8192 bytes returned %p",
-		    tret);
-	    }
-	}
+			if (STD_FUNCTIONAL_TEST) {
+				/* No Verification test, yet... */
+				tst_resm(TPASS,
+					 "sbrk - Increase by 8192 bytes returned %p",
+					 tret);
+			}
+		}
 
+		/*
+		 * TEST CASE:
+		 * Decrease to original size
+		 */
+		Increment = (Increment * -1);
 
-	/*
-	 * TEST CASE:
-	 * Decrease to original size
-	 */
-	Increment=(Increment * -1);
+		/* Call sbrk(2) */
+		errno = 0;
+		tret = sbrk(Increment);
+		TEST_ERRNO = errno;
 
-	/* Call sbrk(2) */
-	errno = 0;
-	tret=sbrk(Increment);
-	TEST_ERRNO=errno;
-
-	/* check return code */
-	if ( tret == (void *)-1 ) {
-	    TEST_ERROR_LOG(TEST_ERRNO);
-	    tst_resm(TFAIL, "sbrk - Decrease to original size failed, errno=%d : %s",
-		     TEST_ERRNO, strerror(TEST_ERRNO));
-	} else {
+		/* check return code */
+		if (tret == (void *)-1) {
+			TEST_ERROR_LOG(TEST_ERRNO);
+			tst_resm(TFAIL,
+				 "sbrk - Decrease to original size failed, errno=%d : %s",
+				 TEST_ERRNO, strerror(TEST_ERRNO));
+		} else {
 	    /***************************************************************
 	     * only perform functional verification if flag set (-f not given)
 	     ***************************************************************/
-	    if ( STD_FUNCTIONAL_TEST ) {
-		/* No Verification test, yet... */
-		tst_resm(TPASS, "sbrk - Decrease to original size returned %p", tret);
-	    }
-	}
+			if (STD_FUNCTIONAL_TEST) {
+				/* No Verification test, yet... */
+				tst_resm(TPASS,
+					 "sbrk - Decrease to original size returned %p",
+					 tret);
+			}
+		}
 
-
-    }	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
     /***************************************************************
      * cleanup and exit
      ***************************************************************/
-    cleanup();
+	cleanup();
 
-    return 0;
-}	/* End main */
+	return 0;
+}				/* End main */
 
 #else
 
@@ -238,38 +237,33 @@ int main()
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void
-setup()
+void setup()
 {
-    /* capture signals */
-    tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	/* capture signals */
+	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-    /* Pause if that option was specified */
-    TEST_PAUSE;
+	/* Pause if that option was specified */
+	TEST_PAUSE;
 
-    /* make a temp dir and cd to it */
-    tst_tmpdir();
-}	/* End setup() */
-
+	/* make a temp dir and cd to it */
+	tst_tmpdir();
+}				/* End setup() */
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void
-cleanup()
+void cleanup()
 {
-    /*
-     * print timing stats if that option was specified.
-     * print errno log if that option was specified.
-     */
-    TEST_CLEANUP;
+	/*
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
+	TEST_CLEANUP;
 
-    
+	/* remove files and temp dir */
+	tst_rmdir();
 
-    /* remove files and temp dir */
-    tst_rmdir();
-
-    /* exit with return code appropriate for results */
-    tst_exit();
-}	/* End cleanup() */
+	/* exit with return code appropriate for results */
+	tst_exit();
+}				/* End cleanup() */

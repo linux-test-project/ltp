@@ -40,14 +40,13 @@
 #define LTPGRP		"bin"
 #define SFILE1		"sfile_1"
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
-	struct passwd *ltpuser;		/* password struct for nobody */
-	struct group *ltpgroup;		/* group struct for nobody */
-	uid_t user_uid;			/* user id of nobody */
-	gid_t group_gid;		/* group id of nobody */
-	char *path_name;		/* name of test directory/file */
+	struct passwd *ltpuser;	/* password struct for nobody */
+	struct group *ltpgroup;	/* group struct for nobody */
+	uid_t user_uid;		/* user id of nobody */
+	gid_t group_gid;	/* group id of nobody */
+	char *path_name;	/* name of test directory/file */
 
 	path_name = argv[1];
 

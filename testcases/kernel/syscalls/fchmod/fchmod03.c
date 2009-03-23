@@ -90,28 +90,26 @@
 #define TESTFILE	"testfile"
 
 int fd;				/* file descriptor for test file */
-char *TCID="fchmod03"; 		/* Test program identifier.    */
-int TST_TOTAL=1;    		/* Total number of test cases. */
+char *TCID = "fchmod03";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
-
 void setup();			/* Main setup function for the test */
 void cleanup();			/* Main cleanup function for the test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	struct stat stat_buf;	/* stat struct.*/
+	struct stat stat_buf;	/* stat struct. */
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	mode_t file_mode;	/* mode permissions set on testfile */
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -125,9 +123,9 @@ main(int ac, char **av)
 		Tst_count = 0;
 
 		/*
-	 	 * Call fchmod(2) with specified mode permissions
+		 * Call fchmod(2) with specified mode permissions
 		 * (to set sticky bit) on testfile.
-	 	 */
+		 */
 		TEST(fchmod(fd, PERMS));
 
 		/* check return code of fchmod(2) */
@@ -163,14 +161,13 @@ main(int ac, char **av)
 		} else {
 			tst_resm(TPASS, "call succeeded");
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
-}	/* End main */
+	 /*NOTREACHED*/ return 0;
+}				/* End main */
 
 /*
  * void
@@ -178,23 +175,21 @@ main(int ac, char **av)
  *  Create a temporary directory and cd to it.
  *  Create a testfile under test directory.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Switch to nobody user for correct error code collection */
-        if (geteuid() != 0) {
-                tst_brkm(TBROK, tst_exit, "Test must be run as root");
-        }
-         ltpuser = getpwnam(nobody_uid);
-         if (seteuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "seteuid failed to "
-                         "to set the effective uid to %d",
-                         ltpuser->pw_uid);
-                perror("seteuid");
-         }
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+	}
+	ltpuser = getpwnam(nobody_uid);
+	if (seteuid(ltpuser->pw_uid) == -1) {
+		tst_resm(TINFO, "seteuid failed to "
+			 "to set the effective uid to %d", ltpuser->pw_uid);
+		perror("seteuid");
+	}
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
@@ -207,12 +202,12 @@ setup()
 	 * mode permissios and set the ownership of the test file to the
 	 * uid/gid of guest user.
 	 */
-	if ((fd = open(TESTFILE, O_RDWR|O_CREAT, FILE_MODE)) == -1) {
+	if ((fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %#o) Failed, errno=%d : %s",
 			 TESTFILE, FILE_MODE, errno, strerror(errno));
 	}
-}	/* End setup() */
+}				/* End setup() */
 
 /*
  * void
@@ -221,8 +216,7 @@ setup()
  *  Close the testfile created in the setup.
  *  Delete the testfile and temporary directory created in setup().
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -240,4 +234,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

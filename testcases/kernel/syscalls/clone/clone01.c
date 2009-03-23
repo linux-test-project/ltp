@@ -27,20 +27,20 @@
  *    AUTHOR		: Saji Kumar.V.R <saji.kumar@wipro.com>
  *
  *    SIGNALS
- * 	Uses SIGUSR1 to pause before test if option set.
- * 	(See the parse_opts(3) man page).
+ *	Uses SIGUSR1 to pause before test if option set.
+ *	(See the parse_opts(3) man page).
  *
  *    DESCRIPTION
  *	This is a Phase I test for the clone(2) system call.
  *	It is intended to provide a limited exposure of the system call.
  *
- * 	Setup:
- * 	  Setup signal handling.
+ *	Setup:
+ *	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
  *
- * 	Test:
+ *	Test:
  *	 Loop if the proper options are given.
- * 	  Call clone() with only SIGCHLD flag
+ *	  Call clone() with only SIGCHLD flag
  *
  *	  CHILD:
  *		return 0;
@@ -52,8 +52,8 @@
  *		else
  *			test failed
  *
- * 	Cleanup:
- * 	  Print errno log and/or timing stats if options given
+ *	Cleanup:
+ *	  Print errno log and/or timing stats if options given
  *
  * USAGE:  <for command-line>
  *  clone01 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
@@ -85,21 +85,20 @@ static void setup();
 static void cleanup();
 static int do_child();
 
-char *TCID="clone01";		/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "clone01";		/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	void *child_stack;	/* stack for child */
 	int status, child_pid;
-   
+
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL))
 	    != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
@@ -108,15 +107,15 @@ main(int ac, char **av)
 	setup();
 
 	/* Allocate stack for child */
-	if((child_stack = (void *) malloc(CHILD_STACK_SIZE)) == NULL) {
+	if ((child_stack = (void *)malloc(CHILD_STACK_SIZE)) == NULL) {
 		tst_brkm(TBROK, cleanup, "Cannot allocate stack for child");
 	}
 
 	/* check looping state if -i option given */
-	for (lc=0; TEST_LOOPING(lc); lc++) {
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/*
 		 * Call clone(2)
@@ -125,10 +124,10 @@ main(int ac, char **av)
 		TEST(clone(do_child, child_stack, SIGCHLD, NULL));
 #elif defined(__ia64__)
 		TEST(clone2(do_child, child_stack,
-				CHILD_STACK_SIZE, SIGCHLD, NULL,
-				NULL, NULL, NULL));
+			    CHILD_STACK_SIZE, SIGCHLD, NULL, NULL, NULL, NULL));
 #else
-		TEST(clone(do_child, child_stack + CHILD_STACK_SIZE, SIGCHLD, NULL));
+		TEST(clone
+		     (do_child, child_stack + CHILD_STACK_SIZE, SIGCHLD, NULL));
 #endif
 
 		if ((child_pid = wait(&status)) == -1) {
@@ -145,21 +144,19 @@ main(int ac, char **av)
 				 child_pid);
 		}
 
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	free(child_stack);
 
 	/* cleanup and exit */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 
-}	/* End main */
+}				/* End main */
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup()
+void setup()
 {
 
 	/* capture signals */
@@ -168,15 +165,13 @@ setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-}	/* End setup() */
-
+}				/* End setup() */
 
 /*
  *cleanup() -  performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 
 	/*
@@ -187,14 +182,12 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */
 
 /*
  * do_child() - function executed by child
  */
-int
-do_child(void)
+int do_child(void)
 {
 	exit(0);
 }
-

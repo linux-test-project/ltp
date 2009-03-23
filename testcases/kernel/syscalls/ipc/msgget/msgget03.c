@@ -63,35 +63,37 @@ extern int Tst_count;
 
 int maxmsgs = 0;
 
-int exp_enos[] = {ENOSPC, 0};	/* 0 terminated list of expected errnos */
+int exp_enos[] = { ENOSPC, 0 };	/* 0 terminated list of expected errnos */
 
 int *msg_q_arr = NULL;		/* hold the id's that we create */
 int num_queue = 0;		/* count the queues created */
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int msg_q;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
-	
+
 		/*
 		 * Use a while loop to create the maximum number of queues.
 		 * When we get an error, check for ENOSPC.
 		 */
-		while((msg_q = msgget(msgkey + num_queue, IPC_CREAT|IPC_EXCL)) != -1) {
+		while ((msg_q =
+			msgget(msgkey + num_queue,
+			       IPC_CREAT | IPC_EXCL)) != -1) {
 			msg_q_arr[num_queue] = msg_q;
 			if (num_queue == maxmsgs) {
 				tst_resm(TINFO, "The maximum number of message"
@@ -102,7 +104,7 @@ int main(int ac, char **av)
 			num_queue++;
 		}
 
-		switch(errno) {
+		switch (errno) {
 		case ENOSPC:
 			tst_resm(TPASS, "expected failure - errno = %d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
@@ -111,21 +113,19 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "call failed with an "
 				 "unexpected error - %d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
-			break;	
+			break;
 		}
 	}
 
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -149,7 +149,7 @@ setup(void)
 	if (maxmsgs < 0)
 		tst_brkm(TBROK, cleanup, "");
 
-	msg_q_arr = (int *)calloc(maxmsgs, sizeof (int));
+	msg_q_arr = (int *)calloc(maxmsgs, sizeof(int));
 	if (msg_q_arr == NULL) {
 		tst_brkm(TBROK, cleanup, "Couldn't allocate memory "
 			 "for msg_q_arr: calloc() failed");
@@ -160,8 +160,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	int i;
 
@@ -170,10 +169,10 @@ cleanup(void)
 	 */
 
 	if (msg_q_arr != NULL) {
-		for (i=0; i<num_queue; i++) {
+		for (i = 0; i < num_queue; i++) {
 			rm_queue(msg_q_arr[i]);
 		}
-		(void) free(msg_q_arr);
+		(void)free(msg_q_arr);
 	}
 
 	/* Remove the temporary directory */
@@ -188,4 +187,3 @@ cleanup(void)
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

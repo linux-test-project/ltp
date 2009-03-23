@@ -36,7 +36,7 @@
  *	by root.   Use the TERM flag, to clean up files.
  */
 
-#include <stdio.h>	
+#include <stdio.h>
 #include <errno.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -50,67 +50,74 @@
 #define FAILED 0
 #define PASSED 1
 
-
-char *TCID="acct02";            /* Test program identifier.    */
-int TST_TOTAL=2;                /* Total number of test cases. */
-extern int Tst_count;           /* Test Case counter for tst_* routines */
+char *TCID = "acct02";		/* Test program identifier.    */
+int TST_TOTAL = 2;		/* Total number of test cases. */
+extern int Tst_count;		/* Test Case counter for tst_* routines */
 /**************/
 
 char fname[80];
 struct passwd *ltpuser;
 
 /*--------------------------------------------------------------*/
-int main (argc, argv)
-	int  argc;
-	char *argv[];
+int main(argc, argv)
+int argc;
+char *argv[];
 {
 
 	/* Get the user id "nobody" */
 	if ((ltpuser = getpwnam("nobody")) == NULL) {
-        tst_resm(TBROK,"nobody not found in /etc/passwd");
-        tst_exit();
-    	}
+		tst_resm(TBROK, "nobody not found in /etc/passwd");
+		tst_exit();
+	}
 
 	/* Switch to "nobody" */
 	setuid(ltpuser->pw_uid);
 
-
 /*--------------------------------------------------------------*/
 
 	/* Attempt to turn off acct as non-root
-	*/
-	if( acct( NULL ) != -1 ) {
-		tst_resm(TBROK, "Non-root attempting to disable acct: didn't fail", errno );
+	 */
+	if (acct(NULL) != -1) {
+		tst_resm(TBROK,
+			 "Non-root attempting to disable acct: didn't fail",
+			 errno);
 		tst_exit();
 	}
 
-	if( errno != EPERM ) {
-	        if( errno == ENOSYS ){
-                        tst_resm(TCONF,"BSD process accounting is not configured in this kernel.");
-                        tst_resm(TCONF,"Test will not run.");
-                        tst_exit();
-                }else{
-			tst_resm(TBROK, "Non-root acct disable - errno expect: %d got: %d",
-					EPERM, errno );
+	if (errno != EPERM) {
+		if (errno == ENOSYS) {
+			tst_resm(TCONF,
+				 "BSD process accounting is not configured in this kernel.");
+			tst_resm(TCONF, "Test will not run.");
 			tst_exit();
-                }
-	} else tst_resm(TPASS, "Received expected error: EPERM");
+		} else {
+			tst_resm(TBROK,
+				 "Non-root acct disable - errno expect: %d got: %d",
+				 EPERM, errno);
+			tst_exit();
+		}
+	} else
+		tst_resm(TPASS, "Received expected error: EPERM");
 
 //-------------------------------------------------
-	if( acct( "/anystring" ) != -1 ) {
-		tst_resm(TBROK, "Non-root attempting to enable acct: didn't fail", errno );
+	if (acct("/anystring") != -1) {
+		tst_resm(TBROK,
+			 "Non-root attempting to enable acct: didn't fail",
+			 errno);
 		tst_exit();
 	}
-	
-	if( errno != EPERM ) {
-		tst_resm(TFAIL, "Non-root acct enable - errno expect: %d got: %d",
-				EPERM, errno );
+
+	if (errno != EPERM) {
+		tst_resm(TFAIL,
+			 "Non-root acct enable - errno expect: %d got: %d",
+			 EPERM, errno);
 		tst_exit();
-	} else tst_resm(TPASS, "Received expected error: EPERM");
+	} else
+		tst_resm(TPASS, "Received expected error: EPERM");
 
 //-------------------------------------------------
 
-	tst_exit();	/* THIS CALL DOES NOT RETURN - EXITS!!	*/
+	tst_exit();		/* THIS CALL DOES NOT RETURN - EXITS!!  */
 /*--------------------------------------------------------------*/
 	return 0;
 }

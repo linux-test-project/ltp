@@ -33,85 +33,91 @@
 #include "usctest.h"
 
 char *TCID = "setegid01";
-int TST_TOTAL = 1;          /* is this number right? */
+int TST_TOTAL = 1;		/* is this number right? */
 int verbose = 0;
 
 option_t options[] = {
-    { "v", &verbose, NULL },      /* No argument */
-    { NULL, NULL, NULL }        /* NULL required to end array */
+	{"v", &verbose, NULL},	/* No argument */
+	{NULL, NULL, NULL}	/* NULL required to end array */
 };
 
 void help()
 {
-    printf("  -v       verbose\n");
+	printf("  -v       verbose\n");
 }
 
 int main(int argc, char **argv)
 {
-    struct passwd nobody;
-    gid_t nobody_gid;
-    gid_t cur_rgid, cur_egid, cur_sgid;
-    gid_t orig_rgid, orig_egid, orig_sgid;
-    char *msg;
+	struct passwd nobody;
+	gid_t nobody_gid;
+	gid_t cur_rgid, cur_egid, cur_sgid;
+	gid_t orig_rgid, orig_egid, orig_sgid;
+	char *msg;
 
-    if ((msg = parse_opts(argc, argv, options, help)) != (char *)NULL) {
-        tst_brkm(TBROK, NULL, "Option parsing error - %s", msg);
-        tst_exit();
-    }
+	if ((msg = parse_opts(argc, argv, options, help)) != (char *)NULL) {
+		tst_brkm(TBROK, NULL, "Option parsing error - %s", msg);
+		tst_exit();
+	}
 
-    if (geteuid() != 0) {
-        tst_brkm(TBROK, NULL, "Must be super/root for this test!");
-        tst_exit();
-    }
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, NULL, "Must be super/root for this test!");
+		tst_exit();
+	}
 
-    nobody = *getpwnam("nobody");
-    nobody_gid = nobody.pw_gid;
+	nobody = *getpwnam("nobody");
+	nobody_gid = nobody.pw_gid;
 
-    TEST(getresgid(&orig_rgid, &orig_egid, &orig_sgid));
-    if (TEST_RETURN == -1) {
-        tst_resm(TBROK, "getresgid() Failed, errno=%d : %s", TEST_ERRNO, strerror(TEST_ERRNO));
-        tst_exit();
-    }
-    if (verbose) {
-        printf("getresgid reports rgid %d, egid %d, sgid %d\n", orig_rgid,
-           orig_egid, orig_sgid);
-        printf("calling setegid(nobody_gid %d)\n", nobody_gid);
-    }
-    TEST(setegid(nobody_gid));
-    if (TEST_RETURN == -1) {
-        tst_resm(TFAIL, "setegid() Failed, errno=%d : %s", TEST_ERRNO, strerror(TEST_ERRNO));
-        tst_exit();
-    }
+	TEST(getresgid(&orig_rgid, &orig_egid, &orig_sgid));
+	if (TEST_RETURN == -1) {
+		tst_resm(TBROK, "getresgid() Failed, errno=%d : %s", TEST_ERRNO,
+			 strerror(TEST_ERRNO));
+		tst_exit();
+	}
+	if (verbose) {
+		printf("getresgid reports rgid %d, egid %d, sgid %d\n",
+		       orig_rgid, orig_egid, orig_sgid);
+		printf("calling setegid(nobody_gid %d)\n", nobody_gid);
+	}
+	TEST(setegid(nobody_gid));
+	if (TEST_RETURN == -1) {
+		tst_resm(TFAIL, "setegid() Failed, errno=%d : %s", TEST_ERRNO,
+			 strerror(TEST_ERRNO));
+		tst_exit();
+	}
 
-    TEST(getresgid(&cur_rgid, &cur_egid, &cur_sgid));
-    if (TEST_RETURN == -1) {
-        tst_resm(TBROK, "setegid() Failed, errno=%d : %s", TEST_ERRNO, strerror(TEST_ERRNO));
-        tst_exit();
-    }
-    if (verbose) {
-        printf("getresgid reports rgid %d, egid %d, sgid %d\n", cur_rgid,
-           cur_egid, cur_sgid);
-    }
+	TEST(getresgid(&cur_rgid, &cur_egid, &cur_sgid));
+	if (TEST_RETURN == -1) {
+		tst_resm(TBROK, "setegid() Failed, errno=%d : %s", TEST_ERRNO,
+			 strerror(TEST_ERRNO));
+		tst_exit();
+	}
+	if (verbose) {
+		printf("getresgid reports rgid %d, egid %d, sgid %d\n",
+		       cur_rgid, cur_egid, cur_sgid);
+	}
 
-    /* make sure it at least does what its name says */
-    if (nobody_gid != cur_egid) {
-        tst_resm(TFAIL, "setegid() Failed functional test: it failed to change the effective gid");
-        tst_exit();
-    }
+	/* make sure it at least does what its name says */
+	if (nobody_gid != cur_egid) {
+		tst_resm(TFAIL,
+			 "setegid() Failed functional test: it failed to change the effective gid");
+		tst_exit();
+	}
 
-    /* SUSv3 says the real group ID and saved set-gid must
-     * remain unchanged by setgid.  See
-     * http://www.opengroup.org/onlinepubs/007904975/functions/setegid.html
-     */
-    if (orig_sgid != cur_sgid) {
-        tst_resm(TFAIL, "setegid() Failed functional test: it changed the saved set-gid");
-        tst_exit();
-    }
-    if (orig_rgid != cur_rgid) {
-        tst_resm(TFAIL, "setegid() Failed functional test: it changed the real gid");
-        tst_exit();
-    }
-    tst_resm(TPASS, "setegid() passed functional test");
-    tst_exit();
-    return 0;
+	/* SUSv3 says the real group ID and saved set-gid must
+	 * remain unchanged by setgid.  See
+	 * http://www.opengroup.org/onlinepubs/007904975/functions/setegid.html
+	 */
+	if (orig_sgid != cur_sgid) {
+		tst_resm(TFAIL,
+			 "setegid() Failed functional test: it changed the saved set-gid");
+		tst_exit();
+	}
+	if (orig_rgid != cur_rgid) {
+		tst_resm(TFAIL,
+			 "setegid() Failed functional test: it changed the real gid");
+		tst_exit();
+	}
+	tst_resm(TPASS, "setegid() passed functional test");
+	tst_exit();
+	return 0;
 }

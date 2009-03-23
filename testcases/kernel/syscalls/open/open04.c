@@ -63,18 +63,18 @@ int nfile;
 int *buf;
 char fname[40];
 
-int exp_enos[] = {EMFILE, 0};
+int exp_enos[] = { EMFILE, 0 };
 
 void setup(void);
 void cleanup(void);
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -106,15 +106,13 @@ int main(int ac, char **av)
 	close(fd);
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -137,8 +135,8 @@ setup()
 	close(first);
 	unlink(fname);
 
-	/* Allocate memory for stat and ustat structure variables*/
-	if( (buf = (int *) malloc(sizeof(int) * nfile - first)) == NULL) {
+	/* Allocate memory for stat and ustat structure variables */
+	if ((buf = (int *)malloc(sizeof(int) * nfile - first)) == NULL) {
 		tst_brkm(TBROK, tst_exit, "Failed to allocate Memory");
 	}
 
@@ -151,7 +149,7 @@ setup()
 			}
 			break;
 		}
-		buf[ifile-first] = fd;
+		buf[ifile - first] = fd;
 	}
 }
 
@@ -159,20 +157,19 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
 	 */
-    close(first);
+	close(first);
 
 	TEST_CLEANUP;
 
 	for (ifile = first; ifile < nfile; ifile++) {
 		sprintf(fname, "open04.%d.%d", ifile, mypid);
-		close(buf[ifile-first]);
+		close(buf[ifile - first]);
 		unlink(fname);
 	}
 

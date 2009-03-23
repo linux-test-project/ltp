@@ -102,14 +102,15 @@ int main(int ac, char **av)
 
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "%s call failed - errno = %d : %s",
-			         TCID, TEST_ERRNO, strerror(TEST_ERRNO));
+				 TCID, TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
 			if (STD_FUNCTIONAL_TEST) {
 
 				/* get the values and make sure they */
 				/* are the same as what was set      */
 				if (semctl(sem_id_1, 0, GETALL, get_arr) == -1) {
-					tst_brkm(TBROK, cleanup, "semctl() failed in functional test");
+					tst_brkm(TBROK, cleanup,
+						 "semctl() failed in functional test");
 				}
 
 				for (i = 0; i < NSEMS; i++) {
@@ -118,9 +119,11 @@ int main(int ac, char **av)
 					}
 				}
 				if (fail)
-					tst_resm(TFAIL, "semaphore values are wrong");
+					tst_resm(TFAIL,
+						 "semaphore values are wrong");
 				else
-					tst_resm(TPASS, "semaphore values are correct");
+					tst_resm(TPASS,
+						 "semaphore values are correct");
 
 			} else {
 				tst_resm(TPASS, "call succeeded");
@@ -130,7 +133,7 @@ int main(int ac, char **av)
 		/*
 		 * clean up things in case we are looping
 		 */
-                union semun set_arr;
+		union semun set_arr;
 		set_arr.val = 0;
 		for (i = 0; i < NSEMS; i++) {
 			if (semctl(sem_id_1, i, SETVAL, set_arr) == -1) {

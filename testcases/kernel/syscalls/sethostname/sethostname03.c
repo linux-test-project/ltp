@@ -84,22 +84,20 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 static char ltpthost[] = "ltphost";
 static char hname[MAX_LENGTH];
-static int exp_enos[] = {EPERM, 0};
+static int exp_enos[] = { EPERM, 0 };
 static char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
 static void setup(void);
 static void cleanup(void);
 
-
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;
 	char *msg;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -110,7 +108,7 @@ main(int ac, char **av)
 	/* Check for looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/* call sethostname() */
 		TEST(sethostname(ltpthost, sizeof(ltpthost)));
@@ -119,12 +117,12 @@ main(int ac, char **av)
 			tst_resm(TPASS, "Expected Failure; Got EPERM");
 		} else {
 			tst_resm(TFAIL, "call failed to produce "
-				"expected error;  errno: %d : %s",
-				TEST_ERRNO, strerror(TEST_ERRNO));
+				 "expected error;  errno: %d : %s",
+				 TEST_ERRNO, strerror(TEST_ERRNO));
 		}
 		TEST_ERROR_LOG(TEST_ERRNO);
 
-	} /* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* cleanup and exit */
 	cleanup();
@@ -135,8 +133,7 @@ main(int ac, char **av)
 /*
  * setup() - performs all one time setup for this test.
  */
-void
-setup()
+void setup()
 {
 	int ret;
 
@@ -152,21 +149,21 @@ setup()
 	}
 
 	/* Switch to nobody user for correct error code collection */
-	if((ltpuser = getpwnam(nobody_uid)) == NULL) {
+	if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
 		tst_brkm(TBROK, tst_exit, "Required user \"nobody\" not"
-					  " present");
+			 " present");
 	}
 
 	if (seteuid(ltpuser->pw_uid) == -1) {
 		tst_resm(TWARN, "seteuid failed to "
-			"to set the effective uid to %d", ltpuser->pw_uid);
+			 "to set the effective uid to %d", ltpuser->pw_uid);
 		perror("seteuid");
 	}
 
 	/* Keep current hostname */
-	if((ret = gethostname (hname, sizeof(hname))) < 0 ) {
+	if ((ret = gethostname(hname, sizeof(hname))) < 0) {
 		tst_brkm(TBROK, tst_exit, "gethostname() failed while"
-				" getting current host name");
+			 " getting current host name");
 	}
 
 	/* Pause if that option was specified */
@@ -178,8 +175,7 @@ setup()
  * cleanup()  - performs all one time cleanup for this test
  *		completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	int ret;
 	/*
@@ -188,17 +184,17 @@ cleanup()
 	 */
 	TEST_CLEANUP;
 
-	 /* Set effective user id back to root/super user */
+	/* Set effective user id back to root/super user */
 	if (seteuid(0) == -1) {
 		tst_resm(TWARN, "seteuid failed to "
-			"to set the effective uid to root" );
+			 "to set the effective uid to root");
 		perror("seteuid");
 	}
 
 	/* Restore host name */
-	if( (ret = sethostname (hname, strlen(hname))) < 0 ) {
+	if ((ret = sethostname(hname, strlen(hname))) < 0) {
 		tst_resm(TWARN, "sethostname() failed while restoring"
-			" hostname to \"%s\"", hname);
+			 " hostname to \"%s\"", hname);
 	}
 
 	/* exit with return code appropriate for results */

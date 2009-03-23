@@ -28,7 +28,7 @@
  * Expected Result:
  *  lseek() should return the offset from the beginning of the file measured
  *  in bytes. Also check if able to read valid data from this location.
- *  
+ * $
  * Algorithm:
  *  Setup:
  *   Setup signal handling.
@@ -83,24 +83,23 @@
 #define TEMP_FILE	"tmp_file"
 #define FILE_MODE	S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
 
-char *TCID="lseek06";		/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "lseek06";		/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 int fildes;			/* file handle for temp file */
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	char read_buf[1];	/* data read from temp. file */
-   
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -111,7 +110,7 @@ main(int ac, char **av)
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/*
 		 * Invoke lseek(2) to move the read/write file
@@ -120,7 +119,7 @@ main(int ac, char **av)
 		TEST(lseek(fildes, OFFSET, SEEK_SET));
 
 		/* check return code of lseek(2) */
-		if (TEST_RETURN == (off_t)-1) {
+		if (TEST_RETURN == (off_t) - 1) {
 			tst_resm(TFAIL, "lseek on (%s) Failed, errno=%d : %s",
 				 TEMP_FILE, TEST_ERRNO, strerror(TEST_ERRNO));
 			continue;
@@ -164,14 +163,13 @@ main(int ac, char **av)
 		} else {
 			tst_resm(TPASS, "call succeeded");
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
-}	/* End main */
+	 /*NOTREACHED*/ return 0;
+}				/* End main */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -179,10 +177,9 @@ main(int ac, char **av)
  *	     Create a test file under temporary directory and write some
  *	     data into it.
  */
-void
-setup()
+void setup()
 {
-	char write_buf[BUFSIZ];		/* buffer to hold data */
+	char write_buf[BUFSIZ];	/* buffer to hold data */
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -204,7 +201,7 @@ setup()
 	}
 
 	/* Write data into temporary file */
-	if(write(fildes, write_buf, strlen(write_buf)) != strlen(write_buf)) {
+	if (write(fildes, write_buf, strlen(write_buf)) != strlen(write_buf)) {
 		tst_brkm(TBROK, cleanup, "write(2) on %s Failed, errno=%d : %s",
 			 TEMP_FILE, errno, strerror(errno));
 	}
@@ -215,8 +212,7 @@ setup()
  *             completion or premature exit.
  *	       Remove the test directory and testfile created in the setup.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

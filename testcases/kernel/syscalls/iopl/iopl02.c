@@ -84,37 +84,37 @@ char *TCID = "iopl02";		/* Test program identifier.    */
 #define EXP_RET_VAL -1
 
 static void setup();
-static int  setup1(void);
+static int setup1(void);
 static void cleanup1();
 static void cleanup();
 
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-static int exp_enos[] = {EINVAL, EPERM, 0};
+static int exp_enos[] = { EINVAL, EPERM, 0 };
 
 static char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
 struct test_cases_t {
-	int	level;		/* I/O privilege level */
-        char	*desc;		/* test case description */
-	int 	exp_errno;	/* expected error number */
+	int level;		/* I/O privilege level */
+	char *desc;		/* test case description */
+	int exp_errno;		/* expected error number */
 } test_cases[] = {
-	{ INVALID_LEVEL, "Invalid privilege level", EINVAL },
-	{ 1, "Non super-user", EPERM }
+	{
+	INVALID_LEVEL, "Invalid privilege level", EINVAL}, {
+	1, "Non super-user", EPERM}
 };
 
 int TST_TOTAL = sizeof(test_cases) / sizeof(test_cases[0]);
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 
 	int lc, i;		/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
-	     != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL))
+	    != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -131,7 +131,7 @@ main(int ac, char **av)
 
 			if (i == 1) {
 				/* setup Non super-user for second test */
-                        	if (setup1()) {
+				if (setup1()) {
 					/* setup1() failed, skip this test */
 					continue;
 				}
@@ -143,17 +143,17 @@ main(int ac, char **av)
 			TEST(iopl(test_cases[i].level));
 
 			if ((TEST_RETURN == EXP_RET_VAL) &&
-		    		(TEST_ERRNO == test_cases[i].exp_errno)) {
-				 tst_resm(TPASS, "Expected failure for %s, "
-					"errno: %d", test_cases[i].desc,
-					TEST_ERRNO);
+			    (TEST_ERRNO == test_cases[i].exp_errno)) {
+				tst_resm(TPASS, "Expected failure for %s, "
+					 "errno: %d", test_cases[i].desc,
+					 TEST_ERRNO);
 			} else {
 				tst_resm(TFAIL, "Unexpected results for %s ; "
-					"returned %d (expected %d), errno %d "
-					"(expected errno  %d)",
-				 	test_cases[i].desc,
-					TEST_RETURN, EXP_RET_VAL,
-					TEST_ERRNO, test_cases[i].exp_errno);
+					 "returned %d (expected %d), errno %d "
+					 "(expected errno  %d)",
+					 test_cases[i].desc,
+					 TEST_RETURN, EXP_RET_VAL,
+					 TEST_ERRNO, test_cases[i].exp_errno);
 			}
 
 			TEST_ERROR_LOG(TEST_ERRNO);
@@ -164,32 +164,29 @@ main(int ac, char **av)
 			}
 
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* cleanup and exit */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 
-}	/* End main */
+}				/* End main */
 
 /* setup1() - set up non-super user for second test case */
-int 
-setup1(void)
+int setup1(void)
 {
 	/* switch to "nobody" user */
 	if (seteuid(ltpuser->pw_uid) == -1) {
 		tst_resm(TWARN, "Failed to set effective"
-				"uid to %d", ltpuser->pw_uid);
+			 "uid to %d", ltpuser->pw_uid);
 		return 1;
 	}
 	return 0;
 }
 
 /* cleanup1() - reset to super user for first test case */
-void
-cleanup1()
+void cleanup1()
 {
 	/* reset user as root */
 	if (seteuid(0) == -1) {
@@ -198,8 +195,7 @@ cleanup1()
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup()
+void setup()
 {
 
 	/* capture signals */
@@ -208,7 +204,7 @@ setup()
 	/* Check whether we are root  */
 	if (geteuid() != 0) {
 		tst_brkm(TBROK, tst_exit, "Must be root for this test!");
-        }
+	}
 
 	/* Check if "nobody" user id exists */
 	if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
@@ -221,15 +217,13 @@ setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-}	/* End setup() */
-
+}				/* End setup() */
 
 /*
  *cleanup() -  performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 
 	/*
@@ -241,7 +235,7 @@ cleanup()
 	/* exit with return code appropriate for results */
 	tst_exit();
 
-}	/* End cleanup() */
+}				/* End cleanup() */
 
 #else /* __i386__ */
 
@@ -250,10 +244,10 @@ cleanup()
 
 int TST_TOTAL = 0;		/* Total number of test cases. */
 
-int
-main()
+int main()
 {
-	tst_resm(TPASS, "LSB v1.3 does not specify iopl() for this architecture.");
+	tst_resm(TPASS,
+		 "LSB v1.3 does not specify iopl() for this architecture.");
 	tst_exit();
 	return 0;
 }

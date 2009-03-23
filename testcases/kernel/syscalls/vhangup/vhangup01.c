@@ -56,11 +56,11 @@ char *TCID = "vhangup01";
 int TST_TOTAL = 1;
 
 /* 0 terminated list of expected errnos */
-int exp_enos[] = {EPERM,0};
+int exp_enos[] = { EPERM, 0 };
 
 int fail;
 char user1name[] = "nobody";
-extern struct passwd * my_getpwnam(char *);
+extern struct passwd *my_getpwnam(char *);
 extern int Tst_count;
 
 int main(int argc, char **argv)
@@ -74,8 +74,8 @@ int main(int argc, char **argv)
 	struct passwd *nobody;
 
 	/* parse standard options */
-	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) !=
-	    (char *) NULL) {
+	if ((msg = parse_opts(argc, argv, (option_t *) NULL, NULL)) !=
+	    (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -90,8 +90,7 @@ int main(int argc, char **argv)
 
 		if ((pid = FORK_OR_VFORK()) < 0) {
 			tst_brkm(TFAIL, cleanup, "fork failed");
-			/*NOTREACHED*/
-		} else if (pid > 0) {	/* parent */
+		 /*NOTREACHED*/} else if (pid > 0) {	/* parent */
 			waitpid(pid, &status, 0);
 			_exit(0);	/*
 					 * Exit here and let the child clean up.
@@ -101,19 +100,17 @@ int main(int argc, char **argv)
 					 * use during cleanup.
 					 */
 
-		} else {		/* child */
+		} else {	/* child */
 			retval = setreuid(nobody->pw_uid, nobody->pw_uid);
 			if (retval < 0) {
 				perror("setreuid");
 				tst_brkm(TFAIL, cleanup, "setreuid failed");
-				/*NOTREACHED*/
-			}
+			 /*NOTREACHED*/}
 			TEST(vhangup());
 			if (TEST_RETURN != -1) {
-				tst_brkm(TFAIL, cleanup,  "vhangup() failed to "
-					"fail");
-				/*NOTREACHED*/
-			} else if (TEST_ERRNO == EPERM) {
+				tst_brkm(TFAIL, cleanup, "vhangup() failed to "
+					 "fail");
+			 /*NOTREACHED*/} else if (TEST_ERRNO == EPERM) {
 				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_resm(TPASS, "Got EPERM as expected.");
 			} else {
@@ -124,9 +121,7 @@ int main(int argc, char **argv)
 		}
 	}
 	cleanup();
-	/*NOTREACHED*/
-
-  return 0;
+	 /*NOTREACHED*/ return 0;
 
 }
 
@@ -134,8 +129,7 @@ int main(int argc, char **argv)
  * setup()
  *	performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* Set up the expected error numbers for -e option */
 	TEST_EXP_ENOS(exp_enos);
@@ -151,8 +145,7 @@ setup(void)
  *	performs all ONE TIME cleanup for this test at
  *	completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -162,5 +155,4 @@ cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}

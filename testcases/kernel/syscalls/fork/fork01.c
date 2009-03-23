@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fork01.c,v 1.4 2009/02/26 12:15:38 subrata_modak Exp $ */
+/* $Id: fork01.c,v 1.5 2009/03/23 13:35:41 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -67,7 +67,7 @@
  *	(See the parse_opts(3) man page).
  *
  *    OUTPUT SPECIFICATIONS
- * 
+ *$
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
  *
@@ -132,10 +132,8 @@ void cleanup();
 #define LINE_SZ	20		/* size of the line written/read to the file */
 #define FILENAME	"childpid"
 
-
-
-char *TCID="fork01"; 		/* Test program identifier.    */
-int TST_TOTAL=2;    		/* Total number of test cases. */
+char *TCID = "fork01";		/* Test program identifier.    */
+int TST_TOTAL = 2;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 /***************************************************************
@@ -144,14 +142,14 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
  ***************************************************************/
 void child_pid()
 {
- 
-  int fildes;
-  char tmp_line[LINE_SZ];
- 
-  fildes = creat(FILENAME,0700);
-  sprintf(tmp_line,"%d\n",getpid());
-  write(fildes,tmp_line,LINE_SZ);
-  close(fildes);
+
+	int fildes;
+	char tmp_line[LINE_SZ];
+
+	fildes = creat(FILENAME, 0700);
+	sprintf(tmp_line, "%d\n", getpid());
+	write(fildes, tmp_line, LINE_SZ);
+	close(fildes);
 
 }
 
@@ -162,32 +160,34 @@ void child_pid()
  ***************************************************************/
 void parent_pid()
 {
- 
-  int fildes;
-  char tmp_line[LINE_SZ];
-  pid_t child_id;
-	
-  if ((fildes = open(FILENAME,O_RDWR)) == -1) {
-    tst_brkm(TBROK, cleanup,
-	     "parent open failed. errno: %d (%s)\n",
-	     errno, strerror(errno));
-  }
-  else {
-    if (read(fildes,tmp_line,LINE_SZ) == 0) {
-      tst_brkm(TBROK,cleanup, "fork(): parent failed to read PID from file errno: %d (%s)",
-	       errno, strerror(errno));
-    }
-    else {
-      child_id = atoi(tmp_line);
-      if (TEST_RETURN != child_id) {
-	tst_resm(TFAIL,"child reported a pid of %d. parent received %d from fork()",
-		 child_id,TEST_RETURN);
-      } else {
-	tst_resm(TPASS,"child pid and fork() return agree: %d",child_id);
-      }
-    }
-    close(fildes);
-  }
+
+	int fildes;
+	char tmp_line[LINE_SZ];
+	pid_t child_id;
+
+	if ((fildes = open(FILENAME, O_RDWR)) == -1) {
+		tst_brkm(TBROK, cleanup,
+			 "parent open failed. errno: %d (%s)\n",
+			 errno, strerror(errno));
+	} else {
+		if (read(fildes, tmp_line, LINE_SZ) == 0) {
+			tst_brkm(TBROK, cleanup,
+				 "fork(): parent failed to read PID from file errno: %d (%s)",
+				 errno, strerror(errno));
+		} else {
+			child_id = atoi(tmp_line);
+			if (TEST_RETURN != child_id) {
+				tst_resm(TFAIL,
+					 "child reported a pid of %d. parent received %d from fork()",
+					 child_id, TEST_RETURN);
+			} else {
+				tst_resm(TPASS,
+					 "child pid and fork() return agree: %d",
+					 child_id);
+			}
+		}
+		close(fildes);
+	}
 }
 
 /***************************************************************
@@ -195,123 +195,120 @@ void parent_pid()
  *
  ***************************************************************/
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-    int lc;		/* loop counter */
-    char *msg;		/* message returned from parse_opts */
-    int fails;
-    int kid_status, wait_status;
-   
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
+	int fails;
+	int kid_status, wait_status;
+
     /***************************************************************
      * parse standard options
      ***************************************************************/
-    if ( (msg=parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL )
-	tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL)
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 
     /***************************************************************
      * perform global setup for test
      ***************************************************************/
-    setup();
+	setup();
 
-    /* set the expected errnos... */
+	/* set the expected errnos... */
     /***************************************************************
      * check looping state if -c option given
      ***************************************************************/
-    for (lc=0; TEST_LOOPING(lc); lc++) {
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-      /* reset Tst_count in case we are looping. */
-      Tst_count=0;
-      fails = 0;
-     
-      /*
-       * Call fork(2)
-       */
-      TEST(fork());
-     
-      /* check return code */
-      if ( TEST_RETURN == -1 ) {
-	TEST_ERROR_LOG(TEST_ERRNO);
-	if ( STD_FUNCTIONAL_TEST ) {
-	  tst_resm(TFAIL, "fork() Failed, errno=%d : %s",
-		   TEST_ERRNO, strerror(TEST_ERRNO));
-	  tst_resm(TBROK,"unable to continue");
-	}
-      }
-      if (TEST_RETURN == 0) {
-	/* child */
-	if ( STD_FUNCTIONAL_TEST ) {
-	  child_pid();
-	}
-	exit(KIDEXIT);
-      } else {
-	/* parent */
-	if ( STD_FUNCTIONAL_TEST ) {
-	  tst_resm(TPASS, "fork() returned %d", TEST_RETURN);
-	}
-	/* wait for the child to complete */
-	wait_status = waitpid(TEST_RETURN, &kid_status, 0);
-	if ( STD_FUNCTIONAL_TEST ) {
-	  if (wait_status == TEST_RETURN) {
-	    if (kid_status != KIDEXIT << 8) {
-	      tst_resm(TBROK,
-		       "incorrect child status returned on wait(): %d",
-		       kid_status);
-	      fails++;
-	    }
-	  }
-	  else {
-	    tst_resm(TBROK,
-		     "wait() for child status failed with %d errno: %d : %s",
-		     wait_status,errno,strerror(errno));
-	    fails++;
-	  }
-	  if (fails == 0 ) {
-	    /* verification tests */
-	    parent_pid();
-	  }
-	}	 	  /* STD_FUNCTIONAL_TEST */
-      }  /* TEST_RETURN */
-    }	/* End for TEST_LOOPING */
-   
+		/* reset Tst_count in case we are looping. */
+		Tst_count = 0;
+		fails = 0;
+
+		/*
+		 * Call fork(2)
+		 */
+		TEST(fork());
+
+		/* check return code */
+		if (TEST_RETURN == -1) {
+			TEST_ERROR_LOG(TEST_ERRNO);
+			if (STD_FUNCTIONAL_TEST) {
+				tst_resm(TFAIL, "fork() Failed, errno=%d : %s",
+					 TEST_ERRNO, strerror(TEST_ERRNO));
+				tst_resm(TBROK, "unable to continue");
+			}
+		}
+		if (TEST_RETURN == 0) {
+			/* child */
+			if (STD_FUNCTIONAL_TEST) {
+				child_pid();
+			}
+			exit(KIDEXIT);
+		} else {
+			/* parent */
+			if (STD_FUNCTIONAL_TEST) {
+				tst_resm(TPASS, "fork() returned %d",
+					 TEST_RETURN);
+			}
+			/* wait for the child to complete */
+			wait_status = waitpid(TEST_RETURN, &kid_status, 0);
+			if (STD_FUNCTIONAL_TEST) {
+				if (wait_status == TEST_RETURN) {
+					if (kid_status != KIDEXIT << 8) {
+						tst_resm(TBROK,
+							 "incorrect child status returned on wait(): %d",
+							 kid_status);
+						fails++;
+					}
+				} else {
+					tst_resm(TBROK,
+						 "wait() for child status failed with %d errno: %d : %s",
+						 wait_status, errno,
+						 strerror(errno));
+					fails++;
+				}
+				if (fails == 0) {
+					/* verification tests */
+					parent_pid();
+				}
+			}	/* STD_FUNCTIONAL_TEST */
+		}		/* TEST_RETURN */
+	}			/* End for TEST_LOOPING */
+
     /***************************************************************
      * cleanup and exit
      ***************************************************************/
-    cleanup();
+	cleanup();
 
-    return 0;
-}	/* End main */
+	return 0;
+}				/* End main */
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void
-  setup()
+void setup()
 {
-  /* capture signals */
-  tst_sig(FORK, DEF_HANDLER, cleanup);
+	/* capture signals */
+	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-  /* Pause if that option was specified */
-  TEST_PAUSE;
- 
-  tst_tmpdir();
-}	/* End setup() */
+	/* Pause if that option was specified */
+	TEST_PAUSE;
 
+	tst_tmpdir();
+}				/* End setup() */
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void
-  cleanup()
+void cleanup()
 {
-  /*
-   * print timing stats if that option was specified.
-   * print errno log if that option was specified.
-   */
-  TEST_CLEANUP;
+	/*
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
+	TEST_CLEANUP;
 
-  /* exit with return code appropriate for results */
-  tst_rmdir();
-  tst_exit();
-}	/* End cleanup() */
+	/* exit with return code appropriate for results */
+	tst_rmdir();
+	tst_exit();
+}				/* End cleanup() */

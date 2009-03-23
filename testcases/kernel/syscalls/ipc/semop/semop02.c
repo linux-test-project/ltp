@@ -62,10 +62,10 @@ char *TCID = "semop02";
 int TST_TOTAL = 5;
 extern int Tst_count;
 
-int exp_enos[] = {E2BIG, EACCES, EFAULT, EINVAL, 0};
+int exp_enos[] = { E2BIG, EACCES, EFAULT, EINVAL, 0 };
 
-int sem_id_1 = -1;	/* a semaphore set with read & alter permissions */
-int sem_id_2 = -1;	/* a semaphore set without read & alter permissions */
+int sem_id_1 = -1;		/* a semaphore set with read & alter permissions */
+int sem_id_2 = -1;		/* a semaphore set without read & alter permissions */
 int bad_id = -1;
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
@@ -85,33 +85,34 @@ struct test_case_t {
 	int error;		/* the expected error number */
 } TC[] = {
 	/* E2BIG - the number of operations is too big */
-	{&sem_id_1, (struct sembuf *)&s_buf, BIGOPS, E2BIG},
-
-	/* EACCES - the semaphore set has no access permission */
-	{&sem_id_2, (struct sembuf *)&s_buf, NSOPS, EACCES},
-
-	/* EFAULT - the address for the s_buf value is not accessible */
-	{&sem_id_1, (struct sembuf *)-1, NSOPS, EFAULT},
-
-	/* EINVAL - the number of elments (t_ops) is 0 */
-	{&sem_id_1, (struct sembuf *)&s_buf, 0, EINVAL},
-
-	/* EINVAL - the semaphore set doesn't exist */
-	{&bad_id, (struct sembuf *)&s_buf, NSOPS, EINVAL}
+	{
+	&sem_id_1, (struct sembuf *)&s_buf, BIGOPS, E2BIG},
+	    /* EACCES - the semaphore set has no access permission */
+	{
+	&sem_id_2, (struct sembuf *)&s_buf, NSOPS, EACCES},
+	    /* EFAULT - the address for the s_buf value is not accessible */
+	{
+	&sem_id_1, (struct sembuf *)-1, NSOPS, EFAULT},
+	    /* EINVAL - the number of elments (t_ops) is 0 */
+	{
+	&sem_id_1, (struct sembuf *)&s_buf, 0, EINVAL},
+	    /* EINVAL - the semaphore set doesn't exist */
+	{
+	&bad_id, (struct sembuf *)&s_buf, NSOPS, EINVAL}
 };
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int i;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -119,7 +120,7 @@ int main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		for (i=0; i<TST_TOTAL; i++) {
+		for (i = 0; i < TST_TOTAL; i++) {
 			/*
 			 * use the TEST macro to make the call
 			 */
@@ -147,30 +148,26 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	key_t semkey2;
 
 	/* Switch to nobody user for correct error code collection */
-        if (geteuid() != 0) {
-                tst_brkm(TBROK, tst_exit, "Test must be run as root");
-        }
-         ltpuser = getpwnam(nobody_uid);
-         if (seteuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "setreuid failed to "
-                         "to set the effective uid to %d",
-                         ltpuser->pw_uid);
-                perror("setreuid");
-         }
-
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+	}
+	ltpuser = getpwnam(nobody_uid);
+	if (seteuid(ltpuser->pw_uid) == -1) {
+		tst_resm(TINFO, "setreuid failed to "
+			 "to set the effective uid to %d", ltpuser->pw_uid);
+		perror("setreuid");
+	}
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -210,8 +207,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/* if they exist, remove the semaphore resources */
 	rm_sema(sem_id_1);
@@ -229,4 +225,3 @@ cleanup(void)
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

@@ -85,24 +85,21 @@ char *TCID = "capget01";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
+static struct __user_cap_header_struct header;	/* cap_user_header_t is a pointer
+						   to __user_cap_header_struct */
 
-static struct __user_cap_header_struct header; /* cap_user_header_t is a pointer
-						  to __user_cap_header_struct */
+static struct __user_cap_data_struct data;	/* cap_user_data_t is a pointer to
+						   __user_cap_data_struct */
 
-static struct __user_cap_data_struct data; /* cap_user_data_t is a pointer to
-					      __user_cap_data_struct */
-
-
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 
-	int lc;		/* loop counter */
-	char *msg;	/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
-	     != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL))
+	    != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -126,19 +123,17 @@ main(int ac, char **av)
 				 " returned %d, errno = %d : %s", TEST_RETURN,
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* cleanup and exit */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 
-}	/* End main */
+}				/* End main */
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -146,15 +141,13 @@ setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-}	/* End setup() */
-
+}				/* End setup() */
 
 /*
  *cleanup() -  performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

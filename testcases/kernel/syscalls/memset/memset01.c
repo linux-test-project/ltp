@@ -52,7 +52,6 @@ char *TCID = "memset01";
 #define FAILED 0
 #define PASSED 1
 
-
 char buf[BSIZE];
 
 /*****	LTP Port	*****/
@@ -71,25 +70,25 @@ int blenter();
 void fill();
 int checkit(char *str);
 
-
 /*--------------------------------------------------------------*/
-int main (int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	register int i, j;
 	char *p;
 
 /*--------------------------------------------------------------*/
-   	local_flag = PASSED;
+	local_flag = PASSED;
 
 	fill();
 
-	for (i=0; i < 200; i++) {
+	for (i = 0; i < 200; i++) {
 		fill();
 		p = &buf[400];
 		memset(p, 0, i);
 		if ((j = checkit(p)) != i) {
-			tst_resm(TINFO, "Not enough zero bytes, wanted %d, got %d",
-			  i, j);
+			tst_resm(TINFO,
+				 "Not enough zero bytes, wanted %d, got %d", i,
+				 j);
 			local_flag = FAILED;
 			break;
 		}
@@ -101,23 +100,27 @@ int main (int argc, char *argv[])
 			break;
 	}
 
-   	(local_flag == FAILED) ? tst_resm(TFAIL, "Test failed") : tst_resm(TPASS, "Test passed");
+	(local_flag == FAILED) ? tst_resm(TFAIL,
+					  "Test failed") : tst_resm(TPASS,
+								    "Test passed");
 /*--------------------------------------------------------------*/
 /* Clean up any files created by test before call to anyfail.	*/
 
-	(local_flag == FAILED)? tst_resm(TFAIL, "Test failed"): tst_resm(TPASS, "Test passed");
+	(local_flag == FAILED) ? tst_resm(TFAIL,
+					  "Test failed") : tst_resm(TPASS,
+								    "Test passed");
 	tst_exit();
-	/* THIS CALL DOES NOT RETURN - EXITS!!	*/
-        return 0;
+	/* THIS CALL DOES NOT RETURN - EXITS!!  */
+	return 0;
 }
+
 /*--------------------------------------------------------------*/
 /* FUNCTIONS GO HERE */
-
 
 void fill()
 {
 	register int i;
-	for (i=0; i < BSIZE; i++)
+	for (i = 0; i < BSIZE; i++)
 		buf[i] = 'a';
 }
 
@@ -130,5 +133,3 @@ int checkit(char *str)
 
 	return (i);
 }
-
-

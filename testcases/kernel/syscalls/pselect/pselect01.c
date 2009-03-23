@@ -51,127 +51,136 @@
 void setup();
 void cleanup();
 
-char *TCID="pselect01";     /* Test program identifier.    */
-int TST_TOTAL=1;           /* Total number of test cases. */
-extern int Tst_count;      /* Test Case counter for tst_* routines */
+char *TCID = "pselect01";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
+extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 #define FILENAME "pselect01_test"
 #define LOOP_COUNT 4
 
 int main()
 {
- int ret_pselect,total_sec,fd,total_usec;
- fd_set readfds;
-        struct timeval tv;
-        int retval;
- time_t t;
- unsigned start,end;
+	int ret_pselect, total_sec, fd, total_usec;
+	fd_set readfds;
+	struct timeval tv;
+	int retval;
+	time_t t;
+	unsigned start, end;
 
- setup();
+	setup();
 
- fd = open(FILENAME,O_CREAT | O_RDWR, 0777);
- if (fd < 0)
- {
-  tst_resm(TBROK,"Opening %s...Failed....err %d",FILENAME,errno);
-  cleanup();
- }
-     FD_ZERO(&readfds);
-     FD_SET(fd,&readfds);
-        tv.tv_sec = 0;
-        tv.tv_usec =  0;
+	fd = open(FILENAME, O_CREAT | O_RDWR, 0777);
+	if (fd < 0) {
+		tst_resm(TBROK, "Opening %s...Failed....err %d", FILENAME,
+			 errno);
+		cleanup();
+	}
+	FD_ZERO(&readfds);
+	FD_SET(fd, &readfds);
+	tv.tv_sec = 0;
+	tv.tv_usec = 0;
 
- ret_pselect = pselect(fd, &readfds, 0, 0, (struct timespec *)&tv,NULL);
- if( ret_pselect >= 0)
- {
-  tst_resm(TPASS,"Basic pselect syscall testing....OK");
- }
- else
-  tst_resm(TFAIL,"Basic pselect syscall testing....FAILED, err %d",errno);
- close(fd);
- remove(FILENAME);
+	ret_pselect = pselect(fd, &readfds, 0, 0, (struct timespec *)&tv, NULL);
+	if (ret_pselect >= 0) {
+		tst_resm(TPASS, "Basic pselect syscall testing....OK");
+	} else
+		tst_resm(TFAIL,
+			 "Basic pselect syscall testing....FAILED, err %d",
+			 errno);
+	close(fd);
+	remove(FILENAME);
 
+	for (total_sec = 1; total_sec <= LOOP_COUNT; total_sec++) {
+		FD_ZERO(&readfds);
+		FD_SET(0, &readfds);
 
- for( total_sec=1; total_sec<=LOOP_COUNT; total_sec++)
- {
-          FD_ZERO(&readfds);
-          FD_SET(0, &readfds);
+		tv.tv_sec = total_sec;
+		tv.tv_usec = 0;
 
-          tv.tv_sec = total_sec;
-          tv.tv_usec =  0;
+		tst_resm(TINFO,
+			 "Testing basic pselect sanity,Sleeping for %d secs",
+			 tv.tv_sec);
+		start = time(&t);
+		retval =
+		    pselect(0, &readfds, NULL, NULL, (struct timespec *)&tv,
+			    NULL);
+		end = time(&t);
 
-  tst_resm(TINFO,"Testing basic pselect sanity,Sleeping for %d secs",tv.tv_sec);
-  start = time(&t);
-   retval = pselect(0, &readfds, NULL, NULL, (struct timespec *)&tv,NULL);
-  end = time(&t);
- 
-  if(total_sec >= (end - start))
-  tst_resm(TPASS,"Sleep time was correct");
-  else
-  tst_resm(TFAIL,"Sleep time was incorrect:%d != %d",total_sec,(end - start));
- }
+		if (total_sec >= (end - start))
+			tst_resm(TPASS, "Sleep time was correct");
+		else
+			tst_resm(TFAIL, "Sleep time was incorrect:%d != %d",
+				 total_sec, (end - start));
+	}
 
 #ifdef DEBUG
- tst_resm(TINFO,"Now checking usec sleep precision");
+	tst_resm(TINFO, "Now checking usec sleep precision");
 #endif
- for( total_usec=1; total_usec<=LOOP_COUNT; total_usec++)
- {
-          FD_ZERO(&readfds);
-          FD_SET(0, &readfds);
+	for (total_usec = 1; total_usec <= LOOP_COUNT; total_usec++) {
+		FD_ZERO(&readfds);
+		FD_SET(0, &readfds);
 
-          tv.tv_sec = total_sec;
-          tv.tv_usec =  total_usec * 1000000;
+		tv.tv_sec = total_sec;
+		tv.tv_usec = total_usec * 1000000;
 
-  tst_resm(TINFO,"Testing basic pselect sanity,Sleeping for %d micro secs",tv.tv_usec);
-  start = time(&t);
-   retval = pselect(0, &readfds, NULL, NULL, (struct timespec *)&tv,NULL);
-  end = time(&t);
+		tst_resm(TINFO,
+			 "Testing basic pselect sanity,Sleeping for %d micro secs",
+			 tv.tv_usec);
+		start = time(&t);
+		retval =
+		    pselect(0, &readfds, NULL, NULL, (struct timespec *)&tv,
+			    NULL);
+		end = time(&t);
 
-  /* Changed total_sec compare to an at least vs an exact compare */
+		/* Changed total_sec compare to an at least vs an exact compare */
 
-  if(((end - start) >= total_sec) && ((end - start) <= total_sec + 1))
-    tst_resm(TPASS,"Sleep time was correct");
-  else {
-    tst_resm(TWARN,"This test could fail if the system was under load");
-    tst_resm(TWARN,"due to the limitation of the way it calculates the");
-    tst_resm(TWARN,"system call execution time.");
-    tst_resm(TFAIL,"Sleep time was incorrect:%d != %d",total_sec,(end - start));
-  }
- }
- cleanup();
-return 0;
+		if (((end - start) >= total_sec)
+		    && ((end - start) <= total_sec + 1))
+			tst_resm(TPASS, "Sleep time was correct");
+		else {
+			tst_resm(TWARN,
+				 "This test could fail if the system was under load");
+			tst_resm(TWARN,
+				 "due to the limitation of the way it calculates the");
+			tst_resm(TWARN, "system call execution time.");
+			tst_resm(TFAIL, "Sleep time was incorrect:%d != %d",
+				 total_sec, (end - start));
+		}
+	}
+	cleanup();
+	return 0;
 }
+
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void
-setup()
+void setup()
 {
-    /* capture signals */
-    tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	/* capture signals */
+	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-    /* create temporary directory */
-    tst_tmpdir();
+	/* create temporary directory */
+	tst_tmpdir();
 
-    /* Pause if that option was specified */
-    TEST_PAUSE;
-}       /* End setup() */
+	/* Pause if that option was specified */
+	TEST_PAUSE;
+}				/* End setup() */
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
  *              completion or premature exit.
  ***************************************************************/
-void
-cleanup()
+void cleanup()
 {
-    /*
-     * print timing stats if that option was specified.
-     * print errno log if that option was specified.
-     */
-    TEST_CLEANUP;
+	/*
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
+	TEST_CLEANUP;
 
-    /* remove temporary test directory */
-    tst_rmdir();
+	/* remove temporary test directory */
+	tst_rmdir();
 
-    /* exit with return code appropriate for results */
-    tst_exit();
-}       /* End cleanup() */
+	/* exit with return code appropriate for results */
+	tst_exit();
+}				/* End cleanup() */

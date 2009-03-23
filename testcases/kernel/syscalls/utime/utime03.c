@@ -43,11 +43,11 @@
  *   Loop if the proper options are given.
  *   Execute system call
  *   Check return code, if system call failed (return=-1)
- *   	Log the errno and Issue a FAIL message.
+ *	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call
+ *	Verify the Functionality of system call
  *      if successful,
- *      	Issue Functionality-Pass message.
+ *		Issue Functionality-Pass message.
  *      Otherwise,
  *		Issue Functionality-Fail message.
  *  Cleanup:
@@ -96,23 +96,22 @@
 #define LTPUSER1	"nobody"
 #define LTPUSER2	"bin"
 
-char *TCID="utime03";		/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "utime03";		/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 time_t curr_time;		/* current time in seconds */
 time_t tloc;			/* argument var. for time() */
-int exp_enos[]={0};
+int exp_enos[] = { 0 };
 
-struct passwd *ltpuser;         /* password struct for ltpusers */
-uid_t user_uid;                 /* user id of ltpuser */
-gid_t group_gid;                /* group id of ltpuser */
+struct passwd *ltpuser;		/* password struct for ltpusers */
+uid_t user_uid;			/* user id of ltpuser */
+gid_t group_gid;		/* group id of ltpuser */
 int status;
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	struct stat stat_buf;	/* struct buffer to hold file info. */
 	int lc;			/* loop counter */
@@ -120,10 +119,10 @@ main(int ac, char **av)
 	time_t modf_time, access_time;
 	time_t pres_time;	/* file modification/access/present time */
 	pid_t pid;
-   
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -132,11 +131,12 @@ main(int ac, char **av)
 	setup();
 
 	/*
-        * check if the current filesystem is nfs
-        */
-        if(tst_is_cwd_nfs()) {
-                tst_brkm(TCONF, cleanup, "Cannot do utime on a file located on an NFS filesystem");
-        }
+	 * check if the current filesystem is nfs
+	 */
+	if (tst_is_cwd_nfs()) {
+		tst_brkm(TCONF, cleanup,
+			 "Cannot do utime on a file located on an NFS filesystem");
+	}
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
@@ -147,8 +147,8 @@ main(int ac, char **av)
 		tst_brkm(TBROK, cleanup, "fork() failed");
 	} else if (pid == 0) {
 		if ((ltpuser = getpwnam(LTPUSER1)) == NULL) {
-			tst_brkm(TBROK,cleanup,"%s not found in /etc/passwd",
-			LTPUSER1);
+			tst_brkm(TBROK, cleanup, "%s not found in /etc/passwd",
+				 LTPUSER1);
 		}
 
 		/* get uid/gid of user accordingly */
@@ -159,7 +159,7 @@ main(int ac, char **av)
 		/* Check looping state if -i option given */
 		for (lc = 0; TEST_LOOPING(lc); lc++) {
 			/* Reset Tst_count in case we are looping. */
-			Tst_count=0;
+			Tst_count = 0;
 
 			/*
 			 * Invoke utime(2) to set TEMP_FILE access and
@@ -171,9 +171,9 @@ main(int ac, char **av)
 			if (TEST_RETURN == -1) {
 				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_resm(TFAIL,
-					"utime(%s) Failed, errno=%d : %s",
-					TEMP_FILE, TEST_ERRNO,
-					strerror(TEST_ERRNO));
+					 "utime(%s) Failed, errno=%d : %s",
+					 TEMP_FILE, TEST_ERRNO,
+					 strerror(TEST_ERRNO));
 			} else {
 				/*
 				 * Perform functional verification if test
@@ -193,12 +193,11 @@ main(int ac, char **av)
 					 */
 					if ((pres_time = time(&tloc)) < 0) {
 						tst_brkm(TFAIL, cleanup,
-							"time() failed to get "
-							"present time after "
-							"utime, error=%d",
-							errno);
-						/*NOTREACHED*/
-					}
+							 "time() failed to get "
+							 "present time after "
+							 "utime, error=%d",
+							 errno);
+					 /*NOTREACHED*/}
 
 					/*
 					 * Get the modification and access
@@ -207,35 +206,34 @@ main(int ac, char **av)
 					 */
 					if (stat(TEMP_FILE, &stat_buf) < 0) {
 						tst_brkm(TFAIL, cleanup,
-							"stat(2) of %s failed, "
-							"error:%d", TEMP_FILE,
-							TEST_ERRNO);
-						/*NOTREACHED*/
-					}
+							 "stat(2) of %s failed, "
+							 "error:%d", TEMP_FILE,
+							 TEST_ERRNO);
+					 /*NOTREACHED*/}
 					modf_time = stat_buf.st_mtime;
 					access_time = stat_buf.st_atime;
 
 					/* Now do the actual verification */
-					if (modf_time <= curr_time || \
-						modf_time >= pres_time || \
-						access_time <= curr_time || \
-						access_time >= pres_time) {
+					if (modf_time <= curr_time ||
+					    modf_time >= pres_time ||
+					    access_time <= curr_time ||
+					    access_time >= pres_time) {
 						tst_resm(TFAIL, "%s access and "
-							"modification times "
-							"not set", TEMP_FILE);
+							 "modification times "
+							 "not set", TEMP_FILE);
 					} else {
 						tst_resm(TPASS, "Functionality "
-							"of utime(%s, NULL) "
-							"successful",
-							TEMP_FILE);
+							 "of utime(%s, NULL) "
+							 "successful",
+							 TEMP_FILE);
 					}
 				} else {
 					tst_resm(TPASS, "%s call succeeded",
-							TCID);
+						 TCID);
 				}
 			}
-			Tst_count++;		/* incr. TEST_LOOP counter */
-		}	/* End for TEST_LOOPING */
+			Tst_count++;	/* incr. TEST_LOOP counter */
+		}		/* End for TEST_LOOPING */
 	} else {
 		waitpid(pid, &status, 0);
 		_exit(0);	/*
@@ -248,12 +246,9 @@ main(int ac, char **av)
 	}
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
-	/*NOTREACHED*/
+	 /*NOTREACHED*/ return 0;
 
-
-  return 0;
-
-}	/* End main */
+}				/* End main */
 
 /*
  * void
@@ -263,10 +258,9 @@ main(int ac, char **av)
  *  Change the ownership of testfile to that of "bin" user.
  *  Record the current time.
  */
-void
-setup()
+void setup()
 {
-	int fildes;			/* file handle for temp file */
+	int fildes;		/* file handle for temp file */
 	char *tmpd = NULL;
 
 	/* capture signals */
@@ -288,26 +282,24 @@ setup()
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
-        /* get the name of the temporary directory */
-        if ((tmpd = getcwd(tmpd, 0)) == NULL) {
-                tst_brkm(TBROK, tst_exit, "getcwd failed");
-        }
+	/* get the name of the temporary directory */
+	if ((tmpd = getcwd(tmpd, 0)) == NULL) {
+		tst_brkm(TBROK, tst_exit, "getcwd failed");
+	}
 
 	/* Creat a temporary file under above directory */
 	if ((fildes = creat(TEMP_FILE, FILE_MODE)) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "creat(%s, %#o) Failed, errno=%d :%s",
 			 TEMP_FILE, FILE_MODE, errno, strerror(errno));
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/* Close the temporary file created */
 	if (close(fildes) < 0) {
 		tst_brkm(TBROK, cleanup,
 			 "close(%s) Failed, errno=%d : %s:",
 			 TEMP_FILE, errno, strerror(errno));
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/*
 	 * Make sure that specified Mode permissions set as
@@ -317,47 +309,43 @@ setup()
 		tst_brkm(TBROK, cleanup,
 			 "chmod(%s) Failed, errno=%d : %s:",
 			 TEMP_FILE, errno, strerror(errno));
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
-        if (chmod(tmpd, 0711) != 0) {
-                tst_brkm(TBROK, cleanup, "chmod() failed");
-        }
+	if (chmod(tmpd, 0711) != 0) {
+		tst_brkm(TBROK, cleanup, "chmod() failed");
+	}
 
 	if ((ltpuser = getpwnam(LTPUSER2)) == NULL) {
 		tst_brkm(TBROK, cleanup, "%s not found in /etc/passwd",
-			LTPUSER2);
-		/*NOTREACHED*/
-	}
+			 LTPUSER2);
+	 /*NOTREACHED*/}
 
 	/* get uid/gid of user accordingly */
 	user_uid = ltpuser->pw_uid;
 	group_gid = ltpuser->pw_gid;
 
-	 /*
-         * Change the ownership of test directory/file specified by
-         * pathname to that of user_uid and group_gid.
-         */
-        if (chown(TEMP_FILE, user_uid, group_gid) < 0) {
+	/*
+	 * Change the ownership of test directory/file specified by
+	 * pathname to that of user_uid and group_gid.
+	 */
+	if (chown(TEMP_FILE, user_uid, group_gid) < 0) {
 		tst_brkm(TBROK, cleanup, "chown() of %s failed, error %d",
-			TEMP_FILE, errno);
-		/*NOTREACHED*/
-	}
-		
+			 TEMP_FILE, errno);
+	 /*NOTREACHED*/}
+
 	/* Get the current time */
 	if ((curr_time = time(&tloc)) < 0) {
 		tst_brkm(TBROK, cleanup,
 			 "time() failed to get current time, errno=%d", errno);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/*
 	 * Sleep for a second so that mod time and access times will be
 	 * different from the current time
 	 */
-	sleep(2);	/* sleep(1) on IA64 sometimes sleeps < 1 sec!! */
-	
-}	/* End setup() */
+	sleep(2);		/* sleep(1) on IA64 sometimes sleeps < 1 sec!! */
+
+}				/* End setup() */
 
 /*
  * void
@@ -365,8 +353,7 @@ setup()
  *             completion or premature exit.
  *  Remove the test directory and testfile created in the setup.
  */
-void
-cleanup()
+void cleanup()
 {
 	seteuid(0);
 	/*
@@ -380,4 +367,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

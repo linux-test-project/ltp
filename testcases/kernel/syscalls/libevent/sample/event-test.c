@@ -20,8 +20,7 @@
 
 #include <event.h>
 
-void
-fifo_read(int fd, short event, void *arg)
+void fifo_read(int fd, short event, void *arg)
 {
 	char buf[255];
 	int len;
@@ -36,10 +35,10 @@ fifo_read(int fd, short event, void *arg)
 	fprintf(stderr, "fifo_read called with fd: %d, event: %d, arg: %p\n",
 		fd, event, arg);
 #ifdef WIN32
-	len = ReadFile((HANDLE)fd, buf, sizeof(buf) - 1, &dwBytesRead, NULL);
+	len = ReadFile((HANDLE) fd, buf, sizeof(buf) - 1, &dwBytesRead, NULL);
 
 	// Check for end of file.
-	if(len && dwBytesRead == 0) {
+	if (len && dwBytesRead == 0) {
 		fprintf(stderr, "End Of File");
 		event_del(ev);
 		return;
@@ -62,22 +61,21 @@ fifo_read(int fd, short event, void *arg)
 	fprintf(stdout, "Read: %s\n", buf);
 }
 
-int
-main (int argc, char **argv)
+int main(int argc, char **argv)
 {
 	struct event evfifo;
 #ifdef WIN32
 	HANDLE socket;
 	// Open a file.
-	socket = CreateFile("test.txt",     // open File
-			GENERIC_READ,                 // open for reading
-			0,                            // do not share
-			NULL,                         // no security
-			OPEN_EXISTING,                // existing file only
-			FILE_ATTRIBUTE_NORMAL,        // normal file
-			NULL);                        // no attr. template
+	socket = CreateFile("test.txt",	// open File
+			    GENERIC_READ,	// open for reading
+			    0,	// do not share
+			    NULL,	// no security
+			    OPEN_EXISTING,	// existing file only
+			    FILE_ATTRIBUTE_NORMAL,	// normal file
+			    NULL);	// no attr. template
 
-	if(socket == INVALID_HANDLE_VALUE)
+	if (socket == INVALID_HANDLE_VALUE)
 		return 1;
 
 #else
@@ -85,30 +83,30 @@ main (int argc, char **argv)
 	char *fifo = "event.fifo";
 	int socket;
 
-	if (lstat (fifo, &st) == 0) {
+	if (lstat(fifo, &st) == 0) {
 		if ((st.st_mode & S_IFMT) == S_IFREG) {
 			errno = EEXIST;
 			perror("lstat");
-			exit (1);
+			exit(1);
 		}
 	}
 
-	unlink (fifo);
-	if (mkfifo (fifo, 0600) == -1) {
+	unlink(fifo);
+	if (mkfifo(fifo, 0600) == -1) {
 		perror("mkfifo");
-		exit (1);
+		exit(1);
 	}
 
 	/* Linux pipes are broken, we need O_RDWR instead of O_RDONLY */
 #ifdef __linux
-	socket = open (fifo, O_RDWR | O_NONBLOCK, 0);
+	socket = open(fifo, O_RDWR | O_NONBLOCK, 0);
 #else
-	socket = open (fifo, O_RDONLY | O_NONBLOCK, 0);
+	socket = open(fifo, O_RDONLY | O_NONBLOCK, 0);
 #endif
 
 	if (socket == -1) {
 		perror("open");
-		exit (1);
+		exit(1);
 	}
 
 	fprintf(stderr, "Write data to %s\n", fifo);
@@ -132,4 +130,3 @@ main (int argc, char **argv)
 #endif
 	return (0);
 }
-

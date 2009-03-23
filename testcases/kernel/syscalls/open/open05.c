@@ -61,22 +61,20 @@ char fname[20];
 struct passwd *nobody;
 int fd;
 
-int exp_enos[] = {EACCES, 0};
-
+int exp_enos[] = { EACCES, 0 };
 
 void cleanup(void);
 void setup(void);
 
-
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
-	int e_code, status, retval=0;
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
+	int e_code, status, retval = 0;
 	pid_t pid;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -92,10 +90,9 @@ int main(int ac, char **av)
 
 		if ((pid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() failed");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
-		if (pid == 0) {		/* child */
+		if (pid == 0) {	/* child */
 			if (seteuid(nobody->pw_uid) == -1) {
 				tst_resm(TWARN, "seteuid() failed, errno: %d",
 					 errno);
@@ -111,7 +108,7 @@ int main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO != EACCES) {
-				retval=1;
+				retval = 1;
 				tst_resm(TFAIL, "Expected EACCES got %d",
 					 TEST_ERRNO);
 			} else {
@@ -125,14 +122,14 @@ int main(int ac, char **av)
 			}
 			exit(retval);
 
-		} else {		/* parent */
+		} else {	/* parent */
 			/* wait for the child to finish */
-            		wait(&status);
-            		/* make sure the child returned a good exit status */
-            		e_code = status >> 8;
-            		if ((e_code != 0) || (retval != 0)) {
-                	  tst_resm(TFAIL, "Failures reported above");
-            		}
+			wait(&status);
+			/* make sure the child returned a good exit status */
+			e_code = status >> 8;
+			if ((e_code != 0) || (retval != 0)) {
+				tst_resm(TFAIL, "Failures reported above");
+			}
 
 			close(fd);
 			cleanup();
@@ -140,15 +137,13 @@ int main(int ac, char **av)
 		}
 	}
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* test must be run as root */
 	if (geteuid() != 0) {
@@ -170,16 +165,14 @@ setup()
 
 	if ((fd = open(fname, O_RDWR | O_CREAT, 0700)) == -1) {
 		tst_brkm(TBROK, cleanup, "open() failed, errno: %d", errno);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 }
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

@@ -59,7 +59,6 @@
 #define OFF_T off_t
 #endif /* Not def: OFF_T */
 
-
 TCID_DEFINE(sendfile03);
 int TST_TOTAL = 3;
 extern int Tst_count;
@@ -73,31 +72,31 @@ void setup_func1(void);
 
 struct test_case_t {
 	char *desc;
-	void (*setupfunc)();
+	void (*setupfunc) ();
 	int out_fd;
 	int in_fd;
 	OFF_T *offset;
 	int count;
 	int exp_errno;
 } testcases[] = {
-	{ "Test for EBADF, in_fd = -1", NULL, 8, -1, (void *)0, 0, EBADF},
-	{ "Test for EBADF, out_fd = -1", NULL, -1, 7, (void *)0, 0, EBADF},
-	{ "Test for EBADF, in_fd = out_fd = -1", NULL, -1, -1, (void *)0, 0,
-		EBADF}
+	{
+	"Test for EBADF, in_fd = -1", NULL, 8, -1, (void *)0, 0, EBADF}, {
+	"Test for EBADF, out_fd = -1", NULL, -1, 7, (void *)0, 0, EBADF}, {
+	"Test for EBADF, in_fd = out_fd = -1", NULL, -1, -1, (void *)0,
+		    0, EBADF}
 };
 
-int exp_enos[] = {EBADF, 0};
+int exp_enos[] = { EBADF, 0 };
 
 int main(int ac, char **av)
 {
 	int i;
-	int lc;				/* loop counter */
-	char *msg;			/* parse_opts() return message */
+	int lc;			/* loop counter */
+	char *msg;		/* parse_opts() return message */
 
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	setup();
 
@@ -115,8 +114,7 @@ int main(int ac, char **av)
 			}
 
 			TEST(sendfile(testcases[i].out_fd, testcases[i].in_fd,
-				      testcases[i].offset,
-				      testcases[i].count));
+				      testcases[i].offset, testcases[i].count));
 
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
@@ -137,15 +135,13 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	char buf[100];
 
@@ -162,31 +158,26 @@ setup()
 	if ((in_fd = creat(in_file, 00700)) < 0) {
 		tst_brkm(TBROK, cleanup, "creat failed in setup, errno: %d",
 			 errno);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 	sprintf(buf, "abcdefghijklmnopqrstuvwxyz");
 	if (write(in_fd, buf, strlen(buf)) < 0) {
 		tst_brkm(TBROK, cleanup, "write failed, errno: %d", errno);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 	close(in_fd);
 	if ((in_fd = open(in_file, O_RDONLY)) < 0) {
 		tst_brkm(TBROK, cleanup, "open failed, errno: %d", errno);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 	sprintf(out_file, "out.%d", getpid());
 	if ((out_fd = open(out_file, O_TRUNC | O_CREAT | O_RDWR, 0777)) < 0) {
 		tst_brkm(TBROK, cleanup, "open failed, errno: %d", errno);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 }
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

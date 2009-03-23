@@ -80,13 +80,14 @@ char *TCID = "creat06";
 int fileHandle = 0;
 extern int Tst_count;
 
-int exp_enos[] = {EISDIR, ENAMETOOLONG, ENOENT, ENOTDIR, EFAULT, EACCES, 0};
+int exp_enos[] = { EISDIR, ENAMETOOLONG, ENOENT, ENOTDIR, EFAULT, EACCES, 0 };
 
 #define	MODE1	0444
 #define	MODE2	0666
 #define NSIZE	1000
 
-char long_name[] = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyz";
+char long_name[] =
+    "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyz";
 
 char good_dir[NSIZE];
 char no_dir[] = "testfile/testdir";
@@ -101,39 +102,39 @@ struct test_case_t {
 	int error;
 } TC[] = {
 	/* The file name is an existing directory */
-	{good_dir, MODE1, EISDIR},
-
-	/* The file name is too long - ENAMETOOLONG */
-	{long_name, MODE1, ENAMETOOLONG},
-
-	/* Attept to create a file in a directory that doesn't exist - ENOENT */
-	{no_dir, MODE1, ENOENT},
-
-	/* a compent of the file's path is not a directory - ENOTDIR */
-	{not_dir, MODE1, ENOTDIR},
-
+	{
+	good_dir, MODE1, EISDIR},
+	    /* The file name is too long - ENAMETOOLONG */
+	{
+	long_name, MODE1, ENAMETOOLONG},
+	    /* Attept to create a file in a directory that doesn't exist - ENOENT */
+	{
+	no_dir, MODE1, ENOENT},
+	    /* a compent of the file's path is not a directory - ENOTDIR */
+	{
+	not_dir, MODE1, ENOTDIR},
 #if !defined(UCLINUX)
-	/* The file address is bad - EFAULT */
-	{(char *)-1, MODE1, EFAULT},
+	    /* The file address is bad - EFAULT */
+	{
+	(char *)-1, MODE1, EFAULT},
 #endif
-
-	/* The directory lacks execute permission - EACCES */
-	{test6_file, MODE1, EACCES}
+	    /* The directory lacks execute permission - EACCES */
+	{
+	test6_file, MODE1, EACCES}
 };
 
 int TST_TOTAL = (sizeof(TC) / sizeof(*TC));
 
-char * bad_addr = 0;
+char *bad_addr = 0;
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int i;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -175,29 +176,25 @@ main(int ac, char **av)
 
 	return 0;
 	return 0;
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	char *cur_dir = NULL;
 
 	/* Switch to nobody user for correct error code collection */
-        if (geteuid() != 0) {
-                tst_brkm(TBROK, tst_exit, "Test must be run as root");
-        }
-         ltpuser = getpwnam(nobody_uid);
-         if (seteuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "seteuid failed to "
-                         "to set the effective uid to %d",
-                         ltpuser->pw_uid);
-                perror("seteuid");
-         }
-
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+	}
+	ltpuser = getpwnam(nobody_uid);
+	if (seteuid(ltpuser->pw_uid) == -1) {
+		tst_resm(TINFO, "seteuid failed to "
+			 "to set the effective uid to %d", ltpuser->pw_uid);
+		perror("seteuid");
+	}
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -221,10 +218,9 @@ setup()
 	if ((fileHandle = creat("file1", MODE1)) == -1) {
 		tst_brkm(TBROK, cleanup, "couldn't create a test file");
 	}
-
 #if !defined(UCLINUX)
 	bad_addr = mmap(0, 1, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
+			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
 	if (bad_addr == MAP_FAILED) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}
@@ -237,19 +233,17 @@ setup()
 	}
 }
 
-
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
 	 */
-    close(fileHandle);
+	close(fileHandle);
 
 	TEST_CLEANUP;
 

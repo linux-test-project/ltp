@@ -67,7 +67,7 @@ void setup(void);
 void cleanup(void);
 void help(void);
 
-int exp_enos[] = {EBADF, EFAULT, EINVAL, ENOTTY, EFAULT, 0};
+int exp_enos[] = { EBADF, EFAULT, EINVAL, ENOTTY, EFAULT, 0 };
 
 int fd, fd1;
 int bfd = -1;
@@ -76,25 +76,26 @@ char *tty;
 struct termio termio;
 
 struct test_case_t {
-        int *fd;
-        int request;
-        struct termio *s_tio;
-        int error;
+	int *fd;
+	int request;
+	struct termio *s_tio;
+	int error;
 } TC[] = {
 	/* file descriptor is invalid */
-        {&bfd, TCGETA, &termio, EBADF},
-
-	/* termio address is invalid */
-        {&fd, TCGETA, (struct termio *)-1, EFAULT},
-
-	/* command is invalid */
-        {&fd, INVAL_IOCTL, &termio, EINVAL},
-
-	/* file descriptor is for a regular file */
-        {&fd1, TCGETA, &termio, ENOTTY},
-
-	/* termio is NULL */
-        {&fd, TCGETA, NULL, EFAULT}
+	{
+	&bfd, TCGETA, &termio, EBADF},
+	    /* termio address is invalid */
+	{
+	&fd, TCGETA, (struct termio *)-1, EFAULT},
+	    /* command is invalid */
+	{
+	&fd, INVAL_IOCTL, &termio, EINVAL},
+	    /* file descriptor is for a regular file */
+	{
+	&fd1, TCGETA, &termio, ENOTTY},
+	    /* termio is NULL */
+	{
+	&fd, TCGETA, NULL, EFAULT}
 };
 
 int Devflag = 0;
@@ -108,9 +109,9 @@ option_t options[] = {
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
+	int lc;			/* loop counter */
 	int i;
-	char *msg;			/* message returned from parse_opts */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, options, &help)) != (char *)NULL) {
@@ -122,10 +123,10 @@ int main(int ac, char **av)
 			 "the -D option.");
 		tst_resm(TWARN, "Run '%s -h' for option information.", TCID);
 		cleanup();
-        }
+	}
 
-        if (geteuid() != 0) { 
-	                 tst_brkm(TBROK, tst_exit, "Test must be run as root"); 
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Test must be run as root");
 	}
 
 	setup();
@@ -147,36 +148,34 @@ int main(int ac, char **av)
 
 			TEST(ioctl(*(TC[i].fd), TC[i].request, TC[i].s_tio));
 
-                        if (TEST_RETURN != -1) {
-                                tst_resm(TFAIL, "call succeeded unexpectedly");
-                                continue;
-                        }
+			if (TEST_RETURN != -1) {
+				tst_resm(TFAIL, "call succeeded unexpectedly");
+				continue;
+			}
 
-                        TEST_ERROR_LOG(TEST_ERRNO);
+			TEST_ERROR_LOG(TEST_ERRNO);
 
-                        if (TEST_ERRNO == TC[i].error) {
-                                tst_resm(TPASS, "expected failure - "
-                                         "errno = %d : %s", TEST_ERRNO,
-                                         strerror(TEST_ERRNO));
-                        } else {
-                                tst_resm(TFAIL, "unexpected error - %d : %s - "
-                                         "expected %d", TEST_ERRNO,
-                                         strerror(TEST_ERRNO), TC[i].error);
+			if (TEST_ERRNO == TC[i].error) {
+				tst_resm(TPASS, "expected failure - "
+					 "errno = %d : %s", TEST_ERRNO,
+					 strerror(TEST_ERRNO));
+			} else {
+				tst_resm(TFAIL, "unexpected error - %d : %s - "
+					 "expected %d", TEST_ERRNO,
+					 strerror(TEST_ERRNO), TC[i].error);
 			}
 		}
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * help() - Prints out the help message for the -D option defined
  *          by this test.
  */
-void
-help()
+void help()
 {
 	printf("  -D <tty device> : for example, /dev/tty[0-9]\n");
 }
@@ -184,8 +183,7 @@ help()
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -202,13 +200,11 @@ setup()
 	}
 }
 
-
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -224,4 +220,3 @@ cleanup()
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

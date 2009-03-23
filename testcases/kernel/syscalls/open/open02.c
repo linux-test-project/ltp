@@ -19,10 +19,10 @@
 
 /*
  * NAME
- * 	open02.c
+ *	open02.c
  *
  * DESCRIPTION
- * 	Test if open without O_CREAT returns -1 if a file does not exist.
+ *	Test if open without O_CREAT returns -1 if a file does not exist.
  *
  * ALGORITHM
  *	1. open a new file without O_CREAT, test for return value of -1
@@ -40,7 +40,7 @@
  *	07/2001 Ported by Wayne Boyer
  *
  * RESTRICTIONS
- * 	None
+ *	None
  */
 #include <stdio.h>
 #include <sys/types.h>
@@ -56,25 +56,24 @@ extern int Tst_count;
 
 char pfilname[40] = "";
 
-int exp_enos[] = {ENOENT, 0};
+int exp_enos[] = { ENOENT, 0 };
 
 void cleanup(void);
 void setup(void);
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/*
 	 * parse standard command line options
 	 */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
-		 tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+	 /*NOTREACHED*/}
 
-	setup();			/* global setup for test */
+	setup();		/* global setup for test */
 
 	TEST_EXP_ENOS(exp_enos);
 
@@ -82,7 +81,7 @@ int main(int ac, char **av)
 	 * check looping state if -i option given on the command line
 	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		Tst_count = 0;		/* reset Tst_count while looping. */
+		Tst_count = 0;	/* reset Tst_count while looping. */
 
 		TEST(open(pfilname, O_RDWR, 0444));
 
@@ -102,15 +101,13 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	umask(0);
 
@@ -130,8 +127,7 @@ setup(void)
  * cleanup() - performs all ONE TIME cleanup for this test at completion or
  *	       premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: dup03.c,v 1.3 2009/02/26 12:14:55 subrata_modak Exp $ */
+/* $Id: dup03.c,v 1.4 2009/03/23 13:35:40 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -66,7 +66,7 @@
  *	(See the parse_opts(3) man page).
  *
  *    OUTPUT SPECIFICATIONS
- * 
+ *$
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
  *
@@ -117,176 +117,174 @@
 void setup();
 void cleanup();
 
-char *TCID="dup03"; 		/* Test program identifier.    */
-int TST_TOTAL=1;    		/* Total number of test cases. */
+char *TCID = "dup03";		/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-
 
 char Fname[255];
 int *Fd = NULL;
-int Nfds=0;
+int Nfds = 0;
 
 /***********************************************************************
  * Main
  ***********************************************************************/
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-    int lc;		/* loop counter */
-    char *msg;		/* message returned from parse_opts */
-   
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
+
     /***************************************************************
      * parse standard options
      ***************************************************************/
-    if ( (msg=parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL ) {
-	tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	tst_exit();
-    }
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+		tst_exit();
+	}
 
     /***************************************************************
      * perform global setup for test
      ***************************************************************/
-    setup();
+	setup();
 
     /***************************************************************
      * check looping state if -c option given
      ***************************************************************/
-    for (lc=0; TEST_LOOPING(lc); lc++) {
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-	/* reset Tst_count in case we are looping. */
-	Tst_count=0;
+		/* reset Tst_count in case we are looping. */
+		Tst_count = 0;
 
-	/*
-	 * Call dup(2)
-	 */
-	TEST( dup(Fd[0]) );
+		/*
+		 * Call dup(2)
+		 */
+		TEST(dup(Fd[0]));
 
-        /* check return code */
-        if ( TEST_RETURN == -1 ) {
-            if ( STD_FUNCTIONAL_TEST ) {
-                if ( TEST_ERRNO == EMFILE ) {
-                    tst_resm(TPASS, "dup(%d) Failed, errno=%d : %s", Fd[0],
-                        TEST_ERRNO, strerror(TEST_ERRNO));
+		/* check return code */
+		if (TEST_RETURN == -1) {
+			if (STD_FUNCTIONAL_TEST) {
+				if (TEST_ERRNO == EMFILE) {
+					tst_resm(TPASS,
+						 "dup(%d) Failed, errno=%d : %s",
+						 Fd[0], TEST_ERRNO,
+						 strerror(TEST_ERRNO));
+				} else {
+					tst_resm(TFAIL,
+						 "dup(%d) Failed, errno=%d %s, expected %d (EMFILE)",
+						 Fd[0], TEST_ERRNO,
+						 strerror(TEST_ERRNO), EMFILE);
+				}
+			}
+		} else {
+			tst_resm(TFAIL,
+				 "dup(%d) returned %d, expected -1, errno:%d (EMFILE)",
+				 Fd[0], TEST_RETURN, EMFILE);
+
+			/* close the new file so loops do not open too many files */
+			if (close(TEST_RETURN) == -1) {
+				tst_brkm(TBROK, cleanup,
+					 "close(%s) Failed, errno=%d : %s",
+					 Fname, errno, strerror(errno));
+			}
 		}
-                else {
-                    tst_resm(TFAIL, "dup(%d) Failed, errno=%d %s, expected %d (EMFILE)",
-                        Fd[0], TEST_ERRNO, strerror(TEST_ERRNO), EMFILE);
-		}
-            }
-        } else {
-            tst_resm(TFAIL, "dup(%d) returned %d, expected -1, errno:%d (EMFILE)",
-                Fd[0], TEST_RETURN, EMFILE);
 
-            /* close the new file so loops do not open too many files */
-            if (close(TEST_RETURN) == -1) {
-               tst_brkm(TBROK, cleanup, "close(%s) Failed, errno=%d : %s",
-                    Fname, errno, strerror(errno));
-            }
-        }
-
-    }	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
     /***************************************************************
      * cleanup and exit
      ***************************************************************/
-    cleanup();
+	cleanup();
 
-    return 0;
-}	/* End main */
+	return 0;
+}				/* End main */
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void
-setup()
+void setup()
 {
-    long maxfds;
+	long maxfds;
 
-    /*
-     * Initialize Fd in case we get a quick signal
-     */
-    maxfds = sysconf(_SC_OPEN_MAX);
-    if (maxfds < 1) {
-	tst_brkm(TBROK, cleanup,
-	    		"sysconf(_SC_OPEN_MAX) Failed, errno=%d : %s",
-	    		errno, strerror(errno));
-    }
-   
-    Fd = (int *)malloc(maxfds*sizeof(int));
-    Fd[0]=-1;
-
-    /* capture signals */
-    tst_sig(FORK, DEF_HANDLER, cleanup);
-
-    /* Pause if that option was specified */
-    TEST_PAUSE;
-
-    /* make a temp directory and cd to it */
-    tst_tmpdir();
-
-    /*
-     * open the file as many times as it takes to use up all fds
-     */
-    sprintf(Fname, "dupfile");
-    for (Nfds=1; Nfds<=maxfds; Nfds++) {
-        if ((Fd[Nfds-1] = open(Fname,O_RDWR|O_CREAT,0700)) == -1) {
-
-	    Nfds--;	/* on a open failure, decrement the counter */
-	    if ( errno == EMFILE ) {
-		break;
-	    }
-	    else { 	/* open failed for some other reason */
-	        tst_brkm(TBROK, cleanup,
-		    "open(%s, O_RDWR|O_CREAT,0700) Failed, errno=%d : %s",
-		    Fname, errno, strerror(errno));
-	    }
+	/*
+	 * Initialize Fd in case we get a quick signal
+	 */
+	maxfds = sysconf(_SC_OPEN_MAX);
+	if (maxfds < 1) {
+		tst_brkm(TBROK, cleanup,
+			 "sysconf(_SC_OPEN_MAX) Failed, errno=%d : %s",
+			 errno, strerror(errno));
 	}
-    }
 
-    /*
-     * make sure at least one was open and that all fds were opened.
-     */
-    if ( Nfds == 0 ) {
-	tst_brkm(TBROK, cleanup, "Unable to open at least one file");
-    }
-    if ( Nfds > maxfds ) {
-	tst_brkm(TBROK, cleanup,
-	    "Unable to open enough files to use all file descriptors, tried %d",
-	    maxfds);
-    }
-}	/* End setup() */
+	Fd = (int *)malloc(maxfds * sizeof(int));
+	Fd[0] = -1;
 
+	/* capture signals */
+	tst_sig(FORK, DEF_HANDLER, cleanup);
+
+	/* Pause if that option was specified */
+	TEST_PAUSE;
+
+	/* make a temp directory and cd to it */
+	tst_tmpdir();
+
+	/*
+	 * open the file as many times as it takes to use up all fds
+	 */
+	sprintf(Fname, "dupfile");
+	for (Nfds = 1; Nfds <= maxfds; Nfds++) {
+		if ((Fd[Nfds - 1] = open(Fname, O_RDWR | O_CREAT, 0700)) == -1) {
+
+			Nfds--;	/* on a open failure, decrement the counter */
+			if (errno == EMFILE) {
+				break;
+			} else {	/* open failed for some other reason */
+				tst_brkm(TBROK, cleanup,
+					 "open(%s, O_RDWR|O_CREAT,0700) Failed, errno=%d : %s",
+					 Fname, errno, strerror(errno));
+			}
+		}
+	}
+
+	/*
+	 * make sure at least one was open and that all fds were opened.
+	 */
+	if (Nfds == 0) {
+		tst_brkm(TBROK, cleanup, "Unable to open at least one file");
+	}
+	if (Nfds > maxfds) {
+		tst_brkm(TBROK, cleanup,
+			 "Unable to open enough files to use all file descriptors, tried %d",
+			 maxfds);
+	}
+}				/* End setup() */
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void
-cleanup()
+void cleanup()
 {
-    /*
-     * print timing stats if that option was specified.
-     * print errno log if that option was specified.
-     */
-    TEST_CLEANUP;
+	/*
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
+	TEST_CLEANUP;
 
-    /* close the open file we've been dup'ing */
-    if (Fd) {
-    	for (; Nfds >0 ; Nfds--) {
-    	    if (close(Fd[Nfds-1]) == -1) {
-		tst_resm(TWARN, "close(%s) Failed, errno=%d : %s",
-				Fname, errno, strerror(errno));
-	    }
-	    Fd[Nfds]=-1;
+	/* close the open file we've been dup'ing */
+	if (Fd) {
+		for (; Nfds > 0; Nfds--) {
+			if (close(Fd[Nfds - 1]) == -1) {
+				tst_resm(TWARN,
+					 "close(%s) Failed, errno=%d : %s",
+					 Fname, errno, strerror(errno));
+			}
+			Fd[Nfds] = -1;
+		}
+		free(Fd);
 	}
-	free(Fd);
-    }
 
-    /* Remove tmp dir and all files in it */
-    tst_rmdir();
+	/* Remove tmp dir and all files in it */
+	tst_rmdir();
 
-    /* exit with return code appropriate for results */
-    tst_exit();
-}	/* End cleanup() */
-
-
+	/* exit with return code appropriate for results */
+	tst_exit();
+}				/* End cleanup() */

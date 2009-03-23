@@ -63,9 +63,6 @@
 #include "epoll.h"
 #include "dbllist.h"
 
-
-
-
 #define CO_STD_STACK_SIZE		(2 * 4096)
 #define STD_SCHED_TIMEOUT		1000
 /* you might need to increase "net.ipv4.tcp_max_syn_backlog" to use this value */
@@ -76,8 +73,6 @@
 #define STD_SERVER_PORT			8080
 #define MAX_DEFAULT_FDS			20000
 
-
-
 struct eph_conn {
 	struct list_head lnk;
 	int sfd;
@@ -87,9 +82,6 @@ struct eph_conn {
 	char buffer[DATA_BUFFER_SIZE];
 };
 
-
-
-
 static int kdpfd;
 static struct list_head close_list;
 static struct epoll_event *events;
@@ -97,13 +89,11 @@ static int maxfds, numfds = 0;
 static int chash_size;
 static struct list_head *chash;
 static int msgsize = STD_MESSAGE_SIZE, port = STD_SERVER_PORT,
-	maxsfd = MAX_DEFAULT_FDS, stksize = CO_STD_STACK_SIZE;
+    maxsfd = MAX_DEFAULT_FDS, stksize = CO_STD_STACK_SIZE;
 struct sockaddr_in saddr;
 static volatile unsigned long httpresp = 0;
 static int nreqsess = 1;
 static char httpreq[512] = "";
-
-
 
 int eph_socket(int domain, int type, int protocol)
 {
@@ -120,17 +110,16 @@ int eph_socket(int domain, int type, int protocol)
 	return sfd;
 }
 
-
 int eph_close(int sfd)
 {
 	close(sfd);
 	return 0;
 }
 
-
 static int eph_new_conn(int sfd, void *func)
 {
-	struct eph_conn *conn = (struct eph_conn *) malloc(sizeof(struct eph_conn));
+	struct eph_conn *conn =
+	    (struct eph_conn *)malloc(sizeof(struct eph_conn));
 	struct epoll_event ev;
 
 	if (!conn)
@@ -167,7 +156,6 @@ static int eph_new_conn(int sfd, void *func)
 	return 0;
 }
 
-
 static void eph_exit_conn(struct eph_conn *conn)
 {
 	struct epoll_event ev;
@@ -188,7 +176,6 @@ static void eph_exit_conn(struct eph_conn *conn)
 	co_exit();
 }
 
-
 static void eph_free_conns(void)
 {
 	struct eph_conn *conn;
@@ -200,7 +187,6 @@ static void eph_free_conns(void)
 		free(conn);
 	}
 }
-
 
 static int eph_mod_conn(struct eph_conn *conn, unsigned int events)
 {
@@ -215,8 +201,8 @@ static int eph_mod_conn(struct eph_conn *conn, unsigned int events)
 	return 0;
 }
 
-
-int eph_connect(struct eph_conn *conn, const struct sockaddr *serv_addr, socklen_t addrlen)
+int eph_connect(struct eph_conn *conn, const struct sockaddr *serv_addr,
+		socklen_t addrlen)
 {
 
 	if (connect(conn->sfd, serv_addr, addrlen) == -1) {
@@ -233,7 +219,6 @@ int eph_connect(struct eph_conn *conn, const struct sockaddr *serv_addr, socklen
 	}
 	return 0;
 }
-
 
 int eph_read(struct eph_conn *conn, char *buf, int nbyte)
 {
@@ -254,7 +239,6 @@ int eph_read(struct eph_conn *conn, char *buf, int nbyte)
 	return n;
 }
 
-
 int eph_write(struct eph_conn *conn, char const *buf, int nbyte)
 {
 	int n;
@@ -273,7 +257,6 @@ int eph_write(struct eph_conn *conn, char const *buf, int nbyte)
 	}
 	return n;
 }
-
 
 int eph_accept(struct eph_conn *conn, struct sockaddr *addr, int *addrlen)
 {
@@ -300,21 +283,20 @@ int eph_accept(struct eph_conn *conn, struct sockaddr *addr, int *addrlen)
 	return sfd;
 }
 
-
 static int eph_create_conn(int domain, int type, int protocol, void *func)
 {
 	int sfd = eph_socket(domain, type, protocol);
 
-	return sfd != -1 ? eph_new_conn(sfd, func): -1;
+	return sfd != -1 ? eph_new_conn(sfd, func) : -1;
 }
-
 
 static int eph_read_data(struct eph_conn *conn)
 {
 	int nbytes;
 
 	if (conn->rindex && conn->rindex < conn->nbytes) {
-		memmove(conn->buffer, conn->buffer + conn->rindex, conn->nbytes - conn->rindex);
+		memmove(conn->buffer, conn->buffer + conn->rindex,
+			conn->nbytes - conn->rindex);
 		conn->nbytes -= conn->rindex;
 	} else
 		conn->nbytes = 0;
@@ -330,12 +312,11 @@ static int eph_read_data(struct eph_conn *conn)
 	return 0;
 }
 
-
 static int eph_write_data(struct eph_conn *conn, char const *buf, int nbyte)
 {
 	int wbytes, wcurr;
 
-	for (wbytes = 0; wbytes < nbyte; ) {
+	for (wbytes = 0; wbytes < nbyte;) {
 		if ((wcurr = eph_write(conn, buf + wbytes, nbyte - wbytes)) < 0)
 			break;
 		wbytes += wcurr;
@@ -343,7 +324,6 @@ static int eph_write_data(struct eph_conn *conn, char const *buf, int nbyte)
 
 	return wbytes;
 }
-
 
 static char *eph_read_line(struct eph_conn *conn)
 {
@@ -355,7 +335,8 @@ static char *eph_read_line(struct eph_conn *conn)
 					    conn->nbytes - conn->rindex))) {
 				line = conn->buffer + conn->rindex;
 				conn->rindex += (nline - line) + 1;
-				for (; nline > line && nline[-1] == '\r'; nline--);
+				for (; nline > line && nline[-1] == '\r';
+				     nline--) ;
 				*nline = '\0';
 				return line;
 			}
@@ -365,7 +346,6 @@ static char *eph_read_line(struct eph_conn *conn)
 	}
 	return NULL;
 }
-
 
 static int eph_parse_request(struct eph_conn *conn)
 {
@@ -385,7 +365,6 @@ static int eph_parse_request(struct eph_conn *conn)
 	return 0;
 }
 
-
 static int eph_send_response(struct eph_conn *conn)
 {
 	static int resplen = -1;
@@ -394,21 +373,19 @@ static int eph_send_response(struct eph_conn *conn)
 	if (resp == NULL) {
 		msgsize = ((msgsize + 63) / 64) * 64;
 
-		resp = (char *) malloc(msgsize + 256);
+		resp = (char *)malloc(msgsize + 256);
 
 		sprintf(resp,
 			"HTTP/1.1 200 OK\r\n"
 			"Server: dp server\r\n"
 			"Content-Type: text/plain\r\n"
-			"Content-Length: %d\r\n"
-			"\r\n", msgsize);
+			"Content-Length: %d\r\n" "\r\n", msgsize);
 
 		while (msgsize > 0) {
 			strcat(resp,
 			       "01234567890123\r\n"
 			       "01234567890123\r\n"
-			       "01234567890123\r\n"
-			       "01234567890123\r\n");
+			       "01234567890123\r\n" "01234567890123\r\n");
 			msgsize -= 64;
 		}
 
@@ -421,10 +398,9 @@ static int eph_send_response(struct eph_conn *conn)
 	return 0;
 }
 
-
 static void *eph_httpd(void *data)
 {
-	struct eph_conn *conn = (struct eph_conn *) data;
+	struct eph_conn *conn = (struct eph_conn *)data;
 
 	while (eph_parse_request(conn) == 0) {
 		eph_send_response(conn);
@@ -435,14 +411,14 @@ static void *eph_httpd(void *data)
 	return data;
 }
 
-
 static void *eph_acceptor(void *data)
 {
-	struct eph_conn *conn = (struct eph_conn *) data;
+	struct eph_conn *conn = (struct eph_conn *)data;
 	struct sockaddr_in addr;
 	int sfd, addrlen = sizeof(addr);
 
-	while ((sfd = eph_accept(conn, (struct sockaddr *) &addr, &addrlen)) != -1) {
+	while ((sfd =
+		eph_accept(conn, (struct sockaddr *)&addr, &addrlen)) != -1) {
 		if (eph_new_conn(sfd, eph_httpd) < 0) {
 			eph_close(sfd);
 
@@ -451,7 +427,6 @@ static void *eph_acceptor(void *data)
 	eph_exit_conn(conn);
 	return data;
 }
-
 
 static struct eph_conn *eph_find(int sfd)
 {
@@ -466,7 +441,6 @@ static struct eph_conn *eph_find(int sfd)
 	}
 	return NULL;
 }
-
 
 static int eph_runqueue(void)
 {
@@ -486,7 +460,6 @@ static int eph_runqueue(void)
 	return 0;
 }
 
-
 unsigned long long eph_mstics(void)
 {
 
@@ -495,17 +468,19 @@ unsigned long long eph_mstics(void)
 	if (gettimeofday(&tv, NULL) != 0)
 		return (0);
 
-	return (1000 * (unsigned long long) tv.tv_sec + (unsigned long long) tv.tv_usec / 1000);
+	return (1000 * (unsigned long long)tv.tv_sec +
+		(unsigned long long)tv.tv_usec / 1000);
 
 }
-
-
 
 int eph_init(void)
 {
 	int i;
 
-	if (!(events = (struct epoll_event *) malloc(maxsfd * sizeof(struct epoll_event)))) {
+	if (!
+	    (events =
+	     (struct epoll_event *)malloc(maxsfd *
+					  sizeof(struct epoll_event)))) {
 		perror("malloc()");
 		return -1;
 	}
@@ -515,7 +490,9 @@ int eph_init(void)
 		return -1;
 	}
 
-	if (!(chash = (struct list_head *) malloc(maxsfd * sizeof(struct list_head)))) {
+	if (!
+	    (chash =
+	     (struct list_head *)malloc(maxsfd * sizeof(struct list_head)))) {
 		perror("malloc()");
 		free(events);
 		close(kdpfd);
@@ -540,8 +517,6 @@ int eph_cleanup(void)
 	close(kdpfd);
 	return 0;
 }
-
-
 
 static int eph_scheduler(int loop, unsigned int timeout)
 {
@@ -571,10 +546,6 @@ static int eph_scheduler(int loop, unsigned int timeout)
 	return 0;
 }
 
-
-
-
-
 #if defined(DPHTTPD)
 
 void eph_usage(char const *prgname)
@@ -586,11 +557,10 @@ void eph_usage(char const *prgname)
 
 }
 
-
 int main(int argc, char *argv[])
 {
 	int i, sfd, flags = 1;
-	struct linger ling = {0, 0};
+	struct linger ling = { 0, 0 };
 	struct sockaddr_in addr;
 
 	for (i = 1; i < argc; i++) {
@@ -637,7 +607,7 @@ int main(int argc, char *argv[])
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(port);
 	addr.sin_addr.s_addr = htonl(INADDR_ANY);
-	if (bind(sfd, (struct sockaddr *) &addr, sizeof(addr)) == -1) {
+	if (bind(sfd, (struct sockaddr *)&addr, sizeof(addr)) == -1) {
 
 		eph_close(sfd);
 		eph_cleanup();
@@ -646,7 +616,7 @@ int main(int argc, char *argv[])
 
 	listen(sfd, STD_LISTEN_SIZE);
 
-	if (eph_new_conn(sfd, (void *) eph_acceptor) == -1) {
+	if (eph_new_conn(sfd, (void *)eph_acceptor) == -1) {
 
 		eph_close(sfd);
 		eph_cleanup();
@@ -661,20 +631,16 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
-#endif	/* #if defined(DPHTTPD) */
-
-
-
-
+#endif /* #if defined(DPHTTPD) */
 
 #if defined(HTTP_BLASTER)
 
 static void *eph_http_session(void *data)
 {
 	int i, rlen = strlen(httpreq), ava;
-	struct eph_conn *conn = (struct eph_conn *) data;
+	struct eph_conn *conn = (struct eph_conn *)data;
 
-	if (eph_connect(conn, (struct sockaddr *) &saddr, sizeof(saddr)) == 0) {
+	if (eph_connect(conn, (struct sockaddr *)&saddr, sizeof(saddr)) == 0) {
 		for (i = 0; i < nreqsess; i++) {
 			if (eph_write_data(conn, httpreq, rlen) == rlen) {
 				static char const *clent = "Content-Length:";
@@ -685,8 +651,10 @@ static void *eph_http_session(void *data)
 				while ((line = eph_read_line(conn))) {
 					if (*line == '\0')
 						break;
-					if (strncasecmp(line, clent, clens) == 0) {
-						for (line += clens; *line == ' '; line++);
+					if (strncasecmp(line, clent, clens) ==
+					    0) {
+						for (line += clens;
+						     *line == ' '; line++) ;
 						length = atoi(line);
 					}
 				}
@@ -700,39 +668,40 @@ static void *eph_http_session(void *data)
 				}
 				++httpresp;
 				while (length > 0) {
-					int rsiz = length > sizeof(buf) ? sizeof(buf): length;
+					int rsiz =
+					    length >
+					    sizeof(buf) ? sizeof(buf) : length;
 
-					if ((rsiz = eph_read(conn, buf, rsiz)) <= 0)
+					if ((rsiz =
+					     eph_read(conn, buf, rsiz)) <= 0)
 						goto sess_out;
 					length -= rsiz;
 				}
-			}
-			else
+			} else
 				goto sess_out;
 		}
 	}
-sess_out:
+      sess_out:
 	eph_exit_conn(conn);
 	return data;
 }
 
-
 void eph_usage(char const *prgname)
 {
 
-	fprintf(stderr, "use: %s  --server serv	 --port nprt  --numconns ncon  [--nreq nreq (%d)]\n"
+	fprintf(stderr,
+		"use: %s  --server serv	 --port nprt  --numconns ncon  [--nreq nreq (%d)]\n"
 		"[--maxconns ncon] [--url url ('/')] [--stksize bytes (%d)]\n",
 		prgname, nreqsess, stksize);
 
 }
-
 
 int main(int argc, char *argv[])
 {
 	int i, nconns = 0, totconns = 0, maxconns = 0;
 	unsigned long resplast;
 	unsigned long long tinit, tlast, tcurr;
-	struct hostent * he;
+	struct hostent *he;
 	char const *server = NULL, *url = "/";
 	struct in_addr inadr;
 
@@ -787,15 +756,10 @@ int main(int argc, char *argv[])
 
 	sprintf(httpreq,
 		"GET %s HTTP/1.1\r\n"
-		"Host: %s\r\n"
-		"Connection: keepalive\r\n"
-		"\r\n",
-		url, server);
+		"Host: %s\r\n" "Connection: keepalive\r\n" "\r\n", url, server);
 
-	if (inet_aton(server, &inadr) == 0)
-	{
-		if ((he = gethostbyname(server)) == NULL)
-		{
+	if (inet_aton(server, &inadr) == 0) {
+		if ((he = gethostbyname(server)) == NULL) {
 			fprintf(stderr, "unable to resolve: %s\n", server);
 			return (-1);
 		}
@@ -818,15 +782,17 @@ int main(int argc, char *argv[])
 		int nfds = numfds, errs = 0, diffconns = nconns - numfds;
 
 		while (numfds < nconns && (!maxconns || totconns < maxconns)) {
-			eph_create_conn(AF_INET, SOCK_STREAM, 0, eph_http_session);
+			eph_create_conn(AF_INET, SOCK_STREAM, 0,
+					eph_http_session);
 			if (nfds == numfds) {
 				++errs;
 				if (errs > 32) {
-					fprintf(stderr, "unable to connect: server=%s errors=%d\n", server, errs);
+					fprintf(stderr,
+						"unable to connect: server=%s errors=%d\n",
+						server, errs);
 					goto main_exit;
 				}
-			}
-			else
+			} else
 				++totconns;
 			nfds = numfds;
 		}
@@ -835,29 +801,27 @@ int main(int argc, char *argv[])
 
 		tcurr = eph_mstics();
 		if ((tcurr - tlast) >= 1000) {
-			printf("rate = %lu  avg = %lu  totconns = %d  diff = %d  resp = %ld  nfds = %d\n",
-			       (unsigned long) ((1000 * (httpresp - resplast)) / (tcurr - tlast)),
-			       (unsigned long) ((1000 * httpresp) / (tcurr - tinit)), totconns, diffconns,
-			       httpresp, numfds);
+			printf
+			    ("rate = %lu  avg = %lu  totconns = %d  diff = %d  resp = %ld  nfds = %d\n",
+			     (unsigned long)((1000 * (httpresp - resplast)) /
+					     (tcurr - tlast)),
+			     (unsigned long)((1000 * httpresp) /
+					     (tcurr - tinit)), totconns,
+			     diffconns, httpresp, numfds);
 
 			tlast = tcurr;
 			resplast = httpresp;
 		}
 	}
 
-main_exit:
+      main_exit:
 	eph_cleanup();
 	return 0;
 }
 
-#endif	/* #if defined(HTTP_BLASTER) */
-
-
-
-
+#endif /* #if defined(HTTP_BLASTER) */
 
 #if defined(PIPETESTER)
-
 
 int eph_createcgi(char **args, void *func)
 {
@@ -892,7 +856,6 @@ int eph_createcgi(char **args, void *func)
 	return eph_new_conn(fds[0], func);
 }
 
-
 int eph_createpipetest(int size, int tsleep, int ttime, void *func)
 {
 	int fds[2], flags = 1;
@@ -909,7 +872,7 @@ int eph_createpipetest(int size, int tsleep, int ttime, void *func)
 		return -1;
 	} else if (chpid == 0) {
 		int i;
-		char *buff = (char *) malloc(size + 1);
+		char *buff = (char *)malloc(size + 1);
 		close(fds[0]);
 		dup2(fds[1], 1);
 		close(fds[1]);
@@ -944,22 +907,22 @@ int eph_createpipetest(int size, int tsleep, int ttime, void *func)
 	return eph_new_conn(fds[0], func);
 }
 
-
 static void *eph_pipe_session(void *data)
 {
-	struct eph_conn *conn = (struct eph_conn *) data;
+	struct eph_conn *conn = (struct eph_conn *)data;
 	int nbytes, totbytes = 0;
 	char buff[257];
 
 	while ((nbytes = eph_read(conn, buff, sizeof(buff))) > 0) {
-		fprintf(stdout, "[%p] %d bytes readed\n", conn, nbytes), fflush(stdout);
+		fprintf(stdout, "[%p] %d bytes readed\n", conn, nbytes),
+		    fflush(stdout);
 		totbytes += nbytes;
 	}
-	fprintf(stdout, "[%p] exit - totbytes=%d\n", conn, totbytes), fflush(stdout);
+	fprintf(stdout, "[%p] exit - totbytes=%d\n", conn, totbytes),
+	    fflush(stdout);
 	eph_exit_conn(conn);
 	return data;
 }
-
 
 void eph_sigchld(int sig)
 {
@@ -972,15 +935,14 @@ void eph_sigchld(int sig)
 	signal(SIGCHLD, eph_sigchld);
 }
 
-
 void eph_usage(char const *prgname)
 {
 
-	fprintf(stderr, "use: %s  [--ncgis ncgi]  [--cgi cgi] [--stksize bytes (%d)]\n",
+	fprintf(stderr,
+		"use: %s  [--ncgis ncgi]  [--cgi cgi] [--stksize bytes (%d)]\n",
 		prgname, stksize);
 
 }
-
 
 int main(int argc, char *argv[])
 {
@@ -1035,7 +997,4 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
-
-
-#endif	/* #if defined(PIPETESTER) */
-
+#endif /* #if defined(PIPETESTER) */

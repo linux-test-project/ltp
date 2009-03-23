@@ -68,7 +68,7 @@ extern int Tst_count;
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
-int exp_enos[] = {EACCES, EFAULT, EINVAL, 0};
+int exp_enos[] = { EACCES, EFAULT, EINVAL, 0 };
 
 int msg_q_1 = -1;		/* The message queue id created in setup */
 int msg_q_2 = -1;		/* Another queue id created in setup */
@@ -76,43 +76,44 @@ int bad_q = -1;			/* a value to use as a bad queue id */
 
 struct msqid_ds q_buf;
 
-struct test_case_t {      	/* This allows testing of many negative */
-        int *queue_id;		/* test cases that can all use the same */
-        int ipc_cmd;		/* basic test setup.			*/
-        struct msqid_ds *buf;
+struct test_case_t {		/* This allows testing of many negative */
+	int *queue_id;		/* test cases that can all use the same */
+	int ipc_cmd;		/* basic test setup.                    */
+	struct msqid_ds *buf;
 	int error;
 } TC[] = {
 	/* EACCES - there is no read permission for the queue */
-        {&msg_q_1, IPC_STAT, &q_buf, EACCES},
-
-	/* EFAULT - the structure address is invalid - IPC_STAT */
-        {&msg_q_2, IPC_STAT, (struct msqid_ds *)-1, EFAULT},
-
-	/* EFAULT - the structure address is invalid - IPC_SET */
-        {&msg_q_2, IPC_SET, (struct msqid_ds *)-1, EFAULT},
-
-	/* EINVAL - the command (-1) is invalid */
-        {&msg_q_2, -1, &q_buf, EINVAL},
-
-	/* EINVAL - the queue id is invalid - IPC_STAT */
-        {&bad_q, IPC_STAT, &q_buf, EINVAL},
-
-	/* EINVAL - the queue id is invalid - IPC_SET */
-        {&bad_q, IPC_SET, &q_buf, EINVAL}
+	{
+	&msg_q_1, IPC_STAT, &q_buf, EACCES},
+	    /* EFAULT - the structure address is invalid - IPC_STAT */
+	{
+	&msg_q_2, IPC_STAT, (struct msqid_ds *)-1, EFAULT},
+	    /* EFAULT - the structure address is invalid - IPC_SET */
+	{
+	&msg_q_2, IPC_SET, (struct msqid_ds *)-1, EFAULT},
+	    /* EINVAL - the command (-1) is invalid */
+	{
+	&msg_q_2, -1, &q_buf, EINVAL},
+	    /* EINVAL - the queue id is invalid - IPC_STAT */
+	{
+	&bad_q, IPC_STAT, &q_buf, EINVAL},
+	    /* EINVAL - the queue id is invalid - IPC_SET */
+	{
+	&bad_q, IPC_SET, &q_buf, EINVAL}
 };
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int i;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -122,7 +123,7 @@ int main(int ac, char **av)
 
 		/* loop through the test cases */
 
-		for (i=0; i<TST_TOTAL; i++) {
+		for (i = 0; i < TST_TOTAL; i++) {
 
 			TEST(msgctl(*(TC[i].queue_id), TC[i].ipc_cmd,
 				    TC[i].buf));
@@ -137,8 +138,8 @@ int main(int ac, char **av)
 
 			if (TEST_ERRNO == TC[i].error) {
 				tst_resm(TPASS, "expected failure - "
-				 	 "errno = %d : %s", TEST_ERRNO,
-				 	 strerror(TEST_ERRNO));
+					 "errno = %d : %s", TEST_ERRNO,
+					 strerror(TEST_ERRNO));
 			} else {
 				tst_resm(TFAIL, "unexpected error - %d : %s -",
 					 TEST_ERRNO, strerror(TEST_ERRNO));
@@ -150,15 +151,13 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	key_t msgkey2;
 
@@ -171,18 +170,16 @@ setup(void)
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	 /* Switch to nobody user for correct error code collection */
-        if (geteuid() != 0) {
-                tst_brkm(TBROK, tst_exit, "Test must be run as root");
-        }
-        ltpuser = getpwnam(nobody_uid);
-        if (setuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "setuid failed to "
-                         "to set the effective uid to %d",
-                         ltpuser->pw_uid);
-                perror("setuid");
-        }
-
+	/* Switch to nobody user for correct error code collection */
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+	}
+	ltpuser = getpwnam(nobody_uid);
+	if (setuid(ltpuser->pw_uid) == -1) {
+		tst_resm(TINFO, "setuid failed to "
+			 "to set the effective uid to %d", ltpuser->pw_uid);
+		perror("setuid");
+	}
 
 	/*
 	 * Create a temporary directory and cd into it.
@@ -198,13 +195,15 @@ setup(void)
 
 	/* now we have a key, so let's create a message queue */
 	if ((msg_q_1 = msgget(msgkey, IPC_CREAT | IPC_EXCL)) == -1) {
-		tst_brkm(TBROK, cleanup, "Can't create message queue #1: %s", strerror(errno) );
+		tst_brkm(TBROK, cleanup, "Can't create message queue #1: %s",
+			 strerror(errno));
 	}
 
 	/* now let's create another message queue with read & write access */
 	if ((msg_q_2 =
-	   msgget(msgkey2, IPC_CREAT | IPC_EXCL | MSG_RD | MSG_WR)) == -1) {
-		tst_brkm(TBROK, cleanup, "Can't create message queue #2: %s", strerror(errno) );
+	     msgget(msgkey2, IPC_CREAT | IPC_EXCL | MSG_RD | MSG_WR)) == -1) {
+		tst_brkm(TBROK, cleanup, "Can't create message queue #2: %s",
+			 strerror(errno));
 	}
 }
 
@@ -212,8 +211,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * remove the message queues that were created.
@@ -234,4 +232,3 @@ cleanup(void)
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

@@ -41,7 +41,6 @@
  *
  */
 
-
 #include <stdio.h>
 #include <unistd.h>
 #include <errno.h>
@@ -56,108 +55,140 @@
 #define TESTFILE	"ftruncate03_tst_file"
 
 TCID_DEFINE(ftruncate03);
-int TST_TOTAL=3;
+int TST_TOTAL = 3;
 
 int main()
 {
-   int wjh_ret = -1, wjh_f = -1, count = 0;
-   //used for the 2nd test
-   //make str > trunc_size characters long
-   char str[] = "THIS IS JAYS TEST FILE DATA";
-   int trunc_size = 4;
-   int flag = O_RDONLY;
+	int wjh_ret = -1, wjh_f = -1, count = 0;
+	//used for the 2nd test
+	//make str > trunc_size characters long
+	char str[] = "THIS IS JAYS TEST FILE DATA";
+	int trunc_size = 4;
+	int flag = O_RDONLY;
 
 #ifdef DEBUG
-   printf("Starting test, possible errnos are; EBADF(%d) EINVAL(%d)\n",
-                                               EBADF, EINVAL);
-   printf("\t\tENOENT(%d) EACCES(%d) EPERM(%d)\n\n", ENOENT, EACCES, EPERM);
+	printf("Starting test, possible errnos are; EBADF(%d) EINVAL(%d)\n",
+	       EBADF, EINVAL);
+	printf("\t\tENOENT(%d) EACCES(%d) EPERM(%d)\n\n", ENOENT, EACCES,
+	       EPERM);
 #endif
 
-   tst_tmpdir();
+	tst_tmpdir();
 
 //TEST1: ftruncate on a socket is not valid, should fail w/ EINVAL
 
 #ifdef DEBUG
-   printf("Starting test1\n");
+	printf("Starting test1\n");
 #endif
-   wjh_f = socket(PF_INET, SOCK_STREAM, 0);
-   wjh_ret = ftruncate(wjh_f, 1);
+	wjh_f = socket(PF_INET, SOCK_STREAM, 0);
+	wjh_ret = ftruncate(wjh_f, 1);
 #ifdef DEBUG
-   printf("DEBUG: fd: %d ret: %d errno(%d) %s\n",
-                wjh_f, wjh_ret, errno, strerror(errno));
+	printf("DEBUG: fd: %d ret: %d errno(%d) %s\n",
+	       wjh_f, wjh_ret, errno, strerror(errno));
 #endif
-   if (wjh_ret == -1 && errno == EINVAL)
-   {   tst_resm(TPASS, "Test Passed"); }
-   else
-   {   tst_resm(TFAIL, "ftruncate(socket)=%i (wanted -1), errno=%i (wanted EINVAL %i)",
-                wjh_ret, errno, EINVAL);
-   }
-   close(wjh_f); errno = 0; wjh_ret = 0; wjh_f = -1;
+	if (wjh_ret == -1 && errno == EINVAL) {
+		tst_resm(TPASS, "Test Passed");
+	} else {
+		tst_resm(TFAIL,
+			 "ftruncate(socket)=%i (wanted -1), errno=%i (wanted EINVAL %i)",
+			 wjh_ret, errno, EINVAL);
+	}
+	close(wjh_f);
+	errno = 0;
+	wjh_ret = 0;
+	wjh_f = -1;
 
 //TEST2: ftruncate on fd not open for writing should be EINVAL
 
 #ifdef DEBUG
-   printf("\nStarting test2\n");
+	printf("\nStarting test2\n");
 #endif
-   //create a file and fill it so we can truncate it in ReadOnly mode
-   //delete it first, ignore if it doesn't exist
-   unlink(TESTFILE); errno = 0;
-   wjh_f = open(TESTFILE, O_RDWR|O_CREAT, 0644);
-   if (wjh_f == -1) { tst_resm(TFAIL, "open(%s) failed: %s", TESTFILE, strerror(errno)); tst_rmdir(); tst_exit(); }
-   while (count < strlen(str) )
-   {
-      if ((count += write(wjh_f, str, strlen(str))) == -1)
-        { tst_resm(TFAIL, "write() failed: %s", strerror(errno)); close(wjh_f); tst_rmdir(); tst_exit(); }
-   }
-   close(wjh_f); errno = 0;
+	//create a file and fill it so we can truncate it in ReadOnly mode
+	//delete it first, ignore if it doesn't exist
+	unlink(TESTFILE);
+	errno = 0;
+	wjh_f = open(TESTFILE, O_RDWR | O_CREAT, 0644);
+	if (wjh_f == -1) {
+		tst_resm(TFAIL, "open(%s) failed: %s", TESTFILE,
+			 strerror(errno));
+		tst_rmdir();
+		tst_exit();
+	}
+	while (count < strlen(str)) {
+		if ((count += write(wjh_f, str, strlen(str))) == -1) {
+			tst_resm(TFAIL, "write() failed: %s", strerror(errno));
+			close(wjh_f);
+			tst_rmdir();
+			tst_exit();
+		}
+	}
+	close(wjh_f);
+	errno = 0;
 
 //Uncomment below if you want it to succeed, O_RDWR => success
 // flag = O_RDWR;
 #ifdef DEBUG
-   if (flag == O_RDWR) { printf("\tLooks like it should succeed!\n"); }
+	if (flag == O_RDWR) {
+		printf("\tLooks like it should succeed!\n");
+	}
 #endif
 
-   wjh_f = open(TESTFILE, flag);
-   if (wjh_f == -1) { tst_resm(TFAIL, "open(%s) failed: %s", TESTFILE, strerror(errno)); tst_rmdir(); tst_exit(); }
-   wjh_ret = ftruncate(wjh_f, trunc_size);
+	wjh_f = open(TESTFILE, flag);
+	if (wjh_f == -1) {
+		tst_resm(TFAIL, "open(%s) failed: %s", TESTFILE,
+			 strerror(errno));
+		tst_rmdir();
+		tst_exit();
+	}
+	wjh_ret = ftruncate(wjh_f, trunc_size);
 #ifdef DEBUG
-   printf("DEBUG: fd: %d ret: %d @ errno(%d) %s\n",
-                wjh_f, wjh_ret, errno, strerror(errno));
+	printf("DEBUG: fd: %d ret: %d @ errno(%d) %s\n",
+	       wjh_f, wjh_ret, errno, strerror(errno));
 #endif
-   if ((flag == O_RDONLY) && (wjh_ret == -1) && (errno == EINVAL))
-   {   tst_resm(TPASS, "Test Passed"); }
-   else if ((flag == O_RDWR))
-   {   if (wjh_ret == 0) { tst_resm(TPASS, "Test Succeeded!"); }
-       else { tst_resm(TFAIL, "ftruncate(%s) should have succeeded, but didn't! ret="
-                      "%d (wanted 0) errno(%d): %s\n", TESTFILE, wjh_ret, errno, strerror(errno)); }
-   }
-   else //flag was O_RDONLY but return codes wrong
-   {   tst_resm(TFAIL, "ftruncate(rd_only_fd)=%i (wanted -1), errno=%i (wanted %i EINVAL)",
-                wjh_ret, errno, EINVAL);
-   }
-   close(wjh_f); errno = 0; wjh_ret = 0; wjh_f = -1;
+	if ((flag == O_RDONLY) && (wjh_ret == -1) && (errno == EINVAL)) {
+		tst_resm(TPASS, "Test Passed");
+	} else if ((flag == O_RDWR)) {
+		if (wjh_ret == 0) {
+			tst_resm(TPASS, "Test Succeeded!");
+		} else {
+			tst_resm(TFAIL,
+				 "ftruncate(%s) should have succeeded, but didn't! ret="
+				 "%d (wanted 0) errno(%d): %s\n", TESTFILE,
+				 wjh_ret, errno, strerror(errno));
+		}
+	} else			//flag was O_RDONLY but return codes wrong
+	{
+		tst_resm(TFAIL,
+			 "ftruncate(rd_only_fd)=%i (wanted -1), errno=%i (wanted %i EINVAL)",
+			 wjh_ret, errno, EINVAL);
+	}
+	close(wjh_f);
+	errno = 0;
+	wjh_ret = 0;
+	wjh_f = -1;
 
 //TEST3: invalid socket descriptor should fail w/ EBADF
 
 #ifdef DEBUG
-   printf("\nStarting test3\n");
+	printf("\nStarting test3\n");
 #endif
-   wjh_f = -999999; //should be a bad file descriptor
-   wjh_ret = ftruncate(wjh_f, trunc_size);
+	wjh_f = -999999;	//should be a bad file descriptor
+	wjh_ret = ftruncate(wjh_f, trunc_size);
 #ifdef DEBUG
-   printf("DEBUG: fd: %d ret: %d @ errno(%d) %s\n",
-                wjh_f, wjh_ret, errno, strerror(errno));
+	printf("DEBUG: fd: %d ret: %d @ errno(%d) %s\n",
+	       wjh_f, wjh_ret, errno, strerror(errno));
 #endif
-   if (wjh_ret != -1 || errno != EBADF)
-   {   tst_resm(TFAIL, "ftruncate(invalid_fd)=%1 (wanted -1), errno=%i (wanted %i EBADF)",
-               wjh_ret, errno, EBADF);
-   }
-   else { tst_resm(TPASS, "Test Passed"); }
+	if (wjh_ret != -1 || errno != EBADF) {
+		tst_resm(TFAIL,
+			 "ftruncate(invalid_fd)=%1 (wanted -1), errno=%i (wanted %i EBADF)",
+			 wjh_ret, errno, EBADF);
+	} else {
+		tst_resm(TPASS, "Test Passed");
+	}
 
 /* Remove tmp dir and all files in it */
-   tst_rmdir();
+	tst_rmdir();
 
 //Done Testing
-   return 0;
+	return 0;
 }
-

@@ -25,7 +25,7 @@
  *  euid, ruid, suid, egid, rgid, sgid, umask, inode and device number of
  *  root and current working directories are same as that of the parent
  *  process.
- *  
+ * $
  * Expected Result:
  *  The attribute values like euid, ruid, suid, egid, rgid, sgid, umask, inode
  *  and device number of root and current working directory of the parent and
@@ -84,17 +84,17 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID="vfork01";		/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "vfork01";		/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-int exp_enos[]={0};
+int exp_enos[] = { 0 };
 
 /* Variables to hold parent/child eff/real/saved uid/gid values */
-uid_t  Peuid, Ceuid, Csuid, Psuid, Pruid, Cruid;
-gid_t  Pegid, Cegid, Psgid, Csgid, Prgid, Crgid;
-mode_t Pumask,Cumask;
+uid_t Peuid, Ceuid, Csuid, Psuid, Pruid, Cruid;
+gid_t Pegid, Cegid, Psgid, Csgid, Prgid, Crgid;
+mode_t Pumask, Cumask;
 
-char  *Pcwd, *Ccwd;		/*
+char *Pcwd, *Ccwd;		/*
 				 * pathname of working directory of
 				 * child/parent process.
 				 */
@@ -107,17 +107,16 @@ struct stat Stat_cwd_Cbuf;
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	pid_t cpid;		/* process id of the child process */
 	int exit_status;	/* exit status of child process */
-   
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -131,7 +130,7 @@ main(int ac, char **av)
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/*
 		 * Call vfork(2) to create a child process without
@@ -144,7 +143,7 @@ main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "vfork() Failed, errno=%d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
-		} else if (cpid == 0) {		/* Child process */
+		} else if (cpid == 0) {	/* Child process */
 			/*
 			 * Perform functional verification if test
 			 * executed without (-f) option.
@@ -157,15 +156,15 @@ main(int ac, char **av)
 				 */
 				if (getresuid(&Cruid, &Ceuid, &Csuid) < 0) {
 					tst_resm(TFAIL, "getresuid() fails to "
-						"get real/eff./saved uid of "
-						"child process");
+						 "get real/eff./saved uid of "
+						 "child process");
 					_exit(1);
 				}
 
 				if (getresgid(&Crgid, &Cegid, &Csgid) < 0) {
 					tst_resm(TFAIL, "getresgid() fails to "
-						"get real/eff./saved gid of "
-						"child process");
+						 "get real/eff./saved gid of "
+						 "child process");
 					_exit(1);
 				}
 
@@ -186,10 +185,10 @@ main(int ac, char **av)
 				 * Get the pathname of current working
 				 * directory for the child process.
 				 */
-				if ((Ccwd = (char *)getcwd((char *)NULL, \
-						BUFSIZ)) == NULL) {
+				if ((Ccwd = (char *)getcwd((char *)NULL,
+							   BUFSIZ)) == NULL) {
 					tst_resm(TFAIL, "getcwd failed for the "
-						"child process");
+						 "child process");
 					_exit(1);
 				}
 
@@ -200,8 +199,8 @@ main(int ac, char **av)
 				 */
 				if (stat("/", &StatCbuf) < 0) {
 					tst_resm(TFAIL, "stat(2) failed to get "
-						"info. of'/' in the child "
-						"process");
+						 "info. of'/' in the child "
+						 "process");
 					_exit(1);
 				}
 
@@ -211,67 +210,67 @@ main(int ac, char **av)
 				 */
 				if (stat(Ccwd, &Stat_cwd_Cbuf) < 0) {
 					tst_resm(TFAIL, "stat(2) failed to get "
-						"info. of working irectory in "
-						"the child");
+						 "info. of working irectory in "
+						 "the child");
 					_exit(1);
 				}
 
 				/* Now, do the actual comparision */
-				if (Peuid != Ceuid || Pegid != Cegid  || \
-					Psuid != Csuid || Psgid != Csgid  || \
-					Pruid != Cruid || Prgid != Crgid  || \
-					Pumask != Cumask) {
+				if (Peuid != Ceuid || Pegid != Cegid ||
+				    Psuid != Csuid || Psgid != Csgid ||
+				    Pruid != Cruid || Prgid != Crgid ||
+				    Pumask != Cumask) {
 					tst_resm(TFAIL, "Attribute values of "
-						"parent and child don't match");
+						 "parent and child don't match");
 					_exit(1);
 				} else {
 					tst_resm(TINFO, "Attribute values of "
-						"parent and child match");
+						 "parent and child match");
 				}
 
 				/* Check for the same working directories */
 				if (strcmp(Pcwd, Ccwd) != 0) {
 					tst_resm(TFAIL, "Working directories "
-						"of parent and child don't "
-						"match");
+						 "of parent and child don't "
+						 "match");
 					_exit(1);
 				} else {
 					tst_resm(TINFO, "Working directories "
-						"of parent and child match");
+						 "of parent and child match");
 				}
 
 				/*
 				 * Check for the same device/inode number of
 				 * '/' directory.
 				 */
-				if ((StatPbuf.st_ino != StatCbuf.st_ino) || \
-					(StatPbuf.st_dev != StatCbuf.st_dev)) {
+				if ((StatPbuf.st_ino != StatCbuf.st_ino) ||
+				    (StatPbuf.st_dev != StatCbuf.st_dev)) {
 					tst_resm(TFAIL, "Device/inode number "
-						"of parent and childs '/' "
-						" don't match");
+						 "of parent and childs '/' "
+						 " don't match");
 					_exit(1);
 				} else {
 					tst_resm(TINFO, "Device/inode number "
-						"of parent and childs '/' "
-						"match");
+						 "of parent and childs '/' "
+						 "match");
 				}
 
 				/*
 				 * Check for the same device and inode number
 				 *  of "." (current working directory.
 				 */
-				if ((Stat_cwd_Pbuf.st_ino != \
-					Stat_cwd_Cbuf.st_ino) || \
-					(Stat_cwd_Pbuf.st_dev != \
-					Stat_cwd_Cbuf.st_dev)) {
+				if ((Stat_cwd_Pbuf.st_ino !=
+				     Stat_cwd_Cbuf.st_ino) ||
+				    (Stat_cwd_Pbuf.st_dev !=
+				     Stat_cwd_Cbuf.st_dev)) {
 					tst_resm(TFAIL, "Device/inode number "
-						"of parent and childs '.' "
-						"don't match");
+						 "of parent and childs '.' "
+						 "don't match");
 					_exit(1);
 				} else {
 					tst_resm(TINFO, "Device/inode number "
-						"of parent and childs '.' "
-						"don't match");
+						 "of parent and childs '.' "
+						 "don't match");
 				}
 
 				/*
@@ -289,21 +288,19 @@ main(int ac, char **av)
 
 			/* Check for the exit status of child process */
 			if (WEXITSTATUS(exit_status) == 0) {
-				tst_resm(TPASS, \
-					 "Call of vfork() successful");
+				tst_resm(TPASS, "Call of vfork() successful");
 			} else if (WEXITSTATUS(exit_status) == 1) {
-				tst_resm(TFAIL, \
+				tst_resm(TFAIL,
 					 "Child process exited abnormally");
 			}
 		}
-		Tst_count++;			/* incr. TEST_LOOP counter */
-	}	/* End for TEST_LOOPING */
+		Tst_count++;	/* incr. TEST_LOOP counter */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
-	/*NOTREACHED*/
-	return 0;
-}	/* End main */
+	 /*NOTREACHED*/ return 0;
+}				/* End main */
 
 /*
  * void
@@ -311,8 +308,7 @@ main(int ac, char **av)
  *  This function gets real/effective/saved uid/gid, umask, the device/inode
  *  number of '/' and current working directory for the parent process.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -326,36 +322,36 @@ setup()
 	 */
 	if (getresuid(&Pruid, &Peuid, &Psuid) < 0) {
 		tst_brkm(TFAIL, cleanup, "getresuid() fails to get "
-			"real/eff./saved uid of parent");
+			 "real/eff./saved uid of parent");
 	}
 
 	if (getresgid(&Prgid, &Pegid, &Psgid) < 0) {
 		tst_brkm(TFAIL, cleanup, "getresgid() fails to get "
-			"real/eff./saved gid of parent");
+			 "real/eff./saved gid of parent");
 	}
 
 	/* Get the process file mode creation mask by setting value 0 */
 	Pumask = umask(0);
-	umask(Pumask);			/*
-					 * Restore the mask value of the
-					 * process.
-					 */
+	umask(Pumask);		/*
+				 * Restore the mask value of the
+				 * process.
+				 */
 	/*
 	 * Get the pathname of current working directory of the parent
 	 * process.
 	 */
-	if ((Pcwd = (char *) getcwd((char *)NULL, BUFSIZ)) == NULL) {
+	if ((Pcwd = (char *)getcwd((char *)NULL, BUFSIZ)) == NULL) {
 		tst_brkm(TFAIL, cleanup,
 			 "getcwd failed for the parent process");
 	}
 
 	/*
- 	 * Get the device and inode number of root directory for the
+	 * Get the device and inode number of root directory for the
 	 * parent process.
 	 */
 	if (stat("/", &StatPbuf) == -1) {
 		tst_brkm(TFAIL, cleanup, "stat(2) failed to get info. of '/' "
-			"in parent process");
+			 "in parent process");
 	}
 
 	/*
@@ -364,17 +360,16 @@ setup()
 	 */
 	if (stat(Pcwd, &Stat_cwd_Pbuf) < 0) {
 		tst_brkm(TFAIL, cleanup, "stat(2) failed to get info. of "
-			"working directory in parent process");
+			 "working directory in parent process");
 	}
-}	/* End setup() */
+}				/* End setup() */
 
 /*
  * void
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -384,4 +379,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

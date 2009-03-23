@@ -69,19 +69,19 @@
 void setup();
 void cleanup();
 
-char *TCID = "munlockall01";		/* Test program identifier.    */
-int TST_TOTAL = 1;			/* Total number of test cases. */
-extern int Tst_count;			/* TestCase counter for tst_* routine */
+char *TCID = "munlockall01";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
+extern int Tst_count;		/* TestCase counter for tst_* routine */
 int exp_enos[] = { 0 };
 
 #if !defined(UCLINUX)
 
 int main(int ac, char **av)
 {
-	int lc;		 		/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != (char *) NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -94,22 +94,21 @@ int main(int ac, char **av)
 
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
-					
+
 		TEST(munlockall());
-		
+
 		/* check return code */
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "munlockall() Failed with"
-				" return=%d, errno=%d : %s",
-				TEST_RETURN, TEST_ERRNO,
-				strerror(TEST_ERRNO));
+				 " return=%d, errno=%d : %s",
+				 TEST_RETURN, TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
 			tst_resm(TPASS, "munlockall() passed with"
-				" return=%d ",TEST_RETURN);                     		
-			
-			}
+				 " return=%d ", TEST_RETURN);
+
 		}
-				/* End for TEST_LOOPING */
+	}
+	/* End for TEST_LOOPING */
 
 	/* cleanup and exit */
 	cleanup();
@@ -127,7 +126,6 @@ int main()
 
 #endif /* if !defined(UCLINUX) */
 
-
 /* setup() - performs all ONE TIME setup for this test. */
 void setup()
 {
@@ -135,12 +133,12 @@ void setup()
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/*set the expected errnos*/
+	/*set the expected errnos */
 	TEST_EXP_ENOS(exp_enos);
 
-	if(geteuid() != 0) {
-		tst_brkm(TBROK,tst_exit, "Test must be tested as root");
-	 }
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Test must be tested as root");
+	}
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;

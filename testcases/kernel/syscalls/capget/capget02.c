@@ -96,7 +96,7 @@ static void test_setup(int);
 
 char *TCID = "capget02";	/* Test program identifier.    */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-static int exp_enos[] = {EFAULT, EINVAL, ESRCH, 0};
+static int exp_enos[] = { EFAULT, EINVAL, ESRCH, 0 };
 
 static struct __user_cap_header_struct header;
 static struct __user_cap_data_struct data;
@@ -109,26 +109,27 @@ struct test_case_t {
 } test_cases[] = {
 #ifndef UCLINUX
 	/* Skip since uClinux does not implement memory protection */
-	{ (cap_user_header_t)-1, &data, EFAULT, "EFAULT" },
-	{ &header, (cap_user_data_t)-1, EFAULT, "EFAULT" },
+	{
+	(cap_user_header_t) - 1, &data, EFAULT, "EFAULT"}, {
+	&header, (cap_user_data_t) - 1, EFAULT, "EFAULT"},
 #endif
-	{ &header, &data, EINVAL, "EINVAL" },
-	{ &header, &data, EINVAL, "EINVAL" },
-	{ &header, &data, ESRCH, "ESRCH" }
+	{
+	&header, &data, EINVAL, "EINVAL"}, {
+	&header, &data, EINVAL, "EINVAL"}, {
+	&header, &data, ESRCH, "ESRCH"}
 };
 
 int TST_TOTAL = sizeof(test_cases) / sizeof(test_cases[0]);
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 
 	int lc, i;		/* loop counter */
-	char *msg;	/* message returned from parse_opts */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
-	     != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL))
+	    != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -147,29 +148,28 @@ main(int ac, char **av)
 				    test_cases[i].datap));
 
 			if ((TEST_RETURN == -1) && (TEST_ERRNO ==
-						test_cases[i].exp_errno)) {
+						    test_cases[i].exp_errno)) {
 				tst_resm(TPASS, "capget() returned -1,"
-					" errno: %s", test_cases[i].errdesc);
+					 " errno: %s", test_cases[i].errdesc);
 			} else {
 				tst_resm(TFAIL, "Test Failed, capget()"
-				 " returned %d, errno = %d : %s", TEST_RETURN,
-				 TEST_ERRNO, strerror(TEST_ERRNO));
+					 " returned %d, errno = %d : %s",
+					 TEST_RETURN, TEST_ERRNO,
+					 strerror(TEST_ERRNO));
 			}
 			TEST_ERROR_LOG(TEST_ERRNO);
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* cleanup and exit */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 
-}	/* End main */
+}				/* End main */
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -180,15 +180,13 @@ setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-}	/* End setup() */
-
+}				/* End setup() */
 
 /*
  *cleanup() -  performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -198,31 +196,30 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */
 
-void
-test_setup(int i)
+void test_setup(int i)
 {
 #ifdef UCLINUX
-	i = i+2;
+	i = i + 2;
 #endif
 	switch (i) {
 
-	case 0 :
+	case 0:
 		break;
-	case 1 :
+	case 1:
 		header.version = _LINUX_CAPABILITY_VERSION;
 		header.pid = getpid();
 		break;
-	case 2 :
+	case 2:
 		header.version = 0;
 		header.pid = getpid();
 		break;
-	case 3 :
+	case 3:
 		header.version = _LINUX_CAPABILITY_VERSION;
 		header.pid = -1;
 		break;
-	case 4 :
+	case 4:
 		header.version = _LINUX_CAPABILITY_VERSION;
 		header.pid = INVALID_PID;
 		break;

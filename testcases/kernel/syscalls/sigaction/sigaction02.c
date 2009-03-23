@@ -72,8 +72,7 @@ volatile sig_atomic_t testcase_no;
  * handler()
  *	A dummy signal handler for attempting to catch signals.
  */
-void
-handler(int sig)
+void handler(int sig)
 {
 	if (DEBUG)
 		tst_resm(TINFO, "Inside signal handler. Got signal: %d", sig);
@@ -87,8 +86,7 @@ handler(int sig)
  * Returns
  *	0 on success, errno on failure
  */
-int
-set_handler(int sig, int sig_to_mask, int flag)
+int set_handler(int sig, int sig_to_mask, int flag)
 {
 	struct sigaction sa;
 	int err;
@@ -112,23 +110,21 @@ set_handler(int sig, int sig_to_mask, int flag)
 	}
 }
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	char *msg;			/* message got from parse_opts */
+	char *msg;		/* message got from parse_opts */
 
 	int ret;
 
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
-
 //test1:
 	testcase_no = 1;
 
 	if (DEBUG)
 		tst_resm(TINFO, "Enter test %d: set handler for SIGKILL",
-				testcase_no);
+			 testcase_no);
 	if ((ret = set_handler(SIGKILL, 0, 0)) == 0) {
 		tst_resm(TFAIL, "sigaction() succeeded, should have failed");
 	}
@@ -144,7 +140,7 @@ main(int ac, char **av)
 
 	if (DEBUG)
 		tst_resm(TINFO, "Enter test %d: set handler for SIGSTOP",
-				testcase_no);
+			 testcase_no);
 	if ((ret = set_handler(SIGSTOP, 0, 0)) == 0) {
 		tst_resm(TFAIL, "sigaction() succeeded, should have failed");
 	}
@@ -159,8 +155,7 @@ main(int ac, char **av)
 	testcase_no++;
 	if (DEBUG)
 		tst_resm(TINFO, "Enter test %d: set handler for bad "
-				"signal number",
-		 testcase_no);
+			 "signal number", testcase_no);
 	if ((ret = set_handler(SIGBAD, 0, 0)) == 0) {
 		tst_resm(TFAIL, "sigaction() succeeded, should have failed");
 	}
@@ -177,7 +172,7 @@ main(int ac, char **av)
 	testcase_no++;
 	if (DEBUG)
 		tst_resm(TINFO, "Enter test %d: set handler with "
-				"bad \"act\" param", testcase_no);
+			 "bad \"act\" param", testcase_no);
 	if ((ret = set_handler(SIGUSR1, 0, 1)) == 0) {
 		tst_resm(TFAIL, "sigaction() succeeded, should have failed");
 	}
@@ -192,7 +187,7 @@ main(int ac, char **av)
 	testcase_no++;
 	if (DEBUG)
 		tst_resm(TINFO, "Enter test %d: set handler with "
-				"bad \"oact\" param", testcase_no);
+			 "bad \"oact\" param", testcase_no);
 	if ((ret = set_handler(SIGUSR1, 0, 2)) == 0) {
 		tst_resm(TFAIL, "sigaction() succeeded, should have failed");
 	}
@@ -202,10 +197,10 @@ main(int ac, char **av)
 	} else {
 		tst_resm(TPASS, "call failed with expected EFAULT error");
 	}
-#endif		/* GLIBC_SIGACTION_BUG */
+#endif /* GLIBC_SIGACTION_BUG */
 
 	tst_exit();
 
-  return 0;
+	return 0;
 
 }

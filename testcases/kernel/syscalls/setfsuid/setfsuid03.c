@@ -68,23 +68,23 @@ struct passwd *ltpuser;
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	uid_t uid;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
 	setup();
 
 	uid = geteuid();
-        uid = 1;
-        while (!getpwuid(uid)) {
-                uid++;
-        }
+	uid = 1;
+	while (!getpwuid(uid)) {
+		uid++;
+	}
 
 	/* Check for looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -106,7 +106,8 @@ int main(int ac, char **av)
 		}
 
 		if (TEST_RETURN == uid) {
-			tst_resm(TFAIL, "setfsuid() returned %d, expected anything but %d",
+			tst_resm(TFAIL,
+				 "setfsuid() returned %d, expected anything but %d",
 				 TEST_RETURN, uid);
 		} else {
 			tst_resm(TPASS, "setfsuid() returned expected value : "
@@ -117,26 +118,23 @@ int main(int ac, char **av)
 
 	return 0;
 
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
-        /* Switch to nobody user for correct error code collection */
-        if (geteuid() != 0) {
-                tst_brkm(TBROK, tst_exit, "Test must be run as root");
-        }
-         ltpuser = getpwnam(nobody_uid);
-         if (setuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "setuid failed to "
-                         "to set the effective uid to %d",
-                         ltpuser->pw_uid);
-                perror("setuid");
-         }
+	/* Switch to nobody user for correct error code collection */
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+	}
+	ltpuser = getpwnam(nobody_uid);
+	if (setuid(ltpuser->pw_uid) == -1) {
+		tst_resm(TINFO, "setuid failed to "
+			 "to set the effective uid to %d", ltpuser->pw_uid);
+		perror("setuid");
+	}
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -149,8 +147,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

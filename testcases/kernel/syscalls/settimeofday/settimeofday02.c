@@ -68,7 +68,7 @@
 
 char *TCID = "settimeofday02";
 int TST_TOTAL = 1;
-int exp_enos[]={EFAULT, EPERM, 0};
+int exp_enos[] = { EFAULT, EPERM, 0 };
 struct timeval tp;
 time_t save_tv_sec, save_tv_usec;
 
@@ -85,11 +85,11 @@ void restore_time(void);
 
 int main(int argc, char **argv)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) !=
+	if ((msg = parse_opts(argc, argv, (option_t *) NULL, NULL)) !=
 	    (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
@@ -109,7 +109,7 @@ int main(int argc, char **argv)
 			TEST_ERROR_LOG(TEST_ERRNO);
 			if (TEST_ERRNO != EFAULT) {
 				tst_resm(TFAIL, "Expected EFAULT got %d",
-					TEST_ERRNO);
+					 TEST_ERRNO);
 			} else {
 				tst_resm(TPASS, "Received expected errno");
 			}
@@ -125,16 +125,14 @@ int main(int argc, char **argv)
 			TEST_ERROR_LOG(TEST_ERRNO);
 			if (TEST_ERRNO != EPERM) {
 				tst_resm(TFAIL, "Expected EPERM got %d",
-					TEST_ERRNO);
+					 TEST_ERRNO);
 			} else {
 				tst_resm(TPASS, "Received expected errno");
 			}
 		}
 	}
 	cleanup();
-	/*NOTREACHED*/
-
-  return 0;
+	 /*NOTREACHED*/ return 0;
 
 }
 
@@ -152,8 +150,7 @@ int main()
  * setup()
  *	performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -162,18 +159,15 @@ setup(void)
 	if (geteuid() != 0) {
 		tst_brkm(TBROK, NULL, "Must be root for this test!");
 		tst_exit();
-		/*NOTREACHED*/
+	 /*NOTREACHED*/}
+
+	/* Switch to nobody user for correct error code collection */
+	ltpuser = getpwnam(nobody_uid);
+	if (setuid(ltpuser->pw_uid) == -1) {
+		tst_resm(TINFO, "setuid failed to "
+			 "to set the effective uid to %d", ltpuser->pw_uid);
+		perror("setuid");
 	}
-
-        /* Switch to nobody user for correct error code collection */
-	 ltpuser = getpwnam(nobody_uid);
-         if (setuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "setuid failed to "
-                         "to set the effective uid to %d",
-                         ltpuser->pw_uid);
-                perror("setuid");
-         }
-
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
@@ -186,9 +180,8 @@ setup(void)
 	/* Save the current time values */
 	if ((gettimeofday(&tp, (struct timezone *)&tp)) == -1) {
 		tst_brkm(TBROK, cleanup, "gettimeofday failed. "
-			"errno=%d", errno);
-		/*NOTREACHED*/
-	}
+			 "errno=%d", errno);
+	 /*NOTREACHED*/}
 	save_tv_sec = tp.tv_sec;
 	save_tv_usec = tp.tv_usec;
 }
@@ -198,8 +191,7 @@ setup(void)
  *	performs all ONE TIME cleanup for this test at
  *	completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -209,18 +201,15 @@ cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}
 
-void
-restore_time(void)
+void restore_time(void)
 {
 	/* restore the original time values. */
 	tp.tv_sec = save_tv_sec;
 	tp.tv_usec = save_tv_usec;
 	if ((settimeofday(&tp, NULL)) == -1) {
 		tst_resm(TWARN, "FATAL COULD NOT RESET THE CLOCK");
-		tst_resm(TFAIL, "Error Setting Time, errno=%d",
-			errno);
+		tst_resm(TFAIL, "Error Setting Time, errno=%d", errno);
 	}
 }

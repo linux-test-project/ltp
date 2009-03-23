@@ -56,66 +56,85 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID="sendto01";		/* Test program identifier.    */
+char *TCID = "sendto01";	/* Test program identifier.    */
 int testno;
 
-char	buf[1024], bigbuf[128*1024];
-int	s;	/* socket descriptor */
+char buf[1024], bigbuf[128 * 1024];
+int s;				/* socket descriptor */
 struct sockaddr_in sin1, sin2;
-static int sfd; /* shared between do_child and start_server */
+static int sfd;			/* shared between do_child and start_server */
 
 void setup(void), setup0(void), setup1(void), setup2(void), setup3(void),
-	do_child(void), cleanup(void), cleanup0(void), cleanup1(void);
+do_child(void), cleanup(void), cleanup0(void), cleanup1(void);
 
 struct test_case_t {		/* test case structure */
-	int	domain;	/* PF_INET, PF_UNIX, ... */
-	int	type;	/* SOCK_STREAM, SOCK_DGRAM ... */
-	int	proto;	/* protocol number (usually 0 = default) */
-	void	*buf;	/* send data buffer */
-	int	buflen;	/* send's 3rd argument */
-	unsigned flags;	/* send's 4th argument */
+	int domain;		/* PF_INET, PF_UNIX, ... */
+	int type;		/* SOCK_STREAM, SOCK_DGRAM ... */
+	int proto;		/* protocol number (usually 0 = default) */
+	void *buf;		/* send data buffer */
+	int buflen;		/* send's 3rd argument */
+	unsigned flags;		/* send's 4th argument */
 	struct sockaddr_in *to;	/* destination */
-	int	tolen;		/* length of "to" buffer */
-	int	retval;		/* syscall return value */
-	int	experrno;	/* expected errno */
-	void	(*setup)(void);
-	void	(*cleanup)(void);
+	int tolen;		/* length of "to" buffer */
+	int retval;		/* syscall return value */
+	int experrno;		/* expected errno */
+	void (*setup) (void);
+	void (*cleanup) (void);
 	char *desc;
 } tdat[] = {
-	{ PF_INET, SOCK_STREAM, 0, buf, sizeof(buf), 0, &sin1, sizeof(sin1),
-		-1, EBADF, setup0, cleanup0, "bad file descriptor" },
-	{ 0, 0, 0, buf, sizeof(buf), 0, &sin1, sizeof(sin1),
-		-1, ENOTSOCK, setup0, cleanup0, "invalid socket" },
+	{
+	PF_INET, SOCK_STREAM, 0, buf, sizeof(buf), 0, &sin1,
+		    sizeof(sin1), -1, EBADF, setup0, cleanup0,
+		    "bad file descriptor"}
+	, {
+	0, 0, 0, buf, sizeof(buf), 0, &sin1, sizeof(sin1),
+		    -1, ENOTSOCK, setup0, cleanup0, "invalid socket"}
+	,
 #ifndef UCLINUX
-	/* Skip since uClinux does not implement memory protection */
-	{ PF_INET, SOCK_DGRAM, 0, (void *)-1, sizeof(buf), 0, &sin1,
-		sizeof(sin1),
-		-1, EFAULT, setup1, cleanup1, "invalid send buffer" },
+	    /* Skip since uClinux does not implement memory protection */
+	{
+	PF_INET, SOCK_DGRAM, 0, (void *)-1, sizeof(buf), 0, &sin1,
+		    sizeof(sin1),
+		    -1, EFAULT, setup1, cleanup1, "invalid send buffer"}
+	,
 #endif
-	{ PF_INET, SOCK_STREAM, 0, buf, sizeof(buf), 0, &sin2, sizeof(sin2),
-		 0, EFAULT, setup1, cleanup1, "connected TCP" },
-	{ PF_INET, SOCK_STREAM, 0, buf, sizeof(buf), 0, &sin1, sizeof(sin1),
-		-1, EPIPE, setup3, cleanup1, "not connected TCP" },
-	{ PF_INET, SOCK_DGRAM, 0, buf, sizeof(buf), 0, &sin1, -1,
-		-1, EINVAL, setup1, cleanup1, "invalid to buffer length" },
+	{
+	PF_INET, SOCK_STREAM, 0, buf, sizeof(buf), 0, &sin2,
+		    sizeof(sin2), 0, EFAULT, setup1, cleanup1, "connected TCP"}
+	, {
+	PF_INET, SOCK_STREAM, 0, buf, sizeof(buf), 0, &sin1,
+		    sizeof(sin1), -1, EPIPE, setup3, cleanup1,
+		    "not connected TCP"}
+	, {
+	PF_INET, SOCK_DGRAM, 0, buf, sizeof(buf), 0, &sin1, -1,
+		    -1, EINVAL, setup1, cleanup1, "invalid to buffer length"}
+	,
 #ifndef UCLINUX
-	/* Skip since uClinux does not implement memory protection */
-	{ PF_INET, SOCK_DGRAM, 0, buf, sizeof(buf), 0, (struct sockaddr_in *)-1,
-		sizeof(sin1),
-		-1, EFAULT, setup1, cleanup1, "invalid to buffer" },
+	    /* Skip since uClinux does not implement memory protection */
+	{
+	PF_INET, SOCK_DGRAM, 0, buf, sizeof(buf), 0,
+		    (struct sockaddr_in *)-1, sizeof(sin1), -1, EFAULT,
+		    setup1, cleanup1, "invalid to buffer"}
+	,
 #endif
-	{ PF_INET, SOCK_DGRAM, 0, bigbuf, sizeof(bigbuf), 0, &sin1,
-		sizeof(sin1),
-		-1, EMSGSIZE, setup1, cleanup1, "UDP message too big" },
-	{ PF_INET, SOCK_STREAM, 0, buf, sizeof(buf), 0, &sin1, sizeof(sin1),
-		-1, EPIPE, setup2, cleanup1, "local endpoint shutdown" },
-	{ PF_INET, SOCK_STREAM, 0, buf, sizeof(buf), -1, &sin1, sizeof(sin1),
-		0, EPIPE, setup1, cleanup1, "invalid flags set" }
+	{
+	PF_INET, SOCK_DGRAM, 0, bigbuf, sizeof(bigbuf), 0, &sin1,
+		    sizeof(sin1),
+		    -1, EMSGSIZE, setup1, cleanup1, "UDP message too big"}
+	, {
+	PF_INET, SOCK_STREAM, 0, buf, sizeof(buf), 0, &sin1,
+		    sizeof(sin1), -1, EPIPE, setup2, cleanup1,
+		    "local endpoint shutdown"}
+	, {
+	PF_INET, SOCK_STREAM, 0, buf, sizeof(buf), -1, &sin1,
+		    sizeof(sin1), 0, EPIPE, setup1, cleanup1,
+		    "invalid flags set"}
 };
 
-int TST_TOTAL=sizeof(tdat)/sizeof(tdat[0]); /* Total number of test cases. */
+int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);	/* Total number of test cases. */
 
-int exp_enos[] = {EBADF, ENOTSOCK, EFAULT, EISCONN, ENOTCONN, EINVAL, EMSGSIZE, EPIPE, 0};
+int exp_enos[] =
+    { EBADF, ENOTSOCK, EFAULT, EISCONN, ENOTCONN, EINVAL, EMSGSIZE, EPIPE, 0 };
 
 extern int Tst_count;
 
@@ -123,30 +142,29 @@ extern int Tst_count;
 static char *argv0;
 #endif
 
-pid_t
-start_server(struct sockaddr_in *sin0)
+pid_t start_server(struct sockaddr_in *sin0)
 {
 	struct sockaddr_in sin1 = *sin0;
-	pid_t	pid;
+	pid_t pid;
 
 	sfd = socket(PF_INET, SOCK_STREAM, 0);
 	if (sfd < 0) {
 		tst_brkm(TBROK, cleanup, "server socket failed: %s",
-			strerror(errno));
+			 strerror(errno));
 		return -1;
 	}
-	if (bind(sfd, (struct sockaddr*)&sin1, sizeof(sin1)) < 0) {
+	if (bind(sfd, (struct sockaddr *)&sin1, sizeof(sin1)) < 0) {
 		tst_brkm(TBROK, cleanup, "server bind failed: %s",
-			strerror(errno));
+			 strerror(errno));
 		return -1;
 	}
 	if (listen(sfd, 10) < 0) {
 		tst_brkm(TBROK, cleanup, "server listen failed: %s",
-			strerror(errno));
+			 strerror(errno));
 		return -1;
 	}
 	switch ((pid = FORK_OR_VFORK())) {
-	case 0:	/* child */
+	case 0:		/* child */
 #ifdef UCLINUX
 		if (self_exec(argv0, "d", sfd) < 0) {
 			tst_brkm(TBROK, cleanup, "server self_exec failed");
@@ -157,23 +175,21 @@ start_server(struct sockaddr_in *sin0)
 		break;
 	case -1:
 		tst_brkm(TBROK, cleanup, "server fork failed: %s",
-			strerror(errno));
+			 strerror(errno));
 		/* fall through */
-	default: /* parent */
-		(void) close(sfd);
+	default:		/* parent */
+		(void)close(sfd);
 		return pid;
 	}
 
-	/*NOTREACHED*/
-	exit(1);
+	 /*NOTREACHED*/ exit(1);
 }
 
-void
-do_child()
+void do_child()
 {
 	struct sockaddr_in fsin;
-	fd_set	afds, rfds;
-	int	nfds, cc, fd;
+	fd_set afds, rfds;
+	int nfds, cc, fd;
 
 	FD_ZERO(&afds);
 	FD_SET(sfd, &afds);
@@ -182,12 +198,12 @@ do_child()
 
 	/* accept connections until killed */
 	while (1) {
-		socklen_t	fromlen;
+		socklen_t fromlen;
 
 		memcpy(&rfds, &afds, sizeof(rfds));
 
-		if (select(nfds, &rfds, (fd_set *)0, (fd_set *)0,
-		    (struct timeval *)0) < 0)
+		if (select(nfds, &rfds, (fd_set *) 0, (fd_set *) 0,
+			   (struct timeval *)0) < 0)
 			if (errno != EINTR)
 				exit(1);
 		if (FD_ISSET(sfd, &rfds)) {
@@ -198,11 +214,11 @@ do_child()
 			if (newfd >= 0)
 				FD_SET(newfd, &afds);
 		}
-		for (fd=0; fd<nfds; ++fd) {
+		for (fd = 0; fd < nfds; ++fd) {
 			if (fd != sfd && FD_ISSET(fd, &rfds)) {
 				cc = read(fd, buf, sizeof(buf));
 				if (cc == 0 || (cc < 0 && errno != EINTR)) {
-					(void) close(fd);
+					(void)close(fd);
 					FD_CLR(fd, &afds);
 				}
 			}
@@ -210,18 +226,16 @@ do_child()
 	}
 }
 
-int
-main(int ac, char *av[])
+int main(int ac, char *av[])
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
-
 #ifdef UCLINUX
 	argv0 = av[0];
 	maybe_run_child(&do_child, "d", &sfd);
@@ -235,12 +249,13 @@ main(int ac, char *av[])
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 
 		Tst_count = 0;
-		for (testno=0; testno < TST_TOTAL; ++testno) {
+		for (testno = 0; testno < TST_TOTAL; ++testno) {
 			tdat[testno].setup();
 
 			TEST(sendto(s, tdat[testno].buf, tdat[testno].buflen,
-				tdat[testno].flags, (const struct sockaddr*)tdat[testno].to,
-				tdat[testno].tolen));
+				    tdat[testno].flags,
+				    (const struct sockaddr *)tdat[testno].to,
+				    tdat[testno].tolen));
 
 			if (TEST_RETURN > 0)
 				TEST_RETURN = 0;	/* all success equal */
@@ -251,101 +266,89 @@ main(int ac, char *av[])
 			    (TEST_RETURN < 0 &&
 			     TEST_ERRNO != tdat[testno].experrno)) {
 				tst_resm(TFAIL, "%s ; returned"
-					" %d (expected %d), errno %d (expected"
-					" %d)", tdat[testno].desc,
-					TEST_RETURN, tdat[testno].retval,
-					TEST_ERRNO, tdat[testno].experrno);
+					 " %d (expected %d), errno %d (expected"
+					 " %d)", tdat[testno].desc,
+					 TEST_RETURN, tdat[testno].retval,
+					 TEST_ERRNO, tdat[testno].experrno);
 			} else {
 				tst_resm(TPASS, "%s successful",
-					tdat[testno].desc);
+					 tdat[testno].desc);
 			}
 			tdat[testno].cleanup();
 		}
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 pid_t pid;
 
-void
-setup(void)
+void setup(void)
 {
-	TEST_PAUSE;	/* if -P option specified */
+	TEST_PAUSE;		/* if -P option specified */
 
 	/* initialize sockaddr's */
 	sin1.sin_family = AF_INET;
-	sin1.sin_port = htons((getpid() % 32768) +11000);
+	sin1.sin_port = htons((getpid() % 32768) + 11000);
 	sin1.sin_addr.s_addr = INADDR_ANY;
 	pid = start_server(&sin1);
 
-	(void) signal(SIGPIPE, SIG_IGN);
+	(void)signal(SIGPIPE, SIG_IGN);
 }
 
-void
-cleanup(void)
+void cleanup(void)
 {
-	(void) kill(pid, SIGKILL);	/* kill server */
+	(void)kill(pid, SIGKILL);	/* kill server */
 	TEST_CLEANUP;
 	tst_exit();
 }
 
-
-void
-setup0(void)
+void setup0(void)
 {
 	if (tdat[testno].experrno == EBADF)
 		s = 400;	/* anything not an open file */
-	else
-	if((s = open("/dev/null", O_WRONLY)) == -1)
+	else if ((s = open("/dev/null", O_WRONLY)) == -1)
 		tst_brkm(TBROK, cleanup, "error opening /dev/null - "
-		"errno: %s", strerror(errno));
+			 "errno: %s", strerror(errno));
 }
 
-void
-cleanup0(void)
+void cleanup0(void)
 {
 	s = -1;
 }
 
-void
-setup1(void)
+void setup1(void)
 {
 	s = socket(tdat[testno].domain, tdat[testno].type, tdat[testno].proto);
 	if (s < 0) {
 		tst_brkm(TBROK, cleanup, "socket setup failed: %s",
-			strerror(errno));
+			 strerror(errno));
 	}
-	if (connect(s, (const struct sockaddr*)&sin1, sizeof(sin1)) < 0) {
+	if (connect(s, (const struct sockaddr *)&sin1, sizeof(sin1)) < 0) {
 		tst_brkm(TBROK, cleanup, "connect failed: ", strerror(errno));
 	}
 }
 
-void
-cleanup1(void)
+void cleanup1(void)
 {
-	(void) close(s);
+	(void)close(s);
 	s = -1;
 }
 
-void
-setup2(void)
+void setup2(void)
 {
-	setup1();	/* get a socket in s */
+	setup1();		/* get a socket in s */
 	if (shutdown(s, 1) < 0) {
 		tst_brkm(TBROK, cleanup, "socket setup failed connect "
-			"test %d: %s", testno, strerror(errno));
+			 "test %d: %s", testno, strerror(errno));
 	}
 }
-void
-setup3(void)
+void setup3(void)
 {
 	s = socket(tdat[testno].domain, tdat[testno].type, tdat[testno].proto);
 	if (s < 0) {
 		tst_brkm(TBROK, cleanup, "socket setup failed: %s",
-			strerror(errno));
+			 strerror(errno));
 	}
 }
-

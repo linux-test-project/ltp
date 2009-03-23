@@ -39,9 +39,9 @@
  *   Loop if the proper options are given.
  *   Execute system call
  *   Check return code, if system call failed (return=-1)
- *   	Log the errno and Issue a FAIL message.
+ *	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call
+ *	Verify the Functionality of system call
  *      if successful,
  *      	Issue Functionality-Pass message.
  *      Otherwise,
@@ -65,8 +65,8 @@
  *
  * RESTRICTIONS:
  *  None.
- *
  */
+
 #include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -78,8 +78,8 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID="nanosleep02";	/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "nanosleep02";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
@@ -101,22 +101,20 @@ void sig_handler();		/* signal catching function */
  * the "rem" field would never change without the increased
  * usec precision in the -aa tree.
  */
-#define USEC_PRECISION 250000      /* Error margin allowed in usec */
+#define USEC_PRECISION 250000	/* Error margin allowed in usec */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	pid_t cpid;		/* Child process id */
 	int status;		/* child exit status */
-   
+
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
-
 #ifdef UCLINUX
 	maybe_run_child(&do_child, "dddd", &timereq.tv_sec, &timereq.tv_nsec,
 			&timerem.tv_sec, &timerem.tv_nsec);
@@ -129,7 +127,7 @@ main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/*
 		 * Creat a child process and suspend its
@@ -140,7 +138,7 @@ main(int ac, char **av)
 				 "fork() failed to create child process");
 		}
 
-		if (cpid == 0) {		/* Child process */
+		if (cpid == 0) {	/* Child process */
 #ifdef UCLINUX
 			if (self_exec(av[0], "dddd",
 				      timereq.tv_sec, timereq.tv_nsec,
@@ -169,25 +167,23 @@ main(int ac, char **av)
 		} else if (WEXITSTATUS(status) == 1) {
 			tst_resm(TFAIL, "child process exited abnormally");
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 
-}	/* End main */
+}				/* End main */
 
 /*
  * do_child()
  */
-void
-do_child()
+void do_child()
 {
-       unsigned long req, rem, elapsed; /* usec */
-	struct timeval otime;		 /* time before child execution suspended */
-	struct timeval ntime;		 /* time after child resumes execution */
+	unsigned long req, rem, elapsed;	/* usec */
+	struct timeval otime;	/* time before child execution suspended */
+	struct timeval ntime;	/* time after child resumes execution */
 
 	/* Note down the current time */
 	gettimeofday(&otime, NULL);
@@ -207,18 +203,22 @@ do_child()
 	 * in 'timerem' structure.
 	 * The time remaining should be equal to the
 	 * Total time for sleep - time spent on sleep bfr signal
-         * Change precision from msec to usec.
+	 * Change precision from msec to usec.
 	 */
-       req = timereq.tv_sec * 1000000 + timereq.tv_nsec / 1000;
-       rem = timerem.tv_sec * 1000000 + timerem.tv_nsec / 1000;
-       elapsed = (ntime.tv_sec - otime.tv_sec) * 1000000 + ntime.tv_usec - otime.tv_usec;
+	req = timereq.tv_sec * 1000000 + timereq.tv_nsec / 1000;
+	rem = timerem.tv_sec * 1000000 + timerem.tv_nsec / 1000;
+	elapsed =
+	    (ntime.tv_sec - otime.tv_sec) * 1000000 + ntime.tv_usec -
+	    otime.tv_usec;
 
-       if (rem - (req - elapsed) > USEC_PRECISION) {
-               tst_resm(TWARN,"This test could fail if the system was under load");
-               tst_resm(TWARN,"due to the limitation of the way it calculates the");
-               tst_resm(TWARN,"system call execution time.");
-               tst_resm(TFAIL, "Remaining sleep time %lu usec doesn't "
-                        "match with the expected %lu usec time",
+	if (rem - (req - elapsed) > USEC_PRECISION) {
+		tst_resm(TWARN,
+			 "This test could fail if the system was under load");
+		tst_resm(TWARN,
+			 "due to the limitation of the way it calculates the");
+		tst_resm(TWARN, "system call execution time.");
+		tst_resm(TFAIL, "Remaining sleep time %lu usec doesn't "
+			 "match with the expected %lu usec time",
 			 rem, (req - elapsed));
 		exit(1);
 	}
@@ -232,7 +232,7 @@ do_child()
 	 * 'timereq' structure.
 	 */
 	TEST(nanosleep(&timereq, &timerem));
-		
+
 	/* Record the time after suspension */
 	gettimeofday(&ntime, NULL);
 
@@ -255,16 +255,20 @@ do_child()
 		 * sleep time specified by 'timerem'
 		 * structure.
 		 */
-               req = timereq.tv_sec * 1000000 + timereq.tv_nsec / 1000;
-               elapsed = (ntime.tv_sec - otime.tv_sec) * 1000000 + ntime.tv_usec - otime.tv_usec;
-               if (elapsed - req > USEC_PRECISION) {
-			tst_resm(TWARN,"This test could fail if the system was under load");
-			tst_resm(TWARN,"due to the limitation of the way it calculates the");
-			tst_resm(TWARN,"system call execution time.");
+		req = timereq.tv_sec * 1000000 + timereq.tv_nsec / 1000;
+		elapsed =
+		    (ntime.tv_sec - otime.tv_sec) * 1000000 + ntime.tv_usec -
+		    otime.tv_usec;
+		if (elapsed - req > USEC_PRECISION) {
+			tst_resm(TWARN,
+				 "This test could fail if the system was under load");
+			tst_resm(TWARN,
+				 "due to the limitation of the way it calculates the");
+			tst_resm(TWARN, "system call execution time.");
 			tst_resm(TFAIL, "Child execution not "
-                                "suspended for %d seconds %lu nanoseconds",
-                                timereq.tv_sec, timereq.tv_nsec);
-				exit(1);
+				 "suspended for %d seconds %lu nanoseconds",
+				 timereq.tv_sec, timereq.tv_nsec);
+			exit(1);
 		}
 	} else {
 		tst_resm(TPASS, "call succeeded");
@@ -278,8 +282,7 @@ do_child()
  *  to child process.
  *  Initialise time structure elements.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -308,8 +311,7 @@ setup()
  *   to child to awake it from sleep.
  *   This function just returns without doing anything.
  */
-void
-sig_handler()
+void sig_handler()
 {
 }
 
@@ -318,8 +320,7 @@ sig_handler()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

@@ -24,7 +24,7 @@
  *  Verify that getresgid() will be successful to get the real, effective
  *  and saved user ids after calling process invokes setresgid() to change
  *  the effective gid to that of specified user.
- *  
+ *
  * Expected Result:
  *  getresgid() should return with 0 value and the effective user id
  *  should match the egid of specified user, real/saved user ids should
@@ -39,11 +39,11 @@
  *   Loop if the proper options are given.
  *   Execute system call
  *   Check return code, if system call failed (return=-1)
- *   	Log the errno and Issue a FAIL message.
+ *	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call
+ *	Verify the Functionality of system call
  *      if successful,
- *      	Issue Functionality-Pass message.
+ *		Issue Functionality-Pass message.
  *      Otherwise,
  *		Issue Functionality-Fail message.
  *  Cleanup:
@@ -79,28 +79,27 @@
 #include "test.h"
 #include "usctest.h"
 
-extern int getresgid(gid_t*, gid_t*, gid_t*);
+extern int getresgid(gid_t *, gid_t *, gid_t *);
 extern int setresgid(gid_t, gid_t, gid_t);
 
-char *TCID="getresgid03";	/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "getresgid03";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 gid_t pr_gid, pe_gid, ps_gid;	/* calling process real/effective/saved gid */
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	gid_t real_gid,		/* real/eff./saved user id from getresgid() */
-	      eff_gid, sav_gid;
-   
+	 eff_gid, sav_gid;
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -111,7 +110,7 @@ main(int ac, char **av)
 	/* Check looping state if -c option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/*
 		 * Call getresgid() to get the real/effective/saved
@@ -148,14 +147,13 @@ main(int ac, char **av)
 		} else {
 			tst_resm(TPASS, "call succeeded");
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
-}	/* End main */
+	 /*NOTREACHED*/ return 0;
+}				/* End main */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -164,10 +162,9 @@ main(int ac, char **av)
  *	     Get the user info. of test user "ltpuser1" from /etc/passwd file.
  *	     Set the eff. user id of test process to that of "ltpuser1" user.
  */
-void
-setup()
+void setup()
 {
-	struct passwd *user_id;		/* passwd struct for test user*/
+	struct passwd *user_id;	/* passwd struct for test user */
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -189,10 +186,9 @@ setup()
 	/* Get effective gid of "ltpuser1" user from passwd file */
 	if ((user_id = getpwnam("nobody")) == NULL) {
 		tst_brkm(TBROK, cleanup,
-			 "getpwnam(nobody) Failed, errno=%d",
-			 errno);
+			 "getpwnam(nobody) Failed, errno=%d", errno);
 	}
-	
+
 	/* Effective user-id of the test-user "ltpuser1" */
 	pe_gid = user_id->pw_gid;
 
@@ -208,13 +204,11 @@ setup()
 	}
 }
 
-
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -224,8 +218,7 @@ cleanup()
 
 	/* Reset the effective/saved gid of the calling process */
 	if (setregid(-1, pr_gid) < 0) {
-		tst_brkm(TBROK, NULL,
-			 "resetting process effective gid failed");
+		tst_brkm(TBROK, NULL, "resetting process effective gid failed");
 	}
 
 	/* exit with return code appropriate for results */

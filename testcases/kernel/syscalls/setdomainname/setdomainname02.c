@@ -87,11 +87,11 @@
 static void cleanup(void);
 static void setup(void);
 
-char *TCID= "setdomainname02";
+char *TCID = "setdomainname02";
 int TST_TOTAL = 3;
 extern int Tst_count;
 
-static int exp_enos[] = {EINVAL, EFAULT, 0};	/* 0 terminated list of *
+static int exp_enos[] = { EINVAL, EFAULT, 0 };	/* 0 terminated list of *
 						 * expected errnos */
 
 static char old_domain_name[MAX_NAME_LEN];
@@ -102,26 +102,25 @@ static struct test_case_t {
 	int exp_errno;
 	char err_desc[10];
 } test_cases[] = {
-	{ "test with len = -1", "test_dom", -1, EINVAL, "EINVAL" },
-	{ "test with len > allowed maximum", "test_dom", MAX_NAME_LEN+1,
-	EINVAL, "EINVAL" },
-	{ "test with name = NULL", NULL, MAX_NAME_LEN, EFAULT, "EFAULT" },
-};
+	{
+	"test with len = -1", "test_dom", -1, EINVAL, "EINVAL"}, {
+	"test with len > allowed maximum", "test_dom", MAX_NAME_LEN + 1,
+		    EINVAL, "EINVAL"}, {
+"test with name = NULL", NULL, MAX_NAME_LEN, EFAULT, "EFAULT"},};
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	int lc, ind;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc, ind;		/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL))
-			!= (char *) NULL) {
+	    != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -129,24 +128,24 @@ main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		for (ind =0; ind < TST_TOTAL; ind++) {
-		
+		for (ind = 0; ind < TST_TOTAL; ind++) {
+
 			/*
 			 * call the system call with the TEST() macro
-		 	 */
+			 */
 			TEST(setdomainname(test_cases[ind].name,
 					   (size_t) test_cases[ind].len));
 
 			if ((TEST_RETURN == -1) &&
 			    (TEST_ERRNO == test_cases[ind].exp_errno)) {
 				tst_resm(TPASS, "expected failure; Got %s",
-						 test_cases[ind].err_desc);
+					 test_cases[ind].err_desc);
 			} else {
 				tst_resm(TFAIL, "Call failed to produce "
-					"expected error;  Expected errno: %d "
-					"Got : %d, %s",
-					test_cases[ind].exp_errno,
-					TEST_ERRNO, strerror(TEST_ERRNO));
+					 "expected error;  Expected errno: %d "
+					 "Got : %d, %s",
+					 test_cases[ind].exp_errno,
+					 TEST_ERRNO, strerror(TEST_ERRNO));
 			}
 			TEST_ERROR_LOG(TEST_ERRNO);
 		}
@@ -154,16 +153,14 @@ main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 
 }
 
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 
 	/* capture signals */
@@ -172,15 +169,15 @@ setup(void)
 	/* Set up the expected error numbers for -e option */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Check whether we are root*/
+	/* Check whether we are root */
 	if (geteuid() != 0) {
 		tst_brkm(TBROK, tst_exit, "Test must be run as root");
 	}
 
 	/* Save current domainname */
-	if((getdomainname (old_domain_name, MAX_NAME_LEN)) < 0 ) {
+	if ((getdomainname(old_domain_name, MAX_NAME_LEN)) < 0) {
 		tst_brkm(TBROK, tst_exit, "getdomainname() failed while"
-					  " getting current domain name");
+			 " getting current domain name");
 	}
 
 	/* Pause if that option was specified */
@@ -192,8 +189,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 
 	/*
@@ -203,13 +199,12 @@ cleanup(void)
 	TEST_CLEANUP;
 
 	/* Restore domain name */
-	if((setdomainname (old_domain_name, sizeof(old_domain_name)))
-		< 0 ) {
+	if ((setdomainname(old_domain_name, sizeof(old_domain_name)))
+	    < 0) {
 		tst_resm(TWARN, "setdomainname() failed while restoring"
-				" domainname to \"%s\"", old_domain_name);
+			 " domainname to \"%s\"", old_domain_name);
 	}
 
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

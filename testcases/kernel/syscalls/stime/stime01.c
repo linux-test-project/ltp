@@ -80,31 +80,29 @@
 
 #define INCR_TIME	10	/* increment in the system's current time */
 
-char *TCID="stime01";		/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "stime01";		/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 time_t curr_time;		/* system's current time in seconds */
 time_t new_time;		/* system's new time */
 time_t tloc;			/* argument var. for time() */
-int exp_enos[]={0};
+int exp_enos[] = { 0 };
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	time_t pres_time;	/* system's present time */
-   
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/* Perform global setup for test */
 	setup();
@@ -115,7 +113,7 @@ main(int ac, char **av)
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/*
 		 * Invoke stime(2) to set the system's time
@@ -140,45 +138,40 @@ main(int ac, char **av)
 				 */
 				if ((pres_time = time(&tloc)) < 0) {
 					tst_brkm(TFAIL, cleanup,
-						"time() failed to get "
-						"system's time after stime, "
-						"error=%d", errno);
-					/*NOTREACHED*/
-				}
+						 "time() failed to get "
+						 "system's time after stime, "
+						 "error=%d", errno);
+				 /*NOTREACHED*/}
 
 				/* Now do the actual verification */
 				if ((pres_time != new_time) &&
-				   (pres_time != new_time + 1)) {
+				    (pres_time != new_time + 1)) {
 					tst_resm(TFAIL, "stime() fails to set "
-						"system's time");
+						 "system's time");
 				} else {
 					tst_resm(TPASS, "Functionality of "
-						"stime(%ld) successful",
+						 "stime(%ld) successful",
 						 new_time);
 				}
 			} else {
 				tst_resm(TPASS, "Call succeeded");
 			}
 		}
-		Tst_count++;			/* incr TEST_LOOP counter */
-	}	/* End for TEST_LOOPING */
+		Tst_count++;	/* incr TEST_LOOP counter */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
-	/*NOTREACHED*/
+	 /*NOTREACHED*/ return 0;
 
-
-  return 0;
-
-}	/* End main */
+}				/* End main */
 
 /*
  * void
  * setup() - performs all ONE TIME setup for this test.
  *  Get the current time and system's new time to be set in the test.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -187,8 +180,7 @@ setup()
 	if (geteuid() != 0) {
 		tst_brkm(TBROK, NULL, "Must be super/root for this test!");
 		tst_exit();
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
@@ -196,22 +188,19 @@ setup()
 	/* Get the current time */
 	if ((curr_time = time(&tloc)) < 0) {
 		tst_brkm(TBROK, cleanup,
-			 "time() failed to get current time, errno=%d",
-			 errno);
-		/*NOTREACHED*/
-	}
+			 "time() failed to get current time, errno=%d", errno);
+	 /*NOTREACHED*/}
 
 	/* Get the system's new time */
 	new_time = curr_time + INCR_TIME;
-}	/* End setup() */
+}				/* End setup() */
 
 /*
  * void
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -221,4 +210,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

@@ -83,27 +83,27 @@ static void help(void);
 static void setup(void);
 static void cleanup(void);
 
-
-char	*TCID = "mount04";		/* Test program identifier.    */
-extern int Tst_count;			/* TestCase counter for tst_* routine */
+char *TCID = "mount04";		/* Test program identifier.    */
+extern int Tst_count;		/* TestCase counter for tst_* routine */
 
 #define DEFAULT_FSTYPE "ext2"
 #define FSTYPE_LEN	20
 #define DIR_MODE	S_IRWXU | S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP
 
-static char	*Type;
-static char	mntpoint[PATH_MAX];
-static char	*fstype;
-static char	*device;
-static int	Tflag = 0;
-static int	Dflag = 0;
+static char *Type;
+static char mntpoint[PATH_MAX];
+static char *fstype;
+static char *device;
+static int Tflag = 0;
+static int Dflag = 0;
 
 static struct test_case_t {
-	char	*err_desc;	/* error description		*/
-	int	exp_errno;	/* Expected error no		*/
-	char	*exp_errval;	/* Expected error value string  */
+	char *err_desc;		/* error description            */
+	int exp_errno;		/* Expected error no            */
+	char *exp_errval;	/* Expected error value string  */
 } testcases[] = {
-  { "User not Super User/root", EPERM, "EPERM"}
+	{
+	"User not Super User/root", EPERM, "EPERM"}
 };
 
 /* Total number of test cases. */
@@ -111,17 +111,16 @@ int TST_TOTAL = sizeof(testcases) / sizeof(testcases[0]);
 
 static int exp_enos[] = { EPERM, 0 };
 
-static option_t options[] = {		/* options supported by mount04 test */
-	{ "T:", &Tflag, &fstype },	/* -T type of filesystem	*/
-	{ "D:", &Dflag, &device },	/* -D device used for mounting	*/
-	{ NULL, NULL, NULL }
+static option_t options[] = {	/* options supported by mount04 test */
+	{"T:", &Tflag, &fstype},	/* -T type of filesystem        */
+	{"D:", &Dflag, &device},	/* -D device used for mounting  */
+	{NULL, NULL, NULL}
 };
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	int	lc, i;			/* loop counter */
-	char	*msg;			/* message returned from parse_opts */
+	int lc, i;		/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, options, &help)) != (char *)NULL) {
@@ -137,7 +136,7 @@ main(int ac, char **av)
 		tst_exit();
 	}
 
-	Type = (char *) malloc(FSTYPE_LEN);
+	Type = (char *)malloc(FSTYPE_LEN);
 	if (!Type) {
 		tst_brkm(TBROK, NULL, "malloc - alloc of %d failed",
 			 FSTYPE_LEN);
@@ -146,12 +145,13 @@ main(int ac, char **av)
 
 	if (Tflag == 1) {
 		strncpy(Type, fstype,
-		   (FSTYPE_LEN < strlen(fstype)) ? FSTYPE_LEN : strlen(fstype));
+			(FSTYPE_LEN <
+			 strlen(fstype)) ? FSTYPE_LEN : strlen(fstype));
 	} else {
 		strncpy(Type, DEFAULT_FSTYPE, strlen(DEFAULT_FSTYPE));
 	}
 
-	if(STD_COPIES != 1) {
+	if (STD_COPIES != 1) {
 		tst_resm(TINFO, "-c option has no effect for this testcase - "
 			 "%s doesn't allow running more than one instance "
 			 "at a time", TCID);
@@ -160,7 +160,6 @@ main(int ac, char **av)
 
 	/* perform global setup for test */
 	setup();
-
 
 	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -176,49 +175,45 @@ main(int ac, char **av)
 			if ((TEST_RETURN == -1) &&
 			    (TEST_ERRNO == testcases[i].exp_errno)) {
 				tst_resm(TPASS, "mount(2) expected failure; "
-					"Got errno - %s : %s",
+					 "Got errno - %s : %s",
 					 testcases[i].exp_errval,
 					 testcases[i].err_desc);
 			} else {
 				if (umount(mntpoint) == -1) {
 					tst_brkm(TBROK, cleanup, "umount(2) "
-						"failed to umount mntpoint %s "
-						"errno - %d : %s", mntpoint,
-						TEST_ERRNO,
-						strerror(TEST_ERRNO));
+						 "failed to umount mntpoint %s "
+						 "errno - %d : %s", mntpoint,
+						 TEST_ERRNO,
+						 strerror(TEST_ERRNO));
 				}
 				tst_resm(TFAIL, "mount(2) failed to produce "
-					"expected error; %d, errno:%s got %d",
+					 "expected error; %d, errno:%s got %d",
 					 testcases[i].exp_errno,
 					 testcases[i].exp_errval, TEST_ERRNO);
 			}
 
 			TEST_ERROR_LOG(TEST_ERRNO);
 
-
-		}	/* End of TEST CASE LOOPING. */
-	}	/* End for TEST_LOOPING */
+		}		/* End of TEST CASE LOOPING. */
+	}			/* End for TEST_LOOPING */
 
 	/* cleanup and exit */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 
-}	/* End main */
-
+}				/* End main */
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup()
+void setup()
 {
-	char    nobody_uid[] = "nobody";
+	char nobody_uid[] = "nobody";
 	struct passwd *ltpuser;
 
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Check whether we are root*/
+	/* Check whether we are root */
 	if (geteuid() != 0) {
 		free(Type);
 		tst_brkm(TBROK, tst_exit, "Test must be run as root");
@@ -226,7 +221,8 @@ setup()
 
 	ltpuser = getpwnam(nobody_uid);
 	if (seteuid(ltpuser->pw_uid) == -1) {
-		tst_brkm(TBROK, cleanup,"seteuid() failed to change euid to %d "
+		tst_brkm(TBROK, cleanup,
+			 "seteuid() failed to change euid to %d "
 			 "errno = %d : %s", ltpuser->pw_uid, TEST_ERRNO,
 			 strerror(TEST_ERRNO));
 	}
@@ -238,7 +234,7 @@ setup()
 	if (mkdir(mntpoint, DIR_MODE)) {
 		tst_brkm(TBROK, cleanup, "mkdir(%s, %#o) failed; "
 			 "errno = %d: %s", mntpoint, DIR_MODE, errno,
-			  strerror(errno));
+			 strerror(errno));
 	}
 
 	/* set up expected error numbers */
@@ -250,15 +246,13 @@ setup()
 	TEST_PAUSE;
 
 	return;
-}	/* End setup() */
-
+}				/* End setup() */
 
 /*
  *cleanup() -  performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	free(Type);
 
@@ -274,23 +268,22 @@ cleanup()
 	/* Set effective user id back to root */
 	if (seteuid(0) == -1) {
 		tst_resm(TINFO, "seteuid failed to "
-			 "to set the effective uid to root" );
-			 perror("seteuid");
+			 "to set the effective uid to root");
+		perror("seteuid");
 	}
 
 	/* exit with return code appropriate for results */
 	tst_exit();
 
 	return;
-}	/* End cleanup() */
+}				/* End cleanup() */
 
 /*
  * issue a help message
  */
-void
-help()
+void help()
 {
 	printf("-T type	  : specifies the type of filesystem to be mounted."
-		" Default ext2. \n");
+	       " Default ext2. \n");
 	printf("-D device : device used for mounting \n");
 }

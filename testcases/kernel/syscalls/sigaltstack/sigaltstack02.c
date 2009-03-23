@@ -40,9 +40,9 @@
  *   Loop if the proper options are given.
  *   Execute system call
  *   Check return code, if system call failed (return=-1)
- *   	if errno set == expected errno
- *   		Issue sys call fails with expected return value and errno.
- *   	Otherwise,
+ *	if errno set == expected errno
+ *		Issue sys call fails with expected return value and errno.
+ *	Otherwise,
  *		Issue sys call fails with unexpected errno.
  *   Otherwise,
  *	Issue sys call returns unexpected value.
@@ -82,15 +82,15 @@
 
 #define INVAL_FLAGS	9999
 
-char *TCID="sigaltstack02";	/* Test program identifier.    */
-int TST_TOTAL=2;		/* Total number of test cases. */
+char *TCID = "sigaltstack02";	/* Test program identifier.    */
+int TST_TOTAL = 2;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-int exp_enos[]={EINVAL, ENOMEM, 0};
+int exp_enos[] = { EINVAL, ENOMEM, 0 };
 
 stack_t sigstk;			/* signal stack storing struct. */
 
-void setup();                   /* Main setup function of test */
-void cleanup();                 /* cleanup function for the test */
+void setup();			/* Main setup function of test */
+void cleanup();			/* cleanup function for the test */
 
 struct test_case_t {		/* test case struct. to hold diff. test.conds */
 	int flag;
@@ -98,13 +98,17 @@ struct test_case_t {		/* test case struct. to hold diff. test.conds */
 	char *desc;
 	int exp_errno;
 } Test_cases[] = {
-	{ INVAL_FLAGS, SIGSTKSZ, "Invalid Flag value", EINVAL },
+	{
+	INVAL_FLAGS, SIGSTKSZ, "Invalid Flag value", EINVAL},
 #ifdef __ia64__
-	{ 0, (131027 - 1), "alternate stack is < MINSIGSTKSZ", ENOMEM },
+	{
+	0, (131027 - 1), "alternate stack is < MINSIGSTKSZ", ENOMEM},
 #else
-	{ 0, (MINSIGSTKSZ - 1), "alternate stack is < MINSIGSTKSZ", ENOMEM },
+	{
+	0, (MINSIGSTKSZ - 1), "alternate stack is < MINSIGSTKSZ", ENOMEM},
 #endif
-	{ 0, 0, NULL, 0 }
+	{
+	0, 0, NULL, 0}
 };
 
 int main(int ac, char **av)
@@ -116,11 +120,10 @@ int main(int ac, char **av)
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/* Perform global setup for test */
 	setup();
@@ -131,64 +134,62 @@ int main(int ac, char **av)
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
 			sigstk.ss_size = Test_cases[ind].size;
 			sigstk.ss_flags = Test_cases[ind].flag;
 			test_desc = Test_cases[ind].desc;
-		
+
 			/* Verify sigaltstack() fails and sets errno */
-			TEST(sigaltstack(&sigstk, (stack_t *)0));
+			TEST(sigaltstack(&sigstk, (stack_t *) 0));
 
 			/* Check return code from sigaltstack() */
 			if (TEST_RETURN == -1) {
 				TEST_ERROR_LOG(TEST_ERRNO);
 				/*
-			 	 * Perform functional verification if test
-			 	 * executed without (-f) option.
-			 	 */
+				 * Perform functional verification if test
+				 * executed without (-f) option.
+				 */
 				if (STD_FUNCTIONAL_TEST) {
-					if (TEST_ERRNO == \
+					if (TEST_ERRNO ==
 					    Test_cases[ind].exp_errno) {
 						tst_resm(TPASS, "stgaltstack() "
-							"fails, %s, errno:%d",
-							test_desc, TEST_ERRNO);
+							 "fails, %s, errno:%d",
+							 test_desc, TEST_ERRNO);
 					} else {
 						tst_resm(TFAIL, "sigaltstack() "
-							"fails, %s, errno:%d, "
-							"expected errno:%d",
+							 "fails, %s, errno:%d, "
+							 "expected errno:%d",
 							 test_desc, TEST_ERRNO,
-							 Test_cases[ind].exp_errno);
+							 Test_cases[ind].
+							 exp_errno);
 					}
 				} else {
 					tst_resm(TPASS, "Call returned -1 as "
-						"expected.");
+						 "expected.");
 				}
 			} else {
 				tst_resm(TFAIL, "sigaltstack() returned %d, "
-					"expected -1, errno:%d", TEST_RETURN,
+					 "expected -1, errno:%d", TEST_RETURN,
 					 Test_cases[ind].exp_errno);
 			}
-		}	/* End of TEST CASE LOOPING. */
-		Tst_count++;		/* incr. TEST_LOOP counter */
-	}	/* End of TEST CASE LOOPING. */
+		}		/* End of TEST CASE LOOPING. */
+		Tst_count++;	/* incr. TEST_LOOP counter */
+	}			/* End of TEST CASE LOOPING. */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
-	/*NOTREACHED*/
+	 /*NOTREACHED*/ return 0;
 
-  return 0;
-
-}	/* End main */
+}				/* End main */
 
 /*
  * void
  * setup() - performs all ONE TIME setup for this test.
  * Allocate memory for the alternative stack.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -200,8 +201,7 @@ setup()
 	if ((sigstk.ss_sp = (void *)malloc(SIGSTKSZ)) == NULL) {
 		tst_brkm(TFAIL, cleanup,
 			 "could not allocate memory for the alternate stack");
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 }
 
 /*
@@ -210,8 +210,7 @@ setup()
  *             completion or premature exit.
  *  Free the memory allocated for alternate stack.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -223,5 +222,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
-
+}				/* End cleanup() */

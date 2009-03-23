@@ -24,7 +24,7 @@
  *
  * DESCRIPTION
  * 	Test to see the the proper errors are returned by sigpending
- * 
+ *$
  * ALGORITHM
  * 	test 1:
  * 	Call sigpending(sigset_t*=-1), it should return -1 with errno EFAULT
@@ -55,108 +55,107 @@
 #include "test.h"
 #include "usctest.h"
 
-
 void setup();
 void help();
 void cleanup();
 
-char *TCID="sigpending02";	/* Test program identifier.    */
-int TST_TOTAL=1;    		/* Total number of test cases. */
+char *TCID = "sigpending02";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 extern int Tst_nobuf;
 
-int exp_enos[]={EFAULT, 0};
+int exp_enos[] = { EFAULT, 0 };
 
 /***********************************************************************
  * Main
  ***********************************************************************/
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-    int lc;		/* loop counter */
-    char *msg;		/* message returned from parse_opts */
-    sigset_t *sigset;
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
+	sigset_t *sigset;
 
-    if ( (msg=parse_opts(ac, av, NULL, NULL)) != (char *) NULL ) {
-	tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	tst_exit();
-    }
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != (char *)NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+		tst_exit();
+	}
 
     /***************************************************************
      * perform global setup for test
      ***************************************************************/
-    setup();
+	setup();
 
-    /* set sigset to point to an invalid location */
-    sigset = (sigset_t*)-1;
+	/* set sigset to point to an invalid location */
+	sigset = (sigset_t *) - 1;
 
-    /* set the expected errnos... */
-    TEST_EXP_ENOS(exp_enos);
+	/* set the expected errnos... */
+	TEST_EXP_ENOS(exp_enos);
 
     /***************************************************************
      * check looping state
      ***************************************************************/
-    /* TEST_LOOPING() is a macro that will make sure the test continues
-     * looping according to the standard command line args.
-     */
-    for (lc=0; TEST_LOOPING(lc); lc++) {
+	/* TEST_LOOPING() is a macro that will make sure the test continues
+	 * looping according to the standard command line args.
+	 */
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-	/* reset Tst_count in case we are looping. */
-	Tst_count=0;
+		/* reset Tst_count in case we are looping. */
+		Tst_count = 0;
 
-	TEST(sigpending(sigset));
+		TEST(sigpending(sigset));
 
- 	/* check return code */
-	if ( TEST_RETURN == -1 ) {
-	    TEST_ERROR_LOG(TEST_ERRNO);
-	        if (TEST_ERRNO != EFAULT)
-	            tst_brkm(TFAIL, cleanup, "sigpending() Failed with wrong "
-                             "errno, expected errno=%d, got errno=%d : %s",
-			     EFAULT, TEST_ERRNO, strerror(TEST_ERRNO));
-		else
-		    tst_resm(TPASS, "expected failure - errno = %d : %s",
-				    TEST_ERRNO, strerror(TEST_ERRNO));
-	} else {
-	        tst_brkm(TFAIL, cleanup, "sigpending() Failed, expected "
-			 "return value=-1, got %d", TEST_RETURN);
-	}
-    }	/* End for TEST_LOOPING */
+		/* check return code */
+		if (TEST_RETURN == -1) {
+			TEST_ERROR_LOG(TEST_ERRNO);
+			if (TEST_ERRNO != EFAULT)
+				tst_brkm(TFAIL, cleanup,
+					 "sigpending() Failed with wrong "
+					 "errno, expected errno=%d, got errno=%d : %s",
+					 EFAULT, TEST_ERRNO,
+					 strerror(TEST_ERRNO));
+			else
+				tst_resm(TPASS,
+					 "expected failure - errno = %d : %s",
+					 TEST_ERRNO, strerror(TEST_ERRNO));
+		} else {
+			tst_brkm(TFAIL, cleanup,
+				 "sigpending() Failed, expected "
+				 "return value=-1, got %d", TEST_RETURN);
+		}
+	}			/* End for TEST_LOOPING */
 
     /***************************************************************
      * cleanup and exit
      ***************************************************************/
-    cleanup();
+	cleanup();
 
-    return 0;
-}	/* End main */
+	return 0;
+}				/* End main */
 
 /***************************************************************
  * help
  ***************************************************************/
-void
-help()
+void help()
 {
-    printf("test\n");
+	printf("test\n");
 }
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void
-setup()
+void setup()
 {
-    TEST_PAUSE;
+	TEST_PAUSE;
 }
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void
-cleanup()
+void cleanup()
 {
-    TEST_CLEANUP;
+	TEST_CLEANUP;
 
-    /* exit with return code appropriate for results */
-    tst_exit();
+	/* exit with return code appropriate for results */
+	tst_exit();
 }

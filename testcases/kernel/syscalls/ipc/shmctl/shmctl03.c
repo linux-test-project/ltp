@@ -64,8 +64,9 @@
 char *TCID = "shmctl03";
 extern int Tst_count;
 
-int exp_enos[] = {EACCES, EPERM, 0};	/* 0 terminated list of */
-					/* expected errnos 	*/
+int exp_enos[] = { EACCES, EPERM, 0 };	/* 0 terminated list of */
+
+					/* expected errnos      */
 int shm_id_1 = -1;
 
 uid_t ltp_uid;
@@ -80,29 +81,29 @@ struct test_case_t {
 	int error;
 } TC[] = {
 	/* EACCES - child has no read permission for segment */
-	{&shm_id_1, IPC_STAT, &buf, EACCES},
-
-	/* EPERM - IPC_SET - child doesn't have permission to change segment */
-	{&shm_id_1, IPC_SET, &buf, EPERM},
-
-	/* EPERM - IPC_RMID - child can not remove the segment */
-	{&shm_id_1, IPC_RMID, &buf, EPERM},
-};
+	{
+	&shm_id_1, IPC_STAT, &buf, EACCES},
+	    /* EPERM - IPC_SET - child doesn't have permission to change segment */
+	{
+	&shm_id_1, IPC_SET, &buf, EPERM},
+	    /* EPERM - IPC_RMID - child can not remove the segment */
+	{
+&shm_id_1, IPC_RMID, &buf, EPERM},};
 
 int TST_TOTAL = (sizeof(TC) / sizeof(*TC));
 
 int main(int ac, char **av)
 {
-	char *msg;			/* message returned from parse_opts */
+	char *msg;		/* message returned from parse_opts */
 	int pid;
 	void do_child(void);
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	if ((pid = FORK_OR_VFORK()) == -1) {
 		tst_brkm(TBROK, cleanup, "could not fork");
@@ -129,15 +130,14 @@ int main(int ac, char **av)
 		tst_rmdir();
 	}
 
-	cleanup ();
+	cleanup();
 	return 0;
 }
 
 /*
  * do_child - make the call as the child process
  */
-void
-do_child()
+void do_child()
 {
 	int i, lc;
 
@@ -148,7 +148,7 @@ do_child()
 		Tst_count = 0;
 
 		/* loop through the test cases */
-		for (i=0; i<TST_TOTAL; i++) {
+		for (i = 0; i < TST_TOTAL; i++) {
 			/*
 			 * use the TEST() macro to make the call
 			 */
@@ -170,7 +170,7 @@ do_child()
 				tst_resm(TFAIL, "call failed with an "
 					 "unexpected error - %d : %s",
 					 TEST_ERRNO, strerror(TEST_ERRNO));
-			}		
+			}
 		}
 	}
 }
@@ -178,8 +178,7 @@ do_child()
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	/* check for root as process owner */
 	check_root();
@@ -205,7 +204,7 @@ setup(void)
 
 	/* create a shared memory segment with read and write permissions */
 	if ((shm_id_1 = shmget(shmkey, SHM_SIZE, IPC_CREAT | IPC_EXCL |
-	     SHM_RW)) == -1) {
+			       SHM_RW)) == -1) {
 		tst_brkm(TBROK, cleanup, "couldn't create shared memory "
 			 "segment in setup()");
 	}
@@ -218,8 +217,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -230,4 +228,3 @@ cleanup(void)
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

@@ -79,8 +79,8 @@
 #define FILE_MODE       S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
 #define MAX_SIZE	256
 
-char *TCID="readlink01";	/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "readlink01";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int exp_val;			/* strlen of testfile */
@@ -91,16 +91,14 @@ void cleanup();			/* Cleanup function for the test */
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
-
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	char buffer[MAX_SIZE];	/* temporary buffer to hold symlink contents*/
+	char buffer[MAX_SIZE];	/* temporary buffer to hold symlink contents */
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-   
+
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
@@ -112,7 +110,7 @@ main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/*
 		 * Call readlink(2) to read the contents of
@@ -122,8 +120,9 @@ main(int ac, char **av)
 
 		/* Check return code of readlink(2) */
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL, "readlink() on %s failed, errno=%d : %s"
-				 , SYMFILE, TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL,
+				 "readlink() on %s failed, errno=%d : %s",
+				 SYMFILE, TEST_ERRNO, strerror(TEST_ERRNO));
 			continue;
 		}
 
@@ -139,7 +138,7 @@ main(int ac, char **av)
 			 */
 			if (TEST_RETURN == exp_val) {
 				/* Check for the contents of buffer */
-				if (memcmp(buffer, TESTFILE, exp_val) != 0)  {
+				if (memcmp(buffer, TESTFILE, exp_val) != 0) {
 					tst_resm(TFAIL, "Pathname %s and buffer"
 						 " contents %s differ",
 						 TESTFILE, buffer);
@@ -156,13 +155,13 @@ main(int ac, char **av)
 		} else {
 			tst_resm(TPASS, "call succeeded");
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
 	return 0;
-}	/* End main */
+}				/* End main */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -171,24 +170,22 @@ main(int ac, char **av)
  *  Create a test file under temporary directory and close it
  *  Create a symbolic link of testfile.
  */
-void
-setup()
+void setup()
 {
 	int fd;			/* file handle for testfile */
 
 	/* Switch to nobody user for correct error code collection */
-        if (geteuid() != 0) {
-                tst_brkm(TBROK, tst_exit, "Test must be run as root");
-        }
-	 if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+	}
+	if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
 		tst_brkm(TBROK, cleanup, "getpwname(nobody_uid) failed ");
-	 }
-         if (seteuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "seteuid failed to "
-                         "to set the effective uid to %d",
-                         ltpuser->pw_uid);
-                perror("seteuid");
-         }
+	}
+	if (seteuid(ltpuser->pw_uid) == -1) {
+		tst_resm(TINFO, "seteuid failed to "
+			 "to set the effective uid to %d", ltpuser->pw_uid);
+		perror("seteuid");
+	}
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -199,7 +196,7 @@ setup()
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
-	if ((fd = open(TESTFILE, O_RDWR|O_CREAT, FILE_MODE)) == -1) {
+	if ((fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %#o) failed, errno=%d : %s",
 			 TESTFILE, FILE_MODE, errno, strerror(errno));
@@ -207,7 +204,7 @@ setup()
 
 	if (close(fd) == -1) {
 		tst_resm(TWARN, "close(%s) Failed, errno=%d : %s",
-		TESTFILE, errno, strerror(errno));
+			 TESTFILE, errno, strerror(errno));
 	}
 
 	/* Create a symlink of testfile under temporary directory */
@@ -227,8 +224,7 @@ setup()
  *
  *  Remove the test directory and testfile created in the setup.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

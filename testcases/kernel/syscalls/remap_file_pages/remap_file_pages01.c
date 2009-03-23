@@ -47,7 +47,7 @@
  *       3. Runs mmap at the same file
  *       4. Runs remap_file_pages at the mapped memory
  *       5. Check the results
- *    
+ *   $
  *     Cleanup:
  *       Remove the file and erase the tmp directory
  *
@@ -86,8 +86,8 @@
 #include <sys/syscall.h>
 #include <linux/unistd.h>
 
-#include "test.h"                 /*LTP Specific Include File*/
-#include "usctest.h"              /*LTP Specific Include File*/
+#include "test.h"		/*LTP Specific Include File */
+#include "usctest.h"		/*LTP Specific Include File */
 
 /* Test case defines */
 #define WINDOW_START 0x48000000
@@ -104,30 +104,29 @@ static void cleanup();
 static void test_nonlinear(int fd);
 
 char *TCID = "remap_file_pages01";	/* Test program identifier.    */
-int TST_TOTAL = 2;			/* Total number of test cases. */
-extern int Tst_count;			/* Test Case counter for tst_* routines */
+int TST_TOTAL = 2;		/* Total number of test cases. */
+extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 static char *cache_contents;
-int fd1, fd2;				/* File descriptors used at the test */
+int fd1, fd2;			/* File descriptors used at the test */
 char fname[255];
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	int lc;		/* loop counter */
-	char *msg;	/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 #if defined (__s390__) || (__s390x__) || (__ia64__)
 	/* Disables the test in case the kernel version is lower than 2.6.12 and arch is s390 */
-	if((tst_kvercmp(2, 6, 12)) < 0)
-        {
-		tst_resm(TWARN, "This test can only run on kernels that are 2.6.12 and higher");
+	if ((tst_kvercmp(2, 6, 12)) < 0) {
+		tst_resm(TWARN,
+			 "This test can only run on kernels that are 2.6.12 and higher");
 		exit(0);
 	}
 #endif
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -150,8 +149,7 @@ main(int ac, char **av)
 	/* clean up and exit */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /* test case function, that runs remap_file_pages */
@@ -161,37 +159,39 @@ static void test_nonlinear(int fd)
 	int i, j, repeat = 2;
 
 	for (i = 0; i < cache_pages; i++) {
-		char *page = cache_contents + i*page_sz;
+		char *page = cache_contents + i * page_sz;
 
 		for (j = 0; j < page_words; j++)
 			page[j] = i;
 	}
 
 	if (write(fd, cache_contents, cache_sz) != cache_sz) {
-		tst_resm(TFAIL, "Write Error for \"cache_contents\" to \"cache_sz\" of %d (errno=%d : %s)",
+		tst_resm(TFAIL,
+			 "Write Error for \"cache_contents\" to \"cache_sz\" of %d (errno=%d : %s)",
 			 cache_sz, errno, strerror(errno));
 		cleanup(NULL);
 	}
 
 	data = mmap((void *)WINDOW_START,
-			window_sz,
-			PROT_READ|PROT_WRITE,
-			MAP_FIXED | MAP_SHARED,
-			fd, 0);
+		    window_sz,
+		    PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED, fd, 0);
 
 	if (data == MAP_FAILED) {
-		tst_resm(TFAIL, "mmap Error, errno=%d : %s", errno, strerror(errno));
+		tst_resm(TFAIL, "mmap Error, errno=%d : %s", errno,
+			 strerror(errno));
 		cleanup(NULL);
 	}
 
-again:
+      again:
 	for (i = 0; i < window_pages; i += 2) {
-		char *page = data + i*page_sz;
+		char *page = data + i * page_sz;
 
 		if (remap_file_pages(page, page_sz * 2, 0,
-				(window_pages-i-2), 0) == -1) {
-			tst_resm(TFAIL, "remap_file_pages error for page=%d, page_sz=%d, window_pages=%d (errno=%d : %s)",
-				page,(page_sz * 2), (window_pages-i-2), errno, strerror(errno));
+				     (window_pages - i - 2), 0) == -1) {
+			tst_resm(TFAIL,
+				 "remap_file_pages error for page=%d, page_sz=%d, window_pages=%d (errno=%d : %s)",
+				 page, (page_sz * 2), (window_pages - i - 2),
+				 errno, strerror(errno));
 			cleanup(data);
 		}
 	}
@@ -201,16 +201,20 @@ again:
 		 * Double-check the correctness of the mapping:
 		 */
 		if (i & 1) {
-			if (data[i*page_sz] != window_pages-i) {
-				tst_resm(TFAIL, "hm, mapped incorrect data, data[%d]=%d, (window_pages-%d)=%d",
-					 (i*page_sz), data[i*page_sz], i, (window_pages-i));
+			if (data[i * page_sz] != window_pages - i) {
+				tst_resm(TFAIL,
+					 "hm, mapped incorrect data, data[%d]=%d, (window_pages-%d)=%d",
+					 (i * page_sz), data[i * page_sz], i,
+					 (window_pages - i));
 				cleanup(data);
 			}
 		} else {
-			if (data[i*page_sz] != window_pages-i-2) {
-				tst_resm(TFAIL,"hm, mapped incorrect data, data[%d]=%d, (window_pages-%d-2)=%d",
-					 (i*page_sz), data[i*page_sz], i, (window_pages-i-2));
-				cleanup(data);                           
+			if (data[i * page_sz] != window_pages - i - 2) {
+				tst_resm(TFAIL,
+					 "hm, mapped incorrect data, data[%d]=%d, (window_pages-%d-2)=%d",
+					 (i * page_sz), data[i * page_sz], i,
+					 (window_pages - i - 2));
+				cleanup(data);
 			}
 		}
 	}
@@ -218,12 +222,11 @@ again:
 	if (--repeat)
 		goto again;
 
-	munmap (data, window_sz);
+	munmap(data, window_sz);
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -237,52 +240,51 @@ setup()
 	/* Get page size */
 	if ((page_sz = getpagesize()) < 0) {
 		tst_brkm(TFAIL, cleanup,
-			"getpagesize() fails to get system page size");
+			 "getpagesize() fails to get system page size");
 	}
 
-	page_words = (page_sz/sizeof(char));
+	page_words = (page_sz / sizeof(char));
 
 	/* Set the cache size */
 	cache_pages = 1024;
-	cache_sz = cache_pages*page_sz;
-	cache_contents = (char *) malloc(cache_sz * sizeof(char));
+	cache_sz = cache_pages * page_sz;
+	cache_contents = (char *)malloc(cache_sz * sizeof(char));
 
 	/* Set the window size */
 	window_pages = 16;
-	window_sz = window_pages*page_sz;
+	window_sz = window_pages * page_sz;
 
-	sprintf(fname,"/dev/shm/cache_%d", getpid());
+	sprintf(fname, "/dev/shm/cache_%d", getpid());
 
-	if ((fd1 = open(fname, O_RDWR|O_CREAT|O_TRUNC,S_IRWXU)) < 0) {
+	if ((fd1 = open(fname, O_RDWR | O_CREAT | O_TRUNC, S_IRWXU)) < 0) {
 		tst_brkm(TBROK, cleanup,
-			"open(%s, O_RDWR|O_CREAT|O_TRUNC,S_IRWXU) Failed, errno=%d : %s",
-			fname, errno, strerror(errno));
+			 "open(%s, O_RDWR|O_CREAT|O_TRUNC,S_IRWXU) Failed, errno=%d : %s",
+			 fname, errno, strerror(errno));
 	}
 
-	if ((fd2 = open("cache", O_RDWR|O_CREAT|O_TRUNC,S_IRWXU)) < 0) {
+	if ((fd2 = open("cache", O_RDWR | O_CREAT | O_TRUNC, S_IRWXU)) < 0) {
 		tst_brkm(TBROK, cleanup,
-			"open(%s, O_RDWR|O_CREAT|O_TRUNC,S_IRWXU) Failed, errno=%d : %s",
-			"cache", errno, strerror(errno));
+			 "open(%s, O_RDWR|O_CREAT|O_TRUNC,S_IRWXU) Failed, errno=%d : %s",
+			 "cache", errno, strerror(errno));
 	}
 
-}  /* End setup() */
+}				/* End setup() */
 
 /*
 * cleanup() - Performs one time cleanup for this test at
 * completion or premature exit
 */
-void
-cleanup(char *data)
+void cleanup(char *data)
 {
 	/* Close the file descriptors */
 	close(fd1);
 	close(fd2);
 
 	if (data)
-		munmap (data, window_sz);
+		munmap(data, window_sz);
 
 	/* Remove the /dev/shm/cache_<pid> file */
-	unlink (fname);
+	unlink(fname);
 
 	/*
 	 * print timing stats if that option was specified.
@@ -290,10 +292,10 @@ cleanup(char *data)
 	 */
 	TEST_CLEANUP;
 
-	/* Remove tmp dir and all files inside it*/
+	/* Remove tmp dir and all files inside it */
 	tst_rmdir();
 
 	/* exit with return code appropriate for results */
 	tst_exit();
 
-}  /* End cleanup() */
+}				/* End cleanup() */

@@ -1,21 +1,21 @@
  /*
- *   Copyright (C) Bull S.A. 2001
- *   Copyright (c) International Business Machines  Corp., 2001
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+  *   Copyright (C) Bull S.A. 2001
+  *   Copyright (c) International Business Machines  Corp., 2001
+  *
+  *   This program is free software;  you can redistribute it and/or modify
+  *   it under the terms of the GNU General Public License as published by
+  *   the Free Software Foundation; either version 2 of the License, or
+  *   (at your option) any later version.
+  *
+  *   This program is distributed in the hope that it will be useful,
+  *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
+  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+  *   the GNU General Public License for more details.
+  *
+  *   You should have received a copy of the GNU General Public License
+  *   along with this program;  if not, write to the Free Software
+  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+  */
 
 /*
  * NAME
@@ -55,133 +55,124 @@ char *TCID = "chroot04";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-char test_dir [100];
-int exp_enos[] = {EACCES, 0};
+char test_dir[100];
+int exp_enos[] = { EACCES, 0 };
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
 void setup(void);
 void cleanup(void);
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-		 int lc;
-		 char *msg;
+	int lc;
+	char *msg;
 
-		 /* parse standard options */
-		 if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
-		 		 tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-		 }
+	/* parse standard options */
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+	}
 
-		 setup();
+	setup();
 
-		 /* set up expected errnos */
-		 TEST_EXP_ENOS(exp_enos);
+	/* set up expected errnos */
+	TEST_EXP_ENOS(exp_enos);
 
-		 /* Check for looping state if -i option is given */
-		 for (lc = 0; TEST_LOOPING(lc); lc++) {
+	/* Check for looping state if -i option is given */
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		 		 /* reset Tst_count in case we are looping */
-		 		 Tst_count = 0;
+		/* reset Tst_count in case we are looping */
+		Tst_count = 0;
 
-		 		 TEST(chroot(test_dir));
+		TEST(chroot(test_dir));
 
-                        if (TEST_RETURN != -1) {
-                                tst_resm(TFAIL, "call succeeded unexpectedly");
-                        } else if (TEST_ERRNO != EACCES) {
-                                tst_resm(TFAIL, "expected EACCES - got %d",
-                                         TEST_ERRNO);
-                        } else {
-                                TEST_ERROR_LOG(TEST_ERRNO);
-                                tst_resm(TPASS, "expected failure - errno = %d"
-                                         " : %s", TEST_ERRNO,
-                                         strerror(TEST_ERRNO));
-                        }
+		if (TEST_RETURN != -1) {
+			tst_resm(TFAIL, "call succeeded unexpectedly");
+		} else if (TEST_ERRNO != EACCES) {
+			tst_resm(TFAIL, "expected EACCES - got %d", TEST_ERRNO);
+		} else {
+			TEST_ERROR_LOG(TEST_ERRNO);
+			tst_resm(TPASS, "expected failure - errno = %d"
+				 " : %s", TEST_ERRNO, strerror(TEST_ERRNO));
+		}
 
-		 }
-		 cleanup();
+	}
+	cleanup();
 
-		 return 0;
-		 /*NOTREACHED*/
-}
+	return 0;
+ /*NOTREACHED*/}
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
-        char *cur_dir = NULL;
+	char *cur_dir = NULL;
 
-		 /* capture signals */
-		 tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	/* capture signals */
+	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-		 /* Pause if that option was specified */
-		 TEST_PAUSE;
+	/* Pause if that option was specified */
+	TEST_PAUSE;
 
-		 /* make a temporary directory and cd to it */
-		 tst_tmpdir();
+	/* make a temporary directory and cd to it */
+	tst_tmpdir();
 
-        /* get the currect directory name */
-        if ((cur_dir = getcwd(cur_dir, 0)) == NULL) {
-                tst_brkm(TBROK, cleanup, "Couldn't get current directory name");
-        }
+	/* get the currect directory name */
+	if ((cur_dir = getcwd(cur_dir, 0)) == NULL) {
+		tst_brkm(TBROK, cleanup, "Couldn't get current directory name");
+	}
 
-		 		  sprintf(test_dir, "%s.%d", cur_dir, getpid());
+	sprintf(test_dir, "%s.%d", cur_dir, getpid());
 
-        /*
-         * create a temporary directory
-         */
-        if (mkdir(test_dir, 0222) != 0) {
-                tst_resm(TFAIL, "mkdir() failed to create"
-                                " a testing directory");
-                exit(1);
-                /* NOTREACHED */
-        }
+	/*
+	 * create a temporary directory
+	 */
+	if (mkdir(test_dir, 0222) != 0) {
+		tst_resm(TFAIL, "mkdir() failed to create"
+			 " a testing directory");
+		exit(1);
+		/* NOTREACHED */
+	}
 
-        /* Switch to nobody user for correct error code collection */
-        if (geteuid() != 0) {
-                tst_brkm(TBROK, tst_exit, "Test must be run as root");
-        }
-         ltpuser = getpwnam(nobody_uid);
-         if (seteuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "seteuid failed to "
-                         "to set the effective uid to %d",
-                         ltpuser->pw_uid);
-                perror("seteuid");
-         }
-
+	/* Switch to nobody user for correct error code collection */
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+	}
+	ltpuser = getpwnam(nobody_uid);
+	if (seteuid(ltpuser->pw_uid) == -1) {
+		tst_resm(TINFO, "seteuid failed to "
+			 "to set the effective uid to %d", ltpuser->pw_uid);
+		perror("seteuid");
+	}
 
 }
-
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		        completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
-		 /* reset the process ID to the saved ID (root) */
-		 if (setuid(0) == -1) {
-		 		 tst_resm(TINFO, "setuid(0) failed");
-		 }
-        if (rmdir(test_dir) != 0) {
-                tst_resm(TFAIL, "rmdir() failed to removed"
-                                " a testing directory");
-                exit(1);
-                /* NOTREACHED */
-        }
-		 /*
-		  * print timing stats if that option was specified.
-		  * print errno log if that option was specified.
-		  */
-		 TEST_CLEANUP;
+	/* reset the process ID to the saved ID (root) */
+	if (setuid(0) == -1) {
+		tst_resm(TINFO, "setuid(0) failed");
+	}
+	if (rmdir(test_dir) != 0) {
+		tst_resm(TFAIL, "rmdir() failed to removed"
+			 " a testing directory");
+		exit(1);
+		/* NOTREACHED */
+	}
+	/*
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
+	TEST_CLEANUP;
 
-		 /* delete the test directory created in setup() */
-		 tst_rmdir();
+	/* delete the test directory created in setup() */
+	tst_rmdir();
 
-		 /* exit with return code appropriate for results */
-		 tst_exit();
+	/* exit with return code appropriate for results */
+	tst_exit();
 }

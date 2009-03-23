@@ -19,16 +19,14 @@
 int test_okay = 1;
 int called = 0;
 
-void
-read_cb(int fd, short event, void *arg)
+void read_cb(int fd, short event, void *arg)
 {
 	char buf[256];
 	int len;
 
 	len = read(fd, buf, sizeof(buf));
 
-	printf("%s: read %d%s\n", __func__,
-	    len, len ? "" : " - means EOF");
+	printf("%s: read %d%s\n", __func__, len, len ? "" : " - means EOF");
 
 	if (len) {
 		if (!called)
@@ -39,8 +37,7 @@ read_cb(int fd, short event, void *arg)
 	called++;
 }
 
-int
-main (int argc, char **argv)
+int main(int argc, char **argv)
 {
 	struct event ev;
 	char *test = "test string";
@@ -49,8 +46,7 @@ main (int argc, char **argv)
 	if (socketpair(AF_UNIX, SOCK_STREAM, 0, pair) == -1)
 		return (1);
 
-
-	write(pair[0], test, strlen(test)+1);
+	write(pair[0], test, strlen(test) + 1);
 	shutdown(pair[0], SHUT_WR);
 
 	/* Initalize the event library */
@@ -65,4 +61,3 @@ main (int argc, char **argv)
 
 	return (test_okay);
 }
-

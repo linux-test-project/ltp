@@ -86,18 +86,17 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 static struct sched_param param = { NEW_PRIORITY };
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 
-	int lc;		/* loop counter */
-	char *msg;	/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int status;
 	pid_t child_pid;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
-	     != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL))
+	    != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -110,7 +109,7 @@ main(int ac, char **av)
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-		switch(child_pid = FORK_OR_VFORK()) {
+		switch (child_pid = FORK_OR_VFORK()) {
 
 		case -1:
 			/* fork() failed */
@@ -129,43 +128,41 @@ main(int ac, char **av)
 
 			if (TEST_RETURN == -1) {
 				tst_resm(TWARN, "sched_setparam() returned %d,"
-					" errno = %d : %s", TEST_RETURN,
-					TEST_ERRNO, strerror(TEST_ERRNO));
+					 " errno = %d : %s", TEST_RETURN,
+					 TEST_ERRNO, strerror(TEST_ERRNO));
 				exit(0);
 			}
 			exit(1);
 
-		default :
+		default:
 			/* Parent */
 			if ((waitpid(child_pid, &status, 0)) < 0) {
 				tst_resm(TFAIL, "wait() failed");
 				continue;
 			}
-	
+
 			/*
 			 * Verify that parent's scheduling priority has
 			 * changed.
 			 */
 			if ((WIFEXITED(status)) && (WEXITSTATUS(status)) &&
-				(verify_priority())) {
+			    (verify_priority())) {
 				tst_resm(TPASS, "Test Passed");
 			} else {
 				tst_resm(TFAIL, "Test Failed");
 			}
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* cleanup and exit */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 
-}	/* End main */
+}				/* End main */
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup()
+void setup()
 {
 	struct sched_param p = { 1 };
 
@@ -180,15 +177,13 @@ setup()
 		tst_brkm(TBROK, cleanup, "sched_setscheduler() failed");
 	}
 
-}	/* End setup() */
-
+}				/* End setup() */
 
 /*
  *cleanup() -   performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 
 	/*
@@ -199,14 +194,13 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */
 
 /*
  * verify_priority() -  This function checks whether the priority is
  *			set correctly
- */	
-int
-verify_priority()
+ */
+int verify_priority()
 {
 	struct sched_param p;
 
@@ -215,7 +209,7 @@ verify_priority()
 			return 1;
 		} else {
 			tst_resm(TWARN, "sched_getparam() returned priority"
-					" value as %d", p.sched_priority);
+				 " value as %d", p.sched_priority);
 			return 0;
 		}
 	}

@@ -41,11 +41,11 @@
  *   Loop if the proper options are given.
  *   Execute system call
  *   Check return code, if system call failed (return=-1)
- *   	Log the errno and Issue a FAIL message.
+ *	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call
+ *	Verify the Functionality of system call
  *      if successful,
- *      	Issue Functionality-Pass message.
+ *		Issue Functionality-Pass message.
  *      Otherwise,
  *		Issue Functionality-Fail message.
  *  Cleanup:
@@ -91,10 +91,10 @@
 struct stat buf;		/* struct. to hold stat(2) o/p contents */
 struct passwd *user1;		/* struct. to hold getpwnam(3) o/p contents */
 
-char *TCID="mknod02";           /* Test program identifier.    */
+char *TCID = "mknod02";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
 char node_name[PATH_MAX];	/* buffer to hold node name created */
-extern int Tst_count;           /* Test Case counter for tst_* routines */
+extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 gid_t group1_gid, group2_gid, mygid;	/* user and process group id's */
 uid_t save_myuid, user1_uid;	/* user and process user id's */
@@ -103,8 +103,7 @@ pid_t mypid;			/* process id */
 void setup();			/* setup function for the test */
 void cleanup();			/* cleanup function for the test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	int fflag;		/* functionality flag variable */
@@ -112,7 +111,7 @@ main(int ac, char **av)
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -123,7 +122,7 @@ main(int ac, char **av)
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/*
 		 *  Attempt to create a filesystem node with group-id bit set
@@ -151,7 +150,7 @@ main(int ac, char **av)
 			fflag = 1;
 
 			/* Check for node's creation */
-	 		if (stat(node_name, &buf) < 0) {
+			if (stat(node_name, &buf) < 0) {
 				tst_resm(TFAIL, "stat() of %s failed, errno:%d",
 					 node_name, TEST_ERRNO);
 
@@ -188,7 +187,7 @@ main(int ac, char **av)
 			tst_resm(TWARN, "unlink(%s) failed, errno:%d %s",
 				 node_name, errno, strerror(errno));
 		}
-   	}
+	}
 
 	/* Change the directory back to temporary directory */
 	chdir("..");
@@ -199,13 +198,12 @@ main(int ac, char **av)
 	 */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
-}	/* End main */
+	 /*NOTREACHED*/ return 0;
+}				/* End main */
 
 /*
  * setup(void) - performs all ONE TIME setup for this test.
- * 	Exit the test program on receipt of unexpected signals.
+ *	Exit the test program on receipt of unexpected signals.
  *	Create a temporary directory used to hold test directories created
  *	and change the directory to it.
  *	Verify that pid of process executing the test is root.
@@ -213,8 +211,7 @@ main(int ac, char **av)
  *	of test directory to ltp user and process.
  *	Set the effective uid/gid of the process to that of ltp user.
  */
-void
-setup()
+void setup()
 {
 	/* Capture unexpected signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -232,15 +229,15 @@ setup()
 	tst_tmpdir();
 
 	/* fix permissions on the tmpdir */
-        if (chmod(".", 0711) != 0) {
-                tst_brkm(TBROK, cleanup, "chmod() failed");
-        }
+	if (chmod(".", 0711) != 0) {
+		tst_brkm(TBROK, cleanup, "chmod() failed");
+	}
 
 	/* Save the real user id of the current test process */
-        save_myuid = getuid();
+	save_myuid = getuid();
 
 	/* Save the process id of the current test process */
-        mypid = getpid();
+	mypid = getpid();
 
 	/* Get the node name to be created in the test */
 	sprintf(node_name, TNODE, mypid);
@@ -253,7 +250,7 @@ setup()
 	group1_gid = user1->pw_gid;
 
 	/* Get the effective group id of the test process */
-        group2_gid = getegid();
+	group2_gid = getegid();
 
 	/*
 	 * Create a test directory under temporary directory with the
@@ -286,7 +283,7 @@ setup()
 		tst_brkm(TBROK, cleanup, "%s: Incorrect group", DIR_TEMP);
 	}
 
-   	/*
+	/*
 	 * Set the effective group id and user id of the test process
 	 * to that of guest user.
 	 */
@@ -319,8 +316,7 @@ setup()
  *	created during setup().
  *	Exit the test program with normal exit code.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -339,7 +335,7 @@ cleanup()
 
 	/* Remove files and temporary directory created */
 	tst_rmdir();
- 
+
 	/* exit with return code appropriate for results */
 	tst_exit();
 }

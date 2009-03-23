@@ -38,7 +38,7 @@
  *		  2. EINVAL when the path exists but is invalid
  *		  3. EPERM when user is not a superuser
  *		  4. EBUSY when the specified path is already being used as a swap area
- *		 
+ *		$
  * 		  Setup:
  *		    Setup signal handling.
  *		    Pause for SIGUSR1 if option specified.
@@ -54,7 +54,7 @@
  *
  * 		  Cleanup:
  * 		    Do cleanup for the test.
- * 		   
+ * 		  $
  * USAGE:  <for command-line>
  *  swapon02 [-e] [-i n] [-I x] [-p x] [-t] [-h] [-f] [-p]
  *  where
@@ -114,292 +114,301 @@ static int setup03();
 static int cleanup03();
 void handler(int);
 
-char *TCID = "swapon02"; 	 /* Test program identifier.    */
-int TST_TOTAL = 4;	 	 /* Total number of test cases. */
-extern int Tst_count;	 	 /* Test Case counter for tst_* routines */
+char *TCID = "swapon02";	/* Test program identifier.    */
+int TST_TOTAL = 4;		/* Total number of test cases. */
+extern int Tst_count;		/* Test Case counter for tst_* routines */
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
 struct utsname uval;
 char *kmachine;
 
-static int exp_enos[] = {EPERM, EINVAL, ENOENT, EBUSY, 0};
+static int exp_enos[] = { EPERM, EINVAL, ENOENT, EBUSY, 0 };
 
 static struct test_case_t {
-  char *err_desc; 	  /* error description */
-  int  exp_errno;	  /* expected error number*/
-  char *exp_errval;	  /* Expected errorvalue string*/
-  char *path;	 /* path to swapon */
-  int (*setupfunc)();	  /* Test setup function */
-  int (*cleanfunc)();	  /* Test cleanup function */
+	char *err_desc;		/* error description */
+	int exp_errno;		/* expected error number */
+	char *exp_errval;	/* Expected errorvalue string */
+	char *path;		/* path to swapon */
+	int (*setupfunc) ();	/* Test setup function */
+	int (*cleanfunc) ();	/* Test cleanup function */
 } testcase[] = {
-	 {"Path does not exist", ENOENT, "ENOENT", "./abcd", NULL,  NULL},
-	 {"Invalid path", EINVAL, "EINVAL", "./nofile", setup02, NULL},
-	 {"Permission denied", EPERM, "EPERM", "./swapfile01",
-	   setup01, cleanup01},
-         {"The specified path is already being used as a swap area",
-           EBUSY, "EBUSY", "./alreadyused", setup03, cleanup03}
+	{
+	"Path does not exist", ENOENT, "ENOENT", "./abcd", NULL, NULL}, {
+	"Invalid path", EINVAL, "EINVAL", "./nofile", setup02, NULL}, {
+	"Permission denied", EPERM, "EPERM", "./swapfile01",
+		    setup01, cleanup01}, {
+	"The specified path is already being used as a swap area",
+		    EBUSY, "EBUSY", "./alreadyused", setup03, cleanup03}
 };
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-        int lc, i;	 /* loop counter */
-        char *msg;	 	  /* message returned from parse_opts */
+	int lc, i;		/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
-        /* parse standard options */
-        if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
-                        != (char *)NULL) {
-                tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-        }
+	/* parse standard options */
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL))
+	    != (char *)NULL) {
+		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+	}
 
-        /* perform global setup for test */
-        uname(&uval);
-        kmachine = uval.machine;
-        setup();
+	/* perform global setup for test */
+	uname(&uval);
+	kmachine = uval.machine;
+	setup();
 
-        /* check looping state if -i option given */
-        for (lc = 0; TEST_LOOPING(lc); lc++) {
-                Tst_count = 0;
-                for(i = 0; i < TST_TOTAL; i++) {
-                        /* reset Tst_count in case we are looping. */
-                        /* do the setup if the test have one */
-                        if(testcase[i].setupfunc && testcase[i].setupfunc() == -1) {
-                                tst_resm(TWARN, "Failed to setup test %d."
-                                                " Skipping test", i);
-                                continue;
-                        } else {
-                                /* run the test */
-                                TEST(swapon(testcase[i].path, 0));
-                        }
-                        /* do the clean if the test have one */
-                        if(testcase[i].cleanfunc && testcase[i].cleanfunc() == -1) {
-                                tst_brkm(TBROK, cleanup, "Cleanup failed,"
-                                                " quitting the test");
-                        }
-                        /* check return code */
-                        if ((TEST_RETURN == -1) && (TEST_ERRNO == testcase[i].exp_errno)) {
-                                tst_resm(TPASS, "swapon(2) expected failure;"
-                                                " Got errno - %s : %s",
-                                                testcase[i].exp_errval,
-                                                testcase[i].err_desc);
-                        } else {
-                                tst_resm(TFAIL, "swapon(2) failed to produce"
-                                                " expected error: %d, errno"
-                                                ": %s and got %d. "
-                                                " System reboot after"
-                                                " execution of LTP"
-                                                " test suite is"
-                                                " recommended.",
-                                                testcase[i].exp_errno,
-                                                testcase[i].exp_errval,
-                                                TEST_ERRNO);
-                                /*If swapfile is turned on, turn it off*/
-                                if(TEST_RETURN == 0) {
-                                        if(swapoff(testcase[i].path) != 0) {
-                                                tst_resm(TWARN, "Failed to"
-                                                                " turn off swapfile"
-                                                                " swapfile. System"
-                                                                " reboot after"
-                                                                " execution of LTP"
-                                                                " test suite is"
-                                                                " recommended.");
-                                        }
-                                }
-                        }
-                        TEST_ERROR_LOG(TEST_ERRNO);
-                }  /*End of TEST LOOPS*/
-        } /*End of TEST LOOPING*/
-        /*Clean up and exit*/
-        cleanup();
+	/* check looping state if -i option given */
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+		Tst_count = 0;
+		for (i = 0; i < TST_TOTAL; i++) {
+			/* reset Tst_count in case we are looping. */
+			/* do the setup if the test have one */
+			if (testcase[i].setupfunc
+			    && testcase[i].setupfunc() == -1) {
+				tst_resm(TWARN,
+					 "Failed to setup test %d."
+					 " Skipping test", i);
+				continue;
+			} else {
+				/* run the test */
+				TEST(swapon(testcase[i].path, 0));
+			}
+			/* do the clean if the test have one */
+			if (testcase[i].cleanfunc
+			    && testcase[i].cleanfunc() == -1) {
+				tst_brkm(TBROK, cleanup,
+					 "Cleanup failed,"
+					 " quitting the test");
+			}
+			/* check return code */
+			if ((TEST_RETURN == -1)
+			    && (TEST_ERRNO == testcase[i].exp_errno)) {
+				tst_resm(TPASS,
+					 "swapon(2) expected failure;"
+					 " Got errno - %s : %s",
+					 testcase[i].exp_errval,
+					 testcase[i].err_desc);
+			} else {
+				tst_resm(TFAIL, "swapon(2) failed to produce"
+					 " expected error: %d, errno"
+					 ": %s and got %d. "
+					 " System reboot after"
+					 " execution of LTP"
+					 " test suite is"
+					 " recommended.",
+					 testcase[i].exp_errno,
+					 testcase[i].exp_errval, TEST_ERRNO);
+				/*If swapfile is turned on, turn it off */
+				if (TEST_RETURN == 0) {
+					if (swapoff(testcase[i].path) != 0) {
+						tst_resm(TWARN, "Failed to"
+							 " turn off swapfile"
+							 " swapfile. System"
+							 " reboot after"
+							 " execution of LTP"
+							 " test suite is"
+							 " recommended.");
+					}
+				}
+			}
+			TEST_ERROR_LOG(TEST_ERRNO);
+		}		/*End of TEST LOOPS */
+	}			/*End of TEST LOOPING */
+	/*Clean up and exit */
+	cleanup();
 
-        /*NOTREACHED*/
-        return 0;
-}  /*End of main*/
+	 /*NOTREACHED*/ return 0;
+}				/*End of main */
 
 /*
  * setup01() - This function creates the file and sets the user as nobody
  */
-int
-setup01()
+int setup01()
 {
-        int pagesize = getpagesize();
+	int pagesize = getpagesize();
 
-        /*create file*/
-        if ((strncmp(kmachine, "ia64", 4)) == 0) {
-                if(system("dd if=/dev/zero of=swapfile01 bs=1024  count=65536 > tmpfile"
-                                        " 2>&1") != 0) {
-                        tst_brkm(TBROK, cleanup, "Failed to create file for swap");
-                }
-        } else if (pagesize == 65536)
-        {
-                if(system("dd if=/dev/zero of=swapfile01 bs=1048  count=655 > tmpfile"
-                                        " 2>&1") != 0) {
-                        tst_brkm(TBROK, cleanup, "Failed to create file for swap");
-                }
-        }else {
-                if(system("dd if=/dev/zero of=swapfile01 bs=1048  count=40 > tmpfile"
-                                        " 2>&1") != 0) {
-                        tst_brkm(TBROK, cleanup, "Failed to create file for swap");
-                }
-        }
+	/*create file */
+	if ((strncmp(kmachine, "ia64", 4)) == 0) {
+		if (system
+		    ("dd if=/dev/zero of=swapfile01 bs=1024  count=65536 > tmpfile"
+		     " 2>&1") != 0) {
+			tst_brkm(TBROK, cleanup,
+				 "Failed to create file for swap");
+		}
+	} else if (pagesize == 65536) {
+		if (system
+		    ("dd if=/dev/zero of=swapfile01 bs=1048  count=655 > tmpfile"
+		     " 2>&1") != 0) {
+			tst_brkm(TBROK, cleanup,
+				 "Failed to create file for swap");
+		}
+	} else {
+		if (system
+		    ("dd if=/dev/zero of=swapfile01 bs=1048  count=40 > tmpfile"
+		     " 2>&1") != 0) {
+			tst_brkm(TBROK, cleanup,
+				 "Failed to create file for swap");
+		}
+	}
 
-        /* make above file a swap file*/
-        if( system("mkswap swapfile01 > tmpfile 2>&1") != 0) {
-                tst_brkm(TBROK, cleanup, "Failed to make swapfile");
-        }
+	/* make above file a swap file */
+	if (system("mkswap swapfile01 > tmpfile 2>&1") != 0) {
+		tst_brkm(TBROK, cleanup, "Failed to make swapfile");
+	}
 
-        if((ltpuser = getpwnam(nobody_uid)) == NULL) {
-                tst_resm(TWARN, "\"nobody\" user not present. skipping test");
-                return -1;
-        }
+	if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
+		tst_resm(TWARN, "\"nobody\" user not present. skipping test");
+		return -1;
+	}
 
-        if (seteuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TWARN, "seteuid failed to "
-                                "to set the effective uid to %d", ltpuser->pw_uid);
-                perror("seteuid");
-                return -1;
-        }
-        return 0;		 /* user switched to nobody*/
+	if (seteuid(ltpuser->pw_uid) == -1) {
+		tst_resm(TWARN, "seteuid failed to "
+			 "to set the effective uid to %d", ltpuser->pw_uid);
+		perror("seteuid");
+		return -1;
+	}
+	return 0;		/* user switched to nobody */
 }
 
 /*
  * cleanup01() - switch back to user root and gives swapoff to the swap file
  */
-int
-cleanup01()
+int cleanup01()
 {
-        if(seteuid(0) == -1) {
-                tst_brkm(TBROK, cleanup, "seteuid failed to set uid to root");
-                perror("seteuid");
-                return -1;
-        }
+	if (seteuid(0) == -1) {
+		tst_brkm(TBROK, cleanup, "seteuid failed to set uid to root");
+		perror("seteuid");
+		return -1;
+	}
 
-        return 0;
+	return 0;
 }
 
 /*
  * setup02() - create a normal file, to be used with swapon
  */
-int
-setup02()
+int setup02()
 {
-        int fd;
-        fd = creat("nofile", S_IRWXU);
-        if(fd == -1)
-                tst_resm(TWARN, "Failed to create temporary file");
-        close(fd);
-        return 0;
+	int fd;
+	fd = creat("nofile", S_IRWXU);
+	if (fd == -1)
+		tst_resm(TWARN, "Failed to create temporary file");
+	close(fd);
+	return 0;
 }
 
 /*
  * setup03() - This function creates the swap file and turn it on
  */
-int
-setup03()
+int setup03()
 {
-        int pagesize = getpagesize();
-        int res = 0;
+	int pagesize = getpagesize();
+	int res = 0;
 
-        /*create file*/
-        if ((strncmp(kmachine, "ia64", 4)) == 0) {
-                if(system("dd if=/dev/zero of=alreadyused bs=1024  count=65536 > tmpfile"
-                                        " 2>&1") != 0) {
-                        tst_brkm(TBROK, cleanup, "Failed to create file for swap");
-                }
-        } else if (pagesize == 65536)
-        {
-                if(system("dd if=/dev/zero of=alreadyused bs=1048  count=655 > tmpfile"
-                                        " 2>&1") != 0) {
-                        tst_brkm(TBROK, cleanup, "Failed to create file for swap");
-                }
-        }else {
-                if(system("dd if=/dev/zero of=alreadyused bs=1048  count=40 > tmpfile"
-                                        " 2>&1") != 0) {
-                        tst_brkm(TBROK, cleanup, "Failed to create file for swap");
-                }
-        }
+	/*create file */
+	if ((strncmp(kmachine, "ia64", 4)) == 0) {
+		if (system
+		    ("dd if=/dev/zero of=alreadyused bs=1024  count=65536 > tmpfile"
+		     " 2>&1") != 0) {
+			tst_brkm(TBROK, cleanup,
+				 "Failed to create file for swap");
+		}
+	} else if (pagesize == 65536) {
+		if (system
+		    ("dd if=/dev/zero of=alreadyused bs=1048  count=655 > tmpfile"
+		     " 2>&1") != 0) {
+			tst_brkm(TBROK, cleanup,
+				 "Failed to create file for swap");
+		}
+	} else {
+		if (system
+		    ("dd if=/dev/zero of=alreadyused bs=1048  count=40 > tmpfile"
+		     " 2>&1") != 0) {
+			tst_brkm(TBROK, cleanup,
+				 "Failed to create file for swap");
+		}
+	}
 
-        /* make above file a swap file*/
-        if( system("mkswap alreadyused > tmpfile 2>&1") != 0) {
-                tst_brkm(TBROK, cleanup, "Failed to make swapfile");
-        }
+	/* make above file a swap file */
+	if (system("mkswap alreadyused > tmpfile 2>&1") != 0) {
+		tst_brkm(TBROK, cleanup, "Failed to make swapfile");
+	}
 
-        /* turn on the swap file*/
-        if ((res = swapon("alreadyused", 0)) != 0) {
-                tst_resm(TWARN, "Failed swapon for file alreadyused"
-                                " returned %d", res);
-                return -1;
-        }
+	/* turn on the swap file */
+	if ((res = swapon("alreadyused", 0)) != 0) {
+		tst_resm(TWARN, "Failed swapon for file alreadyused"
+			 " returned %d", res);
+		return -1;
+	}
 
-        return 0;
+	return 0;
 }
 
 /*
  * cleanup03() - clearing the turned on swap file
  */
-int
-cleanup03()
+int cleanup03()
 {
-        /* give swapoff to the test swap file */
-        if( swapoff("alreadyused") != 0) {
-                tst_resm(TWARN, "Failed to turn off swap files. system"
-                                " reboot after execution of LTP test"
-                                " suite is recommended");
-                return -1;
-        }
+	/* give swapoff to the test swap file */
+	if (swapoff("alreadyused") != 0) {
+		tst_resm(TWARN, "Failed to turn off swap files. system"
+			 " reboot after execution of LTP test"
+			 " suite is recommended");
+		return -1;
+	}
 
-        return 0;
+	return 0;
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup()
+void setup()
 {
 
-        /* capture signals */
-        tst_sig(FORK, DEF_HANDLER, cleanup);
+	/* capture signals */
+	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-        /* set the expected errnos... */
-        TEST_EXP_ENOS(exp_enos);
+	/* set the expected errnos... */
+	TEST_EXP_ENOS(exp_enos);
 
-        /* Check whether we are root*/
-        if (geteuid() != 0) {
-                tst_brkm(TBROK, tst_exit, "Test must be run as root");
-        }
-
-        /* make a temp directory and cd to it */
-        tst_tmpdir();
-
-        if(tst_is_cwd_tmpfs()) {
-                tst_brkm(TCONF, cleanup, "Cannot do swapon on a file located on a tmpfs filesystem");
-        }
-
-	if(tst_is_cwd_nfs()) {
-		tst_brkm(TCONF, cleanup, "Cannot do swapon on a file located on a nfs filesystem");
+	/* Check whether we are root */
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Test must be run as root");
 	}
 
-        /* Pause if that option was specified */
-        TEST_PAUSE;
+	/* make a temp directory and cd to it */
+	tst_tmpdir();
 
-}  /* End setup() */
+	if (tst_is_cwd_tmpfs()) {
+		tst_brkm(TCONF, cleanup,
+			 "Cannot do swapon on a file located on a tmpfs filesystem");
+	}
+
+	if (tst_is_cwd_nfs()) {
+		tst_brkm(TCONF, cleanup,
+			 "Cannot do swapon on a file located on a nfs filesystem");
+	}
+
+	/* Pause if that option was specified */
+	TEST_PAUSE;
+
+}				/* End setup() */
 
 /*
 * cleanup() - Performs one time cleanup for this test at
 * completion or premature exit
 */
-void
-cleanup()
+void cleanup()
 {
-        /*
-         * print timing stats if that option was specified.
-         * print errno log if that option was specified.
-         */
-        TEST_CLEANUP;
+	/*
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
+	TEST_CLEANUP;
 
-        /* Remove tmp dir and all files inside it*/
-        tst_rmdir();
+	/* Remove tmp dir and all files inside it */
+	tst_rmdir();
 
-        /* exit with return code appropriate for results */
-        tst_exit();
-}  /* End cleanup() */
+	/* exit with return code appropriate for results */
+	tst_exit();
+}				/* End cleanup() */

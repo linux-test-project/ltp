@@ -88,8 +88,7 @@ volatile sig_atomic_t pass;
  * 	being executed and compares the current conditions to the ones it
  * 	expects (based on the test case number).
  */
-void
-handler(int sig, siginfo_t *sip, void *ucp)
+void handler(int sig, siginfo_t * sip, void *ucp)
 {
 	struct sigaction oact;
 	int err;
@@ -150,7 +149,7 @@ handler(int sig, siginfo_t *sip, void *ucp)
 			return;
 		}
 		tst_resm(TPASS, "SA_RESETHAND was masked when handler "
-				"executed");
+			 "executed");
 		break;
 
 	case 3:
@@ -192,8 +191,7 @@ handler(int sig, siginfo_t *sip, void *ucp)
  * 	Establish a signal handler for SIGUSR1 with the specified flags and
  * 	signal to mask while the handler executes.
  */
-int
-set_handler(int flags, int sig_to_mask)
+int set_handler(int flags, int sig_to_mask)
 {
 	struct sigaction sa;
 
@@ -214,8 +212,7 @@ set_handler(int flags, int sig_to_mask)
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* Pause if that option was specified */
 	TEST_PAUSE;
@@ -225,8 +222,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -239,13 +235,14 @@ cleanup()
 }
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message got from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message got from parse_opts */
 	int i;
-	int test_flags[] = {SA_RESETHAND|SA_SIGINFO, SA_RESETHAND,
-			    SA_RESETHAND|SA_SIGINFO, SA_RESETHAND|SA_SIGINFO};
+	int test_flags[] = { SA_RESETHAND | SA_SIGINFO, SA_RESETHAND,
+		SA_RESETHAND | SA_SIGINFO, SA_RESETHAND | SA_SIGINFO
+	};
 
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -259,19 +256,20 @@ int main(int ac, char **av)
 
 		testcase_no = 0;
 
-		for (i=0; i<TST_TOTAL; i++) {
+		for (i = 0; i < TST_TOTAL; i++) {
 			if (set_handler(test_flags[i], 0) == 0) {
 				if (STD_FUNCTIONAL_TEST) {
 					testcase_no++;
-					switch(i) {
-					case 0: /*FALLTHROUGH*/
-					case 1:
+					switch (i) {
+					case 0:
+					 /*FALLTHROUGH*/ case 1:
 						(void)kill(getpid(), SIGUSR1);
 						break;
-					case 2: /*FALLTHROUGH*/
-					case 3:
-						(void)pthread_kill(
-						      pthread_self(), SIGUSR1);
+					case 2:
+					 /*FALLTHROUGH*/ case 3:
+						(void)
+						    pthread_kill(pthread_self(),
+								 SIGUSR1);
 						break;
 					default:
 						tst_brkm(TBROK, cleanup,
@@ -286,7 +284,5 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
-

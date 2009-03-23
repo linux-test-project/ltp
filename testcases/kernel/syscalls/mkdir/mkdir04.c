@@ -80,7 +80,7 @@
 
 void setup();
 void cleanup();
-extern struct passwd * my_getpwnam(char *);
+extern struct passwd *my_getpwnam(char *);
 int fail;
 
 #define PERMS		0700
@@ -88,21 +88,20 @@ int fail;
 char user1name[] = "nobody";
 char user2name[] = "bin";
 
-char *TCID="mkdir04";           /* Test program identifier.    */
-int TST_TOTAL=1;                /* Total number of test cases. */
-extern int Tst_count;           /* Test Case counter for tst_* routines */
+char *TCID = "mkdir04";		/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
+extern int Tst_count;		/* Test Case counter for tst_* routines */
 int fail;
 
-char tstdir1 [100];
-char tstdir2 [100];
+char tstdir1[100];
+char tstdir2[100];
 
-int exp_enos[]={EACCES, 0};     /* List must end with 0 */
+int exp_enos[] = { EACCES, 0 };	/* List must end with 0 */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	int lc;             /* loop counter */
-	char *msg;          /* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int rval;
 	pid_t pid, pid1;
 	int status;
@@ -111,7 +110,7 @@ main(int ac, char **av)
 	/*
 	 * parse standard options
 	 */
-	if ((msg=parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -126,10 +125,10 @@ main(int ac, char **av)
 	/*
 	 * check looping state if -i option given
 	 */
-	for (lc=0; TEST_LOOPING(lc); lc++) {
-	 
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+
 		/* reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/* Initialize the test directories name */
 		sprintf(tstdir1, "tstdir1.%d", getpid());
@@ -137,10 +136,9 @@ main(int ac, char **av)
 
 		if ((pid = FORK_OR_VFORK()) < 0) {
 			tst_brkm(TBROK, cleanup, "fork #1 failed");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
-		if (pid == 0) {		/* first child */
+		if (pid == 0) {	/* first child */
 			/* set to ltpuser1 */
 			rval = setreuid(ltpuser1->pw_uid, ltpuser1->pw_uid);
 			if (rval < 0) {
@@ -150,15 +148,13 @@ main(int ac, char **av)
 					 ltpuser1->pw_uid, ltpuser1->pw_uid);
 				perror("setreuid");
 				exit(1);
-				/*NOTREACHED*/
-			}		 
+			 /*NOTREACHED*/}
 			/* create the parent directory with 0700 permits */
-			if ( mkdir(tstdir1, PERMS) == -1 ) {
-				 tst_resm(TFAIL, "mkdir(%s, %#o) Failed",
-					  tstdir1, PERMS);
-				 exit(1);
-				 /*NOTREACHED*/
-			}
+			if (mkdir(tstdir1, PERMS) == -1) {
+				tst_resm(TFAIL, "mkdir(%s, %#o) Failed",
+					 tstdir1, PERMS);
+				exit(1);
+			 /*NOTREACHED*/}
 			/* create tstdir1 succeeded */
 			exit(0);
 		}
@@ -169,16 +165,15 @@ main(int ac, char **av)
 				 "in create parent directory");
 		}
 
-		sprintf(tstdir2, "%s/tst",tstdir1);
+		sprintf(tstdir2, "%s/tst", tstdir1);
 		ltpuser2 = my_getpwnam(user2name);
 
 		if ((pid1 = FORK_OR_VFORK()) < 0) {
 			tst_brkm(TBROK, cleanup, "fork #2 failed");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
-		if (pid1 == 0) {		/* second child */
-		  	/* set to ltpuser2 */
+		if (pid1 == 0) {	/* second child */
+			/* set to ltpuser2 */
 			rval = setreuid(ltpuser2->pw_uid, ltpuser2->pw_uid);
 			if (rval < 0) {
 				tst_resm(TFAIL, "setreuid failed to "
@@ -187,20 +182,17 @@ main(int ac, char **av)
 					 ltpuser2->pw_uid, ltpuser2->pw_uid);
 				perror("setreuid");
 				exit(1);
-				/*NOTREACHED*/
-			}
-			if ( mkdir(tstdir2, PERMS) != -1 ) {
-				 tst_resm(TFAIL, "mkdir(%s, %#o) unexpected "
-					  "succeeded",tstdir2, PERMS);
-				 exit(1);
-				 /*NOTREACHED*/
-			}
+			 /*NOTREACHED*/}
+			if (mkdir(tstdir2, PERMS) != -1) {
+				tst_resm(TFAIL, "mkdir(%s, %#o) unexpected "
+					 "succeeded", tstdir2, PERMS);
+				exit(1);
+			 /*NOTREACHED*/}
 			if (errno != EACCES) {
 				tst_resm(TFAIL, "Expected EACCES got %d",
 					 errno);
 				exit(1);
-				/*NOTREACHED*/
-			}
+			 /*NOTREACHED*/}
 			/* PASS */
 			exit(0);
 		}
@@ -214,28 +206,25 @@ main(int ac, char **av)
 				 "in a directory having no permissions FAILED");
 			cleanup();
 		}
-	}   /* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/*
 	 * cleanup and exit
 	 */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
-}       /* End main */
+	 /*NOTREACHED*/ return 0;
+}				/* End main */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* must run as root */
 	if (geteuid() != 0) {
 		tst_brkm(TBROK, tst_exit, "Must run this as root");
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -247,18 +236,16 @@ setup()
 	tst_tmpdir();
 
 	/* give the write rights to all user */
-	chmod(".",0777);
+	chmod(".", 0777);
 
 	umask(0);
 }
-
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

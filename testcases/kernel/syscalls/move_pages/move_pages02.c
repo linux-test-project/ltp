@@ -74,8 +74,8 @@ extern int Tst_count;
 int main(int argc, char **argv)
 {
 	unsigned int i;
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	unsigned int from_node = 0;
 	unsigned int to_node = 1;
 
@@ -106,7 +106,9 @@ int main(int argc, char **argv)
 		for (i = 0; i < TEST_PAGES; i++)
 			nodes[i] = to_node;
 
-		ret = numa_move_pages(0, TEST_PAGES, pages, nodes, status, MPOL_MF_MOVE);
+		ret =
+		    numa_move_pages(0, TEST_PAGES, pages, nodes, status,
+				    MPOL_MF_MOVE);
 		TEST_ERRNO = errno;
 		if (ret != 0) {
 			tst_resm(TFAIL, "retrieving NUMA nodes failed");
@@ -131,8 +133,7 @@ int main(int argc, char **argv)
 /*
  * setup() - performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -148,8 +149,7 @@ setup(void)
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at completion
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -159,5 +159,4 @@ cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}

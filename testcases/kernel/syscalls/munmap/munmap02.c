@@ -80,8 +80,8 @@
 
 #define TEMPFILE	"mmapfile"
 
-char *TCID="munmap02";		/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "munmap02";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 size_t page_sz;			/* system page size */
@@ -95,14 +95,13 @@ void sig_handler();		/* signal catching function */
 
 #ifndef UCLINUX
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
@@ -111,7 +110,7 @@ main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/* Perform global setup for test */
 		setup();
@@ -152,15 +151,14 @@ main(int ac, char **av)
 		/* Call cleanup() to undo setup done for the test. */
 		cleanup();
 
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* exit with return code appropriate for results */
 	tst_exit();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 
-}	/* End main */
+}				/* End main */
 
 #else
 
@@ -179,8 +177,7 @@ int main()
  * write one byte data into it, map the open file for the specified
  * map length.
  */
-void
-setup()
+void setup()
 {
 
 	/* capture signals */
@@ -275,8 +272,7 @@ setup()
  *   this function is invoked when SIGSEGV generated and it calls test
  *   cleanup function and exit the program.
  */
-void
-sig_handler()
+void sig_handler()
 {
 	tst_resm(TPASS, "Functionality of munmap() successful");
 
@@ -294,8 +290,7 @@ sig_handler()
  *  Close the temporary file.
  *  Remove the temporary directory.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

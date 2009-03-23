@@ -67,15 +67,13 @@ int main(int ac, char **av)
 	int ret, status;
 	int exno = 0;
 
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
-
+	 /*NOTREACHED*/}
 #ifdef UCLINUX
 	argv0 = av[0];
 
@@ -116,15 +114,19 @@ int main(int ac, char **av)
 				do_child_1();
 #endif
 			} else {
-				if (setpgid(0, 0) < 0)  {
-					tst_resm(TFAIL, "setpgid(parent) failed: %s", strerror(errno));
+				if (setpgid(0, 0) < 0) {
+					tst_resm(TFAIL,
+						 "setpgid(parent) failed: %s",
+						 strerror(errno));
 					fail = 1;
 				}
 
 				if ((ret = wait(&status)) > 0) {
 					if (status != 0) {
-						tst_resm(TFAIL, "Test {%d} exited "
-							 "status 0x%0x (wanted 0x0)", ret, status);
+						tst_resm(TFAIL,
+							 "Test {%d} exited "
+							 "status 0x%0x (wanted 0x0)",
+							 ret, status);
 						fail = 1;
 					}
 				}
@@ -134,7 +136,8 @@ int main(int ac, char **av)
 			if ((ret = wait(&status)) > 0) {
 				if (status != 0) {
 					tst_resm(TFAIL, "Test {%d} exited "
-						 "status 0x%0x (wanted 0x0)", ret, status);
+						 "status 0x%0x (wanted 0x0)",
+						 ret, status);
 					fail = 1;
 				}
 			}
@@ -145,15 +148,13 @@ int main(int ac, char **av)
 		}
 	}
 	cleanup();
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * do_child_1()
  */
-void
-do_child_1()
+void do_child_1()
 {
 	int exno = 0;
 	int retval, ret, status;
@@ -185,9 +186,9 @@ do_child_1()
 			tst_resm(TFAIL, "setpgid failed, errno :%d", errno);
 			exno = 2;
 		}
-	
+
 		retval = setsid();
-	
+
 		if (errno == EPERM) {
 			tst_resm(TPASS, "setsid SUCCESS to set "
 				 "errno to EPERM");
@@ -199,8 +200,9 @@ do_child_1()
 		kill(pid, SIGKILL);
 		if ((ret = wait(&status)) > 0) {
 			if (status != 9) {
-				tst_resm(TFAIL, "Test {%d} exited status 0x%-x (wanted 0x9)",
-					ret, status);
+				tst_resm(TFAIL,
+					 "Test {%d} exited status 0x%-x (wanted 0x9)",
+					 ret, status);
 				exno = 4;
 			}
 		}
@@ -211,17 +213,15 @@ do_child_1()
 /*
  * do_child_2()
  */
-void
-do_child_2()
+void do_child_2()
 {
-	for (;;);
+	for (;;) ;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -236,8 +236,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing status if that option was specified

@@ -29,7 +29,7 @@
  *
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: ulimit01.c,v 1.4 2009/02/26 12:17:05 subrata_modak Exp $ */
+/* $Id: ulimit01.c,v 1.5 2009/03/23 13:36:13 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -65,7 +65,7 @@
  *	(See the parse_opts(3) man page).
  *
  *    OUTPUT SPECIFICATIONS
- * 
+ *$
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
  *
@@ -119,154 +119,163 @@
 void setup();
 void cleanup();
 
-
-
-char *TCID="ulimit01"; 	/* Test program identifier.    */
-int TST_TOTAL=6;    		/* Total number of test cases. */
+char *TCID = "ulimit01";	/* Test program identifier.    */
+int TST_TOTAL = 6;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int cmd;
-long limit;	/* saved limit */
+long limit;			/* saved limit */
 
 struct limits_t {
-   int cmd;
-   long newlimit;
-   int nlim_flag;	/* special flag for UL_SETFSIZE records  */
-   int exp_fail;
+	int cmd;
+	long newlimit;
+	int nlim_flag;		/* special flag for UL_SETFSIZE records  */
+	int exp_fail;
 } Scenarios[] = {
 
-  { UL_GETFSIZE, -1, 0, 0 },
-  { UL_SETFSIZE, -2, 1, 0 },	/* case case: must be after UL_GETFSIZE */
-  { UL_SETFSIZE, -2, 2, 0 },	/* case case: must be after UL_GETFSIZE */
-
+	{
+	UL_GETFSIZE, -1, 0, 0}, {
+	UL_SETFSIZE, -2, 1, 0},	/* case case: must be after UL_GETFSIZE */
+	{
+	UL_SETFSIZE, -2, 2, 0},	/* case case: must be after UL_GETFSIZE */
 #if UL_GMEMLIM
-  { UL_GMEMLIM, -1, 0, 0 },
+	{
+	UL_GMEMLIM, -1, 0, 0},
 #endif
 #if UL_GDESLIM
-  { UL_GDESLIM, -1, 0, 0 },
+	{
+	UL_GDESLIM, -1, 0, 0},
 #endif
 #if UL_GSHMEMLIM
-  { UL_GSHMEMLIM, -1, 0, 0 },
+	{
+	UL_GSHMEMLIM, -1, 0, 0},
 #endif
- 
 };
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-    int lc;		/* loop counter */
-    int i;		/* inner loop (test case) counter */
-    char *msg;		/* message returned from parse_opts */
-    int tmp;
+	int lc;			/* loop counter */
+	int i;			/* inner loop (test case) counter */
+	char *msg;		/* message returned from parse_opts */
+	int tmp;
 
-    TST_TOTAL = sizeof(Scenarios)/sizeof(struct limits_t);
-   
+	TST_TOTAL = sizeof(Scenarios) / sizeof(struct limits_t);
+
     /***************************************************************
      * parse standard options
      ***************************************************************/
-    if ( (msg=parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *) NULL ) {
-	tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	tst_exit();
-    }
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+		tst_exit();
+	}
 
     /***************************************************************
      * perform global setup for test
      ***************************************************************/
-    setup();
-
+	setup();
 
     /***************************************************************
      * check looping state if -c option given
      ***************************************************************/
-    for (lc=0; TEST_LOOPING(lc); lc++) {
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-	/* reset Tst_count in case we are looping. */
-	Tst_count=0;
+		/* reset Tst_count in case we are looping. */
+		Tst_count = 0;
 
-	for ( i=0; i<TST_TOTAL; i++) {
+		for (i = 0; i < TST_TOTAL; i++) {
 
-	    cmd=Scenarios[i].cmd;
-	    limit=Scenarios[i].newlimit;
+			cmd = Scenarios[i].cmd;
+			limit = Scenarios[i].newlimit;
 
-	    /*
-	     * Call ulimit(2)
-	     */
-	    TEST(ulimit(cmd, limit));
-	   
-	    /* check return code */
-	    if ( TEST_RETURN == -1 ) {
-		if ( Scenarios[i].exp_fail ) {
-		    if ( STD_FUNCTIONAL_TEST ) {
-			tst_resm(TPASS, "ulimit(%d, %d) Failed, errno=%d : %s", cmd, limit,
-					TEST_ERRNO, strerror(TEST_ERRNO));
-		    }
-		} else {
-		    tst_resm(TFAIL, "ulimit(%d, %d) Failed, errno=%d : %s", cmd, limit,
-			   	    TEST_ERRNO, strerror(TEST_ERRNO));
-		}
-	    } else {
-		if ( Scenarios[i].exp_fail ) {
-		    tst_resm(TFAIL, "ulimit(%d, %d) returned %d",
-		       		    cmd, limit, TEST_RETURN);
-		} else if ( STD_FUNCTIONAL_TEST ) {
-		    tst_resm(TPASS, "ulimit(%d, %d) returned %d",
-		       		    cmd, limit, TEST_RETURN);
-		}
+			/*
+			 * Call ulimit(2)
+			 */
+			TEST(ulimit(cmd, limit));
 
-		/*
-		 * Save the UL_GETFSIZE return value in the newlimit field
-		 * for UL_SETFSIZE test cases.
-		 */
-		if ( cmd == UL_GETFSIZE ) {
-		    for (tmp=i+1; tmp<TST_TOTAL; tmp++) {
-			if ( Scenarios[tmp].nlim_flag == 1 ) {
-			    Scenarios[tmp].newlimit = TEST_RETURN;
+			/* check return code */
+			if (TEST_RETURN == -1) {
+				if (Scenarios[i].exp_fail) {
+					if (STD_FUNCTIONAL_TEST) {
+						tst_resm(TPASS,
+							 "ulimit(%d, %d) Failed, errno=%d : %s",
+							 cmd, limit, TEST_ERRNO,
+							 strerror(TEST_ERRNO));
+					}
+				} else {
+					tst_resm(TFAIL,
+						 "ulimit(%d, %d) Failed, errno=%d : %s",
+						 cmd, limit, TEST_ERRNO,
+						 strerror(TEST_ERRNO));
+				}
+			} else {
+				if (Scenarios[i].exp_fail) {
+					tst_resm(TFAIL,
+						 "ulimit(%d, %d) returned %d",
+						 cmd, limit, TEST_RETURN);
+				} else if (STD_FUNCTIONAL_TEST) {
+					tst_resm(TPASS,
+						 "ulimit(%d, %d) returned %d",
+						 cmd, limit, TEST_RETURN);
+				}
+
+				/*
+				 * Save the UL_GETFSIZE return value in the newlimit field
+				 * for UL_SETFSIZE test cases.
+				 */
+				if (cmd == UL_GETFSIZE) {
+					for (tmp = i + 1; tmp < TST_TOTAL;
+					     tmp++) {
+						if (Scenarios[tmp].nlim_flag ==
+						    1) {
+							Scenarios[tmp].
+							    newlimit =
+							    TEST_RETURN;
+						}
+						if (Scenarios[tmp].nlim_flag ==
+						    2) {
+							Scenarios[tmp].
+							    newlimit =
+							    TEST_RETURN - 1;
+						}
+					}
+				}
 			}
-			if ( Scenarios[tmp].nlim_flag == 2 ) {
-			    Scenarios[tmp].newlimit = TEST_RETURN-1;
-			}
-		    }
 		}
-	    }
-	}
-    }	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
     /***************************************************************
      * cleanup and exit
      ***************************************************************/
-    cleanup();
+	cleanup();
 
-    return 0;
-}	/* End main */
+	return 0;
+}				/* End main */
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void
-setup()
+void setup()
 {
 
-    /* capture signals */
-    tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	/* capture signals */
+	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-    /* Pause if that option was specified */
-    TEST_PAUSE;
+	/* Pause if that option was specified */
+	TEST_PAUSE;
 
-}	/* End setup() */
-
+}				/* End setup() */
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void
-cleanup()
+void cleanup()
 {
-    /*
-     * print timing stats if that option was specified.
-     */
-    TEST_CLEANUP;
+	/*
+	 * print timing stats if that option was specified.
+	 */
+	TEST_CLEANUP;
 
-    /* exit with return code appropriate for results */
-    tst_exit();
-}	/* End cleanup() */
+	/* exit with return code appropriate for results */
+	tst_exit();
+}				/* End cleanup() */

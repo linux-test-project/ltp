@@ -63,59 +63,59 @@
 #define	G_1	M_1 * K_1
 
 #define	NBUFS		4
-#define	CHUNK		64		/* single chunk */
+#define	CHUNK		64	/* single chunk */
 #define	MAX_IOVEC	16
 #define	DATA_FILE	"writev_data_file"
 
 char buf1[K_1], buf2[K_1], buf3[K_1];
 
 struct iovec wr_iovec[MAX_IOVEC] = {
-	/* iov_base */		/* iov_len */
+	/* iov_base *//* iov_len */
 
 	/* testcase# 1 */
-	{buf1,			-1},
-	{(buf1 + CHUNK),	CHUNK},
-	{(buf1 + CHUNK * 2),	CHUNK},
+	{buf1, -1},
+	{(buf1 + CHUNK), CHUNK},
+	{(buf1 + CHUNK * 2), CHUNK},
 
 	/* testcase# 2 */
-	{(buf1 + CHUNK * 3),	G_1},
-	{(buf1 + CHUNK * 4),	G_1},
-	{(buf1 + CHUNK * 5),	G_1},
+	{(buf1 + CHUNK * 3), G_1},
+	{(buf1 + CHUNK * 4), G_1},
+	{(buf1 + CHUNK * 5), G_1},
 
 	/* testcase# 3 */
-	{(buf1 + CHUNK * 6),	CHUNK},
-	{(caddr_t)-1,		CHUNK},
-	{(buf1 + CHUNK * 8),	CHUNK},
+	{(buf1 + CHUNK * 6), CHUNK},
+	{(caddr_t) - 1, CHUNK},
+	{(buf1 + CHUNK * 8), CHUNK},
 
 	/* testcase# 4 */
-	{(buf1 + CHUNK * 9),	CHUNK},
+	{(buf1 + CHUNK * 9), CHUNK},
 
 	/* testcase# 5 */
-	{(buf1 + CHUNK * 10),	CHUNK},
+	{(buf1 + CHUNK * 10), CHUNK},
 
 	/* testcase# 6 */
-	{(buf1 + CHUNK * 11),	CHUNK},
+	{(buf1 + CHUNK * 11), CHUNK},
 
 	/* testcase# 7 */
-	{(buf1 + CHUNK * 12),	CHUNK},
+	{(buf1 + CHUNK * 12), CHUNK},
 
 	/* testcase# 8 */
-	{(buf1 + CHUNK * 13),	0},
+	{(buf1 + CHUNK * 13), 0},
 
 	/* testcase# 7 */
-	{(caddr_t)NULL,		0},
-	{(caddr_t)NULL,		0}
+	{(caddr_t) NULL, 0},
+	{(caddr_t) NULL, 0}
 };
 
 char name[K_1], f_name[K_1];
 
-char * bad_addr = 0;
+char *bad_addr = 0;
 
 /* 0 terminated list of expected errnos */
-int exp_enos[] = {14, 22, 32, 77, 0};
+int exp_enos[] = { 14, 22, 32, 77, 0 };
 
 int fd[4], in_sighandler;
-int pfd[2];				/* pipe fd's */
+int pfd[2];			/* pipe fd's */
 char *buf_list[NBUFS];
 int fail;
 
@@ -134,15 +134,14 @@ int main(int argc, char **argv)
 {
 	int nbytes, ret;
 
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) !=
-	    (char *) NULL) {
+	if ((msg = parse_opts(argc, argv, (option_t *) NULL, NULL)) !=
+	    (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/* set "tstdir", and "testfile" vars */
 	setup();
@@ -150,7 +149,6 @@ int main(int argc, char **argv)
 	/* The following loop checks looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-	
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
@@ -159,19 +157,17 @@ int main(int argc, char **argv)
 		buf_list[2] = buf3;
 		buf_list[3] = (char *)NULL;
 
-		fd[1] = -1;		/* Invalid file descriptor  */
+		fd[1] = -1;	/* Invalid file descriptor  */
 
 		if (signal(SIGTERM, sighandler) == SIG_ERR) {
 			perror("signal: SIGTERM");
 			cleanup();
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		if (signal(SIGPIPE, sighandler) == SIG_ERR) {
 			perror("signal: SIGPIPE");
 			cleanup();
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		init_buffs(buf_list);
 
@@ -179,27 +175,24 @@ int main(int argc, char **argv)
 			tst_resm(TFAIL, "open failed: fname = %s, errno = %d",
 				 f_name, errno);
 			cleanup();
-			/*NOTREACHED*/
-		} else if ((nbytes = write(fd[0], buf_list[2], K_1)) != K_1) {
-			tst_resm(TFAIL, "write failed: nbytes = %d, "
-				 "errno = %d", nbytes, errno);
+		 /*NOTREACHED*/} else
+		    if ((nbytes = write(fd[0], buf_list[2], K_1)) != K_1) {
+			tst_resm(TFAIL,
+				 "write failed: nbytes = %d, " "errno = %d",
+				 nbytes, errno);
 			cleanup();
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		if (close(fd[0]) < 0) {
 			tst_resm(TFAIL, "close failed: errno: %d", errno);
 			cleanup();
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		if ((fd[0] = open(f_name, O_RDWR, 0666)) < 0) {
 			tst_resm(TFAIL, "open failed: fname = %s, errno = %d",
 				 f_name, errno);
 			cleanup();
-			/*NOTREACHED*/
-		}
-
+		 /*NOTREACHED*/}
 //block1: /* given vector length -1, writev() return EINVAL. */
 		tst_resm(TINFO, "Enter Block 1");
 		fail = 0;
@@ -226,10 +219,10 @@ int main(int argc, char **argv)
 		tst_resm(TINFO, "Exit block 1");
 
 //block2:
-	/* This testcases doesn't look like what it intent to do
-        * 1. it is not using the wr_iovec initialized
-        * 2. read() and following message is not consistent
-        */
+		/* This testcases doesn't look like what it intent to do
+		 * 1. it is not using the wr_iovec initialized
+		 * 2. read() and following message is not consistent
+		 */
 		tst_resm(TINFO, "Enter block 2");
 		fail = 0;
 
@@ -245,8 +238,7 @@ int main(int argc, char **argv)
 				tst_resm(TFAIL, "block2: 2nd lseek failed");
 				fail = 1;
 			}
-			if ((nbytes = read(fd[0], buf_list[0], CHUNK)) !=
-			    CHUNK) {
+			if ((nbytes = read(fd[0], buf_list[0], CHUNK)) != CHUNK) {
 				perror("read error");
 				tst_resm(TFAIL, "expected nbytes = 1024, "
 					 "got = %d", nbytes);
@@ -295,9 +287,8 @@ int main(int argc, char **argv)
 			tst_resm(TFAIL, "expected nbytes = 1024, got = %d",
 				 nbytes);
 			fail = 1;
-		} else if (memcmp((buf_list[0]+ CHUNK * 6),
-				  (buf_list[2] + CHUNK * 6),
-				  CHUNK * 3) != 0) {
+		} else if (memcmp((buf_list[0] + CHUNK * 6),
+				  (buf_list[2] + CHUNK * 6), CHUNK * 3) != 0) {
 			tst_resm(TFAIL, "Error: writev() over wrote %s",
 				 f_name);
 			fail = 1;
@@ -386,14 +377,14 @@ int main(int argc, char **argv)
 		tst_resm(TINFO, "Exit block 6");
 
 //block7:
-	 /* given 4 vectors, 2 are NULL, 1 with 0 length and 1 with fixed length,
-         * writev() success writing fixed length.
-         */
+		/* given 4 vectors, 2 are NULL, 1 with 0 length and 1 with fixed length,
+		 * writev() success writing fixed length.
+		 */
 		tst_resm(TINFO, "Enter block 7");
 		fail = 0;
 
 		l_seek(fd[0], CHUNK * 12, 0);
-   		if ((ret = writev(fd[0], (wr_iovec + 12), 4)) != CHUNK) {
+		if ((ret = writev(fd[0], (wr_iovec + 12), 4)) != CHUNK) {
 			tst_resm(TFAIL, "writev() failed writing %d bytes, "
 				 "followed by two NULL vectors", CHUNK);
 			fail = 1;
@@ -426,11 +417,11 @@ int main(int argc, char **argv)
 					 errno);
 				fail = 1;
 			} else if ((writev(pfd[1], (wr_iovec + 12), 1)
-					< 0) && in_sighandler) {
+				    < 0) && in_sighandler) {
 				TEST_ERROR_LOG(errno);
 				if (errno == EPIPE) {
 					tst_resm(TINFO, "Received EPIPE as "
-						"expected");
+						 "expected");
 				} else {
 					tst_resm(TFAIL, "expected errno = "
 						 "EPIPE, got %d", errno);
@@ -452,16 +443,14 @@ int main(int argc, char **argv)
 	close(fd[0]);
 	close(fd[1]);
 	cleanup();
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup()
  *	performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -482,12 +471,12 @@ setup(void)
 	strcpy(name, DATA_FILE);
 	sprintf(f_name, "%s.%d", name, getpid());
 
-        bad_addr = mmap(0, 1, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
-        if (bad_addr == MAP_FAILED) {
-            printf("mmap failed\n");
-        }
-        wr_iovec[7].iov_base = bad_addr;
+	bad_addr = mmap(0, 1, PROT_NONE,
+			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
+	if (bad_addr == MAP_FAILED) {
+		printf("mmap failed\n");
+	}
+	wr_iovec[7].iov_base = bad_addr;
 
 }
 
@@ -496,8 +485,7 @@ setup(void)
  *	performs all ONE TIME cleanup for this test at
  *	completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -514,69 +502,69 @@ cleanup(void)
 	tst_exit();
 }
 
-int
-init_buffs(char *pbufs[])
+int init_buffs(char *pbufs[])
 {
 	int i;
 
 	for (i = 0; pbufs[i] != (char *)NULL; i++) {
 		switch (i) {
 		case 0:
-		
-		case 1:	fill_mem(pbufs[i], 0, 1);
-			break;
-		
-		case 2:	fill_mem(pbufs[i], 1, 0);
+
+		case 1:
+			fill_mem(pbufs[i], 0, 1);
 			break;
 
-		default: tst_resm(TFAIL, "Error detected: init_buffs()");
-			 cleanup();
-			 /*NOTREACHED*/
-		}
+		case 2:
+			fill_mem(pbufs[i], 1, 0);
+			break;
+
+		default:
+			tst_resm(TFAIL, "Error detected: init_buffs()");
+			cleanup();
+		 /*NOTREACHED*/}
 	}
 	return 0;
 }
 
-int
-fill_mem(char *c_ptr, int c1, int c2)
+int fill_mem(char *c_ptr, int c1, int c2)
 {
 	int count;
 
 	for (count = 1; count <= K_1 / CHUNK; count++) {
-		if (count & 0x01) {		/* if odd */
+		if (count & 0x01) {	/* if odd */
 			memset(c_ptr, c1, CHUNK);
-		} else {			/* if even */
+		} else {	/* if even */
 			memset(c_ptr, c2, CHUNK);
 		}
 	}
 	return 0;
 }
 
-void
-sighandler(int sig)
+void sighandler(int sig)
 {
 	switch (sig) {
-	case SIGTERM:	break;
+	case SIGTERM:
+		break;
 
-	case SIGPIPE:	++in_sighandler;
-			return;
+	case SIGPIPE:
+		++in_sighandler;
+		return;
 
-	default:	tst_resm(TFAIL, "sighandler() received invalid "
-				 "signal:%d", sig);
-			break;
+	default:
+		tst_resm(TFAIL, "sighandler() received invalid "
+			 "signal:%d", sig);
+		break;
 	}
 
 	if (unlink(f_name) < 0) {
 		tst_resm(TFAIL, "unlink Failed--file = %s, errno = %d",
 			 f_name, errno);
 		tst_exit();
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 	exit(sig);
 }
 
-long
-l_seek(int fdesc, long offset, int whence)
+long l_seek(int fdesc, long offset, int whence)
 {
 	if (lseek(fdesc, offset, whence) < 0) {
 		perror("lseek");

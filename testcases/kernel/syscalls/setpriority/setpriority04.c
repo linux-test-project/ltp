@@ -61,11 +61,11 @@
 void cleanup(void);
 void setup(void);
 
-char *TCID= "setpriority04";
+char *TCID = "setpriority04";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-int exp_enos[] = {ESRCH, 0};
+int exp_enos[] = { ESRCH, 0 };
 
 /* Get the max number of message queues allowed on system */
 static long get_pid_max()
@@ -76,9 +76,11 @@ static long get_pid_max()
 	/* Get the max number of message queues allowed on system */
 	fp = fopen("/proc/sys/kernel/pid_max", "r");
 	if (fp == NULL)
-		tst_brkm(TBROK, cleanup, "Could not open /proc/sys/kernel/pid_max");
+		tst_brkm(TBROK, cleanup,
+			 "Could not open /proc/sys/kernel/pid_max");
 	if (!fgets(buff, sizeof(buff), fp))
-		tst_brkm(TBROK, cleanup, "Could not read /proc/sys/kernel/pid_max");
+		tst_brkm(TBROK, cleanup,
+			 "Could not read /proc/sys/kernel/pid_max");
 	fclose(fp);
 
 	return atol(buff);
@@ -86,17 +88,17 @@ static long get_pid_max()
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int new_val = 2;
 	int pid_max = get_pid_max();
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -135,9 +137,7 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/
-
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
@@ -157,7 +157,7 @@ void setup(void)
 
 /*
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
- * 	       or premature exit.
+ *	       or premature exit.
  */
 void cleanup(void)
 {

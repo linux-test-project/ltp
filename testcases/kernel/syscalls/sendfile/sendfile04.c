@@ -33,7 +33,7 @@
  *
  * USAGE:  <for command-line>
  *  sendfile04 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
- *     where, 
+ *     where,
  *             -f   : Turn off functionality Testing.
  *             -i n : Execute test n times.
  *             -I x : Execute test for x seconds.
@@ -63,7 +63,6 @@
 #define OFF_T off_t
 #endif /* Not def: OFF_T */
 
-
 TCID_DEFINE(sendfile04);
 extern int Tst_count;
 
@@ -72,7 +71,7 @@ char out_file[100];
 int out_fd;
 pid_t child_pid;
 static int sockfd, s;
-static struct sockaddr_in sin1; /* shared between do_child and create_server */
+static struct sockaddr_in sin1;	/* shared between do_child and create_server */
 
 void cleanup(void);
 void do_child(void);
@@ -83,22 +82,20 @@ int create_server(void);
 #define PASS_UNMAPPED_BUFFER 1
 
 struct test_case_t {
-	int  protection;
-	int  pass_unmapped_buffer;
+	int protection;
+	int pass_unmapped_buffer;
 } testcases[] = {
-	{ PROT_NONE,            PASS_MAPPED_BUFFER   },
-	{ PROT_READ,            PASS_MAPPED_BUFFER   },
-	{ PROT_EXEC,            PASS_MAPPED_BUFFER   },
-	{ PROT_EXEC|PROT_READ,  PASS_MAPPED_BUFFER   },
-	{ PROT_READ|PROT_WRITE, PASS_UNMAPPED_BUFFER },
-};
+	{
+	PROT_NONE, PASS_MAPPED_BUFFER}, {
+	PROT_READ, PASS_MAPPED_BUFFER}, {
+	PROT_EXEC, PASS_MAPPED_BUFFER}, {
+	PROT_EXEC | PROT_READ, PASS_MAPPED_BUFFER}, {
+PROT_READ | PROT_WRITE, PASS_UNMAPPED_BUFFER},};
 
-int TST_TOTAL = sizeof(testcases)/sizeof(testcases[0]);
-
-
+int TST_TOTAL = sizeof(testcases) / sizeof(testcases[0]);
 
 #ifdef UCLINUX
-static char* argv0;
+static char *argv0;
 #endif
 
 void do_sendfile(int prot, int pass_unmapped_buffer)
@@ -107,34 +104,26 @@ void do_sendfile(int prot, int pass_unmapped_buffer)
 	int in_fd;
 	struct stat sb;
 
-
 	protected_buffer = mmap(NULL,
-			       sizeof(*protected_buffer),
-			       prot,
-			       MAP_SHARED|MAP_ANONYMOUS,
-			       -1, 0);
+				sizeof(*protected_buffer),
+				prot, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 	if (protected_buffer == MAP_FAILED) {
 		tst_brkm(TBROK, cleanup, "mmap failed: %d", errno);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	out_fd = create_server();
 
 	if ((in_fd = open(in_file, O_RDONLY)) < 0) {
 		tst_brkm(TBROK, cleanup, "open failed: %d", errno);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 	if (stat(in_file, &sb) < 0) {
 		tst_brkm(TBROK, cleanup, "stat failed: %d", errno);
-		/*NOTREACHED*/
-	}
-
+	 /*NOTREACHED*/}
 
 	if (pass_unmapped_buffer) {
 		if (munmap(protected_buffer, sizeof(*protected_buffer)) < 0) {
 			tst_brkm(TBROK, cleanup, "munmap failed: %d", errno);
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 	}
 
 	TEST(sendfile(out_fd, in_fd, protected_buffer, sb.st_size));
@@ -160,7 +149,7 @@ void do_sendfile(int prot, int pass_unmapped_buffer)
 	close(in_fd);
 
 	if (!pass_unmapped_buffer) {
-		/* Not unmapped yet. So do it now.*/
+		/* Not unmapped yet. So do it now. */
 		munmap(protected_buffer, sizeof(*protected_buffer));
 	}
 }
@@ -168,8 +157,7 @@ void do_sendfile(int prot, int pass_unmapped_buffer)
 /*
  * do_child
  */
-void
-do_child()
+void do_child()
 {
 	int lc;
 	socklen_t length;
@@ -177,7 +165,8 @@ do_child()
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		length = sizeof(sin1);
-		recvfrom(sockfd, rbuf, 4096, 0, (struct sockaddr*)&sin1, &length);
+		recvfrom(sockfd, rbuf, 4096, 0, (struct sockaddr *)&sin1,
+			 &length);
 	}
 	exit(0);
 }
@@ -185,8 +174,7 @@ do_child()
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	int fd;
 	char buf[100];
@@ -203,13 +191,11 @@ setup()
 	if ((fd = creat(in_file, 00700)) < 0) {
 		tst_brkm(TBROK, cleanup, "creat failed in setup, errno: %d",
 			 errno);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 	sprintf(buf, "abcdefghijklmnopqrstuvwxyz");
 	if (write(fd, buf, strlen(buf)) < 0) {
 		tst_brkm(TBROK, cleanup, "write failed, errno: %d", errno);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 	close(fd);
 	sprintf(out_file, "out.%d", getpid());
 }
@@ -218,8 +204,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -235,36 +220,37 @@ cleanup()
 	tst_exit();
 }
 
-int create_server(void) {
-	static int count=0;
+int create_server(void)
+{
+	static int count = 0;
 
 	sockfd = socket(PF_INET, SOCK_DGRAM, 0);
-	if(sockfd < 0) {
+	if (sockfd < 0) {
 		tst_brkm(TBROK, cleanup, "call to socket() failed: %s",
-			strerror(errno));
+			 strerror(errno));
 		return -1;
 	}
 	sin1.sin_family = AF_INET;
 	sin1.sin_port = htons(((getpid() * TST_TOTAL) % 32768) + 11000 + count);
 	sin1.sin_addr.s_addr = INADDR_ANY;
 	count++;
-	if(bind(sockfd, (struct sockaddr*)&sin1, sizeof(sin1)) < 0) {
+	if (bind(sockfd, (struct sockaddr *)&sin1, sizeof(sin1)) < 0) {
 		tst_brkm(TBROK, cleanup, "call to bind() failed: %s",
-			strerror(errno));
+			 strerror(errno));
 		return -1;
 	}
 	child_pid = FORK_OR_VFORK();
-	if(child_pid < 0) {
+	if (child_pid < 0) {
 		tst_brkm(TBROK, cleanup, "client/server fork failed: %s",
-			strerror(errno));
+			 strerror(errno));
 		return -1;
 	}
-	if(!child_pid) { /* child */
+	if (!child_pid) {	/* child */
 #ifdef UCLINUX
-		if(self_exec(argv0, "") < 0) {
+		if (self_exec(argv0, "") < 0) {
 			tst_brkm(TBROK, cleanup, "self_exec failed");
 			return -1;
-		
+
 		}
 #else
 		do_child();
@@ -273,14 +259,14 @@ int create_server(void) {
 
 	s = socket(PF_INET, SOCK_DGRAM, 0);
 	inet_aton("127.0.0.1", &sin1.sin_addr);
-	if(s < 0) {
+	if (s < 0) {
 		tst_brkm(TBROK, cleanup, "call to socket() failed: %s",
-			strerror(errno));
+			 strerror(errno));
 		return -1;
 	}
-	if (connect(s, (struct sockaddr*)&sin1, sizeof(sin1)) < 0) {
+	if (connect(s, (struct sockaddr *)&sin1, sizeof(sin1)) < 0) {
 		tst_brkm(TBROK, cleanup, "call to connect() failed: %s",
-			strerror(errno));
+			 strerror(errno));
 	}
 	return s;
 
@@ -289,14 +275,12 @@ int create_server(void) {
 int main(int ac, char **av)
 {
 	int i;
-	int lc;				/* loop counter */
-	char *msg;			/* parse_opts() return message */
+	int lc;			/* loop counter */
+	char *msg;		/* parse_opts() return message */
 
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
-
+	 /*NOTREACHED*/}
 #ifdef UCLINUX
 	argv0 = av[0];
 	maybe_run_child(&do_child, "");
@@ -317,7 +301,5 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
-

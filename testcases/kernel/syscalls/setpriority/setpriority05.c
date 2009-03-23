@@ -63,27 +63,27 @@
 void cleanup(void);
 void setup(void);
 
-char *TCID= "setpriority05";
+char *TCID = "setpriority05";
 int TST_TOTAL = 1;
 extern int Tst_count;
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
-int exp_enos[] = {EPERM, 0};
+int exp_enos[] = { EPERM, 0 };
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int new_val = 2;
-	int init_val = 1;		/* the init process = id 1 */
+	int init_val = 1;	/* the init process = id 1 */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -100,7 +100,7 @@ int main(int ac, char **av)
 		TEST(setpriority(PRIO_PROCESS, init_val, new_val));
 
 		if (TEST_RETURN == 0) {
-	                tst_resm(TFAIL, "call failed to produce expected error "
+			tst_resm(TFAIL, "call failed to produce expected error "
 				 "- errno = %d - %s", TEST_ERRNO,
 				 strerror(TEST_ERRNO));
 		}
@@ -120,30 +120,25 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-
-  return 0;
+	 /*NOTREACHED*/ return 0;
 
 }
 
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	/* Switch to nobody user for correct error code collection */
-        if (geteuid() != 0) {
-                tst_brkm(TBROK, tst_exit, "Test must be run as root");
-        }
-         ltpuser = getpwnam(nobody_uid);
-         if (setuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "setuid failed to "
-                         "to set the effective uid to %d",
-                         ltpuser->pw_uid);
-                perror("setuid");
-         }
-
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+	}
+	ltpuser = getpwnam(nobody_uid);
+	if (setuid(ltpuser->pw_uid) == -1) {
+		tst_resm(TINFO, "setuid failed to "
+			 "to set the effective uid to %d", ltpuser->pw_uid);
+		perror("setuid");
+	}
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -157,10 +152,9 @@ setup(void)
 
 /*
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
- * 	       or premature exit.
+ *	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

@@ -18,9 +18,9 @@
  *   Loop if the proper options are given.
  *   Execute system call
  *   Check return code, if system call failed (return=-1)
- *   	if errno set == expected errno
- *   		Issue sys call fails with expected return value and errno.
- *   	Otherwise,
+ *	if errno set == expected errno
+ *		Issue sys call fails with expected return value and errno.
+ *	Otherwise,
  *		Issue sys call fails with unexpected errno.
  *   Otherwise,
  *	Issue sys call returns unexpected value.
@@ -62,17 +62,16 @@
 #define FILE_MODE	S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
 #define TEST_FILE	"testfile"
 
-char *TCID="fstat03";           /* Test program identifier.    */
+char *TCID = "fstat03";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
-extern int Tst_count;           /* Test Case counter for tst_* routines */
-int exp_enos[]={EBADF, 0};
+extern int Tst_count;		/* Test Case counter for tst_* routines */
+int exp_enos[] = { EBADF, 0 };
 int fildes;			/* testfile descriptor */
 
 void setup();			/* Main setup function for the tests */
 void cleanup();			/* cleanup function for the test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	struct stat stat_buf;	/* stat structure buffer */
 	int lc;			/* loop counter */
@@ -80,7 +79,7 @@ main(int ac, char **av)
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -97,7 +96,7 @@ main(int ac, char **av)
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 		/*
 		 * Call fstat(2) to get the status information
 		 * of a closed testfile pointed to by 'fd'.
@@ -120,7 +119,7 @@ main(int ac, char **av)
 			tst_resm(TFAIL, "fstat() returned %d, "
 				 "expected -1, error EBADF");
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/*
 	 * Invoke cleanup() to delete the test directory/file(s) created
@@ -128,20 +127,18 @@ main(int ac, char **av)
 	 */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
-}	/* End main */
+	 /*NOTREACHED*/ return 0;
+}				/* End main */
 
 /*
  * void
  * setup(void) - performs all ONE TIME setup for this test.
- * 	Exit the test program on receipt of unexpected signals.
+ *	Exit the test program on receipt of unexpected signals.
  *	Create a temporary directory and change directory to it.
  *      Create a testfile under temporary directory.
  *      Close the testfile.
  */
-void
-setup()
+void setup()
 {
 	/* Capture unexpected signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -153,7 +150,7 @@ setup()
 	tst_tmpdir();
 
 	/* Create a testfile under temporary directory */
-	if ((fildes = open(TEST_FILE, O_RDWR|O_CREAT, 0666)) == -1) {
+	if ((fildes = open(TEST_FILE, O_RDWR | O_CREAT, 0666)) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, 0666) failed, errno=%d : %s",
 			 TEST_FILE, errno, strerror(errno));
@@ -161,10 +158,10 @@ setup()
 
 	if (close(fildes) == -1) {
 		tst_brkm(TBROK, cleanup,
-		 	 "close(%s) Failed, errno=%d : %s",
-		 	 TEST_FILE, errno, strerror(errno));
+			 "close(%s) Failed, errno=%d : %s",
+			 TEST_FILE, errno, strerror(errno));
 	}
-}	/* End of setup */
+}				/* End of setup */
 
 /*
  * void
@@ -176,8 +173,7 @@ setup()
  *	created during setup().
  *	Exit the test program with normal exit code.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -187,7 +183,7 @@ cleanup()
 
 	/* Remove files and temporary directory created */
 	tst_rmdir();
- 
+
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

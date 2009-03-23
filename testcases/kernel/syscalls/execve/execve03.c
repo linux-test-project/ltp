@@ -75,8 +75,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-
-
 char *TCID = "execve03";
 int fileHandle = 0;
 extern int Tst_count;
@@ -84,14 +82,15 @@ extern int Tst_count;
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
-char * bad_addr = 0;
+char *bad_addr = 0;
 
 void setup(void);
 void cleanup(void);
 
-int exp_enos[]={ENAMETOOLONG, ENOENT, ENOTDIR, EFAULT, EACCES, ENOEXEC, 0};
+int exp_enos[] = { ENAMETOOLONG, ENOENT, ENOTDIR, EFAULT, EACCES, ENOEXEC, 0 };
 
-char long_file[] = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyz";
+char long_file[] =
+    "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyz";
 char no_dir[] = "testdir";
 char test_name3[1000];
 char test_name5[1000];
@@ -102,37 +101,37 @@ struct test_case_t {
 	int error;
 } TC[] = {
 	/* the file name is greater than VFS_MAXNAMELEN - ENAMTOOLONG */
-	{long_file, ENAMETOOLONG},
-
-	/* the filename does not exist - ENOENT */
-	{no_dir, ENOENT},
-
-	/* the path contains a directory name which doesn't exist - ENOTDIR */
-	{test_name3, ENOTDIR},
-
+	{
+	long_file, ENAMETOOLONG},
+	    /* the filename does not exist - ENOENT */
+	{
+	no_dir, ENOENT},
+	    /* the path contains a directory name which doesn't exist - ENOTDIR */
+	{
+	test_name3, ENOTDIR},
 #if !defined(UCLINUX)
-	/* the filename isn't part of the process address space - EFAULT */
-	{(char *)-1, EFAULT},
+	    /* the filename isn't part of the process address space - EFAULT */
+	{
+	(char *)-1, EFAULT},
 #endif
-
-	/* the filename does not have execute permission - EACCES */
-	{test_name5, EACCES},
-
-	/* the file is zero length with execute permissions - ENOEXEC */
-	{test_name6, ENOEXEC}
+	    /* the filename does not have execute permission - EACCES */
+	{
+	test_name5, EACCES},
+	    /* the file is zero length with execute permissions - ENOEXEC */
+	{
+	test_name6, ENOEXEC}
 };
 
 int TST_TOTAL = sizeof(TC) / sizeof(*TC);
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int i;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -172,15 +171,13 @@ main(int ac, char **av)
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	char *cwdname = NULL;
 	int fd;
@@ -194,19 +191,16 @@ setup()
 	TEST_PAUSE;
 
 	ltpuser = getpwnam(nobody_uid);
-         if (setgid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "setgid failed to "
-                         "to set the gid to %d",
-                         ltpuser->pw_uid);
-                perror("setgid");
-         }
-         if (setuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "setuid failed to "
-                         "to set the uid to %d",
-                         ltpuser->pw_uid);
-                perror("setuid");
-         }
-
+	if (setgid(ltpuser->pw_uid) == -1) {
+		tst_resm(TINFO, "setgid failed to "
+			 "to set the gid to %d", ltpuser->pw_uid);
+		perror("setgid");
+	}
+	if (setuid(ltpuser->pw_uid) == -1) {
+		tst_resm(TINFO, "setuid failed to "
+			 "to set the uid to %d", ltpuser->pw_uid);
+		perror("setuid");
+	}
 
 	/* make a temporary directory and cd to it */
 	tst_tmpdir();
@@ -235,10 +229,9 @@ setup()
 	if (close(fd) == -1) {
 		tst_brkm(TBROK, cleanup, "close() failed");
 	}
-
 #if !defined(UCLINUX)
 	bad_addr = mmap(0, 1, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
+			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
 	if (bad_addr == MAP_FAILED) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}
@@ -246,19 +239,17 @@ setup()
 #endif
 }
 
-
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
 	 */
-    close(fileHandle);
+	close(fileHandle);
 
 	TEST_CLEANUP;
 

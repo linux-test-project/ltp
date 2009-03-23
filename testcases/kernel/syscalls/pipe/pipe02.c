@@ -81,8 +81,8 @@ int pp[2];			/* pipe descriptor */
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	char rbuf[BUFSIZ], wbuf[BUFSIZ];
 	int pid, ret, len, rlen, status;
 	int sig = 0;
@@ -90,11 +90,9 @@ int main(int ac, char **av)
 	usrsig = 0;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
-
+	 /*NOTREACHED*/}
 #ifdef UCLINUX
 	maybe_run_child(&do_child, "dd", &pp[0], &pp[1]);
 #endif
@@ -109,7 +107,7 @@ int main(int ac, char **av)
 		ret = pipe(pp);
 		if (ret == -1)
 			tst_brkm(TFAIL, cleanup, "pipe() failed, errno %d",
-					errno);
+				 errno);
 
 		strcpy(wbuf, "abcd\0");
 		len = strlen(wbuf);
@@ -117,7 +115,7 @@ int main(int ac, char **av)
 		pid = FORK_OR_VFORK();
 		if (pid < 0)
 			tst_brkm(TFAIL, cleanup, "fork() failed, errno %d",
-					errno);
+				 errno);
 		if (pid == 0) {
 			/* CHILD */
 #ifdef UCLINUX
@@ -134,7 +132,7 @@ int main(int ac, char **av)
 			rlen = safe_read(pp[0], rbuf, len);
 			if (memcmp(wbuf, rbuf, len) != 0)
 				tst_resm(TFAIL, "pipe read data and pipe "
-						"write data didn't match");
+					 "write data didn't match");
 			close(pp[0]);	/* close read end of pipe */
 			kill(pid, SIGUSR2);
 			wait(&status);
@@ -143,10 +141,10 @@ int main(int ac, char **av)
 				sig = WTERMSIG(status);
 			if (sig != SIGPIPE)
 				tst_resm(TFAIL, "SIGPIPE not returned by "
-						"child process");
+					 "child process");
 			else
 				tst_resm(TPASS, "child process returned "
-						"expected SIGPIPE");
+					 "expected SIGPIPE");
 		}
 	}
 	cleanup();
@@ -155,15 +153,15 @@ int main(int ac, char **av)
 	return 0;
 }
 
-void catch_usr2(int sig) {
+void catch_usr2(int sig)
+{
 	usrsig = 1;
 }
 
 /*
  * do_child()
  */
-void
-do_child()
+void do_child()
 {
 	char wbuf[BUFSIZ];
 	int len;
@@ -172,14 +170,12 @@ do_child()
 	len = strlen(wbuf);
 
 	if (signal(SIGUSR2, catch_usr2) == SIG_ERR)
-		tst_resm(TWARN, "signal setup for SIGUSR2 "
-			 "failed");
+		tst_resm(TWARN, "signal setup for SIGUSR2 " "failed");
 	if (signal(SIGPIPE, SIG_DFL) == SIG_ERR)
-		tst_resm(TWARN, "signal setup for SIGPIPE "
-			 "failed");
-	close(pp[0]);	/* close read end of pipe */
+		tst_resm(TWARN, "signal setup for SIGPIPE " "failed");
+	close(pp[0]);		/* close read end of pipe */
 	write(pp[1], wbuf, len);
-	while(!usrsig)
+	while (!usrsig)
 		sleep(1);
 	write(pp[1], wbuf, len);
 	exit(1);
@@ -188,8 +184,7 @@ do_child()
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -203,8 +198,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

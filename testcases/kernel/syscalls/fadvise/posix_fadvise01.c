@@ -25,13 +25,13 @@
  *	Check the value that posix_fadvise returns for wrong ADVISE value.
  *
  * USAGE
- * 	posix_fadvise01
+ *	posix_fadvise01
  *
  * HISTORY
  *	11/2007 Initial version by Masatake YAMATO <yamato@redhat.com>
  *
  * RESTRICTIONS
- * 	None
+ *	None
  */
 
 #define _XOPEN_SOURCE 600
@@ -56,47 +56,47 @@
 void setup();
 void cleanup();
 
-
-TCID_DEFINE(posix_fadvise01);   /* Test program identifier.    */
+TCID_DEFINE(posix_fadvise01);	/* Test program identifier.    */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 char fname[] = "/bin/cat";	/* test executable to open */
-int  fd      = -1;		/* initialized in open */
+int fd = -1;			/* initialized in open */
 
-int  expected_return = 0;
+int expected_return = 0;
 
 int defined_advise[] = {
 	POSIX_FADV_NORMAL,
-        POSIX_FADV_SEQUENTIAL,
-        POSIX_FADV_RANDOM,
-        POSIX_FADV_NOREUSE,
-        POSIX_FADV_WILLNEED,
-        POSIX_FADV_DONTNEED,
+	POSIX_FADV_SEQUENTIAL,
+	POSIX_FADV_RANDOM,
+	POSIX_FADV_NOREUSE,
+	POSIX_FADV_WILLNEED,
+	POSIX_FADV_DONTNEED,
 };
+
 #define defined_advise_total (sizeof(defined_advise) / sizeof(defined_advise[0]))
 
-int TST_TOTAL 	 = defined_advise_total;
+int TST_TOTAL = defined_advise_total;
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	int i;
 
-       /* Check this system has fadvise64 system which is used
-          in posix_fadvise. */
-       if ((_FILE_OFFSET_BITS != 64) && (__NR_fadvise64 == 0)) {
-               tst_resm(TWARN, "This test can only run on kernels that implements ");
-               tst_resm(TWARN, "fadvise64 which is used from posix_fadvise");
-               exit(0);
-       }
+	/* Check this system has fadvise64 system which is used
+	   in posix_fadvise. */
+	if ((_FILE_OFFSET_BITS != 64) && (__NR_fadvise64 == 0)) {
+		tst_resm(TWARN,
+			 "This test can only run on kernels that implements ");
+		tst_resm(TWARN, "fadvise64 which is used from posix_fadvise");
+		exit(0);
+	}
 
 	/*
 	 * parse standard options
 	 */
-	if ( (msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL )
-	  tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL)
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 
 	/*
 	 * perform global setup for test
@@ -106,10 +106,10 @@ main(int ac, char **av)
 	/*
 	 * check looping state if -i option given on the command line
 	 */
-	for (lc=0; TEST_LOOPING(lc); lc++) {
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/* loop through the test cases */
 		for (i = 0; i < defined_advise_total; i++) {
@@ -126,11 +126,10 @@ main(int ac, char **av)
 					 "expected %d",
 					 TEST_RETURN,
 					 strerror(TEST_RETURN),
-					 defined_advise[i],
-					 expected_return);
+					 defined_advise[i], expected_return);
 			}
 		}
-	} /* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/*
 	 * cleanup and exit
@@ -138,13 +137,12 @@ main(int ac, char **av)
 	cleanup();
 
 	return 0;
-}	/* End main */
+}				/* End main */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -156,17 +154,15 @@ setup()
 	if (fd < 0) {
 		tst_brkm(TBROK, cleanup,
 			 "Unable to open a file(\"%s\") for test: %s\n",
-			 fname,strerror(errno));
+			 fname, strerror(errno));
 	}
-}	/* End setup() */
-
+}				/* End setup() */
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -180,4 +176,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

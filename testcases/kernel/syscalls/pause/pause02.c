@@ -37,9 +37,9 @@
  *   Loop if the proper options are given.
  *   Execute system call
  *   Check return code, if system call failed (return=-1)
- *   	if errno set == expected errno
- *   		Issue sys call fails with expected return value and errno.
- *   	Otherwise,
+ *	if errno set == expected errno
+ *		Issue sys call fails with expected return value and errno.
+ *	Otherwise,
  *		Issue sys call fails with unexpected errno.
  *   Otherwise,
  *	Issue sys call returns unexpected value.
@@ -70,11 +70,11 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID="pause02";		/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "pause02";		/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-int exp_enos[]={EINTR, 0};
+int exp_enos[] = { EINTR, 0 };
 pid_t cpid;			/* child process id */
 
 void do_child();		/* Function to run in child process */
@@ -87,20 +87,18 @@ void kill_handle(int sig);	/* sends SIGKILL for child */
 void do_child_uclinux();	/* Setup SIGINT handler then do_child() */
 #endif
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	int status;		/* child process exit status */
 	int rval;		/* return value for wait() */
-   
+
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
-
 #ifdef UCLINUX
 	maybe_run_child(&do_child_uclinux, "");
 #endif
@@ -115,14 +113,14 @@ main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/* Creat a new process using fork() */
 		if ((cpid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() failed");
 		}
 
-		if (cpid == 0) {		/* Child process */
+		if (cpid == 0) {	/* Child process */
 #ifdef UCLINUX
 			if (self_exec(av[0], "") < 0) {
 				tst_brkm(TBROK, cleanup, "self_exec failed");
@@ -144,7 +142,7 @@ main(int ac, char **av)
 
 		/* Sleep to ensure the signal sent is effected */
 		sleep(1);
-		
+
 		/*
 		 * In case pause() doesn't return witin 2 seconds,
 		 * set the alarm to send SIGKILL for the child.
@@ -174,19 +172,18 @@ main(int ac, char **av)
 					 "as expected");
 			}
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
 	return 0;
-}	/* End main */
+}				/* End main */
 
 /*
  * do_child()
  */
-void
-do_child()
+void do_child()
 {
 	/* Suspend the child using pause() */
 	TEST(pause());
@@ -198,8 +195,7 @@ do_child()
 	TEST_ERROR_LOG(TEST_ERRNO);
 	if ((TEST_RETURN == -1) && (TEST_ERRNO == EINTR)) {
 		/* pause returned */
-		tst_resm(TPASS, "Functionality of pause() "
-			 "is correct");
+		tst_resm(TPASS, "Functionality of pause() " "is correct");
 	} else {
 		tst_resm(TFAIL, "pause() returned %d, error=%d",
 			 TEST_RETURN, TEST_ERRNO);
@@ -214,13 +210,11 @@ do_child()
 /*
  * do_child_uclinux()
  */
-void
-do_child_uclinux()
+void do_child_uclinux()
 {
 	/* Catch SIGINT */
 	if (signal(SIGINT, sig_handle) == SIG_ERR) {
-		tst_brkm(TBROK, cleanup,
-			 "signal() fails to catch SIGINT");
+		tst_brkm(TBROK, cleanup, "signal() fails to catch SIGINT");
 	}
 
 	do_child();
@@ -228,10 +222,9 @@ do_child_uclinux()
 
 /*
  * setup() - performs all ONE TIME setup for this test.
- *  	     Set the signal handler to catch SIGINT signal.
+ *	     Set the signal handler to catch SIGINT signal.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -241,8 +234,7 @@ setup()
 
 	/* Catch SIGINT */
 	if (signal(SIGINT, sig_handle) == SIG_ERR) {
-		tst_brkm(TBROK, cleanup,
-			 "signal() fails to catch SIGINT");
+		tst_brkm(TBROK, cleanup, "signal() fails to catch SIGINT");
 	}
 }
 
@@ -252,8 +244,7 @@ setup()
  *    When the child receives SIGINT signal while pausing, parent catches
  *    this signal by executing this handler which simply returns.
  */
-void
-sig_handle(int sig)
+void sig_handle(int sig)
 {
 }
 
@@ -266,8 +257,7 @@ sig_handle(int sig)
  *   in sleep until kill signal is sent.
  *   Send SIGKILL to child to terminate it.
  */
-void
-kill_handle(int sig)
+void kill_handle(int sig)
 {
 	/* Send SIGKILL to child */
 	kill(cpid, SIGKILL);
@@ -277,8 +267,7 @@ kill_handle(int sig)
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

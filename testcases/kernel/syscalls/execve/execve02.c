@@ -71,7 +71,7 @@ void setup(void);
 void cleanup(void);
 void help(void);
 
-int exp_enos[] = {EACCES, 0};
+int exp_enos[] = { EACCES, 0 };
 
 int Fflag = 0;
 char *fname;
@@ -83,29 +83,27 @@ option_t options[] = {
 };
 
 char user1name[] = "nobody";
-extern struct passwd * my_getpwnam(char *);
+extern struct passwd *my_getpwnam(char *);
 struct passwd *ltpuser1;
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
-	int e_code, status, retval=3;
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
+	int e_code, status, retval = 3;
 	pid_t pid;
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, options, &help)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
-        if (!Fflag) {
+	if (!Fflag) {
 		tst_resm(TWARN, "You must specify a test executable with"
 			 "the -F option.");
 		tst_resm(TWARN, "Run '%s -h' for option information.", TCID);
 		tst_exit();
-        }
+	}
 
 	setup();
 
@@ -126,7 +124,7 @@ main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "fork() failed");
 		}
 
-		if (pid == 0) {			/* child */
+		if (pid == 0) {	/* child */
 			if (seteuid(ltpuser1->pw_uid) == -1) {
 				tst_brkm(TBROK, cleanup, "setuid() failed");
 			}
@@ -136,7 +134,7 @@ main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO != EACCES) {
-				retval=1;
+				retval = 1;
 				tst_resm(TFAIL, "Expected EACCES got %d",
 					 TEST_ERRNO);
 			} else {
@@ -155,27 +153,25 @@ main(int ac, char **av)
 			exit(retval);
 		} else {
 			/* wait for the child to finish */
-                        wait(&status);
-                        /* make sure the child returned a good exit status */
-                        e_code = status >> 8;
-                        if ((e_code != 3) || (retval != 3)) {
-                          tst_resm(TFAIL, "Failures reported above");
-                        }
+			wait(&status);
+			/* make sure the child returned a good exit status */
+			e_code = status >> 8;
+			if ((e_code != 3) || (retval != 3)) {
+				tst_resm(TFAIL, "Failures reported above");
+			}
 
 			cleanup();
 		}
 	}
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * help() - Prints out the help message for the -F option defined
  *          by this test.
  */
-void
-help()
+void help()
 {
 	printf("  -F <test file> : for example, 'execve02 -F test3'\n");
 }
@@ -183,8 +179,7 @@ help()
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	char *cmd, *dirc, *basec, *bname, *dname, *path, *pwd = NULL;
 	int res;
@@ -212,13 +207,14 @@ setup()
 		path = dname;
 	else {
 		if ((pwd = getcwd(NULL, 0)) == NULL) {
-			tst_brkm(TBROK, tst_exit, "Could not get current directory");
+			tst_brkm(TBROK, tst_exit,
+				 "Could not get current directory");
 		}
-		path = malloc (strlen(pwd) + strlen(dname) +  2);
+		path = malloc(strlen(pwd) + strlen(dname) + 2);
 		if (path == NULL) {
 			tst_brkm(TBROK, tst_exit, "Cannot alloc path string");
 		}
-		sprintf (path, "%s/%s", pwd, dname);
+		sprintf(path, "%s/%s", pwd, dname);
 	}
 
 	/* make a temp dir and cd to it */
@@ -226,14 +222,14 @@ setup()
 
 	/* Copy the given test file to the private temp directory.
 	 */
-	cmd = malloc (strlen(path) + strlen(bname) + 15);
+	cmd = malloc(strlen(path) + strlen(bname) + 15);
 	if (cmd == NULL) {
 		tst_brkm(TBROK, tst_exit, "Cannot alloc command string");
 	}
 
-	sprintf (cmd, "cp -p %s/%s .", path, bname);
-	res = system (cmd);
-	free (cmd);
+	sprintf(cmd, "cp -p %s/%s .", path, bname);
+	res = system(cmd);
+	free(cmd);
 	if (res == -1) {
 		tst_brkm(TBROK, tst_exit, "Cannot copy file %s", fname);
 	}
@@ -249,8 +245,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -260,7 +255,6 @@ cleanup()
 
 	/* remove files and temp dir */
 	tst_rmdir();
-
 
 	/* exit with return code appropriate for results */
 	tst_exit();

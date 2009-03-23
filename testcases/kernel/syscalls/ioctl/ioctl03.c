@@ -58,12 +58,12 @@
 #endif
 
 /* Extern Global Variables */
-extern int  Tst_count;               /* counter for tst_xxx routines.         */
-extern char *TESTDIR;                /* temporary dir created by tst_tmpdir() */
+extern int Tst_count;		/* counter for tst_xxx routines.         */
+extern char *TESTDIR;		/* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
-char *TCID     = "ioctl03";          /* test program identifier.              */
-int  TST_TOTAL = 1;                  /* total number of tests in this file.   */
+char *TCID = "ioctl03";		/* test program identifier.              */
+int TST_TOTAL = 1;		/* total number of tests in this file.   */
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -83,15 +83,15 @@ int  TST_TOTAL = 1;                  /* total number of tests in this file.   */
 /*              On success - Exits calling tst_exit(). With '0' return code.  */
 /*                                                                            */
 /******************************************************************************/
-extern void cleanup() {
-  /* Remove tmp dir and all files in it */
-  TEST_CLEANUP;
-  tst_rmdir();
+extern void cleanup()
+{
+	/* Remove tmp dir and all files in it */
+	TEST_CLEANUP;
+	tst_rmdir();
 
-  /* Exit with appropriate return code. */
-  tst_exit();
+	/* Exit with appropriate return code. */
+	tst_exit();
 }
-
 
 /* Local  Functions */
 /******************************************************************************/
@@ -111,51 +111,56 @@ extern void cleanup() {
 /*              On success - returns 0.                                       */
 /*                                                                            */
 /******************************************************************************/
-void setup() {
-  /* Capture signals if any */
-  /* Create temporary directories */
-  TEST_PAUSE;
-  tst_tmpdir();
+void setup()
+{
+	/* Capture signals if any */
+	/* Create temporary directories */
+	TEST_PAUSE;
+	tst_tmpdir();
 }
 
-
 static struct {
-  unsigned int flag;
-  const char *name;
+	unsigned int flag;
+	const char *name;
 } known_flags[] = {
-                   { IFF_TUN, "TUN" },
-                   { IFF_TAP, "TAP" },
-                   { IFF_NO_PI, "NO_PI" },
-                   { IFF_ONE_QUEUE, "ONE_QUEUE" },
-                   { IFF_VNET_HDR, "VNET_HDR"}
-                  };
+	{
+	IFF_TUN, "TUN"}, {
+	IFF_TAP, "TAP"}, {
+	IFF_NO_PI, "NO_PI"}, {
+	IFF_ONE_QUEUE, "ONE_QUEUE"}, {
+	IFF_VNET_HDR, "VNET_HDR"}
+};
 
-int main() {
-  unsigned int features, i;
+int main()
+{
+	unsigned int features, i;
 
-  setup();
-  if (geteuid()!=0) {
-    tst_brkm(TBROK, cleanup, "You need to be ROOT to run this test case");
-    tst_exit();
-  }
-  int netfd = open("/dev/net/tun", O_RDWR);
-  if (netfd < 0)
-    tst_brkm(TBROK, cleanup, "Error Opening /dev/net/tun: %s", strerror(errno));
+	setup();
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, cleanup,
+			 "You need to be ROOT to run this test case");
+		tst_exit();
+	}
+	int netfd = open("/dev/net/tun", O_RDWR);
+	if (netfd < 0)
+		tst_brkm(TBROK, cleanup, "Error Opening /dev/net/tun: %s",
+			 strerror(errno));
 
-  if (ioctl(netfd, TUNGETFEATURES, &features) != 0) {
-    tst_resm(TCONF, "Kernel does not support TUNGETFEATURES");
-    cleanup();
-    tst_exit();
-  }
-  tst_resm(TINFO,"Available features are: %#x", features);
-  for (i = 0; i < sizeof(known_flags)/sizeof(known_flags[0]); i++) {
-    if (features & known_flags[i].flag) {
-      features &= ~known_flags[i].flag;
-      tst_resm(TINFO, "%s %#x", known_flags[i].name, known_flags[i].flag);
-    }
-  }
-  if (features)
-    tst_resm(TFAIL, "(UNKNOWN %#x)", features);
-  cleanup();
-  tst_exit();
+	if (ioctl(netfd, TUNGETFEATURES, &features) != 0) {
+		tst_resm(TCONF, "Kernel does not support TUNGETFEATURES");
+		cleanup();
+		tst_exit();
+	}
+	tst_resm(TINFO, "Available features are: %#x", features);
+	for (i = 0; i < sizeof(known_flags) / sizeof(known_flags[0]); i++) {
+		if (features & known_flags[i].flag) {
+			features &= ~known_flags[i].flag;
+			tst_resm(TINFO, "%s %#x", known_flags[i].name,
+				 known_flags[i].flag);
+		}
+	}
+	if (features)
+		tst_resm(TFAIL, "(UNKNOWN %#x)", features);
+	cleanup();
+	tst_exit();
 }

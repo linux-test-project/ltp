@@ -57,43 +57,42 @@ char *TCID = "pipe07";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-int exp_enos[] = {EMFILE, 0};
+int exp_enos[] = { EMFILE, 0 };
 
 int pipe_ret, pipes[2];
 char currdir[PATH_MAX];
-char* tempdir=NULL;
+char *tempdir = NULL;
 void setup(void);
 void cleanup(void);
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
-	int min;			/* number of file descriptors */
-	int usedfds;			/* number of currently used file descriptors */
-	int npipes;			/* number of pipes opened */
-	pid_t mypid;			/* process of id of test */
-	char* cmdstring=NULL;		/* hold command string to execute using system() */
-	FILE* f;			/* used for retrieving the used fds */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
+	int min;		/* number of file descriptors */
+	int usedfds;		/* number of currently used file descriptors */
+	int npipes;		/* number of pipes opened */
+	pid_t mypid;		/* process of id of test */
+	char *cmdstring = NULL;	/* hold command string to execute using system() */
+	FILE *f;		/* used for retrieving the used fds */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 	setup();
 	/* Get the currently used number of file descriptors */
-	mypid=getpid();
-	cmdstring=malloc(BUFSIZ);
+	mypid = getpid();
+	cmdstring = malloc(BUFSIZ);
 	snprintf(cmdstring, BUFSIZ, "test -d /proc/%d/fd || exit 1 ; "
-		"ls -A -1 /proc/%d/fd | wc -l | awk {'print $1'} > pipe07.tmp",
-		mypid, mypid);
+		 "ls -A -1 /proc/%d/fd | wc -l | awk {'print $1'} > pipe07.tmp",
+		 mypid, mypid);
 	if (system(cmdstring) == 0) {
 		f = fopen("pipe07.tmp", "r");
-		fscanf(f,"%d",&usedfds);
+		fscanf(f, "%d", &usedfds);
 		fclose(f);
 	} else
-		usedfds=3;   /* Could not get processes used fds, so assume 3 */
+		usedfds = 3;	/* Could not get processes used fds, so assume 3 */
 	unlink("pipe07.tmp");
 
 	TEST_EXP_ENOS(exp_enos);
@@ -108,19 +107,19 @@ int main(int ac, char **av)
 		/* subtract used fds */
 		min -= usedfds;
 
-		for (npipes = 0; ; npipes++) {
+		for (npipes = 0;; npipes++) {
 			pipe_ret = pipe(pipes);
 			if (pipe_ret < 0) {
 				if (errno != EMFILE) {
 					tst_brkm(TFAIL, cleanup,
-						"got unexpected error - %d",
-						errno);
+						 "got unexpected error - %d",
+						 errno);
 				}
 				break;
 			}
 		}
 		if (npipes == (min / 2))
-			tst_resm(TPASS, "Opened %d pipes",npipes);
+			tst_resm(TPASS, "Opened %d pipes", npipes);
 		else
 			tst_resm(TFAIL, "Unable to open maxfds/2 pipes");
 
@@ -134,8 +133,7 @@ int main(int ac, char **av)
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	char template[PATH_MAX];
 
@@ -143,11 +141,11 @@ setup()
 	 * a SIGSEGV for some reason when I tried to use tst_tmpdir/tst_rmdir */
 
 	/* Save current working directory */
-	getcwd(currdir,PATH_MAX);
+	getcwd(currdir, PATH_MAX);
 
 	/* Create temp directory and cd to it */
- 	snprintf(template, PATH_MAX, "%s/%.3sXXXXXX", TEMPDIR, TCID);
-	tempdir=mkdtemp(template);
+	snprintf(template, PATH_MAX, "%s/%.3sXXXXXX", TEMPDIR, TCID);
+	tempdir = mkdtemp(template);
 	chdir(tempdir);
 
 	/* capture signals */
@@ -162,8 +160,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

@@ -75,7 +75,7 @@ int num_sems = 0;		/* count the semaphores created */
 
 int main(int ac, char **av)
 {
-	int lc;		/* loop counter */
+	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	FILE *fp;
 
@@ -109,8 +109,7 @@ int main(int ac, char **av)
 
 		/* use the TEST macro to make the call */
 
-		TEST(semget(IPC_PRIVATE, PSEMS,
-			    IPC_CREAT | IPC_EXCL | SEM_RA));
+		TEST(semget(IPC_PRIVATE, PSEMS, IPC_CREAT | IPC_EXCL | SEM_RA));
 		//      printf("rc = %ld \n",   TEST_RETURN);
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "call succeeded when error expected");
@@ -163,8 +162,7 @@ void setup(void)
 	 * Use a while loop to create the maximum number of semaphore sets.
 	 * If the loop exceeds MAXIDS, then break the test and cleanup.
 	 */
-	while ((sem_q =
-		semget(IPC_PRIVATE, PSEMS, IPC_CREAT | IPC_EXCL)) != -1) {
+	while ((sem_q = semget(IPC_PRIVATE, PSEMS, IPC_CREAT | IPC_EXCL)) != -1) {
 		sem_id_arr[num_sems++] = sem_q;
 		if (num_sems == MAXIDS) {
 			tst_brkm(TBROK, cleanup, "The maximum number of "

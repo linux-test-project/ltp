@@ -27,29 +27,29 @@
  *    AUTHOR		: Saji Kumar.V.R <saji.kumar@wipro.com>
  *
  *    SIGNALS
- * 	Uses SIGUSR1 to pause before test if option set.
- * 	(See the parse_opts(3) man page).
+ *	Uses SIGUSR1 to pause before test if option set.
+ *	(See the parse_opts(3) man page).
  *
  *    DESCRIPTION
  *	Verify that for a process with scheduling policy SCHED_FIFO,
  *	sched_rr_get_interval() writes zero into timespec structure
  *	for tv_sec & tv_nsec.
  *
- * 	Setup:
- * 	  Setup signal handling.
+ *	Setup:
+ *	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
  *	  Change scheduling policy to SCHED_FIFO
  *
- * 	Test:
+ *	Test:
  *	 Loop if the proper options are given.
- * 	  Execute system call
+ *	  Execute system call
  *	  Check (return code == 0) & (got 0 for tv_sec & tv_nsec )
  *		Test passed.
  *	  Otherwise
  *		Test failed
  *
- * 	Cleanup:
- * 	  Print errno log and/or timing stats if options given
+ *	Cleanup:
+ *	  Print errno log and/or timing stats if options given
  *
  * USAGE:  <for command-line>
  * sched_rr_get_interval02 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
@@ -74,21 +74,20 @@ static void setup();
 static void cleanup();
 
 char *TCID = "sched_rr_get_interval02";	/* Test program identifier.    */
-int TST_TOTAL = 1;			/* Total number of test cases. */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 struct timespec tp;
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 
-	int lc;		/* loop counter */
-	char *msg;	/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
-	     != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL))
+	    != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -110,8 +109,7 @@ main(int ac, char **av)
 		 */
 		TEST(sched_rr_get_interval(0, &tp));
 
-		if ((TEST_RETURN == 0) && (tp.tv_sec == 0) &&
-					  (tp.tv_nsec == 0)) {
+		if ((TEST_RETURN == 0) && (tp.tv_sec == 0) && (tp.tv_nsec == 0)) {
 			tst_resm(TPASS, "Test passed");
 		} else {
 			tst_resm(TFAIL, "Test Failed, sched_rr_get_interval()"
@@ -120,19 +118,17 @@ main(int ac, char **av)
 				 strerror(TEST_ERRNO), (int)tp.tv_sec,
 				 tp.tv_nsec);
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* cleanup and exit */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 
-}	/* End main */
+}				/* End main */
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup()
+void setup()
 {
 	/*
 	 * Initialize scheduling parameter structure to use with
@@ -150,15 +146,13 @@ setup()
 	if ((sched_setscheduler(0, SCHED_FIFO, &p)) == -1) {
 		tst_brkm(TBROK, cleanup, "sched_setscheduler() failed");
 	}
-}	/* End setup() */
-
+}				/* End setup() */
 
 /*
  *cleanup() -  performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 
 	/*
@@ -169,4 +163,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

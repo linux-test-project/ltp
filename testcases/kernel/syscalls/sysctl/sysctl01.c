@@ -56,13 +56,13 @@ char *TCID = "sysctl01";
 int TST_TOTAL = 3;
 extern int Tst_count;
 
-int sysctl(int *name, int nlen, void *oldval, size_t *oldlenp,
-           void *newval, size_t newlen)
+int sysctl(int *name, int nlen, void *oldval, size_t * oldlenp,
+	   void *newval, size_t newlen)
 {
-	struct __sysctl_args args={name,nlen,oldval,oldlenp,newval,newlen};
+	struct __sysctl_args args =
+	    { name, nlen, oldval, oldlenp, newval, newlen };
 	return syscall(__NR__sysctl, &args);
 }
-
 
 #define SIZE(x) sizeof(x)/sizeof(x[0])
 
@@ -81,15 +81,17 @@ struct test_case_t {
 	size_t *oldlen;
 	void *newval;
 	int newlen;
-	int (*cleanup)();
+	int (*cleanup) ();
 	int exp_retval;
 } TC[] = {
-	{ "Test for KERN_OSTYPE", { CTL_KERN, KERN_OSTYPE } , 2, osname,
-		&osnamelth, NULL, 0, NULL, 0 },
-	{ "Test for KERN_OSRELEASE", { CTL_KERN, KERN_OSRELEASE }, 2,
-		osname, &osnamelth, NULL, 0, NULL, 0 },
-	{ "Test for KERN_VERSION", { CTL_KERN, KERN_VERSION }, 2,
-		osname, &osnamelth, NULL, 0, NULL, 0 }
+	{
+		"Test for KERN_OSTYPE", {
+	CTL_KERN, KERN_OSTYPE}, 2, osname, &osnamelth, NULL, 0, NULL, 0}, {
+		"Test for KERN_OSRELEASE", {
+	CTL_KERN, KERN_OSRELEASE}, 2,
+		    osname, &osnamelth, NULL, 0, NULL, 0}, {
+		"Test for KERN_VERSION", {
+	CTL_KERN, KERN_VERSION}, 2, osname, &osnamelth, NULL, 0, NULL, 0}
 };
 
 int main(int ac, char **av)
@@ -100,7 +102,7 @@ int main(int ac, char **av)
 	char *comp_string;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -129,8 +131,7 @@ int main(int ac, char **av)
 			}
 
 			TEST(sysctl(TC[i].name, TC[i].size, TC[i].oldval,
-					  TC[i].oldlen, TC[i].newval,
-					  TC[i].newlen));
+				    TC[i].oldlen, TC[i].newval, TC[i].newlen));
 
 			if (TEST_RETURN != 0) {
 				tst_resm(TFAIL, "sysctl(2) failed unexpectedly "
@@ -156,15 +157,13 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -182,8 +181,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

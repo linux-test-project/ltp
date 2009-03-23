@@ -63,8 +63,7 @@ char *TCID = "msgsnd03";
 int TST_TOTAL = 4;
 extern int Tst_count;
 
-
-int exp_enos[] = {EINVAL, 0};	/* 0 terminated list of expected errnos */
+int exp_enos[] = { EINVAL, 0 };	/* 0 terminated list of expected errnos */
 
 int msg_q_1 = -1;		/* The message queue id created in setup */
 MSGBUF msg_buf;			/* a buffer for the message to queue */
@@ -78,30 +77,31 @@ struct test_case_t {
 	int error;
 } TC[] = {
 	/* EINVAL - the queue ID is invalid */
-	{&bad_q, &msg_buf, 1, 1, EINVAL},
-
-	/* EINVAL - the message type is not positive (0) */
-	{&msg_q_1, &msg_buf, 0, 1, EINVAL},
-
-	/* EINVAL - the message type is not positive (>0) */
-	{&msg_q_1, &msg_buf, -1, 1, EINVAL},
-
-	/* EINVAL - the message size is less than zero */
-	{&msg_q_1, &msg_buf, 1, -1, EINVAL}
+	{
+	&bad_q, &msg_buf, 1, 1, EINVAL},
+	    /* EINVAL - the message type is not positive (0) */
+	{
+	&msg_q_1, &msg_buf, 0, 1, EINVAL},
+	    /* EINVAL - the message type is not positive (>0) */
+	{
+	&msg_q_1, &msg_buf, -1, 1, EINVAL},
+	    /* EINVAL - the message size is less than zero */
+	{
+	&msg_q_1, &msg_buf, 1, -1, EINVAL}
 };
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int i;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -113,14 +113,14 @@ int main(int ac, char **av)
 		 * loop through the test cases
 		 */
 
-		for (i=0; i<TST_TOTAL; i++) {
+		for (i = 0; i < TST_TOTAL; i++) {
 
 			/* set the message type */
 			msg_buf.mtype = TC[i].mtype;
 
 			/* make the call with the TEST macro */
 			TEST(msgsnd(*(TC[i].queue_id), TC[i].buffer,
-			     TC[i].msg_size, 0));
+				    TC[i].msg_size, 0));
 
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
@@ -142,15 +142,13 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -184,8 +182,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/* if it exists, remove the message queue that was created */
 	rm_queue(msg_q_1);
@@ -202,4 +199,3 @@ cleanup(void)
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

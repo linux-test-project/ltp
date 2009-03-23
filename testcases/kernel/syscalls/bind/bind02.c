@@ -41,7 +41,6 @@
  *
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -59,16 +58,16 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID="bind02";            /* Test program identifier.    */
+char *TCID = "bind02";		/* Test program identifier.    */
 int testno;
-int TST_TOTAL=1;
+int TST_TOTAL = 1;
 extern int Tst_count;
 
 /* This port needs to be a Privledged port */
 #define TCP_PRIVLEGED_COM_PORT 463
 
 struct passwd *pw;
-struct group  *gr;
+struct group *gr;
 
 uid_t uid;
 gid_t gid;
@@ -76,84 +75,83 @@ char nobody_uid[] = "nobody";
 
 int rc;
 
-void try_bind(){
+void try_bind()
+{
 	struct sockaddr_in servaddr;
 	int sockfd, r_value;
 
 	// Set effective user/group
-        if ((rc = setegid(gid)) == -1) {
-           tst_brkm(TBROK,0,"Unable to set process group id.");
-           tst_exit();
-        }
-        if ((rc = seteuid(uid)) == -1) {
-           tst_brkm(TBROK,0,"Unable to set process user id.");
-           tst_exit();
-        }
+	if ((rc = setegid(gid)) == -1) {
+		tst_brkm(TBROK, 0, "Unable to set process group id.");
+		tst_exit();
+	}
+	if ((rc = seteuid(uid)) == -1) {
+		tst_brkm(TBROK, 0, "Unable to set process user id.");
+		tst_exit();
+	}
 
+	if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+		printf("socket error\n");
+		exit(-1);
+	}
 
-	if( (sockfd = socket(AF_INET, SOCK_STREAM, 0)) <0 )
-	{
-         printf("socket error\n");
-         exit(-1);
- 	}
-
-	memset(&servaddr,0, sizeof(servaddr));
+	memset(&servaddr, 0, sizeof(servaddr));
 	servaddr.sin_family = AF_INET;
 	servaddr.sin_port = htons(TCP_PRIVLEGED_COM_PORT);
-	servaddr.sin_addr.s_addr=htonl(INADDR_ANY);
-	r_value = bind(sockfd,(struct sockaddr *)&servaddr, sizeof(servaddr));
-	if (r_value){
-		if (errno == EACCES){
-     		tst_resm(TPASS,"correct error");
+	servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+	r_value = bind(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr));
+	if (r_value) {
+		if (errno == EACCES) {
+			tst_resm(TPASS, "correct error");
+		} else {
+			tst_resm(TFAIL, "incorrect error, %d", r_value);
 		}
-		else {
-    	 	tst_resm(TFAIL,"incorrect error, %d",r_value);
-		}
-	}
-	else {
-			tst_resm (TFAIL,"user was able to bind successfully");
+	} else {
+		tst_resm(TFAIL, "user was able to bind successfully");
 	}
 
 	close(sockfd);
 
 	// Set effective user/group
-        if ((rc = setegid(0)) == -1) {
-           tst_brkm(TBROK,0,"Unable to reset process group id.");
-           tst_exit();
-        }
-        if ((rc = seteuid(uid)) == -1) {
-           tst_brkm(TBROK,0,"Unable to reset process user id.");
-           tst_exit();
-        }
+	if ((rc = setegid(0)) == -1) {
+		tst_brkm(TBROK, 0, "Unable to reset process group id.");
+		tst_exit();
+	}
+	if ((rc = seteuid(uid)) == -1) {
+		tst_brkm(TBROK, 0, "Unable to reset process user id.");
+		tst_exit();
+	}
 
 }
 
-int main(int argc,char *argv[]){
+int main(int argc, char *argv[])
+{
 
 	if (argc != 2) {
-          tst_resm(TINFO,"Defaulting to user nobody");
-	  pw = getpwnam(nobody_uid);
-        }else{
-          /*
-           * Get test user uid/gid.
-           */
-           if ((pw = getpwnam(argv[1])) == NULL) {
-	     tst_brkm(TBROK,0,"User %s not found",argv[1]);
-	     tst_exit();
-    	   }
-       }
-                                                                               
-    if ((gr = getgrgid(pw->pw_gid)) == NULL) {
-        tst_brkm(TBROK,0,"Invalid group, %s",pw->pw_gid);
-    	tst_exit();
+		tst_resm(TINFO, "Defaulting to user nobody");
+		pw = getpwnam(nobody_uid);
+	} else {
+		/*
+		 * Get test user uid/gid.
+		 */
+		if ((pw = getpwnam(argv[1])) == NULL) {
+			tst_brkm(TBROK, 0, "User %s not found", argv[1]);
+			tst_exit();
+		}
+	}
+
+	if ((gr = getgrgid(pw->pw_gid)) == NULL) {
+		tst_brkm(TBROK, 0, "Invalid group, %s", pw->pw_gid);
+		tst_exit();
 	}
 
 	uid = pw->pw_uid;
-    	gid = gr->gr_gid;
+	gid = gr->gr_gid;
 
-	tst_resm(TINFO,"Socket will try to be bind by user: %s, group: %s",pw->pw_name,gr->gr_name);
+	tst_resm(TINFO, "Socket will try to be bind by user: %s, group: %s",
+		 pw->pw_name, gr->gr_name);
 
-	try_bind();	
+	try_bind();
 	tst_exit();
 
 	/* NOT REACHED */

@@ -34,18 +34,18 @@
 #include <stdlib.h>
 #include <string.h>
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
-	struct passwd *ltpuser;		/* password struct for ltpuser2 */
-	struct group *ltpgroup;		/* group struct for ltpuser2 */
-	uid_t user_uid;			/* user id of ltpuser2 */
-	gid_t group_gid;		/* group id of ltpuser2 */
-	char *test_name;		/* test specific name */
-	char *path_name;		/* name of test directory/file */
+	struct passwd *ltpuser;	/* password struct for ltpuser2 */
+	struct group *ltpgroup;	/* group struct for ltpuser2 */
+	uid_t user_uid;		/* user id of ltpuser2 */
+	gid_t group_gid;	/* group id of ltpuser2 */
+	char *test_name;	/* test specific name */
+	char *path_name;	/* name of test directory/file */
 
 	if (argc != 3) {
-		fprintf(stderr, "This is a helper binary meant for internal LTP usage only\n");
+		fprintf(stderr,
+			"This is a helper binary meant for internal LTP usage only\n");
 		exit(1);
 	}
 
@@ -62,13 +62,14 @@ main(int argc, char **argv)
 	}
 	if ((ltpgroup = getgrnam("nobody")) == NULL) {
 		if ((ltpgroup = getgrnam("nogroup")) == NULL) {
-			perror("change_owner: nobody/nogroup's group not found in /etc/group");
+			perror
+			    ("change_owner: nobody/nogroup's group not found in /etc/group");
 			exit(1);
 		}
 	}
 
-	user_uid=0;
-        group_gid=0;
+	user_uid = 0;
+	group_gid = 0;
 
 	/* Check for test specific name and set uid/gid accordingly */
 	if (!(strcmp(test_name, "fchown03"))) {

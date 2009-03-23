@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: getegid01.c,v 1.6 2009/02/26 12:15:38 subrata_modak Exp $ */
+/* $Id: getegid01.c,v 1.7 2009/03/23 13:35:41 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -59,30 +59,30 @@
  *
  *    TEST CASES
  *
- * 	1.) getegid(2) returns...(See Description)
+ *	1.) getegid(2) returns...(See Description)
  *
  *    INPUT SPECIFICATIONS
- * 	The standard options for system call tests are accepted.
+ *	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
  *
  *    DURATION
- * 	Terminates - with frequency and infinite modes.
+ *	Terminates - with frequency and infinite modes.
  *
  *    SIGNALS
- * 	Uses SIGUSR1 to pause before test if option set.
- * 	(See the parse_opts(3) man page).
+ *	Uses SIGUSR1 to pause before test if option set.
+ *	(See the parse_opts(3) man page).
  *
  *    RESOURCES
- * 	None
+ *	None
  *
  *    ENVIRONMENTAL NEEDS
  *      No run-time environmental needs.
  *
  *    SPECIAL PROCEDURAL REQUIREMENTS
- * 	None
+ *	None
  *
  *    INTERCASE DEPENDENCIES
- * 	None
+ *	None
  *
  *    DETAILED DESCRIPTION
  *	This is a Phase I test for the getegid(2) system call.  It is intended
@@ -90,19 +90,19 @@
  *	should/will be extended when full functional tests are written for
  *	getegid(2).
  *
- * 	Setup:
- * 	  Setup signal handling.
+ *	Setup:
+ *	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
  *
- * 	Test:
+ *	Test:
  *	 Loop if the proper options are given.
- * 	  Execute system call
+ *	  Execute system call
  *	  Check return code, if system call failed (return=-1)
  *		Log the errno and Issue a FAIL message.
  *	  Otherwise, Issue a PASS message.
  *
- * 	Cleanup:
- * 	  Print errno log and/or timing stats if options given
+ *	Cleanup:
+ *	  Print errno log and/or timing stats if options given
  *
  *
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
@@ -118,110 +118,105 @@
 
 #include "compat_16.h"
 
-
 void setup();
 void cleanup();
 
 TCID_DEFINE(getegid01);		/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-int exp_enos[]={0};		/* must be a 0 terminated list */
+int exp_enos[] = { 0 };		/* must be a 0 terminated list */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-    int lc;		/* loop counter */
-    char *msg;		/* message returned from parse_opts */
-   
-    ;
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
+
+	;
 
     /***************************************************************
      * parse standard options
      ***************************************************************/
-    if ( (msg=parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL )
-	tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL)
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 
     /***************************************************************
      * perform global setup for test
      ***************************************************************/
-    setup();
+	setup();
 
-    /* set the expected errnos... */
-    TEST_EXP_ENOS(exp_enos);
+	/* set the expected errnos... */
+	TEST_EXP_ENOS(exp_enos);
 
     /***************************************************************
      * check looping state if -c option given
      ***************************************************************/
-    for (lc=0; TEST_LOOPING(lc); lc++) {
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-	/* reset Tst_count in case we are looping. */
-	Tst_count=0;
+		/* reset Tst_count in case we are looping. */
+		Tst_count = 0;
 
-	
-	/*
-	 * TEST CASE:
-	 *  Get effective group id.
-	 */
-	;
+		/*
+		 * TEST CASE:
+		 *  Get effective group id.
+		 */
+		;
 
-	/* Call getegid(2) */
-	TEST(GETEGID( ));
+		/* Call getegid(2) */
+		TEST(GETEGID());
 
-	/* check return code */
-	if ( TEST_RETURN < 0 ) {
-	    TEST_ERROR_LOG(TEST_ERRNO);
-	    tst_resm(TFAIL, "getegid -  Get effective group id. failed, errno=%d : %s",
-		     TEST_ERRNO, strerror(TEST_ERRNO));
-	    continue;	/* next loop for MTKERNEL */
-	}
+		/* check return code */
+		if (TEST_RETURN < 0) {
+			TEST_ERROR_LOG(TEST_ERRNO);
+			tst_resm(TFAIL,
+				 "getegid -  Get effective group id. failed, errno=%d : %s",
+				 TEST_ERRNO, strerror(TEST_ERRNO));
+			continue;	/* next loop for MTKERNEL */
+		}
 
 	/***************************************************************
 	 * only perform functional verification if flag set (-f not given)
 	 ***************************************************************/
-	if ( STD_FUNCTIONAL_TEST ) {
-	    /* No Verification test, yet... */
-	    tst_resm(TPASS, "getegid -  Get effective group id. returned %d", TEST_RETURN);
-	}
-    }	/* End for TEST_LOOPING */
+		if (STD_FUNCTIONAL_TEST) {
+			/* No Verification test, yet... */
+			tst_resm(TPASS,
+				 "getegid -  Get effective group id. returned %d",
+				 TEST_RETURN);
+		}
+	}			/* End for TEST_LOOPING */
 
     /***************************************************************
      * cleanup and exit
      ***************************************************************/
-    cleanup();
+	cleanup();
 
-    return 0;
-}	/* End main */
+	return 0;
+}				/* End main */
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void
-setup()
+void setup()
 {
-    /* capture signals */
-    tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	/* capture signals */
+	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-    /* Pause if that option was specified */
-    TEST_PAUSE;
-}	/* End setup() */
-
+	/* Pause if that option was specified */
+	TEST_PAUSE;
+}				/* End setup() */
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void
-cleanup()
+void cleanup()
 {
-    /*
-     * print timing stats if that option was specified.
-     * print errno log if that option was specified.
-     */
-    TEST_CLEANUP;
+	/*
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
+	TEST_CLEANUP;
 
-    /* exit with return code appropriate for results */
-    tst_exit();
-}	/* End cleanup() */
-
-
+	/* exit with return code appropriate for results */
+	tst_exit();
+}				/* End cleanup() */

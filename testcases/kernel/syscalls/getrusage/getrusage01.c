@@ -73,22 +73,21 @@
 static void setup();
 static void cleanup();
 
-char *TCID = "getrusage01"; 	/* Test program identifier.    */
+char *TCID = "getrusage01";	/* Test program identifier.    */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-int who[2] = {RUSAGE_SELF, RUSAGE_CHILDREN };
+int who[2] = { RUSAGE_SELF, RUSAGE_CHILDREN };
 int TST_TOTAL = 2;
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 
 	int lc, ind;		/* loop counter */
-	char *msg;	/* message returned from parse_opts */
+	char *msg;		/* message returned from parse_opts */
 	struct rusage usage;
-   
+
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
-	     != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL))
+	    != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -104,7 +103,7 @@ main(int ac, char **av)
 		for (ind = 0; ind < TST_TOTAL; ind++) {
 			/*
 			 * Call getrusage(2)
-		 	 */
+			 */
 			TEST(getrusage(who[ind], &usage));
 
 			if (TEST_RETURN == 0) {
@@ -116,19 +115,17 @@ main(int ac, char **av)
 					 TEST_ERRNO, strerror(TEST_ERRNO));
 			}
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* cleanup and exit */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 
-}	/* End main */
+}				/* End main */
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup()
+void setup()
 {
 
 	/* capture signals */
@@ -137,15 +134,13 @@ setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-}	/* End setup() */
-
+}				/* End setup() */
 
 /*
  *cleanup() -  performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 
 	/*
@@ -156,4 +151,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

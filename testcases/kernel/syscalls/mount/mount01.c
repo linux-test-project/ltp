@@ -79,32 +79,31 @@ static void help(void);
 static void setup(void);
 static void cleanup(void);
 
-char	*TCID = "mount01";		/* Test program identifier.    */
-int	TST_TOTAL = 1;			/* Total number of test cases. */
-extern int Tst_count;			/* TestCase counter for tst_* routine */
+char *TCID = "mount01";		/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
+extern int Tst_count;		/* TestCase counter for tst_* routine */
 
 #define DEFAULT_FSTYPE	"ext2"
 #define DIR_MODE	S_IRWXU | S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP
 
 static char *Fstype;
 
-static char	mntpoint[20];
-static char	*fstype;
-static char	*device;
-static int	Tflag = 0;
-static int	Dflag = 0;
+static char mntpoint[20];
+static char *fstype;
+static char *device;
+static int Tflag = 0;
+static int Dflag = 0;
 
-static option_t options[] = {		/* options supported by mount01 test */
-	{ "T:", &Tflag, &fstype },	/* -T type of filesystem	*/
-	{ "D:", &Dflag, &device },	/* -D device used for mounting	*/
-	{ NULL, NULL, NULL }
+static option_t options[] = {	/* options supported by mount01 test */
+	{"T:", &Tflag, &fstype},	/* -T type of filesystem        */
+	{"D:", &Dflag, &device},	/* -D device used for mounting  */
+	{NULL, NULL, NULL}
 };
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	int	lc;			/* loop counter */
-	char	*msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, options, &help)) != (char *)NULL) {
@@ -121,19 +120,19 @@ main(int ac, char **av)
 	}
 
 	if (Tflag) {
-		Fstype = (char *) malloc(strlen(fstype)+1);
-		if(Fstype == NULL) {
+		Fstype = (char *)malloc(strlen(fstype) + 1);
+		if (Fstype == NULL) {
 			tst_brkm(TBROK, NULL, "malloc - failed to alloc %d"
 				 "errno %d", strlen(fstype), errno);
 		}
-		strncpy(Fstype, fstype, strlen(fstype)+1);
+		strncpy(Fstype, fstype, strlen(fstype) + 1);
 	} else {
-		Fstype = (char *) malloc(strlen(DEFAULT_FSTYPE)+1);
-		if(Fstype == NULL) {
+		Fstype = (char *)malloc(strlen(DEFAULT_FSTYPE) + 1);
+		if (Fstype == NULL) {
 			tst_brkm(TBROK, NULL, "malloc - failed to alloc %d"
 				 "errno %d", strlen(DEFAULT_FSTYPE), errno);
 		}
-		strncpy(Fstype, DEFAULT_FSTYPE, strlen(DEFAULT_FSTYPE)+1);
+		strncpy(Fstype, DEFAULT_FSTYPE, strlen(DEFAULT_FSTYPE) + 1);
 	}
 
 	if (STD_COPIES != 1) {
@@ -170,29 +169,26 @@ main(int ac, char **av)
 					 TEST_ERRNO, strerror(TEST_ERRNO));
 			}
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* cleanup and exit */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 
-}	/* End main */
+}				/* End main */
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Check whether we are root*/
+	/* Check whether we are root */
 	if (geteuid() != 0) {
 		free(Fstype);
 		tst_brkm(TBROK, tst_exit, "Test must be run as root");
 	}
-
 
 	/* make a temp directory */
 	tst_tmpdir();
@@ -203,21 +199,19 @@ setup()
 	if (mkdir(mntpoint, DIR_MODE) < 0) {
 		tst_brkm(TBROK, cleanup, "mkdir(%s, %#o) failed; "
 			 "errno = %d: %s", mntpoint, DIR_MODE, errno,
-			  strerror(errno));
+			 strerror(errno));
 	}
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-}	/* End setup() */
-
+}				/* End setup() */
 
 /*
  *cleanup() -  performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	free(Fstype);
 
@@ -232,15 +226,14 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */
 
 /*
  * issue a help message
  */
-void
-help()
+void help()
 {
 	printf("-T type	  : specifies the type of filesystem to be mounted."
-		" Default ext2. \n");
+	       " Default ext2. \n");
 	printf("-D device : device used for mounting \n");
 }

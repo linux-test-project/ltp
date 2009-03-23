@@ -57,27 +57,27 @@
 #define	K_1	8192
 
 #define	NBUFS		2
-#define	CHUNK		K_1		/* single chunk */
+#define	CHUNK		K_1	/* single chunk */
 #define	MAX_IOVEC	2
 #define	DATA_FILE	"writev_data_file"
 
-char	buf1[K_1];
-char	buf2[K_1];
-char	buf3[K_1];
+char buf1[K_1];
+char buf2[K_1];
+char buf3[K_1];
 
-char * bad_addr = 0;
+char *bad_addr = 0;
 
-struct	iovec	wr_iovec[MAX_IOVEC] = {
-	{(caddr_t)-1,	CHUNK},
-	{(caddr_t)NULL,	0}
+struct iovec wr_iovec[MAX_IOVEC] = {
+	{(caddr_t) - 1, CHUNK},
+	{(caddr_t) NULL, 0}
 };
 
 /* 0 terminated list of expected errnos */
-int exp_enos[] = {14,0};
+int exp_enos[] = { 14, 0 };
 
-char	name[K_1], f_name[K_1];
-int	fd[2], in_sighandler;
-char	*buf_list[NBUFS];
+char name[K_1], f_name[K_1];
+int fd[2], in_sighandler;
+char *buf_list[NBUFS];
 
 char *TCID = "writev05";
 int TST_TOTAL = 1;
@@ -93,19 +93,18 @@ int fail;
 
 int main(int argc, char **argv)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	int nbytes;
 
 	/* parse standard options */
-	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) !=
-			(char *) NULL) {
+	if ((msg = parse_opts(argc, argv, (option_t *) NULL, NULL)) !=
+	    (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
-	setup();			/* set "tstdir", and "testfile" vars */
+	setup();		/* set "tstdir", and "testfile" vars */
 
 	/* The following loop checks looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -116,21 +115,19 @@ int main(int argc, char **argv)
 		buf_list[0] = buf1;
 		buf_list[1] = buf2;
 
-		fd[1] = -1;		/* Invalid file descriptor */
+		fd[1] = -1;	/* Invalid file descriptor */
 
 		if (signal(SIGTERM, sighandler) == SIG_ERR) {
 			perror("signal");
 			tst_resm(TFAIL, "signal() SIGTERM FAILED");
 			cleanup();
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		if (signal(SIGPIPE, sighandler) == SIG_ERR) {
 			perror("signal");
 			tst_resm(TFAIL, "signal() SIGPIPE FAILED");
 			cleanup();
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		/* Fill the buf_list[0] and buf_list[1] with 0 zeros */
 		memset(buf_list[0], 0, K_1);
@@ -140,29 +137,24 @@ int main(int argc, char **argv)
 			tst_resm(TFAIL, "open(2) failed: fname = %s, "
 				 "errno = %d", f_name, errno);
 			cleanup();
-			/*NOTREACHED*/
-		} else {
-			if ((nbytes = write(fd[0], buf_list[1], K_1)) !=
-				K_1) {
+		 /*NOTREACHED*/} else {
+			if ((nbytes = write(fd[0], buf_list[1], K_1)) != K_1) {
 				tst_resm(TFAIL, "write(2) failed: nbytes "
-					"= %d, errno = %d", nbytes, errno);
+					 "= %d, errno = %d", nbytes, errno);
 				cleanup();
-				/*NOTREACHED*/
-			}
+			 /*NOTREACHED*/}
 		}
 
 		if (close(fd[0]) < 0) {
 			tst_resm(TFAIL, "close failed: errno = %d", errno);
 			cleanup();
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		if ((fd[0] = open(f_name, O_RDWR, 0666)) < 0) {
 			tst_resm(TFAIL, "open failed: fname = %s, errno = %d",
 				 f_name, errno);
 			cleanup();
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		/*
 		 * In this block we are trying to call writev() with invalid
@@ -224,8 +216,7 @@ int main()
  * setup()
  *	performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -246,13 +237,12 @@ setup(void)
 	strcpy(name, DATA_FILE);
 	sprintf(f_name, "%s.%d", name, getpid());
 
-        bad_addr = mmap(0, 1, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
-        if (bad_addr == MAP_FAILED) {
-            printf("mmap failed\n");
-        }
-        wr_iovec[0].iov_base = bad_addr;
-
+	bad_addr = mmap(0, 1, PROT_NONE,
+			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
+	if (bad_addr == MAP_FAILED) {
+		printf("mmap failed\n");
+	}
+	wr_iovec[0].iov_base = bad_addr;
 
 }
 
@@ -261,8 +251,7 @@ setup(void)
  *	performs all ONE TIME cleanup for this test at
  *	completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -283,25 +272,25 @@ cleanup(void)
  * sighandler()
  *	Signal handler for SIGTERM and SIGPIPE
  */
-void
-sighandler(int sig)
+void sighandler(int sig)
 {
-	switch(sig) {
-	case SIGTERM: break;
-	case SIGPIPE: ++in_sighandler;
-			return;
+	switch (sig) {
+	case SIGTERM:
+		break;
+	case SIGPIPE:
+		++in_sighandler;
+		return;
 	default:
-			tst_resm(TFAIL, "sighandler() received invalid signal "
-					": %d", sig);
-			break;
+		tst_resm(TFAIL, "sighandler() received invalid signal "
+			 ": %d", sig);
+		break;
 	}
 
 	if ((unlink(f_name) < 0) && (errno != ENOENT)) {
 		tst_resm(TFAIL, "unlink Failed--file = %s, errno = %d",
 			 f_name, errno);
 		cleanup();
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 	exit(sig);
 }
 
@@ -309,8 +298,7 @@ sighandler(int sig)
  * l_seek()
  *	Wrap around for regular lseek() to give error message on failure
  */
-long
-l_seek(int fdesc, long offset, int whence)
+long l_seek(int fdesc, long offset, int whence)
 {
 	if (lseek(fdesc, offset, whence) < 0) {
 		tst_resm(TFAIL, "lseek Failed : errno = %d", errno);

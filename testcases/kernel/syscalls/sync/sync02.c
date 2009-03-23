@@ -38,11 +38,11 @@
  *   Loop if the proper options are given.
  *   Execute system call
  *   Check return code, if system call failed (return=-1)
- *   	Log the errno and Issue a FAIL message.
+ *	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call
+ *	Verify the Functionality of system call
  *      if successful,
- *      	Issue Functionality-Pass message.
+ *		Issue Functionality-Pass message.
  *      Otherwise,
  *		Issue Functionality-Fail message.
  *  Cleanup:
@@ -81,28 +81,26 @@
 #define TEMP_FILE	"temp_file"
 #define FILE_MODE       S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
 
-char *TCID="sync02";		/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "sync02";		/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-char write_buffer[BUFSIZ];	/* buffer used to write data to file*/
+char write_buffer[BUFSIZ];	/* buffer used to write data to file */
 int fildes;			/* file descriptor for temporary file */
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
-	char read_buffer[BUFSIZ];	/* buffer used to read data from file*/
-   
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
+	char read_buffer[BUFSIZ];	/* buffer used to read data from file */
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/* Perform global setup for test */
 	setup();
@@ -110,7 +108,7 @@ main(int ac, char **av)
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/*
 		 * Call sync(2) to commit buffer data to disk.
@@ -119,7 +117,7 @@ main(int ac, char **av)
 
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "%s, Failed, errno=%d : %s",
-				TCID, TEST_ERRNO, strerror(TEST_ERRNO));
+				 TCID, TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
 			/*
 			 * Perform functional verification if test
@@ -129,44 +127,39 @@ main(int ac, char **av)
 				/* Set the file ptr to b'nning of file */
 				if (lseek(fildes, 0, SEEK_SET) < 0) {
 					tst_brkm(TFAIL, cleanup, "lseek() "
-						"failed on %s, error=%d",
+						 "failed on %s, error=%d",
 						 TEMP_FILE, errno);
-					/*NOTREACHED*/
-				}
+				 /*NOTREACHED*/}
 
 				/* Read the contents of file */
-				if (read(fildes, read_buffer, \
-						 sizeof(read_buffer)) > 0) {
+				if (read(fildes, read_buffer,
+					 sizeof(read_buffer)) > 0) {
 					if (strcmp(read_buffer, write_buffer)) {
 						tst_resm(TFAIL, "Data read "
-							"from %s doesn't match "
-							"with witten data",
-							TEMP_FILE);
+							 "from %s doesn't match "
+							 "with witten data",
+							 TEMP_FILE);
 					} else {
 						tst_resm(TPASS, "Functionality "
-							"of sync() successful");
+							 "of sync() successful");
 					}
 				} else {
 					tst_brkm(TFAIL, cleanup,
 						 "read() Fails on %s, error=%d",
 						 TEMP_FILE, errno);
-						/*NOTREACHED*/
-				}
+				 /*NOTREACHED*/}
 			} else {
 				tst_resm(TPASS, "call succeeded");
 			}
 		}
-		Tst_count++;			/* incr. TEST_LOOP counter */
-	}	/* End for TEST_LOOPING */
+		Tst_count++;	/* incr. TEST_LOOP counter */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
-	/*NOTREACHED*/
+	 /*NOTREACHED*/ return 0;
 
-
-  return 0;
-
-}	/* End main */
+}				/* End main */
 
 /*
  * void
@@ -175,8 +168,7 @@ main(int ac, char **av)
  *  Create a test file under temporary directory and write some
  *  data into it.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -192,26 +184,24 @@ setup()
 	tst_tmpdir();
 
 	/* Copy some data into data buffer */
-	strcpy(write_buffer,  "abcdefghijklmnopqrstuvwxyz");
+	strcpy(write_buffer, "abcdefghijklmnopqrstuvwxyz");
 
 	/* Creat a temporary file under above directory */
 	if ((fildes = open(TEMP_FILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR | O_CREAT, %#o) Failed, errno=%d :%s",
 			 TEMP_FILE, FILE_MODE, errno, strerror(errno));
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/* Write the buffer data into file */
-	if (write(fildes, write_buffer, strlen(write_buffer)+1) != \
-				strlen(write_buffer)+1) {
+	if (write(fildes, write_buffer, strlen(write_buffer) + 1) !=
+	    strlen(write_buffer) + 1) {
 		tst_brkm(TBROK, cleanup,
 			 "write() failed to write buffer data to %s",
 			 TEMP_FILE);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
-}	/* End setup() */
+}				/* End setup() */
 
 /*
  * void
@@ -219,8 +209,7 @@ setup()
  *             completion or premature exit.
  *  Remove the test directory and testfile created in the setup.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -240,4 +229,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

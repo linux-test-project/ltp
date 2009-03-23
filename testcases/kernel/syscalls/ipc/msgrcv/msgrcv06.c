@@ -79,7 +79,7 @@ char *TCID = "msgrcv06";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-int exp_enos[] = {EIDRM, 0};	/* 0 terminated list of expected errnos */
+int exp_enos[] = { EIDRM, 0 };	/* 0 terminated list of expected errnos */
 
 int msg_q_1 = -1;		/* The message queue id created in setup */
 
@@ -90,19 +90,18 @@ pid_t c_pid;
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
-
 #ifdef UCLINUX
 	maybe_run_child(&do_child_uclinux, "d", &msg_q_1);
 #endif
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	if (sync_pipe_create(sync_pipes, PIPE_NAME) == -1)
 		tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
@@ -121,7 +120,7 @@ int main(int ac, char **av)
 
 		/* create a message queue with read/write permission */
 		if ((msg_q_1 = msgget(msgkey, IPC_CREAT | IPC_EXCL | MSG_RW))
-		     == -1) {
+		    == -1) {
 			tst_brkm(TBROK, cleanup, "Can't create message queue");
 		}
 
@@ -133,7 +132,7 @@ int main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "could not fork");
 		}
 
-		if (c_pid == 0) {		/* child */
+		if (c_pid == 0) {	/* child */
 			/*
 			 * Attempt to read a message without IPC_NOWAIT.
 			 * With no message to read, the child sleeps.
@@ -146,13 +145,15 @@ int main(int ac, char **av)
 #else
 			do_child();
 #endif
-		} else {			/* parent */
+		} else {	/* parent */
 
 			if (sync_pipe_wait(sync_pipes) == -1)
-				tst_brkm(TBROK, cleanup, "sync_pipe_wait failed");
+				tst_brkm(TBROK, cleanup,
+					 "sync_pipe_wait failed");
 
 			if (sync_pipe_close(sync_pipes, PIPE_NAME) == -1)
-				tst_brkm(TBROK, cleanup, "sync_pipe_close failed");
+				tst_brkm(TBROK, cleanup,
+					 "sync_pipe_close failed");
 
 			sleep(1);
 
@@ -163,15 +164,13 @@ int main(int ac, char **av)
 		}
 	}
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * do_child()
  */
-void
-do_child()
+void do_child()
 {
 	if (sync_pipe_notify(sync_pipes) == -1)
 		tst_brkm(TBROK, cleanup, "sync_pipe_notify failed");
@@ -188,19 +187,20 @@ do_child()
 
 	TEST_ERROR_LOG(TEST_ERRNO);
 
-	switch(TEST_ERRNO) {
+	switch (TEST_ERRNO) {
 	case EIDRM:
-		tst_resm(TPASS, "expected failure - errno = %d : %s", TEST_ERRNO,
-			 strerror(TEST_ERRNO));
-	
+		tst_resm(TPASS, "expected failure - errno = %d : %s",
+			 TEST_ERRNO, strerror(TEST_ERRNO));
+
 		/* mark the queue as invalid as it was removed */
 		msg_q_1 = -1;
 		break;
 	default:
-		tst_resm(TFAIL, "call failed with an unexpected error - %d : %s",
+		tst_resm(TFAIL,
+			 "call failed with an unexpected error - %d : %s",
 			 TEST_ERRNO, strerror(TEST_ERRNO));
 		break;
-	}		
+	}
 
 	/* if it exists, remove the message queue that was created */
 	rm_queue(msg_q_1);
@@ -212,8 +212,7 @@ do_child()
 /*
  * do_child_uclinux() - capture signals again, then run do_child()
  */
-void
-do_child_uclinux()
+void do_child_uclinux()
 {
 	if (sync_pipe_create(sync_pipes, PIPE_NAME) == -1)
 		tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
@@ -227,8 +226,7 @@ do_child_uclinux()
 /*
  * sighandler() - handle signals
  */
-void
-sighandler(int sig)
+void sighandler(int sig)
 {
 	/* we don't need to do anything here */
 }
@@ -236,8 +234,7 @@ sighandler(int sig)
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, sighandler, cleanup);
@@ -260,8 +257,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/* Remove the temporary directory */
 	tst_rmdir();

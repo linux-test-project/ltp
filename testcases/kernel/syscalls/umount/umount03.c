@@ -85,44 +85,42 @@ static void setup(void);
 static void cleanup(void);
 static void cleanup1(void);
 
-
-char	*TCID = "umount03";		/* Test program identifier.    */
-extern int Tst_count;			/* TestCase counter for tst_* routine */
+char *TCID = "umount03";	/* Test program identifier.    */
+extern int Tst_count;		/* TestCase counter for tst_* routine */
 
 #define DEFAULT_FSTYPE "ext2"
 #define FSTYPE_LEN	20
 #define DIR_MODE	S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH
 
-static char	*Type;
-static char	mntpoint[PATH_MAX];
-static char	*fstype;
-static char	*device;
-static int	Tflag = 0;
-static int	Dflag = 0;
+static char *Type;
+static char mntpoint[PATH_MAX];
+static char *fstype;
+static char *device;
+static int Tflag = 0;
+static int Dflag = 0;
 
 static struct test_case_t {
-	char	*err_desc;	/* error description		*/
-	int	exp_errno;	/* Expected error no		*/
-	char	*exp_errval;	/* Expected error value string  */
-} testcases = { "User not Super User/root", EPERM, "EPERM"};
+	char *err_desc;		/* error description            */
+	int exp_errno;		/* Expected error no            */
+	char *exp_errval;	/* Expected error value string  */
+} testcases = {
+"User not Super User/root", EPERM, "EPERM"};
 
 /* Total number of test cases. */
 int TST_TOTAL = 1;
 
 static int exp_enos[] = { EPERM, 0 };
 
-static option_t options[] = {		/* options supported by mount04 test */
-	{ "T:", &Tflag, &fstype },	/* -T type of filesystem	*/
-	{ "D:", &Dflag, &device },	/* -D device used for mounting	*/
-	{ NULL, NULL, NULL }
+static option_t options[] = {	/* options supported by mount04 test */
+	{"T:", &Tflag, &fstype},	/* -T type of filesystem        */
+	{"D:", &Dflag, &device},	/* -D device used for mounting  */
+	{NULL, NULL, NULL}
 };
 
-
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	int	lc;			/* loop counter */
-	char	*msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	char nobody_uid[] = "nobody";
 	struct passwd *ltpuser;
 	int status;
@@ -141,7 +139,7 @@ main(int ac, char **av)
 		tst_exit();
 	}
 
-	Type = (char *) malloc(FSTYPE_LEN);
+	Type = (char *)malloc(FSTYPE_LEN);
 	if (!Type) {
 		tst_brkm(TBROK, NULL, "malloc - alloc of %d failed",
 			 FSTYPE_LEN);
@@ -150,12 +148,13 @@ main(int ac, char **av)
 
 	if (Tflag == 1) {
 		strncpy(Type, fstype,
-		   (FSTYPE_LEN < strlen(fstype)) ? FSTYPE_LEN : strlen(fstype));
+			(FSTYPE_LEN <
+			 strlen(fstype)) ? FSTYPE_LEN : strlen(fstype));
 	} else {
 		strncpy(Type, DEFAULT_FSTYPE, strlen(DEFAULT_FSTYPE));
 	}
 
-	if(STD_COPIES != 1) {
+	if (STD_COPIES != 1) {
 		tst_resm(TINFO, "-c option has no effect for this testcase - "
 			 "%s doesn't allow running more than one instance "
 			 "at a time", TCID);
@@ -165,14 +164,13 @@ main(int ac, char **av)
 	/* perform global setup for test */
 	setup();
 
-
 	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-		switch(fork()) {
+		switch (fork()) {
 
 		case -1:
 			/* fork() failed */
@@ -183,27 +181,27 @@ main(int ac, char **av)
 			/* Child */
 
 			/* Switch to nobody user */
-			if((ltpuser = getpwnam(nobody_uid)) == NULL) {
+			if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
 				tst_brkm(TBROK, tst_exit, "\"nobody\" user"
-					"not present");
+					 "not present");
 			}
 			if (setuid(ltpuser->pw_uid) == -1) {
 				tst_resm(TWARN, "setuid failed "
-					"to set the effective uid to %d",
-					ltpuser->pw_uid);
+					 "to set the effective uid to %d",
+					 ltpuser->pw_uid);
 				exit(1);
 			}
 			TEST(umount(mntpoint));
 
 			if ((TEST_RETURN == -1) &&
-			   (TEST_ERRNO == testcases.exp_errno)) {
+			    (TEST_ERRNO == testcases.exp_errno)) {
 				tst_resm(TPASS, "umount(2) expected failure "
 					 "Got errno - %s : %s",
 					 testcases.exp_errval,
 					 testcases.err_desc);
 			} else {
 				tst_resm(TFAIL, "umount(2) failed to produce "
-					"expected error; %d, errno:%s got %d",
+					 "expected error; %d, errno:%s got %d",
 					 testcases.exp_errno,
 					 testcases.exp_errval, TEST_ERRNO);
 			}
@@ -211,28 +209,24 @@ main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 			exit(1);
 
-		default :
+		default:
 			/* Parent */
 			if ((wait(&status)) < 0) {
 				tst_resm(TFAIL, "wait() failed");
 			}
 		}
 
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* cleanup and exit */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 
-}	/* End main */
-
-
+}				/* End main */
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup()
+void setup()
 {
 	char nobody_uid[] = "nobody";
 	struct passwd *ltpuser;
@@ -240,7 +234,7 @@ setup()
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Check whether we are root*/
+	/* Check whether we are root */
 	if (geteuid() != 0) {
 		if (Type != NULL) {
 			free(Type);
@@ -249,7 +243,7 @@ setup()
 	}
 
 	/* Switch to nobody user */
-	if((ltpuser = getpwnam(nobody_uid)) == NULL) {
+	if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
 		if (Type != NULL) {
 			free(Type);
 		}
@@ -260,7 +254,7 @@ setup()
 			free(Type);
 		}
 		tst_brkm(TBROK, tst_exit, "setuid failed to set the "
-			"effective uid to %d", ltpuser->pw_uid);
+			 "effective uid to %d", ltpuser->pw_uid);
 	}
 	/* make a temp directory */
 	tst_tmpdir();
@@ -269,12 +263,12 @@ setup()
 
 	if (mkdir(mntpoint, DIR_MODE)) {
 		tst_brkm(TBROK, cleanup1, "mkdir(%s, %#o) failed; errno = %d:"
-			" %s", mntpoint, DIR_MODE, errno, strerror(errno));
+			 " %s", mntpoint, DIR_MODE, errno, strerror(errno));
 	}
 
 	if (seteuid(0) == -1) {
 		tst_brkm(TBROK, cleanup1, "setuid failed to set the effective"
-			" uid to %d", ltpuser->pw_uid);
+			 " uid to %d", ltpuser->pw_uid);
 	}
 	/* set up expected error numbers */
 	TEST_EXP_ENOS(exp_enos);
@@ -283,22 +277,20 @@ setup()
 
 	if (TEST_RETURN != 0) {
 		tst_brkm(TBROK, cleanup1, "mount(2) failed to mount device %s "
-			"errno = %d : %s", device, TEST_ERRNO,
-			strerror(TEST_ERRNO));
+			 "errno = %d : %s", device, TEST_ERRNO,
+			 strerror(TEST_ERRNO));
 	}
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	return;
-}	/* End setup() */
-
+}				/* End setup() */
 
 /*
  *cleanup1() -  performs cleanup for this test at premature exit.
  */
-void
-cleanup1()
+void cleanup1()
 {
 	if (Type != NULL) {
 		free(Type);
@@ -317,20 +309,19 @@ cleanup1()
 	tst_exit();
 
 	return;
-}	/* End cleanup() */
+}				/* End cleanup() */
 
 /*
  *cleanup() -  performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	TEST(umount(mntpoint));
 	if (TEST_RETURN != 0) {
 		tst_resm(TWARN, "umount(2) failed to umount device %s while"
-			" cleanuo errno = %d : %s", mntpoint, TEST_ERRNO,
-			strerror(TEST_ERRNO));
+			 " cleanuo errno = %d : %s", mntpoint, TEST_ERRNO,
+			 strerror(TEST_ERRNO));
 	}
 
 	if (Type != NULL) {
@@ -350,14 +341,14 @@ cleanup()
 	tst_exit();
 
 	return;
-}	/* End cleanup() */
+}				/* End cleanup() */
+
 /*
  * issue a help message
  */
-void
-help()
+void help()
 {
 	printf("-T type	  : specifies the type of filesystem to be mounted."
-		" Default ext2. \n");
+	       " Default ext2. \n");
 	printf("-D device : device used for mounting \n");
 }

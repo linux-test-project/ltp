@@ -72,7 +72,7 @@ char *TCID = "semop05";
 int TST_TOTAL = 4;
 extern int Tst_count;
 
-int exp_enos[] = {EINTR, EIDRM, 0};  /* 0 terminated list of expected errnos */
+int exp_enos[] = { EINTR, EIDRM, 0 };	/* 0 terminated list of expected errnos */
 
 int sem_id_1 = -1;
 
@@ -88,16 +88,17 @@ struct test_case_t {
 	int error;
 } TC[] = {
 	/* EIRDM sem_op = 0 */
-	{{1}, 0, 0, 2, EIDRM},
-
-	/* EIRDM sem_op = -1 */
-	{{0}, -1, 0, 3, EIDRM},
-
-	/* EINTR sem_op = 0 */
-	{{1}, 0, 0, 4, EINTR},
-
-	/* EINTR sem_op = -1 */
-	{{0}, -1, 0, 5, EINTR}
+	{ {
+	1}, 0, 0, 2, EIDRM},
+	    /* EIRDM sem_op = -1 */
+	{ {
+	0}, -1, 0, 3, EIDRM},
+	    /* EINTR sem_op = 0 */
+	{ {
+	1}, 0, 0, 4, EINTR},
+	    /* EINTR sem_op = -1 */
+	{ {
+	0}, -1, 0, 5, EINTR}
 };
 
 #ifdef UCLINUX
@@ -108,22 +109,21 @@ static int i_uclinux;
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int i;
 	pid_t pid;
 	void do_child();
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
-
 #ifdef UCLINUX
 	maybe_run_child(&do_child_uclinux, "dd", &i_uclinux, &sem_id_1);
 #endif
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -131,10 +131,11 @@ int main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		for (i=0; i<TST_TOTAL; i++) {
+		for (i = 0; i < TST_TOTAL; i++) {
 
 			if (sync_pipe_create(sync_pipes, PIPE_NAME) == -1)
-				tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
+				tst_brkm(TBROK, cleanup,
+					 "sync_pipe_create failed");
 
 			/* initialize the s_buf buffer */
 			s_buf.sem_op = TC[i].op;
@@ -151,7 +152,7 @@ int main(int ac, char **av)
 				tst_brkm(TBROK, cleanup, "could not fork");
 			}
 
-			if (pid == 0) {		/* child */
+			if (pid == 0) {	/* child */
 
 #ifdef UCLINUX
 				if (self_exec(av[0], "dd", i, sem_id_1) < 0) {
@@ -161,13 +162,18 @@ int main(int ac, char **av)
 #else
 				do_child(i);
 #endif
-			} else {		/* parent */
+			} else {	/* parent */
 
 				if (sync_pipe_wait(sync_pipes) == -1)
-					tst_brkm(TBROK, cleanup, "sync_pipe_wait failed: %d", errno);
+					tst_brkm(TBROK, cleanup,
+						 "sync_pipe_wait failed: %d",
+						 errno);
 
-				if (sync_pipe_close(sync_pipes, PIPE_NAME) == -1)
-					tst_brkm(TBROK, cleanup, "sync_pipe_close failed: %d", errno);
+				if (sync_pipe_close(sync_pipes, PIPE_NAME) ==
+				    -1)
+					tst_brkm(TBROK, cleanup,
+						 "sync_pipe_close failed: %d",
+						 errno);
 
 				/* After son has been created, give it a chance to execute the
 				 * semop command before we continue. Without this sleep, on SMP machine
@@ -192,7 +198,7 @@ int main(int ac, char **av)
 				}
 
 				/* let the child carry on */
-				waitpid(pid,NULL,0);
+				waitpid(pid, NULL, 0);
 			}
 
 			/*
@@ -212,15 +218,13 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * do_child()
  */
-void
-do_child(int i)
+void do_child(int i)
 {
 #ifdef UCLINUX
 	if (sync_pipe_create(sync_pipes, PIPE_NAME) == -1)
@@ -261,8 +265,7 @@ do_child(int i)
  * do_child_uclinux() - capture signals, re-initialize s_buf then call do_child
  *                      with the appropriate argument
  */
-void
-do_child_uclinux()
+void do_child_uclinux()
 {
 	int i = i_uclinux;
 
@@ -281,8 +284,7 @@ do_child_uclinux()
 /*
  * sighandler() - handle signals
  */
-void
-sighandler(int sig)
+void sighandler(int sig)
 {
 	/* we don't need to do anything here */
 }
@@ -290,8 +292,7 @@ sighandler(int sig)
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, sighandler, cleanup);
@@ -313,7 +314,7 @@ setup(void)
 	semkey = getipckey();
 
 	/* create a semaphore set with read and alter permissions */
-	/* and PSEMS "primitive" semaphores			  */
+	/* and PSEMS "primitive" semaphores                       */
 	if ((sem_id_1 =
 	     semget(semkey, PSEMS, IPC_CREAT | IPC_EXCL | SEM_RA)) == -1) {
 		tst_brkm(TBROK, cleanup, "couldn't create semaphore in setup");
@@ -324,8 +325,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/* if it exists, remove the semaphore resource */
 	rm_sema(sem_id_1);
@@ -343,4 +343,3 @@ cleanup(void)
 
 	tst_exit();
 }
-

@@ -81,8 +81,8 @@
 #define PRESENT		1
 #define NOT_PRESENT	0
 
-char *TCID="getgroups03";	/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test conditions */
+char *TCID = "getgroups03";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test conditions */
 int ngroups;			/* No. of groups */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 gid_t groups_list[NGROUPS];	/* Array to hold gids for getgroups() */
@@ -94,8 +94,7 @@ int readgroups(gid_t *);	/* function to read gids of testuser */
 void setup();			/* setup function for the test */
 void cleanup();			/* cleanup function for the test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
@@ -104,7 +103,7 @@ main(int ac, char **av)
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -149,21 +148,19 @@ main(int ac, char **av)
 		} else {
 			tst_resm(TPASS, "call succeeded");
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
-}	/* End main */
+	 /*NOTREACHED*/ return 0;
+}				/* End main */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  *	     Get the supplimentary gid(s) of root from /etc/group.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -175,19 +172,19 @@ setup()
 	 * Get the IDs of all the groups of "root"
 	 * from /etc/group file
 	 */
-	ngroups=readgroups(groups);
+	ngroups = readgroups(groups);
 
 	/* Setgroups is called by the login(1) process
-         * if the testcase is executed via an ssh session this
-         * testcase will fail. So execute setgroups() before executing
-         * getgroups()
+	 * if the testcase is executed via an ssh session this
+	 * testcase will fail. So execute setgroups() before executing
+	 * getgroups()
 	 */
 	if (setgroups(ngroups, groups) == -1) {
-        	tst_resm (TFAIL, "failed to setup testcase");
-                cleanup();
-        }
+		tst_resm(TFAIL, "failed to setup testcase");
+		cleanup();
+	}
 
-}	/* End setup() */
+}				/* End setup() */
 
 /*
  * readgroups(gid_t *)  - Read supplimentary group ids of "root" user
@@ -195,11 +192,10 @@ setup()
  * belongs and puts them into the array passed.
  * Returns the no of gids read.
  */
-int
-readgroups(gid_t groups[NGROUPS])
+int readgroups(gid_t groups[NGROUPS])
 {
-	struct group *grp;              /* To hold the group entry */
-	int ngrps = 0;			/* No of groups */
+	struct group *grp;	/* To hold the group entry */
+	int ngrps = 0;		/* No of groups */
 	int i;
 	int found;
 	gid_t g;
@@ -220,19 +216,19 @@ readgroups(gid_t groups[NGROUPS])
 	   an application should also call getegid(2) and add or
 	   remove the resulting value.).  So, add the value here if
 	   it's not in.  */
-	     
+
 	found = 0;
-	g = getegid ();
+	g = getegid();
 
 	for (i = 0; i < ngrps; i++) {
-	  if (groups [i] == g)
-	    found = 1;
+		if (groups[i] == g)
+			found = 1;
 	}
 	if (found == 0)
-	  groups [ngrps++] = g;
+		groups[ngrps++] = g;
 
 	endgrent();
-	return(ngrps);
+	return (ngrps);
 }
 
 /*
@@ -242,13 +238,12 @@ readgroups(gid_t groups[NGROUPS])
  *  This function returns flag value which indicates success or failure
  *  of verification.
  */
-int
-verify_groups(ret_val)
+int verify_groups(ret_val)
 int ret_val;
 {
-	int i, j;			/* counter variables */
-	gid_t egid;			/* Effective gid of the process */
-	int egid_flag = PRESENT;        /* egid present or not */
+	int i, j;		/* counter variables */
+	gid_t egid;		/* Effective gid of the process */
+	int egid_flag = PRESENT;	/* egid present or not */
 
 	/* Set the functionality flag */
 	fflag = 1;
@@ -279,7 +274,7 @@ int ret_val;
 	}
 
 	/* Now do the reverse comparison */
-	egid = getegid();		/* get egid */
+	egid = getegid();	/* get egid */
 	for (i = 0; i < ngroups; i++) {
 		for (j = 0; j < ret_val; j++) {
 			if (groups[i] != groups_list[j]) {
@@ -303,10 +298,10 @@ int ret_val;
 						 */
 						egid_flag = NOT_PRESENT;
 					}
-				} else  { /* if the loop is not over */
+				} else {	/* if the loop is not over */
 					continue;
 				}
-			} else {  /* if equal, continue the outer loop */
+			} else {	/* if equal, continue the outer loop */
 				break;
 			}
 		}
@@ -319,26 +314,25 @@ int ret_val;
 	 * Now, if ngroups matches ret_val, as above comparisons of the array
 	 * are successful, this implies that the array contents match.
 	 */
-	if (egid_flag == 0) {		/* If egid is not returned */
-		ngroups --;
+	if (egid_flag == 0) {	/* If egid is not returned */
+		ngroups--;
 	}
 	if (ngroups != ret_val) {
-		tst_resm(TFAIL, \
-		 "getgroups(2) returned incorrect no. of gids %d expect %d",
-			ret_val);
+		tst_resm(TFAIL,
+			 "getgroups(2) returned incorrect no. of gids %d expect %d",
+			 ret_val);
 		fflag = 0;
 	}
 
 	/* Return the status of functionality */
-	return(fflag);
+	return (fflag);
 }
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -347,4 +341,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

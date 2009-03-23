@@ -30,7 +30,7 @@
  *
  * 	test 3:
  * 	Check if read sets EFAULT, if buf is -1.
- * 
+ *$
  * ALGORITHM
  * 	test 1:
  * 	Read with an invalid file descriptor, and expect an EBADF
@@ -41,7 +41,7 @@
  *
  * 	test 3:
  * 	Pass buf = -1 as a parmeter to read, expect an EFAULT.
- * 
+ *$
  * USAGE:  <for command-line>
  *  read02 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
@@ -75,7 +75,7 @@ extern int Tst_count;
 char file[BUFSIZ];
 char fname[100] = "/tmp/tstfile";
 
-int exp_enos[]={EBADF, EISDIR, EFAULT, 0};
+int exp_enos[] = { EBADF, EISDIR, EFAULT, 0 };
 
 int badfd = -1;
 int fd2, fd3;
@@ -87,30 +87,31 @@ struct test_case_t {
 	int error;
 } TC[] = {
 	/* the file descriptor is invalid - EBADF */
-	{&badfd, buf, EBADF},
-
-	/* the file descriptor is a directory - EISDIR */
-	{&fd2, buf, EISDIR,},
-
+	{
+	&badfd, buf, EBADF},
+	    /* the file descriptor is a directory - EISDIR */
+	{
+	&fd2, buf, EISDIR,},
 #ifndef UCLINUX
-	/* Skip since uClinux does not implement memory protection */
-	/* the buffer is invalid - EFAULT */
-	{&fd3, (void *)-1, EFAULT}
+	    /* Skip since uClinux does not implement memory protection */
+	    /* the buffer is invalid - EFAULT */
+	{
+	&fd3, (void *)-1, EFAULT}
 #endif
 };
 
-int TST_TOTAL = sizeof(TC)/sizeof(*TC);
+int TST_TOTAL = sizeof(TC) / sizeof(*TC);
 
-char * bad_addr = 0;
+char *bad_addr = 0;
 
 int main(int ac, char **av)
 {
 	int i;
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -150,15 +151,13 @@ int main(int ac, char **av)
 		}
 	}
 	cleanup();
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -179,16 +178,14 @@ setup(void)
 
 	if (write(fd3, "A", 1) != 1) {
 		tst_brkm(TBROK, cleanup, "can't write to fd3");
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 	close(fd3);
 	if ((fd3 = open(fname, O_RDWR | O_CREAT, 0666)) == -1) {
 		tst_brkm(TBROK, cleanup, "open of fd3 (temp file) failed");
 	}
-
 #if !defined(UCLINUX)
 	bad_addr = mmap(0, 1, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
+			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
 	if (bad_addr == MAP_FAILED) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}
@@ -200,8 +197,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  *	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing status if that option was specified.

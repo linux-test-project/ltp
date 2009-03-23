@@ -27,25 +27,22 @@
 #include <unistd.h>
 #include <pcl.h>
 
-
 #define MIN_MEASURE_TIME 2000000ULL
 #define CO_STACK_SIZE (8 * 1024)
 
-
-
 static volatile unsigned long sw_counter;
 
-
-
-static unsigned long long getustime(void) {
+static unsigned long long getustime(void)
+{
 	struct timeval tm;
 
 	gettimeofday(&tm, NULL);
-	return (unsigned long long) tm.tv_sec * 1000000ULL + (unsigned long long) tm.tv_usec;
+	return (unsigned long long)tm.tv_sec * 1000000ULL +
+	    (unsigned long long)tm.tv_usec;
 }
 
-
-static void switch_bench(void *data) {
+static void switch_bench(void *data)
+{
 
 	for (;;) {
 		sw_counter--;
@@ -53,8 +50,8 @@ static void switch_bench(void *data) {
 	}
 }
 
-
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
 	int i, ntimes;
 	coroutine_t coro;
 	unsigned long nswitches;
@@ -75,8 +72,7 @@ int main(int argc, char *argv[]) {
 		ntimes *= 4;
 	} while ((te - ts) < MIN_MEASURE_TIME);
 
-	fprintf(stdout, "%g usec\n",
-		(double) (te - ts) / (double) ntimes);
+	fprintf(stdout, "%g usec\n", (double)(te - ts) / (double)ntimes);
 
 	if ((coro = co_create(switch_bench, NULL, NULL, CO_STACK_SIZE)) != NULL) {
 		fprintf(stdout, "measuring switch performance ... ");
@@ -92,11 +88,10 @@ int main(int argc, char *argv[]) {
 		} while ((te - ts) < MIN_MEASURE_TIME);
 
 		fprintf(stdout, "%g usec\n",
-			(double) (te - ts) / (double) (2 * nswitches));
+			(double)(te - ts) / (double)(2 * nswitches));
 
 		co_delete(coro);
 	}
 
 	return 0;
 }
-

@@ -52,7 +52,7 @@
  *
  *	OUTPUT SPECIFICATIONS
  *		Output describing whether test cases passed or failed.
- * 
+ *$
  *	ENVIRONMENTAL NEEDS
  *		None
  *
@@ -108,28 +108,25 @@ void cleanup(void);
 void check_and_print(char *advice);
 
 char *TCID = "madvise01";	/* Test program modifier */
-int TST_TOTAL = 5;			/* Total no of test cases */
+int TST_TOTAL = 5;		/* Total no of test cases */
 extern int Tst_count;		/* Test case counter for tst_* routines */
 
-int i=0;		/* Loop Counters */
+int i = 0;			/* Loop Counters */
 
 int main(int argc, char *argv[])
 {
 	int lc, fd;
-	char *file=NULL;
+	char *file = NULL;
 	struct stat stat;
 
-	char *msg=NULL;
+	char *msg = NULL;
 	char filename[64];
-	char *progname=NULL;
-	char *str_for_file="abcdefghijklmnopqrstuvwxyz12345\n";	/* 32-byte string */
+	char *progname = NULL;
+	char *str_for_file = "abcdefghijklmnopqrstuvwxyz12345\n";	/* 32-byte string */
 
-
-	if ((msg = parse_opts(argc, argv, (option_t *) NULL, NULL)) != (char *) NULL)
-	{
-		tst_brkm(TBROK, NULL,
-			"OPTION PARSING ERROR - %s",
-			msg);
+	if ((msg =
+	     parse_opts(argc, argv, (option_t *) NULL, NULL)) != (char *)NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
 	/**************************************************
@@ -141,80 +138,69 @@ int main(int argc, char *argv[])
 	progname = *argv;
 	sprintf(filename, "%s-out.%d", progname, getpid());
 
-	for(lc = 0; TEST_LOOPING(lc); lc++)
-	{
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping */
 		Tst_count = 0;
 
 		/* Create a temporary file for testing */
-		if ((fd = open (filename, O_RDWR | O_CREAT, 0664)) < 0)
-		{
+		if ((fd = open(filename, O_RDWR | O_CREAT, 0664)) < 0) {
 			tst_brkm(TBROK, cleanup,
-				"Could not open file \"%s\" with O_RDWR",
-				filename);
+				 "Could not open file \"%s\" with O_RDWR",
+				 filename);
 		}
 #ifdef MM_DEBUG
-		tst_resm(TINFO,
-			"filename = %s opened successfully",
-			filename);
+		tst_resm(TINFO, "filename = %s opened successfully", filename);
 #endif
 
 		/* Writing 40 KB of random data into this file
 		   [32 * 1280 = 40960] */
-		for(i=0; i<1280; i++)
-		{
-			if(write(fd, str_for_file, strlen(str_for_file)) < 0)
-			{
+		for (i = 0; i < 1280; i++) {
+			if (write(fd, str_for_file, strlen(str_for_file)) < 0) {
 				tst_brkm(TBROK, cleanup,
-					"Could not write data to file \"%s\"",
-					filename);
+					 "Could not write data to file \"%s\"",
+					 filename);
 			}
 		}
 
 		/* Get file status for its size */
-		if(fstat(fd, &stat) < 0)
-		{
+		if (fstat(fd, &stat) < 0) {
 			tst_brkm(TBROK, cleanup,
-				"Could not stat file \"%s\"",
-				filename);
+				 "Could not stat file \"%s\"", filename);
 		}
 
 		/* Map the input file into memory */
 		if ((file =
-	       (char *) mmap (NULL, stat.st_size, PROT_READ, MAP_SHARED, fd, 0)) == (char *)-1)
-		{
-			tst_brkm(TBROK, cleanup,
-				"Could not mmap file \"%s\"",
-				filename);
+		     (char *)mmap(NULL, stat.st_size, PROT_READ, MAP_SHARED, fd,
+				  0)) == (char *)-1) {
+			tst_brkm(TBROK, cleanup, "Could not mmap file \"%s\"",
+				 filename);
 		}
 
 		/*(1) Test case for MADV_NORMAL */
-		TEST(madvise(file,stat.st_size,MADV_NORMAL));
+		TEST(madvise(file, stat.st_size, MADV_NORMAL));
 		check_and_print("MADV_NORMAL");
 
 		/*(2) Test case for MADV_RANDOM */
-		TEST(madvise(file,stat.st_size,MADV_RANDOM));
+		TEST(madvise(file, stat.st_size, MADV_RANDOM));
 		check_and_print("MADV_RANDOM");
 
 		/*(3) Test case for MADV_SEQUENTIAL */
-		TEST(madvise(file,stat.st_size,MADV_SEQUENTIAL));
+		TEST(madvise(file, stat.st_size, MADV_SEQUENTIAL));
 		check_and_print("MADV_SEQUENTIAL");
 
 		/*(4) Test case for MADV_WILLNEED */
-		TEST(madvise(file,stat.st_size,MADV_WILLNEED));
+		TEST(madvise(file, stat.st_size, MADV_WILLNEED));
 		check_and_print("MADV_WILLNEED");
 
 		/*(5) Test case for MADV_DONTNEED */
-		TEST(madvise(file,stat.st_size,MADV_DONTNEED));
+		TEST(madvise(file, stat.st_size, MADV_DONTNEED));
 		check_and_print("MADV_DONTNEED");
 
-		/* Finally Unmapping the whole file */  
-		if(munmap(file, stat.st_size) < 0)
-		{
-			tst_brkm(TBROK, cleanup,
-				"Could not unmap memory");
+		/* Finally Unmapping the whole file */
+		if (munmap(file, stat.st_size) < 0) {
+			tst_brkm(TBROK, cleanup, "Could not unmap memory");
 		}
-	
+
 		close(fd);
 	}
 
@@ -222,22 +208,20 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
-
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
 void setup(void)
 {
-    /* capture signals */
-    tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	/* capture signals */
+	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-    /* Pause if that option was specified */
-    TEST_PAUSE;
+	/* Pause if that option was specified */
+	TEST_PAUSE;
 
 	/* Create temp directory and change to that */
 	tst_tmpdir();
-}	/* End setup() */
-
+}				/* End setup() */
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -245,19 +229,19 @@ void setup(void)
  ***************************************************************/
 void cleanup(void)
 {
-    /*
-     * print timing stats if that option was specified.
-     * print errno log if that option was specified.
-     */
-    TEST_CLEANUP;
+	/*
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
+	TEST_CLEANUP;
 
 	/* Remove temp directory and files */
 	tst_rmdir();
 
-    /* exit with return code appropriate for results */
-    tst_exit();
+	/* exit with return code appropriate for results */
+	tst_exit();
 
-}	/* End cleanup() */
+}				/* End cleanup() */
 
 /***************************************************************
  * check_and_print(advice) - checks the return value
@@ -267,18 +251,12 @@ void cleanup(void)
  ***************************************************************/
 void check_and_print(char *advice)
 {
-	if(TEST_RETURN == -1)
-	{
+	if (TEST_RETURN == -1) {
 		tst_resm(TFAIL,
-			"madvise test for %s failed with "
-			"return = %d, errno = %d : %s",
-			advice, TEST_RETURN, TEST_ERRNO,
-			strerror(TEST_ERRNO));
-	}
-	else if(STD_FUNCTIONAL_TEST)
-	{
-		tst_resm(TPASS,
-			"madvise test for %s PASSED",
-			advice);
+			 "madvise test for %s failed with "
+			 "return = %d, errno = %d : %s",
+			 advice, TEST_RETURN, TEST_ERRNO, strerror(TEST_ERRNO));
+	} else if (STD_FUNCTIONAL_TEST) {
+		tst_resm(TPASS, "madvise test for %s PASSED", advice);
 	}
 }

@@ -85,32 +85,33 @@ static void setup(void);
 
 static struct rlimit rlim;
 static struct test_case_t {
-	int exp_errno;		/* Expected error no 		*/
-	char *exp_errval;	/* Expected error value string 	*/
-	struct rlimit *rlim;	/* rlimit structure 		*/
-	int res_type;		/* resource type 		*/
+	int exp_errno;		/* Expected error no            */
+	char *exp_errval;	/* Expected error value string  */
+	struct rlimit *rlim;	/* rlimit structure             */
+	int res_type;		/* resource type                */
 
 } testcases[] = {
 #ifndef UCLINUX
 	/* Skip since uClinux does not implement memory protection */
-	{ EFAULT, "EFAULT", (void *)-1, RLIMIT_NOFILE },
+	{
+	EFAULT, "EFAULT", (void *)-1, RLIMIT_NOFILE},
 #endif
-	{ EINVAL, "EINVAL", &rlim, RLIMIT_TOO_HIGH }
+	{
+	EINVAL, "EINVAL", &rlim, RLIMIT_TOO_HIGH}
 };
 
-static int exp_enos[] = {EFAULT, EINVAL, 0};
+static int exp_enos[] = { EFAULT, EINVAL, 0 };
 
-int TST_TOTAL = sizeof(testcases)/sizeof(*testcases);
+int TST_TOTAL = sizeof(testcases) / sizeof(*testcases);
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int i;
-	int lc;				/* loop counter */
-	char *msg;			/* parse_opts() return message */
+	int lc;			/* loop counter */
+	char *msg;		/* parse_opts() return message */
 
 	/* Parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -122,23 +123,22 @@ main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;
 
-		for (i=0; i<TST_TOTAL; ++i) {
+		for (i = 0; i < TST_TOTAL; ++i) {
 
 			/*
 			 * Test the system call.
 			 */
 			TEST(getrlimit(testcases[i].res_type,
-				testcases[i].rlim));
+				       testcases[i].rlim));
 
 			if ((TEST_RETURN == -1) &&
 			    (TEST_ERRNO == testcases[i].exp_errno)) {
 				tst_resm(TPASS, "expected failure; got %s",
-					testcases[i].exp_errval);
-			}
-			else {
+					 testcases[i].exp_errval);
+			} else {
 				tst_resm(TFAIL, "call failed to produce "
-					"expected error;  errno: %d : %s",
-					TEST_ERRNO, strerror(TEST_ERRNO));
+					 "expected error;  errno: %d : %s",
+					 TEST_ERRNO, strerror(TEST_ERRNO));
 			}
 			TEST_ERROR_LOG(TEST_ERRNO);
 		}
@@ -152,8 +152,7 @@ main(int ac, char **av)
 /*
  * setup() - performs all one time setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* set up expected error numbers */
 	TEST_EXP_ENOS(exp_enos);
@@ -169,8 +168,7 @@ setup()
  * cleanup()  - performs all one time cleanup for this test
  *		completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

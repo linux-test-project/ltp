@@ -60,8 +60,9 @@ char *TCID = "shmget02";
 int TST_TOTAL = 4;
 extern int Tst_count;
 
-int exp_enos[] = {ENOENT, EEXIST, EINVAL, 0};	/* 0 terminated list of */
-						/* expected errnos 	*/
+int exp_enos[] = { ENOENT, EEXIST, EINVAL, 0 };	/* 0 terminated list of */
+
+						/* expected errnos      */
 
 int shm_id_1 = -1;
 int shm_nonexisting_key = -1;
@@ -74,34 +75,34 @@ struct test_case_t {
 	int error;
 } TC[] = {
 	/* EINVAL - size is 0 */
-	{&shmkey2, 0, IPC_CREAT | IPC_EXCL | SHM_RW, EINVAL},
-
-	/* EINVAL - size is negative */
-//	{&shmkey2, -1, IPC_CREAT | IPC_EXCL | SHM_RW, EINVAL},
-
-	/* EINVAL - size is larger than created segment */
-	{&shmkey, SHM_SIZE * 2, SHM_RW, EINVAL},
-
-	/* EEXIST - the segment exists and IPC_CREAT | IPC_EXCL is given */
-	{&shmkey, SHM_SIZE, IPC_CREAT | IPC_EXCL | SHM_RW, EEXIST},
-
-	/* ENOENT - no segment exists for the key and IPC_CREAT is not given */
-	/* use shm_id_2 (-1) as the key */
-	{&shm_nonexisting_key, SHM_SIZE, SHM_RW, ENOENT}
+	{
+	&shmkey2, 0, IPC_CREAT | IPC_EXCL | SHM_RW, EINVAL},
+	    /* EINVAL - size is negative */
+//      {&shmkey2, -1, IPC_CREAT | IPC_EXCL | SHM_RW, EINVAL},
+	    /* EINVAL - size is larger than created segment */
+	{
+	&shmkey, SHM_SIZE * 2, SHM_RW, EINVAL},
+	    /* EEXIST - the segment exists and IPC_CREAT | IPC_EXCL is given */
+	{
+	&shmkey, SHM_SIZE, IPC_CREAT | IPC_EXCL | SHM_RW, EEXIST},
+	    /* ENOENT - no segment exists for the key and IPC_CREAT is not given */
+	    /* use shm_id_2 (-1) as the key */
+	{
+	&shm_nonexisting_key, SHM_SIZE, SHM_RW, ENOENT}
 };
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int i;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -110,7 +111,7 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		/* loop through the test cases */
-		for (i=0; i<TST_TOTAL; i++) {
+		for (i = 0; i < TST_TOTAL; i++) {
 			/*
 			 * Look for a failure ...
 			 */
@@ -132,22 +133,19 @@ int main(int ac, char **av)
 				tst_resm(TFAIL, "call failed with an "
 					 "unexpected error - %d : %s",
 					 TEST_ERRNO, strerror(TEST_ERRNO));
-			}		
+			}
 		}
 	}
 
 	cleanup();
 
-	/*NOTREACHED*/
-
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -172,17 +170,17 @@ setup(void)
 	shmkey2 = getipckey();
 
 	if ((shm_id_1 = shmget(shmkey, SHM_SIZE, IPC_CREAT | IPC_EXCL |
-	     SHM_RW)) == -1) {
+			       SHM_RW)) == -1) {
 		tst_brkm(TBROK, cleanup, "couldn't create shared memory "
 			 "segment in setup()");
 	}
 
 	/* Make sure shm_nonexisting_key is a nonexisting key */
-	while(1) {
-		while(-1 != shmget(shm_nonexisting_key,1,SHM_RD)) {
+	while (1) {
+		while (-1 != shmget(shm_nonexisting_key, 1, SHM_RD)) {
 			shm_nonexisting_key--;
 		}
-		if(errno == ENOENT)
+		if (errno == ENOENT)
 			break;
 	}
 }
@@ -191,8 +189,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/* if it exists, remove the shared memory resource */
 	rm_shm(shm_id_1);
@@ -209,4 +206,3 @@ cleanup(void)
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

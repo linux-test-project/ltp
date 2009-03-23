@@ -61,10 +61,9 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSIkNG ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	setup();		/* global setup for test */
 
@@ -82,7 +81,7 @@ int main(int ac, char **av)
 				 errno, strerror(errno));
 		}
 
-		if (pid == 0) {		/* parent */
+		if (pid == 0) {	/* parent */
 			exit(exno);
 		} else {
 			sleep(1);	/* let child start */
@@ -129,15 +128,13 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -152,8 +149,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at completion or
  * 	       premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

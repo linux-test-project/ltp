@@ -79,8 +79,8 @@
 #define K1              1024
 #define NBUFS           4
 
-char *TCID="pwrite02";		/* Test program identifier.    */
-int TST_TOTAL=2;		/* Total number of test cases. */
+char *TCID = "pwrite02";	/* Test program identifier.    */
+int TST_TOTAL = 2;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 char *write_buf[NBUFS];		/* buffer to hold data to be written */
@@ -94,24 +94,24 @@ int setup2();			/* setup function for test #2 */
 int no_setup();
 void init_buffers();		/* function to initialize/allocate buffers */
 
-int exp_enos[] = {ESPIPE, EINVAL, EBADF, 0};
+int exp_enos[] = { ESPIPE, EINVAL, EBADF, 0 };
 
-struct test_case_t {		/* test case struct. to hold ref. test cond's*/
+struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	int fd;
 	size_t nb;
 	off_t offst;
 	char *desc;
 	int exp_errno;
-	int (*setupfunc)();
+	int (*setupfunc) ();
 } Test_cases[] = {
-	{ 1, K1, 0, "file descriptor is a PIPE or FIFO", ESPIPE, setup1 },
-	{ 2, K1, -1, "specified offset is -ve or invalid", EINVAL, setup2 },
-	{ 3, K1, 0, "file descriptor is bad", EBADF, no_setup },
-	{ 0, 0, 0, NULL, 0, no_setup }
+	{
+	1, K1, 0, "file descriptor is a PIPE or FIFO", ESPIPE, setup1}, {
+	2, K1, -1, "specified offset is -ve or invalid", EINVAL, setup2}, {
+	3, K1, 0, "file descriptor is bad", EBADF, no_setup}, {
+	0, 0, 0, NULL, 0, no_setup}
 };
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
@@ -122,7 +122,7 @@ main(int ac, char **av)
 	char *test_desc;	/* test specific error message */
 
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
@@ -136,7 +136,7 @@ main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		for (i = 0; Test_cases[i].desc != NULL; i++) {
 			fildes = Test_cases[i].fd;
@@ -151,7 +151,7 @@ main(int ac, char **av)
 			} else {
 				fildes = -1;
 			}
-			
+
 			/*
 			 * Call pwrite() with the specified file descriptor,
 			 * no. of bytes to be written at specified offset.
@@ -181,14 +181,14 @@ main(int ac, char **av)
 					 " errno:%d, expected:%d", test_desc,
 					 TEST_ERRNO, Test_cases[i].exp_errno);
 			}
-		}	/* End of TEST CASE LOOPING */
-	}	/* End of TEST_LOOPING. */
+		}		/* End of TEST CASE LOOPING */
+	}			/* End of TEST_LOOPING. */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
 	return 0;
-}	/* End main */
+}				/* End main */
 
 /*
  * sighandler - handle SIGXFSZ
@@ -197,8 +197,7 @@ main(int ac, char **av)
  * test case passes on a machine running RedHat 6.2 but it will fail
  * on a machine running RedHat 7.1.
  */
-void
-sighandler(sig)
+void sighandler(sig)
 {
 	if (sig != SIGXFSZ) {
 		printf("wrong signal\n");
@@ -213,10 +212,9 @@ sighandler(sig)
  *  Initialize/allocate write buffer.
  *  Call individual setup function.
  */
-void
-setup()
+void setup()
 {
-	int i;		/* counter for setup functions */
+	int i;			/* counter for setup functions */
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -242,8 +240,7 @@ setup()
 /*
  * no_setup() - This function simply returns.
  */
-int
-no_setup()
+int no_setup()
 {
 	return 0;
 }
@@ -255,8 +252,7 @@ no_setup()
  *  Create an unnamed pipe using pipe().
  *  return 0.
  */
-int
-setup1()
+int setup1()
 {
 	/* Create an unnamed pipe */
 	if (pipe(pfd) < 0) {
@@ -273,8 +269,7 @@ setup1()
  *  Create a temporary directory and a file under it.
  *  return 0.
  */
-int
-setup2()
+int setup2()
 {
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
@@ -296,8 +291,7 @@ setup2()
  *    write_buf[0] has 0's, write_buf[1] has 1's, write_buf[2] has 2's
  *    write_buf[3] has 3's.
  */
-void
-init_buffers()
+void init_buffers()
 {
 	int count;		/* counter variable for loop */
 
@@ -305,7 +299,7 @@ init_buffers()
 	for (count = 0; count < NBUFS; count++) {
 		write_buf[count] = (char *)malloc(K1);
 
-		if (write_buf[count] == NULL)  {
+		if (write_buf[count] == NULL) {
 			tst_brkm(TBROK, tst_exit,
 				 "malloc() failed on write buffer");
 		}
@@ -321,8 +315,7 @@ init_buffers()
  * Close the temporary file.
  * Remove the temporary directory created.
  */
-void
-cleanup()
+void cleanup()
 {
 	int count;		/* index for the loop */
 

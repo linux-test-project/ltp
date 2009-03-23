@@ -74,8 +74,8 @@ extern int Tst_count;
 int main(int argc, char **argv)
 {
 	unsigned int i;
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	unsigned int from_node = 0;
 	unsigned int to_node = 1;
 
@@ -111,7 +111,8 @@ int main(int argc, char **argv)
 		if (ipid == -1) {
 			tst_resm(TBROK, "fork failed: %s", strerror(errno));
 			goto err_free_pages;
-		} if (ipid == 0)
+		}
+		if (ipid == 0)
 			exit(0);
 
 		wait(NULL);
@@ -126,7 +127,7 @@ int main(int argc, char **argv)
 			tst_resm(TFAIL, "move pages did not fail "
 				 "with ESRCH");
 
-	err_free_pages:
+	      err_free_pages:
 		free_pages(pages, TEST_PAGES);
 	}
 
@@ -139,8 +140,7 @@ int main(int argc, char **argv)
 /*
  * setup() - performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -156,8 +156,7 @@ setup(void)
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at completion
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -167,5 +166,4 @@ cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}

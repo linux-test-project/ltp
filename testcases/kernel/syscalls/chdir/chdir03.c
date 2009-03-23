@@ -70,7 +70,7 @@ void cleanup(void);
 char user1name[] = "nobody";
 char user2name[] = "bin";
 
-int exp_enos[] = {EACCES, 0};
+int exp_enos[] = { EACCES, 0 };
 
 char good_dir[100];
 
@@ -80,14 +80,14 @@ extern struct passwd *my_getpwnam(char *);
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	pid_t pid, pid1;
 	int status;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -105,7 +105,7 @@ int main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "first fork failed");
 		}
 
-		if (pid == 0) {			/* first child */
+		if (pid == 0) {	/* first child */
 			/* set the child's ID to ltpuser1 */
 			if (setreuid(ltpuser1->pw_uid, ltpuser1->pw_uid) != 0) {
 				tst_resm(TINFO, "setreuid failed in child #1");
@@ -123,7 +123,7 @@ int main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "second fork failed");
 		}
 
-		if (pid1 == 0) {		/* second child */
+		if (pid1 == 0) {	/* second child */
 			/*
 			 * set the child's ID to ltpuser2 using seteuid()
 			 * so that the ID can be changed back after the
@@ -153,7 +153,7 @@ int main(int ac, char **av)
 				tst_resm(TINFO, "setuid(0) failed");
 			}
 
-		} else {		/* parent */
+		} else {	/* parent */
 			wait(&status);
 
 			/* let the child carry on */
@@ -168,14 +168,12 @@ int main(int ac, char **av)
 	cleanup();
 
 	return 0;
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	char *cur_dir = NULL;
 
@@ -208,8 +206,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

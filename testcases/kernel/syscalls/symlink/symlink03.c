@@ -100,49 +100,56 @@
 #define TEST_FILE3      "tfile_3"
 #define SYM_FILE3	"t_file/sfile_3"
 
-char *TCID="symlink03";		/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "symlink03";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-int exp_enos[]={ENOTDIR, ENOENT, ENAMETOOLONG, EFAULT,  EEXIST, EACCES, 0};
+int exp_enos[] = { ENOTDIR, ENOENT, ENAMETOOLONG, EFAULT, EEXIST, EACCES, 0 };
 
-char * bad_addr = 0;
+char *bad_addr = 0;
 
 int no_setup();
-int setup1();                   /* setup function to test symlink for EACCES */
-int setup2();                   /* setup function to test symlink for EEXIST */
-int setup3();                   /* setup function to test symlink for ENOTDIR */
-int longpath_setup();   /* setup function to test chmod for ENAMETOOLONG */
+int setup1();			/* setup function to test symlink for EACCES */
+int setup2();			/* setup function to test symlink for EEXIST */
+int setup3();			/* setup function to test symlink for ENOTDIR */
+int longpath_setup();		/* setup function to test chmod for ENAMETOOLONG */
 
-char Longpathname[PATH_MAX+2];
+char Longpathname[PATH_MAX + 2];
 char High_address_node[64];
 
-struct test_case_t {		/* test case struct. to hold ref. test cond's*/
+struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	char *file;
 	char *link;
 	char *desc;
 	int exp_errno;
-	int (*setupfunc)();
+	int (*setupfunc) ();
 } Test_cases[] = {
-	{ TEST_FILE1, SYM_FILE1, "No Search permissions to process", EACCES, setup1 },
-	{ TEST_FILE2, SYM_FILE2, "Specified symlink already exists", EEXIST, setup2 },
+	{
+	TEST_FILE1, SYM_FILE1, "No Search permissions to process",
+		    EACCES, setup1}, {
+	TEST_FILE2, SYM_FILE2, "Specified symlink already exists",
+		    EEXIST, setup2},
 #if !defined(UCLINUX)
-	{ TESTFILE, High_address_node, "Address beyond address space", EFAULT, no_setup },
+	{
+	TESTFILE, High_address_node, "Address beyond address space",
+		    EFAULT, no_setup},
 #endif
-	{ TESTFILE, (char *)-1, "Negative address", EFAULT, no_setup },
-	{ TESTFILE, Longpathname, "Symlink path too long", ENAMETOOLONG, longpath_setup },
-	{ TESTFILE, "", "Symlink Pathname is empty", ENOENT, no_setup },
-	{ TEST_FILE3, SYM_FILE3, "Symlink Path contains regular file", ENOTDIR, setup3 },
-	{ NULL, NULL, NULL, 0, no_setup }
+	{
+	TESTFILE, (char *)-1, "Negative address", EFAULT, no_setup}, {
+	TESTFILE, Longpathname, "Symlink path too long", ENAMETOOLONG,
+		    longpath_setup}, {
+	TESTFILE, "", "Symlink Pathname is empty", ENOENT, no_setup}, {
+	TEST_FILE3, SYM_FILE3, "Symlink Path contains regular file",
+		    ENOTDIR, setup3}, {
+	NULL, NULL, NULL, 0, no_setup}
 };
 
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
-void setup();		/* Setup function for the test */
-void cleanup();		/* Cleanup function for the test */
+void setup();			/* Setup function for the test */
+void cleanup();			/* Cleanup function for the test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
@@ -153,11 +160,10 @@ main(int ac, char **av)
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/*
 	 * Invoke setup function to call individual test setup functions
@@ -171,7 +177,7 @@ main(int ac, char **av)
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
 			test_file = Test_cases[ind].file;
@@ -184,7 +190,7 @@ main(int ac, char **av)
 #endif
 			/*
 			 * Call symlink(2) to test different test conditions.
-	 		 * verify that it fails with -1 return value and sets
+			 * verify that it fails with -1 return value and sets
 			 * appropriate errno.
 			 */
 			TEST(symlink(test_file, sym_file));
@@ -198,32 +204,29 @@ main(int ac, char **av)
 				TEST_ERROR_LOG(TEST_ERRNO);
 				if (TEST_ERRNO == Test_cases[ind].exp_errno) {
 					tst_resm(TPASS, "symlink() Fails, %s, "
-						"errno=%d", test_desc,
-						TEST_ERRNO);
+						 "errno=%d", test_desc,
+						 TEST_ERRNO);
 				} else {
 					tst_resm(TFAIL, "symlink() Fails, %s, "
-						"errno=%d, expected errno=%d",
-						test_desc, TEST_ERRNO,
-						Test_cases[ind].exp_errno);
+						 "errno=%d, expected errno=%d",
+						 test_desc, TEST_ERRNO,
+						 Test_cases[ind].exp_errno);
 				}
 			} else {
 				tst_resm(TFAIL, "symlink() returned %d, "
-					"expected -1, errno:%d", TEST_RETURN,
-					Test_cases[ind].exp_errno);
+					 "expected -1, errno:%d", TEST_RETURN,
+					 Test_cases[ind].exp_errno);
 			}
-		}	/* End of TEST CASE LOOPING. */
+		}		/* End of TEST CASE LOOPING. */
 
-		Tst_count++;		/* incr. TEST_LOOP counter */
-	}	/* End for TEST_LOOPING */
+		Tst_count++;	/* incr. TEST_LOOP counter */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
-	/*NOTREACHED*/
+	 /*NOTREACHED*/ return 0;
 
-
-  return 0;
-
-}	/* End main */
+}				/* End main */
 
 /*
  * void
@@ -231,8 +234,7 @@ main(int ac, char **av)
  *  Create a temporary directory and change directory to it.
  *  Call test specific setup functions.
  */
-void
-setup()
+void setup()
 {
 	int ind;
 	/* capture signals */
@@ -246,24 +248,22 @@ setup()
 	TEST_PAUSE;
 
 	/* Switch to nobody user for correct error code collection */
-        if (geteuid() != 0) {
-                tst_brkm(TBROK, tst_exit, "Test must be run as root");
-        }
-        ltpuser = getpwnam(nobody_uid);
-        if (setuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "setuid failed to "
-                         "to set the effective uid to %d",
-                         ltpuser->pw_uid);
-                perror("setuid");
-        }
-
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+	}
+	ltpuser = getpwnam(nobody_uid);
+	if (setuid(ltpuser->pw_uid) == -1) {
+		tst_resm(TINFO, "setuid failed to "
+			 "to set the effective uid to %d", ltpuser->pw_uid);
+		perror("setuid");
+	}
 
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 #if !defined(UCLINUX)
 	bad_addr = mmap(0, 1, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
+			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
 	if (bad_addr == MAP_FAILED) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}
@@ -274,7 +274,7 @@ setup()
 	for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
 		Test_cases[ind].setupfunc();
 	}
-}	/* End setup() */
+}				/* End setup() */
 
 /*
  * int
@@ -282,10 +282,9 @@ setup()
  *              Hence, this function just returns 0.
  *  This function simply returns 0.
  */
-int
-no_setup()
+int no_setup()
 {
-        return 0;
+	return 0;
 }
 
 /*
@@ -299,65 +298,56 @@ no_setup()
  *
  *  The function returns 0.
  */
-int
-setup1()
+int setup1()
 {
-        int fd;                 /* file handle for testfile */
+	int fd;			/* file handle for testfile */
 
-        if (mkdir(DIR_TEMP, MODE_RWX) < 0) {
-                tst_brkm(TBROK, cleanup, "mkdir(2) of %s failed", DIR_TEMP);
-		/*NOTREACHED*/
-        }
+	if (mkdir(DIR_TEMP, MODE_RWX) < 0) {
+		tst_brkm(TBROK, cleanup, "mkdir(2) of %s failed", DIR_TEMP);
+	 /*NOTREACHED*/}
 
-        if ((fd = open(TEST_FILE1, O_RDWR|O_CREAT, 0666)) == -1) {
-                tst_brkm(TBROK, cleanup,
-                         "open(%s, O_RDWR|O_CREAT, 0666) failed, errno=%d : %s",
-                         TEST_FILE1, errno, strerror(errno));
-		/*NOTREACHED*/
-        }
-        if (close(fd) == -1) {
-                tst_brkm(TBROK, cleanup,
-                         "close(%s) Failed, errno=%d : %s",
-                         TEST_FILE1, errno, strerror(errno));
-		/*NOTREACHED*/
-        }
+	if ((fd = open(TEST_FILE1, O_RDWR | O_CREAT, 0666)) == -1) {
+		tst_brkm(TBROK, cleanup,
+			 "open(%s, O_RDWR|O_CREAT, 0666) failed, errno=%d : %s",
+			 TEST_FILE1, errno, strerror(errno));
+	 /*NOTREACHED*/}
+	if (close(fd) == -1) {
+		tst_brkm(TBROK, cleanup,
+			 "close(%s) Failed, errno=%d : %s",
+			 TEST_FILE1, errno, strerror(errno));
+	 /*NOTREACHED*/}
 
 	/* Modify mode permissions on test directory */
-        if (chmod(DIR_TEMP, FILE_MODE) < 0) {
-                tst_brkm(TBROK, cleanup, "chmod(2) of %s failed", DIR_TEMP);
-		/*NOTREACHED*/
-        }
-        return 0;
+	if (chmod(DIR_TEMP, FILE_MODE) < 0) {
+		tst_brkm(TBROK, cleanup, "chmod(2) of %s failed", DIR_TEMP);
+	 /*NOTREACHED*/}
+	return 0;
 }
 
 /*
  * int
  * setup2() - EEXIST
  */
-int
-setup2()
+int setup2()
 {
 	int fd;			/* file handle for testfile */
 
-        if ((fd = open(TEST_FILE2, O_RDWR|O_CREAT, 0666)) == -1) {
-                tst_brkm(TBROK, cleanup,
-                         "open(%s, O_RDWR|O_CREAT, 0666) failed, errno=%d : %s",
-                         TEST_FILE1, errno, strerror(errno));
-		/*NOTREACHED*/
-		}
-		if (close(fd) == -1) {
-			tst_brkm(TBROK, cleanup,
-				"close(%s) Failed, errno=%d : %s",
-				TEST_FILE2, errno, strerror(errno));
-		/*NOTREACHED*/
-		}
+	if ((fd = open(TEST_FILE2, O_RDWR | O_CREAT, 0666)) == -1) {
+		tst_brkm(TBROK, cleanup,
+			 "open(%s, O_RDWR|O_CREAT, 0666) failed, errno=%d : %s",
+			 TEST_FILE1, errno, strerror(errno));
+	 /*NOTREACHED*/}
+	if (close(fd) == -1) {
+		tst_brkm(TBROK, cleanup,
+			 "close(%s) Failed, errno=%d : %s",
+			 TEST_FILE2, errno, strerror(errno));
+	 /*NOTREACHED*/}
 
 	if (symlink(TEST_FILE2, SYM_FILE2) < 0) {
 		tst_brkm(TBROK, cleanup,
 			 "symlink() Fails to create %s in setup2, error=%d",
 			 SYM_FILE2, errno);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 	return 0;
 }
 
@@ -367,10 +357,9 @@ setup2()
  *                    the MAX. length of PATH_MAX.
  *   This function retruns 0.
  */
-int
-longpath_setup()
+int longpath_setup()
 {
-	int ind;                /* counter variable */
+	int ind;		/* counter variable */
 
 	for (ind = 0; ind <= (PATH_MAX + 1); ind++) {
 		Longpathname[ind] = 'a';
@@ -387,23 +376,20 @@ longpath_setup()
  *  create symlink file "tfile_3" under "t_file" which happens to be
  *  another symlink file.
  */
-int
-setup3()
+int setup3()
 {
 	int fd;			/* file handle for testfile */
 
 	/* Creat/open a testfile and close it */
-	if ((fd = open("t_file", O_RDWR|O_CREAT, MODE_RWX)) == -1) {
+	if ((fd = open("t_file", O_RDWR | O_CREAT, MODE_RWX)) == -1) {
 		tst_brkm(TBROK, cleanup,
-			"open(2) on t_file failed, errno=%d : %s",
-			errno, strerror(errno));
-		/*NOTREACHED*/
-	}
+			 "open(2) on t_file failed, errno=%d : %s",
+			 errno, strerror(errno));
+	 /*NOTREACHED*/}
 	if (close(fd) == -1) {
 		tst_brkm(TBROK, cleanup, "close(t_file) Failed, errno=%d : %s",
-			errno, strerror(errno));
-		/*NOTREACHED*/
-        }
+			 errno, strerror(errno));
+	 /*NOTREACHED*/}
 	return 0;
 }
 
@@ -414,8 +400,7 @@ setup3()
  *  Restore the mode permissions on test directory.
  *  Remove the temporary directory created in the setup.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -433,4 +418,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

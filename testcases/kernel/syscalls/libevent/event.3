@@ -228,7 +228,7 @@ argument indicating the type of event, and a
 argument given in the
 .Fa arg
 argument.
-The 
+The$
 .Fa fd
 indicates the file descriptor that should be monitored for events.
 The events can be either
@@ -268,7 +268,7 @@ The function
 .Fn event_add
 schedules the execution of the
 .Fa ev
-event when the event specified in 
+event when the event specified in$
 .Fn event_set
 occurs or in at least the time specified in the
 .Fa tv .
@@ -317,7 +317,7 @@ function can be used to check if the event specified by
 is pending to run.
 If
 .Va EV_TIMEOUT
-was specified and 
+was specified and$
 .Fa tv
 is not
 .Va NULL ,
@@ -383,7 +383,7 @@ A new bufferevent is created by
 The parameter
 .Fa "fd"
 specifies the file descriptor from which data is read and written to.
-This file descriptor is not allowed to be a 
+This file descriptor is not allowed to be a$
 .Xr pipe 2 .
 The next three parameters are callbacks.
 The read and write callback have the following form

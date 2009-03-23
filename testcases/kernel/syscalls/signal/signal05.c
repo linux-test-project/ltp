@@ -65,44 +65,42 @@ void cleanup(void);
 void setup(void);
 void sighandler(int);
 
-char *TCID= "signal05";
+char *TCID = "signal05";
 int TST_TOTAL;
 extern int Tst_count;
 
-typedef void (*sighandler_t)(int);
+typedef void (*sighandler_t) (int);
 
-sighandler_t	Tret;
+sighandler_t Tret;
 
 int siglist[] = { SIGHUP, SIGINT, SIGQUIT, SIGILL, SIGTRAP, SIGABRT, SIGIOT,
-		SIGBUS, SIGFPE, SIGUSR1, SIGSEGV, SIGUSR2, SIGPIPE, SIGALRM,
-		SIGTERM,
+	SIGBUS, SIGFPE, SIGUSR1, SIGSEGV, SIGUSR2, SIGPIPE, SIGALRM,
+	SIGTERM,
 #ifdef SIGSTKFLT
-		SIGSTKFLT,
+	SIGSTKFLT,
 #endif
-		SIGCHLD, SIGCONT, SIGTSTP, SIGTTIN,
-		SIGTTOU, SIGURG, SIGXCPU, SIGXFSZ, SIGVTALRM, SIGPROF,
-		SIGWINCH, SIGIO, SIGPWR, SIGSYS,
+	SIGCHLD, SIGCONT, SIGTSTP, SIGTTIN,
+	SIGTTOU, SIGURG, SIGXCPU, SIGXFSZ, SIGVTALRM, SIGPROF,
+	SIGWINCH, SIGIO, SIGPWR, SIGSYS,
 #ifdef SIGUNUSED
-		SIGUNUSED
+	SIGUNUSED
 #endif
 };
 int pass = 0;
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	pid_t pid;
 	int i, rval;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) !=
-			(char *) NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -113,9 +111,11 @@ int main(int ac, char **av)
 		/*
 		 * loop through the list of signals and test each one
 		 */
-		for (i=0; i<TST_TOTAL; i++) {
+		for (i = 0; i < TST_TOTAL; i++) {
 
-			errno = 0; Tret = signal(siglist[i], &sighandler); TEST_ERRNO = errno;
+			errno = 0;
+			Tret = signal(siglist[i], &sighandler);
+			TEST_ERRNO = errno;
 
 			if (Tret == SIG_ERR) {
 				tst_resm(TFAIL, "%s call failed - errno = %d "
@@ -134,8 +134,7 @@ int main(int ac, char **av)
 				if ((rval = kill(pid, siglist[i])) != 0) {
 					tst_brkm(TBROK, cleanup,
 						 "call to kill failed");
-					/*NOTREACHED*/
-				}
+				 /*NOTREACHED*/}
 
 				if (siglist[i] == pass) {
 					tst_resm(TPASS,
@@ -152,17 +151,14 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/
-
-  return 0;
+	 /*NOTREACHED*/ return 0;
 
 }
 
 /*
  * sighandler() - handle the signals
  */
-void
-sighandler(int sig)
+void sighandler(int sig)
 {
 	/* set the global pass variable = sig */
 	pass = sig;
@@ -171,10 +167,9 @@ sighandler(int sig)
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
-	TST_TOTAL = sizeof(siglist)/sizeof(int);
+	TST_TOTAL = sizeof(siglist) / sizeof(int);
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 }
@@ -183,8 +178,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -195,4 +189,3 @@ cleanup(void)
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

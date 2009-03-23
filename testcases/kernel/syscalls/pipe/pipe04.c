@@ -55,7 +55,7 @@ char *TCID = "pipe04";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-int exp_enos[] = {EBADF, 0};
+int exp_enos[] = { EBADF, 0 };
 
 int fildes[2];			/* fds for pipe read and write */
 
@@ -78,21 +78,19 @@ ssize_t safe_read(int fd, void *buf, size_t count)
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	pid_t c1pid, c2pid;
 	int wtchild, wtstatus;
 	int bytesread;
-	int acnt=0, bcnt=0;
+	int acnt = 0, bcnt = 0;
 
 	char rbuf[BUFSIZ];
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
-
+	 /*NOTREACHED*/}
 #ifdef UCLINUX
 	maybe_run_child(&c1func, "ndd", 1, &fildes[0], &fildes[1]);
 	maybe_run_child(&c2func, "ndd", 2, &fildes[0], &fildes[1]);
@@ -107,25 +105,27 @@ int main(int ac, char **av)
 
 		if (pipe(fildes) == -1)
 			tst_brkm(TBROK, cleanup, "pipe() failed - errno %d",
-					errno);
+				 errno);
 
 		if ((c1pid = FORK_OR_VFORK()) == -1)
-				tst_brkm(TBROK, cleanup, "fork() failed - "
-						"errno %d", errno);
+			tst_brkm(TBROK, cleanup, "fork() failed - "
+				 "errno %d", errno);
 		if (c1pid == 0)
 #ifdef UCLINUX
-			if (self_exec(av[0], "ndd", 1, fildes[0], fildes[1]) < 0) {
+			if (self_exec(av[0], "ndd", 1, fildes[0], fildes[1]) <
+			    0) {
 				tst_brkm(TBROK, cleanup, "self_exec failed");
 			}
 #else
 			c1func();
 #endif
-		if((c2pid = FORK_OR_VFORK()) == -1)
-				tst_brkm(TBROK, cleanup, "fork() failed - "
-						"errno %d", errno);
+		if ((c2pid = FORK_OR_VFORK()) == -1)
+			tst_brkm(TBROK, cleanup, "fork() failed - "
+				 "errno %d", errno);
 		if (c2pid == 0)
 #ifdef UCLINUX
-			if (self_exec(av[0], "ndd", 2, fildes[0], fildes[1]) < 0) {
+			if (self_exec(av[0], "ndd", 2, fildes[0], fildes[1]) <
+			    0) {
 				tst_brkm(TBROK, cleanup, "self_exec failed");
 			}
 #else
@@ -135,25 +135,28 @@ int main(int ac, char **av)
 		/* PARENT */
 		if (close(fildes[1]) == -1)
 			tst_resm(TWARN, "Could not close fildes[1] - errno %d",
-					errno);
+				 errno);
 		/*
 		 * Read a bit from the children first
 		 */
-		while((acnt < 100) && (bcnt < 100)) {
+		while ((acnt < 100) && (bcnt < 100)) {
 			bytesread = safe_read(fildes[0], rbuf, sizeof(rbuf));
 			if (bytesread < 0) {
 				tst_resm(TFAIL, "Unable to read from pipe, "
-						"errno=%d",errno);
+					 "errno=%d", errno);
 				break;
 			}
-			switch(rbuf[1]) {
-				case 'A': acnt++;
-					  break;
-				case 'b': bcnt++;
-					  break;
-				default:  tst_resm(TFAIL, "Got bogus '%c' "
-							  "character",rbuf[1]);
-					  break;
+			switch (rbuf[1]) {
+			case 'A':
+				acnt++;
+				break;
+			case 'b':
+				bcnt++;
+				break;
+			default:
+				tst_resm(TFAIL, "Got bogus '%c' "
+					 "character", rbuf[1]);
+				break;
 			}
 		}
 
@@ -162,45 +165,44 @@ int main(int ac, char **av)
 		 */
 		if (kill(c1pid, SIGKILL) == -1)
 			tst_resm(TFAIL, "failed to kill child 1, errno=%d",
-					errno);
+				 errno);
 		if (kill(c2pid, SIGKILL) == -1)
 			tst_resm(TFAIL, "failed to kill child 1, errno=%d",
-					errno);
+				 errno);
 
 		/*
 		 * Set action for the alarm
 		 */
 		if (signal(SIGALRM, alarmfunc) == SIG_ERR)
 			tst_resm(TWARN, "call to signal failed, errno=%d",
-					errno);
+				 errno);
 		/*
 		 * Set an alarm for 60 seconds just in case the child
 		 * processes don't die
 		 */
 		alarm(60);
-		if((wtchild=waitpid(c1pid,&wtstatus,0)) != -1) {
+		if ((wtchild = waitpid(c1pid, &wtstatus, 0)) != -1) {
 			if (wtstatus != SIGKILL)
 				tst_resm(TFAIL, "unexpected wait status %d, "
-						"errno=%d",wtstatus,errno);
+					 "errno=%d", wtstatus, errno);
 			else
 				tst_resm(TPASS, "Child 1 killed while "
-						"writing to a pipe");
+					 "writing to a pipe");
 		}
-		if((wtchild=waitpid(c2pid,&wtstatus,0)) != -1) {
+		if ((wtchild = waitpid(c2pid, &wtstatus, 0)) != -1) {
 			if (wtstatus != SIGKILL)
 				tst_resm(TFAIL, "unexpected wait status %d, "
-						"errno=%d",wtstatus,errno);
+					 "errno=%d", wtstatus, errno);
 			else
 				tst_resm(TPASS, "Child 2 killed while "
-						"writing to a pipe");
+					 "writing to a pipe");
 		}
 		if (alarm(0) <= 0)
 			tst_resm(TWARN, "call to alarm(0) failed");
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
@@ -234,23 +236,21 @@ void cleanup()
 void c1func()
 {
 	if (close(fildes[0]) == -1)
-		tst_resm(TWARN, "Could not close fildes[0] - errno %d",
-				errno);
-	while(1)
+		tst_resm(TWARN, "Could not close fildes[0] - errno %d", errno);
+	while (1)
 		if (write(fildes[1], "bbbbbbbbbbbbbbbbbbbbbbbbb", 25) == -1)
 			tst_resm(TBROK, "Child 1 error writing to pipe - "
-					"errno %d", errno);
+				 "errno %d", errno);
 }
 
 void c2func()
 {
 	if (close(fildes[0]) == -1)
-		tst_resm(TWARN, "Could not close fildes[0] - errno %d",
-				errno);
-	while(1)
+		tst_resm(TWARN, "Could not close fildes[0] - errno %d", errno);
+	while (1)
 		if (write(fildes[1], "AAAAAAAAAAAAAAAAAAAAAAAAA", 25) == -1)
 			tst_resm(TBROK, "Child 2 error writing to pipe - "
-					"errno %d", errno);
+				 "errno %d", errno);
 }
 
 void alarmfunc(int sig)

@@ -61,7 +61,6 @@
  * 	This test must be ran as root.
  */
 
-
 #include <pwd.h>
 #include <grp.h>
 #include <malloc.h>
@@ -75,7 +74,7 @@ extern int Tst_count;
 char *TCID = "setregid04";
 gid_t users_gr_gid, root_gr_gid, daemon_gr_gid, bin_gr_gid;
 gid_t neg_one = -1;
-int exp_enos[]={0};
+int exp_enos[] = { 0 };
 
 struct group users, daemongr, root, bin;
 
@@ -85,41 +84,44 @@ struct group users, daemongr, root, bin;
  */
 
 struct test_data_t {
-	gid_t*	real_gid;
-	gid_t*	eff_gid;
-	struct group* exp_real_usr;
-	struct group* exp_eff_usr;
-	char *	test_msg;
+	gid_t *real_gid;
+	gid_t *eff_gid;
+	struct group *exp_real_usr;
+	struct group *exp_eff_usr;
+	char *test_msg;
 } test_data[] = {
-	{ &root_gr_gid, &root_gr_gid, &root, &root, "After setregid(root, root)," },
-	{ &users_gr_gid, &neg_one, &users, &root, "After setregid(users, -1)" },
-	{ &root_gr_gid, &neg_one, &root, &root, "After setregid(root,-1)," },
-	{ &neg_one, &neg_one, &root, &root, "After setregid(-1, -1)," },
-	{ &neg_one, &root_gr_gid, &root, &root, "After setregid(-1, root)" },
-	{ &root_gr_gid, &neg_one,  &root, &root, "After setregid(root, -1)," },
-	{ &daemon_gr_gid, &users_gr_gid, &daemongr, &users, "After setregid(daemongr, users)" },
-	{ &neg_one, &neg_one, &daemongr, &users, "After setregid(-1, -1)" },
-	{ &neg_one, &users_gr_gid, &daemongr, &users, "After setregid(-1, users)" },
-};
+	{
+	&root_gr_gid, &root_gr_gid, &root, &root,
+		    "After setregid(root, root),"}, {
+	&users_gr_gid, &neg_one, &users, &root, "After setregid(users, -1)"},
+	{
+	&root_gr_gid, &neg_one, &root, &root, "After setregid(root,-1),"}, {
+	&neg_one, &neg_one, &root, &root, "After setregid(-1, -1),"}, {
+	&neg_one, &root_gr_gid, &root, &root, "After setregid(-1, root)"}, {
+	&root_gr_gid, &neg_one, &root, &root, "After setregid(root, -1),"},
+	{
+	&daemon_gr_gid, &users_gr_gid, &daemongr, &users,
+		    "After setregid(daemongr, users)"}, {
+	&neg_one, &neg_one, &daemongr, &users, "After setregid(-1, -1)"}, {
+&neg_one, &users_gr_gid, &daemongr, &users,
+		    "After setregid(-1, users)"},};
 
-int TST_TOTAL = sizeof(test_data)/sizeof(test_data[0]);
+int TST_TOTAL = sizeof(test_data) / sizeof(test_data[0]);
 
-void setup(void);			/* Setup function for the test */
-void cleanup(void);			/* Cleanup function for the test */
+void setup(void);		/* Setup function for the test */
+void cleanup(void);		/* Cleanup function for the test */
 void gid_verify(struct group *ru, struct group *eu, char *when);
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) !=
-	    (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/* Perform global setup for test */
 	setup();
@@ -134,13 +136,13 @@ int main(int ac, char **av)
 		for (i = 0; i < TST_TOTAL; i++) {
 			/* Set the real or effective group id */
 			TEST(setregid(*test_data[i].real_gid,
-				*test_data[i].eff_gid));
+				      *test_data[i].eff_gid));
 
 			if (TEST_RETURN == -1) {
 				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_resm(TBROK, "setregid(%d, %d) failed",
-					test_data[i].real_gid,
-					test_data[i].eff_gid);
+					 test_data[i].real_gid,
+					 test_data[i].eff_gid);
 			} else {
 				/*
 				 * Perform functional verification if test
@@ -148,8 +150,8 @@ int main(int ac, char **av)
 				 */
 				if (STD_FUNCTIONAL_TEST) {
 					gid_verify(test_data[i].exp_real_usr,
-						test_data[i].exp_eff_usr,
-						test_data[i].test_msg);
+						   test_data[i].exp_eff_usr,
+						   test_data[i].test_msg);
 				} else {
 					tst_resm(TPASS, "Call succeeded.");
 				}
@@ -157,9 +159,7 @@ int main(int ac, char **av)
 		}
 	}
 	cleanup();
-	/*NOTREACHED*/
-
-  return 0;
+	 /*NOTREACHED*/ return 0;
 
 }
 
@@ -167,13 +167,12 @@ int main(int ac, char **av)
  * setup()
  *	performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
- 	/* Check that the test process id is super/root  */
+	/* Check that the test process id is super/root  */
 	if (geteuid() != 0) {
 		tst_brkm(TBROK, NULL, "Must be root for this test!");
 		tst_exit();
@@ -185,7 +184,7 @@ setup(void)
 	root = *(getgrnam("root"));
 	root_gr_gid = root.gr_gid;
 
-	users = *( getgrnam("users"));
+	users = *(getgrnam("users"));
 	users_gr_gid = users.gr_gid;
 
 	daemongr = *(getgrnam("daemon"));
@@ -205,8 +204,7 @@ setup(void)
  *	performs all ONE TIME cleanup for this test at
  *	completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -216,11 +214,9 @@ cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}
 
-void
-gid_verify(struct group *rg, struct group *eg, char *when)
+void gid_verify(struct group *rg, struct group *eg, char *when)
 {
 	if ((getgid() != rg->gr_gid) || (getegid() != eg->gr_gid)) {
 		tst_resm(TFAIL, "ERROR: %s real gid = %d; effective gid = %d",
@@ -229,7 +225,6 @@ gid_verify(struct group *rg, struct group *eg, char *when)
 			 rg->gr_gid, eg->gr_gid);
 	} else {
 		tst_resm(TPASS, "real or effective gid was modified as "
-			"expected");
+			 "expected");
 	}
 }
-

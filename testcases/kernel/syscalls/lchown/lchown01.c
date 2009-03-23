@@ -39,11 +39,11 @@
  *   Loop if the proper options are given.
  *   Execute system call
  *   Check return code, if system call failed (return=-1)
- *   	Log the errno and Issue a FAIL message.
+ *	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call
+ *	Verify the Functionality of system call
  *      if successful,
- *      	Issue Functionality-Pass message.
+ *		Issue Functionality-Pass message.
  *      Otherwise,
  *		Issue Functionality-Fail message.
  *  Cleanup:
@@ -83,28 +83,28 @@
 #define TESTFILE	"testfile"
 #define SFILE		"slink_file"
 
-char *TCID="lchown01";		/* Test program identifier.    */
-int TST_TOTAL=5;		/* Total number of test conditions */
+char *TCID = "lchown01";	/* Test program identifier.    */
+int TST_TOTAL = 5;		/* Total number of test conditions */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-struct test_case_t {	/* test case struct. to test different conditions */
+struct test_case_t {		/* test case struct. to test different conditions */
 	char *desc;
 	uid_t user_id;
 	gid_t group_id;
 } Test_cases[] = {
-	{ "Change Owner/Group ids", 700, 701 },
-	{ "Change Owner id only", 702, -1 },
-	{ "Change Owner id only", 703, 701 },
-	{ "Change Group id only", -1, 704 },
-	{ "Change Group id only", 703, 705 },
-	{ NULL, 0, 0 }
+	{
+	"Change Owner/Group ids", 700, 701}, {
+	"Change Owner id only", 702, -1}, {
+	"Change Owner id only", 703, 701}, {
+	"Change Group id only", -1, 704}, {
+	"Change Group id only", 703, 705}, {
+	NULL, 0, 0}
 };
 
 void setup();			/* setup function for the test */
 void cleanup();			/* cleanup function for the test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	struct stat stat_buf;	/* stat(2) struct contents */
 	int lc;			/* loop counter */
@@ -113,10 +113,10 @@ main(int ac, char **av)
 	uid_t User_id;		/* user id of the user set for testfile */
 	gid_t Group_id;		/* group id of the user set for testfile */
 	char *test_desc;	/* test specific message */
-   
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -138,7 +138,7 @@ main(int ac, char **av)
 			 * Call lchwon(2) with different user id and
 			 * group id (numeric values) to set it on
 			 * symlink of testfile.
-		 	 */
+			 */
 			TEST(lchown(SFILE, User_id, Group_id));
 
 			/* check return code of lchown(2) */
@@ -154,7 +154,7 @@ main(int ac, char **av)
 			 */
 			if (STD_FUNCTIONAL_TEST) {
 				/*
-			 	 * Get the testfile information using
+				 * Get the testfile information using
 				 * lstat(2).
 				 */
 				if (lstat(SFILE, &stat_buf) < 0) {
@@ -187,14 +187,13 @@ main(int ac, char **av)
 				tst_resm(TPASS, "call succeeded");
 			}
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
-}	/* End main */
+	 /*NOTREACHED*/ return 0;
+}				/* End main */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -202,8 +201,7 @@ main(int ac, char **av)
  *	     Create a test file under temporary directory and close it
  *	     Create a symlink of testfile under temporary directory.
  */
-void
-setup()
+void setup()
 {
 	int fd;
 
@@ -218,11 +216,11 @@ setup()
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
-	
+
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
-	if ((fd = open(TESTFILE, O_RDWR|O_CREAT, FILE_MODE)) == -1) {
+	if ((fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %o) Failed, errno=%d : %s",
 			 TESTFILE, FILE_MODE, errno, strerror(errno));
@@ -246,8 +244,7 @@ setup()
  *	       completion or premature exit.
  *	       Remove the test directory and testfile created in the setup.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

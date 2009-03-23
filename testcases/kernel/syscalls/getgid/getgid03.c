@@ -76,18 +76,17 @@ extern int Tst_count;
 
 int main(int ac, char **av)
 {
-	int lc;                         /* loop counter */
-	char *msg;                      /* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int uid;
 	struct passwd *pwent;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
-	setup();                        /* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -112,12 +111,12 @@ int main(int ac, char **av)
 				tst_brkm(TBROK,
 					 cleanup,
 					 "gid for uid %d is too large for testing getgid16",
-					uid);
+					 uid);
 			} else {
 				if (pwent->pw_gid != TEST_RETURN) {
 					tst_resm(TFAIL, "getgid() return value "
-						"%d unexpected - expected %d",
-						TEST_RETURN, pwent->pw_gid);
+						 "%d unexpected - expected %d",
+						 TEST_RETURN, pwent->pw_gid);
 				} else {
 					tst_resm(TPASS, "group id %d returned "
 						 "correctly", TEST_RETURN);
@@ -129,16 +128,13 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
-
 
 /*
  * setup() - performs all ONE TIME setup for this test
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -151,8 +147,7 @@ setup()
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing status if that option was specified.

@@ -74,7 +74,6 @@
 #include "test.h"
 #include "usctest.h"
 
-
 void setup();
 void cleanup();
 
@@ -82,41 +81,36 @@ char *TCID = "sysinfo01";	/* Test program identifier */
 int TST_TOTAL = 1;		/* Total number of test cases */
 extern int Tst_count;		/* Test case counter for tst_* routines */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	struct sysinfo *sys_buf;
 	int lc;
 	char *msg;
-	float l1,l2,l3;
-	unsigned long l1_up,l2_up,l3_up;
+	float l1, l2, l3;
+	unsigned long l1_up, l2_up, l3_up;
 
-	sys_buf = (struct sysinfo *) malloc(sizeof(struct sysinfo));
+	sys_buf = (struct sysinfo *)malloc(sizeof(struct sysinfo));
 
 	/* parse standard options */
-	if((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) !=
-		(char *) NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	setup();		/* Global setup */
 
 	/* The following loop checks looping state if -i option given */
-	for(lc = 0; TEST_LOOPING(lc); lc++) {
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
 		TEST(sysinfo(sys_buf));
 		/* check return code */
-		if ( TEST_RETURN == -1 ) {
+		if (TEST_RETURN == -1) {
 			/* To gather stats on errnos returned, log the errno */
 			tst_brkm(TFAIL, cleanup, "sysinfo() Failed, errno=%d"
-				 " : %s",TEST_ERRNO, strerror(TEST_ERRNO));
-			/*NOTREACHED*/
-		}
-		else {
+				 " : %s", TEST_ERRNO, strerror(TEST_ERRNO));
+		 /*NOTREACHED*/} else {
 			/* Test succeeded */
 
 			/* This portion of the code generates information
@@ -124,7 +118,7 @@ main(int ac, char **av)
 			 * sysinfo.
 			 */
 
-			if(ac == 2 &&  !strncmp(av[1], "TEST3", 5)) {
+			if (ac == 2 && !strncmp(av[1], "TEST3", 5)) {
 				tst_resm(TINFO, "Generating info for "
 					 "sysinfo03");
 				l1 = sys_buf->loads[0] / 60000.0;
@@ -133,26 +127,26 @@ main(int ac, char **av)
 				l1_up = l1 * 100;
 				l2_up = l2 * 100;
 				l3_up = l3 * 100;
-				sys_buf->loads[0] = sys_buf->loads[0] /10;
-				sys_buf->loads[1] = sys_buf->loads[1] /10;
-				sys_buf->loads[2] = sys_buf->loads[2] /10;
+				sys_buf->loads[0] = sys_buf->loads[0] / 10;
+				sys_buf->loads[1] = sys_buf->loads[1] / 10;
+				sys_buf->loads[2] = sys_buf->loads[2] / 10;
 				printf("uptime %lu\n", sys_buf->uptime);
 				printf("load1 %lu\n", sys_buf->loads[0]);
 				printf("load2 %lu\n", sys_buf->loads[1]);
 				printf("load3 %lu\n", sys_buf->loads[2]);
-		 		 		 		 printf("l1 %lu\n", l1_up);
-		 		 		 		 printf("l2 %lu\n", l2_up);
-		 		 		 		 printf("l3 %lu\n", l3_up);
+				printf("l1 %lu\n", l1_up);
+				printf("l2 %lu\n", l2_up);
+				printf("l3 %lu\n", l3_up);
 				printf("totalram %lu\n", sys_buf->totalram);
 				printf("freeram  %lu\n", sys_buf->freeram);
 				printf("sharedram %lu\n", sys_buf->sharedram);
 				printf("bufferram %lu\n", sys_buf->bufferram);
 				printf("totalswap %lu\n",
-					sys_buf->totalswap/(1024*1024));
+				       sys_buf->totalswap / (1024 * 1024));
 				printf("freeswap %lu\n", sys_buf->freeswap);
-		 		 		 		 printf("procs %lu\n", (unsigned long)sys_buf->procs);
-			}
-			else {
+				printf("procs %lu\n",
+				       (unsigned long)sys_buf->procs);
+			} else {
 				tst_resm(TPASS, "Test to check the return code",
 					 "PASSED");
 			}
@@ -160,9 +154,7 @@ main(int ac, char **av)
 	}
 
 	cleanup();
-	/*NOTREACHED*/
-
-  return 0;
+	 /*NOTREACHED*/ return 0;
 
 }
 
@@ -171,8 +163,7 @@ main(int ac, char **av)
  *	performs one time setup
  *
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -187,8 +178,7 @@ setup(void)
  * cleanup()
  *
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	TEST_CLEANUP;
 	tst_exit();

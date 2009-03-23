@@ -32,91 +32,93 @@ extern struct event_list eventqueue;
 extern struct event_list signalqueue;
 
 struct rtsigop {
-    sigset_t sigs;
-    struct pollfd *poll;
-    struct event **toev;
-    int cur, max, total;
+	sigset_t sigs;
+	struct pollfd *poll;
+	struct event **toev;
+	int cur, max, total;
 #ifndef HAVE_WORKING_RTSIG
-    int pollmode;
+	int pollmode;
 #endif
 };
 
 #define INIT_MAX 16
 
-static int
-poll_add(struct rtsigop *op, struct event *ev)
+static int poll_add(struct rtsigop *op, struct event *ev)
 {
-    struct pollfd *pfd;
+	struct pollfd *pfd;
 
-    if (op->poll == NULL) return 0;
+	if (op->poll == NULL)
+		return 0;
 
-    if (op->cur == op->max) {
-        void *p;
+	if (op->cur == op->max) {
+		void *p;
 
-        p = realloc(op->poll, sizeof(*op->poll) * (op->max << 1));
-        if (!p) {
-            errno = ENOMEM;
-            return -1;
-        }
-        op->poll = p;
-        p = realloc(op->toev, sizeof(*op->toev) * (op->max << 1));
-        if (!p) {
-            op->poll = realloc(op->poll, sizeof(*op->poll) * op->max);
-            errno = ENOMEM;
-            return -1;
-        }
-        op->toev = p;
-        op->max <<= 1;
-    }
+		p = realloc(op->poll, sizeof(*op->poll) * (op->max << 1));
+		if (!p) {
+			errno = ENOMEM;
+			return -1;
+		}
+		op->poll = p;
+		p = realloc(op->toev, sizeof(*op->toev) * (op->max << 1));
+		if (!p) {
+			op->poll =
+			    realloc(op->poll, sizeof(*op->poll) * op->max);
+			errno = ENOMEM;
+			return -1;
+		}
+		op->toev = p;
+		op->max <<= 1;
+	}
 
-    pfd = &op->poll[op->cur];
-    pfd->fd = ev->ev_fd;
-    pfd->events = 0;
-    if (ev->ev_events & EV_READ) pfd->events |= POLLIN;
-    if (ev->ev_events & EV_WRITE) pfd->events |= POLLOUT;
-    pfd->revents = 0;
+	pfd = &op->poll[op->cur];
+	pfd->fd = ev->ev_fd;
+	pfd->events = 0;
+	if (ev->ev_events & EV_READ)
+		pfd->events |= POLLIN;
+	if (ev->ev_events & EV_WRITE)
+		pfd->events |= POLLOUT;
+	pfd->revents = 0;
 
-    op->toev[op->cur] = ev;
-    op->cur++;
+	op->toev[op->cur] = ev;
+	op->cur++;
 
-    return 0;
+	return 0;
 }
 
-static void
-poll_free(struct rtsigop *op, int n)
+static void poll_free(struct rtsigop *op, int n)
 {
-    if (op->poll == NULL) return;
+	if (op->poll == NULL)
+		return;
 
-    op->cur--;
-    if (n < op->cur) {
-        memcpy(&op->poll[n], &op->poll[op->cur], sizeof(*op->poll));
-        op->toev[n] = op->toev[op->cur];
-    }
-    if (op->max > INIT_MAX && op->cur < op->max >> 1) {
-        op->max >>= 1;
-        op->poll = realloc(op->poll, sizeof(*op->poll) * op->max);
-        op->toev = realloc(op->toev, sizeof(*op->toev) * op->max);
-    }
+	op->cur--;
+	if (n < op->cur) {
+		memcpy(&op->poll[n], &op->poll[op->cur], sizeof(*op->poll));
+		op->toev[n] = op->toev[op->cur];
+	}
+	if (op->max > INIT_MAX && op->cur < op->max >> 1) {
+		op->max >>= 1;
+		op->poll = realloc(op->poll, sizeof(*op->poll) * op->max);
+		op->toev = realloc(op->toev, sizeof(*op->toev) * op->max);
+	}
 }
 
-static void
-poll_remove(struct rtsigop *op, struct event *ev)
+static void poll_remove(struct rtsigop *op, struct event *ev)
 {
-    int i;
+	int i;
 
-    for (i = 0; i < op->cur; i++) {
-        if (op->toev[i] == ev) {
-            poll_free(op, i);
-            break;
-        }
-    }
+	for (i = 0; i < op->cur; i++) {
+		if (op->toev[i] == ev) {
+			poll_free(op, i);
+			break;
+		}
+	}
 }
 
-static void
-activate(struct event *ev, int flags)
+static void activate(struct event *ev, int flags)
 {
-    if (!(ev->ev_events & EV_PERSIST)) event_del(ev);
-    event_active(ev, flags, 1);
+	if (!(ev->ev_events & EV_PERSIST))
+		event_del(ev);
+	event_active(ev, flags, 1);
 }
 
 void *rtsig_init(void);
@@ -126,16 +128,15 @@ int rtsig_recalc(void *, int);
 int rtsig_dispatch(void *, struct timeval *);
 
 struct eventop rtsigops = {
-    "rtsig",
-    rtsig_init,
-    rtsig_add,
-    rtsig_del,
-    rtsig_recalc,
-    rtsig_dispatch
+	"rtsig",
+	rtsig_init,
+	rtsig_add,
+	rtsig_del,
+	rtsig_recalc,
+	rtsig_dispatch
 };
 
-void *
-rtsig_init(void)
+void *rtsig_init(void)
 {
 	struct rtsigop *op;
 
@@ -143,7 +144,8 @@ rtsig_init(void)
 		return (NULL);
 
 	op = malloc(sizeof(*op));
-	if (op == NULL) return (NULL);
+	if (op == NULL)
+		return (NULL);
 
 	memset(op, 0, sizeof(*op));
 
@@ -168,10 +170,9 @@ rtsig_init(void)
 	return (op);
 }
 
-int
-rtsig_add(void *arg, struct event *ev)
+int rtsig_add(void *arg, struct event *ev)
 {
-	struct rtsigop *op = (struct rtsigop *) arg;
+	struct rtsigop *op = (struct rtsigop *)arg;
 	int flags, i;
 #ifndef HAVE_WORKING_RTSIG
 	struct stat st;
@@ -182,10 +183,12 @@ rtsig_add(void *arg, struct event *ev)
 		return sigprocmask(SIG_BLOCK, &op->sigs, NULL);
 	}
 
-	if (!(ev->ev_events & (EV_READ | EV_WRITE))) return 0;
+	if (!(ev->ev_events & (EV_READ | EV_WRITE)))
+		return 0;
 
 #ifndef HAVE_WORKING_RTSIG
-	if (fstat(ev->ev_fd, &st) == -1) return -1;
+	if (fstat(ev->ev_fd, &st) == -1)
+		return -1;
 	if (S_ISFIFO(st.st_mode)) {
 		ev->ev_flags |= EVLIST_X_NORT;
 		op->pollmode++;
@@ -198,13 +201,12 @@ rtsig_add(void *arg, struct event *ev)
 
 	if (!(flags & O_ASYNC)) {
 		if (fcntl(ev->ev_fd, F_SETSIG, SIGRTMIN) == -1
-		    || fcntl(ev->ev_fd, F_SETOWN, (int) getpid()) == -1)
+		    || fcntl(ev->ev_fd, F_SETOWN, (int)getpid()) == -1)
 			return (-1);
 
 		if (fcntl(ev->ev_fd, F_SETFL, flags | O_ASYNC))
 			return (-1);
 	}
-
 #ifdef O_ONESIGFD
 	fcntl(ev->ev_fd, F_SETAUXFL, O_ONESIGFD);
 #endif
@@ -215,17 +217,16 @@ rtsig_add(void *arg, struct event *ev)
 
 	return (0);
 
- err:
+      err:
 	i = errno;
 	fcntl(ev->ev_fd, F_SETFL, flags);
 	errno = i;
 	return (-1);
 }
 
-int
-rtsig_del(void *arg, struct event *ev)
+int rtsig_del(void *arg, struct event *ev)
 {
-	struct rtsigop *op = (struct rtsigop *) arg;
+	struct rtsigop *op = (struct rtsigop *)arg;
 
 	if (ev->ev_events & EV_SIGNAL) {
 		sigset_t sigs;
@@ -250,16 +251,14 @@ rtsig_del(void *arg, struct event *ev)
 	return (0);
 }
 
-int
-rtsig_recalc(void *arg, int max)
+int rtsig_recalc(void *arg, int max)
 {
-    return (0);
+	return (0);
 }
 
-int
-rtsig_dispatch(void *arg, struct timeval *tv)
+int rtsig_dispatch(void *arg, struct timeval *tv)
 {
-	struct rtsigop *op = (struct rtsigop *) arg;
+	struct rtsigop *op = (struct rtsigop *)arg;
 	struct timespec ts;
 	int res, i;
 
@@ -294,11 +293,11 @@ rtsig_dispatch(void *arg, struct timeval *tv)
 
 		if (signum == SIGIO) {
 #ifndef HAVE_WORKING_RTSIG
-		poll_all:
+		      poll_all:
 #endif
 			free(op->poll);
 			free(op->toev);
-		retry_poll:
+		      retry_poll:
 			op->cur = 0;
 			op->max = op->total;
 			op->poll = malloc(sizeof(*op->poll) * op->total);
@@ -313,7 +312,7 @@ rtsig_dispatch(void *arg, struct timeval *tv)
 
 			TAILQ_FOREACH(ev, &eventqueue, ev_next)
 			    if (!(ev->ev_flags & EVLIST_X_NORT))
-				    poll_add(op, ev);
+				poll_add(op, ev);
 
 			break;
 		}
@@ -321,13 +320,16 @@ rtsig_dispatch(void *arg, struct timeval *tv)
 		if (signum == SIGRTMIN) {
 			int flags, i, sigok = 0;
 
-			if (info.si_band <= 0) { /* SI_SIGIO */
+			if (info.si_band <= 0) {	/* SI_SIGIO */
 				flags = EV_READ | EV_WRITE;
 			} else {
 				flags = 0;
-				if (info.si_band & POLLIN) flags |= EV_READ;
-				if (info.si_band & POLLOUT) flags |= EV_WRITE;
-				if (!flags) continue;
+				if (info.si_band & POLLIN)
+					flags |= EV_READ;
+				if (info.si_band & POLLOUT)
+					flags |= EV_WRITE;
+				if (!flags)
+					continue;
 			}
 
 			for (i = 0; flags && i < op->cur; i++) {
@@ -340,12 +342,13 @@ rtsig_dispatch(void *arg, struct timeval *tv)
 			}
 
 			for (ev = TAILQ_FIRST(&eventqueue);
-			    flags && ev != TAILQ_END(&eventqueue);
-			    ev = TAILQ_NEXT(ev, ev_next)) {
+			     flags && ev != TAILQ_END(&eventqueue);
+			     ev = TAILQ_NEXT(ev, ev_next)) {
 				if (ev->ev_fd == info.si_fd) {
 					if (flags & ev->ev_events) {
 						i = poll_add(op, ev);
-						if (i == -1) return -1;
+						if (i == -1)
+							return -1;
 						flags &= ~ev->ev_events;
 					}
 					sigok = 1;
@@ -354,7 +357,8 @@ rtsig_dispatch(void *arg, struct timeval *tv)
 
 			if (!sigok) {
 				flags = fcntl(info.si_fd, F_GETFL);
-				if (flags == -1) return -1;
+				if (flags == -1)
+					return -1;
 				fcntl(info.si_fd, F_SETFL, flags & ~O_ASYNC);
 			}
 		} else {
@@ -407,7 +411,8 @@ rtsig_dispatch(void *arg, struct timeval *tv)
 				if (i == op->cur)
 					break;
 				if (op->poll[op->cur].revents) {
-					memcpy(&op->poll[i], &op->poll[op->cur], sizeof(*op->poll));
+					memcpy(&op->poll[i], &op->poll[op->cur],
+					       sizeof(*op->poll));
 					op->toev[i] = op->toev[op->cur];
 					break;
 				}

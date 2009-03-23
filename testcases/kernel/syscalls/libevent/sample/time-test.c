@@ -22,15 +22,13 @@
 
 int lasttime;
 
-void
-timeout_cb(int fd, short event, void *arg)
+void timeout_cb(int fd, short event, void *arg)
 {
 	struct timeval tv;
 	struct event *timeout = arg;
 	int newtime = time(NULL);
 
-	printf("%s: called at %d: %d\n", __func__, newtime,
-	    newtime - lasttime);
+	printf("%s: called at %d: %d\n", __func__, newtime, newtime - lasttime);
 	lasttime = newtime;
 
 	timerclear(&tv);
@@ -38,8 +36,7 @@ timeout_cb(int fd, short event, void *arg)
 	event_add(timeout, &tv);
 }
 
-int
-main (int argc, char **argv)
+int main(int argc, char **argv)
 {
 	struct event timeout;
 	struct timeval tv;
@@ -60,4 +57,3 @@ main (int argc, char **argv)
 
 	return (0);
 }
-

@@ -87,23 +87,23 @@ static struct test_cases_t {
 	int policy;
 	int priority;
 } testcases[] = {
-	{ "Test with policy SCHED_FIFO", SCHED_FIFO, FIFO_OR_RR_PRIO },
-	{ "Test with policy SCHED_RR", SCHED_RR, FIFO_OR_RR_PRIO },
-	{ "Test with SCHED_OTHER", SCHED_OTHER, OTHER_PRIO }
+	{
+	"Test with policy SCHED_FIFO", SCHED_FIFO, FIFO_OR_RR_PRIO}, {
+	"Test with policy SCHED_RR", SCHED_RR, FIFO_OR_RR_PRIO}, {
+	"Test with SCHED_OTHER", SCHED_OTHER, OTHER_PRIO}
 };
 
 int TST_TOTAL = sizeof(testcases) / sizeof(testcases[0]);
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 
 	int lc, i;		/* loop counter */
-	char *msg;	/* message returned from parse_opts */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
-	     != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL))
+	    != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -115,18 +115,18 @@ main(int ac, char **av)
 
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
-	
+
 		for (i = 0; i < TST_TOTAL; ++i) {
 
 			if (i == 2) {
 				param1.sched_priority = 0;
-			} else  {
+			} else {
 				param1.sched_priority = 1;
 			}
 			if ((sched_setscheduler(0, testcases[i].policy,
 						&param1)) == -1) {
 				tst_brkm(TBROK, cleanup, "sched_setscheduler()"
-							 "  failed");
+					 "  failed");
 			}
 			param.sched_priority = testcases[i].priority;
 			/*
@@ -139,24 +139,22 @@ main(int ac, char **av)
 				tst_resm(TPASS, "%s Passed", testcases[i].desc);
 			} else {
 				tst_resm(TFAIL, "%s Failed. sched_setparam()"
-					" returned %d, errno: %d; %s",
-					testcases[i].desc, TEST_RETURN,
-					TEST_ERRNO, strerror(TEST_ERRNO));
+					 " returned %d, errno: %d; %s",
+					 testcases[i].desc, TEST_RETURN,
+					 TEST_ERRNO, strerror(TEST_ERRNO));
 			}
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* cleanup and exit */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 
-}	/* End main */
+}				/* End main */
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -164,15 +162,13 @@ setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-}	/* End setup() */
-
+}				/* End setup() */
 
 /*
  *cleanup() -  performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 
 	/*
@@ -183,14 +179,13 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */
 
 /*
  * verify_priority() -  This function checks whether the priority is
  *			set correctly
  */
-int
-verify_priority(int i)
+int verify_priority(int i)
 {
 	struct sched_param p;
 
@@ -199,7 +194,7 @@ verify_priority(int i)
 			return 1;
 		} else {
 			tst_resm(TWARN, "sched_getparam() returned priority"
-					" value as %d", p.sched_priority);
+				 " value as %d", p.sched_priority);
 			return 0;
 		}
 	}

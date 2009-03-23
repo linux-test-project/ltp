@@ -78,17 +78,17 @@ const char *TEST_DIR = "alpha";
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	void check_functionality(void);
 	int r_val;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -106,7 +106,7 @@ int main(int ac, char **av)
 		 * create a new directory and open it
 		 */
 
-		if ((r_val = mkdir(TEST_DIR, MODES)) == -1){
+		if ((r_val = mkdir(TEST_DIR, MODES)) == -1) {
 			tst_brkm(TBROK, cleanup, "%s - mkdir() in main() "
 				 "failed", TCID);
 		}
@@ -144,12 +144,12 @@ int main(int ac, char **av)
 		 */
 
 		/* chdir back to our temporary work directory */
-		if ((r_val = chdir("..")) == -1){
+		if ((r_val = chdir("..")) == -1) {
 			tst_resm(TBROK, "fchdir failed - errno = %d : %s",
 				 errno, strerror(errno));
 		}
 
-		if ((r_val = rmdir(TEST_DIR)) == -1){
+		if ((r_val = rmdir(TEST_DIR)) == -1) {
 			tst_resm(TBROK, "rmdir failed - errno = %d : %s",
 				 errno, strerror(errno));
 		}
@@ -163,15 +163,13 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * check_functionality() - check that we are in the correct directory.
  */
-void
-check_functionality(void)
+void check_functionality(void)
 {
 	char *buf = NULL;
 	char **bufptr = &buf;
@@ -194,7 +192,7 @@ check_functionality(void)
 			tst_brkm(TBROK, cleanup, "%s - strsep() in "
 				 "check_functionality() failed", TCID);
 		}
-	} while(*bufptr != NULL);
+	} while (*bufptr != NULL);
 
 	/*
 	 * Make sure we are in the right place.
@@ -209,8 +207,7 @@ check_functionality(void)
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -226,8 +223,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/* remove the test directory */
 	tst_rmdir();
@@ -241,4 +237,3 @@ cleanup(void)
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

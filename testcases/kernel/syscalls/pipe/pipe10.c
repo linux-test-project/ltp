@@ -70,21 +70,20 @@ ssize_t safe_read(int fd, void *buf, size_t count)
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
-	int fd[2];			/* fds for pipe read/write */
+	int fd[2];		/* fds for pipe read/write */
 	char wrbuf[BUFSIZ], rebuf[BUFSIZ];
-	int red, written;		/* no of chars read and */
-					/* written to pipe */
+	int red, written;	/* no of chars read and */
+	/* written to pipe */
 	int length, greater, forkstat;
-	int retval=0, status, e_code;
+	int retval = 0, status, e_code;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	setup();
 
@@ -107,7 +106,7 @@ int main(int ac, char **av)
 		}
 
 		strcpy(wrbuf, "abcdefghijklmnopqrstuvwxyz");
-		length = strlen(wrbuf) + 1 ;
+		length = strlen(wrbuf) + 1;
 
 		written = write(fd[1], wrbuf, length);
 
@@ -120,10 +119,9 @@ int main(int ac, char **av)
 
 		if (forkstat == -1) {
 			tst_brkm(TBROK, cleanup, "fork() failed");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
-		if (forkstat == 0) {		/* child */
+		if (forkstat == 0) {	/* child */
 			red = safe_read(fd[0], rebuf, written);
 
 			/* did read , get at least some chars */
@@ -143,26 +141,24 @@ int main(int ac, char **av)
 			}
 			exit(retval);
 		} else {	/* parent */
-                        /* wait for the child to finish */
-                        wait(&status);
-                        /* make sure the child returned a good exit status */
-                        e_code = status >> 8;
-                        if (e_code != 0) {
-                                tst_resm(TFAIL, "Failures reported above");
-                        }
+			/* wait for the child to finish */
+			wait(&status);
+			/* make sure the child returned a good exit status */
+			e_code = status >> 8;
+			if (e_code != 0) {
+				tst_resm(TFAIL, "Failures reported above");
+			}
 		}
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -175,8 +171,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

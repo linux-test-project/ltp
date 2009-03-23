@@ -37,11 +37,11 @@
  *   Loop if the proper options are given.
  *   Execute system call
  *   Check return code, if system call failed (return=-1)
- *   	Log the errno and Issue a FAIL message.
+ *	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call
+ *	Verify the Functionality of system call
  *      if successful,
- *      	Issue Functionality-Pass message.
+ *		Issue Functionality-Pass message.
  *      Otherwise,
  *		Issue Functionality-Fail message.
  *  Cleanup:
@@ -73,8 +73,8 @@
 int cflag;			/* flag to indicate child process status */
 pid_t cpid;			/* child process id */
 
-char *TCID="pause03";		/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "pause03";		/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 void do_child();		/* Function to run in child process */
@@ -82,20 +82,18 @@ void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 void sig_handle(int sig);	/* signal handler for SIGCLD */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	int status;		/* child process exit status */
 	int ret_val;		/* return value for wait() */
-   
+
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
-
 #ifdef UCLINUX
 	maybe_run_child(&do_child, "");
 #endif
@@ -107,14 +105,14 @@ main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/* Creat a new process using fork() */
 		if ((cpid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() failed");
 		}
 
-		if (cpid == 0) {		/* Child process */
+		if (cpid == 0) {	/* Child process */
 #ifdef UCLINUX
 			if (self_exec(av[0], "") < 0) {
 				tst_brkm(TBROK, cleanup, "self_exec failed");
@@ -158,7 +156,7 @@ main(int ac, char **av)
 		 * Verify that wait returned after child process termination
 		 * due to receipt of SIGKILL signal.
 		 */
-		if (WTERMSIG(status) == SIGKILL){
+		if (WTERMSIG(status) == SIGKILL) {
 			ret_val = wait(&status);
 			if ((ret_val == -1) && (errno == ECHILD)) {
 				/*
@@ -180,19 +178,18 @@ main(int ac, char **av)
 		/* reset cflag in case we are looping */
 		cflag = 0;
 
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
 	return 0;
-}	/* End main */
+}				/* End main */
 
 /*
  * do_child()
  */
-void
-do_child()
+void do_child()
 {
 	/* Suspend the child using pause() */
 	TEST(pause());
@@ -200,16 +197,14 @@ do_child()
 	/* print the message if pause() returned */
 	tst_resm(TFAIL, "Unexpected return from pause()");
 	/* Loop infinitely */
-	while (1)
-	;
+	while (1) ;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
- *  	     Setup signal handler to catch SIGCLD signal.
+ *	     Setup signal handler to catch SIGCLD signal.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -231,8 +226,7 @@ setup()
  *    the handler gets executed and then the cflag variable is set to
  *    indicate the child has terminated.
  */
-void
-sig_handle(int sig)
+void sig_handle(int sig)
 {
 	/* Set the cflag variable */
 	cflag = 1;
@@ -242,8 +236,7 @@ sig_handle(int sig)
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

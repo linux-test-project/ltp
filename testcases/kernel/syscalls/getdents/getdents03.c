@@ -71,13 +71,13 @@ char *TCID = "getdents03";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-int exp_enos[] = {EINVAL, 0};	/* 0 terminated list of expected errnos */
+int exp_enos[] = { EINVAL, 0 };	/* 0 terminated list of expected errnos */
 
 #ifndef __i386__
 int main()
 {
 	tst_resm(TINFO, "This test includes x86 asm and will not work on "
-	                "this machine");
+		 "this machine");
 	tst_exit();
 	return 0;
 }
@@ -85,22 +85,21 @@ int main()
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int rval, fd;
 	int count;
-	const int cnum = 141;		/* system call number 141 = getdents */
+	const int cnum = 141;	/* system call number 141 = getdents */
 	size_t size = 0;
 	char *dir_name = NULL;
 	struct dirent *dirp;
 
-
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -147,11 +146,11 @@ int main(int ac, char **av)
 		 * Hopefully we get an error due to the small buffer.
 		 */
 
-		if (rval < 0) {		/* call returned an error */
+		if (rval < 0) {	/* call returned an error */
 			rval *= -1;
 			TEST_ERROR_LOG(rval);
 
-			switch(rval) {
+			switch (rval) {
 			case EINVAL:
 				tst_resm(TPASS, "expected failure - errno = %d "
 					 "- %s", rval, strerror(rval));
@@ -183,15 +182,13 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -208,10 +205,9 @@ setup(void)
 
 /*
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
- * 	       or premature exit.
+ *	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/* remove the test directory */
 	tst_rmdir();

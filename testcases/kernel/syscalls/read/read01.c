@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: read01.c,v 1.6 2009/02/26 12:16:34 subrata_modak Exp $ */
+/* $Id: read01.c,v 1.7 2009/03/23 13:36:01 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -66,7 +66,7 @@
  *	(See the parse_opts(3) man page).
  *
  *    OUTPUT SPECIFICATIONS
- * 
+ *$
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
  *
@@ -130,147 +130,145 @@
 void setup();
 void cleanup();
 
-
-
-char *TCID="read01"; 		/* Test program identifier.    */
-int TST_TOTAL=1;    		/* Total number of test cases. */
+char *TCID = "read01";		/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-int exp_enos[]={0, 0};
+int exp_enos[] = { 0, 0 };
 char fname[255];
 int fd, i;
-int offset=0;
+int offset = 0;
 char *s;
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-    int lc;		/* loop counter */
-    char *msg;		/* message returned from parse_opts */
-   
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
+
     /***************************************************************
      * parse standard options
      ***************************************************************/
-    if ( (msg=parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL )
-	tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-   
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL)
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+
     /***************************************************************
      * perform global setup for test
      ***************************************************************/
-    setup();
-   
-    /* set the expected errnos... */
-    TEST_EXP_ENOS(exp_enos);
-   
+	setup();
+
+	/* set the expected errnos... */
+	TEST_EXP_ENOS(exp_enos);
+
     /***************************************************************
      * check looping state if -c option given
      ***************************************************************/
-    for (lc=0; TEST_LOOPING(lc); lc++) {
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-	/* reset Tst_count in case we are looping. */
-	Tst_count=0;
+		/* reset Tst_count in case we are looping. */
+		Tst_count = 0;
 
-        if (write(fd, s, READ_BLOCK_SIZE) == -1) {
-	    tst_brkm(TBROK, cleanup,
-		     "write(%s, %s, %d) Failed, errno=%d : %s",
-		     fname, s, READ_BLOCK_SIZE, errno, strerror(errno));
-        }
-        offset+=READ_BLOCK_SIZE;
-        if (lseek(fd, (long)(offset-READ_BLOCK_SIZE), 0) == -1) {
-	    tst_brkm(TBROK, cleanup,
-		     "lseek(%s, %ld, 0) Failed, errno=%d : %s",
-		     fname, (long)(offset-READ_BLOCK_SIZE), errno, strerror(errno));
-        }
-	/*
-	 * Call read(2)
-	 */
-	TEST(read(fd, s, READ_BLOCK_SIZE));
+		if (write(fd, s, READ_BLOCK_SIZE) == -1) {
+			tst_brkm(TBROK, cleanup,
+				 "write(%s, %s, %d) Failed, errno=%d : %s",
+				 fname, s, READ_BLOCK_SIZE, errno,
+				 strerror(errno));
+		}
+		offset += READ_BLOCK_SIZE;
+		if (lseek(fd, (long)(offset - READ_BLOCK_SIZE), 0) == -1) {
+			tst_brkm(TBROK, cleanup,
+				 "lseek(%s, %ld, 0) Failed, errno=%d : %s",
+				 fname, (long)(offset - READ_BLOCK_SIZE), errno,
+				 strerror(errno));
+		}
+		/*
+		 * Call read(2)
+		 */
+		TEST(read(fd, s, READ_BLOCK_SIZE));
 
-	/* check return code */
-	if ( TEST_RETURN == -1 ) {
-	    TEST_ERROR_LOG(TEST_ERRNO);
-	    tst_resm(TFAIL, "read(fd, s, READ_BLOCK_SIZE) Failed, errno=%d : %s",
-		     TEST_ERRNO, strerror(TEST_ERRNO));
-	} else {
+		/* check return code */
+		if (TEST_RETURN == -1) {
+			TEST_ERROR_LOG(TEST_ERRNO);
+			tst_resm(TFAIL,
+				 "read(fd, s, READ_BLOCK_SIZE) Failed, errno=%d : %s",
+				 TEST_ERRNO, strerror(TEST_ERRNO));
+		} else {
 	    /***************************************************************
 	     * only perform functional verification if flag set (-f not given)
 	     ***************************************************************/
-	    if ( STD_FUNCTIONAL_TEST ) {
-		/* No Verification test, yet... */
-		tst_resm(TPASS, "read(pfds) returned %d", TEST_RETURN);
-	    }
-	}
+			if (STD_FUNCTIONAL_TEST) {
+				/* No Verification test, yet... */
+				tst_resm(TPASS, "read(pfds) returned %d",
+					 TEST_RETURN);
+			}
+		}
 
-    }	/* End for TEST_LOOPING */
-   
+	}			/* End for TEST_LOOPING */
+
     /***************************************************************
      * cleanup and exit
      ***************************************************************/
-    cleanup();
+	cleanup();
 
-    return 0;
-}	/* End main */
+	return 0;
+}				/* End main */
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void
-setup()
+void setup()
 {
-    /* capture signals */
-    tst_sig(NOFORK, DEF_HANDLER, cleanup);
-   
-    /* Pause if that option was specified */
-    TEST_PAUSE;
-   
-    /* make a temp directory and cd to it */
-    tst_tmpdir();
-   
-    if ((s = malloc(READ_BLOCK_SIZE)) == NULL) {
-	tst_brkm(TBROK, cleanup,
-		 "malloc(%d) Failed, errno=%d : %s",
-		 READ_BLOCK_SIZE, errno, strerror(errno));
-    }
-    (void) memset(s, '*', READ_BLOCK_SIZE);
-    for (i=0; i < READ_BLOCK_SIZE; i++) {
-        if ( s[i] != '*' ) {
-	    tst_brkm(TBROK, cleanup,
-		     "File Data pattern not setup correctly : expected * at s[%d] : found %c",
-		     i, s[i]);
-        }
-    }
-    sprintf(fname,"./tfile_%d",getpid());
-    if ((fd=open(fname,O_RDWR|O_CREAT,0700)) == -1) {
-	tst_brkm(TBROK, cleanup,
-		 "open(%s, O_RDWR|O_CREAT,0700) Failed, errno=%d : %s",
-		 fname, errno, strerror(errno));
-    }
-   
-}	/* End setup() */
+	/* capture signals */
+	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
+	/* Pause if that option was specified */
+	TEST_PAUSE;
+
+	/* make a temp directory and cd to it */
+	tst_tmpdir();
+
+	if ((s = malloc(READ_BLOCK_SIZE)) == NULL) {
+		tst_brkm(TBROK, cleanup,
+			 "malloc(%d) Failed, errno=%d : %s",
+			 READ_BLOCK_SIZE, errno, strerror(errno));
+	}
+	(void)memset(s, '*', READ_BLOCK_SIZE);
+	for (i = 0; i < READ_BLOCK_SIZE; i++) {
+		if (s[i] != '*') {
+			tst_brkm(TBROK, cleanup,
+				 "File Data pattern not setup correctly : expected * at s[%d] : found %c",
+				 i, s[i]);
+		}
+	}
+	sprintf(fname, "./tfile_%d", getpid());
+	if ((fd = open(fname, O_RDWR | O_CREAT, 0700)) == -1) {
+		tst_brkm(TBROK, cleanup,
+			 "open(%s, O_RDWR|O_CREAT,0700) Failed, errno=%d : %s",
+			 fname, errno, strerror(errno));
+	}
+
+}				/* End setup() */
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void
-cleanup()
+void cleanup()
 {
-    /*
-     * print timing stats if that option was specified.
-     * print errno log if that option was specified.
-     */
-    TEST_CLEANUP;
-   
-    if (close(fd) == -1 ) {
-	tst_resm(TWARN, "close(%s) Failed, errno=%d : %s",
-		 fname, errno, strerror(errno));
-    }
-   
-    /* Remove tmp dir and all files in it */
-    tst_rmdir();
-   
-    /* exit with return code appropriate for results */
-    tst_exit();
-   
-}	/* End cleanup() */
+	/*
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
+	TEST_CLEANUP;
+
+	if (close(fd) == -1) {
+		tst_resm(TWARN, "close(%s) Failed, errno=%d : %s",
+			 fname, errno, strerror(errno));
+	}
+
+	/* Remove tmp dir and all files in it */
+	tst_rmdir();
+
+	/* exit with return code appropriate for results */
+	tst_exit();
+
+}				/* End cleanup() */

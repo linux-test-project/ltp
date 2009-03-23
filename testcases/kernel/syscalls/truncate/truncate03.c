@@ -91,63 +91,66 @@
 #include "test.h"
 #include "usctest.h"
 
-#define TEST_FILE1	"testfile"		/* file under test */
+#define TEST_FILE1	"testfile"	/* file under test */
 #define TEST_FILE2	"t_file/testfile"	/* file under test */
 #define FILE_MODE	S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
 #define NEW_MODE	S_IRUSR | S_IRGRP | S_IROTH
-#define BUF_SIZE	256			/* buffer size */
-#define FILE_SIZE	1024			/* test file size */
-#define TRUNC_LEN	256			/* truncation length */
+#define BUF_SIZE	256	/* buffer size */
+#define FILE_SIZE	1024	/* test file size */
+#define TRUNC_LEN	256	/* truncation length */
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
 int no_setup();
 int setup1();			/* setup function to test chmod for EACCES */
 int setup2();			/* setup function to test chmod for ENOTDIR */
-int longpath_setup();   /* setup function to test chmod for ENAMETOOLONG */
+int longpath_setup();		/* setup function to test chmod for ENAMETOOLONG */
 
 TCID_DEFINE(truncate03);	/* Test program identifier.    */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-int exp_enos[]={EACCES, ENOTDIR, EFAULT, ENAMETOOLONG, ENOENT, 0};
+int exp_enos[] = { EACCES, ENOTDIR, EFAULT, ENAMETOOLONG, ENOENT, 0 };
 
-char * bad_addr = 0;
+char *bad_addr = 0;
 
-char Longpathname[PATH_MAX+2];
+char Longpathname[PATH_MAX + 2];
 char High_address_node[64];
 
-struct test_case_t {		/* test case struct. to hold ref. test cond's*/
+struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	char *pathname;
 	char *desc;
 	int exp_errno;
-	int (*setupfunc)();
+	int (*setupfunc) ();
 } Test_cases[] = {
-	{ TEST_FILE1, "No Search permissions to process", EACCES, setup1 },
-	{ TEST_FILE2, "Path contains regular file", ENOTDIR, setup2 },
+	{
+	TEST_FILE1, "No Search permissions to process", EACCES, setup1}, {
+	TEST_FILE2, "Path contains regular file", ENOTDIR, setup2},
 #if !defined(UCLINUX)
-	{ High_address_node, "Address beyond address space", EFAULT, no_setup},
-	{ (char *)-1, "Negative address", EFAULT, no_setup },
+	{
+	High_address_node, "Address beyond address space", EFAULT, no_setup},
+	{
+	(char *)-1, "Negative address", EFAULT, no_setup},
 #endif
-	{ Longpathname, "Pathname too long", ENAMETOOLONG, longpath_setup },
-	{ "", "Pathname is empty", ENOENT, no_setup },
-	{ NULL, NULL, 0, no_setup }
+	{
+	Longpathname, "Pathname too long", ENAMETOOLONG, longpath_setup}, {
+	"", "Pathname is empty", ENOENT, no_setup}, {
+	NULL, NULL, 0, no_setup}
 };
 int TST_TOTAL = sizeof(Test_cases) / sizeof(*Test_cases);
 
 void setup();			/* Main setup function for the test */
 void cleanup();			/* Main cleanup function for the test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	char *file_name;	/* testfile name */
 	char *test_desc;	/* test specific error message */
 	int ind;
-   
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -186,35 +189,31 @@ main(int ac, char **av)
 			/* check return code of truncate(2) */
 			if (TEST_RETURN == -1) {
 				TEST_ERROR_LOG(TEST_ERRNO);
-				if (TEST_ERRNO == \
-					Test_cases[ind].exp_errno) {
+				if (TEST_ERRNO == Test_cases[ind].exp_errno) {
 					tst_resm(TPASS, "truncate() fails, %s, "
-						"errno=%d", test_desc,
-						TEST_ERRNO);
+						 "errno=%d", test_desc,
+						 TEST_ERRNO);
 				} else {
 					tst_resm(TFAIL, "truncate() fails, %s, "
-						"errno=%d, expected errno:%d",
+						 "errno=%d, expected errno:%d",
 						 test_desc, TEST_ERRNO,
 						 Test_cases[ind].exp_errno);
 				}
 			} else {
 				tst_resm(TFAIL, "truncate() returned %d, "
-					"expected -1, errno:%d",
-					TEST_RETURN,
-					Test_cases[ind].exp_errno);
+					 "expected -1, errno:%d",
+					 TEST_RETURN,
+					 Test_cases[ind].exp_errno);
 			}
-		}	/* End of TEST CASE LOOPING. */
-		Tst_count++;			/* incr TEST_LOOP counter */
-	}	/* End for TEST_LOOPING */
+		}		/* End of TEST CASE LOOPING. */
+		Tst_count++;	/* incr TEST_LOOP counter */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
-	/*NOTREACHED*/
+	 /*NOTREACHED*/ return 0;
 
-
-  return 0;
-
-}	/* End main */
+}				/* End main */
 
 /*
  * void
@@ -224,28 +223,25 @@ main(int ac, char **av)
  *  into it, close it.
  *  Call individual test specific setup functions.
  */
-void
-setup()
+void setup()
 {
-	int fd, i, ind;			/* file handler for testfile */
-	int c, c_total = 0;		/* no. of bytes written to file */
+	int fd, i, ind;		/* file handler for testfile */
+	int c, c_total = 0;	/* no. of bytes written to file */
 	char tst_buff[BUF_SIZE];	/* buffer to hold data */
 
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Switch to nobody user for correct error code collection */
-        if (geteuid() != 0) {
-                tst_brkm(TBROK, tst_exit, "Test must be run as root");
-        }
-         ltpuser = getpwnam(nobody_uid);
-         if (setuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "setuid failed to "
-                         "to set the effective uid to %d",
-                         ltpuser->pw_uid);
-                perror("setuid");
-         }
-	
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+	}
+	ltpuser = getpwnam(nobody_uid);
+	if (setuid(ltpuser->pw_uid) == -1) {
+		tst_resm(TINFO, "setuid failed to "
+			 "to set the effective uid to %d", ltpuser->pw_uid);
+		perror("setuid");
+	}
 
 	/* Pause if that option was specified
 	 * TEST_PAUSE contains the code to fork the test with the -i option.
@@ -263,12 +259,11 @@ setup()
 	}
 
 	/* Creat a testfile and open it for reading/writing */
-	if ((fd = open(TEST_FILE1, O_RDWR|O_CREAT, FILE_MODE)) == -1) {
+	if ((fd = open(TEST_FILE1, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %o) Failed, errno=%d : %s",
 			 TEST_FILE1, FILE_MODE, errno, strerror(errno));
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/* Write to the file 1k data from the buffer */
 	while (c_total < FILE_SIZE) {
@@ -276,8 +271,7 @@ setup()
 			tst_brkm(TBROK, cleanup,
 				 "write(2) on %s Failed, errno=%d : %s",
 				 TEST_FILE1, errno, strerror(errno));
-			/*NOTREACHED*/
-		} else {
+		 /*NOTREACHED*/} else {
 			c_total += c;
 		}
 	}
@@ -287,12 +281,10 @@ setup()
 		tst_brkm(TBROK, cleanup,
 			 "close(%s) Failed, errno=%d : %s",
 			 TEST_FILE1, errno, strerror(errno));
-		/*NOTREACHED*/
-	}
-
+	 /*NOTREACHED*/}
 #if !defined(UCLINUX)
 	bad_addr = mmap(0, 1, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
+			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
 	if (bad_addr == MAP_FAILED) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}
@@ -303,7 +295,7 @@ setup()
 	for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
 		Test_cases[ind].setupfunc();
 	}
-}	/* End setup() */
+}				/* End setup() */
 
 /*
  * int
@@ -311,10 +303,9 @@ setup()
  *              Hence, this function just returns 0.
  *  This function simply returns 0.
  */
-int
-no_setup()
+int no_setup()
 {
-        return 0;
+	return 0;
 }
 
 /*
@@ -326,17 +317,15 @@ no_setup()
  *
  *  The function returns 0.
  */
-int
-setup1()
+int setup1()
 {
 	/* Change mode permissions on test file */
 	if (chmod(TEST_FILE1, NEW_MODE) < 0) {
 		tst_brkm(TBROK, cleanup, "chmod(2) of %s failed", TEST_FILE1);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	return 0;
-}	/* End setup() */
+}				/* End setup() */
 
 /*
  * int
@@ -347,25 +336,22 @@ setup1()
  *  truncate testfile under "t_file" which happens to be another regular file.
  *  The function returns 0.
  */
-int
-setup2()
+int setup2()
 {
 	int fildes;
 
 	/* creat/open a test file under temporary directory */
-	if ((fildes = open("t_file", O_RDWR|O_CREAT, FILE_MODE)) == -1) {
+	if ((fildes = open("t_file", O_RDWR | O_CREAT, FILE_MODE)) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "open(2) on t_file failed, errno=%d : %s",
 			 errno, strerror(errno));
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 	/* Close the file created above */
 	if (close(fildes) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "close(t_file) Failed, errno=%d : %s",
 			 errno, strerror(errno));
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 	return 0;
 }
 
@@ -375,10 +361,9 @@ setup2()
  *                    the MAX. length of PATH_MAX.
  *   This function retruns 0.
  */
-int
-longpath_setup()
+int longpath_setup()
 {
-	int ind;                /* counter variable */
+	int ind;		/* counter variable */
 
 	for (ind = 0; ind <= (PATH_MAX + 1); ind++) {
 		Longpathname[ind] = 'a';
@@ -392,8 +377,7 @@ longpath_setup()
  *	       completion or premature exit.
  *  Remove the test directory and testfile created in the setup.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -405,4 +389,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

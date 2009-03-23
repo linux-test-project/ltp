@@ -66,15 +66,14 @@ struct stat buf;
 void setup(void);
 void cleanup(void);
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
-	int pid, e_code, status, retval=0;
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
+	int pid, e_code, status, retval = 0;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -89,12 +88,12 @@ main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "Could not fork");
 		}
 
-		if (pid == 0) {		/* child */
+		if (pid == 0) {	/* child */
 
 			TEST(chroot(TESTDIR));
 
 			if (TEST_RETURN == -1) {
-				retval=1;
+				retval = 1;
 				tst_resm(TFAIL, "chroot(2) failed errno = %d",
 					 TEST_ERRNO);
 				continue;
@@ -102,7 +101,7 @@ main(int ac, char **av)
 
 			if (STD_FUNCTIONAL_TEST) {
 				if (stat("/chroot02_testfile", &buf) == -1) {
-					retval=1;
+					retval = 1;
 					tst_resm(TFAIL, "stat(2) failed errno "
 						 "= %d", errno);
 				} else {
@@ -126,14 +125,12 @@ main(int ac, char **av)
 	cleanup();
 
 	return 0;
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* make sure the process ID is root */
 	if (geteuid() != 0) {
@@ -145,8 +142,8 @@ setup()
 	tst_tmpdir();
 	sprintf(tmpbuf, "%s%s", TESTDIR, "/chroot02_testfile");
 	if ((fileHandle = creat(tmpbuf, 0777)) == -1)
-		 tst_brkm(TBROK, cleanup, "failed to create tmporary file %s",
-				 tmpbuf);
+		tst_brkm(TBROK, cleanup, "failed to create tmporary file %s",
+			 tmpbuf);
 	if (stat(tmpbuf, &buf) != 0) {
 		tst_brkm(TBROK, cleanup, "%s does not exist", tmpbuf);
 	}
@@ -158,19 +155,17 @@ setup()
 	TEST_PAUSE;
 }
 
-
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
 	 */
-    close(fileHandle);
+	close(fileHandle);
 
 	TEST_CLEANUP;
 	tst_rmdir();
@@ -178,4 +173,3 @@ cleanup()
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

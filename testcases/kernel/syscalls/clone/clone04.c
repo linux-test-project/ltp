@@ -31,7 +31,7 @@
  *      (See the parse_opts(3) man page).
  *
  * DESCRIPTION
- * 	Verify that,
+ *	Verify that,
  *      clone(2) returns -1 and sets errno to EINVAL if
  *	child stack is set to a zero value(NULL)
  *
@@ -82,38 +82,36 @@ static void cleanup(void);
 static void setup(void);
 static int child_fn();
 
-char *TCID= "clone04";
+char *TCID = "clone04";
 extern int Tst_count;
 void *child_stack;
 
-static int exp_enos[] = {EINVAL, 0};	/* 0 terminated list of *
+static int exp_enos[] = { EINVAL, 0 };	/* 0 terminated list of *
 					 * expected errnos */
 static struct test_case_t {
-	int (*child_fn)();
+	int (*child_fn) ();
 	void **child_stack;
 	int exp_errno;
 	char err_desc[10];
 } test_cases[] = {
-	{ child_fn, NULL, EINVAL, "EINVAL" },
-};
+	{
+child_fn, NULL, EINVAL, "EINVAL"},};
 
 int TST_TOTAL = sizeof(test_cases) / sizeof(test_cases[0]);
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	int lc, ind;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc, ind;		/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	void *test_stack;
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL))
-			!= (char *) NULL) {
+	    != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
-
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -126,23 +124,23 @@ main(int ac, char **av)
 				test_stack = (void *)NULL;
 			} else if (*test_cases[ind].child_stack == NULL) {
 				tst_resm(TWARN, "Can not allocate stack for"
-			       			"child, skipping test case");
+					 "child, skipping test case");
 				continue;
 			} else {
 				test_stack = child_stack;
 			}
-		
+
 			/*
 			 * call the system call with the TEST() macro
-		 	 */
+			 */
 #if defined(__hppa__)
 			TEST(clone(test_cases[ind].child_fn, test_stack,
-						SIGCHLD, NULL));
+				   SIGCHLD, NULL));
 #elif defined(__ia64__)
 			test_cases[ind].child_fn = NULL;
 			TEST(clone2(test_cases[ind].child_fn, test_stack,
-						CHILD_STACK_SIZE, SIGCHLD, NULL,
-						NULL, NULL, NULL));
+				    CHILD_STACK_SIZE, SIGCHLD, NULL,
+				    NULL, NULL, NULL));
 #else
 			TEST(clone(test_cases[ind].child_fn, test_stack,
 				   0, NULL));
@@ -151,13 +149,14 @@ main(int ac, char **av)
 			if ((TEST_RETURN == -1) &&
 			    (TEST_ERRNO == test_cases[ind].exp_errno)) {
 				tst_resm(TPASS, "expected failure; Got %s",
-						 test_cases[ind].err_desc);
+					 test_cases[ind].err_desc);
 			} else {
 				tst_resm(TFAIL, "Call failed to produce "
-					"expected error;  Expected errno/result: %d / -1 "
-					"Got : %d, %s / %d",
-					test_cases[ind].exp_errno,
-					TEST_ERRNO, strerror(TEST_ERRNO), TEST_RETURN);
+					 "expected error;  Expected errno/result: %d / -1 "
+					 "Got : %d, %s / %d",
+					 test_cases[ind].exp_errno,
+					 TEST_ERRNO, strerror(TEST_ERRNO),
+					 TEST_RETURN);
 			}
 			TEST_ERROR_LOG(TEST_ERRNO);
 		}
@@ -165,16 +164,14 @@ main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 
 }
 
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 
 	/* capture signals */
@@ -187,16 +184,15 @@ setup(void)
 	TEST_PAUSE;
 
 	/* Allocate stack for child */
-	child_stack = (void *) malloc(CHILD_STACK_SIZE);
+	child_stack = (void *)malloc(CHILD_STACK_SIZE);
 
 }
 
 /*
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
- * 	       or premature exit.
+ *	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 
 	/*
@@ -214,8 +210,7 @@ cleanup(void)
 /*
  * child_fn()	- Child function
  */
-int
-child_fn()
+int child_fn()
 {
 	exit(1);
 }

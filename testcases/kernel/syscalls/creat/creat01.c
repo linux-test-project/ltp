@@ -76,24 +76,24 @@ int fd[2];
 struct test_case_t {
 	char *fname;
 	int mode;
-	void (*functest)();
+	void (*functest) ();
 } TC[] = {
 	/* creat() the file and write to it */
-	{filename, MODE1, functest1},
-
-	/* creat() the same file and check that it is now 0 length */
-	{filename, MODE2, functest2}
+	{
+	filename, MODE1, functest1},
+	    /* creat() the same file and check that it is now 0 length */
+	{
+	filename, MODE2, functest2}
 };
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int i;
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -107,7 +107,7 @@ main(int ac, char **av)
 
 		/* loop through the test cases */
 
-		for (i=0; i<TST_TOTAL; i++) {
+		for (i = 0; i < TST_TOTAL; i++) {
 			TEST(fd[i] = creat(filename, TC[i].mode));
 
 			if (TEST_RETURN == -1) {
@@ -117,7 +117,7 @@ main(int ac, char **av)
 			}
 
 			if (STD_FUNCTIONAL_TEST) {
-				(*TC[i].functest)();
+				(*TC[i].functest) ();
 			} else {
 				tst_resm(TPASS, "call succeeded");
 			}
@@ -126,15 +126,13 @@ main(int ac, char **av)
 	cleanup();
 
 	return 0;
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}
 
 /*
  * functest1() - check the functionality of the first test by making sure
  *		 that a write to the file succeeds
  */
-void
-functest1()
+void functest1()
 {
 	if (write(TEST_RETURN, "A", 1) != 1) {
 		tst_resm(TFAIL, "write was unsuccessful");
@@ -147,15 +145,13 @@ functest1()
  * functest2() - check the functionality of the second test by making sure
  *		 that the file is now 0 length
  */
-void
-functest2()
+void functest2()
 {
 	struct stat buf;
 
 	if (stat(filename, &buf) < 0) {
 		tst_brkm(TBROK, cleanup, "failed to stat test file");
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 	if (buf.st_size != 0) {
 		tst_resm(TFAIL, "creat() FAILED to truncate "
 			 "file to zero bytes");
@@ -167,21 +163,18 @@ functest2()
 /*
  * setup() - performs all ONE TIME setup for this test
  */
-void
-setup()
+void setup()
 {
 	/* Switch to nobody user for correct error code collection */
-        if (geteuid() != 0) {
-                tst_brkm(TBROK, tst_exit, "Test must be run as root");
-        }
-         ltpuser = getpwnam(nobody_uid);
-         if (setuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "setuid failed to "
-                         "to set the effective uid to %d",
-                         ltpuser->pw_uid);
-                perror("setuid");
-         }
-
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+	}
+	ltpuser = getpwnam(nobody_uid);
+	if (setuid(ltpuser->pw_uid) == -1) {
+		tst_resm(TINFO, "setuid failed to "
+			 "to set the effective uid to %d", ltpuser->pw_uid);
+		perror("setuid");
+	}
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -200,8 +193,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	int i;
 	/*
@@ -210,7 +202,7 @@ cleanup()
 	 */
 	TEST_CLEANUP;
 
-	for (i=0; i<TST_TOTAL; i++) {
+	for (i = 0; i < TST_TOTAL; i++) {
 		close(fd[i]);
 	}
 

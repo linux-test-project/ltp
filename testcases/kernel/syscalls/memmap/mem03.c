@@ -40,7 +40,6 @@
  * 	None
  */
 
-
 #include <stdio.h>
 #include <signal.h>
 #include <stdlib.h>
@@ -51,23 +50,23 @@
 #include <time.h>
 #include <string.h>
 #include <sys/types.h>
-#include <sys/stat.h> /* definitions for open()                               */
-#include <sys/mman.h> /* definitions for mmap()                               */
-#include <fcntl.h>    /* definition of open()                                 */
+#include <sys/stat.h>		/* definitions for open()                               */
+#include <sys/mman.h>		/* definitions for mmap()                               */
+#include <fcntl.h>		/* definition of open()                                 */
 #include <sys/user.h>
 
-#define FAILED       (-1) /* return status for all funcs indicating failure   */
-#define SUCCESS      0    /* return status for all routines indicating success*/
+#define FAILED       (-1)	/* return status for all funcs indicating failure   */
+#define SUCCESS      0		/* return status for all routines indicating success */
 
 static void setup();
 static void cleanup();
 
-char *TCID = "mem03";			/* Test program identifier. */
-int TST_TOTAL = 1;			/* Total number of test cases. */
-extern int Tst_count;			/* Test Case counter for tst_* routines */
+char *TCID = "mem03";		/* Test program identifier. */
+int TST_TOTAL = 1;		/* Total number of test cases. */
+extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-int f1=-1, f2=-1;
-char *mm1=NULL, *mm2=NULL;
+int f1 = -1, f2 = -1;
+char *mm1 = NULL, *mm2 = NULL;
 
 /*--------------------------------------------------------------------*/
 int main()
@@ -81,13 +80,11 @@ int main()
 	/* perform global setup for test */
 	setup();
 
-	if ((f1 = open(tmp1, O_RDWR|O_CREAT, S_IREAD|S_IWRITE)) == -1 )
-		tst_brkm(TFAIL, cleanup, "failed to open/create file %s",
-			 tmp1);
+	if ((f1 = open(tmp1, O_RDWR | O_CREAT, S_IREAD | S_IWRITE)) == -1)
+		tst_brkm(TFAIL, cleanup, "failed to open/create file %s", tmp1);
 
-	if ((f2 = open(tmp2, O_RDWR|O_CREAT, S_IREAD|S_IWRITE)) == -1 )
-		tst_brkm(TFAIL, cleanup, "failed to open/create file %s",
-			 tmp2);
+	if ((f2 = open(tmp2, O_RDWR | O_CREAT, S_IREAD | S_IWRITE)) == -1)
+		tst_brkm(TFAIL, cleanup, "failed to open/create file %s", tmp2);
 
 	write(f1, str1, strlen(str1));
 	write(f2, str2, strlen(str2));
@@ -98,19 +95,17 @@ int main()
 		mm1 = mmap(0, 64, PROT_READ, MAP_PRIVATE, f1, 0);
 		mm2 = mmap(0, 64, PROT_READ, MAP_PRIVATE, f2, 0);
 
-		if ((mm1 == (void*)-1) || (mm2 == (void*)-1))
+		if ((mm1 == (void *)-1) || (mm2 == (void *)-1))
 			tst_brkm(TFAIL, cleanup, "mmap failed");
 
 		save_mm1 = mm1;
 		save_mm2 = mm2;
 
-		if ( strncmp(str1, mm1, strlen(str1)) )
-			tst_brkm(TFAIL, cleanup, "failed on compare %s",
-				 tmp1);
+		if (strncmp(str1, mm1, strlen(str1)))
+			tst_brkm(TFAIL, cleanup, "failed on compare %s", tmp1);
 
-		if ( strncmp(str2, mm2, strlen(str2)) )
-			tst_brkm(TFAIL, cleanup, "failed on compare %s",
-				 tmp2);
+		if (strncmp(str2, mm2, strlen(str2)))
+			tst_brkm(TFAIL, cleanup, "failed on compare %s", tmp2);
 
 		munmap(mm1, 64);
 		munmap(mm2, 64);
@@ -118,47 +113,41 @@ int main()
 		mm1 = mmap(save_mm2, 64, PROT_READ, MAP_PRIVATE, f1, 0);
 		mm2 = mmap(save_mm1, 64, PROT_READ, MAP_PRIVATE, f2, 0);
 
-		if ((mm1 == (void*)-1) || (mm2 == (void*)-1))
+		if ((mm1 == (void *)-1) || (mm2 == (void *)-1))
 			tst_brkm(TFAIL, cleanup, "second mmap failed");
 
-		if (mm1 != save_mm2)
-		{
+		if (mm1 != save_mm2) {
 			printf("mmap not using same address\n");
 			return 0;
 		}
 
-		if (mm2 != save_mm1)
-		{
+		if (mm2 != save_mm1) {
 			printf("mmap not using same address\n");
 			return 0;
 		}
 
-		if ( strncmp(str1, mm1, strlen(str1)) )
-			tst_brkm(TFAIL, cleanup, "failed on compare %s",
-				 tmp1);
+		if (strncmp(str1, mm1, strlen(str1)))
+			tst_brkm(TFAIL, cleanup, "failed on compare %s", tmp1);
 
-		if ( strncmp(str2, mm2, strlen(str2)) )
-			tst_brkm(TFAIL, cleanup, "failed on compare %s",
-				 tmp2);
-	
+		if (strncmp(str2, mm2, strlen(str2)))
+			tst_brkm(TFAIL, cleanup, "failed on compare %s", tmp2);
+
 		munmap(mm1, 64);
 		munmap(mm2, 64);
 	}
 
-	tst_resm(TPASS,"%s memory test succeeded", TCID);
+	tst_resm(TPASS, "%s memory test succeeded", TCID);
 
 	/* clean up and exit */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/*
 	 * Create a temporary directory and cd into it.
@@ -170,8 +159,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	if (mm1)
 		munmap(mm1, 64);

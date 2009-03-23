@@ -72,57 +72,59 @@ void setup1(void);
 void setup2(void);
 void setup3(void);
 
-char *TCID= "mprotect01";
+char *TCID = "mprotect01";
 int TST_TOTAL = 3;
 extern int Tst_count;
 
 void *addr1, *addr2, *addr3;
 int fd;
 
-int exp_enos[]={ENOMEM, EINVAL, EACCES, 0};
+int exp_enos[] = { ENOMEM, EINVAL, EACCES, 0 };
 
 struct test_case_t {
-        void **addr;
-        int len;
+	void **addr;
+	int len;
 	int prot;
-        int error;
-        void (*setupfunc)();
+	int error;
+	void (*setupfunc) ();
 } TC[] = {
 #ifdef __ia64__
 	/* Check for ENOMEM passing memory that cannot be accessed. */
-        {&addr1, 1024, PROT_READ, ENOMEM, setup1},
+	{
+	&addr1, 1024, PROT_READ, ENOMEM, setup1},
 #else
 	/* Check for ENOMEM passing memory that cannot be accessed. */
-        {&addr1, 1024, PROT_READ, ENOMEM, NULL},
+	{
+	&addr1, 1024, PROT_READ, ENOMEM, NULL},
 #endif
-
-	/*
-	 * Check for EINVAL by passing a pointer which is not a
-	 * multiple of PAGESIZE.
-	 */
-        {&addr2, 1024, PROT_READ, EINVAL, setup2},
-
-	/*
-	 * Check for EACCES by trying to mark a section of memory
-	 * which has been mmap'ed as read-only, as PROT_WRITE
-	 */
-        {&addr3, PAGESIZE, PROT_WRITE, EACCES, setup3}
+	    /*
+	     * Check for EINVAL by passing a pointer which is not a
+	     * multiple of PAGESIZE.
+	     */
+	{
+	&addr2, 1024, PROT_READ, EINVAL, setup2},
+	    /*
+	     * Check for EACCES by trying to mark a section of memory
+	     * which has been mmap'ed as read-only, as PROT_WRITE
+	     */
+	{
+	&addr3, PAGESIZE, PROT_WRITE, EACCES, setup3}
 };
 
 #ifndef UCLINUX
 
 int main(int ac, char **av)
 {
-	int lc;                         /* loop counter */
+	int lc;			/* loop counter */
 	int i;
-	char *msg;                      /* message returned from parse_opts */
+	char *msg;		/* message returned from parse_opts */
 
-        /* parse standard options */
-        if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	/* parse standard options */
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-        }
+	}
 
-        setup();                        /* global setup */
+	setup();		/* global setup */
 
 	/* set up the expected errnos */
 	TEST_EXP_ENOS(exp_enos);
@@ -130,8 +132,8 @@ int main(int ac, char **av)
 	/* The following loop checks looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-                /* reset Tst_count in case we are looping */
-                Tst_count = 0;
+		/* reset Tst_count in case we are looping */
+		Tst_count = 0;
 
 		/* loop through the test cases */
 		for (i = 0; i < TST_TOTAL; i++) {
@@ -143,34 +145,32 @@ int main(int ac, char **av)
 
 			TEST(mprotect(*(TC[i].addr), TC[i].len, TC[i].prot));
 
-                        if (TEST_RETURN != -1) {
-                                tst_resm(TFAIL, "call succeeded unexpectedly");
-                                continue;
-                        }
+			if (TEST_RETURN != -1) {
+				tst_resm(TFAIL, "call succeeded unexpectedly");
+				continue;
+			}
 
-                        TEST_ERROR_LOG(TEST_ERRNO);
+			TEST_ERROR_LOG(TEST_ERRNO);
 
-                        if (TEST_ERRNO == TC[i].error) {
-                                tst_resm(TPASS, "expected failure - "
-                                         "errno = %d : %s", TEST_ERRNO,
-                                         strerror(TEST_ERRNO));
-                        } else {
-                                tst_resm(TFAIL, "unexpected error - %d : %s - "
-                                         "expected %d", TEST_ERRNO,
-                                         strerror(TEST_ERRNO), TC[i].error);
+			if (TEST_ERRNO == TC[i].error) {
+				tst_resm(TPASS, "expected failure - "
+					 "errno = %d : %s", TEST_ERRNO,
+					 strerror(TEST_ERRNO));
+			} else {
+				tst_resm(TFAIL, "unexpected error - %d : %s - "
+					 "expected %d", TEST_ERRNO,
+					 strerror(TEST_ERRNO), TC[i].error);
 			}
 		}
 		close(fd);
 	}
-        cleanup();
+	cleanup();
 	return 0;
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}
 
 #else
 
-int
-main()
+int main()
 {
 	tst_resm(TINFO, "Ignore this test on uClinux");
 	return 0;
@@ -181,8 +181,7 @@ main()
 /*
  * setup1() - sets up conditions for the first test
  */
-void
-setup1()
+void setup1()
 {
 	TC[0].len = getpagesize() + 1;
 }
@@ -190,29 +189,25 @@ setup1()
 /*
  * setup2() - sets up conditions for the second test
  */
-void
-setup2()
+void setup2()
 {
 
 	addr2 = (char *)malloc(PAGESIZE);
 	if (addr2 == NULL) {
 		tst_brkm(TINFO, cleanup, "malloc failed");
-		/*NOTREACHED*/
-	}       
-	addr2++; /* Ensure addr2 is not page aligned */
+	 /*NOTREACHED*/}
+	addr2++;		/* Ensure addr2 is not page aligned */
 }
 
 /*
  * setup3() - sets up conditions for the third test
  */
-void
-setup3()
+void setup3()
 {
 	fd = open("/etc/passwd", O_RDONLY);
 	if (fd < 0) {
 		tst_brkm(TBROK, cleanup, "open failed");
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/*
 	 * mmap the PAGESIZE bytes as read only.
@@ -220,15 +215,13 @@ setup3()
 	addr3 = mmap(0, PAGESIZE, PROT_READ, MAP_SHARED, fd, 0);
 	if (addr3 < 0) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -241,8 +234,7 @@ setup()
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing status if that option was specified.
@@ -253,4 +245,3 @@ cleanup()
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

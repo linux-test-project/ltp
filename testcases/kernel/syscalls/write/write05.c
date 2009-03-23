@@ -19,19 +19,19 @@
 
 /*
  * NAME
- * 	write05.c
+ *	write05.c
  *
  * DESCRIPTION
  *	Check the return value, and errnos of write(2)
- * 	- when the file descriptor is invalid - EBADF
+ *	- when the file descriptor is invalid - EBADF
  *	- when the buf parameter is invalid - EFAULT
  *	- on an attempt to write to a pipe that is not open for reading - EPIPE
  *
  * ALGORITHM
- * 	Attempt to write on a file with negative file descriptor, check for -1
+ *	Attempt to write on a file with negative file descriptor, check for -1
  *	Attempt to write on a file with invalid buffer, check for -1
- * 	Open a pipe and close the read end, attempt to write to the write
- * 	end, check for -1.
+ *	Open a pipe and close the read end, attempt to write to the write
+ *	end, check for -1.
  *
  * USAGE:  <for command-line>
  *      write05 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
@@ -47,10 +47,10 @@
  *		-Ported
  *      04/2002 wjhuie sigset cleanups
  *      08/2007 Ricardo Salveti de Araujo <rsalveti@linux.vnet.ibm.com>
- *      	- Closing the fd before removing the file
+ *		- Closing the fd before removing the file
  *
  * Restrictions
- * 	None
+ *	None
  */
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -62,36 +62,34 @@
 #include "test.h"
 #include "usctest.h"
 
-
 void setup(void);
 void cleanup(void);
 
 /* 0 terminated list of expected errnos */
-int exp_enos[] = {9,14,32,0};
+int exp_enos[] = { 9, 14, 32, 0 };
 
-char *TCID = "write05";			/* Test program identifier */
-int TST_TOTAL = 1;			/* Total number of test cases */
+char *TCID = "write05";		/* Test program identifier */
+int TST_TOTAL = 1;		/* Total number of test cases */
 extern int Tst_count;
 char filename[100];
 int fd;
 
-char * bad_addr = 0;
+char *bad_addr = 0;
 
 int main(int argc, char **argv)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	char pbuf[BUFSIZ];
 	int pipefildes[2];
 	int status, pid;
 
 	/* parse standard options */
-	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) !=
-	    (char *) NULL) {
+	if ((msg = parse_opts(argc, argv, (option_t *) NULL, NULL)) !=
+	    (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/* global setup */
 	setup();
@@ -121,22 +119,19 @@ int main(int argc, char **argv)
 		if (fd < 0) {
 			tst_resm(TFAIL, "creating a new file failed");
 			cleanup();
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 		if (write(fd, bad_addr, 10) != -1) {
 			tst_resm(TFAIL, "write() on an invalid buffer "
 				 "succeeded, but should have failed");
 			cleanup();
-			/*NOTREACHED*/
-		} else {
+		 /*NOTREACHED*/} else {
 			TEST_ERROR_LOG(errno);
 			if (errno != EFAULT) {
 				tst_resm(TFAIL, "write() returned illegal "
 					 "errno: expected EFAULT, got %d",
 					 errno);
 				cleanup();
-				/*NOTREACHED*/
-			}
+			 /*NOTREACHED*/}
 			tst_resm(TPASS, "received EFAULT as expected.");
 		}
 		tst_resm(TINFO, "Exit Block 2");
@@ -185,20 +180,17 @@ int main(int argc, char **argv)
 		close(fd);
 	}
 	cleanup();
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup()
  *	performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-
 
 	/* Set up the expected error numbers for -e option */
 	TEST_EXP_ENOS(exp_enos);
@@ -215,21 +207,20 @@ setup(void)
 
 	sprintf(filename, "write05.%d", getpid());
 
-        bad_addr = mmap(0, 1, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
-        if (bad_addr == MAP_FAILED) {
-            printf("mmap failed\n");
-        }
+	bad_addr = mmap(0, 1, PROT_NONE,
+			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
+	if (bad_addr == MAP_FAILED) {
+		printf("mmap failed\n");
+	}
 
 }
 
 /*
  * cleanup()
  *	performs all ONE TIME cleanup for this test at
- * 	completion or premature exit
+ *	completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -245,5 +236,4 @@ cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}

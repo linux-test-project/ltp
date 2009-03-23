@@ -57,8 +57,7 @@ static struct timeval tcalled;
 #define TEST1	"this is a test"
 #define SECONDS	1
 
-void
-simple_read_cb(int fd, short event, void *arg)
+void simple_read_cb(int fd, short event, void *arg)
 {
 	char buf[256];
 	int len;
@@ -74,8 +73,7 @@ simple_read_cb(int fd, short event, void *arg)
 	called++;
 }
 
-void
-simple_write_cb(int fd, short event, void *arg)
+void simple_write_cb(int fd, short event, void *arg)
 {
 	int len;
 
@@ -86,8 +84,7 @@ simple_write_cb(int fd, short event, void *arg)
 		test_ok = 1;
 }
 
-void
-multiple_write_cb(int fd, short event, void *arg)
+void multiple_write_cb(int fd, short event, void *arg)
 {
 	struct event *ev = arg;
 	int len;
@@ -117,8 +114,7 @@ multiple_write_cb(int fd, short event, void *arg)
 		event_add(ev, NULL);
 }
 
-void
-multiple_read_cb(int fd, short event, void *arg)
+void multiple_read_cb(int fd, short event, void *arg)
 {
 	struct event *ev = arg;
 	int len;
@@ -137,8 +133,7 @@ multiple_read_cb(int fd, short event, void *arg)
 		event_add(ev, NULL);
 }
 
-void
-timeout_cb(int fd, short event, void *arg)
+void timeout_cb(int fd, short event, void *arg)
 {
 	struct timeval tv;
 	int diff;
@@ -149,7 +144,7 @@ timeout_cb(int fd, short event, void *arg)
 	else
 		timersub(&tset, &tcalled, &tv);
 
-	diff = tv.tv_sec*1000 + tv.tv_usec/1000 - SECONDS * 1000;
+	diff = tv.tv_sec * 1000 + tv.tv_usec / 1000 - SECONDS * 1000;
 	if (diff < 0)
 		diff = -diff;
 
@@ -157,8 +152,7 @@ timeout_cb(int fd, short event, void *arg)
 		test_ok = 1;
 }
 
-void
-signal_cb(int fd, short event, void *arg)
+void signal_cb(int fd, short event, void *arg)
 {
 	struct event *ev = arg;
 
@@ -171,8 +165,7 @@ struct both {
 	int nread;
 };
 
-void
-combined_read_cb(int fd, short event, void *arg)
+void combined_read_cb(int fd, short event, void *arg)
 {
 	struct both *both = arg;
 	char buf[128];
@@ -188,8 +181,7 @@ combined_read_cb(int fd, short event, void *arg)
 	event_add(&both->ev, NULL);
 }
 
-void
-combined_write_cb(int fd, short event, void *arg)
+void combined_write_cb(int fd, short event, void *arg)
 {
 	struct both *both = arg;
 	char buf[128];
@@ -213,8 +205,7 @@ combined_write_cb(int fd, short event, void *arg)
 
 /* Test infrastructure */
 
-int
-setup_test(char *name)
+int setup_test(char *name)
 {
 
 	fprintf(stdout, "%s", name);
@@ -229,8 +220,7 @@ setup_test(char *name)
 	return (0);
 }
 
-int
-cleanup_test(void)
+int cleanup_test(void)
 {
 	close(pair[0]);
 	close(pair[1]);
@@ -245,15 +235,14 @@ cleanup_test(void)
 	return (0);
 }
 
-void
-test1(void)
+void test1(void)
 {
 	struct event ev;
 
 	/* Very simple read test */
 	setup_test("Simple read: ");
 
-	write(pair[0], TEST1, strlen(TEST1)+1);
+	write(pair[0], TEST1, strlen(TEST1) + 1);
 	shutdown(pair[0], SHUT_WR);
 
 	event_set(&ev, pair[1], EV_READ, simple_read_cb, &ev);
@@ -263,8 +252,7 @@ test1(void)
 	cleanup_test();
 }
 
-void
-test2(void)
+void test2(void)
 {
 	struct event ev;
 
@@ -278,8 +266,7 @@ test2(void)
 	cleanup_test();
 }
 
-void
-test3(void)
+void test3(void)
 {
 	struct event ev, ev2;
 	int i;
@@ -305,8 +292,7 @@ test3(void)
 	cleanup_test();
 }
 
-void
-test4(void)
+void test4(void)
 {
 	struct event ev, ev2;
 	int i;
@@ -320,9 +306,9 @@ test4(void)
 	roff = woff = 0;
 	usepersist = 1;
 
-	event_set(&ev, pair[0], EV_WRITE|EV_PERSIST, multiple_write_cb, &ev);
+	event_set(&ev, pair[0], EV_WRITE | EV_PERSIST, multiple_write_cb, &ev);
 	event_add(&ev, NULL);
-	event_set(&ev2, pair[1], EV_READ|EV_PERSIST, multiple_read_cb, &ev2);
+	event_set(&ev2, pair[1], EV_READ | EV_PERSIST, multiple_read_cb, &ev2);
 	event_add(&ev2, NULL);
 	event_dispatch();
 
@@ -332,8 +318,7 @@ test4(void)
 	cleanup_test();
 }
 
-void
-test5(void)
+void test5(void)
 {
 	struct both r1, r2, w1, w2;
 
@@ -363,8 +348,7 @@ test5(void)
 	cleanup_test();
 }
 
-void
-test6(void)
+void test6(void)
 {
 	struct timeval tv;
 	struct event ev;
@@ -382,8 +366,7 @@ test6(void)
 	cleanup_test();
 }
 
-void
-test7(void)
+void test7(void)
 {
 	struct event ev;
 	struct itimerval itv;
@@ -398,14 +381,13 @@ test7(void)
 		goto skip_simplesignal;
 
 	event_dispatch();
- skip_simplesignal:
+      skip_simplesignal:
 	signal_del(&ev);
 
 	cleanup_test();
 }
 
-void
-test8(void)
+void test8(void)
 {
 	struct timeval tv, tv_start, tv_end;
 	struct event ev;
@@ -413,7 +395,7 @@ test8(void)
 	setup_test("Loop exit: ");
 
 	tv.tv_usec = 0;
-	tv.tv_sec = 60*60*24;
+	tv.tv_sec = 60 * 60 * 24;
 	evtimer_set(&ev, timeout_cb, NULL);
 	evtimer_add(&ev, &tv);
 
@@ -434,8 +416,7 @@ test8(void)
 	cleanup_test();
 }
 
-void
-readcb(struct bufferevent *bev, void *arg)
+void readcb(struct bufferevent *bev, void *arg)
 {
 	if (EVBUFFER_LENGTH(bev->input) == 4096) {
 		bufferevent_disable(bev, EV_READ);
@@ -443,21 +424,18 @@ readcb(struct bufferevent *bev, void *arg)
 	}
 }
 
-void
-writecb(struct bufferevent *bev, void *arg)
+void writecb(struct bufferevent *bev, void *arg)
 {
 	if (EVBUFFER_LENGTH(bev->output) == 0)
 		test_ok++;
 }
 
-void
-errorcb(struct bufferevent *bev, short what, void *arg)
+void errorcb(struct bufferevent *bev, short what, void *arg)
 {
 	test_ok = -2;
 }
 
-void
-test9(void)
+void test9(void)
 {
 	struct bufferevent *bev1, *bev2;
 	char buffer[4096];
@@ -487,8 +465,7 @@ test9(void)
 	cleanup_test();
 }
 
-int
-main (int argc, char **argv)
+int main(int argc, char **argv)
 {
 	setvbuf(stdout, NULL, _IONBF, 0);
 
@@ -515,4 +492,3 @@ main (int argc, char **argv)
 
 	return (0);
 }
-

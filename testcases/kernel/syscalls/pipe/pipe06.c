@@ -52,7 +52,7 @@ char *TCID = "pipe06";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-int exp_enos[] = {EMFILE, 0};
+int exp_enos[] = { EMFILE, 0 };
 
 int pipe_ret, pipes[2];
 void setup(void);
@@ -60,14 +60,13 @@ void cleanup(void);
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	setup();
 
@@ -93,7 +92,7 @@ int main(int ac, char **av)
 		} else {
 			tst_resm(TPASS, "expected failure - "
 				 "errno = %d : %s", TEST_ERRNO,
-	 			 strerror(TEST_ERRNO));
+				 strerror(TEST_ERRNO));
 		}
 
 	}
@@ -104,8 +103,7 @@ int main(int ac, char **av)
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	int i, numb_fds;
 
@@ -133,8 +131,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

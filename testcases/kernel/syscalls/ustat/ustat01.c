@@ -67,8 +67,8 @@
 #include "usctest.h"
 #include <errno.h>
 #include <sys/types.h>
-#include <unistd.h>    /* libc[45] */
-#include <ustat.h>     /* glibc2 */
+#include <unistd.h>		/* libc[45] */
+#include <ustat.h>		/* glibc2 */
 #include <sys/stat.h>
 
 static void setup();
@@ -82,16 +82,15 @@ dev_t dev_num;
 struct ustat *ubuf;
 struct stat *buf;
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-	int lc,i;
+	int lc, i;
 	char *msg;
 
 	/*parse standard options */
-	if ((msg = parse_opts(argc,argv,(option_t*)NULL,NULL))
-		!= (char *)NULL ) {
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s",msg);
+	if ((msg = parse_opts(argc, argv, (option_t *) NULL, NULL))
+	    != (char *)NULL) {
+		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
 	/* perform global setup for test */
@@ -102,30 +101,27 @@ main(int argc, char *argv[])
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-		for(i = 0; i < TST_TOTAL; i++) {
+		for (i = 0; i < TST_TOTAL; i++) {
 			TEST(ustat(dev_num, ubuf));
 			/* check return code */
 			if (TEST_RETURN == -1) {
 				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_resm(TFAIL, "ustat(2) failed and set"
-						 "the errno to %d : %s",
-						 TEST_ERRNO,
-						 strerror(TEST_ERRNO));
+					 "the errno to %d : %s",
+					 TEST_ERRNO, strerror(TEST_ERRNO));
+			} else {
+				tst_resm(TPASS, "ustat(2) passed");
 			}
-			else {
-				tst_resm(TPASS,"ustat(2) passed");
-			}
-		}	/* End of the test case loop */
-	} 	/* End of tests loop */
+		}		/* End of the test case loop */
+	}			/* End of tests loop */
 	cleanup();
 
-	/* NOT REACHED*/
+	/* NOT REACHED */
 	return 0;
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -133,32 +129,31 @@ setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	/* Allocate memory for stat and ustat structure variables*/
-	if( (buf = (struct stat *) malloc(sizeof(struct stat))) == NULL) {
+	/* Allocate memory for stat and ustat structure variables */
+	if ((buf = (struct stat *)malloc(sizeof(struct stat))) == NULL) {
 		tst_brkm(TBROK, tst_exit, "Failed to allocate Memory");
 	}
 
-	if((ubuf = (struct ustat *) malloc(sizeof(struct ustat))) == NULL) {
+	if ((ubuf = (struct ustat *)malloc(sizeof(struct ustat))) == NULL) {
 		free(buf);
 		tst_brkm(TBROK, tst_exit, "Failed to allocate Memory");
 	}
 
-	/*Find out device number for a file-system*/
-	if(stat("/", buf) != 0) {
+	/*Find out device number for a file-system */
+	if (stat("/", buf) != 0) {
 		free(buf);
 		free(ubuf);
 		tst_brkm(TBROK, tst_exit, "Couldn't find device number");
 	}
 
 	dev_num = buf->st_dev;
-}	/* End setup() */
+}				/* End setup() */
 
 /*
  * cleanup() - Performs one time cleanup for this test at
  * completion or premature exit
  */
-void
-cleanup()
+void cleanup()
 {
 
 	/*

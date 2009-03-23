@@ -108,15 +108,14 @@ void hack();
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
+	int lc;			/* loop counter */
 	int rval;
-	char *msg;			/* message returned from parse_opts */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, options, &help)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
-
 #ifdef UCLINUX
 	maybe_run_child(&do_child_uclinux, "dS", &parentpid, &childtty);
 #endif
@@ -128,8 +127,8 @@ int main(int ac, char **av)
 		cleanup();
 	}
 
-        if (geteuid() != 0) { 
-	                 tst_brkm(TBROK, tst_exit, "Test must be run as root"); 
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Test must be run as root");
 	}
 
 	setup();
@@ -147,10 +146,9 @@ int main(int ac, char **av)
 
 		if ((childpid = FORK_OR_VFORK()) < 0) {
 			tst_brkm(TBROK, cleanup, "fork() failed");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
-		if (childpid == 0) {		/* child */
+		if (childpid == 0) {	/* child */
 #ifdef UCLINUX
 			if (self_exec(av[0], "dS", parentpid, childtty) < 0) {
 				tst_brkm(TBROK, cleanup, "self_exec failed");
@@ -171,8 +169,7 @@ int main(int ac, char **av)
 			kill(childpid, SIGTERM);
 			waitpid(childpid, NULL, 0);
 			cleanup();
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		/* run the parent test */
 		if ((rval = run_ptest()) == -1) {
@@ -213,12 +210,11 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
-void
-do_child() {
+void do_child()
+{
 	if ((childfd = do_child_setup()) < 0) {
 		_exit(1);
 	}
@@ -226,8 +222,7 @@ do_child() {
 	_exit(0);
 }
 
-void
-do_child_uclinux()
+void do_child_uclinux()
 {
 	struct sigaction act;
 
@@ -244,8 +239,7 @@ do_child_uclinux()
  * run_ptest() - setup the various termio structure values and issue
  *		 the TCSETA ioctl call with the TEST macro.
  */
-int
-run_ptest()
+int run_ptest()
 {
 	int i, rval;
 
@@ -253,10 +247,10 @@ run_ptest()
 	termio.c_line = 0;
 
 	/* Set control modes */
-	termio.c_cflag = B50|CS7|CREAD|PARENB|PARODD|CLOCAL;
+	termio.c_cflag = B50 | CS7 | CREAD | PARENB | PARODD | CLOCAL;
 
 	/* Set control chars. */
-	for(i = 0; i < NCC; i++) {
+	for (i = 0; i < NCC; i++) {
 		if (i == VEOL2) {
 			continue;
 		}
@@ -264,39 +258,40 @@ run_ptest()
 	}
 
 	/* Set local modes. */
-	termio.c_lflag = ((unsigned short)(ISIG|ICANON|XCASE|ECHO|ECHOE|NOFLSH));
+	termio.c_lflag =
+	    ((unsigned short)(ISIG | ICANON | XCASE | ECHO | ECHOE | NOFLSH));
 
 	/* Set input modes. */
-	termio.c_iflag = BRKINT|IGNPAR|INPCK|ISTRIP|ICRNL|IUCLC|IXON|
-			 IXANY|IXOFF;
+	termio.c_iflag =
+	    BRKINT | IGNPAR | INPCK | ISTRIP | ICRNL | IUCLC | IXON | IXANY |
+	    IXOFF;
 
 	/* Set output modes. */
-	termio.c_oflag = OPOST|OLCUC|ONLCR|ONOCR;
+	termio.c_oflag = OPOST | OLCUC | ONLCR | ONOCR;
 
 	TEST(ioctl(parentfd, TCSETA, &termio));
 
 	if (TEST_RETURN < 0) {
 		tst_resm(TFAIL, "ioctl TCSETA failed : "
 			 "errno = %d", TEST_ERRNO);
-		return(-1);
+		return (-1);
 	}
 
 	if (STD_FUNCTIONAL_TEST) {
 		/* Get termio and see if all parameters actually got set */
 		if ((rval = ioctl(parentfd, TCGETA, &termio)) < 0) {
 			tst_resm(TFAIL, "ioctl TCGETA failed.  Ending test.");
-			return(-1);
+			return (-1);
 		}
 
-		return(chk_tty_parms());
+		return (chk_tty_parms());
 	} else {
 		tst_resm(TINFO, "call succeeded");
 		return 0;
 	}
 }
 
-int
-run_ctest()
+int run_ctest()
 {
 	/*
 	 * Wait till the parent has finished testing.
@@ -315,8 +310,7 @@ run_ctest()
 	return 0;
 }
 
-int
-chk_tty_parms()
+int chk_tty_parms()
 {
 	int i, flag = 0;
 
@@ -325,19 +319,18 @@ chk_tty_parms()
 			 termio.c_line);
 		flag++;
 	}
-
-        // The following Code Sniffet is disabled to check the value of c_cflag
-        // as it seems that due to some changes from 2.6.24 onwards, this setting
-        // is not done properly for either of (B50|CS7|CREAD|PARENB|PARODD|CLOCAL|(CREAD|HUPCL|CLOCAL).
-        // However, it has been observed that other flags are properly set.
+	// The following Code Sniffet is disabled to check the value of c_cflag
+	// as it seems that due to some changes from 2.6.24 onwards, this setting
+	// is not done properly for either of (B50|CS7|CREAD|PARENB|PARODD|CLOCAL|(CREAD|HUPCL|CLOCAL).
+	// However, it has been observed that other flags are properly set.
 
 	//if (termio.c_cflag != (B50|CS7|CREAD|PARENB|PARODD|CLOCAL)) {
-	//	tst_resm(TINFO, "cflag has incorrect value. %o",
-	//		 termio.c_cflag);
-	//	flag++;
+	//      tst_resm(TINFO, "cflag has incorrect value. %o",
+	//               termio.c_cflag);
+	//      flag++;
 	//}
 
-	for(i = 0; i < NCC; i++) {
+	for (i = 0; i < NCC; i++) {
 		if (i == VEOL2) {
 			if (termio.c_cc[VEOL2] == CNUL) {
 				continue;
@@ -357,20 +350,24 @@ chk_tty_parms()
 		}
 	}
 
-	if (!(termio.c_lflag && (ISIG|ICANON|XCASE|ECHO|ECHOE|NOFLSH))) {
+	if (!
+	    (termio.c_lflag
+	     && (ISIG | ICANON | XCASE | ECHO | ECHOE | NOFLSH))) {
 		tst_resm(TINFO, "lflag has incorrect value. %o",
 			 termio.c_lflag);
 		flag++;
 	}
 
-	if (!(termio.c_iflag && (BRKINT|IGNPAR|INPCK|ISTRIP|ICRNL|IUCLC|IXON|
-			       IXANY|IXOFF))) {
+	if (!
+	    (termio.c_iflag
+	     && (BRKINT | IGNPAR | INPCK | ISTRIP | ICRNL | IUCLC | IXON | IXANY
+		 | IXOFF))) {
 		tst_resm(TINFO, "iflag has incorrect value. %o",
 			 termio.c_iflag);
 		flag++;
 	}
 
-	if (!(termio.c_oflag && (OPOST|OLCUC|ONLCR|ONOCR))) {
+	if (!(termio.c_oflag && (OPOST | OLCUC | ONLCR | ONOCR))) {
 		tst_resm(TINFO, "oflag has incorrect value. %o",
 			 termio.c_oflag);
 		flag++;
@@ -380,12 +377,10 @@ chk_tty_parms()
 		tst_resm(TINFO, "termio values are set as expected");
 	}
 
-	return(flag);
+	return (flag);
 }
 
-
-int
-do_parent_setup()
+int do_parent_setup()
 {
 	int pfd;
 
@@ -402,11 +397,10 @@ do_parent_setup()
 		tst_brkm(TBROK, cleanup, "ioctl TCFLSH failed : "
 			 "errno = %d", errno);
 	}
-	return(pfd);
+	return (pfd);
 }
 
-int
-do_child_setup()
+int do_child_setup()
 {
 	int cfd;
 
@@ -415,7 +409,7 @@ do_child_setup()
 			 "= %d", childtty, errno);
 		/* signal the parent so we don't hang the test */
 		kill(parentpid, SIGUSR1);
-		return(-1);
+		return (-1);
 	}
 
 	/* flush tty queues to remove old output */
@@ -423,13 +417,13 @@ do_child_setup()
 		tst_resm(TINFO, "ioctl TCFLSH failed. : errno = %d", errno);
 		/* signal the parent so we don't hang the test */
 		kill(parentpid, SIGUSR1);
-		return(-1);
+		return (-1);
 	}
 
 	/* tell the parent that we're done */
 	kill(parentpid, SIGUSR1);
 
-	return(cfd);
+	return (cfd);
 }
 
 /*
@@ -454,8 +448,7 @@ void sigusr2_handler()
  * help() - Prints out the help message for the -D option defined
  *	    by this test.
  */
-void
-help()
+void help()
 {
 	printf("  -D <tty device> : for example, /dev/tty[0-9]\n");
 }
@@ -463,8 +456,7 @@ help()
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	int fd;
 	struct sigaction act;
@@ -508,13 +500,11 @@ setup()
 	TEST_PAUSE;
 }
 
-
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

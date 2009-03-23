@@ -46,9 +46,9 @@
  *   Loop if the proper options are given.
  *   Execute system call
  *   Check return code, if system call failed (return=-1)
- *   	if errno set == expected errno
- *   		Issue sys call fails with expected return value and errno.
- *   	Otherwise,
+ *	if errno set == expected errno
+ *		Issue sys call fails with expected return value and errno.
+ *	Otherwise,
  *		Issue sys call fails with unexpected errno.
  *   Otherwise,
  *	Issue sys call returns unexpected value.
@@ -101,56 +101,51 @@ char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 extern struct passwd *my_getpwnam(char *);
 
-
-char *TCID="fstat05";           /* Test program identifier.    */
-int TST_TOTAL = 1;              /* Total number of test cases. */
-extern int Tst_count;           /* Test Case counter for tst_* routines */
-int exp_enos[]={EFAULT, 0};
-int fildes;                     /* testfile descriptor */
-
+char *TCID = "fstat05";		/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
+extern int Tst_count;		/* Test Case counter for tst_* routines */
+int exp_enos[] = { EFAULT, 0 };
+int fildes;			/* testfile descriptor */
 
 void setup();			/* Main setup function for the tests */
 void cleanup();			/* cleanup function for the test */
 void sighandler(int sig);	/* signals handler function for the test */
 
 int siglist[] = { SIGHUP, SIGINT, SIGQUIT, SIGILL, SIGTRAP, SIGABRT, SIGIOT,
-                SIGBUS, SIGFPE, SIGUSR1, SIGSEGV, SIGUSR2, SIGPIPE, SIGALRM,
-                SIGTERM,
+	SIGBUS, SIGFPE, SIGUSR1, SIGSEGV, SIGUSR2, SIGPIPE, SIGALRM,
+	SIGTERM,
 #ifdef SIGSTKFLT
-SIGSTKFLT,
+	SIGSTKFLT,
 #endif
-		SIGCHLD, SIGCONT, SIGTSTP, SIGTTIN,
-                SIGTTOU, SIGURG, SIGXCPU, SIGXFSZ, SIGVTALRM, SIGPROF,
-                SIGWINCH, SIGIO, SIGPWR, SIGSYS,
+	SIGCHLD, SIGCONT, SIGTSTP, SIGTTIN,
+	SIGTTOU, SIGURG, SIGXCPU, SIGXFSZ, SIGVTALRM, SIGPROF,
+	SIGWINCH, SIGIO, SIGPWR, SIGSYS,
 #ifdef SIGUNUSED
-SIGUNUSED
+	SIGUNUSED
 #endif
 };
 
-int SIG_SEEN = sizeof(siglist)/sizeof(int);
+int SIG_SEEN = sizeof(siglist) / sizeof(int);
 
 #if !defined(UCLINUX)
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	struct stat stat_buf;	/* stat structure buffer */
-	struct stat * ptr_str;
+	struct stat *ptr_str;
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
-
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/* Buffer points outside user's accessible address space. */
-	ptr_str=&stat_buf;	/* if it was for conformance testing */
-	ptr_str=(void *)sbrk(0) + (4 * getpagesize());
+	ptr_str = &stat_buf;	/* if it was for conformance testing */
+	ptr_str = (void *)sbrk(0) + (4 * getpagesize());
 
 	/*
 	 * Invoke setup function
@@ -163,40 +158,39 @@ main(int ac, char **av)
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
-			/*
-			 * Call fstat(2).
-			 * verify that it fails with -1 return value and
-			 * sets appropriate errno.
-			 */
-			TEST(fstat(fildes, ptr_str));
+		/*
+		 * Call fstat(2).
+		 * verify that it fails with -1 return value and
+		 * sets appropriate errno.
+		 */
+		TEST(fstat(fildes, ptr_str));
 
-                /* Check return code from fstat(2) */
-                if (TEST_RETURN == -1) {
-                        TEST_ERROR_LOG(TEST_ERRNO);
-                        if (TEST_ERRNO == EFAULT) {
-                                tst_resm(TPASS, "fstat() fails with "
-                                         "expected error EFAULT");
-                        } else {
-                                tst_resm(TFAIL, "fstat() fails with "
-                                         "wrong errno:%d", TEST_ERRNO);
-                        }
-                } else {
-                        tst_resm(TFAIL, "fstat() returned %d, "
-                                 "expected -1 and error EFAULT",TEST_RETURN);
-                }
+		/* Check return code from fstat(2) */
+		if (TEST_RETURN == -1) {
+			TEST_ERROR_LOG(TEST_ERRNO);
+			if (TEST_ERRNO == EFAULT) {
+				tst_resm(TPASS, "fstat() fails with "
+					 "expected error EFAULT");
+			} else {
+				tst_resm(TFAIL, "fstat() fails with "
+					 "wrong errno:%d", TEST_ERRNO);
+			}
+		} else {
+			tst_resm(TFAIL, "fstat() returned %d, "
+				 "expected -1 and error EFAULT", TEST_RETURN);
+		}
 
-		}	/* End of TEST CASE LOOPING. */
+	}			/* End of TEST CASE LOOPING. */
 
 	/*
 	 * Invoke cleanup() to delete the test directory/file(s) created
 	 * in the setup().
 	 */
 	cleanup();
-	/*NOTREACHED*/
-	return 0;
-}	/* End main */
+	 /*NOTREACHED*/ return 0;
+}				/* End main */
 
 #else
 
@@ -211,36 +205,33 @@ int main()
 /*
  * void
  * setup(void) - performs all ONE TIME setup for this test.
- * 	Exit the test program on receipt of unexpected signals.
+ *	Exit the test program on receipt of unexpected signals.
  *	Create a temporary directory and change directory to it.
  */
-void
-setup()
+void setup()
 {
 	int i;
 
 	/*
 	 * Capture unexpected signals SIGSEGV included
 	 * SIGSEGV being considered as acceptable as returned value
-	*/
-        for (i=0; i<SIG_SEEN; i++) {
+	 */
+	for (i = 0; i < SIG_SEEN; i++) {
 
-                signal(siglist[i], &sighandler);
+		signal(siglist[i], &sighandler);
 	}
 
 	/* Switch to nobody user for correct error code collection */
-        if (geteuid() != 0) {
-                tst_brkm(TBROK, tst_exit, "Test must be run as root");
-        }
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+	}
 
-         ltpuser = getpwnam(nobody_uid);
-         if (setuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "setuid failed to "
-                         "to set the effective uid to %d",
-                         ltpuser->pw_uid);
-                perror("setuid");
-         }
-
+	ltpuser = getpwnam(nobody_uid);
+	if (setuid(ltpuser->pw_uid) == -1) {
+		tst_resm(TINFO, "setuid failed to "
+			 "to set the effective uid to %d", ltpuser->pw_uid);
+		perror("setuid");
+	}
 
 	/* Pause if that option was specified
 	 * TEST_PAUSE contains the code to fork the test with the -i option.
@@ -252,15 +243,14 @@ setup()
 	/* Make a temp dir and cd to it */
 	tst_tmpdir();
 
-        /* Create a testfile under temporary directory */
-        if ((fildes = open(TEST_FILE, O_RDWR|O_CREAT, 0666)) == -1) {
-                tst_brkm(TBROK, cleanup,
-                         "open(%s, O_RDWR|O_CREAT, 0666) failed, errno=%d : %s",
-                         TEST_FILE, errno, strerror(errno));
-        }
+	/* Create a testfile under temporary directory */
+	if ((fildes = open(TEST_FILE, O_RDWR | O_CREAT, 0666)) == -1) {
+		tst_brkm(TBROK, cleanup,
+			 "open(%s, O_RDWR|O_CREAT, 0666) failed, errno=%d : %s",
+			 TEST_FILE, errno, strerror(errno));
+	}
 
-
-}	/* End setup() */
+}				/* End setup() */
 
 /*
  * void
@@ -271,8 +261,7 @@ setup()
  *	created during setup().
  *	Exit the test program with normal exit code.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -280,34 +269,32 @@ cleanup()
 	 */
 	TEST_CLEANUP;
 
-        if (close(fildes) == -1) {
-                tst_brkm(TBROK, cleanup,
-                         "close(%s) Failed, errno=%d : %s",
-                         TEST_FILE, errno, strerror(errno));
-        }
-
+	if (close(fildes) == -1) {
+		tst_brkm(TBROK, cleanup,
+			 "close(%s) Failed, errno=%d : %s",
+			 TEST_FILE, errno, strerror(errno));
+	}
 
 	/* Remove files and temporary directory created */
 	tst_rmdir();
- 
+
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */
 
 /*
  * sighandler() - handle the signals
  */
 
-void
-sighandler(int sig)
+void sighandler(int sig)
 {
-        if (sig == SIGSEGV) {
-                tst_resm(TPASS, "fstat() fails with "
-                         "expected signal SIGSEGV");
-        } else {
+	if (sig == SIGSEGV) {
+		tst_resm(TPASS, "fstat() fails with "
+			 "expected signal SIGSEGV");
+	} else {
 		tst_brkm(TBROK, 0, "Unexpected signal %d received.", sig);
-        }
+	}
 	cleanup();
-	/*NOT REACHED*/
+	/*NOT REACHED */
 
 }

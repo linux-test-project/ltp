@@ -74,21 +74,20 @@
 static void setup();
 static void cleanup();
 
-char *TCID = "sched_get_priority_min02"; /* Test program identifier.    */
+char *TCID = "sched_get_priority_min02";	/* Test program identifier.    */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int TST_TOTAL = 1;
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 
-	int lc;		/* loop counter */
-	char *msg;	/* message returned from parse_opts */
-   
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
+
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
-	     != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL))
+	    != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -110,23 +109,20 @@ main(int ac, char **av)
 			tst_resm(TPASS, "Test Passed, Got EINVAL");
 		} else {
 			tst_resm(TFAIL, "Test Failed, sched_get_priority_min()"
-					" returned %d, errno = %d : %s",
-					TEST_RETURN, TEST_ERRNO,
-					strerror(TEST_ERRNO));
+				 " returned %d, errno = %d : %s",
+				 TEST_RETURN, TEST_ERRNO, strerror(TEST_ERRNO));
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* cleanup and exit */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 
-}	/* End main */
+}				/* End main */
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup()
+void setup()
 {
 
 	/* capture signals */
@@ -135,15 +131,13 @@ setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-}	/* End setup() */
-
+}				/* End setup() */
 
 /*
  *cleanup() -  performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 
 	/*
@@ -154,4 +148,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

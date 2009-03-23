@@ -37,7 +37,7 @@
  *  Execute the system call.
  *  Pass an invalid address to the structure.
  *  Check return code, if system call failed (return=-1)
- *  	Test case passed, Issue functionality pass message
+ *	Test case passed, Issue functionality pass message
  *  Otherwise,
  *	Issue Functionality-Fail message.
  * Cleanup:
@@ -82,8 +82,7 @@ extern int Tst_count;		/* Test case counter for tst_* routines */
 
 #if !defined(UCLINUX)
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	struct sysinfo *sysinfo_buf;
 	int lc;
@@ -92,16 +91,14 @@ main(int ac, char **av)
 	sysinfo_buf = (void *)INVALID_ADDRESS;
 
 	/* parse standard options */
-	if((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) !=
-		(char *) NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	setup();		/* Global setup */
 
 	/* The following loop checks looping state if -i option given */
-	for(lc = 0; TEST_LOOPING(lc); lc++) {
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
@@ -111,19 +108,15 @@ main(int ac, char **av)
 		if (TEST_RETURN != 0 && TEST_ERRNO == EFAULT) {
 			/* Test succeeded as it was supposed to return -1 */
 			tst_resm(TPASS, "Test to check the error code %d",
-				TEST_ERRNO,"PASSED");
-		}
-		else {
+				 TEST_ERRNO, "PASSED");
+		} else {
 			/* Test Failed */
 			tst_brkm(TFAIL, cleanup, "sysinfo() Failed, Expected -1"
 				 "returned %d/n", TEST_ERRNO, "FAILED");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 	}
 	cleanup();
-	/*NOTREACHED*/
-
-  return 0;
+	 /*NOTREACHED*/ return 0;
 
 }
 
@@ -142,8 +135,7 @@ int main()
  *	performs one time setup
  *
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -158,8 +150,7 @@ setup(void)
  * cleanup()
  *
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	TEST_CLEANUP;
 	tst_exit();

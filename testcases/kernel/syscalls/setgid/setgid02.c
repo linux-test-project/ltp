@@ -57,26 +57,24 @@ char nobody_uid[] = "nobody";
 char nobody_gid[] = "nobody";
 struct passwd *ltpuser;
 
-
 static void setup(void);
 static void cleanup(void);
 
 #include "compat_16.h"
 
-int exp_enos[] = {EPERM, 0};
+int exp_enos[] = { EPERM, 0 };
 
 int main(int ac, char **av)
 {
 	struct passwd *getpwnam(), *rootpwent;
 
-	int lc;				/* loop counter */
-	char *msg;			/* message returned by parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned by parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	setup();
 
@@ -87,19 +85,18 @@ int main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-
 		if ((rootpwent = getpwnam(root)) == NULL) {
 			tst_brkm(TBROK, cleanup, "getpwnam failed for user id "
 				 "%s", root);
 		}
 
 		if (!GID_SIZE_CHECK(rootpwent->pw_gid)) {
-		 tst_brkm(TBROK,
-			  cleanup,
-			  "gid for `%s' is too large for testing setgid16",
-			  root);
+			tst_brkm(TBROK,
+				 cleanup,
+				 "gid for `%s' is too large for testing setgid16",
+				 root);
 		}
-	
+
 		TEST(SETGID(rootpwent->pw_gid));
 
 		if (TEST_RETURN != -1) {
@@ -118,43 +115,38 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 /* Switch to nobody user for correct error code collection */
-        if (geteuid() != 0) {
-                tst_brkm(TBROK, tst_exit, "Test must be run as root");
-        }
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+	}
 	ltpuser = getpwnam(nobody_uid);
 
-	 if (!GID_SIZE_CHECK(ltpuser->pw_gid)) {
-		 tst_brkm(TBROK,
-			  cleanup,
-			  "gid for `%s' is too large for testing setgid16",
-			  nobody_gid);
-	 }
+	if (!GID_SIZE_CHECK(ltpuser->pw_gid)) {
+		tst_brkm(TBROK,
+			 cleanup,
+			 "gid for `%s' is too large for testing setgid16",
+			 nobody_gid);
+	}
 
-	 if (setgid(ltpuser->pw_gid) == -1) {
-                tst_resm(TINFO, "setgid failed to "
-                         "to set the effective gid to %d",
-                         ltpuser->pw_gid);
-                perror("setgid");
-         }
+	if (setgid(ltpuser->pw_gid) == -1) {
+		tst_resm(TINFO, "setgid failed to "
+			 "to set the effective gid to %d", ltpuser->pw_gid);
+		perror("setgid");
+	}
 
-         if (setuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "setuid failed to "
-                         "to set the effective uid to %d",
-                         ltpuser->pw_uid);
-                perror("setuid");
-         }
-
+	if (setuid(ltpuser->pw_uid) == -1) {
+		tst_resm(TINFO, "setuid failed to "
+			 "to set the effective uid to %d", ltpuser->pw_uid);
+		perror("setuid");
+	}
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -167,8 +159,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

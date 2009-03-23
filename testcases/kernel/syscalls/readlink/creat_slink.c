@@ -33,28 +33,27 @@
 
 #define FILE_MODE        S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	int fd;				/* file handle for testfile */
+	int fd;			/* file handle for testfile */
 
 	/* Create a testfile under temporary directory */
-        if ((fd = open(av[1], O_RDWR|O_CREAT, FILE_MODE)) == -1) {
+	if ((fd = open(av[1], O_RDWR | O_CREAT, FILE_MODE)) == -1) {
 		perror("creat_slink: open() failed");
 		exit(1);
-        }
+	}
 
 	/* Close the testfile created */
-        if (close(fd) == -1) {
+	if (close(fd) == -1) {
 		perror("creat_slink: close() failed");
 		exit(1);
-        }
+	}
 
-        /* Create a symlink of testfile under temporary directory */
-        if (symlink(av[1], av[2]) < 0) {
+	/* Create a symlink of testfile under temporary directory */
+	if (symlink(av[1], av[2]) < 0) {
 		perror("creat_slink: symlink() failed");
 		exit(1);
-        }
+	}
 
 	exit(0);
 }

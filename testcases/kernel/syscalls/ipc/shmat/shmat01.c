@@ -60,17 +60,17 @@
 char *TCID = "shmat01";
 extern int Tst_count;
 
-#define CASE0		10		/* values to write into the shared */
-#define CASE1		20		/* memory location.		   */
+#define CASE0		10	/* values to write into the shared */
+#define CASE1		20	/* memory location.                */
 
 int shm_id_1 = -1;
 
-void	*base_addr;	/* By probing this address first, we can make
-			 * non-aligned addresses from it for different
-			 * architectures without explicitly code it.
-			 */
+void *base_addr;		/* By probing this address first, we can make
+				 * non-aligned addresses from it for different
+				 * architectures without explicitly code it.
+				 */
 
-void	*addr;		/* for result of shmat-call */
+void *addr;			/* for result of shmat-call */
 
 struct test_case_t {
 	int *shmid;
@@ -80,18 +80,19 @@ struct test_case_t {
 
 int TST_TOTAL = 3;
 
-static void setup_tc( int i, struct test_case_t *tc){
+static void setup_tc(int i, struct test_case_t *tc)
+{
 
 	struct test_case_t TC[] = {
 		/* a straight forward read/write attach */
 		{&shm_id_1, 0, 0},
 		/* an attach using non aligned memory */
-		{&shm_id_1, SHMLBA - 1,SHM_RND},
+		{&shm_id_1, SHMLBA - 1, SHM_RND},
 		/* a read only attach */
 		{&shm_id_1, 0, SHM_RDONLY}
 	};
 
-	if( i > TST_TOTAL || i < 0)
+	if (i > TST_TOTAL || i < 0)
 		return;
 
 	*tc = TC[i];
@@ -99,18 +100,18 @@ static void setup_tc( int i, struct test_case_t *tc){
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int i;
 	struct test_case_t tc;
 	void check_functionality(int);
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -120,17 +121,17 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		/* setup test case paremeters */
-		setup_tc( lc, &tc);
+		setup_tc(lc, &tc);
 
 		/* loop through the test cases */
-		for (i=0; i<TST_TOTAL; i++) {
+		for (i = 0; i < TST_TOTAL; i++) {
 
 			/*
 			 * Use TEST macro to make the call
 			 */
 			errno = 0;
 			addr = shmat(*(tc.shmid), base_addr + tc.offset,
-				   tc.flags);
+				     tc.flags);
 			TEST_ERRNO = errno;
 
 			if (addr == (void *)-1) {
@@ -158,16 +159,14 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * check_functionality - check various conditions to make sure they
  *			 are correct.
  */
-void
-check_functionality(int i)
+void check_functionality(int i)
 {
 	void *orig_add;
 	int *shared;
@@ -195,7 +194,7 @@ check_functionality(int i)
 	}
 
 	/* check for specific conditions depending on the type of attach */
-	switch(i) {
+	switch (i) {
 	case 0:
 		/*
 		 * Check the functionality of the first call by simply
@@ -213,10 +212,10 @@ check_functionality(int i)
 		 * that the original address given was rounded down as
 		 * specified in the man page.
 		 */
-		setup_tc( 1, &tc);
+		setup_tc(1, &tc);
 
 		*shared = CASE1;
-		orig_add = addr + ((unsigned long)tc.offset%SHMLBA);
+		orig_add = addr + ((unsigned long)tc.offset % SHMLBA);
 		if (orig_add != base_addr + tc.offset) {
 			tst_resm(TFAIL, "shared memory address is not "
 				 "correct");
@@ -245,8 +244,7 @@ check_functionality(int i)
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -266,32 +264,31 @@ setup(void)
 
 	/* create a shared memory resource with read and write permissions */
 	if ((shm_id_1 = shmget(shmkey++, INT_SIZE, SHM_RW | IPC_CREAT |
-	     IPC_EXCL)) == -1) {
+			       IPC_EXCL)) == -1) {
 		tst_brkm(TBROK, cleanup, "Failed to create shared memory "
 			 "resource 1 in setup()");
 	}
 
 	/* Probe an available linear address for attachment */
-	if( (base_addr = shmat(shm_id_1, NULL, 0)) == (void *)-1 ){
-		tst_brkm(TBROK, cleanup,
-				"Couldn't attach shared memory");
+	if ((base_addr = shmat(shm_id_1, NULL, 0)) == (void *)-1) {
+		tst_brkm(TBROK, cleanup, "Couldn't attach shared memory");
 	}
 	if (shmdt((const void *)base_addr) == -1) {
-		tst_brkm(TBROK, cleanup,
-				"Couldn't detach shared memory");
+		tst_brkm(TBROK, cleanup, "Couldn't detach shared memory");
 	}
 
 	/* some architectures (e.g. parisc) are strange, so better always align to
 	 * next SHMLBA address. */
-	base_addr = (void *)( ((unsigned long)(base_addr) + (SHMLBA-1)) & ~(SHMLBA-1));
+	base_addr =
+	    (void *)(((unsigned long)(base_addr) + (SHMLBA - 1)) &
+		     ~(SHMLBA - 1));
 }
 
 /*
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/* if it exists, remove the shared memory resource */
 	rm_shm(shm_id_1);
@@ -308,4 +305,3 @@ cleanup(void)
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

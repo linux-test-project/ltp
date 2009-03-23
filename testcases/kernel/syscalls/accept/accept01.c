@@ -56,65 +56,62 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID="accept01";		/* Test program identifier.    */
+char *TCID = "accept01";	/* Test program identifier.    */
 int testno;
 
-int	s;	/* socket descriptor */
+int s;				/* socket descriptor */
 struct sockaddr_in sin0, fsin1;
 socklen_t sinlen;
 
 void setup(void), setup0(void), setup1(void), setup2(void), setup3(void),
-	cleanup(void), cleanup0(void), cleanup1(void);
+cleanup(void), cleanup0(void), cleanup1(void);
 
 struct test_case_t {		/* test case structure */
-	int	domain;	/* PF_INET, PF_UNIX, ... */
-	int	type;	/* SOCK_STREAM, SOCK_DGRAM ... */
-	int	proto;	/* protocol number (usually 0 = default) */
+	int domain;		/* PF_INET, PF_UNIX, ... */
+	int type;		/* SOCK_STREAM, SOCK_DGRAM ... */
+	int proto;		/* protocol number (usually 0 = default) */
 	struct sockaddr *sockaddr;	/* socket address buffer */
-	socklen_t	*salen;	/* accept's 3rd argument */
-	int	retval;		/* syscall return value */
-	int	experrno;	/* expected errno */
-	void	(*setup)(void);
-	void	(*cleanup)(void);
+	socklen_t *salen;	/* accept's 3rd argument */
+	int retval;		/* syscall return value */
+	int experrno;		/* expected errno */
+	void (*setup) (void);
+	void (*cleanup) (void);
 	char *desc;
 } tdat[] = {
-	{ PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&fsin1,
-		&sinlen, -1, EBADF, setup0, cleanup0,
-		"bad file descriptor" },
-	{ PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&fsin1,
-		&sinlen, -1, ENOTSOCK, setup0, cleanup0,
-		"bad file descriptor" },
-	{ PF_INET, SOCK_STREAM, 0, (struct sockaddr *)3,
-		&sinlen, -1, EINVAL, setup1, cleanup1,
-		"invalid socket buffer" },
-	{ PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&fsin1,
-		(socklen_t*)1, -1, EINVAL, setup1, cleanup1,
-		"invalid salen" },
-	{ PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&fsin1,
-		&sinlen, -1, EINVAL, setup2, cleanup1,
-		"invalid salen" },
-	{ PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&fsin1,
-		&sinlen, -1, EINVAL, setup3, cleanup1,
-		"no queued connections" },
-	{ PF_INET, SOCK_DGRAM, 0, (struct sockaddr *)&fsin1,
-		&sinlen, -1, EOPNOTSUPP, setup1, cleanup1,
-		"UDP accept" },
-};
+	{
+	PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&fsin1,
+		    &sinlen, -1, EBADF, setup0, cleanup0,
+		    "bad file descriptor"}, {
+	PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&fsin1,
+		    &sinlen, -1, ENOTSOCK, setup0, cleanup0,
+		    "bad file descriptor"}, {
+	PF_INET, SOCK_STREAM, 0, (struct sockaddr *)3,
+		    &sinlen, -1, EINVAL, setup1, cleanup1,
+		    "invalid socket buffer"}, {
+	PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&fsin1,
+		    (socklen_t *) 1, -1, EINVAL, setup1, cleanup1,
+		    "invalid salen"}, {
+	PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&fsin1,
+		    &sinlen, -1, EINVAL, setup2, cleanup1, "invalid salen"}, {
+	PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&fsin1,
+		    &sinlen, -1, EINVAL, setup3, cleanup1,
+		    "no queued connections"}, {
+PF_INET, SOCK_DGRAM, 0, (struct sockaddr *)&fsin1,
+		    &sinlen, -1, EOPNOTSUPP, setup1, cleanup1, "UDP accept"},};
 
-int TST_TOTAL=sizeof(tdat)/sizeof(tdat[0]); /* Total number of test cases. */
+int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);	/* Total number of test cases. */
 
-int exp_enos[] = {EBADF, ENOTSOCK, EINVAL, EOPNOTSUPP, 0};
+int exp_enos[] = { EBADF, ENOTSOCK, EINVAL, EOPNOTSUPP, 0 };
 
 extern int Tst_count;
 
-int
-main(int ac, char *av[])
+int main(int ac, char *av[])
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
@@ -124,11 +121,11 @@ main(int ac, char *av[])
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		Tst_count = 0;
-		for (testno=0; testno < TST_TOTAL; ++testno) {
+		for (testno = 0; testno < TST_TOTAL; ++testno) {
 			tdat[testno].setup();
 
 			TEST(accept(s, tdat[testno].sockaddr,
-				tdat[testno].salen));
+				    tdat[testno].salen));
 			TEST_ERROR_LOG(TEST_ERRNO);
 			if (TEST_RETURN > 0)
 				TEST_RETURN = 0;
@@ -136,25 +133,24 @@ main(int ac, char *av[])
 			    (TEST_RETURN < 0 &&
 			     TEST_ERRNO != tdat[testno].experrno)) {
 				tst_resm(TFAIL, "%s ; returned"
-					" %d (expected %d), errno %d (expected"
-					" %d)", tdat[testno].desc,
-					TEST_RETURN, tdat[testno].retval,
-					TEST_ERRNO, tdat[testno].experrno);
+					 " %d (expected %d), errno %d (expected"
+					 " %d)", tdat[testno].desc,
+					 TEST_RETURN, tdat[testno].retval,
+					 TEST_ERRNO, tdat[testno].experrno);
 			} else {
 				tst_resm(TPASS, "%s successful",
-					tdat[testno].desc);
+					 tdat[testno].desc);
 			}
 			tdat[testno].cleanup();
 		}
 	}
 	cleanup();
 	return 0;
-}	/* End main */
+}				/* End main */
 
-void
-setup(void)
+void setup(void)
 {
-	TEST_PAUSE;	/* if -P option specified */
+	TEST_PAUSE;		/* if -P option specified */
 
 	/* set up the expected error numbers for -e option */
 	TEST_EXP_ENOS(exp_enos);
@@ -165,67 +161,59 @@ setup(void)
 	sin0.sin_addr.s_addr = INADDR_ANY;
 }
 
-void
-cleanup(void)
+void cleanup(void)
 {
 	TEST_CLEANUP;
 	tst_exit();
 }
 
-void
-setup0(void)
+void setup0(void)
 {
 	if (tdat[testno].experrno == EBADF)
 		s = 400;	/* anything not an open file */
-	else
-		if((s = open("/dev/null", O_WRONLY)) == -1)
-			tst_brkm(TBROK, cleanup, "error opening /dev/null - "
-			"errno: %s", strerror(errno));
+	else if ((s = open("/dev/null", O_WRONLY)) == -1)
+		tst_brkm(TBROK, cleanup, "error opening /dev/null - "
+			 "errno: %s", strerror(errno));
 }
 
-void
-cleanup0(void)
+void cleanup0(void)
 {
 	s = -1;
 }
 
-void
-setup1(void)
+void setup1(void)
 {
 	s = socket(tdat[testno].domain, tdat[testno].type, tdat[testno].proto);
 	if (s < 0) {
 		tst_brkm(TBROK, cleanup, "socket setup failed for accept "
-			"test %d: %s", testno, strerror(errno));
+			 "test %d: %s", testno, strerror(errno));
 	}
 	if (bind(s, (struct sockaddr *)&sin0, sizeof(sin0)) < 0) {
 		tst_brkm(TBROK, cleanup, "socket bind failed for accept "
-			"test %d: %s", testno, strerror(errno));
+			 "test %d: %s", testno, strerror(errno));
 	}
 	sinlen = sizeof(fsin1);
 }
 
-void
-setup3(void)
+void setup3(void)
 {
-	int	one = 1;
+	int one = 1;
 
 	setup1();
 	if (ioctl(s, FIONBIO, &one) < 0) {
 		tst_brkm(TBROK, cleanup, "socket ioctl failed for accept "
-			"test %d: %s", testno, strerror(errno));
+			 "test %d: %s", testno, strerror(errno));
 	}
 }
 
-void
-cleanup1(void)
+void cleanup1(void)
 {
-	(void) close(s);
+	(void)close(s);
 	s = -1;
 }
 
-void
-setup2(void)
+void setup2(void)
 {
-	setup1();	/* get a socket in s */
-	sinlen = 1;	/* invalid s */
+	setup1();		/* get a socket in s */
+	sinlen = 1;		/* invalid s */
 }

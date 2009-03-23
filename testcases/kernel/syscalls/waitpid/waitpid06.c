@@ -76,20 +76,18 @@ void do_child_2_uclinux(void);
 
 int main(int argc, char **argv)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int fail = 0;
 	int pid;
 	int status;
 
 	/* parse standard options */
-	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) !=
+	if ((msg = parse_opts(argc, argv, (option_t *) NULL, NULL)) !=
 	    (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-		/*NOTREACHED*/
-	}
-
+	 /*NOTREACHED*/}
 #ifdef UCLINUX
 	argv0 = argv[0];
 
@@ -121,7 +119,7 @@ int main(int argc, char **argv)
 #else
 			do_child_1();
 #endif
-		} else {		/* parent */
+		} else {	/* parent */
 			fail = 0;
 			waitpid(pid, &status, 0);
 			if (WEXITSTATUS(status) != 0) {
@@ -136,9 +134,7 @@ int main(int argc, char **argv)
 		}
 	}
 	cleanup();
-	/*NOTREACHED*/
-
-  return 0;
+	 /*NOTREACHED*/ return 0;
 
 }
 
@@ -146,12 +142,10 @@ int main(int argc, char **argv)
  * setup_sigint()
  *	Sets up a SIGINT handler
  */
-void
-setup_sigint(void)
+void setup_sigint(void)
 {
-	if ((sig_t)signal(SIGINT, inthandlr) == SIG_ERR ) {
-		tst_resm(TFAIL, "signal SIGINT failed. "
-			 "errno = %d", errno);
+	if ((sig_t) signal(SIGINT, inthandlr) == SIG_ERR) {
+		tst_resm(TFAIL, "signal SIGINT failed. " "errno = %d", errno);
 		exit(-1);
 	}
 }
@@ -159,8 +153,7 @@ setup_sigint(void)
 /*
  * do_child_1()
  */
-void
-do_child_1(void)
+void do_child_1(void)
 {
 	int kid_count, fork_kid_pid[MAXKIDS];
 	int ret_val;
@@ -181,18 +174,15 @@ do_child_1(void)
 #ifdef UCLINUX
 			if (self_exec(argv0, "n", 2) < 0) {
 				tst_resm(TFAIL, "Fork kid %d failed. "
-					 "errno = %d", kid_count,
-					 errno);
+					 "errno = %d", kid_count, errno);
 				exit(ret_val);
 			}
 #else
 			do_exit();
 #endif
-			/*NOTREACHED*/
-		} else if (ret_val < 0) {
+		 /*NOTREACHED*/} else if (ret_val < 0) {
 			tst_resm(TFAIL, "Fork kid %d failed. "
-				 "errno = %d", kid_count,
-				 errno);
+				 "errno = %d", kid_count, errno);
 			exit(ret_val);
 		}
 
@@ -224,8 +214,7 @@ do_child_1(void)
 	 */
 	kid_count = 0;
 	errno = 0;
-	while (((ret_val = waitpid(-1, &status, 0)) != -1) ||
-	       (errno == EINTR)) {
+	while (((ret_val = waitpid(-1, &status, 0)) != -1) || (errno == EINTR)) {
 		if (ret_val == -1) {
 			continue;
 		}
@@ -241,8 +230,7 @@ do_child_1(void)
 					 "exited with wrong "
 					 "status", ret_val);
 				tst_resm(TFAIL, "Expected 3 "
-					 "got %d ",
-					 WEXITSTATUS(status));
+					 "got %d ", WEXITSTATUS(status));
 				flag = FAILED;
 			}
 		}
@@ -257,7 +245,7 @@ do_child_1(void)
 	for (i = 0; i < kid_count; i++) {
 		found = 0;
 		for (j = 0; j < MAXKIDS; j++) {
-			if (fork_kid_pid[j] == wait_kid_pid[i]){
+			if (fork_kid_pid[j] == wait_kid_pid[i]) {
 				found = 1;
 				break;
 			}
@@ -266,19 +254,16 @@ do_child_1(void)
 		if (!found) {
 			tst_resm(TFAIL, "Did not find a "
 				 "wait_kid_pid for the "
-				 "fork_kid_pid of %d",
-				 wait_kid_pid[i]);
+				 "fork_kid_pid of %d", wait_kid_pid[i]);
 			for (k = 0; k < MAXKIDS; k++) {
 				tst_resm(TFAIL,
 					 "fork_kid_pid[%d] = "
-					 "%d", k,
-					 fork_kid_pid[k]);
+					 "%d", k, fork_kid_pid[k]);
 			}
 			for (k = 0; k < kid_count; k++) {
 				tst_resm(TFAIL,
 					 "wait_kid_pid[%d] = "
-					 "%d", k,
-					 wait_kid_pid[k]);
+					 "%d", k, wait_kid_pid[k]);
 			}
 			flag = FAILED;
 		}
@@ -296,8 +281,7 @@ do_child_1(void)
  * do_child_2_uclinux()
  *	sets up sigint handler again, then calls the normal child 2 function
  */
-void
-do_child_2_uclinux(void)
+void do_child_2_uclinux(void)
 {
 	setup_sigint();
 	do_exit();
@@ -308,8 +292,7 @@ do_child_2_uclinux(void)
  * setup()
  *	performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* Pause if that option was specified
 	 * TEST_PAUSE contains the code to fork the test with the -c option.
@@ -322,8 +305,7 @@ setup(void)
  *	performs all ONE TIME cleanup for this test at
  *	completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -333,17 +315,14 @@ cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}
 
-void
-inthandlr()
+void inthandlr()
 {
 	intintr++;
 }
 
-void
-wait_for_parent()
+void wait_for_parent()
 {
 	int testvar;
 
@@ -352,8 +331,7 @@ wait_for_parent()
 	}
 }
 
-void
-do_exit()
+void do_exit()
 {
 	wait_for_parent();
 	exit(3);

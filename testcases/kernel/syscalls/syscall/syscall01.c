@@ -38,7 +38,7 @@
  *	They ARE differnet between vax 4.2BSD and our ported system.
  */
 
-#include <stdio.h>		/* needed by testhead.h		*/
+#include <stdio.h>		/* needed by testhead.h         */
 #include <syscall.h>
 #include <errno.h>
 
@@ -62,7 +62,6 @@ extern int Tst_count;
 
 #define ITER		500
 
-
 int t_flag;
 int errno;
 
@@ -77,17 +76,17 @@ void fail_exit();
 /*****	**	**	*****/
 
 /*--------------------------------------------------------------*/
-int main (int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	register int i;
 	int v1, v2;
 
-	setup();		/* temp file is now open	*/
+	setup();		/* temp file is now open        */
 /*--------------------------------------------------------------*/
 	blenter();
 
 #if defined(SYS_getpid)
-	for (i=0; i < ITER; i++) {
+	for (i = 0; i < ITER; i++) {
 		v1 = getpid();
 		v2 = syscall(SYS_getpid);
 		if (v1 != v2) {
@@ -98,8 +97,8 @@ int main (int argc, char *argv[])
 		}
 	}
 #else
-	fprintf(temp,"\tgetpid syscall failed.\n");
-	fprintf(temp,"\tSYS_getpid not defined\n");
+	fprintf(temp, "\tgetpid syscall failed.\n");
+	fprintf(temp, "\tSYS_getpid not defined\n");
 	local_flag = FAILED;
 #endif
 	blexit();
@@ -107,7 +106,7 @@ int main (int argc, char *argv[])
 	blenter();
 
 #if defined(SYS_getuid) || defined(SYS_getuid32)
-	for (i=0; i < ITER; i++) {
+	for (i = 0; i < ITER; i++) {
 		v1 = getuid();
 #if defined(SYS_getuid)
 		v2 = syscall(SYS_getuid);
@@ -122,16 +121,16 @@ int main (int argc, char *argv[])
 		}
 	}
 #else
-	 fprintf(temp,"\tgetuid syscall failed.\n");
-         fprintf(temp,"\tSYS_getuid and SYS_getuid32 not defined\n");
-         local_flag = FAILED;
+	fprintf(temp, "\tgetuid syscall failed.\n");
+	fprintf(temp, "\tSYS_getuid and SYS_getuid32 not defined\n");
+	local_flag = FAILED;
 #endif
 	blexit();
 /*--------------------------------------------------------------*/
 	blenter();
 
 #if defined(SYS_getgid) || defined(SYS_getgid32)
-	for (i=0; i < ITER; i++) {
+	for (i = 0; i < ITER; i++) {
 		v1 = getgid();
 #if defined(SYS_getgid)
 		v2 = syscall(SYS_getgid);
@@ -146,9 +145,9 @@ int main (int argc, char *argv[])
 		}
 	}
 #else
-	         fprintf(temp,"\tgetgid syscall failed.\n");
-		 fprintf(temp,"\tSYS_getgid and SYS_getgid32 not defined\n");
-                 local_flag = FAILED;
+	fprintf(temp, "\tgetgid syscall failed.\n");
+	fprintf(temp, "\tSYS_getgid and SYS_getgid32 not defined\n");
+	local_flag = FAILED;
 #endif
 
 	blexit();
@@ -157,65 +156,60 @@ int main (int argc, char *argv[])
     /***************************************************************
      * cleanup and exit
      ***************************************************************/
-        cleanup();
+	cleanup();
 
-	anyfail();	/* THIS CALL DOES NOT RETURN - EXITS!!	*/
+	anyfail();		/* THIS CALL DOES NOT RETURN - EXITS!!  */
 	return 0;
 }
+
 /*--------------------------------------------------------------*/
 
 /*****	LTP Port	*****/
 /* functions */
 
-
 void cleanup()
 {
-    /*
-     * print timing stats if that option was specified.
-     * print errno log if that option was specified.
-     */
-    TEST_CLEANUP;
+	/*
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
+	TEST_CLEANUP;
 
-    /* exit with return code appropriate for results */
-    tst_exit();
-}       /* End cleanup() */
-
+	/* exit with return code appropriate for results */
+	tst_exit();
+}				/* End cleanup() */
 
 void setup()
 {
 
-    temp = stderr;
+	temp = stderr;
 
 }
-
 
 int blenter()
 {
-    local_flag = PASSED;
-    return 0;
+	local_flag = PASSED;
+	return 0;
 }
-
 
 int blexit()
 {
-    (local_flag == PASSED) ?
-        tst_resm(TPASS, "Test passed")
-     :  tst_resm(TFAIL, "Test failed");
-    return 0;
+	(local_flag == PASSED) ? tst_resm(TPASS, "Test passed")
+	    : tst_resm(TFAIL, "Test failed");
+	return 0;
 }
 
 int anyfail()
 {
-    tst_exit();
-    return 0;
+	tst_exit();
+	return 0;
 }
 
 void fail_exit()
 {
-     local_flag = FAILED;
-     blexit();
-     anyfail();
+	local_flag = FAILED;
+	blexit();
+	anyfail();
 }
-
 
 /*****	**	**	*****/

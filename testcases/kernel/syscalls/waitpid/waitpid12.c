@@ -70,8 +70,8 @@ int fail;
 
 int main(int argc, char **argv)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	int kid_count, ret_val, status;
 	int i, j, k, found;
@@ -80,13 +80,11 @@ int main(int argc, char **argv)
 	int pid;
 
 	/* parse standard options */
-	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) !=
+	if ((msg = parse_opts(argc, argv, (option_t *) NULL, NULL)) !=
 	    (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-		/*NOTREACHED*/
-	}
-
+	 /*NOTREACHED*/}
 #ifdef UCLINUX
 	maybe_run_child(&do_exit_uclinux, "");
 #endif
@@ -116,11 +114,9 @@ int main(int argc, char **argv)
 				tst_resm(TPASS, "%s PASSED", TCID);
 			}
 			cleanup();
-			/*NOTREACHED*/
-		} else if (pid < 0 ) {
+		 /*NOTREACHED*/} else if (pid < 0) {
 			tst_brkm(TBROK, cleanup, "fork failed");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		/*
 		 * Set up to catch SIGINT.  The kids will wait till a SIGINT
@@ -143,20 +139,17 @@ int main(int argc, char **argv)
 					tst_resm(TFAIL, "self_exec kid %d "
 						 "failed", kid_count);
 					tst_exit();
-					/*NOTREACHED*/
-				}
+				 /*NOTREACHED*/}
 #else
 				do_exit();
 #endif
-				/*NOTREACHED*/
-			}
+			 /*NOTREACHED*/}
 
 			if (ret_val < 0) {
 				tst_resm(TFAIL, "Fork kid %d failed. errno = "
 					 "%d", kid_count, errno);
 				tst_exit();
-				/*NOTREACHED*/
-			}
+			 /*NOTREACHED*/}
 
 			/* parent */
 			fork_kid_pid[kid_count] = ret_val;
@@ -168,22 +161,20 @@ int main(int argc, char **argv)
 			tst_resm(TFAIL, "Expected 0 got %d", ret_val);
 			fail = 1;
 		}
-
 #ifdef UCLINUX
 		/* Give the kids a chance to setup SIGINT again, since this is
 		 * cleared by exec().
 		 */
 		sleep(3);
 #endif
-	
+
 		/* Now send all the kids a SIGINT to tell them to proceed */
 		for (i = 0; i < MAXKIDS; i++) {
 			if (kill(fork_kid_pid[i], SIGINT) < 0) {
 				tst_resm(TFAIL, "Kill of child %d failed, "
 					 "errno = %d", i, errno);
 				tst_exit();
-				/*NOTREACHED*/
-			}
+			 /*NOTREACHED*/}
 		}
 
 		/*
@@ -320,32 +311,27 @@ int main(int argc, char **argv)
 		}
 	}
 
-  return 0;
+	return 0;
 
 }
-
 
 /*
  * setup_sigint()
  *	sets up a SIGINT handler
  */
-void
-setup_sigint(void)
+void setup_sigint(void)
 {
-	if ((sig_t)signal(SIGINT, inthandlr) == SIG_ERR) {
-		tst_resm(TFAIL, "signal SIGINT failed, errno = %d",
-			 errno);
+	if ((sig_t) signal(SIGINT, inthandlr) == SIG_ERR) {
+		tst_resm(TFAIL, "signal SIGINT failed, errno = %d", errno);
 		tst_exit();
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 }
 
 /*
  * setup()
  *	performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -361,8 +347,7 @@ setup(void)
  *	performs all ONE TIME cleanup for this test at
  *	completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -372,17 +357,14 @@ cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}
 
-void
-inthandlr()
+void inthandlr()
 {
 	intintr++;
 }
 
-void
-wait_for_parent()
+void wait_for_parent()
 {
 	int testvar;
 
@@ -391,8 +373,7 @@ wait_for_parent()
 	}
 }
 
-void
-do_exit()
+void do_exit()
 {
 	wait_for_parent();
 	exit(3);
@@ -403,8 +384,7 @@ do_exit()
  * do_exit_uclinux()
  *	Sets up SIGINT handler again, then calls do_exit
  */
-void
-do_exit_uclinux()
+void do_exit_uclinux()
 {
 	setup_sigint();
 	do_exit();

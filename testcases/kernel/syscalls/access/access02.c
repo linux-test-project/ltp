@@ -41,11 +41,11 @@
  *   Loop if the proper options are given.
  *   Execute system call
  *   Check return code, if system call failed (return=-1)
- *   	Log the errno and Issue a FAIL message.
+ *	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call
+ *	Verify the Functionality of system call
  *      if successful,
- *      	Issue Functionality-Pass message.
+ *		Issue Functionality-Pass message.
  *      Otherwise,
  *		Issue Functionality-Fail message.
  *  Cleanup:
@@ -90,8 +90,8 @@
 #define FILE_MODE	S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
 #define EXE_MODE	0777
 
-char *TCID="access02";		/* Test program identifier.    */
-int TST_TOTAL=4;		/* Total number of test cases. */
+char *TCID = "access02";	/* Test program identifier.    */
+int TST_TOTAL = 4;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 int fd1, fd2, fd4;		/* file descriptor for testfile(s) */
 char nobody_uid[] = "nobody";
@@ -100,19 +100,20 @@ struct passwd *ltpuser;
 int setup1();			/* setup() to test access() for R_OK */
 int setup2();			/* setup() to test access() for W_OK */
 int setup3();			/* setup() to test access() for X_OK */
-int setup4();			/* setup() to test access() on symlink file*/
+int setup4();			/* setup() to test access() on symlink file */
 
 struct test_case_t {		/* test case structure */
 	char *pathname;
 	int a_mode;
 	char *desc;
-	int (*setupfunc)();
+	int (*setupfunc) ();
 } Test_cases[] = {
-	{ TEST_FILE1, R_OK, "Read Access (R_OK)", setup1 },
-	{ TEST_FILE2, W_OK, "Write Access (W_OK)", setup2 },
-	{ TEST_FILE3, X_OK, "Execute Access (X_OK)", setup3 },
-	{ SYM_FILE, W_OK, "Symlink file", setup4 },
-	{ NULL, 0, NULL, 0 }
+	{
+	TEST_FILE1, R_OK, "Read Access (R_OK)", setup1}, {
+	TEST_FILE2, W_OK, "Write Access (W_OK)", setup2}, {
+	TEST_FILE3, X_OK, "Execute Access (X_OK)", setup3}, {
+	SYM_FILE, W_OK, "Symlink file", setup4}, {
+	NULL, 0, NULL, 0}
 };
 
 void setup();			/* Main setup function of test */
@@ -122,8 +123,7 @@ int Access_verify(int, int);	/*
 				 * of test file(s).
 				 */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	int ind;		/* counter for testcase looping */
@@ -135,7 +135,7 @@ main(int ac, char **av)
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -146,7 +146,7 @@ main(int ac, char **av)
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		for (ind = 0; ind < TST_TOTAL; ind++) {
 			file_name = Test_cases[ind].pathname;
@@ -190,15 +190,14 @@ main(int ac, char **av)
 			} else {
 				tst_resm(TPASS, "call succeeded");
 			}
-		}	/* Test Case Looping */
-	}	/* End for TEST_LOOPING */
+		}		/* Test Case Looping */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
 	return 0;
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -206,10 +205,9 @@ main(int ac, char **av)
  *  Create a temporary directory and change directory to it.
  *  Call individual test specific setup functions.
  */
-void
-setup()
+void setup()
 {
-	int ind;			/* counter for testsetup functions */
+	int ind;		/* counter for testsetup functions */
 
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -220,12 +218,10 @@ setup()
 	}
 	ltpuser = getpwnam(nobody_uid);
 	if (setuid(ltpuser->pw_uid) == -1) {
-        	tst_resm(TINFO, "setuid failed to "
-	                 "to set the effective uid to %d",
-	                 ltpuser->pw_uid);
-	        perror("setuid");
+		tst_resm(TINFO, "setuid failed to "
+			 "to set the effective uid to %d", ltpuser->pw_uid);
+		perror("setuid");
 	}
-
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
@@ -246,13 +242,12 @@ setup()
  *   Creat/open a testfile and write some data into it.
  *   This function returns 0.
  */
-int
-setup1()
+int setup1()
 {
 	char write_buf[] = "abc";
 
 	/* Creat a test file under above directory created */
-	if ((fd1 = open(TEST_FILE1, O_RDWR|O_CREAT, FILE_MODE)) == -1) {
+	if ((fd1 = open(TEST_FILE1, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %#o) Failed, errno=%d :%s",
 			 TEST_FILE1, FILE_MODE, errno, strerror(errno));
@@ -275,11 +270,10 @@ setup1()
  *   Creat/open a testfile for writing under temporary directory.
  *   This function returns 0.
  */
-int
-setup2()
+int setup2()
 {
 	/* Creat a test file under temporary directory */
-	if ((fd2 = open(TEST_FILE2, O_RDWR|O_CREAT, FILE_MODE)) == -1) {
+	if ((fd2 = open(TEST_FILE2, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %#o) Failed, errno=%d :%s",
 			 TEST_FILE2, FILE_MODE, errno, strerror(errno));
@@ -295,8 +289,7 @@ setup2()
  *   Creat/open a testfile and provide execute permissions to it.
  *   This function returns 0.
  */
-int
-setup3()
+int setup3()
 {
 	int fd3;		/* File handle for test file */
 #ifdef UCLINUX
@@ -304,16 +297,15 @@ setup3()
 #endif
 
 	/* Creat a test file under temporary directory */
-	if ((fd3 = open(TEST_FILE3, O_RDWR|O_CREAT, FILE_MODE)) == -1) {
+	if ((fd3 = open(TEST_FILE3, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %#o) Failed, errno=%d :%s",
 			 TEST_FILE3, FILE_MODE, errno, strerror(errno));
 	}
-
 #ifdef UCLINUX
 	if (write(fd3, exechead, sizeof(exechead)) < 0) {
 		tst_brkm(TBROK, cleanup, "write(%s) Failed, errno=%d : %s",
-		TEST_FILE3, errno, strerror(errno));
+			 TEST_FILE3, errno, strerror(errno));
 	}
 #endif
 
@@ -340,16 +332,14 @@ setup3()
  *   Creat a symbolic link of temporary file.
  *   This function returns 0.
  */
-int
-setup4()
+int setup4()
 {
 	/* Creat a temporary  file under temporary directory */
-	if ((fd4 = open(TEMP_FILE, O_RDWR|O_CREAT, FILE_MODE)) == -1) {
+	if ((fd4 = open(TEMP_FILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %#o) Failed, errno=%d :%s",
 			 TEMP_FILE, FILE_MODE, errno, strerror(errno));
 	}
-
 
 	/* Creat a symbolic link for temporary file */
 	if (symlink(TEMP_FILE, SYM_FILE) < 0) {
@@ -370,53 +360,52 @@ setup4()
  *	any verification is false.
  *	Otherwise, returns the already set fflag value.
  */
-int
-Access_verify(int ind, int fflag)
+int Access_verify(int ind, int fflag)
 {
 	char write_buf[] = "abc";
 	char read_buf[BUFSIZ];
 
 	switch (ind) {
-	case 0:	/*
-		 * The specified file has read access.
-		 * Attempt to read some data from the testfile
-		 * and if successful, access() behaviour is
-		 * correct.
-		 */
+	case 0:		/*
+			 * The specified file has read access.
+			 * Attempt to read some data from the testfile
+			 * and if successful, access() behaviour is
+			 * correct.
+			 */
 		if (read(fd1, &read_buf, sizeof(read_buf)) < 0) {
 			tst_resm(TFAIL, "read() fails on %s, errno=%d : %s",
 				 TEST_FILE1, errno, strerror(errno));
 			fflag = 0;
 		}
 		break;
-	case 1: /*
-		 * The specified file has write access.
-		 * Attempt to write some data to the testfile
-		 * and if successful, access() behaviour is correct.
-		 */
+	case 1:		/*
+			 * The specified file has write access.
+			 * Attempt to write some data to the testfile
+			 * and if successful, access() behaviour is correct.
+			 */
 		if (write(fd2, write_buf, strlen(write_buf)) < 0) {
 			tst_resm(TFAIL, "write() fails on %s, errno=%d : %s",
 				 TEST_FILE2, errno, strerror(errno));
 			fflag = 0;
 		}
 		break;
-	case 2: /*
-		 * The specified file has execute access.
-		 * Attempt to execute the specified executable
-		 * file, if successful, access() behaviour is correct.
-		 */
-		if (system("./"TEST_FILE3) != 0) {
+	case 2:		/*
+			 * The specified file has execute access.
+			 * Attempt to execute the specified executable
+			 * file, if successful, access() behaviour is correct.
+			 */
+		if (system("./" TEST_FILE3) != 0) {
 			tst_resm(TFAIL, "Fail to execute the %s", TEST_FILE3);
 			fflag = 0;
 		}
 		break;
-	case 3:	/*
-		 * The file pointed to by symbolic link has
-		 * write access.
-		 * Attempt to write some data to this temporary file
-		 * pointed to by symlink. if successful, access() bahaviour
-		 * is correct.
-		 */
+	case 3:		/*
+			 * The file pointed to by symbolic link has
+			 * write access.
+			 * Attempt to write some data to this temporary file
+			 * pointed to by symlink. if successful, access() bahaviour
+			 * is correct.
+			 */
 		if (write(fd4, write_buf, strlen(write_buf)) < 0) {
 			tst_resm(TFAIL, "write() fails on %s, errno=%d : %s",
 				 TEMP_FILE, errno, strerror(errno));
@@ -427,17 +416,16 @@ Access_verify(int ind, int fflag)
 		break;
 	}
 
-	return(fflag);
+	return (fflag);
 }
-		
+
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  *
  *  Remove the test directory and testfile created in the setup.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

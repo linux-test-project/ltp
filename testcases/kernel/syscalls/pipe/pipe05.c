@@ -53,7 +53,7 @@ char *TCID = "pipe05";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-int exp_enos[] = {EFAULT, 0};
+int exp_enos[] = { EFAULT, 0 };
 
 intptr_t pipes;
 void setup(void);
@@ -61,18 +61,16 @@ void cleanup(void);
 jmp_buf sig11_recover;
 void sig11_handler(int sig);
 
-
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	struct sigaction sa, osa;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	setup();
 
@@ -82,21 +80,21 @@ int main(int ac, char **av)
 
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
-                /* special sig11 case */
-                sa.sa_handler = &sig11_handler;
-                sigemptyset(&sa.sa_mask);
-                sa.sa_flags = 0;
+		/* special sig11 case */
+		sa.sa_handler = &sig11_handler;
+		sigemptyset(&sa.sa_mask);
+		sa.sa_flags = 0;
 
-                sigaction(SIGSEGV, NULL, &osa);
-                sigaction(SIGSEGV, &sa, NULL);
+		sigaction(SIGSEGV, NULL, &osa);
+		sigaction(SIGSEGV, &sa, NULL);
 
-                if (setjmp(sig11_recover)) {
-                    TEST_RETURN = -1;
-                    TEST_ERRNO = EFAULT;
-                } else {
-		TEST(pipe((int *)pipes));
-                }
-                sigaction(SIGSEGV, &osa, NULL);
+		if (setjmp(sig11_recover)) {
+			TEST_RETURN = -1;
+			TEST_ERRNO = EFAULT;
+		} else {
+			TEST(pipe((int *)pipes));
+		}
+		sigaction(SIGSEGV, &osa, NULL);
 
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "call succeeded unexpectedly");
@@ -111,7 +109,7 @@ int main(int ac, char **av)
 		} else {
 			tst_resm(TPASS, "expected failure - "
 				 "errno = %d : %s", TEST_ERRNO,
-	 			 strerror(TEST_ERRNO));
+				 strerror(TEST_ERRNO));
 		}
 
 	}
@@ -122,8 +120,7 @@ int main(int ac, char **av)
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -131,22 +128,20 @@ setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 }
+
 /******************************************************************
  * sig11_handler() - our segfault recover hack
  ******************************************************************/
-void
-sig11_handler(int sig)
+void sig11_handler(int sig)
 {
-    longjmp(sig11_recover, 1);
+	longjmp(sig11_recover, 1);
 }
-
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -157,4 +152,3 @@ cleanup()
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

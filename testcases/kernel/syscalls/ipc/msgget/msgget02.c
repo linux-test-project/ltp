@@ -67,33 +67,34 @@ int TST_TOTAL = 3;
 extern int Tst_count;
 
 struct test_case_t {
-        int error;     
-        int msgkey;
-        int flags;
+	int error;
+	int msgkey;
+	int flags;
 } TC[] = {
-        {EEXIST, 0, IPC_CREAT | IPC_EXCL},
-        {ENOENT, 1, IPC_PRIVATE},
-        {ENOENT, 1, IPC_EXCL}
+	{
+	EEXIST, 0, IPC_CREAT | IPC_EXCL}, {
+	ENOENT, 1, IPC_PRIVATE}, {
+	ENOENT, 1, IPC_EXCL}
 };
 
-int exp_enos[] = {EEXIST, ENOENT, 0};
+int exp_enos[] = { EEXIST, ENOENT, 0 };
 
 key_t msgkey1;
 int msg_q_1 = -1;		/* The message queue id created in setup */
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int i;
 	key_t key;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -103,7 +104,7 @@ int main(int ac, char **av)
 
 		/* loop through the test cases */
 
-		for (i=0; i<TST_TOTAL; i++) {
+		for (i = 0; i < TST_TOTAL; i++) {
 
 			if (TC[i].msgkey == 0)
 				key = msgkey;
@@ -120,18 +121,16 @@ int main(int ac, char **av)
 
 			TEST_ERROR_LOG(TEST_ERRNO);
 
-			switch(TEST_ERRNO) {
+			switch (TEST_ERRNO) {
 			case ENOENT:
-				/*FALLTHROUGH*/
-			case EEXIST:
+			 /*FALLTHROUGH*/ case EEXIST:
 				if (TEST_ERRNO == TC[i].error) {
 					tst_resm(TPASS, "expected failure - "
-					 	 "errno = %d : %s", TEST_ERRNO,
-					 	 strerror(TEST_ERRNO));
+						 "errno = %d : %s", TEST_ERRNO,
+						 strerror(TEST_ERRNO));
 					break;
 				}
-				/*FALLTHROUGH*/
-			default:
+			/*FALLTHROUGH*/ default:
 				tst_resm(TFAIL, "call failed with an "
 					 "unexpected error - %d : %s",
 					 TEST_ERRNO, strerror(TEST_ERRNO));
@@ -142,15 +141,13 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -173,9 +170,9 @@ setup(void)
 
 	/* now we have a key, so let's create a message queue */
 	if ((msg_q_1 = msgget(msgkey, IPC_CREAT | IPC_EXCL)) == -1) {
-		system ("ipcs > /tmp/toto");
-		system ("ps -aux >> /tmp/toto");
-		tst_brkm(TBROK, cleanup, "Can't create message queue" );
+		system("ipcs > /tmp/toto");
+		system("ps -aux >> /tmp/toto");
+		tst_brkm(TBROK, cleanup, "Can't create message queue");
 	}
 }
 
@@ -183,8 +180,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/* if it exists, remove the message queue that was created. */
 	rm_queue(msg_q_1);
@@ -201,4 +197,3 @@ cleanup(void)
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

@@ -19,17 +19,17 @@
 
 /*
  * NAME
- * 	fcntl16.c
+ *	fcntl16.c
  *
  * DESCRIPTION
- * 	Additional file locking test cases for checking proper notifictaion
- * 	of processes on lock change
+ *	Additional file locking test cases for checking proper notifictaion
+ *	of processes on lock change
  *
  * ALGORITHM
- * 	Various test cases are used to lock a file opened without mandatory
- * 	locking, with madatory locking and mandatory locking with NOBLOCK.
- * 	Checking that processes waiting on lock boundaries are notified
- * 	properly when boundaries change
+ *	Various test cases are used to lock a file opened without mandatory
+ *	locking, with madatory locking and mandatory locking with NOBLOCK.
+ *	Checking that processes waiting on lock boundaries are notified
+ *	properly when boundaries change
  *
  * USAGE
  *	fcntl16
@@ -39,7 +39,7 @@
  *	04/2002 wjhuie sigset cleanups
  *
  * RESTRICTIONS
- * 	None
+ *	None
  */
 
 #include <fcntl.h>
@@ -52,7 +52,7 @@
 #include <sys/wait.h>
 
 #define SKIPVAL 0x0f00
-//#define	SKIP	SKIPVAL, 0, 0L, 0L, IGNORED
+//#define       SKIP    SKIPVAL, 0, 0L, 0L, IGNORED
 #define SKIP 0,0,0L,0L,0
 #if (SKIPVAL == F_RDLCK) || (SKIPVAL == F_WRLCK)
 #error invalid SKIP, must not be F_RDLCK or F_WRLCK
@@ -64,226 +64,226 @@
 #define	TIME_OUT	10
 
 typedef struct {
-	short	type;
-	short	whence;
-	long	start;
-	long	len;
-	short	flag;
+	short type;
+	short whence;
+	long start;
+	long len;
+	short flag;
 } lock;
 
 typedef struct {
-	lock	parent_a;
-	lock	parent_b;
-	lock	child_a;
-	lock	child_b;
-	lock	parent_c;
-	lock	parent_d;
+	lock parent_a;
+	lock parent_b;
+	lock child_a;
+	lock child_b;
+	lock parent_c;
+	lock parent_d;
 } testcase;
 
 static testcase testcases[] = {
 	/* #1 Parent_a making a write lock on entire file */
-	{ {F_WRLCK, 0, 0L, 0L, IGNORED},
-		/* Parent_b skipped */
-		{SKIP},
-			/* Child_a read lock on byte 1 to byte 5 */
-			{F_RDLCK, 0, 0L, 5L, NOBLOCK},
-				/* Child_b read lock on byte 6 to byte 10 */
-				{F_RDLCK, 0, 6L, 5L, NOBLOCK},
-					/*
-					 * Parent_c read lock on entire file
-					 */
-					{F_RDLCK, 0, 0L, 0L, IGNORED},
-						/* Parent_d skipped */
-						{SKIP},},
+	{{F_WRLCK, 0, 0L, 0L, IGNORED},
+	 /* Parent_b skipped */
+	 {SKIP},
+	 /* Child_a read lock on byte 1 to byte 5 */
+	 {F_RDLCK, 0, 0L, 5L, NOBLOCK},
+	 /* Child_b read lock on byte 6 to byte 10 */
+	 {F_RDLCK, 0, 6L, 5L, NOBLOCK},
+	 /*
+	  * Parent_c read lock on entire file
+	  */
+	 {F_RDLCK, 0, 0L, 0L, IGNORED},
+	 /* Parent_d skipped */
+	 {SKIP},},
 
 	/* #2 Parent_a making a write lock on entire file */
 	{{F_WRLCK, 0, 0L, 0L, IGNORED},
-		/* Parent_b skipped */
-		{SKIP},
-			/* Child_a read lock on byte 1 to byte 5 */
-			{F_RDLCK, 0, 0L, 5L, WILLBLOCK},
-				/* Child_b read lock on byte 6 to byte 10 */
-				{F_RDLCK, 0, 6L, 5L, WILLBLOCK},
-					/*
-					 * Parent_c write lock on entire
-					 * file
-					 */
-					{F_WRLCK, 0, 0L, 0L, IGNORED},
-						/* Parent_d skipped */
-						{SKIP},},
+	 /* Parent_b skipped */
+	 {SKIP},
+	 /* Child_a read lock on byte 1 to byte 5 */
+	 {F_RDLCK, 0, 0L, 5L, WILLBLOCK},
+	 /* Child_b read lock on byte 6 to byte 10 */
+	 {F_RDLCK, 0, 6L, 5L, WILLBLOCK},
+	 /*
+	  * Parent_c write lock on entire
+	  * file
+	  */
+	 {F_WRLCK, 0, 0L, 0L, IGNORED},
+	 /* Parent_d skipped */
+	 {SKIP},},
 
 	/* #3 Parent_a making a write lock on entire file */
 	{{F_WRLCK, 0, 0L, 0L, IGNORED},
-		/* Parent_b skipped */
-		{SKIP},
-			/* Child_a read lock on byte 2 to byte 4 */
-			{F_RDLCK, 0, 2L, 3L, WILLBLOCK},
-				/* Child_b read lock on byte 6 to byte 8 */
-				{F_RDLCK, 0, 6L, 3L, WILLBLOCK},
-					/*
-					 * Parent_c read lock on byte 3 to
-					 * byte 7
-					 */
-					{F_RDLCK, 0, 3L, 5L, IGNORED},
-						/* Parent_d skipped */
-						{SKIP},},
+	 /* Parent_b skipped */
+	 {SKIP},
+	 /* Child_a read lock on byte 2 to byte 4 */
+	 {F_RDLCK, 0, 2L, 3L, WILLBLOCK},
+	 /* Child_b read lock on byte 6 to byte 8 */
+	 {F_RDLCK, 0, 6L, 3L, WILLBLOCK},
+	 /*
+	  * Parent_c read lock on byte 3 to
+	  * byte 7
+	  */
+	 {F_RDLCK, 0, 3L, 5L, IGNORED},
+	 /* Parent_d skipped */
+	 {SKIP},},
 
 	/* #4 Parent_a making a write lock on entire file */
 	{{F_WRLCK, 0, 0L, 0L, IGNORED},
-		/* Parent_b skipped */
-		{SKIP},
-			/* Child_a read lock on byte 2 to byte 4 */
-			{F_RDLCK, 0, 2L, 3L, WILLBLOCK},
-				/* Child_b read lock on byte 6 to byte 8 */
-				{F_RDLCK, 0, 6L, 3L, NOBLOCK},
-					/*
-					 * Parent_c read lock on byte 5 to
-					 * byte 9
-					 */
-					{F_RDLCK, 0, 5L, 5L, IGNORED},
-						/* Parent_d skipped */
-						{SKIP},},
+	 /* Parent_b skipped */
+	 {SKIP},
+	 /* Child_a read lock on byte 2 to byte 4 */
+	 {F_RDLCK, 0, 2L, 3L, WILLBLOCK},
+	 /* Child_b read lock on byte 6 to byte 8 */
+	 {F_RDLCK, 0, 6L, 3L, NOBLOCK},
+	 /*
+	  * Parent_c read lock on byte 5 to
+	  * byte 9
+	  */
+	 {F_RDLCK, 0, 5L, 5L, IGNORED},
+	 /* Parent_d skipped */
+	 {SKIP},},
 
 	/* #5 Parent_a making a write lock on entire file */
 	{{F_WRLCK, 0, 0L, 0L, IGNORED},
-		/* Parent_b skipped */
-		{SKIP},
-			/* Child_a read lock on byte 3 to byte 7 */
-			{F_RDLCK, 0, 3L, 5L, NOBLOCK},
-				/* Child_b read lock on byte 5 to byte 10 */
-				{F_RDLCK, 0, 5L, 6L, WILLBLOCK},
-					/*
-					 * Parent_c read lock on byte 2 to
-					 * byte 8
-					 */
-					{F_RDLCK, 0, 2L, 7L, IGNORED},
-						/* Parent_d skipped */
-						{SKIP},},
+	 /* Parent_b skipped */
+	 {SKIP},
+	 /* Child_a read lock on byte 3 to byte 7 */
+	 {F_RDLCK, 0, 3L, 5L, NOBLOCK},
+	 /* Child_b read lock on byte 5 to byte 10 */
+	 {F_RDLCK, 0, 5L, 6L, WILLBLOCK},
+	 /*
+	  * Parent_c read lock on byte 2 to
+	  * byte 8
+	  */
+	 {F_RDLCK, 0, 2L, 7L, IGNORED},
+	 /* Parent_d skipped */
+	 {SKIP},},
 
 	/* #6 Parent_a making a write lock on entire file */
 	{{F_WRLCK, 0, 0L, 0L, IGNORED},
-		/* Parent_b skipped */
-		{SKIP},
-			/* Child_a read lock on byte 2 to byte 4 */
-			{F_RDLCK, 0, 2L, 3L, WILLBLOCK},
-				/* Child_b write lock on byte 6 to byte 8 */
-				{F_RDLCK, 0, 6L, 3L, NOBLOCK},
-					/* Parent_c no lock on byte 3 to 9 */
-					{F_UNLCK, 0, 3L, 7L, IGNORED},
-						/* Parent_d skipped */
-						{SKIP},},
+	 /* Parent_b skipped */
+	 {SKIP},
+	 /* Child_a read lock on byte 2 to byte 4 */
+	 {F_RDLCK, 0, 2L, 3L, WILLBLOCK},
+	 /* Child_b write lock on byte 6 to byte 8 */
+	 {F_RDLCK, 0, 6L, 3L, NOBLOCK},
+	 /* Parent_c no lock on byte 3 to 9 */
+	 {F_UNLCK, 0, 3L, 7L, IGNORED},
+	 /* Parent_d skipped */
+	 {SKIP},},
 
 	/* #7 Parent_a making a write lock on entire file */
 	{{F_WRLCK, 0, 0L, 0L, IGNORED},
-		/* Parent_b read lock on byte 3 to byte 7 */
-		{F_RDLCK, 0, 3L, 5L, IGNORED},
-			/* Child_a read lock on byte 2 to byte 4 */
-			{F_RDLCK, 0, 2L, 3L, NOBLOCK},
-				/* Child_b read lock on byte 6 to byte 8 */
-				{F_RDLCK, 0, 6L, 3L, NOBLOCK},
-					/*
-					 * Parent_c read lock on byte 1 to
-					 * byte 9
-					 */
-					{F_RDLCK, 0, 1L, 9L, IGNORED},
-						/* Parent_d skipped */
-						{SKIP},},
+	 /* Parent_b read lock on byte 3 to byte 7 */
+	 {F_RDLCK, 0, 3L, 5L, IGNORED},
+	 /* Child_a read lock on byte 2 to byte 4 */
+	 {F_RDLCK, 0, 2L, 3L, NOBLOCK},
+	 /* Child_b read lock on byte 6 to byte 8 */
+	 {F_RDLCK, 0, 6L, 3L, NOBLOCK},
+	 /*
+	  * Parent_c read lock on byte 1 to
+	  * byte 9
+	  */
+	 {F_RDLCK, 0, 1L, 9L, IGNORED},
+	 /* Parent_d skipped */
+	 {SKIP},},
 
 	/* #8 Parent_a making a write lock on byte 2 to byte 4 */
 	{{F_WRLCK, 0, 2L, 3L, IGNORED},
-		/* Parent_b write lock on byte 6 to byte 8 */
-		{F_WRLCK, 0, 6L, 3L, IGNORED},
-			/* Child_a read lock on byte 3 to byte 7 */
-			{F_RDLCK, 0, 3L, 5L, NOBLOCK},
-				/* Child_b skipped */
-				{SKIP},
-					/*
-					 * Parent_c read lock on byte 1 to
-					 * byte 5
-					 */
-					{F_RDLCK, 0, 1L, 5L, IGNORED},
-						/*
-						 * Parent_d read lock on
-						 * byte 5 to byte 9
-						 */
-						{F_RDLCK, 0, 5L, 5L,
-							IGNORED},},
+	 /* Parent_b write lock on byte 6 to byte 8 */
+	 {F_WRLCK, 0, 6L, 3L, IGNORED},
+	 /* Child_a read lock on byte 3 to byte 7 */
+	 {F_RDLCK, 0, 3L, 5L, NOBLOCK},
+	 /* Child_b skipped */
+	 {SKIP},
+	 /*
+	  * Parent_c read lock on byte 1 to
+	  * byte 5
+	  */
+	 {F_RDLCK, 0, 1L, 5L, IGNORED},
+	 /*
+	  * Parent_d read lock on
+	  * byte 5 to byte 9
+	  */
+	 {F_RDLCK, 0, 5L, 5L,
+	  IGNORED},},
 
 	/* #9 Parent_a making a write lock on entire file */
 	{{F_WRLCK, 0, 0L, 0L, IGNORED},
-		/* Parent_b read lock on byte 3 to byte 7 */
-		{F_RDLCK, 0, 3L, 5L, IGNORED},
-			/* Child_a read lock on byte 2 to byte 4 */
-			{F_RDLCK, 0, 2L, 3L, NOBLOCK},
-				/* Child_b read lock on byte 6 to byte 8 */
-				{F_RDLCK, 0, 6L, 3L, NOBLOCK},
-					/*
-					 * Parent_c read lock on byte 1 to
-					 * byte 3
-					 */
-					{F_RDLCK, 0, 1L, 3L, IGNORED},
-						/*
-						 * Parent_d read lock on
-						 * byte 7 to byte 9
-						 */
-						{F_RDLCK, 0, 7L, 3L,
-							IGNORED},},
+	 /* Parent_b read lock on byte 3 to byte 7 */
+	 {F_RDLCK, 0, 3L, 5L, IGNORED},
+	 /* Child_a read lock on byte 2 to byte 4 */
+	 {F_RDLCK, 0, 2L, 3L, NOBLOCK},
+	 /* Child_b read lock on byte 6 to byte 8 */
+	 {F_RDLCK, 0, 6L, 3L, NOBLOCK},
+	 /*
+	  * Parent_c read lock on byte 1 to
+	  * byte 3
+	  */
+	 {F_RDLCK, 0, 1L, 3L, IGNORED},
+	 /*
+	  * Parent_d read lock on
+	  * byte 7 to byte 9
+	  */
+	 {F_RDLCK, 0, 7L, 3L,
+	  IGNORED},},
 
 	/* #10 Parent_a making a write lock on entire file */
 	{{F_WRLCK, 0, 0L, 0L, IGNORED},
-		/* Parent_b skipped */
-		{SKIP},
-			/* Child_a read lock on byte 2 to byte 4 */
-			{F_RDLCK, 0, 2L, 3L, NOBLOCK},
-				/* Child_b read lock on byte 6 to byte 8 */
-				{F_RDLCK, 0, 6L, 3L, NOBLOCK},
-					/*
-					 * Parent_c read lock on byte 1 to
-					 * byte 7
-					 */
-					{F_RDLCK, 0, 1L, 7L, IGNORED},
-						/*
-						 * Parent_d read lock on
-						 * byte 3 to byte 9
-						 */
-						{F_RDLCK, 0, 3L, 7L,
-							IGNORED},},
+	 /* Parent_b skipped */
+	 {SKIP},
+	 /* Child_a read lock on byte 2 to byte 4 */
+	 {F_RDLCK, 0, 2L, 3L, NOBLOCK},
+	 /* Child_b read lock on byte 6 to byte 8 */
+	 {F_RDLCK, 0, 6L, 3L, NOBLOCK},
+	 /*
+	  * Parent_c read lock on byte 1 to
+	  * byte 7
+	  */
+	 {F_RDLCK, 0, 1L, 7L, IGNORED},
+	 /*
+	  * Parent_d read lock on
+	  * byte 3 to byte 9
+	  */
+	 {F_RDLCK, 0, 3L, 7L,
+	  IGNORED},},
 
 	/* #11 Parent_a making a write lock on entire file */
 	{{F_WRLCK, 0, 0L, 0L, IGNORED},
-		/* Parent_b skipped */
-		{SKIP},
-			/* Child_a read lock on byte 3 to byte 7 */
-			{F_RDLCK, 0, 3L, 5L, NOBLOCK},
-				/* Child_b read lock on byte 3 to byte 7 */
-				{F_RDLCK, 0, 3L, 5L, NOBLOCK},
-					/*
-					 * Parent_c read lock on byte 3 to
-					 * byte 7
-					 */
-					{F_RDLCK, 0, 3L, 5L, IGNORED},
-						/* Parent_d skipped */
-						{SKIP},},
+	 /* Parent_b skipped */
+	 {SKIP},
+	 /* Child_a read lock on byte 3 to byte 7 */
+	 {F_RDLCK, 0, 3L, 5L, NOBLOCK},
+	 /* Child_b read lock on byte 3 to byte 7 */
+	 {F_RDLCK, 0, 3L, 5L, NOBLOCK},
+	 /*
+	  * Parent_c read lock on byte 3 to
+	  * byte 7
+	  */
+	 {F_RDLCK, 0, 3L, 5L, IGNORED},
+	 /* Parent_d skipped */
+	 {SKIP},},
 };
 
-static	testcase	*thiscase;
-static	lock		*thislock;
-static	int		parent;
-static	int		child_flag1 = 0;
-static	int		child_flag2 = 0;
-static	int		parent_flag = 0;
-static	int		alarm_flag = 0;
-static	int		child_pid[2], flag[2];
-static	int		fd;
-static	int		test;
-static	char		tmpname[40];
+static testcase *thiscase;
+static lock *thislock;
+static int parent;
+static int child_flag1 = 0;
+static int child_flag2 = 0;
+static int parent_flag = 0;
+static int alarm_flag = 0;
+static int child_pid[2], flag[2];
+static int fd;
+static int test;
+static char tmpname[40];
 
 #define	FILEDATA	"tenbytes!"
 
-extern	void	catch_usr1();		/* signal catching subroutine */
-extern	void	catch_usr2();		/* signal catching subroutine */
-extern	void	catch_int();		/* signal catching subroutine */
-extern	void	catch_alarm();		/* signal catching subroutine */
+extern void catch_usr1();	/* signal catching subroutine */
+extern void catch_usr2();	/* signal catching subroutine */
+extern void catch_int();	/* signal catching subroutine */
+extern void catch_alarm();	/* signal catching subroutine */
 
 char *TCID = "fcntl16";
 int TST_TOTAL = 1;
@@ -295,10 +295,9 @@ static char *argv0;
 
 /*
  * cleanup - performs all the ONE TIME cleanup for this test at completion or
- * 	premature exit
+ *	premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	TEST_CLEANUP;
 
@@ -307,13 +306,12 @@ cleanup(void)
 	tst_exit();
 }
 
-
 void dochild(int kid)
 {
 	/* child process */
 	struct sigaction sact;
-	sact.sa_flags=0;
-	sact.sa_handler=catch_int;
+	sact.sa_flags = 0;
+	sact.sa_handler = catch_int;
 	(void)sigaction(SIGUSR1, &sact, NULL);
 
 	/* Lock should succeed after blocking and parent releases lock */
@@ -351,27 +349,24 @@ void dochild(int kid)
 		}
 	}
 	exit(0);
-}					/* end of child process */
+}				/* end of child process */
 
 #ifdef UCLINUX
 static int kid_uc;
 
-void
-dochild_uc()
+void dochild_uc()
 {
 	dochild(kid_uc);
 }
 #endif
 
-void
-catch_alarm()
+void catch_alarm()
 {
 	alarm_flag = 1;
 }
 
-void
-catch_usr1()				/* invoked on catching SIGUSR1 */
-{
+void catch_usr1()
+{				/* invoked on catching SIGUSR1 */
 	/*
 	 * Set flag to let parent know that child #1 is ready to have the
 	 * lock removed
@@ -379,9 +374,8 @@ catch_usr1()				/* invoked on catching SIGUSR1 */
 	child_flag1 = 1;
 }
 
-void
-catch_usr2()				/* invoked on catching SIGUSR2 */
-{
+void catch_usr2()
+{				/* invoked on catching SIGUSR2 */
 	/*
 	 * Set flag to let parent know that child #2 is ready to have the
 	 * lock removed
@@ -389,9 +383,8 @@ catch_usr2()				/* invoked on catching SIGUSR2 */
 	child_flag2 = 1;
 }
 
-void
-catch_int()				/* invoked on child catching SIGUSR1 */
-{
+void catch_int()
+{				/* invoked on child catching SIGUSR1 */
 	/*
 	 * Set flag to interrupt fcntl call in child and force a controlled
 	 * exit
@@ -416,8 +409,7 @@ void child_sig(int sig, int nkids)
 /*
  * setup - performs all ONE TIME steup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	struct sigaction sact;
 
@@ -440,26 +432,25 @@ setup(void)
 	 * Set up signal handling functions
 	 */
 	memset(&sact, 0, sizeof(sact));
-        sact.sa_handler = catch_usr1;
+	sact.sa_handler = catch_usr1;
 	sigemptyset(&sact.sa_mask);
 	sigaddset(&sact.sa_mask, SIGUSR1);
 	sigaction(SIGUSR1, &sact, NULL);
 
 	memset(&sact, 0, sizeof(sact));
-        sact.sa_handler = catch_usr2;
+	sact.sa_handler = catch_usr2;
 	sigemptyset(&sact.sa_mask);
 	sigaddset(&sact.sa_mask, SIGUSR2);
 	sigaction(SIGUSR2, &sact, NULL);
 
 	memset(&sact, 0, sizeof(sact));
-        sact.sa_handler = catch_alarm;
+	sact.sa_handler = catch_alarm;
 	sigemptyset(&sact.sa_mask);
 	sigaddset(&sact.sa_mask, SIGALRM);
 	sigaction(SIGALRM, &sact, NULL);
 }
 
-int
-run_test(int file_flag, int file_mode, int start, int end)
+int run_test(int file_flag, int file_mode, int start, int end)
 {
 	int child_count;
 	int child;
@@ -467,15 +458,13 @@ run_test(int file_flag, int file_mode, int start, int end)
 	int status, expect_stat;
 	int i, fail = 0;
 
-
 	/* loop through all test cases */
 	for (test = start; test < end; test++) {
 		/* open a temp file to lock */
 		fd = open(tmpname, file_flag, file_mode);
 		if (fd < 0) {
 			tst_brkm(TBROK, cleanup, "open failed");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		/* write some dummy data to the file */
 		(void)write(fd, FILEDATA, 10);
@@ -496,7 +485,7 @@ run_test(int file_flag, int file_mode, int start, int end)
 		/* Initialize second parent lock structure */
 		thislock = &thiscase->parent_b;
 
-		if ((thislock->type) != IGNORED) { /*SKIPVAL */
+		if ((thislock->type) != IGNORED) {	/*SKIPVAL */
 			/* set the second parent lock */
 			if ((fcntl(fd, F_SETLK, thislock)) < 0) {
 				tst_resm(TFAIL, "Second parent lock failed");
@@ -579,7 +568,7 @@ run_test(int file_flag, int file_mode, int start, int end)
 		/* Initialize fourth parent lock structure */
 		thislock = &thiscase->parent_d;
 
-		if ((thislock->type) != IGNORED) { /*SKIPVAL */
+		if ((thislock->type) != IGNORED) {	/*SKIPVAL */
 			/* set the fourth parent lock */
 			if ((fcntl(fd, F_SETLK, thislock)) < 0) {
 				tst_resm(TINFO, "Fourth parent lock failed");
@@ -670,21 +659,20 @@ run_test(int file_flag, int file_mode, int start, int end)
 int main(int ac, char **av)
 {
 
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
-
 #ifdef UCLINUX
 	maybe_run_child(dochild_uc, "ddddd", &kid_uc, &parent, &test,
 			&thislock, &fd);
 	argv0 = av[0];
 #endif
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -741,4 +729,3 @@ int main(int ac, char **av)
 	cleanup();
 	return 0;
 }
-

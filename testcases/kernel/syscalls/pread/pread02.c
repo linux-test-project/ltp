@@ -78,8 +78,8 @@
 #define K1              1024
 #define NBUFS           4
 
-char *TCID="pread02";		/* Test program identifier.    */
-int TST_TOTAL=2;		/* Total number of test cases. */
+char *TCID = "pread02";		/* Test program identifier.    */
+int TST_TOTAL = 2;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 char *write_buf[NBUFS];		/* buffer to hold data to be written */
@@ -87,7 +87,7 @@ char *read_buf[NBUFS];		/* buffer to hold data read from file */
 int pfd[2];			/* pair of file descriptors */
 int fd1;			/* file descriptor of temporary file */
 
-int exp_enos[] = {ESPIPE, EINVAL, 0};
+int exp_enos[] = { ESPIPE, EINVAL, 0 };
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
@@ -96,21 +96,21 @@ int setup2();			/* setup function for test #2 */
 int no_setup();
 void init_buffers();		/* function to initialize/allocate buffers */
 
-struct test_case_t {		/* test case struct. to hold ref. test cond's*/
+struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	int fd;
 	size_t nb;
 	off_t offst;
 	char *desc;
 	int exp_errno;
-	int (*setupfunc)();
+	int (*setupfunc) ();
 } Test_cases[] = {
-	{ 1, K1, 0, "file descriptor is a PIPE or FIFO", ESPIPE, setup1 },
-	{ 2, K1, -1, "specified offset is -ve or invalid", EINVAL, setup2 },
-	{ 0, 0, 0, NULL, 0, no_setup }
+	{
+	1, K1, 0, "file descriptor is a PIPE or FIFO", ESPIPE, setup1}, {
+	2, K1, -1, "specified offset is -ve or invalid", EINVAL, setup2}, {
+	0, 0, 0, NULL, 0, no_setup}
 };
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
@@ -121,7 +121,7 @@ main(int ac, char **av)
 	char *test_desc;	/* test specific error message */
 
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
@@ -135,10 +135,10 @@ main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/* loop through the test cases */
-		for (i=0; Test_cases[i].desc != NULL; i++) {
+		for (i = 0; Test_cases[i].desc != NULL; i++) {
 			fildes = Test_cases[i].fd;
 			test_desc = Test_cases[i].desc;
 			nbytes = Test_cases[i].nb;
@@ -162,8 +162,7 @@ main(int ac, char **av)
 			if (TEST_RETURN != -1) {
 				tst_brkm(TFAIL, cleanup, "pread() returned "
 					 "%d, expected -1, errno:%d",
-					 TEST_RETURN,
-					 Test_cases[i].exp_errno);
+					 TEST_RETURN, Test_cases[i].exp_errno);
 			}
 
 			TEST_ERROR_LOG(TEST_ERRNO);
@@ -179,14 +178,13 @@ main(int ac, char **av)
 					 "errno:%d, expected:%d", test_desc,
 					 TEST_ERRNO, Test_cases[i].exp_errno);
 			}
-		}	/* End of TEST CASE LOOPING */
-	}	/* End of TEST_LOOPOING. */
+		}		/* End of TEST CASE LOOPING */
+	}			/* End of TEST_LOOPOING. */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
@@ -194,10 +192,9 @@ main(int ac, char **av)
  *           Initialize/allocate write buffer.
  *           Call individual setup function.
  */
-void
-setup()
+void setup()
 {
-	int i;		/* counter for setup functions */
+	int i;			/* counter for setup functions */
 
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -209,7 +206,7 @@ setup()
 	init_buffers();
 
 	/* Call individual setup functions */
-	for (i=0; Test_cases[i].desc != NULL; i++) {
+	for (i = 0; Test_cases[i].desc != NULL; i++) {
 		Test_cases[i].setupfunc();
 	}
 }
@@ -217,8 +214,7 @@ setup()
 /*
  * no_setup() - This function simply returns.
  */
-int
-no_setup()
+int no_setup()
 {
 	return 0;
 }
@@ -231,8 +227,7 @@ no_setup()
  *  Write some known data to the write end of the pipe.
  *  return 0.
  */
-int
-setup1()
+int setup1()
 {
 	/* Create a pair of unnamed pipe */
 	if (pipe(pfd) < 0) {
@@ -256,8 +251,7 @@ setup1()
  *  Create a temporary directory and a file under it.
  *  return 0.
  */
-int
-setup2()
+int setup2()
 {
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
@@ -279,8 +273,7 @@ setup2()
  *    write_buf[0] has 0's, write_buf[1] has 1's, write_buf[2] has 2's
  *    write_buf[3] has 3's.
  */
-void
-init_buffers()
+void init_buffers()
 {
 	int count;		/* counter variable for loop */
 
@@ -305,8 +298,7 @@ init_buffers()
  *  Close the temporary file.
  *  Remove the temporary directory created.
  */
-void
-cleanup()
+void cleanup()
 {
 	int count;		/* index for the loop */
 

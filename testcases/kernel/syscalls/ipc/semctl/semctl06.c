@@ -45,13 +45,13 @@
 #define DEBUG 0
 
 #ifdef UCLINUX
-#define _GNU_SOURCE /* for asprintf */
+#define _GNU_SOURCE		/* for asprintf */
 #include <stdio.h>
 #endif
 
-#include <sys/types.h>		/* needed for test		*/
-#include <sys/ipc.h>		/* needed for test		*/
-#include <sys/sem.h>		/* needed for test		*/
+#include <sys/types.h>		/* needed for test              */
+#include <sys/ipc.h>		/* needed for test              */
+#include <sys/sem.h>		/* needed for test              */
 #include <unistd.h>
 #include <errno.h>
 #include <stdlib.h>
@@ -61,8 +61,7 @@
 #include <wait.h>
 #include "ipcsem.h"
 
-int local_flag=1;
-
+int local_flag = 1;
 
 #define NREPS	500
 #define NPROCS	3
@@ -72,30 +71,28 @@ int local_flag=1;
 #define LVAL	100
 #define FAILED	0
 
-void setup ();
+void setup();
 void cleanup();
 
-static key_t		keyarray[NPROCS];
-static struct sembuf	semops[NSEMS];
-static short		maxsemvals[NSEMS];
-static int		pidarray[NPROCS];
-static int		kidarray[NKIDS];
-static int		tid;
-static int		procstat;
-static char	       *prog;
-static unsigned short		semvals[NSEMS];
+static key_t keyarray[NPROCS];
+static struct sembuf semops[NSEMS];
+static short maxsemvals[NSEMS];
+static int pidarray[NPROCS];
+static int kidarray[NKIDS];
+static int tid;
+static int procstat;
+static char *prog;
+static unsigned short semvals[NSEMS];
 
 /*
  *  * These globals must be defined in the test.
  *   * */
 
+char *TCID = "semctl06";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
+extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-char *TCID="semctl06";           /* Test program identifier.    */
-int TST_TOTAL=1;                /* Total number of test cases. */
-extern int Tst_count;           /* Test Case counter for tst_* routines */
-
-int exp_enos[]={0};     /* List must end with 0 */
-
+int exp_enos[] = { 0 };		/* List must end with 0 */
 
 static void term(int sig);
 static void dosemas(int id);
@@ -110,16 +107,15 @@ static char *maxsemstring;
 #endif
 
 /*--------------------------------------------------------------*/
-/*ARGSUSED*/
-int
-main(int argc, char **argv)
+ /*ARGSUSED*/ int main(int argc, char **argv)
 {
 	register int i, pid;
 	int count, child, status, nwait;
 
 #ifdef UCLINUX
 	char *msg;
-	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg =
+	     parse_opts(argc, argv, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -129,7 +125,7 @@ main(int argc, char **argv)
 
 	prog = argv[0];
 	nwait = 0;
-	setup();	
+	setup();
 /*--------------------------------------------------------------*/
 	tid = -1;
 
@@ -137,14 +133,15 @@ main(int argc, char **argv)
 		keyarray[i] = getipckey();
 
 	if ((signal(SIGTERM, term)) == SIG_ERR) {
-                tst_resm(TFAIL, "\tsignal failed. errno = %d", errno);
+		tst_resm(TFAIL, "\tsignal failed. errno = %d", errno);
 		tst_exit();
 	}
 
-	for (i = 0; i <  NPROCS; i++) {
+	for (i = 0; i < NPROCS; i++) {
 		if ((pid = FORK_OR_VFORK()) < 0) {
-                        tst_resm(TFAIL, "\tFork failed (may be OK if under stress)");
-                        tst_exit();
+			tst_resm(TFAIL,
+				 "\tFork failed (may be OK if under stress)");
+			tst_exit();
 		}
 		if (pid == 0) {
 			procstat = 1;
@@ -160,9 +157,10 @@ main(int argc, char **argv)
 	 */
 
 	count = 0;
-	while((child = wait(&status)) > 0) {
+	while ((child = wait(&status)) > 0) {
 		if (status) {
-	                tst_resm(TFAIL, "%s[%d] Test failed.  exit=0x%x", prog, child, status);
+			tst_resm(TFAIL, "%s[%d] Test failed.  exit=0x%x", prog,
+				 child, status);
 			local_flag = FAILED;
 		}
 		++count;
@@ -173,42 +171,43 @@ main(int argc, char **argv)
 	 */
 
 	if (count != nwait) {
-                tst_resm(TFAIL, "\tWrong # children waited on, count = %d", count);
+		tst_resm(TFAIL, "\tWrong # children waited on, count = %d",
+			 count);
 		local_flag = FAILED;
 	}
 
 	if (local_flag != FAILED)
 		tst_resm(TPASS, "semctl06 ran successfully!");
-	else tst_resm(TFAIL, "semctl06 failed");
+	else
+		tst_resm(TFAIL, "semctl06 failed");
 
 /*--------------------------------------------------------------*/
 /* Clean up any files created by test before call to anyfail.	*/
 
-	cleanup ();
+	cleanup();
 
-	return (0); /* shut lint up */
+	return (0);		/* shut lint up */
 }
+
 /*--------------------------------------------------------------*/
 
-
-static void
-dotest(key_t key)
+static void dotest(key_t key)
 {
 	int id, pid, status;
 	int count, child, nwait;
 	short i;
-		 union semun get_arr;
+	union semun get_arr;
 
 	nwait = 0;
 	srand(getpid());
-	if ((id = semget(key, NSEMS, IPC_CREAT|IPC_EXCL)) < 0) {
+	if ((id = semget(key, NSEMS, IPC_CREAT | IPC_EXCL)) < 0) {
 		tst_resm(TFAIL, "\tsemget() failed errno %d", errno);
 		exit(1);
 	}
 	tid = id;
 	for (i = 0; i < NSEMS; i++) {
 		do {
-			maxsemvals[i] = /*CASTOK*/(short)(rand() % HVAL);
+			maxsemvals[i] = /*CASTOK*/(short) (rand() % HVAL);
 		} while (maxsemvals[i] < LVAL);
 		semops[i].sem_num = i;
 		semops[i].sem_op = maxsemvals[i];
@@ -218,7 +217,7 @@ dotest(key_t key)
 		tst_resm(TFAIL, "\tfirst semop() failed errno %d", errno);
 		exit(1);
 	}
-		
+
 	for (i = 0; i < NKIDS; i++) {
 		if ((pid = FORK_OR_VFORK()) < 0) {
 			tst_resm(TFAIL, "\tfork failed");
@@ -248,7 +247,6 @@ dotest(key_t key)
 			nwait++;
 		}
 	}
-		
 
 	procstat = 2;
 	/*
@@ -256,9 +254,10 @@ dotest(key_t key)
 	 */
 
 	count = 0;
-	while((child = wait(&status)) > 0) {
+	while ((child = wait(&status)) > 0) {
 		if (status) {
-	                tst_resm(TFAIL, "\t%s:dotest[%d] exited status = 0x%x", prog, child, status);
+			tst_resm(TFAIL, "\t%s:dotest[%d] exited status = 0x%x",
+				 prog, child, status);
 			local_flag = FAILED;
 		}
 		++count;
@@ -269,22 +268,23 @@ dotest(key_t key)
 	 */
 
 	if (count != nwait) {
-                tst_resm(TFAIL, "\tWrong # children waited on, count = %d", count);
+		tst_resm(TFAIL, "\tWrong # children waited on, count = %d",
+			 count);
 		local_flag = FAILED;
 	}
 
-		 get_arr.array = semvals;
-		 if (semctl(id, 0, GETALL, get_arr) < 0) {
-                tst_resm(TFAIL, "\terror on GETALL");
+	get_arr.array = semvals;
+	if (semctl(id, 0, GETALL, get_arr) < 0) {
+		tst_resm(TFAIL, "\terror on GETALL");
 		tst_resm(TFAIL, "\tsemctl() failed errno %d", errno);
 	}
 
 	if (DEBUG)
 		tst_resm(TINFO, "\tchecking maxvals");
 	for (i = 0; i < NSEMS; i++) {
-		if (semvals[i] !=  maxsemvals[i]) {
-			tst_resm(TFAIL, "\terror on i %d orig %d final %d", i, semvals[i],
-					maxsemvals[i]);
+		if (semvals[i] != maxsemvals[i]) {
+			tst_resm(TFAIL, "\terror on i %d orig %d final %d", i,
+				 semvals[i], maxsemvals[i]);
 			local_flag = FAILED;
 		}
 	}
@@ -304,8 +304,7 @@ dotest(key_t key)
 }
 
 #ifdef UCLINUX
-void
-do_child()
+void do_child()
 {
 	int i;
 	char *tok;
@@ -322,7 +321,7 @@ do_child()
 		if (*endptr != '\0') {
 			tst_resm(TBROK, "Invalid argument to -C option");
 			tst_exit();
-                }
+		}
 		tok = strtok(NULL, ":");
 	}
 
@@ -330,8 +329,7 @@ do_child()
 }
 #endif
 
-static void
-dosemas(int id)
+static void dosemas(int id)
 {
 	int i, j;
 
@@ -343,7 +341,9 @@ dosemas(int id)
 
 			do {
 				semops[j].sem_op =
-					( - /*CASTOK*/(short)(rand() % (maxsemvals[j]/2)));
+				    (-
+				     /*CASTOK*/(short) (rand() %
+							(maxsemvals[j] / 2)));
 			} while (semops[j].sem_op == 0);
 		}
 		if (semop(id, semops, NSEMS) < 0) {
@@ -351,7 +351,7 @@ dosemas(int id)
 			exit(1);
 		}
 		for (j = 0; j < NSEMS; j++) {
-			semops[j].sem_op = ( - semops[j].sem_op);
+			semops[j].sem_op = (-semops[j].sem_op);
 		}
 		if (semop(id, semops, NSEMS) < 0) {
 			tst_resm(TFAIL, "\tsemop2 failed errno %d", errno);
@@ -361,10 +361,7 @@ dosemas(int id)
 	exit(0);
 }
 
-
-/*ARGSUSED*/
-static void
-term(int sig)
+ /*ARGSUSED*/ static void term(int sig)
 {
 	int i;
 
@@ -377,7 +374,8 @@ term(int sig)
 			tst_resm(TINFO, "\ttest killing kids");
 		for (i = 0; i < NPROCS; i++) {
 			if (kill(pidarray[i], SIGTERM) != 0) {
-				tst_resm(TFAIL, "Kill error pid = %d :",pidarray[1]);
+				tst_resm(TFAIL, "Kill error pid = %d :",
+					 pidarray[1]);
 			}
 		}
 		if (DEBUG)
@@ -400,7 +398,8 @@ term(int sig)
 	}
 	for (i = 0; i < NKIDS; i++) {
 		if (kill(kidarray[i], SIGTERM) != 0) {
-			tst_resm(TFAIL, "Kill error kid id = %d :",kidarray[1]);
+			tst_resm(TFAIL, "Kill error kid id = %d :",
+				 kidarray[1]);
 		}
 	}
 }
@@ -408,21 +407,19 @@ term(int sig)
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  *****************************************************************/
-void
-setup()
+void setup()
 {
-        /* You will want to enable some signal handling so you can capture
+	/* You will want to enable some signal handling so you can capture
 	 * unexpected signals like SIGSEGV.
 	 *                   */
-        tst_sig(FORK, DEF_HANDLER, cleanup);
+	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-
-        /* Pause if that option was specified */
-        /* One cavet that hasn't been fixed yet.  TEST_PAUSE contains the code to
+	/* Pause if that option was specified */
+	/* One cavet that hasn't been fixed yet.  TEST_PAUSE contains the code to
 	 * fork the test with the -c option.  You want to make sure you do this
 	 * before you create your temporary directory.
 	 */
-        TEST_PAUSE;
+	TEST_PAUSE;
 
 	/*
 	 * Create a temporary directory and cd into it.
@@ -432,24 +429,21 @@ setup()
 	tst_tmpdir();
 }
 
-
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
  * completion or premature exit.
  ****************************************************************/
-void
-cleanup()
+void cleanup()
 {
 	/* Remove the temporary directory */
 	tst_rmdir();
 
-        /*
+	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
 	 */
-        TEST_CLEANUP;
+	TEST_CLEANUP;
 
-        /* exit with return code appropriate for results */
-        tst_exit();
+	/* exit with return code appropriate for results */
+	tst_exit();
 }
-

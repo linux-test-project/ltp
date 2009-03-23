@@ -89,8 +89,7 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 int option[2] = { PR_GET_PDEATHSIG, PR_SET_PDEATHSIG };
 int TST_TOTAL = 2;
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 
 	int lc, i;		/* loop counter */
@@ -99,8 +98,8 @@ main(int ac, char **av)
 	int status, sig;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
-	     != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL))
+	    != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -127,8 +126,7 @@ main(int ac, char **av)
 				if (i == 1) {
 					sig = SIGUSR2;
 					TEST(prctl(option[i], sig));
-				}
-				else {
+				} else {
 					TEST(prctl(option[i], &sig));
 				}
 
@@ -136,9 +134,9 @@ main(int ac, char **av)
 					exit(0);
 				} else {
 					tst_resm(TWARN, "prctl() returned %d"
-						" errno = %d : %s", TEST_RETURN,
-						TEST_ERRNO,
-						strerror(TEST_ERRNO));
+						 " errno = %d : %s",
+						 TEST_RETURN, TEST_ERRNO,
+						 strerror(TEST_ERRNO));
 					exit(1);
 				}
 
@@ -158,19 +156,17 @@ main(int ac, char **av)
 
 			}
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* cleanup and exit */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 
-}/* End main */
+}				/* End main */
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup()
+void setup()
 {
 
 	/* capture signals */
@@ -179,15 +175,13 @@ setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-}	/* End setup() */
-
+}				/* End setup() */
 
 /*
  *cleanup() -  performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 
 	/*
@@ -198,5 +192,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
-
+}				/* End cleanup() */

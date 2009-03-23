@@ -61,26 +61,26 @@
 void cleanup(void);
 void setup(void);
 
-char *TCID= "setitimer02";
+char *TCID = "setitimer02";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-int exp_enos[] = {EFAULT, 0};
+int exp_enos[] = { EFAULT, 0 };
 
 #if !defined(UCLINUX)
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	struct itimerval *value;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -90,7 +90,9 @@ int main(int ac, char **av)
 
 		/* allocate some space for a timer structure */
 		if ((value = (struct itimerval *)malloc((size_t)
-			      sizeof(struct itimerval))) == NULL) {
+							sizeof(struct
+							       itimerval))) ==
+		    NULL) {
 			tst_brkm(TBROK, cleanup, "value malloc failed");
 		}
 
@@ -98,8 +100,8 @@ int main(int ac, char **av)
 
 		value->it_value.tv_sec = 30;
 		value->it_value.tv_usec = 0;
-	  	value->it_interval.tv_sec = 0;
- 		value->it_interval.tv_usec = 0;
+		value->it_interval.tv_sec = 0;
+		value->it_interval.tv_usec = 0;
 		/*
 		 * issue the system call with the TEST() macro
 		 * ITIMER_REAL = 0, ITIMER_VIRTUAL = 1 and ITIMER_PROF = 2
@@ -110,8 +112,8 @@ int main(int ac, char **av)
 
 		if (TEST_RETURN == 0) {
 			tst_resm(TFAIL, "call failed to produce EFAULT error "
-					"- errno = %d - %s", TEST_ERRNO,
-					 strerror(TEST_ERRNO));
+				 "- errno = %d - %s", TEST_ERRNO,
+				 strerror(TEST_ERRNO));
 			continue;
 		}
 
@@ -137,9 +139,7 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/
-
-  return 0;
+	 /*NOTREACHED*/ return 0;
 
 }
 
@@ -156,8 +156,7 @@ int main()
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -173,8 +172,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

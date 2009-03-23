@@ -62,18 +62,17 @@ void cleanup(void);
 
 int main(int argc, char **argv)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	int uret = 0, i, mskval = 0000;
 	int failcnt = 0;
 
 	/* parse standard options */
-	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) !=
-		(char *) NULL) {
+	if ((msg = parse_opts(argc, argv, (option_t *) NULL, NULL)) !=
+	    (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	setup();
 
@@ -84,21 +83,19 @@ int main(int argc, char **argv)
 		Tst_count = 0;
 
 		for (umask(++mskval), i = 1; mskval < 01000;
-			uret = umask(++mskval), i++) {
+		     uret = umask(++mskval), i++) {
 			if ((uret != mskval - 1) && (mskval != 0000)) {
 				failcnt = 1;
 				tst_resm(TFAIL, "umask(%d) returned bad mask "
-						"value %d.", mskval, uret);
+					 "value %d.", mskval, uret);
 			}
 		}
 		if (!failcnt)
 			tst_resm(TPASS, "All umask values return correct "
-					"values");
+				 "values");
 	}
 	cleanup();
-	/*NOTREACHED*/
-
-  return 0;
+	 /*NOTREACHED*/ return 0;
 
 }
 
@@ -106,8 +103,7 @@ int main(int argc, char **argv)
  * setup()
  *	performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -123,8 +119,7 @@ setup(void)
  *	performs all ONE TIME cleanup for this test at
  *	completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -134,5 +129,4 @@ cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}

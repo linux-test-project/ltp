@@ -29,7 +29,7 @@
  *
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: access01.c,v 1.5 2009/02/26 12:14:54 subrata_modak Exp $ */
+/* $Id: access01.c,v 1.6 2009/03/23 13:35:39 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -59,36 +59,36 @@
  *
  *    TEST CASES
  *
- * 	1.) access(2) returns 0 for F_OK...(See Description)
- * 	2.) access(2) returns 0 for R_OK...(See Description)
- * 	3.) access(2) returns 0 for W_OK...(See Description)
- * 	4.) access(2) returns 0 for X_OK...(See Description)
+ *	1.) access(2) returns 0 for F_OK...(See Description)
+ *	2.) access(2) returns 0 for R_OK...(See Description)
+ *	3.) access(2) returns 0 for W_OK...(See Description)
+ *	4.) access(2) returns 0 for X_OK...(See Description)
  *
  *    INPUT SPECIFICATIONS
- * 	The standard options for system call tests are accepted.
+ *	The standard options for system call tests are accepted.
  *	(See the parse_opts(3) man page).
  *
  *    OUTPUT SPECIFICATIONS
- * 
+ *
  *    DURATION
- * 	Terminates - with frequency and infinite modes.
+ *	Terminates - with frequency and infinite modes.
  *
  *    SIGNALS
- * 	Uses SIGUSR1 to pause before test if option set.
- * 	(See the parse_opts(3) man page).
+ *	Uses SIGUSR1 to pause before test if option set.
+ *	(See the parse_opts(3) man page).
  *
  *    RESOURCES
- * 	None
+ *	None
  *
  *    ENVIRONMENTAL NEEDS
- * 	The libcuts.a and libsys.a libraries must be included in
+ *	The libcuts.a and libsys.a libraries must be included in
  *	the compilation of this test.
  *
  *    SPECIAL PROCEDURAL REQUIREMENTS
- * 	None
+ *	None
  *
  *    INTERCASE DEPENDENCIES
- * 	None
+ *	None
  *
  *    DETAILED DESCRIPTION
  *	This is a Phase I test for the access(2) system call.  It is intended
@@ -96,13 +96,13 @@
  *	should/will be extended when full functional tests are written for
  *	access(2).
  *
- * 	Setup:
- * 	  Setup signal handling.
+ *	Setup:
+ *	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
  *	  Create a temp directory and cd to it.
  *	  Creat a temp file wil read, write and execute permissions.
  *
- * 	Test:
+ *	Test:
  *	 Loop if the proper options are given.
  *	  Execute system call with F_OK on tmp file
  *	  Check return code, if system call failed (return=-1)
@@ -110,10 +110,10 @@
  *	  Otherwise, Issue a PASS message.
  *	  Execute system call with X_OK on tmp file...
  *	  Execute system call with W_OK on tmp file...
- * 	  Execute system call with R_OK on tmp file...
+ *	  Execute system call with R_OK on tmp file...
  *
- * 	Cleanup:
- * 	  Print errno log
+ *	Cleanup:
+ *	  Print errno log
  *
  *
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
@@ -130,23 +130,22 @@
 void setup();
 void cleanup();
 
-char *TCID="access01"; 	/* Test program identifier.    */
-int TST_TOTAL=4;    		/* Total number of test cases. */
+char *TCID = "access01";	/* Test program identifier.    */
+int TST_TOTAL = 4;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-
 
 char Fname[255];
 
 static struct test_case_t {
-    char *file;
-    int mode;
-    char *string;
-    int experrno;
+	char *file;
+	int mode;
+	char *string;
+	int experrno;
 } Test_cases[] = {
-    { Fname, F_OK,  "F_OK", 0 },
-    { Fname, X_OK,  "X_OK", 0 },
-    { Fname, W_OK,  "W_OK", 0 },
-    { Fname, R_OK,  "R_OK", 0 },
+	{ Fname, F_OK, "F_OK", 0},
+	{ Fname, X_OK, "X_OK", 0},
+	{ Fname, W_OK, "W_OK", 0},
+	{ Fname, R_OK, "R_OK", 0},
 };
 
 int Ntc = sizeof(Test_cases) / sizeof(struct test_case_t);
@@ -156,147 +155,149 @@ int Ntc = sizeof(Test_cases) / sizeof(struct test_case_t);
  ***********************************************************************/
 int main(int ac, char **av)
 {
-    int lc;		/* loop counter */
-    char *msg;		/* message returned from parse_opts */
-    int tc;
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
+	int tc;
 
-    TST_TOTAL=Ntc;
-   
+	TST_TOTAL = Ntc;
+
     /***************************************************************
      * parse standard options
      ***************************************************************/
-    if ( (msg=parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *) NULL ) {
-	tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	tst_exit();
-    }
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+		tst_exit();
+	}
 
     /***************************************************************
      * perform global setup for test
      ***************************************************************/
-    setup();
+	setup();
 
     /***************************************************************
      * check looping state if -c option given
      ***************************************************************/
-    for (lc=0; TEST_LOOPING(lc); lc++) {
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-	/* reset Tst_count in case we are looping. */
-	Tst_count=0;
+		/* reset Tst_count in case we are looping. */
+		Tst_count = 0;
 
-	for (tc=0; tc<Ntc; tc++) {
-	    /*
-	     * Call access(2)
-	     */
-	    TEST(access(Test_cases[tc].file, Test_cases[tc].mode));
+		for (tc = 0; tc < Ntc; tc++) {
+			/*
+			 * Call access(2)
+			 */
+			TEST(access(Test_cases[tc].file, Test_cases[tc].mode));
 
-	    /* check return code */
-	    if ( TEST_RETURN == -1 && Test_cases[tc].experrno == 0 ) {
-	        tst_resm(TFAIL, "access(%s, %s) Failed, errno=%d : %s",
-		     Test_cases[tc].file, Test_cases[tc].string,
-		     TEST_ERRNO, strerror(TEST_ERRNO));
+			/* check return code */
+			if (TEST_RETURN == -1 && Test_cases[tc].experrno == 0) {
+				tst_resm(TFAIL,
+					 "access(%s, %s) Failed, errno=%d : %s",
+					 Test_cases[tc].file,
+					 Test_cases[tc].string, TEST_ERRNO,
+					 strerror(TEST_ERRNO));
 
-	    } else if ( TEST_RETURN != -1 && Test_cases[tc].experrno != 0 ) {
-		tst_resm(TFAIL, "access(%s, %s) returned %d, exp -1, errno:%d",
-		    Test_cases[tc].file, Test_cases[tc].string,
-		    TEST_RETURN, Test_cases[tc].experrno);
-	    } else {
+			} else if (TEST_RETURN != -1
+				   && Test_cases[tc].experrno != 0) {
+				tst_resm(TFAIL,
+					 "access(%s, %s) returned %d, exp -1, errno:%d",
+					 Test_cases[tc].file,
+					 Test_cases[tc].string, TEST_RETURN,
+					 Test_cases[tc].experrno);
+			} else {
 
-	        /***************************************************************
+		/***************************************************************
 	         * only perform functional verification if flag set (-f not given)
 	         ***************************************************************/
-	        if ( STD_FUNCTIONAL_TEST ) {
-		    /* No Verification test, yet... */
-		    tst_resm(TPASS, "access(%s, %s) returned %d",
-			Test_cases[tc].file, Test_cases[tc].string,
-		        TEST_RETURN);
-	        }
-	    }
-	}
+				if (STD_FUNCTIONAL_TEST) {
+					/* No Verification test, yet... */
+					tst_resm(TPASS,
+						 "access(%s, %s) returned %d",
+						 Test_cases[tc].file,
+						 Test_cases[tc].string,
+						 TEST_RETURN);
+				}
+			}
+		}
 
-    }	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
     /***************************************************************
      * cleanup and exit
      ***************************************************************/
-    cleanup();
+	cleanup();
 
-    return 0;
-}	/* End main */
+	return 0;
+}				/* End main */
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void
-setup()
+void setup()
 {
-    int fd;
-    struct stat stbuf;
+	int fd;
+	struct stat stbuf;
 
-    /* capture signals */
-    tst_sig(FORK, DEF_HANDLER, cleanup);
+	/* capture signals */
+	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-    umask(0);	/* reset umask avoid it affects on modes */
+	umask(0);		/* reset umask avoid it affects on modes */
 
-    /* Pause if that option was specified */
-    TEST_PAUSE;
+	/* Pause if that option was specified */
+	TEST_PAUSE;
 
-    /* make a temp directory and cd to it */
-    tst_tmpdir();
+	/* make a temp directory and cd to it */
+	tst_tmpdir();
 
-    /*
-     * Since files inherit group ids, make sure our dir has a valid grp
-     * to us.
-     */
-    chown(".", -1, getgid());
-
-    sprintf(Fname,"accessfile");
-
-    if ((fd = open(Fname, O_RDWR|O_CREAT, 06777)) == -1) {
-        tst_brkm(TBROK, cleanup, "open(%s, O_RDWR|O_CREAT,06777) Failed, errno=%d : %s",
-	    Fname, errno, strerror(errno));
-    }
-    else if (close(fd) == -1) {
-        tst_resm(TINFO, "close(%s) Failed, errno=%d : %s",
-	    Fname, errno, strerror(errno));
-    }
-
-    /*
-     * force the mode to be set to 6777
-     */
-    if (chmod(Fname, 06777) == -1 ) {
-	tst_brkm(TBROK, cleanup, "chmod(%s, 06777) failed, errno:%d %s",
-	    Fname, errno, strerror(errno));
-    }
-
-    stat(Fname, &stbuf);
-
-    if ( (stbuf.st_mode & 06777) != 06777 ) {
 	/*
-	 * file can not be properly setup
+	 * Since files inherit group ids, make sure our dir has a valid grp
+	 * to us.
 	 */
-    }
+	chown(".", -1, getgid());
 
-}	/* End setup() */
+	sprintf(Fname, "accessfile");
 
+	if ((fd = open(Fname, O_RDWR | O_CREAT, 06777)) == -1) {
+		tst_brkm(TBROK, cleanup,
+			 "open(%s, O_RDWR|O_CREAT,06777) Failed, errno=%d : %s",
+			 Fname, errno, strerror(errno));
+	} else if (close(fd) == -1) {
+		tst_resm(TINFO, "close(%s) Failed, errno=%d : %s",
+			 Fname, errno, strerror(errno));
+	}
+
+	/*
+	 * force the mode to be set to 6777
+	 */
+	if (chmod(Fname, 06777) == -1) {
+		tst_brkm(TBROK, cleanup, "chmod(%s, 06777) failed, errno:%d %s",
+			 Fname, errno, strerror(errno));
+	}
+
+	stat(Fname, &stbuf);
+
+	if ((stbuf.st_mode & 06777) != 06777) {
+		/*
+		 * file can not be properly setup
+		 */
+	}
+
+}				/* End setup() */
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void
-cleanup()
+void cleanup()
 {
-    /*
-     * print timing stats if that option was specified.
-     */
-    TEST_CLEANUP;
+	/*
+	 * print timing stats if that option was specified.
+	 */
+	TEST_CLEANUP;
 
-    /* remove the temp dir */
-    tst_rmdir();
+	/* remove the temp dir */
+	tst_rmdir();
 
-    /* exit with return code appropriate for results */
-    tst_exit();
+	/* exit with return code appropriate for results */
+	tst_exit();
 
-}	/* End cleanup() */
-
-
+}				/* End cleanup() */

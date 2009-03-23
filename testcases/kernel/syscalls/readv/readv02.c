@@ -61,25 +61,25 @@
 char buf1[K_1], buf2[K_1], buf3[K_1];
 
 struct iovec rd_iovec[MAX_IOVEC] = {
-	/* iov_base */		/* iov_len */
+	/* iov_base *//* iov_len */
 
 	/* Test case #1 */
-	{buf2,			-1},
-	{(buf2 + CHUNK),	CHUNK},
-	{(buf2 + CHUNK * 2),	CHUNK},
+	{buf2, -1},
+	{(buf2 + CHUNK), CHUNK},
+	{(buf2 + CHUNK * 2), CHUNK},
 
 	/* Test case #2 */
-	{(buf2 + CHUNK * 3),	G_1},
-	{(buf2 + CHUNK * 4),	G_1},
-	{(buf2 + CHUNK * 5),	G_1},
+	{(buf2 + CHUNK * 3), G_1},
+	{(buf2 + CHUNK * 4), G_1},
+	{(buf2 + CHUNK * 5), G_1},
 
 	/* Test case #3 */
-	{(caddr_t)-1,		CHUNK},
-	{(buf2 + CHUNK * 6),	CHUNK},
-	{(buf2 + CHUNK * 8),	CHUNK},
+	{(caddr_t) - 1, CHUNK},
+	{(buf2 + CHUNK * 6), CHUNK},
+	{(buf2 + CHUNK * 8), CHUNK},
 
 	/* Test case #4 */
-	{(buf2 + CHUNK * 9),	CHUNK}
+	{(buf2 + CHUNK * 9), CHUNK}
 };
 
 char f_name[K_1];
@@ -91,7 +91,7 @@ char *TCID = "readv02";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-char * bad_addr = 0;
+char *bad_addr = 0;
 
 int init_buffs(char **);
 int fill_mem(char *, int, int);
@@ -102,14 +102,13 @@ void cleanup();
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	setup();
 
@@ -183,15 +182,13 @@ int main(int ac, char **av)
 	close(fd[1]);
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	int nbytes;
 
@@ -235,7 +232,7 @@ setup()
 	fd[1] = -1;		/* Invalid file descriptor */
 
 	bad_addr = mmap(0, 1, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
+			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
 	if (bad_addr == MAP_FAILED) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}
@@ -246,8 +243,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	if (unlink(f_name) < 0) {
 		tst_brkm(TBROK, NULL, "unlink FAILED: file %s, errno %d",
@@ -257,16 +253,14 @@ cleanup()
 	tst_exit();
 }
 
-int
-init_buffs(char *pbufs[])
+int init_buffs(char *pbufs[])
 {
 	int i;
 
 	for (i = 0; pbufs[i] != (char *)NULL; i++) {
 		switch (i) {
 		case 0:
-			/*FALLTHROUGH*/
-		case 1:
+		 /*FALLTHROUGH*/ case 1:
 			fill_mem(pbufs[i], 0, 1);
 			break;
 
@@ -281,23 +275,21 @@ init_buffs(char *pbufs[])
 	return 0;
 }
 
-int
-fill_mem(char *c_ptr, int c1, int c2)
+int fill_mem(char *c_ptr, int c1, int c2)
 {
 	int count;
 
 	for (count = 1; count <= K_1 / CHUNK; count++) {
 		if (count & 0x01) {	/* if odd */
 			memset(c_ptr, c1, CHUNK);
-		} else {		/* if even */
+		} else {	/* if even */
 			memset(c_ptr, c2, CHUNK);
 		}
 	}
 	return 0;
 }
 
-long
-l_seek(int fdesc, long offset, int whence)
+long l_seek(int fdesc, long offset, int whence)
 {
 	if (lseek(fdesc, offset, whence) < 0) {
 		tst_brkm(TBROK, cleanup, "lseek Failed : errno = %d", errno);

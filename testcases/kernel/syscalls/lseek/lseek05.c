@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: lseek05.c,v 1.3 2009/02/26 12:16:08 subrata_modak Exp $ */
+/* $Id: lseek05.c,v 1.4 2009/03/23 13:35:54 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -66,7 +66,7 @@
  *	(See the parse_opts(3) man page).
  *
  *    OUTPUT SPECIFICATIONS
- * 
+ *$
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
  *
@@ -121,133 +121,130 @@
 void setup();
 void cleanup();
 
-
-
-char *TCID="lseek05";		/* Test program identifier.    */
-int TST_TOTAL=1;    		/* Total number of test cases. */
+char *TCID = "lseek05";		/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-int exp_enos[]={0, 0};
+int exp_enos[] = { 0, 0 };
 
 int Fd;
 
 /***********************************************************************
  * Main
  ***********************************************************************/
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-    int lc;		/* loop counter */
-    char *msg;		/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
     /***************************************************************
      * parse standard options
      ***************************************************************/
-    if ( (msg=parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL ) {
-	tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	tst_exit();
-    }
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+		tst_exit();
+	}
 
     /***************************************************************
      * perform global setup for test
      ***************************************************************/
-    setup();
+	setup();
 
-    /* set the expected errnos... */
-    TEST_EXP_ENOS(exp_enos);
+	/* set the expected errnos... */
+	TEST_EXP_ENOS(exp_enos);
 
     /***************************************************************
      * check looping state if -c option given
      ***************************************************************/
-    for (lc=0; TEST_LOOPING(lc); lc++) {
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-	/* reset Tst_count in case we are looping. */
-	Tst_count=0;
+		/* reset Tst_count in case we are looping. */
+		Tst_count = 0;
 
-        /*
-         *  Call lseek(2)
-         */
-	TEST(lseek(Fd, (long)1, SEEK_SET));
+		/*
+		 *  Call lseek(2)
+		 */
+		TEST(lseek(Fd, (long)1, SEEK_SET));
 
-	/* check return code */
-	if ( TEST_RETURN == -1 ) {
-	    if ( STD_FUNCTIONAL_TEST ) {
+		/* check return code */
+		if (TEST_RETURN == -1) {
+			if (STD_FUNCTIONAL_TEST) {
 
-	        if ( TEST_ERRNO == ESPIPE )
-	            tst_resm(TPASS,
-		        "lseek(pipefd, 1, SEEK_SET) Failed, errno=%d : %s",
-		        TEST_ERRNO, strerror(TEST_ERRNO));
-	         else
-	            tst_resm(TFAIL,
-			"lseek(pipefd, 1, SEEK_SET) Failed, errno=%d %s, expected %d(ESPIPE)",
-		        TEST_ERRNO, strerror(TEST_ERRNO),
-			EINVAL);
-	    }
-	    else
-	       Tst_count++;
-	} else {
-	   
-	        tst_resm(TFAIL, "lseek(pipefd, 1, SEEK_SET) returned %d",
-		    TEST_RETURN);
-	}
+				if (TEST_ERRNO == ESPIPE)
+					tst_resm(TPASS,
+						 "lseek(pipefd, 1, SEEK_SET) Failed, errno=%d : %s",
+						 TEST_ERRNO,
+						 strerror(TEST_ERRNO));
+				else
+					tst_resm(TFAIL,
+						 "lseek(pipefd, 1, SEEK_SET) Failed, errno=%d %s, expected %d(ESPIPE)",
+						 TEST_ERRNO,
+						 strerror(TEST_ERRNO), EINVAL);
+			} else
+				Tst_count++;
+		} else {
 
-    }	/* End for TEST_LOOPING */
+			tst_resm(TFAIL,
+				 "lseek(pipefd, 1, SEEK_SET) returned %d",
+				 TEST_RETURN);
+		}
+
+	}			/* End for TEST_LOOPING */
 
     /***************************************************************
      * cleanup and exit
      ***************************************************************/
-    cleanup();
+	cleanup();
 
-    return 0;
-}	/* End main */
+	return 0;
+}				/* End main */
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void
-setup()
+void setup()
 {
-    int fds[2];
+	int fds[2];
 
-    /* capture signals */
-    tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	/* capture signals */
+	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-    /* Pause if that option was specified */
-    TEST_PAUSE;
+	/* Pause if that option was specified */
+	TEST_PAUSE;
 
-    /* make a temp directory and cd to it */
-    tst_tmpdir();
+	/* make a temp directory and cd to it */
+	tst_tmpdir();
 
-    if ( pipe(fds) == -1) {
-	tst_brkm(TBROK, cleanup,
-	    "pipe(&fds) Failed, errno=%d : %s", errno, strerror(errno));
-    }
-    Fd = fds[0];
+	if (pipe(fds) == -1) {
+		tst_brkm(TBROK, cleanup,
+			 "pipe(&fds) Failed, errno=%d : %s", errno,
+			 strerror(errno));
+	}
+	Fd = fds[0];
 
-}	/* End setup() */
-
+}				/* End setup() */
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void
-cleanup()
+void cleanup()
 {
-    /*
-     * print timing stats if that option was specified.
-     * print errno log if that option was specified.
-     */
-    TEST_CLEANUP;
+	/*
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
+	TEST_CLEANUP;
 
-    /* close the file we have open */
-    if (close(Fd) == -1) {
-       tst_resm(TWARN, "close(%d) Failed, errno=%d : %s", Fd, errno, strerror(errno));
-    }
+	/* close the file we have open */
+	if (close(Fd) == -1) {
+		tst_resm(TWARN, "close(%d) Failed, errno=%d : %s", Fd, errno,
+			 strerror(errno));
+	}
 
-    /* Remove tmp dir and all files in it */
-    tst_rmdir();
+	/* Remove tmp dir and all files in it */
+	tst_rmdir();
 
-    /* exit with return code appropriate for results */
-    tst_exit();
-}	/* End cleanup() */
+	/* exit with return code appropriate for results */
+	tst_exit();
+}				/* End cleanup() */

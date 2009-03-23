@@ -61,17 +61,17 @@ extern struct event_list eventqueue;
 extern volatile sig_atomic_t evsignal_caught;
 
 struct pollop {
-	int event_count;		/* Highest number alloc */
+	int event_count;	/* Highest number alloc */
 	struct pollfd *event_set;
 	struct event **event_back;
 	sigset_t evsigmask;
 } pollop;
 
-void *poll_init	(void);
-int poll_add		(void *, struct event *);
-int poll_del		(void *, struct event *);
-int poll_recalc	(void *, int);
-int poll_dispatch	(void *, struct timeval *);
+void *poll_init(void);
+int poll_add(void *, struct event *);
+int poll_del(void *, struct event *);
+int poll_recalc(void *, int);
+int poll_dispatch(void *, struct timeval *);
 
 struct eventop pollops = {
 	"poll",
@@ -82,8 +82,7 @@ struct eventop pollops = {
 	poll_dispatch
 };
 
-void *
-poll_init(void)
+void *poll_init(void)
 {
 	/* Disable kqueue when this environment variable is set */
 	if (getenv("EVENT_NOPOLL"))
@@ -101,16 +100,14 @@ poll_init(void)
  * recalculate everything.
  */
 
-int
-poll_recalc(void *arg, int max)
+int poll_recalc(void *arg, int max)
 {
 	struct pollop *pop = arg;
 
 	return (evsignal_recalc(&pop->evsigmask));
 }
 
-int
-poll_dispatch(void *arg, struct timeval *tv)
+int poll_dispatch(void *arg, struct timeval *tv)
 {
 	int res, i, count, sec, nfds;
 	struct event *ev;
@@ -127,13 +124,14 @@ poll_dispatch(void *arg, struct timeval *tv)
 
 			/* We need more file descriptors */
 			pop->event_set = realloc(pop->event_set,
-			    count * sizeof(struct pollfd));
+						 count * sizeof(struct pollfd));
 			if (pop->event_set == NULL) {
 				log_error("realloc");
 				return (-1);
 			}
 			pop->event_back = realloc(pop->event_back,
-			    count * sizeof(struct event *));
+						  count *
+						  sizeof(struct event *));
 			if (pop->event_back == NULL) {
 				log_error("realloc");
 				return (-1);
@@ -189,15 +187,15 @@ poll_dispatch(void *arg, struct timeval *tv)
 		return (0);
 
 	for (i = 0; i < nfds; i++) {
-                int what = pop->event_set[i].revents;
-	
+		int what = pop->event_set[i].revents;
+
 		res = 0;
 
 		/* If the file gets closed notify */
 		if (what & POLLHUP)
-			what |= POLLIN|POLLOUT;
-                if (what & POLLERR)
-                        what |= POLLIN|POLLOUT;
+			what |= POLLIN | POLLOUT;
+		if (what & POLLERR)
+			what |= POLLIN | POLLOUT;
 		if (what & POLLIN)
 			res |= EV_READ;
 		if (what & POLLOUT)
@@ -218,8 +216,7 @@ poll_dispatch(void *arg, struct timeval *tv)
 	return (0);
 }
 
-int
-poll_add(void *arg, struct event *ev)
+int poll_add(void *arg, struct event *ev)
 {
 	struct pollop *pop = arg;
 
@@ -233,8 +230,7 @@ poll_add(void *arg, struct event *ev)
  * Nothing to be done here.
  */
 
-int
-poll_del(void *arg, struct event *ev)
+int poll_del(void *arg, struct event *ev)
 {
 	struct pollop *pop = arg;
 

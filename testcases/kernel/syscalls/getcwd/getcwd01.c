@@ -66,7 +66,7 @@ void setup_test4(void);
 
 struct test_case_t {
 	char *desc;
-	void (*setupfunc)();
+	void (*setupfunc) ();
 	char *buf;
 	int size;
 	int exp_errno;
@@ -74,25 +74,27 @@ struct test_case_t {
 } testcases[] = {
 #ifndef UCLINUX
 	/* Skip since uClinux does not implement memory protection */
-	{ "Test for EFAULT", NULL, (void *)-1, BUFSIZ, EFAULT, NULL },
+	{
+	"Test for EFAULT", NULL, (void *)-1, BUFSIZ, EFAULT, NULL},
 #endif
-	{ "Test for ENOMEM", NULL,  NULL, -1, ENOMEM, NULL },
-	{ "Test for EINVAL", NULL, buf, 0, EINVAL, NULL },
-	{ "Test for ERANGE", (void *)setup_test4, buf, 1, ERANGE, NULL }
+	{
+	"Test for ENOMEM", NULL, NULL, -1, ENOMEM, NULL}, {
+	"Test for EINVAL", NULL, buf, 0, EINVAL, NULL}, {
+	"Test for ERANGE", (void *)setup_test4, buf, 1, ERANGE, NULL}
 };
 
-int exp_enos[] = {EFAULT, ENOMEM, EINVAL, ERANGE, 0};
+int exp_enos[] = { EFAULT, ENOMEM, EINVAL, ERANGE, 0 };
 
-int TST_TOTAL = sizeof(testcases)/sizeof(*testcases);
+int TST_TOTAL = sizeof(testcases) / sizeof(*testcases);
 
 int main(int ac, char **av)
 {
 	int i;
-	int lc;				/* loop counter */
-	char *msg;			/* parse_opts() return message */
+	int lc;			/* loop counter */
+	char *msg;		/* parse_opts() return message */
 	char *test_erg;
 
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 	setup();
@@ -106,7 +108,7 @@ int main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		Tst_count = 0;
 
-		for (i=0; i<TST_TOTAL; ++i) {
+		for (i = 0; i < TST_TOTAL; ++i) {
 			tst_resm(TINFO, "%s", testcases[i].desc);
 
 			if (testcases[i].setupfunc != NULL) {
@@ -132,23 +134,20 @@ int main(int ac, char **av)
 					 testcases[i].exp_errno, TEST_ERRNO);
 				continue;
 			}
-			tst_resm(TPASS, "Test case %d PASSED", i+1);
+			tst_resm(TPASS, "Test case %d PASSED", i + 1);
 		}
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
-void
-setup_test4()
+void setup_test4()
 {
 	chdir("/");
 }
 
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -160,8 +159,7 @@ setup()
 	tst_tmpdir();
 }
 
-void
-cleanup()
+void cleanup()
 {
 	/* remove the test directory */
 	tst_rmdir();

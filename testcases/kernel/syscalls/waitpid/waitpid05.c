@@ -79,17 +79,14 @@ int main(int ac, char **av)
 {
 	int pid, npid, sig, nsig;
 	int exno, nexno, status;
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) !=
-	    (char *) NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-		/*NOTREACHED*/
-	}
-
+	 /*NOTREACHED*/}
 #ifdef UCLINUX
 	maybe_run_child(&do_child_uclinux, "d", &sig_uclinux);
 #endif
@@ -100,11 +97,11 @@ int main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
-	
+
 		/*
 		 * Set SIGTERM to SIG_DFL as test driver sets up to ignore
 		 * SIGTERM
-	 	 */
+		 */
 		if (signal(SIGTERM, SIG_DFL) == SIG_ERR) {
 			tst_resm(TFAIL, "Sigset SIGTERM failed, errno = %d",
 				 errno);
@@ -116,8 +113,8 @@ int main(int ac, char **av)
 			if (sig == SIGUSR1 || sig == SIGUSR2 || sig == SIGBUS) {
 				continue;
 			}
-                        /*Initialize signal to its default action*/
-                        signal(sig,SIG_DFL);
+			/*Initialize signal to its default action */
+			signal(sig, SIG_DFL);
 			pid = FORK_OR_VFORK();
 
 			if (pid == 0) {
@@ -141,7 +138,7 @@ int main(int ac, char **av)
 							 "pid returned");
 					} else {
 						tst_resm(TPASS, "received "
-							"expected pid.");
+							 "expected pid.");
 					}
 
 					nsig = status % 256;
@@ -201,7 +198,7 @@ int main(int ac, char **av)
 							 "returned");
 					} else {
 						tst_resm(TPASS, "received "
-							"expected exit number.");
+							 "expected exit number.");
 					}
 				}
 			}
@@ -212,17 +209,14 @@ int main(int ac, char **av)
 		}
 	}
 	cleanup();
-	/*NOTREACHED*/
-
-  return 0;
+	 /*NOTREACHED*/ return 0;
 
 }
 
 /*
  * do_child()
  */
-void
-do_child(int sig)
+void do_child(int sig)
 {
 	int exno = 1;
 	int pid = getpid();
@@ -238,8 +232,7 @@ do_child(int sig)
  * do_child_uclinux()
  *	run do_child with the appropriate sig variable
  */
-void
-do_child_uclinux()
+void do_child_uclinux()
 {
 	do_child(sig_uclinux);
 }
@@ -249,8 +242,7 @@ do_child_uclinux()
  * setup()
  *	performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	struct rlimit newlimit;
 
@@ -266,7 +258,8 @@ setup(void)
 
 	newlimit.rlim_max = newlimit.rlim_cur = RLIM_INFINITY;
 	if (setrlimit(RLIMIT_CORE, &newlimit) != 0)
-		tst_resm(TWARN, "setrlimit(RLIMIT_CORE,RLIM_INFINITY) failed; this may cause some false core-dump test failures");
+		tst_resm(TWARN,
+			 "setrlimit(RLIMIT_CORE,RLIM_INFINITY) failed; this may cause some false core-dump test failures");
 }
 
 /*
@@ -274,8 +267,7 @@ setup(void)
  *	performs all ONE TIME cleanup for this test at
  *	completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -287,5 +279,4 @@ cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}

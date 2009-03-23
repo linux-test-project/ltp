@@ -77,11 +77,11 @@ struct epollop {
 	sigset_t evsigmask;
 } epollop;
 
-void *epoll_init	(void);
-int epoll_add	(void *, struct event *);
-int epoll_del	(void *, struct event *);
-int epoll_recalc	(void *, int);
-int epoll_dispatch	(void *, struct timeval *);
+void *epoll_init(void);
+int epoll_add(void *, struct event *);
+int epoll_del(void *, struct event *);
+int epoll_recalc(void *, int);
+int epoll_dispatch(void *, struct timeval *);
 
 struct eventop epollops = {
 	"epoll",
@@ -94,8 +94,7 @@ struct eventop epollops = {
 
 #define NEVENT	32000
 
-void *
-epoll_init(void)
+void *epoll_init(void)
 {
 	int epfd, nfiles = NEVENT;
 	struct rlimit rl;
@@ -106,8 +105,7 @@ epoll_init(void)
 
 	memset(&epollop, 0, sizeof(epollop));
 
-	if (getrlimit(RLIMIT_NOFILE, &rl) == 0 &&
-	    rl.rlim_cur != RLIM_INFINITY)
+	if (getrlimit(RLIMIT_NOFILE, &rl) == 0 && rl.rlim_cur != RLIM_INFINITY)
 		nfiles = rl.rlim_cur;
 
 	/* Initalize the kernel queue */
@@ -137,8 +135,7 @@ epoll_init(void)
 	return (&epollop);
 }
 
-int
-epoll_recalc(void *arg, int max)
+int epoll_recalc(void *arg, int max)
 {
 	struct epollop *epollop = arg;
 
@@ -157,15 +154,14 @@ epoll_recalc(void *arg, int max)
 		}
 		epollop->fds = fds;
 		memset(fds + epollop->nfds, 0,
-		    (nfds - epollop->nfds) * sizeof(struct evepoll));
+		       (nfds - epollop->nfds) * sizeof(struct evepoll));
 		epollop->nfds = nfds;
 	}
 
 	return (evsignal_recalc(&epollop->evsigmask));
 }
 
-int
-epoll_dispatch(void *arg, struct timeval *tv)
+int epoll_dispatch(void *arg, struct timeval *tv)
 {
 	struct epollop *epollop = arg;
 	struct epoll_event *events = epollop->events;
@@ -200,11 +196,11 @@ epoll_dispatch(void *arg, struct timeval *tv)
 		struct event *evread = NULL, *evwrite = NULL;
 
 		evep = (struct evepoll *)events[i].data.ptr;
-  
-                if (what & EPOLLHUP)
-                        what |= EPOLLIN | EPOLLOUT;
-                else if (what & EPOLLERR)
-                        what |= EPOLLIN | EPOLLOUT;
+
+		if (what & EPOLLHUP)
+			what |= EPOLLIN | EPOLLOUT;
+		else if (what & EPOLLERR)
+			what |= EPOLLIN | EPOLLOUT;
 
 		if (what & EPOLLIN) {
 			evread = evep->evread;
@@ -234,9 +230,7 @@ epoll_dispatch(void *arg, struct timeval *tv)
 	return (0);
 }
 
-
-int
-epoll_add(void *arg, struct event *ev)
+int epoll_add(void *arg, struct event *ev)
 {
 	struct epollop *epollop = arg;
 	struct epoll_event epev;
@@ -272,7 +266,7 @@ epoll_add(void *arg, struct event *ev)
 	epev.data.ptr = evep;
 	epev.events = events;
 	if (epoll_ctl(epollop->epfd, op, ev->ev_fd, &epev) == -1)
-			return (-1);
+		return (-1);
 
 	/* Update events responsible */
 	if (ev->ev_events & EV_READ)
@@ -283,8 +277,7 @@ epoll_add(void *arg, struct event *ev)
 	return (0);
 }
 
-int
-epoll_del(void *arg, struct event *ev)
+int epoll_del(void *arg, struct event *ev)
 {
 	struct epollop *epollop = arg;
 	struct epoll_event epev;
@@ -308,7 +301,7 @@ epoll_del(void *arg, struct event *ev)
 	if (ev->ev_events & EV_WRITE)
 		events |= EPOLLOUT;
 
-	if ((events & (EPOLLIN|EPOLLOUT)) != (EPOLLIN|EPOLLOUT)) {
+	if ((events & (EPOLLIN | EPOLLOUT)) != (EPOLLIN | EPOLLOUT)) {
 		if ((events & EPOLLIN) && evep->evwrite != NULL) {
 			needwritedelete = 0;
 			events = EPOLLOUT;

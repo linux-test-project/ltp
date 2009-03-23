@@ -62,29 +62,28 @@
 void cleanup(void);
 void setup(void);
 
-char *TCID= "signal02";
+char *TCID = "signal02";
 int TST_TOTAL = 3;
 extern int Tst_count;
 
-typedef void (*sighandler_t)(int);
+typedef void (*sighandler_t) (int);
 
-sighandler_t	Tret;
-int sigs[] = {_NSIG + 1, SIGKILL, SIGSTOP};
-int exp_enos[] = {22, 0};
+sighandler_t Tret;
+int sigs[] = { _NSIG + 1, SIGKILL, SIGSTOP };
+int exp_enos[] = { 22, 0 };
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int i;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -95,20 +94,21 @@ int main(int ac, char **av)
 		/*
 		 * There are three cases where we should get an EINVAL
 		 */
-		for (i=0; i<TST_TOTAL; i++) {
+		for (i = 0; i < TST_TOTAL; i++) {
 
-			errno = 0; Tret = signal(sigs[i], SIG_IGN); TEST_ERRNO = errno;
+			errno = 0;
+			Tret = signal(sigs[i], SIG_IGN);
+			TEST_ERRNO = errno;
 
 			if (Tret != SIG_ERR) {
 				tst_brkm(TFAIL, cleanup, "%s call failed - "
 					 "errno = %d : %s", TCID, TEST_ERRNO,
 					 strerror(TEST_ERRNO));
-				/*NOTREACHED*/
-			}
+			 /*NOTREACHED*/}
 
 			TEST_ERROR_LOG(TEST_ERRNO);
 
-			switch (TEST_ERRNO){
+			switch (TEST_ERRNO) {
 			case EINVAL:
 				tst_resm(TPASS, "expected failure - errno = "
 					 "%d - %s", TEST_ERRNO,
@@ -116,27 +116,24 @@ int main(int ac, char **av)
 				break;
 			default:
 				tst_resm(TFAIL, "call failed to produce "
-						"expected error - errno = %d "
-						"- %s", TEST_ERRNO,
-						strerror(TEST_ERRNO));
+					 "expected error - errno = %d "
+					 "- %s", TEST_ERRNO,
+					 strerror(TEST_ERRNO));
 			}
 		}
-	Tst_count++;		/* incr. TEST_LOOP counter */
+		Tst_count++;	/* incr. TEST_LOOP counter */
 	}
 
 	cleanup();
 
-	/*NOTREACHED*/
-
-  return 0;
+	 /*NOTREACHED*/ return 0;
 
 }
 
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -152,8 +149,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

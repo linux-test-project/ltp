@@ -19,25 +19,25 @@
 
 /*
  * NAME
- * 	open07.c
+ *	open07.c
  *
  * DESCRIPTION
  *	Test the open(2) system call to ensure that it sets ELOOP correctly.
- * 
+ *
  * CALLS
- * 	open()
+ *	open()
  *
  * ALGORITHM
- * 	1. Create a symbolic link to a file, and call open(O_NOFOLLOW). Check
+ *	1. Create a symbolic link to a file, and call open(O_NOFOLLOW). Check
  *	   that it returns ELOOP.
  *
- * 	2. Create a symbolic link to a directory, and call open(O_NOFOLLOW).
+ *	2. Create a symbolic link to a directory, and call open(O_NOFOLLOW).
  *	   Check that it returns ELOOP.
  *
- * 	3. Create a symbolic link to a symbolic link, and call open(O_NOFOLLOW).
+ *	3. Create a symbolic link to a symbolic link, and call open(O_NOFOLLOW).
  *	   Check that it returns ELOOP.
  *
- * 	4. Create a symbolic link to a symbolically linked directory, and call
+ *	4. Create a symbolic link to a symbolically linked directory, and call
  *	   open(O_NOFOLLOW). Check that it returns ELOOP.
  *
  * USAGE:  <for command-line>
@@ -53,7 +53,7 @@
  *	07/2001 Ported by Wayne Boyer
  *
  * RESTRICTIONS
- * 	None
+ *	None
  */
 #define _GNU_SOURCE		/* for O_NOFOLLOW */
 #include <stdio.h>
@@ -78,36 +78,37 @@ int fd1, fd2;
 
 char file1[100], file2[100], file3[100];
 
-int exp_enos[] = {ELOOP, 0};
+int exp_enos[] = { ELOOP, 0 };
 
 struct test_case_t {
 	char *desc;
 	char *filename;
 	int flags;
 	int mode;
-	void (*setupfunc)();
+	void (*setupfunc) ();
 	int exp_errno;
-    int fileHandle;
+	int fileHandle;
 } TC[] = {
-	{ "Test for ELOOP on f2: f1 -> f2", file2, O_NOFOLLOW, 00700,
-		setupfunc_test1, ELOOP, 0},
-	{ "Test for ELOOP on d2: d1 -> d2", file2, O_NOFOLLOW, 00700,
-		setupfunc_test2, ELOOP, 0},
-	{ "Test for ELOOP on f3: f1 -> f2 -> f3", file3, O_NOFOLLOW, 00700,
-		setupfunc_test3, ELOOP, 0},
-	{ "Test for ELOOP on d3: d1 -> d2 -> d3", file3, O_NOFOLLOW, 00700,
-		setupfunc_test4, ELOOP, 0},
-	{ NULL, NULL, 0, 0, NULL, 0, 0}
+	{
+	"Test for ELOOP on f2: f1 -> f2", file2, O_NOFOLLOW, 00700,
+		    setupfunc_test1, ELOOP, 0}, {
+	"Test for ELOOP on d2: d1 -> d2", file2, O_NOFOLLOW, 00700,
+		    setupfunc_test2, ELOOP, 0}, {
+	"Test for ELOOP on f3: f1 -> f2 -> f3", file3, O_NOFOLLOW,
+		    00700, setupfunc_test3, ELOOP, 0}, {
+	"Test for ELOOP on d3: d1 -> d2 -> d3", file3, O_NOFOLLOW,
+		    00700, setupfunc_test4, ELOOP, 0}, {
+	NULL, NULL, 0, 0, NULL, 0, 0}
 };
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int i;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -116,7 +117,7 @@ int main(int ac, char **av)
 	TEST_EXP_ENOS(exp_enos);
 
 	/* run the setup routines for the individual tests */
-	for (i=0; i<TST_TOTAL; i++) {
+	for (i = 0; i < TST_TOTAL; i++) {
 		if (TC[i].setupfunc != NULL) {
 			TC[i].setupfunc();
 		}
@@ -146,89 +147,73 @@ int main(int ac, char **av)
 				tst_resm(TPASS, "open returned expected "
 					 "ELOOP error");
 			}
-            close(TC[i].fileHandle);
+			close(TC[i].fileHandle);
 		}
 	}
 	cleanup();
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
-void
-setupfunc_test1()
+void setupfunc_test1()
 {
 	sprintf(file1, "open03.1.%d", getpid());
 	sprintf(file2, "open03.2.%d", getpid());
 	if ((fd1 = creat(file1, 00700)) < 0) {
 		tst_brkm(TBROK, cleanup, "creat(2) failed: errno: %d", errno);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 	if (symlink(file1, file2) < 0) {
 		tst_brkm(TBROK, cleanup, "symlink(2) failed: errno: %d", errno);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 }
 
-void
-setupfunc_test2()
+void setupfunc_test2()
 {
 	sprintf(file1, "open03.3.%d", getpid());
 	sprintf(file2, "open03.4.%d", getpid());
 	if (mkdir(file1, 00700) < 0) {
 		tst_brkm(TBROK, cleanup, "mkdir(2) failed: errno: %d", errno);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 	if (symlink(file1, file2) < 0) {
 		tst_brkm(TBROK, cleanup, "symlink(2) failed: errno: %d", errno);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 }
 
-void
-setupfunc_test3()
+void setupfunc_test3()
 {
 	sprintf(file1, "open03.5.%d", getpid());
 	sprintf(file2, "open03.6.%d", getpid());
 	sprintf(file3, "open03.7.%d", getpid());
 	if ((fd2 = creat(file1, 00700)) < 0) {
 		tst_brkm(TBROK, cleanup, "creat(2) failed: errno: %d", errno);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 	if (symlink(file1, file2) < 0) {
 		tst_brkm(TBROK, cleanup, "symlink(2) failed: errno: %d", errno);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 	if (symlink(file2, file3) < 0) {
 		tst_brkm(TBROK, cleanup, "symlink(2) failed: errno: %d", errno);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 }
 
-void
-setupfunc_test4()
+void setupfunc_test4()
 {
 	sprintf(file1, "open03.8.%d", getpid());
 	sprintf(file2, "open03.9.%d", getpid());
 	sprintf(file3, "open03.10.%d", getpid());
 	if (mkdir(file1, 00700) < 0) {
 		tst_brkm(TBROK, cleanup, "mkdir(2) failed: errno: %d", errno);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 	if (symlink(file1, file2) < 0) {
 		tst_brkm(TBROK, cleanup, "symlink(2) failed: errno: %d", errno);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 	if (symlink(file2, file3) < 0) {
 		tst_brkm(TBROK, cleanup, "symlink(2) failed: errno: %d", errno);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	umask(0);
 
@@ -246,8 +231,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  *	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing status if that option was specified.

@@ -86,30 +86,28 @@ void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 void sig_handler(int sig);	/* signal catching function */
 
-char *TCID="sigprocmask01";	/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "sigprocmask01";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-int exp_enos[]={0};
+int exp_enos[] = { 0 };
 int sig_catch = 0;		/* variable to blocked/unblocked signals */
 
 struct sigaction sa_new;	/* struct to hold signal info */
 sigset_t sigset;		/* signal set to hold signal lists */
 sigset_t sigset2;
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	pid_t my_pid;		/* test process id */
-   
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-		/*NOTREACED*/
-	}
+	 /*NOTREACED*/}
 
 	/* Perform global setup for test */
 	setup();
@@ -120,7 +118,7 @@ main(int ac, char **av)
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/*
 		 * Call sigprocmask() to block (SIGINT) signal
@@ -154,7 +152,7 @@ main(int ac, char **av)
 				 */
 				if (sig_catch) {
 					tst_resm(TFAIL, "sigprocmask fails to "
-						"change process's signal mask");
+						 "change process's signal mask");
 				} else {
 					/*
 					 * Check whether specified signal
@@ -164,8 +162,8 @@ main(int ac, char **av)
 					if (sigpending(&sigset2) == -1) {
 						tst_brkm(TFAIL, cleanup,
 							 "blocked signal not "
-							"in pending state, "
-							"error:%d", errno);
+							 "in pending state, "
+							 "error:%d", errno);
 					}
 
 					/*
@@ -175,10 +173,9 @@ main(int ac, char **av)
 					errno = 0;
 					if (!sigismember(&sigset2, SIGINT)) {
 						tst_brkm(TFAIL, cleanup,
-							"sigismember() failed, "
-							"error:%d", errno);
-						/*NOTREACHED*/
-					}
+							 "sigismember() failed, "
+							 "error:%d", errno);
+					 /*NOTREACHED*/}
 
 					/*
 					 * Invoke sigprocmask() again to
@@ -188,41 +185,37 @@ main(int ac, char **av)
 					 */
 					errno = 0;
 					if (sigprocmask(SIG_UNBLOCK,
-							 &sigset, 0) == -1) {
+							&sigset, 0) == -1) {
 						tst_brkm(TFAIL, cleanup,
-							"sigprocmask() failed "
-							"to unblock signal, "
-							"error=%d", errno);
-						/*NOTREACHED*/
-					}
+							 "sigprocmask() failed "
+							 "to unblock signal, "
+							 "error=%d", errno);
+					 /*NOTREACHED*/}
 					if (sig_catch) {
 						tst_resm(TPASS, "Functionality "
-							"of sigprocmask() "
-							"Successful");
+							 "of sigprocmask() "
+							 "Successful");
 					} else {
 						tst_resm(TFAIL, "Functionality "
-							"of sigprocmask() "
-							"Failed");
+							 "of sigprocmask() "
+							 "Failed");
 					}
-				/* set sig_catch back to 0 */
-				sig_catch=0;
+					/* set sig_catch back to 0 */
+					sig_catch = 0;
 				}
 			} else {
 				tst_resm(TPASS, "Call succeeded");
 			}
 		}
 
-		Tst_count++;			/* incr TEST_LOOP counter */
-	}	/* End for TEST_LOOPING */
+		Tst_count++;	/* incr TEST_LOOP counter */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
-	/*NOTREACHED*/
+	 /*NOTREACHED*/ return 0;
 
-
-  return 0;
-
-}	/* End main */
+}				/* End main */
 
 /*
  * void
@@ -233,8 +226,7 @@ main(int ac, char **av)
  * Add the signal SIGINT to the exclude list of system-defined
  * signals for the test process.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -250,14 +242,12 @@ setup()
 		tst_brkm(TFAIL, cleanup,
 			 "sigemptyset() failed, errno=%d : %s",
 			 errno, strerror(errno));
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 	if (sigfillset(&sigset2) == -1) {
 		tst_brkm(TFAIL, cleanup,
 			 "sigfillset() failed, errno=%d : %s",
 			 errno, strerror(errno));
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/* Set the signal handler function to catch the signal */
 	sa_new.sa_handler = sig_handler;
@@ -265,8 +255,7 @@ setup()
 		tst_brkm(TFAIL, cleanup,
 			 "sigaction() failed, errno=%d : %s",
 			 errno, strerror(errno));
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/*
 	 * Add specified signal (SIGINT) to the signal set
@@ -276,9 +265,8 @@ setup()
 		tst_brkm(TFAIL, cleanup,
 			 "sigaddset() failed, errno=%d : %s",
 			 errno, strerror(errno));
-		/*NOTREACHED*/
-	}
-}	/* End setup() */
+	 /*NOTREACHED*/}
+}				/* End setup() */
 
 /*
  * void
@@ -289,8 +277,7 @@ setup()
  *   This function when executed, increments a global variable value
  *   which will be accessed in the test.
  */
-void
-sig_handler(int sig)
+void sig_handler(int sig)
 {
 	/* Increment the sig_catch variable */
 	sig_catch++;
@@ -301,8 +288,7 @@ sig_handler(int sig)
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -312,4 +298,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

@@ -43,11 +43,11 @@
  *   Loop if the proper options are given.
  *   Execute system call
  *   Check return code, if system call failed (return=-1)
- *   	Log the errno and Issue a FAIL message.
+ *	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call
+ *	Verify the Functionality of system call
  *      if successful,
- *      	Issue Functionality-Pass message.
+ *		Issue Functionality-Pass message.
  *      Otherwise,
  *		Issue Functionality-Fail message.
  *  Cleanup:
@@ -88,8 +88,8 @@
 
 #define TEMPFILE	"mmapfile"
 
-char *TCID="mmap01";		/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "mmap01";		/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 char *addr;			/* addr of memory mapped region */
 char *dummy;			/* dummy string */
@@ -101,15 +101,14 @@ char Cmd_buffer[BUFSIZ];	/* command buffer to hold test command */
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -120,15 +119,15 @@ main(int ac, char **av)
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/*
 		 * Call mmap to map the temporary file beyond EOF
-	 	 * with write access.
+		 * with write access.
 		 */
 		errno = 0;
 		addr = mmap(addr, page_sz, PROT_READ | PROT_WRITE,
-			    MAP_FILE|MAP_SHARED|MAP_FIXED, fildes, 0);
+			    MAP_FILE | MAP_SHARED | MAP_FIXED, fildes, 0);
 		TEST_ERRNO = errno;
 
 		/* Check for the return value of mmap() */
@@ -191,30 +190,28 @@ main(int ac, char **av)
 			tst_brkm(TFAIL, NULL, "munmap() fails to unmap the "
 				 "memory, errno=%d", errno);
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
-}	/* End main */
+	 /*NOTREACHED*/ return 0;
+}				/* End main */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  *
- * 	     Get system page size, allocate and initialize the string dummy.
- * 	     Initialize addr such that it is more than one page below the break
- * 	     address of the process, and initialize one page region from addr
- * 	     with char 'A'.
- * 	     Creat a temporary directory and a file under it.
- * 	     Write some known data into file and get the size of the file.
+ *	     Get system page size, allocate and initialize the string dummy.
+ *	     Initialize addr such that it is more than one page below the break
+ *	     address of the process, and initialize one page region from addr
+ *	     with char 'A'.
+ *	     Creat a temporary directory and a file under it.
+ *	     Write some known data into file and get the size of the file.
  */
-void
-setup()
+void setup()
 {
 	struct stat stat_buf;
-	char Path_name[PATH_MAX];		/* pathname of temporary file*/
+	char Path_name[PATH_MAX];	/* pathname of temporary file */
 	char write_buf[] = "hello world\n";
 
 	/* capture signals */
@@ -271,12 +268,12 @@ setup()
 	 * Initialize addr to align with the first segment boundary address
 	 * above the break address of the process.
 	 */
-	addr = (void *) (((intptr_t)sbrk(0) + (SHMLBA - 1)) & ~(SHMLBA - 1));
+	addr = (void *)(((intptr_t) sbrk(0) + (SHMLBA - 1)) & ~(SHMLBA - 1));
 
 	/* Set the break address of the process to the addr plus one
 	 * page size.
 	 */
-	if ((intptr_t)sbrk(SHMLBA + page_sz) == -1) {
+	if ((intptr_t) sbrk(SHMLBA + page_sz) == -1) {
 		tst_brkm(TFAIL, cleanup, "sbrk(SHMLBA + page_sz) failed");
 	}
 
@@ -290,16 +287,15 @@ setup()
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
- * 	       Free the memory allocated to dummy variable.
- * 	       Remove the temporary directory created.
+ *	       Free the memory allocated to dummy variable.
+ *	       Remove the temporary directory created.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
 	 */
-    close(fildes);
+	close(fildes);
 
 	TEST_CLEANUP;
 

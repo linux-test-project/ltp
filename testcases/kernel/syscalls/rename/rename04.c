@@ -70,29 +70,28 @@ void setup();
 void cleanup();
 extern void do_file_setup(char *);
 
-char *TCID="rename04";		/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "rename04";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-int exp_enos[]={ENOTEMPTY, EEXIST, 0};     /* List must end with 0 */
+int exp_enos[] = { ENOTEMPTY, EEXIST, 0 };	/* List must end with 0 */
 
 int fd;
 char tstfile[40];
-char fdir[255],mdir[255];
-struct stat buf1,buf2;
-dev_t   olddev, olddev1;
-ino_t   oldino, oldino1;
+char fdir[255], mdir[255];
+struct stat buf1, buf2;
+dev_t olddev, olddev1;
+ino_t oldino, oldino1;
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	int lc;             /* loop counter */
-	char *msg;          /* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/*
 	 * parse standard options
 	 */
-	if ((msg=parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -107,17 +106,17 @@ main(int ac, char **av)
 	/*
 	 * check looping state if -i option given
 	 */
-	for (lc=0; TEST_LOOPING(lc); lc++) {
-	 
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+
 		/* reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/* rename a directory to a non-empty directory */
 
 		/* Call rename(2) */
 		TEST(rename(fdir, mdir));
 
-		if (TEST_RETURN != -1 ) {
+		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "rename(%s, %s) succeeded unexpectedly",
 				 fdir, mdir);
 			continue;
@@ -126,31 +125,28 @@ main(int ac, char **av)
 		TEST_ERROR_LOG(TEST_ERRNO);
 
 		if (TEST_ERRNO == ENOTEMPTY) {
-		    	tst_resm(TPASS, "rename() returned ENOTEMPTY");
+			tst_resm(TPASS, "rename() returned ENOTEMPTY");
 		} else if (TEST_ERRNO == EEXIST) {
-		    	tst_resm(TPASS, "rename() returned EEXIST");
+			tst_resm(TPASS, "rename() returned EEXIST");
 		} else {
 			tst_resm(TFAIL, "Expected ENOTEMPTY or EEXIST got %d",
 				 TEST_ERRNO);
 		}
 
-	}   /* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/*
 	 * cleanup and exit
 	 */
 	cleanup();
-	/*NOTREACHED*/
-
-  return 0;
+	 /*NOTREACHED*/ return 0;
 
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -161,17 +157,16 @@ setup()
 	/* Create a temporary directory and make it current. */
 	tst_tmpdir();
 
-	sprintf(fdir,"./tdir_%d",getpid());
-	sprintf(mdir,"./rndir_%d",getpid());
-	sprintf(tstfile,"%s/tstfile_%d",mdir,getpid());
+	sprintf(fdir, "./tdir_%d", getpid());
+	sprintf(mdir, "./rndir_%d", getpid());
+	sprintf(tstfile, "%s/tstfile_%d", mdir, getpid());
 
 	/* create "old" directory */
 	if (mkdir(fdir, 00770) == -1) {
-		tst_brkm(TBROK, cleanup, "Could not create directory %s",fdir);
-		/*NOTREACHED*/
-	}
+		tst_brkm(TBROK, cleanup, "Could not create directory %s", fdir);
+	 /*NOTREACHED*/}
 
-	if (stat(fdir, &buf1)== -1) {
+	if (stat(fdir, &buf1) == -1) {
 		tst_brkm(TBROK, cleanup, "failed to stat directory %s"
 			 "in rename()", fdir);
 		/* NOTREACHED */
@@ -184,9 +179,8 @@ setup()
 	/* create another directory */
 	if (mkdir(mdir, 00770) == -1) {
 		tst_brkm(TBROK, cleanup, "Could not create directory %s", mdir);
-		/*NOTREACHED*/
-	}
-	
+	 /*NOTREACHED*/}
+
 	/* create a file under "new" directory */
 	do_file_setup(tstfile);
 
@@ -205,8 +199,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *              completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

@@ -51,8 +51,6 @@
   [[xref: select, gettimeofday, memset]]
 */
 
-
-
 #define IOREAD		1	// wait for fd to become readable
 #define IOWRITE		2	// wait for fd to become writeable
 #define IOEXCEPT	4	// wait for an exception condition on fd
@@ -61,14 +59,14 @@
 struct ioreq {
 	struct ioreq *next;
 	coroutine_t coro;	// coroutine that is waiting
-	int mode;			// the events it is waiting for
+	int mode;		// the events it is waiting for
 	int fd;			// optional file descriptor
 	struct timeval timeout[1];	// optional time out
 };
 
 struct ioqueue {
-	struct ioreq *req;		// first request in this queue
-	int maxfd;			// highest fd used in the requests
+	struct ioreq *req;	// first request in this queue
+	int maxfd;		// highest fd used in the requests
 	struct timeval *mintime;	// earliest timeout in the requests
 	fd_set *rp, *wp, *ep;	// pointers to the fd_sets below.
 	fd_set rfds[1], wfds[1], efds[1];	// fd_sets for the select
@@ -83,11 +81,9 @@ struct iosched {
 
 static struct iosched glbl[1];
 
-
-
-
 static struct timeval *tvadd(struct timeval *dst, struct timeval *a,
-			     struct timeval *b) {
+			     struct timeval *b)
+{
 
 	dst->tv_sec = a->tv_sec + b->tv_sec;
 	dst->tv_usec = a->tv_usec + b->tv_usec;
@@ -96,9 +92,9 @@ static struct timeval *tvadd(struct timeval *dst, struct timeval *a,
 	return dst;
 }
 
-
 static struct timeval *tvsub(struct timeval *dst, struct timeval *a,
-			     struct timeval *b) {
+			     struct timeval *b)
+{
 
 	dst->tv_sec = a->tv_sec - b->tv_sec;
 	dst->tv_usec = a->tv_usec - b->tv_usec;
@@ -107,24 +103,24 @@ static struct timeval *tvsub(struct timeval *dst, struct timeval *a,
 	return dst;
 }
 
-
-static long tvcmp(struct timeval *a, struct timeval *b) {
+static long tvcmp(struct timeval *a, struct timeval *b)
+{
 
 	if (a->tv_sec - b->tv_sec)
 		return a->tv_sec - b->tv_sec;
 	return a->tv_usec - b->tv_usec;
 }
 
+static struct timeval *to2tv(struct timeval *dst, int timeout)
+{
 
-static struct timeval *to2tv(struct timeval *dst, int timeout) {
-
-	dst->tv_sec = timeout/1000;
-	dst->tv_usec = timeout%1000 * 1000;
+	dst->tv_sec = timeout / 1000;
+	dst->tv_usec = timeout % 1000 * 1000;
 	return dst;
 }
 
-
-static void set_fds(struct ioreq *r, int mode, fd_set *fds, fd_set **fp) {
+static void set_fds(struct ioreq *r, int mode, fd_set * fds, fd_set ** fp)
+{
 
 	if (r->mode & mode) {
 		FD_SET(r->fd, fds);
@@ -132,8 +128,8 @@ static void set_fds(struct ioreq *r, int mode, fd_set *fds, fd_set **fp) {
 	}
 }
 
-
-static int tst_fds(struct ioreq *r, int mode, fd_set *fds) {
+static int tst_fds(struct ioreq *r, int mode, fd_set * fds)
+{
 
 	if (r->mode & mode)
 		if (FD_ISSET(r->fd, fds)) {
@@ -143,26 +139,26 @@ static int tst_fds(struct ioreq *r, int mode, fd_set *fds) {
 	return 0;
 }
 
-
-static int check(struct ioqueue *q, struct ioreq *r, struct timeval *ctime) {
+static int check(struct ioqueue *q, struct ioreq *r, struct timeval *ctime)
+{
 	int res = 0;
 
-	if (r->mode & (IOREAD|IOWRITE|IOEXCEPT)) {
+	if (r->mode & (IOREAD | IOWRITE | IOEXCEPT)) {
 		res |= tst_fds(r, IOREAD, q->rp);
 		res |= tst_fds(r, IOWRITE, q->wp);
 		res |= tst_fds(r, IOEXCEPT, q->ep);
 	}
-	if (res == 0) // IOTIMEOUT has lower precedence
+	if (res == 0)		// IOTIMEOUT has lower precedence
 		if (r->mode & IOTIMEOUT)
 			if (tvcmp(r->timeout, ctime) <= 0)
 				res |= IOTIMEOUT;
 	return res;
 }
 
+static void enqueue(struct ioqueue *q, struct ioreq *r)
+{
 
-static void enqueue(struct ioqueue *q, struct ioreq *r) {
-
-	if (r->mode & (IOREAD|IOWRITE|IOEXCEPT)) {
+	if (r->mode & (IOREAD | IOWRITE | IOEXCEPT)) {
 		set_fds(r, IOREAD, q->rfds, &q->rp);
 		set_fds(r, IOWRITE, q->wfds, &q->wp);
 		set_fds(r, IOEXCEPT, q->efds, &q->ep);
@@ -176,21 +172,22 @@ static void enqueue(struct ioqueue *q, struct ioreq *r) {
 	q->req = r;
 }
 
-
-static void vadd_req(struct ioreq *r, int mode, va_list args) {
+static void vadd_req(struct ioreq *r, int mode, va_list args)
+{
 
 	r->coro = co_current();
 	r->mode = mode;
-	if (mode & (IOREAD|IOWRITE|IOEXCEPT))
+	if (mode & (IOREAD | IOWRITE | IOEXCEPT))
 		r->fd = va_arg(args, int);
 	if (mode & IOTIMEOUT)
-		tvadd(r->timeout, to2tv(r->timeout, va_arg(args, int)), glbl->ctime);
+		tvadd(r->timeout, to2tv(r->timeout, va_arg(args, int)),
+		      glbl->ctime);
 
 	enqueue(glbl->wait, r);
 }
 
-
-static void add_req(struct ioreq *r, int mode, ...) {
+static void add_req(struct ioreq *r, int mode, ...)
+{
 	va_list args;
 
 	va_start(args, mode);
@@ -198,8 +195,8 @@ static void add_req(struct ioreq *r, int mode, ...) {
 	va_end(args);
 }
 
-
-int cothread_schedule(void) {
+int cothread_schedule(void)
+{
 	struct ioqueue *q;
 	struct ioreq *r;
 	struct timeval tv[1];
@@ -228,16 +225,16 @@ int cothread_schedule(void) {
 		if (q->mintime)
 			q->mintime = tvsub(tv, q->mintime, glbl->ctime);
 
-		while (select(q->maxfd, q->rp, q->wp, q->ep, q->mintime) == -1)
-			;
+		while (select(q->maxfd, q->rp, q->wp, q->ep, q->mintime) ==
+		       -1) ;
 		gettimeofday(glbl->ctime, 0);
 	}
 
 	return 0;
 }
 
-
-int cothread_wait(int mode, ...) {
+int cothread_wait(int mode, ...)
+{
 	va_list args;
 	struct ioreq req[1];
 
@@ -247,8 +244,8 @@ int cothread_wait(int mode, ...) {
 	return cothread_schedule();
 }
 
-
-coroutine_t cothread_new(void (*func)(), ...) {
+coroutine_t cothread_new(void (*func) (), ...)
+{
 	coroutine_t co;
 	va_list args;
 	struct ioreq req[1];
@@ -263,8 +260,8 @@ coroutine_t cothread_new(void (*func)(), ...) {
 	return co;
 }
 
-
-void cothread_init() {
+void cothread_init()
+{
 
 	gettimeofday(glbl->ctime, 0);
 	glbl->active = glbl->queues;
@@ -272,8 +269,8 @@ void cothread_init() {
 	memset(glbl->queues, 0, sizeof(glbl->queues));
 }
 
-
-static void test1(va_list args) {
+static void test1(va_list args)
+{
 	char *str = va_arg(args, char *);
 	int limit = va_arg(args, int);
 	int i = 0;
@@ -287,8 +284,8 @@ static void test1(va_list args) {
 	cothread_wait(0);
 }
 
-
-static void test2(va_list args) {
+static void test2(va_list args)
+{
 	char *str = va_arg(args, char *);
 	int in = va_arg(args, int);
 	int out = va_arg(args, int);
@@ -307,8 +304,8 @@ static void test2(va_list args) {
 	cothread_wait(0);
 }
 
-
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
 	cothread_init();
 
 	cothread_new(test1, "test1a", 10);
@@ -321,4 +318,3 @@ int main(int argc, char **argv) {
 		cothread_wait(IOTIMEOUT, 3000);
 	}
 }
-

@@ -72,7 +72,7 @@
  */
 
 #ifdef _LTP_TASKS_H
-#include <linux/tasks.h>		/* for PID_MAX - old */
+#include <linux/tasks.h>	/* for PID_MAX - old */
 #endif
 
 /*
@@ -82,28 +82,27 @@
 #define PID_MAX 0x8000
 #endif
 
-
 void cleanup(void);
 void setup(void);
 
-char *TCID= "getsid02";
+char *TCID = "getsid02";
 int TST_TOTAL = 1;
 extern int Tst_count;
-int pid_max=32768;    /* Default value for PID_MAX  */
+int pid_max = 32768;		/* Default value for PID_MAX  */
 
-int exp_enos[] = {ESRCH, 0};	/* 0 terminated list of expected errnos */
+int exp_enos[] = { ESRCH, 0 };	/* 0 terminated list of expected errnos */
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -117,7 +116,7 @@ int main(int ac, char **av)
 
 		TEST(getsid(pid_max + 1));
 
-  	        if (TEST_RETURN == 0) {
+		if (TEST_RETURN == 0) {
 			tst_resm(TFAIL, "call succeed when failure expected");
 			continue;
 		}
@@ -139,35 +138,30 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 #if !defined PID_MAX_DEFAULT && !defined PID_MAX
-  FILE *fp;
+	FILE *fp;
 #endif
 
 #ifdef PID_MAX_DEFAULT
-  pid_max = PID_MAX_DEFAULT;
+	pid_max = PID_MAX_DEFAULT;
 #elif defined(PID_MAX)
-  pid_max = PID_MAX;
+	pid_max = PID_MAX;
 #else
 
-    if((fp = fopen("/proc/sys/kernel/pid_max", "r")) != NULL)
-	{
-	  fscanf(fp,"%d",&pid_max);
-	  fclose(fp);
- 	}
-    else
-        {
-         tst_resm(TFAIL, "Cannot open /proc/sys/kernel/pid_max");
-         exit(0);
+	if ((fp = fopen("/proc/sys/kernel/pid_max", "r")) != NULL) {
+		fscanf(fp, "%d", &pid_max);
+		fclose(fp);
+	} else {
+		tst_resm(TFAIL, "Cannot open /proc/sys/kernel/pid_max");
+		exit(0);
 	}
 #endif
 	/* capture signals */
@@ -184,8 +178,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -196,4 +189,3 @@ cleanup(void)
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

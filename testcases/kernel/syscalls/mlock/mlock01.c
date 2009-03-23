@@ -23,7 +23,7 @@
  *
  * DESCRIPTION
  * 	Test to see that mlock works
- * 
+ *$
  * ALGORITHM
  * 	test 1:
  *		Call mlock with various valid addresses and lengths.  No
@@ -73,10 +73,11 @@ struct test_case_t {
 	 * range pointed to by addr and len are not valid mapped pages
 	 * in the address space of the process
 	 */
-	{&addr1, 1, setup1},
-	{&addr1, 1024, setup1},
-	{&addr1, 1024 * 1024, setup1},
-	{&addr1, 1024 * 1024 * 10, setup1}
+	{
+	&addr1, 1, setup1}, {
+	&addr1, 1024, setup1}, {
+	&addr1, 1024 * 1024, setup1}, {
+	&addr1, 1024 * 1024 * 10, setup1}
 };
 
 #if !defined(UCLINUX)
@@ -89,7 +90,7 @@ int main(int ac, char **av)
 	int lc, i;		/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != (char *) NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -163,7 +164,7 @@ void setup()
 
 void setup1(int len)
 {
-	addr1 = (char *) malloc(len);
+	addr1 = (char *)malloc(len);
 	if (addr1 == NULL)
 		tst_brkm(TFAIL, cleanup, "malloc failed");
 }

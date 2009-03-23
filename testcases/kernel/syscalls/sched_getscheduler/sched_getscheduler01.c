@@ -51,7 +51,7 @@
 #include <test.h>
 #include <usctest.h>
 
-char *TCID ="sched_getscheduler01";
+char *TCID = "sched_getscheduler01";
 int TST_TOTAL = 3;
 extern int Tst_count;
 
@@ -63,28 +63,28 @@ struct test_case_t {
 	int policy;
 } TC[] = {
 	/* set scheduling policy to SCHED_RR */
-	{1, SCHED_RR},
-
-	/* set scheduling policy to SCHED_OTHER */
-	{0, SCHED_OTHER},
-
-	/* set scheduling policy to SCHED_FIFO */
-	{1, SCHED_FIFO}
+	{
+	1, SCHED_RR},
+	    /* set scheduling policy to SCHED_OTHER */
+	{
+	0, SCHED_OTHER},
+	    /* set scheduling policy to SCHED_FIFO */
+	{
+	1, SCHED_FIFO}
 };
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned by parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned by parse_opts */
 
 	int i;
 	struct sched_param param;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	setup();
 
@@ -113,7 +113,7 @@ int main(int ac, char **av)
 			}
 
 			if (STD_FUNCTIONAL_TEST) {
-				if(TEST_RETURN != TC[i].policy) {
+				if (TEST_RETURN != TC[i].policy) {
 					tst_resm(TFAIL, "policy value returned "
 						 "is not correct");
 				} else {
@@ -128,14 +128,12 @@ int main(int ac, char **av)
 	cleanup();
 
 	return -1;
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* Must run test as root */
 	if (geteuid() != 0) {
@@ -153,8 +151,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

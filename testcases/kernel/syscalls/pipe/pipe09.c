@@ -53,7 +53,7 @@
 #include "test.h"
 #include "usctest.h"
 
-#define	PIPEWRTCNT	100		/* must be an even number */
+#define	PIPEWRTCNT	100	/* must be an even number */
 
 char *TCID = "pipe09";
 int TST_TOTAL = 1;
@@ -75,20 +75,19 @@ ssize_t safe_read(int fd, void *buf, size_t count)
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	int i, red, wtstatus;
-	int pipefd[2];			/* fds for pipe read/write */
+	int pipefd[2];		/* fds for pipe read/write */
 	char rebuf[BUFSIZ];
-	int Acnt = 0, Bcnt = 0;		/* count 'A' and 'B' */
-	int fork_1, fork_2;		/* ret values in parent */
+	int Acnt = 0, Bcnt = 0;	/* count 'A' and 'B' */
+	int fork_1, fork_2;	/* ret values in parent */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	setup();
 
@@ -112,8 +111,7 @@ int main(int ac, char **av)
 
 		if ((fork_1 = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() #1 failed");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		if (fork_1 == 0) {	/* 1st child */
 			if (close(pipefd[0]) != 0) {
@@ -141,8 +139,7 @@ int main(int ac, char **av)
 
 		if ((fork_2 = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() #2 failed");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		if (fork_2 == 0) {	/* 2nd child */
 			if (close(pipefd[0]) != 0) {
@@ -171,8 +168,7 @@ int main(int ac, char **av)
 		if (close(pipefd[1]) != 0) {
 			tst_brkm(TBROK, cleanup, "pipefd[1] close failed, "
 				 "errno = %d", errno);
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		while ((red = safe_read(pipefd[0], rebuf, 100)) > 0) {
 			for (i = 0; i < red; i++) {
@@ -207,15 +203,13 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -228,8 +222,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

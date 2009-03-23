@@ -69,9 +69,9 @@
 void setup(void);
 void cleanup(void);
 
-char *TCID = "dup201";			/* Test program identifier.    */
-int TST_TOTAL = 4;			/* Total number of test cases. */
-extern int Tst_count;			/* Test counter for tst_* routines */
+char *TCID = "dup201";		/* Test program identifier.    */
+int TST_TOTAL = 4;		/* Total number of test cases. */
+extern int Tst_count;		/* Test counter for tst_* routines */
 
 int maxfd;
 int goodfd = 5;
@@ -81,35 +81,35 @@ int fd, fd1;
 int mypid;
 char fname[20];
 
-int exp_enos[]={EBADF, 0};
+int exp_enos[] = { EBADF, 0 };
 
 struct test_case_t {
-        int *ofd;
+	int *ofd;
 	int *nfd;
-        int error;
-        void (*setupfunc)();
+	int error;
+	void (*setupfunc) ();
 } TC[] = {
 	/* First fd argument is less than 0 - EBADF */
-        { &badfd, &goodfd, EBADF, NULL},
-
-	/* First fd argument is getdtablesize() - EBADF */
-        { &maxfd, &goodfd, EBADF, NULL},
-
-	/* Second fd argument is less than 0 - EBADF */
-        { &mystdout, &badfd, EBADF, NULL},
-
-	/* Second fd argument is getdtablesize() - EBADF */
-        { &mystdout, &maxfd, EBADF, NULL},
-};
+	{
+	&badfd, &goodfd, EBADF, NULL},
+	    /* First fd argument is getdtablesize() - EBADF */
+	{
+	&maxfd, &goodfd, EBADF, NULL},
+	    /* Second fd argument is less than 0 - EBADF */
+	{
+	&mystdout, &badfd, EBADF, NULL},
+	    /* Second fd argument is getdtablesize() - EBADF */
+	{
+&mystdout, &maxfd, EBADF, NULL},};
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
+	int lc;			/* loop counter */
 	int i, j;
-	char *msg;			/* message returned from parse_opts */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -129,30 +129,30 @@ int main(int ac, char **av)
 
 			/* call the test case setup routine if necessary */
 			if (TC[i].setupfunc != NULL) {
-				(*TC[i].setupfunc)();
+				(*TC[i].setupfunc) ();
 			}
 
 			TEST(dup2(*TC[i].ofd, *TC[i].nfd));
 
-                        if (TEST_RETURN != -1) {
-                                tst_resm(TFAIL, "call succeeded unexpectedly");
-                                continue;
-                        }
+			if (TEST_RETURN != -1) {
+				tst_resm(TFAIL, "call succeeded unexpectedly");
+				continue;
+			}
 
-                        TEST_ERROR_LOG(TEST_ERRNO);
+			TEST_ERROR_LOG(TEST_ERRNO);
 
-                        if (TEST_ERRNO == TC[i].error) {
-                                tst_resm(TPASS, "expected failure - "
-                                         "errno = %d : %s", TEST_ERRNO,
-                                         strerror(TEST_ERRNO));
-                        } else {
-                                tst_resm(TFAIL, "unexpected error - %d : %s - "
-                                         "expected %d", TEST_ERRNO,
-                                         strerror(TEST_ERRNO), TC[i].error);
+			if (TEST_ERRNO == TC[i].error) {
+				tst_resm(TPASS, "expected failure - "
+					 "errno = %d : %s", TEST_ERRNO,
+					 strerror(TEST_ERRNO));
+			} else {
+				tst_resm(TFAIL, "unexpected error - %d : %s - "
+					 "expected %d", TEST_ERRNO,
+					 strerror(TEST_ERRNO), TC[i].error);
 			}
 		}
 		/* cleanup things in case we are looping */
-		for (j=fd1; j<maxfd; j++) {
+		for (j = fd1; j < maxfd; j++) {
 			sprintf(fname, "dup201.%d.%d", j, mypid);
 			(void)close(j);
 			(void)unlink(fname);
@@ -160,15 +160,13 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -188,8 +186,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

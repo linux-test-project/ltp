@@ -92,21 +92,26 @@ int main(int ac, char **av)
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 	TEST_PAUSE;
 
-	tst_resm(TINFO, "checking if gettimeofday is monotonous, takes %ss", tlen);
+	tst_resm(TINFO, "checking if gettimeofday is monotonous, takes %ss",
+		 tlen);
 	signal(SIGALRM, breakout);
 	alarm(atoi(tlen));
 
 	if (gettimeofday(&tv1, NULL) != 0)
-		tst_brkm(TBROK, cleanup, "first gettimeofday() failed: %s\n", strerror(errno));
+		tst_brkm(TBROK, cleanup, "first gettimeofday() failed: %s\n",
+			 strerror(errno));
 	while (!done) {
 		if (gettimeofday(&tv2, NULL) != 0)
-			tst_brkm(TBROK, cleanup, "loop gettimeofday() failed: %s\n", strerror(errno));
+			tst_brkm(TBROK, cleanup,
+				 "loop gettimeofday() failed: %s\n",
+				 strerror(errno));
 
 		if (tv2.tv_sec < tv1.tv_sec ||
 		    (tv2.tv_sec == tv1.tv_sec && tv2.tv_usec < tv1.tv_usec)) {
 			tst_resm(TFAIL,
-				"Time is going backwards: old %d.%d vs new %d.%d!",
-				tv1.tv_sec, tv1.tv_usec, tv2.tv_sec, tv2.tv_usec);
+				 "Time is going backwards: old %d.%d vs new %d.%d!",
+				 tv1.tv_sec, tv1.tv_usec, tv2.tv_sec,
+				 tv2.tv_usec);
 			cleanup();
 			return 1;
 		}

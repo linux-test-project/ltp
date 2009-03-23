@@ -73,9 +73,9 @@ void setup();
 void setup1(int);
 void cleanup();
 
-char *TCID = "munlock01";		/* Test program identifier.    */
-int TST_TOTAL = 4;			/* Total number of test cases. */
-extern int Tst_count;			/* TestCase counter for tst_* routine */
+char *TCID = "munlock01";	/* Test program identifier.    */
+int TST_TOTAL = 4;		/* Total number of test cases. */
+extern int Tst_count;		/* TestCase counter for tst_* routine */
 
 int exp_enos[] = { 0 };
 
@@ -86,10 +86,11 @@ struct test_case_t {
 	int len;
 	void (*setupfunc) ();
 } TC[] = {
-	{&addr1, 1, setup1},
-	{&addr1, 1024, setup1},
-	{&addr1, 1024 * 1024, setup1},
-	{&addr1, 1024 * 1024 * 10, setup1}
+	{
+	&addr1, 1, setup1}, {
+	&addr1, 1024, setup1}, {
+	&addr1, 1024 * 1024, setup1}, {
+	&addr1, 1024 * 1024 * 10, setup1}
 };
 
 int main(int ac, char **av)
@@ -97,7 +98,7 @@ int main(int ac, char **av)
 	int lc, i;		/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != (char *) NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -141,7 +142,7 @@ int main(int ac, char **av)
 
 void setup1(int i)
 {
-	addr1 = (char *) malloc(TC[i].len);
+	addr1 = (char *)malloc(TC[i].len);
 	if (addr1 == NULL)
 		tst_brkm(TFAIL, cleanup, "malloc failed");
 	TEST(mlock(*(TC[i].addr), TC[i].len));
@@ -150,8 +151,8 @@ void setup1(int i)
 	if (TEST_RETURN == -1) {
 		TEST_ERROR_LOG(TEST_ERRNO);
 		tst_brkm(TFAIL, cleanup, "mlock(%p, %d) Failed with return=%d,"
-			"errno=%d : %s", TC[i].addr, TC[i].len, TEST_RETURN,
-		       	TEST_ERRNO, strerror(TEST_ERRNO));
+			 "errno=%d : %s", TC[i].addr, TC[i].len, TEST_RETURN,
+			 TEST_ERRNO, strerror(TEST_ERRNO));
 	}
 }
 
@@ -161,7 +162,7 @@ void setup()
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/* Check whether we are root*/
+	/* Check whether we are root */
 	if (geteuid() != 0) {
 		tst_brkm(TBROK, tst_exit, "Test must be run as root");
 	}

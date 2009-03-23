@@ -50,87 +50,86 @@
 void setup();
 void cleanup();
 
-char *TCID="getdtablesize01";     /* Test program identifier.    */
-int TST_TOTAL=1;          	  /* Total number of test cases. */
-extern int Tst_count;      	  /* Test Case counter for tst_* routines */
+char *TCID = "getdtablesize01";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
+extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int main()
 {
- 	int table_size,loop,fd,count = 0;
+	int table_size, loop, fd, count = 0;
 	int max_val_opfiles;
-  struct rlimit rlp;
+	struct rlimit rlp;
 
+	setup();
+	table_size = getdtablesize();
+	getrlimit(RLIMIT_NOFILE, &rlp);
+	max_val_opfiles = (rlim_t) rlp.rlim_cur;
 
- setup();
- table_size = getdtablesize();
-	getrlimit(RLIMIT_NOFILE,&rlp);
-	max_val_opfiles = (rlim_t)rlp.rlim_cur;
+	tst_resm(TINFO,
+		 "Maximum number of files a process can have opened is %d",
+		 table_size);
+	tst_resm(TINFO,
+		 "Checking with the value returned by getrlimit...RLIMIT_NOFILE");
 
+	if (table_size == max_val_opfiles)
+		tst_resm(TPASS, "got correct dtablesize, value is %d",
+			 max_val_opfiles);
+	else {
+		tst_resm(TFAIL, "got incorrect table size, value is %d",
+			 max_val_opfiles);
+		cleanup();
+	}
 
- tst_resm(TINFO,"Maximum number of files a process can have opened is %d",table_size);
- tst_resm(TINFO,"Checking with the value returned by getrlimit...RLIMIT_NOFILE");
-
- if (table_size == max_val_opfiles)
- tst_resm(TPASS,"got correct dtablesize, value is %d",max_val_opfiles);
- else
- {
-   tst_resm(TFAIL,"got incorrect table size, value is %d",max_val_opfiles);
-   cleanup();
- }
-
- tst_resm(TINFO,"Checking Max num of files that can be opened by a process.Should be: RLIMIT_NOFILE - 1");
- for(loop=1;loop<=max_val_opfiles;loop++)
- {
-  fd = open("/etc/hosts",O_RDONLY);
+	tst_resm(TINFO,
+		 "Checking Max num of files that can be opened by a process.Should be: RLIMIT_NOFILE - 1");
+	for (loop = 1; loop <= max_val_opfiles; loop++) {
+		fd = open("/etc/hosts", O_RDONLY);
 #ifdef DEBUG
-  printf("Opened file num %d\n",fd);
+		printf("Opened file num %d\n", fd);
 #endif
-  if( fd == -1)
-  break;
-  else
-  count = fd;
- }
+		if (fd == -1)
+			break;
+		else
+			count = fd;
+	}
 
 //Now the max files opened should be RLIMIT_NOFILE - 1 , why ? read getdtablesize man page
 
- if (count > 0)
-   close(count);
- if(count == (max_val_opfiles -1) )
- tst_resm(TPASS,"%d = %d",count, (max_val_opfiles - 1));
- else
- tst_resm(TFAIL,"%d != %d",count, (max_val_opfiles - 1));
- cleanup();
+	if (count > 0)
+		close(count);
+	if (count == (max_val_opfiles - 1))
+		tst_resm(TPASS, "%d = %d", count, (max_val_opfiles - 1));
+	else
+		tst_resm(TFAIL, "%d != %d", count, (max_val_opfiles - 1));
+	cleanup();
 
- return EXIT_SUCCESS;
+	return EXIT_SUCCESS;
 }
+
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void
-setup()
+void setup()
 {
-    /* capture signals */
-    tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	/* capture signals */
+	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-    /* Pause if that option was specified */
-    TEST_PAUSE;
-}       /* End setup() */
+	/* Pause if that option was specified */
+	TEST_PAUSE;
+}				/* End setup() */
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
  *              completion or premature exit.
  ***************************************************************/
-void
-cleanup()
+void cleanup()
 {
-    /*
-     * print timing stats if that option was specified.
-     * print errno log if that option was specified.
-     */
-    TEST_CLEANUP;
+	/*
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
+	TEST_CLEANUP;
 
-    /* exit with return code appropriate for results */
-    tst_exit();
-}       /* End cleanup() */
-
-
+	/* exit with return code appropriate for results */
+	tst_exit();
+}				/* End cleanup() */

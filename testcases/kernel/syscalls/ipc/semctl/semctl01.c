@@ -69,7 +69,7 @@ char *TCID = "semctl01";
 int TST_TOTAL = 10;
 extern int Tst_count;
 
-int sem_id_1 = -1;	/* a semaphore set with read and alter permissions */
+int sem_id_1 = -1;		/* a semaphore set with read and alter permissions */
 
 int sync_pipes[2];
 
@@ -93,11 +93,11 @@ struct semid_ds buf;
 unsigned short array[PSEMS];
 struct sembuf sops;
 
-#define INCVAL 2	/* a semaphore increment value */
+#define INCVAL 2		/* a semaphore increment value */
 #define NEWMODE	066
 #define NCHILD	5
-#define SEM2	2	/* semaphore to use for GETPID and GETVAL */
-#define SEM4	4	/* semaphore to use for GETNCNT and GETZCNT */
+#define SEM2	2		/* semaphore to use for GETPID and GETVAL */
+#define SEM4	4		/* semaphore to use for GETNCNT and GETZCNT */
 #define ONE	1
 #ifdef _XLC_COMPILER
 #define SEMUN_CAST
@@ -122,49 +122,40 @@ int sem_op;
 struct test_case_t {
 	int semnum;		/* the primitive semaphore to use */
 	int cmd;		/* the command to test */
-	void (*func_test)();	/* the test function */
+	void (*func_test) ();	/* the test function */
 	union semun arg;
-	void (*func_setup)();	/* the setup function if necessary */
+	void (*func_setup) ();	/* the setup function if necessary */
 } TC[] = {
-	{0, IPC_STAT, func_stat, SEMUN_CAST &buf, NULL},
-
-	{0, IPC_SET, func_set, SEMUN_CAST &buf, set_setup},
-
-	{0, GETALL, func_gall, SEMUN_CAST array, NULL},
-
-	{SEM4, GETNCNT, func_cnt, SEMUN_CAST &buf, cnt_setup},
-
-	{SEM2, GETPID, func_pid, SEMUN_CAST &buf, pid_setup},
-
-	{SEM2, GETVAL, func_gval, SEMUN_CAST &buf, NULL},
-
-	{SEM4, GETZCNT, func_cnt, SEMUN_CAST &buf, cnt_setup},
-
-	{0, SETALL, func_sall, SEMUN_CAST array, sall_setup},
-
-	{SEM4, SETVAL, func_sval, SEMUN_CAST INCVAL, NULL},
-
-	{0, IPC_RMID, func_rmid, SEMUN_CAST &buf, NULL}
+	{
+	0, IPC_STAT, func_stat, SEMUN_CAST & buf, NULL}, {
+	0, IPC_SET, func_set, SEMUN_CAST & buf, set_setup}, {
+	0, GETALL, func_gall, SEMUN_CAST array, NULL}, {
+	SEM4, GETNCNT, func_cnt, SEMUN_CAST & buf, cnt_setup}, {
+	SEM2, GETPID, func_pid, SEMUN_CAST & buf, pid_setup}, {
+	SEM2, GETVAL, func_gval, SEMUN_CAST & buf, NULL}, {
+	SEM4, GETZCNT, func_cnt, SEMUN_CAST & buf, cnt_setup}, {
+	0, SETALL, func_sall, SEMUN_CAST array, sall_setup}, {
+	SEM4, SETVAL, func_sval, SEMUN_CAST INCVAL, NULL}, {
+	0, IPC_RMID, func_rmid, SEMUN_CAST & buf, NULL}
 };
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int i, j;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
-
 #ifdef UCLINUX
 	argv0 = av[0];
 	maybe_run_child(&child_pid, "nd", 1, &sem_id_1);
 	maybe_run_child(&child_cnt, "ndd", 2, &sem_id_1, &sem_op);
 #endif
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -173,7 +164,7 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		/* loop through the test cases */
-		for (i=0; i<TST_TOTAL; i++) {
+		for (i = 0; i < TST_TOTAL; i++) {
 
 			/*
 			 * Set up any conditions if needed
@@ -182,13 +173,13 @@ int main(int ac, char **av)
 				/* call the setup function */
 				switch (TC[i].cmd) {
 				case GETNCNT:
-					(*TC[i].func_setup)(-ONE);
+					(*TC[i].func_setup) (-ONE);
 					break;
 				case GETZCNT:
-					(*TC[i].func_setup)(0);
+					(*TC[i].func_setup) (0);
 					break;
 				default:
-					(*TC[i].func_setup)();
+					(*TC[i].func_setup) ();
 					break;
 				}
 			}
@@ -213,16 +204,14 @@ int main(int ac, char **av)
 					 */
 					switch (TC[i].cmd) {
 					case GETNCNT:
-						/*FALLTHROUGH*/
-					case GETZCNT:
-						/*FALLTHROUGH*/
-					case GETPID:
-						/*FALLTHROUGH*/
-					case GETVAL:
-						(*TC[i].func_test)(TEST_RETURN);
+					 /*FALLTHROUGH*/ case GETZCNT:
+					 /*FALLTHROUGH*/ case GETPID:
+					 /*FALLTHROUGH*/ case GETVAL:
+						(*TC[i].
+						 func_test) (TEST_RETURN);
 						break;
 					default:
-						(*TC[i].func_test)();
+						(*TC[i].func_test) ();
 						break;
 					}
 				} else {
@@ -235,12 +224,11 @@ int main(int ac, char **av)
 			 */
 			switch (TC[i].cmd) {
 			case GETNCNT:
-				/*FALLTHROUGH*/
-			case GETZCNT:
-				for (j=0; j<NCHILD; j++) {
+			 /*FALLTHROUGH*/ case GETZCNT:
+				for (j = 0; j < NCHILD; j++) {
 					if (kill(pid_arr[j], SIGKILL) == -1) {
 						tst_brkm(TBROK, cleanup,
-							"child kill failed");
+							 "child kill failed");
 					}
 				}
 				break;
@@ -251,30 +239,29 @@ int main(int ac, char **av)
 		 */
 		if (TEST_LOOPING(lc)) {
 			if ((sem_id_1 = semget(semkey, PSEMS,
-			    IPC_CREAT | IPC_EXCL | SEM_RA)) == -1 ) {
-				tst_brkm(TBROK, cleanup, "couldn't recreate "
-					 "semaphore");
+					       IPC_CREAT | IPC_EXCL | SEM_RA))
+			    == -1) {
+				tst_brkm(TBROK, cleanup,
+					 "couldn't recreate " "semaphore");
 			}
 		}
 	}
 
 	cleanup();
 
-	/*NOTREACHED*/
-        return 0;
+	 /*NOTREACHED*/ return 0;
 
 }
 
 /*
  * func_stat() - check the functionality of the IPC_STAT command with semctl()
  */
-void
-func_stat()
+void func_stat()
 {
 	/* check the number of semaphores and the ipc_perm.mode value */
 	if (buf.sem_nsems == PSEMS && buf.sem_perm.mode == (SEM_RA)) {
 		tst_resm(TPASS, "buf.sem_nsems and buf.sem_perm.mode"
-				" are correct");
+			 " are correct");
 	} else {
 		tst_resm(TFAIL, "semaphore STAT info is incorrect");
 	}
@@ -283,8 +270,7 @@ func_stat()
 /*
  * set_setup() - set up for the IPC_SET command with semctl()
  */
-void
-set_setup()
+void set_setup()
 {
 	/* set up a new mode for the semaphore set */
 	buf.sem_perm.mode = SEM_RA | NEWMODE;
@@ -293,8 +279,7 @@ set_setup()
 /*
  * func_set() - check the functionality of the IPC_SET command with semctl()
  */
-void
-func_set()
+void func_set()
 {
 	/* first stat the semaphore to get the new data */
 	if (semctl(sem_id_1, 0, IPC_STAT, (union semun)&buf) == -1) {
@@ -313,13 +298,12 @@ func_set()
 /*
  * func_gall() - check the functionality of the GETALL command with semctl()
  */
-void
-func_gall()
+void func_gall()
 {
 	int i;
 
 	/* the initial value of the primitive semaphores should be zero */
-	for (i=0 ; i<PSEMS; i++) {
+	for (i = 0; i < PSEMS; i++) {
 		if (array[i] != 0) {
 			tst_resm(TFAIL, "semaphore %d has unexpected value", i);
 			return;
@@ -331,8 +315,7 @@ func_gall()
 /*
  * cnt_setup() - set up for the GETNCNT and GETZCNT commands with semctl()
  */
-void
-cnt_setup(int opval)
+void cnt_setup(int opval)
 {
 	int pid, i;
 
@@ -351,7 +334,7 @@ cnt_setup(int opval)
 	}
 
 	sops.sem_op = opval;	/* set the correct operation */
-	for (i=0; i<NCHILD; i++) {
+	for (i = 0; i < NCHILD; i++) {
 		if (sync_pipe_create(sync_pipes, PIPE_NAME) == -1)
 			tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
 
@@ -359,23 +342,24 @@ cnt_setup(int opval)
 		if ((pid = FORK_OR_VFORK()) == -1)
 			tst_brkm(TBROK, cleanup, "fork failed in cnt_setup");
 
-		if (pid == 0) {		/* child */
+		if (pid == 0) {	/* child */
 #ifdef UCLINUX
 			sem_op = sops.sem_op;
-			if (self_exec(argv0, "ndd", 2, sem_id_1,
-				      sem_op) < 0) {
+			if (self_exec(argv0, "ndd", 2, sem_id_1, sem_op) < 0) {
 				tst_brkm(TBROK, cleanup, "self_exec failed "
 					 "in cnt_setup");
 			}
 #else
 			child_cnt();
 #endif
-		} else {		/* parent */
+		} else {	/* parent */
 			if (sync_pipe_wait(sync_pipes) == -1)
-				tst_brkm(TBROK, cleanup, "sync_pipe_wait failed");
+				tst_brkm(TBROK, cleanup,
+					 "sync_pipe_wait failed");
 
 			if (sync_pipe_close(sync_pipes, PIPE_NAME) == -1)
-				tst_brkm(TBROK, cleanup, "sync_pipe_close failed");
+				tst_brkm(TBROK, cleanup,
+					 "sync_pipe_close failed");
 
 			/* save the pid so we can kill it later */
 			pid_arr[i] = pid;
@@ -388,8 +372,7 @@ cnt_setup(int opval)
 	sleep(1);
 }
 
-void
-child_cnt()
+void child_cnt()
 {
 #ifdef UCLINUX
 	sops.sem_op = (short int)sem_op;
@@ -422,8 +405,7 @@ child_cnt()
  * func_cnt() - check the functionality of the GETNCNT and GETZCNT commands
  *	        with semctl()
  */
-void
-func_cnt(int rval)
+void func_cnt(int rval)
 {
 
 	if (rval == NCHILD) {
@@ -436,8 +418,7 @@ func_cnt(int rval)
 /*
  * pid_setup() - set up for the GETPID command with semctl()
  */
-void
-pid_setup()
+void pid_setup()
 {
 	int pid;
 
@@ -472,8 +453,7 @@ pid_setup()
 	}
 }
 
-void
-child_pid()
+void child_pid()
 {
 #ifdef UCLINUX
 	if (sync_pipe_create(sync_pipes, PIPE_NAME) == -1)
@@ -502,8 +482,7 @@ child_pid()
 /*
  * func_pid() - check the functionality of the GETPID command with semctl()
  */
-void
-func_pid(int rval)
+void func_pid(int rval)
 {
 	/* compare the rval (pid) to the saved pid from the setup */
 	if (rval == pid_arr[SEM2]) {
@@ -516,8 +495,7 @@ func_pid(int rval)
 /*
  * func_gval() - check the functionality of the GETVAL command with semctl()
  */
-void
-func_gval(int rval)
+void func_gval(int rval)
 {
 	/*
 	 * This is a simple test.  The semaphore value should be equal
@@ -534,12 +512,11 @@ func_gval(int rval)
 /*
  * all_setup() - set up for the SETALL command with semctl()
  */
-void
-sall_setup()
+void sall_setup()
 {
 	int i;
 
-	for (i=0; i<PSEMS; i++) {
+	for (i = 0; i < PSEMS; i++) {
 		/* initialize the array values to 3 */
 		array[i] = 3;
 	}
@@ -548,8 +525,7 @@ sall_setup()
 /*
  * func_sall() - check the functionality of the SETALL command with semctl()
  */
-void
-func_sall()
+void func_sall()
 {
 	int i;
 	unsigned short rarray[PSEMS];
@@ -562,7 +538,7 @@ func_sall()
 		tst_brkm(TBROK, cleanup, "semctl failed in func_sall");
 	}
 
-	for (i=0; i<PSEMS; i++) {
+	for (i = 0; i < PSEMS; i++) {
 		if (array[i] != rarray[i]) {
 			tst_resm(TFAIL, "semaphore values are not correct");
 			return;
@@ -575,8 +551,7 @@ func_sall()
 /*
  * func_sval() - check the functionality of the SETVAL command with semctl()
  */
-void
-func_sval()
+void func_sval()
 {
 	int semv;
 	union semun arr;
@@ -599,8 +574,7 @@ func_sval()
 /*
  * func_rmid() - check the functionality of the IPC_RMID command with semctl()
  */
-void
-func_rmid()
+void func_rmid()
 {
 
 	/*
@@ -622,8 +596,7 @@ func_rmid()
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -643,7 +616,7 @@ setup(void)
 
 	/* create a semaphore set with read and alter permissions */
 	if ((sem_id_1 =
-	     semget(semkey, PSEMS, IPC_CREAT | IPC_EXCL | SEM_RA)) == -1 ) {
+	     semget(semkey, PSEMS, IPC_CREAT | IPC_EXCL | SEM_RA)) == -1) {
 		tst_brkm(TBROK, cleanup, "couldn't create semaphore in setup");
 	}
 }
@@ -652,8 +625,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/* if it exists, remove the semaphore resource */
 	rm_sema(sem_id_1);
@@ -670,4 +642,3 @@ cleanup(void)
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

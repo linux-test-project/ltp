@@ -20,7 +20,7 @@
 # 02/05/03  Modified - Manoj Iyer <manjo@mail.utexas.edu> use USCTEST macros
 #           fixed bugs.
 # 07/26/05  Michael Reed  <mreedltp@vnet.ibm.com>
-#           Made changes to account for the replacement of syslogd 
+#           Made changes to account for the replacement of syslogd$
 #           with syslog-ng
 #
 ##################################################################
@@ -72,7 +72,7 @@ syslog_case2()
 
 	echo
 	tst_resm TINFO  "syslog: Testing the messages of all levels"
-       
+      $
 	level_no=0
 	level="emerg alert crit err warning notice info debug"
 	tst_resm TINFO  "syslog: Testing whether messages are logged into log file"
@@ -105,7 +105,7 @@ syslog_case2()
 	       tst_resm TBROK  "$CONFIG_FILE not found!"
 	else
             #Pause if another LTP syslog test is running
-	    while [ -e $CONFIG_FILE.ltpback ]  
+	    while [ -e $CONFIG_FILE.ltpback ] $
               do
                 if [ $(( wait_count-- )) -gt 0 ]
                 then

@@ -34,15 +34,12 @@ int TST_TOTAL = 1;
 #include <errno.h>
 #include <string.h>
 
-
-
 /*
  * cleanup()
  * 	performs all the ONE TIME cleanup for this test at completion or
  * 	premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing status if that option was specified
@@ -56,31 +53,28 @@ cleanup(void)
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
-    /* capture signals */
-    tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	/* capture signals */
+	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-    /* Pause if that option was specified */
-    TEST_PAUSE;
+	/* Pause if that option was specified */
+	TEST_PAUSE;
 
-}	/* End setup() */
+}				/* End setup() */
 
-int
-main(int argc, char** argv)
+int main(int argc, char **argv)
 {
-	int   lc;			/* loop counter */
-	char *msg;			/* parse_opts() return message */
+	int lc;			/* loop counter */
+	char *msg;		/* parse_opts() return message */
 
 	io_context_t ctx;
 	long expected_return;
 
-
-	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg =
+	     parse_opts(argc, argv, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	setup();
 
@@ -90,31 +84,29 @@ main(int argc, char** argv)
 		Tst_count = 0;
 
 		/*
-		  DESCRIPTION
-		  io_cancel attempts to cancel an asynchronous I/O operation  previously
-		  submitted  with  the io_submit system call.  ctx_id is the AIO context
-		  ID of the operation to be cancelled.  If the AIO context is found, the
-		  event  will be cancelled and then copied into the memory pointed to by
-		  result without being placed into the completion queue.
+		   DESCRIPTION
+		   io_cancel attempts to cancel an asynchronous I/O operation  previously
+		   submitted  with  the io_submit system call.  ctx_id is the AIO context
+		   ID of the operation to be cancelled.  If the AIO context is found, the
+		   event  will be cancelled and then copied into the memory pointed to by
+		   result without being placed into the completion queue.
 
-		  RETURN VALUE
-		  io_cancel returns 0 on success; otherwise, it returns one of  the  er-
-		  rors listed in the "Errors" section.
+		   RETURN VALUE
+		   io_cancel returns 0 on success; otherwise, it returns one of  the  er-
+		   rors listed in the "Errors" section.
 
-		  ERRORS
-		  EINVAL The AIO context specified by ctx_id is invalid.
+		   ERRORS
+		   EINVAL The AIO context specified by ctx_id is invalid.
 
-		  EFAULT One of the data structures points to invalid data.
-		*/
+		   EFAULT One of the data structures points to invalid data.
+		 */
 		expected_return = -EFAULT;
-		TEST(io_cancel( ctx, NULL, NULL ));
-
+		TEST(io_cancel(ctx, NULL, NULL));
 
 		if (TEST_RETURN == 0) {
 			tst_resm(TFAIL, "call succeeded unexpectedly");
 			continue;
 		}
-
 
 		if (TEST_RETURN == expected_return) {
 			tst_resm(TPASS, "expected failure - "
@@ -122,15 +114,14 @@ main(int argc, char** argv)
 				 strerror(-1 * TEST_RETURN));
 		} else {
 			tst_resm(TFAIL, "unexpected returned value - %d - "
-				 "expected %d", TEST_RETURN,
-				 expected_return);
+				 "expected %d", TEST_RETURN, expected_return);
 		}
 
 		/*
-		  EAGAIN The iocb specified was not cancelled.
+		   EAGAIN The iocb specified was not cancelled.
 
-		  ENOSYS io_cancel is not implemented on this architecture.
-		*/
+		   ENOSYS io_cancel is not implemented on this architecture.
+		 */
 		/* Crackerjack has a test case for ENOSYS. But Testing for ENOSYS
 		   is not meaningful for LTP, I think.
 		   -- Masatake */

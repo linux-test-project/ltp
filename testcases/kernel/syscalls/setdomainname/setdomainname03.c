@@ -81,30 +81,28 @@
 
 #define MAX_NAME_LEN __NEW_UTS_LEN
 
-
 char *TCID = "setdomainname03";	/* Test program identifier. */
 int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-static int exp_enos[] = {EPERM, 0};
+static int exp_enos[] = { EPERM, 0 };
 
 static char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
-static char  test_domain_name[MAX_NAME_LEN] = "test_dom";
-static char  old_domain_name[MAX_NAME_LEN];
+static char test_domain_name[MAX_NAME_LEN] = "test_dom";
+static char old_domain_name[MAX_NAME_LEN];
 
-static void setup();			/* setup function for the tests */
-static void cleanup();			/* cleanup function for the tests */
+static void setup();		/* setup function for the tests */
+static void cleanup();		/* cleanup function for the tests */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -119,23 +117,23 @@ main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/*
 		 * Call setdomainname(2)
 		 */
 		TEST(setdomainname(test_domain_name, MAX_NAME_LEN));
 		if ((TEST_RETURN == -1) && (TEST_ERRNO == EPERM)) {
-			tst_resm(TPASS,"expected failure; Got EPERM");
+			tst_resm(TPASS, "expected failure; Got EPERM");
 		} else {
 			tst_resm(TFAIL, "Call failed to produce "
-					"expected error;  Expected errno: %d "
-					"Got : %d, %s", EPERM, TEST_ERRNO,
-					strerror(TEST_ERRNO));
+				 "expected error;  Expected errno: %d "
+				 "Got : %d, %s", EPERM, TEST_ERRNO,
+				 strerror(TEST_ERRNO));
 		}
 		TEST_ERROR_LOG(TEST_ERRNO);
 
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/*
 	 * Invoke cleanup() to delete the test directories created
@@ -143,16 +141,14 @@ main(int ac, char **av)
 	 */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 
-}	/* End main */
+}				/* End main */
 
 /*
  * setup(void) - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 
 	/* Capture unexpected signals */
@@ -165,19 +161,19 @@ setup()
 	if (geteuid() != 0) {
 		tst_brkm(TBROK, tst_exit, "Test must be run as root");
 	}
-	if((ltpuser = getpwnam(nobody_uid)) == NULL) {
+	if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
 		tst_brkm(TBROK, tst_exit, "\"nobody\" user not present");
 	}
 	if (seteuid(ltpuser->pw_uid) == -1) {
 		tst_resm(TWARN, "seteuid failed to "
-			"to set the effective uid to %d", ltpuser->pw_uid);
+			 "to set the effective uid to %d", ltpuser->pw_uid);
 		perror("seteuid");
 	}
 
 	/* Save current domainname */
-	 if((getdomainname (old_domain_name, MAX_NAME_LEN)) < 0 ) {
+	if ((getdomainname(old_domain_name, MAX_NAME_LEN)) < 0) {
 		tst_brkm(TBROK, tst_exit, "getdomainname() failed while"
-					  " getting current domain name");
+			 " getting current domain name");
 	}
 
 	/* Pause if that option was specified */
@@ -188,8 +184,7 @@ setup()
 /*
  * cleanup() - Performs all ONE TIME cleanup for this test at
  */
-void
-cleanup()
+void cleanup()
 {
 
 	/*
@@ -201,15 +196,15 @@ cleanup()
 	/* Set effective user id back to root */
 	if (seteuid(0) == -1) {
 		tst_resm(TWARN, "seteuid failed to "
-				"to set the effective uid to root" );
+			 "to set the effective uid to root");
 		perror("seteuid");
 	}
 
 	/* Restore domain name */
-	if((setdomainname (old_domain_name, strlen(old_domain_name)))
-	   < 0 ) {
+	if ((setdomainname(old_domain_name, strlen(old_domain_name)))
+	    < 0) {
 		tst_resm(TWARN, "setdomainname() failed while restoring"
-				" domainname to \"%s\"", old_domain_name);
+			 " domainname to \"%s\"", old_domain_name);
 	}
 
 	/* exit with return code appropriate for results */

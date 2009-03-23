@@ -72,7 +72,6 @@ char *TCID = "ioperm02";	/* Test program identifier.    */
 
 #if defined __i386__ || defined(__x86_64__)
 
-
 #include <errno.h>
 #include <unistd.h>
 #include <sys/io.h>
@@ -85,31 +84,31 @@ char *TCID = "ioperm02";	/* Test program identifier.    */
 #define TURN_OFF 0
 #define EXP_RET_VAL -1
 #ifndef IO_BITMAP_BITS
-#define IO_BITMAP_BITS 1024  /* set to default value since some H/W may not support 0x10000 even with a 2.6.8 kernel */
+#define IO_BITMAP_BITS 1024	/* set to default value since some H/W may not support 0x10000 even with a 2.6.8 kernel */
 #define IO_BITMAP_BITS_16 65536
 #endif
 
 static void setup();
-static int  setup1(void);
+static int setup1(void);
 static void cleanup1();
 static void cleanup();
 
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-static int exp_enos[] = {EINVAL, EPERM, 0};
+static int exp_enos[] = { EINVAL, EPERM, 0 };
 
 static char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
 struct test_cases_t {
-	long	from;		/* starting port address */
-	long	num;		/* no. of bytes from starting address */
-	int	turn_on;
-	char	*desc;		/* test case description */
-	int 	exp_errno;	/* expected error number */
+	long from;		/* starting port address */
+	long num;		/* no. of bytes from starting address */
+	int turn_on;
+	char *desc;		/* test case description */
+	int exp_errno;		/* expected error number */
 };
 
 int TST_TOTAL = 2;
-struct test_cases_t* test_cases;
+struct test_cases_t *test_cases;
 
 int main(int ac, char **av)
 {
@@ -117,8 +116,8 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
-	     != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL))
+	    != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -144,20 +143,20 @@ int main(int ac, char **av)
 			/* Test the system call */
 
 			TEST(ioperm(test_cases[i].from,
-			 	test_cases[i].num, test_cases[i].turn_on));
+				    test_cases[i].num, test_cases[i].turn_on));
 
 			if ((TEST_RETURN == EXP_RET_VAL) &&
-		    		(TEST_ERRNO == test_cases[i].exp_errno)) {
-				 tst_resm(TPASS, "Expected failure for %s, "
-					"errno: %d", test_cases[i].desc,
-					TEST_ERRNO);
+			    (TEST_ERRNO == test_cases[i].exp_errno)) {
+				tst_resm(TPASS, "Expected failure for %s, "
+					 "errno: %d", test_cases[i].desc,
+					 TEST_ERRNO);
 			} else {
 				tst_resm(TFAIL, "Unexpected results for %s ; "
-					"returned %d (expected %d), errno %d "
-					"(expected errno  %d)",
-					test_cases[i].desc,
-					TEST_RETURN, EXP_RET_VAL,
-					TEST_ERRNO, test_cases[i].exp_errno);
+					 "returned %d (expected %d), errno %d "
+					 "(expected errno  %d)",
+					 test_cases[i].desc,
+					 TEST_RETURN, EXP_RET_VAL,
+					 TEST_ERRNO, test_cases[i].exp_errno);
 			}
 
 			TEST_ERROR_LOG(TEST_ERRNO);
@@ -169,32 +168,29 @@ int main(int ac, char **av)
 			}
 		}
 
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* cleanup and exit */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 
-}	/* End main */
+}				/* End main */
 
 /* setup1() - set up non-super user for second test case */
-int
-setup1(void)
+int setup1(void)
 {
 	/* switch to "nobody" user */
 	if (seteuid(ltpuser->pw_uid) == -1) {
 		tst_resm(TWARN, "Failed to set effective"
-				"uid to %d", ltpuser->pw_uid);
+			 "uid to %d", ltpuser->pw_uid);
 		return 1;
 	}
 	return 0;
 }
 
 /* cleanup1() - reset to super user for second test case */
-void
-cleanup1()
+void cleanup1()
 {
 	/* reset user as root */
 	if (seteuid(0) == -1) {
@@ -203,8 +199,7 @@ cleanup1()
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup()
+void setup()
 {
 
 	/* capture signals */
@@ -226,7 +221,8 @@ setup()
 	 *
 	 * Ricky Ng-Adam, rngadam@yahoo.com
 	 * */
-	test_cases = (struct test_cases_t*) malloc(sizeof(struct test_cases_t)*2);
+	test_cases =
+	    (struct test_cases_t *)malloc(sizeof(struct test_cases_t) * 2);
 	test_cases[0].num = NUM_BYTES;
 	test_cases[0].turn_on = TURN_ON;
 	test_cases[0].desc = "Invalid I/O address";
@@ -235,17 +231,17 @@ setup()
 	test_cases[1].turn_on = TURN_ON;
 	test_cases[1].desc = "Non super-user";
 	test_cases[1].exp_errno = EPERM;
-	if ((tst_kvercmp(2,6,8) < 0) || (tst_kvercmp(2,6,9) == 0)) {
-		/*try invalid ioperm on 1022, 1023, 1024*/
+	if ((tst_kvercmp(2, 6, 8) < 0) || (tst_kvercmp(2, 6, 9) == 0)) {
+		/*try invalid ioperm on 1022, 1023, 1024 */
 		test_cases[0].from = (IO_BITMAP_BITS - NUM_BYTES) + 1;
 
-		/*try get valid ioperm on 1021, 1022, 1023*/
+		/*try get valid ioperm on 1021, 1022, 1023 */
 		test_cases[1].from = IO_BITMAP_BITS - NUM_BYTES;
-	}  else {
-		/*try invalid ioperm on 65534, 65535, 65536*/
+	} else {
+		/*try invalid ioperm on 65534, 65535, 65536 */
 		test_cases[0].from = (IO_BITMAP_BITS_16 - NUM_BYTES) + 1;
 
-		/*try valid ioperm on 65533, 65534, 65535*/
+		/*try valid ioperm on 65533, 65534, 65535 */
 		test_cases[1].from = IO_BITMAP_BITS_16 - NUM_BYTES;
 	}
 
@@ -255,10 +251,9 @@ setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-}	/* End setup() */
+}				/* End setup() */
 
-void
-cleanup()
+void cleanup()
 {
 
 	/*
@@ -270,7 +265,7 @@ cleanup()
 	/* exit with return code appropriate for results */
 	tst_exit();
 
-}	/* End cleanup() */
+}				/* End cleanup() */
 
 #else /* __i386__ */
 
@@ -279,10 +274,10 @@ cleanup()
 
 int TST_TOTAL = 0;		/* Total number of test cases. */
 
-int
-main()
+int main()
 {
-	tst_resm(TPASS, "LSB v1.3 does not specify ioperm() for this architecture.");
+	tst_resm(TPASS,
+		 "LSB v1.3 does not specify ioperm() for this architecture.");
 	tst_exit();
 	return 0;
 }

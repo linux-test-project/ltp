@@ -75,19 +75,17 @@ static int ikids_uclinux;
 
 int main(int argc, char **argv)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	int status, pid[25], ret;
 
 	/* parse standard options */
-	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) !=
-	    (char *) NULL) {
+	if ((msg = parse_opts(argc, argv, (option_t *) NULL, NULL)) !=
+	    (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-		/*NOTREACHED*/
-	}
-
+	 /*NOTREACHED*/}
 #ifdef UCLINUX
 	maybe_run_child(&do_child, "d", &ikids_uclinux);
 #endif
@@ -104,7 +102,7 @@ int main(int argc, char **argv)
 		 * Set SIGTERM to SIG_DFL as test driver sets up to ignore
 		 * SIGTERM
 		 */
-		if ((sig_t)signal(SIGTERM, SIG_DFL) == SIG_ERR) {
+		if ((sig_t) signal(SIGTERM, SIG_DFL) == SIG_ERR) {
 			tst_resm(TFAIL, "Signal SIGTERM failed, errno = %d",
 				 errno);
 			tst_exit();
@@ -115,8 +113,7 @@ int main(int argc, char **argv)
 				if (DEBUG)
 					tst_resm(TINFO, "child # %d", ikids);
 			} else if (pid[ikids] == -1) {
-				tst_resm(TFAIL, "cannot open fork #%d",
-					 ikids);
+				tst_resm(TFAIL, "cannot open fork #%d", ikids);
 			} else {
 #ifdef UCLINUX
 				if (self_exec(argv[0], "d", ikids) < 0) {
@@ -143,8 +140,8 @@ int main(int argc, char **argv)
 		ret = waitpid(pid[MAXUPRC / 2], &status, 0);
 		if (ret != pid[MAXUPRC / 2]) {
 			tst_resm(TFAIL, "condition %d test failed. "
-				"waitpid(%d) returned %d.",
-				condition_number, pid[MAXUPRC / 2], ret);
+				 "waitpid(%d) returned %d.",
+				 condition_number, pid[MAXUPRC / 2], ret);
 		} else {
 			tst_resm(TPASS, "Got correct child PID");
 		}
@@ -160,22 +157,19 @@ int main(int argc, char **argv)
 				 condition_number);
 		} else {
 			tst_resm(TPASS, "Condition %d test passed",
-				condition_number);
+				 condition_number);
 		}
 		condition_number++;
 	}
 	cleanup();
-	/*NOTREACHED*/
-
-  return 0;
+	 /*NOTREACHED*/ return 0;
 
 }
 
 /*
  * do_child()
  */
-void
-do_child(int ikids)
+void do_child(int ikids)
 {
 	if (DEBUG)
 		tst_resm(TINFO, "child:%d", ikids);
@@ -188,8 +182,7 @@ do_child(int ikids)
  * do_child_uclinux()
  *	run do_child with the appropriate ikids variable
  */
-void
-do_child_uclinux()
+void do_child_uclinux()
 {
 	do_child(ikids_uclinux);
 }
@@ -199,8 +192,7 @@ do_child_uclinux()
  * setup()
  *	performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* Pause if that option was specified
 	 * TEST_PAUSE contains the code to fork the test with the -c option.
@@ -213,8 +205,7 @@ setup(void)
  *	performs all ONE TIME cleanup for this test at
  *	completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -224,5 +215,4 @@ cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}

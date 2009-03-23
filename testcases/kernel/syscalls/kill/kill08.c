@@ -67,7 +67,7 @@ void cleanup(void);
 void setup(void);
 void do_child(void);
 
-char *TCID= "kill08";
+char *TCID = "kill08";
 int TST_TOTAL = 1;
 
 extern int Tst_count;
@@ -76,21 +76,20 @@ extern int Tst_count;
 
 int main(int ac, char **av)
 {
-	int lc;                         /* loop counter */
-	char *msg;                      /* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	pid_t pid1, pid2;
 	int exno, status, nsig, i;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
-
 #ifdef UCLINUX
 	maybe_run_child(&do_child, "");
 #endif
 
-	setup();                        /* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -127,14 +126,13 @@ int main(int ac, char **av)
 			/* Kill all processes in this process group */
 			TEST(kill(0, TEST_SIG));
 			pause();
-			/*NOTREACHED*/
-			exit(exno);
+			 /*NOTREACHED*/ exit(exno);
 		} else {
 			waitpid(pid1, &status, 0);
 			if (TEST_RETURN != 0) {
 				tst_brkm(TFAIL, cleanup, "%s failed - errno = "
-						"%d : %s", TCID, TEST_ERRNO,
-						strerror(TEST_ERRNO));
+					 "%d : %s", TCID, TEST_ERRNO,
+					 strerror(TEST_ERRNO));
 			}
 		}
 
@@ -146,10 +144,11 @@ int main(int ac, char **av)
 			nsig = WTERMSIG(status);
 			if (nsig == TEST_SIG) {
 				tst_resm(TPASS, "received expected signal %d",
-					nsig);
+					 nsig);
 			} else {
-				tst_resm(TFAIL, "expected signal %d received %d"
-					,TEST_SIG,nsig);
+				tst_resm(TFAIL,
+					 "expected signal %d received %d",
+					 TEST_SIG, nsig);
 			}
 		} else {
 			tst_resm(TPASS, "call succeeded");
@@ -157,28 +156,24 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * do_child()
  */
-void
-do_child()
+void do_child()
 {
 	int exno = 1;
 
 	pause();
-	/*NOTREACHED*/
-	exit(exno);
+	 /*NOTREACHED*/ exit(exno);
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* Pause if that option was specified */
 	TEST_PAUSE;
@@ -188,8 +183,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing status if that option was specified.

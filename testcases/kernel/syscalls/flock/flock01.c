@@ -33,7 +33,7 @@
  *    DESCRIPTION
  * 	Test to verify flock(2) succeds with all kind of locks.
  *	Intends to provide a limited exposure of system call.
- *     
+ *    $
  *	Setup:
  *        Setup signal handling.
  *        Pause for SIGUSR1 if option specified.
@@ -56,7 +56,7 @@
  *                      where,  -c n : Run n copies concurrently.
  *                              -f   : Turn off functional testing
  *    				-e   : Turn on errno logging.
- *                              -h   : Show help screen                         
+ *                              -h   : Show help screen                        $
  *				-i n : Execute test n times.
  *                              -I x : Execute test for x seconds.
  *                              -p   : Pause for SIGUSR1 before starting
@@ -64,8 +64,6 @@
  *                              -t   : Turn on syscall timing.
  *
  ****************************************************************/
-
-
 
 #include <errno.h>
 #include <stdio.h>
@@ -78,41 +76,37 @@ void setup(void);
 void cleanup(void);
 
 /* 0 terminated list of expected errnos */
-int exp_enos[] = {EWOULDBLOCK, EAGAIN, EINVAL, 0}; 
+int exp_enos[] = { EWOULDBLOCK, EAGAIN, EINVAL, 0 };
 
-char *TCID = "flock01";			/* Test program identifier */
-int TST_TOTAL = 3;			/* Total number of test cases */
+char *TCID = "flock01";		/* Test program identifier */
+int TST_TOTAL = 3;		/* Total number of test cases */
 extern int Tst_count;
 char filename[100];
 int fd;
 
-struct test_case_t{
+struct test_case_t {
 	int operation;
 	char *opt;
-}test_cases[]={
-	{ LOCK_SH, "Shared Lock"    },
-	{ LOCK_UN, "Unlock"         },
-	{ LOCK_EX, "Exclusive Lock" },
-};
+} test_cases[] = {
+	{
+	LOCK_SH, "Shared Lock"}, {
+	LOCK_UN, "Unlock"}, {
+LOCK_EX, "Exclusive Lock"},};
 
 int main(int argc, char **argv)
 {
-	int lc,i;
+	int lc, i;
 	/* loop counter */
-	char *msg;			/* message returned from parse_opts */
-
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) !=
-	    (char *) NULL) {
+	if ((msg = parse_opts(argc, argv, (option_t *) NULL, NULL)) !=
+	    (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/* global setup */
 	setup();
-
-
 
 	/* The following loop checks looping state if -i option given */
 
@@ -120,27 +114,28 @@ int main(int argc, char **argv)
 
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
-	
-		for( i = 0; i< TST_TOTAL; ++i)
-		{
-		
-		/* Testing system call */
-		TEST(flock(fd,test_cases[i].operation));
-	
-		if(TEST_RETURN == -1){
-			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL,"flock() failed to get %s, error number=%d : %s",
-					test_cases[i].opt,TEST_ERRNO,strerror(TEST_ERRNO));
-			continue;	/*next loop for MTKERNEL  */
+
+		for (i = 0; i < TST_TOTAL; ++i) {
+
+			/* Testing system call */
+			TEST(flock(fd, test_cases[i].operation));
+
+			if (TEST_RETURN == -1) {
+				TEST_ERROR_LOG(TEST_ERRNO);
+				tst_resm(TFAIL,
+					 "flock() failed to get %s, error number=%d : %s",
+					 test_cases[i].opt, TEST_ERRNO,
+					 strerror(TEST_ERRNO));
+				continue;	/*next loop for MTKERNEL  */
+			} else {
+				tst_resm(TPASS,
+					 "flock() succeded with %s, returned error number=%d",
+					 test_cases[i].opt, TEST_ERRNO);
+			}
+
 		}
-		else{
-			tst_resm(TPASS, "flock() succeded with %s, returned error number=%d",
-					test_cases[i].opt,TEST_ERRNO);
-		}
-	
-	  }
-	
-	}/* End of TEST_LOOPING */
+
+	}			/* End of TEST_LOOPING */
 
 	close(fd);
 
@@ -150,17 +145,14 @@ int main(int argc, char **argv)
 
 }
 
-
 /*
  * setup()
  *	performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-
 
 	/* Set up the expected error numbers for -e option */
 	TEST_EXP_ENOS(exp_enos);
@@ -181,15 +173,15 @@ setup(void)
 	fd = creat(filename, 0644);
 	if (fd < 0) {
 		tst_resm(TFAIL, "creating a new file failed");
-	
+
 		TEST_CLEANUP;
-	
+
 		/* Removing temp directory */
 		tst_rmdir();
-	
+
 		/* exit with resturn code appropriate for result */
 		tst_exit();
-	
+
 	}
 }
 
@@ -198,8 +190,7 @@ setup(void)
  *	performs all ONE TIME cleanup for this test at
  * 	completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -212,5 +203,4 @@ cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}

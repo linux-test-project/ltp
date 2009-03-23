@@ -92,14 +92,12 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 	int i;
 
-       /* Disable test if the version of the kernel is less than 2.6.16 */
-        if((tst_kvercmp(2,6,16)) < 0)
-          {
-             tst_resm(TWARN, "This test can only run on kernels that are ");
-             tst_resm(TWARN, "2.6.16 and higher");
-             exit(0);
-          }
-
+	/* Disable test if the version of the kernel is less than 2.6.16 */
+	if ((tst_kvercmp(2, 6, 16)) < 0) {
+		tst_resm(TWARN, "This test can only run on kernels that are ");
+		tst_resm(TWARN, "2.6.16 and higher");
+		exit(0);
+	}
 
 	/***************************************************************
 	 * parse standard options
@@ -126,7 +124,7 @@ int main(int ac, char **av)
 		 */
 		for (i = 0; i < TST_TOTAL; i++) {
 			TEST(myfchownat
-				 (fds[i], filenames[i], uid, gid, flags[i]));
+			     (fds[i], filenames[i], uid, gid, flags[i]));
 
 			/* check return code */
 			if (TEST_ERRNO == expected_errno[i]) {
@@ -234,7 +232,7 @@ void cleanup()
 	char tmppathname[256];
 	strcpy(tmppathname, pathname);
 
-	close (fd);
+	close(fd);
 	unlink(testfile);
 	unlink(testfile2);
 	unlink(testfile3);

@@ -26,13 +26,13 @@ epoll \- I/O event notification facility
 .B #include <sys/epoll.h>
 .SH DESCRIPTION
 .B epoll
-is a variant of 
+is a variant of$
 .BR poll (2)
 that can be used either as Edge or Level Triggered interface and scales
 well to large numbers of watched fds. Three system calls are provided to
 set up and control an
 .B epoll
-set: 
+set:$
 .BR epoll_create (2) ,
 .BR epoll_ctl (2) ,
 .BR epoll_wait (2) .
@@ -41,9 +41,9 @@ An
 .B epoll
 set is connected to a file descriptor created by
 .BR epoll_create (2) .
-Interest for certain file descriptors is then registered via 
+Interest for certain file descriptors is then registered via$
 .BR epoll_ctl(2) .
-Finally, the actual wait is started by 
+Finally, the actual wait is started by$
 .BR epoll_wait (2) .
 
 .SH NOTES
@@ -123,14 +123,14 @@ as an Edge Triggered (
 .B EPOLLET
 ) interface is below, and possible pitfalls to avoid follow.
 .SR
-.TP 
+.TP$
 .B i
 with non-blocking file descriptors
-.TP 
+.TP$
 .B ii
 by going to wait for an event only after
 .BR read (2)
-or 
+or$
 .BR write (2)
 return EAGAIN
 .SE
@@ -178,7 +178,7 @@ it will continue to
 .BR read (2)
 or
 .BR write (2)
-from where it stopped before.  
+from where it stopped before. $
 
 .nf
 struct epoll_event ev, *events;
@@ -227,15 +227,15 @@ with
 .SH QUESTIONS AND ANSWERS (from linux-kernel)
 
 .SR
-.TP 
-.B Q1 
+.TP$
+.B Q1$
 What happens if you add the same fd to an epoll_set twice?
 .TP
-.B A1 
+.B A1$
 You will probably get EEXIST. However, it is possible that two
 threads may add the same fd twice. This is a harmless condition.
 .TP
-.B Q2 
+.B Q2$
 Can two
 .B epoll
 sets wait for the same fd? If so, are events reported
@@ -254,7 +254,7 @@ fd itself poll/epoll/selectable?
 .B A3
 Yes.
 .TP
-.B Q4 
+.B Q4$
 What happens if the
 .B epoll
 fd is put into its own fd set?
@@ -262,7 +262,7 @@ fd is put into its own fd set?
 .B A4
 It will fail. However, you can add an
 .B epoll
-fd inside another epoll fd set. 
+fd inside another epoll fd set.$
 .TP
 .B Q5
 Can I send the
@@ -280,7 +280,7 @@ sets automatically?
 .B A6
 Yes.
 .TP
-.B Q7 
+.B Q7$
 If more than one event comes in between
 .BR epoll_wait (2)
 calls, are they combined or reported separately?
@@ -338,19 +338,19 @@ receive for fd's that are already ready.
 .PP
 
 .TP
-.B o If using an event cache...  
+.B o If using an event cache... $
 .PP
 If you use an event cache or store all the fd's returned from
 .BR epoll_wait (2),
-then make sure to provide a way to mark its closure dynamically (ie- caused by 
-a previous event's processing). Suppose you receive 100 events from 
+then make sure to provide a way to mark its closure dynamically (ie- caused by$
+a previous event's processing). Suppose you receive 100 events from$
 .BR epoll_wait (2),
-and in eventi #47 a condition causes event #13 to be closed. 
-If you remove the structure and close() the fd for event #13, then your 
-event cache might still say there are events waiting for that fd causing 
+and in eventi #47 a condition causes event #13 to be closed.$
+If you remove the structure and close() the fd for event #13, then your$
+event cache might still say there are events waiting for that fd causing$
 confusion.
 .PP
-.PP 
+.PP$
 One solution for this is to call, during the processing of event 47,
 .BR epoll_ctl ( EPOLL_CTL_DEL )
 to delete fd 13 and close(), then mark its associated

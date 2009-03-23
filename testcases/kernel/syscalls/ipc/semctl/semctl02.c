@@ -57,7 +57,7 @@ char *TCID = "semctl02";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-int exp_enos[] = {EACCES, 0};	/* 0 terminated list of expected errnos */
+int exp_enos[] = { EACCES, 0 };	/* 0 terminated list of expected errnos */
 
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
@@ -66,18 +66,18 @@ int sem_id_1 = -1;
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	struct semid_ds sem_ds;
 	union semun un_arg;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -100,7 +100,7 @@ int main(int ac, char **av)
 
 		TEST_ERROR_LOG(TEST_ERRNO);
 
-		switch(TEST_ERRNO) {
+		switch (TEST_ERRNO) {
 		case EACCES:
 			tst_resm(TPASS, "expected failure - errno = %d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
@@ -114,15 +114,13 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/
-        return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -133,18 +131,16 @@ setup(void)
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	 /* Switch to nobody user for correct error code collection */
-        if (geteuid() != 0) {
-                tst_brkm(TBROK, tst_exit, "Test must be run as root");
-        }
-        ltpuser = getpwnam(nobody_uid);
-        if (setuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "setuid failed to "
-                         "to set the effective uid to %d",
-                         ltpuser->pw_uid);
-                perror("setuid");
-        }
-
+	/* Switch to nobody user for correct error code collection */
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+	}
+	ltpuser = getpwnam(nobody_uid);
+	if (setuid(ltpuser->pw_uid) == -1) {
+		tst_resm(TINFO, "setuid failed to "
+			 "to set the effective uid to %d", ltpuser->pw_uid);
+		perror("setuid");
+	}
 
 	/*
 	 * Create a temporary directory and cd into it.
@@ -166,8 +162,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/* if it exists, remove the semaphore resouce */
 	rm_sema(sem_id_1);
@@ -184,4 +179,3 @@ cleanup(void)
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

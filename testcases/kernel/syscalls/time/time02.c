@@ -38,11 +38,11 @@
  *   Loop if the proper options are given.
  *   Execute system call
  *   Check return code, if system call failed (return=-1)
- *   	Log the errno and Issue a FAIL message.
+ *	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call
+ *	Verify the Functionality of system call
  *      if successful,
- *      	Issue Functionality-Pass message.
+ *		Issue Functionality-Pass message.
  *      Otherwise,
  *		Issue Functionality-Fail message.
  *  Cleanup:
@@ -77,25 +77,23 @@
 #include "test.h"
 #include "usctest.h"
 
-void setup();		/* setup function for the test */
-void cleanup();		/* cleanup function for the test */
+void setup();			/* setup function for the test */
+void cleanup();			/* cleanup function for the test */
 
-char *TCID="time02";		/* Test program identifier.    */
+char *TCID = "time02";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-int exp_enos[]={0};
+int exp_enos[] = { 0 };
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	time_t tloc;		/* time_t variables for time(2) */
 
-   
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -105,14 +103,14 @@ main(int ac, char **av)
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
-   
+
 	/* Check looping state if -i option given */
-	for (lc=0; TEST_LOOPING(lc); lc++) {
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/*
-		 * Call time() to get the time in seconds 
+		 * Call time() to get the time in seconds$
 		 * since Epoch.
 		 */
 		TEST(time(&tloc));
@@ -130,50 +128,45 @@ main(int ac, char **av)
 			if (STD_FUNCTIONAL_TEST) {
 				if (tloc == TEST_RETURN) {
 					tst_resm(TPASS, "time() returned value "
-						"%d, stored value %d are same",
-						TEST_RETURN, tloc);
+						 "%d, stored value %d are same",
+						 TEST_RETURN, tloc);
 				} else {
 					tst_resm(TFAIL, "time() returned value "
-						"%d, stored value %d are "
-						"different", TEST_RETURN, tloc);
+						 "%d, stored value %d are "
+						 "different", TEST_RETURN,
+						 tloc);
 				}
 			} else {
 				tst_resm(TPASS, "call succeeded");
 			}
 
 		}
-		Tst_count++;			/* incr. TEST_LOOP counter */
-	}	/* End for TEST_LOOPING */
+		Tst_count++;	/* incr. TEST_LOOP counter */
+	}			/* End for TEST_LOOPING */
 
 	/* cleanup and exit */
 	cleanup();
-	/*NOTREACHED*/
+	 /*NOTREACHED*/ return 0;
 
-
-  return 0;
-
-}	/* End main */
+}				/* End main */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
-}	/* End setup() */
-
+}				/* End setup() */
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
- * 	       completion or premature exit.
+ *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -183,4 +176,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

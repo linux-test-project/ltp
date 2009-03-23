@@ -46,7 +46,7 @@
 #include "test.h"
 #include "usctest.h"
 
-#undef DEBUG				/* change this to #define if needed */
+#undef DEBUG			/* change this to #define if needed */
 
 void setup(void);
 void cleanup(void);
@@ -62,16 +62,14 @@ char *prog;
 char *av[6];
 char *ev[1];
 
-void
-usage(void)
+void usage(void)
 {
 	tst_resm(TBROK, "usage: %s <iters> <fname1> <fname2> <count>", TCID);
 	tst_resm(TINFO, "example: %s 20 test1 test2 4", TCID);
 	tst_exit();
 }
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	char iter[20];
 	int pid, child, status, count;
@@ -81,17 +79,15 @@ main(int ac, char **av)
 	char *msg;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 	setup();
 
 	if (ac != 5) {
 		tst_resm(TINFO, "Wrong number of arguments");
 		usage();
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -211,15 +207,13 @@ main(int ac, char **av)
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup - performs all ONE TIME steup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -234,8 +228,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion or
  * 	       premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	TEST_CLEANUP;
 

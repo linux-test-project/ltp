@@ -75,20 +75,20 @@ struct statvfs stat_buf;
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	off_t offsetret, offset;
 	char pbuf[BUFSIZ];
-	int ret, max_block=0;
+	int ret, max_block = 0;
 	int i;
 	time_t time_start, time_end;
 	double time_delta;
-	int data_blocks=0;
+	int data_blocks = 0;
 	long int random_number;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -107,9 +107,10 @@ int main(int ac, char **av)
 
 		for (i = 0; i < data_blocks; i++) {
 			if ((offsetret = lseek(fd, offset = BLOCKSIZE
-				    * max_block / data_blocks * (i + 1)
-				    - BUFSIZ, SEEK_SET)) != offset) {
-				tst_brkm(TBROK, cleanup,"lseek failed");
+					       * max_block / data_blocks * (i +
+									    1)
+					       - BUFSIZ, SEEK_SET)) != offset) {
+				tst_brkm(TBROK, cleanup, "lseek failed");
 			}
 			if ((ret = write(fd, pbuf, BUFSIZ)) != BUFSIZ) {
 				tst_brkm(TBROK, cleanup, "Cannot write "
@@ -130,13 +131,15 @@ int main(int ac, char **av)
 
 		if (STD_FUNCTIONAL_TEST) {
 			if (time_end < time_start) {
-				tst_resm(TFAIL, "timer broken end %ld < start %ld",
-						time_end, time_start);
+				tst_resm(TFAIL,
+					 "timer broken end %ld < start %ld",
+					 time_end, time_start);
 			}
 
-
-			if((time_delta = difftime(time_end,time_start)) > TIME_LIMIT) {
-				tst_resm(TFAIL, "fsync took too long: %d "
+			if ((time_delta =
+			     difftime(time_end, time_start)) > TIME_LIMIT) {
+				tst_resm(TFAIL,
+					 "fsync took too long: %d "
 					 "seconds; max_block: %d; data_blocks: "
 					 "%d", (int)time_delta, max_block,
 					 data_blocks);
@@ -155,15 +158,13 @@ int main(int ac, char **av)
 	close(fd);
 	sync();
 	cleanup();
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -177,7 +178,7 @@ setup()
 	sprintf(tempfile, "%s.%d", TCID, pid = getpid());
 	srand48(pid);
 
-	if ((fd = open(tempfile , O_RDWR | O_CREAT | O_TRUNC, 0777)) == -1) {
+	if ((fd = open(tempfile, O_RDWR | O_CREAT | O_TRUNC, 0777)) == -1) {
 		tst_brkm(TBROK, cleanup, "Can't open temp file");
 	}
 
@@ -186,10 +187,9 @@ setup()
 			 "file system");
 	}
 
-	if ((stat_buf.f_bavail / (BLOCKSIZE / stat_buf.f_frsize)) <  MAXBLKS) {
+	if ((stat_buf.f_bavail / (BLOCKSIZE / stat_buf.f_frsize)) < MAXBLKS) {
 		max_blks = stat_buf.f_bavail / (BLOCKSIZE / stat_buf.f_frsize);
 	}
-
 #ifdef LARGEFILE
 	if ((fcntl(fd, F_SETFL, O_LARGEFILE)) == -1) {
 		tst_brkm(TBROK, cleanup, "fcntl failed to O_LARGEFILE");
@@ -201,13 +201,11 @@ setup()
 #endif
 }
 
-
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -221,4 +219,3 @@ cleanup()
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

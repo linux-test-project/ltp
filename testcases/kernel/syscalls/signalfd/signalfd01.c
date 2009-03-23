@@ -49,7 +49,6 @@ TCID_DEFINE(signalfd01);
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-
 #ifndef HAVE_SIGNALFD
 #define  USE_STUB
 #endif
@@ -75,8 +74,6 @@ extern int Tst_count;
 #else
 # define USE_STUB
 #endif
-
-
 
 #ifdef USE_STUB
 int main(int argc, char **argv)
@@ -187,7 +184,7 @@ int do_test1(int ntst, int sig)
 		goto out;
 	}
 
- out:
+      out:
 	return sfd_for_next;
 }
 
@@ -268,7 +265,7 @@ void do_test2(int ntst, int fd, int sig)
 		goto out;
 	}
 
- out:
+      out:
 	return;
 }
 

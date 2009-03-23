@@ -56,21 +56,21 @@ char *TCID = "semget03";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-int exp_enos[] = {ENOENT, 0};	/* 0 terminated list of expected errnos */
+int exp_enos[] = { ENOENT, 0 };	/* 0 terminated list of expected errnos */
 
 int sem_id_1 = -1;
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -90,7 +90,7 @@ int main(int ac, char **av)
 
 		TEST_ERROR_LOG(TEST_ERRNO);
 
-		switch(TEST_ERRNO) {
+		switch (TEST_ERRNO) {
 		case ENOENT:
 			tst_resm(TPASS, "expected failure - errno "
 				 "= %d : %s", TEST_ERRNO, strerror(TEST_ERRNO));
@@ -104,15 +104,13 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -138,8 +136,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/* if it exists, remove the semaphore resource */
 	rm_sema(sem_id_1);
@@ -156,4 +153,3 @@ cleanup(void)
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

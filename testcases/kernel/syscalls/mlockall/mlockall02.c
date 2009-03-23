@@ -33,7 +33,7 @@
  *
  *    DESCRIPTION
  * 	Check for basic errors returned by mount(2) system call.
- * 
+ *$
  * 	Verify that mount(2) returns -1 and sets errno to
  *
  *	1) ENOMEM - If process exceed maximum  number of locked pages.
@@ -85,21 +85,21 @@ int setup_test(int);
 void cleanup_test(int);
 void cleanup();
 
-char *TCID = "mlockall02";		/* Test program identifier.    */
-int TST_TOTAL = 3;			/* Total number of test cases. */
-extern int Tst_count;			/* TestCase counter for tst_* routine */
+char *TCID = "mlockall02";	/* Test program identifier.    */
+int TST_TOTAL = 3;		/* Total number of test cases. */
+extern int Tst_count;		/* TestCase counter for tst_* routine */
 
 int exp_enos[] = { ENOMEM, EPERM, EINVAL, 0 };
 
-
 struct test_case_t {
-	int flag;			/* flag value			*/
-	int error;			/* error description		*/
-	char *edesc;			/* Expected error no		*/
+	int flag;		/* flag value                   */
+	int error;		/* error description            */
+	char *edesc;		/* Expected error no            */
 } TC[] = {
-	{MCL_CURRENT, ENOMEM, "Process exceeds max locked pages" },
-	{MCL_CURRENT, EPERM, "Not a superuser" },
-	{0, EINVAL, "Unknown flag" }
+	{
+	MCL_CURRENT, ENOMEM, "Process exceeds max locked pages"}, {
+	MCL_CURRENT, EPERM, "Not a superuser"}, {
+	0, EINVAL, "Unknown flag"}
 };
 
 #if !defined(UCLINUX)
@@ -109,14 +109,13 @@ int main(int ac, char **av)
 	int lc, i;		/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != (char *) NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
 
 	/* perform global setup for test */
 	setup();
-
 
 	/* check looping state */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -128,7 +127,7 @@ int main(int ac, char **av)
 
 			if (setup_test(i)) {
 				tst_resm(TFAIL, "mlockall() Failed while setup "
-					"for checking error %s", TC[i].edesc);
+					 "for checking error %s", TC[i].edesc);
 				continue;
 			}
 
@@ -152,13 +151,13 @@ int main(int ac, char **av)
 						 strerror(TEST_ERRNO));
 			} else {
 				if (i <= 1)
-                                        tst_resm(TCONF,
-                                                 "mlockall02 did not BEHAVE as expected.");
-                                else
-                                        tst_brkm(TFAIL, cleanup,
-                                                "mlock() Failed, expected "
-                                                "return value=-1, got %d",
-                                                TEST_RETURN);
+					tst_resm(TCONF,
+						 "mlockall02 did not BEHAVE as expected.");
+				else
+					tst_brkm(TFAIL, cleanup,
+						 "mlock() Failed, expected "
+						 "return value=-1, got %d",
+						 TEST_RETURN);
 			}
 			cleanup_test(i);
 		}
@@ -168,7 +167,7 @@ int main(int ac, char **av)
 	cleanup();
 
 	return 0;
-}			/* End main */
+}				/* End main */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -192,52 +191,50 @@ int setup_test(int i)
 	char nobody_uid[] = "nobody";
 	struct passwd *ltpuser;
 
-	switch(i) {
-		case 0:
-			rl.rlim_max = 10;
-			rl.rlim_cur = 7;
+	switch (i) {
+	case 0:
+		rl.rlim_max = 10;
+		rl.rlim_cur = 7;
 
-			if (setrlimit(RLIMIT_MEMLOCK, &rl) != 0)
-			{
-				tst_resm(TWARN, "setrlimit failed to set the "
-					"resource for RLIMIT_MEMLOCK to check "
-					"for mlockall error %s\n", TC[i].edesc);
-				return 1;
-			}
-			if (tst_kvercmp(2,6,9) >= 0) {
-				ltpuser = getpwnam(nobody_uid);
-				if (seteuid(ltpuser->pw_uid) == -1) {
-					tst_brkm(TBROK, cleanup,"seteuid() "
-						"failed to change euid to %d "
-						"errno = %d : %s",
-						ltpuser->pw_uid, TEST_ERRNO,
-						strerror(TEST_ERRNO));
-					return 1;
-				}
-			}
-			return 0;
-		case 1:
-			if (tst_kvercmp(2,6,9) >= 0) {
-				rl.rlim_max = 0;
-				rl.rlim_cur = 0;
-				if (setrlimit(RLIMIT_MEMLOCK, &rl) != 0)
-				{
-					tst_resm(TWARN, "setrlimit failed to "
-						"set the resource for "
-						"RLIMIT_MEMLOCK to check for "
-						"mlockall error %s\n", TC[i].edesc);
-					return 1;
-				}
-			}
+		if (setrlimit(RLIMIT_MEMLOCK, &rl) != 0) {
+			tst_resm(TWARN, "setrlimit failed to set the "
+				 "resource for RLIMIT_MEMLOCK to check "
+				 "for mlockall error %s\n", TC[i].edesc);
+			return 1;
+		}
+		if (tst_kvercmp(2, 6, 9) >= 0) {
 			ltpuser = getpwnam(nobody_uid);
 			if (seteuid(ltpuser->pw_uid) == -1) {
-				tst_brkm(TBROK, cleanup,"seteuid() failed to "
-					"change euid to %d errno = %d : %s",
-					ltpuser->pw_uid, TEST_ERRNO,
-					strerror(TEST_ERRNO));
+				tst_brkm(TBROK, cleanup, "seteuid() "
+					 "failed to change euid to %d "
+					 "errno = %d : %s",
+					 ltpuser->pw_uid, TEST_ERRNO,
+					 strerror(TEST_ERRNO));
 				return 1;
 			}
-			return 0;
+		}
+		return 0;
+	case 1:
+		if (tst_kvercmp(2, 6, 9) >= 0) {
+			rl.rlim_max = 0;
+			rl.rlim_cur = 0;
+			if (setrlimit(RLIMIT_MEMLOCK, &rl) != 0) {
+				tst_resm(TWARN, "setrlimit failed to "
+					 "set the resource for "
+					 "RLIMIT_MEMLOCK to check for "
+					 "mlockall error %s\n", TC[i].edesc);
+				return 1;
+			}
+		}
+		ltpuser = getpwnam(nobody_uid);
+		if (seteuid(ltpuser->pw_uid) == -1) {
+			tst_brkm(TBROK, cleanup, "seteuid() failed to "
+				 "change euid to %d errno = %d : %s",
+				 ltpuser->pw_uid, TEST_ERRNO,
+				 strerror(TEST_ERRNO));
+			return 1;
+		}
+		return 0;
 	}
 	return 0;
 }
@@ -246,33 +243,32 @@ void cleanup_test(int i)
 {
 	struct rlimit rl;
 
-	switch(i) {
-		case 0:
-			if (tst_kvercmp(2,6,9) >= 0)
-				seteuid(0);
+	switch (i) {
+	case 0:
+		if (tst_kvercmp(2, 6, 9) >= 0)
+			seteuid(0);
 
-			rl.rlim_max = -1; rl.rlim_cur = -1;
+		rl.rlim_max = -1;
+		rl.rlim_cur = -1;
 
-			if (setrlimit(RLIMIT_MEMLOCK, &rl) != 0)
-			{
-				tst_brkm(TFAIL, cleanup,
-					"setrlimit failed to reset the "
-					"resource for RLIMIT_MEMLOCK while "
-					"checking for mlockall error %s\n",
-					TC[i].edesc);
-			}
-			return;
-		case 1:
-			if (seteuid(0) == -1) {
-				tst_brkm(TBROK, cleanup,"seteuid() failed to "
-					"change euid to %d errno = %d : %s",
-					0, TEST_ERRNO, strerror(TEST_ERRNO));
-			}
-			return;
+		if (setrlimit(RLIMIT_MEMLOCK, &rl) != 0) {
+			tst_brkm(TFAIL, cleanup,
+				 "setrlimit failed to reset the "
+				 "resource for RLIMIT_MEMLOCK while "
+				 "checking for mlockall error %s\n",
+				 TC[i].edesc);
+		}
+		return;
+	case 1:
+		if (seteuid(0) == -1) {
+			tst_brkm(TBROK, cleanup, "seteuid() failed to "
+				 "change euid to %d errno = %d : %s",
+				 0, TEST_ERRNO, strerror(TEST_ERRNO));
+		}
+		return;
 
 	}
 }
-
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at

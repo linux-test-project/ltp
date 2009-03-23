@@ -62,9 +62,9 @@
 void setup();
 void cleanup();
 
-char *TCID="inotify01";         /* Test program identifier.    */
-int TST_TOTAL = 7;            /* Total number of test cases. */
-extern int Tst_count;        /* Test Case counter for tst_* routines */
+char *TCID = "inotify01";	/* Test program identifier.    */
+int TST_TOTAL = 7;		/* Total number of test cases. */
+extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 #define BUF_SIZE 256
 char fname[BUF_SIZE];
@@ -78,266 +78,267 @@ char event_buf[EVENT_BUF_LEN];
 
 static long myinotify_init()
 {
-    return syscall(__NR_inotify_init);
+	return syscall(__NR_inotify_init);
 }
 
 static long myinotify_add_watch(int fd, const char *pathname, int mask)
 {
-    return syscall(__NR_inotify_add_watch, fd, pathname, mask);
+	return syscall(__NR_inotify_add_watch, fd, pathname, mask);
 }
 
 static long myinotify_rm_watch(int fd, int wd)
 {
-    return syscall(__NR_inotify_rm_watch, fd, wd);
+	return syscall(__NR_inotify_rm_watch, fd, wd);
 }
 
-int main(int ac, char **av){
-    int lc;        /* loop counter */
-    char *msg;        /* message returned from parse_opts */
-   
-    /*
-     * parse standard options
-     */
-    if ( (msg=parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL )
-        tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+int main(int ac, char **av)
+{
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
-    /*
-     * perform global setup for test
-     */
-    setup();
+	/*
+	 * parse standard options
+	 */
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL)
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 
-    /*
-     * check looping state if -c option given
-     */
+	/*
+	 * perform global setup for test
+	 */
+	setup();
 
-    for (lc=0; TEST_LOOPING(lc); lc++) {
-        Tst_count = 0;
-        /* reset Tst_count in case we are looping. */
+	/*
+	 * check looping state if -c option given
+	 */
 
-        /*
-         * generate sequence of events
-         */
-        if (chmod(fname, 0755) < 0) {
-            tst_brkm(TBROK, cleanup,
-                    "chmod(%s, 0755) Failed, errno=%d : %s",
-                    fname, errno, strerror(errno));
-        }
-        event_set[Tst_count] = IN_ATTRIB;
-        Tst_count++;
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+		Tst_count = 0;
+		/* reset Tst_count in case we are looping. */
 
-        if ((fd = open(fname, O_RDONLY)) == -1) {
-            tst_brkm(TBROK, cleanup,
-              "open(%s, O_RDWR|O_CREAT,0700) Failed, errno=%d : %s",
-              fname, errno, strerror(errno));
-        }
-        event_set[Tst_count] = IN_OPEN;
-        Tst_count++;
+		/*
+		 * generate sequence of events
+		 */
+		if (chmod(fname, 0755) < 0) {
+			tst_brkm(TBROK, cleanup,
+				 "chmod(%s, 0755) Failed, errno=%d : %s",
+				 fname, errno, strerror(errno));
+		}
+		event_set[Tst_count] = IN_ATTRIB;
+		Tst_count++;
 
-        if (read(fd, buf, BUF_SIZE) == -1) {
-            tst_brkm(TBROK, cleanup,
-                    "read(%d, buf, %d) Failed, errno=%d : %s",
-                    fd, BUF_SIZE, errno, strerror(errno));
-        }
-        event_set[Tst_count] = IN_ACCESS;
-        Tst_count++;
+		if ((fd = open(fname, O_RDONLY)) == -1) {
+			tst_brkm(TBROK, cleanup,
+				 "open(%s, O_RDWR|O_CREAT,0700) Failed, errno=%d : %s",
+				 fname, errno, strerror(errno));
+		}
+		event_set[Tst_count] = IN_OPEN;
+		Tst_count++;
 
-        if (close(fd) == -1) {
-            tst_brkm(TBROK, cleanup,
-                    "close(%s) Failed, errno=%d : %s",
-                    fname, errno, strerror(errno));
-        }
-        event_set[Tst_count] = IN_CLOSE_NOWRITE;
-        Tst_count++;
+		if (read(fd, buf, BUF_SIZE) == -1) {
+			tst_brkm(TBROK, cleanup,
+				 "read(%d, buf, %d) Failed, errno=%d : %s",
+				 fd, BUF_SIZE, errno, strerror(errno));
+		}
+		event_set[Tst_count] = IN_ACCESS;
+		Tst_count++;
 
+		if (close(fd) == -1) {
+			tst_brkm(TBROK, cleanup,
+				 "close(%s) Failed, errno=%d : %s",
+				 fname, errno, strerror(errno));
+		}
+		event_set[Tst_count] = IN_CLOSE_NOWRITE;
+		Tst_count++;
 
-        if ((fd = open(fname,O_RDWR|O_CREAT,0700)) == -1) {
-            tst_brkm(TBROK, cleanup,
-              "open(%s, O_RDWR|O_CREAT,0700) Failed, errno=%d : %s",
-              fname, errno, strerror(errno));
-        }
-        event_set[Tst_count] = IN_OPEN;
-        Tst_count++;
+		if ((fd = open(fname, O_RDWR | O_CREAT, 0700)) == -1) {
+			tst_brkm(TBROK, cleanup,
+				 "open(%s, O_RDWR|O_CREAT,0700) Failed, errno=%d : %s",
+				 fname, errno, strerror(errno));
+		}
+		event_set[Tst_count] = IN_OPEN;
+		Tst_count++;
 
-        if (write(fd, buf, BUF_SIZE) == -1) {
-            tst_brkm(TBROK, cleanup,
-                "write(%d, %s, 1) Failed, errno=%d : %s",
-                fd, fname, errno, strerror(errno));
-        }
-        event_set[Tst_count] = IN_MODIFY;
-        Tst_count++;
+		if (write(fd, buf, BUF_SIZE) == -1) {
+			tst_brkm(TBROK, cleanup,
+				 "write(%d, %s, 1) Failed, errno=%d : %s",
+				 fd, fname, errno, strerror(errno));
+		}
+		event_set[Tst_count] = IN_MODIFY;
+		Tst_count++;
 
-        if (close(fd) == -1) {
-            tst_brkm(TBROK, cleanup,
-                    "close(%s) Failed, errno=%d : %s",
-                    fname, errno, strerror(errno));
-        }
-        event_set[Tst_count] = IN_CLOSE_WRITE;
-        Tst_count++;
-       
-        if (TST_TOTAL != Tst_count) {
-            tst_brkm(TBROK, cleanup,
-                    "TST_TOTAL and Tst_count are not equal");
-        }
-        Tst_count = 0;
+		if (close(fd) == -1) {
+			tst_brkm(TBROK, cleanup,
+				 "close(%s) Failed, errno=%d : %s",
+				 fname, errno, strerror(errno));
+		}
+		event_set[Tst_count] = IN_CLOSE_WRITE;
+		Tst_count++;
 
-        /*
-         * get list on events
-         */
-        int len, i = 0, test_num = 0;
-        if ((len = read(fd_notify, event_buf, EVENT_BUF_LEN)) < 0) {
-            tst_brkm(TBROK, cleanup,
-                "read(%d, buf, %d) Failed, errno=%d : %s",
-                fd_notify, EVENT_BUF_LEN, errno,
-                strerror(errno));
+		if (TST_TOTAL != Tst_count) {
+			tst_brkm(TBROK, cleanup,
+				 "TST_TOTAL and Tst_count are not equal");
+		}
+		Tst_count = 0;
 
-        }
-           
-        /*
-         * check events
-         */
-        while (i < len) {
-            struct inotify_event *event;
-            event = (struct inotify_event *) &event_buf[i];
-            if (test_num >= TST_TOTAL) {
-                tst_resm(TFAIL,
-                    "get unnecessary event: wd=%d mask=%x "
-                    "cookie=%u len=%u",
-                    event->wd, event->mask,
-                    event->cookie, event->len);
-            } else if (event_set[test_num] == event->mask){
-                tst_resm(TPASS, "get event: wd=%d mask=%x"
-                    " cookie=%u len=%u",
-                    event->wd, event->mask,
-                    event->cookie, event->len);
+		/*
+		 * get list on events
+		 */
+		int len, i = 0, test_num = 0;
+		if ((len = read(fd_notify, event_buf, EVENT_BUF_LEN)) < 0) {
+			tst_brkm(TBROK, cleanup,
+				 "read(%d, buf, %d) Failed, errno=%d : %s",
+				 fd_notify, EVENT_BUF_LEN, errno,
+				 strerror(errno));
 
-            } else {
-                tst_resm( TFAIL, "get event: wd=%d mask=%x "
-                    "(expected %x) cookie=%u len=%u",
-                    event->wd, event->mask,   
-                    event_set[test_num],
-                    event->cookie, event->len);
-            }
-            test_num++;
-            i += EVENT_SIZE + event->len;
-        }
-        for (; test_num<TST_TOTAL; test_num++){
-            tst_resm(TFAIL, "don't get event: mask=%x ",
-                    event_set[test_num]);
+		}
 
-        }
+		/*
+		 * check events
+		 */
+		while (i < len) {
+			struct inotify_event *event;
+			event = (struct inotify_event *)&event_buf[i];
+			if (test_num >= TST_TOTAL) {
+				tst_resm(TFAIL,
+					 "get unnecessary event: wd=%d mask=%x "
+					 "cookie=%u len=%u",
+					 event->wd, event->mask,
+					 event->cookie, event->len);
+			} else if (event_set[test_num] == event->mask) {
+				tst_resm(TPASS, "get event: wd=%d mask=%x"
+					 " cookie=%u len=%u",
+					 event->wd, event->mask,
+					 event->cookie, event->len);
 
-    }    /* End for TEST_LOOPING */
+			} else {
+				tst_resm(TFAIL, "get event: wd=%d mask=%x "
+					 "(expected %x) cookie=%u len=%u",
+					 event->wd, event->mask,
+					 event_set[test_num],
+					 event->cookie, event->len);
+			}
+			test_num++;
+			i += EVENT_SIZE + event->len;
+		}
+		for (; test_num < TST_TOTAL; test_num++) {
+			tst_resm(TFAIL, "don't get event: mask=%x ",
+				 event_set[test_num]);
 
-    /*
-     * cleanup and exit
-     */
-    cleanup();
+		}
 
-    return 0;
-}    /* End main */
+	}			/* End for TEST_LOOPING */
+
+	/*
+	 * cleanup and exit
+	 */
+	cleanup();
+
+	return 0;
+}				/* End main */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void setup(){
-    /* capture signals */
-    tst_sig(NOFORK, DEF_HANDLER, cleanup);
+void setup()
+{
+	/* capture signals */
+	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-    /* Pause if that option was specified */
-    TEST_PAUSE;
+	/* Pause if that option was specified */
+	TEST_PAUSE;
 
-    /* make a temp directory and cd to it */
-    tst_tmpdir();
+	/* make a temp directory and cd to it */
+	tst_tmpdir();
 
-    sprintf(fname,"tfile_%d",getpid());
-    if ((fd = open(fname,O_RDWR|O_CREAT,0700)) == -1) {
-        tst_brkm(TBROK, cleanup,
-            "open(%s, O_RDWR|O_CREAT,0700) Failed, errno=%d : %s",
-            fname, errno, strerror(errno));
-    }
-    if (( write(fd, fname, 1)) == -1) {
-        tst_brkm(TBROK, cleanup,
-                "write(%d, %s, 1) Failed, errno=%d : %s",
-                fd, fname, errno, strerror(errno));
-    }
+	sprintf(fname, "tfile_%d", getpid());
+	if ((fd = open(fname, O_RDWR | O_CREAT, 0700)) == -1) {
+		tst_brkm(TBROK, cleanup,
+			 "open(%s, O_RDWR|O_CREAT,0700) Failed, errno=%d : %s",
+			 fname, errno, strerror(errno));
+	}
+	if ((write(fd, fname, 1)) == -1) {
+		tst_brkm(TBROK, cleanup,
+			 "write(%d, %s, 1) Failed, errno=%d : %s",
+			 fd, fname, errno, strerror(errno));
+	}
 
-    /* close the file we have open */
-    if (close(fd) == -1) {
-        tst_brkm(TBROK, cleanup,
-                "close(%s) Failed, errno=%d : %s",
-                fname, errno, strerror(errno));
-    }
-    if ((fd_notify = myinotify_init ()) < 0) {
-        if( errno == ENOSYS ){
-            tst_resm(TCONF,"inotify is not configured in this kernel.");
-            tst_resm(TCONF,"Test will not run.");
-            tst_exit();
-        }else{
-            tst_brkm(TBROK, cleanup,
-                "inotify_init () Failed, errno=%d : %s",
-                errno, strerror(errno));
-        }
-    }
+	/* close the file we have open */
+	if (close(fd) == -1) {
+		tst_brkm(TBROK, cleanup,
+			 "close(%s) Failed, errno=%d : %s",
+			 fname, errno, strerror(errno));
+	}
+	if ((fd_notify = myinotify_init()) < 0) {
+		if (errno == ENOSYS) {
+			tst_resm(TCONF,
+				 "inotify is not configured in this kernel.");
+			tst_resm(TCONF, "Test will not run.");
+			tst_exit();
+		} else {
+			tst_brkm(TBROK, cleanup,
+				 "inotify_init () Failed, errno=%d : %s",
+				 errno, strerror(errno));
+		}
+	}
 
-    if ((wd = myinotify_add_watch (fd_notify, fname, IN_ALL_EVENTS)) < 0){
-        tst_brkm(TBROK, cleanup,
-                "inotify_add_watch (%d, %s, IN_ALL_EVENTS)"
-                "Failed, errno=%d : %s",
-                fd_notify, fname, errno, strerror(errno));
-    };
+	if ((wd = myinotify_add_watch(fd_notify, fname, IN_ALL_EVENTS)) < 0) {
+		tst_brkm(TBROK, cleanup,
+			 "inotify_add_watch (%d, %s, IN_ALL_EVENTS)"
+			 "Failed, errno=%d : %s",
+			 fd_notify, fname, errno, strerror(errno));
+	};
 
-}    /* End setup() */
-
+}				/* End setup() */
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *        completion or premature exit.
  */
-void cleanup(){
-    if (myinotify_rm_watch(fd_notify, wd) < 0) {
-        tst_resm(TWARN,    "inotify_rm_watch (%d, %d) Failed,"
-                "errno=%d : %s",
-                fd_notify, wd, errno, strerror(errno));
+void cleanup()
+{
+	if (myinotify_rm_watch(fd_notify, wd) < 0) {
+		tst_resm(TWARN, "inotify_rm_watch (%d, %d) Failed,"
+			 "errno=%d : %s",
+			 fd_notify, wd, errno, strerror(errno));
 
-    }
+	}
 
-    if (close(fd_notify) == -1) {
-        tst_resm(TWARN, "close(%d) Failed, errno=%d : %s",
-                fd_notify, errno, strerror(errno));
-    }
+	if (close(fd_notify) == -1) {
+		tst_resm(TWARN, "close(%d) Failed, errno=%d : %s",
+			 fd_notify, errno, strerror(errno));
+	}
 
+	/*
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
+	TEST_CLEANUP;
 
-    /*
-     * print timing stats if that option was specified.
-     * print errno log if that option was specified.
-     */
-    TEST_CLEANUP;
+	/* Remove tmp dir and all files in it */
+	tst_rmdir();
 
-    /* Remove tmp dir and all files in it */
-    tst_rmdir();
-
-    /* exit with return code appropriate for results */
-    tst_exit();
-}    /* End cleanup() */
+	/* exit with return code appropriate for results */
+	tst_exit();
+}				/* End cleanup() */
 
 #else
 
-char *TCID="inotify01";         /* Test program identifier.    */
-int TST_TOTAL = 0;              /* Total number of test cases. */
+char *TCID = "inotify01";	/* Test program identifier.    */
+int TST_TOTAL = 0;		/* Total number of test cases. */
 
-int
-main()
+int main()
 {
 #ifndef __NR_inotify_init
-    tst_resm(TCONF, "This test needs a kernel that has inotify syscall.");
-    tst_resm(TCONF, "Inotify syscall can be found at kernel 2.6.13 or higher.");
-    return 0;
+	tst_resm(TCONF, "This test needs a kernel that has inotify syscall.");
+	tst_resm(TCONF,
+		 "Inotify syscall can be found at kernel 2.6.13 or higher.");
+	return 0;
 #endif
 #ifndef HAVE_SYS_INOTIFY_H
-    tst_resm(TBROK, "can't find header sys/inotify.h");
-    return 1;
+	tst_resm(TBROK, "can't find header sys/inotify.h");
+	return 1;
 #endif
-    return 0;
+	return 0;
 }
 
 #endif

@@ -72,15 +72,14 @@ TCID_DEFINE(eventfd01);
 int TST_TOTAL = 15;
 extern int Tst_count;
 
-static int
-myeventfd(unsigned int initval, int flags)
+static int myeventfd(unsigned int initval, int flags)
 {
-  /* eventfd2 uses FLAGS but eventfd doesn't take FLAGS. */
+	/* eventfd2 uses FLAGS but eventfd doesn't take FLAGS. */
 #if defined (__NR_eventfd)
-    return syscall(__NR_eventfd, initval);
+	return syscall(__NR_eventfd, initval);
 #else
-    errno = ENOSYS;
-    return -1;
+	errno = ENOSYS;
+	return -1;
 #endif
 }
 
@@ -91,8 +90,7 @@ myeventfd(unsigned int initval, int flags)
  * RETURNS:
  * 0 on success, and -1 on failure
  */
-static int
-clear_counter(int fd)
+static int clear_counter(int fd)
 {
 	uint64_t dummy;
 	int ret;
@@ -119,8 +117,7 @@ clear_counter(int fd)
  * RETURNS:
  * 0 on success, -1 on failure
  */
-static int
-set_counter(int fd, uint64_t val)
+static int set_counter(int fd, uint64_t val)
 {
 	int ret;
 
@@ -142,16 +139,14 @@ set_counter(int fd, uint64_t val)
 /*
  * Test whether the current value of the counter matches @required.
  */
-static void
-read_test(int fd, uint64_t required)
+static void read_test(int fd, uint64_t required)
 {
 	int ret;
 	uint64_t val;
 
 	ret = read(fd, &val, sizeof(val));
 	if (ret == -1) {
-		tst_resm(TBROK, "error reading eventfd: %s",
-			 strerror(errno));
+		tst_resm(TBROK, "error reading eventfd: %s", strerror(errno));
 		return;
 	}
 
@@ -165,8 +160,7 @@ read_test(int fd, uint64_t required)
 /*
  * Test whether read returns with error EAGAIN when counter is at 0.
  */
-static void
-read_eagain_test(int fd)
+static void read_eagain_test(int fd)
 {
 	int ret;
 	uint64_t val;
@@ -192,8 +186,7 @@ read_eagain_test(int fd)
 /*
  * Test whether writing to counter works.
  */
-static void
-write_test(int fd)
+static void write_test(int fd)
 {
 	int ret;
 	uint64_t val;
@@ -213,8 +206,7 @@ write_test(int fd)
  * Test whether write returns with error EAGAIN when counter is at
  * (UINT64_MAX - 1).
  */
-static void
-write_eagain_test(int fd)
+static void write_eagain_test(int fd)
 {
 	int ret;
 	uint64_t val;
@@ -243,8 +235,7 @@ write_eagain_test(int fd)
  * Test whether read returns with error EINVAL, if buffer size is less
  * than 8 bytes.
  */
-static void
-read_einval_test(int fd)
+static void read_einval_test(int fd)
 {
 	uint32_t invalid;
 	int ret;
@@ -266,8 +257,7 @@ read_einval_test(int fd)
  * Test whether write returns with error EINVAL, if buffer size is
  * less than 8 bytes.
  */
-static void
-write_einval_test(int fd)
+static void write_einval_test(int fd)
 {
 	uint32_t invalid;
 	int ret;
@@ -290,8 +280,7 @@ write_einval_test(int fd)
  * Test wheter write returns with error EINVAL, when the written value
  * is 0xFFFFFFFFFFFFFFFF.
  */
-static void
-write_einval2_test(int fd)
+static void write_einval2_test(int fd)
 {
 	int ret;
 	uint64_t val;
@@ -310,7 +299,7 @@ write_einval2_test(int fd)
 				 "expected");
 		else
 			tst_resm(TFAIL, "write returned with unexpected "
-				"error: %s", strerror(errno));
+				 "error: %s", strerror(errno));
 	} else {
 		tst_resm(TFAIL, "write returned with %d", ret);
 	}
@@ -320,8 +309,7 @@ write_einval2_test(int fd)
  * Test whether readfd is set by select when counter value is
  * non-zero.
  */
-static void
-readfd_set_test(int fd)
+static void readfd_set_test(int fd)
 {
 	int ret;
 	fd_set readfds;
@@ -356,8 +344,7 @@ readfd_set_test(int fd)
  * Test whether readfd is not set by select when counter value is
  * zero.
  */
-static void
-readfd_not_set_test(int fd)
+static void readfd_not_set_test(int fd)
 {
 	int ret;
 	fd_set readfds;
@@ -390,8 +377,7 @@ readfd_not_set_test(int fd)
  * Test whether writefd is set by select when counter value is not the
  * maximum counter value.
  */
-static void
-writefd_set_test(int fd)
+static void writefd_set_test(int fd)
 {
 	int ret;
 	fd_set writefds;
@@ -403,8 +389,7 @@ writefd_set_test(int fd)
 
 	ret = set_counter(fd, non_max);
 	if (ret == -1) {
-		tst_resm(TBROK, "error setting counter value to %lld",
-			 non_max);
+		tst_resm(TBROK, "error setting counter value to %lld", non_max);
 		return;
 	}
 
@@ -426,8 +411,7 @@ writefd_set_test(int fd)
  * Test whether writefd is not set by select when counter value is at
  * (UINT64_MAX - 1).
  */
-static void
-writefd_not_set_test(int fd)
+static void writefd_not_set_test(int fd)
 {
 	int ret;
 	fd_set writefds;
@@ -459,8 +443,7 @@ writefd_not_set_test(int fd)
 /*
  * Test whether counter update in child is reflected in the parent.
  */
-static void
-child_inherit_test(int fd)
+static void child_inherit_test(int fd)
 {
 	uint64_t val;
 	pid_t cpid;
@@ -546,8 +529,7 @@ child_inherit_test(int fd)
         eventfd.
  *   3. The counter value is UINT64_MAX.
  */
-static int
-trigger_eventfd_overflow(int evfd, int *fd, io_context_t *ctx)
+static int trigger_eventfd_overflow(int evfd, int *fd, io_context_t * ctx)
 {
 	int ret;
 	struct iocb iocb;
@@ -563,8 +545,7 @@ trigger_eventfd_overflow(int evfd, int *fd, io_context_t *ctx)
 
 	*fd = open("testfile", O_RDWR | O_CREAT, 0644);
 	if (*fd == -1) {
-		tst_resm(TINFO, "error creating tmp file: %s",
-			 strerror(errno));
+		tst_resm(TINFO, "error creating tmp file: %s", strerror(errno));
 		goto err_io_destroy;
 	}
 
@@ -586,24 +567,22 @@ trigger_eventfd_overflow(int evfd, int *fd, io_context_t *ctx)
 
 	return 0;
 
- err_close_file:
+      err_close_file:
 	close(*fd);
 
- err_io_destroy:
+      err_io_destroy:
 	io_destroy(*ctx);
 
 	return -1;
 }
 
-static void
-cleanup_overflow(int fd, io_context_t ctx)
+static void cleanup_overflow(int fd, io_context_t ctx)
 {
 	close(fd);
 	io_destroy(ctx);
 }
 
-static void
-overflow_select_test(int evfd)
+static void overflow_select_test(int evfd)
 {
 	struct timeval timeout = { 10, 0 };
 	fd_set readfds;
@@ -631,12 +610,11 @@ overflow_select_test(int evfd)
 	else
 		tst_resm(TFAIL, "read fd not set");
 
- err_cleanup:
+      err_cleanup:
 	cleanup_overflow(fd, ctx);
 }
 
-static void
-overflow_poll_test(int evfd)
+static void overflow_poll_test(int evfd)
 {
 	struct pollfd pollfd;
 	int fd;
@@ -663,12 +641,11 @@ overflow_poll_test(int evfd)
 	else
 		tst_resm(TFAIL, "POLLERR did not occur");
 
- err_cleanup:
+      err_cleanup:
 	cleanup_overflow(fd, ctx);
 }
 
-static void
-overflow_read_test(int evfd)
+static void overflow_read_test(int evfd)
 {
 	uint64_t count;
 	io_context_t ctx;
@@ -692,34 +669,30 @@ overflow_read_test(int evfd)
 	else
 		tst_resm(TFAIL, "overflow did not occur");
 
- err_cleanup:
+      err_cleanup:
 	cleanup_overflow(fd, ctx);
 }
 #else
-static void
-overflow_select_test(int evfd)
+static void overflow_select_test(int evfd)
 {
 	tst_resm(TCONF, "eventfd support is not available in AIO subsystem");
 }
 
-static void
-overflow_poll_test(int evfd)
+static void overflow_poll_test(int evfd)
 {
 	tst_resm(TCONF, "eventfd support is not available in AIO subsystem");
 }
 
-static void
-overflow_read_test(int evfd)
+static void overflow_read_test(int evfd)
 {
 	tst_resm(TCONF, "eventfd support is not available in AIO subsystem");
 }
 #endif
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int fd;
 
 	/* parse standard options */
@@ -778,8 +751,7 @@ main(int argc, char **argv)
 /*
  * setup() - performs all ONE TIME setup for this test
  */
-static void
-setup(void)
+static void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -796,8 +768,7 @@ setup(void)
 /*
  * cleanup() - performs all ONE TIME cleanup for this test
  */
-static void
-cleanup(void)
+static void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -807,5 +778,4 @@ cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}

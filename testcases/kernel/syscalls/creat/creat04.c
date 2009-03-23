@@ -68,36 +68,36 @@ void cleanup(void);
 #define FMODE	0444
 #define DMODE	00700
 
-int exp_enos[] = {EACCES, 0};
+int exp_enos[] = { EACCES, 0 };
 
 char user1name[] = "nobody";
 char good_dir[40] = "testdir";
 char fname[40], fname1[40];
-extern struct passwd * my_getpwnam(char *);
+extern struct passwd *my_getpwnam(char *);
 struct passwd *ltpuser1;
 
 struct test_case_t {
 	char *fname;
 } TC[] = {
 	/* comment */
-	{fname},
-
-	/* comment */
-	{fname1}
+	{
+	fname},
+	    /* comment */
+	{
+	fname1}
 };
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	int retval=0;
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	int retval = 0;
+	char *msg;		/* message returned from parse_opts */
 
 	pid_t pid, pid1;
 	int i, e_code, status, fd;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -115,7 +115,7 @@ main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "fork() #1 failed");
 		}
 
-		if (pid == 0) {		/* first child */
+		if (pid == 0) {	/* first child */
 			if (mkdir(good_dir, DMODE) != 0) {
 				tst_resm(TINFO, "mkdir() failed");
 				exit(1);
@@ -139,7 +139,7 @@ main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "fork() #2 failed");
 		}
 
-		if (pid1 == 0) {		/* second child */
+		if (pid1 == 0) {	/* second child */
 
 			ltpuser1 = my_getpwnam(user1name);
 
@@ -152,12 +152,12 @@ main(int ac, char **av)
 			}
 
 			/* loop through the test cases */
-			for (i=0; i<TST_TOTAL; i++) {
+			for (i = 0; i < TST_TOTAL; i++) {
 
 				TEST(creat(TC[i].fname, FMODE));
 
 				if (TEST_RETURN != -1) {
-					retval=1;
+					retval = 1;
 					tst_resm(TFAIL, "call succeeded "
 						 "unexpectedly");
 					continue;
@@ -166,7 +166,7 @@ main(int ac, char **av)
 				TEST_ERROR_LOG(TEST_ERRNO);
 
 				if (TEST_ERRNO != EACCES) {
-					retval=1;
+					retval = 1;
 					tst_resm(TFAIL, "Expected EACCES got "
 						 "%d : %s", TEST_ERRNO,
 						 strerror(TEST_ERRNO));
@@ -185,7 +185,7 @@ main(int ac, char **av)
 			rmdir(good_dir);
 			exit(retval);
 
-		} else {			/* parent */
+		} else {	/* parent */
 			/* wait for the child to finish */
 			wait(&status);
 			/* make sure the child returned a good exit status */
@@ -198,14 +198,12 @@ main(int ac, char **av)
 	cleanup();
 
 	return 0;
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* The test must be run as root */
 	if (geteuid() != 0) {
@@ -226,13 +224,11 @@ setup()
 	sprintf(fname, "%s/file.%d", good_dir, getpid());
 }
 
-
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

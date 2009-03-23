@@ -88,14 +88,12 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 	int i;
 
-      /* Disable test if the version of the kernel is less than 2.6.16 */
-        if(((tst_kvercmp(2,6,16)) < 0))
-          {
-             tst_resm(TWARN, "This test can only run on kernels that are ");
-             tst_resm(TWARN, "2.6.16 and higher");
-             exit(0);
-          }
-
+	/* Disable test if the version of the kernel is less than 2.6.16 */
+	if (((tst_kvercmp(2, 6, 16)) < 0)) {
+		tst_resm(TWARN, "This test can only run on kernels that are ");
+		tst_resm(TWARN, "2.6.16 and higher");
+		exit(0);
+	}
 
 	/***************************************************************
 	 * parse standard options
@@ -222,7 +220,7 @@ void setup()
 void cleanup()
 {
 	/* Remove them */
-	close (fd);
+	close(fd);
 	unlink(testfile);
 	unlink(testfile2);
 	unlink(testfile3);

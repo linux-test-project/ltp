@@ -22,12 +22,9 @@
 
 #include "pcl_config.h"
 
-
 #define PCL_VERSION VERSION
-
 
 char const *pcl_version[] = {
 	"Portable Coroutine Library (PCL) - Version " PCL_VERSION "\n"
-	"Copyright (C) 2003 Davide Libenzi <davidel@xmailserver.org>\n"
+	    "Copyright (C) 2003 Davide Libenzi <davidel@xmailserver.org>\n"
 };
-

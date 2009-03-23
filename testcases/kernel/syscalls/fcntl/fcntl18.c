@@ -19,19 +19,19 @@
 
 /*
  * NAME
- * 	fcntl18.c
+ *	fcntl18.c
  *
  * DESCRIPTION
- * 	Test to check the error conditions in fcntl system call
+ *	Test to check the error conditions in fcntl system call
  *
  * USAGE
- * 	fcntl18
+ *	fcntl18
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
  *
  * RESTRICTIONS
- * 	NONE
+ *	NONE
  */
 
 #include <signal.h>
@@ -67,21 +67,21 @@ int main(int ac, char **av)
 	struct flock fl;
 	int pid, status;
 
-	char *msg;			/* message returned from parse_opts */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 /* //block1: */
 #ifndef UCLINUX
 	/* Skip since uClinux does not implement memory protection */
 	tst_resm(TINFO, "Enter block 1");
 	fail = 0;
-	if ((fd = open("temp.dat", O_CREAT|O_RDWR, 0777)) < 0) { //mode must be specified when O_CREATE is in the flag
+	if ((fd = open("temp.dat", O_CREAT | O_RDWR, 0777)) < 0) {	//mode must be specified when O_CREATE is in the flag
 		tst_resm(TFAIL, "file opening error");
 		fail = 1;
 	}
@@ -130,7 +130,7 @@ int main(int ac, char **av)
 /* //block3: */
 	tst_resm(TINFO, "Enter block 3");
 	fail = 0;
-	if ((pid = FORK_OR_VFORK()) == 0) {		/* child */
+	if ((pid = FORK_OR_VFORK()) == 0) {	/* child */
 		fail = 0;
 		pass = getpwnam("nobody");
 		retval = setreuid(-1, pass->pw_uid);
@@ -150,7 +150,7 @@ int main(int ac, char **av)
 			fail = 1;
 		}
 		exit(fail);
-	} else {				/* parent */
+	} else {		/* parent */
 		waitpid(pid, &status, 0);
 		if (WEXITSTATUS(status) != 0) {
 			tst_resm(TFAIL, "child returned bad exit status");
@@ -170,10 +170,9 @@ int main(int ac, char **av)
 
 /*
  * setup()
- * 	performs all ONE TIME setup for this test
+ *	performs all ONE TIME setup for this test
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -192,17 +191,16 @@ setup()
 
 /*
  * cleanup()
- * 	performs all the ONE TIME cleanup for this test at completion or
+ *	performs all the ONE TIME cleanup for this test at completion or
  *	or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing status if that option was specified.
 	 * print errno log if that option was specified
 	 */
-    close(fd);
+	close(fd);
 
 	TEST_CLEANUP;
 

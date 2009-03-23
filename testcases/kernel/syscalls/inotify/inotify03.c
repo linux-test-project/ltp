@@ -62,7 +62,7 @@ void help(void);
 void setup();
 void cleanup();
 
-char *TCID="inotify03";		/* Test program identifier.	*/
+char *TCID = "inotify03";	/* Test program identifier.     */
 int TST_TOTAL = 3;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
@@ -102,44 +102,45 @@ static char *device;
 static int Tflag = 0;
 static int Dflag = 0;
 
-static option_t options[] = {		/* options supported by mount01 test */
-	{ "T:", &Tflag, &fstype },	/* -T type of filesystem	*/
-	{ "D:", &Dflag, &device },	/* -D device used for mounting	*/
-	{ NULL, NULL, NULL }
+static option_t options[] = {	/* options supported by mount01 test */
+	{"T:", &Tflag, &fstype},	/* -T type of filesystem        */
+	{"D:", &Dflag, &device},	/* -D device used for mounting  */
+	{NULL, NULL, NULL}
 };
 
-int main(int ac, char **av){
+int main(int ac, char **av)
+{
 	char *msg;		/* message returned from parse_opts */
 	int ret;
 	int len, i, test_num;
 
 	/* parse standard options */
 	msg = parse_opts(ac, av, (option_t *) options, &help);
-	if ( msg != (char *) NULL )
+	if (msg != (char *)NULL)
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 
 	/* Check for mandatory option of the testcase */
 	if (!Dflag) {
 		tst_brkm(TBROK, NULL, "You must specifiy the device used for "
-			" mounting with -D option, Run '%s  -h' for option "
-			" information.", TCID);
+			 " mounting with -D option, Run '%s  -h' for option "
+			 " information.", TCID);
 		tst_exit();
 	}
 
 	if (Tflag) {
-		Fstype = (char *) malloc(strlen(fstype)+1);
-		if(Fstype == NULL) {
+		Fstype = (char *)malloc(strlen(fstype) + 1);
+		if (Fstype == NULL) {
 			tst_brkm(TBROK, NULL, "malloc - failed to alloc %d"
-				"errno %d", strlen(fstype), errno);
+				 "errno %d", strlen(fstype), errno);
 		}
-		strncpy(Fstype, fstype, strlen(fstype)+1);
+		strncpy(Fstype, fstype, strlen(fstype) + 1);
 	} else {
-		Fstype = (char *) malloc(strlen(DEFAULT_FSTYPE)+1);
-		if(Fstype == NULL) {
+		Fstype = (char *)malloc(strlen(DEFAULT_FSTYPE) + 1);
+		if (Fstype == NULL) {
 			tst_brkm(TBROK, NULL, "malloc - failed to alloc %d"
-				"errno %d", strlen(DEFAULT_FSTYPE), errno);
+				 "errno %d", strlen(DEFAULT_FSTYPE), errno);
 		}
-		strncpy(Fstype, DEFAULT_FSTYPE, strlen(DEFAULT_FSTYPE)+1);
+		strncpy(Fstype, DEFAULT_FSTYPE, strlen(DEFAULT_FSTYPE) + 1);
 	}
 
 	/* perform global setup for test */
@@ -152,31 +153,30 @@ int main(int ac, char **av){
 	event_set[Tst_count] = IN_IGNORED;
 	Tst_count++;
 
-	/*check exit code from inotify_rm_watch*/
+	/*check exit code from inotify_rm_watch */
 	Tst_count++;
 
 	if (TST_TOTAL != Tst_count) {
-            tst_brkm(TBROK, cleanup,
-                    "TST_TOTAL and Tst_count are not equal");
-        }
-        Tst_count = 0;
+		tst_brkm(TBROK, cleanup,
+			 "TST_TOTAL and Tst_count are not equal");
+	}
+	Tst_count = 0;
 
 	tst_resm(TINFO, "umount %s", device);
 	TEST(umount(mntpoint));
 	if (TEST_RETURN != 0) {
 		TEST_ERROR_LOG(TEST_ERRNO);
 		tst_brkm(TBROK, cleanup, "umount(2) Failed "
-			"while unmounting errno = %d : %s",
-			TEST_ERRNO, strerror(TEST_ERRNO));
+			 "while unmounting errno = %d : %s",
+			 TEST_ERRNO, strerror(TEST_ERRNO));
 	}
 	mount_flag = 0;
 
 	len = read(fd_notify, event_buf, EVENT_BUF_LEN);
 	if (len < 0) {
 		tst_brkm(TBROK, cleanup,
-			"read(%d, buf, %d) Failed, errno=%d : %s",
-			fd_notify, EVENT_BUF_LEN, errno,
-			strerror(errno));
+			 "read(%d, buf, %d) Failed, errno=%d : %s",
+			 fd_notify, EVENT_BUF_LEN, errno, strerror(errno));
 	}
 
 	/* check events */
@@ -184,49 +184,49 @@ int main(int ac, char **av){
 	i = 0;
 	while (i < len) {
 		struct inotify_event *event;
-		event = (struct inotify_event *) &event_buf[i];
+		event = (struct inotify_event *)&event_buf[i];
 		if (test_num >= (TST_TOTAL - 1)) {
 			tst_resm(TFAIL,
-				"get unnecessary event: wd=%d mask=%x "
-				"cookie=%u len=%u",
-				event->wd, event->mask,
-				event->cookie, event->len);
-		} else if (event_set[test_num] == event->mask){
+				 "get unnecessary event: wd=%d mask=%x "
+				 "cookie=%u len=%u",
+				 event->wd, event->mask,
+				 event->cookie, event->len);
+		} else if (event_set[test_num] == event->mask) {
 			tst_resm(TPASS, "get event: wd=%d mask=%x"
-				" cookie=%u len=%u",
-				event->wd, event->mask,
-				event->cookie, event->len);
+				 " cookie=%u len=%u",
+				 event->wd, event->mask,
+				 event->cookie, event->len);
 
 		} else {
-			tst_resm( TFAIL, "get event: wd=%d mask=%x "
-				"(expected %x) cookie=%u len=%u",
-				event->wd, event->mask,
-				event_set[test_num],
-				event->cookie, event->len);
+			tst_resm(TFAIL, "get event: wd=%d mask=%x "
+				 "(expected %x) cookie=%u len=%u",
+				 event->wd, event->mask,
+				 event_set[test_num],
+				 event->cookie, event->len);
 		}
 		test_num++;
 		i += EVENT_SIZE + event->len;
 	}
-	for (; test_num<TST_TOTAL - 1; test_num++){
+	for (; test_num < TST_TOTAL - 1; test_num++) {
 		tst_resm(TFAIL, "don't get event: mask=%x ",
-				event_set[test_num]);
+			 event_set[test_num]);
 
 	}
 	ret = myinotify_rm_watch(fd_notify, wd);
 	if (ret != -1 || errno != EINVAL)
-		tst_resm(TFAIL,	"inotify_rm_watch (%d, %d) return %d "
-			"errno=%d : %s (instead of %d)",
-			fd_notify, wd, ret, errno, EINVAL, strerror(errno));
+		tst_resm(TFAIL, "inotify_rm_watch (%d, %d) return %d "
+			 "errno=%d : %s (instead of %d)",
+			 fd_notify, wd, ret, errno, EINVAL, strerror(errno));
 	else
-		tst_resm(TPASS,	"inotify_rm_watch (%d, %d) return %d "
-			"errno=%d : %s",
-			fd_notify, wd, ret, errno, strerror(errno));
+		tst_resm(TPASS, "inotify_rm_watch (%d, %d) return %d "
+			 "errno=%d : %s",
+			 fd_notify, wd, ret, errno, strerror(errno));
 
 	/* cleanup and exit */
 	cleanup();
 
 	return 0;
-}	/* End main */
+}				/* End main */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -247,8 +247,8 @@ void setup()
 
 	if (mkdir(mntpoint, DIR_MODE) < 0) {
 		tst_brkm(TBROK, cleanup, "mkdir(%s, %#o) failed; "
-			"errno = %d: %s", mntpoint, DIR_MODE, errno,
-			strerror(errno));
+			 "errno = %d: %s", mntpoint, DIR_MODE, errno,
+			 strerror(errno));
 	}
 
 	/* Call mount(2) */
@@ -259,57 +259,57 @@ void setup()
 	if (TEST_RETURN != 0) {
 		TEST_ERROR_LOG(TEST_ERRNO);
 		tst_brkm(TBROK, cleanup, "mount(2) Failed errno = %d : %s",
-			TEST_ERRNO, strerror(TEST_ERRNO));
+			 TEST_ERRNO, strerror(TEST_ERRNO));
 	}
 	mount_flag = 1;
 
-	sprintf(fname,"%s/tfile_%d", mntpoint, getpid());
-	fd = open(fname,O_RDWR|O_CREAT,0700);
+	sprintf(fname, "%s/tfile_%d", mntpoint, getpid());
+	fd = open(fname, O_RDWR | O_CREAT, 0700);
 	if (fd == -1) {
 		tst_brkm(TBROK, cleanup,
-			"open(%s, O_RDWR|O_CREAT,0700) Failed, errno=%d : %s",
-			fname, errno, strerror(errno));
+			 "open(%s, O_RDWR|O_CREAT,0700) Failed, errno=%d : %s",
+			 fname, errno, strerror(errno));
 	}
 
 	ret = write(fd, fname, 1);
 	if (ret == -1) {
 		tst_brkm(TBROK, cleanup,
-				"write(%d, %s, 1) Failed, errno=%d : %s",
-				fd, fname, errno, strerror(errno));
+			 "write(%d, %s, 1) Failed, errno=%d : %s",
+			 fd, fname, errno, strerror(errno));
 	}
 
 	/* close the file we have open */
 	if (close(fd) == -1) {
 		tst_brkm(TBROK, cleanup,
-				"close(%s) Failed, errno=%d : %s",
-				fname, errno, strerror(errno));
+			 "close(%s) Failed, errno=%d : %s",
+			 fname, errno, strerror(errno));
 	}
 
 	fd_notify = myinotify_init();
 
 	if (fd_notify < 0) {
-		if( errno == ENOSYS ){
-			tst_resm(TCONF, "inotify is not configured in this kernel.");
+		if (errno == ENOSYS) {
+			tst_resm(TCONF,
+				 "inotify is not configured in this kernel.");
 			tst_resm(TCONF, "Test will not run.");
 			cleanup();
 			tst_exit();
-		}else{
+		} else {
 			tst_brkm(TBROK, cleanup,
-				"inotify_init () Failed, errno=%d : %s",
-				errno, strerror(errno));
+				 "inotify_init () Failed, errno=%d : %s",
+				 errno, strerror(errno));
 		}
 	}
 
-	wd = myinotify_add_watch (fd_notify, fname, IN_ALL_EVENTS);
+	wd = myinotify_add_watch(fd_notify, fname, IN_ALL_EVENTS);
 	if (wd < 0) {
 		tst_brkm(TBROK, cleanup,
-				"inotify_add_watch (%d, %s, IN_ALL_EVENTS)"
-				"Failed, errno=%d : %s",
-				fd_notify, fname, errno, strerror(errno));
+			 "inotify_add_watch (%d, %s, IN_ALL_EVENTS)"
+			 "Failed, errno=%d : %s",
+			 fd_notify, fname, errno, strerror(errno));
 	};
 
-}	/* End setup() */
-
+}				/* End setup() */
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
@@ -320,7 +320,7 @@ void cleanup()
 	free(Fstype);
 	if (close(fd_notify) == -1) {
 		tst_resm(TWARN, "close(%d) Failed, errno=%d : %s",
-				fd_notify, errno, strerror(errno));
+			 fd_notify, errno, strerror(errno));
 	}
 
 	if (mount_flag) {
@@ -328,8 +328,8 @@ void cleanup()
 		if (TEST_RETURN != 0) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TWARN, "umount(2) Failed "
-				"while unmounting errno = %d : %s",
-				TEST_ERRNO, strerror(TEST_ERRNO));
+				 "while unmounting errno = %d : %s",
+				 TEST_ERRNO, strerror(TEST_ERRNO));
 		}
 	}
 
@@ -344,7 +344,7 @@ void cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */
 
 /*
  * issue a help message
@@ -352,21 +352,21 @@ void cleanup()
 void help()
 {
 	printf("-T type : specifies the type of filesystem to be mounted."
-		" Default ext2. \n");
+	       " Default ext2. \n");
 	printf("-D device : device used for mounting \n");
 }
 
 #else
 
-char *TCID="inotify03";	/* Test program identifier.	*/
+char *TCID = "inotify03";	/* Test program identifier.     */
 int TST_TOTAL = 0;		/* Total number of test cases. */
 
-int
-main()
+int main()
 {
 #ifndef __NR_inotify_init
 	tst_resm(TCONF, "This test needs a kernel that has inotify syscall.");
-	tst_resm(TCONF, "Inotify syscall can be found at kernel 2.6.13 or higher.");
+	tst_resm(TCONF,
+		 "Inotify syscall can be found at kernel 2.6.13 or higher.");
 	return 0;
 #endif
 #ifndef HAVE_SYS_INOTIFY_H

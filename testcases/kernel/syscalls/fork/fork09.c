@@ -47,7 +47,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <errno.h>
-#include <unistd.h> /* for _SC_OPEN_MAX */
+#include <unistd.h>		/* for _SC_OPEN_MAX */
 #include "test.h"
 #include "usctest.h"
 
@@ -60,7 +60,7 @@ void cleanup(void);
 
 char filname[40], childfile[40];
 int first;
-FILE **fildeses;			/* file streams */
+FILE **fildeses;		/* file streams */
 int mypid, nfiles;
 
 #define OPEN_MAX (sysconf(_SC_OPEN_MAX))
@@ -75,21 +75,19 @@ int main(int ac, char **av)
 	/*
 	 * parse standard options
 	 */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/*
 	 * perform global setup for the test
 	 */
 	setup();
 
-	fildeses = (FILE**)malloc((OPEN_MAX + 10) * sizeof(FILE *));
+	fildeses = (FILE **) malloc((OPEN_MAX + 10) * sizeof(FILE *));
 	if (fildeses == NULL) {
 		tst_brkm(TBROK, cleanup, "malloc failed");
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/*
 	 * check looping state if -i option is given
@@ -109,8 +107,7 @@ int main(int ac, char **av)
 		if ((first = creat(filname, 0660)) == -1) {
 			tst_brkm(TBROK, cleanup, "Cannot open first file %s, "
 				 "errno = %d", filname, errno);
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 		close(first);
 
 		tst_resm(TINFO, "first file descriptor is %d ", first);
@@ -118,8 +115,7 @@ int main(int ac, char **av)
 		if (unlink(filname) == -1) {
 			tst_brkm(TBROK, cleanup, "Cannot unlink file %s, "
 				 "errno = %d", filname, errno);
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		/*
 		 * now open all the files for the test
@@ -133,8 +129,7 @@ int main(int ac, char **av)
 				tst_brkm(TBROK, cleanup, "Parent: cannot open "
 					 "file %d %s errno = %d", nfiles,
 					 filname, errno);
-				/*NOTREACHED*/
-			}
+			 /*NOTREACHED*/}
 #ifdef DEBUG
 			tst_resm(TINFO, "filname: %s", filname);
 #endif
@@ -144,17 +139,15 @@ int main(int ac, char **av)
 
 		if ((pid = fork()) == -1) {
 			tst_brkm(TBROK, cleanup, "Fork failed");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
-		if (pid == 0) {		/* child */
+		if (pid == 0) {	/* child */
 			nfiles--;
 			if (fclose(fildeses[nfiles]) == -1) {
 				tst_resm(TINFO, "Child could not close file "
 					 "#%d, errno = %d", nfiles, errno);
 				exit(1);
-				/*NOTREACHED*/
-			} else {
+			 /*NOTREACHED*/} else {
 				sprintf(childfile, "cfile.%d", getpid());
 				if ((fildeses[nfiles] =
 				     fopen(childfile, "a")) == NULL) {
@@ -162,15 +155,14 @@ int main(int ac, char **av)
 						 "file %s, errno = %d",
 						 childfile, errno);
 					exit(1);
-					/*NOTREACHED*/
-				} else {
+				 /*NOTREACHED*/} else {
 					tst_resm(TINFO, "Child opened new "
 						 "file #%d", nfiles);
 					unlink(childfile);
 					exit(0);
 				}
 			}
-		} else {		/* parent */
+		} else {	/* parent */
 			wait(&status);
 			if (status >> 8 != 0) {
 				tst_resm(TFAIL, "test 1 FAILED");
@@ -188,15 +180,13 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test
  */
-void
-setup()
+void setup()
 {
 	/*
 	 * capture signals
@@ -220,8 +210,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or at premature exit
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

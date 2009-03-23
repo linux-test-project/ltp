@@ -38,7 +38,6 @@
  *
  */
 
-
 #include <stdio.h>
 #include <signal.h>
 #include <stdlib.h>
@@ -54,11 +53,10 @@
 #define FAILED 0
 #define PASSED 1
 
-
 //char progname[]= "abort1()";
 char *TCID = "abort01";
 
-int local_flag=PASSED;
+int local_flag = PASSED;
 int block_number;
 FILE *temp;
 int TST_TOTAL = 1;
@@ -73,28 +71,28 @@ void ok_exit();
 int forkfail();
 void do_child();
 
-/*****	**	**	*****/
+/*************/
 
 /*--------------------------------------------------------------*/
-int main (int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	register int i;
 	int status, count, child, kidpid;
 	int core, sig, ex;
 	char *msg;
 
-	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg =
+	     parse_opts(argc, argv, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
-
 #ifdef UCLINUX
 	maybe_run_child(&do_child, "");
 #endif
 
-	setup();		/* temp file is now open	*/
+	setup();		/* temp file is now open */
 /*--------------------------------------------------------------*/
 
-	for (i=0; i < ITER; i++) {
+	for (i = 0; i < ITER; i++) {
 
 		if ((kidpid = FORK_OR_VFORK()) == 0) {
 #ifdef UCLINUX
@@ -124,32 +122,32 @@ int main (int argc, char *argv[])
 			fail_exit();
 		}
 		/*
-		sig = status & 0177;
-		core = status & 0200;
-		ex = (status & 0xFF00) >> 8;
-		*/
+		   sig = status & 0177;
+		   core = status & 0200;
+		   ex = (status & 0xFF00) >> 8;
+		 */
 		/*****	LTP Port	*****/
 		sig = WTERMSIG(status);
-		#ifdef WCOREDUMP
-			core = WCOREDUMP(status);
-		#endif
+#ifdef WCOREDUMP
+		core = WCOREDUMP(status);
+#endif
 		ex = WIFEXITED(status);
-		/*****	**	**	*****/
+		/**************/
 		if (!core) {
 			fprintf(temp, "\tChild did not return core bit set!\n");
 			fprintf(temp, "\t  iteration %d, exit stat = 0x%x\n",
-			  i, status);
+				i, status);
 			fprintf(temp, "\tCore = %d, sig = %d, ex = %d\n",
-			  core, sig, ex);
+				core, sig, ex);
 			local_flag = FAILED;
 		}
 		if (sig != SIGIOT) {
 			fprintf(temp, "\tChild did not exit with SIGIOT (%d)\n",
-			  SIGIOT);
+				SIGIOT);
 			fprintf(temp, "\t  iteration %d, exit stat = 0x%x\n",
-			  i, status);
+				i, status);
 			fprintf(temp, "\tCore = %d, sig = %d, ex = %d\n",
-			  core, sig, ex);
+				core, sig, ex);
 			local_flag = FAILED;
 		}
 		if (local_flag == FAILED)
@@ -160,12 +158,14 @@ int main (int argc, char *argv[])
 /* Clean up any files created by test before call to anyfail.	*/
 
 	unlink("core");
-	anyfail();	/* THIS CALL DOES NOT RETURN - EXITS!!	*/
-  return 0;
+	anyfail();		/* THIS CALL DOES NOT RETURN - EXITS!!  */
+	return 0;
 }
+
 /*--------------------------------------------------------------*/
 
-void do_child() {
+void do_child()
+{
 	abort();
 	fprintf(temp, "\tchild - abort failed.\n");
 	exit(0);
@@ -174,48 +174,49 @@ void do_child() {
 /******	LTP Port	*****/
 int anyfail()
 {
-  (local_flag == FAILED)? tst_resm(TFAIL, "Test failed"): tst_resm(TPASS, "Test passed");
-  tst_rmdir();
-  tst_exit();
-  return 0;
+	(local_flag == FAILED) ? tst_resm(TFAIL, "Test failed") :
+				tst_resm(TPASS, "Test passed");
+	tst_rmdir();
+	tst_exit();
+	return 0;
 }
-
-
 
 void setup()
 {
- temp = stderr;
- tst_tmpdir();
+	temp = stderr;
+	tst_tmpdir();
 }
 
 int instress()
 {
-  tst_resm(TINFO, "System resources may be too low; fork(), select() etc are likely to fail.");
-  return 1;
+	tst_resm(TINFO,
+		 "System resources may be too low; fork(), select() etc are likely to fail.");
+	return 1;
 }
 
-void terror(char * message)
+void terror(char *message)
 {
-  tst_resm(TBROK, "Reason: %s:%s", message, strerror(errno));
+	tst_resm(TBROK, "Reason: %s:%s", message, strerror(errno));
 }
 
 void fail_exit()
 {
-  local_flag = FAILED;
-  anyfail();
+	local_flag = FAILED;
+	anyfail();
 
 }
 
 void ok_exit()
 {
-        local_flag = PASSED;
-        tst_resm(TINFO, "Test passed");
+	local_flag = PASSED;
+	tst_resm(TINFO, "Test passed");
 }
 
 int forkfail()
 {
-        fprintf(temp, "\t\tFORK FAILED - terminating test.\n");
-        tst_exit();
+	fprintf(temp, "\t\tFORK FAILED - terminating test.\n");
+	tst_exit();
 	return 0;
 }
-/******	** **	*******/
+
+/*****************/

@@ -94,24 +94,23 @@
 #define TESTDIR		"testdir"
 
 int fd;				/* file descriptor for test directory */
-char *TCID="fchmod05"; 		/* Test program identifier.    */
-int TST_TOTAL=1;    		/* Total number of test cases. */
+char *TCID = "fchmod05";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 void setup();			/* Main setup function for test */
 void cleanup();			/* Main cleanup function for test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	struct stat stat_buf;	/* stat struct */
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	mode_t dir_mode;	/* mode permissions set on test directory */
-   
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -125,9 +124,9 @@ main(int ac, char **av)
 		Tst_count = 0;
 
 		/*
-	 	 * Call fchmod(2) with mode argument
+		 * Call fchmod(2) with mode argument
 		 * to set setgid bit on TESTDIR.
-	 	 */
+		 */
 
 		TEST(fchmod(fd, PERMS));
 
@@ -143,13 +142,13 @@ main(int ac, char **av)
 		 */
 		if (STD_FUNCTIONAL_TEST) {
 			/*
-		 	 * Get the directory information using
+			 * Get the directory information using
 			 * fstat(2).
 			 */
 			if (fstat(fd, &stat_buf) < 0) {
-				 tst_brkm(TFAIL, cleanup,
-					  "fstat(2) of %s failed, errno:%d",
-					  TESTDIR, TEST_ERRNO);
+				tst_brkm(TFAIL, cleanup,
+					 "fstat(2) of %s failed, errno:%d",
+					 TESTDIR, TEST_ERRNO);
 			}
 			dir_mode = stat_buf.st_mode;
 			if (PERMS != dir_mode) {
@@ -163,14 +162,13 @@ main(int ac, char **av)
 		} else {
 			tst_resm(TPASS, "call succeeded");
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
-}	/* End main */
+	 /*NOTREACHED*/ return 0;
+}				/* End main */
 
 /*
  * void
@@ -181,12 +179,11 @@ main(int ac, char **av)
  *  on test directory.
  *  Open the test directory for reading.
  */
-void
-setup()
+void setup()
 {
-	char *test_home;		/* variable to hold TESTHOME env */
+	char *test_home;	/* variable to hold TESTHOME env */
 	char Path_name[PATH_MAX];	/* Buffer to hold command string */
-	char Cmd_buffer[BUFSIZ];        /* Buffer to hold command string */
+	char Cmd_buffer[BUFSIZ];	/* Buffer to hold command string */
 
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -224,7 +221,7 @@ setup()
 	 * Get the complete path of TESTDIR created
 	 * under temporary directory
 	 */
-	strcat(Path_name, "/"TESTDIR);
+	strcat(Path_name, "/" TESTDIR);
 
 	/* Get the command name to be executed as setuid to root */
 	strcpy((char *)Cmd_buffer, (const char *)test_home);
@@ -244,8 +241,7 @@ setup()
 			 "open(%s, O_RDONLY) failed, errno=%d : %s",
 			 TESTDIR, errno, strerror(errno));
 	}
-}	/* End setup() */
-
+}				/* End setup() */
 
 /*
  * void
@@ -255,8 +251,7 @@ setup()
  *  Remove the test directory and temporary directory created in
  *  in the setup().
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -275,4 +270,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

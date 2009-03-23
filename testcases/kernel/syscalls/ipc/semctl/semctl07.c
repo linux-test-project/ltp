@@ -38,37 +38,32 @@
  *        to conflict with other instances of the same test.
  */
 
-
-#include <sys/types.h>		/* needed for test		*/
-#include <sys/ipc.h>		/* needed for test		*/
-#include <sys/sem.h>		/* needed for test		*/
-#include <signal.h>		/* needed for test		*/
-#include <errno.h>		/* needed for test		*/
-#include <stdio.h>		/* needed by testhead.h		*/
-#include <wait.h>		/* needed by testhead.h		*/
+#include <sys/types.h>		/* needed for test              */
+#include <sys/ipc.h>		/* needed for test              */
+#include <sys/sem.h>		/* needed for test              */
+#include <signal.h>		/* needed for test              */
+#include <errno.h>		/* needed for test              */
+#include <stdio.h>		/* needed by testhead.h         */
+#include <wait.h>		/* needed by testhead.h         */
 #include "ipcsem.h"
 #include "test.h"
 #include "usctest.h"
 
-
 void setup();
 void cleanup();
-
 
 /*
  *These globals must be defined in the test.
  */
 
+char *TCID = "semctl07";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
+extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-char *TCID="semctl07";           /* Test program identifier.    */
-int TST_TOTAL=1;                /* Total number of test cases. */
-extern int Tst_count;           /* Test Case counter for tst_* routines */
-
-int exp_enos[]={0};     /* List must end with 0 */
+int exp_enos[] = { 0 };		/* List must end with 0 */
 
 key_t key;
 int semid = -1, nsems;
-
 
 /*--------------------------------------------------------------*/
 
@@ -87,7 +82,7 @@ char *argv[];
 
 	union semun arg;
 
-	setup();		/* temp file is now open	*/
+	setup();		/* temp file is now open        */
 /*--------------------------------------------------------------*/
 
 	arg.buf = &buf_ds;
@@ -102,23 +97,28 @@ char *argv[];
 	 */
 
 	if (arg.buf->sem_nsems != nsems) {
-		tst_resm(TFAIL, "error: unexpected number of sems %d", arg.buf->sem_nsems);
+		tst_resm(TFAIL, "error: unexpected number of sems %d",
+			 arg.buf->sem_nsems);
 		tst_exit();
 	}
 	if (arg.buf->sem_perm.uid != getuid()) {
-		tst_resm(TFAIL, "error: unexpected uid %d", arg.buf->sem_perm.uid);
+		tst_resm(TFAIL, "error: unexpected uid %d",
+			 arg.buf->sem_perm.uid);
 		tst_exit();
 	}
 	if (arg.buf->sem_perm.gid != getgid()) {
-		tst_resm(TFAIL, "error: unexpected gid %d", arg.buf->sem_perm.gid);
+		tst_resm(TFAIL, "error: unexpected gid %d",
+			 arg.buf->sem_perm.gid);
 		tst_exit();
 	}
 	if (arg.buf->sem_perm.cuid != getuid()) {
-		tst_resm(TFAIL, "error: unexpected cuid %d", arg.buf->sem_perm.cuid);
+		tst_resm(TFAIL, "error: unexpected cuid %d",
+			 arg.buf->sem_perm.cuid);
 		tst_exit();
 	}
 	if (arg.buf->sem_perm.cgid != getgid()) {
-		tst_resm(TFAIL, "error: unexpected cgid %d", arg.buf->sem_perm.cgid);
+		tst_resm(TFAIL, "error: unexpected cgid %d",
+			 arg.buf->sem_perm.cgid);
 		tst_exit();
 	}
 	if ((status = semctl(semid, 0, GETVAL, arg)) == -1) {
@@ -143,8 +143,7 @@ char *argv[];
 		tst_exit();
 	}
 	status = getpid();
-	if (status == 0)
-	{
+	if (status == 0) {
 		tst_resm(TFAIL, "error: unexpected pid %d", status);
 		tst_exit();
 	}
@@ -173,26 +172,25 @@ char *argv[];
 	cleanup();
 	return (0);
 }
+
 /*--------------------------------------------------------------*/
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  *****************************************************************/
-void
-setup()
+void setup()
 {
-        /* You will want to enable some signal handling so you can capture
+	/* You will want to enable some signal handling so you can capture
 	 * unexpected signals like SIGSEGV.
 	 *                   */
-        tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-
-        /* Pause if that option was specified */
-        /* One cavet that hasn't been fixed yet.  TEST_PAUSE contains the code to
+	/* Pause if that option was specified */
+	/* One cavet that hasn't been fixed yet.  TEST_PAUSE contains the code to
 	 * fork the test with the -c option.  You want to make sure you do this
 	 * before you create your temporary directory.
 	 */
-        TEST_PAUSE;
+	TEST_PAUSE;
 
 	/*
 	 * Create a temporary directory and cd into it.
@@ -205,19 +203,17 @@ setup()
 	key = getipckey();
 	nsems = 1;
 
-	if ((semid = semget(key, nsems, SEM_RA|IPC_CREAT)) == -1) {
+	if ((semid = semget(key, nsems, SEM_RA | IPC_CREAT)) == -1) {
 		tst_resm(TFAIL, "semget() failed errno = %d", errno);
 		tst_exit();
 	}
 }
 
-
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
  * completion or premature exit.
  ****************************************************************/
-void
-cleanup()
+void cleanup()
 {
 	/* if it exists, remove the semaphore resouce */
 	rm_sema(semid);
@@ -225,13 +221,12 @@ cleanup()
 	/* Remove the temporary directory */
 	tst_rmdir();
 
-        /*
+	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
 	 */
-        TEST_CLEANUP;
+	TEST_CLEANUP;
 
-        /* exit with return code appropriate for results */
-        tst_exit();
+	/* exit with return code appropriate for results */
+	tst_exit();
 }
-

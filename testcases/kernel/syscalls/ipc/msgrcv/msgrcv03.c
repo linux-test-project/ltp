@@ -62,7 +62,7 @@ char *TCID = "msgrcv03";
 int TST_TOTAL = 2;
 extern int Tst_count;
 
-int exp_enos[] = {EINVAL, 0};	/* 0 terminated list of expected errnos */
+int exp_enos[] = { EINVAL, 0 };	/* 0 terminated list of expected errnos */
 
 int msg_q_1 = -1;		/* The message queue id created in setup */
 int bad_q = -1;			/* a value to use as a bad queue ID */
@@ -74,24 +74,25 @@ struct test_case_t {
 	int error;
 } TC[] = {
 	/* EINVAL - the queue ID is invalid */
-	{&bad_q, MSGSIZE, EINVAL},
-
-	/* EINVAL - the message size is less than 0 */
-	{&msg_q_1, -1, EINVAL}
+	{
+	&bad_q, MSGSIZE, EINVAL},
+	    /* EINVAL - the message size is less than 0 */
+	{
+	&msg_q_1, -1, EINVAL}
 };
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int i;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -99,14 +100,14 @@ int main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		for (i=0; i<TST_TOTAL; i++) {
+		for (i = 0; i < TST_TOTAL; i++) {
 
 			/*
 			 * Use the TEST macro to make the call
 			 */
 
 			TEST(msgrcv(*(TC[i].queue_id), &rcv_buf, TC[i].msize,
-			     1, 0));
+				    1, 0));
 
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
@@ -123,21 +124,19 @@ int main(int ac, char **av)
 				tst_resm(TFAIL, "call failed with an "
 					 "unexpected error - %d : %s",
 					 TEST_ERRNO, strerror(TEST_ERRNO));
-			}		
+			}
 		}
 	}
 
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -167,8 +166,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/* if it exists, remove the message queue that was created */
 	rm_queue(msg_q_1);
@@ -185,4 +183,3 @@ cleanup(void)
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

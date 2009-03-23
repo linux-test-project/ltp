@@ -65,21 +65,19 @@ void remove_files(int);
 void setup(void);
 void cleanup(void);
 
-int exp_enos[] = {EMFILE, 0};
+int exp_enos[] = { EMFILE, 0 };
 
 int fd, ifile, mypid, first;
 int *buf;
 char fname[40];
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
-
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -115,14 +113,12 @@ main(int ac, char **av)
 	cleanup();
 
 	return 0;
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	int max_open;
 
@@ -151,10 +147,10 @@ setup()
 
 	/* get the maximum number of files that we can open */
 	max_open = getdtablesize();
-       /* Allocate memory for stat and ustat structure variables*/
-       if( (buf = (int *) malloc(sizeof(int) *  max_open - first)) == NULL) {
-               tst_brkm(TBROK, tst_exit, "Failed to allocate Memory");
-       }
+	/* Allocate memory for stat and ustat structure variables */
+	if ((buf = (int *)malloc(sizeof(int) * max_open - first)) == NULL) {
+		tst_brkm(TBROK, tst_exit, "Failed to allocate Memory");
+	}
 
 	/* now open as many files as we can up to max_open */
 	for (ifile = first; ifile <= max_open; ifile++) {
@@ -169,21 +165,20 @@ setup()
 			}
 			break;
 		}
-                buf[ifile-first] = fd;
+		buf[ifile - first] = fd;
 	}
 }
 
 /*
  * remove_files - remove the temporary files that were created
  */
-void
-remove_files(int nfiles)
+void remove_files(int nfiles)
 {
 	int i;
 
-	for (i=first; i<nfiles; i++) {
+	for (i = first; i < nfiles; i++) {
 		sprintf(fname, "creat05.%d.%d", i, mypid);
-                close(buf[i-first]);
+		close(buf[i - first]);
 		unlink(fname);
 	}
 }
@@ -192,8 +187,7 @@ remove_files(int nfiles)
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -209,4 +203,3 @@ cleanup()
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

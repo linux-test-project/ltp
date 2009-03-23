@@ -75,13 +75,13 @@ char *TCID = "move_pages04";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-typedef void (*sighandler_t)(int);
+typedef void (*sighandler_t) (int);
 
 int main(int argc, char **argv)
 {
 	unsigned int i;
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	unsigned int from_node = 0;
 	unsigned int to_node = 1;
 
@@ -137,7 +137,7 @@ int main(int argc, char **argv)
 			tst_resm(TFAIL, "status[%d] is %d", UNTOUCHED_PAGE,
 				 status[UNTOUCHED_PAGE]);
 
-	err_free_pages:
+	      err_free_pages:
 		/* This is capable of freeing both the touched and
 		 * untouched pages.
 		 */
@@ -153,8 +153,7 @@ int main(int argc, char **argv)
 /*
  * setup() - performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -170,8 +169,7 @@ setup(void)
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at completion
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -181,5 +179,4 @@ cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}

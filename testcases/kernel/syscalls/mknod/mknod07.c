@@ -40,9 +40,9 @@
  *   Loop if the proper options are given.
  *   Execute system call
  *   Check return code, if system call failed (return=-1)
- *   	if errno set == expected errno
- *   		Issue sys call fails with expected return value and errno.
- *   	Otherwise,
+ *	if errno set == expected errno
+ *		Issue sys call fails with expected return value and errno.
+ *	Otherwise,
  *		Issue sys call fails with unexpected errno.
  *   Otherwise,
  *	Issue sys call returns unexpected value.
@@ -88,22 +88,25 @@
 int no_setup();
 int setup2();			/* setup function to test mknod for EACCES */
 
-struct test_case_t {		/* test case struct. to hold ref. test cond's*/
+struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	char *pathname;
 	char *desc;
 	int mode;
 	int exp_errno;
-	int (*setupfunc)();
+	int (*setupfunc) ();
 } Test_cases[] = {
-	{ "tnode_1", "Process is not root/super-user", SOCKET_MODE, EACCES, no_setup },
-	{ "tnode_2",  "No Write permissions to process", NEWMODE, EACCES, setup2 },
-	{ NULL, NULL, 0, 0, no_setup }
+	{
+	"tnode_1", "Process is not root/super-user", SOCKET_MODE,
+		    EACCES, no_setup}, {
+	"tnode_2", "No Write permissions to process", NEWMODE, EACCES, setup2},
+	{
+	NULL, NULL, 0, 0, no_setup}
 };
 
-char *TCID="mknod07";           /* Test program identifier.    */
+char *TCID = "mknod07";		/* Test program identifier.    */
 int TST_TOTAL = 2;		/* Total number of test cases. */
-extern int Tst_count;           /* Test Case counter for tst_* routines */
-int exp_enos[]={EPERM, EACCES, 0};
+extern int Tst_count;		/* Test Case counter for tst_* routines */
+int exp_enos[] = { EPERM, EACCES, 0 };
 
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
@@ -111,8 +114,7 @@ struct passwd *ltpuser;
 void setup();			/* setup function for the tests */
 void cleanup();			/* cleanup function for the tests */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
@@ -123,7 +125,7 @@ main(int ac, char **av)
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -140,7 +142,7 @@ main(int ac, char **av)
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
 			node_name = Test_cases[ind].pathname;
@@ -172,9 +174,9 @@ main(int ac, char **av)
 					 "expected errno:%d", test_desc,
 					 TEST_ERRNO, Test_cases[ind].exp_errno);
 			}
-		}	/* End of TEST CASE LOOPING. */
+		}		/* End of TEST CASE LOOPING. */
 
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/*
 	 * Invoke cleanup() to delete the test directories created
@@ -182,13 +184,12 @@ main(int ac, char **av)
 	 */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
-}	/* End main */
+	 /*NOTREACHED*/ return 0;
+}				/* End main */
 
 /*
  * setup(void) - performs all ONE TIME setup for this test.
- * 	Exit the test program on receipt of unexpected signals.
+ *	Exit the test program on receipt of unexpected signals.
  *	Create a temporary directory used to hold test directories and nodes
  *	created and change the directory to it.
  *	Create a test directory with ownership of test process id and
@@ -196,24 +197,23 @@ main(int ac, char **av)
  *	Invoke individual test setup functions according to the order
  *	set in struct. definition.
  */
-void
-setup()
+void setup()
 {
-	int ind;			/* counter for setup functions */
+	int ind;		/* counter for setup functions */
 
 	/* Capture unexpected signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Switch to nobody user for correct error code collection */
-        if (geteuid() != 0) {
-                tst_brkm(TBROK, tst_exit, "Test must be run as root");
-        }
-        ltpuser = getpwnam(nobody_uid);
-        if (seteuid(ltpuser->pw_uid) == -1) {
-          tst_brkm(TBROK, NULL, "setuid failed to "
-                         "to set the effective uid to %d: %s",
-                   ltpuser->pw_uid, strerror(errno));
-        }
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+	}
+	ltpuser = getpwnam(nobody_uid);
+	if (seteuid(ltpuser->pw_uid) == -1) {
+		tst_brkm(TBROK, NULL, "setuid failed to "
+			 "to set the effective uid to %d: %s",
+			 ltpuser->pw_uid, strerror(errno));
+	}
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
@@ -237,10 +237,9 @@ setup()
 
 	/* Change directory to DIR_TEMP */
 	if (chdir(DIR_TEMP) < 0) {
-		tst_brkm(TBROK, cleanup, \
+		tst_brkm(TBROK, cleanup,
 			 "Unable to change to %s directory", DIR_TEMP);
 	}
-
 
 	/* call individual setup functions */
 	for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
@@ -252,10 +251,9 @@ setup()
  * no_setup() - Some test conditions for mknod(2) do not any setup.
  *              Hence, this function just returns 0.
  */
-int
-no_setup()
+int no_setup()
 {
-        return 0;
+	return 0;
 }
 
 /*
@@ -265,8 +263,7 @@ no_setup()
  *  will not have write permission to create node(s) using mknod(2).
  *  The function returns 0.
  */
-int
-setup2()
+int setup2()
 {
 	/* Modify mode permissions on test directory */
 	if (chmod(".", NEWMODE) < 0) {
@@ -283,8 +280,7 @@ setup2()
  *	created during setup().
  *	Exit the test program with normal exit code.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -292,12 +288,12 @@ cleanup()
 	 */
 	TEST_CLEANUP;
 
-	if(seteuid(0)==-1)
+	if (seteuid(0) == -1)
 		tst_resm(TBROK, "Couldn't get root back: %s", strerror(errno));
 
 	/* Remove files and temporary directory created */
 	tst_rmdir();
- 
+
 	/* exit with return code appropriate for results */
 	tst_exit();
 }

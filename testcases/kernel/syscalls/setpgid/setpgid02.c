@@ -67,21 +67,22 @@ pid_t bad_pid = -1;
 pid_t zero_pid = 0;
 pid_t inval_pid = 99999;
 
-int exp_enos[]={EINVAL, ESRCH, EPERM, 0};
+int exp_enos[] = { EINVAL, ESRCH, EPERM, 0 };
 
 struct test_case_t {
 	pid_t *pid;
 	pid_t *pgid;
 	int error;
 } TC[] = {
-	/* pgid is less than zero - EINVAL*/
-	{&pid, &bad_pid, EINVAL},
-
-	/* pid doesn't match any process - ESRCH */
-	{&bad_pid, &pgid, ESRCH},
-
-	/* pgid doesn't exist - EPERM */
-	{&zero_pid, &inval_pid, EPERM}
+	/* pgid is less than zero - EINVAL */
+	{
+	&pid, &bad_pid, EINVAL},
+	    /* pid doesn't match any process - ESRCH */
+	{
+	&bad_pid, &pgid, ESRCH},
+	    /* pgid doesn't exist - EPERM */
+	{
+	&zero_pid, &inval_pid, EPERM}
 };
 
 int main(int ac, char **av)
@@ -91,7 +92,7 @@ int main(int ac, char **av)
 	int i;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -132,15 +133,13 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup - performs all ONE TIME setup for this test
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -156,8 +155,7 @@ setup()
  * cleanup - Performs all ONE TIME cleanup for this test at completion or
  * 	     premature exit
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing status if that option was specified

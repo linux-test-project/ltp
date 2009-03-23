@@ -78,29 +78,27 @@
 
 #define INCR_TIME	10	/* increment in the system's current time */
 
-char *TCID="stime02";		/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "stime02";		/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-int exp_enos[]={EPERM, 0};
+int exp_enos[] = { EPERM, 0 };
 time_t curr_time;		/* system's current time in seconds */
 time_t new_time;		/* system's new time */
 time_t tloc;			/* argument var. for time() */
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
-
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-   
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -114,7 +112,7 @@ main(int ac, char **av)
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/*
 		 * Invoke stime(2) to set the system's time
@@ -127,50 +125,45 @@ main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 			if (TEST_ERRNO == EPERM) {
 				tst_resm(TPASS, "stime(2) fails, Caller not "
-					"root, errno:%d", TEST_ERRNO);
+					 "root, errno:%d", TEST_ERRNO);
 			} else {
 				tst_resm(TFAIL, "stime(2) fails, Caller not "
-					"root, errno:%d, expected errno:%d",
-					TEST_ERRNO, EPERM);
+					 "root, errno:%d, expected errno:%d",
+					 TEST_ERRNO, EPERM);
 			}
 		} else {
 			tst_resm(TFAIL, "stime(2) returned %d, expected -1, "
-				"errno:%d", TEST_RETURN, EPERM);
+				 "errno:%d", TEST_RETURN, EPERM);
 		}
-		Tst_count++;		/* incr TEST_LOOP counter */
-	}	/* End for TEST_LOOPING */
+		Tst_count++;	/* incr TEST_LOOP counter */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
-	/*NOTREACHED*/
+	 /*NOTREACHED*/ return 0;
 
-
-  return 0;
-
-}	/* End main */
+}				/* End main */
 
 /*
  * void
  * setup() - performs all ONE TIME setup for this test.
  *  Get the current time and system's new time.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Switch to nobody user for correct error code collection */
-        if (geteuid() != 0) {
-                tst_brkm(TBROK, tst_exit, "Test must be run as root");
-        }
-         ltpuser = getpwnam(nobody_uid);
-         if (setuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "setuid failed to "
-                         "to set the effective uid to %d",
-                         ltpuser->pw_uid);
-                perror("setuid");
-         }
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+	}
+	ltpuser = getpwnam(nobody_uid);
+	if (setuid(ltpuser->pw_uid) == -1) {
+		tst_resm(TINFO, "setuid failed to "
+			 "to set the effective uid to %d", ltpuser->pw_uid);
+		perror("setuid");
+	}
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
@@ -178,22 +171,19 @@ setup()
 	/* Get the current time */
 	if ((curr_time = time(&tloc)) < 0) {
 		tst_brkm(TBROK, cleanup,
-			 "time() failed to get current time, errno=%d",
-			 errno);
-		/*NOTREACHED*/
-	}
+			 "time() failed to get current time, errno=%d", errno);
+	 /*NOTREACHED*/}
 
 	/* Get the system's new time */
 	new_time = curr_time + INCR_TIME;
-}	/* End setup() */
+}				/* End setup() */
 
 /*
  * void
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -203,4 +193,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

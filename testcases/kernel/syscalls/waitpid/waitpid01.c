@@ -61,19 +61,18 @@ extern int Tst_count;
 
 int main(int argc, char **argv)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	int pid, npid, sig, nsig;
 	int exno, nexno, status;
 
 	/* parse standard options */
-	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) !=
-	    (char *) NULL) {
+	if ((msg = parse_opts(argc, argv, (option_t *) NULL, NULL)) !=
+	    (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	setup();
 
@@ -103,7 +102,8 @@ int main(int argc, char **argv)
 					tst_resm(TFAIL, "waitpid error: "
 						 "unexpected pid returned");
 				} else {
-					tst_resm(TPASS, "recieved expected pid");
+					tst_resm(TPASS,
+						 "recieved expected pid");
 				}
 
 				nsig = WTERMSIG(status);
@@ -118,7 +118,7 @@ int main(int argc, char **argv)
 						 "returned");
 				} else {
 					tst_resm(TPASS, "recieved expected "
-						"signal");
+						 "signal");
 				}
 
 				/*
@@ -135,9 +135,7 @@ int main(int argc, char **argv)
 		}
 	}
 	cleanup();
-	/*NOTREACHED*/
-
-  return 0;
+	 /*NOTREACHED*/ return 0;
 
 }
 
@@ -145,8 +143,7 @@ int main(int argc, char **argv)
  * setup()
  *      performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* Pause if that option was specified
 	 * TEST_PAUSE contains the code to fork the test with the -c option.
@@ -159,8 +156,7 @@ setup(void)
  *      performs all ONE TIME cleanup for this test at
  *      completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -173,5 +169,4 @@ cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}

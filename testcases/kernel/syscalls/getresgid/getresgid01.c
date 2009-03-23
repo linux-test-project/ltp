@@ -2,7 +2,7 @@
  * $Copyright: $
  * Copyright (c) 1984-2000
  * Sequent Computer Systems, Inc.   All rights reserved.
- * 
+ *
  * This software is furnished under a license and may be used
  * only in accordance with the terms of that license and with the
  * inclusion of the above copyright notice.   This software may not
@@ -31,11 +31,11 @@
  *   Loop if the proper options are given.
  *   Execute system call
  *   Check return code, if system call failed (return=-1)
- *   	Log the errno and Issue a FAIL message.
+ *	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call
+ *	Verify the Functionality of system call
  *      if successful,
- *      	Issue Functionality-Pass message.
+ *		Issue Functionality-Pass message.
  *      Otherwise,
  *		Issue Functionality-Fail message.
  *  Cleanup:
@@ -69,27 +69,26 @@
 #include "test.h"
 #include "usctest.h"
 
-extern int getresgid(gid_t*, gid_t*, gid_t*);
+extern int getresgid(gid_t *, gid_t *, gid_t *);
 
-char *TCID="getresgid01";	/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "getresgid01";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 gid_t pr_gid, pe_gid, ps_gid;	/* calling process real/effective/saved gid */
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	gid_t real_gid,		/* real/eff./saved user id from getresgid() */
-	      eff_gid, sav_gid;
-   
+	 eff_gid, sav_gid;
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -100,7 +99,7 @@ main(int ac, char **av)
 	/* Check looping state if -c option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/*
 		 * Call getresgid() to get the real/effective/saved
@@ -123,7 +122,7 @@ main(int ac, char **av)
 			 * Verify the real/effective/saved gid values returned
 			 * by getresgid with the expected values.
 			 */
-			if ((real_gid != pr_gid) || (eff_gid != pe_gid)  ||
+			if ((real_gid != pr_gid) || (eff_gid != pe_gid) ||
 			    (sav_gid != ps_gid)) {
 				tst_resm(TFAIL, "real:%d, effective:%d, "
 					 "saved-user:%d ids differ",
@@ -135,21 +134,19 @@ main(int ac, char **av)
 		} else {
 			tst_resm(TPASS, "call succeeded");
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
-}	/* End main */
+	 /*NOTREACHED*/ return 0;
+}				/* End main */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  *	     Get the real/effective/saved user id of the calling process.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -168,13 +165,11 @@ setup()
 
 }
 
-
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

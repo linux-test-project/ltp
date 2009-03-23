@@ -66,7 +66,7 @@ extern int Tst_count;
 
 struct sched_param param;
 struct sched_param param1 = { 1 };
-int exp_enos[]={ESRCH, EINVAL, EFAULT, 0};
+int exp_enos[] = { ESRCH, EINVAL, EFAULT, 0 };
 
 void setup(void);
 void cleanup(void);
@@ -78,45 +78,45 @@ struct test_case_t {
 	int error;
 } TC[] = {
 	/* The pid is invalid - ESRCH */
-	{INVALID_PID, SCHED_OTHER, &param, ESRCH},
-
-	/* The policy is invalid - EINVAL */
-	{1, SCHED_INVALID, &param, EINVAL},
-
+	{
+	INVALID_PID, SCHED_OTHER, &param, ESRCH},
+	    /* The policy is invalid - EINVAL */
+	{
+	1, SCHED_INVALID, &param, EINVAL},
 #ifndef UCLINUX
-	/* Skip since uClinux does not implement memory protection */
-	/* The param address is invalid - EFAULT */
-	{1, SCHED_OTHER, (struct sched_param *)-1, EFAULT},
+	    /* Skip since uClinux does not implement memory protection */
+	    /* The param address is invalid - EFAULT */
+	{
+	1, SCHED_OTHER, (struct sched_param *)-1, EFAULT},
 #endif
-
-	/* The priority value in param invalid - EINVAL*/
-	{0, SCHED_OTHER, &param1, EINVAL}
+	    /* The priority value in param invalid - EINVAL */
+	{
+	0, SCHED_OTHER, &param1, EINVAL}
 };
 
-int TST_TOTAL = sizeof(TC)/sizeof(*TC);
+int TST_TOTAL = sizeof(TC) / sizeof(*TC);
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	int i;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/* check looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-	setup();
+		setup();
 
-	/* set up the expected errnos */
-	TEST_EXP_ENOS(exp_enos);
+		/* set up the expected errnos */
+		TEST_EXP_ENOS(exp_enos);
 
 		/* loop through the test cases */
 		for (i = 0; i < TST_TOTAL; i++) {
@@ -144,17 +144,14 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-
-  return 0;
+	 /*NOTREACHED*/ return 0;
 
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -167,8 +164,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

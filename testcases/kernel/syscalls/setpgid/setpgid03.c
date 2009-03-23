@@ -59,15 +59,13 @@ int main(int ac, char **av)
 	int ret, status;
 	int exno = 0;
 
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
-
+	 /*NOTREACHED*/}
 #ifdef UCLINUX
 	maybe_run_child(&do_child, "");
 #endif
@@ -89,7 +87,7 @@ int main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "fork() failed");
 		}
 
-		if (pid == 0) {			/* child */
+		if (pid == 0) {	/* child */
 #ifdef UCLINUX
 			if (self_exec(av[0], "") < 0) {
 				tst_brkm(TBROK, cleanup, "self_exec failed");
@@ -97,7 +95,7 @@ int main(int ac, char **av)
 #else
 			do_child();
 #endif
-		} else {			/* parent */
+		} else {	/* parent */
 			sleep(1);
 			rval = setpgid(pid, getppid());
 			if (errno == EPERM) {
@@ -105,15 +103,14 @@ int main(int ac, char **av)
 					 "errno to EPERM");
 			} else {
 				tst_resm(TFAIL, "setpgid FAILED, "
-					 "expect %d, return %d", EPERM,
-					 errno);
+					 "expect %d, return %d", EPERM, errno);
 				fail = 1;
 			}
 			sleep(1);
 			if ((ret = wait(&status)) > 0) {
 				if (DEBUG)
 					tst_resm(TINFO, "Test {%d} exited "
-					 	"status 0x%0x", ret, status);
+						 "status 0x%0x", ret, status);
 
 				if (status != 0) {
 					fail = 1;
@@ -127,7 +124,6 @@ int main(int ac, char **av)
 				tst_resm(TINFO, "Test test 1: PASSED");
 			}
 		}
-
 //test2:
 		/*
 		 * Value of pid matches the pid of the child process and
@@ -138,8 +134,7 @@ int main(int ac, char **av)
 			tst_exit();
 		}
 		if (pid == 0) {
-			if (execlp("sleep", "sleep", "3",
-			    NULL) < 0) {
+			if (execlp("sleep", "sleep", "3", NULL) < 0) {
 				perror("exec failed");
 			}
 			exit(127);
@@ -156,7 +151,7 @@ int main(int ac, char **av)
 			if ((ret = wait(&status)) > 0) {
 				if (DEBUG)
 					tst_resm(TINFO, "Test {%d} exited "
-					 "status 0x%0x", ret, status);
+						 "status 0x%0x", ret, status);
 				if (status != 0) {
 					fail = 1;
 				}
@@ -170,8 +165,7 @@ int main(int ac, char **av)
 /*
  * do_child()
  */
-void
-do_child()
+void do_child()
 {
 	int exno = 0;
 
@@ -187,8 +181,7 @@ do_child()
  * setup()
  * 	performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -204,8 +197,7 @@ setup(void)
  * 	performs all the ONE TIME cleanup for this test at completion
  * 	or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing status if that option was specified

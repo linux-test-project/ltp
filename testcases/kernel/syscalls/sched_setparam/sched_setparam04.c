@@ -85,67 +85,67 @@
 static void cleanup(void);
 static void setup(void);
 
-static struct sched_param  param = { 0 };
-static struct sched_param  param1 = { 1 };
+static struct sched_param param = { 0 };
+static struct sched_param param1 = { 1 };
 
-
-char *TCID= "sched_setparam04";
+char *TCID = "sched_setparam04";
 extern int Tst_count;
 
-static int exp_enos[] = {EINVAL, ESRCH, 0};	/* 0 terminated list of *
+static int exp_enos[] = { EINVAL, ESRCH, 0 };	/* 0 terminated list of *
 						 * expected errnos */
 
 static struct test_case_t {
 	char *desc;
 	pid_t pid;
-	struct  sched_param *p;
+	struct sched_param *p;
 	int exp_errno;
 	char err_desc[10];
 } test_cases[] = {
-	{ "test with non-existing pid", LARGE_PID, &param, ESRCH, "ESRCH" },
-	{ "test invalid pid value", -1, &param, EINVAL, "EINVAL" },
-	{ "test with invalid address for p", 0, NULL, EINVAL, "EINVAL" },
-	{ "test with invalid p.sched_priority", 0, &param1, EINVAL, "EINVAL" }
+	{
+	"test with non-existing pid", LARGE_PID, &param, ESRCH, "ESRCH"}, {
+	"test invalid pid value", -1, &param, EINVAL, "EINVAL"}, {
+	"test with invalid address for p", 0, NULL, EINVAL, "EINVAL"}, {
+	"test with invalid p.sched_priority", 0, &param1, EINVAL,
+		    "EINVAL"}
 };
 
 int TST_TOTAL = sizeof(test_cases) / sizeof(test_cases[0]);
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	int lc, ind;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc, ind;		/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL))
-			!= (char *) NULL) {
+	    != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		for (ind =0; ind < TST_TOTAL; ind++) {
+		for (ind = 0; ind < TST_TOTAL; ind++) {
 			/*
 			 * call the system call with the TEST() macro
-		 	 */
+			 */
 			TEST(sched_setparam(test_cases[ind].pid,
-					   test_cases[ind].p));
+					    test_cases[ind].p));
 
 			if ((TEST_RETURN == -1) &&
 			    (TEST_ERRNO == test_cases[ind].exp_errno)) {
 				tst_resm(TPASS, "expected failure; Got %s",
-						 test_cases[ind].err_desc);
+					 test_cases[ind].err_desc);
 			} else {
 				tst_resm(TFAIL, "Call failed to produce "
-					"expected error;  Expected errno: %d "
-					"Got : %d, %s",
-					test_cases[ind].exp_errno,
-					TEST_ERRNO, strerror(TEST_ERRNO));
+					 "expected error;  Expected errno: %d "
+					 "Got : %d, %s",
+					 test_cases[ind].exp_errno,
+					 TEST_ERRNO, strerror(TEST_ERRNO));
 			}
 			TEST_ERROR_LOG(TEST_ERRNO);
 		}
@@ -153,15 +153,13 @@ main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 
 	/* capture signals */
@@ -179,8 +177,7 @@ setup(void)
  * cleanup() -  performs all the ONE TIME cleanup for this test at completion
  *		or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 
 	/*

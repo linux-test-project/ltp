@@ -77,23 +77,22 @@ int TST_TOTAL = 1;
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 GID_T groups_list[NGROUPS];	/* Array to hold gids for getgroups() */
-int exp_enos[] = {EFAULT, 0};
+int exp_enos[] = { EFAULT, 0 };
 
 void setup();			/* setup function for the test */
 void cleanup();			/* cleanup function for the test */
 
 #if !defined(UCLINUX)
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	int gidsetsize;		/* total no. of groups */
-	char *test_desc;        /* test specific error message */
+	char *test_desc;	/* test specific error message */
 
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
@@ -112,41 +111,39 @@ main(int ac, char **av)
 
 		gidsetsize = NGROUPS;
 		test_desc = "EFAULT";
-				
+
 		/*
 		 * Call setgroups() to test condition
 		 * verify that it fails with -1 return value and
 		 * sets appropriate errno.
 		 */
-		 TEST(SETGROUPS(gidsetsize,sbrk(0)));
+		TEST(SETGROUPS(gidsetsize, sbrk(0)));
 		/* check return code of setgroups */
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "setgroups() returned %d, "
 				 "expected -1, errno=%d", TEST_RETURN,
 				 exp_enos);
-		}
-		else{
-	
+		} else {
+
 			TEST_ERROR_LOG(TEST_ERRNO);
-		
+
 			if (TEST_ERRNO == exp_enos[0]) {
-				tst_resm(TPASS, "setgroups() fails with expected "
-				"error EFAULT errno:%d",TEST_ERRNO);
+				tst_resm(TPASS,
+					 "setgroups() fails with expected "
+					 "error EFAULT errno:%d", TEST_ERRNO);
 			} else {
 				tst_resm(TFAIL, "setgroups() fails, %s, "
 					 "errno=%d, expected errno=%d",
-					 test_desc, TEST_ERRNO,
-					 exp_enos[0]);
+					 test_desc, TEST_ERRNO, exp_enos[0]);
 			}
 		}
 
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 #else
@@ -162,15 +159,14 @@ int main()
 /*
  * setup()
  */
-void
-setup()
+void setup()
 {
 
 	/* check root user */
-        if (geteuid() != 0) {
-                tst_brkm(TBROK, tst_exit, "Test must be run as root");
-        }
-        
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+	}
+
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
@@ -178,11 +174,11 @@ setup()
 	TEST_PAUSE;
 
 }
+
 /*
  * cleanup()
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

@@ -61,7 +61,6 @@
 #define OFF_T off_t
 #endif /* Not def: OFF_T */
 
-
 TCID_DEFINE(sendfile07);
 int TST_TOTAL = 1;
 extern int Tst_count;
@@ -78,13 +77,12 @@ void setup(void);
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* parse_opts() return message */
+	int lc;			/* loop counter */
+	char *msg;		/* parse_opts() return message */
 
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	setup();
 
@@ -115,19 +113,17 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	char buf[100];
-	int  p[2];
-	int  i, r;
+	int p[2];
+	int i, r;
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -142,30 +138,26 @@ setup()
 	if ((in_fd = creat(in_file, 00700)) < 0) {
 		tst_brkm(TBROK, cleanup, "creat failed in setup, errno: %d",
 			 errno);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 	sprintf(buf, "abcdefghijklmnopqrstuvwxyz");
 	if (write(in_fd, buf, strlen(buf)) < 0) {
 		tst_brkm(TBROK, cleanup, "write failed, errno: %d", errno);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 	close(in_fd);
 	if ((in_fd = open(in_file, O_RDONLY)) < 0) {
 		tst_brkm(TBROK, cleanup, "open failed, errno: %d", errno);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/* Make fulfilled out_fd. */
 	if (socketpair(PF_UNIX, SOCK_DGRAM, 0, p) < 0) {
 		tst_brkm(TBROK, cleanup, "socketpair failed, errno: %d", errno);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/* Don't close.
-	   You cannot write nothing on out_fd if ignored_fd is closed.*/
+	   You cannot write nothing on out_fd if ignored_fd is closed. */
 	ignored_fd = p[0];
 	out_fd = p[1];
-	if (fcntl(out_fd, F_SETFL, O_WRONLY|O_NONBLOCK) < 0) {
+	if (fcntl(out_fd, F_SETFL, O_WRONLY | O_NONBLOCK) < 0) {
 		tst_brkm(TBROK, cleanup, "fcntl failed, errno: %d", errno);
 	}
 
@@ -194,17 +186,16 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
 	 */
 	if (out_fd)
-	  close(out_fd);
+		close(out_fd);
 	if (ignored_fd)
-	  close(ignored_fd);
+		close(ignored_fd);
 	close(in_fd);
 
 	TEST_CLEANUP;

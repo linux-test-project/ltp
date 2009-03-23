@@ -1,20 +1,20 @@
 /*
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ *  Copyright (c) International Business Machines  Corp., 2001
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ *  This program is free software;  you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ *  the GNU General Public License for more details.
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program;  if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
 /*
@@ -31,12 +31,12 @@
  *
  * USAGE:  <for command-line>
  *  execve04 -F <test file> [-c n] [-e] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -e   : Turn on errno logging.
- *             -i n : Execute test n times.
- *             -I x : Execute test for x seconds.
- *             -P x : Pause for x seconds between iterations.
- *             -t   : Turn on syscall timing.
+ *     where,	-c n : Run n copies concurrently.
+ *		-e   : Turn on errno logging.
+ *		-i n : Execute test n times.
+ *		-I x : Execute test for x seconds.
+ *		-P x : Pause for x seconds between iterations.
+ *		-t   : Turn on syscall timing.
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
@@ -68,7 +68,7 @@ char fname[40] = "";
 char test_name[PATH_MAX] = "";
 int ifile, nfile, first;
 
-int exp_enos[] = {EMFILE, 0};
+int exp_enos[] = { EMFILE, 0 };
 
 int Fflag = 0;
 char *fname1;
@@ -79,21 +79,21 @@ option_t options[] = {
 	{NULL, NULL, NULL}
 };
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int childpid;
 	int err;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, options, &help)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, options, &help)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
 	if (!Fflag) {
-		tst_resm(TWARN, "You must specify a test executable with"
+		tst_resm(TWARN,
+			 "You must specify a test executable with"
 			 "the -F option.");
 		tst_resm(TWARN, "Run '%s -h' for option information.", TCID);
 		tst_exit();
@@ -109,51 +109,51 @@ main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		childpid=fork();
-		if(childpid==-1) {
+		childpid = fork();
+		if (childpid == -1) {
 			tst_resm(TBROK, "fork() failed: %s", strerror(errno));
-		} else if(childpid==0) {
+		} else if (childpid == 0) {
 			TEST(execve(test_name, NULL, NULL));
 			exit(TEST_ERRNO);
-		} else { /* parent */
+		} else {	/* parent */
 			waitpid(childpid, &err, 0);
-			err=WEXITSTATUS(err);
+			err = WEXITSTATUS(err);
 
 			if (err != EMFILE) {
-				tst_resm(TFAIL, "execve(%s) failed: expected EMFILE(%d), got %d (%s)",
-								 test_name, EMFILE, err, strerror(err));
+				tst_resm(TFAIL,
+					 "execve(%s) failed: expected EMFILE(%d), got %d (%s)",
+					 test_name, EMFILE, err, strerror(err));
 				continue;
 			}
 
 			TEST_ERROR_LOG(err);
 
-			tst_resm(TPASS, "Expected failure - %d : %s",
-							 err, strerror(err));
+			tst_resm(TPASS, "Expected failure - %d : %s", err,
+				 strerror(err));
 		}
 
 	}
 	cleanup();
 
-	/*NOTREACHED*/
+	/* NOTREACHED */
 	return 0;
 }
 
 /*
- * help() - Prints out the help message for the -F option defined
- *          by this test.
+ * help
+ *	Prints out the help message for the -F option defined
+ *	by this test.
  */
-void
-help()
+void help()
 {
 	puts("  -F <test file> : for example, 'execve04 -F test1'\n");
 }
 
 /*
  * setup
- * 	performs all ONE TIME setup for this test.
+ *	performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	int fd;
 	char *pname = NULL;
@@ -173,11 +173,13 @@ setup()
 	 */
 	if (*fname1 != '/') {
 		if ((pname = getcwd(pname, 0)) == NULL) {
-			tst_brkm(TBROK, tst_exit, "Could not get current directory");
+			tst_brkm(TBROK, tst_exit,
+				 "Could not get current directory");
 		}
-		snprintf(test_name, sizeof(test_name)-1, "%s/%s", pname, fname1);
+		snprintf(test_name, sizeof(test_name) - 1, "%s/%s", pname,
+			 fname1);
 	} else {
-		strncpy(test_name, fname1, sizeof(test_name)-1);
+		strncpy(test_name, fname1, sizeof(test_name) - 1);
 	}
 
 	/* make temp dir and cd to it */
@@ -190,7 +192,8 @@ setup()
 	unlink(fname);
 
 	if ((first = fd = creat(fname, 0666)) == -1) {
-		tst_brkm(TBROK, cleanup, "Cannot open first file: %s", strerror(errno));
+		tst_brkm(TBROK, cleanup, "Cannot open first file: %s",
+			 strerror(errno));
 	}
 
 	close(fd);
@@ -201,11 +204,15 @@ setup()
 		if ((fd = creat(fname, 0666)) == -1) {
 			if (errno == EMFILE) {
 				if (ifile != nfile)
-					tst_resm(TINFO, "couldn't creat file #%d, but this should be ok", ifile+1);
+					tst_resm(TINFO,
+						 "couldn't creat file #%d, but this should be ok",
+						 ifile + 1);
 				break;
 			}
-			tst_resm(TBROK, "couldn't creat file #%d, expected to "
-				 "create %d files: %s", ifile + 1, nfile, strerror(errno));
+			tst_resm(TBROK,
+				 "couldn't creat file #%d, expected to "
+				 "create %d files: %s", ifile + 1, nfile,
+				 strerror(errno));
 			cleanup();
 		}
 	}
@@ -213,11 +220,10 @@ setup()
 
 /*
  * cleanup
- * 	performs all ONE TIME cleanup for this test at completion or
- * 	premature exit
+ *	performs all ONE TIME cleanup for this test at completion or
+ *	premature exit
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

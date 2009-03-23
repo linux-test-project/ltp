@@ -19,25 +19,25 @@
 
 /*
  * NAME
- * 	fcnlt08.c
+ *	fcnlt08.c
  *
  * DESCRIPTION
- * 	Testcase to check locking of regions of a file
+ *	Testcase to check locking of regions of a file
  *
  * CALLS
- * 	fcntl
+ *	fcntl
  *
  * ALGORITHM
- * 	Test unlocking sections around a write lock
+ *	Test unlocking sections around a write lock
  *
  * USAGE
- * 	fcntl19
+ *	fcntl19
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
  *
  * RESTRICTIONS
- * 	None
+ *	None
  */
 
 #include <fcntl.h>
@@ -68,7 +68,7 @@ void unlock_file();
 void do_test(struct flock *, short, short, int, int);
 void catch_child();
 char *str_type();
-int do_lock(int, short, short, int , int);
+int do_lock(int, short, short, int, int);
 
 char *TCID = "fcntl19";
 int TST_TOTAL = 1;
@@ -79,16 +79,14 @@ void cleanup(void);
 
 int fail = 0;
 
-
 /*
  * setup
- * 	performs all ONE TIME setup for this test
+ *	performs all ONE TIME setup for this test
  */
-void
-setup()
+void setup()
 {
 	char *buf = STRING;
-        char template[PATH_MAX];
+	char template[PATH_MAX];
 	struct sigaction act;
 
 	/* capture signals */
@@ -108,31 +106,30 @@ setup()
 	snprintf(template, PATH_MAX, "fcntl19XXXXXX");
 
 	if ((fd = mkstemp(template)) < 0) {
-                tst_resm(TFAIL, "Couldn't open temp file! errno = %d", errno);
-        }
+		tst_resm(TFAIL, "Couldn't open temp file! errno = %d", errno);
+	}
 
-        if (write(fd, buf, STRINGSIZE) < 0) {
-                tst_resm(TFAIL, "Couldn't write to temp file! errno = %d", errno);
-        }
+	if (write(fd, buf, STRINGSIZE) < 0) {
+		tst_resm(TFAIL, "Couldn't write to temp file! errno = %d",
+			 errno);
+	}
 
 	memset(&act, 0, sizeof(act));
 	act.sa_handler = catch_child;
 	sigemptyset(&act.sa_mask);
 	sigaddset(&act.sa_mask, SIGCLD);
 	if ((sigaction(SIGCLD, &act, NULL)) < 0) {
-		tst_resm(TFAIL, "SIGCLD signal setup failed, errno: %d",
-			 errno);
+		tst_resm(TFAIL, "SIGCLD signal setup failed, errno: %d", errno);
 		fail = 1;
 	}
 }
 
 /*
  * cleanup()
- * 	performs all ONE TIME cleanup for this test at completion or
- * 	premature exit
+ *	performs all ONE TIME cleanup for this test at completion or
+ *	premature exit
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified
@@ -152,7 +149,7 @@ void do_child()
 
 	close(parent_pipe[1]);
 	close(child_pipe[0]);
-	while(1) {
+	while (1) {
 		child_get(&fl);
 		if (fcntl(fd, F_GETLK, &fl) < 0) {
 			tst_resm(TFAIL, "fcntl on file failed, errno =%d",
@@ -171,11 +168,10 @@ int do_lock(int cmd, short type, short whence, int start, int len)
 	fl.l_whence = whence;
 	fl.l_start = start;
 	fl.l_len = len;
-	return(fcntl(fd, cmd, &fl));
+	return (fcntl(fd, cmd, &fl));
 }
 
-void
-do_test(struct flock *fl, short type, short whence, int start, int len)
+void do_test(struct flock *fl, short type, short whence, int start, int len)
 {
 	fl->l_type = type;
 	fl->l_whence = whence;
@@ -222,40 +218,36 @@ compare_lock(struct flock *fl, short type, short whence, int start, int len,
 	}
 }
 
-void
-unlock_file()
+void unlock_file()
 {
 	struct flock fl;
 
 	if (do_lock(F_SETLK, (short)F_UNLCK, (short)0, 0, 0) < 0) {
-		tst_resm(TFAIL, "fcntl on file failed, errno =%d",
-			 errno);
+		tst_resm(TFAIL, "fcntl on file failed, errno =%d", errno);
 		fail = 1;
 	}
 	do_test(&fl, F_WRLCK, 0, 0, 0);
-	compare_lock(&fl, (short)F_UNLCK, (short)0, 0, 0, (pid_t)0);
+	compare_lock(&fl, (short)F_UNLCK, (short)0, 0, 0, (pid_t) 0);
 }
 
-char *
-str_type(int type)
+char *str_type(int type)
 {
 	static char buf[20];
 
 	switch (type) {
 	case 1:
-		return("F_RDLCK");
+		return ("F_RDLCK");
 	case 2:
-		return("F_WRLCK");
+		return ("F_WRLCK");
 	case 3:
-		return("F_UNLCK");
+		return ("F_UNLCK");
 	default:
 		sprintf(buf, "BAD VALUE: %d", type);
-		return(buf);
+		return (buf);
 	}
 }
 
-void
-parent_put(struct flock *l)
+void parent_put(struct flock *l)
 {
 	if (write(parent_pipe[1], l, sizeof(*l)) != sizeof(*l)) {
 		tst_resm(TFAIL, "couldn't send message to child");
@@ -263,8 +255,7 @@ parent_put(struct flock *l)
 	}
 }
 
-void
-parent_get(struct flock *l)
+void parent_get(struct flock *l)
 {
 	if (read(child_pipe[0], l, sizeof(*l)) != sizeof(*l)) {
 		tst_resm(TFAIL, "couldn't get message from child");
@@ -272,8 +263,7 @@ parent_get(struct flock *l)
 	}
 }
 
-void
-child_put(struct flock *l)
+void child_put(struct flock *l)
 {
 	if (write(child_pipe[1], l, sizeof(*l)) != sizeof(*l)) {
 		tst_resm(TFAIL, "couldn't send message to parent");
@@ -281,8 +271,7 @@ child_put(struct flock *l)
 	}
 }
 
-void
-child_get(struct flock *l)
+void child_get(struct flock *l)
 {
 	if (read(parent_pipe[0], l, sizeof(*l)) != sizeof(*l)) {
 		tst_resm(TFAIL, "couldn't get message from parent");
@@ -292,19 +281,17 @@ child_get(struct flock *l)
 	}
 }
 
-void
-stop_child()
+void stop_child()
 {
 	struct flock fl;
 
-	(void) signal(SIGCLD, (void (*)())SIG_DFL);
+	(void)signal(SIGCLD, (void (*)())SIG_DFL);
 	fl.l_type = STOP;
 	parent_put(&fl);
 	wait(0);
 }
 
-void
-catch_child()
+void catch_child()
 {
 	tst_resm(TFAIL, "Unexpected death of child process");
 	cleanup();
@@ -314,20 +301,19 @@ int main(int ac, char **av)
 {
 	struct flock tl;
 
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
-
 #ifdef UCLINUX
 	maybe_run_child(&do_child, "ddddd", &parent_pipe[0], &parent_pipe[1],
 			&child_pipe[0], &child_pipe[1], &fd);
 #endif
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* Check for looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -336,8 +322,9 @@ int main(int ac, char **av)
 
 		if ((child_pid = FORK_OR_VFORK()) == 0) {	/* child */
 #ifdef UCLINUX
-			if (self_exec(av[0], "ddddd", parent_pipe[0], parent_pipe[1],
-				      child_pipe[0], child_pipe[1], fd) < 0) {
+			if (self_exec
+			    (av[0], "ddddd", parent_pipe[0], parent_pipe[1],
+			     child_pipe[0], child_pipe[1], fd) < 0) {
 				tst_resm(TFAIL, "self_exec failed");
 				cleanup();
 			}
@@ -382,7 +369,7 @@ int main(int ac, char **av)
 		 * Test that the rest of the file is unlocked
 		 */
 		do_test(&tl, (short)F_WRLCK, (short)0, 15, 0);
-		compare_lock(&tl, (short)F_UNLCK, (short)0, 15, 0, (pid_t)0);
+		compare_lock(&tl, (short)F_UNLCK, (short)0, 15, 0, (pid_t) 0);
 
 		/*
 		 * remove all the locks set above
@@ -425,7 +412,7 @@ int main(int ac, char **av)
 		 * Test to make sure the rest of the file is unlocked
 		 */
 		do_test(&tl, (short)F_WRLCK, (short)0, 15, 0);
-		compare_lock(&tl, (short)F_UNLCK, (short)0, 15, 0, (pid_t)0);
+		compare_lock(&tl, (short)F_UNLCK, (short)0, 15, 0, (pid_t) 0);
 
 		/*
 		 * remove all the locks set above
@@ -469,7 +456,7 @@ int main(int ac, char **av)
 		 * Test to make sure the rest of the file is unlocked
 		 */
 		do_test(&tl, (short)F_WRLCK, (short)0, 15, 0);
-		compare_lock(&tl, (short)F_UNLCK, (short)0, 15, 0, (pid_t)0);
+		compare_lock(&tl, (short)F_UNLCK, (short)0, 15, 0, (pid_t) 0);
 
 		/*
 		 * remove all the locks set above
@@ -486,7 +473,7 @@ int main(int ac, char **av)
 /* //block4: */
 		tst_resm(TINFO, "Enter blcok 4");
 		fail = 0;
-	
+
 		/*
 		 * Set a write a lock in the middle of a file and unlock a
 		 * section in the middle of it
@@ -519,7 +506,7 @@ int main(int ac, char **av)
 		 * Test to make sure the rest of the file is unlocked
 		 */
 		do_test(&tl, (short)F_WRLCK, (short)0, 20, 0);
-		compare_lock(&tl, (short)F_UNLCK, (short)0, 20, 0, (pid_t)0);
+		compare_lock(&tl, (short)F_UNLCK, (short)0, 20, 0, (pid_t) 0);
 
 		/*
 		 * remove all the locks set above
@@ -563,7 +550,7 @@ int main(int ac, char **av)
 		 * Test to make sure the rest of the file is unlocked
 		 */
 		do_test(&tl, (short)F_WRLCK, (short)0, 13, 0);
-		compare_lock(&tl, (short)F_UNLCK, (short)0, 13, 0, (pid_t)0);
+		compare_lock(&tl, (short)F_UNLCK, (short)0, 13, 0, (pid_t) 0);
 
 		/*
 		 * remove all the locks set above
@@ -580,7 +567,7 @@ int main(int ac, char **av)
 /* //block6: */
 		tst_resm(TINFO, "Enter block 6");
 		fail = 0;
-	
+
 		/*
 		 * Set write lock in the middle of the file and do an unlock
 		 * starting at the last byte of the write lock
@@ -607,7 +594,7 @@ int main(int ac, char **av)
 		 * Test to make sure the end of the file is unlocked
 		 */
 		do_test(&tl, (short)F_WRLCK, (short)0, 14, 0);
-		compare_lock(&tl, (short)F_UNLCK, (short)0, 14, 0, (pid_t)0);
+		compare_lock(&tl, (short)F_UNLCK, (short)0, 14, 0, (pid_t) 0);
 
 		/*
 		 * remove all the locks set above
@@ -652,7 +639,7 @@ int main(int ac, char **av)
 		 * Test to make sure the rest of the file is unlocked
 		 */
 		do_test(&tl, (short)F_WRLCK, (short)0, 16, 0);
-		compare_lock(&tl, (short)F_UNLCK, (short)0, 16, 0, (pid_t)0);
+		compare_lock(&tl, (short)F_UNLCK, (short)0, 16, 0, (pid_t) 0);
 
 		/*
 		 * remove all the locks set above

@@ -70,7 +70,7 @@ char *TCID = "settimeofday01";
 int TST_TOTAL = 1;
 time_t save_tv_sec, save_tv_usec;
 struct timeval tp, tp1, tp2;
-int exp_enos[]={EFAULT, 0};
+int exp_enos[] = { EFAULT, 0 };
 extern int Tst_count;
 
 void setup(void);
@@ -80,17 +80,16 @@ void cleanup(void);
 
 int main(int argc, char **argv)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	suseconds_t delta;
 
 	/* parse standard options */
-	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) !=
+	if ((msg = parse_opts(argc, argv, (option_t *) NULL, NULL)) !=
 	    (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	setup();
 
@@ -100,8 +99,8 @@ int main(int argc, char **argv)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		tp.tv_sec  =  VAL_SEC;
-		tp.tv_usec  =  VAL_MSEC;
+		tp.tv_sec = VAL_SEC;
+		tp.tv_usec = VAL_MSEC;
 
 		TEST(settimeofday(&tp, NULL));
 		if (TEST_RETURN == -1) {
@@ -111,17 +110,20 @@ int main(int argc, char **argv)
 		}
 
 		if ((gettimeofday(&tp2, (struct timezone *)&tp1)) == -1) {
-			tst_resm(TBROK, "Error Getting Time, errno=%d",
-				 errno);
+			tst_resm(TBROK, "Error Getting Time, errno=%d", errno);
 		}
 
 		if (tp2.tv_sec > tp.tv_sec) {
-			delta=(suseconds_t)(tp2.tv_sec-tp.tv_sec)*1000+(tp2.tv_usec-tp.tv_usec)/1000;
+			delta =
+			    (suseconds_t) (tp2.tv_sec - tp.tv_sec) * 1000 +
+			    (tp2.tv_usec - tp.tv_usec) / 1000;
 		} else {
-			delta=(suseconds_t)(tp.tv_sec-tp2.tv_sec)*1000+(tp.tv_usec-tp2.tv_usec)/1000;
+			delta =
+			    (suseconds_t) (tp.tv_sec - tp2.tv_sec) * 1000 +
+			    (tp.tv_usec - tp2.tv_usec) / 1000;
 		}
-		
-		if(delta>-ACCEPTABLE_DELTA && delta < ACCEPTABLE_DELTA) {
+
+		if (delta > -ACCEPTABLE_DELTA && delta < ACCEPTABLE_DELTA) {
 			tst_resm(TPASS, "Test condition %d successful",
 				 condition_number++);
 		} else {
@@ -142,9 +144,7 @@ int main(int argc, char **argv)
 
 	}
 	cleanup();
-	/*NOTREACHED*/
-
-  return 0;
+	 /*NOTREACHED*/ return 0;
 
 }
 
@@ -162,8 +162,7 @@ int main()
  * setup()
  *	performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -172,8 +171,7 @@ setup(void)
 	if (geteuid() != 0) {
 		tst_brkm(TBROK, NULL, "Must be root for this test!");
 		tst_exit();
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
@@ -186,9 +184,8 @@ setup(void)
 	/* Save the current time values */
 	if ((gettimeofday(&tp, (struct timezone *)&tp1)) == -1) {
 		tst_brkm(TBROK, cleanup, "gettimeofday failed. "
-			"errno=%d", errno);
-		/*NOTREACHED*/
-	}
+			 "errno=%d", errno);
+	 /*NOTREACHED*/}
 	save_tv_sec = tp.tv_sec;
 	save_tv_usec = tp.tv_usec;
 }
@@ -198,16 +195,14 @@ setup(void)
  *	performs all ONE TIME cleanup for this test at
  *	completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/* restore the original time values. */
 	tp.tv_sec = save_tv_sec;
 	tp.tv_usec = save_tv_usec;
 	if ((settimeofday(&tp, NULL)) == -1) {
 		tst_resm(TWARN, "FATAL COULD NOT RESET THE CLOCK");
-		tst_resm(TFAIL, "Error Setting Time, errno=%d",
-			 errno);
+		tst_resm(TFAIL, "Error Setting Time, errno=%d", errno);
 	}
 
 	/*
@@ -218,5 +213,4 @@ cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}

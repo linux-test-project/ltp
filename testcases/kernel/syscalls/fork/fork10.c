@@ -70,10 +70,9 @@ int main(int ac, char **av)
 	/*
 	 * parse standard options
 	 */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/*
 	 * perform global setup for the test
@@ -92,37 +91,33 @@ int main(int ac, char **av)
 		if ((fildes = creat(fnamebuf, 0600)) < 0) {
 			tst_brkm(TBROK, cleanup, "Parent: cannot open %s for "
 				 "write, errno = %d", fnamebuf, errno);
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 		write(fildes, "ABCDEFGHIJKLMNOPQRSTUVWXYZ\n", 27);
 		close(fildes);
 
 		if ((fildes = open(fnamebuf, 0)) == -1) {
 			tst_brkm(TBROK, cleanup, "Parent: cannot open %s for "
 				 "reading", fnamebuf);
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		if ((pid = fork()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() #1 failed");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
-		if (pid == 0) {			/* child */
+		if (pid == 0) {	/* child */
 			tst_resm(TINFO, "fork child A");
 			if (lseek(fildes, 10L, 0) == -1L) {
 				tst_resm(TFAIL, "bad lseek by child");
 				exit(1);
 			}
 			exit(0);
-		} else {			/* parent */
+		} else {	/* parent */
 			wait(&status);
 
 			/* parent starts second child */
 			if ((pid = fork()) == -1) {
 				tst_brkm(TBROK, cleanup, "fork() #2 failed");
-				/*NOTREACHED*/
-			}
+			 /*NOTREACHED*/}
 
 			if (pid == 0) {	/* child */
 				if (read(fildes, chilchar, 1) <= 0) {
@@ -137,7 +132,7 @@ int main(int ac, char **av)
 						exit(0);
 					}
 				}
-			} else {		/* parent */
+			} else {	/* parent */
 				(void)wait(&status);
 				if (status >> 8 != 0) {
 					tst_resm(TFAIL, "Bad return from "
@@ -161,18 +156,16 @@ int main(int ac, char **av)
 		}
 		tst_resm(TPASS, "test 1 PASSED");
 	}
-    close(fildes);
+	close(fildes);
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test
  */
-void
-setup()
+void setup()
 {
 	/*
 	 * capture signals
@@ -200,8 +193,7 @@ setup()
  * cleanup() -	performs all ONE TIME cleanup for this test at
  *	        completion or premature exit
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

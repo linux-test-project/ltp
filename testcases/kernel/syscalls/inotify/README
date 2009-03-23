@@ -1,8 +1,8 @@
 This contains two tests for the inotify subsytem.
 
-The  inotify  API  provides  a mechanism for monitoring file system events.  
-Inotify can be used to monitor individual files, or to monitor directories.  
-When a directory is monitored, inotify will return events for the directory 
+The  inotify  API  provides  a mechanism for monitoring file system events. $
+Inotify can be used to monitor individual files, or to monitor directories. $
+When a directory is monitored, inotify will return events for the directory$
 itself, and for files inside  the directory.
 
 The tests are intended to do the following:

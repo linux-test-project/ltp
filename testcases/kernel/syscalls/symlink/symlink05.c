@@ -82,28 +82,26 @@
 #define  TESTFILE	"testfile"
 #define  SYMFILE	"slink_file"
 
-char *TCID="symlink05";		/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "symlink05";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-int exp_enos[]={0};
+int exp_enos[] = { 0 };
 
-void setup();		/* Setup function for the test */
-void cleanup();		/* Cleanup function for the test */
+void setup();			/* Setup function for the test */
+void cleanup();			/* Cleanup function for the test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	struct stat stat_buf;	/* stat structure buffer */
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-   
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/* Perform global setup for test */
 	setup();
@@ -114,7 +112,7 @@ main(int ac, char **av)
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/*
 		 * Call symlink(2) to create a symlink of
@@ -125,7 +123,7 @@ main(int ac, char **av)
 		/* Check return code of symlink(2) */
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL, \
+			tst_resm(TFAIL,
 				 "symlink(%s, %s) Failed, errno=%d : %s",
 				 TESTFILE, SYMFILE, TEST_ERRNO,
 				 strerror(TEST_ERRNO));
@@ -141,20 +139,19 @@ main(int ac, char **av)
 				 */
 				if (lstat(SYMFILE, &stat_buf) < 0) {
 					tst_brkm(TFAIL, cleanup, "lstat(2) of "
-						"%s failed, error:%d",
-						SYMFILE, errno);
-					/*NOTREACHED*/
-				}
+						 "%s failed, error:%d",
+						 SYMFILE, errno);
+				 /*NOTREACHED*/}
 
 				/* Check if the st_mode contains a link  */
 				if (!S_ISLNK(stat_buf.st_mode)) {
-					tst_resm(TFAIL, \
+					tst_resm(TFAIL,
 						 "symlink of %s doesn't exist",
 						 TESTFILE);
 				} else {
 					tst_resm(TPASS, "symlink(%s, %s) "
-						"functionality successful",
-						TESTFILE, SYMFILE);
+						 "functionality successful",
+						 TESTFILE, SYMFILE);
 				}
 			} else {
 				tst_resm(TPASS, "Call succeeded");
@@ -167,25 +164,21 @@ main(int ac, char **av)
 				 "unlink(%s) Failed, errno=%d : %s",
 				 SYMFILE, errno, strerror(errno));
 		}
-		Tst_count++;		/* incr TEST_LOOP counter */
-	}	/* End for TEST_LOOPING */
+		Tst_count++;	/* incr TEST_LOOP counter */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
-	/*NOTREACHED*/
+	 /*NOTREACHED*/ return 0;
 
-
-  return 0;
-
-}	/* End main */
+}				/* End main */
 
 /*
  * void
  * setup() - performs all ONE TIME setup for this test.
  *  Create a temporary directory and change directory to it.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -200,8 +193,7 @@ setup()
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
-}	/* End setup() */
-
+}				/* End setup() */
 
 /*
  * void
@@ -209,8 +201,7 @@ setup()
  *             completion or premature exit.
  *  Remove the temporary directory created in the setup.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -223,4 +214,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

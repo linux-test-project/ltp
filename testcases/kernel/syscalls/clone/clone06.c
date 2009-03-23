@@ -27,19 +27,19 @@
  *    AUTHOR		: Saji Kumar.V.R <saji.kumar@wipro.com>
  *
  *    SIGNALS
- * 	Uses SIGUSR1 to pause before test if option set.
- * 	(See the parse_opts(3) man page).
+ *	Uses SIGUSR1 to pause before test if option set.
+ *	(See the parse_opts(3) man page).
  *
  *    DESCRIPTION
  *	Test to verify inheritance of environment variables by child.
  *
- * 	Setup:
- * 	  Setup signal handling.
+ *	Setup:
+ *	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
  *
- * 	Test:
+ *	Test:
  *	 Loop if the proper options are given.
- * 	  Call clone()
+ *	  Call clone()
  *
  *	  CHILD:
  *		get the value for environment variable, TERM  and write it
@@ -53,8 +53,8 @@
  *		else
  *			Test failed.
  *
- * 	Cleanup:
- * 	  Print errno log and/or timing stats if options given
+ *	Cleanup:
+ *	  Print errno log and/or timing stats if options given
  *
  * USAGE:  <for command-line>
  *  clone06 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
@@ -95,8 +95,7 @@ char *TCID = "clone06";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 
 	int lc;			/* loop counter */
@@ -106,7 +105,7 @@ main(int ac, char **av)
 	char buff[MAX_LINE_LENGTH];
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL))
 	    != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
@@ -115,7 +114,7 @@ main(int ac, char **av)
 	setup();
 
 	/* Allocate stack for child */
-	if((child_stack = (void *) malloc(CHILD_STACK_SIZE)) == NULL) {
+	if ((child_stack = (void *)malloc(CHILD_STACK_SIZE)) == NULL) {
 		tst_brkm(TBROK, cleanup, "Cannot allocate stack for child");
 	}
 
@@ -137,16 +136,16 @@ main(int ac, char **av)
 		TEST(clone(child_environ, child_stack, 0, NULL));
 #elif defined(__ia64__)
 		TEST(clone2(child_environ, child_stack,
-					CHILD_STACK_SIZE, 0, NULL,
-					NULL, NULL, NULL));
+			    CHILD_STACK_SIZE, 0, NULL, NULL, NULL, NULL));
 #else
-		TEST(clone(child_environ, child_stack + CHILD_STACK_SIZE, 0, NULL));
+		TEST(clone
+		     (child_environ, child_stack + CHILD_STACK_SIZE, 0, NULL));
 #endif
 
 		/* check return code */
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "clone() Failed, errno = %d :"
-				" %s", TEST_ERRNO, strerror(TEST_ERRNO));
+				 " %s", TEST_ERRNO, strerror(TEST_ERRNO));
 			cleanup();
 		}
 
@@ -172,36 +171,32 @@ main(int ac, char **av)
 		} else {
 			tst_resm(TFAIL, "Test Failed");
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	free(child_stack);
 
 	/* cleanup and exit */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 
-}	/* End main */
+}				/* End main */
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
-}	/* End setup() */
-
+}				/* End setup() */
 
 /*
  *cleanup() -  performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -211,15 +206,14 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */
 
 /*
  * child_environ() -	function executed by child.
  *			Gets the value for environment variable,TERM &
  *			writes it to  a pipe.
  */
-int
-child_environ(void)
+int child_environ(void)
 {
 
 	char var[MAX_LINE_LENGTH];
@@ -229,7 +223,7 @@ child_environ(void)
 		tst_brkm(TBROK, cleanup, "close(pfd[0]) failed");
 	}
 
-	if ((sprintf(var, getenv("TERM"))) <= 0){
+	if ((sprintf(var, getenv("TERM"))) <= 0) {
 		tst_resm(TWARN, "sprintf() failed");
 	}
 
@@ -244,4 +238,3 @@ child_environ(void)
 
 	exit(0);
 }
-

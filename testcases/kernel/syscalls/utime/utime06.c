@@ -46,9 +46,9 @@
  *   Loop if the proper options are given.
  *   Execute system call
  *   Check return code, if system call failed (return=-1)
- *   	if errno set == expected errno
- *   		Issue sys call fails with expected return value and errno.
- *   	Otherwise,
+ *	if errno set == expected errno
+ *		Issue sys call fails with expected return value and errno.
+ *	Otherwise,
  *		Issue sys call fails with unexpected errno.
  *   Otherwise,
  *	Issue sys call returns unexpected value.
@@ -96,37 +96,38 @@
 #define TEMP_FILE	"tmp_file"
 #define FILE_MODE	S_IRUSR | S_IRGRP | S_IROTH
 
-char *TCID="utime06";		/* Test program identifier.    */
-int TST_TOTAL=2;		/* Total number of test cases. */
+char *TCID = "utime06";		/* Test program identifier.    */
+int TST_TOTAL = 2;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 time_t curr_time;		/* current time in seconds */
 time_t tloc;			/* argument var. for time() */
-int exp_enos[]={EACCES, ENOENT, 0};
+int exp_enos[] = { EACCES, ENOENT, 0 };
 
-struct passwd *ltpuser;         /* password struct for ltpusers */
-uid_t user_uid;                 /* user id of ltpuser */
-gid_t group_gid;                /* group id of ltpuser */
+struct passwd *ltpuser;		/* password struct for ltpusers */
+uid_t user_uid;			/* user id of ltpuser */
+gid_t group_gid;		/* group id of ltpuser */
 int status;
 
 int setup1();			/* setup function to test error EACCES */
 int no_setup();
 
-struct test_case_t {		/* test case struct. to hold ref. test cond's*/
+struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	char *pathname;
 	char *desc;
 	int exp_errno;
-	int (*setupfunc)();
+	int (*setupfunc) ();
 } Test_cases[] = {
-	{ TEMP_FILE, "Permission denied to modify file time", EACCES, setup1 },
-	{ "", "Specified file doesn't exist", ENOENT, no_setup },
-	{ NULL, NULL, 0, NULL}
+	{
+	TEMP_FILE, "Permission denied to modify file time", EACCES, setup1},
+	{
+	"", "Specified file doesn't exist", ENOENT, no_setup}, {
+	NULL, NULL, 0, NULL}
 };
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
@@ -134,10 +135,10 @@ main(int ac, char **av)
 	char *test_desc;	/* test specific error message */
 	int ind;		/* counter to test different test conditions */
 	int pid;
-   
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -152,13 +153,11 @@ main(int ac, char **av)
 
 	if (pid == -1) {
 		tst_brkm(TBROK, cleanup, "fork() failed");
-		/*NOTREACHED*/
-	} else if (pid == 0) {
+	 /*NOTREACHED*/} else if (pid == 0) {
 		if ((ltpuser = getpwnam(LTPUSER1)) == NULL) {
-			tst_brkm(TBROK,cleanup,"%s not found in /etc/passwd",
-				LTPUSER1);
-			/*NOTREACHED*/
-		}
+			tst_brkm(TBROK, cleanup, "%s not found in /etc/passwd",
+				 LTPUSER1);
+		 /*NOTREACHED*/}
 
 		/* get uid of user */
 		user_uid = ltpuser->pw_uid;
@@ -168,7 +167,7 @@ main(int ac, char **av)
 		/* Check looping state if -i option given */
 		for (lc = 0; TEST_LOOPING(lc); lc++) {
 			/* Reset Tst_count in case we are looping. */
-			Tst_count=0;
+			Tst_count = 0;
 
 			for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
 				file_name = Test_cases[ind].pathname;
@@ -185,31 +184,32 @@ main(int ac, char **av)
 				if (TEST_RETURN == -1) {
 					TEST_ERROR_LOG(TEST_ERRNO);
 					if (TEST_ERRNO ==
-						Test_cases[ind].exp_errno) {
+					    Test_cases[ind].exp_errno) {
 						tst_resm(TPASS, "utime() "
-							"fails, %s, errno:%d",
-							test_desc, TEST_ERRNO);
+							 "fails, %s, errno:%d",
+							 test_desc, TEST_ERRNO);
 					} else {
 						tst_resm(TFAIL, "utime(2) "
-							"fails, %s, errno:%d, "
-							"expected errno:%d",
-							test_desc, TEST_ERRNO,
-							Test_cases[ind].exp_errno);
+							 "fails, %s, errno:%d, "
+							 "expected errno:%d",
+							 test_desc, TEST_ERRNO,
+							 Test_cases[ind].
+							 exp_errno);
 					}
 				} else {
 					tst_resm(TFAIL, "utime(2) returned %d, "
-						"expected -1, errno:%d",
-						TEST_RETURN,
-						Test_cases[ind].exp_errno);
+						 "expected -1, errno:%d",
+						 TEST_RETURN,
+						 Test_cases[ind].exp_errno);
 				}
 			}	/* End of TEST CASE LOOPING. */
 
-			Tst_count++;		/* incr TEST_LOOP counter */
+			Tst_count++;	/* incr TEST_LOOP counter */
 
-		}	/* End for TEST_LOOPING */
+		}		/* End for TEST_LOOPING */
 	} else {
 		waitpid(pid, &status, 0);
-		_exit(0);       /*
+		_exit(0);	/*
 				 * Exit here and let the child clean up.
 				 * This allows the errno information set
 				 * by the TEST_ERROR_LOG macro and the
@@ -219,12 +219,9 @@ main(int ac, char **av)
 	}
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
-	/*NOTREACHED*/
+	 /*NOTREACHED*/ return 0;
 
-
-  return 0;
-
-}	/* End main */
+}				/* End main */
 
 /*
  * void
@@ -233,10 +230,9 @@ main(int ac, char **av)
  *  Invoke individual test setup functions according to the order
  *  set in test struct. definition.
  */
-void
-setup()
+void setup()
 {
-	int ind;			/* counter for setup functions */
+	int ind;		/* counter for setup functions */
 
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -257,15 +253,14 @@ setup()
 	for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
 		Test_cases[ind].setupfunc();
 	}
-}	/* End setup() */
+}				/* End setup() */
 
 /*
  * int
  * no_setup() - Some test conditions for utime(2) do not any setup.
  *              Hence, this function just returns 0.
  */
-int
-no_setup()
+int no_setup()
 {
 	return 0;
 }
@@ -277,10 +272,9 @@ no_setup()
  *  Create a testfile under temporary directory and change the ownership of
  *  testfile to "bin".
  */
-int
-setup1()
+int setup1()
 {
-	int fildes;			/* file handle for temp file */
+	int fildes;		/* file handle for temp file */
 
 	/* Creat a temporary file under above directory */
 	if ((fildes = creat(TEMP_FILE, FILE_MODE)) == -1) {
@@ -291,14 +285,13 @@ setup1()
 	/* Close the temporary file created */
 	if (close(fildes) < 0) {
 		tst_brkm(TBROK, cleanup, "close(%s) Failed, errno=%d : %s:",
-				 TEMP_FILE, errno, strerror(errno));
+			 TEMP_FILE, errno, strerror(errno));
 	}
 
 	if ((ltpuser = getpwnam(LTPUSER2)) == NULL) {
 		tst_brkm(TBROK, cleanup, "%s not found in /etc/passwd",
-				LTPUSER2);
-		/*NOTREACHED*/
-	}
+			 LTPUSER2);
+	 /*NOTREACHED*/}
 
 	/* get uid/gid of user accordingly */
 	user_uid = ltpuser->pw_uid;
@@ -306,12 +299,11 @@ setup1()
 
 	if (chown(TEMP_FILE, user_uid, group_gid) < 0) {
 		tst_brkm(TBROK, cleanup, "chown() of %s failed, error %d",
-			TEMP_FILE, errno);
-		/*NOTREACHED*/
-	}
+			 TEMP_FILE, errno);
+	 /*NOTREACHED*/}
 
 	return 0;
-}	/* End of setup1 */
+}				/* End of setup1 */
 
 /*
  * void
@@ -319,8 +311,7 @@ setup1()
  *             completion or premature exit.
  *  Remove the test directory and testfile created in the setup.
  */
-void
-cleanup()
+void cleanup()
 {
 	seteuid(0);
 	/*
@@ -334,4 +325,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

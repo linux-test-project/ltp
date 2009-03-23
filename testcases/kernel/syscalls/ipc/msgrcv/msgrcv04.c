@@ -64,7 +64,7 @@ char *TCID = "msgrcv04";
 int TST_TOTAL = 2;
 extern int Tst_count;
 
-int exp_enos[] = {E2BIG, ENOMSG, 0};
+int exp_enos[] = { E2BIG, ENOMSG, 0 };
 
 int msg_q_1 = -1;		/* The message queue id created in setup */
 
@@ -80,29 +80,30 @@ struct test_case_t {
 } TC[] = {
 	/*
 	 * E2BIG - The receive buffer is too small for the message and
-	 *	   MSG_NOERROR isn't asserted in the flags.
+	 *         MSG_NOERROR isn't asserted in the flags.
 	 */
-	{SMSIZE, 1, 0, E2BIG},
-
-	/*
-	 * ENOMSG - There is no message with the requested type and
-	 *	    IPC_NOWAIT is asserted in the flags.
-	 */
-	{MSGSIZE, 2, IPC_NOWAIT, ENOMSG}
+	{
+	SMSIZE, 1, 0, E2BIG},
+	    /*
+	     * ENOMSG - There is no message with the requested type and
+	     *          IPC_NOWAIT is asserted in the flags.
+	     */
+	{
+	MSGSIZE, 2, IPC_NOWAIT, ENOMSG}
 };
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int i;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -110,14 +111,14 @@ int main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		for (i=0; i<TST_TOTAL; i++) {
+		for (i = 0; i < TST_TOTAL; i++) {
 
 			/*
 			 * Use the TEST macro to make the call
 			 */
 
 			TEST(msgrcv(msg_q_1, &rcv_buf, TC[i].size, TC[i].type,
-			     TC[i].flags));
+				    TC[i].flags));
 
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
@@ -134,21 +135,19 @@ int main(int ac, char **av)
 				tst_resm(TFAIL, "call failed with an "
 					 "unexpected error - %d : %s",
 					 TEST_ERRNO, strerror(TEST_ERRNO));
-			}		
+			}
 		}
 	}
 
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -186,8 +185,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/* if it exists, remove the message queue that was created */
 	rm_queue(msg_q_1);
@@ -204,4 +202,3 @@ cleanup(void)
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

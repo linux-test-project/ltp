@@ -72,18 +72,17 @@ int main(int ac, char **av)
 	char wbuf[BUFSIZ], rbuf[BUFSIZ];
 	int len, rlen;
 	int rval = 0;
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/*
 	 * parse standard options
 	 */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
-	setup();			/* global setup for test */
+	setup();		/* global setup for test */
 
 	/*
 	 * The following loop checks looping state if -i option given
@@ -100,11 +99,12 @@ int main(int ac, char **av)
 		exno = sig = 0;
 
 		if ((pid = FORK_OR_VFORK()) == -1) {
-			tst_brkm(TBROK, cleanup, "fork failed, error no = %d : %s",
-				 errno, strerror(errno));
+			tst_brkm(TBROK, cleanup,
+				 "fork failed, error no = %d : %s", errno,
+				 strerror(errno));
 		}
 
-		if (pid == 0) {		/* child */
+		if (pid == 0) {	/* child */
 			sleep(1);
 			if ((filed = creat(filen, MODE)) == -1) {
 				tst_resm(TINFO, "creat error: unable to"
@@ -116,7 +116,7 @@ int main(int ac, char **av)
 				exit(2);
 			}
 			exit(exno);
-		} else {		/* parent */
+		} else {	/* parent */
 			npid = wait(&status);
 
 			if (npid != pid) {
@@ -181,15 +181,13 @@ int main(int ac, char **av)
 		}
 	}
 	cleanup();
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - perform all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -202,15 +200,14 @@ setup(void)
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
-	sprintf(filen, "tfile_%d",getpid());
+	sprintf(filen, "tfile_%d", getpid());
 }
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at completion or
  *	       premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

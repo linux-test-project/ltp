@@ -29,7 +29,7 @@
  *
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: alarm03.c,v 1.8 2009/02/26 12:14:54 subrata_modak Exp $ */
+/* $Id: alarm03.c,v 1.9 2009/03/23 13:35:39 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -103,141 +103,133 @@
 void setup();
 void cleanup();
 
-
-char *TCID="alarm03"; 		/* Test program identifier.    */
-int TST_TOTAL=1;    		/* Total number of test cases. */
+char *TCID = "alarm03";		/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-    int lc;		/* loop counter */
-    char *msg;		/* message returned from parse_opts */
-    int e_code, status, retval=0;
-   
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
+	int e_code, status, retval = 0;
+
     /***************************************************************
      * parse standard options
      ***************************************************************/
-    if ( (msg=parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *) NULL ) {
-	tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-        tst_exit();
-    }
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+		tst_exit();
+	}
 
     /***************************************************************
      * perform global setup for test
      ***************************************************************/
-    setup();
+	setup();
 
     /***************************************************************
      * check looping state if -c option given
      ***************************************************************/
-    for (lc=0; TEST_LOOPING(lc); lc++) {
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-	/* reset Tst_count in case we are looping. */
-	Tst_count=0;
+		/* reset Tst_count in case we are looping. */
+		Tst_count = 0;
 
-	/*
-	 * Call alarm(2)
-	 */
-	TEST(alarm(100));
+		/*
+		 * Call alarm(2)
+		 */
+		TEST(alarm(100));
 
-        switch ( FORK_OR_VFORK()) {
-	case -1:
-		tst_brkm(TBROK, cleanup, "fork failed, errno:%d %s",
-			errno, strerror(errno));
-		break;
+		switch (FORK_OR_VFORK()) {
+		case -1:
+			tst_brkm(TBROK, cleanup, "fork failed, errno:%d %s",
+				 errno, strerror(errno));
+			break;
 
-	case  0:
-	    TEST( alarm(0) );
+		case 0:
+			TEST(alarm(0));
 
-	    if ( TEST_RETURN != 0 ) {
-		retval=1;
-		tst_resm(TFAIL,
-		    "alarm(100), fork, alarm(0) child's alarm returned %d",
-                    TEST_RETURN);
-	    } else if ( STD_FUNCTIONAL_TEST ) {
-		tst_resm(TPASS,
-		    "alarm(100), fork, alarm(0) child's alarm returned %d",
-		    TEST_RETURN);
-	    }
+			if (TEST_RETURN != 0) {
+				retval = 1;
+				tst_resm(TFAIL,
+					 "alarm(100), fork, alarm(0) child's alarm returned %d",
+					 TEST_RETURN);
+			} else if (STD_FUNCTIONAL_TEST) {
+				tst_resm(TPASS,
+					 "alarm(100), fork, alarm(0) child's alarm returned %d",
+					 TEST_RETURN);
+			}
 
-	    exit(retval);
-	    break;
+			exit(retval);
+			break;
 
-	default:
-	    Tst_count++;
-	    TEST( alarm(0) );
+		default:
+			Tst_count++;
+			TEST(alarm(0));
 /* The timer may be rounded up to the next nearest second, this is OK */
-	    if ( TEST_RETURN <= 0 || TEST_RETURN > 101 ) {
-		retval = 1;
-                tst_resm(TFAIL,
-		    "alarm(100), fork, alarm(0) parent's alarm returned %d",
-                    TEST_RETURN);
-	    } else if ( STD_FUNCTIONAL_TEST ) {
-                tst_resm(TPASS,
-		    "alarm(100), fork, alarm(0) parent's alarm returned %d",
-                    TEST_RETURN);
-	    }
-	    /* wait for the child to finish */
-	    wait(&status);
-	    /* make sure the child returned a good exit status */
-	    e_code = status >> 8;
-	    if ((e_code != 0) || (retval != 0)) {
-	        tst_resm(TFAIL, "Failures reported above");
-	    }
+			if (TEST_RETURN <= 0 || TEST_RETURN > 101) {
+				retval = 1;
+				tst_resm(TFAIL,
+					 "alarm(100), fork, alarm(0) parent's alarm returned %d",
+					 TEST_RETURN);
+			} else if (STD_FUNCTIONAL_TEST) {
+				tst_resm(TPASS,
+					 "alarm(100), fork, alarm(0) parent's alarm returned %d",
+					 TEST_RETURN);
+			}
+			/* wait for the child to finish */
+			wait(&status);
+			/* make sure the child returned a good exit status */
+			e_code = status >> 8;
+			if ((e_code != 0) || (retval != 0)) {
+				tst_resm(TFAIL, "Failures reported above");
+			}
 
-        }
+		}
 
-    }	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
     /***************************************************************
      * cleanup and exit
      ***************************************************************/
-    cleanup();
+	cleanup();
 
-    return 0;
-}	/* End main */
-
+	return 0;
+}				/* End main */
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void
-setup()
+void setup()
 {
-    void trapper();
+	void trapper();
 
-    /* capture signals */
-    tst_sig(FORK, DEF_HANDLER, cleanup);
+	/* capture signals */
+	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-    signal(SIGALRM, trapper);
+	signal(SIGALRM, trapper);
 
-    /* Pause if that option was specified */
-    TEST_PAUSE;
-}	/* End setup() */
-
+	/* Pause if that option was specified */
+	TEST_PAUSE;
+}				/* End setup() */
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void
-cleanup()
+void cleanup()
 {
-    /*
-     * print timing stats if that option was specified.
-     * print errno log if that option was specified.
-     */
-    TEST_CLEANUP;
+	/*
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
+	TEST_CLEANUP;
 
-    /* exit with return code appropriate for results */
-    tst_exit();
-}	/* End cleanup() */
+	/* exit with return code appropriate for results */
+	tst_exit();
+}				/* End cleanup() */
 
-void
-trapper(sig)
+void trapper(sig)
 int sig;
 {
-   signal(SIGALRM, trapper);
+	signal(SIGALRM, trapper);
 }
-

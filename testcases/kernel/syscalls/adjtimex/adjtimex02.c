@@ -118,33 +118,34 @@ struct passwd *ltpuser;
 
 struct test_cases_t {
 	struct timex *buffp;
-	int (*setup)();
-	void (*cleanup)();
+	int (*setup) ();
+	void (*cleanup) ();
 	int exp_errno;
 } test_cases[] = {
 #ifndef UCLINUX
 	/* Skip since uClinux does not implement memory protection */
-	{ (struct timex *) -1, NULL, NULL, EFAULT },
+	{
+	(struct timex *)-1, NULL, NULL, EFAULT},
 #endif
-	{ &buff, setup2, NULL, EINVAL },
-	{ &buff, setup3, NULL, EINVAL },
-	{ &buff, setup4, NULL, EINVAL },
-	{ &buff, setup5, NULL, EINVAL },
-	{ &buff, setup6, cleanup6, EPERM }
+	{
+	&buff, setup2, NULL, EINVAL}, {
+	&buff, setup3, NULL, EINVAL}, {
+	&buff, setup4, NULL, EINVAL}, {
+	&buff, setup5, NULL, EINVAL}, {
+	&buff, setup6, cleanup6, EPERM}
 };
 
 int TST_TOTAL = sizeof(test_cases) / sizeof(test_cases[0]);
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 
 	int lc, i;		/* loop counter */
-	char *msg;	/* message returned from parse_opts */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
-	     != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL))
+	    != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -157,60 +158,58 @@ main(int ac, char **av)
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-		for(i = 0; i < TST_TOTAL; ++i) {
+		for (i = 0; i < TST_TOTAL; ++i) {
 			/*
 			 * since Linux 2.6.26, if buf.offset value is outside
 			 * the acceptable range, it is simply normalized instead
 			 * of letting the syscall fail. so just skip this test
 			 * case.
 			 */
-			if ((i == 3 || i == 4) && tst_kvercmp(2,6,25) > 0) {
+			if ((i == 3 || i == 4) && tst_kvercmp(2, 6, 25) > 0) {
 				tst_resm(TCONF, "this kernel normalizes buf."
-						"offset value if it is outside"
-						" the acceptable range.");
+					 "offset value if it is outside"
+					 " the acceptable range.");
 				continue;
 			}
 
 			buff = tim_save;
 			buff.modes = SET_MODE;
-			if((test_cases[i].setup) && (test_cases[i].setup())) {
+			if ((test_cases[i].setup) && (test_cases[i].setup())) {
 				tst_resm(TWARN, "setup() failed, skipping"
-						" this test case");
+					 " this test case");
 				continue;
 			}
 
 			/* Call adjtimex(2) */
 			TEST(adjtimex(test_cases[i].buffp));
 
-			if( (TEST_RETURN == -1) && (TEST_ERRNO ==
-						  test_cases[i].exp_errno) ){
+			if ((TEST_RETURN == -1) && (TEST_ERRNO ==
+						    test_cases[i].exp_errno)) {
 				tst_resm(TPASS, "Test Passed, adjtimex()"
 					 " returned -1 with errno: %d",
 					 TEST_ERRNO);
 			} else {
 				tst_resm(TFAIL, "Test Failed, adjtimex()"
-				 	"returned %d, errno = %d : %s",
-					TEST_RETURN, TEST_ERRNO,
-					strerror(TEST_ERRNO));
+					 "returned %d, errno = %d : %s",
+					 TEST_RETURN, TEST_ERRNO,
+					 strerror(TEST_ERRNO));
 			}
 			TEST_ERROR_LOG(TEST_ERRNO);
 			if (test_cases[i].cleanup) {
 				test_cases[i].cleanup();
 			}
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* cleanup and exit */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 
-}	/* End main */
+}				/* End main */
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup()
+void setup()
 {
 
 	tim_save.modes = 0;
@@ -229,7 +228,8 @@ setup()
 	/* set the HZ from sysconf */
 	hz = sysconf(_SC_CLK_TCK);
 	if (hz == -1) {
-		tst_brkm(TBROK, tst_exit, "Failed to read the HZ from sysconf\n");
+		tst_brkm(TBROK, tst_exit,
+			 "Failed to read the HZ from sysconf\n");
 	}
 
 	/* Pause if that option was specified */
@@ -239,15 +239,13 @@ setup()
 	if ((adjtimex(&tim_save)) == -1) {
 		tst_brkm(TBROK, tst_exit, "Failed to save current parameters");
 	}
-}	/* End setup() */
-
+}				/* End setup() */
 
 /*
  *cleanup() -  performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 
 	tim_save.modes = SET_MODE;
@@ -263,58 +261,52 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */
 
-int
-setup2()
+int setup2()
 {
-	buff.tick = 900000/hz - 1;
+	buff.tick = 900000 / hz - 1;
 	return 0;
 }
 
-int
-setup3()
+int setup3()
 {
-	buff.tick = 1100000/hz + 1;
+	buff.tick = 1100000 / hz + 1;
 	return 0;
 }
 
-int
-setup4()
+int setup4()
 {
 	buff.offset = 512000L + 1;
 	return 0;
 }
 
-int
-setup5()
+int setup5()
 {
 	buff.offset = (-1) * (512000L) - 1;
 	return 0;
 }
 
-int
-setup6()
+int setup6()
 {
 	/* Switch to nobody user for correct error code collection */
-	if((ltpuser = getpwnam(nobody_uid)) == NULL) {
+	if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
 		tst_brkm(TBROK, tst_exit, "\"nobody\" user not present");
 	}
 	if (seteuid(ltpuser->pw_uid) == -1) {
 		tst_resm(TWARN, "seteuid failed to set the effective uid to %d",
-			ltpuser->pw_uid);
+			 ltpuser->pw_uid);
 		perror("seteuid");
 		return 1;
 	}
 	return 0;
 }
 
-void
-cleanup6()
+void cleanup6()
 {
 	/* Set effective user id back to root */
 	if (seteuid(0) == -1) {
 		tst_brkm(TBROK, cleanup, "seteuid failed to set the"
-					 " effective uid to root" );
+			 " effective uid to root");
 	}
 }

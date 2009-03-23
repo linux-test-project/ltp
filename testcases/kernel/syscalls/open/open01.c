@@ -19,16 +19,16 @@
 
 /*
  * NAME
- * 	open01.c
+ *	open01.c
  *
  * DESCRIPTION
- * 	Open a file with oflag = O_CREAT set, does it set the sticky bit off?
+ *	Open a file with oflag = O_CREAT set, does it set the sticky bit off?
  *
  *	Open "/tmp" with O_DIRECTORY, does it set the S_IFDIR bit on?
  *
  * ALGORITHM
- * 	1. open a new file with O_CREAT, fstat.st_mode should not have the
- * 	   01000 bit on. In Linux, the save text bit is *NOT* cleared.
+ *	1. open a new file with O_CREAT, fstat.st_mode should not have the
+ *	   01000 bit on. In Linux, the save text bit is *NOT* cleared.
  *
  *	2. open "/tmp" with O_DIRECTORY.  fstat.st_mode should have the
  *	   040000 bit on.
@@ -46,7 +46,7 @@
  *	07/2001 Ported by Wayne Boyer
  *
  * RESTRICTIONS
- * 	None
+ *	None
  */
 #define _GNU_SOURCE		/* for O_DIRECTORY */
 #include <sys/types.h>
@@ -67,8 +67,8 @@ void setup(void);
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	struct stat statbuf;
 	int fildes;
@@ -77,18 +77,17 @@ int main(int ac, char **av)
 	/*
 	 * parse standard command line options
 	 */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
-		 tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+	 /*NOTREACHED*/}
 
-	setup();			/* global setup for test */
+	setup();		/* global setup for test */
 
 	/*
 	 * check looping state if -i option given on the command line
 	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		Tst_count = 0;		/* reset Tst_count while looping. */
+		Tst_count = 0;	/* reset Tst_count while looping. */
 
 		/* test #1 */
 		TEST(open(pfilname, O_RDWR | O_CREAT, 01444));
@@ -115,11 +114,11 @@ int main(int ac, char **av)
 		/* test #2 */
 		TEST(open("/tmp", O_DIRECTORY));
 
-                if (TEST_RETURN == -1) {
-                        tst_resm(TFAIL, "open of /tmp failed, errno: %d",
-                                 TEST_ERRNO);
+		if (TEST_RETURN == -1) {
+			tst_resm(TFAIL, "open of /tmp failed, errno: %d",
+				 TEST_ERRNO);
 			continue;
-                }
+		}
 
 		if (STD_FUNCTIONAL_TEST) {
 			fstat(TEST_RETURN, &statbuf);
@@ -150,15 +149,13 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	umask(0);
 
@@ -178,8 +175,7 @@ setup(void)
  * cleanup() - performs all ONE TIME cleanup for this test at completion or
  *	       premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

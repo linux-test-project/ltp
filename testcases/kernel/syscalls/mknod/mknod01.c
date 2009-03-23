@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: mknod01.c,v 1.3 2009/02/26 12:16:09 subrata_modak Exp $ */
+/* $Id: mknod01.c,v 1.4 2009/03/23 13:35:54 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -66,7 +66,7 @@
  *	(See the parse_opts(3) man page).
  *
  *    OUTPUT SPECIFICATIONS
- * 
+ *$
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
  *
@@ -122,153 +122,147 @@
 void setup();
 void cleanup();
 
-
-
-char *TCID="mknod01";		/* Test program identifier.    */
+char *TCID = "mknod01";		/* Test program identifier.    */
 int TST_TOTAL;			/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 char Path[1024];		/* path to create */
-int i;			/* counter for test case loop */
-int tcases[] = {	/* modes to give nodes created (1 per text case) */
-       S_IFREG|0777,	/* ordinary file with mode 0777 */
-       S_IFIFO|0777, 	/* fifo special with mode 0777 */
-       S_IFCHR|0777,    /* character special with mode 0777 */
-       S_IFBLK|0777,    /* block special with mode 0777 */
+int i;				/* counter for test case loop */
+int tcases[] = {		/* modes to give nodes created (1 per text case) */
+	S_IFREG | 0777,		/* ordinary file with mode 0777 */
+	S_IFIFO | 0777,		/* fifo special with mode 0777 */
+	S_IFCHR | 0777,		/* character special with mode 0777 */
+	S_IFBLK | 0777,		/* block special with mode 0777 */
 
-       S_IFREG|04700,	/* ordinary file with mode 04700 (suid) */
-       S_IFREG|02700,	/* ordinary file with mode 02700 (sgid) */
-       S_IFREG|06700,	/* ordinary file with mode 06700 (sgid & suid) */
+	S_IFREG | 04700,	/* ordinary file with mode 04700 (suid) */
+	S_IFREG | 02700,	/* ordinary file with mode 02700 (sgid) */
+	S_IFREG | 06700,	/* ordinary file with mode 06700 (sgid & suid) */
 
 #ifdef CRAY
-       S_IFDIR|0777,	/* Direcory */
-       S_IRESTART|0400, /* restartbit  */
+	S_IFDIR | 0777,		/* Direcory */
+	S_IRESTART | 0400,	/* restartbit  */
 #ifdef S_IFOFD
-       S_IFOFD|0777,	/* off line, with data  */
+	S_IFOFD | 0777,		/* off line, with data  */
 #endif
 #ifdef S_IFOFL
-	S_IFOFL|0777,	/* off line, with no data   */
+	S_IFOFL | 0777,		/* off line, with no data   */
 #endif
 #endif /* CRAY */
 
 };
 
-
-
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-    int lc;		/* loop counter */
-    char *msg;		/* message returned from parse_opts */
-   
-    TST_TOTAL=(sizeof(tcases)/sizeof(tcases[0]));
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
+
+	TST_TOTAL = (sizeof(tcases) / sizeof(tcases[0]));
     /***************************************************************
      * parse standard options
      ***************************************************************/
-    if ( (msg=parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL ) {
-	tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	tst_exit();
-    }
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+		tst_exit();
+	}
 
     /***************************************************************
      * perform global setup for test
      ***************************************************************/
-    setup();
+	setup();
 
     /***************************************************************
      * check looping state if -c option given
      ***************************************************************/
-    for (lc=0; TEST_LOOPING(lc); lc++) {
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-	/* reset Tst_count in case we are looping. */
-	Tst_count=0;
+		/* reset Tst_count in case we are looping. */
+		Tst_count = 0;
 
-	
-	/*
-	 * TEST CASES:
-	 *  Make nodes in tcases array
-	 */
-	for(i=0; i<TST_TOTAL; i++) {
-	    /* Call mknod(2) */
-	    TEST(mknod(Path, tcases[i], 0));
-	   
-	    /* check return code */
-	    if ( TEST_RETURN == -1 ) {
-		TEST_ERROR_LOG(TEST_ERRNO);
-		tst_resm(TFAIL, "mknod(%s, %#o, 0) failed, errno=%d : %s",
-			 Path, tcases[i], TEST_ERRNO, strerror(TEST_ERRNO));
-	    } else {
+		/*
+		 * TEST CASES:
+		 *  Make nodes in tcases array
+		 */
+		for (i = 0; i < TST_TOTAL; i++) {
+			/* Call mknod(2) */
+			TEST(mknod(Path, tcases[i], 0));
+
+			/* check return code */
+			if (TEST_RETURN == -1) {
+				TEST_ERROR_LOG(TEST_ERRNO);
+				tst_resm(TFAIL,
+					 "mknod(%s, %#o, 0) failed, errno=%d : %s",
+					 Path, tcases[i], TEST_ERRNO,
+					 strerror(TEST_ERRNO));
+			} else {
 		/***************************************************************
 		 * only perform functional verification if flag set (-f not given)
 		 ***************************************************************/
-		if ( STD_FUNCTIONAL_TEST ) {
-		    /* No Verification test, yet... */
-		    tst_resm(TPASS, "mknod(%s, %#o, 0) returned %d",
-			     Path, tcases[i], TEST_RETURN);
-		}
-	    }
-	   
-	    /* remove the node for the next go `round */
-	    if (unlink(Path) == -1 ) {
-		if ( rmdir(Path) == -1 ) {
-		   tst_resm(TWARN, "unlink(%s) & rmdir(%s) failed, errno:%d %s",
-			Path, Path, errno, strerror(errno));
-		}
-	    }
-	}
+				if (STD_FUNCTIONAL_TEST) {
+					/* No Verification test, yet... */
+					tst_resm(TPASS,
+						 "mknod(%s, %#o, 0) returned %d",
+						 Path, tcases[i], TEST_RETURN);
+				}
+			}
 
-    }	/* End for TEST_LOOPING */
+			/* remove the node for the next go `round */
+			if (unlink(Path) == -1) {
+				if (rmdir(Path) == -1) {
+					tst_resm(TWARN,
+						 "unlink(%s) & rmdir(%s) failed, errno:%d %s",
+						 Path, Path, errno,
+						 strerror(errno));
+				}
+			}
+		}
+
+	}			/* End for TEST_LOOPING */
 
     /***************************************************************
      * cleanup and exit
      ***************************************************************/
-    cleanup();
+	cleanup();
 
-    return 0;
-}	/* End main */
+	return 0;
+}				/* End main */
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void
-setup()
+void setup()
 {
-    /* capture signals */
-    tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	/* capture signals */
+	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-    /* Pause if that option was specified */
-    TEST_PAUSE;
+	/* Pause if that option was specified */
+	TEST_PAUSE;
 
-    /* make a temp dir and cd to it */
-    tst_tmpdir();
+	/* make a temp dir and cd to it */
+	tst_tmpdir();
 
-    /* Check that user is root */
-    if ( geteuid() != 0 )
-	tst_brkm(TBROK, cleanup, "Must be root for this test!");
+	/* Check that user is root */
+	if (geteuid() != 0)
+		tst_brkm(TBROK, cleanup, "Must be root for this test!");
 
-    /* build a temp node name to bre created my mknod */
-    sprintf(Path, "./tnode_%d", getpid());
-}	/* End setup() */
-
+	/* build a temp node name to bre created my mknod */
+	sprintf(Path, "./tnode_%d", getpid());
+}				/* End setup() */
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void
-cleanup()
+void cleanup()
 {
-    /*
-     * print timing stats if that option was specified.
-     * print errno log if that option was specified.
-     */
-    TEST_CLEANUP;
+	/*
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
+	TEST_CLEANUP;
 
-    /* remove files and temp dir */
-    tst_rmdir();
+	/* remove files and temp dir */
+	tst_rmdir();
 
-    /* exit with return code appropriate for results */
-    tst_exit();
-}	/* End cleanup() */
-
-
+	/* exit with return code appropriate for results */
+	tst_exit();
+}				/* End cleanup() */

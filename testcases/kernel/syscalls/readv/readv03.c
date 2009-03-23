@@ -38,7 +38,7 @@
  *        issue a FAIL message
  *      call cleanup
  *
- * USAGE 
+ * USAGE$
  *	readv03
  *
  * HISTORY
@@ -63,13 +63,12 @@
 char buf1[K_1];
 
 struct iovec rd_iovec[1] = {
-	{buf1,			K_1}
+	{buf1, K_1}
 };
 
 const char *TEST_DIR = "alpha";
 int r_val;
 int fd;
-
 
 char *TCID = "readv03";
 int TST_TOTAL = 1;
@@ -78,17 +77,15 @@ extern int Tst_count;
 void setup();
 void cleanup();
 
-
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	setup();
 
@@ -112,15 +109,13 @@ int main(int ac, char **av)
 
 	}
 	cleanup();
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 
 	/* capture signals */
@@ -132,18 +127,18 @@ setup()
 	/* make a temporary directory and cd to it */
 	tst_tmpdir();
 
-        /*
-         * create a new directory and open it
-         */
+	/*
+	 * create a new directory and open it
+	 */
 
-        if ((r_val = mkdir(TEST_DIR, MODES)) == -1){
-                tst_brkm(TBROK, cleanup, "%s - mkdir() in main() "
-                         "failed", TCID);
-        }
+	if ((r_val = mkdir(TEST_DIR, MODES)) == -1) {
+		tst_brkm(TBROK, cleanup, "%s - mkdir() in main() "
+			 "failed", TCID);
+	}
 
-        if ((fd = open(TEST_DIR, O_RDONLY)) == -1) {
-                tst_brkm(TBROK, cleanup, "open of directory failed");
-        }
+	if ((fd = open(TEST_DIR, O_RDONLY)) == -1) {
+		tst_brkm(TBROK, cleanup, "open of directory failed");
+	}
 
 }
 
@@ -151,8 +146,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	if (close(fd) < 0) {
 		tst_brkm(TBROK, cleanup, "close failed: errno = %d", errno);
@@ -160,4 +154,3 @@ cleanup()
 	tst_rmdir();
 	tst_exit();
 }
-

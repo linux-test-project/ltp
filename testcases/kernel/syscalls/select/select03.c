@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: select03.c,v 1.5 2009/02/26 12:16:34 subrata_modak Exp $ */
+/* $Id: select03.c,v 1.6 2009/03/23 13:36:02 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -109,13 +109,12 @@
 
 #include <errno.h>
 #include <signal.h>
-#include <fcntl.h>              /* For open system call parameters.  */
+#include <fcntl.h>		/* For open system call parameters.  */
 #include <signal.h>
 #include <sys/param.h>
 #include <sys/types.h>
 #include <sys/time.h>
 #include <sys/stat.h>
-
 
 #include "test.h"
 #include "usctest.h"
@@ -125,159 +124,151 @@
 void setup();
 void cleanup();
 
-char *TCID="select03";		/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "select03";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int Fd;
 fd_set saved_Readfds, saved_Writefds;
 fd_set Readfds, Writefds;
 
-
 /***********************************************************************
  * MAIN
  ***********************************************************************/
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-    int lc;		/* loop counter */
-    char *msg;		/* message returned from parse_opts */
-    struct timeval timeout;
-    long test_time = 0;	/* in usecs */
-
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
+	struct timeval timeout;
+	long test_time = 0;	/* in usecs */
 
     /***************************************************************
      * parse standard options, and exit if there is an error
      ***************************************************************/
-    if ( (msg=parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL ) {
-	tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	tst_exit();
-    }
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+		tst_exit();
+	}
 
     /***************************************************************
      * perform global setup for test
      ***************************************************************/
-    setup();
+	setup();
 
     /***************************************************************
      * check looping state if -c option given
      ***************************************************************/
-    for (lc=0; TEST_LOOPING(lc); lc++) {
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-	/* reset Tst_count in case we are looping. */
-	Tst_count=0;
+		/* reset Tst_count in case we are looping. */
+		Tst_count = 0;
 
-        /*
-         * Assigning the specified seconds within the timeval structure.
-         */
+		/*
+		 * Assigning the specified seconds within the timeval structure.
+		 */
 
-	test_time = ((lc%2000)*100000);	/* 100 milli-seconds */
+		test_time = ((lc % 2000) * 100000);	/* 100 milli-seconds */
 
-        /*
-         * Bound the time to a value less than 60 seconds
-         */
+		/*
+		 * Bound the time to a value less than 60 seconds
+		 */
 
-        if ( test_time > 1000000 * 60 )
-            test_time = test_time % (1000000 * 60);
+		if (test_time > 1000000 * 60)
+			test_time = test_time % (1000000 * 60);
 
-        timeout.tv_sec = test_time / 1000000;
-        timeout.tv_usec = test_time - (timeout.tv_sec * 1000000);
+		timeout.tv_sec = test_time / 1000000;
+		timeout.tv_usec = test_time - (timeout.tv_sec * 1000000);
 
-        Readfds = saved_Readfds;
-        Writefds = saved_Writefds;
+		Readfds = saved_Readfds;
+		Writefds = saved_Writefds;
 
-	/* Call the system call being tested. */
+		/* Call the system call being tested. */
 
-        TEST(select(5, &Readfds, &Writefds, 0, &timeout));
+		TEST(select(5, &Readfds, &Writefds, 0, &timeout));
 
-	/* check return code */
-	if ( TEST_RETURN == -1 ) {
-	    TEST_ERROR_LOG(TEST_ERRNO);
-	    tst_resm(TFAIL,
-		"%d select(5, &Readfds, &Writefds, 0, &timeout) failed errno=%d\n",
-		lc, errno);
-	} else {
+		/* check return code */
+		if (TEST_RETURN == -1) {
+			TEST_ERROR_LOG(TEST_ERRNO);
+			tst_resm(TFAIL,
+				 "%d select(5, &Readfds, &Writefds, 0, &timeout) failed errno=%d\n",
+				 lc, errno);
+		} else {
 
 	    /***************************************************************
 	     * only perform functional verification if flag set (-f not given)
 	     ***************************************************************/
-	    if ( STD_FUNCTIONAL_TEST ) {
-		/* Perform functional verification here */
-		tst_resm(TPASS,
-				"select(5, &Readfds, &Writefds, 0, &timeout) timeout = %ld usecs",
-				test_time);
-	    }
-	}
+			if (STD_FUNCTIONAL_TEST) {
+				/* Perform functional verification here */
+				tst_resm(TPASS,
+					 "select(5, &Readfds, &Writefds, 0, &timeout) timeout = %ld usecs",
+					 test_time);
+			}
+		}
 
-    }	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
     /***************************************************************
      * cleanup and exit
      ***************************************************************/
-    cleanup();
+	cleanup();
 
-    return 0;
-}	/* End main */
+	return 0;
+}				/* End main */
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void
-setup()
+void setup()
 {
-    /* capture signals */
-    tst_sig(FORK, DEF_HANDLER, cleanup);
+	/* capture signals */
+	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-    /* Pause if that option was specified */
-    TEST_PAUSE;
+	/* Pause if that option was specified */
+	TEST_PAUSE;
 
-    /* create a temporary directory and go to it */
-    tst_tmpdir();
+	/* create a temporary directory and go to it */
+	tst_tmpdir();
 
-    /* make and open FIFO */
-    if ( mkfifo(FILENAME, 0777) == -1 ) {
-	tst_brkm(TBROK, cleanup, "mkfifo(%s, 0777) failed, errno=%d",
-	    FILENAME, errno);
-    }
+	/* make and open FIFO */
+	if (mkfifo(FILENAME, 0777) == -1) {
+		tst_brkm(TBROK, cleanup, "mkfifo(%s, 0777) failed, errno=%d",
+			 FILENAME, errno);
+	}
 
-    if ((Fd=open(FILENAME, O_RDWR)) == -1 ) {
-	tst_brkm(TBROK, cleanup, "open(%s, O_RDWR) failed, errno=%d",
-	    FILENAME, errno);
-    }
+	if ((Fd = open(FILENAME, O_RDWR)) == -1) {
+		tst_brkm(TBROK, cleanup, "open(%s, O_RDWR) failed, errno=%d",
+			 FILENAME, errno);
+	}
 
-    /*
-     * Initializing and assigning the standard output file descriptor to
-     * fd_set for select.
-     */
+	/*
+	 * Initializing and assigning the standard output file descriptor to
+	 * fd_set for select.
+	 */
 
-    FD_ZERO(&saved_Readfds);
-    FD_ZERO(&saved_Writefds);
-    FD_SET(Fd, &saved_Readfds);
-    FD_SET(Fd, &saved_Writefds);
+	FD_ZERO(&saved_Readfds);
+	FD_ZERO(&saved_Writefds);
+	FD_SET(Fd, &saved_Readfds);
+	FD_SET(Fd, &saved_Writefds);
 
-}	/* End setup() */
-
+}				/* End setup() */
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void
-cleanup()
+void cleanup()
 {
-    /*
-     * print timing stats if that option was specified.
-     * print errno log if that option was specified.
-     */
-    close(Fd);
+	/*
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
+	close(Fd);
 
-    TEST_CLEANUP;
+	TEST_CLEANUP;
 
-    /* remove temporary directory and all files in it. */
-    tst_rmdir();
+	/* remove temporary directory and all files in it. */
+	tst_rmdir();
 
-    /* exit with return code appropriate for results */
-    tst_exit();
-}	/* End cleanup() */
-
-
+	/* exit with return code appropriate for results */
+	tst_exit();
+}				/* End cleanup() */

@@ -39,9 +39,9 @@
  *   Loop if the proper options are given.
  *   Execute system call
  *   Check return code, if system call failed (return=-1)
- *   	if errno set == expected errno
- *   		Issue sys call failed with expected return value and errno.
- *   	Otherwise,
+ *	if errno set == expected errno
+ *		Issue sys call failed with expected return value and errno.
+ *	Otherwise,
  *		Issue sys call failed with unexpected errno.
  *   Otherwise,
  *	Issue sys call returns unexpected value.
@@ -90,29 +90,28 @@
 
 #define SHM_MODE	(SHM_R | SHM_W)	/* mode permissions of shared memory */
 
-char *TCID="mremap04";		/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "mremap04";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 char *addr;			/* addr of memory mapped region */
 char *shmaddr;			/* pointer to shared memory segment */
 int shmid;			/* shared memory identifier. */
 int memsize;			/* memory mapped size */
 int newsize;			/* new size of virtual memory blcok */
-int exp_enos[]={ENOMEM, 0};
+int exp_enos[] = { ENOMEM, 0 };
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 
 extern int getipckey();
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
@@ -127,7 +126,7 @@ main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/*
 		 * Attempt to expand the existing shared
@@ -164,14 +163,13 @@ main(int ac, char **av)
 			tst_resm(TFAIL, "mremap() failed, "
 				 "Unexpected errno %d", TEST_ERRNO);
 		}
-	}	/* End of TEST_LOOPING */
-			
+	}			/* End of TEST_LOOPING */
+
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
-}	/* End main */
+	 /*NOTREACHED*/ return 0;
+}				/* End main */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -185,8 +183,7 @@ main(int ac, char **av)
  * calling process. The segment is attached at the first available address as
  * selected by the system.
  */
-void
-setup()
+void setup()
 {
 	key_t shmkey;
 
@@ -240,8 +237,7 @@ setup()
  *	       Detach the shared memory segment and remove the shared memory
  *	       identifier associated with the shared memory.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

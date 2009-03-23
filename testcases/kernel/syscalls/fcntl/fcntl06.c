@@ -19,26 +19,26 @@
 
 /*
  * NAME
- * 	fcntl06.c
+ *	fcntl06.c
  *
  * DESCRIPTION
- * 	Error checking conditions for remote locking of regions of a file.
+ *	Error checking conditions for remote locking of regions of a file.
  *
  * CALLS
- * 	open(2), write(2), fcntl(2)
+ *	open(2), write(2), fcntl(2)
  *
  * ALGORITHM
- * 	Test unlocking sections around a write lock using remote Lock/Unlock
- * 	call which should all fail.
+ *	Test unlocking sections around a write lock using remote Lock/Unlock
+ *	call which should all fail.
  *
  * USAGE
- * 	fcntl06
+ *	fcntl06
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
  *
  * RESTRICTIONS
- * 	Currently Linux kernel doesn't implement R_GETLK/R_SETLK facility,
+ *	Currently Linux kernel doesn't implement R_GETLK/R_SETLK facility,
  *	but this facility seems to be present in other standard flavours of
  *	Unix. Currently this program has all the testing done under
  *	"#ifdef LINUX_FILE_REGION_LOCK", when Linux implements the regions
@@ -75,16 +75,16 @@ int main(int ac, char **av)
 {
 	int fail = 0;
 
-	char *msg;			/* message returned from parse_opts */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
-/* //block1:	*/				/* Error: when no lock is set */
+	/* //block1:    *//* Error: when no lock is set */
 	tst_resm(TINFO, "Enter block 1");
 	fail = 0;
 
@@ -94,10 +94,8 @@ int main(int ac, char **av)
 			tst_resm(TINFO, "fcntl remote locking feature not "
 				 "implemented in the kernel: exitting");
 			cleanup();
-			/*NOTREACHED*/
-		} else {
-			tst_resm(TPASS, "fcntl on file failed: Test "
-				 "PASSED");
+		 /*NOTREACHED*/} else {
+			tst_resm(TPASS, "fcntl on file failed: Test " "PASSED");
 		}
 	}
 
@@ -132,10 +130,9 @@ int main(int ac, char **av)
 
 /*
  * setup()
- * 	performs all ONE TIME setup for this test
+ *	performs all ONE TIME setup for this test
  */
-void
-setup()
+void setup()
 {
 	char *buf = STRING;
 	char template[PATH_MAX];
@@ -158,12 +155,12 @@ setup()
 	}
 
 	if (write(fd, buf, STRINGSIZE) < 0) {
-		tst_resm(TFAIL, "Couldn't write to temp file! errno = %d", errno);
+		tst_resm(TFAIL, "Couldn't write to temp file! errno = %d",
+			 errno);
 	}
 }
 
-int
-do_lock(int cmd, short type, short whence, int start, int len)
+int do_lock(int cmd, short type, short whence, int start, int len)
 {
 	struct flock fl;
 
@@ -171,11 +168,10 @@ do_lock(int cmd, short type, short whence, int start, int len)
 	fl.l_whence = whence;
 	fl.l_start = start;
 	fl.l_len = len;
-	return(fcntl(fd, cmd, &fl));
+	return (fcntl(fd, cmd, &fl));
 }
 
-void
-unlock_file()
+void unlock_file()
 {
 	if (do_lock(F_RSETLK, (short)F_UNLCK, (short)0, 0, 0) < 0) {
 		perror("");
@@ -185,11 +181,10 @@ unlock_file()
 
 /*
  * cleanup()
- * 	performs all the ONE TIME cleanup for this test at completion or
+ *	performs all the ONE TIME cleanup for this test at completion or
  * or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing status if that option was specified.

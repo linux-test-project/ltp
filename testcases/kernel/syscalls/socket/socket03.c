@@ -62,13 +62,13 @@
 #endif
 
 /* Extern Global Variables */
-extern int  Tst_count;               /* counter for tst_xxx routines.         */
-extern char *TESTDIR;                /* temporary dir created by tst_tmpdir() */
+extern int Tst_count;		/* counter for tst_xxx routines.         */
+extern char *TESTDIR;		/* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
-char *TCID     = "socket03"; /* test program identifier.              */
-int  testno;
-int  TST_TOTAL = 1;                  /* total number of tests in this file.   */
+char *TCID = "socket03";	/* test program identifier.              */
+int testno;
+int TST_TOTAL = 1;		/* total number of tests in this file.   */
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -88,13 +88,14 @@ int  TST_TOTAL = 1;                  /* total number of tests in this file.   */
 /*              On success - Exits calling tst_exit(). With '0' return code.  */
 /*                                                                            */
 /******************************************************************************/
-extern void cleanup() {
-  /* Remove tmp dir and all files in it */
-  TEST_CLEANUP;
-  tst_rmdir();
+extern void cleanup()
+{
+	/* Remove tmp dir and all files in it */
+	TEST_CLEANUP;
+	tst_rmdir();
 
-  /* Exit with appropriate return code. */
-  tst_exit();
+	/* Exit with appropriate return code. */
+	tst_exit();
 }
 
 /* Local  Functions */
@@ -115,72 +116,77 @@ extern void cleanup() {
 /*              On success - returns 0.                                       */
 /*                                                                            */
 /******************************************************************************/
-void setup() {
-  /* Capture signals if any */
-  /* Create temporary directories */
-  TEST_PAUSE;
-  tst_tmpdir();
+void setup()
+{
+	/* Capture signals if any */
+	/* Create temporary directories */
+	TEST_PAUSE;
+	tst_tmpdir();
 }
 
-int main (int argc, char *argv[]) {
-  int fd, fl;
-  int lc;                 /* loop counter */
-  char *msg;              /* message returned from parse_opts */
+int main(int argc, char *argv[])
+{
+	int fd, fl;
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
-  /* Parse standard options given to run the test. */
-  msg = parse_opts(argc, argv, (option_t *) NULL, NULL);
-  if (msg != (char *) NULL) {
-      tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-      tst_exit();
-  }
-  if((tst_kvercmp(2, 6, 27)) < 0) {
-                tst_resm(TCONF, "This test can only run on kernels that are 2.6.27 and higher");
-                tst_exit();
-  }
-  setup();
+	/* Parse standard options given to run the test. */
+	msg = parse_opts(argc, argv, (option_t *) NULL, NULL);
+	if (msg != (char *)NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+		tst_exit();
+	}
+	if ((tst_kvercmp(2, 6, 27)) < 0) {
+		tst_resm(TCONF,
+			 "This test can only run on kernels that are 2.6.27 and higher");
+		tst_exit();
+	}
+	setup();
 
-  /* Check looping state if -i option given */
-  for (lc = 0; TEST_LOOPING(lc); ++lc) {
-       Tst_count = 0;
-       for (testno=0; testno < TST_TOTAL; ++testno) {
-            fd = socket (PF_INET, SOCK_STREAM, 0);
-            if (fd == -1) {
-                tst_resm(TFAIL, "socket(0) failed");
-                cleanup();
-                tst_exit();
-            }
-            fl = fcntl (fd, F_GETFL);
-            if (fl == -1) {
-                tst_brkm(TBROK, cleanup, "fcntl failed");
-                tst_exit();
-            }
-            if (fl & O_NONBLOCK) {
-                tst_resm(TFAIL, "socket(0) set non-blocking mode");
-                cleanup();
-                tst_exit();
-            }
-            close (fd);
+	/* Check looping state if -i option given */
+	for (lc = 0; TEST_LOOPING(lc); ++lc) {
+		Tst_count = 0;
+		for (testno = 0; testno < TST_TOTAL; ++testno) {
+			fd = socket(PF_INET, SOCK_STREAM, 0);
+			if (fd == -1) {
+				tst_resm(TFAIL, "socket(0) failed");
+				cleanup();
+				tst_exit();
+			}
+			fl = fcntl(fd, F_GETFL);
+			if (fl == -1) {
+				tst_brkm(TBROK, cleanup, "fcntl failed");
+				tst_exit();
+			}
+			if (fl & O_NONBLOCK) {
+				tst_resm(TFAIL,
+					 "socket(0) set non-blocking mode");
+				cleanup();
+				tst_exit();
+			}
+			close(fd);
 
-            fd = socket (PF_INET, SOCK_STREAM|SOCK_NONBLOCK, 0);
-            if (fd == -1) {
-                tst_resm(TFAIL, "socket(SOCK_NONBLOCK) failed");
-                cleanup();
-                tst_exit();
-            }
-            fl = fcntl (fd, F_GETFL);
-            if (fl == -1) {
-                tst_brkm(TBROK, cleanup, "fcntl failed");
-                tst_exit();
-            }
-            if ((fl & O_NONBLOCK) == 0) {
-                 tst_resm(TFAIL, "socket(SOCK_NONBLOCK) does not set non-blocking mode");
-                 cleanup();
-                 tst_exit();
-            }
-            close (fd);
-            tst_resm(TPASS, "socket(SOCK_NONBLOCK) PASSED");
-            cleanup();
-       }
-  }
-  tst_exit();
+			fd = socket(PF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
+			if (fd == -1) {
+				tst_resm(TFAIL, "socket(SOCK_NONBLOCK) failed");
+				cleanup();
+				tst_exit();
+			}
+			fl = fcntl(fd, F_GETFL);
+			if (fl == -1) {
+				tst_brkm(TBROK, cleanup, "fcntl failed");
+				tst_exit();
+			}
+			if ((fl & O_NONBLOCK) == 0) {
+				tst_resm(TFAIL,
+					 "socket(SOCK_NONBLOCK) does not set non-blocking mode");
+				cleanup();
+				tst_exit();
+			}
+			close(fd);
+			tst_resm(TPASS, "socket(SOCK_NONBLOCK) PASSED");
+			cleanup();
+		}
+	}
+	tst_exit();
 }

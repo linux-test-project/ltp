@@ -82,40 +82,40 @@
 #define INVAL_PID	-1
 #define INVAL_FLAG      -1
 
-char *TCID="getpriority02";	/* Test program identifier.    */
-int TST_TOTAL=4;		/* Total number of test cases. */
+char *TCID = "getpriority02";	/* Test program identifier.    */
+int TST_TOTAL = 4;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-int exp_enos[]={EINVAL, ESRCH, 0};
+int exp_enos[] = { EINVAL, ESRCH, 0 };
 
-struct test_case_t {		/* test case struct. to hold ref. test cond's*/
+struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	int pro_which;
 	uid_t pro_uid;
 	char *desc;
 	int exp_errno;
 } Test_cases[] = {
-	{ INVAL_FLAG, 0, "Invalid 'which' value specified", EINVAL },
-	{ PRIO_PROCESS, INVAL_PID, "Invalid 'who' value specified", ESRCH },
-	{ PRIO_PGRP, INVAL_PID, "Invalid 'who' value specified", ESRCH },
-	{ PRIO_USER, INVAL_PID, "Invalid 'who' value specified", ESRCH },
-	{ 0, 0, NULL, 0 }
+	{
+	INVAL_FLAG, 0, "Invalid 'which' value specified", EINVAL}, {
+	PRIO_PROCESS, INVAL_PID, "Invalid 'who' value specified", ESRCH}, {
+	PRIO_PGRP, INVAL_PID, "Invalid 'who' value specified", ESRCH}, {
+	PRIO_USER, INVAL_PID, "Invalid 'who' value specified", ESRCH}, {
+	0, 0, NULL, 0}
 };
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	int ind;		/* counter variable for test case looping */
-	char *test_desc; 	/* test specific error message */
+	char *test_desc;	/* test specific error message */
 	int which;		/* process priority category */
 	uid_t who;		/* process uid of the test process */
-   
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -129,7 +129,7 @@ main(int ac, char **av)
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		for (ind = 0; ind < TST_TOTAL; ind++) {
 			which = Test_cases[ind].pro_which;
@@ -166,22 +166,20 @@ main(int ac, char **av)
 					 "expected -1, errno:%d", TEST_RETURN,
 					 Test_cases[ind].exp_errno);
 			}
-		}	/* End of TEST CASE LOOPING. */
+		}		/* End of TEST CASE LOOPING. */
 
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
-}	/* End main */
+	 /*NOTREACHED*/ return 0;
+}				/* End main */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -194,8 +192,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

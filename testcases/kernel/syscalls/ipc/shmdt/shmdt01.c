@@ -71,23 +71,23 @@ void sighandler(int);
 struct shmid_ds buf;
 
 int shm_id_1 = -1;
-int *shared;		/* variable to use for shared memory attach */
+int *shared;			/* variable to use for shared memory attach */
 int new;
 int pass = 0;
 sigjmp_buf env;
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	void check_functionality(void);
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -125,15 +125,13 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * check_functionality() - make sure the memory is detached correctly
  */
-void
-check_functionality()
+void check_functionality()
 {
 	/* stat the shared memory segment */
 	if (shmctl(shm_id_1, IPC_STAT, &buf) == -1) {
@@ -174,8 +172,7 @@ check_functionality()
 /*
  * sighandler()
  */
-void
-sighandler(sig)
+void sighandler(sig)
 {
 	/* if we have received a SIGSEGV, we are almost done */
 	if (sig == SIGSEGV) {
@@ -190,8 +187,7 @@ sighandler(sig)
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 
@@ -212,7 +208,7 @@ setup(void)
 
 	/* create a shared memory resource with read and write permissions */
 	if ((shm_id_1 = shmget(shmkey, INT_SIZE, SHM_RW | IPC_CREAT |
-	     IPC_EXCL)) == -1) {
+			       IPC_EXCL)) == -1) {
 		tst_brkm(TBROK, cleanup, "Failed to create shared memory "
 			 "resource in setup()");
 	}
@@ -232,8 +228,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/* if it exists, delete the shared memory resource */
 	rm_shm(shm_id_1);
@@ -250,4 +245,3 @@ cleanup(void)
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

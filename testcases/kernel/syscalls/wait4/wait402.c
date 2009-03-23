@@ -65,11 +65,11 @@
 void cleanup(void);
 void setup(void);
 
-char *TCID= "wait402";
+char *TCID = "wait402";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-int exp_enos[] = {10, 0};
+int exp_enos[] = { 10, 0 };
 
 /* Get the max number of message queues allowed on system */
 static long get_pid_max()
@@ -80,32 +80,32 @@ static long get_pid_max()
 	/* Get the max number of message queues allowed on system */
 	fp = fopen("/proc/sys/kernel/pid_max", "r");
 	if (fp == NULL)
-		tst_brkm(TBROK, cleanup, "Could not open /proc/sys/kernel/pid_max");
+		tst_brkm(TBROK, cleanup,
+			 "Could not open /proc/sys/kernel/pid_max");
 	if (!fgets(buff, sizeof(buff), fp))
-		tst_brkm(TBROK, cleanup, "Could not read /proc/sys/kernel/pid_max");
+		tst_brkm(TBROK, cleanup,
+			 "Could not read /proc/sys/kernel/pid_max");
 	fclose(fp);
 
 	return atol(buff);
 }
 
-
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	pid_t pid;
 	pid_t epid = get_pid_max() + 1;
 
 	int status = 1;
-	struct rusage *rusage=NULL;
+	struct rusage *rusage = NULL;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -113,13 +113,12 @@ main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-
 		/*
 		 * Allocate some space for the rusage structure.
 		 */
 
 		if ((rusage = (struct rusage *)malloc(sizeof(struct rusage)))
-				== NULL) {
+		    == NULL) {
 			tst_brkm(TBROK, cleanup, "malloc() failed");
 		}
 
@@ -129,13 +128,13 @@ main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "fork() failed");
 		}
 
-		if (pid == 0) {		/* this is the child */
+		if (pid == 0) {	/* this is the child */
 			/*
 			 * sleep for a moment to let us do the test
 			 */
 			sleep(2);
 			exit(0);
-		} else {		/* this is the parent */
+		} else {	/* this is the parent */
 			/*
 			 * call wait4 with the TEST() macro.  epid is set
 			 * to an illegal positive value.  This should give
@@ -145,20 +144,24 @@ main(int ac, char **av)
 		}
 
 		if (TEST_RETURN == 0) {
-			tst_brkm(TFAIL, cleanup, "call failed to produce expected error - errno = %d - %s", TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_brkm(TFAIL, cleanup,
+				 "call failed to produce expected error - errno = %d - %s",
+				 TEST_ERRNO, strerror(TEST_ERRNO));
 		}
 
 		TEST_ERROR_LOG(TEST_ERRNO);
 
 		switch (TEST_ERRNO) {
 		case ECHILD:
-			tst_resm(TPASS, "received expected failure - errno = %d - %s",
-				TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TPASS,
+				 "received expected failure - errno = %d - %s",
+				 TEST_ERRNO, strerror(TEST_ERRNO));
 			break;
 		default:
-			tst_brkm(TFAIL, cleanup, "call failed to produce expected "
-				"error - errno = %d - %s", TEST_ERRNO,
-				strerror(TEST_ERRNO));
+			tst_brkm(TFAIL, cleanup,
+				 "call failed to produce expected "
+				 "error - errno = %d - %s", TEST_ERRNO,
+				 strerror(TEST_ERRNO));
 		}
 
 		/*
@@ -170,17 +173,14 @@ main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/
-
-  return 0;
+	 /*NOTREACHED*/ return 0;
 
 }
 
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -194,10 +194,9 @@ setup(void)
 
 /*
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
- * 	       or premature exit.
+ *	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	wait(NULL);
 	/*
@@ -209,4 +208,3 @@ cleanup(void)
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

@@ -80,24 +80,23 @@
 static void setup();
 static void cleanup();
 
-char *TCID = "sched_getparam02"; /* Test program identifier.    */
-int TST_TOTAL = 1;		 /* Total number of test cases. */
-extern int Tst_count;		 /* Test Case counter for tst_* routines */
+char *TCID = "sched_getparam02";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
+extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 static struct sched_param param;
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 
-	int lc;		/* loop counter */
-	char *msg;	/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int status;
 	pid_t child_pid;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
-	     != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL))
+	    != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -110,7 +109,7 @@ main(int ac, char **av)
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-		switch(child_pid = FORK_OR_VFORK()) {
+		switch (child_pid = FORK_OR_VFORK()) {
 
 		case -1:
 			/* fork() failed */
@@ -129,7 +128,7 @@ main(int ac, char **av)
 			TEST(sched_getparam(getppid(), &param));
 
 			/*
-		 	 * Check return code & priority. For normal process,
+			 * Check return code & priority. For normal process,
 			 * scheduling policy is SCHED_OTHER. For this
 			 * scheduling policy, only allowed priority value is 0.
 			 * So we should get 0 for priority value
@@ -159,19 +158,17 @@ main(int ac, char **av)
 			}
 		}
 
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* cleanup and exit */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 
-}	/* End main */
+}				/* End main */
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -179,15 +176,13 @@ setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-}	/* End setup() */
-
+}				/* End setup() */
 
 /*
  *cleanup() -  performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 
 	/*
@@ -198,4 +193,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

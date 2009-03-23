@@ -83,20 +83,19 @@
 static void setup();
 static void cleanup();
 
-char *TCID = "swapon01"; /* Test program identifier.    */
-int TST_TOTAL = 1;	/* Total number of test cases. */
-extern int Tst_count;	/* Test Case counter for tst_* routines */
+char *TCID = "swapon01";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
+extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 
-	int lc;		/* loop counter */
-	char *msg;	/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
-		!= (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL))
+	    != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -115,38 +114,35 @@ main(int ac, char **av)
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "swapon(2) Failed to turn on"
-				" swapfile.");
+				 " swapfile.");
 		} else {
 			tst_resm(TPASS, "swapon(2) passed and turned on"
-					" swapfile");
+				 " swapfile");
 			/*we need to turn this swap file off for -i option */
-			if(swapoff("./swapfile01") != 0) {
+			if (swapoff("./swapfile01") != 0) {
 				tst_brkm(TBROK, cleanup, "Failed to turn off"
-							" swapfile. system"
-							" reboot after"
-							" execution of LTP"
-							" test suite is"
-							" recommended.");
+					 " swapfile. system"
+					 " reboot after"
+					 " execution of LTP"
+					 " test suite is" " recommended.");
 			}
 		}
-	}	/*End for TEST_LOOPING*/
+	}			/*End for TEST_LOOPING */
 
-	/*Clean up and exit*/
+	/*Clean up and exit */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup()
+void setup()
 {
 
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	/* Check whether we are root*/
+	/* Check whether we are root */
 	if (geteuid() != 0) {
 		tst_brkm(TBROK, tst_exit, "Test must be run as root");
 	}
@@ -157,42 +153,43 @@ setup()
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
-	if(tst_is_cwd_tmpfs()) {
-		tst_brkm(TCONF, cleanup, "Cannot do swapon on a file located on a tmpfs filesystem");
+	if (tst_is_cwd_tmpfs()) {
+		tst_brkm(TCONF, cleanup,
+			 "Cannot do swapon on a file located on a tmpfs filesystem");
 	}
 
-	if(tst_is_cwd_nfs()) {
-		tst_brkm(TCONF, cleanup, "Cannot do swapon on a file located on a nfs filesystem");
+	if (tst_is_cwd_nfs()) {
+		tst_brkm(TCONF, cleanup,
+			 "Cannot do swapon on a file located on a nfs filesystem");
 	}
 
-	if(!tst_cwd_has_free(65536)) {
-		tst_brkm(TBROK, cleanup, "Insufficient disk space to create swap file");
+	if (!tst_cwd_has_free(65536)) {
+		tst_brkm(TBROK, cleanup,
+			 "Insufficient disk space to create swap file");
 	}
 
-	/*create file*/
-	if(system("dd if=/dev/zero of=swapfile01 bs=1024  count=65536 >"
-				" tmpfile 2>&1") != 0) {
+	/*create file */
+	if (system("dd if=/dev/zero of=swapfile01 bs=1024  count=65536 >"
+		   " tmpfile 2>&1") != 0) {
 		tst_brkm(TBROK, cleanup, "Failed to create file for swap");
 	}
 
-
-	/* make above file a swap file*/
-	if( system("mkswap swapfile01 > tmpfile 2>&1") != 0) {
+	/* make above file a swap file */
+	if (system("mkswap swapfile01 > tmpfile 2>&1") != 0) {
 		tst_brkm(TBROK, cleanup, "Failed to make swapfile");
 	}
-}	/* End setup() */
+}				/* End setup() */
 
 /*
  * cleanup() - Performs one time cleanup for this test at
  * completion or premature exit
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
-	* print timing stats if that option was specified.
-	* print errno log if that option was specified.
-	*/
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
 	TEST_CLEANUP;
 
 	/* Remove tmp dir and all files inside it. */
@@ -200,4 +197,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

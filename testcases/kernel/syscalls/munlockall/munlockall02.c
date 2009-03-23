@@ -33,12 +33,12 @@
  *    DESCRIPTION
  *	Verify munlockall(2) returns -1 and sets errno to EPERM
  *	if the effective userid of the caller is not super-user.
- *	 
+ *	$
  * 	Setup:
  *	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
  *        Change effective user id to "nobody" user
- *      
+ *     $
  * 	Test:
  *	 Loop if the proper options are given.
  *	  Execute system call
@@ -75,22 +75,22 @@
 void setup();
 void cleanup();
 
-char *TCID = "munlockall02";		/* Test program identifier.    */
-int TST_TOTAL = 1;			/* Total number of test cases. */
-extern int Tst_count;			/* TestCase counter for tst_* routine */
-static int exp_enos[] = {EPERM ,0};
+char *TCID = "munlockall02";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
+extern int Tst_count;		/* TestCase counter for tst_* routine */
+static int exp_enos[] = { EPERM, 0 };
 
-static char nobody_uid[]="nobody";
+static char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
 #if !defined(UCLINUX)
 
 int main(int ac, char **av)
 {
-	int lc;		/* loop counter */
-	char *msg;	/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
-	if ((msg = parse_opts(ac,av,(option_t *)NULL, NULL)) != (char *) NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -103,24 +103,22 @@ int main(int ac, char **av)
 
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
-	
+
 		TEST(munlockall());
-	
-                TEST_ERROR_LOG(TEST_ERRNO);
+
+		TEST_ERROR_LOG(TEST_ERRNO);
 		/* check return code */
-		if ((TEST_RETURN == -1) && (TEST_ERRNO == EPERM)){
-				tst_resm(TPASS, "munlockall() failed"
-				" as expected for non-superuser"
-				":GOT EPERM");		
+		if ((TEST_RETURN == -1) && (TEST_ERRNO == EPERM)) {
+			tst_resm(TPASS, "munlockall() failed"
+				 " as expected for non-superuser" ":GOT EPERM");
 		} else {
-	  		tst_resm(TCONF, "munlockall() failed to produce "
-					"expected errno :%d Got : %d, %s. ***Some distros, such as Red Hat Enterprise Linux, support non-superuser munlockall calls.***",
-				EPERM,TEST_ERRNO,
-				strerror(TEST_ERRNO));
-					 
-			}
+			tst_resm(TCONF, "munlockall() failed to produce "
+				 "expected errno :%d Got : %d, %s. ***Some distros, such as Red Hat Enterprise Linux, support non-superuser munlockall calls.***",
+				 EPERM, TEST_ERRNO, strerror(TEST_ERRNO));
+
 		}
-				/* End for TEST_LOOPING */
+	}
+	/* End for TEST_LOOPING */
 
 	/* cleanup and exit */
 	cleanup();
@@ -128,32 +126,28 @@ int main(int ac, char **av)
 	return 0;
 }				/* End main */
 
-
 /* setup() - performs all ONE TIME setup for this test. */
 void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	/*set the expected errnos*/
+	/*set the expected errnos */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* switch to nobody user*/
-	if(geteuid()!=0){
-		tst_brkm(TBROK,tst_exit,
-			"Test must be run as root");
+	/* switch to nobody user */
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Test must be run as root");
 	}
 
-       	if((ltpuser = getpwnam(nobody_uid)) == NULL) {
-		 tst_brkm(TBROK, tst_exit, "\"nobody\"user not present");
-	 }
+	if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
+		tst_brkm(TBROK, tst_exit, "\"nobody\"user not present");
+	}
 
-	 if(seteuid(ltpuser->pw_uid) == -1) {
-		 tst_brkm(TBROK, tst_exit ,"seteuid failed to "
-			"to set the effective uid to %d",
-		       	ltpuser->pw_uid);
-	 }
-	
+	if (seteuid(ltpuser->pw_uid) == -1) {
+		tst_brkm(TBROK, tst_exit, "seteuid failed to "
+			 "to set the effective uid to %d", ltpuser->pw_uid);
+	}
 
 /* Pause if that option was specified */
 
@@ -178,13 +172,12 @@ void cleanup()
 {
 	TEST_CLEANUP;
 
-	/*set effective userid back to root*/
+	/*set effective userid back to root */
 	if (seteuid(0) == -1) {
-		tst_resm(TWARN , "seteuid failed to "
-			"to set the effective uid to root");
+		tst_resm(TWARN, "seteuid failed to "
+			 "to set the effective uid to root");
 		perror("setuid");
 	}
-
 
 	/* exit with return code appropriate for results */
 	tst_exit();

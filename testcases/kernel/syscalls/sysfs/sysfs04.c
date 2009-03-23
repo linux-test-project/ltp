@@ -22,26 +22,26 @@
  *    EXECUTED BY	: anyone
  *
  *    TEST TITLE	: Test checking for basic error conditions
- *    				 for sysfs(2)
+ *				 for sysfs(2)
  *
  *    TEST CASE TOTAL	: 1
  *
  *    AUTHOR		: Aniruddha Marathe <aniruddha.marathe@wipro.com>
  *
  *    SIGNALS
- * 	Uses SIGUSR1 to pause before test if option set.
- * 	(See the parse_opts(3) man page).
+ *	Uses SIGUSR1 to pause before test if option set.
+ *	(See the parse_opts(3) man page).
  *
  *    DESCRIPTION
  *	This test case checks whether sysfs(2) system call  returns
  *	appropriate error number for invalid
  *	option.
  *
- * 	Setup:
+ *	Setup:
  *	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
  *
- * 	Test:
+ *	Test:
  *	  Loop if the proper options are given.
  *	  Execute system call with invaid  option parameter
  *
@@ -50,13 +50,13 @@
  *	  Otherwise,
  *	  Issue syscall failed to produce expected errno
  *
- * 	Cleanup:
- * 	  Do cleanup for the test.
+ *	Cleanup:
+ *	  Do cleanup for the test.
  *
  * USAGE:  <for command-line>
  * sysfs04  [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
  * where:
- * 	-c n : run n copies simultaneously
+ *	-c n : run n copies simultaneously
  *	-e   : Turn on errno logging.
  *	-i n : Execute test n times.
  *	-I x : Execute test for x seconds.
@@ -115,7 +115,8 @@ int main(int ac, char **av)
 		TEST_ERROR_LOG(TEST_ERRNO);
 	}			/* End of TEST_LOOPING */
 #else
-	tst_resm(TWARN, "This test can only run on kernels that support the sysfs system call");
+	tst_resm(TWARN,
+		 "This test can only run on kernels that support the sysfs system call");
 #endif
 
 	/*Clean up and exit */

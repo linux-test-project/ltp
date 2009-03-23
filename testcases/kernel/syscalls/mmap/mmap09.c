@@ -68,7 +68,7 @@ void cleanup();
 #define mapsize (1 << 14)
 
 char *TCID = "mmap09";
-int TST_TOTAL=3;
+int TST_TOTAL = 3;
 extern int Tst_count;
 int fd;
 char *maddr;
@@ -77,18 +77,19 @@ struct test_case_t {
 	off_t newsize;
 	char *desc;
 } TC[] = {
-	{mapsize - 8192, "ftruncate mmaped file to a smaller size"},
-	{mapsize + 1024, "ftruncate mmaped file to a larger size"},
-	{0, "ftruncate mmaped file to 0 size"},
-};
+	{
+	mapsize - 8192, "ftruncate mmaped file to a smaller size"}, {
+	mapsize + 1024, "ftruncate mmaped file to a larger size"}, {
+0, "ftruncate mmaped file to 0 size"},};
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
 	int lc;
 	int i;
-	char *msg;	/* for parse_opts */
+	char *msg;		/* for parse_opts */
 
 	msg = parse_opts(argc, argv, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -103,7 +104,7 @@ int main(int argc, char **argv) {
 			if (TEST_RETURN == -1) {
 				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_resm(TFAIL, "%s - errnor: %d",
-						TC[i].desc, TEST_ERRNO);
+					 TC[i].desc, TEST_ERRNO);
 			} else {
 				tst_resm(TPASS, TC[i].desc);
 			}
@@ -116,7 +117,8 @@ int main(int argc, char **argv) {
 	return 0;
 }
 
-void setup() {
+void setup()
+{
 	int i;
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -128,28 +130,28 @@ void setup() {
 
 	if ((fd = open("mmaptest", O_RDWR | O_CREAT, 0666)) < 0)
 		tst_brkm(TFAIL, cleanup, "failed to open mmaptest "
-				"file, errno: %d", errno);
+			 "file, errno: %d", errno);
 
 	/* ftruncate the file to 16k */
 	if (ftruncate(fd, mapsize) < 0)
 		tst_brkm(TFAIL, cleanup, "failed to ftruncate "
-				"file, errno: %d", errno);
+			 "file, errno: %d", errno);
 
-	maddr = mmap(0, (size_t)mapsize, PROT_READ | PROT_WRITE,
-		MAP_FILE|MAP_SHARED, fd, (off_t)0);
+	maddr = mmap(0, (size_t) mapsize, PROT_READ | PROT_WRITE,
+		     MAP_FILE | MAP_SHARED, fd, (off_t) 0);
 	if (maddr == MAP_FAILED)
 		tst_brkm(TFAIL, cleanup, "failed to mmap file, "
-				"errno: %d", errno);
+			 "errno: %d", errno);
 	/* fill up the file with A's */
 	for (i = 0; i < mapsize; i++)
 		maddr[i] = 'A';
 
-
 }
 
-void cleanup() {
+void cleanup()
+{
 	TEST_CLEANUP;
-	munmap(maddr, (size_t)mapsize);
+	munmap(maddr, (size_t) mapsize);
 	close(fd);
 	tst_rmdir();
 	tst_exit();

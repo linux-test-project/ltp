@@ -78,28 +78,27 @@ void dochild1();
 void dochild2();
 void setup();
 void cleanup();
-extern struct passwd * my_getpwnam(char *);
+extern struct passwd *my_getpwnam(char *);
 
 #define PERMS		0777
 
 char user1name[] = "nobody";
 
-char *TCID="rmdir03";           /* Test program identifier.    */
-int TST_TOTAL=1;                /* Total number of test cases. */
-extern int Tst_count;           /* Test Case counter for tst_* routines */
+char *TCID = "rmdir03";		/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
+extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 char tstdir1[255];
 char tstdir2[255];
 char tstdir3[255];
 char tstdir4[255];
 
-int exp_enos[]={EPERM, EACCES, 0};     /* List must end with 0 */
+int exp_enos[] = { EPERM, EACCES, 0 };	/* List must end with 0 */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	int lc;             /* loop counter */
-	char *msg;          /* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	pid_t pid;
 	struct stat buf1;
 	int e_code, status, status2;
@@ -107,10 +106,9 @@ main(int ac, char **av)
 	/*
 	 * parse standard options
 	 */
-	if ((msg=parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
-
 #ifdef UCLINUX
 	maybe_run_child(&dochild1, "ns", 1, tstdir2);
 	maybe_run_child(&dochild2, "ns", 2, tstdir4);
@@ -127,12 +125,12 @@ main(int ac, char **av)
 	/*
 	 * check looping state if -i option given
 	 */
-	for (lc=0; TEST_LOOPING(lc); lc++) {
-	 
-		/* reset Tst_count in case we are looping. */
-		Tst_count=0;
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-//test1:	
+		/* reset Tst_count in case we are looping. */
+		Tst_count = 0;
+
+//test1:       $
 		/*
 		 * attempt to rmdir a file whose parent directory has
 		 * the sticky bit set without the root right
@@ -142,27 +140,25 @@ main(int ac, char **av)
 		if (stat(tstdir1, &buf1) != -1) {
 			tst_brkm(TBROK, cleanup,
 				 "tmp directory %s found!", tstdir1);
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 		/* create a directory */
 		if (mkdir(tstdir1, PERMS) == -1) {
 			tst_brkm(TBROK, cleanup,
-				 "Couldnot create directory %s",tstdir1);
-			/*NOTREACHED*/
-		}
-		if (stat(tstdir1, &buf1)== -1) {
+				 "Couldnot create directory %s", tstdir1);
+		 /*NOTREACHED*/}
+		if (stat(tstdir1, &buf1) == -1) {
 			perror("stat");
 			tst_brkm(TBROK, cleanup, "failed to stat directory %s "
 				 "in rmdir()", tstdir1);
 			/* NOTREACHED */
 		}
 		/* set the sticky bit */
-		if (chmod(tstdir1,buf1.st_mode|S_ISVTX)!= 0) {
+		if (chmod(tstdir1, buf1.st_mode | S_ISVTX) != 0) {
 			perror("chmod");
 			tst_brkm(TBROK, cleanup,
 				 "failed to set the S_ISVTX bit");
 			/* NOTREACHED */
-			}
+		}
 		/* create a sub directory under tstdir1 */
 		if (mkdir(tstdir2, PERMS) == -1) {
 			tst_brkm(TBROK, cleanup,
@@ -171,10 +167,9 @@ main(int ac, char **av)
 
 		if ((pid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() failed");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
-		if (pid == 0) {		/* first child */
+		if (pid == 0) {	/* first child */
 #ifdef UCLINUX
 			if (self_exec(av[0], "ns", 1, tstdir2) < 0) {
 				tst_brkm(TBROK, cleanup, "self_exec failed");
@@ -185,26 +180,23 @@ main(int ac, char **av)
 		}
 		/* Parent */
 
-//test2:	
+//test2:       $
 		/* create the a directory with 0700 permits */
 		if (mkdir(tstdir3, 0700) == -1) {
-		       	 tst_brkm(TBROK, cleanup, "mkdir(%s, %#o) Failed",
-		       		  tstdir3, PERMS);
-		       	 /*NOTREACHED*/
-		}
+			tst_brkm(TBROK, cleanup, "mkdir(%s, %#o) Failed",
+				 tstdir3, PERMS);
+		 /*NOTREACHED*/}
 		/* create the a directory with 0700 permits */
 		if (mkdir(tstdir4, 0777) == -1) {
-	       		 tst_brkm(TBROK, cleanup, "mkdir(%s, %#o) Failed",
-	       			  tstdir4, PERMS);
-	       		 /*NOTREACHED*/
-	       	}
+			tst_brkm(TBROK, cleanup, "mkdir(%s, %#o) Failed",
+				 tstdir4, PERMS);
+		 /*NOTREACHED*/}
 
 		if ((pid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() failed");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
-		if (pid == 0) {		/* child */
+		if (pid == 0) {	/* child */
 #ifdef UCLINUX
 			if (self_exec(av[0], "ns", 2, tstdir4) < 0) {
 				tst_brkm(TBROK, cleanup, "self_exec failed");
@@ -212,19 +204,20 @@ main(int ac, char **av)
 #else
 			dochild2();
 #endif
-		} else {		/* parent */
-                        /* wait for the child to finish */
-                        wait(&status);
-                        wait(&status2);
-                        /* make sure the child returned a good exit status */
-                        e_code = status >> 8;
-                        if (e_code != 0) {
-                                tst_resm(TFAIL, "Failures reported above");
-                        } else {
+		} else {	/* parent */
+			/* wait for the child to finish */
+			wait(&status);
+			wait(&status2);
+			/* make sure the child returned a good exit status */
+			e_code = status >> 8;
+			if (e_code != 0) {
+				tst_resm(TFAIL, "Failures reported above");
+			} else {
 				/* No error in the 1st one, check the 2nd */
-                        	e_code = status2 >> 8;
-                        	if (e_code != 0) {
-                               	   tst_resm(TFAIL, "Failures reported above");
+				e_code = status2 >> 8;
+				if (e_code != 0) {
+					tst_resm(TFAIL,
+						 "Failures reported above");
 				}
 			}
 		}
@@ -236,66 +229,21 @@ main(int ac, char **av)
 		(void)rmdir(tstdir4);
 		(void)rmdir(tstdir3);
 
-	}   /* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/*
 	 * cleanup and exit
 	 */
 	cleanup();
 
-	/*NOTREACHED*/
+	 /*NOTREACHED*/ return 0;
 
-  return 0;
-
-}       /* End main */
+}				/* End main */
 
 /*
  * dochild1()
  */
-void
-dochild1()
-{
-	int retval = 0;
-	struct passwd *nobody = my_getpwnam(user1name);
-
-	/* set to nobody */
-	if (seteuid(nobody->pw_uid) == -1) {
-		retval=1;
-		tst_brkm(TBROK, cleanup, "setreuid failed to "
-			 "set effective uid to %d", nobody->pw_uid);
-		/*NOTREACHED*/
-	}		 
-
-	/* rmdir tstdir2 */
-	TEST(rmdir(tstdir2));
-
-	if (TEST_ERRNO) {
-		TEST_ERROR_LOG(TEST_ERRNO);
-	}
-
-	if (TEST_RETURN != -1) {
-		retval=1;
-		tst_resm(TFAIL, "call succeeded unexpectedly");
-	} else if ((TEST_ERRNO != EPERM)&&(TEST_ERRNO != EACCES)) {
-		retval=1;
-		tst_resm(TFAIL, "Expected EPERM or EACCES, got %d", TEST_ERRNO);
-	} else {
-		tst_resm(TPASS, "rmdir() produced EPERM or EACCES");
-	}
-
-	if (seteuid(0) == -1) {
-		retval=1;
-		tst_brkm(TBROK, cleanup, "seteuid(0) failed");
-	}
-	exit(retval);
-	/* END of child 1 (test1) */
-}
-
-/*
- * dochild1()
- */
-void
-dochild2()
+void dochild1()
 {
 	int retval = 0;
 	struct passwd *nobody = my_getpwnam(user1name);
@@ -305,10 +253,49 @@ dochild2()
 		retval = 1;
 		tst_brkm(TBROK, cleanup, "setreuid failed to "
 			 "set effective uid to %d", nobody->pw_uid);
-		/*NOTREACHED*/
+	 /*NOTREACHED*/}
+
+	/* rmdir tstdir2 */
+	TEST(rmdir(tstdir2));
+
+	if (TEST_ERRNO) {
+		TEST_ERROR_LOG(TEST_ERRNO);
 	}
 
-	/* rmdir tstdir4*/
+	if (TEST_RETURN != -1) {
+		retval = 1;
+		tst_resm(TFAIL, "call succeeded unexpectedly");
+	} else if ((TEST_ERRNO != EPERM) && (TEST_ERRNO != EACCES)) {
+		retval = 1;
+		tst_resm(TFAIL, "Expected EPERM or EACCES, got %d", TEST_ERRNO);
+	} else {
+		tst_resm(TPASS, "rmdir() produced EPERM or EACCES");
+	}
+
+	if (seteuid(0) == -1) {
+		retval = 1;
+		tst_brkm(TBROK, cleanup, "seteuid(0) failed");
+	}
+	exit(retval);
+	/* END of child 1 (test1) */
+}
+
+/*
+ * dochild1()
+ */
+void dochild2()
+{
+	int retval = 0;
+	struct passwd *nobody = my_getpwnam(user1name);
+
+	/* set to nobody */
+	if (seteuid(nobody->pw_uid) == -1) {
+		retval = 1;
+		tst_brkm(TBROK, cleanup, "setreuid failed to "
+			 "set effective uid to %d", nobody->pw_uid);
+	 /*NOTREACHED*/}
+
+	/* rmdir tstdir4 */
 	TEST(rmdir(tstdir4));
 
 	if (TEST_ERRNO) {
@@ -335,8 +322,7 @@ dochild2()
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* test must be run as root */
 	if (geteuid() != 0) {
@@ -357,18 +343,17 @@ setup()
 
 	umask(0);
 
-	sprintf(tstdir1,"./tstdir1_%d",getpid());
-	sprintf(tstdir2,"%s/tstdir2_%d",tstdir1,getpid());
-	sprintf(tstdir3,"./tstdir3_%d",getpid());
-	sprintf(tstdir4,"%s/tstdir3_%d",tstdir3,getpid());
+	sprintf(tstdir1, "./tstdir1_%d", getpid());
+	sprintf(tstdir2, "%s/tstdir2_%d", tstdir1, getpid());
+	sprintf(tstdir3, "./tstdir3_%d", getpid());
+	sprintf(tstdir4, "%s/tstdir3_%d", tstdir3, getpid());
 }
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *              completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

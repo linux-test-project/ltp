@@ -65,7 +65,8 @@ void cleanup(void);
 
 #define	NUMCHILD	50
 #define	NCPERCHILD	50
-char rawchars[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
+char rawchars[] =
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
 int kidid;
 int numchild;			/* no of children to fork */
 int ncperchild;			/* no of chars child should read */
@@ -87,19 +88,17 @@ ssize_t safe_read(int fd, void *buf, size_t count)
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	int i;
 	int fork_ret, status;
-	int written;			/* no of chars read and written */
+	int written;		/* no of chars read and written */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
-
+	 /*NOTREACHED*/}
 #ifdef UCLINUX
 	maybe_run_child(&do_child_uclinux, "ddddd", &fd[0], &fd[1], &kidid,
 			&ncperchild, &szcharbuf);
@@ -129,26 +128,24 @@ int main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "write to pipe failed");
 		}
 
-refork:
+	      refork:
 		++kidid;
 		fork_ret = FORK_OR_VFORK();
 
 		if (fork_ret < 0) {
 			tst_brkm(TBROK, cleanup, "fork() failed");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		if ((fork_ret != 0) && (fork_ret != -1) && (kidid < numchild)) {
 			goto refork;
 		}
 
-		if (fork_ret == 0) {		/* child */
+		if (fork_ret == 0) {	/* child */
 #ifdef UCLINUX
 			if (self_exec(av[0], "ddddd", fd[0], fd[1], kidid,
 				      ncperchild, szcharbuf) < 0) {
 				tst_brkm(TBROK, cleanup, "self_exec failed");
-				/*NOTREACHED*/
-			}
+			 /*NOTREACHED*/}
 #else
 			do_child();
 #endif
@@ -170,15 +167,13 @@ refork:
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * do_child()
  */
-void
-do_child()
+void do_child()
 {
 	int nread;
 
@@ -200,23 +195,19 @@ do_child()
 /*
  * do_child_uclinux() - as above, but mallocs rdbuf first
  */
-void
-do_child_uclinux()
+void do_child_uclinux()
 {
 	if ((rdbuf = (char *)malloc(szcharbuf)) == (char *)0) {
 		tst_brkm(TBROK, cleanup, "malloc of rdbuf failed");
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	do_child();
 }
 
-
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	int i, j;
 
@@ -242,17 +233,15 @@ setup()
 
 	if ((wrbuf = (char *)malloc(szcharbuf)) == (char *)0) {
 		tst_brkm(TBROK, cleanup, "malloc failed");
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	if ((rdbuf = (char *)malloc(szcharbuf)) == (char *)0) {
 		tst_brkm(TBROK, cleanup, "malloc of rdbuf failed");
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/* initialize wrbuf */
 	j = 0;
-	for (i = 0; i < szcharbuf; ) {
+	for (i = 0; i < szcharbuf;) {
 		wrbuf[i++] = rawchars[j++];
 		if (j >= sizeof(rawchars)) {
 			j = 0;
@@ -264,8 +253,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

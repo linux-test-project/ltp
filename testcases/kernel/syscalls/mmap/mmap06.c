@@ -41,9 +41,9 @@
  *   Loop if the proper options are given.
  *   Execute system call
  *   Check return code, if system call failed (return=-1)
- *   	if errno set == expected errno
- *   		Issue sys call fails with expected return value and errno.
- *   	Otherwise,
+ *	if errno set == expected errno
+ *		Issue sys call fails with expected return value and errno.
+ *	Otherwise,
  *		Issue sys call fails with unexpected errno.
  *   Otherwise,
  *	Issue sys call returns unexpected value.
@@ -84,10 +84,10 @@
 
 #define TEMPFILE	"mmapfile"
 
-char *TCID="mmap06";		/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "mmap06";		/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-int exp_enos[]={EACCES, 0};
+int exp_enos[] = { EACCES, 0 };
 
 size_t page_sz;			/* system page size */
 char *addr;			/* addr of memory mapped region */
@@ -96,15 +96,14 @@ int fildes;			/* file descriptor for temporary file */
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -118,15 +117,15 @@ main(int ac, char **av)
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/*
 		 * Call mmap to map the temporary file 'TEMPFILE'
-	 	 * with read access.
+		 * with read access.
 		 */
 		errno = 0;
 		addr = mmap(0, page_sz, PROT_READ,
-			    MAP_FILE|MAP_SHARED, fildes, 0);
+			    MAP_FILE | MAP_SHARED, fildes, 0);
 		TEST_ERRNO = errno;
 
 		/* Check for the return value of mmap() */
@@ -147,14 +146,13 @@ main(int ac, char **av)
 			tst_resm(TFAIL, "mmap() fails, 'fd' doesn't allow "
 				 "desired access, invalid errno:%d", errno);
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
-}	/* End main */
+	 /*NOTREACHED*/ return 0;
+}				/* End main */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -162,10 +160,9 @@ main(int ac, char **av)
  *	     Create a temporary directory and a file under it.
  *	     Write some known data into file.
  */
-void
-setup()
+void setup()
 {
-	char *tst_buff;                 /* test buffer to hold known data */
+	char *tst_buff;		/* test buffer to hold known data */
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -220,14 +217,13 @@ setup()
  *             completion or premature exit.
  *	       Remove the temporary directory created.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
 	 */
-    close(fildes);
+	close(fildes);
 
 	TEST_CLEANUP;
 

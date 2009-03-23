@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fpathconf01.c,v 1.4 2009/02/26 12:15:38 subrata_modak Exp $ */
+/* $Id: fpathconf01.c,v 1.5 2009/03/23 13:35:41 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -66,7 +66,7 @@
  *	(See the parse_opts(3) man page).
  *
  *    OUTPUT SPECIFICATIONS
- * 
+ *$
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
  *
@@ -120,144 +120,144 @@
 void setup();
 void cleanup();
 
-
-
-char *TCID="fpathconf01"; 	/* Test program identifier.    */
+char *TCID = "fpathconf01";	/* Test program identifier.    */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 #define FILENAME	"fpafile01"
 
-int exp_enos[]={0, 0};
+int exp_enos[] = { 0, 0 };
 
 int i;
 
-struct pathconf_args
-{
-   char *define_tag;
-   int value;
-   int defined;   /* Some of these are undefined on regular files.
-		   * Cancer does a slightly better job with these already,
-		   * so this is all I'll do to this test.  11/19/98 roehrich
-		   */
+struct pathconf_args {
+	char *define_tag;
+	int value;
+	int defined;		/* Some of these are undefined on regular files.
+				 * Cancer does a slightly better job with these already,
+				 * so this is all I'll do to this test.  11/19/98 roehrich
+				 */
 } args[] = {
-    {"_PC_MAX_CANON", _PC_MAX_CANON, 0},
-    {"_PC_MAX_INPUT", _PC_MAX_INPUT, 0},
-    {"_PC_VDISABLE", _PC_VDISABLE, 0},
-    {"_PC_LINK_MAX", _PC_LINK_MAX, 1},
-    {"_PC_NAME_MAX", _PC_NAME_MAX, 1},
-    {"_PC_PATH_MAX", _PC_PATH_MAX, 1},
-    {"_PC_PIPE_BUF", _PC_PIPE_BUF, 0}
+	{
+	"_PC_MAX_CANON", _PC_MAX_CANON, 0}, {
+	"_PC_MAX_INPUT", _PC_MAX_INPUT, 0}, {
+	"_PC_VDISABLE", _PC_VDISABLE, 0}, {
+	"_PC_LINK_MAX", _PC_LINK_MAX, 1}, {
+	"_PC_NAME_MAX", _PC_NAME_MAX, 1}, {
+	"_PC_PATH_MAX", _PC_PATH_MAX, 1}, {
+	"_PC_PIPE_BUF", _PC_PIPE_BUF, 0}
 };
 
-int TST_TOTAL=((sizeof(args)/sizeof(args[0])));
-int fd=-1;		/* temp file for fpathconf */
+int TST_TOTAL = ((sizeof(args) / sizeof(args[0])));
+int fd = -1;			/* temp file for fpathconf */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-    int lc;		/* loop counter */
-    char *msg;		/* message returned from parse_opts */
-   
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
+
     /***************************************************************
      * parse standard options
      ***************************************************************/
-    if ( (msg=parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL ) {
-	tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	tst_exit();
-    }
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+		tst_exit();
+	}
 
     /***************************************************************
      * perform global setup for test
      ***************************************************************/
-    setup();
+	setup();
 
-    /* set the expected errnos... */
-    TEST_EXP_ENOS(exp_enos);
+	/* set the expected errnos... */
+	TEST_EXP_ENOS(exp_enos);
 
     /***************************************************************
      * check looping state if -c option given
      ***************************************************************/
-    for (lc=0; TEST_LOOPING(lc); lc++) {
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-	/* reset Tst_count in case we are looping. */
-	Tst_count=0;
+		/* reset Tst_count in case we are looping. */
+		Tst_count = 0;
 
-	for (i=0; i<TST_TOTAL; i++) {
-	    /*
-	     * Call fpathconf(2) with one of the valid arguments in the args array
-	     */
-	    TEST(fpathconf(fd,args[i].value));
-	   
-	    /* check return code -- if the return value is defined */
-	    if ( (TEST_RETURN == -1) && args[i].defined ) {
-		TEST_ERROR_LOG(TEST_ERRNO);
-		tst_resm(TFAIL, "fpathconf(fd, %s) Failed, errno=%d : %s", args[i].define_tag,
-			 TEST_ERRNO, strerror(TEST_ERRNO));
-	    } else {
-	
+		for (i = 0; i < TST_TOTAL; i++) {
+			/*
+			 * Call fpathconf(2) with one of the valid arguments in the args array
+			 */
+			TEST(fpathconf(fd, args[i].value));
+
+			/* check return code -- if the return value is defined */
+			if ((TEST_RETURN == -1) && args[i].defined) {
+				TEST_ERROR_LOG(TEST_ERRNO);
+				tst_resm(TFAIL,
+					 "fpathconf(fd, %s) Failed, errno=%d : %s",
+					 args[i].define_tag, TEST_ERRNO,
+					 strerror(TEST_ERRNO));
+			} else {
+
 		/***************************************************************
 		 * only perform functional verification if flag set (-f not given)
 		 ***************************************************************/
-		if ( STD_FUNCTIONAL_TEST ) {
-		    /* No Verification test, yet... */
-		    tst_resm(TPASS, "fpathconf(fd, %s) returned %d", args[i].define_tag, TEST_RETURN);
-		}
-	    }
-	}	/* End for i */
-    }	/* End for TEST_LOOPING */
-   
+				if (STD_FUNCTIONAL_TEST) {
+					/* No Verification test, yet... */
+					tst_resm(TPASS,
+						 "fpathconf(fd, %s) returned %d",
+						 args[i].define_tag,
+						 TEST_RETURN);
+				}
+			}
+		}		/* End for i */
+	}			/* End for TEST_LOOPING */
+
     /***************************************************************
      * cleanup and exit
      ***************************************************************/
-    cleanup();
+	cleanup();
 
-    return 0;
-}	/* End main */
+	return 0;
+}				/* End main */
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void
-setup()
+void setup()
 {
 
-    /* capture signals */
-    tst_sig(FORK, DEF_HANDLER, cleanup);
+	/* capture signals */
+	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-    /* Pause if that option was specified */
-    TEST_PAUSE;
+	/* Pause if that option was specified */
+	TEST_PAUSE;
 
-    tst_tmpdir();
+	tst_tmpdir();
 
-    if ( (fd=open(FILENAME, O_RDWR|O_CREAT, 0700)) == -1 )
-	tst_brkm(TBROK, cleanup, "Unable to open temp file %s!", FILENAME);
+	if ((fd = open(FILENAME, O_RDWR | O_CREAT, 0700)) == -1)
+		tst_brkm(TBROK, cleanup, "Unable to open temp file %s!",
+			 FILENAME);
 
-}	/* End setup() */
-
+}				/* End setup() */
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void
-cleanup()
+void cleanup()
 {
-    /*
-     * print timing stats if that option was specified.
-     * print errno log if that option was specified.
-     */
-    TEST_CLEANUP;
+	/*
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
+	TEST_CLEANUP;
 
-    if (fd >= 0) {
-	if (close(fd) == -1) {
-		tst_resm(TWARN, "close(%s) Failed, errno=%d : %s",
-			FILENAME, errno, strerror(errno));
-    	}
-	fd=-1;
-    }
+	if (fd >= 0) {
+		if (close(fd) == -1) {
+			tst_resm(TWARN, "close(%s) Failed, errno=%d : %s",
+				 FILENAME, errno, strerror(errno));
+		}
+		fd = -1;
+	}
 
-    /* exit with return code appropriate for results */
-    tst_rmdir();
-    tst_exit();
+	/* exit with return code appropriate for results */
+	tst_rmdir();
+	tst_exit();
 
-}	/* End cleanup() */
+}				/* End cleanup() */

@@ -52,27 +52,25 @@
 
 int local_flag = PASSED;
 
-char *TCID="rename14";            /* Test program identifier.    */
-int TST_TOTAL=1;                /* Total number of test cases. */
-extern int Tst_count;           /* Test Case counter for tst_* routines */
+char *TCID = "rename14";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
+extern int Tst_count;		/* Test Case counter for tst_* routines */
 /**************/
-
 
 #define RUNTIME	45
 
 int kidpid[2];
 int parent_pid;
 
-
-int main (argc, argv)
-	int  argc;
-	char *argv[];
+int main(argc, argv)
+int argc;
+char *argv[];
 {
 	int pid;
 	sigset_t set;
 	struct sigaction act, oact;
-	int	term();
-	int	al();
+	int term();
+	int al();
 	void dochild1();
 	void dochild2();
 
@@ -80,7 +78,7 @@ int main (argc, argv)
 	char *msg;		/* message returned from parse_opts */
 
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(argc, argv, (option_t *)NULL, NULL);
+	msg = parse_opts(argc, argv, (option_t *) NULL, NULL);
 	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
@@ -89,20 +87,20 @@ int main (argc, argv)
 	maybe_run_child(&dochild2, "n", 2);
 #endif
 	sigemptyset(&set);
-	act.sa_handler = (void(*)())term;
+	act.sa_handler = (void (*)())term;
 	act.sa_mask = set;
 	act.sa_flags = 0;
 	if (sigaction(SIGTERM, &act, &oact)) {
-		tst_resm(TBROK,"Sigaction(SIGTERM)");
+		tst_resm(TBROK, "Sigaction(SIGTERM)");
 		tst_exit();
 	}
 
 	sigemptyset(&set);
-	act.sa_handler = (void(*)())al;
+	act.sa_handler = (void (*)())al;
 	act.sa_mask = set;
 	act.sa_flags = 0;
 	if (sigaction(SIGALRM, &act, 0)) {
-		tst_resm(TBROK,"Sigaction(SIGALRM)");
+		tst_resm(TBROK, "Sigaction(SIGALRM)");
 		tst_exit();
 	}
 	parent_pid = getpid();
@@ -111,13 +109,13 @@ int main (argc, argv)
 
 	pid = FORK_OR_VFORK();
 	if (pid < 0) {
-		tst_resm(TBROK,"fork() returned %d", pid);
+		tst_resm(TBROK, "fork() returned %d", pid);
 		tst_exit();
 	}
 	if (pid == 0) {
 #ifdef UCLINUX
 		if (self_exec(argv[0], "n", 1) < 0) {
-			tst_resm(TBROK,"self_exec failed");
+			tst_resm(TBROK, "self_exec failed");
 		}
 #else
 		dochild1();
@@ -128,13 +126,13 @@ int main (argc, argv)
 	if (pid < 0) {
 		(void)kill(kidpid[0], SIGTERM);
 		(void)unlink("./rename14");
-		tst_resm(TBROK,"fork() returned %d", pid);
+		tst_resm(TBROK, "fork() returned %d", pid);
 		tst_exit();
 	}
 	if (pid == 0) {
 #ifdef UCLINUX
 		if (self_exec(argv[0], "n", 1) < 0) {
-			tst_resm(TBROK,"self_exec failed");
+			tst_resm(TBROK, "self_exec failed");
 		}
 #else
 		dochild2();
@@ -156,16 +154,16 @@ int main (argc, argv)
 
 	unlink("./rename14");
 	unlink("./rename14xyz");
-	(local_flag == PASSED) ?
-	    tst_resm(TPASS, "Test Passed")
-	:   tst_resm(TFAIL, "Test Failed");
+	(local_flag == PASSED) ? tst_resm(TPASS, "Test Passed")
+	    : tst_resm(TFAIL, "Test Failed");
 
 	tst_rmdir();
 /*--------------------------------------------------------------*/
-	tst_exit();	/* THIS CALL DOES NOT RETURN - EXITS!!	*/
+	tst_exit();		/* THIS CALL DOES NOT RETURN - EXITS!!  */
 /*--------------------------------------------------------------*/
 	return 0;
 }
+
 /* FUNCTIONS GO HERE */
 
 int term()
@@ -173,19 +171,19 @@ int term()
 	if (parent_pid != getpid())
 		exit(0);
 	if (kidpid[0])
-		return(kill(kidpid[0], SIGTERM));
+		return (kill(kidpid[0], SIGTERM));
 	if (kidpid[1])
-		return(kill(kidpid[1], SIGTERM));
-        return 0;
+		return (kill(kidpid[1], SIGTERM));
+	return 0;
 }
 
 int al()
 {
 	if (kidpid[0])
-		return(kill(kidpid[0], SIGTERM));
+		return (kill(kidpid[0], SIGTERM));
 	if (kidpid[1])
-		return(kill(kidpid[1], SIGTERM));
-        return 0;
+		return (kill(kidpid[1], SIGTERM));
+	return 0;
 }
 
 void dochild1()

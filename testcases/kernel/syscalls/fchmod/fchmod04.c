@@ -90,28 +90,26 @@
 #define TESTDIR		"testdir_4"
 
 int fd;				/* file descriptor for test directory */
-char *TCID="fchmod04"; 		/* Test program identifier.    */
-int TST_TOTAL=1;    		/* Total number of test cases. */
+char *TCID = "fchmod04";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
-
 void setup();			/* Setup function for the test */
 void cleanup();			/* Cleanup function for the test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	struct stat stat_buf;	/* stat struct. */
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	mode_t dir_mode;	/* mode permissions set on testdirectory */
-   
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -125,9 +123,9 @@ main(int ac, char **av)
 		Tst_count = 0;
 
 		/*
-	 	 * Call fchmod(2) with mode argument to
+		 * Call fchmod(2) with mode argument to
 		 * set sticky bit on TESTDIR
-	 	 */
+		 */
 		TEST(fchmod(fd, PERMS));
 
 		/* check return code of fchmod(2) */
@@ -164,14 +162,13 @@ main(int ac, char **av)
 		} else {
 			tst_resm(TPASS, "call succeeded");
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
-}	/* End main */
+	 /*NOTREACHED*/ return 0;
+}				/* End main */
 
 /*
  * void
@@ -180,23 +177,21 @@ main(int ac, char **av)
  *  Create another test directory under temporary directory.
  *  Open the test directory for reading.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Switch to nobody user for correct error code collection */
-        if (geteuid() != 0) {
-                tst_brkm(TBROK, tst_exit, "Test must be run as root");
-        }
-         ltpuser = getpwnam(nobody_uid);
-         if (seteuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "seteuid failed to "
-                         "to set the effective uid to %d",
-                         ltpuser->pw_uid);
-                perror("seteuid");
-         }
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+	}
+	ltpuser = getpwnam(nobody_uid);
+	if (seteuid(ltpuser->pw_uid) == -1) {
+		tst_resm(TINFO, "seteuid failed to "
+			 "to set the effective uid to %d", ltpuser->pw_uid);
+		perror("seteuid");
+	}
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
@@ -216,7 +211,7 @@ setup()
 			 "open(%s, O_RDONLY) failed, errno=%d : %s",
 			 TESTDIR, errno, strerror(errno));
 	}
-}	/* End setup() */
+}				/* End setup() */
 
 /*
  * void
@@ -225,8 +220,7 @@ setup()
  *  Close the test directory opened during setup().
  *  Remove the test directory and temporary directory created in setup().
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -245,4 +239,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

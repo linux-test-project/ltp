@@ -67,18 +67,17 @@ extern int Tst_count;
 
 int main(int argc, char **argv)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	int pid, npid, sig, nsig;
 	int exno, nexno, status;
 
 	/* parse standard options */
-	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) !=
-	    (char *) NULL) {
+	if ((msg = parse_opts(argc, argv, (option_t *) NULL, NULL)) !=
+	    (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
-
 #ifdef UCLINUX
 	maybe_run_child(&do_child, "");
 #endif
@@ -105,8 +104,8 @@ int main(int argc, char **argv)
 		} else {
 			kill(pid, sig);
 			errno = 0;
-			while(((npid = waitpid(pid, &status, 0)) != -1) ||
-			      (errno == EINTR)) {
+			while (((npid = waitpid(pid, &status, 0)) != -1) ||
+			       (errno == EINTR)) {
 				if (errno == EINTR) {
 					continue;
 				}
@@ -115,7 +114,8 @@ int main(int argc, char **argv)
 					tst_resm(TFAIL, "waitpid error: "
 						 "unexpected pid returned");
 				} else {
-					tst_resm(TPASS, "recieved expected pid");
+					tst_resm(TPASS,
+						 "recieved expected pid");
 				}
 
 				nsig = WTERMSIG(status);
@@ -129,7 +129,7 @@ int main(int argc, char **argv)
 						 "unexpected signal returned");
 				} else {
 					tst_resm(TPASS, "recieved expected "
-						"signal");
+						 "signal");
 				}
 
 				/*
@@ -143,7 +143,7 @@ int main(int argc, char **argv)
 						 "returned");
 				} else {
 					tst_resm(TPASS, "recieved expected "
-						"exit value");
+						 "exit value");
 				}
 			}
 		}
@@ -153,21 +153,18 @@ int main(int argc, char **argv)
 		}
 	}
 	cleanup();
-	/*NOTREACHED*/
-
-  return 0;
+	 /*NOTREACHED*/ return 0;
 
 }
 
 /*
  * do_child()
  */
-void
-do_child()
+void do_child()
 {
 	int exno = 1;
 
-	while(1)
+	while (1)
 		usleep(10);
 
 	exit(exno);
@@ -177,8 +174,7 @@ do_child()
  * setup()
  *      performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* Pause if that option was specified
 	 * TEST_PAUSE contains the code to fork the test with the -c option.
@@ -191,8 +187,7 @@ setup(void)
  *	performs all ONE TIME cleanup for this test at
  *	completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -202,5 +197,4 @@ cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}

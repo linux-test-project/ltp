@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: link02.c,v 1.3 2009/02/26 12:16:08 subrata_modak Exp $ */
+/* $Id: link02.c,v 1.4 2009/03/23 13:35:53 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -66,7 +66,7 @@
  *	(See the parse_opts(3) man page).
  *
  *    OUTPUT SPECIFICATIONS
- * 
+ *$
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
  *
@@ -121,143 +121,140 @@
 void setup();
 void cleanup();
 
-
-
-char *TCID="link02"; 		/* Test program identifier.    */
-int TST_TOTAL=1;    		/* Total number of test cases. */
+char *TCID = "link02";		/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-int exp_enos[]={0, 0};
+int exp_enos[] = { 0, 0 };
 
 char Fname[255], Lname[255];
 
 /***********************************************************************
  * Main
  ***********************************************************************/
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-    int lc;		/* loop counter */
-    char *msg;		/* message returned from parse_opts */
-    struct stat fbuf, lbuf;
-   
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
+	struct stat fbuf, lbuf;
+
     /***************************************************************
      * parse standard options
      ***************************************************************/
-    if ( (msg=parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *) NULL ) {
-	tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	tst_exit();
-    }
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+		tst_exit();
+	}
 
     /***************************************************************
      * perform global setup for test
      ***************************************************************/
-    setup();
+	setup();
 
-    /* set the expected errnos... */
-    TEST_EXP_ENOS(exp_enos);
+	/* set the expected errnos... */
+	TEST_EXP_ENOS(exp_enos);
 
     /***************************************************************
      * check looping state if -c option given
      ***************************************************************/
-    for (lc=0; TEST_LOOPING(lc); lc++) {
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-	/* reset Tst_count in case we are looping. */
-	Tst_count=0;
+		/* reset Tst_count in case we are looping. */
+		Tst_count = 0;
 
-        /*
-	 *  Call link(2)
-	 */
-	TEST(link(Fname, Lname));
+		/*
+		 *  Call link(2)
+		 */
+		TEST(link(Fname, Lname));
 
-	/* check return code */
-	if ( TEST_RETURN == -1 ) {
-	    TEST_ERROR_LOG(TEST_ERRNO);
-	    tst_resm(TFAIL, "link(%s, %s) Failed, errno=%d : %s",
-		     Fname, Lname, TEST_ERRNO, strerror(TEST_ERRNO));
-	} else {
-	   
+		/* check return code */
+		if (TEST_RETURN == -1) {
+			TEST_ERROR_LOG(TEST_ERRNO);
+			tst_resm(TFAIL, "link(%s, %s) Failed, errno=%d : %s",
+				 Fname, Lname, TEST_ERRNO,
+				 strerror(TEST_ERRNO));
+		} else {
+
 	    /***************************************************************
 	     * only perform functional verification if flag set (-f not given)
 	     ***************************************************************/
-	    if ( STD_FUNCTIONAL_TEST ) {
-		/* No Verification test, yet... */
-		stat(Fname, &fbuf);
-		stat(Lname, &lbuf);
-		if ( fbuf.st_nlink > 1 && lbuf.st_nlink > 1 &&
-			fbuf.st_nlink == lbuf.st_nlink )
+			if (STD_FUNCTIONAL_TEST) {
+				/* No Verification test, yet... */
+				stat(Fname, &fbuf);
+				stat(Lname, &lbuf);
+				if (fbuf.st_nlink > 1 && lbuf.st_nlink > 1 &&
+				    fbuf.st_nlink == lbuf.st_nlink)
 
-		    tst_resm(TPASS, "link(%s, %s) returned %d and link cnts match",
-			 Fname, Lname, TEST_RETURN);
-		else {
-		    tst_resm(TFAIL,
-			"link(%s, %s) returned %d, stat link cnts do not match %d %d",
-			Fname, Lname, TEST_RETURN, fbuf.st_nlink,
-			lbuf.st_nlink);
+					tst_resm(TPASS,
+						 "link(%s, %s) returned %d and link cnts match",
+						 Fname, Lname, TEST_RETURN);
+				else {
+					tst_resm(TFAIL,
+						 "link(%s, %s) returned %d, stat link cnts do not match %d %d",
+						 Fname, Lname, TEST_RETURN,
+						 fbuf.st_nlink, lbuf.st_nlink);
+				}
+			}
+			if (unlink(Lname) == -1) {
+				tst_resm(TWARN,
+					 "unlink(%s) Failed, errno=%d : %s",
+					 Fname, errno, strerror(errno));
+			}
 		}
-	    }
-	    if (unlink(Lname) == -1) {
-		tst_resm(TWARN, "unlink(%s) Failed, errno=%d : %s",
-			Fname, errno, strerror(errno));
-	    }
-	}
 
-    }	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
     /***************************************************************
      * cleanup and exit
      ***************************************************************/
-    cleanup();
+	cleanup();
 
-    return 0;
-}	/* End main */
+	return 0;
+}				/* End main */
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void
-setup()
+void setup()
 {
-    int fd;
+	int fd;
 
-    /* capture signals */
-    tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	/* capture signals */
+	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-    /* Pause if that option was specified */
-    TEST_PAUSE;
+	/* Pause if that option was specified */
+	TEST_PAUSE;
 
-    /* make a temp directory and cd to it */
-    tst_tmpdir();
+	/* make a temp directory and cd to it */
+	tst_tmpdir();
 
-    strcpy(Fname, "tfile");
-    if ((fd = open(Fname, O_RDWR|O_CREAT, 0700)) == -1) {
-       tst_brkm(TBROK, cleanup,
-		"open(%s, O_RDWR|O_CREAT, 0700) Failed, errno=%d : %s",
-		Fname, errno, strerror(errno));
-    } else if (close(fd) == -1) {
-       tst_resm(TWARN, "close(%s) Failed, errno=%d : %s",
-	       Fname, errno, strerror(errno));
-    }
-    strcpy(Lname, "lfile");
-}	/* End setup() */
-
+	strcpy(Fname, "tfile");
+	if ((fd = open(Fname, O_RDWR | O_CREAT, 0700)) == -1) {
+		tst_brkm(TBROK, cleanup,
+			 "open(%s, O_RDWR|O_CREAT, 0700) Failed, errno=%d : %s",
+			 Fname, errno, strerror(errno));
+	} else if (close(fd) == -1) {
+		tst_resm(TWARN, "close(%s) Failed, errno=%d : %s",
+			 Fname, errno, strerror(errno));
+	}
+	strcpy(Lname, "lfile");
+}				/* End setup() */
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void
-cleanup()
+void cleanup()
 {
-    /*
-     * print timing stats if that option was specified.
-     * print errno log if that option was specified.
-     */
-    TEST_CLEANUP;
+	/*
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
+	TEST_CLEANUP;
 
-    /* Remove tmp dir and all files in it */
-    tst_rmdir();
+	/* Remove tmp dir and all files in it */
+	tst_rmdir();
 
-    /* exit with return code appropriate for results */
-    tst_exit();
-}	/* End cleanup() */
+	/* exit with return code appropriate for results */
+	tst_exit();
+}				/* End cleanup() */

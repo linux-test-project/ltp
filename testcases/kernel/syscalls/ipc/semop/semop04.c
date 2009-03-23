@@ -56,7 +56,7 @@ char *TCID = "semop04";
 int TST_TOTAL = 2;
 extern int Tst_count;
 
-int exp_enos[] = {EAGAIN, 0};	/* 0 terminated list of expected errnos */
+int exp_enos[] = { EAGAIN, 0 };	/* 0 terminated list of expected errnos */
 
 int sem_id_1 = -1;
 
@@ -70,26 +70,27 @@ struct test_case_t {
 	int error;
 } TC[] = {
 	/* EAGAIN sem_op = 0 */
-	{{1}, 0, IPC_NOWAIT, 2, EAGAIN},
-
-	/* EAGAIN sem_op = -1 */
-	{{0}, -1, IPC_NOWAIT, 2, EAGAIN}
+	{ {
+	1}, 0, IPC_NOWAIT, 2, EAGAIN},
+	    /* EAGAIN sem_op = -1 */
+	{ {
+	0}, -1, IPC_NOWAIT, 2, EAGAIN}
 };
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
-	int val = 1;			/* value for SETVAL */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
+	int val = 1;		/* value for SETVAL */
 
 	int i;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -97,7 +98,7 @@ int main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		for (i=0; i<TST_TOTAL; i++) {
+		for (i = 0; i < TST_TOTAL; i++) {
 
 			/* initialize the s_buf buffer */
 			s_buf.sem_op = TC[i].op;
@@ -125,7 +126,9 @@ int main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO == TC[i].error) {
-				tst_resm(TPASS, "expected failure - errno = %d"						 " : %s", TEST_ERRNO,
+				tst_resm(TPASS,
+					 "expected failure - errno = %d"
+					 " : %s", TEST_ERRNO,
 					 strerror(TEST_ERRNO));
 			} else {
 				tst_resm(TFAIL, "unexpected error - "
@@ -137,15 +140,13 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -167,7 +168,7 @@ setup(void)
 	semkey = getipckey();
 
 	/* create a semaphore set with read and alter permissions */
-	/* and PSEMS "primitive" semaphores			  */
+	/* and PSEMS "primitive" semaphores                       */
 	if ((sem_id_1 =
 	     semget(semkey, PSEMS, IPC_CREAT | IPC_EXCL | SEM_RA)) == -1) {
 		tst_brkm(TBROK, cleanup, "couldn't create semaphore in setup");
@@ -178,8 +179,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/* if it exists, remove the semaphore resource */
 	rm_sema(sem_id_1);
@@ -196,4 +196,3 @@ cleanup(void)
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

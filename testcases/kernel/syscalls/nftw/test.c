@@ -46,35 +46,34 @@ extern FILE *temp;
  *      in the directory tree, and return 0.
  */
 
-void
-test1A(void)
+void test1A(void)
 {
-	int         i, j, ret;
+	int i, j, ret;
 
-        temp = stderr;
+	temp = stderr;
 #ifdef DEBUG
 	fprintf(temp, "TEST: nftw() succeeds\n");
 #endif
 
 	visit = 0;
-	if((ret = nftw("./tmp/data/dirh", test_func1, MAX_FD,0 )) == -1) {
+	if ((ret = nftw("./tmp/data/dirh", test_func1, MAX_FD, 0)) == -1) {
 		perror("ERROR: nftw failed");
 		cleanup_function();
 		fail_exit();
 	}
 
-	if(ret == 999) {
+	if (ret == 999) {
 		cleanup_function();
 		fail_exit();
 	}
-
 #ifdef DEBUG
 	fprintf(temp, "TEST: Whole tree traversed\n");
 #endif
 
 	if (visit != ngoods) {
 		fprintf(temp, "ERROR: Count of objects visited incorrect\n");
-		fprintf(temp, "       Expected %d, Received %d\n", ngoods, visit);
+		fprintf(temp, "       Expected %d, Received %d\n", ngoods,
+			visit);
 		cleanup_function();
 		fail_exit();
 	}
@@ -92,14 +91,13 @@ test1A(void)
 	for (i = 0; i < visit; i++) {
 		if (dirlist[i] != (char *)NULL) {
 			free(dirlist[i]);
-			fprintf(temp, "ERROR: Unexpected visit to %s\n", dirlist[i]);
+			fprintf(temp, "ERROR: Unexpected visit to %s\n",
+				dirlist[i]);
 			cleanup_function();
 			fail_exit();
 		}
 	}
 }
-
-
 
 /*
  *    void test2A()     - tests the assertion:
@@ -108,32 +106,33 @@ test1A(void)
  *      contains FTW_PHYS shall not traverse symbolic links.
  */
 
-void
-test2A(void)
+void test2A(void)
 {
-	int         i, ret;
+	int i, ret;
 
 	temp = stderr;
 #ifdef DEBUG
-	fprintf(temp, "TEST: nftw with FTW_PHYS does not follow symbolic links\n");
+	fprintf(temp,
+		"TEST: nftw with FTW_PHYS does not follow symbolic links\n");
 #endif
 
 	visit = 0;
-	if((ret = nftw("./tmp/data/dirl", test_func1, MAX_FD, FTW_PHYS))
-			== -1) {
+	if ((ret = nftw("./tmp/data/dirl", test_func1, MAX_FD, FTW_PHYS))
+	    == -1) {
 		perror("nftw");
 		cleanup_function();
 		fail_exit();
 	}
 
-	if(ret == 999) {
+	if (ret == 999) {
 		cleanup_function();
 		fail_exit();
 	}
 
-	if (visit != NO_LINK_CNT)
-	{
-		fprintf(temp, "ERROR: Expected %d files to be visited.  nftw() visited %d\n", NO_LINK_CNT, visit);
+	if (visit != NO_LINK_CNT) {
+		fprintf(temp,
+			"ERROR: Expected %d files to be visited.  nftw() visited %d\n",
+			NO_LINK_CNT, visit);
 		cleanup_function();
 		fail_exit();
 	}
@@ -144,7 +143,6 @@ test2A(void)
 	}
 }
 
-
 /*
  *    void test3A()     - tests the assertion:
  *      A call to int nftw(const char *path, int (*fn)(const char *, const
@@ -153,10 +151,9 @@ test2A(void)
  *      them and shall not report the same file twice.
  */
 
-void
-test3A(void)
+void test3A(void)
 {
-	int         ret;
+	int ret;
 
 #ifdef DEBUG
 	fprintf(temp, "TEST: nftw without FTW_PHYS follows symbolic links\n");
@@ -164,24 +161,24 @@ test3A(void)
 
 	visit = 0;
 
-	if((ret = nftw("./tmp/data/dirl", test_func3, MAX_FD, 0)) == -1) {
+	if ((ret = nftw("./tmp/data/dirl", test_func3, MAX_FD, 0)) == -1) {
 		perror("nftw");
 		cleanup_function();
 		fail_exit();
 	}
-	if(ret == 999) {
+	if (ret == 999) {
 		cleanup_function();
 		fail_exit();
 	}
 
-	if (visit != LINK_CNT-1)
-	{
-		fprintf(temp, "ERROR: Expected %d files to be visited.  nftw() visited %d\n", LINK_CNT-1, visit);
+	if (visit != LINK_CNT - 1) {
+		fprintf(temp,
+			"ERROR: Expected %d files to be visited.  nftw() visited %d\n",
+			LINK_CNT - 1, visit);
 		cleanup_function();
 		fail_exit();
 	}
 }
-
 
 /*
  *    void test4A()     - tests the assertion:
@@ -191,23 +188,22 @@ test3A(void)
  *      reporting the directory.
  */
 
-void
-test4A(void)
+void test4A(void)
 {
-	char 	path[] = "./tmp/data/d777";
-	int	ret_val;
+	char path[] = "./tmp/data/d777";
+	int ret_val;
 
 #ifdef DEBUG
 	fprintf(temp, "TEST: Verify traversal with FTW_DEPTH set\n");
 #endif
 
 	visit = 0;
-	if((ret_val = nftw(path, test_func4, MAX_FD, FTW_DEPTH)) == -1) {
+	if ((ret_val = nftw(path, test_func4, MAX_FD, FTW_DEPTH)) == -1) {
 		perror("nftw");
 		cleanup_function();
 		fail_exit();
 	}
-	if(ret_val != 999) {
+	if (ret_val != 999) {
 		fprintf(temp, "ERROR: %s never visited\n", path);
 		cleanup_function();
 		fail_exit();
@@ -220,7 +216,6 @@ test4A(void)
 	}
 }
 
-
 /*
  *    void test5A()     - tests the assertion:
  *      A call to int nftw(const char *path, int (*fn)(const char *, const
@@ -229,36 +224,33 @@ test4A(void)
  *      the files in that directory.
  */
 
-void
-test5A(void)
+void test5A(void)
 {
-	char 	path[] = "./tmp/data/d777";
-	int	ret_val;
+	char path[] = "./tmp/data/d777";
+	int ret_val;
 
 #ifdef DEBUG
 	fprintf(temp, "TEST: Verify traversal without FTW_DEPTH set\n");
 #endif
 
 	visit = 0;
-	if((ret_val = nftw(path, test_func4, MAX_FD, 0)) == -1) {
+	if ((ret_val = nftw(path, test_func4, MAX_FD, 0)) == -1) {
 		perror("nftw");
 		cleanup_function();
 		fail_exit();
 	}
-	if(ret_val != 999) {
+	if (ret_val != 999) {
 		fprintf(temp, "ERROR: %s never visited\n", path);
 		cleanup_function();
 		fail_exit();
 	}
 
-	if (visit != 1)
-	{
+	if (visit != 1) {
 		fprintf(temp, "ERROR: Visited contents before directory\n");
 		cleanup_function();
 		fail_exit();
 	}
 }
-
 
 /*
  *    void test6A()     - tests the assertion:
@@ -268,13 +260,12 @@ test5A(void)
  *      directory as it reports files in that directory.
  */
 
-void
-test6A(void)
+void test6A(void)
 {
-	char 	path[PATH_MAX + NAME_MAX];
-	int 	ret_val;
+	char path[PATH_MAX + NAME_MAX];
+	int ret_val;
 
-	if(getcwd(path, sizeof(path)) == NULL) {
+	if (getcwd(path, sizeof(path)) == NULL) {
 		perror("getcwd");
 		cleanup_function();
 		fail_exit();
@@ -282,7 +273,8 @@ test6A(void)
 	(void)strcat(path, "/tmp/data/dirh");
 
 #ifdef DEBUG
-	fprintf(temp, "TEST: nftw with FTW_CHDIR changes to each dir before reporting files in it\n");
+	fprintf(temp,
+		"TEST: nftw with FTW_CHDIR changes to each dir before reporting files in it\n");
 #endif
 
 	ret_val = nftw(path, test_func5, MAX_FD, FTW_CHDIR);
@@ -297,7 +289,6 @@ test6A(void)
 	}
 }
 
-
 /*
  *    void test7A()     - tests the assertion:
  *      A call to int nftw(const char *path, int (*fn)(const char *, const
@@ -306,16 +297,15 @@ test6A(void)
  *      function fn.
  */
 
-void
-test7A(void)
+void test7A(void)
 {
-	int	ret;
+	int ret;
 
 #ifdef DEBUG
 	fprintf(temp, "TEST: nftw passes pathname as first argument to fn()\n");
 #endif
 
-	if((ret = nftw("./tmp/data/dirg", test_func7, MAX_FD, 0)) == -1) {
+	if ((ret = nftw("./tmp/data/dirg", test_func7, MAX_FD, 0)) == -1) {
 		perror("nftw");
 		cleanup_function();
 		fail_exit();
@@ -326,7 +316,6 @@ test7A(void)
 		fail_exit();
 	}
 }
-
 
 /*
  *    void test8A()    - tests the assertion:
@@ -336,16 +325,16 @@ test7A(void)
  *      object as the second argument to fn.
  */
 
-void
-test8A(void)
+void test8A(void)
 {
-	int	ret;
+	int ret;
 
 #ifdef DEBUG
-	fprintf(temp, "TEST: nftw passes stat struct as second argument to fn()\n");
+	fprintf(temp,
+		"TEST: nftw passes stat struct as second argument to fn()\n");
 #endif
 
-	if((ret = nftw("./tmp/data/dirg", test_func8, MAX_FD, 0)) == -1) {
+	if ((ret = nftw("./tmp/data/dirg", test_func8, MAX_FD, 0)) == -1) {
 		perror("nftw");
 		cleanup_function();
 		fail_exit();
@@ -356,7 +345,6 @@ test8A(void)
 		fail_exit();
 	}
 }
-
 
 /*
  *    void test9A()    - tests the assertion:
@@ -366,17 +354,16 @@ test8A(void)
  *      file
  */
 
-void
-test9A(void)
+void test9A(void)
 {
-	int	ret;
+	int ret;
 
 #ifdef DEBUG
-	fprintf(temp, "TEST: nftw passes FTW_F as third arg to fn() for files\n");
+	fprintf(temp,
+		"TEST: nftw passes FTW_F as third arg to fn() for files\n");
 #endif
 
-	if((ret = nftw("./tmp/data/dirg", test_func9, MAX_FD,
-			FTW_PHYS)) == -1) {
+	if ((ret = nftw("./tmp/data/dirg", test_func9, MAX_FD, FTW_PHYS)) == -1) {
 		perror("nftw");
 		cleanup_function();
 		fail_exit();
@@ -388,7 +375,6 @@ test9A(void)
 	}
 }
 
-
 /*
  *    void test10A()    - tests the assertion:
  *      A call to int nftw(const char *path, int (*fn)(const char *, const
@@ -397,13 +383,13 @@ test9A(void)
  *      directory.
  */
 
-void
-test10A(void)
+void test10A(void)
 {
-	int	ret;
+	int ret;
 
 #ifdef DEBUG
-	fprintf(temp, "TEST: nftw passes FTW_D as third arg to fn() when file is directory\n");
+	fprintf(temp,
+		"TEST: nftw passes FTW_D as third arg to fn() when file is directory\n");
 #endif
 
 	if ((ret = nftw("./tmp/data/dirg", test_func10, MAX_FD,
@@ -419,7 +405,6 @@ test10A(void)
 	}
 }
 
-
 /*
  *    void test11A()    - tests the assertion:
  *      A call to int nftw(const char *path, int (*fn)(const char *, const
@@ -428,20 +413,20 @@ test10A(void)
  *      directory and subdirectories have been visited.
  */
 
-void
-test11A(void)
+void test11A(void)
 {
-	int         i, ret;
+	int i, ret;
 
 	for (i = 0; i < nbads; i++)
 		if (badlist[i].i == FTW_D)
 			badlist[i].i = FTW_DP;
 
 #ifdef DEBUG
-	fprintf(temp, "TEST: nftw passes FTW_DP when file is directory and subdirs already visited\n");
+	fprintf(temp,
+		"TEST: nftw passes FTW_DP when file is directory and subdirs already visited\n");
 #endif
 
-	if((ret = nftw("./tmp/data/dirg", test_func11, MAX_FD, FTW_DEPTH |
+	if ((ret = nftw("./tmp/data/dirg", test_func11, MAX_FD, FTW_DEPTH |
 			FTW_PHYS)) == -1) {
 		perror("nftw");
 		cleanup_function();
@@ -453,7 +438,6 @@ test11A(void)
 		fail_exit();
 	}
 }
-
 
 /*
  *    void test12A()    - tests the assertion:
@@ -463,17 +447,16 @@ test11A(void)
  *      symbolic link.
  */
 
-void
-test12A(void)
+void test12A(void)
 {
-	int	ret;
+	int ret;
 
 #ifdef DEBUG
 	fprintf(temp,
 		"TEST: nftw wth FTW_PHYS passes FTW_SL when file is symlink\n");
 #endif
 
-	if((ret = nftw("./tmp/data/dirg", test_func12, MAX_FD,
+	if ((ret = nftw("./tmp/data/dirg", test_func12, MAX_FD,
 			FTW_PHYS)) == -1) {
 		perror("nftw");
 		cleanup_function();
@@ -486,7 +469,6 @@ test12A(void)
 	}
 }
 
-
 /*
  *    void test13A()    - tests the assertion:
  *      A call to int nftw(const char *path, int (*fn)(const char *, const
@@ -495,12 +477,11 @@ test12A(void)
  *      symbolic link that does not name an existing file.
  */
 
-void
-test13A(void)
+void test13A(void)
 {
-	int         i, ret;
+	int i, ret;
 
-	if(unlink("./tmp/byebye") == -1){
+	if (unlink("./tmp/byebye") == -1) {
 		perror("unlink");
 		cleanup_function();
 		fail_exit();
@@ -515,7 +496,7 @@ test13A(void)
 	fprintf(temp, " is symlink pointing \n to non-existent file\n");
 #endif
 
-	if((ret = nftw("./tmp/data/dirg", test_func13, MAX_FD,
+	if ((ret = nftw("./tmp/data/dirg", test_func13, MAX_FD,
 			FTW_PHYS)) == -1) {
 		perror("nftw");
 		cleanup_function();
@@ -528,7 +509,6 @@ test13A(void)
 	}
 }
 
-
 /*
  *    void test14A()    - tests the assertion:
  *      A call to int nftw(const char *path, int (*fn)(const char *, const
@@ -537,16 +517,16 @@ test13A(void)
  *      directory that cannot be read.
  */
 
-void
-test14A(void)
+void test14A(void)
 {
-	int	ret;
+	int ret;
 
 #ifdef DEBUG
-	fprintf(temp, "TEST: nftw passes FTW_DNR when file is directory that cannot be read\n");
+	fprintf(temp,
+		"TEST: nftw passes FTW_DNR when file is directory that cannot be read\n");
 #endif
 
-	if((ret = nftw("./tmp/data/d333", test_func14, MAX_FD, 0)) == -1) {
+	if ((ret = nftw("./tmp/data/d333", test_func14, MAX_FD, 0)) == -1) {
 		perror("nftw");
 		cleanup_function();
 		fail_exit();
@@ -557,7 +537,6 @@ test14A(void)
 		fail_exit();
 	}
 }
-
 
 /*
  *    void test15A()    - tests the assertion:
@@ -567,16 +546,17 @@ test14A(void)
  *      the object because of lack of appropriate permission.
  */
 
-void
-test15A(void)
+void test15A(void)
 {
-	int         ret;
+	int ret;
 
 #ifdef DEBUG
-	fprintf(temp, "TEST: nftw(path, fn, depth, FTW_PHYS) passes FTW_NS when dir unsearchable\n");
+	fprintf(temp,
+		"TEST: nftw(path, fn, depth, FTW_PHYS) passes FTW_NS when dir unsearchable\n");
 #endif
 
-	if((ret = nftw("./tmp/data/d666", test_func15, MAX_FD,FTW_PHYS)) == -1) {
+	if ((ret =
+	     nftw("./tmp/data/d666", test_func15, MAX_FD, FTW_PHYS)) == -1) {
 		perror("nftw");
 		cleanup_function();
 		fail_exit();
@@ -587,7 +567,6 @@ test15A(void)
 		fail_exit();
 	}
 }
-
 
 /*
  *    void test16A()    - tests the assertion:
@@ -598,13 +577,12 @@ test15A(void)
  *      fourth argument of the function fn.
  */
 
-void
-test16A(void)
+void test16A(void)
 {
-	char        path[PATH_MAX + NAME_MAX];
-	char        orig[PATH_MAX];
+	char path[PATH_MAX + NAME_MAX];
+	char orig[PATH_MAX];
 
-	if(getcwd(orig, sizeof(orig)) == NULL) {
+	if (getcwd(orig, sizeof(orig)) == NULL) {
 		perror("getcwd on original wd");
 		cleanup_function();
 		fail_exit();
@@ -617,7 +595,7 @@ test16A(void)
 	fprintf(temp, "TEST: nftw with absolute pathname %s\n", path);
 #endif
 
-	if((s2 = nftw(path, test_func16, MAX_FD, 0)) == -1) {
+	if ((s2 = nftw(path, test_func16, MAX_FD, 0)) == -1) {
 		perror("nftw");
 		cleanup_function();
 		fail_exit();
@@ -633,7 +611,7 @@ test16A(void)
 	fprintf(temp, "TEST: nftw with relative pathname %s\n", path);
 #endif
 
-	if((s2 = nftw(path, test_func16, MAX_FD, 0)) == -1) {
+	if ((s2 = nftw(path, test_func16, MAX_FD, 0)) == -1) {
 		perror("nftw");
 		cleanup_function();
 		fail_exit();
@@ -645,7 +623,6 @@ test16A(void)
 	}
 }
 
-
 /*
  *    void test17A()    - tests the assertion:
  *      A call to int nftw(const char *path, int (*fn)(const char *, const
@@ -654,10 +631,9 @@ test16A(void)
  *      FTW_PHYS flag is included in flags.
  */
 
-void
-test17A(void)
+void test17A(void)
 {
-	int         ret;
+	int ret;
 
 	visit = 0;
 
@@ -665,7 +641,8 @@ test17A(void)
 	fprintf(temp, "TEST: nftw with FTW_PHYS passes FTW_SL for symlink\n");
 #endif
 
-	if((ret=nftw("./tmp/data/dirl", test_func17, MAX_FD, FTW_PHYS)) == -1) {
+	if ((ret =
+	     nftw("./tmp/data/dirl", test_func17, MAX_FD, FTW_PHYS)) == -1) {
 		perror("nftw");
 		cleanup_function();
 		fail_exit();
@@ -679,10 +656,11 @@ test17A(void)
 	visit = 0;
 
 #ifdef DEBUG
-	fprintf(temp, "TEST: nftw without FTW_PHYS does not pass FTW_SL for symlink\n");
+	fprintf(temp,
+		"TEST: nftw without FTW_PHYS does not pass FTW_SL for symlink\n");
 #endif
 
-	if((ret = nftw("./tmp/data/dirl", test_func17, MAX_FD, 0)) == -1) {
+	if ((ret = nftw("./tmp/data/dirl", test_func17, MAX_FD, 0)) == -1) {
 		perror("nftw");
 		cleanup_function();
 		fail_exit();
@@ -694,7 +672,6 @@ test17A(void)
 	}
 }
 
-
 /*
  *    void test18A()    - tests the assertion:
  *      A call to int nftw(const char *path, int (*fn)(const char *, const
@@ -703,20 +680,19 @@ test17A(void)
  *      FTW_PHYS flag is not included in flags.
  */
 
-void
-test18A(void)
+void test18A(void)
 {
-	int         ret;
+	int ret;
 
 	unlink("./tmp/byebye");
 
-	visit=0;
+	visit = 0;
 
 #ifdef DEBUG
 	fprintf(temp, "TEST: nftw with FTW_PHYS does not pass FTW_SLN\n");
 #endif
 
-	if((ret = nftw("./tmp/data/dirg", test_func18, MAX_FD,
+	if ((ret = nftw("./tmp/data/dirg", test_func18, MAX_FD,
 			FTW_PHYS)) == -1) {
 		perror("nftw");
 		cleanup_function();
@@ -728,13 +704,13 @@ test18A(void)
 		fail_exit();
 	}
 
-	visit=0;
+	visit = 0;
 
 #ifdef DEBUG
 	fprintf(temp, "TEST: nftw without FTW_PHYS passes FTW_SLN\n");
 #endif
 
-	if((ret=nftw("./tmp/data/dirg", test_func18, MAX_FD, 0)) == -1) {
+	if ((ret = nftw("./tmp/data/dirg", test_func18, MAX_FD, 0)) == -1) {
 		perror("nftw");
 		cleanup_function();
 		fail_exit();
@@ -757,7 +733,6 @@ test18A(void)
 	}
 }
 
-
 /*
  *    void test19A()    - tests the assertion:
  *      On a call to int nftw(const char *path, int (*fn)(const char *, const
@@ -766,13 +741,13 @@ test18A(void)
  *      descendants of the directory shall not be processed.
  */
 
-void
-test19A(void)
+void test19A(void)
 {
-	int	ret_val;
+	int ret_val;
 
 #ifdef DEBUG
-	fprintf(temp, "TEST: Can not traverse directory with no read permission\n");
+	fprintf(temp,
+		"TEST: Can not traverse directory with no read permission\n");
 #endif
 
 	visit = 0;
@@ -788,20 +763,18 @@ test19A(void)
 		cleanup_function();
 		fail_exit();
 	}
-
 #ifdef DEBUG
 	fprintf(temp, "TEST: fn only be called once\n");
 #endif
 
-	if (visit != 1)
-	{
-		fprintf(temp, "ERROR: %s","Directory without read permission allows traversing\n");
+	if (visit != 1) {
+		fprintf(temp, "ERROR: %s",
+			"Directory without read permission allows traversing\n");
 		fprintf(temp, "       Visited %d files\n", visit);
 		cleanup_function();
 		fail_exit();
 	}
 }
-
 
 /*
  *    void test20A()    - tests the assertion:
@@ -811,52 +784,52 @@ test19A(void)
  *      directory tree.
  */
 
-void
-test20A(void)
+void test20A(void)
 {
-	int	 	fd, nfd;
+	int fd, nfd;
 
 #ifdef DEBUG
 	fprintf(temp, "TEST: File descriptors used in traversal are closed\n");
 #endif
 
-	if((fd=open("./tmp/data/dirh", O_RDONLY)) == -1) {
+	if ((fd = open("./tmp/data/dirh", O_RDONLY)) == -1) {
 		perror("close");
 		cleanup_function();
 		fail_exit();
 	}
 
-	if(close(fd) == -1) {
+	if (close(fd) == -1) {
 		perror("close");
 		cleanup_function();
 		fail_exit();
 	}
 
-	if(nftw("./tmp/data/dirh", test_func20, 1, 0) == -1) {
+	if (nftw("./tmp/data/dirh", test_func20, 1, 0) == -1) {
 		perror("nftw");
 		cleanup_function();
 		fail_exit();
 	}
 
-	if((nfd=open("./tmp/data/dirh", O_RDONLY)) == -1) {
+	if ((nfd = open("./tmp/data/dirh", O_RDONLY)) == -1) {
 		perror("open");
 		cleanup_function();
 		fail_exit();
 	}
 
 	if (nfd != fd) {
-		fprintf(temp, "ERROR: %s,fd == %d ofd = %d", "nftw did not close all file descriptors used in traversal\n", nfd, fd);
+		fprintf(temp, "ERROR: %s,fd == %d ofd = %d",
+			"nftw did not close all file descriptors used in traversal\n",
+			nfd, fd);
 		cleanup_function();
 		fail_exit();
 	}
 
-	if(close(nfd) == -1) {
+	if (close(nfd) == -1) {
 		perror("close");
 		cleanup_function();
 		fail_exit();
 	}
 }
-
 
 /*
  *    void test21A()    - tests the assertion:
@@ -865,44 +838,44 @@ test20A(void)
  *      be the maximum number of file descriptors used for the search.
  */
 
-void
-test21A(void)
+void test21A(void)
 {
-	char 	path[] = "./tmp/data/dirh";
-	int 	ret_val;
+	char path[] = "./tmp/data/dirh";
+	int ret_val;
 
 #ifdef DEBUG
-	fprintf(temp, "TEST: No more than depth file descriptors used in traversal\n");
+	fprintf(temp,
+		"TEST: No more than depth file descriptors used in traversal\n");
 #endif
 
-	/*this is the fd we expect if 0 are used*/
-	if((next_fd[0] = open(path, O_RDONLY)) == -1) {
+	/*this is the fd we expect if 0 are used */
+	if ((next_fd[0] = open(path, O_RDONLY)) == -1) {
 		perror("open next_fd[0]");
 		cleanup_function();
 		fail_exit();
 	}
 
-	/*this is the fd we expect if 1 is used*/
-	if((next_fd[1] = open(path, O_RDONLY)) == -1) {
+	/*this is the fd we expect if 1 is used */
+	if ((next_fd[1] = open(path, O_RDONLY)) == -1) {
 		perror("open next_fd[1]");
 		cleanup_function();
 		fail_exit();
 	}
 
-	if(close(next_fd[0]) == -1) {
+	if (close(next_fd[0]) == -1) {
 		perror("close next_fd[0]");
 		cleanup_function();
 		fail_exit();
 	}
 
-	if(close(next_fd[1]) == -1) {
+	if (close(next_fd[1]) == -1) {
 		perror("close next_fd[1]");
 		cleanup_function();
 		fail_exit();
 	}
 
-	visit=0;
-	ret_val=nftw(path, test_func21, 1, 0);
+	visit = 0;
+	ret_val = nftw(path, test_func21, 1, 0);
 	if (ret_val == -1) {
 		perror("nftw");
 		cleanup_function();
@@ -915,7 +888,6 @@ test21A(void)
 	}
 }
 
-
 /*
  *    void test22A()    - tests the assertion:
  *      A call to int nftw(const char *path, int (*fn)(const char *, const
@@ -923,14 +895,13 @@ test21A(void)
  *      most one file descriptor for each directory level.
  */
 
-void
-test22A(void)
+void test22A(void)
 {
-	char 	path[] = "./tmp/data/dirh";
-	int 	ret_val, i;
+	char path[] = "./tmp/data/dirh";
+	int ret_val, i;
 
 	for (i = 0; i < 4; i++) {
-		if((next_fd[i] = open(path, O_RDONLY)) == -1) {
+		if ((next_fd[i] = open(path, O_RDONLY)) == -1) {
 			perror("open");
 			cleanup_function();
 			fail_exit();
@@ -938,7 +909,7 @@ test22A(void)
 	}
 
 	for (i = 0; i < 4; i++) {
-		if(close(next_fd[i]) == -1) {
+		if (close(next_fd[i]) == -1) {
 			perror("close");
 			cleanup_function();
 			fail_exit();
@@ -948,7 +919,8 @@ test22A(void)
 	visit = 0;
 
 #ifdef DEBUG
-	fprintf(temp, "TEST: No more than 1 fd per level is used in traversal\n");
+	fprintf(temp,
+		"TEST: No more than 1 fd per level is used in traversal\n");
 #endif
 
 	ret_val = nftw(path, test_func22, MAX_FD, 0);
@@ -965,7 +937,6 @@ test22A(void)
 	}
 }
 
-
 /*
  *    void test23A()    - tests the assertion:
  *      A call to int nftw(const char *path, int (*fn)(const char *, const
@@ -974,35 +945,37 @@ test22A(void)
  *      returned by fn.
  */
 
-void
-test23A(void)
+void test23A(void)
 {
-	int 	ret;
+	int ret;
 
-	visit=0;
+	visit = 0;
 
 #ifdef DEBUG
-	fprintf(temp, "TEST: The function nftw should return with value set by fn\n");
+	fprintf(temp,
+		"TEST: The function nftw should return with value set by fn\n");
 #endif
 
-	if((ret=nftw("./tmp/data/dirh", test_func23, MAX_FD, FTW_PHYS)) == -1) {
+	if ((ret =
+	     nftw("./tmp/data/dirh", test_func23, MAX_FD, FTW_PHYS)) == -1) {
 		perror("nftw");
 		cleanup_function();
 		fail_exit();
 	}
 
 	if (ret != 999) {
-		fprintf(temp, "ERROR: nftw did not return value returned by fn()\n");
+		fprintf(temp,
+			"ERROR: nftw did not return value returned by fn()\n");
 		cleanup_function();
 		fail_exit();
 	}
-	if(visit != 4){
-		fprintf(temp, "ERROR: nftw() did not return immediately on non-zero fn() return\n");
+	if (visit != 4) {
+		fprintf(temp,
+			"ERROR: nftw() did not return immediately on non-zero fn() return\n");
 		cleanup_function();
 		fail_exit();
 	}
 }
-
 
 /*
  *    void test24A()    - tests the assertion:
@@ -1011,12 +984,10 @@ test23A(void)
  *      *), int depth, int flags) when the length of path exceeds PATH_MAX.
  */
 
-void
-test24A(void)
+void test24A(void)
 {
 	test_ENAMETOOLONG_path("nftw", callback, -1);
 }
-
 
 /*
  *    void test25A()    - tests the assertion:
@@ -1025,12 +996,10 @@ test24A(void)
  *      *), int depth, int flags) when a component of path exceeds NAME_MAX.
  */
 
-void
-test25A(void)
+void test25A(void)
 {
 	test_ENAMETOOLONG_name("nftw", callback, -1);
 }
-
 
 /*
  *    void test26A()    - tests the assertion:
@@ -1039,8 +1008,7 @@ test25A(void)
  *      depth, int flags) when path points to a file which does not exist.
  */
 
-void
-test26A(void)
+void test26A(void)
 {
 #ifdef DEBUG
 	fprintf(temp, "TEST: [ENOENT] && -1 returned by nftw\n");
@@ -1049,7 +1017,6 @@ test26A(void)
 	test_ENOENT_nofile("nftw", callback, -1);
 }
 
-
 /*
  *    void test27A()    - tests the assertion:
  *      ENOENT in errno and return -1 on a call to int nftw(const char *path,
@@ -1057,8 +1024,7 @@ test26A(void)
  *      depth, int flags) when path points to an empty string.
  */
 
-void
-test27A(void)
+void test27A(void)
 {
 #ifdef DEBUG
 	fprintf(temp, "TEST: The function nftw should return with a -1\n");
@@ -1067,7 +1033,6 @@ test27A(void)
 	test_ENOENT_empty("nftw", callback, -1);
 }
 
-
 /*
  *    void test28A()    - tests the assertion:
  *      ENOTDIR in errno and return -1 on a call to int nftw(const char
@@ -1075,8 +1040,7 @@ test27A(void)
  *      *), int depth, int flags) when path is not a directory.
  */
 
-void
-test28A(void)
+void test28A(void)
 {
 #ifdef DEBUG
 	fprintf(temp, "TEST: [ENOTDIR] && -1 returned by nftw\n");
@@ -1084,7 +1048,6 @@ test28A(void)
 
 	test_ENOTDIR("nftw", callback, -1);
 }
-
 
 /*
  *    void test29A()    - tests the assertion:
@@ -1094,22 +1057,19 @@ test28A(void)
  *      of path.
  */
 
-void
-test29A(void)
+void test29A(void)
 {
-	if(chmod("./tmp/data/d333", (mode_t)S_IRUSR) == -1){
+	if (chmod("./tmp/data/d333", (mode_t) S_IRUSR) == -1) {
 		perror("chmod");
 		cleanup_function();
 		fail_exit();
 	}
-
 #ifdef DEBUG
 	fprintf(temp, "TEST: [EACCES] && -1 returned by nftw\n");
 #endif
 
 	test_ENOTDIR("nftw", callback, -1);
 }
-
 
 /*
  *    void test30A()    - tests the assertion:
@@ -1118,19 +1078,15 @@ test29A(void)
  *      depth, int flags) when read permission is denied for path.
  */
 
-void
-test30A(void)
+void test30A(void)
 {
-	if(chmod("./tmp/data/d333", (mode_t)S_IXUSR) == -1){
+	if (chmod("./tmp/data/d333", (mode_t) S_IXUSR) == -1) {
 		perror("chmod");
 		cleanup_function();
 		fail_exit();
 	}
-
 #ifdef DEBUG
 	fprintf(temp, "TEST: [EACCES] && -1 returned by nftw\n");
 #endif
 	test_ENOTDIR("nftw", callback, -1);
 }
-
-

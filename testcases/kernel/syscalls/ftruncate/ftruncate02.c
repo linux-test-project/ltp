@@ -22,7 +22,7 @@
  *
  * Test Description:
  *  Verify that, ftruncate(2) succeeds to truncate a file to a certain length,
- *  but the attempt to read past the truncated length will fail. 
+ *  but the attempt to read past the truncated length will fail.
  *
  * Expected Result:
  *  ftruncate(2) should return a value 0 and the attempt to read past the
@@ -39,11 +39,11 @@
  *   Loop if the proper options are given.
  *   Execute system call
  *   Check return code, if system call failed (return=-1)
- *   	Log the errno and Issue a FAIL message.
+ *	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call
+ *	Verify the Functionality of system call
  *      if successful,
- *      	Issue Functionality-Pass message.
+ *		Issue Functionality-Pass message.
  *      Otherwise,
  *		Issue Functionality-Fail message.
  *  Cleanup:
@@ -77,15 +77,15 @@
 #include "test.h"
 #include "usctest.h"
 
-#define TESTFILE	"testfile"		/* file under test */
+#define TESTFILE	"testfile"	/* file under test */
 #define FILE_MODE	S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
-#define BUF_SIZE	256			/* buffer size */
-#define FILE_SIZE	1024			/* test file size */
-#define TRUNC_LEN1	256			/* truncation length */
-#define TRUNC_LEN2	512			/* truncation length */
+#define BUF_SIZE	256	/* buffer size */
+#define FILE_SIZE	1024	/* test file size */
+#define TRUNC_LEN1	256	/* truncation length */
+#define TRUNC_LEN2	512	/* truncation length */
 
-TCID_DEFINE(ftruncate02);       /* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test conditions */
+TCID_DEFINE(ftruncate02);	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test conditions */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 int fd;				/* file descriptor of testfile */
 char tst_buff[BUF_SIZE];	/* buffer to hold testfile contents */
@@ -93,8 +93,7 @@ char tst_buff[BUF_SIZE];	/* buffer to hold testfile contents */
 void setup();			/* setup function for the test */
 void cleanup();			/* cleanup function for the test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	struct stat stat_buf;	/* stat(2) struct contents */
 	int lc;			/* loop counter */
@@ -104,10 +103,10 @@ main(int ac, char **av)
 	int rbytes, i;		/* bytes read from testfile */
 	int read_len = 0;	/* total no. of bytes read from testfile */
 	int err_flag = 0;	/* error indicator flag */
-   
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -139,7 +138,7 @@ main(int ac, char **av)
 		 */
 		if (STD_FUNCTIONAL_TEST) {
 			/*
-		 	 * Get the testfile information using
+			 * Get the testfile information using
 			 * fstat(2).
 			 */
 			if (fstat(fd, &stat_buf) < 0) {
@@ -195,8 +194,8 @@ main(int ac, char **av)
 			}
 
 			/* Read the testfile contents till EOF */
-			while((rbytes = read(fd, tst_buff,
-			       sizeof(tst_buff))) > 0) {
+			while ((rbytes = read(fd, tst_buff,
+					      sizeof(tst_buff))) > 0) {
 				for (i = 0; i < rbytes; i++) {
 					if (tst_buff[i] != 0) {
 						err_flag++;
@@ -212,43 +211,46 @@ main(int ac, char **av)
 			 * to a smaller file failed, then don't check.
 			 * Both results are allowed according to the SUS.
 			 */
-		
+
 			/* check return code of ftruncate(2) */
 			if (TEST_RETURN != -1) {
-			  if ((file_length1 != TRUNC_LEN1) ||
-			      (file_length2 != TRUNC_LEN2) ||
-			      (read_len != TRUNC_LEN1) ||
-			      (err_flag != 0)) {
-			  	  tst_resm(TFAIL, "Functionality of ftruncate(2) "
-					   "on %s Failed", TESTFILE);
-			  } else {
-				  tst_resm(TPASS, "Functionality of ftruncate(2) "
-					   "on %s successful", TESTFILE);
-			  }
+				if ((file_length1 != TRUNC_LEN1) ||
+				    (file_length2 != TRUNC_LEN2) ||
+				    (read_len != TRUNC_LEN1) ||
+				    (err_flag != 0)) {
+					tst_resm(TFAIL,
+						 "Functionality of ftruncate(2) "
+						 "on %s Failed", TESTFILE);
+				} else {
+					tst_resm(TPASS,
+						 "Functionality of ftruncate(2) "
+						 "on %s successful", TESTFILE);
+				}
 			}
 			if (TEST_RETURN == -1) {
-			  if ((file_length1 != TRUNC_LEN1) ||
-			      (read_len != TRUNC_LEN1) ||
-			      (err_flag != 0)) {
-			  	  tst_resm(TFAIL, "Functionality of ftruncate(2) "
-					   "on %s Failed", TESTFILE);
-			  } else {
-				  tst_resm(TPASS, "Functionality of ftruncate(2) "
-					   "on %s successful", TESTFILE);
-			  }
+				if ((file_length1 != TRUNC_LEN1) ||
+				    (read_len != TRUNC_LEN1) ||
+				    (err_flag != 0)) {
+					tst_resm(TFAIL,
+						 "Functionality of ftruncate(2) "
+						 "on %s Failed", TESTFILE);
+				} else {
+					tst_resm(TPASS,
+						 "Functionality of ftruncate(2) "
+						 "on %s successful", TESTFILE);
+				}
 			}
 
 		} else {
 			tst_resm(TPASS, "call succeeded");
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
-}	/* End main */
+	 /*NOTREACHED*/ return 0;
+}				/* End main */
 
 /*
  * void
@@ -257,8 +259,7 @@ main(int ac, char **av)
  *  Create a test file under temporary directory and write some
  *  data into it.
  */
-void
-setup()
+void setup()
 {
 	int i;			/* counter variable */
 	int wbytes;		/* bytes written to testfile */
@@ -278,7 +279,7 @@ setup()
 		tst_buff[i] = 'a';
 	}
 	/* open a file for reading/writing */
-	if ((fd = open(TESTFILE, O_RDWR|O_CREAT, FILE_MODE)) == -1) {
+	if ((fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %o) Failed, errno=%d : %s",
 			 TESTFILE, FILE_MODE, errno, strerror(errno));
@@ -294,7 +295,7 @@ setup()
 			write_len += wbytes;
 		}
 	}
-}	/* End setup() */
+}				/* End setup() */
 
 /*
  * void
@@ -303,8 +304,7 @@ setup()
  *  Close the testfile.
  *  Remove the test directory and testfile created in the setup.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -322,4 +322,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

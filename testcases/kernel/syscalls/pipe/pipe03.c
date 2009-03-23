@@ -51,7 +51,7 @@ char *TCID = "pipe03";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-int exp_enos[] = {EBADF, 0};
+int exp_enos[] = { EBADF, 0 };
 
 void setup(void);
 void cleanup(void);
@@ -69,17 +69,16 @@ ssize_t safe_read(int fd, void *buf, size_t count)
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
-	int fildes[2];			/* fds for pipe read and write */
+	int fildes[2];		/* fds for pipe read and write */
 	char rbuf[BUFSIZ];
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	setup();
 
@@ -92,31 +91,29 @@ int main(int ac, char **av)
 
 		if (TEST_RETURN == -1)
 			tst_brkm(TBROK, cleanup, "pipe() failed unexpectedly "
-					"- errno %d", TEST_ERRNO);
+				 "- errno %d", TEST_ERRNO);
 
 		TEST(write(fildes[0], "A", 1));
 		if (TEST_RETURN == -1 && TEST_ERRNO == EBADF)
 			tst_resm(TPASS, "expected failure writing to "
-					"read end of pipe");
+				 "read end of pipe");
 		else
 			tst_resm(TFAIL, "success when writing to read "
-					"end of pipe ret=%d, errno=%d",
-					TEST_RETURN, TEST_ERRNO);
+				 "end of pipe ret=%d, errno=%d",
+				 TEST_RETURN, TEST_ERRNO);
 
 		TEST(safe_read(fildes[1], rbuf, 1));
 		if (TEST_RETURN == -1 && TEST_ERRNO == EBADF)
 			tst_resm(TPASS, "expected failure reading from "
-					"write end of pipe");
+				 "write end of pipe");
 		else
 			tst_resm(TFAIL, "success when reading from "
-					"write end of pipe ret=%d, "
-					"errno=%d", TEST_RETURN,
-					TEST_ERRNO);
+				 "write end of pipe ret=%d, "
+				 "errno=%d", TEST_RETURN, TEST_ERRNO);
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*

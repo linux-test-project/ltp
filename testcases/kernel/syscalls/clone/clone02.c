@@ -27,17 +27,17 @@
  *    AUTHOR		: Saji Kumar.V.R <saji.kumar@wipro.com>
  *
  *    SIGNALS
- * 	Uses SIGUSR1 to pause before test if option set.
- * 	(See the parse_opts(3) man page).
+ *	Uses SIGUSR1 to pause before test if option set.
+ *	(See the parse_opts(3) man page).
  *
  *    DESCRIPTION
  *
- * 	Setup:
- * 	  Setup signal handling.
+ *	Setup:
+ *	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
  *	  generate a unique file name fore each test instance
  *
- * 	Test:
+ *	Test:
  *	 Loop if the proper options are given.
  *	 TEST1
  *	 -----
@@ -70,8 +70,8 @@
  *			test passed
  *		else
  *			test failed
- * 	Cleanup:
- * 	  Print errno log and/or timing stats if options given
+ *	Cleanup:
+ *	  Print errno log and/or timing stats if options given
  *
  * USAGE:  <for command-line>
  *	clone02 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
@@ -133,39 +133,36 @@ static int modified_SIG();
 static void sig_child_defined_handler();
 static void sig_default_handler();
 
-
 static int fd_parent;
 static char file_name[25];
 static int parent_variable;
 static char cwd_parent[FILENAME_MAX];
 static int parent_got_signal, child_pid;
 
-char *TCID="clone02";		/* Test program identifier.    */
+char *TCID = "clone02";		/* Test program identifier.    */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 struct test_case_t {
 	int flags;
-	int (*parent_fn)();
+	int (*parent_fn) ();
 } test_cases[] = {
-	{ FLAG_ALL, parent_test1},
-	{ FLAG_NONE, parent_test2}
+	{
+	FLAG_ALL, parent_test1}, {
+	FLAG_NONE, parent_test2}
 };
 
 int TST_TOTAL = sizeof(test_cases) / sizeof(test_cases[0]);
 
-
-
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	void *child_stack;	/* stack for child */
 	int status, i;
-   
+
 	/* parse standard options */
-	if ((msg=parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -173,33 +170,33 @@ main(int ac, char **av)
 	setup();
 
 	/* Allocate stack for child */
-	if((child_stack = (void *) malloc(CHILD_STACK_SIZE)) == NULL) {
+	if ((child_stack = (void *)malloc(CHILD_STACK_SIZE)) == NULL) {
 		tst_brkm(TBROK, cleanup, "Cannot allocate stack for child");
 	}
 
 	/* check looping state if -c option given */
-	for (lc=0; TEST_LOOPING(lc); lc++) {
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
-		for (i=0; i<TST_TOTAL; ++i) {
-	
+		for (i = 0; i < TST_TOTAL; ++i) {
+
 			/*Do test specific setup */
 			if (!(test_setup())) {
 				tst_resm(TWARN, "test_setup() failed,"
 					 "skipping this test case");
 				continue;
 			}
-		
+
 			/* Test the system call */
 #if defined(__hppa__)
 			TEST(clone(child_fn, child_stack,
 				   test_cases[i].flags, NULL));
 #elif defined(__ia64__)
 			TEST(clone2(child_fn, child_stack,
-				CHILD_STACK_SIZE, test_cases[i].flags, NULL,
-				NULL, NULL, NULL));
+				    CHILD_STACK_SIZE, test_cases[i].flags, NULL,
+				    NULL, NULL, NULL));
 #else
 			TEST(clone(child_fn, child_stack + CHILD_STACK_SIZE,
 				   test_cases[i].flags, NULL));
@@ -218,15 +215,16 @@ main(int ac, char **av)
 			/* Wait for child to finish */
 			if ((wait(&status)) < 0) {
 				tst_resm(TWARN, "wait() failed, skipping this"
-						" test case");
+					 " test case");
 				/* Cleanup & continue with next test case */
 				test_cleanup();
 				continue;
 			}
-		
+
 			if (WTERMSIG(status)) {
-                                tst_resm(TWARN, "child exitied with signal %d", WTERMSIG(status));
-                        }		
+				tst_resm(TWARN, "child exitied with signal %d",
+					 WTERMSIG(status));
+			}
 
 			/*
 			 * Check the return value from child function  and
@@ -237,27 +235,25 @@ main(int ac, char **av)
 			    (test_cases[i].parent_fn())) {
 				tst_resm(TPASS, "Test Passed");
 			} else {
-				 tst_resm(TFAIL, "Test Failed");
+				tst_resm(TFAIL, "Test Failed");
 			}
 
 			/* Do test specific cleanup */
 			test_cleanup();
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	free(child_stack);
 
 	/* cleanup and exit */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 
-}	/* End main */
+}				/* End main */
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup()
+void setup()
 {
 
 	/* capture signals */
@@ -270,19 +266,17 @@ setup()
 	tst_tmpdir();
 
 	/* Get unique file name for each child process */
-	if ((sprintf(file_name, "parent_file_%ld", syscall(__NR_gettid))) <= 0 ) {
+	if ((sprintf(file_name, "parent_file_%ld", syscall(__NR_gettid))) <= 0) {
 		tst_brkm(TBROK, cleanup, "sprintf() failed");
 	}
 
-}	/* End setup() */
-
+}				/* End setup() */
 
 /*
  *cleanup() -  performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 
 	/*
@@ -292,7 +286,7 @@ cleanup()
 	TEST_CLEANUP;
 
 	/* Remove temperory file */
-	if ((unlink(file_name)) == -1 ) {
+	if ((unlink(file_name)) == -1) {
 		tst_resm(TWARN, "Couldn't delete file, %s", file_name);
 	}
 	chdir("/tmp");
@@ -300,13 +294,12 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */
 
 /*
  * test_setup() - test specific setup function
  */
-int
-test_setup()
+int test_setup()
 {
 
 	struct sigaction def_act;
@@ -327,7 +320,7 @@ test_setup()
 	 * Open file from parent, which will be closed by
 	 * child in test_FILES(), used for testing CLONE_FILES flag
 	 */
-	if ((fd_parent = open(file_name, O_CREAT | O_RDWR, 0777)) == -1) {  //mode must be specified when O_CREATE is in the flag
+	if ((fd_parent = open(file_name, O_CREAT | O_RDWR, 0777)) == -1) {	//mode must be specified when O_CREATE is in the flag
 		tst_resm(TWARN, "open() failed in test_setup()");
 		return 0;
 	}
@@ -347,15 +340,14 @@ test_setup()
 		return 0;
 	}
 
-	/* test_setup() returns success*/
+	/* test_setup() returns success */
 	return 1;
 }
 
 /*
  * test_cleanup() - test specific cleanup function
  */
-void
-test_cleanup()
+void test_cleanup()
 {
 
 	/* Restore parent's working directory */
@@ -369,12 +361,11 @@ test_cleanup()
 /*
  * child_fn() - child function
  */
-int
-child_fn()
+int child_fn()
 {
 
 	/* save child pid */
-    child_pid = syscall(__NR_gettid);
+	child_pid = syscall(__NR_gettid);
 
 	/*child_pid = getpid(); changed to above to work on POSIX threads -- NPTL */
 
@@ -387,8 +378,7 @@ child_fn()
 /*
  * parent_test1() - parent function for test1
  */
-int
-parent_test1()
+int parent_test1()
 {
 
 	/*
@@ -399,8 +389,8 @@ parent_test1()
 	 * parent_test1() to return 1
 	 */
 
-	if(modified_VM() && modified_FILES() && modified_FS() &&
-	   modified_SIG()) {
+	if (modified_VM() && modified_FILES() && modified_FS() &&
+	    modified_SIG()) {
 		return 1;
 	}
 	return 0;
@@ -409,8 +399,7 @@ parent_test1()
 /*
  * parent_test2 - parent function for test 2
  */
-int
-parent_test2()
+int parent_test2()
 {
 
 	/*
@@ -419,8 +408,8 @@ parent_test2()
 	 * to return 1
 	 */
 
-	if ( modified_VM() || modified_FILES() || modified_FS() ||
-	     modified_SIG()) {
+	if (modified_VM() || modified_FILES() || modified_FS() ||
+	    modified_SIG()) {
 		return 0;
 	}
 	return 1;
@@ -433,8 +422,7 @@ parent_test2()
  *	       to parent also.
  */
 
-int
-test_VM()
+int test_VM()
 {
 	parent_variable = CHILD_VALUE;
 	return 1;
@@ -446,8 +434,7 @@ test_VM()
  *		  the child process share the same file descriptor
  *		  table. so this affects the parent also
  */
-int
-test_FILES()
+int test_FILES()
 {
 	if ((close(fd_parent)) == -1) {
 		tst_resm(TWARN, "close() failed in test_FILES()");
@@ -461,10 +448,9 @@ test_FILES()
  *		of the child process. If CLONE_FS flag is set, this
  *		will be visible to parent also.
  */
-int
-test_FS()
+int test_FS()
 {
-	if((chdir("/tmp")) == -1) {
+	if ((chdir("/tmp")) == -1) {
 		tst_resm(TWARN, "chdir() failed in test_FS()");
 		return 0;
 	}
@@ -476,8 +462,7 @@ test_FS()
  *		signal for child. If CLONE_SIGHAND flag is set, this
  *		affects parent also.
  */
-int
-test_SIG()
+int test_SIG()
 {
 
 	struct sigaction new_act;
@@ -505,8 +490,7 @@ test_SIG()
  *		   is visible to parent
  */
 
-int
-modified_VM()
+int modified_VM()
 {
 
 	if (parent_variable == CHILD_VALUE) {
@@ -520,18 +504,16 @@ modified_VM()
  * modified_FILES() - This function checks for file descriptor table
  *		      modifications done by child
  */
-int
-modified_FILES()
+int modified_FILES()
 {
 	char buff[20];
 
-	if (((read(fd_parent, buff, sizeof(buff))) == -1) &&
-	    (errno == EBADF)) {
+	if (((read(fd_parent, buff, sizeof(buff))) == -1) && (errno == EBADF)) {
 		/* Child has closed this file descriptor */
 		return 1;
 	}
 
-	/* close fd_parent*/
+	/* close fd_parent */
 	if ((close(fd_parent)) == -1) {
 		tst_resm(TWARN, "close() failed in modified_FILES()");
 	}
@@ -543,8 +525,7 @@ modified_FILES()
  * modified_FS() - This function checks parent's current working directory
  *		   to see whether its modified by child or not.
  */
-int
-modified_FS()
+int modified_FS()
 {
 	char cwd[FILENAME_MAX];
 
@@ -552,7 +533,7 @@ modified_FS()
 		tst_resm(TWARN, "getcwd() failed");
 	}
 
-	if ( !(strcmp(cwd, cwd_parent) )) {
+	if (!(strcmp(cwd, cwd_parent))) {
 		/* cwd hasn't changed */
 		return 0;
 	}
@@ -563,8 +544,7 @@ modified_FS()
  * modified_SIG() - This function checks whether child has changed
  *		    parent's signal handler for signal, SIGUSR2
  */
-int
-modified_SIG()
+int modified_SIG()
 {
 
 	if (parent_got_signal) {
@@ -580,10 +560,9 @@ modified_SIG()
 /*
  * sig_child_defined_handler()  - Signal handler installed by child
  */
-void
-sig_child_defined_handler(int pid)
+void sig_child_defined_handler(int pid)
 {
-	if((syscall(__NR_gettid)) == child_pid) {
+	if ((syscall(__NR_gettid)) == child_pid) {
 		/* Child got signal, give warning */
 		tst_resm(TWARN, "Child got SIGUSR2 signal");
 	} else {
@@ -592,7 +571,6 @@ sig_child_defined_handler(int pid)
 }
 
 /* sig_default_handler() - Default handler for parent */
-void
-sig_default_handler()
+void sig_default_handler()
 {
 }

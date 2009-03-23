@@ -59,7 +59,7 @@ char fifo[100] = "fifo";
 int rfd, wfd;
 struct stat buf;
 
-int exp_enos[] = {EAGAIN, 0};
+int exp_enos[] = { EAGAIN, 0 };
 
 void alarm_handler();
 void setup();
@@ -73,7 +73,7 @@ int main(int ac, char **av)
 	int c;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -108,15 +108,13 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -132,16 +130,13 @@ setup(void)
 
 	if (mknod(fifo, S_IFIFO | 0777, 0) < 0) {
 		tst_brkm(TBROK, cleanup, "mknod() failed, errno: %d", errno);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 	if (stat(fifo, &buf) != 0) {
 		tst_brkm(TBROK, cleanup, "stat() failed, errno: %d", errno);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 	if ((buf.st_mode & S_IFIFO) == 0) {
 		tst_brkm(TBROK, cleanup, "Mode does not indicate fifo file");
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	rfd = open(fifo, O_RDONLY | O_NONBLOCK);
 	wfd = open(fifo, O_WRONLY | O_NONBLOCK);
@@ -151,8 +146,7 @@ setup(void)
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

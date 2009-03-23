@@ -71,11 +71,11 @@ struct selectop {
 	sigset_t evsigmask;
 } sop;
 
-void *select_init	(void);
-int select_add		(void *, struct event *);
-int select_del		(void *, struct event *);
-int select_recalc	(void *, int);
-int select_dispatch	(void *, struct timeval *);
+void *select_init(void);
+int select_add(void *, struct event *);
+int select_del(void *, struct event *);
+int select_recalc(void *, int);
+int select_dispatch(void *, struct timeval *);
 
 const struct eventop selectops = {
 	"select",
@@ -86,8 +86,7 @@ const struct eventop selectops = {
 	select_dispatch
 };
 
-void *
-select_init(void)
+void *select_init(void)
 {
 	/* Disable kqueue when this environment variable is set */
 	if (getenv("EVENT_NOSELECT"))
@@ -105,8 +104,7 @@ select_init(void)
  * recalculate everything.
  */
 
-int
-select_recalc(void *arg, int max)
+int select_recalc(void *arg, int max)
 {
 	struct selectop *sop = arg;
 	fd_set *readset, *writeset;
@@ -118,8 +116,8 @@ select_recalc(void *arg, int max)
 
 	if (!sop->event_fds) {
 		TAILQ_FOREACH(ev, &eventqueue, ev_next)
-			if (ev->ev_fd > sop->event_fds)
-				sop->event_fds = ev->ev_fd;
+		    if (ev->ev_fd > sop->event_fds)
+			sop->event_fds = ev->ev_fd;
 	}
 
 	fdsz = howmany(sop->event_fds + 1, NFDBITS) * sizeof(fd_mask);
@@ -136,9 +134,9 @@ select_recalc(void *arg, int max)
 		}
 
 		memset((char *)readset + sop->event_fdsz, 0,
-		    fdsz - sop->event_fdsz);
+		       fdsz - sop->event_fdsz);
 		memset((char *)writeset + sop->event_fdsz, 0,
-		    fdsz - sop->event_fdsz);
+		       fdsz - sop->event_fdsz);
 
 		sop->event_readset = readset;
 		sop->event_writeset = writeset;
@@ -148,8 +146,7 @@ select_recalc(void *arg, int max)
 	return (evsignal_recalc(&sop->evsigmask));
 }
 
-int
-select_dispatch(void *arg, struct timeval *tv)
+int select_dispatch(void *arg, struct timeval *tv)
 {
 	int maxfd, res;
 	struct event *ev, *next;
@@ -169,7 +166,7 @@ select_dispatch(void *arg, struct timeval *tv)
 		return (-1);
 
 	res = select(sop->event_fds + 1, sop->event_readset,
-	    sop->event_writeset, NULL, tv);
+		     sop->event_writeset, NULL, tv);
 
 	if (evsignal_recalc(&sop->evsigmask) == -1)
 		return (-1);
@@ -211,8 +208,7 @@ select_dispatch(void *arg, struct timeval *tv)
 	return (0);
 }
 
-int
-select_add(void *arg, struct event *ev)
+int select_add(void *arg, struct event *ev)
 {
 	struct selectop *sop = arg;
 
@@ -233,8 +229,7 @@ select_add(void *arg, struct event *ev)
  * Nothing to be done here.
  */
 
-int
-select_del(void *arg, struct event *ev)
+int select_del(void *arg, struct event *ev)
 {
 	struct selectop *sop = arg;
 

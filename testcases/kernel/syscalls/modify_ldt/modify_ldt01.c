@@ -57,14 +57,12 @@ TCID_DEFINE(modify_ldt01);
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-
 #if defined(__i386__) && defined(HAVE_MODIFY_LDT)
 
 #ifdef HAVE_ASM_LDT_H
 #include <asm/ldt.h>
 #endif
-extern int modify_ldt(int, void*, unsigned long);
-
+extern int modify_ldt(int, void *, unsigned long);
 
 #include <asm/unistd.h>
 #include <errno.h>
@@ -75,18 +73,17 @@ typedef struct user_desc modify_ldt_s;
 #elif  HAVE_STRUCT_MODIFY_LDT_LDT_S
 typedef struct modify_ldt_ldt_s modify_ldt_s;
 #else
-typedef struct modify_ldt_ldt_t
-{
-  unsigned int entry_number;
-  unsigned long int base_addr;
-  unsigned int limit;
-  unsigned int seg_32bit:1;
-  unsigned int contents:2;
-  unsigned int read_exec_only:1;
-  unsigned int limit_in_pages:1;
-  unsigned int seg_not_present:1;
-  unsigned int useable:1;
-  unsigned int empty:25;
+typedef struct modify_ldt_ldt_t {
+	unsigned int entry_number;
+	unsigned long int base_addr;
+	unsigned int limit;
+	unsigned int seg_32bit:1;
+	unsigned int contents:2;
+	unsigned int read_exec_only:1;
+	unsigned int limit_in_pages:1;
+	unsigned int seg_not_present:1;
+	unsigned int useable:1;
+	unsigned int empty:25;
 } modify_ldt_s;
 #endif
 
@@ -96,11 +93,10 @@ void setup(void);
 
 #define FAILED 1
 
-
 int main(int ac, char **av)
 {
-	int lc;                         /* loop counter */
-	char *msg;                      /* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	void *ptr;
 	int retval, func;
@@ -108,19 +104,18 @@ int main(int ac, char **av)
 	int flag;
 	int seg[4];
 
-        /* parse standard options */
-        if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	/* parse standard options */
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-        }
+	 /*NOTREACHED*/}
 
-        setup();                        /* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-                /* reset Tst_count in case we are looping */
-                Tst_count = 0;
+		/* reset Tst_count in case we are looping */
+		Tst_count = 0;
 
 //block1:
 		/*
@@ -128,13 +123,13 @@ int main(int ac, char **av)
 		 */
 		tst_resm(TINFO, "Enter block 1");
 		flag = 0;
-		ptr=(void *)malloc(10);
+		ptr = (void *)malloc(10);
 		func = 100;
 		retval = modify_ldt(func, ptr, sizeof(ptr));
 		if (retval < 0) {
 			if (errno != ENOSYS) {
 				tst_resm(TFAIL, "modify_ldt() set invalid "
-                                         "errno, expected ENOSYS, got: %d",
+					 "errno, expected ENOSYS, got: %d",
 					 errno);
 				flag = FAILED;
 			}
@@ -165,7 +160,7 @@ int main(int ac, char **av)
 		if (retval < 0) {
 			if (errno != EINVAL) {
 				tst_resm(TFAIL, "modify_ldt() set invalid "
-                                         "errno, expected EINVAL, got: %d",
+					 "errno, expected EINVAL, got: %d",
 					 errno);
 				flag = FAILED;
 			}
@@ -189,8 +184,7 @@ int main(int ac, char **av)
 		 */
 		if (create_segment(seg, sizeof(seg)) == -1) {
 			tst_brkm(TINFO, cleanup, "Creation of segment failed");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		/*
 		 * Check for EFAULT
@@ -201,7 +195,7 @@ int main(int ac, char **av)
 		if (retval < 0) {
 			if (errno != EFAULT) {
 				tst_resm(TFAIL, "modify_ldt() set invalid "
-                                         "errno, expected EFAULT, got: %d",
+					 "errno, expected EFAULT, got: %d",
 					 errno);
 				flag = FAILED;
 			}
@@ -218,16 +212,15 @@ int main(int ac, char **av)
 		}
 		tst_resm(TINFO, "Exit block 3");
 
-        }
-        cleanup();
+	}
+	cleanup();
 	return 0;
 }
 
 /*
  * create_segment() -
  */
-int
-create_segment(void *seg, size_t size)
+int create_segment(void *seg, size_t size)
 {
 	modify_ldt_s entry;
 
@@ -246,8 +239,7 @@ create_segment(void *seg, size_t size)
 /*
  * setup() - performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -260,8 +252,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing status if that option was specified.
@@ -276,7 +267,8 @@ cleanup(void)
 #elif HAVE_MODIFY_LDT
 int main()
 {
-	tst_resm(TCONF, "modify_ldt is available but not tested on the platform than __i386__");
+	tst_resm(TCONF,
+		 "modify_ldt is available but not tested on the platform than __i386__");
 	return 0;
 }
 

@@ -95,52 +95,53 @@
 #define SYM_FILE2	"sfile_2"
 #define MAX_SIZE	256
 
-char *TCID="readlink03";	/* Test program identifier.    */
-int TST_TOTAL=5;		/* Total number of test cases. */
+char *TCID = "readlink03";	/* Test program identifier.    */
+int TST_TOTAL = 5;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-int exp_enos[]={EACCES, EINVAL, ENAMETOOLONG, ENOENT, 0};
+int exp_enos[] = { EACCES, EINVAL, ENAMETOOLONG, ENOENT, 0 };
 
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
-
 int no_setup();
 int setup1();			/* setup function to test symlink for EACCES */
 int setup2();			/* setup function to test symlink for EEXIST */
-int lpath_setup();	   /* setup function to test chmod for ENAMETOOLONG */
+int lpath_setup();		/* setup function to test chmod for ENAMETOOLONG */
 
-char Longpathname[PATH_MAX+2];
+char Longpathname[PATH_MAX + 2];
 
-struct test_case_t {		/* test case struct. to hold ref. test cond's*/
+struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	char *link;
 	char *desc;
 	int exp_errno;
 	size_t buf_siz;
-	int (*setupfunc)();
+	int (*setupfunc) ();
 } Test_cases[] = {
-	{ SYM_FILE1, "No Search permissions to process", EACCES, 1, setup1 },
-	/* Don't test with bufsize -1, since this cause a fortify-check-fail when
-	   using glibc and -D_FORITY_SOURCE=2
-          
-           Discussion: http://lkml.org/lkml/2008/10/23/229
-	   Conclusion: Only test with 0 as non-positive bufsize.
+	{
+	SYM_FILE1, "No Search permissions to process", EACCES, 1, setup1},
+	    /* Don't test with bufsize -1, since this cause a fortify-check-fail when
+	       using glibc and -D_FORITY_SOURCE=2
 
-	{ SYM_FILE2, "Buffer size is not positive", EINVAL, -1, setup2 },
-	*/
-	{ SYM_FILE2, "Buffer size is not positive", EINVAL, 0, setup2 },
-	{ TEST_FILE2, "File is not symbolic link", EINVAL, 1, no_setup },
-	{ Longpathname, "Symlink path too long", ENAMETOOLONG, 1, lpath_setup },
-	{ "", "Symlink Pathname is empty", ENOENT, 1, no_setup },
-	{ NULL, NULL, 0, 0, no_setup }
+	       Discussion: http://lkml.org/lkml/2008/10/23/229
+	       Conclusion: Only test with 0 as non-positive bufsize.
+
+	       { SYM_FILE2, "Buffer size is not positive", EINVAL, -1, setup2 },
+	     */
+	{
+	SYM_FILE2, "Buffer size is not positive", EINVAL, 0, setup2}, {
+	TEST_FILE2, "File is not symbolic link", EINVAL, 1, no_setup}, {
+	Longpathname, "Symlink path too long", ENAMETOOLONG, 1, lpath_setup},
+	{
+	"", "Symlink Pathname is empty", ENOENT, 1, no_setup}, {
+	NULL, NULL, 0, 0, no_setup}
 };
 
-void setup();		/* Setup function for the test */
-void cleanup();		/* Cleanup function for the test */
+void setup();			/* Setup function for the test */
+void cleanup();			/* Cleanup function for the test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	char buffer[MAX_SIZE];  /* temporary buffer to hold symlink contents*/
+	char buffer[MAX_SIZE];	/* temporary buffer to hold symlink contents */
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	char *sym_file;		/* symbolic link file name */
@@ -149,7 +150,7 @@ main(int ac, char **av)
 	size_t buf_size;	/* size of buffer for readlink */
 
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
@@ -166,7 +167,7 @@ main(int ac, char **av)
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		for (i = 0; Test_cases[i].desc != NULL; i++) {
 			sym_file = Test_cases[i].link;
@@ -179,7 +180,7 @@ main(int ac, char **av)
 
 			/*
 			 * Call readlink(2) to test different test conditions.
-	 		 * verify that it fails with -1 return value and sets
+			 * verify that it fails with -1 return value and sets
 			 * appropriate errno.
 			 */
 			TEST(readlink(sym_file, buffer, buf_size));
@@ -205,13 +206,13 @@ main(int ac, char **av)
 					 test_desc, TEST_ERRNO,
 					 Test_cases[i].exp_errno);
 			}
-		}	/* End of TEST CASE LOOPING. */
-	}	/* End for TEST_LOOPING */
+		}		/* End of TEST CASE LOOPING. */
+	}			/* End for TEST_LOOPING */
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
 	return 0;
-}	/* End main */
+}				/* End main */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -219,25 +220,23 @@ main(int ac, char **av)
  *  Create a temporary directory and change directory to it.
  *  Call test specific setup functions.
  */
-void
-setup()
+void setup()
 {
 	int i;
 
 	/* Switch to nobody user for correct error code collection */
-        if (geteuid() != 0) {
-                tst_brkm(TBROK, tst_exit, "Test must be run as root");
-        }
-	 if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
-		tst_brkm(TBROK, cleanup, "getpwname(nobody_uid) failed " );
-	 }
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+	}
+	if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
+		tst_brkm(TBROK, cleanup, "getpwname(nobody_uid) failed ");
+	}
 
-         if (seteuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "seteuid failed to "
-                         "to set the effective uid to %d",
-                         ltpuser->pw_uid);
-                perror("seteuid");
-         }
+	if (seteuid(ltpuser->pw_uid) == -1) {
+		tst_resm(TINFO, "seteuid failed to "
+			 "to set the effective uid to %d", ltpuser->pw_uid);
+		perror("seteuid");
+	}
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -257,10 +256,9 @@ setup()
 /*
  * no_setup() - Some test conditions for readlink(2) do not any setup.
  */
-int
-no_setup()
+int no_setup()
 {
-        return 0;
+	return 0;
 }
 
 /*
@@ -273,24 +271,23 @@ no_setup()
  *  Modify the mode permissions on test directory such that process will not
  *  have search permissions on test directory.
  */
-int
-setup1()
+int setup1()
 {
-        int fd;                 /* file handle for testfile */
+	int fd;			/* file handle for testfile */
 
-        if (mkdir(DIR_TEMP, MODE_RWX) < 0) {
-                tst_brkm(TBROK, cleanup, "mkdir(2) of %s failed", DIR_TEMP);
-        }
+	if (mkdir(DIR_TEMP, MODE_RWX) < 0) {
+		tst_brkm(TBROK, cleanup, "mkdir(2) of %s failed", DIR_TEMP);
+	}
 
-        if ((fd = open(TEST_FILE1, O_RDWR|O_CREAT, 0666)) == -1) {
-                tst_brkm(TBROK, cleanup,
-                         "open(%s, O_RDWR|O_CREAT, 0666) failed, errno=%d : %s",
-                         TEST_FILE1, errno, strerror(errno));
-        }
-        if (close(fd) == -1) {
-                tst_brkm(TBROK, cleanup, "close(%s) failed, errno=%d : %s",
-                         TEST_FILE1, errno, strerror(errno));
-        }
+	if ((fd = open(TEST_FILE1, O_RDWR | O_CREAT, 0666)) == -1) {
+		tst_brkm(TBROK, cleanup,
+			 "open(%s, O_RDWR|O_CREAT, 0666) failed, errno=%d : %s",
+			 TEST_FILE1, errno, strerror(errno));
+	}
+	if (close(fd) == -1) {
+		tst_brkm(TBROK, cleanup, "close(%s) failed, errno=%d : %s",
+			 TEST_FILE1, errno, strerror(errno));
+	}
 
 	/* Creat a symbolic link of testfile under test directory */
 	if (symlink(TEST_FILE1, SYM_FILE1) < 0) {
@@ -298,10 +295,10 @@ setup1()
 	}
 
 	/* Modify mode permissions on test directory */
-        if (chmod(DIR_TEMP, FILE_MODE) < 0) {
-                tst_brkm(TBROK, cleanup, "chmod(2) of %s failed", DIR_TEMP);
-        }
-        return 0;
+	if (chmod(DIR_TEMP, FILE_MODE) < 0) {
+		tst_brkm(TBROK, cleanup, "chmod(2) of %s failed", DIR_TEMP);
+	}
+	return 0;
 }
 
 /*
@@ -311,21 +308,20 @@ setup1()
  *	Create a testfile under temporary directory and create a symlink
  *	file of it.
  */
-int
-setup2()
+int setup2()
 {
 	int fd;			/* file handle for testfile */
 
 	/* Creat a testfile and close it */
-        if ((fd = open(TEST_FILE2, O_RDWR|O_CREAT, 0666)) == -1) {
-                tst_brkm(TBROK, cleanup,
-                         "open(%s, O_RDWR|O_CREAT, 0666) failed, errno=%d : %s",
-                         TEST_FILE2, errno, strerror(errno));
-        }
-        if (close(fd) == -1) {
-                tst_brkm(TBROK, cleanup, "close(%s) failed, errno=%d : %s",
-                         TEST_FILE2, errno, strerror(errno));
-        }
+	if ((fd = open(TEST_FILE2, O_RDWR | O_CREAT, 0666)) == -1) {
+		tst_brkm(TBROK, cleanup,
+			 "open(%s, O_RDWR|O_CREAT, 0666) failed, errno=%d : %s",
+			 TEST_FILE2, errno, strerror(errno));
+	}
+	if (close(fd) == -1) {
+		tst_brkm(TBROK, cleanup, "close(%s) failed, errno=%d : %s",
+			 TEST_FILE2, errno, strerror(errno));
+	}
 
 	/* Creat a symlink of testfile created above */
 	if (symlink(TEST_FILE2, SYM_FILE2) < 0) {
@@ -339,15 +335,14 @@ setup2()
  * lpath_setup() - setup to create a node with a name length exceeding
  *		   the MAX. length of PATH_MAX.
  */
-int
-lpath_setup()
+int lpath_setup()
 {
-        int i;                /* counter variable */
+	int i;			/* counter variable */
 
-        for (i = 0; i <= (PATH_MAX + 1); i++) {
-                Longpathname[i] = 'a';
-        }
-        return 0;
+	for (i = 0; i <= (PATH_MAX + 1); i++) {
+		Longpathname[i] = 'a';
+	}
+	return 0;
 }
 
 /*
@@ -357,8 +352,7 @@ lpath_setup()
  *  Restore the mode permissions on test directory.
  *  Remove the temporary directory created in the setup.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -366,10 +360,10 @@ cleanup()
 	 */
 	TEST_CLEANUP;
 
-        /* Restore mode permissions on test directory created in setup2() */
-        if (chmod(DIR_TEMP, MODE_RWX) < 0) {
-                tst_brkm(TBROK, NULL, "chmod(2) of %s failed", DIR_TEMP);
-        }
+	/* Restore mode permissions on test directory created in setup2() */
+	if (chmod(DIR_TEMP, MODE_RWX) < 0) {
+		tst_brkm(TBROK, NULL, "chmod(2) of %s failed", DIR_TEMP);
+	}
 
 	/* Remove tmp dir and all files in it */
 	tst_rmdir();

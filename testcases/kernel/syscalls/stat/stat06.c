@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: stat06.c,v 1.8 2009/02/26 12:16:40 subrata_modak Exp $ */
+/* $Id: stat06.c,v 1.9 2009/03/23 13:36:06 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -67,7 +67,7 @@
  *      -h  : print help and exit
  *
  *    OUTPUT SPECIFICATIONS
- * 
+ *$
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
  *
@@ -126,12 +126,12 @@
 void setup();
 void cleanup();
 
-char *TCID="stat06";		/* Test program identifier.    */
+char *TCID = "stat06";		/* Test program identifier.    */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-int exp_enos[]={0, 0};
+int exp_enos[] = { 0, 0 };
 
-char * bad_addr = 0;
+char *bad_addr = 0;
 
 #if !defined(UCLINUX)
 int high_address_setup();
@@ -140,193 +140,196 @@ char High_address[64];
 int longpath_setup();
 int no_setup();
 int filepath_setup();
-char Longpathname[PATH_MAX+2];
+char Longpathname[PATH_MAX + 2];
 struct stat statbuf;
 jmp_buf sig11_recover;
 void sig11_handler(int sig);
 
 struct test_case_t {
-   char *pathname;
-   struct stat *stbuf;
-   char *desc;
-   int exp_errno;
-   int (*setupfunc)();
+	char *pathname;
+	struct stat *stbuf;
+	char *desc;
+	int exp_errno;
+	int (*setupfunc) ();
 } Test_cases[] = {
-    { "nonexistfile", &statbuf, "non-existent file", ENOENT, no_setup},
-    { "", &statbuf, "path is empty string", ENOENT, no_setup},
-    { "nefile/file", &statbuf, "path contains a non-existent file",
-		ENOENT, no_setup },
-    { "file/file", &statbuf, "path contains a regular file",
-		ENOTDIR, filepath_setup },
-    { Longpathname, &statbuf, "pathname too long", ENAMETOOLONG, longpath_setup },
+	{
+	"nonexistfile", &statbuf, "non-existent file", ENOENT, no_setup}, {
+	"", &statbuf, "path is empty string", ENOENT, no_setup}, {
+	"nefile/file", &statbuf, "path contains a non-existent file",
+		    ENOENT, no_setup}, {
+	"file/file", &statbuf, "path contains a regular file",
+		    ENOTDIR, filepath_setup}, {
+	Longpathname, &statbuf, "pathname too long", ENAMETOOLONG,
+		    longpath_setup},
 #if !defined(UCLINUX)
-    { High_address, &statbuf, "address beyond address space", EFAULT, high_address_setup },
-    { (char *)-1, &statbuf, "negative address", EFAULT, no_setup },
+	{
+	High_address, &statbuf, "address beyond address space", EFAULT,
+		    high_address_setup}, {
+	(char *)-1, &statbuf, "negative address", EFAULT, no_setup},
 #endif
-    { NULL, NULL, NULL, 0, no_setup }
+	{
+	NULL, NULL, NULL, 0, no_setup}
 };
 int TST_TOTAL = sizeof(Test_cases) / sizeof(*Test_cases);
 
 /***********************************************************************
  * Main
  ***********************************************************************/
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-    int lc;		/* loop counter */
-    char *msg;		/* message returned from parse_opts */
-    char *fname;
-    char *desc;
-    int ind;
-    struct stat *stbuf;
-    struct sigaction sa, osa;
-   
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
+	char *fname;
+	char *desc;
+	int ind;
+	struct stat *stbuf;
+	struct sigaction sa, osa;
+
     /***************************************************************
      * parse standard options
      ***************************************************************/
-    if ( (msg=parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *) NULL ) {
-	tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	tst_exit();
-    }
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+		tst_exit();
+	}
 
     /***************************************************************
      * perform global setup for test
      ***************************************************************/
-    setup();
+	setup();
 
-    /* set the expected errnos... */
-    TEST_EXP_ENOS(exp_enos);
+	/* set the expected errnos... */
+	TEST_EXP_ENOS(exp_enos);
 
     /***************************************************************
      * check looping state if -c option given
      ***************************************************************/
-    for (lc=0; TEST_LOOPING(lc); lc++) {
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-	/* reset Tst_count in case we are looping. */
-	Tst_count=0;
+		/* reset Tst_count in case we are looping. */
+		Tst_count = 0;
 
+		for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
 
-        for (ind=0; Test_cases[ind].desc != NULL; ind++ ) {
+			fname = Test_cases[ind].pathname;
+			desc = Test_cases[ind].desc;
+			stbuf = Test_cases[ind].stbuf;
 
-	    fname = Test_cases[ind].pathname;
-	    desc = Test_cases[ind].desc;
-	    stbuf = Test_cases[ind].stbuf;
-      
-	    if (stbuf == (struct stat *)-1) {
-		/* special sig11 case */
-		sa.sa_handler = &sig11_handler;
-		sigemptyset(&sa.sa_mask);
-		sa.sa_flags = 0;
+			if (stbuf == (struct stat *)-1) {
+				/* special sig11 case */
+				sa.sa_handler = &sig11_handler;
+				sigemptyset(&sa.sa_mask);
+				sa.sa_flags = 0;
 
-		sigaction(SIGSEGV, NULL, &osa);
-		sigaction(SIGSEGV, &sa, NULL);
+				sigaction(SIGSEGV, NULL, &osa);
+				sigaction(SIGSEGV, &sa, NULL);
 
-		if (setjmp(sig11_recover)) {
-		    TEST_RETURN = -1;
-		    TEST_ERRNO = EFAULT;
-		} else {
-		    TEST(stat(fname, stbuf));
+				if (setjmp(sig11_recover)) {
+					TEST_RETURN = -1;
+					TEST_ERRNO = EFAULT;
+				} else {
+					TEST(stat(fname, stbuf));
+				}
+				sigaction(SIGSEGV, &osa, NULL);
+			} else {
+				/*
+				 *  Call stat(2)
+				 */
+
+				TEST(stat(fname, stbuf));
+			}
+
+			/* check return code */
+			if (TEST_RETURN == -1) {
+				if (STD_FUNCTIONAL_TEST) {
+					if (TEST_ERRNO ==
+					    Test_cases[ind].exp_errno)
+						tst_resm(TPASS,
+							 "stat(<%s>, &stbuf) Failed, errno=%d",
+							 desc, TEST_ERRNO);
+					else
+						tst_resm(TFAIL,
+							 "stat(<%s>, &stbuf) Failed, errno=%d, expected errno:%d",
+							 desc, TEST_ERRNO,
+							 Test_cases[ind].
+							 exp_errno);
+				} else
+					Tst_count++;
+			} else {
+				tst_resm(TFAIL,
+					 "stat(<%s>, &stbuf) returned %d, expected -1, errno:%d",
+					 desc, TEST_RETURN,
+					 Test_cases[ind].exp_errno);
+			}
 		}
-		sigaction(SIGSEGV, &osa, NULL);
-	    } else {
-		/*
-		 *  Call stat(2)
-		 */
 
-		TEST(stat(fname, stbuf));
-	    }
-
-	    /* check return code */
-	    if ( TEST_RETURN == -1 ) {
-	        if ( STD_FUNCTIONAL_TEST ) {
-		    if ( TEST_ERRNO == Test_cases[ind].exp_errno )
-	                tst_resm(TPASS, "stat(<%s>, &stbuf) Failed, errno=%d",
-			    desc, TEST_ERRNO);
-		    else
-			tst_resm(TFAIL,
-			    "stat(<%s>, &stbuf) Failed, errno=%d, expected errno:%d",
-                            desc, TEST_ERRNO, Test_cases[ind].exp_errno);
-	        }
-		else
-		   Tst_count++;
-	    } else  {
-	        tst_resm(TFAIL,
-		    "stat(<%s>, &stbuf) returned %d, expected -1, errno:%d",
-		    desc, TEST_RETURN, Test_cases[ind].exp_errno);
-	    }
-	}
-
-    }	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
     /***************************************************************
      * cleanup and exit
      ***************************************************************/
-    cleanup();
+	cleanup();
 
-    return 0;
-}	/* End main */
+	return 0;
+}				/* End main */
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void
-setup()
+void setup()
 {
-    int ind;
+	int ind;
 
-    /* capture signals */
-    tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	/* capture signals */
+	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-    /* Pause if that option was specified */
-    TEST_PAUSE;
+	/* Pause if that option was specified */
+	TEST_PAUSE;
 
-    /* make a temp directory and cd to it */
-    tst_tmpdir();
+	/* make a temp directory and cd to it */
+	tst_tmpdir();
 
 #if !defined(UCLINUX)
-    bad_addr = mmap(0, 1, PROT_NONE,
-		    MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
-    if (bad_addr == MAP_FAILED) {
-	tst_brkm(TBROK, cleanup, "mmap failed");
-    }
-    Test_cases[6].pathname = bad_addr;
+	bad_addr = mmap(0, 1, PROT_NONE,
+			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
+	if (bad_addr == MAP_FAILED) {
+		tst_brkm(TBROK, cleanup, "mmap failed");
+	}
+	Test_cases[6].pathname = bad_addr;
 #endif
 
-    for (ind=0; Test_cases[ind].desc != NULL; ind++ ) {
-	Test_cases[ind].setupfunc();
-    }
+	for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
+		Test_cases[ind].setupfunc();
+	}
 
-}	/* End setup() */
-
+}				/* End setup() */
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void
-cleanup()
+void cleanup()
 {
-    /*
-     * print timing stats if that option was specified.
-     * print errno log if that option was specified.
-     */
-    TEST_CLEANUP;
+	/*
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
+	TEST_CLEANUP;
 
-    /* Remove tmp dir and all files in it */
-    tst_rmdir();
+	/* Remove tmp dir and all files in it */
+	tst_rmdir();
 
-    /* exit with return code appropriate for results */
-    tst_exit();
+	/* exit with return code appropriate for results */
+	tst_exit();
 
-}	/* End cleanup() */
+}				/* End cleanup() */
 
 /******************************************************************
  * no_setup() - does nothing
  ******************************************************************/
-int
-no_setup()
+int no_setup()
 {
-    return 0;
+	return 0;
 }
 
 #if !defined(UCLINUX)
@@ -334,19 +337,18 @@ no_setup()
 /******************************************************************
  * high_address_setup() - generates an address that should cause a segfault
  ******************************************************************/
-int
-high_address_setup()
+int high_address_setup()
 {
-    int ind;
+	int ind;
 
-    for (ind=0; Test_cases[ind].desc != NULL; ind++ ) {
-	if ( Test_cases[ind].pathname == High_address ) {
-	/*if ( strcmp(Test_cases[ind].pathname, HIGH_ADDRESS) == 0 ) { ***/
-	    Test_cases[ind].pathname = (char *)(sbrk(0)+5);
-	    break;
+	for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
+		if (Test_cases[ind].pathname == High_address) {
+			/*if ( strcmp(Test_cases[ind].pathname, HIGH_ADDRESS) == 0 ) { ** */
+			Test_cases[ind].pathname = (char *)(sbrk(0) + 5);
+			break;
+		}
 	}
-    }
-    return 0;
+	return 0;
 
 }
 #endif
@@ -354,39 +356,36 @@ high_address_setup()
 /******************************************************************
  * longpath_setup() - creates a filename that is too long
  ******************************************************************/
-int
-longpath_setup()
+int longpath_setup()
 {
-   int ind;
+	int ind;
 
-    for(ind=0; ind<= PATH_MAX+1; ind++) {
-	Longpathname[ind] = 'a';
-    }
-    return 0;
+	for (ind = 0; ind <= PATH_MAX + 1; ind++) {
+		Longpathname[ind] = 'a';
+	}
+	return 0;
 
 }
 
 /******************************************************************
  * filepath_setup() creates a file the exists that we will treat as a directory
  ******************************************************************/
-int
-filepath_setup()
+int filepath_setup()
 {
-    int fd;
+	int fd;
 
-    if ( (fd=creat("file", 0777)) == -1 ) {
-	tst_brkm(TBROK, cleanup, "creat(file) failed, errno:%d %s",
-	    errno, strerror(errno));
-    }
-    close(fd);
-    return 0;
+	if ((fd = creat("file", 0777)) == -1) {
+		tst_brkm(TBROK, cleanup, "creat(file) failed, errno:%d %s",
+			 errno, strerror(errno));
+	}
+	close(fd);
+	return 0;
 }
 
 /******************************************************************
  * sig11_handler() - our segfault recover hack
  ******************************************************************/
-void
-sig11_handler(int sig)
+void sig11_handler(int sig)
 {
-    longjmp(sig11_recover, 1);
+	longjmp(sig11_recover, 1);
 }

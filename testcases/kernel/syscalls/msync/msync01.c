@@ -39,11 +39,11 @@
  *   Loop if the proper options are given.
  *   Execute system call
  *   Check return code, if system call failed (return=-1)
- *   	Log the errno and Issue a FAIL message.
+ *	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call
+ *	Verify the Functionality of system call
  *      if successful,
- *      	Issue Functionality-Pass message.
+ *		Issue Functionality-Pass message.
  *      Otherwise,
  *		Issue Functionality-Fail message.
  *  Cleanup:
@@ -76,8 +76,8 @@
 #define TEMPFILE	"msync_file"
 #define BUF_SIZE	256
 
-char *TCID="msync01";		/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "msync01";		/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 char *addr;			/* addr of memory mapped region */
@@ -88,16 +88,15 @@ char write_buf[BUF_SIZE];	/* buffer to hold data to be written */
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	char read_buf[BUF_SIZE];	/* buffer to hold data read from file */
 	int nread = 0, count, err_flg = 0;
 
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
@@ -106,14 +105,14 @@ main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/* Perform global setup for test */
 		setup();
 
 		/*
 		 * Call msync to synchronize the mapped region
-	 	 * with the specified file.
+		 * with the specified file.
 		 */
 		TEST(msync(addr, page_sz, MS_ASYNC));
 
@@ -134,7 +133,7 @@ main(int ac, char **av)
 			 * Seek to the offset pos. where bytes were
 			 * set in the setup.
 			 */
-			if (lseek(fildes, (off_t)100, SEEK_SET) != (off_t)100) {
+			if (lseek(fildes, (off_t) 100, SEEK_SET) != (off_t) 100) {
 				tst_brkm(TBROK, cleanup, "lseek() to specified "
 					 "offset pos. Failed, error=%d : %s",
 					 errno, strerror(errno));
@@ -179,15 +178,14 @@ main(int ac, char **av)
 		/* Call cleanup() to undo setup done for the test. */
 		cleanup();
 
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* exit with return code appropriate for results */
 	tst_exit();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 
-}	/* End main */
+}				/* End main */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -197,8 +195,7 @@ main(int ac, char **av)
  * Write 1 page size char data into file.
  * Initialize paged region (256 bytes) from the specified offset pos.
  */
-void
-setup()
+void setup()
 {
 	int c_total = 0, nwrite = 0;	/* no. of bytes to be written */
 
@@ -230,7 +227,8 @@ setup()
 		nwrite = write(fildes, write_buf, sizeof(write_buf));
 		if (nwrite <= 0) {
 			tst_brkm(TBROK, cleanup, "write() on %s failed, errno "
-			" = %d : %s", TEMPFILE, errno, strerror(errno));
+				 " = %d : %s", TEMPFILE, errno,
+				 strerror(errno));
 			tst_exit();
 		} else {
 			c_total += nwrite;
@@ -258,12 +256,11 @@ setup()
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
- * 	       Unmap the mapped memory area done in the test.
- * 	       Close the temporary file.
- * 	       Remove the temporary directory created.
+ *	       Unmap the mapped memory area done in the test.
+ *	       Close the temporary file.
+ *	       Remove the temporary directory created.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

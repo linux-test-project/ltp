@@ -83,15 +83,15 @@ extern int Tst_count;
 #define EXP_RET_VAL	-1
 #define SPL_FILE	"/dev/null"
 
-struct test_case_t {			/* test case structure */
-	int	experrno;		/* expected errno */
-	char	*desc;
-	int	(*setup)(void);		/* Individual setup routine */
-	void	(*cleanup)(void);	/* Individual cleanup routine */
+struct test_case_t {		/* test case structure */
+	int experrno;		/* expected errno */
+	char *desc;
+	int (*setup) (void);	/* Individual setup routine */
+	void (*cleanup) (void);	/* Individual cleanup routine */
 };
 
 char *TCID = "fdatasync02";
-static int exp_enos[] = {EBADF, EINVAL, 0};
+static int exp_enos[] = { EBADF, EINVAL, 0 };
 static int testno;
 static int fd;
 
@@ -101,21 +101,20 @@ static int setup1(void);
 static int setup2(void);
 static void cleanup2(void);
 
-static struct test_case_t  tdat[] = {
-	{ EBADF, "invalid file descriptor", setup1, NULL},
-	{ EINVAL, "file descriptor to a special file", setup2, cleanup2},
+static struct test_case_t tdat[] = {
+	{EBADF, "invalid file descriptor", setup1, NULL},
+	{EINVAL, "file descriptor to a special file", setup2, cleanup2},
 };
 
 int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) !=
+	if ((msg = parse_opts(argc, argv, (option_t *) NULL, NULL)) !=
 	    (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
@@ -128,7 +127,7 @@ main(int argc, char **argv)
 		Tst_count = 0;
 
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
-			if( (tdat[testno].setup) && (tdat[testno].setup()) ) {
+			if ((tdat[testno].setup) && (tdat[testno].setup())) {
 				/* setup() failed, skip this test */
 				continue;
 			}
@@ -136,38 +135,35 @@ main(int argc, char **argv)
 			/* Test the system call */
 			TEST(fdatasync(fd));
 			TEST_ERROR_LOG(TEST_ERRNO);
-			if ( (TEST_RETURN == EXP_RET_VAL) &&
-				(TEST_ERRNO == tdat[testno].experrno) ) {
+			if ((TEST_RETURN == EXP_RET_VAL) &&
+			    (TEST_ERRNO == tdat[testno].experrno)) {
 				tst_resm(TPASS, "Expected failure for %s, "
-					"errno: %d", tdat[testno].desc,
-					TEST_ERRNO);
+					 "errno: %d", tdat[testno].desc,
+					 TEST_ERRNO);
 			} else {
 				tst_resm(TFAIL, "Unexpected results for %s ; "
-					"returned %d (expected %d), errno %d "
-					"(expected %d)", tdat[testno].desc,
-					TEST_RETURN, EXP_RET_VAL,
-					TEST_ERRNO, tdat[testno].experrno);
+					 "returned %d (expected %d), errno %d "
+					 "(expected %d)", tdat[testno].desc,
+					 TEST_RETURN, EXP_RET_VAL,
+					 TEST_ERRNO, tdat[testno].experrno);
 			}
-			if(tdat[testno].cleanup) {
+			if (tdat[testno].cleanup) {
 				tdat[testno].cleanup();
 			}
 		}
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
-int
-setup1(void)
+int setup1(void)
 {
 	fd = -1;
 	return 0;
 }
 
-int
-setup2(void)
+int setup2(void)
 {
 	/* Open special file */
 	if ((fd = open(SPL_FILE, O_RDONLY)) == -1) {
@@ -177,8 +173,7 @@ setup2(void)
 	return 0;
 }
 
-void
-cleanup2(void)
+void cleanup2(void)
 {
 	/* close special file */
 	if (close(fd) == -1) {
@@ -186,13 +181,11 @@ cleanup2(void)
 	}
 }
 
-
 /*
  * setup()
  *	performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -212,8 +205,7 @@ setup(void)
  *	performs all ONE TIME cleanup for this test at
  *	completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -223,5 +215,4 @@ cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}

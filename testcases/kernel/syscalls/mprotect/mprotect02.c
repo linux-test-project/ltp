@@ -52,7 +52,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/mman.h>
-#include <limits.h>			/* for PAGESIZE */
+#include <limits.h>		/* for PAGESIZE */
 #include <signal.h>
 #include <wait.h>
 #include <test.h>
@@ -67,7 +67,7 @@
 void cleanup(void);
 void setup(void);
 
-char *TCID= "mprotect02";
+char *TCID = "mprotect02";
 int TST_TOTAL = 1;
 int status;
 char file1[BUFSIZ];
@@ -78,30 +78,29 @@ extern int Tst_count;
 
 int main(int ac, char **av)
 {
-	int lc;                         /* loop counter */
-	char *msg;                      /* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	char *addr;
 	int fd, pid;
 	char *buf = "abcdefghijklmnopqrstuvwxyz";
 
-        /* parse standard options */
-        if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	/* parse standard options */
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-        }
+	}
 
-        setup();                        /* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-                /* reset Tst_count in case we are looping */
-                Tst_count = 0;
+		/* reset Tst_count in case we are looping */
+		Tst_count = 0;
 
-		if ((fd = open(file1, O_RDWR | O_CREAT, 0777)) < 0 ) { //mode must be specified when O_CREATE is in the flag
+		if ((fd = open(file1, O_RDWR | O_CREAT, 0777)) < 0) {	//mode must be specified when O_CREATE is in the flag
 			tst_brkm(TBROK, cleanup, "open failed");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 		(void)write(fd, buf, strlen(buf));
 
 		/*
@@ -110,31 +109,27 @@ int main(int ac, char **av)
 		addr = mmap(0, strlen(buf), PROT_READ, MAP_SHARED, fd, 0);
 		if (addr < 0) {
 			tst_brkm(TBROK, cleanup, "mmap failed");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		if ((pid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() #1 failed");
 		}
 
-		if (pid == 0) {		/* child */
+		if (pid == 0) {	/* child */
 			(void)memcpy((void *)addr, (void *)buf, strlen(buf));
 			tst_resm(TINFO, "memcpy() did not generate SIGSEGV");
 			exit(1);
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		/* parent */
 		(void)waitpid(pid, &status, 0);
 		if (WIFEXITED(status) == 0) {
 			tst_brkm(TBROK, cleanup, "chiled exited abnormally");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 		/* exit status should be 1 */
 		if (WEXITSTATUS(status) != 1) {
 			tst_brkm(TBROK, cleanup, "child failed");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		/*
 		 * Change the protection to WRITE.
@@ -148,7 +143,7 @@ int main(int ac, char **av)
 						 "fork() #2 failed");
 				}
 
-				if (pid == 0) {		/* child */
+				if (pid == 0) {	/* child */
 					(void)memcpy((void *)addr, (void *)buf,
 						     strlen(buf));
 					exit(0);
@@ -159,8 +154,7 @@ int main(int ac, char **av)
 				if (WIFEXITED(status) == 0) {
 					tst_brkm(TBROK, cleanup, "child exited "
 						 "abnormally");
-					/*NOTREACHED*/
-				}
+				 /*NOTREACHED*/}
 				/*
 				 * if we get a SIGSEGV, the exit status
 				 * will be 1.
@@ -181,9 +175,8 @@ int main(int ac, char **av)
 			continue;
 		}
 
-
 		/* clean up things in case we are looping */
-		if (munmap(addr, strlen(buf)) == -1){
+		if (munmap(addr, strlen(buf)) == -1) {
 			tst_brkm(TBROK, cleanup, "close() failed");
 		}
 		if (close(fd) == -1) {
@@ -192,16 +185,14 @@ int main(int ac, char **av)
 		if (unlink(file1) == -1) {
 			tst_brkm(TBROK, cleanup, "unlink() failed");
 		}
-        }
-        cleanup();
-	/*NOTREACHED*/
-	return 0;
+	}
+	cleanup();
+	 /*NOTREACHED*/ return 0;
 }
 
 #else
 
-int
-main()
+int main()
 {
 	tst_resm(TINFO, "Ignore this test on uClinux");
 	return 0;
@@ -209,22 +200,21 @@ main()
 
 #endif /* UCLINUX */
 
-void sighandler(int sig) {
+void sighandler(int sig)
+{
 	tst_resm(TINFO, "received signal: %d", sig);
-        if(sig == SIGSEGV) {
+	if (sig == SIGSEGV) {
 		exit(1);
 	} else {
 		tst_brkm(TBROK, 0, "Unexpected signal %d received.", sig);
 	}
-        tst_exit();
+	tst_exit();
 }
-
 
 /*
  * setup() - performs all ONE TIME setup for this test
  */
-void
-setup()
+void setup()
 {
 	tst_sig(FORK, sighandler, NULL);
 
@@ -240,8 +230,7 @@ setup()
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  *	       or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing status if that option was specified.

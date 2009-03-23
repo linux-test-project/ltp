@@ -56,7 +56,7 @@ char *TCID = "shmget03";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-int exp_enos[] = {ENOSPC, 0};	/* 0 terminated list of expected errnos */
+int exp_enos[] = { ENOSPC, 0 };	/* 0 terminated list of expected errnos */
 
 /*
  * The MAXIDS value is somewhat arbitrary and may need to be increased
@@ -69,18 +69,17 @@ int num_shms = 0;
 
 int shm_id_arr[MAXIDS];
 
-
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -102,7 +101,7 @@ int main(int ac, char **av)
 
 		TEST_ERROR_LOG(TEST_ERRNO);
 
-		switch(TEST_ERRNO) {
+		switch (TEST_ERRNO) {
 		case ENOSPC:
 			tst_resm(TPASS, "expected failure - errno = "
 				 "%d : %s", TEST_ERRNO, strerror(TEST_ERRNO));
@@ -112,20 +111,18 @@ int main(int ac, char **av)
 				 "unexpected error - %d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 			break;
-		}		
+		}
 	}
 
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -151,7 +148,7 @@ setup(void)
 	 * If the loop exceeds MAXIDS, then break the test and cleanup.
 	 */
 	while ((shm_id_1 = shmget(IPC_PRIVATE, SHM_SIZE, IPC_CREAT |
-	     IPC_EXCL | SHM_RW)) != -1) {
+				  IPC_EXCL | SHM_RW)) != -1) {
 		shm_id_arr[num_shms++] = shm_id_1;
 		if (num_shms == MAXIDS) {
 			tst_brkm(TBROK, cleanup, "The maximum number of shared "
@@ -173,13 +170,12 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	int i;
 
 	/* remove the shared memory resources that were created */
-	for(i=0; i<num_shms; i++) {
+	for (i = 0; i < num_shms; i++) {
 		rm_shm(shm_id_arr[i]);
 	}
 
@@ -195,4 +191,3 @@ cleanup(void)
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

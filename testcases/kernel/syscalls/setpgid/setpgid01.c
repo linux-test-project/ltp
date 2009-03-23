@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: setpgid01.c,v 1.5 2009/02/26 12:16:35 subrata_modak Exp $ */
+/* $Id: setpgid01.c,v 1.6 2009/03/23 13:36:04 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -66,7 +66,7 @@
  *	(See the parse_opts(3) man page).
  *
  *    OUTPUT SPECIFICATIONS
- * 
+ *$
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
  *
@@ -120,122 +120,117 @@
 void setup();
 void cleanup();
 
-
-
-char *TCID="setpgid01";		/* Test program identifier.    */
-int TST_TOTAL=1;    		/* Total number of test cases. */
+char *TCID = "setpgid01";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-int exp_enos[]={0, 0};
+int exp_enos[] = { 0, 0 };
 int pgid, pid;
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-    int lc;		/* loop counter */
-    char *msg;		/* message returned from parse_opts */
-   
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
+
     /***************************************************************
      * parse standard options
      ***************************************************************/
-    if ( (msg=parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL )
-	tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL)
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 
     /***************************************************************
      * perform global setup for test
      ***************************************************************/
-    setup();
+	setup();
 
-    /* set the expected errnos... */
-    TEST_EXP_ENOS(exp_enos);
+	/* set the expected errnos... */
+	TEST_EXP_ENOS(exp_enos);
 
     /***************************************************************
      * check looping state if -c option given
      ***************************************************************/
-    for (lc=0; TEST_LOOPING(lc); lc++) {
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-	/* reset Tst_count in case we are looping. */
-	Tst_count=0;
+		/* reset Tst_count in case we are looping. */
+		Tst_count = 0;
 
-	/*
-	 * Call setpgid(2)
-	 */
-	TEST(setpgid(pid, pgid));
+		/*
+		 * Call setpgid(2)
+		 */
+		TEST(setpgid(pid, pgid));
 
-	/* check return code */
-	if ( TEST_RETURN == -1 ) {
-	    TEST_ERROR_LOG(TEST_ERRNO);
-	    tst_resm(TFAIL, "setpgid(%d, %d) Failed, errno=%d : %s", pid, pgid,
-		     TEST_ERRNO, strerror(TEST_ERRNO));
-	} else {
+		/* check return code */
+		if (TEST_RETURN == -1) {
+			TEST_ERROR_LOG(TEST_ERRNO);
+			tst_resm(TFAIL, "setpgid(%d, %d) Failed, errno=%d : %s",
+				 pid, pgid, TEST_ERRNO, strerror(TEST_ERRNO));
+		} else {
 	    /***************************************************************
 	     * only perform functional verification if flag set (-f not given)
 	     ***************************************************************/
-	    if ( STD_FUNCTIONAL_TEST ) {
-		/* No Verification test, yet... */
-		tst_resm(TPASS, "setpgid(%d, %d) returned %d", pid, pgid,  TEST_RETURN);
-	    }
-	}
-    }	/* End for TEST_LOOPING */
+			if (STD_FUNCTIONAL_TEST) {
+				/* No Verification test, yet... */
+				tst_resm(TPASS, "setpgid(%d, %d) returned %d",
+					 pid, pgid, TEST_RETURN);
+			}
+		}
+	}			/* End for TEST_LOOPING */
 
     /***************************************************************
      * cleanup and exit
      ***************************************************************/
-    cleanup();
+	cleanup();
 
-    return 0;
-}	/* End main */
+	return 0;
+}				/* End main */
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void
-setup()
+void setup()
 {
-    int	status;
+	int status;
 
-    /* capture signals */
-    tst_sig(FORK, DEF_HANDLER, cleanup);
+	/* capture signals */
+	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-    /* Pause if that option was specified */
-    TEST_PAUSE;
+	/* Pause if that option was specified */
+	TEST_PAUSE;
 
-    /*
-     * Make sure current process is NOT a session or pgrp leader
-     */
+	/*
+	 * Make sure current process is NOT a session or pgrp leader
+	 */
 
-    pgid=getpgrp();
-    pid=getpid();
+	pgid = getpgrp();
+	pid = getpid();
 
-    if (pgid == pid) {
-	if ((pid = FORK_OR_VFORK()) == -1) {
-	    tst_brkm(TBROK, cleanup, "fork() in setup() failed - errno %d",
-		     errno);
+	if (pgid == pid) {
+		if ((pid = FORK_OR_VFORK()) == -1) {
+			tst_brkm(TBROK, cleanup,
+				 "fork() in setup() failed - errno %d", errno);
+		}
+
+		if (pid != 0) {	/* parent - sits and waits */
+			wait(&status);
+			exit(WEXITSTATUS(status));
+		} else {	/* child - continues with test */
+			pid = getpid();
+		}
 	}
-
-	if (pid != 0) {	    	    /* parent - sits and waits */
-	    wait(&status);
-	    exit(WEXITSTATUS(status));
-	} else {    	    	    /* child - continues with test */
-	    pid = getpid();
-	}
-    }
-}	/* End setup() */
-
+}				/* End setup() */
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void
-cleanup()
+void cleanup()
 {
-    /*
-     * print timing stats if that option was specified.
-     * print errno log if that option was specified.
-     */
-    TEST_CLEANUP;
+	/*
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
+	TEST_CLEANUP;
 
-    /* exit with return code appropriate for results */
-    tst_exit();
-}	/* End cleanup() */
+	/* exit with return code appropriate for results */
+	tst_exit();
+}				/* End cleanup() */

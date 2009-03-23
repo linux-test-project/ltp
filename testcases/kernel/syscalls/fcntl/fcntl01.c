@@ -1,21 +1,21 @@
 /*
  * NAME
- * 	fcntl01.c
+ *	fcntl01.c
  *
  * DESCRIPTION
- * 	Test F_DUPFD, F_SETFL cmds of fcntl
+ *	Test F_DUPFD, F_SETFL cmds of fcntl
  *
  * CALLS
- * 	fcntl
+ *	fcntl
  *
  * ALGORITHM
  *
- * 	1. Testing F_DUPFD cmd with arg less than, equal to, and greater
- * 	   than the next available file descriptor.
+ *	1. Testing F_DUPFD cmd with arg less than, equal to, and greater
+ *	   than the next available file descriptor.
  *
- * 	2. Checking F_SETFL cmd with each valid flag (O_NDELAY, O_APPEND).
+ *	2. Checking F_SETFL cmd with each valid flag (O_NDELAY, O_APPEND).
  *
- * 	3. Checking, setting and reading `close on exec' flag.
+ *	3. Checking, setting and reading `close on exec' flag.
  *
  * USAGE
  *	fcntl01
@@ -25,7 +25,7 @@
  *	09/2002 added fd2 array to remove statid fds
  *
  * RESTRICTIONS
- * 	None
+ *	None
  *
  */
 
@@ -54,7 +54,7 @@ int main(int ac, char **av)
 	char *msg;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -76,8 +76,8 @@ int main(int ac, char **av)
 		for (i = 0; i < 8; i++) {
 			sprintf(fname, "./fcntl%d.%d", i, mypid);
 			if ((fd2[i] = fd[i] = open(fname, O_WRONLY | O_CREAT,
-					  0666)) < 0) {
-                        	fprintf(stderr, "\tcannot open '%s', errno "
+						   0666)) < 0) {
+				fprintf(stderr, "\tcannot open '%s', errno "
 					"= %d\n", fname, errno);
 				exit(1);
 			}
@@ -275,30 +275,27 @@ int main(int ac, char **av)
 		}
 	}
 	cleanup();
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup
- * 	performs all ONE TIME setup for this test
+ *	performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	tst_sig(FORK, DEF_HANDLER, cleanup);	/* capture signals */
 	umask(0);
-	TEST_PAUSE;			/* Pause if that option is specified */
-	tst_tmpdir();			/* make temp dir and cd to it */
+	TEST_PAUSE;		/* Pause if that option is specified */
+	tst_tmpdir();		/* make temp dir and cd to it */
 }
 
 /*
  * cleanup
- * 	performs all the ONE TIME cleanup for this test at completion or
- * 	premature exit
+ *	performs all the ONE TIME cleanup for this test at completion or
+ *	premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing status if that option was specified

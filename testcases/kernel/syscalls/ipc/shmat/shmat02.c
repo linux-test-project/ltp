@@ -61,19 +61,20 @@ extern int Tst_count;
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
-int exp_enos[] = {EINVAL, EACCES, 0};	/* 0 terminated list of */
+int exp_enos[] = { EINVAL, EACCES, 0 };	/* 0 terminated list of */
+
 					/* expected errnos      */
 
 int shm_id_1 = -1;
 int shm_id_2 = -1;
 int shm_id_3 = -1;
 
-void   *base_addr;	/* By probing this address first, we can make
-			 * non-aligned addresses from it for different
-			 * architectures without explicitly code it.
-			 */
+void *base_addr;		/* By probing this address first, we can make
+				 * non-aligned addresses from it for different
+				 * architectures without explicitly code it.
+				 */
 
-void	*addr;		/* for result of shmat-call */
+void *addr;			/* for result of shmat-call */
 
 struct test_case_t {
 	int *shmid;
@@ -83,7 +84,8 @@ struct test_case_t {
 
 int TST_TOTAL = 3;
 
-static void setup_tc( int i, struct test_case_t *tc){
+static void setup_tc(int i, struct test_case_t *tc)
+{
 
 	struct test_case_t TC[] = {
 		/* EINVAL - the shared memory ID is not valid */
@@ -94,7 +96,7 @@ static void setup_tc( int i, struct test_case_t *tc){
 		{&shm_id_3, 0, EACCES}
 	};
 
-	if( i > TST_TOTAL || i < 0)
+	if (i > TST_TOTAL || i < 0)
 		return;
 
 	*tc = TC[i];
@@ -102,17 +104,17 @@ static void setup_tc( int i, struct test_case_t *tc){
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int i;
 	struct test_case_t tc;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -121,10 +123,10 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		/* setup test case paremeters */
-		setup_tc( lc, &tc);
+		setup_tc(lc, &tc);
 
 		/* loop through the test cases */
-		for (i=0; i<TST_TOTAL; i++) {
+		for (i = 0; i < TST_TOTAL; i++) {
 			/*
 			 * make the call using the TEST() macro - attempt
 			 * various invalid shared memory attaches
@@ -133,7 +135,7 @@ int main(int ac, char **av)
 			addr = shmat(*(tc.shmid), base_addr + tc.offset, 0);
 			TEST_ERRNO = errno;
 
-                      	if (addr != (void *)-1) {
+			if (addr != (void *)-1) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
 				continue;
 			}
@@ -148,37 +150,33 @@ int main(int ac, char **av)
 				tst_resm(TFAIL, "call failed with an "
 					 "unexpected error - %d : %s",
 					 TEST_ERRNO, strerror(TEST_ERRNO));
-		
+
 			}
 		}
 	}
 
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	key_t shmkey2;
 
 	/* Switch to nobody user for correct error code collection */
-        if (geteuid() != 0) {
-                tst_brkm(TBROK, tst_exit, "Test must be run as root");
-        }
-         ltpuser = getpwnam(nobody_uid);
-         if (setuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "setuid failed to "
-                         "to set the effective uid to %d",
-                         ltpuser->pw_uid);
-                perror("setuid");
-         }
-
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+	}
+	ltpuser = getpwnam(nobody_uid);
+	if (setuid(ltpuser->pw_uid) == -1) {
+		tst_resm(TINFO, "setuid failed to "
+			 "to set the effective uid to %d", ltpuser->pw_uid);
+		perror("setuid");
+	}
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -202,7 +200,7 @@ setup(void)
 	/* create a shared memory resource with read and write permissions */
 	/* also post increment the shmkey for the next shmget call */
 	if ((shm_id_2 = shmget(shmkey, INT_SIZE, SHM_RW | IPC_CREAT |
-	     IPC_EXCL)) == -1) {
+			       IPC_EXCL)) == -1) {
 		tst_brkm(TBROK, cleanup, "Failed to create shared memory "
 			 "resource #1 in setup()");
 	}
@@ -217,27 +215,25 @@ setup(void)
 	}
 
 	/* Probe an available linear address for attachment */
-	if( (base_addr = shmat(shm_id_2, NULL, 0)) == (void *)-1 ){
-		tst_brkm(TBROK, cleanup,
-				"Couldn't attach shared memory");
+	if ((base_addr = shmat(shm_id_2, NULL, 0)) == (void *)-1) {
+		tst_brkm(TBROK, cleanup, "Couldn't attach shared memory");
 	}
 
 	if (shmdt((const void *)base_addr) == -1) {
-		tst_brkm(TBROK, cleanup,
-				"Couldn't detach shared memory");
+		tst_brkm(TBROK, cleanup, "Couldn't detach shared memory");
 	}
 
 	/* some architectures (e.g. parisc) are strange, so better always align to
 	 * next SHMLBA address. */
-	base_addr = (void *)( ((unsigned long)(base_addr) & ~(SHMLBA-1)) + SHMLBA );
+	base_addr =
+	    (void *)(((unsigned long)(base_addr) & ~(SHMLBA - 1)) + SHMLBA);
 }
 
 /*
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/* if they exist, remove the shared memory resources */
 	rm_shm(shm_id_2);
@@ -255,4 +251,3 @@ cleanup(void)
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

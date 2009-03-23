@@ -77,29 +77,28 @@
 
 #define TEMPFILE	"mmapfile"
 
-char *TCID="munmap03";		/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "munmap03";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-size_t page_sz;                 /* system page size */
+size_t page_sz;			/* system page size */
 char *addr;			/* addr of memory mapped region */
 char *faddr;			/* addr of memory mapped region */
 int fildes;			/* file descriptor for tempfile */
 size_t map_len;			/* length of the region to be mapped */
 
-int exp_enos[]={EINVAL, 0};
+int exp_enos[] = { EINVAL, 0 };
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
@@ -111,7 +110,7 @@ main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/* Perform global setup for test */
 		setup();
@@ -144,15 +143,14 @@ main(int ac, char **av)
 		/* Call cleanup() to undo setup done for the test. */
 		cleanup();
 
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* exit with return code appropriate for results */
 	tst_exit();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 
-}	/* End main */
+}				/* End main */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -161,10 +159,9 @@ main(int ac, char **av)
  * write one byte data into it, map the open file for the specified
  * map length.
  */
-void
-setup()
+void setup()
 {
-		 struct rlimit brkval;		 /* variable to hold max. break val */
+	struct rlimit brkval;	/* variable to hold max. break val */
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -172,8 +169,8 @@ setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-		 /* call getrlimit function to get the maximum possible break value */
-		 getrlimit(RLIMIT_DATA, &brkval);
+	/* call getrlimit function to get the maximum possible break value */
+	getrlimit(RLIMIT_DATA, &brkval);
 
 	/* Get the system page size */
 	if ((page_sz = getpagesize()) < 0) {
@@ -222,11 +219,11 @@ setup()
 	 */
 #ifdef UCLINUX
 	/* MAP_SHARED not implemented on uClinux */
-	faddr = mmap(0, map_len, PROT_READ | PROT_WRITE, \
-		    MAP_FILE | MAP_PRIVATE, fildes, 0);
+	faddr = mmap(0, map_len, PROT_READ | PROT_WRITE,
+		     MAP_FILE | MAP_PRIVATE, fildes, 0);
 #else
-	faddr = mmap(0, map_len, PROT_READ | PROT_WRITE, \
-		    MAP_FILE | MAP_SHARED, fildes, 0);
+	faddr = mmap(0, map_len, PROT_READ | PROT_WRITE,
+		     MAP_FILE | MAP_SHARED, fildes, 0);
 #endif
 
 	/* check for the return value of mmap system call */
@@ -237,7 +234,7 @@ setup()
 	}
 
 	/* convert the MAX. possible break value */
-		 addr = (char *) brkval.rlim_max;
+	addr = (char *)brkval.rlim_max;
 }
 
 /*
@@ -247,8 +244,7 @@ setup()
  *  	       Close the temporary file.
  *  	       Remove the temporary directory.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

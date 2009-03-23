@@ -53,7 +53,7 @@
  *
  * 	Cleanup:
  * 	  Do cleanup for the test.
- * 	  
+ * 	 $
  * USAGE:  <for command-line>
  *  reboot02 [-c n] [-e] [-i n] [-I x] [-p x] [-t] [-h] [-f] [-p]
  *  where
@@ -86,32 +86,32 @@ static void setup();
 static void cleanup();
 static int setup_test();
 
-char *TCID = "reboot02"; 	/* Test program identifier.    */
-int TST_TOTAL = 2;       	/* Total number of test cases. */
-extern int Tst_count;    	/* Test Case counter for tst_* routines */
+char *TCID = "reboot02";	/* Test program identifier.    */
+int TST_TOTAL = 2;		/* Total number of test cases. */
+extern int Tst_count;		/* Test Case counter for tst_* routines */
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
-static int exp_enos[] = {EINVAL, EPERM, 0};
+static int exp_enos[] = { EINVAL, EPERM, 0 };
 
 static struct test_case_t {
 	char *err_desc;		/*error description */
-	int  exp_errno;		/* expected error number*/
-	char *exp_errval;	/*Expected errorvalue string*/
+	int exp_errno;		/* expected error number */
+	char *exp_errval;	/*Expected errorvalue string */
 } testcase[] = {
-	{"Invalid flag", EINVAL, "EINVAL"},
-	{"Permission denied", EPERM, "EPERM "}
+	{
+	"Invalid flag", EINVAL, "EINVAL"}, {
+	"Permission denied", EPERM, "EPERM "}
 };
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 
-	int lc, i;	/* loop counter */
-	char *msg;	/* message returned from parse_opts */
+	int lc, i;		/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
-		!= (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL))
+	    != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -121,22 +121,22 @@ main(int ac, char **av)
 	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		for(i = 0; i < TST_TOTAL; i++) {
+		for (i = 0; i < TST_TOTAL; i++) {
 
 			/* reset Tst_count in case we are looping. */
 			Tst_count = 0;
-			if(i == 0) {
+			if (i == 0) {
 				TEST(reboot(INVALID_PARAMETER));
 			} else {
-				/*change the user to nobody*/
-				if(setup_test() == 0) {
+				/*change the user to nobody */
+				if (setup_test() == 0) {
 					TEST(reboot(LINUX_REBOOT_CMD_CAD_ON));
 					/* Set effective user id back to root */
 					if (seteuid(0) == -1) {
 						tst_brkm(TBROK, cleanup,
-							"seteuid failed to "
-							"set the effective uid"
-							" to root");
+							 "seteuid failed to "
+							 "set the effective uid"
+							 " to root");
 						perror("seteuid");
 					}
 				} else {
@@ -146,44 +146,41 @@ main(int ac, char **av)
 			}
 			/* check return code */
 			if ((TEST_RETURN == -1) && (TEST_ERRNO == testcase[i].
-					exp_errno)) {
+						    exp_errno)) {
 				tst_resm(TPASS, "reboot(2) expected failure;"
-						" Got errno - %s : %s",
-						testcase[i].exp_errval,
-						testcase[i].err_desc);
+					 " Got errno - %s : %s",
+					 testcase[i].exp_errval,
+					 testcase[i].err_desc);
 			} else {
-				tst_resm(TFAIL,"reboot(2) failed to produce"
-						" expected error; %d, errno"
-					       ": %s and got %d",
-						testcase[i].exp_errno,
-						testcase[i].exp_errval,
-						TEST_ERRNO);
+				tst_resm(TFAIL, "reboot(2) failed to produce"
+					 " expected error; %d, errno"
+					 ": %s and got %d",
+					 testcase[i].exp_errno,
+					 testcase[i].exp_errval, TEST_ERRNO);
 			}
 
 			TEST_ERROR_LOG(TEST_ERRNO);
-		}	/*End of TEST LOOPS*/
-	}		/* End of TEST_LOOPING*/
+		}		/*End of TEST LOOPS */
+	}			/* End of TEST_LOOPING */
 
-	/*Clean up and exit*/
+	/*Clean up and exit */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
-}	/*End of main*/
+	 /*NOTREACHED*/ return 0;
+}				/*End of main */
 
 /*
  * setup_test() - This function sets the user as nobdy
  */
-int
-setup_test()
+int setup_test()
 {
-	if((ltpuser = getpwnam(nobody_uid)) == NULL) {
+	if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
 		tst_resm(TWARN, "\"nobody\" user not present. skipping test");
 		return -1;
 	}
 	if (seteuid(ltpuser->pw_uid) == -1) {
 		tst_resm(TWARN, "seteuid failed to "
-			"to set the effective uid to %d", ltpuser->pw_uid);
+			 "to set the effective uid to %d", ltpuser->pw_uid);
 		perror("seteuid");
 		return -1;
 	}
@@ -191,8 +188,7 @@ setup_test()
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -200,7 +196,7 @@ setup()
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	/* Check whether we are root*/
+	/* Check whether we are root */
 	if (geteuid() != 0) {
 		tst_brkm(TBROK, tst_exit, "Test must be run as root");
 	}
@@ -208,22 +204,20 @@ setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-}	/* End setup() */
+}				/* End setup() */
 
 /*
 * cleanup() - Performs one time cleanup for this test at
 * completion or premature exit
 */
-void
-cleanup()
+void cleanup()
 {
 	/*
-	* print timing stats if that option was specified.
-	* print errno log if that option was specified.
-	*/
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
 	TEST_CLEANUP;
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
-
+}				/* End cleanup() */

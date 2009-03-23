@@ -48,7 +48,7 @@
 
 #define cleanup tst_exit
 
-char *TCID="timerfd01";	/* Test program identifier */
+char *TCID = "timerfd01";	/* Test program identifier */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 /*
@@ -68,7 +68,8 @@ struct tmr_type {
 	char const *name;
 };
 
-unsigned long long getustime(int clockid) {
+unsigned long long getustime(int clockid)
+{
 	struct timespec tp;
 
 	if (clock_gettime((clockid_t) clockid, &tp)) {
@@ -79,29 +80,34 @@ unsigned long long getustime(int clockid) {
 	return 1000000ULL * tp.tv_sec + tp.tv_nsec / 1000;
 }
 
-void set_timespec(struct timespec *tmr, unsigned long long ustime) {
+void set_timespec(struct timespec *tmr, unsigned long long ustime)
+{
 
 	tmr->tv_sec = (time_t) (ustime / 1000000ULL);
-	tmr->tv_nsec = (long) (1000ULL * (ustime % 1000000ULL));
+	tmr->tv_nsec = (long)(1000ULL * (ustime % 1000000ULL));
 }
 
-int timerfd_create(int clockid, int flags) {
+int timerfd_create(int clockid, int flags)
+{
 
 	return syscall(__NR_timerfd_create, clockid, flags);
 }
 
 int timerfd_settime(int ufc, int flags, const struct itimerspec *utmr,
-		    struct itimerspec *otmr) {
+		    struct itimerspec *otmr)
+{
 
 	return syscall(__NR_timerfd_settime, ufc, flags, utmr, otmr);
 }
 
-int timerfd_gettime(int ufc, struct itimerspec *otmr) {
+int timerfd_gettime(int ufc, struct itimerspec *otmr)
+{
 
 	return syscall(__NR_timerfd_gettime, ufc, otmr);
 }
 
-long waittmr(int tfd, int timeo) {
+long waittmr(int tfd, int timeo)
+{
 	u_int64_t ticks;
 	struct pollfd pfd;
 
@@ -126,25 +132,27 @@ long waittmr(int tfd, int timeo) {
 
 int TST_TOTAL = 3;
 
-int main(int ac, char **av) {
+int main(int ac, char **av)
+{
 	int i, tfd;
 	long ticks;
 	unsigned long long tnow, ttmr;
 	u_int64_t uticks;
 	struct itimerspec tmr;
 	struct tmr_type clks[] = {
-		{ CLOCK_MONOTONIC, "CLOCK MONOTONIC" },
-		{ CLOCK_REALTIME, "CLOCK REALTIME" },
+		{CLOCK_MONOTONIC, "CLOCK MONOTONIC"},
+		{CLOCK_REALTIME, "CLOCK REALTIME"},
 	};
 
-        if((tst_kvercmp(2,6,25)) < 0) {
-          tst_resm(TCONF, "This test can only run on kernels that are ");
-          tst_resm(TCONF, "2.6.25 and higher");
-          exit(0);
-        }
+	if ((tst_kvercmp(2, 6, 25)) < 0) {
+		tst_resm(TCONF, "This test can only run on kernels that are ");
+		tst_resm(TCONF, "2.6.25 and higher");
+		exit(0);
+	}
 
 	for (i = 0; i < sizeof(clks) / sizeof(clks[0]); i++) {
-		fprintf(stdout, "\n\n---------------------------------------\n");
+		fprintf(stdout,
+			"\n\n---------------------------------------\n");
 		fprintf(stdout, "| testing %s\n", clks[i].name);
 		fprintf(stdout, "---------------------------------------\n\n");
 
@@ -171,7 +179,6 @@ int main(int ac, char **av) {
 		else
 			fprintf(stdout, "got timer ticks (%ld) after %llu ms\n",
 				ticks, (ttmr - tnow) / 1000);
-
 
 		fprintf(stdout, "absolute timer test (at 500 ms) ...\n");
 		tnow = getustime(clks[i].id);
@@ -208,8 +215,9 @@ int main(int ac, char **av) {
 		}
 		fprintf(stdout, "timerfd_gettime returned:\n"
 			"\tit_value = { %ld, %ld } it_interval = { %ld, %ld }\n",
-			(long) tmr.it_value.tv_sec, (long) tmr.it_value.tv_nsec,
-			(long) tmr.it_interval.tv_sec, (long) tmr.it_interval.tv_nsec);
+			(long)tmr.it_value.tv_sec, (long)tmr.it_value.tv_nsec,
+			(long)tmr.it_interval.tv_sec,
+			(long)tmr.it_interval.tv_nsec);
 		fprintf(stdout, "sleeping 1 second ...\n");
 		sleep(1);
 
@@ -221,7 +229,6 @@ int main(int ac, char **av) {
 		else
 			fprintf(stdout, "got timer ticks (%ld) after %llu ms\n",
 				ticks, (ttmr - tnow) / 1000);
-
 
 		fprintf(stdout, "O_NONBLOCK test ...\n");
 		tnow = getustime(clks[i].id);
@@ -245,9 +252,11 @@ int main(int ac, char **av) {
 		fcntl(tfd, F_SETFL, fcntl(tfd, F_GETFL, 0) | O_NONBLOCK);
 
 		if (read(tfd, &uticks, sizeof(uticks)) > 0)
-			fprintf(stdout, "whooops! timer ticks not zero when should have been\n");
+			fprintf(stdout,
+				"whooops! timer ticks not zero when should have been\n");
 		else if (errno != EAGAIN)
-			fprintf(stdout, "whooops! bad errno value (%d = '%s')!\n",
+			fprintf(stdout,
+				"whooops! bad errno value (%d = '%s')!\n",
 				errno, strerror(errno));
 		else
 			fprintf(stdout, "success\n");
@@ -261,9 +270,10 @@ int main(int ac, char **av) {
 }
 
 #else
-int TST_TOTAL = 0;              /* Total number of test cases. */
+int TST_TOTAL = 0;		/* Total number of test cases. */
 
-int main(){
+int main()
+{
 
 	tst_resm(TCONF, "This test needs a kernel that has timerfd syscall.");
 	return 0;

@@ -62,13 +62,13 @@ char *TCID = "sysctl03";
 int TST_TOTAL = 2;
 extern int Tst_count;
 
-int sysctl(int *name, int nlen, void *oldval, size_t *oldlenp,
-           void *newval, size_t newlen)
+int sysctl(int *name, int nlen, void *oldval, size_t * oldlenp,
+	   void *newval, size_t newlen)
 {
-	struct __sysctl_args args={name,nlen,oldval,oldlenp,newval,newlen};
+	struct __sysctl_args args =
+	    { name, nlen, oldval, oldlenp, newval, newlen };
 	return syscall(__NR__sysctl, &args);
 }
-
 
 #define SIZE(x) sizeof(x)/sizeof(x[0])
 #define OSNAMESZ 100
@@ -76,7 +76,7 @@ int sysctl(int *name, int nlen, void *oldval, size_t *oldlenp,
 void setup(void);
 void cleanup(void);
 
-int exp_enos[] = {EPERM, 0};
+int exp_enos[] = { EPERM, 0 };
 
 int main(int ac, char **av)
 {
@@ -90,7 +90,7 @@ int main(int ac, char **av)
 	struct passwd *ltpuser;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -115,8 +115,10 @@ int main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO != EPERM) {
-				tst_resm(TFAIL, "Expected EPERM (%d), got %d: %s",
-					 EPERM, TEST_ERRNO, strerror(TEST_ERRNO));
+				tst_resm(TFAIL,
+					 "Expected EPERM (%d), got %d: %s",
+					 EPERM, TEST_ERRNO,
+					 strerror(TEST_ERRNO));
 			} else {
 				tst_resm(TPASS, "Got expected EPERM error");
 			}
@@ -137,9 +139,8 @@ int main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "fork() failed");
 		}
 
-		if (pid == 0) {			/* child */
-			TEST(sysctl(name, SIZE(name), 0, 0, osname,
-				   osnamelth));
+		if (pid == 0) {	/* child */
+			TEST(sysctl(name, SIZE(name), 0, 0, osname, osnamelth));
 
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
@@ -157,7 +158,7 @@ int main(int ac, char **av)
 
 			cleanup();
 
-		} else {			/* parent */
+		} else {	/* parent */
 			/* wait for the child to finish */
 			wait(&status);
 		}
@@ -169,15 +170,13 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* test must be run as root */
 	if (geteuid() != 0) {
@@ -195,8 +194,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

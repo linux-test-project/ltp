@@ -50,10 +50,10 @@
  *              4. pass a pathname containing a file component
  *                 to rmdir() and check the return value and errno (expect
  *                 ENOTDIR
- *     	        5. Attempt to pass an invalid pathname with an address
+ *	        5. Attempt to pass an invalid pathname with an address
  *                 pointing outside the address space of the process,
  *                 as the argument to rmdir(), and expect to get EFAULT.
- *     	        6. Attempt to pass an invalid pathname with NULL
+ *		6. Attempt to pass an invalid pathname with NULL
  *                 as the argument to rmdir(), and expect to get EFAULT.
  *
  *	Cleanup:
@@ -93,59 +93,59 @@ void do_file_setup(char *);
 
 #define PERMS		0777
 
-char *TCID="rmdir02";           /* Test program identifier.    */
-extern int Tst_count;           /* Test Case counter for tst_* routines */
+char *TCID = "rmdir02";		/* Test program identifier.    */
+extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-int exp_enos[]={ENOTEMPTY, EBUSY, ENAMETOOLONG, ENOENT, ENOTDIR, EFAULT, 0};
+int exp_enos[] = { ENOTEMPTY, EBUSY, ENAMETOOLONG, ENOENT, ENOTDIR, EFAULT, 0 };
 
-char * bad_addr = 0;
+char *bad_addr = 0;
 
-char tstfile [255];
-char tstdir1 [255];
-char tstdir2 [255];
-char tstdir3 [255];
-char longname [255];
-char longpath [2*PATH_MAX];
-char cwd [255];
+char tstfile[255];
+char tstdir1[255];
+char tstdir2[255];
+char tstdir3[255];
+char longname[255];
+char longpath[2 * PATH_MAX];
+char cwd[255];
 
 struct test_case_t {
 	char *dir;
 	int error;
-	void (*set_cond)(int);
+	void (*set_cond) (int);
 } TC[] = {
 	/* The directory is not empty - ENOTEMPTY */
-	{tstdir1, ENOTEMPTY, set_condition},
-
-	/* The directory pathname is too long - ENAMETOOLONG */
-	{longpath, ENAMETOOLONG, set_condition},
-
-	/* A component of the pathname does not exists - ENOENT */
-	{tstdir2, ENOENT, set_condition},
-
-	/* The given argument is not a directory - ENOTDIR */
-	{tstdir3, ENOTDIR, set_condition},
-
+	{
+	tstdir1, ENOTEMPTY, set_condition},
+	    /* The directory pathname is too long - ENAMETOOLONG */
+	{
+	longpath, ENAMETOOLONG, set_condition},
+	    /* A component of the pathname does not exists - ENOENT */
+	{
+	tstdir2, ENOENT, set_condition},
+	    /* The given argument is not a directory - ENOTDIR */
+	{
+	tstdir3, ENOTDIR, set_condition},
 #if !defined(UCLINUX)
-	/* The argument is illegal - EFAULT */
-	{(char *)-1, EFAULT, NULL},
+	    /* The argument is illegal - EFAULT */
+	{
+	(char *)-1, EFAULT, NULL},
 #endif
-
-	/* The argument is illegal - EFAULT */
-	{NULL, EFAULT, NULL}
+	    /* The argument is illegal - EFAULT */
+	{
+	NULL, EFAULT, NULL}
 };
 int TST_TOTAL = (sizeof(TC) / sizeof(*TC));
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	int lc;             /* loop counter */
-	char *msg;          /* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int i;
 
 	/*
 	 * parse standard options
 	 */
-	if ((msg=parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -160,13 +160,13 @@ main(int ac, char **av)
 	/*
 	 * check looping state if -i option given
 	 */
-	for (lc=0; TEST_LOOPING(lc); lc++) {
-	 
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+
 		/* reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/* save current working directory */
-		getcwd(cwd,255);
+		getcwd(cwd, 255);
 
 		/* loop through the test cases */
 		for (i = 0; i < TST_TOTAL; i++) {
@@ -175,7 +175,7 @@ main(int ac, char **av)
 			chdir(cwd);
 
 			if (TC[i].set_cond != NULL) {
-				TC[i].set_cond(i+1);
+				TC[i].set_cond(i + 1);
 			}
 
 			TEST(rmdir(TC[i].dir));
@@ -204,42 +204,37 @@ main(int ac, char **av)
 		(void)rmdir(tstdir2);
 		(void)rmdir(tstdir3);
 
-	}   /* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/*
 	 * cleanup and exit
 	 */
 	cleanup();
-	/*NOTREACHED*/
+	 /*NOTREACHED*/ return 0;
 
-
-  return 0;
-
-}       /* End main */
+}				/* End main */
 
 /*
  * set_condition - set up starting conditions for the individual tests
  */
-void
-set_condition(int num)
+void set_condition(int num)
 {
 	int fd;
-	switch(num) {
+	switch (num) {
 	case 1:
 		/* set up for first test */
-		sprintf(tstdir1,"./tstdir1_%d",getpid());
-		sprintf(tstfile,"%s/tstfile_%d",tstdir1,getpid());
+		sprintf(tstdir1, "./tstdir1_%d", getpid());
+		sprintf(tstfile, "%s/tstfile_%d", tstdir1, getpid());
 
 		/* create a directory */
 		if (mkdir(tstdir1, PERMS) == -1) {
-			tst_brkm(TBROK,cleanup,"mkdir(%s, %#o) Failed",
+			tst_brkm(TBROK, cleanup, "mkdir(%s, %#o) Failed",
 				 tstdir1, PERMS);
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		/* create a file under tstdir1 */
 		do_file_setup(tstfile);
-					
+
 		break;
 	case 2:
 		create_longpath();
@@ -252,12 +247,11 @@ set_condition(int num)
 	case 4:
 		/* Initialize the test directory name and file name */
 		sprintf(tstdir3, "%s/tstdir3", tstfile);
-	
+
 		/* create a file */
 		if ((fd = creat(tstfile, PERMS)) == -1) {
 			tst_brkm(TBROK, cleanup, "creat() failed");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 		close(fd);
 		break;
 	default:
@@ -267,34 +261,35 @@ set_condition(int num)
 
 }
 
-int
-create_longpath()
+int create_longpath()
 {
-	sprintf(longname,"abcdefghivwxyzabcdefgmopqrsqrsrsthmopqrsqrsrstijklmnopjklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdabcdefghijklmopqrsqrsrstmnopqrqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyz_%d/",getpid());
+	sprintf(longname,
+		"abcdefghivwxyzabcdefgmopqrsqrsrsthmopqrsqrsrstijklmnopjklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdabcdefghijklmopqrsqrsrstmnopqrqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyz_%d/",
+		getpid());
 
 	chdir(cwd);
 
-	while(strlen(longpath) < PATH_MAX) {
+	while (strlen(longpath) < PATH_MAX) {
 		/*
-	   	 * if the longpath is not long enough
-	   	 * create a sub directory under it
-	   	 */
-	  	if (mkdir(longname, PERMS)== -1) {
-	  		tst_resm(TINFO, "mkdir failed in creae_longpath()");
-	    		break;
-	  	}
-	  	/*
-	   	 * save the path
-	   	 */
-	  	strcat(longpath,longname);
-	 
-	  	/*
-	   	 * cd to the sub directory
-	   	 */
-	  	if (chdir(longname) == -1 ) {
-	    		tst_resm(TINFO, "chdir failed in create_longpath()");
-	    		break;
-	  	}
+		 * if the longpath is not long enough
+		 * create a sub directory under it
+		 */
+		if (mkdir(longname, PERMS) == -1) {
+			tst_resm(TINFO, "mkdir failed in creae_longpath()");
+			break;
+		}
+		/*
+		 * save the path
+		 */
+		strcat(longpath, longname);
+
+		/*
+		 * cd to the sub directory
+		 */
+		if (chdir(longname) == -1) {
+			tst_resm(TINFO, "chdir failed in create_longpath()");
+			break;
+		}
 	}
 
 	/* resume original working directory */
@@ -303,11 +298,10 @@ create_longpath()
 	return (strlen(longpath) >= PATH_MAX) ? 0 : -1;
 }
 
-void
-remove_longpath()
+void remove_longpath()
 {
 	int len, i, j;
- 	int path_len;
+	int path_len;
 
 	chdir(cwd);
 
@@ -318,19 +312,19 @@ remove_longpath()
 	 * Since we can't rm directory with long pathname directly,
 	 * we remove it's sub directories one by one.
 	 */
-	for ( i = (path_len/len)-1; i>=0 ; i--) {
-		for (j = 1; j<= i; j++) {
+	for (i = (path_len / len) - 1; i >= 0; i--) {
+		for (j = 1; j <= i; j++) {
 			if (chdir(longname) == -1) {
 				tst_resm(TFAIL,
-					"failed in chdir %s, errno: %d "
-					, longname,errno);
+					 "failed in chdir %s, errno: %d ",
+					 longname, errno);
 				break;
 			}
 		}
-		if (rmdir(longname) == -1 ) {
+		if (rmdir(longname) == -1) {
 			tst_resm(TFAIL,
-				"failed in clean %s, errno: %d",
-				longname,errno);
+				 "failed in clean %s, errno: %d",
+				 longname, errno);
 			break;
 		}
 		chdir(cwd);
@@ -342,8 +336,7 @@ remove_longpath()
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -356,7 +349,7 @@ setup()
 
 #if !defined(UCLINUX)
 	bad_addr = mmap(0, 1, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
+			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
 	if (bad_addr == MAP_FAILED) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}
@@ -368,8 +361,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *              completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

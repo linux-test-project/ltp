@@ -91,149 +91,143 @@
 void setup();
 void cleanup();
 
-char *TCID="link06"; 		/* Test program identifier.    */
-int TST_TOTAL=1;    		/* Total number of test cases. */
+char *TCID = "link06";		/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-int exp_enos[]={EACCES, 0};
+int exp_enos[] = { EACCES, 0 };
 char *file1, *file2;		/* oldpath and newpath */
-
 
 /***********************************************************************
  * Main
  ***********************************************************************/
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-    int lc;		/* loop counter */
-    char *msg;		/* message returned from parse_opts */
-    char *test_desc;    /* test specific error message */
-   
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
+	char *test_desc;	/* test specific error message */
+
     /***************************************************************
      * parse standard options
      ***************************************************************/
-    if ( (msg=parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *) NULL ) {
-	tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	tst_exit();
-    }
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+		tst_exit();
+	}
 
     /***************************************************************
      * perform global setup for test
      ***************************************************************/
-    setup();
+	setup();
 
     /***************************************************************
      * check looping state if -c option given
      ***************************************************************/
-    for (lc=0; TEST_LOOPING(lc); lc++) {
-	test_desc = "EACCES";
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+		test_desc = "EACCES";
 
-	/* reset Tst_count in case we are looping. */
-	Tst_count=0;
+		/* reset Tst_count in case we are looping. */
+		Tst_count = 0;
 
-	/*
- 	 *  Call link(2)
-  	 */
-	TEST(link(file1, file2));
+		/*
+		 *  Call link(2)
+		 */
+		TEST(link(file1, file2));
 
-	/* Check return code from link(2) */
-	if (TEST_RETURN != -1) {
-		tst_resm(TFAIL,"link() returned %d,"
-			"expected -1, errno=%d",TEST_RETURN,
-			exp_enos[0]);
-	} else {
-		TEST_ERROR_LOG(TEST_ERRNO);
-	
-		if (TEST_ERRNO == exp_enos[0]) {
-			tst_resm(TPASS,"link() fails with expected "
-			"error EACCES errno:%d",TEST_ERRNO);
-		} else {
-			tst_resm(TFAIL, "link() fails, %s, "
-				 "errno=%d, expected errno=%d",
-				 test_desc, TEST_ERRNO,
+		/* Check return code from link(2) */
+		if (TEST_RETURN != -1) {
+			tst_resm(TFAIL, "link() returned %d,"
+				 "expected -1, errno=%d", TEST_RETURN,
 				 exp_enos[0]);
+		} else {
+			TEST_ERROR_LOG(TEST_ERRNO);
+
+			if (TEST_ERRNO == exp_enos[0]) {
+				tst_resm(TPASS, "link() fails with expected "
+					 "error EACCES errno:%d", TEST_ERRNO);
+			} else {
+				tst_resm(TFAIL, "link() fails, %s, "
+					 "errno=%d, expected errno=%d",
+					 test_desc, TEST_ERRNO, exp_enos[0]);
+			}
 		}
-	}
-    }	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
     /***************************************************************
      * cleanup and exit
      ***************************************************************/
-    cleanup();
+	cleanup();
 
-    return 0;
-}	/* End main */
+	return 0;
+}				/* End main */
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void
-setup()
+void setup()
 {
-	char Path_name[PATH_MAX];       /* Buffer to hold current path */
+	char Path_name[PATH_MAX];	/* Buffer to hold current path */
 	int fd;
 
-    /* capture signals */
-    tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	/* capture signals */
+	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-    /* Pause if that option was specified */
-    TEST_PAUSE;
+	/* Pause if that option was specified */
+	TEST_PAUSE;
 
-    /* make a temp directory and cd to it */
-    tst_tmpdir();
-        /* Get the current working directory of the process */
-        if (getcwd(Path_name, sizeof(Path_name)) == NULL) {
-                tst_brkm(TBROK, cleanup,
-                         "getcwd(3) fails to get working directory of process");
-        }
+	/* make a temp directory and cd to it */
+	tst_tmpdir();
+	/* Get the current working directory of the process */
+	if (getcwd(Path_name, sizeof(Path_name)) == NULL) {
+		tst_brkm(TBROK, cleanup,
+			 "getcwd(3) fails to get working directory of process");
+	}
 
-        /* Modify mode permissions on test directory */
-        if (chmod(Path_name, MODE_TO) < 0) {
-                tst_brkm(TBROK, cleanup, "chmod(2) of %s failed", Path_name);
-        }
-   
-        /* create regular file*/
-        if ( (fd=creat("regfile", 0777)) == -1 ) {
-            tst_brkm(TBROK, cleanup, "creat(regfile, 0777) failed, errno:%d %s",
-            errno, strerror(errno));
-        }
-        close(fd);
+	/* Modify mode permissions on test directory */
+	if (chmod(Path_name, MODE_TO) < 0) {
+		tst_brkm(TBROK, cleanup, "chmod(2) of %s failed", Path_name);
+	}
+
+	/* create regular file */
+	if ((fd = creat("regfile", 0777)) == -1) {
+		tst_brkm(TBROK, cleanup,
+			 "creat(regfile, 0777) failed, errno:%d %s", errno,
+			 strerror(errno));
+	}
+	close(fd);
 
 	/* set paths for test */
 	file1 = "regfile";
 	file2 = "new_test_file";
-   
+
 	/* set effective user ID to NOBODY_USER using seteuid */
 	if (seteuid(NOBODY_USER) != 0) {
 		tst_resm(TFAIL, "seteuid to NOBODY_USER failed");
 		cleanup();
 	}
 
-}	/* End setup() */
-
+}				/* End setup() */
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void
-cleanup()
+void cleanup()
 {
-     /* set back effective user ID to ROOT_USER using seteuid */
-    if (seteuid(ROOT_USER) != 0) {
-            tst_resm(TFAIL, "seteuid to ROOT_USER failed");
-    }
+	/* set back effective user ID to ROOT_USER using seteuid */
+	if (seteuid(ROOT_USER) != 0) {
+		tst_resm(TFAIL, "seteuid to ROOT_USER failed");
+	}
 
-    /*
-     * print timing stats if that option was specified.
-     * print errno log if that option was specified.
-     */
-    TEST_CLEANUP;
+	/*
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
+	TEST_CLEANUP;
 
-    /* Remove tmp dir and all files in it */
-    tst_rmdir();
+	/* Remove tmp dir and all files in it */
+	tst_rmdir();
 
-    /* exit with return code appropriate for results */
-    tst_exit();
-}	/* End cleanup() */
-
+	/* exit with return code appropriate for results */
+	tst_exit();
+}				/* End cleanup() */

@@ -59,10 +59,11 @@ char *TCID = "sysctl05";
 int TST_TOTAL = 2;
 extern int Tst_count;
 
-int sysctl(int *name, int nlen, void *oldval, size_t *oldlenp,
-           void *newval, size_t newlen)
+int sysctl(int *name, int nlen, void *oldval, size_t * oldlenp,
+	   void *newval, size_t newlen)
 {
-	struct __sysctl_args args={name,nlen,oldval,oldlenp,newval,newlen};
+	struct __sysctl_args args =
+	    { name, nlen, oldval, oldlenp, newval, newlen };
 	return syscall(__NR__sysctl, &args);
 }
 
@@ -71,7 +72,7 @@ int sysctl(int *name, int nlen, void *oldval, size_t *oldlenp,
 char osname[BUFSIZ];
 size_t osnamelth;
 
-int exp_enos[] = {EFAULT, 0};
+int exp_enos[] = { EFAULT, 0 };
 
 void setup(void);
 void cleanup(void);
@@ -84,14 +85,17 @@ struct testcases {
 	size_t *oldlen;
 	void *newval;
 	int newlen;
-	int (*cleanup)();
+	int (*cleanup) ();
 	int exp_retval;
 	int exp_errno;
 } testcases[] = {
-	{ "Test for EFAULT: invalid oldlen", { CTL_KERN, KERN_OSRELEASE },
-		2, osname, (void *)-1, NULL, 0, NULL, -1, EFAULT },
-	{ "Test for EFAULT: invalid oldval", { CTL_KERN, KERN_VERSION },
-		2, (void *)-1, &osnamelth, NULL, 0, NULL, -1, EFAULT }
+	{
+		"Test for EFAULT: invalid oldlen", {
+	CTL_KERN, KERN_OSRELEASE},
+		    2, osname, (void *)-1, NULL, 0, NULL, -1, EFAULT}, {
+		"Test for EFAULT: invalid oldval", {
+	CTL_KERN, KERN_VERSION},
+		    2, (void *)-1, &osnamelth, NULL, 0, NULL, -1, EFAULT}
 };
 
 #if !defined(UCLINUX)
@@ -101,10 +105,10 @@ int main(int ac, char **av)
 	int lc;
 	char *msg;
 	int i;
-	int ret=0;
+	int ret = 0;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -123,8 +127,8 @@ int main(int ac, char **av)
 			osnamelth = SIZE(osname);
 
 			TEST(sysctl(testcases[i].name, testcases[i].size,
-				     testcases[i].oldval, testcases[i].oldlen,
-				     testcases[i].newval, testcases[i].newlen));
+				    testcases[i].oldval, testcases[i].oldlen,
+				    testcases[i].newval, testcases[i].newlen));
 
 			if (TEST_RETURN != testcases[i].exp_retval) {
 				tst_resm(TFAIL, "sysctl(2) returned unexpected "
@@ -152,8 +156,7 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 #else
@@ -169,8 +172,7 @@ int main()
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -183,8 +185,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

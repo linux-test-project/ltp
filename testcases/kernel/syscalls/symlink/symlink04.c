@@ -82,16 +82,15 @@
 #define  SYMFILE	"slink_file"
 #define FILE_MODE       S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
 
-char *TCID="symlink04";		/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "symlink04";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-int exp_enos[]={0};
+int exp_enos[] = { 0 };
 
-void setup();		/* Setup function for the test */
-void cleanup();		/* Cleanup function for the test */
+void setup();			/* Setup function for the test */
+void cleanup();			/* Cleanup function for the test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	struct stat stat_buf;	/* stat structure buffer */
 	int lc;			/* loop counter */
@@ -99,11 +98,10 @@ main(int ac, char **av)
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/* Perform global setup for test */
 	setup();
@@ -114,7 +112,7 @@ main(int ac, char **av)
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/*
 		 * Call symlink(2) to create a symlink of
@@ -140,10 +138,9 @@ main(int ac, char **av)
 				 */
 				if (lstat(SYMFILE, &stat_buf) < 0) {
 					tst_brkm(TFAIL, cleanup, "lstat(2) of "
-						"%s failed, error:%d", SYMFILE,
-						errno);
-					/*NOTREACHED*/
-				}
+						 "%s failed, error:%d", SYMFILE,
+						 errno);
+				 /*NOTREACHED*/}
 
 				/* Check if the st_mode contains a link  */
 				if (!S_ISLNK(stat_buf.st_mode)) {
@@ -152,8 +149,8 @@ main(int ac, char **av)
 						 TESTFILE);
 				} else {
 					tst_resm(TPASS, "symlink(%s, %s) "
-						"functionality successful",
-						TESTFILE, SYMFILE);
+						 "functionality successful",
+						 TESTFILE, SYMFILE);
 				}
 			} else {
 				tst_resm(TPASS, "Call succeeded");
@@ -165,19 +162,15 @@ main(int ac, char **av)
 			tst_brkm(TBROK, cleanup,
 				 "unlink(%s) Failed, errno=%d : %s",
 				 SYMFILE, errno, strerror(errno));
-			/*NOTREACHED*/
-		}
-		Tst_count++;		/* incr TEST_LOOP counter */
-	}	/* End for TEST_LOOPING */
+		 /*NOTREACHED*/}
+		Tst_count++;	/* incr TEST_LOOP counter */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
-	/*NOTREACHED*/
+	 /*NOTREACHED*/ return 0;
 
-
-  return 0;
-
-}	/* End main */
+}				/* End main */
 
 /*
  * void
@@ -185,8 +178,7 @@ main(int ac, char **av)
  *  Create a temporary directory and change directory to it.
  *  Create a test file under temporary directory and close it
  */
-void
-setup()
+void setup()
 {
 	int fd;			/* file handle for testfile */
 
@@ -204,20 +196,18 @@ setup()
 	tst_tmpdir();
 
 	/* creat/open a testfile */
-	if ((fd = open(TESTFILE, O_RDWR|O_CREAT, FILE_MODE)) == -1) {
+	if ((fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %#o) Failed, errno=%d : %s",
 			 TESTFILE, FILE_MODE, errno, strerror(errno));
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/* Close the temporary file created above */
 	if (close(fd) == -1) {
 		tst_resm(TBROK, "close(%s) Failed, errno=%d : %s",
-		TESTFILE, errno, strerror(errno));
+			 TESTFILE, errno, strerror(errno));
 	}
-}	/* End setup() */
-
+}				/* End setup() */
 
 /*
  * void
@@ -225,8 +215,7 @@ setup()
  *             completion or premature exit.
  *  Remove the test directory and testfile created in the setup.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -239,4 +228,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

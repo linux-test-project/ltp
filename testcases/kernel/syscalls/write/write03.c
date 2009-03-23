@@ -56,13 +56,13 @@
 #include <sys/mman.h>
 
 /* 0 terminated list of expected errnos */
-int exp_enos[] = {14,0};
+int exp_enos[] = { 14, 0 };
 
 char *TCID = "write03";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-char * bad_addr = 0;
+char *bad_addr = 0;
 
 void setup(void);
 void cleanup(void);
@@ -73,18 +73,17 @@ char filename[100];
 
 int main(int argc, char **argv)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	char wbuf[BUFSIZ], rbuf[BUFSIZ];
 	int fd;
 
 	/* parse standard options */
-	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) !=
+	if ((msg = parse_opts(argc, argv, (option_t *) NULL, NULL)) !=
 	    (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/* global setup */
 	setup();
@@ -103,36 +102,31 @@ int main(int argc, char **argv)
 		if (fd < 0) {
 			tst_resm(TBROK, "creating a new file failed");
 			cleanup();
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		(void)memset(wbuf, '0', 100);
 
 		if (write(fd, wbuf, 100) == -1) {
 			tst_resm(TFAIL, "failed to write to %s", filename);
 			cleanup();
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		if (write(fd, bad_addr, 100) != -1) {
 			tst_resm(TFAIL, "write(2) failed to fail");
 			cleanup();
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 		TEST_ERROR_LOG(errno);
 		close(fd);
 
 		if ((fd = open(filename, O_RDONLY)) == -1) {
 			tst_resm(TBROK, "open(2) failed, errno: %d", errno);
 			cleanup();
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		if (read(fd, rbuf, 100) == -1) {
 			tst_resm(TBROK, "read(2) failed, errno: %d", errno);
 			cleanup();
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		if (memcmp(wbuf, rbuf, 100) == 0) {
 			tst_resm(TPASS, "failure of write(2) didnot corrupt "
@@ -145,8 +139,7 @@ int main(int argc, char **argv)
 		close(fd);
 	}
 	cleanup();
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 #else
@@ -162,8 +155,7 @@ int main()
 /*
  * setup() - performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -183,20 +175,19 @@ setup(void)
 
 	sprintf(filename, "./write03.%d", getpid());
 
-        bad_addr = mmap(0, 1, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
-        if (bad_addr == MAP_FAILED) {
-            printf("mmap failed\n");
-        }
+	bad_addr = mmap(0, 1, PROT_NONE,
+			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
+	if (bad_addr == MAP_FAILED) {
+		printf("mmap failed\n");
+	}
 
 }
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
- * 		completion or premature exit
+ *		completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -209,5 +200,4 @@ cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}

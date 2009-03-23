@@ -27,19 +27,19 @@
  *    AUTHOR		: Robbie Williamson <robbiew@us.ibm.com>
  *
  *    SIGNALS
- * 	Uses SIGUSR1 to pause before test if option set.
- * 	(See the parse_opts(3) man page).
+ *	Uses SIGUSR1 to pause before test if option set.
+ *	(See the parse_opts(3) man page).
  *
  *    DESCRIPTION
  *	This is a test for a glibc bug for the clone(2) system call.
  *
- * 	Setup:
- * 	  Setup signal handling.
+ *	Setup:
+ *	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
  *
- * 	Test:
+ *	Test:
  *	 Loop if the proper options are given.
- * 	  Call clone() with only SIGCHLD flag
+ *	  Call clone() with only SIGCHLD flag
  *
  *	  CHILD:
  *		return 0;
@@ -51,8 +51,8 @@
  *		else
  *			test failed
  *
- * 	Cleanup:
- * 	  Print errno log and/or timing stats if options given
+ *	Cleanup:
+ *	  Print errno log and/or timing stats if options given
  *
  * USAGE:  <for command-line>
  *  clone01 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-h] [-f] [-p]
@@ -83,13 +83,12 @@
 #define TRUE 1
 #define FALSE 0
 
-
 static void setup();
 static void cleanup();
 static int do_child();
 
-char *TCID="clone07";		/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "clone07";		/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 void sigsegv_handler(int);
@@ -97,16 +96,15 @@ void sigusr2_handler(int);
 static int child_pid;
 static int fail = FALSE;
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	void *child_stack;	/* stack for child */
-   
+
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL))
 	    != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
@@ -115,47 +113,49 @@ main(int ac, char **av)
 	setup();
 
 	/* Allocate stack for child */
-	if((child_stack = (void *) malloc(CHILD_STACK_SIZE)) == NULL) {
+	if ((child_stack = (void *)malloc(CHILD_STACK_SIZE)) == NULL) {
 		tst_brkm(TBROK, cleanup, "Cannot allocate stack for child");
 	}
 
 	/* check looping state if -i option given */
-	for (lc=0; TEST_LOOPING(lc); lc++) {
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/*
 		 * Call clone(2)
 		 */
 #if defined(__hppa__)
-		child_pid=clone(do_child, child_stack, SIGCHLD, NULL);
+		child_pid = clone(do_child, child_stack, SIGCHLD, NULL);
 #elif defined(__ia64__)
-		child_pid=clone2(do_child, child_stack,
-				CHILD_STACK_SIZE, SIGCHLD, NULL,
-				NULL, NULL, NULL);
+		child_pid = clone2(do_child, child_stack,
+				   CHILD_STACK_SIZE, SIGCHLD, NULL,
+				   NULL, NULL, NULL);
 #else
-		child_pid=(clone(do_child, child_stack + CHILD_STACK_SIZE, SIGCHLD, NULL));
+		child_pid =
+		    (clone
+		     (do_child, child_stack + CHILD_STACK_SIZE, SIGCHLD, NULL));
 #endif
 		wait(NULL);
 		free(child_stack);
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
-	if (fail==FALSE)
-		tst_resm(TPASS,"Use of return() in child did not cause SIGSEGV");
-	else{
-		tst_resm(TFAIL,"Use of return() in child caused SIGSEGV");
-        }
-  
+	if (fail == FALSE)
+		tst_resm(TPASS,
+			 "Use of return() in child did not cause SIGSEGV");
+	else {
+		tst_resm(TFAIL, "Use of return() in child caused SIGSEGV");
+	}
+
 	cleanup();
 
 	return 0;
 
-}	/* End main */
+}				/* End main */
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup()
+void setup()
 {
 	struct sigaction def_act;
 	struct sigaction act;
@@ -165,27 +165,27 @@ setup()
 
 	act.sa_handler = sigsegv_handler;
 	act.sa_flags = SA_RESTART;
-        if ((sigaction(SIGSEGV, &act, NULL)) == -1) {
-                tst_resm(TWARN, "sigaction() for SIGSEGV failed in test_setup()");
-        }
+	if ((sigaction(SIGSEGV, &act, NULL)) == -1) {
+		tst_resm(TWARN,
+			 "sigaction() for SIGSEGV failed in test_setup()");
+	}
 
-        /* Setup signal handler for SIGUSR2 */
-        def_act.sa_handler = sigusr2_handler;
-        def_act.sa_flags = SA_RESTART|SA_RESETHAND;
+	/* Setup signal handler for SIGUSR2 */
+	def_act.sa_handler = sigusr2_handler;
+	def_act.sa_flags = SA_RESTART | SA_RESETHAND;
 
-        if ((sigaction(SIGUSR2, &def_act, NULL)) == -1) {
-                tst_resm(TWARN, "sigaction() for SIGUSR2 failed in test_setup()");
-        }
+	if ((sigaction(SIGUSR2, &def_act, NULL)) == -1) {
+		tst_resm(TWARN,
+			 "sigaction() for SIGUSR2 failed in test_setup()");
+	}
 
-}	/* End setup() */
-
+}				/* End setup() */
 
 /*
  *cleanup() -  performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 
 	/*
@@ -194,35 +194,31 @@ cleanup()
 	 */
 	TEST_CLEANUP;
 
-	kill(child_pid,SIGKILL);
+	kill(child_pid, SIGKILL);
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */
 
 /*
  * do_child() - function executed by child
  */
-int
-do_child(void)
+int do_child(void)
 {
 	return 0;
 }
 
-void
-sigsegv_handler(int sig)
+void sigsegv_handler(int sig)
 {
-  if (child_pid==0){
-  	kill(getppid(), SIGUSR2);
-	_exit(42);
-  }
+	if (child_pid == 0) {
+		kill(getppid(), SIGUSR2);
+		_exit(42);
+	}
 }
 
 /* sig_default_handler() - Default handler for parent */
-void
-sigusr2_handler(int sig)
+void sigusr2_handler(int sig)
 {
-  if (child_pid!=0){
-  	fail=TRUE;
-  }
+	if (child_pid != 0) {
+		fail = TRUE;
+	}
 }
-

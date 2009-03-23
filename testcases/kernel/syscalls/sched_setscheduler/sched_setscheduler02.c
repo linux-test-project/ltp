@@ -60,7 +60,7 @@ char *TCID = "sched_setscheduler02";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-int exp_enos[] = {EPERM, 0};
+int exp_enos[] = { EPERM, 0 };
 extern struct passwd *my_getpwnam(char *);
 
 void setup(void);
@@ -70,8 +70,8 @@ char user1name[] = "nobody";
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	struct passwd *nobody;
 	pid_t pid;
@@ -79,10 +79,9 @@ int main(int ac, char **av)
 	int status;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	setup();
 
@@ -98,7 +97,7 @@ int main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "fork failed");
 		}
 
-		if (pid == 0) {		/* child */
+		if (pid == 0) {	/* child */
 			param.sched_priority = 1;
 
 			nobody = my_getpwnam(user1name);
@@ -122,10 +121,10 @@ int main(int ac, char **av)
 			} else {
 				tst_resm(TPASS, "got EPERM");
 			}
-		} else {		/* parent */
+		} else {	/* parent */
 			/* let the child carry on */
 			wait(&status);
-			if (WIFEXITED(status) != 0) {  /* Exit with errors */
+			if (WIFEXITED(status) != 0) {	/* Exit with errors */
 				exit(WEXITSTATUS(status));
 			} else {
 				exit(0);
@@ -137,17 +136,14 @@ int main(int ac, char **av)
 		}
 	}
 	cleanup();
-	/*NOTREACHED*/
-
-  return 0;
+	 /*NOTREACHED*/ return 0;
 
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* must run test as root */
 	if (geteuid() != 0) {
@@ -165,8 +161,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

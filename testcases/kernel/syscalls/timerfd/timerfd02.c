@@ -73,13 +73,13 @@
 #define TFD_CLOEXEC O_CLOEXEC
 
 /* Extern Global Variables */
-extern int  Tst_count;               /* counter for tst_xxx routines.         */
-extern char *TESTDIR;                /* temporary dir created by tst_tmpdir() */
+extern int Tst_count;		/* counter for tst_xxx routines.         */
+extern char *TESTDIR;		/* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
-char *TCID     = "timerfd02";        /* test program identifier.              */
-int  testno;
-int  TST_TOTAL = 1;                  /* total number of tests in this file.   */
+char *TCID = "timerfd02";	/* test program identifier.              */
+int testno;
+int TST_TOTAL = 1;		/* total number of tests in this file.   */
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -99,13 +99,14 @@ int  TST_TOTAL = 1;                  /* total number of tests in this file.   */
 /*              On success - Exits calling tst_exit(). With '0' return code.  */
 /*                                                                            */
 /******************************************************************************/
-extern void cleanup() {
-  /* Remove tmp dir and all files in it */
-  TEST_CLEANUP;
-  tst_rmdir();
+extern void cleanup()
+{
+	/* Remove tmp dir and all files in it */
+	TEST_CLEANUP;
+	tst_rmdir();
 
-  /* Exit with appropriate return code. */
-  tst_exit();
+	/* Exit with appropriate return code. */
+	tst_exit();
 }
 
 /* Local  Functions */
@@ -126,72 +127,79 @@ extern void cleanup() {
 /*              On success - returns 0.                                       */
 /*                                                                            */
 /******************************************************************************/
-void setup() {
-  /* Capture signals if any */
-  /* Create temporary directories */
-  TEST_PAUSE;
-  tst_tmpdir();
+void setup()
+{
+	/* Capture signals if any */
+	/* Create temporary directories */
+	TEST_PAUSE;
+	tst_tmpdir();
 }
 
-int main (int argc, char *argv[]) {
-  int fd, coe;
-  int lc;                 /* loop counter */
-  char *msg;              /* message returned from parse_opts */
+int main(int argc, char *argv[])
+{
+	int fd, coe;
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
-  /* Parse standard options given to run the test. */
-  msg = parse_opts(argc, argv, (option_t *) NULL, NULL);
-  if (msg != (char *) NULL) {
-      tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-      tst_exit();
-  }
-  if((tst_kvercmp(2, 6, 27)) < 0) {
-                tst_resm(TCONF, "This test can only run on kernels that are 2.6.27 and higher");
-                tst_exit();
-  }
-  setup();
+	/* Parse standard options given to run the test. */
+	msg = parse_opts(argc, argv, (option_t *) NULL, NULL);
+	if (msg != (char *)NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+		tst_exit();
+	}
+	if ((tst_kvercmp(2, 6, 27)) < 0) {
+		tst_resm(TCONF,
+			 "This test can only run on kernels that are 2.6.27 and higher");
+		tst_exit();
+	}
+	setup();
 
-   /* Check looping state if -i option given */
-  for (lc = 0; TEST_LOOPING(lc); ++lc) {
-       Tst_count = 0;
-       for (testno=0; testno < TST_TOTAL; ++testno) {
-            fd = syscall (__NR_timerfd_create, CLOCK_REALTIME, 0);
-            if (fd == -1) {
-                tst_resm(TFAIL, "timerfd_create(0) failed");
-                cleanup();
-                tst_exit();
-            }
-            coe = fcntl (fd, F_GETFD);
-            if (coe == -1) {
-                tst_brkm(TBROK, cleanup, "fcntl failed");
-                tst_exit();
-            }
-            if (coe & FD_CLOEXEC) {
-                tst_resm(TFAIL, "timerfd_create(0) set close-on-exec flag");
-                cleanup();
-                tst_exit();
-            }
-            close (fd);
+	/* Check looping state if -i option given */
+	for (lc = 0; TEST_LOOPING(lc); ++lc) {
+		Tst_count = 0;
+		for (testno = 0; testno < TST_TOTAL; ++testno) {
+			fd = syscall(__NR_timerfd_create, CLOCK_REALTIME, 0);
+			if (fd == -1) {
+				tst_resm(TFAIL, "timerfd_create(0) failed");
+				cleanup();
+				tst_exit();
+			}
+			coe = fcntl(fd, F_GETFD);
+			if (coe == -1) {
+				tst_brkm(TBROK, cleanup, "fcntl failed");
+				tst_exit();
+			}
+			if (coe & FD_CLOEXEC) {
+				tst_resm(TFAIL,
+					 "timerfd_create(0) set close-on-exec flag");
+				cleanup();
+				tst_exit();
+			}
+			close(fd);
 
-            fd = syscall (__NR_timerfd_create, CLOCK_REALTIME, TFD_CLOEXEC);
-            if (fd == -1) {
-                tst_resm(TFAIL, "timerfd_create(TFD_CLOEXEC) failed");
-                cleanup();
-                tst_exit();
-            }
-            coe = fcntl (fd, F_GETFD);
-            if (coe == -1) {
-                tst_brkm(TBROK, cleanup, "fcntl failed");
-                tst_exit();
-            }
-            if ((coe & FD_CLOEXEC) == 0) {
-                 tst_resm(TFAIL, "timerfd_create(TFD_CLOEXEC) set close-on-exec flag");
-                 cleanup();
-                 tst_exit();
-            }
-            close (fd);
-            tst_resm(TPASS, "timerfd_create(TFD_CLOEXEC) Passed");
-            cleanup();
-           }
-      }
-      tst_exit();
+			fd = syscall(__NR_timerfd_create, CLOCK_REALTIME,
+				     TFD_CLOEXEC);
+			if (fd == -1) {
+				tst_resm(TFAIL,
+					 "timerfd_create(TFD_CLOEXEC) failed");
+				cleanup();
+				tst_exit();
+			}
+			coe = fcntl(fd, F_GETFD);
+			if (coe == -1) {
+				tst_brkm(TBROK, cleanup, "fcntl failed");
+				tst_exit();
+			}
+			if ((coe & FD_CLOEXEC) == 0) {
+				tst_resm(TFAIL,
+					 "timerfd_create(TFD_CLOEXEC) set close-on-exec flag");
+				cleanup();
+				tst_exit();
+			}
+			close(fd);
+			tst_resm(TPASS, "timerfd_create(TFD_CLOEXEC) Passed");
+			cleanup();
+		}
+	}
+	tst_exit();
 }

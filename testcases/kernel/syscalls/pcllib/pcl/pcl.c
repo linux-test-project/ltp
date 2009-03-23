@@ -25,7 +25,6 @@
 #include "pcl_config.h"
 #include "pcl.h"
 
-
 #if defined(CO_USE_UCONEXT)
 #include <ucontext.h>
 
@@ -40,14 +39,12 @@ typedef jmp_buf co_core_ctx_t;
 #include <signal.h>
 #endif
 
-
 /*
  * The following value must be power of two ( N^2 ).
  */
 #define CO_STK_ALIGN 256
 #define CO_STK_MIN (4 * 1024)
 #define CO_MIN_SIZE (sizeof(coroutine) + CO_STK_MIN)
-
 
 typedef struct s_co_ctx {
 	co_core_ctx_t cc;
@@ -58,10 +55,9 @@ typedef struct s_coroutine {
 	int alloc;
 	struct s_coroutine *caller;
 	struct s_coroutine *restarget;
-	void (*func)(void *);
+	void (*func) (void *);
 	void *data;
 } coroutine;
-
 
 static coroutine co_main;
 static coroutine *co_curr = &co_main;
@@ -78,26 +74,26 @@ static co_ctx_t ctx_caller;
 
 #endif /* #if defined(CO_USE_SIGCONTEXT) */
 
-
-
-static int co_ctx_sdir(unsigned long psp) {
+static int co_ctx_sdir(unsigned long psp)
+{
 	int nav = 0;
-	unsigned long csp = (unsigned long) &nav;
+	unsigned long csp = (unsigned long)&nav;
 
-	return psp > csp ? -1: +1;
+	return psp > csp ? -1 : +1;
 }
 
-
-static int co_ctx_stackdir(void) {
+static int co_ctx_stackdir(void)
+{
 	int cav = 0;
 
-	return co_ctx_sdir((unsigned long) &cav);
+	return co_ctx_sdir((unsigned long)&cav);
 }
-
 
 #if defined(CO_USE_UCONEXT)
 
-static int co_set_context(co_ctx_t *ctx, void *func, char *stkbase, long stksiz) {
+static int co_set_context(co_ctx_t * ctx, void *func, char *stkbase,
+			  long stksiz)
+{
 
 	if (getcontext(&ctx->cc))
 		return -1;
@@ -113,8 +109,8 @@ static int co_set_context(co_ctx_t *ctx, void *func, char *stkbase, long stksiz)
 	return 0;
 }
 
-
-static void co_switch_context(co_ctx_t *octx, co_ctx_t *nctx) {
+static void co_switch_context(co_ctx_t * octx, co_ctx_t * nctx)
+{
 
 	if (swapcontext(&octx->cc, &nctx->cc) < 0) {
 		fprintf(stderr, "[PCL] Context switch failed: curr=%p\n",
@@ -143,9 +139,10 @@ static void co_switch_context(co_ctx_t *octx, co_ctx_t *nctx) {
  * User-Space Thread Creation'' from Ralf S. Engelschall.
  */
 
-static void co_ctx_bootstrap(void) {
-	co_ctx_t * volatile ctx_starting;
-	void (* volatile ctx_starting_func)(void);
+static void co_ctx_bootstrap(void)
+{
+	co_ctx_t *volatile ctx_starting;
+	void (*volatile ctx_starting_func) (void);
 
 	/*
 	 * Switch to the final signal mask (inherited from parent)
@@ -158,7 +155,7 @@ static void co_ctx_bootstrap(void) {
 	 * a local context until the thread is scheduled for real.
 	 */
 	ctx_starting = ctx_creating;
-	ctx_starting_func = (void (*)(void)) ctx_creating_func;
+	ctx_starting_func = (void (*)(void))ctx_creating_func;
 
 	/*
 	 * Save current machine state (on new stack) and
@@ -173,13 +170,14 @@ static void co_ctx_bootstrap(void) {
 	 */
 	ctx_starting_func();
 
-	fprintf(stderr, "[PCL] Hmm, you really shouldn't reach this point: curr=%p\n",
+	fprintf(stderr,
+		"[PCL] Hmm, you really shouldn't reach this point: curr=%p\n",
 		co_curr);
 	exit(1);
 }
 
-
-static void co_ctx_trampoline(int sig) {
+static void co_ctx_trampoline(int sig)
+{
 	/*
 	 * Save current machine state and _immediately_ go back with
 	 * a standard "return" (to stop the signal handler situation)
@@ -204,8 +202,9 @@ static void co_ctx_trampoline(int sig) {
 	co_ctx_bootstrap();
 }
 
-
-static int co_set_context(co_ctx_t *ctx, void *func, char *stkbase, long stksiz) {
+static int co_set_context(co_ctx_t * ctx, void *func, char *stkbase,
+			  long stksiz)
+{
 	struct sigaction sa;
 	struct sigaction osa;
 	sigset_t osigs;
@@ -327,7 +326,9 @@ static int co_set_context(co_ctx_t *ctx, void *func, char *stkbase, long stksiz)
 
 #else /* #if defined(CO_USE_SIGCONTEXT) */
 
-static int co_set_context(co_ctx_t *ctx, void *func, char *stkbase, long stksiz) {
+static int co_set_context(co_ctx_t * ctx, void *func, char *stkbase,
+			  long stksiz)
+{
 	char *stack;
 
 	stack = stkbase + stksiz - sizeof(int);
@@ -336,22 +337,22 @@ static int co_set_context(co_ctx_t *ctx, void *func, char *stkbase, long stksiz)
 
 #if defined(__GLIBC__) && defined(__GLIBC_MINOR__) \
     && __GLIBC__ >= 2 && __GLIBC_MINOR__ >= 0 && defined(JB_PC) && defined(JB_SP)
-	ctx->cc[0].__jmpbuf[JB_PC] = (int) func;
-	ctx->cc[0].__jmpbuf[JB_SP] = (int) stack;
+	ctx->cc[0].__jmpbuf[JB_PC] = (int)func;
+	ctx->cc[0].__jmpbuf[JB_SP] = (int)stack;
 #elif defined(__GLIBC__) && defined(__GLIBC_MINOR__) \
     && __GLIBC__ >= 2 && __GLIBC_MINOR__ >= 0 && defined(__mc68000__)
-	ctx->cc[0].__jmpbuf[0].__aregs[0] = (long) func;
-	ctx->cc[0].__jmpbuf[0].__sp = (int *) stack;
+	ctx->cc[0].__jmpbuf[0].__aregs[0] = (long)func;
+	ctx->cc[0].__jmpbuf[0].__sp = (int *)stack;
 #elif defined(__GNU_LIBRARY__) && defined(__i386__)
 	ctx->cc[0].__jmpbuf[0].__pc = func;
 	ctx->cc[0].__jmpbuf[0].__sp = stack;
 #elif defined(_WIN32) && defined(_MSC_VER)
-	((_JUMP_BUFFER *) &ctx->cc)->Eip = (long) func;
-	((_JUMP_BUFFER *) &ctx->cc)->Esp = (long) stack;
+	((_JUMP_BUFFER *) & ctx->cc)->Eip = (long)func;
+	((_JUMP_BUFFER *) & ctx->cc)->Esp = (long)stack;
 #elif defined(__GLIBC__) && defined(__GLIBC_MINOR__) \
     && __GLIBC__ >= 2 && __GLIBC_MINOR__ >= 0 && (defined(__powerpc64__) || defined(__powerpc__))
-	ctx->cc[0].__jmpbuf[JB_LR] = (int) func;
-	ctx->cc[0].__jmpbuf[JB_GPR1] = (int) stack;
+	ctx->cc[0].__jmpbuf[JB_LR] = (int)func;
+	ctx->cc[0].__jmpbuf[JB_GPR1] = (int)stack;
 #else
 #error "PCL: Unsupported setjmp/longjmp platform. Please report to <davidel@xmailserver.org>"
 #endif
@@ -361,8 +362,8 @@ static int co_set_context(co_ctx_t *ctx, void *func, char *stkbase, long stksiz)
 
 #endif /* #if defined(CO_USE_SIGCONTEXT) */
 
-
-static void co_switch_context(co_ctx_t *octx, co_ctx_t *nctx) {
+static void co_switch_context(co_ctx_t * octx, co_ctx_t * nctx)
+{
 
 	if (!setjmp(octx->cc))
 		longjmp(nctx->cc, 1);
@@ -370,8 +371,8 @@ static void co_switch_context(co_ctx_t *octx, co_ctx_t *nctx) {
 
 #endif /* #if defined(CO_USE_UCONEXT) */
 
-
-static void co_runner(void) {
+static void co_runner(void)
+{
 	coroutine *co = co_curr;
 
 	co->restarget = co->caller;
@@ -379,8 +380,8 @@ static void co_runner(void) {
 	co_exit();
 }
 
-
-coroutine_t co_create(void (*func)(void *), void *data, void *stack, int size) {
+coroutine_t co_create(void (*func) (void *), void *data, void *stack, int size)
+{
 	int alloc = 0;
 	coroutine *co;
 
@@ -406,8 +407,8 @@ coroutine_t co_create(void (*func)(void *), void *data, void *stack, int size) {
 	return (coroutine_t) co;
 }
 
-
-void co_delete(coroutine_t coro) {
+void co_delete(coroutine_t coro)
+{
 	coroutine *co = (coroutine *) coro;
 
 	if (co == co_curr) {
@@ -419,8 +420,8 @@ void co_delete(coroutine_t coro) {
 		free(co);
 }
 
-
-void co_call(coroutine_t coro) {
+void co_call(coroutine_t coro)
+{
 	coroutine *co = (coroutine *) coro, *oldco = co_curr;
 
 	co->caller = co_curr;
@@ -429,15 +430,15 @@ void co_call(coroutine_t coro) {
 	co_switch_context(&oldco->ctx, &co->ctx);
 }
 
-
-void co_resume(void) {
+void co_resume(void)
+{
 
 	co_call(co_curr->restarget);
 	co_curr->restarget = co_curr->caller;
 }
 
-
-static void co_del_helper(void *data) {
+static void co_del_helper(void *data)
+{
 	coroutine *cdh;
 
 	for (;;) {
@@ -446,22 +447,24 @@ static void co_del_helper(void *data) {
 		co_delete(co_curr->caller);
 		co_call((coroutine_t) cdh);
 		if (!co_dhelper) {
-			fprintf(stderr, "[PCL] Resume to delete helper coroutine: curr=%p\n",
+			fprintf(stderr,
+				"[PCL] Resume to delete helper coroutine: curr=%p\n",
 				co_curr);
 			exit(1);
 		}
 	}
 }
 
-
-void co_exit_to(coroutine_t coro) {
+void co_exit_to(coroutine_t coro)
+{
 	coroutine *co = (coroutine *) coro;
 	static coroutine *dchelper = NULL;
 	static char stk[CO_MIN_SIZE];
 
 	if (!dchelper &&
 	    !(dchelper = co_create(co_del_helper, NULL, stk, sizeof(stk)))) {
-		fprintf(stderr, "[PCL] Unable to create delete helper coroutine: curr=%p\n",
+		fprintf(stderr,
+			"[PCL] Unable to create delete helper coroutine: curr=%p\n",
 			co_curr);
 		exit(1);
 	}
@@ -470,20 +473,18 @@ void co_exit_to(coroutine_t coro) {
 
 	co_call((coroutine_t) dchelper);
 
-	fprintf(stderr, "[PCL] Stale coroutine called: curr=%p\n",
-		co_curr);
+	fprintf(stderr, "[PCL] Stale coroutine called: curr=%p\n", co_curr);
 	exit(1);
 }
 
-
-void co_exit(void) {
+void co_exit(void)
+{
 
 	co_exit_to((coroutine_t) co_curr->restarget);
 }
 
-
-coroutine_t co_current(void) {
+coroutine_t co_current(void)
+{
 
 	return (coroutine_t) co_curr;
 }
-

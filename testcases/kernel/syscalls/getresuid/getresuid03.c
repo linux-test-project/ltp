@@ -24,7 +24,7 @@
  *  Verify that getresuid() will be successful to get the real, effective
  *  and saved user ids after calling process invokes setresuid() to change
  *  the effective uid to that of specified user.
- *  
+ * $
  * Expected Result:
  *  getresuid() should return with 0 value and the effective user id
  *  should match the euid of specified user, real/saved user ids should
@@ -78,28 +78,27 @@
 #include "test.h"
 #include "usctest.h"
 
-extern int getresuid(uid_t*, uid_t*, uid_t*);
+extern int getresuid(uid_t *, uid_t *, uid_t *);
 extern int setresuid(uid_t, uid_t, uid_t);
 
-char *TCID="getresuid03";	/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "getresuid03";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 uid_t pr_uid, pe_uid, ps_uid;	/* calling process real/effective/saved uid */
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	uid_t real_uid,		/* real/eff./saved user id from getresuid() */
-	      eff_uid, sav_uid;
+	 eff_uid, sav_uid;
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -110,7 +109,7 @@ main(int ac, char **av)
 	/* Check looping state if -c option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/*
 		 * Call getresuid() to get the real/effective/saved
@@ -147,14 +146,13 @@ main(int ac, char **av)
 		} else {
 			tst_resm(TPASS, "call succeeded");
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
-}	/* End main */
+	 /*NOTREACHED*/ return 0;
+}				/* End main */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -163,10 +161,9 @@ main(int ac, char **av)
  *	     Get the user info. of test user "ltpuser1" from /etc/passwd file.
  *	     Set the eff. user id of test process to that of "ltpuser1" user.
  */
-void
-setup()
+void setup()
 {
-	struct passwd *user_id;		/* passwd struct for test user*/
+	struct passwd *user_id;	/* passwd struct for test user */
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -188,10 +185,9 @@ setup()
 	/* Get effective uid of "ltpuser1" user from passwd file */
 	if ((user_id = getpwnam("nobody")) == NULL) {
 		tst_brkm(TBROK, cleanup,
-			 "getpwnam(nobody) Failed, errno=%d",
-			 errno);
+			 "getpwnam(nobody) Failed, errno=%d", errno);
 	}
-	
+
 	/* Effective user-id of the test-user "ltpuser1" */
 	pe_uid = user_id->pw_uid;
 
@@ -207,13 +203,11 @@ setup()
 	}
 }
 
-
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -223,8 +217,7 @@ cleanup()
 
 	/* Reset the effective/saved uid of the calling process */
 	if (setreuid(-1, pr_uid) < 0) {
-		tst_brkm(TBROK, NULL,
-			 "resetting process effective uid failed");
+		tst_brkm(TBROK, NULL, "resetting process effective uid failed");
 	}
 
 	/* exit with return code appropriate for results */

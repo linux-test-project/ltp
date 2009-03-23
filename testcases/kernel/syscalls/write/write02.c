@@ -19,7 +19,7 @@
 
 /*
  * NAME
- * 	write02.c
+ *	write02.c
  *
  * DESCRIPTION
  *	Basic functionality test: does the return from write match the count
@@ -27,8 +27,8 @@
  *
  *
  * ALGORITHM
- * 	Create a file and write some bytes out to it.
- * 	Check the return count against the number returned.
+ *	Create a file and write some bytes out to it.
+ *	Check the return count against the number returned.
  *
  * USAGE:  <for command-line>
  *      write02 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
@@ -44,7 +44,7 @@
  *		-Ported
  *
  * Restrictions
- * 	None
+ *	None
  */
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -65,8 +65,8 @@ char pfiln[40] = "";
 
 int main(int argc, char **argv)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	int cwrite;
 	int fild;
@@ -77,10 +77,9 @@ int main(int argc, char **argv)
 	/* parse standard options */
 	if ((msg = parse_opts(argc, argv, (option_t *) NULL, NULL))) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
-	setup();			/* global setup for test */
+	setup();		/* global setup for test */
 
 	/* The following loop checks looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -99,8 +98,7 @@ int main(int argc, char **argv)
 
 		if ((fild = creat(pfiln, 0777)) == -1) {
 			tst_brkm(TBROK, cleanup, "Can't creat Xwrit");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 		for (iws = BUFSIZ; iws > 0; iws--) {
 			if ((cwrite = write(fild, pwbuf, iws)) != iws) {
 				TEST_ERROR_LOG(errno);
@@ -117,15 +115,13 @@ int main(int argc, char **argv)
 		close(fild);
 	}
 	cleanup();
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -136,14 +132,14 @@ setup(void)
 	 * TEST_PAUSE contains the code to fork the test with the -i option.
 	 * You want to make sure you do this before you create your temporary
 	 * directory.
-         */
+	 */
 	TEST_PAUSE;
 
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 // Changed by prashant yendigeri, because the temp file was not being created in//  the $TDIRECTORY
-//	sprintf(pfiln, "./write1.%d", getpid());
+//      sprintf(pfiln, "./write1.%d", getpid());
 	sprintf(pfiln, "write1.%d", getpid());
 }
 
@@ -151,8 +147,7 @@ setup(void)
  * cleanup() - performs all ONE TIME cleanup for this test at completion or
  * premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

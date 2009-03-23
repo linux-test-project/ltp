@@ -39,11 +39,11 @@
  *   Loop if the proper options are given.
  *   Execute system call
  *   Check return code, if system call failed (return=-1)
- *   	Log the errno and Issue a FAIL message.
+ *	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call
+ *	Verify the Functionality of system call
  *      if successful,
- *      	Issue Functionality-Pass message.
+ *		Issue Functionality-Pass message.
  *      Otherwise,
  *		Issue Functionality-Fail message.
  *  Cleanup:
@@ -87,8 +87,8 @@
 #define TEMP_FILE	"tmp_file"
 #define FILE_MODE	0644
 
-char *TCID="llseek01";		/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "llseek01";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 char write_buff[BUFSIZ];	/* buffer to hold data */
 int fildes;			/* file handle for temp file */
@@ -98,9 +98,7 @@ struct rlimit rlp_orig;		/* resource for original file size limit */
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 
-
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
@@ -108,7 +106,7 @@ main(int ac, char **av)
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -119,15 +117,15 @@ main(int ac, char **av)
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/*
 		 * set file size limit, seek to a file using llseek.
 		 */
-		TEST(lseek64(fildes, (loff_t)(80 * BUFSIZ), SEEK_SET));
+		TEST(lseek64(fildes, (loff_t) (80 * BUFSIZ), SEEK_SET));
 
 		/* check return code of lseek(2) */
-		if (TEST_RETURN == (loff_t)-1) {
+		if (TEST_RETURN == (loff_t) - 1) {
 			tst_resm(TFAIL, "llseek on (%s) Failed, errno=%d : %s",
 				 TEMP_FILE, TEST_ERRNO, strerror(TEST_ERRNO));
 			continue;
@@ -142,7 +140,7 @@ main(int ac, char **av)
 			 * Check if the return value from lseek(2)
 			 * is equal to the specified offset value.
 			 */
-			if (TEST_RETURN != (loff_t)(80 * BUFSIZ)) {
+			if (TEST_RETURN != (loff_t) (80 * BUFSIZ)) {
 				tst_resm(TFAIL, "llseek() returned incorrect "
 					 "value %d, expected %d",
 					 offset, BUFSIZ);
@@ -159,8 +157,8 @@ main(int ac, char **av)
 			}
 
 			/* Seeking to end of last valid write */
-			offset = lseek64(fildes, (loff_t)BUFSIZ, SEEK_SET);
-			if (offset != (loff_t)BUFSIZ) {
+			offset = lseek64(fildes, (loff_t) BUFSIZ, SEEK_SET);
+			if (offset != (loff_t) BUFSIZ) {
 				tst_brkm(TFAIL, cleanup,
 					 "llseek under file size limit");
 			}
@@ -187,14 +185,13 @@ main(int ac, char **av)
 		} else {
 			tst_resm(TPASS, "call succeeded");
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
-}	/* End main */
+	 /*NOTREACHED*/ return 0;
+}				/* End main */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -203,11 +200,10 @@ main(int ac, char **av)
  *           Create a test file under temporary directory.
  *           Set the file size limit using setrlimit.
  */
-void
-setup()
+void setup()
 {
-	struct sigaction act;		/* struct. to hold signal */
-	struct rlimit rlp; 		/* resource for file size limit */
+	struct sigaction act;	/* struct. to hold signal */
+	struct rlimit rlp;	/* resource for file size limit */
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -259,8 +255,7 @@ setup()
  *             Close the temporary file.
  *             Remove the test directory and testfile created in the setup.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

@@ -70,12 +70,11 @@
 #include <errno.h>
 #include <sys/wait.h>
 
-
 char *TCID = "setresuid03";
 extern int Tst_count;
 
 uid_t neg_one = -1;
-uid_t inval_user = (USHRT_MAX-2);
+uid_t inval_user = (USHRT_MAX - 2);
 
 /* flag to tell parent if child passed or failed. */
 int flag = 0;
@@ -93,23 +92,28 @@ struct passwd nobody, bin, root;
  */
 
 struct test_data_t {
-	uid_t*	real_uid;
-	uid_t*	eff_uid;
-	uid_t*  sav_uid;
-	int	exp_errno;
-	struct passwd* exp_real_usr;
-	struct passwd* exp_eff_usr;
-	struct passwd* exp_sav_usr;
-	char*	test_msg;
+	uid_t *real_uid;
+	uid_t *eff_uid;
+	uid_t *sav_uid;
+	int exp_errno;
+	struct passwd *exp_real_usr;
+	struct passwd *exp_eff_usr;
+	struct passwd *exp_sav_usr;
+	char *test_msg;
 } test_data[] = {
-	{ &nobody_pw_uid, &neg_one, &neg_one, EPERM, &root, &bin, &bin, "After setresuid(root, -1, -1)," },
-	{ &neg_one, &neg_one, &nobody_pw_uid, EPERM, &root, &bin, &bin, "After setresuid(-1, -1, bin)," },
-	{ &neg_one, &nobody_pw_uid, &neg_one, EPERM, &root, &bin, &bin, "After setresuid(-1, -1, bin)," },
-	{ &neg_one, &neg_one, &inval_user, EPERM, &root, &bin, &bin, "After setresuid(-1, -1, bin)," },
-	{ &neg_one, &inval_user, &neg_one, EPERM, &root, &bin, &bin, "After setresuid(-1, -1, bin)," },
-};
+	{
+	&nobody_pw_uid, &neg_one, &neg_one, EPERM, &root, &bin, &bin,
+		    "After setresuid(root, -1, -1),"}, {
+	&neg_one, &neg_one, &nobody_pw_uid, EPERM, &root, &bin, &bin,
+		    "After setresuid(-1, -1, bin),"}, {
+	&neg_one, &nobody_pw_uid, &neg_one, EPERM, &root, &bin, &bin,
+		    "After setresuid(-1, -1, bin),"}, {
+	&neg_one, &neg_one, &inval_user, EPERM, &root, &bin, &bin,
+		    "After setresuid(-1, -1, bin),"}, {
+&neg_one, &inval_user, &neg_one, EPERM, &root, &bin, &bin,
+		    "After setresuid(-1, -1, bin),"},};
 
-int TST_TOTAL = sizeof(test_data)/sizeof(test_data[0]);
+int TST_TOTAL = sizeof(test_data) / sizeof(test_data[0]);
 
 void setup(void);
 void cleanup(void);
@@ -120,16 +124,14 @@ uid_verify(struct passwd *ru, struct passwd *eu, struct passwd *su, char *);
 int main(int ac, char **av)
 {
 	int lc;
-	char *msg;			/* message returned from parse_opts */
+	char *msg;		/* message returned from parse_opts */
 	int status;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) !=
-	    (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/* Perform global setup for test */
 	setup();
@@ -143,37 +145,35 @@ int main(int ac, char **av)
 
 		/* set the appropriate ownership values */
 		if (setresuid(root_pw_uid, bin_pw_uid, bin_pw_uid)
-					== -1) {
+		    == -1) {
 			tst_brkm(TFAIL, cleanup, "Initial setresuid failed");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		if ((pid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork failed");
-			/*NOTREACHED*/
-		} else if (pid == 0) {		/* child */
+		 /*NOTREACHED*/} else if (pid == 0) {	/* child */
 
 			for (i = 0; i < TST_TOTAL; i++) {
 
 				/* Set the real, effective or saved user id */
 				TEST(setresuid(*test_data[i].real_uid,
-					*test_data[i].eff_uid,
-					*test_data[i].sav_uid));
+					       *test_data[i].eff_uid,
+					       *test_data[i].sav_uid));
 
 				if (TEST_RETURN == -1 && TEST_ERRNO ==
-						test_data[i].exp_errno) {
+				    test_data[i].exp_errno) {
 					tst_resm(TPASS, "setresuid(%d, %d, %d) "
-						"failed as expected.",
-						*test_data[i].real_uid,
-						*test_data[i].eff_uid,
-						*test_data[i].sav_uid);
+						 "failed as expected.",
+						 *test_data[i].real_uid,
+						 *test_data[i].eff_uid,
+						 *test_data[i].sav_uid);
 				} else {
 					tst_resm(TFAIL, "setresuid(%d, %d, %d) "
-						"did not fail as expected.",
-						*test_data[i].real_uid,
-						*test_data[i].eff_uid,
-						*test_data[i].sav_uid);
-					flag=-1;
+						 "did not fail as expected.",
+						 *test_data[i].real_uid,
+						 *test_data[i].eff_uid,
+						 *test_data[i].sav_uid);
+					flag = -1;
 				}
 
 				/*
@@ -182,33 +182,31 @@ int main(int ac, char **av)
 				 */
 				if (STD_FUNCTIONAL_TEST) {
 					uid_verify(test_data[i].exp_real_usr,
-						test_data[i].exp_eff_usr,
-						test_data[i].exp_sav_usr,
-						test_data[i].test_msg);
+						   test_data[i].exp_eff_usr,
+						   test_data[i].exp_sav_usr,
+						   test_data[i].test_msg);
 				} else {
 					tst_resm(TPASS, "Call succeeded.");
 				}
 			}
 			exit(flag);
-		} else {			/* parent */
+		} else {	/* parent */
 			waitpid(pid, &status, 0);
 			if (WEXITSTATUS(status) != 0) {
 				tst_resm(TFAIL, "test failed within "
-					"child process.");
+					 "child process.");
 			}
 		}
 	}
 	cleanup();
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup()
  *	performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -216,29 +214,26 @@ setup(void)
 	if (getpwnam("nobody") == NULL) {
 		tst_brkm(TBROK, NULL, "nobody must be a valid user.");
 		tst_exit();
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	if (getpwnam("bin") == NULL) {
 		tst_brkm(TBROK, NULL, "bin must be a valid user.");
 		tst_exit();
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/* Check that the test process id is root */
 	if (geteuid() != 0) {
 		tst_brkm(TBROK, NULL, "Must be root for this test!");
 		tst_exit();
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	root = *(getpwnam("root"));
 	root_pw_uid = root.pw_uid;
 
-	nobody = *( getpwnam("nobody"));
+	nobody = *(getpwnam("nobody"));
 	nobody_pw_uid = nobody.pw_uid;
 
-	bin = *( getpwnam("bin"));
+	bin = *(getpwnam("bin"));
 	bin_pw_uid = bin.pw_uid;
 
 	/* Pause if that option was specified
@@ -254,8 +249,7 @@ setup(void)
  *	performs all ONE TIME cleanup for this test at
  *	completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -265,8 +259,7 @@ cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}
 
 void
 uid_verify(struct passwd *ru, struct passwd *eu, struct passwd *su, char *when)
@@ -275,17 +268,16 @@ uid_verify(struct passwd *ru, struct passwd *eu, struct passwd *su, char *when)
 	if (getresuid(&cur_ru, &cur_eu, &cur_su) != 0) {
 		flag = -1;
 		tst_brkm(TBROK, cleanup, "Set getresuid() failed");
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 	if ((cur_ru != ru->pw_uid) || (cur_eu != eu->pw_uid) || (cur_su !=
-		su->pw_uid)) {
+								 su->pw_uid)) {
 		tst_resm(TFAIL, "ERROR: %s real uid = %d; effective uid = %d; "
-			"saved uid = %d", when, cur_ru, cur_eu, cur_su);
+			 "saved uid = %d", when, cur_ru, cur_eu, cur_su);
 		tst_resm(TINFO, "Expected: real uid = %d, effective uid = %d "
-			"saved uid = %d", ru->pw_uid, eu->pw_uid, su->pw_uid);
+			 "saved uid = %d", ru->pw_uid, eu->pw_uid, su->pw_uid);
 		flag = -1;
 	} else {
 		tst_resm(TINFO, "real uid = %d, effective uid = %d, and "
-			"saved uid = %d as expected", cur_ru, cur_eu, cur_su);
+			 "saved uid = %d as expected", cur_ru, cur_eu, cur_su);
 	}
 }

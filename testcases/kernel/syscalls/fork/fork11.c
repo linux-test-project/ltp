@@ -56,17 +56,16 @@ void cleanup(void);
 int main(int ac, char **av)
 {
 	int i, pid, cpid, status;
-	int fail=0;
+	int fail = 0;
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
 	/*
 	 * parse standard options
 	 */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/*
 	 * perform global setup for the test
@@ -83,12 +82,12 @@ int main(int ac, char **av)
 		 */
 		Tst_count = 0;
 
-		for (i=0; i<NUMFORKS; i++) {
+		for (i = 0; i < NUMFORKS; i++) {
 			if ((pid = fork()) == 0) {	/* child */
 				exit(0);
 			}
 
-			if (pid > 0) {			/* parent */
+			if (pid > 0) {	/* parent */
 				cpid = wait(&status);
 				if (cpid != pid) {
 					fail++;
@@ -106,15 +105,13 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test
  */
-void
-setup()
+void setup()
 {
 	/*
 	 * capture signals
@@ -131,8 +128,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

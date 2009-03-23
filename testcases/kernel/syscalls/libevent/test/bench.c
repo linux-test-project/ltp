@@ -52,18 +52,14 @@
 
 #include <event.h>
 
-
 static int count, writes, fired;
 static int *pipes;
 static int num_pipes, num_active, num_writes;
 static struct event *events;
 
-
-
-void
-read_cb(int fd, short which, void *arg)
+void read_cb(int fd, short which, void *arg)
 {
-	int idx = (int) arg, widx = idx + 1;
+	int idx = (int)arg, widx = idx + 1;
 	u_char ch;
 
 	count += read(fd, &ch, sizeof(ch));
@@ -76,15 +72,15 @@ read_cb(int fd, short which, void *arg)
 	}
 }
 
-struct timeval *
-run_once(void)
+struct timeval *run_once(void)
 {
 	int *cp, i, space;
 	static struct timeval ts, te;
 
 	for (cp = pipes, i = 0; i < num_pipes; i++, cp += 2) {
 		event_del(&events[i]);
-		event_set(&events[i], cp[0], EV_READ | EV_PERSIST, read_cb, (void *) i);
+		event_set(&events[i], cp[0], EV_READ | EV_PERSIST, read_cb,
+			  (void *)i);
 		event_add(&events[i], NULL);
 	}
 
@@ -98,15 +94,18 @@ run_once(void)
 
 	count = 0;
 	writes = num_writes;
-	{ int xcount = 0;
-	gettimeofday(&ts, NULL);
-	do {
-		event_loop(EVLOOP_ONCE | EVLOOP_NONBLOCK);
-		xcount++;
-	} while (count != fired);
-	gettimeofday(&te, NULL);
+	{
+		int xcount = 0;
+		gettimeofday(&ts, NULL);
+		do {
+			event_loop(EVLOOP_ONCE | EVLOOP_NONBLOCK);
+			xcount++;
+		} while (count != fired);
+		gettimeofday(&te, NULL);
 
-	if (xcount != count) fprintf(stderr, "Xcount: %d, Rcount: %d\n", xcount, count);
+		if (xcount != count)
+			fprintf(stderr, "Xcount: %d, Rcount: %d\n", xcount,
+				count);
 	}
 
 	timersub(&te, &ts, &te);
@@ -114,8 +113,7 @@ run_once(void)
 	return (&te);
 }
 
-int
-main (int argc, char **argv)
+int main(int argc, char **argv)
 {
 	struct rlimit rl;
 	int i, c;
@@ -173,8 +171,7 @@ main (int argc, char **argv)
 		tv = run_once();
 		if (tv == NULL)
 			exit(1);
-		fprintf(stdout, "%ld\n",
-			tv->tv_sec * 1000000L + tv->tv_usec);
+		fprintf(stdout, "%ld\n", tv->tv_sec * 1000000L + tv->tv_usec);
 	}
 
 	exit(0);

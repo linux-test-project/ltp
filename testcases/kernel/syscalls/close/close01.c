@@ -75,31 +75,30 @@ char fname[40] = "";
 int fild, newfd, pipefildes[2];
 
 struct test_case_t {
-        int *fd;
+	int *fd;
 	char *type;
 } TC[] = {
 	/* file descriptor for a regular file */
-        {&newfd, "file"},
-
-	/* file descriptor for a pipe */
-        {&pipefildes[0], "pipe"}
+	{
+	&newfd, "file"},
+	    /* file descriptor for a pipe */
+	{
+	&pipefildes[0], "pipe"}
 };
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 
 	int i;
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -126,10 +125,10 @@ main(int ac, char **av)
 
 			TEST(close(*TC[i].fd));
 
-                        if (TEST_RETURN == -1) {
-                                tst_resm(TFAIL, "call failed unexpectedly");
-                                continue;
-                        }
+			if (TEST_RETURN == -1) {
+				tst_resm(TFAIL, "call failed unexpectedly");
+				continue;
+			}
 
 			if (STD_FUNCTIONAL_TEST) {
 				/* attempt to close the fd again */
@@ -149,14 +148,12 @@ main(int ac, char **av)
 	cleanup();
 
 	return 0;
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}
 
 /*
  * setup() - performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	int mypid;
 
@@ -179,14 +176,13 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing status if that option was specified.
 	 * print errno log if that option was specified
 	 */
-    close(fild);
+	close(fild);
 
 	TEST_CLEANUP;
 

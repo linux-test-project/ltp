@@ -73,57 +73,58 @@ extern int Tst_count;
 int fd = 0;
 char fname[255];
 char good_dir[100] = "/tmp/testdir";
-char bad_dir[] = "abcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyz";
+char bad_dir[] =
+    "abcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyz";
 
-int exp_enos[]={ENAMETOOLONG, ENOENT, ENOTDIR, EFAULT, 0};
+int exp_enos[] = { ENAMETOOLONG, ENOENT, ENOTDIR, EFAULT, 0 };
 
 struct test_case_t {
-        char *dir;
-        int error;
+	char *dir;
+	int error;
 } TC[] = {
 	/*
 	 * to test whether chroot() is setting ENAMETOOLONG if the
 	 * pathname is more than VFS_MAXNAMELEN
 	 */
-        {bad_dir, ENAMETOOLONG},
-
-	/*
-	 * to test whether chroot() is setting ENOTDIR if the argument
-	 * is not a directory.
-	 */
-        {fname, ENOTDIR},
-
-	/*
-	 * to test whether chroot() is setting ENOENT if the directory
-	 * does not exist.
-	 */
-        {good_dir, ENOENT},
-
+	{
+	bad_dir, ENAMETOOLONG},
+	    /*
+	     * to test whether chroot() is setting ENOTDIR if the argument
+	     * is not a directory.
+	     */
+	{
+	fname, ENOTDIR},
+	    /*
+	     * to test whether chroot() is setting ENOENT if the directory
+	     * does not exist.
+	     */
+	{
+	good_dir, ENOENT},
 #if !defined(UCLINUX)
-	/*
-	 * attempt to chroot to a path pointing to an invalid address
-	 * and expect EFAULT as errno
-	 */
-        {(char *)-1, EFAULT}
+	    /*
+	     * attempt to chroot to a path pointing to an invalid address
+	     * and expect EFAULT as errno
+	     */
+	{
+	(char *)-1, EFAULT}
 #endif
 };
 
 int TST_TOTAL = (sizeof(TC) / sizeof(*TC));
 
-char * bad_addr = 0;
+char *bad_addr = 0;
 
 void setup(void);
 void cleanup(void);
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
+	int lc;			/* loop counter */
 	int i;
-	char *msg;			/* message returned from parse_opts */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -142,35 +143,33 @@ main(int ac, char **av)
 
 			TEST(chroot(TC[i].dir));
 
-                        if (TEST_RETURN != -1) {
-                                tst_resm(TFAIL, "call succeeded unexpectedly");
-                                continue;
-                        }
+			if (TEST_RETURN != -1) {
+				tst_resm(TFAIL, "call succeeded unexpectedly");
+				continue;
+			}
 
-                        TEST_ERROR_LOG(TEST_ERRNO);
+			TEST_ERROR_LOG(TEST_ERRNO);
 
-                        if (TEST_ERRNO == TC[i].error) {
-                                tst_resm(TPASS, "expected failure - "
-                                         "errno = %d : %s", TEST_ERRNO,
-                                         strerror(TEST_ERRNO));
-                        } else {
-                                tst_resm(TFAIL, "unexpected error - %d : %s - "
-                                         "expected %d", TEST_ERRNO,
-                                         strerror(TEST_ERRNO), TC[i].error);
+			if (TEST_ERRNO == TC[i].error) {
+				tst_resm(TPASS, "expected failure - "
+					 "errno = %d : %s", TEST_ERRNO,
+					 strerror(TEST_ERRNO));
+			} else {
+				tst_resm(TFAIL, "unexpected error - %d : %s - "
+					 "expected %d", TEST_ERRNO,
+					 strerror(TEST_ERRNO), TC[i].error);
 			}
 		}
 	}
 	cleanup();
 
 	return 0;
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -185,7 +184,7 @@ setup()
 	 * create a file and use it to test whether chroot() is setting
 	 * ENOTDIR if the argument is not a directory.
 	 */
-	(void) sprintf(fname, "tfile_%d", getpid());
+	(void)sprintf(fname, "tfile_%d", getpid());
 	if ((fd = creat(fname, 0777)) == -1) {
 		tst_brkm(TBROK, cleanup, "Failed to creat a temp file");
 	}
@@ -198,7 +197,7 @@ setup()
 
 #if !defined(UCLINUX)
 	bad_addr = mmap(0, 1, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
+			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
 	if (bad_addr == MAP_FAILED) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}
@@ -206,19 +205,17 @@ setup()
 #endif
 }
 
-
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
 	 */
-    close(fd);
+	close(fd);
 
 	TEST_CLEANUP;
 

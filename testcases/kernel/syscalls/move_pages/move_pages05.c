@@ -88,7 +88,7 @@ extern int Tst_count;
  * child() - touches pages, and waits for signal from parent.
  * @pages: shared pages allocated in parent
  */
-void child(void **pages, sem_t *sem)
+void child(void **pages, sem_t * sem)
 {
 	int i;
 
@@ -113,8 +113,8 @@ void child(void **pages, sem_t *sem)
 int main(int argc, char **argv)
 {
 	unsigned int i;
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	unsigned int from_node = 0;
 	unsigned int to_node = 1;
 
@@ -141,14 +141,12 @@ int main(int argc, char **argv)
 		Tst_count = 0;
 
 		ret = alloc_shared_pages_on_node(pages + SHARED_PAGE,
-						 N_SHARED_PAGES,
-						 from_node);
+						 N_SHARED_PAGES, from_node);
 		if (ret == -1)
 			continue;
 
 		ret = alloc_pages_on_node(pages + UNSHARED_PAGE,
-					  N_UNSHARED_PAGES,
-					  from_node);
+					  N_UNSHARED_PAGES, from_node);
 		if (ret == -1)
 			goto err_free_shared;
 
@@ -194,18 +192,18 @@ int main(int argc, char **argv)
 			tst_resm(TFAIL, "status[%d] is %d",
 				 SHARED_PAGE, status[SHARED_PAGE]);
 
-	err_kill_child:
+	      err_kill_child:
 		/* Test done. Ask child to terminate. */
 		if (sem_post(&sem[SEM_PARENT_TEST]) == -1)
 			tst_resm(TWARN, "error post semaphore: %s",
 				 strerror(errno));
 		/* Read the status, no zombies! */
 		wait(NULL);
-	err_free_sem:
+	      err_free_sem:
 		free_sem(sem, MAX_SEMS);
-	err_free_unshared:
+	      err_free_unshared:
 		free_pages(pages + UNSHARED_PAGE, N_UNSHARED_PAGES);
-	err_free_shared:
+	      err_free_shared:
 		free_shared_pages(pages + SHARED_PAGE, N_SHARED_PAGES);
 	}
 
@@ -218,8 +216,7 @@ int main(int argc, char **argv)
 /*
  * setup() - performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -235,8 +232,7 @@ setup(void)
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at completion
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -246,5 +242,4 @@ cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}

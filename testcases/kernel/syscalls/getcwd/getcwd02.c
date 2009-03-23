@@ -79,220 +79,206 @@ void do_block5();
 void do_block6();
 void do_block7();
 
-char pwd_buf[BUFSIZ]; //holds results of pwd pipe
-char cwd[BUFSIZ];     //used as our valid buffer
-char *buffer = NULL;  //catches the return value from getcwd when passing NULL
-char *cwd_ptr = NULL; //catches the return value from getcwd() when passing cwd[]
+char pwd_buf[BUFSIZ];		//holds results of pwd pipe
+char cwd[BUFSIZ];		//used as our valid buffer
+char *buffer = NULL;		//catches the return value from getcwd when passing NULL
+char *cwd_ptr = NULL;		//catches the return value from getcwd() when passing cwd[]
 
 int main(int ac, char **av)
 {
-   FILE *fin;
-   char *cp, *cp_cur;   
-   int lc;				/* loop counter */
-   char *msg;			/* parse_opts() return message */
+	FILE *fin;
+	char *cp, *cp_cur;
+	int lc;			/* loop counter */
+	char *msg;		/* parse_opts() return message */
 
-   if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL)
-   { tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg); }
-   setup();
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+	}
+	setup();
 
-   /*
-   * The following loop checks looping state if -i option given
-   */
-   for (lc = 0; TEST_LOOPING(lc); lc++)
-   {
-      Tst_count = 0;
+	/*
+	 * The following loop checks looping state if -i option given
+	 */
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+		Tst_count = 0;
 
-      if ((fin = popen(pwd, "r")) == NULL)
-      {
-         tst_resm(TINFO, "%s: can't run %s", TCID, pwd);
-         tst_brkm(TBROK, cleanup, "%s FAILED", TCID);
-         /*NOTREACHED*/
-      }
-      while (fgets(pwd_buf, sizeof(pwd_buf), fin) != NULL)
-      {
-         if ((cp = strchr(pwd_buf, '\n')) == (char *)NULL)
-         {
-            tst_brkm(TBROK, cleanup, "pwd output too long");
-            /*NOTREACHED*/
-         }
-         *cp = 0;
-         cp_cur = pwd_buf;
-      }
-      pclose(fin);
+		if ((fin = popen(pwd, "r")) == NULL) {
+			tst_resm(TINFO, "%s: can't run %s", TCID, pwd);
+			tst_brkm(TBROK, cleanup, "%s FAILED", TCID);
+		 /*NOTREACHED*/}
+		while (fgets(pwd_buf, sizeof(pwd_buf), fin) != NULL) {
+			if ((cp = strchr(pwd_buf, '\n')) == (char *)NULL) {
+				tst_brkm(TBROK, cleanup, "pwd output too long");
+			 /*NOTREACHED*/}
+			*cp = 0;
+			cp_cur = pwd_buf;
+		}
+		pclose(fin);
 
-      do_block1();
-      do_block2();
-      do_block3();
-      do_block4();
-      do_block5();
-      do_block6();
-      do_block7();
-   }
-   cleanup();
-   /*NOTREACHED*/
-   return 0;
+		do_block1();
+		do_block2();
+		do_block3();
+		do_block4();
+		do_block5();
+		do_block6();
+		do_block7();
+	}
+	cleanup();
+	 /*NOTREACHED*/ return 0;
 }
 
-void do_block1() //valid cwd[]: -> Should work fine
+void do_block1()		//valid cwd[]: -> Should work fine
 {
-   int flag = 0;
-   tst_resm(TINFO, "Enter Block 1");
+	int flag = 0;
+	tst_resm(TINFO, "Enter Block 1");
 
-   if ((cwd_ptr = getcwd(cwd, sizeof(cwd))) == NULL)
-   {
-      tst_resm(TFAIL, "getcwd() failed unexpectedly: "
-                      "errno = %d\n", errno);
-      flag = FAILED;
-   }
-   if ((flag != FAILED) && (strcmp(pwd_buf, cwd) != 0))
-   {
-      tst_resm(TFAIL, "getcwd() returned unexpected working "
-                      "directory: expected: %s, got: %s\n",
-                      pwd_buf, cwd);
-      flag = FAILED;
-   }
-   tst_resm(TINFO, "Exit Block 1");
-   if (flag == FAILED)
-   { tst_resm(TFAIL, "Block 1 FAILED"); }
-   else
-   { tst_resm(TPASS, "Block 1 PASSED"); }
+	if ((cwd_ptr = getcwd(cwd, sizeof(cwd))) == NULL) {
+		tst_resm(TFAIL, "getcwd() failed unexpectedly: "
+			 "errno = %d\n", errno);
+		flag = FAILED;
+	}
+	if ((flag != FAILED) && (strcmp(pwd_buf, cwd) != 0)) {
+		tst_resm(TFAIL, "getcwd() returned unexpected working "
+			 "directory: expected: %s, got: %s\n", pwd_buf, cwd);
+		flag = FAILED;
+	}
+	tst_resm(TINFO, "Exit Block 1");
+	if (flag == FAILED) {
+		tst_resm(TFAIL, "Block 1 FAILED");
+	} else {
+		tst_resm(TPASS, "Block 1 PASSED");
+	}
 }
 
-void do_block2()  //valid cwd[], size = 0: -> Should return NULL, errno = EINVAL
+void do_block2()		//valid cwd[], size = 0: -> Should return NULL, errno = EINVAL
 {
-   int flag = 0;
-   tst_resm(TINFO, "Enter Block 2");
+	int flag = 0;
+	tst_resm(TINFO, "Enter Block 2");
 
-   if (((cwd_ptr = getcwd(cwd, 0)) == NULL)
-                       && (errno != EINVAL))
-   {
-      tst_resm(TFAIL, "getcwd() failed unexpectedly: "
-		      "errno = %d expected EINVAL(%d)\n",
-                       errno, EINVAL);
-      flag = FAILED;
-   }
-   tst_resm(TINFO, "Exit Block 2");
-   if (flag == FAILED)
-   { tst_resm(TFAIL, "Block 2 FAILED"); }
-   else
-   { tst_resm(TPASS, "Block 2 PASSED"); }
+	if (((cwd_ptr = getcwd(cwd, 0)) == NULL)
+	    && (errno != EINVAL)) {
+		tst_resm(TFAIL, "getcwd() failed unexpectedly: "
+			 "errno = %d expected EINVAL(%d)\n", errno, EINVAL);
+		flag = FAILED;
+	}
+	tst_resm(TINFO, "Exit Block 2");
+	if (flag == FAILED) {
+		tst_resm(TFAIL, "Block 2 FAILED");
+	} else {
+		tst_resm(TPASS, "Block 2 PASSED");
+	}
 }
 
-void do_block3()  //valid cwd[], size = 1 -> Should return NULL, errno = ERANGE
+void do_block3()		//valid cwd[], size = 1 -> Should return NULL, errno = ERANGE
 {
-   int flag = 0;
-   tst_resm(TINFO, "Enter Block 3");
+	int flag = 0;
+	tst_resm(TINFO, "Enter Block 3");
 
-   if (((cwd_ptr = getcwd(cwd, 1)) != NULL)
-                       || (errno != ERANGE))
-   {
-      tst_resm(TFAIL, "getcwd() failed unexpectedly: "
-                      "errno = %d, expected ERANGE(%d)\n",
-                       errno, ERANGE);
-      flag = FAILED;
-   }
-   tst_resm(TINFO, "Exit Block 3");
-   if (flag == FAILED)
-   { tst_resm(TFAIL, "Block 3 FAILED"); }
-   else
-   { tst_resm(TPASS, "Block 3 PASSED"); }
+	if (((cwd_ptr = getcwd(cwd, 1)) != NULL)
+	    || (errno != ERANGE)) {
+		tst_resm(TFAIL, "getcwd() failed unexpectedly: "
+			 "errno = %d, expected ERANGE(%d)\n", errno, ERANGE);
+		flag = FAILED;
+	}
+	tst_resm(TINFO, "Exit Block 3");
+	if (flag == FAILED) {
+		tst_resm(TFAIL, "Block 3 FAILED");
+	} else {
+		tst_resm(TPASS, "Block 3 PASSED");
+	}
 }
 
-void do_block4() //invalid cwd[] = -1, size = BUFSIZ: -> return NULL, errno = FAULT
+void do_block4()		//invalid cwd[] = -1, size = BUFSIZ: -> return NULL, errno = FAULT
 {
 /* Skip since uClinux does not implement memory protection */
 #ifndef UCLINUX
-   int flag = 0;
-   tst_resm(TINFO, "Enter Block 4");
+	int flag = 0;
+	tst_resm(TINFO, "Enter Block 4");
 
-   if (((cwd_ptr = getcwd((char*)-1, sizeof(cwd))) != NULL)
-                                       || (errno != EFAULT))
-   {
-      tst_resm(TFAIL, "getcwd() failed unexpectedly: "
-                      "errno = %d, expected EFAULT(%d)\n",
-                       errno, EFAULT);
-      flag = FAILED;
-   }
-   tst_resm(TINFO, "Exit Block 4");
-   if (flag == FAILED)
-   { tst_resm(TFAIL, "Block 4 FAILED"); }
-   else
-   { tst_resm(TPASS, "Block 4 PASSED"); }
+	if (((cwd_ptr = getcwd((char *)-1, sizeof(cwd))) != NULL)
+	    || (errno != EFAULT)) {
+		tst_resm(TFAIL, "getcwd() failed unexpectedly: "
+			 "errno = %d, expected EFAULT(%d)\n", errno, EFAULT);
+		flag = FAILED;
+	}
+	tst_resm(TINFO, "Exit Block 4");
+	if (flag == FAILED) {
+		tst_resm(TFAIL, "Block 4 FAILED");
+	} else {
+		tst_resm(TPASS, "Block 4 PASSED");
+	}
 #else
 	tst_resm(TINFO, "Skipping Block 4 on uClinux");
 #endif
 }
 
-void do_block5()  //buffer = NULL, and size = 0, should succeed
+void do_block5()		//buffer = NULL, and size = 0, should succeed
 {
-   int flag = 0;
-   tst_resm(TINFO, "Enter Block 5");
+	int flag = 0;
+	tst_resm(TINFO, "Enter Block 5");
 
-   if ((buffer = getcwd(NULL, 0)) == NULL)
-   {
-      tst_resm(TFAIL, "getcwd() failed unexpectedly: "
-                      "errno = %d\n", errno);
-      flag = FAILED;
-   }
-   if ((flag != FAILED) && (strcmp(pwd_buf, buffer) != 0))
-   {
-      tst_resm(TFAIL, "getcwd() returned unexpected working "
-                      "directory: expected: %s, got: %s\n",
-                      pwd_buf, buffer);
-      flag = FAILED;
-   }
-   tst_resm(TINFO, "Exit Block 5");
-   if (flag == FAILED)
-   { tst_resm(TFAIL, "Block 5 FAILED"); }
-   else
-   { tst_resm(TPASS, "Block 5 PASSED"); }
-   free(buffer); buffer = NULL;
+	if ((buffer = getcwd(NULL, 0)) == NULL) {
+		tst_resm(TFAIL, "getcwd() failed unexpectedly: "
+			 "errno = %d\n", errno);
+		flag = FAILED;
+	}
+	if ((flag != FAILED) && (strcmp(pwd_buf, buffer) != 0)) {
+		tst_resm(TFAIL, "getcwd() returned unexpected working "
+			 "directory: expected: %s, got: %s\n", pwd_buf, buffer);
+		flag = FAILED;
+	}
+	tst_resm(TINFO, "Exit Block 5");
+	if (flag == FAILED) {
+		tst_resm(TFAIL, "Block 5 FAILED");
+	} else {
+		tst_resm(TPASS, "Block 5 PASSED");
+	}
+	free(buffer);
+	buffer = NULL;
 }
 
-void do_block6()  //buffer = NULL, size = 1: -> return NULL, errno = ERANGE
+void do_block6()		//buffer = NULL, size = 1: -> return NULL, errno = ERANGE
 {
-   int flag = 0;
-   tst_resm(TINFO, "Enter Block 6");
+	int flag = 0;
+	tst_resm(TINFO, "Enter Block 6");
 
-   if (((buffer = getcwd(NULL, 1)) != NULL)
-                             || (errno != ERANGE))
-   {
-      tst_resm(TFAIL, "getcwd() failed unexpectedly: "
-                      "errno = %d, expected ERANGE(%d)\n",
-                       errno, ERANGE);
-      flag = FAILED;
-   }
-   tst_resm(TINFO, "Exit Block 6");
-   if (flag == FAILED)
-   { tst_resm(TFAIL, "Block 6 FAILED"); }
-   else
-   { tst_resm(TPASS, "Block 6 PASSED"); }
+	if (((buffer = getcwd(NULL, 1)) != NULL)
+	    || (errno != ERANGE)) {
+		tst_resm(TFAIL, "getcwd() failed unexpectedly: "
+			 "errno = %d, expected ERANGE(%d)\n", errno, ERANGE);
+		flag = FAILED;
+	}
+	tst_resm(TINFO, "Exit Block 6");
+	if (flag == FAILED) {
+		tst_resm(TFAIL, "Block 6 FAILED");
+	} else {
+		tst_resm(TPASS, "Block 6 PASSED");
+	}
 }
 
-void do_block7() //buffer = NULL, size = BUFSIZ: -> work fine, allocate buffer
+void do_block7()		//buffer = NULL, size = BUFSIZ: -> work fine, allocate buffer
 {
-   int flag = 0;
-   tst_resm(TINFO, "Enter Block 7");
+	int flag = 0;
+	tst_resm(TINFO, "Enter Block 7");
 
-   if ((buffer = getcwd(NULL, sizeof(cwd))) == NULL)
-   {
-      tst_resm(TFAIL, "getcwd() failed unexpectedly: "
-                      "errno = %d\n", errno);
-      flag = FAILED;
-   }
-   if ((flag != FAILED) && (strcmp(pwd_buf, buffer) != 0))
-   {
-      tst_resm(TFAIL, "getcwd() returned unexpected working "
-                      "directory: expected: %s, got: %s\n",
-                       pwd_buf, buffer);
-      flag = FAILED;
-   }
-   tst_resm(TINFO, "Exit Block 7");
-   if (flag == FAILED)
-   { tst_resm(TFAIL, "Block 7 FAILED"); }
-   else
-   { tst_resm(TPASS, "Block 7 PASSED"); }
-   free(buffer); buffer = NULL;
+	if ((buffer = getcwd(NULL, sizeof(cwd))) == NULL) {
+		tst_resm(TFAIL, "getcwd() failed unexpectedly: "
+			 "errno = %d\n", errno);
+		flag = FAILED;
+	}
+	if ((flag != FAILED) && (strcmp(pwd_buf, buffer) != 0)) {
+		tst_resm(TFAIL, "getcwd() returned unexpected working "
+			 "directory: expected: %s, got: %s\n", pwd_buf, buffer);
+		flag = FAILED;
+	}
+	tst_resm(TINFO, "Exit Block 7");
+	if (flag == FAILED) {
+		tst_resm(TFAIL, "Block 7 FAILED");
+	} else {
+		tst_resm(TPASS, "Block 7 PASSED");
+	}
+	free(buffer);
+	buffer = NULL;
 }
 
 void setup()

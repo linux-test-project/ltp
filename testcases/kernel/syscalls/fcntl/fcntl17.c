@@ -19,18 +19,18 @@
 
 /*
  * NAME
- * 	fcntl17.c
+ *	fcntl17.c
  *
  * DESCRIPTION
- * 	Check deadlock detection for file locking
+ *	Check deadlock detection for file locking
  *
  * ALGORITHM
- * 	The parent forks off 3 children. The parent controls the children
- * 	with messages via pipes to create a delayed deadlock between the
- * 	second and third child.
+ *	The parent forks off 3 children. The parent controls the children
+ *	with messages via pipes to create a delayed deadlock between the
+ *	second and third child.
  *
  * USAGE
- * 	fcntl17
+ *	fcntl17
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
@@ -71,12 +71,12 @@ int child_pipe3[2];
 int file_fd;
 pid_t parent_pid, child_pid1, child_pid2, child_pid3;
 int child_stat;
-struct flock lock1 = { (short)F_WRLCK, (short)0,  2,  5, (short)0 };
-struct flock lock2 = { (short)F_WRLCK, (short)0,  9,  5, (short)0 };
-struct flock lock3 = { (short)F_WRLCK, (short)0, 17,  5, (short)0 };
-struct flock lock4 = { (short)F_WRLCK, (short)0, 17,  5, (short)0 };
-struct flock lock5 = { (short)F_WRLCK, (short)0,  2, 14, (short)0 };
-struct flock unlock = { (short)F_UNLCK, (short)0,  0,  0, (short)0 };
+struct flock lock1 = { (short)F_WRLCK, (short)0, 2, 5, (short)0 };
+struct flock lock2 = { (short)F_WRLCK, (short)0, 9, 5, (short)0 };
+struct flock lock3 = { (short)F_WRLCK, (short)0, 17, 5, (short)0 };
+struct flock lock4 = { (short)F_WRLCK, (short)0, 17, 5, (short)0 };
+struct flock lock5 = { (short)F_WRLCK, (short)0, 2, 14, (short)0 };
+struct flock unlock = { (short)F_UNLCK, (short)0, 0, 0, (short)0 };
 
 /* prototype declarations */
 int setup();
@@ -97,30 +97,30 @@ char *str_type();
 int setup()
 {
 	char *buf = STRING;
-        char template[PATH_MAX];
+	char template[PATH_MAX];
 	struct sigaction act;
 
 	tst_sig(FORK, DEF_HANDLER, NULL);	/* capture signals */
 	umask(0);
-	TEST_PAUSE;			/* Pause if that option is specified */
-	tst_tmpdir();			/* make temp dir and cd to it */
+	TEST_PAUSE;		/* Pause if that option is specified */
+	tst_tmpdir();		/* make temp dir and cd to it */
 
-	if(pipe(parent_pipe) < 0) {
+	if (pipe(parent_pipe) < 0) {
 		tst_resm(TFAIL, "Couldn't create parent_pipe! errno = %d",
 			 errno);
 		return 1;
 	}
-	if(pipe(child_pipe1) < 0) {
+	if (pipe(child_pipe1) < 0) {
 		tst_resm(TFAIL, "Couldn't create child_pipe1! errno = %d",
 			 errno);
 		return 1;
 	}
-	if(pipe(child_pipe2) < 0) {
+	if (pipe(child_pipe2) < 0) {
 		tst_resm(TFAIL, "Couldn't create child_pipe2! errno = %d",
 			 errno);
 		return 1;
 	}
-	if(pipe(child_pipe3) < 0) {
+	if (pipe(child_pipe3) < 0) {
 		tst_resm(TFAIL, "Couldn't create child_pipe3! errno = %d",
 			 errno);
 		return 1;
@@ -128,13 +128,14 @@ int setup()
 	parent_pid = getpid();
 	snprintf(template, PATH_MAX, "fcntl17XXXXXX");
 
-        if ((file_fd = mkstemp(template)) < 0) {
-                tst_resm(TFAIL, "Couldn't open temp file! errno = %d", errno);
-        }
+	if ((file_fd = mkstemp(template)) < 0) {
+		tst_resm(TFAIL, "Couldn't open temp file! errno = %d", errno);
+	}
 
-        if (write(file_fd, buf, STRINGSIZE) < 0) {
-                tst_resm(TFAIL, "Couldn't write to temp file! errno = %d", errno);
-        }
+	if (write(file_fd, buf, STRINGSIZE) < 0) {
+		tst_resm(TFAIL, "Couldn't write to temp file! errno = %d",
+			 errno);
+	}
 
 	memset(&act, 0, sizeof(act));
 	act.sa_handler = catch_alarm;
@@ -151,25 +152,22 @@ int setup()
 	sigemptyset(&act.sa_mask);
 	sigaddset(&act.sa_mask, SIGCLD);
 	if (sigaction(SIGCLD, &act, NULL) < 0) {
-		tst_resm(TFAIL, "SIGCLD signal setup failed, errno: %d",
-			 errno);
+		tst_resm(TFAIL, "SIGCLD signal setup failed, errno: %d", errno);
 		return 1;
 	}
 	return 0;
 }
 
-void
-cleanup()
+void cleanup()
 {
-    close(file_fd);
+	close(file_fd);
 	tst_rmdir();
 	tst_exit();
 }
 
-void
-do_child1()
+void do_child1()
 {
-    int err;
+	int err;
 
 	close(parent_pipe[0]);
 	close(child_pipe1[1]);
@@ -179,30 +177,29 @@ do_child1()
 	close(child_pipe3[1]);
 
 	child_wait(child_pipe1[0]);
-        tst_resm(TINFO, "child 1 starting");
+	tst_resm(TINFO, "child 1 starting");
 	if (fcntl(file_fd, F_SETLK, &lock1) < 0) {
-            err = errno;
-            tst_resm(TINFO, "child 1 lock err %d", err);
+		err = errno;
+		tst_resm(TINFO, "child 1 lock err %d", err);
 		parent_free(err);
 	} else {
-            tst_resm(TINFO, "child 1 pid %d locked", getpid());
+		tst_resm(TINFO, "child 1 pid %d locked", getpid());
 		parent_free(0);
 	}
 
 	child_wait(child_pipe1[0]);
-        tst_resm(TINFO, "child 1 resuming");
+	tst_resm(TINFO, "child 1 resuming");
 	fcntl(file_fd, F_SETLK, &unlock);
-        tst_resm(TINFO, "child 1 unlocked");
+	tst_resm(TINFO, "child 1 unlocked");
 
 	child_wait(child_pipe1[0]);
-        tst_resm(TINFO, "child 1 exiting");
+	tst_resm(TINFO, "child 1 exiting");
 	exit(1);
 }
 
-void
-do_child2()
+void do_child2()
 {
-    int err;
+	int err;
 
 	close(parent_pipe[0]);
 	close(child_pipe1[0]);
@@ -212,36 +209,35 @@ do_child2()
 	close(child_pipe3[1]);
 
 	child_wait(child_pipe2[0]);
-        tst_resm(TINFO, "child 2 starting");
+	tst_resm(TINFO, "child 2 starting");
 	if (fcntl(file_fd, F_SETLK, &lock2) < 0) {
-            err = errno;
-            tst_resm(TINFO, "child 2 lock err %d", err);
+		err = errno;
+		tst_resm(TINFO, "child 2 lock err %d", err);
 		parent_free(err);
 	} else {
-            tst_resm(TINFO, "child 2 pid %d locked", getpid());
+		tst_resm(TINFO, "child 2 pid %d locked", getpid());
 		parent_free(0);
 	}
 
 	child_wait(child_pipe2[0]);
-        tst_resm(TINFO, "child 2 resuming");
+	tst_resm(TINFO, "child 2 resuming");
 	if (fcntl(file_fd, F_SETLKW, &lock4) < 0) {
-            err = errno;
-            tst_resm(TINFO, "child 2 lockw err %d", err);
+		err = errno;
+		tst_resm(TINFO, "child 2 lockw err %d", err);
 		parent_free(err);
 	} else {
-            tst_resm(TINFO, "child 2 lockw locked");
+		tst_resm(TINFO, "child 2 lockw locked");
 		parent_free(0);
 	}
 
 	child_wait(child_pipe2[0]);
-        tst_resm(TINFO, "child 2 exiting");
+	tst_resm(TINFO, "child 2 exiting");
 	exit(1);
 }
 
-void
-do_child3()
+void do_child3()
 {
-    int err;
+	int err;
 
 	close(parent_pipe[0]);
 	close(child_pipe1[0]);
@@ -251,34 +247,33 @@ do_child3()
 	close(child_pipe3[1]);
 
 	child_wait(child_pipe3[0]);
-        tst_resm(TINFO, "child 3 starting");
+	tst_resm(TINFO, "child 3 starting");
 	if (fcntl(file_fd, F_SETLK, &lock3) < 0) {
-            err = errno;
-            tst_resm(TINFO, "child 3 lock err %d", err);
+		err = errno;
+		tst_resm(TINFO, "child 3 lock err %d", err);
 		parent_free(err);
 	} else {
-            tst_resm(TINFO, "child 3 pid %d locked", getpid());
+		tst_resm(TINFO, "child 3 pid %d locked", getpid());
 		parent_free(0);
 	}
 
 	child_wait(child_pipe3[0]);
-        tst_resm(TINFO, "child 3 resuming");
+	tst_resm(TINFO, "child 3 resuming");
 	if (fcntl(file_fd, F_SETLKW, &lock5) < 0) {
-            err = errno;
-            tst_resm(TINFO, "child 3 lockw err %d", err);
+		err = errno;
+		tst_resm(TINFO, "child 3 lockw err %d", err);
 		parent_free(err);
 	} else {
-            tst_resm(TINFO, "child 3 lockw locked");
+		tst_resm(TINFO, "child 3 lockw locked");
 		parent_free(0);
 	}
 
 	child_wait(child_pipe3[0]);
-        tst_resm(TINFO, "child 3 exiting");
+	tst_resm(TINFO, "child 3 exiting");
 	exit(1);
 }
 
-int
-do_test(struct flock *lock, pid_t pid)
+int do_test(struct flock *lock, pid_t pid)
 {
 	struct flock fl;
 
@@ -286,10 +281,9 @@ do_test(struct flock *lock, pid_t pid)
 	fl.l_whence = lock->l_whence;
 	fl.l_start = lock->l_start;
 	fl.l_len = lock->l_len;
-	fl.l_pid = (short) 0;
+	fl.l_pid = (short)0;
 	if (fcntl(file_fd, F_GETLK, &fl) < 0) {
-		tst_resm(TFAIL, "fcntl on file failed, errno =%d",
-			 errno);
+		tst_resm(TFAIL, "fcntl on file failed, errno =%d", errno);
 		return 1;
 	}
 
@@ -325,26 +319,24 @@ do_test(struct flock *lock, pid_t pid)
 	return 0;
 }
 
-char *
-str_type(int type)
+char *str_type(int type)
 {
 	static char buf[20];
 
 	switch (type) {
 	case F_RDLCK:
-		return("F_RDLCK");
+		return ("F_RDLCK");
 	case F_WRLCK:
-		return("F_WRLCK");
+		return ("F_WRLCK");
 	case F_UNLCK:
-		return("F_UNLCK");
+		return ("F_UNLCK");
 	default:
 		sprintf(buf, "BAD VALUE: %d", type);
-		return(buf);
+		return (buf);
 	}
 }
 
-void
-parent_free(int arg)
+void parent_free(int arg)
 {
 	if (write(parent_pipe[1], &arg, sizeof(arg)) != sizeof(arg)) {
 		tst_resm(TFAIL, "couldn't send message to parent");
@@ -358,13 +350,12 @@ int parent_wait()
 
 	if (read(parent_pipe[0], &arg, sizeof(arg)) != sizeof(arg)) {
 		tst_resm(TFAIL, "parent_wait() failed");
-		return(errno);
+		return (errno);
 	}
-	return(arg);
+	return (arg);
 }
 
-void
-child_free(int fd, int arg)
+void child_free(int fd, int arg)
 {
 	if (write(fd, &arg, sizeof(arg)) != sizeof(arg)) {
 		tst_resm(TFAIL, "couldn't send message to child");
@@ -372,8 +363,7 @@ child_free(int fd, int arg)
 	}
 }
 
-void
-child_wait(int fd)
+void child_wait(int fd)
 {
 	int arg;
 
@@ -385,12 +375,11 @@ child_wait(int fd)
 	}
 }
 
-void
-stop_children()
+void stop_children()
 {
 	int arg;
 
-	(void) signal(SIGCLD, (void (*)())SIG_DFL);
+	(void)signal(SIGCLD, (void (*)())SIG_DFL);
 	arg = STOP;
 	child_free(child_pipe1[1], arg);
 	child_free(child_pipe2[1], arg);
@@ -398,53 +387,45 @@ stop_children()
 	wait(0);
 }
 
-void
-catch_child()
+void catch_child()
 {
 	tst_resm(TFAIL, "Unexpected death of child process");
 	cleanup();
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}
 
-void
-catch_alarm()
+void catch_alarm()
 {
-    sighold(SIGCHLD);
+	sighold(SIGCHLD);
 	/*
 	 * Timer has runout and the children have not detected the deadlock.
 	 * Need to kill the kids and exit
 	 */
-        if (child_pid1 != 0 &&
-            (kill(child_pid1, SIGKILL)) < 0) {
+	if (child_pid1 != 0 && (kill(child_pid1, SIGKILL)) < 0) {
 		tst_resm(TFAIL, "Attempt to signal child 1 failed.");
 	}
 
-	if (child_pid2 != 0 &&
-            (kill(child_pid2, SIGKILL)) < 0) {
+	if (child_pid2 != 0 && (kill(child_pid2, SIGKILL)) < 0) {
 		tst_resm(TFAIL, "Attempt to signal child 2 failed.");
 	}
-	if (child_pid3 != 0 &&
-            (kill(child_pid3, SIGKILL)) < 0) {
+	if (child_pid3 != 0 && (kill(child_pid3, SIGKILL)) < 0) {
 		tst_resm(TFAIL, "Attempt to signal child 2 failed.");
 	}
-        tst_resm(TFAIL, "Alarm expired, deadlock not detected");
-        tst_resm(TWARN, "You may need to kill child processes by hand");
+	tst_resm(TFAIL, "Alarm expired, deadlock not detected");
+	tst_resm(TWARN, "You may need to kill child processes by hand");
 	cleanup();
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}
 
 int main(int ac, char **av)
 {
 	int ans;
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int fail = 0;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
-
 #ifdef UCLINUX
 	maybe_run_child(&do_child1, "nddddddddd", 1, &file_fd,
 			&parent_pipe[0], &parent_pipe[1],
@@ -463,11 +444,10 @@ int main(int ac, char **av)
 			&child_pipe3[0], &child_pipe3[1]);
 #endif
 
-	if (setup()) {			/* global testup */
+	if (setup()) {		/* global testup */
 		tst_resm(TINFO, "setup failed");
 		cleanup();
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/* check for looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -491,8 +471,7 @@ int main(int ac, char **av)
 		} else if (child_pid1 < 0) {
 			perror("Fork failed: child 1");
 			cleanup();
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		/* parent */
 
@@ -516,8 +495,7 @@ int main(int ac, char **av)
 					 "1 failed");
 			}
 			cleanup();
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		/* parent */
 
@@ -546,8 +524,7 @@ int main(int ac, char **av)
 					 "failed");
 			}
 			cleanup();
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 		/* parent */
 
 		close(parent_pipe[1]);
@@ -654,4 +631,3 @@ int main(int ac, char **av)
 	cleanup();
 	return 0;
 }
-

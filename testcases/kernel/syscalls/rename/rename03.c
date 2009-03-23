@@ -76,8 +76,8 @@ void setup2();
 void cleanup();
 extern void do_file_setup(char *);
 
-char *TCID="rename03";		/* Test program identifier.    */
-int TST_TOTAL=2;		/* Total number of test cases. */
+char *TCID = "rename03";	/* Test program identifier.    */
+int TST_TOTAL = 2;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 char fname[255], mname[255];
@@ -94,23 +94,23 @@ struct test_case_t {
 	ino_t *oldino;
 } TC[] = {
 	/* comment goes here */
-	{fname, mname, "file", &f_olddev, &f_oldino},
-
-	/* comment goes here */
-	{fdir, mdir, "directory", &d_olddev, &d_oldino}
+	{
+	fname, mname, "file", &f_olddev, &f_oldino},
+	    /* comment goes here */
+	{
+	fdir, mdir, "directory", &d_olddev, &d_oldino}
 };
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	int lc;             /* loop counter */
-	char *msg;          /* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int i;
 
 	/*
 	 * parse standard options
 	 */
-	if ((msg=parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -122,10 +122,10 @@ main(int ac, char **av)
 	/*
 	 * check looping state if -i option given
 	 */
-	for (lc=0; TEST_LOOPING(lc); lc++) {
-	 
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+
 		/* reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/* set up the files and directories for the tests */
 		setup2();
@@ -153,7 +153,7 @@ main(int ac, char **av)
 				 * same as the old one
 				 */
 				if (buf2.st_dev != *TC[i].olddev ||
-						buf2.st_ino != *TC[i].oldino) {
+				    buf2.st_ino != *TC[i].oldino) {
 					tst_resm(TFAIL, "rename() failed: the "
 						 "new %s points to a different "
 						 "inode/location", TC[i].desc);
@@ -188,25 +188,21 @@ main(int ac, char **av)
 		if (rmdir(mdir) == -1) {
 			tst_brkm(TBROK, cleanup, "Could not remove "
 				 "directory %s", mdir);
-			/*NOTREACHED*/
-		}
-	}   /* End for TEST_LOOPING */
+		 /*NOTREACHED*/}
+	}			/* End for TEST_LOOPING */
 
 	/*
 	 * cleanup and exit
 	 */
 	cleanup();
-	/*NOTREACHED*/
-
-  return 0;
+	 /*NOTREACHED*/ return 0;
 
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -217,24 +213,23 @@ setup()
 	/* Create a temporary directory and make it current. */
 	tst_tmpdir();
 
-	sprintf(fname,"./tfile_%d",getpid());
-	sprintf(mname,"./rnfile_%d",getpid());
-	sprintf(fdir,"./tdir_%d",getpid());
-	sprintf(mdir,"./rndir_%d",getpid());
+	sprintf(fname, "./tfile_%d", getpid());
+	sprintf(mname, "./rnfile_%d", getpid());
+	sprintf(fdir, "./tdir_%d", getpid());
+	sprintf(mdir, "./rndir_%d", getpid());
 }
 
 /*
  * setup2() - set up the files and directories for the tests
  */
-void
-setup2()
+void setup2()
 {
 	/* create the old file */
 	do_file_setup(fname);
 
 	if (stat(fname, &buf1) == -1) {
 		tst_brkm(TBROK, cleanup, "failed to stat file %s"
-			 "in rename()",fname);
+			 "in rename()", fname);
 		/* NOTREACHED */
 	}
 
@@ -243,16 +238,15 @@ setup2()
 	f_oldino = buf1.st_ino;
 
 	/* create another file */
-	do_file_setup(mname);	     
+	do_file_setup(mname);
 
 	/* create "old" directory */
 	if (mkdir(fdir, 00770) == -1) {
 		tst_brkm(TBROK, cleanup, "Could not create directory %s", fdir);
-		/*NOTREACHED*/
-	}
-	if (stat(fdir, &buf1)== -1) {
+	 /*NOTREACHED*/}
+	if (stat(fdir, &buf1) == -1) {
 		tst_brkm(TBROK, cleanup, "failed to stat directory %s"
-			 "in rename()",fdir);
+			 "in rename()", fdir);
 		/* NOTREACHED */
 	}
 
@@ -262,16 +256,14 @@ setup2()
 	/* create another directory */
 	if (mkdir(mdir, 00770) == -1) {
 		tst_brkm(TBROK, cleanup, "Could not create directory %s", mdir);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 }
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

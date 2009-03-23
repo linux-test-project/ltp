@@ -52,8 +52,8 @@
 void setup();
 void cleanup();
 
-char *TCID = "dup204"; 		/* Test program identifier.    */
-int TST_TOTAL = 2;    		/* Total number of test cases. */
+char *TCID = "dup204";		/* Test program identifier.    */
+int TST_TOTAL = 2;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int Fd[2];
@@ -66,7 +66,7 @@ int main(int ac, char **av)
 	int i, fd;
 	struct stat oldbuf, newbuf;
 
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -79,7 +79,7 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		/* loop through the test cases */
-		for (i=0; i<TST_TOTAL; i++) {
+		for (i = 0; i < TST_TOTAL; i++) {
 			TEST(dup2(Fd[i], NFd[i]));
 
 			if ((fd = TEST_RETURN) == -1) {
@@ -114,20 +114,18 @@ int main(int ac, char **av)
 			}
 		}
 	}
-    	cleanup();
+	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* Initialize Fd in case we get a quick signal */
-	Fd[0]=-1;
+	Fd[0] = -1;
 
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -148,8 +146,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	int i;
 
@@ -160,7 +157,7 @@ cleanup()
 	TEST_CLEANUP;
 
 	/* close the open file we've been dup'ing */
-	for (i=0; i<2; i++) {
+	for (i = 0; i < 2; i++) {
 		if (close(Fd[i]) == -1) {
 			tst_resm(TWARN, "close(%d) Failed, errno = %d "
 				 ": %s", Fd[i], errno, strerror(errno));

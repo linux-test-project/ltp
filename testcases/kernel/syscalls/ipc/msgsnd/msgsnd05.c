@@ -81,7 +81,7 @@ char *TCID = "msgsnd05";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-int exp_enos[] = {EINTR, 0};	/* 0 terminated list of expected errnos */
+int exp_enos[] = { EINTR, 0 };	/* 0 terminated list of expected errnos */
 
 int msg_q_1 = -1;		/* The message queue id created in setup */
 
@@ -91,20 +91,19 @@ MSGBUF msg_buf;
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	pid_t c_pid;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
-
 #ifdef UCLINUX
 	maybe_run_child(&do_child_uclinux, "d", &msg_q_1);
 #endif
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	if (sync_pipe_create(sync_pipes, PIPE_NAME) == -1)
 		tst_brkm(TBROK, cleanup, "sync_pipe_create failed");
@@ -123,7 +122,7 @@ int main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "could not fork");
 		}
 
-		if (c_pid == 0) {		/* child */
+		if (c_pid == 0) {	/* child */
 			/*
 			 * Attempt to write another message to the full queue.
 			 * Without the IPC_NOWAIT flag, the child sleeps
@@ -136,13 +135,15 @@ int main(int ac, char **av)
 #else
 			do_child();
 #endif
-		} else {		/* parent */
+		} else {	/* parent */
 
 			if (sync_pipe_wait(sync_pipes) == -1)
-				tst_brkm(TBROK, cleanup, "sync_pipe_wait failed");
+				tst_brkm(TBROK, cleanup,
+					 "sync_pipe_wait failed");
 
 			if (sync_pipe_close(sync_pipes, PIPE_NAME) == -1)
-				tst_brkm(TBROK, cleanup, "sync_pipe_close failed");
+				tst_brkm(TBROK, cleanup,
+					 "sync_pipe_close failed");
 
 			/* After son has been created, give it a chance to execute the
 			 * msgsnd command before we continue. Without this sleep, on SMP machine
@@ -161,15 +162,13 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * do_child()
  */
-void
-do_child()
+void do_child()
 {
 	if (sync_pipe_notify(sync_pipes) == -1)
 		tst_brkm(TBROK, cleanup, "sync_pipe_notify failed");
@@ -186,13 +185,14 @@ do_child()
 
 	TEST_ERROR_LOG(TEST_ERRNO);
 
-	switch(TEST_ERRNO) {
+	switch (TEST_ERRNO) {
 	case EINTR:
 		tst_resm(TPASS, "expected failure - errno = %d : %s",
 			 TEST_ERRNO, strerror(TEST_ERRNO));
 		break;
 	default:
-		tst_resm(TFAIL, "call failed with an unexpected error - %d : %s",
+		tst_resm(TFAIL,
+			 "call failed with an unexpected error - %d : %s",
 			 TEST_ERRNO, strerror(TEST_ERRNO));
 		break;
 	}
@@ -204,8 +204,7 @@ do_child()
 /*
  * do_child_uclinux() - capture signals, initialize buffer, then run do_child()
  */
-void
-do_child_uclinux()
+void do_child_uclinux()
 {
 	/* initialize the message buffer */
 	init_buf(&msg_buf, MSGTYPE, MSGSIZE);
@@ -222,8 +221,7 @@ do_child_uclinux()
 /*
  * sighandler() - handle signals
  */
-void
-sighandler(int sig)
+void sighandler(int sig)
 {
 	/* we don't need to do anything here */
 }
@@ -231,8 +229,7 @@ sighandler(int sig)
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals in our own handler */
 	tst_sig(FORK, sighandler, cleanup);
@@ -270,8 +267,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/* if it exists, remove the message queue that was created */
 	rm_queue(msg_q_1);
@@ -288,4 +284,3 @@ cleanup(void)
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

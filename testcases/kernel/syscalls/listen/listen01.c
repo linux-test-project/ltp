@@ -55,48 +55,45 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID="listen01";		/* Test program identifier.    */
+char *TCID = "listen01";	/* Test program identifier.    */
 int testno;
 
-int	s;	/* socket descriptor */
+int s;				/* socket descriptor */
 
 void setup(void), setup0(void), setup1(void),
-	cleanup(void), cleanup0(void), cleanup1(void);
+cleanup(void), cleanup0(void), cleanup1(void);
 
 struct test_case_t {		/* test case structure */
-	int	domain;	/* PF_INET, PF_UNIX, ... */
-	int	type;	/* SOCK_STREAM, SOCK_DGRAM ... */
-	int	proto;	/* protocol number (usually 0 = default) */
-	int	backlog;	/* connect's 3rd argument */
-	int	retval;		/* syscall return value */
-	int	experrno;	/* expected errno */
-	void	(*setup)(void);
-	void	(*cleanup)(void);
+	int domain;		/* PF_INET, PF_UNIX, ... */
+	int type;		/* SOCK_STREAM, SOCK_DGRAM ... */
+	int proto;		/* protocol number (usually 0 = default) */
+	int backlog;		/* connect's 3rd argument */
+	int retval;		/* syscall return value */
+	int experrno;		/* expected errno */
+	void (*setup) (void);
+	void (*cleanup) (void);
 	char *desc;
 } tdat[] = {
-	{ 0, 0, 0, 0, -1, EBADF, setup0, cleanup0,
-		"bad file descriptor" },
-	{ 0, 0, 0, 0, -1, ENOTSOCK, setup0, cleanup0,
-		"not a socket" },
-	{ PF_INET, SOCK_DGRAM, 0, 0, -1, EOPNOTSUPP, setup1, cleanup1,
-		"UDP listen" },
-};
+	{
+	0, 0, 0, 0, -1, EBADF, setup0, cleanup0, "bad file descriptor"}, {
+	0, 0, 0, 0, -1, ENOTSOCK, setup0, cleanup0, "not a socket"}, {
+PF_INET, SOCK_DGRAM, 0, 0, -1, EOPNOTSUPP, setup1, cleanup1,
+		    "UDP listen"},};
 
-int TST_TOTAL=sizeof(tdat)/sizeof(tdat[0]); /* Total number of test cases. */
+int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);	/* Total number of test cases. */
 
-int exp_enos[] = {EBADF, ENOTSOCK, EOPNOTSUPP, 0};
+int exp_enos[] = { EBADF, ENOTSOCK, EOPNOTSUPP, 0 };
 
 extern int Tst_count;
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(argc, argv, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -109,7 +106,7 @@ main(int argc, char *argv[])
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		Tst_count = 0;
-		for (testno=0; testno < TST_TOTAL; ++testno) {
+		for (testno = 0; testno < TST_TOTAL; ++testno) {
 			tdat[testno].setup();
 
 			TEST(listen(s, tdat[testno].backlog));
@@ -117,67 +114,59 @@ main(int argc, char *argv[])
 			    (TEST_RETURN < 0 &&
 			     TEST_ERRNO != tdat[testno].experrno)) {
 				tst_resm(TFAIL, "%s ; returned"
-					" %d (expected %d), errno %d (expected"
-					" %d)", tdat[testno].desc,
-					TEST_RETURN, tdat[testno].retval,
-					TEST_ERRNO, tdat[testno].experrno);
+					 " %d (expected %d), errno %d (expected"
+					 " %d)", tdat[testno].desc,
+					 TEST_RETURN, tdat[testno].retval,
+					 TEST_ERRNO, tdat[testno].experrno);
 			} else {
 				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_resm(TPASS, "%s successful",
-					tdat[testno].desc);
+					 tdat[testno].desc);
 			}
 			tdat[testno].cleanup();
 		}
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
-}	/* End main */
+	 /*NOTREACHED*/ return 0;
+}				/* End main */
 
-void
-setup(void)
+void setup(void)
 {
-	TEST_PAUSE;	/* if -P option specified */
+	TEST_PAUSE;		/* if -P option specified */
 }
 
-void
-cleanup(void)
+void cleanup(void)
 {
 	TEST_CLEANUP;
 	tst_exit();
 }
 
-void
-setup0(void)
+void setup0(void)
 {
 	if (tdat[testno].experrno == EBADF)
 		s = 400;	/* anything not an open file */
-	else
-	if((s = open("/dev/null", O_WRONLY)) == -1)
+	else if ((s = open("/dev/null", O_WRONLY)) == -1)
 		tst_brkm(TBROK, cleanup, "error opening /dev/null - "
-		"errno: %s", strerror(errno));
+			 "errno: %s", strerror(errno));
 }
 
-void
-cleanup0(void)
+void cleanup0(void)
 {
 	s = -1;
 }
 
-void
-setup1(void)
+void setup1(void)
 {
 	s = socket(tdat[testno].domain, tdat[testno].type, tdat[testno].proto);
 	if (s < 0) {
 		tst_brkm(TBROK, cleanup, "socket setup failed for listen: "
-			"%s", strerror(errno));
+			 "%s", strerror(errno));
 	}
 }
 
-void
-cleanup1(void)
+void cleanup1(void)
 {
-	(void) close(s);
+	(void)close(s);
 	s = -1;
 }

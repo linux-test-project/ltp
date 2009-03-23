@@ -72,13 +72,14 @@ int exp_enos[] = {
 #endif
 };
 
-char * bad_addr = 0;
+char *bad_addr = 0;
 
-char bad_file[] = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyz";
-	char good_dir[100] = "testdir";
-	char fname[30] = "testfile";
-	struct statfs fsbuf;
-	char fname1[30];
+char bad_file[] =
+    "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyz";
+char good_dir[100] = "testdir";
+char fname[30] = "testfile";
+struct statfs fsbuf;
+char fname1[30];
 
 struct test_case_t {
 	char *path;
@@ -86,40 +87,40 @@ struct test_case_t {
 	int error;
 } TC[] = {
 	/* path has a component which is not a directory - ENOTDIR */
-	{fname1, &fsbuf, ENOTDIR},
-
-	/* path does not exist - ENOENT */
-	{good_dir, &fsbuf, ENOENT},
-
-	/* path is too long - ENAMETOOLONG */
-	{bad_file, &fsbuf, ENAMETOOLONG},
-
+	{
+	fname1, &fsbuf, ENOTDIR},
+	    /* path does not exist - ENOENT */
+	{
+	good_dir, &fsbuf, ENOENT},
+	    /* path is too long - ENAMETOOLONG */
+	{
+	bad_file, &fsbuf, ENAMETOOLONG},
 #ifndef UCLINUX
-	/* Skip since uClinux does not implement memory protection */
-	/* path is an invalid address - EFAULT */
-	{(char *)-1, &fsbuf, EFAULT},
-
-	/* buf is an invalid address - EFAULT */
-	{fname, (struct statfs *)-1, EFAULT}
+	    /* Skip since uClinux does not implement memory protection */
+	    /* path is an invalid address - EFAULT */
+	{
+	(char *)-1, &fsbuf, EFAULT},
+	    /* buf is an invalid address - EFAULT */
+	{
+	fname, (struct statfs *)-1, EFAULT}
 #endif
 };
 
-int TST_TOTAL = sizeof(TC)/sizeof(*TC);
+int TST_TOTAL = sizeof(TC) / sizeof(*TC);
 
 void setup(void);
 void cleanup(void);
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int i;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	setup();
 
@@ -131,7 +132,6 @@ int main(int ac, char **av)
 
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
-
 
 		/* loop through the test cases */
 		for (i = 0; i < TST_TOTAL; i++) {
@@ -158,17 +158,14 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-
-  return 0;
+	 /*NOTREACHED*/ return 0;
 
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -189,7 +186,7 @@ setup()
 
 #if !defined(UCLINUX)
 	bad_addr = mmap(0, 1, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
+			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
 	if (bad_addr == MAP_FAILED) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}
@@ -197,19 +194,17 @@ setup()
 #endif
 }
 
-
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
 	 */
-    close(fileHandle);
+	close(fileHandle);
 
 	TEST_CLEANUP;
 
@@ -219,4 +214,3 @@ cleanup()
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

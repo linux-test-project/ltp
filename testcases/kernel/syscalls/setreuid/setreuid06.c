@@ -19,10 +19,10 @@
 
 /*
  * NAME
- * 	setreuid06.c
+ *	setreuid06.c
  *
  * DESCRIPTION
- * 	Test that EPERM is set when setreuid is given an invalid user id.
+ *	Test that EPERM is set when setreuid is given an invalid user id.
  *
  * USAGE:  <for command-line>
  *	setreuid06 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
@@ -57,12 +57,11 @@
 
 char *TCID = "setreuid06";
 int TST_TOTAL = 1;
-int exp_enos[]={EPERM, 0};
+int exp_enos[] = { EPERM, 0 };
 extern int Tst_count;
 
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
-
 
 void setup(void);
 void cleanup(void);
@@ -70,15 +69,14 @@ void cleanup(void);
 int main(int argc, char **argv)
 {
 
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) !=
-	    (char *) NULL) {
+	if ((msg = parse_opts(argc, argv, (option_t *) NULL, NULL)) !=
+	    (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/*
 	 * perform global setup for the test
@@ -96,27 +94,24 @@ int main(int argc, char **argv)
 		} else if (TEST_ERRNO == EPERM) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TPASS, "setreuid set errno to EPERM as "
-				"expected");
+				 "expected");
 		} else {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "setreuid FAILED, expected 1 but "
-				"returned %d", TEST_ERRNO);
+				 "returned %d", TEST_ERRNO);
 		}
 
 	}
 	cleanup();
-	/*NOTREACHED*/
-
-  return 0;
+	 /*NOTREACHED*/ return 0;
 
 }
 
 /*
  * setup()
- * 	performs all ONE TIME setup for this test
+ *	performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -126,18 +121,16 @@ setup(void)
 
 	umask(0);
 
-	 /* Switch to nobody user for correct error code collection */
-        if (geteuid() != 0) {
-                tst_brkm(TBROK, tst_exit, "Test must be run as root");
-        }
-        ltpuser = getpwnam(nobody_uid);
-        if (setuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "setuid failed to "
-                         "to set the effective uid to %d",
-                         ltpuser->pw_uid);
-                perror("setuid");
-        }
-
+	/* Switch to nobody user for correct error code collection */
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+	}
+	ltpuser = getpwnam(nobody_uid);
+	if (setuid(ltpuser->pw_uid) == -1) {
+		tst_resm(TINFO, "setuid failed to "
+			 "to set the effective uid to %d", ltpuser->pw_uid);
+		perror("setuid");
+	}
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
@@ -145,11 +138,10 @@ setup(void)
 
 /*
  * cleanup()
- * 	performs all the ONE TIME cleanup for this test at completion
- * 	or premature exit
+ *	performs all the ONE TIME cleanup for this test at completion
+ *	or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing status if that option was specified

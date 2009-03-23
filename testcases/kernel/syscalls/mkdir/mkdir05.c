@@ -79,26 +79,25 @@ void cleanup();
 
 #define PERMS		0777
 
-char *TCID="mkdir05";           /* Test program identifier.    */
-int TST_TOTAL=1;                /* Total number of test cases. */
-extern int Tst_count;           /* Test Case counter for tst_* routines */
+char *TCID = "mkdir05";		/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
+extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
-char tstdir1 [100];
+char tstdir1[100];
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	int lc;             /* loop counter */
-	char *msg;          /* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	struct stat buf;
 
 	/*
 	 * parse standard options
 	 */
-	if ((msg=parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -110,10 +109,10 @@ main(int ac, char **av)
 	/*
 	 * check looping state if -i option given
 	 */
-	for (lc=0; TEST_LOOPING(lc); lc++) {
-	 
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+
 		/* reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/*
 		 * TEST mkdir() base functionality
@@ -125,7 +124,7 @@ main(int ac, char **av)
 		/* Call mkdir(2) using the TEST macro */
 		TEST(mkdir(tstdir1, PERMS));
 
-		if (TEST_RETURN == -1 ) {
+		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "mkdir(%s, %#o) Failed",
 				 tstdir1, PERMS);
 			continue;
@@ -135,18 +134,17 @@ main(int ac, char **av)
 			if (stat(tstdir1, &buf) == -1) {
 				tst_brkm(TBROK, cleanup, "failed to stat the "
 					 "new directory");
-				/*NOTREACHED*/
-			}
+			 /*NOTREACHED*/}
 			/* check the owner */
 			if (buf.st_uid != geteuid()) {
 				tst_resm(TFAIL, "mkdir() FAILED to set owner ID"
-						" as process's effective ID");
+					 " as process's effective ID");
 				continue;
 			}
 			/* check the group ID */
 			if (buf.st_gid != getegid()) {
 				tst_resm(TFAIL, "mkdir() failed to set group ID"
-						" as the process's group ID");
+					 " as the process's group ID");
 				continue;
 			}
 			tst_resm(TPASS, "mkdir() functionality is correct");
@@ -159,33 +157,30 @@ main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "could not remove directory");
 		}
 
-	}   /* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/*
 	 * cleanup and exit
 	 */
 	cleanup();
-	/*NOTREACHED*/
-	return 0;
-}       /* End main */
+	 /*NOTREACHED*/ return 0;
+}				/* End main */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
-	 /* Switch to nobody user for correct error code collection */
-        if (geteuid() != 0) {
-                tst_brkm(TBROK, tst_exit, "Test must be run as root");
-        }
-        ltpuser = getpwnam(nobody_uid);
-        if (setuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "setuid failed to "
-                         "to set the effective uid to %d",
-                         ltpuser->pw_uid);
-                perror("setuid");
-        }
+	/* Switch to nobody user for correct error code collection */
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+	}
+	ltpuser = getpwnam(nobody_uid);
+	if (setuid(ltpuser->pw_uid) == -1) {
+		tst_resm(TINFO, "setuid failed to "
+			 "to set the effective uid to %d", ltpuser->pw_uid);
+		perror("setuid");
+	}
 
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -197,13 +192,11 @@ setup()
 	tst_tmpdir();
 }
 
-
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

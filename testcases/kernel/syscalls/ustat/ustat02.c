@@ -25,7 +25,7 @@
  *    				 for ustat(2)
  *
  *    TEST CASE TOTAL	: 2
- *        
+ *       $
  *    AUTHOR		: Aniruddha Marathe <aniruddha.marathe@wipro.com>
  *
  *    SIGNALS
@@ -53,7 +53,7 @@
  *
  * 	Cleanup:
  * 	  Do cleanup for the test.
- * 	  
+ * 	 $
  * USAGE:  <for command-line>
  *  ustat02 [-c n] [-e] [-i n] [-I x] [-p x] [-t] [-h] [-f] [-p]
  *  where
@@ -71,46 +71,47 @@
 #include "test.h"
 #include "usctest.h"
 #include <sys/types.h>
-#include <unistd.h>    /* libc[45] */
-#include <ustat.h>     /* glibc2 */
+#include <unistd.h>		/* libc[45] */
+#include <ustat.h>		/* glibc2 */
 #include <sys/stat.h>
 
 static void setup();
 static void cleanup();
 
-char *TCID = "ustat02"; 	/* Test program identifier.    */
-extern int Tst_count;    	/* Test Case counter for tst_* routines */
+char *TCID = "ustat02";		/* Test program identifier.    */
+extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-static int exp_enos[] = {EINVAL, EFAULT, 0};
+static int exp_enos[] = { EINVAL, EFAULT, 0 };
 
 static struct test_case_t {
 	char *err_desc;		/*error description */
-	int  exp_errno;		/* expected error number*/
-	char *exp_errval;	/*Expected errorvalue string*/
+	int exp_errno;		/* expected error number */
+	char *exp_errval;	/*Expected errorvalue string */
 } testcase[] = {
-	{"Invalid parameter", EINVAL, "EINVAL"},
+	{
+	"Invalid parameter", EINVAL, "EINVAL"},
 #ifndef UCLINUX
-	/* Skip since uClinux does not implement memory protection */
-	{"Bad address", EFAULT, "EFAULT"}
+	    /* Skip since uClinux does not implement memory protection */
+	{
+	"Bad address", EFAULT, "EFAULT"}
 #endif
 };
 
-int TST_TOTAL = sizeof(testcase)/sizeof(*testcase);	/* Total number of test cases. */
+int TST_TOTAL = sizeof(testcase) / sizeof(*testcase);	/* Total number of test cases. */
 
 dev_t dev_num[2];
 struct ustat *ubuf;
 struct stat *buf;
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 
-	int lc, i;	/* loop counter */
-	char *msg;	/* message returned from parse_opts */
+	int lc, i;		/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
-		!= (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL))
+	    != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -123,42 +124,39 @@ main(int ac, char **av)
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-		for(i = 0; i < TST_TOTAL; i++) {
-			if(i == 0) {
+		for (i = 0; i < TST_TOTAL; i++) {
+			if (i == 0) {
 				TEST(ustat(dev_num[i], ubuf));
 			} else {
-				TEST(ustat(dev_num[i], (struct ustat *) -1));
+				TEST(ustat(dev_num[i], (struct ustat *)-1));
 			}
 
 			if ((TEST_RETURN == -1) && (TEST_ERRNO == testcase[i].
-			exp_errno)) {
+						    exp_errno)) {
 				tst_resm(TPASS, "ustat(2) expected failure;"
-						" Got errno - %s : %s",
-						testcase[i].exp_errval,
-						testcase[i].err_desc);
+					 " Got errno - %s : %s",
+					 testcase[i].exp_errval,
+					 testcase[i].err_desc);
 			} else {
-				tst_resm(TFAIL,"ustat(2) failed to produce"
-						" expected error; %d, errno"
-					       ": %s and got %d",
-						testcase[i].exp_errno,
-						testcase[i].exp_errval,
-						TEST_ERRNO);
+				tst_resm(TFAIL, "ustat(2) failed to produce"
+					 " expected error; %d, errno"
+					 ": %s and got %d",
+					 testcase[i].exp_errno,
+					 testcase[i].exp_errval, TEST_ERRNO);
 			}
 
 			TEST_ERROR_LOG(TEST_ERRNO);
-		}	/*End of TEST LOOPS*/
-	}		/* End of TEST_LOOPING*/
+		}		/*End of TEST LOOPS */
+	}			/* End of TEST_LOOPING */
 
-	/*Clean up and exit*/
+	/*Clean up and exit */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
-}	/*End of main*/
+	 /*NOTREACHED*/ return 0;
+}				/*End of main */
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -171,41 +169,40 @@ setup()
 
 	dev_num[0] = -1;
 
-	/* Allocating memory for ustat and stat structure variables*/
-	if((ubuf = (struct ustat *) malloc (sizeof(struct ustat))) == NULL) {
-	       tst_brkm(TBROK, tst_exit, "Failed to allocate Memory");
+	/* Allocating memory for ustat and stat structure variables */
+	if ((ubuf = (struct ustat *)malloc(sizeof(struct ustat))) == NULL) {
+		tst_brkm(TBROK, tst_exit, "Failed to allocate Memory");
 	}
 
-	if((buf = (struct stat *) malloc (sizeof(struct stat))) == NULL) {
+	if ((buf = (struct stat *)malloc(sizeof(struct stat))) == NULL) {
 		free(ubuf);
-       		tst_brkm(TBROK, tst_exit, "Failed to allocate Memory");
+		tst_brkm(TBROK, tst_exit, "Failed to allocate Memory");
 	}
 
-	/* Finding out a valid device number*/
-	if(stat("/", buf) != 0) {
+	/* Finding out a valid device number */
+	if (stat("/", buf) != 0) {
 		free(buf);
 		free(ubuf);
-       		tst_brkm(TBROK, tst_exit, "stat(2) failed. Exiting without"
-				"invoking ustat(2)");
+		tst_brkm(TBROK, tst_exit, "stat(2) failed. Exiting without"
+			 "invoking ustat(2)");
 	}
 	dev_num[1] = buf->st_dev;
-}	/* End setup() */
+}				/* End setup() */
 
 /*
 * cleanup() - Performs one time cleanup for this test at
 * completion or premature exit
 */
-void
-cleanup()
+void cleanup()
 {
 	free(ubuf);
 	free(buf);
 	/*
-	* print timing stats if that option was specified.
-	* print errno log if that option was specified.
-	*/
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
 	TEST_CLEANUP;
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

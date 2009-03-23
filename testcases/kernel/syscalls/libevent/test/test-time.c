@@ -21,15 +21,14 @@ int called = 0;
 
 struct event *ev[NEVENT];
 
-void
-time_cb(int fd, short event, void *arg)
+void time_cb(int fd, short event, void *arg)
 {
 	struct timeval tv;
 	int i, j;
 
 	called++;
 
-	if (called < 10*NEVENT) {
+	if (called < 10 * NEVENT) {
 		for (i = 0; i < 10; i++) {
 			j = random() % NEVENT;
 			tv.tv_sec = 0;
@@ -42,8 +41,7 @@ time_cb(int fd, short event, void *arg)
 	}
 }
 
-int
-main (int argc, char **argv)
+int main(int argc, char **argv)
 {
 	struct timeval tv;
 	int i;
@@ -65,4 +63,3 @@ main (int argc, char **argv)
 
 	return (called < NEVENT);
 }
-

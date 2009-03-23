@@ -51,7 +51,6 @@
  *	none
  */
 
-
 #define _GNU_SOURCE
 #include <sched.h>
 #include <errno.h>
@@ -61,16 +60,16 @@
 #include <dirent.h>
 
 #if defined(__i386__) || defined(__x86_64__)
-	#if __GLIBC_PREREQ(2,6)
-	#if defined(__x86_64__)
-		#include <utmpx.h>
-	#endif
-	int sys_support = 1;
-	#elif defined(__i386__)
-	int sys_support = 1;
-	#else
-	int sys_support = 0;
-	#endif
+#if __GLIBC_PREREQ(2,6)
+#if defined(__x86_64__)
+#include <utmpx.h>
+#endif
+int sys_support = 1;
+#elif defined(__i386__)
+int sys_support = 1;
+#else
+int sys_support = 0;
+#endif
 #else
 int sys_support = 0;
 #endif
@@ -82,37 +81,35 @@ unsigned int set_cpu_affinity();
 unsigned int get_nodeid(unsigned int);
 unsigned int max_cpuid(cpu_set_t *);
 
-char *TCID= "getcpu01";
+char *TCID = "getcpu01";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
-	unsigned int cpu_id, node_id = 0 ;
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
+	unsigned int cpu_id, node_id = 0;
 	unsigned int cpu_set;
-	#ifdef __i386__
+#ifdef __i386__
 	unsigned int node_set;
-	#endif
+#endif
 
 	/* Check For Kernel Version */
- 	if(((tst_kvercmp(2,6,20)) < 0) || !(sys_support))
-          {
-             tst_resm(TCONF, "This test can only run on kernels that are ");
-             tst_resm(TCONF, "2.6.20 and higher and glibc version 2.6 and above");
-             tst_resm(TCONF, "Currently the test case has been");
-             tst_resm(TCONF, "developed only for i386 and x86_64");
-             exit(0);
-          }
+	if (((tst_kvercmp(2, 6, 20)) < 0) || !(sys_support)) {
+		tst_resm(TCONF, "This test can only run on kernels that are ");
+		tst_resm(TCONF,
+			 "2.6.20 and higher and glibc version 2.6 and above");
+		tst_resm(TCONF, "Currently the test case has been");
+		tst_resm(TCONF, "developed only for i386 and x86_64");
+		exit(0);
+	}
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL)
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL)
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 
-
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -122,60 +119,59 @@ int main(int ac, char **av)
 
 		/* call the system call with the TEST() macro */
 		cpu_set = set_cpu_affinity();
-		#ifdef __i386__
-			node_set = get_nodeid(cpu_set);
-		#endif
-		TEST(getcpu(&cpu_id,&node_id,NULL));
-		if( TEST_RETURN == 0 ) {
-			if ( cpu_id != cpu_set ) {
-				tst_resm(TFAIL, "getcpu() returned wrong value"\
-				" expected cpuid:%d, returned value cpuid: %d",
-				cpu_set,cpu_id);
+#ifdef __i386__
+		node_set = get_nodeid(cpu_set);
+#endif
+		TEST(getcpu(&cpu_id, &node_id, NULL));
+		if (TEST_RETURN == 0) {
+			if (cpu_id != cpu_set) {
+				tst_resm(TFAIL, "getcpu() returned wrong value"
+					 " expected cpuid:%d, returned value cpuid: %d",
+					 cpu_set, cpu_id);
 				tst_exit();
 			}
-			#ifdef __i386__
-			else if( node_id != node_set ){
-				tst_resm(TFAIL, "getcpu() returned wrong value"\
-				" expected  node id:%d returned  node id:%d",
-				node_set,node_id);
+#ifdef __i386__
+			else if (node_id != node_set) {
+				tst_resm(TFAIL, "getcpu() returned wrong value"
+					 " expected  node id:%d returned  node id:%d",
+					 node_set, node_id);
 				tst_exit();
-			}	
-			#endif
+			}
+#endif
 			else
-				tst_resm(TPASS, "getcpu() returned proper"\
-				" cpuid:%d, node id:%d", cpu_id,node_id);
+				tst_resm(TPASS, "getcpu() returned proper"
+					 " cpuid:%d, node id:%d", cpu_id,
+					 node_id);
 		} else {
 			tst_resm(TFAIL, "getcpu() Failed, errno=%d:%s",
-				TEST_ERRNO,strerror(TEST_ERRNO));
-				tst_exit();
+				 TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_exit();
 		}
 	}
 
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * getcpu() - calls the system call
  */
-static inline int getcpu(unsigned *cpu_id, unsigned *node_id, void *cache_struct)
+static inline int getcpu(unsigned *cpu_id, unsigned *node_id,
+			 void *cache_struct)
 {
-	#if defined(__i386__)
-		return syscall(318, cpu_id,node_id,cache_struct);
-	#elif __GLIBC_PREREQ(2,6)
-		*cpu_id = sched_getcpu();
-	#endif
+#if defined(__i386__)
+	return syscall(318, cpu_id, node_id, cache_struct);
+#elif __GLIBC_PREREQ(2,6)
+	*cpu_id = sched_getcpu();
+#endif
 	return 0;
 }
-
 
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	/* ?? */
@@ -187,21 +183,20 @@ setup(void)
  * This will set the affinity to max cpu on which process can run
  * and return that cpu id to the calling process
  */
-unsigned int
-set_cpu_affinity()
+unsigned int set_cpu_affinity()
 {
 	unsigned cpu_max;
 	cpu_set_t set;
-	if ( sched_getaffinity(0, sizeof(cpu_set_t), &set) < 0 ){
-			tst_resm(TFAIL,"sched_getaffinity:errno:%d",errno);
-			tst_exit();
+	if (sched_getaffinity(0, sizeof(cpu_set_t), &set) < 0) {
+		tst_resm(TFAIL, "sched_getaffinity:errno:%d", errno);
+		tst_exit();
 	}
 	cpu_max = max_cpuid(&set);
 	CPU_ZERO(&set);
-	CPU_SET(cpu_max,&set);
-	if ( sched_setaffinity(0, sizeof(cpu_set_t), &set) < 0 ){
-			tst_resm(TFAIL,"sched_setaffinity:errno:%d",errno);
-			tst_exit();
+	CPU_SET(cpu_max, &set);
+	if (sched_setaffinity(0, sizeof(cpu_set_t), &set) < 0) {
+		tst_resm(TFAIL, "sched_setaffinity:errno:%d", errno);
+		tst_exit();
 	}
 	return cpu_max;
 }
@@ -210,53 +205,53 @@ set_cpu_affinity()
  * Return the maximum cpu id
  */
 #define BITS_PER_BYTE 8
-unsigned int
-max_cpuid(cpu_set_t *set)
+unsigned int max_cpuid(cpu_set_t * set)
 {
 	unsigned int index, max = 0;
-	for ( index = 0; index < sizeof(cpu_set_t) * BITS_PER_BYTE; index++)
-		if(CPU_ISSET(index,set)) max = index;
+	for (index = 0; index < sizeof(cpu_set_t) * BITS_PER_BYTE; index++)
+		if (CPU_ISSET(index, set))
+			max = index;
 	return max;
 }
-
 
 /*
  * get_nodeid(cpuid) - This will return the node to which selected cpu belongs
  */
-unsigned int
-get_nodeid(unsigned int cpu_id)
+unsigned int get_nodeid(unsigned int cpu_id)
 {
- 	DIR *directory_parent, *directory_node;
-        struct dirent *de,*dn;
+	DIR *directory_parent, *directory_node;
+	struct dirent *de, *dn;
 	char directory_path[255];
 	unsigned int cpu;
-        int node_id = 0;
+	int node_id = 0;
 
-        directory_parent = opendir("/sys/devices/system/node");
-        if (!directory_parent)  {
-                tst_resm(TWARN,
-                   "/sys not mounted or not a numa system. Assuming one node: %s",
-                        strerror(errno));
-               	return 0; //By Default assume it to belong to node Zero
-        } else {
-                while ((de = readdir(directory_parent)) != NULL) {
-                        if (strncmp(de->d_name, "node", 4))
- 				continue;
-			sprintf(directory_path,"/sys/devices/system/node/%s",de->d_name);
-        		directory_node = opendir(directory_path);
-			while ((dn = readdir(directory_node)) != NULL) {
-			if (strncmp(dn->d_name, "cpu", 3))
+	directory_parent = opendir("/sys/devices/system/node");
+	if (!directory_parent) {
+		tst_resm(TWARN,
+			 "/sys not mounted or not a numa system. Assuming one node: %s",
+			 strerror(errno));
+		return 0;	//By Default assume it to belong to node Zero
+	} else {
+		while ((de = readdir(directory_parent)) != NULL) {
+			if (strncmp(de->d_name, "node", 4))
 				continue;
-			cpu = strtoul(dn->d_name+3,NULL,0);
-			if ( cpu == cpu_id ){
-	                        node_id = strtoul(de->d_name+4, NULL, 0);
-				break;
+			sprintf(directory_path, "/sys/devices/system/node/%s",
+				de->d_name);
+			directory_node = opendir(directory_path);
+			while ((dn = readdir(directory_node)) != NULL) {
+				if (strncmp(dn->d_name, "cpu", 3))
+					continue;
+				cpu = strtoul(dn->d_name + 3, NULL, 0);
+				if (cpu == cpu_id) {
+					node_id =
+					    strtoul(de->d_name + 4, NULL, 0);
+					break;
+				}
 			}
-			}
-                	closedir(directory_node);
-                }
-                closedir(directory_parent);
-        }
+			closedir(directory_node);
+		}
+		closedir(directory_parent);
+	}
 	return node_id;
 }
 
@@ -264,8 +259,7 @@ get_nodeid(unsigned int cpu_id)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -275,4 +269,3 @@ cleanup(void)
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

@@ -40,20 +40,20 @@ extern FILE *temp;
  * Calling function should free the dirlist array.
  */
 int
-test_func1(const char *path_name, const struct stat64 * stat_pointer,
-		int  ftw_integer, struct FTW *ftwp)
+test_func1(const char *path_name, const struct stat64 *stat_pointer,
+	   int ftw_integer, struct FTW *ftwp)
 {
-	char	*s;
+	char *s;
 	const char *p;
-	temp=stderr;
+	temp = stderr;
 
-        if ((s = (char *)malloc((size_t)(strlen((char *)path_name) + 1)))
-                        == NULL) {
-                perror("malloc in test_func1");
-                return 999;
-        }
+	if ((s = (char *)malloc((size_t) (strlen((char *)path_name) + 1)))
+	    == NULL) {
+		perror("malloc in test_func1");
+		return 999;
+	}
 
-	if ((p = strstr(path_name, NFTW)) != (char *)NULL){
+	if ((p = strstr(path_name, NFTW)) != (char *)NULL) {
 		p += strlen(NFTW);
 	} else {
 		p = path_name;
@@ -73,14 +73,12 @@ test_func1(const char *path_name, const struct stat64 * stat_pointer,
 	return 0;
 }
 
-
-
 int
-test_func3(const char *path_name, const struct stat64 * stat_pointer,
-		int  ftw_integer, struct FTW *ftwp)
+test_func3(const char *path_name, const struct stat64 *stat_pointer,
+	   int ftw_integer, struct FTW *ftwp)
 {
 	visit++;
-	temp=stderr;
+	temp = stderr;
 #ifdef DEBUG
 	fprintf(temp, "INFO: Call to fn() at %s\n", path_name);
 #endif
@@ -90,19 +88,19 @@ test_func3(const char *path_name, const struct stat64 * stat_pointer,
 		return 999;
 	}
 
-	if (strcmp(path_name, "./tmp/data/dirl/dir_right.1/dir_right.2/right.3") == 0) {
-		fprintf(temp, "ERROR: Target of right.3 was already reported so this file should not be\n");
+	if (strcmp(path_name, "./tmp/data/dirl/dir_right.1/dir_right.2/right.3")
+	    == 0) {
+		fprintf(temp,
+			"ERROR: Target of right.3 was already reported so this file should not be\n");
 		return 999;
 	}
 
 	return 0;
 }
 
-
-
 int
-test_func4(const char *path_name, const struct stat64 * stat_pointer,
-		int  ftw_integer, struct FTW *ftwp)
+test_func4(const char *path_name, const struct stat64 *stat_pointer,
+	   int ftw_integer, struct FTW *ftwp)
 {
 	visit++;
 	do_info(path_name);
@@ -113,19 +111,17 @@ test_func4(const char *path_name, const struct stat64 * stat_pointer,
 	return 0;
 }
 
-
-
 int
-test_func5(const char *path_name, const struct stat64 * stat_pointer,
-		int  ftw_integer, struct FTW *ftwp)
+test_func5(const char *path_name, const struct stat64 *stat_pointer,
+	   int ftw_integer, struct FTW *ftwp)
 {
-	char  pathcwd[PATH_MAX];
-	
-	temp=stderr;
+	char pathcwd[PATH_MAX];
+
+	temp = stderr;
 	if (ftw_integer == FTW_D)
 		return (0);
 
-	if(getcwd(pathcwd,sizeof(pathcwd)) == NULL) {
+	if (getcwd(pathcwd, sizeof(pathcwd)) == NULL) {
 		perror("getcwd");
 		return 998;
 	}
@@ -139,19 +135,17 @@ test_func5(const char *path_name, const struct stat64 * stat_pointer,
 	return (0);
 }
 
-
-
 int
-test_func7(const char *path_name, const struct stat64 * stat_pointer,
-		int  ftw_integer, struct FTW *ftwp)
+test_func7(const char *path_name, const struct stat64 *stat_pointer,
+	   int ftw_integer, struct FTW *ftwp)
 {
-	int		i, found;
-	const char	*p;
+	int i, found;
+	const char *p;
 
-	temp=stderr;
+	temp = stderr;
 	do_info(path_name);
 
-	if ((p = strstr(path_name, NFTW)) != (char *)NULL){
+	if ((p = strstr(path_name, NFTW)) != (char *)NULL) {
 		p += strlen(NFTW);
 	} else {
 		p = path_name;
@@ -172,20 +166,18 @@ test_func7(const char *path_name, const struct stat64 * stat_pointer,
 	return 0;
 }
 
-
-
 int
-test_func8(const char *path_name, const struct stat64 * stat_pointer,
-		 int  ftw_integer, struct FTW *ftwp)
+test_func8(const char *path_name, const struct stat64 *stat_pointer,
+	   int ftw_integer, struct FTW *ftwp)
 {
-	int		i;
-	const char	*p;
-	struct	stat st_buf;
+	int i;
+	const char *p;
+	struct stat st_buf;
 
-	temp=stderr;
+	temp = stderr;
 	do_info(path_name);
 
-	if ((p = strstr(path_name, NFTW)) != (char *)NULL){
+	if ((p = strstr(path_name, NFTW)) != (char *)NULL) {
 		p += strlen(NFTW);
 	} else {
 		p = path_name;
@@ -193,51 +185,61 @@ test_func8(const char *path_name, const struct stat64 * stat_pointer,
 
 	for (i = 0; i < nbads; i++) {
 		if (ftw_integer == FTW_D || ftw_integer == FTW_F ||
-				ftw_integer == FTW_SL) {
-			if ( (((ftw_integer == FTW_D) || (ftw_integer ==
-					FTW_F))? stat(path_name, &st_buf) :
-					lstat(path_name, &st_buf))  == -1) {
+		    ftw_integer == FTW_SL) {
+			if ((((ftw_integer == FTW_D) || (ftw_integer ==
+							 FTW_F)) ?
+			     stat(path_name, &st_buf) : lstat(path_name,
+							      &st_buf)) == -1) {
 				perror("stat");
 				return 999;
 			}
 
-			if (st_buf.st_dev != stat_pointer->st_dev)
-			{
-				fprintf(temp, "ERROR: st_dev members do not match for %s\n", path_name);
+			if (st_buf.st_dev != stat_pointer->st_dev) {
+				fprintf(temp,
+					"ERROR: st_dev members do not match for %s\n",
+					path_name);
 				return 999;
 			}
 
-			if (st_buf.st_ino != stat_pointer->st_ino)
-			{
-				fprintf(temp, "ERROR: st_ino members do not match for %s\n", path_name);
+			if (st_buf.st_ino != stat_pointer->st_ino) {
+				fprintf(temp,
+					"ERROR: st_ino members do not match for %s\n",
+					path_name);
 				return 999;
 			}
 
-			if (st_buf.st_mode != stat_pointer->st_mode)
-			{
-				fprintf(temp, "ERROR: st_mode members do not match for %s\n", path_name);
+			if (st_buf.st_mode != stat_pointer->st_mode) {
+				fprintf(temp,
+					"ERROR: st_mode members do not match for %s\n",
+					path_name);
 				return 999;
 			}
 
-			if (st_buf.st_nlink != stat_pointer->st_nlink)
-			{
-				fprintf(temp, "ERROR: st_nlink members d o not match for %s\n", path_name);
+			if (st_buf.st_nlink != stat_pointer->st_nlink) {
+				fprintf(temp,
+					"ERROR: st_nlink members d o not match for %s\n",
+					path_name);
 				return 999;
 			}
 
-			if (st_buf.st_uid != stat_pointer->st_uid)
-			{
-				fprintf(temp, "ERROR: st_uid members do not match for %s\n", path_name);
+			if (st_buf.st_uid != stat_pointer->st_uid) {
+				fprintf(temp,
+					"ERROR: st_uid members do not match for %s\n",
+					path_name);
 				return 999;
 			}
 
 			if (st_buf.st_gid != stat_pointer->st_gid) {
-				fprintf(temp, "ERROR: st_gid members do not match for %s\n", path_name);
+				fprintf(temp,
+					"ERROR: st_gid members do not match for %s\n",
+					path_name);
 				return 999;
 			}
 
 			if (st_buf.st_size != stat_pointer->st_size) {
-				fprintf(temp, "ERROR: st_size members do not match for %s\n", path_name);
+				fprintf(temp,
+					"ERROR: st_size members do not match for %s\n",
+					path_name);
 				return 999;
 			}
 		}
@@ -246,19 +248,17 @@ test_func8(const char *path_name, const struct stat64 * stat_pointer,
 	return 0;
 }
 
-
-
 int
-test_func9(const char *path_name, const struct stat64 * stat_pointer,
-		 int  ftw_integer, struct FTW *ftwp)
+test_func9(const char *path_name, const struct stat64 *stat_pointer,
+	   int ftw_integer, struct FTW *ftwp)
 {
-	int		i;
-	const char	*p;
+	int i;
+	const char *p;
 
 	do_info(path_name);
 
-	temp=stderr;
-	if ((p = strstr(path_name, NFTW)) != (char *)NULL){
+	temp = stderr;
+	if ((p = strstr(path_name, NFTW)) != (char *)NULL) {
 		p += strlen(NFTW);
 	} else {
 		p = path_name;
@@ -267,11 +267,15 @@ test_func9(const char *path_name, const struct stat64 * stat_pointer,
 	for (i = 0; i < nbads; i++) {
 		if (strcmp(p, badlist[i].s) == 0) {
 
-			if(ftw_integer == FTW_F) {
+			if (ftw_integer == FTW_F) {
 				if (ftw_integer != badlist[i].i) {
-					fprintf(temp, "ERROR: Bad thrid arg to fn () for %s\n", path_name);
-					fprintf(temp, "       Expected %s\n", ftw_mnemonic(badlist[i].i));
-					fprintf(temp, "       Received %s\n", ftw_mnemonic(ftw_integer));
+					fprintf(temp,
+						"ERROR: Bad thrid arg to fn () for %s\n",
+						path_name);
+					fprintf(temp, "       Expected %s\n",
+						ftw_mnemonic(badlist[i].i));
+					fprintf(temp, "       Received %s\n",
+						ftw_mnemonic(ftw_integer));
 					return 999;
 				}
 			}
@@ -280,16 +284,14 @@ test_func9(const char *path_name, const struct stat64 * stat_pointer,
 	return 0;
 }
 
-
-
 int
-test_func10(const char *path_name, const struct stat64 * stat_pointer,
-		 int  ftw_integer, struct FTW *ftwp)
+test_func10(const char *path_name, const struct stat64 *stat_pointer,
+	    int ftw_integer, struct FTW *ftwp)
 {
-	int		i;
-	const char	*p;
+	int i;
+	const char *p;
 
-	temp=stderr;
+	temp = stderr;
 	do_info(path_name);
 
 	if ((p = strstr(path_name, NFTW)) != (char *)NULL) {
@@ -300,11 +302,15 @@ test_func10(const char *path_name, const struct stat64 * stat_pointer,
 
 	for (i = 0; i < nbads; i++) {
 		if (strcmp(p, badlist[i].s) == 0) {
-			if(ftw_integer == FTW_D) {
+			if (ftw_integer == FTW_D) {
 				if (ftw_integer != badlist[i].i) {
-					fprintf(temp, "ERROR: Bad third arg to fn () for %s\n", path_name);
-					fprintf(temp, "       Expected %s\n", ftw_mnemonic(badlist[i].i));
-					fprintf(temp, "       Received %s\n", ftw_mnemonic(ftw_integer));
+					fprintf(temp,
+						"ERROR: Bad third arg to fn () for %s\n",
+						path_name);
+					fprintf(temp, "       Expected %s\n",
+						ftw_mnemonic(badlist[i].i));
+					fprintf(temp, "       Received %s\n",
+						ftw_mnemonic(ftw_integer));
 					return 999;
 				}
 			}
@@ -313,80 +319,14 @@ test_func10(const char *path_name, const struct stat64 * stat_pointer,
 	return 0;
 }
 
-
-
 int
-test_func11(const char *path_name, const struct stat64 * stat_pointer,
-		 int  ftw_integer, struct FTW *ftwp)
+test_func11(const char *path_name, const struct stat64 *stat_pointer,
+	    int ftw_integer, struct FTW *ftwp)
 {
-	int		i;
-	const char	*p;
+	int i;
+	const char *p;
 
-	temp=stderr;
-	do_info(path_name);
-
-	if ((p = strstr(path_name, NFTW)) != (char *)NULL){
-		p += strlen(NFTW);
-	} else {
-		p = path_name;
-	}
-
-	for (i = 0; i < nbads; i++) {
-		if (strcmp(p, badlist[i].s) == 0) {
-			if(ftw_integer == FTW_DP) {
-				if (ftw_integer != badlist[i].i) {
-					fprintf(temp, "ERROR: Bad third arg to fn () for %s\n", path_name);
-					fprintf(temp, "       Expected %s\n", ftw_mnemonic(badlist[i].i));
-					fprintf(temp, "       Received %s\n", ftw_mnemonic(ftw_integer));
-					return 999;
-				}
-			}
-		}
-	}
-	return 0;
-}
-
-
-
-int
-test_func12(const char *path_name, const struct stat64 * stat_pointer,
-		 int  ftw_integer, struct FTW *ftwp)
-{
-	int		i;
-	const char	*p;
-
-	temp=stderr;
-	do_info(path_name);
-
-	if ((p = strstr(path_name, NFTW)) != (char *)NULL){
-		p += strlen(NFTW);
-	} else {
-		p = path_name;
-	}
-
-	for (i = 0; i < nbads; i++) {
-		if (strcmp(p, badlist[i].s) == 0) {
-			if(ftw_integer == FTW_SL) {
-				if (ftw_integer != badlist[i].i) {
-					fprintf(temp, "ERROR: Bad third arg to fn() for %s.  Expected %s, Received %s\n", path_name, ftw_mnemonic(badlist[i].i),ftw_mnemonic(ftw_integer) );
-					return 999;
-				}
-			}
-		}
-	}
-	return 0;
-}
-
-
-
-int
-test_func13(const char *path_name, const struct stat64 * stat_pointer,
-		 int  ftw_integer, struct FTW *ftwp)
-{
-	int		i;
-	const char	*p;
-
-	temp=stderr;
+	temp = stderr;
 	do_info(path_name);
 
 	if ((p = strstr(path_name, NFTW)) != (char *)NULL) {
@@ -397,12 +337,15 @@ test_func13(const char *path_name, const struct stat64 * stat_pointer,
 
 	for (i = 0; i < nbads; i++) {
 		if (strcmp(p, badlist[i].s) == 0) {
-
-			if(ftw_integer == FTW_SLN) {
+			if (ftw_integer == FTW_DP) {
 				if (ftw_integer != badlist[i].i) {
-					fprintf(temp, "ERROR: Bad third arg to fn() for %s\n", path_name);
-					fprintf(temp, "       Expected %s\n", ftw_mnemonic(badlist[i].i));
-					fprintf(temp, "       Received %s\n", ftw_mnemonic(ftw_integer));
+					fprintf(temp,
+						"ERROR: Bad third arg to fn () for %s\n",
+						path_name);
+					fprintf(temp, "       Expected %s\n",
+						ftw_mnemonic(badlist[i].i));
+					fprintf(temp, "       Received %s\n",
+						ftw_mnemonic(ftw_integer));
 					return 999;
 				}
 			}
@@ -411,16 +354,47 @@ test_func13(const char *path_name, const struct stat64 * stat_pointer,
 	return 0;
 }
 
+int
+test_func12(const char *path_name, const struct stat64 *stat_pointer,
+	    int ftw_integer, struct FTW *ftwp)
+{
+	int i;
+	const char *p;
 
+	temp = stderr;
+	do_info(path_name);
+
+	if ((p = strstr(path_name, NFTW)) != (char *)NULL) {
+		p += strlen(NFTW);
+	} else {
+		p = path_name;
+	}
+
+	for (i = 0; i < nbads; i++) {
+		if (strcmp(p, badlist[i].s) == 0) {
+			if (ftw_integer == FTW_SL) {
+				if (ftw_integer != badlist[i].i) {
+					fprintf(temp,
+						"ERROR: Bad third arg to fn() for %s.  Expected %s, Received %s\n",
+						path_name,
+						ftw_mnemonic(badlist[i].i),
+						ftw_mnemonic(ftw_integer));
+					return 999;
+				}
+			}
+		}
+	}
+	return 0;
+}
 
 int
-test_func14(const char *path_name, const struct stat64 * stat_pointer,
-		 int  ftw_integer, struct FTW *ftwp)
+test_func13(const char *path_name, const struct stat64 *stat_pointer,
+	    int ftw_integer, struct FTW *ftwp)
 {
-	int		i;
-	const char	*p;
+	int i;
+	const char *p;
 
-	temp=stderr;
+	temp = stderr;
 	do_info(path_name);
 
 	if ((p = strstr(path_name, NFTW)) != (char *)NULL) {
@@ -432,11 +406,15 @@ test_func14(const char *path_name, const struct stat64 * stat_pointer,
 	for (i = 0; i < nbads; i++) {
 		if (strcmp(p, badlist[i].s) == 0) {
 
-			if(ftw_integer == FTW_DNR) {
+			if (ftw_integer == FTW_SLN) {
 				if (ftw_integer != badlist[i].i) {
-					fprintf(temp, "ERROR: Bad third arg to fn() for %s\n", path_name);
-					fprintf(temp, "       Expected %s\n", ftw_mnemonic(badlist[i].i));
-					fprintf(temp, "       Received %s\n", ftw_mnemonic(ftw_integer));
+					fprintf(temp,
+						"ERROR: Bad third arg to fn() for %s\n",
+						path_name);
+					fprintf(temp, "       Expected %s\n",
+						ftw_mnemonic(badlist[i].i));
+					fprintf(temp, "       Received %s\n",
+						ftw_mnemonic(ftw_integer));
 					return 999;
 				}
 			}
@@ -445,152 +423,178 @@ test_func14(const char *path_name, const struct stat64 * stat_pointer,
 	return 0;
 }
 
+int
+test_func14(const char *path_name, const struct stat64 *stat_pointer,
+	    int ftw_integer, struct FTW *ftwp)
+{
+	int i;
+	const char *p;
 
+	temp = stderr;
+	do_info(path_name);
+
+	if ((p = strstr(path_name, NFTW)) != (char *)NULL) {
+		p += strlen(NFTW);
+	} else {
+		p = path_name;
+	}
+
+	for (i = 0; i < nbads; i++) {
+		if (strcmp(p, badlist[i].s) == 0) {
+
+			if (ftw_integer == FTW_DNR) {
+				if (ftw_integer != badlist[i].i) {
+					fprintf(temp,
+						"ERROR: Bad third arg to fn() for %s\n",
+						path_name);
+					fprintf(temp, "       Expected %s\n",
+						ftw_mnemonic(badlist[i].i));
+					fprintf(temp, "       Received %s\n",
+						ftw_mnemonic(ftw_integer));
+					return 999;
+				}
+			}
+		}
+	}
+	return 0;
+}
 
 int
-test_func15(const char *path_name, const struct stat64 * stat_pointer,
-		 int  ftw_integer, struct FTW *ftwp)
+test_func15(const char *path_name, const struct stat64 *stat_pointer,
+	    int ftw_integer, struct FTW *ftwp)
 {
 
-	temp=stderr;
+	temp = stderr;
 	do_info(path_name);
 	if (strcmp(path_name, "./tmp/data/d666/errs") == 0) {
 		if (ftw_integer != FTW_NS) {
-			fprintf(temp, "ERROR: FTW_NS not passed for file in unsearchable dir\n");
+			fprintf(temp,
+				"ERROR: FTW_NS not passed for file in unsearchable dir\n");
 			return 999;
 		}
 	}
 	return 0;
 }
 
-
-
 int
-test_func16(const char *path_name, const struct stat64 * stat_pointer,
-		 int  ftw_integer, struct FTW *ftwp)
+test_func16(const char *path_name, const struct stat64 *stat_pointer,
+	    int ftw_integer, struct FTW *ftwp)
 {
-	const char	*p;
-	temp=stderr;
+	const char *p;
+	temp = stderr;
 
 	if ((p = strstr(path_name, NFTW2)) != (char *)NULL) {
-		p += strlen(NFTW2) +1;
+		p += strlen(NFTW2) + 1;
 	} else {
 		p = path_name;
 	}
 
-	if (ftwp->level !=  getlev(p)) {
+	if (ftwp->level != getlev(p)) {
 		fprintf(temp, "ERROR: Incorrect value of level for %s\n",
 			path_name);
-		fprintf(temp, "       Expected %d, received %d\n", 
+		fprintf(temp, "       Expected %d, received %d\n",
 			getlev(p), ftwp->level);
 		return 999;
 	}
-	if(ftwp->base != getbase(path_name)){
+	if (ftwp->base != getbase(path_name)) {
 		fprintf(temp, "ERROR: Incorrect value of base for %s\n",
 			path_name);
-		fprintf(temp, "       Expected %d, received %d\n", 
+		fprintf(temp, "       Expected %d, received %d\n",
 			getbase(path_name), ftwp->base);
 		return 999;
 	}
 	return 0;
 }
 
-
-
 int
-test_func17(const char *path_name, const struct stat64 * stat_pointer,
-		 int  ftw_integer, struct FTW *ftwp)
+test_func17(const char *path_name, const struct stat64 *stat_pointer,
+	    int ftw_integer, struct FTW *ftwp)
 {
 	do_info(path_name);
 
-	if(ftw_integer == FTW_SL) {
+	if (ftw_integer == FTW_SL) {
 		visit++;
 		return 999;
 	}
 	return 0;
 }
 
-
-
 int
-test_func18(const char *path_name, const struct stat64 * stat_pointer,
-		 int  ftw_integer, struct FTW *ftwp)
+test_func18(const char *path_name, const struct stat64 *stat_pointer,
+	    int ftw_integer, struct FTW *ftwp)
 {
 	do_info(path_name);
-	if(ftw_integer == FTW_SLN){
+	if (ftw_integer == FTW_SLN) {
 		visit++;
 		return 999;
 	}
 	return 0;
 }
 
-
-
 int
-test_func19(const char *path_name, const struct stat64 * stat_pointer,
-		 int  ftw_integer, struct FTW *ftwp)
+test_func19(const char *path_name, const struct stat64 *stat_pointer,
+	    int ftw_integer, struct FTW *ftwp)
 {
 	do_info(path_name);
-	temp=stderr;
+	temp = stderr;
 	visit++;
 	if (ftw_integer == FTW_DNR) {
 		if (strcmp(path_name, "./tmp/data/d333") == 0) {
 			return 0;
 		} else {
-			fprintf(temp, "ERROR: When FTW_DNR is passed to the function fn the\n");
-			fprintf(temp, "       descendants of the directory should not have\n");
+			fprintf(temp,
+				"ERROR: When FTW_DNR is passed to the function fn the\n");
+			fprintf(temp,
+				"       descendants of the directory should not have\n");
 			fprintf(temp, "       Been processed\n");
 			return 999;
 		}
 	} else {
-		fprintf(temp, "ERROR: Directory has read permission or FTW_DNR was not passed to fn\n");
+		fprintf(temp,
+			"ERROR: Directory has read permission or FTW_DNR was not passed to fn\n");
 		return 999;
 	}
 }
 
-
-
 int
-test_func20(const char *path_name, const struct stat64 * stat_pointer,
-		 int  ftw_integer, struct FTW *ftwp)
+test_func20(const char *path_name, const struct stat64 *stat_pointer,
+	    int ftw_integer, struct FTW *ftwp)
 {
 	return 0;
 }
 
-
-
 int
-test_func21(const char *path_name, const struct stat64 * stat_pointer,
-		 int  ftw_integer, struct FTW *ftwp)
+test_func21(const char *path_name, const struct stat64 *stat_pointer,
+	    int ftw_integer, struct FTW *ftwp)
 {
 	int fd;
 
 	do_info(path_name);
-	temp=stderr;
+	temp = stderr;
 	/* get next file descriptor available */
-	if((fd = open(path_name, O_RDONLY)) == -1) {
+	if ((fd = open(path_name, O_RDONLY)) == -1) {
 		perror("open");
 		return 999;
 	}
 
-	if(close(fd) == -1) {
+	if (close(fd) == -1) {
 		perror("close");
 		return 999;
 	}
 
 	if ((fd != next_fd[0]) && (fd != next_fd[1])) {
-		fprintf(temp, "ERROR: Expected next fd available to be %d (none used) or %d (1 used)\n", next_fd[0], next_fd[1]);
+		fprintf(temp,
+			"ERROR: Expected next fd available to be %d (none used) or %d (1 used)\n",
+			next_fd[0], next_fd[1]);
 		fprintf(temp, "       Next fd available is %d\n", fd);
 		return 999;
 	}
 	return 0;
 }
 
-
-
 int
-test_func22(const char *path_name, const struct stat64 * stat_pointer,
-		 int  ftw_integer, struct FTW *ftwp)
+test_func22(const char *path_name, const struct stat64 *stat_pointer,
+	    int ftw_integer, struct FTW *ftwp)
 {
 	int fd;
 	int i;
@@ -602,7 +606,7 @@ test_func22(const char *path_name, const struct stat64 * stat_pointer,
 		return 999;
 	}
 
-	if(close(fd) == -1) {
+	if (close(fd) == -1) {
 		perror("close");
 		return 999;
 	}
@@ -612,27 +616,28 @@ test_func22(const char *path_name, const struct stat64 * stat_pointer,
 			return 0;
 	}
 
-
-	fprintf(temp, "ERROR: At the start of the traversal the next four fds were: %d, %d, %d, and %d\n", next_fd[0], next_fd[1], next_fd[2], next_fd[3]);
+	fprintf(temp,
+		"ERROR: At the start of the traversal the next four fds were: %d, %d, %d, and %d\n",
+		next_fd[0], next_fd[1], next_fd[2], next_fd[3]);
 	fprintf(temp, "       Traversing level %d the next fd is %d\n",
 		ftwp->level, fd);
 	return 999;
 }
 
-
-
 int
-test_func23(const char *path_name, const struct stat64 * stat_pointer,
-		 int  ftw_integer, struct FTW *ftwp)
+test_func23(const char *path_name, const struct stat64 *stat_pointer,
+	    int ftw_integer, struct FTW *ftwp)
 {
 	visit++;
-	temp=stderr;
+	temp = stderr;
 	do_info(path_name);
 
 	if (ftw_integer == FTW_F) {
 
 #ifdef DEBUG
-		fprintf(temp, "INFO: fn() returning non-zero after traversal of %d objects\n", visit);
+		fprintf(temp,
+			"INFO: fn() returning non-zero after traversal of %d objects\n",
+			visit);
 #endif
 
 		return 999;
@@ -640,4 +645,3 @@ test_func23(const char *path_name, const struct stat64 * stat_pointer,
 
 	return 0;
 }
-

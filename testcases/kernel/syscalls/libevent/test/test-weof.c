@@ -21,16 +21,14 @@ int pair[2];
 int test_okay = 1;
 int called = 0;
 
-void
-write_cb(int fd, short event, void *arg)
+void write_cb(int fd, short event, void *arg)
 {
 	char *test = "test string";
 	int len;
 
 	len = write(fd, test, strlen(test) + 1);
 
-	printf("%s: write %d%s\n", __func__,
-	    len, len ? "" : " - means EOF");
+	printf("%s: write %d%s\n", __func__, len, len ? "" : " - means EOF");
 
 	if (len > 0) {
 		if (!called)
@@ -42,8 +40,7 @@ write_cb(int fd, short event, void *arg)
 	called++;
 }
 
-int
-main (int argc, char **argv)
+int main(int argc, char **argv)
 {
 	struct event ev;
 
@@ -65,4 +62,3 @@ main (int argc, char **argv)
 
 	return (test_okay);
 }
-

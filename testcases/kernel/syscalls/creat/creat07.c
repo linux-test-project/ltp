@@ -64,7 +64,7 @@ void setup(void);
 void cleanup(void);
 void help(void);
 
-int exp_enos[] = {ETXTBSY, 0};
+int exp_enos[] = { ETXTBSY, 0 };
 
 int Fflag = 0;
 char *fname;
@@ -75,16 +75,15 @@ option_t options[] = {
 	{NULL, NULL, NULL}
 };
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
-	int retval=0, status, e_code;
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
+	int retval = 0, status, e_code;
 	pid_t pid, pid2;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, options, &help)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, options, &help)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -114,7 +113,7 @@ main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "fork() #1 failed");
 		}
 
-		if (pid == 0) {		/* first child */
+		if (pid == 0) {	/* first child */
 			/* start up the test1 executable */
 			(void)execve(fname, NULL, NULL);
 			tst_resm(TFAIL, "execve() failed");
@@ -125,13 +124,13 @@ main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "fork() #2 failed");
 		}
 
-		if (pid2 == 0) {		/* second child */
-			sleep(10);		/* let first child start */
+		if (pid2 == 0) {	/* second child */
+			sleep(10);	/* let first child start */
 
 			TEST(creat(fname, O_WRONLY));
 
 			if (TEST_RETURN != -1) {
-				retval=1;
+				retval = 1;
 				tst_resm(TFAIL, "creat(2) succeeded on "
 					 "expected fail");
 				continue;
@@ -140,7 +139,7 @@ main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO != ETXTBSY) {
-				retval=1;
+				retval = 1;
 				tst_resm(TFAIL, "expected ETXTBSY, instead "
 					 "received %d : %s", TEST_ERRNO,
 					 strerror(TEST_ERRNO));
@@ -150,32 +149,30 @@ main(int ac, char **av)
 
 			/* kill off the dummy test program */
 			if (kill(pid, SIGKILL) == -1) {
-				retval=1;
+				retval = 1;
 				tst_brkm(TBROK, cleanup, "kill failed");
 			}
 			exit(retval);
 		} else {
-                       /* wait for the child to finish */
-                        wait(&status);
-                        /* make sure the child returned a good exit status */
-                        e_code = status >> 8;
-                        if (e_code != 0) {
-                                tst_resm(TFAIL, "Failures reported above");
-                        }
+			/* wait for the child to finish */
+			wait(&status);
+			/* make sure the child returned a good exit status */
+			e_code = status >> 8;
+			if (e_code != 0) {
+				tst_resm(TFAIL, "Failures reported above");
+			}
 		}
 	}
 	cleanup();
 
 	return 0;
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}
 
 /*
  * help() - Prints out the help message for the -F option defined
  *          by this test.
  */
-void
-help()
+void help()
 {
 	printf("  -F <test file> : in this case the file is 'test1'\n");
 }
@@ -183,8 +180,7 @@ help()
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	char *cmd, *dirc, *basec, *bname, *dname, *path, *pwd = NULL;
 	int res;
@@ -204,28 +200,29 @@ setup()
 		path = dname;
 	else {
 		if ((pwd = getcwd(NULL, 0)) == NULL) {
-			tst_brkm(TBROK, tst_exit, "Could not get current directory");
+			tst_brkm(TBROK, tst_exit,
+				 "Could not get current directory");
 		}
-		path = malloc (strlen(pwd) + strlen(dname) +  2);
+		path = malloc(strlen(pwd) + strlen(dname) + 2);
 		if (path == NULL) {
 			tst_brkm(TBROK, tst_exit, "Cannot alloc path string");
 		}
-		sprintf (path, "%s/%s", pwd, dname);
+		sprintf(path, "%s/%s", pwd, dname);
 	}
 
 	/* make a temp dir and cd to it */
 	tst_tmpdir();
 
 	/* Copy the given test file to the private temp directory.
-	*/
-	cmd = malloc (strlen(path) + strlen(bname) + 15);
-	if (cmd == NULL){
+	 */
+	cmd = malloc(strlen(path) + strlen(bname) + 15);
+	if (cmd == NULL) {
 		tst_brkm(TBROK, tst_exit, "Cannot alloc command string");
 	}
 
-	sprintf (cmd, "cp -p %s/%s .", path, bname);
-	res = system (cmd);
-	free (cmd);
+	sprintf(cmd, "cp -p %s/%s .", path, bname);
+	res = system(cmd);
+	free(cmd);
 	if (res == -1) {
 		tst_brkm(TBROK, tst_exit, "Cannot copy file %s", fname);
 	}
@@ -235,13 +232,11 @@ setup()
 	TEST_PAUSE;
 }
 
-
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

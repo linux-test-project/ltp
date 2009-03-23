@@ -85,21 +85,20 @@
 #define K1              2048
 #define NBUFS           1
 
-char *TCID="pread03";		/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "pread03";		/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 char *read_buf[NBUFS];		/* buffer to hold data read from file */
-char test_dir [100];
+char test_dir[100];
 int fd1;			/* file descriptor of temporary file */
-int exp_enos[] = {EISDIR,0};
+int exp_enos[] = { EISDIR, 0 };
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 void init_buffers();		/* function to initialize/allocate buffers */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;
 	char *msg;		/* message returned from parse_opts */
@@ -108,7 +107,7 @@ main(int ac, char **av)
 	char *test_desc;	/* test specific error message */
 
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
@@ -133,8 +132,7 @@ main(int ac, char **av)
 		if (TEST_RETURN != -1) {
 			tst_brkm(TFAIL, cleanup, "pread() returned "
 				 "%d, expected -1, errno:%d\n",
-				 TEST_RETURN,
-				 exp_enos);
+				 TEST_RETURN, exp_enos);
 		}
 
 		TEST_ERROR_LOG(TEST_ERRNO);
@@ -143,7 +141,9 @@ main(int ac, char **av)
 		 * Verify whether expected errno is set.
 		 */
 		if (TEST_ERRNO == exp_enos[0]) {
-			tst_resm(TPASS, "pread() fails with expected error EISDIR errno:%d",TEST_ERRNO);
+			tst_resm(TPASS,
+				 "pread() fails with expected error EISDIR errno:%d",
+				 TEST_ERRNO);
 		} else {
 			tst_resm(TFAIL, "pread() fails, %s, unexpected "
 				 "errno:%d, expected:%d\n", test_desc,
@@ -153,16 +153,14 @@ main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  *           create temporary directory and open it
  */
-void
-setup()
+void setup()
 {
 	char *cur_dir = NULL;
 
@@ -188,15 +186,14 @@ setup()
 	/*
 	 * create a temporary directory
 	 */
-	if(mkdir(PREAD_TEMPDIR, 0777) != 0) {
-		tst_resm(TFAIL, "mkdir() failed to create"
-		                " test directory");
+	if (mkdir(PREAD_TEMPDIR, 0777) != 0) {
+		tst_resm(TFAIL, "mkdir() failed to create" " test directory");
 		exit(1);
 		/* NOTREACHED */
 	}
 
 	/* open temporary directory used for test */
-	if ((fd1 = open(PREAD_TEMPDIR,O_RDONLY)) < 0) {
+	if ((fd1 = open(PREAD_TEMPDIR, O_RDONLY)) < 0) {
 		tst_brkm(TBROK, cleanup, "open() on %s Failed, errno=%d : %s",
 			 PREAD_TEMPDIR, errno, strerror(errno));
 	}
@@ -208,8 +205,7 @@ setup()
  *
  *  Allocate read buffer.
  */
-void
-init_buffers()
+void init_buffers()
 {
 	int count;		/* counter variable for loop */
 
@@ -230,8 +226,7 @@ init_buffers()
  *
  *  Close/Remove the temporary directory created.
  */
-void
-cleanup()
+void cleanup()
 {
 	int count;		/* index for the loop */
 

@@ -65,7 +65,7 @@ int TST_TOTAL = 1;
 extern int Tst_count;
 
 /* 0 terminated list of expected errnos */
-int exp_enos[] = {11,0};
+int exp_enos[] = { 11, 0 };
 
 char fifo[100] = "fifo";
 static sigjmp_buf jmp;
@@ -80,14 +80,13 @@ int main(int argc, char **argv)
 	int fail;
 	int cnt;
 	char wbuf[17 * PIPE_SIZE_TEST];
-	struct sigaction sigptr; /* set up signal handler */
+	struct sigaction sigptr;	/* set up signal handler */
 
 	/* parse standard options */
-	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) !=
-			(char *) NULL) {
+	if ((msg = parse_opts(argc, argv, (option_t *) NULL, NULL)) !=
+	    (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/* global setup */
 	setup();
@@ -102,18 +101,15 @@ int main(int argc, char **argv)
 		if (mknod(fifo, S_IFIFO | 0777, 0) < 0) {
 			tst_resm(TBROK, "mknod() failed, errno: %d", errno);
 			cleanup();
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 		if (stat(fifo, &buf) != 0) {
 			tst_resm(TBROK, "stat() failed, errno: %d", errno);
 			cleanup();
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 		if ((buf.st_mode & S_IFIFO) == 0) {
 			tst_resm(TBROK, "Mode does not indicate fifo file");
 			cleanup();
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 #if 0
 		sigset(SIGALRM, alarm_handler);
 #endif
@@ -121,18 +117,15 @@ int main(int argc, char **argv)
 		sigfillset(&sigptr.sa_mask);
 		sigptr.sa_flags = 0;
 		sigaddset(&sigptr.sa_mask, SIGALRM);
-		if (sigaction(SIGALRM, &sigptr, (struct sigaction *)NULL) == -1)
-		{
+		if (sigaction(SIGALRM, &sigptr, (struct sigaction *)NULL) == -1) {
 			tst_resm(TBROK, "sigaction(): Failed");
 			cleanup();
-		}  
-
-
+		}
 //block1:
 		tst_resm(TINFO, "Enter block 1: test for EAGAIN in write()");
 		fail = 0;
 
-		(void)memset((void *)wbuf, 'A', 17*PIPE_SIZE_TEST);
+		(void)memset((void *)wbuf, 'A', 17 * PIPE_SIZE_TEST);
 
 		/*
 		 * open the read end of the pipe
@@ -141,7 +134,7 @@ int main(int argc, char **argv)
 			tst_resm(TBROK, "Error reading fifo, read blocked");
 			fail = 1;
 		}
-		(void)alarm(10);		/* set alarm for 10 seconds */
+		(void)alarm(10);	/* set alarm for 10 seconds */
 		rfd = open(fifo, O_RDONLY | O_NONBLOCK);
 		(void)alarm(0);
 		if (rfd < 0) {
@@ -155,9 +148,8 @@ int main(int argc, char **argv)
 		if (sigsetjmp(jmp, 1)) {
 			tst_resm(TBROK, "setjmp() failed");
 			cleanup();
-			/*NOTREACHED*/
-		}
-		(void)alarm(10);		/* set alarm for 10 seconds */
+		 /*NOTREACHED*/}
+		(void)alarm(10);	/* set alarm for 10 seconds */
 		wfd = open(fifo, O_WRONLY | O_NONBLOCK);
 		(void)alarm(0);
 		if (wfd < 0) {
@@ -173,7 +165,7 @@ int main(int argc, char **argv)
 			fail = 1;
 		}
 		(void)alarm(10);
-		cnt = write(wfd, wbuf, 17*PIPE_SIZE_TEST);
+		cnt = write(wfd, wbuf, 17 * PIPE_SIZE_TEST);
 		(void)alarm(0);
 		if (cnt == 17 * PIPE_SIZE_TEST) {
 			tst_resm(TBROK, "Error reading fifo, nozero read");
@@ -188,7 +180,7 @@ int main(int argc, char **argv)
 			fail = 1;
 		}
 		(void)alarm(10);
-		cnt = write(wfd, wbuf, 8*PIPE_SIZE_TEST);
+		cnt = write(wfd, wbuf, 8 * PIPE_SIZE_TEST);
 		(void)alarm(0);
 		if (cnt != -1) {
 			tst_resm(TBROK, "write() failed to fail when pipe "
@@ -215,12 +207,10 @@ int main(int argc, char **argv)
 		unlink(fifo);
 	}
 	cleanup();
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
-void
-alarm_handler()
+void alarm_handler()
 {
 	siglongjmp(jmp, 1);
 }
@@ -229,8 +219,7 @@ alarm_handler()
  * setup()
  *	performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -253,8 +242,7 @@ setup(void)
 
 }
 
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print errno log if that option was specified.
@@ -268,5 +256,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}

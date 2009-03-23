@@ -67,16 +67,16 @@ int msg_q_1 = -1;		/* to hold the message queue ID */
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	void check_functionality(void);
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -108,7 +108,7 @@ int main(int ac, char **av)
 		}
 
 		/*
- 		 * remove the message queue that was created and mark the ID
+		 * remove the message queue that was created and mark the ID
 		 * as invalid.
 		 */
 		if (msg_q_1 != -1) {
@@ -119,45 +119,43 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * check_functionality() - check the functionality of the tested system call.
  */
-void
-check_functionality()
+void check_functionality()
 {
-	int i=0;
+	int i = 0;
 	MSGBUF snd_buf, rcv_buf;
 
 	/* EAGLE: Houston, Tranquility Base here. The Eagle has landed! */
 	char *queue_msg =
-		 "Qston, check_functionality here.  The message has queued!";
+	    "Qston, check_functionality here.  The message has queued!";
 
 	/*
 	 * copy our message into the buffer and then set the type.
 	 */
 	do {
 		snd_buf.mtext[i++] = *queue_msg;
-	} while(*queue_msg++ != '\0');
+	} while (*queue_msg++ != '\0');
 
 	snd_buf.mtype = MSGTYPE;
 
 	/* send the message */
-	if(msgsnd(msg_q_1, &snd_buf, MSGSIZE, 0) == -1) {
+	if (msgsnd(msg_q_1, &snd_buf, MSGSIZE, 0) == -1) {
 		tst_brkm(TBROK, cleanup, "Could not send a message in the "
 			 "check_functionality() routine.");
 	}
 
 	/* receive the message */
-	if(msgrcv(msg_q_1, &rcv_buf, MSGSIZE, MSGTYPE, IPC_NOWAIT) == -1) {
+	if (msgrcv(msg_q_1, &rcv_buf, MSGSIZE, MSGTYPE, IPC_NOWAIT) == -1) {
 		tst_brkm(TBROK, cleanup, "Could not read a messages in the "
 			 "check_functionality() routine.");
 	}
 
-	if(strcmp(snd_buf.mtext, rcv_buf.mtext) == 0) {
+	if (strcmp(snd_buf.mtext, rcv_buf.mtext) == 0) {
 		tst_resm(TPASS, "message received = message sent");
 	} else {
 		tst_resm(TFAIL, "message received != message sent");
@@ -167,8 +165,7 @@ check_functionality()
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -190,8 +187,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/* if it exists, remove the message queue that was created */
 	rm_queue(msg_q_1);
@@ -208,4 +204,3 @@ cleanup(void)
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

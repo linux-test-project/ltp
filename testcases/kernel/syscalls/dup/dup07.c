@@ -19,7 +19,7 @@
 
 /* Pored from SPIE, section2/iosuite/dup3.c, by Airong Zhang */
 
-                           /*dup3.c*/
+			   /*dup3.c */
 /*======================================================================
     =================== TESTPLAN SEGMENT ===================
 >KEYS:  < dup()
@@ -44,121 +44,122 @@
 char *TCID = "dup07";
 int TST_TOTAL = 1;
 extern int Tst_count;
-int     local_flag;
+int local_flag;
 
 #define PASSED 1
 #define FAILED 0
 
-char testfile[40]= "";
+char testfile[40] = "";
 
 /*--------------------------------------------------------------------*/
 int main(int ac, char **av)
 {
-struct	stat	retbuf ;
-struct	stat	dupbuf ;
-	int	rdoret , wroret, rdwret;
-	int	duprdo , dupwro, duprdwr ;
+	struct stat retbuf;
+	struct stat dupbuf;
+	int rdoret, wroret, rdwret;
+	int duprdo, dupwro, duprdwr;
 
 /*--------------------------------------------------------------------*/
 
-        int lc;                 /* loop counter */
-        char *msg;              /* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
-        /*
-         * parse standard options
-         */
-        if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
-	                tst_resm(TBROK, "OPTION PARSING ERROR - %s", msg);
-                tst_exit();
-                /*NOTREACHED*/
-        }
+	/*
+	 * parse standard options
+	 */
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
+		tst_resm(TBROK, "OPTION PARSING ERROR - %s", msg);
+		tst_exit();
+	 /*NOTREACHED*/}
 
 	local_flag = PASSED;
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		sprintf(testfile, "dup07.%d", getpid());
-		if( (rdoret = creat(testfile,  0444 )) == -1 ) {
-    			tst_resm(TFAIL, "Unable to creat file '%s'", testfile) ;
-    			local_flag = FAILED ;
+		if ((rdoret = creat(testfile, 0444)) == -1) {
+			tst_resm(TFAIL, "Unable to creat file '%s'", testfile);
+			local_flag = FAILED;
 		} else {
-    			if( (duprdo = dup( rdoret )) == -1 ) {
-    				tst_resm(TFAIL, "Unable to dup '%s'", testfile ) ;
-    				local_flag = FAILED ;
-    			} else {
-    				fstat( rdoret, &retbuf ) ;
-    				fstat( duprdo, &dupbuf ) ;
-    				if( retbuf.st_mode != dupbuf.st_mode )
-    				{
-    					tst_resm(TFAIL, "rdonly and dup do not match" ) ;
-					local_flag = FAILED ;
+			if ((duprdo = dup(rdoret)) == -1) {
+				tst_resm(TFAIL, "Unable to dup '%s'", testfile);
+				local_flag = FAILED;
+			} else {
+				fstat(rdoret, &retbuf);
+				fstat(duprdo, &dupbuf);
+				if (retbuf.st_mode != dupbuf.st_mode) {
+					tst_resm(TFAIL,
+						 "rdonly and dup do not match");
+					local_flag = FAILED;
 				}
 			}
-    		}
+		}
 		if (local_flag == PASSED) {
-       		         tst_resm(TPASS, "Test passed in read mode.");
-	        } else {
-       		         tst_resm(TFAIL, "Test failed in read mode.");
-        	}
+			tst_resm(TPASS, "Test passed in read mode.");
+		} else {
+			tst_resm(TFAIL, "Test failed in read mode.");
+		}
 
 /*--------------------------------------------------------------------*/
 
 		unlink(testfile);
-		if( (wroret = creat( testfile, 0222 )) == -1 ) {
-		    	tst_resm(TFAIL, "Unable to creat file '%s'", testfile ) ;
-    			local_flag = FAILED ;
-    		} else {
-    			if( (dupwro = dup( wroret )) == -1 ) {
-    				tst_resm(TFAIL, "Unable to dup '%s'", testfile ) ;
-    				local_flag = FAILED ;
-    			} else {
-    				fstat( wroret, &retbuf ) ;
-    				fstat( dupwro, &dupbuf ) ;
-    				if( retbuf.st_mode != dupbuf.st_mode ) {
-    					tst_resm(TFAIL, "wronly and dup do not match" ) ;
-					local_flag = FAILED ;
+		if ((wroret = creat(testfile, 0222)) == -1) {
+			tst_resm(TFAIL, "Unable to creat file '%s'", testfile);
+			local_flag = FAILED;
+		} else {
+			if ((dupwro = dup(wroret)) == -1) {
+				tst_resm(TFAIL, "Unable to dup '%s'", testfile);
+				local_flag = FAILED;
+			} else {
+				fstat(wroret, &retbuf);
+				fstat(dupwro, &dupbuf);
+				if (retbuf.st_mode != dupbuf.st_mode) {
+					tst_resm(TFAIL,
+						 "wronly and dup do not match");
+					local_flag = FAILED;
 				}
 			}
-    		}
+		}
 
 		if (local_flag == PASSED) {
-       		         tst_resm(TPASS, "Test passed in write mode.");
-	        } else {
-       		         tst_resm(TFAIL, "Test failed in write mode.");
-        	}
+			tst_resm(TPASS, "Test passed in write mode.");
+		} else {
+			tst_resm(TFAIL, "Test failed in write mode.");
+		}
 /*--------------------------------------------------------------------*/
 		unlink(testfile);
-		if( (rdwret = creat(testfile, 0666 )) == -1 ) {
-    			tst_resm(TFAIL, "Unable to creat file '%s'", testfile ) ;
-    			local_flag = FAILED ;
+		if ((rdwret = creat(testfile, 0666)) == -1) {
+			tst_resm(TFAIL, "Unable to creat file '%s'", testfile);
+			local_flag = FAILED;
 		} else {
-    			if( (duprdwr = dup( rdwret )) == -1 ) {
-    				tst_resm(TFAIL, "Unable to dup '%s'", testfile ) ;
-    				local_flag = FAILED ;
-    			} else {
-    				fstat( rdwret, &retbuf ) ;
-    				fstat( duprdwr, &dupbuf ) ;
-    				if( retbuf.st_mode != dupbuf.st_mode ) {
-    					tst_resm(TFAIL, "rdwr and dup do not match" ) ;
-					local_flag = FAILED ;
+			if ((duprdwr = dup(rdwret)) == -1) {
+				tst_resm(TFAIL, "Unable to dup '%s'", testfile);
+				local_flag = FAILED;
+			} else {
+				fstat(rdwret, &retbuf);
+				fstat(duprdwr, &dupbuf);
+				if (retbuf.st_mode != dupbuf.st_mode) {
+					tst_resm(TFAIL,
+						 "rdwr and dup do not match");
+					local_flag = FAILED;
 				}
 			}
-    		}
+		}
 		if (local_flag == PASSED) {
-	       	         tst_resm(TPASS, "Test passed in read/write mode.");
-       		 } else {
-               		 tst_resm(TFAIL, "Test failed in read/write mode.");
-       		 }
+			tst_resm(TPASS, "Test passed in read/write mode.");
+		} else {
+			tst_resm(TFAIL, "Test failed in read/write mode.");
+		}
 /*--------------------------------------------------------------------*/
-	    	unlink(testfile);
+		unlink(testfile);
 
 		if (local_flag == PASSED) {
-       		         tst_resm(TPASS, "Test passed");
-        	} else {
-               		 tst_resm(TFAIL, "Test failed");
-        	}
+			tst_resm(TPASS, "Test passed");
+		} else {
+			tst_resm(TFAIL, "Test failed");
+		}
 
 		tst_exit();
-	} /* end for */
+	}			/* end for */
 	return 0;
 }

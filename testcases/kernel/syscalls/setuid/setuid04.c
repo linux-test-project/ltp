@@ -62,7 +62,7 @@ char nobody_uid[] = "nobody";
 char testfile[256] = "";
 struct passwd *ltpuser;
 
-int exp_enos[] = {EACCES, 0};
+int exp_enos[] = { EACCES, 0 };
 int fd = -1;
 
 void setup(void);
@@ -72,14 +72,13 @@ void do_master_child();
 int main(int ac, char **av)
 {
 	pid_t pid;
-	char *msg;			/* message returned from parse_opts */
+	char *msg;		/* message returned from parse_opts */
 	int status;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/*
 	 * perform global setup for the test
@@ -94,17 +93,15 @@ int main(int ac, char **av)
 
 	if (pid == 0) {
 		do_master_child();
-	}
-	else {
+	} else {
 		waitpid(pid, &status, 0);
 		if (!WIFEXITED(status) || (WEXITSTATUS(status) != 0))
-			tst_resm(WEXITSTATUS(status), "son process exits with error");
+			tst_resm(WEXITSTATUS(status),
+				 "son process exits with error");
 	}
 
 	cleanup();
-	/*NOTREACHED*/
-
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
@@ -112,7 +109,7 @@ int main(int ac, char **av)
  */
 void do_master_child()
 {
-	int lc;				/* loop counter */
+	int lc;			/* loop counter */
 	int pid;
 	int status;
 
@@ -160,16 +157,16 @@ void do_master_child()
 			}
 
 			TEST_ERROR_LOG(TEST_ERRNO);
-		
+
 			if (TEST_ERRNO == EACCES) {
 				tst_resm(TPASS, "open returned errno EACCES");
 			} else {
-				tst_resm(TFAIL, "open returned unexpected errno - %d",
+				tst_resm(TFAIL,
+					 "open returned unexpected errno - %d",
 					 TEST_ERRNO);
 				continue;
 			}
-		}
-		else {
+		} else {
 			/* Wait for son completion */
 			waitpid(pid, &status, 0);
 			if (!WIFEXITED(status) || (WEXITSTATUS(status) != 0))
@@ -181,12 +178,11 @@ void do_master_child()
 /*
  * setup() - performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
-        if (geteuid() != 0) {
-                tst_brkm(TBROK, tst_exit, "Test must be run as root");
-        }
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+	}
 
 	ltpuser = getpwnam(nobody_uid);
 
@@ -208,10 +204,9 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
-	close (fd);
+	close(fd);
 	unlink(testfile);
 
 	/*

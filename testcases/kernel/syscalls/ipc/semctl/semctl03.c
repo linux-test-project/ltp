@@ -68,7 +68,7 @@ extern int Tst_count;
 #define SEMUN_CAST (union semun)
 #endif
 
-int exp_enos[] = {EINVAL, EFAULT, 0};
+int exp_enos[] = { EINVAL, EFAULT, 0 };
 
 int sem_id_1 = -1;
 int bad_id = -1;
@@ -82,31 +82,32 @@ struct test_case_t {
 	int error;
 } TC[] = {
 	/* EINVAL - the IPC command is not valid */
-	{&sem_id_1, -1, SEMUN_CAST &sem_ds, EINVAL},
-
-	/* EINVAL - the semaphore ID is not valid */
-	{&bad_id, IPC_STAT, SEMUN_CAST &sem_ds, EINVAL},
-
-	/* EFAULT - the union arg is invalid when expecting "ushort *array" */
-	{&sem_id_1, GETALL, SEMUN_CAST -1, EFAULT},
-
-	/* EFAULT - the union arg is invalid when expecting */
-	/* "struct semid_ds *buf */
-	{&sem_id_1, IPC_SET, SEMUN_CAST -1, EFAULT}
+	{
+	&sem_id_1, -1, SEMUN_CAST & sem_ds, EINVAL},
+	    /* EINVAL - the semaphore ID is not valid */
+	{
+	&bad_id, IPC_STAT, SEMUN_CAST & sem_ds, EINVAL},
+	    /* EFAULT - the union arg is invalid when expecting "ushort *array" */
+	{
+	&sem_id_1, GETALL, SEMUN_CAST - 1, EFAULT},
+	    /* EFAULT - the union arg is invalid when expecting */
+	    /* "struct semid_ds *buf */
+	{
+	&sem_id_1, IPC_SET, SEMUN_CAST - 1, EFAULT}
 };
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int i;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -114,10 +115,10 @@ int main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		for (i=0; i<TST_TOTAL; i++) {
+		for (i = 0; i < TST_TOTAL; i++) {
 
 			TEST(semctl(*(TC[i].sem_id), 0, TC[i].ipc_cmd,
-			     TC[i].arg));
+				    TC[i].arg));
 
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
@@ -139,15 +140,13 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -179,8 +178,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/* if it exists, remove the semaphore resouce */
 	rm_sema(sem_id_1);
@@ -197,4 +195,3 @@ cleanup(void)
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

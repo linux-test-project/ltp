@@ -33,7 +33,7 @@
  *	Uses SIGUSR1 to pause before test if option set.
  *	(See the parse_opts(3) man page).
  *
- *    DESCRIPTION 
+ *    DESCRIPTION$
  *      This is a Phase I test for the sethostname(2) system call.
  *      It is intended to provide a limited exposure of the system call.
  *
@@ -81,18 +81,17 @@ static void cleanup();
 
 char *TCID = "sethostname01";
 int TST_TOTAL = 1;
-static char hname[MAX_LENGTH];			/* host name */
+static char hname[MAX_LENGTH];	/* host name */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
-	char ltphost[]="ltphost"; /* temporary host name to set */
+	char ltphost[] = "ltphost";	/* temporary host name to set */
 
 	/* parse standard options */
-	if ((msg=parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -101,36 +100,36 @@ main(int ac, char **av)
 	setup();
 
 	/* check -c option for looping. */
-	for (lc=0; TEST_LOOPING(lc); lc++) {
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-	/* reset Tst_count in case we are looping. */
-	Tst_count=0;
+		/* reset Tst_count in case we are looping. */
+		Tst_count = 0;
 
-	/* Call sethostname(2) */
-	TEST(sethostname(ltphost, sizeof(ltphost)));
+		/* Call sethostname(2) */
+		TEST(sethostname(ltphost, sizeof(ltphost)));
 
-	/* check return code */
-	if ( TEST_RETURN == -1 ) {
-		tst_resm(TFAIL, "sethostname() failed , errno=%d : %s",
-		TEST_ERRNO, strerror(TEST_ERRNO));
-	} else {
-		tst_resm(TPASS, "sethostname() returned %d,"
-		" Hostname set to \"%s\"", TEST_RETURN, ltphost);
-	}
+		/* check return code */
+		if (TEST_RETURN == -1) {
+			tst_resm(TFAIL, "sethostname() failed , errno=%d : %s",
+				 TEST_ERRNO, strerror(TEST_ERRNO));
+		} else {
+			tst_resm(TPASS, "sethostname() returned %d,"
+				 " Hostname set to \"%s\"", TEST_RETURN,
+				 ltphost);
+		}
 
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* cleanup and exit */
 	cleanup();
 
 	return 0;
-} /* End main */
+}				/* End main */
 
 /*
  * setup() - performs all one time setup for this test.
  */
-void
-setup()
+void setup()
 {
 	int ret;
 
@@ -143,22 +142,21 @@ setup()
 	}
 
 	/* Store the existing hostname to retain it before exiting */
-	if((ret = gethostname (hname, sizeof(hname))) < 0 ) {
+	if ((ret = gethostname(hname, sizeof(hname))) < 0) {
 		tst_brkm(TBROK, tst_exit, "gethostname() failed while getting"
-			" current host name");
+			 " current host name");
 	}
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-} /* End setup() */
+}				/* End setup() */
 
 /*
  * cleanup() -	performs all one time cleanup for this test
  *		completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	int ret;
 
@@ -169,12 +167,11 @@ cleanup()
 	TEST_CLEANUP;
 
 	/* Set the host name back to original name */
-	if( (ret = sethostname (hname, strlen(hname))) < 0 ) {
+	if ((ret = sethostname(hname, strlen(hname))) < 0) {
 		tst_resm(TWARN, "sethostname() failed while restoring"
-				" hostname to \"%s\": %s", hname, strerror(errno));
+			 " hostname to \"%s\": %s", hname, strerror(errno));
 	}
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-} /* End cleanup() */
-
+}				/* End cleanup() */

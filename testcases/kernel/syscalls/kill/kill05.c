@@ -86,13 +86,13 @@ void setup(void);
 void do_child(void);
 void do_master_child(char **av);
 
-char *TCID= "kill05";
+char *TCID = "kill05";
 int TST_TOTAL = 1;
 int shmid1 = -1;
 extern key_t semkey;
 int *flag;
 
-int exp_enos[] = {EPERM, 0};
+int exp_enos[] = { EPERM, 0 };
 
 extern int Tst_count;
 extern int getipckey();
@@ -101,20 +101,19 @@ extern int getipckey();
 
 int main(int ac, char **av)
 {
-	char *msg;                      /* message returned from parse_opts */
+	char *msg;		/* message returned from parse_opts */
 	pid_t pid;
 	int status;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
-
 #ifdef UCLINUX
 	maybe_run_child(&do_child, "");
 #endif
 
-	setup();                        /* global setup */
+	setup();		/* global setup */
 
 	pid = FORK_OR_VFORK();
 	if (pid < 0)
@@ -123,24 +122,20 @@ int main(int ac, char **av)
 	if (pid == 0) {
 		do_master_child(av);
 		return (0);
-	}
-	else {
+	} else {
 		waitpid(pid, &status, 0);
 	}
 
 	cleanup();
-	/*NOTREACHED*/
-
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * do_master_child()
  */
-void
-do_master_child(char **av)
+void do_master_child(char **av)
 {
-	int lc;                         /* loop counter */
+	int lc;			/* loop counter */
 
 	pid_t pid1;
 	int status;
@@ -148,7 +143,7 @@ do_master_child(char **av)
 	char user1name[] = "nobody";
 	char user2name[] = "bin";
 
-	extern struct passwd * my_getpwnam(char *);
+	extern struct passwd *my_getpwnam(char *);
 
 	struct passwd *ltpuser1, *ltpuser2;
 
@@ -176,19 +171,20 @@ do_master_child(char **av)
 			tst_brkm(TBROK, cleanup, "Fork failed");
 		}
 
-		if (pid1 == 0) {		/* child */
-			if (setreuid(ltpuser1->pw_uid, ltpuser1->pw_uid) == -1){
+		if (pid1 == 0) {	/* child */
+			if (setreuid(ltpuser1->pw_uid, ltpuser1->pw_uid) == -1) {
 				tst_resm(TWARN, "setreuid failed in child");
 			}
 #ifdef UCLINUX
 			if (self_exec(av[0], "") < 0) {
-				tst_brkm(TBROK, cleanup, "self_exec of child failed");
+				tst_brkm(TBROK, cleanup,
+					 "self_exec of child failed");
 			}
 #else
 			do_child();
 #endif
-		} else {			/* parent */
-			if (setreuid(ltpuser2->pw_uid,ltpuser2->pw_uid) == -1) {
+		} else {	/* parent */
+			if (setreuid(ltpuser2->pw_uid, ltpuser2->pw_uid) == -1) {
 				tst_resm(TWARN, "seteuid failed in child");
 			}
 
@@ -201,9 +197,9 @@ do_master_child(char **av)
 
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "%s failed - errno = "
-					"%d : %s Expected a return "
-					"value of -1 got %d", TCID, TEST_ERRNO,
-					strerror(TEST_ERRNO), TEST_RETURN);
+					 "%d : %s Expected a return "
+					 "value of -1 got %d", TCID, TEST_ERRNO,
+					 strerror(TEST_ERRNO), TEST_RETURN);
 
 				continue;
 			}
@@ -217,12 +213,11 @@ do_master_child(char **av)
 
 		if (TEST_ERRNO == EPERM) {
 			tst_resm(TPASS, "errno set to %d : %s, as "
-				"expected", TEST_ERRNO,
-				strerror(TEST_ERRNO));
+				 "expected", TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
 			tst_resm(TFAIL, "errno set to %d : %s expected "
-				"%d : %s", TEST_ERRNO,
-				strerror(TEST_ERRNO), 1, strerror(1));
+				 "%d : %s", TEST_ERRNO,
+				 strerror(TEST_ERRNO), 1, strerror(1));
 		}
 	}
 }
@@ -230,17 +225,16 @@ do_master_child(char **av)
 /*
  * do_child()
  */
-void
-do_child()
+void do_child()
 {
 	pid_t my_pid;
 
 	my_pid = getpid();
-	while(1) {
+	while (1) {
 		if (*flag == 1) {
 			exit(0);
 		} else {
-			sleep (1);
+			sleep(1);
 		}
 	}
 }
@@ -248,8 +242,7 @@ do_child()
 /*
  * setup() - performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* Check that the process is owned by root */
 	if (geteuid() != 0) {
@@ -264,18 +257,18 @@ setup(void)
 	 */
 	tst_tmpdir();
 
-        /* get an IPC resource key */
-        semkey = getipckey();
+	/* get an IPC resource key */
+	semkey = getipckey();
 
 	if ((shmid1 = shmget(semkey, (int)getpagesize(),
-	      0666|IPC_CREAT)) == -1) {
+			     0666 | IPC_CREAT)) == -1) {
 		tst_brkm(TBROK, cleanup, "Failed to setup shared memory");
 	}
 
-	/*flag = (int *)shmat(shmid1, 0, 0);*/
+	/*flag = (int *)shmat(shmid1, 0, 0); */
 	if ((flag = (int *)shmat(shmid1, 0, 0)) == (int *)-1) {
 		tst_brkm(TBROK, cleanup,
-			"Failed to attatch shared memory:%d", flag);
+			 "Failed to attatch shared memory:%d", flag);
 	}
 }
 
@@ -283,8 +276,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing status if that option was specified.

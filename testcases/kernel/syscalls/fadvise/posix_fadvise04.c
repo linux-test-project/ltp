@@ -25,15 +25,14 @@
  *	Check the value that posix_fadvise returns for pipe descriptor.
  *
  * USAGE
- * 	posix_fadvise04
+ *	posix_fadvise04
  *
  * HISTORY
  *	11/2007 Initial version by Masatake YAMATO <yamato@redhat.com>
  *
  * RESTRICTIONS
- * 	None
+ *	None
  */
-
 
 #define _XOPEN_SOURCE 600
 #include <fcntl.h>
@@ -54,7 +53,6 @@
 void setup();
 void cleanup();
 
-
 TCID_DEFINE(posix_fadvise04);	/* Test program identifier.    */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
@@ -62,49 +60,49 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 				   This is overwritten by setup(). */
 
 struct test_case_t {
-	int   fd;
+	int fd;
 	off_t offset;
 	off_t len;
-	int   advice;
-	int   error;
+	int advice;
+	int error;
 } TC[] = {
-	{GIVEN_IN_SETUP, 0, 0, POSIX_FADV_NORMAL,     ESPIPE},
-	{GIVEN_IN_SETUP, 0, 0, POSIX_FADV_SEQUENTIAL, ESPIPE},
-	{GIVEN_IN_SETUP, 0, 0, POSIX_FADV_RANDOM,     ESPIPE},
-	{GIVEN_IN_SETUP, 0, 0, POSIX_FADV_NOREUSE,    ESPIPE},
-	{GIVEN_IN_SETUP, 0, 0, POSIX_FADV_WILLNEED,   ESPIPE},
-	{GIVEN_IN_SETUP, 0, 0, POSIX_FADV_DONTNEED,   ESPIPE},
-};
+	{
+	GIVEN_IN_SETUP, 0, 0, POSIX_FADV_NORMAL, ESPIPE}, {
+	GIVEN_IN_SETUP, 0, 0, POSIX_FADV_SEQUENTIAL, ESPIPE}, {
+	GIVEN_IN_SETUP, 0, 0, POSIX_FADV_RANDOM, ESPIPE}, {
+	GIVEN_IN_SETUP, 0, 0, POSIX_FADV_NOREUSE, ESPIPE}, {
+	GIVEN_IN_SETUP, 0, 0, POSIX_FADV_WILLNEED, ESPIPE}, {
+GIVEN_IN_SETUP, 0, 0, POSIX_FADV_DONTNEED, ESPIPE},};
 
 int TST_TOTAL = sizeof(TC) / sizeof(TC[0]);
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	int i;
 
-        /* Check this system has fadvise64 system which is used
-          in posix_fadvise. */
-        if ((_FILE_OFFSET_BITS != 64) && (__NR_fadvise64 == 0)) {
-               tst_resm(TWARN, "This test can only run on kernels that implements ");
-               tst_resm(TWARN, "fadvise64 which is used from posix_fadvise");
-               exit(0);
-        }
+	/* Check this system has fadvise64 system which is used
+	   in posix_fadvise. */
+	if ((_FILE_OFFSET_BITS != 64) && (__NR_fadvise64 == 0)) {
+		tst_resm(TWARN,
+			 "This test can only run on kernels that implements ");
+		tst_resm(TWARN, "fadvise64 which is used from posix_fadvise");
+		exit(0);
+	}
 
-        /* Disable test if the version of the kernel is less than 2.6.16 */
-        if((tst_kvercmp(2,6,16)) < 0) {
-          tst_resm(TWARN, "This test can only run on kernels that are ");
-          tst_resm(TWARN, "2.6.16 and higher");
-          exit(0);
-        }
+	/* Disable test if the version of the kernel is less than 2.6.16 */
+	if ((tst_kvercmp(2, 6, 16)) < 0) {
+		tst_resm(TWARN, "This test can only run on kernels that are ");
+		tst_resm(TWARN, "2.6.16 and higher");
+		exit(0);
+	}
 
 	/*
 	 * parse standard options
 	 */
-	if ( (msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL )
-	  tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL)
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 
 	/*
 	 * perform global setup for test
@@ -114,15 +112,16 @@ main(int ac, char **av)
 	/*
 	 * check looping state if -i option given on the command line
 	 */
-	for (lc=0; TEST_LOOPING(lc); lc++) {
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/* loop through the test cases */
 		for (i = 0; i < TST_TOTAL; i++) {
 
-			TEST(posix_fadvise(TC[i].fd, TC[i].offset, TC[i].len, TC[i].advice));
+			TEST(posix_fadvise
+			     (TC[i].fd, TC[i].offset, TC[i].len, TC[i].advice));
 
 			if (TEST_RETURN == 0) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
@@ -133,15 +132,16 @@ main(int ac, char **av)
 			   "On error, an error number is returned." */
 			if (TEST_RETURN == TC[i].error) {
 				tst_resm(TPASS, "expected failure - "
-					 "returned value = %d : %s", TEST_RETURN,
-					 strerror(TEST_RETURN));
+					 "returned value = %d : %s",
+					 TEST_RETURN, strerror(TEST_RETURN));
 			} else {
-				tst_resm(TFAIL, "unexpected return value - %d : %s - "
+				tst_resm(TFAIL,
+					 "unexpected return value - %d : %s - "
 					 "expected %d", TEST_RETURN,
 					 strerror(TEST_RETURN), TC[i].error);
 			}
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/*
 	 * cleanup and exit
@@ -149,13 +149,12 @@ main(int ac, char **av)
 	cleanup();
 
 	return 0;
-}	/* End main */
+}				/* End main */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	int pipedes[2];
 
@@ -168,11 +167,10 @@ setup()
 	/* Make a pipe */
 	if (pipe(pipedes) != 0) {
 		tst_brkm(TBROK, cleanup,
-			 "Untable to make a pipe: %s\n",
-			 strerror(errno));
+			 "Untable to make a pipe: %s\n", strerror(errno));
 	} else {
 		int i;
-	
+
 		/* Close write side first.
 		   I don't use it in test. */
 		close(pipedes[1]);
@@ -183,15 +181,13 @@ setup()
 			TC[i].fd = pipedes[0];
 		}
 	}
-}	/* End setup() */
-
+}				/* End setup() */
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -204,4 +200,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

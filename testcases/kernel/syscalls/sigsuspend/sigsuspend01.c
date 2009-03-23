@@ -80,10 +80,10 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID="sigsuspend01";	/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "sigsuspend01";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-int exp_enos[]={EINTR, 0};
+int exp_enos[] = { EINTR, 0 };
 
 struct sigaction sa_new;	/* struct to hold signal info */
 sigset_t sigset;		/* signal set to hold signal lists */
@@ -94,15 +94,14 @@ void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 void sig_handler(int sig);	/* signal catching function */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -116,7 +115,7 @@ main(int ac, char **av)
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/* Set the alarm timer */
 		alarm(5);
@@ -144,21 +143,20 @@ main(int ac, char **av)
 				 * Check whether previous signal mask preserved
 				 */
 				if (sigprocmask(SIG_UNBLOCK, 0, &sigset2)
-								== -1) {
+				    == -1) {
 					tst_resm(TFAIL, "sigprocmask() Failed "
-						"to get previous signal mask "
-						"of process");
-				} else if (sigset2.__val[0] !=
-						sigset1.__val[0]) {
+						 "to get previous signal mask "
+						 "of process");
+				} else if (sigset2.__val[0] != sigset1.__val[0]) {
 					tst_resm(TFAIL, "sigsuspend failed to "
-						"preserve signal mask");
+						 "preserve signal mask");
 				} else {
 					tst_resm(TPASS, "Functionality of "
-						"sigsuspend() successful");
+						 "sigsuspend() successful");
 				}
 			} else {
 				tst_resm(TPASS,
-					"Received expected return value.");
+					 "Received expected return value.");
 			}
 		} else {
 			tst_resm(TFAIL,
@@ -166,17 +164,14 @@ main(int ac, char **av)
 				 TEST_RETURN, TEST_ERRNO);
 		}
 
-		Tst_count++;			/* incr TEST_LOOP counter */
-	}	/* End for TEST_LOOPING */
+		Tst_count++;	/* incr TEST_LOOP counter */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
-	/*NOTREACHED*/
+	 /*NOTREACHED*/ return 0;
 
-
-  return 0;
-
-}	/* End main */
+}				/* End main */
 
 /*
  * void
@@ -186,8 +181,7 @@ main(int ac, char **av)
  * Set the signal handler to catch SIGALRM signal.
  * Get the current signal mask of test process using sigprocmask().
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -203,14 +197,12 @@ setup()
 		tst_brkm(TFAIL, cleanup,
 			 "sigemptyset() failed, errno=%d : %s",
 			 errno, strerror(errno));
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 	if (sigfillset(&sigset2) == -1) {
 		tst_brkm(TFAIL, cleanup,
 			 "sigfillset() failed, errno=%d : %s",
 			 errno, strerror(errno));
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/* Set the signal handler function to catch the signal */
 	sa_new.sa_handler = sig_handler;
@@ -218,17 +210,15 @@ setup()
 		tst_brkm(TFAIL, cleanup,
 			 "sigaction() failed, errno=%d : %s",
 			 errno, strerror(errno));
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/* Read the test process's current signal mask. */
 	if (sigprocmask(SIG_UNBLOCK, 0, &sigset1) == -1) {
 		tst_brkm(TFAIL, cleanup,
 			 "sigprocmask() Failed, errno=%d : %s",
 			 errno, strerror(errno));
-		/*NOTREACHED*/
-	}
-}	/* End setup() */
+	 /*NOTREACHED*/}
+}				/* End setup() */
 
 /*
  * void
@@ -239,8 +229,7 @@ setup()
  *
  *   This function simply returns without doing anything.
  */
-void
-sig_handler(int sig)
+void sig_handler(int sig)
 {
 }
 
@@ -249,8 +238,7 @@ sig_handler(int sig)
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -260,4 +248,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

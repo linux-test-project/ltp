@@ -105,12 +105,11 @@ static int got_signal = 0;
 
 char *TCID = "ptrace01";	/* Test program identifier.    */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-static int i;		/* loop test case counter, shared with do_child */
+static int i;			/* loop test case counter, shared with do_child */
 
 int TST_TOTAL = 2;
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 
 	int lc;			/* loop counter */
@@ -118,13 +117,12 @@ main(int ac, char **av)
 	pid_t child_pid;
 	int status;
 	struct sigaction parent_act;
-   
+
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
-	     != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL))
+	    != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
-
 #ifdef UCLINUX
 	maybe_run_child(&do_child, "d", &i);
 #endif
@@ -137,10 +135,10 @@ main(int ac, char **av)
 
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
-	
+
 		for (i = 0; i < TST_TOTAL; ++i) {
 			got_signal = 0;
-	
+
 			/* Setup signal handler for parent */
 			if (i == 1) {
 				parent_act.sa_handler = parent_handler;
@@ -149,7 +147,7 @@ main(int ac, char **av)
 				if ((sigaction(SIGUSR2, &parent_act, NULL))
 				    == -1) {
 					tst_resm(TWARN, "sigaction() failed"
-							" in parent");
+						 " in parent");
 					continue;
 				}
 			}
@@ -184,9 +182,9 @@ main(int ac, char **av)
 				 * normally with exit value 1) OR (child came
 				 * through signal handler), Test Failed
 				 */
-			
+
 				if (((WIFEXITED(status)) &&
-				    (WEXITSTATUS(status))) ||
+				     (WEXITSTATUS(status))) ||
 				    (got_signal == 1)) {
 					tst_resm(TFAIL, "Test Failed");
 					continue;
@@ -195,8 +193,8 @@ main(int ac, char **av)
 					if ((ptrace(PTRACE_KILL, child_pid,
 						    0, 0)) == -1) {
 						tst_resm(TFAIL, "Test Failed:"
-						" Parent was not able to kill"
-						" child");
+							 " Parent was not able to kill"
+							 " child");
 						continue;
 					}
 				}
@@ -215,19 +213,17 @@ main(int ac, char **av)
 
 			}
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* cleanup and exit */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 
-}/* End main */
+}				/* End main */
 
 /* do_child() */
-void
-do_child()
+void do_child()
 {
 	struct sigaction child_act;
 
@@ -244,7 +240,7 @@ do_child()
 		exit(1);
 	}
 
-	if ((ptrace(PTRACE_TRACEME, 0, 0 ,0)) == -1) {
+	if ((ptrace(PTRACE_TRACEME, 0, 0, 0)) == -1) {
 		tst_resm(TWARN, "ptrace() failed in child");
 		exit(1);
 	}
@@ -255,10 +251,9 @@ do_child()
 	}
 	exit(1);
 }
-	
+
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup()
+void setup()
 {
 
 	/* capture signals */
@@ -267,15 +262,13 @@ setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-}	/* End setup() */
-
+}				/* End setup() */
 
 /*
  *cleanup() -  performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 
 	/*
@@ -286,13 +279,12 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */
 
 /*
  * child_handler() - Signal handler for child
  */
-void
-child_handler()
+void child_handler()
 {
 
 	if ((kill(getppid(), SIGUSR2)) == -1) {
@@ -304,10 +296,8 @@ child_handler()
 /*
  * parent_handler() - Signal handler for parent
  */
-void
-parent_handler()
+void parent_handler()
 {
 
 	got_signal = 1;
 }
-

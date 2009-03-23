@@ -72,18 +72,17 @@ void cleanup(void);
 void setup(void);
 char *getpwd();
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	char dir1[BUFSIZ], dir2[BUFSIZ];
 	char cwd1[BUFSIZ], cwd2[BUFSIZ];
 	char *pwd1, *pwd2;
 	char link2[BUFSIZ];
 	int n;
-	int lc;				/* loop counter */
-	char *msg;			/* parse_opts() return message */
+	int lc;			/* loop counter */
+	char *msg;		/* parse_opts() return message */
 
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -104,12 +103,10 @@ main(int ac, char **av)
 		sprintf(dir1, "getcwd1.%d", getpid());
 		if (mkdir(dir1, 00755) < 0) {
 			tst_brkm(TBROK, cleanup, "mkdir(2) failed");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 		if (chdir(dir1) != 0) {
 			tst_brkm(TBROK, cleanup, "chdir(2) failed");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		pwd1 = getpwd();
 		if (getcwd(cwd1, sizeof cwd1) == NULL) {
@@ -121,8 +118,7 @@ main(int ac, char **av)
 			tst_brkm(TFAIL, cleanup, "getcwd() returned unexpected "
 				 "working directory: expected: %s, got: %s\n",
 				 pwd1, cwd1);
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		tst_resm(TINFO, "getcwd(2) succeeded in returning correct path "
 			 "for dir1");
@@ -138,14 +134,12 @@ main(int ac, char **av)
 		if (symlink(dir1, dir2) < 0) {
 			tst_brkm(TBROK, cleanup, "symlink(2) failed: errno: %d",
 				 errno);
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		if (chdir(dir2) != 0) {
 			tst_brkm(TBROK, cleanup, "chdir(2) failed: errno: %d",
 				 errno);
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		pwd2 = getpwd();
 		if (getcwd(cwd2, sizeof cwd2) == NULL) {
@@ -159,15 +153,14 @@ main(int ac, char **av)
 		    ((n = readlink(dir2, link2, sizeof(link2))) < 0)) {
 			tst_brkm(TBROK, cleanup, "readlink(2) failed: errno:%d",
 				 errno);
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
 		/*
 		 * Finally compare the pwd, cwd, link informations:
 		 * The test should pass iff all the following are true:
-		 * a.	pwd1 == pwd2
-		 * b.	cwd1 == cwd2
-		 * c.	link2 == basename(cwd1)
+		 * a.   pwd1 == pwd2
+		 * b.   cwd1 == cwd2
+		 * c.   link2 == basename(cwd1)
 		 */
 		if (flag != FAILED) {
 			if (strcmp(pwd1, pwd2) != 0) {
@@ -208,12 +201,10 @@ main(int ac, char **av)
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	/* FORK is set here because of the popen() call below */
@@ -226,8 +217,7 @@ setup()
 	tst_tmpdir();
 }
 
-void
-cleanup()
+void cleanup()
 {
 	/* remove the test directory */
 	tst_rmdir();
@@ -239,8 +229,7 @@ cleanup()
 	tst_exit();
 }
 
-char *
-getpwd()
+char *getpwd()
 {
 	FILE *fin;
 	char *pwd = "/bin/pwd";
@@ -251,13 +240,11 @@ getpwd()
 	if ((fin = popen(pwd, "r")) == NULL) {
 		tst_resm(TINFO, "%s: can't run %s", TCID, pwd);
 		tst_brkm(TBROK, cleanup, "%s FAILED", TCID);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 	while (fgets(buf, BUFSIZ, fin) != NULL) {
 		if ((cp = strchr(buf, '\n')) == (char *)NULL) {
 			tst_brkm(TBROK, cleanup, "pwd output too long");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 		*cp = 0;
 		cp_cur = buf;
 	}

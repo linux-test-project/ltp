@@ -48,11 +48,11 @@
  *   Loop if the proper options are given.
  *   Execute system call
  *   Check return code, if system call failed (return=-1)
- *   	Log the errno and Issue a FAIL message.
+ *	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call
+ *	Verify the Functionality of system call
  *      if successful,
- *      	Issue Functionality-Pass message.
+ *		Issue Functionality-Pass message.
  *      Otherwise,
  *		Issue Functionality-Fail message.
  *  Cleanup:
@@ -92,29 +92,28 @@
 
 #define TEMPFILE	"mmapfile"
 
-char *TCID="mmap03";		/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "mmap03";		/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 size_t page_sz;			/* system page size */
 char *addr;			/* addr of memory mapped region */
 char *dummy;			/* dummy variable to hold temp file contents */
 int fildes;			/* file descriptor for temporary file */
-volatile int pass=0;            /* pass flag perhaps set to 1 in sig_handler */
-sigjmp_buf env;                 /* environment for sigsetjmp/siglongjmp */
+volatile int pass = 0;		/* pass flag perhaps set to 1 in sig_handler */
+sigjmp_buf env;			/* environment for sigsetjmp/siglongjmp */
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
-void sig_handler();             /* signal handler to catch SIGSEGV */
+void sig_handler();		/* signal handler to catch SIGSEGV */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -125,14 +124,15 @@ main(int ac, char **av)
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/*
 		 * Call mmap to map the temporary file 'TEMPFILE'
-	 	 * with execute access.
+		 * with execute access.
 		 */
-		errno = 0; addr = mmap(0, page_sz, PROT_EXEC,
-			    MAP_FILE|MAP_SHARED, fildes, 0);
+		errno = 0;
+		addr = mmap(0, page_sz, PROT_EXEC,
+			    MAP_FILE | MAP_SHARED, fildes, 0);
 
 		/* Check for the return value of mmap() */
 		if (addr == MAP_FAILED) {
@@ -159,26 +159,27 @@ main(int ac, char **av)
 			 * has the file contents.
 			 *
 			 * with ia64 and PARISC/hppa, this should
-                         * generate a SIGSEGV which will be caught below.
-                         *
-                         */
+			 * generate a SIGSEGV which will be caught below.
+			 *
+			 */
 
 			if (sigsetjmp(env, 1) == 0) {
-			   if (memcmp(dummy, addr, page_sz)) {
-				tst_resm(TFAIL, "mapped memory region contains "
-					 "invalid data");
-			   } else {
-				tst_resm(TPASS,
-					 "Functionality of mmap() successful");
-			   }
+				if (memcmp(dummy, addr, page_sz)) {
+					tst_resm(TFAIL,
+						 "mapped memory region contains "
+						 "invalid data");
+				} else {
+					tst_resm(TPASS,
+						 "Functionality of mmap() successful");
+				}
 			}
 #if defined(__ia64__) || defined(__hppa__)
-		        if (pass) {
-                                tst_resm(TPASS, "Got SIGSEGV as expected");
-                        } else {
-                                tst_resm(TFAIL, "Mapped memory region with NO "
-                                         "access is accessible");
-                        }
+			if (pass) {
+				tst_resm(TPASS, "Got SIGSEGV as expected");
+			} else {
+				tst_resm(TFAIL, "Mapped memory region with NO "
+					 "access is accessible");
+			}
 #endif
 
 		} else {
@@ -193,14 +194,13 @@ main(int ac, char **av)
 		}
 		pass = 0;
 
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
-}	/* End main */
+	 /*NOTREACHED*/ return 0;
+}				/* End main */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -210,10 +210,9 @@ main(int ac, char **av)
  *	     Change the mode permissions on file to 0555.
  *	     Re-open the file for reading.
  */
-void
-setup()
+void setup()
 {
-	char *tst_buff;			/* test buffer to hold known data */
+	char *tst_buff;		/* test buffer to hold known data */
 
 	/* capture signals */
 	tst_sig(NOFORK, sig_handler, cleanup);
@@ -291,32 +290,29 @@ setup()
  *   the signal SIGSEGV while trying to access the contents of memory which
  *   is not accessible.
  */
-void
-sig_handler(sig)
+void sig_handler(sig)
 {
-        if (sig == SIGSEGV) {
-                /* set the global variable and jump back */
-                pass = 1;
-                siglongjmp(env, 1);
-        } else {
-                tst_brkm(TBROK, cleanup, "received an unexpected signal");
-        }
+	if (sig == SIGSEGV) {
+		/* set the global variable and jump back */
+		pass = 1;
+		siglongjmp(env, 1);
+	} else {
+		tst_brkm(TBROK, cleanup, "received an unexpected signal");
+	}
 }
-
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
-	       Free the memory allocated to dummy variable.
- * 	       Remove the temporary directory created.
+ *		completion or premature exit.
+ *		Free the memory allocated to dummy variable.
+ *		Remove the temporary directory created.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
 	 */
-    close(fildes);
+	close(fildes);
 
 	TEST_CLEANUP;
 
@@ -331,4 +327,3 @@ cleanup()
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

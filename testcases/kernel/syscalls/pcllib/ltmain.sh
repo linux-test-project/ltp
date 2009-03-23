@@ -69,17 +69,17 @@ rm="rm -f"
 # metacharacters that are still active within double-quoted strings.
 Xsed="${SED}"' -e 1s/^X//'
 sed_quote_subst='s/\([\\`\\"$\\\\]\)/\\\1/g'
-# test EBCDIC or ASCII                                                         
-case `echo A|od -x` in                                                         
- *[Cc]1*) # EBCDIC based system                                                
-  SP2NL="tr '\100' '\n'"                                                       
-  NL2SP="tr '\r\n' '\100\100'"                                                 
-  ;;                                                                           
- *) # Assume ASCII based system                                                
-  SP2NL="tr '\040' '\012'"                                                     
-  NL2SP="tr '\015\012' '\040\040'"                                             
-  ;;                                                                           
-esac                                                                           
+# test EBCDIC or ASCII                                                        $
+case `echo A|od -x` in                                                        $
+ *[Cc]1*) # EBCDIC based system                                               $
+  SP2NL="tr '\100' '\n'"                                                      $
+  NL2SP="tr '\r\n' '\100\100'"                                                $
+  ;;                                                                          $
+ *) # Assume ASCII based system                                               $
+  SP2NL="tr '\040' '\012'"                                                    $
+  NL2SP="tr '\015\012' '\040\040'"                                            $
+  ;;                                                                          $
+esac                                                                          $
 
 # NLS nuisances.
 # Only set LANG and LC_ALL to C if already set.

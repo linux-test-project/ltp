@@ -77,8 +77,8 @@
 #define TEMPFILE	"pwrite_file"
 #define NBUFS           1
 
-char *TCID="pwrite03";		/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "pwrite03";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 char *write_buf[NBUFS];		/* buffer to hold data to be written */
@@ -88,12 +88,11 @@ void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 void init_buffers();		/* function to initialize/allocate buffers */
 
-int exp_enos[] = {EFAULT,0};
+int exp_enos[] = { EFAULT, 0 };
 
 #if !defined(UCLINUX)
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
@@ -102,7 +101,7 @@ main(int ac, char **av)
 	char *test_desc;	/* test specific error message */
 
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
@@ -114,51 +113,51 @@ main(int ac, char **av)
 
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		
+
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		test_desc = "EFAULT";
 		nbytes = 1024;
 		offset = 1;
-		write_buf[0]= sbrk(0);
-	
+		write_buf[0] = sbrk(0);
+
 		/*
 		 * Call pwrite() with the specified file descriptor,
 		 * no. of bytes to be written at specified offset.
 		 * and verify that call should fail with appropriate
 		 * errno. set.
 		 */
-		TEST(pwrite(fd1,write_buf[0] , nbytes, offset));
-					
+		TEST(pwrite(fd1, write_buf[0], nbytes, offset));
+
 		/* Check for the return code of pwrite() */
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "pwrite() returned %d, "
-					 "expected -1, errno:%d",
-					 TEST_RETURN, exp_enos[0]);
+				 "expected -1, errno:%d",
+				 TEST_RETURN, exp_enos[0]);
 		}
 
 		TEST_ERROR_LOG(TEST_ERRNO);
 
 		/*
-		* Verify whether expected errno is set.
-		*/
+		 * Verify whether expected errno is set.
+		 */
 		if (TEST_ERRNO == exp_enos[0]) {
 			tst_resm(TPASS, "pwrite() fails with expected "
-				"error EFAULT errno:%d",TEST_ERRNO);
+				 "error EFAULT errno:%d", TEST_ERRNO);
 		} else {
 			tst_resm(TFAIL, "pread() fails, %s, unexpected "
 				 "errno:%d, expected:%d\n", test_desc,
 				 TEST_ERRNO, exp_enos[0]);
 		}
-	
-	}	/* End of TEST_LOOPING. */
+
+	}			/* End of TEST_LOOPING. */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
 	return 0;
-}	/* End main */
+}				/* End main */
 
 #else
 
@@ -170,14 +169,12 @@ int main()
 
 #endif /* if !defined(UCLINUX) */
 
-
 /*
  * setup() - performs all ONE TIME setup for this test.
  *
  *  Initialize/allocate write buffer.
  */
-void
-setup()
+void setup()
 {
 
 	/* capture signals */
@@ -203,8 +200,7 @@ setup()
  * Close the temporary file.
  * Remove the temporary directory created.
  */
-void
-cleanup()
+void cleanup()
 {
 
 	/*

@@ -27,8 +27,8 @@
  *    AUTHOR		: Aniruddha Marathe <aniruddha.marathe@wipro.com>
  *
  *    SIGNALS
- * 	Uses SIGUSR1 to pause before test if option set.
- * 	(See the parse_opts(3) man page).
+ *	Uses SIGUSR1 to pause before test if option set.
+ *	(See the parse_opts(3) man page).
  *
  *    DESCRIPTION
  *    This is a Phase I test for the sysfs(2) system call.
@@ -36,24 +36,24 @@
  *    It is intended to provide a limited exposure of the system call.
  *
  *
- * 	Setup:
+ *	Setup:
  *	  Setup signal handling.
  *	  Pause for SIGUSR1 if option specified.
  *
- * 	Test:
+ *	Test:
  *	 Loop if the proper options are given.
  *	  Execute system call
  *	  Check return code, if system call failed (return=-1)
  *		Log the errno and Issue a FAIL message.
  *	  Otherwise, Issue a PASS message.
  *
- * 	Cleanup:
- * 	  Print errno log and/or timing stats if options given
+ *	Cleanup:
+ *	  Print errno log and/or timing stats if options given
  *
  * USAGE:  <for command-line>
  * sysfs01 [-c n]  [-e] [-i n] [-I x] [-p x] [-t] [-h] [-f] [-p]
  *  where:
- *  	-c n : run n copies simultaneously.
+ *	-c n : run n copies simultaneously.
  *	-e   : Turn on errno logging.
  *	-i n : Execute test n times.
  *	-I x : Execute test for x seconds.
@@ -111,7 +111,8 @@ int main(int ac, char **av)
 		}
 	}			/*End of TEST_LOOPING */
 #else
-	tst_resm(TWARN, "This test can only run on kernels that support the sysfs system call");
+	tst_resm(TWARN,
+		 "This test can only run on kernels that support the sysfs system call");
 #endif
 
 	/*Clean up and exit */

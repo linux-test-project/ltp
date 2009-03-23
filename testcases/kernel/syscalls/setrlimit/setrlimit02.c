@@ -58,7 +58,7 @@ struct rlimit rlim;
 void setup();
 void cleanup();
 
-int exp_enos[]={EFAULT, EINVAL, EPERM, 0};
+int exp_enos[] = { EFAULT, EINVAL, EPERM, 0 };
 
 struct test_case_t {
 	int resource;
@@ -67,28 +67,29 @@ struct test_case_t {
 } TC[] = {
 #if !defined(UCLINUX)
 	/* rlim points outside the process address space - EFAULT */
-	{RLIMIT_NOFILE, (void *)-1, EFAULT},
+	{
+	RLIMIT_NOFILE, (void *)-1, EFAULT},
 #endif
-	/* the resource is invalid - EINVAL */
-	{-1, &rlim, EINVAL},
-
-	/* a non-root user attemps to increase the rlim_max value - EPERM */
-	{RLIMIT_NOFILE, &rlim, EPERM}
+	    /* the resource is invalid - EINVAL */
+	{
+	-1, &rlim, EINVAL},
+	    /* a non-root user attemps to increase the rlim_max value - EPERM */
+	{
+	RLIMIT_NOFILE, &rlim, EPERM}
 };
 
-int TST_TOTAL = sizeof(TC)/sizeof(*TC);
+int TST_TOTAL = sizeof(TC) / sizeof(*TC);
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int i;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	setup();
 
@@ -126,17 +127,14 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-
-  return 0;
+	 /*NOTREACHED*/ return 0;
 
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 
 	/* capture signals */
@@ -145,30 +143,27 @@ setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	 /* Switch to nobody user for correct error code collection */
-        if (geteuid() != 0) {
-                tst_brkm(TBROK, tst_exit, "Test must be run as root");
-        }
-        ltpuser = getpwnam(nobody_uid);
-        if (setuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "setuid failed to "
-                         "to set the effective uid to %d",
-                         ltpuser->pw_uid);
-                perror("setuid");
-        }
-
+	/* Switch to nobody user for correct error code collection */
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+	}
+	ltpuser = getpwnam(nobody_uid);
+	if (setuid(ltpuser->pw_uid) == -1) {
+		tst_resm(TINFO, "setuid failed to "
+			 "to set the effective uid to %d", ltpuser->pw_uid);
+		perror("setuid");
+	}
 
 	/* set an illegal value for a non-root user - test #3 - EPERM */
 	getrlimit(RLIMIT_NOFILE, &rlim);
-	rlim.rlim_max ++;
+	rlim.rlim_max++;
 }
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

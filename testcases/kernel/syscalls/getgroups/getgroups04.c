@@ -76,10 +76,10 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID="getgroups04";	/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test conditions */
+char *TCID = "getgroups04";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test conditions */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-int exp_enos[]={EINVAL, 0};
+int exp_enos[] = { EINVAL, 0 };
 
 gid_t groups_list[NGROUPS];	/* buffer to hold user group list */
 
@@ -87,29 +87,29 @@ int no_setup();
 void setup();			/* setup function for the test */
 void cleanup();			/* cleanup function for the test */
 
-struct test_case_t {		/* test case struct. to hold ref. test cond's*/
+struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	size_t gsize;
 	gid_t list;
 	char *desc;
 	int exp_errno;
-	int (*setupfunc)();
+	int (*setupfunc) ();
 } Test_cases[] = {
-	{ -1, 1, "Size is < no. suppl. gids", EINVAL, no_setup },
-	{ 0, 0, NULL, 0, no_setup }
+	{
+	-1, 1, "Size is < no. suppl. gids", EINVAL, no_setup}, {
+	0, 0, NULL, 0, no_setup}
 };
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	int gidsetsize;		/* total no. of groups */
 	int ind;		/* counter to test different test conditions */
-	char *test_desc;        /* test specific error message */
+	char *test_desc;	/* test specific error message */
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -128,13 +128,13 @@ main(int ac, char **av)
 		for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
 			gidsetsize = Test_cases[ind].gsize;
 			test_desc = Test_cases[ind].desc;
-		
+
 			/*
 			 * Call getgroups() to test different test conditions
 			 * verify that it fails with -1 return value and
 			 * sets appropriate errno.
 			 */
-			 TEST(getgroups(gidsetsize, groups_list));
+			TEST(getgroups(gidsetsize, groups_list));
 
 			/* check return code of getgroups(2) */
 			if (TEST_RETURN == -1) {
@@ -154,23 +154,21 @@ main(int ac, char **av)
 					 "expected -1, errno=%d", TEST_RETURN,
 					 Test_cases[ind].exp_errno);
 			}
-		}	/* End of TEST CASE LOOPING. */
+		}		/* End of TEST CASE LOOPING. */
 
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
-}	/* End main */
+	 /*NOTREACHED*/ return 0;
+}				/* End main */
 
 /*
  * void
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -178,15 +176,14 @@ setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-}	/* End setup() */
+}				/* End setup() */
 
 /*
  * no_setup() - Some test conditions for mknod(2) do not any setup.
  *              Hence, this function just returns 0.
  *  		This function simply returns 0.
  */
-int
-no_setup()
+int no_setup()
 {
 	return 0;
 }
@@ -195,8 +192,7 @@ no_setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -205,4 +201,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

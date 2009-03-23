@@ -19,10 +19,10 @@
 
 /*
  * NAME
- * 	setreuid02.c
+ *	setreuid02.c
  *
  * DESCRIPTION
- * 	Test setreuid() when executed by root.
+ *	Test setreuid() when executed by root.
  *
  * ALGORITHM
  *
@@ -58,10 +58,9 @@
  *		-Ported
  *
  * Restrictions
- * 	This test must be ran as root.
+ *	This test must be ran as root.
  *	nobody, bin, and daemon must be valid users.
  */
-
 
 #include <pwd.h>
 #include <malloc.h>
@@ -75,7 +74,7 @@ extern int Tst_count;
 char *TCID = "setreuid02";
 uid_t nobody_pw_uid, root_pw_uid, daemon_pw_uid, bin_pw_uid;
 uid_t neg_one = -1;
-int exp_enos[]={0};
+int exp_enos[] = { 0 };
 
 struct passwd nobody, daemonpw, root, bin;
 
@@ -85,39 +84,39 @@ struct passwd nobody, daemonpw, root, bin;
  */
 
 struct test_data_t {
-	uid_t*	real_uid;
-	uid_t*	eff_uid;
-	struct passwd* exp_real_usr;
-	struct passwd* exp_eff_usr;
-	char *	test_msg;
+	uid_t *real_uid;
+	uid_t *eff_uid;
+	struct passwd *exp_real_usr;
+	struct passwd *exp_eff_usr;
+	char *test_msg;
 } test_data[] = {
-	{ &neg_one, &neg_one, &root, &root, "After setreuid(-1, -1)," },
-	{ &nobody_pw_uid, &neg_one, &nobody, &root, "After setreuid(nobody, -1)" },
-	{ &root_pw_uid, &neg_one, &root, &root, "After setreuid(root,-1)," },
-	{ &neg_one, &daemon_pw_uid, &root, &daemonpw, "After setreuid(-1, daemon)" },
-	{ &neg_one, &root_pw_uid, &root, &root, "After setreuid(-1,root)," },
-	{ &bin_pw_uid, &neg_one, &bin, &root, "After setreuid(bin, -1)" },
-	{ &root_pw_uid, &neg_one, &root, &root, "After setreuid(-1, root)" },
-};
+	{
+	&neg_one, &neg_one, &root, &root, "After setreuid(-1, -1),"}, {
+	&nobody_pw_uid, &neg_one, &nobody, &root, "After setreuid(nobody, -1)"},
+	{
+	&root_pw_uid, &neg_one, &root, &root, "After setreuid(root,-1),"}, {
+	&neg_one, &daemon_pw_uid, &root, &daemonpw,
+		    "After setreuid(-1, daemon)"}, {
+	&neg_one, &root_pw_uid, &root, &root, "After setreuid(-1,root),"}, {
+	&bin_pw_uid, &neg_one, &bin, &root, "After setreuid(bin, -1)"}, {
+&root_pw_uid, &neg_one, &root, &root, "After setreuid(-1, root)"},};
 
-int TST_TOTAL = sizeof(test_data)/sizeof(test_data[0]);
+int TST_TOTAL = sizeof(test_data) / sizeof(test_data[0]);
 
-void setup(void);			/* Setup function for the test */
-void cleanup(void);			/* Cleanup function for the test */
+void setup(void);		/* Setup function for the test */
+void cleanup(void);		/* Cleanup function for the test */
 void uid_verify(struct passwd *ru, struct passwd *eu, char *when);
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) !=
-	    (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/* Perform global setup for test */
 	setup();
@@ -132,13 +131,13 @@ int main(int ac, char **av)
 		for (i = 0; i < TST_TOTAL; i++) {
 			/* Set the real or effective user id */
 			TEST(setreuid(*test_data[i].real_uid,
-				*test_data[i].eff_uid));
+				      *test_data[i].eff_uid));
 
 			if (TEST_RETURN == -1) {
 				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_resm(TBROK, "setreuid(%d, %d) failed",
-					test_data[i].real_uid,
-					test_data[i].eff_uid);
+					 test_data[i].real_uid,
+					 test_data[i].eff_uid);
 			} else {
 				/*
 				 * Perform functional verification if test
@@ -146,8 +145,8 @@ int main(int ac, char **av)
 				 */
 				if (STD_FUNCTIONAL_TEST) {
 					uid_verify(test_data[i].exp_real_usr,
-						test_data[i].exp_eff_usr,
-						test_data[i].test_msg);
+						   test_data[i].exp_eff_usr,
+						   test_data[i].test_msg);
 				} else {
 					tst_resm(TPASS, "Call succeeded.");
 				}
@@ -155,9 +154,7 @@ int main(int ac, char **av)
 		}
 	}
 	cleanup();
-	/*NOTREACHED*/
-
-  return 0;
+	 /*NOTREACHED*/ return 0;
 
 }
 
@@ -165,8 +162,7 @@ int main(int ac, char **av)
  * setup()
  *	performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -174,16 +170,14 @@ setup(void)
 	if (getpwnam("nobody") == NULL) {
 		tst_brkm(TBROK, NULL, "nobody must be a valid user.");
 		tst_exit();
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	if (getpwnam("daemon") == NULL) {
 		tst_brkm(TBROK, NULL, "daemon must be a valid user.");
 		tst_exit();
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
- 	/* Check that the test process id is root  */
+	/* Check that the test process id is root  */
 	if (geteuid() != 0) {
 		tst_brkm(TBROK, NULL, "Must be root for this test!");
 		tst_exit();
@@ -195,7 +189,7 @@ setup(void)
 	root = *(getpwnam("root"));
 	root_pw_uid = root.pw_uid;
 
-	nobody = *( getpwnam("nobody"));
+	nobody = *(getpwnam("nobody"));
 	nobody_pw_uid = nobody.pw_uid;
 
 	daemonpw = *(getpwnam("daemon"));
@@ -215,8 +209,7 @@ setup(void)
  *	performs all ONE TIME cleanup for this test at
  *	completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -226,11 +219,9 @@ cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}
 
-void
-uid_verify(struct passwd *ru, struct passwd *eu, char *when)
+void uid_verify(struct passwd *ru, struct passwd *eu, char *when)
 {
 	if ((getuid() != ru->pw_uid) || (geteuid() != eu->pw_uid)) {
 		tst_resm(TFAIL, "ERROR: %s real uid = %d; effective uid = %d",
@@ -239,7 +230,6 @@ uid_verify(struct passwd *ru, struct passwd *eu, char *when)
 			 ru->pw_uid, eu->pw_uid);
 	} else {
 		tst_resm(TPASS, "real or effective uid was modified as "
-			"expected");
+			 "expected");
 	}
 }
-

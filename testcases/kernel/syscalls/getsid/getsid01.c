@@ -66,7 +66,7 @@
 void cleanup(void);
 void setup(void);
 
-char *TCID= "getsid01";
+char *TCID = "getsid01";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
@@ -74,16 +74,16 @@ pid_t p_sid;
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	pid_t pid, c_pid, c_sid;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -110,7 +110,7 @@ int main(int ac, char **av)
 				tst_brkm(TBROK, cleanup, "could not fork");
 			}
 
-			if (pid == 0) {		/* child */
+			if (pid == 0) {	/* child */
 				if ((c_pid = getpid()) == -1) {
 					tst_resm(TINFO, "getpid failed in "
 						 "functionality test");
@@ -147,15 +147,13 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -168,8 +166,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -180,4 +177,3 @@ cleanup(void)
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

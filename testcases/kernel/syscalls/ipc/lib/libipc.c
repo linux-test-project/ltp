@@ -44,13 +44,11 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 
-
 /*
  * getipckey() - generates and returns a message key used by the "get"
  *		 calls to create an IPC resource.
  */
-int
-getipckey()
+int getipckey()
 {
 	const char a = 'a';
 	int ascii_a = (int)a;
@@ -71,23 +69,22 @@ getipckey()
 	 * ftok() requires a character as a second argument.  This is
 	 * refered to as a "project identifier" in the man page.
 	 */
-	proj_id = count%26 + ascii_a;
+	proj_id = count % 26 + ascii_a;
 	count++;
 
 	if ((ipc_key = ftok(curdir, proj_id)) == -1) {
 		tst_brkm(TBROK, cleanup, "Can't get msgkey from ftok()");
 	}
 
-	return(ipc_key);
+	return (ipc_key);
 }
 
 /*
  * rm_queue() - removes a message queue.
  */
-void
-rm_queue(int queue_id)
+void rm_queue(int queue_id)
 {
-	if (queue_id == -1) {		/* no queue to remove */
+	if (queue_id == -1) {	/* no queue to remove */
 		return;
 	}
 
@@ -101,14 +98,13 @@ rm_queue(int queue_id)
 /*
  * init_buf() - initialize the message buffer with some text and a type.
  */
-void
-init_buf(MSGBUF *m_buf, int type, int size)
+void init_buf(MSGBUF * m_buf, int type, int size)
 {
 	int i;
-	int ascii_a = (int)'a';		/* the ascii value for 'a' */
+	int ascii_a = (int)'a';	/* the ascii value for 'a' */
 
 	/* this fills the message with a repeating alphabet string */
-	for (i=0; i<size; i++) {
+	for (i = 0; i < size; i++) {
 		m_buf->mtext[i] = ascii_a + (i % 26);
 	}
 
@@ -126,12 +122,11 @@ init_buf(MSGBUF *m_buf, int type, int size)
 /*
  * rm_sema() - removes a semaphore.
  */
-void
-rm_sema(int sem_id)
+void rm_sema(int sem_id)
 {
 	union semun arr;
 
-	if (sem_id == -1) {		/* no semaphore to remove */
+	if (sem_id == -1) {	/* no semaphore to remove */
 		return;
 	}
 
@@ -145,8 +140,7 @@ rm_sema(int sem_id)
 /*
  * check_root() - make sure the process ID is root
  */
-void
-check_root()
+void check_root()
 {
 	if (geteuid() != 0) {
 		tst_brkm(TBROK, cleanup, "test must be run as root");
@@ -156,16 +150,15 @@ check_root()
 /*
  * getuserid() - return the integer value for the "user" id
  */
-int
-getuserid(char *user)
+int getuserid(char *user)
 {
 	struct passwd *ent;
 
 	/* allocate some space for the passwd struct */
 	if ((ent = (struct passwd *)malloc(sizeof(struct passwd))) == NULL) {
-	     tst_brkm(TBROK, cleanup, "couldn't allocate space for passwd"
-		      " structure");
-        }
+		tst_brkm(TBROK, cleanup, "couldn't allocate space for passwd"
+			 " structure");
+	}
 
 	/* get the uid value for the user */
 	if ((ent = getpwnam(user)) == NULL) {
@@ -173,16 +166,15 @@ getuserid(char *user)
 			 user);
 	}
 
-	return(ent->pw_uid);
+	return (ent->pw_uid);
 }
 
 /*
  * rm_shm() - removes a shared memory segment.
  */
-void
-rm_shm(int shm_id)
+void rm_shm(int shm_id)
 {
-	if (shm_id == -1) {		/* no segment to remove */
+	if (shm_id == -1) {	/* no segment to remove */
 		return;
 	}
 
@@ -202,8 +194,7 @@ rm_shm(int shm_id)
 /*
  * Get the number of message queues already in use
  */
-int
-get_used_msgqueues()
+int get_used_msgqueues()
 {
 	FILE *f;
 	int used_queues;
@@ -212,16 +203,15 @@ get_used_msgqueues()
 	f = popen("ipcs -q", "r");
 	if (!f) {
 		tst_resm(TBROK, "Could not run 'ipcs' to calculate used "
-			"message queues");
+			 "message queues");
 		tst_exit();
 	}
 	/* FIXME: Start at -4 because ipcs prints four lines of header */
-	for (used_queues = -4; fgets(buff, BUFSIZE, f); used_queues++)
-		;
+	for (used_queues = -4; fgets(buff, BUFSIZE, f); used_queues++) ;
 	pclose(f);
 	if (used_queues < 0) {
 		tst_resm(TBROK, "Could not read output of 'ipcs' to "
-			"calculate used message queues");
+			 "calculate used message queues");
 		tst_exit();
 	}
 	return used_queues;
@@ -230,8 +220,7 @@ get_used_msgqueues()
 /*
  * Get the max number of message queues allowed on system
  */
-int
-get_max_msgqueues()
+int get_max_msgqueues()
 {
 	FILE *f;
 	char buff[BUFSIZE];

@@ -60,15 +60,15 @@ extern int Tst_count;
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned by parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned by parse_opts */
 
-	register int 	pgid_0, pgid_1;
-	register int	my_pid, my_ppid;
+	register int pgid_0, pgid_1;
+	register int my_pid, my_ppid;
 	int ex_stat, fail = 0;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -82,12 +82,12 @@ int main(int ac, char **av)
 		if ((pgid_0 = FORK_OR_VFORK()) < 0) {
 			tst_brkm(TBROK, cleanup, "fork() failed");
 		}
-		if (pgid_0 > 0) {		/* parent */
+		if (pgid_0 > 0) {	/* parent */
 			/*
 			 * parent process waits for child to exit, and then
 			 * exits itself.
 			 */
-			while ((pgid_0 = wait(&ex_stat)) > 0);
+			while ((pgid_0 = wait(&ex_stat)) > 0) ;
 
 			if (WEXITSTATUS(ex_stat) == 0) {
 				tst_resm(TINFO, "%s PASSED", TCID);
@@ -147,8 +147,7 @@ int main(int ac, char **av)
 		my_ppid = getppid();
 		if ((pgid_1 = getpgid(my_ppid)) < 0) {
 			perror("getpgid");
-			tst_resm(TFAIL, "getpgid(my_ppid=%d) failed",
-				 my_ppid);
+			tst_resm(TFAIL, "getpgid(my_ppid=%d) failed", my_ppid);
 			tst_exit();
 		}
 		if (pgid_0 != pgid_1) {
@@ -212,8 +211,7 @@ int main(int ac, char **av)
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -222,13 +220,11 @@ setup()
 	TEST_PAUSE;
 }
 
-
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -239,4 +235,3 @@ cleanup()
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

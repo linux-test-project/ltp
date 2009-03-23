@@ -23,7 +23,7 @@
  * Test Description:
  *  Fork a process using vfork() and verify that, the pending signals in
  *  the parent are not pending in the child process.
- *  
+ * $
  * Expected Result:
  *  The signal which is pending in the parent should not be pending in the
  *  child process.
@@ -80,27 +80,26 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID="vfork02";		/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "vfork02";		/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-int exp_enos[]={0};
+int exp_enos[] = { 0 };
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 void sig_handler();		/* signal catching function */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	pid_t cpid;		/* process id of the child process */
 	int exit_status;	/* exit status of child process */
 	sigset_t PendSig;	/* variable to hold pending signal */
-   
+
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -114,7 +113,7 @@ main(int ac, char **av)
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/*
 		 * Call vfork(2) to create a child process without
@@ -127,7 +126,7 @@ main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "vfork() Failed, errno=%d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
-		} else if (cpid == 0) {		/* Child process */
+		} else if (cpid == 0) {	/* Child process */
 			/*
 			 * Perform functional verification if test
 			 * executed without (-f) option.
@@ -140,14 +139,14 @@ main(int ac, char **av)
 				 */
 				if (sigpending(&PendSig) == -1) {
 					tst_resm(TFAIL, "sigpending function "
-						"failed in child");
+						 "failed in child");
 					_exit(1);
 				}
 
 				/* Check if SIGUSR1 is pending in child */
 				if (sigismember(&PendSig, SIGUSR1) != 0) {
 					tst_resm(TFAIL, "SIGUSR1 also pending "
-						"in child process");
+						 "in child process");
 					_exit(1);
 				}
 
@@ -167,20 +166,20 @@ main(int ac, char **av)
 			/* Check for the exit status of child process */
 			if (WEXITSTATUS(exit_status) == 0) {
 				tst_resm(TPASS, "Call to vfork() "
-					"successful");
+					 "successful");
 			} else if (WEXITSTATUS(exit_status) == 1) {
-				tst_resm(TFAIL, \
+				tst_resm(TFAIL,
 					 "Child process exited abnormally");
 			}
 		}
-		Tst_count++;			/* incr. TEST_LOOP counter */
-	}	/* End for TEST_LOOPING */
+		Tst_count++;	/* incr. TEST_LOOP counter */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
 	return 0;
-}	/* End main */
+}				/* End main */
 
 /*
  * void
@@ -189,10 +188,9 @@ main(int ac, char **av)
  *   on hold and then sends the signal SIGUSR1 to itself so that it is in
  *   pending state.
  */
-void
-setup()
+void setup()
 {
-	sigset_t PendSig;		/* variable to hold pending signal */
+	sigset_t PendSig;	/* variable to hold pending signal */
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
@@ -201,8 +199,7 @@ setup()
 
 	/* Install the signal handler */
 	if (signal(SIGUSR1, sig_handler) == SIG_ERR) {
-		tst_brkm(TBROK, cleanup,
-			 "Fails to catch the signal SIGUSR1");
+		tst_brkm(TBROK, cleanup, "Fails to catch the signal SIGUSR1");
 	}
 
 	/* Hold the signal SIGUSR1 */
@@ -228,17 +225,16 @@ setup()
 		tst_brkm(TBROK, cleanup,
 			 "SIGUSR1 signal is not pending in parent");
 	}
-}	/* End setup() */
+}				/* End setup() */
 
 /*
  * void
  * sig_handler() - signal catching function for 'SIGUSR1' signal.
- *		  
+ *		 $
  *   This is a null function and used only to catch the above signal
  *   generated in parent process.
  */
-void
-sig_handler()
+void sig_handler()
 {
 }
 
@@ -248,8 +244,7 @@ sig_handler()
  *             completion or premature exit.
  *  Release the signal 'SIGUSR1'  if still in pending state.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -259,10 +254,9 @@ cleanup()
 
 	/* Release the signal 'SIGUSR1' if in pending state */
 	if (sigrelse(SIGUSR1) == -1) {
-		tst_brkm(TBROK, NULL,
-			 "Failed to release 'SIGUSR1' in cleanup");
+		tst_brkm(TBROK, NULL, "Failed to release 'SIGUSR1' in cleanup");
 	}
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

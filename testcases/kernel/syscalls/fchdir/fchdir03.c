@@ -72,7 +72,7 @@ void cleanup(void);
 
 char user1name[] = "nobody";
 
-int exp_enos[] = {EACCES, 0};
+int exp_enos[] = { EACCES, 0 };
 
 char good_dir[100];
 int fd;
@@ -83,14 +83,14 @@ extern struct passwd *my_getpwnam(char *);
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	pid_t pid;
 	int status;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -108,7 +108,7 @@ int main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "fork failed");
 		}
 
-		if (pid == 0) {		/* child */
+		if (pid == 0) {	/* child */
 			/*
 			 * set the child's ID to ltpuser1 using seteuid()
 			 * so that the ID can be changed back after the
@@ -122,13 +122,12 @@ int main(int ac, char **av)
 				tst_resm(TINFO, "mkdir failed in child #1");
 				exit(1);
 			}
-	                if ((fd = open(good_dir, O_RDONLY)) == -1) {
-                        tst_brkm(TBROK, cleanup, "open of directory failed");
+			if ((fd = open(good_dir, O_RDONLY)) == -1) {
+				tst_brkm(TBROK, cleanup,
+					 "open of directory failed");
 			}
 
-
 			TEST(fchdir(fd));
-
 
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
@@ -147,7 +146,7 @@ int main(int ac, char **av)
 				tst_resm(TINFO, "setuid(0) failed");
 			}
 
-		} else {		/* parent */
+		} else {	/* parent */
 			wait(&status);
 
 			/* let the child carry on */
@@ -162,15 +161,13 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	char *cur_dir = NULL;
 
@@ -193,7 +190,7 @@ setup()
 		tst_brkm(TBROK, cleanup, "Couldn't get current directory name");
 	}
 
-		 sprintf(good_dir, "%s.%d", cur_dir, getpid());
+	sprintf(good_dir, "%s.%d", cur_dir, getpid());
 
 	ltpuser1 = my_getpwnam(user1name);
 }
@@ -202,8 +199,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

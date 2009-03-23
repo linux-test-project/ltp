@@ -37,11 +37,11 @@
  *   Loop if the proper options are given.
  *   Execute system call
  *   Check return code, if system call failed (return=-1)
- *   	Log the errno and Issue a FAIL message.
+ *	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call
+ *	Verify the Functionality of system call
  *      if successful,
- *      	Issue Functionality-Pass message.
+ *		Issue Functionality-Pass message.
  *      Otherwise,
  *		Issue Functionality-Fail message.
  *  Cleanup:
@@ -78,21 +78,19 @@
 #include "test.h"
 #include "usctest.h"
 
-
-
-char *TCID="sigaltstack01";	/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "sigaltstack01";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-int exp_enos[]={0};
-void  *addr, *main_stk;		/* address of main stack for signal */
+int exp_enos[] = { 0 };
+void *addr, *main_stk;		/* address of main stack for signal */
 int got_signal = 0;
 pid_t my_pid;			/* test process id */
 
 stack_t sigstk, osigstk;	/* signal stack storing struct. */
 struct sigaction act, oact;	/* sigaction() struct. */
 
-void setup();                   /* Main setup function of test */
-void cleanup();                 /* cleanup function for the test */
+void setup();			/* Main setup function of test */
+void cleanup();			/* cleanup function for the test */
 void sig_handler();		/* signal catching function */
 
 int main(int ac, char **av)
@@ -103,11 +101,10 @@ int main(int ac, char **av)
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/* Perform global setup for test */
 	setup();
@@ -118,17 +115,17 @@ int main(int ac, char **av)
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/* Call sigaltstack() to set up an alternate stack */
 		sigstk.ss_size = SIGSTKSZ;
 		sigstk.ss_flags = 0;
 		TEST(sigaltstack(&sigstk, &osigstk));
 
-		/* check return code of sigaltstack */     
+		/* check return code of sigaltstack */
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL, \
+			tst_resm(TFAIL,
 				 "sigaltstack() Failed, errno=%d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
@@ -142,16 +139,16 @@ int main(int ac, char **av)
 				act.sa_handler = (void (*)())sig_handler;
 				if ((sigaction(SIGUSR1, &act, &oact)) == -1) {
 					tst_brkm(TFAIL, cleanup, "sigaction() "
-						"fails to trap signal "
-						"delivered on alt. stack, "
-						"error=%d", errno);
+						 "fails to trap signal "
+						 "delivered on alt. stack, "
+						 "error=%d", errno);
 				}
 
 				/* Deliver signal onto the alternate stack */
 				kill(my_pid, SIGUSR1);
 
 				/* wait till the signal arrives */
-				while(!got_signal);
+				while (!got_signal) ;
 
 				got_signal = 0;
 				alt_stk = addr;
@@ -165,38 +162,34 @@ int main(int ac, char **av)
 				 * Check that main_stk is outside the
 				 * alternate stk boundaries.
 				 */
-				if ((alt_stk < sigstk.ss_sp) && \
-				    (alt_stk > \
-				     (sigstk.ss_sp + SIGSTKSZ))) {
-					tst_resm(TFAIL, \
-						"alt. stack is not within the "
-						"alternate stk boundaries");
-				} else if ((main_stk >= sigstk.ss_sp) && \
-					   (main_stk <= \
+				if ((alt_stk < sigstk.ss_sp) &&
+				    (alt_stk > (sigstk.ss_sp + SIGSTKSZ))) {
+					tst_resm(TFAIL,
+						 "alt. stack is not within the "
+						 "alternate stk boundaries");
+				} else if ((main_stk >= sigstk.ss_sp) &&
+					   (main_stk <=
 					    (sigstk.ss_sp + SIGSTKSZ))) {
-					tst_resm(TFAIL, \
-						"main stk. not outside the "
-						"alt. stack boundaries");
+					tst_resm(TFAIL,
+						 "main stk. not outside the "
+						 "alt. stack boundaries");
 				} else {
-					tst_resm(TPASS, \
-						"Functionality of "
-						"sigaltstack() successful");
+					tst_resm(TPASS,
+						 "Functionality of "
+						 "sigaltstack() successful");
 				}
 			} else {
 				tst_resm(TPASS, "CALL succeeded.");
 			}
 		}
-		Tst_count++;		/* incr. TEST_LOOP counter */
-	}	/* End for TEST_LOOPING */
+		Tst_count++;	/* incr. TEST_LOOP counter */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
-	/*NOTREACHED*/
+	 /*NOTREACHED*/ return 0;
 
-
-  return 0;
-
-}	/* End main */
+}				/* End main */
 
 /*
  * void
@@ -206,8 +199,7 @@ int main(int ac, char **av)
  * wait till the signal arrives.
  * Allocate memory for the alternative stack.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -222,16 +214,14 @@ setup()
 	act.sa_handler = (void (*)())sig_handler;
 	if ((sigaction(SIGUSR1, &act, &oact)) == -1) {
 		tst_brkm(TFAIL, cleanup,
-			 "sigaction() fails in setup, errno=%d",
-			 errno);
-		/*NOTREACHED*/
-	}
+			 "sigaction() fails in setup, errno=%d", errno);
+	 /*NOTREACHED*/}
 
 	/* Send the signal to the test process */
 	kill(my_pid, SIGUSR1);
 
 	/* Wait till the signal arrives */
-	while(!got_signal);
+	while (!got_signal) ;
 
 	got_signal = 0;
 	main_stk = addr;
@@ -240,8 +230,7 @@ setup()
 	if ((sigstk.ss_sp = (void *)malloc(SIGSTKSZ)) == NULL) {
 		tst_brkm(TFAIL, cleanup,
 			 "could not allocate memory for the alternate stack");
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 }
 
 /*
@@ -252,8 +241,8 @@ setup()
  *
  *  This function updates 'addr' variable and sets got_signal value.
  */
-void
-sig_handler() {
+void sig_handler()
+{
 	int i;
 
 	addr = &i;
@@ -266,8 +255,7 @@ sig_handler() {
  *             completion or premature exit.
  *  Free the memory allocated for alternate stack.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -279,4 +267,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

@@ -66,32 +66,31 @@ void cleanup(void);
 void setup(void);
 void do_child(void);
 
-char *TCID= "kill04";
+char *TCID = "kill04";
 int TST_TOTAL = 1;
 
 extern int Tst_count;
 
-int exp_enos[] = {ESRCH, 0};
+int exp_enos[] = { ESRCH, 0 };
 
 #define TEST_SIG SIGKILL
 
 int main(int ac, char **av)
 {
-	int lc;                         /* loop counter */
-	char *msg;                      /* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	pid_t pid, fake_pid;
 	int exno, status, fake_status, nsig;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
-
 #ifdef UCLINUX
 	maybe_run_child(&do_child, "");
 #endif
 
-	setup();                        /* global setup */
+	setup();		/* global setup */
 
 	TEST_EXP_ENOS(exp_enos);
 
@@ -108,7 +107,8 @@ int main(int ac, char **av)
 		} else if (pid == 0) {
 #ifdef UCLINUX
 			if (self_exec(av[0], "") < 0) {
-				tst_brkm(TBROK, cleanup, "self_exec of child failed");
+				tst_brkm(TBROK, cleanup,
+					 "self_exec of child failed");
 			}
 #else
 			do_child();
@@ -120,7 +120,8 @@ int main(int ac, char **av)
 			} else if (fake_pid == 0) {
 #ifdef UCLINUX
 				if (self_exec(av[0], "") < 0) {
-					tst_brkm(TBROK, cleanup, "second self_exec "
+					tst_brkm(TBROK, cleanup,
+						 "second self_exec "
 						 "of child failed");
 				}
 #else
@@ -136,11 +137,10 @@ int main(int ac, char **av)
 
 		if (TEST_RETURN != -1) {
 			tst_brkm(TFAIL, cleanup, "%s failed - errno = %d : %s "
-				"Expected a return value of -1 got %d",
-				TCID, TEST_ERRNO, strerror(TEST_ERRNO),
-				TEST_RETURN);
-			/*NOTREACHED*/
-		}
+				 "Expected a return value of -1 got %d",
+				 TCID, TEST_ERRNO, strerror(TEST_ERRNO),
+				 TEST_RETURN);
+		 /*NOTREACHED*/}
 
 		if (STD_FUNCTIONAL_TEST) {
 			/*
@@ -151,39 +151,35 @@ int main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 			if (TEST_ERRNO == ESRCH) {
 				tst_resm(TPASS, "errno set to %d : %s, as "
-					"expected", TEST_ERRNO,
-					strerror(TEST_ERRNO));
+					 "expected", TEST_ERRNO,
+					 strerror(TEST_ERRNO));
 			} else {
 				tst_resm(TFAIL, "errno set to %d : %s expected "
-					"%d : %s", TEST_ERRNO,
-					strerror(TEST_ERRNO), 3, strerror(3));
+					 "%d : %s", TEST_ERRNO,
+					 strerror(TEST_ERRNO), 3, strerror(3));
 			}
 		}
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * do_child()
  */
-void
-do_child()
+void do_child()
 {
 	int exno = 1;
 
 	pause();
-	/*NOTREACHED*/
-	exit(exno);
+	 /*NOTREACHED*/ exit(exno);
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* Pause if that option was specified */
 	TEST_PAUSE;
@@ -193,8 +189,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing status if that option was specified.

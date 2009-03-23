@@ -73,15 +73,15 @@
 #include "test.h"
 #include "usctest.h"
 
-#ifndef RUSAGE_BOTH      /* Removed from user space on RHEL4 */
-#define RUSAGE_BOTH (-2) /* still works on SuSE      */
-#endif			 /* so this is a work around */
+#ifndef RUSAGE_BOTH		/* Removed from user space on RHEL4 */
+#define RUSAGE_BOTH (-2)	/* still works on SuSE      */
+#endif /* so this is a work around */
 
 static void setup();
 static void cleanup();
-static int exp_enos[] = {EINVAL, EFAULT, 0};
+static int exp_enos[] = { EINVAL, EFAULT, 0 };
 
-char *TCID = "getrusage02"; 	/* Test program identifier.    */
+char *TCID = "getrusage02";	/* Test program identifier.    */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 static struct rusage usage;
@@ -90,26 +90,27 @@ struct test_cases_t {
 	int who;
 	struct rusage *usage;
 	int exp_errno;
-} test_cases[] ={
-	{ RUSAGE_BOTH, &usage, EINVAL },
+} test_cases[] = {
+	{
+	RUSAGE_BOTH, &usage, EINVAL},
 #ifndef UCLINUX
-	/* Skip since uClinux does not implement memory protection */
-	{ RUSAGE_SELF, (struct rusage*) -1, EFAULT }
+	    /* Skip since uClinux does not implement memory protection */
+	{
+	RUSAGE_SELF, (struct rusage *)-1, EFAULT}
 #endif
 };
 
-int TST_TOTAL = sizeof(test_cases)/sizeof(*test_cases);
+int TST_TOTAL = sizeof(test_cases) / sizeof(*test_cases);
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 
 	int lc, ind;		/* loop counter */
-	char *msg;	/* message returned from parse_opts */
-   
+	char *msg;		/* message returned from parse_opts */
+
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
-	     != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL))
+	    != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -125,12 +126,13 @@ main(int ac, char **av)
 		for (ind = 0; ind < TST_TOTAL; ind++) {
 			/*
 			 * Call getrusage(2)
-		 	 */
+			 */
 			TEST(getrusage(test_cases[ind].who,
-				test_cases[ind].usage));
+				       test_cases[ind].usage));
 
 			if ((TEST_RETURN == -1) && (TEST_ERRNO ==
-						   test_cases[ind].exp_errno)) {
+						    test_cases[ind].
+						    exp_errno)) {
 				tst_resm(TPASS, "TEST Passed");
 			} else {
 				tst_resm(TFAIL, "test Failed,"
@@ -140,19 +142,17 @@ main(int ac, char **av)
 			}
 			TEST_ERROR_LOG(TEST_ERRNO);
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* cleanup and exit */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 
-}	/* End main */
+}				/* End main */
 
 /* setup() - performs all ONE TIME setup for this test */
-void
-setup()
+void setup()
 {
 
 	/* capture signals */
@@ -164,15 +164,13 @@ setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-}	/* End setup() */
-
+}				/* End setup() */
 
 /*
  *cleanup() -  performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 
 	/*
@@ -183,4 +181,4 @@ cleanup()
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-}	/* End cleanup() */
+}				/* End cleanup() */

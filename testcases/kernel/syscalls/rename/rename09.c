@@ -91,21 +91,20 @@ extern struct passwd *my_getpwnam(char *);
 char user1name[] = "nobody";
 char user2name[] = "bin";
 
-char *TCID="rename09";		/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "rename09";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 char fdir[255], mdir[255];
 char fname[255], mname[255];
 struct passwd *nobody, *bin;
 
-int exp_enos[]={EACCES, 0};     /* List must end with 0 */
+int exp_enos[] = { EACCES, 0 };	/* List must end with 0 */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	int lc;             /* loop counter */
-	char *msg;          /* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int rval;
 	pid_t pid, pid1;
 	int status;
@@ -113,7 +112,7 @@ main(int ac, char **av)
 	/*
 	 * parse standard options
 	 */
-	if ((msg=parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -128,17 +127,16 @@ main(int ac, char **av)
 	/*
 	 * check looping state if -i option given
 	 */
-	for (lc=0; TEST_LOOPING(lc); lc++) {
-	 
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+
 		/* reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		if ((pid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() #1 failed");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
-		if (pid == 0) {		/* first child */
+		if (pid == 0) {	/* first child */
 			/* set to nobody */
 			rval = setreuid(nobody->pw_uid, nobody->pw_uid);
 			if (rval < 0) {
@@ -148,16 +146,14 @@ main(int ac, char **av)
 					 nobody->pw_uid, nobody->pw_uid);
 				perror("setreuid");
 				exit(1);
-				/*NOTREACHED*/
-			}		 
+			 /*NOTREACHED*/}
 
 			/* create the a directory with 0700 permits */
 			if (mkdir(fdir, PERMS) == -1) {
-				 tst_resm(TWARN, "mkdir(%s, %#o) Failed",
-					  fdir, PERMS);
-				 exit(1);
-				 /*NOTREACHED*/
-			}
+				tst_resm(TWARN, "mkdir(%s, %#o) Failed",
+					 fdir, PERMS);
+				exit(1);
+			 /*NOTREACHED*/}
 
 			/* create "old" file under it */
 			do_file_setup(fname);
@@ -174,27 +170,24 @@ main(int ac, char **av)
 
 		if ((pid1 = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() #2 failed");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
-		if (pid1 == 0) {		/* second child */
+		if (pid1 == 0) {	/* second child */
 			/* set to bin */
 			if ((rval = seteuid(bin->pw_uid)) == -1) {
 				tst_resm(TWARN, "seteuid() failed");
 				perror("setreuid");
 				exit(1);
-				/*NOTREACHED*/
-			}
+			 /*NOTREACHED*/}
 
 			/* create "new" directory */
 			if (mkdir(mdir, PERMS) == -1) {
-				 tst_resm(TWARN, "mkdir(%s, %#o) failed",
-					  mdir, PERMS);
-				 exit(1);
-				 /*NOTREACHED*/
-			}
+				tst_resm(TWARN, "mkdir(%s, %#o) failed",
+					 mdir, PERMS);
+				exit(1);
+			 /*NOTREACHED*/}
 
-			/* create the new file */		
+			/* create the new file */
 			do_file_setup(mname);
 
 			/* rename "old" to "new" */
@@ -209,11 +202,10 @@ main(int ac, char **av)
 			if (TEST_ERRNO != EACCES) {
 				tst_resm(TFAIL, "Expected EACCES got %d",
 					 TEST_ERRNO);
-				/*NOTREACHED*/
-			} else {
+			 /*NOTREACHED*/} else {
 				tst_resm(TPASS, "rename() returned EACCES");
 			}
-		
+
 			/* set the process id back to root */
 			if (seteuid(0) == -1) {
 				tst_resm(TWARN, "seteuid(0) failed");
@@ -235,37 +227,33 @@ main(int ac, char **av)
 			}
 		} else {
 			/* parent - let the second child carry on */
-			waitpid(pid1,&status,0);
+			waitpid(pid1, &status, 0);
 			if (!WIFEXITED(status) || (WEXITSTATUS(status) != 0)) {
 				exit(WEXITSTATUS(status));
 			} else {
-			   exit(0);
+				exit(0);
 			}
 		}
-	}   /* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/*
 	 * cleanup and exit
 	 */
 	cleanup();
 
-	/*NOTREACHED*/
-
-  return 0;
+	 /*NOTREACHED*/ return 0;
 
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* must run as root */
 	if (geteuid() != 0) {
 		tst_brkm(TBROK, tst_exit, "Must run test as root");
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -281,10 +269,10 @@ setup()
 
 	umask(0);
 
-	sprintf(fdir,"tdir_%d",getpid());
-	sprintf(mdir,"rndir_%d",getpid());
-	sprintf(fname,"%s/tfile_%d",fdir,getpid());
-	sprintf(mname,"%s/rnfile_%d",mdir,getpid());
+	sprintf(fdir, "tdir_%d", getpid());
+	sprintf(mdir, "rndir_%d", getpid());
+	sprintf(fname, "%s/tfile_%d", fdir, getpid());
+	sprintf(mname, "%s/rnfile_%d", mdir, getpid());
 
 	nobody = my_getpwnam(user1name);
 	bin = my_getpwnam(user2name);
@@ -294,8 +282,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

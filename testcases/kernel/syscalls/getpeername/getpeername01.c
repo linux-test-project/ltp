@@ -55,64 +55,63 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID="getpeername01";		/* Test program identifier.    */
+char *TCID = "getpeername01";	/* Test program identifier.    */
 int testno;
 
-int	s, s2;	/* socket descriptors */
+int s, s2;			/* socket descriptors */
 struct sockaddr_in sin0, fsin1;
-socklen_t	sinlen;
+socklen_t sinlen;
 
 void setup(void), setup0(void), setup1(void), setup2(void),
-	cleanup(void), cleanup0(void), cleanup1(void), cleanup2(void);
+cleanup(void), cleanup0(void), cleanup1(void), cleanup2(void);
 
 struct test_case_t {		/* test case structure */
-	int	domain;	/* PF_INET, PF_UNIX, ... */
-	int	type;	/* SOCK_STREAM, SOCK_DGRAM ... */
-	int	proto;	/* protocol number (usually 0 = default) */
+	int domain;		/* PF_INET, PF_UNIX, ... */
+	int type;		/* SOCK_STREAM, SOCK_DGRAM ... */
+	int proto;		/* protocol number (usually 0 = default) */
 	struct sockaddr *sockaddr;	/* socket address buffer */
-	socklen_t	*salen;	/* getpeername's 3rd argument */
-	int	retval;		/* syscall return value */
-	int	experrno;	/* expected errno */
-	void	(*setup)(void);
-	void	(*cleanup)(void);
+	socklen_t *salen;	/* getpeername's 3rd argument */
+	int retval;		/* syscall return value */
+	int experrno;		/* expected errno */
+	void (*setup) (void);
+	void (*cleanup) (void);
 	char *desc;
 } tdat[] = {
-	{ PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&fsin1,
-		&sinlen, -1, EBADF, setup0, cleanup0,
-		"bad file descriptor" },
-	{ PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&fsin1,
-		&sinlen, -1, ENOTSOCK, setup0, cleanup0,
-		"bad file descriptor" },
-	{ PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&fsin1,
-		&sinlen, -1, ENOTCONN, setup1, cleanup1,
-		"invalid salen" },
+	{
+	PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&fsin1,
+		    &sinlen, -1, EBADF, setup0, cleanup0,
+		    "bad file descriptor"}, {
+	PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&fsin1,
+		    &sinlen, -1, ENOTSOCK, setup0, cleanup0,
+		    "bad file descriptor"}, {
+	PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&fsin1,
+		    &sinlen, -1, ENOTCONN, setup1, cleanup1, "invalid salen"},
 #ifndef UCLINUX
-	/* Skip since uClinux does not implement memory protection */
-	{ PF_UNIX, SOCK_STREAM, 0, (struct sockaddr *)0,
-		&sinlen, -1, EFAULT, setup2, cleanup1,
-		"invalid socket buffer" },
-	{ PF_UNIX, SOCK_STREAM, 0, (struct sockaddr *)&fsin1,
-		(socklen_t*)1, -1, EFAULT, setup2, cleanup1,
-		"invalid salen" },
+	    /* Skip since uClinux does not implement memory protection */
+	{
+	PF_UNIX, SOCK_STREAM, 0, (struct sockaddr *)0,
+		    &sinlen, -1, EFAULT, setup2, cleanup1,
+		    "invalid socket buffer"}, {
+	PF_UNIX, SOCK_STREAM, 0, (struct sockaddr *)&fsin1,
+		    (socklen_t *) 1, -1, EFAULT, setup2, cleanup1,
+		    "invalid salen"},
 #endif
 };
 
-int TST_TOTAL=sizeof(tdat)/sizeof(tdat[0]); /* Total number of test cases. */
+int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);	/* Total number of test cases. */
 
-int exp_enos[] = {EBADF, ENOTSOCK, ENOTCONN, EFAULT, 0};
+int exp_enos[] = { EBADF, ENOTSOCK, ENOTCONN, EFAULT, 0 };
 
 extern int Tst_count;
 
-
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(argc, argv, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -125,11 +124,11 @@ main(int argc, char *argv[])
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		Tst_count = 0;
-		for (testno=0; testno < TST_TOTAL; ++testno) {
+		for (testno = 0; testno < TST_TOTAL; ++testno) {
 			tdat[testno].setup();
 
 			TEST(getpeername(s, tdat[testno].sockaddr,
-				tdat[testno].salen));
+					 tdat[testno].salen));
 			if (TEST_RETURN > 0) {
 				TEST_RETURN = 0;
 			} else {
@@ -139,27 +138,25 @@ main(int argc, char *argv[])
 			    (TEST_RETURN < 0 &&
 			     TEST_ERRNO != tdat[testno].experrno)) {
 				tst_resm(TFAIL, "%s ; returned"
-					" %d (expected %d), errno %d (expected"
-					" %d)", tdat[testno].desc,
-					TEST_RETURN, tdat[testno].retval,
-					TEST_ERRNO, tdat[testno].experrno);
+					 " %d (expected %d), errno %d (expected"
+					 " %d)", tdat[testno].desc,
+					 TEST_RETURN, tdat[testno].retval,
+					 TEST_ERRNO, tdat[testno].experrno);
 			} else {
 				tst_resm(TPASS, "%s successful",
-					tdat[testno].desc);
+					 tdat[testno].desc);
 			}
 			tdat[testno].cleanup();
 		}
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
-}	/* End main */
+	 /*NOTREACHED*/ return 0;
+}				/* End main */
 
-void
-setup(void)
+void setup(void)
 {
-	TEST_PAUSE;	/* if -P option specified */
+	TEST_PAUSE;		/* if -P option specified */
 
 	/* initialize local sockaddr */
 	sin0.sin_family = AF_INET;
@@ -167,72 +164,63 @@ setup(void)
 	sin0.sin_addr.s_addr = INADDR_ANY;
 }
 
-void
-cleanup(void)
+void cleanup(void)
 {
 	TEST_CLEANUP;
 	tst_exit();
 }
 
-
-void
-setup0(void)
+void setup0(void)
 {
 	if (tdat[testno].experrno == EBADF)
 		s = 400;	/* anything not an open file */
-	else
-		if((s = open("/dev/null", O_WRONLY)) == -1)
-			tst_brkm(TBROK, cleanup, "error opening /dev/null - "
-			"errno: %s", strerror(errno));
+	else if ((s = open("/dev/null", O_WRONLY)) == -1)
+		tst_brkm(TBROK, cleanup, "error opening /dev/null - "
+			 "errno: %s", strerror(errno));
 
 }
 
-void
-cleanup0(void)
+void cleanup0(void)
 {
 	s = -1;
 }
 
-void
-setup1(void)
+void setup1(void)
 {
 	s = socket(tdat[testno].domain, tdat[testno].type, tdat[testno].proto);
 	if (s < 0) {
 		tst_brkm(TBROK, cleanup, "socket setup failed for getpeername"
-			": %s", testno, strerror(errno));
+			 ": %s", testno, strerror(errno));
 	}
 	if (bind(s, (struct sockaddr *)&sin0, sizeof(sin0)) < 0) {
 		tst_brkm(TBROK, cleanup, "socket bind failed for getpeername "
-			"test %d: %s", testno, strerror(errno));
+			 "test %d: %s", testno, strerror(errno));
 	}
 	sinlen = sizeof(fsin1);
 }
 
-void
-cleanup1(void)
+void cleanup1(void)
 {
-	(void) close(s);
+	(void)close(s);
 	s = -1;
 }
 
-void
-setup2(void)
+void setup2(void)
 {
-	int	sv[2];
+	int sv[2];
 
 	if (socketpair(tdat[testno].domain, tdat[testno].type,
-	    tdat[testno].proto, sv) < 0) {
+		       tdat[testno].proto, sv) < 0) {
 		tst_brkm(TBROK, cleanup, "socketpair failed for getpeername "
-			"test %d: %s", testno, strerror(errno));
+			 "test %d: %s", testno, strerror(errno));
 	}
 	s = sv[0];
 	s2 = sv[1];
 }
 
-void
-cleanup2(void)
+void cleanup2(void)
 {
-	(void) close(s);
-	(void) close(s2);
+	(void)close(s);
+	(void)close(s2);
 	s = s2 = -1;
 }

@@ -19,26 +19,26 @@
 
 /*
  * NAME
- * 	fcntl15.c
+ *	fcntl15.c
  *
  * DESCRIPTION
- * 	Check that file locks are removed when file closed
+ *	Check that file locks are removed when file closed
  *
  * ALGORITHM
- * 	Use three testcases to check removal of locks when a file is closed.
+ *	Use three testcases to check removal of locks when a file is closed.
  *
- * 	Case 1: Parent opens a file and duplicates it, places locks using
- * 	both file descriptors then closes one descriptor, all locks should
- * 	be removed.
- * 
- * 	Case 2: Open same file twice using(open), place locks using both
- * 	descriptors then close on descriptor, locks on the file should be
- * 	lost
+ *	Case 1: Parent opens a file and duplicates it, places locks using
+ *	both file descriptors then closes one descriptor, all locks should
+ *	be removed.
  *
- * 	Case 3: Open file twice, one by each process, set the locks and have
- * 	a child check the locks. Remove the first file and have the child
- * 	check the locks. Remove the first file and have child check locks
- * 	again. Only locks set on first file should have been removed
+ *	Case 2: Open same file twice using(open), place locks using both
+ *	descriptors then close on descriptor, locks on the file should be
+ *	lost
+ *
+ *	Case 3: Open file twice, one by each process, set the locks and have
+ *	a child check the locks. Remove the first file and have the child
+ *	check the locks. Remove the first file and have child check locks
+ *	again. Only locks set on first file should have been removed
  *
  * USAGE
  *	fcntl15
@@ -48,7 +48,7 @@
  * MODIFIED: - mridge@us.ibm.com -- changed getpid to syscall(get thread ID) for unique ID on NPTL threading
  *
  * RESTRICTIONS
- * 	None
+ *	None
  */
 
 #include <signal.h>
@@ -70,21 +70,20 @@ char *TCID = "fcntl15";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-static	int	parent, child1, child2, status;
-static	volatile sig_atomic_t 	parent_flag, child_flag, alarm_flag;
-static	char	tmpname[40];
-struct	flock	flock;
+static int parent, child1, child2, status;
+static volatile sig_atomic_t parent_flag, child_flag, alarm_flag;
+static char tmpname[40];
+struct flock flock;
 
 #ifdef UCLINUX
-static char* argv0;	/* set by main, passed to self_exec */
+static char *argv0;		/* set by main, passed to self_exec */
 #endif
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -96,8 +95,7 @@ cleanup()
 	tst_exit();
 }
 
-void
-alarm_sig()
+void alarm_sig()
 {
 	signal(SIGALRM, (void (*)())alarm_sig);
 	alarm_flag = 1;
@@ -108,15 +106,13 @@ alarm_sig()
 	}
 }
 
-void
-child_sig()
+void child_sig()
 {
 	signal(SIGUSR1, (void (*)())child_sig);
 	child_flag++;
 }
 
-void
-parent_sig()
+void parent_sig()
 {
 	signal(SIGUSR2, (void (*)())parent_sig);
 	parent_flag++;
@@ -172,7 +168,7 @@ int dochild1(int file_flag, int file_mode)
 	alarm((unsigned)0);
 	if (parent_flag != 1) {
 		perror("pause in child1 terminated without "
-				"SIGUSR2 signal from parent");
+		       "SIGUSR2 signal from parent");
 		exit(1);
 	}
 	parent_flag = 0;
@@ -181,7 +177,6 @@ int dochild1(int file_flag, int file_mode)
 		perror("child1 sigprocmask SIG_SETMASK fail");
 		exit(1);
 	}
-
 
 	/* wait for child2 to complete then cleanup */
 	sleep(10);
@@ -242,8 +237,7 @@ int dofork(int file_flag, int file_mode)
 			sigsuspend(&zeromask);
 		alarm((unsigned)0);
 		if (child_flag != 1) {
-			perror("parent paused without SIGUSR1 "
-					"from child");
+			perror("parent paused without SIGUSR1 " "from child");
 			exit(1);
 		}
 		child_flag = 0;
@@ -320,7 +314,7 @@ int dochild2(int file_flag, int file_mode, int dup_flag)
 	alarm((unsigned)0);
 	if (parent_flag != 1) {
 		perror("pause in child2 terminated without "
-				"SIGUSR2 signal from parent");
+		       "SIGUSR2 signal from parent");
 		exit(1);
 	}
 	parent_flag = 0;
@@ -370,8 +364,7 @@ int dochild2(int file_flag, int file_mode, int dup_flag)
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -380,9 +373,7 @@ setup()
 	TEST_PAUSE;
 }
 
-
-int
-run_test(int file_flag, int file_mode, int dup_flag)
+int run_test(int file_flag, int file_mode, int dup_flag)
 {
 	int fd_A, fd_B;
 	sigset_t newmask, zeromask, oldmask;
@@ -470,7 +461,7 @@ run_test(int file_flag, int file_mode, int dup_flag)
 		perror("Fork failure");
 		tst_rmdir();
 		return 1;
-	} else if (child2 == 0) {		/* child */
+	} else if (child2 == 0) {	/* child */
 		dochild2(file_flag, file_mode, dup_flag);
 	}
 
@@ -500,8 +491,7 @@ run_test(int file_flag, int file_mode, int dup_flag)
 		sigsuspend(&zeromask);
 	alarm((unsigned)0);
 	if (child_flag != 1) {
-		perror("parent paused without SIGUSR1 "
-				"from child");
+		perror("parent paused without SIGUSR1 " "from child");
 		exit(1);
 	}
 	child_flag = 0;
@@ -544,16 +534,15 @@ run_test(int file_flag, int file_mode, int dup_flag)
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	int fail = 0;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
-
 #ifdef UCLINUX
 	maybe_run_child(&dochild1_uc, "nddds", 1, &uc_file_flag,
 			&uc_file_mode, &parent, tmpname);

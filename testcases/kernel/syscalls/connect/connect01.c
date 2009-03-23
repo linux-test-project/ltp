@@ -55,60 +55,66 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID="connect01";		/* Test program identifier.    */
+char *TCID = "connect01";	/* Test program identifier.    */
 int testno;
 
-int	s, s2;	/* socket descriptor */
+int s, s2;			/* socket descriptor */
 struct sockaddr_in sin1, sin2, sin3, sin4;
-static int sfd;	/* shared between start_server and do_child */
+static int sfd;			/* shared between start_server and do_child */
 
 void setup(void), setup0(void), setup1(void), setup2(void),
-	cleanup(void), cleanup0(void), cleanup1(void), do_child(void);
+cleanup(void), cleanup0(void), cleanup1(void), do_child(void);
 
-static pid_t start_server(struct sockaddr_in*);
+static pid_t start_server(struct sockaddr_in *);
 
 struct test_case_t {		/* test case structure */
-	int	domain;	/* PF_INET, PF_UNIX, ... */
-	int	type;	/* SOCK_STREAM, SOCK_DGRAM ... */
-	int	proto;	/* protocol number (usually 0 = default) */
+	int domain;		/* PF_INET, PF_UNIX, ... */
+	int type;		/* SOCK_STREAM, SOCK_DGRAM ... */
+	int proto;		/* protocol number (usually 0 = default) */
 	struct sockaddr *sockaddr;	/* socket address buffer */
-	int	salen;	/* connect's 3rd argument */
-	int	retval;		/* syscall return value */
-	int	experrno;	/* expected errno */
-	void	(*setup)(void);
-	void	(*cleanup)(void);
+	int salen;		/* connect's 3rd argument */
+	int retval;		/* syscall return value */
+	int experrno;		/* expected errno */
+	void (*setup) (void);
+	void (*cleanup) (void);
 	char *desc;
 } tdat[] = {
-	{ PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&sin1,
-		sizeof(struct sockaddr_in), -1, EBADF, setup0, cleanup0,
-		"bad file descriptor" },
+	{
+	PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&sin1,
+		    sizeof(struct sockaddr_in), -1, EBADF, setup0,
+		    cleanup0, "bad file descriptor"},
 #ifndef UCLINUX
-	/* Skip since uClinux does not implement memory protection */
-	{ PF_INET, SOCK_STREAM, 0, (struct sockaddr *)-1,
-		sizeof(struct sockaddr_in), -1, EFAULT, setup1, cleanup1,
-		"invalid socket buffer" },
+	    /* Skip since uClinux does not implement memory protection */
+	{
+	PF_INET, SOCK_STREAM, 0, (struct sockaddr *)-1,
+		    sizeof(struct sockaddr_in), -1, EFAULT, setup1,
+		    cleanup1, "invalid socket buffer"},
 #endif
-	{ PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&sin1,
-		3, -1, EINVAL, setup1, cleanup1,
-		"invalid salen" },
-	{ 0, 0, 0, (struct sockaddr *)&sin1,
-		sizeof(sin1), -1, ENOTSOCK, setup0, cleanup0,
-		"invalid socket" },
-	{ PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&sin1,
-		sizeof(sin1), -1, EISCONN, setup2, cleanup1,
-		"already connected" },
-	{ PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&sin2,
-		sizeof(sin2), -1, ECONNREFUSED, setup1, cleanup1,
-		"connection refused" },
-	{ PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&sin4,
-		sizeof(sin4), -1, EAFNOSUPPORT, setup1, cleanup1,
-		"invalid address family" },
+	{
+	PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&sin1,
+		    3, -1, EINVAL, setup1, cleanup1, "invalid salen"}, {
+	0, 0, 0, (struct sockaddr *)&sin1,
+		    sizeof(sin1), -1, ENOTSOCK, setup0, cleanup0,
+		    "invalid socket"}
+	, {
+	PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&sin1,
+		    sizeof(sin1), -1, EISCONN, setup2, cleanup1,
+		    "already connected"}
+	, {
+	PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&sin2,
+		    sizeof(sin2), -1, ECONNREFUSED, setup1, cleanup1,
+		    "connection refused"}
+	, {
+	PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&sin4,
+		    sizeof(sin4), -1, EAFNOSUPPORT, setup1, cleanup1,
+		    "invalid address family"}
+,};
+
+int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);	/* Total number of test cases. */
+
+int exp_enos[] = { EBADF, EFAULT, EINVAL, ENOTSOCK, EISCONN, ECONNREFUSED,
+	EAFNOSUPPORT, 0
 };
-
-int TST_TOTAL=sizeof(tdat)/sizeof(tdat[0]); /* Total number of test cases. */
-
-int exp_enos[] = {EBADF, EFAULT, EINVAL, ENOTSOCK, EISCONN, ECONNREFUSED,
-		  EAFNOSUPPORT, 0};
 
 extern int Tst_count;
 
@@ -116,19 +122,17 @@ extern int Tst_count;
 static char *argv0;
 #endif
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(argc, argv, (option_t *) NULL, NULL);
-	if (msg != (char *) NULL) {
+	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
-
 #ifdef UCLINUX
 	argv0 = argv[0];
 	maybe_run_child(&do_child, "d", &sfd);
@@ -142,23 +146,24 @@ main(int argc, char *argv[])
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		Tst_count = 0;
-		for (testno=0; testno < TST_TOTAL; ++testno) {
+		for (testno = 0; testno < TST_TOTAL; ++testno) {
 			tdat[testno].setup();
 
-			TEST(connect(s, tdat[testno].sockaddr,tdat[testno].salen));
+			TEST(connect
+			     (s, tdat[testno].sockaddr, tdat[testno].salen));
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_RETURN != tdat[testno].retval ||
 			    (TEST_RETURN < 0 &&
 			     TEST_ERRNO != tdat[testno].experrno)) {
 				tst_resm(TFAIL, "%s ; returned"
-					" %d (expected %d), errno %d (expected"
-					" %d)", tdat[testno].desc,
-					TEST_RETURN, tdat[testno].retval,
-					TEST_ERRNO, tdat[testno].experrno);
+					 " %d (expected %d), errno %d (expected"
+					 " %d)", tdat[testno].desc,
+					 TEST_RETURN, tdat[testno].retval,
+					 TEST_ERRNO, tdat[testno].experrno);
 			} else {
 				tst_resm(TPASS, "%s successful",
-					tdat[testno].desc);
+					 tdat[testno].desc);
 			}
 			tdat[testno].cleanup();
 		}
@@ -166,30 +171,28 @@ main(int argc, char *argv[])
 	cleanup();
 
 	return 0;
-	/*NOTREACHED*/
-}	/* End main */
+ /*NOTREACHED*/}		/* End main */
 
 pid_t pid;
 
-void
-setup(void)
+void setup(void)
 {
-	TEST_PAUSE;	/* if -p option specified */
+	TEST_PAUSE;		/* if -p option specified */
 
 	/* initialize sockaddr's */
 	sin1.sin_family = AF_INET;
-	sin1.sin_port = htons((getpid() % 32768) +11000);
+	sin1.sin_port = htons((getpid() % 32768) + 11000);
 	sin1.sin_addr.s_addr = INADDR_ANY;
 	pid = start_server(&sin1);
 
 	sin2.sin_family = AF_INET;
-		/* this port must be unused! */
-	sin2.sin_port = htons((getpid() % 32768) +10000);
+	/* this port must be unused! */
+	sin2.sin_port = htons((getpid() % 32768) + 10000);
 	sin2.sin_addr.s_addr = INADDR_ANY;
 
 	sin3.sin_family = AF_INET;
 	sin3.sin_port = 0;
-		/* assumes no route to this network! */
+	/* assumes no route to this network! */
 	sin3.sin_addr.s_addr = htonl(0x0AFFFEFD);
 
 	sin4.sin_family = 47;	/* bogus address family */
@@ -198,85 +201,76 @@ setup(void)
 
 }
 
-void
-cleanup(void)
+void cleanup(void)
 {
-	(void) kill(pid, SIGKILL);	/* kill server */
+	(void)kill(pid, SIGKILL);	/* kill server */
 
 	TEST_CLEANUP;
 	tst_exit();
 }
 
-
-void
-setup0(void)
+void setup0(void)
 {
 	if (tdat[testno].experrno == EBADF)
 		s = 400;	/* anything not an open file */
-	else
-		if((s = open("/dev/null", O_WRONLY)) == -1)
-			tst_brkm(TBROK, cleanup, "error opening /dev/null - "
-			"errno: %s", strerror(errno));
+	else if ((s = open("/dev/null", O_WRONLY)) == -1)
+		tst_brkm(TBROK, cleanup, "error opening /dev/null - "
+			 "errno: %s", strerror(errno));
 
 }
 
-void
-cleanup0(void)
+void cleanup0(void)
 {
 	s = -1;
 }
 
-void
-setup1(void)
+void setup1(void)
 {
 	s = socket(tdat[testno].domain, tdat[testno].type, tdat[testno].proto);
 	if (s < 0) {
 		tst_brkm(TBROK, cleanup, "socket setup failed for connect: %s",
-			strerror(errno));
+			 strerror(errno));
 	}
 }
 
-void
-cleanup1(void)
+void cleanup1(void)
 {
-	(void) close(s);
+	(void)close(s);
 	s = -1;
 }
 
-void
-setup2(void)
+void setup2(void)
 {
-	setup1();	/* get a socket in s */
+	setup1();		/* get a socket in s */
 	if (connect(s, (const struct sockaddr *)&sin1, sizeof(sin1)) < 0) {
 		tst_brkm(TBROK, cleanup, "socket setup failed connect "
-			"test %d: %s", testno, strerror(errno));
+			 "test %d: %s", testno, strerror(errno));
 	}
 }
 
-pid_t
-start_server(struct sockaddr_in *sin0)
+pid_t start_server(struct sockaddr_in *sin0)
 {
 	struct sockaddr_in sin1 = *sin0;
-	pid_t	pid;
+	pid_t pid;
 
 	sfd = socket(PF_INET, SOCK_STREAM, 0);
 	if (sfd < 0) {
 		tst_brkm(TBROK, cleanup, "server socket failed: %s",
-			strerror(errno));
+			 strerror(errno));
 		return -1;
 	}
 	if (bind(sfd, (struct sockaddr *)&sin1, sizeof(sin1)) < 0) {
 		tst_brkm(TBROK, cleanup, "server bind failed: %s",
-			strerror(errno));
+			 strerror(errno));
 		return -1;
 	}
 	if (listen(sfd, 10) < 0) {
 		tst_brkm(TBROK, cleanup, "server listen failed: %s",
-			strerror(errno));
+			 strerror(errno));
 		return -1;
 	}
 	switch ((pid = FORK_OR_VFORK())) {
-	case 0:	/* child */
+	case 0:		/* child */
 #ifdef UCLINUX
 		self_exec(argv0, "d", sfd);
 #else
@@ -285,23 +279,22 @@ start_server(struct sockaddr_in *sin0)
 		break;
 	case -1:
 		tst_brkm(TBROK, cleanup, "server fork failed: %s",
-			strerror(errno));
+			 strerror(errno));
 		/* fall through */
-	default: /* parent */
-		(void) close(sfd);
+	default:		/* parent */
+		(void)close(sfd);
 		return pid;
 	}
 
 	return -1;
 }
 
-void
-do_child()
+void do_child()
 {
 	struct sockaddr_in fsin;
-	fd_set	afds, rfds;
-	int	nfds, cc, fd;
-	char	c;
+	fd_set afds, rfds;
+	int nfds, cc, fd;
+	char c;
 
 	FD_ZERO(&afds);
 	FD_SET(sfd, &afds);
@@ -310,27 +303,26 @@ do_child()
 
 	/* accept connections until killed */
 	while (1) {
-		socklen_t	fromlen;
+		socklen_t fromlen;
 
 		memcpy(&rfds, &afds, sizeof(rfds));
 
-		if (select(nfds, &rfds, (fd_set *)0, (fd_set *)0,
-		    (struct timeval *)0) < 0)
+		if (select(nfds, &rfds, (fd_set *) 0, (fd_set *) 0,
+			   (struct timeval *)0) < 0)
 			if (errno != EINTR)
 				exit(1);
 		if (FD_ISSET(sfd, &rfds)) {
 			int newfd;
 
 			fromlen = sizeof(fsin);
-			newfd = accept(sfd, (struct  sockaddr  *)&fsin,
-				       &fromlen);
+			newfd = accept(sfd, (struct sockaddr *)&fsin, &fromlen);
 			if (newfd >= 0)
 				FD_SET(newfd, &afds);
 		}
-		for (fd=0; fd<nfds; ++fd)
+		for (fd = 0; fd < nfds; ++fd)
 			if (fd != sfd && FD_ISSET(fd, &rfds)) {
-				if ((cc=read(fd, &c, 1)) == 0) {
-					(void) close(fd);
+				if ((cc = read(fd, &c, 1)) == 0) {
+					(void)close(fd);
 					FD_CLR(fd, &afds);
 				}
 			}

@@ -1,40 +1,40 @@
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
  * Portions Copyright (c) 2000 Ulrich Drepper
- * 
+ *$
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
- * 
+ *$
  * This program is distributed in the hope that it would be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * 
+ *$
  * Further, this software is distributed without any warranty that it is
  * free of the rightful claim of any third person regarding infringement
  * or the like.  Any license provided herein, whether implied or
  * otherwise, applies only to this software file.  Patent licenses, if
  * any, provided herein do not apply to combinations of this program with
  * other software, or any other product whatsoever.
- * 
+ *$
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston MA 02111-1307, USA.
- * 
+ *$
  * Contact information: Silicon Graphics, Inc., 1600 Amphitheatre Pkwy,
  * Mountain View, CA  94043, or:
- * 
- * http://www.sgi.com 
- * 
- * For further information regarding this notice, see: 
- * 
+ *$
+ * http://www.sgi.com$
+ *$
+ * For further information regarding this notice, see:$
+ *$
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: fork05.c,v 1.7 2009/02/26 12:02:56 subrata_modak Exp $ */
+/* $Id: fork05.c,v 1.8 2009/03/23 13:35:41 subrata_modak Exp $ */
 /**********************************************************
  *
  *    Linux Test Project - Silicon Graphics, Inc.
- *    
+ *   $
  *    TEST IDENTIFIER	: fork05
  *
  *    EXECUTED BY	: anyone
@@ -115,29 +115,28 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID="fork05";
+char *TCID = "fork05";
 extern int Tst_count;
 
 /* list of environment variables to test */
-char *environ_list[] = {"TERM","NoTSetzWq","TESTPROG"};
-#define NUMBER_OF_ENVIRON sizeof(environ_list)/sizeof(char*)
-int TST_TOTAL=NUMBER_OF_ENVIRON;                /* Total number of test cases. */
+char *environ_list[] = { "TERM", "NoTSetzWq", "TESTPROG" };
 
+#define NUMBER_OF_ENVIRON sizeof(environ_list)/sizeof(char*)
+int TST_TOTAL = NUMBER_OF_ENVIRON;	/* Total number of test cases. */
 
 #if defined(linux) && defined(__i386__)
 
-struct modify_ldt_ldt_s
-{
-  unsigned int entry_number;
-  unsigned long int base_addr;
-  unsigned int limit;
-  unsigned int seg_32bit:1;
-  unsigned int contents:2;
-  unsigned int read_exec_only:1;
-  unsigned int limit_in_pages:1;
-  unsigned int seg_not_present:1;
-  unsigned int useable:1;
-  unsigned int empty:25;
+struct modify_ldt_ldt_s {
+	unsigned int entry_number;
+	unsigned long int base_addr;
+	unsigned int limit;
+	unsigned int seg_32bit:1;
+	unsigned int contents:2;
+	unsigned int read_exec_only:1;
+	unsigned int limit_in_pages:1;
+	unsigned int seg_not_present:1;
+	unsigned int useable:1;
+	unsigned int empty:25;
 };
 
 int a = 42;
@@ -155,70 +154,67 @@ modify_ldt: \n\
 	pop    %ebx \n\
 	ret");
 
-
-
-int
-main ()
+int main()
 {
-  struct modify_ldt_ldt_s ldt0;
-  int lo;
-  pid_t pid;
-  int res;
+	struct modify_ldt_ldt_s ldt0;
+	int lo;
+	pid_t pid;
+	int res;
 
-  ldt0.entry_number = 0;
-  ldt0.base_addr = (long) &a;
-  ldt0.limit = 4;
-  ldt0.seg_32bit = 1;
-  ldt0.contents = 0;
-  ldt0.read_exec_only = 0;
-  ldt0.limit_in_pages = 0;
-  ldt0.seg_not_present = 0;
-  ldt0.useable = 1;
-  ldt0.empty = 0;
+	ldt0.entry_number = 0;
+	ldt0.base_addr = (long)&a;
+	ldt0.limit = 4;
+	ldt0.seg_32bit = 1;
+	ldt0.contents = 0;
+	ldt0.read_exec_only = 0;
+	ldt0.limit_in_pages = 0;
+	ldt0.seg_not_present = 0;
+	ldt0.useable = 1;
+	ldt0.empty = 0;
 
-  modify_ldt (1, &ldt0, sizeof (ldt0));
+	modify_ldt(1, &ldt0, sizeof(ldt0));
 
-  asm ("movw %w0, %%fs" : : "q" (7));
+      asm("movw %w0, %%fs": :"q"(7));
 
-  asm ("movl %%fs:0, %0" : "=r" (lo));
-  tst_resm(TINFO,"a = %d", lo);
+      asm("movl %%fs:0, %0":"=r"(lo));
+	tst_resm(TINFO, "a = %d", lo);
 
-  asm ("pushl %%fs; popl %0" : "=q" (lo));
-  tst_resm(TINFO,"%%fs = %#06hx", lo);
+      asm("pushl %%fs; popl %0":"=q"(lo));
+	tst_resm(TINFO, "%%fs = %#06hx", lo);
 
-  asm ("movl %0, %%fs:0" : : "r" (99));
+      asm("movl %0, %%fs:0": :"r"(99));
 
-  pid = fork ();
+	pid = fork();
 
-  if (pid == 0) {
-      asm ("pushl %%fs; popl %0" : "=q" (lo));
-      tst_resm(TINFO,"%%fs = %#06hx", lo);
+	if (pid == 0) {
+	      asm("pushl %%fs; popl %0":"=q"(lo));
+		tst_resm(TINFO, "%%fs = %#06hx", lo);
 
-      asm ("movl %%fs:0, %0" : "=r" (lo));
-      tst_resm(TINFO,"a = %d", lo);
+	      asm("movl %%fs:0, %0":"=r"(lo));
+		tst_resm(TINFO, "a = %d", lo);
 
-      if (lo != 99)
-         tst_resm(TFAIL, "Test failed");
-	 else tst_resm(TPASS, "Test passed");
-      exit (lo != 99);
-  } else {
-      waitpid (pid, &res, 0);
-  }
+		if (lo != 99)
+			tst_resm(TFAIL, "Test failed");
+		else
+			tst_resm(TPASS, "Test passed");
+		exit(lo != 99);
+	} else {
+		waitpid(pid, &res, 0);
+	}
 
-  return WIFSIGNALED(res);
+	return WIFSIGNALED(res);
 }
 
 #else /* if defined(linux) && defined(__i386__) */
 
-int
-main()
+int main()
 {
-  tst_resm(TINFO, "%%fs test only for ix86");
+	tst_resm(TINFO, "%%fs test only for ix86");
 
-  /*
-   * should be successful on all non-ix86 platforms.
-   */
-  return 0;
+	/*
+	 * should be successful on all non-ix86 platforms.
+	 */
+	return 0;
 }
 
 #endif /* if defined(linux) && defined(__i386__) */

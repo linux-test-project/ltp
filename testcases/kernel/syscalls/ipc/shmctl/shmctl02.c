@@ -63,7 +63,8 @@ extern int Tst_count;
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
-int exp_enos[] = {EPERM, EACCES, EFAULT, EINVAL, 0};  /* 0 terminated list  */
+int exp_enos[] = { EPERM, EACCES, EFAULT, EINVAL, 0 };	/* 0 terminated list  */
+
 						      /* of expected errnos */
 int shm_id_1 = -1;
 int shm_id_2 = -1;
@@ -78,41 +79,42 @@ struct test_case_t {
 	int error;
 } TC[] = {
 	/* EACCES - segment has no read or write permissions */
-	{&shm_id_1, IPC_STAT, &buf, EACCES},
-
-	/* EFAULT - IPC_SET & buf isn't valid */
-	{&shm_id_2, IPC_SET, (struct shmid_ds *)-1, EFAULT},
-
-	/* EFAULT - IPC_STAT & buf isn't valid */
-	{&shm_id_2, IPC_STAT, (struct shmid_ds *)-1, EFAULT},
-
-	/* EINVAL - the shmid is not valid */
-	{&shm_id_3, IPC_STAT, &buf, EINVAL},
-
-	/* EINVAL - the command is not valid */
-	{&shm_id_2, -1, &buf, EINVAL},
-
-	/* EPERM - the command is only valid for the super-user */
-	{&shm_id_2, SHM_LOCK, &buf, EPERM},
-
-	/* EPERM - the command is only valid for the super-user */
-	{&shm_id_2, SHM_UNLOCK, &buf, EPERM}
+	{
+	&shm_id_1, IPC_STAT, &buf, EACCES},
+	    /* EFAULT - IPC_SET & buf isn't valid */
+	{
+	&shm_id_2, IPC_SET, (struct shmid_ds *)-1, EFAULT},
+	    /* EFAULT - IPC_STAT & buf isn't valid */
+	{
+	&shm_id_2, IPC_STAT, (struct shmid_ds *)-1, EFAULT},
+	    /* EINVAL - the shmid is not valid */
+	{
+	&shm_id_3, IPC_STAT, &buf, EINVAL},
+	    /* EINVAL - the command is not valid */
+	{
+	&shm_id_2, -1, &buf, EINVAL},
+	    /* EPERM - the command is only valid for the super-user */
+	{
+	&shm_id_2, SHM_LOCK, &buf, EPERM},
+	    /* EPERM - the command is only valid for the super-user */
+	{
+	&shm_id_2, SHM_UNLOCK, &buf, EPERM}
 };
 
 int TST_TOTAL = (sizeof(TC) / sizeof(*TC));
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int i;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -121,14 +123,14 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		/* loop through the test cases */
-		for (i=0; i<TST_TOTAL; i++) {
+		for (i = 0; i < TST_TOTAL; i++) {
 			/*
 			 * use the TEST() macro to make the call
 			 */
 
 			TEST(shmctl(*(TC[i].shmid), TC[i].cmd, TC[i].sbuf));
 
-			if ((TEST_RETURN != -1)&&(i < 5)) {
+			if ((TEST_RETURN != -1) && (i < 5)) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
 				continue;
 			}
@@ -141,42 +143,40 @@ int main(int ac, char **av)
 					 strerror(TEST_ERRNO));
 			} else {
 				if (i >= 5)
-					tst_resm(TCONF,"shmctl() did not fail for non-root user."
-                                                 "This may be okay for your distribution.");
+					tst_resm(TCONF,
+						 "shmctl() did not fail for non-root user."
+						 "This may be okay for your distribution.");
 				else
 					tst_resm(TFAIL, "call failed with an "
 						 "unexpected error - %d : %s",
-					 	TEST_ERRNO, strerror(TEST_ERRNO));
-			}		
+						 TEST_ERRNO,
+						 strerror(TEST_ERRNO));
+			}
 		}
 	}
 
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	key_t shmkey2;
 
 	/* Switch to nobody user for correct error code collection */
-        if (geteuid() != 0) {
-                tst_brkm(TBROK, tst_exit, "Test must be run as root");
-        }
-         ltpuser = getpwnam(nobody_uid);
-         if (setuid(ltpuser->pw_uid) == -1) {
-                tst_resm(TINFO, "setuid failed to "
-                         "to set the effective uid to %d",
-                         ltpuser->pw_uid);
-                perror("setuid");
-         }
-
+	if (geteuid() != 0) {
+		tst_brkm(TBROK, tst_exit, "Test must be run as root");
+	}
+	ltpuser = getpwnam(nobody_uid);
+	if (setuid(ltpuser->pw_uid) == -1) {
+		tst_resm(TINFO, "setuid failed to "
+			 "to set the effective uid to %d", ltpuser->pw_uid);
+		perror("setuid");
+	}
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -208,7 +208,7 @@ setup(void)
 
 	/* create a shared memory segment with read and write permissions */
 	if ((shm_id_2 = shmget(shmkey2, SHM_SIZE, IPC_CREAT | IPC_EXCL |
-	     SHM_RW)) == -1) {
+			       SHM_RW)) == -1) {
 		tst_brkm(TBROK, cleanup, "couldn't create shared memory "
 			 "segment #2 in setup()");
 	}
@@ -218,8 +218,7 @@ setup(void)
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
  * 	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/* if they exist, remove the shared memory resources */
 	rm_shm(shm_id_1);
@@ -237,4 +236,3 @@ cleanup(void)
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

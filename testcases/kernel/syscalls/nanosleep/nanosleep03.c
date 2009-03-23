@@ -70,35 +70,32 @@
 #include "test.h"
 #include "usctest.h"
 
-char *TCID="nanosleep03";	/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "nanosleep03";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 struct timespec timereq;	/* time struct. buffer for nanosleep() */
 struct timespec timerem;	/* time struct. buffer for nanosleep() */
 
-
-int exp_enos[]={EINTR, 0};
+int exp_enos[] = { EINTR, 0 };
 
 void do_child();		/* Child process */
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 void sig_handler();		/* signal catching function */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	pid_t cpid;		/* Child process id */
 	int status;		/* child exit status */
-   
+
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, (option_t *)NULL, NULL);
+	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
 	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
-
 #ifdef UCLINUX
 	maybe_run_child(&do_child, "dddd", &timereq.tv_sec, &timereq.tv_nsec,
 			&timerem.tv_sec, &timerem.tv_nsec);
@@ -113,7 +110,7 @@ main(int ac, char **av)
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/*
 		 * Creat a child process and suspend its
@@ -123,7 +120,7 @@ main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "fork() failed");
 		}
 
-		if (cpid == 0) {		/* Child process */
+		if (cpid == 0) {	/* Child process */
 #ifdef UCLINUX
 			if (self_exec(av[0], "dddd",
 				      timereq.tv_sec, timereq.tv_nsec,
@@ -152,21 +149,19 @@ main(int ac, char **av)
 		} else if (WEXITSTATUS(status) == 1) {
 			tst_resm(TFAIL, "child process exited abnormally");
 		}
-	}	/* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 
-}	/* End main */
+}				/* End main */
 
 /*
  * do_child()
  */
-void
-do_child()
+void do_child()
 {
 	/*
 	 * Call nanosleep() to suspend child process
@@ -191,8 +186,7 @@ do_child()
 		}
 	} else {
 		tst_resm(TFAIL, "nanosleep() returns %d, "
-			 "expected -1, errno:%d",
-			 TEST_RETURN, EINTR);
+			 "expected -1, errno:%d", TEST_RETURN, EINTR);
 		exit(1);
 	}
 
@@ -206,8 +200,7 @@ do_child()
  *  to child process.
  *  Initialise time structure elements.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -233,8 +226,7 @@ setup()
  *   to child to awake it from sleep.
  *   This function just returns without doing anything.
  */
-void
-sig_handler()
+void sig_handler()
 {
 }
 
@@ -242,8 +234,7 @@ sig_handler()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

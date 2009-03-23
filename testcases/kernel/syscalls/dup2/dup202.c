@@ -70,29 +70,30 @@ int newfd;
 int duprdo = 10, dupwro = 20, duprdwr = 30;
 
 struct test_case_t {
-        int *nfd;
-        mode_t mode;
+	int *nfd;
+	mode_t mode;
 } TC[] = {
 	/* The first test creat(es) a file with mode 0444 */
-        {&duprdo, S_IRUSR|S_IRGRP|S_IROTH},
-
-	/* The second test creat(es) a file with mode 0222 */
-        {&dupwro, S_IWUSR|S_IWGRP|S_IWOTH},
-
-	/* The third test creat(es) a file with mode 0666 */
-        {&duprdwr, S_IRUSR|S_IRGRP|S_IROTH|S_IWUSR|S_IWGRP|S_IWOTH}
+	{
+	&duprdo, S_IRUSR | S_IRGRP | S_IROTH},
+	    /* The second test creat(es) a file with mode 0222 */
+	{
+	&dupwro, S_IWUSR | S_IWGRP | S_IWOTH},
+	    /* The third test creat(es) a file with mode 0666 */
+	{
+	&duprdwr,
+		    S_IRUSR | S_IRGRP | S_IROTH | S_IWUSR | S_IWGRP | S_IWOTH}
 };
-
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int i, ofd;
 	struct stat oldbuf, newbuf;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -107,18 +108,18 @@ int main(int ac, char **av)
 		/* loop through the test cases */
 		for (i = 0; i < TST_TOTAL; i++) {
 
-			if ((ofd = creat(testfile, TC[i].mode)) == -1 ) {
+			if ((ofd = creat(testfile, TC[i].mode)) == -1) {
 				tst_brkm(TBROK, cleanup, "creat() failed");
 			}
 
 			TEST(dup2(ofd, *TC[i].nfd));
 
-                        if (TEST_RETURN == -1) {
-                                tst_resm(TFAIL, "call failed unexpectedly");
-                                continue;
-                        }
+			if (TEST_RETURN == -1) {
+				tst_resm(TFAIL, "call failed unexpectedly");
+				continue;
+			}
 
-                        if (STD_FUNCTIONAL_TEST) {
+			if (STD_FUNCTIONAL_TEST) {
 
 				/* stat the original file */
 				if (fstat(ofd, &oldbuf) == -1) {
@@ -157,15 +158,13 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -187,8 +186,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

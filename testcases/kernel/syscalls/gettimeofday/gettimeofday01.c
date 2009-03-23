@@ -90,16 +90,20 @@ int main(int ac, char **av)
 		 * TEST_RETURN into an int to test with */
 		ret = TEST_RETURN;
 		if (ret != -1) {
-			tst_resm(TFAIL, "call succeeded unexpectedly (got back %i, wanted -1)", ret);
+			tst_resm(TFAIL,
+				 "call succeeded unexpectedly (got back %i, wanted -1)",
+				 ret);
 			continue;
 		}
 
 		TEST_ERROR_LOG(TEST_ERRNO);
 		if (TEST_ERRNO == EFAULT)
-			tst_resm(TPASS, "gettimeofday(2) set the errno EFAULT correctly");
+			tst_resm(TPASS,
+				 "gettimeofday(2) set the errno EFAULT correctly");
 		else
-			tst_resm(TFAIL, "gettimeofday(2) didn't set errno to EFAULT, errno=%i (%s)",
-				errno, strerror(errno));
+			tst_resm(TFAIL,
+				 "gettimeofday(2) didn't set errno to EFAULT, errno=%i (%s)",
+				 errno, strerror(errno));
 	}
 	cleanup();
 

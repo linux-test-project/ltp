@@ -67,24 +67,24 @@
 void cleanup(void);
 void setup(void);
 
-char *TCID= "wait401";
+char *TCID = "wait401";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	pid_t pid;
 	int status = 1;
 	struct rusage *rusage = NULL;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	setup();			/* global setup */
+	setup();		/* global setup */
 
 	/* The following loop checks looping state if -i option given */
 
@@ -97,7 +97,7 @@ int main(int ac, char **av)
 		 */
 
 		if ((rusage = (struct rusage *)malloc(sizeof(struct rusage)))
-				== NULL) {
+		    == NULL) {
 			tst_brkm(TBROK, cleanup, "malloc() failed");
 		}
 
@@ -107,13 +107,13 @@ int main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "fork() failed");
 		}
 
-		if (pid == 0) {		/* this is the child */
+		if (pid == 0) {	/* this is the child */
 			/*
 			 * sleep for a moment to let us do the test
 			 */
 			sleep(1);
 			exit(0);
-		} else {		/* this is the parent */
+		} else {	/* this is the parent */
 
 			/* call wait4 with the TEST() macro */
 			TEST(wait4(pid, &status, 0, rusage));
@@ -121,7 +121,8 @@ int main(int ac, char **av)
 
 		if (TEST_RETURN == -1) {
 			tst_brkm(TFAIL, cleanup, "%s call failed - errno = %d "
-				": %s", TCID, TEST_ERRNO, strerror(TEST_ERRNO));
+				 ": %s", TCID, TEST_ERRNO,
+				 strerror(TEST_ERRNO));
 		}
 
 		if (STD_FUNCTIONAL_TEST) {
@@ -129,16 +130,18 @@ int main(int ac, char **av)
 			 * The return from this call should be non-zero.
 			 */
 			if (WIFEXITED(status) == 0) {
-				tst_brkm(TFAIL, cleanup, "%s call succeeded but "
-					"WIFEXITED() did not return expected value "
-					"- %d", TCID, WIFEXITED(status));
+				tst_brkm(TFAIL, cleanup,
+					 "%s call succeeded but "
+					 "WIFEXITED() did not return expected value "
+					 "- %d", TCID, WIFEXITED(status));
 			} else if (TEST_RETURN != pid) {
 				tst_resm(TFAIL, "%s did not return the "
-						"expected value. %d", TCID,
-						TEST_RETURN);
+					 "expected value. %d", TCID,
+					 TEST_RETURN);
 			} else {
 
-				tst_resm(TPASS, "Received child pid as expected.");
+				tst_resm(TPASS,
+					 "Received child pid as expected.");
 			}
 		}
 		tst_resm(TPASS, "%s call succeeded", TCID);
@@ -152,17 +155,14 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	/*NOTREACHED*/
-
-  return 0;
+	 /*NOTREACHED*/ return 0;
 
 }
 
 /*
  * setup() - performs all the ONE TIME setup for this test.
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -173,10 +173,9 @@ setup(void)
 
 /*
  * cleanup() - performs all the ONE TIME cleanup for this test at completion
- * 	       or premature exit.
+ *	       or premature exit.
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -187,4 +186,3 @@ cleanup(void)
 	/* exit with return code appropriate for results */
 	tst_exit();
 }
-

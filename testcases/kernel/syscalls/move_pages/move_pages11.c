@@ -87,8 +87,7 @@ extern int Tst_count;
  * @pages: shared pages allocated in parent
  * @sem: semaphore to sync with parent
  */
-void
-child(void **pages, sem_t *sem)
+void child(void **pages, sem_t * sem)
 {
 	int i;
 
@@ -113,8 +112,8 @@ child(void **pages, sem_t *sem)
 int main(int argc, char **argv)
 {
 	unsigned int i;
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	unsigned int from_node = 0;
 	unsigned int to_node = 1;
 
@@ -140,11 +139,9 @@ int main(int argc, char **argv)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		ret = alloc_shared_pages_on_node(pages, TEST_PAGES,
-						 from_node);
+		ret = alloc_shared_pages_on_node(pages, TEST_PAGES, from_node);
 		if (ret == -1)
 			continue;
-
 
 		for (i = 0; i < TEST_PAGES; i++) {
 			nodes[i] = to_node;
@@ -178,7 +175,7 @@ int main(int argc, char **argv)
 		TEST_ERRNO = errno;
 		if (ret == -1 && errno == EPERM)
 			tst_resm(TPASS, "move_pages failed with "
-				"EPERM as expected");
+				 "EPERM as expected");
 		else
 			tst_resm(TFAIL, "move_pages did not fail "
 				 "with EPERM");
@@ -189,9 +186,9 @@ int main(int argc, char **argv)
 				 strerror(errno));
 		/* Read the status, no zombies! */
 		wait(NULL);
-	err_free_sem:
+	      err_free_sem:
 		free_sem(sem, MAX_SEMS);
-	err_free_pages:
+	      err_free_pages:
 		free_shared_pages(pages, TEST_PAGES);
 	}
 
@@ -204,8 +201,7 @@ int main(int argc, char **argv)
 /*
  * setup() - performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	struct passwd *ltpuser;
 
@@ -238,8 +234,7 @@ setup(void)
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at completion
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -249,5 +244,4 @@ cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-	/*NOTREACHED*/
-}
+ /*NOTREACHED*/}

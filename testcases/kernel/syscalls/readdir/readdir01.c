@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: readdir01.c,v 1.6 2009/02/26 12:16:34 subrata_modak Exp $ */
+/* $Id: readdir01.c,v 1.7 2009/03/23 13:36:01 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -64,7 +64,7 @@
  *	(See the parse_opts(3) man page).
  *
  *    OUTPUT SPECIFICATIONS
- * 
+ *$
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
  *
@@ -130,18 +130,18 @@ void setup();
 void help();
 void cleanup();
 
-char *TCID="readdir01";		/* Test program identifier.    */
-int TST_TOTAL=2;    		/* Total number of test cases. */
+char *TCID = "readdir01";	/* Test program identifier.    */
+int TST_TOTAL = 2;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 extern int Tst_nobuf;
 
-int exp_enos[]={0, 0};
+int exp_enos[] = { 0, 0 };
 
 #define BASENAME	"readdirfile"
 
 char Basename[255];
 char Fname[255];
-int Nfiles=0;
+int Nfiles = 0;
 
 /* To add command line options you need to declare a structure to pass to
  * parse_opts().  options is the structure used in this example.  The format is
@@ -151,141 +151,152 @@ int Nfiles=0;
  * option.  Long options are not supported at this time.
  */
 char *Nfilearg;
-int Nflag=0;
+int Nflag = 0;
 
 /* for test specific parse_opts options */
 option_t options[] = {
-        { "N:",  &Nflag, &Nfilearg },   /* -N #files */
-        { NULL, NULL, NULL }
+	{"N:", &Nflag, &Nfilearg},	/* -N #files */
+	{NULL, NULL, NULL}
 };
 
 /***********************************************************************
  * Main
  ***********************************************************************/
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-    int lc;		/* loop counter */
-    char *msg;		/* message returned from parse_opts */
-    int cnt;
-    int nfiles, fd;
-    char fname[255];
-    DIR *test_dir;
-    struct dirent *dptr;
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
+	int cnt;
+	int nfiles, fd;
+	char fname[255];
+	DIR *test_dir;
+	struct dirent *dptr;
 
-    Tst_nobuf=1;
+	Tst_nobuf = 1;
 
     /***************************************************************
      * parse standard options
      ***************************************************************/
-    /* start off by parsing the command line options.  We provide a function
-     * that understands many common options to control looping.  If you are not
-     * adding any new options, pass NULL in place of options and &help.
-     */
-    if ( (msg=parse_opts(ac, av, options, &help)) != 0 ) {
-	tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	tst_exit();
-    }
-
-    if ( Nflag ) {
-	if (sscanf(Nfilearg, "%i", &Nfiles) != 1 ) {
-	    tst_brkm(TBROK, NULL, "--N option arg is not a number");
-	    tst_exit();
+	/* start off by parsing the command line options.  We provide a function
+	 * that understands many common options to control looping.  If you are not
+	 * adding any new options, pass NULL in place of options and &help.
+	 */
+	if ((msg = parse_opts(ac, av, options, &help)) != 0) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+		tst_exit();
 	}
-    }
+
+	if (Nflag) {
+		if (sscanf(Nfilearg, "%i", &Nfiles) != 1) {
+			tst_brkm(TBROK, NULL, "--N option arg is not a number");
+			tst_exit();
+		}
+	}
 
     /***************************************************************
      * perform global setup for test
      ***************************************************************/
-    /* Next you should run a setup routine to make sure your environment is
-     * sane.
-     */
-    setup();
+	/* Next you should run a setup routine to make sure your environment is
+	 * sane.
+	 */
+	setup();
 
-    /* set the expected errnos... */
-    TEST_EXP_ENOS(exp_enos);
+	/* set the expected errnos... */
+	TEST_EXP_ENOS(exp_enos);
 
     /***************************************************************
      * check looping state
      ***************************************************************/
-    /* TEST_LOOPING() is a macro that will make sure the test continues
-     * looping according to the standard command line args.
-     */
-    for (lc=0; TEST_LOOPING(lc); lc++) {
-
-	/* reset Tst_count in case we are looping. */
-	Tst_count=0;
-
-	if ( Nfiles )
-	    nfiles = Nfiles;
-	else
-	    /* min of 10 links and max of a 100 links */
-	    nfiles = (lc%90)+10;
-
-	/* create a bunch of files to look at */
-	for(cnt=0; cnt < nfiles; cnt++) {
-
-	    sprintf(fname, "%s%d", Basename, cnt);
-	    if ((fd = open(fname, O_RDWR|O_CREAT, 0700)) == -1) {
-		tst_brkm(TBROK, cleanup,
-				"open(%s, O_RDWR|O_CREAT,0700) Failed, errno=%d : %s", fname, errno, strerror(errno));
-	    } else if (write(fd, "hello\n", 6) < 0) {
-		tst_brkm(TBROK, cleanup,
-				"write(%s, \"hello\\n\", 6) Failed, errno=%d : %s", fname, errno, strerror(errno));
-	    } else if (close(fd) < 0) {
-		tst_res(TWARN, "close(%s) Failed, errno=%d : %s",
-				fname, errno, strerror(errno));
-	    }
-	}
-
-	if ((test_dir = opendir(".")) == NULL) {
-	    tst_resm(TFAIL, "opendir(\".\") Failed, errno=%d : %s",
-			    errno, strerror(errno));
-	} else {
-	    /* count the entries we find to see if any are missing */
-	    cnt = 0;
-	    errno = 0;
-	    while ((dptr = readdir(test_dir)) != 0) {
-		if (strcmp(dptr->d_name, ".") && strcmp(dptr->d_name, ".."))
-		    cnt++;
-	    }
-
-	    if (errno != 0) {
-		tst_resm(TFAIL, "readir(test_dir) Failed on try %d, errno=%d : %s",
-				cnt+1, errno, strerror(errno));
-	    }
-	    if (cnt == nfiles) {
-		tst_resm(TPASS, "found all %d that were created", nfiles);
-	    } else if (cnt > nfiles) {
-		tst_resm(TFAIL, "found more files than were created");
-		tst_resm(TINFO, "created: %d, found: %d", nfiles, cnt);
-	    } else {
-		tst_resm(TFAIL, "found less files than were created");
-		tst_resm(TINFO, "created: %d, found: %d", nfiles, cnt);
-	    }
-	}
-
-	/* Here we clean up after the test case so we can do another iteration.
+	/* TEST_LOOPING() is a macro that will make sure the test continues
+	 * looping according to the standard command line args.
 	 */
-	for(cnt=0; cnt < nfiles; cnt++) {
-       
-            sprintf(fname, "%s%d", Basename, cnt);
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-	    if (unlink(fname) == -1) {
-		tst_res(TWARN, "unlink(%s) Failed, errno=%d : %s",
-			Fname, errno, strerror(errno));
-	    }
-	}
+		/* reset Tst_count in case we are looping. */
+		Tst_count = 0;
 
-    }	/* End for TEST_LOOPING */
+		if (Nfiles)
+			nfiles = Nfiles;
+		else
+			/* min of 10 links and max of a 100 links */
+			nfiles = (lc % 90) + 10;
+
+		/* create a bunch of files to look at */
+		for (cnt = 0; cnt < nfiles; cnt++) {
+
+			sprintf(fname, "%s%d", Basename, cnt);
+			if ((fd = open(fname, O_RDWR | O_CREAT, 0700)) == -1) {
+				tst_brkm(TBROK, cleanup,
+					 "open(%s, O_RDWR|O_CREAT,0700) Failed, errno=%d : %s",
+					 fname, errno, strerror(errno));
+			} else if (write(fd, "hello\n", 6) < 0) {
+				tst_brkm(TBROK, cleanup,
+					 "write(%s, \"hello\\n\", 6) Failed, errno=%d : %s",
+					 fname, errno, strerror(errno));
+			} else if (close(fd) < 0) {
+				tst_res(TWARN,
+					"close(%s) Failed, errno=%d : %s",
+					fname, errno, strerror(errno));
+			}
+		}
+
+		if ((test_dir = opendir(".")) == NULL) {
+			tst_resm(TFAIL, "opendir(\".\") Failed, errno=%d : %s",
+				 errno, strerror(errno));
+		} else {
+			/* count the entries we find to see if any are missing */
+			cnt = 0;
+			errno = 0;
+			while ((dptr = readdir(test_dir)) != 0) {
+				if (strcmp(dptr->d_name, ".")
+				    && strcmp(dptr->d_name, ".."))
+					cnt++;
+			}
+
+			if (errno != 0) {
+				tst_resm(TFAIL,
+					 "readir(test_dir) Failed on try %d, errno=%d : %s",
+					 cnt + 1, errno, strerror(errno));
+			}
+			if (cnt == nfiles) {
+				tst_resm(TPASS,
+					 "found all %d that were created",
+					 nfiles);
+			} else if (cnt > nfiles) {
+				tst_resm(TFAIL,
+					 "found more files than were created");
+				tst_resm(TINFO, "created: %d, found: %d",
+					 nfiles, cnt);
+			} else {
+				tst_resm(TFAIL,
+					 "found less files than were created");
+				tst_resm(TINFO, "created: %d, found: %d",
+					 nfiles, cnt);
+			}
+		}
+
+		/* Here we clean up after the test case so we can do another iteration.
+		 */
+		for (cnt = 0; cnt < nfiles; cnt++) {
+
+			sprintf(fname, "%s%d", Basename, cnt);
+
+			if (unlink(fname) == -1) {
+				tst_res(TWARN,
+					"unlink(%s) Failed, errno=%d : %s",
+					Fname, errno, strerror(errno));
+			}
+		}
+
+	}			/* End for TEST_LOOPING */
 
     /***************************************************************
      * cleanup and exit
      ***************************************************************/
-    cleanup();
+	cleanup();
 
-    return 0;
-}	/* End main */
+	return 0;
+}				/* End main */
 
 /***************************************************************
  * help
@@ -294,58 +305,55 @@ main(int ac, char **av)
  * standard out.  Your help function will be called after the standard options
  * have been printed
  */
-void
-help()
+void help()
 {
-    printf("  -N #files : create #files files every iteration\n");
+	printf("  -N #files : create #files files every iteration\n");
 }
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void
-setup()
+void setup()
 {
-    /* You will want to enable some signal handling so you can capture
-     * unexpected signals like SIGSEGV.
-     */
-    tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	/* You will want to enable some signal handling so you can capture
+	 * unexpected signals like SIGSEGV.
+	 */
+	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-    /* Pause if that option was specified */
-    /* One cavet that hasn't been fixed yet.  TEST_PAUSE contains the code to
-     * fork the test with the -c option.  You want to make sure you do this
-     * before you create your temporary directory.
-     */
-    TEST_PAUSE;
+	/* Pause if that option was specified */
+	/* One cavet that hasn't been fixed yet.  TEST_PAUSE contains the code to
+	 * fork the test with the -c option.  You want to make sure you do this
+	 * before you create your temporary directory.
+	 */
+	TEST_PAUSE;
 
-    /* If you are doing any file work, you should use a temporary directory.  We
-     * provide tst_tmpdir() which will create a uniquely named temporary
-     * directory and cd into it.  You can now create files in the current
-     * directory without worrying.
-     */
-    tst_tmpdir();
+	/* If you are doing any file work, you should use a temporary directory.  We
+	 * provide tst_tmpdir() which will create a uniquely named temporary
+	 * directory and cd into it.  You can now create files in the current
+	 * directory without worrying.
+	 */
+	tst_tmpdir();
 
-    sprintf(Basename, "%s_%d.", BASENAME, getpid());
+	sprintf(Basename, "%s_%d.", BASENAME, getpid());
 }
 
 /***************************************************************
  * cleanup() - performs all ONE TIME cleanup for this test at
  *		completion or premature exit.
  ***************************************************************/
-void
-cleanup()
+void cleanup()
 {
-    /*
-     * print timing stats if that option was specified.
-     * print errno log if that option was specified.
-     */
-    TEST_CLEANUP;
+	/*
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
+	TEST_CLEANUP;
 
-    /* If you use a temporary directory, you need to be sure you remove it. Use
-     * tst_rmdir() to do it automatically. 
-     */
-    tst_rmdir();
+	/* If you use a temporary directory, you need to be sure you remove it. Use
+	 * tst_rmdir() to do it automatically.$
+	 */
+	tst_rmdir();
 
-    /* exit with return code appropriate for results */
-    tst_exit();
+	/* exit with return code appropriate for results */
+	tst_exit();
 }

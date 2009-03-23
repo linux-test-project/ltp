@@ -84,60 +84,61 @@ void setup5();
 
 #define NAMELEN		50
 
-char *TCID = "mkdir03";           /* Test program identifier.    */
+char *TCID = "mkdir03";		/* Test program identifier.    */
 int fileHandle, fileHandle2 = 0;
-extern int Tst_count;           /* Test Case counter for tst_* routines */
+extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 char tstdir3[NAMELEN];
 char tstdir4[NAMELEN];
 char tstdir5[NAMELEN];
 
-char long_dir[] = "abcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyz";
+char long_dir[] =
+    "abcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyz";
 
-int exp_enos[]={EFAULT, ENAMETOOLONG, EEXIST, ENOENT, ENOTDIR, 0};
+int exp_enos[] = { EFAULT, ENAMETOOLONG, EEXIST, ENOENT, ENOTDIR, 0 };
 
-char * bad_addr = 0;
+char *bad_addr = 0;
 
 struct test_case_t {
-        char *dir;
-        int perms;
-        int error;
-        void (*setupfunc)();
+	char *dir;
+	int perms;
+	int error;
+	void (*setupfunc) ();
 } TC[] = {
 #if !defined(UCLINUX)
 	/* try to create a directory with an illegal name/address */
-        { (void *)-1, PERMS, EFAULT, NULL },
+	{
+	(void *)-1, PERMS, EFAULT, NULL},
 #endif
-
-	/* try to create a directory using a name that is too long */
-        { long_dir, PERMS2, ENAMETOOLONG, NULL },
-
-	/* try to create a directory with the same name as an existing file */
-        { tstdir3, PERMS, EEXIST, setup3 },
-
-	/* try to create a directory under a directory that doesn't exist */
-        { tstdir4, PERMS, ENOENT, setup4 },
-
-	/*
-	 * try to create a directory under a path with a non-directory
-	 * component
-	 */
-        { tstdir5, PERMS, ENOTDIR, setup5 }
+	    /* try to create a directory using a name that is too long */
+	{
+	long_dir, PERMS2, ENAMETOOLONG, NULL},
+	    /* try to create a directory with the same name as an existing file */
+	{
+	tstdir3, PERMS, EEXIST, setup3},
+	    /* try to create a directory under a directory that doesn't exist */
+	{
+	tstdir4, PERMS, ENOENT, setup4},
+	    /*
+	     * try to create a directory under a path with a non-directory
+	     * component
+	     */
+	{
+	tstdir5, PERMS, ENOTDIR, setup5}
 };
 
-int TST_TOTAL = sizeof(TC)/sizeof(TC[0]);
+int TST_TOTAL = sizeof(TC) / sizeof(TC[0]);
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	int lc;             /* loop counter */
-	char *msg;          /* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	int i;
 
 	/*
 	 * parse standard options
 	 */
-	if ((msg=parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -152,54 +153,52 @@ main(int ac, char **av)
 	/*
 	 * check looping state if -i option given
 	 */
-	for (lc=0; TEST_LOOPING(lc); lc++) {
-	 
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+
 		/* reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/* loop through the test cases */
 		for (i = 0; i < TST_TOTAL; i++) {
 
 			/* perform test specific setup if necessary */
 			if (TC[i].setupfunc != NULL) {
-				(*TC[i].setupfunc)();
+				(*TC[i].setupfunc) ();
 			}
 
 			TEST(mkdir(TC[i].dir, TC[i].perms));
 
-                        if (TEST_RETURN != -1) {
-                                tst_resm(TFAIL, "call succeeded unexpectedly");
-                                continue;
-                        }
+			if (TEST_RETURN != -1) {
+				tst_resm(TFAIL, "call succeeded unexpectedly");
+				continue;
+			}
 
-                        TEST_ERROR_LOG(TEST_ERRNO);
+			TEST_ERROR_LOG(TEST_ERRNO);
 
-                        if (TEST_ERRNO == TC[i].error) {
-                                tst_resm(TPASS, "expected failure - "
-                                         "errno = %d : %s", TEST_ERRNO,
-                                         strerror(TEST_ERRNO));
-                        } else {
-                                tst_resm(TFAIL, "unexpected error - %d : %s - "
-                                         "expected %d", TEST_ERRNO,
-                                         strerror(TEST_ERRNO), TC[i].error);
+			if (TEST_ERRNO == TC[i].error) {
+				tst_resm(TPASS, "expected failure - "
+					 "errno = %d : %s", TEST_ERRNO,
+					 strerror(TEST_ERRNO));
+			} else {
+				tst_resm(TFAIL, "unexpected error - %d : %s - "
+					 "expected %d", TEST_ERRNO,
+					 strerror(TEST_ERRNO), TC[i].error);
 			}
 		}
-	}   /* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/*
 	 * cleanup and exit
 	 */
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
-}       /* End main */
+	 /*NOTREACHED*/ return 0;
+}				/* End main */
 
 /*
  * setup3() - performs all ONE TIME setup for this test case 3.
  */
-void
-setup3()
+void setup3()
 {
 	char tstfile3[NAMELEN];
 
@@ -216,14 +215,13 @@ setup3()
 /*
  * setup4() - performs all ONE TIME setup for this test case 4.
  */
-void
-setup4()
+void setup4()
 {
 	char tstdir[NAMELEN];
 	struct stat statbuf;
 
 	/* Initialize the test directory name */
-		 sprintf(tstdir, "tstdir4.%d", getpid());
+	sprintf(tstdir, "tstdir4.%d", getpid());
 	sprintf(tstdir4, "%s/tst", tstdir);
 /*
 	sprintf(tstdir4, "%s/tst", tstdir4);
@@ -243,27 +241,24 @@ setup4()
 /*
  * setup5() - performs all ONE TIME setup for this test case 5.
  */
-void
-setup5()
+void setup5()
 {
 	char tstfile5[NAMELEN];
 
 	/* Initialize the test directories name and file name */
 	sprintf(tstfile5, "tstfile5.%d", getpid());
-	sprintf(tstdir5, "%s/tst",tstfile5);
+	sprintf(tstdir5, "%s/tst", tstfile5);
 
 	/* create a file */
 	if ((fileHandle2 = creat(tstfile5, PERMS)) == -1) {
 		tst_brkm(TBROK, cleanup, "creat a file failed");
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -276,7 +271,7 @@ setup()
 
 #if !defined(UCLINUX)
 	bad_addr = mmap(0, 1, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX|MAP_ANONYMOUS, 0, 0);
+			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
 	if (bad_addr == MAP_FAILED) {
 		tst_brkm(TBROK, cleanup, "mmap failed");
 	}
@@ -284,13 +279,11 @@ setup()
 #endif
 }
 
-
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *              completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

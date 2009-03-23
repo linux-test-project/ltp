@@ -49,8 +49,7 @@
 
 #include "event.h"
 
-struct evbuffer *
-evbuffer_new(void)
+struct evbuffer *evbuffer_new(void)
 {
 	struct evbuffer *buffer;
 
@@ -59,8 +58,7 @@ evbuffer_new(void)
 	return (buffer);
 }
 
-void
-evbuffer_free(struct evbuffer *buffer)
+void evbuffer_free(struct evbuffer *buffer)
 {
 	if (buffer->buffer != NULL)
 		free(buffer->buffer);
@@ -72,8 +70,7 @@ evbuffer_free(struct evbuffer *buffer)
  * the other buffer.
  */
 
-int
-evbuffer_add_buffer(struct evbuffer *outbuf, struct evbuffer *inbuf)
+int evbuffer_add_buffer(struct evbuffer *outbuf, struct evbuffer *inbuf)
 {
 	int res;
 	res = evbuffer_add(outbuf, inbuf->buffer, inbuf->off);
@@ -83,8 +80,7 @@ evbuffer_add_buffer(struct evbuffer *outbuf, struct evbuffer *inbuf)
 	return (res);
 }
 
-int
-evbuffer_add_printf(struct evbuffer *buf, char *fmt, ...)
+int evbuffer_add_printf(struct evbuffer *buf, char *fmt, ...)
 {
 	int res = -1;
 	char *msg;
@@ -100,14 +96,13 @@ evbuffer_add_printf(struct evbuffer *buf, char *fmt, ...)
 		res = -1;
 	free(msg);
 
- end:
+      end:
 	va_end(ap);
 
 	return (res);
 }
 
-int
-evbuffer_add(struct evbuffer *buf, u_char *data, size_t datlen)
+int evbuffer_add(struct evbuffer *buf, u_char * data, size_t datlen)
 {
 	size_t need = buf->off + datlen;
 	size_t oldoff = buf->off;
@@ -132,13 +127,12 @@ evbuffer_add(struct evbuffer *buf, u_char *data, size_t datlen)
 	buf->off += datlen;
 
 	if (datlen && buf->cb != NULL)
-		(*buf->cb)(buf, oldoff, buf->off, buf->cbarg);
+		(*buf->cb) (buf, oldoff, buf->off, buf->cbarg);
 
 	return (0);
 }
 
-void
-evbuffer_drain(struct evbuffer *buf, size_t len)
+void evbuffer_drain(struct evbuffer *buf, size_t len)
 {
 	size_t oldoff = buf->off;
 
@@ -150,15 +144,14 @@ evbuffer_drain(struct evbuffer *buf, size_t len)
 	memmove(buf->buffer, buf->buffer + len, buf->off - len);
 	buf->off -= len;
 
- done:
+      done:
 	/* Tell someone about changes in this buffer */
 	if (buf->off != oldoff && buf->cb != NULL)
-		(*buf->cb)(buf, oldoff, buf->off, buf->cbarg);
+		(*buf->cb) (buf, oldoff, buf->off, buf->cbarg);
 
 }
 
-int
-evbuffer_read(struct evbuffer *buffer, int fd, int howmuch)
+int evbuffer_read(struct evbuffer *buffer, int fd, int howmuch)
 {
 	u_char inbuf[4096];
 	int n;
@@ -177,8 +170,7 @@ evbuffer_read(struct evbuffer *buffer, int fd, int howmuch)
 	return (n);
 }
 
-int
-evbuffer_write(struct evbuffer *buffer, int fd)
+int evbuffer_write(struct evbuffer *buffer, int fd)
 {
 	int n;
 
@@ -193,8 +185,7 @@ evbuffer_write(struct evbuffer *buffer, int fd)
 	return (n);
 }
 
-u_char *
-evbuffer_find(struct evbuffer *buffer, u_char *what, size_t len)
+u_char *evbuffer_find(struct evbuffer * buffer, u_char * what, size_t len)
 {
 	size_t remain = buffer->off;
 	u_char *search = buffer->buffer;
@@ -205,15 +196,15 @@ evbuffer_find(struct evbuffer *buffer, u_char *what, size_t len)
 			return (p);
 
 		search = p + 1;
-		remain = buffer->off - (size_t)(search - buffer->buffer);
+		remain = buffer->off - (size_t) (search - buffer->buffer);
 	}
 
 	return (NULL);
 }
 
 void evbuffer_setcb(struct evbuffer *buffer,
-    void (*cb)(struct evbuffer *, size_t, size_t, void *),
-    void *cbarg)
+		    void (*cb) (struct evbuffer *, size_t, size_t, void *),
+		    void *cbarg)
 {
 	buffer->cb = cb;
 	buffer->cbarg = cbarg;

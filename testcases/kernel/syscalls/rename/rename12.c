@@ -77,15 +77,15 @@
 void setup();
 void cleanup();
 extern void do_file_setup(char *);
-extern struct passwd * my_getpwnam(char *);
+extern struct passwd *my_getpwnam(char *);
 
 #define PERMS		0777
 
 char user1name[] = "nobody";
 char user2name[] = "bin";
 
-char *TCID="rename12";		/* Test program identifier.    */
-int TST_TOTAL=1;		/* Total number of test cases. */
+char *TCID = "rename12";	/* Test program identifier.    */
+int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int fd;
@@ -94,20 +94,19 @@ char fname[255], mname[255];
 struct passwd *nobody;
 struct stat buf1;
 
-int exp_enos[]={EPERM, 0};     /* List must end with 0 */
+int exp_enos[] = { EPERM, 0 };	/* List must end with 0 */
 
-int
-main(int ac, char **av)
+int main(int ac, char **av)
 {
-	int lc;             /* loop counter */
-	char *msg;          /* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 	pid_t pid;
 	int status;
 
 	/*
 	 * parse standard options
 	 */
-	if ((msg=parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -122,10 +121,10 @@ main(int ac, char **av)
 	/*
 	 * check looping state if -i option given
 	 */
-	for (lc=0; TEST_LOOPING(lc); lc++) {
-	 
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+
 		/* reset Tst_count in case we are looping. */
-		Tst_count=0;
+		Tst_count = 0;
 
 		/*
 		 * rename a file whose parent directory has
@@ -135,75 +134,69 @@ main(int ac, char **av)
 
 		if ((pid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() failed");
-			/*NOTREACHED*/
-		}
+		 /*NOTREACHED*/}
 
-		if (pid == 0) {		/* child */
+		if (pid == 0) {	/* child */
 			/* set to nobody */
 			if (seteuid(nobody->pw_uid) == -1) {
 				tst_resm(TWARN, "setreuid failed");
 				perror("setreuid");
 				exit(1);
-				/*NOTREACHED*/
-			}		 
+			 /*NOTREACHED*/}
 
 			/* rename "old" to "new" */
 			TEST(rename(fname, mname));
 
 			if (TEST_RETURN != -1) {
-				 tst_resm(TFAIL, "call succeeded unexpectedly");
-				 exit(1);
-				 /*NOTREACHED*/
-			}
+				tst_resm(TFAIL, "call succeeded unexpectedly");
+				exit(1);
+			 /*NOTREACHED*/}
 
 			TEST_ERROR_LOG(TEST_ERRNO);
 
-			if ((TEST_ERRNO != EPERM)&&(TEST_ERRNO != EACCES)) {
-				tst_resm(TFAIL, "Expected EPERM or EACCES, got %d",
+			if ((TEST_ERRNO != EPERM) && (TEST_ERRNO != EACCES)) {
+				tst_resm(TFAIL,
+					 "Expected EPERM or EACCES, got %d",
 					 TEST_ERRNO);
 				exit(1);
-				/*NOTREACHED*/
-			} else {
-				tst_resm(TPASS, "rename returned EPERM or EACCES");
+			 /*NOTREACHED*/} else {
+				tst_resm(TPASS,
+					 "rename returned EPERM or EACCES");
 			}
 
 			/* set the id back to root */
 			if (seteuid(0) == -1) {
 				tst_resm(TWARN, "seteuid(0) failed");
 			}
-		} else {		/* parent */
+		} else {	/* parent */
 			wait(&status);
-                        if (!WIFEXITED(status) || (WEXITSTATUS(status) != 0)) {
-                                exit(WEXITSTATUS(status));
-                        } else {
-                           exit(0);
-                        }
+			if (!WIFEXITED(status) || (WEXITSTATUS(status) != 0)) {
+				exit(WEXITSTATUS(status));
+			} else {
+				exit(0);
+			}
 
 		}
-	}   /* End for TEST_LOOPING */
+	}			/* End for TEST_LOOPING */
 
 	/*
 	 * cleanup and exit
 	 */
 	cleanup();
 
-	/*NOTREACHED*/
-
-  return 0;
+	 /*NOTREACHED*/ return 0;
 
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* must run as root */
 	if (geteuid() != 0) {
 		tst_brkm(TBROK, tst_exit, "Must run this as root");
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -215,27 +208,26 @@ setup()
 	tst_tmpdir();
 
 	/* give the write rights to all user */
-	chmod(".",0777);
+	chmod(".", 0777);
 
 	umask(0);
 
-	sprintf(fdir,"./tdir_%d",getpid());
-	sprintf(fname,"%s/tfile_%d",fdir,getpid());
-	sprintf(mname,"%s/rnfile_%d",fdir,getpid());
+	sprintf(fdir, "./tdir_%d", getpid());
+	sprintf(fname, "%s/tfile_%d", fdir, getpid());
+	sprintf(mname, "%s/rnfile_%d", fdir, getpid());
 
 	/* create a directory */
 	if (mkdir(fdir, PERMS) == -1) {
-		tst_brkm(TBROK, cleanup, "Could not create directory %s",fdir);
-		/*NOTREACHED*/
-	}
+		tst_brkm(TBROK, cleanup, "Could not create directory %s", fdir);
+	 /*NOTREACHED*/}
 
-	if (stat(fdir, &buf1)== -1) {
+	if (stat(fdir, &buf1) == -1) {
 		tst_brkm(TBROK, cleanup, "failed to stat directory %s", fdir);
 		/* NOTREACHED */
 	}
 
 	/* set the sticky bit */
-	if (chmod(fdir,buf1.st_mode|S_ISVTX)!= 0) {
+	if (chmod(fdir, buf1.st_mode | S_ISVTX) != 0) {
 		tst_brkm(TBROK, cleanup, "failed to set the S_ISVTX bit");
 		/* NOTREACHED */
 	}
@@ -251,8 +243,7 @@ setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

@@ -61,15 +61,15 @@ void cleanup(void);
 
 char fname[100] = "fifo";
 
-int exp_enos[] = {ENXIO, 0};
+int exp_enos[] = { ENXIO, 0 };
 
 int main(int ac, char **av)
 {
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -99,15 +99,13 @@ int main(int ac, char **av)
 	}
 	cleanup();
 
-	/*NOTREACHED*/
-	return 0;
+	 /*NOTREACHED*/ return 0;
 }
 
 /*
  * setup() - performs all ONE TIME setup for this test.
  */
-void
-setup()
+void setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -120,18 +118,16 @@ setup()
 
 	sprintf(fname, "%s.%d", fname, getpid());
 
-	if (mknod(fname, S_IFIFO | 0644, (dev_t)NULL) == -1) {
+	if (mknod(fname, S_IFIFO | 0644, (dev_t) NULL) == -1) {
 		tst_brkm(TBROK, cleanup, "mknod FAILED");
-		/*NOTREACHED*/
-	}
+	 /*NOTREACHED*/}
 }
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *	       completion or premature exit.
  */
-void
-cleanup()
+void cleanup()
 {
 	/*
 	 * print timing stats if that option was specified.

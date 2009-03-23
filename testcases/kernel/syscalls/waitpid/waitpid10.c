@@ -95,17 +95,15 @@ int main(int ac, char **av)
 	int kid_count, ret_val, status, nkids;
 	int i, j, k, found;
 	int fork_kid_pid[MAXKIDS], wait_kid_pid[MAXKIDS];
-	int runtime;			/* time(sec) to run this process */
+	int runtime;		/* time(sec) to run this process */
 
-	int lc;				/* loop counter */
-	char *msg;			/* message returned from parse_opts */
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) !=
-	    (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
-
 #ifdef UCLINUX
 	argv0 = av[0];
 
@@ -176,13 +174,13 @@ int main(int ac, char **av)
 			 */
 			kid_count = 0;
 			/*
-		* Clearing the intinitr flag here for all the children.
-		* So that we may not miss any signals !
-		*/
+			 * Clearing the intinitr flag here for all the children.
+			 * So that we may not miss any signals !
+			 */
 			intintr = 0;
 			ret_val = FORK_OR_VFORK();
-			if (ret_val == 0) {		/* child 0 */
-			//    	intintr = 0; 
+			if (ret_val == 0) {	/* child 0 */
+				//      intintr = 0;$
 #ifdef UCLINUX
 				if (self_exec(argv0, "n", 1) < 0) {
 					tst_resm(TFAIL, "self_exec 0 failed");
@@ -202,8 +200,8 @@ int main(int ac, char **av)
 			fork_kid_pid[kid_count++] = ret_val;
 
 			ret_val = FORK_OR_VFORK();
-			if (ret_val == 0) {		/* child 1 */
-			//	intintr = 0;
+			if (ret_val == 0) {	/* child 1 */
+				//      intintr = 0;
 #ifdef UCLINUX
 				if (self_exec(argv0, "n", 1) < 0) {
 					tst_resm(TFAIL, "self_exec 1 failed");
@@ -223,8 +221,8 @@ int main(int ac, char **av)
 			fork_kid_pid[kid_count++] = ret_val;
 
 			ret_val = FORK_OR_VFORK();
-			if (ret_val == 0) {		/* child 2 */
-			//	intintr = 0;
+			if (ret_val == 0) {	/* child 2 */
+				//      intintr = 0;
 #ifdef UCLINUX
 				if (self_exec(argv0, "n", 2) < 0) {
 					tst_resm(TFAIL, "self_exec 2 failed");
@@ -244,8 +242,8 @@ int main(int ac, char **av)
 			fork_kid_pid[kid_count++] = ret_val;
 
 			ret_val = FORK_OR_VFORK();
-			if (ret_val == 0) {		/* child 3 */
-			//	intintr = 0;
+			if (ret_val == 0) {	/* child 3 */
+				//      intintr = 0;
 #ifdef UCLINUX
 				if (self_exec(argv0, "n", 2) < 0) {
 					tst_resm(TFAIL, "self_exec 3 failed");
@@ -265,8 +263,8 @@ int main(int ac, char **av)
 			fork_kid_pid[kid_count++] = ret_val;
 
 			ret_val = FORK_OR_VFORK();
-			if (ret_val == 0) {		/* child 4 */
-			//	intintr = 0;
+			if (ret_val == 0) {	/* child 4 */
+				//      intintr = 0;
 #ifdef UCLINUX
 				if (self_exec(argv0, "n", 3) < 0) {
 					tst_resm(TFAIL, "self_exec 4 failed");
@@ -286,8 +284,8 @@ int main(int ac, char **av)
 			fork_kid_pid[kid_count++] = ret_val;
 
 			ret_val = FORK_OR_VFORK();
-			if (ret_val == 0) {		/* child 5 */
-			//	intintr = 0;
+			if (ret_val == 0) {	/* child 5 */
+				//      intintr = 0;
 #ifdef UCLINUX
 				if (self_exec(argv0, "n", 3) < 0) {
 					tst_resm(TFAIL, "self_exec 5 failed");
@@ -307,8 +305,8 @@ int main(int ac, char **av)
 			fork_kid_pid[kid_count++] = ret_val;
 
 			ret_val = FORK_OR_VFORK();
-			if (ret_val == 0) {		/* child 6 */
-			//	intintr = 0;
+			if (ret_val == 0) {	/* child 6 */
+				//      intintr = 0;
 #ifdef UCLINUX
 				if (self_exec(argv0, "n", 4) < 0) {
 					tst_resm(TFAIL, "self_exec 6 failed");
@@ -328,8 +326,8 @@ int main(int ac, char **av)
 			fork_kid_pid[kid_count++] = ret_val;
 
 			ret_val = FORK_OR_VFORK();
-			if (ret_val == 0) {		/* child 7 */
-			//	intintr = 0;
+			if (ret_val == 0) {	/* child 7 */
+				//      intintr = 0;
 #ifdef UCLINUX
 				if (self_exec(argv0, "n", 4) < 0) {
 					tst_resm(TFAIL, "self_exec 7 failed");
@@ -389,8 +387,7 @@ int main(int ac, char **av)
 			for (i = 0; i < MAXKIDS; i++) {
 				found = 0;
 				for (j = 0; j < MAXKIDS; j++) {
-					if (fork_kid_pid[i] ==
-					    wait_kid_pid[j]) {
+					if (fork_kid_pid[i] == wait_kid_pid[j]) {
 						found = 1;
 						break;
 					}
@@ -427,9 +424,7 @@ int main(int ac, char **av)
 		}
 	}
 	cleanup();
-	/*NOTREACHED*/
-
-  return 0;
+	 /*NOTREACHED*/ return 0;
 
 }
 
@@ -437,8 +432,7 @@ int main(int ac, char **av)
  * setup()
  *	performs all ONE TIME setup for this test
  */
-void
-setup(void)
+void setup(void)
 {
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -454,8 +448,7 @@ setup(void)
  *	performs all ONE TIME cleanup for this test at
  *	completion or premature exit
  */
-void
-cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -465,22 +458,19 @@ cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
-	/*NOTREACHED*/
-}
-void
-alrmhandlr()
+ /*NOTREACHED*/}
+
+void alrmhandlr()
 {
 	alrmintr++;
 }
 
-void
-inthandlr()
+void inthandlr()
 {
 	intintr++;
 }
 
-void
-wait_for_parent()
+void wait_for_parent()
 {
 	int testvar;
 
@@ -489,36 +479,33 @@ wait_for_parent()
 	}
 }
 
-void
-do_exit()
+void do_exit()
 {
 	wait_for_parent();
 	exit(3);
 }
 
-void
-do_compute()
+void do_compute()
 {
 	int i;
 
 	wait_for_parent();
 
-	for (i = 0; i < 100000; i++);
-	for (i = 0; i < 100000; i++);
-	for (i = 0; i < 100000; i++);
-	for (i = 0; i < 100000; i++);
-	for (i = 0; i < 100000; i++);
-	for (i = 0; i < 100000; i++);
-	for (i = 0; i < 100000; i++);
-	for (i = 0; i < 100000; i++);
-	for (i = 0; i < 100000; i++);
-	for (i = 0; i < 100000; i++);
+	for (i = 0; i < 100000; i++) ;
+	for (i = 0; i < 100000; i++) ;
+	for (i = 0; i < 100000; i++) ;
+	for (i = 0; i < 100000; i++) ;
+	for (i = 0; i < 100000; i++) ;
+	for (i = 0; i < 100000; i++) ;
+	for (i = 0; i < 100000; i++) ;
+	for (i = 0; i < 100000; i++) ;
+	for (i = 0; i < 100000; i++) ;
+	for (i = 0; i < 100000; i++) ;
 
 	exit(4);
 }
 
-void
-do_fork()
+void do_fork()
 {
 	int fork_pid, wait_pid;
 	int status, i;
@@ -549,7 +536,7 @@ do_fork()
 
 		errno = 0;
 		while (((wait_pid = waitpid(fork_pid, &status, 0)) != -1) ||
-			(errno == EINTR)) {
+		       (errno == EINTR)) {
 			if (wait_pid == -1) {
 				continue;
 			}
@@ -568,8 +555,7 @@ do_fork()
 	exit(4);
 }
 
-void
-do_sleep()
+void do_sleep()
 {
 	wait_for_parent();
 	sleep(1);
@@ -578,8 +564,7 @@ do_sleep()
 	exit(4);
 }
 
-void
-do_mkdir()
+void do_mkdir()
 {
 	int ret_val;
 
