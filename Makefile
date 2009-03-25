@@ -21,6 +21,7 @@ all: config.h config.mk libltp.a
 	@$(MAKE) -C pan $@
 	@$(MAKE) -C testcases $@
 	@$(MAKE) -C tools $@
+	@$(MAKE) -C utils $@
 	@echo
 	@echo "***********************************************"
 	@echo "** You now need to do a make install as root **"
@@ -66,6 +67,7 @@ clean: ac-clean
 	@$(MAKE) -C pan $@
 	@$(MAKE) -C tools $@
 	@$(MAKE) -C testcases $@
+	@$(MAKE) -C utils $@
 
 distclean: clean ac-distclean
 	@$(MAKE) -C include $@
