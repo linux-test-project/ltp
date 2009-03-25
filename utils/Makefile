@@ -21,12 +21,12 @@
 SUBDIRS := benchmark
 
 configure:
-     @set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i $@; done;
+	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i $@; done;
 
 all: configure
-     @set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i $@; done;
+	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i $@; done;
 
 install:
 
 clean:
-     @set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i $@; done;
+	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i $@; done;

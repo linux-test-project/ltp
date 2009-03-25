@@ -1,0 +1,41 @@
+#!/bin/sh                                                                     
+
+OS=`uname -s` 
+SUPPORTED="Linux SunOS HP-UX FreeBSD"
+
+for i in `echo "$SUPPORTED"`
+do
+	if [ "$OS" = "$i" ]; then
+		supported="yes"
+		break
+	fi
+done
+
+if [ "$supported" != "yes" ]; then
+	echo "Only this list are supported for now: $SUPPORTED"
+	exit 1
+fi
+
+LIBS="-lpthread"
+FLAGS=""
+
+case "$OS" in
+	"SunOS") 
+        	LIBS="${LIBS} -lmalloc";
+		FLAGS="${FLAGS} -D_solaris";;
+	"FreeBSD")
+		FLAGS="${FLAGS} -D_freebsd";;
+esac
+
+cat <<EOF > Makefile
+all: ebizzy
+
+ebizzy: ebizzy.c
+	gcc -Wall -Wshadow ${LIBS} ${FLAGS} -o ebizzy ebizzy.c
+
+clean:
+	rm -f ebizzy Makefile 
+EOF
+
+echo "Type 'make' to compile"
+

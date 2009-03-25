@@ -1,0 +1,21 @@
+2007-10-01 Valerie Henson <val@nmt.edu>
+
+	* Release 0.3.
+
+	* Added FreeBSD and HP-UX compatibility, thanks to Rodrigo Rubira Branco
+		<rrbranco@br.ibm.com> for frequent patches and testing.
+
+2007-08-15 Valerie Henson <val@nmt.edu>
+
+	* Release 0.2.
+	
+	* Started reporting a rate of transactions per second rather than
+		just measuring the time.
+
+	* Solaris compatibility, thanks to Rodrigo Rubira Branco
+		<rrbranco@br.ibm.com> for frequent patches and testing.
+
+	* rand() was limiting scalability, use cheap dumb inline "random"
+		function to avoid that.  Thanks to Brian Twichell
+		<twichell@us.ibm.com> for finding it and Yong Cai
+		<ycai@us.ibm.com> for testing.
