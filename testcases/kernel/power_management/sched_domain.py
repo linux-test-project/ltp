@@ -22,5 +22,6 @@ if __name__ == "__main__":
         verify_sched_domain_dmesg(1)
         set_sched_mc_power(0)
         verify_sched_domain_dmesg(0)
-    except:
+        sys.exit(0)
+    except Exception:
         sys.exit(1)

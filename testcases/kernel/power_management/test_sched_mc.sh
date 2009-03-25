@@ -42,4 +42,4 @@ echo "${0}: ---Valid test cases---"
 check_input "${valid_input}"
 echo "${0}: ---Invalid test cases---"
 check_input "${invalid_input}" invalid
-#return $RC
+exit $RC

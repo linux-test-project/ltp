@@ -47,7 +47,7 @@ export TST_COUNT=0
 RC=0		#Return status
 
 # Checking required kernel version and architecture
-check_kv_arch || RC=$?
+check_kv_arch; RC=$?
 if [ $RC -eq 1 ] ; then
 	tst_resm TCONF "Kernel version or Architecture not supported:\
 	Not running testcases"
@@ -57,7 +57,7 @@ fi
 # Checking sched_mc sysfs interface
 #check_config.sh config_sched_mc || RC=$?
 if [ -f /sys/devices/system/cpu/sched_mc_power_savings ] ; then
-	test_sched_mc.sh || RC=$?
+	test_sched_mc.sh; RC=$?
 	if [ $RC -eq 1 ] ; then
 		tst_resm TFAIL "SCHED_MC sysfs tests failed"
 	fi
@@ -67,49 +67,46 @@ if [ -f /sys/devices/system/cpu/sched_mc_power_savings ] ; then
     	tst_resm TCONF "Python is not installed, CPU Consoldation test not run"
 	else
 		# Trigger ebizzy workload for sched_mc_power_saving 1
-		cpu_consolidation.py -w ebizzy -l 1 || RC=$?
+		cpu_consolidation.py -w ebizzy -l 1; RC=$?
 		if [ $RC -eq 1 ] ; then
         	tst_resm TFAIL "cpu consolidation test failed"
 		else
 	        tst_resm TPASS "cpu consolidation test for sched_mc_power set to 1"
 		fi
         # Validate CPU level sched domain topology validation
-        sched_domain.py || RC=$?
+        sched_domain.py; RC=$?
         if [ $RC -eq 1 ] ; then
             tst_resm TFAIL "sched domain topology validation test failed"
         else    
             tst_resm TPASS "sched domain topology validation test passed"
         fi      
-
-        
 	fi
 else
 	tst_resm TCONF "Required kernel configuration for SCHED_MC NOT set"
         exit 0
 fi
-
 # Checking cpufreq sysfs interface files
 #check_config.sh config_cpu_freq || RC=$?
 if [ -d /sys/devices/system/cpu/cpu0/cpufreq ] ; then
-	check_cpufreq_sysfs_files.sh || RC=$?
+	check_cpufreq_sysfs_files.sh; RC=$?
 	if [ $RC -eq 1 ] ; then
 		tst_resm TFAIL "CPUFREQ sysfs tests failed"
 	fi
 
 	# Changing governors
-	change_govr.sh || RC=$?
+	change_govr.sh; RC=$?
 	if [ $RC -eq 1 ] ; then
 		tst_resm TFAIL "Changing governors failed"
 	fi
 
 	# Changing frequencies
-	change_freq.sh || RC=$?
+	change_freq.sh; RC=$?
 	if [ $RC -eq 1 ] ; then
 		tst_resm TFAIL "Changing frequncies failed"
 	fi
 
 	# Loading and Unloading governor related kernel modules
-	pwkm_load_unload.sh || RC=$?
+	pwkm_load_unload.sh; RC=$?
 	if [ $RC -eq 1 ] ; then
 		tst_resm TFAIL "Loading and Unloading of governor kernel \
 		modules got failed"
@@ -119,8 +116,7 @@ else
 fi
 
 # Checking cpuidle sysfs interface files
-check_cpuidle_sysfs_files.sh || RC=$?
+check_cpuidle_sysfs_files.sh; RC=$?
 if [ $RC -eq 1 ] ; then
 	tst_resm TFAIL "CPUIDLE sysfs tests failed"
 fi
-

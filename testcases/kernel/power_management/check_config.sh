@@ -29,4 +29,4 @@ while read config_option
 do
 	check_config_options "${config_option}=*" ${config_file} ${grep_command}
 done < ${filename}
-#return ${RC}
+exit $RC

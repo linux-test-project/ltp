@@ -33,4 +33,4 @@ fi
 if [ ${RC} -eq 0 ] ; then
 	echo "${0}: PASS: Changing cpu frequencies"
 fi
-#return $RC
+exit $RC

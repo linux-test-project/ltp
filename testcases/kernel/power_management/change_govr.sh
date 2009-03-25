@@ -21,4 +21,4 @@ done
 if [ ${RC} -eq 0 ] ; then
 	echo "${0}: PASS: Changing cpu governors"
 fi
-#return $RC
+exit $RC

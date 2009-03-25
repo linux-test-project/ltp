@@ -31,5 +31,6 @@ if __name__ == "__main__":
         trigger_workld(options.workload)
         generate_report()
         validate_cpu_consolidation(options.mc_level)
-    except:
+        sys.exit(0)
+    except Exception:
         sys.exit(1)

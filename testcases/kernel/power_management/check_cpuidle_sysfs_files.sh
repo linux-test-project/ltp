@@ -16,4 +16,4 @@ if [ ${RC} -eq 0 ] ; then
 else
 	echo "${0}: FAIL: Checking cpu idle sysfs files"
 fi
-#return $RC
+exit $RC
