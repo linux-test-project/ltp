@@ -38,6 +38,26 @@ def get_proc_data(stats_list):
         print "Could not read statistics", e
         sys.exit(1)
 
+def is_hyper_threaded():
+    '''Return 1 is the system is hyper threaded else return 0
+    '''
+    try:
+        file_cpuinfo = open("/proc/cpuinfo", 'r')
+        for line in file_cpuinfo:
+            if line.startswith('siblings'):
+                siblings = line.split(":") 
+            if line.startswith('cpu cores'):
+                cpu_cores = line.split(":")              
+                break
+        if int( siblings[1] ) / int( cpu_cores[1] )> 1:
+            file_cpuinfo.close()
+            return 1
+        else:
+            return 0
+    except Exception:
+        print "Failed to check if system is hyper-threaded"
+        sys.exit(1)
+
 def set_sched_mc_power(sched_mc_level):
     ''' Routine to set sched_mc_power_savings to required level
     '''
@@ -47,6 +67,17 @@ def set_sched_mc_power(sched_mc_level):
             % sched_mc_level)
     except OSError, e:
         print "Could not set sched_mc_power_savings to", e
+        sys.exit(1)
+
+def set_sched_smt_power(sched_smt_level):
+    ''' Routine to set sched_smt_power_savings to required level
+    '''
+    try:
+        os.system('echo %s > \
+            /sys/devices/system/cpu/sched_smt_power_savings'
+            % sched_smt_level)
+    except OSError, e:
+        print "Could not set sched_smt_power_savings to", e
         sys.exit(1)
 
 def count_num_cpu():
@@ -66,25 +97,50 @@ def count_num_cpu():
 def map_cpuid_pkgid():
     ''' Routine to map physical package id to cpu id
     '''
-    for i in range(0, cpu_count):
+    if is_hyper_threaded():
+        core_info = {}
         try:
-            phy_pkg_file = '/sys/devices/system/cpu/cpu%s' %i
-            phy_pkg_file += '/topology/physical_package_id' 
-            cpu_phy_id = open(phy_pkg_file).read().rstrip()
-            try:
-                cpu_map[cpu_phy_id].append(i)
-            except KeyError:
-                cpu_map[cpu_phy_id] = [i]
-        except IOError, e:
-            print "Mapping of CPU to pkg id failed", e
+            for i in range(0, cpu_count):
+                phy_pkg_file = '/sys/devices/system/cpu/cpu%s' % i
+                phy_pkg_file += '/topology/physical_package_id'
+                core_file = '/sys/devices/system/cpu/cpu%s' % i
+                core_file += '/topology/core_id'
+                core_id = open(core_file).read().rstrip()
+                cpu_phy_id = open(phy_pkg_file).read().rstrip()
+                if not cpu_phy_id in cpu_map.keys():
+                    core_info = {}
+                if not core_id in core_info.keys():
+                    core_info[core_id] = [i]
+                else:
+                    core_info[core_id].append(i)
+                if not cpu_phy_id in cpu_map.keys():
+                    cpu_map[cpu_phy_id]= core_info 
+        except Exception, details:
+            print "Package, core & cpu map table creation failed", e
             sys.exit(1)
+    else:
+        for i in range(0, cpu_count):
+            try:
+                phy_pkg_file = '/sys/devices/system/cpu/cpu%s' %i
+                phy_pkg_file += '/topology/physical_package_id' 
+                cpu_phy_id = open(phy_pkg_file).read().rstrip()
+                if not cpu_phy_id in cpu_map.keys():
+                    cpu_map[cpu_phy_id] = [i]
+                else:
+                    cpu_map[cpu_phy_id].append(i)
+            except IOError, e:
+                print "Mapping of CPU to pkg id failed", e
+                sys.exit(1)
 
-def trigger_workld(workload):
+def trigger_workld(workload, test_thread_consld):
     ''' Based on value in argument passed triggers workloads.
         Triggers workload with number of threads same as number
         of cores in package. 
     '''
-    threads = cpu_count / len(cpu_map)
+    if test_thread_consld != 0:
+        threads = 2
+    else:
+        threads = cpu_count / len(cpu_map)
     duration = 60 # let the test run for 1 minute 
     path = '%s/utils/benchmark' % os.environ['LTPROOT']
     try:
@@ -98,7 +154,6 @@ def trigger_workld(workload):
                 wklds_avlbl.append(file_name)
         wklds_avlbl.sort()
         workload_dir = wklds_avlbl[len(wklds_avlbl)-1]
-           
         if workload_dir != "":
             new_path = os.path.join(path,"%s" % workload_dir)
             os.chdir(new_path)
@@ -162,21 +217,34 @@ def generate_report():
         print >> reportfile
 
     #Now get the package ID information
-    print >> debugfile, "cpu_map: ", cpu_map
-    keyvalfile = open('/procstat/keyval', 'a')
-    print >> keyvalfile, "nr_packages=%d" % len(cpu_map)
-    print >> keyvalfile, "system-idle=%3.4f" % (stats_percentage['cpu'][4])
-    for pkg in sorted(cpu_map.keys()):
-        total_idle = 0
-        total = 0 
-        for cpu in cpu_map[pkg]:
-            total_idle += stats_stop["cpu%d" % cpu][4]
-            for i in range(1, len(stats_stop["cpu%d" % cpu])):
-                total += stats_stop["cpu%d" % cpu][i]
-        print >> reportfile, "Package: ", pkg, "Idle %3.4f%%" \
-		% (float(total_idle)*100/total)
-        print >> keyvalfile, "package-%s=%3.4f" % \
+    try:
+        print >> debugfile, "cpu_map: ", cpu_map
+        keyvalfile = open('/procstat/keyval', 'a')
+        print >> keyvalfile, "nr_packages=%d" % len(cpu_map)
+        print >> keyvalfile, "system-idle=%3.4f" % (stats_percentage['cpu'][4])
+        for pkg in sorted(cpu_map.keys()):
+            if is_hyper_threaded():
+                for core in sorted(cpu_map[pkg].keys()):
+                    total_idle = 0
+                    total = 0
+                    for cpu in cpu_map[pkg][core]:
+                        total_idle += stats_stop["cpu%d" % cpu][4]
+                        for i in range(1, len(stats_stop["cpu%d" % cpu])):
+                            total += stats_stop["cpu%d" % cpu][i]
+            else:
+                total_idle = 0
+                total = 0 
+                for cpu in cpu_map[pkg]:
+                    total_idle += stats_stop["cpu%d" % cpu][4]
+                    for i in range(1, len(stats_stop["cpu%d" % cpu])):
+                        total += stats_stop["cpu%d" % cpu][i]
+            print >> reportfile, "Package: ", pkg, "Idle %3.4f%%" \
+	        % (float(total_idle)*100/total)
+            print >> keyvalfile, "package-%s=%3.4f" % \
 		(pkg, (float(total_idle)*100/total))
+    except Exception, details:
+        print "Generating reportfile failed: ", details
+        sys.exit(1)
 
     #Add record delimiter '\n' before closing these files
     print >> debugfile
@@ -203,7 +271,7 @@ def expand_range(range_val):
 
 def is_quad_core():
     '''
-       Read /proc/cpuinfo and check is system is Quad core
+       Read /proc/cpuinfo and check if system is Quad core
     '''
     try:
         cpuinfo = open('/proc/cpuinfo', 'r')
@@ -220,22 +288,53 @@ def is_quad_core():
         print "Failed to get cpu core information", e
         sys.exit(1)
 
-def validate_cpugrp_map(cpu_group, sched_mc_level):
+def validate_cpugrp_map(cpu_group, sched_mc_level, sched_smt_level):
     '''
        Verify if cpugrp belong to same package
     '''
-    for pkg in sorted(cpu_map.keys()):
-        pkg_cpus = cpu_map[pkg]
-        if pkg_cpus == cpu_group:
-            return(0)
-        else:
-            if is_quad_core() and sched_mc_level == 0:
-                return(0)
-
-    print "INFO: cpu group does not belong to single package"
-    sys.exit(1) 
+    modi_cpu_grp = cpu_group[:]
+    try:
+        if is_hyper_threaded():
+            for pkg in sorted(cpu_map.keys()):
+                # if CPU utilized is across package this condition will be true
+                if len(modi_cpu_grp) != len(cpu_group):
+                    break
+                for core in sorted(cpu_map[pkg].keys()):
+                    core_cpus = cpu_map[pkg][core]
+                    if core_cpus == modi_cpu_grp:
+                        return 0
+                    else:
+                        #if CPUs used across the cores
+                        for i in range(0, len(core_cpus)):
+                            if core_cpus[i] in modi_cpu_grp:
+                                modi_cpu_grp.remove(core_cpus[i]) 
+                            else:
+                                # If sched_smt == 0 then its oky if threads run
+                                # in different cores of same package 
+                                if sched_smt_level == 1:
+                                    sys.exit(1)
+                                else:
+                                    if len(cpu_group) == 2 and \
+                                        len(modi_cpu_grp) < len(cpu_group):
+                                        print "INFO:CPUs utilized not in a core"
+                                        return 0                                        
+            print "INFO: CPUs utilized is not in same package or core"
+            sys.exit(1)
+	else:
+            for pkg in sorted(cpu_map.keys()):
+                pkg_cpus = cpu_map[pkg]
+                if pkg_cpus == cpu_group:
+                    return(0)
+                else:
+                    if is_quad_core() and sched_mc_level == 0:
+                        return(0)
+            print "INFO: CPUs utilized is not in same package"
+            sys.exit(1) 
+    except Exception, details:
+        print "Exception in validate_cpugrp_map: ", details
+        sys.exit(1)
  
-def verify_sched_domain_dmesg(sched_mc_level):
+def verify_sched_domain_dmesg(sched_mc_level, sched_smt_level):
     '''
        Read sched domain information from dmesg.
     '''
@@ -249,24 +348,29 @@ def verify_sched_domain_dmesg(sched_mc_level):
                 subgroup = groups[1].split()
                 for j in range(0, len(subgroup)):
                     cpu_group = expand_range(subgroup[j])
-                    validate_cpugrp_map(cpu_group, sched_mc_level) 
-    except OSError, e:
-        print "Reading dmesg failed", e
+                    validate_cpugrp_map(cpu_group, sched_mc_level,\
+                        sched_smt_level) 
+    except Exception, details:
+        print "Reading dmesg failed", details
         sys.exit(1)
     return(0)
 
-def validate_cpu_consolidation(sched_mc_level):
-    ''' Verify if cpu's on which threads execiuted belong to same
+def validate_cpu_consolidation(sched_mc_level, sched_smt_level):
+    ''' Verify if cpu's on which threads executed belong to same
     package
     '''
     cpus_utilized = list()
-    for l in sorted(stats_percentage.keys()):
-        if stats_percentage[l][1] > 20:
-            cpu_id = stats_percentage[l][0].split("cpu")
-            if cpu_id[1] != '':
-                cpus_utilized.append(int(cpu_id[1]))
-    cpus_utilized.sort()
-    print "INFO: CPU's utilized %s" %cpus_utilized
+    try:
+        for l in sorted(stats_percentage.keys()):
+            if stats_percentage[l][1] > 20:
+                cpu_id = stats_percentage[l][0].split("cpu")
+                if cpu_id[1] != '':
+                    cpus_utilized.append(int(cpu_id[1]))
+        cpus_utilized.sort()
+        print "INFO: CPU's utilized ", cpus_utilized
 
-    validate_cpugrp_map(cpus_utilized, sched_mc_level)
+        validate_cpugrp_map(cpus_utilized, sched_mc_level, sched_smt_level)
+    except Exception, details:
+        print "Exception in validate_cpu_consolidation: ", details
+        sys.exit(1)
     return(0)
