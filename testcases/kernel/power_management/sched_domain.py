@@ -8,20 +8,42 @@ import sys
 LIB_DIR = "%s/testcases/kernel/power_management/lib" % os.environ['LTPROOT']
 sys.path.append(LIB_DIR)
 from sched_mc import *
+from optparse import OptionParser
 
 __author__ = "Poornima Nayak <mpnayak@linux.vnet.ibm.com>"
 
 # Run test based on the command line arguments
 if __name__ == "__main__":
+    sched_smt = 0
+    sched_mc = 0
+
+    usage = "-w"
+    parser = OptionParser(usage)
+    parser.add_option("-w", "--workload", dest="workload",
+        help="Test name that has be triggered")
+    parser.add_option("-c", "--mc_level", dest="mc_level",
+        help="Sched mc power saving value 0/1/2")
+    parser.add_option("-t", "--smt_level", dest="smt_level", default=0,
+        help="Sched smt power saving value 0/1/2")
+    (options, args) = parser.parse_args()
 
     try:
         clear_dmesg()
         count_num_cpu()
         map_cpuid_pkgid()
-        set_sched_mc_power(1)
-        verify_sched_domain_dmesg(1)
-        set_sched_mc_power(0)
-        verify_sched_domain_dmesg(0)
+       
+        if int(options.smt_level) == 1 or int(options.smt_level) == 2:
+            if is_hyper_threaded():
+                sched_smt_level = options.smt_level
+                set_sched_smt_power(sched_smt_level)
+            else:
+                print "INFO: No Hyper-threading support in this machine"
+                sys.exit(0)
+ 
+        # Validate sched domain for sched_mc = 1, sched_smt = 0
+        set_sched_mc_power(options.mc_level) 
+        verify_sched_domain_dmesg(options.mc_level, options.smt_level)
         sys.exit(0)
-    except Exception:
+    except Exception, details:
+        print "INFO: sched domain test failed: ", details
         sys.exit(1)
