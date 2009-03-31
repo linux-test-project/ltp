@@ -1,0 +1,16 @@
+#
+# Integrity measure policy
+#
+# PROC_SUPER_MAGIC
+dont_measure fsmagic=0x9fa0
+# SYSFS_MAGIC
+dont_measure fsmagic=0x62656572
+# DEBUGFS_MAGIC
+dont_measure fsmagic=0x64626720
+# TMPFS_MAGIC
+dont_measure fsmagic=0x01021994
+# SECURITYFS_MAGIC
+dont_measure fsmagic=0x73636673
+measure func=FILE_MMAP mask=MAY_EXEC
+measure func=BPRM_CHECK mask=MAY_EXEC
+measure func=PATH_CHECK mask=MAY_READ uid=0

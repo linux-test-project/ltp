@@ -1,4 +1,4 @@
-SUBDIRS = mmc_security filecaps integrity
+SUBDIRS = src tests policy
 
 all:
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
@@ -8,5 +8,4 @@ install:
 
 clean:
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i clean ; done
-
 

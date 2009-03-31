@@ -1,0 +1,5 @@
+#DESCRIPTION:Integrity Measurement Architecture (IMA)
+ima01   ima_measurements.sh
+ima02   ima_policy.sh
+ima03   ima_tpm.sh
+ima04   ima_violations.sh
