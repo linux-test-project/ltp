@@ -20,8 +20,8 @@ int main(int argc, char *argv[])
 {
 	timer_t tid;
 	struct itimerspec its;
-
-	tid = (timer_t) BOGUSTID;
+	int tval = BOGUSTID;
+	tid = (timer_t) & tval;
 	its.it_interval.tv_sec = 0; its.it_interval.tv_nsec = 0;
 	its.it_value.tv_sec = 0; its.it_value.tv_nsec = 0;
 
