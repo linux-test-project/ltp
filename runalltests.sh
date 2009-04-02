@@ -197,6 +197,9 @@ export RUN_CONTROLLER_AREA_NETWORK_TESTS=0
 ## as both of them cannot be tested in the same running kernel
 export RUN_SMACK_SECURITY_TESTS=0
 
+##Set this to 1 if you wish to run the Basic PERFORMANCE COUNTER tests
+export RUN_PERFORMANCE_COUNTERS_TESTS=0
+
 export LTP_VERSION=`./runltp -e`
 export TEST_START_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
 export HARDWARE_TYPE=$(uname -i)
@@ -537,4 +540,14 @@ then
      ./runltp -f smack
 fi
 ## END => Test Series 28                               ##
+
+## The next one i plan to run the PERFORMANCE COUNTERS tests
+## START => Test Series 29                             ##
+if [ $RUN_PERFORMANCE_COUNTERS_TESTS -eq 1 ]
+then
+     (cd $LTPROOT/testcases/kernel/performance_counters; make && make install)
+     ./runltp -f perfcounters
+fi
+## END => Test Series 29                               ##
+
 
