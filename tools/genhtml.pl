@@ -42,6 +42,14 @@ my $flag4         = 0;
 my $test_counter  = 1;
 my $failed_test_counter       = 0;
 my $failed_test_counter_flag  = 0;
+my $brok_test_counter       = 0;
+my $brok_test_counter_flag  = 0;
+my $warn_test_counter       = 0;
+my $warn_test_counter_flag  = 0;
+my $retr_test_counter       = 0;
+my $retr_test_counter_flag  = 0;
+my $conf_test_counter       = 0;
+my $conf_test_counter_flag  = 0;
 
 my $detected_fail = 0;
 my $detected_pass = 0;
@@ -109,7 +117,7 @@ foreach my $file (@ARGV) {
 			$process_line  = 0;
                         $flag  = 0;             $flag2 = 0;            $flag3 = 0;            $flag4 = 0;
                         $detected_fail = 0;     $detected_pass = 0;    $detected_warn = 0;    $detected_brok = 0;    $detected_retr = 0;    $detected_conf = 0;
-                        $background_colour = 0; $failed_test_counter_flag = 0;    $row_line= "";
+                        $background_colour = 0; $failed_test_counter_flag = 0; $brok_test_counter_flag = 0; $warn_test_counter_flag = 0; $retr_test_counter_flag = 0; $conf_test_counter_flag = 0;  $row_line= "";
 		}
 
 		if ($process_line) {
@@ -170,21 +178,37 @@ foreach my $file (@ARGV) {
                              $row_line = $row_line . "</strong></pre></td>";
                         }
                         if ( $flag2 == 1 ) {
-                             $row_line = $row_line . "$line \n";
-                             if ($line =~ /\ FAIL\ / ) {
-                                 $detected_fail = 1;
-                                 if ( $failed_test_counter_flag == 0 ) {
-                                      $failed_test_counter++;
-                                      $failed_test_counter_flag=1;
-                                 }
-                             } elsif ($line =~ /\ BROK\ / ) {
-                                 $detected_brok = 1;
-                             } elsif ($line =~ /\ WARN\ / ) {
-                                 $detected_warn = 1;
-                             } elsif ($line =~ /\ RETR\ / ) {
-                                 $detected_retr = 1;
-                             } elsif ($line =~ /\ CONF\ / ) {
-                                 $detected_conf = 1;
+			    $row_line = $row_line . "$line \n";
+			    if ($line =~ /\ FAIL\ / ) {
+				$detected_fail = 1;
+				if ( $failed_test_counter_flag == 0 ) {
+				    $failed_test_counter++;
+				    $failed_test_counter_flag=1;
+				}
+			    } elsif ($line =~ /\ BROK\ / ) {
+				$detected_brok = 1;
+				if ( $brok_test_counter_flag == 0 ) {
+				    $brok_test_counter++;
+				    $brok_test_counter_flag=1;
+				}
+			    } elsif ($line =~ /\ WARN\ / ) {
+				$detected_warn = 1;
+				if ( $warn_test_counter_flag == 0 ) {
+				    $warn_test_counter++;
+				    $warn_test_counter_flag=1;
+				}
+			    } elsif ($line =~ /\ RETR\ / ) {
+				$detected_retr = 1;
+				if ( $retr_test_counter_flag == 0 ) {
+				    $retr_test_counter++;
+				    $retr_test_counter_flag=1;
+				}
+			    } elsif ($line =~ /\ CONF\ / ) {
+				$detected_conf = 1;
+				if ( $conf_test_counter_flag == 0 ) {
+				    $conf_test_counter++;
+				    $conf_test_counter_flag=1;
+				}
                              } else {
                                  $detected_pass = 1;
                              }
@@ -215,13 +239,15 @@ print "<tr><td><strong>Output/Failed Result</strong></td><td><a href=\"file://$E
 print "<tr><td><strong>Total Tests</strong></td><td><strong>";
 $test_counter--;
 print "$test_counter                         </strong></td></tr>\n";
-print "<tr><td><strong>Total Failures</strong></td><td><strong> $failed_test_counter </strong></td></tr>\n";
-print "<tr><td><strong>Kernel Version</strong></td><td><strong>";
-$kernel_version=system("uname -r");       chop($kernel_version);
-print " $kernel_version </strong></td></tr>\n";
-print "<tr><td><strong>Machine Architecture</strong>  </td><td><strong>";
-$machine_architecture=system("uname -i"); chop($machine_architecture);
-print " $machine_architecture </strong></td></tr>\n";
+$test_passed=$test_counter-$failed_test_counter-$brok_test_counter-$warn_test_counter-$retr_test_counter-$conf_test_counter;
+print "<tr><td><strong>Total Test TPASS:</strong></td><td><strong> $test_passed </strong></td></tr>\n";
+print "<tr><td><strong>Total Test TFAIL:</strong></td><td><strong> $failed_test_counter </strong></td></tr>\n";
+print "<tr><td><strong>Total Test TBROK</strong></td><td><strong> $brok_test_counter </strong></td></tr>\n";
+print "<tr><td><strong>Total Test TWARN</strong></td><td><strong> $warn_test_counter </strong></td></tr>\n";
+print "<tr><td><strong>Total Test TRETR</strong></td><td><strong> $retr_test_counter </strong></td></tr>\n";
+print "<tr><td><strong>Total Test TCONF</strong></td><td><strong> $conf_test_counter </strong></td></tr>\n";
+print "<tr><td><strong>Kernel Version</strong></td><td><strong> $ENV{KERNEL_VERSION}  </strong></td></tr>\n";
+print "<tr><td><strong>Machine Architecture</strong></td><td><strong> $ENV{MACHINE_ARCH} </strong></td></tr>\n";
 print "<tr><td><strong>Hostname</strong>  </td> <td><strong>";
 $hostname=system("uname -n");             chop($hostname); 
 print " $hostname </strong></td></tr></tbody></table></div></body></html>\n";
