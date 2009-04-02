@@ -18,6 +18,12 @@ mtest06 mmap1 -x 0.05
 
 mem02 mem02
 
+# Test for mmap() page corruption. This test is meant for
+# 1 hour and more. Please change -h(hour), -m(minute) &
+# -s(seconds) settings, if default not desired
+mmap-corruption01 mmap-corruption01 -h1 -m1 -s1
+
+
 page01 page01
 page02 page02
 
