@@ -2,12 +2,13 @@
 PREFIX=/opt/ltp
 
 CFLAGS+= -Wall
-CFLAGS+= -D_USC_LIB_ -D__UCLIBC__
 CPPFLAGS+= -I../include 
 ifeq ($(shell uname -s),HP-UX)
 CFLAGS+=-Ae -D_LARGEFILE64_SOURCE +DA1.1
 endif
-CFLAGS+=$(if $(UCLINUX),-DUCLINUX)
+ifeq ($(UCLINUX),1)
+CFLAGS+= -D_USC_LIB_ -D__UCLIBC__ -DUCLINUX
+endif
 LDFLAGS+=
 TARGET=libltp.a
 SRCS=$(wildcard *.c)

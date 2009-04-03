@@ -2115,7 +2115,7 @@ long *curr_size_ptr;	/* BUG:14136 */
 				return -1;
 			}
 #if NEWIO
-#ifdef sgi
+#if defined(sgi) || defined(__linux__)
 			/* If this is POSIX I/O and it is via aio_{read,write}
 			 * or lio_listio then after completion of the I/O the
 			 * value of the file offset for the file is
@@ -2131,7 +2131,7 @@ long *curr_size_ptr;	/* BUG:14136 */
 					tmp = Woffset + grow_incr;
 				}
 			}
-#endif
+#endif /* sgi __linux__ */
 #endif
 		}
 		*curr_size_ptr=tmp;	/* BUG:14136 */
