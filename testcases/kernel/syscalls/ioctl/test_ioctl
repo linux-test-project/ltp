@@ -49,7 +49,7 @@ case "$device_no" in
     tst_resm TINFO "Testing ioctl02 with $tttype"
     ioctl02 -D $tttype
     RC=$?
-    if  [ $RC -eq 0 ] $
+    if  [ $RC -eq 0 ]
     then
      tst_resm TPASS "ioctl02 Passed with $tttype"
     else
