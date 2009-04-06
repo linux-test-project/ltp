@@ -37,6 +37,9 @@ export PATH=${PATH}:.
 export TCID="Power Management"
 export TST_COUNT=0
 
+#List of reusable functions defined in pm_include.sh
+. pm_include.sh
+
 # Function:     main
 #
 # Description:  - Execute all tests, exit with test status.
@@ -50,7 +53,7 @@ RC=0		#Return status
 check_kv_arch; RC=$?
 if [ $RC -eq 1 ] ; then
 	tst_resm TCONF "Kernel version or Architecture not supported:\
-	Not running testcases"
+Not running testcases"
 	exit 0
 fi
 
@@ -64,45 +67,110 @@ if [ -f /sys/devices/system/cpu/sched_mc_power_savings ] ; then
 	# Test CPU consolidation for corresponding sched_mc
 	which python > /dev/null
 	if [ $? -ne 0 ] ; then
-    	tst_resm TCONF "Python is not installed, CPU Consoldation test not run"
+		tst_resm TCONF "Python is not installed, CPU Consoldation\
+		 test not run"
 	else
-		# Trigger ebizzy workload for sched_mc_power_saving 1
-		cpu_consolidation.py -w ebizzy -l 1; RC=$?
-		if [ $RC -eq 1 ] ; then
-        	tst_resm TFAIL "cpu consolidation test failed"
+		# Test CPU consolidation on hyper-threaded system
+		hyper_threaded=$(is_hyper_threaded)
+		if [ $hyper_threaded -eq 1 ]; then
+			cpu_consolidation.py -w ebizzy -c 1 -t 0; RC=$?
+			if [ $RC -eq 1 ] ; then
+				tst_resm TFAIL "cpu consolidation \
+sched_mc=1, sched_smt=0"
+			else
+				tst_resm TPASS "cpu consolidation sched_mc=1,\
+sched_smt=0"
+			fi
+			cpu_consolidation.py -w ebizzy -c 1 -t 1; RC=$?
+			if [ $RC -eq 1 ] ; then
+				tst_resm TFAIL "cpu consolidation test \
+sched_mc=1, sched_smt=1"
+			else
+				tst_resm TPASS "cpu consolidation sched_mc=1,\
+sched_smt=1"
+			fi
+			cpu_consolidation.py -w ebizzy -c 0 -t 1; RC=$?
+			if [ $RC -eq 1 ] ; then
+				tst_resm TFAIL "cpu consolidation test \
+sched_mc=0, sched_smt=1"
+			else
+				tst_resm TPASS "cpu consolidation sched_mc=0,\
+sched_smt=1"
+			fi
 		else
-	        tst_resm TPASS "cpu consolidation test for sched_mc_power set to 1"
+			# Test CPU consolidation for sched_mc=1
+			cpu_consolidation.py -w ebizzy -c 1; RC=$?
+			if [ $RC -eq 1 ] ; then
+				tst_resm TFAIL "cpu consolidation test\
+ sched_mc_power set to 1"
+			else
+				tst_resm TPASS "cpu consolidation test for \
+sched_mc_power set to 1"
+			fi
 		fi
-        # Validate CPU level sched domain topology validation
-        sched_domain.py; RC=$?
-        if [ $RC -eq 1 ] ; then
-            tst_resm TFAIL "sched domain topology validation test failed"
-        else    
-            tst_resm TPASS "sched domain topology validation test passed"
-        fi      
+
+        	# sched_mc =1 and sched_smt =0
+		if [ $hyper_threaded -eq 1 ]; then
+			# sched_mc =1 and sched_smt =0
+			sched_domain.py -c 1 -t 0; RC=$?
+			if [ $RC -eq 1 ] ; then
+				tst_resm TFAIL "sched domain test sched_mc=1,\
+sched_smt=0 "
+			else    
+				tst_resm TPASS "sched domain test sched_mc=1,\
+sched_smt=0 "
+			fi
+
+			# sched_mc =1 and sched_smt =1  
+			sched_domain.py -c 1 -t 1; RC=$?
+			if [ $RC -eq 1 ] ; then
+				tst_resm TFAIL "sched domain test sched_mc=1,\
+sched_smt=1 "
+			else
+				tst_resm TPASS "sched domain test sched_mc=1,\
+sched_smt=1 "
+			fi
+
+			# sched_mc =0 and sched_smt =1
+			sched_domain.py -c 0 -t 1; RC=$?
+			if [ $RC -eq 1 ] ; then
+				tst_resm TFAIL "sched domain test sched_mc=0,\
+sched_smt=1 "
+			else
+				tst_resm TPASS "sched domain test sched_mc=0,\
+sched_smt=1 "
+			fi
+		else
+			# Validate CPU level sched domain topology validation
+			sched_domain.py -c 1; RC=$?
+			if [ $RC -eq 1 ] ; then
+				tst_resm TFAIL "sched domain test for sched_mc=1 "
+			else
+				tst_resm TPASS "sched domain test for sched_mc=1 "
+			fi
+		fi
 	fi
 else
 	tst_resm TCONF "Required kernel configuration for SCHED_MC NOT set"
-        exit 0
 fi
 # Checking cpufreq sysfs interface files
 #check_config.sh config_cpu_freq || RC=$?
 if [ -d /sys/devices/system/cpu/cpu0/cpufreq ] ; then
 	check_cpufreq_sysfs_files.sh; RC=$?
 	if [ $RC -eq 1 ] ; then
-		tst_resm TFAIL "CPUFREQ sysfs tests failed"
+		tst_resm TFAIL "CPUFREQ sysfs tests "
 	fi
 
 	# Changing governors
 	change_govr.sh; RC=$?
 	if [ $RC -eq 1 ] ; then
-		tst_resm TFAIL "Changing governors failed"
+		tst_resm TFAIL "Changing governors "
 	fi
 
 	# Changing frequencies
 	change_freq.sh; RC=$?
 	if [ $RC -eq 1 ] ; then
-		tst_resm TFAIL "Changing frequncies failed"
+		tst_resm TFAIL "Changing frequncies "
 	fi
 
 	# Loading and Unloading governor related kernel modules
@@ -112,11 +180,27 @@ if [ -d /sys/devices/system/cpu/cpu0/cpufreq ] ; then
 		modules got failed"
 	fi
 else
-       tst_resm TCONF "Required kernel configuration for CPU_FREQ NOT set"
+	tst_resm TCONF "Required kernel configuration for CPU_FREQ NOT set"
 fi
 
 # Checking cpuidle sysfs interface files
 check_cpuidle_sysfs_files.sh; RC=$?
 if [ $RC -eq 1 ] ; then
 	tst_resm TFAIL "CPUIDLE sysfs tests failed"
+fi
+
+# Test sched_smt_power_savings interface on HT machines
+if [ -f /sys/devices/system/cpu/sched_smt_power_savings ] ; then
+	test_sched_smt.sh; RC=$?
+	if [ $RC -eq 1 ] ; then
+		tst_resm TFAIL "SCHED_MC sysfs tests failed"
+	fi
+else
+	hyper_threaded=$(is_hyper_threaded)
+	if [ $hyper_threaded -eq 1 ]; then
+		tst_resm TFAIL "Required kernel configuration for SCHED_SMT NOT set"
+	else
+		tst_resm TCONF "Required Hyper Threading support in the\
+		 system under test"
+	fi
 fi

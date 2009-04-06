@@ -61,3 +61,43 @@ function get_supporting_govr() {
 	cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_available_governors | uniq
 }
 
+function is_hyper_threaded() {
+	siblings=`cat /proc/cpuinfo | grep siblings | uniq | cut -f2 -d':'`
+	cpu_cores=`cat /proc/cpuinfo | grep "cpu cores" | uniq | cut -f2 -d':'`
+	if [ $siblings -eq $cpu_cores ]; then
+		echo 0
+	else
+		echo 1
+	fi
+}
+
+function check_input() {
+	validity_check=${2:-valid}
+	testfile=$3
+	if [ "${validity_check}" = "invalid" ] ; then
+		PASS="Testcase FAIL - Able to execute"
+		FAIL="Testcase PASS - Unable to execute"
+	else
+		PASS="Testcase PASS"
+		FAIL="Testcase FAIL"
+	fi
+	for input in ${1}
+	do
+		echo ${input} > ${test_file} 2>/dev/null
+		return_value=$?
+		output=$(cat ${test_file})
+		if [ "${return_value}" = "0" -a "${input}" = "${output}" ] ; then
+			echo "${0}: ${PASS}: echo ${input} > ${test_file}"
+			if [ "${validity_check}" = "invalid" ] ; then
+				RC=1
+			fi
+		else
+			echo "${0}: ${FAIL}: echo ${input} > ${test_file}"
+			if [ "${validity_check}" = "valid" ] ; then
+				RC=1
+			fi
+		fi
+	done
+	return $RC
+}
+ 
