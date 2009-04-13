@@ -112,16 +112,16 @@ int main(int ac, char **av)
 	/* perform global setup for test */
 	setup();
 
-	/* Allocate stack for child */
-	if ((child_stack = (void *)malloc(CHILD_STACK_SIZE)) == NULL) {
-		tst_brkm(TBROK, cleanup, "Cannot allocate stack for child");
-	}
-
 	/* check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
+                               /* Allocate stack for child */
+                if((child_stack = (void *) malloc(CHILD_STACK_SIZE)) == NULL) {
+                        tst_brkm(TBROK, cleanup, "Cannot allocate stack for child");
+                }
+
 
 		/*
 		 * Call clone(2)
