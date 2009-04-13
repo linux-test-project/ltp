@@ -20,8 +20,8 @@
 int main(int argc, char *argv[])
 {
 	timer_t tid;
-
-	tid = (timer_t) BOGUSTID;
+	int tval = BOGUSTID;
+	tid = (timer_t) & tval;
 
 	if (timer_getoverrun(tid) == -1) {
 		if (EINVAL == errno) {
