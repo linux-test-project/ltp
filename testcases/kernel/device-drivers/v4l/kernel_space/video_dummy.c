@@ -45,7 +45,18 @@ static struct file_operations dummy_fops = {
 	.open           = dummy_open,
 	.release        = dummy_close,
 	.ioctl          = video_ioctl2, /* V4L2 ioctl handler */
+
+#ifdef CONFIG_COMPAT
+/*
+ * V4L/DVB (10139): v4l: rename v4l_compat_ioctl32 to v4l2_compat_ioctl32
+ * http://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=commit;h=9bb7cde793f0637cfbdd21c04050ffcef33a5624
+ */
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 19)
 	.compat_ioctl   = v4l_compat_ioctl32,
+#else
+	.compat_ioctl   = v4l2_compat_ioctl32,
+#endif
+#endif
 };
 
 

@@ -12,6 +12,7 @@
 <a href="#v4l2">V4L2</a> |
 <a href="#code_coverage">Code Coverage</a> |
 <a href="#status">Status</a> |
+<a href="results.html">Results</a> |
 <a href="#others">Similar projects</a> |
 <a href="#feedback">Feedback</a><br>
 </p>
@@ -259,7 +260,7 @@ implemented test cases.</p>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r10944.htm">VIDIOC_G_FMT</a></td>
-      <td>no</td>
+      <td>yes, only when STREAM_OFF</td>
       <td>Opt.</td>
     </tr>
     <tr>
@@ -314,12 +315,12 @@ implemented test cases.</p>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r11612.htm">VIDIOC_G_OUTPUT</a></td>
-      <td>no</td>
+      <td>yes, only when STREAM_OFF</td>
       <td>Opt.</td>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r11612.htm">VIDIOC_S_OUTPUT</a></td>
-      <td>no</td>
+      <td>yes, only when STREAM_OFF</td>
       <td>Opt.</td>
     </tr>
     <tr>
@@ -344,7 +345,7 @@ implemented test cases.</p>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r12051.htm">VIDIOC_G_SLICED_VBI_CAP</a></td>
-      <td>no</td>
+      <td>yes, only when STREAM_OFF</td>
       <td>Opt.</td>
     </tr>
     <tr>
@@ -405,28 +406,28 @@ implemented test cases.</p>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r13317.htm">VIDIOC_QUERYMENU</a></td>
-      <td>no</td>
+      <td>yes, only when STREAM_OFF</td>
       <td>Enum.</td>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r13641.htm">VIDIOC_QUERYSTD</a></td>
       <td>yes, only when STREAM_OFF</td>
-      <td><br></td>
+      <td>Opt.</td>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r13696.htm">VIDIOC_REQBUFS</a></td>
       <td>no</td>
-      <td><br></td>
+      <td>Opt.</td>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r13817.htm">VIDIOC_STREAMON</a></td>
       <td>no</td>
-      <td><br></td>
+      <td>Opt.</td>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r13817.htm">VIDIOC_STREAMOFF</a></td>
       <td>no</td>
-      <td><br></td>
+      <td>Opt.</td>
     </tr>
     <tr>
       <td>V4L2 <a href="spec/r13889.htm">mmap()</a></td>
@@ -514,7 +515,7 @@ The following documents and articles are useful if you are dealing with V4L2:
 <p>Any feedbacks, comments, ideas, etc. are welcome at the author's email address.</p>
 <hr style="width: 100%; height: 2px;">
 <p>Last changed:
-Wed Mar 18 17:39:11 CET 2009
+Thu Apr  9 07:38:33 CEST 2009
 </p>
 <p>
   <a href="http://validator.w3.org/check?uri=referer"><img

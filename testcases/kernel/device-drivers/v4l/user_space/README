@@ -3,6 +3,14 @@
 
 Release History
 ---------------
+ 9 Mar 2009  0.11 Test cases added for VIDIOC_G_OUTPUT, VIDIOC_S_OUTPUT,
+                  VIDIOC_G_FMT, VIDIOC_G_SLICED_VBI_CAP, VIDIOC_QUERYMENU;
+                  Cleaned up ret and errno variable names;
+                  Separated the NULL parameter test cases to a spearated testsuite
+                  and reworked most of the NULL parameter test cases;
+                  Added camera enabling through /sys/devices/platform/eeepc/camera;
+                  Added results page to documentation;
+                  Follow kernel API changes in video_dummy.ko
 18 Mar 2009  0.10 Test cases added for VIDIOC_G_PARM;
                   Duplicated test for V4L2_BUF_TYPE_VIDEO_CAPTURE removed in
                   VIDIOC_ENUM_FMT test

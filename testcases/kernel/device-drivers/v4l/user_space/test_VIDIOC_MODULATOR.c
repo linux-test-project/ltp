@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ * 28 Mar 2009  0.2  Clean up ret and errno variable names and dprintf() output
  *  2 Feb 2009  0.1  First release
  *
  * Written by Márton Németh <nm127@freemail.hu>
@@ -47,17 +48,19 @@ int valid_modulator_sub(__u32 tuner_sub) {
 }
 
 static int do_get_modulator(int f, __u32 index) {
-	int ret;
+	int ret_get, errno_get;
 	struct v4l2_modulator modulator;
 
 	memset(&modulator, 0xff, sizeof(modulator));
 	modulator.index = index;
-	ret = ioctl(f, VIDIOC_G_MODULATOR, &modulator);
+	ret_get = ioctl(f, VIDIOC_G_MODULATOR, &modulator);
+	errno_get = errno;
 
-	dprintf("VIDIOC_G_MODULATOR, ret=%i\n", ret);
+	dprintf("\t%s:%u: VIDIOC_G_MODULATOR, ret_get=%i, errno_get=%i\n",
+		__FILE__, __LINE__, ret_get, errno_get);
 
-	if (ret == 0) {
-		CU_ASSERT_EQUAL(ret, 0);
+	if (ret_get == 0) {
+		CU_ASSERT_EQUAL(ret_get, 0);
 
 		CU_ASSERT_EQUAL(modulator.index, index);
 
@@ -95,13 +98,13 @@ static int do_get_modulator(int f, __u32 index) {
 		);
 
 	} else {
-		dprintf("\t%s:%u: ret=%d (expected %d)\n", __FILE__, __LINE__, ret, -1);
-		dprintf("\t%s:%u: errno=%d (expected %d)\n", __FILE__, __LINE__, errno, EINVAL);
-		CU_ASSERT_EQUAL(ret, -1);
-		CU_ASSERT_EQUAL(errno, EINVAL);
+		dprintf("\t%s:%u: ret_get=%d (expected %d)\n", __FILE__, __LINE__, ret_get, -1);
+		dprintf("\t%s:%u: errno_get=%d (expected %d)\n", __FILE__, __LINE__, errno_get, EINVAL);
+		CU_ASSERT_EQUAL(ret_get, -1);
+		CU_ASSERT_EQUAL(errno_get, EINVAL);
 	}
 
-	return ret;
+	return ret_get;
 }
 
 void test_VIDIOC_G_MODULATOR() {
@@ -120,7 +123,7 @@ void test_VIDIOC_G_MODULATOR() {
 }
 
 void test_VIDIOC_G_MODULATOR_S32_MAX() {
-	int ret;
+	int ret_get, errno_get;
 	__u32 index;
 	struct v4l2_modulator modulator;
 
@@ -128,18 +131,20 @@ void test_VIDIOC_G_MODULATOR_S32_MAX() {
 
 	memset(&modulator, 0xff, sizeof(modulator));
 	modulator.index = index;
-	ret = ioctl(get_video_fd(), VIDIOC_G_MODULATOR, &modulator);
+	ret_get = ioctl(get_video_fd(), VIDIOC_G_MODULATOR, &modulator);
+	errno_get = errno;
 
-	dprintf("VIDIOC_G_MODULATOR, ret=%i\n", ret);
+	dprintf("\t%s:%u: VIDIOC_G_MODULATOR, ret_get=%i, errno_get=%i\n",
+		__FILE__, __LINE__, ret_get, errno_get);
 
-	dprintf("\t%s:%u: ret=%d (expected %d)\n", __FILE__, __LINE__, ret, -1);
-	dprintf("\t%s:%u: errno=%d (expected %d)\n", __FILE__, __LINE__, errno, EINVAL);
-	CU_ASSERT_EQUAL(ret, -1);
-	CU_ASSERT_EQUAL(errno, EINVAL);
+	dprintf("\t%s:%u: ret_get=%d (expected %d)\n", __FILE__, __LINE__, ret_get, -1);
+	dprintf("\t%s:%u: errno_get=%d (expected %d)\n", __FILE__, __LINE__, errno_get, EINVAL);
+	CU_ASSERT_EQUAL(ret_get, -1);
+	CU_ASSERT_EQUAL(errno_get, EINVAL);
 }
 
 void test_VIDIOC_G_MODULATOR_S32_MAX_1() {
-	int ret;
+	int ret_get, errno_get;
 	__u32 index;
 	struct v4l2_modulator modulator;
 
@@ -147,18 +152,19 @@ void test_VIDIOC_G_MODULATOR_S32_MAX_1() {
 
 	memset(&modulator, 0xff, sizeof(modulator));
 	modulator.index = index;
-	ret = ioctl(get_video_fd(), VIDIOC_G_MODULATOR, &modulator);
+	ret_get = ioctl(get_video_fd(), VIDIOC_G_MODULATOR, &modulator);
+	errno_get = errno;
 
-	dprintf("VIDIOC_G_MODULATOR, ret=%i\n", ret);
+	dprintf("VIDIOC_G_MODULATOR, ret_get=%i\n", ret_get);
 
-	dprintf("\t%s:%u: ret=%d (expected %d)\n", __FILE__, __LINE__, ret, -1);
-	dprintf("\t%s:%u: errno=%d (expected %d)\n", __FILE__, __LINE__, errno, EINVAL);
-	CU_ASSERT_EQUAL(ret, -1);
-	CU_ASSERT_EQUAL(errno, EINVAL);
+	dprintf("\t%s:%u: ret_get=%d (expected %d)\n", __FILE__, __LINE__, ret_get, -1);
+	dprintf("\t%s:%u: errno_get=%d (expected %d)\n", __FILE__, __LINE__, errno_get, EINVAL);
+	CU_ASSERT_EQUAL(ret_get, -1);
+	CU_ASSERT_EQUAL(errno_get, EINVAL);
 }
 
 void test_VIDIOC_G_MODULATOR_U32_MAX() {
-	int ret;
+	int ret_get, errno_get;
 	__u32 index;
 	struct v4l2_modulator modulator;
 
@@ -166,43 +172,51 @@ void test_VIDIOC_G_MODULATOR_U32_MAX() {
 
 	memset(&modulator, 0xff, sizeof(modulator));
 	modulator.index = index;
-	ret = ioctl(get_video_fd(), VIDIOC_G_MODULATOR, &modulator);
+	ret_get = ioctl(get_video_fd(), VIDIOC_G_MODULATOR, &modulator);
+	errno_get = errno;
 
-	dprintf("VIDIOC_G_MODULATOR, ret=%i\n", ret);
+	dprintf("\t%s:%u: VIDIOC_G_MODULATOR, ret_get=%i, errno_get=%i\n",
+		__FILE__, __LINE__, ret_get, errno_get);
 
-	dprintf("\t%s:%u: ret=%d (expected %d)\n", __FILE__, __LINE__, ret, -1);
-	dprintf("\t%s:%u: errno=%d (expected %d)\n", __FILE__, __LINE__, errno, EINVAL);
-	CU_ASSERT_EQUAL(ret, -1);
-	CU_ASSERT_EQUAL(errno, EINVAL);
+	dprintf("\t%s:%u: ret_get=%d (expected %d)\n", __FILE__, __LINE__, ret_get, -1);
+	dprintf("\t%s:%u: errno_get=%d (expected %d)\n", __FILE__, __LINE__, errno_get, EINVAL);
+	CU_ASSERT_EQUAL(ret_get, -1);
+	CU_ASSERT_EQUAL(errno_get, EINVAL);
 }
 
 void test_VIDIOC_G_MODULATOR_NULL() {
-	int ret1;
-	int errno1;
-	int ret2;
+	int ret_get, errno_get;
+	int ret_null, errno_null;
 	struct v4l2_modulator modulator;
 
 	memset(&modulator, 0xff, sizeof(modulator));
 	modulator.index = 0;
-	ret1 = ioctl(get_video_fd(), VIDIOC_G_MODULATOR, &modulator);
-	errno1 = errno;
+	ret_get = ioctl(get_video_fd(), VIDIOC_G_MODULATOR, &modulator);
+	errno_get = errno;
 
-	ret2 = ioctl(get_video_fd(), VIDIOC_G_MODULATOR, NULL);
+	dprintf("\t%s:%u: VIDIOC_G_MODULATOR, ret_get=%i, errno_get=%i\n",
+		__FILE__, __LINE__, ret_get, errno_get);
+
+	ret_null = ioctl(get_video_fd(), VIDIOC_G_MODULATOR, NULL);
+	errno_null = errno;
+
+	dprintf("\t%s:%u: VIDIOC_G_MODULATOR, ret_null=%i, errno_null=%i\n",
+		__FILE__, __LINE__, ret_null, errno_null);
 
 	/* check if VIDIOC_G_MODULATOR is supported at all or not */
-	if (ret1 == -1 && errno1 == EINVAL) {
-		/* VIDIOC_G_MODULATOR not supported at all, the parameter should not be evaluated */
-		dprintf("\t%s:%u: ret2=%d (expected %d)\n", __FILE__, __LINE__, ret2, -1);
-		dprintf("\t%s:%u: errno=%d (expected %d)\n", __FILE__, __LINE__, errno, EINVAL);
-		CU_ASSERT_EQUAL(ret2, -1);
-		CU_ASSERT_EQUAL(errno, EINVAL);
-
-	} else {
+	if (ret_get == 0) {
 		/* VIDIOC_G_MODULATOR is supported, the parameter should be checked */
-		dprintf("\t%s:%u: ret2=%d (expected %d)\n", __FILE__, __LINE__, ret2, -1);
-		dprintf("\t%s:%u: errno=%d (expected %d)\n", __FILE__, __LINE__, errno, EFAULT);
-		CU_ASSERT_EQUAL(ret2, -1);
-		CU_ASSERT_EQUAL(errno, EFAULT);
+		CU_ASSERT_EQUAL(ret_get, 0);
+		CU_ASSERT_EQUAL(ret_null, -1);
+		CU_ASSERT_EQUAL(errno_null, EFAULT);
+	} else {
+		/* VIDIOC_G_MODULATOR not supported at all, the parameter should not be evaluated */
+		CU_ASSERT_EQUAL(ret_get, -1);
+		CU_ASSERT_EQUAL(errno_get, EINVAL);
+		CU_ASSERT_EQUAL(ret_null, -1);
+		CU_ASSERT_EQUAL(errno_null, EINVAL);
 	}
 
 }
+
+/* TODO: test cases for VIDIOC_S_MODULATOR */

@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ * 25 Mar 2009  0.5  Cleaned up ret and errno variable names
  * 14 Mar 2009  0.4  Added test steps for S16_MIN, S16_MAX, U16_MIN and U16_MAX
  *  6 Mar 2009  0.3  Check whether the newly set value is converted to the
  *                   closest valid value when setting out of bounds value
@@ -31,8 +32,8 @@
 #include "test_VIDIOC_CTRL.h"
 
 int do_get_control(__u32 id) {
-	int ret1, errno1;
-	int ret2, errno2;
+	int ret_query, errno_query;
+	int ret_get, errno_get;
 	struct v4l2_queryctrl queryctrl;
 	struct v4l2_control control;
 
@@ -42,12 +43,12 @@ int do_get_control(__u32 id) {
 
 	memset(&queryctrl, 0, sizeof(queryctrl));
 	queryctrl.id = id;
-	ret1 = ioctl(get_video_fd(), VIDIOC_QUERYCTRL, &queryctrl);
-	errno1 = errno;
+	ret_query = ioctl(get_video_fd(), VIDIOC_QUERYCTRL, &queryctrl);
+	errno_query = errno;
 
-	dprintf("\t%s:%u: VIDIOC_QUERYCTRL, id=%u (V4L2_CID_BASE+%i), ret1=%i, errno1=%i\n",
-		__FILE__, __LINE__, id, id-V4L2_CID_BASE, ret1, errno1);
-	if (ret1 == 0) {
+	dprintf("\t%s:%u: VIDIOC_QUERYCTRL, id=%u (V4L2_CID_BASE+%i), ret_query=%i, errno_query=%i\n",
+		__FILE__, __LINE__, id, id-V4L2_CID_BASE, ret_query, errno_query);
+	if (ret_query == 0) {
 		dprintf("\t%s:%u: queryctrl = {.id=%u, .type=%i, .name=\"%s\", "
 		".minimum=%i, .maximum=%i, .step=%i, "
 		".default_value=%i, "
@@ -69,21 +70,22 @@ int do_get_control(__u32 id) {
 
 	memset(&control, 0xff, sizeof(control));
 	control.id = id;
-	ret2 = ioctl(get_video_fd(), VIDIOC_G_CTRL, &control);
-	errno2 = errno;
+	ret_get = ioctl(get_video_fd(), VIDIOC_G_CTRL, &control);
+	errno_get = errno;
 
-	dprintf("\tVIDIOC_G_CTRL, id=%u (V4L2_CID_BASE+%i), ret2=%i, errno2=%i\n",
-		id, id-V4L2_CID_BASE, ret2, errno2);
+	dprintf("\t%s:%u: VIDIOC_G_CTRL, id=%u (V4L2_CID_BASE+%i), ret_get=%i, errno_get=%i\n",
+		__FILE__, __LINE__,
+		id, id-V4L2_CID_BASE, ret_get, errno_get);
 
-	if (ret1 == 0) {
-		CU_ASSERT_EQUAL(ret1, 0);
+	if (ret_query == 0) {
+		CU_ASSERT_EQUAL(ret_query, 0);
 
 		switch (queryctrl.type) {
 		case V4L2_CTRL_TYPE_INTEGER:
 		case V4L2_CTRL_TYPE_BOOLEAN:
 		case V4L2_CTRL_TYPE_MENU:
-			CU_ASSERT_EQUAL(ret2, 0);
-			if (ret2 == 0) {
+			CU_ASSERT_EQUAL(ret_get, 0);
+			if (ret_get == 0) {
 				CU_ASSERT(queryctrl.minimum <= control.value);
 				CU_ASSERT(control.value <= queryctrl.maximum);
 			}
@@ -93,26 +95,26 @@ int do_get_control(__u32 id) {
 			/* This control only performs an action, does not have
 			 * any value
 			 */
-			CU_ASSERT_EQUAL(ret2, -1);
-			CU_ASSERT_EQUAL(errno2, EINVAL);
+			CU_ASSERT_EQUAL(ret_get, -1);
+			CU_ASSERT_EQUAL(errno_get, EINVAL);
 			break;
 
 		case V4L2_CTRL_TYPE_INTEGER64: /* TODO: what about this case? */
 		case V4L2_CTRL_TYPE_CTRL_CLASS:
 		default:
-			CU_ASSERT_EQUAL(ret2, -1);
-			CU_ASSERT_EQUAL(errno2, -1);
+			CU_ASSERT_EQUAL(ret_get, -1);
+			CU_ASSERT_EQUAL(errno_get, -1);
 		}
 	} else {
-		CU_ASSERT_EQUAL(ret1, -1);
-		CU_ASSERT_EQUAL(errno1, EINVAL);
+		CU_ASSERT_EQUAL(ret_query, -1);
+		CU_ASSERT_EQUAL(errno_query, EINVAL);
 
-		CU_ASSERT_EQUAL(ret2, -1);
-		CU_ASSERT_EQUAL(errno2, EINVAL);
+		CU_ASSERT_EQUAL(ret_get, -1);
+		CU_ASSERT_EQUAL(errno_get, EINVAL);
 
 	}
 
-	return ret1;
+	return ret_query;
 }
 
 void test_VIDIOC_G_CTRL() {
@@ -137,16 +139,44 @@ void test_VIDIOC_G_CTRL() {
 }
 
 void test_VIDIOC_G_CTRL_NULL() {
-	int ret;
+	int ret_get, errno_get;
+	int ret_null, errno_null;
+	struct v4l2_control control;
+	__u32 id;
 
-	ret = ioctl(get_video_fd(), VIDIOC_G_CTRL, NULL);
-	CU_ASSERT_EQUAL(ret, -1);
-	CU_ASSERT_EQUAL(errno, EFAULT);
+	id = V4L2_CID_BASE;
+	ret_get = -1;
+	while (ret_get == -1 && id < V4L2_CID_LASTP1) {
+		memset(&control, 0xff, sizeof(control));
+		control.id = id;
+		ret_get = ioctl(get_video_fd(), VIDIOC_G_CTRL, &control);
+		errno_get = errno;
+		dprintf("\t%s:%u: VIDIOC_G_CTRL, id=%u (V4L2_CID_BASE+%i), ret_get=%i, errno_get=%i\n",
+			__FILE__, __LINE__,
+			id, id-V4L2_CID_BASE, ret_get, errno_get);
+	}
+
+	ret_null = ioctl(get_video_fd(), VIDIOC_G_CTRL, NULL);
+	errno_null = errno;
+
+	dprintf("\t%s:%u: VIDIOC_G_CTRL, ret_null=%i, errno_null=%i\n",
+		__FILE__, __LINE__, ret_null, errno_null);
+
+	if (ret_get == 0) {
+		CU_ASSERT_EQUAL(ret_get, 0);
+		CU_ASSERT_EQUAL(ret_null, -1);
+		CU_ASSERT_EQUAL(errno_null, EFAULT);
+	} else {
+		CU_ASSERT_EQUAL(ret_get, -1);
+		CU_ASSERT_EQUAL(errno_get, EINVAL);
+		CU_ASSERT_EQUAL(ret_null, -1);
+		CU_ASSERT_EQUAL(errno_null, EINVAL);
+	}
 
 }
 
 int do_set_control(__u32 id) {
-	int ret1, errno1;
+	int ret_query, errno_query;
 	int ret_set, errno_set;
 	int ret_get, errno_get;
 	int ret_orig, errno_orig;
@@ -163,12 +193,12 @@ int do_set_control(__u32 id) {
 
 	memset(&queryctrl, 0, sizeof(queryctrl));
 	queryctrl.id = id;
-	ret1 = ioctl(get_video_fd(), VIDIOC_QUERYCTRL, &queryctrl);
-	errno1 = errno;
+	ret_query = ioctl(get_video_fd(), VIDIOC_QUERYCTRL, &queryctrl);
+	errno_query = errno;
 
-	dprintf("\t%s:%u: VIDIOC_QUERYCTRL, id=%u (V4L2_CID_BASE+%i), ret1=%i, errno1=%i\n",
-		__FILE__, __LINE__, id, id-V4L2_CID_BASE, ret1, errno1);
-	if (ret1 == 0) {
+	dprintf("\t%s:%u: VIDIOC_QUERYCTRL, id=%u (V4L2_CID_BASE+%i), ret_query=%i, errno_query=%i\n",
+		__FILE__, __LINE__, id, id-V4L2_CID_BASE, ret_query, errno_query);
+	if (ret_query == 0) {
 		dprintf("\t%s:%u: queryctrl = {.id=%u, .type=%i, .name=\"%s\", "
 		".minimum=%i, .maximum=%i, .step=%i, "
 		".default_value=%i, "
@@ -196,8 +226,8 @@ int do_set_control(__u32 id) {
 	dprintf("\t%s:%u: VIDIOC_G_CTRL, id=%u (V4L2_CID_BASE+%i), ret_orig=%i, errno_orig=%i, control_orig.value=%i\n",
 		__FILE__, __LINE__, id, id-V4L2_CID_BASE, ret_orig, errno_orig, control_orig.value);
 
-	if (ret1 == 0) {
-		CU_ASSERT_EQUAL(ret1, 0);
+	if (ret_query == 0) {
+		CU_ASSERT_EQUAL(ret_query, 0);
 
 		switch (queryctrl.type) {
 		case V4L2_CTRL_TYPE_INTEGER:
@@ -395,8 +425,8 @@ int do_set_control(__u32 id) {
 			CU_ASSERT_EQUAL(errno_orig, -1);
 		}
 	} else {
-		CU_ASSERT_EQUAL(ret1, -1);
-		CU_ASSERT_EQUAL(errno1, EINVAL);
+		CU_ASSERT_EQUAL(ret_query, -1);
+		CU_ASSERT_EQUAL(errno_query, EINVAL);
 
 		CU_ASSERT_EQUAL(ret_orig, -1);
 		CU_ASSERT_EQUAL(errno_orig, EINVAL);
@@ -449,7 +479,7 @@ int do_set_control(__u32 id) {
 
 	}
 
-	return ret1;
+	return ret_query;
 }
 
 static void do_set_control_value(__u32 id, __s32 value, struct v4l2_queryctrl *queryctrl);
@@ -519,7 +549,7 @@ static void do_set_control_value(__u32 id, __s32 value, struct v4l2_queryctrl *q
 
 
 int do_set_control_invalid(__u32 id) {
-	int ret1, errno1;
+	int ret_query, errno_query;
 	int ret_set, errno_set;
 	int ret_get, errno_get;
 	int ret_orig, errno_orig;
@@ -536,12 +566,12 @@ int do_set_control_invalid(__u32 id) {
 
 	memset(&queryctrl, 0, sizeof(queryctrl));
 	queryctrl.id = id;
-	ret1 = ioctl(get_video_fd(), VIDIOC_QUERYCTRL, &queryctrl);
-	errno1 = errno;
+	ret_query = ioctl(get_video_fd(), VIDIOC_QUERYCTRL, &queryctrl);
+	errno_query = errno;
 
-	dprintf("\t%s:%u: VIDIOC_QUERYCTRL, id=%u (V4L2_CID_BASE+%i), ret1=%i, errno1=%i\n",
-		__FILE__, __LINE__, id, id-V4L2_CID_BASE, ret1, errno1);
-	if (ret1 == 0) {
+	dprintf("\t%s:%u: VIDIOC_QUERYCTRL, id=%u (V4L2_CID_BASE+%i), ret_query=%i, errno_query=%i\n",
+		__FILE__, __LINE__, id, id-V4L2_CID_BASE, ret_query, errno_query);
+	if (ret_query == 0) {
 		dprintf("\t%s:%u: queryctrl = {.id=%u, .type=%i, .name=\"%s\", "
 		".minimum=%i, .maximum=%i, .step=%i, "
 		".default_value=%i, "
@@ -569,8 +599,8 @@ int do_set_control_invalid(__u32 id) {
 	dprintf("\t%s:%u: VIDIOC_G_CTRL, id=%u (V4L2_CID_BASE+%i), ret_orig=%i, errno_orig=%i, control_orig.value=%i\n",
 		__FILE__, __LINE__, id, id-V4L2_CID_BASE, ret_orig, errno_orig, control_orig.value);
 
-	if (ret1 == 0) {
-		CU_ASSERT_EQUAL(ret1, 0);
+	if (ret_query == 0) {
+		CU_ASSERT_EQUAL(ret_query, 0);
 
 		switch (queryctrl.type) {
 		case V4L2_CTRL_TYPE_INTEGER:
@@ -628,8 +658,8 @@ int do_set_control_invalid(__u32 id) {
 			CU_ASSERT_EQUAL(errno_orig, -1);
 		}
 	} else {
-		CU_ASSERT_EQUAL(ret1, -1);
-		CU_ASSERT_EQUAL(errno1, EINVAL);
+		CU_ASSERT_EQUAL(ret_query, -1);
+		CU_ASSERT_EQUAL(errno_query, EINVAL);
 
 		CU_ASSERT_EQUAL(ret_orig, -1);
 		CU_ASSERT_EQUAL(errno_orig, EINVAL);
@@ -726,7 +756,7 @@ int do_set_control_invalid(__u32 id) {
 
 	}
 
-	return ret1;
+	return ret_query;
 }
 
 
@@ -825,10 +855,17 @@ void test_VIDIOC_S_CTRL_gain_invalid() {
 
 
 void test_VIDIOC_S_CTRL_NULL() {
-	int ret;
+	int ret_null, errno_null;
 
-	ret = ioctl(get_video_fd(), VIDIOC_S_CTRL, NULL);
-	CU_ASSERT_EQUAL(ret, -1);
-	CU_ASSERT_EQUAL(errno, EFAULT);
+	/* TODO: check whether VIDIOC_S_CTRL is supported or not */
+
+	ret_null = ioctl(get_video_fd(), VIDIOC_S_CTRL, NULL);
+	errno_null = errno;
+
+	dprintf("\t%s:%u: VIDIOC_S_CTRL, ret_null=%i, errno_null=%i\n",
+		__FILE__, __LINE__, ret_null, errno_null);
+
+	CU_ASSERT_EQUAL(ret_null, -1);
+	CU_ASSERT_EQUAL(errno_null, EFAULT);
 
 }

@@ -1,6 +1,8 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ *  5 Apr 2009  0.3  Test case for NULL parameter reworked
+ * 28 Mar 2009  0.2  Clean up ret and errno variable names and dprintf() output
  * 30 Jan 2009  0.1  First release
  *
  * Written by Márton Németh <nm127@freemail.hu>
@@ -29,57 +31,61 @@
 #include "test_VIDIOC_QUERYSTD.h"
 
 void test_VIDIOC_QUERYSTD() {
-	int ret;
+	int ret_query, errno_query;
 	v4l2_std_id id;
 
-	memset(&id, 0, sizeof(id));
+	memset(&id, 0xff, sizeof(id));
 
-	ret = ioctl(get_video_fd(), VIDIOC_QUERYSTD, &id);
+	ret_query = ioctl(get_video_fd(), VIDIOC_QUERYSTD, &id);
+	errno_query = errno;
 
-	dprintf("VIDIOC_QUERYSTD, ret=%i\n", ret);
-	dprintf("\tid=0x%llx\n", id);
+	dprintf("\t%s:%u: VIDIOC_QUERYSTD, ret_query=%i, errno_query=%i, id=0x%llx\n",
+		__FILE__, __LINE__, ret_query, errno_query, id);
 
-	if (ret == 0) {
+	if (ret_query == 0) {
+		CU_ASSERT_EQUAL(ret_query, 0);
 		CU_ASSERT(id != 0);
 		CU_ASSERT(valid_v4l2_std_id(id));
 
-	} else if (ret == -1) {
+	} else {
 		/* if this ioctl is not supported, then errno shall be EINVAL */
-		dprintf("\tret=%d (expected %d)\n", ret, -1);
-		dprintf("\terrno=%d (expected %d)\n", errno, EINVAL);
-		CU_ASSERT_EQUAL(errno, EINVAL);
+		CU_ASSERT_EQUAL(ret_query, -1);
+		CU_ASSERT_EQUAL(errno_query, EINVAL);
 	}
 
 }
 
 void test_VIDIOC_QUERYSTD_NULL() {
-	int ret1;
-	int errno1;
-	int ret2;
+	int ret_query, errno_query;
+	int ret_null, errno_null;
 	v4l2_std_id id;
 
 	memset(&id, 0, sizeof(id));
-	ret1 = ioctl(get_video_fd(), VIDIOC_QUERYSTD, NULL);
-	errno1 = errno;
-	dprintf("\tChecking VIDIOC_QUERYSTD whether is supported: "
-		"%s (ret1=%d, errno1=%d)\n", (ret1 == -1 && errno1 == EINVAL) ? "no" : "yes", ret1, errno1);
+	ret_query = ioctl(get_video_fd(), VIDIOC_QUERYSTD, &id);
+	errno_query = errno;
 
-	ret2 = ioctl(get_video_fd(), VIDIOC_QUERYSTD, NULL);
+	dprintf("\t%s:%u: VIDIOC_QUERYSTD: ret_query=%i, errno_query=%i\n",
+		__FILE__, __LINE__, ret_query, errno_query);
+
+	ret_null = ioctl(get_video_fd(), VIDIOC_QUERYSTD, NULL);
+	errno_null = errno;
+
+	dprintf("\t%s:%u: VIDIOC_G_TUNER: ret_null=%i, errno_null=%i\n",
+		__FILE__, __LINE__, ret_null, errno_null);
 
 	/* check if VIDIOC_QUERYSTD is supported at all or not */
-	if (ret1 == -1 && errno1 == EINVAL) {
-		/* VIDIOC_QUERYSTD not supported at all, the parameter should not be evaluated */
-		dprintf("\t%s:%u: ret2=%d (expected %d)\n", __FILE__, __LINE__, ret2, -1);
-		dprintf("\t%s:%u: errno=%d (expected %d)\n", __FILE__, __LINE__, errno, EINVAL);
-		CU_ASSERT_EQUAL(ret2, -1);
-		CU_ASSERT_EQUAL(errno, EINVAL);
-
-	} else {
+	if (ret_query == 0) {
 		/* VIDIOC_QUERYSTD is supported, the parameter should be checked */
-		dprintf("\t%s:%u: ret2=%d (expected %d)\n", __FILE__, __LINE__, ret2, -1);
-		dprintf("\t%s:%u: errno=%d (expected %d)\n", __FILE__, __LINE__, errno, EFAULT);
-		CU_ASSERT_EQUAL(ret2, -1);
-		CU_ASSERT_EQUAL(errno, EFAULT);
+		CU_ASSERT_EQUAL(ret_query, 0);
+		CU_ASSERT_EQUAL(ret_null, -1);
+		CU_ASSERT_EQUAL(errno_null, EFAULT);
+	} else {
+		/* VIDIOC_QUERYSTD not supported at all, the parameter should not be evaluated */
+		CU_ASSERT_EQUAL(ret_query, -1);
+		CU_ASSERT_EQUAL(errno_query, EINVAL);
+		CU_ASSERT_EQUAL(ret_null, -1);
+		CU_ASSERT_EQUAL(errno_null, EINVAL);
+
 	}
 }
 

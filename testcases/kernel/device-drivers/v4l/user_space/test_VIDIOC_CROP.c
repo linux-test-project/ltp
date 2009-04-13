@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ *  3 Apr 2009  0.4  Minor style cleanup
  *  7 Mar 2009  0.3  Test cases added for VIDIOC_S_CROP
  * 13 Feb 2009  0.2  Test cases added for VIDIOC_G_CROP
  *  7 Feb 2009  0.1  First release
@@ -84,55 +85,58 @@ void test_VIDIOC_G_CROP_invalid() {
 }
 
 void test_VIDIOC_G_CROP_NULL() {
-	int ret1, errno1;
-	int ret2, errno2;
-	int ret3, errno3;
-	int ret4, errno4;
+	int ret_get1, errno_get1;
+	int ret_get2, errno_get2;
+	int ret_get3, errno_get3;
+	int ret_null, errno_null;
 	struct v4l2_crop crop;
 
 	memset(&crop, 0, sizeof(crop));
 	crop.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 
-	ret1 = ioctl(get_video_fd(), VIDIOC_G_CROP, &crop);
-	errno1 = errno;
+	ret_get1 = ioctl(get_video_fd(), VIDIOC_G_CROP, &crop);
+	errno_get1 = errno;
 
-	dprintf("VIDIOC_G_CROP ret1=%i, errno1=%i\n", ret1, errno1);
+	dprintf("\t%s:%u: VIDIOC_G_CROP ret_get1=%i, errno_get1=%i\n",
+		__FILE__, __LINE__, ret_get1, errno_get1);
 
 	memset(&crop, 0, sizeof(crop));
 	crop.type = V4L2_BUF_TYPE_VIDEO_OUTPUT;
 
-	ret2 = ioctl(get_video_fd(), VIDIOC_G_CROP, &crop);
-	errno2 = errno;
+	ret_get2 = ioctl(get_video_fd(), VIDIOC_G_CROP, &crop);
+	errno_get2 = errno;
 
-	dprintf("VIDIOC_G_CROP ret2=%i, errno2=%i\n", ret2, errno2);
+	dprintf("\t%s:%u: VIDIOC_G_CROP ret_get2=%i, errno_get2=%i\n",
+		__FILE__, __LINE__, ret_get2, errno_get2);
 
 	memset(&crop, 0, sizeof(crop));
 	crop.type = V4L2_BUF_TYPE_VIDEO_OVERLAY;
 
-	ret3 = ioctl(get_video_fd(), VIDIOC_G_CROP, &crop);
-	errno3 = errno;
+	ret_get3 = ioctl(get_video_fd(), VIDIOC_G_CROP, &crop);
+	errno_get3 = errno;
 
-	dprintf("VIDIOC_G_CROP ret3=%i, errno3=%i\n", ret3, errno3);
+	dprintf("\t%s:%u: VIDIOC_G_CROP ret_get3=%i, errno_get3=%i\n",
+		__FILE__, __LINE__, ret_get3, errno_get3);
 
+	ret_null = ioctl(get_video_fd(), VIDIOC_G_CROP, NULL);
+	errno_null = errno;
 
-	ret4 = ioctl(get_video_fd(), VIDIOC_G_CROP, NULL);
-	errno4 = errno;
+	dprintf("\t%s:%u: VIDIOC_G_CROP ret_null=%i, errno_null=%i\n",
+		__FILE__, __LINE__, ret_null, errno_null);
 
-	dprintf("VIDIOC_G_CROP ret4=%i, errno4=%i\n", ret4, errno4);
-
-	if (ret1 == 0 || ret2 == 0 || ret3 == 0) {
-		CU_ASSERT_EQUAL(ret4, -1);
-		CU_ASSERT_EQUAL(errno4, EFAULT);
+	if (ret_get1 == 0 || ret_get2 == 0 || ret_get3 == 0) {
+		CU_ASSERT_EQUAL(ret_null, -1);
+		CU_ASSERT_EQUAL(errno_null, EFAULT);
 
 	} else {
-		CU_ASSERT_EQUAL(ret1, -1);
-		CU_ASSERT_EQUAL(errno1, EINVAL);
-		CU_ASSERT_EQUAL(ret2, -1);
-		CU_ASSERT_EQUAL(errno2, EINVAL);
-		CU_ASSERT_EQUAL(ret3, -1);
-		CU_ASSERT_EQUAL(errno3, EINVAL);
-		CU_ASSERT_EQUAL(ret4, -1);
-		CU_ASSERT_EQUAL(errno4, EINVAL);
+		CU_ASSERT_EQUAL(ret_get1, -1);
+		CU_ASSERT_EQUAL(errno_get1, EINVAL);
+		CU_ASSERT_EQUAL(ret_get2, -1);
+		CU_ASSERT_EQUAL(errno_get2, EINVAL);
+		CU_ASSERT_EQUAL(ret_get3, -1);
+		CU_ASSERT_EQUAL(errno_get3, EINVAL);
+		CU_ASSERT_EQUAL(ret_null, -1);
+		CU_ASSERT_EQUAL(errno_null, EINVAL);
 
 	}
 

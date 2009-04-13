@@ -1,6 +1,8 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ *  3 Apr 2009  0.2  Added camera enabling through
+ *                   /sys/devices/platform/eeepc/camera
  * 18 Dec 2008  0.1  First release
  *
  * Written by Márton Németh <nm127@freemail.hu>
@@ -21,6 +23,7 @@
 
 #define DEV_VIDEO_STATE_NORMAL		0
 #define DEV_VIDEO_STATE_ASUS		1
+#define DEV_VIDEO_STATE_EEEPC		2
 
 static int f;
 static int dev_video_state;
@@ -68,7 +71,12 @@ int open_video() {
 		fprintf(stderr, "Retrying with ASUS camera...\n");
 		f = try_ASUS_camera("/proc/acpi/asus/camera", "1");
 		if (f < 0) {
-			error = 1;
+			f = try_ASUS_camera("/sys/devices/platform/eeepc/camera", "1");
+			if (f < 0) {
+				error = 1;
+			} else {
+				dev_video_state = DEV_VIDEO_STATE_EEEPC;
+			}
 		} else {
 			dev_video_state = DEV_VIDEO_STATE_ASUS;
 		}
@@ -84,8 +92,9 @@ int close_video() {
 	fflush(stdout);
 
 	ret = close(f);
+	f = 0;
 	if (ret < 0) {
-		perror("Cannot open close");
+		perror("Cannot close");
 		return 1;
 	}
 	switch (dev_video_state) {
@@ -93,6 +102,9 @@ int close_video() {
 			break;
 		case DEV_VIDEO_STATE_ASUS:
 			try_ASUS_camera("/proc/acpi/asus/camera", "0");
+			break;
+		case DEV_VIDEO_STATE_EEEPC:
+			try_ASUS_camera("/sys/devices/platform/eeepc/camera", "0");
 			break;
 	}
 

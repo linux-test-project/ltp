@@ -1,6 +1,8 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ *  3 Apr 2009  0.6  Test case for NULL parameter reworked
+ * 28 Mar 2009  0.5  Clean up ret and errno variable names and dprintf() output
  * 18 Jan 2009  0.4  Test case for MAX_EM28XX_TVNORMS removed, test cases for
  *                   S32_MAX & U32_MAX are enough
  *  1 Jan 2009  0.3  Added index=S32_MAX and S32_MAX+1
@@ -38,7 +40,7 @@
 #include "test_VIDIOC_ENUMSTD.h"
 
 void test_VIDIOC_ENUMSTD() {
-	int ret;
+	int ret_enum, errno_enum;
 	struct v4l2_standard std;
 	struct v4l2_standard std2;
 	__u32 i;
@@ -47,12 +49,14 @@ void test_VIDIOC_ENUMSTD() {
 	do {
 		memset(&std, 0xff, sizeof(std));
 		std.index = i;
-		ret = ioctl(get_video_fd(), VIDIOC_ENUMSTD, &std);
+		ret_enum = ioctl(get_video_fd(), VIDIOC_ENUMSTD, &std);
+		errno_enum = errno;
 
-		dprintf("VIDIOC_ENUMSTD, ret=%i\n", ret);
+		dprintf("\t%s:%u: VIDIOC_ENUMSTD, ret_enum=%i, errno_enum=%i\n",
+			__FILE__, __LINE__, ret_enum, errno_enum);
 
-		if (ret == 0) {
-			CU_ASSERT_EQUAL(ret, 0);
+		if (ret_enum == 0) {
+			CU_ASSERT_EQUAL(ret_enum, 0);
 			CU_ASSERT_EQUAL(std.index, i);
 			//CU_ASSERT_EQUAL(std.id, ?);
 
@@ -84,31 +88,30 @@ void test_VIDIOC_ENUMSTD() {
 			);
 
 		} else {
-			CU_ASSERT_EQUAL(ret, -1);
-			CU_ASSERT_EQUAL(errno, EINVAL);
+			CU_ASSERT_EQUAL(ret_enum, -1);
+			CU_ASSERT_EQUAL(errno_enum, EINVAL);
 
 			memset(&std2, 0xff, sizeof(std2));
 			std2.index = i;
 			CU_ASSERT_EQUAL(memcmp(&std, &std2, sizeof(std)), 0);
 
-			dprintf("\terrno=%i\n", errno);
-
 		}
 		i++;
-	} while (ret == 0);
+	} while (ret_enum == 0);
 }
 
 void test_VIDIOC_ENUMSTD_S32_MAX() {
-	int ret;
+	int ret_enum, errno_enum;
 	struct v4l2_standard std;
 	struct v4l2_standard std2;
 
 	memset(&std, 0xff, sizeof(std));
 	std.index = (__u32)S32_MAX;
-	ret = ioctl(get_video_fd(), VIDIOC_ENUMSTD, &std);
+	ret_enum = ioctl(get_video_fd(), VIDIOC_ENUMSTD, &std);
+	errno_enum = errno;
 
-	CU_ASSERT_EQUAL(ret, -1);
-	CU_ASSERT_EQUAL(errno, EINVAL);
+	CU_ASSERT_EQUAL(ret_enum, -1);
+	CU_ASSERT_EQUAL(errno_enum, EINVAL);
 
 	memset(&std2, 0xff, sizeof(std2));
 	std2.index = (__u32)S32_MAX;
@@ -116,16 +119,17 @@ void test_VIDIOC_ENUMSTD_S32_MAX() {
 }
 
 void test_VIDIOC_ENUMSTD_S32_MAX_1() {
-	int ret;
+	int ret_enum, errno_enum;
 	struct v4l2_standard std;
 	struct v4l2_standard std2;
 
 	memset(&std, 0xff, sizeof(std));
 	std.index = ((__u32)S32_MAX)+1;
-	ret = ioctl(get_video_fd(), VIDIOC_ENUMSTD, &std);
+	ret_enum = ioctl(get_video_fd(), VIDIOC_ENUMSTD, &std);
+	errno_enum = errno;
 
-	CU_ASSERT_EQUAL(ret, -1);
-	CU_ASSERT_EQUAL(errno, EINVAL);
+	CU_ASSERT_EQUAL(ret_enum, -1);
+	CU_ASSERT_EQUAL(errno_enum, EINVAL);
 
 	memset(&std2, 0xff, sizeof(std2));
 	std2.index = ((__u32)S32_MAX)+1;
@@ -134,16 +138,20 @@ void test_VIDIOC_ENUMSTD_S32_MAX_1() {
 
 
 void test_VIDIOC_ENUMSTD_U32_MAX() {
-	int ret;
+	int ret_enum, errno_enum;
 	struct v4l2_standard std;
 	struct v4l2_standard std2;
 
 	memset(&std, 0xff, sizeof(std));
 	std.index = U32_MAX;
-	ret = ioctl(get_video_fd(), VIDIOC_ENUMSTD, &std);
+	ret_enum = ioctl(get_video_fd(), VIDIOC_ENUMSTD, &std);
+	errno_enum = errno;
 
-	CU_ASSERT_EQUAL(ret, -1);
-	CU_ASSERT_EQUAL(errno, EINVAL);
+	dprintf("\t%s:%u: VIDIOC_ENUMSTD, ret_enum=%i, errno_enum=%i\n",
+		__FILE__, __LINE__, ret_enum, errno_enum);
+
+	CU_ASSERT_EQUAL(ret_enum, -1);
+	CU_ASSERT_EQUAL(errno_enum, EINVAL);
 
 	memset(&std2, 0xff, sizeof(std2));
 	std2.index = U32_MAX;
@@ -151,10 +159,33 @@ void test_VIDIOC_ENUMSTD_U32_MAX() {
 }
 
 void test_VIDIOC_ENUMSTD_NULL() {
-	int ret;
+	int ret_enum, errno_enum;
+	int ret_null, errno_null;
+	struct v4l2_standard std;
 
-	ret = ioctl(get_video_fd(), VIDIOC_ENUMSTD, NULL);
-	CU_ASSERT_EQUAL(ret, -1);
-	CU_ASSERT_EQUAL(errno, EFAULT);
+	memset(&std, 0xff, sizeof(std));
+	std.index = 0;
+	ret_enum = ioctl(get_video_fd(), VIDIOC_ENUMSTD, &std);
+	errno_enum = errno;
+
+	dprintf("\t%s:%u: VIDIOC_ENUMSTD, ret_enum=%i, errno_enum=%i\n",
+		__FILE__, __LINE__, ret_enum, errno_enum);
+
+	ret_null = ioctl(get_video_fd(), VIDIOC_ENUMSTD, NULL);
+	errno_null = errno;
+
+	dprintf("\t%s:%u: VIDIOC_ENUMSTD, ret_null=%i, errno_null=%i\n",
+		__FILE__, __LINE__, ret_null, errno_null);
+
+	if (ret_enum == 0) {
+		CU_ASSERT_EQUAL(ret_enum, 0);
+		CU_ASSERT_EQUAL(ret_null, -1);
+		CU_ASSERT_EQUAL(errno_null, EFAULT);
+	} else {
+		CU_ASSERT_EQUAL(ret_enum, -1);
+		CU_ASSERT_EQUAL(errno_enum, EINVAL);
+		CU_ASSERT_EQUAL(ret_null, -1);
+		CU_ASSERT_EQUAL(errno_null, EINVAL);
+	}
 
 }

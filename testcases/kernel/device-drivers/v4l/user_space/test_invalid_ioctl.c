@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ * 28 Mar 2009  0.2  Clean up ret and errno variable names
  * 18 Dec 2008  0.1  First release
  *
  * Written by Márton Németh <nm127@freemail.hu>
@@ -31,12 +32,13 @@
 /* invalid ioctls */
 
 static void do_invalid_ioctl(int f, int request) {
-	int ret;
+	int ret_invalid, errno_invalid;
 
-	ret = ioctl(f, request, NULL);
+	ret_invalid = ioctl(f, request, NULL);
+	errno_invalid = errno;
 
-	CU_ASSERT_EQUAL(ret, -1);
-	CU_ASSERT_EQUAL(errno, EINVAL);
+	CU_ASSERT_EQUAL(ret_invalid, -1);
+	CU_ASSERT_EQUAL(errno_invalid, EINVAL);
 }
 
 void test_invalid_ioctl_1() {

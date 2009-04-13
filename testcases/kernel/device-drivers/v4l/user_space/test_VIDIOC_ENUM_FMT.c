@@ -1,6 +1,8 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ *  3 Apr 2009  0.6  Test case for NULL parameter reworked
+ * 28 Mar 2009  0.5  Clean up ret and errno variable names and dprintf() output
  * 18 Mar 2009  0.4  Duplicated test for V4L2_BUF_TYPE_VIDEO_CAPTURE removed
  *  1 Jan 2009  0.3  Test cases added for index=S32_MAX and S32_MAX+1;
  *                   Test functions renamed
@@ -33,7 +35,7 @@
 #include "test_VIDIOC_ENUM_FMT.h"
 
 static void do_enumerate_formats(enum v4l2_buf_type type) {
-	int ret;
+	int ret_enum, errno_enum;
 	struct v4l2_fmtdesc format;
 	struct v4l2_fmtdesc format2;
 	__u32 i;
@@ -44,10 +46,13 @@ static void do_enumerate_formats(enum v4l2_buf_type type) {
 		format.index = i;
 		format.type = type;
 
-		ret = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, &format);
-		dprintf("VIDIOC_ENUM_FMT, ret=%i\n", ret);
-		if (ret == 0) {
-			CU_ASSERT_EQUAL(ret, 0);
+		ret_enum = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, &format);
+		errno_enum = errno;
+
+		dprintf("\t%s:%u: VIDIOC_ENUM_FMT, i=%i, ret_enum=%i, errno_enum=%i\n",
+			__FILE__, __LINE__, i, ret_enum, errno_enum);
+		if (ret_enum == 0) {
+			CU_ASSERT_EQUAL(ret_enum, 0);
 			CU_ASSERT_EQUAL(format.index, i);
 			//CU_ASSERT_EQUAL(format.type, ?);
 			//CU_ASSERT_EQUAL(format.flags, ?);
@@ -76,19 +81,17 @@ static void do_enumerate_formats(enum v4l2_buf_type type) {
 			);
 
 		} else {
-			CU_ASSERT_EQUAL(ret, -1);
-			CU_ASSERT_EQUAL(errno, EINVAL);
+			CU_ASSERT_EQUAL(ret_enum, -1);
+			CU_ASSERT_EQUAL(errno_enum, EINVAL);
 
 			memset(&format2, 0xff, sizeof(format2));
 			format2.index = i;
 			format2.type = type;
 			CU_ASSERT_EQUAL(memcmp(&format, &format2, sizeof(format)), 0);
 
-			dprintf("\terrno=%i\n", errno);
-
 		}
 		i++;
-	} while (ret == 0);
+	} while (ret_enum == 0);
 
 }
 
@@ -105,7 +108,7 @@ void test_VIDIOC_ENUM_FMT() {
 }
 
 void test_VIDIOC_ENUM_FMT_S32_MAX() {
-	int ret;
+	int ret_enum, errno_enum;
 	struct v4l2_fmtdesc format;
 	struct v4l2_fmtdesc format2;
 
@@ -113,10 +116,11 @@ void test_VIDIOC_ENUM_FMT_S32_MAX() {
 	memset(&format, 0xff, sizeof(format));
 	format.index = (__u32)S32_MAX;
 	format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-	ret = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, &format);
+	ret_enum = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, &format);
+	errno_enum = errno;
 
-	CU_ASSERT_EQUAL(ret, -1);
-	CU_ASSERT_EQUAL(errno, EINVAL);
+	CU_ASSERT_EQUAL(ret_enum, -1);
+	CU_ASSERT_EQUAL(errno_enum, EINVAL);
 
 	/* Check whether the original format struct is untouched */
 	memset(&format2, 0xff, sizeof(format2));
@@ -126,7 +130,7 @@ void test_VIDIOC_ENUM_FMT_S32_MAX() {
 }
 
 void test_VIDIOC_ENUM_FMT_S32_MAX_1() {
-	int ret;
+	int ret_enum, errno_enum;
 	struct v4l2_fmtdesc format;
 	struct v4l2_fmtdesc format2;
 
@@ -134,10 +138,11 @@ void test_VIDIOC_ENUM_FMT_S32_MAX_1() {
 	memset(&format, 0xff, sizeof(format));
 	format.index = ((__u32)S32_MAX)+1;
 	format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-	ret = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, &format);
+	ret_enum = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, &format);
+	errno_enum = errno;
 
-	CU_ASSERT_EQUAL(ret, -1);
-	CU_ASSERT_EQUAL(errno, EINVAL);
+	CU_ASSERT_EQUAL(ret_enum, -1);
+	CU_ASSERT_EQUAL(errno_enum, EINVAL);
 
 	/* Check whether the original format struct is untouched */
 	memset(&format2, 0xff, sizeof(format2));
@@ -148,7 +153,7 @@ void test_VIDIOC_ENUM_FMT_S32_MAX_1() {
 
 
 void test_VIDIOC_ENUM_FMT_U32_MAX() {
-	int ret;
+	int ret_enum, errno_enum;
 	struct v4l2_fmtdesc format;
 	struct v4l2_fmtdesc format2;
 
@@ -156,10 +161,11 @@ void test_VIDIOC_ENUM_FMT_U32_MAX() {
 	memset(&format, 0xff, sizeof(format));
 	format.index = U32_MAX;
 	format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-	ret = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, &format);
+	ret_enum = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, &format);
+	errno_enum = errno;
 
-	CU_ASSERT_EQUAL(ret, -1);
-	CU_ASSERT_EQUAL(errno, EINVAL);
+	CU_ASSERT_EQUAL(ret_enum, -1);
+	CU_ASSERT_EQUAL(errno_enum, EINVAL);
 
 	/* Check whether the original format struct is untouched */
 	memset(&format2, 0xff, sizeof(format2));
@@ -169,7 +175,7 @@ void test_VIDIOC_ENUM_FMT_U32_MAX() {
 }
 
 void test_VIDIOC_ENUM_FMT_invalid_type() {
-	int ret;
+	int ret_enum, errno_enum;
 	struct v4l2_fmtdesc format;
 	struct v4l2_fmtdesc format2;
 	int i;
@@ -182,10 +188,11 @@ void test_VIDIOC_ENUM_FMT_invalid_type() {
 	memset(&format, 0xff, sizeof(format));
 	format.index = 0;
 	format.type = 0;
-	ret = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, &format);
+	ret_enum = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, &format);
+	errno_enum = errno;
 
-	CU_ASSERT_EQUAL(ret, -1);
-	CU_ASSERT_EQUAL(errno, EINVAL);
+	CU_ASSERT_EQUAL(ret_enum, -1);
+	CU_ASSERT_EQUAL(errno_enum, EINVAL);
 
 	/* Check whether the original format struct is untouched */
 	memset(&format2, 0xff, sizeof(format2));
@@ -198,10 +205,11 @@ void test_VIDIOC_ENUM_FMT_invalid_type() {
 	memset(&format, 0xff, sizeof(format));
 	format.index = 0;
 	format.type = SINT_MIN;
-	ret = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, &format);
+	ret_enum = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, &format);
+	errno_enum = errno;
 
-	CU_ASSERT_EQUAL(ret, -1);
-	CU_ASSERT_EQUAL(errno, EINVAL);
+	CU_ASSERT_EQUAL(ret_enum, -1);
+	CU_ASSERT_EQUAL(errno_enum, EINVAL);
 
 	/* Check whether the original format struct is untouched */
 	memset(&format2, 0xff, sizeof(format2));
@@ -213,10 +221,11 @@ void test_VIDIOC_ENUM_FMT_invalid_type() {
 	memset(&format, 0xff, sizeof(format));
 	format.index = 0;
 	format.type = -1;
-	ret = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, &format);
+	ret_enum = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, &format);
+	errno_enum = errno;
 
-	CU_ASSERT_EQUAL(ret, -1);
-	CU_ASSERT_EQUAL(errno, EINVAL);
+	CU_ASSERT_EQUAL(ret_enum, -1);
+	CU_ASSERT_EQUAL(errno_enum, EINVAL);
 
 	/* Check whether the original format struct is untouched */
 	memset(&format2, 0xff, sizeof(format2));
@@ -229,10 +238,11 @@ void test_VIDIOC_ENUM_FMT_invalid_type() {
 		memset(&format, 0xff, sizeof(format));
 		format.index = 0;
 		format.type = i;
-		ret = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, &format);
+		ret_enum = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, &format);
+		errno_enum = errno;
 
-		CU_ASSERT_EQUAL(ret, -1);
-		CU_ASSERT_EQUAL(errno, EINVAL);
+		CU_ASSERT_EQUAL(ret_enum, -1);
+		CU_ASSERT_EQUAL(errno_enum, EINVAL);
 
 		/* Check whether the original format struct is untouched */
 		memset(&format2, 0xff, sizeof(format2));
@@ -250,10 +260,11 @@ void test_VIDIOC_ENUM_FMT_invalid_type() {
 	memset(&format, 0xff, sizeof(format));
 	format.index = 0;
 	format.type = SINT_MAX;
-	ret = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, &format);
+	ret_enum = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, &format);
+	errno_enum = errno;
 
-	CU_ASSERT_EQUAL(ret, -1);
-	CU_ASSERT_EQUAL(errno, EINVAL);
+	CU_ASSERT_EQUAL(ret_enum, -1);
+	CU_ASSERT_EQUAL(errno_enum, EINVAL);
 
 	/* Check whether the original format struct is untouched */
 	memset(&format2, 0xff, sizeof(format2));
@@ -263,10 +274,133 @@ void test_VIDIOC_ENUM_FMT_invalid_type() {
 }
 
 void test_VIDIOC_ENUM_FMT_NULL() {
-	int ret;
+	int ret_capture, errno_capture;
+	int ret_output, errno_output;
+	int ret_video_overlay, errno_video_overlay;
+	int ret_vbi_capture, errno_vbi_capture;
+	int ret_vbi_output, errno_vbi_output;
+	int ret_sliced_vbi_capture, errno_sliced_vbi_capture;
+	int ret_sliced_vbi_output, errno_sliced_vbi_output;
+	int ret_video_output_overlay, errno_video_output_overlay;
+	int ret_private, errno_private;
+	int ret_null, errno_null;
+	struct v4l2_fmtdesc format;
 
-	ret = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, NULL);
-	CU_ASSERT_EQUAL(ret, -1);
-	CU_ASSERT_EQUAL(errno, EFAULT);
+	memset(&format, 0xff, sizeof(format));
+	format.index = 0;
+	format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+	ret_capture = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, &format);
+	errno_capture = errno;
+
+	dprintf("\t%s:%u: VIDIOC_ENUM_FMT, ret_capture=%i, errno_capture=%i\n",
+		__FILE__, __LINE__, ret_capture, errno_capture);
+
+	memset(&format, 0xff, sizeof(format));
+	format.index = 0;
+	format.type = V4L2_BUF_TYPE_VIDEO_OUTPUT;
+	ret_output = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, &format);
+	errno_output = errno;
+
+	dprintf("\t%s:%u: VIDIOC_ENUM_FMT, ret_output=%i, errno_output=%i\n",
+		__FILE__, __LINE__, ret_output, errno_output);
+
+	memset(&format, 0xff, sizeof(format));
+	format.index = 0;
+	format.type = V4L2_BUF_TYPE_VIDEO_OVERLAY;
+	ret_video_overlay = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, &format);
+	errno_video_overlay = errno;
+
+	dprintf("\t%s:%u: VIDIOC_ENUM_FMT, ret_video_overlay=%i, errno_video_overlay=%i\n",
+		__FILE__, __LINE__, ret_video_overlay, errno_video_overlay);
+
+	memset(&format, 0xff, sizeof(format));
+	format.index = 0;
+	format.type = V4L2_BUF_TYPE_VBI_CAPTURE;
+	ret_vbi_capture = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, &format);
+	errno_vbi_capture = errno;
+
+	dprintf("\t%s:%u: VIDIOC_ENUM_FMT, ret_vbi_capture=%i, errno_vbi_capture=%i\n",
+		__FILE__, __LINE__, ret_vbi_capture, errno_vbi_capture);
+
+	memset(&format, 0xff, sizeof(format));
+	format.index = 0;
+	format.type = V4L2_BUF_TYPE_VBI_OUTPUT;
+	ret_vbi_output = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, &format);
+	errno_vbi_output = errno;
+
+	dprintf("\t%s:%u: VIDIOC_ENUM_FMT, ret_vbi_output=%i, errno_vbi_output=%i\n",
+		__FILE__, __LINE__, ret_vbi_output, errno_vbi_output);
+
+	memset(&format, 0xff, sizeof(format));
+	format.index = 0;
+	format.type = V4L2_BUF_TYPE_SLICED_VBI_CAPTURE;
+	ret_sliced_vbi_capture = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, &format);
+	errno_sliced_vbi_capture = errno;
+
+	dprintf("\t%s:%u: VIDIOC_ENUM_FMT, ret_sliced_vbi_capture=%i, errno_sliced_vbi_capture=%i\n",
+		__FILE__, __LINE__, ret_sliced_vbi_capture, errno_sliced_vbi_capture);
+
+	memset(&format, 0xff, sizeof(format));
+	format.index = 0;
+	format.type = V4L2_BUF_TYPE_SLICED_VBI_OUTPUT;
+	ret_sliced_vbi_output = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, &format);
+	errno_sliced_vbi_output = errno;
+
+	dprintf("\t%s:%u: VIDIOC_ENUM_FMT, ret_sliced_vbi_output=%i, errno_sliced_vbi_output=%i\n",
+		__FILE__, __LINE__, ret_sliced_vbi_output, errno_sliced_vbi_output);
+
+	memset(&format, 0xff, sizeof(format));
+	format.index = 0;
+	format.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_OVERLAY;
+	ret_video_output_overlay = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, &format);
+	errno_video_output_overlay = errno;
+
+	dprintf("\t%s:%u: VIDIOC_ENUM_FMT, ret_video_output_overlay=%i, errno_video_output_overlay=%i\n",
+		__FILE__, __LINE__, ret_video_output_overlay, errno_video_output_overlay);
+
+	memset(&format, 0xff, sizeof(format));
+	format.index = 0;
+	format.type = V4L2_BUF_TYPE_PRIVATE;
+	ret_private = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, &format);
+	errno_private = errno;
+
+	dprintf("\t%s:%u: VIDIOC_ENUM_FMT, ret_private=%i, errno_private=%i\n",
+		__FILE__, __LINE__, ret_private, errno_private);
+
+	ret_null = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, NULL);
+	errno_null = errno;
+
+	dprintf("\t%s:%u: VIDIOC_ENUM_FMT, ret_null=%i, errno_null=%i\n",
+		__FILE__, __LINE__, ret_null, errno_null);
+
+	if (ret_capture == 0 || ret_output == 0 ||
+	    ret_video_overlay == 0 || ret_vbi_capture == 0 ||
+	    ret_vbi_output == 0 || ret_sliced_vbi_capture == 0 ||
+	    ret_sliced_vbi_output == 0 || ret_video_output_overlay == 0 ||
+	    ret_private == 0) {
+		CU_ASSERT_EQUAL(ret_null, -1);
+		CU_ASSERT_EQUAL(errno_null, EFAULT);
+	} else {
+		CU_ASSERT_EQUAL(ret_capture, -1);
+		CU_ASSERT_EQUAL(errno_null, EINVAL);
+		CU_ASSERT_EQUAL(ret_output, -1);
+		CU_ASSERT_EQUAL(errno_output, EINVAL);
+		CU_ASSERT_EQUAL(ret_video_overlay, -1);
+		CU_ASSERT_EQUAL(errno_video_overlay, EINVAL);
+		CU_ASSERT_EQUAL(ret_vbi_capture, -1);
+		CU_ASSERT_EQUAL(errno_vbi_capture, EINVAL);
+		CU_ASSERT_EQUAL(ret_vbi_output, -1);
+		CU_ASSERT_EQUAL(errno_vbi_output, EINVAL);
+		CU_ASSERT_EQUAL(ret_sliced_vbi_capture, -1);
+		CU_ASSERT_EQUAL(errno_sliced_vbi_capture, EINVAL);
+		CU_ASSERT_EQUAL(ret_sliced_vbi_output, -1);
+		CU_ASSERT_EQUAL(errno_sliced_vbi_output, EINVAL);
+		CU_ASSERT_EQUAL(ret_video_output_overlay, -1);
+		CU_ASSERT_EQUAL(errno_video_output_overlay, EINVAL);
+		CU_ASSERT_EQUAL(ret_private, -1);
+		CU_ASSERT_EQUAL(errno_private, EINVAL);
+		CU_ASSERT_EQUAL(ret_null, -1);
+		CU_ASSERT_EQUAL(errno_null, EINVAL);
+	}
 
 }

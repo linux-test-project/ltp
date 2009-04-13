@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ * 27 Mar 2009  0.2  Clean up ret and errno variable names and dprintf() output
  * 23 Dec 2008  0.1  First release
  *
  * Written by Márton Németh <nm127@freemail.hu>
@@ -28,19 +29,22 @@
 #include "test_VIDIOC_LOG_STATUS.h"
 
 void test_VIDIOC_LOG_STATUS() {
-	int ret;
+	int ret_log, errno_log;
 
-	ret = ioctl(get_video_fd(), VIDIOC_LOG_STATUS);
-	dprintf("ret=%i, errno=%i\n", ret, errno);
+	ret_log = ioctl(get_video_fd(), VIDIOC_LOG_STATUS);
+	errno_log = errno;
+
+	dprintf("\t%s:%u: ret_log=%i, errno_log=%i\n",
+		__FILE__, __LINE__, ret_log, errno_log);
 
 	/* this is an optional ioctl, so two possible return values */
 	/* are possible */
-	if (ret == 0) {
-		CU_ASSERT_EQUAL(ret, 0);
+	if (ret_log == 0) {
+		CU_ASSERT_EQUAL(ret_log, 0);
 		/* TODO: check if something is shown in dmesg */
 
 	} else {
-		CU_ASSERT_EQUAL(ret, -1);
-		CU_ASSERT_EQUAL(errno, EINVAL);
+		CU_ASSERT_EQUAL(ret_log, -1);
+		CU_ASSERT_EQUAL(errno_log, EINVAL);
 	}
 }

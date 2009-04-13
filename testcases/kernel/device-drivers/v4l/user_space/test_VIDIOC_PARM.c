@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ * 29 Mar 2009  0.2  Comments updated
  * 18 Mar 2009  0.1  First release
  *
  * Written by Márton Németh <nm127@freemail.hu>
@@ -120,8 +121,9 @@ static void do_get_param(enum v4l2_buf_type type) {
 					CU_ASSERT(parm.parm.capture.timeperframe.denominator != 0);
 					// TODO: timerperframe: check struct v4l2_standard frameperiod field
 				} else {
-					CU_ASSERT_EQUAL(parm.parm.capture.timeperframe.numerator, 0);
-					CU_ASSERT_EQUAL(parm.parm.capture.timeperframe.denominator, 0);
+					//CU_ASSERT_EQUAL(parm.parm.capture.timeperframe.numerator, 0);
+					//CU_ASSERT_EQUAL(parm.parm.capture.timeperframe.denominator, 0);
+					CU_ASSERT(parm.parm.output.timeperframe.denominator != 0);
 				}
 
 				//CU_ASSERT_EQUAL(parm.parm.capture.extendedmode, ???);
@@ -163,8 +165,9 @@ static void do_get_param(enum v4l2_buf_type type) {
 					CU_ASSERT(parm.parm.output.timeperframe.denominator != 0);
 					// TODO: timerperframe: check struct v4l2_standard frameperiod field
 				} else {
-					CU_ASSERT_EQUAL(parm.parm.output.timeperframe.numerator, 0);
-					CU_ASSERT_EQUAL(parm.parm.output.timeperframe.denominator, 0);
+					//CU_ASSERT_EQUAL(parm.parm.output.timeperframe.numerator, 0);
+					//CU_ASSERT_EQUAL(parm.parm.output.timeperframe.denominator, 0);
+					CU_ASSERT(parm.parm.output.timeperframe.denominator != 0);
 				}
 
 				//CU_ASSERT_EQUAL(parm.parm.output.extendedmode, ???);
@@ -286,13 +289,21 @@ void test_VIDIOC_G_PARM_NULL() {
 	    ret_output == 0 ||
 	    ret_private == 0) {
 		/* if at least one type is supported, then the
-		 * result shall be EFAULT
+		 * parameter shall be tested and the result shall be EFAULT
 		 */
 		CU_ASSERT_EQUAL(ret_null, -1);
 		CU_ASSERT_EQUAL(errno_null, EFAULT);
 	} else {
+		CU_ASSERT_EQUAL(ret_capture, -1);
+		CU_ASSERT_EQUAL(errno_capture, EINVAL);
+		CU_ASSERT_EQUAL(ret_output, -1);
+		CU_ASSERT_EQUAL(errno_output, EINVAL);
+		CU_ASSERT_EQUAL(ret_private, -1);
+		CU_ASSERT_EQUAL(errno_private, EINVAL);
 		CU_ASSERT_EQUAL(ret_null, -1);
 		CU_ASSERT_EQUAL(errno_null, EINVAL);
 	}
 
 }
+
+/* TODO: test cases for VIDIOC_S_PARM */

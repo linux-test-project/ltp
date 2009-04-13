@@ -1,6 +1,10 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ *  5 Apr 2009  0.18 Test cases for VIDIOC_QUERYMENU added
+ *  4 Apr 2009  0.17 Test cases for VIDIOC_G_FMT added
+ * 29 Mar 2009  0.16 Test case for VIDIOC_S_FREQUENCY with NULL parameter added
+ * 22 Mar 2009  0.15 Test cases added for VIDIOC_G_OUTPUT and VIDIOC_S_OUTPUT
  * 18 Mar 2009  0.14 Test cases added for VIDIOC_G_PARM
  *  7 Mar 2009  0.13 Test cases added for VIDIOC_S_CROP
  * 22 Feb 2009  0.12 Test cases added for VIDIOC_S_CTRL
@@ -49,7 +53,9 @@
 #include "test_VIDIOC_QUERYCAP.h"
 #include "test_VIDIOC_QUERYSTD.h"
 #include "test_VIDIOC_QUERYCTRL.h"
+#include "test_VIDIOC_QUERYMENU.h"
 #include "test_VIDIOC_CROPCAP.h"
+#include "test_VIDIOC_G_SLICED_VBI_CAP.h"
 
 #include "test_VIDIOC_ENUMAUDIO.h"
 #include "test_VIDIOC_ENUMAUDOUT.h"
@@ -60,6 +66,7 @@
 
 #include "test_VIDIOC_STD.h"
 #include "test_VIDIOC_INPUT.h"
+#include "test_VIDIOC_OUTPUT.h"
 #include "test_VIDIOC_TUNER.h"
 #include "test_VIDIOC_MODULATOR.h"
 #include "test_VIDIOC_FREQUENCY.h"
@@ -69,6 +76,7 @@
 #include "test_VIDIOC_CROP.h"
 #include "test_VIDIOC_CTRL.h"
 #include "test_VIDIOC_PARM.h"
+#include "test_VIDIOC_FMT.h"
 
 #include "test_VIDIOC_LOG_STATUS.h"
 #include "test_invalid_ioctl.h"
@@ -76,11 +84,12 @@
 
 static CU_TestInfo suite_querycap[] = {
   { "VIDIOC_QUERYCAP", test_VIDIOC_QUERYCAP },
-  { "VIDIOC_QUERYCAP with NULL parameter", test_VIDIOC_QUERYCAP_NULL },
 
   { "VIDIOC_CROPCAP", test_VIDIOC_CROPCAP },
   { "VIDIOC_CROPCAP with different inputs", test_VIDIOC_CROPCAP_enum_INPUT },
-  { "VIDIOC_CROPCAP with NULL parameter", test_VIDIOC_CROPCAP_NULL },
+
+  { "VIDIOC_G_SLICED_VBI_CAP", test_VIDIOC_G_SLICED_VBI_CAP },
+  { "VIDIOC_G_SLICED_VBI_CAP with invalid types", test_VIDIOC_G_SLICED_VBI_CAP_invalid },
 
   CU_TEST_INFO_NULL,
 };
@@ -90,38 +99,32 @@ static CU_TestInfo suite_enums[] = {
   { "VIDIOC_ENUMAUDIO, index=S32_MAX", test_VIDIOC_ENUMAUDIO_S32_MAX },
   { "VIDIOC_ENUMAUDIO, index=S32_MAX+1", test_VIDIOC_ENUMAUDIO_S32_MAX_1 },
   { "VIDIOC_ENUMAUDIO, index=U32_MAX", test_VIDIOC_ENUMAUDIO_U32_MAX },
-  { "VIDIOC_ENUMAUDIO with NULL parameter", test_VIDIOC_ENUMAUDIO_NULL },
 
   { "VIDIOC_ENUMAUDOUT", test_VIDIOC_ENUMAUDOUT },
   { "VIDIOC_ENUMAUDOUT, index=S32_MAX", test_VIDIOC_ENUMAUDOUT_S32_MAX },
   { "VIDIOC_ENUMAUDOUT, index=S32_MAX+1", test_VIDIOC_ENUMAUDOUT_S32_MAX_1 },
   { "VIDIOC_ENUMAUDOUT, index=U32_MAX", test_VIDIOC_ENUMAUDOUT_U32_MAX },
-  { "VIDIOC_ENUMAUDOUT with NULL parameter", test_VIDIOC_ENUMAUDOUT_NULL },
 
   { "VIDIOC_ENUM_FMT", test_VIDIOC_ENUM_FMT },
   { "VIDIOC_ENUM_FMT, index=S32_MAX", test_VIDIOC_ENUM_FMT_S32_MAX },
   { "VIDIOC_ENUM_FMT, index=S32_MAX+1", test_VIDIOC_ENUM_FMT_S32_MAX_1 },
   { "VIDIOC_ENUM_FMT, index=U32_MAX", test_VIDIOC_ENUM_FMT_U32_MAX },
   { "VIDIOC_ENUM_FMT, invalid type", test_VIDIOC_ENUM_FMT_invalid_type },
-  { "VIDIOC_ENUM_FMT with NULL parameter", test_VIDIOC_ENUM_FMT_NULL },
 
   { "VIDIOC_ENUMINPUT", test_VIDIOC_ENUMINPUT },
   { "VIDIOC_ENUMINPUT, index=S32_MAX", test_VIDIOC_ENUMINPUT_S32_MAX },
   { "VIDIOC_ENUMINPUT, index=S32_MAX+1", test_VIDIOC_ENUMINPUT_S32_MAX_1 },
   { "VIDIOC_ENUMINPUT, index=U32_MAX", test_VIDIOC_ENUMINPUT_U32_MAX },
-  { "VIDIOC_ENUMINPUT with NULL parameter", test_VIDIOC_ENUMINPUT_NULL },
 
   { "VIDIOC_ENUMOUTPUT", test_VIDIOC_ENUMOUTPUT },
   { "VIDIOC_ENUMOUTPUT, index=S32_MAX", test_VIDIOC_ENUMOUTPUT_S32_MAX },
   { "VIDIOC_ENUMOUTPUT, index=S32_MAX+1", test_VIDIOC_ENUMOUTPUT_S32_MAX_1 },
   { "VIDIOC_ENUMOUTPUT, index=U32_MAX", test_VIDIOC_ENUMOUTPUT_U32_MAX },
-  { "VIDIOC_ENUMOUTPUT with NULL parameter", test_VIDIOC_ENUMOUTPUT_NULL },
 
   { "VIDIOC_ENUMSTD", test_VIDIOC_ENUMSTD },
   { "VIDIOC_ENUMSTD, index=S32_MAX", test_VIDIOC_ENUMSTD_S32_MAX },
   { "VIDIOC_ENUMSTD, index=S32_MAX+1", test_VIDIOC_ENUMSTD_S32_MAX_1 },
   { "VIDIOC_ENUMSTD, index=U32_MAX", test_VIDIOC_ENUMSTD_U32_MAX },
-  { "VIDIOC_ENUMSTD with NULL parameter", test_VIDIOC_ENUMSTD_NULL },
 
   { "VIDIOC_QUERYCTRL", test_VIDIOC_QUERYCTRL },
   { "VIDIOC_QUERYCTRL, id=V4L2_CID_BASE-1", test_VIDIOC_QUERYCTRL_BASE_1 },
@@ -131,7 +134,11 @@ static CU_TestInfo suite_enums[] = {
   { "VIDIOC_QUERYCTRL, enumerate private controls", test_VIDIOC_QUERYCTRL_private },
   { "VIDIOC_QUERYCTRL, V4L2_CID_PRIVATE_BASE-1", test_VIDIOC_QUERYCTRL_private_base_1 },
   { "VIDIOC_QUERYCTRL, last private control+1", test_VIDIOC_QUERYCTRL_private_last_1 },
-  { "VIDIOC_QUERYCTRL with NULL parameter", test_VIDIOC_QUERYCTRL_NULL },
+
+  { "VIDIOC_QUERYMENU", test_VIDIOC_QUERYMENU },
+  { "VIDIOC_QUERYMENU with invalid id", test_VIDIOC_QUERYMENU_invalid },
+  { "VIDIOC_QUERYMENU with private controls", test_VIDIOC_QUERYMENU_private },
+  { "VIDIOC_QUERYMENU, last private control+1", test_VIDIOC_QUERYMENU_private_last_1 },
 
   CU_TEST_INFO_NULL,
 };
@@ -141,77 +148,63 @@ static CU_TestInfo suite_get_set_try[] = {
   { "VIDIOC_S_STD with the enumerated values", test_VIDIOC_S_STD_from_enum },
   { "VIDIOC_S_STD", test_VIDIOC_S_STD },
   { "VIDIOC_S_STD with invalid standard", test_VIDIOC_S_STD_invalid_standard },
-  { "VIDIOC_G_STD with NULL parameter", test_VIDIOC_G_STD_NULL },
-  { "VIDIOC_S_STD with NULL parameter", test_VIDIOC_S_STD_NULL },
 
   { "VIDIOC_G_INPUT", test_VIDIOC_G_INPUT },
   { "VIDIOC_S_INPUT from enum", test_VIDIOC_S_INPUT_from_enum },
   { "VIDIOC_S_INPUT with invalid inputs", test_VIDIOC_S_INPUT_invalid_inputs },
-  { "VIDIOC_G_INPUT with NULL parameter", test_VIDIOC_G_INPUT_NULL },
-  { "VIDIOC_S_INPUT with NULL parameter", test_VIDIOC_S_INPUT_NULL },
+
+  { "VIDIOC_G_OUTPUT", test_VIDIOC_G_OUTPUT },
+  { "VIDIOC_S_OUTPUT from enum", test_VIDIOC_S_OUTPUT_from_enum },
+  { "VIDIOC_S_OUTPUT with invalid outputs", test_VIDIOC_S_OUTPUT_invalid_outputs },
 
   { "VIDIOC_G_TUNER", test_VIDIOC_G_TUNER },
   { "VIDIOC_G_TUNER, index=S32_MAX", test_VIDIOC_G_TUNER_S32_MAX },
   { "VIDIOC_G_TUNER, index=S32_MAX+1", test_VIDIOC_G_TUNER_S32_MAX_1 },
   { "VIDIOC_G_TUNER, index=U32_MAX", test_VIDIOC_G_TUNER_U32_MAX },
-  { "VIDIOC_G_TUNER with NULL parameter", test_VIDIOC_G_TUNER_NULL },
 
   { "VIDIOC_S_TUNER", test_VIDIOC_S_TUNER },
   { "VIDIOC_S_TUNER with invalid index and audmode parameters", test_VIDIOC_S_TUNER_invalid },
-  { "VIDIOC_S_TUNER with NULL parameter", test_VIDIOC_S_TUNER_NULL },
 
   { "VIDIOC_G_MODULATOR", test_VIDIOC_G_MODULATOR },
   { "VIDIOC_G_MODULATOR, index=S32_MAX", test_VIDIOC_G_MODULATOR_S32_MAX },
   { "VIDIOC_G_MODULATOR, index=S32_MAX+1", test_VIDIOC_G_MODULATOR_S32_MAX_1 },
   { "VIDIOC_G_MODULATOR, index=U32_MAX", test_VIDIOC_G_MODULATOR_U32_MAX },
-  { "VIDIOC_G_MODULATOR with NULL parameter", test_VIDIOC_G_MODULATOR_NULL },
 
   { "VIDIOC_G_FREQUENCY", test_VIDIOC_G_FREQUENCY },
   { "VIDIOC_G_FREQUENCY, tuner=S32_MAX", test_VIDIOC_G_FREQUENCY_S32_MAX },
   { "VIDIOC_G_FREQUENCY, tuner=S32_MAX+1", test_VIDIOC_G_FREQUENCY_S32_MAX_1 },
   { "VIDIOC_G_FREQUENCY, tuner=U32_MAX", test_VIDIOC_G_FREQUENCY_U32_MAX },
-  { "VIDIOC_G_FREQUENCY with NULL parameter", test_VIDIOC_G_FREQUENCY_NULL },
 
   { "VIDIOC_S_FREQUENCY", test_VIDIOC_S_FREQUENCY },
   { "VIDIOC_S_FREQUENCY with boundary values", test_VIDIOC_S_FREQUENCY_boundaries },
   { "VIDIOC_S_FREQUENCY scan all possbile values", test_VIDIOC_S_FREQUENCY_scan },
 
   { "VIDIOC_G_PRIORITY", test_VIDIOC_G_PRIORITY },
-  { "VIDIOC_G_PRIORITY with NULL parameter", test_VIDIOC_G_PRIORITY_NULL },
   { "VIDIOC_S_PRIORITY", test_VIDIOC_S_PRIORITY },
   { "VIDIOC_S_PRIORITY with invalid values", test_VIDIOC_S_PRIORITY_invalid },
-  { "VIDIOC_S_PRIORITY with NULL parameter", test_VIDIOC_S_PRIORITY_NULL },
 
   { "VIDIOC_G_AUDIO", test_VIDIOC_G_AUDIO },
   { "VIDIOC_G_AUDIO, ignore index value", test_VIDIOC_G_AUDIO_ignore_index },
-  { "VIDIOC_G_AUDIO with NULL parameter", test_VIDIOC_G_AUDIO_NULL },
 
   { "VIDIOC_S_AUDIO", test_VIDIOC_S_AUDIO },
   { "VIDIOC_S_AUDIO, index=S32_MAX", test_VIDIOC_S_AUDIO_S32_MAX },
   { "VIDIOC_S_AUDIO, index=S32_MAX+1", test_VIDIOC_S_AUDIO_S32_MAX_1 },
   { "VIDIOC_S_AUDIO, index=U32_MAX", test_VIDIOC_S_AUDIO_U32_MAX },
-  { "VIDIOC_S_AUDIO with NULL parameter", test_VIDIOC_S_AUDIO_NULL },
 
   { "VIDIOC_G_AUDOUT", test_VIDIOC_G_AUDOUT },
   { "VIDIOC_G_AUDOUT, ignore index value", test_VIDIOC_G_AUDOUT_ignore_index },
-  { "VIDIOC_G_AUDOUT with NULL parameter", test_VIDIOC_G_AUDOUT_NULL },
 
   { "VIDIOC_S_AUDOUT", test_VIDIOC_S_AUDOUT },
   { "VIDIOC_S_AUDOUT, index=S32_MAX", test_VIDIOC_S_AUDOUT_S32_MAX },
   { "VIDIOC_S_AUDOUT, index=S32_MAX+1", test_VIDIOC_S_AUDOUT_S32_MAX_1 },
   { "VIDIOC_S_AUDOUT, index=U32_MAX", test_VIDIOC_S_AUDOUT_U32_MAX },
-  { "VIDIOC_S_AUDOUT with NULL parameter", test_VIDIOC_S_AUDOUT_NULL },
 
   { "VIDIOC_G_CROP", test_VIDIOC_G_CROP },
   { "VIDIOC_G_CROP with invalid type", test_VIDIOC_G_CROP_invalid },
-  { "VIDIOC_G_CROP with NULL parameter", test_VIDIOC_G_CROP_NULL },
-
   { "VIDIOC_S_CROP", test_VIDIOC_S_CROP },
   { "VIDIOC_S_CROP with invalid type", test_VIDIOC_S_CROP_invalid},
-  { "VIDIOC_S_CROP with NULL parameter", test_VIDIOC_S_CROP_NULL },
 
   { "VIDIOC_G_CTRL", test_VIDIOC_G_CTRL },
-  { "VIDIOC_G_CTRL with NULL parameter", test_VIDIOC_G_CTRL_NULL },
 
   { "VIDIOC_S_CTRL", test_VIDIOC_S_CTRL },
   { "VIDIOC_S_CTRL with invalid value parameter", test_VIDIOC_S_CTRL_invalid },
@@ -220,11 +213,11 @@ static CU_TestInfo suite_get_set_try[] = {
   { "VIDIOC_S_CTRL, gain control", test_VIDIOC_S_CTRL_gain },
   { "VIDIOC_S_CTRL, gain control with invalid value parameter", test_VIDIOC_S_CTRL_gain_invalid },
 
-  { "VIDIOC_S_CTRL with NULL parameter", test_VIDIOC_S_CTRL_NULL },
-
   { "VIDIOC_G_PARM", test_VIDIOC_G_PARM },
   { "VIDIOC_G_PARM with invalid type parameter", test_VIDIOC_G_PARM_invalid },
-  { "VIDIOC_G_PARM with NULL parameter", test_VIDIOC_G_PARM_NULL },
+
+  { "VIDIOC_G_FMT", test_VIDIOC_G_FMT },
+  { "VIDIOC_G_FMT with invalid type parameter", test_VIDIOC_G_FMT_invalid_type },
 
   CU_TEST_INFO_NULL,
 };
@@ -232,11 +225,47 @@ static CU_TestInfo suite_get_set_try[] = {
 static CU_TestInfo suite_querystd[] = {
   { "VIDIOC_QUERYSTD", test_VIDIOC_QUERYSTD },
 
-  { "VIDIOC_QUERYSTD with NULL parameter", test_VIDIOC_QUERYSTD_NULL },
-
   CU_TEST_INFO_NULL,
 };
 
+static CU_TestInfo suite_null[] = {
+  { "VIDIOC_QUERYCAP with NULL parameter", test_VIDIOC_QUERYCAP_NULL },
+  { "VIDIOC_CROPCAP with NULL parameter", test_VIDIOC_CROPCAP_NULL },
+  { "VIDIOC_G_SLICED_VBI_CAP with NULL parameter", test_VIDIOC_G_SLICED_VBI_CAP_NULL },
+  { "VIDIOC_ENUMAUDIO with NULL parameter", test_VIDIOC_ENUMAUDIO_NULL },
+  { "VIDIOC_ENUMAUDOUT with NULL parameter", test_VIDIOC_ENUMAUDOUT_NULL },
+  { "VIDIOC_ENUM_FMT with NULL parameter", test_VIDIOC_ENUM_FMT_NULL },
+  { "VIDIOC_ENUMINPUT with NULL parameter", test_VIDIOC_ENUMINPUT_NULL },
+  { "VIDIOC_ENUMOUTPUT with NULL parameter", test_VIDIOC_ENUMOUTPUT_NULL },
+  { "VIDIOC_ENUMSTD with NULL parameter", test_VIDIOC_ENUMSTD_NULL },
+  { "VIDIOC_QUERYCTRL with NULL parameter", test_VIDIOC_QUERYCTRL_NULL },
+  { "VIDIOC_QUERYMENU with NULL parameter", test_VIDIOC_QUERYMENU_NULL },
+  { "VIDIOC_G_STD with NULL parameter", test_VIDIOC_G_STD_NULL },
+  { "VIDIOC_S_STD with NULL parameter", test_VIDIOC_S_STD_NULL },
+  { "VIDIOC_G_INPUT with NULL parameter", test_VIDIOC_G_INPUT_NULL },
+  { "VIDIOC_S_INPUT with NULL parameter", test_VIDIOC_S_INPUT_NULL },
+  { "VIDIOC_G_OUTPUT with NULL parameter", test_VIDIOC_G_OUTPUT_NULL },
+  { "VIDIOC_S_OUTPUT with NULL parameter", test_VIDIOC_S_OUTPUT_NULL },
+  { "VIDIOC_G_TUNER with NULL parameter", test_VIDIOC_G_TUNER_NULL },
+  { "VIDIOC_S_TUNER with NULL parameter", test_VIDIOC_S_TUNER_NULL },
+  { "VIDIOC_G_MODULATOR with NULL parameter", test_VIDIOC_G_MODULATOR_NULL },
+  { "VIDIOC_G_FREQUENCY with NULL parameter", test_VIDIOC_G_FREQUENCY_NULL },
+  { "VIDIOC_S_FREQUENCY with NULL parameter", test_VIDIOC_S_FREQUENCY_NULL },
+  { "VIDIOC_G_PRIORITY with NULL parameter", test_VIDIOC_G_PRIORITY_NULL },
+  { "VIDIOC_S_PRIORITY with NULL parameter", test_VIDIOC_S_PRIORITY_NULL },
+  { "VIDIOC_G_AUDIO with NULL parameter", test_VIDIOC_G_AUDIO_NULL },
+  { "VIDIOC_S_AUDIO with NULL parameter", test_VIDIOC_S_AUDIO_NULL },
+  { "VIDIOC_G_AUDOUT with NULL parameter", test_VIDIOC_G_AUDOUT_NULL },
+  { "VIDIOC_S_AUDOUT with NULL parameter", test_VIDIOC_S_AUDOUT_NULL },
+  { "VIDIOC_G_CROP with NULL parameter", test_VIDIOC_G_CROP_NULL },
+  { "VIDIOC_S_CROP with NULL parameter", test_VIDIOC_S_CROP_NULL },
+  { "VIDIOC_G_CTRL with NULL parameter", test_VIDIOC_G_CTRL_NULL },
+  { "VIDIOC_S_CTRL with NULL parameter", test_VIDIOC_S_CTRL_NULL },
+  { "VIDIOC_G_PARM with NULL parameter", test_VIDIOC_G_PARM_NULL },
+  { "VIDIOC_QUERYSTD with NULL parameter", test_VIDIOC_QUERYSTD_NULL },
+  { "VIDIOC_G_FMT with NULL parameter", test_VIDIOC_G_FMT_NULL },
+  CU_TEST_INFO_NULL,
+};
 
 static CU_TestInfo suite_invalid_ioctl[] = {
   { "invalid ioctl _IO(0, 0)", test_invalid_ioctl_1 },
@@ -258,6 +287,7 @@ static CU_SuiteInfo suites[] = {
   { "VIDIOC_ENUM* ioctl calls", open_video, close_video, suite_enums },
   { "VIDIOC_G_*, VIDIOC_S_* and VIDIOC_TRY_* ioctl calls", open_video, close_video, suite_get_set_try },
   { "VIDIOC_QUERYSTD", open_video, close_video, suite_querystd },
+  { "NULL parameter", open_video, close_video, suite_null },
   { "debug ioctl calls", open_video, close_video, suite_debug_ioctl },
   { "invalid ioctl calls", open_video, close_video, suite_invalid_ioctl },
   CU_SUITE_INFO_NULL,

@@ -1,6 +1,10 @@
 #
 # v4l-test: Test environment for Video For Linux Two API
 #
+#  5 Apr 2009  0.13 test_VIDIOC_QUERYMENU.c added
+#  4 Apr 2009  0.12 test_VIDIOC_FMT.c added
+# 22 Mar 2009  0.11 test_VIDIOC_OUTPUT.c added,
+#                   test_VIDIOC_G_SLICED_VBI_CAP.c added
 # 18 Mar 2009  0.10 test_VIDIOC_PARM.c added
 # 19 Feb 2009  0.9  test_VIDIOC_CTRL.c added
 #  7 Feb 2009  0.8  test_VIDIOC_CROP.c added
@@ -39,11 +43,14 @@ OBJS = dev_video.o \
        test_VIDIOC_ENUMSTD.o \
        test_VIDIOC_LOG_STATUS.o \
        test_VIDIOC_CROPCAP.o \
+       test_VIDIOC_G_SLICED_VBI_CAP.o \
        test_VIDIOC_CROP.o \
        test_VIDIOC_QUERYCTRL.o \
+       test_VIDIOC_QUERYMENU.o \
        test_VIDIOC_QUERYSTD.o \
        test_VIDIOC_STD.o \
        test_VIDIOC_INPUT.o \
+       test_VIDIOC_OUTPUT.o \
        test_VIDIOC_TUNER.o \
        test_VIDIOC_MODULATOR.o \
        test_VIDIOC_FREQUENCY.o \
@@ -52,6 +59,7 @@ OBJS = dev_video.o \
        test_VIDIOC_AUDOUT.o \
        test_VIDIOC_CTRL.o \
        test_VIDIOC_PARM.o \
+       test_VIDIOC_FMT.o \
        test_invalid_ioctl.o \
        v4l2_test.o
 

@@ -1,6 +1,8 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ * 29 Mar 2009  0.5  Clean up test case for NULL parameter
+ * 28 Mar 2009  0.4  Clean up ret and errno variable names and dprintf() output
  *  1 Jan 2009  0.3  Added index=S32_MAX, S32_MAX+1 and U32_MAX
  * 22 Dec 2008  0.2  Test case with NULL parameter added
  * 18 Dec 2008  0.1  First release
@@ -31,7 +33,7 @@
 #include "test_VIDIOC_ENUMAUDIO.h"
 
 void test_VIDIOC_ENUMAUDIO() {
-	int ret;
+	int ret_enum, errno_enum;
 	struct v4l2_audio audio;
 	struct v4l2_audio audio2;
 	__u32 i;
@@ -40,12 +42,14 @@ void test_VIDIOC_ENUMAUDIO() {
 	do {
 		memset(&audio, 0xff, sizeof(audio));
 		audio.index = i;
-		ret = ioctl(get_video_fd(), VIDIOC_ENUMAUDIO, &audio);
+		ret_enum = ioctl(get_video_fd(), VIDIOC_ENUMAUDIO, &audio);
+		errno_enum = errno;
 
-		dprintf("VIDIOC_ENUMAUDIO, ret=%i\n", ret);
+		dprintf("\t%s:%u: VIDIOC_ENUMAUDIO, ret_enum=%i, errno_enum=%i\n",
+			__FILE__, __LINE__, ret_enum, errno_enum);
 
-		if (ret == 0) {
-			CU_ASSERT_EQUAL(ret, 0);
+		if (ret_enum == 0) {
+			CU_ASSERT_EQUAL(ret_enum, 0);
 			CU_ASSERT_EQUAL(audio.index, i);
 
 			//CU_ASSERT_EQUAL(audio.name, ?);
@@ -68,32 +72,31 @@ void test_VIDIOC_ENUMAUDIO() {
 				);
 
 		} else {
-			CU_ASSERT_EQUAL(ret, -1);
-			CU_ASSERT_EQUAL(errno, EINVAL);
+			CU_ASSERT_EQUAL(ret_enum, -1);
+			CU_ASSERT_EQUAL(errno_enum, EINVAL);
 
 			memset(&audio2, 0xff, sizeof(audio2));
 			audio2.index = i;
 			CU_ASSERT_EQUAL(memcmp(&audio, &audio2, sizeof(audio)), 0);
 
-			dprintf("\terrno=%i\n", errno);
-
 		}
 		i++;
-	} while (ret == 0);
+	} while (ret_enum == 0);
 
 }
 
 void test_VIDIOC_ENUMAUDIO_S32_MAX() {
-	int ret;
+	int ret_enum, errno_enum;
 	struct v4l2_audio audio;
 	struct v4l2_audio audio2;
 
 	memset(&audio, 0xff, sizeof(audio));
 	audio.index = (__u32)S32_MAX;
-	ret = ioctl(get_video_fd(), VIDIOC_ENUMAUDIO, &audio);
+	ret_enum = ioctl(get_video_fd(), VIDIOC_ENUMAUDIO, &audio);
+	errno_enum = errno;
 
-	CU_ASSERT_EQUAL(ret, -1);
-	CU_ASSERT_EQUAL(errno, EINVAL);
+	CU_ASSERT_EQUAL(ret_enum, -1);
+	CU_ASSERT_EQUAL(errno_enum, EINVAL);
 
 	/* Check whether the original audio struct is untouched */
 	memset(&audio2, 0xff, sizeof(audio2));
@@ -102,16 +105,17 @@ void test_VIDIOC_ENUMAUDIO_S32_MAX() {
 }
 
 void test_VIDIOC_ENUMAUDIO_S32_MAX_1() {
-	int ret;
+	int ret_enum, errno_enum;
 	struct v4l2_audio audio;
 	struct v4l2_audio audio2;
 
 	memset(&audio, 0xff, sizeof(audio));
 	audio.index = ((__u32)S32_MAX)+1;
-	ret = ioctl(get_video_fd(), VIDIOC_ENUMAUDIO, &audio);
+	ret_enum = ioctl(get_video_fd(), VIDIOC_ENUMAUDIO, &audio);
+	errno_enum = errno;
 
-	CU_ASSERT_EQUAL(ret, -1);
-	CU_ASSERT_EQUAL(errno, EINVAL);
+	CU_ASSERT_EQUAL(ret_enum, -1);
+	CU_ASSERT_EQUAL(errno_enum, EINVAL);
 
 	/* Check whether the original audio struct is untouched */
 	memset(&audio2, 0xff, sizeof(audio2));
@@ -121,16 +125,17 @@ void test_VIDIOC_ENUMAUDIO_S32_MAX_1() {
 
 
 void test_VIDIOC_ENUMAUDIO_U32_MAX() {
-	int ret;
+	int ret_enum, errno_enum;
 	struct v4l2_audio audio;
 	struct v4l2_audio audio2;
 
 	memset(&audio, 0xff, sizeof(audio));
 	audio.index = U32_MAX;
-	ret = ioctl(get_video_fd(), VIDIOC_ENUMAUDIO, &audio);
+	ret_enum = ioctl(get_video_fd(), VIDIOC_ENUMAUDIO, &audio);
+	errno_enum = errno;
 
-	CU_ASSERT_EQUAL(ret, -1);
-	CU_ASSERT_EQUAL(errno, EINVAL);
+	CU_ASSERT_EQUAL(ret_enum, -1);
+	CU_ASSERT_EQUAL(errno_enum, EINVAL);
 
 	/* Check whether the original audio struct is untouched */
 	memset(&audio2, 0xff, sizeof(audio2));
@@ -139,10 +144,33 @@ void test_VIDIOC_ENUMAUDIO_U32_MAX() {
 }
 
 void test_VIDIOC_ENUMAUDIO_NULL() {
-	int ret;
+	int ret_enum, errno_enum;
+	int ret_null, errno_null;
+	struct v4l2_audio audio;
 
-	ret = ioctl(get_video_fd(), VIDIOC_ENUMAUDIO, NULL);
-	CU_ASSERT_EQUAL(ret, -1);
-	CU_ASSERT_EQUAL(errno, EFAULT);
+	memset(&audio, 0, sizeof(audio));
+	audio.index = 0;
+	ret_enum = ioctl(get_video_fd(), VIDIOC_ENUMAUDIO, &audio);
+	errno_enum = errno;
+
+	dprintf("\t%s:%u: VIDIOC_ENUMAUDIO, ret_enum=%i, errno_enum=%i\n",
+		__FILE__, __LINE__, ret_enum, errno_enum);
+
+	ret_null = ioctl(get_video_fd(), VIDIOC_ENUMAUDIO, NULL);
+	errno_null = errno;
+
+	dprintf("\t%s:%u: VIDIOC_ENUMAUDIO, ret_null=%i, errno_null=%i\n",
+		__FILE__, __LINE__, ret_null, errno_null);
+
+	if (ret_enum == 0) {
+		CU_ASSERT_EQUAL(ret_enum, 0);
+		CU_ASSERT_EQUAL(ret_null, -1);
+		CU_ASSERT_EQUAL(errno_null, EFAULT);
+	} else {
+		CU_ASSERT_EQUAL(ret_enum, -1);
+		CU_ASSERT_EQUAL(errno_enum, EINVAL);
+		CU_ASSERT_EQUAL(ret_null, -1);
+		CU_ASSERT_EQUAL(errno_null, EINVAL);
+	}
 
 }

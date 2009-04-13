@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ * 29 Mar 2009  0.3  Clean up ret and errno variable names and dprintf() output
  * 22 Dec 2008  0.2  Test case with NULL parameter added
  * 18 Dec 2008  0.1  First release
  *
@@ -105,10 +106,18 @@ void test_VIDIOC_QUERYCAP() {
 }
 
 void test_VIDIOC_QUERYCAP_NULL() {
-	int ret;
+	int ret_null, errno_null;
 
-	ret = ioctl(get_video_fd(), VIDIOC_QUERYCAP, NULL);
-	CU_ASSERT_EQUAL(ret, -1);
-	CU_ASSERT_EQUAL(errno, EFAULT);
+	ret_null = ioctl(get_video_fd(), VIDIOC_QUERYCAP, NULL);
+	errno_null = errno;
+
+	dprintf("\t%s:%u: VIDIOC_QUERYCAP, ret_null=%i, errno_null=%i\n",
+		__FILE__, __LINE__, ret_null, errno_null);
+
+	/* VIDIOC_QUERYCAP is a mandatory command, all drivers shall
+	 * support it. The parameter shall be always tested.
+	 */
+	CU_ASSERT_EQUAL(ret_null, -1);
+	CU_ASSERT_EQUAL(errno_null, EFAULT);
 
 }
