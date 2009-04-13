@@ -20,8 +20,8 @@
 int main(int argc, char *argv[])
 {
 	timer_t tid;
-
-	tid = (timer_t) BOGUSTIMERID;
+	int tval = BOGUSTIMERID;
+	tid = (timer_t) & tval;
 
 	if (timer_delete(tid) == -1) {
 		if (errno==EINVAL) {
