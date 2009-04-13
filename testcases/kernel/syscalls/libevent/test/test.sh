@@ -16,32 +16,32 @@ test () {
 	fi	
 
 echo -n " test-eof: "
-if ./test-eof >/dev/null ;$
-then$
-	echo OKAY ;$
-else$
-	echo FAILED ;$
+if ./test-eof >/dev/null ;
+then
+	echo OKAY ;
+else
+	echo FAILED ;
 fi
 echo -n " test-weof: "
-if ./test-weof >/dev/null ;$
-then$
-	echo OKAY ;$
-else$
-	echo FAILED ;$
+if ./test-weof >/dev/null ;
+then
+	echo OKAY ;
+else
+	echo FAILED ;
 fi
 echo -n " test-time: "
-if ./test-time >/dev/null ;$
-then$
-	echo OKAY ;$
-else$
-	echo FAILED ;$
+if ./test-time >/dev/null ;
+then
+	echo OKAY ;
+else
+	echo FAILED ;
 fi
 echo -n " regress: "
-if ./regress >/dev/null ;$
-then$
-	echo OKAY ;$
-else$
-	echo FAILED ;$
+if ./regress >/dev/null ;
+then
+	echo OKAY ;
+else
+	echo FAILED ;
 fi
 }
 
