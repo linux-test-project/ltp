@@ -67,6 +67,7 @@ chroot02 chroot02
 chroot03 chroot03
 chroot04 chroot04
 
+clock_nanosleep2_01 clock_nanosleep2_01
 
 clone01 clone01
 clone02 clone02
