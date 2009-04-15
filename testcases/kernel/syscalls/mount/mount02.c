@@ -410,8 +410,8 @@ int cleanup_test(int i)
 		if (Tflag) {
 			/* Avoid buffer overflow */
 			strncpy(Type, fstype,
-				(FSTYPE_LEN < strlen(fstype)) ? FSTYPE_LEN :
-				strlen(fstype));
+				(FSTYPE_LEN < strlen(fstype)+1) ? FSTYPE_LEN :
+				strlen(fstype)+1);
 		} else {
 			strcpy(Type, "ext2");
 		}
