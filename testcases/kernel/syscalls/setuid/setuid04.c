@@ -160,11 +160,12 @@ void do_master_child()
 
 			if (TEST_ERRNO == EACCES) {
 				tst_resm(TPASS, "open returned errno EACCES");
+				exit(0);
 			} else {
 				tst_resm(TFAIL,
 					 "open returned unexpected errno - %d",
 					 TEST_ERRNO);
-				continue;
+				exit(-1);
 			}
 		} else {
 			/* Wait for son completion */
