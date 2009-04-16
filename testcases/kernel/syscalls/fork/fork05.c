@@ -30,7 +30,7 @@
  *$
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: fork05.c,v 1.8 2009/03/23 13:35:41 subrata_modak Exp $ */
+/* $Id: fork05.c,v 1.9 2009/04/16 06:52:49 subrata_modak Exp $ */
 /**********************************************************
  *
  *    Linux Test Project - Silicon Graphics, Inc.
@@ -174,23 +174,23 @@ int main()
 
 	modify_ldt(1, &ldt0, sizeof(ldt0));
 
-      asm("movw %w0, %%fs": :"q"(7));
+      asm volatile ("movw %w0, %%fs" : : "q" (7));
 
-      asm("movl %%fs:0, %0":"=r"(lo));
-	tst_resm(TINFO, "a = %d", lo);
+      asm volatile ("movl %%fs:0, %0" : "=r" (lo));
+      tst_resm(TINFO, "a = %d", lo);
 
-      asm("pushl %%fs; popl %0":"=q"(lo));
-	tst_resm(TINFO, "%%fs = %#06hx", lo);
+      asm volatile ("pushl %%fs; popl %0" : "=q" (lo));
+      tst_resm(TINFO, "%%fs = %#06hx", lo);
 
-      asm("movl %0, %%fs:0": :"r"(99));
+      asm volatile ("movl %0, %%fs:0" : : "r" (99));
 
-	pid = fork();
+      pid = fork();
 
 	if (pid == 0) {
-	      asm("pushl %%fs; popl %0":"=q"(lo));
+                asm volatile ("pushl %%fs; popl %0" : "=q" (lo));
 		tst_resm(TINFO, "%%fs = %#06hx", lo);
 
-	      asm("movl %%fs:0, %0":"=r"(lo));
+                asm volatile ("movl %%fs:0, %0" : "=r" (lo));
 		tst_resm(TINFO, "a = %d", lo);
 
 		if (lo != 99)
