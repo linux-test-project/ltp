@@ -449,24 +449,26 @@ fi
  
 # The -s causes regeneration of symbol table even if a symbol table exists.
 
+echo "-)17 SKIPPED due to binutils ar automatically adds a symbol."
+
 # CODE
 
-rm -rf $TCtmp/lib.a;cd $TCdat
-ar -cr $TCtmp/lib.a file1.o
-crtest
-size1=`ls -l $TCtmp/lib.a|awk '{print $5}'`
-strip $TCtmp/lib.a 2>&1 1>/dev/null
-ar -s $TCtmp/lib.a 2>&1 1>/dev/null
-size2=`ls -l $TCtmp/lib.a|awk '{print $5}'`
+#rm -rf $TCtmp/lib.a;cd $TCdat
+#ar -cr $TCtmp/lib.a file1.o
+#crtest
+#size1=`ls -l $TCtmp/lib.a|awk '{print $5}'`
+#strip $TCtmp/lib.a 2>&1 1>/dev/null
+#ar -s $TCtmp/lib.a 2>&1 1>/dev/null
+#size2=`ls -l $TCtmp/lib.a|awk '{print $5}'`
 
-if [ $size1 -eq $size2 ]
+#if [ $size1 -eq $size2 ]
 
-then
-    echo "-)17"
-else
-    TCRESULT=17
-    echo "FAIL - ar with -s does not regenerate symbol table"
-fi
+#then
+#    echo "-)17"
+#else
+#    TCRESULT=17
+#    echo "FAIL - ar with -s does not regenerate symbol table"
+#fi
  
 # The -t option prints a table of contents of the archive file.
 
@@ -490,23 +492,25 @@ fi
  
 # The -t does not affect behaviour of -s option.
 
+echo "-)19 SKIPPED due to binutils ar automatically adds a symbol."
+
 # CODE
 
-rm -rf $TCtmp/lib.a;cd $TCdat
-ar -cr $TCtmp/lib.a file1.o
-crtest
-size1=`ls -l $TCtmp/lib.a|awk '{print $5}'`
-strip $TCtmp/lib.a 2>&1 1>/dev/null
-ar -ts $TCtmp/lib.a 2>&1 1>/dev/null
-size2=`ls -l $TCtmp/lib.a|awk '{print $5}'`
+#rm -rf $TCtmp/lib.a;cd $TCdat
+#ar -cr $TCtmp/lib.a file1.o
+#crtest
+#size1=`ls -l $TCtmp/lib.a|awk '{print $5}'`
+#strip $TCtmp/lib.a 2>&1 1>/dev/null
+#ar -ts $TCtmp/lib.a 2>&1 1>/dev/null
+#size2=`ls -l $TCtmp/lib.a|awk '{print $5}'`
 
-if [ $size1 -eq $size2 ]
-then
-    echo "-)19"
-else
-    TCRESULT=19
-    echo "FAIL - ar with -t option did affect the -s option"
-fi
+#if [ $size1 -eq $size2 ]
+#then
+#    echo "-)19"
+#else
+#    TCRESULT=19
+#    echo "FAIL - ar with -t option did affect the -s option"
+#fi
  
 # The 'u' flag causes files only with later modification date than 
 # in archive are replaced.
