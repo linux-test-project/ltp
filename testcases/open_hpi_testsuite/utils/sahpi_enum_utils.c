@@ -2755,6 +2755,12 @@ char * oh_lookup_resourceeventtype(SaHpiResourceEventTypeT value)
                 return "RESTORED";
         case SAHPI_RESE_RESOURCE_ADDED:
                 return "ADDED";
+        case SAHPI_RESE_RESOURCE_REMOVED:
+                return "REMOVED";
+        case SAHPI_RESE_RESOURCE_INACCESSIBLE:
+                return "INACCESSIBLE";
+        case SAHPI_RESE_RESOURCE_UPDATED:
+                return "UPDATED";
         default:
                 return NULL;
         }
@@ -2764,6 +2770,9 @@ struct oh_resourceeventtype_map resourceeventtype_strings[] = {
        {SAHPI_RESE_RESOURCE_FAILURE, "FAILURE"},
        {SAHPI_RESE_RESOURCE_RESTORED, "RESTORED"},
        {SAHPI_RESE_RESOURCE_ADDED, "ADDED"},
+       {SAHPI_RESE_RESOURCE_REMOVED, "REMOVED"},
+       {SAHPI_RESE_RESOURCE_INACCESSIBLE, "INACCESSIBLE"},
+       {SAHPI_RESE_RESOURCE_UPDATED, "UPDATED"},
 };
 
 /**

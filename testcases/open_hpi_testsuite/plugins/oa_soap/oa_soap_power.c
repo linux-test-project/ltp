@@ -341,7 +341,7 @@ SaErrorT set_server_power_state(SOAP_CON *con,
         SaErrorT rv = SA_OK;
         SaHpiPowerStateT tmp;
         struct setBladePower blade_power;
-        SaHpiInt32T timeout = 0;
+        SaHpiInt32T pwroff_poll = 0;
 
         if (con == NULL) {
                 err("Invalid parameters");
@@ -381,28 +381,6 @@ SaErrorT set_server_power_state(SOAP_CON *con,
                                 return SA_ERR_HPI_INTERNAL_ERROR;
                         }
                         break;
-                        /* Check whether the power state is OFF for every
-                         * 0.5 second.  Server blade takes few seconds
-                         * (around 4 secs) to power off.  Return after the
-                         * server blade's power state is OFF
-                         * OR, return error after 30 seconds
-                         * TODO: Remove this workaround when the OA/iLO firmware
-                         *       supports instaneous shutdown of the blade
-                         */
-                        while (timeout < TIMEOUT) {
-                                rv = get_server_power_state(con, bay_number,
-                                                            &tmp);
-                                if (rv != SA_OK) {
-                                        err("get blade power is failed");
-                                        return rv;
-                                }
-                                if (state == tmp)
-                                        return rv;
-                                usleep(HALF_SECOND);
-                                timeout++;
-                        }
-                        return SA_ERR_HPI_INTERNAL_ERROR;
-                        break;
 
                 case (SAHPI_POWER_CYCLE):
                         /* Power cycle requires the server to be
@@ -420,15 +398,40 @@ SaErrorT set_server_power_state(SOAP_CON *con,
                                             "failed");
                                         return SA_ERR_HPI_INTERNAL_ERROR;
                                 }
-                                /* Simultaneous issue of power off and power on
-                                 * will not power on the server blade.
-                                 * As workaround, put a delay of 5 seconds
-                                 * after power off.
-                                 * TODO: Remove the workaround as soon as this
-                                 *       is fixed in iLO2 of the server blade
-                                 */
-                                 sleep(SERVER_POWER_OFF_WAIT_PERIOD);
-                        }
+
+				/* Check whether the power state is OFF for 
+				 * every OA_POWEROFF_POLL_INTERVAL seconds.
+			 	 * Server blades take a few seconds (around 4
+				 * secs) to power off if no operating system is
+				 * running there. Otherwise, an orderly shutdown
+				 * is performed, which could take a while.
+				 */
+
+				while (pwroff_poll < OA_MAX_POWEROFF_POLLS) {
+					rv = get_server_power_state(con,
+							      bay_number, &tmp);
+					if (rv != SA_OK) {
+						err("get_server_power_state failed");
+						return(SA_ERR_HPI_INTERNAL_ERROR);
+					}
+
+					if ( tmp == SAHPI_POWER_OFF)
+						break;
+
+					sleep(OA_POWEROFF_POLL_INTERVAL);
+					pwroff_poll++;
+				}
+
+				if( pwroff_poll >= OA_MAX_POWEROFF_POLLS){
+
+					err("Max poweroff polls exceeded (%d)",
+							 OA_MAX_POWEROFF_POLLS);
+					return( SA_ERR_HPI_INTERNAL_ERROR);
+				}
+
+			} /* end if tmp != SAHPI_POWER_OFF */
+
+			/* Now, turn the blade back on */
 
                         blade_power.power = MOMENTARY_PRESS;
                         rv = soap_setBladePower(con, &blade_power);
@@ -437,6 +440,7 @@ SaErrorT set_server_power_state(SOAP_CON *con,
                                 return SA_ERR_HPI_INTERNAL_ERROR;
                         }
                         break;
+
                 default:
                         err("Invalid power state");
                         return SA_ERR_HPI_INVALID_PARAMS;

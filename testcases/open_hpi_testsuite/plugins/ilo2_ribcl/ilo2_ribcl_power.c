@@ -224,18 +224,15 @@ SaErrorT ilo2_ribcl_set_power_state(void *hnd,
 		return(SA_ERR_HPI_INVALID_RESOURCE);
 	}
 
+	/* Note that we don't check our cached power state, since the resource
+	 * power state could have been changed via a local power button. */ 
+
 	/* Allocate a temporary response buffer. */
 
 	response = malloc(ILO2_RIBCL_BUFFER_LEN);
 	if( response == NULL){
 		err("ilo2_ribcl_set_power_state: failed to allocate resp buffer.");
 		return( SA_ERR_HPI_OUT_OF_MEMORY);
-	}
-
-	/* if the saved current state is same as the one requested. 
-		just return */
-	if(res_info->power_cur_state == state) {
-        	return(SA_OK);
 	}
 
 	/* Retrieve our customized command buffer */
@@ -283,20 +280,42 @@ SaErrorT ilo2_ribcl_set_power_state(void *hnd,
 	/* If the requested state is SAHPI_POWER_CYCLE, turn the power on */
 	if(state == SAHPI_POWER_CYCLE) {
 		SaHpiPowerStateT temp_state;
+		int polls;
+
+		/* First, wait for the power to go off. An orderly shutdown
+		 * is being performed, so we might have to wait for
+		 * an OS running on that resource to fully shut down.
+		 * Unfortunately, the iLo2 will not queue the power commands.
+		 * If we send a "power on" command before the system actually
+		 * powers off, the "power on" command will be dropped, as the
+		 * iLo2 will detect that the system is already (still) on. */
 	
-		/* Power is off, update res_info power status */
+		temp_state = SAHPI_POWER_ON;
+		for( polls=0; polls < ILO2_MAX_POWER_POLLS; polls++){
+
+			dbg("Obtaining current power state from iLo2 at %s, try %d",
+				ilo2_ribcl_handler->ilo2_hostport, polls);
+			ilo2_ribcl_get_power_state(hnd, rid, &temp_state);
+			if(temp_state == SAHPI_POWER_OFF){
+				break;
+			}
+
+			/* iLo2 commands take around 10 seconds round trip,
+			 * so sleep for a while before retrying. */
+			sleep( ILO2_POWER_POLL_SLEEP_SECONDS);
+
+		} /* end for polls */
+
+		if( polls == ILO2_MAX_POWER_POLLS){
+			err("Maximum tries exceeded ( %d) checking power off for system at address %s",
+		 ILO2_MAX_POWER_POLLS, ilo2_ribcl_handler->ilo2_hostport);
+			return( SA_ERR_HPI_INTERNAL_ERROR);
+		}
+	
+		/* Power is off now. update res_info power status */
 		res_info->power_cur_state = SAHPI_POWER_OFF;
 	
-		/* It takes several seconds for the power to be tunred off.
-		   If we send power on right away it will be lost. Query
-		   power status before sending power on
-		*/
-		ilo2_ribcl_get_power_state(hnd, rid, &temp_state);
-		if(temp_state != SAHPI_POWER_OFF) {
-			err("ilo2_ribcl_set_power_state: Retuned power state = %d after a power off command returned success.", temp_state);
-			/* send power on. Power off takes time to complete as
-			   it is a graceful shutdown */
-		}
+		/* Now, try sending the power on command */
 
 		sps_cmd = ilo2_ribcl_handler->ribcl_xml_cmd[IR_CMD_SET_HOST_POWER_ON];
 		if( sps_cmd == NULL){

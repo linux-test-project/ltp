@@ -495,7 +495,6 @@ void update_hotswap_event(struct oh_handler_state *oh_handler,
         event->event.EventType = SAHPI_ET_HOTSWAP;
         /* TODO: map the timestamp of the OA generated event */
         oh_gettimeofday(&(event->event.Timestamp));
-        /* All the hotswap events raised by OA SOAP plug-in are critical */
         event->event.Severity = SAHPI_CRITICAL;
 }
 
@@ -1001,7 +1000,8 @@ SaErrorT create_event_session(struct oa_info *oa)
  * Return values:
  *      NONE
  **/
-void create_oa_connection(struct oa_info *oa,
+void create_oa_connection(struct oa_soap_handler *oa_handler,
+                          struct oa_info *oa,
                           char *user_name,
                           char *password)
 {
@@ -1015,11 +1015,13 @@ void create_oa_connection(struct oa_info *oa,
         }
 
         while (is_oa_accessible == SAHPI_FALSE) {
+                OA_SOAP_CHEK_SHUTDOWN_REQ(oa_handler, NULL, NULL, NULL);
                 /* Check whether the OA is present.
                  * If not, wait till the OA is inserted
                  */
                  is_oa_present = SAHPI_FALSE;
                  while (is_oa_present == SAHPI_FALSE) {
+                	OA_SOAP_CHEK_SHUTDOWN_REQ(oa_handler, NULL, NULL, NULL);
                         g_mutex_lock(oa->mutex);
                         if (oa->oa_status != OA_ABSENT) {
                                 g_mutex_unlock(oa->mutex);
@@ -1146,12 +1148,15 @@ SaErrorT delete_all_inventory_info(struct oh_handler_state *oh_handler)
 
         rpt = oh_get_resource_next(oh_handler->rptcache, SAHPI_FIRST_ENTRY);
         while (rpt) {
-                /* Free the inventory info from inventory RDR */
-                rv = free_inventory_info(oh_handler, rpt->ResourceId);
-                if (rv != SA_OK) {
-                        err("Inventory cleanup failed for resource id %d",
-                            rpt->ResourceId);
+                if (rpt->ResourceCapabilities 
+                    & SAHPI_CAPABILITY_INVENTORY_DATA) {
+                        /* Free the inventory info from inventory RDR */
+                        rv = free_inventory_info(oh_handler, rpt->ResourceId);
+                        if (rv != SA_OK) 
+                                err("Inventory cleanup failed for resource %d",
+                                    rpt->ResourceId);
                 }
+                /* Get the next resource */
                 rpt = oh_get_resource_next(oh_handler->rptcache,
                                            rpt->ResourceId);
         }
@@ -1228,13 +1233,17 @@ void release_oa_soap_resources(struct oa_soap_handler *oa_handler)
         if (oa_handler->oa_soap_resources.server.resource_id != NULL) {
                 g_free(oa_handler->oa_soap_resources.server.resource_id);
         }
-        for (i = 0; i < oa_handler->oa_soap_resources.server.max_bays; i++) {
-                if (oa_handler->oa_soap_resources.server.serial_number[i] !=
-                    NULL)
+	if(oa_handler->oa_soap_resources.server.serial_number != NULL) {
+	    for (i = 0; i < oa_handler->oa_soap_resources.server.max_bays; i++)
+	    {
+		if (oa_handler->oa_soap_resources.server.serial_number[i] !=
+                    NULL) {
                         g_free(oa_handler->oa_soap_resources.server.
                                serial_number[i]);
-        }
-        g_free(oa_handler->oa_soap_resources.server.serial_number);
+		}
+            }
+            g_free(oa_handler->oa_soap_resources.server.serial_number);
+	}
 
         /* Release memory of interconnect presence and serial number array */
         if (oa_handler->oa_soap_resources.interconnect.presence != NULL) {
@@ -1243,14 +1252,17 @@ void release_oa_soap_resources(struct oa_soap_handler *oa_handler)
         if (oa_handler->oa_soap_resources.interconnect.resource_id != NULL) {
                 g_free(oa_handler->oa_soap_resources.interconnect.resource_id);
         }
-        for (i = 0; i < oa_handler->oa_soap_resources.interconnect.max_bays;
+	if(oa_handler->oa_soap_resources.interconnect.serial_number != NULL) {
+            for (i = 0; i < oa_handler->oa_soap_resources.interconnect.max_bays;
              i++) {
                 if (oa_handler->oa_soap_resources.interconnect.
-                    serial_number[i] != NULL)
+                    serial_number[i] != NULL) {
                         g_free(oa_handler->oa_soap_resources.interconnect.
                                serial_number[i]);
-        }
-        g_free(oa_handler->oa_soap_resources.interconnect.serial_number);
+		}
+            }
+            g_free(oa_handler->oa_soap_resources.interconnect.serial_number);
+	}
 
         /* Release memory of OA presence and serial number array */
         if (oa_handler->oa_soap_resources.oa.presence != NULL) {
@@ -1259,12 +1271,15 @@ void release_oa_soap_resources(struct oa_soap_handler *oa_handler)
         if (oa_handler->oa_soap_resources.oa.resource_id != NULL) {
                 g_free(oa_handler->oa_soap_resources.oa.resource_id);
         }
-        for (i = 0; i < oa_handler->oa_soap_resources.oa.max_bays; i++) {
-                if (oa_handler->oa_soap_resources.oa.serial_number[i] != NULL)
+	if(oa_handler->oa_soap_resources.oa.serial_number != NULL) {
+            for (i = 0; i < oa_handler->oa_soap_resources.oa.max_bays; i++) {
+                if (oa_handler->oa_soap_resources.oa.serial_number[i] != NULL) {
                         g_free(oa_handler->oa_soap_resources.oa.
                                serial_number[i]);
-        }
-        g_free(oa_handler->oa_soap_resources.oa.serial_number);
+		}
+            }
+            g_free(oa_handler->oa_soap_resources.oa.serial_number);
+	}
 
         /* Release memory of fan presence.  Since fans do not have serial
          * numbers, a serial numbers array does not need to be released.
@@ -1288,13 +1303,17 @@ void release_oa_soap_resources(struct oa_soap_handler *oa_handler)
         if (oa_handler->oa_soap_resources.ps_unit.resource_id !=NULL) {
                 g_free(oa_handler->oa_soap_resources.ps_unit.resource_id);
         }
-        for (i = 0; i < oa_handler->oa_soap_resources.ps_unit.max_bays; i++) {
+	if(oa_handler->oa_soap_resources.ps_unit.serial_number != NULL) {
+            for (i = 0; i < oa_handler->oa_soap_resources.ps_unit.max_bays; i++)
+	    {
                 if (oa_handler->oa_soap_resources.ps_unit.serial_number[i]
-                    != NULL)
+                    != NULL) {
                         g_free(oa_handler->oa_soap_resources.
                                 ps_unit.serial_number[i]);
-        }
-        g_free(oa_handler->oa_soap_resources.ps_unit.serial_number);
+		}
+            }
+            g_free(oa_handler->oa_soap_resources.ps_unit.serial_number);
+	}
 }
 
 /**

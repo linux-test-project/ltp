@@ -19,6 +19,7 @@
  *     Thomas Kanngieser <thomas.kanngieser@fci.com>
  *     Renier Morales <renier@openhpi.org>
  *     Racing Guo <racing.guo@intel.com>
+ *     Anton Pak <anton.pak@pigeonpoint.com>
  */
 
 #include <string.h>
@@ -29,7 +30,7 @@
 
 /*********************************************************************
  *
- * Begin SAHPI B.1.1 Functions. For full documentation please see
+ * Begin SAHPI B.03.01 Functions. For full documentation please see
  * the specification
  *
  ********************************************************************/
@@ -407,6 +408,37 @@ SaErrorT SAHPI_API saHpiResourceTagSet(
         }
         rptentry->ResourceTag = *ResourceTag;
         oh_release_domain(d); /* Unlock domain */
+
+        return SA_OK;
+}
+
+SaErrorT SAHPI_API saHpiMyEntityPathGet(
+        SAHPI_IN  SaHpiSessionIdT  SessionId,
+        SAHPI_OUT SaHpiEntityPathT *EntityPath)
+{
+        SaHpiDomainIdT did;
+        struct oh_global_param ep_param = { .type = OPENHPI_ON_EP };
+
+        if (EntityPath == NULL)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        OH_CHECK_INIT_STATE(SessionId);
+        OH_GET_DID(SessionId, did);
+
+        oh_get_global_param(&ep_param);
+
+        // This is true if OPENHPI_ON_EP is not set in openhpi.conf
+        if (
+             ( ep_param.u.on_ep.Entry[0].EntityType == SAHPI_ENT_ROOT ) &&
+             ( ep_param.u.on_ep.Entry[0].EntityLocation == 0 )
+           )
+        {
+                err("Could not get entity we are running in."
+                    "It is probably not set in openhpi.conf (OPENHPI_ON_EP).");
+                return SA_ERR_HPI_UNKNOWN;
+        }
+
+        *EntityPath = ep_param.u.on_ep;
 
         return SA_OK;
 }
@@ -1798,6 +1830,42 @@ SaErrorT SAHPI_API saHpiRdrGetByInstrumentId (
         return SA_OK;
 }
 
+SaErrorT SAHPI_API saHpiRdrUpdateCountGet(
+        SAHPI_IN  SaHpiSessionIdT  SessionId,
+        SAHPI_IN  SaHpiResourceIdT ResourceId,
+        SAHPI_OUT SaHpiUint32T     *UpdateCount)
+{
+        SaHpiDomainIdT did;
+        struct oh_domain *d = NULL;
+        SaHpiRptEntryT *res;
+
+        /* Test pointer parameters for invalid pointers */
+        if (UpdateCount == NULL)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        OH_CHECK_INIT_STATE(SessionId);
+        OH_GET_DID(SessionId, did);
+        OH_GET_DOMAIN(did, d); /* Lock domain */
+        OH_RESOURCE_GET(d, ResourceId, res);
+
+        if(!(res->ResourceCapabilities & SAHPI_CAPABILITY_RDR)) {
+                err("No RDRs for Resource %d in Domain %d",ResourceId,did);
+                oh_release_domain(d); /* Unlock domain */
+                return SA_ERR_HPI_CAPABILITY;
+        }
+
+        // TODO implement
+        // Current implementation always return 0
+        // Shall we introduce new call in handler ABI or
+        // implement update counter in OpenHPI core?
+        *UpdateCount = 0;
+
+        oh_release_domain(d); /* Unlock domain */
+
+        return SA_OK;
+}
+
+
 /*********************************************************************
  *
  *  Sensor Functions
@@ -1861,7 +1929,7 @@ SaErrorT SAHPI_API saHpiSensorReadingGet (
 	 * 
 	 * The below code is added to overcome the marshalling limitation.
 	 */
-	if (rv == SA_OK && Reading->IsSupported == SAHPI_FALSE) {
+	if (rv == SA_OK && Reading && Reading->IsSupported == SAHPI_FALSE) {
 		Reading->Type = 0;
 		memset(&(Reading->Value), 0, sizeof(SaHpiSensorReadingUnionT));
 	}
@@ -1975,6 +2043,7 @@ SaErrorT SAHPI_API saHpiSensorThresholdsSet (
         }
 
 
+        /* Merging thresholds*/
         SaHpiSensorThresholdsT tmp;
 
         rv = saHpiSensorThresholdsGet( SessionId, ResourceId, SensorNum, &tmp );
@@ -1986,31 +2055,23 @@ SaErrorT SAHPI_API saHpiSensorThresholdsSet (
             return rv;
         }
 
-        /* Merging thresholds*/
-        if (SensorThresholds->UpCritical.IsSupported == SAHPI_TRUE) {
-                tmp.UpCritical = SensorThresholds->UpCritical;
-        }
-        if (SensorThresholds->UpMajor.IsSupported == SAHPI_TRUE) {
-                tmp.UpMajor = SensorThresholds->UpMajor;
-        }
-        if (SensorThresholds->UpMinor.IsSupported == SAHPI_TRUE) {
-                tmp.UpMinor = SensorThresholds->UpMinor;
-        }
-        if (SensorThresholds->LowCritical.IsSupported == SAHPI_TRUE) {
-                tmp.LowCritical = SensorThresholds->LowCritical;
-        }
-        if (SensorThresholds->LowMajor.IsSupported == SAHPI_TRUE) {
-                tmp.LowMajor = SensorThresholds->LowMajor;
-        }
-        if (SensorThresholds->LowMinor.IsSupported == SAHPI_TRUE) {
-                tmp.LowMinor = SensorThresholds->LowMinor;
-        }
-        if (SensorThresholds->PosThdHysteresis.IsSupported == SAHPI_TRUE) {
-                tmp.PosThdHysteresis = SensorThresholds->PosThdHysteresis;
-        }
-        if (SensorThresholds->NegThdHysteresis.IsSupported == SAHPI_TRUE) {
-                tmp.NegThdHysteresis = SensorThresholds->NegThdHysteresis;
-        }
+        SaHpiSensorThdMaskT wmask = rdr->RdrTypeUnion.SensorRec.ThresholdDefn.WriteThold;
+
+#define COPY_TH( TH, MASK ) \
+{ \
+    if ( ( SensorThresholds->TH.IsSupported == SAHPI_TRUE ) && ( ( wmask & MASK ) != 0 ) ) { \
+        tmp.TH = SensorThresholds->TH; \
+    } \
+}
+        COPY_TH( UpCritical, SAHPI_STM_UP_CRIT );
+        COPY_TH( UpMajor, SAHPI_STM_UP_MAJOR );
+        COPY_TH( UpMinor, SAHPI_STM_UP_MINOR );
+        COPY_TH( LowCritical, SAHPI_STM_LOW_CRIT );
+        COPY_TH( LowMajor, SAHPI_STM_LOW_MAJOR );
+        COPY_TH( LowMinor, SAHPI_STM_LOW_MINOR );
+        COPY_TH( PosThdHysteresis, SAHPI_STM_UP_HYSTERESIS );
+        COPY_TH( NegThdHysteresis, SAHPI_STM_LOW_HYSTERESIS );
+#undef COPY_TH
 
         rv = oh_valid_thresholds(&tmp, rdr);
         if (rv != SA_OK) { /* Invalid sensor threshold */
@@ -2448,10 +2509,10 @@ SaErrorT SAHPI_API saHpiSensorEventMasksSet (
         		return SA_ERR_HPI_INVALID_DATA;        		
         	}
         	
-        	if ((!res->ResourceCapabilities & SAHPI_CAPABILITY_EVT_DEASSERTS) &&
-        	    DeassertEventMask != SAHPI_ALL_EVENT_STATES &&
-        	    (rdr_cur->RdrTypeUnion.SensorRec.Events | DeassertEventMask) !=
-        	    rdr_cur->RdrTypeUnion.SensorRec.Events) {
+        	if (!(res->ResourceCapabilities & SAHPI_CAPABILITY_EVT_DEASSERTS) &&
+        	    (DeassertEventMask != SAHPI_ALL_EVENT_STATES) &&
+        	    ((rdr_cur->RdrTypeUnion.SensorRec.Events | DeassertEventMask) !=
+        	    rdr_cur->RdrTypeUnion.SensorRec.Events)) {
         		oh_release_domain(d);
         		return SA_ERR_HPI_INVALID_DATA;
         	}
@@ -4372,6 +4433,109 @@ SaErrorT SAHPI_API saHpiDimiTestResultsGet (
  *
  ******************************************************************************/
 
+SaErrorT SAHPI_API saHpiFumiSpecInfoGet(
+        SAHPI_IN    SaHpiSessionIdT    SessionId,
+        SAHPI_IN    SaHpiResourceIdT   ResourceId,
+        SAHPI_IN    SaHpiFumiNumT      FumiNum,
+        SAHPI_OUT   SaHpiFumiSpecInfoT *SpecInfo)
+{
+        SaHpiDomainIdT did;
+        struct oh_domain *d = NULL;
+        SaHpiRptEntryT *rpte = NULL;
+        SaHpiRdrT *rdr = NULL;
+
+        SaErrorT error = SA_OK;
+        struct oh_handler *h = NULL;
+
+        if (SpecInfo == NULL)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        OH_CHECK_INIT_STATE(SessionId);
+        OH_GET_DID(SessionId, did);
+        OH_GET_DOMAIN(did, d); /* Lock domain */
+        OH_RESOURCE_GET_CHECK(d, ResourceId, rpte);
+
+        if (!(rpte->ResourceCapabilities & SAHPI_CAPABILITY_FUMI)) {
+                err("Resource %d in Domain %d doesn't does not support FUMIs",
+                    ResourceId, did);
+                oh_release_domain(d);
+                return SA_ERR_HPI_CAPABILITY;
+        }
+
+        rdr = oh_get_rdr_by_type(&(d->rpt),
+                                 ResourceId,
+                                 SAHPI_FUMI_RDR,
+                                 FumiNum);
+
+        if (!rdr) {
+                err("No FUMI num %d found for Resource %d in Domain %d",
+                    FumiNum, ResourceId, did);
+                oh_release_domain(d);
+                return SA_ERR_HPI_NOT_PRESENT;
+        }
+
+        OH_HANDLER_GET(d, ResourceId, h);
+        oh_release_domain(d);
+
+        OH_CALL_ABI(h, get_fumi_spec, SA_ERR_HPI_INVALID_CMD, error,
+                    ResourceId, FumiNum, SpecInfo);
+        oh_release_handler(h);
+
+        return error;
+}
+
+SaErrorT SAHPI_API saHpiFumiServiceImpactGet(
+        SAHPI_IN   SaHpiSessionIdT              SessionId,
+        SAHPI_IN   SaHpiResourceIdT             ResourceId,
+        SAHPI_IN   SaHpiFumiNumT                FumiNum,
+        SAHPI_OUT  SaHpiFumiServiceImpactDataT  *ServiceImpact)
+{
+        SaHpiDomainIdT did;
+        struct oh_domain *d = NULL;
+        SaHpiRptEntryT *rpte = NULL;
+        SaHpiRdrT *rdr = NULL;
+
+        SaErrorT error = SA_OK;
+        struct oh_handler *h = NULL;
+
+        if (ServiceImpact == NULL)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        OH_CHECK_INIT_STATE(SessionId);
+        OH_GET_DID(SessionId, did);
+        OH_GET_DOMAIN(did, d); /* Lock domain */
+        OH_RESOURCE_GET_CHECK(d, ResourceId, rpte);
+
+        if (!(rpte->ResourceCapabilities & SAHPI_CAPABILITY_FUMI)) {
+                err("Resource %d in Domain %d doesn't does not support FUMIs",
+                    ResourceId, did);
+                oh_release_domain(d);
+                return SA_ERR_HPI_CAPABILITY;
+        }
+
+        rdr = oh_get_rdr_by_type(&(d->rpt),
+                                 ResourceId,
+                                 SAHPI_FUMI_RDR,
+                                 FumiNum);
+
+        if (!rdr) {
+                err("No FUMI num %d found for Resource %d in Domain %d",
+                    FumiNum, ResourceId, did);
+                oh_release_domain(d);
+                return SA_ERR_HPI_NOT_PRESENT;
+        }
+
+        OH_HANDLER_GET(d, ResourceId, h);
+        oh_release_domain(d);
+
+        OH_CALL_ABI(h, get_fumi_service_impact, SA_ERR_HPI_INVALID_CMD, error,
+                    ResourceId, FumiNum, ServiceImpact);
+
+        oh_release_handler(h);
+
+        return error;
+}
+
 SaErrorT SAHPI_API saHpiFumiSourceSet (
     SAHPI_IN    SaHpiSessionIdT         SessionId,
     SAHPI_IN    SaHpiResourceIdT        ResourceId,
@@ -4526,6 +4690,69 @@ SaErrorT SAHPI_API saHpiFumiSourceInfoGet (
         return error;
 }
 
+SaErrorT SAHPI_API saHpiFumiSourceComponentInfoGet(
+        SAHPI_IN    SaHpiSessionIdT         SessionId,
+        SAHPI_IN    SaHpiResourceIdT        ResourceId,
+        SAHPI_IN    SaHpiFumiNumT           FumiNum,
+        SAHPI_IN    SaHpiBankNumT           BankNum,
+        SAHPI_IN    SaHpiEntryIdT           ComponentEntryId,
+        SAHPI_OUT   SaHpiEntryIdT           *NextComponentEntryId,
+        SAHPI_OUT   SaHpiFumiComponentInfoT *ComponentInfo)
+{
+        SaHpiDomainIdT did;
+        struct oh_domain *d = NULL;
+        SaHpiRptEntryT *rpte = NULL;
+        SaHpiRdrT *rdr = NULL;
+        
+        SaErrorT error = SA_OK;
+        struct oh_handler *h = NULL;
+
+        if (NextComponentEntryId == NULL || ComponentInfo == NULL)
+                return SA_ERR_HPI_INVALID_PARAMS;
+        if ( ComponentEntryId == SAHPI_LAST_ENTRY)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        OH_CHECK_INIT_STATE(SessionId);
+        OH_GET_DID(SessionId, did);
+        OH_GET_DOMAIN(did, d); /* Lock domain */
+        OH_RESOURCE_GET_CHECK(d, ResourceId, rpte);
+
+        if (!(rpte->ResourceCapabilities & SAHPI_CAPABILITY_FUMI)) {
+                err("Resource %d in Domain %d doesn't does not support FUMIs",
+                    ResourceId, did);
+                oh_release_domain(d);
+                return SA_ERR_HPI_CAPABILITY;
+        }
+
+        rdr = oh_get_rdr_by_type(&(d->rpt),
+                                 ResourceId,
+                                 SAHPI_FUMI_RDR,
+                                 FumiNum);
+
+        if (!rdr) {
+                err("No FUMI num %d found for Resource %d in Domain %d",
+                    FumiNum, ResourceId, did);
+                oh_release_domain(d);
+                return SA_ERR_HPI_NOT_PRESENT;
+        } else if (!(rdr->RdrTypeUnion.FumiRec.Capability & SAHPI_FUMI_CAP_COMPONENTS)) {
+                err("FUMI %u does not support subsidiary firmware components for"
+                    " Resource %u in Domain %u",
+                    FumiNum, ResourceId, did);
+                oh_release_domain(d);
+                return SA_ERR_HPI_CAPABILITY;
+        }
+        
+        OH_HANDLER_GET(d, ResourceId, h);
+        oh_release_domain(d);
+
+        OH_CALL_ABI(h, get_fumi_source_component, SA_ERR_HPI_INVALID_CMD, error,
+                    ResourceId, FumiNum, BankNum, ComponentEntryId,
+                    NextComponentEntryId, ComponentInfo);
+        oh_release_handler(h);
+
+        return error;
+}
+
 SaErrorT SAHPI_API saHpiFumiTargetInfoGet (
     SAHPI_IN    SaHpiSessionIdT       SessionId,
     SAHPI_IN    SaHpiResourceIdT      ResourceId,
@@ -4573,6 +4800,182 @@ SaErrorT SAHPI_API saHpiFumiTargetInfoGet (
 
         OH_CALL_ABI(h, get_fumi_target, SA_ERR_HPI_INVALID_CMD, error,
                     ResourceId, FumiNum, BankNum, BankInfo);
+        oh_release_handler(h);
+        
+        return error;
+}
+
+SaErrorT SAHPI_API saHpiFumiTargetComponentInfoGet(
+        SAHPI_IN    SaHpiSessionIdT         SessionId,
+        SAHPI_IN    SaHpiResourceIdT        ResourceId,
+        SAHPI_IN    SaHpiFumiNumT           FumiNum,
+        SAHPI_IN    SaHpiBankNumT           BankNum,
+        SAHPI_IN    SaHpiEntryIdT           ComponentEntryId,
+        SAHPI_OUT   SaHpiEntryIdT           *NextComponentEntryId,
+        SAHPI_OUT   SaHpiFumiComponentInfoT *ComponentInfo)
+{
+        SaHpiDomainIdT did;
+        struct oh_domain *d = NULL;
+        SaHpiRptEntryT *rpte = NULL;
+        SaHpiRdrT *rdr = NULL;
+        
+        SaErrorT error = SA_OK;
+        struct oh_handler *h = NULL;
+
+        if (NextComponentEntryId == NULL || ComponentInfo == NULL)
+                return SA_ERR_HPI_INVALID_PARAMS;
+        if ( ComponentEntryId == SAHPI_LAST_ENTRY)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        OH_CHECK_INIT_STATE(SessionId);
+        OH_GET_DID(SessionId, did);
+        OH_GET_DOMAIN(did, d); /* Lock domain */
+        OH_RESOURCE_GET_CHECK(d, ResourceId, rpte);
+
+        if (!(rpte->ResourceCapabilities & SAHPI_CAPABILITY_FUMI)) {
+                err("Resource %d in Domain %d doesn't does not support FUMIs",
+                    ResourceId, did);
+                oh_release_domain(d);
+                return SA_ERR_HPI_CAPABILITY;
+        }
+
+        rdr = oh_get_rdr_by_type(&(d->rpt),
+                                 ResourceId,
+                                 SAHPI_FUMI_RDR,
+                                 FumiNum);
+
+        if (!rdr) {
+                err("No FUMI num %d found for Resource %d in Domain %d",
+                    FumiNum, ResourceId, did);
+                oh_release_domain(d);
+                return SA_ERR_HPI_NOT_PRESENT;
+        } else if (!(rdr->RdrTypeUnion.FumiRec.Capability & SAHPI_FUMI_CAP_COMPONENTS)) {
+                err("FUMI %u does not support subsidiary firmware components for"
+                    " Resource %u in Domain %u",
+                    FumiNum, ResourceId, did);
+                oh_release_domain(d);
+                return SA_ERR_HPI_CAPABILITY;
+        }
+        
+        OH_HANDLER_GET(d, ResourceId, h);
+        oh_release_domain(d);
+
+        OH_CALL_ABI(h, get_fumi_target_component, SA_ERR_HPI_INVALID_CMD, error,
+                    ResourceId, FumiNum, BankNum, ComponentEntryId,
+                    NextComponentEntryId, ComponentInfo);
+        oh_release_handler(h);
+        
+        return error;
+}
+
+SaErrorT SAHPI_API saHpiFumiLogicalTargetInfoGet(
+        SAHPI_IN    SaHpiSessionIdT             SessionId,
+        SAHPI_IN    SaHpiResourceIdT            ResourceId,
+        SAHPI_IN    SaHpiFumiNumT               FumiNum,
+        SAHPI_OUT   SaHpiFumiLogicalBankInfoT   *BankInfo)
+{
+        SaHpiDomainIdT did;
+        struct oh_domain *d = NULL;
+        SaHpiRptEntryT *rpte = NULL;
+        SaHpiRdrT *rdr = NULL;
+        
+        SaErrorT error = SA_OK;
+        struct oh_handler *h = NULL;
+
+        if (BankInfo == NULL)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        OH_CHECK_INIT_STATE(SessionId);
+        OH_GET_DID(SessionId, did);
+        OH_GET_DOMAIN(did, d); /* Lock domain */
+        OH_RESOURCE_GET_CHECK(d, ResourceId, rpte);
+
+        if (!(rpte->ResourceCapabilities & SAHPI_CAPABILITY_FUMI)) {
+                err("Resource %d in Domain %d doesn't does not support FUMIs",
+                    ResourceId, did);
+                oh_release_domain(d);
+                return SA_ERR_HPI_CAPABILITY;
+        }
+
+        rdr = oh_get_rdr_by_type(&(d->rpt),
+                                 ResourceId,
+                                 SAHPI_FUMI_RDR,
+                                 FumiNum);
+
+        if (!rdr) {
+                err("No FUMI num %d found for Resource %d in Domain %d",
+                    FumiNum, ResourceId, did);
+                oh_release_domain(d);
+                return SA_ERR_HPI_NOT_PRESENT;
+        }
+        
+        OH_HANDLER_GET(d, ResourceId, h);
+        oh_release_domain(d);
+
+        OH_CALL_ABI(h, get_fumi_logical_target, SA_ERR_HPI_INVALID_CMD, error,
+                    ResourceId, FumiNum, BankInfo);
+        oh_release_handler(h);
+        
+        return error;
+}
+
+SaErrorT SAHPI_API saHpiFumiLogicalTargetComponentInfoGet(
+        SAHPI_IN    SaHpiSessionIdT                SessionId,
+        SAHPI_IN    SaHpiResourceIdT               ResourceId,
+        SAHPI_IN    SaHpiFumiNumT                  FumiNum,
+        SAHPI_IN    SaHpiEntryIdT                  ComponentEntryId,
+        SAHPI_OUT   SaHpiEntryIdT                  *NextComponentEntryId,
+        SAHPI_OUT   SaHpiFumiLogicalComponentInfoT *ComponentInfo)
+{
+        SaHpiDomainIdT did;
+        struct oh_domain *d = NULL;
+        SaHpiRptEntryT *rpte = NULL;
+        SaHpiRdrT *rdr = NULL;
+        
+        SaErrorT error = SA_OK;
+        struct oh_handler *h = NULL;
+
+        if (NextComponentEntryId == NULL || ComponentInfo == NULL)
+                return SA_ERR_HPI_INVALID_PARAMS;
+        if ( ComponentEntryId == SAHPI_LAST_ENTRY)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        OH_CHECK_INIT_STATE(SessionId);
+        OH_GET_DID(SessionId, did);
+        OH_GET_DOMAIN(did, d); /* Lock domain */
+        OH_RESOURCE_GET_CHECK(d, ResourceId, rpte);
+
+        if (!(rpte->ResourceCapabilities & SAHPI_CAPABILITY_FUMI)) {
+                err("Resource %d in Domain %d doesn't does not support FUMIs",
+                    ResourceId, did);
+                oh_release_domain(d);
+                return SA_ERR_HPI_CAPABILITY;
+        }
+
+        rdr = oh_get_rdr_by_type(&(d->rpt),
+                                 ResourceId,
+                                 SAHPI_FUMI_RDR,
+                                 FumiNum);
+
+        if (!rdr) {
+                err("No FUMI num %d found for Resource %d in Domain %d",
+                    FumiNum, ResourceId, did);
+                oh_release_domain(d);
+                return SA_ERR_HPI_NOT_PRESENT;
+        } else if (!(rdr->RdrTypeUnion.FumiRec.Capability & SAHPI_FUMI_CAP_COMPONENTS)) {
+                err("FUMI %u does not support subsidiary firmware components for"
+                    " Resource %u in Domain %u",
+                    FumiNum, ResourceId, did);
+                oh_release_domain(d);
+                return SA_ERR_HPI_CAPABILITY;
+        }
+        
+        OH_HANDLER_GET(d, ResourceId, h);
+        oh_release_domain(d);
+
+        OH_CALL_ABI(h, get_fumi_logical_target_component, SA_ERR_HPI_INVALID_CMD, error,
+                    ResourceId, FumiNum, ComponentEntryId,
+                    NextComponentEntryId, ComponentInfo);
         oh_release_handler(h);
         
         return error;
@@ -4928,6 +5331,73 @@ SaErrorT SAHPI_API saHpiFumiTargetVerifyStart (
         return error;
 }
 
+SaErrorT SAHPI_API saHpiFumiTargetVerifyMainStart(
+        SAHPI_IN    SaHpiSessionIdT  SessionId,
+        SAHPI_IN    SaHpiResourceIdT ResourceId,
+        SAHPI_IN    SaHpiFumiNumT    FumiNum)
+{
+        SaHpiDomainIdT did;
+        struct oh_domain *d = NULL;
+        SaHpiRptEntryT *rpte = NULL;
+        SaHpiRdrT *rdr = NULL;
+        
+        SaErrorT error = SA_OK;
+        struct oh_handler *h = NULL;
+        SaHpiFumiSourceInfoT sourceinfo;
+
+        OH_CHECK_INIT_STATE(SessionId);
+        OH_GET_DID(SessionId, did);
+        OH_GET_DOMAIN(did, d); /* Lock domain */
+        OH_RESOURCE_GET_CHECK(d, ResourceId, rpte);
+
+        if (!(rpte->ResourceCapabilities & SAHPI_CAPABILITY_FUMI)) {
+                err("Resource %d in Domain %d doesn't does not support FUMIs",
+                    ResourceId, did);
+                oh_release_domain(d);
+                return SA_ERR_HPI_CAPABILITY;
+        }
+
+        rdr = oh_get_rdr_by_type(&(d->rpt),
+                                 ResourceId,
+                                 SAHPI_FUMI_RDR,
+                                 FumiNum);
+
+        if (!rdr) {
+                err("No FUMI num %d found for Resource %d in Domain %d",
+                    FumiNum, ResourceId, did);
+                oh_release_domain(d);
+                return SA_ERR_HPI_NOT_PRESENT;
+        } else if (!(rdr->RdrTypeUnion.FumiRec.Capability & SAHPI_FUMI_CAP_TARGET_VERIFY_MAIN)) {
+                err("FUMI %u does not support target verification for"
+                    " Resource %u in Domain %u",
+                    FumiNum, ResourceId, did);
+                oh_release_domain(d);
+                return SA_ERR_HPI_CAPABILITY;
+        }
+
+        error = saHpiFumiSourceInfoGet(SessionId, ResourceId, FumiNum,
+                                       0, &sourceinfo);
+        if (error) {
+                oh_release_domain(d);
+                return error;
+        } else if (sourceinfo.SourceStatus != SAHPI_FUMI_SRC_VALID &&
+                   sourceinfo.SourceStatus != SAHPI_FUMI_SRC_VALIDITY_UNKNOWN) {
+                oh_release_domain(d);
+                err("Source is not valid: Bank %u, Fumi %u, Resource %u, Domain %u",
+                    0, FumiNum, ResourceId, did);
+                return SA_ERR_HPI_INVALID_REQUEST;
+        }
+        
+        OH_HANDLER_GET(d, ResourceId, h);
+        oh_release_domain(d);
+
+        OH_CALL_ABI(h, start_fumi_verify_main, SA_ERR_HPI_INVALID_CMD, error,
+                    ResourceId, FumiNum);
+        oh_release_handler(h);
+        
+        return error;
+}
+
 SaErrorT SAHPI_API saHpiFumiUpgradeCancel (
     SAHPI_IN    SaHpiSessionIdT       SessionId,
     SAHPI_IN    SaHpiResourceIdT      ResourceId,
@@ -4971,6 +5441,123 @@ SaErrorT SAHPI_API saHpiFumiUpgradeCancel (
 
         OH_CALL_ABI(h, cancel_fumi_upgrade, SA_ERR_HPI_INVALID_CMD, error,
                     ResourceId, FumiNum, BankNum);
+        oh_release_handler(h);
+        
+        return error;
+}
+
+SaErrorT SAHPI_API saHpiFumiAutoRollbackDisableGet(
+        SAHPI_IN    SaHpiSessionIdT  SessionId,
+        SAHPI_IN    SaHpiResourceIdT ResourceId,
+        SAHPI_IN    SaHpiFumiNumT    FumiNum,
+        SAHPI_OUT   SaHpiBoolT       *Disable)
+{
+        SaHpiDomainIdT did;
+        struct oh_domain *d = NULL;
+        SaHpiRptEntryT *rpte = NULL;
+        SaHpiRdrT *rdr = NULL;
+        
+        SaErrorT error = SA_OK;
+        struct oh_handler *h = NULL;
+
+        if (Disable == NULL)
+                return SA_ERR_HPI_INVALID_PARAMS;
+
+        OH_CHECK_INIT_STATE(SessionId);
+        OH_GET_DID(SessionId, did);
+        OH_GET_DOMAIN(did, d); /* Lock domain */
+        OH_RESOURCE_GET_CHECK(d, ResourceId, rpte);
+
+        if (!(rpte->ResourceCapabilities & SAHPI_CAPABILITY_FUMI)) {
+                err("Resource %d in Domain %d doesn't does not support FUMIs",
+                    ResourceId, did);
+                oh_release_domain(d);
+                return SA_ERR_HPI_CAPABILITY;
+        }
+
+        rdr = oh_get_rdr_by_type(&(d->rpt),
+                                 ResourceId,
+                                 SAHPI_FUMI_RDR,
+                                 FumiNum);
+
+        if (!rdr) {
+                err("No FUMI num %d found for Resource %d in Domain %d",
+                    FumiNum, ResourceId, did);
+                oh_release_domain(d);
+                return SA_ERR_HPI_NOT_PRESENT;
+        } else if (!(rdr->RdrTypeUnion.FumiRec.Capability & SAHPI_FUMI_CAP_AUTOROLLBACK)) {
+                err("FUMI %u does not support automatic rollback for"
+                    " Resource %u in Domain %u",
+                    FumiNum, ResourceId, did);
+                oh_release_domain(d);
+                return SA_ERR_HPI_CAPABILITY;
+        }
+        
+        OH_HANDLER_GET(d, ResourceId, h);
+        oh_release_domain(d);
+
+        OH_CALL_ABI(h, get_fumi_autorollback_disable, SA_ERR_HPI_INVALID_CMD,
+                    error, ResourceId, FumiNum, Disable);
+        oh_release_handler(h);
+        
+        return error;
+}
+
+SaErrorT SAHPI_API saHpiFumiAutoRollbackDisableSet(
+        SAHPI_IN    SaHpiSessionIdT  SessionId,
+        SAHPI_IN    SaHpiResourceIdT ResourceId,
+        SAHPI_IN    SaHpiFumiNumT    FumiNum,
+        SAHPI_IN    SaHpiBoolT       Disable)
+{
+        SaHpiDomainIdT did;
+        struct oh_domain *d = NULL;
+        SaHpiRptEntryT *rpte = NULL;
+        SaHpiRdrT *rdr = NULL;
+        
+        SaErrorT error = SA_OK;
+        struct oh_handler *h = NULL;
+
+        OH_CHECK_INIT_STATE(SessionId);
+        OH_GET_DID(SessionId, did);
+        OH_GET_DOMAIN(did, d); /* Lock domain */
+        OH_RESOURCE_GET_CHECK(d, ResourceId, rpte);
+
+        if (!(rpte->ResourceCapabilities & SAHPI_CAPABILITY_FUMI)) {
+                err("Resource %d in Domain %d doesn't does not support FUMIs",
+                    ResourceId, did);
+                oh_release_domain(d);
+                return SA_ERR_HPI_CAPABILITY;
+        }
+
+        rdr = oh_get_rdr_by_type(&(d->rpt),
+                                 ResourceId,
+                                 SAHPI_FUMI_RDR,
+                                 FumiNum);
+
+        if (!rdr) {
+                err("No FUMI num %d found for Resource %d in Domain %d",
+                    FumiNum, ResourceId, did);
+                oh_release_domain(d);
+                return SA_ERR_HPI_NOT_PRESENT;
+        } else if (!(rdr->RdrTypeUnion.FumiRec.Capability & SAHPI_FUMI_CAP_AUTOROLLBACK)) {
+                err("FUMI %u does not support automatic rollback for"
+                    " Resource %u in Domain %u",
+                    FumiNum, ResourceId, did);
+                oh_release_domain(d);
+                return SA_ERR_HPI_CAPABILITY;
+        } else if (!(rdr->RdrTypeUnion.FumiRec.Capability & SAHPI_FUMI_CAP_AUTOROLLBACK_CAN_BE_DISABLED)) {
+                err("FUMI %u does not support automatic rollback control for"
+                    " Resource %u in Domain %u",
+                    FumiNum, ResourceId, did);
+                oh_release_domain(d);
+                return SA_ERR_HPI_CAPABILITY;
+        }
+        
+        OH_HANDLER_GET(d, ResourceId, h);
+        oh_release_domain(d);
+
+        OH_CALL_ABI(h, set_fumi_autorollback_disable, SA_ERR_HPI_INVALID_CMD,
+                    error, ResourceId, FumiNum, Disable);
         oh_release_handler(h);
         
         return error;
@@ -5071,6 +5658,102 @@ SaErrorT SAHPI_API saHpiFumiActivate (
 
         OH_CALL_ABI(h, activate_fumi, SA_ERR_HPI_INVALID_CMD, error,
                     ResourceId, FumiNum);
+        oh_release_handler(h);
+        
+        return error;
+}
+
+SaErrorT SAHPI_API saHpiFumiActivateStart(
+        SAHPI_IN    SaHpiSessionIdT  SessionId,
+        SAHPI_IN    SaHpiResourceIdT ResourceId,
+        SAHPI_IN    SaHpiFumiNumT    FumiNum,
+        SAHPI_IN    SaHpiBoolT       Logical)
+{
+        SaHpiDomainIdT did;
+        struct oh_domain *d = NULL;
+        SaHpiRptEntryT *rpte = NULL;
+        SaHpiRdrT *rdr = NULL;
+        
+        SaErrorT error = SA_OK;
+        struct oh_handler *h = NULL;
+
+        OH_CHECK_INIT_STATE(SessionId);
+        OH_GET_DID(SessionId, did);
+        OH_GET_DOMAIN(did, d); /* Lock domain */
+        OH_RESOURCE_GET_CHECK(d, ResourceId, rpte);
+
+        if (!(rpte->ResourceCapabilities & SAHPI_CAPABILITY_FUMI)) {
+                err("Resource %d in Domain %d doesn't does not support FUMIs",
+                    ResourceId, did);
+                oh_release_domain(d);
+                return SA_ERR_HPI_CAPABILITY;
+        }
+
+        rdr = oh_get_rdr_by_type(&(d->rpt),
+                                 ResourceId,
+                                 SAHPI_FUMI_RDR,
+                                 FumiNum);
+
+        if (!rdr) {
+                err("No FUMI num %d found for Resource %d in Domain %d",
+                    FumiNum, ResourceId, did);
+                oh_release_domain(d);
+                return SA_ERR_HPI_NOT_PRESENT;
+        }
+        
+        OH_HANDLER_GET(d, ResourceId, h);
+        oh_release_domain(d);
+
+        OH_CALL_ABI(h, start_fumi_activate, SA_ERR_HPI_INVALID_CMD, error,
+                    ResourceId, FumiNum, Logical);
+        oh_release_handler(h);
+        
+        return error;
+}
+
+SaErrorT SAHPI_API saHpiFumiCleanup(
+        SAHPI_IN    SaHpiSessionIdT  SessionId,
+        SAHPI_IN    SaHpiResourceIdT ResourceId,
+        SAHPI_IN    SaHpiFumiNumT    FumiNum,
+        SAHPI_IN    SaHpiBankNumT    BankNum)
+{
+        SaHpiDomainIdT did;
+        struct oh_domain *d = NULL;
+        SaHpiRptEntryT *rpte = NULL;
+        SaHpiRdrT *rdr = NULL;
+        
+        SaErrorT error = SA_OK;
+        struct oh_handler *h = NULL;
+
+        OH_CHECK_INIT_STATE(SessionId);
+        OH_GET_DID(SessionId, did);
+        OH_GET_DOMAIN(did, d); /* Lock domain */
+        OH_RESOURCE_GET_CHECK(d, ResourceId, rpte);
+
+        if (!(rpte->ResourceCapabilities & SAHPI_CAPABILITY_FUMI)) {
+                err("Resource %d in Domain %d doesn't does not support FUMIs",
+                    ResourceId, did);
+                oh_release_domain(d);
+                return SA_ERR_HPI_CAPABILITY;
+        }
+
+        rdr = oh_get_rdr_by_type(&(d->rpt),
+                                 ResourceId,
+                                 SAHPI_FUMI_RDR,
+                                 FumiNum);
+
+        if (!rdr) {
+                err("No FUMI num %d found for Resource %d in Domain %d",
+                    FumiNum, ResourceId, did);
+                oh_release_domain(d);
+                return SA_ERR_HPI_NOT_PRESENT;
+        }
+        
+        OH_HANDLER_GET(d, ResourceId, h);
+        oh_release_domain(d);
+
+        OH_CALL_ABI(h, cleanup_fumi, SA_ERR_HPI_INVALID_CMD, error,
+                    ResourceId, FumiNum, BankNum);
         oh_release_handler(h);
         
         return error;

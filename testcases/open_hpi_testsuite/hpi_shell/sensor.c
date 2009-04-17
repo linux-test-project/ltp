@@ -539,7 +539,7 @@ static ret_code_t hs_block_getsettime(int get)
 				return(HPI_SHELL_CMD_ERROR);
 			};
             if ( timeout != SAHPI_TIMEOUT_BLOCK ) {
-    			printf("Auto-insert timeout: %lld\n", timeout);
+    			printf("Auto-insert timeout: %lld nsec\n", timeout);
             } else {
     			printf("Auto-insert timeout: BLOCK\n");
             }
@@ -553,7 +553,7 @@ static ret_code_t hs_block_getsettime(int get)
 			return(HPI_SHELL_CMD_ERROR);
 		};
         if ( timeout != SAHPI_TIMEOUT_BLOCK ) {
-    		printf("Auto-extract timeout: %lld\n", timeout);
+    		printf("Auto-extract timeout: %lld nsec\n", timeout);
         } else {
     			printf("Auto-extract timeout: BLOCK\n");
         }

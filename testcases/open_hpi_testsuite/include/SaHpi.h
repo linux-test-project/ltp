@@ -10,10 +10,10 @@
 **   generated from the Platform Interface specification document.
 **
 ** SPECIFICATION VERSION:
-**   SAI-HPI-B.02.01
+**   SAI-HPI-B.03.01
 **
 ** DATE:
-**   Wed  Jan  17  2007  11:33
+**   Wed  Oct  08  2008  18:33
 **
 ** LEGAL:
 **   OWNERSHIP OF SPECIFICATION AND COPYRIGHTS.
@@ -26,7 +26,7 @@
 **   at any time without notice.  Licensor is not obligated to support or
 **   update the Specification.
 **
-**   Copyright(c) 2004, 2007, Service Availability(TM) Forum. All rights
+**   Copyright(c) 2004, 2008, Service Availability(TM) Forum. All rights
 **   reserved.
 **
 **   Permission to use, copy, modify, and distribute this software for any
@@ -44,6 +44,10 @@
 
 #ifndef __SAHPI_H
 #define __SAHPI_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /*******************************************************************************
 ********************************************************************************
@@ -129,7 +133,7 @@ typedef SaHpiUint8T     SaHpiBoolT;
 **
 ** This is the IANA-assigned private enterprise number for the
 ** manufacturer of the resource or FRU, or of the manufacturer
-** defining an OEM Control or event type. A list of current
+** defining an OEM Control or event type.  A list of current
 ** IANA-assigned private enterprise numbers may be obtained at
 **
 **     http://www.iana.org/assignments/enterprise-numbers
@@ -155,14 +159,14 @@ typedef SaHpiUint32T SaHpiVersionT;
 ** the next 8 bits represent the major version number; and
 ** the least significant 8 bits represent the minor version number.
 */
-#define SAHPI_INTERFACE_VERSION (SaHpiVersionT)0x020201 /* B.02.01 */
+#define SAHPI_INTERFACE_VERSION (SaHpiVersionT)0x020301 /* B.03.01 */
 
 /*
 ** Return Codes
 **
 ** SaErrorT is defined in the HPI specification.  In the future a
-** common SAF types definition may be created to contain this type. At
-** that time, this typedef should be removed. Each of the return codes
+** common SAF types definition may be created to contain this type.  At
+** that time, this typedef should be removed.  Each of the return codes
 ** is defined in Section 4.1 of the specification.
 **
 ** Future version of the specification may add new return codes.  User
@@ -387,7 +391,8 @@ typedef enum {
     SAHPI_LANG_TWI, SAHPI_LANG_UKRAINIAN, SAHPI_LANG_URDU,
     SAHPI_LANG_UZBEK, SAHPI_LANG_VIETNAMESE, SAHPI_LANG_VOLAPUK,
     SAHPI_LANG_WOLOF, SAHPI_LANG_XHOSA, SAHPI_LANG_YORUBA,
-    SAHPI_LANG_CHINESE, SAHPI_LANG_ZULU
+    SAHPI_LANG_CHINESE, SAHPI_LANG_ZULU,
+    SAHPI_LANG_MAX_VALID = SAHPI_LANG_ZULU
 } SaHpiLanguageT;
 
 /*
@@ -459,7 +464,8 @@ typedef enum {
     SAHPI_TL_TYPE_ASCII6,         /* Reduced ASCII character set: 0x20-0x5F
                                      ONLY */
     SAHPI_TL_TYPE_TEXT,           /* ASCII+Latin 1 */
-    SAHPI_TL_TYPE_BINARY          /* Binary data, any values legal */
+    SAHPI_TL_TYPE_BINARY,         /* Binary data, any values legal */
+    SAHPI_TL_TYPE_MAX_VALID = SAHPI_TL_TYPE_BINARY
 } SaHpiTextTypeT;
 
 typedef struct {
@@ -480,7 +486,6 @@ typedef struct {
 typedef SaHpiUint32T SaHpiInstrumentIdT;
 
 
-
 /*******************************************************************************
 ********************************************************************************
 **********                                                            **********
@@ -491,12 +496,12 @@ typedef SaHpiUint32T SaHpiInstrumentIdT;
 /*
 ** Entity Types
 **
-** An Entity is a physical hardware component of the system. Entities are
+** An Entity is a physical hardware component of the system.  Entities are
 ** defined with an entity type enumeration, and an entity location number
 ** (to identify the physical location of a particular type of entity).
 **
 ** Entities are uniquely identified in a system with an ordered series of
-** Entity Type / Entity Location pairs called an "Entity Path". Each subsequent
+** Entity Type / Entity Location pairs called an "Entity Path".  Each subsequent
 ** Entity Type/Entity Location in the path is the next higher "containing"
 ** entity. The "root" of the Entity Path (the outermost level of containment)
 ** is designated with an Entity Type of SAHPI_ENT_ROOT if the entire Entity Path
@@ -578,16 +583,16 @@ typedef enum {
     SAHPI_ENT_OPERATING_SYSTEM,
     SAHPI_ENT_SYSTEM_BUS,
     SAHPI_ENT_GROUP,              /* This is a logical entity for use with
-                                    Entity Association records. It is
-                                    provided to allow a Sensor data
-                                    record to point to an entity-
-                                    association record when there is no
-                                    appropriate pre-defined logical
-                                    entity for the entity grouping.
-                                    This Entity should not be used as a
-                                    physical entity. */
+                                     Entity Association records. It is
+                                     provided to allow a Sensor data
+                                     record to point to an entity-
+                                     association record when there is no
+                                     appropriate pre-defined logical
+                                     entity for the entity grouping.
+                                     This Entity should not be used as a
+                                     physical entity. */
     SAHPI_ENT_REMOTE,             /* Out of band management communication
-                                    device */
+                                     device */
     SAHPI_ENT_EXTERNAL_ENVIRONMENT,
     SAHPI_ENT_BATTERY,
     SAHPI_ENT_RESERVED_1,
@@ -595,27 +600,27 @@ typedef enum {
     SAHPI_ENT_RESERVED_3,
     SAHPI_ENT_RESERVED_4,
     SAHPI_ENT_RESERVED_5,
-    SAHPI_ENT_MC_FIRMWARE,        /* Management Controller Firmware,
-                                    represents firmware or software
-                                    running on a management controller */
-    SAHPI_ENT_IPMI_CHANNEL,       /* This Entity ID enables associating
-                                    Sensors with the IPMI communication
-                                    channels - for example a Redundancy
-                                    Sensor could be used to report
-                                    redundancy status for a channel that
-                                    is composed of multiple physical
-                                    links. By convention, the Entity
-                                    Instance corresponds to the channel
-                                    number. */
+    SAHPI_ENT_MC_FIRMWARE   ,    /* Management Controller Firmware,
+                        represents firmware or software
+                        running on a management controller */
+    SAHPI_ENT_IPMI_CHANNEL,  /* This Entity ID enables associating
+                        Sensors with the IPMI communication
+                        channels - for example a Redundancy
+                        Sensor could be used to report
+                        redundancy status for a channel that
+                        is composed of multiple physical
+                        links.  By convention, the Entity
+                        Instance corresponds to the channel
+                        number. */
 
-    SAHPI_ENT_PCI_BUS,
-    SAHPI_ENT_PCI_EXPRESS_BUS,
-    SAHPI_ENT_SCSI_BUS,
-    SAHPI_ENT_SATA_BUS,
-    SAHPI_ENT_PROC_FSB,          /* Processor, front side bus */
-    SAHPI_ENT_CLOCK,             /* e.g. Real Time Clock (RTC) */
-    SAHPI_ENT_SYSTEM_FIRMWARE,   /* e.g. BIOS/ EFI */
-                                 /* The range from
+     SAHPI_ENT_PCI_BUS,
+     SAHPI_ENT_PCI_EXPRESS_BUS,
+     SAHPI_ENT_SCSI_BUS,
+     SAHPI_ENT_SATA_BUS,
+     SAHPI_ENT_PROC_FSB,         /* Processor, front side bus */
+     SAHPI_ENT_CLOCK,        /* e.g. Real Time Clock (RTC) */
+     SAHPI_ENT_SYSTEM_FIRMWARE,  /* e.g. BIOS/ EFI */
+                     /* The range from
                                     SAHPI_ENT_SYSTEM_FIRMWARE + 1 to
                                     SAHPI_ENT_CHASSIS_SPECIFIC - 1 is
                                     Reserved for future use by this
@@ -649,29 +654,29 @@ typedef enum {
                                             SBC board */
     SAHPI_ENT_ALARM_MANAGER,             /* Chassis alarm manager board */
     SAHPI_ENT_SHELF_MANAGER,             /* Blade-based shelf manager */
-    SAHPI_ENT_DISPLAY_PANEL,             /* Display panel, such as an
+    SAHPI_ENT_DISPLAY_PANEL,         /* Display panel, such as an
                                             alarm display panel. */
     SAHPI_ENT_SUBBOARD_CARRIER_BLADE,    /* Includes PMC Carrier Blade --
                                             Use only if "carrier" is only
-                                            function of blade. Else use
+                                            function of blade.  Else use
                                             primary function (SBC_BLADE,
                                             SPEC_PROC_BLADE, etc.). */
     SAHPI_ENT_PHYSICAL_SLOT,             /* Indicates the physical slot into
                                             which a FRU is inserted. */
     SAHPI_ENT_PICMG_FRONT_BLADE,         /* Any blade conforming to a PICMG
-                                            Standard. E.g. AdvancedTCA */
+                            Standard.  E.g. AdvancedTCA */
 
     SAHPI_ENT_SYSTEM_INVENTORY_DEVICE,   /* Inventory storage device for
-                                            storing system definitions */
-    SAHPI_ENT_FILTRATION_UNIT,           /* E.g. a fan filter */
-    SAHPI_ENT_AMC,                       /* Advanced Mezzannine Card */
-                                         /* The range from
-                                            SAHPI_ENT_AMC + 0x01 to
-                                            SAHPI_ENT_SAFHPI_GROUP + 0x2F is
-                                            reserved for future use by this
-                                            specification */
+                                storing system definitions */
+    SAHPI_ENT_FILTRATION_UNIT,       /* E.g. a fan filter */
+    SAHPI_ENT_AMC,           /* Advanced Mezzannine Card */
+                         /* The range from
+                            SAHPI_ENT_AMC + 0x01 to
+                            SAHPI_ENT_SAFHPI_GROUP + 0x2F is
+                            reserved for future use by this
+                            specification */
     SAHPI_ENT_BMC = SAHPI_ENT_SAFHPI_GROUP + 0x30, /* Baseboard Management
-                                                      Controller */
+                            Controller */
     SAHPI_ENT_IPMC,                    /* IPM controller */
     SAHPI_ENT_MMC,                     /* Module Management controller */
     SAHPI_ENT_SHMC,                    /* Shelf Mangement Controller */
@@ -684,8 +689,9 @@ typedef enum {
     SAHPI_ENT_DSP,                     /* Digital Signal Processor */
     SAHPI_ENT_UCODE,                   /* Microcode */
     SAHPI_ENT_NPU,                     /* Network Processor */
-    SAHPI_ENT_OEM                      /* Proprietary device */
-                                       /* The range from
+    SAHPI_ENT_OEM,                     /* Proprietary device */
+    SAHPI_ENT_MAX_VALID = SAHPI_ENT_OEM
+                        /* The range from
                                            SAHPI_ENT_OEM + 0x01 to
                                            SAHPI_ENT_SAFHPI_GROUP + 0xFF is
                                            reserved for future use by this
@@ -716,7 +722,7 @@ typedef struct {
 /*
 ** Category
 **
-** Sensor events contain an event category and event state. Depending on the
+** Sensor events contain an event category and event state.  Depending on the
 ** event category, the event states take on different meanings for events
 ** generated by specific Sensors.
 **
@@ -766,7 +772,7 @@ typedef SaHpiUint8T SaHpiEventCategoryT;
 ** Event States
 **
 ** The following event states are specified relative to the categories listed
-** above. The event types are only valid for their given category. Each set of
+** above. The event types are only valid for their given category.  Each set of
 ** events is labeled as to which category it belongs to.
 ** Each event has only one event state associated with it. When retrieving
 ** the event status or event enabled status a bit mask of all applicable event
@@ -896,7 +902,7 @@ typedef SaHpiInstrumentIdT SaHpiSensorNumT;
 ** by the HPI specification.
 ** HPI Implementations shall not assign Sensor numbers within this
 ** number range, except for the specific Sensors identified in the
-** specification. For example, currently, three aggregate Sensors are named in
+** specification.  For example, currently, three aggregate Sensors are named in
 ** this range. Other Sensors exposed by the HPI Implementation (e.g., a
 ** temperature Sensor) must be assigned a number outside of this range.
 **/
@@ -956,7 +962,8 @@ typedef enum {
     SAHPI_OPERATIONAL = 0xA0,
     SAHPI_OEM_SENSOR=0xC0,
     SAHPI_COMM_CHANNEL_LINK_STATE = SAHPI_SENSOR_TYPE_SAFHPI_GROUP + 0x1,
-    SAHPI_MANAGEMENT_BUS_STATE
+    SAHPI_MANAGEMENT_BUS_STATE,
+    SAHPI_SENSOR_TYPE_MAX_VALID = SAHPI_MANAGEMENT_BUS_STATE
 }  SaHpiSensorTypeT;
 
 /*
@@ -973,12 +980,13 @@ typedef enum {
       SAHPI_SENSOR_READING_TYPE_INT64,
       SAHPI_SENSOR_READING_TYPE_UINT64,
       SAHPI_SENSOR_READING_TYPE_FLOAT64,
-      SAHPI_SENSOR_READING_TYPE_BUFFER    /* 32 byte array. The format of
+      SAHPI_SENSOR_READING_TYPE_BUFFER,   /* 32 byte array. The format of
                                              the buffer is implementation-
                                              specific. Sensors that use
                                              this reading type may not have
                                              thresholds that are settable
                                              or readable. */
+      SAHPI_SENSOR_READING_TYPE_MAX_VALID = SAHPI_SENSOR_READING_TYPE_BUFFER
 } SaHpiSensorReadingTypeT;
 
 typedef union {
@@ -1004,7 +1012,7 @@ typedef union {
 typedef struct {
       SaHpiBoolT                  IsSupported;
       SaHpiSensorReadingTypeT     Type;
-      SaHpiSensorReadingUnionT    Value;
+      SaHpiSensorReadingUnionT     Value;
 } SaHpiSensorReadingT;
 
 
@@ -1012,7 +1020,8 @@ typedef struct {
 
 typedef enum {
     SAHPI_SENS_ADD_EVENTS_TO_MASKS,
-    SAHPI_SENS_REMOVE_EVENTS_FROM_MASKS
+    SAHPI_SENS_REMOVE_EVENTS_FROM_MASKS,
+    SAHPI_SENS_EVENT_MASK_ACTION_MAX_VALID = SAHPI_SENS_REMOVE_EVENTS_FROM_MASKS
 } SaHpiSensorEventMaskActionT;
 
 /* Value to use for AssertEvents or DeassertEvents parameter
@@ -1062,8 +1071,7 @@ typedef struct {
     SaHpiSensorReadingT UpMinor;          /* Upper minor Threshold */
     SaHpiSensorReadingT PosThdHysteresis; /* Positive Threshold Hysteresis */
     SaHpiSensorReadingT NegThdHysteresis; /* Negative Threshold Hysteresis */
-}SaHpiSensorThresholdsT;
-
+} SaHpiSensorThresholdsT;
 
 /*******************************************************************************
 ********************************************************************************
@@ -1074,7 +1082,7 @@ typedef struct {
 *******************************************************************************/
 
 /*
-** Sensor Range
+**  Sensor Range
 ** Sensor range values can include minimum, maximum, normal minimum, normal
 ** maximum, and nominal values.
 **
@@ -1137,12 +1145,13 @@ typedef enum {
     SAHPI_SU_RESET, SAHPI_SU_OVERRUN, SAHPI_SU_UNDERRUN,
     SAHPI_SU_COLLISION, SAHPI_SU_PACKETS, SAHPI_SU_MESSAGES,
     SAHPI_SU_CHARACTERS, SAHPI_SU_ERRORS, SAHPI_SU_CORRECTABLE_ERRORS,
-    SAHPI_SU_UNCORRECTABLE_ERRORS
+    SAHPI_SU_UNCORRECTABLE_ERRORS,
+    SAHPI_SU_MAX_VALID = SAHPI_SU_UNCORRECTABLE_ERRORS
 } SaHpiSensorUnitsT;
 
 /*
 ** Modifier Unit Use
-** This type defines how the modifier unit is used. For example: base unit ==
+** This type defines how the modifier unit is used.  For example: base unit ==
 ** meter, modifier unit == seconds, and modifier unit use ==
 ** SAHPI_SMUU_BASIC_OVER_MODIFIER. The resulting unit would be meters per
 ** second.
@@ -1150,7 +1159,8 @@ typedef enum {
 typedef enum {
     SAHPI_SMUU_NONE = 0,
     SAHPI_SMUU_BASIC_OVER_MODIFIER,  /* Basic Unit / Modifier Unit */
-    SAHPI_SMUU_BASIC_TIMES_MODIFIER  /* Basic Unit * Modifier Unit */
+    SAHPI_SMUU_BASIC_TIMES_MODIFIER,  /* Basic Unit * Modifier Unit */
+    SAHPI_SMUU_MAX_VALID = SAHPI_SMUU_BASIC_TIMES_MODIFIER
 } SaHpiSensorModUnitUseT;
 
 /*
@@ -1160,7 +1170,7 @@ typedef enum {
 ** indicates that the rest of the structure is not meaningful.
 **
 ** This structure encapsulates all of the various types that make up the
-** definition of Sensor data. For reading type of
+** definition of Sensor data.  For reading type of
 ** SAHPI_SENSOR_READING_TYPE_BUFFER, the rest of the structure
 ** (beyond ReadingType) is not meaningful.
 **
@@ -1233,9 +1243,10 @@ typedef enum {
     SAHPI_SEC_READ_ONLY_MASKS,  /* Control for entire Sensor only; Sensor
                                    event enable status can be changed, but
                                    assert/deassert masks cannot be changed */
-    SAHPI_SEC_READ_ONLY         /* Event control not supported; Sensor event
+    SAHPI_SEC_READ_ONLY,        /* Event control not supported; Sensor event
                                    enable status cannot be changed and
                                    assert/deassert masks cannot be changed */
+    SAHPI_SEC_MAX_VALID = SAHPI_SEC_READ_ONLY
 } SaHpiSensorEventCtrlT;
 
 /*
@@ -1259,7 +1270,6 @@ typedef struct {
     SaHpiUint32T            Oem;           /* Reserved for OEM use */
 } SaHpiSensorRecT;
 
-
 /*******************************************************************************
 ********************************************************************************
 **********                                                            **********
@@ -1276,7 +1286,6 @@ typedef struct {
 /* The following specifies the named range for aggregate status. */
 #define SAHPI_DEFAGSENS_MIN   (SaHpiSensorNumT)0x00000100
 #define SAHPI_DEFAGSENS_MAX   (SaHpiSensorNumT)0x0000010F
-
 
 /*******************************************************************************
 ********************************************************************************
@@ -1304,7 +1313,8 @@ typedef enum {
     SAHPI_CTRL_TYPE_ANALOG,
     SAHPI_CTRL_TYPE_STREAM,
     SAHPI_CTRL_TYPE_TEXT,
-    SAHPI_CTRL_TYPE_OEM = 0xC0
+    SAHPI_CTRL_TYPE_OEM = 0xC0,
+    SAHPI_CTRL_TYPE_MAX_VALID = SAHPI_CTRL_TYPE_OEM
 } SaHpiCtrlTypeT;
 
 /*
@@ -1329,7 +1339,8 @@ typedef enum {
     SAHPI_CTRL_STATE_OFF = 0,
     SAHPI_CTRL_STATE_ON,
     SAHPI_CTRL_STATE_PULSE_OFF,
-    SAHPI_CTRL_STATE_PULSE_ON
+    SAHPI_CTRL_STATE_PULSE_ON,
+    SAHPI_CTRL_STATE_MAX_VALID = SAHPI_CTRL_STATE_PULSE_ON
 } SaHpiCtrlStateDigitalT;
 
 /*
@@ -1397,9 +1408,9 @@ typedef struct {
 */
 typedef enum {
     SAHPI_CTRL_MODE_AUTO,
-    SAHPI_CTRL_MODE_MANUAL
+    SAHPI_CTRL_MODE_MANUAL,
+    SAHPI_CTRL_MODE_MAX_VALID = SAHPI_CTRL_MODE_MANUAL
 } SaHpiCtrlModeT;
-
 
 /*******************************************************************************
 ********************************************************************************
@@ -1428,7 +1439,8 @@ typedef enum {
     SAHPI_CTRL_POWER_INTERLOCK,
     SAHPI_CTRL_POWER_STATE,
     SAHPI_CTRL_LCD_DISPLAY,
-    SAHPI_CTRL_OEM
+    SAHPI_CTRL_OEM,
+    SAHPI_CTRL_OUTPUT_TYPE_MAX_VALID = SAHPI_CTRL_OEM
 } SaHpiCtrlOutputTypeT;
 
 /*
@@ -1516,7 +1528,6 @@ typedef struct {
 } SaHpiCtrlRecT;
 
 
-
 /*******************************************************************************
 ********************************************************************************
 **********                                                            **********
@@ -1546,7 +1557,8 @@ typedef enum {
     SAHPI_IDR_AREATYPE_BOARD_INFO,
     SAHPI_IDR_AREATYPE_PRODUCT_INFO,
     SAHPI_IDR_AREATYPE_OEM = 0xC0,
-    SAHPI_IDR_AREATYPE_UNSPECIFIED = 0xFF
+    SAHPI_IDR_AREATYPE_UNSPECIFIED = 0xFF,
+    SAHPI_IDR_AREATYPE_MAX_VALID = SAHPI_IDR_AREATYPE_UNSPECIFIED
 } SaHpiIdrAreaTypeT;
 
 /* Inventory Data Field type definitions
@@ -1565,7 +1577,8 @@ typedef enum {
     SAHPI_IDR_FIELDTYPE_FILE_ID,
     SAHPI_IDR_FIELDTYPE_ASSET_TAG,
     SAHPI_IDR_FIELDTYPE_CUSTOM,
-    SAHPI_IDR_FIELDTYPE_UNSPECIFIED = 0xFF
+    SAHPI_IDR_FIELDTYPE_UNSPECIFIED = 0xFF,
+    SAHPI_IDR_FIELDTYPE_MAX_VALID = SAHPI_IDR_FIELDTYPE_UNSPECIFIED
 } SaHpiIdrFieldTypeT;
 
 /* Inventory Data Field structure definition */
@@ -1596,12 +1609,10 @@ typedef struct {
     SaHpiUint32T       NumAreas;    /* Number of Areas contained in IDR */
 } SaHpiIdrInfoT;
 
-
-
 /*******************************************************************************
 ********************************************************************************
 **********                                                            **********
-**********       Inventory Data Repository Resource Data Records      **********
+**********     Inventory Data Repository Resource Data Records        **********
 **********                                                            **********
 ********************************************************************************
 *******************************************************************************/
@@ -1621,8 +1632,6 @@ typedef struct {
                                   defined in implementation documentation.*/
     SaHpiUint32T  Oem;
 } SaHpiInventoryRecT;
-
-
 
 /*******************************************************************************
 ********************************************************************************
@@ -1650,7 +1659,8 @@ typedef enum {
     SAHPI_WA_NO_ACTION = 0,
     SAHPI_WA_RESET,
     SAHPI_WA_POWER_DOWN,
-    SAHPI_WA_POWER_CYCLE
+    SAHPI_WA_POWER_CYCLE,
+    SAHPI_WA_MAX_VALID = SAHPI_WA_POWER_CYCLE
 } SaHpiWatchdogActionT;
 
 typedef enum {
@@ -1658,7 +1668,8 @@ typedef enum {
     SAHPI_WAE_RESET,
     SAHPI_WAE_POWER_DOWN,
     SAHPI_WAE_POWER_CYCLE,
-    SAHPI_WAE_TIMER_INT=0x08   /* Used if Timer Preinterrupt only */
+    SAHPI_WAE_TIMER_INT=0x08,   /* Used if Timer Preinterrupt only */
+    SAHPI_WAE_MAX_VALID = SAHPI_WAE_TIMER_INT
 } SaHpiWatchdogActionEventT;
 
 /*
@@ -1673,14 +1684,15 @@ typedef enum {
     SAHPI_WPI_SMI,
     SAHPI_WPI_NMI,
     SAHPI_WPI_MESSAGE_INTERRUPT,
-    SAHPI_WPI_OEM = 0x0F
+    SAHPI_WPI_OEM = 0x0F,
+    SAHPI_WPI_MAX_VALID = SAHPI_WPI_OEM
 } SaHpiWatchdogPretimerInterruptT;
 
 /*
 ** Watchdog Timer Use
 **
 ** These enumerations represent the possible Watchdog users that may have caused
-** the Watchdog to expire. For instance, if a Watchdog is used during power
+** the Watchdog to expire.  For instance, if a Watchdog is used during power
 ** on self test (POST), and it expires, the SAHPI_WTU_BIOS_POST expiration type
 ** is set. Most specific uses for Watchdog timer by users of HPI should
 ** indicate SAHPI_WTU_SMS_OS if the use is to provide an OS-healthy heartbeat,
@@ -1694,7 +1706,8 @@ typedef enum {
     SAHPI_WTU_SMS_OS,            /* System Management System providing
                                    heartbeat for OS */
     SAHPI_WTU_OEM,
-    SAHPI_WTU_UNSPECIFIED = 0x0F
+    SAHPI_WTU_UNSPECIFIED = 0x0F,
+    SAHPI_WTU_MAX_VALID = SAHPI_WTU_UNSPECIFIED
 } SaHpiWatchdogTimerUseT;
 
 /*
@@ -1718,9 +1731,9 @@ typedef SaHpiUint8T SaHpiWatchdogExpFlagsT;
 **
 ** For saHpiWatchdogTimerGet() :
 **
-**   Log -                indicates whether or not the Watchdog is configured to
+**   Log -                indicates whether the Watchdog is configured to
 **                        issue events. True=events are generated.
-**   Running -            indicates whether or not the Watchdog is currently
+**   Running -            indicates whether the Watchdog is currently
 **                        running or stopped. True=Watchdog is running.
 **   TimerUse -           indicates the current use of the timer; one of the
 **                        enumerated preset uses which was included on the last
@@ -1755,7 +1768,7 @@ typedef SaHpiUint8T SaHpiWatchdogExpFlagsT;
 **                        resolution could be supported.  The HPI implementation
 **                        returns this rounded value.
 **   PresentCount -       The remaining time in milliseconds before the timer
-**                        times out unless a saHpiWatchdogTimerReset()
+**                        times out unless an saHpiWatchdogTimerReset()
 **                        function call is made, or some other implementation-
 **                        dependent strobe is sent to the Watchdog.
 **                        HPI implementations may not be able to support
@@ -1765,9 +1778,9 @@ typedef SaHpiUint8T SaHpiWatchdogExpFlagsT;
 **
 ** For saHpiWatchdogTimerSet():
 **
-**   Log -                indicates whether or not the Watchdog should issue
+**   Log -                indicates whether the Watchdog should issue
 **                        events. True=events are generated.
-**   Running -            indicates whether or not the Watchdog should be
+**   Running -            indicates whether the Watchdog should be
 **                        stopped before updating.
 **                        True =  Watchdog is not stopped. If it is
 **                                already stopped, it remains stopped,
@@ -1777,12 +1790,12 @@ typedef SaHpiUint8T SaHpiWatchdogExpFlagsT;
 **                                there is a race condition possible
 **                                with this setting, so it should be used
 **                                with care.
-**                        False = Watchdog is stopped. After
+**                        False = Watchdog is stopped.  After
 **                                saHpiWatchdogTimerSet() is called, a
 **                                subsequent call to
 **                                saHpiWatchdogTimerReset() is required
 **                                to start the timer.
-**   TimerUse -           indicates the current use of the timer. Controls
+**   TimerUse -           indicates the current use of the timer.  Controls
 **                        which TimerUseExpFlag will be set if the timer
 **                        expires.
 **   TimerAction -        indicates what action will be taken when the Watchdog
@@ -1799,16 +1812,16 @@ typedef SaHpiUint8T SaHpiWatchdogExpFlagsT;
 **                        These restrictions should be documented by the
 **                        provider of the HPI interface.
 **   TimerUseExpFlags -   Set of five bit flags corresponding to the five
-**                        TimerUse values. For each bit set to "1", the
+**                        TimerUse values.  For each bit set to "1", the
 **                        corresponding Timer Use Expiration Flag is cleared,
 **                        that is, set to "0". Generally, a program should only
 **                        clear the Timer Use Expiration Flag corresponding to
 **                        its own TimerUse, so that other software, which may
 **                        have used the timer for another purpose in the past
 **                        can still read its TimerUseExpFlag to determine
-**                        whether or not the timer expired during that use.
+**                        whether the timer expired during that use.
 **   InitialCount -       The time, in milliseconds, before the timer will time
-**                        out after a saHpiWatchdogTimerReset() function call is
+**                        out after an saHpiWatchdogTimerReset() function call is
 **                        made, or some other implementation-dependent strobe is
 **                        sent to the Watchdog. HPI implementations may not be
 **                        able to support millisecond resolution and may have a
@@ -1830,7 +1843,6 @@ typedef struct {
     SaHpiUint32T                      PresentCount;
 } SaHpiWatchdogT;
 
-
 /*******************************************************************************
 ********************************************************************************
 **********                                                            **********
@@ -1841,7 +1853,7 @@ typedef struct {
 
 /*
 ** When the "Watchdog" capability is set in a resource, a Watchdog with an
-** identifier of SAHPI_DEFAULT_WATCHDOG_NUM is required. All Watchdogs must be
+** identifier of SAHPI_DEFAULT_WATCHDOG_NUM is required.  All Watchdogs must be
 ** represented in the RDR repository with an SaHpiWatchdogRecT, including the
 ** Watchdog with an identifier of SAHPI_DEFAULT_WATCHDOG_NUM.
 */
@@ -1850,12 +1862,10 @@ typedef struct {
     SaHpiUint32T       Oem;
 } SaHpiWatchdogRecT;
 
-
-
 /*******************************************************************************
 ********************************************************************************
 **********                                                            **********
-**********                   DIMI                                     **********
+**********                              DIMI                          **********
 **********                                                            **********
 ********************************************************************************
 *******************************************************************************/
@@ -1873,9 +1883,10 @@ typedef SaHpiInstrumentIdT SaHpiDimiNumT;
 typedef enum {
     SAHPI_DIMITEST_NONDEGRADING,
     SAHPI_DIMITEST_DEGRADING,
-    SAHPI_DIMITEST_VENDOR_DEFINED_LEVEL /* VENDOR_DEFINED_LEVEL can be used
-                                           to indicate severity of degrading
-                                           test */
+    SAHPI_DIMITEST_VENDOR_DEFINED_LEVEL, /* VENDOR_DEFINED_LEVEL can be used
+                                          to indicate severity of degrading
+                                          test */
+    SAHPI_DIMITEST_SERVICE_IMPACT_MAX_VALID = SAHPI_DIMITEST_VENDOR_DEFINED_LEVEL
 } SaHpiDimiTestServiceImpactT;
 
 
@@ -1887,23 +1898,24 @@ typedef enum {
 
 typedef struct {
     SaHpiEntityPathT        EntityImpacted; /* Entity path of impacted
-                                               entity */
-    SaHpiDimiTestServiceImpactT     ServiceImpact;   /* Service Impact on
-                                                        affected entity */
+                                                    entity */
+    SaHpiDimiTestServiceImpactT     ServiceImpact;   /* Service Impact on affected
+                                                    entity */
 } SaHpiDimiTestAffectedEntityT;
 
 typedef enum {
-    SAHPI_DIMITEST_STATUS_NOT_RUN,        /* Only returned if test has never
-                                             been executed on the DIMI */
+    SAHPI_DIMITEST_STATUS_NOT_RUN,   /* Only returned if test has never
+                            been executed on the DIMI */
     SAHPI_DIMITEST_STATUS_FINISHED_NO_ERRORS, /* Test is not running. Last run
-                                             finished without any errors */
-    SAHPI_DIMITEST_STATUS_FINISHED_ERRORS, /* Test is not running. But the last
-                                             run finished with error */
-    SAHPI_DIMITEST_STATUS_CANCELED,       /* This is returned when a test has
+                            finished without any errors */
+    SAHPI_DIMITEST_STATUS_FINISHED_ERRORS, /* Test is not running.  But the last
+                             run finished with error */
+    SAHPI_DIMITEST_STATUS_CANCELED,        /* This is returned when a test has
                                              canceled using the
                                              saHpiDimiTestCancel function */
-    SAHPI_DIMITEST_STATUS_RUNNING         /* This is returned when a test is
+    SAHPI_DIMITEST_STATUS_RUNNING,         /* This is returned when a test is
                                              in progress */
+    SAHPI_DIMITEST_STATUS_MAX_VALID = SAHPI_DIMITEST_STATUS_RUNNING
 } SaHpiDimiTestRunStatusT;
 
 
@@ -1913,41 +1925,42 @@ typedef enum {
 ** undefined errors.  */
 
 typedef enum {
-    SAHPI_DIMITEST_STATUSERR_NOERR = 0,    /* No Error was generated */
-    SAHPI_DIMITEST_STATUSERR_RUNERR,       /* Run time error was generated */
-    SAHPI_DIMITEST_STATUSERR_UNDEF         /* Undefined Error*/
+    SAHPI_DIMITEST_STATUSERR_NOERR = 0, /* No Error was generated */
+    SAHPI_DIMITEST_STATUSERR_RUNERR,    /* Run time error was generated */
+    SAHPI_DIMITEST_STATUSERR_UNDEF, /* Undefined Error*/
+    SAHPI_DIMITEST_STATUSERR_MAX_VALID = SAHPI_DIMITEST_STATUSERR_UNDEF
 } SaHpiDimiTestErrCodeT;
 
 
 /*  Test results from last run of test */
 
 typedef struct {
-    SaHpiTimeT      ResultTimeStamp; /* TimeStamp when the results are
-                                        generated. When test ends,
-                                        ResultTimeStamp captures the time
-                                        test ended */
-    SaHpiTimeoutT       RunDuration; /* Implementation provides the
-                                        duration from the start of last run
-                                        until the time results were
-                                        generated */
-    SaHpiDimiTestRunStatusT LastRunStatus;
-    SaHpiDimiTestErrCodeT   TestErrorCode;
-    SaHpiTextBufferT    TestResultString; /* String contains either in line
-                                             Test result or URI to the file name
-                                             containing results from last run */
-    SaHpiBoolT      TestResultStringIsURI;  /* True = URI to file name,
-                                               False = in-line test result,
-                                               If True, the DataType of the
-                                               TestResultString text buffer
-                                               must be SAHPI_TL_TYPE_TEXT. */
+SaHpiTimeT      ResultTimeStamp; /* TimeStamp when the results are
+                             generated. When test ends,
+                             ResultTimeStamp captures the time
+                             test ended */
+SaHpiTimeoutT       RunDuration;      /* Implementation provides the
+                         duration from the start of last run
+                             until the time results were
+                             generated */
+SaHpiDimiTestRunStatusT LastRunStatus;
+SaHpiDimiTestErrCodeT   TestErrorCode;
+SaHpiTextBufferT    TestResultString; /* String contains either in line
+                                              Test result or URI to the file name
+                                              containing results from last run */
+SaHpiBoolT      TestResultStringIsURI;  /* True = URI to file name,
+                                                   False = in-line test result,
+                                                   If True, the DataType of the
+                                                   TestResultString text buffer
+                                                   must be SAHPI_TL_TYPE_TEXT. */
 } SaHpiDimiTestResultsT;
 
 
 /* SaHpiDimiTestParamsDefinitionT struct defines test parameters. The test
 ** parameter definition consists of Parameter Name, human readable text for
 ** parameters information, parameters type and value (min, max, default).
-** HPI user can use APIs to obtain the parameters definition along with test
-** information. Based on test parameters definition a proper parameter can
+** HPI User can use APIs to obtain the parameters definition along with test
+** information.  Based on test parameters definition a proper parameter can
 ** be defined and passed together with the test invocation.
 */
 
@@ -1957,17 +1970,18 @@ typedef enum {
     SAHPI_DIMITEST_PARAM_TYPE_BOOLEAN,  /* HPI type SaHpiBoolT */
     SAHPI_DIMITEST_PARAM_TYPE_INT32,    /* HPI type SaHpiUint32T */
     SAHPI_DIMITEST_PARAM_TYPE_FLOAT64,  /* HPI type SaHpiFloat64T */
-    SAHPI_DIMITEST_PARAM_TYPE_TEXT      /* HPI type SaHpiTextBufferT */
+    SAHPI_DIMITEST_PARAM_TYPE_TEXT, /* HPI type SaHpiTextBufferT */
+    SAHPI_DIMITEST_PARAM_TYPE_MAX_VALID = SAHPI_DIMITEST_PARAM_TYPE_TEXT
 } SaHpiDimiTestParamTypeT;
 
 
 /* This union is defining the values for the test parameter*/
 
 typedef union {
-    SaHpiInt32T             paramint;
-    SaHpiBoolT              parambool;
-    SaHpiFloat64T           paramfloat;
-    SaHpiTextBufferT        paramtext; /* Must be DataType=SAHPI_TL_TYPE_TEXT */
+    SaHpiInt32T     paramint;
+    SaHpiBoolT      parambool;
+    SaHpiFloat64T       paramfloat;
+    SaHpiTextBufferT    paramtext;  /* Must be DataType = SAHPI_TL_TYPE_TEXT */
 } SaHpiDimiTestParamValueT;
 
 
@@ -1979,22 +1993,20 @@ typedef union {
 
 typedef union {
    SaHpiInt32T      IntValue;
-   SaHpiFloat64T    FloatValue;
+   SaHpiFloat64T         FloatValue;
 } SaHpiDimiTestParameterValueUnionT;
 
 
 typedef struct {
-    SaHpiUint8T    ParamName[SAHPI_DIMITEST_PARAM_NAME_LEN]; /* Name of the
-                                                              parameter, case
-                                                              sensitive */
-    SaHpiTextBufferT                  ParamInfo;  /* This is a human readable
-                                                     text */
-    SaHpiDimiTestParamTypeT           ParamType;
-    SaHpiDimiTestParameterValueUnionT MinValue;   /* Only valid for integer and
-                                                     float parameters */
-    SaHpiDimiTestParameterValueUnionT MaxValue;   /* Only valid for integer and
-                                                     float parameters */
-    SaHpiDimiTestParamValueT          DefaultParam; /* Default value */
+  SaHpiUint8T ParamName[SAHPI_DIMITEST_PARAM_NAME_LEN]; /* Name of the
+                           parameter, case sensitive */
+  SaHpiTextBufferT      ParamInfo;  /* This is a human readable text */
+  SaHpiDimiTestParamTypeT       ParamType;
+  SaHpiDimiTestParameterValueUnionT MinValue;   /* Only valid for integer and float
+                               parameters */
+  SaHpiDimiTestParameterValueUnionT MaxValue;   /* Only valid for integer and float
+                               parameters */
+  SaHpiDimiTestParamValueT DefaultParam;     /* Default value */
 
 } SaHpiDimiTestParamsDefinitionT;
 
@@ -2003,7 +2015,7 @@ typedef struct {
 ** mask. If a test supports one of these capabilities then the corresponding
 ** bit is set in the bit mask.
 ** There is a close relationship between capabilities and parameters of a
-** test. A test may support some standard parameters if specific capability
+** test.  A test may support some standard parameters if specific capability
 ** bits are set. Some capabilities might not have test parameters.
 **
 ** Future versions of the HPI specification may define additional DIMI test
@@ -2053,100 +2065,100 @@ typedef struct {
 typedef SaHpiUint32T SaHpiDimiTestCapabilityT;
 
 #define SAHPI_DIMITEST_CAPABILITY_NO_CAPABILITY \
-        (SaHpiDimiTestCapabilityT)0x00000000
+                        (SaHpiDimiTestCapabilityT)0x00000000
 #define SAHPI_DIMITEST_CAPABILITY_RESULTSOUTPUT \
-        (SaHpiDimiTestCapabilityT)0x00000001
+                        (SaHpiDimiTestCapabilityT)0x00000001
 #define SAHPI_DIMITEST_CAPABILITY_SERVICEMODE   \
-        (SaHpiDimiTestCapabilityT)0x00000002
-#define SAHPI_DIMITEST_CAPABILITY_LOOPCOUNT     \
-        (SaHpiDimiTestCapabilityT)0x00000004
-#define SAHPI_DIMITEST_CAPABILITY_LOOPTIME      \
-        (SaHpiDimiTestCapabilityT)0x00000008
-#define SAHPI_DIMITEST_CAPABILITY_LOGGING       \
-        (SaHpiDimiTestCapabilityT)0x00000010
+                        (SaHpiDimiTestCapabilityT)0x00000002
+#define SAHPI_DIMITEST_CAPABILITY_LOOPCOUNT \
+                        (SaHpiDimiTestCapabilityT)0x00000004
+#define SAHPI_DIMITEST_CAPABILITY_LOOPTIME  \
+                        (SaHpiDimiTestCapabilityT)0x00000008
+#define SAHPI_DIMITEST_CAPABILITY_LOGGING   \
+                        (SaHpiDimiTestCapabilityT)0x00000010
 #define SAHPI_DIMITEST_CAPABILITY_TESTCANCEL    \
-        (SaHpiDimiTestCapabilityT)0x00000020
+                        (SaHpiDimiTestCapabilityT)0x00000020
 
 /* The following are the standard test parameters available for use with DIMI
 ** tests. These parameters are applicable only if the corresponding test
-** capability is supported by a DIMI test. HPI user can check the capabilities
+** capability is supported by a DIMI test. HPI User can check the capabilities
 ** through the bit-stream defined through SaHpiDimiTestCapabilityT. If a test
 ** supports certain capability, corresponding test parameter is defined in
-** standard format. The parameters are defined here as macros. For tests
+** standard format. The parameters are defined here as macros.  For tests
 ** supporting these parameters they are returned as type
 ** SaHpiDimiTestParamsDefinitionT with the SaHpiDimiTestT structure.
 */
 
 #ifndef SAHPI_DIMITEST_LOOP_COUNT_PARAM
 #define SAHPI_DIMITEST_LOOP_COUNT_PARAM_NAME    "Loop Count"
-#define SAHPI_DIMITEST_LOOP_COUNT_PARAM                     \
-                {                                           \
+#define SAHPI_DIMITEST_LOOP_COUNT_PARAM                 \
+                {                       \
                     SAHPI_DIMITEST_LOOP_COUNT_PARAM_NAME,   \
-                    {                                       \
-                        SAHPI_TL_TYPE_TEXT,                 \
-                        SAHPI_LANG_ENGLISH,                 \
-                        15,                                 \
-                        "Test Loop Count"                   \
-                    },                                      \
+                    {                       \
+                    SAHPI_TL_TYPE_TEXT,         \
+                    SAHPI_LANG_ENGLISH,         \
+                    15,                 \
+                    "Test Loop Count"           \
+                    },                      \
                     SAHPI_DIMITEST_PARAM_TYPE_INT32,        \
-                    1,                                      \
-                    0xFFFFFFFF,                             \
-                    { 1 }                                   \
+                    1,                      \
+                    0xFFFFFFFF,             \
+                    { 1 }                   \
                 }
 #endif // SAHPI_DIMITEST_LOOP_COUNT_PARAM
 
 #ifndef SAHPI_DIMITEST_LOOP_TIME_PARAM
-#define SAHPI_DIMITEST_LOOP_TIME_PARAM_NAME     "Loop Time"
-#define SAHPI_DIMITEST_LOOP_TIME_PARAM                      \
-                {                                           \
+#define SAHPI_DIMITEST_LOOP_TIME_PARAM_NAME "Loop Time"
+#define SAHPI_DIMITEST_LOOP_TIME_PARAM                  \
+                {                       \
                     SAHPI_DIMITEST_LOOP_TIME_PARAM_NAME,    \
-                    {                                       \
-                        SAHPI_TL_TYPE_TEXT,                 \
-                        SAHPI_LANG_ENGLISH,                 \
-                        14,                                 \
-                        "Test Loop Time"                    \
-                    },                                      \
-                    SAHPI_DIMITEST_PARAM_TYPE_INT32,        \
-                    0,                                      \
-                    0xFFFFFFFF,                             \
-                    { 1 }                                   \
-                }
+                           {                        \
+                                SAHPI_TL_TYPE_TEXT,         \
+                                SAHPI_LANG_ENGLISH,             \
+                                14,                 \
+                                "Test Loop Time"            \
+                               },                       \
+                              SAHPI_DIMITEST_PARAM_TYPE_INT32,      \
+                              0,                        \
+                              0xFFFFFFFF,               \
+                              { 1 }                 \
+                          }
 #endif // SAHPI_DIMITEST_LOOP_TIME_PARAM
 
 #ifndef SAHPI_DIMITEST_SERVICE_MODE_PARAM
 #define SAHPI_DIMITEST_SERVICE_MODE_PARAM_NAME  "Service Mode"
-#define SAHPI_DIMITEST_SERVICE_MODE_PARAM                   \
-                {                                           \
-                    SAHPI_DIMITEST_SERVICE_MODE_PARAM_NAME, \
-                    {                                       \
-                        SAHPI_TL_TYPE_TEXT,                 \
-                        SAHPI_LANG_ENGLISH,                 \
-                        14,                                 \
-                        "Operating Mode"                    \
-                    },                                      \
-                    SAHPI_DIMITEST_PARAM_TYPE_INT32,        \
-                    0, /* basic mode */                     \
-                    1, /* extended mode */                  \
-                    { 0 } /* default is basic mode */       \
-                }
+#define SAHPI_DIMITEST_SERVICE_MODE_PARAM  {                \
+                {                       \
+                              SAHPI_DIMITEST_SERVICE_MODE_PARAM_NAME,   \
+                              {                     \
+                                SAHPI_TL_TYPE_TEXT,         \
+                                SAHPI_LANG_ENGLISH,             \
+                                14,                 \
+                                "Operating Mode"            \
+                              },                        \
+                              SAHPI_DIMITEST_PARAM_TYPE_INT32,      \
+                              0, /* basic mode */           \
+                              1, /* extended mode */            \
+                              { 0 } /* default is basic mode */     \
+                         }
 #endif // SAHPI_DIMITEST_SERVICE_MODE_PARAM
 
 #ifndef SAHPI_DIMITEST_LOGGING_PARAM
-#define SAHPI_DIMITEST_LOGGING_PARAM_NAME       "Logging"
-#define SAHPI_DIMITEST_LOGGING_PARAM                        \
-                {                                           \
-                    SAHPI_DIMITEST_LOGGING_PARAM_NAME,      \
-                    {                                       \
-                        SAHPI_TL_TYPE_TEXT,                 \
-                        SAHPI_LANG_ENGLISH,                 \
-                        18,                                 \
-                        "Logging Capability"                \
-                    },                                      \
-                    SAHPI_DIMITEST_PARAM_TYPE_INT32,        \
-                    0,   /* No Logging */                   \
-                    5,   /* Verbose Logging*/               \
-                    { 0 }                                   \
-                }
+#define SAHPI_DIMITEST_LOGGING_PARAM_NAME   "Logging"
+#define SAHPI_DIMITEST_LOGGING_PARAM                    \
+                         {                      \
+                               SAHPI_DIMITEST_LOGGING_PARAM_NAME,   \
+                              {                     \
+                            SAHPI_TL_TYPE_TEXT,         \
+                            SAHPI_LANG_ENGLISH,             \
+                            18,                 \
+                                 "Logging Capability"           \
+                              },                        \
+                              SAHPI_DIMITEST_PARAM_TYPE_INT32,      \
+                              0,    /* No Logging */            \
+                              5,    /* Verbose Logging*/            \
+                              { 0 }                 \
+                         }
 #endif  // SAHPI_DIMITEST_LOGGING_PARAM
 
 /* ResultsOutputParam:  Standard parameter describing the capability of a
@@ -2157,26 +2169,26 @@ typedef SaHpiUint32T SaHpiDimiTestCapabilityT;
 
 #ifndef SAHPI_DIMITEST_RESULTS_OUTPUT_PARAM
 
-#define SAHPI_DIMITEST_CAPAB_RES_FINALONLY       0
-#define SAHPI_DIMITEST_CAPAB_RES_ONDEMAND        1
-#define SAHPI_DIMITEST_CAPAB_RES_ASYNC           2
+#define SAHPI_DIMITEST_CAPAB_RES_FINALONLY 0
+#define SAHPI_DIMITEST_CAPAB_RES_ONDEMAND  1
+#define SAHPI_DIMITEST_CAPAB_RES_ASYNC     2
 
 
 #define SAHPI_DIMITEST_RESULTS_OUTPUT_PARAM_NAME    "Results Output"
-#define SAHPI_DIMITEST_RESULTS_OUTPUT_PARAM                     \
-                {                                               \
-                    SAHPI_DIMITEST_RESULTS_OUTPUT_PARAM_NAME,   \
-                    {                                           \
-                        SAHPI_TL_TYPE_TEXT,                     \
-                        SAHPI_LANG_ENGLISH,                     \
-                        25,                                     \
-                        "Results Output Capability"             \
-                    },                                          \
-                    SAHPI_DIMITEST_PARAM_TYPE_INT32,            \
-                    0,                                          \
-                    2,                                          \
-                   { 0 }                                        \
-               }
+#define SAHPI_DIMITEST_RESULTS_OUTPUT_PARAM   {             \
+                {                       \
+                              SAHPI_DIMITEST_RESULTS_OUTPUT_PARAM_NAME,\
+                              {                     \
+                                SAHPI_TL_TYPE_TEXT,             \
+                                 SAHPI_LANG_ENGLISH,            \
+                                 25,                    \
+                                 "Results Output Capability"        \
+                              },                        \
+                              SAHPI_DIMITEST_PARAM_TYPE_INT32,      \
+                              0,                    \
+                              2,                    \
+                              { 0 }                     \
+                         }
 #endif // SAHPI_DIMITEST_RESULTS_OUTPUT_PARAM
 
 
@@ -2187,94 +2199,90 @@ typedef SaHpiUint32T SaHpiDimiTestCapabilityT;
 /* DIMI test number */
 typedef SaHpiUint32T SaHpiDimiTestNumT;
 
-/* Maximum number entities that can be impacted by a test */
+/* Maximum number entities that can be affected by a test */
 #define SAHPI_DIMITEST_MAX_ENTITIESIMPACTED 5
 
 typedef struct {
-    SaHpiTextBufferT            TestName;
-    SaHpiDimiTestServiceImpactT ServiceImpact; /* Service Impact on DIMI
-                                                  itself */
-    SaHpiDimiTestAffectedEntityT
-    EntitiesImpacted[SAHPI_DIMITEST_MAX_ENTITIESIMPACTED];
-                    /* Entities impacted by the Test. If entity contains
-                        other entities then contained entities are considered
-                        impacted as well. If Entities impacted by Test are more
-                        than Max number, its recommended to associate test with
-                        higher level entity DIMI. */
-    SaHpiBoolT              NeedServiceOS;  /* True if a special Service
-                                               OS is needed for this test */
-    SaHpiTextBufferT        ServiceOS;  /* If a special Service OS
-                                            is needed to be run for the
-                                            test, the HPI user is required
-                                            to load the particular Service
-                                            OS before running the tests,
-                                            else DIMI returns an error code.*/
-    SaHpiTimeT              ExpectedRunDuration; /* Expected run duration
-                                           for a test with default
-                                           parameters */
-    SaHpiDimiTestCapabilityT        TestCapabilities;
-
-    SaHpiDimiTestParamsDefinitionT
-                                TestParameters[SAHPI_DIMITEST_MAX_PARAMETERS];
+    SaHpiTextBufferT        TestName;
+    SaHpiDimiTestServiceImpactT ServiceImpact; /* Service Impact
+                               on DIMI itself */
+    SaHpiDimiTestAffectedEntityT EntitiesImpacted[SAHPI_DIMITEST_MAX_ENTITIESIMPACTED];
+            /* Entities affected by the Test. If entity contains
+               other entities then contained entities are considered
+               affected as well. If Entities affected by Test are more
+               than Max number, its recommended to associate test with
+               higher level entity DIMI. */
+    SaHpiBoolT          NeedServiceOS;  /* True if a special Service
+                                                   OS is needed for this test */
+    SaHpiTextBufferT        ServiceOS;  /* If a special Service OS is
+                               needed to be run for the test,
+                               the HPI User is required to
+                               load the particular Service
+                               OS before running the tests,
+                               else DIMI returns an error
+                               code.*/
+    SaHpiTimeT          ExpectedRunDuration; /* Expected run duration
+                                  for a test with default
+                                  parameters */
+    SaHpiDimiTestCapabilityT    TestCapabilities;
+    SaHpiDimiTestParamsDefinitionT TestParameters[SAHPI_DIMITEST_MAX_PARAMETERS];
 } SaHpiDimiTestT;
 
 /* This struct defines the format of parameter which is passed
 ** to the test on invocation
 */
 typedef struct {
-       SaHpiUint8T     ParamName[SAHPI_DIMITEST_PARAM_NAME_LEN];
-                                           /* Must exactly match the one
-                                            returned by the ParamsDefinition */
-       SaHpiDimiTestParamTypeT  ParamType; /* Must exactly match the one
-                                            returned by the ParamsDefinition */
-       SaHpiDimiTestParamValueT Value;
+    SaHpiUint8T ParamName[SAHPI_DIMITEST_PARAM_NAME_LEN];
+                        /* Must exactly match the one returned
+                           by the ParamsDefinition */
+    SaHpiDimiTestParamTypeT ParamType; /* Must exactly match the one
+                          returned by the ParamsDefinition */
+    SaHpiDimiTestParamValueT Value;
 } SaHpiDimiTestVariableParamsT;
 
-/* Percentage of test completed. Based on DIMI test capability,
+/* Percentage of test completed.  Based on DIMI test capability,
    Value range is 0 - 100,
    0xFF returned if capability not available.
 */
 typedef SaHpiUint8T SaHpiDimiTestPercentCompletedT;
 
 typedef enum {
-    SAHPI_DIMI_READY,   /* DIMI is in ready state to run a particular test */
+    SAHPI_DIMI_READY,       /* DIMI is in ready state to run a particular test */
     SAHPI_DIMI_WRONG_STATE, /* DIMI is in the wrong state to run a
                               particular test.  For example, need to load a
                               correct ServiceOS before this test can run */
-    SAHPI_DIMI_BUSY  /* DIMI cannot start a particular test at this
-                            time.  User can try again later.  */
+   SAHPI_DIMI_BUSY,        /* DIMI cannot start a particular test at this
+                              time.  User can try again later.  */
+   SAHPI_DIMI_READY_MAX_VALID = SAHPI_DIMI_BUSY
 } SaHpiDimiReadyT;
 
-typedef SaHpiUint32T SaHpiDimiTotalTestsT;
-
 typedef struct {
-    SaHpiDimiTotalTestsT    NumberOfTests;  /* It is recommended that the DIMI
-                                                advertise all available tests
-                                                regardless of ServiceImpact or
-                                                Service OS */
-    SaHpiUint32T        TestNumUpdateCounter; /* If number of tests change for
-                                               DIMI this counter is incremented
-                                               and Event is generated */
-} SaHpiDimiInfoT;
+ SaHpiUint32T   NumberOfTests; /* It is recommended that the DIMI
+                                           advertise all available tests
+                                           regardless of ServiceImpact or
+                           Service OS */
+SaHpiUint32T        TestNumUpdateCounter;   /* If number of tests change for
+                       DIMI this counter is incremented and
+                           Event is generated*/
 
+} SaHpiDimiInfoT;
 
 /*******************************************************************************
 ********************************************************************************
 **********                                                            **********
-**********                     DIMI Resource Data Records             **********
+**********                       DIMI Resource Data Records           **********
 **********                                                            **********
 ********************************************************************************
 *******************************************************************************/
 
 /*
 ** All DIMIs must be represented in the
-** RDR repository with a SaHpiDimiRecT
+** RDR repository with an SaHpiDimiRecT
 */
 typedef struct {
     SaHpiDimiNumT       DimiNum;
     SaHpiUint32T        Oem;    /* Reserved for OEM use */
 } SaHpiDimiRecT;
-
 
 /*******************************************************************************
 ********************************************************************************
@@ -2291,6 +2299,127 @@ typedef SaHpiInstrumentIdT SaHpiFumiNumT;
 typedef SaHpiUint8T SaHpiBankNumT;
 
 /*
+** Spec framework underlying a FUMI implementation
+**
+** This information can be presented in two ways:
+**
+** 1) If SAF recognizes underlying spec framework:
+**    a well-known assigned Spec Identifier and Spec
+**    revision (SaHpiFumiSafDefinedSpecInfoT).
+**
+** 2) Otherwise, an OEM defined identifier (SaHpiFumiOemDefinedSpecInfoT)
+*/
+
+/*
+** Underlying spec framework information type
+*/
+typedef enum {
+    SAHPI_FUMI_SPEC_INFO_NONE,
+    SAHPI_FUMI_SPEC_INFO_SAF_DEFINED,
+    SAHPI_FUMI_SPEC_INFO_OEM_DEFINED,
+    SAHPI_FUMI_SPEC_INFO_MAX_VALID = SAHPI_FUMI_SPEC_INFO_OEM_DEFINED
+} SaHpiFumiSpecInfoTypeT;
+
+/*
+** SAF-recognized underlying spec framework information
+*/
+typedef enum {
+    SAHPI_FUMI_SPEC_HPM1 = 0,
+    /* future revisions of HPI specification will define more constants */
+    SAHPI_FUMI_SPEC_MAX_VALID = SAHPI_FUMI_SPEC_HPM1
+} SaHpiFumiSafDefinedSpecIdT;
+
+typedef struct {
+    SaHpiFumiSafDefinedSpecIdT SpecID;
+    SaHpiUint32T    RevisionID;
+} SaHpiFumiSafDefinedSpecInfoT;
+
+/*
+** OEM-defined underlying spec framework information
+*/
+#define SAHPI_FUMI_MAX_OEM_BODY_LENGTH 255
+typedef struct {
+    SaHpiManufacturerIdT    Mid;
+    SaHpiUint8T BodyLength;
+    SaHpiUint8T Body[SAHPI_FUMI_MAX_OEM_BODY_LENGTH];
+} SaHpiFumiOemDefinedSpecInfoT;
+
+/*
+** Underlying spec framework information
+*/
+typedef union {
+    SaHpiFumiSafDefinedSpecInfoT    SafDefined;
+    SaHpiFumiOemDefinedSpecInfoT    OemDefined;
+} SaHpiFumiSpecInfoTypeUnionT;
+
+typedef struct {
+    SaHpiFumiSpecInfoTypeT SpecInfoType;
+    SaHpiFumiSpecInfoTypeUnionT SpecInfoTypeUnion;
+} SaHpiFumiSpecInfoT;
+
+
+/*
+** Firmware instance info.
+** InstancePresent indicates whether the firmware instance is present or not.
+** Identifier contains file name.
+** Description contains the description string for the firmware instance.
+** DateTime contains the firmware build date-time
+** Version further identifies the firmware instance.
+** Text buffers may have zero length if data is not available.
+** Version field values may be 0 if version data is not available.
+*/
+typedef  struct {
+    SaHpiBoolT      InstancePresent;
+    SaHpiTextBufferT    Identifier;
+    SaHpiTextBufferT    Description;
+    SaHpiTextBufferT    DateTime;
+    SaHpiUint32T        MajorVersion;
+    SaHpiUint32T        MinorVersion;
+    SaHpiUint32T        AuxVersion;
+} SaHpiFumiFirmwareInstanceInfoT;
+
+
+/*
+** FUMI Service Impact Levels
+*/
+typedef enum {
+    SAHPI_FUMI_PROCESS_NONDEGRADING,
+    SAHPI_FUMI_PROCESS_DEGRADING,
+    SAHPI_FUMI_PROCESS_VENDOR_DEFINED_IMPACT_LEVEL,
+    SAHPI_FUMI_PROCESS_IMPACT_MAX_VALID = SAHPI_FUMI_PROCESS_VENDOR_DEFINED_IMPACT_LEVEL
+} SaHpiFumiServiceImpactT;
+
+/*
+** An upgrade process on FUMI may affect the entity corresponding to FUMI
+** resource. It also may affect other entities as well.
+** This struct defines the entity path and the service impact for an affected
+** entity.
+*/
+typedef struct {
+    SaHpiEntityPathT        ImpactedEntity;
+    SaHpiFumiServiceImpactT ServiceImpact;
+} SaHpiFumiImpactedEntityT;
+
+/*
+** Maximum number of entities that can be affected by an upgrade process
+** on a FUMI
+*/
+#define SAHPI_FUMI_MAX_ENTITIES_IMPACTED 5
+
+/*
+** This structure lists the entities affected by an upgrade process on a FUMI.
+** If an entity is in the list, all its contained entities are implicitly
+** considered affected as well (and with the same impact description).
+** If both container and contained entity are in list, impact description for
+** contained entity is explicitly taken from the corresponding list element.
+*/
+typedef struct {
+    SaHpiUint32T NumEntities;
+    SaHpiFumiImpactedEntityT ImpactedEntities[SAHPI_FUMI_MAX_ENTITIES_IMPACTED];
+} SaHpiFumiServiceImpactDataT;
+
+
+/*
 ** FUMI Source Validation Status codes
 */
 typedef enum {
@@ -2301,17 +2430,18 @@ typedef enum {
     SAHPI_FUMI_SRC_UNREACHABLE,  /* Destination designated by source URI is
                                     not reachable, or does not respond */
     SAHPI_FUMI_SRC_VALIDATION_NOT_STARTED, /* Validation process has not
-                                             been started, e.g., no call
-                                             to saHpiFumiSourceInfoValidate() */
+                                              been started, e.g., no call
+                                              to saHpiFumiSourceInfoValidate(). */
     SAHPI_FUMI_SRC_VALIDATION_INITIATED, /* Validation process is in process */
     SAHPI_FUMI_SRC_VALIDATION_FAIL, /* Validation process failed, unable to
                                        determine if source image is valid */
-    SAHPI_FUMI_SRC_TYPE_MISMATCH,   /* If the source image does not
-                                       match the target */
-    SAHPI_FUMI_SRC_INVALID,         /* If the source image fails validation such
-                                       as failed checksum, corrupted etc. */
-    SAHPI_FUMI_SRC_VALIDITY_UNKNOWN /* If the source image validity cannot be
-                                       determined */
+    SAHPI_FUMI_SRC_TYPE_MISMATCH, /* If the source image does not
+                                     match the target */
+    SAHPI_FUMI_SRC_INVALID,       /* If the source image fails validation such
+                                     as failed checksum, corrupted etc. */
+    SAHPI_FUMI_SRC_VALIDITY_UNKNOWN, /* If the source image validity cannot be
+                                        determined */
+    SAHPI_FUMI_SRC_STATUS_MAX_VALID = SAHPI_FUMI_SRC_VALIDITY_UNKNOWN
 } SaHpiFumiSourceStatusT;
 
 /*
@@ -2321,10 +2451,11 @@ typedef enum {
     SAHPI_FUMI_BANK_VALID = 0x00,
     SAHPI_FUMI_BANK_UPGRADE_IN_PROGRESS,
     SAHPI_FUMI_BANK_CORRUPTED,
-    SAHPI_FUMI_BANK_ACTIVE,    /* Bank has become active bank */
-    SAHPI_FUMI_BANK_BUSY,     /* FUMI operations targeting bank
-                              are not currently possible */
-    SAHPI_FUMI_BANK_UNKNOWN
+    SAHPI_FUMI_BANK_ACTIVE,     /* Bank has become active bank */
+    SAHPI_FUMI_BANK_BUSY,        /* FUMI operations targeting bank
+                                    are not currently possible */
+    SAHPI_FUMI_BANK_UNKNOWN,
+    SAHPI_FUMI_BANK_STATE_MAX_VALID = SAHPI_FUMI_BANK_UNKNOWN
 } SaHpiFumiBankStateT;
 
 
@@ -2333,7 +2464,7 @@ typedef enum {
 */
 typedef enum {
     SAHPI_FUMI_OPERATION_NOTSTARTED = 0x00, /* Only returned in response to
-                                            saHpiFumiUpgradeStatusGet() */
+                                               saHpiFumiUpgradeStatusGet() */
     SAHPI_FUMI_SOURCE_VALIDATION_INITIATED,
     SAHPI_FUMI_SOURCE_VALIDATION_FAILED,
     SAHPI_FUMI_SOURCE_VALIDATION_DONE,
@@ -2359,7 +2490,14 @@ typedef enum {
     SAHPI_FUMI_TARGET_VERIFY_INITIATED,
     SAHPI_FUMI_TARGET_VERIFY_FAILED,
     SAHPI_FUMI_TARGET_VERIFY_DONE,
-    SAHPI_FUMI_TARGET_VERIFY_CANCELLED
+    SAHPI_FUMI_TARGET_VERIFY_CANCELLED,
+    SAHPI_FUMI_ACTIVATE_INITIATED,
+    SAHPI_FUMI_ACTIVATE_FAILED_ROLLBACK_NEEDED,
+    SAHPI_FUMI_ACTIVATE_FAILED_ROLLBACK_INITIATED,
+    SAHPI_FUMI_ACTIVATE_FAILED_ROLLBACK_NOT_POSSIBLE,
+    SAHPI_FUMI_ACTIVATE_DONE,
+    SAHPI_FUMI_ACTIVATE_CANCELLED,
+    SAHPI_FUMI_UPGRADE_STATUS_MAX_VALID = SAHPI_FUMI_ACTIVATE_CANCELLED
 } SaHpiFumiUpgradeStatusT;
 
 
@@ -2371,17 +2509,29 @@ typedef enum {
 ** available.  Version values may be 0 if version data is not available.
 */
 typedef struct {
-    SaHpiTextBufferT      SourceUri;   /* Value set for the source information
-                                          with saHpiFumiSourceSet(). */
-    SaHpiFumiSourceStatusT SourceStatus;    /* Result of validation */
-    SaHpiTextBufferT      Identifier;       /* File name */
-    SaHpiTextBufferT      Description;      /* Description */
-    SaHpiTextBufferT      DateTime;         /* Build Date-Time */
-    SaHpiUint32T          MajorVersion;     /* Major Version */
-    SaHpiUint32T          MinorVersion;     /* Minor Version */
-    SaHpiUint32T          AuxVersion;       /* Auxiliary Version */
+    SaHpiTextBufferT      SourceUri;       /* Value set for the source information
+                                              with saHpiFumiSourceSet(). */
+    SaHpiFumiSourceStatusT   SourceStatus; /* Result of validation */
+    SaHpiTextBufferT      Identifier;      /* File name */
+    SaHpiTextBufferT      Description;     /* Description */
+    SaHpiTextBufferT      DateTime;        /* Build Date-Time */
+    SaHpiUint32T          MajorVersion;    /* Major Version */
+    SaHpiUint32T          MinorVersion;    /* Minor Version */
+    SaHpiUint32T          AuxVersion;      /* Auxiliary Version */
 
 } SaHpiFumiSourceInfoT;
+
+
+/*
+** FUMI subsidiary component information
+*/
+typedef struct {
+    SaHpiEntryIdT   EntryId;
+    SaHpiUint32T    ComponentId;
+    SaHpiFumiFirmwareInstanceInfoT MainFwInstance;
+    SaHpiUint32T ComponentFlags; /* Reserved for future use */
+} SaHpiFumiComponentInfoT;
+
 
 /*
 ** FUMI Bank Information -
@@ -2392,17 +2542,51 @@ typedef struct {
     SaHpiUint8T             BankId;         /* Identifier for bank */
     SaHpiUint32T            BankSize;       /* Bank Size in KBytes */
     SaHpiUint32T            Position;       /* Bank Position in boot order.
-                                                If only one bank, will always
-                                                be set to "1" */
-    SaHpiFumiBankStateT     BankState;      /* Validity state of bank */
-    SaHpiTextBufferT        Identifier;     /* File name */
-    SaHpiTextBufferT        Description;    /* Description */
-    SaHpiTextBufferT        DateTime;       /* Build Date-Time */
-    SaHpiUint32T            MajorVersion;   /* Major Version */
-    SaHpiUint32T            MinorVersion;   /* Minor Version */
-    SaHpiUint32T            AuxVersion;     /* Auxiliary Version */
+                                    If only one bank, will always
+                                    be set to "1" */
+    SaHpiFumiBankStateT     BankState;       /* Validity state of bank */
+    SaHpiTextBufferT        Identifier;      /* File name */
+    SaHpiTextBufferT        Description;     /* Description */
+    SaHpiTextBufferT        DateTime;        /* Build Date-Time */
+    SaHpiUint32T            MajorVersion;    /* Major Version */
+    SaHpiUint32T            MinorVersion;    /* Minor Version */
+    SaHpiUint32T            AuxVersion;      /* Auxiliary Version */
 } SaHpiFumiBankInfoT;
 
+/*
+** FUMI Logical Bank State Flags
+** Currently only one state flag is defined. It indicates that the currently executing main
+** firmware instance does not have a persistent copy.
+** Additional state flags may be defined in future versions of this specification.
+*/
+typedef SaHpiUint32T SaHpiFumiLogicalBankStateFlagsT;
+#define SAHPI_FUMI_NO_MAIN_PERSISTENT_COPY  (SaHpiFumiLogicalBankStatesT)0x00000001
+
+
+/*
+** FUMI Logical Bank Information
+*/
+typedef struct
+{
+    /* The max number of persistent firmware instances that this */
+    /* FUMI logical bank can have at the same time */
+    SaHpiUint8T FirmwarePersistentLocationCount;
+    SaHpiFumiLogicalBankStateFlagsT BankStateFlags;
+    SaHpiFumiFirmwareInstanceInfoT PendingFwInstance;
+    SaHpiFumiFirmwareInstanceInfoT RollbackFwInstance;
+} SaHpiFumiLogicalBankInfoT;
+
+
+/*
+** Logical FUMI Bank Component Information
+*/
+typedef struct {
+    SaHpiEntryIdT   EntryId;
+    SaHpiUint32T    ComponentId;
+    SaHpiFumiFirmwareInstanceInfoT PendingFwInstance;
+    SaHpiFumiFirmwareInstanceInfoT RollbackFwInstance;
+    SaHpiUint32T ComponentFlags; /* Reserved for future use */
+} SaHpiFumiLogicalComponentInfoT;
 
 /*******************************************************************************
 ********************************************************************************
@@ -2431,12 +2615,12 @@ typedef struct {
 
 typedef SaHpiUint32T SaHpiFumiProtocolT;
 
-#define SAHPI_FUMI_PROT_TFTP     (SaHpiFumiProtocolT)0x00000001
-#define SAHPI_FUMI_PROT_FTP      (SaHpiFumiProtocolT)0x00000002
-#define SAHPI_FUMI_PROT_HTTP     (SaHpiFumiProtocolT)0x00000004
-#define SAHPI_FUMI_PROT_LDAP     (SaHpiFumiProtocolT)0x00000008
-#define SAHPI_FUMI_PROT_LOCAL    (SaHpiFumiProtocolT)0x00000010 /* Local Copy */
-#define SAHPI_FUMI_PROT_NFS      (SaHpiFumiProtocolT)0x00000020
+#define SAHPI_FUMI_PROT_TFTP    (SaHpiFumiProtocolT)0x00000001
+#define SAHPI_FUMI_PROT_FTP     (SaHpiFumiProtocolT)0x00000002
+#define SAHPI_FUMI_PROT_HTTP    (SaHpiFumiProtocolT)0x00000004
+#define SAHPI_FUMI_PROT_LDAP    (SaHpiFumiProtocolT)0x00000008
+#define SAHPI_FUMI_PROT_LOCAL   (SaHpiFumiProtocolT)0x00000010 /* Local Copy */
+#define SAHPI_FUMI_PROT_NFS     (SaHpiFumiProtocolT)0x00000020
 #define SAHPI_FUMI_PROT_DBACCESS (SaHpiFumiProtocolT)0x00000040
 
 
@@ -2457,11 +2641,18 @@ typedef SaHpiUint32T SaHpiFumiProtocolT;
 
 typedef SaHpiUint32T SaHpiFumiCapabilityT;
 
-#define SAHPI_FUMI_CAP_ROLLBACK      (SaHpiFumiCapabilityT)0x00000001
-#define SAHPI_FUMI_CAP_BANKCOPY      (SaHpiFumiCapabilityT)0x00000002
-#define SAHPI_FUMI_CAP_BANKREORDER   (SaHpiFumiCapabilityT)0x00000004
-#define SAHPI_FUMI_CAP_BACKUP        (SaHpiFumiCapabilityT)0x00000008
+#define SAHPI_FUMI_CAP_ROLLBACK (SaHpiFumiCapabilityT)0x00000001
+#define SAHPI_FUMI_CAP_BANKCOPY (SaHpiFumiCapabilityT)0x00000002
+#define SAHPI_FUMI_CAP_BANKREORDER (SaHpiFumiCapabilityT)0x00000004
+#define SAHPI_FUMI_CAP_BACKUP (SaHpiFumiCapabilityT)0x00000008
 #define SAHPI_FUMI_CAP_TARGET_VERIFY (SaHpiFumiCapabilityT)0x00000010
+#define SAHPI_FUMI_CAP_TARGET_VERIFY_MAIN (SaHpiFumiCapabilityT)0x00000020
+#define SAHPI_FUMI_CAP_COMPONENTS (SaHpiFumiCapabilityT)0x00000040
+#define SAHPI_FUMI_CAP_AUTOROLLBACK (SaHpiFumiCapabilityT)0x00000080
+#define SAHPI_FUMI_CAP_AUTOROLLBACK_CAN_BE_DISABLED \
+    (SaHpiFumiCapabilityT)0x00000100
+#define SAHPI_FUMI_CAP_MAIN_NOT_PERSISTENT \
+    (SaHpiFumiCapabilityT)0x00000200
 
 /*
 ** Record Definition
@@ -2470,14 +2661,15 @@ typedef SaHpiUint32T SaHpiFumiCapabilityT;
 typedef struct {
     SaHpiFumiNumT         Num;         /* FUMI Number/Index */
     SaHpiFumiProtocolT    AccessProt;  /* Supported protocols for
-                                            repository access */
+                          repository access */
     SaHpiFumiCapabilityT  Capability;  /* Optional capbilities supported
-                                            by FUMI */
-         SaHpiUint8T      NumBanks;    /* Set to "1" if bank paradigm is
-                                            not supported */
-         SaHpiUint32T        Oem;      /* Reserved for OEM use */
-} SaHpiFumiRecT;
+                          by FUMI */
+    SaHpiUint8T           NumBanks;    /* Number of explicit banks supported.
+                          Set to "0" if no explicit banks
+                                          are supported */
+    SaHpiUint32T          Oem;         /* Reserved for OEM use */
 
+} SaHpiFumiRecT;
 
 /*******************************************************************************
 ********************************************************************************
@@ -2490,13 +2682,16 @@ typedef struct {
 /* Hot Swap Indicator State */
 typedef enum {
     SAHPI_HS_INDICATOR_OFF = 0,
-    SAHPI_HS_INDICATOR_ON
+    SAHPI_HS_INDICATOR_ON,
+    SAHPI_HS_INDICATOR_STATE_MAX_VALID = SAHPI_HS_INDICATOR_ON
+
 } SaHpiHsIndicatorStateT;
 
 /* Hot Swap Action  */
 typedef enum {
     SAHPI_HS_ACTION_INSERTION = 0,
-    SAHPI_HS_ACTION_EXTRACTION
+    SAHPI_HS_ACTION_EXTRACTION,
+    SAHPI_HS_ACTION_MAX_VALID = SAHPI_HS_ACTION_EXTRACTION
 } SaHpiHsActionT;
 
 /* Hot Swap State */
@@ -2505,7 +2700,8 @@ typedef enum {
     SAHPI_HS_STATE_INSERTION_PENDING,
     SAHPI_HS_STATE_ACTIVE,
     SAHPI_HS_STATE_EXTRACTION_PENDING,
-    SAHPI_HS_STATE_NOT_PRESENT
+    SAHPI_HS_STATE_NOT_PRESENT,
+    SAHPI_HS_STATE_MAX_VALID = SAHPI_HS_STATE_NOT_PRESENT
 } SaHpiHsStateT;
 
 /* Cause of Hot Swap State Change */
@@ -2519,9 +2715,10 @@ typedef enum {
     SAHPI_HS_CAUSE_SURPRISE_EXTRACTION,
     SAHPI_HS_CAUSE_EXTRACTION_UPDATE,
     SAHPI_HS_CAUSE_HARDWARE_FAULT,
-    SAHPI_HS_CAUSE_UNKNOWN = 0xFFFF
+    SAHPI_HS_CAUSE_CONTAINING_FRU,
+    SAHPI_HS_CAUSE_UNKNOWN = 0xFFFF,
+    SAHPI_HS_CAUSE_MAX_VALID = SAHPI_HS_CAUSE_UNKNOWN
 } SaHpiHsCauseOfStateChangeT;
-
 
 
 /*******************************************************************************
@@ -2541,10 +2738,11 @@ typedef enum {
     SAHPI_INFORMATIONAL,
     SAHPI_OK,
     SAHPI_DEBUG = 0xF0,
-    SAHPI_ALL_SEVERITIES = 0xFF  /* Only used with some DAT and      */
+    SAHPI_ALL_SEVERITIES = 0xFF, /* Only used with some DAT and      */
                                  /* Annunciator functions.  This is  */
                                  /* not a valid severity for events, */
                                  /* alarms, or announcements         */
+    SAHPI_SEVERITY_MAX_VALID = SAHPI_DEBUG
 } SaHpiSeverityT;
 
 /*
@@ -2557,7 +2755,11 @@ typedef enum {
 typedef enum {
     SAHPI_RESE_RESOURCE_FAILURE,
     SAHPI_RESE_RESOURCE_RESTORED,
-    SAHPI_RESE_RESOURCE_ADDED
+    SAHPI_RESE_RESOURCE_ADDED,
+    SAHPI_RESE_RESOURCE_REMOVED,
+    SAHPI_RESE_RESOURCE_INACCESSIBLE,
+    SAHPI_RESE_RESOURCE_UPDATED,
+    SAHPI_RESE_TYPE_MAX_VALID = SAHPI_RESE_RESOURCE_UPDATED
 } SaHpiResourceEventTypeT;
 
 
@@ -2577,7 +2779,8 @@ typedef struct {
 */
 typedef enum {
     SAHPI_DOMAIN_REF_ADDED,
-    SAHPI_DOMAIN_REF_REMOVED
+    SAHPI_DOMAIN_REF_REMOVED,
+    SAHPI_DOMAIN_EVENT_TYPE_MAX_VALID = SAHPI_DOMAIN_REF_REMOVED
 } SaHpiDomainEventTypeT;
 
 typedef struct {
@@ -2599,8 +2802,8 @@ typedef struct {
 **
 ** Sensor events may contain optional data items passed and stored with the
 ** event. If these optional data items are present, they are included with
-** the event data returned in response to a saHpiEventGet() or
-** saHpiEventLogEntryGet() function call. Also, the optional data items may be
+** the event data returned in response to an saHpiEventGet() or
+** saHpiEventLogEntryGet() function call.  Also, the optional data items may be
 ** included with the event data passed to the saHpiEventLogEntryAdd() function.
 **
 ** Specific implementations of HPI may have restrictions on how much data may
@@ -2715,15 +2918,14 @@ typedef struct {
         Similarly, there should never be a bit set in any of these three
         fields that is not also set in the AssertEventMask field, and, if the
         SAHPI_SEOD_CURRENT_STATE flag is Set, in the CurrentState field. */
-    SaHpiEventStateT          CriticalAlarms;    /* current set of asserted
-                                                    Event states that are
-                                                    critical alarms.*/
-    SaHpiEventStateT          MajorAlarms;       /* current set of asserted
-                                                    Event states that are
-                                                    major alarms.*/
-    SaHpiEventStateT          MinorAlarms;       /* current set of asserted
-                                                    Event states that are
-                                                    minor alarms.*/
+    SaHpiEventStateT        CriticalAlarms;  /* current set of asserted
+                    Event states that are critical alarms.*/
+    SaHpiEventStateT        MajorAlarms;  /* current set of asserted
+                              Event states that are
+                              major alarms.*/
+    SaHpiEventStateT        MinorAlarms;  /* current set of asserted
+                              Event states that are
+                              minor alarms.*/
 
 } SaHpiSensorEnableChangeEventT;
 
@@ -2769,12 +2971,13 @@ typedef struct {
 typedef enum {
     SAHPI_HPIE_AUDIT,
     SAHPI_HPIE_STARTUP,
-    SAHPI_HPIE_OTHER
+    SAHPI_HPIE_OTHER,
+    SAHPI_HPIE_TYPE_MAX_VALID = SAHPI_HPIE_OTHER
 } SaHpiSwEventTypeT;
 
 typedef struct {
     SaHpiManufacturerIdT MId;
-    SaHpiSwEventTypeT    Type;
+    SaHpiSwEventTypeT   Type;
     SaHpiTextBufferT     EventData;
 } SaHpiHpiSwEventT;
 
@@ -2805,20 +3008,20 @@ typedef struct {
 ** in SaHpiDimiTestRunStatusT
 */
 typedef struct {
-    SaHpiDimiNumT                  DimiNum;
-    SaHpiDimiTestNumT              TestNum;
-    SaHpiDimiTestRunStatusT        DimiTestRunStatus;
+    SaHpiDimiNumT           DimiNum;
+     SaHpiDimiTestNumT      TestNum;
+    SaHpiDimiTestRunStatusT     DimiTestRunStatus;
     SaHpiDimiTestPercentCompletedT DimiTestPercentCompleted;
-                                /* Percentage of test completed. Based on
-                                    implementation capability,
-                                    value 0 - 100,
-                                    0xFF returned if capability not available */
+                    /* Percentage of test completed.  Based on
+                       implementation capability,
+                       value 0 - 100,
+                       0xFF returned if capability not available */
 } SaHpiDimiEventT;
 
 /*
 ** DIMI update events are generated when the set of tests for a DIMI changes.
 ** For example, when new tests are added or deleted from DIMI. When this event
-** is generated, HPI user is expected to retrieve updated test information
+** is generated, HPI User is expected to retrieve updated test information
 ** using DimiInfoGet function with the DIMI number provided in the event.
 */
 
@@ -2840,7 +3043,7 @@ typedef struct {
 typedef struct {
     SaHpiFumiNumT           FumiNum;       /* FUMI Number */
     SaHpiUint8T             BankNum;       /* Bank Number */
-    SaHpiFumiUpgradeStatusT UpgradeStatus; /* Upgrade status of bank */
+    SaHpiFumiUpgradeStatusT     UpgradeStatus; /* Upgrade status of bank */
 } SaHpiFumiEventT;
 
 
@@ -2865,7 +3068,8 @@ typedef enum {
     SAHPI_ET_USER,
     SAHPI_ET_DIMI,
     SAHPI_ET_DIMI_UPDATE,
-    SAHPI_ET_FUMI
+    SAHPI_ET_FUMI,
+    SAHPI_ET_MAX_VALID = SAHPI_ET_FUMI
 } SaHpiEventTypeT;
 
 typedef union {
@@ -2873,14 +3077,14 @@ typedef union {
     SaHpiDomainEventT             DomainEvent;
     SaHpiSensorEventT             SensorEvent;
     SaHpiSensorEnableChangeEventT SensorEnableChangeEvent;
-    SaHpiHotSwapEventT            HotSwapEvent;
-    SaHpiWatchdogEventT           WatchdogEvent;
+    SaHpiHotSwapEventT           HotSwapEvent;
+    SaHpiWatchdogEventT          WatchdogEvent;
     SaHpiHpiSwEventT              HpiSwEvent;
-    SaHpiOemEventT                OemEvent;
-    SaHpiUserEventT               UserEvent;
-    SaHpiDimiEventT               DimiEvent;
-    SaHpiDimiUpdateEventT         DimiUpdateEvent;
-    SaHpiFumiEventT               FumiEvent;
+    SaHpiOemEventT           OemEvent;
+    SaHpiUserEventT              UserEvent;
+    SaHpiDimiEventT      DimiEvent;
+    SaHpiDimiUpdateEventT        DimiUpdateEvent;
+    SaHpiFumiEventT      FumiEvent;
 } SaHpiEventUnionT;
 
 typedef struct {
@@ -2907,7 +3111,6 @@ typedef SaHpiUint32T    SaHpiEvtQueueStatusT;
 
 #define SAHPI_EVT_QUEUE_OVERFLOW        (SaHpiEvtQueueStatusT)0x0001
 
-
 /*******************************************************************************
 ********************************************************************************
 **********                                                            **********
@@ -2932,7 +3135,7 @@ typedef SaHpiInstrumentIdT SaHpiAnnunciatorNumT;
 
 typedef struct {
     SaHpiUint16T  Length;
-    SaHpiUint8T Value[SA_HPI_MAX_NAME_LENGTH];
+    unsigned char Value[SA_HPI_MAX_NAME_LENGTH];
 } SaHpiNameT;
 
 /*
@@ -2946,7 +3149,8 @@ typedef enum {
     SAHPI_STATUS_COND_TYPE_SENSOR,
     SAHPI_STATUS_COND_TYPE_RESOURCE,
     SAHPI_STATUS_COND_TYPE_OEM,
-    SAHPI_STATUS_COND_TYPE_USER
+    SAHPI_STATUS_COND_TYPE_USER,
+    SAHPI_STATUS_COND_TYPE_MAX_VALID = SAHPI_STATUS_COND_TYPE_USER
 } SaHpiStatusCondTypeT;
 
 
@@ -3000,9 +3204,9 @@ typedef struct {
 typedef enum {
     SAHPI_ANNUNCIATOR_MODE_AUTO,
     SAHPI_ANNUNCIATOR_MODE_USER,
-    SAHPI_ANNUNCIATOR_MODE_SHARED
+    SAHPI_ANNUNCIATOR_MODE_SHARED,
+    SAHPI_ANNUNCIATOR_MODE_MAX_VALID = SAHPI_ANNUNCIATOR_MODE_SHARED
 } SaHpiAnnunciatorModeT;
-
 
 /*******************************************************************************
 ********************************************************************************
@@ -3028,7 +3232,8 @@ typedef enum {
     SAHPI_ANNUNCIATOR_TYPE_LCD_DISPLAY,
     SAHPI_ANNUNCIATOR_TYPE_MESSAGE,
     SAHPI_ANNUNCIATOR_TYPE_COMPOSITE,
-    SAHPI_ANNUNCIATOR_TYPE_OEM
+    SAHPI_ANNUNCIATOR_TYPE_OEM,
+    SAHPI_ANNUNCIATOR_TYPE_MAX_VALID = SAHPI_ANNUNCIATOR_TYPE_OEM
 } SaHpiAnnunciatorTypeT;
 
 
@@ -3048,7 +3253,6 @@ typedef struct {
                                                   limit.  */
     SaHpiUint32T              Oem;
 } SaHpiAnnunciatorRecT;
-
 
 /*******************************************************************************
 ********************************************************************************
@@ -3077,7 +3281,8 @@ typedef enum {
     SAHPI_WATCHDOG_RDR,
     SAHPI_ANNUNCIATOR_RDR,
     SAHPI_DIMI_RDR,
-    SAHPI_FUMI_RDR
+    SAHPI_FUMI_RDR,
+    SAHPI_RDR_TYPE_MAX_VALID = SAHPI_FUMI_RDR
 } SaHpiRdrTypeT;
 
 typedef union {
@@ -3103,7 +3308,6 @@ typedef struct {
     SaHpiTextBufferT     IdString;
 } SaHpiRdrT;
 
-
 /*******************************************************************************
 ********************************************************************************
 **********                                                            **********
@@ -3115,14 +3319,14 @@ typedef struct {
 typedef enum {
     SAHPI_DEFAULT_PARM = 0,
     SAHPI_SAVE_PARM,
-    SAHPI_RESTORE_PARM
+    SAHPI_RESTORE_PARM,
+    SAHPI_PARM_ACTION_MAX_VALID = SAHPI_RESTORE_PARM
 } SaHpiParmActionT;
-
 
 /*******************************************************************************
 ********************************************************************************
 **********                                                            **********
-**********                      Reset                                 **********
+**********                           Reset                            **********
 **********                                                            **********
 ********************************************************************************
 *******************************************************************************/
@@ -3131,9 +3335,9 @@ typedef enum {
     SAHPI_COLD_RESET = 0,
     SAHPI_WARM_RESET,
     SAHPI_RESET_ASSERT,
-    SAHPI_RESET_DEASSERT
+    SAHPI_RESET_DEASSERT,
+    SAHPI_RESET_MAX_VALID = SAHPI_RESET_DEASSERT
 } SaHpiResetActionT;
-
 
 /*******************************************************************************
 ********************************************************************************
@@ -3146,9 +3350,9 @@ typedef enum {
 typedef enum {
     SAHPI_POWER_OFF = 0,
     SAHPI_POWER_ON,
-    SAHPI_POWER_CYCLE
+    SAHPI_POWER_CYCLE,
+    SAHPI_POWER_STATE_MAX_VALID = SAHPI_POWER_CYCLE
 } SaHpiPowerStateT;
-
 
 /*******************************************************************************
 ********************************************************************************
@@ -3160,13 +3364,12 @@ typedef enum {
 
 typedef SaHpiUint32T SaHpiLoadNumberT;
 #define SAHPI_LOAD_ID_DEFAULT (SaHpiLoadNumberT)0
-#define SAHPI_LOAD_ID_BYNAME  (SaHpiLoadNumberT)0xffffffff
+#define SAHPI_LOAD_ID_BYNAME (SaHpiLoadNumberT)0xffffffff
 
 typedef struct {
     SaHpiLoadNumberT LoadNumber;
     SaHpiTextBufferT LoadName;
 } SaHpiLoadIdT;
-
 
 /*******************************************************************************
 ********************************************************************************
@@ -3201,7 +3404,13 @@ typedef SaHpiUint8T    SaHpiGuidT[16];
 ** specific management controller which may have defined OEM fields in Sensors,
 ** OEM Controls, etc.).
 **
-** The GUID is used to uniquely identify a Resource. A GUID value of zero
+** The fields of the SaHpiResourceInfoT structure are intended to uniquely
+** identify an implementation of the functionality modeled by an HPI resource.
+** Multiple instances of a resource implementation may be present in an HPI
+** implementation with different configurations, so it is not required that
+** this data be unique in each resource present in an HPI implemenation.
+**
+** The GUID is used to uniquely identify a Resource.  A GUID value of zero
 ** indicates that the Resource does not have an associated GUID.
 **
 ** All of the fields in the following structure may or may not be used by a
@@ -3223,7 +3432,7 @@ typedef struct {
 ** Resource Capabilities
 **
 ** This definition defines the capabilities of a given resource. One resource
-** may support any number of capabilities using the bit mask. Because each entry
+** may support any number of capabilities using the bit mask.  Because each entry
 ** in an RPT has the SAHPI_CAPABILITY_RESOURCE bit set, zero is not a
 ** valid value for the capability flag, and is thus used to indicate "no RPT
 ** entry present" in some function calls.
@@ -3248,7 +3457,7 @@ typedef struct {
 ** SAHPI_CAPABILITY_AGGREGATE_STATUS
 ** SAHPI_CAPABILITY_CONFIGURATION
 ** SAHPI_CAPABILITY_MANAGED_HOTSWAP
-**   Indicates that the resource supports the managed hot swap model.
+**   Indicates that the resource supports managed hot swap.
 **   Since hot swap only makes sense for field-replaceable units, the
 **    SAHPI_CAPABILITY_FRU capability bit must also be set for this resource.
 ** SAHPI_CAPABILITY_WATCHDOG
@@ -3256,10 +3465,8 @@ typedef struct {
 ** SAHPI_CAPABILITY_FRU
 **   Indicates that the resource is associated with an entity that is a
 **   field-replaceable unit; i.e., it is capable of being removed and
-**   replaced in a live system. If SAHPI_CAPABILITY_MANAGED_HOTSWAP is also
-**   set, the resource supports the managed hot swap model.  If
-**   SAHPI_CAPABILITY_MANAGED_HOTSWAP is not set, the resource supports the
-**   simplified hot swap model.
+**   replaced in a live system, and the resource reports hot swap events
+**   for the FRU.
 ** SAHPI_CAPABILITY_LOAD_ID
 ** SAHPI_CAPABILITY_DIMI
 ** SAHPI_CAPABILITY_FUMI
@@ -3315,8 +3522,13 @@ typedef SaHpiUint32T SaHpiCapabilitiesT;
 **
 ** SAHPI_HS_CAPABILITY_AUTOEXTRACT_READ_ONLY
 ** This capability indicates if the hot swap autoextract timer is read-only.
+
 ** SAHPI_HS_CAPABILITY_INDICATOR_SUPPORTED
-** Indicates whether or not the resource has a hot swap indicator.
+** Indicates whether the resource has a hot swap indicator.
+** SAHPI_HS_CAPABILITY_AUTOINSERT_IMMEDIATE
+** This capability indicates that the resource ignores the auto insertion
+** timeout value(s) configured for the domain(s) of which it is a member,
+** but instead begins its auto insertion policy immediately upon insertion.
 */
 
 typedef SaHpiUint32T SaHpiHsCapabilitiesT;
@@ -3324,6 +3536,8 @@ typedef SaHpiUint32T SaHpiHsCapabilitiesT;
    (SaHpiHsCapabilitiesT)0x80000000
 #define SAHPI_HS_CAPABILITY_INDICATOR_SUPPORTED \
    (SaHpiHsCapabilitiesT)0X40000000
+#define SAHPI_HS_CAPABILITY_AUTOINSERT_IMMEDIATE\
+   (SaHpiHsCapabilitiesT)0x20000000
 /*
 ** RPT Entry
 **
@@ -3348,7 +3562,7 @@ typedef struct {
     SaHpiEntryIdT        EntryId;
     SaHpiResourceIdT     ResourceId;
     SaHpiResourceInfoT   ResourceInfo;
-    SaHpiEntityPathT     ResourceEntity;  /* If resource manages a FRU, entity
+    SaHpiEntityPathT     ResourceEntity;      /* If resource manages a FRU, entity
                                              path of the FRU */
                                           /* If resource manages a single
                                              entity, entity path of that
@@ -3367,10 +3581,9 @@ typedef struct {
                                               should be raised when the resource
                                               is not responding   */
     SaHpiBoolT           ResourceFailed;  /* Indicates that the resource is not
-                                             currently functional */
+                                             currently accessible */
     SaHpiTextBufferT     ResourceTag;
 } SaHpiRptEntryT;
-
 
 /*******************************************************************************
 ********************************************************************************
@@ -3385,7 +3598,7 @@ typedef struct {
 /*
 ** Domain Capabilities
 **
-** This definition defines the capabilities of a given domain. A domain
+** This definition defines the capabilities of a given domain.  A domain
 ** may support any number of capabilities using the bit mask.
 **
 ** Future versions of the HPI specification may define additional domain
@@ -3424,7 +3637,7 @@ typedef SaHpiUint32T SaHpiDomainCapabilitiesT;
 ** than or equal to SAHPI_TIME_MAX_RELATIVE, then it is relative; if it is
 ** greater than SAHPI_TIME_MAX_RELATIVE, then it is absolute.
 **
-** The GUID is used to uniquely identify a domain. A GUID value of zero is not
+** The GUID is used to uniquely identify a domain.  A GUID value of zero is not
 ** valid and indicates that the domain does not have an associated GUID.
 */
 
@@ -3443,32 +3656,32 @@ typedef struct {
                                           reached  */
     SaHpiTimeT        DrtUpdateTimestamp; /* This timestamp is set any time the
                                              DRT table is changed. */
-    SaHpiUint32T      RptUpdateCount;  /* This count is incremented any time
+    SaHpiUint32T      RptUpdateCount;   /* This count is incremented any time
                                            the RPT is changed. It rolls over
                                            to zero when the maximum value is
                                            reached  */
     SaHpiTimeT        RptUpdateTimestamp; /* This timestamp is set any time the
                                              RPT table is changed. */
-    SaHpiUint32T      DatUpdateCount;  /* This count is incremented any time
+    SaHpiUint32T       DatUpdateCount;  /* This count is incremented any time
                                            the DAT is changed. It rolls over to
                                            zero when the maximum value is
                                            reached */
-    SaHpiTimeT        DatUpdateTimestamp; /* This timestamp is set any time the
+    SaHpiTimeT         DatUpdateTimestamp; /* This timestamp is set any time the
                                               DAT is changed. */
-    SaHpiUint32T      ActiveAlarms;   /* Count of active alarms in the DAT */
-    SaHpiUint32T      CriticalAlarms; /* Count of active critical alarms in
-                                          the DAT */
-    SaHpiUint32T      MajorAlarms;    /* Count of active major alarms in the
-                                          DAT */
-    SaHpiUint32T      MinorAlarms;    /* Count of active minor alarms in the
-                                          DAT */
-    SaHpiUint32T      DatUserAlarmLimit; /* Maximum User Alarms that can be
+    SaHpiUint32T       ActiveAlarms;     /* Count of active alarms in the DAT */
+    SaHpiUint32T       CriticalAlarms;   /* Count of active critical alarms in
+                                            the DAT */
+    SaHpiUint32T       MajorAlarms;      /* Count of active major alarms in the
+                                            DAT */
+    SaHpiUint32T       MinorAlarms;      /* Count of active minor alarms in the
+                                            DAT */
+    SaHpiUint32T       DatUserAlarmLimit; /* Maximum User Alarms that can be
                                              added to DAT.  0=no fixed limit */
-    SaHpiBoolT        DatOverflow;     /* Set to True if there are one
-                                           or more non-User Alarms that
-                                           are missing from the DAT because
-                                           of space limitations */
-    SaHpiGuidT        Guid;            /* GUID associated with domain.*/
+    SaHpiBoolT         DatOverflow;       /* Set to True if there are one
+                                             or more non-User Alarms that
+                                             are missing from the DAT because
+                                             of space limitations */
+    SaHpiGuidT        Guid;              /* GUID associated with domain.*/
 } SaHpiDomainInfoT;
 
 /*
@@ -3500,7 +3713,7 @@ typedef struct {
     SaHpiTimeT           Timestamp;    /* Time when alarm added to DAT */
     SaHpiSeverityT       Severity;     /* Severity of alarm */
     SaHpiBoolT           Acknowledged; /* Acknowledged flag */
-    SaHpiConditionT      AlarmCond;    /* Detailed alarm condition */
+    SaHpiConditionT     AlarmCond;   /* Detailed alarm condition */
 } SaHpiAlarmT;
 
 /*******************************************************************************
@@ -3510,6 +3723,7 @@ typedef struct {
 **********                                                            **********
 ********************************************************************************
 *******************************************************************************/
+
 /* This section defines the types associated with the Event Log. */
 /*
 ** Event Log Information
@@ -3528,12 +3742,12 @@ typedef struct {
 **   the timestamp that would be placed on an entry if it was added now.
 ** The Enabled entry indicates whether the Event Log is enabled. If the Event
 **   Log is "disabled" no events generated within the HPI implementation are
-**   added to the Event Log. Events may still be added to the Event Log with
+**   added to the Event Log.  Events may still be added to the Event Log with
 **   the saHpiEventLogEntryAdd() function. When the Event Log is "enabled"
 **   events may be automatically added to the Event Log as they are generated
 **   in a resource or a domain, however, it is implementation-specific which
 **   events are automatically added to any Event Log.
-** The OverflowFlag entry indicates the Event Log has overflowed. Events have
+** The OverflowFlag entry indicates the Event Log has overflowed.  Events have
 **   been dropped or overwritten due to a table overflow.
 ** The OverflowAction entry indicates the behavior of the Event Log when an
 **   overflow occurs.
@@ -3541,10 +3755,11 @@ typedef struct {
 **   cleared by an HPI User with the saHpiEventLogOverflowReset() function.
 */
 typedef enum {
-    SAHPI_EL_OVERFLOW_DROP,      /* New entries are dropped when Event Log is
+    SAHPI_EL_OVERFLOW_DROP,       /* New entries are dropped when Event Log is
                                     full*/
-    SAHPI_EL_OVERFLOW_OVERWRITE  /* Event Log overwrites existing entries
+    SAHPI_EL_OVERFLOW_OVERWRITE,  /* Event Log overwrites existing entries
                                     when Event Log is full */
+    SAHPI_EL_OVERFLOW_ACTION_MAX_TYPE = SAHPI_EL_OVERFLOW_OVERWRITE
 } SaHpiEventLogOverflowActionT;
 
 typedef struct {
@@ -3589,9 +3804,9 @@ typedef struct {
 **
 **  SAHPI_EVTLOG_CAPABILITY_ENTRY_ADD
 **     The saHpiEventLogEntryAdd() function may be used to add events to the
-**     event log.  Note that this capability only addresses whether or not
+**     event log.  Note that this capability only addresses whether
 **     users can add entries directly to the event log via the
-**     saHpiEventLogEntryAdd() function. Even without this capability, user
+**     saHpiEventLogEntryAdd() function.  Even without this capability, user
 **     events added to a domain via the saHpiEventAdd() function may be added
 **     to an event log by the HPI implementation.
 **  SAHPI_EVTLOG_CAPABILITY_CLEAR
@@ -3613,7 +3828,7 @@ typedef SaHpiUint32T SaHpiEventLogCapabilitiesT;
 #define SAHPI_EVTLOG_CAPABILITY_CLEAR     (SaHpiEventLogCapabilitiesT)0x00000002
 #define SAHPI_EVTLOG_CAPABILITY_TIME_SET  (SaHpiEventLogCapabilitiesT)0x00000004
 #define SAHPI_EVTLOG_CAPABILITY_STATE_SET (SaHpiEventLogCapabilitiesT)0x00000008
-#define SAHPI_EVTLOG_CAPABILITY_OVERFLOW_RESET \
+#define SAHPI_EVTLOG_CAPABILITY_OVERFLOW_RESET  \
                                           (SaHpiEventLogCapabilitiesT)0x00000010
 
 
@@ -3638,6 +3853,57 @@ typedef struct {
     SaHpiEventT           Event;     /* Logged Event */
 } SaHpiEventLogEntryT;
 
+/*******************************************************************************
+********************************************************************************
+**********                                                            **********
+**********               Initialization and Finalization              **********
+**********                                                            **********
+********************************************************************************
+*******************************************************************************/
+
+/*
+** Options are passed in using the following structure.  The OptionId is set
+** to the particular option, and IntVal and PointerVal are set based on the
+** requirements of the particular option.  See the specific options for details.
+*/
+typedef struct {
+    SaHpiUint32T OptionId;
+    union {
+        SaHpiInt32T IntVal;
+        void *PointerVal;
+    } u;
+} SaHpiInitOptionT;
+
+/*
+** An implementation may define OEM options.  For an OEM option, OptionId
+** must be greater than or equal to the following value:
+*/
+#define SA_HPI_INITOPTION_FIRST_OEM 0x40000000U
+
+/*
+** Provide a function to create threads for the library.  A library
+** implementation may create threads for internal use; programs may need to
+** monitor these threads or set their priority.  This option allows the user
+** to pass a function of type SaHpiCreateThreadFuncT with the PointerVal field;
+** if this option is specified, the library will use only this function to create
+** threads.
+**
+** When the function of type SaHpiCreateThreadFuncT is called,
+** it should create a new thread, and from that thread, call the function
+** specified by the StartFunction parameter, and providing in this call
+** the FunctionData parameter.
+** The return value of StartFunction is not used; it is provided only for
+** compatibility with some operating systems.
+**
+** All threads will return when SaHpiShutdown() is called.  Threads may return at
+** any other time; this is not an error.
+**
+** This option cannot fail, so it has no error codes.
+*/
+#define SA_HPI_INITOPTION_HANDLE_CREATE_THREAD    1
+
+typedef SaErrorT (*SaHpiCreateThreadFuncT)(void *(*StartFunction)(void *),
+                                           void *FunctionData);
 
 /*******************************************************************************
 **
@@ -3669,6 +3935,112 @@ typedef struct {
 **
 *******************************************************************************/
 SaHpiVersionT SAHPI_API saHpiVersionGet ( void );
+
+/*******************************************************************************
+**
+** Name: saHpiInitialize()
+**
+** Description:
+**   This function allows an HPI User to initialize an HPI library.  
+**   The usage of this function is not mandatory; however, if it is used, 
+**   it must be invoked when the library is in an initial state, that is, before 
+**   any other HPI function has been called or after saHpiFinalize() has been 
+**   called. This function allows aspects of the HPI library to be controlled.  
+**   The options themselves are defined in Section 8.29.
+**
+** Parameters:
+**   RequestedVersion – [in] The version of the specification to which the 
+**      HPI User complies.
+**   NumOptions – [in] The number of options in the Options array.
+**   Options – [in/out] An array of option information.  
+**      The user passes option-specified information in this field if the option 
+**      requires it. If information is returned to the user, it is also done 
+**      through this field. If no options are required or supplied, this 
+**      parameter may be NULL.
+**   FailedOption – [out] If this function returns SA_ERR_HPI_INVALID_DATA, 
+**      this parameter will be set to the index of the first invalid option. 
+**      Passing in NULL is valid. In this case, the function will operate 
+**      normally, but if the function returns SA_ERR_HPI_INVALID_DATA, the 
+**      user will not know which option failed.
+**   OptionError – [out] If this function returns SA_ERR_HPI_INVALID_DATA, this 
+**      parameter will be set to an option-specific error code.  Passing in NULL 
+**      is valid. In this case; the function will operate normally, but if the 
+**      function returns SA_ERR_HPI_INVALID_DATA, the user will not know the 
+**      specific reason for the failure.
+**
+** Return Value:
+**   SA_OK is returned on successful completion; otherwise, an error code is 
+**      returned.
+**   SA_ERR_HPI_UNSUPPORTED_API is returned if the HPI Library does not 
+**      support the RequestedVersion.
+**   SA_ERR_HPI_INVALID_PARAMS is returned if the Options array is passed in as 
+**      NULL and NumOptions is not zero.
+**   SA_ERR_HPI_INVALID_DATA is returned if an option has an invalid OptionID, 
+**      or if a parameter in an option is not valid.
+**   SA_ERR_HPI_INVALID_REQUEST is returned if the HPI library is not in initial
+**      state.
+**
+** Remarks:
+**   It is not mandatory for the HPI User to call this function before using the 
+**   HPI library. If the function is not called, the library will make reasonable 
+**   assumptions for the options available.
+**
+**   If this function returns an error, the library’s state will not be modified.
+**
+**   The FailedOption and OptionError parameters will be updated if the function 
+**   returns SA_ERR_HPI_INVALID_PARAMS; otherwise, the library will not modify
+**   FailedOption or OptionError. This overrides the rule described in Section 
+**   4.3.
+**
+**   The RequestedVersion parameter does not have to match the version returned 
+**   by saHpiVersionGet(). Because all versions of the specification with the 
+**   same compatibility level identifier are backward compatible, the 
+**   RequestedVersion may be any earlier version of the specification with the 
+**   same compatibility level, and the library shall accept the version. For 
+**   example, if the library supports B.03.01, it shall accept users specifying
+**   a RequestedVersion of B.01.01 or B.02.01.
+**
+**   An HPI implementation may accept a RequestedVersion that is not backward 
+**   compatible with the version returned by saHpiVersionGet(). If the library 
+**   does this, all API functions shall work as specified in the 
+**   RequestedVersion, including semantics and data structure layout. Using API
+**   functions, constants, or semantics defined in versions later than the 
+**   RequestedVersion may result in undefined behavior.
+**
+*******************************************************************************/
+SaErrorT SAHPI_API saHpiInitialize (
+	SAHPI_IN    SaHpiVersionT        RequestedVersion,
+	SAHPI_IN    SaHpiUint32T         NumOptions,
+	SAHPI_INOUT SaHpiInitOptionT     *Options,
+	SAHPI_OUT   SaHpiUint32T         *FailedOption,
+	SAHPI_OUT   SaErrorT             *OptionError
+);
+
+/*******************************************************************************
+**
+** Name: saHpiFinalize()
+**
+** Description:
+**   This function allows an HPI User to return the library to its initial state.
+**
+** Parameters:
+**   None.
+**
+** Return Value:
+**   SA_OK is returned on successful completion; otherwise, an error code is 
+**     returned.
+**   SA_ERR_HPI_INVALID_REQUEST is returned if the HPI library is already in initial 
+**     state.
+**
+** Remarks:
+**   Calling this function is not mandatory. The HPI User can just shut down without 
+**   calling it.
+**
+**   This function will return the library to the initial state at startup.  
+**   All sessions will be closed by this function.
+**
+*******************************************************************************/
+SaErrorT SAHPI_API saHpiFinalize ( void );
 
 /*******************************************************************************
 **
@@ -3739,10 +4111,10 @@ SaErrorT SAHPI_API saHpiSessionClose (
 ** Description:
 **   This function requests the HPI implementation service to update information
 **   about resources and domains that have recently been added to the system or
-**   removed from the system. 
+**   removed from the system. This function also updates RPT entries for 
+**   resources that have changed 'failed' status. 
 **
-**   This function also updates RPT entries for resources that have changed
-**   'failed' status. An HPI implementation may exhibit latency between when
+**   An HPI implementation may exhibit latency between when
 **   hardware changes occur and when the domain DRT and RPT are updated.  To
 **   overcome this latency, the saHpiDiscover() function may be called.  When
 **   this function returns, the DRT and RPT should be updated to reflect the
@@ -4109,7 +4481,48 @@ SaErrorT SAHPI_API saHpiResourceTagSet (
 
 /*******************************************************************************
 **
+** Name: saHpiMyEntityPathGet()
+**
+** Description:
+**   This function returns the EntityPath of the entity upon which the HPI User 
+**   is running.
+**
+** Parameters:
+**   SessionId - [in] Identifier for a session context previously obtained using
+**      saHpiSessionOpen().
+**   EntityPath – [out] Pointer to location to hold the returned EntityPath. 
+**
+** Return Value:
+**   SA_OK is returned on successful completion; otherwise, an error code is
+**      returned.
+**   SA_ERR_HPI_INVALID_PARAMS is returned if the EntityPath pointer is passed
+**      in as NULL.
+**   SA_ERR_HPI_UNKNOWN is returned if the appropriate EntityPath to return 
+**      cannot be determined.
+**
+** Remarks:
+**   To support user authentication, an HPI User must have an open session to 
+**   call this function, but the entity path returned will be the same 
+**   regardless of which domain is associated with the session.  Thus, it is 
+**   possible that the entity path returned may not be manageable through the 
+**   domain associated with the passed SessionId.  When there are multiple 
+**   domains, an HPI User may call saHpiMyEntityPathGet() using a session open 
+**   to any domain to get the entity path, then call saHpiGetIdByEntityPath() on
+**   all available domains to find management capabilities for that entity.
+**
+*******************************************************************************/
+SaErrorT SAHPI_API saHpiMyEntityPathGet (
+    SAHPI_IN  SaHpiSessionIdT      SessionId,
+    SAHPI_OUT SaHpiEntityPathT     *EntityPath
+);
+
+/*******************************************************************************
+**
 ** Name: saHpiResourceIdGet()
+**
+** Note: 
+**   This function should not be used in new HPI User programs. 
+**   The function saHpiMyEntityPathGet() should be used instead.
 **
 ** Description:
 **   This function returns the ResourceId of the resource associated with the
@@ -4188,10 +4601,10 @@ SaErrorT SAHPI_API saHpiResourceIdGet (
 **      return, this value is updated to the instance number of the next
 **      resource or management instrument associated with the entity path, or to
 **      SAHPI_LAST_ENTRY if there are no more.  Reserved InstanceId values:
-**         * SAHPI_FIRST_ENTRY 	Get first match that is associated with
-**            EntityPath and InstrumentType.
-**         * SAHPI_LAST_ENTRY  	Reserved as delimiter for end of list. Not a
-**            valid entry identifier.
+**   SAHPI_FIRST_ENTRY 	Get first match that is associated with EntityPath and
+**      InstrumentType.
+**   SAHPI_LAST_ENTRY  	Reserved as delimiter for end of list. Not a valid entry
+**      identifier.
 **   ResourceId - [out] Pointer to a location to store the ResourceId of a
 **      resource found that provides management access to the designated entity.
 **      If InstrumentType is not SAHPI_NO_RECORD then a resource is selected
@@ -4286,13 +4699,13 @@ SaErrorT SAHPI_API saHpiResourceIdGet (
 **
 *******************************************************************************/
 SaErrorT SAHPI_API saHpiGetIdByEntityPath (
-        SAHPI_IN  	SaHpiSessionIdT     	SessionId,
-        SAHPI_IN	SaHpiEntityPathT	EntityPath,
-        SAHPI_IN	SaHpiRdrTypeT		InstrumentType,
-        SAHPI_INOUT	SaHpiUint32T		*InstanceId,
-        SAHPI_OUT	SaHpiResourceIdT	*ResourceId,
-        SAHPI_OUT	SaHpiInstrumentIdT	*InstrumentId,
-        SAHPI_OUT	SaHpiUint32T		*RptUpdateCount
+    SAHPI_IN  	SaHpiSessionIdT     	SessionId,
+	SAHPI_IN	SaHpiEntityPathT	EntityPath,
+	SAHPI_IN	SaHpiRdrTypeT		InstrumentType,
+	SAHPI_INOUT	SaHpiUint32T		*InstanceId,
+	SAHPI_OUT	SaHpiResourceIdT	*ResourceId,
+	SAHPI_OUT	SaHpiInstrumentIdT	*InstrumentId,
+	SAHPI_OUT	SaHpiUint32T		*RptUpdateCount
 );
 
 /*******************************************************************************
@@ -4428,15 +4841,23 @@ SaErrorT SAHPI_API saHpiGetChildEntityPath (
 **      field of the resource's RPT entry.
 **
 ** Remarks:
-**   This function can be used only on failed resources that are associated with
-**   FRUs. Resources that either do not represent FRUs or, do no have the
-**   ResourceFailed flag in ther RPT entry set to True cannot be removed by this
-**   function. See Section 3.8.2 for more information on failed resources
-**   representing FRUs.
+**   This function can be used only on resources marked as inaccessible in the 
+**   RPT. Resources that do not have the ResourceFailed flag in their RPT entry
+**   set to True cannot be removed by this function.  For more information on 
+**   failed resources, see Section 3.8.
 **
-**   When the HPI User calls this function for a failed resource, the HPI
-**   implementation issues a "user update" hot swap event for transition of the
-**   resource to the SAHPI_HS_STATE_NOT_PRESENT state from its last known state.   
+**   When the HPI User calls this function for a failed resource, the HPI 
+**   implementation removes the RPT entry for the failed resource and issues an 
+**   event.  The event issued depends on whether the resource has the FRU 
+**   capability set indicating that it provides hot swap management.  If it is a 
+**   FRU resource, a “user update” hot swap event is issued for transition of 
+**   the resource to the SAHPI_HS_STATE_NOT_PRESENT state from its last known 
+**   state.  If it is not a FRU resource, a “Resource Removed” event is issued.
+**
+**   If a FRU resource is removed as the result of an HPI User calling this 
+**   function, any nested resources are also removed from the RPT, and 
+**   appropriate events are issued for those nested resources.  For more 
+**   information on nested resources, see Section 3.3.
 **
 *******************************************************************************/
 SaErrorT SAHPI_API saHpiResourceFailedRemove (
@@ -4453,8 +4874,8 @@ SaErrorT SAHPI_API saHpiResourceFailedRemove (
 **   total size of the Event Log, the time of the most recent update to the
 **   Event Log, the current value of the Event Log's clock (i.e., timestamp that
 **   would be placed on an entry at this moment), the enabled/disabled status of
-**   the Event Log (see Section ), the overflow flag, and the action taken by
-**   the Event Log if an overflow occurs.
+**   the Event Log (see Section 6.4.9), the overflow flag, and the action taken 
+**   by the Event Log if an overflow occurs.
 **
 ** Parameters:
 **   SessionId - [in] Identifier for a session context previously obtained using
@@ -4519,7 +4940,7 @@ SaErrorT SAHPI_API saHpiEventLogInfoGet (
 **   the event log does not support the corresponding capability.  Undefined
 **   bits in the capability value are reserved, and may be assigned to indicate
 **   support for other capabilities in future versions of the specification.
-**   See Section  for a definition of the event log capabilities and the
+**   See Section 8.28 for a definition of the event log capabilities and the
 **   corresponding bits in the returned EventLogCapabilities value that indicate
 **   support for each capability.
 **
@@ -4620,6 +5041,7 @@ SaErrorT SAHPI_API saHpiEventLogCapabilitiesGet (
 **   important to interpret the event. If the Event Log includes logged RPT
 **   entries and/or RDRs, and if an HPI User provides a pointer to a structure
 **   to receive this information, it is returned along with the Event Log entry.
+**
 **   If an HPI User provides a pointer for an RPT entry, but the Event Log does
 **   not include a logged RPT entry for the Event Log entry being returned,
 **   RptEntry->ResourceCapabilities is set to zero. No valid RptEntry has a zero
@@ -5564,9 +5986,13 @@ SaErrorT SAHPI_API saHpiAlarmDelete(
 **   of SAHPI_FIRST_ENTRY and then use the returned NextEntryId in the next
 **   call. Proceed until the NextEntryId returned is SAHPI_LAST_ENTRY.
 **
-**   A resource's RDR repository is static over the lifetime of the resource;
-**   therefore no precautions are required against changes to the content of the
-**   RDR repository while it is being accessed.
+**   If the resource configuration changes, and a "Resource Updated" event is 
+**   issued, the contents of the RDR repository can change.  If this happens 
+**   while an HPI User is reading the repository with this function, 
+**   inconsistent data may be read.  To protect against this, an HPI User may 
+**   examine the RDR update counter before and after reading the RDR repository
+**   to make sure no configuration change occurred while the repository was 
+**   being read.
 **
 *******************************************************************************/
 SaErrorT SAHPI_API saHpiRdrGet (
@@ -5624,6 +6050,49 @@ SaErrorT SAHPI_API saHpiRdrGetByInstrumentId (
     SAHPI_IN  SaHpiRdrTypeT          RdrType,
     SAHPI_IN  SaHpiInstrumentIdT     InstrumentId,
     SAHPI_OUT SaHpiRdrT              *Rdr
+);
+
+/*******************************************************************************
+**
+** Name: saHpiRdrUpdateCountGet()
+**
+** Description:
+**   This function returns an update counter for the resource data records for
+**   the addressed resource.
+**
+** Parameters:
+**   SessionId - [in] Identifier for a session context previously obtained using
+**      saHpiSessionOpen().
+**   ResourceId - [in] Resource identified for this operation.
+**   UpdateCount – [out] Pointer to the update counter.
+**
+** Return Value:
+**   SA_OK is returned on successful completion; otherwise, an error code is
+**      returned.
+**   SA_ERR_HPI_CAPABILITY is returned if the resource contains no RDR records
+**      (and thus does not have the SAHPI_CAPABILITY_RDR flag set in its RPT 
+**      entry).
+**   SA_ERR_HPI_INVALID_RESOURCE is returned if the specified resource does not 
+**      exist.
+**
+** Remarks:
+**   This function provides a mechanism for the user to detect updates of the 
+**   RDR for a resource. This can happen while the user is reading the RDRs. 
+**   To protect against these updates, an HPI User may use this function before 
+**   and after reading the RDR repository to make sure no configuration change
+**   occurred while the repository was being read. An HPI user may also use this
+**   function after receiving a "Resource Updated" or "Resource Restored" event 
+**   to detect whether the RDR repository has changed.
+**
+**   There is no significance attached to the value of the RDR update counter, 
+**   except that it must change any time the RDR data for a resource is updated 
+**   and should remain constant when no changes are made to the RDR data.
+**
+*******************************************************************************/
+SaErrorT SAHPI_API saHpiRdrUpdateCountGet (
+    SAHPI_IN  SaHpiSessionIdT       SessionId,
+    SAHPI_IN  SaHpiResourceIdT      ResourceId,
+    SAHPI_OUT SaHpiUint32T          *UpdateCount
 );
 
 /*******************************************************************************
@@ -7938,9 +8407,9 @@ SaErrorT SAHPI_API saHpiDimiTestStatusGet (
     SAHPI_IN    SaHpiSessionIdT                   SessionId,
     SAHPI_IN    SaHpiResourceIdT                  ResourceId,
     SAHPI_IN    SaHpiDimiNumT	                  DimiNum,
-    SAHPI_IN    SaHpiDimiTestNumT	          TestNum,
+    SAHPI_IN    SaHpiDimiTestNumT	              TestNum,
     SAHPI_OUT   SaHpiDimiTestPercentCompletedT    *PercentCompleted,
-    SAHPI_OUT   SaHpiDimiTestRunStatusT	  *RunStatus
+    SAHPI_OUT   SaHpiDimiTestRunStatusT	          *RunStatus
 );
 
 /*******************************************************************************
@@ -7990,11 +8459,105 @@ SaErrorT SAHPI_API saHpiDimiTestResultsGet (
 
 /*******************************************************************************
 **
+** Name: saHpiFumiSpecInfoGet()
+**
+** Description:
+**   This function is used to identify the specification-defined framework, if 
+**   any, underlying a FUMI implementation.
+**
+** Parameters:
+**   SessionId - [in] Identifier for a session context previously obtained using
+**      saHpiSessionOpen().
+**   ResourceId - [in] Resource identified for this operation.
+**   FumiNum - [in] FUMI number for which the spec information is to be 
+**      returned.
+**   SpecInfo – [out] Pointer to the location to store spec information.
+**
+** Return Value:
+**   SA_OK is returned on successful completion; otherwise, an error code is
+**      returned.
+**   SA_ERR_HPI_CAPABILITY is returned if the resource does not support Firmware
+**      Upgrade management instruments, as indicated by SAHPI_CAPABILITY_FUMI in
+**      the resource's RPT entry.
+**   SA_ERR_HPI_INVALID_PARAMS is returned if the SpecInfo parameter is passed 
+**      as NULL.
+**   SA_ERR_HPI_NOT_PRESENT is returned if the FumiNum does not address a valid
+**      FUMI supported by the resource.
+**
+** Remarks:
+**   A FUMI provides a high-level abstraction of the firmware upgrade process. 
+**   FUMI implementations can use any mechanisms or upgrade protocol to 
+**   accomplish the actual upgrade.  Some FUMIs use a specification-defined 
+**   framework, and it may be helpful for an HPI User to be aware of any such 
+**   framework that underlies the FUMI implementation.  For some such 
+**   frameworks, for instance, there may be additional sensors or controls 
+**   associated with the FUMI that provide supplementary functionality specific
+**   to that framework.
+**
+*******************************************************************************/
+SaErrorT SAHPI_API saHpiFumiSpecInfoGet (
+    SAHPI_IN    SaHpiSessionIdT		SessionId,
+    SAHPI_IN    SaHpiResourceIdT  	ResourceId,
+    SAHPI_IN    SaHpiFumiNumT		FumiNum,
+    SAHPI_OUT   SaHpiFumiSpecInfoT	*SpecInfo
+);
+
+/*******************************************************************************
+**
+** Name: saHpiFumiServiceImpactGet()
+**
+** Description:
+**   This function is used to obtain information about the potential service 
+**   impact of an upgrade process on a FUMI.
+**
+** Parameters:
+**   SessionId - [in] Identifier for a session context previously obtained using
+**      saHpiSessionOpen().
+**   ResourceId - [in] Resource identified for this operation.
+**   FumiNum - [in] FUMI number for which the service impact information is to 
+**      be returned.
+**   ServiceImpact – [out] Pointer to the location to store information about 
+**      the service impact.
+**
+** Return Value:
+**   SA_OK is returned on successful completion; otherwise, an error code is
+**      returned.
+**   SA_ERR_HPI_CAPABILITY is returned if the resource does not support Firmware
+**      Upgrade management instruments, as indicated by SAHPI_CAPABILITY_FUMI in
+**      the resource's RPT entry.
+**   SA_ERR_HPI_INVALID_PARAMS is returned if the ServiceImpact parameter is 
+**      passed as NULL.
+**   SA_ERR_HPI_NOT_PRESENT is returned if the FumiNum does not address a valid
+**      FUMI supported by the resource.
+**
+** Remarks:
+**   An upgrade process on a FUMI can affect one or more entities associated 
+**   with the resource that implements a FUMI.  For instance, new FPGA content
+**   may not take effect until the FPGA, and possibly other entities, are reset.
+**
+**   An HPI User may call this function to check possible consequences of an 
+**   upgrade process on a FUMI.
+**
+**   The function returns a list of affected entities and the level of impact 
+**   for each entity. If a listed entity has other entities below it in an entity 
+**   tree, they are also assumed to be affected.
+**
+*******************************************************************************/
+
+SaErrorT SAHPI_API saHpiFumiServiceImpactGet(
+    SAHPI_IN   SaHpiSessionIdT			SessionId,
+    SAHPI_IN   SaHpiResourceIdT			ResourceId,
+    SAHPI_IN   SaHpiFumiNumT			FumiNum,
+    SAHPI_OUT  SaHpiFumiServiceImpactDataT	*ServiceImpact
+);
+
+/*******************************************************************************
+**
 ** Name: saHpiFumiSourceSet()
 **
 ** Description:
 **   This function is used to set new source information to the target.  When
-**   multiple banks are supported, different source information can be assigned
+**   explicit banks are supported, different source information can be assigned
 **   to each bank.  This allows the FUMI to support loading different sources to
 **   different banks.
 **
@@ -8003,7 +8566,7 @@ SaErrorT SAHPI_API saHpiDimiTestResultsGet (
 **      saHpiSessionOpen().
 **   ResourceId - [in] Resource identified for this operation.
 **   FumiNum - [in] FUMI number for which the source information is being set.
-**   BankNum - [in] Bank number; 0 for the active bank.
+**   BankNum - [in] Bank number; 0 for the logical bank.
 **   SourceUri - [in] Text buffer containing URI of the source.
 **
 ** Return Value:
@@ -8023,33 +8586,31 @@ SaErrorT SAHPI_API saHpiDimiTestResultsGet (
 **      * BankNum is not 0 and not a valid bank number supported by the FUMI.
 **
 ** Remarks:
-**   Source information is required by the FUMI to correctly address the image
-**   in the source repository. The HPI user provides it in the form of the URI.
+**   A FUMI identifies the location of the source data using the URI provided 
+**   by the HPI User. The URI also identifies the protocol for accessing the 
+**   source data.  Protocols that the FUMI supports are reported by the FUMI’s
+**   RDR. An HPI User shall make sure that the source URI corresponds to one of
+**   the supported protocols and that the location of the source data is 
+**   accessible by the FUMI.
 **
-**   The URI indicates the path to the source file and the access protocol.
-**
-**   Protocols that the FUMI can support are reported by the FUMI's RDR. The HPI
-**   user shall make sure that the source URI corresponds to one of the
-**   supported protocols, and that the source is accessible by the FUMI.
-**
-**   The HPI user calls this function to provide the source information to the
+**   An HPI User calls this function to provide the source information to the 
 **   FUMI. The actual upgrade process can only be initiated after this
-**   information has been set.
+**   information has been set. 
 **
-**   When a FUMI supports multiple banks, each bank has separate source
-**   information.  The Bank ID of 0 can be used to set the source information
-**   for the currently active bank.  When a FUMI does not support multiple
-**   banks, the HPI User shall use Bank 0 with this function.
+**   When a FUMI supports explicit banks, each bank has separate source 
+**   information.  The Bank ID of 0 is used to set the source information for
+**   the logical bank.  When a FUMI does not support explicit banks, only Bank 0
+**   can be used with this function.
 **
-**   The validation of the source image set through this API is done through
-**   another API call.
+**   This function does not necessarily validate the source image.  If it does 
+**   not, it may execute successfully, even if the image is not correct.
 **
 *******************************************************************************/
 SaErrorT SAHPI_API saHpiFumiSourceSet (
-    SAHPI_IN    SaHpiSessionIdT	        SessionId,
+    SAHPI_IN    SaHpiSessionIdT	    SessionId,
     SAHPI_IN    SaHpiResourceIdT  	ResourceId,
     SAHPI_IN    SaHpiFumiNumT		FumiNum,
-    SAHPI_IN    SaHpiBankNumT           BankNum,
+    SAHPI_IN    SaHpiBankNumT       BankNum,
     SAHPI_IN    SaHpiTextBufferT	*SourceUri
 );
 
@@ -8067,7 +8628,7 @@ SaErrorT SAHPI_API saHpiFumiSourceSet (
 **   ResourceId - [in] Resource identified for this operation.
 **   FumiNum - [in] FUMI number for which the source information is to be
 **      validated.
-**   BankNum - [in] Bank number on FUMI; 0 for the active bank..
+**   BankNum - [in] Bank number on FUMI; 0 for the logical bank.
 **
 ** Return Value:
 **   SA_OK is returned when the source validation is successfully started;
@@ -8090,21 +8651,20 @@ SaErrorT SAHPI_API saHpiFumiSourceSet (
 **   hash key or message digest validation.
 **
 **   The FUMI validates the URI on invocation of this API. Optionally, the FUMI
-**   can start the validation process internally after the saHpiFumiSourceSet
+**   can start the validation process internally after the saHpiFumiSourceSet()
 **   function is called and can cache the result. It can then return the result
-**   of validation immediately, once the saHpiFumiValidateSource function is
+**   of validation immediately, once the saHpiFumiValidateSource() function is
 **   called.
 **
-**   When a FUMI supports multiple banks, each bank has separate source
-**   information, which should be separately validated.  The Bank ID of 0 can be
-**   used to validate the source information for the currently active bank.
+**   When a FUMI supports explicit banks, each bank has separate source 
+**   information, which should be separately validated.  The Bank ID of 0 is 
+**   used to validate the source information for the logical bank.  When a FUMI
+**   does not support explicit banks, only Bank 0 can be used with this 
+**   function.
 **
-**   When a FUMI does not support multiple banks, the HPI User shall use Bank 0
-**   with this function.
-**
-**   The status of a source validate operation is reported via events, and can
-**   be queried with the saHpiFumiUpgradeStatusGet() function, using the source
-**   bank as the value of the BankNum.
+**   The status of a source validate operation is reported via events and can be
+**   queried with the saHpiFumiUpgradeStatusGet() function for the appropriate 
+**   bank.
 **
 *******************************************************************************/
 SaErrorT SAHPI_API saHpiFumiSourceInfoValidateStart (
@@ -8123,11 +8683,12 @@ SaErrorT SAHPI_API saHpiFumiSourceInfoValidateStart (
 **   the designated bank.
 **
 ** Parameters:
-**   SessionId â€“ [in] Identifier for a session context previously obtained using **      saHpiSessionOpen().
-**   ResourceId â€“ [in] Resource identified for this operation.
-**   FumiNum â€“ [in] FUMI number for which source information is to be returned.
-**   BankNum â€“ [in] Bank number on FUMI; 0 for the active bank.
-**   SourceInfo â€“ [out] Pointer to the location to store source information.
+**   SessionId – [in] Identifier for a session context previously obtained using 
+**      saHpiSessionOpen().
+**   ResourceId – [in] Resource identified for this operation.
+**   FumiNum – [in] FUMI number for which source information is to be returned.
+**   BankNum – [in] Bank number on FUMI; 0 for the logical bank.
+**   SourceInfo – [out] Pointer to the location to store source information.
 **
 ** Return Value:
 **   SA_OK is returned on successful completion; otherwise, an error code is
@@ -8143,17 +8704,16 @@ SaErrorT SAHPI_API saHpiFumiSourceInfoValidateStart (
 **      * BankNum is not 0 and not a valid bank number supported by the FUMI.
 **
 ** Remarks:
-**   It is expected that this function is called only after the source is set
-**   and validated. This function returns information about the firmware image
-**   represented by the URI set previously. This information can be used to
-**   identify the firmware to be downloaded by the FUMI. This information
+**   This function returns information about the firmware image addressed by the
+**   URI set previously.  To be meaningful, this function can only be called 
+**   after the source is set and validated.  This information can be used to 
+**   identify the firmware to be downloaded by the FUMI.  This information 
 **   contains the image name, version, and build date-time.
 **
-**   When a FUMI supports multiple banks, each bank has separate source
-**   information, which should be separately read.  The Bank ID of 0 can be used
-**   to get the source information for the currently active bank.  When a FUMI
-**   does not support multiple banks, the HPI User shall use Bank 0 with this
-**   function.
+**   When a FUMI supports explicit banks, each bank has separate source 
+**   information, which should be separately read.  The Bank ID of 0 is used
+**   to get the source information for the logical bank.  When a FUMI does not
+**   support explicit banks, only Bank 0 can be used with this function.
 **
 *******************************************************************************/
 SaErrorT SAHPI_API saHpiFumiSourceInfoGet (
@@ -8166,18 +8726,99 @@ SaErrorT SAHPI_API saHpiFumiSourceInfoGet (
 
 /*******************************************************************************
 **
+** Name: saHpiFumiSourceComponentInfoGet()
+**
+** Description:
+**   This function returns the information about the specified subsidiary 
+**   firmware component in the source image assigned to the designated bank.
+**
+** Parameters:
+**   SessionId – [in] Identifier for a session context previously obtained using 
+**      saHpiSessionOpen().
+**   ResourceId – [in] Resource identified for this operation.
+**   FumiNum – [in] FUMI number for which source information is to be returned.
+**   BankNum – [in] Bank number on FUMI; 0 for the logical bank.
+**   SourceInfo – [out] Pointer to the location to store source information.
+**   ComponentEntryId – [in] Identifier of the component to retrieve. Reserved 
+**      ComponentEntryId values:
+**      * SAHPI_FIRST_ENTRY - Get first component.
+**      * SAHPI_LAST_ENTRY - Reserved as delimiter for end of list. Not a valid
+**         component identifier.
+**   NextComponentEntryId – [out] Pointer to location to store the 
+**      ComponentEntryId of the next component.
+**   ComponentInfo – [out] Pointer to the location to store the component 
+**      information.
+**
+** Return Value:
+**   SA_OK is returned on successful completion; otherwise, an error code is
+**      returned. 
+**   SA_ERR_HPI_CAPABILITY is returned if the:
+**      * resource does not support Firmware Upgrade management instruments, 
+**         as indicated by SAHPI_CAPABILITY_FUMI in the resource's RPT entry.
+**      * FUMI does not support subsidiary firmware component structures, as
+**         indicated by SAHPI_FUMI_CAP_COMPONENTS in the FUMI RDR.
+**   SA_ERR_HPI_INVALID_PARAMS is returned if the:
+**      * ComponentInfo parameter is NULL.
+**      * NextComponentEntryId pointer is passed in as NULL.
+**      * ComponentEntryId is an invalid reserved value such as SAHPI_LAST_ENTRY.
+**   SA_ERR_HPI_INVALID_REQUEST is returned if the source was not set prior to 
+**      calling this function.
+**   SA_ERR_HPI_NOT_PRESENT is returned if the:
+**      * FumiNum does not address a valid FUMI supported by the resource.
+**      * BankNum is not 0 and not a valid bank number supported by the FUMI.
+**      * Component identified by ComponentEntryId is not present. 
+**      * ComponentEntryId is SAHPI_FIRST_ENTRY and no components are avaliable
+**         in source image
+**
+** Remarks:
+**   This function returns information about the subsidiary firmware 
+**   component(s) in the source image represented by the URI set previously.  
+**   To be meaningful, this function can only be called after the source is set
+**   and validated.  This information contains component firmware version, 
+**   description, and build date-time and can be used to further characterize
+**   the firmware to be installed by the FUMI.
+**
+**   When a FUMI supports explicit banks, each bank may have separate component 
+**   structure in source image, which should be separately read. The Bank ID of 
+**   0 can be used to get the component structure information for the logical
+**   bank. When a FUMI does not support explicit banks, only Bank 0 can be used
+**   with this function.
+**
+**   If the ComponentEntryId parameter is set to SAHPI_FIRST_ENTRY, the first 
+**   component in firmware source image is returned. When an entry is 
+**   successfully retrieved, NextComponentEntryId is set to the identifier of
+**   the next valid entry; however, when the last entry has been retrieved, 
+**   NextComponentEntryId is set to SAHPI_LAST_ENTRY. To retrieve an entire list
+**   of entries, an HPI User needs to call this function first with a 
+**   ComponentEntryId of SAHPI_FIRST_ENTRY and then use the returned 
+**   NextComponentEntryId in the next call, until the NextComponentEntryId 
+**   returned is SAHPI_LAST_ENTRY.
+**
+*******************************************************************************/
+SaErrorT SAHPI_API saHpiFumiSourceComponentInfoGet (
+    SAHPI_IN    SaHpiSessionIdT       	SessionId,
+    SAHPI_IN    SaHpiResourceIdT      	ResourceId,
+    SAHPI_IN    SaHpiFumiNumT	    	FumiNum,
+    SAHPI_IN    SaHpiBankNumT		    BankNum,
+    SAHPI_IN    SaHpiEntryIdT		    ComponentEntryId,
+    SAHPI_OUT   SaHpiEntryIdT		    *NextComponentEntryId,
+    SAHPI_OUT   SaHpiFumiComponentInfoT *ComponentInfo
+);
+
+/*******************************************************************************
+**
 ** Name: saHpiFumiTargetInfoGet()
 **
 ** Description:
 **   This function returns information about the specified bank.
 **
 ** Parameters:
-**   SessionId â€“ [in] Identifier for a session context previously obtained using
+**   SessionId – [in] Identifier for a session context previously obtained using
 **      saHpiSessionOpen().
-**   ResourceId â€“ [in] Resource identified for this operation.
-**   FumiNum â€“ [in] FUMI number which contains the bank.
-**   BankNum â€“ [in] Bank number for on FUMI; 0 for the active bank.
-**   BankInfo â€“ [out] Pointer to location to store information about the bank.
+**   ResourceId – [in] Resource identified for this operation.
+**   FumiNum – [in] FUMI number which contains the bank.
+**   BankNum – [in] Bank number for on FUMI; 0 for the logical bank.
+**   BankInfo – [out] Pointer to location to store information about the bank.
 **
 ** Return Value:
 **   SA_OK is returned on successful completion; otherwise, an error code is
@@ -8193,12 +8834,15 @@ SaErrorT SAHPI_API saHpiFumiSourceInfoGet (
 ** Remarks:
 **   This function returns information about the current image on the target
 **   including bank number, validity state, executable firmware name, version
-**   number, build date-time, and position in the boot order.
+**   number, build date-time, and position in the boot order. The validity 
+**   state and position in the boot order information is applicable only to 
+**   explicit banks.
 **
-**   When a FUMI supports multiple banks, each bank has separate information,
-**   which should be separately read.  The Bank ID of 0 can be used to get
-**   information for the currently active bank.  When a FUMI does not support
-**   multiple banks, the HPI User shall use Bank 0 with this function.
+**   When a FUMI supports explicit banks, each bank has separate information, 
+**   which should be separately read.  The Bank ID of 0 is used to get 
+**   information about the main firmware instance in the logical bank.  
+**   This is the instance that is executing or, if no instance is currently 
+**   executing, this is the instance that will execute when execution starts.
 **
 *******************************************************************************/
 SaErrorT SAHPI_API saHpiFumiTargetInfoGet (
@@ -8211,11 +8855,194 @@ SaErrorT SAHPI_API saHpiFumiTargetInfoGet (
 
 /*******************************************************************************
 **
+** Name: saHpiFumiTargetComponentInfoGet()
+**
+** Description:
+**   This function returns the information about the specified subsidiary 
+**   firmware component in the designated bank.
+**
+** Parameters:
+**   SessionId – [in] Identifier for a session context previously obtained using 
+**      saHpiSessionOpen().
+**   ResourceId – [in] Resource identified for this operation.
+**   FumiNum – [in] FUMI number for which source information is to be returned.
+**   BankNum – [in] Bank number on FUMI; 0 for the logical bank.
+**   ComponentEntryId – [in] Identifier of the component to retrieve. Reserved 
+**      ComponentEntryId values:
+**      * SAHPI_FIRST_ENTRY - Get first component.
+**      * SAHPI_LAST_ENTRY - Reserved as delimiter for end of list. Not a valid
+**         component identifier.
+**   NextComponentEntryId – [out] Pointer to location to store the 
+**      ComponentEntryId of the next component.
+**   ComponentInfo – [out] Pointer to the location to store the component 
+**      information.
+**
+** Return Value:
+**   SA_OK is returned on successful completion; otherwise, an error code is
+**      returned. 
+**   SA_ERR_HPI_CAPABILITY is returned if the:
+**      * resource does not support Firmware Upgrade management instruments, 
+**         as indicated by SAHPI_CAPABILITY_FUMI in the resource's RPT entry.
+**      * FUMI does not support subsidiary firmware component structures, as
+**         indicated by SAHPI_FUMI_CAP_COMPONENTS in the FUMI RDR.
+**   SA_ERR_HPI_INVALID_PARAMS is returned if the:
+**      * ComponentInfo parameter is NULL.
+**      * NextComponentEntryId pointer is passed in as NULL.
+**      * ComponentEntryId is an invalid reserved value such as SAHPI_LAST_ENTRY.
+**   SA_ERR_HPI_NOT_PRESENT is returned if the:
+**      * FumiNum does not address a valid FUMI supported by the resource.
+**      * BankNum is not 0 and not a valid bank number supported by the FUMI.
+**      * Component identified by ComponentEntryId is not present. 
+**      * ComponentEntryId is SAHPI_FIRST_ENTRY and no components are avaliable
+**         in the designated bank
+**
+** Remarks:
+**   This function returns information about the subsidiary firmware 
+**   component(s) within the current firmware of the designated bank. This 
+**   information contains component firmware version, description, and build 
+**   date-time.
+**
+**   When a FUMI supports explicit banks, each bank's component structure is 
+**   independent and, therefore, queried separately. The Bank ID of 0 can be 
+**   used to get the component structure information for the main firmware 
+**   instance in the logical bank.  If the ComponentEntryId parameter is set to
+**   SAHPI_FIRST_ENTRY, the first component in the bank firmware is returned. 
+**   When an entry is successfully retrieved, NextComponentEntryId is set to the
+**   identifier of the next valid entry; however, when the last entry has been 
+**   retrieved, NextComponentEntryId is set to SAHPI_LAST_ENTRY. To retrieve an
+**   entire list of entries, call this function first with a ComponentEntryId of
+**   SAHPI_FIRST_ENTRY and then use the returned NextComponentEntryId in the 
+**   next call. Proceed until the NextComponentEntryId returned is 
+**   SAHPI_LAST_ENTRY.
+**
+*******************************************************************************/
+
+SaErrorT SAHPI_API saHpiFumiTargetComponentInfoGet (
+    SAHPI_IN    SaHpiSessionIdT       	SessionId,
+    SAHPI_IN    SaHpiResourceIdT      	ResourceId,
+    SAHPI_IN    SaHpiFumiNumT	    	FumiNum,
+    SAHPI_IN    SaHpiBankNumT		    BankNum,
+    SAHPI_IN    SaHpiEntryIdT		    ComponentEntryId,
+    SAHPI_OUT   SaHpiEntryIdT		    *NextComponentEntryId,
+    SAHPI_OUT   SaHpiFumiComponentInfoT *ComponentInfo
+);
+
+/*******************************************************************************
+**
+** Name: saHpiFumiLogicalTargetInfoGet()
+**
+** Description:
+**   This function returns additional target information about the logical bank.
+**
+** Parameters:
+**   SessionId – [in] Identifier for a session context previously obtained using 
+**      saHpiSessionOpen().
+**   ResourceId – [in] Resource identified for this operation.
+**   FumiNum – [in] FUMI number for which source information is to be returned.
+**   ComponentEntryId – [in] Identifier of the component to retrieve. Reserved 
+**      ComponentEntryId values:
+**      * SAHPI_FIRST_ENTRY - Get first component.
+**      * SAHPI_LAST_ENTRY - Reserved as delimiter for end of list. Not a valid
+**         component identifier.
+**   NextComponentEntryId – [out] Pointer to location to store the 
+**      ComponentEntryId of the next component.
+**   ComponentInfo – [out] Pointer to the location to store the component 
+**      information.
+**
+** Return Value:
+**   SA_OK is returned on successful completion; otherwise, an error code is
+**      returned. 
+**   SA_ERR_HPI_CAPABILITY is returned if the resource does not support Firmware
+**      Upgrade management instruments, as indicated by SAHPI_CAPABILITY_FUMI in
+**      the resource's RPT entry.
+**   SA_ERR_HPI_INVALID_PARAMS is returned if BankInfo is NULL.
+**   SA_ERR_HPI_NOT_PRESENT is returned if the FumiNum does not address a valid 
+**      FUMI supported by the resource.
+**
+** Remarks:
+**   As previously described, there can be up to three logical locations for the
+**   firmware instances in the logical bank. Those locations are all accessed 
+**   using Bank ID 0, and their contents changes automatically depending on the
+**   executed function. Therefore, a special function is necessary to return
+**   additional information about the firmware instances in the logical bank
+**   target, specifically regarding the rollback and pending firmware instances.
+**   This information also includes the number of persistent locations for 
+**   firmware instances and a flag indicating whether the currently executing
+**   main firmware instance has a persistent copy or not.
+**
+*******************************************************************************/
+
+SaErrorT SAHPI_API saHpiFumiLogicalTargetInfoGet (
+    SAHPI_IN    SaHpiSessionIdT       		SessionId,
+    SAHPI_IN    SaHpiResourceIdT      		ResourceId,
+    SAHPI_IN    SaHpiFumiNumT	    		FumiNum,
+    SAHPI_OUT   SaHpiFumiLogicalBankInfoT	*BankInfo
+);
+
+/*******************************************************************************
+**
+** Name: saHpiFumiLogicalTargetComponentInfoGet()
+**
+** Description:
+**   This function returns additional information about the specified subsidiary 
+**   firmware component in the logical bank.
+**
+** Parameters:
+**   SessionId – [in] Identifier for a session context previously obtained using 
+**      saHpiSessionOpen().
+**   ResourceId – [in] Resource identified for this operation.
+**   FumiNum – [in] FUMI number for which source information is to be returned.
+**   BankInfo – [out] Pointer to location to store additional information about 
+**      the bank.
+**
+** Return Value:
+**   SA_ERR_HPI_CAPABILITY is returned if the:
+**      * resource does not support Firmware Upgrade management instruments, 
+**         as indicated by SAHPI_CAPABILITY_FUMI in the resource's RPT entry.
+**      * FUMI does not support subsidiary firmware component structures, as
+**         indicated by SAHPI_FUMI_CAP_COMPONENTS in the FUMI RDR.
+**   SA_ERR_HPI_INVALID_PARAMS is returned if the:
+**      * ComponentInfo parameter is NULL.
+**      * NextComponentEntryId pointer is passed in as NULL.
+**      * ComponentEntryId is an invalid reserved value such as SAHPI_LAST_ENTRY.
+**   SA_ERR_HPI_NOT_PRESENT is returned if the:
+**      * FumiNum does not address a valid FUMI supported by the resource.
+**      * Component identified by ComponentEntryId is not present. 
+**      * ComponentEntryId is SAHPI_FIRST_ENTRY and no components are avaliable
+**
+** Remarks:
+**   This function returns additional information about the subsidiary firmware 
+**   component in the logical bank, specifically regarding the subsidiary 
+**   components of the rollback and pending firmware instances.
+**
+**   If the ComponentEntryId parameter is set to SAHPI_FIRST_ENTRY, the first
+**   component in a firmware instance is returned. When an entry is successfully
+**   retrieved, NextComponentEntryId is set to the identifier of the next valid 
+**   entry; however, when the last entry has been retrieved, 
+**   NextComponentEntryId is set to SAHPI_LAST_ENTRY. To retrieve an entire list
+**   of entries, call this function first with a ComponentEntryId of 
+**   SAHPI_FIRST_ENTRY and then use the returned NextComponentEntryId in the 
+**   next call. Proceed until the NextComponentEntryId returned is 
+**   SAHPI_LAST_ENTRY.
+**
+*******************************************************************************/
+
+SaErrorT SAHPI_API saHpiFumiLogicalTargetComponentInfoGet (
+    SAHPI_IN    SaHpiSessionIdT       		SessionId,
+    SAHPI_IN    SaHpiResourceIdT      		ResourceId,
+    SAHPI_IN    SaHpiFumiNumT	    		FumiNum,
+    SAHPI_IN    SaHpiEntryIdT			    ComponentEntryId,
+    SAHPI_OUT   SaHpiEntryIdT			    *NextComponentEntryId,
+    SAHPI_OUT   SaHpiFumiLogicalComponentInfoT	*ComponentInfo
+);
+
+/*******************************************************************************
+**
 ** Name: saHpiFumiBackupStart()
 **
 ** Description:
-**   This function initiates a backup of the currently active bank on the target
-**   to an implementation-dependent location.
+**   This function initiates a backup of the main instance in the logical bank 
+**   on the target, resulting in a rollback instance in the logical bank.
 **
 ** Parameters:
 **   SessionId - [in] Identifier for a session context previously obtained using
@@ -8235,31 +9062,31 @@ SaErrorT SAHPI_API saHpiFumiTargetInfoGet (
 **      FUMI supported by the resource.
 **
 ** Remarks:
-**   This function is used for taking a backup of the image on the target in
-**   preparation for upgrades. Depending on the implementation, this may mean
-**   taking a backup on the hard drive or into another bank or in any other
-**   location. In cases where the target already has a redundant image, the FUMI
-**   may immediately report the backup is complete without making an additional
-**   copy.
+**   This function is used for taking a backup of the main firmware instance in
+**   the logical bank on the target in preparation for upgrades.  Depending on 
+**   the implementation, this may mean taking a backup on the hard drive or into
+**   another bank, or in any other location. If the logical bank already has a 
+**   copy of the main instance as the rollback instance, the FUMI may 
+**   immediately report the backup is complete without making an additional 
+**   copy. 
 **
-**   The status of a backup operation is reported via events, and can be queried
-**   with the saHpiFumiUpgradeStatusGet() function.  When a FUMI supports
-**   multiple banks, this function starts the backup operation for the active
-**   bank.  Status of the backup operation will be associated with that bank.
+**   The status of a backup operation is reported via events and can be queried
+**   with the saHpiFumiUpgradeStatusGet() function.
 **
-**   As a result of executing this function the contents of one of the banks (if
-**   available) might be overwritten..  Whether or not this occurs, and which
-**   bank is used to hold the backup copy is implementation specific.  To copy
-**   an image to a specific bank, the saHpiFumiBankCopy() function should be
-**   used.
+**   The saHpiFumiBackupStart() function cannot be directly targeted to an 
+**   explicit bank, but may have undefined side effects on an explicit bank if
+**   the FUMI implements explicit banks.  To copy an image to a specific bank,
+**   the saHpiFumiBankCopy() function should be used.
 **
-**   If an implementation supports HPI users initiating backups of the active
-**   bank, it should be reflected in the FUMI capability flags in the RDR.  If
-**   an implementation does not support this capability, backups may be created
-**   automatically during the upgrade operation by the implementation.  If an
-**   implementation does support the backup capability using this function,
-**   automatic backups that would override the use of this function shall not be
-**   created.
+**   If an implementation supports HPI Users initiating backups of the logical
+**   bank, it is reflected in the FUMI capability flag SAHPI_FUMI_CAP_BACKUP in
+**   the RDR.  If an implementation does not support this capability, backups
+**   may be created automatically during the upgrade operation by the 
+**   implementation; such automatic backups are available if 
+**   SAHPI_FUMI_CAP_ROLLBACK is set and SAHPI_FUMI_CAP_BACKUP is not set. 
+**   If an implementation does support the backup capability using this 
+**   function, it does not create automatic backups that would override the 
+**   ones created by this function.
 **
 *******************************************************************************/
 SaErrorT SAHPI_API saHpiFumiBackupStart(
@@ -8268,19 +9095,21 @@ SaErrorT SAHPI_API saHpiFumiBackupStart(
     SAHPI_IN    SaHpiFumiNumT	      FumiNum
 );
 
+
 /*******************************************************************************
 **
 ** Name: saHpiFumiBankBootOrderSet()
 **
 ** Description:
-**   This function sets the position of a bank in the boot order.
+**   This function sets the position of an explicit bank in the boot order.
 **
 ** Parameters:
 **   SessionId - [in] Identifier for a session context previously obtained using
 **      saHpiSessionOpen().
 **   ResourceId - [in] Resource identified for this operation.
 **   FumiNum - [in] FUMI number which contains the bank.
-**   BankNum - [in] Bank number; 0 for the active bank..
+**   BankNum – [in] Explicit bank number; a logical bank reference (BankNum = 0) 
+**      is not allowed.
 **   Position - [in] Position of the bank in boot order.
 **
 ** Return Value:
@@ -8295,16 +9124,16 @@ SaErrorT SAHPI_API saHpiFumiBackupStart(
 **      banks on the FUMI.
 **   SA_ERR_HPI_NOT_PRESENT is returned if the:
 **      * FumiNum does not address a valid FUMI supported by the resource.
-**      * BankNum is not 0 and not a valid bank number supported by the FUMI.
+**      * BankNum is not a valid explicit bank number supported by the FUMI.
 **
 ** Remarks:
-**   For boot ordering, banks are assigned positions between 1 and n, inclusive,
-**   where n is the number of banks in a FUMI.
+**   For boot ordering, explicit banks are assigned positions between 1 and n, 
+**   inclusive, where n is the number of banks in a FUMI.
 **
 **   Boot order can be represented as a list. Setting a bank to a certain
 **   position causes all the subsequent banks to move to next higher positions.
 **
-**   For example, suppose the ordered list for a FUMI has four banks in
+**   For example, suppose the ordered list for a FUMI has four expliict banks in
 **   following order:
 **   bank3, bank 2, bank 4, bank 1. 
 **
@@ -8325,16 +9154,19 @@ SaErrorT SAHPI_API saHpiFumiBankBootOrderSet (
 ** Name: saHpiFumiBankCopyStart()
 **
 ** Description:
-**   This function initiates the copy of the contents of one bank to another
-**   bank in the same FUMI.
+**   This function initiates the copy of the contents of one explicit bank to 
+**   another explicit bank in the same FUMI. 
 **
 ** Parameters:
 **   SessionId - [in] Identifier for a session context previously obtained using
 **      saHpiSessionOpen().
 **   ResourceId - [in] Resource identified for this operation.
-**   FumiNum - [in] FUMI number which contains the source and destination banks.
-**   SourceBankNum - [in] Source Bank number to copy from.
-**   TargetBankNum - [in] Target Bank number to copy to.
+**   FumiNum - [in] FUMI number which contains the source and destination 
+**      explicit banks.
+**   SourceBankNum – [in] Explicit Source Bank number to copy from; a logical
+**      bank reference (SourceBankNum = 0) is not allowed.
+**   TargetBankNum – [in] Explicit Target Bank number to copy to; a logical bank
+**      reference (TargetBankNum = 0) is not allowed.
 **
 ** Return Value:
 **   SA_OK is returned if the backup operation is successfully started;
@@ -8349,7 +9181,7 @@ SaErrorT SAHPI_API saHpiFumiBankBootOrderSet (
 **   SA_ERR_HPI_NOT_PRESENT is returned if FumiNum does not address a valid FUMI
 **      supported by the resource.
 **   SA_ERR_HPI_INVALID_DATA is returned if SourceBankNum or TargetBankNum is
-**      not a valid bank number supported by the FUMI.
+**      not a valid explicit bank number supported by the FUMI.
 **
 ** Remarks:
 **   The status of a bank copy operation is reported via events, and can be
@@ -8370,29 +9202,29 @@ SaErrorT SAHPI_API saHpiFumiBankCopyStart(
 ** Name: saHpiFumiInstallStart()
 **
 ** Description:
-**   This function starts an installation process, loading firmware to the
-**   active bank or a specified bank.
+**   This function starts an installation process, loading firmware to the 
+**   logical bank or to a specified explicit bank. 
 **
 ** Parameters:
-**   SessionId â€“ [in] Identifier for a session context previously obtained using
+**   SessionId – [in] Identifier for a session context previously obtained using
 **      saHpiSessionOpen().
-**   ResourceId â€“ [in] Resource identified for this operation.
-**   FumiNum â€“ [in] FUMI number which that should perform the install operation.
-**   BankNum â€“ [in] Target bank number; 0 for the active bank.
+**   ResourceId – [in] Resource identified for this operation.
+**   FumiNum – [in] FUMI number which that should perform the install operation.
+**   BankNum – [in] Target bank number; 0 for the logical bank.
 **
 ** Return Value:
-**   SA_OK is returned on successful completion; otherwise, an error code is
-**      returned. 
+**   SA_OK is returned if the install operation is successfully started; 
+**      otherwise, an error code is returned. 
 **   SA_ERR_HPI_CAPABILITY is returned if the resource does not support Firmware
 **      Upgrade management instruments, as indicated by SAHPI_CAPABILITY_FUMI in
 **      the resource's RPT entry.
 **   SA_ERR_HPI_NOT_PRESENT is returned if the:
 **      * FumiNum does not address a valid FUMI supported by the resource.
 **      * BankNum is not 0 and not a valid bank number supported by the FUMI.
-**      * SA_ERR_HPI_INVALID_REQUEST is returned if the source is not valid.
-**         That is, if saHpiFumiSourceInfoGet() returns any value other than
-**         SAHPI_FUMI_SRC_VALID or SAHPI_FUMI_SRC_VALIDITY_UNKNOWN for
-**         SourceInfoâ€“>SourceStatus.
+**   SA_ERR_HPI_INVALID_REQUEST is returned if the source is not valid.
+**      That is, if saHpiFumiSourceInfoGet() returns any value other than
+**      SAHPI_FUMI_SRC_VALID or SAHPI_FUMI_SRC_VALIDITY_UNKNOWN for
+**      SourceInfo–>SourceStatus.
 **
 ** Remarks:
 **   This function can be called after setting up and optionally validating the
@@ -8400,17 +9232,23 @@ SaErrorT SAHPI_API saHpiFumiBankCopyStart(
 **   is programmed with the new source image on completion of the upgrade
 **   process. The whole process is atomic to the HPI user.
 **
-**   If the install process fails, the FUMI may automatically initiate a
-**   rollback process.
+**   If the install process on the logical bank fails, the FUMI can 
+**   automatically initiate a rollback process if the FUMI’s RDR indicates the
+**   capability SAHPI_FUMI_CAP_AUTOROLLBACK.  However, if that capability is 
+**   present, the capability SAHPI_FUMI_CAP_AUTOROLLBACK_CAN_BE_DISABLED 
+**   indicates that the automatic rollback can be disabled and enabled via the
+**   corresponding FUMI function.
 **
-**   When a FUMI supports multiple banks, each bank can be individually
-**   installed.  The Bank ID of 0 can be used to install the currently active
-**   bank.  When a FUMI does not support multiple banks, the HPI User shall use
-**   Bank 0 with this function.
+**   When a FUMI supports explicit banks, each bank can be individually 
+**   installed.  The Bank ID of 0 can be used to install the logical bank. When
+**   a FUMI does not support explicit banks, an HPI User shall use Bank 0 with
+**   this function.
 **
-**   The status of the install operation is reported via events, and can be
+**   The status of the install operation is reported via events, and can be 
 **   queried with the saHpiFumiUpgradeStatusGet() function, using the source
-**   bank as the value of the BankNum.
+**   bank as the value of the BankNum. Some events (and the corresponding status
+**   values) indicate that an HPI User should take follow up action, such as
+**   initiating an explicit rollback operation.
 **
 *******************************************************************************/
 SaErrorT SAHPI_API saHpiFumiInstallStart (
@@ -8432,7 +9270,7 @@ SaErrorT SAHPI_API saHpiFumiInstallStart (
 **      saHpiSessionOpen().
 **   ResourceId - [in] Resource identified for this operation.
 **   FumiNum - [in] FUMI number for which status is to be returned.
-**   BankNum - [in] Target bank number; 0 for the active bank.
+**   BankNum - [in] Target bank number; 0 for the logical bank.
 **   UpgradeStatus - [out] Pointer to location to store upgrade status for the
 **      bank.
 **
@@ -8476,12 +9314,12 @@ SaErrorT SAHPI_API saHpiFumiUpgradeStatusGet (
 **   bank.
 **
 ** Parameters:
-**   SessionId â€“ [in] Identifier for a session context previously obtained using
+**   SessionId – [in] Identifier for a session context previously obtained using
 **      saHpiSessionOpen().
-**   ResourceId â€“ [in] Resource identified for this operation.
-**   FumiNum â€“ [in] FUMI number which should perform the target verify
+**   ResourceId – [in] Resource identified for this operation.
+**   FumiNum – [in] FUMI number which should perform the target verify
 **      operation.
-**   BankNum â€“ [in] Bank number; 0 for the active bank.
+**   BankNum – [in] Bank number; 0 for the logical bank.
 **
 ** Return Value:
 **   SA_OK is returned when source verify operation is successfully started;
@@ -8490,27 +9328,27 @@ SaErrorT SAHPI_API saHpiFumiUpgradeStatusGet (
 **      * the resource does not support Firmware Upgrade management instruments,
 **         as indicated by SAHPI_CAPABILITY_FUMI in the resource's RPT entry.
 **      * the FUMI does not support target verify capability, as indicated by
-**         SAHPI_FUMI_CAP_TARGET_VERIFY in the FUMIâ€™s RDR.
+**         SAHPI_FUMI_CAP_TARGET_VERIFY in the FUMI’s RDR.
 **   SA_ERR_HPI_NOT_PRESENT is returned if the:
 **      * FumiNum does not address a valid FUMI supported by the resource.
 **      * BankNum is not 0 and not a valid bank number supported by the FUMI.
 **   SA_ERR_HPI_INVALID_REQUEST is returned if the source for the target to be
 **      verified is not valid. That is, if saHpiFumiSourceInfoGet() returns any
 **      value other than SAHPI_FUMI_SRC_VALID or SAHPI_FUMI_SRC_VALIDITY_UNKNOWN
-**      for SourceInfoâ€“>SourceStatus.
+**      for SourceInfo–>SourceStatus.
 **
 ** Remarks:
-**   This function can be called after the upgrade process has been completed
-**   successfully. It verifies that the upgraded image at the target matches
+**   This function verifies that the installed image at the target bank matches 
 **   with the source image that was assigned to it.
 **
-**   The Bank ID of 0 can be used to validate the source information for the
-**   currently active bank.  When a FUMI does not support multiple banks, the
-**   HPI User shall use Bank 0 with this function.
+**   The Bank ID of 0 can be used to validate the source information for the 
+**   logical bank.  In this case, this function verifies that the pending 
+**   firmware instance at the target matches the source image that was set for
+**   the bank.
 **
-**   The status of a target verify operation is reported via events, and can be
-**   queried with the saHpiFumiUpgradeStatusGet() function, using the source
-**   bank as the value of the BankNum.
+**   The status of a target verify operation is reported via events and can be
+**   queried with the saHpiFumiUpgradeStatusGet() function, using the target 
+**   bank as the value of the BankNum parameter.
 **
 *******************************************************************************/
 SaErrorT SAHPI_API saHpiFumiTargetVerifyStart (
@@ -8522,17 +9360,73 @@ SaErrorT SAHPI_API saHpiFumiTargetVerifyStart (
 
 /*******************************************************************************
 **
+** Name: saHpiFumiTargetVerifyMainStart()
+**
+** Description:
+**   This function starts the verification process of the main firmware instance
+**   in the logical bank.
+**
+** Parameters:
+**   SessionId - [in] Identifier for a session context previously obtained using
+**      saHpiSessionOpen().
+**   ResourceId - [in] Resource identified for this operation.
+**   FumiNum - [in] FUMI number that should perform the target verify operation.
+**
+** Return Value:
+**   SA_OK is returned if the target verify operation is successfully started;
+**      otherwise, an error code is returned.
+**   SA_ERR_HPI_CAPABILITY is returned if:
+**      * the resource does not support Firmware Upgrade management instruments,
+**         as indicated by SAHPI_CAPABILITY_FUMI in the resource's RPT entry.
+**      * the FUMI does not support target verify capability, as indicated by
+**         SAHPI_FUMI_CAP_TARGET_VERIFY_MAIN in the FUMI's RDR.
+**   SA_ERR_HPI_NOT_PRESENT is returned if the FumiNum does not address a valid
+**      FUMI supported by the resource.
+**   SA_ERR_HPI_INVALID_REQUEST is returned if the:
+**      * source for the target to be verified is not valid.  That is, if 
+**         saHpiFumiSourceInfoGet() returns any value other than 
+**         SAHPI_FUMI_SRC_VALID or SAHPI_FUMI_SRC_VALIDITY_UNKNOWN for
+**         SourceInfo–>SourceStatus.
+**      * main firmware instance is not avaliable. This can happen in the case 
+**         of a failed activation or a failed rollback.
+**
+** Remarks:
+**   Verification compares the main firmware instance with the source assigned 
+**   for the logical bank. Note that an explicit source set operation may be 
+**   needed to align the source with the main firmware instance on the target.
+**
+**   The logical bank may hold up to three instances of the firmware.  Two of 
+**   these, the main and pending instances, can be verified against the source.
+**   This function verifies the main instance.  To verify the pending instance,
+**   use the saHpiFumiVerifyTargetStart() function with a Bank ID of 0.
+**
+**   The status of a target verify against main firmware instance operation is
+**   reported via the same events as target verification against pending 
+**   firmware instance and can be queried with the saHpiFumiUpgradeStatusGet()
+**   function, using 0 as the value of the BankNum parameter.
+**
+*******************************************************************************/
+SaErrorT SAHPI_API saHpiFumiTargetVerifyMainStart (
+    SAHPI_IN    SaHpiSessionIdT		SessionId,
+    SAHPI_IN    SaHpiResourceIdT	ResourceId,
+    SAHPI_IN    SaHpiFumiNumT		FumiNum
+);
+
+
+/*******************************************************************************
+**
 ** Name: saHpiFumiUpgradeCancel()
 **
 ** Description:
-**   This function stops an asynchronous operation in process.
+**   This function stops an asynchronous operation in process on a designated
+**      bank.
 **
 ** Parameters:
-**   SessionId â€“ [in] Identifier for a session context previously obtained using
+**   SessionId – [in] Identifier for a session context previously obtained using
 **      saHpiSessionOpen().
-**   ResourceId â€“ [in] Resource identified for this operation.
-**   FumiNum â€“ [in] FUMI number which contains this bank.
-**   BankNum â€“ [in] Target bank number; 0 for the active bank.
+**   ResourceId – [in] Resource identified for this operation.
+**   FumiNum – [in] FUMI number which contains this bank.
+**   BankNum – [in] Target bank number; 0 for the logical bank.
 **
 ** Return Value:
 **   SA_OK is returned on successful completion; otherwise, an error code is
@@ -8551,16 +9445,17 @@ SaErrorT SAHPI_API saHpiFumiTargetVerifyStart (
 **   of a FUMI.  Asynchronous operations are started by
 **   saHpiFumiSourceInfoVerifyStart(), saHpiFumiInstallStart(),
 **   saHpiFumiTargetVerifyStart(), saHpiFumiRollbackStart(),
-**   saHpiFumiBankCopyStart(), and saHpiFumiBackupStart().
+**   saHpiFumiActivateStart(), saHpiFumiBankCopyStart(), and 
+**   saHpiFumiBackupStart().
 **
-**   The result of canceling the upgrade process is implementation specific. The
-**   result of this function is indicated by an event issued by the FUMI. Some
-**   implementations may automatically roll back to a previous version.
+**   The only mandatory result of this function is an event issued by the FUMI
+**   identifying the operation that was cancelled. Other persistent effects of 
+**   such a cancellation are implementation-specific. Some implementations may
+**   automatically roll back to a previous version. Target bank firmware 
+**   instances may be corrupted and not available after the cancellation.
 **
 **   Asynchronous operations are activated for specific banks.  The Bank ID of 0
-**   can be used to cancel an asynchronous operation on the currently active
-**   bank.  When a FUMI does not support multiple banks, the HPI User shall use
-**   Bank 0 with this function.
+**   can be used to cancel an asynchronous operation on the logical bank.
 **
 *******************************************************************************/
 SaErrorT SAHPI_API saHpiFumiUpgradeCancel (
@@ -8572,20 +9467,118 @@ SaErrorT SAHPI_API saHpiFumiUpgradeCancel (
 
 /*******************************************************************************
 **
-** Name: saHpiFumiRollbackStart()
+** Name: saHpiFumiAutoRollbackDisableGet()
 **
 ** Description:
-**   This function initiates a rollback operation to restore the currently
-**   active bank with a backup version.  The backup may have been explicitly
-**   created with saHpiFumiBackupStart(), or automatically by the
-**   implementation, if the saHpiFumiBackiupStart() capability is not defined
-**   for this FUMI.
+**   This function is used to query whether automatic rollback is disabled or
+**   not on the FUMI logical bank.
 **
 ** Parameters:
 **   SessionId - [in] Identifier for a session context previously obtained using
 **      saHpiSessionOpen().
 **   ResourceId - [in] Resource identified for this operation.
-**   FumiNum - [in] FUMI number which contains this bank.
+**   FumiNum - [in] FUMI number for which automatic rollback policy is to be 
+**      returned.
+**   Disable – [out] Pointer to location to store information about automatic 
+**      rollback disable status. Set to True if automatic rollback is disabled, 
+**      or False automatic rollback is enabled.
+**
+** Return Value:
+**   SA_OK is returned on successful completion; otherwise, an error code is
+**      returned.
+**   SA_ERR_HPI_CAPABILITY is returned if:
+**      * the resource does not support Firmware Upgrade management instruments,
+**         as indicated by SAHPI_CAPABILITY_FUMI in the resource's RPT entry.
+**      * FUMI does not support automatic rollback, as indicated by 
+**         SAHPI_FUMI_CAP_AUTOROLLBACK capability in FUMI RDR.
+**   SA_ERR_HPI_NOT_PRESENT is returned if FumiNum does not address a valid FUMI
+**      supported by the resource.
+**   SA_ERR_HPI_INVALID_PARAMS is returned if Disable is passed as NULL.
+**
+** Remarks:
+**   This function can be used by an HPI User to determine whether automatic 
+**   rollback is disabled or not on the FUMI logical bank.
+**
+*******************************************************************************/
+
+SaErrorT SAHPI_API saHpiFumiAutoRollbackDisableGet (
+    SAHPI_IN    SaHpiSessionIdT   SessionId,
+    SAHPI_IN    SaHpiResourceIdT  ResourceId,
+    SAHPI_IN    SaHpiFumiNumT	FumiNum,
+    SAHPI_OUT   SaHpiBoolT		*Disable
+);
+
+/*******************************************************************************
+**
+** Name: saHpiFumiAutoRollbackDisableSet()
+**
+** Description:
+**   This function is used to disable or enable automatic rollback on the FUMI
+**   logical bank.
+**
+** Parameters:
+**   SessionId - [in] Identifier for a session context previously obtained using
+**      saHpiSessionOpen().
+**   ResourceId - [in] Resource identified for this operation.
+**   FumiNum - [in] FUMI number for which automatic rollback policy is to be 
+**      set.
+**   Disable – [in] Boolean variable that indicates whether an HPI User requests
+**      disabling or enabling automatic rollback. Set to True to disable 
+**      automatic rollback or to False to enable automatic rollback.
+**
+** Return Value:
+**   SA_OK is returned on successful completion; otherwise, an error code is
+**      returned.
+**   SA_ERR_HPI_CAPABILITY is returned if:
+**      * the resource does not support Firmware Upgrade management instruments,
+**         as indicated by SAHPI_CAPABILITY_FUMI in the resource's RPT entry.
+**      * FUMI does not support automatic rollback, as indicated by 
+**         SAHPI_FUMI_CAP_AUTOROLLBACK capability in FUMI RDR.
+**      * FUMI does not support disabling the automatic rollback policy, as 
+**         indicated by SAHPI_FUMI_CAP_AUTOROLLBACK_CAN_BE_DISABLED in FUMI RDR.
+**   SA_ERR_HPI_NOT_PRESENT is returned if FumiNum does not address a valid FUMI
+**      supported by the resource.
+**
+** Remarks:
+**   This function can be used by an HPI User to enable or disable automatic 
+**   rollback on the FUMI logical bank.  By default, automatic rollback is 
+**   enabled.  For some implementations, automatic rollback cannot be disabled.
+**   To change the automatic rollback policy, an HPI User must call this 
+**   function before calling a function (typically an install or activate) that
+**   could result in the rollback.  The state of the rollback policy is intended
+**   to persist until explicitly changed.  Entities that use multiple firmware 
+**   instances for reliability benefits beyond protecting the upgrade process 
+**   itself may apply this policy in those broader contexts as well.  
+**   For instance, an implementation may have the capability to switch to a 
+**   rollback firmware instance if the main instance becomes inoperable for some
+**   reason not associated with a firmware upgrade; such an implementation may 
+**   inhibit that switch if automatic rollback has been disabled via a FUMI 
+**   operation.
+**
+*******************************************************************************/
+
+SaErrorT SAHPI_API saHpiFumiAutoRollbackDisableSet (
+    SAHPI_IN    SaHpiSessionIdT     SessionId,
+    SAHPI_IN    SaHpiResourceIdT    ResourceId,
+    SAHPI_IN    SaHpiFumiNumT	    FumiNum,
+    SAHPI_IN    SaHpiBoolT		    Disable
+);
+
+/*******************************************************************************
+**
+** Name: saHpiFumiRollbackStart()
+**
+** Description:
+**   This function initiates a rollback operation to replace the main firmware
+**   instance of the logical bank with the rollback instance.  The rollback 
+**   instance may have been explicitly created with saHpiFumiBackupStart(), 
+**   or automatically by the implementation.
+**
+** Parameters:
+**   SessionId - [in] Identifier for a session context previously obtained using
+**      saHpiSessionOpen().
+**   ResourceId - [in] Resource identified for this operation.
+**   FumiNum – [in] FUMI number that should perform the rollback operation.
 **
 ** Return Value:
 **   SA_OK is returned on successful completion; otherwise, an error code is
@@ -8597,9 +9590,8 @@ SaErrorT SAHPI_API saHpiFumiUpgradeCancel (
 **         SAHPI_FUMI_CAP_ROLLBACK in the FUMI's RDR.
 **   SA_ERR_HPI_NOT_PRESENT is returned if FumiNum does not address a valid FUMI
 **      supported by the resource.
-**   SA_ERR_HPI_INVALID_REQUEST is returned if 
-**      * Upgrade was not done.
-**      * Backup copy is not available
+**   SA_ERR_HPI_INVALID_REQUEST is returned if rollback firmware instance is 
+**      not available.
 **
 ** Remarks:
 **   The intent of this function is to roll back to the backed up version. Some
@@ -8610,7 +9602,7 @@ SaErrorT SAHPI_API saHpiFumiUpgradeCancel (
 **
 **   The status of a rollback operation is reported via events, and can be
 **   queried with the saHpiFumiUpgradeStatusGet() function.  This function
-**   starts the rollback operation for the active bank.  Status of the rollback
+**   starts the rollback operation for the logical bank.  Status of the rollback
 **   operation will be associated with that bank.
 **
 *******************************************************************************/
@@ -8624,8 +9616,15 @@ SaErrorT SAHPI_API saHpiFumiRollback (
 **
 ** Name: saHpiFumiActivate()
 **
+** Note:
+**   This function should not be used in new HPI User programs. The function
+**   saHpiFumiActivateStart() should be used instead.
+**
 ** Description:
-**   This function starts execution of the active image on the FUMI.
+**   This function starts execution of the firmware in the first valid explicit
+**   bank in the boot order list on the FUMI, if the FUMI supports explicit 
+**   banks, or activates an appropriate firmware instance on the logical bank,
+**   if FUMI does not support explicit banks.
 **
 ** Parameters:
 **   SessionId - [in] Identifier for a session context previously obtained using
@@ -8641,20 +9640,179 @@ SaErrorT SAHPI_API saHpiFumiRollback (
 **      the resource's RPT entry.
 **   SA_ERR_HPI_NOT_PRESENT is returned if FumiNum does not address a valid FUMI
 **      supported by the resource.
+**   SA_ERR_HPI_INVALID_REQUEST is returned if:
+**      * NumBanks is 0, but there is no valid firmware instance in the logical
+**         bank to execute on the entity; that is, if there is no valid pending
+**         or main instance.
+**      * NumBanks is positive, but no explicit bank has both a valid BankState 
+**         and a positive Position in the boot order list.
 **
 ** Remarks:
-**   This function ensures that the firmware loaded in the current active bank
-**   is executing.  If it is already executing before this function was called,
-**   the function has no effect.  If the entity is not executing any firmware,
-**   or is executing firmware from a different bank, calling this function will
-**   cause the entity to be restarted with the correct firmware from the active
-**   bank.
+**   This function provides a synchronous method for firmware activation.
+**
+**   When a FUMI supports explicit banks, this function ensures that the 
+**   firmware loaded in the first valid explicit bank in the boot order list is
+**   executing.  If the required firmware instance is already executing before
+**   this function was called, the function has no effect.  If the entity is not
+**   executing any firmware, or is executing some inappropriate instance, 
+**   calling this function will cause the entity to be restarted with the 
+**   correct firmware.
+**
+**   When a FUMI does not support explicit banks, this function ensures that the
+**   pending firmware instance becomes the main firmware instance and starts 
+**   executing.  If there is no pending instance, this function ensures that the
+**   main instance is executing, if necessary by restarting the entity with that
+**   instance.  If the main instance is already executing, this function has no 
+**   effect.
+**
+**   This function is preserved for compatibility with previous HPI 
+**   specification revisions.  The more flexible asynchronous function 
+**   saHpiFumiActivateStart() is preferred for new applications.
 **
 *******************************************************************************/
 SaErrorT SAHPI_API saHpiFumiActivate (
     SAHPI_IN    SaHpiSessionIdT       SessionId,
     SAHPI_IN    SaHpiResourceIdT      ResourceId,
     SAHPI_IN    SaHpiFumiNumT	      FumiNum
+);
+
+/*******************************************************************************
+**
+** Name: saHpiFumiActivateStart()
+**
+** Description:
+**   This function initiates firmware activation in either the logical bank or
+**   the explicit banks on the FUMI. 
+**
+** Parameters:
+**   SessionId - [in] Identifier for a session context previously obtained using
+**      saHpiSessionOpen().
+**   ResourceId - [in] Resource identified for this operation.
+**   FumiNum - [in] FUMI number
+**   Logical – [in] Boolean variable. When True, indicates a logical bank 
+**      activation. When False, indicates an explicit bank activation according
+**      to the boot order list.
+**
+** Return Value:
+**   SA_OK is returned on successful completion; otherwise, an error code is
+**      returned.
+**   SA_ERR_HPI_CAPABILITY is returned if the resource does not support Firmware
+**      Upgrade management instruments, as indicated by SAHPI_CAPABILITY_FUMI in
+**      the resource's RPT entry.
+**   SA_ERR_HPI_NOT_PRESENT is returned if FumiNum does not address a valid FUMI
+**      supported by the resource.
+**   SA_ERR_HPI_INVALID_REQUEST is returned if:
+**      * Logical is False, but NumBanks is 0 indicating that the FUMI does not 
+**         support explicit banks.
+**      * Logical is False, NumBanks is positive, but no explicit bank has both
+**         a valid BankState and a positive Position in the boot order list.
+**      * Logical is True, but there is no valid firmware instance in the 
+**         logical bank to execute on the entity; that is, if there is no valid
+**         pending or main instance.
+**
+** Remarks:
+**   This function provides an asynchronous method for firmware activation. Some
+**   implementations may require a long time to start execution of a new image
+**   on the FUMI.  For example, an implementation may need to copy firmware from
+**   a non-executable SEEPROM to an executable flash location.  Alternatively, 
+**   the old firmware may need a long time to shut down or the new firmware may
+**   need a long time to start up.
+**
+**   If Logical is True, this function ensures that the pending firmware 
+**   instance become the main firmware instance and starts executing.  If there
+**   is no pending instance, this function ensures that the main instance is
+**   executing, if necessary by restarting the entity with that instance.  If
+**   the main instance is already executing, this function has no effect.
+**
+**   If Logical is True and the activate process fails, the FUMI can 
+**   automatically restore the rollback firmware instance if the FUMI’s RDR
+**   indicates the capability SAHPI_FUMI_CAP_AUTOROLLBACK.  However, if that
+**   capability is present, the capability 
+**   SAHPI_FUMI_CAP_AUTOROLLBACK_CAN_BE_DISABLED indicates that the automatic
+**   rollback can be disabled and enabled via the corresponding FUMI functions.
+**
+**   If Logical is False, this function ensures that the firmware loaded in the
+**   first valid explicit bank in the boot order list is executing. If the 
+**   required firmware instance is already executing before this function was
+**   called, the function has no effect. If the entity is not executing any 
+**   firmware, or is executing some inappropriate instance, calling this 
+**   function will cause the entity to be restarted with the correct 
+**   firmware.
+**
+**   The status of an asynchronous activation operation is reported via events
+**   and can be queried with the saHpiFumiUpgradeStatusGet() function. Some
+**   events (and the corresponding status values) indicate that an HPI User 
+**   should take follow up action, such as initiating an explicit rollback
+**   operation.
+**
+**   There are some considerations that make this function more flexible than
+**   the saHpiFumiActivate() variant. One such consideration is that the 
+**   asynchronous variant is better suited to FUMI implementations that 
+**   require a long time to start execution of a new image.  For example, an
+**   implementation may need to copy firmware from a non-executable SEEPROM to
+**   an executable flash location.  Alternatively, the old firmware may need a
+**   long time to shut down, or the new firmware may need a long time to start 
+**   up.  Doing firmware activation synchronously can lead to timeout problems
+**   in the HPI implementation.
+**
+**   Another such consideration is that the saHpiFumiActivateStart() function
+**   has an additional parameter that explicitly states whether the logical bank
+**   or explicit bank activation is intended.  For FUMIs that support explicit
+**   banks, this parameter allows an HPI User to unambiguously determine the 
+**   activation type.
+**
+*******************************************************************************/
+
+SaErrorT SAHPI_API saHpiFumiActivateStart (
+    SAHPI_IN    SaHpiSessionIdT	    SessionId,
+    SAHPI_IN    SaHpiResourceIdT	ResourceId,
+    SAHPI_IN    SaHpiFumiNumT	    FumiNum,
+    SAHPI_IN    SaHpiBoolT		    Logical
+);
+
+/*******************************************************************************
+**
+** Name: saHpiFumiActivateStart()
+**
+** Description:
+**   This function performs cleanup after an upgrade process on the specified 
+**   bank, returning it to a predefined state.
+**
+** Parameters:
+**   SessionId - [in] Identifier for a session context previously obtained using
+**      saHpiSessionOpen().
+**   ResourceId - [in] Resource identified for this operation.
+**   FumiNum - [in] FUMI number
+**   BankNum – [in] Target bank number; 0 for the logical bank.
+**
+** Return Value:
+**   SA_OK is returned on successful completion; otherwise, an error code is
+**      returned.
+**   SA_ERR_HPI_CAPABILITY is returned if the resource does not support Firmware
+**      Upgrade management instruments, as indicated by SAHPI_CAPABILITY_FUMI in
+**      the resource's RPT entry.
+**   SA_ERR_HPI_NOT_PRESENT is returned if the:
+**      * FumiNum does not address a valid FUMI supported by the resource.
+**      * BankNum is not 0 and not a valid bank number supported by the FUMI.
+**
+** Remarks:
+**   This function takes the following actions:
+**      * Cancels all asynchronous operations in progress or scheduled for the 
+**         designated bank.  An asynchronous bank to bank copying operation is 
+**         canceled only if the designated bank is the source bank for the 
+**         operation.
+**      * Unsets the source for designated bank.
+**      * Returns the designated bank state to SAHPI_FUMI_OPERATION_NOTSTARTED.
+**      * Does any other cleanup (such as deleting a downloaded source file or 
+**         freeing allocated memory) that is needed by the implementation.
+**
+*******************************************************************************/
+
+SaErrorT SAHPI_API saHpiFumiCleanup (
+    SAHPI_IN    SaHpiSessionIdT     SessionId,
+    SAHPI_IN    SaHpiResourceIdT    ResourceId,
+    SAHPI_IN    SaHpiFumiNumT	    FumiNum,
+    SAHPI_IN    SaHpiBankNumT	    BankNum
 );
 
 /*******************************************************************************
@@ -8669,8 +9827,9 @@ SaErrorT SAHPI_API saHpiFumiActivate (
 **   immediately power off the FRU and turn on a hot swap indicator. This
 **   function allows an HPI User, after receiving a hot swap event with
 **   HotSwapState equal to SAHPI_HS_STATE_INSERTION_PENDING or
-**   SAHPI_HS_STATE_EXTRACTION_PENDING, to prevent the default policy from being
-**   executed.
+**   SAHPI_HS_STATE_EXTRACTION_PENDING, to prevent the auto insertion or 
+**   auto extraction policy from being automatically executed by the HPI 
+**   implementation.
 **
 ** Parameters:
 **   SessionId - [in] Identifier for a session context previously obtained using
@@ -8692,12 +9851,14 @@ SaErrorT SAHPI_API saHpiFumiActivate (
 **   EXTRACTION PENDING state, the default policies execute after the configured
 **   timeout period, unless cancelled using saHpiHotSwapPolicyCancel() after the
 **   transition to INSERTION PENDING or EXTRACTION PENDING state and before the
-**   timeout expires. The default policy cannot be canceled once it has begun to
+**   timeout expires. The policy cannot be canceled once it has begun to
 **   execute.
 **
-**   Because a resource that supports the simplified hot swap model never
-**   transitions into INSERTION PENDING or EXTRACTION PENDING states, this
-**   function is not applicable to those resources.
+**   This function is only supported by resources that support Managed Hot Swap.  
+**   If a resource with the FRU capability set but without the Managed Hot Swap 
+**   capability set transitions to INSERTION PENDING or EXTRACTION PENDING, 
+**   there is no way for an HPI User to control its insertion or extraction 
+**   policy.
 **
 *******************************************************************************/
 SaErrorT SAHPI_API saHpiHotSwapPolicyCancel (
@@ -8711,7 +9872,9 @@ SaErrorT SAHPI_API saHpiHotSwapPolicyCancel (
 **
 ** Description:
 **   This function allows an HPI User to request a resource to transition to the
-**   ACTIVE state from the INSERTION PENDING or EXTRACTION PENDING state.
+**   ACTIVE state from the INSERTION PENDING or EXTRACTION PENDING state, 
+**   executing the auto insertion policy to condition the hardware 
+**   appropriately.
 **
 ** Parameters:
 **   SessionId - [in] Identifier for a session context previously obtained using
@@ -8729,29 +9892,28 @@ SaErrorT SAHPI_API saHpiHotSwapPolicyCancel (
 **      * Processing an auto-insertion or auto-extraction policy.
 **
 ** Remarks:
-**   During insertion, a resource supporting hot swap generates an event to
-**   indicate that it is in the INSERTION PENDING state. If an HPI User calls
-**   saHpiHotSwapPolicyCancel() before the resource begins an auto-insert
-**   operation, then the resource remains in INSERTION PENDING state while an
-**   HPI User acts on the resource to integrate it into the system. During this
-**   state, an HPI User can instruct the resource to power on the associated
-**   FRU, to de-assert reset, or to turn off its hot swap indicator using the
-**   saHpiResourcePowerStateSet(), saHpiResourceResetStateSet(), or
-**   saHpiHotSwapIndicatorStateSet() functions, respectively, if the resource
-**   has those associated capabilities. Once an HPI User has completed with the
-**   integration of the FRU, this function must be called to signal that the
-**   resource should now transition into the ACTIVE state.
+**   During insertion, a resource supporting managed hot swap generates an 
+**   event to indicate that it is in the INSERTION PENDING state.  While the
+**   resource is in this state, and before it begins execution of the auto 
+**   insertion policy, an HPI User may call this function to request that the 
+**   auto insertion policy be started immediately.
+**
+**   If an HPI User calls saHpiHotSwapPolicyCancel() before the resource begins
+**   executing the auto insertion policy, the resource remains in INSERTION 
+**   PENDING state while actions can be taken to integrate the FRU associated 
+**   with this resource into the system.  Once completed with the integration of
+**   the FRU, an HPI User must call this function to signal that the resource 
+**   should now execute the auto insertion policy and transition into the ACTIVE
+**   state.
 **
 **   An HPI User may also use this function to request a resource to return to
 **   the ACTIVE state from the EXTRACTION PENDING state to reject an extraction
 **   request.
 **
-**   Because a resource that supports the simplified hot swap model never
-**   transitions into INSERTION PENDING or EXTRACTION PENDING states, this
-**   function is not applicable to those resources.
-**
-**   Only valid if resource is in INSERTION PENDING or EXTRACTION PENDING state
-**   and an auto-insert or auto-extract policy action has not been initiated.
+**   This function is only supported by resources that support Managed Hot Swap.  
+**   It is only valid if the resource is in INSERTION PENDING or EXTRACTION 
+**   PENDING state, and an auto insertion or auto extraction policy has not been
+**   initiated.
 **
 *******************************************************************************/
 SaErrorT SAHPI_API saHpiResourceActiveSet (
@@ -8765,7 +9927,9 @@ SaErrorT SAHPI_API saHpiResourceActiveSet (
 **
 ** Description:
 **   This function allows an HPI User to request a resource to transition to the
-**   INACTIVE state from the INSERTION PENDING or EXTRACTION PENDING state.
+**   INACTIVE state from the INSERTION PENDING or EXTRACTION PENDING state, 
+**   executing the auto extraction policy to condition the hardware 
+**   appropriately.
 **
 ** Parameters:
 **   SessionId - [in] Identifier for a session context previously obtained using
@@ -8780,32 +9944,30 @@ SaErrorT SAHPI_API saHpiResourceActiveSet (
 **      resource's RPT entry.
 **   SA_ERR_HPI_INVALID_REQUEST is returned if the resource is:
 **      * Not in the INSERTION PENDING or EXTRACTION PENDING state.
-**      * Processing an auto-insertion or auto-extraction policy.
+**      * Already processing an auto-insertion or auto-extraction policy.
 **
 ** Remarks:
-**   During extraction, a resource supporting hot swap generates an event to
-**   indicate that it is in the EXTRACTION PENDING state. If an HPI User calls
-**   saHpiHotSwapPolicyCancel() before the resource begins an auto-extract
-**   operation, then the resource remains in EXTRACTION PENDING state while an
-**   HPI User acts on the resource to isolate the associated FRU from the
-**   system. During this state, an HPI User can instruct the resource to power
-**   off the FRU, to assert reset, or to turn on its hot swap indicator using
-**   the saHpiResourcePowerStateSet(), saHpiResourceResetStateSet(), or
-**   saHpiHotSwapIndicatorStateSet() functions, respectively, if the resource
-**   has these associated capabilities. Once an HPI User has completed the
-**   shutdown of the FRU, this function must be called to signal that the
-**   resource should now transition into the INACTIVE state.
+**   During extraction, a resource supporting managed hot swap generates an 
+**   event to indicate that it is in the EXTRACTION PENDING state.  While the
+**   resource is in this state, and before it begins execution of the auto 
+**   extraction policy, an HPI User may call this function to request that the
+**   auto extraction policy be started immediately. If an HPI User calls 
+**   saHpiHotSwapPolicyCancel() before the resource begins executing the auto
+**   extraction policy, the resource remains in EXTRACTION PENDING state while
+**   actions can be taken to prepare the system for the FRU associated with this
+**   resource to be out of service.  Once the system is prepared for the 
+**   shutdown of the FRU, an HPI User must call this function to signal that the
+**   resource should now execute the auto extraction policy and transition into 
+**   the INACTIVE state.
 **
 **   An HPI User may also use this function to request a resource to return to
 **   the INACTIVE state from the INSERTION PENDING state to abort a hot-swap
 **   insertion action.
 **
-**   Because a resource that supports the simplified hot swap model never
-**   transitions into INSERTION PENDING or EXTRACTION PENDING states, this
-**   function is not applicable to those resources.
-**
-**   Only valid if resource is in EXTRACTION PENDING or INSERTION PENDING state
-**   and an auto-extract or auto-insert policy action has not been initiated.
+**   This function is only supported by resources that support Managed Hot Swap. 
+**   It is only valid if the resource is in EXTRACTION PENDING or INSERTION 
+**   PENDING state, and an auto extraction or auto insertion policy has not been
+**   initiated.
 **
 *******************************************************************************/
 SaErrorT SAHPI_API saHpiResourceInactiveSet (
@@ -8819,9 +9981,9 @@ SaErrorT SAHPI_API saHpiResourceInactiveSet (
 **
 ** Description:
 **   This function allows an HPI User to request the auto-insert timeout value
-**   within a specific domain. This value indicates how long a resource waits
-**   after transitioning to INSERTION PENDING state before the default
-**   auto-insertion policy is invoked.
+**   within a specific domain. This value indicates how long a resource that 
+**   supports managed hot swap waits after transitioning to INSERTION PENDING 
+**   state before the default auto-insertion policy is invoked.
 **
 ** Parameters:
 **   SessionId - [in] Identifier for a session context previously obtained using
@@ -8841,7 +10003,6 @@ SaErrorT SAHPI_API saHpiResourceInactiveSet (
 ** Remarks:
 **   Each domain maintains a single auto-insert timeout value and it is applied
 **   to all contained resources upon insertion, which support managed hot swap.
-**
 **   Further information on the auto-insert timeout can be found in the function
 **   saHpiAutoInsertTimeoutSet().
 **
@@ -8856,9 +10017,9 @@ SaErrorT SAHPI_API saHpiAutoInsertTimeoutGet(
 ** Name: saHpiAutoInsertTimeoutSet()
 **
 ** Description:
-**   This function allows an HPI User to configure a timeout for how long to
-**   wait before the default auto-insertion policy is invoked on a resource
-**   within a specific domain.
+**   This function allows an HPI User to configure a timeout for how long to 
+**   wait before the default auto insertion policy is invoked on a resource that
+**   supports managed hot swap within a specific domain.
 **
 ** Parameters:
 **   SessionId - [in] Identifier for a session context previously obtained using
@@ -8879,18 +10040,19 @@ SaErrorT SAHPI_API saHpiAutoInsertTimeoutGet(
 **      to SAHPI_TIMEOUT_BLOCK, SAHPI_TIMEOUT_IMMEDIATE or a positive value.
 **
 ** Remarks:
-**   This function accepts a parameter instructing each resource to impose a
-**   delay before performing its default hot swap policy for auto-insertion.
-**   The parameter may be set to SAHPI_TIMEOUT_IMMEDIATE to direct resources to
-**   proceed immediately to auto-insertion, or to SAHPI_TIMEOUT_BLOCK to prevent
-**   auto-insertion from ever occurring.  If the parameter is set to another
-**   value, then it defines the number of nanoseconds between the time a hot
-**   swap event with HotSwapState = SAHPI_HS_STATE_INSERTION_PENDING is
-**   generated, and the time that the auto-insertion policy is invoked for that
-**   resource.  If, during this time period, a saHpiHotSwapPolicyCancel()
-**   function call is processed, the timer is stopped, and the auto-insertion
-**   policy is not invoked.  Each domain maintains a single auto-insert timeout
-**   value and it is applied to all contained resources upon insertion, which
+**   This function accepts a parameter instructing each resource that supports 
+**   managed hot swap to impose a delay before performing its hot swap policy 
+**   for auto insertion.  The parameter may be set to SAHPI_TIMEOUT_IMMEDIATE to
+**   direct resources to proceed immediately to auto insertion, or to 
+**   SAHPI_TIMEOUT_BLOCK to prevent auto insertion policy from running until an
+**   HPI User calls saHpiResourceActiveSet().  If the parameter is set to 
+**   another value, it defines the number of nanoseconds between the time a hot
+**   swap event with HotSwapState = SAHPI_HS_STATE_INSERTION_PENDING is 
+**   generated and the time that the auto insertion policy is started for that
+**   resource.  If, during this time period, an saHpiHotSwapPolicyCancel() 
+**   function call is processed, the timer is stopped, and the auto insertion 
+**   policy is not invoked.  Each domain maintains a single auto insertion 
+**   timeout value, and this value is applied to all contained resources that
 **   support managed hot swap.
 **
 **   Once the auto-insertion policy begins, an HPI User is not allowed to cancel
@@ -8907,12 +10069,15 @@ SaErrorT SAHPI_API saHpiAutoInsertTimeoutGet(
 **   timeout value.  As an example, if a resource is inserted into two domains,
 **   one with an auto-insertion timeout of 5 seconds, and one with an
 **   auto-insertion timeout of 10 seconds, the resource begins its
-**   auto-insertion policy at 5 seconds.
+**   auto-insertion policy at 5 seconds. A resource may also be designed to 
+**   always immediately begin execution of its auto insertion policy upon 
+**   insertion.  The SAHPI_HS_CAPABILITY_AUTOINSERT_IMMEDIATE flag will be set
+**   in the RPT entry of such a resource.
 **
-**   An implementation may enforce a fixed, preset timeout value.  In such
-**   cases, the SAHPI_DOMAIN_CAP_AUTOINSERT_READ_ONLY flag is set to indicate
-**   that an HPI User cannot change the auto-insert Timeout value.
-**   SA_ERR_HPI_READ_ONLY is returned if an HPI User attempts to change a
+**   A domain may have a fixed, preset timeout value used for all resources.  
+**   In such cases, the SAHPI_DOMAIN_CAP_AUTOINSERT_READ_ONLY flag is set to 
+**   indicate that an HPI User cannot change the auto insertion timeout value. 
+**   SA_ERR_HPI_READ_ONLY is returned if an HPI User attempts to change a 
 **   read-only timeout.
 **
 *******************************************************************************/
@@ -8927,8 +10092,9 @@ SaErrorT SAHPI_API saHpiAutoInsertTimeoutSet(
 **
 ** Description:
 **   This function allows an HPI User to request the timeout for how long a
-**   resource waits after transitioning to EXTRACTION PENDING state before the
-**   default auto-extraction policy is invoked.
+**   resource that supports managed hot swap waits after transitioning to 
+**   EXTRACTION PENDING state before the default auto-extraction policy is 
+**   invoked.
 **
 ** Parameters:
 **   SessionId - [in] Identifier for a session context previously obtained using
@@ -8950,7 +10116,8 @@ SaErrorT SAHPI_API saHpiAutoInsertTimeoutSet(
 **      as NULL.
 **
 ** Remarks:
-**   Further information on auto-extract timeouts is detailed in
+**   This function is only supported by resources that support Managed Hot Swap.  
+**   Further information on auto extraction timeouts is detailed in 
 **   saHpiAutoExtractTimeoutSet().
 **
 *******************************************************************************/
@@ -8965,8 +10132,9 @@ SaErrorT SAHPI_API saHpiAutoExtractTimeoutGet(
 ** Name: saHpiAutoExtractTimeoutSet()
 **
 ** Description:
-**   This function allows an HPI User to configure a timeout for how long to
-**   wait before the default auto-extraction policy is invoked.
+**   This function allows an HPI User to configure a timeout for how long a 
+**   resource that supports managed hot swap will wait before the auto 
+**   extraction policy is invoked. 
 **
 ** Parameters:
 **   SessionId - [in] Identifier for a session context previously obtained using
@@ -8992,16 +10160,16 @@ SaErrorT SAHPI_API saHpiAutoExtractTimeoutGet(
 **
 ** Remarks:
 **   This function accepts a parameter instructing the resource to impose a
-**   delay before performing its default hot swap policy for auto-extraction.
-**   The parameter may be set to SAHPI_TIMEOUT_IMMEDIATE to direct the resource
-**   to proceed immediately to auto-extraction, or to SAHPI_TIMEOUT_BLOCK to
-**   prevent auto-extraction from ever occurring on a resource. If the parameter
-**   is set to another value, then it defines the number of nanoseconds between
-**   the time a hot swap event with HotSwapState =
-**   SAHPI_HS_STATE_EXTRACTION_PENDING is generated and the time that the
-**   auto-extraction policy is invoked for the resource. If, during this time
-**   period, a saHpiHotSwapPolicyCancel() function call is processed, the timer
-**   is stopped, and the auto-extraction policy is not invoked.
+**   delay before performing its hot swap policy for auto extraction.  The 
+**   parameter may be set to SAHPI_TIMEOUT_IMMEDIATE to direct the resource
+**   to proceed immediately to auto extraction, or to SAHPI_TIMEOUT_BLOCK to
+**   prevent the auto extraction policy from running until an HPI User calls
+**   saHpiResourceInactiveSet().  If the parameter is set to another value, it
+**   defines the number of nanoseconds between the time a hot swap event with 
+**   HotSwapState = SAHPI_HS_STATE_EXTRACTION_PENDING is generated and the time 
+**   that the auto extraction policy is invoked for the resource.  If, during
+**   this time period, an saHpiHotSwapPolicyCancel() function call is processed,
+**   the timer is stopped, and the auto extraction policy is not invoked. 
 **
 **   Once the auto-extraction policy begins, an HPI User is not allowed to
 **   cancel the extraction policy; hence, the timeout should be set
@@ -9011,21 +10179,17 @@ SaErrorT SAHPI_API saHpiAutoExtractTimeoutGet(
 **   received by a HPI User with a saHpiEventGet() function call, or even when
 **   it is placed in a session event queue.
 **
-**   The auto-extraction policy is set at the resource level and is only
-**   supported by resources supporting the Managed Hot Swap capability. The
-**   auto-extraction timeout value cannot be modified if the resource's "Hot
-**   Swap AutoExtract Read-only" capability is set. After discovering that a
-**   newly inserted resource supports Managed Hot Swap, and read-write
-**   auto-extract timeouts, an HPI User may use this function to change the
-**   timeout of the auto-extraction policy for that resource. If a resource
-**   supports the simplified hot swap model, setting this timer has no effect
-**   since the resource transitions directly to NOT PRESENT state on an
-**   extraction.
+**   The auto extraction timeout period is set at the resource level and is 
+**   only supported by resources supporting the Managed Hot Swap capability.  
+**   After discovering that a newly inserted resource supports Managed Hot Swap,
+**   an HPI User may use this function to change the timeout of the auto
+**   extraction policy for that resource.
 **
-**   An implementation may enforce a fixed, preset timeout value.  In such
-**   cases, the SAHPI_HS_CAPABILITY_AUTOEXTRACT_READ_ONLY flag is set to
-**   indicate that an HPI User cannot change the auto-extract Timeout value.
-**   SA_ERR_HPI_READ_ONLY is returned if an HPI User attempts to change a
+**   An implementation may enforce a fixed, preset timeout value.  In such 
+**   cases, the RPT entry for the resource will have the 
+**   SAHPI_HS_CAPABILITY_AUTOEXTRACT_READ_ONLY flag set to indicate that an
+**   HPI User cannot change the auto extraction timeout value.  
+**   SA_ERR_HPI_READ_ONLY is returned if an HPI User attempts to change a 
 **   read-only timeout.
 **
 *******************************************************************************/
@@ -9082,7 +10246,7 @@ SaErrorT SAHPI_API saHpiHotSwapStateGet (
 **
 ** Description:
 **   This function allows an HPI User to invoke an insertion or extraction
-**   process via software.
+**   process via software on a resource that supports managed hot swap.
 **
 ** Parameters:
 **   SessionId - [in] Identifier for a session context previously obtained using
@@ -9130,9 +10294,9 @@ SaErrorT SAHPI_API saHpiHotSwapActionRequest (
 **
 ** Description:
 **   This function allows an HPI User to retrieve the state of the hot swap
-**   indicator. A FRU associated with a hot-swappable resource may include a hot
-**   swap indicator such as a blue LED. This indicator signifies that the FRU is
-**   ready for removal.
+**   indicator. A FRU associated with a resource that supports managed hot swap 
+**   may include a hot swap indicator such as a blue LED. This indicator 
+**   signifies that the FRU is ready for removal.
 **
 ** Parameters:
 **   SessionId - [in] Identifier for a session context previously obtained using
@@ -9156,9 +10320,10 @@ SaErrorT SAHPI_API saHpiHotSwapActionRequest (
 **   SAHPI_HS_INDICATOR_ON. This function returns the state of the indicator,
 **   regardless of what hot swap state the resource is in.
 **
-**   Not all resources supporting managed hot swap necessarily support this
-**   function. Whether or not a resource supports the hot swap indicator is
-**   specified in the Hot Swap Capabilities field of the RPT entry.
+**   This function is only supported by resources that support managed hot swap.
+**   Furthermore, not all resources supporting managed hot swap necessarily 
+**   support this function.  Whether a resource supports the hot swap indicator
+**   is specified in the Hot Swap Capabilities field of the RPT entry.
 **
 *******************************************************************************/
 SaErrorT SAHPI_API saHpiHotSwapIndicatorStateGet (
@@ -9173,9 +10338,9 @@ SaErrorT SAHPI_API saHpiHotSwapIndicatorStateGet (
 **
 ** Description:
 **   This function allows an HPI User to set the state of the hot swap
-**   indicator. A FRU associated with a hot-swappable resource may include a hot
-**   swap indicator such as a blue LED. This indicator signifies that the FRU is
-**   ready for removal.
+**   indicator. A FRU associated with a resource that supports managed hot swap 
+**   may include a hot swap indicator such as a blue LED. This indicator 
+**   signifies that the FRU is ready for removal.
 **
 ** Parameters:
 **   SessionId - [in] Identifier for a session context previously obtained using
@@ -9200,9 +10365,10 @@ SaErrorT SAHPI_API saHpiHotSwapIndicatorStateGet (
 **   is in, though it is recommended that this function be used only in
 **   conjunction with moving the resource to the appropriate hot swap state.
 **
-**   Not all resources supporting managed hot swap necessarily support this
-**   function. Whether or not a resource supports the hot swap indicator is
-**   specified in the Hot Swap Capabilities field of the RPT entry.
+**   This function is only supported by resources that support managed hot swap.
+**   Furthermore, not all resources supporting managed hot swap necessarily 
+**   support this function. Whether or not a resource supports the hot swap 
+**   indicator is specified in the Hot Swap Capabilities field of the RPT entry.
 **
 *******************************************************************************/
 SaErrorT SAHPI_API saHpiHotSwapIndicatorStateSet (
@@ -9527,10 +10693,6 @@ SaErrorT SAHPI_API saHpiResourcePowerStateGet (
 **   instructed to power on a FRU even while it is in INACTIVE state, for
 **   example, to run off-line diagnostics.
 **   
-**   Not all resource supporting hot swap necessarily support this function. In
-**   particular, resource that use the simplified hot swap model may not have
-**   the ability to control FRU power.
-**
 **   This function may also be supported for non-FRU entities if power control
 **   is available for those entities.
 **
@@ -9541,5 +10703,8 @@ SaErrorT SAHPI_API saHpiResourcePowerStateSet (
     SAHPI_IN  SaHpiPowerStateT      State
 );
 
-#endif /* __SAHPI_H */
+#ifdef __cplusplus
+}
+#endif
 
+#endif /* __SAHPI_H */

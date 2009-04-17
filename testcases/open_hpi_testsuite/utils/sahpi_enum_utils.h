@@ -237,7 +237,7 @@ extern struct oh_severity_map {
 char * oh_lookup_severity(SaHpiSeverityT value);
 SaErrorT oh_encode_severity(SaHpiTextBufferT *buffer, SaHpiSeverityT *type);
 
-#define OH_MAX_RESOURCEEVENTTYPE 3 
+#define OH_MAX_RESOURCEEVENTTYPE 6 
 extern struct oh_resourceeventtype_map {
   SaHpiResourceEventTypeT  entity_type;
   char *str;

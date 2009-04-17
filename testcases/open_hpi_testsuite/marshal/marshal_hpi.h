@@ -13,6 +13,7 @@
  * Authors:
  *     Thomas Kanngieser <thomas.kanngieser@fci.com>
  *     W. David Ashley <dashley@us.ibm.com.com>
+ *     Anton Pak <anton.pak@pigeonpoint.com>
  */
 
 #ifndef dMarshalHpi_h
@@ -150,6 +151,23 @@ typedef enum
   eFoHpiGlobalParamGet,
   eFoHpiGlobalParamSet,
   eFoHpiInjectEvent,
+
+  // New B.03.01 functions
+  // They are added to the end of enum in order to keep ABI compatibility
+  eFsaHpiMyEntityPathGet,
+  eFsaHpiRdrUpdateCountGet,
+  eFsaHpiFumiSpecInfoGet,
+  eFsaHpiFumiServiceImpactGet,
+  eFsaHpiFumiSourceComponentInfoGet,
+  eFsaHpiFumiTargetComponentInfoGet,
+  eFsaHpiFumiLogicalTargetInfoGet,
+  eFsaHpiFumiLogicalTargetComponentInfoGet,
+  eFsaHpiFumiTargetVerifyMainStart,
+  eFsaHpiFumiAutoRollbackDisableGet,
+  eFsaHpiFumiAutoRollbackDisableSet,
+  eFsaHpiFumiActivateStart,
+  eFsaHpiFumiCleanup,
+
 } tHpiFucntionId;
 
 

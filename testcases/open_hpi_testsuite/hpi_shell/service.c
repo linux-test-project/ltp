@@ -231,6 +231,7 @@ SaErrorT decode1_proc(int num, int val, char *buf, int bufsize)
 SaErrorT thres_value(SaHpiSensorReadingT *item, char *buf, int size)
 {
 	char	*val;
+    int i, n;
 
 	memset(buf, 0, size);
 	if (item->IsSupported != SAHPI_TRUE)
@@ -247,11 +248,14 @@ SaErrorT thres_value(SaHpiSensorReadingT *item, char *buf, int size)
 			break;
 		case SAHPI_SENSOR_READING_TYPE_BUFFER:
 			val = (char *)(item->Value.SensorBuffer);
-			if (val != NULL) {
-				snprintf(buf, size, "%s", val);
-				break;
-			}
-			return(-1);
+            if (val == NULL ) {
+                return(-1);
+            }
+            n = ( SAHPI_SENSOR_BUFFER_LENGTH > ( size / 2 ) ) ? ( size / 2 ) : SAHPI_SENSOR_BUFFER_LENGTH;
+            buf[0] = '\0';
+            for (i = 0; i < n; ++i) {
+                sprintf( buf + 2 * i, "%02x", val[i] );
+            }
 	};
 	return(SA_OK);
 }
@@ -1079,7 +1083,7 @@ void get_text_buffer_text(char *mes, SaHpiTextBufferT *buf, char *meslast,
 	*outbuf = 0;
 	if (mes != (char *)NULL)
 		strcpy(outbuf,mes);
-	if ((buf->DataLength < 2) && (buf->DataType != SAHPI_TL_TYPE_BINARY)) {
+	if ((buf->DataLength == 0) && (buf->DataType != SAHPI_TL_TYPE_BINARY)) {
 		if (meslast != (char *)NULL)
 			strcat(outbuf, meslast);
 		return;
@@ -1195,9 +1199,7 @@ Pr_ret_t print_text_buffer(char *mes, SaHpiTextBufferT *buf, char *meslast,
 	if (mes != (char *)NULL) {
 		if (proc(mes) == HPI_UI_END) return(HPI_UI_END);
 	};
-	if ((buf->DataLength < 2) && (buf->DataType != SAHPI_TL_TYPE_BINARY)) {
-		return(HPI_UI_OK);
-	}
+	if ((buf->DataLength > 0) || (buf->DataType == SAHPI_TL_TYPE_BINARY)) {
 	if (print_text_buffer_type(NULL, buf, ": ", proc) != HPI_UI_OK)
 		return(HPI_UI_END);
 	if (print_text_buffer_lang(NULL, buf, ": ", proc) != HPI_UI_OK)
@@ -1206,6 +1208,7 @@ Pr_ret_t print_text_buffer(char *mes, SaHpiTextBufferT *buf, char *meslast,
 		return(HPI_UI_END);
 	if (print_text_buffer_length(" (len=", buf, ")", proc) != HPI_UI_OK)
 		return(HPI_UI_END);
+	}
 	if (meslast != (char *)NULL) {
 		if (proc(meslast) == HPI_UI_END) return(HPI_UI_END);
 	};

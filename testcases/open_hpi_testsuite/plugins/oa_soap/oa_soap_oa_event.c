@@ -207,6 +207,8 @@ SaErrorT process_oa_failover_event(struct oh_handler_state *oh_handler,
         while (is_transition_complete != SAHPI_TRUE &&
               time_elapsed < OA_STABILIZE_MAX_TIME) {
 
+		OA_SOAP_CHEK_SHUTDOWN_REQ(oa_handler, oa_handler->mutex, NULL,
+					  timer);
                 g_mutex_lock(oa->mutex);
                 rv = soap_getAllEvents(oa->event_con, &request, &response);
                 g_mutex_unlock(oa->mutex);
@@ -241,14 +243,16 @@ SaErrorT process_oa_failover_event(struct oh_handler_state *oh_handler,
 
                 /* Check for transition complete event */
                 while (response.eventInfoArray) {
-                       soap_getEventInfo(response.eventInfoArray, &event);
-                       if (event.event == EVENT_OA_TRANSITION_COMPLETE) {
-                                   is_transition_complete = SAHPI_TRUE;
-                                   break;
-                       }
-                       response.eventInfoArray =
+			OA_SOAP_CHEK_SHUTDOWN_REQ(oa_handler, oa_handler->mutex,
+						  NULL, timer);
+                        soap_getEventInfo(response.eventInfoArray, &event);
+                        if (event.event == EVENT_OA_TRANSITION_COMPLETE) {
+                                is_transition_complete = SAHPI_TRUE;
+                                break;
+                        }
+                        response.eventInfoArray =
                                 soap_next_node(response.eventInfoArray);
-                 }
+                }
                 /* Get the time (in seconds) since the timer has been started */
                 time_elapsed = g_timer_elapsed(timer, &micro_seconds);
         }
@@ -266,6 +270,7 @@ SaErrorT process_oa_failover_event(struct oh_handler_state *oh_handler,
         if (sleep_time > 0) {
                sleep(sleep_time);
         }
+	OA_SOAP_CHEK_SHUTDOWN_REQ(oa_handler, NULL, NULL, NULL);
 
         /* Check the OA staus there may be change in OA state */
         rv = check_oa_status(oa_handler, oa, oa->event_con);
@@ -299,7 +304,9 @@ SaErrorT process_oa_failover_event(struct oh_handler_state *oh_handler,
         /* Re-discover the resources as there is a high chances
          * that we might have missed some events
          */
-        rv = oa_soap_re_discover_resources(oh_handler, oa->event_con);
+	OA_SOAP_CHEK_SHUTDOWN_REQ(oa_handler, oa_handler->mutex, oa->mutex,
+				  NULL);
+        rv = oa_soap_re_discover_resources(oh_handler, oa);
         g_mutex_unlock(oa->mutex);
         g_mutex_unlock(oa_handler->mutex);
 

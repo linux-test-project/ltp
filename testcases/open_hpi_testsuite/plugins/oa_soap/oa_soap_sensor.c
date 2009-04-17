@@ -2440,6 +2440,8 @@ SaErrorT oa_soap_assert_sen_evt(struct oh_handler_state *oh_handler,
 			default:
 				err("Unrecognized sensor class %d "
 				    "is detected", sensor_class);
+				/* Release the node->data */
+				g_free(node->data);
 				continue;
 		 }
 
@@ -2453,6 +2455,8 @@ SaErrorT oa_soap_assert_sen_evt(struct oh_handler_state *oh_handler,
 		if (sensor_num == OA_SOAP_SEN_OPER_STATUS)
 			oa_soap_gen_res_evt(oh_handler, rpt,
 					    OA_SOAP_SEN_ASSERT_TRUE);
+		/* Release the node->data */
+		g_free(node->data);
 	} /* End of while loop */
 
 	/* Release the assert_sensor_list */

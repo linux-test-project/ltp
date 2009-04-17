@@ -204,7 +204,7 @@ static ret_code_t moreset(void)
 
         term = get_next_term();
         if (term == NULL) {
-                 if (is_more) val = "NO";
+                 if (is_more) val = "ON";
 		 else val = "OFF";
                 printf("more = %s\n", val);
                 return(HPI_SHELL_OK);
@@ -751,7 +751,7 @@ static ret_code_t show_rdr(void)
                 if (read_file) return(HPI_SHELL_CMD_ERROR);
                 i = get_string_param("RDR Type (s|a|c|w|i|d|f) ==> ",
                         buf, 9);
-                if (i != 0 || (buf + 1) != 0)
+                if ( (i != 0) || (buf[0] == '\0') || (buf[1] != 0) )
 			return HPI_SHELL_PARM_ERROR;
         } else {
                 memset(buf, 0, 10);
@@ -1173,7 +1173,7 @@ static ret_code_t domain_info(void)
         time2str(info.DatUpdateTimestamp, date, 30);
         printf("    DAT update count: %d   DAT Timestamp : %s\n",
                 info.DatUpdateCount, date);
-        printf("        ActiveAlarms: %d   CriticalAlarms: %d   Major: %d"
+        printf("        ActiveAlarms: %d   CriticalAlarms: %d   Major: %d "
                 "Minor: %d   Limit: %d\n",
                 info.ActiveAlarms, info.CriticalAlarms, info.MajorAlarms,
                 info.MinorAlarms, info.DatUserAlarmLimit);

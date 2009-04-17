@@ -81,7 +81,8 @@ SaErrorT check_config_parameters(GHashTable *handler_config);
 
 SaErrorT create_event_session(struct oa_info *oa);
 
-void create_oa_connection(struct oa_info *oa,
+void create_oa_connection(struct oa_soap_handler *oa_handler,
+                          struct oa_info *oa,
                           char *user_name,
                           char *password);
 

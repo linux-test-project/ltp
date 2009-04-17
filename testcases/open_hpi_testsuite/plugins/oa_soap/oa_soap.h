@@ -156,7 +156,9 @@ struct oa_info
         char server[MAX_URL_LEN];
         SOAP_CON *hpi_con;
         SOAP_CON *event_con;
+        SOAP_CON *event_con2;
         SaHpiFloat64T fm_version;
+	struct oh_handler_state *oh_handler;
 };
 
 typedef enum resource_presence_status
@@ -199,14 +201,8 @@ struct oa_soap_handler
         struct oa_info *oa_2;
 	/* Type of the enclsoure */
 	SaHpiInt32T enc_type; 
+	SaHpiBoolT shutdown_event_thread;
         GMutex *mutex;
-};
-
-/* Structure for passing the parameters for Event threads */
-struct event_handler
-{
-        struct oh_handler_state *oh_handler;
-        struct oa_info *oa;
 };
 
 /* Structure for storing the current hotswap state of the resource */
@@ -224,6 +220,24 @@ struct oa_soap_hotswap_state {
  * The HP BladeSystem c-Class can have interconnect blades from Cisco Systems
  */
 #define CISCO_MANUFACTURING_ID 9
+
+/* Checks for the shutdown request in event thread. On shutdown request, mutexes
+ * locked by event thread are unlocked and exits the thread. It is necessary to
+ * unlock the mutex, else g_free_mutex crahes on locked mutex
+ */
+#define OA_SOAP_CHEK_SHUTDOWN_REQ(oa_handler, hnd_mutex, oa_mutex, timer) \
+	{ \
+		if (oa_handler->shutdown_event_thread == SAHPI_TRUE) { \
+			dbg("Shutting down the OA SOAP event thread"); \
+			if (oa_mutex != NULL) \
+				g_mutex_unlock(oa_mutex); \
+			if (hnd_mutex != NULL) \
+				g_mutex_unlock(hnd_mutex); \
+			if (timer != NULL) \
+				g_timer_destroy(timer); \
+			g_thread_exit(NULL); \
+		} \
+	}
 
 /* Function prototypes */
 

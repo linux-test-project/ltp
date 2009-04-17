@@ -506,7 +506,7 @@ int get_int_param(char *mes, int *val)
 		return(HPI_SHELL_CMD_ERROR);
 	};
 	str = term->term;
-	if (isdigit(*str)) {
+	if (isdigit(*str) || *str == '-' ) {
 		res = sscanf(str, "%d", val);
 		return(res);
 	};

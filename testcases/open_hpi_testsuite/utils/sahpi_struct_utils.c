@@ -701,7 +701,7 @@ SaErrorT oh_fprint_text(FILE *stream, const SaHpiTextBufferT *buffer)
         SaErrorT err;
 
         if (buffer->DataType == SAHPI_TL_TYPE_TEXT) {
-                err = fprintf(stream, "%s\n", buffer->Data);
+                err = fwrite( buffer->Data, buffer->DataLength, 1, stream);
                 if (err < 0) {
                         err("Invalid parameter.");
                         return(SA_ERR_HPI_INVALID_PARAMS);
@@ -3895,37 +3895,42 @@ if (thds->thdname.IsSupported) { \
         case SAHPI_SENSOR_READING_TYPE_INT64: \
                 if (thdmask == SAHPI_STM_UP_HYSTERESIS || thdmask == SAHPI_STM_LOW_HYSTERESIS) { \
                         if (thds->thdname.Value.SensorInt64 < 0) return(SA_ERR_HPI_INVALID_DATA); \
-                } \
-                if (format.Range.Flags & SAHPI_SRF_MAX) { \
-                        if (thds->thdname.Value.SensorInt64 > format.Range.Max.Value.SensorInt64) \
-                                return(SA_ERR_HPI_INVALID_CMD); \
-                } \
-                if (format.Range.Flags & SAHPI_SRF_MIN) { \
-                        if (thds->thdname.Value.SensorInt64 < format.Range.Min.Value.SensorInt64) \
-                                return(SA_ERR_HPI_INVALID_CMD); \
+                } else { \
+                        if (format.Range.Flags & SAHPI_SRF_MAX) { \
+                                if (thds->thdname.Value.SensorInt64 > format.Range.Max.Value.SensorInt64) \
+                                        return(SA_ERR_HPI_INVALID_CMD); \
+                        } \
+                        if (format.Range.Flags & SAHPI_SRF_MIN) { \
+                                if (thds->thdname.Value.SensorInt64 < format.Range.Min.Value.SensorInt64) \
+                                        return(SA_ERR_HPI_INVALID_CMD); \
+                        } \
                 } \
                 break; \
         case SAHPI_SENSOR_READING_TYPE_FLOAT64: \
                 if (thdmask == SAHPI_STM_UP_HYSTERESIS || thdmask == SAHPI_STM_LOW_HYSTERESIS) { \
                         if (thds->thdname.Value.SensorFloat64 < 0) return(SA_ERR_HPI_INVALID_DATA); \
-                } \
-                if (format.Range.Flags & SAHPI_SRF_MAX) { \
-                        if (thds->thdname.Value.SensorFloat64 > format.Range.Max.Value.SensorFloat64) \
-                                return(SA_ERR_HPI_INVALID_CMD); \
-                } \
-                if (format.Range.Flags & SAHPI_SRF_MIN) { \
-                        if (thds->thdname.Value.SensorFloat64 < format.Range.Min.Value.SensorFloat64) \
-                                return(SA_ERR_HPI_INVALID_CMD); \
+                } else { \
+                        if (format.Range.Flags & SAHPI_SRF_MAX) { \
+                                if (thds->thdname.Value.SensorFloat64 > format.Range.Max.Value.SensorFloat64) \
+                                        return(SA_ERR_HPI_INVALID_CMD); \
+                        } \
+                        if (format.Range.Flags & SAHPI_SRF_MIN) { \
+                                if (thds->thdname.Value.SensorFloat64 < format.Range.Min.Value.SensorFloat64) \
+                                        return(SA_ERR_HPI_INVALID_CMD); \
+                        } \
                 } \
                 break; \
         case SAHPI_SENSOR_READING_TYPE_UINT64: \
-                if (format.Range.Flags & SAHPI_SRF_MAX) { \
-                        if (thds->thdname.Value.SensorUint64 > format.Range.Max.Value.SensorUint64) \
-                                return(SA_ERR_HPI_INVALID_CMD); \
-                } \
-                if (format.Range.Flags & SAHPI_SRF_MIN) { \
-                        if (thds->thdname.Value.SensorUint64 < format.Range.Min.Value.SensorUint64) \
-                                return(SA_ERR_HPI_INVALID_CMD); \
+                if (thdmask == SAHPI_STM_UP_HYSTERESIS || thdmask == SAHPI_STM_LOW_HYSTERESIS) { \
+                } else { \
+                        if (format.Range.Flags & SAHPI_SRF_MAX) { \
+                                if (thds->thdname.Value.SensorUint64 > format.Range.Max.Value.SensorUint64) \
+                                        return(SA_ERR_HPI_INVALID_CMD); \
+                        } \
+                        if (format.Range.Flags & SAHPI_SRF_MIN) { \
+                                if (thds->thdname.Value.SensorUint64 < format.Range.Min.Value.SensorUint64) \
+                                        return(SA_ERR_HPI_INVALID_CMD); \
+                        } \
                 } \
                 break; \
         case SAHPI_SENSOR_READING_TYPE_BUFFER: \
@@ -4203,6 +4208,8 @@ int oh_compare_sensorreading(SaHpiSensorReadingTypeT type,
                              SaHpiSensorReadingT *reading1,
                              SaHpiSensorReadingT *reading2)
 {
+        int res;
+        
         switch(type) {
         case SAHPI_SENSOR_READING_TYPE_INT64:
                 if (reading1->Value.SensorInt64 < reading2->Value.SensorInt64) { return -1; }
@@ -4226,8 +4233,12 @@ int oh_compare_sensorreading(SaHpiSensorReadingTypeT type,
                 }
                 break;
         case SAHPI_SENSOR_READING_TYPE_BUFFER:
-                return(memcmp(reading1->Value.SensorBuffer, reading2->Value.SensorBuffer,
-                              sizeof(SAHPI_SENSOR_BUFFER_LENGTH)));
+                res = memcmp(reading1->Value.SensorBuffer, reading2->Value.SensorBuffer,
+                              SAHPI_SENSOR_BUFFER_LENGTH);
+
+                if (res < 0) { return -1; }
+                else if (res > 0) { return 1; }
+                else { return 0; }
                 break;
         default:
                 err("Invalid sensor reading type.");

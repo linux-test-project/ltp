@@ -15,6 +15,7 @@
  *     Sean Dague <http://dague.net/sean>
  *     David Judkovics <djudkovi@us.ibm.com>
  *     Renier Morales <renier@openhpi.org>
+ *     Anton Pak <anton.pak@pigeonpoint.com>
  */
 
 #include <string.h>
@@ -839,14 +840,26 @@ int oh_load_plugin_functions(struct oh_plugin *plugin, struct oh_abi_v2 **abi)
                                                 "oh_get_dimi_test_status");
         (*abi)->get_dimi_test_results     = lt_dlsym(plugin->dl_handle,
                                                 "oh_get_dimi_test_results");
+        (*abi)->get_fumi_spec             = lt_dlsym(plugin->dl_handle,
+                                                "oh_get_fumi_spec");
+        (*abi)->get_fumi_service_impact = lt_dlsym(plugin->dl_handle,
+                                                "oh_get_fumi_service_impact");
         (*abi)->set_fumi_source           = lt_dlsym(plugin->dl_handle,
                                                 "oh_set_fumi_source");
         (*abi)->validate_fumi_source      = lt_dlsym(plugin->dl_handle,
                                                 "oh_validate_fumi_source");
         (*abi)->get_fumi_source           = lt_dlsym(plugin->dl_handle,
                                                 "oh_get_fumi_source");
+        (*abi)->get_fumi_source_component = lt_dlsym(plugin->dl_handle,
+                                                "oh_get_fumi_source_component");
         (*abi)->get_fumi_target           = lt_dlsym(plugin->dl_handle,
                                                 "oh_get_fumi_target");
+        (*abi)->get_fumi_target_component = lt_dlsym(plugin->dl_handle,
+                                                "oh_get_fumi_target_component");
+        (*abi)->get_fumi_logical_target   = lt_dlsym(plugin->dl_handle,
+                                                "oh_get_fumi_logical_target");
+        (*abi)->get_fumi_logical_target_component = lt_dlsym(plugin->dl_handle,
+                                                "oh_get_fumi_logical_target_component");
         (*abi)->start_fumi_backup         = lt_dlsym(plugin->dl_handle,
                                                 "oh_start_fumi_backup");
         (*abi)->set_fumi_bank_order       = lt_dlsym(plugin->dl_handle,
@@ -859,12 +872,22 @@ int oh_load_plugin_functions(struct oh_plugin *plugin, struct oh_abi_v2 **abi)
                                                 "oh_get_fumi_status");
         (*abi)->start_fumi_verify         = lt_dlsym(plugin->dl_handle,
                                                 "oh_start_fumi_verify");
+        (*abi)->start_fumi_verify_main    = lt_dlsym(plugin->dl_handle,
+                                                "oh_start_fumi_verify_main");
         (*abi)->cancel_fumi_upgrade       = lt_dlsym(plugin->dl_handle,
                                                 "oh_cancel_fumi_upgrade");
+        (*abi)->get_fumi_autorollback_disable = lt_dlsym(plugin->dl_handle,
+                                                "oh_get_fumi_autorollback_disable");
+        (*abi)->set_fumi_autorollback_disable = lt_dlsym(plugin->dl_handle,
+                                                "oh_set_fumi_autorollback_disable");
         (*abi)->rollback_fumi             = lt_dlsym(plugin->dl_handle,
                                                 "oh_rollback_fumi");
         (*abi)->activate_fumi             = lt_dlsym(plugin->dl_handle,
                                                 "oh_activate_fumi");
+        (*abi)->start_fumi_activate       = lt_dlsym(plugin->dl_handle,
+                                                "oh_start_fumi_activate");
+        (*abi)->cleanup_fumi              = lt_dlsym(plugin->dl_handle,
+                                                "oh_cleanup_fumi");
         (*abi)->hotswap_policy_cancel     = lt_dlsym(plugin->dl_handle,
                                                 "oh_hotswap_policy_cancel");
         (*abi)->get_hotswap_state         = lt_dlsym(plugin->dl_handle,

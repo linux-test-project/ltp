@@ -21,7 +21,7 @@
 #include <SaHpi.h>
 #include <oh_clients.h>
 
-#define OH_SVN_REV "$Revision: 1.4 $"
+#define OH_SVN_REV "$Revision: 1.5 $"
 
 #define  uchar  unsigned char
 char fdebug = 0;

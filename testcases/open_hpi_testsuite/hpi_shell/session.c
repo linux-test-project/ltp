@@ -113,7 +113,7 @@ static void* get_event(void *unused)
 			memset(&event, 0xF, sizeof(event));
 			rv = saHpiEventGet(Domain->sessionId,
 				SAHPI_TIMEOUT_BLOCK, &event,
-				NULL, NULL, NULL);		
+				&rdr, &rptentry, NULL);		
 			if (rv != SA_OK ) {
 				printf("saHpiEventGet failed with error <%d>", rv);
 				break;
@@ -133,9 +133,6 @@ static void* get_event(void *unused)
                                         if(rv == SA_OK)
                                                 oh_print_event(&event, &rptentry.ResourceEntity, 4);
                                         else {
-                                                printf("saHpiRptEntryGet failed for resource Id <%d> with error <%d>",
-                                                        event.Source, rv);
-                                                printf("Wrong resource Id <%d> detected", event.Source);
                                                 oh_print_event(&event, NULL, 4);
                                         }
                                 }

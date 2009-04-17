@@ -90,6 +90,10 @@
 /* Define to 1 if you have the `vprintf' function. */
 #undef HAVE_VPRINTF
 
+/* Define to the sub-directory in which libtool stores uninstalled libraries.
+   */
+#undef LT_OBJDIR
+
 /* default client configfile */
 #undef OH_CLIENT_DEFAULT_CONF
 

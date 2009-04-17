@@ -15,6 +15,7 @@
  *     Sean Dague <http://dague.net/sean>
  *     Renier Morales <renier@openhpi.org>
  *     Racing Guo <racing.guo@intel.com>
+ *     Anton Pak <anton.pak@pigeonpoint.com>
  */
 
 #ifndef __OH_HANDLER_H
@@ -644,6 +645,24 @@ struct oh_abi_v2 {
          ***************/
 
         /***
+         * saHpiFumiSpecInfoGet 
+         **/
+        SaErrorT (*get_fumi_spec)(
+                                void *hnd,
+                                SaHpiResourceIdT id,
+                                SaHpiFumiNumT num,
+                                SaHpiFumiSpecInfoT *specinfo );
+
+        /***
+         * saHpiFumiServiceImpactGet
+         **/
+        SaErrorT (*get_fumi_service_impact)(
+                                void *hnd,
+                                SaHpiResourceIdT id,
+                                SaHpiFumiNumT num,
+                                SaHpiFumiServiceImpactDataT *serviceimpact );
+
+        /***
          * saHpiFumiSourceSet
          **/
         SaErrorT (*set_fumi_source)(
@@ -673,6 +692,18 @@ struct oh_abi_v2 {
                                 SaHpiFumiSourceInfoT *sourceinfo);
 
         /***
+         * saHpiFumiSourceComponentInfoGet
+         **/
+        SaErrorT (*get_fumi_source_component)(
+                                void *hnd,
+                                SaHpiResourceIdT id,
+                                SaHpiFumiNumT num,
+                                SaHpiBankNumT banknum,
+                                SaHpiEntryIdT compid,
+                                SaHpiEntryIdT *nextcompid,
+                                SaHpiFumiComponentInfoT *compinfo);
+
+        /***
          * saHpiFumiTargetInfoGet
          **/
         SaErrorT (*get_fumi_target)(
@@ -681,6 +712,38 @@ struct oh_abi_v2 {
                                 SaHpiFumiNumT num,
                                 SaHpiBankNumT banknum,
                                 SaHpiFumiBankInfoT *bankinfo);
+
+        /***
+         * saHpiFumiTargetComponentInfoGet
+         **/
+        SaErrorT (*get_fumi_target_component)(
+                                void *hnd,
+                                SaHpiResourceIdT id,
+                                SaHpiFumiNumT num,
+                                SaHpiBankNumT banknum,
+                                SaHpiEntryIdT compid,
+                                SaHpiEntryIdT *nextcompid,
+                                SaHpiFumiComponentInfoT *compinfo);
+
+        /***
+         * saHpiFumiLogicalTargetInfoGet
+         **/
+        SaErrorT (*get_fumi_logical_target)(
+                                void *hnd,
+                                SaHpiResourceIdT id,
+                                SaHpiFumiNumT num,
+                                SaHpiFumiLogicalBankInfoT *bankinfo);
+
+        /***
+         * saHpiFumiLogicalTargetComponentInfoGet
+         **/
+        SaErrorT (*get_fumi_logical_target_component)(
+                                void *hnd,
+                                SaHpiResourceIdT id,
+                                SaHpiFumiNumT num,
+                                SaHpiEntryIdT compid,
+                                SaHpiEntryIdT *nextcompid,
+                                SaHpiFumiLogicalComponentInfoT *compinfo);
 
         /***
          * saHpiFumiBackupStart
@@ -739,6 +802,14 @@ struct oh_abi_v2 {
                                 SaHpiBankNumT banknum);
 
         /***
+         * saHpiFumiTargetVerifyMainStart
+         **/
+        SaErrorT (*start_fumi_verify_main)(
+                                void *hnd,
+                                SaHpiResourceIdT id,
+                                SaHpiFumiNumT num );
+
+        /***
          * saHpiFumiUpgradeCancel
          **/
         SaErrorT (*cancel_fumi_upgrade)(
@@ -746,6 +817,24 @@ struct oh_abi_v2 {
                                 SaHpiResourceIdT id,
                                 SaHpiFumiNumT num,
                                 SaHpiBankNumT banknum);
+
+        /***
+         * saHpiFumiAutoRollbackDisableGet
+         **/
+        SaErrorT (*get_fumi_autorollback_disable)(
+                                void *hnd,
+                                SaHpiResourceIdT id,
+                                SaHpiFumiNumT num,
+                                SaHpiBoolT *disable);
+
+        /***
+         * saHpiFumiAutoRollbackDisableSet
+         **/
+        SaErrorT (*set_fumi_autorollback_disable)(
+                                void *hnd,
+                                SaHpiResourceIdT id,
+                                SaHpiFumiNumT num,
+                                SaHpiBoolT disable);
 
         /***
          * saHpiFumiRollback
@@ -762,6 +851,23 @@ struct oh_abi_v2 {
                                 void *hnd,
                                 SaHpiResourceIdT id,
                                 SaHpiFumiNumT num);
+        /***
+         * saHpiFumiActivateStart
+         **/
+        SaErrorT (*start_fumi_activate)(
+                                void *hnd,
+                                SaHpiResourceIdT id,
+                                SaHpiFumiNumT num,
+                                SaHpiBoolT logical);
+
+        /***
+         * saHpiFumiCleanup
+         **/
+        SaErrorT (*cleanup_fumi)(
+                                void *hnd,
+                                SaHpiResourceIdT id,
+                                SaHpiFumiNumT num,
+                                SaHpiBankNumT banknum);
         
 	/***************
 	 * HOTSWAP ABIs

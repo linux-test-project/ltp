@@ -31,6 +31,7 @@ openhpid_SOURCES        = openhpid.cpp
 
 openhpid_LDADD         = $(top_builddir)/src/libopenhpi.la \
 	                 $(top_builddir)/utils/libopenhpiutils.la \
+	                 $(top_builddir)/marshal/libopenhpimarshal.la \
 			 $(top_builddir)/marshal/libohtcpconnx.la
 if HAVE_OPENSSL
 openhpid_LDADD		+= $(top_builddir)/$(SSLDIR)/libopenhpi_ssl.la
@@ -51,6 +52,7 @@ libopenhpi_la_SOURCES = oh_client.cpp oh_client_session.cpp oh_client_conf.c
 
 libopenhpi_la_LDFLAGS = -version-info @HPI_LIB_VERSION@
 libopenhpi_la_LIBADD  = $(top_builddir)/marshal/libohtcpconnx.la -lstdc++ \
+                        $(top_builddir)/marshal/libopenhpimarshal.la \
                         $(top_builddir)/utils/libopenhpiutils.la
 
 install-data-local:

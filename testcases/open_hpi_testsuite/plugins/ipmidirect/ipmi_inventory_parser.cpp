@@ -539,26 +539,18 @@ cIpmiInventoryArea::FindIdrField( SaHpiIdrFieldTypeT fieldtype,
                                   SaHpiEntryIdT fieldid
                                 )
 {
-    bool found = false;
-    int idx = 0;
-
     cIpmiInventoryField *iif;
 
     if ( fieldid == SAHPI_FIRST_ENTRY )
     {
-        if ( m_field_array.Num() == 0 )
-            return NULL;
-
-        iif = m_field_array[0];
-
-        if (( fieldtype == SAHPI_IDR_FIELDTYPE_UNSPECIFIED )
-            || ( iif->FieldType() == fieldtype ))
+        for ( int i = 0; i < m_field_array.Num(); i++ )
         {
-            idx = 0;
-            found = true;
+            iif = m_field_array[i];
+
+            if (( fieldtype == SAHPI_IDR_FIELDTYPE_UNSPECIFIED ) ||
+                ( fieldtype == iif->FieldType() ))
+                return iif;
         }
-        else
-            return NULL;
     }
     else
     {
@@ -568,23 +560,15 @@ cIpmiInventoryArea::FindIdrField( SaHpiIdrFieldTypeT fieldtype,
 
             if ( iif->FieldId() == fieldid )
             {
-                if (( fieldtype == SAHPI_IDR_FIELDTYPE_UNSPECIFIED )
-                    || ( iif->FieldType() == fieldtype ))
-                {
-                    idx = i;
-                    found = true;
-                    break;
-                }
+                if (( fieldtype == SAHPI_IDR_FIELDTYPE_UNSPECIFIED ) ||
+                    ( fieldtype == iif->FieldType() ))
+                    return iif;
+                break;
             }
         }
     }
 
-    if ( !found )
-        return NULL;
-
-    iif = m_field_array[idx];
-
-    return iif;
+    return NULL;
 }
 
 SaErrorT
@@ -603,13 +587,17 @@ cIpmiInventoryArea::GetIdrField( SaHpiIdrFieldTypeT &fieldtype,
     int idx = m_field_array.Find( iif );
 
     idx++;
+    nextfieldid = SAHPI_LAST_ENTRY;
 
-    if ( idx == m_field_array.Num() )
-        nextfieldid = SAHPI_LAST_ENTRY;
-    else
+    for ( ; idx < m_field_array.Num(); idx++ )
     {
         iif = m_field_array[idx];
-        nextfieldid = iif->FieldId();
+        if (( fieldtype == SAHPI_IDR_FIELDTYPE_UNSPECIFIED ) ||
+            ( fieldtype == iif->FieldType() ))
+        {
+            nextfieldid = iif->FieldId();
+            break;
+        }
     }
 
     return SA_OK;
@@ -731,26 +719,18 @@ cIpmiInventoryParser::FindIdrArea( SaHpiIdrAreaTypeT areatype,
 			                       SaHpiEntryIdT areaid
                                  )
 {
-    bool found = false;
-    int idx = 0;
-
     cIpmiInventoryArea *ia;
 
     if ( areaid == SAHPI_FIRST_ENTRY )
     {
-        if ( m_area_array.Num() == 0 )
-            return NULL;
-
-        ia = m_area_array[0];
-
-        if (( areatype == SAHPI_IDR_AREATYPE_UNSPECIFIED )
-            || ( ia->AreaType() == areatype ))
+        for ( int i = 0; i < m_area_array.Num(); i++ )
         {
-            idx = 0;
-            found = true;
+            ia = m_area_array[i];
+
+            if (( areatype == SAHPI_IDR_AREATYPE_UNSPECIFIED ) ||
+                ( areatype == ia->AreaType() ))
+                return ia;
         }
-        else
-            return NULL;
     }
     else
     {
@@ -760,23 +740,15 @@ cIpmiInventoryParser::FindIdrArea( SaHpiIdrAreaTypeT areatype,
 
             if ( ia->AreaId() == areaid )
             {
-                if (( areatype == SAHPI_IDR_AREATYPE_UNSPECIFIED )
-                    || ( ia->AreaType() == areatype ))
-                {
-                    idx = i;
-                    found = true;
-                    break;
-                }
+                if (( areatype == SAHPI_IDR_AREATYPE_UNSPECIFIED ) ||
+                    ( areatype == ia->AreaType() ))
+                    return ia;
+                break;
             }
         }
     }
 
-    if ( !found )
-        return NULL;
-
-    ia = m_area_array[idx];
-
-    return ia;
+    return NULL;
 }
 
 
@@ -812,15 +784,19 @@ cIpmiInventoryParser::GetIdrAreaHeader( SaHpiIdrIdT &idrid,
     int idx = m_area_array.Find( ia );
 
     idx++;
+    nextareaid = SAHPI_LAST_ENTRY;
 
-    if ( idx == m_area_array.Num() )
-        nextareaid = SAHPI_LAST_ENTRY;
-    else
+    for ( ; idx < m_area_array.Num(); idx++ )
     {
         ia = m_area_array[idx];
-        nextareaid = ia->AreaId();
+        if (( areatype == SAHPI_IDR_AREATYPE_UNSPECIFIED ) ||
+            ( areatype == ia->AreaType() ))
+        {
+            nextareaid = ia->AreaId();
+            break;
+        }
     }
-
+    
     return SA_OK;
 }
 

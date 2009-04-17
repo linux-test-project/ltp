@@ -1,5 +1,5 @@
 This is an implementation of the Service Availability Forum's 
-Hardware Platform Interface B.01.01 specification.
+Hardware Platform Interface B.03.01 specification.
 
 The following components are supported:
 * OpenHPI base library

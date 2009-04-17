@@ -29,7 +29,7 @@ int main(int argc, char **argv)
 {
 	int	c, eflag = 0;
 
-	while ( (c = getopt( argc, argv,"c:ef:xn?")) != EOF )
+	while ( (c = getopt( argc, argv,"c:ef:xn:?")) != EOF )
 		switch(c)  {
 			case 'c':
 				setenv("OPENHPI_CONF", optarg, 1);

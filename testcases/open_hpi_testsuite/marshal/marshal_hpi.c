@@ -14,6 +14,7 @@
  *     Thomas Kanngieser <thomas.kanngieser@fci.com>
  *     W. David Ashley <dashley@us.ibm.com.com>
  *     Renier Morales <renier@openhpi.org>
+ *     Anton Pak <anton.pak@pigeonpoint.com>
  */
 
 #include "marshal_hpi.h"
@@ -167,6 +168,20 @@ static const cMarshalType *saHpiResourceTagSetIn[] =
 static const cMarshalType *saHpiResourceTagSetOut[] =
 {
   &SaErrorType, // result (SaErrorT)
+  0
+};
+
+
+static const cMarshalType *saHpiMyEntityPathGetIn[] =
+{
+  &SaHpiSessionIdType, // session id (SaHpiSessionIdT)
+  0
+};
+
+static const cMarshalType *saHpiMyEntityPathGetOut[] =
+{
+  &SaErrorType, // result (SaErrorT)
+  &SaHpiEntityPathType,
   0
 };
 
@@ -555,6 +570,21 @@ static const cMarshalType *saHpiRdrGetByInstrumentIdOut[] =
 {
   &SaErrorType, // result (SaErrorT)
   &SaHpiRdrType,
+  0
+};
+
+
+static const cMarshalType *saHpiRdrUpdateCountGetIn[] =
+{
+  &SaHpiSessionIdType, // session id (SaHpiSessionIdT)
+  &SaHpiResourceIdType,
+  0
+};
+
+static const cMarshalType *saHpiRdrUpdateCountGetOut[] =
+{
+  &SaErrorType, // result (SaErrorT)
+  &SaHpiUint32Type,
   0
 };
 
@@ -1224,6 +1254,34 @@ static const cMarshalType *saHpiDimiTestResultsGetOut[] =
 };
 
 // FUMIs
+static const cMarshalType *saHpiFumiSpecInfoGetIn[]=
+{
+        &SaHpiSessionIdType,
+        &SaHpiResourceIdType,
+        &SaHpiFumiNumType,
+        0
+};
+static const cMarshalType *saHpiFumiSpecInfoGetOut[] =
+{
+        &SaErrorType,
+        &SaHpiFumiSpecInfoType,
+        0
+};
+
+static const cMarshalType *saHpiFumiServiceImpactGetIn[]=
+{
+        &SaHpiSessionIdType,
+        &SaHpiResourceIdType,
+        &SaHpiFumiNumType,
+        0
+};
+static const cMarshalType *saHpiFumiServiceImpactGetOut[] =
+{
+        &SaErrorType,
+        &SaHpiFumiServiceImpactDataType,
+        0
+};
+
 static const cMarshalType *saHpiFumiSourceSetIn[]=
 {
         &SaHpiSessionIdType,
@@ -1268,6 +1326,23 @@ static const cMarshalType *saHpiFumiSourceInfoGetOut[] =
         0
 };
 
+static const cMarshalType *saHpiFumiSourceComponentInfoGetIn[]=
+{
+        &SaHpiSessionIdType,
+        &SaHpiResourceIdType,
+        &SaHpiFumiNumType,
+        &SaHpiBankNumType,
+        &SaHpiEntryIdType,
+        0
+};
+static const cMarshalType *saHpiFumiSourceComponentInfoGetOut[] =
+{
+        &SaErrorType,
+        &SaHpiEntryIdType,
+        &SaHpiFumiComponentInfoType,
+        0
+};
+
 static const cMarshalType *saHpiFumiTargetInfoGetIn[]=
 {
         &SaHpiSessionIdType,
@@ -1280,6 +1355,53 @@ static const cMarshalType *saHpiFumiTargetInfoGetOut[] =
 {
         &SaErrorType,
 	&SaHpiFumiBankInfoType,
+        0
+};
+
+static const cMarshalType *saHpiFumiTargetComponentInfoGetIn[]=
+{
+        &SaHpiSessionIdType,
+        &SaHpiResourceIdType,
+        &SaHpiFumiNumType,
+        &SaHpiBankNumType,
+        &SaHpiEntryIdType,
+        0
+};
+static const cMarshalType *saHpiFumiTargetComponentInfoGetOut[] =
+{
+        &SaErrorType,
+        &SaHpiEntryIdType,
+        &SaHpiFumiComponentInfoType,
+        0
+};
+
+static const cMarshalType *saHpiFumiLogicalTargetInfoGetIn[]=
+{
+        &SaHpiSessionIdType,
+        &SaHpiResourceIdType,
+        &SaHpiFumiNumType,
+        0
+};
+static const cMarshalType *saHpiFumiLogicalTargetInfoGetOut[] =
+{
+        &SaErrorType,
+        &SaHpiFumiLogicalBankInfoType,
+        0
+};
+
+static const cMarshalType *saHpiFumiLogicalTargetComponentInfoGetIn[]=
+{
+        &SaHpiSessionIdType,
+        &SaHpiResourceIdType,
+        &SaHpiFumiNumType,
+        &SaHpiEntryIdType,
+        0
+};
+static const cMarshalType *saHpiFumiLogicalTargetComponentInfoGetOut[] =
+{
+        &SaErrorType,
+        &SaHpiEntryIdType,
+        &SaHpiFumiLogicalComponentInfoType,
         0
 };
 
@@ -1369,6 +1491,21 @@ static const cMarshalType *saHpiFumiTargetVerifyStartOut[] =
         0
 };
 
+
+static const cMarshalType *saHpiFumiTargetVerifyMainStartIn[]=
+{
+        &SaHpiSessionIdType,
+        &SaHpiResourceIdType,
+        &SaHpiFumiNumType,
+        0
+};
+static const cMarshalType *saHpiFumiTargetVerifyMainStartOut[] =
+{
+        &SaErrorType,
+        0
+};
+
+
 static const cMarshalType *saHpiFumiUpgradeCancelIn[]=
 {
         &SaHpiSessionIdType,
@@ -1382,6 +1519,38 @@ static const cMarshalType *saHpiFumiUpgradeCancelOut[] =
         &SaErrorType,
         0
 };
+
+
+static const cMarshalType *saHpiFumiAutoRollbackDisableGetIn[] =
+{
+        &SaHpiSessionIdType,
+        &SaHpiResourceIdType,
+        &SaHpiFumiNumType,
+        0
+};
+static const cMarshalType *saHpiFumiAutoRollbackDisableGetOut[] =
+{
+        &SaErrorType,
+        &SaHpiBoolType,
+        0
+};
+
+
+static const cMarshalType *saHpiFumiAutoRollbackDisableSetIn[] =
+{
+        &SaHpiSessionIdType,
+        &SaHpiResourceIdType,
+        &SaHpiFumiNumType,
+        &SaHpiBoolType,
+        0
+};
+
+static const cMarshalType *saHpiFumiAutoRollbackDisableSetOut[] =
+{
+        &SaErrorType, // result (SaErrorT)
+        0
+};
+
 
 static const cMarshalType *saHpiFumiRollbackIn[]=
 {
@@ -1404,6 +1573,36 @@ static const cMarshalType *saHpiFumiActivateIn[]=
         0
 };
 static const cMarshalType *saHpiFumiActivateOut[] =
+{
+        &SaErrorType,
+        0
+};
+
+
+static const cMarshalType *saHpiFumiActivateStartIn[]=
+{
+        &SaHpiSessionIdType,
+        &SaHpiResourceIdType,
+        &SaHpiFumiNumType,
+        &SaHpiBoolType,
+        0
+};
+static const cMarshalType *saHpiFumiActivateStartOut[] =
+{
+        &SaErrorType,
+        0
+};
+
+
+static const cMarshalType *saHpiFumiCleanupIn[]=
+{
+        &SaHpiSessionIdType,
+        &SaHpiResourceIdType,
+        &SaHpiFumiNumType,
+    	&SaHpiBankNumType,
+        0
+};
+static const cMarshalType *saHpiFumiCleanupOut[] =
 {
         &SaErrorType,
         0
@@ -1919,6 +2118,22 @@ static cHpiMarshal hpi_marshal[] =
   dHpiMarshalEntry( oHpiGlobalParamGet ),
   dHpiMarshalEntry( oHpiGlobalParamSet ),
   dHpiMarshalEntry( oHpiInjectEvent ),
+
+  // New B.03.01 functions
+  // They are added to the end of enum in order to keep ABI compatibility
+  dHpiMarshalEntry( saHpiMyEntityPathGet ),
+  dHpiMarshalEntry( saHpiRdrUpdateCountGet ),
+  dHpiMarshalEntry( saHpiFumiSpecInfoGet ),
+  dHpiMarshalEntry( saHpiFumiServiceImpactGet ),
+  dHpiMarshalEntry( saHpiFumiSourceComponentInfoGet ),
+  dHpiMarshalEntry( saHpiFumiTargetComponentInfoGet ),
+  dHpiMarshalEntry( saHpiFumiLogicalTargetInfoGet ),
+  dHpiMarshalEntry( saHpiFumiLogicalTargetComponentInfoGet ),
+  dHpiMarshalEntry( saHpiFumiTargetVerifyMainStart ),
+  dHpiMarshalEntry( saHpiFumiAutoRollbackDisableGet ),
+  dHpiMarshalEntry( saHpiFumiAutoRollbackDisableSet ),
+  dHpiMarshalEntry( saHpiFumiActivateStart ),
+  dHpiMarshalEntry( saHpiFumiCleanup ),
 };
 
 

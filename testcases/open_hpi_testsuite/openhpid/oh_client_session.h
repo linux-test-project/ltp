@@ -33,9 +33,9 @@ struct oh_client_session {
         GHashTable *connxs; /* Connections for this session (per thread) */
 };
 
-extern GHashTable *domains;
-extern GHashTable *sessions;
-extern GStaticRecMutex sessions_sem;
+extern GHashTable *ohd_domains;
+extern GHashTable *ohd_sessions;
+extern GStaticRecMutex ohd_sessions_sem;
 
 SaErrorT oh_create_connx(SaHpiDomainIdT, pcstrmsock *);
 void oh_delete_connx(pcstrmsock);

@@ -9,9 +9,24 @@
 %define _docdir %{_datadir}/doc/%{name}-%{version}
 
 %define with_ipmi @WITH_IPMI@
+
+%if "x@IPMIDIRECT@" == "xipmidirect"
+%define with_ipmidirect 1
+%endif
+
 %define with_bladecenter @WITH_SNMP_BC@
+
+%if "x@SIMULATOR@" == "xsimulator"
+%define with_simulator 1
+%endif
+
 %define with_rtas @WITH_RTAS@
 %define with_sysfs @WITH_SYSFS@
+
+%if "x@WATCHDOG@" == "xwatchdog"
+%define with_watchdog 1
+%endif
+
 %define with_ilo2_ribcl @WITH_ILO2_RIBCL@
 %define with_oa_soap @WITH_OA_SOAP@
 %define with_docbook2html @WITH_DOCBOOK2HTML@
@@ -32,7 +47,7 @@ URL: http://www.openhpi.org
 Source: http://prdownloads.sourceforge.net/openhpi/%{name}-%{version}.tar.gz
 #
 Buildroot: %{_rpmtopdir}/INSTALL
-BuildRequires: pkgconfig glib2-devel automake autoconf libtool net-snmp-devel gcc-c++
+BuildRequires: pkgconfig glib2-devel automake autoconf libtool gcc-c++
 %if 0%{?suse_version}
 BuildRequires: tcpd-devel
 %else
@@ -64,10 +79,12 @@ BuildRequires: OpenIPMI-devel
 Requires: openhpi = %{version} OpenIPMI
 %endif
 
+%if 0%{?with_ipmidirect}
 %package ipmidirect
 Summary: OpenHPI plugin for IPMI-enabled systems
 Group: System/Monitoring
 Requires: openhpi = %{version}
+%endif
 
 %if 0%{?with_rtas}
 %package rtas
@@ -77,10 +94,12 @@ BuildRequires: librtas-devel
 Requires: openhpi = %{version} librtas
 %endif
 
+%if 0%{?with_simulator}
 %package simulator
 Summary: OpenHPI plugin for testing the core library
 Group: System/Monitoring
 Requires: openhpi = %{version}
+%endif
 
 %if 0%{?with_bladecenter}
 %package bladecenter
@@ -97,10 +116,12 @@ Group: System/Monitoring
 Requires: openhpi = %{version} libsysfs
 %endif
 
+%if 0%{?with_watchdog}
 %package watchdog
 Group: System/Monitoring
 Summary: OpenHPI plugin for Linux software watchdog support
 Requires: openhpi = %{version}
+%endif
 
 %if 0%{?with_ilo2_ribcl}
 %package ilo2_ribcl
@@ -140,9 +161,11 @@ locally or over the network. Its focus is wide, created to support
 any generic hardware topology that uses IPMI.
 %endif
 
+%if 0%{?with_ipmidirect}
 %description ipmidirect
 This OpenHPI plugin connects directly to IPMI-enabled hardware
 locally or over the network. Its focus is to support ATCA-type chassis.
+%endif
 
 %if 0%{?with_rtas}
 %description rtas
@@ -150,9 +173,11 @@ OpenHPI plugin for reading sensor and vpd information
 from IBM PPC systems.
 %endif
 
+%if 0%{?with_simulator}
 %description simulator
 OpenHPI plugin that reports fakes hardware used for
 testing the core library.
+%endif
 
 %if 0%{?with_bladecenter}
 %description bladecenter
@@ -166,9 +191,11 @@ This plugin uses snmp to connect to and gather information from all systems.
 OpenHPI plugin that reads system information from sysfs.
 %endif
 
+%if 0%{?with_watchdog}
 %description watchdog
 OpenHPI plugin that uses the Linux software watchdog support
 provided by the kernel.
+%endif
 
 %if 0%{?with_ilo2_ribcl}
 %description ilo2_ribcl
@@ -246,6 +273,8 @@ make DESTDIR=%{buildroot} install
 ###################################################
 %defattr(-,root,root)
 %{_bindir}/hpi*
+%{_mandir}/man1/*.1*
+%{_sysconfdir}/openhpi/openhpiclient.conf
 
 ###################################################
 %if 0%{?with_ipmi}
@@ -256,10 +285,12 @@ make DESTDIR=%{buildroot} install
 %endif
 
 ###################################################
+%if 0%{?with_ipmidirect}
 %files ipmidirect
 ###################################################
 %defattr(-,root,root)
 %{_libdir}/%{name}/libipmidirect.*
+%endif
 
 ###################################################
 %if 0%{?with_rtas}
@@ -270,10 +301,12 @@ make DESTDIR=%{buildroot} install
 %endif
 
 ###################################################
+%if 0%{?with_simulator}
 %files simulator
 ###################################################
 %defattr(-,root,root)
 %{_libdir}/%{name}/libsimulator.*
+%endif
 
 ###################################################
 %if 0%{?with_bladecenter}
@@ -292,16 +325,20 @@ make DESTDIR=%{buildroot} install
 %endif
 
 ###################################################
+%if 0%{?with_watchdog}
 %files watchdog
 ###################################################
 %defattr(-,root,root)
 %{_libdir}/%{name}/libwatchdog.*
+%endif
 
 ###################################################
+%if 0%{?with_ilo2_ribcl}
 %files ilo2_ribcl
 ###################################################
 %defattr(-,root,root)
 %{_libdir}/%{name}/libilo2_ribcl.*
+%endif
 
 ###################################################
 %if 0%{?with_oa_soap}

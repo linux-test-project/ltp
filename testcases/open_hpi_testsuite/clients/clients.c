@@ -29,7 +29,6 @@ void oh_prog_version(const char *prog_name, const char *svn_rev_str)
         SaHpiVersionT hpiver;
         char svn_rev[SAHPI_MAX_TEXT_BUFFER_LENGTH];
 
-        memset(svn_rev, 0, sizeof(SAHPI_MAX_TEXT_BUFFER_LENGTH));
         strncpy(svn_rev, svn_rev_str, SAHPI_MAX_TEXT_BUFFER_LENGTH);
         svn_rev[strlen(svn_rev_str)-2] = '\0';
 

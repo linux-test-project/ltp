@@ -5,7 +5,7 @@ dnl   various hacks by Sean Dague <http://dague.net/sean> 4/23/03
 
 
 AC_PREREQ(2.57)
-AC_INIT(openhpi, 2.13.2)
+AC_INIT(openhpi, 2.14.0)
 AC_CONFIG_SRCDIR(openhpi.spec.in)
 AM_INIT_AUTOMAKE([1.8])
 
@@ -23,7 +23,7 @@ AH_BOTTOM([#endif /* __OPENHPI_CONFIG_H */])
 # minor version: 11 = 11
 # patch version: 4  = 4
 #
-HPI_LIB_VERSION=15:2:13
+HPI_LIB_VERSION=16:0:14
 HPI_PKG=$PACKAGE_NAME
 HPI_UTIL_PKG=${PACKAGE_NAME}utils
 HPI_CLIENT_PKG=${PACKAGE_NAME}client
@@ -566,8 +566,7 @@ CC_WARNINGS="\
         -Wcast-align \
         -Wno-strict-aliasing \
 	-fno-strict-aliasing \
-        -Wno-unused-value \
-        -Werror "
+        -Wno-unused-value "
 
 CXX_WARNINGS="\
         -Wall \
@@ -582,8 +581,7 @@ CXX_WARNINGS="\
         -Wredundant-decls \
         -Wno-strict-aliasing \
 	-fno-strict-aliasing \
-        -Wno-unused-value \
-        -Werror "
+        -Wno-unused-value "
 
 if test -n "`gcc --version | grep ' 3.2'`" ; then
         CC_WARNINGS=`echo $CC_WARNINGS | sed -e 's/-Wno-strict-aliasing//g'`

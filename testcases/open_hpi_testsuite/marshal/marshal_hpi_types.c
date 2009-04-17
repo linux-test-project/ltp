@@ -14,6 +14,7 @@
  *     Thomas Kanngieser <thomas.kanngieser@fci.com>
  *     W. David Ashley <dashley@us.ibm.com>
  *     Renier Morales <renier@openhpi.org>
+ *     Anton Pak <anton.pak@pigeonpoint.com>
  */
 
 #include "marshal_hpi_types.h"
@@ -630,6 +631,61 @@ static cMarshalType SaHpiDimiRecElements[] =
 cMarshalType SaHpiDimiRecType = dStruct( SaHpiDimiRecT, SaHpiDimiRecElements );
 
 // FUMIs
+static cMarshalType SaHpiFumiSafDefinedSpecInfoElements[] =
+{
+        dStructElement( SaHpiFumiSafDefinedSpecInfoT, SpecID, SaHpiFumiSafDefinedSpecIdType ),
+        dStructElement( SaHpiFumiSafDefinedSpecInfoT, RevisionID, SaHpiUint32Type ),
+        dStructElementEnd()
+};
+static cMarshalType SaHpiFumiSafDefinedSpecInfoType = dStruct( SaHpiFumiSafDefinedSpecInfoT, SaHpiFumiSafDefinedSpecInfoElements );
+
+static cMarshalType SaHpiFumiOemDefinedSpecInfoBodyArray = dArray( SaHpiUint8Type, SAHPI_FUMI_MAX_OEM_BODY_LENGTH );
+
+static cMarshalType SaHpiFumiOemDefinedSpecInfoElements[] =
+{
+        dStructElement( SaHpiFumiOemDefinedSpecInfoT, Mid, SaHpiManufacturerIdType ),
+        dStructElement( SaHpiFumiOemDefinedSpecInfoT, BodyLength, SaHpiUint8Type ),
+        dStructElement( SaHpiFumiOemDefinedSpecInfoT, Body, SaHpiFumiOemDefinedSpecInfoBodyArray ),
+        dStructElementEnd()
+};
+static cMarshalType SaHpiFumiOemDefinedSpecInfoType = dStruct( SaHpiFumiOemDefinedSpecInfoT, SaHpiFumiOemDefinedSpecInfoElements );
+
+static cMarshalType SaHpiFumiSpecInfoTypeUnionElements[] =
+{
+        dUnionElement( SAHPI_FUMI_SPEC_INFO_NONE, SaHpiVoidType ),
+        dUnionElement( SAHPI_FUMI_SPEC_INFO_SAF_DEFINED, SaHpiFumiSafDefinedSpecInfoType ),
+        dUnionElement( SAHPI_FUMI_SPEC_INFO_OEM_DEFINED, SaHpiFumiOemDefinedSpecInfoType ),
+        dUnionElementEnd()
+};
+
+static cMarshalType SaHpiFumiSpecInfoTypeUnionType = dUnion( 0, SaHpiFumiSpecInfoTypeUnionT, SaHpiFumiSpecInfoTypeUnionElements );
+
+static cMarshalType SaHpiFumiSpecInfoTypeElements[] =
+{
+        dStructElement( SaHpiFumiSpecInfoT, SpecInfoType, SaHpiFumiSpecInfoTypeType ),
+        dStructElement( SaHpiFumiSpecInfoT, SpecInfoTypeUnion, SaHpiFumiSpecInfoTypeUnionType ),
+        dStructElementEnd()
+};
+cMarshalType SaHpiFumiSpecInfoType = dStruct( SaHpiFumiSpecInfoT, SaHpiFumiSpecInfoTypeElements );
+ 
+static cMarshalType SaHpiFumiImpactedEntityTypeElements[] =
+{
+        dStructElement( SaHpiFumiImpactedEntityT, ImpactedEntity, SaHpiEntityPathType ),
+        dStructElement( SaHpiFumiImpactedEntityT, ServiceImpact, SaHpiFumiServiceImpactType ),
+        dStructElementEnd()
+};
+static cMarshalType SaHpiFumiImpactedEntityType = dStruct( SaHpiFumiImpactedEntityT, SaHpiFumiImpactedEntityTypeElements );
+
+static cMarshalType SaHpiFumiServiceImpactDataImpactedEntitiesArray = dArray( SaHpiFumiImpactedEntityType, SAHPI_FUMI_MAX_ENTITIES_IMPACTED );
+
+static cMarshalType SaHpiFumiServiceImpactDataElements[] =
+{
+        dStructElement( SaHpiFumiServiceImpactDataT, NumEntities, SaHpiUint32Type ),
+        dStructElement( SaHpiFumiServiceImpactDataT, ImpactedEntities, SaHpiFumiServiceImpactDataImpactedEntitiesArray ),
+        dStructElementEnd()
+};
+cMarshalType SaHpiFumiServiceImpactDataType = dStruct( SaHpiFumiServiceImpactDataT, SaHpiFumiServiceImpactDataElements );
+
 static cMarshalType SaHpiFumiSourceInfoTypeElements[] =
 {
         dStructElement( SaHpiFumiSourceInfoT, SourceUri, SaHpiTextBufferType ),
@@ -659,6 +715,50 @@ static cMarshalType SaHpiFumiBankInfoTypeElements[] =
         dStructElementEnd()
 };
 cMarshalType SaHpiFumiBankInfoType = dStruct( SaHpiFumiBankInfoT, SaHpiFumiBankInfoTypeElements );
+
+static cMarshalType SaHpiFumiFirmwareInstanceInfoTypeElements[] =
+{
+        dStructElement( SaHpiFumiFirmwareInstanceInfoT, InstancePresent, SaHpiBoolType ),
+        dStructElement( SaHpiFumiFirmwareInstanceInfoT, Identifier, SaHpiTextBufferType ),
+        dStructElement( SaHpiFumiFirmwareInstanceInfoT, Description, SaHpiTextBufferType ),
+        dStructElement( SaHpiFumiFirmwareInstanceInfoT, DateTime,  SaHpiTextBufferType ),
+        dStructElement( SaHpiFumiFirmwareInstanceInfoT, MajorVersion, SaHpiUint32Type ),
+        dStructElement( SaHpiFumiFirmwareInstanceInfoT, MinorVersion, SaHpiUint32Type ),
+        dStructElement( SaHpiFumiFirmwareInstanceInfoT, AuxVersion, SaHpiUint32Type ),
+        dStructElementEnd()
+};
+static cMarshalType SaHpiFumiFirmwareInstanceInfoType = dStruct( SaHpiFumiFirmwareInstanceInfoT, SaHpiFumiFirmwareInstanceInfoTypeElements );
+
+static cMarshalType SaHpiFumiLogicalBankInfoTypeElements[] =
+{
+        dStructElement( SaHpiFumiLogicalBankInfoT, FirmwarePersistentLocationCount, SaHpiUint8Type ),
+        dStructElement( SaHpiFumiLogicalBankInfoT, BankStateFlags, SaHpiFumiLogicalBankStateFlagsType ),
+        dStructElement( SaHpiFumiLogicalBankInfoT, PendingFwInstance, SaHpiFumiFirmwareInstanceInfoType ),
+        dStructElement( SaHpiFumiLogicalBankInfoT, RollbackFwInstance, SaHpiFumiFirmwareInstanceInfoType ),
+        dStructElementEnd()
+};
+cMarshalType SaHpiFumiLogicalBankInfoType = dStruct( SaHpiFumiLogicalBankInfoT, SaHpiFumiLogicalBankInfoTypeElements );
+
+static cMarshalType SaHpiFumiComponentInfoTypeElements[] =
+{
+        dStructElement( SaHpiFumiComponentInfoT, EntryId, SaHpiEntryIdType ),
+        dStructElement( SaHpiFumiComponentInfoT, ComponentId, SaHpiUint32Type ),
+        dStructElement( SaHpiFumiComponentInfoT, MainFwInstance, SaHpiFumiFirmwareInstanceInfoType ),
+        dStructElement( SaHpiFumiComponentInfoT, ComponentFlags, SaHpiUint32Type ),
+        dStructElementEnd()
+};
+cMarshalType SaHpiFumiComponentInfoType = dStruct( SaHpiFumiComponentInfoT, SaHpiFumiComponentInfoTypeElements );
+
+static cMarshalType SaHpiFumiLogicalComponentInfoTypeElements[] =
+{
+        dStructElement( SaHpiFumiLogicalComponentInfoT, EntryId, SaHpiEntryIdType ),
+        dStructElement( SaHpiFumiLogicalComponentInfoT, ComponentId, SaHpiUint32Type ),
+        dStructElement( SaHpiFumiLogicalComponentInfoT, PendingFwInstance, SaHpiFumiFirmwareInstanceInfoType ),
+        dStructElement( SaHpiFumiLogicalComponentInfoT, RollbackFwInstance, SaHpiFumiFirmwareInstanceInfoType ),
+        dStructElement( SaHpiFumiLogicalComponentInfoT, ComponentFlags, SaHpiUint32Type ),
+        dStructElementEnd()
+};
+cMarshalType SaHpiFumiLogicalComponentInfoType = dStruct( SaHpiFumiLogicalComponentInfoT, SaHpiFumiLogicalComponentInfoTypeElements );
 
 // FUMI rdr
 static cMarshalType SaHpiFumiRecElements[] =

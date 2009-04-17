@@ -38,9 +38,11 @@
 /* Include files */
 #include "oa_soap_utils.h"
 
-#define HALF_SECOND 500000
-#define TIMEOUT 60
-#define SERVER_POWER_OFF_WAIT_PERIOD 5
+/* Seconds to sleep between polls when checking for powerdown */
+#define OA_POWEROFF_POLL_INTERVAL	2
+
+/* Max number of times to poll when checking for powerdown */
+#define OA_MAX_POWEROFF_POLLS		100
 
 SaErrorT get_server_power_state(SOAP_CON *con,
                                 SaHpiInt32T bay_number,

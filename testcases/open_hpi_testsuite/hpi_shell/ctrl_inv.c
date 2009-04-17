@@ -850,7 +850,6 @@ static ret_code_t add_announ(SaHpiResourceIdT rptid, SaHpiInstrumentIdT rdrnum)
 	};
 	announ.Severity = sev;
 
-	memset(&announ, 0, sizeof(SaHpiAnnouncementT));
 	i = get_string_param("Condition Type(sensor|res|oem|user): ",
 		str, 10);
 	if (i != 0) return(-1);

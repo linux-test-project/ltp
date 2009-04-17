@@ -31,7 +31,7 @@
 #include <oh_utils.h>
 #include <oh_clients.h>
 
-#define OH_SVN_REV "$Revision: 1.4 $"
+#define OH_SVN_REV "$Revision: 1.5 $"
 
 /* 
  * Function prototypes

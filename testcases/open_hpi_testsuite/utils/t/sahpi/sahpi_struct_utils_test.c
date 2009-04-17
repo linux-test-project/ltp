@@ -1312,9 +1312,8 @@ int main(int argc, char **argv)
 	/* oh_print_ctrlrec: Normal stream testcase */
 	control.Type = SAHPI_CTRL_TYPE_STREAM;
 	control.TypeUnion.Stream.Default.Repeat = SAHPI_TRUE;
-	control.TypeUnion.Stream.Default.StreamLength = strlen("Stream Data");
-	memset(&control.TypeUnion.Stream.Default.Stream, 0, sizeof(SAHPI_CTRL_MAX_STREAM_LENGTH));
-        strncpy((char *)control.TypeUnion.Stream.Default.Stream, "Stream Data" , strlen("Stream Data"));
+	control.TypeUnion.Stream.Default.StreamLength = MIN(SAHPI_CTRL_MAX_STREAM_LENGTH, strlen("Stream Data"));
+        strncpy((char *)control.TypeUnion.Stream.Default.Stream, "Stream Data", SAHPI_CTRL_MAX_STREAM_LENGTH);
 	
 	printf("Print control - normal stream case\n");
 	err = oh_print_ctrlrec(&control, 1);
@@ -1333,9 +1332,8 @@ int main(int argc, char **argv)
 	control.TypeUnion.Text.Default.Line = 1;
 	control.TypeUnion.Text.Default.Text.DataType = SAHPI_TL_TYPE_TEXT;
 	control.TypeUnion.Text.Default.Text.Language = SAHPI_LANG_ENGLISH;
-	memset(&control.TypeUnion.Text.Default.Text.Data, 0, sizeof(SAHPI_MAX_TEXT_BUFFER_LENGTH));
-	control.TypeUnion.Text.Default.Text.DataLength = strlen("Text Data");
-        strncpy((char *)(control.TypeUnion.Text.Default.Text.Data), "Text Data" , strlen("Text Data"));
+	control.TypeUnion.Text.Default.Text.DataLength = MIN(SAHPI_MAX_TEXT_BUFFER_LENGTH, strlen("Text Data"));
+        strncpy((char *)(control.TypeUnion.Text.Default.Text.Data), "Text Data", SAHPI_MAX_TEXT_BUFFER_LENGTH);
 	
 	printf("Print control - normal text case\n");
 	err = oh_print_ctrlrec(&control, 1);
@@ -1348,12 +1346,10 @@ int main(int argc, char **argv)
 	/* oh_print_ctrlrec: Normal oem testcase */
 	control.Type = SAHPI_CTRL_TYPE_OEM;
 	control.TypeUnion.Oem.MId = 1;
-	memset(&control.TypeUnion.Oem.ConfigData, 0, SAHPI_CTRL_MAX_OEM_BODY_LENGTH);
-	strncpy((char *)control.TypeUnion.Oem.ConfigData, "Config Data", strlen("Config Data"));
+	strncpy((char *)control.TypeUnion.Oem.ConfigData, "Config Data", SAHPI_CTRL_OEM_CONFIG_LENGTH);
 	control.TypeUnion.Oem.Default.MId = 1;
-	control.TypeUnion.Oem.Default.BodyLength = strlen("Config Default");
-	memset(&control.TypeUnion.Oem.Default.Body, 0, SAHPI_CTRL_MAX_OEM_BODY_LENGTH);
-	strncpy((char *)control.TypeUnion.Oem.Default.Body, "Config Default", strlen("Config Default")); 
+	control.TypeUnion.Oem.Default.BodyLength = MIN(SAHPI_CTRL_MAX_OEM_BODY_LENGTH, strlen("Config Default"));
+	strncpy((char *)control.TypeUnion.Oem.Default.Body, "Config Default", SAHPI_CTRL_MAX_OEM_BODY_LENGTH); 
 	
 	printf("Print control - normal OEM case\n");
 	err = oh_print_ctrlrec(&control, 1);

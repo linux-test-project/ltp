@@ -108,6 +108,18 @@
 #define ILO2_RIBCL_RESET_SUCCESS	1	
 #define ILO2_RIBCL_RESET_FAILED	0	
 
+/*
+ * For a oh_set_power_state() call with a state parameter of
+ * SAHPI_POWER_CYCLE, we must wait until the server actually powers off
+ * before powering it back on again. 
+ * The total turnaround time for a RIBCL command is around 10 seconds,
+ * so the total time spent waiting for the system to power off (in seconds)
+ * will be ((ILO2_POWER_POLL_SLEEP_SECONDS + 10) * ILO2_MAX_POWER_POLLS)
+ * The default timing below will wait a maximum of 200 seconds.
+ */
+#define ILO2_MAX_POWER_POLLS            10
+#define ILO2_POWER_POLL_SLEEP_SECONDS   10
+
 /* 
  * get_event return value when there are events pending to be processed.
  * OpenHPI framework doesn't provide mnemonic for this return value.

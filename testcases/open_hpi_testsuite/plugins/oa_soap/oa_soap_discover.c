@@ -186,7 +186,6 @@ SaErrorT oa_soap_discover_resources(void *oh_handler)
 {
         struct oh_handler_state *handler;
         struct oa_soap_handler *oa_handler = NULL;
-        struct event_handler oa1_event_handler, oa2_event_handler;
         SaErrorT rv = SA_OK;
         GError **error = NULL;
 
@@ -268,14 +267,12 @@ SaErrorT oa_soap_discover_resources(void *oh_handler)
                         return SA_ERR_HPI_INTERNAL_ERROR;
         }
 
-        /* Create the event thread for the OA
+        /* Create the event thread for the OA in slot 1
          * If the thread_handler is not NULL, then the event threads are
          * already created and skip the event thread creation
          */
         g_mutex_lock(oa_handler->mutex);
         if (oa_handler->oa_1->thread_handler == NULL) {
-                oa1_event_handler.oh_handler = handler;
-                oa1_event_handler.oa = oa_handler->oa_1;
                 /* Subscribe for events, so that we don't lose any changes
                  * to resource states which may happen during discovery
                  */
@@ -292,7 +289,7 @@ SaErrorT oa_soap_discover_resources(void *oh_handler)
 
                 oa_handler->oa_1->thread_handler =
                         g_thread_create(oa_soap_event_thread,
-                                        &oa1_event_handler,
+                                        oa_handler->oa_1,
                                         TRUE, error);
                 if (oa_handler->oa_1->thread_handler == NULL) {
                         g_mutex_unlock(oa_handler->mutex);
@@ -305,8 +302,6 @@ SaErrorT oa_soap_discover_resources(void *oh_handler)
 
         /* Create the event thread for OA in slot 2 */
         if (oa_handler->oa_2->thread_handler == NULL) {
-                oa2_event_handler.oh_handler = handler;
-                oa2_event_handler.oa = oa_handler->oa_2;
                 rv = create_event_session(oa_handler->oa_2);
                 if (rv != SOAP_OK) {
                         dbg("Subscribe for events failed OA %s",
@@ -315,7 +310,7 @@ SaErrorT oa_soap_discover_resources(void *oh_handler)
 
                 oa_handler->oa_2->thread_handler =
                         g_thread_create(oa_soap_event_thread,
-                                        &oa2_event_handler,
+                                        oa_handler->oa_2,
                                         TRUE, error);
                 if (oa_handler->oa_2->thread_handler == NULL) {
                         g_mutex_unlock(oa_handler->mutex);

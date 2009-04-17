@@ -15,6 +15,7 @@
  *     Thomas Kanngieser <thomas.kanngieser@fci.com>
  *     W. David Ashley <dashley@us.ibm.com>
  *     Renier Morales <renier@openhpi.org>
+ *     Anton Pak <anton.pak@pigeonpoint.com>
  */
 
 #ifndef dMarshalHpiTypes_h
@@ -209,8 +210,17 @@ extern cMarshalType SaHpiDimiTestVariableParamsListType;
 #define SaHpiFumiUpgradeStatusType SaHpiUint32Type
 #define SaHpiFumiSourceStatusType SaHpiUint32Type
 #define SaHpiFumiBankStateType SaHpiUint32Type
+#define SaHpiFumiSafDefinedSpecIdType SaHpiUint32Type
+#define SaHpiFumiSpecInfoTypeType SaHpiUint32Type
+#define SaHpiFumiServiceImpactType SaHpiUint32Type
+#define SaHpiFumiLogicalBankStateFlagsType SaHpiUint32Type
+extern cMarshalType SaHpiFumiSpecInfoType;
+extern cMarshalType SaHpiFumiServiceImpactDataType;
 extern cMarshalType SaHpiFumiSourceInfoType;
 extern cMarshalType SaHpiFumiBankInfoType;
+extern cMarshalType SaHpiFumiLogicalBankInfoType;
+extern cMarshalType SaHpiFumiComponentInfoType;
+extern cMarshalType SaHpiFumiLogicalComponentInfoType;
 
 // resource data record
 #define SaHpiRdrTypeType SaHpiUint32Type

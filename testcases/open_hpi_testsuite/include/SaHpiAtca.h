@@ -212,32 +212,32 @@ Device
 typedef SaHpiEntityTypeT AtcaHpiEntityTypeT;
 
 #define ATCAHPI_ENT_POWER_ENTRY_MODULE_SLOT \
-                        (AtcaHpiEntityTypeT)SAHPI_ENT_CHASSIS_SPECIFIC + 1
+                        (AtcaHpiEntityTypeT)(SAHPI_ENT_CHASSIS_SPECIFIC + 1)
 #define ATCAHPI_ENT_SHELF_FRU_DEVICE_SLOT   \
-                        (AtcaHpiEntityTypeT)SAHPI_ENT_CHASSIS_SPECIFIC + 2
+                        (AtcaHpiEntityTypeT)(SAHPI_ENT_CHASSIS_SPECIFIC + 2)
 #define ATCAHPI_ENT_SHELF_MANAGER_SLOT      \
-                        (AtcaHpiEntityTypeT)SAHPI_ENT_CHASSIS_SPECIFIC + 3
+                        (AtcaHpiEntityTypeT)(SAHPI_ENT_CHASSIS_SPECIFIC + 3)
 #define ATCAHPI_ENT_FAN_TRAY_SLOT           \
-                        (AtcaHpiEntityTypeT)SAHPI_ENT_CHASSIS_SPECIFIC + 4
+                        (AtcaHpiEntityTypeT)(SAHPI_ENT_CHASSIS_SPECIFIC + 4)
 #define ATCAHPI_ENT_FAN_FILTER_TRAY_SLOT    \
-                        (AtcaHpiEntityTypeT)SAHPI_ENT_CHASSIS_SPECIFIC + 5
+                        (AtcaHpiEntityTypeT)(SAHPI_ENT_CHASSIS_SPECIFIC + 5)
 #define ATCAHPI_ENT_ALARM_SLOT              \
-                        (AtcaHpiEntityTypeT)SAHPI_ENT_CHASSIS_SPECIFIC + 6
+                        (AtcaHpiEntityTypeT)(SAHPI_ENT_CHASSIS_SPECIFIC + 6)
 #define ATCAHPI_ENT_AMC_SLOT                \
-                        (AtcaHpiEntityTypeT)SAHPI_ENT_CHASSIS_SPECIFIC + 7
+                        (AtcaHpiEntityTypeT)(SAHPI_ENT_CHASSIS_SPECIFIC + 7)
 #define ATCAHPI_ENT_PMC_SLOT                \
-                        (AtcaHpiEntityTypeT)SAHPI_ENT_CHASSIS_SPECIFIC + 8
+                        (AtcaHpiEntityTypeT)(SAHPI_ENT_CHASSIS_SPECIFIC + 8)
 #define ATCAHPI_ENT_RTM_SLOT                \
-                        (AtcaHpiEntityTypeT)SAHPI_ENT_CHASSIS_SPECIFIC + 9
+                        (AtcaHpiEntityTypeT)(SAHPI_ENT_CHASSIS_SPECIFIC + 9)
 
 #define ATCAHPI_ENT_PICMG_FRONT_BLADE       \
-                        (AtcaHpiEntityTypeT)SAHPI_ENT_PHYSICAL_SLOT + 1
+                        (AtcaHpiEntityTypeT)(SAHPI_ENT_PHYSICAL_SLOT + 1)
 #define ATCAHPI_ENT_SHELF_FRU_DEVICE        \
-                        (AtcaHpiEntityTypeT)SAHPI_ENT_PHYSICAL_SLOT + 2
+                        (AtcaHpiEntityTypeT)(SAHPI_ENT_PHYSICAL_SLOT + 2)
 #define ATCAHPI_ENT_FILTRATION_UNIT         \
-                        (AtcaHpiEntityTypeT)SAHPI_ENT_PHYSICAL_SLOT + 3
+                        (AtcaHpiEntityTypeT)(SAHPI_ENT_PHYSICAL_SLOT + 3)
 #define ATCAHPI_ENT_AMC                     \
-                        (AtcaHpiEntityTypeT)SAHPI_ENT_PHYSICAL_SLOT + 4
+                        (AtcaHpiEntityTypeT)(SAHPI_ENT_PHYSICAL_SLOT + 4)
 
 
 /***********************************************************************
