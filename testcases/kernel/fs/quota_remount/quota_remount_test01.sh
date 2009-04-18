@@ -1,3 +1,4 @@
+#!/bin/sh
 ################################################################################
 ##                                                                            ##
 ## Copyright (c) Jan Kara <jack@suse.cz>, 2008                                ##
@@ -35,7 +36,6 @@
 #               Feb 17 2009 - Ported to LTP,                                  ##
 #                             Subrata Modak <subrata@linux.vnet.ibm.com>      ##
 ################################################################################
-#!/bin/bash
 
 export TCID=quota_remount_test01
 export TST_TOTAL=1
@@ -62,7 +62,7 @@ if [ ! -d /proc/sys/fs/quota ]; then
         exit 0
 fi
 
-function die()
+die()
 {
 	echo >&2 $2
 	umount 2>/dev/null $MNTDIR
