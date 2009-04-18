@@ -132,10 +132,72 @@ def map_cpuid_pkgid():
                 print "Mapping of CPU to pkg id failed", e
                 sys.exit(1)
 
-def trigger_workld(workload, test_thread_consld):
-    ''' Based on value in argument passed triggers workloads.
-        Triggers workload with number of threads same as number
-        of cores in package. 
+def trigger_ebizzy (test_thread_consld):
+    ''' Triggers ebizzy workload for sched_mc=1
+        testing
+    '''
+    if test_thread_consld != 0:
+        threads = 2
+    else:
+        threads = cpu_count / len(cpu_map)
+
+    duration = 60 # let the test run for 1 minute
+    olddir = os.getcwd()
+    path = '%s/utils/benchmark' % os.environ['LTPROOT']
+    os.chdir(path)
+    wklds_avlbl = list()
+    workload = "ebizzy"
+    workload_dir = ""
+    
+    # Use the latest version of similar workload available
+    for file_name in os.listdir('.'):
+        if file_name.find(workload) != -1:
+            wklds_avlbl.append(file_name)
+
+    wklds_avlbl.sort()
+    workload_dir = wklds_avlbl[len(wklds_avlbl)-1]
+    if workload_dir != "":
+        new_path = os.path.join(path,"%s" % workload_dir)
+        get_proc_data(stats_start)
+        try:
+            os.chdir(new_path)
+            os.system('./ebizzy -t%s -s4096 -S %s >/dev/null'
+            % (threads, duration))
+            print "INFO: ebizzy workload triggerd"
+            os.chdir(olddir)
+            get_proc_data(stats_stop)
+        except Exception, details:
+            print "Ebizzy workload trigger failed ", details
+            sys.exit(1)
+
+def trigger_mc2_workld (test_thread_consld):
+    ''' Trigger load on system like kernbench.
+        Copys existing copy of LTP into as LTP2 and then builds it
+        with make -j
+    '''
+    olddir = os.getcwd()
+    try:
+        if test_thread_consld != 0:
+            threads = 2
+        else:
+            threads = cpu_count / len(cpu_map)
+        src_path = os.environ['LTPROOT']
+        dst_path = src_path + '2'
+        os.system ('cp -r %s/ %s/ >/dev/null' %(src_path, dst_path))
+        os.chdir(dst_path)
+        os.system ( 'make clean >/dev/null')
+        get_proc_data(stats_start)
+        os.system('make -j %s >/dev/null 2>&1' % threads)
+        print "INFO: Workload for sched_mc=2 triggerd"
+        os.chdir(olddir)
+        os.system ('rm -rf %s >/dev/null' % dst_path)
+        get_proc_data(stats_stop)
+    except Exception, details:
+        print "Workload trigger using make -j failed ", details
+        sys.exit(1)
+   
+def trigger_workld(sched_mc, test_thread_consld):
+    ''' Based on sched_mc value invokes workload triggering function.
     '''
     if test_thread_consld != 0:
         threads = 2
@@ -144,36 +206,12 @@ def trigger_workld(workload, test_thread_consld):
     duration = 60 # let the test run for 1 minute 
     path = '%s/utils/benchmark' % os.environ['LTPROOT']
     try:
-        olddir = os.getcwd()
-        os.chdir(path)
-        wklds_avlbl = list()
-        workload_dir = ""
-        # Use the latest version of similar workload available
-        for file_name in os.listdir('.'):
-            if file_name.find(workload) != -1:
-                wklds_avlbl.append(file_name)
-        wklds_avlbl.sort()
-        workload_dir = wklds_avlbl[len(wklds_avlbl)-1]
-        if workload_dir != "":
-            new_path = os.path.join(path,"%s" % workload_dir)
-            os.chdir(new_path)
-            get_proc_data(stats_start)
-            if workload == "ebizzy":
-                try:
-                    os.system('./ebizzy -t%s -s4096 -S %s >/dev/null'
-                        % (threads, duration))
-                    print "INFO: ebizzy workload triggerd"
-                    os.chdir(olddir)
-                    get_proc_data(stats_stop)
-                except OSError, e: 
-                    print "Workload trigger failed", e
-                    sys.exit(1)
-        else:
-            print "Benchmark/Workload is missing in LTP utils"
-            os.chdir(olddir)
-            sys.exit(1)
-    except OSError, e:
-        print "Benchmark/Workload trigger failed ", e
+        if int (sched_mc) == 1:
+            trigger_ebizzy (test_thread_consld)
+        if int (sched_mc) == 2:
+            trigger_mc2_workld (test_thread_consld)
+    except Exception, details:
+        print "INFO: CPU consolidation failed", details
         sys.exit(1)
 
 def generate_report():
