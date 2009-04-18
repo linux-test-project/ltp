@@ -60,12 +60,14 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int main()
 {
-	int ret_pselect, total_sec, fd, total_usec;
+	int ret_pselect, total_sec, fd, total_nsec;
 	fd_set readfds;
-	struct timeval tv;
+	struct timespec tv;
 	int retval;
 	time_t t;
 	unsigned start, end;
+	struct timeval tv_start, tv_end;
+	int real_usec;
 
 	setup();
 
@@ -78,9 +80,9 @@ int main()
 	FD_ZERO(&readfds);
 	FD_SET(fd, &readfds);
 	tv.tv_sec = 0;
-	tv.tv_usec = 0;
+	tv.tv_nsec = 0;
 
-	ret_pselect = pselect(fd, &readfds, 0, 0, (struct timespec *)&tv, NULL);
+	ret_pselect = pselect(fd, &readfds, 0, 0, &tv, NULL);
 	if (ret_pselect >= 0) {
 		tst_resm(TPASS, "Basic pselect syscall testing....OK");
 	} else
@@ -95,7 +97,7 @@ int main()
 		FD_SET(0, &readfds);
 
 		tv.tv_sec = total_sec;
-		tv.tv_usec = 0;
+		tv.tv_nsec = 0;
 
 		tst_resm(TINFO,
 			 "Testing basic pselect sanity,Sleeping for %d secs",
@@ -114,28 +116,31 @@ int main()
 	}
 
 #ifdef DEBUG
-	tst_resm(TINFO, "Now checking usec sleep precision");
+	tst_resm(TINFO, "Now checking nsec sleep precision");
 #endif
-	for (total_usec = 1; total_usec <= LOOP_COUNT; total_usec++) {
+	for (total_nsec = 1e8; total_nsec <= LOOP_COUNT * 1e8; total_nsec += 1e8) {
 		FD_ZERO(&readfds);
 		FD_SET(0, &readfds);
 
-		tv.tv_sec = total_sec;
-		tv.tv_usec = total_usec * 1000000;
+		tv.tv_sec = 0;
+		tv.tv_nsec = total_nsec;
 
 		tst_resm(TINFO,
-			 "Testing basic pselect sanity,Sleeping for %d micro secs",
-			 tv.tv_usec);
-		start = time(&t);
+			 "Testing basic pselect sanity,Sleeping for %d nano secs",
+			 tv.tv_nsec);
+		gettimeofday(&tv_start, NULL);
 		retval =
-		    pselect(0, &readfds, NULL, NULL, (struct timespec *)&tv,
+		    pselect(0, &readfds, NULL, NULL, &tv,
 			    NULL);
-		end = time(&t);
+		gettimeofday(&tv_end, NULL);
 
 		/* Changed total_sec compare to an at least vs an exact compare */
 
-		if (((end - start) >= total_sec)
-		    && ((end - start) <= total_sec + 1))
+		real_usec = (tv_end.tv_sec - tv_start.tv_sec) * 1e6 +
+			tv_end.tv_usec - tv_start.tv_usec;
+
+		/* allow 10% error*/
+		if (abs(real_usec - tv.tv_nsec / 1000) < 0.1 * total_nsec / 1000)
 			tst_resm(TPASS, "Sleep time was correct");
 		else {
 			tst_resm(TWARN,
@@ -143,8 +148,9 @@ int main()
 			tst_resm(TWARN,
 				 "due to the limitation of the way it calculates the");
 			tst_resm(TWARN, "system call execution time.");
-			tst_resm(TFAIL, "Sleep time was incorrect:%d != %d",
-				 total_sec, (end - start));
+			tst_resm(TFAIL,
+				"Sleep time was incorrect:%d usec vs expected %d usec",
+				 real_usec, total_nsec / 1000);
 		}
 	}
 	cleanup();
