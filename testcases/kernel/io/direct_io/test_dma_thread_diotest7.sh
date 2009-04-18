@@ -24,7 +24,7 @@ tst_resm TINFO "Generating Test Files"
 ./dma_thread_diotest7
 
 # test different alignments: 512, 1024, ..., (4096-512)
-for ((i = 512; i < 4096; i+=512))
+for i in $(seq 512 512 4095)
 do
         tst_resm TINFO "i=$i"
         ./dma_thread_diotest7 -a="$i"
