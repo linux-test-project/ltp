@@ -73,81 +73,64 @@ if [ -f /sys/devices/system/cpu/sched_mc_power_savings ] ; then
 		# Test CPU consolidation on hyper-threaded system
 		hyper_threaded=$(is_hyper_threaded)
 		if [ $hyper_threaded -eq 1 ]; then
-			cpu_consolidation.py -w ebizzy -c 1 -t 0; RC=$?
-			if [ $RC -eq 1 ] ; then
-				tst_resm TFAIL "cpu consolidation \
-sched_mc=1, sched_smt=0"
-			else
-				tst_resm TPASS "cpu consolidation sched_mc=1,\
-sched_smt=0"
-			fi
-			cpu_consolidation.py -w ebizzy -c 1 -t 1; RC=$?
-			if [ $RC -eq 1 ] ; then
-				tst_resm TFAIL "cpu consolidation test \
-sched_mc=1, sched_smt=1"
-			else
-				tst_resm TPASS "cpu consolidation sched_mc=1,\
-sched_smt=1"
-			fi
-			cpu_consolidation.py -w ebizzy -c 0 -t 1; RC=$?
-			if [ $RC -eq 1 ] ; then
-				tst_resm TFAIL "cpu consolidation test \
-sched_mc=0, sched_smt=1"
-			else
-				tst_resm TPASS "cpu consolidation sched_mc=0,\
-sched_smt=1"
-			fi
+			for sched_mc in `seq 0 2`; do
+				for sched_smt in `seq 0 1`; do
+					if [ $sched_smt -eq 0 -a $sched_mc -eq 0 ]; then 
+						continue
+					fi
+					cpu_consolidation.py -c $sched_mc -t $sched_smt; RC=$?
+					if [ $RC -eq 1 ] ; then
+						tst_resm TFAIL "cpu consolidation \
+ sched_mc=$sched_mc, sched_smt=$sched_smt"
+					else
+						tst_resm TPASS "cpu consolidation sched_mc=$sched_mc,\
+ sched_smt=$sched_smt"
+					fi
+				done
+			done
 		else
-			# Test CPU consolidation for sched_mc=1
-			cpu_consolidation.py -w ebizzy -c 1; RC=$?
-			if [ $RC -eq 1 ] ; then
-				tst_resm TFAIL "cpu consolidation test\
- sched_mc_power set to 1"
-			else
-				tst_resm TPASS "cpu consolidation test for \
-sched_mc_power set to 1"
-			fi
+			# Test CPU consolidation for sched_mc=1 & 2
+			for sched_mc in `seq 1 2`; do
+				cpu_consolidation.py -c $sched_mc; RC=$?
+				if [ $RC -eq 1 ] ; then
+					tst_resm TFAIL "cpu consolidation test\
+ sched_mc_power set to $sched_mc"
+				else
+					tst_resm TPASS "cpu consolidation test for \
+sched_mc_power set to $sched_mc"
+				fi
+			done
 		fi
 
-        	# sched_mc =1 and sched_smt =0
+		# Testcase to validate sched_domain tree
 		if [ $hyper_threaded -eq 1 ]; then
-			# sched_mc =1 and sched_smt =0
-			sched_domain.py -c 1 -t 0; RC=$?
-			if [ $RC -eq 1 ] ; then
-				tst_resm TFAIL "sched domain test sched_mc=1,\
-sched_smt=0 "
-			else    
-				tst_resm TPASS "sched domain test sched_mc=1,\
-sched_smt=0 "
-			fi
+			for sched_mc in `seq 0 2`; do
+                for sched_smt in `seq 0 1`; do
+					if [ $sched_smt -eq 0 -a $sched_mc -eq 0 ]; then
+                        continue
+                    fi
 
-			# sched_mc =1 and sched_smt =1  
-			sched_domain.py -c 1 -t 1; RC=$?
-			if [ $RC -eq 1 ] ; then
-				tst_resm TFAIL "sched domain test sched_mc=1,\
-sched_smt=1 "
-			else
-				tst_resm TPASS "sched domain test sched_mc=1,\
-sched_smt=1 "
-			fi
-
-			# sched_mc =0 and sched_smt =1
-			sched_domain.py -c 0 -t 1; RC=$?
-			if [ $RC -eq 1 ] ; then
-				tst_resm TFAIL "sched domain test sched_mc=0,\
-sched_smt=1 "
-			else
-				tst_resm TPASS "sched domain test sched_mc=0,\
-sched_smt=1 "
-			fi
+					sched_domain.py -c $sched_mc -t $sched_smt; RC=$?
+					if [ $RC -eq 1 ] ; then
+						tst_resm TFAIL "sched domain test sched_mc=$sched_mc,\
+sched_smt=$sched_smt "
+					else    
+						tst_resm TPASS "sched domain test sched_mc=$sched_mc,\
+sched_smt=$sched_smt "
+					fi
+				done
+			done
 		else
 			# Validate CPU level sched domain topology validation
-			sched_domain.py -c 1; RC=$?
-			if [ $RC -eq 1 ] ; then
-				tst_resm TFAIL "sched domain test for sched_mc=1 "
-			else
-				tst_resm TPASS "sched domain test for sched_mc=1 "
-			fi
+			for sched_mc in `seq 1 2`; do
+				sched_domain.py -c $sched_mc; RC=$?
+				if [ $RC -eq 1 ] ; then
+					tst_resm TFAIL "sched domain test for sched_mc=$sched_mc "
+				else
+					tst_resm TPASS "sched domain test for sched_mc=$sched_mc "
+				fi
+			done
+			
 		fi
 	fi
 else
@@ -201,6 +184,6 @@ else
 		tst_resm TFAIL "Required kernel configuration for SCHED_SMT NOT set"
 	else
 		tst_resm TCONF "Required Hyper Threading support in the\
-		 system under test"
+system under test"
 	fi
 fi
