@@ -16,8 +16,6 @@ __author__ = "Poornima Nayak <mpnayak@linux.vnet.ibm.com>"
 if __name__ == "__main__":
     usage = "-w"
     parser = OptionParser(usage)
-    parser.add_option("-w", "--workload", dest="workload",
-        help="Test name that has be triggered")
     parser.add_option("-c", "--mc_level", dest="mc_level",
         help="Sched mc power saving value 0/1/2")
     parser.add_option("-t", "--smt_level", dest="smt_level",
@@ -38,15 +36,15 @@ if __name__ == "__main__":
                 # Trigger ebizzy with 2 threads only to verify logical CPU
                 # consolidation
                 test_thread_consld = 1
-                trigger_workld(options.workload, test_thread_consld)
+                trigger_workld(options.mc_level, test_thread_consld)
                 generate_report()
                 validate_cpu_consolidation(options.mc_level, options.smt_level)
                 test_thread_consld = 0
             else:
                 print "INFO: No Hyper-threading support in this machine"
                 sys.exit(0)
-        
-        trigger_workld(options.workload, test_thread_consld)
+    
+        trigger_workld(options.mc_level, test_thread_consld)
         generate_report()
         validate_cpu_consolidation(options.mc_level, options.smt_level)
         sys.exit(0)
