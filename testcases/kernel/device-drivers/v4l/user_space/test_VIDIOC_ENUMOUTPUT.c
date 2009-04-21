@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ * 18 Apr 2009  0.4  More strict check for strings
  *  3 Apr 2009  0.3  Test case for NULL parameter reworked
  * 28 Mar 2009  0.2  Clean up ret and errno variable names and dprintf() output
  *  1 Jan 2009  0.1  First release
@@ -61,6 +62,20 @@ void test_VIDIOC_ENUMOUTPUT() {
 			CU_ASSERT_EQUAL(output.reserved[1], 0);
 			CU_ASSERT_EQUAL(output.reserved[2], 0);
 			CU_ASSERT_EQUAL(output.reserved[3], 0);
+
+			/* Check if the unused bytes of the name string are
+			 * also filled with zeros. Also check if there is any
+			 * padding byte between any two fields then this
+			 * padding byte is also filled with zeros.
+			 */
+			memset(&output2, 0, sizeof(output2));
+			output2.index = output.index;
+			strncpy((char*)output2.name, (char*)output.name, sizeof(output2.name));
+			output2.type = output.type;
+			output2.audioset = output.audioset;
+			output2.modulator = output.modulator;
+			output2.std = output.std;
+			CU_ASSERT_EQUAL(memcmp(&output, &output2, sizeof(output)), 0);
 
 			dprintf("\toutput = {.index=%u, .name=\"%s\", "
 				".type=0x%X, .audioset=0x%X, .modulator=0x%X, "

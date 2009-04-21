@@ -3,7 +3,13 @@
 
 Release History
 ---------------
- 9 Mar 2009  0.11 Test cases added for VIDIOC_G_OUTPUT, VIDIOC_S_OUTPUT,
+19 Apr 2009  0.12 Test cases added for VIDIOC_S_FMT;
+                  NULL parameter test suite split to read only, write only
+                  and write/read ioctl suite;
+                  More verbose debug output in VIDIOC_S_FREQUENCY and in some
+                  other test cases;
+                  More strict check added for strings in different test cases
+ 9 Apr 2009  0.11 Test cases added for VIDIOC_G_OUTPUT, VIDIOC_S_OUTPUT,
                   VIDIOC_G_FMT, VIDIOC_G_SLICED_VBI_CAP, VIDIOC_QUERYMENU;
                   Cleaned up ret and errno variable names;
                   Separated the NULL parameter test cases to a spearated testsuite

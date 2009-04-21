@@ -1,6 +1,9 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ * 18 Apr 2009  0.8  More strict check for strings
+ * 13 Apr 2009  0.7  Also show type in debug output;
+ *                   Add some debug output
  *  3 Apr 2009  0.6  Test case for NULL parameter reworked
  * 28 Mar 2009  0.5  Clean up ret and errno variable names and dprintf() output
  * 18 Mar 2009  0.4  Duplicated test for V4L2_BUF_TYPE_VIDEO_CAPTURE removed
@@ -49,8 +52,8 @@ static void do_enumerate_formats(enum v4l2_buf_type type) {
 		ret_enum = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, &format);
 		errno_enum = errno;
 
-		dprintf("\t%s:%u: VIDIOC_ENUM_FMT, i=%i, ret_enum=%i, errno_enum=%i\n",
-			__FILE__, __LINE__, i, ret_enum, errno_enum);
+		dprintf("\t%s:%u: VIDIOC_ENUM_FMT, index=%u, type=%i, ret_enum=%i, errno_enum=%i\n",
+			__FILE__, __LINE__, i, type, ret_enum, errno_enum);
 		if (ret_enum == 0) {
 			CU_ASSERT_EQUAL(ret_enum, 0);
 			CU_ASSERT_EQUAL(format.index, i);
@@ -65,6 +68,18 @@ static void do_enumerate_formats(enum v4l2_buf_type type) {
 			CU_ASSERT_EQUAL(format.reserved[1], 0);
 			CU_ASSERT_EQUAL(format.reserved[2], 0);
 			CU_ASSERT_EQUAL(format.reserved[3], 0);
+
+			/* Check if the unused bytes of the description string is also filled
+			 * with zeros. Also check if there is any padding byte between
+			 * any two fields then this padding byte is also filled with zeros.
+			 */
+			memset(&format2, 0, sizeof(format2));
+			format2.index = format.index;
+			format2.type = format.type;
+			format2.flags = format.flags;
+			strncpy((char*)format2.description, (char*)format.description, sizeof(format2.description));
+			format2.pixelformat = format.pixelformat;
+			CU_ASSERT_EQUAL(memcmp(&format, &format2, sizeof(format)), 0);
 
 			dprintf("\tformat = {.index=%u, .type=0x%X, .flags=0x%X, "
 				".description=\"%s\", .pixelformat=0x%X, "
@@ -119,6 +134,9 @@ void test_VIDIOC_ENUM_FMT_S32_MAX() {
 	ret_enum = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, &format);
 	errno_enum = errno;
 
+	dprintf("\t%s:%u: VIDIOC_ENUM_FMT, index=%u, type=%i, ret_enum=%i, errno_enum=%i\n",
+		__FILE__, __LINE__, format.index, format.type, ret_enum, errno_enum);
+
 	CU_ASSERT_EQUAL(ret_enum, -1);
 	CU_ASSERT_EQUAL(errno_enum, EINVAL);
 
@@ -140,6 +158,9 @@ void test_VIDIOC_ENUM_FMT_S32_MAX_1() {
 	format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	ret_enum = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, &format);
 	errno_enum = errno;
+
+	dprintf("\t%s:%u: VIDIOC_ENUM_FMT, index=%u, type=%i, ret_enum=%i, errno_enum=%i\n",
+		__FILE__, __LINE__, format.index, format.type, ret_enum, errno_enum);
 
 	CU_ASSERT_EQUAL(ret_enum, -1);
 	CU_ASSERT_EQUAL(errno_enum, EINVAL);
@@ -163,6 +184,9 @@ void test_VIDIOC_ENUM_FMT_U32_MAX() {
 	format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	ret_enum = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, &format);
 	errno_enum = errno;
+
+	dprintf("\t%s:%u: VIDIOC_ENUM_FMT, index=%u, type=%i, ret_enum=%i, errno_enum=%i\n",
+		__FILE__, __LINE__, format.index, format.type, ret_enum, errno_enum);
 
 	CU_ASSERT_EQUAL(ret_enum, -1);
 	CU_ASSERT_EQUAL(errno_enum, EINVAL);
@@ -191,6 +215,9 @@ void test_VIDIOC_ENUM_FMT_invalid_type() {
 	ret_enum = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, &format);
 	errno_enum = errno;
 
+	dprintf("\t%s:%u: VIDIOC_ENUM_FMT, index=%u, type=%i, ret_enum=%i, errno_enum=%i\n",
+		__FILE__, __LINE__, format.index, format.type, ret_enum, errno_enum);
+
 	CU_ASSERT_EQUAL(ret_enum, -1);
 	CU_ASSERT_EQUAL(errno_enum, EINVAL);
 
@@ -208,6 +235,9 @@ void test_VIDIOC_ENUM_FMT_invalid_type() {
 	ret_enum = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, &format);
 	errno_enum = errno;
 
+	dprintf("\t%s:%u: VIDIOC_ENUM_FMT, index=%u, type=%i, ret_enum=%i, errno_enum=%i\n",
+		__FILE__, __LINE__, format.index, format.type, ret_enum, errno_enum);
+
 	CU_ASSERT_EQUAL(ret_enum, -1);
 	CU_ASSERT_EQUAL(errno_enum, EINVAL);
 
@@ -223,6 +253,9 @@ void test_VIDIOC_ENUM_FMT_invalid_type() {
 	format.type = -1;
 	ret_enum = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, &format);
 	errno_enum = errno;
+
+	dprintf("\t%s:%u: VIDIOC_ENUM_FMT, index=%u, type=%i, ret_enum=%i, errno_enum=%i\n",
+		__FILE__, __LINE__, format.index, format.type, ret_enum, errno_enum);
 
 	CU_ASSERT_EQUAL(ret_enum, -1);
 	CU_ASSERT_EQUAL(errno_enum, EINVAL);
@@ -240,6 +273,9 @@ void test_VIDIOC_ENUM_FMT_invalid_type() {
 		format.type = i;
 		ret_enum = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, &format);
 		errno_enum = errno;
+
+		dprintf("\t%s:%u: VIDIOC_ENUM_FMT, index=%u, type=%i, ret_enum=%i, errno_enum=%i\n",
+			__FILE__, __LINE__, format.index, format.type, ret_enum, errno_enum);
 
 		CU_ASSERT_EQUAL(ret_enum, -1);
 		CU_ASSERT_EQUAL(errno_enum, EINVAL);
@@ -262,6 +298,9 @@ void test_VIDIOC_ENUM_FMT_invalid_type() {
 	format.type = SINT_MAX;
 	ret_enum = ioctl(get_video_fd(), VIDIOC_ENUM_FMT, &format);
 	errno_enum = errno;
+
+	dprintf("\t%s:%u: VIDIOC_ENUM_FMT, index=%u, type=%i, ret_enum=%i, errno_enum=%i\n",
+		__FILE__, __LINE__, format.index, format.type, ret_enum, errno_enum);
 
 	CU_ASSERT_EQUAL(ret_enum, -1);
 	CU_ASSERT_EQUAL(errno_enum, EINVAL);

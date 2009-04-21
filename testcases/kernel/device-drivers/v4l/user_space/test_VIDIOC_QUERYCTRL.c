@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ * 18 Apr 2009  0.3  More strict check for strings
  * 28 Mar 2009  0.2  Clean up ret and errno variable names and dprintf() output
  *  2 Jan 2009  0.1  First release
  *
@@ -143,6 +144,22 @@ void test_VIDIOC_QUERYCTRL() {
 
 			CU_ASSERT_EQUAL(queryctrl.reserved[0], 0);
 			CU_ASSERT_EQUAL(queryctrl.reserved[1], 0);
+
+			/* Check if the unused bytes of the name string are
+			 * also filled with zeros. Also check if there is any
+			 * padding byte between any two fields then this
+			 * padding byte is also filled with zeros.
+			 */
+			memset(&queryctrl2, 0, sizeof(queryctrl2));
+			queryctrl2.id = queryctrl.id;
+			queryctrl2.type = queryctrl.type;
+			strncpy((char*)queryctrl2.name, (char*)queryctrl.name, sizeof(queryctrl2.name));
+			queryctrl2.minimum = queryctrl.minimum;
+			queryctrl2.maximum = queryctrl.maximum;
+			queryctrl2.step = queryctrl.step;
+			queryctrl2.default_value = queryctrl.default_value;
+			queryctrl2.flags = queryctrl.flags;
+			CU_ASSERT_EQUAL(memcmp(&queryctrl, &queryctrl2, sizeof(queryctrl)), 0);
 
 			dprintf("\tqueryctrl = {.id=%u, .type=%i, .name=\"%s\", "
 				".minimum=%i, .maximum=%i, .step=%i, "
@@ -467,6 +484,22 @@ void test_VIDIOC_QUERYCTRL_private() {
 
 			CU_ASSERT_EQUAL(queryctrl.reserved[0], 0);
 			CU_ASSERT_EQUAL(queryctrl.reserved[1], 0);
+
+			/* Check if the unused bytes of the name string are
+			 * also filled with zeros. Also check if there is any
+			 * padding byte between any two fields then this
+			 * padding byte is also filled with zeros.
+			 */
+			memset(&queryctrl2, 0, sizeof(queryctrl2));
+			queryctrl2.id = queryctrl.id;
+			queryctrl2.type = queryctrl.type;
+			strncpy((char*)queryctrl2.name, (char*)queryctrl.name, sizeof(queryctrl2.name));
+			queryctrl2.minimum = queryctrl.minimum;
+			queryctrl2.maximum = queryctrl.maximum;
+			queryctrl2.step = queryctrl.step;
+			queryctrl2.default_value = queryctrl.default_value;
+			queryctrl2.flags = queryctrl.flags;
+			CU_ASSERT_EQUAL(memcmp(&queryctrl, &queryctrl2, sizeof(queryctrl)), 0);
 
 			dprintf("\tqueryctrl = {.id=%u, .type=%i, .name=\"%s\", "
 				".minimum=%i, .maximum=%i, .step=%i, "

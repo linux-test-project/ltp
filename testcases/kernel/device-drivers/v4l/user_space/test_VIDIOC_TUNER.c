@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ * 18 Apr 2009  0.4  More strict check for strings
  * 28 Mar 2009  0.3  Clean up ret and errno variable names and dprintf() output
  *  9 Feb 2009  0.2  Added test cases for VIDIOC_S_TUNER;
  *                   Some typos corrected;
@@ -88,6 +89,7 @@ int valid_tuner_audmode(__u32 audmode) {
 static int do_get_tuner(int f, __u32 index) {
 	int ret_get, errno_get;
 	struct v4l2_tuner tuner;
+	struct v4l2_tuner tuner2;
 
 	memset(&tuner, 0xff, sizeof(tuner));
 	tuner.index = index;
@@ -121,6 +123,24 @@ static int do_get_tuner(int f, __u32 index) {
 		CU_ASSERT_EQUAL(tuner.reserved[1], 0);
 		CU_ASSERT_EQUAL(tuner.reserved[2], 0);
 		CU_ASSERT_EQUAL(tuner.reserved[3], 0);
+
+		/* Check if the unused bytes of the name string are also filled
+		 * with zeros. Also check if there is any padding byte between
+		 * any two fields then this padding byte is also filled with
+		 * zeros.
+		 */
+		memset(&tuner2, 0, sizeof(tuner2));
+		tuner2.index = tuner.index;
+		strncpy((char*)tuner2.name, (char*)tuner.name, sizeof(tuner2.name));
+		tuner2.type = tuner.type;
+		tuner2.capability = tuner.capability;
+		tuner2.rangelow = tuner.rangelow;
+		tuner2.rangehigh = tuner.rangehigh;
+		tuner2.rxsubchans = tuner.rxsubchans;
+		tuner2.audmode = tuner.audmode;
+		tuner2.signal = tuner.signal;
+		tuner2.afc = tuner.afc;
+		CU_ASSERT_EQUAL(memcmp(&tuner, &tuner2, sizeof(tuner)), 0);
 
 		dprintf("\ttuner = { "
 			".index = %u, "

@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ * 18 Apr 2009  0.2  More strict check for strings
  *  5 Apr 2009  0.1  First release
  *
  * Written by Márton Németh <nm127@freemail.hu>
@@ -51,6 +52,17 @@ static void do_check_menu(__u32 id, __u32 index,
 		CU_ASSERT(strlen((char*)menu->name) < sizeof(menu->name));
 
 		CU_ASSERT_EQUAL(menu->reserved, 0);
+
+		/* Check if the unused bytes of the name string is also filled
+		 * with zeros. Also check if there is any padding byte between
+		 * any two fields then this padding byte is also filled with
+		 * zeros.
+		 */
+		memset(&menu2, 0, sizeof(menu2));
+		menu2.id = id;
+		menu2.index = index;
+		strncpy((char*)menu2.name, (char*)menu->name, sizeof(menu2.name));
+		CU_ASSERT_EQUAL(memcmp(menu, &menu2, sizeof(*menu)), 0);
 
 	} else {
 		CU_ASSERT_EQUAL(ret_query, -1);

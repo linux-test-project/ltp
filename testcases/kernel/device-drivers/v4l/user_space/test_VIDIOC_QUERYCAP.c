@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ * 18 Apr 2009  0.4  More strict check for strings
  * 29 Mar 2009  0.3  Clean up ret and errno variable names and dprintf() output
  * 22 Dec 2008  0.2  Test case with NULL parameter added
  * 18 Dec 2008  0.1  First release
@@ -58,6 +59,7 @@ int valid_capabilities(__u32 capabilities) {
 void test_VIDIOC_QUERYCAP() {
 	int ret;
 	struct v4l2_capability cap;
+	struct v4l2_capability cap2;
 
 	memset(&cap, 0xff, sizeof(cap));
 
@@ -87,11 +89,14 @@ void test_VIDIOC_QUERYCAP() {
 	if (ret == 0) {
 		//CU_ASSERT_EQUAL(cap.driver, ?);
 		CU_ASSERT(0 < strlen( (char*)cap.driver) );
+		CU_ASSERT(strlen( (char*)cap.driver) < sizeof(cap.driver));
 
 		//CU_ASSERT_EQUAL(cap.card, ?);
 		CU_ASSERT(0 < strlen( (char*)cap.card) );
+		CU_ASSERT(strlen( (char*)cap.card) < sizeof(cap.card) );
 
 		//CU_ASSERT_EQUAL(cap.bus_info, ?);
+		CU_ASSERT(strlen( (char*)cap.bus_info) < sizeof(cap.bus_info) );
 
 		//CU_ASSERT_EQUAL(cap.version, ?);
 		CU_ASSERT(valid_capabilities(cap.capabilities));
@@ -100,6 +105,19 @@ void test_VIDIOC_QUERYCAP() {
 		CU_ASSERT_EQUAL(cap.reserved[1], 0);
 		CU_ASSERT_EQUAL(cap.reserved[2], 0);
 		CU_ASSERT_EQUAL(cap.reserved[3], 0);
+
+		/* Check if the unused bytes of the driver, card and bus_info
+		 * strings are also filled with zeros. Also check if there is
+		 * any padding byte between any two fields then this padding
+		 * byte is also filled with zeros.
+		 */
+		memset(&cap2, 0, sizeof(cap2));
+		strncpy((char*)cap2.driver, (char*)cap.driver, sizeof(cap2.driver));
+		strncpy((char*)cap2.card, (char*)cap.card, sizeof(cap2.card));
+		strncpy((char*)cap2.bus_info, (char*)cap.bus_info, sizeof(cap2.bus_info));
+		cap2.version = cap.version;
+		cap2.capabilities = cap.capabilities;
+		CU_ASSERT_EQUAL(memcmp(&cap, &cap2, sizeof(cap)), 0);
 
 	}
 

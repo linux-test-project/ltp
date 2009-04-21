@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ * 18 Apr 2009  0.7  More strict check for strings
  *  3 Apr 2009  0.6  Test case for NULL parameter reworked
  * 28 Mar 2009  0.5  Clean up ret and errno variable names and dprintf() output
  * 18 Jan 2009  0.4  Test case for MAX_EM28XX_TVNORMS removed, test cases for
@@ -70,6 +71,19 @@ void test_VIDIOC_ENUMSTD() {
 			CU_ASSERT_EQUAL(std.reserved[1], 0);
 			CU_ASSERT_EQUAL(std.reserved[2], 0);
 			CU_ASSERT_EQUAL(std.reserved[3], 0);
+
+			/* Check if the unused bytes of the name string is also filled
+			 * with zeros. Also check if there is any padding byte between
+			 * any two fields then this padding byte is also filled with zeros.
+			 */
+			memset(&std2, 0, sizeof(std2));
+			std2.index = std.index;
+			std2.id = std.id;
+			strncpy((char*)std2.name, (char*)std.name, sizeof(std2.name));
+			std2.frameperiod.numerator = std.frameperiod.numerator;
+			std2.frameperiod.denominator = std.frameperiod.denominator;
+			std2.framelines = std.framelines;
+			CU_ASSERT_EQUAL(memcmp(&std, &std2, sizeof(std)), 0);
 
 			dprintf("\tstd = {.index=%u, .id=%llX, .name=\"%s\", "
 				".frameperiod={ .numerator=%u, .denominator=%u }, "

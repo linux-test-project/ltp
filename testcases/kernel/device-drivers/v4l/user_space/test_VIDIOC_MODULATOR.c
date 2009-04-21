@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ * 18 Apr 2009  0.3  More strict check for strings
  * 28 Mar 2009  0.2  Clean up ret and errno variable names and dprintf() output
  *  2 Feb 2009  0.1  First release
  *
@@ -50,6 +51,7 @@ int valid_modulator_sub(__u32 tuner_sub) {
 static int do_get_modulator(int f, __u32 index) {
 	int ret_get, errno_get;
 	struct v4l2_modulator modulator;
+	struct v4l2_modulator modulator2;
 
 	memset(&modulator, 0xff, sizeof(modulator));
 	modulator.index = index;
@@ -76,6 +78,20 @@ static int do_get_modulator(int f, __u32 index) {
 		CU_ASSERT_EQUAL(modulator.reserved[1], 0);
 		CU_ASSERT_EQUAL(modulator.reserved[2], 0);
 		CU_ASSERT_EQUAL(modulator.reserved[3], 0);
+
+		/* Check if the unused bytes of the name string are also filled
+		 * with zeros. Also check if there is any padding byte between
+		 * any two fields then this padding byte is also filled with
+		 * zeros.
+		 */
+		memset(&modulator2, 0, sizeof(modulator2));
+		modulator2.index = modulator.index;
+		strncpy((char*)modulator2.name, (char*)modulator.name, sizeof(modulator2.name));
+		modulator2.capability = modulator.capability;
+		modulator2.rangelow = modulator.rangelow;
+		modulator2.rangehigh = modulator.rangehigh;
+		modulator2.txsubchans = modulator.txsubchans;
+		CU_ASSERT_EQUAL(memcmp(&modulator, &modulator2, sizeof(modulator)), 0);
 
 		dprintf("\tmodulator = { "
 			".index = %u, "

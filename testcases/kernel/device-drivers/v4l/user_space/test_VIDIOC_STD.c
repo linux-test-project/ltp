@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ * 18 Apr 2009  0.8  Typo corrected
  * 27 Mar 2009  0.7  Cleanup ret and errno variable names and dprintf() outputs;
  *                   Make VIDIOC_S_STD tests independent from VIDIOC_G_STD
  *  9 Feb 2009  0.6  Modify test cases to support drivers without any inputs;
@@ -264,7 +265,7 @@ void test_VIDIOC_G_STD_NULL() {
 	ret_null = ioctl(get_video_fd(), VIDIOC_G_STD, NULL);
 	errno_null = errno;
 
-	dprintf("\t%s:%u: VIDIOC_S_STD: ret_null=%i, errno_null=%i\n",
+	dprintf("\t%s:%u: VIDIOC_G_STD: ret_null=%i, errno_null=%i\n",
 		__FILE__, __LINE__, ret_null, errno_null);
 
 	if (ret_get == 0) {
