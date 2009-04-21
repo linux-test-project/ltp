@@ -15,8 +15,8 @@ setup()
 	export TST_COUNT=0
 	export TST_TOTAL=3
 
-	# Remove any leftover test file from prior failed runs.
-	rm -rf $SELINUXTMPDIR/test_file $SELINUXTMPDIR/test_file2 $SELINUXTMPDIR/test_sock
+	SELINUXTMPDIR=$(mktemp -d)
+	chcon -t test_file_t $SELINUXTMPDIR
 
 	# Create and label the test files.
 	touch $SELINUXTMPDIR/test_file $SELINUXTMPDIR/test_file2
@@ -100,8 +100,7 @@ cleanup()
 	# Kill the server.
 	kill -s TERM $PID
 
-	# Cleanup.
-	rm -rf $SELINUXTMPDIR/test_file $SELINUXTMPDIR/test_file2 $SELINUXTMPDIR/test_sock
+	rm -rf $SELINUXTMPDIR
 }
 
 # Function:     main

@@ -15,8 +15,8 @@ setup()
         export TST_COUNT=0
 	export TST_TOTAL=8
 
-	# Remove any leftover test directories from prior failed runs.
-	rm -rf $SELINUXTMPDIR/test_file
+	SELINUXTMPDIR=$(mktemp -d)
+	chcon -t test_file_t $SELINUXTMPDIR
 
 	# Create a test file.
 	touch $SELINUXTMPDIR/test_file
@@ -180,8 +180,7 @@ test08()
 
 cleanup()
 {
-	# Cleanup.
-	rm -rf $SELINUXTMPDIR/test_file
+	rm -rf $SELINUXTMPDIR
 }
 
 # Function:     main

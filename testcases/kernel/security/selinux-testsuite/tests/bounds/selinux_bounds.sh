@@ -14,8 +14,8 @@ setup()
 	export TST_COUNT=0
 	export TST_TOTAL=4
 
-	# Remove any leftover test directories from prior failed runs.
-	rm -rf $SELINUXTMPDIR/bounds_file*
+	SELINUXTMPDIR=$(mktemp -d)
+	chcon -t test_file_t $SELINUXTMPDIR
 
 	# Create test files
 	dd if=/dev/zero of=$SELINUXTMPDIR/bounds_file      count=1
@@ -141,8 +141,7 @@ test06()
 
 cleanup()
 {
-	# Cleanup
-	rm -rf $SELINUXTMPDIR/bounds_file*
+	rm -rf $SELINUXTMPDIR
 }
 
 # Function:	main

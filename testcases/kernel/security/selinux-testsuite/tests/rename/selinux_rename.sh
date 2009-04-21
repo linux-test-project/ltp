@@ -15,8 +15,8 @@ setup()
 	export TST_COUNT=0
 	export TST_TOTAL=9
 
-	# Remove any leftover test directories from prior failed runs.
-	rm -rf $SELINUXTMPDIR/src_dir $SELINUXTMPDIR/dst_dir
+	SELINUXTMPDIR=$(mktemp -d)
+	chcon -t test_file_t $SELINUXTMPDIR
 
 	# Create the source and destination test directories for the rename.
 	mkdir --context=system_u:object_r:test_rename_src_dir_t $SELINUXTMPDIR/src_dir 2>&1
@@ -231,8 +231,7 @@ test09()
 
 cleanup()
 {
-	# Cleanup.
-	rm -rf $SELINUXTMPDIR/src_dir $SELINUXTMPDIR/dst_dir
+	rm -rf $SELINUXTMPDIR
 }
 
 # Function:     main

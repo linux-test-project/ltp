@@ -15,8 +15,8 @@ setup()
 	export TST_COUNT=0 
 	export TST_TOTAL=2
 
-	# Remove any leftover test file from prior failed runs.
-	rm -rf $SELINUXTMPDIR/test_file
+	SELINUXTMPDIR=$(mktemp -d)
+	chcon -t test_file_t $SELINUXTMPDIR
 
 	# Create a test file with the test_stat_file_t type
 	# for use in the tests.
@@ -64,8 +64,7 @@ test02()
 
 cleanup()
 {
-	# Cleanup.
-	rm -rf $SELINUXTMPDIR/test_file
+	rm -rf $SELINUXTMPDIR
 }
 
 # Function:     main

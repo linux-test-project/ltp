@@ -17,8 +17,8 @@ setup()
         export TST_COUNT=0
 	export TST_TOTAL=8
 
-        # Clean up from a previous run
-        rm -f $SELINUXTMPDIR/temp_file 2>&1
+	SELINUXTMPDIR=$(mktemp -d)
+	chcon -t test_file_t $SELINUXTMPDIR
 }
 
 #
@@ -195,8 +195,7 @@ test08()
 
 cleanup()
 {
-	# Remove files
-	rm -f $SELINUXTMPDIR/temp_file 2>&1
+	rm -rf $SELINUXTMPDIR
 }
 
 # Function:     main
@@ -215,6 +214,7 @@ test02 || EXIT_VAL=$RC
 test03 || EXIT_VAL=$RC
 test04 || EXIT_VAL=$RC
 cleanup
+setup
 test05 || EXIT_VAL=$RC
 test06 || EXIT_VAL=$RC
 test07 || EXIT_VAL=$RC

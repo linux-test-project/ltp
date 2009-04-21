@@ -15,8 +15,8 @@ setup()
 	export TST_COUNT=0
 	export TST_TOTAL=6
 
-	# Clean up from a previous run
-	rm -f $SELINUXTMPDIR/test_dir 2>&1
+	SELINUXTMPDIR=$(mktemp -d)
+	chcon -t test_file_t $SELINUXTMPDIR
 
 	# Create a test directory with the test_addname_dir_t type 
 	# for use in the tests.
@@ -157,8 +157,7 @@ test06()
 
 cleanup()
 {
-	# Cleanup.
-	rm -rf $SELINUXTMPDIR/test_dir
+	rm -rf $SELINUXTMPDIR
 }
 
 # Function:     main

@@ -17,6 +17,9 @@ setup()
 	export TST_COUNT=0
 	export TST_TOTAL=2
 
+	SELINUXTMPDIR=$(mktemp -d)
+	chcon -t test_file_t $SELINUXTMPDIR
+
 	# Create a temporary file for testing
 	rm -f $SELINUXTMPDIR/temp_file 2>&1
 	touch $SELINUXTMPDIR/temp_file 2>&1
@@ -65,7 +68,7 @@ test02()
 
 cleanup()
 {
-	rm -f $SELINUXTMPDIR/temp_file 2>&1
+	rm -rf $SELINUXTMPDIR
 }
 
 # Function:     main

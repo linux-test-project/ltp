@@ -15,8 +15,8 @@ setup()
         export TST_COUNT=0
 	export TST_TOTAL=2
 
-        # Clean up from a previous run
-        rm -f $SELINUXTMPDIR/true 2>&1
+	SELINUXTMPDIR=$(mktemp -d)
+	chcon -t test_file_t $SELINUXTMPDIR
 }
 
 test01()
@@ -66,8 +66,7 @@ test02()
 
 cleanup()
 {
-	# Cleanup.
-	rm -f $SELINUXTMPDIR/true
+	rm -rf $SELINUXTMPDIR
 }
 
 # Function:     main

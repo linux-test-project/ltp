@@ -17,10 +17,9 @@ setup()
 	export TST_COUNT=0
 	export TST_TOTAL=14
 
-	# Clean up from a previous run
-	rm -f $SELINUXTMPDIR/temp_file 2>&1
-	rm -f $SELINUXTMPDIR/temp_file2 2>&1
-	rm -f $SELINUXTMPDIR/temp_file3 2>&1
+	LTPBIN=$LTPROOT/testcases/bin
+	SELINUXTMPDIR=$(mktemp -d)
+	chcon -t test_file_t $SELINUXTMPDIR
 
 	#
 	# Create the temp files
@@ -361,12 +360,7 @@ test14()
 
 cleanup()
 {
-	#
-	# Delete the temp files
-	#
-	rm -f $basedir/temp_file 2>&1
-	rm -f $basedir/temp_file2 2>&1
-	rm -f $basedir/temp_file3 2>&1
+	rm -rf $SELINUXTMPDIR
 }
 
 #

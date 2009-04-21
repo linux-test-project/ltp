@@ -15,8 +15,8 @@ setup()
 	export TST_COUNT=0
 	export TST_TOTAL=3
 
-	# Clean up from a previous run
-	rm -f $SELINUXTMPDIR/test_file 2>&1
+	SELINUXTMPDIR=$(mktemp -d)
+	chcon -t test_file_t $SELINUXTMPDIR
 
 	# Create a test file with the test_inherit_file_t type 
 	# for use in the tests.
@@ -97,9 +97,7 @@ test03()
 
 cleanup()
 {
-	# Cleanup.
-	rm -rf $SELINUXTMPDIR/test_file
-	cd $SAVEPWD
+	rm -rf $SELINUXTMPDIR
 }
 
 # Function:     main
