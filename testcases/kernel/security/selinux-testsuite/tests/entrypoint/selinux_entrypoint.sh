@@ -52,6 +52,7 @@ test02()
 
 	# Verify that test_entrypoint_t can be entered via this program.
 	runcon -t test_entrypoint_t $SELINUXTMPDIR/true
+	RC=$?
         if [ $RC -ne 0 ]
         then
 		echo "$TCID   FAIL : entrypoint failed."
