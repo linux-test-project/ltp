@@ -31,6 +31,7 @@
 #  DATE        NAME            EMAIL                         DESC                #
 #                                                                                #
 #  20/12/07  Sudhir Kumar <sudhirkumarmalik@in.ibm.com>   Created this test      #
+#  02/03/09  Miao Xie     <miaox@cn.fujitsu.com>          Add cpuset testset     #
 #                                                                                #
 ##################################################################################
 
@@ -40,6 +41,7 @@ then
 	MEM_CONTROLLER=`grep -w memory /proc/cgroups | cut -f1`;
 	IOTHROTTLE_CONTROLLER=`grep -w blockio /proc/cgroups | cut -f1`;
 	FREEZER=`grep -w freezer /proc/cgroups | cut -f1`;
+	CPUSET_CONTROLLER=`grep -w cpuset /proc/cgroups | cut -f1`
 
 	if [ "$CPU_CONTROLLER" = "cpu" ]
 	then
@@ -55,7 +57,6 @@ then
 		# Add the latency testcase to be run
 		$LTPROOT/testcases/bin/run_cpuctl_latency_test.sh 1;
 		$LTPROOT/testcases/bin/run_cpuctl_latency_test.sh 2;
-		echo
 	else
 		echo "CONTROLLERS TESTCASES: WARNING";
 		echo "Kernel does not support for cpu controller";
@@ -92,6 +93,18 @@ then
 		echo "CONTROLLERS TESTCASES: WARNING";
 		echo "Kernel does not support freezer controller";
 		echo "Skipping all freezer testcases....";
+	fi
+	if [ "$CPUSET_CONTROLLER" = "cpuset" ]
+	then
+		$LTPROOT/testcases/bin/run_cpuset_test.sh 1;
+		$LTPROOT/testcases/bin/run_cpuset_test.sh 2;
+		$LTPROOT/testcases/bin/run_cpuset_test.sh 3;
+		$LTPROOT/testcases/bin/run_cpuset_test.sh 4;
+		$LTPROOT/testcases/bin/run_cpuset_test.sh 5;
+	else
+		echo "CONTROLLERS TESTCASES: WARNING";
+		echo "Kernel does not support cpuset controller";
+		echo "Skipping all cpuset controller testcases....";
 	fi
 else
 	echo "CONTROLLERS TESTCASES: WARNING"

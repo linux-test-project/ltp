@@ -4,8 +4,12 @@ For the test plan please refer to the file testplan.txt
 --------------
 ***WARNING:***
 --------------
-The test creates the cpu controller device as /dev/cpuctl. In case you already have
-/dev/cpuctl it may be overwritten. So please rename it to have a backup of your file.
+The cpu controller test creates the cpu controller device as /dev/cpuctl. In
+case you already have /dev/cpuctl it may be overwritten. So please rename it
+to have a backup of your file.
+
+The cpuset controller also creates the device as /dev/cpuset, so please do the
+similar work as above.
 
 
 FILES DESCRIPTION:
@@ -30,12 +34,17 @@ Directory containing the cgroup regression testcases.
 
 cpuctl
 ------
-Directory containing the cpu controller testcases. A similar directory will be created for
-any new controller.
+Directory containing the cpu controller testcases. A similar directory will
+be created for any new controller.
 
 memctl
 ------
 Directory containing the memory controller testcases. A similar directory will
+be created for any new controller.
+
+cpuset
+------
+Directory containing the cpuset controller testcases. A similar directory will
 be created for any new controller.
 
 libcontrollers
@@ -46,10 +55,14 @@ Makefile
 --------
 The usual Makefile to conduct all the tests.
 
-Before starting compilation this file checks if the kernel is supporting the cpu controller.
-If yes it enters lower directory and compiles the source files otherwise exits warning to user.
+Before starting compilation this file checks if the kernel is supporting the
+cpu controller. If yes it enters lower directory and compiles the source files
+otherwise exits warning to user.
 Hence the user has to take care of the fact that the test runs or just quiets.
 (Your kernel needs to be 2.6.24 onwards with proper config options)
+
+And before starting test cpuset, Please check whether the test system has
+4 CPUs and 3 Memory nodes and the kernel version is 2.6.28 or above.
 
 A snapshot of config file options is given below:
 CONFIG_CGROUPS=y

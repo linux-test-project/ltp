@@ -1,0 +1,61 @@
+
+TEST SUITE:
+
+The directory cpuset contains the tests related to the cpuset controller.
+
+Cpuset is a mechanism for assigning a set of CPUs and Memory Nodes to a set of
+tasks.
+
+There are total 190 testcases taht have been added till date. Now, These
+testcases contain the basis operation test and part functionality test of
+cpuset, such as: adding/removing cpus/mems, setting flags, exclusive function,
+hierarchy realtion, inherit relation and cpuset VS syscall.
+
+More testcases will be added in future.
+
+NOTE: the test can be run by root only. And 4 CPUs and 3 Memory Nodes is need
+to run it at least.
+
+TESTS AIM:
+
+The aim of the tests is to test the functionality of cpuset.
+
+FILES DESCRIPTION:
+
+cpuset_base_ops_test
+--------------------
+Directory containing the shell script which is used to test the basis
+operation of cpuset. such as: adding/removing cpus/mems, setting flags.
+
+cpuset_exclusive_test
+---------------------
+Directory containing the shell script which is used to test exclusive
+function of cpuset.
+
+cpuset_hierarchy_test
+---------------------
+Directory containing the shell script is used to test hierarchy relation
+of cpuset.
+
+cpuset_syscall_test
+-------------------
+Directory containing the shell script and program which are used to test
+syscalls whether they collide with cpuset.
+
+cpuset_lib
+----------
+This directory contains the library and script for cpuset controller testing.
+such as: cpuset_funcs.sh(functions for cpuset test script)
+
+run_cpuset_test.sh
+------------------
+This script runs all the 190 testcases.
+
+Makefile
+--------
+Each directory in cpuset has its usual makefile, it is for its directory.
+
+README
+------
+The one you have gone through.
+

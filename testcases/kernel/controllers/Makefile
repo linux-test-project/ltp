@@ -3,6 +3,7 @@ CHECK_CPUCTL := $(shell grep -w cpu /proc/cgroups 2>/dev/null|cut -f1)
 CHECK_MEMCTL := $(shell grep -w memory /proc/cgroups 2>/dev/null|cut -f1)
 CHECK_BLOCKIOCTL := $(shell grep -w blockio /proc/cgroups 2>/dev/null|cut -f1)
 CHECK_FREEZER := $(shell grep -w freezer /proc/cgroups 2>/dev/null| cut -f1)
+CHECK_CPUSETCTL = $(shell grep -w cpuset /proc/cgroups 2>/dev/null|cut -f1)
 
 ifeq ($(CHECK_CGROUP),cgroup)
 SUBDIRS += cgroup
@@ -29,6 +30,11 @@ ifeq ($(CHECK_FREEZER),freezer)
 SUBDIRS += freezer
 else
 $(info "Kernel is not compiled with cgroup freezer support")
+endif
+ifeq ($(CHECK_CPUSETCTL),cpuset)
+SUBDIRS += cpuset
+else
+$(info "Kernel is not compiled with cpuset resource controller support")
 endif
 
 # If at least one of the controllers is available then build libcontrollers.
