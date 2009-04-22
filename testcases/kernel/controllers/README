@@ -24,6 +24,10 @@ README
 ------
 This file.
 
+cgroup
+------
+Directory containing the cgroup regression testcases.
+
 cpuctl
 ------
 Directory containing the cpu controller testcases. A similar directory will be created for

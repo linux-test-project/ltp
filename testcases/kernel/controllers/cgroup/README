@@ -1,0 +1,9 @@
+TEST SUITE:
+
+The directory cgroup contains the tests related to control groups.
+Those testcases can reproduce bugs we found in cgroups.
+
+TESTS AIM:
+
+The aim of the tests is to track any future regressions.
+

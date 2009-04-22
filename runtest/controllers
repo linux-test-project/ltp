@@ -1,2 +1,3 @@
 #DESCRIPTION:Resource Management testing
+cgroup		cgroup_regression_test.sh
 controllers	test_controllers.sh
