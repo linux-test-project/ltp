@@ -42,11 +42,11 @@
  *   Loop if the proper options are given.
  *   Execute system call
  *   Check return code, if system call failed (return=-1)
- *   	Log the errno and Issue a FAIL message.
+ *	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call
+ *	Verify the Functionality of system call
  *      if successful,
- *      	Issue Functionality-Pass message.
+ *		Issue Functionality-Pass message.
  *      Otherwise,
  *		Issue Functionality-Fail message.
  *  Cleanup:
@@ -83,8 +83,8 @@
 #include "test.h"
 #include "usctest.h"
 
-#define FILE_MODE	S_IFREG | S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
-#define NEW_PERMS       S_IFREG | S_IRWXU | S_IRWXG | S_ISUID | S_ISGID
+#define FILE_MODE	(S_IFREG | S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
+#define NEW_PERMS	(S_IFREG | S_IRWXU | S_IRWXG | S_ISUID | S_ISGID)
 #define TESTFILE	"testfile"
 
 char *TCID = "chown03";		/* Test program identifier.    */
@@ -103,8 +103,6 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 	uid_t User_id;		/* Owner id of the test file. */
 	gid_t Group_id;		/* Group id of the test file. */
-
-	STD_FUNCTIONAL_TEST = 0;
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
@@ -130,8 +128,6 @@ int main(int ac, char **av)
 		 * group id (numeric values) to set it on testfile.
 		 */
 
-		seteuid(0);
-		setegid(0);
 		TEST(chown(TESTFILE, -1, Group_id));
 
 		/* check return code of chown(2) */
@@ -159,8 +155,8 @@ int main(int ac, char **av)
 			 */
 			if ((stat_buf.st_uid != User_id) ||
 			    (stat_buf.st_gid != Group_id)) {
-				tst_resm(TFAIL, "%s: Incorrect "
-					 "ownership set to %d %d, Expected %d %d",
+				tst_resm(TFAIL, "%s: Incorrect ownership"
+					 "set to %d %d, Expected %d %d",
 					 TESTFILE, stat_buf.st_uid,
 					 stat_buf.st_gid, User_id, Group_id);
 			}
@@ -169,10 +165,11 @@ int main(int ac, char **av)
 			 * Verify that setuid/setgid bits set on the
 			 * testfile in setup() are cleared by chown()
 			 */
-			if (stat_buf.st_mode & (S_ISUID | S_ISGID)) {
+			if (stat_buf.st_mode != (NEW_PERMS & ~(S_ISUID | S_ISGID))) {
 				tst_resm(TFAIL, "%s: Incorrect mode permissions"
 					 " %#o, Expected %#o", TESTFILE,
-					 stat_buf.st_mode, NEW_PERMS);
+					 stat_buf.st_mode,
+					 NEW_PERMS & ~(S_ISUID | S_ISGID));
 			} else {
 				tst_resm(TPASS, "chown() on %s succeeds, "
 					 "clears setuid/gid bits", TESTFILE);
@@ -186,7 +183,8 @@ int main(int ac, char **av)
 	cleanup();
 
 	return 0;
- /*NOTREACHED*/}		/* End main */
+/*NOTREACHED*/
+}		/* End main */
 
 /*
  * void
@@ -197,11 +195,7 @@ int main(int ac, char **av)
  */
 void setup()
 {
-	char test_home[PATH_MAX];	/* variable to hold TESTHOME env */
-	int fd;			/* file handler for testfile */
-	char Path_name[PATH_MAX];	/* Buffer to hold command string */
-	char Cmd_buffer[BUFSIZ];	/* Buffer to hold command string */
-	char *change_owner_path;
+	int fd;				/* file handler for testfile */
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
@@ -230,60 +224,33 @@ void setup()
 		perror("seteuid");
 	}
 
-	if (getcwd(test_home, sizeof(test_home)) == NULL) {
-		tst_brkm(TBROK, cleanup,
-			 "getcwd(3) fails to get working directory of process");
-	}
-
 	/* Create a test file under temporary directory */
 	if ((fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %o) Failed, errno=%d : %s",
 			 TESTFILE, FILE_MODE, errno, strerror(errno));
 	}
+
+	if (seteuid(0) == -1)
+		 tst_brkm(TBROK, cleanup, "Couldn't switch to user root: %s",
+				strerror(errno));
+
+	if (fchown(fd, -1, 0) < 0)
+		tst_brkm(TBROK, cleanup, "Fail to modify Ownership of %s: %s",
+				TESTFILE, strerror(errno));
+
+	if (fchmod(fd, NEW_PERMS) < 0)
+		tst_brkm(TBROK, cleanup, "Fail to modify Mode of %s: %s",
+				TESTFILE, strerror(errno));
+
+	if (seteuid(ltpuser->pw_uid) == -1)
+		 tst_brkm(TBROK, cleanup, "Couldn't switch to user nobody: %s",
+				strerror(errno));
+
 	/* Close the test file created above */
 	if (close(fd) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "close(%s) Failed, errno=%d : %s",
+		tst_brkm(TBROK, cleanup, "close(%s) Failed, errno=%d : %s",
 			 TESTFILE, errno, strerror(errno));
-	}
-
-	/*
-	 * Change mode permissions on testfile such that
-	 * setuid/setgid bits are set on the testfile.
-	 */
-	if (chmod(TESTFILE, NEW_PERMS) < 0) {
-		tst_brkm(TBROK, cleanup,
-			 "chmod(2) on %s Failed, errno=%d : %s",
-			 TESTFILE, errno, strerror(errno));
-	}
-
-	/* Get the current working directory of the process */
-	if (getcwd(Path_name, sizeof(Path_name)) == NULL) {
-		tst_brkm(TBROK, cleanup,
-			 "getcwd(3) fails to get working directory of process");
-	}
-	/* Get the path of TESTFILE under temporary directory */
-	strcat(Path_name, "/" TESTFILE);
-
-	/* Set the environment variable change_owner if not already set */
-	setenv("change_owner", strcat(test_home, "/change_owner"), 0);
-
-	/* Get the command name to be executed as setuid to root */
-	if ((change_owner_path = getenv("change_owner")) == NULL) {
-		tst_brkm(TBROK, cleanup,
-			 "getenv() failed to get the cmd to be execd as setuid to root");
-	}
-
-	strcpy((char *)Cmd_buffer, (const char *)change_owner_path);
-	strcat((char *)Cmd_buffer, " ");
-	strcat((char *)Cmd_buffer, TCID);
-	strcat((char *)Cmd_buffer, " ");
-	strcat((char *)Cmd_buffer, Path_name);
-
-	if (system((const char *)Cmd_buffer) != 0) {
-		tst_brkm(TBROK, cleanup,
-			 "Fail to modify Ownership of %s", TESTFILE);
 	}
 }				/* End setup() */
 

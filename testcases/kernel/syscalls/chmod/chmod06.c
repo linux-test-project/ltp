@@ -103,11 +103,11 @@
 #define TEST_FILE2	"testdir_1/tfile_2"
 #define TEST_FILE3	"t_file/tfile_3"
 
-int no_setup();			/* dummy setup function */
-int setup1();			/* setup function to test chmod for EPERM */
-int setup2();			/* setup function to test chmod for EACCES */
-int setup3();			/* setup function to test chmod for ENOTDIR */
-int longpath_setup();		/* setup function to test chmod for ENAMETOOLONG */
+int no_setup();		/* dummy setup function */
+int setup1();		/* setup function to test chmod for EPERM */
+int setup2();		/* setup function to test chmod for EACCES */
+int setup3();		/* setup function to test chmod for ENOTDIR */
+int longpath_setup();	/* setup function to test chmod for ENAMETOOLONG */
 
 char *get_high_address();	/* Function from ltp-Lib */
 
@@ -303,8 +303,6 @@ int no_setup()
 int setup1()
 {
 	int fd;
-	char Path_name[PATH_MAX];	/* Buffer to hold command string */
-	char Cmd_buffer[BUFSIZ];	/* Buffer to hold command string */
 
 	/* open/creat a test file and close it */
 	if ((fd = open(TEST_FILE1, O_RDWR | O_CREAT, 0666)) == -1) {
@@ -312,33 +310,17 @@ int setup1()
 			 "open(%s, O_RDWR|O_CREAT, 0666) failed, errno=%d : %s",
 			 TEST_FILE1, errno, strerror(errno));
 	}
+
+	if (fchown(fd, 0, 0) < 0)
+		tst_brkm(TBROK, cleanup, "Fail to modify %s ownership(s): %s",
+			TEST_FILE1, strerror(errno));
+
 	if (close(fd) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "close(%s) Failed, errno=%d : %s",
 			 TEST_FILE1, errno, strerror(errno));
 	}
 
-	/* Get the current working directory of the process */
-	if (getcwd(Path_name, sizeof(Path_name)) == NULL) {
-		tst_brkm(TBROK, cleanup,
-			 "getcwd(3) fails to get working directory of process");
-	}
-
-	/* Get the path of test file created under temporary directory */
-	strcat(Path_name, "/" TEST_FILE1);
-
-	/* Get the command name to be executed as setuid to root */
-	strcpy((char *)Cmd_buffer, (const char *)test_home);
-	strcat((char *)Cmd_buffer, "/change_owner ");
-	strcat((char *)Cmd_buffer, TCID);
-	strcat((char *)Cmd_buffer, " ");
-	strcat((char *)Cmd_buffer, Path_name);
-
-	/* Change the ownership of testfile */
-	if (system((const char *)Cmd_buffer) != 0) {
-		tst_brkm(TBROK, cleanup,
-			 "Fail to modify %s ownership(s)!", TEST_FILE1);
-	}
 	return 0;
 }
 

@@ -41,9 +41,9 @@
  *   Loop if the proper options are given.
  *   Execute system call
  *   Check return code, if system call failed (return=-1)
- *   	if errno set == expected errno
- *   		Issue sys call fails with expected return value and errno.
- *   	Otherwise,
+ *	if errno set == expected errno
+ *		Issue sys call fails with expected return value and errno.
+ *	Otherwise,
  *		Issue sys call fails with unexpected errno.
  *   Otherwise,
  *	Issue sys call returns unexpected value.
@@ -205,7 +205,7 @@ int main(int ac, char **av)
 /*
  * setup(void) - performs all ONE TIME setup for this test.
  *
- * 	Exit the test program on receipt of unexpected signals.
+ *	Exit the test program on receipt of unexpected signals.
  *	Create a temporary directory and change directory to it.
  *	Invoke individual test setup functions according to the order
  *	set in struct. definition.
@@ -222,15 +222,13 @@ void setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-//changed by prashant yendigeri because the temp directory creating and deletinI// are with different uids, so this test case will fail in most of the scenario.
+/*
+ * changed by prashant yendigeri because the temp directory creating and
+ * deleting are with different uids, so this test case will fail in most of
+ * the scenario.
+ */
 	/* Make a temp dir and cd to it */
-//      tst_tmpdir();
-
-	/* Get the current working directory of the process */
-	if (getcwd(test_home, sizeof(test_home)) == NULL) {
-		tst_brkm(TBROK, cleanup,
-			 "getcwd(3) fails to get working directory of process");
-	}
+	/* tst_tmpdir(); */
 
 	/* Switch to bin user for correct error code collection */
 	if (geteuid() != 0) {
@@ -275,43 +273,31 @@ void setup()
  */
 int setup1()
 {
-	char Path_name[PATH_MAX];	/* Buffer to hold command string */
-	char Cmd_buffer[BUFSIZ];	/* Buffer to hold command string */
-	char *change_owner_path;
+	int old_uid;
+	struct passwd *nobody;
 
 	/* Create a testfile under temporary directory */
-	if ((fd1 = open(TEST_FILE1, O_RDWR | O_CREAT, 0666)) == -1) {
+	fd1 = open(TEST_FILE1, O_RDWR | O_CREAT, 0666);
+	if (fd1 == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, 0666) failed, errno=%d : %s",
 			 TEST_FILE1, errno, strerror(errno));
 	}
 
-	/* Get the current working directory of the process */
-	if (getcwd(Path_name, sizeof(Path_name)) == NULL) {
-		tst_brkm(TBROK, cleanup,
-			 "getcwd(3) fails to get working directory of process");
-	}
-	/* Get the path of test file created under temporary directory */
-	strcat(Path_name, "/" TEST_FILE1);
+	old_uid = geteuid();
+	seteuid(0);
 
-	/* Set the environment variable change_owner if not already set */
-	setenv("change_owner", strcat(test_home, "/change_owner"), 0);
+	nobody = getpwnam("nobody");
+	if (!nobody)
+		tst_brkm(TBROK, cleanup, "Couldn't find user nobody: %s",
+						strerror(errno));
 
-	/* Get the command name to be executed as setuid to root */
-	if ((change_owner_path = getenv("change_owner")) == NULL) {
-		tst_brkm(TBROK, cleanup,
-			 "getenv() failed to get the cmd to be execd as setuid to root");
-	}
-	strcpy((char *)Cmd_buffer, (const char *)change_owner_path);
-	strcat((char *)Cmd_buffer, " ");
-	strcat((char *)Cmd_buffer, TCID);
-	strcat((char *)Cmd_buffer, " ");
-	strcat((char *)Cmd_buffer, Path_name);
+	if (fchown(fd1, nobody->pw_uid, nobody->pw_gid) < 0)
+		tst_brkm(TBROK, cleanup, "Fail to modify %s ownership(s)! %s",
+					TEST_FILE1, strerror(errno));
 
-	if (system((const char *)Cmd_buffer) != 0) {
-		tst_brkm(TBROK, cleanup,
-			 "Fail to modify %s ownership(s)!", TEST_FILE1);
-	}
+	seteuid(old_uid);
+
 	return 0;
 }
 

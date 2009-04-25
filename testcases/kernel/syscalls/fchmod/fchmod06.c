@@ -41,9 +41,9 @@
  *   Loop if the proper options are given.
  *   Execute system call
  *   Check return code, if system call failed (return=-1)
- *   	if errno set == expected errno
- *   		Issue sys call fails with expected return value and errno.
- *   	Otherwise,
+ *	if errno set == expected errno
+ *		Issue sys call fails with expected return value and errno.
+ *	Otherwise,
  *		Issue sys call fails with unexpected errno.
  *   Otherwise,
  *	Issue sys call returns unexpected value.
@@ -258,8 +258,7 @@ void setup()
  */
 int setup1()
 {
-	char Path_name[PATH_MAX];	/* Buffer to hold command string */
-	char Cmd_buffer[BUFSIZ];	/* Buffer to hold command string */
+	uid_t old_uid;
 
 	/* Create a testfile under temporary directory */
 	if ((fd1 = open(TEST_FILE1, O_RDWR | O_CREAT, 0666)) == -1) {
@@ -268,26 +267,15 @@ int setup1()
 			 TEST_FILE1, errno, strerror(errno));
 	}
 
-	/* Get the current working directory of the process */
-	if (getcwd(Path_name, sizeof(Path_name)) == NULL) {
-		tst_brkm(TBROK, cleanup,
-			 "getcwd(3) fails to get working directory of process");
-	}
+	old_uid = geteuid();
+	seteuid(0);
 
-	/* Get the path of test file created under temporary directory */
-	strcat(Path_name, "/" TEST_FILE1);
+	if (fchown(fd1, 0, 0) < 0)
+		tst_brkm(TBROK, cleanup, "Fail to modify %s ownership(s): %s",
+				TEST_FILE1, strerror(errno));
 
-	/* Get the command name to be executed as setuid to root */
-	strcpy((char *)Cmd_buffer, (const char *)test_home);
-	strcat((char *)Cmd_buffer, "/change_owner ");
-	strcat((char *)Cmd_buffer, TCID);
-	strcat((char *)Cmd_buffer, " ");
-	strcat((char *)Cmd_buffer, Path_name);
+	seteuid(old_uid);
 
-	if (system((const char *)Cmd_buffer) != 0) {
-		tst_brkm(TBROK, cleanup,
-			 "Fail to modify %s ownership(s)!", TEST_FILE1);
-	}
 	return 0;
 }
 

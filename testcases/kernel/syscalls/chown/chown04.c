@@ -23,8 +23,8 @@
  * Test Description:
  *   Verify that,
  *   1) chown(2) returns -1 and sets errno to EPERM if the effective user id
- *		 of process does not match the owner of the file and the process is
- *		 not super user.
+ *		 of process does not match the owner of the file and the process
+ *		 is not super user.
  *   2) chown(2) returns -1 and sets errno to EACCES if search permission is
  *		 denied on a component of the path prefix.
  *   3) chown(2) returns -1 and sets errno to EFAULT if pathname points
@@ -49,12 +49,12 @@
  *   Loop if the proper options are given.
  *   Execute system call
  *   Check return code, if system call failed (return=-1)
- *   		 if errno set == expected errno
- *   		 		 Issue sys call fails with expected return value and errno.
- *   		 Otherwise,
- *		 		 Issue sys call fails with unexpected errno.
+ *	if errno set == expected errno
+ *		Issue sys call fails with expected return value and errno.
+ *	Otherwise,
+ *		Issue sys call fails with unexpected errno.
  *   Otherwise,
- *		 Issue sys call returns unexpected value.
+ *		Issue sys call returns unexpected value.
  *
  *  Cleanup:
  *   Print errno log and/or timing stats if options given
@@ -100,10 +100,10 @@
 #define TEST_FILE3		 "t_file/tfile_3"
 
 int no_setup();
-int setup1();			/* setup function to test chown for EPERM */
-int setup2();			/* setup function to test chown for EACCES */
-int setup3();			/* setup function to test chown for ENOTDIR */
-int longpath_setup();		/* setup function to test chown for ENAMETOOLONG */
+int setup1();		/* setup function to test chown for EPERM */
+int setup2();		/* setup function to test chown for EACCES */
+int setup3();		/* setup function to test chown for ENOTDIR */
+int longpath_setup();	/* setup function to test chown for ENAMETOOLONG */
 
 char *get_high_address();	/* Function from ltp-lib                */
 
@@ -221,12 +221,13 @@ int main(int ac, char **av)
 	cleanup();
 
 	return 0;
- /*NOTREACHED*/}		/* End main */
+/*NOTREACHED*/
+}		/* End main */
 
 /*
  * void
  * setup(void) - performs all ONE TIME setup for this test.
- * 		 Exit the test program on receipt of unexpected signals.
+ *		 Exit the test program on receipt of unexpected signals.
  *		 Create a temporary directory and change directory to it.
  *		 Invoke individual test setup functions according to the order
  *		 set in struct. definition.
@@ -296,47 +297,38 @@ int no_setup()
  */
 int setup1()
 {
-	int fd;			/* file handle for testfile */
-	char Path_name[PATH_MAX];	/* Buffer to hold command string */
-	char Cmd_buffer[BUFSIZ];	/* Buffer to hold command string */
+	int fd;				/* file handle for testfile */
+	uid_t old_uid;
 
-	if ((fd = open(TEST_FILE1, O_RDWR | O_CREAT, 0666)) == -1) {
+	old_uid = geteuid();
+
+	fd = open(TEST_FILE1, O_RDWR|O_CREAT, 0666);
+	if (fd == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, 0666) failed, errno=%d : %s",
 			 TEST_FILE1, errno, strerror(errno));
 	}
+
+	seteuid(0);
+	if (fchown(fd, 0, 0) < 0)
+		tst_brkm(TBROK, cleanup,
+			 "Fail to modify %s ownership(s)!", TEST_FILE1);
+
+	seteuid(old_uid);
+
 	if (close(fd) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "close(%s) Failed, errno=%d : %s",
 			 TEST_FILE1, errno, strerror(errno));
 	}
 
-	/* Get the current working directory of the process */
-	if (getcwd(Path_name, sizeof(Path_name)) == NULL) {
-		tst_brkm(TBROK, cleanup,
-			 "getcwd(3) fails to get working directory of process");
-	}
-	/* Get the path of test file created under temporary directory */
-	strcat(Path_name, "/" TEST_FILE1);
-
-	/* Get the command name to be executed as setuid to root */
-	strcpy((char *)Cmd_buffer, (const char *)test_home);
-	strcat((char *)Cmd_buffer, (const char *)"/change_owner ");
-	strcat((char *)Cmd_buffer, TCID);
-	strcat((char *)Cmd_buffer, " ");
-	strcat((char *)Cmd_buffer, Path_name);
-
-	if (system((const char *)Cmd_buffer) != 0) {
-		tst_brkm(TBROK, cleanup,
-			 "Fail to modify %s ownership(s)!", TEST_FILE1);
-	}
 	return 0;
 }
 
 /*
  * int
  * setup2() - setup function for a test condition for which chown(2)
- *		       returns -1 and sets errno to EACCES.
+ *		returns -1 and sets errno to EACCES.
  *  Create a test directory under temporary directory and create a test file
  *  under this directory with mode "0666" permissions.
  *  Modify the mode permissions on test directory such that process will not
@@ -376,7 +368,7 @@ int setup2()
 /*
  * int
  * setup3() - setup function for a test condition for which chown(2)
- *		      returns -1 and sets errno to ENOTDIR.
+ *		returns -1 and sets errno to ENOTDIR.
  *
  *  Create a test file under temporary directory so that test tries to
  *  change mode of a testfile "tfile_3" under "t_file" which happens to be
@@ -421,10 +413,10 @@ int longpath_setup()
  * void
  * cleanup() - Performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
- *		 Print test timing stats and errno log if test executed with options.
- *		 Remove temporary directory and sub-directories/files under it
- *		 created during setup().
- *		 Exit the test program with normal exit code.
+ *	Print test timing stats and errno log if test executed with options.
+ *	Remove temporary directory and sub-directories/files under it
+ *	created during setup().
+ *	Exit the test program with normal exit code.
  */
 void cleanup()
 {

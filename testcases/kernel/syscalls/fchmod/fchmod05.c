@@ -42,11 +42,11 @@
  *   Loop if the proper options are given.
  *   Execute system call
  *   Check return code, if system call failed (return=-1)
- *   	Log the errno and Issue a FAIL message.
+ *	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call
+ *	Verify the Functionality of system call
  *      if successful,
- *      	Issue Functionality-Pass message.
+ *		Issue Functionality-Pass message.
  *      Otherwise,
  *		Issue Functionality-Fail message.
  *  Cleanup:
@@ -89,7 +89,7 @@
 #include "test.h"
 #include "usctest.h"
 
-#define MODE_RWX 	S_IRWXU | S_IRWXG | S_IRWXO
+#define MODE_RWX	(S_IRWXU | S_IRWXG | S_IRWXO)
 #define PERMS		043777
 #define TESTDIR		"testdir"
 
@@ -151,7 +151,7 @@ int main(int ac, char **av)
 					 TESTDIR, TEST_ERRNO);
 			}
 			dir_mode = stat_buf.st_mode;
-			if (PERMS != dir_mode) {
+			if ((PERMS & ~S_ISGID) != dir_mode) {
 				tst_resm(TFAIL, "%s: Incorrect modes 0%03o, "
 					 "Expected 0%03o",
 					 TESTDIR, PERMS, MODE_RWX);
@@ -181,9 +181,8 @@ int main(int ac, char **av)
  */
 void setup()
 {
-	char *test_home;	/* variable to hold TESTHOME env */
-	char Path_name[PATH_MAX];	/* Buffer to hold command string */
-	char Cmd_buffer[BUFSIZ];	/* Buffer to hold command string */
+	struct passwd *nobody_u;
+	struct group *bin_group;
 
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -194,13 +193,21 @@ void setup()
 		tst_exit();
 	}
 
-	test_home = get_current_dir_name();
-
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
+
+	nobody_u = getpwnam("nobody");
+	if (!nobody_u)
+		tst_brkm(TBROK, cleanup,
+			 "Couldn't find uid of nobody: %s", strerror(errno));
+
+	bin_group = getgrnam("bin");
+	if (!bin_group)
+		tst_brkm(TBROK, cleanup,
+			 "Couldn't find gid of bin: %s", strerror(errno));
 
 	/*
 	 * Create a test directory under temporary directory with specified
@@ -211,32 +218,18 @@ void setup()
 		tst_brkm(TBROK, cleanup, "mkdir(2) of %s failed", TESTDIR);
 	}
 
-	/* Get the current working directory of the process */
-	if (getcwd(Path_name, sizeof(Path_name)) == NULL) {
-		tst_brkm(TBROK, cleanup,
-			 "getcwd(3) fails to get working directory of process");
-	}
+	if (chown(TESTDIR, nobody_u->pw_uid, bin_group->gr_gid) == -1)
+		tst_brkm(TBROK, cleanup, "Couldn't change owner of testdir: %s",
+				strerror(errno));
 
-	/*
-	 * Get the complete path of TESTDIR created
-	 * under temporary directory
-	 */
-	strcat(Path_name, "/" TESTDIR);
-
-	/* Get the command name to be executed as setuid to root */
-	strcpy((char *)Cmd_buffer, (const char *)test_home);
-	strcat((char *)Cmd_buffer, (const char *)"/change_owner ");
-	strcat((char *)Cmd_buffer, TCID);
-	strcat((char *)Cmd_buffer, " ");
-	strcat((char *)Cmd_buffer, Path_name);
-
-	if (system((const char *)Cmd_buffer) != 0) {
-		tst_brkm(TBROK, cleanup,
-			 "Fail to modify %s group ownerships", TESTDIR);
-	}
+	/* change to nobody:nobody */
+	if (setegid(nobody_u->pw_gid) == -1 || seteuid(nobody_u->pw_uid) == -1)
+		tst_brkm(TBROK, cleanup, "Couldn't switch to nobody:nobody: %s",
+				strerror(errno));
 
 	/* Open the test directory for reading */
-	if ((fd = open(TESTDIR, O_RDONLY)) == -1) {
+	fd = open(TESTDIR, O_RDONLY);
+	if (fd == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDONLY) failed, errno=%d : %s",
 			 TESTDIR, errno, strerror(errno));

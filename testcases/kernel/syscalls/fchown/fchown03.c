@@ -42,11 +42,11 @@
  *   Loop if the proper options are given.
  *   Execute system call
  *   Check return code, if system call failed (return=-1)
- *   	Log the errno and Issue a FAIL message.
+ *	Log the errno and Issue a FAIL message.
  *   Otherwise,
- *   	Verify the Functionality of system call
+ *	Verify the Functionality of system call
  *      if successful,
- *      	Issue Functionality-Pass message.
+ *		Issue Functionality-Pass message.
  *      Otherwise,
  *		Issue Functionality-Fail message.
  *  Cleanup:
@@ -83,13 +83,13 @@
 #include "test.h"
 #include "usctest.h"
 
-#define FILE_MODE	(mode_t)S_IFREG | S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
-#define NEW_PERMS       (mode_t)S_IFREG | S_IRWXU | S_IRWXG | S_ISUID | S_ISGID
-#define FCHOWN_PERMS    (mode_t)S_IFREG | S_IRWXU | S_IRWXG
+#define FILE_MODE (mode_t)(S_IFREG | S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
+#define NEW_PERMS (mode_t)(S_IFREG | S_IRWXU | S_IRWXG | S_ISUID | S_ISGID)
+#define FCHOWN_PERMS	(mode_t)(NEW_PERMS & ~(S_ISUID | S_ISGID))
 #define TESTFILE	"testfile"
 
 int fildes;			/* File descriptor for test file */
-char *TCID = "fchown03";	/* Test program identifier.    */
+char *TCID = "fchown03";	/* Test program identifier. */
 int TST_TOTAL = 1;		/* Total number of test conditions */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 char nobody_uid[] = "nobody";
@@ -169,7 +169,7 @@ int main(int ac, char **av)
 			 * set on the testfile in setup() are
 			 * cleared by fchown()
 			 */
-			if (stat_buf.st_mode & (S_ISUID | S_ISGID)) {
+			if (stat_buf.st_mode != FCHOWN_PERMS) {
 				tst_resm(TFAIL, "%s: Incorrect mode permissions"
 					 " %#o, Expected %#o", TESTFILE,
 					 stat_buf.st_mode, FCHOWN_PERMS);
@@ -196,9 +196,6 @@ int main(int ac, char **av)
  */
 void setup()
 {
-	char test_home[PATH_MAX];	/* variable to hold TESTHOME env */
-	char Path_name[PATH_MAX];	/* Buffer to hold command string */
-	char Cmd_buffer[BUFSIZ];	/* Buffer to hold command string */
 
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -209,14 +206,9 @@ void setup()
 	}
 	ltpuser = getpwnam(nobody_uid);
 	if (seteuid(ltpuser->pw_uid) == -1) {
-		tst_resm(TINFO, "seteuid failed to "
-			 "to set the effective uid to %d", ltpuser->pw_uid);
-		perror("seteuid");
-	}
-
-	if (getcwd(test_home, sizeof(test_home)) == NULL) {
-		tst_brkm(TBROK, cleanup,
-			 "getcwd(3) fails to get working directory of process");
+		tst_brkm(TBROK, cleanup, "seteuid failed to "
+			"to set the effective uid to %d: %s", ltpuser->pw_uid,
+				strerror(errno));
 	}
 
 	/* Pause if that option was specified */
@@ -231,35 +223,18 @@ void setup()
 			 "open(%s, O_RDWR|O_CREAT, %o) Failed, errno=%d : %s",
 			 TESTFILE, FILE_MODE, errno, strerror(errno));
 	}
+	seteuid(0);
+	if (fchown(fildes, -1, 0) < 0)
+		tst_brkm(TBROK, cleanup, "Fail to modify Ownership of %s: %s",
+				TESTFILE, strerror(errno));
 
-	/*
-	 * Change mode permissions on testfile such that
-	 * setuid/setgid bits are set on the testfile.
-	 */
-	if (chmod(TESTFILE, NEW_PERMS) < 0) {
-		tst_brkm(TBROK, cleanup, "chmod(2) on %s Failed, errno=%d : %s",
-			 TESTFILE, errno, strerror(errno));
-	}
+	if (fchmod(fildes, NEW_PERMS) < 0)
+		tst_brkm(TBROK, cleanup, "Fail to modify Mode of %s: %s",
+				TESTFILE, strerror(errno));
 
-	/* Get the current working directory of the process */
-	if (getcwd(Path_name, sizeof(Path_name)) == NULL) {
-		tst_brkm(TBROK, cleanup,
-			 "getcwd(3) fails to get working directory of process");
-	}
-	/* Get the path of TESTFILE under temporary directory */
-	strcat(Path_name, "/" TESTFILE);
+	setegid(ltpuser->pw_gid);
+	seteuid(ltpuser->pw_uid);
 
-	/* Get the command name to be executed as setuid to root */
-	strcpy((char *)Cmd_buffer, (const char *)test_home);
-	strcat((char *)Cmd_buffer, (const char *)"/change_owner ");
-	strcat((char *)Cmd_buffer, TCID);
-	strcat((char *)Cmd_buffer, " ");
-	strcat((char *)Cmd_buffer, Path_name);
-
-	if (system((const char *)Cmd_buffer) != 0) {
-		tst_brkm(TBROK, cleanup,
-			 "Fail to modify Ownership of %s", TESTFILE);
-	}
 }				/* End setup() */
 
 /*
