@@ -150,7 +150,8 @@ CONFIG_GROUP_SCHED=y
 CONFIG_FAIR_GROUP_SCHED=y
 CONFIG_RT_GROUP_SCHED=y
 CONFIG_CGROUP_SCHED=y
-CGROUP_MEM_RES_CTLR=y
+CONFIG_CGROUP_MEM_RES_CTLR=y
+CONFIG_LOCKDEP=y
 ---------------------------------
 Enabling Kernel Configuration to test Power Management features
 ---------------------------------
