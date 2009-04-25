@@ -166,6 +166,9 @@ int main(int ac, char **av)
  */
 void setup()
 {
+	/* free blocks avail to non-superuser */
+	unsigned long f_bavail;
+
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
@@ -187,9 +190,10 @@ void setup()
 			 "file system");
 	}
 
-	if ((stat_buf.f_bavail / (BLOCKSIZE / stat_buf.f_frsize)) < MAXBLKS) {
-		max_blks = stat_buf.f_bavail / (BLOCKSIZE / stat_buf.f_frsize);
-	}
+	f_bavail = stat_buf.f_bavail / (BLOCKSIZE / stat_buf.f_frsize);
+	if (f_bavail && (f_bavail < MAXBLKS))
+		max_blks = f_bavail;
+
 #ifdef LARGEFILE
 	if ((fcntl(fd, F_SETFL, O_LARGEFILE)) == -1) {
 		tst_brkm(TBROK, cleanup, "fcntl failed to O_LARGEFILE");
