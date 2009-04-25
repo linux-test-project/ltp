@@ -39,6 +39,9 @@
 #include <syscall.h>
 #include <linux/mempolicy.h>
 
+#include "../cpuset_lib/cpuset.h"
+#include "../cpuset_lib/bitmask.h"
+
 unsigned long mask;
 int test = -1;
 int flag_exit;
@@ -179,10 +182,28 @@ void test_set_mempolicy(void)
 
 void test_get_mempolicy(void)
 {
-	unsigned long nmask = 0L;
-	ret = get_mempolicy(NULL, &nmask, 8 * sizeof(nmask), 0,
+	int nbits;
+	struct bitmask *nmask;
+	char str[256];
+
+	nbits = cpuset_mems_nbits();
+	if (nbits <= 0) {
+		warn("get the nbits of nodes failed");
+		ret = 1;
+		return;
+	}
+
+	nmask = bitmask_alloc(nbits);
+	if (nmask == NULL) {
+		warn("alloc bitmask failed");
+		ret = 1;
+		return;
+	}
+	ret = get_mempolicy(NULL, bitmask_mask(nmask), bitmask_nbits(nmask), 0,
 			MPOL_F_MEMS_ALLOWED);
-	printf("%x", nmask);
+
+	bitmask_displaylist(str, 256, nmask);
+	printf("%s", str);
 }
 
 void sigusr_handler(int __attribute__((unused)) signo)

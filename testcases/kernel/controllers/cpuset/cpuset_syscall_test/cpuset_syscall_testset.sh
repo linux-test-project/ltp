@@ -283,7 +283,7 @@ test15()
 {
 	do_syscall_test 0 0 --get_mempolicy 0 || return 1
 	allowed_list="$(awk '/Mems_allowed_list:/{print $2}' $TEST_PROCSTATUS )"
-	test "$(cat "$TEST_OUTPUT")" = "1"
+	test "$(cat "$TEST_OUTPUT")" = "0"
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "Result(get_mempolicy) = \"$(cat $TEST_OUTPUT)\", expect = \"1\")"
 		return 1
@@ -301,7 +301,7 @@ test16()
 {
 	do_syscall_test 0 0-1 --get_mempolicy 0 || return 1
 	allowed_list="$(awk '/Mems_allowed_list:/{print $2}' $TEST_PROCSTATUS )"
-	test "$(cat "$TEST_OUTPUT")" = "3"
+	test "$(cat "$TEST_OUTPUT")" = "0-1"
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "Result(get_mempolicy) = \"$(cat $TEST_OUTPUT)\", expect = \"3\")"
 		return 1

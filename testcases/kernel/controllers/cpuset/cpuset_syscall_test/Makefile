@@ -1,6 +1,11 @@
 SRCS = $(wildcard *.sh)
 
+LIBSRCS=$(wildcard ../cpuset_lib/*.c)
+LIBOBJECTS=$(patsubst %.c,%.o,$(LIBSRCS))
+
 all:cpuset_syscall_test
+
+cpuset_syscall_test: %: %.o $(LIBOBJECTS)
 
 clean:
 	rm -rf cpuset_syscall_test

@@ -25,7 +25,11 @@
 ################################################################################
 
 NR_CPUS="`cat /proc/cpuinfo | grep "processor" | wc -l`"
-N_NODES="`cat /sys/devices/system/node/has_normal_memory`"
+if [ -f "/sys/devices/system/node/has_high_memory" ]; then
+	N_NODES="`cat /sys/devices/system/node/has_high_memory`"
+else
+	N_NODES="`cat /sys/devices/system/node/has_normal_memory`"
+fi
 N_NODES=${N_NODES#*-*}
 ((N_NODES++))
 
@@ -56,7 +60,7 @@ ncpus_check()
 
 nnodes_check()
 {
-	if [ $N_NODES -lt 2 ]; then
+	if [ $N_NODES -lt 3 ]; then
 		tst_brkm TCONF ignored "The total of nodes is less than 3"
 		return 1
 	fi
