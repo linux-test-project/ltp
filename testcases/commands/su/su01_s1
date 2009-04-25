@@ -435,10 +435,12 @@ expect {
             expect {
 								"su: incorrect password" { set i_am_correct 1 }
 								"su: Authentication failure" { set i_am_correct 1 }
+								"su: Authentication token manipulation error" { set i_am_correct 1 }
             }
           }
 					"su: incorrect password" { set i_am_correct 1 }
 					"su: Authentication failure" { set i_am_correct 1 }
+					"su: Authentication token manipulation error" { set i_am_correct 1 }
         }
       }
     }
