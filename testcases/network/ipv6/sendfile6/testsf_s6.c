@@ -61,10 +61,14 @@ char *argv[];
 
   memset(&hints, 0, sizeof(hints));
   hints.ai_family = PF_INET6;
-  if ((gai=getaddrinfo(argv[1], NULL, &hints, &hp))!=0)
+  if ((gai=getaddrinfo(argv[1], NULL, &hints, &hp))!=0) {
         fprintf(stderr, "Unknown subject address %s: %s\n",argv[1], gai_strerror(gai));
-  if (!hp->ai_addr || hp->ai_addr->sa_family != AF_INET6)
+        exit(1);
+  }
+  if (!hp || !hp->ai_addr || hp->ai_addr->sa_family != AF_INET6) {
         fprintf(stderr, "getaddrinfo failed");
+        exit(1);
+  }
 
 
   /* server IP and port */
