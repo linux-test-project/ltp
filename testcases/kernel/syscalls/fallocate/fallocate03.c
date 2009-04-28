@@ -245,6 +245,7 @@ static inline long fallocate(int fd, int mode, loff_t offset, loff_t len)
 	struct utsname buf;
 	if (uname(&buf) == 0) {
 		if (!strcmp(buf.machine, "ppc64")
+		    || !strcmp(buf.machine, "ppc")
 		    || !strcmp(buf.machine, "x86_64"))
 			return syscall(__NR_fallocate, fd, mode,
 				       (int)(offset >> 32), (int)offset,
