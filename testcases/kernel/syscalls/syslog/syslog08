@@ -20,7 +20,7 @@
 # 02/05/03  Modified - Manoj Iyer <manjo@mail.utexas.edu> use USCTEST macros
 #           fixed bugs.
 # 07/26/05  Michael Reed  <mreedltp@vnet.ibm.com>
-#           Made changes to account for the replacement of syslogd$
+#           Made changes to account for the replacement of syslogd
 #           with syslog-ng
 #
 ##################################################################
@@ -109,7 +109,7 @@ syslog_case8()
 	tst_resm TBROK  "$CONFIG_FILE not found!"
   else
     #Pause if another LTP syslog test is running
-    while [ -e $CONFIG_FILE.ltpback ] $
+    while [ -e $CONFIG_FILE.ltpback ]
       do
         if [ $(( wait_count-- )) -gt 0 ]
         then
@@ -184,7 +184,7 @@ syslog_case8()
 	             old_mail_check=0
 	        fi
 
-		# syslogtst has to be called with one more$
+		# syslogtst has to be called with one more
                 # additional facility argument(1-6)
 		syslogtst 8 $facility_no 2>/dev/null
 		if [ $? -ne 0 ]; then

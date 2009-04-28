@@ -20,14 +20,14 @@
 # 02/05/03  Modified - Manoj Iyer <manjo@mail.utexas.edu> use USCTEST macros
 #           fixed bugs.
 # 07/26/05  Michael Reed  <mreedltp@vnet.ibm.com>
-#           Made changes to account for the replacement of syslogd$
+#           Made changes to account for the replacement of syslogd
 #           with syslog-ng
 #
 ##################################################################
 # case 7: Test the priorities....                                #
 #                                                                #
 #         o Add lowest prority level i.e debug level entry to    #
-#           configuration file.                                  #   $
+#           configuration file.                                  #
 #           o For syslog-ng the priority is set to all           #
 #             because of the format of syslog-ng.conf            #
 #             The format of the tests is the same, all levels of #
@@ -129,7 +129,7 @@ then
 	tst_resm TBROK  "$CONFIG_FILE not found!"
 else
 #Pause if another LTP syslog test is running
-      while [ -e $CONFIG_FILE.ltpback ] $
+      while [ -e $CONFIG_FILE.ltpback ]
       do
           if [ $(( wait_count-- )) -gt 0 ]
           then
@@ -196,7 +196,7 @@ else
 	notice_old=0
 	info_old=0
 	debug_old=0
-fi$
+fi
 
 	# Call syslogtst. It will send the messages of all levels.
 	syslogtst 7 2>/dev/null
@@ -207,7 +207,7 @@ fi$
 	sleep 2
 
 	# check if /var/log/maillog script exists
-#	find /var/log/ |grep maillog 2>&1 1>/dev/null$
+#	find /var/log/ |grep maillog 2>&1 1>/dev/null
 #	RC=$?
 #	if [ $RC -ne 0 ]
 #	then
