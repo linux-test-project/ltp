@@ -55,43 +55,107 @@
 #include <signal.h>
 #include "test.h"
 #include "usctest.h"
+#include "rmobj.h"
 #include "linux_syscall_numbers.h"
 
-#define TEST_CASES 6
-#define VERIFICATION_BLOCK_SIZE 1024
-#define MYRETCODE -999
 #ifndef AT_FDCWD
 #define AT_FDCWD -100
 #endif
-#ifndef AT_REMOVEDIR
-#define AT_REMOVEDIR 0x200
+#ifndef AT_SYMLINK_FOLLOW
+#define AT_SYMLINK_FOLLOW 0x400
 #endif
 
-void setup();
-void cleanup();
-void setup_every_copy();
-static int mylinkat_test(int testno, int ofd, const char *ofn,
-			 int nfd, const char *nfn, int f);
+struct test_struct;
+static void setup();
+static void cleanup();
+static void setup_every_copy();
+static void mylinkat_test(struct test_struct* desc);
+
+#define TEST_DIR1 "olddir"
+#define TEST_DIR2 "newdir"
+#define TEST_DIR3 "deldir"
+#define TEST_FILE1 "oldfile"
+#define TEST_FILE2 "newfile"
+#define TEST_FIFO "fifo"
+
+static char dpathname[256] = "%s/"TEST_DIR2"/"TEST_FILE1;
+static int olddirfd, newdirfd = -1, cwd_fd = AT_FDCWD, stdinfd = 0, crapfd = -1, deldirfd;
+
+struct test_struct {
+	int* oldfd;
+	const char* oldfn;
+	int* newfd;
+	const char* newfn;
+	int flags;
+	const char* referencefn1;
+	const char* referencefn2;
+	int expected_errno;
+} test_desc[]= {
+	/* relative paths */
+	{ &olddirfd, TEST_FILE1, &newdirfd, TEST_FILE1, 0, TEST_DIR1"/"TEST_FILE1, TEST_DIR2"/"TEST_FILE1, 0 },
+	/* abs path at source */
+	{ &olddirfd, "/etc/passwd", &newdirfd, TEST_FILE1, 0, 0, 0, 0 },
+	/* abs path at dst */
+	{ &olddirfd, TEST_FILE1, &newdirfd, dpathname, 0, TEST_DIR1"/"TEST_FILE1, TEST_DIR2"/"TEST_FILE1, 0},
+
+	/* relative paths to cwd */
+	{ &cwd_fd, TEST_DIR1"/"TEST_FILE1, &newdirfd, TEST_FILE1, 0, TEST_DIR1"/"TEST_FILE1, TEST_DIR2"/"TEST_FILE1, 0 },
+	/* relative paths to cwd */
+	{ &olddirfd, TEST_FILE1, &cwd_fd, TEST_DIR2"/"TEST_FILE1, 0, TEST_DIR1"/"TEST_FILE1, TEST_DIR2"/"TEST_FILE1, 0 },
+	/* abs path at source */
+	{ &cwd_fd, "/etc/passwd", &newdirfd, TEST_FILE1, 0, 0, 0, 0 },
+	/* abs path at dst */
+	{ &olddirfd, TEST_FILE1, &cwd_fd, dpathname, 0, TEST_DIR1"/"TEST_FILE1, TEST_DIR2"/"TEST_FILE1, 0},
+
+	/* relative paths to invalid */
+	{ &stdinfd, TEST_DIR1"/"TEST_FILE1, &newdirfd, TEST_FILE1, 0, 0, 0, ENOTDIR },
+	/* relative paths to invalid */
+	{ &olddirfd, TEST_FILE1, &stdinfd, TEST_DIR2"/"TEST_FILE1, 0, 0, 0, ENOTDIR },
+	/* abs path at source */
+	{ &stdinfd, "/etc/passwd", &newdirfd, TEST_FILE1, 0, 0, 0, 0 },
+	/* abs path at dst */
+	{ &olddirfd, TEST_FILE1, &stdinfd, dpathname, 0, TEST_DIR1"/"TEST_FILE1, TEST_DIR2"/"TEST_FILE1, 0},
+
+	/* relative paths to crap */
+	{ &crapfd, TEST_DIR1"/"TEST_FILE1, &newdirfd, TEST_FILE1, 0, 0, 0, EBADF },
+	/* relative paths to crap */
+	{ &olddirfd, TEST_FILE1, &crapfd, TEST_DIR2"/"TEST_FILE1, 0, 0, 0, EBADF },
+	/* abs path at source */
+	{ &crapfd, "/etc/passwd", &newdirfd, TEST_FILE1, 0, 0, 0, 0 },
+	/* abs path at dst */
+	{ &olddirfd, TEST_FILE1, &crapfd, dpathname, 0, TEST_DIR1"/"TEST_FILE1, TEST_DIR2"/"TEST_FILE1, 0},
+
+	/* relative paths to deleted */
+	{ &deldirfd, TEST_DIR1"/"TEST_FILE1, &newdirfd, TEST_FILE1, 0, 0, 0, ENOENT },
+	/* relative paths to deleted */
+	{ &olddirfd, TEST_FILE1, &deldirfd, TEST_DIR2"/"TEST_FILE1, 0, 0, 0, ENOENT },
+	/* abs path at source */
+	{ &deldirfd, "/etc/passwd", &newdirfd, TEST_FILE1, 0, 0, 0, 0 },
+	/* abs path at dst */
+	{ &olddirfd, TEST_FILE1, &deldirfd, dpathname, 0, TEST_DIR1"/"TEST_FILE1, TEST_DIR2"/"TEST_FILE1, 0},
+
+	/* x-device link */
+	{ &cwd_fd, "/proc/cpuinfo", &newdirfd, TEST_FILE1, 0, 0, 0, EXDEV },
+	/* directory link */
+	{ &cwd_fd, "/tmp", &newdirfd, TEST_FILE1, 0, 0, 0, EPERM },
+	/* invalid flag */
+	{ &olddirfd, TEST_FILE1, &newdirfd, TEST_FILE1, 1, 0, 0, EINVAL },
+	/* fifo link */
+	/*	{ &olddirfd, TEST_FIFO, &newdirfd, TEST_FILE1, 0, TEST_DIR1"/"TEST_FIFO, TEST_DIR2"/"TEST_FILE1, 0 },*/
+};
 
 char *TCID = "linkat01";	/* Test program identifier.    */
-int TST_TOTAL = TEST_CASES;	/* Total number of test cases. */
+int TST_TOTAL = sizeof(test_desc) / sizeof(*test_desc);	/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-char pathname[256];
-char dpathname[256];
-char testfile[256];
-char dtestfile[256];
-char testfile2[256];
-char dtestfile2[256];
-char testfile3[256];
-char dtestfile3[256];
-int olddirfd, newdirfd, fd, ret;
-int oldfds[TEST_CASES], newfds[TEST_CASES];
-char *oldfilenames[TEST_CASES], *newfilenames[TEST_CASES];
-int expected_errno[TEST_CASES] = { 0, 0, ENOTDIR, EBADF, EINVAL, 0 };
-int flags[TEST_CASES] = { 0, 0, 0, 0, 1, 0 };
-char buffer[VERIFICATION_BLOCK_SIZE];
 
-int mylinkat(int olddirfd, const char *oldfilename,
+#define SUCCEED_OR_DIE(syscall, message, ...)														\
+	(errno = 0,																														\
+		({int ret=syscall(__VA_ARGS__);																			\
+			if(ret==-1)																												\
+				tst_brkm(TBROK, cleanup, message, __VA_ARGS__, strerror(errno)); \
+			ret;}))
+
+static int mylinkat(int olddirfd, const char *oldfilename,
 	     int newdirfd, const char *newfilename, int flags)
 {
 	return syscall(__NR_linkat, olddirfd, oldfilename, newdirfd,
@@ -126,7 +190,6 @@ int main(int ac, char **av)
 	 * check looping state if -c option given
 	 ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		setup_every_copy();
 
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
@@ -135,35 +198,9 @@ int main(int ac, char **av)
 		 * Call linkat
 		 */
 		for (i = 0; i < TST_TOTAL; i++) {
-			TEST(mylinkat_test
-			     (i, oldfds[i], oldfilenames[i], newfds[i],
-			      newfilenames[i], flags[i]));
+			setup_every_copy();
+			mylinkat_test(&test_desc[i]);
 
-			/* check return code */
-			if (TEST_ERRNO == expected_errno[i]) {
-
-				/***************************************************************
-				 * only perform functional verification if flag set (-f not given)
-				 ***************************************************************/
-				if (STD_FUNCTIONAL_TEST) {
-					/* No Verification test, yet... */
-					tst_resm(TPASS,
-						 "linkat() returned the expected  errno %d: %s",
-						 TEST_ERRNO,
-						 strerror(TEST_ERRNO));
-				}
-			} else {
-				if ((TEST_ERRNO == ENOMSG)
-				    && (TEST_RETURN == MYRETCODE)) {
-					tst_resm(TINFO,
-						 "The link file's content isn't as same as the original file's "
-						 "although linkat returned 0");
-				}
-				TEST_ERROR_LOG(TEST_ERRNO);
-				tst_resm(TFAIL,
-					 "linkat() Failed, errno=%d : %s",
-					 TEST_ERRNO, strerror(TEST_ERRNO));
-			}
 		}
 
 	}			/* End for TEST_LOOPING */
@@ -176,160 +213,90 @@ int main(int ac, char **av)
 	return (0);
 }				/* End main */
 
-void setup_every_copy()
+static void setup_every_copy()
 {
-	int len;
+	close(newdirfd);
+	rmobj(TEST_DIR2, NULL);
 
-	/* Initialize test dir and file names */
-	sprintf(pathname, "linkattestdir%d", getpid());
-	sprintf(dpathname, "dlinkattestdir%d", getpid());
-	sprintf(testfile, "linkattestfile%d.txt", getpid());
-	sprintf(dtestfile, "dlinkattestfile%d.txt", getpid());
-	sprintf(testfile2, "linkattestdir%d/linkattestfile%d.txt", getpid(),
-		getpid());
-	sprintf(dtestfile2, "dlinkattestdir%d/dlinkattestfile%d.txt", getpid(),
-		getpid());
-	sprintf(testfile3, "/tmp/linkattestfile%d.txt", getpid());
-	sprintf(dtestfile3, "/tmp/dlinkattestfile%d.txt", getpid());
-
-	ret = mkdir(pathname, 0700);
-	if (ret < 0) {
-		perror("mkdir: ");
-		exit(-1);
-	}
-
-	ret = mkdir(dpathname, 0700);
-	if (ret < 0) {
-		perror("mkdir: ");
-		exit(-1);
-	}
-
-	olddirfd = open(pathname, O_DIRECTORY);
-	if (olddirfd < 0) {
-		perror("open: ");
-		exit(-1);
-	}
-
-	newdirfd = open(dpathname, O_DIRECTORY);
-	if (newdirfd < 0) {
-		perror("open: ");
-		exit(-1);
-	}
-
-	fd = open(testfile, O_CREAT | O_RDWR, 0600);
-	if (fd < 0) {
-		perror("open: ");
-		exit(-1);
-	}
-
-	len = write(fd, buffer, VERIFICATION_BLOCK_SIZE);
-	if (len < VERIFICATION_BLOCK_SIZE) {
-		perror("write: ");
-		exit(-1);
-	}
-
-	fd = open(testfile2, O_CREAT | O_RDWR, 0600);
-	if (fd < 0) {
-		perror("open: ");
-		exit(-1);
-	}
-
-	len = write(fd, buffer, VERIFICATION_BLOCK_SIZE);
-	if (len < VERIFICATION_BLOCK_SIZE) {
-		perror("write: ");
-		exit(-1);
-	}
-
-	fd = open(testfile3, O_CREAT | O_RDWR, 0600);
-	if (fd < 0) {
-		perror("open: ");
-		exit(-1);
-	}
-
-	len = write(fd, buffer, VERIFICATION_BLOCK_SIZE);
-	if (len < VERIFICATION_BLOCK_SIZE) {
-		perror("write: ");
-		exit(-1);
-	}
-
-	oldfds[0] = oldfds[1] = oldfds[4] = olddirfd;
-	oldfds[2] = fd;
-	oldfds[3] = 100;
-	oldfds[5] = AT_FDCWD;
-
-	newfds[0] = newfds[1] = newfds[4] = newdirfd;
-	newfds[2] = fd;
-	newfds[3] = 100;
-	newfds[5] = AT_FDCWD;
-
-	oldfilenames[0] = oldfilenames[2] = oldfilenames[3] = oldfilenames[4] =
-	    oldfilenames[5] = testfile;
-	oldfilenames[1] = testfile3;
-
-	newfilenames[0] = newfilenames[2] = newfilenames[3] = newfilenames[4] =
-	    newfilenames[5] = dtestfile;
-	newfilenames[1] = dtestfile3;
+	SUCCEED_OR_DIE(mkdir, "mkdir(%s, %o) failed: %s", TEST_DIR2, 0700);
+	newdirfd = SUCCEED_OR_DIE(open, "open(%s, 0x%x) failed: %s", TEST_DIR2, O_DIRECTORY);
 }
 
-static int mylinkat_test(int testno, int ofd, const char *ofn,
-			 int nfd, const char *nfn, int f)
+static void mylinkat_test(struct test_struct* desc)
 {
-	int ret, tmperrno, fd;
-	char linkbuf[VERIFICATION_BLOCK_SIZE];
-	char *filename = NULL;
-	int len;
+	int fd;
 
-	ret = mylinkat(ofd, ofn, nfd, nfn, f);
-	if (ret < 0) {
-		return ret;
-	}
+	TEST(mylinkat(*desc->oldfd, desc->oldfn, *desc->newfd, desc->newfn, desc->flags));
 
-	tmperrno = errno;
+	/* check return code */
+	if (TEST_ERRNO == desc->expected_errno) {
 
-	if (testno == 0)
-		filename = dtestfile2;
-	else if (testno == 1)
-		filename = dtestfile3;
-	else if (testno == 5)
-		filename = dtestfile;
+		/***************************************************************
+		 * only perform functional verification if flag set (-f not given)
+		 ***************************************************************/
+		if (STD_FUNCTIONAL_TEST) {
+			/* No Verification test, yet... */
 
-	if (filename == NULL) {
-		errno = tmperrno;
-		return ret;
+			if (TEST_RETURN == 0 && desc->referencefn1 != NULL) {
+				int tnum=rand(), vnum=~tnum;
+				int len;
+				fd = SUCCEED_OR_DIE(open, "open(%s, 0x%x) failed: %s", desc->referencefn1, O_RDWR);
+				if((len=write(fd, &tnum, sizeof(tnum))) != sizeof(tnum))
+					tst_brkm(TBROK, cleanup, "write() failed: expected %d, returned %d; error: %s", sizeof(tnum), len, strerror(errno));
+				SUCCEED_OR_DIE(close, "close(%d) failed: %s", fd);
+
+				fd = SUCCEED_OR_DIE(open, "open(%s, 0x%x) failed: %s", desc->referencefn2, O_RDONLY);
+				if((len=read(fd, &vnum, sizeof(vnum))) != sizeof(tnum))
+					tst_brkm(TBROK, cleanup, "read() failed: expected %d, returned %d; error: %s", sizeof(vnum), len, strerror(errno));
+				SUCCEED_OR_DIE(close, "close(%d) failed: %s", fd);
+
+				if(tnum == vnum)
+					tst_resm(TPASS, "Test passed");
+				else
+					tst_resm(TFAIL,
+									 "The link file's content isn't as same as the original file's "
+									 "although linkat returned 0");
+			}
+			else
+				tst_resm(TPASS,
+								 "linkat() returned the expected  errno %d: %s",
+								 TEST_ERRNO,
+								 strerror(TEST_ERRNO));
+		} else
+			tst_resm(TPASS, "Test passed");
 	} else {
-		fd = open(filename, O_RDONLY);
-		if (fd < 0) {
-			perror("open: ");
-			exit(-1);
-		}
-		len = read(fd, linkbuf, VERIFICATION_BLOCK_SIZE);
-		if (len < 0) {
-			perror("read: ");
-			exit(-1);
-		}
-		if (memcmp(buffer, linkbuf, VERIFICATION_BLOCK_SIZE) != 0) {
-			errno = ENOMSG;
-			return MYRETCODE;
-		}
-		errno = tmperrno;
-		return ret;
+		TEST_ERROR_LOG(TEST_ERRNO);
+		tst_resm(TFAIL,
+						 TEST_RETURN == 0 ? "linkat() surprisingly succeeded" : "linkat() Failed, errno=%d : %s",
+						 TEST_ERRNO, strerror(TEST_ERRNO));
 	}
 }
 
 /***************************************************************
  * setup() - performs all ONE TIME setup for this test.
  ***************************************************************/
-void setup()
+static void setup()
 {
-	/* Initilize buffer */
-	int i;
-
-	for (i = 0; i < VERIFICATION_BLOCK_SIZE; i++) {
-		buffer[i] = i & 0xff;
-	}
+	char *tmp;
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+
+	tst_tmpdir();
+
+	SUCCEED_OR_DIE(mkdir, "mkdir(%s, %o) failed: %s", TEST_DIR1, 0700);
+	SUCCEED_OR_DIE(mkdir, "mkdir(%s, %o) failed: %s", TEST_DIR3, 0700);
+	olddirfd = SUCCEED_OR_DIE(open, "open(%s, 0x%x) failed: %s", TEST_DIR1, O_DIRECTORY);
+	deldirfd = SUCCEED_OR_DIE(open, "open(%s, 0x%x) failed: %s", TEST_DIR3, O_DIRECTORY);
+	SUCCEED_OR_DIE(rmdir, "rmdir(%s) failed: %s", TEST_DIR3);
+	SUCCEED_OR_DIE(close, "close(%d) failed: %s",
+								 SUCCEED_OR_DIE(open, "open(%s, 0x%x, %o) failed: %s", TEST_DIR1"/"TEST_FILE1, O_CREAT | O_EXCL, 0600));
+
+	SUCCEED_OR_DIE(mkfifo, "mkfifo(%s, %o) failed: %s", TEST_DIR1"/"TEST_FIFO, 0600);
+
+	/* gratuitous memory leak here */
+	tmp = strdup(dpathname);
+	snprintf(dpathname, sizeof(dpathname), tmp, get_current_dir_name());
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
@@ -339,18 +306,9 @@ void setup()
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  ***************************************************************/
-void cleanup()
+static void cleanup()
 {
-	/* Remove them */
-	unlink(testfile2);
-	unlink(dtestfile2);
-	unlink(testfile3);
-	unlink(dtestfile3);
-	unlink(testfile);
-	unlink(dtestfile);
-	rmdir(pathname);
-	rmdir(dpathname);
-
+	tst_rmdir();
 	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
