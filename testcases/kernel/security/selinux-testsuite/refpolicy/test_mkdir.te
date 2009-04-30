@@ -56,4 +56,4 @@ allow test_nocreate_t test_create_dir_t:dir { search getattr };
 
 # Allow all of these domains to be entered from sysadm domain
 corecmd_bin_entry_type(test_mkdir_domain)
-sysadm_bin_spec_domtrans_to(test_mkdir_domain)
+userdom_sysadm_bin_spec_domtrans_to(test_mkdir_domain)

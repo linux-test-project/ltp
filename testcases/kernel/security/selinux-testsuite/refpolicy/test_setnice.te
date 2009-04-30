@@ -25,6 +25,7 @@ typeattribute test_setnice_change_t testdomain;
 
 # Allow execution of helper programs.
 corecmd_exec_bin(setnicedomain)
+corecmd_exec_sbin(setnicedomain)
 domain_exec_all_entry_files(setnicedomain)
 files_exec_etc_files(setnicedomain)
 libs_use_ld_so(setnicedomain)

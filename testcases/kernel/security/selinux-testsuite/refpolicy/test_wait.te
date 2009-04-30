@@ -25,7 +25,7 @@ typeattribute test_wait_notchild_t testdomain;
 
 # Allow all of these domains to be entered from the sysadm domain.
 miscfiles_domain_entry_test_files(waitdomain)
-sysadm_entry_spec_domtrans_to(waitdomain)
+userdom_sysadm_entry_spec_domtrans_to(waitdomain)
 
 # Grant permissions for a domain transition from parent to child,
 # including the ability to wait on the child.

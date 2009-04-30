@@ -43,7 +43,7 @@ allow test_kill_signal_t test_kill_server_t:process signal;
 # Allow all of these domains to be entered from the sysadm domains,
 # via kill or a program in the test directory.
 miscfiles_domain_entry_test_files(killdomain)
-sysadm_entry_spec_domtrans_to(killdomain)
+userdom_sysadm_entry_spec_domtrans_to(killdomain)
 corecmd_bin_entry_type(killdomain)
-sysadm_bin_spec_domtrans_to(killdomain)
+userdom_sysadm_bin_spec_domtrans_to(killdomain)
 

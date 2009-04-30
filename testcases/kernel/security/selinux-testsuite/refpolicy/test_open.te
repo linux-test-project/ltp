@@ -32,4 +32,4 @@ allow test_append_t test_open_file_t:file { getattr append };
 
 # Allow all of these domains to be entered from sysadm domain
 miscfiles_domain_entry_test_files(test_open_domain)
-sysadm_entry_spec_domtrans_to(test_open_domain)
+userdom_sysadm_entry_spec_domtrans_to(test_open_domain)

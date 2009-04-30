@@ -27,7 +27,7 @@ typeattribute test_ptrace_traced_t testdomain;
 
 # Allow the tracer domain to trace the traced domain.
 allow test_ptrace_tracer_t test_ptrace_traced_t:process ptrace;
-userdom_search_user_home_dirs(test_ptrace_traced_t)
+userdom_search_generic_user_home_dirs(test_ptrace_traced_t)
 
 # Let the tracer wait on the traced domain.
 allow test_ptrace_traced_t test_ptrace_tracer_t:process sigchld;
@@ -35,4 +35,4 @@ allow test_ptrace_traced_t test_ptrace_tracer_t:process sigchld;
 # Allow all of these domains to be entered from the sysadm domains.
 # via a program in the test directory.
 miscfiles_domain_entry_test_files(ptracedomain)
-sysadm_entry_spec_domtrans_to(ptracedomain)
+userdom_sysadm_entry_spec_domtrans_to(ptracedomain)

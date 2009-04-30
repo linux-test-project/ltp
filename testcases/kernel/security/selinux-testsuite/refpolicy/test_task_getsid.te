@@ -25,7 +25,7 @@ typeattribute test_getsid_no_t testdomain;
 
 # Allow domain to be entered from the sysadm domain.
 miscfiles_domain_entry_test_files(test_getsid_d)
-sysadm_entry_spec_domtrans_to(test_getsid_d)
+userdom_sysadm_entry_spec_domtrans_to(test_getsid_d)
 
 # Give test_getsid_yes_t the permission needed.
 allow test_getsid_yes_t test_getsid_target_t:process getsession;
