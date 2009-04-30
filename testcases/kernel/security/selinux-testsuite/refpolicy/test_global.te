@@ -22,13 +22,12 @@ allow testdomain self:capability { dac_override dac_read_search };
 # Let sysadm_t use runcon to run the test programs in various domains.
 #allow sysadm_t self:process setexec;
 #selinux_get_fs_mount(sysadm_t)
-allow sysadm_t test_file_t:file { execute execute_no_trans };
 
 # Let all test domains read test directories and files.
 miscfiles_read_test_files(testdomain)
 
 # Let the test domains set their current, exec and fscreate contexts.
-# allow testdomain self:process setcurrent;
+allow testdomain self:process setcurrent;
 # domain_dyntrans_type(testdomain)
 selinux_get_fs_mount(testdomain)
 allow testdomain self:process setexec;
