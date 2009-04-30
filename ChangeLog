@@ -548,6 +548,49 @@ IMA update openssl-devel existence test: Verify the existence of openssl/sha.h n
 Modified File(s):
 ltp/m4/ltp-crypto.m4
 
+50) Log Message:
+Reverting Jiri Palecek <jpalecek@web.de> patch: <SUBJECT: Fix running of the selinux tests>, as Stephen Smalley <sds@tycho.nsa.gov> objected as: NAK to this one as well - if you look at the commented-out line immediately following the setcurrent one, you'll see what you need to do to make this work _if_ you aren't following the README instructions in the first place.  sysadm_t one might be valid due to tightening of sysadm_t in more modern refpolicy, but just revert the patch for now please and await an ack on future ones.
+
+Modified Files:
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_global.te
+
+51) Log Message:
+Reverting "Christopher J. PeBenito" <cpebenito@tresys.com> patch: <SUBJECT: LTP SELinux policy error> applied on 02-02-2009, as, Stephen Smalley <sds@tycho.nsa.gov> objected as: Subrata - this patch never should have been applied.  Chris said that it was incomplete, and I noted that it conflicted with Serge's conditionally applied patch.  Please revert this, as it breaks the selinux ltp testsuite and the resulting policy will not build.
+
+Modified Files:
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_capable_file.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_capable_net.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_dyntrace.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_dyntrans.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_entrypoint.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_execshare.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_exectrace.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_execute_no_trans.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_fdreceive.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_file.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_global.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_inherit.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_ioctl.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_ipc.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_link.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_mkdir.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_open.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_ptrace.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_relabel.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_rename.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_setattr.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_setnice.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_sigkill.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_sysctl.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_task_create.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_task_getpgid.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_task_getsched.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_task_getsid.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_task_setpgid.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_task_setsched.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_transition.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_wait.te
+
 LTP-20090331
 
 1) Log Message:
