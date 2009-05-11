@@ -12,6 +12,3 @@ source $SCRIPTS_DIR/setenv.sh
 
 # Warning: tests args are now set in profiles
 $SCRIPTS_DIR/run_c_files.sh $profile sched_football
-
-LOG_FILE="$LOG_DIR/$LOG_FORMAT-sched_football.log"
-PYTHONPATH=../../  python parse-football.py $LOG_FILE 2>&1 | tee -a $LOG_FILE

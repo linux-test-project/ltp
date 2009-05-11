@@ -162,6 +162,7 @@ int main(int argc, char* argv[])
 	struct sched_param param;
 	int priority;
 	int i;
+	int result;
 	setup();
 
 	rt_init("n:l:h",parse_args,argc,argv);
@@ -197,6 +198,9 @@ int main(int argc, char* argv[])
 
 	/* Ok, everyone is on the field, bring out the ref */
 	printf("Starting referee thread\n");
-	return referee(game_length);
+	result = referee(game_length);
+	printf("Result: %s\n", result ? "FAIL" : "PASS");
+	return result;
+
 }
 
