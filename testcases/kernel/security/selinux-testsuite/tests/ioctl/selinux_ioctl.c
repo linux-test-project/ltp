@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
     exit(1);
   }
 
-  /* This one should hit the FILE__GETATTR test */
+  /* This one should hit the FILE__IOCTL test */
   rc = ioctl(fd, FIGETBSZ, &val);
   if( rc != 0 ) {
     perror("test_ioctl:FIGETBSZ");
@@ -49,15 +49,22 @@ int main(int argc, char **argv) {
     exit(1);
   }
 
-  /* This one should hit the normal file descriptor use test */
+  /* This one should hit the FILE__IOCTL test */
   rc = ioctl(fd, FIONBIO, &val);
   if( rc != 0 ) {
     perror("test_ioctl:FIONBIO");
     exit(1);
   }
 
+  /* This one should hit the FILE__READ test */
+  rc = ioctl(fd, EXT2_IOC_GETVERSION, &val);
+  if( rc != 0 ) {
+    perror("test_ioctl:EXT2_IOC_GETVERSION");
+    exit(1);
+  }
+
+  /* This one should hit the FILE__WRITE test */
   val = 0;
-  /* This one should hit the FILE__SETATTR test */
   rc = ioctl(fd, EXT2_IOC_SETVERSION, &val);
   if( rc != 0 ) {
     perror("test_ioctl:EXT2_IOC_SETVERSION");
