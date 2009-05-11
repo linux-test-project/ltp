@@ -17,7 +17,7 @@ setup()
 	export TST_COUNT=0
 	export TST_TOTAL=14
 
-	LTPBIN=$LTPROOT/testcases/bin
+	LTPBIN=${LTPBIN:-$LTPROOT/testcases/bin}
 	SELINUXTMPDIR=$(mktemp -d)
 	chcon -t test_file_t $SELINUXTMPDIR
 
