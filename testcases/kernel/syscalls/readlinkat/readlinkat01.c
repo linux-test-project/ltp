@@ -253,8 +253,7 @@ void setup_every_copy()
 	fds[3] = 100;
 	fds[4] = AT_FDCWD;
 
-	filenames[0] = filenames[2] = filenames[3] = filenames[4] =
-	    filenames[5] = dtestfile;
+	filenames[0] = filenames[2] = filenames[3] = filenames[4] = dtestfile;
 	filenames[1] = dtestfile3;
 
 	for (i = 0; i < TEST_CASES; i++)
