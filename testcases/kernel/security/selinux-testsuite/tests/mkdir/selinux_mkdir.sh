@@ -89,12 +89,18 @@ test04()
 	TCID="test04"
 	TST_COUNT=4
 	RC=0
+	SUFFIX=""
+	MLS=x`cat /selinux/mls`
+	if [ "$MLS" == "x1" ]
+	then
+	    SUFFIX=":s0"
+	fi
 
 	# Verify that test_create_t can create a subdirectory
 	# with a different type.
 	# This requires add_name to test_mkdir_dir_t and create
 	# to test_create_dir_t.
-	runcon -t test_create_t -- mkdir --context=system_u:object_r:test_create_dir_t $SELINUXTMPDIR/test_dir/test3 2>&1
+	runcon -t test_create_t -- mkdir --context=system_u:object_r:test_create_dir_t$SUFFIX $SELINUXTMPDIR/test_dir/test3 2>&1
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
@@ -110,11 +116,17 @@ test05()
 	TCID="test05"
 	TST_COUNT=5
 	RC=0
+	SUFFIX=""
+	MLS=x`cat /selinux/mls`
+	if [ "$MLS" == "x1" ]
+	then
+	    SUFFIX=":s0"
+	fi
 
 	# Verify that test_nocreate_t cannot create 
 	# a subdirectory with a different type.
 	# Should fail on create check to the new type.
-	runcon -t test_nocreate_t -- mkdir --context=system_u:object_r:test_create_dir_t $SELINUXTMPDIR/test_dir/test4 2>&1
+	runcon -t test_nocreate_t -- mkdir --context=system_u:object_r:test_create_dir_t$SUFFIX $SELINUXTMPDIR/test_dir/test4 2>&1
 	RC=$?
 	if [ $RC -ne 0 ]
 	then

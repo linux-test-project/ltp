@@ -19,15 +19,18 @@ setup()
 	chcon -t test_file_t $SELINUXTMPDIR
 
 	# Create the source and destination test directories for the rename.
-	mkdir --context=system_u:object_r:test_rename_src_dir_t $SELINUXTMPDIR/src_dir 2>&1
-	mkdir --context=system_u:object_r:test_rename_dst_dir_t $SELINUXTMPDIR/dst_dir 2>&1
+	mkdir $SELINUXTMPDIR/src_dir
+	chcon -t test_rename_src_dir_t $SELINUXTMPDIR/src_dir
+	mkdir $SELINUXTMPDIR/dst_dir
+	chcon -t test_rename_dst_dir_t $SELINUXTMPDIR/dst_dir
 
 	# Create a test file to try renaming.
 	touch $SELINUXTMPDIR/src_dir/test_file
 	chcon -t test_rename_file_t $SELINUXTMPDIR/src_dir/test_file
 
 	# Create a test directory to try renaming.
-	mkdir --context=system_u:object_r:test_rename_dir_t $SELINUXTMPDIR/src_dir/test_dir
+	mkdir $SELINUXTMPDIR/src_dir/test_dir
+	chcon -t test_rename_dir_t $SELINUXTMPDIR/src_dir/test_dir
 
 }
 

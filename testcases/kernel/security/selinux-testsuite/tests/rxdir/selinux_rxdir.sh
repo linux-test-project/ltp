@@ -20,7 +20,8 @@ setup()
 
 	# Create a test dir with the test_rxdir_dir_t type
 	# for use in the tests.
-	mkdir --context=system_u:object_r:test_rxdir_dir_t $SELINUXTMPDIR/test_dir
+	mkdir $SELINUXTMPDIR/test_dir
+	chcon -t test_rxdir_dir_t $SELINUXTMPDIR/test_dir
 
 	# Touch a file in the directory.
 	touch $SELINUXTMPDIR/test_dir/test_file

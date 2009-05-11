@@ -53,7 +53,7 @@ setup()
 	#
 	# Get the SID of the good file.
 	#
-	good_file_sid="system_u:object_r:fileop_file_t"
+	good_file_sid=`ls -Z $SELINUXTMPDIR/temp_file | awk '{print $4}'`
 }
 
 test01()
