@@ -118,6 +118,60 @@ case $TEST_NUM in
 		exit -1;
 	fi;
 	;;
+"6" )
+	if [ -f cpuset_sched_domains_test.sh ]; then
+		./cpuset_sched_domains_test.sh
+		exit $?;
+	else
+		echo "Shell file not installed..Please check Makefile...Exiting"
+		exit -1;
+	fi;
+	;;
+"7" )
+	if [ -f cpuset_load_balance_test.sh ]; then
+		./cpuset_load_balance_test.sh
+		exit $?;
+	else
+		echo "Shell file not installed..Please check Makefile...Exiting"
+		exit -1;
+	fi;
+	;;
+"8" )
+	if [ -f cpuset_hotplug_test.sh ]; then
+		./cpuset_hotplug_test.sh
+		exit $?;
+	else
+		echo "Shell file not installed..Please check Makefile...Exiting"
+		exit -1;
+	fi;
+	;;
+"9" )
+	if [ -f cpuset_memory_testset.sh ]; then
+		./cpuset_memory_testset.sh
+		exit $?;
+	else
+		echo "Shell file not installed..Please check Makefile...Exiting"
+		exit -1;
+	fi;
+	;;
+"10" )
+	if [ -f cpuset_memory_pressure_testset.sh ]; then
+		./cpuset_memory_pressure_testset.sh
+		exit $?;
+	else
+		echo "Shell file not installed..Please check Makefile...Exiting"
+		exit -1;
+	fi;
+	;;
+"11" )
+	if [ -f cpuset_memory_spread_testset.sh ]; then
+		./cpuset_memory_spread_testset.sh
+		exit $?;
+	else
+		echo "Shell file not installed..Please check Makefile...Exiting"
+		exit -1;
+	fi;
+	;;
 "*" )
 	usage;
 	exit -1;

@@ -6,12 +6,10 @@ The directory cpuset contains the tests related to the cpuset controller.
 Cpuset is a mechanism for assigning a set of CPUs and Memory Nodes to a set of
 tasks.
 
-There are total 190 testcases taht have been added till date. Now, These
+There are total 258 testcases that have been added till date. Now, These
 testcases contain the basis operation test and part functionality test of
 cpuset, such as: adding/removing cpus/mems, setting flags, exclusive function,
-hierarchy realtion, inherit relation and cpuset VS syscall.
-
-More testcases will be added in future.
+hierarchy relation, inherit relation, cpuset VS syscall and so on
 
 NOTE: the test can be run by root only. And 4 CPUs and 3 Memory Nodes is need
 to run it at least.
@@ -41,6 +39,36 @@ cpuset_syscall_test
 -------------------
 Directory containing the shell script and program which are used to test
 syscalls whether they collide with cpuset.
+
+cpuset_hotplug_test
+-------------------
+Directory containing the shell script and program which are used to test
+cpu hotplug whether they collide with cpuset.
+
+cpuset_load_balance_test
+------------------------
+Directory containing the shell script and program which are used to test
+scheduler domains partitions. Beside that, they are also used to check that
+whether load balance breaks the cpuset's limit.
+
+cpuset_memory_pressure_test
+---------------------------
+Directory containing the shell script and program which are used to test
+memory pressure measurement function.
+
+cpuset_memory_spread_test
+-------------------------
+Directory containing the shell script and program which are used to test
+page caches spread. There are two control files. One is memory_spread_page which
+is used to control the allocation of page caches, the other is
+memory_spread_slab which is used to control the allocation of slab objects.
+Because there are much factor to affect the result of slab spread test, it
+is hard to test it. So we just test memory_spread_page.
+
+cpuset_memory_test
+------------------
+Directory containing the shell script and program which are used to test
+memory allocation.
 
 cpuset_lib
 ----------

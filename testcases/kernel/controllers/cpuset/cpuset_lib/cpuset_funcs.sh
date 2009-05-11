@@ -36,9 +36,22 @@ N_NODES=${N_NODES#*-*}
 CPUSET="/dev/cpuset"
 CPUSET_TMP="/tmp/cpuset_tmp"
 
+HOTPLUG_CPU="1"
+
 cpuset_log()
 {
 	tst_resm TINFO "$*"
+}
+
+# cpuset_log_error <error_file>
+cpuset_log_error()
+{
+	local error_message=
+
+	while read error_message
+	do
+		cpuset_log "$error_message"
+	done < "$1"
 }
 
 version_check()
@@ -173,12 +186,80 @@ cleanup()
 	rm -rf "$CPUSET_TMP" &> /dev/null
 }
 
-# set_cfiles_value <path> <value>
-set_cfiles_value()
+# set the cpuset's parameter
+# cpuset_set <cpusetpath> <cpus> <mems> <load_balance>
+cpuset_set()
 {
-	local path=$1
-	local value=$2
+	local path="$1"
+	mkdir -p "$path"
+	if [ $? -ne 0 ]; then
+		return 1
+	fi
 
-	echo $value > $path
-	return $?
+	local cpus="$2"
+	local mems="$3"
+	local load_balance="$4"
+
+	if [ "$path" != "$CPUSET" ]; then
+		if [ "$cpus" != "-" ]; then
+			/bin/echo $cpus > $path/cpus
+			if [ $? -ne 0 ]; then
+				return 1
+			fi
+		fi
+
+		/bin/echo $mems > $path/mems
+		if [ $? -ne 0 ]; then
+			return 1
+		fi
+	fi
+
+	/bin/echo $load_balance > $path/sched_load_balance
+	if [ $? -ne 0 ]; then
+		return 1
+	fi
 }
+
+# cpu_hotplug cpu_id offline/online
+cpu_hotplug()
+{
+	if [ "$2" == "online" ]; then
+		/bin/echo 1 > "/sys/devices/system/cpu/cpu$1/online"
+		if [ $? -ne 0 ]; then
+			return 1
+		fi
+	elif [ "$2" == "offline" ]; then
+		/bin/echo 0 > "/sys/devices/system/cpu/cpu$1/online"
+		if [ $? -ne 0 ]; then
+			return 1
+		fi
+	fi
+}
+
+# setup_test_environment <online | offline>
+#   online  - online a CPU in testing, so we must offline a CPU first
+#   offline - offline a CPU in testing, we needn't do anything
+setup_test_environment()
+{
+	if [ "$1" == "online" ]; then
+		cpu_hotplug $HOTPLUG_CPU offline
+		if [ $? -ne 0 ]; then
+			return 1
+		fi
+	fi
+}
+
+cpu_hotplug_cleanup()
+{
+	local cpus_array="$(seq -s' ' 1 $((NR_CPUS-1)))"
+	local cpuid=
+	for cpuid in $cpus_array
+	do
+		local file="/sys/devices/system/cpu/cpu$cpuid/online"
+		local offline="$(cat $file)"
+		if [ $offline -eq 0 ]; then
+			cpu_hotplug $cpuid "online"
+		fi
+	done
+}
+

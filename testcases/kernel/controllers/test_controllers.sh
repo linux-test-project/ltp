@@ -101,6 +101,12 @@ then
 		$LTPROOT/testcases/bin/run_cpuset_test.sh 3;
 		$LTPROOT/testcases/bin/run_cpuset_test.sh 4;
 		$LTPROOT/testcases/bin/run_cpuset_test.sh 5;
+		$LTPROOT/testcases/bin/run_cpuset_test.sh 6;
+		$LTPROOT/testcases/bin/run_cpuset_test.sh 7;
+		$LTPROOT/testcases/bin/run_cpuset_test.sh 8;
+		$LTPROOT/testcases/bin/run_cpuset_test.sh 9;
+		$LTPROOT/testcases/bin/run_cpuset_test.sh 10;
+		$LTPROOT/testcases/bin/run_cpuset_test.sh 11;
 	else
 		echo "CONTROLLERS TESTCASES: WARNING";
 		echo "Kernel does not support cpuset controller";

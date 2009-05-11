@@ -337,5 +337,5 @@ do
 	((TST_COUNT++))
 done
 
-cleanup
+exit $exit_status
 
