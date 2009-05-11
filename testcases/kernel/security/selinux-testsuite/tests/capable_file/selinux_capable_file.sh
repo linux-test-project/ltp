@@ -252,6 +252,7 @@ test03 || EXIT_VAL=$RC
 test04 || EXIT_VAL=$RC
 test05 || EXIT_VAL=$RC
 cleanup
+setup
 test06 || EXIT_VAL=$RC
 test07 || EXIT_VAL=$RC
 test08 || EXIT_VAL=$RC
