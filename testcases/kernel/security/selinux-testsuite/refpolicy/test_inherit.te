@@ -8,6 +8,7 @@ attribute inheritdomain;
 # Domain for parent process.
 type test_inherit_parent_t;
 domain_type(test_inherit_parent_t)
+unconfined_runs_test(test_inherit_parent_t)
 typeattribute test_inherit_parent_t inheritdomain;
 typeattribute test_inherit_parent_t testdomain;
 
@@ -18,6 +19,7 @@ files_type(test_inherit_file_t)
 # Domain for child process that can inherit r/w fd to test file from parent.
 type test_inherit_child_t;
 domain_type(test_inherit_child_t)
+unconfined_runs_test(test_inherit_child_t)
 typeattribute test_inherit_child_t inheritdomain;
 typeattribute test_inherit_child_t testdomain;
 
@@ -25,6 +27,7 @@ typeattribute test_inherit_child_t testdomain;
 # of fd use permission.
 type test_inherit_nouse_t;
 domain_type(test_inherit_nouse_t)
+unconfined_runs_test(test_inherit_nouse_t)
 typeattribute test_inherit_nouse_t inheritdomain;
 typeattribute test_inherit_nouse_t testdomain;
 
@@ -32,6 +35,7 @@ typeattribute test_inherit_nouse_t testdomain;
 # due to lack of file write permission.
 type test_inherit_nowrite_t;
 domain_type(test_inherit_nowrite_t)
+unconfined_runs_test(test_inherit_nowrite_t)
 typeattribute test_inherit_nowrite_t inheritdomain;
 typeattribute test_inherit_nowrite_t testdomain;
 
@@ -61,4 +65,4 @@ allow test_inherit_parent_t test_inherit_nowrite_t:fd use;
 allow test_inherit_nowrite_t test_inherit_parent_t:fd use;
 allow test_inherit_nowrite_t test_inherit_parent_t:fifo_file rw_file_perms;
 allow test_inherit_nowrite_t test_inherit_parent_t:process sigchld;
-allow test_inherit_nowrite_t test_inherit_file_t:file r_file_perms;
+allow test_inherit_nowrite_t test_inherit_file_t:file read_file_perms;

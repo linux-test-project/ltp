@@ -8,6 +8,7 @@ attribute fileopdomain;
 # Domain for process that is allowed to perform operations.
 type test_fileop_t;
 domain_type(test_fileop_t)
+unconfined_runs_test(test_fileop_t)
 domain_obj_id_change_exemption(test_fileop_t)
 typeattribute test_fileop_t fileopdomain;
 typeattribute test_fileop_t testdomain;
@@ -15,6 +16,7 @@ typeattribute test_fileop_t testdomain;
 # Domain for process that is not allowed to perform all operations.
 type test_nofileop_t;
 domain_type(test_nofileop_t)
+unconfined_runs_test(test_nofileop_t)
 domain_obj_id_change_exemption(test_nofileop_t)
 typeattribute test_nofileop_t fileopdomain;
 typeattribute test_nofileop_t testdomain;
@@ -30,6 +32,7 @@ files_type(fileop_exec_t)
 # Domain for running certain executables
 type fileop_t;
 domain_type(fileop_t)
+unconfined_runs_test(fileop_t)
 typeattribute fileop_t fileopdomain;
 typeattribute fileop_t testdomain;
 
@@ -43,7 +46,6 @@ files_type(nofileop_ra_file_t)
 
 # Allow execution of helper programs.
 corecmd_exec_bin(fileopdomain)
-corecmd_exec_sbin(fileopdomain)
 domain_exec_all_entry_files(fileopdomain)
 libs_use_ld_so(fileopdomain)
 libs_use_shared_libs(fileopdomain)
@@ -55,10 +57,7 @@ miscfiles_domain_entry_test_files(fileopdomain)
 userdom_sysadm_entry_spec_domtrans_to(fileopdomain)
 
 corecmd_bin_entry_type(fileopdomain)
-userdom_sysadm_bin_spec_domtrans_to(fileopdomain)
-
-corecmd_sbin_entry_type(fileopdomain)
-userdom_sysadm_sbin_spec_domtrans_to(fileopdomain)
+sysadm_bin_spec_domtrans_to(fileopdomain)
 
 allow fileop_t fileop_exec_t:file entrypoint;
 domain_auto_trans(test_fileop_t, fileop_exec_t, fileop_t)
@@ -79,6 +78,6 @@ allow test_fileop_t fileop_file_t:file { execute relabelfrom relabelto };
 allow test_fileop_t fileop_t:process { signal };
 
 # Permissions for the 'bad' domain...
-allow test_nofileop_t nofileop_rw_file_t:file { read write append relabelfrom };
-allow test_nofileop_t nofileop_ra_file_t:file { read append };
+allow test_nofileop_t nofileop_rw_file_t:file { open read write append relabelfrom };
+allow test_nofileop_t nofileop_ra_file_t:file { open read append };
 allow test_nofileop_t fileop_file_t:file { relabelto };

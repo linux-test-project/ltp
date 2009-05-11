@@ -7,12 +7,14 @@
 # Type for process that is allowed certain capabilities
 type test_ncap_t;
 domain_type(test_ncap_t)
+unconfined_runs_test(test_ncap_t)
 typeattribute test_ncap_t capabledomain;
 typeattribute test_ncap_t testdomain;
 
 # Type for process that has restricted capability
 type test_resncap_t;
 domain_type(test_resncap_t)
+unconfined_runs_test(test_resncap_t)
 typeattribute test_resncap_t capabledomain;
 typeattribute test_resncap_t testdomain;
 
@@ -28,7 +30,7 @@ corenet_udp_sendrecv_all_nodes(capabledomain)
 corenet_raw_sendrecv_all_nodes(capabledomain)
 corenet_tcp_sendrecv_all_ports(capabledomain)
 corenet_udp_sendrecv_all_ports(capabledomain)
-corenet_non_ipsec_sendrecv(capabledomain)
+corenet_all_recvfrom_unlabeled(capabledomain)
 corenet_tcp_bind_all_nodes(capabledomain)
 corenet_udp_bind_all_nodes(capabledomain)
 sysnet_read_config(capabledomain)
@@ -44,8 +46,8 @@ require {
 allow capabledomain hi_reserved_port_t:tcp_socket name_bind;
 
 # Allow sbin_t to be entered from admin via certain utils.
-corecmd_sbin_entry_type(capabledomain)
-userdom_sysadm_sbin_spec_domtrans_to(capabledomain)
+corecmd_bin_entry_type(capabledomain)
+sysadm_bin_spec_domtrans_to(capabledomain)
 
 require {
 	type ifconfig_exec_t;

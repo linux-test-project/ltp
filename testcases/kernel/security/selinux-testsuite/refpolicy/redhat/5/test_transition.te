@@ -1,0 +1,33 @@
+#################################
+#
+# Policy for testing process transition permission
+#
+
+attribute transitiondomain;
+
+# Domain for process that is allowed to transition to the new domain.
+type test_transition_fromdomain_t;
+domain_type(test_transition_fromdomain_t)
+typeattribute test_transition_fromdomain_t transitiondomain;
+typeattribute test_transition_fromdomain_t testdomain;
+
+# Domain for process that is not allowed to transition to the new domain.
+type test_transition_notfromdomain_t;
+domain_type(test_transition_notfromdomain_t)
+typeattribute test_transition_notfromdomain_t transitiondomain;
+typeattribute test_transition_notfromdomain_t testdomain;
+
+# New domain for the process after the transition.
+type test_transition_todomain_t;
+domain_type(test_transition_todomain_t)
+typeattribute test_transition_todomain_t transitiondomain;
+typeattribute test_transition_todomain_t testdomain;
+
+# Allow the fromdomain to transition to the new domain.
+corecmd_bin_entry_type(transitiondomain)
+domain_trans(test_transition_fromdomain_t,bin_t,test_transition_todomain_t)
+allow test_transition_fromdomain_t test_transition_todomain_t:fd use;
+allow test_transition_todomain_t test_transition_fromdomain_t:fd use;
+
+# Allow all of these domains to be entered from the sysadm domain.
+userdom_sysadm_entry_spec_domtrans_to(transitiondomain)

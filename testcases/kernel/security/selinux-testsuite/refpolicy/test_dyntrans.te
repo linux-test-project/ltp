@@ -8,18 +8,22 @@ attribute dyntransdomain;
 # Domain for process that is allowed to transition to the new domain.
 type test_dyntrans_fromdomain_t;
 domain_type(test_dyntrans_fromdomain_t)
+unconfined_runs_test(test_dyntrans_fromdomain_t)
+domain_dyntrans_type(test_dyntrans_fromdomain_t)
 typeattribute test_dyntrans_fromdomain_t dyntransdomain;
 typeattribute test_dyntrans_fromdomain_t testdomain;
 
 # Domain for process that is not allowed to transition to the new domain.
 type test_dyntrans_notfromdomain_t;
 domain_type(test_dyntrans_notfromdomain_t)
+unconfined_runs_test(test_dyntrans_notfromdomain_t)
 typeattribute test_dyntrans_notfromdomain_t dyntransdomain;
 typeattribute test_dyntrans_notfromdomain_t testdomain;
 
 # Allow the fromdomain to dyntrans to the new domain.
 type test_dyntrans_todomain_t;
 domain_type(test_dyntrans_todomain_t)
+unconfined_runs_test(test_dyntrans_todomain_t)
 typeattribute test_dyntrans_todomain_t dyntransdomain;
 typeattribute test_dyntrans_todomain_t testdomain;
 

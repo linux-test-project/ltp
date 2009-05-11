@@ -1,0 +1,84 @@
+#################################
+#
+# Policy for testing file operations
+#
+
+attribute fileopdomain;
+
+# Domain for process that is allowed to perform operations.
+type test_fileop_t;
+domain_type(test_fileop_t)
+domain_obj_id_change_exemption(test_fileop_t)
+typeattribute test_fileop_t fileopdomain;
+typeattribute test_fileop_t testdomain;
+
+# Domain for process that is not allowed to perform all operations.
+type test_nofileop_t;
+domain_type(test_nofileop_t)
+domain_obj_id_change_exemption(test_nofileop_t)
+typeattribute test_nofileop_t fileopdomain;
+typeattribute test_nofileop_t testdomain;
+
+# Type for temp test files
+type fileop_file_t;
+files_type(fileop_file_t)
+
+# Type for executable test files
+type fileop_exec_t;
+files_type(fileop_exec_t)
+
+# Domain for running certain executables
+type fileop_t;
+domain_type(fileop_t)
+typeattribute fileop_t fileopdomain;
+typeattribute fileop_t testdomain;
+
+# Type for a temp file that the bad domain has read/write/append
+type nofileop_rw_file_t;
+files_type(nofileop_rw_file_t)
+
+# Type for a temp file that the bad domain has only read/append access
+type nofileop_ra_file_t;
+files_type(nofileop_ra_file_t)
+
+# Allow execution of helper programs.
+corecmd_exec_bin(fileopdomain)
+corecmd_exec_sbin(fileopdomain)
+domain_exec_all_entry_files(fileopdomain)
+libs_use_ld_so(fileopdomain)
+libs_use_shared_libs(fileopdomain)
+libs_exec_ld_so(fileopdomain)
+libs_exec_lib_files(fileopdomain)
+
+# Allow all of these domains to be entered from sysadm domain
+miscfiles_domain_entry_test_files(fileopdomain)
+userdom_sysadm_entry_spec_domtrans_to(fileopdomain)
+
+corecmd_bin_entry_type(fileopdomain)
+userdom_sysadm_bin_spec_domtrans_to(fileopdomain)
+
+corecmd_sbin_entry_type(fileopdomain)
+userdom_sysadm_sbin_spec_domtrans_to(fileopdomain)
+
+allow fileop_t fileop_exec_t:file entrypoint;
+domain_auto_trans(test_fileop_t, fileop_exec_t, fileop_t)
+allow test_fileop_t fileop_t:fd use;
+allow fileop_t test_fileop_t:fd use;
+allow fileop_t test_fileop_t:fifo_file rw_file_perms;
+allow fileop_t test_fileop_t:process sigchld;
+
+domain_auto_trans(test_nofileop_t, fileop_exec_t, fileop_t)
+allow test_nofileop_t fileop_t:fd use;
+allow fileop_t test_nofileop_t:fd use;
+allow fileop_t test_nofileop_t:fifo_file rw_file_perms;
+allow fileop_t test_nofileop_t:process sigchld;
+
+# Permissions for the 'good' domain...
+allow test_fileop_t fileop_file_t:file { setattr rw_file_perms};
+allow test_fileop_t fileop_file_t:file { execute relabelfrom relabelto };
+allow test_fileop_t fileop_t:process { signal };
+
+# Permissions for the 'bad' domain...
+allow test_nofileop_t nofileop_rw_file_t:file { read write append relabelfrom };
+allow test_nofileop_t nofileop_ra_file_t:file { read append };
+allow test_nofileop_t fileop_file_t:file { relabelto };

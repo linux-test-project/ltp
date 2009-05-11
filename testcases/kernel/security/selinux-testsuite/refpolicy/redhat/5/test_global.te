@@ -1,0 +1,80 @@
+
+policy_module(test_policy,1.0.0)
+
+###############################################
+#
+# Declarations
+#
+attribute testdomain;
+
+# Authorize sysadm_r and system_r for the test domains.
+role sysadm_r types testdomain;
+role system_r types testdomain;
+
+# Allow the test domains to access the sysadm terminal.
+# This allows read and write sysadm ttys and ptys.
+userdom_use_sysadm_terms(testdomain)
+
+# Allow the test domains to access the test directory and files
+# even if they are not root owned.
+allow testdomain self:capability { dac_override dac_read_search };
+
+# Let sysadm_t use runcon to run the test programs in various domains.
+#allow sysadm_t self:process setexec;
+#selinux_get_fs_mount(sysadm_t)
+
+# Let all test domains read test directories and files.
+miscfiles_read_test_files(testdomain)
+
+# Let the test domains set their current, exec and fscreate contexts.
+allow testdomain self:process setcurrent;
+# domain_dyntrans_type(testdomain)
+selinux_get_fs_mount(testdomain)
+allow testdomain self:process setexec;
+allow testdomain self:process setfscreate;
+
+# General permissions commonly required for test operation.
+# general_domain_access
+allow testdomain self:process ~{ptrace setcurrent setexec setfscreate setrlimit execmem execstack execheap};
+allow testdomain self:fd use;
+allow testdomain self:fifo_file rw_file_perms;
+allow testdomain self:unix_dgram_socket create_socket_perms;
+allow testdomain self:unix_stream_socket create_stream_socket_perms;
+allow testdomain self:unix_dgram_socket sendto;
+files_search_tmp(testdomain)
+
+# permission to use shared library
+libs_use_ld_so(testdomain)
+libs_use_shared_libs(testdomain)
+
+allow testdomain proc_t:file { getattr read };
+files_list_var(testdomain)
+files_list_home(testdomain)
+dev_read_rand(testdomain)
+files_list_pids(testdomain)
+require {
+	type root_t;
+	type etc_t;
+	type bin_t;
+	type sbin_t;
+	type lib_t;
+	type usr_t;
+	type devpts_t;
+	type devtty_t;
+	type null_device_t;
+	type zero_device_t;
+}
+allow testdomain { root_t etc_t bin_t sbin_t lib_t usr_t devpts_t }:dir r_dir_perms;
+allow testdomain lib_t:{ file lnk_file } r_file_perms;
+allow testdomain etc_t:file r_file_perms;
+allow testdomain { devtty_t null_device_t zero_device_t }:chr_file rw_file_perms;
+miscfiles_read_localization(testdomain)
+domain_use_interactive_fds(testdomain)
+seutil_read_config(testdomain)
+
+# can getsecurity
+selinux_validate_context(testdomain)
+selinux_compute_access_vector(testdomain)
+selinux_compute_create_context(testdomain)
+selinux_compute_relabel_context(testdomain)
+selinux_compute_user_contexts(testdomain)

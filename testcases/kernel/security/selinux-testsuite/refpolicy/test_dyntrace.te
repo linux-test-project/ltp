@@ -8,6 +8,8 @@ attribute dyntracedomain;
 # Domain for parent process.
 type test_dyntrace_parent_t;
 domain_type(test_dyntrace_parent_t)
+unconfined_runs_test(test_dyntrace_parent_t)
+domain_dyntrans_type(test_dyntrace_parent_t)
 typeattribute test_dyntrace_parent_t dyntracedomain;
 typeattribute test_dyntrace_parent_t testdomain;
 allow test_dyntrace_parent_t self:process ptrace;
@@ -16,6 +18,7 @@ allow test_dyntrace_parent_t self:process ptrace;
 # dynamic trans by the parent.
 type test_dyntrace_child_t;
 domain_type(test_dyntrace_child_t)
+unconfined_runs_test(test_dyntrace_child_t)
 typeattribute test_dyntrace_child_t dyntracedomain;
 typeattribute test_dyntrace_child_t testdomain;
 
@@ -23,6 +26,7 @@ typeattribute test_dyntrace_child_t testdomain;
 # dynamic transition by the parent.
 type test_dyntrace_notchild_t;
 domain_type(test_dyntrace_notchild_t) 
+unconfined_runs_test(test_dyntrace_notchild_t)
 typeattribute test_dyntrace_notchild_t dyntracedomain;
 typeattribute test_dyntrace_notchild_t testdomain;
 

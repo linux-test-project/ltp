@@ -8,24 +8,26 @@ attribute setnicedomain;
 # Domain for process whose nice can be set.
 type test_setnice_set_t;
 domain_type(test_setnice_set_t)
+unconfined_runs_test(test_setnice_set_t)
 typeattribute test_setnice_set_t setnicedomain;
 typeattribute test_setnice_set_t testdomain;
 
 # Domain for process whose nice cannot be set.
 type test_setnice_noset_t;
 domain_type(test_setnice_noset_t)
+unconfined_runs_test(test_setnice_noset_t)
 typeattribute test_setnice_noset_t setnicedomain;
 typeattribute test_setnice_noset_t testdomain;
 
 # Domain for parent process.
 type test_setnice_change_t;
 domain_type(test_setnice_change_t)
+unconfined_runs_test(test_setnice_change_t)
 typeattribute test_setnice_change_t setnicedomain;
 typeattribute test_setnice_change_t testdomain;
 
 # Allow execution of helper programs.
 corecmd_exec_bin(setnicedomain)
-corecmd_exec_sbin(setnicedomain)
 domain_exec_all_entry_files(setnicedomain)
 files_exec_etc_files(setnicedomain)
 libs_use_ld_so(setnicedomain)

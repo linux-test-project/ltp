@@ -1,0 +1,61 @@
+#################################
+#
+# Policy for testing network related capabilities. The test_capable_file.te
+# policy is a prequisite for this file.
+#
+
+# Type for process that is allowed certain capabilities
+type test_ncap_t;
+domain_type(test_ncap_t)
+typeattribute test_ncap_t capabledomain;
+typeattribute test_ncap_t testdomain;
+
+# Type for process that has restricted capability
+type test_resncap_t;
+domain_type(test_resncap_t)
+typeattribute test_resncap_t capabledomain;
+typeattribute test_resncap_t testdomain;
+
+# Allow access to the network - all permissions is fine, we're testing
+# capabilities here.
+allow capabledomain self:tcp_socket create_stream_socket_perms;
+allow capabledomain self:udp_socket create_socket_perms;
+corenet_tcp_sendrecv_generic_if(capabledomain)
+corenet_udp_sendrecv_generic_if(capabledomain)
+corenet_raw_sendrecv_generic_if(capabledomain)
+corenet_tcp_sendrecv_all_nodes(capabledomain)
+corenet_udp_sendrecv_all_nodes(capabledomain)
+corenet_raw_sendrecv_all_nodes(capabledomain)
+corenet_tcp_sendrecv_all_ports(capabledomain)
+corenet_udp_sendrecv_all_ports(capabledomain)
+corenet_non_ipsec_sendrecv(capabledomain)
+corenet_tcp_bind_all_nodes(capabledomain)
+corenet_udp_bind_all_nodes(capabledomain)
+sysnet_read_config(capabledomain)
+#optional_policy(`mount', `
+#	mount_send_nfs_client_request(capabledomain)
+#')
+
+corenet_tcp_bind_reserved_port(capabledomain)
+
+require {
+	type hi_reserved_port_t;
+}
+allow capabledomain hi_reserved_port_t:tcp_socket name_bind;
+
+# Allow sbin_t to be entered from admin via certain utils.
+corecmd_sbin_entry_type(capabledomain)
+userdom_sysadm_sbin_spec_domtrans_to(capabledomain)
+
+require {
+	type ifconfig_exec_t;
+}
+domain_trans(sysadm_t, ifconfig_exec_t, capabledomain)
+domain_entry_file(capabledomain, ifconfig_exec_t)
+
+# Permissions for the good domain
+allow test_ncap_t self:capability { dac_override net_admin net_raw };
+allow test_ncap_t self:rawip_socket { create };
+
+# Permissions for the restricted domain
+allow test_resncap_t self:rawip_socket { create };

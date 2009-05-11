@@ -8,12 +8,14 @@ attribute ioctldomain;
 # Domain for process that is allowed to perform ioctl.
 type test_ioctl_t;
 domain_type(test_ioctl_t)
+unconfined_runs_test(test_ioctl_t)
 typeattribute test_ioctl_t ioctldomain;
 typeattribute test_ioctl_t testdomain;
 
 # Domain for process that is not allowed to perform ioctl.
 type test_noioctl_t;
 domain_type(test_noioctl_t)
+unconfined_runs_test(test_noioctl_t)
 typeattribute test_noioctl_t ioctldomain;
 typeattribute test_noioctl_t testdomain;
 
@@ -23,7 +25,6 @@ files_type(test_ioctl_file_t)
 
 # Allow execution of helper programs.
 corecmd_exec_bin(ioctldomain)
-corecmd_exec_sbin(ioctldomain)
 domain_exec_all_entry_files(ioctldomain)
 files_exec_etc_files(ioctldomain)
 libs_use_ld_so(ioctldomain)
@@ -36,9 +37,9 @@ libs_exec_lib_files(ioctldomain)
 miscfiles_domain_entry_test_files(ioctldomain)
 userdom_sysadm_entry_spec_domtrans_to(ioctldomain)
 corecmd_bin_entry_type(ioctldomain)
-userdom_sysadm_bin_spec_domtrans_to(ioctldomain)
+sysadm_bin_spec_domtrans_to(ioctldomain)
 
 # Allow the test domains some access to the temp file
-allow test_ioctl_t test_ioctl_file_t:file { read getattr setattr ioctl };
-allow test_noioctl_t test_ioctl_file_t:file { read };
+allow test_ioctl_t test_ioctl_file_t:file { open read write ioctl };
+allow test_noioctl_t test_ioctl_file_t:file { open read };
 

@@ -8,6 +8,7 @@ attribute ipcdomain;
 # Base domain for IPC tests, has all IPC permissions 
 type test_ipc_base_t;
 domain_type(test_ipc_base_t)
+unconfined_runs_test(test_ipc_base_t)
 typeattribute test_ipc_base_t ipcdomain;
 typeattribute test_ipc_base_t testdomain;
 allow test_ipc_base_t self:msgq create;
@@ -15,18 +16,21 @@ allow test_ipc_base_t self:msgq create;
 # Domain that has read only access to IPC resources
 type test_ipc_read_t;
 domain_type(test_ipc_read_t)
+unconfined_runs_test(test_ipc_read_t)
 typeattribute test_ipc_read_t ipcdomain;
 typeattribute test_ipc_read_t testdomain;
 
 # Domain that can't create, associate, control, or use IPC resources
 type test_ipc_none_t;
 domain_type(test_ipc_none_t)
+unconfined_runs_test(test_ipc_none_t)
 typeattribute test_ipc_none_t ipcdomain;
 typeattribute test_ipc_none_t testdomain;
 
 # Domain that can associate, but not do anything else
 type test_ipc_associate_t;
 domain_type(test_ipc_associate_t)
+unconfined_runs_test(test_ipc_associate_t)
 typeattribute test_ipc_associate_t ipcdomain;
 typeattribute test_ipc_associate_t testdomain;
 
@@ -74,7 +78,7 @@ fs_rw_tmpfs_files(ipcdomain)
 miscfiles_domain_entry_test_files(ipcdomain)
 userdom_sysadm_entry_spec_domtrans_to(ipcdomain)
 corecmd_bin_entry_type(ipcdomain)
-userdom_sysadm_bin_spec_domtrans_to(ipcdomain)
+sysadm_bin_spec_domtrans_to(ipcdomain)
 
 allow test_ipc_base_t self:sem create_sem_perms;
 allow test_ipc_base_t self:shm create_sem_perms;

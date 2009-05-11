@@ -1,0 +1,64 @@
+#################################
+#
+# Policy for testing file descriptor inheritance
+#
+
+attribute inheritdomain;
+
+# Domain for parent process.
+type test_inherit_parent_t;
+domain_type(test_inherit_parent_t)
+typeattribute test_inherit_parent_t inheritdomain;
+typeattribute test_inherit_parent_t testdomain;
+
+# Type for test file opened by parent, inherited by child.
+type test_inherit_file_t;
+files_type(test_inherit_file_t)
+
+# Domain for child process that can inherit r/w fd to test file from parent.
+type test_inherit_child_t;
+domain_type(test_inherit_child_t)
+typeattribute test_inherit_child_t inheritdomain;
+typeattribute test_inherit_child_t testdomain;
+
+# Domain for child process that cannot inherit from parent due to lack
+# of fd use permission.
+type test_inherit_nouse_t;
+domain_type(test_inherit_nouse_t)
+typeattribute test_inherit_nouse_t inheritdomain;
+typeattribute test_inherit_nouse_t testdomain;
+
+# Domain for child process that cannot inherit r/w fd to test file
+# due to lack of file write permission.
+type test_inherit_nowrite_t;
+domain_type(test_inherit_nowrite_t)
+typeattribute test_inherit_nowrite_t inheritdomain;
+typeattribute test_inherit_nowrite_t testdomain;
+
+# Allow all of these domains to be entered from the sysadm domain.
+miscfiles_domain_entry_test_files(inheritdomain)
+userdom_sysadm_entry_spec_domtrans_to(inheritdomain)
+
+# Grant the necessary permissions for the parent domain.
+allow test_inherit_parent_t test_inherit_file_t:file rw_file_perms;
+
+# Grant the necessary permissions for the child domain.
+domain_trans(test_inherit_parent_t, test_file_t, test_inherit_child_t)
+allow test_inherit_parent_t test_inherit_child_t:fd use;
+allow test_inherit_child_t test_inherit_parent_t:fd use;
+allow test_inherit_child_t test_inherit_parent_t:fifo_file rw_file_perms;
+allow test_inherit_child_t test_inherit_parent_t:process sigchld;
+allow test_inherit_child_t test_inherit_file_t:file rw_file_perms;
+
+# Grant the nouse domain all of the same permissions except for fd use.
+allow test_inherit_parent_t test_inherit_nouse_t:process transition;
+allow test_inherit_nouse_t test_file_t:file { read getattr execute entrypoint };
+allow test_inherit_nouse_t test_inherit_file_t:file rw_file_perms;
+
+# Grant the nowrite domain all of the same permissions except for file write.
+domain_trans(test_inherit_parent_t, test_file_t, test_inherit_nowrite_t)
+allow test_inherit_parent_t test_inherit_nowrite_t:fd use;
+allow test_inherit_nowrite_t test_inherit_parent_t:fd use;
+allow test_inherit_nowrite_t test_inherit_parent_t:fifo_file rw_file_perms;
+allow test_inherit_nowrite_t test_inherit_parent_t:process sigchld;
+allow test_inherit_nowrite_t test_inherit_file_t:file r_file_perms;

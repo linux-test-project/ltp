@@ -1,0 +1,31 @@
+#########################################
+#
+# Policy for testing the selinux_task_getscheduler hook.
+#
+
+attribute test_getsched_d;
+
+# Domain for the target process
+type test_getsched_target_t;
+domain_type(test_getsched_target_t)
+typeattribute test_getsched_target_t test_getsched_d;
+typeattribute test_getsched_target_t testdomain;
+
+# Domain that can get the target's scheduling policy.
+type test_getsched_yes_t;
+domain_type(test_getsched_yes_t)
+typeattribute test_getsched_yes_t test_getsched_d;
+typeattribute test_getsched_yes_t testdomain;
+
+# Domain that cannot get the target's scheduling policy.
+type test_getsched_no_t;
+domain_type(test_getsched_no_t)
+typeattribute test_getsched_no_t test_getsched_d;
+typeattribute test_getsched_no_t testdomain;
+
+# Allow domain to be entered from the sysadm domain.
+miscfiles_domain_entry_test_files(test_getsched_d)
+userdom_sysadm_entry_spec_domtrans_to(test_getsched_d)
+
+# Give test_getsched_yes_t the permission needed.
+allow test_getsched_yes_t test_getsched_target_t:process getsched;

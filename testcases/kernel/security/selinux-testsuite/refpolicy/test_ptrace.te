@@ -8,6 +8,7 @@ attribute ptracedomain;
 # Domain for process that is allowed to trace.
 type test_ptrace_tracer_t;
 domain_type(test_ptrace_tracer_t)
+unconfined_runs_test(test_ptrace_tracer_t)
 typeattribute test_ptrace_tracer_t ptracedomain;
 typeattribute test_ptrace_tracer_t testdomain;
 allow test_ptrace_tracer_t self:capability sys_ptrace;
@@ -15,6 +16,7 @@ allow test_ptrace_tracer_t self:capability sys_ptrace;
 # Domain for process that is not allowed to trace.
 type test_ptrace_nottracer_t;
 domain_type(test_ptrace_nottracer_t)
+unconfined_runs_test(test_ptrace_nottracer_t)
 typeattribute test_ptrace_nottracer_t ptracedomain;
 typeattribute test_ptrace_nottracer_t testdomain;
 allow test_ptrace_nottracer_t self:capability sys_ptrace;
@@ -22,6 +24,7 @@ allow test_ptrace_nottracer_t self:capability sys_ptrace;
 # Domain for process that is to be traced.
 type test_ptrace_traced_t;
 domain_type(test_ptrace_traced_t)
+unconfined_runs_test(test_ptrace_traced_t)
 typeattribute test_ptrace_traced_t ptracedomain;
 typeattribute test_ptrace_traced_t testdomain;
 

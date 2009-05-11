@@ -8,6 +8,7 @@ attribute exectracedomain;
 # Domain for parent process.
 type test_exectrace_parent_t;
 domain_type(test_exectrace_parent_t)
+unconfined_runs_test(test_exectrace_parent_t)
 typeattribute test_exectrace_parent_t exectracedomain;
 typeattribute test_exectrace_parent_t testdomain;
 
@@ -17,12 +18,14 @@ allow test_exectrace_parent_t self:process ptrace;
 # Domain for child process that can be traced across an exec by the parent.
 type test_exectrace_child_t;
 domain_type(test_exectrace_child_t)
+unconfined_runs_test(test_exectrace_child_t)
 typeattribute test_exectrace_child_t exectracedomain;
 typeattribute test_exectrace_child_t testdomain;
 
 # Domain for child process that cannot be traced across an exec by the parent.
 type test_exectrace_notchild_t;
 domain_type(test_exectrace_notchild_t)
+unconfined_runs_test(test_exectrace_notchild_t)
 typeattribute test_exectrace_notchild_t exectracedomain;
 typeattribute test_exectrace_notchild_t testdomain;
 
@@ -38,7 +41,7 @@ allow test_exectrace_child_t test_exectrace_parent_t:fifo_file rw_file_perms;
 allow test_exectrace_child_t test_exectrace_parent_t:process sigchld;
 allow test_exectrace_parent_t test_exectrace_child_t:process { ptrace getattr };
 allow test_exectrace_parent_t test_exectrace_child_t:dir search;
-allow test_exectrace_parent_t test_exectrace_child_t:file read;
+allow test_exectrace_parent_t test_exectrace_child_t:file read_file_perms;
 
 # Grant the notchild domain all the same permissions except for ptrace.
 domain_entry_file_spec_domtrans(test_exectrace_parent_t, test_exectrace_notchild_t)
@@ -48,4 +51,4 @@ allow test_exectrace_notchild_t test_exectrace_parent_t:fifo_file rw_file_perms;
 allow test_exectrace_notchild_t test_exectrace_parent_t:process sigchld;
 allow test_exectrace_parent_t test_exectrace_notchild_t:process getattr;
 allow test_exectrace_parent_t test_exectrace_notchild_t:dir search;
-allow test_exectrace_parent_t test_exectrace_notchild_t:file read;
+allow test_exectrace_parent_t test_exectrace_notchild_t:file read_file_perms;

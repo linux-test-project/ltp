@@ -16,12 +16,14 @@ files_type(test_fdreceive_file2_t)
 # Domain for client process.
 type test_fdreceive_client_t;
 domain_type(test_fdreceive_client_t)
+unconfined_runs_test(test_fdreceive_client_t)
 typeattribute test_fdreceive_client_t fdreceivedomain;
 typeattribute test_fdreceive_client_t testdomain;
 
 # Domain for second client process.
 type test_fdreceive_client2_t;
 domain_type(test_fdreceive_client2_t)
+unconfined_runs_test(test_fdreceive_client2_t)
 typeattribute test_fdreceive_client2_t fdreceivedomain;
 typeattribute test_fdreceive_client2_t testdomain;
 
@@ -30,6 +32,7 @@ typeattribute test_fdreceive_client2_t testdomain;
 # Can access test file, not second test file.
 type test_fdreceive_server_t;
 domain_type(test_fdreceive_server_t);
+unconfined_runs_test(test_fdreceive_server_t)
 typeattribute test_fdreceive_server_t fdreceivedomain;
 typeattribute test_fdreceive_server_t testdomain;
 

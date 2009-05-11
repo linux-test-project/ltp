@@ -1,0 +1,53 @@
+#########################################
+#
+# Policy for testing the selinux_task_create hook
+#
+
+attribute test_create_d;
+
+# Domain for process allowed to fork.
+type test_create_yes_t;
+domain_type(test_create_yes_t)
+typeattribute test_create_yes_t test_create_d;
+typeattribute test_create_yes_t testdomain;
+
+# Domain for process not allowed to fork.
+# The same permissions as test_create_yes_t, except process fork
+type test_create_no_t;
+
+# In refpolicy, all types with "domain" attribute are allowed
+# process_fork. Thus, to prevent test_create_no_t from picking up this
+# permission so we can test it, we omit the domain attribute. 
+# Ideally, refpolicy would _not_ grant such permissions to every domain,
+# as it makes the permission effectively unusable in real policy.
+#domain_type(test_create_no_t)
+typeattribute test_create_no_t test_create_d;
+
+allow test_create_no_t self:process ~fork;
+allow test_create_no_t proc_t:dir r_dir_perms;
+allow test_create_no_t proc_t:lnk_file read;
+allow test_create_no_t self:dir r_dir_perms;
+allow test_create_no_t self:notdevfile_class_set r_file_perms;
+
+libs_use_ld_so(test_create_no_t)
+libs_use_shared_libs(test_create_no_t)
+
+allow test_create_no_t self:process setexec;
+selinux_get_fs_mount(test_create_no_t)
+
+allow test_create_no_t { root_t bin_t sbin_t lib_t locale_t usr_t devpts_t home_root_t }:dir r_dir_perms;
+allow test_create_no_t lib_t:lnk_file r_file_perms;
+allow test_create_no_t { devtty_t null_device_t zero_device_t }:chr_file rw_file_perms;
+allow test_create_no_t locale_t:dir r_dir_perms;
+allow test_create_no_t locale_t:{ file lnk_file } r_file_perms;
+allow test_create_no_t privfd:fd use;
+userdom_use_sysadm_ptys(test_create_no_t)
+userdom_use_sysadm_ttys(test_create_no_t)
+
+# General rules for the test_create_d
+
+# Allow domain to be entered from the sysadm domain.
+role sysadm_r types test_create_d;
+role system_r types test_create_d;
+miscfiles_domain_entry_test_files(test_create_d)
+userdom_sysadm_entry_spec_domtrans_to(test_create_d)

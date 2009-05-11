@@ -1,0 +1,31 @@
+#########################################
+#
+# Policy for testing the selinux_task_getpgid hook.
+#
+
+attribute test_getpgid_d;
+
+# Domain for the target process
+type test_getpgid_target_t;
+domain_type(test_getpgid_target_t)
+typeattribute test_getpgid_target_t test_getpgid_d;
+typeattribute test_getpgid_target_t testdomain;
+
+# Domain that can get the target's process group ID.
+type test_getpgid_yes_t;
+domain_type(test_getpgid_yes_t)
+typeattribute test_getpgid_yes_t test_getpgid_d;
+typeattribute test_getpgid_yes_t testdomain;
+
+# Domain that cannot get the target's process group ID.
+type test_getpgid_no_t;
+domain_type(test_getpgid_no_t)
+typeattribute test_getpgid_no_t test_getpgid_d;
+typeattribute test_getpgid_no_t testdomain;
+
+# Allow domain to be entered from the sysadm domain
+miscfiles_domain_entry_test_files(test_getpgid_d)
+userdom_sysadm_entry_spec_domtrans_to(test_getpgid_d)
+
+# Give test_getpgid_yes_t the permission needed.
+allow test_getpgid_yes_t test_getpgid_target_t:process getpgid;

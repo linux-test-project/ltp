@@ -16,6 +16,7 @@ files_type(test_link_file_t)
 # Domain for process that can create hard links to the file.
 type test_link_t;
 domain_type(test_link_t)
+unconfined_runs_test(test_link_t)
 typeattribute test_link_t test_link_domain;
 typeattribute test_link_t testdomain;
 
@@ -26,6 +27,7 @@ allow test_link_t test_link_file_t:file { getattr link };
 # because it lacks link permission to the file.
 type test_nolink_t;
 domain_type(test_nolink_t)
+unconfined_runs_test(test_nolink_t)
 typeattribute test_nolink_t test_link_domain;
 typeattribute test_nolink_t testdomain;
 allow test_nolink_t test_link_dir_t:dir { search getattr write add_name };
@@ -36,6 +38,7 @@ allow test_nolink_t test_link_file_t:file getattr;
 # the directory.
 type test_nolink2_t;
 domain_type(test_nolink2_t)
+unconfined_runs_test(test_nolink2_t)
 typeattribute test_nolink2_t test_link_domain;
 typeattribute test_nolink2_t testdomain;
 allow test_nolink2_t test_link_dir_t:dir { search getattr write };
@@ -44,6 +47,7 @@ allow test_nolink2_t test_link_file_t:file { getattr link };
 # Domain for process that can remove hard links to the file.
 type test_unlink_t;
 domain_type(test_unlink_t)
+unconfined_runs_test(test_unlink_t)
 typeattribute test_unlink_t test_link_domain;
 typeattribute test_unlink_t testdomain;
 allow test_unlink_t test_link_dir_t:dir { search getattr write remove_name };
@@ -53,6 +57,7 @@ allow test_unlink_t test_link_file_t:file { getattr unlink };
 # because it lacks unlink permission to the file.
 type test_nounlink_t;
 domain_type(test_nounlink_t)
+unconfined_runs_test(test_nounlink_t)
 typeattribute test_nounlink_t test_link_domain;
 typeattribute test_nounlink_t testdomain;
 allow test_nounlink_t test_link_dir_t:dir { search getattr write remove_name };
@@ -62,6 +67,7 @@ allow test_nounlink_t test_link_file_t:file { getattr };
 # the test directory because it lacks remove_name permission to the directory.
 type test_nounlink2_t;
 domain_type(test_nounlink2_t)
+unconfined_runs_test(test_nounlink2_t)
 typeattribute test_nounlink2_t test_link_domain;
 typeattribute test_nounlink2_t testdomain;
 allow test_nounlink2_t test_link_dir_t:dir { search getattr write };
@@ -69,5 +75,5 @@ allow test_nounlink2_t test_link_file_t:file { getattr unlink };
 
 # Allow all of these domains to be entered from sysadm domain
 corecmd_bin_entry_type(test_link_domain)
-userdom_sysadm_bin_spec_domtrans_to(test_link_domain)
+sysadm_bin_spec_domtrans_to(test_link_domain)
 

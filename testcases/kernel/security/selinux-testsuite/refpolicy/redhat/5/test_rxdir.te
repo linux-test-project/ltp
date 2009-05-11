@@ -1,0 +1,34 @@
+#################################
+#
+# Policy for testing read and search access to a directory.
+#
+
+attribute test_rxdir_domain;
+
+# Type for top-level test directory in which the tests are performed.
+type test_rxdir_dir_t;
+files_type(test_rxdir_dir_t)
+
+# Domain for process that can read but not search the directory.
+type test_rdir_t;
+domain_type(test_rdir_t)
+typeattribute test_rdir_t test_rxdir_domain;
+typeattribute test_rdir_t testdomain;
+allow test_rdir_t test_rxdir_dir_t:dir { getattr read };
+allow test_rdir_t test_rxdir_dir_t:file { getattr };
+
+# Domain for process that can search but not read the directory.
+type test_xdir_t;
+domain_type(test_xdir_t)
+typeattribute test_xdir_t test_rxdir_domain;
+typeattribute test_xdir_t testdomain;
+allow test_xdir_t test_rxdir_dir_t:dir { getattr search };
+allow test_xdir_t test_rxdir_dir_t:file { getattr };
+
+# TODO: How to translate this into refpolicy????
+# Allow all of these domains to be entered from sysadm domain
+require {
+	type ls_exec_t;
+}
+domain_entry_file(test_rxdir_domain, ls_exec_t)
+domain_trans(sysadm_t, ls_exec_t, test_rxdir_domain)

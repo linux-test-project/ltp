@@ -83,11 +83,6 @@ else
     POLICYDIR="$LTPROOT/testcases/kernel/security/selinux-testsuite/policy"
 fi
 
-# Update test policy if needed
-pushd $LTPROOT/testcases/kernel/security/selinux-testsuite/misc
-sh ./update_refpolicy.sh
-popd
-
 config_set_expandcheck
 
 config_allow_domain_fd_use 0

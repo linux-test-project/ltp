@@ -14,6 +14,7 @@ files_type(test_readlink_link_t)
 # Domain for process that can read and follow the symbolic link.
 type test_readlink_t;
 domain_type(test_readlink_t)
+unconfined_runs_test(test_readlink_t)
 typeattribute test_readlink_t test_readlink_domain;
 typeattribute test_readlink_t testdomain;
 allow test_readlink_t test_readlink_file_t:file { getattr read };
@@ -22,6 +23,7 @@ allow test_readlink_t test_readlink_link_t:lnk_file { getattr read };
 # Domain for process that cannot read or follow the symbolic link.
 type test_noreadlink_t;
 domain_type(test_noreadlink_t)
+unconfined_runs_test(test_noreadlink_t)
 typeattribute test_noreadlink_t test_readlink_domain;
 typeattribute test_noreadlink_t testdomain;
 allow test_noreadlink_t test_readlink_file_t:file { getattr read };

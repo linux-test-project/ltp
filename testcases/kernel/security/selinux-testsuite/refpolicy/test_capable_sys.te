@@ -7,12 +7,14 @@
 # Type for process that is allowed certain capabilities
 type test_scap_t;
 domain_type(test_scap_t)
+unconfined_runs_test(test_scap_t)
 typeattribute test_scap_t capabledomain;
 typeattribute test_scap_t testdomain;
 
 # Domain for process that has no capability
 type test_noscap_t;
 domain_type(test_noscap_t)
+unconfined_runs_test(test_noscap_t)
 typeattribute test_noscap_t capabledomain;
 typeattribute test_noscap_t testdomain;
 
