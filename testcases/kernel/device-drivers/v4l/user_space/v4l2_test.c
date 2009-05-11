@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ *  5 May 2009  0.22 Test cases added for VIDIOC_QUERYBUF
  * 29 Apr 2009  0.21 Test cases added for VIDIOC_REQBUFS
  * 18 Apr 2009  0.20 NULL parameter test suite split to read only, write only
  *                   and write/read ioctl suite
@@ -83,6 +84,7 @@
 #include "test_VIDIOC_FMT.h"
 
 #include "test_VIDIOC_REQBUFS.h"
+#include "test_VIDIOC_QUERYBUF.h"
 
 #include "test_VIDIOC_LOG_STATUS.h"
 #include "test_invalid_ioctl.h"
@@ -246,6 +248,17 @@ static CU_TestInfo suite_buffs[] = {
   { "VIDIOC_REQBUFS with invalid memory parameter, output", test_VIDIOC_REQBUFS_invalid_memory_output },
   { "VIDIOC_REQBUFS with invalid type parameter, memory mapped i/o", test_VIDIOC_REQUBUFS_invalid_type_mmap },
   { "VIDIOC_REQBUFS with invalid type parameter, user pointer i/o", test_VIDIOC_REQUBUFS_invalid_type_userptr },
+
+  { "VIDIOC_QUERYBUF with memory map capture streaming i/o", test_VIDIOC_QUERYBUF_capture_mmap },
+  { "VIDIOC_QUERYBUF with user pointer capture streaming i/o", test_VIDIOC_QUERYBUF_capture_userptr },
+  { "VIDIOC_QUERYBUF with memory map output streaming i/o", test_VIDIOC_QUERYBUF_output_mmap },
+  { "VIDIOC_QUERYBUF with user pointer output streaming i/o", test_VIDIOC_QUERYBUF_output_userptr },
+  { "VIDIOC_QUERYBUF with overlay capture (invalid)", test_VIDIOC_QUERYBUF_overlay_capture },
+  { "VIDIOC_QUERYBUF with overlay output (invalid)", test_VIDIOC_QUERYBUF_overlay_output },
+  { "VIDIOC_QUERYBUF with invalid memory parameter, capture", test_VIDIOC_QUERYBUF_invalid_memory_capture },
+  { "VIDIOC_QUERYBUF with invalid memory parameter, output", test_VIDIOC_QUERYBUF_invalid_memory_output },
+  { "VIDIOC_QUERYBUF with invalid type parameter, memory mapped i/o", test_VIDIOC_QUERYBUF_invalid_type_mmap },
+  { "VIDIOC_QUERYBUF with invalid type parameter, user pointer i/o", test_VIDIOC_QUERYBUF_invalid_type_userptr },
 
   CU_TEST_INFO_NULL,
 };

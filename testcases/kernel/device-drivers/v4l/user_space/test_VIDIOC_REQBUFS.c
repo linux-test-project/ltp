@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ *  7 May 2009  0.2  show_v4l2_*() function extracted to v4l2_show.c
  * 29 Apr 2009  0.1  First release
  *
  * Written by Márton Németh <nm127@freemail.hu>
@@ -22,25 +23,11 @@
 #include <CUnit/CUnit.h>
 
 #include "v4l2_test.h"
+#include "v4l2_show.h"
 #include "dev_video.h"
 #include "video_limits.h"
 
 #include "test_VIDIOC_REQBUFS.h"
-
-static void show_v4l2_requestbuffers(struct v4l2_requestbuffers *reqbuf) {
-	dprintf("\treqbuf = { "
-		".count=%u, "
-		".type=%i, "
-		".memory=%i, "
-		".reserved = { 0x%X, 0x%X } "
-		"}\n",
-		reqbuf->count,
-		reqbuf->type,
-		reqbuf->memory,
-		reqbuf->reserved[0],
-		reqbuf->reserved[1]
-	);
-}
 
 static void do_VIDIOC_REQBUFS_capture_mmap(__u32 count) {
 	int ret_cap, errno_cap;

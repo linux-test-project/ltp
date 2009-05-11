@@ -3,6 +3,8 @@
 
 Release History
 ---------------
+ 7 May 2009  0.14 Test cases added for VIDIOC_QUERYBUF;
+                  Debug functions separated
 29 Apr 2009  0.13 Added string content validation;
                   Test cases added for VIDIOC_REQBUFS
 19 Apr 2009  0.12 Test cases added for VIDIOC_S_FMT;

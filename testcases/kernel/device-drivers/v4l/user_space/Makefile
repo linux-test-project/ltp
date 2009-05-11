@@ -1,6 +1,8 @@
 #
 # v4l-test: Test environment for Video For Linux Two API
 #
+#  7 May 2009  0.16 v4l2_show.c added
+#  5 May 2009  0.15 test_VIDIOC_QUERYBUF.c added
 # 25 Apr 2009  0.14 test_VIDIOC_REQBUFS.c added
 #  5 Apr 2009  0.13 test_VIDIOC_QUERYMENU.c added
 #  4 Apr 2009  0.12 test_VIDIOC_FMT.c added
@@ -62,7 +64,9 @@ OBJS = dev_video.o \
        test_VIDIOC_PARM.o \
        test_VIDIOC_FMT.o \
        test_VIDIOC_REQBUFS.o \
+       test_VIDIOC_QUERYBUF.o \
        test_invalid_ioctl.o \
+       v4l2_show.o \
        v4l2_test.o
 
 all: $(OBJS)

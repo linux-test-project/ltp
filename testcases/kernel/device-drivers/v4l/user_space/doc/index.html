@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta content="text/html;charset=UTF-8" http-equiv="Content-Type">
-  <title>v4l-test: Test environment for Video For Linux Two API</title>
+  <title>v4l-test: Test environment for Video For Linux Two (V4L2) API</title>
 </head>
 <body>
 <p>
@@ -18,7 +18,7 @@
 </p>
 <hr style="width: 100%; height: 2px;">
 
-<h1>v4l-test: Test environment for Video For Linux Two API</h1>
+<h1>v4l-test: Test environment for Video For Linux Two (V4L2) API</h1>
 <p>
 Download <a href="http://sourceforge.net/project/showfiles.php?group_id=247983">v4l-test</a>
 or visit <a href="http://sourceforge.net/projects/v4l-test/">v4l-test project page</a> at
@@ -390,7 +390,7 @@ implemented test cases.</p>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r13022.htm">VIDIOC_QUERYBUF</a></td>
-      <td>no</td>
+      <td>yes, only when STREAM_OFF</td>
       <td>Opt.</td>
     </tr>
     <tr>
@@ -480,6 +480,10 @@ There migth be similar projects which also tries to test the V4L2 API.
 So far I could find the following:
 </p>
 <ul>
+  <li>A <a href="http://www.linuxtv.org/wiki/index.php/V4L_Test_Suite">
+  list of V4L and V4L2 test drivers and applications</a> at
+  <a href="http://www.linuxtv.org/wiki/index.php/Main_Page">LinuxTV Wiki</a>
+  </li>
   <li><a href="http://www.linuxowl.com/v4ltest.html">v4ltest</a><br>
   </li>
   <li>test cases in <a href="http://linuxtv.org/hg/dvb-apps/file">dvb-apps repository</a>, under /test directory
@@ -516,7 +520,7 @@ The following documents and articles are useful if you are dealing with V4L2:
 <p>Any feedbacks, comments, ideas, etc. are welcome at the author's email address.</p>
 <hr style="width: 100%; height: 2px;">
 <p>Last changed:
-Wed Apr 29 20:39:28 CEST 2009
+Thu May  7 22:51:07 CEST 2009
 </p>
 <p>
   <a href="http://validator.w3.org/check?uri=referer"><img
