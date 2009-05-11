@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ * 20 Apr 2009  0.5  Added string content validation
  * 18 Apr 2009  0.4  More strict check for strings
  * 28 Mar 2009  0.3  Clean up ret and errno variable names and dprintf() output
  *  9 Feb 2009  0.2  Added test cases for VIDIOC_S_TUNER;
@@ -105,6 +106,7 @@ static int do_get_tuner(int f, __u32 index) {
 		CU_ASSERT_EQUAL(tuner.index, index);
 
 		CU_ASSERT(0 < strlen( (char*)tuner.name ));
+		CU_ASSERT(valid_string((char*)tuner.name, sizeof(tuner.name)));
 
 		CU_ASSERT(valid_tuner_type(tuner.type));
 		CU_ASSERT(valid_tuner_capability(tuner.capability));

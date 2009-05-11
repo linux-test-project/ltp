@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ * 20 Apr 2009  0.7  Added string content validation
  * 18 Apr 2009  0.6  More strict check for strings
  * 29 Mar 2009  0.5  Clean up test case for NULL parameter
  * 22 Mar 2009  0.4  Cleaned up dprintf() messages
@@ -30,6 +31,7 @@
 #include "v4l2_test.h"
 #include "dev_video.h"
 #include "video_limits.h"
+#include "v4l2_validator.h"
 
 #include "test_VIDIOC_AUDOUT.h"
 
@@ -61,9 +63,8 @@ void test_VIDIOC_G_AUDOUT() {
 
 		//CU_ASSERT_EQUAL(audioout.index, ?);
 
-		//CU_ASSERT_EQUAL(audioout.name, ?);
 		CU_ASSERT(0 < strlen( (char*)audioout.name ));
-		CU_ASSERT(strlen( (char*)audioout.name ) < sizeof(audioout.name));
+		CU_ASSERT(valid_string((char*)audioout.name, sizeof(audioout.name)));
 
 		CU_ASSERT_EQUAL(audioout.capability, 0);
 		CU_ASSERT_EQUAL(audioout.mode, 0);

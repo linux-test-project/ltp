@@ -41,6 +41,18 @@ void test_VIDIOC_G_STD() {
 	int ret_get, errno_get;
 	v4l2_std_id std_id;
 
+	/* TODO: Iterate trough all inputs and all outputs
+	 * with VIDIOC_ENUMINPUT and VIDIOC_ENUMOUTPUT.
+	 * Also ensure tahat VIDIC_G_STD is called at least
+	 * once even if VIDIOC_ENUMINPUT and VIDIOC_ENUMOUTPUT
+	 * always return EINVAL.
+	 *
+	 * V4L2 API specification rev. 0.24, Chapter 1.7.
+	 * "Video Standards" specifies if the std field
+	 * of v4l2_input and v4l2_output is zero then
+	 * VIDIOC_G_STD shall always return EINVAL.
+	 */
+
 	memset(&std_id, 0xff, sizeof(std_id));
 	ret_get = ioctl(get_video_fd(), VIDIOC_G_STD, &std_id);
 	errno_get = errno;

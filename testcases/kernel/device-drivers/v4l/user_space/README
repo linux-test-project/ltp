@@ -3,6 +3,8 @@
 
 Release History
 ---------------
+29 Apr 2009  0.13 Added string content validation;
+                  Test cases added for VIDIOC_REQBUFS
 19 Apr 2009  0.12 Test cases added for VIDIOC_S_FMT;
                   NULL parameter test suite split to read only, write only
                   and write/read ioctl suite;

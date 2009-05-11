@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ * 20 Apr 2009  0.5  Added string content validation
  * 18 Apr 2009  0.4  More strict check for strings
  * 29 Mar 2009  0.3  Clean up ret and errno variable names and dprintf() output
  * 22 Dec 2008  0.2  Test case with NULL parameter added
@@ -28,6 +29,7 @@
 #include "v4l2_test.h"
 #include "dev_video.h"
 #include "video_limits.h"
+#include "v4l2_validator.h"
 
 #include "test_VIDIOC_QUERYCAP.h"
 
@@ -87,16 +89,16 @@ void test_VIDIOC_QUERYCAP() {
 	/* This ioctl must be implemented by ALL drivers */
 	CU_ASSERT_EQUAL(ret, 0);
 	if (ret == 0) {
-		//CU_ASSERT_EQUAL(cap.driver, ?);
 		CU_ASSERT(0 < strlen( (char*)cap.driver) );
-		CU_ASSERT(strlen( (char*)cap.driver) < sizeof(cap.driver));
+		CU_ASSERT(valid_string((char*)cap.driver, sizeof(cap.driver)));
 
-		//CU_ASSERT_EQUAL(cap.card, ?);
 		CU_ASSERT(0 < strlen( (char*)cap.card) );
-		CU_ASSERT(strlen( (char*)cap.card) < sizeof(cap.card) );
+		CU_ASSERT(valid_string((char*)cap.card, sizeof(cap.card)));
 
-		//CU_ASSERT_EQUAL(cap.bus_info, ?);
-		CU_ASSERT(strlen( (char*)cap.bus_info) < sizeof(cap.bus_info) );
+		/* cap.bus_info is allowed to be an empty string ("") if no
+		 * is info available
+		 */
+		CU_ASSERT(valid_string((char*)cap.bus_info, sizeof(cap.bus_info)));
 
 		//CU_ASSERT_EQUAL(cap.version, ?);
 		CU_ASSERT(valid_capabilities(cap.capabilities));

@@ -82,3 +82,28 @@ int valid_tuner_capability(__u32 capability) {
 int valid_modulator_capability(__u32 capability) {
 	return valid_tuner_capability(capability);
 }
+
+int valid_string(char* str, unsigned int max_length) {
+	int valid = 1;
+	unsigned int i;
+
+	i = 0;
+	while (i < max_length && str[i] != 0) {
+		/* Printable characters start with SPACE (32) and
+		 * ends with '~' (126) inclusively.
+		 */
+		if (str[i] < 32 || 126 < str[i]) {
+			valid = 0;
+			break;
+		}
+		i++;
+	}
+
+	/* check if the string was closed with zero byte properly */
+	if (i == max_length) {
+		valid = 0;
+	}
+
+	return valid;
+}
+

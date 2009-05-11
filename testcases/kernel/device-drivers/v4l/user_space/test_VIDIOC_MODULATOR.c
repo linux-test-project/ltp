@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ * 20 Apr 2009  0.4  Added string content validation
  * 18 Apr 2009  0.3  More strict check for strings
  * 28 Mar 2009  0.2  Clean up ret and errno variable names and dprintf() output
  *  2 Feb 2009  0.1  First release
@@ -67,6 +68,7 @@ static int do_get_modulator(int f, __u32 index) {
 		CU_ASSERT_EQUAL(modulator.index, index);
 
 		CU_ASSERT(0 < strlen( (char*)modulator.name ));
+		CU_ASSERT(valid_string((char*)modulator.name, sizeof(modulator.name)));
 
 		CU_ASSERT(valid_modulator_capability(modulator.capability));
 

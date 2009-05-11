@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ * 20 Apr 2009  0.9  Added string content validation
  * 18 Apr 2009  0.8  More strict check for strings
  * 13 Apr 2009  0.7  Also show type in debug output;
  *                   Add some debug output
@@ -34,6 +35,7 @@
 #include "v4l2_test.h"
 #include "dev_video.h"
 #include "video_limits.h"
+#include "v4l2_validator.h"
 
 #include "test_VIDIOC_ENUM_FMT.h"
 
@@ -60,8 +62,8 @@ static void do_enumerate_formats(enum v4l2_buf_type type) {
 			//CU_ASSERT_EQUAL(format.type, ?);
 			//CU_ASSERT_EQUAL(format.flags, ?);
 
-			//CU_ASSERT_EQUAL(format.description, ?);
 			CU_ASSERT(0 < strlen( (char*)format.description ));
+			CU_ASSERT(valid_string((char*)format.description, sizeof(format.description)));
 
 			//CU_ASSERT_EQUAL(format.pixelformat, ?);
 			CU_ASSERT_EQUAL(format.reserved[0], 0);

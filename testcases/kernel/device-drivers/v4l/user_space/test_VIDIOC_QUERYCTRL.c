@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ * 20 Apr 2009  0.4  Added string content validation
  * 18 Apr 2009  0.3  More strict check for strings
  * 28 Mar 2009  0.2  Clean up ret and errno variable names and dprintf() output
  *  2 Jan 2009  0.1  First release
@@ -25,6 +26,7 @@
 #include "v4l2_test.h"
 #include "dev_video.h"
 #include "video_limits.h"
+#include "v4l2_validator.h"
 
 #include "test_VIDIOC_QUERYCTRL.h"
 
@@ -69,6 +71,20 @@ void test_VIDIOC_QUERYCTRL() {
 	struct v4l2_queryctrl queryctrl2;
 	__u32 i;
 
+	/* The available controls and their parameters
+	 * may change with different
+	 *  - input or output
+	 *  - tuner or modulator
+	 *  - audio input or audio output
+	 * See V4L API specification rev. 0.24, Chapter 1.8.
+	 * "User Controls" for details
+	 *
+	 * TODO: iterate through the mentioned settings.
+	 * TODO: check for deprecated controls (maybe in a
+	 * separated test case which could fail when a
+	 * deprecated control is supported)
+	 */
+
 	for (i = V4L2_CID_BASE; i < V4L2_CID_LASTP1; i++) {
 
 		memset(&queryctrl, 0xff, sizeof(queryctrl));
@@ -83,8 +99,8 @@ void test_VIDIOC_QUERYCTRL() {
 			CU_ASSERT_EQUAL(ret_query, 0);
 			CU_ASSERT_EQUAL(queryctrl.id, i);
 
-			//CU_ASSERT_EQUAL(queryctrl.name, ?);
 			CU_ASSERT(0 < strlen( (char*)queryctrl.name ));
+			CU_ASSERT(valid_string((char*)queryctrl.name, sizeof(queryctrl.name)));
 
 			CU_ASSERT(valid_control_type(queryctrl.type));
 
@@ -423,8 +439,8 @@ void test_VIDIOC_QUERYCTRL_private() {
 			CU_ASSERT_EQUAL(ret_query, 0);
 			CU_ASSERT_EQUAL(queryctrl.id, i);
 
-			//CU_ASSERT_EQUAL(queryctrl.name, ?);
 			CU_ASSERT(0 < strlen( (char*)queryctrl.name ));
+			CU_ASSERT(valid_string((char*)queryctrl.name, sizeof(queryctrl.name)));
 
 			CU_ASSERT(valid_control_type(queryctrl.type));
 

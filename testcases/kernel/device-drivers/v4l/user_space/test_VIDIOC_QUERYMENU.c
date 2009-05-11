@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ * 20 Apr 2009  0.3  Added string content validation
  * 18 Apr 2009  0.2  More strict check for strings
  *  5 Apr 2009  0.1  First release
  *
@@ -24,6 +25,7 @@
 #include "v4l2_test.h"
 #include "dev_video.h"
 #include "video_limits.h"
+#include "v4l2_validator.h"
 
 #include "test_VIDIOC_QUERYCTRL.h"
 
@@ -47,9 +49,8 @@ static void do_check_menu(__u32 id, __u32 index,
 		CU_ASSERT_EQUAL(menu->id, id);
 		CU_ASSERT_EQUAL(menu->index, index);
 
-		//CU_ASSERT_EQUAL(menu->name, ???);
 		CU_ASSERT(0 < strlen((char*)menu->name));
-		CU_ASSERT(strlen((char*)menu->name) < sizeof(menu->name));
+		CU_ASSERT(valid_string((char*)menu->name, sizeof(menu->name)));
 
 		CU_ASSERT_EQUAL(menu->reserved, 0);
 

@@ -1,6 +1,8 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ * 20 Apr 2009  0.9  Added string content validation
+ * 19 Apr 2009  0.8  Also check std field
  * 18 Apr 2009  0.7  More strict check for strings
  *  3 Apr 2009  0.6  Test case for NULL parameter reworked
  * 28 Mar 2009  0.5  Clean up ret and errno variable names and dprintf() output
@@ -32,6 +34,7 @@
 #include "v4l2_test.h"
 #include "dev_video.h"
 #include "video_limits.h"
+#include "v4l2_validator.h"
 
 #include "test_VIDIOC_ENUMINPUT.h"
 
@@ -55,13 +58,13 @@ void test_VIDIOC_ENUMINPUT() {
 			CU_ASSERT_EQUAL(ret_enum, 0);
 			CU_ASSERT_EQUAL(input.index, i);
 
-			//CU_ASSERT_EQUAL(input.name, ?);
 			CU_ASSERT(0 < strlen( (char*)input.name ));
+			CU_ASSERT(valid_string((char*)input.name, sizeof(input.name)));
 
 			//CU_ASSERT_EQUAL(input.type, ?);
 			//CU_ASSERT_EQUAL(input.audioset, ?);
 			//CU_ASSERT_EQUAL(input.tuner, ?);
-			//CU_ASSERT_EQUAL(input.std, ?);
+			CU_ASSERT(valid_v4l2_std_id(input.std));
 			//CU_ASSERT_EQUAL(input.status, ?);
 			CU_ASSERT_EQUAL(input.reserved[0], 0);
 			CU_ASSERT_EQUAL(input.reserved[1], 0);

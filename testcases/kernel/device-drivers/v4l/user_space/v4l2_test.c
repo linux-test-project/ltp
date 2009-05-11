@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ * 29 Apr 2009  0.21 Test cases added for VIDIOC_REQBUFS
  * 18 Apr 2009  0.20 NULL parameter test suite split to read only, write only
  *                   and write/read ioctl suite
  * 16 Apr 2009  0.19 Test cases added for VIDIOC_S_FMT
@@ -80,6 +81,8 @@
 #include "test_VIDIOC_CTRL.h"
 #include "test_VIDIOC_PARM.h"
 #include "test_VIDIOC_FMT.h"
+
+#include "test_VIDIOC_REQBUFS.h"
 
 #include "test_VIDIOC_LOG_STATUS.h"
 #include "test_invalid_ioctl.h"
@@ -234,6 +237,19 @@ static CU_TestInfo suite_querystd[] = {
   CU_TEST_INFO_NULL,
 };
 
+static CU_TestInfo suite_buffs[] = {
+  { "VIDIOC_REQBUFS with memory map capture streaming i/o", test_VIDIOC_REQBUFS_capture_mmap },
+  { "VIDIOC_REQBUFS with user pointer capture streaming i/o", test_VIDIOC_REQBUFS_capture_userptr },
+  { "VIDIOC_REQBUFS with memory map output streaming i/o", test_VIDIOC_REQBUFS_output_mmap },
+  { "VIDIOC_REQBUFS with user pointer output streaming i/o", test_VIDIOC_REQBUFS_output_userptr },
+  { "VIDIOC_REQBUFS with invalid memory parameter, capture", test_VIDIOC_REQBUFS_invalid_memory_capture },
+  { "VIDIOC_REQBUFS with invalid memory parameter, output", test_VIDIOC_REQBUFS_invalid_memory_output },
+  { "VIDIOC_REQBUFS with invalid type parameter, memory mapped i/o", test_VIDIOC_REQUBUFS_invalid_type_mmap },
+  { "VIDIOC_REQBUFS with invalid type parameter, user pointer i/o", test_VIDIOC_REQUBUFS_invalid_type_userptr },
+
+  CU_TEST_INFO_NULL,
+};
+
 static CU_TestInfo suite_null_readonly[] = {
   { "VIDIOC_QUERYCAP with NULL parameter", test_VIDIOC_QUERYCAP_NULL },
   /* { "VIDIOC_G_FBUF with NULL parameter", }, */
@@ -311,6 +327,8 @@ static CU_TestInfo suite_null_writeread[] = {
   CU_TEST_INFO_NULL,
 };
 
+
+
 static CU_TestInfo suite_invalid_ioctl[] = {
   { "invalid ioctl _IO(0, 0)", test_invalid_ioctl_1 },
   { "invalid ioctl _IO(0xFF, 0xFF)", test_invalid_ioctl_2 },
@@ -331,6 +349,7 @@ static CU_SuiteInfo suites[] = {
   { "VIDIOC_ENUM* ioctl calls", open_video, close_video, suite_enums },
   { "VIDIOC_G_*, VIDIOC_S_* and VIDIOC_TRY_* ioctl calls", open_video, close_video, suite_get_set_try },
   { "VIDIOC_QUERYSTD", open_video, close_video, suite_querystd },
+  { "buffer i/o", open_video, close_video, suite_buffs },
   { "read only IOCTLs with NULL parameter", open_video, close_video, suite_null_readonly },
   { "write only IOCTLs with NULL parameter", open_video, close_video, suite_null_writeonly },
   { "write and read IOCTLs with NULL parameter", open_video, close_video, suite_null_writeread },
