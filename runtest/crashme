@@ -13,9 +13,6 @@ crash02 crash02
 mem01 mem01 -r
 # Memory eater. Loves to be run in parallel with other programs.
 # May panic on buggy systems if the OOM killer was not fast enough :-)
-proc01 proc01
-# Read every file in /proc. Not likely to crash, but does enough 
-# to disturb the kernel. A good kernel latency killer too.
 fork12 fork12
 # Fork as many children as possible.  On systems with lots of memory
 # and kernels prior to 2.4.19, this can hang the system by using up all pids
