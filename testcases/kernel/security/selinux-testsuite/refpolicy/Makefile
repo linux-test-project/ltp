@@ -1,5 +1,5 @@
 REDHAT_RELEASE=$(shell rpm -q redhat-release)
-REDHAT_VERS=$(shell echo $(REDHAT_RELEASE) | cut -f3 -d"-")
+REDHAT_VERS=$(shell echo $(REDHAT_RELEASE) | cut -f3 -d"-" | sed -e "s/[^0-9]*//g")
 POLICYDEVEL = /usr/share/selinux/devel
 SEMODULE = /usr/sbin/semodule
 CHECKPOLICY = /usr/bin/checkpolicy

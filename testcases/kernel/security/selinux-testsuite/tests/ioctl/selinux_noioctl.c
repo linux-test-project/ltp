@@ -16,6 +16,7 @@
 #include<sys/stat.h>
 #include<linux/fs.h>
 #include<linux/ext2_fs.h>
+#include <sys/utsname.h>
 
 /*
  * Test the ioctl() calls on a file whose name is given as the first
@@ -25,10 +26,18 @@
  * acess to the given file.
  */
 int main(int argc, char **argv) {
-
+  struct utsname uts;
   int fd;
-  int rc;
+  int rc, oldkernel = 1;
   int val;
+
+  if (uname(&uts) < 0) {
+    perror("uname");
+    exit(1);
+  }
+
+  if (strverscmp(uts.release, "2.6.27") >= 0)
+    oldkernel = 0;
 
   fd = open(argv[1], O_RDONLY, 0);
  
@@ -51,19 +60,24 @@ int main(int argc, char **argv) {
     exit(1);
   }
 
-  /* This one should hit the FILE__IOCTL test and fail. */
+  /*
+   * This one depends on kernel version:
+   * New:  Should hit the FILE__IOCTL test and fail.
+   * Old:  Should only check FD__USE and succeed.
+   */
   rc = ioctl(fd, FIONBIO, &val);
-  if( rc == 0 ) {
+  if( !rc == !oldkernel ) {
     printf("test_noioctl:FIONBIO");
     exit(1);
   }
 
   /*
-   * This one should hit the FILE__READ test and succeed since
-   * read permission had to be granted in order to open the file.
+   * This one depends on kernel version:
+   * New:  Should hit the FILE__READ test and succeed.
+   * Old:  Should hit the FILE__GETATTR test and fail.
    */
   rc = ioctl(fd, EXT2_IOC_GETVERSION, &val);
-  if( rc != 0 ) {
+  if( !rc != !oldkernel ) {
     perror("test_noioctl:EXT2_IOC_GETVERSION");
     exit(1);
   }

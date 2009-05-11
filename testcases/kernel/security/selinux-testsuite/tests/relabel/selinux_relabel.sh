@@ -31,7 +31,7 @@ test01()
 	RC=0
 
 	# Verify that test_relabel_t can relabel the file.
-	runcon -t test_relabel_t chcon -t test_relabel_newtype_t $SELINUXTMPDIR/test_file 2>&1
+	runcon -t test_relabel_t -- chcon -t test_relabel_newtype_t $SELINUXTMPDIR/test_file 2>&1
         RC=$?
         if [ $RC -eq 0 ]
         then
