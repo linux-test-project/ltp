@@ -37,3 +37,4 @@ SELinux35	selinux_task_setscheduler.sh
 SELinux36	selinux_wait.sh
 SELinux37	selinux_dyntrace.sh
 SELinux38	selinux_dyntrans.sh
+SELinux39	selinux_bounds.sh
