@@ -169,10 +169,16 @@ The testsuite requires a pre-existing base policy configuration of
 SELinux, using either the old example policy or the reference policy
 as the baseline.  It also requires the core SELinux userland packages
 (libsepol, checkpolicy, libselinux, policycoreutils, and if using
-reference policy, libsemanage) to be installed.  The test scripts also
+modular policy, libsemanage) to be installed.  The test scripts also
 rely upon the SELinux extensions being integrated into the coreutils
 package, with support for the chcon and runcon commands as well as the
 SELinux options to existing utilities such as ls and mkdir.
+
+In addition to the libselinux shared library, the libselinux headers
+and the libselinux static library are required in order to build
+certain testcases.  These can be found in the libselinux-devel and
+libselinux-static packages respectively in modern Fedora releases, or
+in the libselinux-devel package in RHEL 5.
 
 On systems whose policy was derived from the old example policy
 (e.g. RHEL 4), the base policy sources must be installed on the
@@ -188,3 +194,11 @@ base selinux-policy package in Fedora 10 and later.  The test policy
 will look in $POLICYDEVEL as defined in
 selinux-testsuite/refpolicy/Makefile for the policy module development
 files.
+
+If the base distribution does not include the SELinux userland, then
+the source code for the core SELinux userland packages can be obtained from:
+http://userspace.selinuxproject.org
+
+If the base distribution does not include a policy configuration, then
+the reference policy can be obtained from:
+http://oss.tresys.com/projects/refpolicy
