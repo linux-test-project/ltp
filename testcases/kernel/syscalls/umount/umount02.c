@@ -171,9 +171,9 @@ int main(int ac, char **av)
 	if (Tflag == 1) {
 		strncpy(Type, fstype,
 			(FSTYPE_LEN <
-			 strlen(fstype)) ? FSTYPE_LEN : strlen(fstype));
+			 (strlen(fstype)+1)) ? FSTYPE_LEN : (strlen(fstype)+1));
 	} else {
-		strncpy(Type, DEFAULT_FSTYPE, strlen(DEFAULT_FSTYPE));
+		strncpy(Type, DEFAULT_FSTYPE, strlen(DEFAULT_FSTYPE)+1);
 	}
 
 	if (STD_COPIES != 1) {
@@ -252,12 +252,17 @@ int setup_test(int i, int cnt)
 	switch (i) {
 	case 0:
 		/* Setup for umount(2) returning errno EBUSY. */
+		if(access(Device,F_OK)) {
+			tst_brkm(TBROK, cleanup,
+				"Device %s does not exist", Device);
+			return 1;
+		}
 
 		TEST(mount(Device, Mntpoint, Fstype, Flag, NULL));
 
 		if (TEST_RETURN == -1) {
 			tst_brkm(TBROK, cleanup, "mount(2) failed to mount "
-				 "device %s at mountpoint %s, Got errno - %s :"
+				 "device %s at mountpoint %s, Got errno - %d :"
 				 " %s", Device, Mntpoint, TEST_ERRNO,
 				 strerror(TEST_ERRNO));
 			return 1;
