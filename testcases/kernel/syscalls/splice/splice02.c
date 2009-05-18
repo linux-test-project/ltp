@@ -108,7 +108,6 @@ void setup() {
 
 int main(int ac, char **av) {
 	int fd = 0;
-	int ret = 0;
 	
         setup();
 
@@ -118,26 +117,23 @@ int main(int ac, char **av) {
 	}
 	fd=open(av[1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if(fd < 0 ) {
-           tst_resm(TFAIL, "%s failed - errno = %d : %s", TCID, TEST_ERRNO, strerror(TEST_ERRNO));
+		tst_resm(TFAIL, "open(%s) failed - errno = %d : %s", av[1], errno, strerror(errno));
 	   cleanup();
 	   tst_exit();
 	}
 			
         do {
-	    ret = splice(STDIN_FILENO, NULL, fd, NULL, SPLICE_SIZE, 0);
-	    if (ret < 0) {
-            	tst_resm(TFAIL, "%s failed - errno = %d : %s",TCID, TEST_ERRNO, strerror(TEST_ERRNO));
+					TEST(splice(STDIN_FILENO, NULL, fd, NULL, SPLICE_SIZE, 0));
+	    if (TEST_RETURN < 0) {
+            	tst_resm(TFAIL, "splice failed - errno = %d : %s", TEST_ERRNO, strerror(TEST_ERRNO));
 	        cleanup();
 		tst_exit();
 	    } else
-            if (ret < SPLICE_SIZE){
+            if (TEST_RETURN == 0){
+							tst_resm(TPASS, "splice() system call Passed");
 	        cleanup();
 	        tst_exit();
 	    }
 	} while(1);
-
-	close(fd);
-        tst_resm(TPASS, "splice() system call Passed");
-        tst_exit();
 }
 

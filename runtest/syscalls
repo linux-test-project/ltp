@@ -1033,7 +1033,7 @@ sockioctl01 sockioctl01
 
 #splice test
 splice01 splice01
-splice02 echo "Test splice02()" > splice02-temp; splice02 splice02-temp
+splice02 seq 1 10000000 | splice02 splice02-temp
 
 tee01 tee01
 
