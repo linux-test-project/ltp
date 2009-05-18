@@ -44,7 +44,7 @@
 chk_ifexists()
 {
 	RC=0
-	which $2 > "$LTPTMP/tst_unzip.err" || RC=$?
+	which $2 > "$PWD/tst_unzip.err" || RC=$?
 	if [ $? -ne 0 ]
 	then
 		tst_brkm TBROK NULL "$1: command $2 not found."
@@ -98,8 +98,8 @@ init()
 	chk_ifexists INIT awk       || return $RC
 
 	# create expected output files. tst_unzip.exp
-	cat > $LTPTMP/tst_unzip.out.exp <<-EOF
-	Archive:  $TMP/tst_unzip_file.zip
+	cat > $PWD/tst_unzip.out.exp <<-EOF
+	Archive:  $1
     creating: tst_unzip.dir/
     creating: tst_unzip.dir/d.0/
     extracting: tst_unzip.dir/d.0/f.0
@@ -140,17 +140,22 @@ test01()
 
 	tst_resm TINFO "Test #1: unzip command un-compresses a .zip file."
 
-	unzip "${zipfile}" > "$LTPTMP/tst_unzip.out" || RC=$?
+	unzip "${zipfile}" > "$PWD/tst_unzip.out" || RC=$?
 	if [ $RC -ne 0 ]
 	then
-		tst_res TFAIL "$LTPTMP/tst_unzip.out" \
+		tst_res TFAIL "$PWD/tst_unzip.out" \
 			"Test #1: unzip command failed. Return value = $RC. Details:"
 		return $RC
 	else
-		diff -iwB "$LTPTMP/tst_unzip.out" "$LTPTMP/tst_unzip.out.exp" > "$LTPTMP/tst_unzip.out.err" || RC=$?
+		sort -o "$PWD/tst_unzip.out" "$PWD/tst_unzip.out"
+		sort -o "$PWD/tst_unzip.out.exp" "$PWD/tst_unzip.out.exp"
+
+		diff -iwB "$PWD/tst_unzip.out" "$PWD/tst_unzip.out.exp" >\
+    		          "$PWD/tst_unzip.out.err" || RC=$?
+		
 		if [ $RC -ne 0 ]
 		then
-			tst_res TFAIL "$LTPTMP/tst_unzip.out.err" \
+			tst_res TFAIL "$PWD/tst_unzip.out.err" \
 				"Test #1: unzip output differs from expected output. Details"
 		else
 			tst_resm TINFO "Test #1: check if \"$PWD/tst_unzip.dir\" exits."
@@ -180,7 +185,7 @@ test01()
 
 RC=0
 stat "$1" || exit $?
-init || exit $?
+init "$1" || exit $?
 
 test01 "$1" || RC=$?
 
