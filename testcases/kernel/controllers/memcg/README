@@ -1,0 +1,9 @@
+TEST SUITE:
+
+The directory memcg contains the tests related to memory resource controller.
+Those testcases can reproduce bugs we found.
+
+TESTS AIM:
+
+The aim of the tests is to track any future regressions.
+

@@ -11,6 +11,12 @@ else
 $(info "Kernel is not compiled with control cgroup support")
 endif
 
+ifeq ($(CHECK_MEMCTL),memory)
+SUBDIRS += memcg
+else
+$(info "Kernel is not compiled with memory resource controller support")
+endif
+
 ifeq ($(CHECK_CPUCTL),cpu)
 SUBDIRS += cpuctl
 else
