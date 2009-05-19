@@ -48,4 +48,6 @@ int main(int argc, char *argv[])
 		perror("unmap");
 		return(-1);
 	}
+
+	return 0;
 }
