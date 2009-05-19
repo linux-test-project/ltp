@@ -119,15 +119,15 @@ if [ ${VERBOSE} = "yes" ]; then
     cat $CMDFILE
     ${LTPROOT}/ver_linux
     echo ""
-    echo ${LTPROOT}/pan/pan -e -l /tmp/netpan.log -S -a ltpnet -n ltpnet -f $CMDFILE
+    echo ${LTPROOT}/pan/ltp-pan -e -l /tmp/netpan.log -S -a ltpnet -n ltpnet -f $CMDFILE
 fi
 
-${LTPROOT}/pan/pan -e -l /tmp/netpan.log -S -a ltpnet -n ltpnet -f $CMDFILE
+${LTPROOT}/pan/ltp-pan -e -l /tmp/netpan.log -S -a ltpnet -n ltpnet -f $CMDFILE
 
 if [ $? -eq "0" ]; then
-  echo pan reported PASS
+  echo ltp-pan reported PASS
 else
-  echo pan reported FAIL
+  echo ltp-pan reported FAIL
 fi
 
 rm -rf ${TMPDIR}

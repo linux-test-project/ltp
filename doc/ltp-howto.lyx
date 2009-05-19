@@ -253,7 +253,7 @@ Testing Tools
 The Linux Test Project has not yet decided on a "final" test harness.
   We have provided a simple solution with 
 \family typewriter 
-pan
+ltp-pan
 \family default 
  to make due until a complete solution has been found/created that compliments
  the Linux kernel development process.
@@ -263,24 +263,24 @@ pan
    
 \layout Subsection
 
-Pan
+Ltp-pan
 \layout Standard
 
 
 \family typewriter 
-pan
+ltp-pan
 \family default 
  is a simple test driver with the ability to keep track of orphaned processes
  and capture test output.
  It works by reading a list of test tags and command lines and runs them.
- By default pan will select a command randomly from the list of test tags,
+ By default ltp-pan will select a command randomly from the list of test tags,
  wait for it to finish.
  Through command line options you can run through the entire list sequentially,
  run n tests, keep n test running at all times, and buffer test output.
- Pan can be nested to create very complex test environments.
+ Ltp-pan can be nested to create very complex test environments.
 \layout Standard
 
-Pan uses an 
+Ltp-pan uses an 
 \emph on 
 active file
 \emph default 
@@ -290,11 +290,11 @@ zoo file
 \emph default 
  to keep track of which tests are currently running.
  This file holds the pid, tag, and a portion of the command line.
- When you start pan it becomes a test tag in itself, thus it requires a
+ When you start ltp-pan it becomes a test tag in itself, thus it requires a
  name for itself.
- Pan updates the active file to show which test tags are currently running.
- When a test tag exits, pan will overwrite the first character with a '#'.
- The active file can be shared between multiple instances of pan so you
+ Ltp-pan updates the active file to show which test tags are currently running.
+ When a test tag exits, ltp-pan will overwrite the first character with a '#'.
+ The active file can be shared between multiple instances of ltp-pan so you
  know which tests were running when the system crashes by looking at one
  file.
  
@@ -302,10 +302,10 @@ zoo file
 
 A 
 \emph on 
-pan file
+ltp-pan file
 \emph default 
- contains a list of test tags for pan to run.
- The format of a pan file is as follows:
+ contains a list of test tags for ltp-pan to run.
+ The format of a ltp-pan file is as follows:
 \layout Code
 
 
@@ -321,7 +321,7 @@ testtag testprogram -o one -p two other command line options
 
 
 \latex no_latex 
-# tags in your pan file.
+# tags in your ltp-pan file.
  Tests programs can have different 
 \layout Code
 
@@ -397,7 +397,7 @@ kill09 kill09
 
 
 \latex no_latex 
-fs-suite01 pan -e -a fs-suite01.zoo -n fs-suite01 -f runtest/fs
+fs-suite01 ltp-pan -e -a fs-suite01.zoo -n fs-suite01 -f runtest/fs
 \layout Code
 
 
@@ -407,7 +407,7 @@ fs-suite01 pan -e -a fs-suite01.zoo -n fs-suite01 -f runtest/fs
 
 The test tags are simple identifiers, no spaces are allowed.
  The test of the line is the program to run, which is done using execvp(3).
- Lines starting with '#' are comments and ignored by pan.
+ Lines starting with '#' are comments and ignored by ltp-pan.
  It is a good practice to include descriptions with your test tags so you
  can have a reminder what a certain obscure test tag tries to do.
 \layout Subsubsection
@@ -415,7 +415,7 @@ The test tags are simple identifiers, no spaces are allowed.
 Examples
 \layout Standard
 
-The most basic way to run pan is by passing the test program and parameters
+The most basic way to run ltp-pan is by passing the test program and parameters
  on the command line.
  This will run the single program once and wrap the output.
  
@@ -423,7 +423,7 @@ The most basic way to run pan is by passing the test program and parameters
 
 
 \latex no_latex 
-$ pan -a ltp.zoo -n tutor sleep 4
+$ ltp-pan -a ltp.zoo -n tutor sleep 4
 \layout Code
 
 
@@ -484,7 +484,7 @@ $ cat ltp.zoo
 
 
 \latex no_latex 
-#9357,tutor,pan/pan -a ltp.zoo -n tutor sleep 4 
+#9357,tutor,pan/ltp-pan -a ltp.zoo -n tutor sleep 4 
 \layout Code
 
 
@@ -500,8 +500,8 @@ $
 How it works
 \layout Standard
 
-This example shows the two parameters that are always required by pan, the
- active file and a test tag for pan.
+This example shows the two parameters that are always required by ltp-pan, the
+ active file and a test tag for ltp-pan.
  The 
 \begin_inset Quotes eld
 \end_inset 
@@ -510,7 +510,7 @@ sleep 4
 \begin_inset Quotes erd
 \end_inset 
 
- on the end of the command line is a test program and parameters that pan
+ on the end of the command line is a test program and parameters that ltp-pan
  should run.
  This test is given the tag 
 \begin_inset Quotes eld
@@ -520,8 +520,8 @@ cmdln.
 \begin_inset Quotes erd
 \end_inset 
 
- Pan will run one test randomly, which ends up being cmdln since it is the
- only test that we told pan about.
+ Ltp-pan will run one test randomly, which ends up being cmdln since it is the
+ only test that we told ltp-pan about.
  
 \layout Standard
 
@@ -529,12 +529,12 @@ In the active file,
 \family typewriter 
 ltp.zoo
 \family default 
-, pan writes the pid, test tag, and part of the command line for the currently
+, ltp-pan writes the pid, test tag, and part of the command line for the currently
  running tests.
  The command lines are truncated so each line will fit on an 80 column display.
- When a test tag finishes, pan will place a '#' at the beginning of the
+ When a test tag finishes, ltp-pan will place a '#' at the beginning of the
  line to mark it as available.
- Here you can see that cmdln and tutor, the name we gave pan, ran to completion.
+ Here you can see that cmdln and tutor, the name we gave ltp-pan, ran to completion.
  If the computer hangs, you can read this file to see which test programs
  were running.
 \layout Standard
@@ -547,7 +547,7 @@ We have run one test once.
 
 
 \latex no_latex 
-$ pan -a ltp.zoo -n tutor -x 3 -s 3 -O /tmp sleep 1
+$ ltp-pan -a ltp.zoo -n tutor -x 3 -s 3 -O /tmp sleep 1
 \layout Code
 
 
@@ -744,15 +744,15 @@ In this example we run another fake test from the command line, but we run
  
 \layout Itemize
 
-Using a pan file to run multiple tests
+Using a ltp-pan file to run multiple tests
 \layout Itemize
 
-Nesting pan
+Nesting ltp-pan
 \layout Standard
 
-For more information on pan see the man page 
+For more information on ltp-pan see the man page 
 \family typewriter 
-doc/man1/pan.1
+doc/man1/ltp-pan.1
 \family default 
 .
 \layout Subsection
@@ -762,7 +762,7 @@ Scanner
 
 
 \family typewriter 
-scanner
+Ltp-scanner
 \family default 
  is a results analysis tool that understands the 
 \emph on 
@@ -770,7 +770,7 @@ rts
 \emph default 
  style output which 
 \family typewriter 
-pan
+ltp-pan
 \family default 
  generates by default.
  It will produce a table summarizing which tests passed and which failed.
@@ -936,7 +936,7 @@ Test\SpecialChar ~
 Driver A program that handles the execution of test programs.
  It is responsible for starting the test programs, capturing their output,
  and recording their results.
- Pan is an example of a test driver.
+ Ltp-pan is an example of a test driver.
 \layout Description
 
 Test\SpecialChar ~

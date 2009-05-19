@@ -4,21 +4,21 @@ LFLAGS += -l -w
 CFLAGS += -w 
 PREFIX = /opt/ltp
 
-all: pan bump scanner
+all: ltp-pan ltp-bump ltp-scanner
 
-pan: pan.o zoolib.o splitstr.o
-
-
-bump: bump.o zoolib.o
+ltp-pan: ltp-pan.o zoolib.o splitstr.o
 
 
-scanner: scan.o scanner.o reporter.o tag_report.o symbol.o splitstr.o debug.o
+ltp-bump: ltp-bump.o zoolib.o
 
 
-install: pan bump scanner
-	install -D scanner $(DESTDIR)/$(PREFIX)/bin/scanner
-	install -D pan $(DESTDIR)/$(PREFIX)/bin/pan
-	install -D bump $(DESTDIR)/$(PREFIX)/bin/bump
+ltp-scanner: scan.o ltp-scanner.o reporter.o tag_report.o symbol.o splitstr.o debug.o
+
+
+install: ltp-pan ltp-bump ltp-scanner
+	install -D ltp-scanner $(DESTDIR)/$(PREFIX)/bin/ltp-scanner
+	install -D ltp-pan $(DESTDIR)/$(PREFIX)/bin/ltp-pan
+	install -D ltp-bump $(DESTDIR)/$(PREFIX)/bin/ltp-bump
 
 clean:
-	rm -f *.o pan bump scanner
+	rm -f *.o ltp-pan ltp-bump ltp-scanner

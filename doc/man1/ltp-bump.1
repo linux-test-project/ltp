@@ -1,5 +1,5 @@
 .\"
-.\" $Id: bump.1,v 1.1 2000/09/14 21:54:44 nstraz Exp $
+.\" $Id: ltp-bump.1,v 1.1 2009/05/19 09:39:11 subrata_modak Exp $
 .\"
 .\" Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
 .\" 
@@ -33,14 +33,14 @@
 .\"
 .TH BUMP 1 "14 Sep 2000" "LTP" "Linux Test Project"
 .SH NAME
-bump \- send signal to tags run by pan
+ltp-bump \- send signal to tags run by ltp-pan
 .SH SYNOPSIS
-\fBbump [-1] [-s \fIsig\fB] [\fI-a active-file\fB] [tags...]
+\fBltp-bump [-1] [-s \fIsig\fB] [\fI-a active-file\fB] [tags...]
 .SH DESCRIPTION
 
 Bump will send a SIGINT signal to processes, given that each process has a
 corresponding tag in an active-file.  The active-file is the same one that is
-used by the pan to start the processes.
+used by the ltp-pan to start the processes.
 
 If the active file has multiple occurrences of a single tag name then only the
 first process will be signaled.  You may specify the tag name multiple times
@@ -51,7 +51,7 @@ on the commandline if necessary.
 Send a SIGUSR1 signal.  By default a SIGINT will be sent.
 .TP 1i
 \fB-a \fIactive_file\fB
-A file containing the tagnames, pids, and commands being run by a pan.  If this
+A file containing the tagnames, pids, and commands being run by a ltp-pan.  If this
 is not specified then the ZOO environment variable will be read for the name of
 the directory where the active file can be found.
 .TP 1i
@@ -73,7 +73,7 @@ Default name of active file if \fI-a\fP is not specified.  This is prefixed
 by the directory name found in the ZOO environment variable.
 
 .SH "SEE ALSO"
-Zoo tools - pan(1)
+Zoo tools - ltp-pan(1)
 
 .SH DIAGNOSTICS
 Exits zero, unless it cannot find the active file or if there were no tags

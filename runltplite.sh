@@ -57,9 +57,9 @@ setup()
         exit 1
     }
 
-    [ -e $LTPROOT/pan/pan ] ||
+    [ -e $LTPROOT/pan/ltp-pan ] ||
     {
-        echo "FATAL: Test suite driver 'pan' not found"
+        echo "FATAL: Test suite driver 'ltp-pan' not found"
         echo "INFO: as root user type 'make ; make install'"
         exit 1
     }
@@ -284,7 +284,7 @@ main()
     }
 
     [ ! -z "$QUIET_MODE" ] && { echo "INFO: Test start time: $(date)" ; }
-    PAN_COMMAND="${LTPROOT}/pan/pan $QUIET_MODE -e -S $INSTANCES $DURATION -a $$ \
+    PAN_COMMAND="${LTPROOT}/pan/ltp-pan $QUIET_MODE -e -S $INSTANCES $DURATION -a $$ \
     -n $$ $PRETTY_PRT -f ${TMP}/alltests $LOGFILE $OUTPUTFILE"
     if [ ! -z "$VERBOSE_MODE" ] ; then
       echo "COMMAND:    $PAN_COMMAND"
@@ -295,14 +295,14 @@ main()
     #$PAN_COMMAND #Duplicated code here, because otherwise if we fail, only "PAN_COMMAND" gets output
     # Some tests need to run inside the "bin" directory.
     cd "${LTPROOT}/testcases/bin"
-    ${LTPROOT}/pan/pan $QUIET_MODE -e -S $INSTANCES $DURATION -a $$ \
+    ${LTPROOT}/pan/ltp-pan $QUIET_MODE -e -S $INSTANCES $DURATION -a $$ \
     -n $$ $PRETTY_PRT -f ${TMP}/alltests $LOGFILE $OUTPUTFILE
     
     if [ $? -eq 0 ]; then
-      echo "INFO: pan reported all tests PASS"
+      echo "INFO: ltp-pan reported all tests PASS"
       VALUE=0
     else
-      echo "INFO: pan reported some tests FAIL"
+      echo "INFO: ltp-pan reported some tests FAIL"
       VALUE=1
     fi
     cd ..

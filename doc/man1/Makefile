@@ -1,7 +1,7 @@
 
 
 PREFIX=/usr
-MANPAGES=bump.1 doio.1 iogen.1 pan.1
+MANPAGES=ltp-bump.1 doio.1 iogen.1 ltp-pan.1
 
 all:
 

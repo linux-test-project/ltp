@@ -30,30 +30,28 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: bump.c,v 1.4 2001/03/08 19:13:21 nstraz Exp $ */
+/* $Id: ltp-bump.c,v 1.1 2009/05/19 09:39:11 subrata_modak Exp $ */
 #include <stdio.h>
 #include <errno.h>
 #include <sys/signal.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "zoolib.h"
 
-pid_t
-read_active( FILE *fp, char *name );
+pid_t read_active(FILE *fp, char *name);
 
-int 
-main( int argc, char **argv ){
-	extern char *optarg;
-	extern int optind;
+int main(int argc, char **argv)
+{
 	int c;
 	char *active = NULL;
 	pid_t nanny;
 	zoo_t zoo;
 	int sig = SIGINT;
 
-	while( (c = getopt(argc, argv, "a:s:12")) != -1 ){
-		switch(c){
+	while((c = getopt(argc, argv, "a:s:12")) != -1) {
+		switch(c) {
 			case 'a':
 				active = (char*)malloc(strlen(optarg)+1);
 				strcpy( active, optarg );
@@ -70,37 +68,38 @@ main( int argc, char **argv ){
 		}
 	}
 
-	if( active == NULL ){
+	if (active == NULL) {
 		active = zoo_getname();
-		if( active == NULL ){
-			fprintf(stderr, "bump: Must supply -a or set ZOO env variable\n");
+		if (active == NULL) {
+			fprintf(stderr, "ltp-bump: Must supply -a or set ZOO env variable\n");
 			exit(1);
 		}
 	}
-	if( optind == argc ){
-		fprintf( stderr, "bump: Must supply names\n");
+
+	if (optind == argc) {
+		fprintf(stderr, "ltp-bump: Must supply names\n");
 		exit(1);
 	}
 
 	/* need r+ here because we're using write-locks */
-	if( (zoo = zoo_open(active)) == NULL ){
-		fprintf(stderr, "bump: %s\n", zoo_error);
+	if ((zoo = zoo_open(active)) == NULL) {
+		fprintf(stderr, "ltp-bump: %s\n", zoo_error);
 		exit(1);
 	}
-	while( optind < argc ){
+
+	while (optind < argc) {
 		/*printf("argv[%d] = (%s)\n", optind, argv[optind] );*/
 		nanny = zoo_getpid(zoo, argv[optind]);
-		if( nanny == -1 ){
-			fprintf(stderr, "bump: Did not find tag '%s'\n",
-				argv[optind] );
-		}
-		else{
-			if (kill( nanny, sig ) == -1){
-				if (errno == ESRCH){
-					fprintf(stderr,"bump: Tag %s (pid %d) seems to be dead already.\n",
-						argv[optind], nanny );
+		if (nanny == -1) {
+			fprintf(stderr, "ltp-bump: Did not find tag '%s'\n",
+				argv[optind]);
+		} else {
+			if (kill( nanny, sig ) == -1) {
+				if (errno == ESRCH) {
+					fprintf(stderr,"ltp-bump: Tag %s (pid %d) seems to be dead already.\n",
+						argv[optind], nanny);
 					if (zoo_clear(zoo, nanny))
-						fprintf(stderr,"bump: %s\n", zoo_error);
+						fprintf(stderr,"ltp-bump: %s\n", zoo_error);
 				}
 			}
 		}
@@ -110,4 +109,3 @@ main( int argc, char **argv ){
 
 	exit(0);
 }
-

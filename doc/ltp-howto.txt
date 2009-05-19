@@ -154,44 +154,44 @@ the results.
 5 Testing Tools
 
 The Linux Test Project has not yet decided on a "final" test
-harness.  We have provided a simple solution with pan to
+harness.  We have provided a simple solution with ltp-pan to
 make due until a complete solution has been found/created
 that compliments the Linux kernel development process. 
 Several people have said we should use such and such a test
 harness. Until we find we need a large complex test harness,
 we will apply the KISS concept.   
 
-5.1 Pan
+5.1 Ltp-pan
 
-pan is a simple test driver with the ability to keep track
+Ltp-pan is a simple test driver with the ability to keep track
 of orphaned processes and capture test output. It works
 by reading a list of test tags and command lines and runs
-them. By default pan will select a command randomly from
+them. By default ltp-pan will select a command randomly from
 the list of test tags, wait for it to finish. Through command
 line options you can run through the entire list sequentially,
 run n tests, keep n test running at all times, and buffer
-test output. Pan can be nested to create very complex test
+test output. Ltp-pan can be nested to create very complex test
 environments.
 
-Pan uses an active file, also called a zoo file to keep track
+Ltp-pan uses an active file, also called a zoo file to keep track
 of which tests are currently running. This file holds the
 pid, tag, and a portion of the command line. When you start
-pan it becomes a test tag in itself, thus it requires a
-name for itself. Pan updates the active file to show which
+ltp-pan it becomes a test tag in itself, thus it requires a
+name for itself. Ltp-pan updates the active file to show which
 test tags are currently running. When a test tag exits,
-pan will overwrite the first character with a '#'. The active
-file can be shared between multiple instances of pan so
+ltp-pan will overwrite the first character with a '#'. The active
+file can be shared between multiple instances of ltp-pan so
 you know which tests were running when the system crashes
 by looking at one file. 
 
-A pan file contains a list of test tags for pan to run. The
-format of a pan file is as follows:
+A ltp-pan file contains a list of test tags for ltp-pan to run. The
+format of a ltp-pan file is as follows:
 
 testtag testprogram -o one -p two other command line options
 
 # This is a comment. It is a good idea to describe the test 
 
-# tags in your pan file. Tests programs can have different 
+# tags in your ltp-pan file. Tests programs can have different 
 
 # behaviors depending on the command line options so it is 
 
@@ -222,24 +222,24 @@ kill09 kill09
 
 # Basic test for kill(2)
 
-fs-suite01 pan -e -a fs-suite01.zoo -n fs-suite01 -f runtest/fs
+fs-suite01 ltp-pan -e -a fs-suite01.zoo -n fs-suite01 -f runtest/fs
 
 # run the entire set of file system tests
 
 The test tags are simple identifiers, no spaces are allowed.
 The test of the line is the program to run, which is done
 using execvp(3). Lines starting with '#' are comments and
-ignored by pan. It is a good practice to include descriptions
+ignored by ltp-pan. It is a good practice to include descriptions
 with your test tags so you can have a reminder what a certain
 obscure test tag tries to do.
 
 5.1.1 Examples
 
-The most basic way to run pan is by passing the test program
+The most basic way to run ltp-pan is by passing the test program
 and parameters on the command line. This will run the single
 program once and wrap the output. 
 
-$ pan -a ltp.zoo -n tutor sleep 4
+$ ltp-pan -a ltp.zoo -n tutor sleep 4
 
 <<<test_start>>> 
 
@@ -264,7 +264,7 @@ corefile=no cutime=0 cstime=0
 
 $ cat ltp.zoo
 
-#9357,tutor,pan/pan -a ltp.zoo -n tutor sleep 4 
+#9357,tutor,pan/ltp-pan -a ltp.zoo -n tutor sleep 4 
 
 #9358,cmdln,sleep 4
 
@@ -273,27 +273,27 @@ $
 How it works
 
 This example shows the two parameters that are always required
-by pan, the active file and a test tag for pan. The "sleep
+by ltp-pan, the active file and a test tag for ltp-pan. The "sleep
 4" on the end of the command line is a test program and
-parameters that pan should run. This test is given the tag
-"cmdln." Pan will run one test randomly, which ends
-up being cmdln since it is the only test that we told pan
+parameters that ltp-pan should run. This test is given the tag
+"cmdln." Ltp-pan will run one test randomly, which ends
+up being cmdln since it is the only test that we told ltp-pan
 about. 
 
-In the active file, ltp.zoo, pan writes the pid, test tag,
+In the active file, ltp.zoo, ltp-pan writes the pid, test tag,
 and part of the command line for the currently running tests.
 The command lines are truncated so each line will fit on
-an 80 column display. When a test tag finishes, pan will
+an 80 column display. When a test tag finishes, ltp-pan will
 place a '#' at the beginning of the line to mark it as available.
 Here you can see that cmdln and tutor, the name we gave
-pan, ran to completion. If the computer hangs, you can read
+ltp-pan, ran to completion. If the computer hangs, you can read
 this file to see which test programs were running.
 
 We have run one test once. Let's do something a little more
 exciting. Let's run one test several times, at the same
 time. 
 
-$ pan -a ltp.zoo -n tutor -x 3 -s 3 -O /tmp sleep 1
+$ ltp-pan -a ltp.zoo -n tutor -x 3 -s 3 -O /tmp sleep 1
 
 <<<test_start>>>
 
@@ -380,16 +380,16 @@ the output of each test tag. You can see in the output that
 cmdln ran three times. If the -O option were omitted, your
 test output would be mixed, making it almost worthless. 
 
-* Using a pan file to run multiple tests
+* Using a ltp-pan file to run multiple tests
 
-* Nesting pan
+* Nesting ltp-pan
 
-For more information on pan see the man page doc/man1/pan.1.
+For more information on ltp-pan see the man page doc/man1/ltp-pan.1.
 
 5.2 Scanner
 
-scanner is a results analysis tool that understands the rts
-style output which pan generates by default. It will produce
+Ltp-scanner is a results analysis tool that understands the rts
+style output which ltp-pan generates by default. It will produce
 a table summarizing which tests passed and which failed.
   
 
@@ -475,7 +475,7 @@ Test Case A test assertion with a single result that
 Test Driver A program that handles the execution of
   test programs. It is responsible for starting the test
   programs, capturing their output, and recording their
-  results. Pan is an example of a test driver.
+  results. Ltp-pan is an example of a test driver.
 
 Test Framework A mechanism for organizing a group of
   tests.  Frameworks may have complex or very simple API's,

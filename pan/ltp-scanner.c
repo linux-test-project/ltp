@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: scanner.c,v 1.1 2000/09/21 21:35:06 alaffin Exp $ */
+/* $Id: ltp-scanner.c,v 1.1 2009/05/19 09:39:11 subrata_modak Exp $ */
 /*
  * An RTS/pan driver output processing program.
  *
@@ -41,7 +41,7 @@
  * it's reports.  
  *
  * Synopsis:
- * 	scanner [ -e ] [ -D area:level ] [ -h ]
+ * 	ltp-scanner [ -e ] [ -D area:level ] [ -h ]
  *
  * Description:
  *   Scanner is part of the RTS 2.0 reporting mechanism or pan.
@@ -125,59 +125,50 @@
 #include <unistd.h>
 #include <stdarg.h>
 #include <string.h>
+#include <getopt.h>
 #include "scan.h"
 #include "debug.h"
 #include "reporter.h"
 #include "symbol.h"
 
-char *cfn;			/* current filename */
-int extended=0;			/* -e option */
+char *cnf;              /* current filename */
+int extended=0;		/* -e option        */
 
-int
-main(argc, argv)
-    int argc;
-    char **argv;
+int main(int argc, char *argv[])
 {
-    SYM tags;			/* tag data */
+	SYM tags;			/* tag data */
+	int c;
 
-    /* Argument parsing */
-    int r;
-    char c;
-    extern char *optarg;
-    extern int optind, opterr, optopt;
-
-    while(( r = getopt(argc, argv, "D:ehi")) != -1) {
-	c = (char) r;
-	switch(c) {
-	case 'i':
-	    set_iscanner();
-	    break;
-	case 'D':
-	    set_debug(optarg);
-	    break;
-	case 'e':
-	    extended++;
-	    break;
-	case 'h':
-	    fprintf(stderr, "%s [-e] [-i] [ -D area, level ] input-filenames\n",
-		    argv[0]);
-	    exit(0);
-	    break;
-	default:
-	    fprintf(stderr, "invalid argument, %c\n", c);
-	    exit(1);
+	while ((c = getopt(argc, argv, "D:ehi")) != -1) {
+		switch(c) {
+			case 'i':
+			    set_iscanner();
+			    break;
+			case 'D':
+			    set_debug(optarg);
+			    break;
+			case 'e':
+			    extended++;
+			    break;
+			case 'h':
+			    fprintf(stderr, "%s [-e] [-i] [ -D area, level ] input-filenames\n",
+				    argv[0]);
+			    exit(0);
+			default:
+			    fprintf(stderr, "invalid argument, %c\n", c);
+			    exit(1);
+		}
 	}
-    }
 
-    lex_files(&argv[optind]);	/* I hope that argv[argc+1] == NULL */
-    tags = sym_open(0, 0, 0);
+	lex_files(&argv[optind]);	/* I hope that argv[argc+1] == NULL */
+	tags = sym_open(0, 0, 0);
 
-    scanner(tags);
+	scanner(tags);
 #ifdef DEBUGGING
-    DEBUG(D_INIT, 1)
+	DEBUG(D_INIT, 1)
 	sym_dump_s(tags, 0);
 #endif
-    reporter(tags);
+	reporter(tags);
 
-    exit(0);
+	exit(0);
 }

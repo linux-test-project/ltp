@@ -124,15 +124,15 @@ if [ ${VERBOSE} = "yes" ]; then
 	cat $TMPDIR/network_stress.tests
 	${LTPROOT}/ver_linux
 	echo ""
-	echo ${LTPROOT}/pan/pan -e -l /tmp/netstress.log -S -a netstress -n netstress -f ${TMPDIR}/network_stress.tests
+	echo ${LTPROOT}/pan/ltp-pan -e -l /tmp/netstress.log -S -a netstress -n netstress -f ${TMPDIR}/network_stress.tests
 fi
 
-${LTPROOT}/pan/pan -e -l /tmp/netstress.log -S -a netstress -n netstress -f ${TMPDIR}/network_stress.tests
+${LTPROOT}/pan/ltp-pan -e -l /tmp/netstress.log -S -a netstress -n netstress -f ${TMPDIR}/network_stress.tests
 
 if [ $? -eq "0" ]; then
-  echo pan reported PASS
+  echo ltp-pan reported PASS
 else
-  echo pan reported FAIL
+  echo ltp-pan reported FAIL
 fi
 
 rm -rf ${TMPDIR}

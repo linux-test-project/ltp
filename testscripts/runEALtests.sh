@@ -207,12 +207,12 @@ fi
 # display versions of installed software
 ${LTPROOT}/../ver_linux
 
-${LTPROOT}/../pan/pan $quiet_mode -e -S $instances $duration -a $$ -n $$ $pretty_prt -f ${TMP}/alltests $logfile 
+${LTPROOT}/../pan/ltp-pan $quiet_mode -e -S $instances $duration -a $$ -n $$ $pretty_prt -f ${TMP}/alltests $logfile 
 
 if [ $? -eq 0 ]; then
-  echo pan reported PASS
+  echo ltp-pan reported PASS
 else
-  echo pan reported FAIL
+  echo ltp-pan reported FAIL
 fi
 
 if [ $GenLoad -eq 1 ]

@@ -33,7 +33,7 @@
 #               Oct 08 2003 - Modified - Manoj Iyer
 #               - fixed bug in creating results directory
 #               - all checks should be enlclosed in " " to avoid bash error
-#               - exit with error if pan is not found in pan directory
+#               - exit with error if ltp-pan is not found in pan directory
 #
 #               Jul 22 2007 - Modified - Ricardo Salveti de Araujo
 #               - added support to put more then one file at CMDLINE (-f)
@@ -85,9 +85,9 @@ setup()
         exit 1
     }
 
-    [ -e $LTPROOT/pan/pan ] ||
+    [ -e $LTPROOT/pan/ltp-pan ] ||
     {
-        echo "FATAL: Test suite driver 'pan' not found"
+        echo "FATAL: Test suite driver 'ltp-pan' not found"
         echo "INFO: as root user type 'make ; make install'"
         exit 1
     }
@@ -709,7 +709,7 @@ main()
     fi
 
     [ ! -z "$QUIET_MODE" ] && { echo "INFO: Test start time: $(date)" ; }
-    PAN_COMMAND="${LTPROOT}/pan/pan $QUIET_MODE -e -S $INSTANCES $DURATION -a $$ \
+    PAN_COMMAND="${LTPROOT}/pan/ltp-pan $QUIET_MODE -e -S $INSTANCES $DURATION -a $$ \
     -n $$ $PRETTY_PRT -f ${TMP}/alltests $LOGFILE $OUTPUTFILE $FAILCMDFILE"
     if [ ! -z "$VERBOSE_MODE" ] ; then
       echo "COMMAND:    $PAN_COMMAND"
@@ -740,14 +740,14 @@ main()
 
     # Some tests need to run inside the "bin" directory.
     cd "${LTPROOT}/testcases/bin"
-    ${LTPROOT}/pan/pan $QUIET_MODE -e -S $INSTANCES $DURATION -a $$ -n $$ $PRETTY_PRT -f ${TMP}/alltests $LOGFILE $OUTPUTFILE $FAILCMDFILE
+    ${LTPROOT}/pan/ltp-pan $QUIET_MODE -e -S $INSTANCES $DURATION -a $$ -n $$ $PRETTY_PRT -f ${TMP}/alltests $LOGFILE $OUTPUTFILE $FAILCMDFILE
      
     if [ $? -eq 0 ]; then
-      echo "INFO: pan reported all tests PASS"
+      echo "INFO: ltp-pan reported all tests PASS"
       VALUE=0
       export LTP_EXIT_VALUE=0;
     else
-      echo "INFO: pan reported some tests FAIL"
+      echo "INFO: ltp-pan reported some tests FAIL"
       VALUE=1
       export LTP_EXIT_VALUE=1;
     fi

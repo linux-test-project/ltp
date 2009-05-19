@@ -21,9 +21,9 @@ It is intended to be used to build testcases using the provided API.
 %files
 /opt/ltp/lib/libltp.a
 /usr/share/pkgconfig/ltp.pc
-/opt/ltp/bin/pan
-/opt/ltp/bin/scanner
-/opt/ltp/bin/bump
+/opt/ltp/bin/ltp-pan
+/opt/ltp/bin/ltp-scanner
+/opt/ltp/bin/ltp-bump
 /opt/ltp/include/linux_syscall_numbers.h
 /opt/ltp/include/libtestsuite.h
 /opt/ltp/include/usctest.h
@@ -59,10 +59,10 @@ It is intended to be used to build testcases using the provided API.
 /usr/share/man/man3/string_to_tokens.3
 /usr/share/man/man3/tst_sig.3
 /usr/share/man/man3/get_attrib.3
-/usr/share/man/man1/pan.1
+/usr/share/man/man1/ltp-pan.1
 /usr/share/man/man1/doio.1
 /usr/share/man/man1/iogen.1
-/usr/share/man/man1/bump.1
+/usr/share/man/man1/ltp-bump.1
 # Post-install stuff would go here.
 #EOF
 

@@ -275,9 +275,9 @@ output1=${TMPBASE}/ltpstress.$$.output1
 output2=${TMPBASE}/ltpstress.$$.output2
 output3=${TMPBASE}/ltpstress.$$.output3
 
-${LTPROOT}/pan/pan -e -p -q -S -t ${hours}h -a stress1 -n stress1 -l $logfile -f ${TMP}/stress.part1 -o $output1 & 
-${LTPROOT}/pan/pan -e -p -q -S -t ${hours}h -a stress2 -n stress2 -l $logfile -f ${TMP}/stress.part2 -o $output2 &
-${LTPROOT}/pan/pan -e -p -q -S -t ${hours}h -a stress3 -n stress3 -l $logfile -f ${TMP}/stress.part3 -o $output3 &
+${LTPROOT}/pan/ltp-pan -e -p -q -S -t ${hours}h -a stress1 -n stress1 -l $logfile -f ${TMP}/stress.part1 -o $output1 & 
+${LTPROOT}/pan/ltp-pan -e -p -q -S -t ${hours}h -a stress2 -n stress2 -l $logfile -f ${TMP}/stress.part2 -o $output2 &
+${LTPROOT}/pan/ltp-pan -e -p -q -S -t ${hours}h -a stress3 -n stress3 -l $logfile -f ${TMP}/stress.part3 -o $output3 &
 
 echo "Running LTP Stress for $hours hour(s) using $(($memsize/1024)) Mb"
 echo ""
@@ -286,7 +286,7 @@ echo "        $output1"
 echo "        $output2"
 echo "        $output3"
 
-# Sleep a little longer than duration to let pan "try" to gracefully end itself.
+# Sleep a little longer than duration to let ltp-pan "try" to gracefully end itself.
 sleep $(($duration + 10))  
 
 if [ $Sar -eq 1 ]; then
@@ -295,7 +295,7 @@ fi
 if [ $Top -eq 1 ]; then
   kill $SCREEN_PID >/dev/null 2>&1
 fi
-killall -9 pan >/dev/null 2>&1
+killall -9 ltp-pan >/dev/null 2>&1
 killall -9 genload >/dev/null 2>&1
 if [ $NO_NETWORK -eq 0 ];then
   killall -9 netpipe.sh >/dev/null 2>&1
