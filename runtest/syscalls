@@ -1161,6 +1161,8 @@ timerfd03 timerfd03
 timer_getoverrun01 timer_getoverrun01
 timer_gettime01 timer_gettime01
 
+tkill01 tkill01
+
 truncate01 truncate01
 truncate01_64 truncate01_64
 truncate02 truncate02
