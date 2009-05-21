@@ -141,6 +141,8 @@ execvp01 execvp01
 exit01 exit01
 exit02 exit02
 
+exit_group01 exit_group01
+
 #faccessat test cases
 faccessat01 faccessat01
 
