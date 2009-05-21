@@ -970,6 +970,7 @@ setrlimit02 setrlimit02
 setrlimit03 setrlimit03
 
 set_robust_list01 set_robust_list01
+set_thread_area01 set_thread_area01
 
 setsid01 setsid01
 
