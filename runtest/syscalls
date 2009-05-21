@@ -895,6 +895,8 @@ setgid03_16 setgid03_16
 
 setegid01 setegid01
 
+sgetmask01 sgetmask01
+
 setgroups01 setgroups01
 setgroups01_16 setgroups01_16
 setgroups02 setgroups02
