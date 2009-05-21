@@ -786,6 +786,8 @@ rmdir03A symlink01 -T rmdir03
 rmdir04 rmdir04
 rmdir05 rmdir05
 
+rt_sigaction01 rt_sigaction01
+
 sbrk01 sbrk01
 
 sched_get_priority_max01 sched_get_priority_max01
