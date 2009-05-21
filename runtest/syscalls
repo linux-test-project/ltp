@@ -1158,6 +1158,8 @@ timerfd01 timerfd01
 timerfd02 timerfd02
 timerfd03 timerfd03
 
+timer_getoverrun01 timer_getoverrun01
+
 truncate01 truncate01
 truncate01_64 truncate01_64
 truncate02 truncate02
