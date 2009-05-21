@@ -444,6 +444,8 @@ io_getevents01 run-io_getevents.sh
 io_setup01 run-io_setup.sh
 io_submit01 run-io_submit.sh
 
+keyctl01 keyctl01
+
 kill01 kill01
 kill02 kill02
 kill03 kill03
