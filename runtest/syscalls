@@ -788,6 +788,7 @@ rmdir05 rmdir05
 
 rt_sigaction01 rt_sigaction01
 rt_sigprocmask01 rt_sigprocmask01
+rt_sigprocmask02 rt_sigprocmask02
 
 sbrk01 sbrk01
 
