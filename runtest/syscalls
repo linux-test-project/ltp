@@ -790,6 +790,7 @@ rt_sigaction01 rt_sigaction01
 rt_sigprocmask01 rt_sigprocmask01
 rt_sigprocmask02 rt_sigprocmask02
 rt_sigqueueinfo01 rt_sigqueueinfo01
+rt_sigsuspend01 rt_sigsuspend01
 
 sbrk01 sbrk01
 
