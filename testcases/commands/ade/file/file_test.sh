@@ -467,7 +467,7 @@ then
     $LTPBIN/tst_brkm TBROK NULL "cat: failed to create test file cprog.c"
 fi
 
-$bCMD -bs  $LTPTMP/files.spec > $LTPTMP/file.out 2>&1
+$bCMD --define "_topdir $bDIR" -bs  $LTPTMP/files.spec > $LTPTMP/file.out 2>&1
 if [ $? -ne 0 ]
 then
     $LTPBIN/tst_brk TBROK $LTPTMP/file.out NULL "rpm command brok. Reason:"
