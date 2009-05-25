@@ -51,6 +51,8 @@ TODO:
 */
 
 
+#define _GNU_SOURCE
+#include <sys/syscall.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -241,7 +243,7 @@ badboy_fork ()
       my_signal (SIGALRM, monitor_fcn);
       alarm (ntries*MAX_TRY_TIME);
 
-	  pid = wait (&status);
+	  pid = waitpid (-1, &status, WUNTRACED);
 	  if (pid <= 0)
 	  {
 		  perror ("wait");
@@ -298,6 +300,7 @@ void my_signal (int sig, void (*func) ());
 void again_handler (int sig);
 void try_one_crash (int try_num);
 void set_up_signals ();
+int in_blacklist (int sysno);
 
 /* badboy "entry" point */
 
@@ -453,7 +456,10 @@ try_one_crash (int try_num)
 {
   long int sysno, arg1, arg2, arg3, arg4, arg5, arg6, arg7;
 
-  sysno = rand()%sysno_max;
+  do {
+    sysno = rand()%sysno_max;
+  } while (in_blacklist(sysno));
+
   arg1 = rand_long();
   arg2 = rand_long();
   arg3 = rand_long();
@@ -472,4 +478,32 @@ try_one_crash (int try_num)
   }
 }
 
+/* The following syscalls create new processes which may cause the test
+   unable to finish. */
+int
+in_blacklist (int sysno)
+{
+  int i;
+  const list[] =
+    {
+#ifdef __ia64__
+      SYS_clone2,
+#else
+      /* No SYS_fork(vfork) on IA-64. Instead, it uses,
+         clone(child_stack=0, flags=CLONE_VM|CLONE_VFORK|SIGCHLD)
+         clone2() */
+      SYS_vfork,
+      SYS_fork,
+#endif /* __ia64__ */
+      SYS_clone,
+      -1
+    };
 
+  for (i = 0; list[i] != -1; i++)
+    {
+      if (sysno == list[i])
+        return 1;
+    }
+
+  return 0;
+}
