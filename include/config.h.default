@@ -14,3 +14,5 @@
 
 /* ifaddrs.h is in glibc-2.3+ */
 #define HAVE_IFADDRS_H 1
+
+#define HAVE_TASKSTATS_FREEPAGES_COUNT 1

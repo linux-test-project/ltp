@@ -199,8 +199,10 @@ void print_delayacct(struct taskstats *t)
 	       "SWAP  %15s%15s\n"
 	       "      %15llu%15llu\n"
 	       "RECLAIM  %12s%15s\n"
-	       "      %15llu%15llu\n",
-	       "count", "real total", "virtual total", "delay total",
+#ifdef HAVE_TASKSTATS_FREEPAGES_COUNT
+	       "      %15llu%15llu\n"
+#endif
+	       , "count", "real total", "virtual total", "delay total",
 	       (unsigned long long)t->cpu_count,
 	       (unsigned long long)t->cpu_run_real_total,
 	       (unsigned long long)t->cpu_run_virtual_total,
@@ -211,9 +213,12 @@ void print_delayacct(struct taskstats *t)
 	       "count", "delay total",
 	       (unsigned long long)t->swapin_count,
 	       (unsigned long long)t->swapin_delay_total,
-	       "count", "delay total",
-	       (unsigned long long)t->freepages_count,
-	       (unsigned long long)t->freepages_delay_total);
+	       "count", "delay total"
+#ifdef HAVE_TASKSTATS_FREEPAGES_COUNT
+	       , (unsigned long long)t->freepages_count,
+	       (unsigned long long)t->freepages_delay_total
+#endif
+	       );
 }
 
 void task_context_switch_counts(struct taskstats *t)
