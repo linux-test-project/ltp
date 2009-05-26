@@ -75,12 +75,11 @@ int main()
 		exit(PTS_FAIL);
 	}
 
-	close(fd);
-
 	do {
 		retval = aio_error( &aiocb);
 		if (retval == -1)
 		{
+			close(fd);
 			printf(TNAME " Error at aio_error(): %s\n",
 				strerror(errno));
 			exit(PTS_FAIL);
@@ -90,11 +89,13 @@ int main()
 	retval = aio_return(&aiocb);
 	if (retval != BUF_SIZE)
 	{
+		close(fd);
 		printf(TNAME " Error at aio_return(): %s\n",
 		       strerror(errno));
 		exit(PTS_FAIL);
 	}
 	
+	close(fd);
 	printf ("Test PASSED\n");
 	return PTS_PASS;
 }
