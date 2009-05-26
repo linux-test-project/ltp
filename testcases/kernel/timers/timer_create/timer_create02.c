@@ -93,6 +93,7 @@ main(int ac, char **av)
 		"NULL",
 		"SIGEV_NONE"
 	};
+	const char *mrstr = "MONOTONIC_RAW";
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) !=
@@ -122,6 +123,9 @@ main(int ac, char **av)
 						continue;
 					}
 				}
+				if (strstr(get_clock_str(clock_list[j]), mrstr))
+					continue;
+
 				TEST(timer_create(clock_list[j], evp_ptr,
 							&created_timer_id));
 
