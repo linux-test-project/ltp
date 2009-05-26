@@ -72,8 +72,13 @@ void cleanup()
  */
 static void child_signal_handler(int sig, siginfo_t *si, void *unused)
 {
-	/* sigtimedwait() traps siginfo details, so this wont be called */
-	tst_resm(TWARN, "cinit: control should have not reached here!");
+	/* Recieved SIGUSR1. Check sender pid */
+	if (si->si_pid == 0)
+		tst_resm(TPASS, "cinit: signalling PID (from other namespace)"\
+				" is 0 as expected");
+	else
+		tst_resm(TFAIL, "cinit: signalling PID (from other namespace)"\
+				" is not 0, but %d.", si->si_pid);
 }
 
 /*
@@ -82,9 +87,6 @@ static void child_signal_handler(int sig, siginfo_t *si, void *unused)
 int child_fn(void *arg)
 {
 	struct sigaction sa;
-	sigset_t newset;
-	siginfo_t info;
-	struct timespec timeout;
 	pid_t pid, ppid;
 
 	/* Set process id and parent pid */
@@ -108,34 +110,13 @@ int child_fn(void *arg)
 		cleanup();
 	}
 
-	/* Set timeout for sigtimedwait */
-	timeout.tv_sec = 3;
-	timeout.tv_nsec = 0;
-
-	/* Set mask to wait for SIGUSR1 signal */
-	sigemptyset(&newset);
-	sigaddset(&newset, SIGUSR1);
-
 	/* Let parent to signal SIGUSR1 */
 	if (write(pipefd[1], "c:go\0", 5) != 5) {
 		tst_resm(TBROK, "cinit: pipe is broken to write");
 		cleanup();
 	}
 
-	/* Wait for SIGUSR1 */
-	if (sigtimedwait(&newset, &info, &timeout) != SIGUSR1) {
-		tst_resm(TBROK, "cinit: sigtimedwait() failed(%s).",
-				strerror(errno));
-		cleanup();
-	}
-
-	/* Recieved SIGUSR1. Check sender pid */
-	if (info.si_pid == 0)
-		tst_resm(TPASS, "cinit: signalling PID (from other namespace)"\
-				" is 0 as expected");
-	else
-		tst_resm(TFAIL, "cinit: signalling PID (from other namespace)"\
-				" is not 0, but %d.", info.si_pid);
+	sleep(3);
 
 	/* cleanup and exit */
 	close(pipefd[1]);
