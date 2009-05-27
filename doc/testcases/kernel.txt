@@ -803,14 +803,10 @@ syscalls
   
   execve04  
   
- 	Testcase to check execve(2) sets errno to EMFILE correctly
- 
-  execve05  
-  
  	Testcase to check execve sets the following errnos correctly:
  	1.	ETXTBSY
 
-  execve06  
+  execve05  
   
   	This testcase tests the basic functionality of the execve(2) system
  	call.

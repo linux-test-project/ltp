@@ -167,9 +167,8 @@ execv01 execv01
 execve01 execve01
 execve02 execve02 -F $LTPROOT/testcases/bin/test3
 execve03 execve03
-execve04 cp -f $LTPROOT/testcases/bin/test3 $TMP; execve04 -F test3
-execve05 execve05 -F $LTPROOT/testcases/bin/test3
-execve06 execve06 20 $LTPROOT/testcases/bin/execve06 $LTPROOT/testcases/bin/execve06 4
+execve04 execve04 -F $LTPROOT/testcases/bin/test3
+execve05 execve05 20 $LTPROOT/testcases/bin/execve05 $LTPROOT/testcases/bin/execve05 4
 execvp01 execvp01
 
 exit01 exit01
