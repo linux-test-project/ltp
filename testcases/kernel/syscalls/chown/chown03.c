@@ -213,9 +213,9 @@ void setup()
 	}
 
 	ltpuser = getpwnam(nobody_uid);
-	if (setegid(ltpuser->pw_uid) == -1) {
+	if (setegid(ltpuser->pw_gid) == -1) {
 		tst_resm(TINFO, "setegid failed to "
-			 "to set the effective uid to %d", ltpuser->pw_uid);
+			 "to set the effective uid to %d", ltpuser->pw_gid);
 		perror("setegid");
 	}
 	if (seteuid(ltpuser->pw_uid) == -1) {
