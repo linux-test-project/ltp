@@ -584,6 +584,8 @@ mprotect01 mprotect01
 mprotect02 mprotect02
 mprotect03 mprotect03
 
+mq_notify01 mq_notify01
+
 mremap01 mremap01
 mremap02 mremap02
 mremap03 mremap03
