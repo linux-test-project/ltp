@@ -2,9 +2,9 @@ This is a README to describe the ltp-devel.patch functional changes.
 
 "make install" is to build and install:
 
-	/opt/ltp/bin/bump
-	/opt/ltp/bin/pan
-	/opt/ltp/bin/scanner
+	/opt/ltp/bin/ltp-bump
+	/opt/ltp/bin/ltp-pan
+	/opt/ltp/bin/ltp-scanner
 	/opt/ltp/lib/libltp.a
 	/usr/share/pkgconfig/ltp.pc
 	/opt/ltp/include/
@@ -24,7 +24,7 @@ To read manual pages, then the developer would type:
 (Most Important man pages)
 
 	man usctest
-	man pan
+	man ltp-pan
 	man tst_res
 	man tst_sig
 	man tst_set_error
@@ -32,7 +32,7 @@ To read manual pages, then the developer would type:
 	man parse_opts
 
 (Others)
-	man bump
+	man ltp-bump
 	man doio
 	man iogen
 	man forker

@@ -1,4 +1,4 @@
-$Id: INSTALL,v 1.23 2009/01/21 11:30:52 subrata_modak Exp $
+$Id: INSTALL,v 1.24 2009/05/29 10:06:08 subrata_modak Exp $
 
 About configuration
 -------------------
@@ -74,7 +74,7 @@ contributions are welcome.
 
 4. You can run all of the tests sequentially by using the example test
    script runalltests.sh.  The script is there just to get you started.
-   See pan(1) for more information on the test driver we have provided.
+   See ltp-pan(1) for more information on the test driver we have provided.
    It is simple, but it can do a lot of stuff.
 
    NOTE: The diskio and network tests will NOT be run by the runalltests.sh
