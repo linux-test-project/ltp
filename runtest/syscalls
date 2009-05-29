@@ -1207,6 +1207,7 @@ unlink08 unlink08
 unlinkat01 unlinkat01
 
 unshare01 unshare01
+unshare02 unshare02
 
 #
 # These tests require an unmounted block device
