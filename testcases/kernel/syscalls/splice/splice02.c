@@ -52,6 +52,15 @@ char *TCID = "splice02";  /* Test program identifier.*/
 int  testno;
 int  TST_TOTAL = 1;                   /* total number of tests in this file.   */
 
+static inline long ltp_splice(int fd_in, loff_t *off_in,
+				int fd_out, loff_t *off_out,
+				size_t len, unsigned int flags)
+{
+			return syscall(__NR_splice, fd_in, off_in, fd_out,
+					off_out, len, flags);
+}
+
+
 /* Extern Global Functions */
 /******************************************************************************/
 /*                                                                            */
@@ -108,7 +117,15 @@ void setup() {
 
 int main(int ac, char **av) {
 	int fd = 0;
-	
+	int results = 0;
+
+	/* Disable test if the version of the kernel is less than 2.6.17 */
+	if (((results = tst_kvercmp(2, 6, 17)) < 0)) {
+		tst_resm(TINFO, "This test can only run on kernels that are ");
+		tst_resm(TINFO, "2.6.17 and higher");
+		exit(0);
+	}
+
         setup();
 
         if (ac < 2 ) {
@@ -123,7 +140,7 @@ int main(int ac, char **av) {
 	}
 			
         do {
-					TEST(splice(STDIN_FILENO, NULL, fd, NULL, SPLICE_SIZE, 0));
+		TEST(ltp_splice(STDIN_FILENO, NULL, fd, NULL, SPLICE_SIZE, 0));
 	    if (TEST_RETURN < 0) {
             	tst_resm(TFAIL, "splice failed - errno = %d : %s", TEST_ERRNO, strerror(TEST_ERRNO));
 	        cleanup();
