@@ -1206,6 +1206,8 @@ unlink08 unlink08
 #unlinkat test cases
 unlinkat01 unlinkat01
 
+unshare01 unshare01
+
 #
 # These tests require an unmounted block device
 # to run correctly. Please see individual test
