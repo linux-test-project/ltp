@@ -47,6 +47,9 @@
  * HISTORY
  *	06/2008 written by Sharyathi Nagesh <sharyathi@in.ibm.com>
  *
+ *      05/2009         Suzuki K P <suzuki@in.ibm.com>
+ *                      Use TCONF instead of TWARN for non-NUMA machines
+ *
  * RESTRICTIONS
  *	none
  */
@@ -227,8 +230,10 @@ unsigned int get_nodeid(unsigned int cpu_id)
 
 	directory_parent = opendir("/sys/devices/system/node");
 	if (!directory_parent) {
-		tst_resm(TWARN,
-			 "/sys not mounted or not a numa system. Assuming one node: %s",
+                tst_resm(TCONF,
+                    "/sys not mounted or not a numa system. Assuming one node");
+                tst_resm(TCONF,
+                    "Error opening: /sys/devices/system/node :%s",
 			 strerror(errno));
 		return 0;	//By Default assume it to belong to node Zero
 	} else {
