@@ -19,19 +19,42 @@
 #define NUMSTOPS 10
 
 int child_stopped = 0;
-int waiting = 1;
+int child_continued = 0;
+int notification;
 
 void handler(int signo, siginfo_t *info, void *context) 
 {
-	if (info && info->si_code == CLD_STOPPED) {
+		if (!info)
+		return;
+
+		
+		notification = info->si_code;
+
+		switch (notification) {
+		case CLD_STOPPED:
 		printf("Child has been stopped\n");
-		waiting = 0;
 		child_stopped++;
+		break;
+		case CLD_CONTINUED:
+		printf("Child has been continued\n");
+		child_continued++;
+		break;
 	}
 }
 
+void wait_for_notification(int val)
+{
+ struct timeval tv;
 
-int main()
+ while (notification != val) {
+ tv.tv_sec = 1;
+ tv.tv_usec = 0;
+ if (!select(0, NULL, NULL, NULL, &tv))
+ break;
+ }
+}
+
+int main(void)
 {
 	pid_t pid;
 	struct sigaction act;
@@ -58,25 +81,25 @@ int main()
 		int i;
 
 		for (i = 0; i < NUMSTOPS; i++) {
-			waiting = 1;
-
 			printf("--> Sending SIGSTOP\n");
+			notification = 0;
 			kill(pid, SIGSTOP);
 
 			/*
 			  Don't let the kernel optimize away queued
 			  SIGSTOP/SIGCONT signals.
 			*/
-			while (waiting) {
-				tv.tv_sec = 1;
-				tv.tv_usec = 0;
-				if (!select(0, NULL, NULL, NULL, &tv))
-				  break;
-			}
 
+			wait_for_notification(CLD_STOPPED);
 
 			printf("--> Sending SIGCONT\n");
+			notification = 0;
 			kill(pid, SIGCONT);
+			/*
+			 SIGCHLD doesn't queue, make sure CLD_CONTINUED
+			 doesn't mask the next CLD_STOPPED
+			 */
+			 wait_for_notification(CLD_CONTINUED);
 		}
 		
 		/* POSIX specifies default action to be abnormal termination */
@@ -84,7 +107,7 @@ int main()
 		waitpid(pid, &s, 0);
 	}
 
-	if (child_stopped == NUMSTOPS) {
+	if (child_stopped == NUMSTOPS && child_continued == NUMSTOPS) {
 		printf("Test PASSED\n");
 		return 0;
 	}
@@ -92,4 +115,3 @@ int main()
 	printf("Test FAILED\n");
 	return -1;
 }
-
