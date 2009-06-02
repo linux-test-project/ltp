@@ -177,7 +177,7 @@ CONFIG_CPU_FREQ_GOV_CONSERVATIVE=y
 ---------------------------------
 Enabling Kernel Configuration to test filecaps security feature
 ---------------------------------
-CONFIG_SECURITY_CAPABILITIES=y
+CONFIG_SECURITY_FILE_CAPABILITIES=y
 ---------------------------------
 Enabling Kernel Configuration to test SELinux security feature
 ---------------------------------
@@ -187,7 +187,6 @@ test SELinux:
 CONFIG_SECURITY=y
 CONFIG_SECURITY_NETWORK=y
 CONFIG_SECURITY_NETWORK_XFRM=y
-CONFIG_SECURITY_FILE_CAPABILITIES=y
 
 CONFIG_SECURITY_DEFAULT_MMAP_MIN_ADDR=0
 This has to be set to a positive value if you want to test this check.
