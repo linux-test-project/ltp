@@ -1,10 +1,26 @@
+ifdef $(CROSS_COMPILE)
+CHECK_CGROUP := $(shell test -f $(TARGET_DIR)/usr/include/linux/cgroupstats.h && echo 'cgroup')
+else
 CHECK_CGROUP := $(shell test -f /proc/cgroups && echo 'cgroup')
 CHECK_CPUCTL := $(shell grep -w cpu /proc/cgroups 2>/dev/null|cut -f1)
 CHECK_MEMCTL := $(shell grep -w memory /proc/cgroups 2>/dev/null|cut -f1)
 CHECK_BLOCKIOCTL := $(shell grep -w blockio /proc/cgroups 2>/dev/null|cut -f1)
 CHECK_FREEZER := $(shell grep -w freezer /proc/cgroups 2>/dev/null| cut -f1)
 CHECK_CPUSETCTL = $(shell grep -w cpuset /proc/cgroups 2>/dev/null|cut -f1)
+endif
 
+ifdef $(CROSS_COMPILE)
+ifeq ($(CHECK_CGROUP),cgroup)
+SUBDIRS += cgroup
+SUBDIRS += cpuctl
+SUBDIRS += memctl
+SUBDIRS += io-throttle
+SUBDIRS += freezer
+SUBDIRS += cpuset
+else
+$(info "Kernel is not compiled with control cgroup support")
+endif
+else
 ifeq ($(CHECK_CGROUP),cgroup)
 SUBDIRS += cgroup
 else
@@ -41,6 +57,7 @@ ifeq ($(CHECK_CPUSETCTL),cpuset)
 SUBDIRS += cpuset
 else
 $(info "Kernel is not compiled with cpuset resource controller support")
+endif
 endif
 
 # If at least one of the controllers is available then build libcontrollers.
