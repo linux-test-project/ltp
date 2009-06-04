@@ -95,7 +95,7 @@ a USB video device or ask the user if a received picture make sense or
 not.
 </p>
 <p>
-The following table gives an overview about the current state of
+The following tables give an overview about the current state of
 implemented test cases.</p>
 
 <table border="1" cellpadding="2"
@@ -235,17 +235,17 @@ implemented test cases.</p>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r10386.htm">VIDIOC_G_EXT_CTRLS</a></td>
-      <td>no</td>
+      <td>yes, only when STREAM_OFF, currently only zero and one item</td>
       <td>Opt.</td>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r10386.htm">VIDIOC_S_EXT_CTRLS</a></td>
-      <td>no</td>
+      <td>yes, only when STREAM_OFF, only with zero item</td>
       <td>Opt.</td>
     </tr>
     <tr>
       <td>ioctl <a href="spec/r10386.htm">VIDIOC_TRY_EXT_CTRLS</a></td>
-      <td>no</td>
+      <td>yes, only when STREAM_OFF, only with zero item</td>
       <td>Opt.</td>
     </tr>
     <tr>
@@ -474,6 +474,46 @@ Enum.: enumeration, will return EINVAL for the first unknown entry<br>
 Exp.: experimental, may change in future
 </p>
 
+<p>The following actions are not part of the V4L2 API but they might have
+influence on the V4L2 API functions:</p>
+
+<table border="1" cellpadding="2"
+ cellspacing="0">
+  <thead>
+    <tr>
+      <td><b>Action</b></td>
+      <td><b>Covered?</b></td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Load kernel module</td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>Unload kernel module</td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>USB connect event (in case of USB webcams)</td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>USB disconnect event (in case of USB webcams)</td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>Suspend</td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>Resume</td>
+      <td>no</td>
+    </tr>
+  </tbody>
+</table>
+
+
 <h2><a name="others">Similar projects</a></h2>
 <p>
 There migth be similar projects which also tries to test the V4L2 API.
@@ -520,7 +560,7 @@ The following documents and articles are useful if you are dealing with V4L2:
 <p>Any feedbacks, comments, ideas, etc. are welcome at the author's email address.</p>
 <hr style="width: 100%; height: 2px;">
 <p>Last changed:
-Thu May  7 22:51:07 CEST 2009
+Mon May 25 08:08:11 CEST 2009
 </p>
 <p>
   <a href="http://validator.w3.org/check?uri=referer"><img

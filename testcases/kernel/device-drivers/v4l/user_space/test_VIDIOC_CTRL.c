@@ -31,7 +31,7 @@
 
 #include "test_VIDIOC_CTRL.h"
 
-int do_get_control(__u32 id) {
+static int do_get_control(__u32 id) {
 	int ret_query, errno_query;
 	int ret_get, errno_get;
 	struct v4l2_queryctrl queryctrl;
@@ -103,7 +103,7 @@ int do_get_control(__u32 id) {
 		case V4L2_CTRL_TYPE_CTRL_CLASS:
 		default:
 			CU_ASSERT_EQUAL(ret_get, -1);
-			CU_ASSERT_EQUAL(errno_get, -1);
+			CU_ASSERT_EQUAL(errno_get, EINVAL);
 		}
 	} else {
 		CU_ASSERT_EQUAL(ret_query, -1);

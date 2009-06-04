@@ -3,6 +3,8 @@
 
 Release History
 ---------------
+25 May 2009  0.15 Test cases added for VIDIOC_G_EXT_CTRLS, VIDIOC_S_EXT_CTRLS
+                  and VIDIOC_TRY_EXT_CTRLS
  7 May 2009  0.14 Test cases added for VIDIOC_QUERYBUF;
                   Debug functions separated
 29 Apr 2009  0.13 Added string content validation;

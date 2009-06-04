@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ * 23 May 2009  0.23 Test cases added for VIDIOC_G_EXT_CTRLS, VIDIOC_S_EXT_CTRLS
  *  5 May 2009  0.22 Test cases added for VIDIOC_QUERYBUF
  * 29 Apr 2009  0.21 Test cases added for VIDIOC_REQBUFS
  * 18 Apr 2009  0.20 NULL parameter test suite split to read only, write only
@@ -80,6 +81,7 @@
 #include "test_VIDIOC_AUDOUT.h"
 #include "test_VIDIOC_CROP.h"
 #include "test_VIDIOC_CTRL.h"
+#include "test_VIDIOC_EXT_CTRLS.h"
 #include "test_VIDIOC_PARM.h"
 #include "test_VIDIOC_FMT.h"
 
@@ -221,6 +223,19 @@ static CU_TestInfo suite_get_set_try[] = {
   { "VIDIOC_S_CTRL, gain control", test_VIDIOC_S_CTRL_gain },
   { "VIDIOC_S_CTRL, gain control with invalid value parameter", test_VIDIOC_S_CTRL_gain_invalid },
 
+  { "VIDIOC_G_EXT_CTRLS with zero items to get", test_VIDIOC_G_EXT_CTRLS_zero },
+  { "VIDIOC_G_EXT_CTRLS with zero items to get, but with invalid count values", 
+	test_VIDIOC_G_EXT_CTRLS_zero_invalid_count },
+  { "VIDIOC_G_EXT_CTRLS with only one item to get", test_VIDIOC_G_EXT_CTRLS_one },
+
+  { "VIDIOC_S_EXT_CTRLS with zero items to set", test_VIDIOC_S_EXT_CTRLS_zero },
+  { "VIDIOC_S_EXT_CTRLS with zero items to set, but with invalid count values", 
+	test_VIDIOC_S_EXT_CTRLS_zero_invalid_count },
+
+  { "VIDIOC_TRY_EXT_CTRLS with zero items to try", test_VIDIOC_TRY_EXT_CTRLS_zero },
+  { "VIDIOC_TRY_EXT_CTRLS with zero items to try, but with invalid count values", 
+	test_VIDIOC_TRY_EXT_CTRLS_zero_invalid_count },
+
   { "VIDIOC_G_PARM", test_VIDIOC_G_PARM },
   { "VIDIOC_G_PARM with invalid type parameter", test_VIDIOC_G_PARM_invalid },
 
@@ -327,9 +342,9 @@ static CU_TestInfo suite_null_writeread[] = {
   { "VIDIOC_ENUMAUDIO with NULL parameter", test_VIDIOC_ENUMAUDIO_NULL },
   { "VIDIOC_ENUMAUDOUT with NULL parameter", test_VIDIOC_ENUMAUDOUT_NULL },
   { "VIDIOC_G_SLICED_VBI_CAP with NULL parameter", test_VIDIOC_G_SLICED_VBI_CAP_NULL },
-  /* { "VIDIOC_G_EXT_CTRLS with NULL parameter", }, */
-  /* { "VIDIOC_S_EXT_CTRLS with NULL parameter", }, */
-  /* { "VIDIOC_TRY_EXT_CTRLS with NULL parameter", }, */
+  { "VIDIOC_G_EXT_CTRLS with NULL parameter", test_VIDIOC_G_EXT_CTRLS_NULL },
+  { "VIDIOC_S_EXT_CTRLS with NULL parameter", test_VIDIOC_S_EXT_CTRLS_NULL },
+  { "VIDIOC_TRY_EXT_CTRLS with NULL parameter", test_VIDIOC_TRY_EXT_CTRLS_NULL },
   /* { "VIDIOC_ENUM_FRAMESIZES with NULL parameter", }, */
   /* { "VIDIOC_ENUM_FRAMEINTERVALS with NULL parameter", }, */
   /* { "VIDIOC_ENCODER_CMD with NULL parameter", }, */
