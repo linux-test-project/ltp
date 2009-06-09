@@ -60,8 +60,10 @@ fi
 # Checking sched_mc sysfs interface
 #check_config.sh config_sched_mc || RC=$?
 if [ -f /sys/devices/system/cpu/sched_mc_power_savings ] ; then
-	test_sched_mc.sh; RC=$?
-	if [ $RC -eq 1 ] ; then
+	if test_sched_mc.sh ; then
+		tst_resm TPASS "SCHED_MC sysfs tests passed"
+	else
+		RC=$?
 		tst_resm TFAIL "SCHED_MC sysfs tests failed"
 	fi
 	# Test CPU consolidation for corresponding sched_mc
@@ -78,26 +80,26 @@ if [ -f /sys/devices/system/cpu/sched_mc_power_savings ] ; then
 					if [ $sched_smt -eq 0 -a $sched_mc -eq 0 ]; then 
 						continue
 					fi
-					cpu_consolidation.py -c $sched_mc -t $sched_smt; RC=$?
-					if [ $RC -eq 1 ] ; then
-						tst_resm TFAIL "cpu consolidation \
- sched_mc=$sched_mc, sched_smt=$sched_smt"
-					else
+					if cpu_consolidation.py -c $sched_mc -t $sched_smt ; then
 						tst_resm TPASS "cpu consolidation sched_mc=$sched_mc,\
  sched_smt=$sched_smt"
+					else
+						RC=$?
+						tst_resm TFAIL "cpu consolidation \
+ sched_mc=$sched_mc, sched_smt=$sched_smt"
 					fi
 				done
 			done
 		else
 			# Test CPU consolidation for sched_mc=1 & 2
 			for sched_mc in `seq 1 2`; do
-				cpu_consolidation.py -c $sched_mc; RC=$?
-				if [ $RC -eq 1 ] ; then
-					tst_resm TFAIL "cpu consolidation test\
- sched_mc_power set to $sched_mc"
-				else
+				if cpu_consolidation.py -c $sched_mc ; then
 					tst_resm TPASS "cpu consolidation test for \
 sched_mc_power set to $sched_mc"
+				else
+					RC=$?
+					tst_resm TFAIL "cpu consolidation test\
+ sched_mc_power set to $sched_mc"
 				fi
 			done
 		fi
@@ -110,12 +112,12 @@ sched_mc_power set to $sched_mc"
                         continue
                     fi
 
-					sched_domain.py -c $sched_mc -t $sched_smt; RC=$?
-					if [ $RC -eq 1 ] ; then
-						tst_resm TFAIL "sched domain test sched_mc=$sched_mc,\
-sched_smt=$sched_smt "
-					else    
+					if sched_domain.py -c $sched_mc -t $sched_smt; then
 						tst_resm TPASS "sched domain test sched_mc=$sched_mc,\
+sched_smt=$sched_smt "
+					else
+						RC=$?
+						tst_resm TFAIL "sched domain test sched_mc=$sched_mc,\
 sched_smt=$sched_smt "
 					fi
 				done
@@ -123,11 +125,11 @@ sched_smt=$sched_smt "
 		else
 			# Validate CPU level sched domain topology validation
 			for sched_mc in `seq 1 2`; do
-				sched_domain.py -c $sched_mc; RC=$?
-				if [ $RC -eq 1 ] ; then
-					tst_resm TFAIL "sched domain test for sched_mc=$sched_mc "
-				else
+				if sched_domain.py -c $sched_mc ; then
 					tst_resm TPASS "sched domain test for sched_mc=$sched_mc "
+				else
+					RC=$?
+					tst_resm TFAIL "sched domain test for sched_mc=$sched_mc "
 				fi
 			done
 			
@@ -139,26 +141,35 @@ fi
 # Checking cpufreq sysfs interface files
 #check_config.sh config_cpu_freq || RC=$?
 if [ -d /sys/devices/system/cpu/cpu0/cpufreq ] ; then
-	check_cpufreq_sysfs_files.sh; RC=$?
-	if [ $RC -eq 1 ] ; then
+	if check_cpufreq_sysfs_files.sh ; then
+		tst_resm TPASS "CPUFREQ sysfs tests "
+	else
+		RC=$?
 		tst_resm TFAIL "CPUFREQ sysfs tests "
 	fi
 
 	# Changing governors
-	change_govr.sh; RC=$?
-	if [ $RC -eq 1 ] ; then
+	if change_govr.sh ; then
+		tst_resm TPASS "Changing governors "
+	else
+		RC=$?
 		tst_resm TFAIL "Changing governors "
 	fi
 
 	# Changing frequencies
-	change_freq.sh; RC=$?
-	if [ $RC -eq 1 ] ; then
+	if change_freq.sh ; then
+		tst_resm TPASS "Changing frequncies "
+	else
+		RC=$?
 		tst_resm TFAIL "Changing frequncies "
 	fi
 
 	# Loading and Unloading governor related kernel modules
-	pwkm_load_unload.sh; RC=$?
-	if [ $RC -eq 1 ] ; then
+	if pwkm_load_unload.sh ; then
+		tst_resm TPASS "Loading and Unloading of governor kernel \
+		modules got failed"
+	else
+		RC=$?
 		tst_resm TFAIL "Loading and Unloading of governor kernel \
 		modules got failed"
 	fi
@@ -167,23 +178,30 @@ else
 fi
 
 # Checking cpuidle sysfs interface files
-check_cpuidle_sysfs_files.sh; RC=$?
-if [ $RC -eq 1 ] ; then
+if check_cpuidle_sysfs_files.sh ; then
+	tst_resm TPASS "CPUIDLE sysfs tests failed"
+else
+	RC=$?
 	tst_resm TFAIL "CPUIDLE sysfs tests failed"
 fi
 
 # Test sched_smt_power_savings interface on HT machines
 if [ -f /sys/devices/system/cpu/sched_smt_power_savings ] ; then
-	test_sched_smt.sh; RC=$?
-	if [ $RC -eq 1 ] ; then
+	if test_sched_smt.sh ; then
+		tst_resm TPASS "SCHED_MC sysfs tests failed"
+	else
+		RC=$?
 		tst_resm TFAIL "SCHED_MC sysfs tests failed"
 	fi
 else
 	hyper_threaded=$(is_hyper_threaded)
 	if [ $hyper_threaded -eq 1 ]; then
 		tst_resm TFAIL "Required kernel configuration for SCHED_SMT NOT set"
+		RC=1
 	else
 		tst_resm TCONF "Required Hyper Threading support in the\
 system under test"
 	fi
 fi
+
+exit $RC

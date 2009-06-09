@@ -81,6 +81,7 @@ function check_input() {
 		PASS="Testcase PASS"
 		FAIL="Testcase FAIL"
 	fi
+	RC=0
 	for input in ${1}
 	do
 		echo ${input} > ${test_file} 2>/dev/null
