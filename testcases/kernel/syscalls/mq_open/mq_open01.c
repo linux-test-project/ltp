@@ -315,7 +315,7 @@ static int do_test(struct test_case *tc)
          * Execute system call
          */
 
-	if (tc->ttype != NO_SPACE) {
+	if (tc->ttype != NO_SPACE && !(tc->oflag & O_CREAT)) {
                 errno = 0;
                 TEST(sys_ret = mq_open(QUEUE_NAME, O_CREAT|O_EXCL|O_RDWR, S_IRWXU, NULL));
                 sys_errno = errno;
