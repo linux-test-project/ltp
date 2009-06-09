@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: zoolib.c,v 1.7 2008/11/11 05:15:52 subrata_modak Exp $ */
+/* $Id: zoolib.c,v 1.8 2009/06/09 17:59:46 subrata_modak Exp $ */
 /* 
  * ZooLib
  *
@@ -104,6 +104,7 @@ zoo_open(char *zooname)
 		snprintf(zoo_error, ZELEN, 
 				"Could not open zoo as \"%s\", errno:%d %s", 
 				zooname, errno, strerror(errno));
+		return 0;
 	    }
 	    fclose(new_zoo);
 	    new_zoo = fopen(zooname, "r+");
