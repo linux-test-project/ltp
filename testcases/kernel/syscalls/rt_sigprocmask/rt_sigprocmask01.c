@@ -163,14 +163,14 @@ int main(int ac, char **av) {
 			
 			/* call rt_sigaction() */
 			act.sa_handler = sig_handler;
-                        TEST(syscall(174, 33, &act, &oact, 8));
+                        TEST(syscall(__NR_rt_sigaction, 33, &act, &oact, 8));
 			if(TEST_RETURN != 0){
 				tst_resm(TFAIL,"Call to rt_sigaction() Failed, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
                         	cleanup();
 				tst_exit();
 			}
 			/* call rt_sigprocmask() to block signal#33 */
-                        TEST(syscall(175, SIG_BLOCK, &set, &oset, 8));
+                        TEST(syscall(__NR_rt_sigprocmask, SIG_BLOCK, &set, &oset, 8));
 			if(TEST_RETURN == -1){
 				tst_resm(TFAIL,"Call to rt_sigprocmask()**** Failed, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
                         	cleanup();
@@ -192,7 +192,7 @@ int main(int ac, char **av) {
 				}
 				else {
 					/* call rt_sigpending() */
-					TEST(syscall(176, &oset, 8));
+					TEST(syscall(__NR_rt_sigpending, &oset, 8));
 					if(TEST_RETURN == -1){
 						tst_resm(TFAIL,"call rt_sigpending() failed, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
                         			cleanup();
@@ -205,7 +205,7 @@ int main(int ac, char **av) {
 						tst_exit();
 					}
 					/* call rt_sigprocmask() to unblock signal#33 */
-					TEST(syscall(175, SIG_UNBLOCK, &set, &oset, 8));
+					TEST(syscall(__NR_rt_sigprocmask, SIG_UNBLOCK, &set, &oset, 8));
 					if(TEST_RETURN == -1){
 						tst_resm(TFAIL,"Call to rt_sigprocmask() Failed, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
                         			cleanup();
