@@ -49,7 +49,7 @@
  *			   - added option to create a command file with all failed tests.
  * 	
  */
-/* $Id: ltp-pan.c,v 1.2 2009/06/01 10:25:49 subrata_modak Exp $ */
+/* $Id: ltp-pan.c,v 1.3 2009/06/09 16:14:40 subrata_modak Exp $ */
 
 #include <errno.h>
 #include <string.h>
@@ -115,8 +115,8 @@ static void orphans_running(struct orphan_pgrp *orphans);
 static void check_orphans(struct orphan_pgrp *orphans, int sig);
 
 static void copy_buffered_output(struct tag_pgrp *running);
-static void write_test_start(struct tag_pgrp *running, const char *init_status);
-static void write_test_end(struct tag_pgrp *running,
+static void write_test_start(struct tag_pgrp *running);
+static void write_test_end(struct tag_pgrp *running, const char *init_status,
 			   time_t exit_time, char *term_type, int stat_loc,
 			   int term_id, struct tms *tms1, struct tms *tms2);
 
@@ -755,12 +755,12 @@ check_pids(struct tag_pgrp *running, int *num_active, int keep_active,
 
 		if (test_out_dir) {
 			if (!quiet_mode)
-				write_test_start(running+i, "ok");
+				write_test_start(running+i);
 			copy_buffered_output(running + i);
 			unlink(running[i].output);
 		}
 		if (!quiet_mode)
-			write_test_end(running+i, t, status,
+			write_test_end(running+i, "ok", t, status,
 			   stat_loc, w, &tms1, &tms2);
 
 		/* If signaled and we weren't expecting
@@ -844,6 +844,13 @@ run_child(struct coll_entry *colle, struct tag_pgrp *active, int quiet_mode)
 	return -1;
     }
 
+    time(&active->mystime);
+    active->cmd = colle;
+
+    if (!test_out_dir) 
+	if (!quiet_mode)
+		write_test_start(active);
+
     if ((cpid = fork()) < 0) {
 	fprintf(stderr, "pan(%s): fork failed (tag %s).  errno:%d  %s\n",
 		panname, colle->name, errno, strerror(errno));
@@ -926,8 +933,6 @@ run_child(struct coll_entry *colle, struct tag_pgrp *active, int quiet_mode)
     if (colle->pcnt_f) free(c_cmdline); 
 
     close(errpipe[1]);
-    time(&active->mystime);
-    active->cmd = colle;
 
     /* if the child couldn't go through with the exec, 
      * clean up the mess, note it, and move on
@@ -960,8 +965,8 @@ run_child(struct coll_entry *colle, struct tag_pgrp *active, int quiet_mode)
 	time(&end_time);
 	if (!quiet_mode) 
 	{
-		write_test_start(active, errbuf);
-		write_test_end(active, end_time, termtype, status, 
+		//write_test_start(active, errbuf);
+		write_test_end(active, errbuf, end_time, termtype, status, 
 			termid, &notime, &notime);
 	}
         if (capturing) {
@@ -973,10 +978,6 @@ run_child(struct coll_entry *colle, struct tag_pgrp *active, int quiet_mode)
 
     close(errpipe[0]);
     if (capturing) close(c_stdout);
-	
-    if (!test_out_dir) 
-	if (!quiet_mode)
-		write_test_start(active, "ok");
 
     active->pgrp = cpid;
     active->stopping = 0;
@@ -1212,14 +1213,14 @@ copy_buffered_output(struct tag_pgrp *running)
 
 
 static void
-write_test_start(struct tag_pgrp *running, const char *init_status)
+write_test_start(struct tag_pgrp *running)
 {
     if (!strcmp(reporttype, "rts")) {
 
-	printf("%s\ntag=%s stime=%ld\ncmdline=\"%s\"\ncontacts=\"%s\"\nanalysis=%s\ninitiation_status=\"%s\"\n%s\n",
+	printf("%s\ntag=%s stime=%ld\ncmdline=\"%s\"\ncontacts=\"%s\"\nanalysis=%s\n%s\n",
 			"<<<test_start>>>",
 			running->cmd->name, running->mystime, running->cmd->cmdline, "",
-			"exit", init_status,
+			"exit",
 			"<<<test_output>>>");
     }
     fflush(stdout);
@@ -1227,13 +1228,14 @@ write_test_start(struct tag_pgrp *running, const char *init_status)
 
 
 static void
-write_test_end(struct tag_pgrp *running, time_t exit_time,
-	       char *term_type, int stat_loc, int term_id,
-	       struct tms *tms1, struct tms *tms2)
+write_test_end(struct tag_pgrp *running, const char *init_status,
+		time_t exit_time, char *term_type, int stat_loc,
+		int term_id, struct tms *tms1, struct tms *tms2)
 {
     if (!strcmp(reporttype, "rts")) {
-	printf("%s\nduration=%ld termination_type=%s termination_id=%d corefile=%s\ncutime=%d cstime=%d\n%s\n",
-		  	"<<<execution_status>>>", 
+	printf("%s\ninitiation_status=\"%s\"\nduration=%ld termination_type=%s "
+		"termination_id=%d corefile=%s\ncutime=%d cstime=%d\n%s\n",
+		  	"<<<execution_status>>>", init_status,
 			(long) (exit_time - running->mystime),
 			term_type, term_id, (stat_loc & 0200) ? "yes" : "no",
 			(int) (tms2->tms_cutime - tms1->tms_cutime),

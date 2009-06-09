@@ -46,8 +46,8 @@
       <td bgcolor="Silver"><strong>Command-Line</strong></td>
       <td bgcolor="Silver"><strong>Contacts</strong></td>
       <td bgcolor="Silver"><strong>Analysis</strong></td>
-      <td bgcolor="Silver"><strong>Initiation-Status</strong></td>
       <td bgcolor="Silver"><strong>Test-Output</strong></td>
+      <td bgcolor="Silver"><strong>Initiation-Status</strong></td>
       <td bgcolor="Silver"><strong>Duration</strong></td>
       <td bgcolor="Silver"><strong>Termination-type</strong></td>
       <td bgcolor="Silver"><strong>Termination-id</strong></td>

@@ -144,12 +144,12 @@ foreach my $file (@ARGV) {
                              @variable_value_pair = split(/=/, $line);
                              $row_line = $row_line . "<td><p><strong>$variable_value_pair[1]</strong></p></td>\n";
                         }
-                        if ( $flag == 6) { #Assuming we will find "initiation_status" value here
-                             @variable_value_pair = split(/=/, $line);
-                             $row_line = $row_line . "<td><p><strong>$variable_value_pair[1]</strong></p></td>\n";
-                        }
                         if ( $flag3 == 1 ) {
                              if ( $flag4 == 1 ) {
+				  @variable_value_pair = split(/=/, $line);
+				  $row_line = $row_line . "<td><p><strong>$variable_value_pair[1]</strong></p></td>\n";
+			     }
+                             if ( $flag4 == 2 ) {
                                   @variable_value_pair    = split(/\ /, $line);
                                   @duration_value         = split(/=/, $variable_value_pair[0]);
                                   @termination_type_value = split(/=/, $variable_value_pair[1]);
@@ -162,7 +162,7 @@ foreach my $file (@ARGV) {
                                               "<td><p><strong>$corefile_value[1]</strong></p></td>\n";
                                   $row_line =~ s/<tr>/<tr\ bgcolor=$background_colour>/;
                              }
-                             if ( $flag4 == 2 ) {
+                             if ( $flag4 == 3 ) {
                                   @variable_value_pair    = split(/\ /, $line);
                                   @cutime_value           = split(/=/, $variable_value_pair[0]);
                                   @cstime_value           = split(/=/, $variable_value_pair[1]);
