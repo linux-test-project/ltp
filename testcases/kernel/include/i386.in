@@ -4,6 +4,8 @@ __NR_setuid		 23
 __NR_setgid		 46
 __NR_getgid		 47
 __NR_getegid		 50
+__NR_sgetmask		 68
+__NR_ssetmask		 69
 __NR_setreuid		 70
 __NR_setregid		 71
 __NR_setgroups		 81
