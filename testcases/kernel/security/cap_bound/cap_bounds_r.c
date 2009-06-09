@@ -60,13 +60,13 @@ int main(int argc, char *argv[])
 			tst_resm(TFAIL, "prctl(CAP_BSET_READ, %d) returned %d\n", i, ret);
 			if (ret == -1)
 				tst_resm(TINFO, "errno was %d\n", errno);
-			tst_exit(1);
+			tst_exit();
 		}
 	}
 	ret = prctl(CAP_BSET_READ, -1);
 	if (ret != -1) {
 		tst_resm(TFAIL, "prctl(CAP_BSET_READ, -1) returned %d\n", -1, ret);
-		tst_exit(1);
+		tst_exit();
 	}
 
 	/* Ideally I'd check CAP_LAST_CAP+1, but userspace
@@ -79,8 +79,8 @@ int main(int argc, char *argv[])
 	if (ret != -1) {
 		tst_resm(TFAIL, "prctl(CAP_BSET_READ, %d) returned %d\n", CAP_LAST_CAP+1, ret);
 		tst_resm(TINFO, " %d is CAP_LAST_CAP+1 and should not exist\n", CAP_LAST_CAP+1);
-		tst_exit(1);
+		tst_exit();
 	}
 	tst_resm(TPASS, "CAP_BSET_READ tests passed\n");
-	tst_exit(0);
+	tst_exit();
 }

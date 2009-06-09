@@ -46,35 +46,35 @@ int main(int argc, char *argv[])
 
 	if (argc != 2) {
 		tst_resm(TBROK, "Usage: check_pe [0|1]\n");
-		tst_exit(1);
+		tst_exit();
 	}
 	n = atoi(argv[1]);
 	if (n != 0 && n != 1) {
 		tst_resm(TBROK, "Usage: check_pe [0|1]\n");
-		tst_exit(1);
+		tst_exit();
 	}
 
 	cur = cap_get_proc();
 	ret = cap_get_flag(cur, CAP_SYS_ADMIN, CAP_EFFECTIVE, &f);
 	if (ret) {
 		tst_resm(TBROK, "cap_get_flag failed (errno %d)\n", errno);
-		tst_exit(1);
+		tst_exit();
 	}
 	
 	cap_free(cur);
 	if (n == 1) {
 		if (f == CAP_SET) {
 			tst_resm(TPASS, "cap is in pE\n");
-			tst_exit(0);
+			tst_exit();
 		}
 		tst_resm(TFAIL, "Cap is not in pE\n");
-		tst_exit(1);
+		tst_exit();
 	}
 	if (f == CAP_CLEAR) {
 		tst_resm(TPASS, "cap is not in pE\n");
-		tst_exit(0);
+		tst_exit();
 	}
 	tst_resm(TFAIL, "Cap is in pE\n");
-	tst_exit(1);
+	tst_exit();
 
 }

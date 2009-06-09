@@ -14,8 +14,7 @@
 
 #define TMPFS_MAGIC 0x01021994 /* man 2 statfs */
 
-int 
-tst_is_cwd_tmpfs() 
+int tst_is_cwd_tmpfs(void)
 {
 	struct statfs sf;
 	statfs(".", &sf);

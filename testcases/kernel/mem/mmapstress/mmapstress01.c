@@ -166,7 +166,7 @@ main(int argc, char *argv[])
 	tst_tmpdir();
 	if (argc < 2) {
 		tst_resm(TBROK, "usage: %s %s\n", progname, usage);
-                tst_exit(0);
+                tst_exit();
 	}
 
 	while ((c = getopt(argc, argv, "S:omdlrf:p:t:")) != -1) {
@@ -218,7 +218,7 @@ main(int argc, char *argv[])
 			break;
 		default:
 			(void)fprintf(stderr,"usage: %s %s\n", progname, usage);
-                        tst_exit(0);
+                        tst_exit();
 		}
 	}
 

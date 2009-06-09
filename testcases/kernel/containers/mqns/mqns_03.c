@@ -64,7 +64,7 @@ int check_mqueue(void *vtest)
 	mqd = mq_open(SLASH_MQ1, O_RDWR|O_CREAT|O_EXCL, 0755, NULL);
 	if (mqd == -1) {
 		write(p2[1], "mqfail", 7);
-		tst_exit(3);
+		tst_exit();
 	}
 
 	mq_close(mqd);
@@ -73,19 +73,19 @@ int check_mqueue(void *vtest)
 	if (rc == -1) {
 		perror("mount");
 		write(p2[1], "mount1", 7);
-		tst_exit(3);
+		tst_exit();
 	}
 
 	rc = stat(FNAM1, &statbuf);
 	if (rc == -1) {
 		write(p2[1], "stat1", 6);
-		tst_exit(3);
+		tst_exit();
 	}
 
 	rc = creat(FNAM2, 0755);
 	if (rc == -1) {
 		write(p2[1], "creat", 6);
-		tst_exit(3);
+		tst_exit();
 	}
 
 	close(rc);
@@ -94,33 +94,30 @@ int check_mqueue(void *vtest)
 	if (rc == -1) {
 		perror("umount");
 		write(p2[1], "umount", 7);
-		tst_exit(3);
+		tst_exit();
 	}
 
 	rc = mount("mqueue", DEV_MQUEUE2, "mqueue", 0, NULL);
 	if (rc == -1) {
 		write(p2[1], "mount2", 7);
-		tst_exit(3);
+		tst_exit();
 	}
 
 	rc = stat(FNAM1, &statbuf);
 	if (rc == -1) {
 		write(p2[1], "stat2", 7);
-		tst_exit(3);
+		tst_exit();
 	}
 
 	rc = stat(FNAM2, &statbuf);
 	if (rc == -1) {
 		write(p2[1], "stat3", 7);
-		tst_exit(3);
+		tst_exit();
 	}
 
 	write(p2[1], "done", 5);
 
-	tst_exit(0);
-
-	/* NOT REACHED */
-	return 0;
+	tst_exit();
 }
 
 
@@ -143,7 +140,7 @@ int main(int argc, char *argv[])
 	r = do_clone_unshare_test(use_clone, CLONE_NEWIPC, check_mqueue, NULL);
 	if (r < 0) {
 		tst_resm(TFAIL, "failed clone/unshare\n");
-		tst_exit(1);
+		tst_exit();
 	}
 
 	tst_resm(TINFO, "Checking correct umount+remount of mqueuefs\n");
@@ -189,8 +186,5 @@ int main(int argc, char *argv[])
 fail:
 	umount(DEV_MQUEUE2);
 	rmdir(DEV_MQUEUE2);
-	tst_exit(r);
-
-	/* NOT REACHED */
-	return 0;
+	tst_exit();
 }

@@ -137,13 +137,13 @@ int main(int argc, char *argv[])
 #define MADV_DOFORK     11
 		tst_resm(TCONF, "This test can only run on kernels that are ");
 		tst_resm(TCONF, "2.6.16 and higher");
-		tst_exit(0);
+		tst_exit();
 	}
 
 	if ((msg =
 	     parse_opts(argc, argv, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit(0);
+		tst_exit();
 	}
 
 	/**************************************************

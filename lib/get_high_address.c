@@ -1,4 +1,4 @@
-/* $Header: /cvsroot/ltp/ltp/lib/get_high_address.c,v 1.4 2006/07/19 14:00:55 robbiew Exp $ */
+/* $Header: /cvsroot/ltp/ltp/lib/get_high_address.c,v 1.5 2009/06/09 16:01:20 subrata_modak Exp $ */
 
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
@@ -34,8 +34,7 @@
 
 #include <unistd.h> 
 
-char *
-get_high_address()
+char *get_high_address(void)
 {
        return (char *)sbrk(0) + (4 * getpagesize());
 }

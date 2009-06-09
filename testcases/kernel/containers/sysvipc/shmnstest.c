@@ -57,10 +57,8 @@ int check_shmid(void *vtest)
               write(p2[1], "exists", 7);
               shmctl(id, IPC_RMID, NULL);
       }
-      tst_exit(0);
 
-      /* NOT REACHED */
-      return 0;
+      tst_exit();
 }
 
 #define UNSHARESTR "unshare"
@@ -76,7 +74,7 @@ int main(int argc, char *argv[])
       if (argc != 2) {
               tst_resm(TFAIL, "Usage: %s <clone|unshare|none>\n", argv[0]);
               tst_resm(TFAIL, " where clone, unshare, or fork specifies unshare method.");
-              tst_exit(2);
+              tst_exit();
       }
       if (pipe(p1) == -1) { perror("pipe"); exit(EXIT_FAILURE); }
       if (pipe(p2) == -1) { perror("pipe"); exit(EXIT_FAILURE); }
@@ -94,7 +92,7 @@ int main(int argc, char *argv[])
       if (id == -1) {
               perror("shmget");
               tst_resm(TFAIL, "shmget failed\n");
-              tst_exit(3);
+              tst_exit();
       }
 
       tst_resm(TINFO, "shmid namespaces test : %s\n",tsttype);
@@ -102,7 +100,7 @@ int main(int argc, char *argv[])
       r = do_clone_unshare_test(use_clone, CLONE_NEWIPC, check_shmid, NULL);
       if (r < 0) {
               tst_resm(TFAIL, "%s failed\n", tsttype);
-              tst_exit(1);
+              tst_exit();
       }
 
       close(p1[0]);
@@ -126,8 +124,5 @@ int main(int argc, char *argv[])
       /* destroy the key */
       shmctl(id, IPC_RMID, NULL);
 
-      tst_exit(0);
-
-      /* NOT REACHED */
-      return 0;
+      tst_exit();
 }

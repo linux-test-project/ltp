@@ -59,7 +59,7 @@ int check_mqueue(void *vtest)
 	mqd = mq_open(SLASH_MQ1, O_RDWR|O_CREAT|O_EXCL, 0777, NULL);
 	if (mqd == -1) {
 		write(p2[1], "mqfail", 7);
-		tst_exit(3);
+		tst_exit();
 	}
 
 	write(p2[1], "mqopen", 7);
@@ -72,10 +72,7 @@ int check_mqueue(void *vtest)
 
 	write(p2[1], "done", 5);
 
-	tst_exit(0);
-
-	/* NOT REACHED */
-	return 0;
+	tst_exit();
 }
 
 
@@ -99,7 +96,7 @@ int main(int argc, char *argv[])
 	r = do_clone_unshare_test(use_clone, CLONE_NEWIPC, check_mqueue, NULL);
 	if (r < 0) {
 		tst_resm(TFAIL, "failed clone/unshare\n");
-		tst_exit(1);
+		tst_exit();
 	}
 
 	tst_resm(TINFO, "Checking namespaces isolation (child to parent)\n");
@@ -112,19 +109,17 @@ int main(int argc, char *argv[])
 	if (!strcmp(buf, "mqfail")) {
 		tst_resm(TFAIL, "child process could not create mqueue\n");
 		umount(DEV_MQUEUE);
-		tst_exit(TFAIL);
+		tst_exit();
 	} else if (strcmp(buf, "mqopen")) {
 		tst_resm(TFAIL, "child process could not create mqueue\n");
 		umount(DEV_MQUEUE);
-		tst_exit(TFAIL);
+		tst_exit();
 	}
 
 	mqd = mq_open(SLASH_MQ1, O_RDONLY);
 	if (mqd == -1) {
-		r = TPASS;
 		tst_resm(TPASS, "Father process doesn't see mqueue\n");
 	} else {
-		r = TFAIL;
 		tst_resm(TFAIL, "Father process found mqueue\n");
 		mq_close(mqd);
 	}
@@ -132,8 +127,5 @@ int main(int argc, char *argv[])
 	write(p1[1], "cont", 5);
 	read(p2[0], buf, 7);
 
-	tst_exit(r);
-
-	/* NOT REACHED */
-	return 0;
+	tst_exit();
 }

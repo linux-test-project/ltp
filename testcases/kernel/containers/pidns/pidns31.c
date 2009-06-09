@@ -143,7 +143,7 @@ static void cleanup(int result, int step, mqd_t mqd)
 	TEST_CLEANUP;
 
 	/* exit with return code appropriate for results */
-	tst_exit(result);
+	tst_exit();
 }
 
 /*

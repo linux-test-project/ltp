@@ -31,12 +31,11 @@
 
 #define NFS_MAGIC 0x6969 /* man 2 statfs */
 
-int
-tst_is_cwd_nfs()
+int tst_is_cwd_nfs(void)
 {
-       struct statfs sf;
-       statfs(".", &sf);
+	struct statfs sf;
+	statfs(".", &sf);
 
-       /* Verify that the file is not on a nfs filesystem */
-       return sf.f_type == NFS_MAGIC?1:0;
+	/* Verify that the file is not on a nfs filesystem */
+	return sf.f_type == NFS_MAGIC?1:0;
 }

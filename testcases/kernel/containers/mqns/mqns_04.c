@@ -60,7 +60,7 @@ int check_mqueue(void *vtest)
 	mqd = mq_open(SLASH_MQ1, O_RDWR|O_CREAT|O_EXCL, 0755, NULL);
 	if (mqd == -1) {
 		write(p2[1], "mqfail", 7);
-		tst_exit(3);
+		tst_exit();
 	}
 
 	mq_close(mqd);
@@ -69,22 +69,18 @@ int check_mqueue(void *vtest)
 	if (rc == -1) {
 		perror("mount");
 		write(p2[1], "mount", 6);
-		tst_exit(3);
+		tst_exit();
 	}
 
 	write(p2[1], "go", 3);
 	read(p1[0], buf, 3);
 
-	tst_exit(0);
-
-	/* NOT REACHED */
-	return 0;
+	tst_exit();
 }
 
 
 int main(int argc, char *argv[])
 {
-	int r = TFAIL;
 	int rc;
 	int status;
 	char buf[30];
@@ -157,12 +153,10 @@ int main(int argc, char *argv[])
 
 	tst_resm(TPASS, "Child mqueue fs still visible for parent\n");
 
-	r = 0;
-
 fail:
 	umount(DEV_MQUEUE2);
 	rmdir(DEV_MQUEUE2);
-	tst_exit(r);
+	tst_exit();
 
 	/* NOT REACHED */
 	return 0;

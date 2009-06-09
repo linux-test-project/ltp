@@ -59,10 +59,8 @@ int check_mqueue(void *vtest)
 		write(p2[1], "exists", 7);
 		mq_close(mqd);
 	}
-	tst_exit(0);
 
-	/* NOT REACHED */
-	return 0;
+	tst_exit();
 }
 
 int main(int argc, char *argv[])
@@ -85,7 +83,7 @@ int main(int argc, char *argv[])
 	if (mqd == -1) {
 		perror("mq_open");
 		tst_resm(TFAIL, "mq_open failed\n");
-		tst_exit(3);
+		tst_exit();
 	}
 
 	tst_resm(TINFO, "Checking namespaces isolation from parent to child\n");
@@ -95,7 +93,7 @@ int main(int argc, char *argv[])
 		tst_resm(TFAIL, "failed clone/unshare\n");
 		mq_close(mqd);
 		mq_unlink(SLASH_MQ1);
-		tst_exit(1);
+		tst_exit();
 	}
 
 	close(p1[0]);
@@ -104,21 +102,15 @@ int main(int argc, char *argv[])
 	read(p2[0], buf, 7);
 	if (!strcmp(buf, "exists")) {
 		tst_resm(TFAIL, "child process found mqueue\n");
-		r = TFAIL;
 	} else if (!strcmp(buf, "notfnd")) {
 		tst_resm(TPASS, "child process didn't find mqueue\n");
-		r = TPASS;
 	} else {
 		tst_resm(TFAIL, "UNKNOWN RESULT\n");
-		r = TFAIL;
 	}
 
 	/* destroy the mqueue */
 	mq_close(mqd);
 	mq_unlink(SLASH_MQ1);
 
-	tst_exit(r);
-
-	/* NOT REACHED */
-	return 0;
+	tst_exit();
 }

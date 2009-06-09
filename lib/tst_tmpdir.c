@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: tst_tmpdir.c,v 1.12 2007/04/27 10:12:01 subrata_modak Exp $ */
+/* $Id: tst_tmpdir.c,v 1.13 2009/06/09 16:01:20 subrata_modak Exp $ */
 
 /**********************************************************
  *
@@ -116,8 +116,7 @@ extern char *TESTDIR;         /* the directory created; defined in */
 #undef   FN_NAME
 #define  FN_NAME  "tst_tmpdir()"
 
-void
-tst_tmpdir()
+void tst_tmpdir(void)
 {
  	char template[PATH_MAX];      /* template for mkstemp, mkdtemp */
   	int  no_cleanup = 0;          /* !0 means TDIRECTORY env var was set */
@@ -268,8 +267,7 @@ tst_tmpdir()
 #undef   FN_NAME
 #define  FN_NAME  "tst_rmdir()"
 
-void
-tst_rmdir()
+void tst_rmdir(void)
 {
    char *errmsg;
    char *tdirectory;

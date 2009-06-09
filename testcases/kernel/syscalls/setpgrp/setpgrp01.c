@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: setpgrp01.c,v 1.5 2009/03/23 13:36:04 subrata_modak Exp $ */
+/* $Id: setpgrp01.c,v 1.6 2009/06/09 16:01:21 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -135,7 +135,7 @@ int main(int ac, char **av)
      ***************************************************************/
 	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit(0);
+		tst_exit();
 	}
 
     /***************************************************************

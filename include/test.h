@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
- * 
+ * Copyright (c) 2009 Cyril Hrubis chrubis@suse.cz
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -30,7 +31,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: test.h,v 1.14 2008/08/19 07:00:49 subrata_modak Exp $ */
+/* $Id: test.h,v 1.15 2009/06/09 16:01:20 subrata_modak Exp $ */
 
 #ifndef __TEST_H__
 #define __TEST_H__
@@ -131,36 +132,6 @@
 					/* environment variable to desired path */
 
 /*
- * The following contains support for error message passing.
- * See test_error.c for details.
- */
-#define  TST_ERR_MESG_SIZE      1023    /* max size of error message */
-#define  TST_ERR_FILE_SIZE      511     /* max size of module name used by compiler */
-#define  TST_ERR_FUNC_SIZE      127     /* max size of func name */
-
-typedef struct {
-    int  te_line;                       /* line where last error was reported.  Use */
-                                        /* "__LINE__" and let compiler do the rest */
-    int  te_level;                      /* If set, will prevent current stored */
-                                        /* error to not be overwritten */
-    char te_func[TST_ERR_FUNC_SIZE+1];  /* name of function of last error */
-                                        /* Name of function or NULL */
-    char te_file[TST_ERR_FILE_SIZE+1];  /* module of last error.  Use */
-                                        /* "__FILE__" and let compiler do the rest */
-    char te_mesg[TST_ERR_MESG_SIZE+1];  /* string of last error */
-
-} _TST_ERROR;
-
-extern _TST_ERROR Tst_error;            /* defined in test_error.c */
-#if __STDC__
-extern void tst_set_error(char *file, int line, char *func, char *fmt, ...);
-#else
-extern void tst_set_error();
-#endif
-extern void tst_clear_error();
-
-
-/*
  * The following define contains the name of an environmental variable
  * that can be used to specify the number of iterations.
  * It is supported in parse_opts.c and USC_setup.c.
@@ -206,42 +177,63 @@ extern void tst_clear_error();
 #endif
 
 /*
- * The following prototypes are needed to remove compile errors
- * on IRIX systems when compiled with -n32 and -64.
+ * Functions from lib/tst_res.c
  */
-extern void tst_res(int ttype, char *fname, char *arg_fmt, ...);
-extern void tst_resm(int ttype, char *arg_fmt, ...);
-extern void tst_brk(int ttype, char *fname, void (*func)(), 
-							char *arg_fmt, ...);
-extern void tst_brkloop(int ttype, char *fname, void (*func)(), 
-							char *arg_fmt, ...);
-extern void tst_brkm(int ttype, void (*func)(), char *arg_fmt, ...);
-extern void tst_brkloopm(int ttype, void (*func)(), char *arg_fmt, ...);
-extern void tst_require_root(void (*func)());
+void tst_res(int ttype, char *fname, char *arg_fmt, ...);
+void tst_resm(int ttype, char *arg_fmt, ...);
+void tst_brk(int ttype, char *fname, void (*func)(void), char *arg_fmt, ...);
+void tst_brkloop(int ttype, char *fname, void (*func)(void), char *arg_fmt, ...);
+void tst_brkm(int ttype, void (*func)(void), char *arg_fmt, ...);
+void tst_brkloopm(int ttype, void (*func)(void), char *arg_fmt, ...);
+void tst_require_root(void (*func)(void));
+int  tst_environ(void);
+void tst_exit(void) LTP_ATTRIBUTE_NORETURN;
+void tst_flush(void);
 
-extern int  tst_environ();
-extern void tst_exit() attribute_noreturn;
-extern void tst_flush();
+extern int Tst_count;
 
-/* prototypes for the t_res.c functions */
-extern void t_result(char *tcid, int tnum, int ttype, char *tmesg);
-extern void tt_exit();
-extern int  t_environ();
-extern void t_breakum(char *tcid, int total, int typ, char *msg, void (*fnc)());
+/*
+ * Function from lib/tst_sig.c
+ */
+void tst_sig(int fork_flag, void (*handler)(), void (*cleanup)());
 
-extern void tst_sig(int fork_flag, void (*handler)(), void (*cleanup)());
-extern void tst_tmpdir();
-extern void tst_rmdir();
+/*
+ * Functions from lib/tst_tmpdir.c
+ */
+void tst_tmpdir(void);
+void tst_rmdir(void);
 
-extern char * get_high_address(void);
+/*
+ * Function from lib/get_high_address.c
+ */
+char *get_high_address(void);
 
-extern void get_kver(int*, int*, int*);
-extern int tst_kvercmp(int, int, int);
-extern int tst_is_cwd_nfs();
-extern int tst_is_cwd_tmpfs();
-extern int tst_cwd_has_free(int required_kib);
+/*
+ * Functions from lib/tst_kvercmp.c
+ */
+void tst_getkver(int *k1, int *k2, int *k3);
+int tst_kvercmp(int r1, int r2, int r3);
 
+/*
+ * Function from lib/tst_is_cwd_nfs.c
+ */
+int tst_is_cwd_nfs(void);
 
+/*
+ * Function from lib/tst_is_cwd_tmpfs.c
+ */
+int tst_is_cwd_tmpfs(void);
+
+/*
+ * Function from lib/tst_cwd_has_free.c
+ */
+int tst_cwd_has_free(int required_kib);
+
+/*
+ * Functions from lib/self_exec.c
+ */
+void maybe_run_child(void (*child)(), char *fmt, ...);
+int self_exec(char *argv0, char *fmt, ...);
 
 #ifdef TST_USE_COMPAT16_SYSCALL
 #define TCID_BIT_SUFFIX "_16"
@@ -250,14 +242,6 @@ extern int tst_cwd_has_free(int required_kib);
 #else
 #define TCID_BIT_SUFFIX ""
 #endif
-#define TCID_DEFINE(ID) \
-  char *TCID = (#ID TCID_BIT_SUFFIX)
+#define TCID_DEFINE(ID) char *TCID = (#ID TCID_BIT_SUFFIX)
 
-
-extern int Tst_count;
-
-/* self_exec.c functions */
-void maybe_run_child(void (*child)(), char *fmt, ...);
-int self_exec(char *argv0, char *fmt, ...);
-
-#endif	/* end of __TEST_H__ */
+#endif	/* __TEST_H__ */

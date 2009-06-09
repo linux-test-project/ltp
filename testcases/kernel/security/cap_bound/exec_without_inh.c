@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
 			ret = cap_set_proc(cur);
 		if (ret) {
 			tst_resm(TBROK, "Failed to drop cap_sys_admin from pI\n");
-			tst_exit(1);
+			tst_exit();
 		}
 	}
 	cap_free(cur);
@@ -78,11 +78,11 @@ int main(int argc, char *argv[])
 	if (ret) {
 		tst_resm(TFAIL, "Failed to drop CAP_SYS_ADMIN from bounding set.\n");
 		tst_resm(TINFO, "(ret=%d, errno %d)\n", ret, errno);
-		tst_exit(1);
+		tst_exit();
 	}
 
 	/* execute "check_pe 0" */
 	execl("check_pe", "check_pe", "0", NULL);
 	tst_resm(TBROK, "Failed to execute check_pe (errno %d)\n", errno);
-	tst_exit(1);
+	tst_exit();
 }

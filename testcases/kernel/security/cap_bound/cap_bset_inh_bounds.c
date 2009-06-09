@@ -63,27 +63,27 @@ int main(int argc, char *argv[])
 	ret = prctl(CAP_BSET_READ, CAP_SYS_ADMIN);
 	if (ret != 1) {
 		tst_resm(TBROK, "Not starting with CAP_SYS_ADMIN\n");
-		tst_exit(1);
+		tst_exit();
 	}
 
 	/* Make sure it's in pI */
 	cur = cap_from_text("all=eip");
 	if (!cur) {
 		tst_resm(TBROK, "Failed to create cap_sys_admin+i cap_t (errno %d)\n", errno);
-		tst_exit(1);
+		tst_exit();
 	}
 	ret = cap_set_proc(cur);
 	if (ret) {
 		tst_resm(TBROK, "Failed to cap_set_proc with cap_sys_admin+i (ret %d errno %d)\n",
 			ret, errno);
-		tst_exit(1);
+		tst_exit();
 	}
 	cap_free(cur);
 	cur = cap_get_proc();
 	ret = cap_get_flag(cur, CAP_SYS_ADMIN, CAP_INHERITABLE, &f);
 	if (ret || f != CAP_SET) {
 		tst_resm(TBROK, "Failed to add CAP_SYS_ADMIN to pI\n");
-		tst_exit(1);
+		tst_exit();
 	}
 	cap_free(cur);
 
@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
 	if (ret) {
 		tst_resm(TFAIL, "Failed to drop CAP_SYS_ADMIN from bounding set.\n");
 		tst_resm(TINFO, "(ret=%d, errno %d)\n", ret, errno);
-		tst_exit(1);
+		tst_exit();
 	}
 
 	/* test 1: is CAP_SYS_ADMIN still in pI? */
@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
 	ret = cap_get_flag(cur, CAP_SYS_ADMIN, CAP_INHERITABLE, &f);
 	if (ret || f != CAP_SET) {
 		tst_resm(TFAIL, "CAP_SYS_ADMIN not in pI after dropping from bounding set\n");
-		tst_exit(1);
+		tst_exit();
 	}
 	tst_resm(TPASS, "CAP_SYS_ADMIN remains in pI after removing from bounding set\n");
 
@@ -109,12 +109,12 @@ int main(int argc, char *argv[])
 	ret = cap_set_flag(tmpcap, CAP_INHERITABLE, 1, v, CAP_CLEAR);
 	if (ret) {
 		tst_resm(TFAIL, "Failed to drop CAP_SYS_ADMIN from cap_t\n");
-		tst_exit(1);
+		tst_exit();
 	}
 	ret = cap_set_proc(tmpcap);
 	if (ret) {
 		tst_resm(TFAIL, "Failed to drop CAP_SYS_ADMIN from pI\n");
-		tst_exit(1);
+		tst_exit();
 	}
 	cap_free(tmpcap);
 
@@ -122,10 +122,10 @@ int main(int argc, char *argv[])
 	ret = cap_set_proc(cur);
 	if (ret == 0) { /* success means pI was not bounded by X */
 		tst_resm(TFAIL, "Managed to put CAP_SYS_ADMIN back into pI though not in X\n");
-		tst_exit(1);
+		tst_exit();
 	}
 	cap_free(cur);
 
 	tst_resm(TPASS, "Couldn't put CAP_SYS_ADMIN back into pI when not in bounding set\n");
-	tst_exit(0);
+	tst_exit();
 }

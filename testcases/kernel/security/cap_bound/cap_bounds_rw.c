@@ -57,7 +57,7 @@ int check_remaining_caps(int lastdropped)
 		ret = prctl(CAP_BSET_READ, i);
 		if (ret == -1) {
 			tst_resm(TBROK, "Failed to read bounding set during sanity check\n");
-			tst_exit(1);
+			tst_exit();
 		}
 		if (ret == 1) {
 			tst_resm(TFAIL, "Bit %d should have been dropped but wasn't\n", i);
@@ -68,7 +68,7 @@ int check_remaining_caps(int lastdropped)
 		ret = prctl(CAP_BSET_READ, i);
 		if (ret == -1) {
 			tst_resm(TBROK, "Failed to read bounding set during sanity check\n");
-			tst_exit(1);
+			tst_exit();
 		}
 		if (ret == 0) {
 			tst_resm(TFAIL, "Bit %d wasn't yet dropped, but isn't in bounding set\n", i);
@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
 	ret = prctl(CAP_BSET_DROP, -1);
 	if (ret != -1) {
 		tst_resm(TFAIL, "prctl(CAP_BSET_DROP, -1) returned %d\n", ret);
-		tst_exit(1);
+		tst_exit();
 	}
 	/* Ideally I'd check CAP_LAST_CAP+1, but userspace
 	 * tends to be far too unreliable to trust CAP_LAST_CAP>
@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
 	if (ret != -1) {
 		tst_resm(TFAIL, "prctl(CAP_BSET_DROP, %d) returned %d\n", max(INSANE, CAP_LAST_CAP+1), ret);
 		tst_resm(TINFO, " %d is should not exist\n", max(INSANE, CAP_LAST_CAP+1));
-		tst_exit(1);
+		tst_exit();
 	}
 	for (i=0; i<=CAP_LAST_CAP; i++) {
 		ret = prctl(CAP_BSET_DROP, i);
@@ -106,19 +106,19 @@ int main(int argc, char *argv[])
 			tst_resm(TFAIL, "prctl(CAP_BSET_DROP, %d) returned %d\n", i, ret);
 			if (ret == -1)
 				tst_resm(TINFO, "errno was %d\n", errno);
-			tst_exit(1);
+			tst_exit();
 		}
 		ret = check_remaining_caps(i);
 		if (ret > 0) {
 			tst_resm(TFAIL, "after dropping bits 0..%d, %d was still in bounding set\n",
 				i, ret);
-			tst_exit(1);
+			tst_exit();
 		} else if (ret < 0) {
 			tst_resm(TFAIL, "after dropping bits 0..%d, %d was not in bounding set\n",
 				i, -ret);
-			tst_exit(1);
+			tst_exit();
 		}
 	}
 	tst_resm(TPASS, "CAP_BSET_DROP tests passed\n");
-	tst_exit(0);
+	tst_exit();
 }
