@@ -19,7 +19,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * $Id: common_j_h.c,v 1.1 2009/05/29 10:26:02 subrata_modak Exp $
+ * $Id: common_j_h.c,v 1.2 2009/06/09 17:58:42 subrata_modak Exp $
  *
  */
 //#define _GNU_SOURCE 1
@@ -102,23 +102,14 @@ int cleanup_euid(uid_t old_uid)
 /*
  * Generate a child process which will send a signal
  */
-static void sighandler_for_sig_proc(int sig)
-{
-	if (sig == SIGUSR2)
-		return;
-	return;
-}
-
 pid_t create_sig_proc(unsigned long usec, int sig)
 {
 	pid_t pid, cpid;
 
-	signal(SIGUSR2, sighandler_for_sig_proc);
 	pid = getpid();
 	cpid = fork();
 	switch (cpid) {
 	case 0:
-		pause();
 		usleep(usec);
 		kill(pid, sig);
 		_exit(0);
@@ -127,7 +118,6 @@ pid_t create_sig_proc(unsigned long usec, int sig)
 		EPRINTF("fork failed.\n");
 		return cpid;
 	default:
-		kill(cpid, SIGUSR2);
 		return cpid;
 	}
 }
