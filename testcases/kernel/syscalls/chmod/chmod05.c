@@ -177,7 +177,7 @@ int main(int ac, char **av)
 			if ((PERMS & ~S_ISGID) != dir_mode) {
 				tst_resm(TFAIL, "%s: Incorrect modes 0%03o, "
 					 "Expected 0%03o", TESTDIR, dir_mode,
-					 PERMS);
+					 PERMS & ~S_ISGID);
 			} else {
 				tst_resm(TPASS,
 					 "Functionality of chmod(%s, %#o) successful",
@@ -241,12 +241,12 @@ void setup()
 				strerror(errno));
 	}
 
-	if (chown(TESTDIR, nobody_u->pw_uid, bin_group->gr_gid) == -1)
+	if (chown(TESTDIR, nobody_u->pw_uid, nobody_u->pw_gid) == -1)
 		tst_brkm(TBROK, cleanup, "Couldn't change owner of testdir: %s",
 				strerror(errno));
 
-	/* change to nobody:nobody */
-	if (setegid(nobody_u->pw_gid) == -1 ||
+	/* change to nobody:bin */
+	if (setegid(bin_group->gr_gid) == -1 ||
 		 seteuid(nobody_u->pw_uid) == -1)
 		tst_brkm(TBROK, cleanup, "Couldn't switch to nobody:nobody: %s",
 				strerror(errno));
