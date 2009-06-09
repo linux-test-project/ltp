@@ -79,6 +79,7 @@ static void mylinkat_test(struct test_struct* desc);
 #define TEST_FIFO "fifo"
 
 static char dpathname[256] = "%s/"TEST_DIR2"/"TEST_FILE1;
+static char spathname[256] = "%s/"TEST_DIR1"/"TEST_FILE1;
 static int olddirfd, newdirfd = -1, cwd_fd = AT_FDCWD, stdinfd = 0, crapfd = -1, deldirfd;
 
 struct test_struct {
@@ -94,7 +95,7 @@ struct test_struct {
 	/* relative paths */
 	{ &olddirfd, TEST_FILE1, &newdirfd, TEST_FILE1, 0, TEST_DIR1"/"TEST_FILE1, TEST_DIR2"/"TEST_FILE1, 0 },
 	/* abs path at source */
-	{ &olddirfd, "/etc/passwd", &newdirfd, TEST_FILE1, 0, 0, 0, 0 },
+	{ &olddirfd, spathname, &newdirfd, TEST_FILE1, 0, 0, 0, 0 },
 	/* abs path at dst */
 	{ &olddirfd, TEST_FILE1, &newdirfd, dpathname, 0, TEST_DIR1"/"TEST_FILE1, TEST_DIR2"/"TEST_FILE1, 0},
 
@@ -103,7 +104,7 @@ struct test_struct {
 	/* relative paths to cwd */
 	{ &olddirfd, TEST_FILE1, &cwd_fd, TEST_DIR2"/"TEST_FILE1, 0, TEST_DIR1"/"TEST_FILE1, TEST_DIR2"/"TEST_FILE1, 0 },
 	/* abs path at source */
-	{ &cwd_fd, "/etc/passwd", &newdirfd, TEST_FILE1, 0, 0, 0, 0 },
+	{ &cwd_fd, spathname, &newdirfd, TEST_FILE1, 0, 0, 0, 0 },
 	/* abs path at dst */
 	{ &olddirfd, TEST_FILE1, &cwd_fd, dpathname, 0, TEST_DIR1"/"TEST_FILE1, TEST_DIR2"/"TEST_FILE1, 0},
 
@@ -112,7 +113,7 @@ struct test_struct {
 	/* relative paths to invalid */
 	{ &olddirfd, TEST_FILE1, &stdinfd, TEST_DIR2"/"TEST_FILE1, 0, 0, 0, ENOTDIR },
 	/* abs path at source */
-	{ &stdinfd, "/etc/passwd", &newdirfd, TEST_FILE1, 0, 0, 0, 0 },
+	{ &stdinfd, spathname, &newdirfd, TEST_FILE1, 0, 0, 0, 0 },
 	/* abs path at dst */
 	{ &olddirfd, TEST_FILE1, &stdinfd, dpathname, 0, TEST_DIR1"/"TEST_FILE1, TEST_DIR2"/"TEST_FILE1, 0},
 
@@ -121,7 +122,7 @@ struct test_struct {
 	/* relative paths to crap */
 	{ &olddirfd, TEST_FILE1, &crapfd, TEST_DIR2"/"TEST_FILE1, 0, 0, 0, EBADF },
 	/* abs path at source */
-	{ &crapfd, "/etc/passwd", &newdirfd, TEST_FILE1, 0, 0, 0, 0 },
+	{ &crapfd, spathname, &newdirfd, TEST_FILE1, 0, 0, 0, 0 },
 	/* abs path at dst */
 	{ &olddirfd, TEST_FILE1, &crapfd, dpathname, 0, TEST_DIR1"/"TEST_FILE1, TEST_DIR2"/"TEST_FILE1, 0},
 
@@ -130,7 +131,7 @@ struct test_struct {
 	/* relative paths to deleted */
 	{ &olddirfd, TEST_FILE1, &deldirfd, TEST_DIR2"/"TEST_FILE1, 0, 0, 0, ENOENT },
 	/* abs path at source */
-	{ &deldirfd, "/etc/passwd", &newdirfd, TEST_FILE1, 0, 0, 0, 0 },
+	{ &deldirfd, spathname, &newdirfd, TEST_FILE1, 0, 0, 0, 0 },
 	/* abs path at dst */
 	{ &olddirfd, TEST_FILE1, &deldirfd, dpathname, 0, TEST_DIR1"/"TEST_FILE1, TEST_DIR2"/"TEST_FILE1, 0},
 
@@ -297,6 +298,9 @@ static void setup()
 	/* gratuitous memory leak here */
 	tmp = strdup(dpathname);
 	snprintf(dpathname, sizeof(dpathname), tmp, get_current_dir_name());
+
+	tmp = strdup(spathname);
+	snprintf(spathname, sizeof(spathname), tmp, get_current_dir_name());
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
