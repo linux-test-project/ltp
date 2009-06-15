@@ -740,6 +740,7 @@ pwrite02 pwrite02
 pwrite03 pwrite03
 pwrite04 pwrite04
 
+quotactl01 quotactl01
 
 read01 read01
 read02 read02
