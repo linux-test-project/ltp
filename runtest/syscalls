@@ -126,6 +126,7 @@ eventfd01 eventfd01
 
 eventfd2_01 eventfd2_01
 eventfd2_02 eventfd2_02
+eventfd2_03 eventfd2_03
 
 execl01 execl01
 execle01 execle01
