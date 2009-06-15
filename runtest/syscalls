@@ -1270,6 +1270,7 @@ waitpid12 waitpid12
 waitpid13 waitpid13
 
 waitid01 waitid01
+waitid02 waitid02
 
 write01 write01
 write02 write02
