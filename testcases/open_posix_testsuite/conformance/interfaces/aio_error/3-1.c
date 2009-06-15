@@ -36,29 +36,55 @@
 
 int main()
 {
-	struct aiocb bad;
-	int ret;
+
+        char tmpfname[256];
+#define BUF_SIZE 512
+        char buf[BUF_SIZE];
+        int fd;
+        struct aiocb aiocb;
+	int ret=0;
 
 #if _POSIX_ASYNCHRONOUS_IO != 200112L
-	return PTS_UNSUPPORTED;
+        exit(PTS_UNSUPPORTED);
 #endif
 
-	memset (&bad, 0, sizeof (struct aiocb));
+        snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_error_3_1_%d",
+                  getpid());
+        unlink(tmpfname);
+        fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
+                  S_IRUSR | S_IWUSR);
+        if (fd == -1)
+        {
+                printf(TNAME " Error at open(): %s\n",
+                       strerror(errno));
+                exit(PTS_UNRESOLVED);
+        }
 
-	ret = aio_error(&bad);
-	if (ret != -1)
+        unlink(tmpfname);
+
+	memset (&aiocb, 0, sizeof (struct aiocb));
+
+        aiocb.aio_fildes = fd;
+        aiocb.aio_buf = buf;
+        aiocb.aio_reqprio = -1;
+        aiocb.aio_nbytes = BUF_SIZE;
+
+        if (aio_write(&aiocb) != 0)
 	{
-		printf(TNAME " bad aio_error return value; %d\n", ret);
-		return PTS_FAIL;
+                printf(TNAME " bad aio_read return value()\n");
+                exit(PTS_FAIL);
 	}
 
-	if (errno != EINVAL)
+	while (aio_error (&aiocb) == EINPROGRESS);
+	ret = aio_error(&aiocb);
+
+	if (ret != EINVAL)
 	{
 		printf(TNAME " errno is not EINVAL %s\n", strerror(errno));
 		return PTS_FAIL;
 	}
 
-
+	close(fd);
 	printf ("Test PASSED\n");
 	return PTS_PASS;
 }
