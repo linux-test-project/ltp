@@ -1269,6 +1269,8 @@ waitpid11 waitpid11
 waitpid12 waitpid12
 waitpid13 waitpid13
 
+waitid01 waitid01
+
 write01 write01
 write02 write02
 write03 write03
