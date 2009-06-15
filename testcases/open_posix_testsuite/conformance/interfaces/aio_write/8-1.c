@@ -40,6 +40,7 @@ int main()
 #define BUF_SIZE 512
 	char buf[BUF_SIZE];
 	struct aiocb aiocb;
+	int ret=0;
 
 #if _POSIX_ASYNCHRONOUS_IO != 200112L
 	exit(PTS_UNSUPPORTED);
@@ -51,13 +52,21 @@ int main()
 	aiocb.aio_buf = buf;
 	aiocb.aio_nbytes = BUF_SIZE;
 
-	if (aio_write(&aiocb) != -1)
+	/*
+	 * EBADF is encountered at a later stage
+	 * and should be collected by aio_error()
+	 */ 
+	
+	if (aio_write(&aiocb) != 0)
 	{
 		printf(TNAME " bad aio_write return value()\n");
 		exit(PTS_FAIL);
 	}
 
-	if (errno != EBADF)
+	while (aio_error(&aiocb) == EINPROGRESS);
+	ret = aio_error(&aiocb);
+
+	if (ret != EBADF)
 	{
 		printf(TNAME " errno is not EBADF %s\n", strerror(errno));
 		exit(PTS_FAIL);
