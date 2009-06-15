@@ -8,7 +8,8 @@
  *  GNU General Public License for more details.
  *
  * Test that the mlock() function sets errno = EPERM if the calling process
- * does not have the appropriate privilege to perform the requested operation.
+ * does not have the appropriate privilege to perform the requested operation
+ * (Linux 2.6.9 and later) and its RLIMIT_MEMLOCK soft resource limit set to 0.
  */
 
 #define _XOPEN_SOURCE 600
@@ -21,6 +22,7 @@
 #include <sys/types.h>
 #include <pwd.h>
 #include <string.h>
+#include <sys/resource.h>
 #include "posixtest.h"
 
 #define BUFSIZE 8
@@ -29,6 +31,9 @@
 int set_nonroot()
 {
 	struct passwd *pw;
+        struct rlimit rlim;
+        int ret=0;
+
 	setpwent();
 	/* search for the first user which is non root */ 
 	while((pw = getpwent()) != NULL)
@@ -39,6 +44,18 @@ int set_nonroot()
 		printf("There is no other user than current and root.\n");
 		return 1;
 	}
+
+	/*
+	 * mlock()
+	 * EPERM:
+	 * (Linux 2.6.9 and later) the caller was not privileged (CAP_IPC_LOCK)
+	 * and its RLIMIT_MEMLOCK soft resource limit was 0.
+	 */
+
+        rlim.rlim_cur = 0;
+        rlim.rlim_max = 0;
+        if ((ret = setrlimit(RLIMIT_MEMLOCK,&rlim)) != 0)
+                printf("Failed at setrlimit() return %d \n", ret);
 
 	if(seteuid(pw->pw_uid) != 0) {
 		if(errno == EPERM) {
