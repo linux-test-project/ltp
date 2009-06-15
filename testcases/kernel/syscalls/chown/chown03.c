@@ -267,6 +267,9 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
+	setegid(0);
+	seteuid(0);
+
 	/* Remove tmp dir and all files in it */
 	tst_rmdir();
 
