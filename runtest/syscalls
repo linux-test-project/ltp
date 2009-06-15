@@ -507,6 +507,8 @@ lstat03_64 lstat03_64
 
 mallopt01 mallopt01
 
+mbind01 mbind01
+
 memset01 memset01
 memcmp01 memcmp01
 memcpy01 memcpy01
