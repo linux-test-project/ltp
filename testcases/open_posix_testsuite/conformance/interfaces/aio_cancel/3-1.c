@@ -128,6 +128,7 @@ int main()
 		aiocb->aio_sigevent.sigev_notify = SIGEV_SIGNAL;
 		aiocb->aio_sigevent.sigev_signo = SIGRTMIN+1;
 		aiocb->aio_sigevent.sigev_value.sival_ptr = aiocb;
+		aiocb->aio_reqprio = 0;
 
 		if (aio_write(aiocb) == -1)
 		{
