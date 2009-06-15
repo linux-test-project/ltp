@@ -1,4 +1,4 @@
-ifdef $(CROSS_COMPILE)
+ifdef CROSS_COMPILE
 CHECK_CGROUP := $(shell test -f $(TARGET_DIR)/usr/include/linux/cgroupstats.h && echo 'cgroup')
 else
 CHECK_CGROUP := $(shell test -f /proc/cgroups && echo 'cgroup')
@@ -9,7 +9,7 @@ CHECK_FREEZER := $(shell grep -w freezer /proc/cgroups 2>/dev/null| cut -f1)
 CHECK_CPUSETCTL = $(shell grep -w cpuset /proc/cgroups 2>/dev/null|cut -f1)
 endif
 
-ifdef $(CROSS_COMPILE)
+ifdef CROSS_COMPILE
 ifeq ($(CHECK_CGROUP),cgroup)
 SUBDIRS += cgroup
 SUBDIRS += cpuctl
