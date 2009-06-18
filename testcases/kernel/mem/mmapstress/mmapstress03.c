@@ -166,8 +166,8 @@ main(int argc, char *argv[])
 		ERROR("really large mmap didn't fail");
                 anyfail();
 	}
-	if (errno != ENOMEM) {
-		ERROR("really large mmap didn't set errno = ENOMEM");
+	if (errno != ENOMEM && errno != EINVAL) {
+		ERROR("really large mmap didn't set errno = ENOMEM nor EINVAL");
                 anyfail();
 	}
 	(void)time(&t);
