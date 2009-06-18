@@ -5,12 +5,12 @@ PROGS:=$(patsubst %.c,%,$(TEST_SRCS))
 HARNESS_SRCS:=main.c
 # io_queue.c
 
-CFLAGS+=--static -Wall  -g -O -I../../../../../include -Wall
+CFLAGS+=-Wall  -g -O -I../../../../../include -Wall
 LDFLAGS+=-L../../../../../lib -lltp $(AIO_LIBS)
 #-lpthread -lrt
 all: $(PROGS)
 
-$(PROGS): %: %.c $(HARNESS_SRCS)
+$(PROGS): %: %.c $(HARNESS_SRCS) Makefile
 	$(CC) $(CFLAGS) -DTEST_NAME=\"$<\" -o $@ main.c $(LDFLAGS)
 
 clean:
