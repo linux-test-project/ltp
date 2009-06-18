@@ -74,8 +74,10 @@ int child_fn(void *arg)
 
 	/* Spawn many children */
 	for (i = 0; i < 10; i++)
-		if ((children[i] = fork()) == 0)
-			sleep(10);
+		if ((children[i] = fork()) == 0) {
+			pause();
+			exit(2);
+		}
 
 	/* wait for last child to get scheduled */
 	sleep(1);
@@ -86,13 +88,16 @@ int child_fn(void *arg)
 	}
 
 	for (i = 0; i < 10; i++) {
-		if (waitpid(children[i], &status, WNOHANG) == -1) {
+		if (waitpid(children[i], &status, 0) == -1) {
 			tst_resm(TBROK, "cinit: waitpid() failed(%s)",\
 					strerror(errno));
 			cleanup();
 		}
-		if (!(WIFSIGNALED(&status) && WTERMSIG(status) == SIGUSR1)) {
-			tst_resm(TFAIL, "cinit: found a child alive still.");
+		if (!(WIFSIGNALED(status) && WTERMSIG(status) == SIGUSR1)) {
+			tst_resm(TFAIL, "cinit: found a child alive still "
+					"%d exit: %d, %d, signal %d, %d", i,
+					WIFEXITED(status), WEXITSTATUS(status),
+					WIFSIGNALED(status), WTERMSIG(status));
 			cleanup();
 		}
 	}
@@ -125,7 +130,7 @@ int main(int argc, char *argv[])
 	}
 
 	sleep(1);
-	if (wait(&status) < 0)
+	if (waitpid(-1, &status, __WALL) < 0)
 		tst_resm(TWARN, "parent: waitpid() failed.");
 
 	if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
