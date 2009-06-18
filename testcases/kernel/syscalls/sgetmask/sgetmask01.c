@@ -141,7 +141,7 @@ int main(int ac, char **av) {
 			for (sig = -3; sig <= SIGRTMAX + 1; sig++){
 				TEST(syscall(__NR_ssetmask,sig));
                 		tst_resm(TINFO,"Setting signal : %d -- return of setmask : %d",sig,TEST_RETURN);     //call sgetmask()
-                     		TEST(syscall(__NR_ssetmask));     //call sgetmask()
+                     		TEST(syscall(__NR_sgetmask));     //call sgetmask()
                      		if(TEST_RETURN != sig) {
         				tst_resm(TINFO,"Oops,setting sig %d, got %d",sig,TEST_RETURN);
                      		} else
