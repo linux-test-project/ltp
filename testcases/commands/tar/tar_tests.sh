@@ -258,7 +258,7 @@ else
 		TFAILCNT=$(( $TFAILCNT+1 ))
 	    fi
 	else
-	    $LTPBIN/tst_brk TBROK $LTPTMP/file.out NULL \
+	    $LTPBIN/tst_brk TBROK $LTPTMP/tar_tst.out NULL \
 		"tar: command failed while creating compressed archive. Reason:"
 	    TFAILCNT=$(( $TFAILCNT+1 ))
 	fi
