@@ -178,6 +178,11 @@ prg_usage()
         exit(1);
 }
 
+static void setup(void);
+static void cleanup(void);
+static int fd1 = -1;
+static char filename[LEN];
+
 int
 main(int argc, char *argv[])
 {
@@ -185,15 +190,13 @@ main(int argc, char *argv[])
         int     bufsize = BUFSIZE;
         int     count, ret;
 	int     offset;
-        int     fd, newfd, fd1;
+        int     fd, newfd;
         int     i, l_fail = 0, fail_count = 0, total = 0;
 	int	failed = 0;
 	int	shmsz = SHMLBA;
 	int	pagemask = ~(sysconf(_SC_PAGE_SIZE) - 1);
         char    *buf0, *buf1, *buf2;
-	char	filename[LEN];
 	caddr_t	shm_base;
-	struct	sigaction act;
 
 	/* Options */
 	while ((i = getopt(argc, argv, "b:")) != -1) {
@@ -208,50 +211,31 @@ main(int argc, char *argv[])
 			prg_usage();
 		}
 	}
-	act.sa_handler = SIG_IGN;
-	(void) sigaction(SIGXFSZ, &act, NULL);
-        sprintf(filename,"testdata-4.%ld", syscall(__NR_gettid));
 
-        /* Test for filesystem support of O_DIRECT */
-        if ((fd1 = open(filename, O_DIRECT|O_CREAT, 0666)) < 0) {
-                 tst_resm(TCONF,"O_DIRECT is not supported by this filesystem.");
-                 tst_exit();
-        }else{
-                close(fd1);
-        }
+	setup();
 
 	/* Open file and fill, allocate for buffer */
         if ((fd = open(filename, O_DIRECT|O_RDWR|O_CREAT, 0666)) < 0) {
-		tst_resm(TFAIL, "open failed for %s: %s",
+		tst_brkm(TBROK, cleanup, "open failed for %s: %s",
 			filename, strerror(errno));
-                tst_exit();
         }
         if ((buf0 = valloc(BUFSIZE)) == NULL) {
-		tst_resm(TFAIL, "valloc() buf0 failed: %s", strerror(errno));
-                unlink(filename);
-                tst_exit();
+		tst_brkm(TBROK, cleanup, "valloc() buf0 failed: %s", strerror(errno));
         }
         for (i = 1; i < fblocks; i++) {
                 fillbuf(buf0, BUFSIZE, (char)i);
                 if (write(fd, buf0, BUFSIZE) < 0) {
-			tst_resm(TFAIL, "write failed for %s: %s",
+			tst_brkm(TBROK, cleanup, "write failed for %s: %s",
 				filename, strerror(errno));
-			close(fd);
-                        unlink(filename);
-                        tst_exit();
                 }
         }
 	close(fd);
         if ((buf2 = valloc(BUFSIZE)) == NULL) {
-		tst_resm(TFAIL, "valloc() buf2 failed: %s", strerror(errno));
-                unlink(filename);
-                tst_exit();
+		tst_brkm(TBROK, cleanup, "valloc() buf2 failed: %s", strerror(errno));
         }
         if ((fd = open(filename, O_DIRECT|O_RDWR)) < 0) {
-		tst_resm(TFAIL, "open failed for %s: %s",
+		tst_brkm(TBROK, cleanup, "open failed for %s: %s",
 				filename, strerror(errno));
-                unlink(filename);
-                tst_exit();
         }
 
 	/* Test-1: Negative Offset */
@@ -349,9 +333,7 @@ main(int argc, char *argv[])
 	offset = 4096;
 	count = bufsize;
         if (close(fd) < 0) {
-		tst_resm(TFAIL, "can't close fd %d: %s", fd, strerror(errno));
-                unlink(filename);
-                tst_exit();
+		tst_brkm(TBROK, cleanup, "can't close fd %d: %s", fd, strerror(errno));
         }
 	ret = runtest_f(fd, buf2, offset, count, EBADF, 7, "closed fd");
 	if (ret != 0) {
@@ -387,24 +369,18 @@ main(int argc, char *argv[])
 	/* Test-10: read, write to a mmaped file */
 	shm_base = (char *)(((long)sbrk(0) + (shmsz-1)) & ~(shmsz-1));
         if (shm_base == NULL) {
-		tst_resm(TFAIL, "sbrk failed: %s", strerror(errno));
-                unlink(filename);
-                tst_exit();
+		tst_brkm(TBROK, cleanup, "sbrk failed: %s", strerror(errno));
         }
 	offset = 4096;
 	count = bufsize;
 	if ((fd = open(filename, O_DIRECT|O_RDWR)) < 0) {
-		tst_resm(TFAIL, "can't open %s: %s",
+		tst_brkm(TBROK, cleanup, "can't open %s: %s",
 			filename, strerror(errno));
-                unlink(filename);
-                tst_exit();
         }
 	shm_base = mmap(shm_base, 0x100000, PROT_READ|PROT_WRITE,
 		        MAP_SHARED|MAP_FIXED, fd, 0);
         if (shm_base == (caddr_t)-1) {
-                tst_resm(TFAIL, "can't mmap file: %s", strerror(errno));
-                unlink(filename);
-                tst_exit();
+		tst_brkm(TBROK, cleanup, "can't mmap file: %s", strerror(errno));
         }
 	ret = runtest_s(fd, buf2, offset, count, 10, "mmapped file");
 	if (ret != 0) {
@@ -419,9 +395,7 @@ main(int argc, char *argv[])
 
 	/* Test-11: read, write to an unmaped file with munmap */
 	if ((ret = munmap(shm_base, 0x100000)) < 0) {
-                tst_resm(TFAIL, "can't unmap file: %s", strerror(errno));
-                unlink(filename);
-                tst_exit();
+		tst_brkm(TBROK, cleanup, "can't unmap file: %s", strerror(errno));
         }
 	ret = runtest_s(fd, buf2, offset, count, 11, "unmapped file");
 	if (ret != 0) {
@@ -438,10 +412,8 @@ main(int argc, char *argv[])
 	offset = 4096;
 	count = bufsize;
         if ((fd = open(filename, O_DIRECT|O_WRONLY)) < 0) {
-		tst_resm(TFAIL, "can't open %s: %s",
+		tst_brkm(TBROK, cleanup, "can't open %s: %s",
 			filename, strerror(errno));
-                unlink(filename);
-                tst_exit();
         }
 	if (lseek(fd, offset, SEEK_SET) < 0) {
 		tst_resm(TFAIL, "lseek failed: %s", strerror(errno));
@@ -466,10 +438,8 @@ main(int argc, char *argv[])
 	offset = 4096;
 	count = bufsize;
 	if ((fd = open(filename, O_DIRECT|O_RDONLY)) < 0) {
-		tst_resm(TFAIL, "can't open %s: %s",
+		tst_brkm(TBROK, cleanup, "can't open %s: %s",
 			filename, strerror(errno));
-		unlink(filename);
-		tst_exit();
 	}
 	if (lseek(fd, offset, SEEK_SET) < 0) {
 		tst_resm(TFAIL, "lseek failed: %s", strerror(errno));
@@ -495,10 +465,8 @@ main(int argc, char *argv[])
 	count = bufsize;
 	l_fail = 0;
         if ((fd = open(filename, O_DIRECT|O_RDWR)) < 0) {
-		tst_resm(TFAIL, "can't open %s: %s",
+		tst_brkm(TBROK, cleanup, "can't open %s: %s",
 			filename, strerror(errno));
-                unlink(filename);
-                tst_exit();
         }
 	if (lseek(fd, offset, SEEK_SET) < 0) {
 		tst_resm(TFAIL, "lseek before read failed: %s",
@@ -540,10 +508,8 @@ main(int argc, char *argv[])
 	count = bufsize;
 	l_fail = 0;
         if ((fd = open(filename, O_DIRECT|O_RDWR)) < 0) {
-                tst_resm(TFAIL, "can't open %s: %s",
+                tst_brkm(TBROK, cleanup, "can't open %s: %s",
 			filename, strerror(errno));
-                unlink(filename);
-                tst_exit();
         }
 	if (lseek(fd, offset, SEEK_SET) < 0) {
 		tst_resm(TFAIL, "lseek before read failed: %s",
@@ -585,15 +551,11 @@ main(int argc, char *argv[])
 	offset = 4096;
 	count = bufsize;
 	if ((buf1 = (char *) (((long)sbrk(0) + (shmsz-1)) & ~(shmsz-1))) == NULL) {
-                tst_resm(TFAIL,"sbrk: %s", strerror(errno));
-                unlink(filename);
-                tst_exit();
+                tst_brkm(TBROK, cleanup,"sbrk: %s", strerror(errno));
         }
         if ((fd = open(filename, O_DIRECT|O_RDWR)) < 0) {
-		tst_resm(TFAIL, "can't open %s: %s",
+		tst_brkm(TBROK, cleanup, "can't open %s: %s",
 			filename, strerror(errno));
-                unlink(filename);
-                tst_exit();
         }
 	ret =runtest_f(fd, buf1, offset, count, EFAULT, 16, " nonexistant space");
 	if (ret != 0) {
@@ -610,10 +572,8 @@ main(int argc, char *argv[])
 	offset = 4096;
 	count = bufsize;
         if ((fd = open(filename,O_DIRECT|O_RDWR|O_SYNC)) < 0) {
-		tst_resm(TFAIL, "can't open %s: %s",
+		tst_brkm(TBROK, cleanup, "can't open %s: %s",
 			filename, strerror(errno));
-                unlink(filename);
-                tst_exit();
         }
 	ret = runtest_s(fd, buf2, offset, count, 17, "opened with O_SYNC");
 	if (ret != 0) {
@@ -634,8 +594,39 @@ main(int argc, char *argv[])
 		tst_resm(TINFO, "%d testblocks completed",
 		 		 total);
 	}
-	tst_exit();
+	cleanup();
 	return 0;
+}
+
+static void setup(void)
+{
+	struct	sigaction act;
+
+	tst_tmpdir();
+
+	act.sa_handler = SIG_IGN;
+	(void) sigaction(SIGXFSZ, &act, NULL);
+	sprintf(filename,"testdata-4.%ld", syscall(__NR_gettid));
+
+	if ((fd1 = open(filename, O_CREAT|O_EXCL, 0600)) < 0) {
+		tst_brkm(TBROK, cleanup, "Couldn't create test file %s: %s", filename, strerror(errno));
+	}
+	close(fd1);
+
+	/* Test for filesystem support of O_DIRECT */
+	if ((fd1 = open(filename, O_DIRECT, 0600)) < 0) {
+		tst_brkm(TCONF, cleanup, "O_DIRECT is not supported by this filesystem. %s", strerror(errno));
+	}
+}
+
+static void cleanup(void)
+{
+	if(fd1 != -1)
+		unlink(filename);
+
+	tst_rmdir();
+
+	tst_exit();
 }
 
 #else /* O_DIRECT */

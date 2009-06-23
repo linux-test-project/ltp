@@ -227,6 +227,9 @@ child_function(int childnum, int action)
 	exit(0);
 }
 
+static void setup(void);
+static void cleanup(void);
+static int fd1 = -1;
 
 int
 main(int argc, char *argv[])
@@ -234,7 +237,6 @@ main(int argc, char *argv[])
 	int	*pidlst;
 	int	numchild = 1;	/* Number of children. Default 5 */
 	int	i, fail_count = 0, failed = 0, total = 0;
-	int     fd1;
 
 	/* Options */
 	while ((i = getopt(argc, argv, "b:o:i:n:f:")) != -1) {
@@ -276,13 +278,7 @@ main(int argc, char *argv[])
 	}
 	sprintf(filename,"testdata-3.%ld", syscall(__NR_gettid));
 
-        /* Test for filesystem support of O_DIRECT */
-        if ((fd1 = open(filename, O_DIRECT|O_CREAT, 0666)) < 0) {
-                 tst_resm(TCONF,"O_DIRECT is not supported by this filesystem.");
-                 tst_exit();
-        }else{
-                close(fd1);
-        }
+	setup();
 
 
 	/* Testblock-1: Read with Direct IO, Write without */
@@ -346,15 +342,38 @@ main(int argc, char *argv[])
 	if (failed) {
 		tst_resm(TINFO, "%d/%d testblocks failed",
 			fail_count, total);
-		tst_exit();
 	}
-	tst_resm(TINFO, "%d testblocks %d iterations with %d children completed",
-			total, iter, numchild);
-	tst_exit();
+	else
+		tst_resm(TINFO, "%d testblocks %d iterations with %d children completed",
+						 total, iter, numchild);
+	cleanup();
 	return 0;
 }
 
+static void setup(void)
+{
+	tst_tmpdir();
 
+	if ((fd1 = open(filename, O_CREAT|O_EXCL, 0600)) < 0) {
+		tst_brkm(TBROK, cleanup, "Couldn't create test file %s: %s", filename, strerror(errno));
+	}
+	close(fd1);
+
+	/* Test for filesystem support of O_DIRECT */
+	if ((fd1 = open(filename, O_DIRECT, 0600)) < 0) {
+		tst_brkm(TCONF, cleanup, "O_DIRECT is not supported by this filesystem. %s", strerror(errno));
+	}
+}
+
+static void cleanup(void)
+{
+	if(fd1 != -1)
+		unlink(filename);
+
+	tst_rmdir();
+
+	tst_exit();
+}
 #else /* O_DIRECT */
 
 int

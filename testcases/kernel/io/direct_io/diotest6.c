@@ -76,6 +76,10 @@ static int	bufsize = BUFSIZE;	/* Buffersize. Default 4k */
 static off64_t	offset = 0;		/* Offset. Default 0 */
 static int	nvector = 20;		/* Vector array. Default 20 */
 static char	filename[LEN];		/* Test data file */
+static int fd1 = -1;
+
+static void setup(void);
+static void cleanup(void);
 
 /*
  * prg_usage: display the program usage
@@ -185,6 +189,7 @@ child_function(int childnum, int action)
 			tst_resm(TFAIL, "fd_r open failed for %s: %s",
 				filename, strerror(errno));
 			close(fd_w);
+			unlink(filename);
 			return(-1);
 		}
 		if (runtest(fd_r, fd_w, childnum, action) == -1) {
@@ -205,6 +210,7 @@ child_function(int childnum, int action)
 			tst_resm(TFAIL, "fd_r open failed for %s: %s",
 				filename, strerror(errno));
 			close(fd_w);
+			unlink(filename);
 			return(-1);
 		}
 		if (runtest(fd_r, fd_w, childnum, action) == -1) {
@@ -251,7 +257,6 @@ main(int argc, char *argv[])
 	int	*pidlst;
 	int	numchild = 1;	/* Number of children. Default 5 */
 	int	i, fail_count = 0, failed = 0, total = 0;
-	int	fd1;
 
 	/* Options */
 	sprintf(filename,"testdata-6.%ld", syscall(__NR_gettid));
@@ -299,13 +304,7 @@ main(int argc, char *argv[])
 		}
 	}
 
-        /* Test for filesystem support of O_DIRECT */
-        if ((fd1 = open(filename, O_DIRECT|O_CREAT, 0666)) < 0) {
-                 tst_resm(TCONF,"O_DIRECT is not supported by this filesystem.");
-                 tst_exit();
-        }else{
-                close(fd1);
-        }
+	setup();
 
 	/* Testblock-1: Read with Direct IO, Write without */
 	if (forkchldrn(&pidlst, numchild, READ_DIRECT, child_function) < 0 ) {
@@ -371,10 +370,34 @@ main(int argc, char *argv[])
 	else
 		tst_resm(TINFO, "%d testblocks %d iterations with %d children completed",
 			total, iter, numchild);
-	tst_exit();
+	cleanup();
 	return 0;
 }
 
+static void setup(void)
+{
+	tst_tmpdir();
+
+	if ((fd1 = open(filename, O_CREAT|O_EXCL, 0600)) < 0) {
+		tst_brkm(TBROK, cleanup, "Couldn't create test file %s: %s", filename, strerror(errno));
+	}
+	close(fd1);
+
+	/* Test for filesystem support of O_DIRECT */
+	if ((fd1 = open(filename, O_DIRECT, 0600)) < 0) {
+		tst_brkm(TCONF, cleanup, "O_DIRECT is not supported by this filesystem. %s", strerror(errno));
+	}
+}
+
+static void cleanup(void)
+{
+	if(fd1 != -1)
+		unlink(filename);
+
+	tst_rmdir();
+
+	tst_exit();
+}
 
 #else /* O_DIRECT */
 
