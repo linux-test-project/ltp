@@ -104,7 +104,7 @@ executeTestCase.h : dataTypes
 	/bin/echo "// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA." >> executeTestCase.h
 	/bin/echo " " >> executeTestCase.h
 	/bin/echo '#'include \"userIncludes.h\" >> executeTestCase.h
-	for A in `echo ${OBLIST:.o=.h}`; do \
+	@set -e; for A in `echo ${OBLIST:.o=.h}`; do \
 		/bin/echo '#'include \"$$A\" >> executeTestCase.h; \
 	done
 

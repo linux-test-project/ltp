@@ -11,6 +11,6 @@ clean:
 	rm -f $(TARGETS)
 
 install:
-	@set -e;
+	@set -e; \
 	ln -f cpuset_funcs.sh ../../../../bin/cpuset_funcs.sh;
 	chmod +x cpuset_funcs.sh;

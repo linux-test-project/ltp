@@ -44,7 +44,7 @@ all: $(TARGETS)
 
 install:
 ifeq ($(HAS_UNSHARE),y)
-	for i in $(TARGETS) $(SCRIPTS) runnetnstest.sh check_netns_enabled; do ln -f $$i ../../../bin/$$i ; chmod +x runnetnstest.sh ; done
+	@set -e; for i in $(TARGETS) $(SCRIPTS) runnetnstest.sh check_netns_enabled; do ln -f $$i ../../../bin/$$i ; chmod +x runnetnstest.sh ; done
 endif
 
 clean:

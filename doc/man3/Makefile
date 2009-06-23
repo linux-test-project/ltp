@@ -9,7 +9,7 @@ MANPAGES=forker.3 get_attrib.3 parse_open_flags.3 parse_opts.3 \
 all:
 
 install: $(MANPAGES)
-	for i in $(MANPAGES); do \
+	@set -e; for i in $(MANPAGES); do \
 		install -D -m 644 $$i $(DESTDIR)/$(PREFIX)/share/man/man3/$$i; \
 	done
 

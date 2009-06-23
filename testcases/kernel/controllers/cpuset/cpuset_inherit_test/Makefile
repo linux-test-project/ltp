@@ -7,6 +7,6 @@ clean:
 	@true
 
 install:
-	@set -e;
+	@set -e; \
 	for i in $(SRCS); do ln -f $$i ../../../../bin/$$i; chmod +x $$i; done
 

@@ -4,11 +4,11 @@ SUBDIRS += cpuset_hotplug_test cpuset_load_balance_test
 SUBDIRS += cpuset_memory_pressure_test cpuset_memory_spread_test
 SUBDIRS += cpuset_memory_test
 all:
-	@set -e;
+	@set -e; \
 	for i in $(SUBDIRS); do $(MAKE) -C $$i $@ ;done;
 
 install:
-	@set -e;
+	@set -e; \
 	for i in $(SUBDIRS); do $(MAKE) -C $$i install ; done;
 	ln -f run_cpuset_test.sh ../../../bin/run_cpuset_test.sh;
 	chmod +x run_cpuset_test.sh;

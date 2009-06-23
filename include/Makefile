@@ -10,7 +10,7 @@ HEADERS=compiler.h dataascii.h databin.h file_lock.h forker.h open_flags.h \
 all:
 
 install: $(HEADERS)
-	for i in $(HEADERS); do \
+	@set -e; for i in $(HEADERS); do \
 		install -D -m 644 $$i $(DESTDIR)/$(PREFIX)/include/ltp/$$i; \
 	done
 

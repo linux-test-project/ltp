@@ -16,7 +16,7 @@ clean:
 	rm -f $(TARGETS) $(OBJECTS) $(LIBOBJECTS)
 
 install:
-	@set -e;
+	@set -e; \
 	for i in $(TARGETS); do ln -f $$i ../../../../bin/$$i; chmod +x $$i; done
 	ln -f cpuset_hotplug_test.sh ../../../../bin/cpuset_hotplug_test.sh;
 	chmod +x cpuset_hotplug_test.sh;

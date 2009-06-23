@@ -20,7 +20,7 @@ tst_unzip.dir: unzip_genfile.sh
 	./unzip_genfile.sh tst_unzip.dir
 
 install: all
-	for i in $(BINS) ; do \
+	@set -e; for i in $(BINS); do \
 		ln -f $$i ../../bin/$$i ; \
 	done
 
