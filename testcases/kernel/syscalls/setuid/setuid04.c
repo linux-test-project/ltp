@@ -114,7 +114,7 @@ void do_master_child()
 	int status;
 
 	if (setuid(ltpuser->pw_uid) == -1) {
-		tst_brkm(TBROK, cleanup,
+		tst_brkm(TBROK, tst_exit,
 			 "setuid failed to set the effective uid to %d",
 			 ltpuser->pw_uid);
 	}
@@ -143,7 +143,7 @@ void do_master_child()
 
 		pid = FORK_OR_VFORK();
 		if (pid < 0)
-			tst_brkm(TBROK, cleanup, "Fork failed");
+			tst_brkm(TBROK, tst_exit, "Fork failed");
 
 		if (pid == 0) {
 			int tst_fd2;
@@ -160,13 +160,12 @@ void do_master_child()
 
 			if (TEST_ERRNO == EACCES) {
 				tst_resm(TPASS, "open returned errno EACCES");
-				exit(0);
 			} else {
 				tst_resm(TFAIL,
 					 "open returned unexpected errno - %d",
 					 TEST_ERRNO);
-				exit(-1);
 			}
+			tst_exit();
 		} else {
 			/* Wait for son completion */
 			waitpid(pid, &status, 0);
