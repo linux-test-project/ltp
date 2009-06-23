@@ -19,7 +19,8 @@
 # Test suite for the t-core kernel patch 
 export TCID=tcore01
 PTHREAD_DIR="/lib/i686"
-TEST_DIR="."
+BIN_DIR=$LTPROOT/testcases/bin/
+TEST_DIR=$(mktemp -dt)
 OSTYPE="redhat"
 # Do some preparation to generate the correct core dump
 # files
@@ -42,6 +43,14 @@ os_check()
 	fi
 }
 
+cleanup()
+{
+		rm -rf $TEST_DIR
+		[ -f /proc/sys/kernel/core_dumps_threads ] && ! [ -z "$OLD_PATTERN" ] && 
+		echo "$OLD_PATTERN" > /proc/sys/kernel/core_dumps_threads
+		exit $1
+}
+
 prepare_dump()
 {
 	ulimit -c 20000000 >/dev/null 2>&1
@@ -52,18 +61,23 @@ prepare_dump()
 			echo "1">/proc/sys/kernel/core_dumps_threads
 		fi
 	fi
+	if [ -f /proc/sys/kernel/core_pattern ]; then
+			OLD_PATTERN=$(cat /proc/sys/kernel/core_pattern)
+			echo 'core.%p' > /proc/sys/kernel/core_pattern
+	fi
 	#Recover the lipthread.so.0 lib to generate the correct
 	#core dump file
 	os_check
 	if [ $OSTYPE = "redhat" ];then
-		cd $PTHREAD_DIR
-		if [ -f libpthread.so.0.orig ];then
-			test=`ls -l libpthread.so.0.orig|awk '{print $11}'`
-			if [ $test = "libpthread-0.9.so"  ];then
-				mv libpthread.so.0.orig libpthread.so.0
+		cd $PTHREAD_DIR && {
+			if [ -f libpthread.so.0.orig ];then
+				test=`ls -l libpthread.so.0.orig|awk '{print $11}'`
+					if [ $test = "libpthread-0.9.so"  ];then
+						mv libpthread.so.0.orig libpthread.so.0
+					fi
 			fi
-		fi
-		cd -
+			cd -
+		}
 	fi
 }
 #Prepare for the gdb dump 
@@ -71,7 +85,7 @@ prepare_gdb()
 {
 	os_check
 	if [ $OSTYPE = "redhat" ];then
-		cd $PTHREAD_DIR
+		cd $PTHREAD_DIR && {
 		if [ -f libpthread.so.0 ];then
 			test=`ls -l libpthread.so.0|awk '{print $11}'`
 			if [ $test = "libpthread-0.9.so"  ];then
@@ -80,6 +94,7 @@ prepare_gdb()
 		fi
 		ln -s /lib/libpthread.so.0 libpthread.so.0 >/dev/null 2>&1
 		cd -
+    }
 	fi
 }
 #Test whether the system can generate the needed core files
@@ -91,7 +106,7 @@ Test_gen_core()
 	if [ -f core.* ];then
 		rm -f core.*
 	fi
-	pid=`$TEST_DIR/tcore |grep "consumer pid"|awk '{print $2}'|cut -d = -f 2`
+	pid=`$BIN_DIR/tcore |grep "consumer pid"|awk '{print $2}'|cut -d = -f 2`
 	echo -e "Test whether we can generate the needed core file"
 	if [ -f core.* ];then
 		echo -e "PASS"
@@ -110,7 +125,7 @@ Test_core_file()
 	prepare_gdb
 	mv -f $TEST_DIR/core.* $TEST_DIR/corefile >/dev/null 2>&1
 	echo -e "Test whether the core support bt,fpu and threads commands "
-	expect ./tcore.exp >/dev/null 2>&1
+	expect $BIN_DIR/tcore.exp
 	return=$?
 	pass=`expr $pass + $return`
 	fail=`expr 3 - $return + $fail`
@@ -123,7 +138,7 @@ Test_core_file
 echo "Linux Tcore test results" > results
 echo "Total pass fail" >>  results
 echo "  5	$pass	$fail" >> results
-exit $fail 
+cleanup $fail 
 
 	
 	
