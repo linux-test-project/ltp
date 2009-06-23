@@ -1,117 +1,170 @@
-ade
----
-ar01
+<testname=ar01>
+	<description>
+		Construct one or more command lines which use options that do not
+		take arguments
+		For each of these invocations
+		Specify the options seperately
+		Group the options together
+		Compare the behavior of the two cases
+		If they behave differently, then fail
+		If none of the cases fail, then pass
 
-	Construct one or more command lines which use options that do not
-	take arguments
-	For each of these invocations
-	Specify the options seperately
-	Group the options together
-	Compare the behavior of the two cases
-	If they behave differently, then fail
-	If none of the cases fail, then pass
+	<\description>
+	<test_location>
+		ltp/testcases/commands/ade/ar/ar01
+	<\test_location>
+<\testname>
+<testname=ld01>
+	<description>
+		To test the basic functionality of the `ld` command.
 
-ld01
+	<\description>
+	<test_location>
+		ltp/testcases/commands/ade/ld/ld01
+	<\test_location>
+<\testname>
+<testname=ldd01>
+	<description>
+		To test the basic functionality of the `ldd` command.
 
-	 To test the basic functionality of the `ld` command.
+	<\description>
+	<test_location>
+		ltp/testcases/commands/ade/ldd/ldd01
+	<\test_location>
+<\testname>
+<testname=nm01>
+	<description>
+		To test the basic functionality of the `nm` command.
 
-ldd01
+	<\description>
+	<test_location>
+		ltp/testcases/commands/ade/nm/nm01
+	<\test_location>
+<\testname>
+<testname=objdump01>
+	<description>
+		Tests the functionality of the `objdump` command.
 
-	 To test the basic functionality of the `ldd` command.
+	<\description>
+	<test_location>
+		ltp/testcases/commands/ade/objdump/objdump01
+	<\test_location>
+<\testname>
+<testname=size01>
+	<description>
+		To test the basic functionality of `size`.
 
-nm01
+	<\description>
+	<test_location>
+		ltp/testcases/commands/ade/size/size01
+	<\test_location>
+<\testname>
+<testname=cpio_test.sh>
+	<description>
+		Tests the basic functionality of `cpio` command
 
-	To test the basic functionality of the `nm` command.
+	<\description>
+	<test_location>
+		ltp/testcases/commands/cpio/cpio_tests.sh
+	<\test_location>
+<\testname>
+<testname=cron_test.sh>
+	<description>
+		This testcase tests if crontab <filename> installs the cronjob
+		and cron schedules the job correctly.
 
-objdump01
+	<\description>
+	<test_location>
+		ltp/testcases/commands/cron/cron_tests.sh
+	<\test_location>
+<\testname>
+<testname=eject_tests.sh>
+	<description>
+		Tests the basic functionality of `eject` command.
 
-	Tests the functionality of the `objdump` command.
+	<\description>
+	<test_location>
+		ltp/testcases/commands/eject/eject-tests.sh
+	<\test_location>
+<\testname>
+<testname=cp_tests.sh>
+	<description>
+		Test basic functionality of `cp` command
 
-size01
+	<\description>
+	<test_location>
+		ltp/testcases/commands/fileutils/cp/cp_tests.sh
+	<\test_location>
+<\testname>
+<testname=ln_tests.sh>
+	<description>
+		Test basic functionality of `ln` command
 
-	To test the basic functionality of `size`.
+	<\description>
+	<test_location>
+		ltp/testcases/commands/fileutils/ln/ln_tests.sh
+	<\test_location>
+<\testname>
+<testname=mkdir_tests.sh>
+	<description>
+		Test basic functionality of `mkdir` command
 
+	<\description>
+	<test_location>
+		ltp/testcases/commands/fileutils/mkdir/mkdir_tests.sh
+	<\test_location>
+<\testname>
+<testname=mv_test.sh>
+	<description>
+		Test basic functionality of `mv` command
 
+	<\description>
+	<test_location>
+		ltp/testcases/commands/fileutils/mv/mv_tests.sh
+	<\test_location>
+<\testname>
+<testname=gzip_tests.sh>
+	<description>
+		Test basic functionality of `gzip` and `gunzip` command
 
-cpio
-----
-cpio_test.sh
-	
-	Tests the basic functionality of `cpio` command
+	<\description>
+	<test_location>
+		ltp/testcases/commands/gzip/gzip_tests.sh
+	<\test_location>
+<\testname>
+<testname=logrotate_tests.sh>
+	<description>
+		Test basic functionality of `logrotate` command.
 
+	<\description>
+	<test_location>
+		ltp/testcases/commands/logrotate/logrotate_tests.sh
+	<\test_location>
+<\testname>
+<testname=mail_tests.sh>
+	<description>
+		Test basic functionality of `mail` command.
 
+	<\description>
+	<test_location>
+		ltp/testcases/commands/mail/mail_tests.sh
+	<\test_location>
+<\testname>
+<testname=tar_tests.sh>
+	<description>
+		Test basic functionality of `tar` command.
 
-cron
-----
-cron_test.sh
-	
-	This testcase tests if crontab <filename> installs the cronjob 
-	and cron schedules the job correctly.
+	<\description>
+	<test_location>
+		ltp/testcases/commands/tar/tar_tests.sh
+	<\test_location>
+<\testname>
+<testname=unzip>
+	<description>
+		Test basic functionality of `unzip` command.
 
-
-
-eject
------
-eject_tests.sh
-
-	Tests the basic functionality of `eject` command.
-
-
-
-fileutils
----------
-cp_tests.sh
-	
-	Test basic functionality of `cp` command
-
-ln_tests.sh
-	
-	Test basic functionality of `ln` command
-
-mkdir_tests.sh
-
-	Test basic functionality of `mkdir` command
-
-mv_test.sh
-
-	Test basic functionality of `mv` command
-
-
-
-gzip
-----
-gzip_tests.sh
-
-	Test basic functionality of `gzip` and `gunzip` command
-
-
-
-logrotate
----------
-logrotate_tests.sh
-
-	Test basic functionality of `logrotate` command.
-
-
-
-mail
-----
-mail_tests.sh
-	
-	Test basic functionality of `mail` command.
-
-
-
-tar
----
-tar_tests.sh
-	
-	Test basic functionality of `tar` command.
-
-
-unzip
------
-unzip_tests.sh
-
-	Test basic functionality of `unzip` command.
-
+	<\description>
+	<test_location>
+		ltp/testcases/commands/unzip
+	<\test_location>
+<\testname>
