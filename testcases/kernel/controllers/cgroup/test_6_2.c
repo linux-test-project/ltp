@@ -24,6 +24,8 @@
 #include <unistd.h>
 #include <sched.h>
 
+#include "clone_platform.h"
+
 #define DEFAULT_USEC	30000
 
 int foo(void __attribute__((unused)) *arg)
@@ -42,7 +44,15 @@ int main(int argc, char **argv)
 
 	while (1) {
 		usleep(usec);
-		clone(foo, stack+4096, CLONE_NEWNS, NULL);
+#if defined(__hppa__)
+		clone(foo, stack, CLONE_NEWNS, NULL);
+#elif defined(__ia64__)
+		clone2(foo, stack,
+			    4096, CLONE_NEWNS, NULL, NULL, NULL, NULL);
+#else
+		clone
+		     (foo, stack + 4096, CLONE_NEWNS, NULL);
+#endif
 	}
 
 	return 0;
