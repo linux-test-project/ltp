@@ -19,10 +19,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * $Id: common_j_h.c,v 1.2 2009/06/09 17:58:42 subrata_modak Exp $
+ * $Id: common_j_h.c,v 1.3 2009/06/23 14:15:43 subrata_modak Exp $
  *
  */
-//#define _GNU_SOURCE 1
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/wait.h>

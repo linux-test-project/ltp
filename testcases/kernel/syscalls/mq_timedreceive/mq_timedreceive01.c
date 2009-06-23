@@ -45,6 +45,7 @@
 /* History:     Porting from Crackerjack to LTP is done by                    */
 /*              Manas Kumar Nayak maknayak@in.ibm.com>                        */
 /******************************************************************************/
+#define _XOPEN_SOURCE 500
 #include <sys/syscall.h>
 #include <sys/types.h>
 #include <sys/stat.h>
