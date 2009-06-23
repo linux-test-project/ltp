@@ -463,9 +463,9 @@ main()
         exit 1
     }
     export TMP
-    # To be evoked by tst_tmpdir()
-    #  write to it as user nobody
-    export TMPDIR="/tmp" 
+    # To be invoked by tst_tmpdir()
+    # write to it as user nobody
+    export TMPDIR=$TMP
 
     chmod 777 $TMP || \
     {
