@@ -155,8 +155,6 @@ else
    		export TCbin=$PWD
 	fi
 	
-	EXIT_CODE=$?
-	
 	do_cleanup
 fi	
 
