@@ -78,7 +78,7 @@ DEBUG=0
     fi
 cleanup()
 {
-   if [ $# == 2 ]; then
+   if [ $# = 2 ]; then
         pid=$1
         netdev=$2
     fi

@@ -128,8 +128,7 @@ test_2()
 	pid2=$!
 
 	# check if 'echo' will exit and exit with failure
-	for ((tmp = 0; tmp < 5; tmp++))
-	{
+	for tmp in $(seq 0 4); do
 		sleep 1
 		ps -p $! > /dev/null
 		if [ $? -ne 0 ]; then
@@ -143,7 +142,7 @@ test_2()
 			fi
 			break
 		fi
-	}
+	done
 
 	if [ $tmp -eq 5 ]; then
 		tst_resm TFAIL "'echo' doesn't exit!"
@@ -206,8 +205,7 @@ test_4()
 
 mkdir memcg/
 
-for ((cur = 1; cur <= $TST_TOTAL; cur++))
-{
+for cur in $(seq 1 $TST_TOTAL); do
 	export TST_COUNT=$cur
 
 	mount -t cgroup -o memory xxx memcg/
@@ -219,7 +217,7 @@ for ((cur = 1; cur <= $TST_TOTAL; cur++))
 	test_$cur
 
 	umount memcg/
-}
+done
 
 rmdir memcg/
 

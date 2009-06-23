@@ -22,9 +22,9 @@
 #                                                                              #
 ################################################################################
 
-source ./cpuset_funcs.sh
-
 cd $LTPROOT/testcases/bin
+
+. ./cpuset_funcs.sh
 
 export TCID="cpuset02"
 export TST_TOTAL=27
@@ -52,7 +52,7 @@ base_op_write_and_test()
 		tst_brkm TFAIL "Failed to mkdir -p $(basename $write_file)"
 		return 1
 	}
-	[ "$write_string" == NULL ] && write_string=" "
+	[ "$write_string" = NULL ] && write_string=" "
 
 	/bin/echo "$write_string" > "$write_file" 2> $CPUSET_TMP/stderr
 	mkdir $(dirname $write_file)/2 2> $CPUSET_TMP/stderr
@@ -97,7 +97,7 @@ inherit_test()
 			exit_status=1
 		fi
 	fi
-	((TST_COUNT++))
+	: $((TST_COUNT++))
 }
 
 test_cpus()

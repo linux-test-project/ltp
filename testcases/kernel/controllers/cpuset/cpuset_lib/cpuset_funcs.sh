@@ -31,7 +31,7 @@ else
 	N_NODES="`cat /sys/devices/system/node/has_normal_memory`"
 fi
 N_NODES=${N_NODES#*-*}
-((N_NODES++))
+: $((N_NODES++))
 
 CPUSET="/dev/cpuset"
 CPUSET_TMP="/tmp/cpuset_tmp"
@@ -89,7 +89,7 @@ user_check()
 
 cpuset_check()
 {
-	grep cpuset /proc/cgroups &> /dev/null
+	grep cpuset /proc/cgroups > /dev/null 2>&1
 	if [ $? -ne 0 ]; then
 		tst_brkm TCONF ignored "Cpuset is not supported"
 		return 1
@@ -152,8 +152,8 @@ setup()
 # Write the cleanup function
 cleanup()
 {
-	mount | grep "$CPUSET" &>/dev/null || {
-		rm -rf "$CPUSET" &>/dev/null
+	mount | grep "$CPUSET" >/dev/null 2>&1 || {
+		rm -rf "$CPUSET" >/dev/null 2>&1
 		return 0
 	}
 
@@ -161,7 +161,7 @@ cleanup()
 	do
 		while read pid
 		do
-			/bin/kill $pid &> /dev/null
+			/bin/kill $pid > /dev/null 2>&1
 			if [ $? -ne 0 ]; then
 				tst_brkm TFAIL ignored "Couldn't kill task - "\
 							"$pid in the cpuset"
@@ -182,8 +182,8 @@ cleanup()
 					" cpuset on $CPUSET..Exiting test"
 		return 1
 	fi
-	rmdir "$CPUSET" &> /dev/null
-	rm -rf "$CPUSET_TMP" &> /dev/null
+	rmdir "$CPUSET" > /dev/null 2>&1
+	rm -rf "$CPUSET_TMP" > /dev/null 2>&1
 }
 
 # set the cpuset's parameter
@@ -223,12 +223,12 @@ cpuset_set()
 # cpu_hotplug cpu_id offline/online
 cpu_hotplug()
 {
-	if [ "$2" == "online" ]; then
+	if [ "$2" = "online" ]; then
 		/bin/echo 1 > "/sys/devices/system/cpu/cpu$1/online"
 		if [ $? -ne 0 ]; then
 			return 1
 		fi
-	elif [ "$2" == "offline" ]; then
+	elif [ "$2" = "offline" ]; then
 		/bin/echo 0 > "/sys/devices/system/cpu/cpu$1/online"
 		if [ $? -ne 0 ]; then
 			return 1
@@ -241,7 +241,7 @@ cpu_hotplug()
 #   offline - offline a CPU in testing, we needn't do anything
 setup_test_environment()
 {
-	if [ "$1" == "online" ]; then
+	if [ "$1" = "online" ]; then
 		cpu_hotplug $HOTPLUG_CPU offline
 		if [ $? -ne 0 ]; then
 			return 1

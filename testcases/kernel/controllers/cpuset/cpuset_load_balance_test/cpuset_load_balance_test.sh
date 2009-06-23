@@ -22,9 +22,9 @@
 #                                                                              #
 ################################################################################
 
-source ./cpuset_funcs.sh
-
 cd $LTPROOT/testcases/bin
+
+. ./cpuset_funcs.sh
 
 export TCID="cpuset07"
 export TST_TOTAL=13
@@ -307,7 +307,7 @@ base_test()
 
 		cpu_hotplug_cleanup
 	fi
-	((TST_COUNT++))
+	: $((TST_COUNT++))
 }
 
 test_general_load_balance1()

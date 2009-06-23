@@ -22,9 +22,9 @@
 #                                                                              #
 ################################################################################
 
-source ./cpuset_funcs.sh
-
 cd $LTPROOT/testcases/bin
+
+. ./cpuset_funcs.sh
 
 export TCID="cpuset08"
 export TST_TOTAL=13
@@ -76,7 +76,7 @@ root_cpu_hotplug_test()
 		return 1
 	fi
 
-	/bin/cat /dev/zero &> /dev/null &
+	/bin/cat /dev/zero > /dev/null 2>&1 &
 	tst_pid=$!
 
 	cpu_hotplug $HOTPLUG_CPU $cpuhotplug 2> $CPUSET_TMP/stderr
@@ -104,7 +104,7 @@ root_cpu_hotplug_test()
 		tst_resm TFAIL "root group's cpus isn't expected(Result: $root_cpus, Expect: $expect_cpus)."
 	fi
 
-	/bin/kill -9 $tst_pid &> /dev/null
+	/bin/kill -9 $tst_pid > /dev/null 2>&1
 
 	return $ret
 }
@@ -136,7 +136,7 @@ general_cpu_hotplug_test()
 		return 1
 	fi
 
-	/bin/cat /dev/zero &> /dev/null &
+	/bin/cat /dev/zero > /dev/null 2>&1 &
 	tst_pid=$!
 
 	echo $tst_pid > "$path/tasks" 2> $CPUSET_TMP/stderr
@@ -160,7 +160,7 @@ general_cpu_hotplug_test()
 	task_cpus="`cat /proc/$tst_pid/status | grep Cpus_allowed_list`"
 	task_cpus="`echo $task_cpus | sed -e 's/Cpus_allowed_list: //'`"
 
-	if [ "$expect_cpus" == "EMPTY" ]; then
+	if [ "$expect_cpus" = "EMPTY" ]; then
 		local tasks=`cat $path/tasks | grep "\b$tst_pid\b"`
 		check_result "$tasks" "EMPTY"
 		if [ $? -ne 0 ]; then
@@ -187,12 +187,12 @@ general_cpu_hotplug_test()
 			tst_resm TFAIL "task's cpu allowed list isn't expected(Result: $task_cpus, Expect: $expect_task_cpus)."
 		fi
 	else
-		if [ "$cpus" == "" ]; then
+		if [ "$cpus" = "" ]; then
 			cpus="EMPTY"
 		fi
 		tst_resm TFAIL "general group's cpus isn't expected(Result: $cpus, Expect: $expect_cpus)."
 	fi
-	/bin/kill -s SIGKILL $tst_pid &> /dev/null
+	/bin/kill -s SIGKILL $tst_pid > /dev/null 2>&1
 
 	return $ret
 }
@@ -218,7 +218,7 @@ base_test()
 
 		cpu_hotplug_cleanup
 	fi
-	((TST_COUNT++))
+	: $((TST_COUNT++))
 }
 
 # Test Case 1-2

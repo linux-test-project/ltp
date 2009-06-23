@@ -22,9 +22,9 @@
 #                                                                              #
 ################################################################################
 
-source ./cpuset_funcs.sh
-
 cd $LTPROOT/testcases/bin
+
+. ./cpuset_funcs.sh
 
 export TCID="cpuset06"
 export TST_TOTAL=19
@@ -222,7 +222,7 @@ base_test()
 
 		cpu_hotplug_cleanup
 	fi
-	((TST_COUNT++))
+	: $((TST_COUNT++))
 }
 
 # Casee 1-6
@@ -236,7 +236,7 @@ test_root_load_balance()
 	while read isbalance level hotplug
 	do
 		base_test $isbalance $hotplug
-		((file_case_num++))
+		: $((file_case_num++))
 	done <<- EOF
 		0	none
 		1	none

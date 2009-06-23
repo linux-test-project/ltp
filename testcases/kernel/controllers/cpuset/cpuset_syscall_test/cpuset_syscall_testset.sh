@@ -22,9 +22,9 @@
 #                                                                              #
 ################################################################################
 
-source ./cpuset_funcs.sh
-
 cd $LTPROOT/testcases/bin
+
+. ./cpuset_funcs.sh
 
 export TCID="cpuset05"
 export TST_TOTAL=16
@@ -315,7 +315,7 @@ test16()
 	return 0
 }
 
-for ((c=1; c <=$TST_TOTAL; c++))
+for c in $(seq 1 $TST_TOTAL)
 do
 	setup
 	if [ $? -ne 0 ]; then
@@ -334,7 +334,7 @@ do
 			fi
 		fi
 	fi
-	((TST_COUNT++))
+	: $((TST_COUNT++))
 done
 
 exit $exit_status

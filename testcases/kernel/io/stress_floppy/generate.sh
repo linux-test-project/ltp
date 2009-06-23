@@ -19,17 +19,17 @@ if [ ! -d dumpdir ]; then
    mkdir dumpdir
 fi
 
-`diff --brief 1K_file dumpdir/1K_file &> /dev/null`
+`diff --brief 1K_file dumpdir/1K_file > /dev/null 2>&1`
 if [ $? ]; then
    cp 1K_file dumpdir
 fi
 
-`diff --brief 10K_file dumpdir/10K_file &> /dev/null`
+`diff --brief 10K_file dumpdir/10K_file > /dev/null 2>&1`
 if [ $? ]; then
    cp 10K_file dumpdir
 fi
 
-`diff --brief 100K_file dumpdir/100K_file &> /dev/null`
+`diff --brief 100K_file dumpdir/100K_file > /dev/null 2>&1`
 if [ $? ]; then
    cp 100K_file dumpdir
 fi

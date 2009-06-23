@@ -22,7 +22,7 @@
 #                                                                              #
 ################################################################################
 
-source ./cpuset_funcs.sh
+. ./cpuset_funcs.sh
 
 cd $LTPROOT/testcases/bin
 
@@ -152,7 +152,7 @@ check_hugetlbfs()
 {
 	local fssupport="grep -w hugetlbfs /proc/filesystems 2>/dev/null | cut -f2"
 
-	if [ "$fssupport" == "hugetlbfs" ]; then
+	if [ "$fssupport" = "hugetlbfs" ]; then
 		return 1
 	else
 		return 0
@@ -469,7 +469,7 @@ get_the_second()
 	ls /proc/$1/task | (
 		read tid1
 		read tid2
-		if (($1 == tid1))
+		if [ "$1" -eq "$tid1" ]
 		then
 			echo $tid2
 		else
@@ -806,7 +806,7 @@ test18()
 	fi
 }
 
-for ((c=1; c <=$TST_TOTAL; c++))
+for c in $(seq 1 $TST_TOTAL)
 do
 	setup
 	if [ $? -ne 0 ]; then
@@ -825,7 +825,7 @@ do
 			fi
 		fi
 	fi
-	((TST_COUNT++))
+	: $((TST_COUNT++))
 done
 
 exit $exit_status

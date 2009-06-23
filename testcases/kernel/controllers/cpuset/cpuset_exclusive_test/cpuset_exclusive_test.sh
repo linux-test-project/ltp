@@ -22,9 +22,9 @@
 #                                                                              #
 ################################################################################
 
-source ./cpuset_funcs.sh
-
 cd $LTPROOT/testcases/bin
+
+. ./cpuset_funcs.sh
 
 export TCID="cpuset03"
 export TST_TOTAL=18
@@ -217,7 +217,7 @@ test18()
 	test 0 = $(cat "$CPUSET/father/child/mem_exclusive") || return 1
 }
 
-for ((i=1; i <=$TST_TOTAL; i++))
+for i in $(seq 1 $TST_TOTAL)
 do
 	setup
 	if [ $? -ne 0 ]; then
@@ -238,7 +238,7 @@ do
 			exit_status=1
 		fi
 	fi
-	((TST_COUNT++))
+	: $((TST_COUNT++))
 done
 
 exit $exit_status

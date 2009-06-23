@@ -22,9 +22,9 @@
 #                                                                              #
 ################################################################################
 
-source ./cpuset_funcs.sh
-
 cd $LTPROOT/testcases/bin
+
+. ./cpuset_funcs.sh
 
 export TCID="cpuset10"
 export TST_TOTAL=6
@@ -51,7 +51,7 @@ test1()
 	fi
 
 	local i
-	for ((i=0; i<10; i++))
+	for i in $(seq 0 9)
 	do
 		if [ $(cat "$CPUSET/memory_pressure") -ne 0 ]; then
 			tst_resm TFAIL "Memory_pressure had memory pressure rate."
@@ -72,7 +72,7 @@ test2()
 	./cpuset_memory_pressure $usemem
 
 	local i
-	for ((i=0; i<10; i++))
+	for i in $(seq 0 9)
 	do
 		if [ $(cat "$CPUSET/memory_pressure") -ne 0 ]; then
 			tst_resm TFAIL "Memory_pressure had memory pressure rate."
@@ -98,7 +98,7 @@ test3()
 	fi
 
 	local i
-	for ((i=0; i<10; i++))
+	for i in $(seq 0 9)
 	do
 		if [ $(cat "$CPUSET/memory_pressure") -ne 0 ]; then
 			tst_resm TFAIL "root group's memory_pressure had memory pressure rate."
@@ -145,7 +145,7 @@ test4()
 	fi
 
 	local i
-	for ((i=0; i<10; i++))
+	for i in $(seq 0 9)
 	do
 		if [ $(cat "$CPUSET/memory_pressure") -ne 0 ]; then
 			tst_resm TFAIL "root group's memory_pressure had memory pressure rate."
@@ -176,7 +176,7 @@ test5()
 
 	./cpuset_memory_pressure $usemem
 	local i
-	for ((i=0; i<10; i++))
+	for i in $(seq 0 9)
 	do
 		if [ $(cat "$CPUSET/memory_pressure") -eq 0 ]; then
 			tst_resm TFAIL "root group's memory_pressure didn't have memory pressure rate."
@@ -222,7 +222,7 @@ test6()
 
 	./cpuset_memory_pressure $usemem
 	local i
-	for ((i=0; i<10; i++))
+	for i in $(seq 0 9)
 	do
 		if [ $(cat "$CPUSET/memory_pressure") -eq 0 ]; then
 			tst_resm TFAIL "root group's memory_pressure didn't have memory pressure rate."
@@ -235,7 +235,7 @@ test6()
 	done
 }
 
-for ((c=1; c <=$TST_TOTAL; c++))
+for c in $(seq 1 $TST_TOTAL)
 do
 	setup
 	if [ $? -ne 0 ]; then
@@ -254,7 +254,7 @@ do
 			fi
 		fi
 	fi
-	((TST_COUNT++))
+	: $((TST_COUNT++))
 done
 
 exit $exit_status
