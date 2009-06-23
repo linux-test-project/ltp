@@ -8,6 +8,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include "test.h"
+#include "config.h"
 
 #ifdef HAVE_LIBAIO_H
 
