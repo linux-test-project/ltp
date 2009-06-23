@@ -21,7 +21,7 @@
 #include <string.h>
 #include "test.h"
 
-char *TCID = "ht_affinity";
+char *TCID = "smt_smp_affinity";
 int TST_TOTAL = 3;
 
 /************************************************************************************
@@ -161,7 +161,7 @@ unsigned long get_porc_affinity(pid_t pid)
 
 int HT_GetAffinity()
 {
-	unsigned long mask,mask1,mask2;
+	unsigned long mask, mask1;
 	pid_t pid;
 
 	mask=0x1;
@@ -173,20 +173,18 @@ int HT_GetAffinity()
 
 	sleep(1);
 
-	mask1=get_porc_affinity(pid);
-	sched_getaffinity(pid, sizeof(unsigned int), &mask2);
+	sched_getaffinity(pid, sizeof(unsigned int), &mask1);
 
-	if(mask==0x1 && mask==mask1 && mask==mask2)
+	if (mask == 0x1 && mask == mask1)
 	{
 		mask=0x2;
 		sched_setaffinity(pid, sizeof(unsigned long), &mask);
 
 		sleep(1);
 
-		mask1=get_porc_affinity(pid);
-		sched_getaffinity(pid, sizeof(unsigned int), &mask2);
+		sched_getaffinity(pid, sizeof(unsigned int), &mask1);
 
-		if(mask==0x2 && mask==mask1 && mask==mask2)
+		if (mask == 0x2 && mask == mask1)
 			return 1;
 		else
 			return 0;
@@ -195,7 +193,6 @@ int HT_GetAffinity()
 		return 0;
 }
 
-// return 0 means Pass, return 1 means Fail
 int HT_InheritAffinity()
 {
 	unsigned long mask;
@@ -217,7 +214,7 @@ int HT_InheritAffinity()
 		exit(0);
 	}
 
-	mask=get_porc_affinity(pid);
+	sched_getaffinity(pid, sizeof(unsigned int), &mask);
 
 	if(mask==0x2)
 		return 1;
@@ -228,7 +225,6 @@ int HT_InheritAffinity()
 // return 0 means Pass, return 1 means Fail
 int main(int argc, char *argv[])
 {
-	tst_resm(TINFO, "Begin: HyperThreading Affinity");
 
 #ifndef __i386__
 	tst_brkm(TCONF, NULL, "This test suite can only excute on i386 architecture.");
@@ -260,8 +256,6 @@ int main(int argc, char *argv[])
 		tst_brkm(TCONF, NULL, "HT is not enabled or not supported.");
 	}
 #endif
-
-	tst_resm(TINFO, "End: HyperThreading Affinity");
 
 	return 0;
 }

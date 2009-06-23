@@ -10,6 +10,8 @@ ht_enabled:
 	${CC} -o ht_enabled HTenabled.c HTutils.c $(CFLAGS) $(LOADLIBES)
 
 install:
+	@chmod 755 smt_smp_enabled.sh
+	@ln -f smt_smp_enabled.sh ../../../../bin/
 	@set -e; for i in $(TARGETS) ; do ln -f $$i ../../../../bin/$$i ; done
 
 clean:

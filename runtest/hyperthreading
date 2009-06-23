@@ -1,5 +1,5 @@
 #DESCRIPTION:Hyperthreading stress tests
-ht_enabled ht_enabled
-ht_affinity ht_affinity
+smt_smp_enabled smt_smp_enabled.sh
+smt_smp_affinity smt_smp_affinity.sh
 ht_interrupt ht_interrupt
 

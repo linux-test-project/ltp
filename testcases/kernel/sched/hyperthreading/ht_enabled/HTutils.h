@@ -8,8 +8,6 @@ int is_cmdline_para(const char *para);
 
 // return 0 means Pass,
 // return 1 means ht is not enabled,
-// return 2 means CPU is not support ht,
-// return 3 mean kernel is not support ht.
 int check_ht_capability();
 
 extern char buf[];
