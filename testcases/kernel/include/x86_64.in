@@ -46,3 +46,4 @@ __NR_epoll_create1			291
 __NR_dup3				292
 __NR_pipe2				293
 __NR_inotify_init1			294
+__NR_perf_counter_open	295

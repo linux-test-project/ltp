@@ -16,6 +16,7 @@ __NR_timer_settime		1249
 __NR_timer_delete		1252
 __NR_clock_settime		1253
 __NR_clock_gettime		1254
+__NR_migrate_pages 1280
 __NR_openat			1281
 __NR_mkdirat			1282
 __NR_mknodat			1283

@@ -69,18 +69,7 @@ it print out the values of each counter.
 /* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
-
-#ifdef __x86_64__
-# define __NR_perf_counter_open	295
-#endif
-
-#ifdef __i386__
-# define __NR_perf_counter_open 333
-#endif
-
-#ifdef __powerpc__
-# define __NR_perf_counter_open 319
-#endif
+#include "linux_syscall_numbers.h"
 
 #define PR_TASK_PERF_COUNTERS_DISABLE           31
 #define PR_TASK_PERF_COUNTERS_ENABLE            32
@@ -92,6 +81,8 @@ extern char *TESTDIR;                /* temporary dir created by tst_tmpdir() */
 /* Global Variables */
 char *TCID     = "performance_counter02"; /* test program identifier.          */
 int  TST_TOTAL = 1;                  /* total number of tests in this file.   */
+
+#define cleanup tst_exit /* for now... */
 
 typedef unsigned int u32;
 typedef unsigned long long u64;

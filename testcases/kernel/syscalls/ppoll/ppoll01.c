@@ -137,10 +137,6 @@ void setup() {
  */
 #define SYSCALL_NAME    "ppoll"
 
-#ifndef __NR_ppoll
-#  define __NR_ppoll    309
-#endif
-
 #ifndef POLLRDHUP
 #  define POLLRDHUP     0x2000
 #endif

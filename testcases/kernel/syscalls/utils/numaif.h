@@ -22,30 +22,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * $Id: numaif.h,v 1.1 2009/05/29 10:26:02 subrata_modak Exp $
+ * $Id: numaif.h,v 1.2 2009/06/23 14:21:32 subrata_modak Exp $
  *
  */
 
 #include "./include_j_h.h"
-
-#ifndef __NR_mbind
-#  define __NR_mbind			274
-#endif
-#ifndef __NR_get_mempolicy
-#  define __NR_get_mempolicy		275
-#endif
-#ifndef __NR_set_mempolicy
-#  define __NR_set_mempolicy		276
-#endif
-#ifndef __NR_migrate_pages
-#  define __NR_migrate_pages		294
-#endif
-#ifndef __NR_move_pages
-#  define __NR_move_pages		317
-#endif
-
-
-
+#include "linux_syscall_numbers.h"
 
 #define NUMA_NUM_NODES 	128
 typedef struct { 

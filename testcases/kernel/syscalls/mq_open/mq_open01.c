@@ -134,11 +134,6 @@ void setup() {
  */
 #define SYSCALL_NAME    "mq_open"
 
-#ifndef __NR_mq_getsetattr
-#  define __NR_mq_getsetattr            282
-#endif
-
-
 /*
  * Global variables
  */

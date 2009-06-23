@@ -23,3 +23,4 @@ __NR_faccessat (__NR_openat + 12)
 __NR_eventfd 307
 __NR_fallocate 309
 __NR_utimensat 304
+__NR_perf_counter_open 319

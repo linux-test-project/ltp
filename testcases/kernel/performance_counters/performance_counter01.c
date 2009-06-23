@@ -41,14 +41,7 @@
 /* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
-
-#ifdef __x86_64__
-# define __NR_perf_counter_open	295
-#endif
-
-#ifdef __i386__
-# define __NR_perf_counter_open 333
-#endif
+#include "linux_syscall_numbers.h"
 
 /* Extern Global Variables */
 extern int  Tst_count;               /* counter for tst_xxx routines.         */
@@ -56,6 +49,8 @@ extern char *TESTDIR;                /* temporary dir created by tst_tmpdir() */
 /* Global Variables */
 char *TCID     = "performance_counter01"; /* test program identifier.          */
 int  TST_TOTAL = 1; 
+
+#define cleanup tst_exit /* for now... */
 
 int perf_counter_open(int		hw_event_type,
                       unsigned int	hw_event_period,
