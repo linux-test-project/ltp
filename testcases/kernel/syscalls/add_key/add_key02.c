@@ -140,7 +140,7 @@ int main(int ac, char **av) {
                 for (testno = 0; testno < TST_TOTAL; ++testno) {
 
 		for(i=0; i<test_count; i++) {
-                	TEST(syscall(286, test_cases[i].type, test_cases[i].desc, test_cases[i].payload, test_cases[i].plen, KEY_SPEC_USER_KEYRING));    //call add_key()
+                	TEST(syscall(__NR_add_key, test_cases[i].type, test_cases[i].desc, test_cases[i].payload, test_cases[i].plen, KEY_SPEC_USER_KEYRING));    //call add_key()
                 	if(TEST_RETURN != -1){
                         	tst_resm(TINFO,"call add_key() with wrong args succeed, but should fail");
                         	fail++;
@@ -170,4 +170,3 @@ int main(int ac, char **av) {
       }	
         tst_exit();
 }
-

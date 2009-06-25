@@ -139,7 +139,7 @@ int main(int ac, char **av) {
                 for (testno = 0; testno < TST_TOTAL; ++testno) {
 
 			for(i=0; i<2; i++){
-		                TEST(syscall(238, test_cases[i].tid, SIGUSR1));
+		                TEST(syscall(__NR_tkill, test_cases[i].tid, SIGUSR1));
 		     		if(TEST_RETURN == -1) {
 			            	if(TEST_ERRNO == test_cases[i].exp_errno){
 						tst_resm(TINFO, "%s() call with tid:%d got expected errno:%d", TCID, test_cases[i].tid,TEST_ERRNO);

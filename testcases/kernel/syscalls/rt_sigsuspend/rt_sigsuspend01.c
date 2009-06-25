@@ -142,13 +142,13 @@ int main(int ac, char **av) {
 			struct sigaction act, oact;
 		        act.sa_handler = sig_handler;
 			
-			TEST(syscall(174, SIGALRM, &act, &oact, 8));
+			TEST(syscall(__NR_rt_sigaction, SIGALRM, &act, &oact, 8));
 			if(TEST_RETURN == -1){
 		        	tst_resm(TFAIL,"rt_sigaction() Failed, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
 				cleanup();
 				tst_exit();
 			}
-			TEST(syscall(175, SIG_UNBLOCK, 0, &set1, 8));
+			TEST(syscall(__NR_rt_sigprocmask, SIG_UNBLOCK, 0, &set1, 8));
 			if(TEST_RETURN == -1){
 		        	tst_resm(TFAIL,"rt_sigprocmask() Failed, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
 				cleanup();
@@ -157,10 +157,10 @@ int main(int ac, char **av) {
 			
 			TEST(alarm(5));
 		        int result;
-			TEST(result = syscall(179, &set, 8));
+			TEST(result = syscall(__NR_rt_sigsuspend, &set, 8));
 		        TEST(alarm(0));
 			if((result == -1) && (TEST_ERRNO != EINTR)){
-				TEST(syscall(175, SIG_UNBLOCK, 0, &set2, 8));
+				TEST(syscall(__NR_rt_sigprocmask, SIG_UNBLOCK, 0, &set2, 8));
 				if(TEST_RETURN == -1){
 		        		tst_resm(TFAIL,"rt_sigprocmask() Failed, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
 					cleanup();

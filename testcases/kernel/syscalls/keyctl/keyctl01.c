@@ -123,7 +123,7 @@ int main(int ac, char **av) {
         for (lc = 0; TEST_LOOPING(lc); ++lc) {
                 Tst_count = 0;
                 for (testno = 0; testno < TST_TOTAL; ++testno) {
-                     TEST(syscall(258, KEYCTL_GET_KEYRING_ID, KEY_SPEC_USER_SESSION_KEYRING));    //call keyctl() and Ask for a keyring's ID
+                     TEST(syscall(__NR_keyctl, KEYCTL_GET_KEYRING_ID, KEY_SPEC_USER_SESSION_KEYRING));    //call keyctl() and Ask for a keyring's ID
                      if(TEST_RETURN != -1) {
         		tst_resm(TPASS,"KEYCTL_GET_KEYRING_ID succeed");
                      /*   cleanup(); */
@@ -135,7 +135,7 @@ int main(int ac, char **av) {
                      }
 
 
-		     TEST(syscall(288, KEYCTL_REVOKE, "MyKey"));    //call keyctl()
+		     TEST(syscall(__NR_keyctl, KEYCTL_REVOKE, "MyKey"));    //call keyctl()
                      if(TEST_RETURN != -1) {
                         tst_resm(TFAIL,"KEYTL_REVOKE succeededs, but should fail");
                         cleanup();

@@ -109,7 +109,6 @@ void setup() {
 }
 
 int main(int ac, char **av) {
-        int result;
         int lc;                 /* loop counter */
         char *msg;              /* message returned from parse_opts */
 	
@@ -125,7 +124,7 @@ int main(int ac, char **av) {
         for (lc = 0; TEST_LOOPING(lc); ++lc) {
                 Tst_count = 0;
                 for (testno = 0; testno < TST_TOTAL; ++testno) {
-                     TEST(result = syscall(286, "keyring", "wjkey", NULL, 0, KEY_SPEC_THREAD_KEYRING));     //call add_key()
+                     TEST(syscall(__NR_add_key, "keyring", "wjkey", NULL, 0, KEY_SPEC_THREAD_KEYRING));     //call add_key()
                      if(TEST_RETURN != -1) {
         		tst_resm(TPASS, "add_key call succeeded");
                         cleanup();
@@ -139,4 +138,3 @@ int main(int ac, char **av) {
         }	
         tst_exit();
 }
-

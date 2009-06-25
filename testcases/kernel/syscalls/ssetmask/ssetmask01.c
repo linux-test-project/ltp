@@ -125,14 +125,14 @@ int main(int ac, char **av) {
         for (lc = 0; TEST_LOOPING(lc); ++lc) {
                 Tst_count = 0;
                 for (testno = 0; testno < TST_TOTAL; ++testno) {
-		     syscall(69,SIGALRM);
-                     TEST(syscall(68));     //call ssetmask()
+		     syscall(__NR_ssetmask,SIGALRM);
+                     TEST(syscall(__NR_sgetmask));     //call ssetmask()
                      if(TEST_RETURN != SIGALRM) {
                  	   tst_resm(TFAIL, "%s failed - errno = %d : %s", TCID, TEST_ERRNO, strerror(TEST_ERRNO));
                            cleanup();
 			   tst_exit();
                      }
-                     TEST(syscall(69,SIGUSR1));     //call ssetmask()
+                     TEST(syscall(__NR_ssetmask,SIGUSR1));     //call ssetmask()
                      if(TEST_RETURN != SIGALRM) {
                  	   tst_resm(TFAIL, "%s failed - errno = %d : %s", TCID, TEST_ERRNO, strerror(TEST_ERRNO));
                            cleanup();

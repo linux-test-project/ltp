@@ -140,13 +140,13 @@ int main(int ac, char **av) {
                 Tst_count = 0;
                 for (testno = 0; testno < TST_TOTAL; ++testno) {
                      TEST(signal(SIGUSR1, &sig_action));     
-                     TEST(tid = syscall(224));     
+                     TEST(tid = syscall( __NR_gettid));     
 		     if(TEST_RETURN == -1) {
                  	   tst_resm(TFAIL, "%s failed - errno = %d : %s", TCID, TEST_ERRNO, strerror(TEST_ERRNO));
 			   cleanup();
 			   tst_exit();
                      }
-                     TEST(syscall(238,tid, SIGUSR1));     
+                     TEST(syscall(__NR_tkill,tid, SIGUSR1));     
 		     if(TEST_RETURN == 0) {
 				if(!sig_count);
         			tst_resm(TPASS, "tkill call succeeded");

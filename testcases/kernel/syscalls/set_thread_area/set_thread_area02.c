@@ -126,7 +126,6 @@ void setup() {
 int main(int ac, char **av) {
         
 	struct user_desc u_info;
-        int result;
         int lc;                 /* loop counter */
         char *msg;              /* message returned from parse_opts */
 	
@@ -148,7 +147,7 @@ int main(int ac, char **av) {
          * This call to get_thread_area function should be sucessful.
          */
 
-                     TEST(result = syscall(244, &u_info));     //call get_thread_area()
+                     TEST(syscall(__NR_get_thread_area, &u_info));     //call get_thread_area()
                      if(TEST_RETURN == -1) {
                  	   tst_resm(TFAIL, "call get_thraed_area() failed with errno = %d ", TEST_ERRNO, strerror(TEST_ERRNO));
                            cleanup();
@@ -160,13 +159,13 @@ int main(int ac, char **av) {
          * This call to set_thread_area function with invalid entry_number should be FAILED.
          */
 
-                     TEST(result = syscall(243, &u_info));     //call set_thread_area()
+                     TEST(syscall(__NR_set_thread_area, &u_info));     //call set_thread_area()
                      if(TEST_RETURN == -1) {
 			if(TEST_ERRNO == EINVAL){
-				tst_resm(TPASS, "Call to set_thread_area call failed with invalid entry_number result = %d (expected EINVAL)",TEST_ERRNO);
+				tst_resm(TPASS, "Call to set_thread_area call failed with invalid entry_number  errno = %d (expected EINVAL)",TEST_ERRNO);
 			 }
 			 else {
-                 	  	  tst_resm(TPASS,"Call to set_thread_area with invalid entry_number got unexpected result = %d (expected EINVAL)",TEST_ERRNO);
+                 	  	  tst_resm(TFAIL,"Call to set_thread_area with invalid entry_number got unexpected errno = %d (expected EINVAL)",TEST_ERRNO);
 		               }
 		     }
 		     else {
@@ -179,13 +178,13 @@ int main(int ac, char **av) {
          * This call to set_thread_area function with an invalid pointer should be FAILED with EFAULT.
          */
 
-                     TEST(result = syscall(243,(struct user_desc *)-9));     //call set_thread_area()
+                     TEST(syscall(__NR_set_thread_area,(struct user_desc *)-9));     //call set_thread_area()
                      if(TEST_RETURN == -1) {
 			if(TEST_ERRNO == EFAULT){
-				tst_resm(TPASS, "Call to set_thread_area call with invalid entry_number result = %d (got expected error EFAULT)",TEST_ERRNO);
+				tst_resm(TPASS, "Call to set_thread_area call with invalid entry_number errno = %d (got expected error EFAULT)",TEST_ERRNO);
 			 }
 			 else {
-                 	  	  tst_resm(TPASS,"Call to set_thread_area with invalid entry_number got unexpected result = %d (expected EFAULT)",TEST_ERRNO);
+                 	  	  tst_resm(TFAIL,"Call to set_thread_area with invalid entry_number got unexpected errno = %d (expected EFAULT)",TEST_ERRNO);
 		               }
 		     }
 		     else {

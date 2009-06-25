@@ -187,7 +187,7 @@ int main(int ac, char **av) {
         for (lc = 0; TEST_LOOPING(lc); ++lc) {
                 Tst_count = 0;
                 for (testno = 0; testno < TST_TOTAL; ++testno) {
-			TEST(syscall(134,0,data));	//bdflush(0,data);
+			TEST(syscall(__NR_bdflush,0,data));	//bdflush(0,data);
 			if(TEST_RETURN < 0){
 				tst_resm(TFAIL,"Call to bdflush() Failed, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
                         	cleanup();

@@ -125,7 +125,6 @@ void setup() {
 int main(int ac, char **av) {
         
 	struct user_desc u_info;
-        int result;
         int lc;                 /* loop counter */
         char *msg;              /* message returned from parse_opts */
 	
@@ -147,7 +146,7 @@ int main(int ac, char **av) {
          * This call to get_thread_area function should be sucessful.
          */
 
-                     TEST(result = syscall(244, &u_info));     //call get_thread_area()
+                     TEST(syscall(__NR_get_thread_area, &u_info));     //call get_thread_area()
                      if(TEST_RETURN == 0) {
         		tst_resm(TPASS, "get_thread_area call succeeded");
                      }
@@ -162,7 +161,7 @@ int main(int ac, char **av) {
          * This call to set_thread_area function should be sucessful.
          */
 
-                     TEST(result = syscall(243, &u_info));     //call set_thread_area()
+                     TEST(syscall(__NR_set_thread_area, &u_info));     //call set_thread_area()
                      if(TEST_RETURN == 0) {
         		tst_resm(TPASS, "set_thread_area call succeeded");
                      }

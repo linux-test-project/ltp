@@ -109,7 +109,6 @@ void setup() {
 
 int main(int ac, char **av) {
         int newtid = -1;
-        int result;
         int lc;                 /* loop counter */
         char *msg;              /* message returned from parse_opts */
 	
@@ -125,9 +124,9 @@ int main(int ac, char **av) {
         for (lc = 0; TEST_LOOPING(lc); ++lc) {
                 Tst_count = 0;
                 for (testno = 0; testno < TST_TOTAL; ++testno) {
-                     TEST(result = syscall(258, &newtid));     //call set_tid_address()
+                     TEST(syscall(__NR_set_tid_address, &newtid));     //call set_tid_address()
                      if(TEST_RETURN == getpid()) {
-        		tst_resm(TPASS, "set_tid_address call succeeded: result = %d (expected %d)",TEST_RETURN, result);
+        		tst_resm(TPASS, "set_tid_address call succeeded:  as expected %d",TEST_RETURN);
                      }
                      else {
                  	   tst_resm(TFAIL, "%s failed - errno = %d : %s", TCID, TEST_ERRNO, strerror(TEST_ERRNO));

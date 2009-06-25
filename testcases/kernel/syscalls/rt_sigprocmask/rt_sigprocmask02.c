@@ -176,7 +176,7 @@ int main(int ac, char **av) {
 
 			for(i=0; i<test_count; i++)
 		        {
-				TEST(syscall(175, SIG_BLOCK, &s, test_cases[i].ss, test_cases[i].sssize));
+				TEST(syscall(__NR_rt_sigprocmask, SIG_BLOCK, &s, test_cases[i].ss, test_cases[i].sssize));
 				if(TEST_RETURN == 0){
 					tst_resm(TFAIL,"Call to rt_sigprocmask()succeeded,but should failed, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
 					fail++;
