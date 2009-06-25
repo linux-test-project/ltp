@@ -47,9 +47,11 @@
  *
  * HISTORY
  *     2006-03-16 Reduced verbosity, non binary failure reporting, removal of
- *     crazy_fans thread, added game_length argument by Darren Hart.
- *      2007-08-01 Remove all thread cleanup in favor of simply exiting.Various
- *      bugfixes and cleanups. -- Josh Triplett
+ *                crazy_fans thread, added game_length argument by Darren Hart.
+ *     2007-08-01 Remove all thread cleanup in favor of simply exiting.Various
+ *                bugfixes and cleanups. -- Josh Triplett
+ *     2009-06-23 Simplified atomic startup mechanism, avoiding thundering herd
+ *                scheduling at the beginning of the game. -- Darren Hart
  *
  *****************************************************************************/
 
@@ -71,11 +73,9 @@
 /* Here's the position of the ball */
 volatile int the_ball;
 
-/* pthread_barrier for synchronization */
-pthread_barrier_t barrier;
-
 static int players_per_team = 0;
 static int game_length = DEF_GAME_LENGTH;
+static atomic_t players_ready;
 
 void usage(void)
 {
@@ -110,8 +110,7 @@ int parse_args(int c, char *v)
 /* This is the defensive team. They're trying to block the offense */
 void *thread_defense(void* arg)
 {
-	pthread_barrier_wait(&barrier);
-
+	atomic_inc(&players_ready);
 	/*keep the ball from being moved */
 	while (1) {
 		sched_yield(); /* let other defenders run */
@@ -123,8 +122,7 @@ void *thread_defense(void* arg)
 /* This is the offensive team. They're trying to move the ball */
 void *thread_offense(void* arg)
 {
-	pthread_barrier_wait(&barrier);
-
+	atomic_inc(&players_ready);
 	while (1) {
 		the_ball++; /* move the ball ahead one yard */
 		sched_yield(); /* let other offensive players run */
@@ -141,9 +139,9 @@ int referee(int game_length)
 
 	gettimeofday(&start, NULL);
 	now = start;
-	the_ball = 0;
 
-	pthread_barrier_wait(&barrier);
+	/* Start the game! */
+	the_ball = 0;
 
 	/* Watch the game */
 	while ((now.tv_sec - start.tv_sec) < game_length) {
@@ -170,10 +168,7 @@ int main(int argc, char* argv[])
 	if (players_per_team == 0)
 		players_per_team = sysconf(_SC_NPROCESSORS_ONLN);
 
-	if ((i = pthread_barrier_init(&barrier, NULL, players_per_team*2 + 1))) {
-		printf("pthread_barrier_init failed: %s\n", strerror(i));
-		exit(i);
-	}
+	atomic_set(0, &players_ready);
 
 	printf("Running with: players_per_team=%d game_length=%d\n",
 	       players_per_team, game_length);
@@ -182,12 +177,19 @@ int main(int argc, char* argv[])
 	param.sched_priority = sched_get_priority_min(SCHED_FIFO) + 80;
 	sched_setscheduler(0, SCHED_FIFO, &param);
 
-	/* Start the offense */
+	/*
+	 * Start the offense
+	 * They are lower priority than defense, so they must be started first.
+	 */
 	priority = 15;
 	printf("Starting %d offense threads at priority %d\n",
 			players_per_team, priority);
 	for (i = 0; i < players_per_team; i++)
 		create_fifo_thread(thread_offense, NULL, priority);
+
+	/* Wait for the offense threads to start */
+	while (atomic_get(&players_ready) < players_per_team)
+		usleep(100);
 
 	/* Start the defense */
 	priority = 30;
@@ -195,6 +197,10 @@ int main(int argc, char* argv[])
 			players_per_team, priority);
 	for (i = 0; i < players_per_team; i++)
 		create_fifo_thread(thread_defense, NULL, priority);
+
+	/* Wait for the defense threads to start */
+	while (atomic_get(&players_ready) < players_per_team * 2)
+		usleep(100);
 
 	/* Ok, everyone is on the field, bring out the ref */
 	printf("Starting referee thread\n");
