@@ -759,6 +759,8 @@ static void setup(void)
 	if (tst_kvercmp(2, 6, 22) < 0)
 		tst_brkm(TCONF, cleanup, "2.6.22 or greater kernel required");
 
+	/* Create a temporary directory & chdir there */
+	tst_tmpdir();
 	/* Pause if that option was specified
 	 * TEST_PAUSE contains the code to fork the test with the -c option.
 	 */
@@ -776,6 +778,7 @@ static void cleanup(void)
 	 */
 	TEST_CLEANUP;
 
+	tst_rmdir();
 	/* exit with return code appropriate for results */
 	tst_exit();
  /*NOTREACHED*/}
