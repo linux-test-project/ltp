@@ -173,6 +173,7 @@ void do_master_child()
 				exit(WEXITSTATUS(status));
 		}
 	}
+	tst_exit();
 }
 
 /*
