@@ -96,12 +96,14 @@ int main(int ac, char **av)
 	setup();
 
 	/*
-	 * check if the current filesystem is nfs
+	 * check if the current filesystem of the test directory is nfs
 	 */
+	tst_tmpdir();
 	if (tst_is_cwd_nfs()) {
 		tst_brkm(TCONF, cleanup,
 			 "Cannot do splice on a file located on an NFS filesystem");
 	}
+	tst_rmdir();
 
 	/*
 	 * check looping state if -c option given
