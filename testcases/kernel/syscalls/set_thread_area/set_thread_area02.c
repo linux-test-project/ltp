@@ -49,25 +49,27 @@
 /* History:     Porting from Crackerjack to LTP is done by                    */
 /*              Manas Kumar Nayak maknayak@in.ibm.com>                        */
 /******************************************************************************/
-
 #include <stdio.h>
 #include <errno.h>
 #include <linux/unistd.h>
-#include <asm/ldt.h>
 
 /* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
-
-/* Extern Global Variables */
-extern int Tst_count;           /* counter for tst_xxx routines.         */
-extern char *TESTDIR;           /* temporary dir created by tst_tmpdir() */
+#include "config.h"
 
 /* Global Variables */
 char *TCID = "set_thread_area_02";  /* Test program identifier.*/
 int  testno;
 int  TST_TOTAL = 3;                   /* total number of tests in this file.   */
+
+#if defined HAVE_ASM_LDT_H
+#include <asm/ldt.h>
+
+/* Extern Global Variables */
+extern int Tst_count;           /* counter for tst_xxx routines.         */
+extern char *TESTDIR;           /* temporary dir created by tst_tmpdir() */
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -195,4 +197,11 @@ int main(int ac, char **av) {
 	cleanup();
         tst_exit();
 }
+#else
+int main(int ac, char **av) {
+    
+    tst_resm(TCONF, "is not available for this architecture");
+    tst_exit();
+}
+#endif
 
