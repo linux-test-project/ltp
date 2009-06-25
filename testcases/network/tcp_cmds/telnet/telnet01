@@ -41,6 +41,7 @@ set TC telnet
 set TCtmp "/tmp"
 set SLEEPTIME 3
 set TESTLOG "$TCtmp"
+set PROMPT "Alpha Bravo"
 
 if [info exists env(RUSER)] {
    set RUSER $env(RUSER)
@@ -83,20 +84,21 @@ while {$count < $LOOPCOUNT} {
       # telnet to the host
       spawn telnet $HOST
       expect -re "login:"
-      sleep 1
+
       send "$RUSER\r"
       expect -re "Password:"
-      sleep 1
+
       send "$PASSWD\r"
 
+      send "PS1=\"$PROMPT\"\r"
       # Wait for shell prompt
-      expect -re "$RUSER@" 
+      expect "$PROMPT" 
 
       # Run passwd command - and respond to its prompts
       send "LC_ALL=C ls -l /etc/hosts | wc -w > $TESTLOG/$RUSER.$HOST \r" 
       # When shell prompt comes back, logout
 
-      expect -re "$RUSER@"
+      expect "$PROMPT"
       exp_send "logout\r"
 
       send_user "CHECKING TELNET STATUS\n"
