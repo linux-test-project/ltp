@@ -1,8 +1,11 @@
 #!/bin/bash
 
 . pm_include.sh
-valid_input="0 1"
-invalid_input="a abcefg x1999 xffff -1 -00000
+
+get_kernel_version
+get_valid_input $kernel_version
+
+invalid_input="3 4 5 6 7 8 a abcefg x1999 xffff -1 -00000
 200000000000000000000000000000000000000000000000000000000000000000000000000000
 ox324 -0xfffffffffffffffffffff"
 test_file="/sys/devices/system/cpu/sched_smt_power_savings"
