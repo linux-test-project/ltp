@@ -49,7 +49,7 @@
 #include <asm/cachectl.h>
 int cacheflush(char *addr, int nbytes, int cache)
 {
-B  B  B  B return syscall(__NR_cacheflush, addr, nbytes, cache);
+return syscall(__NR_cacheflush, addr, nbytes, cache);
 }
 #endif /* __mips__ */
 
