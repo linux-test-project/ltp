@@ -116,12 +116,6 @@ int main(int argc, char *argv[])
 		exit(-1);
 	}
 
-	if (mlockall(MCL_CURRENT)) {
-		fprintf(stderr, "Couldn't lock memory\n");
-		exit(1);
-	}
-
-
 	for(j=0; j < INTERVALS; j++){
 		/* Collect samples */
 		for(i = 0; i < ITERATIONS; i++)

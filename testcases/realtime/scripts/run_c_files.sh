@@ -10,7 +10,6 @@
 # pattern "testid testname" and runs the corresponding test with the
 # args defined in the line.
 
-
 [ $# -lt 2 ] && { echo >&2 "$0: too few arguments (at least two)" ; exit 1 ; }
 profile=$1
 shift
@@ -37,7 +36,9 @@ do
 			shift 2
 			params="$*"
 
-			LOG_FILE="$LOG_DIR/$LOG_FORMAT-${cmd}${params// /}.log"
+			if [ "$LOG_FILE" = "" ]; then
+				LOG_FILE="$LOG_DIR/$LOG_FORMAT-${cmd}${params// /}.log"
+			fi
 			[ ! -d $LOG_DIR ] && mkdir -p $LOG_DIR
 
 			( 

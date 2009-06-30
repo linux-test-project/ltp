@@ -2,8 +2,6 @@ o Unify output, see matrix_mult for an example
 o Add libjvmsim support to all tests, e.g. matrix_mult
 o Add help output (-h option) to all tests, e.g. matrix_mult
 o Use librt debug output mechanism in all tests, e.g. matrix_mult
-o Add option to mlock_all() to all tests (probably as part of librt standard
-  options)
 
 o Add/integrate network tests
 o Add/integrate load tests

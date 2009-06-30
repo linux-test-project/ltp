@@ -57,6 +57,7 @@
 #include <sys/stat.h>
 #include <sys/syscall.h>
 #include <sys/types.h>
+#include <sys/mman.h>
 #include <fcntl.h>
 #include <math.h>
 
@@ -77,6 +78,7 @@ void rt_help(void)
 	printf("librt standard options:\n");
 	printf("  -b(0,1)	1:enable buffered output, 0:diable buffered output\n");
 	printf("  -p(0,1)	0:don't use pi mutexes, 1:use pi mutexes\n");
+	printf("  -m		use mlockall\n");
 	printf("  -v[0-4]	0:no debug, 1:DBG_ERR, 2:DBG_WARN, 3:DBG_INFO, 4:DBG_DEBUG\n");
 	printf("  -s		Enable saving stats data (default disabled)\n");
 	printf("  -c		Set pass criteria\n");
@@ -103,9 +105,10 @@ int rt_init(const char *options, int (*parse_arg)(int option, char *value), int 
 	size_t i;
 	int c;
 	opterr = 0;
+	int mlock = 0;
 	char *all_options;
 
-	if (asprintf(&all_options, ":b:p:v:sc:%s", options) == -1) {
+	if (asprintf(&all_options, ":b:mp:v:sc:%s", options) == -1) {
 		fprintf(stderr, "Failed to allocate string for option string\n");
 		exit(1);
 	}
@@ -135,6 +138,9 @@ int rt_init(const char *options, int (*parse_arg)(int option, char *value), int 
 		case 'p':
 			_use_pi = atoi(optarg);
 			break;
+		case 'm':
+			mlock = 1;
+			break;
 		case 'v':
 			_dbg_lvl = atoi(optarg);
 			break;
@@ -161,6 +167,12 @@ int rt_init(const char *options, int (*parse_arg)(int option, char *value), int 
 		printf("Priority Inheritance has been disabled for this run.\n");
 	if (use_buffer)
 		buffer_init();
+	if (mlock) {
+		if (mlockall(MCL_CURRENT|MCL_FUTURE)) {
+			perror("failed to lock memory\n");
+			exit(1);
+		}
+	}
 
 	calibrate_busyloop();
 
