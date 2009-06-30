@@ -12,18 +12,19 @@ from optparse import OptionParser
 
 __author__ = "Poornima Nayak <mpnayak@linux.vnet.ibm.com>"
 
-# Run test based on the command line arguments
-if __name__ == "__main__":
-    sched_smt = 0
-    sched_mc = 0
+class Usage(Exception):
+    def __init__(self, msg):
+        self.msg = msg
+
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv
 
     usage = "-w"
     parser = OptionParser(usage)
-    parser.add_option("-w", "--workload", dest="workload",
-        help="Test name that has be triggered")
-    parser.add_option("-c", "--mc_level", dest="mc_level",
+    parser.add_option("-c", "--mc_level", dest="mc_level", default=-1,
         help="Sched mc power saving value 0/1/2")
-    parser.add_option("-t", "--smt_level", dest="smt_level", default=0,
+    parser.add_option("-t", "--smt_level", dest="smt_level", default=-1,
         help="Sched smt power saving value 0/1/2")
     (options, args) = parser.parse_args()
 
@@ -32,18 +33,24 @@ if __name__ == "__main__":
         count_num_cpu()
         map_cpuid_pkgid()
        
-        if int(options.smt_level) == 1 or int(options.smt_level) == 2:
+        if is_hyper_threaded() and int(options.smt_level) >= 0:
+            set_sched_smt_power(options.smt_level)
+
+        if int(options.mc_level) >= 0:
+            set_sched_mc_power(options.mc_level) 
+        if int(options.smt_level) >= 0 or int(options.mc_level) >= 0:
+            status = verify_sched_domain_dmesg(options.mc_level, options.smt_level)
+            reset_schedmc()
             if is_hyper_threaded():
-                sched_smt_level = options.smt_level
-                set_sched_smt_power(sched_smt_level)
-            else:
-                print "INFO: No Hyper-threading support in this machine"
-                sys.exit(0)
- 
-        # Validate sched domain for sched_mc = 1, sched_smt = 0
-        set_sched_mc_power(options.mc_level) 
-        verify_sched_domain_dmesg(options.mc_level, options.smt_level)
-        sys.exit(0)
+                reset_schedsmt()
+        	return(status)
+        else:
+            print "INFO: Invalid arguments given"
+            return 1
     except Exception, details:
         print "INFO: sched domain test failed: ", details
-        sys.exit(1)
+        return(1)
+
+# Run test based on the command line arguments
+if __name__ == "__main__":
+    sys.exit(main())
