@@ -58,7 +58,7 @@
 #include "usctest.h"
 
 #include <errno.h>
-#include <linux/personality.h>
+#include <sys/personality.h>
 #undef personality
 
 extern int personality(unsigned long);
@@ -75,6 +75,7 @@ int pers[] = { PER_LINUX, PER_LINUX_32BIT, PER_SVR4, PER_SVR3, PER_SCOSVR3,
 	PER_IRIX32, PER_IRIXN32, PER_IRIX64
 };
 
+#ifdef __NR_personality
 int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
@@ -146,6 +147,13 @@ int main(int ac, char **av)
 
 	 /*NOTREACHED*/ return 0;
 }
+#else
+int main(int ac, char **av)
+{
+	tst_resm(TCONF, "personality() not defined in your system");
+	tst_exit();
+}
+#endif
 
 /*
  * setup() - performs all the ONE TIME setup for this test.

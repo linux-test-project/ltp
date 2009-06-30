@@ -79,6 +79,7 @@ extern int Tst_count;
 
 #define	PER_BAD	0x00dd		/* A non-existent personality type */
 
+#ifdef __NR_personality
 int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
@@ -128,6 +129,14 @@ int main(int ac, char **av)
 
 	 /*NOTREACHED*/ return 0;
 }
+#else
+int main(int ac, char **av)
+{
+	tst_resm(TCONF, "personality() not defined in your system");
+	tst_exit();
+}
+#endif
+
 
 /*
  * setup() - performs all the ONE TIME setup for this test.
