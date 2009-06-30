@@ -1,0 +1,81 @@
+Kernbench v0.42
+
+
+What is this?
+
+This is a cpu throughput benchmark originally devised and used by Martin J.
+Bligh. It is designed to compare kernels on the same machine, or to compare
+hardware. To compare hardware you need to be running the same architecture
+machines (eg i386), the same userspace binaries and run kernbench on the same
+kernel source tree.
+
+It runs a kernel at various numbers of concurrent jobs: 1/2 number of cpus, 
+optimal (default is 4xnumber of cpus) and maximal job count. Optionally it can
+also run single threaded. It then prints out a number of useful statistics
+for the average of each group of runs and logs them to kernbench.log
+
+You need more than 2Gb of ram for this to be a true throughput benchmark or
+else you will get swapstorms.
+
+Ideally it should be run in single user mode on a non-journalled filesystem.
+To compare results it should always be run in the same kernel tree.
+
+
+How do I use it?
+
+You need a kernel tree (any 2.6 will do) and the applications 'time', 'awk',
+'date' and 'yes' installed. 'time' is different to the builtin time used by
+BASH and has more information desired for this benchmark.
+ 
+Simply cd into the kernel tree directory and type
+
+/path/to/kernbench
+
+
+Options
+
+kernbench [-n runs] [-o jobs] [-s] [-H] [-O] [-M] [-h] [-v]
+n : number of times to perform benchmark (default 5)
+o : number of jobs for optimal run (default 4 * cpu)
+s : perform single threaded runs (default don't)
+H : don't perform half load runs (default do)
+O : don't perform optimal load runs (default do)
+M : don't perform maximal load runs (default do)
+f : fast run
+h : print this help
+v : print version number
+
+
+Changelog:
+v0.42 Fixed incorrect counting of cpus (thanks Flynn Marquardt)
+	Changed -j to at least 4GB ram.
+
+v0.41 Fixed make oldconfig
+
+v0.40 Made all runs use the oldconfig if it exists. Changed to only do one
+	warmup run before all the benchmarks. Added logging to kernbench.log
+	Cleaned up the code substantially to reuse code where possible.
+	Added standard deviation statistics courtesy of Peter Williams
+
+v0.30 Added fast run option which bypasses caching, warmup and tree 
+	preparation and drops number of runs to 3. Modified half loads to 
+	detect -j2 and change to -j3. Added syncs. Improved warnings and 
+	messages. 
+
+v0.20 Change to average of runs, add options to choose which runs to perform
+	remove single threaded run from defaults, do warmup run, lots more
+	sanity checks, drop meaningless runs, add a few warnings, remove fudge
+	factor from no. of jobs.
+
+v0.11 First public release
+
+
+Thanks: M. Bligh for ideas. Others for help with magic incantations to get
+	BASH to work.
+
+
+Con Kolivas <kernbench@kolivas.org>
+Mon Jun 18 18:59:24 2007
+
+License:
+GPL of course. Read COPYING included in this tarball.

@@ -1,0 +1,233 @@
+#!/bin/sh
+# kernbench by Con Kolivas <kernbench@kolivas.org>
+# based on a benchmark by Martin J. Bligh
+trap 'echo "ABORTING";exit' 1 2 15
+
+VERSION=0.42
+
+num_runs=5
+single_runs=0
+half_runs=1
+opti_runs=1
+max_runs=1
+fast_run=0
+
+while getopts vsHOMn:o:hf i
+do
+	case $i in
+		 h) 	echo "kernbench v$VERSION by Con Kolivas <kernbench@kolivas.org>"
+				echo "Usage:"
+				echo "kernbench [-n runs] [-o jobs] [-s] [-H] [-O] [-M] [-h] [-v]"
+				echo "n : number of times to perform benchmark (default 5)"
+				echo "o : number of jobs for optimal run (default 4 * cpu)"
+				echo "s : perform single threaded runs (default don't)"
+				echo "H : don't perform half load runs (default do)"
+				echo "O : don't perform optimal load runs (default do)"
+				echo "M : don't perform maximal load runs (default do)"
+				echo "f : fast run"
+				echo "h : print this help"
+				echo "v : print version number"
+				exit ;;
+		 v) echo "kernbench Version $VERSION by Con Kolivas <kernbench@kolivas.org>" ; exit ;;
+		 n) nruns=$OPTARG ;;
+		 o) optijobs=$OPTARG ;;
+		 s) single_runs=1 ;;
+		 H) half_runs=0 ;;
+		 O) opti_runs=0 ;;
+		 M) max_runs=0 ;;
+		 f) fast_run=1 ;;
+	esac
+done
+
+if [[ ! -f include/linux/kernel.h ]] ; then
+	echo "No kernel source found; exiting"
+	exit 
+fi
+
+for i in time awk yes date
+do
+	iname=`which $i`
+	if [[ ! -a $iname ]] ; then
+		echo "$i not found in path, please install it; exiting"
+		exit
+	fi
+done
+
+time=`which time`
+
+if [[ $nruns -gt 0 ]] ; then
+	num_runs=$nruns
+elif [[ $fast_run -eq 1 ]]; then
+	echo "Dropping to 3 runs for fast run"
+	num_runs=3
+fi
+
+if (($num_runs < 1)) ; then
+	echo "Nothing to do; exiting"
+	exit
+fi
+
+if (($num_runs > 10)) ; then
+	echo "Are you crazy? trimming number of runs to 10"
+	num_runs=10
+fi
+
+if [[ ! -d /proc ]] ; then
+	echo "Can't find proc filesystem; exiting"
+	exit
+fi
+
+mem=`awk '/MemTotal/ {print $2}' /proc/meminfo`
+if [[ $mem -lt 4000000 && $max_runs -gt 0 ]] ; then
+	echo Less than 4Gb ram detected!
+	echo Maximal loads will not measure cpu throughput and may cause a swapstorm!
+	echo If you did not plan this, -M flag is recommended to bypass maximal load.
+fi
+
+(( single_runs *= $num_runs ))
+(( half_runs *= $num_runs ))
+(( opti_runs *= $num_runs ))
+(( max_runs *= $num_runs ))
+
+cpus=`grep -c ^processor /proc/cpuinfo`
+echo $cpus cpus found
+echo Cleaning source tree...
+make clean > /dev/null 2>&1
+
+if [[ $fast_run -eq 0 ]] ; then
+	echo Caching kernel source in ram...
+	for i in `find -type f`
+	do
+		cat $i > /dev/null
+	done
+fi
+
+if [[ ! -f .config ]] ; then
+	echo No old config found, using defconfig
+	echo Making mrproper
+	make mrproper > /dev/null 2>&1
+	echo Making defconfig...
+	make defconfig > /dev/null 2>&1
+else
+	echo Making oldconfig...
+	yes "" | make oldconfig > /dev/null 2>&1
+fi
+
+halfjobs=$(( $cpus / 2 ))
+optijobs=${optijobs:=$(( $cpus * 4 ))}
+
+if [[ $halfjobs -lt 2 ]] ; then
+	echo "Half load is no greater than single; disabling"
+	half_runs=0
+elif [[ $halfjobs -eq 2 ]] ; then
+	echo "Half load is 2 jobs, changing to 3 as a kernel compile won't guarantee 2 jobs"
+	halfjobs=3
+fi
+
+echo Kernel `uname -r`
+echo Performing $num_runs runs of
+if [[ $single_runs -gt 0 ]] ; then
+	echo make
+fi
+if [[ $half_runs -gt 0 ]] ; then
+	echo make -j $halfjobs
+fi
+if [[ $opti_runs -gt 0 ]] ; then
+	echo make -j $optijobs
+fi
+if [[ $max_runs -gt 0 ]] ; then
+	echo make -j
+fi
+echo
+
+echo All data logged to kernbench.log
+
+if [[ $fast_run -eq 0 ]] ; then
+	echo Warmup run...
+	make -j $optijobs > /dev/null 2>&1
+fi
+
+date >> kernbench.log
+uname -r >> kernbench.log
+
+add_data_point()
+{
+    echo $@ | awk '{printf "%.6f %.6f %d", $1 + $2, $1 * $1 + $3, $4 + 1}'
+}
+
+show_statistics()
+{
+    case $3 in
+	0)
+	    echo "No data"
+	    ;;
+	1)
+	    echo $1
+	    ;;
+	*)
+	    avg=`echo $1 $3 | awk '{print $1 / $2}'`
+	    var=`echo $1 $2 $3 | awk '{print ($2 - ($1 * $1) / $3) / ($3 - 1)}'`
+	    sdev=`echo $var | awk '{print $1^0.5}'`
+	    echo "$avg ($sdev)"
+	    ;;
+    esac
+}
+
+do_log()
+{
+	echo "Average $runname Run (std deviation):" > templog
+	echo Elapsed Time  `show_statistics $temp_elapsed` >> templog
+	echo User Time  `show_statistics $temp_user` >> templog
+	echo System Time  `show_statistics $temp_sys` >> templog
+	echo Percent CPU  `show_statistics $temp_percent` >> templog
+	echo Context Switches  `show_statistics $temp_ctx` >> templog
+	echo Sleeps  `show_statistics $temp_sleeps` >> templog
+	echo >> templog
+	cat templog
+	cat templog >> kernbench.log
+}
+
+do_runs()
+{
+	temp_elapsed="a"
+	for (( i=1 ; i <= temp_runs ; i++ ))
+	do
+		echo $runname run number $i...
+		make clean > /dev/null 2>&1
+		sync
+		if [[ $fast_run -eq 0 ]] ; then
+			sleep 5
+		fi
+		$time -f "%e %U %S %P %c %w" -o timelog make -j $tempjobs > /dev/null 2>&1
+		read elapsed_time user_time sys_time percent ctx sleeps <timelog
+		temp_elapsed=`add_data_point $elapsed_time $temp_elapsed`
+		temp_user=`add_data_point $user_time $temp_user`
+		temp_sys=`add_data_point $sys_time $temp_sys`
+		temp_percent=`add_data_point $percent $temp_percent`
+		temp_ctx=`add_data_point $ctx $temp_ctx`
+		temp_sleeps=`add_data_point $sleeps $temp_sleeps`
+	done
+	if [[ $temp_runs -ne 0 ]] ; then
+		do_log
+	fi
+}
+
+temp_runs=$single_runs
+tempjobs=1
+runname="Single threaded"
+do_runs
+
+temp_runs=$half_runs
+tempjobs=$halfjobs
+runname="Half load -j $halfjobs"
+do_runs
+
+temp_runs=$opti_runs
+tempjobs=$optijobs
+runname="Optimal load -j $optijobs"
+do_runs
+
+temp_runs=$max_runs
+tempjobs=""
+runname="Maximal load -j"
+do_runs
