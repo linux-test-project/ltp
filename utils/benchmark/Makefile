@@ -18,7 +18,7 @@
 ####
 ################################################################################
 
-SUBDIRS := ebizzy-0.3
+SUBDIRS := ebizzy-0.3 kernbench-0.42
 
 configure:
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i $@; done;
@@ -27,6 +27,6 @@ all: configure
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i $@; done;
 
 install:
-
+	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i $@; done;
 clean:
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i $@; done;
