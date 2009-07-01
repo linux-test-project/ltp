@@ -28,7 +28,7 @@
 
 int main()
 {
-	char mqname[50];
+	char mqname[50]="/123";
 
 //	sprintf(mqname, FUNCTION "_" TEST "_%d", getpid());
 
