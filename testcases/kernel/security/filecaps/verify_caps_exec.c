@@ -54,7 +54,7 @@ void usage(char *me)
 	tst_resm(TFAIL, "Usage: %s <0|1> [arg]\n", me);
 	tst_resm(TINFO, "  0: set file caps without privilege\n");
 	tst_resm(TINFO, "  1: test that file caps are set correctly on exec\n");
-	tst_exit(1);
+	tst_exit();
 }
 
 #define DROP_PERMS 0
@@ -79,7 +79,7 @@ int drop_root(int keep_perms)
 	if (ret) {
 		perror("setresuid");
 		tst_resm(TFAIL, "Error dropping root privs\n");
-		tst_exit(4);
+		tst_exit();
 	}
 	if (keep_perms) {
 		cap_t cap = cap_from_text("=eip");
@@ -123,7 +123,7 @@ void create_fifo(void)
 	if (ret == -1 && errno != EEXIST) {
 		perror("mkfifo");
 		tst_resm(TFAIL, "failed creating %s\n", FIFOFILE);
-		tst_exit(1);
+		tst_exit();
 	}
 }
 
@@ -145,7 +145,7 @@ void read_from_fifo(char *buf)
 	if (fd < 0) {
 		perror("open");
 		tst_resm(TFAIL, "Failed opening fifo\n");
-		tst_exit(1);
+		tst_exit();
 	}
 	read(fd, buf, 199);
 	close(fd);
@@ -164,7 +164,7 @@ int fork_drop_and_exec(int keepperms, cap_t expected_caps)
 	if (pid < 0) {
 		perror("fork");
 		tst_resm(TFAIL, "%s: failed fork\n", __FUNCTION__);
-		tst_exit(1);
+		tst_exit();
 	}
 	if (pid == 0) {
 		drop_root(keepperms);
@@ -177,7 +177,7 @@ int fork_drop_and_exec(int keepperms, cap_t expected_caps)
 		snprintf(buf, 200, "failed to run as %s\n", capstxt);
 		cap_free(capstxt);
 		write_to_fifo(buf);
-		tst_exit(1);
+		tst_exit();
 	} else {
 		p = buf;
 		while (1) {
@@ -192,7 +192,7 @@ int fork_drop_and_exec(int keepperms, cap_t expected_caps)
 		p = index(buf, '.')+1;
 		if (p==(char *)1) {
 			tst_resm(TFAIL, "got a bad message from print_caps\n");
-			tst_exit(1);
+			tst_exit();
 		}
 		actual_caps = cap_from_text(p);
 		if (cap_compare(actual_caps, expected_caps) != 0) {
@@ -396,5 +396,5 @@ int main(int argc, char *argv[])
 		default: usage(argv[0]);
 	}
 
-	tst_exit(ret);
+	tst_exit();
 }
