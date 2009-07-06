@@ -18,17 +18,13 @@
 /******************************************************************************/
 /******************************************************************************/
 /*                                                                            */
-/* File:        rt_sigaction01.c                                              */
+/* File:        rt_sigaction03.c                                              */
 /*                                                                            */
 /* Description: This tests the rt_sigaction() syscall                         */
-/*		rt_sigaction alters an action taken by a process on receipt   */
-/* 		of a particular signal. The action is specified by the        */
-/*		sigaction structure. The previous action on the signal is     */
-/*		saved in oact.sigsetsize should indicate the size of a        */
-/*		sigset_t type.                       			      */
+/*		rt_sigaction Expected EINVAL error check                      */
 /*                                                                            */
 /* Usage:  <for command-line>                                                 */
-/* rt_sigaction01 [-c n] [-e][-i n] [-I x] [-p x] [-t]                        */
+/* rt_sigaction03 [-c n] [-e][-i n] [-I x] [-p x] [-t]                        */
 /*      where,  -c n : Run n copies concurrently.                             */
 /*              -e   : Turn on errno logging.                                 */
 /*              -i n : Execute test n times.                                  */
@@ -38,7 +34,7 @@
 /*                                                                            */
 /* Total Tests: 1                                                             */
 /*                                                                            */
-/* Test Name:   rt_sigaction01                                             */
+/* Test Name:   rt_sigaction03                                             */
 /* History:     Porting from Crackerjack to LTP is done by                    */
 /*              Manas Kumar Nayak maknayak@in.ibm.com>                        */
 /******************************************************************************/
@@ -55,21 +51,14 @@
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
 
-#if defined __mips__
-#define SIGSETSIZE 16
-#endif
-
-#if defined __arm__ || __i386__ || __powerpc__
-#define SIGSETSIZE 8
-#endif
-
+#define INVAL_SIGSETSIZE -1
 
 /* Extern Global Variables */
 extern int Tst_count;           /* counter for tst_xxx routines.         */
 extern char *TESTDIR;           /* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
-char *TCID = "rt_sigaction01";  /* Test program identifier.*/
+char *TCID = "rt_sigaction03";  /* Test program identifier.*/
 int  testno;
 int  TST_TOTAL = 1;                   /* total number of tests in this file.   */
 
@@ -128,6 +117,14 @@ void setup() {
 int test_flags[] = {SA_RESETHAND|SA_SIGINFO, SA_RESETHAND, SA_RESETHAND|SA_SIGINFO, SA_RESETHAND|SA_SIGINFO, SA_NOMASK};
 char *test_flags_list[] = {"SA_RESETHAND|SA_SIGINFO", "SA_RESETHAND", "SA_RESETHAND|SA_SIGINFO", "SA_RESETHAND|SA_SIGINFO", "SA_NOMASK"};
 
+
+struct test_case_t {
+        int exp_errno;
+        char *errdesc;
+} test_cases[] = {
+	{ EINVAL, "EINVAL" }
+};
+
 void
 handler(int sig)
 {
@@ -144,12 +141,20 @@ set_handler(int sig, int sig_to_mask, int mask_flags)
                 sa.sa_flags = mask_flags;
                 sigemptyset(&sa.sa_mask);
                 sigaddset(&sa.sa_mask, sig_to_mask);
-                TEST(syscall(__NR_rt_sigaction,sig, &sa, &oldaction,SIGSETSIZE));
-        if (TEST_RETURN == 0) {
-                return 0;
-        } else {
+
+		/*   							        *
+		 * long sys_rt_sigaction (int sig, const struct sigaction *act, *
+		 * truct sigaction *oact, size_t sigsetsize);			* 
+		 * EINVAL:							*
+        	 * sigsetsize was not equivalent to the size of a sigset_t type *
+		 */
+
+                TEST(syscall(__NR_rt_sigaction,sig, &sa , &oldaction,INVAL_SIGSETSIZE));
+                if (TEST_RETURN == 0) {
+                        return 0;
+                } else {
                         return TEST_RETURN;
-        }
+                }
 }
 
 
@@ -174,14 +179,13 @@ int main(int ac, char **av) {
 			for (signal = SIGRTMIN; signal <= (SIGRTMAX ); signal++){//signal for 34 to 65 
 			 	for(flag=0; flag<5;flag++) {
 	                        	 TEST(set_handler(signal, 0, test_flags[flag]));
-						 if (TEST_RETURN == 0) {
-        					tst_resm(TINFO,"signal: %d ", signal);
-        					tst_resm(TPASS, "rt_sigaction call succeeded: result = %d ",TEST_RETURN );
-        					tst_resm(TINFO, "sa.sa_flags = %s ",test_flags_list[flag]);
-						kill(getpid(),signal);
+					if((TEST_RETURN == -1) && (TEST_ERRNO == test_cases[0].exp_errno)) {
+        						tst_resm(TINFO, "sa.sa_flags = %s ",test_flags_list[flag]);
+                 	   				tst_resm(TPASS, "%s failure with sig: %d as expected errno  = %s : %s", TCID, signal,test_cases[0].errdesc, strerror(TEST_ERRNO));
 			                         } else {
-                 	   				tst_resm(TFAIL, "%s failed - errno = %d : %s", TCID, TEST_ERRNO, strerror(TEST_ERRNO));
-                       				}
+        					tst_resm(TFAIL, "rt_sigaction call succeeded: result = %d got error %d:but expected  %d", TEST_RETURN, TEST_ERRNO, test_cases[0].exp_errno);
+        					tst_resm(TINFO, "sa.sa_flags = %s ",test_flags_list[flag]);
+						}
                 			}
 		 	printf("\n");	
         		}
