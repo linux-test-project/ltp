@@ -441,11 +441,11 @@ ioperm02 ioperm02
 iopl01 iopl01
 iopl02 iopl02
 
-io_cancel01 run-io_cancel.sh
-io_destroy01 run-io_destroy.sh
-io_getevents01 run-io_getevents.sh
-io_setup01 run-io_setup.sh
-io_submit01 run-io_submit.sh
+io_cancel01 io_cancel01
+io_destroy01 io_destroy01
+io_getevents01 io_getevents01
+io_setup01 io_setup01
+io_submit01 io_submit01
 
 keyctl01 keyctl01
 
