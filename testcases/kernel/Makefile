@@ -1,5 +1,11 @@
-SUBDIRS = power_management numa containers controllers connectors include fs io ipc mem pty sched security syscalls timers
+include ../../config.mk
+
+SUBDIRS = power_management numa containers connectors include fs io ipc mem pty sched security syscalls timers
 UCLINUX_SUBDIRS = include syscalls
+
+ifeq ($(LTP_CHECK_CGROUPSTATS_HEADER),yes)
+	SUBDIRS+= controllers
+endif
 
 all:
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i ; done

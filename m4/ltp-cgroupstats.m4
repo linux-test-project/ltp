@@ -1,0 +1,9 @@
+dnl
+dnl LTP_CHECK_CGROUPSTATS
+dnl ----------------------------
+dnl
+AC_DEFUN([LTP_CHECK_CGROUPSTATS],
+[dnl
+AC_CHECK_HEADERS(linux/cgroupstats.h,[LTP_CHECK_CGROUPSTATS_HEADER=yes])
+AC_SUBST(LTP_CHECK_CGROUPSTATS_HEADER)
+])
