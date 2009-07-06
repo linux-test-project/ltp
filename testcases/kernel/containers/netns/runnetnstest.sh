@@ -24,6 +24,27 @@
 
 rc=0
 exit_code=0
+
+# Check the iproute2 version (aka "SnapShot")
+IPROUTEV=`ip -V | cut -d ',' -f 2 | cut -d '-' -f 2 | sed -e 's/^ss//'`
+
+# We need to strip leading 0s else bash thinks we're giving it octal numbers.
+IPROUTEY=$(echo ${IPROUTEV:0:2} | sed -e 's/^0\+//') # Year
+IPROUTEM=$(echo ${IPROUTEV:2:2} | sed -e 's/^0\+//') # Month
+IPROUTED=$(echo ${IPROUTEV:4:2} | sed -e 's/^0\+//') # Day
+
+V=$((${IPROUTEY}*12*32 + ${IPROUTEM}*32 + ${IPROUTED}))
+
+#
+# iproute-ss080725 and later support setting the network namespace of an
+# interface.
+#
+NETNSV=$((8*12*32 + 7*32 + 25))
+if [ ${V} -lt ${NETNSV} ]; then
+	echo "INFO: iproute tools do not support setting network namespaces. Skipping network namespace tests."
+	exit $exit_code
+fi
+
 crtchild
 rc=$?
 if [ $rc -ne 0 ]; then
