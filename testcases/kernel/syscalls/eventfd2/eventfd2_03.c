@@ -33,20 +33,15 @@
 #include <unistd.h>
 #include <errno.h>
 
-char *TCID = "eventfd2_02";     /* test program identifier*/
+/* Harness Specific Include Files. */
+#include "test.h"
+#include "linux_syscall_numbers.h"
+
+char *TCID = "eventfd2_03";     /* test program identifier*/
+int TST_TOTAL = 1;	        	/* total number of tests in this file */
 
 #ifndef EFD_SEMLIKE
 #define EFD_SEMLIKE (1 << 0)
-#endif
-
-#ifndef __NR_eventfd2
-#if defined(__x86_64__)
-#define __NR_eventfd2 290
-#elif defined(__i386__)
-#define __NR_eventfd2 328
-#else
-#error Cannot detect your architecture!
-#endif
 #endif
 
 
@@ -112,6 +107,11 @@ int main (int argc, char **argv) {
 			usage(argv[0]);
 			return 1;
 		}
+	}
+	if ((tst_kvercmp(2, 6, 27)) < 0) {
+		tst_resm(TCONF,
+			 "This test can only run on kernels that are 2.6.27 and higher");
+		tst_exit();
 	}
 	if ((fd1 = eventfd2(0, EFD_SEMLIKE)) == -1 ||
 	    (fd2 = eventfd2(0, EFD_SEMLIKE)) == -1) {
