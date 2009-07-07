@@ -80,7 +80,7 @@ void usage(void)
 	printf("testpi-7 specific options:\n");
 	printf("  -i#     #: number of iterations\n");
 	printf("  -f      #: Use flag mutex\n");
-	printf("  -m#     #:number of mid priority threads\n");
+	printf("  -x#     #:number of mid priority threads\n");
 }
 
 int parse_args(int c, char *v)
@@ -96,7 +96,7 @@ int parse_args(int c, char *v)
                 case 'i':
                         iterations = atoi(v);
                         break;
-                case 'm':
+                case 'x':
                         med_threads = atoi(v);
                         break;
                 default:
@@ -246,11 +246,11 @@ int main(int argc, char *argv[])
 	int i,numcpus;
 	setup();
 
-	rt_init("hfi:m:", parse_args, argc, argv);
+	rt_init("hfi:x:", parse_args, argc, argv);
 
 	if (!med_threads) {
 		printf("This test requires that at least NRCPUS medium priority threads run\n");
-		printf("If it is run bound to a single CPU, you can specify -m 1\n");
+		printf("If it is run bound to a single CPU, you can specify -x 1\n");
 		printf("No User input , using default value for NRCPUS");
 		numcpus = sysconf(_SC_NPROCESSORS_ONLN);
 		med_threads = numcpus;
