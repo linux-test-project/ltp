@@ -13,9 +13,11 @@
  * 1. Call mlockall(), setting MCL_FUTURE;
  * 2. Call setrlimit(), set rlim_cur of resource RLIMIT_MEMLOCK to a
  *    certain value.
- * 3. Map a shared memory object, with size larger than the 
+ * 3. Change user to non-root user seteuid() 
+ * 4. Map a shared memory object, with size larger than the 
  *    rlim_cur value set in step 2
- * 4. Should get EAGAIN. 
+ * 5. Should get EAGAIN. 
+ * 6. Change user to root seteuid()
  */
 
 #define _XOPEN_SOURCE 600
@@ -28,11 +30,42 @@
 #include <sys/stat.h>
 #include <sys/resource.h>
 #include <fcntl.h>
+#include <pwd.h>
 #include <string.h>
 #include <errno.h>
 #include "posixtest.h"
  
 #define TNAME "mmap/18-1.c"
+
+
+/** Set the euid of this process to a non-root uid */
+int set_nonroot()
+{
+	struct passwd *pw;
+	setpwent();
+	/* search for the first user which is non root */ 
+	while((pw = getpwent()) != NULL)
+		if(strcmp(pw->pw_name, "root"))
+			break;
+	endpwent();
+	if(pw == NULL) {
+		printf("There is no other user than current and root.\n");
+		return 1;
+	}
+
+	if(seteuid(pw->pw_uid) != 0) {
+		if(errno == EPERM) {
+			printf("You don't have permission to change your UID.\n");
+			return 1;
+		}
+		perror("An error occurs when calling seteuid()");
+		return 1;
+	}
+	
+	printf("Testing with user '%s' (uid: %d)\n",
+	       pw->pw_name, (int)geteuid());
+	return 0;
+}
 
 int main()
 {
@@ -93,11 +126,29 @@ int main()
   }
 
   fd = shm_fd;	
+	
+  /* This test should be run under standard user permissions */
+  if (getuid() == 0) {
+	  if (set_nonroot() != 0) {
+		  printf("Cannot run this test as non-root user\n");	
+		  return PTS_UNTESTED;
+	  }
+  }
+
+  /*
+   * EAGAIN:
+   * Lock all the memory by mlockall().
+   * Set resource limit setrlimit()
+   * Change the user to non-root then only setrmilit is applicable.
+   */
+
   pa = mmap (addr, len, prot, flag, fd, off);
   if (pa == MAP_FAILED && errno == EAGAIN)
   {
     printf ("Test Pass: " TNAME " Get EAGAIN: %s\n", 
             strerror(errno));    
+    /* Change user to root */ 
+    seteuid(0);
     close(fd);
     munmap(pa, len);
     exit(PTS_PASS);
