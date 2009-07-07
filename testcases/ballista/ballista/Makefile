@@ -115,9 +115,8 @@ test_parse_arguments : test_parse_arguments.o parseArguments.o \
 pause_harness : pause_harness.cpp ${OBJS}
 	${CC} -Itemplates ${CFLAGS} pause_harness.cpp ${OBJS} -o pause_harness 
 
-
 # clean up everything that we build
 clean :
 	$(MAKE) -C templates clean
-	rm -f *.o ballista callGen callGen_standAlone genCodeCreator replacer testmarshal
-
+	$(RM) -f *.o *.out ballista blexer bparser callGen callGen_standAlone \
+	            genCodeCreator replacer testmarshal
