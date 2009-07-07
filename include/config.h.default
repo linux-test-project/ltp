@@ -10,9 +10,17 @@
 /* signalfd() is in glibc-2.7+ */
 #define HAVE_SYS_SIGNALFD_H 1
 #define HAVE_SIGNALFD 1
-#define HAVE_SIGNALFD_SIGINFO_SSI_SIGNO 1
+#define HAVE_STRUCT_SIGNALFD_SIGINFO_SSI_SIGNO 1
 
 /* ifaddrs.h is in glibc-2.3+ */
 #define HAVE_IFADDRS_H 1
 
-#define HAVE_TASKSTATS_FREEPAGES_COUNT 1
+/* 2.6.27 */
+#define HAVE_STRUCT_TASKSTATS_FREEPAGES_COUNT 1
+
+/* 2.6.23 */
+#define HAVE_STRUCT_TASKSTATS_NVCSW 1
+
+/* 2.6.20 */
+#define HAVE_STRUCT_TASKSTATS_READ_BYTES 1
+

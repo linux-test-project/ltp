@@ -27,6 +27,7 @@
 #include <linux/taskstats.h>
 #include <linux/cgroupstats.h>
 
+#include "config.h"
 /*
  * Generic macros for dealing with netlink sockets. Might be duplicated
  * elsewhere. It is recommended that commercial grade applications use
@@ -199,7 +200,7 @@ void print_delayacct(struct taskstats *t)
 	       "SWAP  %15s%15s\n"
 	       "      %15llu%15llu\n"
 	       "RECLAIM  %12s%15s\n"
-#ifdef HAVE_TASKSTATS_FREEPAGES_COUNT
+#ifdef HAVE_STRUCT_TASKSTATS_FREEPAGES_COUNT
 	       "      %15llu%15llu\n"
 #endif
 	       , "count", "real total", "virtual total", "delay total",
@@ -214,7 +215,7 @@ void print_delayacct(struct taskstats *t)
 	       (unsigned long long)t->swapin_count,
 	       (unsigned long long)t->swapin_delay_total,
 	       "count", "delay total"
-#ifdef HAVE_TASKSTATS_FREEPAGES_COUNT
+#ifdef HAVE_STRUCT_TASKSTATS_FREEPAGES_COUNT
 	       , (unsigned long long)t->freepages_count,
 	       (unsigned long long)t->freepages_delay_total
 #endif
@@ -223,10 +224,12 @@ void print_delayacct(struct taskstats *t)
 
 void task_context_switch_counts(struct taskstats *t)
 {
+#ifdef HAVE_STRUCT_TASKSTATS_NVCSW
 	printf("\n\nTask   %15s%15s\n"
 	       "       %15llu%15llu\n",
 	       "voluntary", "nonvoluntary",
 	       (unsigned long long)t->nvcsw, (unsigned long long)t->nivcsw);
+#endif
 }
 
 void print_cgroupstats(struct cgroupstats *c)
@@ -242,11 +245,13 @@ void print_cgroupstats(struct cgroupstats *c)
 
 void print_ioacct(struct taskstats *t)
 {
+#ifdef HAVE_STRUCT_TASKSTATS_READ_BYTES
 	printf("%s: read=%llu, write=%llu, cancelled_write=%llu\n",
 		t->ac_comm,
 		(unsigned long long)t->read_bytes,
 		(unsigned long long)t->write_bytes,
 		(unsigned long long)t->cancelled_write_bytes);
+#endif
 }
 
 int main(int argc, char *argv[])

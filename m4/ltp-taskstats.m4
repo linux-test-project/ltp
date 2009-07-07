@@ -30,7 +30,7 @@ dnl
 
 AC_DEFUN([_LTP_CHECK_TASKSTATS_FREEPAGES],
 [dnl
-AC_CHECK_MEMBERS([struct taskstats.freepages_count],[],[],[dnl
+AC_CHECK_MEMBERS([struct taskstats.freepages_count, struct taskstats.nvcsw, struct taskstats.read_bytes],[],[],[dnl
 #include <linux/types.h>
 #include <linux/taskstats.h>
 ])
