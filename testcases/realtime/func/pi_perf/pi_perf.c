@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- *   Copyright © International Business Machines  Corp., 2007, 2008
+ *   Copyright © International Business Machines  Corp., 2007, 2008, 2009
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -36,6 +36,8 @@
  *
  * HISTORY
  *     2007-Nov-20:    Initial version by Sripathi Kodi <sripathik@in.ibm.com>
+ *     2009-Jul-03:    Pass criteria corrected by Sripathi Kodi
+ *                                                      <sripathik@in.ibm.com>
  *
  *****************************************************************************/
 
@@ -71,9 +73,9 @@ static unsigned int high_work_time = DEF_HIGH_WORK_MS;
 static unsigned int busy_work_time;
 static int num_busy = -1;
 
-nsec_t low_unlock, high_get_lock;
+nsec_t low_unlock, max_pi_delay;
 
-stats_container_t lock_wait_dat, low_dat, cpu_delay_dat;
+stats_container_t low_dat, cpu_delay_dat;
 stats_container_t cpu_delay_hist;
 stats_quantiles_t cpu_delay_quantiles;
 
@@ -165,10 +167,9 @@ void * low_prio_thread(void *arg)
 
 void * high_prio_thread(void *arg)
 {
-	nsec_t high_start, high_spent, high_end;
+	nsec_t high_start, high_end, high_get_lock;
 	unsigned int i;
 
-	stats_container_init(&lock_wait_dat, iterations);
 	stats_container_init(&cpu_delay_dat, iterations);
 	stats_container_init(&cpu_delay_hist, HIST_BUCKETS);
 	stats_quantiles_init(&cpu_delay_quantiles, (int)log10(iterations));
@@ -184,14 +185,11 @@ void * high_prio_thread(void *arg)
 		high_start = rt_gettime();
 		pthread_mutex_lock(&lock);
 		high_end = rt_gettime();
-		high_spent = high_end - high_start;
 		high_get_lock = high_end - low_unlock;
 
 		busy_work_ms(high_work_time);
 		pthread_mutex_unlock(&lock);
 
-		lock_wait_dat.records[i].x = i;
-		lock_wait_dat.records[i].y = high_spent / NS_PER_US;
 		cpu_delay_dat.records[i].x = i;
 		cpu_delay_dat.records[i].y = high_get_lock / NS_PER_US;
 
@@ -206,13 +204,15 @@ void * high_prio_thread(void *arg)
 				"Latency (us)", "Samples", &cpu_delay_hist, "steps");
 
 	printf("Time taken for high prio thread to get the lock once released by low prio thread\n");
-	printf("Min wait time = %ld us\n", stats_min(&cpu_delay_dat));
-	printf("Max wait time = %ld us\n", stats_max(&cpu_delay_dat));
-	printf("Average wait time = %4.2f us\n", stats_avg(&cpu_delay_dat));
+	printf("Min delay = %ld us\n", stats_min(&cpu_delay_dat));
+	printf("Max delay = %ld us\n", stats_max(&cpu_delay_dat));
+	printf("Average delay = %4.2f us\n", stats_avg(&cpu_delay_dat));
 	printf("Standard Deviation = %4.2f us\n", stats_stddev(&cpu_delay_dat));
 	printf("Quantiles:\n");
 	stats_quantiles_calc(&cpu_delay_dat, &cpu_delay_quantiles);
 	stats_quantiles_print(&cpu_delay_quantiles);
+
+	max_pi_delay = stats_max(&cpu_delay_dat);
 
 	return NULL;
 }
@@ -261,13 +261,11 @@ int main(int argc, char *argv[])
 	}
 
 	join_threads();
-	printf("Low prio lock held time (min) = %ld us\n", stats_min(&low_dat));
-	printf("High prio lock wait time (max) = %ld us\n", stats_max(&lock_wait_dat));
 	printf("Criteria: High prio lock wait time < "
 			"(Low prio lock held time + %d us)\n", (int)pass_criteria);
 
 	ret = 0;
-	if (stats_max(&lock_wait_dat) > stats_min(&low_dat) + (int)pass_criteria)
+	if (max_pi_delay > pass_criteria)
 		ret = 1;
 
 	printf("Result: %s\n", ret ? "FAIL" : "PASS");
