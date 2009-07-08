@@ -41,7 +41,7 @@ tvar=${tvar#*-}
 
 # need to export tvar for su01_s1
 export tvar
-echo "Machine type is: $tvar \n"
+printf "Machine type is: $tvar\n\n"
 
 if [ $tvar = "redhat" -o $tvar = "redhat-linux" ] 
 # Need to also set group for TEST_USER2
@@ -76,9 +76,9 @@ export TEST_ENV_FILE2="/tmp/TEST_ENV_FILE_ROOT2"
 do_setup(){
 
 #REMOVE ANY TEMPOARY FILES THAT MAY STILL BE AROUND
-rm -f $TEST_ENV_FILE_USER &> /dev/null
-rm -f $TEST_ENV_FILE2 &> /dev/null
-rm -f $TEST_ENV_FILE &> /dev/null
+rm -f $TEST_ENV_FILE_USER > /dev/null 2>&1
+rm -f $TEST_ENV_FILE2 > /dev/null 2>&1
+rm -f $TEST_ENV_FILE > /dev/null 2>&1
 
 
 #Create 1st test user
@@ -108,7 +108,7 @@ rm -f $TEST_ENV_FILE &> /dev/null
 	}
 	fi
 
-        usermod -p $TEST_USER1_ENCRYPTED_PASSWD $TEST_USER1 &> /dev/null
+        usermod -p $TEST_USER1_ENCRYPTED_PASSWD $TEST_USER1 > /dev/null 2>&1
         if [ $? != 0 ]
         then {
                 echo "Could not set password for test user $TEST_USER1"
@@ -144,7 +144,7 @@ rm -f $TEST_ENV_FILE &> /dev/null
 	}
 	fi
 
-        usermod -p $TEST_USER2_ENCRYPTED_PASSWD $TEST_USER2 &> /dev/null
+        usermod -p $TEST_USER2_ENCRYPTED_PASSWD $TEST_USER2 > /dev/null 2>&1
         if [ $? != 0 ]
         then {
                 echo "Could not set password for test user $TEST_USER2"
@@ -164,9 +164,9 @@ do_cleanup() {
 	userdel $TEST_USER1 
 	userdel $TEST_USER2
 	#REMOVE ANY TEMPOARY FILES THAT MAY STILL BE AROUND
-	rm -f $TEST_ENV_FILE_USER &> /dev/null
-	rm -f $TEST_ENV_FILE2 &> /dev/null
-	rm -f $TEST_ENV_FILE &> /dev/null
+	rm -f $TEST_ENV_FILE_USER > /dev/null 2>&1
+	rm -f $TEST_ENV_FILE2 > /dev/null 2>&1
+	rm -f $TEST_ENV_FILE > /dev/null 2>&1
 }
 
 #-----------------------------------------------------------------------

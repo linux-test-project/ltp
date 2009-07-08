@@ -77,7 +77,7 @@ else
 fi
 
 # Test sched_smt_power_savings interface on HT machines
-((TST_COUNT= $TST_COUNT + 1))
+: $(( TST_COUNT += 1 ))
 if [ -f /sys/devices/system/cpu/sched_smt_power_savings ] ; then
     if test_sched_smt.sh; then
 		tst_resm TPASS "SCHED_SMT sysfs test"
@@ -96,7 +96,7 @@ fi
 
 # Checking cpufreq sysfs interface files
 #check_config.sh config_cpu_freq || RC=$?
-((TST_COUNT= $TST_COUNT + 1))
+: $(( TST_COUNT += 1 ))
 if [ -d /sys/devices/system/cpu/cpu0/cpufreq ] ; then
     if check_cpufreq_sysfs_files.sh; then
 		tst_resm TPASS "CPUFREQ sysfs tests"
@@ -106,7 +106,7 @@ if [ -d /sys/devices/system/cpu/cpu0/cpufreq ] ; then
 	fi
 
     # Changing governors
-	((TST_COUNT= $TST_COUNT + 1))
+	: $(( TST_COUNT += 1 ))
 	if change_govr.sh; then
 		tst_resm TPASS "Changing governors "
 	else
@@ -115,7 +115,7 @@ if [ -d /sys/devices/system/cpu/cpu0/cpufreq ] ; then
 	fi
 
     # Changing frequencies
-	((TST_COUNT= $TST_COUNT + 1))
+	: $(( TST_COUNT += 1 ))
     if change_freq.sh ; then
 		tst_resm TPASS "Changing frequncies "
 	else
@@ -124,7 +124,7 @@ if [ -d /sys/devices/system/cpu/cpu0/cpufreq ] ; then
     fi
 
     # Loading and Unloading governor related kernel modules
-	((TST_COUNT= $TST_COUNT + 1))
+	: $(( TST_COUNT += 1 ))
     if pwkm_load_unload.sh ; then
 		tst_resm TPASS "Loading and Unloading of governor kernel \
 modules"
@@ -138,7 +138,7 @@ else
 fi
 
 # Checking cpuidle sysfs interface files
-(( TST_COUNT= $TST_COUNT +1))
+: $(( TST_COUNT+=1))
 if check_cpuidle_sysfs_files.sh ; then
 	tst_resm TPASS "CPUIDLE sysfs tests passed"
 else
@@ -154,21 +154,21 @@ test cannot run"
 else
 	get_max_sched_mc; max_sched_mc=$?
 	for sched_mc in `seq 0 $max_sched_mc`; do
-		(( TST_COUNT= $TST_COUNT +1))
+		: $(( TST_COUNT+=1))
 		sched_domain.py -c $sched_mc; RC=$?
 		analyze_sched_domain_result $sched_mc $RC 
 		if [ $hyper_threaded -eq $YES ]; then
 			get_max_sched_smt ; max_sched_smt=$?
 			for sched_smt in `seq 0 $max_sched_smt`; do
 				# Testcase to validate sched_domain tree
-				(( TST_COUNT= $TST_COUNT +1))
+				: $(( TST_COUNT+=1))
 				sched_domain.py -c $sched_mc -t $sched_smt; RC=$?
 				analyze_sched_domain_result $sched_mc $RC $sched_smt ;
 			done
 		fi
 	done
 fi
-if [ $# -gt 0 -a $1 == "-exclusive" ]; then 
+if [ $# -gt 0 -a "$1" = "-exclusive" ]; then 
 	# Test CPU consolidation 
 	which python > /dev/null
 	if [ $? -ne 0 ] ; then
@@ -180,12 +180,12 @@ if [ $# -gt 0 -a $1 == "-exclusive" ]; then
 		for sched_mc in `seq 0 $max_sched_mc`; do
 			for work_load in ${work_loads_list}
             do
-				((TST_COUNT= $TST_COUNT + 1))
+				: $(( TST_COUNT += 1 ))
 				sched_mc_pass_cnt=0
 				for repeat_test in `seq 1  10`; do
 					 #Testcase to validate CPU consolidation for sched_mc
 					if cpu_consolidation.py -c $sched_mc -w $work_load ; then
-						((sched_mc_pass_cnt= $sched_mc_pass_cnt +1))
+						: $(( sched_mc_pass_cnt += 1 ))
 					fi
 				done
 				analyze_consolidation_result $sched_mc $work_load $sched_mc_pass_cnt	
@@ -193,13 +193,13 @@ if [ $# -gt 0 -a $1 == "-exclusive" ]; then
 			if [ $hyper_threaded -eq $YES ]; then
 				for sched_smt in `seq 0 $max_sched_smt`; do
 					for work_load in ${work_loads_list}; do
-                    	((TST_COUNT= $TST_COUNT + 1))
+                    	: $(( TST_COUNT += 1 ))
 						sched_mc_smt_pass_cnt=0
 						for repeat_test in `seq 1  10`; do
 							# Testcase to validate CPU consolidation for
 							# for sched_mc & sched_smt with stress=50%
 							if cpu_consolidation.py -c $sched_mc -t $sched_smt -w $work_load; then
-								((sched_mc_smt_pass_cnt= $sched_mc_smt_pass_cnt +1))
+								: $(( sched_mc_smt_pass_cnt += 1 ))
 							fi
 						done
 						analyze_consolidation_result $sched_mc $work_load $sched_mc_smt_pass_cnt $sched_smt
@@ -207,10 +207,10 @@ if [ $# -gt 0 -a $1 == "-exclusive" ]; then
 						#Testcase to validate consolidation at core level
 						sched_mc_smt_pass_cnt=0
 						stress="thread"
-						((TST_COUNT= $TST_COUNT + 1))
+						: $(( TST_COUNT += 1 ))
 						for repeat_test in `seq 1  10`; do
 							if cpu_consolidation.py -c $sched_mc -t $sched_smt -w $work_load -s $stress; then
-								((sched_mc_smt_pass_cnt= $sched_mc_smt_pass_cnt +1))
+								: $(( sched_mc_smt_pass_cnt += 1 ))
 							fi
 						done
 						analyze_consolidation_result $sched_mc $work_load $sched_mc_smt_pass_cnt $sched_smt $stress

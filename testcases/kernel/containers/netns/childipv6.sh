@@ -52,7 +52,7 @@ status=0
     
     #starting the sshd inside the child NS
     /usr/sbin/sshd -p $PORT 
-    if [ $? == 0 ]; then
+    if [ $? = 0 ]; then
         debug "INFO: started the sshd @ port no $PORT"
         sshpid=`ps -ef | grep "sshd -p $PORT" | awk '{ print $2 ; exit 0} ' `
     else
@@ -68,7 +68,7 @@ status=0
 
     # checking if parent ns responding
     ping6 -I $vnet1 -qc 2 $parIPv6 >/dev/null 2>&1 
-           if [ $? == 0 ] ; then
+           if [ $? = 0 ] ; then
                tst_resm TINFO "IPv6: Pinging Parent from Child: PASS"
             else
                tst_resm TFAIL "IPv6: Pinging Parent from Child: FAIL"

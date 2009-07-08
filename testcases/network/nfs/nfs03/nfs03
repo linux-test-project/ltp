@@ -91,10 +91,10 @@ fs_inod()
 #
 # RETURNS:              None.
 #=============================================================================
-function err_log
+err_log()
 {
     error "$1"
-    let step_errors="$step_errors + 1"
+    : $(($step_errors+=1))
 }
 
 
@@ -107,7 +107,7 @@ function err_log
 #
 # RETURNS:              None.
 #=============================================================================
-function make_subdirs
+make_subdirs()
 {
     i=0;
     while [ "$i" -lt "$numsubdirs" ]; do
@@ -115,7 +115,7 @@ function make_subdirs
             echo "$0: mkdir dir$i"
             mkdir -p dir$i || echo "mkdir dir$i FAILED"
         }
-        let i="$i + 1"
+        : $(( i += 1 ))
     done;
 }
 
@@ -129,7 +129,7 @@ function make_subdirs
 #
 # RETURNS:              None.
 #=============================================================================
-function touch_files
+touch_files()
 {
     echo "$0: touch files [0-$numsubdirs]/file$numsubdirs[0-$numfiles]"
     j=0;
@@ -140,10 +140,10 @@ function touch_files
 
         while [ "$k" -lt "$numfiles" ]; do
             >file$j$k || err_log ">file$j$k FAILED"
-            let k="$k + 1"
+            : $(( k += 1 ))
         done
 
-        let j="$j + 1"
+        : $(( j += 1 ))
         cd ..
     done
 }
@@ -158,7 +158,7 @@ function touch_files
 #
 # RETURNS:      None.
 #=============================================================================
-function rm_files
+rm_files()
 {
     echo "$0: rm files [0-$numsubdirs]/file$numsubdirs[0-$numfiles]"
     j=0;
@@ -169,10 +169,10 @@ function rm_files
 
         while [ "$k" -lt "$numfiles" ]; do
             rm -f file$j$k || err_log "rm -f file$j$k FAILED"
-            let k="$k + 1"
+            : $(( k += 1 ))
         done
 
-        let j="$j + 1"
+        : $(( j += 1 ))
         cd ..
     done
 }
@@ -187,7 +187,7 @@ function rm_files
 #
 # RETURNS:              None.
 #=============================================================================
-function step1
+step1()
 {
     echo "=============================================="
     echo "MULTIPLE PROCESSES CREATING AND DELETING FILES"
@@ -240,7 +240,7 @@ function step1
         rm_files &
         pid2=$!
 
-        let i="$i + 1"
+        : $(( i += 1 ))
     done
 
     # wait for all background processes to complete execution
@@ -376,7 +376,7 @@ $trace_logic
     echo "fs_inod starting on $TCtmp."
     fs_inod $TCtmp $DIR_NUM $FILE_NUM 1 
     retval=$?
-    echo $"fs_inod on $TCtmp finished."
+    echo "fs_inod on $TCtmp finished."
     
     if [ "$retval" != 0 ]; then
       end_testcase "Errors have resulted from this test: fs_inod returned $retval."

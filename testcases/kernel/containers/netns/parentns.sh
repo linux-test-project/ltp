@@ -43,7 +43,7 @@ export TST_TOTAL
 status=0
 
     # Checks if any script is passed as argument.
-    if [ $# == 2 ]; then
+    if [ $# = 2 ]; then
         scrpt=$1
         debug "INFO: Script to be executed in parent NS is $scrpt"
     fi
@@ -56,7 +56,7 @@ status=0
     create_veth
     vnet0=$dev0
     vnet1=$dev1
-    if [[ -z $vnet0 || -z $vnet1 ]] ; then
+    if [ -z "$vnet0" -o -z "$vnet1" ] ; then
         tst_resm TFAIL  "Error: unable to create veth pair"
         exit -1
     else

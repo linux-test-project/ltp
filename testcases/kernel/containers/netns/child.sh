@@ -34,7 +34,7 @@ export TST_TOTAL
     
     ping -qc 2 $IP1 >  /dev/null 
     
-    if [ $? == 0 ] ; then
+    if [ $? = 0 ] ; then
         tst_resm TINFO "PASS: Pinging ParentNS from ChildNS"
         status=0
     else

@@ -37,7 +37,7 @@ TEST_USER_HOMEDIR="/home/$TEST_USER"
 
 do_setup(){
 	#erase any data from potential defunt cron test
-	rm -rf /tmp/crontest &> /dev/null
+	rm -rf /tmp/crontest > /dev/null 2>&1
 
     #erase user if he may exist , so we can have a clean env
         rm -rf /home/$TEST_USER
@@ -56,7 +56,7 @@ do_setup(){
 # Red Hat uses crond, SuSE/Other uses cron. Check if this is Red Hat/SuSE/Other
 tvar=${MACHTYPE%-*}
 tvar=${tvar#*-}
-echo "Distro type is: $tvar \n"
+printf "Distro type is: $tvar\n\n"
 
 if [ $tvar != "redhat" -a $tvar != "redhat-linux" ]; then
 

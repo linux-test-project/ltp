@@ -59,7 +59,7 @@ do_setup(){
 # Red Hat uses crond, SuSE/Other uses cron. Check if this is Red Hat/SuSE/Other
 tvar=${MACHTYPE%-*}
 tvar=${tvar#*-}
-echo "Distro type is: $tvar \n"
+printf "Distro type is: $tvar\n\n"
 
 if [ $tvar != "redhat" -a $tvar != "redhat-linux" ]; then
 

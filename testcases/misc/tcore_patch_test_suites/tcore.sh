@@ -107,13 +107,13 @@ Test_gen_core()
 		rm -f core.*
 	fi
 	pid=`$BIN_DIR/tcore |grep "consumer pid"|awk '{print $2}'|cut -d = -f 2`
-	echo -e "Test whether we can generate the needed core file"
+	echo "Test whether we can generate the needed core file"
 	if [ -f core.* ];then
-		echo -e "PASS"
+		echo "PASS"
 		pass=`expr $pass + 1`
 		return 0
 	else
-		echo -e "FAIL"
+		echo "FAIL"
 		fail=`expr $fail + 1`
 		return 1
 	fi	
@@ -124,14 +124,14 @@ Test_core_file()
 	cd $TEST_DIR
 	prepare_gdb
 	mv -f $TEST_DIR/core.* $TEST_DIR/corefile >/dev/null 2>&1
-	echo -e "Test whether the core support bt,fpu and threads commands "
+	echo "Test whether the core support bt,fpu and threads commands "
 	expect $BIN_DIR/tcore.exp
 	return=$?
 	pass=`expr $pass + $return`
 	fail=`expr 3 - $return + $fail`
 }
 
-echo -e "Test Tcore patch "
+echo "Test Tcore patch "
 check_install
 Test_gen_core
 Test_core_file

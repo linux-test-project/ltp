@@ -61,7 +61,7 @@ init()
 	trap "cleanup" 0
 
 	# create the tmp directory for this testcase.
-	mkdir -p $LTPTMP/ &>/dev/null || RC=$?
+	mkdir -p $LTPTMP/ >/dev/null 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
 		tst_brkm TBROK "INIT: Unable to create temporary directory"
@@ -69,7 +69,7 @@ init()
 	fi	
 		
 	# Check to see if test harness functions are in the path.
-	which tst_resm  &>$LTPTMP/tst_ip.err || RC=$?
+	which tst_resm  >$LTPTMP/tst_ip.err 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
 		tst_brkm TBROK NULL \
@@ -77,7 +77,7 @@ init()
 		return $RC
 	fi
 
-	which awk  &>$LTPTMP/tst_ip.err || RC=$?
+	which awk  >$LTPTMP/tst_ip.err 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
 		tst_brkm TBROK NULL \
@@ -85,7 +85,7 @@ init()
 		return $RC
 	fi
 
-	which ip  &>$LTPTMP/tst_ip.err || RC=$?
+	which ip  >$LTPTMP/tst_ip.err 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
 		tst_brkm TBROK NULL \
@@ -93,7 +93,7 @@ init()
 		return $RC
 	fi
 
-	which ifconfig  &>$LTPTMP/tst_ip.err || RC=$?
+	which ifconfig  >$LTPTMP/tst_ip.err 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
 		tst_brkm TBROK NULL \
@@ -104,13 +104,13 @@ init()
 	tst_resm TINFO "INIT: Inititalizing tests."
 
 	# Aliasing eth0 to create private network.
-	/sbin/ifconfig eth0:1 10.1.1.12 &>$LTPTMP/tst_ip.err || RC=$?
+	/sbin/ifconfig eth0:1 10.1.1.12 >$LTPTMP/tst_ip.err 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
 		tst_brk TBROK "INIT: failed aliasing eth0:1 with IP 10.1.1.12"
 		return $RC
 	else
-		/sbin/route add -host 10.1.1.12 dev eth0:1 &>$LTPTMP/tst_ip.err \
+		/sbin/route add -host 10.1.1.12 dev eth0:1 >$LTPTMP/tst_ip.err 2>&1 \
 			|| RC=$?
 		if [ $RC -ne 0 ]
 		then
@@ -153,10 +153,10 @@ cleanup()
 	TST_COUNT=0
 	RC=0
 
-	/sbin/ifconfig eth0:1 &>$LTPTMP/tst_ip.err || RC=$?
+	/sbin/ifconfig eth0:1 >$LTPTMP/tst_ip.err 2>&1 || RC=$?
 	if [ $RC -eq 0 ]
 	then
-		/sbin/ifconfig eth0:1 down &>$LTPTMP/tst_ip.err
+		/sbin/ifconfig eth0:1 down >$LTPTMP/tst_ip.err 2>&1
 	fi
 
 	rm -fr $LTPTMP
@@ -187,7 +187,7 @@ test01()
 
 	tst_resm TINFO "Test #1: changing mtu size of eth0:1 device."
 
-	ip link set eth0:1 mtu 300 &>$LTPTMP/tst_ip.err
+	ip link set eth0:1 mtu 300 >$LTPTMP/tst_ip.err 2>&1
 	if [ $RC -ne 0 ]
 	then
 		tst_res TFAIL $LTPTMP/tst_ip.err \
@@ -232,7 +232,7 @@ test02()
 	tst_resm TINFO \
 	 "Test #2: Installing dummy.o in kernel"
 
-	modprobe dummy &>$LTPTMP/tst_ip.out || RC=$?
+	modprobe dummy >$LTPTMP/tst_ip.out 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then 
 		tst_brk TBROK $LTPTMP/tst_ip.out NULL \
@@ -240,7 +240,7 @@ test02()
 		return $RC
 	fi
 
-	ip link show dummy0 | grep dummy0 &>$LTPTMP/tst_ip.err || RC=$?
+	ip link show dummy0 | grep dummy0 >$LTPTMP/tst_ip.err 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
 		tst_res TFAIL $LTPTMP/tst_ip.err "Test #2: ip command failed. Reason:"
@@ -278,7 +278,7 @@ test03()
 	tst_resm TINFO \
 	 "Test #3: ip addr add - adds a new protolcol address to the device"
 	
-	ip addr add 127.6.6.6 dev lo &>$LTPTMP/tst_ip.err || RC=$?
+	ip addr add 127.6.6.6 dev lo >$LTPTMP/tst_ip.err 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
 		tst_res TFAIL $LTPTMP/tst_ip.err \
@@ -287,7 +287,7 @@ test03()
 	else
 		tst_resm TINFO \
 		 "Test #3: ip addr show dev <device> - shows protocol address."
-		ip addr show dev lo | grep 127.6.6.6 &>$LTPTMP/tst_ip.err || RC=$?
+		ip addr show dev lo | grep 127.6.6.6 >$LTPTMP/tst_ip.err 2>&1 || RC=$?
 		if [ $RC -ne 0 ]
 		then
 			tst_res TFAIL $LTPTMP/tst_ip.err \
@@ -297,14 +297,14 @@ test03()
 
 		tst_resm TINFO \
 		 "Test #3: ip addr del <ip> dev <device> - deletes protocol address."
-		ip addr del 127.6.6.6 dev lo &>$LTPTMP/tst_ip.err || RC=$?
+		ip addr del 127.6.6.6 dev lo >$LTPTMP/tst_ip.err 2>&1 || RC=$?
 		if [ $RC -ne 0 ]
 		then
 			tst_res TFAIL $LTPTMP/tst_ip.err \
 				"Test #3: ip addr del command failed. Reason: "
 			return $RC
 		else
-			ip addr show dev lo | grep 127.6.6.6 &>$LTPTMP/tst_ip.err || RC=$?
+			ip addr show dev lo | grep 127.6.6.6 >$LTPTMP/tst_ip.err 2>&1 || RC=$?
 			if [ $RC -eq 0 ]
 			then
 				tst_res TFAIL $LTPTMP/tst_ip.err \
@@ -343,7 +343,7 @@ test04()
 	tst_resm TINFO \
 	 "Test #4: ip neigh add - adds a new neighbour to arp tables."
 	
-	ip neigh add 127.0.0.1 dev lo nud reachable &>$LTPTMP/tst_ip.err || RC=$?
+	ip neigh add 127.0.0.1 dev lo nud reachable >$LTPTMP/tst_ip.err 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
 		tst_res TFAIL $LTPTMP/tst_ip.err \
@@ -357,7 +357,7 @@ test04()
 		127.0.0.1 dev lo lladdr 00:00:00:00:00:00 nud reachable
 		EOF
 
-		ip neigh show 127.0.0.1 | head -n1 &>$LTPTMP/tst_ip.out || RC=$?
+		ip neigh show 127.0.0.1 | head -n1 >$LTPTMP/tst_ip.out 2>&1 || RC=$?
 		if [ $RC -ne 0 ]
 		then
 			tst_res TFAIL $LTPTMP/tst_ip.err \
@@ -365,7 +365,7 @@ test04()
 			return $RC
 		else
 			diff -iwB  $LTPTMP/tst_ip.out $LTPTMP/tst_ip.exp \
-				&>$LTPTMP/tst_ip.err || RC=$?
+				>$LTPTMP/tst_ip.err 2>&1 || RC=$?
 			if [ $RC -ne 0 ]
 			then
 				tst_res FAIL $LTPTMP/tst_ip.err \
@@ -377,14 +377,14 @@ test04()
 		tst_resm TINFO \
 		 "Test #4: ip neigh del - deletes neighbour from the arp table."
 
-		ip neigh del 127.0.0.1 dev lo &>$LTPTMP/tst_ip.err || RC=$?
+		ip neigh del 127.0.0.1 dev lo >$LTPTMP/tst_ip.err 2>&1 || RC=$?
 		if [ $RC -ne 0 ]
 		then
 			tst_res TFAIL $LTPTMP/tst_ip.err \
 				"Test #4: ip neigh del command failed return = $RC. Reason: "
 			return $RC
 		else
-			ip neigh show | grep 127.0.0.1 grep -v "nud failed$" &>$LTPTMP/tst_ip.err || RC=$?
+			ip neigh show | grep 127.0.0.1 grep -v "nud failed$" >$LTPTMP/tst_ip.err 2>&1 || RC=$?
 			if [ $RC -eq 0 ]
 			then
 				tst_res TFAIL $LTPTMP/tst_ip.err \
@@ -426,7 +426,7 @@ test05()
 	tst_resm TINFO \
 	 "Test #5: create an interface with inet 10.6.6.6 alias to eth0"
 
-	ifconfig eth0:1 10.6.6.6 netmask 255.255.255.0 &>$LTPTMP/tst_ip.err || RC=$?
+	ifconfig eth0:1 10.6.6.6 netmask 255.255.255.0 >$LTPTMP/tst_ip.err 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
 		tst_brk TBROK $LTPTMP/tst_ip.err NULL \
@@ -434,7 +434,7 @@ test05()
 		return $RC
 	fi
 	
-	ip route add 10.6.6.6 via 127.0.0.1 &>$LTPTMP/tst_ip.err || RC=$?
+	ip route add 10.6.6.6 via 127.0.0.1 >$LTPTMP/tst_ip.err 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
 		tst_res TFAIL $LTPTMP/tst_ip.err \
@@ -449,7 +449,7 @@ test05()
 		10.6.6.6 via 127.0.0.1 dev lo
 		EOF
 
-		ip route show | head -n1 &>$LTPTMP/tst_ip.out || RC=$?
+		ip route show | head -n1 >$LTPTMP/tst_ip.out 2>&1 || RC=$?
 		if [ $RC -ne 0 ]
 		then
 			tst_res TFAIL $LTPTMP/tst_ip.err \
@@ -457,7 +457,7 @@ test05()
 			return $RC
 		else
 			diff -iwB  $LTPTMP/tst_ip.out $LTPTMP/tst_ip.exp \
-				&>$LTPTMP/tst_ip.err || RC=$?
+				>$LTPTMP/tst_ip.err 2>&1 || RC=$?
 			if [ $RC -ne 0 ]
 			then
 				tst_res FAIL $LTPTMP/tst_ip.err \
@@ -469,14 +469,14 @@ test05()
 		tst_resm TINFO \
 		 "Test #5: ip route del - deletes route from the route table."
 
-		ip route del 10.6.6.6 via 127.0.0.1 &>$LTPTMP/tst_ip.err || RC=$?
+		ip route del 10.6.6.6 via 127.0.0.1 >$LTPTMP/tst_ip.err 2>&1 || RC=$?
 		if [ $RC -ne 0 ]
 		then
 			tst_res TFAIL $LTPTMP/tst_ip.err \
 				"Test #5: ip route del command failed return = $RC. Reason: "
 			return $RC
 		else
-			ip route show | grep 127.0.0.1 &>$LTPTMP/tst_ip.err || RC=$?
+			ip route show | grep 127.0.0.1 >$LTPTMP/tst_ip.err 2>&1 || RC=$?
 			if [ $RC -eq 0 ]
 			then
 				tst_res TFAIL $LTPTMP/tst_ip.err \
@@ -514,7 +514,7 @@ test06()
 	tst_resm TINFO \
 	 "Test #6: ip maddr add - adds a new multicast addr"
 
-	ifconfig eth0:1 10.6.6.6 netmask 255.255.255.0 &>$LTPTMP/tst_ip.err || RC=$?
+	ifconfig eth0:1 10.6.6.6 netmask 255.255.255.0 >$LTPTMP/tst_ip.err 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
 		tst_brk TBROK $LTPTMP/tst_ip.err NULL \
@@ -522,7 +522,7 @@ test06()
 		return $RC
 	fi
 	
-	ip maddr add 66:66:00:00:00:66 dev eth0:1 &>$LTPTMP/tst_ip.err || RC=$?
+	ip maddr add 66:66:00:00:00:66 dev eth0:1 >$LTPTMP/tst_ip.err 2>&1 || RC=$?
 	if [ $RC -ne 0 ]
 	then
 		tst_res TFAIL $LTPTMP/tst_ip.err \
@@ -536,7 +536,7 @@ test06()
         link  66:66:00:00:00:66 static
 		EOF
 
-		ip maddr show | grep "66:66:00:00:00:66" &>$LTPTMP/tst_ip.out || RC=$?
+		ip maddr show | grep "66:66:00:00:00:66" >$LTPTMP/tst_ip.out 2>&1 || RC=$?
 		if [ $RC -ne 0 ]
 		then
 			tst_res TFAIL $LTPTMP/tst_ip.err \
@@ -556,7 +556,7 @@ test06()
 		tst_resm TINFO \
 		 "Test #6: ip maddr del - deletes multicast addr."
 
-		ip maddr del 66:66:00:00:00:66 dev eth0:1 &>$LTPTMP/tst_ip.err || RC=$?
+		ip maddr del 66:66:00:00:00:66 dev eth0:1 >$LTPTMP/tst_ip.err 2>&1 || RC=$?
 		if [ $RC -ne 0 ]
 		then
 			tst_res TFAIL $LTPTMP/tst_ip.err \

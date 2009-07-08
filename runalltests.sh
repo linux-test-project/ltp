@@ -29,17 +29,17 @@
 ##                                                                            ##
 ################################################################################
 
-echo -e  "*******************************************************************"
-echo -e  "*******************************************************************"
-echo -e  "**                                                               **"
-echo -e "** This script is being re-written to cover all aspects of    **"
-echo -e "** testing LTP, which includes running all those tests which  **"
-echo -e "** are not run by default with ./runltp script. Special setup **"
-echo -e "** in system environment will be done to run all those tests  **"
-echo -e "** like the File System tests, SELinuxtest, etc               **"
-echo -e  "**                                                               **"
-echo -e  "*******************************************************************"
-echo -e  "*******************************************************************"
+echo  "*******************************************************************"
+echo  "*******************************************************************"
+echo  "**                                                               **"
+echo "** This script is being re-written to cover all aspects of    **"
+echo "** testing LTP, which includes running all those tests which  **"
+echo "** are not run by default with ./runltp script. Special setup **"
+echo "** in system environment will be done to run all those tests  **"
+echo "** like the File System tests, SELinuxtest, etc               **"
+echo  "**                                                               **"
+echo  "*******************************************************************"
+echo  "*******************************************************************"
 
 export LTPROOT=${PWD}
 export RUN_BALLISTA=0
@@ -210,19 +210,19 @@ export HTML_OUTPUT_FILE_NAME=$LTP_VERSION_$HOSTNAME_$KERNEL_VERSION_$HARDWARE_TY
 
 ## The First one i plan to run is the default LTP run ##
 ## START => Test Series 1                             ##
-echo -e "Running Default LTP..."
+echo "Running Default LTP..."
 ./runltp -g $HTML_OUTPUT_FILE_NAME
-echo -e "Completed running Default LTP\n\n"
+printf "Completed running Default LTP\n\n\n"
 ## END => Test Series 1                               ##
 
 ## The next one i plan to run is ballista             ##
 ## START => Test Series 2                             ##
 if [ $RUN_BALLISTA -eq 1 ]
 then
-    echo -e "Running Ballista..."
+    echo "Running Ballista..."
     export TEST_START_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
     ./runltp -f ballista -o $LTP_VERSION-BALLISTA_RUN_ON-$HOSTNAME-$KERNEL_VERSION-$HARDWARE_TYPE-$TEST_START_TIME.out
-    echo -e "Completed running Ballista\n\n"
+    printf "Completed running Ballista\n\n\n"
 fi
 ## END => Test Series 2                               ##
 
@@ -230,9 +230,9 @@ fi
 ## START => Test Series 3                             ##
 if [ $RUN_OPENPOSIX -eq 1 ]
 then
-    echo -e "Running Open Posix Tests..."
+    echo "Running Open Posix Tests..."
     (cd testcases/open_posix_testsuite; make)
-    echo -e "Completed running Open Posix Tests\n\n"
+    printf "Completed running Open Posix Tests\n\n\n"
 fi
 ## END => Test Series 3                               ##
 
@@ -242,9 +242,9 @@ fi
 ## START => Test Series 4                             ##
 if [ $RUN_MM_CORE_APIS -eq 1 ]
 then
-    echo -e "Initializing ltp/testcases/kernel/mem/libmm/mm_core_apis ..."
+    echo "Initializing ltp/testcases/kernel/mem/libmm/mm_core_apis ..."
     # Check to see if User is Root
-    if [ $EUID -ne 0 ]
+    if [ $(id -u) -ne 0 ]
     then
         echo You need to be root to Install libmm and run mem/libmm/mm_core_apis
         echo Aborting ltp/testcases/kernel/mem/libmm/mm_core_apis
@@ -262,13 +262,13 @@ then
         else
             echo libmm-1.4.2 already installed in your system
         fi
-        echo -e "Running ltp/testcases/kernel/mem/libmm/mm_core_apis ..."
+        echo "Running ltp/testcases/kernel/mem/libmm/mm_core_apis ..."
         (cd testcases/kernel/mem/libmm; \
          make; \
          make install; \
          $LTPROOT/testcases/bin/mm_core_apis; )
     fi
-    echo -e "Completed running ltp/testcases/kernel/mem/libmm/mm_core_apis...\n\n"
+    printf "Completed running ltp/testcases/kernel/mem/libmm/mm_core_apis...\n\n\n"
 fi
 ## END => Test Series 4                               ##
 
@@ -278,9 +278,9 @@ fi
 ## START => Test Series 5                             ##
 if [ $RUN_AIOTESTS -eq 1 ]
     then
-    echo -e "Initializing ltp/testcases/kernel/io/aio ..."
+    echo "Initializing ltp/testcases/kernel/io/aio ..."
     # Check to see if User is Root
-    if [ $EUID -ne 0 ]
+    if [ $(id -u) -ne 0 ]
     then
         echo You need to be root to Install libaio-0.3.92 and run ltp/testcases/kernel/io/aio
         echo Aborting ltp/testcases/kernel/io/aio
@@ -298,13 +298,13 @@ if [ $RUN_AIOTESTS -eq 1 ]
         else
              echo libaio-0.3.92 already installed in your system
         fi
-        echo -e "Building & Running ltp/testcases/kernel/io/aio..."
+        echo "Building & Running ltp/testcases/kernel/io/aio..."
         (cd testcases/kernel/io/aio; \
          make > /dev/null; \
          ./aio01/aio01; \
          ./aio02/runfstests.sh -a aio02/cases/aio_tio; \
          make clean 1>&2 > /dev/null )
-         echo -e "Completed running ltp/testcases/kernel/io/aio...\n\n"
+         printf "Completed running ltp/testcases/kernel/io/aio...\n\n\n"
     fi
 fi
 ## END => Test Series 5                               ##
@@ -316,9 +316,9 @@ fi
 ## START => Test Series 6                             ##
 if [ $RUN_FILECAPS -eq 1 ]
 then
-    echo -e "Initializing ltp/testcases/kernel/security/filecaps ..."
+    echo "Initializing ltp/testcases/kernel/security/filecaps ..."
     # Check to see if User is Root
-    if [ $EUID -ne 0 ]
+    if [ $(id -u) -ne 0 ]
     then
         echo You need to be root to Install libcaps and run ltp/testcases/kernel/security/filecaps
         echo Aborting ltp/testcases/kernel/security/filecaps
@@ -336,11 +336,11 @@ then
         else
              echo libcaps already installed in your system
         fi
-        echo -e "Building & Running ltp/testcases/kernel/security/filecaps"
+        echo "Building & Running ltp/testcases/kernel/security/filecaps"
         (cd ltp/testcases/kernel/security/filecaps; \
          make && make install > /dev/null; )
          ./runltp -f filecaps
-         echo -e "Completed running ltp/testcases/kernel/io/aio...\n\n"
+         printf "Completed running ltp/testcases/kernel/io/aio...\n\n\n"
     fi
 fi
 ## END => Test Series 6                               ##

@@ -35,7 +35,7 @@ export TST_TOTAL
 
     ping -q -c 2 $IP2 > /dev/null
     
-    if [ $? == 0 ] ; then
+    if [ $? = 0 ] ; then
         tst_resm TINFO "Pinging ChildNS from ParentNS"
     else
         tst_resm TFAIL "Error: Unable to ping ChildNS from ParentNS"

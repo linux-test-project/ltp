@@ -41,7 +41,7 @@ export TST_TOTAL
     newnet=`cat /tmp/FIFO4`
     debug "INFO: new dev is  $newnet"
 
-    if [ $newnet == -1 ] ; then
+    if [ $newnet = -1 ] ; then
         status=-1
     fi
     
@@ -56,11 +56,11 @@ export TST_TOTAL
     ls /sys/class/net > /tmp/sys_aftr_child_killed
     diff -q /tmp/sys_b4_child_killed /tmp/sys_aftr_child_killed 
     
-    if [ $? == 0 ] ; then
+    if [ $? = 0 ] ; then
         debug "INFO: No difference in the contents of sysfs after deleting the child"
     else 
         grep -qw $newnet /tmp/sys_aftr_child_killed
-        if [ $? == 0 ]; then
+        if [ $? = 0 ]; then
             debug "INFO: Device $newnet is moved to ParentNS"
         else
             debug "INFO: Device $newnet is moved under diff name in ParentNS"

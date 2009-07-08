@@ -49,7 +49,7 @@ status=0
     create_veth
     vnet0=$dev0
     vnet1=$dev1
-    if [[ -z $vnet0 || -z $vnet1 ]] ; then
+    if [ -z "$vnet0" -o -z "$vnet1" ] ; then
         tst_resm TFAIL "Error: unable to create veth pair"
         exit -1
     else
@@ -76,7 +76,7 @@ status=0
     echo $parIPv6 > /tmp/FIFO4
     ping6 -I $vnet0 -qc 2 $childIPv6 >/dev/null 2>&1 
 
-    if [ $? == 0 ] ; then
+    if [ $? = 0 ] ; then
        tst_resm TINFO "IPv6: Pinging child from parent: PASS"
        status=0
     else

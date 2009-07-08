@@ -38,7 +38,7 @@ export TST_TOTAL
     create_veth
     vnet0=$dev0
     vnet1=$dev1
-    if [[ -z $vnet0 || -z $vnet1 ]] ; then
+    if [ -z "$vnet0" -o -z "$vnet1" ] ; then
         tst_resm TFAIL  "Error: unable to create veth pair in $0"
         exit -1
     else

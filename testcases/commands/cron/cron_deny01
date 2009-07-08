@@ -49,11 +49,11 @@ TEST_USER2_HOME="/home/$TEST_USER2"
 
 do_setup() {
 	#move any files that may get in the way
-	rm /tmp/cron_deny_test &> /dev/null
-        rm /tmp/cron_deny_test1 &> /dev/null
+	rm /tmp/cron_deny_test > /dev/null 2>&1
+        rm /tmp/cron_deny_test1 > /dev/null 2>&1
 	
-	mv $CRON_DENY $CRON_DENY.old &> /dev/null
-	mv $CRON_ALLOW $CRON_ALLOW.old &> /dev/null
+	mv $CRON_DENY $CRON_DENY.old > /dev/null 2>&1
+	mv $CRON_ALLOW $CRON_ALLOW.old > /dev/null 2>&1
 
 	#remove users for clean enviroment
     su $TEST_USER1 -c "crontab -r"
@@ -94,9 +94,9 @@ do_cleanup(){
 	userdel $TEST_USER1
 	userdel $TEST_USER2
 	rm $CRON_DENY
-	mv $CRON_DENY.old $CRON_DENY &> /dev/null
-	mv $CRON_ALLOW.old $CRON_ALLOW &> /dev/null
-	rm /tmp/cron_allow_test &>/dev/null
+	mv $CRON_DENY.old $CRON_DENY > /dev/null 2>&1
+	mv $CRON_ALLOW.old $CRON_ALLOW > /dev/null 2>&1
+	rm /tmp/cron_allow_test >/dev/null 2>&1
 }
 
 #-----------------------------------------------------------------------

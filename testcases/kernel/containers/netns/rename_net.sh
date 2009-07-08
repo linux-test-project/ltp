@@ -46,9 +46,9 @@ export TST_TOTAL
     ip link set $vnet1 name $newdev
     ifconfig $newdev $IP2/24 up > /dev/null 2>&1
 
-    if [ $? == 0 ] ; then
+    if [ $? = 0 ] ; then
         tst_resm TINFO "Successfully Renamed device to $newdev"
-        if [ DEBUG == 1 ]; then
+        if [ "$DEBUG" = 1 ]; then
                 ifconfig
         fi
     else
@@ -56,7 +56,7 @@ export TST_TOTAL
         status=-1
     fi
 
-    if [ $status == 0 ] ; then
+    if [ $status = 0 ] ; then
         echo $sshpid > /tmp/FIFO3
         echo $newdev > /tmp/FIFO4
     else

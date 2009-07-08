@@ -64,7 +64,7 @@ else
 cpu_cores=`cat /proc/cpuinfo | grep "cpu cores" | cut -f 2 -d ':'\
 			 | sed 's/ //' | uniq`
 
-	if [ $cpu_cores == 1 ];then
+	if [ $cpu_cores -eq 1 ];then
 		tst_resm TPASS "SMT is enable"
 	elif [ $cpu_cores -ge 2 ];then
 		tst_resm TPASS "SMP System"

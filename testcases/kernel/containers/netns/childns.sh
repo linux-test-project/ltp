@@ -41,7 +41,7 @@ export TST_TOTAL
 .  initialize.sh
 status=0
     
-    if [ $# == 1 ] ; then
+    if [ $# = 1 ] ; then
         childscrpt=$1
         debug "INFO: The script to be executed in child NS is $childscrpt"
     fi
@@ -63,7 +63,7 @@ status=0
     
     #starting the sshd inside the child NS
     /usr/sbin/sshd -p $PORT
-    if [ $? == 0 ]; then
+    if [ $? = 0 ]; then
         debug "INFO: started the sshd @ port no $PORT"
         sshpid=`ps -ef | grep "sshd -p $PORT" | awk '{ print $2 ; exit 0} ' `
     else
