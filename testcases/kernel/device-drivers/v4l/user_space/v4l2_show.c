@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ *  5 Jul 2009  0.2  show_v4l2_input() introduced
  *  7 May 2009  0.1  First release
  *
  * Written by Márton Németh <nm127@freemail.hu>
@@ -113,4 +114,24 @@ void show_v4l2_buffer(struct v4l2_buffer *buf) {
 		buf->reserved
 	);
 
+}
+
+void show_v4l2_input(struct v4l2_input *input) {
+	dprintf("\tinput = {.index=%u, .name=\"%s\", "
+		".type=0x%X, .audioset=0x%X, .tuner=0x%X, "
+		".std=%llX, "
+		".status=0x%X, "
+		".reserved[]={ 0x%X, 0x%X, 0x%X, 0x%X } }\n",
+		input->index,
+		input->name,
+		input->type,
+		input->audioset,
+		input->tuner,
+		input->std,
+		input->status,
+		input->reserved[0],
+		input->reserved[1],
+		input->reserved[2],
+		input->reserved[3]
+		);
 }

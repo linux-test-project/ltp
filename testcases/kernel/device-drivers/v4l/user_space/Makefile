@@ -1,6 +1,7 @@
 #
 # v4l-test: Test environment for Video For Linux Two API
 #
+#  5 Jul 2009  0.18 v4l2_foreach.c added
 # 19 May 2009  0.17 test_VIDIOC_EXT_CTRLS.c added
 #  7 May 2009  0.16 v4l2_show.c added
 #  5 May 2009  0.15 test_VIDIOC_QUERYBUF.c added
@@ -38,6 +39,7 @@ LDFLAGS = -lcunit
 
 OBJS = dev_video.o \
        v4l2_validator.o \
+       v4l2_foreach.o \
        test_VIDIOC_QUERYCAP.o \
        test_VIDIOC_ENUMAUDIO.o \
        test_VIDIOC_ENUMAUDOUT.o \

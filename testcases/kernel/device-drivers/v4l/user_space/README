@@ -3,6 +3,8 @@
 
 Release History
 ---------------
+ 6 Jul 2009  0.16 Iterate through all available inputs in VIDIOC_G_STD and
+                  VIDIOC_S_STD test cases
 25 May 2009  0.15 Test cases added for VIDIOC_G_EXT_CTRLS, VIDIOC_S_EXT_CTRLS
                   and VIDIOC_TRY_EXT_CTRLS
  7 May 2009  0.14 Test cases added for VIDIOC_QUERYBUF;
@@ -111,14 +113,9 @@ a USB video device or ask the user if a received picture make sense or not.
 See doc/index.html about how much of the specification is covered by the
 different test cases.
 
-Similar projects
-----------------
- - v4ltest: http://www.linuxowl.com/v4ltest.html
- - test cases in dvb-apps repository, under /test directory: http://linuxtv.org/hg/dvb-apps/file
- - test cases in v4l-dvb repository, under /v4l2-apps/test directory:
-http://linuxtv.org/hg/v4l-dvb/file
- - this test environment is also available under Linux Test Project (LTP),
-   under directory testcases/kernel/device-drivers/v4l/user_space: http://ltp.sourceforge.net/
+See also
+--------
+See also doc/index.html for further references and recommended readings.
 
 Feedbacks
 ---------
