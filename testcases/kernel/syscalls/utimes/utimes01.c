@@ -248,6 +248,7 @@ static int do_test(struct test_case *tc)
         /*
          * Execute system call
          */
+	memset(tv, 0, 2 * sizeof(struct timeval));
         tv[0].tv_sec = tc->a_sec;
         tv[1].tv_sec = tc->m_sec;
         TEST(len = strlen(fpath));
