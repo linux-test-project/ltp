@@ -39,15 +39,97 @@
 #                            accordingly.
 
 
-export TST_TOTAL=10                # Number of tests in this testcase
+#
+# Description of individual test cases
+# ------------------------------------
+#
+# Test01: Test if file command recognizes ASCII text files
+# -------
+# 1) Write text to a known file 
+# 2) Use 'file' command to get the type of the known file
+#    Ex: file xyz.txt
+# 3) Grep for the keyword "ASCII text" in the output of the 
+#    'file' command
+# 4) Declare test as PASS if above step is successful else 
+#    declare test as FAIL
+#
+# Test02: Test if file command can recognize bash shell script
+# -------
+# 1) Write a small bash shell script to a known file
+# 2) Use 'file' command to get the type of the known file
+#    Ex: file xyz.sh
+# 3) Grep for the keyword "Bourne-Again shell script" in 
+#    the output of the 'file' command
+# 4) Declare test as PASS if above step is successful else 
+#    declare test as FAIL
+#
+# Test03: Test if file command can recognize bash shell script
+# -------
+#   Similar test(as Test02) is performed with Korn shell script
+#
+# Test04: Test if file command can recognize C shell script
+# -------
+#   Similar test(as Test02) is performed with C shell script
+#
+# Test05: Test if file command can recognize C program text
+# -------
+#   Similar test(as Test02) is performed with C program text
+#
+# Test06: Test if file command can recognize ELF binay executables
+# -------  
+# 1) Grep for 'm68k' or 'sparc' or 'mips' or 'mipseb' or 'sh.eb' 
+#    or 'powerpc' or 'ppc' or 's390' from the output of the command 
+#    'uname -m'
+# 2) If the above step is successful, assign string 'MSB' to variable 
+#    TARGET_ARCH else assign string 'LSB'
+# 3) Write small C program to a known '.c' file
+# 4) Compile it using "cc"
+#    Ex: cc xyz xyz.c
+# 5) Use file command to get the type of the object file
+# 6) Grep for the string "ELF .*-bit $TEST_ARCH executable, .*" 
+#    in the output of the 'file' command
+# 7) If the above command is successful, declare test as PASS
+#    else declare test as FAIL
+#
+# Test07: Test if file command can recognize tar files
+# -------
+# 1) Write text to three different files
+# 2) Archive the files using "tar" command
+#    Ex: tar -cf ...
+# 3) Use 'file' command to get the type of the archive file
+#    Ex: file xyz.tar
+# 4) Grep for the string "tar archive" from the output of
+#    the above 'file' command
+# 5) Declare test as PASS, if the above step is successfull else
+#    declare test as FAIL
+#
+# Test08: Test if file command can tar zip files
+# -------
+# 1) Write text to three different files
+# 2) Archive the files using "tar" command
+#    Ex: tar -cf ...
+# 3) Use 'gzip' command to zip tar files
+#    Ex: gzip -f xyz.tar
+# 4) Use 'file' command to get the type of the archive file
+#    Ex: file xyz.tar.gz
+# 5) Grep for the string "gzip compressed data, .*" from the above 
+#    file commnand
+# 6) Declare test as PASS, if the above step is successfull else
+#    declare test as FAIL
+#
 
+
+export TST_TOTAL=10                # Number of tests in this testcase
+ 
 if [ -z "$LTPTMP" -a -z "$TMPBASE" ]
 then 
     LTPTMP=/tmp/
 else
-	LTPTMP=$TMPBASE
+    LTPTMP=$TMPBASE
 fi
 
+# 'LTPBIN' where actual test cases (test binaries) reside
+# 'LTPROOT' where the actual LTP test suite resides
 if [ -z "$LTPBIN" -a -z "$LTPROOT" ]
 then
     LTPBIN=./
@@ -65,7 +147,7 @@ RC=0
 # Test if file command recognizes ASCII text files.
 
 export TCID=file01
-export TST_COUNT=7
+export TST_COUNT=1
 
 $LTPBIN/tst_resm TINFO "TEST #1: file commad recogizes ASCII text files"
 
