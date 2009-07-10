@@ -31,9 +31,9 @@ if tst_kvercmp 2 6 22 ; then
        exit 0
 fi
 
-RESULT_FILE=/tmp/utimensat.result
+RESULT_FILE=$TMPDIR/utimensat.result
 
-TEST_DIR=/tmp/utimensat_tests
+TEST_DIR=$TMPDIR/utimensat_tests
 FILE=$TEST_DIR/utimensat.test_file
 
 TEST_PROG=utimensat01
