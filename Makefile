@@ -14,6 +14,10 @@ HAS_NUMA=$(shell sh tools/scripts/numa_test.sh)
 export CFLAGS += -Wall $(CROSS_CFLAGS)
 export CC AR RANLIB CPPFLAGS LDFLAGS HAS_NUMA
 
+# SKIP_IDCHECK	!= 1, defaults to previous behavior, which is to execute
+# IDcheck.sh at the end of `make install'.
+SKIP_IDCHECK		?= 0 
+
 -include config.mk
 
 VPATH += include m4
@@ -36,8 +40,9 @@ install: all
 	@$(MAKE) -C m4 install
 	@$(MAKE) -C doc/man1 install
 	@$(MAKE) -C doc/man3 install
-
+ifneq ($(strip $(SKIP_IDCHECK)),1)
 	@./IDcheck.sh
+endif
 
 libltp.a: config.h
 	@$(MAKE) -C lib $@
@@ -54,7 +59,9 @@ uclinux: uclinux_libltp.a
 uclinux_install: uclinux
 	@$(MAKE) -C testcases uclinux_install
 	@$(MAKE) -C tools install
+ifneq ($(strip $(SKIP_IDCHECK)),1)
 	@./IDcheck.sh
+endif
 
 uclinux_libltp.a:
 	@$(MAKE) -C lib UCLINUX=1 libltp.a

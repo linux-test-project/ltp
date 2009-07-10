@@ -22,7 +22,6 @@
 #
 
 # Prompt user if ids/groups should be created
-clear
 echo "Checking for required user/group ids"
 echo ""
 
@@ -41,12 +40,11 @@ passwd="$DESTDIR/etc/passwd"
 
 # find entry.
 fe() {
-	ID=$1; shift
-	FILE=$1; shift
-	awk "/^$ID:/ { FOUND=1 } END { if (\$FOUND == 1) { exit 0; } exit 1; }" \
-	"$FILE"
-	ec=$?
-	echo "$ID => $ec"
+    ID=$1; shift
+    FILE=$1; shift
+    [ -e "$FILE" ] || return $?
+    awk "/^$ID:/ { FOUND=1 } END { if (\$FOUND == 1) { exit 1; } exit 0; }" \
+    "$FILE"
 }
 
 prompt_for_create() {
@@ -70,13 +68,12 @@ if [ -z ${EUID} ] ; then
 	EUID=$(id -u)
 fi
 
-if [ -e "$passwd" -a ! -r "$passwd" ] ; then
-	echo "/etc/passwd not readable by uid $EUID"
+for i in "$passwd" "$group"; do
+    if [ -e "$i" -a ! -r "$i" ] ; then
+	echo "$i not readable by uid $EUID"
 	exit 1
-elif [ -e "$group" -a ! -r "$group" ] ; then
-	echo "$group not readable by uid $EUID"
-	exit 1
-fi
+    fi
+done
 
 fe bin "$passwd"; NO_BIN_ID=$?
 fe daemon "$passwd"; NO_DAEMON_ID=$?
@@ -110,10 +107,10 @@ echo ""
 #debug_vals
 
 if [ $CREATE_ENTRIES -ne 0 ] ; then
-	if ! touch "$group" ; then
-		echo "Couldn't touch $group"
-		exit 1
-	fi
+    if ! touch "$group" "$passwd" 2>/dev/null; then
+        echo "Failed to touch $group or $passwd"
+        exit 1
+    fi
 fi
 
 make_user_group() {
