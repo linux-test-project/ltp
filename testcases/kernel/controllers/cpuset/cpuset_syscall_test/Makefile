@@ -8,7 +8,7 @@ all:cpuset_syscall_test
 cpuset_syscall_test: %: %.o $(LIBOBJECTS)
 
 clean:
-	rm -rf cpuset_syscall_test
+	rm -rf cpuset_syscall_test $(OBJECTS) $(LIBOBJECTS)
 
 install:
 	@set -e; \
