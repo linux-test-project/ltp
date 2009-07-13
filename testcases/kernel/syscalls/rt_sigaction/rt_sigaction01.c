@@ -188,7 +188,7 @@ int main(int ac, char **av) {
         					tst_resm(TINFO,"signal: %d ", signal);
         					tst_resm(TPASS, "rt_sigaction call succeeded: result = %d ",TEST_RETURN );
         					tst_resm(TINFO, "sa.sa_flags = %s ",test_flags_list[flag]);
-						//kill(getpid(),signal);
+						kill(getpid(),signal);
 			                         } else {
                  	   				tst_resm(TFAIL, "%s failed - errno = %d : %s", TCID, TEST_ERRNO, strerror(TEST_ERRNO));
                        				}
