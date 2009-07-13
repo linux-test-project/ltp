@@ -51,11 +51,22 @@
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
 
-#if defined __mips__
+/*
+ * For all but __mips__:
+ *
+ * _COMPAT_NSIG / _COMPAT_NSIG_BPW == 2.
+ *
+ * For __mips__:
+ *
+ * _COMPAT_NSIG / _COMPAT_NSIG_BPW == 4.
+ *
+ * See asm/compat.h under the kernel source for more details.
+ *
+ * Multiply that by a fudge factor of 4 and you have your SIGSETSIZE.
+ */
+#if defined (__mips__)
 #define SIGSETSIZE 16
-#endif
-
-#if defined __arm__ || __i386__ || __powerpc__
+#else
 #define SIGSETSIZE 8
 #endif
 

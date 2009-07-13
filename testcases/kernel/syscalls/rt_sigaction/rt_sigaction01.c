@@ -55,14 +55,24 @@
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
 
-#if defined __mips__
+/*
+ * For all but __mips__:
+ *
+ * _COMPAT_NSIG / _COMPAT_NSIG_BPW == 2.
+ *
+ * For __mips__:
+ *
+ * _COMPAT_NSIG / _COMPAT_NSIG_BPW == 4.
+ *
+ * See asm/compat.h under the kernel source for more details.
+ *
+ * Multiply that by a fudge factor of 4 and you have your SIGSETSIZE.
+ */
+#if defined (__mips__)
 #define SIGSETSIZE 16
-#endif
-
-#if defined __arm__ || __i386__ || __powerpc__
+#else
 #define SIGSETSIZE 8
 #endif
-
 
 /* Extern Global Variables */
 extern int Tst_count;           /* counter for tst_xxx routines.         */
@@ -178,7 +188,7 @@ int main(int ac, char **av) {
         					tst_resm(TINFO,"signal: %d ", signal);
         					tst_resm(TPASS, "rt_sigaction call succeeded: result = %d ",TEST_RETURN );
         					tst_resm(TINFO, "sa.sa_flags = %s ",test_flags_list[flag]);
-						kill(getpid(),signal);
+						//kill(getpid(),signal);
 			                         } else {
                  	   				tst_resm(TFAIL, "%s failed - errno = %d : %s", TCID, TEST_ERRNO, strerror(TEST_ERRNO));
                        				}
