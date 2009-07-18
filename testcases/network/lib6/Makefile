@@ -38,4 +38,5 @@ clean:
 	rm -f $(TARGETS) *.a *.o
 
 runcc.a: runcc.o
-	ar cr runcc.a runcc.o
+	$(AR) cr $@ $^
+	$(RANLIB) $@
