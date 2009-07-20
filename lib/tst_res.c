@@ -32,7 +32,7 @@
  */
 
 
-/* $Id: tst_res.c,v 1.8 2009/06/09 16:01:20 subrata_modak Exp $ */
+/* $Id: tst_res.c,v 1.9 2009/07/20 02:42:32 vapier Exp $ */
 
 /**********************************************************
  *
@@ -115,6 +115,7 @@
 #include <stdarg.h>
 #include <unistd.h>
 #include "test.h"
+#include "usctest.h"
 
 #define VERBOSE      1     /* flag values for the T_mode variable */
 #define CONDENSE     2
@@ -206,6 +207,80 @@ extern int  TST_TOTAL;  /* Total number of test cases from the test */
  */
 char *TESTDIR = NULL;
 
+struct pair {
+	const char *name;
+	int val;
+};
+#define PAIR(def) [def] = { .name = #def, .val = def, },
+const char *pair_lookup(struct pair *pair, int pair_size, int idx)
+{
+	if (idx < 0 || idx >= pair_size || pair[idx].name == NULL)
+		return "???";
+	return pair[idx].name;
+}
+#define pair_lookup(pair, idx) pair_lookup(pair, ARRAY_SIZE(pair), idx)
+
+/*
+ * strttype() - convert a type result to the human readable string
+ */
+const char *strttype(int ttype)
+{
+	struct pair ttype_pairs[] = {
+		PAIR(TPASS)
+		PAIR(TFAIL)
+		PAIR(TBROK)
+		PAIR(TRETR)
+		PAIR(TCONF)
+		PAIR(TWARN)
+		PAIR(TINFO)
+	};
+	return pair_lookup(ttype_pairs, TTYPE_RESULT(ttype));
+}
+
+/*
+ * strerrnodef() - convert an errno value to its C define
+ */
+static const char *strerrnodef(int err)
+{
+	struct pair errno_pairs[] = {
+		PAIR(EPERM)
+		PAIR(ENOENT)
+		PAIR(ESRCH)
+		PAIR(EINTR)
+		PAIR(EIO)
+		PAIR(ENXIO)
+		PAIR(E2BIG)
+		PAIR(ENOEXEC)
+		PAIR(EBADF)
+		PAIR(ECHILD)
+		PAIR(EAGAIN)
+		PAIR(ENOMEM)
+		PAIR(EACCES)
+		PAIR(EFAULT)
+		PAIR(ENOTBLK)
+		PAIR(EBUSY)
+		PAIR(EEXIST)
+		PAIR(EXDEV)
+		PAIR(ENODEV)
+		PAIR(ENOTDIR)
+		PAIR(EISDIR)
+		PAIR(EINVAL)
+		PAIR(ENFILE)
+		PAIR(EMFILE)
+		PAIR(ENOTTY)
+		PAIR(ETXTBSY)
+		PAIR(EFBIG)
+		PAIR(ENOSPC)
+		PAIR(ESPIPE)
+		PAIR(EROFS)
+		PAIR(EMLINK)
+		PAIR(EPIPE)
+		PAIR(EDOM)
+		PAIR(ERANGE)
+	};
+	return pair_lookup(errno_pairs, err);
+}
+
 /*
  * tst_res() - Main result reporting function.  Handle test information
  *             appropriately depending on output display mode.  Call
@@ -217,6 +292,7 @@ void tst_res(int ttype, char *fname, char *arg_fmt, ...)
 {
 	int  i;
 	char tmesg[USERMESG];
+	int ttype_result = TTYPE_RESULT(ttype);
 
 #if DEBUG
 	printf("IN tst_res; Tst_count = %d; Tst_range = %d\n",
@@ -229,7 +305,7 @@ void tst_res(int ttype, char *fname, char *arg_fmt, ...)
 	 * Save the test result type by ORing ttype into the current exit
 	 * value (used by tst_exit()).
 	 */
-	T_exitval |= ttype;
+	T_exitval |= ttype_result;
 
 	/*
 	 * Unless T_out has already been set by tst_environ(), make tst_res()
@@ -257,7 +333,7 @@ void tst_res(int ttype, char *fname, char *arg_fmt, ...)
 	 * Set the test case number and print the results, depending on the
 	 * display type.
 	 */
-	if (ttype == TWARN || ttype == TINFO) {
+	if (ttype_result == TWARN || ttype_result == TINFO) {
 		if (Tst_range > 1)
 			tst_print(TCID, 0, 1, TWARN,
 				  "tst_res(): Range not valid for TINFO or TWARN types");
@@ -303,6 +379,7 @@ void tst_res(int ttype, char *fname, char *arg_fmt, ...)
 static void tst_condense(int tnum, int ttype, char *tmesg)
 {
 	char *file;
+	int ttype_result = TTYPE_RESULT(ttype);
 
 #if DEBUG
 	printf("IN tst_condense: tcid = %s, tnum = %d, ttype = %d, tmesg = %s\n",
@@ -314,7 +391,7 @@ static void tst_condense(int tnum, int ttype, char *tmesg)
 	 * If this result is the same as the previous result, return.
 	 */
 	if (Buffered == TRUE) {
-		if (strcmp(Last_tcid, TCID) == 0 && Last_type == ttype &&
+		if (strcmp(Last_tcid, TCID) == 0 && Last_type == ttype_result &&
 		    strcmp(Last_mesg, tmesg) == 0 && File == NULL )
 			return;
 
@@ -343,7 +420,7 @@ static void tst_condense(int tnum, int ttype, char *tmesg)
 		Last_tcid = (char *)malloc(strlen(TCID) + 1);
 		strcpy(Last_tcid, TCID);
 		Last_num = tnum;
-		Last_type = ttype;
+		Last_type = ttype_result;
 		Last_mesg = (char *)malloc(strlen(tmesg) + 1);
 		strcpy(Last_mesg, tmesg);
 		Buffered = TRUE;
@@ -381,7 +458,8 @@ void tst_flush(void)
  */
 static void tst_print(char *tcid, int tnum, int trange, int ttype, char *tmesg)
 {
-	char type[5];
+	const char *type;
+	int ttype_result = TTYPE_RESULT(ttype);
 
 #if DEBUG
 	printf("IN tst_print: tnum = %d, trange = %d, ttype = %d, tmesg = %s\n",
@@ -395,7 +473,7 @@ static void tst_print(char *tcid, int tnum, int trange, int ttype, char *tmesg)
 	 * also done here to catch internal warnings.  For internal warnings,
 	 * tst_print() is called directly with a case of TWARN.
 	 */
-	T_exitval |= ttype;
+	T_exitval |= ttype_result;
 
 	/*
 	 * If output mode is DISCARD, or if the output mode is NOPASS and this
@@ -404,53 +482,33 @@ static void tst_print(char *tcid, int tnum, int trange, int ttype, char *tmesg)
 	 * tst_res(), since occasionally we get to this point without going
 	 * through tst_res() (e.g. internal TWARN messages).
 	 */
-	if (T_mode == DISCARD || (T_mode == NOPASS && ttype != TFAIL &&
-	    ttype != TBROK && ttype != TWARN))
+	if (T_mode == DISCARD || (T_mode == NOPASS && ttype_result != TFAIL &&
+	    ttype_result != TBROK && ttype_result != TWARN))
 		return;
-
-	/*
-	 * Fill in the type string according to ttype.
-	 */
-	switch (ttype) {
-		case TPASS:
-			strcpy(type, "PASS");
-		break;
-		case TFAIL:
-			strcpy(type, "FAIL");
-		break;
-		case TBROK:
-			strcpy(type, "BROK");
-		break;
-		case TRETR:
-			strcpy(type, "RETR");
-		break;
-		case TCONF:
-			strcpy(type, "CONF");
-		break;
-		case TWARN:
-			strcpy(type, "WARN");
-		break;
-		case TINFO:
-			strcpy(type, "INFO");
-		break;
-		default:
-			strcpy(type, "????");
-		break;
-	}
 
 	/*
 	 * Build the result line and print it.
 	 */
+	type = strttype(ttype);
 	if (T_mode == VERBOSE) {
-		fprintf(T_out, "%-8s %4d  %s  :  %s\n", tcid, tnum, type, tmesg);
+		fprintf(T_out, "%-8s %4d  %s  :  %s", tcid, tnum, type, tmesg);
 	} else {
 		if (trange > 1)
-			fprintf(T_out, "%-8s %4d-%-4d  %s  :  %s\n",
+			fprintf(T_out, "%-8s %4d-%-4d  %s  :  %s",
 				tcid, tnum, tnum + trange - 1, type, tmesg);
 		else
-			fprintf(T_out, "%-8s %4d       %s  :  %s\n",
+			fprintf(T_out, "%-8s %4d       %s  :  %s",
 				tcid, tnum, type, tmesg);
 	}
+	if (ttype & TERRNO) {
+		int err = errno; /* avoid unintended side effects */
+		fprintf(T_out, ": errno=%s(%i): %s", strerrnodef(err),
+			err, strerror(err));
+	}
+	if (ttype & TTERRNO)
+		fprintf(T_out, ": TEST_ERRNO=%s(%i): %s", strerrnodef(TEST_ERRNO),
+			(int)TEST_ERRNO, strerror(TEST_ERRNO));
+	fprintf(T_out, "\n");
 
 	/*
 	 * If tst_res() was called with a file, append file contents to the
@@ -559,6 +617,7 @@ int tst_environ(void)
 void tst_brk(int ttype, char *fname, void (*func)(void), char *arg_fmt, ...)
 {
 	char tmesg[USERMESG];
+	int ttype_result = TTYPE_RESULT(ttype);
 
 #if DEBUG
 	printf("IN tst_brk\n"); fflush(stdout);
@@ -570,10 +629,10 @@ void tst_brk(int ttype, char *fname, void (*func)(void), char *arg_fmt, ...)
 	/*
 	 * Only FAIL, BROK, CONF, and RETR are supported by tst_brk().
 	 */
-	if (ttype != TFAIL && ttype != TBROK && ttype != TCONF &&
-	    ttype != TRETR ) {
+	if (ttype_result != TFAIL && ttype_result != TBROK &&
+	    ttype_result != TCONF && ttype_result != TRETR) {
 		sprintf(Warn_mesg, "tst_brk(): Invalid Type: %d.  Using TBROK",
-			ttype);
+			ttype_result);
 		tst_print(TCID, 0, 1, TWARN, Warn_mesg);
 		ttype = TBROK;
 	}
@@ -641,8 +700,8 @@ void tst_brkloop(int ttype, char *fname, void (*func)(void), char *arg_fmt, ...)
 	if (ttype != TFAIL && ttype != TBROK && ttype != TCONF &&
 	    ttype != TRETR) {
 		sprintf(Warn_mesg,
-			"tst_brkloop(): Invalid Type: %d.  Using TBROK",
-			ttype);
+			"tst_brkloop(): Invalid Type: %d(%s).  Using TBROK",
+			ttype, strttype(ttype));
 		tst_print(TCID, 0, 1, TWARN, Warn_mesg);
 		ttype = TBROK;
 	}
@@ -805,7 +864,6 @@ int main(void)
 {
 	int  ttype;
 	int  range;
-	char *chrptr;
 	char chr;
 	char fname[MAXMESG];
 
@@ -815,16 +873,18 @@ int main(void)
 	       -3 : call tst_brk()\n\
 	       -4 : call tst_brkloop()\n\
 	       -5 : call tst_res() with a range\n\
-	        0 : call tst_res(TPASS, ...)\n\
-	        1 : call tst_res(TFAIL, ...)\n\
-	        2 : call tst_res(TBROK, ...)\n\
-	        4 : call tst_res(TWARN, ...)\n\
-	        8 : call tst_res(TRETR, ...)\n\
-	       16 : call tst_res(TINFO, ...)\n\
-	       32 : call tst_res(TCONF, ...)\n\n");
+	       %2i : call tst_res(TPASS, ...)\n\
+	       %2i : call tst_res(TFAIL, ...)\n\
+	       %2i : call tst_res(TBROK, ...)\n\
+	       %2i : call tst_res(TWARN, ...)\n\
+	       %2i : call tst_res(TRETR, ...)\n\
+	       %2i : call tst_res(TINFO, ...)\n\
+	       %2i : call tst_res(TCONF, ...)\n\n",
+		TPASS, TFAIL, TBROK, TWARN, TRETR, TINFO, TCONF);
 
 	while (1) {
-		printf("Enter ttype (-5,-4,-3,-2,-1,0,1,2,4,8,16,32): ");
+		printf("Enter ttype (-5,-4,-3,-2,-1,%i,%i,%i,%i,%i,%i,%i): ",
+			TPASS, TFAIL, TBROK, TWARN, TRETR, TINFO, TCONF);
 		scanf("%d%c", &ttype, &chr);
 
 		switch (ttype) {
@@ -837,7 +897,8 @@ int main(void)
 			break;
 
 			case -3:
-				printf("Enter the current type (1=FAIL, 2=BROK, 8=RETR, 32=CONF): ");
+				printf("Enter the current type (%i=FAIL, %i=BROK, %i=RETR, %i=CONF): ",
+					TFAIL, TBROK, TRETR, TCONF);
 				scanf("%d%c", &ttype, &chr);
 				printf("Enter file name (<cr> for none): ");
 				gets(fname);
@@ -852,7 +913,8 @@ int main(void)
 				scanf("%d%c", &range, &chr);
 				Tst_lpstart = Tst_count;
 				Tst_lptotal = range;
-				printf("Enter the current type (1=FAIL, 2=BROK, 8=RETR, 32=CONF): ");
+				printf("Enter the current type (%i=FAIL, %i=BROK, %i=RETR, %i=CONF): ",
+					TFAIL, TBROK, TRETR, TCONF);
 				scanf("%d%c", &ttype, &chr);
 				printf("Enter file name (<cr> for none): ");
 				gets(fname);
@@ -866,7 +928,8 @@ int main(void)
 			case -5:
 				printf("Enter the size of the range: ");
 				scanf("%d%c", &Tst_range, &chr);
-				printf("Enter the current type (0,1,2,4,8,16,32): ");
+				printf("Enter the current type (%i,%i,%i,%i,%i,%i,%i): ",
+					TPASS, TFAIL, TBROK, TWARN, TRETR, TINFO, TCONF);
 				scanf("%d%c", &ttype, &chr);
 			default:
 				printf("Enter file name (<cr> for none): ");
