@@ -2,13 +2,13 @@ This is a README to describe the ltp-devel.patch functional changes.
 
 "make install" is to build and install:
 
-	/opt/ltp/bin/ltp-bump
-	/opt/ltp/bin/ltp-pan
-	/opt/ltp/bin/ltp-scanner
-	/opt/ltp/lib/libltp.a
-	/usr/share/pkgconfig/ltp.pc
-	/opt/ltp/include/
-	/usr/share/man/
+	/scratch/ltp-install2/bin/ltp-bump
+	/scratch/ltp-install2/bin/ltp-pan
+	/scratch/ltp-install2/bin/ltp-scanner
+	/scratch/ltp-install2/lib/libltp.a
+	${prefix}/share/pkgconfig/ltp.pc
+	/scratch/ltp-install2/include/
+	${datarootdir}/man
 
 "make package" is to rpm package what was installed above:
 
