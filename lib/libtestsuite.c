@@ -82,7 +82,7 @@ void generate_pipe_name(const char *name)
 {
 	char *p;
 
-	p = rindex(name, '/');
+	p = strrchr(name, '/');
 	if (p == NULL)
 		p = (char *) name;
 	else
