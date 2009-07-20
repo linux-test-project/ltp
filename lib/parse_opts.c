@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: parse_opts.c,v 1.11 2007/04/11 04:17:56 subrata_modak Exp $ */
+/* $Id: parse_opts.c,v 1.12 2009/07/20 04:48:17 vapier Exp $ */
 
 /**********************************************************
  * 
@@ -579,7 +579,7 @@ STD_opts_help()
 
     for(i = 0; std_options[i].optstr; ++i) {
 	if (std_options[i].help)
-	    printf(std_options[i].help);
+	    printf("%s", std_options[i].help);
     }
 }
 
