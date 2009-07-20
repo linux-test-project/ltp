@@ -44,7 +44,7 @@ for arch in `cat order` ; do
 	echo "#ifdef __${arch}__" >> ${output}
 	while read line ; do
 		set -- $line
-		nr=$1
+		nr="__NR_$1"
 		shift
 		if [ -z "$*" ] ; then
 			echo "invalid line found"
@@ -64,7 +64,9 @@ done
 
 echo -n "Generating stub list ... "
 echo "" >> ${output}
+echo "/* Common stubs */" >> ${output}
 for nr in $(awk '{print $1}' *.in | sort -u) ; do
+	nr="__NR_$nr"
 	cat <<-EOF >> ${output}
 	# ifndef $nr
 	#  define $nr 0
