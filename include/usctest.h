@@ -1,56 +1,56 @@
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
- * 
+ *
  * This program is distributed in the hope that it would be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * 
+ *
  * Further, this software is distributed without any warranty that it is
  * free of the rightful claim of any third person regarding infringement
  * or the like.  Any license provided herein, whether implied or
  * otherwise, applies only to this software file.  Patent licenses, if
  * any, provided herein do not apply to combinations of this program with
  * other software, or any other product whatsoever.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston MA 02111-1307, USA.
- * 
+ *
  * Contact information: Silicon Graphics, Inc., 1600 Amphitheatre Pkwy,
  * Mountain View, CA  94043, or:
- * 
- * http://www.sgi.com 
- * 
- * For further information regarding this notice, see: 
- * 
+ *
+ * http://www.sgi.com
+ *
+ * For further information regarding this notice, see:
+ *
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: usctest.h,v 1.10 2006/05/26 06:06:06 vapier Exp $ */
+/* $Id: usctest.h,v 1.11 2009/07/20 10:59:32 vapier Exp $ */
 
 /**********************************************************
- * 
+ *
  *    IRIX/Linux Feature Test and Evaluation - Silicon Graphics, Inc.
- * 
+ *
  *    FUNCTION NAME 	: usctest.h
- * 
+ *
  *    FUNCTION TITLE	: System Call Test Macros
- * 
+ *
  *    SYNOPSIS:
  *	See DESCRIPTION below.
- * 
+ *
  *    AUTHOR		: William Roske
- * 
+ *
  *    INITIAL RELEASE	: UNICOS 7.0
- * 
+ *
  *    DESCRIPTION
  * 	TEST(SCALL) - calls a system call
  *	TEST_VOID(SCALL) - same as TEST() but for syscalls with no return value.
- *	TEST_CLEANUP - print the log of errno return counts if STD_ERRNO_LOG 
+ *	TEST_CLEANUP - print the log of errno return counts if STD_ERRNO_LOG
  *		       is set.
  *	TEST_PAUSEF(HAND) - Pause for SIGUSR1 if the pause flag is set.
  *		      Use "hand" as the interrupt handling function
@@ -92,8 +92,8 @@
 
 #include <sys/param.h>
 
-/* 
- * Ensure that PATH_MAX is defined 
+/*
+ * Ensure that PATH_MAX is defined
  */
 #ifndef PATH_MAX
 #ifdef MAXPATHLEN
@@ -104,7 +104,7 @@
 #endif
 
 #ifndef CRAY
-#ifndef BSIZE 
+#ifndef BSIZE
 #define BSIZE BBSIZE
 #endif
 #endif
@@ -114,14 +114,14 @@
  * Entries in this struct are used by the parse_opts routine
  * to indicate valid options and return option arguments
  ***********************************************************************/
-typedef struct {		
+typedef struct {
   char *option;      	/* Valid option string (one option only) like "a:" */
   int  *flag;		/* pointer to location to set true if option given */
   char **arg;		/* pointer to location to place argument, if needed */
 } option_t;
 
 /***********************************************************************
- * The following globals are defined in parse_opts.c but must be 
+ * The following globals are defined in parse_opts.c but must be
  * externed here because they are used in the macros defined below.
  ***********************************************************************/
 extern int STD_FUNCTIONAL_TEST,	/* turned off by -f to not do functional test */
@@ -138,7 +138,7 @@ extern float STD_LOOP_DURATION, /* wall clock time to iterate */
 	     STD_LOOP_DELAY;    /* delay time after each iteration */
 
 #define USC_MAX_ERRNO	2000
-    
+
 /**********************************************************************
  * Prototype for parse_opts routine
  **********************************************************************/
@@ -146,7 +146,7 @@ extern char *parse_opts(int ac, char **av, option_t *user_optarr, void (*uhf)())
 
 
 /*
- * define a structure 
+ * define a structure
  */
 struct usc_errno_t {
     int flag;
@@ -154,7 +154,7 @@ struct usc_errno_t {
 
 /***********************************************************************
  ****
- **** 
+ ****
  ****
  **********************************************************************/
 #ifdef  _USC_LIB_
@@ -181,12 +181,12 @@ long TEST_ERRNO;
 /***********************************************************************
  * temporary variables for determining max and min times in TEST macro
  ***********************************************************************/
-long btime, etime, tmptime;	
+long btime, etime, tmptime;
 
 #endif  /* _USC_LIB_ */
 
 /***********************************************************************
- * structure for timing accumulator and counters 
+ * structure for timing accumulator and counters
  ***********************************************************************/
 struct tblock {
     long tb_max;
@@ -206,8 +206,8 @@ extern void STD_opts_help();
 
 
 /***********************************************************************
- * TEST: calls a system call 
- * 
+ * TEST: calls a system call
+ *
  * parameters:
  *	SCALL = system call and parameters to execute
  *
@@ -221,12 +221,12 @@ extern void STD_opts_help();
 
 /***********************************************************************
  * TEST_VOID: calls a system call
- * 
+ *
  * parameters:
  *	SCALL = system call and parameters to execute
  *
  * Note: This is IDENTICAL to the TEST() macro except that it is intended
- * for use with syscalls returning no values (void syscall()).  The 
+ * for use with syscalls returning no values (void syscall()).  The
  * Typecasting nothing (void) into an unsigned integer causes compilation
  * errors.
  *
@@ -237,7 +237,7 @@ extern void STD_opts_help();
  * TEST_CLEANUP: print system call timing stats and errno log entries
  * to stdout if STD_TIMING_ON and STD_ERRNO_LOG are set, respectively.
  * Do NOT print ANY information if no system calls logged.
- * 
+ *
  * parameters:
  *	none
  *
@@ -261,7 +261,7 @@ if ( STD_ERRNO_LOG ) {						\
  * TEST_PAUSEF: Pause for SIGUSR1 if the pause flag is set.
  * 		 Set the user specified function as the interrupt
  *		 handler instead of "STD_go"
- * 
+ *
  * parameters:
  *	none
  *
@@ -276,7 +276,7 @@ if ( STD_PAUSE ) { 					\
 /***********************************************************************
  * TEST_PAUSE: Pause for SIGUSR1 if the pause flag is set.
  *	       Just continue when signal comes in.
- * 
+ *
  * parameters:
  *	none
  *
@@ -295,7 +295,7 @@ int usc_test_looping(int counter);
 
 /***********************************************************************
  * TEST_ERROR_LOG(eno): log this errno if STD_ERRNO_LOG flag set
- * 
+ *
  * parameters:
  *	int eno: the errno location in STD_ERRNO_LIST to log.
  *
@@ -309,7 +309,7 @@ int usc_test_looping(int counter);
 /***********************************************************************
  * TEST_EXP_ENOS(array): set the bits associated with the nput errnos
  *	in the TEST_VALID_ENO array.
- * 
+ *
  * parameters:
  *	int array[]: a zero terminated array of errnos expected.
  *
@@ -321,6 +321,6 @@ int usc_test_looping(int counter);
 	    TEST_VALID_ENO[array[tmptime]].flag=1;	\
 	tmptime++;					\
     }
-					
+
 
 #endif  /* end of __USCTEST_H__ */

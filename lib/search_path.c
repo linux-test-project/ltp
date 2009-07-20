@@ -1,4 +1,4 @@
-/* $Header: /cvsroot/ltp/ltp/lib/search_path.c,v 1.3 2006/07/19 14:00:56 robbiew Exp $ */
+/* $Header: /cvsroot/ltp/ltp/lib/search_path.c,v 1.4 2009/07/20 10:59:32 vapier Exp $ */
 
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
@@ -34,24 +34,24 @@
 
 
 /**********************************************************
- * 
+ *
  *    UNICOS Feature Test and Evaluation - Cray Research, Inc.
- * 
- *    FUNCTION NAME 	: search_path 
- * 
+ *
+ *    FUNCTION NAME 	: search_path
+ *
  *    FUNCTION TITLE	: search PATH locations for desired filename
- * 
+ *
  *    SYNOPSIS:
  *	int search_path(cmd, res_path, access_mode, fullpath)
  *	char *cmd;
  *	char *res_path;
  *	int access_mode;
  *	int fullpath;
- * 
+ *
  *    AUTHOR		: Richard Logan
- * 
+ *
  *    INITIAL RELEASE	: UNICOS 7.0
- * 
+ *
  *    DESCRIPTION
  *	Search_path will walk through PATH and attempt to find "cmd".  If cmd is
  *	a full or relative path, it is checked but PATH locations are not scanned.
@@ -66,10 +66,10 @@
  *	directory is prepended to path/cmd before access is called.
  *	If cmd is found, search_path will return 0.  If cmd cannot be
  *	found, 1 is returned.  If an error has occurred, -1 is returned
- *	and an error mesg is placed in res_path. 
+ *	and an error mesg is placed in res_path.
  *	If the length of path/cmd is larger then PATH_MAX, then that path
  *	location is skipped.
- * 
+ *
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 
 #include <stdio.h>
@@ -121,7 +121,7 @@ char **argv;
 	    printf("path of %s is %s\n", argv[ind], path);
 	}
     }
-    
+
 }
 
 #endif
@@ -151,7 +151,7 @@ printf("search_path: cmd = %s, access_mode = %d, fullpath = %d\n", cmd, access_m
     /*
      * full or relative path was given
      */
-    if ( (cmd[0] == '/') || ( (cp=strchr(cmd, '/')) != NULL )) {  
+    if ( (cmd[0] == '/') || ( (cp=strchr(cmd, '/')) != NULL )) {
 	if ( access(cmd, access_mode) == 0 ) {
 
 	    if ( cmd[0] != '/' ) { /* relative path */
@@ -184,8 +184,8 @@ printf("search_path: cmd = %s, access_mode = %d, fullpath = %d\n", cmd, access_m
     }
 
     /*
-     * walk through each path in PATH. 
-     * Each path in PATH is placed in tmppath.  
+     * walk through each path in PATH.
+     * Each path in PATH is placed in tmppath.
      * pathenv cannot be modified since it will affect PATH.
      * If a signal came in while we have modified the PATH
      * memory, we could create a problem for the caller.
@@ -236,7 +236,7 @@ printf("search_path: res_path = '%s'\n", res_path);
 	    /* if the path is not full at this point, prepend the current
 	     * path to get the full path.
 	     * Note:  this could not be wise to do when under a protected
-	     * directory.  
+	     * directory.
 	     */
 
 	if ( fullpath && res_path[0] != '/' ) {	/* not a full path */

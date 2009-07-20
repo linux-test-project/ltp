@@ -1,32 +1,32 @@
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
- * 
+ *
  * This program is distributed in the hope that it would be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * 
+ *
  * Further, this software is distributed without any warranty that it is
  * free of the rightful claim of any third person regarding infringement
  * or the like.  Any license provided herein, whether implied or
  * otherwise, applies only to this software file.  Patent licenses, if
  * any, provided herein do not apply to combinations of this program with
  * other software, or any other product whatsoever.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston MA 02111-1307, USA.
- * 
+ *
  * Contact information: Silicon Graphics, Inc., 1600 Amphitheatre Pkwy,
  * Mountain View, CA  94043, or:
- * 
- * http://www.sgi.com 
- * 
- * For further information regarding this notice, see: 
- * 
+ *
+ * http://www.sgi.com
+ *
+ * For further information regarding this notice, see:
+ *
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 /*
@@ -45,7 +45,7 @@
  * The wlog_rec datatype is a structure which contains all the information
  * about a file write.  Examples include the file name, offset, length,
  * pattern, etc.  In addition there is a bit which is cleared/set based
- * on whether or not the write has been confirmed as complete.  This 
+ * on whether or not the write has been confirmed as complete.  This
  * allows the write logfile to contain information on writes which have
  * been initiated, but not yet completed (as in async io).
  *
@@ -152,7 +152,7 @@ int			mode;
 		wfile->w_afd = -1;
 		return -1;
 	}
-    
+
 	return 0;
 }
 
@@ -178,10 +178,10 @@ struct wlog_file	*wfile;
  * is so that we can record writes which are outstanding (with the w_done
  * bit in wrec cleared), but not completed, and then later update the
  * logfile when the write request completes (as with async io).  When
- * offset is >= 0, only the fixed length portion of the record is 
+ * offset is >= 0, only the fixed length portion of the record is
  * rewritten.  See text in write_log.h for details on the format of an
  * on-disk record.
- * 
+ *
  * The return value of the function is the byte offset in the logfile
  * where the record begins.
  *
@@ -221,12 +221,12 @@ long			offset;
 	 * its length onto the end so that wlog_scan_backward() will work.
 	 * Length is asumed to fit into 2 bytes.
 	 */
-	    
+
 	    wbuf[reclen] = reclen / 256;
 	    wbuf[reclen+1] = reclen % 256;
 	    reclen += 2;
 
-            if ( write(wfile->w_afd, wbuf, reclen) == -1 ) { 
+            if ( write(wfile->w_afd, wbuf, reclen) == -1 ) {
                   sprintf(Wlog_Error_String,
                           "Could not write log - write(%s, %s, %d) failed:  %s\n",
                            wfile->w_file, wbuf, reclen, strerror(errno));
@@ -244,7 +244,7 @@ long			offset;
             if ( (lseek(wfile->w_rfd, offset, SEEK_SET)) == -1 ) {
                   sprintf(Wlog_Error_String,
                           "Could not reposition file pointer - lseek(%s, %ld, SEEK_SET) failed:  %s\n",
-                           wfile->w_file, offset, strerror(errno)); 
+                           wfile->w_file, offset, strerror(errno));
                   return -1;
             } else {
                   if ( (write(wfile->w_rfd, wbuf, reclen)) == -1 ) {
@@ -255,7 +255,7 @@ long			offset;
                   }
             }
     }
-    
+
     return offset;
 }
 
@@ -317,7 +317,7 @@ long			data;
 			offset -= sizeof(buf) - leftover;
 		}
 
-		/* 
+		/*
 		 * Move to the proper file offset, and read into buf
 		 */
                 if ( (lseek(fd, offset, SEEK_SET)) ==-1  ) {
@@ -445,13 +445,13 @@ int             flag;
 		file = buf + sizeof(struct wlog_rec_disk);
 		host = file + wrecd->w_pathlen;
 		pattern = host + wrecd->w_hostlen;
-	
+
 		if (wrecd->w_pathlen > 0)
 			memcpy(file, wrec->w_path, wrecd->w_pathlen);
-	
+
 		if (wrecd->w_hostlen > 0)
 			memcpy(host, wrec->w_host, wrecd->w_hostlen);
-	
+
 		if (wrecd->w_patternlen > 0)
 			memcpy(pattern, wrec->w_pattern, wrecd->w_patternlen);
 

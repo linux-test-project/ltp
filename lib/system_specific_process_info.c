@@ -22,7 +22,7 @@
  *	get_max_pids(): Return the maximum number of pids for this system by
  *			reading /proc/sys/kernel/pid_max
  *
- *	get_free_pids(): Return number of free pids by subtracting the number 
+ *	get_free_pids(): Return number of free pids by subtracting the number
  *			 of pids currently used ('ps -eT') from max_pids
  */
 

@@ -1,32 +1,32 @@
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
- * 
+ *
  * This program is distributed in the hope that it would be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * 
+ *
  * Further, this software is distributed without any warranty that it is
  * free of the rightful claim of any third person regarding infringement
  * or the like.  Any license provided herein, whether implied or
  * otherwise, applies only to this software file.  Patent licenses, if
  * any, provided herein do not apply to combinations of this program with
  * other software, or any other product whatsoever.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston MA 02111-1307, USA.
- * 
+ *
  * Contact information: Silicon Graphics, Inc., 1600 Amphitheatre Pkwy,
  * Mountain View, CA  94043, or:
- * 
- * http://www.sgi.com 
- * 
- * For further information regarding this notice, see: 
- * 
+ *
+ * http://www.sgi.com
+ *
+ * For further information regarding this notice, see:
+ *
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 #include <stdio.h>
@@ -69,7 +69,7 @@ struct range {
  *	str		The string to parse - assumed to be a comma-separated
  *			list of tokens having the above format.
  *	defmin		default value to plug in for min, if it is missing
- *	defmax		default value to plug in for max, if it is missing     
+ *	defmax		default value to plug in for max, if it is missing
  *	defmult		default value to plug in for mult, if missing
  *	parse_func	A user-supplied function pointer, which parse_ranges()
  *			can call to parse the min, max, and mult strings.  This
@@ -77,7 +77,7 @@ struct range {
  *			MUST have the following prototype:
  *				parse_func(char *str, int *val)
  *			The function should return -1 if str cannot be parsed
- *			into an integer, or >= 0 if it was successfully 
+ *			into an integer, or >= 0 if it was successfully
  *			parsed.  The resulting integer will be stored in
  *			*val.  If parse_func is NULL, parse_ranges will parse
  *			the tokens in a manner consistent with the the sscanf
@@ -168,7 +168,7 @@ char	**errptr;
 
 		/*
 		 * Process the 'max' field - if one was not present (n1 format)
-		 * set max equal to min.  If the field was present, but 
+		 * set max equal to min.  If the field was present, but
 		 * zero length (n1: format), retain the default.  Otherwise
 		 * pass the string to the parse function.
 		 */
@@ -185,7 +185,7 @@ char	**errptr;
 		}
 
 		/*
-		 * Process the 'mult' field - if one was not present 
+		 * Process the 'mult' field - if one was not present
 		 * (n1:n2 format), or the field was zero length (n1:n2: format)
 		 * then set the mult field to defmult - otherwise pass then
 		 * mult field to the parse function.
@@ -352,7 +352,7 @@ char	**errp;
 	}
 
     	nmults = ((max - min) / mult) + 1;
-#if CRAY 
+#if CRAY
         /*
          * If max is less than 2gb, then the value can fit in 32 bits
          * and the standard lrand48() routine can be used.
@@ -540,7 +540,7 @@ char		**errp;
 	 * If max is less than 2gb, then the value can fit in 32 bits
 	 * and the standard lrand48() routine can be used.
 	 */
-	if ( max <= (long)2147483647 ) {  
+	if ( max <= (long)2147483647 ) {
     	    return (long long) (min + (((long long)lrand48() % nmults) * mult));
 	} else {
 	    /*
@@ -583,7 +583,7 @@ divider(long long min, long long max, long long cnt, long long rand)
     /*
      * Only get a random number the first time.
      */
-    if ( cnt == 0 || rand < -1 ) { 
+    if ( cnt == 0 || rand < -1 ) {
         rand = (long long)lrand48();  /* 32 bit random number */
     }
 
@@ -620,7 +620,7 @@ printf("   diff = %lld, half = %lld,   med = %lld\n", diff, half, med);
 	} else {
 	    return divider(min, med, cnt+1, rand);
 	}
-	
+
     }
 
 }
@@ -760,7 +760,7 @@ char **argv;
     int imax=1048576;
 #endif
 
-    long lret, lmin=0, lmult=1, ltmin, ltmax=0; 
+    long lret, lmin=0, lmult=1, ltmin, ltmax=0;
 #if CRAY || (_MIPS_SZLONG == 64)
     long lmax=6*(long)GIG;	/* higher than 32 bits */
 #else
@@ -777,7 +777,7 @@ char **argv;
 
     for (ind=0; ind<PARTNUM; ind++ )
 	cntarr[ind]=0;
-    
+
     if ( argc < 2 ) {
         printf("Usage: %s func [iterations] \n", argv[0]);
 	printf("func can be random_range, random_rangel, random_rangell\n");
@@ -826,7 +826,7 @@ char **argv;
 	        valbound[ind], valbound[ind+1], cntarr[ind],
 	        (float)(cntarr[ind]/(float)iter));
         }
-        printf("%2d %-13ld to  %-13ld   %5ld %4.4f\n", PARTNUM, 
+        printf("%2d %-13ld to  %-13ld   %5ld %4.4f\n", PARTNUM,
 	    valbound[PARTNUM-1], lmax, cntarr[PARTNUM-1],
 	    (float)(cntarr[PARTNUM-1]/(float)iter));
 	printf("  min=%ld,  max=%ld\n", ltmin, ltmax);
@@ -904,7 +904,7 @@ char **argv;
 	        valbound[ind], valbound[ind+1], cntarr[ind],
 	        (float)(cntarr[ind]/(float)iter));
         }
-        printf("%2d %-13ld to  %-13ld   %5ld %4.4f\n", PARTNUM, 
+        printf("%2d %-13ld to  %-13ld   %5ld %4.4f\n", PARTNUM,
 	    valbound[PARTNUM-1], (long)imax, cntarr[PARTNUM-1],
 	    (float)(cntarr[PARTNUM-1]/(float)iter));
 	printf("  min=%d,  max=%d\n", itmin, itmax);

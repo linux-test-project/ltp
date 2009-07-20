@@ -138,9 +138,9 @@ int sync_pipe_wait(int fd[])
 		close (fd[1]);
 		fd[1] = -1;
 	}
-	
+
 	r = read (fd[0], &buf, 1);
-	
+
 	if ((r != 1) || (buf != 'A'))
 		return -1;
 	return 0;

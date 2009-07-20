@@ -1,5 +1,5 @@
 /* The following functions are used to synchronize father and sons processes.
- * 
+ *
  * create_sync_pipes: create pipes used for the synchronization. Must be done
  *                    by father process before a fork.
  *

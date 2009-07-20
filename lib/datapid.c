@@ -1,32 +1,32 @@
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
- * 
+ *
  * This program is distributed in the hope that it would be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * 
+ *
  * Further, this software is distributed without any warranty that it is
  * free of the rightful claim of any third person regarding infringement
  * or the like.  Any license provided herein, whether implied or
  * otherwise, applies only to this software file.  Patent licenses, if
  * any, provided herein do not apply to combinations of this program with
  * other software, or any other product whatsoever.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston MA 02111-1307, USA.
- * 
+ *
  * Contact information: Silicon Graphics, Inc., 1600 Amphitheatre Pkwy,
  * Mountain View, CA  94043, or:
- * 
- * http://www.sgi.com 
- * 
- * For further information regarding this notice, see: 
- * 
+ *
+ * http://www.sgi.com
+ *
+ * For further information regarding this notice, see:
+ *
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 /************
@@ -44,7 +44,7 @@ ________________________________________________________________
 
 
 8 bits to a bytes == character
- NBPW            8 
+ NBPW            8
 ************/
 
 #include <stdio.h>
@@ -72,12 +72,12 @@ static char Errmsg[80];
 
 /***********************************************************************
  *
- * 
+ *
  * 1   2   3   4   5   6   7   8   9   10  11  12  13  14  14  15	bytes
  * 1234567890123456789012345678901234567890123456789012345678901234	bits
  * ________________________________________________________________	1 word
  * <    pid       >< offset in file of this word  ><    pid       >
- * 
+ *
  * the words are put together where offset zero is the start.
  * thus, offset 16 is the start of  the second full word
  * Thus, offset 8 is in middle of word 1
@@ -90,7 +90,7 @@ int bsize;
 int offset;
 {
 #if CRAY
-	
+
    int cnt;
    int tmp;
    char *chr;
@@ -124,13 +124,13 @@ printf("partial at beginning, cnt = %d, woff = %d\n", cnt, woff);
     }
 
     /*
-     * full words 
+     * full words
      */
 
     num_full_words = (bsize-boff)/NBPW;
-	
+
     woff = offset+boff;
-	
+
     for (cnt=0; cnt<num_full_words; woff += NBPW, cnt++ ) {
 
 	word = ((LOWER16BITS(pid) << 48) | (LOWER32BITS(woff) << 16) | LOWER16BITS(pid));
@@ -171,7 +171,7 @@ printf("partial at end\n");
 
 #endif
 
-} 
+}
 
 /***********************************************************************
  *
@@ -186,7 +186,7 @@ int offset;
 char **errmsg;
 {
 #if CRAY
-	
+
    int cnt;
    int tmp;
    char *chr;
@@ -225,13 +225,13 @@ char **errmsg;
     }
 
     /*
-     * full words 
+     * full words
      */
 
     num_full_words = (bsize-boff)/NBPW;
-	
+
     woff = offset+boff;
-	
+
     for (cnt=0; cnt<num_full_words; woff += NBPW, cnt++ ) {
 	word = ((LOWER16BITS(pid) << 48) | (LOWER32BITS(woff) << 16) | LOWER16BITS(pid));
 
@@ -281,7 +281,7 @@ printf("partial at end\n");
     return -1;      /* buffer is ok */
 
 #else
-	
+
     if ( errmsg != NULL ) {
         *errmsg = Errmsg;
     }

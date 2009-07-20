@@ -44,7 +44,7 @@ int get_no_of_hugepages() {
        if (!fgets(buf, 10, f)) {
                fclose(f);
                tst_resm(TBROK, "Could not read Total_Hugepages from /proc/meminfo");
-               tst_exit(); 
+               tst_exit();
        }
        pclose(f);
        return(atoi(buf));

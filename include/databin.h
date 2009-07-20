@@ -14,7 +14,7 @@
 *
 * DESCRIPTION
 *       datagen fills the buffer pointed to by 'buffer' with 'bsize' bytes
-*       of data of the form indicated by 'mode'.  
+*       of data of the form indicated by 'mode'.
 *	All modes (expect r -random) are file offset based.
 *	This allows more than process to do writing to the file without
 *	corrupting it if the same modes were used.

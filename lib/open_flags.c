@@ -1,32 +1,32 @@
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
- * 
+ *
  * This program is distributed in the hope that it would be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * 
+ *
  * Further, this software is distributed without any warranty that it is
  * free of the rightful claim of any third person regarding infringement
  * or the like.  Any license provided herein, whether implied or
  * otherwise, applies only to this software file.  Patent licenses, if
  * any, provided herein do not apply to combinations of this program with
  * other software, or any other product whatsoever.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston MA 02111-1307, USA.
- * 
+ *
  * Contact information: Silicon Graphics, Inc., 1600 Amphitheatre Pkwy,
  * Mountain View, CA  94043, or:
- * 
- * http://www.sgi.com 
- * 
- * For further information regarding this notice, see: 
- * 
+ *
+ * http://www.sgi.com
+ *
+ * For further information regarding this notice, see:
+ *
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 /**************************************************************
@@ -66,10 +66,10 @@
  *	If parse_open_flags returns, <string> will left unchanged.
  *
  * 	The openflags2symbols function attempts to convert open flag
- *	bits into human readable  symbols (i.e. O_TRUNC).  If there 
+ *	bits into human readable  symbols (i.e. O_TRUNC).  If there
  *	are more than one symbol, the <sep> string will be placed as
  *	a separator between symbols.  Commonly used separators would
- *	be a comma "," or pipe "|".  If <mode> is one and not all 
+ *	be a comma "," or pipe "|".  If <mode> is one and not all
  *	<openflags> bits can be converted to symbols, the "UNKNOWN"
  *	symbol will be added to return string.
  * 	Openflags2symbols will return the indentified symbols.
@@ -187,7 +187,7 @@ static struct open_flag_t Open_flags[] = {
 
 };
 
-int 
+int
 parse_open_flags(char *string, char **badname)
 {
    int  bits = 0;
@@ -262,9 +262,9 @@ openflags2symbols(int openflags, char *sep, int mode)
      *  Loop through all but O_RDONLY elments of Open_flags
      */
     for(ind=1; ind < size; ind++) {
-	  
+
 	if ( (bits & Open_flags[ind].flag) == Open_flags[ind].flag ) {
-	    if ( havesome ) 
+	    if ( havesome )
 		strcat(Open_symbols, sep);
 
 	    strcat(Open_symbols, Open_flags[ind].symbol);
@@ -314,11 +314,11 @@ char **argv;
     if ( sscanf(argv[1], "%i", &bits) == 1 ) {
 	printf("openflags2symbols(%#o, \",\", 1) returned %s\n",
 	    bits, openflags2symbols(bits, ",", 1));
-	
+
     } else {
 	ret=parse_open_flags(argv[1], &err);
 	if ( ret == -1 )
-	    printf("parse_open_flags(%s, &err) returned -1, err = %s\n", 
+	    printf("parse_open_flags(%s, &err) returned -1, err = %s\n",
 	        argv[0], err);
         else
 	    printf("parse_open_flags(%s, &err) returned %#o\n", argv[0], ret);

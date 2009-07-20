@@ -1,32 +1,32 @@
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
- * 
+ *
  * This program is distributed in the hope that it would be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * 
+ *
  * Further, this software is distributed without any warranty that it is
  * free of the rightful claim of any third person regarding infringement
  * or the like.  Any license provided herein, whether implied or
  * otherwise, applies only to this software file.  Patent licenses, if
  * any, provided herein do not apply to combinations of this program with
  * other software, or any other product whatsoever.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston MA 02111-1307, USA.
- * 
+ *
  * Contact information: Silicon Graphics, Inc., 1600 Amphitheatre Pkwy,
  * Mountain View, CA  94043, or:
- * 
- * http://www.sgi.com 
- * 
- * For further information regarding this notice, see: 
- * 
+ *
+ * http://www.sgi.com
+ *
+ * For further information regarding this notice, see:
+ *
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 /*
@@ -88,7 +88,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/time.h>          
+#include <sys/time.h>
 #include <sys/param.h>
 #include <errno.h>
 #include <sys/types.h>
@@ -140,14 +140,14 @@ struct lio_info_type  Lio_info1[] = {
     { "b", LIO_IO_ASYNC|LIO_WAIT_SIGPAUSE, "async i/o using pause" },
     { "a", LIO_IO_ASYNC|LIO_WAIT_RECALL, "async i/o using recall/aio_suspend" },
 #if defined(sgi) || (defined(__linux__) && !defined(__UCLIBC__))
-    { "r", 
+    { "r",
 	LIO_RANDOM|LIO_IO_TYPES|LIO_WAIT_TYPES, "random sync i/o types and wait methods" },
-    { "R", 
+    { "R",
 	LIO_RANDOM|LIO_IO_ATYPES|LIO_WAIT_ATYPES, "random i/o types and wait methods" },
 #else
-    { "r", 
+    { "r",
 	LIO_RANDOM|LIO_IO_TYPES|LIO_WAIT_TYPES, "random i/o types and wait methods" },
-    { "R", 
+    { "R",
 	LIO_RANDOM|LIO_IO_TYPES|LIO_WAIT_TYPES, "random i/o types and wait methods" },
 #endif
     { "l", LIO_IO_SLISTIO|LIO_WAIT_RECALL, "single stride sync listio" },
@@ -174,8 +174,8 @@ struct lio_info_type  Lio_info2[] = {
 /* nowait is a touchy thing, it's an accident that this implementation worked at all.  6/27/97 roehrich */
 /*    { "nowait",    LIO_WAIT_NONE,	"do not wait for async io to complete" },*/
     { "random",    LIO_RANDOM,		"set random bit" },
-    { "randomall", 
-	LIO_RANDOM|LIO_IO_TYPES|LIO_WAIT_TYPES, 
+    { "randomall",
+	LIO_RANDOM|LIO_IO_TYPES|LIO_WAIT_TYPES,
 	"all random i/o types and wait methods (except nowait)" },
 };
 
@@ -197,7 +197,7 @@ static int Debug_level = 0;
  *
  * Determine the bounds of a strided request, normalized to offset.  Returns
  * the number of bytes needed to satisfy the request, and optionally sets
- * *min and *max to the mininum and maximum bytes referenced, normalized 
+ * *min and *max to the mininum and maximum bytes referenced, normalized
  * around offset.
  *
  * Returns -1 on error - the only possible error conditions are illegal values
@@ -245,11 +245,11 @@ int	*max;
 		min_byte = offset;
 		max_byte = min_byte + nbytes - 1;
 	}
-	
+
 	if (min != NULL) {
 		*min = min_byte;
 	}
-	
+
 	if (max != NULL) {
 		*max = max_byte;
 	}
@@ -330,7 +330,7 @@ lio_help1(char *prefix)
  * method tokens as defined in Lio_info2[].  If a token does not match
  * any of the tokens in Lio_info2[], it will be coverted to a number.
  * If it was a number, those bits are also set.
- * 
+ *
  *  (rrl 04/96)
  ***********************************************************************/
 int
@@ -354,7 +354,7 @@ lio_parse_io_arg2(char *string, char **badtoken)
         savecc = *cc;
         *cc = '\0';
 
-        found = 0; 
+        found = 0;
 
         /*
 	 * Determine if token is a valid string or number and if
@@ -460,7 +460,7 @@ lio_async_callback_handler(sigval_t sigval)
  *
  * Return Value
  * This function will return a value with all non choosen io type
- * and wait method bits cleared.  The LIO_RANDOM bit is also 
+ * and wait method bits cleared.  The LIO_RANDOM bit is also
  * cleared.  All other bits are left unchanged.
  *
  * (rrl 04/96)
@@ -493,7 +493,7 @@ static void wait4sync_io(int fd, int read)
 }
 
 /***********************************************************************
- * Generic write function 
+ * Generic write function
  * This function can be used to do a write using write(2), writea(2),
  * aio_write(3), writev(2), pwrite(2),
  * or single stride listio(2)/lio_listio(3).
@@ -505,12 +505,12 @@ static void wait4sync_io(int fd, int read)
  * wait method is: recall(2) for writea(2) and listio(2); aio_suspend(3) for
  * aio_write(3) and lio_listio(3).
  *
- * If multiple wait methods are specified, 
+ * If multiple wait methods are specified,
  * only one wait method will be used. The order is predetermined.
  *
  * If the call specifies a signal and one of the two signal wait methods,
  * a signal handler for the signal is set.  This will reset an already
- * set handler for this signal. 
+ * set handler for this signal.
  *
  * If the LIO_RANDOM method bit is set, this function will randomly
  * choose a io type and wait method from bits in the method argument.
@@ -528,7 +528,7 @@ static void wait4sync_io(int fd, int read)
  *	If the size the system call say was written is different
  *	then what was asked to be written, errmsg is updated for
  *	this error condition.  The return value is still the amount
- *	the system call says was written.  
+ *	the system call says was written.
  *
  * (rrl 04/96)
  ***********************************************************************/
@@ -548,7 +548,7 @@ long wrd;	/* to allow future features, use zero for now */
     int listio_cmd;		/* Holds the listio/lio_listio cmd */
 #ifdef  CRAY
     struct listreq request;	/* Used when a listio is wanted */
-    struct iosw status, *statptr[1];  
+    struct iosw status, *statptr[1];
 #else
     /* for linux or sgi */
     struct iovec iov;	/* iovec for writev(2) */
@@ -654,7 +654,7 @@ long wrd;	/* to allow future features, use zero for now */
      * Otherwise there is not necessary a signal handler to trap
      * the signal.
      */
-    if ( sig && !(method & LIO_USE_SIGNAL) && 
+    if ( sig && !(method & LIO_USE_SIGNAL) &&
 	! (method & LIO_WAIT_SIGTYPES) ){
 
 	sig=0;	/* ignore signal parameter */
@@ -711,7 +711,7 @@ long wrd;	/* to allow future features, use zero for now */
      * system call failure.  If sync i/o, return the number of
      * bytes written/read.
      */
-     
+
 	if ( (method & LIO_IO_SYNC) || (method & (LIO_IO_TYPES | LIO_IO_ATYPES)) == 0 ){
 	/*
 	 * write(2) is used if LIO_IO_SYNC bit is set or not none
@@ -813,7 +813,7 @@ long wrd;	/* to allow future features, use zero for now */
 	listio_cmd=LC_WAIT;
 	io_type="listio(2) sync write";
 
-	sprintf(Lio_SysCall, 
+	sprintf(Lio_SysCall,
 		"listio(LC_WAIT, &req, 1) LO_WRITE, fd:%d, nbyte:%d",
                 fd, size);
 
@@ -887,7 +887,7 @@ long wrd;	/* to allow future features, use zero for now */
 	listio_cmd=LC_START;
 	io_type="listio(2) async write";
 
-	sprintf(Lio_SysCall, 
+	sprintf(Lio_SysCall,
 		"listio(LC_START, &req, 1) LO_WRITE, fd:%d, nbyte:%d",
                 fd, size);
 
@@ -934,7 +934,7 @@ long wrd;	/* to allow future features, use zero for now */
     else if ( method & LIO_IO_SYNCV ) {
 	io_type="writev(2)";
 
-	sprintf(Lio_SysCall, 
+	sprintf(Lio_SysCall,
 		"writev(%d, &iov, 1) nbyte:%d", fd, size);
 
         if ( Debug_level ) {
@@ -965,7 +965,7 @@ long wrd;	/* to allow future features, use zero for now */
     else if ( method & LIO_IO_SYNCP ) {
 	io_type="pwrite(2)";
 
-	sprintf(Lio_SysCall, 
+	sprintf(Lio_SysCall,
 						"pwrite(%d, buf, %d, %lld)", fd, size, (long long)poffset);
 
         if ( Debug_level ) {
@@ -1027,10 +1027,10 @@ long wrd;	/* to allow future features, use zero for now */
      * check that async io was successful.
      * Note:  if the there was an system call failure, -errno
      * was returned and Errormsg should already have been updated.
-     * If amount i/o was different than size, Errormsg should already 
+     * If amount i/o was different than size, Errormsg should already
      * have been updated but the actual i/o size if returned.
      */
-    
+
 #ifdef CRAY
     ret=lio_check_asyncio(io_type, size, &status);
 #endif
@@ -1042,7 +1042,7 @@ long wrd;	/* to allow future features, use zero for now */
 }	/* end of lio_write_buffer */
 
 /***********************************************************************
- * Generic read function 
+ * Generic read function
  * This function can be used to do a read using read(2), reada(2),
  * aio_read(3), readv(2), pread(2),
  * or single stride listio(2)/lio_listio(3).
@@ -1054,12 +1054,12 @@ long wrd;	/* to allow future features, use zero for now */
  * wait method is: recall(2) for reada(2) and listio(2); aio_suspend(3) for
  * aio_read(3) and lio_listio(3).
  *
- * If multiple wait methods are specified, 
+ * If multiple wait methods are specified,
  * only one wait method will be used. The order is predetermined.
  *
  * If the call specifies a signal and one of the two signal wait methods,
  * a signal handler for the signal is set.  This will reset an already
- * set handler for this signal. 
+ * set handler for this signal.
  *
  * If the LIO_RANDOM method bit is set, this function will randomly
  * choose a io type and wait method from bits in the method argument.
@@ -1077,7 +1077,7 @@ long wrd;	/* to allow future features, use zero for now */
  *	If the size the system call say was written is different
  *	then what was asked to be written, errmsg is updated for
  *	this error condition.  The return value is still the amount
- *	the system call says was written.  
+ *	the system call says was written.
  *
  * (rrl 04/96)
  ***********************************************************************/
@@ -1097,7 +1097,7 @@ long wrd;	/* to allow future features, use zero for now */
     int omethod = method;
 #ifdef  CRAY
     struct listreq request;	/* Used when a listio is wanted */
-    struct iosw status, *statptr[1];  
+    struct iosw status, *statptr[1];
 #else
     /* for linux or sgi */
     struct iovec iov; /* iovec for readv(2) */
@@ -1262,7 +1262,7 @@ long wrd;	/* to allow future features, use zero for now */
      * system call failure.  If sync i/o, return the number of
      * bytes written/read.
      */
-     
+
 	if ( (method & LIO_IO_SYNC) || (method & (LIO_IO_TYPES | LIO_IO_ATYPES)) == 0 ){
 	/*
 	 * read(2) is used if LIO_IO_SYNC bit is set or not none
@@ -1366,7 +1366,7 @@ long wrd;	/* to allow future features, use zero for now */
 	listio_cmd=LC_WAIT;
 	io_type="listio(2) sync read";
 
-	sprintf(Lio_SysCall, 
+	sprintf(Lio_SysCall,
 		"listio(LC_WAIT, &req, 1) LO_READ, fd:%d, nbyte:%d",
                 fd, size);
 
@@ -1395,7 +1395,7 @@ long wrd;	/* to allow future features, use zero for now */
 	listio_cmd=LIO_WAIT;
 	io_type="lio_listio(3) sync read";
 
-	sprintf(Lio_SysCall, 
+	sprintf(Lio_SysCall,
 		"lio_listio(LIO_WAIT, aiolist, 1, NULL) LIO_READ, fd:%d, nbyte:%d",
                 fd, size);
 
@@ -1438,7 +1438,7 @@ long wrd;	/* to allow future features, use zero for now */
 	listio_cmd=LC_START;
 	io_type="listio(2) async read";
 
-	sprintf(Lio_SysCall, 
+	sprintf(Lio_SysCall,
 		"listio(LC_START, &req, 1) LO_READ, fd:%d, nbyte:%d",
                 fd, size);
 
@@ -1460,7 +1460,7 @@ long wrd;	/* to allow future features, use zero for now */
 	listio_cmd=LIO_NOWAIT;
 	io_type="lio_listio(3) async read";
 
-	sprintf(Lio_SysCall, 
+	sprintf(Lio_SysCall,
 		"lio_listio(LIO_NOWAIT, aiolist, 1, NULL) LIO_READ, fd:%d, nbyte:%d",
                 fd, size);
 
@@ -1485,7 +1485,7 @@ long wrd;	/* to allow future features, use zero for now */
     else if ( method & LIO_IO_SYNCV ) {
 	io_type="readv(2)";
 
-	sprintf(Lio_SysCall, 
+	sprintf(Lio_SysCall,
 		"readv(%d, &iov, 1) nbyte:%d", fd, size);
 
         if ( Debug_level ) {
@@ -1516,7 +1516,7 @@ long wrd;	/* to allow future features, use zero for now */
     else if ( method & LIO_IO_SYNCP ) {
 	io_type="pread(2)";
 
-	sprintf(Lio_SysCall, 
+	sprintf(Lio_SysCall,
 						"pread(%d, buf, %d, %lld)", fd, size, (long long)poffset);
 
         if ( Debug_level ) {
@@ -1579,10 +1579,10 @@ long wrd;	/* to allow future features, use zero for now */
      * check that async io was successful.
      * Note:  if the there was an system call failure, -errno
      * was returned and Errormsg should already have been updated.
-     * If amount i/o was different than size, Errormsg should already 
+     * If amount i/o was different than size, Errormsg should already
      * have been updated but the actual i/o size if returned.
      */
-    
+
 #ifdef CRAY
     ret=lio_check_asyncio(io_type, size, &status);
 #endif
@@ -1733,7 +1733,7 @@ int lio_wait4asyncio(int method, int fd, struct iosw **statptr)
     int cnt;
 #ifdef sgi
     int ret;
-    const aiocb_t *aioary[1]; 
+    const aiocb_t *aioary[1];
 #endif
 #if defined(__linux__)&& !defined(__UCLIBC__)
 	int ret;
@@ -1742,8 +1742,8 @@ int lio_wait4asyncio(int method, int fd, struct iosw **statptr)
 
     if ( (method & LIO_WAIT_RECALL)
 #if defined(sgi) || (defined(__linux__)&& !defined(__UCLIBC__))
-	|| (method & LIO_WAIT_CBSUSPEND) 
-	|| (method & LIO_WAIT_SIGSUSPEND) 
+	|| (method & LIO_WAIT_CBSUSPEND)
+	|| (method & LIO_WAIT_SIGSUSPEND)
 #endif
 	|| ((method & LIO_WAIT_TYPES) == 0) ){
 	/*
@@ -1806,12 +1806,12 @@ int lio_wait4asyncio(int method, int fd, struct iosw **statptr)
             printf("DEBUG %s/%d: wait method : active\n", __FILE__, __LINE__);
 #ifdef CRAY
         sigon();
-	/* 
+	/*
          * loop until sw_flag, sw_count or sw_error field elements
 	 * change to non-zero.
  	 */
         cnt=0;
-        while ( (*statptr)->sw_flag == 0 && 
+        while ( (*statptr)->sw_flag == 0 &&
 		(*statptr)->sw_count == 0 &&
 		(*statptr)->sw_error == 0 ) {
 	   cnt++;
@@ -1903,7 +1903,7 @@ int lio_wait4asyncio(int method, int fd, struct iosw **statptr)
 /***********************************************************************
  * The following code is provided as unit test.
  * Just define add "-DUNIT_TEST=1" to the cc line.
- * 
+ *
  * (rrl 04/96)
  ***********************************************************************/
 struct unit_info_t {

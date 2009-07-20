@@ -1,45 +1,45 @@
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
- * 
+ *
  * This program is distributed in the hope that it would be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * 
+ *
  * Further, this software is distributed without any warranty that it is
  * free of the rightful claim of any third person regarding infringement
  * or the like.  Any license provided herein, whether implied or
  * otherwise, applies only to this software file.  Patent licenses, if
  * any, provided herein do not apply to combinations of this program with
  * other software, or any other product whatsoever.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston MA 02111-1307, USA.
- * 
+ *
  * Contact information: Silicon Graphics, Inc., 1600 Amphitheatre Pkwy,
  * Mountain View, CA  94043, or:
- * 
- * http://www.sgi.com 
- * 
- * For further information regarding this notice, see: 
- * 
+ *
+ * http://www.sgi.com
+ *
+ * For further information regarding this notice, see:
+ *
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: parse_opts.c,v 1.12 2009/07/20 04:48:17 vapier Exp $ */
+/* $Id: parse_opts.c,v 1.13 2009/07/20 10:59:32 vapier Exp $ */
 
 /**********************************************************
- * 
+ *
  *    OS Testing - Silicon Graphics, Inc.
- * 
+ *
  *    FUNCTION NAME 	: parse_opts
- * 
+ *
  *    FUNCTION TITLE	: parse standard & user options for system call tests
- * 
+ *
  *    SYNOPSIS:
  *	#include "usctest.h"
  *
@@ -48,11 +48,11 @@
  * 	char **av;
  *	option_t user_optarr[];
  *	void (*uhf)();
- * 
+ *
  *    AUTHOR		: William Roske/Richard Logan
- * 
+ *
  *    INITIAL RELEASE	: UNICOS 7.0
- * 
+ *
  *    DESCRIPTION
  * 	The parse_opts library routine takes that argc and argv parameters
  *	recevied by main() and an array of structures defining user options.
@@ -62,11 +62,11 @@
  *
  *      This module contains the functions usc_global_setup_hook and
  *      usc_test_looping, which are called by marcos defined in usctest.h.
- * 
+ *
  *    RETURN VALUE
  * 	parse_opts returns a pointer to an error message if an error occurs.
  *	This pointer is (char *)NULL if parsing is successful.
- * 
+ *
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
 #include <errno.h>
 #include <stdlib.h>
@@ -151,7 +151,7 @@ struct std_option_t {
     { "h" , "  -h      Show this help screen\n", NULL, NULL},
     { "i:", "  -i n    Execute test n times\n", NULL, NULL},
     { "I:", "  -I x    Execute test for x seconds\n", NULL, NULL},
-    { "p" , "  -p      Pause for SIGUSR1 before starting\n", NULL, NULL}, 
+    { "p" , "  -p      Pause for SIGUSR1 before starting\n", NULL, NULL},
     { "P:", "  -P x    Pause for x seconds between iterations\n", NULL, NULL},
     { "t" , "  -t      Turn on syscall timing\n", NULL, NULL},
 #ifdef UCLINUX
@@ -199,7 +199,7 @@ extern char *child_args;	/* Arguments to child when -C is used */
 #endif
 
 /**********************************************************************
- * parse_opts: 
+ * parse_opts:
  **********************************************************************/
 char *
 parse_opts(int ac, char **av, option_t *user_optarr, void (*uhf)())
@@ -225,7 +225,7 @@ parse_opts(int ac, char **av, option_t *user_optarr, void (*uhf)())
     }
     /* Calculate how much space we need for the option string */
     optstrlen = 0;
-    for (i = 0; std_options[i].optstr; ++i) 
+    for (i = 0; std_options[i].optstr; ++i)
 	optstrlen += strlen(std_options[i].optstr);
     if (user_optarr)
 	for (i = 0; user_optarr[i].option; ++i) {
@@ -237,7 +237,7 @@ parse_opts(int ac, char **av, option_t *user_optarr, void (*uhf)())
 
     /* Create the option string for getopt */
     optionstr = (char *)malloc(optstrlen);
-    if (!optionstr) 
+    if (!optionstr)
 	return "parse_opts: ERROR - Could not allocate memory for optionstr";
 
     optionstr[0] = '\0';
@@ -247,7 +247,7 @@ parse_opts(int ac, char **av, option_t *user_optarr, void (*uhf)())
     if (user_optarr)
 	for (i = 0; user_optarr[i].option; ++i)
 	    /* only add the option if it wasn't there already */
-	    if (strchr(optionstr, user_optarr[i].option[0]) == NULL) 
+	    if (strchr(optionstr, user_optarr[i].option[0]) == NULL)
 		strcat(optionstr, user_optarr[i].option);
 
 #if DEBUG > 1
@@ -283,7 +283,7 @@ parse_opts(int ac, char **av, option_t *user_optarr, void (*uhf)())
 		case 'I': /* Time duration */
 			options |= OPT_duration;
 			STD_LOOP_DURATION = atof(optarg);
-			if ( STD_LOOP_DURATION == 0.0 ) STD_INFINITE=1; 
+			if ( STD_LOOP_DURATION == 0.0 ) STD_INFINITE=1;
 			break;
 		case 'c': /* Copies */
 			options |= OPT_copies;
@@ -311,7 +311,7 @@ parse_opts(int ac, char **av, option_t *user_optarr, void (*uhf)())
 			break;
 #endif
 		default:
-			
+
             /* Check all the user specified options */
             found=0;
 	    for(i = 0; user_optarr[i].option; ++i) {
@@ -324,14 +324,14 @@ parse_opts(int ac, char **av, option_t *user_optarr, void (*uhf)())
                     found++;
 
 		    /* save the argument at the user's location */
-                    if ( user_optarr[i].option[strlen(user_optarr[i].option)-1] == ':' ) {  
+                    if ( user_optarr[i].option[strlen(user_optarr[i].option)-1] == ':' ) {
                         *user_optarr[i].arg=optarg;
                     }
                     break;  /* option found - break out of the for loop */
                 }
             }
 	    /* This condition "should never happen".  SO CHECK FOR IT!!!! */
-            if ( ! found ) { 
+            if ( ! found ) {
                 sprintf(Mesg2,
 		    "parse_opts: ERROR - option:\"%c\" NOT FOUND... INTERNAL ERROR", opt);
                 return(Mesg2);
@@ -466,7 +466,7 @@ parse_opts(int ac, char **av, option_t *user_optarr, void (*uhf)())
 	}
         else
 	    STD_LP_barrier=1;
-	if ( Debug ) 
+	if ( Debug )
 	    printf("using env USC_LP_BARRIER, Set STD_LP_barrier to %d\n",
 	        STD_LP_barrier);
     }
@@ -541,7 +541,7 @@ parse_opts(int ac, char **av, option_t *user_optarr, void (*uhf)())
 		    STD_LD_recfun);
         }
     }
- 
+
 #if UNIT_TEST
     printf("The following variables after option and env parsing:\n");
     printf("STD_FUNCTIONAL_TEST = %d\n", STD_FUNCTIONAL_TEST);
@@ -583,7 +583,7 @@ STD_opts_help()
     }
 }
 
-/* 
+/*
  * routine to goto when we get the SIGUSR1 for STD_PAUSE
  */
 void STD_go(int sig)
@@ -623,14 +623,14 @@ usc_global_setup_hook()
 		break;
 	}
     }
-    
+
     /*
      * pause waiting for sigusr1.
      */
-    if ( STD_PAUSE ) {                                      
-        _TMP_FUNC = (int (*)())signal(SIGUSR1, STD_go);   
-        pause();                                          
-        signal(SIGUSR1, (void (*)())_TMP_FUNC);          
+    if ( STD_PAUSE ) {
+        _TMP_FUNC = (int (*)())signal(SIGUSR1, STD_go);
+        pause();
+        signal(SIGUSR1, (void (*)())_TMP_FUNC);
     }
 
 #if !defined(UCLINUX)
@@ -641,7 +641,7 @@ usc_global_setup_hook()
 
     if ( STD_TP_sbrk ) {
 	sbrk(STD_TP_sbrk);
-	if ( Debug ) 
+	if ( Debug )
 	    printf("after sbrk(%d)\n", STD_TP_sbrk);
     }
 
@@ -689,7 +689,7 @@ get_current_time()
  * If the STD_LOOP_DURATION variable is set, compare current time against
  * calculated stop_time.
  * This function will return 1 until all desired looping methods
- * have been met.  
+ * have been met.
  *
  * counter integer is supplied by the user program.
  ***********************************************************************/
@@ -705,7 +705,7 @@ int counter;
     int keepgoing=0;		/* used to determine return value */
 
     /*
-     * If this is the first iteration and we are looping for 
+     * If this is the first iteration and we are looping for
      * duration of STD_LOOP_DURATION seconds (fractional) or
      * doing loop delays, get the clocks per second.
      */
@@ -720,7 +720,7 @@ int counter;
 	 * If looping for duration, calculate stop time in
 	 * clocks.
 	 */
-	
+
 	if ( STD_LOOP_DURATION) {
 	    ct=get_current_time();
 	    stop_time=(int)((float)hertz * STD_LOOP_DURATION) + ct;
@@ -735,7 +735,7 @@ int counter;
 	}
 
     }
-	
+
     /*
      * if delay each iteration, loop for delay clocks.
      * This will not be done on first iteration.
@@ -751,7 +751,7 @@ int counter;
 	     */
 	    if ( STD_LD_recfun ) {
 		if ( Debug )
-		    printf("calling usc_recressive_func(0, %d, *STD_bigstack)\n", 
+		    printf("calling usc_recressive_func(0, %d, *STD_bigstack)\n",
 		        STD_LD_recfun);
 		usc_recressive_func(0, STD_LD_recfun, *STD_bigstack);
 	    }
@@ -781,7 +781,7 @@ int counter;
 
     if ( STD_LP_recfun ) {
 	if ( Debug )
-	    printf("calling usc_recressive_func(0, %d, *STD_bigstack)\n", 
+	    printf("calling usc_recressive_func(0, %d, *STD_bigstack)\n",
 	        STD_LP_recfun);
 	usc_recressive_func(0, STD_LP_recfun, *STD_bigstack);
     }
@@ -805,7 +805,7 @@ int counter;
 
 /*
  * This function recressively calls itself max times.
- */ 
+ */
 static void
 usc_recressive_func(cnt, max, bstack)
 int cnt;
@@ -821,7 +821,7 @@ struct usc_bigstack_t bstack;
 /******************************************************************************
  * UNIT TEST CODE
  * UNIT TEST CODE
- * 
+ *
  * this following code is provide so that unit testing can
  * be done fairly easily.
  ******************************************************************************/
@@ -883,7 +883,7 @@ char **argv;
     TEST_PAUSE;
 
     for (lc=0; TEST_LOOPING(lc); lc++) {
-    
+
         TEST( gettimeofday(&t, NULL) );
         printf("iter=%d: sec:%d, usec:%6.6d %s", lc+1, t.tv_sec,
 	    t.tv_usec, ctime(&t.tv_sec));

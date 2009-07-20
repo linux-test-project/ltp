@@ -11,7 +11,7 @@
  */
 #include <sys/vfs.h>
 
-int 
+int
 tst_cwd_has_free(int required_kib)
 {
 	struct statfs sf;
