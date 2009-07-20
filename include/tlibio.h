@@ -61,13 +61,13 @@
 #define LIO_WAIT_RECALL         00040000 /* call recall(2)/aio_suspend(3) */
 #define LIO_WAIT_SIGPAUSE       00100000 /* call pause */
 #define LIO_WAIT_SIGACTIVE      00200000 /* spin waiting for signal */
-#if defined(sgi) || defined(__linux__) || !defined(__UCLIBC__)
+#if defined(sgi) || defined(__linux__)
 #define LIO_WAIT_CBSUSPEND      00400000 /* aio_suspend waiting for callback */
 #define LIO_WAIT_SIGSUSPEND     01000000 /* aio_suspend waiting for signal */
 #define LIO_WAIT_ATYPES         01760000 /* all async wait types, except nowait */
 #define LIO_WAIT_TYPES          00020000 /* all sync wait types (sorta) */
 #endif /* sgi */
-#if defined(__sun) || defined(__hpux) || defined(_AIX) || defined(__UCLIBC__)
+#if defined(__sun) || defined(__hpux) || defined(_AIX)
 #define LIO_WAIT_TYPES          00300000 /* all wait types, except nowait */
 #endif /* linux */
 #ifdef CRAY
