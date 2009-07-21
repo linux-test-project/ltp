@@ -138,7 +138,6 @@ void setup() {
  */
 static int opt_debug;
 static char *progname;
-static char *progdir;
 
 enum test_type {
 		NORMAL,
@@ -232,7 +231,7 @@ static int do_test(struct test_case *tc)
         struct stat st;
         uid_t old_uid;
 
-        TEST(rc = setup_file(progdir, "test.file", fpath));
+        TEST(rc = setup_file(TESTDIR, "test.file", fpath));
         if (rc < 0)
                 return 1;
 
@@ -257,9 +256,19 @@ static int do_test(struct test_case *tc)
                 fpath[len - 1] = '\0';
         }
         errno = 0;
-        if (tc->ttype == NO_FNAME)
-                TEST(sys_ret = utimes(NULL, tv));
-        else
+        if (tc->ttype == NO_FNAME) {
+                /**
+                 * Note (garrcoop):
+                 *
+                 * If you do NULL directly, then gcc [4.3] will complain when
+                 * one specifies -Wnonnull in CPPFLAGS. This is a negative
+                 * test, but let's not allow the compiler to complain about
+                 * something trivial like this.
+                 **/
+                const char *dummy = NULL;
+                TEST(sys_ret = utimes(dummy, tv));
+        }
+	else
                 TEST(sys_ret = utimes(fpath, tv));
         sys_errno = errno;
         if (tc->ttype == FILE_NOT_EXIST)
@@ -338,9 +347,6 @@ int main(int ac, char **av) {
 
 	progname = strchr(av[0], '/');
         progname = progname ? progname + 1 : av[0];	
-	
-	progdir = strdup(av[0]);
-        progdir = dirname(progdir);
 	
         /* parse standard options */
         if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
