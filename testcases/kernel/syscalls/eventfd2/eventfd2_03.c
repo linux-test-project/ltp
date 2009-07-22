@@ -33,6 +33,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
+#include <inttypes.h>
 
 /* Harness Specific Include Files. */
 #include "test.h"
@@ -59,7 +60,7 @@ static void xsem_wait(int fd) {
 		perror("reading eventfd");
 		exit(1);
 	}
-	fprintf(stdout, "[%u] wait completed on %d: count=%lu64\n",
+	fprintf(stdout, "[%u] wait completed on %d: count=%"PRIu64"\n",
 		getpid(), fd, cntr);
 }
 
