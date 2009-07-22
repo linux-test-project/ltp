@@ -26,6 +26,7 @@
 #include <sys/types.h>
 #include <sys/syscall.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <fcntl.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -44,6 +45,8 @@ int TST_TOTAL = 1;	        	/* total number of tests in this file */
 #define EFD_SEMLIKE (1 << 0)
 #endif
 
+/* Dummy function as syscall from linux_syscall_numbers.h uses cleanup(). */
+void cleanup() { }
 
 static int eventfd2(int count, int flags) {
 	return syscall(__NR_eventfd2, count, flags);
@@ -56,7 +59,7 @@ static void xsem_wait(int fd) {
 		perror("reading eventfd");
 		exit(1);
 	}
-	fprintf(stdout, "[%u] wait completed on %d: count=%llu\n",
+	fprintf(stdout, "[%u] wait completed on %d: count=%lu64\n",
 		getpid(), fd, cntr);
 }
 
