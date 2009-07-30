@@ -106,6 +106,13 @@ extern void cleanup() {
         tst_exit();
 }
 
+/*
+ * sighandler()
+ */
+void sighandler(int sig)
+{
+}
+
 /* Local  Functions */
 /******************************************************************************/
 /*                                                                            */
@@ -126,6 +133,7 @@ extern void cleanup() {
 /******************************************************************************/
 void setup() {
         /* Capture signals if any */
+	signal(SIGINT, sighandler);
         /* Create temporary directories */
         TEST_PAUSE;
         tst_tmpdir();
@@ -301,7 +309,7 @@ static int do_test(struct test_case *tc)
 	int oflag;
         int i, rc, cmp_ok = 1, fd = -1;
         char smsg[MAX_MSGSIZE], rmsg[MAX_MSGSIZE];
-        struct timespec ts, *p_ts;
+        struct timespec ts, *p_ts = NULL;
         pid_t pid = 0;
         unsigned prio;
         size_t msg_len;
@@ -368,7 +376,7 @@ switch (tc->ttype) {
         case FD_FILE:
                 break;
         default:
-		TEST(rc = mq_timedsend(fd, smsg, tc->len, tc->prio, NULL));
+		TEST(rc = mq_timedsend(fd, smsg, tc->len, tc->prio, p_ts));
                 if (TEST_RETURN < 0) {
                  	tst_resm(TFAIL, "mq_timedsend failed - errno = %d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
                         result = 1;
@@ -430,17 +438,6 @@ EXIT:
                 TEST(wait(&st));
         }
         return result;
-}
-
-/*
- * sighandler()
- */
-void sighandler(int sig)
-{
-        if (sig == SIGINT)
-                return;
-        // NOTREACHED
-        return;
 }
 
 
