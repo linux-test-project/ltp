@@ -1,6 +1,8 @@
 #
 # v4l-test: Test environment for Video For Linux Two API
 #
+# 16 Jul 2009  0.19 test_VIDIOC_JPEGCOMP.c and
+#                   test_VIDIOC_ENUM_FRAMESIZES.c added
 #  5 Jul 2009  0.18 v4l2_foreach.c added
 # 19 May 2009  0.17 test_VIDIOC_EXT_CTRLS.c added
 #  7 May 2009  0.16 v4l2_show.c added
@@ -44,9 +46,11 @@ OBJS = dev_video.o \
        test_VIDIOC_ENUMAUDIO.o \
        test_VIDIOC_ENUMAUDOUT.o \
        test_VIDIOC_ENUM_FMT.o \
+       test_VIDIOC_JPEGCOMP.o \
        test_VIDIOC_ENUMINPUT.o \
        test_VIDIOC_ENUMOUTPUT.o \
        test_VIDIOC_ENUMSTD.o \
+       test_VIDIOC_ENUM_FRAMESIZES.o \
        test_VIDIOC_LOG_STATUS.o \
        test_VIDIOC_CROPCAP.o \
        test_VIDIOC_G_SLICED_VBI_CAP.o \

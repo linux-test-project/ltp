@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ * 17 Jul 2009  0.3  show_v4l2_frmsizeenum() added
  *  5 Jul 2009  0.2  show_v4l2_input() introduced
  *  7 May 2009  0.1  First release
  *
@@ -134,4 +135,46 @@ void show_v4l2_input(struct v4l2_input *input) {
 		input->reserved[2],
 		input->reserved[3]
 		);
+}
+
+void show_v4l2_frmsizeenum(struct v4l2_frmsizeenum* framesize) {
+	dprintf("\tframesize = { .index=%u, "
+		".pixel_format=0x%x, "
+		".type=%u, ",
+		framesize->index,
+		framesize->pixel_format,
+		framesize->type
+	);
+
+	switch (framesize->type) {
+		case V4L2_FRMSIZE_TYPE_DISCRETE:
+			dprintf(".discrete = { .width=%u, heigth=%u }, ",
+				framesize->discrete.width,
+				framesize->discrete.height);
+			break;
+		case V4L2_FRMSIZE_TYPE_CONTINUOUS:
+		case V4L2_FRMSIZE_TYPE_STEPWISE:
+			dprintf(".stepwise = { .min_width=%u, "
+				".max_width=%u, "
+				".step_width=%u, "
+				".min_height=%u, "
+				".max_height=%u, "
+				".step_height=%u }, ",
+				framesize->stepwise.min_width,
+				framesize->stepwise.max_width,
+				framesize->stepwise.step_width,
+				framesize->stepwise.min_height,
+				framesize->stepwise.max_height,
+				framesize->stepwise.step_height
+				);
+			break;
+		default:
+			;
+	}
+
+	dprintf(".reserved = { 0x%x, 0x%x } }\n",
+		framesize->reserved[0],
+		framesize->reserved[1]
+	);
+
 }

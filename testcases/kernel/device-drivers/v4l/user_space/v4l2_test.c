@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ * 16 Jul 2009  0.24 Test cases added for VIDIOC_G_JPEGCOMP and VIDIOC_ENUM_FRAMESIZES
  * 23 May 2009  0.23 Test cases added for VIDIOC_G_EXT_CTRLS, VIDIOC_S_EXT_CTRLS
  *  5 May 2009  0.22 Test cases added for VIDIOC_QUERYBUF
  * 29 Apr 2009  0.21 Test cases added for VIDIOC_REQBUFS
@@ -69,6 +70,7 @@
 #include "test_VIDIOC_ENUM_FMT.h"
 #include "test_VIDIOC_ENUMINPUT.h"
 #include "test_VIDIOC_ENUMOUTPUT.h"
+#include "test_VIDIOC_ENUM_FRAMESIZES.h"
 
 #include "test_VIDIOC_STD.h"
 #include "test_VIDIOC_INPUT.h"
@@ -84,6 +86,7 @@
 #include "test_VIDIOC_EXT_CTRLS.h"
 #include "test_VIDIOC_PARM.h"
 #include "test_VIDIOC_FMT.h"
+#include "test_VIDIOC_JPEGCOMP.h"
 
 #include "test_VIDIOC_REQBUFS.h"
 #include "test_VIDIOC_QUERYBUF.h"
@@ -149,6 +152,10 @@ static CU_TestInfo suite_enums[] = {
   { "VIDIOC_QUERYMENU with invalid id", test_VIDIOC_QUERYMENU_invalid },
   { "VIDIOC_QUERYMENU with private controls", test_VIDIOC_QUERYMENU_private },
   { "VIDIOC_QUERYMENU, last private control+1", test_VIDIOC_QUERYMENU_private_last_1 },
+
+  { "VIDIOC_ENUM_FRAMESIZES", test_VIDIOC_ENUM_FRAMESIZES },
+  { "VIDIOC_ENUM_FRAMESIZES with invalid index", test_VIDIOC_ENUM_FRAMESIZES_invalid_index },
+  { "VIDIOC_ENUM_FRAMESIZES with invalid pixel_format", test_VIDIOC_ENUM_FRAMESIZES_invalid_pixel_format },
 
   CU_TEST_INFO_NULL,
 };
@@ -245,6 +252,8 @@ static CU_TestInfo suite_get_set_try[] = {
   { "VIDIOC_S_FMT with enumerated values", test_VIDIOC_S_FMT_enum },
   { "VIDIOC_S_FMT with invalid type parameter", test_VIDIOC_S_FMT_type },
 
+  { "VIDIOC_G_JPEGCOMP", test_VIDIOC_G_JPEGCOMP },
+
   CU_TEST_INFO_NULL,
 };
 
@@ -286,7 +295,7 @@ static CU_TestInfo suite_null_readonly[] = {
   { "VIDIOC_G_INPUT with NULL parameter", test_VIDIOC_G_INPUT_NULL },
   { "VIDIOC_G_OUTPUT with NULL parameter", test_VIDIOC_G_OUTPUT_NULL },
   { "VIDIOC_G_AUDOUT with NULL parameter", test_VIDIOC_G_AUDOUT_NULL },
-  /* { "VIDIOC_G_JPEGCOMP with NULL parameter", }, */
+  { "VIDIOC_G_JPEGCOMP with NULL parameter", test_VIDIOC_G_JPEGCOMP_NULL },
   { "VIDIOC_QUERYSTD with NULL parameter", test_VIDIOC_QUERYSTD_NULL },
   { "VIDIOC_G_PRIORITY with NULL parameter", test_VIDIOC_G_PRIORITY_NULL },
   /* { "VIDIOC_G_ENC_INDEX with NULL parameter", }, */
@@ -345,7 +354,7 @@ static CU_TestInfo suite_null_writeread[] = {
   { "VIDIOC_G_EXT_CTRLS with NULL parameter", test_VIDIOC_G_EXT_CTRLS_NULL },
   { "VIDIOC_S_EXT_CTRLS with NULL parameter", test_VIDIOC_S_EXT_CTRLS_NULL },
   { "VIDIOC_TRY_EXT_CTRLS with NULL parameter", test_VIDIOC_TRY_EXT_CTRLS_NULL },
-  /* { "VIDIOC_ENUM_FRAMESIZES with NULL parameter", }, */
+  { "VIDIOC_ENUM_FRAMESIZES with NULL parameter", test_VIDIOC_ENUM_FRAMESIZES_NULL },
   /* { "VIDIOC_ENUM_FRAMEINTERVALS with NULL parameter", }, */
   /* { "VIDIOC_ENCODER_CMD with NULL parameter", }, */
   /* { "VIDIOC_TRY_ENCODER_CMD with NULL parameter", }, */

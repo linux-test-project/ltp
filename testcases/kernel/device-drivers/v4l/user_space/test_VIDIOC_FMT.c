@@ -1,6 +1,7 @@
 /*
  * v4l-test: Test environment for Video For Linux Two API
  *
+ * 19 Jul 2009  0.4  More V4L2_PIX_FMT_* formats added to valid_poxelformat()
  * 18 Apr 2009  0.3  Type added to debug printouts
  * 15 Apr 2009  0.2  Added test case for VIDIOC_S_FMT
  *  4 Apr 2009  0.1  First release
@@ -76,6 +77,81 @@ int valid_pixelformat(__u32 pixelformat) {
 	case V4L2_PIX_FMT_PWC1:
 	case V4L2_PIX_FMT_PWC2:
 	case V4L2_PIX_FMT_ET61X251:
+
+	/* formats from Linux kernel 2.6.31-rc2 */
+
+#ifdef V4L2_PIX_FMT_VYUY
+	case V4L2_PIX_FMT_VYUY:
+#endif
+
+#ifdef V4L2_PIX_FMT_NV16
+	case V4L2_PIX_FMT_NV16:
+#endif
+
+#ifdef V4L2_PIX_FMT_NV61
+	case V4L2_PIX_FMT_NV61:
+#endif
+
+#ifdef V4L2_PIX_FMT_SGBRG8
+	case V4L2_PIX_FMT_SGBRG8:
+#endif
+
+#ifdef V4L2_PIX_FMT_SGRBG8
+	case V4L2_PIX_FMT_SGRBG8:
+#endif
+
+#ifdef V4L2_PIX_FMT_SGRBG10
+	case V4L2_PIX_FMT_SGRBG10:
+#endif
+
+#ifdef V4L2_PIX_FMT_SGRBG10DPCM8
+	case V4L2_PIX_FMT_SGRBG10DPCM8:
+#endif
+
+#ifdef V4L2_PIX_FMT_SPCA501
+	case V4L2_PIX_FMT_SPCA501:
+#endif
+
+#ifdef V4L2_PIX_FMT_SPCA505
+	case V4L2_PIX_FMT_SPCA505:
+#endif
+
+#ifdef V4L2_PIX_FMT_SPCA508
+	case V4L2_PIX_FMT_SPCA508:
+#endif
+
+#ifdef V4L2_PIX_FMT_SPCA561
+	case V4L2_PIX_FMT_SPCA561:
+#endif
+
+#ifdef V4L2_PIX_FMT_PAC207
+	case V4L2_PIX_FMT_PAC207:
+#endif
+
+#ifdef V4L2_PIX_FMT_MR97310A
+	case V4L2_PIX_FMT_MR97310A:
+#endif
+
+#ifdef V4L2_PIX_FMT_SQ905C
+	case V4L2_PIX_FMT_SQ905C:
+#endif
+
+#ifdef V4L2_PIX_FMT_PJPG
+	case V4L2_PIX_FMT_PJPG:
+#endif
+
+#ifdef V4L2_PIX_FMT_YVYU
+	case V4L2_PIX_FMT_YVYU:
+#endif
+
+#ifdef V4L2_PIX_FMT_OV511
+	case V4L2_PIX_FMT_OV511:
+#endif
+
+#ifdef V4L2_PIX_FMT_OV518
+	case V4L2_PIX_FMT_OV518:
+#endif
+
 		valid = 1;
 		break;
 	default:
