@@ -13,6 +13,7 @@ ifdef CROSS_COMPILE
 ifeq ($(CHECK_CGROUP),cgroup)
 SUBDIRS += cgroup
 SUBDIRS += cpuctl
+SUBDIRS += cpuctl_fj
 SUBDIRS += memctl
 SUBDIRS += io-throttle
 SUBDIRS += freezer
@@ -35,6 +36,7 @@ endif
 
 ifeq ($(CHECK_CPUCTL),cpu)
 SUBDIRS += cpuctl
+SUBDIRS += cpuctl_fj
 else
 $(info "Kernel is not compiled with cpu controller support")
 endif

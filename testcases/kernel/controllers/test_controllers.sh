@@ -32,6 +32,7 @@
 #                                                                                #
 #  20/12/07  Sudhir Kumar <sudhirkumarmalik@in.ibm.com>   Created this test      #
 #  02/03/09  Miao Xie     <miaox@cn.fujitsu.com>          Add cpuset testset     #
+#  07/07/09  Shi Weihua   <shiwh@cn.fujitsu.com>      Add cpu testset of Fujitsu #
 #                                                                                #
 ##################################################################################
 
@@ -57,6 +58,8 @@ then
 		# Add the latency testcase to be run
 		$LTPROOT/testcases/bin/run_cpuctl_latency_test.sh 1;
 		$LTPROOT/testcases/bin/run_cpuctl_latency_test.sh 2;
+		# Add the testcases from Fujitsu
+		$LTPROOT/testcases/bin/run_cpuctl_test_fj.sh
 	else
 		echo "CONTROLLERS TESTCASES: WARNING";
 		echo "Kernel does not support for cpu controller";
