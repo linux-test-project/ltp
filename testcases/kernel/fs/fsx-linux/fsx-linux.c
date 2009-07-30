@@ -446,13 +446,6 @@ get_fd(void)
 	return tf->fd;
 }
 
-static const char *basename(const char *path)
-{
-	char *c = strrchr(path, '/');
-
-	return c ? c++ : path;
-}
-
 void
 open_test_files(char **argv, int argc)
 {
