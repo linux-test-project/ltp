@@ -116,14 +116,9 @@ void setup() {
 int errnochoose(void){   //choose the relative errno
 
     switch (TEST_ERRNO){
-        case    0:      tst_exit();
-        case    ECHILD: strerror((int)"ECHILD");
-        	        break;
-        case    EINTR:  strerror((int)"EINTR");
-                	break;
-        case    EINVAL: strerror((int)"EINVAL");
-                	break;
-        default:     strerror((int)"Other Error");
+        case  0:     tst_exit();
+		     break;
+        default:     strerror(TEST_ERRNO);
                      break;
    }
         TEST_RETURN = 0;
