@@ -37,17 +37,17 @@ init()
 	RC=0
 
 	# verify ima_boot_aggregate is available
-	which ima_boot_aggregate &> /dev/null || RC=$?
+	which ima_boot_aggregate >/dev/null 2>&1 || RC=$?
 	if [ $RC -ne 0 ]; then
-		tst_res TINFO $LTPTMP/imalog.$$\
+		tst_res TINFO $LTPTMP/imalog.$$ \
 		 "$TCID: ima_tpm.sh test requires openssl-devel, skipping"
 		return $RC
 	fi
 
 	# verify ima_measure is available
-	which ima_measure &> /dev/null || RC=$?
+	which ima_measure > /dev/null 2>&1 || RC=$?
 	if [ $RC -ne 0 ]; then
-		tst_res TINFO $LTPTMP/imalog.$$\
+		tst_res TINFO $LTPTMP/imalog.$$ \
 		 "$TCID: ima_tpm.sh test requires openssl-devel, skipping"
 	fi
 	return $RC
@@ -60,34 +60,36 @@ test01()
 	TCID="test01"
 	TST_COUNT=1
 	RC=0
+	zero="0000000000000000000000000000000000000000"
 
 	# IMA boot aggregate
 	ima_measurements=$SECURITYFS/ima/ascii_runtime_measurements
 	read line < $ima_measurements
+	ima_aggr=`expr substr "${line}" 49 40`
 
 	# verify TPM is available and enabled.
 	tpm_bios=$SECURITYFS/tpm0/binary_bios_measurements
 	if [ ! -f $tpm_bios ]; then
-		tst_res TINFO $LTPTMP/imalog.$$\
+		tst_res TINFO $LTPTMP/imalog.$$ \
 		 "$TCID: no TPM, TPM not builtin kernel, or TPM not enabled"
 
-		[ "${line:49:40}" -eq 0 ] || RC=$?
+		[ "${ima_aggr}" = "${zero}" ] || RC=$?
 		if [ $RC -eq 0 ]; then
-			tst_res TPASS $LTPTMP/imalog.$$\
+			tst_res TPASS $LTPTMP/imalog.$$ \
 			 "$TCID: bios boot aggregate is 0."
 		else
-			tst_res TFAIL $LTPTMP/imalog.$$\
+			tst_res TFAIL $LTPTMP/imalog.$$ \
 			 "$TCID: bios boot aggregate is not 0."
 		fi
 	else
 		boot_aggregate=`ima_boot_aggregate $tpm_bios`
-
-		[ "${line:48:40}" == "${boot_aggregate:15:40}" ] ||  RC=$?
+		boot_aggr=`expr substr $boot_aggregate 16 40`
+		[ ${ima_aggr} = ${boot_aggr} ] || RC=$?
 		if [ $RC -eq 0 ]; then
-			tst_res TPASS $LTPTMP/imalog.$$\
+			tst_res TPASS $LTPTMP/imalog.$$ \
 			 "$TCID: bios aggregate matches IMA boot aggregate."
 		else
-			tst_res TFAIL $LTPTMP/imalog.$$\
+			tst_res TFAIL $LTPTMP/imalog.$$ \
 			 "$TCID: bios aggregate does not match IMA boot " \
 				"aggregate."
 		fi
@@ -103,10 +105,14 @@ validate_pcr()
 	ima_measurements=$SECURITYFS/ima/binary_runtime_measurements
 	aggregate_pcr=`ima_measure $ima_measurements --validate`
 	dev_pcrs=$1
+	RC=0
+
 	while read line ; do
-		if [ "${line:0:6}" == "PCR-10" ]; then
-			[ "${line:8:59}" == "${aggregate_pcr:25:59}" ]
-				RC=$?
+		pcr=`expr substr "${line}" 1 6`
+		if [ "${pcr}" = "PCR-10" ]; then
+			aggr=`expr substr "${aggregate_pcr}" 26 59`
+			pcr=`expr substr "${line}" 9 59`
+			[ "${pcr}" = "${aggr}" ] || RC=$?
 		fi
 	done < $dev_pcrs
 	return $RC
@@ -126,15 +132,15 @@ test02()
 	if [ $RC -eq 0 ]; then
 		validate_pcr $PCRS_PATH || RC=$?
 		if [ $RC -eq 0 ]; then
-			tst_res TPASS $LTPTMP/imalog.$$\
+			tst_res TPASS $LTPTMP/imalog.$$ \
 			 "$TCID: aggregate PCR value matches real PCR value."
 		else
-			tst_res TFAIL $LTPTMP/imalog.$$\
+			tst_res TFAIL $LTPTMP/imalog.$$ \
 			 "$TCID: aggregate PCR value does not match" \
 			 " real PCR value."
 		fi
 	else
-		tst_res TFAIL $LTPTMP/imalog.$$\
+		tst_res TFAIL $LTPTMP/imalog.$$ \
 		 "$TCID: TPM not enabled, no PCR value to validate"
 	fi
 	return $RC
@@ -152,10 +158,10 @@ test03()
 	aggregate_pcr=`ima_measure $ima_measurements --verify --validate` > /dev/null
 	RC=$?
 	if [ $RC -eq 0 ]; then
-		tst_res TPASS $LTPTMP/imalog.$$\
+		tst_res TPASS $LTPTMP/imalog.$$ \
 		 "$TCID: verified IMA template hash values."
 	else
-		tst_res TFAIL $LTPTMP/imalog.$$\
+		tst_res TFAIL $LTPTMP/imalog.$$ \
 		 "$TCID: error verifing IMA template hash values."
 	fi
 	return $RC
@@ -172,7 +178,7 @@ RC=0    # Return value from setup, and test functions.
 EXIT_VAL=0
 
 # set the testcases/bin directory
-source `dirname $0`\/ima_setup.sh
+. `dirname $0`\/ima_setup.sh
 setup || exit $RC
 
 init || exit $RC

@@ -52,11 +52,16 @@ open for read by root. If the default policy has been replaced, loading
 another measurement policy will fail, as the policy may only be replaced
 once per boot. Some of the policy dependency tests might also fail as well.
 
+ima_tpm.sh: test02, verifying the PCR-10 value, requires a hard reboot.
+[On Ubuntu, before running the ltp tests, disable /etc/init.d/kexec-load
+and reboot.]
+
 Run tests
 ---------
 After doing 'make' and 'make install' from the top-level,
 - execute './ltp-full-<version>/runltp -f ima' to run the entire testsuite.
-- To run individual tests, cd into the IMA directory:
+- To run individual tests, cd into the IMA directory, and add testcases/bin
+  to PATH:
   ./ltp-full-<version>/testcases/kernel/security/integrity/ima/tests/
   and execute the individual scripts.
 

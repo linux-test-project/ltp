@@ -64,12 +64,17 @@ init()
 	export TST_COUNT=0
 	RC=0
 
-	service auditd status &> /dev/null || RC=$?
+	if [ -f /etc/init.d/auditd ]; then
+		service auditd status > /dev/null 2>&1 || RC=$?
+	else
+		RC=$?
+	fi
+
 	if [ $RC -ne 0 ]; then
 		log=/var/log/messages
 	else
 		log=/var/log/audit/audit.log
-		tst_res TINFO $LTPTMP/imalog.$$\
+		tst_res TINFO $LTPTMP/imalog.$$ \
 		 "$TCID: requires integrity auditd patch"
 	fi
 }
@@ -96,13 +101,16 @@ test01()
 		tail $log | grep test.txt-$$ | \
 			grep 1>/dev/null 'open_writers' || RC=$?
 		if [ $RC -eq 0 ]; then
-			tst_res TPASS $LTPTMP/imalog.$$\
-			 "$TCID: open_writers violation added"
+			tst_res TPASS $LTPTMP/imalog.$$ \
+			 "$TCID: open_writers violation added(test.txt-$$)"
 			return $RC
+		else
+			tst_res TINFO $LTPTMP/imalog.$$ \
+			 "$TCID: (message ratelimiting?)"
 		fi
 	fi
-	tst_res TFAIL $LTPTMP/imalog.$$\
-	 "$TCID: open_writers violation not added"
+	tst_res TFAIL $LTPTMP/imalog.$$ \
+	 "$TCID: open_writers violation not added(test.txt-$$)"
 	return $RC
 }
 
@@ -128,12 +136,16 @@ test02()
 		tail $log | grep test.txt-$$ | \
 			grep 'ToMToU' 1>/dev/null || RC=$?
 		if [ $RC -eq 0 ]; then
-			tst_res TPASS $LTPTMP/imalog.$$\
-			 "$TCID: ToMToU violation added"
+			tst_res TPASS $LTPTMP/imalog.$$ \
+			 "$TCID: ToMToU violation added(test.txt-$$)"
 			return $RC
+		else
+			tst_res TINFO $LTPTMP/imalog.$$ \
+			 "$TCID: (message ratelimiting?)"
 		fi
 	fi
-	tst_res TFAIL $LTPTMP/imalog.$$ "$TCID: ToMToU violation not added"
+	tst_res TFAIL $LTPTMP/imalog.$$ \
+	 "$TCID: ToMToU violation not added(test.txt-$$)"
 	return $RC
 }
 
@@ -160,13 +172,16 @@ test03()
 		tail $log | grep test.txtb-$$ | \
 			grep 1>/dev/null 'open_writers' || RC=$?
 		if [ $RC -eq 0 ]; then
-			tst_res TPASS $LTPTMP/imalog.$$\
-			 "$TCID: mmapped open_writers violation added"
+			tst_res TPASS $LTPTMP/imalog.$$ \
+			 "$TCID: mmapped open_writers violation added(test.txtb-$$)"
 			return $RC
+		else
+			tst_res TINFO $LTPTMP/imalog.$$ \
+			 "$TCID: (message ratelimiting?)"
 		fi
 	fi
-	tst_res TFAIL $LTPTMP/imalog.$$\
-	 "$TCID: mmapped open_writers violation not added"
+	tst_res TFAIL $LTPTMP/imalog.$$ \
+	 "$TCID: mmapped open_writers violation not added(test.txtb-$$)"
 	close_file_read
 	return $RC
 }
@@ -181,9 +196,8 @@ test03()
 RC=0    # Return value from setup, init, and test functions.
 EXIT_VAL=0
 
-source `dirname $0`\/ima_setup.sh
+. `dirname $0`\/ima_setup.sh
 setup || exit $RC
-
 init || exit $RC
 test01 || EXIT_VAL=$RC
 test02 || EXIT_VAL=$RC

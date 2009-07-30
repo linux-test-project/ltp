@@ -35,9 +35,10 @@ init()
 	export TST_TOTAL=3
 	export TCID="init"
         export TST_COUNT=0
+	RC=0
 
 	# check that sha1sum is installed
-	which sha1sum &> /dev/null || RC=$?
+	which sha1sum >/dev/null 2>&1 || RC=$?
 	if [ $RC -ne 0 ]; then
 		tst_brkm TBROK NULL "$TCID: sha1sum not found"
 		return $RC
@@ -45,7 +46,7 @@ init()
 
 	# verify using default policy
 	if [ ! -f $IMA_DIR/policy ]; then
-		tst_res TINFO $LTPTMP/imalog.$$\
+		tst_res TINFO $LTPTMP/imalog.$$ \
 		 "$TCID: not using default policy"
 	fi
 	return $RC
@@ -65,7 +66,7 @@ test01()
 	`date` - this is a test file
 	EOF
 	if [ $RC -ne 0 ]; then
-		tst_brkm TBROK $LTPTMP/imalog.$$\
+		tst_brkm TBROK $LTPTMP/imalog.$$ \
 		 "$TCID: Unable to create test file"
 		return $RC
 	fi
@@ -82,11 +83,11 @@ test01()
 	sleep 1
 	`grep $hash $LTPIMA/measurements > /dev/null` || RC=$?
 	if [ $RC -ne 0 ]; then
-		tst_res TFAIL $LTPTMP/imalog.$$\
+		tst_res TFAIL $LTPTMP/imalog.$$ \
 		 "$TCID: TPM ascii measurement list does not contain sha1sum"
 		return $RC
 	else
-		tst_res TPASS $LTPTMP/imalog.$$\
+		tst_res TPASS $LTPTMP/imalog.$$ \
 		 "$TCID: TPM ascii measurement list contains sha1sum"
 	fi
 	return $RC
@@ -114,13 +115,13 @@ test02()
 	`grep $hash $LTPIMA/measurements > /dev/null` || RC=$?
 
 	if [ $RC -ne 0 ]; then
-		tst_res TFAIL $LTPTMP/imalog.$$\
+		tst_res TFAIL $LTPTMP/imalog.$$ \
 		 "$TCID: Modified file not measured"
-		tst_res TINFO $LTPTMP/imalog.$$\
+		tst_res TINFO $LTPTMP/imalog.$$ \
 		 "$TCID: iversion not supported; or not mounted with iversion"
 		return $RC
 	else
-		tst_res TPASS $LTPTMP/imalog.$$\
+		tst_res TPASS $LTPTMP/imalog.$$ \
 		 "$TCID: Modified file measured"
 	fi
 	return $RC
@@ -137,12 +138,13 @@ test03()
 
 	# create file user-test.txt
 	mkdir -m 0700 $LTPIMA/user
-	chown 99.99 $LTPIMA/user
+	chown nobody.nobody $LTPIMA/user
 	cd $LTPIMA/user
 	hash=0
 
-	# As user 99, create and cat the new file
-	sudo -u \#99 sh -c "echo `date` - create test.txt > ./test.txt;
+	# As user nobody, create and cat the new file
+	# (The LTP tests assumes existence of 'nobody'.)
+	sudo -u nobody sh -c "echo `date` - create test.txt > ./test.txt;
 				cat ./test.txt > /dev/null"
 
 	# Calculating the hash will add the measurement to the measurement
@@ -157,11 +159,11 @@ test03()
 	grep $hash $LTPIMA/measurements > /dev/null || RC=$?
 	if [ $RC -ne 0 ]; then
 		RC=0
-		tst_res TPASS $LTPTMP/imalog.$$\
+		tst_res TPASS $LTPTMP/imalog.$$ \
 		 "$TCID: user file test.txt not measured"
 	else
 		RC=1
-		tst_res TFAIL $LTPTMP/imalog.$$\
+		tst_res TFAIL $LTPTMP/imalog.$$ \
 		 "$TCID: user file test.txt measured"
 	fi
 	return $RC
@@ -176,9 +178,8 @@ test03()
 #
 RC=0
 EXIT_VAL=0
-source `dirname $0`\/ima_setup.sh
+. `dirname $0`\/ima_setup.sh
 setup || exit $RC
-
 init
 test01 || EXIT_VAL=$RC
 test02 || EXIT_VAL=$RC

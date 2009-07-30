@@ -46,7 +46,7 @@ mount_sysfs()
 mount_securityfs()
 {
 	SECURITYFS=`mount | grep securityfs` || RC=$?
-	if [ $RC == 1 ]; then
+	if [ $RC -eq 1 ]; then
 		SECURITYFS=$SYSFS/kernel/security
 		`mkdir -p $SECURITYFS`
 		`mount -t securityfs securityfs $SECURITYFS`
@@ -77,7 +77,8 @@ setup()
 	fi
 
 	# Must be root
-	if [ $UID -ne 0 ]; then
+	userid=`id -u`
+	if [ $userid -ne 0 ]; then
 		tst_brkm TBROK $LTPTMP/imalog.$$ \
 		 "$TCID: Must be root to execute test"
 		return 1
@@ -92,7 +93,7 @@ setup()
 	# create the temporary directory used by this testcase
 	LTPIMA=$LTPTMP/ima
 	umask 077
-	mkdir $LTPIMA &>/dev/null || RC=$?
+	mkdir $LTPIMA > /dev/null 2>&1 || RC=$?
 	if [ $RC -ne 0 ]; then
 		tst_brk TBROK "$TCID: Unable to create temporary directory"
 		return $RC

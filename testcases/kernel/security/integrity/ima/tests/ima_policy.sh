@@ -39,21 +39,21 @@ init()
 	# verify using default policy
 	IMA_POLICY=$IMA_DIR/policy
 	if [ ! -f $IMA_POLICY ]; then
-		tst_res TINFO $LTPTMP/imalog.$$\
+		tst_res TINFO $LTPTMP/imalog.$$ \
 		 "$TCID: default policy already replaced"
 		  RC=1
 	fi
 
 	VALID_POLICY=`dirname $0`\/..\/policy/measure.policy
 	if [ ! -f $VALID_POLICY ]; then
-		tst_res TINFO $LTPTMP/imalog.$$\
+		tst_res TINFO $LTPTMP/imalog.$$ \
 		 "$TCID: missing $VALID_POLICY"
 		  RC=1
 	fi
 
 	INVALID_POLICY=`dirname $0`\/..\/policy/measure.policy-invalid
 	if [ ! -f $INVALID_POLICY ]; then
-		tst_res TINFO $LTPTMP/imalog.$$\
+		tst_res TINFO $LTPTMP/imalog.$$ \
 		 "$TCID: missing $INVALID_POLICY"
 		  RC=1
 	fi
@@ -70,7 +70,7 @@ load_policy()
 	cat $1 |
 	while read line ; do
 	{
-		if [ "${line:0:1}" != "#" ] ; then
+		if [ "${line#\#}" = "${line}" ] ; then
 			echo $line >&4 2> /dev/null
 			if [ $? -ne 0 ]; then
 				exec 4>&-
@@ -95,11 +95,11 @@ test01()
 	wait "$p1"; RC=$?
 	if [ $RC -ne 0 ]; then
 		RC=0
-		tst_res TPASS $LTPTMP/imalog.$$\
+		tst_res TPASS $LTPTMP/imalog.$$ \
 		 "$TCID: didn't load invalid policy"
 	else
 		RC=1
-		tst_res TFAIL $LTPTMP/imalog.$$\
+		tst_res TFAIL $LTPTMP/imalog.$$ \
 		 "$TCID: loaded invalid policy"
 	fi
 	return $RC
@@ -118,16 +118,15 @@ test02()
 	load_policy $VALID_POLICY & p2=$!  # forked process 2
 	wait "$p1"; RC1=$?
 	wait "$p2"; RC2=$?
-	RC=$((`expr $RC1 + $RC2`))
-	if [ $RC -eq 1 ]; then
-		RC=0
-		tst_res TPASS $LTPTMP/imalog.$$\
-		 "$TCID: replaced default measurement policy"
-	elif [ $RC -eq 0 ]; then
-		tst_res TFAIL $LTPTMP/imalog.$$\
+	if [ $RC1 -eq 0 ] && [ $RC2 -eq 0 ]; then
+		tst_res TFAIL $LTPTMP/imalog.$$ \
 		 "$TCID: measurement policy opened concurrently"
+	elif [ $RC1 -eq 0 ] || [ $RC2 -eq 0 ]; then
+		RC=0
+		tst_res TPASS $LTPTMP/imalog.$$ \
+		 "$TCID: replaced default measurement policy"
 	else
-		tst_res TFAIL $LTPTMP/imalog.$$\
+		tst_res TFAIL $LTPTMP/imalog.$$ \
 		 "$TCID: problems opening measurement policy"
 	fi
 	return 0
@@ -145,7 +144,7 @@ test03()
 	wait "$p1"; RC=$?
 	if [ $RC -ne 0 ]; then
 		RC=0
-		tst_res TPASS $LTPTMP/imalog.$$\
+		tst_res TPASS $LTPTMP/imalog.$$ \
 		 "$TCID: didn't replace valid policy"
 	else
 		RC=1
@@ -164,7 +163,7 @@ test03()
 RC=0    # Return value from setup, init, and test functions.
 EXIT_VAL=0
 
-source `dirname $0`\/ima_setup.sh
+. `dirname $0`\/ima_setup.sh
 setup || exit $RC
 
 init || exit $RC
