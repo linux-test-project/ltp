@@ -116,18 +116,15 @@ void setup() {
 int errnochoose(void){   //choose the relative errno
 
     switch (TEST_ERRNO){
-        case    0:      tst_exit();
         case    ECHILD:  strerror((int)"ECHILD");
-                tst_exit();
+			break;
         case    EINTR:  strerror((int)"EINTR");
-                tst_exit();
+			break;
         case    EINVAL: strerror((int)"EINVAL");
-                tst_exit();
+			break;
         default:     strerror((int)"Other Error");
-                tst_exit();
    }
-        TEST_RETURN = 0;
-        //tst_exit() ;
+        tst_exit() ;
 }
 
 
@@ -160,7 +157,7 @@ int main(int ac, char **av) {
 	if(TEST_RETURN == 0)
                 tst_resm(TPASS,"Success !");
         else{
-                tst_resm(TFAIL,"Error. is your system >2.6.9 ?");
+                tst_resm(TFAIL,"%s failed", TCID);
                 errnochoose();
         }
 
