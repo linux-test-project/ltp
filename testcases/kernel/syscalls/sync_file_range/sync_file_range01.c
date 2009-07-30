@@ -224,9 +224,9 @@ void setup()
 			 "open(%s, O_RDWR|O_CREAT,0700) Failed, errno=%d : %s",
 			 filename, errno, strerror(errno));
 
-		sfd = open(spl_file, O_RDWR | O_CREAT, 0700);
-
 	}
+
+	sfd = open(spl_file, O_RDWR | O_CREAT, 0700);
 
 	return;
 }
