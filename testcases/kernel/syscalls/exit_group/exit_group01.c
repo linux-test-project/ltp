@@ -136,7 +136,7 @@ int main(int ac, char **av) {
                      } else if (TEST_RETURN == 0){
 	                 	tst_resm(TINFO, "In the child process");
                            	sleep(5);
-				TEST(syscall(252,4));
+				TEST(syscall(__NR_exit_group,4));
                      }else {
 				tst_resm(TINFO,"in the parent process");
 				TEST(w = wait(&status));
