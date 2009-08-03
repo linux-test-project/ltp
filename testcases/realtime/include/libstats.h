@@ -56,6 +56,7 @@ typedef struct stats_record {
 
 typedef struct stats_container {
 	long size;
+	long index;
 	stats_record_t *records;
 } stats_container_t;
 
@@ -162,4 +163,11 @@ void stats_hist_print(stats_container_t *hist);
  */
 int stats_container_save(char *filename, char *title, char *labelx, char *labely, stats_container_t *data, char *mode);
 
+/* stats_container_append - appends stats_record_t to data
+ * data: stats_container_t structure for holding the records list, index of
+ *       min and max elements in records list and the sum
+ * rec: stats_record_t to be appended to the records list in data
+ * Returns the index of the appended record on success and -1 on error
+ */
+int stats_container_append(stats_container_t *data, stats_record_t rec);
 #endif /* LIBSTAT_H */

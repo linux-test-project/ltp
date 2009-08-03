@@ -31,6 +31,7 @@
  *
  * HISTORY
  *      2006-Oct-17: Initial version by Darren Hart
+ *      2009-Jul-22: Addition of stats_container_append function by Kiran Prakash
  *
  * TODO: the save routine for gnuplot plotting should be more modular...
  *
@@ -43,6 +44,7 @@
 #include <unistd.h>
 #include <math.h>
 #include <libstats.h>
+#include <librttest.h>
 
 int save_stats = 0;
 
@@ -62,10 +64,24 @@ static int stats_record_compare(const void * a, const void * b) {
 int stats_container_init(stats_container_t *data, long size)
 {
 	data->size = size;
+	data->index = -1;
 	data->records = calloc(size, sizeof(stats_record_t));
 	if (!data->records)
 		return -1;
 	return 0;
+}
+
+int stats_container_append(stats_container_t *data, stats_record_t rec)
+{
+	int myindex = ++data->index;
+	if (myindex >= data->size) {
+		debug(DBG_ERR, "Number of elements cannot be more than %d\n",
+				data->size);
+		data->index--;
+		return -1;
+	}
+	data->records[myindex] = rec;
+	return myindex;
 }
 
 int stats_container_resize(stats_container_t *data, long size)
