@@ -105,7 +105,7 @@ int stats_container_free(stats_container_t *data)
 int stats_sort(stats_container_t *data, enum stats_sort_method method)
 {
 	// method not implemented, always ascending on y atm
-	qsort(data->records, data->size, sizeof(stats_record_t),
+	qsort(data->records, data->index + 1, sizeof(stats_record_t),
 	      stats_record_compare);
 	return 0;
 }
@@ -117,7 +117,7 @@ float stats_stddev(stats_container_t *data)
 	long n;
 
 	sd = 0.0;
-	n = data->size;
+	n = data->index + 1;
 	sum = 0.0;
 
 	/* calculate the mean */
@@ -145,7 +145,7 @@ float stats_avg(stats_container_t *data)
 	float avg, sum;
 	long n;
 
-	n = data->size;
+	n = data->index + 1;
 	sum = 0.0;
 
 	/* calculate the mean */
@@ -163,7 +163,7 @@ long stats_min(stats_container_t *data)
 	long min;
 	long n;
 
-	n = data->size;
+	n = data->index + 1;
 
 	/* calculate the mean */
 	min = data->records[0].y;
@@ -182,7 +182,7 @@ long stats_max(stats_container_t *data)
 	long max;
 	long n;
 
-	n = data->size;
+	n = data->index + 1;
 
 	/* calculate the mean */
 	max = data->records[0].y;
@@ -223,16 +223,17 @@ int stats_quantiles_calc(stats_container_t *data, stats_quantiles_t *quantiles)
 	int index;
 
 	// check for sufficient data size of accurate calculation
-	if (data->size <= 0 || data->size < (long)exp10(quantiles->nines)) {
+	if (data->index < 0 || (data->index + 1) \
+	    < (long)exp10(quantiles->nines)) {
 		//printf("ERROR: insufficient data size for %d nines\n", data->size);
 		return -1;
 	}
 
-	size = data->size;
+	size = data->index + 1;
 	stats_sort(data, ASCENDING_ON_Y);
 
 	for (i = 2; i <= quantiles->nines; i++) {
-		index = data->size - data->size / exp10(i);
+		index = size - size / exp10(i);
 		quantiles->quantiles[i-2] = data->records[index].y;
 	}
 	return 0;
@@ -259,13 +260,13 @@ int stats_hist(stats_container_t *hist, stats_container_t *data)
 
 	ret = 0;
 
-	if (hist->size <= 0 || data->size <= 0) {
+	if (hist->size <= 0 || data->index < 0) {
 		return -1;
 	}
 
 	/* calculate the range of dataset */
 	min = max = data->records[0].y;
-	for (i = 0; i < data->size; i++) {
+	for (i = 0; i <= data->index; i++) {
 		y = data->records[i].y;
 		if (y > max) max = y;
 		if (y < min) min = y;
@@ -284,7 +285,7 @@ int stats_hist(stats_container_t *hist, stats_container_t *data)
 	}
 
 	/* fill in the counts */
-	for (i = 0; i < data->size; i++) {
+	for (i = 0; i <= data->index; i++) {
 		y = data->records[i].y;
 		b = MIN((y-min)/width, hist->size-1);
 		//printf("%d will go in bucket %d\n", y, b);
@@ -336,8 +337,8 @@ int stats_container_save(char *filename, char *title, char *xlabel, char *ylabel
         return -1;
     } else {
         minx = maxx = data->records[0].x;
-        miny = maxy = data->records[0].y;
-        for (i = 0; i < data->size; i++) {
+	miny = maxy = data->records[0].y;
+	for (i = 0; i <= data->index; i++) {
             rec = &data->records[i];
             minx = MIN(minx, rec->x);
             maxx = MAX(maxx, rec->x);
