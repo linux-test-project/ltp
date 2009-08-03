@@ -226,7 +226,6 @@ getegid01 getegid01
 geteuid01 geteuid01
 
 getgid01 getgid01
-getgid02 getgid02
 getgid03 getgid03
 
 getgroups01 getgroups01
