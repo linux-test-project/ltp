@@ -132,6 +132,14 @@ int main(int ac, char **av)
 			 "Cannot do fcntl on a file located on an NFS filesystem");
 	}
 
+	/*
+	 * check if the current filesystem is tmpfs
+	 */
+	if (tst_is_cwd_tmpfs()) {
+		tst_brkm(TCONF, cleanup,
+			 "Cannot do fcntl on a file located on an TMPFS filesystem");
+	}
+
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
