@@ -86,6 +86,7 @@ int periodic_thread(nsec_t period, int iterations, int loops)
 	stats_container_t dat;
 	stats_container_t hist;
 	stats_quantiles_t quantiles;
+	stats_record_t rec;
 
 	int i = 0;
 	int fail = 0;
@@ -119,8 +120,9 @@ int periodic_thread(nsec_t period, int iterations, int loops)
 		calc(loops);
 		exe_end = rt_gettime();
 		exe_time = exe_end - exe_start;
-		dat.records[i].x = i;
-		dat.records[i].y = exe_time/NS_PER_US;
+		rec.x = i;
+		rec.y = exe_time/NS_PER_US;
+		stats_container_append(&dat, rec);
 
 		i++;
 

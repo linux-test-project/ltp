@@ -63,6 +63,7 @@
 
 int fail[THREADS_PER_GROUP * NUM_GROUPS];
 stats_container_t dat[THREADS_PER_GROUP * NUM_GROUPS];
+stats_record_t rec;
 stats_quantiles_t quantiles[THREADS_PER_GROUP * NUM_GROUPS];
 static const char groupname[NUM_GROUPS] = "ABC";
 
@@ -139,8 +140,9 @@ void *periodic_thread(void *thread)
 		func(parg->arg);
 		exe_end = rt_gettime();
 		exe_time = exe_end - exe_start;
-		dat[t->id].records[i].x = i;
-		dat[t->id].records[i].y = exe_time/NS_PER_US;
+		rec.x = i;
+		rec.y = exe_time/NS_PER_US;
+		stats_container_append(&dat[t->id], rec);
 
 		i++;
 

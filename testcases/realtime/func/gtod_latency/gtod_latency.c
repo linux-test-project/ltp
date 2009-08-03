@@ -222,6 +222,7 @@ int main(int argc, char *argv[])
 	stats_container_t dat;
 	stats_container_t hist;
 	stats_quantiles_t quantiles;
+	stats_record_t rec;
 
 	stats_container_init(&dat, ITERATIONS);
 	stats_container_init(&hist, HIST_BUCKETS);
@@ -273,8 +274,9 @@ int main(int argc, char *argv[])
 	}
 	for (i = 0; i < ITERATIONS; i++) {
 		delta = timespec_subtract(&start_data[i], &stop_data[i]);
-		dat.records[i].x = i;
-		dat.records[i].y = delta;
+		rec.x = i;
+		rec.y = delta;
+		stats_container_append(&dat, rec);
 		if (i == 0 || delta < min) min = delta;
 		if (delta > max) max = delta;
 		if (latency_threshold && delta > latency_threshold)

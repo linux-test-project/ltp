@@ -115,6 +115,7 @@ void *signal_thread(void *arg)
 	long delta, max, min;
 	stats_container_t dat;
 	stats_container_t hist;
+	stats_record_t rec;
 
 	stats_container_init(&dat, iterations);
 	stats_container_init(&hist, HIST_BUCKETS);
@@ -139,8 +140,9 @@ void *signal_thread(void *arg)
 		delta = (long)((end - start)/NS_PER_US);
 		if (delta > pass_criteria)
 			ret = 1;
-		dat.records[i].x = i;
-		dat.records[i].y = delta;
+		rec.x = i;
+		rec.y = delta;
+		stats_container_append(&dat, rec);
 		if (i == 0)
 			min = max = delta;
 		else {

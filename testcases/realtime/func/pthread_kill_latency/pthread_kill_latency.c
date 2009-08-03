@@ -120,6 +120,7 @@ void *signal_receiving_thread(void *arg)
 	stats_container_t dat;
 	stats_container_t hist;
 	stats_quantiles_t quantiles;
+	stats_record_t rec;
 
 	stats_container_init(&dat, ITERATIONS);
 	stats_container_init(&hist, HIST_BUCKETS);
@@ -160,8 +161,9 @@ void *signal_receiving_thread(void *arg)
 		sigwait(&set, &sig);
 		end = rt_gettime();
 		delta = (end - begin)/NS_PER_US;
-		dat.records[i].x = i;
-		dat.records[i].y = delta;
+		rec.x = i;
+		rec.y = delta;
+		stats_container_append(&dat, rec);
 
 		if (i == 0 || delta < min)
 			min = delta;

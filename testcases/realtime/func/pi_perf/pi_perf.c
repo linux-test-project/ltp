@@ -78,6 +78,7 @@ nsec_t low_unlock, max_pi_delay;
 stats_container_t low_dat, cpu_delay_dat;
 stats_container_t cpu_delay_hist;
 stats_quantiles_t cpu_delay_quantiles;
+stats_record_t rec;
 
 void usage(void)
 {
@@ -151,8 +152,9 @@ void * low_prio_thread(void *arg)
 
 		pthread_mutex_unlock(&lock);
 
-		low_dat.records[i].x = i;
-		low_dat.records[i].y = low_hold / NS_PER_US;
+		rec.x = i;
+		rec.y = low_hold / NS_PER_US;
+		stats_container_append(&low_dat, rec);
 
 		if (i == iterations-1)
 			end = 1;

@@ -192,6 +192,7 @@ test_signal(long iter, long nthreads)
 	unsigned long max = 0;
 	unsigned long min = 0;
 	stats_container_t dat;
+	stats_record_t rec;
 
 	stats_container_init(&dat,iter * nthreads);
 
@@ -207,8 +208,9 @@ test_signal(long iter, long nthreads)
 	for (i = 0; i < (iter - 1) * nthreads; i+=nthreads) {
 		for (j = 0 , k = i; j < nthreads; j++ , k++) {
 			wake_child(j, broadcast_flag);
-			dat.records[k].x = k;
-			dat.records[k].y = latency;
+			rec.x = k;
+			rec.y = latency;
+			stats_container_append(&dat, rec);
 			pthread_mutex_lock(&child_mutex);
 			child_waiting[j] = 0;
 			pthread_mutex_unlock(&child_mutex);

@@ -73,6 +73,7 @@ static unsigned int load_ms = DEF_LOAD_MS;
 stats_container_t dat;
 stats_container_t hist;
 stats_quantiles_t quantiles;
+stats_record_t rec;
 
 void usage(void)
 {
@@ -166,8 +167,10 @@ void *periodic_thread(void *arg)
 
 		/* start of period */
 		delay = (now - iter_start - (nsec_t)(i+1)*period)/NS_PER_US;
-		dat.records[i].x = i;
-		dat.records[i].y = delay;
+		rec.x = i;
+		rec.y = delay;
+		stats_container_append(&dat, rec);
+
 		if (delay < min_delay)
 			min_delay = delay;
 		if (delay > max_delay)

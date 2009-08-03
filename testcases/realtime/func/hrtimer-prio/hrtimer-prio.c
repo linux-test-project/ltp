@@ -58,6 +58,7 @@ static int iterations = DEF_ITERATIONS;
 static int busy_threads;
 
 static stats_container_t dat;
+static stats_record_t rec;
 static atomic_t busy_threads_started;
 static unsigned long min_delta;
 static unsigned long max_delta;
@@ -131,8 +132,9 @@ void *timer_thread(void *thread)
 		rt_nanosleep(DEF_SLEEP_TIME);
 		end = rt_gettime();
 		delta_us = ((unsigned long)(end - start) - DEF_SLEEP_TIME)/NS_PER_US;
-		dat.records[i].x = i;
-		dat.records[i].y = delta_us;
+		rec.x = i;
+		rec.y = delta_us;
+		stats_container_append(&dat, rec);
 		max_delta = MAX(max_delta, delta_us);
 		min_delta = (i == 0) ? delta_us : MIN(min_delta, delta_us);
 	}

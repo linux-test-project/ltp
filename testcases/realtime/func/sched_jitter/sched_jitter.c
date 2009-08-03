@@ -122,6 +122,7 @@ void *thread_worker(void* arg)
 	unsigned long long min=-1, max=0;
 
 	stats_container_t dat;
+	stats_record_t rec;
 
 	stats_container_init(&dat, NUMRUNS);
 
@@ -141,8 +142,9 @@ void *thread_worker(void* arg)
 			min = delta;
 		if (delta> max)
 			max = delta;
-		dat.records[i].x = i;
-		dat.records[i].y = delta;
+		rec.x = i;
+		rec.y = delta;
+		stats_container_append(&dat, rec);
 
 		printf("delta: %llu ns\n", delta);
 		usleep(1); /* let other things happen */
