@@ -130,6 +130,7 @@ int main(int ac, char **av)
 		     (do_child, child_stack + CHILD_STACK_SIZE, SIGCHLD, NULL));
 #endif
 
+again:
 		if ((child_pid = wait(&status)) == -1) {
 			tst_brkm(TBROK, cleanup, "wait() failed; error no ="
 				 " %d, %s", errno, strerror(errno));
@@ -138,11 +139,11 @@ int main(int ac, char **av)
 		/* check return code */
 		if (TEST_RETURN == child_pid) {
 			tst_resm(TPASS, "clone() returned %d", TEST_RETURN);
-		} else {
-			tst_resm(TFAIL, "clone() returned %d, errno = %d ",
-				 "wait() returned %d", TEST_RETURN, TEST_ERRNO,
+		} else if (TEST_RETURN == -1) {
+			tst_resm(TFAIL, "clone() returned %d, errno = %d wait() returned %d\n", TEST_RETURN, TEST_ERRNO,
 				 child_pid);
-		}
+		} else
+			goto again;
 
 	}			/* End for TEST_LOOPING */
 
