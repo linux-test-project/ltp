@@ -31,7 +31,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: test.h,v 1.17 2009/07/20 10:59:32 vapier Exp $ */
+/* $Id: test.h,v 1.18 2009/08/04 11:47:10 subrata_modak Exp $ */
 
 #ifndef __TEST_H__
 #define __TEST_H__
@@ -44,15 +44,15 @@
 
 #include "compiler.h"
 
-/* Use low 4 bits to encode test type */
-#define TTYPE_MASK 0xf
+/* Use low 6 bits to encode test type */
+#define TTYPE_MASK 0x3f
 #define TPASS      0    /* Test passed flag */
 #define TFAIL      1    /* Test failed flag */
 #define TBROK      2    /* Test broken flag */
-#define TWARN      3    /* Test warning flag */
-#define TRETR      4    /* Test retire flag */
-#define TINFO      5    /* Test information flag */
-#define TCONF      6    /* Test not appropriate for configuration flag */
+#define TWARN      4    /* Test warning flag */
+#define TRETR      8    /* Test retire flag */
+#define TINFO      16   /* Test information flag */
+#define TCONF      32   /* Test not appropriate for configuration flag */
 #define TTYPE_RESULT(ttype) ((ttype) & TTYPE_MASK)
 
 #define TERRNO     0x100   /* Append errno information to output */
