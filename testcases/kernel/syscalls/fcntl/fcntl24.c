@@ -139,6 +139,14 @@ int main(int ac, char **av)
 			 "Cannot do fcntl on a file located on an TMPFS filesystem");
 	}
 
+	/*
+	 * check if the current filesystem is ramfs
+	 */
+	if (tst_is_cwd_ramfs()) {
+		tst_brkm(TCONF, cleanup,
+			 "Cannot do fcntl on a file located on an RAMFS filesystem");
+	}
+
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
