@@ -39,6 +39,7 @@
  *      2006-May-05: Initial version by John Stultz <johnstul@us.ibm.com>
  *      2007-July-18: Support to gather stats by Ankita Garg <ankita@in.ibm.com>
  *
+ *      This line has to be added to avoid a stupid CVS problem
  *****************************************************************************/
 
 #include <stdio.h>

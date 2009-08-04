@@ -42,6 +42,7 @@
  *	2008-Jan-23:  Latency tracing added by
  *				Sebastien Dugue <sebastien.dugue@bull.net>
  *
+ *      This line has to be added to avoid a stupid CVS problem
  *****************************************************************************/
 
 #include <stdio.h>

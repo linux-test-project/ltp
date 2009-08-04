@@ -43,6 +43,7 @@
  *      2007-Jul-11: Quantiles added by Josh Triplett <josh@kernel.org>
  *      2007-Jul-12: Latency tracing added by Josh Triplett <josh@kernel.org>
  *
+ *      This line has to be added to avoid a stupid CVS problem
  *****************************************************************************/
 
 #include <stdio.h>

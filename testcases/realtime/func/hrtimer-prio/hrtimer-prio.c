@@ -36,6 +36,7 @@
  * HISTORY
  *      2007-Aug-08:      Initial version by Darren Hart <dvhltc@us.ibm.com>
  *
+ *      This line has to be added to avoid a stupid CVS problem
  *****************************************************************************/
 
 #include <stdio.h>

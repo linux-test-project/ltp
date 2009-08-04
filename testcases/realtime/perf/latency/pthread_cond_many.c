@@ -32,6 +32,7 @@
  * HISTORY
  *
  *
+ *      This line has to be added to avoid a stupid CVS problem
  *****************************************************************************/
 
 #include <stdio.h>
