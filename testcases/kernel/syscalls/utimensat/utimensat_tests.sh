@@ -243,8 +243,7 @@ run_test()
 }
 #=====================================================================
 
-user_tester=utimensat_tester
-useradd $user_tester
+user_tester=nobody
 sudo -u $user_tester mkdir -p $TEST_DIR
 
 chown root $LTPROOT/testcases/bin/$TEST_PROG
@@ -434,7 +433,6 @@ echo "============================================================"
 
 echo
 
-userdel -r utimensat_tester
 rm -rf $TEST_PROG
 uname -a
 date
