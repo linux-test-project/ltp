@@ -93,8 +93,11 @@ struct test_case_t {		/* test case structure */
 		    &sinlen, -1, EFAULT, setup2, cleanup1,
 		    "invalid socket buffer"}, {
 	PF_UNIX, SOCK_STREAM, 0, (struct sockaddr *)&fsin1,
+		    (socklen_t *) 0, -1, EFAULT, setup2, cleanup1,
+		    "invalid aligned salen"}, {
+	PF_UNIX, SOCK_STREAM, 0, (struct sockaddr *)&fsin1,
 		    (socklen_t *) 1, -1, EFAULT, setup2, cleanup1,
-		    "invalid salen"},
+		    "invalid unaligned salen"},
 #endif
 };
 

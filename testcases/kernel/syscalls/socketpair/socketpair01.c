@@ -80,8 +80,8 @@ struct test_case_t {		/* test case structure */
 #ifndef UCLINUX
 	    /* Skip since uClinux does not implement memory protection */
 	{
-	PF_UNIX, SOCK_STREAM, 0, 0, -1, EFAULT, "bad pointer"}, {
-	PF_UNIX, SOCK_STREAM, 0, (int *)7, -1, EFAULT, "bad pointer"},
+	PF_UNIX, SOCK_STREAM, 0, 0, -1, EFAULT, "bad aligned pointer"}, {
+	PF_UNIX, SOCK_STREAM, 0, (int *)7, -1, EFAULT, "bad unaligned pointer"},
 #endif
 	{
 	PF_INET, SOCK_DGRAM, 17, sv, -1, EOPNOTSUPP, "UDP socket"}, {
