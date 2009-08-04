@@ -192,8 +192,9 @@ void * high_prio_thread(void *arg)
 		busy_work_ms(high_work_time);
 		pthread_mutex_unlock(&lock);
 
-		cpu_delay_dat.records[i].x = i;
-		cpu_delay_dat.records[i].y = high_get_lock / NS_PER_US;
+		rec.x = i;
+		rec.y = high_get_lock / NS_PER_US;
+		stats_container_append(&cpu_delay_dat, rec);
 
 		/* Wait for all threads to finish this iteration */
 		pthread_barrier_wait(&bar2);
