@@ -163,8 +163,8 @@ declare -i HUNG=0
 declare -i SEGV=0
 declare -i OTH=0
 
-# Maximum Two minutes waiting time period to execute a test. If it exceeds, the test case will go into the 'HUNG' category.
-TIMEOUT_VAL=120
+# Maximum five minutes waiting time period to execute a test. If it exceeds, the test case will go into the 'HUNG' category.
+TIMEOUT_VAL=300
 
 # if gcc available then remove the below line comment else put the t0 in posixtestsuite directory.
 #gcc -o t0 t0.c
