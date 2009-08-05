@@ -18,20 +18,25 @@
 #
 #
 #
-#  FILE   : fs_di 
+#  FILE   : fs_di
 #
 #  PURPOSE: FileSystem Data Integrity
-#	    Creates a data file of specified or random size and copies 
-#           the file to a random directory depth on a specified filesystem
-#	    The two files are compared and checked for differences. 
-#	    If the files differ, then the test fails. By default, this 
-#	    test creates a 30Mb file and runs for ten loops.
-#	               
+#	   1. Creates a data file of specified or random size and copies
+#         the file to a random directory depth on a specified filesystem
+#	      The two files are compared and checked for differences.
+#	      If the files differ, then the test fails. By default, this
+#	      test creates a 30Mb file and runs for ten loops.
+#      2. Creates a datafile of size half of the partition size. Creates
+#         two fragmented files on the specified partition and copies datafile
+#         to them. Then compares both the fragmented files with datafile. If
+#         files differ, then test fails.
 #
 #  SETUP: None
 #
 #
 #  HISTORY:
+#    28/07/09 Jyoti Vantagodi (jyotiv@linux.vnet.ibm.com)
+#             Added point two of above PURPOSE
 #    04/11/05 Robbie Williamson (robbiew@us.ibm.com)
 #      -Written
 #
@@ -59,16 +64,17 @@ usage()
 {
     cat <<-EOF >&2
 
-    usage: ./${0##*/} -d TMPDIR [-h] [-l # of LOOPS ] [-s SIZE in Mb]
+    usage: ./${0##*/} -d TMPDIR [-h] [-l # of LOOPS ] [-s SIZE in Mb][-S partition SIZE in Mb]
 
     -d TMPDIR       Directory where temporary files will be created.
     -h              Help. Prints all available options.
     -l # of LOOPS   The number of times to run the test. Default=10.
     -s SIZE in Mb   The size of the data file to create. Default=30Mb. A "0" means random sizes from 10-500Mb.
-    -v 		    Verbose output.
-
+    -S SIZE in Mb   Size of usable partition (in MBs) on which the testing is carried out (needs to be passed
+                    for fragmented file test)
+    -v              Verbose output.
+    example: ./${0##*/} -d /mnt/cifsmount -l 20 -s 100 -S 200
     example: ./${0##*/} -d /mnt/cifsmount -l 20 -s 100
-
 
 	EOF
 exit 0
@@ -89,6 +95,8 @@ $trace_logic
     if [ "$CLEANUP" = "ON" ]; then
 	rm -rf $TCtmp
 	rm -rf ${TESTFS}
+   	rm -rf $TMPBASE/*
+        rm -f $TCtmp/testfile*
     fi
 
     [ $# = 0 ] && { tst_resm TPASS "Test Successful"; exit 0; }
@@ -110,16 +118,16 @@ $trace_logic
     LOOPS=10
     SIZE=30
     RANDOM_SIZE=0
-    while getopts d:hl:s:v arg
-    do  
+    DISK_SIZE=0
+    while getopts d:hl:s:S:v arg
+    do
 	case $arg in
 
         d)  # append $$ to TMP, as it is recursively
             # removed at end of script.
-            TMPBASE=$OPTARG
+            export TMPBASE=$OPTARG
             TMP="${TMPBASE}/fs_di-$$"
             export TESTFS="$TMP";;
-
         h)  usage
 	    exit 0;;
    
@@ -130,10 +138,13 @@ $trace_logic
             SIZE=$OPTARG
 	    if [ $SIZE -eq 0 ]; then
               RANDOM_SIZE=1
-	    fi;;	
+	    fi;;
 
 	v)  # Verbose
 	    trace_logic=${trace_logic:-"set -x"};;
+
+        S)  # Size of usable partition, which is used for creating creating the files
+            DISK_SIZE=$OPTARG;;
 	
        \?) usage
 	   exit 0;;
@@ -142,7 +153,8 @@ $trace_logic
     if [ $TMPBASE = "0" ]; then
       tst_resm TBROK "You must specify the target directory [-d]"
       exit 1
-    fi 
+    fi
+
     export TST_COUNT=$LOOPS
 
     echo ""
@@ -184,12 +196,12 @@ $trace_logic
               SIZE=$RANDOM
               let "SIZE %= 500"
  	    done
-        fi
+      	fi
   	create_datafile $SIZE $TCtmp/testfile >/dev/null
 	  if [ $? != 0 ]; then
 		end_testcase "Could not create testfile of size ${SIZE}Mb"
 	  fi
-	RANDOM_DEPTH=$RANDOM 
+	RANDOM_DEPTH=$RANDOM
 	let "RANDOM_DEPTH %= 500"
 
 	RANDOM_LENGTH=$RANDOM
@@ -230,6 +242,39 @@ $trace_logic
 	loopcount=$(( $loopcount + 1 ))
 	tst_resm TINFO "Completed Loop $loopcount"
     done
-  end_testcase
+    if [ "$DISK_SIZE" != 0 ]; then
+    #Create a datafile of size half of the disk size
+    tst_resm TINFO "Creating fragmented files. Please wait..."
+    DISK_SIZE=$(( $DISK_SIZE / 2 ))
+	if [ "$DISK_SIZE" == 0 ]; then
+		DISK_SIZE=1
+	fi
+    create_datafile $DISK_SIZE $TCtmp/testfile >/dev/null
+    retval=$?
+    if [ "$retval" != 0 ]; then
+        end_testcase "Error in creating data file"
+    fi
 
+    #Invoke frag to create 2 fragmented files and copy data file to both the files
+    frag $TCtmp/testfile $TMPBASE
+    retval=$?
+    if [ "$retval" != 0 ]; then
+        end_testcase "Error in creating frag files"
+    fi
+    tst_resm TINFO "Created fragmented files"
 
+    #Compare both frag files with data file
+    cmp $TCtmp/testfile $TMPBASE/frag1
+    retval=$?
+    if [ "$retval" != 0 ]; then
+        end_testcase "frag1 and datafile are not matching"
+    fi
+    if [ "$retval" != 0 ]; then
+       end_testcase "frag2 and datafile are not matching"
+    fi
+
+    tst_resm TINFO "Completed test with fragmented files"
+	rm -rf $TMPBASE/*
+	rm -f $TCtmp/testfile*
+    fi
+end_testcase
