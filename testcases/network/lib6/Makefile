@@ -23,6 +23,8 @@
 CFLAGS+=	-I../../../include -g -D_GNU_SOURCE
 LOADLIBES+=	-L../../../lib runcc.a -lltp -lpthread
 
+RANLIB		?= ranlib
+
 SRCS=$(wildcard *.c)
 TARGETS= asapi_01 asapi_02 asapi_03 asapi_04 asapi_05 asapi_06 asapi_07 \
 	getaddrinfo_01 in6_01 in6_02
