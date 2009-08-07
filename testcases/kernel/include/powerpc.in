@@ -1,27 +1,27 @@
-timer_create 240
-timer_settime 241
-timer_delete 244
-clock_settime 245
-clock_gettime 246
-splice 283
-tee 284
-vmsplice 285
-openat 286
-mkdirat (__NR_openat  1)
-mknodat (__NR_openat  2)
-fchownat (__NR_openat  3)
-futimesat (__NR_openat  4)
-newfstatat (__NR_openat  5)
-fstatat64 (__NR_openat  5)
-unlinkat (__NR_openat  6)
-renameat (__NR_openat  7)
-linkat (__NR_openat  8)
-symlinkat (__NR_openat  9)
-readlinkat (__NR_openat  10)
-fchmodat (__NR_openat  11)
-faccessat (__NR_openat  12)
-utimensat 304
-eventfd 307
-fallocate 309
-eventfd2 314
-perf_counter_open 319
+__NR_timer_create 240
+__NR_timer_settime 241
+__NR_timer_delete 244
+__NR_clock_settime 245
+__NR_clock_gettime 246
+__NR_splice 283
+__NR_tee 284
+__NR_vmsplice 285
+__NR_openat 286
+__NR_mkdirat (__NR_openat + 1)
+__NR_mknodat (__NR_openat + 2)
+__NR_fchownat (__NR_openat + 3)
+__NR_futimesat (__NR_openat + 4)
+__NR_newfstatat (__NR_openat + 5)
+__NR_fstatat64 (__NR_openat + 5)
+__NR_unlinkat (__NR_openat + 6)
+__NR_renameat (__NR_openat + 7)
+__NR_linkat (__NR_openat + 8)
+__NR_symlinkat (__NR_openat + 9)
+__NR_readlinkat (__NR_openat + 10)
+__NR_fchmodat (__NR_openat + 11)
+__NR_faccessat (__NR_openat + 12)
+__NR_utimensat 304
+__NR_eventfd 307
+__NR_fallocate 309
+__NR_eventfd2 314
+__NR_perf_counter_open 319
