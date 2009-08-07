@@ -46,20 +46,19 @@
 #include <sys/syscall.h>
 #include <string.h>
 
-
 /* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
 
 /* Extern Global Variables */
-extern int Tst_count;           /* counter for tst_xxx routines.         */
-extern char *TESTDIR;           /* temporary dir created by tst_tmpdir() */
+extern int Tst_count; /* counter for tst_xxx routines.         */
+extern char *TESTDIR; /* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
-char *TCID = "rt_sigqueueinfo01";  /* Test program identifier.*/
-int  testno;
-int  TST_TOTAL = 2;                   /* total number of tests in this file.   */
+char *TCID = "rt_sigqueueinfo01"; /* Test program identifier.*/
+int testno;
+int TST_TOTAL = 2; /* total number of tests in this file.   */
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -80,12 +79,12 @@ int  TST_TOTAL = 2;                   /* total number of tests in this file.   *
 /*                                                                            */
 /******************************************************************************/
 extern void cleanup() {
-        /* Remove tmp dir and all files in it */
-        TEST_CLEANUP;
-        tst_rmdir();
+	/* Remove tmp dir and all files in it */
+	TEST_CLEANUP;
+	tst_rmdir();
 
-        /* Exit with appropriate return code. */
-        tst_exit();
+	/* Exit with appropriate return code. */
+	tst_exit();
 }
 
 /* Local  Functions */
@@ -107,73 +106,50 @@ extern void cleanup() {
 /*                                                                            */
 /******************************************************************************/
 void setup() {
-        /* Capture signals if any */
-        /* Create temporary directories */
-        TEST_PAUSE;
-        tst_tmpdir();
+	/* Capture signals if any */
+	/* Create temporary directories */
+	TEST_PAUSE;
+	tst_tmpdir();
 }
-
 
 int main(int ac, char **av) {
 	int pid, retval;
-        pid = getpid();
-        siginfo_t uinfo;
-        int lc;                 /* loop counter */
-        char *msg;              /* message returned from parse_opts */
-	
-        /* parse standard options */
-        if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
-             tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-             tst_exit();
-           }
+	pid = getpid();
+	siginfo_t uinfo;
+	int lc; /* loop counter */
+	char *msg; /* message returned from parse_opts */
 
-        setup();
+	/* parse standard options */
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL) {
+		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+	}
 
-        /* Check looping state if -i option given */
-        for (lc = 0; TEST_LOOPING(lc); ++lc) {
-                Tst_count = 0;
-                for (testno = 0; testno < TST_TOTAL; ++testno) {
+	/* Check looping state if -i option given */
+	for (lc = 0; TEST_LOOPING(lc); ++lc) {
+		Tst_count = 0;
+		for (testno = 0; testno < TST_TOTAL; ++testno) {
 			TEST(pid = fork());
-		        if(TEST_RETURN < 0){
-				tst_resm(TFAIL,"fork() Failed, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
-                        	cleanup();
-				tst_exit();
-		        } else if (TEST_RETURN == 0){
-				  uinfo.si_errno = 0;
-			          uinfo.si_code = -1;
-		                  TEST(retval = syscall(__NR_rt_sigqueueinfo, getpid(), 17, &uinfo));
-				   if(TEST_RETURN == 0){
-					tst_resm(TPASS,"Test Succeeded");
-					tst_exit();
-			          } else {
-					tst_resm(TFAIL,"Test Failed, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
-	                        	cleanup();
-					tst_exit();
-		                    }
-		        }
-
-			TEST(pid = fork());
-                        if(TEST_RETURN < 0){
-                                tst_resm(TFAIL,"fork() Failed, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
-                                cleanup();
-                                tst_exit();
-                        } else if (TEST_RETURN == 0){
-                                  uinfo.si_errno = 0;
-                                  uinfo.si_code = 0;
-                                  TEST(retval = syscall(__NR_rt_sigqueueinfo, getpid(), 17, &uinfo));
-                                   if(TEST_RETURN == 0){
-                                        tst_resm(TPASS,"Test Succeeded");
-                                        tst_exit();
-                                  } else {
-                                        tst_resm(TFAIL,"Test Failed, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
-                                        cleanup();
-                                        tst_exit();
-                                    }
-                        }
-
-                }
-	Tst_count++;
-        }	
-        tst_exit();
+			setup();
+			if (TEST_RETURN < 0) {
+				tst_resm(TFAIL, "fork() Failed, errno=%d : %s", TEST_ERRNO,
+						strerror(TEST_ERRNO));
+				cleanup();
+			} else if (TEST_RETURN == 0) {
+				uinfo.si_errno = 0;
+				uinfo.si_code = SI_QUEUE;
+				TEST(retval = syscall(__NR_rt_sigqueueinfo, getpid(), 17,
+						&uinfo));
+				if (TEST_RETURN == 0) {
+					tst_resm(TPASS, "Test Succeeded");
+				} else {
+					tst_resm(TFAIL, "Test Failed, errno=%d : %s", TEST_ERRNO,
+							strerror(TEST_ERRNO));
+				}
+				cleanup();
+			}
+			tst_exit();
+		}
+		Tst_count++;
+	}
 }
 
