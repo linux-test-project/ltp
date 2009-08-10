@@ -2,18 +2,18 @@ vmsplice 25
 splice 232
 tee 280
 openat 284
-mkdirat (__NR_openat  1)
-mknodat (__NR_openat  2)
-fchownat (__NR_openat  3)
-futimesat (__NR_openat  4)
-newfstatat (__NR_openat  5)
-fstatat64 (__NR_openat  5)
-unlinkat (__NR_openat  6)
-renameat (__NR_openat  7)
-linkat (__NR_openat  8)
-symlinkat (__NR_openat  9)
-readlinkat (__NR_openat  10)
-fchmodat (__NR_openat  11)
-faccessat (__NR_openat  12)
+mkdirat (__NR_openat + 1)
+mknodat (__NR_openat + 2)
+fchownat (__NR_openat + 3)
+futimesat (__NR_openat + 4)
+newfstatat (__NR_openat + 5)
+fstatat64 (__NR_openat + 5)
+unlinkat (__NR_openat + 6)
+renameat (__NR_openat + 7)
+linkat (__NR_openat + 8)
+symlinkat (__NR_openat + 9)
+readlinkat (__NR_openat + 10)
+fchmodat (__NR_openat + 11)
+faccessat (__NR_openat + 12)
 eventd 313
 fallocate 314
