@@ -37,6 +37,7 @@
 #include <signal.h>
 #include <errno.h>
 #include "posixtest.h"
+#include "mq_send.h"
 
 #define NAMESIZE 50
 #define MSGSTR "0123456789"
