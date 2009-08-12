@@ -7,6 +7,11 @@ ifdef CROSS_COMPILER
 CC=$(CROSS_COMPILER)gcc
 AR=$(CROSS_COMPILER)ar
 RANLIB=$(CROSS_COMPILER)ranlib
+else
+# RANLIB isn't a standard Make variable, which means that when it's exported
+# to leaf callers as an empty value, builds fail.
+# testcases/network/lib6/Makefile is a prime example.
+RANLIB?=ranlib
 endif
 
 HAS_NUMA=$(shell sh tools/scripts/numa_test.sh)
