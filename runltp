@@ -141,6 +141,7 @@ usage()
     -q              Print less verbose output to screen.
     -r LTPROOT      Fully qualified path where testsuite is installed.
     -s PATTERN      Only run test cases which match PATTERN.
+    -S SKIPFILE     Skip tests specified in SKIPFILE
     -t DURATION     Execute the testsuite for given duration. Examples:
                       -t 60s = 60 seconds
                       -t 45m = 45 minutes
@@ -193,7 +194,7 @@ main()
     local DEFAULT_FILE_NAME_GENERATION_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
     version_date=`head -n 1 $LTPROOT/ChangeLog`
 
-    while getopts a:c:C:d:D:f:ehi:g:l:m:Nno:pqr:s:t:T:vw:x:b:B: arg
+    while getopts a:c:C:d:D:f:ehi:g:l:m:Nno:pqr:s:S:t:T:vw:x:b:B: arg
     do  case $arg in
         a)  EMAIL_TO=$OPTARG
             ALT_EMAIL_OUT=1;;
@@ -353,6 +354,13 @@ main()
         r)  LTPROOT=$OPTARG;;
     
         s)  TAG_RESTRICT_STRING=$OPTARG;;
+
+	S)  case $OPTARG in
+            /*)
+                SKIPFILE=$OPTARG;;
+            *)
+                SKIPFILE="$LTPROOT/$OPTARG";;
+            esac ;;
     
         t)  # In case you want to specify the time 
             # to run from the command line 
@@ -629,6 +637,14 @@ main()
     then
         mv -f ${TMP}/alltests ${TMP}/alltests.orig
 	    grep $TAG_RESTRICT_STRING ${TMP}/alltests.orig > ${TMP}/alltests #Not worth checking return codes for this case
+    fi
+
+    # Blacklist or skip tests if a SKIPFILE was specified with -S
+    if [ -n "$SKIPFILE" ]
+    then
+        for file in $( cat $SKIPFILE ); do
+            sed -i "/$file/d" ${TMP}/alltests
+        done
     fi
     
     # check for required users and groups
