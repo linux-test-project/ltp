@@ -102,9 +102,7 @@ int main()
 		}
 	} else {
 		/* parent here */
-		struct sigaction act;
 		int j;
-		int r;
 
 		/* wait for child to reach MAXMSG */
 		for (j = 0; j < MAXMSG; j++) {

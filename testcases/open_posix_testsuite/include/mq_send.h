@@ -46,7 +46,6 @@ int sync_pipe_wait(int fd[])
 
 int sync_pipe_wait_select(int fd[], long tv_sec)
 {
-        char buf;
         int r;
        fd_set rfds;
        struct timeval tv;
