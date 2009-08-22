@@ -272,7 +272,6 @@ The tests also require CUnit Framework to be installed before compiling the test
 http://sourceforge.net/projects/cunit/
 ---------------------------------
 ---------------------------------
-
 Native language support (nls) testsuite requirements
 ----------------------------------------------------
 CONFIG_NLS=m
@@ -286,5 +285,112 @@ CONFIG_CAN_RAW=m
 CONFIG_CAN_BCM=m
 # CAN Device Drivers
 CONFIG_CAN_VCAN=m
+---------------------------------
+Enabling Fault Injection Support for your kernel (version 2.6.29).
+Please check with the original kernel for the fault injection
+types it supports. Following supports will be available:
+
+/sys/kernel/debug/fail_io_timeout/interval
+/sys/kernel/debug/fail_io_timeout/probability
+/sys/kernel/debug/fail_io_timeout/reject-end
+/sys/kernel/debug/fail_io_timeout/reject-start
+/sys/kernel/debug/fail_io_timeout/require-end
+/sys/kernel/debug/fail_io_timeout/require-start
+/sys/kernel/debug/fail_io_timeout/space
+/sys/kernel/debug/fail_io_timeout/stacktrace-depth
+/sys/kernel/debug/fail_io_timeout/task-filter
+/sys/kernel/debug/fail_io_timeout/times
+/sys/kernel/debug/fail_io_timeout/verbose
+
+/sys/kernel/debug/fail_make_request/interval
+/sys/kernel/debug/fail_make_request/probability
+/sys/kernel/debug/fail_make_request/reject-end
+/sys/kernel/debug/fail_make_request/reject-start
+/sys/kernel/debug/fail_make_request/require-end
+/sys/kernel/debug/fail_make_request/require-start
+/sys/kernel/debug/fail_make_request/space
+/sys/kernel/debug/fail_make_request/stacktrace-depth
+/sys/kernel/debug/fail_make_request/task-filter
+/sys/kernel/debug/fail_make_request/times
+/sys/kernel/debug/fail_make_request/verbose
+
+/sys/kernel/debug/fail_page_alloc/ignore-gfp-highmem
+/sys/kernel/debug/fail_page_alloc/ignore-gfp-wait
+/sys/kernel/debug/fail_page_alloc/interval
+/sys/kernel/debug/fail_page_alloc/min-order
+/sys/kernel/debug/fail_page_alloc/probability
+/sys/kernel/debug/fail_page_alloc/reject-end
+/sys/kernel/debug/fail_page_alloc/reject-start
+/sys/kernel/debug/fail_page_alloc/require-end
+/sys/kernel/debug/fail_page_alloc/require-start
+/sys/kernel/debug/fail_page_alloc/space
+/sys/kernel/debug/fail_page_alloc/stacktrace-depth
+/sys/kernel/debug/fail_page_alloc/task-filter
+/sys/kernel/debug/fail_page_alloc/times
+/sys/kernel/debug/fail_page_alloc/verbose
+
+/sys/kernel/debug/failslab/ignore-gfp-wait
+/sys/kernel/debug/failslab/interval
+/sys/kernel/debug/failslab/probability
+/sys/kernel/debug/failslab/reject-end
+/sys/kernel/debug/failslab/reject-start
+/sys/kernel/debug/failslab/require-end
+/sys/kernel/debug/failslab/require-start
+/sys/kernel/debug/failslab/space
+/sys/kernel/debug/failslab/stacktrace-depth
+/sys/kernel/debug/failslab/task-filter
+/sys/kernel/debug/failslab/times
+/sys/kernel/debug/failslab/verbose
+
+when the below kernel config options are set:
+
+CONFIG_FAULT_INJECTION=y
+CONFIG_DEBUG_KERNEL=y
+CONFIG_FAILSLAB=y (Fault-injection capability for kmalloc)
+(CONFIG_SLAB=y || CONFIG_SLUB=y) if CONFIG_FAILSLAB=y
+CONFIG_FAIL_PAGE_ALLOC=y (Fault-injection capabilitiy for alloc_pages())
+CONFIG_FAIL_MAKE_REQUEST=y (Fault-injection capability for disk IO)
+CONFIG_BLOCK=y if CONFIG_FAIL_MAKE_REQUEST=y
+CONFIG_FAIL_IO_TIMEOUT=y (Faul-injection capability for faking disk interrupts)
+CONFIG_BLOCK=y if CONFIG_FAIL_IO_TIMEOUT=y
+CONFIG_FAULT_INJECTION_DEBUG_FS=y (Debugfs entries for fault-injection capabilities)
+(CONFIG_SYSFS=y && CONFIG_DEBUG_FS=y) if CONFIG_FAULT_INJECTION_DEBUG_FS=y
+CONFIG_FAULT_INJECTION_STACKTRACE_FILTER=y (stacktrace filter for fault-injection capabilities)
+(CONFIG_FAULT_INJECTION_DEBUG_FS=y && CONFIG_STACKTRACE_SUPPORT=y && !CONFIG_X86_64) if
+	CONFIG_FAULT_INJECTION_STACKTRACE_FILTER=y
+
+For more information on Fault injection, please refer to:
+linux-2.6/Documentation/fault-injection/fault-injection.txt,
+
+You should also have made the following entries in your /etc/fstab file
+once the kernel is booted with the above CONFIG options set:
+
+debugfs		/sys/kernel/debug/		debugfs
+
+# How the Kernel Fault Injection works for LTP ?
+
+1) Build Kernel with all the above possible kernel CONFIG Options,
+2) Create the above entry in /etc/fstab file,
+3) Reboot in the new kernel,
+4) Goto LTPROOT. Build and Install LTP as per ltp/INSTALL file,
+5) Choose your own test(or default) to run with fault injection as follows:
+	./runltp -f <command_file> -F <LOOPS>,<FAULT_PROBABILITY>
+
+The agorithm will work as:
+loop (for each testcase)
+begin
+	execute_testcase(inside_stable_kernel)
+	begin
+		insert_fault_into_kernel()
+		loop X Times
+		begin
+			execute_testcase(inside_fault_kernel)
+		end
+		restore_kernel_to_normal()
+	end
+end
+
+# Eternal TODOs:
+1) Add as many framework as they get added/modifed in the kernel
 ---------------------------------
 
