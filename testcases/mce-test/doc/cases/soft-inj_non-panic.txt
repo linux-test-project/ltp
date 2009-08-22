@@ -1,0 +1,66 @@
+Overall:(4 cases)
+
+- Test method
+  * Preparation
+    + Disable mcelog cron job
+  * Add cases/soft-inj/non-panic/cases.sh into configuration file, and invoke
+    a test driver on it.
+- Common
+  * Test script of test cases in this file can be found in
+    cases/soft-inj/non-panic/cases.sh
+
+
+1. corrected
+
+- Objective:
+  * Test machine_check_poll() and mce_log()
+- Code path tested:
+  * machine_check_poll()
+  * mce_get_rip(), branch without EIPV, RIPV, rip_msr
+  * mce_log()
+- Reference:
+  * Inject data file: cases/soft-inj/non-panic/data/corrected
+- Expected results:
+  * MCE records gotten via /dev/mcelog is same as injected ones
+  * No warning or bug during kernel processing
+
+
+2. corrected hold
+
+- Objective:
+  * Whether is there race condition in machine_check_poll() and mce_log(),
+    multiple machine_check_poll() or mce_log() may be run simultaneously
+    on difference CPU.
+- Code path tested:
+  * same as corrected
+- Reference:
+  * Inject data file: cases/soft-inj/non-panic/data/corrected_hold
+- Expected results:
+  * MCE records gotten via /dev/mcelog is same as injected ones
+  * No warning or bug during kernel processing
+
+
+3. corrected over
+
+- Objective:
+  * Test OVER processing
+- Code path tested:
+  * same as 1
+- Reference:
+  * Inject data file: cases/soft-inj/non-panic/data/corrected_over
+- Expected results:
+  * MCE records gotten via /dev/mcelog is same as injected ones
+  * No warning or bug during kernel processing
+
+
+4. corrected without EN
+
+- Objective:
+  * Test no EN processing
+- Code path tested:
+  * same as 1
+- Reference:
+  * Inject data file: cases/soft-inj/non-panic/data/corrected_no_en
+- Expected results:
+  * MCE records gotten via /dev/mcelog is same as injected ones
+  * No warning or bug during kernel processing

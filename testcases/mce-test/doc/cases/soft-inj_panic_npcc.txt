@@ -1,0 +1,145 @@
+Overall:(8 cases)
+
+- Test method
+  * Preparation
+    + Disable mcelog cron job
+  * Add cases/soft-inj/panic_npcc/cases.sh into configuration file, and invoke
+    a test driver on it.
+- Common
+  * Test script of test cases in this file can be found in
+    cases/soft-inj/panic_npcc/cases.sh
+
+
+1. fatal severity
+
+- Objective:
+  * Test severity comparison logic of MCE handler
+- Code path tested:
+  * do_machine_check()
+  * mce_start()
+  * mce_end()
+  * mce_severity()
+  * mce_regin() for_each_possible_loops loops(check mce-severity message)
+  * mce_panic()
+  * mce_log()
+  * print_mce()
+- Reference:
+  * Inject data file: cases/soft-inj/panic_npcc/data/fatal_severity
+- Expected result:
+  * No warning or bug during kernel processing.
+  * MCE records collected via kernel panic log is same as reference ones.
+  * Kernel panic message is "Fatal Machine check"
+  * Exception message is "Processor context corrupt"
+
+
+2. uncorrected
+
+- Objective:
+  * Test MCE handler logic for EIPV MCE in kernel space
+- Code path tested:
+  * Same as falta severity
+- Reference:
+  * Inject data file: cases/soft-inj/panic_npcc/data/uncorrected
+- Expected result:
+  * No warning or bug during kernel processing.
+  * MCE records collected via kernel panic log is same as reference ones.
+  * Kernel panic message is "Fatal Machine check"
+  * Exception message is "In kernel and no restart IP"
+
+
+3. uncorrected timeout
+
+- Objective:
+  * Test MCE handler timeout logic for EIPV MCE in kernel space
+- Code path tested:
+  * do_machine_check()
+  * mce_start() until timeout
+  * mce_severity()
+  * mce_panic("Fatal machine check on current CPU", )
+  * mce_log()
+  * print_mce()
+- Reference:
+  * Inject data file: cases/soft-inj/panic_npcc/data/uncorrected_timeout
+- Expected result:
+  * No warning or bug during kernel processing.
+  * MCE records collected via kernel panic log is same as reference ones.
+  * Kernel panic message is "Fatal machine check on current CPU"
+  * Exception message is "In kernel and no restart IP"
+  * Timeout message is "Some CPUs didn't answer in synchronization"
+
+
+4. uncorrected without MCIP
+
+- Objective:
+  * Test MCE handler logic for MCE without PCC, MCIP, EIPV and RIPV
+- Code path tested:
+  * Same as fatal severity
+- Reference:
+  * Inject data file: cases/soft-inj/panic_npcc/data/uncorrected_no_mcip
+- Expected result:
+  * No warning or bug during kernel processing.
+  * MCE records collected via kernel panic log is same as reference ones.
+  * Kernel panic message is "Fatal Machine check"
+  * Exception message is "MCIP not set in MCA handler"
+
+
+5. uncorrect timeout without MCIP
+
+- Objective:
+  * Test MCE handler timeout logic for MCE without PCC, MCIP, EIPV and RIPV
+- Code path tested:
+  * Same as uncorrected timeout
+- Reference:
+  * Inject data file: cases/soft-inj/panic_npcc/data/uncorrected_no_mcip_timeout
+- Expected result:
+  * No warning or bug during kernel processing.
+  * MCE records collected via kernel panic log is same as reference ones.
+  * Kernel panic message is "Fatal machine check on current CPU"
+  * Kernel panic message is "MCIP not set in MCA handler"
+  * Timeout message is "Some CPUs didn't answer in synchronization"
+
+
+6. uncorrected without EIPV and RIPV
+
+- Objective:
+  * Test MCE handler logic for EIPV and RIPV MCE in kernel space
+- Code path tested:
+  * Same as uncorrected
+- Reference:
+  * Inject data file: cases/soft-inj/panic_npcc/data/uncorrected_no_eripv
+- Expected result:
+  * No warning or bug during kernel processing.
+  * MCE records collected via kernel panic log is same as reference ones.
+  * Kernel panic message is "Fatal Machine check"
+  * Exception message is "Neither restart nor error IP"
+
+
+7. uncorrected timeout without EIPV and RIPV
+
+- Objective:
+  * Test MCE handler timout logic for EIPV|RIPV MCE in kernel space
+- Code path tested:
+  * Same as uncorrected timeout
+- Reference:
+  * Inject data file: cases/soft-inj/panic_npcc/data/uncorrected_no_eripv_timeout
+- Expected result:
+  * No warning or bug during kernel processing.
+  * MCE records collected via kernel panic log is same as reference ones.
+  * Kernel panic message is "Fatal Machine check"
+  * Exception message is "In kernel and no restart IP"
+  * Timeout message is "Some CPUs didn't answer in synchronization"
+
+
+8. unknown
+
+- Objective:
+  * Test logic for MCE from unknown source (external?)
+- Code path tested:
+  * mce_reign(), mce_panic("Machine check from unknown source") branch
+  * Others are same as fatal severity
+- Reference:
+  * Inject data file: cases/soft-inj/panic_npcc/data/unknown
+- Expected result:
+  * No warning or bug during kernel processing.
+  * Kernel panic message is "Machine check from unknown source"
+  * No exception and timeout message.

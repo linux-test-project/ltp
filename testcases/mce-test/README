@@ -1,0 +1,100 @@
+MCE test suite
+---------------
+
+The MCE test suite is a collection of tools and test scripts for
+testing the Linux kernel MCE processing features. The goal is to cover
+most Linux kernel MCE processing code paths and features with
+automation tests.
+
+
+In the Package
+--------------
+
+Here is a short description of what is included in the package
+
+README
+	This document
+
+COPYING
+	GNU General Public License
+
+Makefile
+	Top level make file for MCE test suite
+
+drivers/*
+	Contains test drivers, which drive test procedure and do some
+	common works for test drivers. There is one directory for each
+	test driver, the user interface of a driver is the driver.sh
+	in corresponding directory, such as:
+	    drivers/kdump/driver.sh
+	is user interface of kdump test driver.
+
+cases/*
+	Contains all test cases, which may be organized in
+	sub-directories, the interface of a class of test cases is a
+	shell script under cases/, such as:
+	    cases/soft-inj/panic/cases.sh
+	is for test cases triggered by soft-inject and my cause system
+	panic during testing.
+
+config/*
+	Contains test configuration files, which specifies the
+	parameters for test driver, which test cases are used in test,
+	the parameters for test cases, etc.
+
+tsrc/*
+	Some standalone test programs for various parts of the machine
+	check code.
+
+lib/*
+	Contains some shell scripts, in which some common shell
+	functions and variable definitions are defined to be used by
+	multiple test drivers or test cases.
+
+tools/*
+	Some tools used by MCE test suites.
+
+doc/*
+	Documentation for MCE test suites include howto and
+	descriptions of every test case.
+
+results/
+	When test is done, the test result will be placed in this
+	directory, test results for a specific test driver will be
+	placed in corresponding directory, such as test results of
+	kdump test driver will be placed in "results/kdump". General
+	test result is in results/$driver/result; additional results
+	of various cases may be in corresponding directory, for
+	example, files in
+	    results/kdump/soft-inj/panic/fatal/
+	is for additional result for test case soft-inj/panic/fatal.
+
+work/
+	During test, some temporary file will be put in work
+	directory, temporary files for a specific test driver will be
+	placed in corresponding directory, such as temporary files of
+	kdump test driver will be placed in "work/kdump". Test log is
+	in work/$driver/log.
+
+bin/
+	Some tools used by test drivers or test cases will be
+	installed into this directory.
+
+
+Test Instruction
+----------------
+
+Please refer to corresponding section in doc/howto.txt.
+
+
+Futher Information
+------------------
+
+For futher information about MCE test suite, please refer to documents
+in doc sub-directory.
+
+doc/howto.txt:		a more detailed HOWTO document
+
+doc/cases/*.txt:	Description of every test case, including test
+			objective, code patch tested, reference and
+			expected results
