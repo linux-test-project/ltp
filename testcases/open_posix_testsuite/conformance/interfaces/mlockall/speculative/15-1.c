@@ -21,6 +21,7 @@
 #include <sys/types.h>
 #include <pwd.h>
 #include <string.h>
+#include <sys/resource.h>
 #include "posixtest.h"
 
 
@@ -28,6 +29,9 @@
 int set_nonroot()
 {
 	struct passwd *pw;
+        struct rlimit rlim;
+        int ret=0;
+
 	setpwent();
 	/* search for the first user which is non root */ 
 	while((pw = getpwent()) != NULL)
@@ -38,6 +42,11 @@ int set_nonroot()
 		printf("There is no other user than current and root.\n");
 		return 1;
 	}
+
+        rlim.rlim_cur = 0;
+        rlim.rlim_max = 0;
+        if ((ret = setrlimit(RLIMIT_MEMLOCK,&rlim)) != 0)
+                printf("Failed at setrlimit() return %d \n", ret);
 
 	if(seteuid(pw->pw_uid) != 0) {
 		if(errno == EPERM) {
