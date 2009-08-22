@@ -62,6 +62,8 @@
 #               - Added a new option to mail back LTP reports
 #               May 19 2008 - Modified - Subrata Modak
 #               - Added capability for default Log file generation
+#		Aug 17 2009 - Modified - Subrata Modak
+#		- Added Fault Injection generation Capability through -F Option
 #
 #################################################################################
 
@@ -108,6 +110,7 @@ usage()
     [ -i NUM_PROCS ] [ -l LOGFILE ] [ -m NUM_PROCS,CHUNKS,BYTES,HANGUP_FLAG ] 
     -N -n [ -o OUTPUTFILE ] -p -q [ -r LTPROOT ] [ -s PATTERN ] [ -t DURATION ]
     -v [ -w CMDFILEADDR ] [ -x INSTANCES ] [ -b DEVICE ] [-B DEVICE_FS_TYPE]
+	[ -F LOOPS,PERCENTAGE ]
                 
     -a EMAIL_TO     EMAIL all your Reports to this E-mail Address
     -c NUM_PROCS    Run LTP under additional background CPU load
@@ -123,6 +126,7 @@ usage()
                     [CLEAN_FLAG  = unlink file to which random data written, when value 1]
     -e              Prints the date of the current LTP release
     -f CMDFILES     Execute user defined list of testcases (separate with ',')
+	-F LOOPS,PERCENTAGE Induce PERCENTAGE Fault in the Kernel Subsystems, and, run each test for LOOPS loop
     -g HTMLFILE     Create an additional HTML output format
     -h              Help. Prints all available options.
     -i NUM_PROCS    Run LTP under additional background Load on IO Bus
@@ -181,6 +185,9 @@ main()
     local DURATION=""
     local CMDFILEADDR=""
     local FAILCMDFILE=""
+	local INJECT_KERNEL_FAULT=""
+	local INJECT_KERNEL_FAULT_PERCENTAGE=""
+	local INJECT_FAULT_LOOPS_PER_TEST=""
     local LOGFILE_NAME=""
     local LOGFILE=""
     local OUTPUTFILE_NAME=""
@@ -194,7 +201,7 @@ main()
     local DEFAULT_FILE_NAME_GENERATION_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
     version_date=`head -n 1 $LTPROOT/ChangeLog`
 
-    while getopts a:c:C:d:D:f:ehi:g:l:m:Nno:pqr:s:S:t:T:vw:x:b:B: arg
+    while getopts a:c:C:d:D:f:F:ehi:g:l:m:Nno:pqr:s:S:t:T:vw:x:b:B: arg
     do  case $arg in
         a)  EMAIL_TO=$OPTARG
             ALT_EMAIL_OUT=1;;
@@ -264,6 +271,18 @@ main()
             # Can be more then one file, just separate it with ',', like:
             # -f nfs,commands,/tmp/testfile
             CMDFILES=$OPTARG;;
+	F)	INJECT_KERNEL_FAULT=1
+		#Seperate out the NO_OF_LOOPS & FAULT_PERCENTAGE
+		INJECT_FAULT_LOOPS_PER_TEST=`echo $OPTARG |cut -d',' -f1 | tr -d '\n' | tr -d ' '`
+		INJECT_KERNEL_FAULT_PERCENTAGE=`echo $OPTARG |cut -d',' -f2 | tr -d '\n' | tr -d ' '`
+		if [ ! $INJECT_FAULT_LOOPS_PER_TEST ]; then
+			echo "Loops not properly defined. Resorting to default 5..."
+			export INJECT_FAULT_LOOPS_PER_TEST=5
+		fi
+		if [ ! $INJECT_KERNEL_FAULT_PERCENTAGE ]; then
+			echo "Fault Persentage not properly defined. Resorting to default 10..."
+			export INJECT_KERNEL_FAULT_PERCENTAGE=10
+		fi;;
         g)  HTMLFILE_NAME="$OPTARG"
             case $OPTARG in
             /*)
@@ -753,6 +772,28 @@ main()
 
     echo "Running tests......."
     test_start_time=$(date)
+
+	# User wants testing with Kernel Fault Injection
+	if [ $INJECT_KERNEL_FAULT -eq 1 ] ; then
+		#See if Debugfs is mounted, and
+		#Fault Injection Framework available through Debugfs
+		if [ -d "/sys/kernel/debug/fail_io_timeout" -o \
+			-d "/sys/kernel/debug/fail_make_request" -o \
+			-d "/sys/kernel/debug/fail_page_alloc" -o \
+			-d "/sys/kernel/debug/failslab" ]; then
+			#If atleast one of the Framework is available
+			#Go ahead to Inject Fault & Create required
+			#Command Files for LTP run
+			echo Running tests with Fault Injection Enabled in the Kernel...
+			${LTPROOT}/tools/create_kernel_faults_in_loops_and_probability.pl\
+				${TMP}/alltests $INJECT_FAULT_LOOPS_PER_TEST $INJECT_KERNEL_FAULT_PERCENTAGE > ${TMP}/alltests.tmp
+			cp ${TMP}/alltests.tmp ${TMP}/alltests
+			rm -rf ${TMP}/alltests.tmp
+		else
+			echo Fault Injection not enabled in the Kernel..
+			echo Running tests normally...
+		fi
+	fi
 
     # Some tests need to run inside the "bin" directory.
     cd "${LTPROOT}/testcases/bin"
