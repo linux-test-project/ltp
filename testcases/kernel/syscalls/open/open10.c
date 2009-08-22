@@ -74,6 +74,8 @@ int local_flag;
 #define ROOT_SETGID	"root_setgid"
 #define	MSGSIZE		150
 
+void cleanup(void);
+
 char progname[] = "open10()";
 
 int issu()
@@ -121,13 +123,14 @@ int main(int ac, char *av[])
 	 * parse standard options
 	 */
 	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
-		tst_resm(TBROK, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	 /*NOTREACHED*/}
+
+	tst_tmpdir();
 
 	if (issu() != 0) {
 		tst_resm(TINFO, "Must be root to run this test.");
-		tst_exit();
+		cleanup();
 	}
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
@@ -145,8 +148,7 @@ int main(int ac, char *av[])
 
 		/* Get the uid of user1 */
 		if ((user1 = getpwnam("nobody")) == NULL) {
-			tst_resm(TBROK, "nobody not in /etc/passwd");
-			tst_exit();
+			tst_brkm(TBROK, cleanup, "nobody not in /etc/passwd");
 		}
 		user1_uid = user1->pw_uid;
 
@@ -155,14 +157,13 @@ int main(int ac, char *av[])
 		 */
 		if ((group = getgrnam("nobody")) == NULL) {
 			if ((group = getgrnam("nogroup")) == NULL) {
-				tst_resm(TBROK,
+				tst_brkm(TBROK, cleanup,
 					 "nobody/nogroup not in /etc/group");
-				tst_exit();
 			}
 		}
 		group1_gid = group->gr_gid;
 		if ((group = getgrnam("bin")) == NULL) {
-			tst_resm(TBROK, "bin not in /etc/group");
+			tst_brkm(TBROK, cleanup, "bin not in /etc/group");
 		}
 		group2_gid = group->gr_gid;
 
@@ -510,6 +511,21 @@ int main(int ac, char *av[])
 		}
 
 	}
-	tst_exit();
+	cleanup();
 	return 0;
+}
+
+void cleanup(void)
+{
+	/*
+	 * print timing status if that option was specified.
+	 * print errno log if that option was specified
+	 */
+	TEST_CLEANUP;
+
+	/* Remove tmp dir and all files in it */
+	tst_rmdir();
+
+	/* exit with return code appropriate for results */
+	tst_exit();
 }
