@@ -472,6 +472,8 @@ export TCID=file09
 export TST_COUNT=9
 
 $LTPBIN/tst_resm TINFO "TEST #9: file command recognizes RPM files"
+`type rpm &> /dev/null`
+if [ $? = 0 ]; then
 if [ -f /etc/redhat-release ]; then
 	bDIR=/usr/src/redhat
 	bCMD=rpmbuild
@@ -574,6 +576,9 @@ else
     $LTPBIN/tst_resm TFAIL "file: Failed to recognize RPM file"
     TFAILCNT=$(( $TFAILCNT+1 ))
 fi
+else
+    $LTPBIN/tst_resm TCONF "rpm not installed"
+fi
 
 
 # TEST #10
@@ -582,11 +587,7 @@ fi
 export TCID=file10
 export TST_COUNT=10
 
-if [ -f /etc/redhat-release ]; then
-   KERNEL=vmlinuz
-else
-   KERNEL=vmlinux
-fi
+KERNEL=vmlinu
 
 $LTPBIN/tst_resm TINFO "TEST #10: file command recognizes $KERNEL file"
 
