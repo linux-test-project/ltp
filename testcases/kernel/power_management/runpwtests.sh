@@ -40,6 +40,7 @@ export contacts="mpnayak@linux.vnet.ibm.com"
 export analysis="/proctstat"
 
 YES=0
+NO=1
 #List of reusable functions defined in pm_include.sh
 . ./pm_include.sh
 
@@ -61,34 +62,50 @@ if [ $RC -eq 1 ] ; then
 fi
 
 is_hyper_threaded; hyper_threaded=$?
+is_multi_socket; multi_socket=$?
+is_multi_core; multi_core=$?
+is_dual_core; dual_core=$?
 
 #Checking sched_mc sysfs interface
 #check_config.sh config_sched_mc || RC=$?
 TST_COUNT=1
-if [ -f /sys/devices/system/cpu/sched_mc_power_savings ] ; then
-	if test_sched_mc.sh ; then
-		tst_resm TPASS "SCHED_MC sysfs tests"
+if [ $multi_socket -eq $YES -a $dual_core -eq $YES ] ; then
+	if [ -f /sys/devices/system/cpu/sched_mc_power_savings ] ; then
+		if test_sched_mc.sh ; then
+			tst_resm TPASS "SCHED_MC sysfs tests"
+		else
+			RC=$?
+			tst_resm TFAIL "SCHED_MC sysfs tests"
+		fi
 	else
-		RC=$?
-		tst_resm TFAIL "SCHED_MC sysfs tests"
+    	tst_resm TCONF "Required kernel configuration for SCHED_MC NOT set"
 	fi
 else
-    tst_resm TCONF "Required kernel configuration for SCHED_MC NOT set"
+	if [ -f /sys/devices/system/cpu/sched_mc_power_savings ] ; then
+		tst_resm TFAIL "sched_mc_power_savings interface in system which is not a multi socket &(/) multi core"
+	else
+		tst_resm TCONF "Not a suitable architecture for SCHED_MC test"
+	fi
 fi
 
 # Test sched_smt_power_savings interface on HT machines
 : $(( TST_COUNT += 1 ))
-if [ -f /sys/devices/system/cpu/sched_smt_power_savings ] ; then
-    if test_sched_smt.sh; then
-		tst_resm TPASS "SCHED_SMT sysfs test"
+if [ $hyper_threaded -eq $YES ]; then
+	if [ -f /sys/devices/system/cpu/sched_smt_power_savings ] ; then
+    	if test_sched_smt.sh; then
+			tst_resm TPASS "SCHED_SMT sysfs test"
+		else
+			RC=$?
+        	tst_resm TFAIL "SCHED_SMT sysfs test"
+    	fi
 	else
 		RC=$?
-        tst_resm TFAIL "SCHED_SMT sysfs test"
-    fi
+		tst_resm TFAIL "Required kernel configuration for SCHED_SMT NOT set"
+	fi
 else
-    if [ $hyper_threaded -eq $YES ]; then
+	if [ -f /sys/devices/system/cpu/sched_smt_power_savings ] ; then
 		RC=$?
-        tst_resm TFAIL "Required kernel configuration for SCHED_SMT NOT set"
+        tst_resm TFAIL "sched_smt_power_saving interface in system not hyper-threaded"
     else
         tst_resm TCONF "Required Hyper Threading support for SCHED_SMT test"
     fi
@@ -152,13 +169,13 @@ if [ $? -ne 0 ] ; then
 	tst_resm TCONF "Python is not installed, CPU Consoldation\
 test cannot run"
 else
-	get_max_sched_mc; max_sched_mc=$?
+	get_sched_values sched_mc; max_sched_mc=$?
 	for sched_mc in `seq 0 $max_sched_mc`; do
 		: $(( TST_COUNT+=1))
 		sched_domain.py -c $sched_mc; RC=$?
 		analyze_sched_domain_result $sched_mc $RC 
 		if [ $hyper_threaded -eq $YES ]; then
-			get_max_sched_smt ; max_sched_smt=$?
+			get_sched_values sched_smt; max_sched_smt=$?
 			for sched_smt in `seq 0 $max_sched_smt`; do
 				# Testcase to validate sched_domain tree
 				: $(( TST_COUNT+=1))
@@ -168,32 +185,54 @@ else
 		fi
 	done
 fi
+
+: $(( TST_COUNT+=1))
+if [ -f /proc/sys/kernel/timer_migration ]; then
+	if test_timer_migration.sh; then
+        tst_resm TPASS "Timer Migration interface test"
+    else
+        RC=$?
+        tst_resm TFAIL "Timer migration interface test"
+    fi
+else
+	check_kv_arch "timer_migration"; supp=$? 
+	if [ $supp -eq $YES ]; then
+		RC=$?
+		tst_resm TFAIL "Timer migration interface missing"
+	else
+		tst_resm TCONF "Kernel version does not support Timer migration"
+	fi
+fi
+
+: $(( TST_COUNT+=1))	
+if check_cpufreq_sysfs_files.sh; then
+        tst_resm TPASS "CPUFREQ sysfs tests"
+    else
+        RC=$?
+        tst_resm TFAIL "CPUFREQ sysfs tests "
+    fi
+
 if [ $# -gt 0 -a "$1" = "-exclusive" ]; then 
 	# Test CPU consolidation 
-	which python > /dev/null
-	if [ $? -ne 0 ] ; then
-		tst_resm TCONF "Python is not installed, CPU Consoldation\
- test not run"
-	else
-		sched_mc_smt_pass_cnt=0
+	if [ $multi_socket -eq $YES -a $multi_core -eq $YES ]; then
 		work_loads_list="ebizzy kernbench"
 		for sched_mc in `seq 0 $max_sched_mc`; do
 			for work_load in ${work_loads_list}
-            do
+           	do
 				: $(( TST_COUNT += 1 ))
 				sched_mc_pass_cnt=0
 				for repeat_test in `seq 1  10`; do
-					 #Testcase to validate CPU consolidation for sched_mc
+					#Testcase to validate CPU consolidation for sched_mc
 					if cpu_consolidation.py -c $sched_mc -w $work_load ; then
 						: $(( sched_mc_pass_cnt += 1 ))
 					fi
 				done
-				analyze_consolidation_result $sched_mc $work_load $sched_mc_pass_cnt	
+				analyze_package_consolidation_result $sched_mc $work_load $sched_mc_pass_cnt	
 			done	
 			if [ $hyper_threaded -eq $YES ]; then
 				for sched_smt in `seq 0 $max_sched_smt`; do
 					for work_load in ${work_loads_list}; do
-                    	: $(( TST_COUNT += 1 ))
+                   		: $(( TST_COUNT += 1 ))
 						sched_mc_smt_pass_cnt=0
 						for repeat_test in `seq 1  10`; do
 							# Testcase to validate CPU consolidation for
@@ -201,23 +240,25 @@ if [ $# -gt 0 -a "$1" = "-exclusive" ]; then
 							if cpu_consolidation.py -c $sched_mc -t $sched_smt -w $work_load; then
 								: $(( sched_mc_smt_pass_cnt += 1 ))
 							fi
+							echo "sched_mc_smt_pass_cnt = $sched_mc_smt_pass_cnt"
 						done
-						analyze_consolidation_result $sched_mc $work_load $sched_mc_smt_pass_cnt $sched_smt
-
-						#Testcase to validate consolidation at core level
-						sched_mc_smt_pass_cnt=0
-						stress="thread"
-						: $(( TST_COUNT += 1 ))
-						for repeat_test in `seq 1  10`; do
-							if cpu_consolidation.py -c $sched_mc -t $sched_smt -w $work_load -s $stress; then
-								: $(( sched_mc_smt_pass_cnt += 1 ))
-							fi
-						done
-						analyze_consolidation_result $sched_mc $work_load $sched_mc_smt_pass_cnt $sched_smt $stress
+						analyze_package_consolidation_result $sched_mc $work_load $sched_mc_smt_pass_cnt $sched_smt
 					done
 				done
 			fi
 		done
+	fi
+	if [ $hyper_threaded -eq $YES ]; then
+		#Testcase to validate consolidation at core level
+		sched_smt_pass_cnt=0
+		: $(( TST_COUNT += 1 ))
+		stress="thread"
+		for repeat_test in `seq 1  10`; do
+			if cpu_consolidation.py -c $sched_mc -t $sched_smt -w $work_load -s $stress; then
+				: $(( sched_smt_pass_cnt += 1 ))
+			fi
+		done
+		analyze_core_consolidation_result $sched_smt $work_load $sched_smt_pass_cnt
 	fi
 fi
 
