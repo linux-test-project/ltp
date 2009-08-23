@@ -193,6 +193,8 @@ def trigger_ebizzy (stress, duration, background):
             threads = get_hyper_thread_count()
         if stress == "partial":
             threads = cpu_count / socket_count
+            if is_hyper_threaded():
+                threads = threads / get_hyper_thread_count()
         if stress == "full":
 	    threads = cpu_count
 
@@ -244,9 +246,11 @@ def trigger_kernbench (stress, background):
     olddir = os.getcwd()
     try:
         if stress == "thread":
-	        threads = 2
+	    threads = 2
         if stress == "partial":
-	        threads = cpu_count / socket_count
+	    threads = cpu_count / socket_count
+            if is_hyper_threaded():
+                threads = threads / get_hyper_thread_count()
         if stress == "full":
             threads = cpu_count
 
@@ -281,7 +285,8 @@ def trigger_kernbench (stress, background):
 	    sys.exit(1)
    
         get_proc_data(stats_start)
-        os.system ( '%s/kernbench -o 2 -M -H -n 1 >/dev/null 2>&1' % benchmark_path)
+        os.system ( '%s/kernbench -o %s -M -H -n 1 >/dev/null 2>&1' % (benchmark_path, threads))
+        print threads
         
         print "INFO: Workload kernbench triggerd"
         os.chdir(olddir)
@@ -438,6 +443,8 @@ def validate_cpugrp_map(cpu_group, sched_mc_level, sched_smt_level):
                         for i in range(0, len(core_cpus)):
                             if core_cpus[i] in modi_cpu_grp:
                                 modi_cpu_grp.remove(core_cpus[i]) 
+                                if len(modi_cpu_grp) == 0:
+                                    return 0
                             else:
                                 # If sched_smt == 0 then its oky if threads run
                                 # in different cores of same package 
@@ -499,24 +506,35 @@ def verify_sched_domain_dmesg(sched_mc_level, sched_smt_level):
         print "Reading dmesg failed", details
         sys.exit(1)
 
-def validate_cpu_consolidation(sched_mc_level, sched_smt_level):
+def validate_cpu_consolidation(work_ld, sched_mc_level, sched_smt_level):
     ''' Verify if cpu's on which threads executed belong to same
     package
     '''
     cpus_utilized = list()
     try:
         for l in sorted(stats_percentage.keys()):
-	    #modify threshold
-            if stats_percentage[l][1] > 50:
-                cpu_id = stats_percentage[l][0].split("cpu")
-                if cpu_id[1] != '':
-                    cpus_utilized.append(int(cpu_id[1]))
-        cpus_utilized.sort()
+            #modify threshold
+            if is_hyper_threaded():
+                if stats_percentage[l][1] > 25 and work_ld == "kernbench":
+                    cpu_id = stats_percentage[l][0].split("cpu")
+                    if cpu_id[1] != '':
+                        cpus_utilized.append(int(cpu_id[1]))
+                else:
+                    if stats_percentage[l][1] > 50:
+                        cpu_id = stats_percentage[l][0].split("cpu")
+                        if cpu_id[1] != '':
+                            cpus_utilized.append(int(cpu_id[1]))
+            else:
+                if stats_percentage[l][1] > 50:
+                    cpu_id = stats_percentage[l][0].split("cpu")
+                    if cpu_id[1] != '':
+                        cpus_utilized.append(int(cpu_id[1]))
+                    cpus_utilized.sort()
         print "INFO: CPU's utilized ", cpus_utilized
 
         status = validate_cpugrp_map(cpus_utilized, sched_mc_level, sched_smt_level)
-	if status == 1:
-	    print "INFO: CPUs utilized is not in same package or core"
+        if status == 1:
+            print "INFO: CPUs utilized is not in same package or core"
         return(status)
     except Exception, details:
         print "Exception in validate_cpu_consolidation: ", details
