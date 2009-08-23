@@ -534,7 +534,7 @@ fi
 
 if [ $RC -ne 0 ]
 then
-    $LTPBIN/tst_brk TBROK $LTPTMP/file.out NULL "mkdir: brok. Reason:"
+    $LTPBIN/tst_brk TBROK $LTPTMP/file.out NULL "mkdir: broke. Reason:"
 fi
 
 cat > $bDIR/SOURCES/cprog.c <<EOF
@@ -554,7 +554,7 @@ fi
 $bCMD --define "_topdir $bDIR" -bs  $LTPTMP/files.spec > $LTPTMP/file.out 2>&1
 if [ $? -ne 0 ]
 then
-    $LTPBIN/tst_brk TBROK $LTPTMP/file.out NULL "rpm command brok. Reason:"
+    $LTPBIN/tst_brk TBROK $LTPTMP/file.out NULL "rpm command broke. Reason:"
 fi
 
 file $bDIR/SRPMS/cprog-0.0.7-3.src.rpm > $LTPTMP/file.out 2>&1
