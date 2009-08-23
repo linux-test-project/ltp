@@ -59,6 +59,12 @@ RC=0
 export TCID=SETUP
 export TST_COUNT=1
 
+MAIL_NOT_INSTALLED=0
+`type mail &> /dev/null`
+if [ $? != 0 ]; then
+    MAIL_NOT_INSTALLED=1
+fi
+
 # check if the user mail_test exists on this system.
 # if not add that user mail_test, will removed before exiting test.
 RC=$(awk '/^mail_test/ {print 1}' /etc/passwd)
@@ -97,6 +103,7 @@ $LTPBIN/tst_resm TINFO "Test #1: mail root@localhost will send mail to root"
 $LTPBIN/tst_resm TINFO "Test #1: user on local machine."
 
 
+if [ -z "$MAIL_NOT_INSTALLED" ]; then
 cat > $LTPTMP/tst_mail.in <<EOF
 This is a test email.
 EOF
@@ -125,6 +132,9 @@ else
         TFAILCNT=$(( $TFAILCNT+1 ))
     fi
 fi
+else
+    $LTPBIN/tst_resm TCONF "mail command not installed"
+fi
 
 
 # Test #2
@@ -142,6 +152,7 @@ $LTPBIN/tst_resm TINFO \
 $LTPBIN/tst_resm TINFO "Test #2: to deliver the mail. Mailer daemon should"
 $LTPBIN/tst_resm TINFO "Test #2: report this failure."
 
+if [ -z $MAIL_NOT_INSTALLED ]; then
 cat > $LTPTMP/tst_mail.in <<EOF
 This is a test email.
 EOF
@@ -193,7 +204,9 @@ fi
         fi
     fi
 fi
-    
+else
+    $LTPBIN/tst_resm TCONF "mail command not installed"
+fi    
 
 # Test #3
 # Test that mail non_existant_user@localhost will result in delivery failure.
@@ -210,6 +223,7 @@ $LTPBIN/tst_resm TINFO \
 $LTPBIN/tst_resm TINFO "Test #3: to deliver the mail. Mailer daemon should"
 $LTPBIN/tst_resm TINFO "Test #3: report this failure."
 
+if [ -z $MAIL_NOT_INSTALLED ]; then
 cat > $LTPTMP/tst_mail.in <<EOF
 This is a test email.
 EOF
@@ -260,6 +274,9 @@ fi
         fi
     fi
 fi
+else
+    $LTPBIN/tst_resm TCONF "mail command not installed"
+fi
 
 # Test #4 
 # Test that mail -c user@domain option will carbon copy that user.
@@ -270,6 +287,7 @@ RC=0
 
 $LTPBIN/tst_resm TINFO "Test #4: Test that mail -c user@domain will"
 $LTPBIN/tst_resm TINFO "Test #4: carbon copy user@domain"
+if [ -z $MAIL_NOT_INSTALLED ]; then
 
 # send mail to root and carbon copy mail_test 
 mail -s "Test" root@localhost -c mail_test@localhost < \
@@ -297,7 +315,9 @@ else
         TFAILCNT=$(( $TFAILCNT+1 ))
     fi
 fi
-
+else
+    $LTPBIN/tst_resm TCONF "mail command not installed"
+fi
 
 # Test #5 
 # Test that mail -b user@domain option will blind carbon copy that user.
@@ -308,6 +328,7 @@ RC=0
 
 $LTPBIN/tst_resm TINFO "Test #5: Test that mail -b user@domain will"
 $LTPBIN/tst_resm TINFO "Test #5: blind carbon copy user@domain"
+if [ -z $MAIL_NOT_INSTALLED ]; then
 
 # send mail to root and carbon copy mail_test 
 mail -s "Test" root@localhost -c mail_test@localhost < \
@@ -335,7 +356,9 @@ else
         TFAILCNT=$(( $TFAILCNT+1 ))
     fi
 fi
-    
+else
+    $LTPBIN/tst_resm TCONF "mail command not installed"
+fi
 
 #CLEANUP & EXIT
 # remove all the temporary files created by this test.
