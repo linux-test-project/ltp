@@ -45,7 +45,7 @@ def main(argv=None):
         duration=60
         trigger_workld(options.work_ld, options.stress, duration, background)
         generate_report()
-        status = validate_cpu_consolidation(options.mc_level, options.smt_level)
+        status = validate_cpu_consolidation(options.work_ld,options.mc_level, options.smt_level)
         reset_schedmc()
         if is_hyper_threaded():
             reset_schedsmt()
