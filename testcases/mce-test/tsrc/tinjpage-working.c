@@ -13,7 +13,7 @@
 #include <errno.h>
 #include <string.h>
 
-#define MADV_POISON 12
+#define MADV_POISON 100
 
 #define err(x) perror(x),exit(1)
 

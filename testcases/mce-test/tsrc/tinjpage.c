@@ -19,7 +19,7 @@
 #include <pthread.h>
 
 #ifndef MADV_POISON
-#define MADV_POISON 12
+#define MADV_POISON 100
 #endif
 
 #define TMPDIR "./"
