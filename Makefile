@@ -45,6 +45,7 @@ install: all
 	@$(MAKE) -C m4 install
 	@$(MAKE) -C doc/man1 install
 	@$(MAKE) -C doc/man3 install
+	@$(MAKE) -C utils install
 ifneq ($(strip $(SKIP_IDCHECK)),1)
 	@./IDcheck.sh
 endif
