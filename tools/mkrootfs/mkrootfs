@@ -84,7 +84,7 @@ usage()
 
 help()
 {
-    echo "This program will create a root file system with busybox commads."
+    echo "This program will create a root file system with busybox commands."
     echo "Follow these steps to boot your machine with this file system"
     echo "1. create a boot floppy."
     echo "   - use command: dd if=<path>/bzImage of=/dev/fd0h1440 bs=1k"

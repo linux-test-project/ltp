@@ -149,7 +149,7 @@ RC=0
 export TCID=file01
 export TST_COUNT=1
 
-$LTPBIN/tst_resm TINFO "TEST #1: file commad recogizes ASCII text files"
+$LTPBIN/tst_resm TINFO "TEST #1: file command recogizes ASCII text files"
 
 cat > $LTPTMP/test_file.txt <<EOF
 This is a text file 
@@ -191,7 +191,7 @@ cat > $LTPTMP/bash_script.sh <<EOF
 #! /bin/bash
 
 echo "this is a shell script"
-echo "used to test file commad"
+echo "used to test file command"
 
 EOF
 
@@ -226,7 +226,7 @@ cat > $LTPTMP/ksh_script.sh <<EOF
 #! /bin/ksh
 
 echo "this is a shell script"
-echo "used to test file commad"
+echo "used to test file command"
 
 EOF
 
@@ -262,7 +262,7 @@ cat > $LTPTMP/C_script.sh <<EOF
 #! /bin/csh
 
 echo "this is a shell script"
-echo "used to test file commad"
+echo "used to test file command"
 
 EOF
 

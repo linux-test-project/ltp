@@ -101,7 +101,7 @@ export TCID=eject02
 export TST_COUNT=2
 RC=0
 
-$LTPBIN/tst_resm TINFO "Test #2: eject commad with no options"
+$LTPBIN/tst_resm TINFO "Test #2: eject command with no options"
 $LTPBIN/tst_resm TINFO "Test #2: will eject the default cdrom device."
 
 eject -v > $LTPTMP/tst_eject.res 2>&1 || RC=$?

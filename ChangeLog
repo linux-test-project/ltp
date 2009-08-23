@@ -959,7 +959,7 @@ ltp/testcases/kernel/syscalls/mq_timedreceive/mq_timedreceive01.c
 ltp/testcases/kernel/syscalls/utils/common_j_h.c
 
 49) Log Message:
-Some makefiles ignore errors from commads ran in shell loops. This patch fixes that. Signed-off-by: Jiri Palecek <jpalecek@web.de>.
+Some makefiles ignore errors from commands ran in shell loops. This patch fixes that. Signed-off-by: Jiri Palecek <jpalecek@web.de>.
 
 Modified Files:
 ltp/doc/man1/Makefile

@@ -116,7 +116,7 @@ SaErrorT ilo2_ribcl_get_reset_state(void *hnd,
  * Sets a resource's reset action state.
  * Retrieves a resource's reset action state. If the resource has
  * SAHPI_CAPABILITY_RESET then sends RESET_SERVER RIBCL command to iLO2
- * to do a warm reset the system and a COLD_BOOT_SERVER commad to do a
+ * to do a warm reset the system and a COLD_BOOT_SERVER command to do a
  * cold reset. Please note that this command doesn't bring the system and
  * (OS running on it down gracefully.
  *
