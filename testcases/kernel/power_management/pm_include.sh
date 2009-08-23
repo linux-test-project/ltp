@@ -112,6 +112,46 @@ function is_multi_socket() {
 	fi
 }
 
+function is_multi_core() {
+	siblings=`cat /proc/cpuinfo | grep siblings | uniq | cut -f2 -d':'`
+	cpu_cores=`cat /proc/cpuinfo | grep "cpu cores" | uniq | cut -f2 -d':'`
+	echo "siblings count $siblings cores count $cpu_cores"
+	if [ $siblings -eq $cpu_cores ]; then
+		if [ $cpu_cores -gt 1 ]; then
+			return 0
+		else
+			return 1
+		fi
+	else
+		: $(( num_of_cpus = siblings / cpu_cores ))
+		if [ $num_of_cpus -gt 1 ]; then
+			return 0
+		else
+			return 1
+		fi
+	fi
+}		
+
+function is_dual_core() {
+	siblings=`cat /proc/cpuinfo | grep siblings | uniq | cut -f2 -d':'`
+        cpu_cores=`cat /proc/cpuinfo | grep "cpu cores" | uniq | cut -f2 -d':'`
+        if [ $siblings -eq $cpu_cores ]; then
+                if [ $cpu_cores -eq 2 ]; then
+                        return 1
+                else
+                        return 0
+                fi
+        else
+                : $(( num_of_cpus = siblings / cpu_cores ))
+                if [ $num_of_cpus -eq 2 ]; then
+                        echo "number of cpus $num_of_cpus"
+                        return 1
+                else
+                        return 0
+                fi
+        fi
+}
+
 function get_kernel_version() {
 	# Get kernel minor version
 	export kernel_version=`uname -r | awk -F. '{print $1"."$2"."$3}' | cut -f1 -d'-'`
@@ -120,42 +160,12 @@ function get_kernel_version() {
 function get_valid_input() {
 	kernel_version=$1
 	case "$kernel_version" in
-	'2.6.29' | '2.6.30' | '2.6.31')
-			export valid_input="0 1 2" ;;
-		*) export valid_input="0 1" ;;
+	'2.6.26' | '2.6.27' | '2.6.28')
+			export valid_input="0 1" ;;
+		*) export valid_input="0 1 2" ;;
 	esac
 }
 		
-function get_max_sched_mc() {
-	get_kernel_version
-	case "$kernel_version" in
-	'2.6.29' | '2.6.30' | '2.6.31') 
-		return 2
-		;;
-	'2.6.26' | '2.6.27' | '2.6.28') 
-		return 1
-		;;
-	*) 
-		return 0
-		;;
-	esac
-}
-
-function get_max_sched_smt() {
-    get_kernel_version
-    case "$kernel_version" in
-        '2.6.29' | '2.6.30' | '2.6.31') 
-                    return 2
-				;;
-        '2.6.26' | '2.6.27' | '2.6.28') 
-                    return 1
-				;;
-        *) 
-			return 0
-			;;
-	esac
-}
-
 function check_supp_wkld() {
 	sched_mcsmt=$1
 	work_load=$2
@@ -184,58 +194,33 @@ function analyze_wrt_workload_hyperthreaded() {
     work_load=$2
     pass_count=$3
     sched_smt=$4
-    stress=$5
 
-	if [ $sched_mc > $sched_smt ]; then
+	if [ $sched_mc -gt $sched_smt ]; then
 		check_supp_wkld $sched_mc $work_load; valid_workload=$?
 	else
 		check_supp_wkld $sched_smt $work_load; valid_workload=$?
 	fi
 
-	if [ "$stress" = "thread" ]; then
-		case "$valid_workload" in
-        0)
-			if [ $pass_count -lt 5 ]; then
-				RC=1
-				tst_resm TFAIL "Consolidation at core level failed for \
+	case "$valid_workload" in
+	0)
+		if [ $pass_count -lt 5 ]; then
+			RC=1
+			tst_resm TFAIL "Consolidation at package level failed for \
 sched_mc=$sched_mc, sched_smt=$sched_smt for workload=$work_load"
-			else
-				tst_resm TPASS "Consolidation at core level passed for \
+		else
+			tst_resm TPASS "Consolidation at package level passed for \
 sched_mc=$sched_mc, sched_smt=$sched_smt & workload=$work_load"
-			fi ;;
-        1)
-            if [ $pass_count -lt 5 ]; then
-                tst_resm TPASS "Consolidation at core level failed for \
+		fi ;;
+	1)
+		if [ $pass_count -lt 5 ]; then
+			tst_resm TPASS "Consolidation at package level failed for \
 unsupported workload $work_load when sched_mc=$sched_mc & sched_smt=$sched_smt"
-            else
-				RC=1
-                tst_resm TFAIL "Consolidation at core level passed for \
+		else
+			RC=1
+			tst_resm TFAIL "Consolidation at package level passed for \
 unsupported workload $work_load when sched_mc=$sched_mc & sched_smt=$sched_smt"
-            fi ;;
+		fi ;;
         esac
-	else
-		case "$valid_workload" in
-        0)
-            if [ $pass_count -lt 5 ]; then
-				RC=1
-                tst_resm TFAIL "Consolidation at package level failed for \
-sched_mc=$sched_mc, sched_smt=$sched_smt for workload=$work_load"
-            else
-                tst_resm TPASS "Consolidation at package level passed for \
-sched_mc=$sched_mc, sched_smt=$sched_smt & workload=$work_load"
-            fi ;;
-        1)
-			echo "pass count is $pass_count"
-            if [ $pass_count -lt 5 ]; then
-                tst_resm TPASS "Consolidation at package level failed for \
-unsupported workload $work_load when sched_mc=$sched_mc & sched_smt=$sched_smt"
-            else
-				RC=1
-                tst_resm TFAIL "Consolidation at package level passed for \
-unsupported workload $work_load when sched_mc=$sched_mc & sched_smt=$sched_smt"
-            fi ;;
-        esac
-	fi
 }
 
 function analyze_wrt_wkld() {
@@ -243,12 +228,11 @@ function analyze_wrt_wkld() {
     work_load=$2
     pass_count=$3
 	sched_smt=$4
-	stress=$5
 
 	check_supp_wkld $sched_mc $work_load; valid_workload=$?
 	if [ $hyper_threaded -eq $YES ]; then
 		analyze_wrt_workload_hyperthreaded $sched_mc $work_load $pass_count\
-		 $sched_smt $stress
+		 $sched_smt 
 	else
 		case "$valid_workload" in
 		0)
@@ -278,74 +262,56 @@ function analyze_result_hyperthreaded() {
     work_load=$2
     pass_count=$3
     sched_smt=$4
-    stress=$5
 
+	echo "sched_mc =$sched_mc  work-load=$work_load  pass_count=$pass_count  sched_smt=$sched_smt"
 	case "$sched_mc" in
 	0)
 		if [ $sched_smt ]; then
 			case "$sched_smt" in
 			0)
-				if [ "$stress" = "thread" ]; then
-					if [ $pass_count -lt 1 ]; then
-						tst_resm TPASS "Consolidation at core level failed for sched_mc=\
+				if [ "$pass_count" -lt 5 ]; then
+					tst_resm TPASS "cpu consolidation failed for sched_mc=\
 $sched_mc & sched_smt=$sched_smt for workload=$work_load"
-					else
-						RC=1
-						tst_resm TFAIL "Consolidation at core level passed for sched_mc=\
-$sched_mc & sched_smt=$sched_smt for workload=$work_load"
-					fi
 				else
-					if [ "$pass_count" -lt 1 ]; then
-						tst_resm TPASS "cpu consolidation failed for sched_mc=\
+					RC=1
+				tst_resm TFAIL "cpu consolidation passed for sched_mc=\
 $sched_mc & sched_smt=$sched_smt for workload=$work_load"
-					else
-						RC=1
-						tst_resm TFAIL "cpu consolidation passed for sched_mc=\
-$sched_mc & sched_smt=$sched_smt for workload=$work_load"
-					fi
 				fi
 				;;
 			*)
-				if [ "$stress" = "thread" ]; then
-					analyze_wrt_wkld $sched_mc $work_load $pass_count $sched_smt $stress
-				else
-					analyze_wrt_wkld $sched_mc $work_load $pass_count $sched_smt
-				fi ;;
+				analyze_wrt_wkld $sched_mc $work_load $pass_count $sched_smt
+				;;
 			esac
 		else
-			if [ $pass_count -lt 1 ]; then
+			if [ $pass_count -lt 5 ]; then
 				tst_resm TPASS "cpu consolidation failed for sched_mc=\
 $sched_mc for workload=$work_load"
 			else
 				RC=1
 				tst_resm TFAIL "cpu consolidation passed for sched_mc=\
-$sched_mc & sched_smt=$sched_smt for workload=$work_load"
+$sched_mc for workload=$work_load"
 			fi
 		fi
 		;;
 	*)
-		if [ "$stress" = "thread" ]; then
-			analyze_wrt_wkld $sched_mc $work_load $pass_count $sched_smt $stress
-		else
 			analyze_wrt_wkld $sched_mc $work_load $pass_count $sched_smt
-		fi
 		;;
 	esac
 }
 
-function analyze_consolidation_result() {
+function analyze_package_consolidation_result() {
 	sched_mc=$1
     work_load=$2
     pass_count=$3
 	sched_smt=$4
-	stress=$5
 
+	echo "sched mc $sched_mc sched smt is $sched_smt workload $work_load pass count $pass_count"
 	if [ $hyper_threaded -eq $YES ]; then
-		analyze_result_hyperthreaded $sched_mc $work_load $pass_count $sched_smt $stress
+		analyze_result_hyperthreaded $sched_mc $work_load $pass_count $sched_smt
 	else
 		case "$sched_mc" in
 	    0)
-    	    if [ $pass_count -lt 1 ]; then
+    	    if [ $pass_count -lt 5 ]; then
         	    tst_resm TPASS "cpu consolidation failed for sched_mc=\
 $sched_mc for workload=$work_load"
         	else
@@ -358,6 +324,33 @@ $sched_mc for workload=$work_load"
         	;;
     	esac
 	fi
+}
+
+function analyze_core_consolidation_result() {
+	sched_smt=$1
+	work_load=$2
+	pass_count=$3
+
+	case "$valid_workload" in
+	0)
+		if [ $pass_count -lt 5 ]; then
+			RC=1
+			tst_resm TFAIL "Consolidation at core level failed for \
+sched_mc=$sched_mc, sched_smt=$sched_smt for workload=$work_load"
+		else
+			tst_resm TPASS "Consolidation at core level passed for \
+sched_mc=$sched_mc, sched_smt=$sched_smt & workload=$work_load"
+		fi ;;
+	1)
+		if [ $pass_count -lt 5 ]; then
+			tst_resm TPASS "Consolidation at core level failed for \
+unsupported workload $work_load when sched_mc=$sched_mc & sched_smt=$sched_smt"
+		else
+			RC=1
+			tst_resm TFAIL "Consolidation at core level passed for \
+unsupported workload $work_load when sched_mc=$sched_mc & sched_smt=$sched_smt"
+		fi ;;
+	esac
 }
 
 function analyze_sched_domain_result(){
