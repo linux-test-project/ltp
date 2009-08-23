@@ -126,7 +126,7 @@ EOF
 	if [ $EXIT_CODE = 1 ]; then
 		echo "Cron did not allow user to execute job , TEST FAILED"
 	else
-		echo "Cron allowed user to exectue test job, TEST PASSED"
+		echo "Cron allowed user to execute test job, TEST PASSED"
 	fi
 	
 	 echo "restore old crontab..."
@@ -162,7 +162,7 @@ EOF
         if [ $EXIT_CODE = 0 ]; then
                 echo "Cron did not allow user to execute job , TEST PASSED"
         else
-                echo "Cron allowed user to exectue test job, TEST FAILED"
+                echo "Cron allowed user to execute test job, TEST FAILED"
         fi
 
 		echo "restore old crontab..."

@@ -114,7 +114,7 @@ run_test()
         if [ ${exit_code} -eq 1 ]; then
             echo "At did not allow user to execute job, TEST FAILED."
 	else
-            echo "At allowed user to exectue test job, TEST PASSED."
+            echo "At allowed user to execute test job, TEST PASSED."
 	fi
 
 	rm -f "${tmpfile}" >/dev/null 2>&1
@@ -135,7 +135,7 @@ run_test()
         exit_code=1
         test -e "${tmpfile}" || exit_code=0
         if [ ${exit_code} -eq 1 ]; then
-            echo "At allowed user to exectue test job, TEST FAILED."
+            echo "At allowed user to execute test job, TEST FAILED."
         else
             echo "At did not allow user to execute job, TEST PASSED."
         fi
