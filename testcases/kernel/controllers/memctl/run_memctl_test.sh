@@ -323,7 +323,7 @@ case $TEST_NUM in
 		check_mem_allocated;# $MEM_TOTAL;
 		# now we can check the memory usage from both files
 		USAGE_FROM_STAT=`cat /dev/memctl/group_1/memory.stat \
-					| grep -w "active" | cut -d" " -f2`;
+					| grep -w "rss" | cut -d" " -f2`;
 		if [ $USAGE_FROM_USAGE_IN_BYTES -eq $USAGE_FROM_STAT ]
 		then
 			echo "memory usage from memory.usage_in_bytes= $USAGE_FROM_USAGE_IN_BYTES";
@@ -360,7 +360,7 @@ case $TEST_NUM in
 
 		# now we can check the memory usage from both files
 		USAGE_FROM_STAT=`cat /dev/memctl/group_1/memory.stat \
-					| grep -w "active" | cut -d" " -f2`;
+					| grep -w "rss" | cut -d" " -f2`;
 		if [ $USAGE_FROM_USAGE_IN_BYTESGRP1_MEMUSAGE -eq $USAGE_FROM_STAT ] \
 							&& [ $FIRST_STEP_PASS -eq 1 ]
 		then
