@@ -35,11 +35,11 @@ echo -e "number of processes = $nproc " | tee -a $LOG_FILE
 rm -f $nthread.$iter.$nproc.*.out
 
 i=0
-./pthread_cond_many --realtime  --broadcast $iter $nthread > $nthread.$iter.$nproc.$i.out &
+./pthread_cond_many --realtime --broadcast -i $iter -n $nthread > $nthread.$iter.$nproc.$i.out &
 i=1
 while test $i -lt $nproc
 do
-        ./pthread_cond_many --broadcast $iter $nthread > $nthread.$iter.$nproc.$i.out &
+        ./pthread_cond_many --broadcast -i $iter -n $nthread > $nthread.$iter.$nproc.$i.out &
         i=`expr $i + 1`
 done
 wait

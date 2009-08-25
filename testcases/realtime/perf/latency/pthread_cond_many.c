@@ -24,12 +24,12 @@
  *
  * USAGE:
  *      Use run_auto.sh script in current directory to build and run test.
- *      Use "-j" to enable jvm simulator.
  *
  * AUTHOR
  *      Paul E. McKenney <paulmck@us.ibm.com>
  *
  * HISTORY
+ *      librttest parsing, threading, and mutex initialization - Darren Hart
  *
  *
  *      This line has to be added to avoid a stupid CVS problem
@@ -47,10 +47,12 @@
 #include <librttest.h>
 #include <libstats.h>
 #define PASS_US 100
-pthread_mutex_t child_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t child_mutex;
 volatile int *child_waiting = NULL;
 double endtime;
 pthread_cond_t *condlist = NULL;
+int iterations = 0;
+int nthreads = 0;
 int realtime = 0;
 int broadcast_flag = 0;
 unsigned long latency = 0;
@@ -243,42 +245,68 @@ test_signal(long iter, long nthreads)
 	printf("Standard Deviation: %f\n", stats_stddev(&dat));
 }
 
-void
-usage(char *progname)
+void usage(void)
 {
-	fprintf(stderr,
-		"Usage: %s [--realtime] [--broadcast] iterations nthreads\n",
-		progname);
-	printf("currently options are not supported\n");
-	exit(-1);
+	rt_help();
+	printf("pthread_cond_many specific options:\n");
+	printf("  -r,--realtime   run with realtime priority\n");
+	printf("  -b,--broadcast  use cond_broadcast instead of cond_signal\n");
+	printf("  -iITERATIONS    iterations (required)\n");
+	printf("  -nNTHREADS      number of threads (required)\n");
+	printf("deprecated unnamed arguments:\n");
+	printf("  pthread_cond_many [options] iterations nthreads\n");
+}
+
+int parse_args(int c, char *v)
+{
+	int handled;
+        switch (c) {
+		case 'h':
+			usage();
+			exit(0);
+                case 'a':
+			broadcast_flag = 1;
+                        break;
+		case 'i':
+			iterations = atoi(v);
+			break;
+		case 'n':
+			nthreads = atoi(v);
+			break;
+		case 'r':
+			realtime = 1;
+			break;
+                default:
+                        handled = 0;
+                        break;
+        }
+        return handled;
 }
 
 int
 main(int argc, char *argv[])
 {
-	int i = 1;
-	long iter;
-	long nthreads;
+	struct option longopts[] = {
+		{"broadcast", 0, NULL, 'a'},
+		{"realtime", 0, NULL, 'r'},
+		{NULL, 0, NULL, 0},
+	};
 	setup();
 
-	while (i < argc) {
-		if (strcmp(argv[i], "--realtime") == 0) {
-			realtime = 1;
-			i++;
-		} else if (strcmp(argv[i], "--broadcast") == 0) {
-			broadcast_flag = 1;
-			i++;
-		} else if (argv[i][0] == '-') {
-			usage(argv[0]);
-		} else {
-			break;
-		}
+	init_pi_mutex(&child_mutex);
+	rt_init_long("ahi:n:r", longopts, parse_args, argc, argv);
+
+	/* Legacy command line arguments support, overrides getopt args. */
+	if (optind < argc)
+		iterations = strtol(argv[optind++], NULL, 0);
+	if (optind < argc)
+		nthreads = strtol(argv[optind++], NULL, 0);
+
+	/* Ensure we have the required arguments. */
+	if (iterations == 0 || nthreads == 0) {
+		usage();
+		exit(1);
 	}
-	if (argc - i < 2) {
-		usage(argv[0]);
-	}
-	iter = strtol(argv[i], NULL, 0);
-	nthreads = strtol(argv[i + 1], NULL, 0);
 
 	child_waiting = (int *)malloc(sizeof(*child_waiting) * nthreads);
 	condlist = (pthread_cond_t *)malloc(sizeof(*condlist) * nthreads);
@@ -286,7 +314,7 @@ main(int argc, char *argv[])
 		fprintf(stderr, "Out of memory\n");
 		exit(-1);
 	}
-	test_signal(iter, nthreads);
+	test_signal(iterations, nthreads);
 	printf("\nCriteria: latencies < %d us\n", PASS_US);
 	printf("Result: %s\n", fail ? "FAIL" : "PASS");
 	return 0;
