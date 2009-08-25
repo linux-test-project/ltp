@@ -55,7 +55,7 @@ int HT_SetAffinity()
 
 	pid=getpid();
 
-	tst_resm(TINFO, "Set affinity through system call.\n");
+	tst_resm(TINFO, "Set affinity through system call");
 
 	cpu_count=get_cpu_count();
 	if(cpu_count==0)
@@ -91,11 +91,11 @@ int HT_SetAffinity()
 
 		if(j<10)
 		{
-			tst_resm(TINFO, "...Error\n");
+			tst_resm(TINFO, "...Error");
 			result=0;
 		}
 		else
-			tst_resm(TINFO, "...OK\n");
+			tst_resm(TINFO, "...OK");
 
 	}
 
@@ -126,11 +126,11 @@ int HT_SetAffinity()
 
 		if(j<10)
 		{
-			tst_resm(TINFO, "...Error\n");
+			tst_resm(TINFO, "...Error");
 			result=0;
 		}
 		else
-			tst_resm(TINFO, "...OK\n");
+			tst_resm(TINFO, "...OK");
 
 	}
 
@@ -168,7 +168,7 @@ int HT_GetAffinity()
 	mask[0] = 0x1;
 	pid = getpid();
 
-	tst_resm(TINFO, "Get affinity through system call.\n");
+	tst_resm(TINFO, "Get affinity through system call");
 
 	sched_setaffinity(pid, sizeof(mask), mask);
 
@@ -216,13 +216,13 @@ int HT_InheritAffinity()
 		else
 			exit(1);
 	} else if (pid < 0) {
-		tst_resm(TINFO, "Inherit affinity:fork failed! .\n");
+		tst_resm(TINFO, "Inherit affinity:fork failed!");
 		return 0;
 	}
 	waitpid(pid, &status, 0);
 
 	if (WEXITSTATUS(status) == 0) {
-		tst_resm(TINFO, "Inherited affinity from parent process.\n");
+		tst_resm(TINFO, "Inherited affinity from parent process");
 		return 1;
 	}
 	else
