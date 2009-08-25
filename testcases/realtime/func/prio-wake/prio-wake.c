@@ -56,6 +56,7 @@
 #include <librttest.h>
 volatile int running_threads = 0;
 static int rt_threads = 0;
+static int locked_broadcast = 1;
 static pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 static pthread_mutex_t mutex;
 static volatile nsec_t beginrun;
@@ -67,6 +68,8 @@ void usage(void)
         rt_help();
         printf("prio-wake specific options:\n");
         printf("  -n#           #: number of worker threads\n");
+        printf("  -l#           1:lock the mutex before broadcast, 0:don't\n");
+	printf("                defaults to 1\n");
 }
 
 int parse_args(int c, char *v)
@@ -79,6 +82,9 @@ int parse_args(int c, char *v)
                         exit(0);
                 case 'n':
                         rt_threads = atoi(v);
+                        break;
+                case 'l':
+                        locked_broadcast = atoi(v);
                         break;
                 default:
                         handled = 0;
@@ -106,9 +112,11 @@ void *master_thread(void* arg)
 
 	printf("%08lld us: Master thread about to wake the workers\n", start/NS_PER_US);
 	/* start the children threads */
-	rc = pthread_mutex_lock(&mutex);
+	if (locked_broadcast)
+		rc = pthread_mutex_lock(&mutex);
 	rc = pthread_cond_broadcast(&cond);
-	rc = pthread_mutex_unlock(&mutex);
+	if (locked_broadcast)
+		rc = pthread_mutex_unlock(&mutex);
 
 	while (running_threads > 0)
 		sleep(1);
@@ -161,7 +169,7 @@ int main(int argc, char* argv[])
 	int i;
 	setup();
 
-        rt_init("hn:", parse_args, argc, argv);
+        rt_init("hn:l:", parse_args, argc, argv);
 
 	if (rt_threads == 0) {
 		numcpus = sysconf(_SC_NPROCESSORS_ONLN);
@@ -172,7 +180,9 @@ int main(int argc, char* argv[])
 	printf("\n-----------------------\n");
 	printf("Priority Ordered Wakeup\n");
 	printf("-----------------------\n");
-	printf("Worker Threads: %d\n\n", rt_threads);
+	printf("Worker Threads: %d\n", rt_threads);
+	printf("Calling pthread_cond_broadcast() with mutex: %s\n\n",
+	       locked_broadcast ? "LOCKED" : "UNLOCKED");
 
 	pri_boost = 3;
 
