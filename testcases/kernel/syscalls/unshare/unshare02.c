@@ -56,7 +56,7 @@
 /* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
-#include "linux_syscall_numbers.h"
+#include "config.h"
 
 /* Extern Global Variables */
 extern int Tst_count;           /* counter for tst_xxx routines.         */
@@ -66,6 +66,8 @@ extern char *TESTDIR;           /* temporary dir created by tst_tmpdir() */
 char *TCID = "unshare02";  /* Test program identifier.*/
 int  testno;
 int  TST_TOTAL = 2;                   /* total number of tests in this file.   */
+
+#ifdef HAVE_UNSHARE
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -141,37 +143,53 @@ int main(int ac, char **av) {
  *fork a child process;testing which one is a child or a parent;
  * */
 		        TEST(pid1=fork());    //call to fork()
-			if (TEST_RETURN == -1){
-			tst_resm(TFAIL, "fork() Failed, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
-			cleanup();
-			tst_exit();
-			}
-			else if (TEST_RETURN == 0){
-				if((TEST_RETURN = unshare(-1)) == 0) {
-	        		tst_resm(TPASS, "Call succeeded");
+			if (TEST_RETURN == -1) {
+				tst_resm(TFAIL|TTERRNO,
+					"fork() failed.");
+				cleanup();
 				tst_exit();
+			} else if (TEST_RETURN == 0) {
+				TEST_RETURN = unshare(-1);
+				if (TEST_RETURN == 0)
+					tst_resm(TFAIL,
+						"Call unexpectedly succeeded.");
+				else if (TEST_RETURN == -1) {
+					if (errno == EINVAL)
+						tst_resm(TPASS|TERRNO,
+							"Expect EINVAL.");
+					else if (errno == ENOSYS)
+						tst_resm(TCONF,
+							"unshare is not "
+							"implemented in kernel."
+							);
+					else
+						tst_resm(TFAIL|TERRNO,
+							"Test failed.");
 				}
-				else if (TEST_RETURN == -1 ){
-					tst_resm(TFAIL,"Test Failed, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
-					tst_exit();
-                     			}
+				tst_exit();
 			}
 
 			TEST(pid1=fork());    //call to fork()
-                        if (pid1 == -1){
-                        tst_resm(TFAIL, "fork() Failed, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
-                        cleanup();
-                        tst_exit();
-                        }
-                        else if (TEST_RETURN == 0){
-                                if((TEST_RETURN = unshare((int)NULL)) == 0) {
-                                tst_resm(TPASS, "Call succeeded");
+			if (pid1 == -1) {
+				tst_resm(TFAIL|TTERRNO,
+					"fork() failed.");
+				cleanup();
 				tst_exit();
-                                }
-                                else if (TEST_RETURN == -1 ){
-                                        tst_resm(TFAIL,"Test Failed 2, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
-					tst_exit();
-                                        }
+			} else if (TEST_RETURN == 0) {
+				TEST_RETURN = unshare((int)NULL);
+				if (TEST_RETURN == 0)
+					tst_resm(TPASS, "Call succeeded");
+				else if (TEST_RETURN == -1) {
+					if (errno == ENOSYS)
+						tst_resm(TCONF,
+							"unshare is not "
+							"implemented in kernel."
+							);
+					else
+						tst_resm(TFAIL|TERRNO,
+							"Test failed 2. ");
+				}
+				tst_exit();
                         }
 
 
@@ -180,4 +198,10 @@ int main(int ac, char **av) {
 	cleanup();
         tst_exit();
 }
-
+#else
+int main(void)
+{
+	tst_resm(TCONF, "unshare is undefined.");
+	return 0;
+}
+#endif
