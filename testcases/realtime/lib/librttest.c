@@ -99,9 +99,13 @@ void calibrate_busyloop(void)
 	iters_per_us = (CALIBRATE_LOOPS * NS_PER_US) / (end-start);
 }
 
-int rt_init(const char *options, int (*parse_arg)(int option, char *value), int argc, char *argv[])
+int rt_init_long(const char *options, const struct option *longopts,
+		 int (*parse_arg)(int option, char *value), int argc,
+		 char *argv[])
 {
+	const struct option *cur_opt;
 	int use_buffer = 1;
+	char *longopt_vals;
 	size_t i;
 	int c;
 	opterr = 0;
@@ -126,8 +130,33 @@ int rt_init(const char *options, int (*parse_arg)(int option, char *value), int 
 			exit(1);
 		}
 	}
+
+	/* Ensure each long options has a known unique short option in val. */
+	longopt_vals = "";
+	cur_opt = longopts;
+	while (cur_opt && cur_opt->name) {
+		if (cur_opt->flag) {
+			fprintf(stderr, "Programmer error -- argument --%s flag"
+				" is non-null\n", cur_opt->name);
+			exit(1);
+		}
+		if (!strchr(all_options, cur_opt->val)) {
+			fprintf(stderr, "Progreammer error -- argument --%s "
+				"shortopt -%c wasn't listed in options (%s)\n",
+				cur_opt->name, cur_opt->val, all_options);
+			exit(1);
+		}
+		if (strchr(longopt_vals, cur_opt->val)) {
+			fprintf(stderr, "Programmer error -- argument --%s "
+				"shortopt -%c is used more than once\n",
+				cur_opt->name, cur_opt->val);
+			exit(1);
+		}
+		asprintf(&longopt_vals, "%s%c", longopt_vals, cur_opt->val);
+		cur_opt++;
+	}
 	
-	while ((c = getopt(argc, argv, all_options)) != -1) {
+	while ((c = getopt_long(argc, argv, all_options, longopts, NULL)) != -1) {
 		switch (c) {
 		case 'c':
 			pass_criteria = atof(optarg);
@@ -148,11 +177,17 @@ int rt_init(const char *options, int (*parse_arg)(int option, char *value), int 
 			save_stats = 1;
 			break;
 		case ':':
-			fprintf(stderr, "option -%c: missing arg\n", optopt);
+			if (optopt == '-')
+				fprintf(stderr, "long option missing arg\n");
+			else
+				fprintf(stderr, "option -%c: missing arg\n", optopt);
 			parse_arg('h', optarg); /* Just to display usage */
 			exit (1); /* Just in case. (should normally be done by usage()) */
 		case '?':
-			fprintf(stderr, "option -%c not recognized\n", optopt);
+			if (optopt == '-')
+				fprintf(stderr, "unrecognized long option\n");
+			else
+				fprintf(stderr, "option -%c not recognized\n", optopt);
 			parse_arg('h', optarg); /* Just to display usage */
 			exit (1); /* Just in case. (should normally be done by usage()) */
 		default:
@@ -183,6 +218,12 @@ int rt_init(const char *options, int (*parse_arg)(int option, char *value), int 
 	atexit(buffer_fini);
 	atexit(buffer_print);
 	return 0;
+}
+
+int rt_init(const char *options, int (*parse_arg)(int option, char *value),
+	    int argc, char *argv[])
+{
+	return rt_init_long(options, NULL, parse_arg, argc, argv);
 }
 
 void buffer_init(void)

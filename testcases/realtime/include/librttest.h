@@ -235,10 +235,12 @@ static volatile int _debug_count = 0;
 /* rt_help: print help for standard args */
 void rt_help();
 
-/* rt_init: initialize librttest
+/* rt_init_long: initialize librttest
  * options: pass in an getopt style string of options -- e.g. "ab:cd::e:"
  *          if this or parse_arg is null, no option parsing will be done
  *          on behalf of the calling program (only internal args will be parsed)
+ * longopts: a pointer to the first element of an array of struct option, the
+ *           last entry must be set to all zeros.
  * parse_arg: a function that will get called when one of the above
  *            options is encountered on the command line.  It will be passed
  *            the option -- e.g. 'b' -- and the value.  Something like:
@@ -267,7 +269,13 @@ void rt_help();
  * argc: passed from main
  * argv: passed from main
  */
-int rt_init(const char *options, int (*parse_arg)(int option, char *value), int argc, char *argv[]);
+int rt_init_long(const char *options, const struct option *longopts,
+		 int (*parse_arg)(int option, char *value),
+		 int argc, char *argv[]);
+
+/* rt_init: same as rt_init_long with no long options */
+int rt_init(const char *options, int (*parse_arg)(int option, char *value),
+	    int argc, char *argv[]);
 
 int create_thread(void*(*func)(void*), void *arg, int prio, int policy);
 
