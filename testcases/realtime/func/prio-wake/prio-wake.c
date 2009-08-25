@@ -54,6 +54,8 @@
 #include <errno.h>
 #include <sys/syscall.h>
 #include <librttest.h>
+#include <libstats.h>
+
 volatile int running_threads = 0;
 static int rt_threads = 0;
 static int locked_broadcast = 1;
@@ -164,8 +166,10 @@ void *worker_thread(void* arg)
 
 int main(int argc, char* argv[])
 {
-	int pri_boost;
+	int threads_per_prio;
         int numcpus;
+	int numprios;
+	int prio;
 	int i;
 	setup();
 
@@ -184,19 +188,29 @@ int main(int argc, char* argv[])
 	printf("Calling pthread_cond_broadcast() with mutex: %s\n\n",
 	       locked_broadcast ? "LOCKED" : "UNLOCKED");
 
-	pri_boost = 3;
-
 	beginrun = rt_gettime();
 
 	init_pi_mutex(&mutex);
 
+	/* calculate the number of threads per priority */
+	/* we get num numprios -1 for the workers, leaving one for the master */
+	numprios = sched_get_priority_max(SCHED_FIFO) -
+		   sched_get_priority_min(SCHED_FIFO);
+
+	threads_per_prio = rt_threads /	numprios;
+	if (rt_threads % numprios)
+		threads_per_prio++;
+
 	/* start the worker threads */
+	prio = sched_get_priority_min(SCHED_FIFO);
 	for (i = rt_threads; i > 0; i--) {
-		create_fifo_thread(worker_thread, (void*)(intptr_t)i, sched_get_priority_min(SCHED_FIFO) + pri_boost++);
+		if ((i != rt_threads && (i % threads_per_prio) == 0))
+			prio++;
+		create_fifo_thread(worker_thread, (void*)(intptr_t)i, prio);
 	}
 
 	/* start the master thread */
-	create_fifo_thread(master_thread, (void*)(intptr_t)i, sched_get_priority_min(SCHED_FIFO) + pri_boost);
+	create_fifo_thread(master_thread, (void*)(intptr_t)i, ++prio);
 
 	/* wait for threads to complete */
 	join_threads();
