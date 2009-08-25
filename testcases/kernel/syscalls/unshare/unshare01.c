@@ -92,7 +92,7 @@
 /* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
-#include "linux_syscall_numbers.h"
+#include "config.h"
 
 /* Extern Global Variables */
 extern int Tst_count;           /* counter for tst_xxx routines.         */
@@ -102,6 +102,8 @@ extern char *TESTDIR;           /* temporary dir created by tst_tmpdir() */
 char *TCID = "unshare01";  /* Test program identifier.*/
 int  testno;
 int  TST_TOTAL =1;                   /* total number of tests in this file.   */
+
+#ifdef HAVE_UNSHARE
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -177,47 +179,77 @@ int main(int ac, char **av) {
  *fork a child process;testing which one is a child or a parent;
  * */
 		        TEST(pid1=fork());    //call to fork()
-			if (TEST_RETURN == -1){
-				tst_resm(TFAIL, "fork() Failed, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
+			if (TEST_RETURN == -1) {
+				tst_resm(TFAIL|TTERRNO, "fork() failed.");
 				cleanup();
 				tst_exit();
-			}else if (TEST_RETURN == 0){
-				if((TEST_RETURN = unshare(CLONE_FILES)) == 0) {
-	        		tst_resm(TPASS, "unshare with CLONE_FILES call succeeded");
+			} else if (TEST_RETURN == 0) {
+				TEST_RETURN = unshare(CLONE_FS);
+				if (TEST_RETURN == 0)
+					tst_resm(TPASS,
+						"unshare with CLONE_FILES call "
+						"succeeded");
+				else if (TEST_RETURN == -1) {
+					if (errno == ENOSYS)
+						tst_resm(TCONF,
+							"unshare is not "
+							"implemented in kernel."
+							);
+					else
+						tst_resm(TFAIL|TERRNO,
+							"unshare failed.");
+				}
 				tst_exit();
-				}else if (TEST_RETURN == -1 )
-					tst_resm(TFAIL,"unshare Failed, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
-					tst_exit();
 			}else{
 			}
 
 			TEST(pid1=fork());    //call to fork()
-                        if (TEST_RETURN == -1){
-                	        tst_resm(TFAIL, "fork() Failed, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
+			if (TEST_RETURN == -1) {
+				tst_resm(TFAIL|TTERRNO, "fork() failed.");
 	                        cleanup();
                         	tst_exit();
-                        }else if (TEST_RETURN == 0){
-                                if((TEST_RETURN = unshare(CLONE_FS)) == 0) {
-                                	tst_resm(TPASS, "unshare with CLONE_FS call succeeded");
-					tst_exit();
-                                }else if (TEST_RETURN == -1 )
-                                        tst_resm(TFAIL,"unshare Failed 2, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
-					tst_exit();
+			} else if (TEST_RETURN == 0) {
+				TEST_RETURN = unshare(CLONE_FS);
+				if (TEST_RETURN == 0)
+					tst_resm(TPASS,
+						"unshare with CLONE_FS call "
+						"succeeded");
+				else if (TEST_RETURN == -1) {
+					if (errno == ENOSYS)
+						tst_resm(TCONF,
+							"unshare is not "
+							"implemented in kernel."
+							);
+					else
+						tst_resm(TFAIL|TERRNO,
+							"unshare failed 2.");
+				}
+				tst_exit();
                         }else{
 			}
 
 			TEST(pid1=fork());    //call to fork()
-                        if (TEST_RETURN == -1){
-                	        tst_resm(TFAIL, "fork() Failed, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
+			if (TEST_RETURN == -1) {
+				tst_resm(TFAIL|TTERRNO, "fork() failed.");
 	                        cleanup();
                         	tst_exit();
-                        }else if (TEST_RETURN == 0){
-                                if((TEST_RETURN = unshare(CLONE_NEWNS)) == 0) {
-                                	tst_resm(TPASS, "unshare call with CLONE_NEWNS succeeded");
-					tst_exit();
-                                }else if (TEST_RETURN == -1 )
-                                        tst_resm(TFAIL,"unshare Failed 2, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
-					tst_exit();
+			} else if (TEST_RETURN == 0) {
+				TEST_RETURN = unshare(CLONE_NEWNS);
+				if (TEST_RETURN == 0) {
+					tst_resm(TPASS,
+						"unshare call with CLONE_NEWNS "
+						"succeeded");
+				} else if (TEST_RETURN == -1) {
+					if (errno == ENOSYS)
+						tst_resm(TCONF,
+							"unshare is not "
+							"implemented in kernel."
+							);
+					else
+						tst_resm(TFAIL|TERRNO,
+							"unshare failed 2.");
+				}
+				tst_exit();
                         }else{
 			}
 
@@ -228,4 +260,10 @@ int main(int ac, char **av) {
 	cleanup();
 	tst_exit();
 }
-
+#else
+int main(void)
+{
+	tst_resm(TCONF, "unshare is undefined.");
+	return 0;
+}
+#endif
