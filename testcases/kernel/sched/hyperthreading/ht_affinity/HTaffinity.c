@@ -16,6 +16,7 @@
 #include <sys/syscall.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <sys/wait.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -47,7 +48,7 @@ len - length in bytes of the bitmask pointed to by user_mask_ptr.
 
 int HT_SetAffinity()
 {
-	unsigned mask;
+	unsigned int mask;
 	pid_t pid;
 	int result=1;
 	int cpu_count, i, j, k, cpuid;
@@ -161,30 +162,30 @@ unsigned long get_porc_affinity(pid_t pid)
 
 int HT_GetAffinity()
 {
-	unsigned long mask, mask1;
+	unsigned int mask[2], mask1[2];
 	pid_t pid;
 
-	mask=0x1;
-	pid=getpid();
+	mask[0] = 0x1;
+	pid = getpid();
 
 	tst_resm(TINFO, "Get affinity through system call.\n");
 
-	sched_setaffinity(pid, sizeof(unsigned int), &mask);
+	sched_setaffinity(pid, sizeof(mask), mask);
 
 	sleep(1);
 
-	sched_getaffinity(pid, sizeof(unsigned int), &mask1);
+	sched_getaffinity(pid, sizeof(mask), mask1);
 
-	if (mask == 0x1 && mask == mask1)
+	if (mask[0] == 0x1 && mask[0] == mask1[0])
 	{
-		mask=0x2;
-		sched_setaffinity(pid, sizeof(unsigned long), &mask);
+		mask[0] = 0x2;
+		sched_setaffinity(pid, sizeof(mask), mask);
 
 		sleep(1);
 
-		sched_getaffinity(pid, sizeof(unsigned int), &mask1);
+		sched_getaffinity(pid, sizeof(mask), mask1);
 
-		if (mask == 0x2 && mask == mask1)
+		if (mask[0] == 0x2 && mask[0] == mask1[0])
 			return 1;
 		else
 			return 0;
@@ -195,29 +196,35 @@ int HT_GetAffinity()
 
 int HT_InheritAffinity()
 {
-	unsigned long mask;
+	unsigned int mask[2];
 	pid_t pid;
+	int status;
+	mask[0] = 0x2;
+	pid = getpid();
 
-	mask=0x2;
-	pid=getpid();
-
-	tst_resm(TINFO, "Inherit affinity from parent process.\n");
-
-	sched_setaffinity(pid, sizeof(unsigned int), &mask);
+	sched_setaffinity(pid, sizeof(mask), mask);
 
 	sleep(1);
-
-	if((pid=fork())==0)
+	pid = fork();
+	if (pid  == 0)
 	{
 		sleep(1);
-		system("ps > /dev/null");
-		exit(0);
+		sched_getaffinity(pid, sizeof(mask), mask);
+		if (mask[0] == 0x2)
+			exit(0);
+
+		else
+			exit(1);
+	} else if (pid < 0) {
+		tst_resm(TINFO, "Inherit affinity:fork failed! .\n");
+		return 0;
 	}
+	waitpid(pid, &status, 0);
 
-	sched_getaffinity(pid, sizeof(unsigned int), &mask);
-
-	if(mask==0x2)
+	if (WEXITSTATUS(status) == 0) {
+		tst_resm(TINFO, "Inherited affinity from parent process.\n");
 		return 1;
+	}
 	else
 		return 0;
 }
