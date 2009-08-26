@@ -7,6 +7,7 @@ CHECK_MEMCTL := $(shell grep -w memory /proc/cgroups 2>/dev/null|cut -f1)
 CHECK_BLOCKIOCTL := $(shell grep -w blockio /proc/cgroups 2>/dev/null|cut -f1)
 CHECK_FREEZER := $(shell grep -w freezer /proc/cgroups 2>/dev/null| cut -f1)
 CHECK_CPUSETCTL = $(shell grep -w cpuset /proc/cgroups 2>/dev/null|cut -f1)
+CHECK_CPUACCTCTL := $(shell grep -w cpuacct /proc/cgroups 2>/dev/null|cut -f1)
 endif
 
 ifdef CROSS_COMPILE
@@ -19,6 +20,7 @@ SUBDIRS += memctl
 SUBDIRS += io-throttle
 SUBDIRS += freezer
 SUBDIRS += cpuset
+SUBDIRS += cpuacct
 else
 $(info "Kernel is not compiled with control cgroup support")
 endif
@@ -61,6 +63,11 @@ ifeq ($(CHECK_CPUSETCTL),cpuset)
 SUBDIRS += cpuset
 else
 $(info "Kernel is not compiled with cpuset resource controller support")
+endif
+ifeq ($(CHECK_CPUACCTCTL),cpuacct)
+SUBDIRS += cpuacct
+else
+$(info "Kernel is not compiled with cpuacct resource controller support")
 endif
 endif
 

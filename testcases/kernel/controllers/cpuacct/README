@@ -1,0 +1,51 @@
+TEST SUITE:
+
+The directory cpuacct contains the tests related to cpu accounting controller.
+More testcases are expected to be added in future.
+
+TESTS AIM:
+
+The aim of the tests is to test cpu accounting controller functionality.
+
+FILES DESCRIPTION:
+
+cpuacct_task01.c
+---------------
+This is the task which is run for eating up the cpu time.
+
+
+cpuacct_setup.sh
+----------
+This file contains the functions which are common for all the tests. For ex.
+the setup and cleanup functions which do the setup for running the test and do
+the cleanup once the test finishes. The setup() function creates /dev/cpuacct
+directory and mounts cgroup filesystem on it with accounting  controller. It 
+then creates a number(n) of groups in /dev/cpuacct. The cleanup function does a
+complete cleanup of the system.
+
+Most of the error scenarios have been taken care of for a sane cleanup of the
+system. However if cleanup fails in any case, just manually execute the
+commands written in cleanup function in setup.sh.
+One of the most common causes of failed cleanup is that you have done cd into
+any of the groups in controller dir tree.
+
+run_cpuacct_test.sh
+------------------
+This script creates different scenarios for cpu accounting controller testing and
+starting (n) tasks in different groups to do some cpu allocations etc. It
+checks for the cpu usage of the groups and reports test pass/fail accordingly.
+
+Makefile
+--------
+
+The usual makefile for this directory
+
+PASS/FAIL CRITERION:
+==================
+The test cases are intelligent enough in deciding the pass or failure of a
+test.
+
+README:
+--------
+The one you have gone through.
+

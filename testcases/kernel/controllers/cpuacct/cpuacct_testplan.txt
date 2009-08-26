@@ -1,0 +1,44 @@
+The CPU Accounting controller testplan includes a complete set of 
+testcases that test the CPU Accounting controller in different scenarios.
+
+
+TESTCASE DESCRIPTION:
+====================
+
+These tests will check if the cpu usage of the child cgroup is 
+getting reflected in the parent cgroup.Reports PASS if the cpu 
+usage is same for both the cgroups and FAIL if they differ.
+
+In these tests cpu usage of the tasks running in a group is read in 
+terms of 3 different stat values.
+
+'cpuacct.usage'  gives the current cpu usage of the task running 
+in the group.
+'cpuacct.usage_percpu' gives the cpu usage of each cpu.
+'cpuacct.stat' gives the user and system cpu usage of the task running 
+in the group.
+
+Test01: STAT CHECK TEST
+-------------------------------
+This test is run by running a task in the child group and reading it's stat 
+values and comparing them with the parent group's stat values.
+
+Test02: STAT CHECK TEST
+-------------------------------
+This test is run by running num_online_cpus number of tasks in 2 child groups, 
+adding the stat values from the child groups and comparing them with the 
+parent's stat values.
+
+The values reported for user and system time in cpuacct.stat is not very
+accurate and they can vary from the actual values by Threshold*num_online_cpus in the
+worst case.
+Where Threshold T = max(num_online_cpus^2, 32)
+
+In this test case, we allow for a max difference between actual and reported
+values to be 2T. If the difference between parent's value and children's value
+is greater than 2T, we mark the test as failed.
+
+
+For any other information please refer to 
+Documentation/controllers/cpuacct.txt in kernel documentation.
+

@@ -43,6 +43,7 @@ then
 	IOTHROTTLE_CONTROLLER=`grep -w blockio /proc/cgroups | cut -f1`;
 	FREEZER=`grep -w freezer /proc/cgroups | cut -f1`;
 	CPUSET_CONTROLLER=`grep -w cpuset /proc/cgroups | cut -f1`
+	CPUACCOUNT_CONTROLLER=`grep -w cpuacct /proc/cgroups | cut -f1`
 
 	if [ "$CPU_CONTROLLER" = "cpu" ]
 	then
@@ -115,6 +116,15 @@ then
 		echo "Kernel does not support cpuset controller";
 		echo "Skipping all cpuset controller testcases....";
 	fi
+	if [ "$CPUACCOUNT_CONTROLLER" = "cpuacct" ]
+        then
+                $LTPROOT/testcases/bin/run_cpuacct_test.sh 1;
+                $LTPROOT/testcases/bin/run_cpuacct_test.sh 2;
+        else
+                echo "Could not start cpu accounting controller test";
+                echo "usage: run_cpuacct_test.sh $TEST_NUM ";
+                echo "Skipping the cpu accounting controller test...";
+        fi
 else
 	echo "CONTROLLERS TESTCASES: WARNING"
 	echo "Kernel does not support for control groups";

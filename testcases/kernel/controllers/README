@@ -51,6 +51,10 @@ libcontrollers
 --------------
 This directory contains the library for cpucontroller testing.
 
+cpuacct
+-----------
+Directory containing the cpu accounting controller testcases.
+
 Makefile
 --------
 The usual Makefile to conduct all the tests.
