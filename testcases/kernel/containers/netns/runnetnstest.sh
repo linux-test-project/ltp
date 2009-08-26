@@ -90,16 +90,21 @@ else
 fi
 echo
 
-sysfsview
-rc=$?
-if [ $rc -ne 0 ]; then
-    exit_code=$rc
-    errmesg="$errmesg sysfsview: return code is $exit_code ; "
-    echo $errmesg
-else
-   echo "sysfsview: PASS"
-fi
-echo
+# sysfs tagging does not exist, so this test can't pass.  In
+# fact at the moment it fails when mount -t sysfs none /sys is
+# refused, fails in a bad state, leaving the system hard to
+# reboot.  Revisit enabling this test when per-container sysfs
+# views are supported.
+#sysfsview
+#rc=$?
+#if [ $rc -ne 0 ]; then
+#    exit_code=$rc
+#    errmesg="$errmesg sysfsview: return code is $exit_code ; "
+#    echo $errmesg
+#else
+#   echo "sysfsview: PASS"
+#fi
+#echo
 
 par_chld_ftp
 rc=$?
