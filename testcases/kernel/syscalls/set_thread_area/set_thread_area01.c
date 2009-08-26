@@ -48,15 +48,8 @@
 /* History:     Porting from Crackerjack to LTP is done by                    */
 /*              Manas Kumar Nayak maknayak@in.ibm.com>                        */
 /******************************************************************************/
-#include <stdio.h>
-#include <errno.h>
-#include <linux/unistd.h>
+#include "set_thread_area.h"
 
-/* Harness Specific Include Files. */
-#include "test.h"
-#include "usctest.h"
-#include "linux_syscall_numbers.h"
-#include "config.h"
 
 /* Global Variables */
 char *TCID = "set_thread_area01";  /* Test program identifier.*/
@@ -64,8 +57,6 @@ int  testno;
 int  TST_TOTAL = 2;                   /* total number of tests in this file.   */
 
 #if defined HAVE_ASM_LDT_H
-#include <asm/ldt.h>
-
 /* Extern Global Variables */
 extern int Tst_count;           /* counter for tst_xxx routines.         */
 extern char *TESTDIR;           /* temporary dir created by tst_tmpdir() */
@@ -124,7 +115,7 @@ void setup() {
 
 int main(int ac, char **av) {
         
-	struct user_desc u_info;
+        thread_area_s u_info;
         int lc;                 /* loop counter */
         char *msg;              /* message returned from parse_opts */
 	
