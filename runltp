@@ -138,6 +138,10 @@ usage()
                     [CHUNKS      = malloc these many chunks (default is 1 when value 0 or undefined)]
                     [BYTES       = malloc CHUNKS of BYTES bytes (default is 256MB when value 0 or undefined) ]
                     [HANGUP_FLAG = hang in a sleep loop after memory allocated, when value 1]
+	-M CHECK_TYPE
+		[CHECK_TYPE=1 => Full Memory Leak Check tracing children as well]
+		[CHECK_TYPE=2 => Thread Concurrency Check tracing children as well]
+		[CHECK_TYPE=3 => Full Memory Leak & Thread Concurrency Check tracing children as well]
     -N              Run all the networking tests. 
     -n              Run LTP with network traffic in background.
     -o OUTPUTFILE   Redirect test output to a file.
@@ -188,6 +192,8 @@ main()
 	local INJECT_KERNEL_FAULT=""
 	local INJECT_KERNEL_FAULT_PERCENTAGE=""
 	local INJECT_FAULT_LOOPS_PER_TEST=""
+	local VALGRIND_CHECK=""
+	local VALGRIND_CHECK_TYPE=""
     local LOGFILE_NAME=""
     local LOGFILE=""
     local OUTPUTFILE_NAME=""
@@ -201,7 +207,7 @@ main()
     local DEFAULT_FILE_NAME_GENERATION_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
     version_date=`head -n 1 $LTPROOT/ChangeLog`
 
-    while getopts a:c:C:d:D:f:F:ehi:g:l:m:Nno:pqr:s:S:t:T:vw:x:b:B: arg
+    while getopts a:c:C:d:D:f:F:ehi:g:l:m:M:Nno:pqr:s:S:t:T:vw:x:b:B: arg
     do  case $arg in
         a)  EMAIL_TO=$OPTARG
             ALT_EMAIL_OUT=1;;
@@ -350,7 +356,10 @@ main()
                     $CHUNKS --vm-bytes $BYTES >/dev/null 2>&1 &
             fi
             GENLOAD=1;;
-    
+	M)
+		VALGRIND_CHECK=1
+		VALGRIND_CHECK_TYPE="$OPTARG";;
+
         N)  RUN_NETEST=1;;
     
         n)  
@@ -774,7 +783,7 @@ main()
     test_start_time=$(date)
 
 	# User wants testing with Kernel Fault Injection
-	if [ $INJECT_KERNEL_FAULT -eq 1 ] ; then
+	if [ $INJECT_KERNEL_FAULT ] ; then
 		#See if Debugfs is mounted, and
 		#Fault Injection Framework available through Debugfs
 		if [ -d "/sys/kernel/debug/fail_io_timeout" -o \
@@ -792,6 +801,29 @@ main()
 		else
 			echo Fault Injection not enabled in the Kernel..
 			echo Running tests normally...
+		fi
+	fi
+
+	## Valgrind Check will work only when Kernel Fault Injection is not expected,
+	## We do not want to test Faults when valgrind is running
+	if [ $VALGRIND_CHECK ]; then
+		if [ ! $INJECT_KERNEL_FAULT ]; then
+			which valgrind || VALGRIND_CHECK_TYPE=XYZ
+			case $VALGRIND_CHECK_TYPE in
+				1)
+				${LTPROOT}/tools/create_valgrind_check.pl ${TMP}/alltests 1 > ${TMP}/alltests.tmp
+				cp ${TMP}/alltests.tmp ${TMP}/alltests
+				rm -rf ${TMP}/alltests.tmp;;
+				2)
+				${LTPROOT}/tools/create_valgrind_check.pl ${TMP}/alltests 2 > ${TMP}/alltests.tmp
+				cp ${TMP}/alltests.tmp ${TMP}/alltests
+				rm -rf ${TMP}/alltests.tmp;;
+				3)
+				${LTPROOT}/tools/create_valgrind_check.pl ${TMP}/alltests 3 > ${TMP}/alltests.tmp
+				cp ${TMP}/alltests.tmp ${TMP}/alltests
+				rm -rf ${TMP}/alltests.tmp;;
+				*) echo "Invalid Memory Check Type, or, Valgrind is not available";;
+			esac
 		fi
 	fi
 
