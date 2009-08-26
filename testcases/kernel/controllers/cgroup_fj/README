@@ -1,0 +1,56 @@
+
+TEST SUITE:
+
+The directory cgroup_fj contains the tests related to the cgroups.
+
+There are total 194 testcases that have been added. These testcases 
+contain the basis operation test and stress test of cgroups.
+
+NOTE: the test can be run by root only.
+
+TESTS AIM:
+
+The aim of the tests is to test the functionality of cgroups.
+
+FILES DESCRIPTION:
+
+run_cgroup_test_fj.sh
+--------------------
+This script runs all the 194 testcases.
+
+cgroup_fj_proc.c
+--------------------
+The program creates child process till catched a signal SIGUSR1.
+
+cgroup_fj_utility.sh
+--------------------
+Contains common functions for function test and stress test.
+
+cgroup_fj_release_agent
+--------------------
+Used for the cgroup option of release_agent.
+
+cgroup_fj_function.sh
+--------------------
+This script runs a function test.
+
+cgroup_fj_function2.sh
+--------------------
+This script runs a function test which not be covered by cgroup_fj_function.sh.
+
+cgroup_fj_stress.sh
+--------------------
+This script runs a stress test.
+
+cgroup_fj_testcases
+--------------------
+Prestored test cases for function test and stress test.
+
+Makefile
+--------------------
+The usual makefile for this directory
+
+README
+------
+The one you have gone through.
+

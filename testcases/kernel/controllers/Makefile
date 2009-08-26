@@ -12,6 +12,7 @@ endif
 ifdef CROSS_COMPILE
 ifeq ($(CHECK_CGROUP),cgroup)
 SUBDIRS += cgroup
+SUBDIRS += cgroup_fj
 SUBDIRS += cpuctl
 SUBDIRS += cpuctl_fj
 SUBDIRS += memctl
@@ -24,6 +25,7 @@ endif
 else
 ifeq ($(CHECK_CGROUP),cgroup)
 SUBDIRS += cgroup
+SUBDIRS += cgroup_fj
 else
 $(info "Kernel is not compiled with control cgroup support")
 endif

@@ -1,4 +1,5 @@
 #DESCRIPTION:Resource Management testing
 cgroup		cgroup_regression_test.sh
 memcg		memcg_regression_test.sh
+cgroup_fj	run_cgroup_test_fj.sh
 controllers	test_controllers.sh

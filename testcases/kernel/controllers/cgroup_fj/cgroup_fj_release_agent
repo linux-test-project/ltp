@@ -1,0 +1,11 @@
+#!/bin/sh
+
+TESTROOT=`pwd`
+
+if [ -e /dev/cgroup/subgroup_1 ]
+then
+	cd /dev/cgroup
+	rmdir -p subgroup_*/ 2>/dev/null
+	rmdir /dev/cgroup/subgroup_* 2> /dev/null
+	cd $TESTROOT
+fi
