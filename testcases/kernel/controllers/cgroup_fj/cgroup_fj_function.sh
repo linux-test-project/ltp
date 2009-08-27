@@ -66,7 +66,7 @@ usage()
 	echo "      9: debug,debug"
 	echo "      10: (nonexistent subsystem), e.g. abc"
 	echo "      11: freezer"
-	echo "      11: devices"
+	echo "      12: devices"
 	echo "    remount_use's usable number"
 	echo "      1: do not use remount in "-o"'s parameter"
 	echo "      2: use it"
