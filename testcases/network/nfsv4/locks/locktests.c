@@ -236,7 +236,7 @@ int initialise(int clnt){
         perror("Master pipe creation error\n");
         exit(1);
     }
-    printf("%s initalization\n",eType);
+    printf("%s initialization\n",eType);
     load();
     initTest();
     
