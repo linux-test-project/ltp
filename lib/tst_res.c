@@ -32,7 +32,7 @@
  */
 
 
-/* $Id: tst_res.c,v 1.10 2009/07/20 10:59:32 vapier Exp $ */
+/* $Id: tst_res.c,v 1.11 2009/08/28 10:00:39 vapier Exp $ */
 
 /**********************************************************
  *
@@ -767,7 +767,7 @@ void tst_brkm(int ttype, void (*func)(void), char *arg_fmt, ...)
 
 	EXPAND_VAR_ARGS(arg_fmt, tmesg);
 
-	tst_brk(ttype, NULL, func, tmesg);
+	tst_brk(ttype, NULL, func, "%s", tmesg);
 }
 
 
@@ -785,7 +785,7 @@ void tst_brkloopm(int ttype, void (*func)(void), char *arg_fmt, ...)
 
 	EXPAND_VAR_ARGS(arg_fmt, tmesg);
 
-	tst_brkloop(ttype, NULL, func, tmesg);
+	tst_brkloop(ttype, NULL, func, "%s", tmesg);
 }
 
 
