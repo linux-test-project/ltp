@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: getgroups01.c,v 1.6 2009/03/23 13:35:42 subrata_modak Exp $ */
+/* $Id: getgroups01.c,v 1.7 2009/08/28 13:03:01 vapier Exp $ */
 /***********************************************************************
 TEST IDENTIFIER:  getgroups01 :	Getgroups system call critical test
 
@@ -110,7 +110,6 @@ int main(int ac, char **av)
 	int ret;
 	int ret2;
 	int errors = 0;
-	char msg[500];
 
 	/* Initialize the group access list */
 	initgroups("root", 0);
@@ -141,23 +140,17 @@ int main(int ac, char **av)
 		TEST(getgroups(-1, gidset));
 
 		if ((ret = TEST_RETURN) != -1) {
-			sprintf(msg,
-				"getgroups(-1,gidset) returned %d, expected -1 and errno = EINVAL",
-				ret);
-			tst_resm(TFAIL, msg);
+			tst_resm(TFAIL, "getgroups(-1,gidset) returned %d, expected -1 and errno = EINVAL", ret);
 			errors++;
 		} else if (STD_FUNCTIONAL_TEST) {
 			if (errno != EINVAL) {
-				sprintf(msg,
-					"getgroups(-1,gidset) returned %d, errno = %d, expected errno %d (EINVAL)",
+				tst_resm(TFAIL, "getgroups(-1,gidset) returned %d, errno = %d, expected errno %d (EINVAL)",
 					ret, errno, EINVAL);
-				tst_resm(TFAIL, msg);
 				errors++;
 			} else {
-				sprintf(msg,
+				tst_resm(TPASS,
 					"getgroups(-1,gidset) returned %d and error = %d (EINVAL) as expected",
 					ret, errno);
-				tst_resm(TPASS, msg);
 			}
 		}
 
@@ -172,26 +165,23 @@ int main(int ac, char **av)
 
 		TEST(getgroups(0, gidset));
 		if ((ret = TEST_RETURN) < 0) {
-			sprintf(msg,
+			tst_resm(TFAIL,
 				"getgroups(0,gidset) returned %d with errno = %d, expected num gids with no change to gidset",
 				ret, errno);
-			tst_resm(TFAIL, msg);
 			errors++;
 		} else if (STD_FUNCTIONAL_TEST) {
 			/*
 			 * check that gidset was unchanged
 			 */
 			if (memcmp(cmpset, gidset, NGROUPS) != 0) {
-				sprintf(msg,
+				tst_resm(TFAIL,
 					"getgroups(0,gidset) returned %d, the gidset array was modified",
 					ret);
-				tst_resm(TFAIL, msg);
 				errors++;
 			} else {
-				sprintf(msg,
+				tst_resm(TPASS,
 					"getgroups(0,gidset) returned %d, the gidset array not was modified",
 					ret);
-				tst_resm(TPASS, msg);
 			}
 		}
 
@@ -201,33 +191,29 @@ int main(int ac, char **av)
 		 */
 
 		if (ret <= 1) {
-			sprintf(msg,
+			tst_resm(TCONF,
 				"getgroups(0,gidset) returned %d, Unable to test that\nusing ngrps >=1 but less than number of grps",
 				ret);
-			tst_resm(TCONF, msg);
 			errors++;
 		} else {
 			TEST(getgroups(ret - 1, gidset));
 			if ((ret2 = TEST_RETURN) == -1) {
 				if (STD_FUNCTIONAL_TEST) {
 					if (errno != EINVAL) {
-						sprintf(msg,
+						tst_resm(TFAIL,
 							"getgroups(%d, gidset) returned -1, but not errno %d (EINVAL) but %d",
 							ret - 1, EINVAL, errno);
-						tst_resm(TFAIL, msg);
 						errors++;
 					} else {
-						sprintf(msg,
+						tst_resm(TPASS,
 							"getgroups(%d, gidset) returned -1, and errno %d (EINVAL) when %d grps",
 							ret - 1, errno, ret);
-						tst_resm(TPASS, msg);
 					}
 				}
 			} else {
-				sprintf(msg,
+				tst_resm(TFAIL,
 					"getgroups(%d, gidset) returned %d, expected -1 and errno EINVAL.",
 					ret - 1, ret2);
-				tst_resm(TFAIL, msg);
 				errors++;
 			}
 		}
@@ -238,10 +224,9 @@ int main(int ac, char **av)
 
 		TEST(getgroups(NGROUPS, gidset));
 		if ((entries = TEST_RETURN) == -1) {
-			sprintf(msg,
+			tst_resm(TFAIL,
 				"getgroups(NGROUPS,gidset) returned -1 and errno = %d",
 				errno);
-			tst_resm(TFAIL, msg);
 			errors++;
 		} else if (STD_FUNCTIONAL_TEST) {
 
@@ -253,19 +238,17 @@ int main(int ac, char **av)
 
 			for (i = 0; i < entries; i++) {
 				if (gidset[i] == group) {
-					sprintf(msg,
+					tst_resm(TPASS,
 						"getgroups(NGROUPS,gidset) ret %d contains gid %d (from getgid)",
 						entries, group);
-					tst_resm(TPASS, msg);
 					break;
 				}
 			}
 
 			if (i == entries) {
-				sprintf(msg,
+				tst_resm(TFAIL,
 					"getgroups(NGROUPS,gidset) ret %d, does not contain gid %d (from getgid)",
 					entries, group);
-				tst_resm(TFAIL, msg);
 				errors++;
 			}
 		}
