@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: open03.c,v 1.5 2009/03/23 13:35:58 subrata_modak Exp $ */
+/* $Id: open03.c,v 1.6 2009/08/28 13:35:01 vapier Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -166,9 +166,8 @@ int main(int ac, char **av)
 		/* check return code */
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL,
-				 "open(%s,O_RDWR|O_CREAT,0700) Failed, errno=%d : %s",
-				 fname, TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TTERRNO,
+				 "open(%s,O_RDWR|O_CREAT,0700) failed", fname);
 		} else {
 	    /***************************************************************
 	     * only perform functional verification if flag set (-f not given)
@@ -176,19 +175,16 @@ int main(int ac, char **av)
 			if (STD_FUNCTIONAL_TEST) {
 				/* No Verification test, yet... */
 				tst_resm(TPASS,
-					 "open(%s, O_RDWR|O_CREAT,0700) returned %d",
+					 "open(%s, O_RDWR|O_CREAT,0700) returned %ld",
 					 fname, TEST_RETURN);
 			}
 
-			if (close(fd) == -1) {
-				tst_brkm(TBROK, cleanup,
-					 "close(%s) Failed, errno=%d : %s",
-					 fname, errno, strerror(errno));
-			} else if (unlink(fname) == -1) {
-				tst_brkm(TBROK, cleanup,
-					 "unlink(%s) Failed, errno=%d : %s",
-					 fname, errno, strerror(errno));
-			}
+			if (close(fd) == -1)
+				tst_brkm(TBROK|TERRNO, cleanup,
+					 "close(%s) failed", fname);
+			else if (unlink(fname) == -1)
+				tst_brkm(TBROK|TERRNO, cleanup,
+					 "unlink(%s) failed", fname);
 		}
 	}			/* End for TEST_LOOPING */
 

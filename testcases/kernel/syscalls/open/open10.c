@@ -177,17 +177,17 @@ int main(int ac, char *av[])
 		 * and with no setgid bit.
 		 */
 		if ((ret = mkdir(DIR_A, MODE_RWX)) < 0) {
-			tst_resm(TFAIL, "Creation dir of %s failed", DIR_A);
+			tst_resm(TFAIL|TERRNO, "mkdir(%s) failed", DIR_A);
 			local_flag = FAILED;
 		}
 
 		if ((ret = chown(DIR_A, user1_uid, group2_gid)) < 0) {
-			tst_resm(TFAIL, "Chown of %d failed", DIR_A);
+			tst_resm(TFAIL|TERRNO, "chown(%s) failed", DIR_A);
 			local_flag = FAILED;
 		}
 
 		if ((ret = stat(DIR_A, &buf)) < 0) {
-			tst_resm(TFAIL, "Stat of %s failed", DIR_A);
+			tst_resm(TFAIL|TERRNO, "stat(%s) failed", DIR_A);
 			local_flag = FAILED;
 		}
 
@@ -200,9 +200,8 @@ int main(int ac, char *av[])
 
 		/* Verify group ID */
 		if (buf.st_gid != group2_gid) {
-			tst_resm(TFAIL, "%s: Incorrect group", DIR_A);
-			tst_resm(TINFO, "got %ld and %ld", buf.st_gid,
-				 group2_gid);
+			tst_resm(TFAIL, "%s: Incorrect group (got %d and %d)",
+				 DIR_A, buf.st_gid, group2_gid);
 			local_flag = FAILED;
 		}
 
@@ -211,22 +210,22 @@ int main(int ac, char *av[])
 		 * this process and with the setgid bit set.
 		 */
 		if ((ret = mkdir(DIR_B, MODE_RWX)) < 0) {
-			tst_resm(TFAIL, "Creation of %s failed", DIR_B);
+			tst_resm(TFAIL|TERRNO, "mkdir(%s) failed", DIR_B);
 			local_flag = FAILED;
 		}
 
 		if ((ret = chown(DIR_B, user1_uid, group2_gid)) < 0) {
-			tst_resm(TFAIL, "Chown of %s failed", DIR_B);
+			tst_resm(TFAIL|TERRNO, "chown(%s) failed", DIR_B);
 			local_flag = FAILED;
 		}
 
 		if ((ret = chmod(DIR_B, MODE_SGID)) < 0) {
-			tst_resm(TFAIL, "Chmod of %s failed", DIR_B);
+			tst_resm(TFAIL|TERRNO, "chmod(%s) failed", DIR_B);
 			local_flag = FAILED;
 		}
 
 		if ((ret = stat(DIR_B, &buf)) < 0) {
-			tst_resm(TFAIL, "Stat of %s failed", DIR_B);
+			tst_resm(TFAIL|TERRNO, "stat(%s) failed", DIR_B);
 			local_flag = FAILED;
 		}
 
@@ -240,9 +239,8 @@ int main(int ac, char *av[])
 
 		/* Verify group ID */
 		if (buf.st_gid != group2_gid) {
-			tst_resm(TFAIL, "%s: Incorrect group", DIR_B);
-			tst_resm(TINFO, "got %ld and %ld", buf.st_gid,
-				 group2_gid);
+			tst_resm(TFAIL, "%s: Incorrect group (got %d and %d)",
+				 DIR_B, buf.st_gid, group2_gid);
 			local_flag = FAILED;
 		}
 
@@ -268,28 +266,25 @@ int main(int ac, char *av[])
 		 * Now become user1, group1
 		 */
 		if ((ret = setgid(group1_gid)) < 0) {
-			tst_resm(TINFO, 0,
-				 "Unable to set process group ID to group1");
+			tst_resm(TINFO, "Unable to set process group ID to group1");
 		}
 
 		if ((ret = setreuid(-1, user1_uid)) < 0) {
-			tst_resm(TINFO, 0,
-				 "Unable to set process uid to user1");
+			tst_resm(TINFO, "Unable to set process uid to user1");
 		}
 		mygid = getgid();
 
 		/*
 		 * Create the file with setgid not set
 		 */
-		if ((ret =
-		     open(nosetgid_A, O_CREAT | O_EXCL | O_RDWR,
-			  MODE_RWX)) < 0) {
-			tst_resm(TFAIL, "Creation of %s failed", nosetgid_A);
+		ret = open(nosetgid_A, O_CREAT | O_EXCL | O_RDWR, MODE_RWX);
+		if (ret < 0) {
+			tst_resm(TFAIL|TERRNO, "open(%s) failed", nosetgid_A);
 			local_flag = FAILED;
 		}
 
 		if ((ret = stat(nosetgid_A, &buf)) < 0) {
-			tst_resm(TFAIL, "Stat of %s failed", nosetgid_A);
+			tst_resm(TFAIL|TERRNO, "stat(%s) failed", nosetgid_A);
 			local_flag = FAILED;
 		}
 
@@ -302,23 +297,22 @@ int main(int ac, char *av[])
 
 		/* Verify group ID */
 		if (buf.st_gid != mygid) {
-			tst_resm(TFAIL, "%s: Incorrect group", nosetgid_A);
-			tst_resm(TINFO, "got %ld and %ld", buf.st_gid, mygid);
+			tst_resm(TFAIL, "%s: Incorrect group (got %d and %d)",
+				 nosetgid_A, buf.st_gid, mygid);
 			local_flag = FAILED;
 		}
 
 		/*
 		 * Create the file with setgid set
 		 */
-		if ((ret =
-		     open(setgid_A, O_CREAT | O_EXCL | O_RDWR,
-			  MODE_SGID)) < 0) {
-			tst_resm(TFAIL, "Creation of %s failed", setgid_A);
+		ret = open(setgid_A, O_CREAT | O_EXCL | O_RDWR, MODE_SGID);
+		if (ret < 0) {
+			tst_resm(TFAIL|TERRNO, "open(%s) failed", setgid_A);
 			local_flag = FAILED;
 		}
 
 		if ((ret = stat(setgid_A, &buf)) < 0) {
-			tst_resm(TFAIL, "Stat of %s failed", setgid_A);
+			tst_resm(TFAIL|TERRNO, "stat(%s) failed", setgid_A);
 			local_flag = FAILED;
 		}
 
@@ -332,8 +326,8 @@ int main(int ac, char *av[])
 
 		/* Verify group ID */
 		if (buf.st_gid != mygid) {
-			tst_resm(TFAIL, "%s: Incorrect group", setgid_A);
-			tst_resm(TINFO, "got %ld and %ld", buf.st_gid, mygid);
+			tst_resm(TFAIL, "%s: Incorrect group (%d and %d)",
+				 setgid_A, buf.st_gid, mygid);
 			local_flag = FAILED;
 		}
 
@@ -358,15 +352,14 @@ int main(int ac, char *av[])
 		/*
 		 * Create the file with setgid not set
 		 */
-		if ((ret =
-		     open(nosetgid_B, O_CREAT | O_EXCL | O_RDWR,
-			  MODE_RWX)) < 0) {
-			tst_resm(TFAIL, "Creation of %s failed", nosetgid_B);
+		ret = open(nosetgid_B, O_CREAT | O_EXCL | O_RDWR, MODE_RWX);
+		if (ret < 0) {
+			tst_resm(TFAIL|TERRNO, "open(%s) failed", nosetgid_B);
 			local_flag = FAILED;
 		}
 
 		if ((ret = stat(nosetgid_B, &buf)) < 0) {
-			tst_resm(TFAIL, "Stat of %s failed", nosetgid_B);
+			tst_resm(TFAIL|TERRNO, "stat(%s) failed", nosetgid_B);
 			local_flag = FAILED;
 		}
 
@@ -380,32 +373,29 @@ int main(int ac, char *av[])
 
 		/* Verify group ID */
 		if (buf.st_gid != group2_gid) {
-			tst_resm(TFAIL, "%s: Incorrect group", nosetgid_B);
-			tst_resm(TINFO, "got %ld and %ld", buf.st_gid,
-				 group2_gid);
+			tst_resm(TFAIL, "%s: Incorrect group (got %d and %d)",
+				 nosetgid_B, buf.st_gid, group2_gid);
 			local_flag = FAILED;
 		}
 
 		/*
 		 * Create the file with setgid set
 		 */
-		if ((ret =
-		     open(setgid_B, O_CREAT | O_EXCL | O_RDWR,
-			  MODE_SGID)) < 0) {
-			tst_resm(TFAIL, "Creation of %s failed", setgid_B);
+		ret = open(setgid_B, O_CREAT | O_EXCL | O_RDWR, MODE_SGID);
+		if (ret < 0) {
+			tst_resm(TFAIL|TERRNO, "open(%s) failed", setgid_B);
 			local_flag = FAILED;
 		}
 
 		if ((ret = stat(setgid_B, &buf)) < 0) {
-			tst_resm(TFAIL, "Stat of %s failed", setgid_B);
+			tst_resm(TFAIL|TERRNO, "stat(%s) failed", setgid_B);
 			local_flag = FAILED;
 		}
 
 		/* Verify group ID */
 		if (buf.st_gid != group2_gid) {
-			tst_resm(TFAIL, "%s: Incorrect group", setgid_B);
-			tst_resm(TINFO, "got %ld and %ld", buf.st_gid,
-				 group2_gid);
+			tst_resm(TFAIL, "%s: Incorrect group (got %d and %d)",
+				 setgid_B, buf.st_gid, group2_gid);
 			local_flag = FAILED;
 		}
 
@@ -436,19 +426,19 @@ int main(int ac, char *av[])
 
 		/* Become root again */
 		if ((ret = setreuid(-1, save_myuid)) < 0) {
-			tst_resm(TFAIL, 0, "Changing back to root failed");
+			tst_resm(TFAIL|TERRNO, "Changing back to root failed");
 			local_flag = FAILED;
 		}
 
 		/* Create the file with setgid set */
 		if ((ret = open(root_setgid_B, O_CREAT | O_EXCL | O_RDWR,
 				MODE_SGID)) < 0) {
-			tst_resm(TFAIL, "Creation of %s failed", root_setgid_B);
+			tst_resm(TFAIL|TERRNO, "open(%s) failed", root_setgid_B);
 			local_flag = FAILED;
 		}
 
 		if ((ret = stat(root_setgid_B, &buf)) < 0) {
-			tst_resm(TFAIL, "Stat of %s failed", root_setgid_B);
+			tst_resm(TFAIL|TERRNO, "stat(%s) failed", root_setgid_B);
 			local_flag = FAILED;
 		}
 
@@ -462,9 +452,8 @@ int main(int ac, char *av[])
 
 		/* Verify group ID */
 		if (buf.st_gid != group2_gid) {
-			tst_resm(TFAIL, "%s: Incorrect group", root_setgid_B);
-			tst_resm(TINFO, "got %ld and %ld", buf.st_gid,
-				 group2_gid);
+			tst_resm(TFAIL, "%s: Incorrect group (got %d and %d)",
+				 root_setgid_B, buf.st_gid, group2_gid);
 			local_flag = FAILED;
 		}
 
@@ -479,30 +468,22 @@ int main(int ac, char *av[])
 		/* Clean up any files created by test before call to anyfail.   */
 		/* Remove the directories.                                      */
 	/*--------------------------------------------------------------*/
-		if ((ret = unlink(setgid_A)) < 0) {
-			tst_resm(TINFO, "Warning: %s not removed", setgid_A);
-		}
-		if ((ret = unlink(nosetgid_A)) < 0) {
-			tst_resm(TINFO, "Warning: %s not removed", nosetgid_A);
-		}
-		if ((ret = rmdir(DIR_A)) < 0) {
-			tst_resm(TINFO, "Warning: %s not removed", DIR_A);
-		}
+		if ((ret = unlink(setgid_A)) < 0)
+			tst_resm(TWARN|TERRNO, "unlink(%s) failed", setgid_A);
+		if ((ret = unlink(nosetgid_A)) < 0)
+			tst_resm(TWARN|TERRNO, "unlink(%s) failed", nosetgid_A);
+		if ((ret = rmdir(DIR_A)) < 0)
+			tst_resm(TWARN|TERRNO, "rmdir(%s) failed", DIR_A);
 
-		if ((ret = unlink(setgid_B)) < 0) {
-			tst_resm(TINFO, "Warning: %s not removed", setgid_B);
-		}
-		if ((ret = unlink(root_setgid_B)) < 0) {
-			tst_resm(TINFO, "Warning: %s not removed",
-				 root_setgid_B);
-		}
-		if ((ret = unlink(nosetgid_B)) < 0) {
-			tst_resm(TINFO, "Warning: %s not removed", nosetgid_B);
-		}
-		if ((ret = rmdir(DIR_B)) < 0) {
-			tst_resm(TINFO, "Warning: %s not removed", DIR_B);
-			printf("errno is %d\n", errno);
-		}
+		if ((ret = unlink(setgid_B)) < 0)
+			tst_resm(TWARN|TERRNO, "unlink(%s) failed", setgid_B);
+		if ((ret = unlink(root_setgid_B)) < 0)
+			tst_resm(TWARN|TERRNO, "unlink(%s) failed", root_setgid_B);
+		if ((ret = unlink(nosetgid_B)) < 0)
+			tst_resm(TWARN|TERRNO, "unlink(%s) failed", nosetgid_B);
+		if ((ret = rmdir(DIR_B)) < 0)
+			tst_resm(TWARN|TERRNO, "rmdir(%s) failed", DIR_B);
+
 		if (fail_count == 0) {
 			tst_resm(TPASS, "Test passed.");
 		} else {

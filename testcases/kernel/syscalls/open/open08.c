@@ -165,16 +165,10 @@ void setup(void)
 		tst_brkm(TBROK, tst_exit, "Test must be run as root");
 	}
 	ltpuser = getpwnam(nobody_uid);
-	if (setgid(ltpuser->pw_gid) == -1) {
-		tst_resm(TINFO, "setgid failed to "
-			 "to set the effective uid to %d", ltpuser->pw_gid);
-		perror("setgid");
-	}
-	if (setuid(ltpuser->pw_uid) == -1) {
-		tst_resm(TINFO, "setuid failed to "
-			 "to set the effective uid to %d", ltpuser->pw_uid);
-		perror("setuid");
-	}
+	if (setgid(ltpuser->pw_gid) == -1)
+		tst_resm(TINFO|TERRNO, "setgid(%d) failed", ltpuser->pw_gid);
+	if (setuid(ltpuser->pw_uid) == -1)
+		tst_resm(TINFO|TERRNO, "setuid(%d) failed", ltpuser->pw_uid);
 
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
