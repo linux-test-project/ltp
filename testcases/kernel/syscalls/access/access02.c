@@ -183,8 +183,7 @@ int main(int ac, char **av)
 				 */
 				fflag = Access_verify(ind, fflag);
 				if (fflag) {
-					tst_resm(TPASS, "Functionality of "
-						 "access() for %s, successful",
+					tst_resm(TPASS, "access(%s): %s test",
 						 file_name, test_desc);
 				}
 			} else {
