@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: usctest.h,v 1.13 2009/08/28 09:59:52 vapier Exp $ */
+/* $Id: usctest.h,v 1.14 2009/08/28 10:03:01 vapier Exp $ */
 
 /**********************************************************
  *
@@ -160,7 +160,7 @@ struct usc_errno_t {
 #ifdef  _USC_LIB_
 
 extern long TEST_RETURN;
-extern long TEST_ERRNO;
+extern int TEST_ERRNO;
 extern struct usc_errno_t TEST_VALID_ENO[USC_MAX_ERRNO];
 
 #else
@@ -175,7 +175,7 @@ struct usc_errno_t TEST_VALID_ENO[USC_MAX_ERRNO];
  * test macros.
  ***********************************************************************/
 long TEST_RETURN;
-long TEST_ERRNO;
+int TEST_ERRNO;
 
 #endif  /* _USC_LIB_ */
 
