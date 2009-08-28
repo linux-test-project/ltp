@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: signal01.c,v 1.10 2009/03/23 13:36:04 subrata_modak Exp $ */
+/* $Id: signal01.c,v 1.11 2009/08/28 13:58:53 vapier Exp $ */
 /***********************************************************************************
  *
  * OS Test   -  Silicon Graphics, Inc.  Eagan, Minnesota
@@ -202,7 +202,6 @@ void catchsig();
 
 int exit_val;			/* Global variable, used to tell whether the    */
 			/* child exited instead of being killed.        */
-char mesg[MAXMESG];		/* Holds messages to pass to tst_res.           */
 
 struct ipc_t {
 	int status;
@@ -305,11 +304,7 @@ int tst_count;
 	 * Create a pipe of ipc
 	 */
 	if (pipe(fd1) == -1) {
-		sprintf(mesg,
-			"pipe system call failed, Errno: %d, Error message: %s",
-			errno, strerror(errno));
-		tst_resm(TBROK, mesg);
-		tst_resm(TBROK, mesg);
+		tst_resm(TBROK|TERRNO, "pipe() failed");
 		return;
 	}
 
@@ -319,11 +314,7 @@ int tst_count;
 	 */
 
 	if (fcntl(fd1[0], F_SETFL, O_NONBLOCK) == -1) {
-		sprintf(mesg,
-			"fcntl(fd1[0], F_SETFL, O_NONBLOCK) failed: errno=%d",
-			errno);
-		tst_resm(TBROK, mesg);
-		tst_resm(TBROK, mesg);
+		tst_resm(TBROK|TERRNO, "fcntl(fd1[0], F_SETFL, O_NONBLOCK) failed");
 		close(fd1[0]);
 		close(fd1[1]);
 		return;
@@ -353,10 +344,7 @@ int tst_count;
 			}
 
 			if (rd_sz == 0) {	/* if EOF encountered */
-				sprintf(mesg,
-					"child's pipe is closed before 'go' message received");
-				tst_resm(TBROK, Ipc_info.mesg);
-				tst_resm(TBROK, Ipc_info.mesg);
+				tst_resm(TBROK, "child's pipe is closed before 'go' message received");
 				close(fd1[0]);
 				return;
 			}
@@ -385,7 +373,7 @@ int tst_count;
 			} else {
 				tst_resm(TINFO,
 					 "Unknown message from child: %s",
-					 mesg);
+					 Ipc_info.mesg);
 			}
 		}
 
@@ -393,14 +381,7 @@ int tst_count;
 		 * Send the signal SIGKILL to the child.
 		 */
 		if (kill(Pid, SIGKILL) == -1) {
-			/*
-			 * The kill system call failed.
-			 */
-			sprintf(mesg,
-				"kill(Pid,SIGKILL) failed, Errno: %d, Error message: %s",
-				errno, strerror(errno));
-			tst_resm(TBROK, mesg);
-			tst_resm(TBROK, mesg);
+			tst_resm(TBROK|TERRNO, "kill(%d) failed", Pid);
 			close(fd1[0]);
 			return;
 		}
@@ -412,11 +393,7 @@ int tst_count;
 			/*
 			 * The wait system call failed.
 			 */
-			sprintf(mesg,
-				"Wait system call failed. Errno: %d, Error message: %s",
-				errno, strerror(errno));
-			tst_resm(TBROK, mesg);
-			tst_resm(TBROK, mesg);
+			tst_resm(TBROK|TERRNO, "wait() failed");
 			close(fd1[0]);
 			return;
 		} else if (STD_FUNCTIONAL_TEST) {
@@ -428,24 +405,19 @@ int tst_count;
 				tst_resm(TPASS,
 					 "The child was killed by SIGKILL.");
 			} else if ((term_stat >> 8) == TIMED_OUT) {
-				sprintf(mesg,
-					"child exited with a timed out exit status");
-				tst_resm(TBROK, mesg);
+				tst_resm(TBROK, "child exited with a timed out exit status");
 			} else {
 				if ((term_stat >> 8) == SIG_IGNORED
 				    && test_case == IGNORE_TEST) {
-					sprintf(mesg,
-						"SIGKILL was ignored by child after sent by parent.");
+					tst_resm(TFAIL, "SIGKILL was ignored by child after sent by parent.");
 				} else if ((term_stat >> 8) == SIG_CAUGHT
 					   && test_case == CATCH_TEST) {
-					sprintf(mesg,
-						"SIGKILL was caught by child after sent by parent.");
+					tst_resm(TFAIL, "SIGKILL was caught by child after sent by parent.");
 				} else {
-					sprintf(mesg,
+					tst_resm(TFAIL,
 						"Child's termination status is unexpected. Status: %d (%#o).",
 						term_stat, term_stat);
 				}
-				tst_resm(TFAIL, mesg);
 			}
 		} else {
 			Tst_count++;	/* increment test counter */
@@ -460,9 +432,7 @@ int tst_count;
 		 */
 #ifdef UCLINUX
 		if (self_exec(argv0, "dd", test_case, fd1[1]) < 0) {
-			sprintf(mesg, "self_exec failed.");
-			tst_resm(TBROK, mesg);
-			tst_resm(TBROK, mesg);
+			tst_resm(TBROK|TERRNO, "self_exec() failed");
 			close(fd1[0]);
 			close(fd1[1]);
 			return;
@@ -473,14 +443,7 @@ int tst_count;
 
 	} /* End of child. */
 	else {
-		/*
-		 * The fork system call failed.
-		 */
-		sprintf(mesg,
-			"Fork system call failed. Errno: %d, Error message: %s",
-			errno, strerror(errno));
-		tst_resm(TBROK, mesg);
-		tst_resm(TBROK, mesg);
+		tst_resm(TBROK|TERRNO, "fork() failed");
 		close(fd1[0]);
 		close(fd1[1]);
 		return;
@@ -518,7 +481,7 @@ int test_case;
 			Ipc_info.status = PASS_FLAG;
 		} else {
 			sprintf(Ipc_info.mesg,
-				"%s ret:%p, errno:%ld expected ret:%ld, errno:%d",
+				"%s ret:%p, errno:%d expected ret:%ld, errno:%d",
 				string, Tret, TEST_ERRNO, (long)SIG_ERR,
 				EINVAL);
 			Ipc_info.status = FAIL_FLAG;
@@ -531,7 +494,7 @@ int test_case;
 		 * be ignored and errno was correct.
 		 */
 		sprintf(Ipc_info.mesg,
-			"%s ret:%p, errno:%ld expected ret:%ld, errno:%d",
+			"%s ret:%p, errno:%d expected ret:%ld, errno:%d",
 			string, Tret, TEST_ERRNO, (long)SIG_ERR, EINVAL);
 		Ipc_info.status = FAIL_FLAG;
 		write(fd1[1], (char *)&Ipc_info, sizeof(Ipc_info));
@@ -584,23 +547,20 @@ void sigdfl_test()
 	if (Tret == SIG_ERR) {
 		if (STD_FUNCTIONAL_TEST) {
 			if (TEST_ERRNO != EINVAL) {
-				sprintf(mesg,
-					"signal(SIGKILL,SIG_DFL) ret:%p, errno:%ld expected ret:-1, errno:%d",
-					Tret, TEST_ERRNO, EINVAL);
-				tst_resm(TFAIL, mesg);
+				tst_resm(TFAIL|TTERRNO,
+					"signal(SIGKILL,SIG_DFL) expected ret:-1, errno:EINVAL, got ret:%p",
+					Tret);
 			} else {
-				sprintf(mesg,
-					"signal(SIGKILL,SIG_DFL) ret:%p, errno:%ld as expected.",
-					Tret, TEST_ERRNO);
-				tst_resm(TPASS, mesg);
+				tst_resm(TPASS,
+					"signal(SIGKILL,SIG_DFL) ret:%p, errno EINVAL as expected",
+					Tret);
 			}
 		} else
 			Tst_count++;
 	} else {
-		sprintf(mesg,
-			"signal(SIGKILL,SIG_DFL) ret:%p, errno:%ld expected ret:-1, errno:%d",
+		tst_resm(TFAIL,
+			"signal(SIGKILL,SIG_DFL) ret:%p, errno:%d expected ret:-1, errno:%d",
 			Tret, TEST_ERRNO, EINVAL);
-		tst_resm(TFAIL, mesg);
 	}
 
 }				/* End of sigdfl_test. */
