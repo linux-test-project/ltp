@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: tst_sig.c,v 1.12 2009/08/28 09:27:10 vapier Exp $ */
+/* $Id: tst_sig.c,v 1.13 2009/08/28 09:29:01 vapier Exp $ */
 
 /*****************************************************************************
 	OS Testing  - Silicon Graphics, Inc.
@@ -75,7 +75,7 @@
 
 #define MAXMESG 150		/* size of mesg string sent to tst_res */
 
-void (*T_cleanup)();		/* pointer to cleanup function */
+void (*T_cleanup) ();		/* pointer to cleanup function */
 
 /****************************************************************************
  * STD_COPIES is defined in parse_opts.c but is externed here in order to
@@ -83,8 +83,8 @@ void (*T_cleanup)();		/* pointer to cleanup function */
  ***************************************************************************/
 extern int STD_COPIES;
 
-static void def_handler();		/* default signal handler */
-static void (*tst_setup_signal( int, void (*)(int)))(int);
+static void def_handler();	/* default signal handler */
+static void (*tst_setup_signal(int, void (*)(int))) (int);
 
 /****************************************************************************
  * tst_sig() : set-up to catch unexpected signals.  fork_flag is set to NOFORK
@@ -95,27 +95,25 @@ static void (*tst_setup_signal( int, void (*)(int)))(int);
  *    set to NULL, a default handler is used).
  ***************************************************************************/
 
-void
-tst_sig(int fork_flag, void (*handler)(), void (*cleanup)())
+void tst_sig(int fork_flag, void (*handler) (), void (*cleanup) ())
 {
 	int sig;
 #ifdef _SC_SIGRT_MIN
-        long sigrtmin, sigrtmax;
+	long sigrtmin, sigrtmax;
 #endif
 
 	/*
 	 * save T_cleanup and handler function pointers
 	 */
-	T_cleanup = cleanup;		/* used by default handler */
+	T_cleanup = cleanup;	/* used by default handler */
 
 	if (handler == DEF_HANDLER) {
 		/* use default handler */
 		handler = def_handler;
 	}
-
 #ifdef _SC_SIGRT_MIN
-        sigrtmin = sysconf(_SC_SIGRT_MIN);
-        sigrtmax = sysconf(_SC_SIGRT_MAX);
+	sigrtmin = sysconf(_SC_SIGRT_MIN);
+	sigrtmax = sysconf(_SC_SIGRT_MAX);
 #endif
 
 	/*
@@ -123,140 +121,135 @@ tst_sig(int fork_flag, void (*handler)(), void (*cleanup)())
 	 */
 
 	for (sig = 1; sig < NSIG; sig++) {
-	    /*
-	     * SIGKILL is never unexpected.
-	     * SIGCLD is only unexpected when
-	     *    no forking is being done.
-	     * SIGINFO is used for file quotas and should be expected
-	     */
+		/*
+		 * SIGKILL is never unexpected.
+		 * SIGCLD is only unexpected when
+		 *    no forking is being done.
+		 * SIGINFO is used for file quotas and should be expected
+		 */
 
 #ifdef _SC_SIGRT_MIN
-            if (sig >= sigrtmin && sig <= sigrtmax)
-                continue;
+		if (sig >= sigrtmin && sig <= sigrtmax)
+			continue;
 #endif
 
-	    switch (sig) {
-	        case SIGKILL:
-	        case SIGSTOP:
-	        case SIGCONT:
+		switch (sig) {
+		case SIGKILL:
+		case SIGSTOP:
+		case SIGCONT:
 #if !defined(_SC_SIGRT_MIN) && defined(__SIGRTMIN) && defined(__SIGRTMAX)
-	     /* Ignore all real-time signals */
+			/* Ignore all real-time signals */
 		case __SIGRTMIN:
-		case __SIGRTMIN+1:
-		case __SIGRTMIN+2:
-		case __SIGRTMIN+3:
-		case __SIGRTMIN+4:
-		case __SIGRTMIN+5:
-		case __SIGRTMIN+6:
-		case __SIGRTMIN+7:
-		case __SIGRTMIN+8:
-		case __SIGRTMIN+9:
-		case __SIGRTMIN+10:
-		case __SIGRTMIN+11:
-		case __SIGRTMIN+12:
-		case __SIGRTMIN+13:
-		case __SIGRTMIN+14:
-		case __SIGRTMIN+15:
+		case __SIGRTMIN + 1:
+		case __SIGRTMIN + 2:
+		case __SIGRTMIN + 3:
+		case __SIGRTMIN + 4:
+		case __SIGRTMIN + 5:
+		case __SIGRTMIN + 6:
+		case __SIGRTMIN + 7:
+		case __SIGRTMIN + 8:
+		case __SIGRTMIN + 9:
+		case __SIGRTMIN + 10:
+		case __SIGRTMIN + 11:
+		case __SIGRTMIN + 12:
+		case __SIGRTMIN + 13:
+		case __SIGRTMIN + 14:
+		case __SIGRTMIN + 15:
 /* __SIGRTMIN is 37 on HPPA rather than 32 *
  * as on i386, etc.                        */
 #if !defined(__hppa__)
-		case __SIGRTMAX-15:
-		case __SIGRTMAX-14:
-		case __SIGRTMAX-13:
-		case __SIGRTMAX-12:
-		case __SIGRTMAX-11:
+		case __SIGRTMAX - 15:
+		case __SIGRTMAX - 14:
+		case __SIGRTMAX - 13:
+		case __SIGRTMAX - 12:
+		case __SIGRTMAX - 11:
 #endif
-		case __SIGRTMAX-10:
-		case __SIGRTMAX-9:
-		case __SIGRTMAX-8:
-		case __SIGRTMAX-7:
-		case __SIGRTMAX-6:
-		case __SIGRTMAX-5:
-		case __SIGRTMAX-4:
-		case __SIGRTMAX-3:
-		case __SIGRTMAX-2:
-		case __SIGRTMAX-1:
+		case __SIGRTMAX - 10:
+		case __SIGRTMAX - 9:
+		case __SIGRTMAX - 8:
+		case __SIGRTMAX - 7:
+		case __SIGRTMAX - 6:
+		case __SIGRTMAX - 5:
+		case __SIGRTMAX - 4:
+		case __SIGRTMAX - 3:
+		case __SIGRTMAX - 2:
+		case __SIGRTMAX - 1:
 		case __SIGRTMAX:
 #endif
 #ifdef CRAY
-	        case SIGINFO:
-	        case SIGRECOVERY:	/* allow chkpnt/restart */
-#endif  /* CRAY */
+		case SIGINFO:
+		case SIGRECOVERY:	/* allow chkpnt/restart */
+#endif				/* CRAY */
 
 #ifdef SIGSWAP
 		case SIGSWAP:
-#endif /* SIGSWAP */
+#endif				/* SIGSWAP */
 
 #ifdef SIGCKPT
-	        case SIGCKPT:
+		case SIGCKPT:
 #endif
 #ifdef SIGRESTART
-	        case SIGRESTART:
+		case SIGRESTART:
 #endif
-                /*
-                 * pthread-private signals SIGPTINTR and SIGPTRESCHED.
-                 * Setting a handler for these signals is disallowed when
-                 * the binary is linked against libpthread.
-                 */
+			/*
+			 * pthread-private signals SIGPTINTR and SIGPTRESCHED.
+			 * Setting a handler for these signals is disallowed when
+			 * the binary is linked against libpthread.
+			 */
 #ifdef SIGPTINTR
-                case SIGPTINTR:
-#endif /* SIGPTINTR */
+		case SIGPTINTR:
+#endif				/* SIGPTINTR */
 #ifdef SIGPTRESCHED
-                case SIGPTRESCHED:
-#endif /* SIGPTRESCHED */
+		case SIGPTRESCHED:
+#endif				/* SIGPTRESCHED */
 #ifdef _SIGRESERVE
-              case _SIGRESERVE:
+		case _SIGRESERVE:
 #endif
 #ifdef _SIGDIL
-              case _SIGDIL:
+		case _SIGDIL:
 #endif
 #ifdef _SIGCANCEL
-              case _SIGCANCEL:
+		case _SIGCANCEL:
 #endif
 #ifdef _SIGGFAULT
-              case _SIGGFAULT:
+		case _SIGGFAULT:
 #endif
-	            break;
+			break;
 
-	        case SIGCLD:
-	            if ( fork_flag == FORK || STD_COPIES > 1)
-		        continue;
+		case SIGCLD:
+			if (fork_flag == FORK || STD_COPIES > 1)
+				continue;
 
-	        default:
-		    if (tst_setup_signal(sig, handler) == SIG_ERR) {
-		        tst_resm(TWARN|TERRNO, "signal() failed for signal %d", sig);
-		    }
-		break;
-            }
+		default:
+			if (tst_setup_signal(sig, handler) == SIG_ERR)
+				tst_resm(TWARN | TERRNO,
+					"signal() failed for signal %d", sig);
+			break;
+		}
 #ifdef __sgi
-	    /* On irix  (07/96), signal() fails when signo is 33 or higher */
-	    if ( sig+1 >= 33 )
-		break;
-#endif  /*  __sgi */
+		/* On irix  (07/96), signal() fails when signo is 33 or higher */
+		if (sig + 1 >= 33)
+			break;
+#endif				/*  __sgi */
 
-	} /* endfor */
+	}			/* endfor */
 }
-
-
 
 /****************************************************************************
  * def_handler() : default signal handler that is invoked when
  *      an unexpected signal is caught.
  ***************************************************************************/
 
-static void
-def_handler(int sig)
+static void def_handler(int sig)
 {
-
 	/*
-         * Break remaining test cases, do any cleanup, then exit
+	 * Break remaining test cases, do any cleanup, then exit
 	 */
 	tst_brkm(TBROK, 0, "Unexpected signal %d received.", sig);
 
 	/* now cleanup and exit */
-	if (T_cleanup) {
-		(*T_cleanup)();
-	}
+	if (T_cleanup)
+		(*T_cleanup) ();
 
 	tst_exit();
 }
@@ -265,20 +258,19 @@ def_handler(int sig)
  * tst_setup_signal - A function like signal(), but we have
  *                    control over its personality.
  */
-static void (*tst_setup_signal( int sig, void (*handler)(int)))(int)
+static void (*tst_setup_signal(int sig, void (*handler) (int))) (int)
 {
-  struct sigaction my_act,old_act;
-  int ret;
+	struct sigaction my_act, old_act;
+	int ret;
 
-  my_act.sa_handler = handler;
-  my_act.sa_flags = SA_RESTART;
-  sigemptyset(&my_act.sa_mask);
+	my_act.sa_handler = handler;
+	my_act.sa_flags = SA_RESTART;
+	sigemptyset(&my_act.sa_mask);
 
-  ret = sigaction(sig, &my_act, &old_act);
+	ret = sigaction(sig, &my_act, &old_act);
 
-  if ( ret == 0 )
-    return( old_act.sa_handler );
-  else
-    return( SIG_ERR );
+	if (ret == 0)
+		return old_act.sa_handler;
+	else
+		return SIG_ERR;
 }
-
