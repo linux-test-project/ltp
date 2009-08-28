@@ -49,13 +49,13 @@
 #include "linux_syscall_numbers.h"
 
 /* Extern Global Variables */
-extern int Tst_count;           /* counter for tst_xxx routines.         */
-extern char *TESTDIR;           /* temporary dir created by tst_tmpdir() */
+extern int Tst_count;		/* counter for tst_xxx routines.         */
+extern char *TESTDIR;		/* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
-char *TCID = "ssetmask01";  /* Test program identifier.*/
-int  testno;
-int  TST_TOTAL = 2;                   /* total number of tests in this file.   */
+char *TCID = "ssetmask01";	/* Test program identifier. */
+int testno;
+int TST_TOTAL = 2;		/* total number of tests in this file.   */
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -75,13 +75,14 @@ int  TST_TOTAL = 2;                   /* total number of tests in this file.   *
 /*              On success - Exits calling tst_exit(). With '0' return code.  */
 /*                                                                            */
 /******************************************************************************/
-extern void cleanup() {
-        /* Remove tmp dir and all files in it */
-        TEST_CLEANUP;
-        tst_rmdir();
+extern void cleanup()
+{
+	/* Remove tmp dir and all files in it */
+	TEST_CLEANUP;
+	tst_rmdir();
 
-        /* Exit with appropriate return code. */
-        tst_exit();
+	/* Exit with appropriate return code. */
+	tst_exit();
 }
 
 /* Local  Functions */
@@ -102,46 +103,47 @@ extern void cleanup() {
 /*              On success - returns 0.                                       */
 /*                                                                            */
 /******************************************************************************/
-void setup() {
-        /* Capture signals if any */
-        /* Create temporary directories */
-        TEST_PAUSE;
-        tst_tmpdir();
+void setup()
+{
+	/* Capture signals if any */
+	/* Create temporary directories */
+	TEST_PAUSE;
+	tst_tmpdir();
 }
 
-int main(int ac, char **av) {
-        int lc;                 /* loop counter */
-        char *msg;              /* message returned from parse_opts */
-	
-        /* parse standard options */
-        if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
-             tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-             tst_exit();
-           }
+int main(int ac, char **av)
+{
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
-        setup();
+	/* parse standard options */
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+		tst_exit();
+	}
 
-        /* Check looping state if -i option given */
-        for (lc = 0; TEST_LOOPING(lc); ++lc) {
-                Tst_count = 0;
-                for (testno = 0; testno < TST_TOTAL; ++testno) {
-		     syscall(__NR_ssetmask,SIGALRM);
-                     TEST(syscall(__NR_sgetmask));     //call ssetmask()
-                     if(TEST_RETURN != SIGALRM) {
-                 	   tst_resm(TFAIL, "%s failed - errno = %d : %s", TCID, TEST_ERRNO, strerror(TEST_ERRNO));
-                           cleanup();
-			   tst_exit();
-                     }
-                     TEST(syscall(__NR_ssetmask,SIGUSR1));     //call ssetmask()
-                     if(TEST_RETURN != SIGALRM) {
-                 	   tst_resm(TFAIL, "%s failed - errno = %d : %s", TCID, TEST_ERRNO, strerror(TEST_ERRNO));
-                           cleanup();
-			   tst_exit();
-                     }
-                 	   tst_resm(TPASS, "Got SIGALRM--Test PASS ",TEST_RETURN);
-                     }
-                }
+	setup();
+
+	/* Check looping state if -i option given */
+	for (lc = 0; TEST_LOOPING(lc); ++lc) {
+		Tst_count = 0;
+		for (testno = 0; testno < TST_TOTAL; ++testno) {
+			syscall(__NR_ssetmask, SIGALRM);
+			TEST(syscall(__NR_sgetmask));	//call ssetmask()
+			if (TEST_RETURN != SIGALRM) {
+				tst_resm(TFAIL|TTERRNO, "sgetmask() failed");
+				cleanup();
+				tst_exit();
+			}
+			TEST(syscall(__NR_ssetmask, SIGUSR1));	//call ssetmask()
+			if (TEST_RETURN != SIGALRM) {
+				tst_resm(TFAIL|TTERRNO, "ssetmask() failed");
+				cleanup();
+				tst_exit();
+			}
+			tst_resm(TPASS, "Got SIGALRM--Test PASS ");
+		}
+	}
 	cleanup();
-        tst_exit();
+	tst_exit();
 }
-
