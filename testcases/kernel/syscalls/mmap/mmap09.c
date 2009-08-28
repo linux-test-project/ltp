@@ -105,7 +105,7 @@ int main(int argc, char **argv)
 				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_resm(TFAIL|TTERRNO, "%s", TC[i].desc);
 			} else {
-				tst_resm(TPASS, TC[i].desc);
+				tst_resm(TPASS, "%s", TC[i].desc);
 			}
 		}
 
