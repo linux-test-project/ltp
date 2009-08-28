@@ -29,7 +29,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: symlink01.c,v 1.18 2009/03/23 13:36:07 subrata_modak Exp $ */
+/* $Id: symlink01.c,v 1.19 2009/08/28 14:17:14 vapier Exp $ */
 /*
  *	OS Test - Silicon Graphics, Inc.
  *
@@ -893,7 +893,7 @@ struct tcses *tcs;
 			if (!(tc_ptr->ck_test)
 			    (tc_ptr->fn_arg[0], tc_ptr->fn_arg[1],
 			     tc_ptr->fn_arg[2], tc_ptr->errno_val))
-				tst_resm(TEST_RESULT, test_msg);
+				tst_resm(TEST_RESULT, "%s", test_msg);
 			else if (tc_ptr->errno_val == EEXIST)
 				do_EEXIST(tc_ptr);
 			else if (tc_ptr->errno_val == ENOENT)
@@ -929,11 +929,11 @@ struct tcses *tcs;
 				    (cktcsid(tc_ptr->tcid, LSTAT)) ||
 				    (cktcsid(tc_ptr->tcid, LSTAT_64))) {
 					if (ret == 1)
-						tst_resm(TEST_RESULT, msgs[tc_ptr->pass_msg]);
+						tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 					else
-						tst_resm(TEST_RESULT, test_msg);
+						tst_resm(TEST_RESULT, "%s", test_msg);
 				} else if (ret == 0)
-					tst_resm(TEST_RESULT, test_msg);
+					tst_resm(TEST_RESULT, "%s", test_msg);
 				else if (cktcsid(tc_ptr->tcid, READLINK))
 					do_readlink(tc_ptr);
 				else if (cktcsid(tc_ptr->tcid, STAT))
@@ -980,7 +980,7 @@ struct all_test_cases *tc_ptr;
 		errno = TEST_ERRNO;
 		if ((TEST_RETURN == -1) && (errno == EEXIST))
 			if (STD_FUNCTIONAL_TEST)
-				tst_resm(TPASS, msgs[tc_ptr->pass_msg]);
+				tst_resm(TPASS, "%s", msgs[tc_ptr->pass_msg]);
 			else
 				Tst_count++;
 		else
@@ -993,7 +993,7 @@ struct all_test_cases *tc_ptr;
 		errno = TEST_ERRNO;
 		if ((TEST_RETURN == -1) && (errno == EEXIST))
 			if (TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST)
-				tst_resm(TEST_RESULT, msgs[tc_ptr->pass_msg]);
+				tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 			else
 				Tst_count++;
 		else {
@@ -1009,7 +1009,7 @@ struct all_test_cases *tc_ptr;
 		errno = TEST_ERRNO;
 		if ((TEST_RETURN == -1) && (errno == EEXIST))
 			if (TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST)
-				tst_resm(TEST_RESULT, msgs[tc_ptr->pass_msg]);
+				tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 			else
 				Tst_count++;
 		else
@@ -1036,7 +1036,7 @@ struct all_test_cases *tc_ptr;
 		if ((stat(tc_ptr->fn_arg[1], &asymlink) == -1)
 		    && (errno == ENOENT))
 			if (TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST)
-				tst_resm(TEST_RESULT, msgs[tc_ptr->pass_msg]);
+				tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 			else
 				Tst_count++;
 		else
@@ -1047,7 +1047,7 @@ struct all_test_cases *tc_ptr;
 	} else if (cktcsid(tc_ptr->tcid, CHDIR)) {
 		if ((chdir(tc_ptr->fn_arg[1]) == -1) && (errno == ENOENT))
 			if (TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST)
-				tst_resm(TEST_RESULT, msgs[tc_ptr->pass_msg]);
+				tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 			else
 				Tst_count++;
 		else {
@@ -1062,7 +1062,7 @@ struct all_test_cases *tc_ptr;
 		if ((link(tc_ptr->fn_arg[1], "nick") == -1)
 		    && (errno == ENOENT))
 			if (TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST)
-				tst_resm(TEST_RESULT, msgs[tc_ptr->pass_msg]);
+				tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 			else
 				Tst_count++;
 		else {
@@ -1075,7 +1075,7 @@ struct all_test_cases *tc_ptr;
 
 		if ((chmod(tc_ptr->fn_arg[1], MODE) == -1) && (errno == ENOENT))
 			if (TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST)
-				tst_resm(TEST_RESULT, msgs[tc_ptr->pass_msg]);
+				tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 			else
 				Tst_count++;
 		else
@@ -1086,7 +1086,7 @@ struct all_test_cases *tc_ptr;
 
 		if ((utime(tc_ptr->fn_arg[1], NULL) == -1) && (errno == ENOENT))
 			if (TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST)
-				tst_resm(TEST_RESULT, msgs[tc_ptr->pass_msg]);
+				tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 			else
 				Tst_count++;
 		else
@@ -1098,7 +1098,7 @@ struct all_test_cases *tc_ptr;
 		if ((open(tc_ptr->fn_arg[1], O_RDWR) == -1)
 		    && (errno == ENOENT))
 			if (TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST)
-				tst_resm(TEST_RESULT, msgs[tc_ptr->pass_msg]);
+				tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 			else
 				Tst_count++;
 		else
@@ -1126,7 +1126,7 @@ struct all_test_cases *tc_ptr;
 		errno = TEST_ERRNO;
 		if ((TEST_RETURN == -1) && (errno == ELOOP))
 			if (TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST)
-				tst_resm(TEST_RESULT, msgs[tc_ptr->pass_msg]);
+				tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 			else
 				Tst_count++;
 		else if (TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST)
@@ -1141,7 +1141,7 @@ struct all_test_cases *tc_ptr;
 		errno = TEST_ERRNO;
 		if ((TEST_RETURN == -1) && (errno == ELOOP))
 			if (TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST)
-				tst_resm(TEST_RESULT, msgs[tc_ptr->pass_msg]);
+				tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 			else
 				Tst_count++;
 		else {
@@ -1157,7 +1157,7 @@ struct all_test_cases *tc_ptr;
 		errno = TEST_ERRNO;
 		if ((TEST_RETURN == -1) && (errno == ELOOP))
 			if (TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST)
-				tst_resm(TEST_RESULT, msgs[tc_ptr->pass_msg]);
+				tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 			else
 				Tst_count++;
 		else
@@ -1170,7 +1170,7 @@ struct all_test_cases *tc_ptr;
 		errno = TEST_ERRNO;
 		if ((TEST_RETURN == -1) && (errno == ELOOP))
 			if (TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST)
-				tst_resm(TEST_RESULT, msgs[tc_ptr->pass_msg]);
+				tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 			else
 				Tst_count++;
 		else
@@ -1185,7 +1185,7 @@ struct all_test_cases *tc_ptr;
 
 		if ((TEST_RETURN == -1) && (errno == ELOOP))
 			if (TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST)
-				tst_resm(TEST_RESULT, msgs[tc_ptr->pass_msg]);
+				tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 			else
 				Tst_count++;
 		else
@@ -1200,7 +1200,7 @@ struct all_test_cases *tc_ptr;
 		errno = TEST_ERRNO;
 		if ((fd == -1) && (errno == ELOOP))
 			if (TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST)
-				tst_resm(TEST_RESULT, msgs[tc_ptr->pass_msg]);
+				tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 			else
 				Tst_count++;
 		else
@@ -1230,7 +1230,7 @@ struct all_test_cases *tc_ptr;
 		else if ((rmdir(tc_ptr->fn_arg[1]) == -1) && (errno == ENOTDIR)) {
 
 			if (TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST)
-				tst_resm(TEST_RESULT, msgs[tc_ptr->pass_msg]);
+				tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 			else
 				Tst_count++;
 			rmdir(tc_ptr->fn_arg[0]);
@@ -1260,7 +1260,7 @@ struct all_test_cases *tc_ptr;
 		if ((TEST_RETURN == -1) && (errno == EXDEV)) {
 			if (see_if_a_symlink(Y_A_S_FILE) == -1)
 				if (TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST)
-					tst_resm(TEST_RESULT, msgs[tc_ptr->pass_msg]);
+					tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 				else
 					Tst_count++;
 			else
@@ -1298,7 +1298,7 @@ struct all_test_cases *tc_ptr;
 		if ((TEST_RETURN == -1) && (errno == ENAMETOOLONG))
 			if (see_if_a_symlink(full_path) == -1)
 				if (TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST)
-					tst_resm(TEST_RESULT, msgs[tc_ptr->pass_msg]);
+					tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 				else
 					Tst_count++;
 			else
@@ -1308,9 +1308,9 @@ struct all_test_cases *tc_ptr;
 					 (PATH_MAX + 1),
 					 "characters, but it created the symbolic link file");
 		else
-			tst_resm(TFAIL,
-				 "Expected ENAMETOOLONG error when creating %s symbolic link file with a path exceeding %d characters: errno:%d %s",
-				 tc_ptr->fn_arg[1], (PATH_MAX + 1), errno, strerror(errno));
+			tst_resm(TFAIL|TERRNO,
+				 "Expected ENAMETOOLONG error when creating %s symbolic link file with a path exceeding %d characters",
+				 tc_ptr->fn_arg[1], (PATH_MAX + 1));
 	} else if (cktcsid(tc_ptr->tcid, READLINK)) {
 
 		char scratch[PATH_MAX + 1];
@@ -1318,7 +1318,7 @@ struct all_test_cases *tc_ptr;
 		ret = readlink(full_path, scratch, strlen(full_path));
 		if ((ret == -1) && (errno == ENAMETOOLONG))
 			if (TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST)
-				tst_resm(TEST_RESULT, msgs[tc_ptr->pass_msg]);
+				tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 			else
 				Tst_count++;
 		else
@@ -1345,7 +1345,7 @@ struct all_test_cases *tc_ptr;
 		if (TEST_RETURN == -1) {
 			if (errno == EINVAL) {
 				if (TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST)
-					tst_resm(TEST_RESULT, msgs[tc_ptr->pass_msg]);
+					tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 				else
 					Tst_count++;
 			} else
@@ -1391,7 +1391,7 @@ struct all_test_cases *tc_ptr;
 			 "readlink(2) Error : Expected %s symbolic link file contents but %s actual contents were returned",
 			 tc_ptr->fn_arg[0], scratch);
 	} else if (TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST)
-		tst_resm(TEST_RESULT, msgs[tc_ptr->pass_msg]);
+		tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 	else
 		Tst_count++;
 }
@@ -1451,7 +1451,7 @@ struct all_test_cases *tc_ptr;
 			 "stat of symbolic link reference to object change time %ld != stat of object file change time %ld",
 			 statter.st_atime, asymlink.st_atime);
 	else if (TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST)
-		tst_resm(TEST_RESULT, msgs[tc_ptr->pass_msg]);
+		tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 	else
 		Tst_count++;
 }
@@ -1492,7 +1492,7 @@ struct all_test_cases *tc_ptr;
 				tst_resm(TFAIL, "getcwd(3) FAILURE");
 			else if (strcmp(cwd, expected_location) == 0)
 				if (TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST)
-					tst_resm(TEST_RESULT, msgs[tc_ptr->pass_msg]);
+					tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 				else
 					Tst_count++;
 			else {
@@ -1545,7 +1545,7 @@ struct all_test_cases *tc_ptr;
 					if ((statter.st_nlink == 2)
 					    && (asymlink.st_nlink == 2)) {
 						if (TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST)
-							tst_resm(TEST_RESULT,
+							tst_resm(TEST_RESULT, "%s",
 								 msgs[tc_ptr->pass_msg]);
 						else
 							Tst_count++;
@@ -1595,7 +1595,7 @@ struct all_test_cases *tc_ptr;
 			 (statter.st_size == asymlink.st_size))
 
 			if (TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST)
-				tst_resm(TEST_RESULT, msgs[tc_ptr->pass_msg]);
+				tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 			else
 				Tst_count++;
 		else
@@ -1634,7 +1634,7 @@ struct all_test_cases *tc_ptr;
 		else if ((statter.st_mode == (MODE | MASK))
 			 && (statter.st_mode != asymlink.st_mode))
 			if (TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST)
-				tst_resm(TEST_RESULT, msgs[tc_ptr->pass_msg]);
+				tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 			else
 				Tst_count++;
 		else
@@ -1686,7 +1686,7 @@ struct all_test_cases *tc_ptr;
 
 				if (!diff)
 					if (TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST)
-						tst_resm(TEST_RESULT, msgs[tc_ptr->pass_msg]);
+						tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 					else
 						Tst_count++;
 				else
@@ -1724,19 +1724,19 @@ struct all_test_cases *tc_ptr;
 	else if (pts_at_object)
 		if (ck_both(tc_ptr->fn_arg[0], A_S_FILE, tc_ptr->fn_arg[2]))
 			if (TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST)
-				tst_resm(TEST_RESULT, msgs[tc_ptr->pass_msg]);
+				tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 			else
 				Tst_count++;
 		else
-			tst_resm(TFAIL, test_msg);
+			tst_resm(TFAIL, "%s", test_msg);
 	else if (!ck_symlink(tc_ptr->fn_arg[0], A_S_FILE, NULL))
-		tst_resm(TFAIL, test_msg);
+		tst_resm(TFAIL, "%s", test_msg);
 	else if (stat(tc_ptr->fn_arg[1], &asymlink) != -1)
 		tst_resm(TFAIL,
 			 "rename(3) did not remove %s when renaming to %s",
 			 tc_ptr->fn_arg[1], A_S_FILE);
 	else if (TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST)
-		tst_resm(TEST_RESULT, msgs[tc_ptr->pass_msg]);
+		tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 	else
 		Tst_count++;
 }
@@ -1781,7 +1781,7 @@ struct all_test_cases *tc_ptr;
 			 errno);
 	} else if (ret != strlen(BIG_STRING)) {
 		tst_resm(TFAIL,
-			 "write(2) Failed to write %d bytes to object file opened through a symbolic link file",
+			 "write(2) Failed to write %zu bytes to object file opened through a symbolic link file",
 			 strlen(BIG_STRING));
 	} else if (lseek(fd, 0L, 0) == -1) {
 		tst_resm(TFAIL,
@@ -1793,7 +1793,7 @@ struct all_test_cases *tc_ptr;
 			 errno);
 	} else if (ret != strlen(BIG_STRING)) {
 		tst_resm(TFAIL,
-			 "read(2) Failed to read %d bytes to object file opened through a symbolic link file",
+			 "read(2) Failed to read %zu bytes to object file opened through a symbolic link file",
 			 strlen(BIG_STRING));
 	} else if (strncmp(BIG_STRING, scratch, strlen(BIG_STRING)) != 0) {
 		tst_resm(TFAIL,
@@ -1820,7 +1820,7 @@ struct all_test_cases *tc_ptr;
 				 errno);
 		} else if (ret != strlen(BIG_STRING)) {
 			tst_resm(TFAIL,
-				 "read(2) Failed to read %d bytes to object file opened through a symbolic link file",
+				 "read(2) Failed to read %zu bytes to object file opened through a symbolic link file",
 				 strlen(BIG_STRING));
 		} else if (strncmp(BIG_STRING, scratch, strlen(BIG_STRING)) != 0) {
 			tst_resm(TFAIL,
@@ -1828,17 +1828,17 @@ struct all_test_cases *tc_ptr;
 				 BIG_STRING, scratch);
 		} else if (pts_at_object) {
 			if (TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST)
-				tst_resm(TEST_RESULT, msgs[tc_ptr->pass_msg]);
+				tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 			else
 				Tst_count++;
 		} else {	/* Insure newly created object file is pointed at */
 			if (ck_both(tc_ptr->fn_arg[0], tc_ptr->fn_arg[1], tc_ptr->fn_arg[0]))
 				if (TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST)
-					tst_resm(TEST_RESULT, msgs[tc_ptr->pass_msg]);
+					tst_resm(TEST_RESULT, "%s", msgs[tc_ptr->pass_msg]);
 				else
 					Tst_count++;
 			else
-				tst_resm(TFAIL, test_msg);
+				tst_resm(TFAIL, "%s", test_msg);
 		}
 		close(fd);
 	}

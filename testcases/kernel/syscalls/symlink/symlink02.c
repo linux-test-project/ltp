@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: symlink02.c,v 1.5 2009/03/23 13:36:07 subrata_modak Exp $ */
+/* $Id: symlink02.c,v 1.6 2009/08/28 14:17:14 vapier Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -173,7 +173,7 @@ int main(int ac, char **av)
 	     ***************************************************************/
 			if (STD_FUNCTIONAL_TEST) {
 				/* No Verification test, yet... */
-				tst_resm(TPASS, "symlink(%s, %s) returned %d",
+				tst_resm(TPASS, "symlink(%s, %s) returned %ld",
 					 fname, symlnk, TEST_RETURN);
 			}
 			if (unlink(symlnk) == -1) {
