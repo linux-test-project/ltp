@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: asyncio02.c,v 1.5 2009/03/23 13:35:39 subrata_modak Exp $ */
+/* $Id: asyncio02.c,v 1.6 2009/08/28 11:17:39 vapier Exp $ */
 /************************************************************
  * OS Test - Silicon Graphics, Inc.
  * Mendota Heights, Minnesota
@@ -125,7 +125,6 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 extern int Tst_nobuf;		/* variable used to turn off tst_res buffering */
 
 int exp_enos[] = { 0 };		/* Array of expected errnos */
-char mesg[150];
 char *filename;			/* name of the temporary file */
 
 char *Progname;
@@ -213,11 +212,8 @@ int main(int ac, char **av)
 			for (i = BUFSIZ - 1; i >= 0; i -= DECR) {
 				if ((ret_val =
 				     testrun(Flags[flag_cnt], i, 3)) != OK) {
-					char output[80];	/* local output char string */
-
-					(void)sprintf(output, ERR_MSG2, ret_val,
+					tst_resm(TFAIL, ERR_MSG2, ret_val,
 						      i * WRITES);
-					tst_resm(TFAIL, output);
 				}
 			}
 
@@ -254,8 +250,7 @@ int testrun(int flag, int bytes, int ti)
 	 */
 
 	if ((fildes = open(filename, flag, MODE)) == -1) {
-		sprintf(mesg, "open failed, errno:%d", errno);
-		tst_brkm(TBROK, cleanup, mesg);
+		tst_brkm(TBROK|TERRNO, cleanup, "open(%s) failed", filename);
 	}
 
 	/*
@@ -266,8 +261,7 @@ int testrun(int flag, int bytes, int ti)
 		TEST(write(fildes, dp, (unsigned)bytes));
 
 		if (TEST_RETURN == -1) {
-			sprintf(mesg, "write failed, errno:%d", errno);
-			tst_brkm(TBROK, cleanup, mesg);
+			tst_brkm(TBROK|TTERRNO, cleanup, "write() failed");
 		}
 	}			/* end for() */
 
@@ -276,8 +270,7 @@ int testrun(int flag, int bytes, int ti)
 	 */
 
 	if (close(fildes) == -1) {
-		sprintf(mesg, "close failed, errno:%d", errno);
-		tst_brkm(TBROK, cleanup, mesg);
+		tst_brkm(TBROK|TERRNO, cleanup, "close() failed");
 	}
 
 	ret = OK;
@@ -289,8 +282,7 @@ int testrun(int flag, int bytes, int ti)
 		 */
 
 		if (stat(filename, &buffer) == -1) {
-			sprintf(mesg, "stat failed, errno:%d", errno);
-			tst_brkm(TBROK, cleanup, mesg);
+			tst_brkm(TBROK|TERRNO, cleanup, "stat() failed");
 		}
 
 		if (buffer.st_size != (off_t) (bytes * WRITES)) {
@@ -299,8 +291,7 @@ int testrun(int flag, int bytes, int ti)
 	}
 
 	if (unlink(filename) == -1) {
-		sprintf(mesg, "unlink failed, errno:%d", errno);
-		tst_brkm(TBROK, cleanup, mesg);
+		tst_brkm(TBROK|TERRNO, cleanup, "unlink(%s) failed", filename);
 	}
 
 	return ret;
@@ -329,8 +320,7 @@ void setup()
 	 */
 
 	if ((dp = (char *)malloc((unsigned)BUFSIZ + 1)) == NULL) {
-		sprintf(mesg, "malloc failed, errno:%d", errno);
-		tst_brkm(TBROK, cleanup, mesg);
+		tst_brkm(TBROK|TERRNO, cleanup, "malloc() failed");
 	}
 
 }				/* End setup() */
