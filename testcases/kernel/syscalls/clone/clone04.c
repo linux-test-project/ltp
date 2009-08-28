@@ -151,12 +151,9 @@ int main(int ac, char **av)
 				tst_resm(TPASS, "expected failure; Got %s",
 					 test_cases[ind].err_desc);
 			} else {
-				tst_resm(TFAIL, "Call failed to produce "
-					 "expected error;  Expected errno/result: %d / -1 "
-					 "Got : %d, %s / %d",
-					 test_cases[ind].exp_errno,
-					 TEST_ERRNO, strerror(TEST_ERRNO),
-					 TEST_RETURN);
+				tst_resm(TFAIL|TTERRNO, "Call failed to produce expected error; "
+					 "expected errno %d and result -1; got result %ld",
+					 test_cases[ind].exp_errno, TEST_RETURN);
 			}
 			TEST_ERROR_LOG(TEST_ERRNO);
 		}

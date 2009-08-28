@@ -119,7 +119,7 @@ int main(int ac, char **av)
 
 		/* Open a pipe */
 		if ((pipe(pfd)) == -1) {
-			tst_brkm(TBROK, cleanup, "pipe() failed");
+			tst_brkm(TBROK|TERRNO, cleanup, "pipe() failed");
 		}
 
 		/*
@@ -136,24 +136,23 @@ int main(int ac, char **av)
 
 		/* check return code */
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL, "clone() Failed, errno = %d :"
-				 " %s", TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TTERRNO, "clone() failed");
 			cleanup();
 		}
 
 		/* close write end from parent */
 		if ((close(pfd[1])) == -1) {
-			tst_brkm(TBROK, cleanup, "close(pfd[1]) failed");
+			tst_brkm(TBROK|TERRNO, cleanup, "close(pfd[1]) failed");
 		}
 
 		/* Read pid from read end */
 		if ((read(pfd[0], buff, sizeof(buff))) == -1) {
-			tst_brkm(TBROK, cleanup, "read from pipe failed");
+			tst_brkm(TBROK|TERRNO, cleanup, "read from pipe failed");
 		}
 
 		/* Close read end from parent */
 		if ((close(pfd[0])) == -1) {
-			tst_resm(TWARN, "close(pfd[0]) failed");
+			tst_resm(TWARN|TERRNO, "close(pfd[0]) failed");
 		}
 
 		/* Get child's pid from pid string */
@@ -215,7 +214,7 @@ int child_fn(void)
 
 	/* Close read end from child */
 	if ((close(pfd[0])) == -1) {
-		tst_brkm(TBROK, cleanup, "close(pfd[0]) failed");
+		tst_brkm(TBROK|TERRNO, cleanup, "close(pfd[0]) failed");
 	}
 
 	/* Construct pid string */
@@ -223,12 +222,12 @@ int child_fn(void)
 
 	/* Write pid string to pipe */
 	if ((write(pfd[1], pid, sizeof(pid))) == -1) {
-		tst_brkm(TBROK, cleanup, "write to pipe failed");
+		tst_brkm(TBROK|TERRNO, cleanup, "write to pipe failed");
 	}
 
 	/* Close write end of pipe from child */
 	if ((close(pfd[1])) == -1) {
-		tst_resm(TWARN, "close(pfd[1]) failed");
+		tst_resm(TWARN|TERRNO, "close(pfd[1]) failed");
 	}
 	exit(1);
 }

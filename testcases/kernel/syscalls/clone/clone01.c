@@ -131,17 +131,14 @@ int main(int ac, char **av)
 #endif
 
 again:
-		if ((child_pid = wait(&status)) == -1) {
-			tst_brkm(TBROK, cleanup, "wait() failed; error no ="
-				 " %d, %s", errno, strerror(errno));
-		}
+		if ((child_pid = wait(&status)) == -1)
+			tst_brkm(TBROK|TERRNO, cleanup, "wait() failed");
 
 		/* check return code */
 		if (TEST_RETURN == child_pid) {
-			tst_resm(TPASS, "clone() returned %d", TEST_RETURN);
+			tst_resm(TPASS, "clone() returned %ld", TEST_RETURN);
 		} else if (TEST_RETURN == -1) {
-			tst_resm(TFAIL, "clone() returned %d, errno = %d wait() returned %d\n", TEST_RETURN, TEST_ERRNO,
-				 child_pid);
+			tst_resm(TFAIL|TTERRNO, "clone() returned %ld for child %d", TEST_RETURN, child_pid);
 		} else
 			goto again;
 

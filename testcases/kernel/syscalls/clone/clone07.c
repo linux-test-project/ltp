@@ -166,7 +166,7 @@ void setup()
 	act.sa_handler = sigsegv_handler;
 	act.sa_flags = SA_RESTART;
 	if ((sigaction(SIGSEGV, &act, NULL)) == -1) {
-		tst_resm(TWARN,
+		tst_resm(TWARN|TERRNO,
 			 "sigaction() for SIGSEGV failed in test_setup()");
 	}
 
@@ -175,7 +175,7 @@ void setup()
 	def_act.sa_flags = SA_RESTART | SA_RESETHAND;
 
 	if ((sigaction(SIGUSR2, &def_act, NULL)) == -1) {
-		tst_resm(TWARN,
+		tst_resm(TWARN|TERRNO,
 			 "sigaction() for SIGUSR2 failed in test_setup()");
 	}
 

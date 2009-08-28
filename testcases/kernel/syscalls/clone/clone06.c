@@ -126,7 +126,7 @@ int main(int ac, char **av)
 
 		/* Open a pipe */
 		if ((pipe(pfd)) == -1) {
-			tst_brkm(TBROK, cleanup, "pipe() failed");
+			tst_brkm(TBROK|TERRNO, cleanup, "pipe() failed");
 		}
 
 		/*
@@ -144,24 +144,23 @@ int main(int ac, char **av)
 
 		/* check return code */
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL, "clone() Failed, errno = %d :"
-				 " %s", TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TTERRNO, "clone() failed");
 			cleanup();
 		}
 
 		/* close write end from parent */
 		if ((close(pfd[1])) == -1) {
-			tst_resm(TWARN, "close(pfd[1]) failed");
+			tst_resm(TWARN|TERRNO, "close(pfd[1]) failed");
 		}
 
 		/* Read env var from read end */
 		if ((read(pfd[0], buff, sizeof(buff))) == -1) {
-			tst_brkm(TBROK, cleanup, "read from pipe failed");
+			tst_brkm(TBROK|TERRNO, cleanup, "read from pipe failed");
 		}
 
 		/* Close read end from parent */
 		if ((close(pfd[0])) == -1) {
-			tst_resm(TWARN, "close(pfd[0]) failed");
+			tst_resm(TWARN|TERRNO, "close(pfd[0]) failed");
 		}
 
 		parent_env = getenv("TERM");
@@ -220,20 +219,20 @@ int child_environ(void)
 
 	/* Close read end from child */
 	if ((close(pfd[0])) == -1) {
-		tst_brkm(TBROK, cleanup, "close(pfd[0]) failed");
+		tst_brkm(TBROK|TERRNO, cleanup, "close(pfd[0]) failed");
 	}
 
-	if ((sprintf(var, getenv("TERM"))) <= 0) {
-		tst_resm(TWARN, "sprintf() failed");
+	if ((sprintf(var, "%s", getenv("TERM") ? : "")) <= 0) {
+		tst_resm(TWARN|TERRNO, "sprintf() failed");
 	}
 
 	if ((write(pfd[1], var, MAX_LINE_LENGTH)) == -1) {
-		tst_resm(TWARN, "write to pipe failed");
+		tst_resm(TWARN|TERRNO, "write to pipe failed");
 	}
 
 	/* Close write end of pipe from child */
 	if ((close(pfd[1])) == -1) {
-		tst_resm(TWARN, "close(pfd[1]) failed");
+		tst_resm(TWARN|TERRNO, "close(pfd[1]) failed");
 	}
 
 	exit(0);

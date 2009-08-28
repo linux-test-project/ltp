@@ -204,9 +204,7 @@ int main(int ac, char **av)
 
 			/* check return code */
 			if (TEST_RETURN == -1) {
-				tst_resm(TFAIL, "clone() Failed, errno = %d :"
-					 " %s", TEST_ERRNO,
-					 strerror(TEST_ERRNO));
+				tst_resm(TFAIL|TTERRNO, "clone() failed");
 				/* Cleanup & continue with next test case */
 				test_cleanup();
 				continue;
@@ -214,7 +212,7 @@ int main(int ac, char **av)
 
 			/* Wait for child to finish */
 			if ((wait(&status)) < 0) {
-				tst_resm(TWARN, "wait() failed, skipping this"
+				tst_resm(TWARN|TERRNO, "wait() failed, skipping this"
 					 " test case");
 				/* Cleanup & continue with next test case */
 				test_cleanup();
@@ -267,7 +265,7 @@ void setup()
 
 	/* Get unique file name for each child process */
 	if ((sprintf(file_name, "parent_file_%ld", syscall(__NR_gettid))) <= 0) {
-		tst_brkm(TBROK, cleanup, "sprintf() failed");
+		tst_brkm(TBROK|TERRNO, cleanup, "sprintf() failed");
 	}
 
 }				/* End setup() */
@@ -306,7 +304,7 @@ int test_setup()
 
 	/* Save current working directory of parent */
 	if ((getcwd(cwd_parent, sizeof(cwd_parent))) == NULL) {
-		tst_resm(TWARN, "getcwd() failed in test_setup()");
+		tst_resm(TWARN|TERRNO, "getcwd() failed in test_setup()");
 		return 0;
 	}
 
@@ -321,7 +319,7 @@ int test_setup()
 	 * child in test_FILES(), used for testing CLONE_FILES flag
 	 */
 	if ((fd_parent = open(file_name, O_CREAT | O_RDWR, 0777)) == -1) {	//mode must be specified when O_CREATE is in the flag
-		tst_resm(TWARN, "open() failed in test_setup()");
+		tst_resm(TWARN|TERRNO, "open() failed in test_setup()");
 		return 0;
 	}
 
@@ -336,7 +334,7 @@ int test_setup()
 	def_act.sa_flags = SA_RESTART;
 
 	if ((sigaction(SIGUSR2, &def_act, NULL)) == -1) {
-		tst_resm(TWARN, "sigaction() failed in test_setup()");
+		tst_resm(TWARN|TERRNO, "sigaction() failed in test_setup()");
 		return 0;
 	}
 
@@ -353,7 +351,7 @@ void test_cleanup()
 	/* Restore parent's working directory */
 	if ((chdir(cwd_parent)) == -1) {
 		/* we have to exit here */
-		tst_brkm(TBROK, cleanup, "chdir() failed in test_cleanup()");
+		tst_brkm(TBROK|TERRNO, cleanup, "chdir() failed in test_cleanup()");
 	}
 
 }
@@ -437,7 +435,7 @@ int test_VM()
 int test_FILES()
 {
 	if ((close(fd_parent)) == -1) {
-		tst_resm(TWARN, "close() failed in test_FILES()");
+		tst_resm(TWARN|TERRNO, "close() failed in test_FILES()");
 		return 0;
 	}
 	return 1;
@@ -451,7 +449,7 @@ int test_FILES()
 int test_FS()
 {
 	if ((chdir("/tmp")) == -1) {
-		tst_resm(TWARN, "chdir() failed in test_FS()");
+		tst_resm(TWARN|TERRNO, "chdir() failed in test_FS()");
 		return 0;
 	}
 	return 1;
@@ -472,13 +470,13 @@ int test_SIG()
 
 	/* Set signal handler to sig_child_defined_handler */
 	if ((sigaction(SIGUSR2, &new_act, NULL)) == -1) {
-		tst_resm(TWARN, "signal() failed in test_SIG()");
+		tst_resm(TWARN|TERRNO, "signal() failed in test_SIG()");
 		return 0;
 	}
 
 	/* Send SIGUSR2 signal to parent */
 	if ((kill(getppid(), SIGUSR2)) == -1) {
-		tst_resm(TWARN, "kill() failed in test_SIG()");
+		tst_resm(TWARN|TERRNO, "kill() failed in test_SIG()");
 		return 0;
 	}
 	return 1;
@@ -515,7 +513,7 @@ int modified_FILES()
 
 	/* close fd_parent */
 	if ((close(fd_parent)) == -1) {
-		tst_resm(TWARN, "close() failed in modified_FILES()");
+		tst_resm(TWARN|TERRNO, "close() failed in modified_FILES()");
 	}
 
 	return 0;
@@ -530,7 +528,7 @@ int modified_FS()
 	char cwd[FILENAME_MAX];
 
 	if ((getcwd(cwd, sizeof(cwd))) == NULL) {
-		tst_resm(TWARN, "getcwd() failed");
+		tst_resm(TWARN|TERRNO, "getcwd() failed");
 	}
 
 	if (!(strcmp(cwd, cwd_parent))) {
