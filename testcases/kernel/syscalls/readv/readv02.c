@@ -136,7 +136,7 @@ int main(int ac, char **av)
 		if (readv(fd[0], (rd_iovec + 6), 3) < 0) {
 			if (errno != EFAULT) {
 				tst_resm(TFAIL, "expected errno = EFAULT, "
-					 "got %d");
+					 "got %d", errno);
 			} else {
 				tst_resm(TPASS, "got EFAULT");
 			}
