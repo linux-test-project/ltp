@@ -167,7 +167,7 @@ int main(int ac, char **av)
 					 "pause() is correct");
 			} else {
 				tst_resm(TFAIL, "wait() failed due to "
-					 "unkown reason, ret_val, "
+					 "unkown reason, ret_val=%d, "
 					 "errno=%d", ret_val, errno);
 			}
 		} else {

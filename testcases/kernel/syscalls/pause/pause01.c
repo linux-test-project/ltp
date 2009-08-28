@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: pause01.c,v 1.5 2009/03/23 13:35:58 subrata_modak Exp $ */
+/* $Id: pause01.c,v 1.6 2009/08/28 13:36:21 vapier Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -172,11 +172,11 @@ int main(int ac, char **av)
 			if (STD_FUNCTIONAL_TEST) {
 				/* check the errno */
 				if (TEST_ERRNO == EINTR)
-					tst_resm(TPASS, "pause() returned %d",
+					tst_resm(TPASS, "pause() returned %ld",
 						 TEST_RETURN);
 				else
 					tst_resm(TFAIL,
-						 "pause() returned %d. Expected %d (EINTR)",
+						 "pause() returned %ld. Expected %d (EINTR)",
 						 TEST_RETURN, EINTR);
 			}
 		}

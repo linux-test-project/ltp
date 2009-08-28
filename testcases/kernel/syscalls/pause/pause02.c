@@ -197,7 +197,7 @@ void do_child()
 		/* pause returned */
 		tst_resm(TPASS, "Functionality of pause() " "is correct");
 	} else {
-		tst_resm(TFAIL, "pause() returned %d, error=%d",
+		tst_resm(TFAIL, "pause() returned %ld, error=%d",
 			 TEST_RETURN, TEST_ERRNO);
 	}
 	if (TEST_RETURN == -1) {
