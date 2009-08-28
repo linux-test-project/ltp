@@ -32,7 +32,7 @@
  */
 
 
-/* $Id: tst_res.c,v 1.11 2009/08/28 10:00:39 vapier Exp $ */
+/* $Id: tst_res.c,v 1.12 2009/08/28 11:05:36 vapier Exp $ */
 
 /**********************************************************
  *
@@ -277,6 +277,7 @@ static const char *strerrnodef(int err)
 		PAIR(EPIPE)
 		PAIR(EDOM)
 		PAIR(ERANGE)
+		PAIR(ENAMETOOLONG)
 	};
 	return pair_lookup(errno_pairs, err);
 }
