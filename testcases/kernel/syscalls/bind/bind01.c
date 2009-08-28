@@ -140,7 +140,7 @@ int main(int argc, char *argv[])
 			    (TEST_RETURN < 0 &&
 			     TEST_ERRNO != tdat[testno].experrno)) {
 				tst_resm(TFAIL, "%s ; returned"
-					 " %d (expected %d), errno %d (expected"
+					 " %ld (expected %d), errno %d (expected"
 					 " %d)", tdat[testno].desc,
 					 TEST_RETURN, tdat[testno].retval,
 					 TEST_ERRNO, tdat[testno].experrno);
@@ -192,10 +192,8 @@ void cleanup(void)
 void setup0(void)
 {
 	s = socket(tdat[testno].domain, tdat[testno].type, tdat[testno].proto);
-	if (s < 0) {
-		tst_brkm(TBROK, cleanup, "socket setup failed for bind "
-			 "test %d: %s", testno, strerror(errno));
-	}
+	if (s < 0)
+		tst_brkm(TBROK|TERRNO, cleanup, "socket() failed for bind test %d", testno);
 }
 
 void cleanup0(void)
@@ -207,8 +205,7 @@ void setup1(void)
 {
 	/* setup for the "not a socket" case */
 	if ((s = open("/dev/null", O_WRONLY)) == -1)
-		tst_brkm(TBROK, cleanup, "error opening /dev/null - "
-			 "errno: %s", strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "open(/dev/null) failed");
 
 }
 
