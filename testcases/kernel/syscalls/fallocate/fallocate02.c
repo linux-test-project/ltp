@@ -91,6 +91,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
+#include <inttypes.h>
 #include <sys/utsname.h>
 
 /* Harness Specific Include Files. */
@@ -161,15 +162,11 @@ int buf_size;
 extern void cleanup()
 {
 	/* Close all open file descriptors. */
-	if (close(fdw) == -1) {
-		tst_resm(TWARN, "close(%s) Failed, errno=%d : %s", fnamew,
-			 errno, strerror(errno));
-	}
+	if (close(fdw) == -1)
+		tst_resm(TWARN|TERRNO, "close(%s) failed", fnamew);
 
-	if (close(fdr) == -1) {
-		tst_resm(TWARN, "close(%s) Failed, errno=%d : %s", fnamer,
-			 errno, strerror(errno));
-	}
+	if (close(fdr) == -1)
+		tst_resm(TWARN|TERRNO, "close(%s) failed", fnamer);
 
 	/* Remove tmp dir and all files in it */
 	tst_rmdir();
@@ -198,16 +195,16 @@ void setup()
 	sprintf(fnamer, "tfile_read_%d", getpid());
 	sprintf(fnamew, "tfile_write_%d", getpid());
 
-	if ((fdr = open(fnamer, O_RDONLY | O_CREAT, S_IRUSR)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s,O_RDONLY|O_CREAT,S_IRUSR) Failed, errno=%d : %s",
-			 fnamer, errno, strerror(errno));
-	}
-	if ((fdw = open(fnamew, O_RDWR | O_CREAT, S_IRWXU)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s,O_RDWR|O_CREAT,S_IRWXU) Failed, errno=%d : %s",
-			 fnamew, errno, strerror(errno));
-	}
+	fdr = open(fnamer, O_RDONLY | O_CREAT, S_IRUSR);
+	if (fdr == -1)
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "open(%s, O_RDONLY|O_CREAT, S_IRUSR) failed",
+			 fnamer);
+	fdw = open(fnamew, O_RDWR | O_CREAT, S_IRWXU);
+	if (fdw == -1)
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT, S_IRWXU) failed",
+			 fnamew);
 	get_blocksize(fdr);
 	populate_file();
 }
@@ -220,9 +217,8 @@ void get_blocksize(int fd)
 	struct stat file_stat;
 
 	if (fstat(fd, &file_stat) < 0)
-		tst_resm(TFAIL,
-			 "fstat failed while getting block_size errno=%d : %s",
-			 TEST_ERRNO, strerror(TEST_ERRNO));
+		tst_resm(TFAIL|TERRNO,
+			 "fstat failed while getting block_size");
 
 	block_size = (int)file_stat.st_blksize;
 	buf_size = block_size;
@@ -241,11 +237,9 @@ void populate_file()
 		for (index = 0; index < buf_size; index++)
 			buf[index] = 'A' + (index % 26);
 		buf[buf_size] = '\0';
-		if ((data = write(fdw, buf, buf_size)) < 0) {
-			tst_brkm(TBROK, cleanup,
-				 "Unable to write to %s. Error: %d, %s", fnamew,
-				 errno, strerror(errno));
-		}
+		if ((data = write(fdw, buf, buf_size)) < 0)
+			tst_brkm(TBROK|TERRNO, cleanup,
+				 "Unable to write to %s", fnamew);
 	}
 }
 
@@ -325,21 +319,18 @@ int main(int ac, char **av)
 			if (TEST_ERRNO != test_data[test_index].error) {
 				if (TEST_ERRNO == EOPNOTSUPP) {
 					tst_brkm(TCONF, cleanup,
-						 " fallocate system call"
-						 " is not implemented");
+						 "fallocate system call is not implemented");
 				}
 				TEST_ERROR_LOG(TEST_ERRNO);
-				tst_resm(TFAIL, "fallocate(%s:%d, %d, %lld, %lld) Failed, \
-					expected errno:%d instead errno=%d : %s",
+				tst_resm(TFAIL|TTERRNO, "fallocate(%s:%d, %d, %"PRId64", %"PRId64") failed, expected errno:%d",
 					fname, fd, test_data[test_index].mode,
 					test_data[test_index].offset * block_size,
 					test_data[test_index].len * block_size,
-					test_data[test_index].error, TEST_ERRNO,
-					strerror(TEST_ERRNO));
+					test_data[test_index].error);
 			} else {
 				/* No Verification test, yet... */
 				tst_resm(TPASS,
-					 "fallocate(%s:%d, %d, %lld, %lld) returned %d ",
+					 "fallocate(%s:%d, %d, %"PRId64", %"PRId64") returned %d",
 					 fname, fd, test_data[test_index].mode,
 					 test_data[test_index].offset *
 					 block_size,

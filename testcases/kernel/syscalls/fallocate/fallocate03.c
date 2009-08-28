@@ -90,6 +90,7 @@
 #include <sys/types.h>		//Can be done with out
 #include <fcntl.h>
 #include <unistd.h>
+#include <inttypes.h>
 #include <sys/utsname.h>
 
 /* Harness Specific Include Files. */
@@ -152,10 +153,8 @@ int buf_size;
 extern void cleanup()
 {
 	/* Close all open file descriptors. */
-	if (close(fd) == -1) {
-		tst_resm(TWARN, "close(%s) Failed, errno=%d : %s", fname, errno,
-			 strerror(errno));
-	}
+	if (close(fd) == -1)
+		tst_resm(TWARN|TERRNO, "close(%s) failed", fname);
 
 	/* Remove tmp dir and all files in it */
 	tst_rmdir();
@@ -178,11 +177,10 @@ void setup()
 	tst_tmpdir();
 
 	sprintf(fname, "tfile_sparse_%d", getpid());
-	if ((fd = open(fname, O_RDWR | O_CREAT, 0700)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "Unable to open %s for read/write.  Error:%d, %s\n",
-			 fname, errno, strerror(errno));
-	}
+	fd = open(fname, O_RDWR | O_CREAT, 0700);
+	if (fd == -1)
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "open(%s) failed", fname);
 	get_blocksize(fd);
 	populate_file();
 	file_seek(BLOCKS_WRITTEN + HOLE_SIZE_IN_BLOCKS);	/* create holes */
@@ -198,9 +196,8 @@ void get_blocksize(int fd)
 	struct stat file_stat;
 
 	if (fstat(fd, &file_stat) < 0)
-		tst_resm(TFAIL,
-			 "fstat failed while getting block_size errno=%d : %s",
-			 TEST_ERRNO, strerror(TEST_ERRNO));
+		tst_resm(TFAIL|TERRNO,
+			 "fstat failed while getting block_size");
 
 	block_size = (int)file_stat.st_blksize;
 	buf_size = block_size;
@@ -228,11 +225,9 @@ void populate_file()
 		for (index = 0; index < buf_size; index++)
 			buf[index] = 'A' + (index % 26);
 		buf[buf_size] = '\0';
-		if ((data = write(fd, buf, buf_size)) < 0) {
-			tst_brkm(TBROK, cleanup,
-				 "Unable to write to %s. Error: %d, %s", fname,
-				 errno, strerror(errno));
-		}
+		if ((data = write(fd, buf, buf_size)) < 0)
+			tst_brkm(TBROK|TERRNO, cleanup,
+				 "Unable to write to %s", fname);
 	}
 }
 
@@ -299,23 +294,21 @@ int main(int ac, char **av)
 			if (TEST_RETURN != test_data[test_index].error) {
 				if (TEST_ERRNO == EOPNOTSUPP) {
 					tst_resm(TCONF,
-						 " fallocate system call"
-						 " is not implemented");
+						 "fallocate system call is not implemented");
 					cleanup();	/* calls tst_exit */
 				}
 				TEST_ERROR_LOG(TEST_ERRNO);
-				tst_resm(TFAIL,
-					 "fallocate(%s, %d, %lld, %lld) Failed, errno=%d : %s",
+				tst_resm(TFAIL|TTERRNO,
+					 "fallocate(%s, %d, %"PRId64", %"PRId64") failed",
 					 fname, test_data[test_index].mode,
 					 test_data[test_index].offset *
 					 block_size,
-					 test_data[test_index].len * block_size,
-					 TEST_ERRNO, strerror(TEST_ERRNO));
+					 test_data[test_index].len * block_size);
 			} else {
 				if (STD_FUNCTIONAL_TEST) {
 					/* No Verification test, yet... */
 					tst_resm(TPASS,
-						 "fallocate(%s, %d, %lld, %lld) returned %d ",
+						 "fallocate(%s, %d, %"PRId64", %"PRId64") returned %ld",
 						 fname,
 						 test_data[test_index].mode,
 						 test_data[test_index].offset *
