@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fstat01.c,v 1.5 2009/03/23 13:35:41 subrata_modak Exp $ */
+/* $Id: fstat01.c,v 1.6 2009/08/28 12:51:34 vapier Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -166,9 +166,8 @@ int main(int ac, char **av)
 		/* check return code */
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL,
-				 "fstat(%s, &statter) Failed, errno=%d : %s",
-				 fname, TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TTERRNO,
+				 "fstat(%s, &statter) failed", fname);
 		} else {
 
 	    /***************************************************************
@@ -177,7 +176,7 @@ int main(int ac, char **av)
 			if (STD_FUNCTIONAL_TEST) {
 				/* No Verification test, yet... */
 				tst_resm(TPASS,
-					 "fstat(%s, &statter) returned %d",
+					 "fstat(%s, &statter) returned %ld",
 					 fname, TEST_RETURN);
 			}
 		}
@@ -207,11 +206,10 @@ void setup()
 	tst_tmpdir();
 
 	sprintf(fname, "tfile_%d", getpid());
-	if ((fd = open(fname, O_RDWR | O_CREAT, 0700)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT,0700) Failed, errno=%d : %s",
-			 fname, errno, strerror(errno));
-	}
+	fd = open(fname, O_RDWR | O_CREAT, 0700);
+	if (fd == -1)
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT,0700) failed", fname);
 }				/* End setup() */
 
 /***************************************************************
@@ -226,10 +224,8 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	if (close(fd) == -1) {
-		tst_resm(TWARN, "close(%s) Failed, errno=%d : %s", fname, errno,
-			 strerror(errno));
-	}
+	if (close(fd) == -1)
+		tst_resm(TWARN|TERRNO, "close(%s) failed", fname);
 
 	/* Remove tmp dir and all files in it */
 	tst_rmdir();

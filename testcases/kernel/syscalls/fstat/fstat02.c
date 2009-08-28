@@ -126,9 +126,7 @@ int main(int ac, char **av)
 
 		/* check return code of fstat(2) */
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL,
-				 "fstat on %s Failed, errno=%d : %s",
-				 TESTFILE, TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TTERRNO, "fstat(%s) failed", TESTFILE);
 			continue;
 		}
 		/*
@@ -183,11 +181,8 @@ void setup()
 		tst_brkm(TBROK, tst_exit, "Test must be run as root");
 	}
 	ltpuser = getpwnam(nobody_uid);
-	if (setuid(ltpuser->pw_uid) == -1) {
-		tst_resm(TINFO, "setuid failed to "
-			 "to set the effective uid to %d", ltpuser->pw_uid);
-		perror("setuid");
-	}
+	if (setuid(ltpuser->pw_uid) == -1)
+		tst_resm(TINFO|TERRNO, "setuid(%d) failed", ltpuser->pw_uid);
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
@@ -195,11 +190,11 @@ void setup()
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
-	if ((fildes = open(TESTFILE, O_WRONLY | O_CREAT, FILE_MODE)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, %#o) Failed, errno=%d : %s",
-			 TESTFILE, FILE_MODE, errno, strerror(errno));
-	}
+	fildes = open(TESTFILE, O_WRONLY | O_CREAT, FILE_MODE);
+	if (fildes == -1)
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT, %#o) failed",
+			 TESTFILE, FILE_MODE);
 
 	/* Fill the test buffer with the known data */
 	for (i = 0; i < BUF_SIZE; i++) {
@@ -209,9 +204,8 @@ void setup()
 	/* Write to the file 1k data from the buffer */
 	while (write_len < FILE_SIZE) {
 		if ((wbytes = write(fildes, tst_buff, sizeof(tst_buff))) <= 0) {
-			tst_brkm(TBROK, cleanup,
-				 "write(2) on %s Failed, errno=%d : %s",
-				 TESTFILE, errno, strerror(errno));
+			tst_brkm(TBROK|TERRNO, cleanup,
+				 "write(%s) failed", TESTFILE);
 		} else {
 			write_len += wbytes;
 		}
@@ -237,10 +231,8 @@ void cleanup()
 	TEST_CLEANUP;
 
 	/* Close the test file */
-	if (close(fildes) == -1) {
-		tst_brkm(TFAIL, NULL, "close(%s) Failed, errno=%d : %s",
-			 TESTFILE, errno, strerror(errno));
-	}
+	if (close(fildes) == -1)
+		tst_brkm(TFAIL|TERRNO, NULL, "close(%s) failed", TESTFILE);
 
 	/* Remove tmp dir and all files in it */
 	tst_rmdir();

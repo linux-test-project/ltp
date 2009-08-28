@@ -178,8 +178,8 @@ int main(int ac, char **av)
 					 "wrong errno:%d", TEST_ERRNO);
 			}
 		} else {
-			tst_resm(TFAIL, "fstat() returned %d, "
-				 "expected -1 and error EFAULT", TEST_RETURN);
+			tst_resm(TFAIL, "fstat() returned %ld but we wanted -1",
+				 TEST_RETURN);
 		}
 
 	}			/* End of TEST CASE LOOPING. */
@@ -227,11 +227,8 @@ void setup()
 	}
 
 	ltpuser = getpwnam(nobody_uid);
-	if (setuid(ltpuser->pw_uid) == -1) {
-		tst_resm(TINFO, "setuid failed to "
-			 "to set the effective uid to %d", ltpuser->pw_uid);
-		perror("setuid");
-	}
+	if (setuid(ltpuser->pw_uid) == -1)
+		tst_resm(TINFO, "setuid(%d) failed", ltpuser->pw_uid);
 
 	/* Pause if that option was specified
 	 * TEST_PAUSE contains the code to fork the test with the -i option.
@@ -244,11 +241,10 @@ void setup()
 	tst_tmpdir();
 
 	/* Create a testfile under temporary directory */
-	if ((fildes = open(TEST_FILE, O_RDWR | O_CREAT, 0666)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, 0666) failed, errno=%d : %s",
-			 TEST_FILE, errno, strerror(errno));
-	}
+	fildes = open(TEST_FILE, O_RDWR | O_CREAT, 0666);
+	if (fildes == -1)
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT, 0666) failed", TEST_FILE);
 
 }				/* End setup() */
 
@@ -269,11 +265,8 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	if (close(fildes) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "close(%s) Failed, errno=%d : %s",
-			 TEST_FILE, errno, strerror(errno));
-	}
+	if (close(fildes) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "close(%s) failed", TEST_FILE);
 
 	/* Remove files and temporary directory created */
 	tst_rmdir();

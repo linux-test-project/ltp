@@ -109,15 +109,12 @@ int main(int ac, char **av)
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			if (TEST_ERRNO == EBADF) {
-				tst_resm(TPASS, "fstat() fails with "
-					 "expected error EBADF");
+				tst_resm(TPASS, "fstat() fails with expected error EBADF");
 			} else {
-				tst_resm(TFAIL, "fstat() fails with "
-					 "wrong errno:%d", TEST_ERRNO);
+				tst_resm(TFAIL|TTERRNO, "fstat() did not fail with EBADF");
 			}
 		} else {
-			tst_resm(TFAIL, "fstat() returned %d, "
-				 "expected -1, error EBADF");
+			tst_resm(TFAIL, "fstat() returned %ld, expected -1", TEST_RETURN);
 		}
 	}			/* End for TEST_LOOPING */
 
@@ -150,17 +147,13 @@ void setup()
 	tst_tmpdir();
 
 	/* Create a testfile under temporary directory */
-	if ((fildes = open(TEST_FILE, O_RDWR | O_CREAT, 0666)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, 0666) failed, errno=%d : %s",
-			 TEST_FILE, errno, strerror(errno));
-	}
+	fildes = open(TEST_FILE, O_RDWR | O_CREAT, 0666);
+	if (fildes == -1)
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT, 0666) failed", TEST_FILE);
 
-	if (close(fildes) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "close(%s) Failed, errno=%d : %s",
-			 TEST_FILE, errno, strerror(errno));
-	}
+	if (close(fildes) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "close(%s) failed", TEST_FILE);
 }				/* End of setup */
 
 /*
