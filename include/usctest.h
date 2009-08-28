@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: usctest.h,v 1.12 2009/08/28 09:58:17 vapier Exp $ */
+/* $Id: usctest.h,v 1.13 2009/08/28 09:59:52 vapier Exp $ */
 
 /**********************************************************
  *
@@ -162,7 +162,6 @@ struct usc_errno_t {
 extern long TEST_RETURN;
 extern long TEST_ERRNO;
 extern struct usc_errno_t TEST_VALID_ENO[USC_MAX_ERRNO];
-extern long btime, etime;
 
 #else
 /***********************************************************************
@@ -177,11 +176,6 @@ struct usc_errno_t TEST_VALID_ENO[USC_MAX_ERRNO];
  ***********************************************************************/
 long TEST_RETURN;
 long TEST_ERRNO;
-
-/***********************************************************************
- * temporary variables for determining max and min times in TEST macro
- ***********************************************************************/
-long btime, etime;
 
 #endif  /* _USC_LIB_ */
 

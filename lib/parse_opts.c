@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: parse_opts.c,v 1.13 2009/07/20 10:59:32 vapier Exp $ */
+/* $Id: parse_opts.c,v 1.14 2009/08/28 09:59:52 vapier Exp $ */
 
 /**********************************************************
  *
@@ -842,13 +842,6 @@ struct usc_errno_t TEST_VALID_ENO[USC_MAX_ERRNO];
    ***********************************************************************/
 int TEST_RETURN;
 int TEST_ERRNO;
-
-  /***********************************************************************
-   * temporary variables for determining max and min times in TEST macro
-   ***********************************************************************/
-long btime, etime, tmptime;
-
-
 
 /* for test specific parse_opts options */
 option_t Options[] = {
