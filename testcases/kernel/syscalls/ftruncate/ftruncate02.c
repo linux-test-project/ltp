@@ -127,9 +127,8 @@ int main(int ac, char **av)
 
 		/* check return code of ftruncate(2) */
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL, "ftruncate of %s to size %d Failed, "
-				 "errno=%d : %s", TESTFILE, TRUNC_LEN1,
-				 TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TTERRNO, "ftruncate(%s) to size %d failed",
+				 TESTFILE, TRUNC_LEN1);
 			continue;
 		}
 		/*
@@ -279,18 +278,16 @@ void setup()
 		tst_buff[i] = 'a';
 	}
 	/* open a file for reading/writing */
-	if ((fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
+	fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE);
+	if (fd == -1)
 		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, %o) Failed, errno=%d : %s",
-			 TESTFILE, FILE_MODE, errno, strerror(errno));
-	}
+			 "open(%s, O_RDWR|O_CREAT, %o) failed",
+			 TESTFILE, FILE_MODE);
 
 	/* Write to the file 1k data from the buffer */
 	while (write_len < FILE_SIZE) {
 		if ((wbytes = write(fd, tst_buff, sizeof(tst_buff))) <= 0) {
-			tst_brkm(TBROK, cleanup,
-				 "write(2) on %s Failed, errno=%d : %s",
-				 TESTFILE, errno, strerror(errno));
+			tst_brkm(TBROK, cleanup, "write(%s) failed", TESTFILE);
 		} else {
 			write_len += wbytes;
 		}
@@ -312,10 +309,8 @@ void cleanup()
 	TEST_CLEANUP;
 
 	/* Close the testfile after writing data into it */
-	if (close(fd) == -1) {
-		tst_brkm(TFAIL, NULL, "close(%s) Failed, errno=%d : %s",
-			 TESTFILE, errno, strerror(errno));
-	}
+	if (close(fd) == -1)
+		tst_brkm(TFAIL|TERRNO, NULL, "close(%s) failed", TESTFILE);
 
 	/* Remove tmp dir and all files in it */
 	tst_rmdir();

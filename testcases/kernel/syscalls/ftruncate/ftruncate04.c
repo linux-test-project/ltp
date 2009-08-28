@@ -63,6 +63,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <wait.h>
+#include <inttypes.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "test.h"
@@ -186,7 +187,7 @@ void doparent()
 	}
 	if (sb.st_size != recstart + (RECLEN / 2)) {
 		tst_resm(TFAIL, "unexpected ftruncate failure case 4");
-		tst_resm(TFAIL, "expected size of %d, got size of %d",
+		tst_resm(TFAIL, "expected size of %d, got size of %"PRId64,
 			 recstart + (RECLEN / 2), sb.st_size);
 		local_flag = FAILED;
 		cleanup();
@@ -210,8 +211,8 @@ void doparent()
 	}
 	if (sb.st_size != RECLEN) {
 		tst_resm(TFAIL, "unexpected ftruncate failure case 5");
-		tst_resm(TFAIL, "expected size of %d, got size of %d", RECLEN,
-			 sb.st_size);
+		tst_resm(TFAIL, "expected size of %d, got size of %"PRId64,
+			 RECLEN, sb.st_size);
 		local_flag = FAILED;
 		cleanup();
 	}
@@ -229,7 +230,7 @@ void doparent()
 	}
 	if (sb.st_size != (2 * len)) {
 		tst_resm(TFAIL, "unexpected ftruncate failure case 6");
-		tst_resm(TFAIL, "expected size of %d, got size of %d",
+		tst_resm(TFAIL, "expected size of %d, got size of %"PRId64,
 			 (2 * len), sb.st_size);
 		local_flag = FAILED;
 		cleanup();

@@ -72,6 +72,7 @@
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
+#include <inttypes.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -120,9 +121,7 @@ int main(int ac, char **av)
 
 		/* check return code of ftruncate(2) */
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL,
-				 "ftruncate() of %s Failed, errno=%d : %s",
-				 TESTFILE, TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TTERRNO, "ftruncate(%s) failed", TESTFILE);
 			continue;
 		}
 		/*
@@ -147,7 +146,7 @@ int main(int ac, char **av)
 			 * truncate(2) on it.
 			 */
 			if (file_length != TRUNC_LEN) {
-				tst_resm(TFAIL, "%s: Incorrect file size %d, "
+				tst_resm(TFAIL, "%s: Incorrect file size %"PRId64", "
 					 "Expected %d", TESTFILE, file_length,
 					 TRUNC_LEN);
 			} else {
@@ -193,18 +192,16 @@ void setup()
 	}
 
 	/* open a file for reading/writing */
-	if ((fildes = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, %o) Failed, errno=%d : %s",
-			 TESTFILE, FILE_MODE, errno, strerror(errno));
-	}
+	fildes = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE);
+	if (fildes == -1)
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT, %o) failed",
+			 TESTFILE, FILE_MODE);
 
 	/* Write to the file 1k data from the buffer */
 	while (c_total < FILE_SIZE) {
 		if ((c = write(fildes, tst_buff, sizeof(tst_buff))) <= 0) {
-			tst_brkm(TBROK, cleanup,
-				 "write(2) on %s Failed, errno=%d : %s",
-				 TESTFILE, errno, strerror(errno));
+			tst_brkm(TBROK|TERRNO, cleanup, "write(%s) failed", TESTFILE);
 		} else {
 			c_total += c;
 		}
@@ -226,11 +223,8 @@ void cleanup()
 	TEST_CLEANUP;
 
 	/* Close the testfile after writing data into it */
-	if (close(fildes) == -1) {
-		tst_brkm(TFAIL, NULL,
-			 "close(%s) Failed, errno=%d : %s",
-			 TESTFILE, errno, strerror(errno));
-	}
+	if (close(fildes) == -1)
+		tst_brkm(TFAIL|TERRNO, NULL, "close(%s) failed", TESTFILE);
 
 	/* Remove tmp dir and all files in it */
 	tst_rmdir();
