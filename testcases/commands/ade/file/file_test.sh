@@ -474,13 +474,8 @@ export TST_COUNT=9
 $LTPBIN/tst_resm TINFO "TEST #9: file command recognizes RPM files"
 `type rpm &> /dev/null`
 if [ $? = 0 ]; then
-if [ -f /etc/redhat-release ]; then
-	bDIR=/usr/src/redhat
-	bCMD=rpmbuild
-else
-	bDIR=/usr/src/packages
-	bCMD=rpmbuild
-fi
+bDIR=$(rpm --eval "%{_topdir}")
+bCMD=rpmbuild
 
 rpmversion=`rpm --version | awk -F ' ' '{print $3}' | cut -d '.' -f1 `
 
