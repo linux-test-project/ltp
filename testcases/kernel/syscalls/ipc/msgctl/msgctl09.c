@@ -468,7 +468,7 @@ long key;
 				 "Size mismatch in child %d, read # = %d",
 				 child, (i + 1));
 			tst_resm(TFAIL,
-				 "\tfor message size got  %d expected  %d %s",
+				 "\tfor message size got  %d expected  %d",
 				 size, buffer.data.len);
 			tst_exit();
 		}
@@ -479,8 +479,8 @@ long key;
 			tst_exit();
 		}
 		if (verify(buffer.data.pbytes, (key % 255), size - 1, child)) {
-			tst_resm(TFAIL, "in read # = %d,key =  %x", (i + 1),
-				 child, key);
+			tst_resm(TFAIL, "in child %d read # = %d,key =  %lx",
+				 child, (i + 1), key);
 			tst_exit();
 		}
 		key++;
@@ -519,7 +519,7 @@ long key;
 		buffer.type = type;
 		if (msgsnd(id, &buffer, size + 1, 0) < 0) {
 			tst_resm(TFAIL,
-				 "Msgsnd error in child %d, key =   %x errno  = %d",
+				 "Msgsnd error in child %d, key =   %lx errno  = %d",
 				 child, key, errno);
 			tst_exit();
 		}

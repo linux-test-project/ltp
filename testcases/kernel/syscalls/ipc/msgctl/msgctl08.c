@@ -346,13 +346,13 @@ long key;
 				 "Size mismatch in child %d, read # = %d",
 				 child, (i + 1));
 			tst_resm(TFAIL,
-				 "for message size got  %d expected  %d %s",
+				 "for message size got  %d expected  %d",
 				 size, buffer.data.len);
 			tst_exit();
 		}
 		if (verify(buffer.data.pbytes, key, size - 1, child)) {
-			tst_resm(TFAIL, "in read # = %d,key =  %x", (i + 1),
-				 child, key);
+			tst_resm(TFAIL, "in child %d read # = %d,key =  %lx",
+				 child, (i + 1), key);
 			tst_exit();
 		}
 		key++;
@@ -376,7 +376,7 @@ long key;
 		TEST(msgsnd(id, &buffer, size + 1, 0));
 		if (TEST_RETURN < 0) {
 			tst_brkm(TBROK, cleanup,
-				 "Msgsnd error in child %d, key =   %x errno  = %d",
+				 "Msgsnd error in child %d, key =   %lx errno  = %d",
 				 child, key, TEST_ERRNO);
 		}
 		key++;
