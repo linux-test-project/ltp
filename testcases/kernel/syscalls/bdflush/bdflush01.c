@@ -149,27 +149,6 @@ void setup() {
         tst_tmpdir();
 }
 
-int errnochoose(void)   //choose the relative errno
-{
-    switch errno
-    {
-        case    EFAULT: perror("EFAULT");
-            break;
-        case    EINVAL: perror("EINVAL");
-            break;
-        case    EPERM:  perror("EPERM");
-            break;
-        case    EBUSY:  perror("EBUSY");
-            break;
-        default:        perror("Other Error");
-            break;
-    }
-    TEST_ERRNO=0;
-    return 0 ;
-}
-
-
-
 int main(int ac, char **av) {
 	long data;
 	int lc;                 /* loop counter */
@@ -189,11 +168,11 @@ int main(int ac, char **av) {
                 for (testno = 0; testno < TST_TOTAL; ++testno) {
 			TEST(syscall(__NR_bdflush,0,data));	//bdflush(0,data);
 			if(TEST_RETURN < 0){
-				tst_resm(TFAIL,"Call to bdflush() Failed, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
+				tst_resm(TFAIL|TTERRNO,"Call to bdflush() failed");
                         	cleanup();
 				tst_exit();
 			}else {
-				tst_resm(TPASS,"Test PASSED and %d is returned \n",TEST_RETURN);
+				tst_resm(TPASS,"Test PASSED and %ld is returned \n",TEST_RETURN);
 				tst_resm(TINFO,"bdflush() activated...\n");
                         	cleanup();
 				tst_exit();

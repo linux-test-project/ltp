@@ -112,22 +112,6 @@ void setup() {
 	tst_tmpdir();
 }
 
-
-int errnochoose(void){   //choose the relative errno
-
-	switch (TEST_ERRNO) {
-	case    ECHILD:  strerror((int)"ECHILD");
-		break;
-	case    EINTR:  strerror((int)"EINTR");
-		break;
-	case    EINVAL: strerror((int)"EINVAL");
-		break;
-	default:     strerror((int)"Other Error");
-	}
-	tst_exit() ;
-}
-
-
 int main(int ac, char **av) {
 	id_t pgid;
 	id_t id1, id2, id3;
@@ -192,8 +176,8 @@ int main(int ac, char **av) {
 		tst_resm(TPASS, "Success 2 ...0 is returned.. error is %d.",
 		TEST_ERRNO);
 	else {
-		tst_resm(TFAIL, "%s Failed 2", TCID);
-		errnochoose();
+		tst_resm(TFAIL|TTERRNO, "%s Failed 2", TCID);
+		tst_exit();
 	}
 
 	tst_resm(TINFO, "I'm a Parent,my id is %d,gpid is %d",
@@ -205,8 +189,8 @@ int main(int ac, char **av) {
 		tst_resm(TINFO, "si_pid = %d ; si_code = %d ; si_status = %d",
 		infop.si_pid, infop.si_code, infop.si_status);
 	} else {
-		tst_resm(TFAIL, "Fail3 ...  %d is returned", TEST_RETURN);
-		errnochoose();
+		tst_resm(TFAIL|TTERRNO, "Fail3 ...  %ld is returned", TEST_RETURN);
+		tst_exit();
 	}
 
 	TEST(kill(id2, SIGSTOP));
@@ -217,8 +201,8 @@ int main(int ac, char **av) {
 		infop.si_pid, infop.si_code, infop.si_status);
 		tst_resm(TPASS, "Success4 ... 0 is returned");
 	} else {
-		tst_resm(TFAIL, "Fail4 ...  %d is returned", i);
-		errnochoose();
+		tst_resm(TFAIL|TTERRNO, "Fail4 ...  %d is returned", i);
+		tst_exit();
 	}
 
 
@@ -228,9 +212,9 @@ int main(int ac, char **av) {
 		infop.si_pid, infop.si_code, infop.si_status);
 		tst_resm(TPASS, "Success5 ... 0 is returned");
 	} else {
-		tst_resm(TFAIL, "Fail5 ...  %d is returned", TEST_RETURN);
-		errnochoose();
-		}
+		tst_resm(TFAIL|TTERRNO, "Fail5 ...  %ld is returned", TEST_RETURN);
+		tst_exit();
+	}
 
 	TEST(i = waitid(P_PID, id2, &infop, WCONTINUED));
 	if (TEST_RETURN == 0) {	/*EINVAL*/
@@ -238,8 +222,8 @@ int main(int ac, char **av) {
 		infop.si_pid, infop.si_code, infop.si_status);
 		tst_resm(TPASS, "Success6 ... 0 is returned");
 	} else {
-		tst_resm(TFAIL, "Fail6 ...  %d is returned", i);
-		errnochoose();
+		tst_resm(TFAIL|TTERRNO, "Fail6 ...  %d is returned", i);
+		tst_exit();
 	}
 
 	sleep(3);

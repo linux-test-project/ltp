@@ -113,18 +113,6 @@ void setup() {
 }
 
 
-int errnochoose(void){   //choose the relative errno
-
-    switch (TEST_ERRNO){
-        case  0:     tst_exit();
-		     break;
-        default:     strerror(TEST_ERRNO);
-                     break;
-   }
-        TEST_RETURN = 0;
-        tst_exit() ;
-}
-
 void display_status(siginfo_t *infop)
 {
         tst_resm(TINFO,"Process %d terminated:", infop->si_pid);
@@ -161,7 +149,8 @@ int main(int ac, char **av) {
         else{
                 TEST(waitid(P_ALL,getpid(),&infop,WEXITED));
 		if(TEST_RETURN == -1){
-                        TEST(errnochoose());
+                        tst_resm(TFAIL|TTERRNO, "waitid(getpid()) failed");
+                        tst_exit();
 		}else 
 		    display_status(&infop); //CLD_EXITED = 1
         }
@@ -173,9 +162,10 @@ int main(int ac, char **av) {
                 tst_exit();
         } else{
                 TEST(waitid(P_ALL,0,&infop,WEXITED));
-		if(TEST_RETURN == -1)
-                        TEST(errnochoose());
-                else
+		if(TEST_RETURN == -1) {
+                        tst_resm(TFAIL|TTERRNO, "waitid(0) failed");
+                        tst_exit();
+                } else
 			display_status(&infop); //CLD_DUMPED = 3 ; SIGFPE = 8
         }
 
@@ -186,9 +176,10 @@ int main(int ac, char **av) {
         }
         TEST(kill(pid,SIGHUP));
         TEST(waitid(P_ALL,0,&infop,WEXITED));
-	if(TEST_RETURN == -1)
-                TEST(errnochoose());
-        else 
+	if(TEST_RETURN == -1) {
+                tst_resm(TFAIL|TTERRNO, "waitid(0) failed");
+                tst_exit();
+        } else 
 		display_status(&infop); //CLD_KILLED = 2 ; SIGHUP = 1
                 }
         }	
