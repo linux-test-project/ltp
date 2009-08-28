@@ -121,7 +121,7 @@ int main(int ac, char **av)
 
 		if (TEST_RETURN != -1) {
 			tst_brkm(TFAIL, cleanup, "%s failed - errno = %d : %s "
-				 "Expected a return value of -1 got %d",
+				 "Expected a return value of -1 got %ld",
 				 TCID, TEST_ERRNO, strerror(TEST_ERRNO),
 				 TEST_RETURN);
 		 /*NOTREACHED*/}
