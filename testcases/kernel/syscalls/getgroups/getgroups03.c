@@ -124,9 +124,7 @@ int main(int ac, char **av)
 
 		/* check return code of getgroups(2) */
 		if ((ret_val = TEST_RETURN) == -1) {
-			tst_resm(TFAIL, "getgroups(%d, groups_list) Failed, "
-				 "errno=%d : %s", gidsetsize, TEST_ERRNO,
-				 strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TTERRNO, "getgroups(%d, groups_list) failed", gidsetsize);
 			continue;
 		}
 		/*
@@ -180,7 +178,7 @@ void setup()
 	 * getgroups()
 	 */
 	if (setgroups(ngroups, groups) == -1) {
-		tst_resm(TFAIL, "failed to setup testcase");
+		tst_resm(TFAIL|TERRNO, "setgroups() failed");
 		cleanup();
 	}
 
@@ -319,8 +317,8 @@ int ret_val;
 	}
 	if (ngroups != ret_val) {
 		tst_resm(TFAIL,
-			 "getgroups(2) returned incorrect no. of gids %d expect %d",
-			 ret_val);
+			 "getgroups(2) returned incorrect no. of gids %d (expect %d)",
+			 ret_val, ngroups);
 		fflag = 0;
 	}
 

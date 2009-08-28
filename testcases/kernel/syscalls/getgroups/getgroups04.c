@@ -150,7 +150,7 @@ int main(int ac, char **av)
 						 Test_cases[ind].exp_errno);
 				}
 			} else {
-				tst_resm(TFAIL, "getgroups() returned %d, "
+				tst_resm(TFAIL, "getgroups() returned %ld, "
 					 "expected -1, errno=%d", TEST_RETURN,
 					 Test_cases[ind].exp_errno);
 			}

@@ -141,7 +141,7 @@ int main(int argc, char *argv[])
 			    (TEST_RETURN < 0 &&
 			     TEST_ERRNO != tdat[testno].experrno)) {
 				tst_resm(TFAIL, "%s ; returned"
-					 " %d (expected %d), errno %d (expected"
+					 " %ld (expected %d), errno %d (expected"
 					 " %d)", tdat[testno].desc,
 					 TEST_RETURN, tdat[testno].retval,
 					 TEST_ERRNO, tdat[testno].experrno);
@@ -178,8 +178,7 @@ void setup0(void)
 	if (tdat[testno].experrno == EBADF)
 		s = 400;	/* anything not an open file */
 	else if ((s = open("/dev/null", O_WRONLY)) == -1)
-		tst_brkm(TBROK, cleanup, "error opening /dev/null - "
-			 "errno: %s", strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "open(/dev/null) failed");
 
 }
 
@@ -192,12 +191,12 @@ void setup1(void)
 {
 	s = socket(tdat[testno].domain, tdat[testno].type, tdat[testno].proto);
 	if (s < 0) {
-		tst_brkm(TBROK, cleanup, "socket setup failed for getpeername"
-			 ": %s", testno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "socket setup failed for getpeername "
+			 " test %d", testno);
 	}
 	if (bind(s, (struct sockaddr *)&sin0, sizeof(sin0)) < 0) {
-		tst_brkm(TBROK, cleanup, "socket bind failed for getpeername "
-			 "test %d: %s", testno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "socket bind failed for getpeername "
+			 "test %d", testno);
 	}
 	sinlen = sizeof(fsin1);
 }
@@ -214,8 +213,8 @@ void setup2(void)
 
 	if (socketpair(tdat[testno].domain, tdat[testno].type,
 		       tdat[testno].proto, sv) < 0) {
-		tst_brkm(TBROK, cleanup, "socketpair failed for getpeername "
-			 "test %d: %s", testno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "socketpair failed for getpeername "
+			 "test %d", testno);
 	}
 	s = sv[0];
 	s2 = sv[1];
