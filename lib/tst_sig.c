@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: tst_sig.c,v 1.11 2009/07/20 10:59:32 vapier Exp $ */
+/* $Id: tst_sig.c,v 1.12 2009/08/28 09:27:10 vapier Exp $ */
 
 /*****************************************************************************
 	OS Testing  - Silicon Graphics, Inc.
@@ -98,7 +98,6 @@ static void (*tst_setup_signal( int, void (*)(int)))(int);
 void
 tst_sig(int fork_flag, void (*handler)(), void (*cleanup)())
 {
-	char mesg[MAXMESG];		/* message buffer for tst_res */
 	int sig;
 #ifdef _SC_SIGRT_MIN
         long sigrtmin, sigrtmax;
@@ -225,10 +224,7 @@ tst_sig(int fork_flag, void (*handler)(), void (*cleanup)())
 
 	        default:
 		    if (tst_setup_signal(sig, handler) == SIG_ERR) {
-		        (void) sprintf(mesg,
-			    "signal() failed for signal %d. error:%d %s.",
-			    sig, errno, strerror(errno));
-		        tst_resm(TWARN, mesg);
+		        tst_resm(TWARN|TERRNO, "signal() failed for signal %d", sig);
 		    }
 		break;
             }
