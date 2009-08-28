@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: sighold02.c,v 1.10 2009/03/23 13:36:04 subrata_modak Exp $ */
+/* $Id: sighold02.c,v 1.11 2009/08/28 13:53:04 vapier Exp $ */
 /*****************************************************************************
  * OS Test - Silicon Graphics, Inc.  Eagan, Minnesota
  *
@@ -123,7 +123,6 @@ char *TCID = "sighold02";	/* Test program identifier.    */
 int TST_TOTAL = 2;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-char mesg[MAXMESG];		/* message buffer for tst_res */
 char signals_received[MAXMESG];
 int pid;			/* process id of child */
 int Fds1[2];			/* file descriptors for pipe - child 2 parent */
@@ -148,9 +147,9 @@ static void getout();
 static void timeout();
 static int read_pipe();
 static int write_pipe();
-static int setup_sigs();
+static int setup_sigs(char *mesg);
 static void handle_sigs();
-static int set_timeout();
+static int set_timeout(char *mesg);
 static void clear_timeout();
 
 int Timeout = 0;
@@ -195,9 +194,7 @@ int main(int ac, char **av)
 		 * fork off a child process
 		 */
 		if ((pid = FORK_OR_VFORK()) < 0) {
-			(void)sprintf(mesg, "fork() failed. error:%d %s.",
-				      errno, strerror(errno));
-			tst_brkm(TBROK, cleanup, mesg);
+			tst_brkm(TBROK|TERRNO, cleanup, "fork() failed");
 
 		} else if (pid > 0) {
 
@@ -207,7 +204,7 @@ int main(int ac, char **av)
 			/* wait for "ready" message from child */
 			if (read_pipe(PARENTSREADFD, 0) != 0) {
 				/* read_pipe() failed. */
-				tst_brkm(TBROK, getout, p_p.mesg);
+				tst_brkm(TBROK, getout, "%s", p_p.mesg);
 			}
 
 			if (STD_TIMING_ON) {
@@ -225,9 +222,9 @@ int main(int ac, char **av)
 			/* check for ready message */
 			if (p_p.result != TPASS) {
 				/* child setup did not go well */
-				tst_brkm(p_p.result, getout, p_p.mesg);
+				tst_brkm(p_p.result, getout, "%s", p_p.mesg);
 			} else if (STD_FUNCTIONAL_TEST) {
-				tst_resm(p_p.result, p_p.mesg);
+				tst_resm(p_p.result, "%s", p_p.mesg);
 			} else {	/* no pass results being issued */
 				Tst_count++;
 			}
@@ -258,11 +255,7 @@ int main(int ac, char **av)
 #endif
 				    ) {
 					if (kill(pid, sig) < 0) {
-						(void)sprintf(mesg,
-							      "kill() failed. sig:%d error:%d %s.",
-							      sig, errno,
-							      strerror(errno));
-						tst_brkm(TBROK, NULL, mesg);
+						tst_brkm(TBROK|TERRNO, NULL, "kill(%d, %d) failed", pid, sig);
 						getout();
 					}
 				}
@@ -273,23 +266,21 @@ int main(int ac, char **av)
 			 */
 			p_p.result = TPASS;
 			strcpy(p_p.mesg, "All signals were sent");
-			if (write_pipe(PARENTSWRITEFD) < 0) {
-				tst_brkm(TBROK, getout, mesg);
-			}
+			write_pipe(PARENTSWRITEFD);
 
 			/*
 			 * Get childs reply about received signals.
 			 */
 
 			if (read_pipe(PARENTSREADFD, 0) < 0) {
-				tst_brkm(TBROK, getout, mesg);
+				tst_brkm(TBROK, getout, "%s", p_p.mesg);
 			}
 
 			if (STD_FUNCTIONAL_TEST)
-				tst_resm(p_p.result, p_p.mesg);
+				tst_resm(p_p.result, "%s", p_p.mesg);
 
 			else if (p_p.result != TPASS)
-				tst_resm(p_p.result, p_p.mesg);
+				tst_resm(p_p.result, "%s", p_p.mesg);
 
 			else
 				Tst_count++;
@@ -298,11 +289,7 @@ int main(int ac, char **av)
 			 * wait for child
 			 */
 			if (wait(&term_stat) < 0) {
-				(void)sprintf(mesg,
-					      "wait() failed. error:%d %s.",
-					      errno, strerror(errno));
-				tst_brkm(TBROK, NULL, mesg);
-				getout();
+				tst_brkm(TBROK, getout, "wait() failed");
 			}
 
 		} else {
@@ -314,8 +301,7 @@ int main(int ac, char **av)
 #ifdef UCLINUX
 			if (self_exec(av[0], "dd", CHILDSWRITEFD, CHILDSREADFD)
 			    < 0) {
-				(void)sprintf(mesg, "self_exec failed");
-				tst_brkm(TBROK, cleanup, mesg);
+				tst_brkm(TBROK|TERRNO, cleanup, "self_exec() failed");
 			}
 #else
 			do_child();
@@ -340,9 +326,8 @@ void do_child()
 	p_p.result = TPASS;
 
 	/* set up signal handlers for the signals */
-	if (setup_sigs() < 0) {
+	if (setup_sigs(p_p.mesg) < 0) {
 		p_p.result = TBROK;
-		strcpy(p_p.mesg, mesg);
 
 	} else {
 		/* all set up to catch signals, now hold them */
@@ -401,7 +386,7 @@ void do_child()
 	 */
 	if (read_pipe(CHILDSREADFD, 0) != 0) {
 		p_p.result = TBROK;
-		strcpy(p_p.mesg, mesg);
+		strcpy(p_p.mesg, "read() pipe failed");
 	} else if (signals_received[0] == '\0') {
 		p_p.result = TPASS;
 		strcpy(p_p.mesg,
@@ -438,7 +423,7 @@ int fd;
 #endif
 
 	/* set timeout alarm in case the pipe is blocked */
-	if (set_timeout() < 0) {
+	if (set_timeout(p_p.mesg) < 0) {
 		/* an error occured, message in mesg */
 		return -1;
 	}
@@ -477,8 +462,8 @@ int fd;
 	       p_p.mesg);
 #endif
 	if (write(fd, (char *)&p_p, sizeof(struct pipe_packet)) < 0) {
-		(void)sprintf(mesg, "write() pipe failed. error:%d %s.",
-			      errno, strerror(errno));
+		if (pid)
+			tst_brkm(TBROK|TERRNO, getout, "write() pipe failed");
 		return -1;
 	}
 #ifdef debug
@@ -494,7 +479,7 @@ int fd;
  *       into mesg and return -1.
  ****************************************************************************/
 
-static int set_timeout()
+static int set_timeout(char *mesg)
 {
 	if (signal(SIGALRM, timeout) == SIG_ERR) {
 		(void)sprintf(mesg,
@@ -541,7 +526,7 @@ static void timeout()
  *       trouble, write message in mesg and return -1, else return 0.
  ****************************************************************************/
 
-static int setup_sigs()
+static int setup_sigs(char *mesg)
 {
 	int sig;
 
@@ -601,12 +586,8 @@ int sig;			/* the signal causing the execution of this handler */
 
 static void getout()
 {
-	if (kill(pid, SIGKILL) < 0) {
-		(void)sprintf(mesg,
-			      "kill() failed. Child may not have been killed. error:%d %s.",
-			      errno, strerror(errno));
-		tst_resm(TWARN, mesg);
-	}
+	if (kill(pid, SIGKILL) < 0)
+		tst_resm(TWARN|TERRNO, "kill(%d) failed", pid);
 	cleanup();
 }
 
@@ -619,18 +600,13 @@ void setup()
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* set up pipe for child sending to parent communications */
-	if (pipe(Fds1) < 0) {
-		(void)sprintf(mesg, "pipe() failed. error:%d %s.",
-			      errno, strerror(errno));
-		tst_brkm(TBROK, cleanup, mesg);
-	}
+	if (pipe(Fds1) < 0)
+		tst_brkm(TBROK|TERRNO, cleanup, "pipe() failed");
 
 	/* set up pipe for parent sending to child communications */
-	if (pipe(Fds2) < 0) {
-		(void)sprintf(mesg, "pipe() failed. error:%d %s.",
-			      errno, strerror(errno));
-		tst_brkm(TBROK, cleanup, mesg);
-	}
+	if (pipe(Fds2) < 0)
+		tst_brkm(TBROK|TERRNO, cleanup, "pipe() failed");
+
 #if debug
 	printf("child 2 parent Fds1[0] = %d, Fds1[1] = %d\n", Fds1[0], Fds1[1]);
 	printf("parent 2 child Fds2[0] = %d, Fds2[1] = %d\n", Fds2[0], Fds2[1]);
