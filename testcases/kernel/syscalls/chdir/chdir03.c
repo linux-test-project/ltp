@@ -139,18 +139,15 @@ int main(int ac, char **av)
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
 			} else if (TEST_ERRNO != EACCES) {
-				tst_resm(TFAIL, "expected EACCES - got %d",
-					 TEST_ERRNO);
+				tst_resm(TFAIL|TTERRNO, "expected EACCES");
 			} else {
 				TEST_ERROR_LOG(TEST_ERRNO);
-				tst_resm(TPASS, "expected failure - errno = %d"
-					 " : %s", TEST_ERRNO,
-					 strerror(TEST_ERRNO));
+				tst_resm(TPASS|TTERRNO, "expected failure");
 			}
 
 			/* reset the process ID to the saved ID (root) */
 			if (setuid(0) == -1) {
-				tst_resm(TINFO, "setuid(0) failed");
+				tst_resm(TINFO|TERRNO, "setuid(0) failed");
 			}
 
 		} else {	/* parent */
@@ -162,7 +159,7 @@ int main(int ac, char **av)
 
 		/* clean up things in case we are looping */
 		if (rmdir(good_dir) == -1) {
-			tst_brkm(TBROK, cleanup, "Couldn't remove directory");
+			tst_brkm(TBROK|TERRNO, cleanup, "rmdir(%s) failed", good_dir);
 		}
 	}
 	cleanup();
@@ -193,7 +190,7 @@ void setup()
 
 	/* get the currect directory name */
 	if ((cur_dir = getcwd(cur_dir, 0)) == NULL) {
-		tst_brkm(TBROK, cleanup, "Couldn't get current directory name");
+		tst_brkm(TBROK|TERRNO, cleanup, "Couldn't get current directory name");
 	}
 
 	sprintf(good_dir, "%s/%d", cur_dir, getpid());

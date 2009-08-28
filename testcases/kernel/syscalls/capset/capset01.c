@@ -120,13 +120,11 @@ int main(int ac, char **av)
 		TEST(capset(&header, &data));
 
 		if (TEST_RETURN == 0) {
-			tst_resm(TPASS, "capset() returned %d", TEST_RETURN);
+			tst_resm(TPASS, "capset() returned %ld", TEST_RETURN);
 		} else {
-			tst_resm(TFAIL, "Test Failed, capset()"
-				 " returned %d, errno = %d : %s."
+			tst_resm(TFAIL|TTERRNO, "Test Failed, capset() returned %ld"
 				 " Maybe you need to do `modprobe capability`?",
-				 TEST_RETURN, TEST_ERRNO, strerror(TEST_ERRNO)
-			    );
+				 TEST_RETURN);
 		}
 	}			/* End for TEST_LOOPING */
 
@@ -153,7 +151,7 @@ void setup()
 	header.version = _LINUX_CAPABILITY_VERSION;
 	header.pid = 0;
 	if ((capget(&header, &data)) == -1) {
-		tst_brkm(TBROK, tst_exit, "capget() failed");
+		tst_brkm(TBROK|TTERRNO, tst_exit, "capget() failed");
 	}
 
 }				/* End setup() */

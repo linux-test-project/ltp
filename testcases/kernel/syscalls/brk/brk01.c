@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: brk01.c,v 1.7 2009/03/23 13:35:39 subrata_modak Exp $ */
+/* $Id: brk01.c,v 1.8 2009/08/28 11:24:25 vapier Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -207,10 +207,9 @@ int main(int ac, char **av)
 		if (TEST_RETURN == -1) {
 
 			aft_brk_val = (long)sbrk(0);
-			tst_resm(TFAIL,
-				 "brk(%d) Failed, errno=%d : %s\n size before %d, after %d",
-				 nbrkpt, TEST_ERRNO, strerror(TEST_ERRNO),
-				 cur_brk_val, aft_brk_val);
+			tst_resm(TFAIL|TTERRNO,
+				 "brk(%ld) failed (size before %ld, after %ld)",
+				 nbrkpt, cur_brk_val, aft_brk_val);
 
 		} else {
 
@@ -223,11 +222,11 @@ int main(int ac, char **av)
 				if (aft_brk_val == nbrkpt) {
 
 					tst_resm(TPASS,
-						 "brk(%d) returned %d, new size verified by sbrk",
+						 "brk(%ld) returned %ld, new size verified by sbrk",
 						 nbrkpt, TEST_RETURN);
 				} else {
 					tst_resm(TFAIL,
-						 "brk(%d) returned %d, sbrk before %d, after %d",
+						 "brk(%ld) returned %ld, sbrk before %ld, after %ld",
 						 nbrkpt, TEST_RETURN,
 						 cur_brk_val, aft_brk_val);
 				}
@@ -259,20 +258,17 @@ void setup()
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/*if ((ulim_sz=ulimit(3,0)) == -1)
-	   tst_brkm(TBROK, cleanup, "ulimit(3,0) Failed, errno=%d : %s",
-	   errno, strerror(errno)); */
+	   tst_brkm(TBROK|TERRNO, cleanup, "ulimit(3,0) failed"); */
 
 	if (getrlimit(RLIMIT_DATA, &lim) == -1)
-		tst_brkm(TBROK, cleanup,
-			 "getrlimit(RLIMIT_DATA,0x%lld) Failed, errno=%d : %s",
-			 (void *)&lim, errno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "getrlimit(RLIMIT_DATA,%p) failed", &lim);
 	ulim_sz = lim.rlim_cur;
 
 #ifdef CRAY
 	if ((usr_mem_sz = sysconf(_SC_CRAY_USRMEM)) == -1)
-		tst_brkm(TBROK, cleanup,
-			 "sysconf(_SC_CRAY_USRMEM) Failed, errno=%d : %s",
-			 errno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "sysconf(_SC_CRAY_USRMEM) failed");
 
 	usr_mem_sz *= 8;	/* convert to bytes */
 #else
@@ -287,9 +283,7 @@ void setup()
 #define _SC_NPROC_ONLN _SC_NPROCESSORS_ONLN
 #endif
 	if ((ncpus = sysconf(_SC_NPROC_ONLN)) == -1)
-		tst_brkm(TBROK, cleanup,
-			 "sysconf(_SC_NPROC_ONLN) Failed, errno=%d : %s",
-			 errno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "sysconf(_SC_NPROC_ONLN) failed");
 
 	/*
 	 * allow 2*ncpus copies to run.

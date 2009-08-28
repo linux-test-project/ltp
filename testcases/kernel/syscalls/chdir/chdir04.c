@@ -141,13 +141,10 @@ int main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO == TC[i].error) {
-				tst_resm(TPASS, "expected failure - "
-					 "errno = %d : %s", TEST_ERRNO,
-					 strerror(TEST_ERRNO));
+				tst_resm(TPASS|TTERRNO, "expected failure");
 			} else {
-				tst_resm(TFAIL, "unexpected error - %d : %s - "
-					 "expected %d", TEST_ERRNO,
-					 strerror(TEST_ERRNO), TC[i].error);
+				tst_resm(TFAIL|TTERRNO, "unexpected error (expected %d)",
+					TC[i].error);
 			}
 		}
 	}
@@ -174,7 +171,7 @@ void setup()
 	bad_addr = mmap(0, 1, PROT_NONE,
 			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
 	if (bad_addr == MAP_FAILED) {
-		tst_brkm(TBROK, cleanup, "mmap failed");
+		tst_brkm(TBROK|TERRNO, cleanup, "mmap() failed");
 	}
 	TC[2].dname = bad_addr;
 #endif

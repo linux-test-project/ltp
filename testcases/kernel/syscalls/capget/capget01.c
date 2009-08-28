@@ -117,11 +117,10 @@ int main(int ac, char **av)
 		TEST(capget(&header, &data));
 
 		if (TEST_RETURN == 0) {
-			tst_resm(TPASS, "capget() returned %d", TEST_RETURN);
+			tst_resm(TPASS, "capget() returned %ld", TEST_RETURN);
 		} else {
-			tst_resm(TFAIL, "Test Failed, capget()"
-				 " returned %d, errno = %d : %s", TEST_RETURN,
-				 TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TTERRNO, "Test Failed, capget() returned %ld",
+				 TEST_RETURN);
 		}
 	}			/* End for TEST_LOOPING */
 

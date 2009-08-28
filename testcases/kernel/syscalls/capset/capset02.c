@@ -165,10 +165,8 @@ int main(int ac, char **av)
 				tst_resm(TPASS, "capset() returned -1,"
 					 " errno: %s", test_cases[i].errdesc);
 			} else {
-				tst_resm(TFAIL, "Test Failed, capset()"
-					 " returned %d, errno = %d : %s",
-					 TEST_RETURN, TEST_ERRNO,
-					 strerror(TEST_ERRNO));
+				tst_resm(TFAIL|TTERRNO, "Test Failed, capset() returned %ld",
+					 TEST_RETURN);
 			}
 			TEST_ERROR_LOG(TEST_ERRNO);
 		}
@@ -200,7 +198,7 @@ void setup()
 	 */
 	header.version = _LINUX_CAPABILITY_VERSION;
 	if ((capget(&header, &data)) == -1) {
-		tst_brkm(TBROK, tst_exit, "capget() failed");
+		tst_brkm(TBROK|TERRNO, tst_exit, "capget() failed");
 	}
 
 }				/* End setup() */
@@ -269,7 +267,7 @@ void test_setup(int i, char *argv0)
 		child_pid = FORK_OR_VFORK();
 		switch (child_pid) {
 		case -1:
-			tst_resm(TBROK, "fork() failed: %s", strerror(errno));
+			tst_resm(TBROK|TERRNO, "fork() failed");
 			cleanup();
 			break;
 		case 0:
@@ -288,8 +286,7 @@ void test_setup(int i, char *argv0)
 			header.pid = child_pid;
 			ltpuser = getpwnam(nobody_uid);
 			if (seteuid(ltpuser->pw_uid) == -1) {
-				tst_resm(TBROK, "seteuid() failed: %s",
-					 strerror(errno));
+				tst_resm(TBROK|TERRNO, "seteuid() failed");
 				cleanup();
 			}
 

@@ -96,14 +96,13 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		if ((ret = chdir(testdir)) != 0) {
-			perror("chdir");
-			tst_brkm(TBROK, cleanup, "chdir failed");
+			tst_brkm(TBROK|TERRNO, cleanup, "chdir(%s) failed", testdir);
 		 /*NOTREACHED*/}
 		if ((fd = creat(filname, 0000)) == -1) {
-			tst_brkm(TBROK, cleanup, "Cannot create %s", filname);
+			tst_brkm(TBROK|TERRNO, cleanup, "creat(%s) failed", filname);
 		 /*NOTREACHED*/}
 		if ((ddir = opendir(".")) == NULL) {
-			tst_brkm(TBROK, cleanup, "Cannot open . ");
+			tst_brkm(TBROK|TERRNO, cleanup, "opendir(.) failed");
 		 /*NOTREACHED*/}
 
 		filenames[0] = ".";
@@ -116,12 +115,10 @@ int main(int ac, char **av)
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "call succeeded on expected fail");
 		} else if (TEST_ERRNO != ENOTDIR) {
-			tst_resm(TFAIL, "received unexpected error - %d - "
-				 "Expected ENOTDIR", TEST_ERRNO);
+			tst_resm(TFAIL|TTERRNO, "received unexpected errno (wanted ENOTDIR)");
 		} else {
 			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TPASS, "received expected error - %d : %s",
-				 TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TPASS|TTERRNO, "received expected error");
 		}
 
 		/* reset things in case we are looping */
@@ -160,7 +157,7 @@ void setup(void)
 	sprintf(testdir, "Testdir.%d", getpid());
 
 	if (mkdir(testdir, 0700) == -1) {
-		tst_brkm(TBROK, cleanup, "Couldn't create test directory");
+		tst_brkm(TBROK|TERRNO, cleanup, "mkdir(%s) failed", testdir);
 	}
 }
 

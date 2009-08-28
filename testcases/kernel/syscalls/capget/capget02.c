@@ -152,10 +152,8 @@ int main(int ac, char **av)
 				tst_resm(TPASS, "capget() returned -1,"
 					 " errno: %s", test_cases[i].errdesc);
 			} else {
-				tst_resm(TFAIL, "Test Failed, capget()"
-					 " returned %d, errno = %d : %s",
-					 TEST_RETURN, TEST_ERRNO,
-					 strerror(TEST_ERRNO));
+				tst_resm(TFAIL|TTERRNO, "Test Failed, capget() returned %ld",
+					 TEST_RETURN);
 			}
 			TEST_ERROR_LOG(TEST_ERRNO);
 		}
