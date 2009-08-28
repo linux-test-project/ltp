@@ -20,7 +20,7 @@ $(TARGET): $(OBJS)
 	$(AR) -cr $@ $^
 
 clean:
-	rm -f $(TARGET) $(OBJS)
+	rm -f $(TARGET) *.o
 
 install: $(TARGET)
 	install -D -m 644 $(TARGET) $(DESTDIR)/$(PREFIX)/lib$(LIBSUFFIX)/$(TARGET)
