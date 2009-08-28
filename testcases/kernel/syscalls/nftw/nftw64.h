@@ -18,7 +18,8 @@
  * other person.  No title to or ownership of the software is
  * hereby transferred.
  */
-#ident "$Header: /cvsroot/ltp/ltp/testcases/kernel/syscalls/nftw/nftw64.h,v 1.1 2002/12/04 18:32:01 robbiew Exp $"
+
+/* $Header: /cvsroot/ltp/ltp/testcases/kernel/syscalls/nftw/nftw64.h,v 1.2 2009/08/28 10:18:24 vapier Exp $ */
 
 
 #ifndef _NFTW_H_
