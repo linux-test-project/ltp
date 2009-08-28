@@ -163,7 +163,7 @@ int main(int argc, char *argv[])
 			    (TEST_RETURN < 0 &&
 			     TEST_ERRNO != tdat[testno].experrno)) {
 				tst_resm(TFAIL, "%s ; returned"
-					 " %d (expected %d), errno %d (expected"
+					 " %ld (expected %d), errno %d (expected"
 					 " %d)", tdat[testno].desc,
 					 TEST_RETURN, tdat[testno].retval,
 					 TEST_ERRNO, tdat[testno].experrno);
@@ -205,8 +205,7 @@ void setup0(void)
 	if (tdat[testno].experrno == EBADF)
 		s = 400;	/* anything not an open file */
 	else if ((s = open("/dev/null", O_WRONLY)) == -1)
-		tst_brkm(TBROK, cleanup, "error opening /dev/null - "
-			 "errno: %s", strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "open(/dev/null) failed");
 	fromlen = sizeof(from);
 }
 
@@ -222,13 +221,11 @@ void setup1(void)
 	int n;
 
 	s = socket(tdat[testno].domain, tdat[testno].type, tdat[testno].proto);
-	if (s < 0) {
-		tst_brkm(TBROK, cleanup, "socket setup failed: %s",
-			 strerror(errno));
-	}
+	if (s < 0)
+		tst_brkm(TBROK|TERRNO, cleanup, "socket() failed");
 	if (tdat[testno].type == SOCK_STREAM &&
 	    connect(s, (struct sockaddr *)&sin1, sizeof(sin1)) < 0) {
-		tst_brkm(TBROK, cleanup, "connect failed: ", strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "connect failed");
 	}
 	/* Wait for something to be readable, else we won't detect EFAULT on recv */
 	FD_ZERO(&rdfds);
@@ -261,18 +258,15 @@ pid_t start_server(struct sockaddr_in *sin0)
 
 	sfd = socket(PF_INET, SOCK_STREAM, 0);
 	if (sfd < 0) {
-		tst_brkm(TBROK, cleanup, "server socket failed: %s",
-			 strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "server socket failed");
 		return -1;
 	}
 	if (bind(sfd, (struct sockaddr *)&sin1, sizeof(sin1)) < 0) {
-		tst_brkm(TBROK, cleanup, "server bind failed: %s",
-			 strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "server bind failed");
 		return -1;
 	}
 	if (listen(sfd, 10) < 0) {
-		tst_brkm(TBROK, cleanup, "server listen failed: %s",
-			 strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "server listen failed");
 		return -1;
 	}
 	switch ((pid = FORK_OR_VFORK())) {
@@ -286,8 +280,7 @@ pid_t start_server(struct sockaddr_in *sin0)
 #endif
 		break;
 	case -1:
-		tst_brkm(TBROK, cleanup, "server fork failed: %s",
-			 strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "server fork failed");
 		/* fall through */
 	default:		/* parent */
 		(void)close(sfd);
