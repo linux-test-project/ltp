@@ -161,10 +161,9 @@ int main(int ac, char **av)
 
 			/* check return code of access(2) */
 			if (TEST_RETURN == -1) {
-				tst_resm(TFAIL,
-					 "access(%s, %d) Failed, errno=%d : %s",
-					 file_name, access_mode, TEST_ERRNO,
-					 strerror(TEST_ERRNO));
+				tst_resm(TFAIL|TTERRNO,
+					 "access(%s, %#o) failed",
+					 file_name, access_mode);
 				continue;
 			}
 
@@ -216,11 +215,8 @@ void setup()
 		tst_brkm(TBROK, tst_exit, "Test must be run as root");
 	}
 	ltpuser = getpwnam(nobody_uid);
-	if (setuid(ltpuser->pw_uid) == -1) {
-		tst_resm(TINFO, "setuid failed to "
-			 "to set the effective uid to %d", ltpuser->pw_uid);
-		perror("setuid");
-	}
+	if (setuid(ltpuser->pw_uid) == -1)
+		tst_resm(TINFO|TERRNO, "setuid(%d) failed", ltpuser->pw_uid);
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
@@ -247,16 +243,16 @@ int setup1()
 
 	/* Creat a test file under above directory created */
 	if ((fd1 = open(TEST_FILE1, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, %#o) Failed, errno=%d :%s",
-			 TEST_FILE1, FILE_MODE, errno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT, %#o) failed",
+			 TEST_FILE1, FILE_MODE);
 	}
 
 	/* write some data into testfile */
 	if (write(fd1, write_buf, strlen(write_buf)) != strlen(write_buf)) {
-		tst_brkm(TBROK, cleanup,
-			 "write() failed on %s in setup1, errno=%d",
-			 TEST_FILE1, errno);
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "write(%s) failed in setup1",
+			 TEST_FILE1);
 	}
 
 	return 0;
@@ -273,9 +269,9 @@ int setup2()
 {
 	/* Creat a test file under temporary directory */
 	if ((fd2 = open(TEST_FILE2, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, %#o) Failed, errno=%d :%s",
-			 TEST_FILE2, FILE_MODE, errno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT, %#o) failed",
+			 TEST_FILE2, FILE_MODE);
 	}
 
 	return 0;
@@ -297,27 +293,27 @@ int setup3()
 
 	/* Creat a test file under temporary directory */
 	if ((fd3 = open(TEST_FILE3, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, %#o) Failed, errno=%d :%s",
-			 TEST_FILE3, FILE_MODE, errno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT, %#o) failed",
+			 TEST_FILE3, FILE_MODE);
 	}
 #ifdef UCLINUX
 	if (write(fd3, exechead, sizeof(exechead)) < 0) {
-		tst_brkm(TBROK, cleanup, "write(%s) Failed, errno=%d : %s",
-			 TEST_FILE3, errno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "write(%s) failed",
+			 TEST_FILE3);
 	}
 #endif
 
 	/* Close the test file created above */
 	if (close(fd3) == -1) {
-		tst_brkm(TBROK, cleanup, "close(%s) Failed, errno=%d : %s",
-			 TEST_FILE3, errno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "close(%s) failed",
+			 TEST_FILE3);
 	}
 
 	/* Set execute permission bits on the test file. */
 	if (chmod(TEST_FILE3, EXE_MODE) < 0) {
-		tst_brkm(TBROK, cleanup, "chmod() on %s Failed, errno=%d : %s",
-			 TEST_FILE3, errno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "chmod(%s, %#o) failed",
+			 TEST_FILE3, EXE_MODE);
 	}
 
 	return 0;
@@ -335,16 +331,16 @@ int setup4()
 {
 	/* Creat a temporary  file under temporary directory */
 	if ((fd4 = open(TEMP_FILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, %#o) Failed, errno=%d :%s",
-			 TEMP_FILE, FILE_MODE, errno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT, %#o) failed",
+			 TEMP_FILE, FILE_MODE);
 	}
 
 	/* Creat a symbolic link for temporary file */
 	if (symlink(TEMP_FILE, SYM_FILE) < 0) {
-		tst_brkm(TBROK, cleanup,
-			 "symlink(%s, %s) Failed, errno=%d : %s",
-			 TEMP_FILE, SYM_FILE, errno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "symlink(%s, %s) failed",
+			 TEMP_FILE, SYM_FILE);
 	}
 
 	return 0;
@@ -372,8 +368,7 @@ int Access_verify(int ind, int fflag)
 			 * correct.
 			 */
 		if (read(fd1, &read_buf, sizeof(read_buf)) < 0) {
-			tst_resm(TFAIL, "read() fails on %s, errno=%d : %s",
-				 TEST_FILE1, errno, strerror(errno));
+			tst_resm(TFAIL|TERRNO, "read(%s) failed", TEST_FILE1);
 			fflag = 0;
 		}
 		break;
@@ -383,8 +378,7 @@ int Access_verify(int ind, int fflag)
 			 * and if successful, access() behaviour is correct.
 			 */
 		if (write(fd2, write_buf, strlen(write_buf)) < 0) {
-			tst_resm(TFAIL, "write() fails on %s, errno=%d : %s",
-				 TEST_FILE2, errno, strerror(errno));
+			tst_resm(TFAIL|TERRNO, "write(%s) failed", TEST_FILE2);
 			fflag = 0;
 		}
 		break;
@@ -406,8 +400,7 @@ int Access_verify(int ind, int fflag)
 			 * is correct.
 			 */
 		if (write(fd4, write_buf, strlen(write_buf)) < 0) {
-			tst_resm(TFAIL, "write() fails on %s, errno=%d : %s",
-				 TEMP_FILE, errno, strerror(errno));
+			tst_resm(TFAIL|TERRNO, "write(%s) failed", TEMP_FILE);
 			fflag = 0;
 		}
 		break;
@@ -433,18 +426,12 @@ void cleanup()
 	TEST_CLEANUP;
 
 	/* Close the testfile(s) created in the setup()s */
-	if (close(fd1) == -1) {
-		tst_brkm(TFAIL, NULL, "close(%s) Failed, errno=%d : %s",
-			 TEST_FILE1, errno, strerror(errno));
-	}
-	if (close(fd2) == -1) {
-		tst_brkm(TFAIL, NULL, "close(%s) Failed, errno=%d : %s",
-			 TEST_FILE2, errno, strerror(errno));
-	}
-	if (close(fd4) == -1) {
-		tst_brkm(TFAIL, NULL, "close(%s) Failed, errno=%d : %s",
-			 TEMP_FILE, errno, strerror(errno));
-	}
+	if (close(fd1) == -1)
+		tst_brkm(TFAIL|TERRNO, NULL, "close(%s) failed", TEST_FILE1);
+	if (close(fd2) == -1)
+		tst_brkm(TFAIL|TERRNO, NULL, "close(%s) failed", TEST_FILE2);
+	if (close(fd4) == -1)
+		tst_brkm(TFAIL|TERRNO, NULL, "close(%s) failed", TEMP_FILE);
 
 	/*
 	 * Delete the test directory/file and temporary directory

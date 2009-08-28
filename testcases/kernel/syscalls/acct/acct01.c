@@ -77,9 +77,7 @@ char *argv[];
 			tst_resm(TCONF, "Test will not run.");
 			tst_exit();
 		} else {
-			tst_resm(TBROK,
-				 "Attempting to disable acct, but got= %d",
-				 errno);
+			tst_resm(TBROK|TERRNO, "Attempting to disable acct failed");
 			tst_exit();
 		}
 	}
@@ -96,9 +94,8 @@ char *argv[];
 
 	/* check the errno, for EACCESS */
 	if (errno != EACCES) {
-		tst_resm(TFAIL,
-			 "Attempt to use non-ordinary file didn't receive EACCESS error - received %d",
-			 errno);
+		tst_resm(TFAIL|TERRNO,
+			 "Attempt to use non-ordinary file didn't receive EACCESS error");
 		tst_exit();
 	} else
 		tst_resm(TPASS, "Received expected error: EACCESS");
@@ -116,9 +113,8 @@ char *argv[];
 
 	/* check the errno */
 	if (errno != ENOENT) {
-		tst_resm(TFAIL,
-			 "Attempt to set acct to non-existent file failed as expected but errno= %d",
-			 errno);
+		tst_resm(TFAIL|TERRNO,
+			 "Attempt to set acct to non-existent file failed as we wanted ENOENT");
 	} else
 		tst_resm(TPASS, "Received expected error: ENOENT");
 
@@ -127,15 +123,14 @@ char *argv[];
 	sprintf(tmpbuf, "./%s.%d", TCID, getpid());
 
 	if ((i = creat(tmpbuf, 0777)) == -1) {
-		tst_resm(TBROK, "Failure %d on opening %s", errno, tmpbuf);
+		tst_resm(TBROK|TERRNO, "creat(%s, 0777) failed", tmpbuf);
 		tst_exit();
 	}
 
 	close(i);
 
 	if (acct(tmpbuf) == -1) {
-		tst_resm(TBROK, "Failure %d on enabling acct file= %d",
-			 errno, tmpbuf);
+		tst_resm(TBROK|TERRNO, "acct(%s) failed", tmpbuf);
 		tst_exit();
 	}
 
@@ -164,9 +159,8 @@ char *argv[];
 
 	/* now disable accting */
 	if (acct(NULL) == -1) {
-		tst_resm(TBROK,
-			 "Attempt to do final disable of acct failed, errno= %d",
-			 errno);
+		tst_resm(TBROK|TERRNO,
+			 "Attempt to do final disable of acct failed");
 		tst_exit();
 	}
 

@@ -121,9 +121,7 @@ int main(int ac, char **av)
 
 		/* check return code of access(2) */
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL,
-				 "access(%s, F_OK) Failed, errno=%d : %s",
-				 TESTFILE, TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TTERRNO, "access(%s, F_OK) failed", TESTFILE);
 			continue;
 		}
 
@@ -174,11 +172,8 @@ void setup()
 		tst_brkm(TBROK, tst_exit, "Test must be run as root");
 	}
 	ltpuser = getpwnam(nobody_uid);
-	if (setuid(ltpuser->pw_uid) == -1) {
-		tst_resm(TINFO, "setuid failed to "
-			 "to set the effective uid to %d", ltpuser->pw_uid);
-		perror("setuid");
-	}
+	if (setuid(ltpuser->pw_uid) == -1)
+		tst_resm(TINFO|TERRNO, "setuid(%d) failed", ltpuser->pw_uid);
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
@@ -187,39 +182,33 @@ void setup()
 	tst_tmpdir();
 
 	/* Creat a test directory under temporary directory */
-	if (mkdir(TESTDIR, DIR_MODE) < 0) {
-		tst_brkm(TBROK, cleanup,
-			 "mkdir(%s, %#o) Failed, errno=%d : %s",
-			 TESTDIR, DIR_MODE, errno, strerror(errno));
-	}
+	if (mkdir(TESTDIR, DIR_MODE) < 0)
+		tst_brkm(TBROK|TERRNO, cleanup, "mkdir(%s, %#o) failed",
+			 TESTDIR, DIR_MODE);
 
 	/* Make sure test directory has search permissions set */
-	if (chmod(TESTDIR, DIR_MODE) < 0) {
-		tst_brkm(TBROK, cleanup,
-			 "chmod(%s, %#o) Failed, errno=%d : %s",
-			 TESTDIR, DIR_MODE, errno, strerror(errno));
-	}
+	if (chmod(TESTDIR, DIR_MODE) < 0)
+		tst_brkm(TBROK|TERRNO, cleanup, "chmod(%s, %#o) failed",
+			 TESTDIR, DIR_MODE);
 
 	/* Creat a test file under above directory created */
-	if ((fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, %#o) Failed, errno=%d :%s",
-			 TESTFILE, FILE_MODE, errno, strerror(errno));
-	}
+	fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE);
+	if (fd == -1)
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT, %#o) failed",
+			 TESTFILE, FILE_MODE);
 
 	/* Close the testfile created above */
-	if (close(fd) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "close(%s) Failed, errno=%d : %s",
-			 TESTFILE, errno, strerror(errno));
-	}
+	if (close(fd) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "close(%s) failed",
+			 TESTFILE);
 
 	/* Change the mode permissions on the testfile */
-	if (chmod(TESTFILE, 0) < 0) {
-		tst_brkm(TBROK, cleanup,
-			 "chmod(%s, 0) Failed, errno=%d : %s",
-			 TESTFILE, errno, strerror(errno));
-	}
+	if (chmod(TESTFILE, 0) < 0)
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "chmod(%s, 0) failed",
+			 TESTFILE);
 }
 
 /*

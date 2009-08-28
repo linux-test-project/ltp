@@ -196,7 +196,7 @@ int main(int ac, char **av)
 			TEST(access(file_name, access_mode));
 
 			if (TEST_RETURN != -1) {
-				tst_resm(TFAIL, "access() returned %d, "
+				tst_resm(TFAIL, "access() returned %ld, "
 					 "expected -1, errno:%d", TEST_RETURN,
 					 Test_cases[ind].exp_errno);
 				continue;
@@ -210,12 +210,11 @@ int main(int ac, char **av)
 			 * access mode.
 			 */
 			if (TEST_ERRNO == Test_cases[ind].exp_errno) {
-				tst_resm(TPASS, "access() fails, %s, errno:%d",
-					 test_desc, TEST_ERRNO);
+				tst_resm(TPASS|TTERRNO, "access() fails, %s",
+					 test_desc);
 			} else {
-				tst_resm(TFAIL, "access() fails, %s, errno:%d, "
-					 "expected errno:%d", test_desc,
-					 TEST_ERRNO, Test_cases[ind].exp_errno);
+				tst_resm(TFAIL|TTERRNO, "access() fails %s (expected errno %d)",
+					 test_desc, Test_cases[ind].exp_errno);
 			}
 		}		/* Test Case Looping */
 	}			/* End for TEST_LOOPING */
@@ -244,11 +243,8 @@ void setup()
 		tst_brkm(TBROK, tst_exit, "Test must be run as root");
 	}
 	ltpuser = getpwnam(nobody_uid);
-	if (setuid(ltpuser->pw_uid) == -1) {
-		tst_resm(TINFO, "setuid failed to "
-			 "to set the effective uid to %d", ltpuser->pw_uid);
-		perror("setuid");
-	}
+	if (setuid(ltpuser->pw_uid) == -1)
+		tst_resm(TINFO|TERRNO, "setuid(%d) failed", ltpuser->pw_uid);
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
@@ -260,7 +256,7 @@ void setup()
 	bad_addr = mmap(0, 1, PROT_NONE,
 			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
 	if (bad_addr == MAP_FAILED) {
-		tst_brkm(TBROK, cleanup, "mmap failed");
+		tst_brkm(TBROK|TERRNO, cleanup, "mmap failed");
 	}
 	Test_cases[5].pathname = bad_addr;
 #endif
@@ -280,6 +276,29 @@ int no_setup()
 	return 0;
 }
 
+int setup_file(const char *file, mode_t perms)
+{
+	int fd;		/* file handle for testfile */
+
+	/* Creat a test file under above directory created */
+	fd = open(file, O_RDWR | O_CREAT, FILE_MODE);
+	if (fd == -1)
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT, %#o) failed",
+			 file, FILE_MODE);
+
+	/* Close the testfile created above */
+	if (close(fd) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "close(%s) failed", file);
+
+	/* Change mode permissions on testfile */
+	if (chmod(file, perms) < 0)
+		tst_brkm(TBROK|TERRNO, cleanup, "chmod(%s, %#o) failed",
+			 file, perms);
+
+	return 0;
+}
+
 /*
  * setup1() - Setup function to test access() for return value -1
  *	      and errno EACCES when read access denied for specified
@@ -291,28 +310,7 @@ int no_setup()
  */
 int setup1()
 {
-	int fd1;		/* file handle for testfile */
-
-	/* Creat a test file under above directory created */
-	if ((fd1 = open(TEST_FILE1, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, %#o) Failed, errno=%d :%s",
-			 TEST_FILE1, FILE_MODE, errno, strerror(errno));
-	}
-
-	/* Close the testfile created above */
-	if (close(fd1) == -1) {
-		tst_brkm(TBROK, cleanup, "close(%s) Failed, errno=%d : %s",
-			 TEST_FILE1, errno, strerror(errno));
-	}
-
-	/* Change mode permissions on testfile */
-	if (chmod(TEST_FILE1, 0333) < 0) {
-		tst_brkm(TBROK, cleanup, "chmod() failed on %s, errno=%d",
-			 TEST_FILE1, errno);
-	}
-
-	return 0;
+	return setup_file(TEST_FILE1, 0333);
 }
 
 /*
@@ -325,28 +323,7 @@ int setup1()
  */
 int setup2()
 {
-	int fd2;		/* file handle for testfile */
-
-	/* Creat a test file under above directory created */
-	if ((fd2 = open(TEST_FILE2, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, %#o) Failed, errno=%d :%s",
-			 TEST_FILE2, FILE_MODE, errno, strerror(errno));
-	}
-
-	/* Close the testfile created above */
-	if (close(fd2) == -1) {
-		tst_brkm(TBROK, cleanup, "close(%s) Failed, errno=%d : %s",
-			 TEST_FILE2, errno, strerror(errno));
-	}
-
-	/* Change mode permissions on testfile */
-	if (chmod(TEST_FILE2, 0555) < 0) {
-		tst_brkm(TBROK, cleanup, "chmod() failed on %s, errno=%d",
-			 TEST_FILE2, errno);
-	}
-
-	return 0;
+	return setup_file(TEST_FILE2, 0555);
 }
 
 /*
@@ -359,28 +336,7 @@ int setup2()
  */
 int setup3()
 {
-	int fd3;		/* file handle for testfile */
-
-	/* Creat a test file under above directory created */
-	if ((fd3 = open(TEST_FILE3, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, %#o) Failed, errno=%d :%s",
-			 TEST_FILE3, FILE_MODE, errno, strerror(errno));
-	}
-
-	/* Close the testfile created above */
-	if (close(fd3) == -1) {
-		tst_brkm(TBROK, cleanup, "close(%s) Failed, errno=%d : %s",
-			 TEST_FILE3, errno, strerror(errno));
-	}
-
-	/* Change mode permissions on testfile */
-	if (chmod(TEST_FILE3, 0666) < 0) {
-		tst_brkm(TBROK, cleanup, "chmod() failed on %s, errno=%d",
-			 TEST_FILE3, errno);
-	}
-
-	return 0;
+	return setup_file(TEST_FILE3, 0666);
 }
 
 /*
@@ -393,22 +349,7 @@ int setup3()
  */
 int setup4()
 {
-	int fd4;		/* file handle for testfile */
-
-	/* Creat a test file under above directory created */
-	if ((fd4 = open(TEST_FILE4, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, %#o) Failed, errno=%d :%s",
-			 TEST_FILE4, FILE_MODE, errno, strerror(errno));
-	}
-
-	/* Close the testfile created above */
-	if (close(fd4) == -1) {
-		tst_brkm(TBROK, cleanup, "close(%s) Failed, errno=%d : %s",
-			 TEST_FILE4, errno, strerror(errno));
-	}
-
-	return 0;
+	return setup_file(TEST_FILE4, FILE_MODE);
 }
 
 /*

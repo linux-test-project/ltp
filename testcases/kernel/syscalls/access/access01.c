@@ -29,7 +29,7 @@
  *
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: access01.c,v 1.6 2009/03/23 13:35:39 subrata_modak Exp $ */
+/* $Id: access01.c,v 1.7 2009/08/28 10:46:41 vapier Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -190,16 +190,15 @@ int main(int ac, char **av)
 
 			/* check return code */
 			if (TEST_RETURN == -1 && Test_cases[tc].experrno == 0) {
-				tst_resm(TFAIL,
-					 "access(%s, %s) Failed, errno=%d : %s",
+				tst_resm(TFAIL|TTERRNO,
+					 "access(%s, %s) failed",
 					 Test_cases[tc].file,
-					 Test_cases[tc].string, TEST_ERRNO,
-					 strerror(TEST_ERRNO));
+					 Test_cases[tc].string);
 
 			} else if (TEST_RETURN != -1
 				   && Test_cases[tc].experrno != 0) {
 				tst_resm(TFAIL,
-					 "access(%s, %s) returned %d, exp -1, errno:%d",
+					 "access(%s, %s) returned %ld, exp -1, errno:%d",
 					 Test_cases[tc].file,
 					 Test_cases[tc].string, TEST_RETURN,
 					 Test_cases[tc].experrno);
@@ -211,7 +210,7 @@ int main(int ac, char **av)
 				if (STD_FUNCTIONAL_TEST) {
 					/* No Verification test, yet... */
 					tst_resm(TPASS,
-						 "access(%s, %s) returned %d",
+						 "access(%s, %s) returned %ld",
 						 Test_cases[tc].file,
 						 Test_cases[tc].string,
 						 TEST_RETURN);
@@ -256,22 +255,18 @@ void setup()
 
 	sprintf(Fname, "accessfile");
 
-	if ((fd = open(Fname, O_RDWR | O_CREAT, 06777)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT,06777) Failed, errno=%d : %s",
-			 Fname, errno, strerror(errno));
-	} else if (close(fd) == -1) {
-		tst_resm(TINFO, "close(%s) Failed, errno=%d : %s",
-			 Fname, errno, strerror(errno));
-	}
+	fd = open(Fname, O_RDWR | O_CREAT, 06777);
+	if (fd == -1)
+		tst_brkm(TBROK|TERRNO, cleanup,
+			"open(%s, O_RDWR|O_CREAT, 06777) failed", Fname);
+	else if (close(fd) == -1)
+		tst_resm(TINFO|TERRNO, "close(%s) failed", Fname);
 
 	/*
 	 * force the mode to be set to 6777
 	 */
-	if (chmod(Fname, 06777) == -1) {
-		tst_brkm(TBROK, cleanup, "chmod(%s, 06777) failed, errno:%d %s",
-			 Fname, errno, strerror(errno));
-	}
+	if (chmod(Fname, 06777) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "chmod(%s, 06777) failed", Fname);
 
 	stat(Fname, &stbuf);
 

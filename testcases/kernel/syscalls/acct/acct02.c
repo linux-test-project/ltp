@@ -78,9 +78,8 @@ char *argv[];
 	/* Attempt to turn off acct as non-root
 	 */
 	if (acct(NULL) != -1) {
-		tst_resm(TBROK,
-			 "Non-root attempting to disable acct: didn't fail",
-			 errno);
+		tst_resm(TBROK|TERRNO,
+			 "Non-root attempting to disable acct: didn't fail");
 		tst_exit();
 	}
 
@@ -91,9 +90,8 @@ char *argv[];
 			tst_resm(TCONF, "Test will not run.");
 			tst_exit();
 		} else {
-			tst_resm(TBROK,
-				 "Non-root acct disable - errno expect: %d got: %d",
-				 EPERM, errno);
+			tst_resm(TBROK|TERRNO,
+				 "Non-root acct disable failed as we wanted EPERM errno");
 			tst_exit();
 		}
 	} else
@@ -101,16 +99,14 @@ char *argv[];
 
 //-------------------------------------------------
 	if (acct("/anystring") != -1) {
-		tst_resm(TBROK,
-			 "Non-root attempting to enable acct: didn't fail",
-			 errno);
+		tst_resm(TBROK|TERRNO,
+			 "Non-root attempting to enable acct: didn't fail");
 		tst_exit();
 	}
 
 	if (errno != EPERM) {
-		tst_resm(TFAIL,
-			 "Non-root acct enable - errno expect: %d got: %d",
-			 EPERM, errno);
+		tst_resm(TFAIL|TERRNO,
+			 "Non-root acct enable failed as we wanted EPERM errno");
 		tst_exit();
 	} else
 		tst_resm(TPASS, "Received expected error: EPERM");
