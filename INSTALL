@@ -1,4 +1,4 @@
-$Id: INSTALL,v 1.24 2009/05/29 10:06:08 subrata_modak Exp $
+$Id: INSTALL,v 1.25 2009/08/28 05:33:40 subrata_modak Exp $
 
 About configuration
 -------------------
@@ -67,6 +67,9 @@ contributions are welcome.
 2. Untar the ltp tarball into a spare directory.  There is not a
    standard location for it yet.  We put it in our home directory
    while we're working on it.
+   Note that the full path to this location must be accessible for
+   unprivileged users, as some tests are run as a different user than root.
+   Hence /root is not a good choice on several distributions.
 
 3. Run "make" to build everything.
    *NOTE: Some of the Makefiles (example: pan/Makefile) require the lex (or
