@@ -76,10 +76,8 @@ int main(int ac, char **av)
 		sig = 0;
 		exno = 1;
 
-		if ((pid = FORK_OR_VFORK()) == -1) {
-			tst_brkm(TBROK, cleanup, "fork failed, errno=%d",
-				 errno, strerror(errno));
-		}
+		if ((pid = FORK_OR_VFORK()) == -1)
+			tst_brkm(TBROK|TERRNO, cleanup, "fork() failed");
 
 		if (pid == 0) {	/* parent */
 			exit(exno);

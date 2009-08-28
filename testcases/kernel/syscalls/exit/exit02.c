@@ -98,11 +98,8 @@ int main(int ac, char **av)
 
 		exno = sig = 0;
 
-		if ((pid = FORK_OR_VFORK()) == -1) {
-			tst_brkm(TBROK, cleanup,
-				 "fork failed, error no = %d : %s", errno,
-				 strerror(errno));
-		}
+		if ((pid = FORK_OR_VFORK()) == -1)
+			tst_brkm(TBROK|TERRNO, cleanup, "fork() failed");
 
 		if (pid == 0) {	/* child */
 			sleep(1);
