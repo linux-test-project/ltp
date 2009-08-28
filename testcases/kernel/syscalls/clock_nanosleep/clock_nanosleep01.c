@@ -295,7 +295,7 @@ static int do_test(struct test_case *tc)
          */
         TEST(rc = clock_gettime(tc->clk_id, &beftp));
         if (rc < 0) {
-                tst_resm(TFAIL, "iclock_gettime failed - errno = %d : %s", TEST_ERRNO, strerror(TEST_ERRNO));
+                tst_resm(TFAIL|TTERRNO, "iclock_gettime failed");
                 result = 1;
                 goto EXIT;
         }
@@ -455,7 +455,7 @@ int main(int ac, char **av) {
 		                break;
 
 	        default:
-                 	   	tst_resm(TFAIL, "%s failed - errno = %d : %s", TCID, TEST_ERRNO, strerror(TEST_ERRNO));
+                 	   	tst_resm(TFAIL, "clock_nanosleep failed");
         		        tst_resm(TINFO,"NG");
 				cleanup();
 				tst_exit();

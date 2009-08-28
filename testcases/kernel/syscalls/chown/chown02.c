@@ -264,21 +264,21 @@ int setup1()
 
 	/* Creat a testfile and close it */
 	if ((fd = open(TESTFILE1, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, %o) Failed, errno=%d : %s",
-			 TESTFILE1, FILE_MODE, errno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT, %o) failed",
+			 TESTFILE1, FILE_MODE);
 	}
 	if (close(fd) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "close(%s) Failed, errno=%d : %s",
-			 TESTFILE1, errno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "close(%s) failed",
+			 TESTFILE1);
 	}
 
 	/* Set setuid/setgid bits on the test file created */
 	if (chmod(TESTFILE1, NEW_PERMS1) != 0) {
-		tst_brkm(TBROK, cleanup,
-			 "chmod(%s) Failed, errno=%d : %s",
-			 TESTFILE1, errno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "chmod(%s) failed",
+			 TESTFILE1);
 	}
 	return 0;
 }				/* End setup1() */
@@ -295,21 +295,21 @@ int setup2()
 
 	/* Creat a testfile and close it */
 	if ((fd = open(TESTFILE2, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, %o) Failed, errno=%d : %s",
-			 TESTFILE2, FILE_MODE, errno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT, %o) failed",
+			 TESTFILE2, FILE_MODE);
 	}
 	if (close(fd) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "close(%s) Failed, errno=%d : %s",
-			 TESTFILE2, errno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "close(%s) failed",
+			 TESTFILE2);
 	}
 
 	/* Set setgid bit on the test file created */
 	if (chmod(TESTFILE2, NEW_PERMS2) != 0) {
-		tst_brkm(TBROK, cleanup,
-			 "chmod(%s) Failed, errno=%d : %s",
-			 TESTFILE2, errno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "chmod(%s) failed",
+			 TESTFILE2);
 	}
 	return 0;
 }

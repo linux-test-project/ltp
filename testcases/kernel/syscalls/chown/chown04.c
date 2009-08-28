@@ -194,7 +194,7 @@ int main(int ac, char **av)
 
 			/* Check return code from chown(2) */
 			if (TEST_RETURN != -1) {
-				tst_resm(TFAIL, "chown() returned %d, expected "
+				tst_resm(TFAIL, "chown() returned %ld, expected "
 					 "-1, errno:%d", TEST_RETURN,
 					 Test_cases[ind].exp_errno);
 				continue;
@@ -203,13 +203,13 @@ int main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO == Test_cases[ind].exp_errno) {
-				tst_resm(TPASS,
-					 "chown() fails, %s, errno:%d",
-					 test_desc, TEST_ERRNO);
+				tst_resm(TPASS|TTERRNO,
+					 "chown() fails, %s",
+					 test_desc);
 			} else {
-				tst_resm(TFAIL, "chown() fails, %s, errno:%d, "
-					 "expected errno:%d", test_desc,
-					 TEST_ERRNO, Test_cases[ind].exp_errno);
+				tst_resm(TFAIL|TTERRNO,
+					 "chown() fails, %s, expected errno:%d",
+					 test_desc, Test_cases[ind].exp_errno);
 			}
 		}		/* End of TEST CASE LOOPING. */
 	}
@@ -239,21 +239,17 @@ void setup()
 	/* Capture unexpected signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	if (getcwd(test_home, sizeof(test_home)) == NULL) {
-		tst_brkm(TBROK, cleanup,
+	if (getcwd(test_home, sizeof(test_home)) == NULL)
+		tst_brkm(TBROK|TERRNO, cleanup,
 			 "getcwd(3) fails to get working directory of process");
-	}
 
 	/* Switch to nobody user for correct error code collection */
 	if (geteuid() != 0) {
 		tst_brkm(TBROK, tst_exit, "Test must be run as root");
 	}
 	ltpuser = getpwnam(nobody_uid);
-	if (seteuid(ltpuser->pw_uid) == -1) {
-		tst_resm(TINFO, "seteuid failed to "
-			 "to set the effective uid to %d", ltpuser->pw_uid);
-		perror("seteuid");
-	}
+	if (seteuid(ltpuser->pw_uid) == -1)
+		tst_resm(TINFO|TERRNO, "seteuid(%d) failed", ltpuser->pw_uid);
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
@@ -264,7 +260,7 @@ void setup()
 	bad_addr = mmap(0, 1, PROT_NONE,
 			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
 	if (bad_addr == MAP_FAILED) {
-		tst_brkm(TBROK, cleanup, "mmap failed");
+		tst_brkm(TBROK|TERRNO, cleanup, "mmap failed");
 	}
 
 	Test_cases[3].pathname = bad_addr;
@@ -303,24 +299,21 @@ int setup1()
 	old_uid = geteuid();
 
 	fd = open(TEST_FILE1, O_RDWR|O_CREAT, 0666);
-	if (fd == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, 0666) failed, errno=%d : %s",
-			 TEST_FILE1, errno, strerror(errno));
-	}
+	if (fd == -1)
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT, 0666) failed",
+			 TEST_FILE1);
 
 	seteuid(0);
 	if (fchown(fd, 0, 0) < 0)
-		tst_brkm(TBROK, cleanup,
+		tst_brkm(TBROK|TERRNO, cleanup,
 			 "Fail to modify %s ownership(s)!", TEST_FILE1);
 
 	seteuid(old_uid);
 
-	if (close(fd) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "close(%s) Failed, errno=%d : %s",
-			 TEST_FILE1, errno, strerror(errno));
-	}
+	if (close(fd) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "close(%s) failed",
+			 TEST_FILE1);
 
 	return 0;
 }
@@ -341,27 +334,25 @@ int setup2()
 	int fd;			/* file handle for testfile */
 
 	/* Creat a test directory */
-	if (mkdir(DIR_TEMP, MODE_RWX) < 0) {
-		tst_brkm(TBROK, cleanup, "mkdir(2) of %s failed", DIR_TEMP);
-	}
+	if (mkdir(DIR_TEMP, MODE_RWX) < 0)
+		tst_brkm(TBROK|TERRNO, cleanup, "mkdir(%s) failed", DIR_TEMP);
 
 	/* Creat a testfile under above test directory */
-	if ((fd = open(TEST_FILE2, O_RDWR | O_CREAT, 0666)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, 0666) failed, errno=%d : %s",
-			 TEST_FILE2, errno, strerror(errno));
-	}
+	fd = open(TEST_FILE2, O_RDWR | O_CREAT, 0666);
+	if (fd == -1)
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT, 0666) failed",
+			 TEST_FILE2);
+
 	/* Close the testfile created */
-	if (close(fd) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "close(%s) Failed, errno=%d : %s",
-			 TEST_FILE2, errno, strerror(errno));
-	}
+	if (close(fd) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "close(%s) failed", TEST_FILE2);
 
 	/* Modify mode permissions on test directory */
-	if (chmod(DIR_TEMP, FILE_MODE) < 0) {
-		tst_brkm(TBROK, cleanup, "chmod(2) of %s failed", DIR_TEMP);
-	}
+	if (chmod(DIR_TEMP, FILE_MODE) < 0)
+		tst_brkm(TBROK|TERRNO, cleanup, "chmod(%s) failed", DIR_TEMP);
+
 	return 0;
 }
 
@@ -379,17 +370,14 @@ int setup3()
 	int fd;			/* file handle for test file */
 
 	/* Creat a testfile under temporary directory */
-	if ((fd = open("t_file", O_RDWR | O_CREAT, MODE_RWX)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(2) on t_file failed, errno=%d : %s",
-			 errno, strerror(errno));
-	}
+	fd = open("t_file", O_RDWR | O_CREAT, MODE_RWX);
+	if (fd == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "open(t_file) failed");
+
 	/* close the test file */
-	if (close(fd) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "close(t_file) Failed, errno=%d : %s",
-			 errno, strerror(errno));
-	}
+	if (close(fd) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "close(t_file) failed");
+
 	return 0;
 }
 
@@ -427,9 +415,8 @@ void cleanup()
 	TEST_CLEANUP;
 
 	/* Restore mode permissions on test directory created in setup2() */
-	if (chmod(DIR_TEMP, MODE_RWX) < 0) {
-		tst_resm(TBROK, "chmod(2) of %s failed", DIR_TEMP);
-	}
+	if (chmod(DIR_TEMP, MODE_RWX) < 0)
+		tst_resm(TBROK|TERRNO, "chmod(%s) failed", DIR_TEMP);
 
 	/* Remove files and temporary directory created */
 	tst_rmdir();

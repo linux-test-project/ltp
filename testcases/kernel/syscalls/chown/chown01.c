@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: chown01.c,v 1.5 2009/03/23 13:35:39 subrata_modak Exp $ */
+/* $Id: chown01.c,v 1.6 2009/08/28 11:59:17 vapier Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -165,10 +165,9 @@ int main(int ac, char **av)
 		/* check return code */
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL,
-				 "chown(%s, %d,%d) Failed, errno=%d : %s",
-				 fname, uid, gid, TEST_ERRNO,
-				 strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TTERRNO,
+				 "chown(%s, %d,%d) failed",
+				 fname, uid, gid);
 		} else {
 
 	    /***************************************************************
@@ -176,7 +175,7 @@ int main(int ac, char **av)
 	     ***************************************************************/
 			if (STD_FUNCTIONAL_TEST) {
 				/* No Verification test, yet... */
-				tst_resm(TPASS, "chown(%s, %d,%d) returned %d",
+				tst_resm(TPASS, "chown(%s, %d,%d) returned %ld",
 					 fname, uid, gid, TEST_RETURN);
 			}
 		}		/* end else */
@@ -211,16 +210,16 @@ void setup()
 
 	sprintf(fname, "t_%d", getpid());
 	if ((fd = open(fname, O_RDWR | O_CREAT, 0700)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT,0700) Failed, errno=%d : %s",
-			 fname, errno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT,0700) failed",
+			 fname);
 	} else if (write(fd, &buf, strlen(buf)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "write(%s, &buf, strlen(buf)) Failed, errno=%d : %s",
-			 fname, errno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "write(%s, &buf, strlen(buf)) failed",
+			 fname);
 	} else if (close(fd) == -1) {
-		tst_brkm(TBROK, cleanup, "close(%s) Failed, errno=%d : %s",
-			 fname, errno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "close(%s) failed",
+			 fname);
 	}
 }				/* End setup() */
 

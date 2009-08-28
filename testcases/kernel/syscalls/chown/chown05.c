@@ -219,16 +219,13 @@ void setup()
 	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
-	if ((fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, %o) Failed, errno=%d : %s",
-			 TESTFILE, FILE_MODE, errno, strerror(errno));
-	}
-	if (close(fd) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "close(%s) Failed, errno=%d : %s",
-			 TESTFILE, errno, strerror(errno));
-	}
+	fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE);
+	if (fd == -1)
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT, %o) failed",
+			 TESTFILE, FILE_MODE);
+	if (close(fd) == -1)
+		tst_brkm(TBROK, cleanup, "close(%s) failed", TESTFILE);
 
 }				/* End setup() */
 

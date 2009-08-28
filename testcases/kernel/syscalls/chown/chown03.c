@@ -213,45 +213,32 @@ void setup()
 	}
 
 	ltpuser = getpwnam(nobody_uid);
-	if (setegid(ltpuser->pw_gid) == -1) {
-		tst_resm(TINFO, "setegid failed to "
-			 "to set the effective uid to %d", ltpuser->pw_gid);
-		perror("setegid");
-	}
-	if (seteuid(ltpuser->pw_uid) == -1) {
-		tst_resm(TINFO, "seteuid failed to "
-			 "to set the effective uid to %d", ltpuser->pw_uid);
-		perror("seteuid");
-	}
+	if (setegid(ltpuser->pw_gid) == -1)
+		tst_resm(TINFO|TERRNO, "setegid(%d) failed", ltpuser->pw_gid);
+	if (seteuid(ltpuser->pw_uid) == -1)
+		tst_resm(TINFO|TERRNO, "seteuid(%d) failed", ltpuser->pw_uid);
 
 	/* Create a test file under temporary directory */
-	if ((fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, %o) Failed, errno=%d : %s",
-			 TESTFILE, FILE_MODE, errno, strerror(errno));
-	}
+	if ((fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT, %o) failed",
+			 TESTFILE, FILE_MODE);
 
 	if (seteuid(0) == -1)
-		 tst_brkm(TBROK, cleanup, "Couldn't switch to user root: %s",
-				strerror(errno));
+		 tst_brkm(TBROK|TERRNO, cleanup, "Couldn't switch to user root");
 
 	if (fchown(fd, -1, 0) < 0)
-		tst_brkm(TBROK, cleanup, "Fail to modify Ownership of %s: %s",
-				TESTFILE, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "fchown(%s) failed", TESTFILE);
 
 	if (fchmod(fd, NEW_PERMS) < 0)
-		tst_brkm(TBROK, cleanup, "Fail to modify Mode of %s: %s",
-				TESTFILE, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "fchmod(%s) failed", TESTFILE);
 
 	if (seteuid(ltpuser->pw_uid) == -1)
-		 tst_brkm(TBROK, cleanup, "Couldn't switch to user nobody: %s",
-				strerror(errno));
+		 tst_brkm(TBROK|TERRNO, cleanup, "Couldn't switch to user nobody");
 
 	/* Close the test file created above */
-	if (close(fd) == -1) {
-		tst_brkm(TBROK, cleanup, "close(%s) Failed, errno=%d : %s",
-			 TESTFILE, errno, strerror(errno));
-	}
+	if (close(fd) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "close(%s) failed", TESTFILE);
 }				/* End setup() */
 
 /*
