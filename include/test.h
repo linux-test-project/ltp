@@ -31,7 +31,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: test.h,v 1.20 2009/08/28 08:33:04 subrata_modak Exp $ */
+/* $Id: test.h,v 1.21 2009/08/28 12:43:06 vapier Exp $ */
 
 #ifndef __TEST_H__
 #define __TEST_H__
@@ -222,14 +222,11 @@ void tst_getkver(int *k1, int *k2, int *k3);
 int tst_kvercmp(int r1, int r2, int r3);
 
 /*
- * Function from lib/tst_is_cwd_nfs.c
+ * Function from lib/tst_is_cwd.c
  */
 int tst_is_cwd_nfs(void);
-
-/*
- * Function from lib/tst_is_cwd_tmpfs.c
- */
 int tst_is_cwd_tmpfs(void);
+int tst_is_cwd_ramfs(void);
 
 /*
  * Function from lib/tst_cwd_has_free.c
