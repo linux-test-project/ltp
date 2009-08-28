@@ -113,25 +113,11 @@ void setup() {
         tst_tmpdir();
 }
 
-int errnochoose(void)  // choose the relative errno
-{
-        switch errno
-        {
-                case EFAULT: 
-			perror("EFAULT");
-                        break;
-                case EINVAL: perror("EINVAL");
-                        break;
-                case EPERM: perror("EPERM");
-                        break;
-                case ESRCH: perror("ESRCH");
-                        break;
-                default: perror("other errno");
-                        break;
-        }
-        return 0 ;
-}
-
+#define QUICK_TEST(t) \
+do { \
+	TEST(t); \
+	tst_resm((TEST_RETURN == -1 ? TPASS : TFAIL) | TTERRNO, #t); \
+} while (0)
 
 int main(int ac, char **av) {
         int lc,num,i;                 /* loop counter */
@@ -139,7 +125,6 @@ int main(int ac, char **av) {
 	cpu_set_t mask;
 	unsigned int len = sizeof(cpu_set_t);
 
-	
         /* parse standard options */
         if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
              tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
@@ -155,30 +140,18 @@ int main(int ac, char **av) {
         for (lc = 0; TEST_LOOPING(lc); ++lc) {
                 Tst_count = 0;
                 for (testno = 0; testno < TST_TOTAL; ++testno) {
-                     TEST(sched_getaffinity(0,len,(cpu_set_t *)-1));     //call sched_getaffinity()
-                     if(TEST_RETURN == -1) {
-			errnochoose();
-                     }
-		
-                     TEST(sched_getaffinity(0,0,&mask));     //call sched_getaffinity()
-                     if(TEST_RETURN == -1) {
-			errnochoose();
-                     }
+                     QUICK_TEST(sched_getaffinity(0, len, (cpu_set_t *)-1));
+                     QUICK_TEST(sched_getaffinity(0, 0, &mask));
+                     QUICK_TEST(sched_getaffinity(getpid() + 1, len, &mask));
 
-                     TEST(sched_getaffinity(getpid()+1,len,&mask));     //call sched_getaffinity()
-                     if(TEST_RETURN == -1) {
-			errnochoose();
-                     }
-			
 		     CPU_ZERO(&mask); //clear
                      TEST(sched_getaffinity(0,len,&mask));     //call sched_getaffinity()
 		     if(TEST_RETURN == -1) {
-                 	   tst_resm(TFAIL, "%s failed -could not get cpu affinity errno = %d : %s", TCID, TEST_ERRNO, strerror(TEST_ERRNO));
-			errnochoose();
+                 	   tst_resm(TFAIL|TTERRNO, "could not get cpu affinity");
 			cleanup();
 			tst_exit();
                      } else {
-				tst_resm(TINFO,"cpusetsize is %d cpu_set_t mask is %d",len,mask);
+				tst_resm(TINFO,"cpusetsize is %d", len);
 				tst_resm(TINFO,"mask.__bits[0] = %lu ",mask.__bits[0]);
 				for(i=0;i<num;i++){    // check the processor
 	                        	TEST(CPU_ISSET(i,&mask));
