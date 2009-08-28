@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: sigrelse01.c,v 1.13 2009/03/23 13:36:06 subrata_modak Exp $ */
+/* $Id: sigrelse01.c,v 1.14 2009/08/28 14:10:16 vapier Exp $ */
 /*****************************************************************************
  * OS Test - Silicon Graphics, Inc.  Eagan, Minnesota
  *
@@ -220,9 +220,7 @@ int main(int argc, char **argv)
 		 * fork off a child process
 		 */
 		if ((pid = FORK_OR_VFORK()) < 0) {
-			(void)sprintf(mesg, "fork() failed. errno:%d %s.",
-				      errno, strerror(errno));
-			tst_brkm(TBROK, cleanup, mesg);
+			tst_brkm(TBROK|TERRNO, cleanup, "fork() failed");
 
 		} else if (pid > 0) {
 			parent();
@@ -231,8 +229,7 @@ int main(int argc, char **argv)
 #ifdef UCLINUX
 			if (self_exec(argv[0], "dd", pipe_fd[1], pipe_fd2[0]) <
 			    0) {
-				(void)sprintf(mesg, "self_exec failed");
-				tst_brkm(TBROK, cleanup, mesg);
+				tst_brkm(TBROK|TERRNO, cleanup, "self_exec() failed");
 			}
 #else
 			child();
@@ -267,12 +264,12 @@ static void parent()
 	/* wait for "ready" message from child */
 	if ((str = read_pipe(pipe_fd[0])) == NULL) {
 		/* read_pipe() failed. */
-		tst_brkm(TBROK, getout, mesg);
+		tst_brkm(TBROK, getout, "%s", mesg);
 	}
 
 	if (strcmp(str, READY) != 0) {
 		/* child setup did not go well */
-		tst_brkm(TBROK, getout, str);
+		tst_brkm(TBROK, getout, "%s", str);
 	}
 
 	/*
@@ -283,52 +280,32 @@ static void parent()
 		if (choose_sig(sig)) {
 			if (kill(pid, sig) < 0) {
 				if (errno == ESRCH) {
-					if (kill(pid, SIGTERM) < 0) {
-						(void)sprintf(mesg,
-							      "kill(%d, %d) failed. error:%d %s.\n\
-kill(%d, SIGTERM) also failed.\n", pid, sig, ESRCH, strerror(ESRCH), pid);
-					} else {
-						(void)sprintf(mesg,
-							      "kill(%d, %d) failed. error:%d %s.\n\
-UT kill(%d, SIGTERM) was successful\n", pid, sig, ESRCH, strerror(ESRCH),
-							      pid);
-					}
-				} else {
-					(void)sprintf(mesg,
-						      "kill(%d, %d) failed. error:%d %s.",
-						      pid, sig, errno,
-						      strerror(errno));
-				}
-				tst_brkm(TBROK, getout, mesg);
+					if (kill(pid, SIGTERM) < 0)
+						tst_brkm(TBROK|TERRNO, getout,
+							"kill(%d, %d) and kill(%d, SIGTERM) failed", pid, sig, pid);
+					else
+						tst_brkm(TBROK|TERRNO, getout,
+							"kill(%d, %d) failed, but kill(%d, SIGTERM) worked", pid, sig, pid);
+				} else
+					tst_brkm(TBROK|TERRNO, getout, "kill(%d, %d) failed", pid, sig);
 			}
 		}
 	}
 
 	if (write_pipe(pipe_fd2[1], READY) < 0) {
-		/*
-		 * write_pipe() failed.$
-		 */
-		(void)sprintf(mesg,
-			      "Unable to tell child to go, write to pipe failed");
-		tst_brkm(TBROK, getout, mesg);
+		tst_brkm(TBROK|TERRNO, getout, "Unable to tell child to go, write to pipe failed");
 	}
 
 	/*
 	 * child is now releasing signals, wait and check exit value
 	 */
-	if (wait(&term_stat) < 0) {
-		(void)sprintf(mesg, "wait() failed. error:%d %s.",
-			      errno, strerror(errno));
-		tst_brkm(TBROK, getout, mesg);
-	}
+	if (wait(&term_stat) < 0)
+		tst_brkm(TBROK|TERRNO, getout, "wait() failed");
 
 	/* check child's signal exit value */
-	if ((sig = CHILD_SIG(term_stat)) != 0) {
+	if ((sig = CHILD_SIG(term_stat)) != 0)
 		/* the child was zapped by a signal */
-		(void)sprintf(mesg, "Unexpected signal killed child. sig:%d.",
-			      sig);
-		tst_brkm(TBROK, cleanup, mesg);
-	}
+		tst_brkm(TBROK, cleanup, "Unexpected signal %d killed child", sig);
 
 	/* get child exit value */
 
@@ -339,7 +316,7 @@ UT kill(%d, SIGTERM) was successful\n", pid, sig, ESRCH, strerror(ESRCH),
 		/* sig_array sent back on pipe, check it out */
 		if ((array = (int *)read_pipe(pipe_fd[0])) == NULL) {
 			/* read_pipe() failed. */
-			tst_resm(TBROK, mesg);
+			tst_resm(TBROK, "%s", mesg);
 			break;
 		}
 #if DEBUG > 1
@@ -364,7 +341,7 @@ UT kill(%d, SIGTERM) was successful\n", pid, sig, ESRCH, strerror(ESRCH),
 		}		/* endfor */
 
 		if (fail == TRUE)
-			tst_resm(TFAIL, big_mesg);
+			tst_resm(TFAIL, "%s", big_mesg);
 		else
 			tst_resm(TPASS,
 				 "sigrelse() released all %d signals under test.",
@@ -375,12 +352,12 @@ UT kill(%d, SIGTERM) was successful\n", pid, sig, ESRCH, strerror(ESRCH),
 		/* get BROK message from pipe */
 		if ((str = read_pipe(pipe_fd[0])) == NULL) {
 			/* read_pipe() failed. */
-			tst_resm(TBROK, mesg);
+			tst_resm(TBROK, "%s", mesg);
 			break;
 		}
 
 		/* call tst_res: str contains the message */
-		tst_resm(TBROK, str);
+		tst_resm(TBROK, "%s", str);
 		break;
 	case SIG_CAUGHT:
 		/* a signal was caught before it was released */
@@ -395,9 +372,7 @@ UT kill(%d, SIGTERM) was successful\n", pid, sig, ESRCH, strerror(ESRCH),
 		tst_resm(TBROK, "Error occured in signal handler.");
 		break;
 	default:
-		(void)sprintf(mesg, "Unexpected return from child. Exit:%d.",
-			      rv);
-		tst_resm(TBROK, mesg);
+		tst_resm(TBROK, "Unexpected exit code %d from child", rv);
 		break;
 	}
 
@@ -748,14 +723,8 @@ static void wait_a_while()
  ****************************************************************************/
 static void getout()
 {
-	if (pid > 0) {
-		if (kill(pid, SIGKILL) < 0) {
-			(void)sprintf(mesg,
-				      "kill(%d, SIGKILL) failed. Child may not have been killed. error:%d %s.",
-				      pid, errno, strerror(errno));
-			tst_resm(TWARN, mesg);
-		}
-	}
+	if (pid > 0 && kill(pid, SIGKILL) < 0)
+		tst_resm(TWARN, "kill(%d, SIGKILL) failed", pid);
 	cleanup();
 
 }				/* end of getout */
@@ -831,9 +800,7 @@ void setup()
 
 	/* set up pipe for parent/child communications */
 	if (pipe(pipe_fd) < 0) {
-		(void)sprintf(mesg, "pipe() failed. errno:%d %s.",
-			      errno, strerror(errno));
-		tst_resm(TBROK, mesg);
+		tst_resm(TBROK|TERRNO, "pipe() failed");
 		cleanup();
 	}
 
@@ -848,9 +815,7 @@ void setup()
 
 	/* set up pipe for parent/child communications */
 	if (pipe(pipe_fd2) < 0) {
-		(void)sprintf(mesg, "pipe() failed. errno:%d %s.",
-			      errno, strerror(errno));
-		tst_resm(TBROK, mesg);
+		tst_resm(TBROK|TERRNO, "pipe() failed");
 		cleanup();
 	}
 
