@@ -128,9 +128,8 @@ int main(int ac, char **av)
 
 		/* check return code of chmod(2) */
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL, "chmod(%s, %#o) Failed, errno=%d : %s",
-				 TESTFILE, PERMS, TEST_ERRNO,
-				 strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TTERRNO, "chmod(%s, %#o) failed",
+				 TESTFILE, PERMS);
 			continue;
 		}
 
@@ -188,11 +187,8 @@ void setup()
 		tst_brkm(TBROK, tst_exit, "Test must be run as root");
 	}
 	ltpuser = getpwnam(nobody_uid);
-	if (setuid(ltpuser->pw_uid) == -1) {
-		tst_resm(TINFO, "setuid failed to "
-			 "to set the effective uid to %d", ltpuser->pw_uid);
-		perror("setuid");
-	}
+	if (setuid(ltpuser->pw_uid) == -1)
+		tst_resm(TINFO|TERRNO, "setuid(%u) failed", ltpuser->pw_uid);
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
@@ -206,15 +202,15 @@ void setup()
 	 * uid/gid of guest user.
 	 */
 	if ((fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, %#o) Failed, errno=%d : %s",
-			 TESTFILE, FILE_MODE, errno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT, %#o) failed",
+			 TESTFILE, FILE_MODE);
 	}
 
 	/* Close the test file created above */
 	if (close(fd) == -1) {
-		tst_brkm(TBROK, cleanup, "close(%s) Failed, errno=%d : %s",
-			 TESTFILE, errno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "close(%s) failed",
+			 TESTFILE);
 	}
 }				/* End setup() */
 

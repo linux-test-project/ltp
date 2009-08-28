@@ -128,9 +128,8 @@ int main(int ac, char **av)
 
 		/* check return code of chmod(2) */
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL, "chmod(%s, %#o) Failed, errno=%d : %s",
-				 TESTFILE, PERMS, TEST_ERRNO,
-				 strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TTERRNO, "chmod(%s, %#o) failed",
+				 TESTFILE, PERMS);
 			continue;
 		}
 		/*
@@ -215,23 +214,20 @@ void setup()
 	 * mode permissios and set the ownership of the test file to the
 	 * uid/gid of guest user.
 	 */
-	if ((fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, %#o) Failed, errno=%d : %s",
-			 TESTFILE, FILE_MODE, errno, strerror(errno));
-	}
-	if (close(fd) == -1) {
-		tst_brkm(TBROK, cleanup, "close(%s) Failed, errno=%d : %s",
-			 TESTFILE, errno, strerror(errno));
-	}
-	if (chown(TESTFILE, user1_uid, group1_gid) < 0) {
-		tst_brkm(TBROK, cleanup, "chown(2) of %s failed", TESTFILE);
-	}
+	fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE);
+	if (fd == -1)
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT, %#o) failed",
+			 TESTFILE, FILE_MODE);
+	if (close(fd) == -1)
+		tst_brkm(TBROK, cleanup, "close(%s) failed",
+			 TESTFILE);
+	if (chown(TESTFILE, user1_uid, group1_gid) < 0)
+		tst_brkm(TBROK|TERRNO, cleanup, "chown(%s) failed", TESTFILE);
 
 	/* Set the effective gid of the process to that of user */
-	if (setgid(group1_gid) < 0) {
-		tst_brkm(TBROK, cleanup, "setgid(2) to %d failed", group1_gid);
-	}
+	if (setgid(group1_gid) < 0)
+		tst_brkm(TBROK|TERRNO, cleanup, "setgid(%d) failed", group1_gid);
 }				/* End setup() */
 
 /*

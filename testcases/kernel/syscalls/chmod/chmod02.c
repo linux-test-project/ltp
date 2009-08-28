@@ -29,7 +29,7 @@
  *
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: chmod02.c,v 1.4 2009/03/23 13:35:39 subrata_modak Exp $ */
+/* $Id: chmod02.c,v 1.5 2009/08/28 11:49:07 vapier Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -173,10 +173,9 @@ int main(int ac, char **av)
 
 			/* check return code */
 			if (TEST_RETURN == -1) {
-				tst_resm(TFAIL,
-					 "chmod(%s, %#o) Failed, errno=%d : %s",
-					 fname, mode, TEST_ERRNO,
-					 strerror(TEST_ERRNO));
+				tst_resm(TFAIL|TTERRNO,
+					 "chmod(%s, %#o) failed",
+					 fname, mode);
 			} else {
 
 		/***************************************************************
@@ -185,7 +184,7 @@ int main(int ac, char **av)
 				if (STD_FUNCTIONAL_TEST) {
 					/* No Verification test, yet... */
 					tst_resm(TPASS,
-						 "chmod(%s, %#o) returned %d",
+						 "chmod(%s, %#o) returned %ld",
 						 fname, mode, TEST_RETURN);
 				} else
 					Tst_count++;
@@ -220,17 +219,17 @@ void setup()
 
 	strcat(fname, "tfile");
 	if ((fd = open(fname, O_RDWR | O_CREAT, 0700)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT,0700) Failed, errno=%d : %s",
-			 fname, errno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT,0700) failed",
+			 fname);
 	} else if (write(fd, &buf, strlen(buf)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "write(%s, &buf, strlen(buf)) Failed, errno=%d : %s",
-			 fname, errno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "write(%s, &buf, strlen(buf)) failed",
+			 fname);
 	} else if (close(fd) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "close(%s) Failed, errno=%d : %s",
-			 fname, errno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "close(%s) failed",
+			 fname);
 	}
 }				/* End setup() */
 

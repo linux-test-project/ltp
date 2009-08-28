@@ -126,10 +126,8 @@ int main(int ac, char **av)
 
 			/* check return code of chmod(2) */
 			if (TEST_RETURN == -1) {
-				tst_resm(TFAIL,
-					 "chmod(%s, %#o) Failed, errno=%d : %s",
-					 TESTFILE, mode, TEST_ERRNO,
-					 strerror(TEST_ERRNO));
+				tst_resm(TFAIL|TTERRNO,
+					 "chmod(%s, %#o) failed", TESTFILE, mode);
 				continue;
 			}
 			/*
@@ -194,16 +192,15 @@ void setup()
 	tst_tmpdir();
 
 	/* Creat a test file under temporary directory and close it */
-	if ((fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, %o) Failed, errno=%d : %s",
-			 TESTFILE, FILE_MODE, errno, strerror(errno));
-	}
-	if (close(fd) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "close(%s) Failed, errno=%d : %s",
-			 TESTFILE, errno, strerror(errno));
-	}
+	fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE);
+	if (fd == -1)
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT, %o) failed",
+			 TESTFILE, FILE_MODE);
+	if (close(fd) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "close(%s) failed",
+			 TESTFILE);
 
 }				/* End setup() */
 

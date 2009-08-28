@@ -147,9 +147,8 @@ int main(int ac, char **av)
 
 		/* check return code of chmod(2) */
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL, "chmod(%s, %#o) Failed, errno=%d : %s",
-				 TESTDIR, PERMS, TEST_ERRNO,
-				 strerror(TEST_ERRNO));
+			tst_resm(TFAIL, "chmod(%s, %#o) failed",
+				 TESTDIR, PERMS);
 			continue;
 		}
 //wjh should this even be an option? Run but don't test anything?
@@ -222,13 +221,11 @@ void setup()
 
 	nobody_u = getpwnam("nobody");
 	if (!nobody_u)
-		tst_brkm(TBROK, cleanup, "Couldn't find uid of nobody: %s",
-				strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "Couldn't find uid of nobody");
 
 	bin_group = getgrnam("bin");
 	if (!bin_group)
-		tst_brkm(TBROK, cleanup, "Couldn't find gid of bin: %s",
-				strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "Couldn't find gid of bin");
 
 	/*
 	 * Create a test directory under temporary directory with specified
@@ -236,20 +233,16 @@ void setup()
 	 //wjh Improper comment! Ownership it changed to "nobody"
 	 * guest user2.
 	 */
-	if (mkdir(TESTDIR, MODE_RWX) < 0) {
-		tst_brkm(TBROK, cleanup, "mkdir(2) of %s failed: %s", TESTDIR,
-				strerror(errno));
-	}
+	if (mkdir(TESTDIR, MODE_RWX) < 0)
+		tst_brkm(TBROK|TERRNO, cleanup, "mkdir(%s) failed", TESTDIR);
 
 	if (chown(TESTDIR, nobody_u->pw_uid, nobody_u->pw_gid) == -1)
-		tst_brkm(TBROK, cleanup, "Couldn't change owner of testdir: %s",
-				strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "chown() of testdir failed");
 
 	/* change to nobody:bin */
 	if (setegid(bin_group->gr_gid) == -1 ||
 		 seteuid(nobody_u->pw_uid) == -1)
-		tst_brkm(TBROK, cleanup, "Couldn't switch to nobody:nobody: %s",
-				strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "Couldn't switch to nobody:nobody");
 }				/* End setup() */
 
 /*

@@ -191,12 +191,8 @@ int main(int ac, char **av)
 			if (ind < 2) {
 				/* Switch to nobody user for correct error code collection */
 				ltpuser = getpwnam(nobody_uid);
-				if (seteuid(ltpuser->pw_uid) == -1) {
-					tst_resm(TINFO, "seteuid failed to "
-						 "to set the effective uid to %d",
-						 ltpuser->pw_uid);
-					perror("seteuid");
-				}
+				if (seteuid(ltpuser->pw_uid) == -1)
+					tst_resm(TINFO|TERRNO, "seteuid(%u) failed", ltpuser->pw_uid);
 			}
 			if (ind >= 2) {
 				seteuid(0);
@@ -211,7 +207,7 @@ int main(int ac, char **av)
 
 			/* Check return code from chmod(2) */
 			if (TEST_RETURN != -1) {
-				tst_resm(TFAIL, "chmod() returned %d, "
+				tst_resm(TFAIL, "chmod() returned %ld, "
 					 "expected -1, errno:%d", TEST_RETURN,
 					 Test_cases[ind].exp_errno);
 				continue;
@@ -219,12 +215,11 @@ int main(int ac, char **av)
 
 			TEST_ERROR_LOG(TEST_ERRNO);
 			if (TEST_ERRNO == Test_cases[ind].exp_errno) {
-				tst_resm(TPASS, "chmod() fails, %s, errno:%d",
-					 test_desc, TEST_ERRNO);
+				tst_resm(TPASS|TTERRNO, "chmod() fails, %s",
+					 test_desc);
 			} else {
-				tst_resm(TFAIL, "chmod() fails, %s, errno:%d, "
-					 "expected errno:%d", test_desc,
-					 TEST_ERRNO, Test_cases[ind].exp_errno);
+				tst_resm(TFAIL|TTERRNO, "chmod() fails, %s, expected errno:%d",
+					 test_desc, Test_cases[ind].exp_errno);
 			}
 		}		/* End of TEST CASE LOOPING. */
 
@@ -305,21 +300,20 @@ int setup1()
 	int fd;
 
 	/* open/creat a test file and close it */
-	if ((fd = open(TEST_FILE1, O_RDWR | O_CREAT, 0666)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, 0666) failed, errno=%d : %s",
-			 TEST_FILE1, errno, strerror(errno));
-	}
+	fd = open(TEST_FILE1, O_RDWR | O_CREAT, 0666);
+	if (fd == -1)
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT, 0666) failed",
+			 TEST_FILE1);
 
 	if (fchown(fd, 0, 0) < 0)
-		tst_brkm(TBROK, cleanup, "Fail to modify %s ownership(s): %s",
-			TEST_FILE1, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "fchown(%s) failed",
+			TEST_FILE1);
 
-	if (close(fd) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "close(%s) Failed, errno=%d : %s",
-			 TEST_FILE1, errno, strerror(errno));
-	}
+	if (close(fd) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "close(%s) failed",
+			 TEST_FILE1);
 
 	return 0;
 }
@@ -340,27 +334,25 @@ int setup2()
 	int fd;			/* file handle for testfile */
 
 	/* Creat a test directory and a file under it */
-	if (mkdir(DIR_TEMP, MODE_RWX) < 0) {
-		tst_brkm(TBROK, cleanup, "mkdir(2) of %s failed", DIR_TEMP);
-	}
+	if (mkdir(DIR_TEMP, MODE_RWX) < 0)
+		tst_brkm(TBROK|TERRNO, cleanup, "mkdir(%s) failed", DIR_TEMP);
 
-	if ((fd = open(TEST_FILE2, O_RDWR | O_CREAT, 0666)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, 0666) failed, errno=%d : %s",
-			 TEST_FILE2, errno, strerror(errno));
-	}
+	fd = open(TEST_FILE2, O_RDWR | O_CREAT, 0666);
+	if (fd == -1)
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT, 0666) failed",
+			 TEST_FILE2);
 
 	/* Close the testfile created above */
-	if (close(fd) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "close(%s) Failed, errno=%d : %s",
-			 TEST_FILE2, errno, strerror(errno));
-	}
+	if (close(fd) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "close(%s) failed",
+			 TEST_FILE2);
 
 	/* Modify mode permissions on test directory */
-	if (chmod(DIR_TEMP, FILE_MODE) < 0) {
-		tst_brkm(TBROK, cleanup, "chmod(2) of %s failed", DIR_TEMP);
-	}
+	if (chmod(DIR_TEMP, FILE_MODE) < 0)
+		tst_brkm(TBROK|TERRNO, cleanup, "chmod(%s) failed", DIR_TEMP);
+
 	return 0;
 }
 
@@ -378,16 +370,13 @@ int setup3()
 	int fd;
 
 	/* Creat a test file under temporary directory and close it */
-	if ((fd = open("t_file", O_RDWR | O_CREAT, MODE_RWX)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(2) on t_file failed, errno=%d : %s",
-			 errno, strerror(errno));
-	}
-	if (close(fd) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "close(t_file) Failed, errno=%d : %s",
-			 errno, strerror(errno));
-	}
+	fd = open("t_file", O_RDWR | O_CREAT, MODE_RWX);
+	if (fd == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "open(t_file) failed");
+
+	if (close(fd) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup, "close(t_file) failed");
+
 	return 0;
 }
 
@@ -426,7 +415,7 @@ void cleanup()
 
 	/* Restore mode permissions on test directory created in setup2() */
 	if (chmod(DIR_TEMP, MODE_RWX) < 0) {
-		tst_resm(TBROK, "chmod(2) of %s failed", DIR_TEMP);
+		tst_resm(TBROK|TERRNO, "chmod(%s) failed", DIR_TEMP);
 	}
 
 	/* Remove files and temporary directory created */
