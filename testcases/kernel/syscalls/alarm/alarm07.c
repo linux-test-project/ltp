@@ -140,7 +140,7 @@ int main(int ac, char **av)
 				wait(0);
 			}
 		} else {
-			tst_resm(TPASS, "call returned %d", TEST_RETURN);
+			tst_resm(TPASS, "call returned %ld", TEST_RETURN);
 		}
 	}			/* End for TEST_LOOPING */
 

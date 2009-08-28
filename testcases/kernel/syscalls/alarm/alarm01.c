@@ -29,7 +29,7 @@
  *
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: alarm01.c,v 1.5 2009/03/23 13:35:39 subrata_modak Exp $ */
+/* $Id: alarm01.c,v 1.6 2009/08/28 10:57:29 vapier Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -155,8 +155,7 @@ int main(int ac, char **av)
 
 		/* check return code */
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL, "alarm(1) Failed, errno=%d : %s",
-				 TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TTERRNO, "alarm(1) failed");
 		} else {
 
 	    /***************************************************************
@@ -164,7 +163,7 @@ int main(int ac, char **av)
 	     ***************************************************************/
 			if (STD_FUNCTIONAL_TEST) {
 				/* No Verification test, yet... */
-				tst_resm(TPASS, "alarm(1) returned %d",
+				tst_resm(TPASS, "alarm(1) returned %ld",
 					 TEST_RETURN);
 			}
 		}

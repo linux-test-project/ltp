@@ -29,7 +29,7 @@
  *
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: alarm02.c,v 1.3 2009/03/23 13:35:39 subrata_modak Exp $ */
+/* $Id: alarm02.c,v 1.4 2009/08/28 10:57:29 vapier Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -154,7 +154,7 @@ int main(int ac, char **av)
 			alarm(0);
 			if (TEST_RETURN != 0) {
 				tst_resm(TFAIL,
-					 "alarm(%u) returned %u, when %u was expected for value %s.",
+					 "alarm(%lu) returned %ld, when %u was expected for value %s",
 					 sec[i], TEST_RETURN, exp[i], buf[i]);
 
 			}
@@ -164,11 +164,11 @@ int main(int ac, char **av)
 			else if (STD_FUNCTIONAL_TEST) {
 				if (received_alarm == 1) {
 					tst_resm(TFAIL,
-						 "alarm(%u) returned %u but an alarm signal was received for value %s.",
+						 "alarm(%lu) returned %ldu but an alarm signal was received for value %s",
 						 sec[i], TEST_RETURN, buf[i]);
 				} else {
 					tst_resm(TPASS,
-						 "alarm(%u) returned %u as expected for value %s.",
+						 "alarm(%lu) returned %ld as expected for value %s",
 						 sec[i], TEST_RETURN, buf[i]);
 				}
 

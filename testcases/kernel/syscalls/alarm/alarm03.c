@@ -29,7 +29,7 @@
  *
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: alarm03.c,v 1.9 2009/03/23 13:35:39 subrata_modak Exp $ */
+/* $Id: alarm03.c,v 1.10 2009/08/28 10:57:29 vapier Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -141,8 +141,7 @@ int main(int ac, char **av)
 
 		switch (FORK_OR_VFORK()) {
 		case -1:
-			tst_brkm(TBROK, cleanup, "fork failed, errno:%d %s",
-				 errno, strerror(errno));
+			tst_brkm(TBROK|TERRNO, cleanup, "fork() failed");
 			break;
 
 		case 0:
@@ -151,11 +150,11 @@ int main(int ac, char **av)
 			if (TEST_RETURN != 0) {
 				retval = 1;
 				tst_resm(TFAIL,
-					 "alarm(100), fork, alarm(0) child's alarm returned %d",
+					 "alarm(100), fork, alarm(0) child's alarm returned %ld",
 					 TEST_RETURN);
 			} else if (STD_FUNCTIONAL_TEST) {
 				tst_resm(TPASS,
-					 "alarm(100), fork, alarm(0) child's alarm returned %d",
+					 "alarm(100), fork, alarm(0) child's alarm returned %ld",
 					 TEST_RETURN);
 			}
 
@@ -169,11 +168,11 @@ int main(int ac, char **av)
 			if (TEST_RETURN <= 0 || TEST_RETURN > 101) {
 				retval = 1;
 				tst_resm(TFAIL,
-					 "alarm(100), fork, alarm(0) parent's alarm returned %d",
+					 "alarm(100), fork, alarm(0) parent's alarm returned %ld",
 					 TEST_RETURN);
 			} else if (STD_FUNCTIONAL_TEST) {
 				tst_resm(TPASS,
-					 "alarm(100), fork, alarm(0) parent's alarm returned %d",
+					 "alarm(100), fork, alarm(0) parent's alarm returned %ld",
 					 TEST_RETURN);
 			}
 			/* wait for the child to finish */

@@ -185,14 +185,11 @@ int main(int ac, char **av)
 
 			if ((TEST_RETURN == -1) && (TEST_ERRNO ==
 						    test_cases[i].exp_errno)) {
-				tst_resm(TPASS, "Test Passed, adjtimex()"
-					 " returned -1 with errno: %d",
-					 TEST_ERRNO);
+				tst_resm(TPASS|TTERRNO,
+					 "Test Passed, adjtimex() returned -1");
 			} else {
-				tst_resm(TFAIL, "Test Failed, adjtimex()"
-					 "returned %d, errno = %d : %s",
-					 TEST_RETURN, TEST_ERRNO,
-					 strerror(TEST_ERRNO));
+				tst_resm(TFAIL|TTERRNO,
+					 "Test Failed, adjtimex() returned %ld", TEST_RETURN);
 			}
 			TEST_ERROR_LOG(TEST_ERRNO);
 			if (test_cases[i].cleanup) {
@@ -294,9 +291,7 @@ int setup6()
 		tst_brkm(TBROK, tst_exit, "\"nobody\" user not present");
 	}
 	if (seteuid(ltpuser->pw_uid) == -1) {
-		tst_resm(TWARN, "seteuid failed to set the effective uid to %d",
-			 ltpuser->pw_uid);
-		perror("seteuid");
+		tst_resm(TWARN|TERRNO, "seteuid(%d) failed", ltpuser->pw_uid);
 		return 1;
 	}
 	return 0;
@@ -306,7 +301,7 @@ void cleanup6()
 {
 	/* Set effective user id back to root */
 	if (seteuid(0) == -1) {
-		tst_brkm(TBROK, cleanup, "seteuid failed to set the"
+		tst_brkm(TBROK|TERRNO, cleanup, "seteuid failed to set the"
 			 " effective uid to root");
 	}
 }

@@ -113,11 +113,10 @@ int main(int ac, char **av)
 		TEST(adjtimex(&tim_save));
 
 		if ((TEST_RETURN >= 0) && (TEST_RETURN <= 5)) {
-			tst_resm(TPASS, "adjtimex() returned %d", TEST_RETURN);
+			tst_resm(TPASS, "adjtimex() returned %ld", TEST_RETURN);
 		} else {
-			tst_resm(TFAIL, "Test Failed, adjtimex()"
-				 "returned %d, errno = %d : %s", TEST_RETURN,
-				 TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TTERRNO, "Test Failed, adjtimex()"
+				 "returned %ld", TEST_RETURN);
 		}
 	}			/* End for TEST_LOOPING */
 
