@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: usctest.h,v 1.11 2009/07/20 10:59:32 vapier Exp $ */
+/* $Id: usctest.h,v 1.12 2009/08/28 09:58:17 vapier Exp $ */
 
 /**********************************************************
  *
@@ -162,7 +162,7 @@ struct usc_errno_t {
 extern long TEST_RETURN;
 extern long TEST_ERRNO;
 extern struct usc_errno_t TEST_VALID_ENO[USC_MAX_ERRNO];
-extern long btime, etime, tmptime;
+extern long btime, etime;
 
 #else
 /***********************************************************************
@@ -181,7 +181,7 @@ long TEST_ERRNO;
 /***********************************************************************
  * temporary variables for determining max and min times in TEST macro
  ***********************************************************************/
-long btime, etime, tmptime;
+long btime, etime;
 
 #endif  /* _USC_LIB_ */
 
@@ -231,7 +231,7 @@ extern void STD_opts_help();
  * errors.
  *
  ***********************************************************************/
-#define TEST_VOID(SCALL)  errno=0; SCALL; TEST_ERRNO=errno;
+#define TEST_VOID(SCALL) do { errno = 0; SCALL; TEST_ERRNO = errno; } while (0)
 
 /***********************************************************************
  * TEST_CLEANUP: print system call timing stats and errno log entries
@@ -242,20 +242,19 @@ extern void STD_opts_help();
  *	none
  *
  ***********************************************************************/
-#define TEST_CLEANUP 	\
-if ( STD_ERRNO_LOG ) {						\
-	for (tmptime=0; tmptime<USC_MAX_ERRNO; tmptime++) {		\
-	     if ( STD_ERRNO_LIST[tmptime] )	{			\
-	         if ( TEST_VALID_ENO[tmptime].flag )			\
-		     tst_resm(TINFO, "ERRNO %d:\tReceived %d Times",	\
-			      tmptime, STD_ERRNO_LIST[tmptime]);	\
-	         else							\
-		     tst_resm(TINFO,					\
-			      "ERRNO %d:\tReceived %d Times ** UNEXPECTED **",	\
-			      tmptime, STD_ERRNO_LIST[tmptime]);	\
-	     }								\
-	}								\
-}
+#define TEST_CLEANUP \
+do { \
+	int i; \
+	if (!STD_ERRNO_LOG) \
+		break; \
+	for (i = 0; i < USC_MAX_ERRNO; ++i) { \
+		if (!STD_ERRNO_LIST[i]) \
+			continue; \
+		tst_resm(TINFO, "ERRNO %d:\tReceived %d Times%s", \
+			i, STD_ERRNO_LIST[i], \
+			TEST_VALID_ENO[i].flag ? "" : " ** UNEXPECTED **"); \
+	} \
+} while (0)
 
 /***********************************************************************
  * TEST_PAUSEF: Pause for SIGUSR1 if the pause flag is set.
@@ -266,12 +265,14 @@ if ( STD_ERRNO_LOG ) {						\
  *	none
  *
  ***********************************************************************/
-#define TEST_PAUSEF(HANDLER) 					\
-if ( STD_PAUSE ) { 					\
-    _TMP_FUNC = (int (*)())signal(SIGUSR1, HANDLER); 	\
-    pause(); 						\
-    signal(SIGUSR1, (void (*)())_TMP_FUNC);		\
-}
+#define TEST_PAUSEF(HANDLER) \
+do { \
+	if (STD_PAUSE) { \
+		_TMP_FUNC = (int (*)())signal(SIGUSR1, HANDLER); \
+		pause(); \
+		signal(SIGUSR1, (void (*)())_TMP_FUNC); \
+	} \
+} while (0)
 
 /***********************************************************************
  * TEST_PAUSE: Pause for SIGUSR1 if the pause flag is set.
@@ -300,11 +301,12 @@ int usc_test_looping(int counter);
  *	int eno: the errno location in STD_ERRNO_LIST to log.
  *
  ***********************************************************************/
-#define TEST_ERROR_LOG(eno)		\
-    if ( STD_ERRNO_LOG )		\
-        if ( eno < USC_MAX_ERRNO )		\
-            STD_ERRNO_LIST[eno]++;	\
-
+#define TEST_ERROR_LOG(eno) \
+do { \
+	int _eno = (eno); \
+	if ((STD_ERRNO_LOG) && (_eno < USC_MAX_ERRNO)) \
+		STD_ERRNO_LIST[_eno]++; \
+} while (0)
 
 /***********************************************************************
  * TEST_EXP_ENOS(array): set the bits associated with the nput errnos
@@ -314,13 +316,14 @@ int usc_test_looping(int counter);
  *	int array[]: a zero terminated array of errnos expected.
  *
  ***********************************************************************/
-#define TEST_EXP_ENOS(array)				\
-    tmptime=0;						\
-    while (array[tmptime] != 0) {			\
-	if (array[tmptime] < USC_MAX_ERRNO)		\
-	    TEST_VALID_ENO[array[tmptime]].flag=1;	\
-	tmptime++;					\
-    }
-
+#define TEST_EXP_ENOS(array) \
+do { \
+	int i = 0; \
+	while (array[i] != 0) { \
+		if (array[i] < USC_MAX_ERRNO) \
+			TEST_VALID_ENO[array[i]].flag = 1; \
+		++i; \
+	} \
+} while (0)
 
 #endif  /* end of __USCTEST_H__ */
