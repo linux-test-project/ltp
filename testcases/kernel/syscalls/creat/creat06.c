@@ -162,13 +162,9 @@ int main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO == TC[i].error) {
-				tst_resm(TPASS, "expected failure - "
-					 "errno = %d : %s", TEST_ERRNO,
-					 strerror(TEST_ERRNO));
+				tst_resm(TPASS|TTERRNO, "expected failure");
 			} else {
-				tst_resm(TFAIL, "unexpected error - %d : %s - "
-					 "expected %d", TEST_ERRNO,
-					 strerror(TEST_ERRNO), TC[i].error);
+				tst_resm(TFAIL|TTERRNO, "wanted errno %d", TC[i].error);
 			}
 		}
 	}
@@ -190,11 +186,8 @@ void setup()
 		tst_brkm(TBROK, tst_exit, "Test must be run as root");
 	}
 	ltpuser = getpwnam(nobody_uid);
-	if (seteuid(ltpuser->pw_uid) == -1) {
-		tst_resm(TINFO, "seteuid failed to "
-			 "to set the effective uid to %d", ltpuser->pw_uid);
-		perror("seteuid");
-	}
+	if (seteuid(ltpuser->pw_uid) == -1)
+		tst_resm(TINFO|TERRNO, "seteuid(%d) failed", ltpuser->pw_uid);
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);

@@ -104,8 +104,7 @@ int main(int ac, char **av)
 			tst_resm(TPASS, "call failed with expected error - "
 				 "EMFILE");
 		} else {
-			tst_resm(TFAIL, "Expected EMFILE got %s",
-				 strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TTERRNO, "Expected EMFILE");
 		}
 
 		remove_files(ifile);

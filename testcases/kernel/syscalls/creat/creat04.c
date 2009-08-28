@@ -144,10 +144,8 @@ int main(int ac, char **av)
 			ltpuser1 = my_getpwnam(user1name);
 
 			if (seteuid(ltpuser1->pw_uid) == -1) {
-				tst_resm(TINFO, "setreuid failed to "
-					 "to set the effective uid to %d",
+				tst_resm(TINFO|TERRNO, "setreuid(%d) failed",
 					 ltpuser1->pw_uid);
-				perror("setreuid");
 				continue;
 			}
 
@@ -167,9 +165,7 @@ int main(int ac, char **av)
 
 				if (TEST_ERRNO != EACCES) {
 					retval = 1;
-					tst_resm(TFAIL, "Expected EACCES got "
-						 "%d : %s", TEST_ERRNO,
-						 strerror(TEST_ERRNO));
+					tst_resm(TFAIL|TTERRNO, "Expected EACCES");
 				} else {
 					tst_resm(TPASS, "call failed with "
 						 "expected EACCES error");

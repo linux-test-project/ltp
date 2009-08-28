@@ -175,7 +175,7 @@ int main(int ac, char **av)
 		/* Verify group ID */
 		if (buf.st_gid != group2_gid) {
 			tst_resm(TFAIL, "%s: Incorrect group", DIR_A);
-			tst_resm(TINFO, "got %ld and %ld", buf.st_gid,
+			tst_resm(TINFO, "got %u and %u", buf.st_gid,
 				 group2_gid);
 			local_flag = FAILED;
 		}
@@ -215,7 +215,7 @@ int main(int ac, char **av)
 		/* Verify group ID */
 		if (buf.st_gid != group2_gid) {
 			tst_resm(TFAIL, "%s: Incorrect group", DIR_B);
-			tst_resm(TINFO, "got %ld and %ld", buf.st_gid,
+			tst_resm(TINFO, "got %u and %u", buf.st_gid,
 				 group2_gid);
 			local_flag = FAILED;
 		}
@@ -303,7 +303,7 @@ int main(int ac, char **av)
 		/* Verify group ID */
 		if (buf.st_gid != mygid) {
 			tst_resm(TFAIL, "%s: Incorrect group", setgid_A);
-			tst_resm(TINFO, "got %ld and %ld", buf.st_gid, mygid);
+			tst_resm(TINFO, "got %u and %u", buf.st_gid, mygid);
 			local_flag = FAILED;
 		}
 		if (local_flag == PASSED) {
@@ -364,7 +364,7 @@ int main(int ac, char **av)
 		/* Verify group ID */
 		if (buf.st_gid != group2_gid) {
 			tst_resm(TFAIL, "%s: Incorrect group", setgid_B);
-			tst_resm(TFAIL, "got %ld and %ld", buf.st_gid,
+			tst_resm(TFAIL, "got %u and %u", buf.st_gid,
 				 group2_gid);
 			local_flag = FAILED;
 		}
@@ -393,7 +393,7 @@ int main(int ac, char **av)
 /*--------------------------------------------------------------*/
 		/* Become root again */
 		if ((ret = setreuid(-1, save_myuid)) < 0) {
-			tst_resm(errno, 0, "Changing back to root failed");
+			tst_resm(TFAIL|TERRNO, "Changing back to root failed");
 			local_flag = FAILED;
 		}
 
@@ -419,7 +419,7 @@ int main(int ac, char **av)
 		/* Verify group ID */
 		if (buf.st_gid != group2_gid) {
 			tst_resm(TFAIL, "%s: Incorrect group", root_setgid_B);
-			tst_resm(TINFO, "got %ld and %ld", buf.st_gid,
+			tst_resm(TINFO, "got %u and %u", buf.st_gid,
 				 group2_gid);
 			local_flag = FAILED;
 		}

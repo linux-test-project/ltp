@@ -140,9 +140,7 @@ int main(int ac, char **av)
 
 			if (TEST_ERRNO != ETXTBSY) {
 				retval = 1;
-				tst_resm(TFAIL, "expected ETXTBSY, instead "
-					 "received %d : %s", TEST_ERRNO,
-					 strerror(TEST_ERRNO));
+				tst_resm(TFAIL|TTERRNO, "expected ETXTBSY");
 			} else {
 				tst_resm(TPASS, "received ETXTBSY");
 			}

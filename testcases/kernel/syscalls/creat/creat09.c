@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: creat09.c,v 1.5 2009/03/23 13:35:40 subrata_modak Exp $ */
+/* $Id: creat09.c,v 1.6 2009/08/28 12:15:15 vapier Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -168,8 +168,7 @@ int main(int ac, char **av)
 
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL, "creat(%s, 0700) Failed, errno=%d : %s",
-				 fname, TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TTERRNO, "creat(%s, 0700) failed", fname);
 		} else {
 
 	    /***************************************************************
@@ -177,19 +176,16 @@ int main(int ac, char **av)
 	     ***************************************************************/
 			if (STD_FUNCTIONAL_TEST) {
 				/* No Verification test, yet... */
-				tst_resm(TPASS, "creat(%s, 0700) returned %d",
+				tst_resm(TPASS, "creat(%s, 0700) returned %ld",
 					 fname, TEST_RETURN);
 			}
 		}
 
 		/* close and remove file, possibly for next loop */
 		if (close(TEST_RETURN) == -1) {
-			tst_brkm(TBROK, cleanup,
-				 "close(%s) Failed, errno=%d : %s",
-				 fname, errno, strerror(errno));
+			tst_brkm(TBROK|TERRNO, cleanup, "close(%s) failed", fname);
 		} else if (unlink(fname) == -1) {
-			tst_resm(TWARN, "unlink(%s) Failed, errno=%d : %s",
-				 fname, errno, strerror(errno));
+			tst_resm(TWARN|TERRNO, "unlink(%s) failed", fname);
 		}
 
 	}			/* End for TEST_LOOPING */
