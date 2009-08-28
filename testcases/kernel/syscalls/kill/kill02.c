@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: kill02.c,v 1.9 2009/03/23 13:35:53 subrata_modak Exp $ */
+/* $Id: kill02.c,v 1.10 2009/08/28 13:20:15 vapier Exp $ */
 /***********************************************************************************
 
     OS Test -  Silicon Graphics, Inc.
@@ -138,7 +138,6 @@
 #include "test.h"
 #include "usctest.h"
 
-#define MAXMESG 150		/*The maximum message that can be created.              */
 #define CHAR_SET_FAILED	"0"	/*Set up failing status transferred through the pipe.   */
 #define CHAR_SET_PASSED	"1"	/*Set up passing status transferred through the pipe.   */
 #define SIG_CAUGHT	"2"	/*Indicates that the signal SIGUSR1 was caught.         */
@@ -157,7 +156,6 @@
 #define CHILD_EXIT(VAR) ((VAR >> 8) & 0377)	/*Exit value from the child.               */
 #define CHILD_SIG(VAR) (VAR & 0377)	/*Signal value from the termination of child.       */
 				/*from the parent.                                      */
-#define SYS_FAIL	"The system call %s failed. Errno: %d, Error message: %s."
 
 int pid1;			/*Return value from 1st fork. Global so that it can be  */
 				/*used in interrupt handling routines.                  */
@@ -221,8 +219,6 @@ void childB_rout_uclinux();
  ***********************************************************************/
 int main(int ac, char **av)
 {
-	char mesg[MAXMESG];	/* Holds messages to pass to tst_res.            */
-
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
@@ -282,9 +278,7 @@ int main(int ac, char **av)
 						tst_resm(TWARN,
 							 "Child process may not have been killed.");
 					}
-					(void)sprintf(mesg, SYS_FAIL, "fork",
-						      errno, strerror(errno));
-					tst_brkm(TBROK, cleanup, mesg);
+					tst_brkm(TBROK|TERRNO, cleanup, "fork() failed");
 				}
 #else
 				(void)child2_rout();
@@ -297,9 +291,7 @@ int main(int ac, char **av)
 					tst_resm(TWARN,
 						 "Child process may not have been killed.");
 				}
-				(void)sprintf(mesg, SYS_FAIL, "fork", errno,
-					      strerror(errno));
-				tst_brkm(TBROK, cleanup, mesg);
+				tst_brkm(TBROK|TERRNO, cleanup, "fork() failed");
 			}
 
 		} else if (pid1 == 0) {
@@ -311,9 +303,7 @@ int main(int ac, char **av)
 			    (argv0, "ndddddd", 3, pipe1_fd[1], pipe2_fd[1],
 			     pipeA_fd[0], pipeA_fd[1], pipeB_fd[0],
 			     pipeB_fd[1]) < 0) {
-				(void)sprintf(mesg, SYS_FAIL, "self_exec",
-					      errno, strerror(errno));
-				tst_brkm(TBROK, cleanup, mesg);
+				tst_brkm(TBROK|TERRNO, cleanup, "self_exec() failed");
 			}
 #else
 			(void)child1_rout();
@@ -322,9 +312,7 @@ int main(int ac, char **av)
 			/*
 			 * Fork failed.
 			 */
-			(void)sprintf(mesg, SYS_FAIL, "fork", errno,
-				      strerror(errno));
-			tst_brkm(TBROK, cleanup, mesg);
+			tst_brkm(TBROK|TERRNO, cleanup, "fork() failed");
 		}
 	}
 
@@ -339,8 +327,6 @@ int main(int ac, char **av)
  *********************************************************************************/
 void parent_rout()
 {
-	char mesg[MAXMESG];	/*Used to buffer messages for tst_resm. */
-
 	/*
 	 *  Set to catch the alarm signal SIGALRM.
 	 */
@@ -398,8 +384,7 @@ void parent_rout()
 	TEST(kill(0, SIGUSR1));
 
 	if (TEST_RETURN == -1) {
-		(void)sprintf(mesg, SYS_FAIL, "kill", errno, strerror(errno));
-		tst_brkm(TBROK, NULL, mesg);
+		tst_brkm(TBROK|TERRNO, NULL, "kill() failed");
 		(void)par_kill();
 		cleanup();
 	}
@@ -432,8 +417,7 @@ void parent_rout()
 		/*
 		 * The read system call failed.
 		 */
-		(void)sprintf(mesg, SYS_FAIL, "read", errno, strerror(errno));
-		tst_brkm(TBROK, NULL, mesg);
+		tst_brkm(TBROK|TERRNO, NULL, "read() failed");
 		(void)par_kill();
 		cleanup();
 	}
@@ -501,7 +485,6 @@ void parent_rout()
  ******************************************************************************/
 void child1_rout()
 {
-	char mesg[MAXMESG];	/*Used to buffer messages for tst_resm. */
 	who_am_i = '1';
 
 	/*
@@ -524,9 +507,7 @@ void child1_rout()
 			/* This is child B. */
 #ifdef UCLINUX
 			if (self_exec(argv0, "nd", 2, pipeB_fd[1]) < 0) {
-				(void)sprintf(mesg, SYS_FAIL, "self_exec",
-					      errno, strerror(errno));
-				tst_brkm(TBROK, NULL, mesg);
+				tst_brkm(TBROK|TERRNO, NULL, "self_exec() failed");
 				(void)write(pipe1_fd[1], CHAR_SET_FAILED, 1);
 				exit(0);
 			}
@@ -542,9 +523,7 @@ void child1_rout()
 			if (kill(pidA, SIGKILL) == -1)
 				tst_resm(TWARN,
 					 "Child process may not have been killed.");
-			(void)sprintf(mesg, SYS_FAIL, "fork", errno,
-				      strerror(errno));
-			tst_brkm(TBROK, NULL, mesg);
+			tst_brkm(TBROK|TERRNO, NULL, "fork() failed");
 			(void)write(pipe2_fd[1], CHAR_SET_FAILED, 1);
 			exit(0);
 		}
@@ -554,9 +533,7 @@ void child1_rout()
 		/* This is child A. */
 #ifdef UCLINUX
 		if (self_exec(argv0, "nd", 1, pipeA_fd[1]) < 0) {
-			(void)sprintf(mesg, SYS_FAIL, "self_exec", errno,
-				      strerror(errno));
-			tst_brkm(TBROK, NULL, mesg);
+			tst_brkm(TBROK|TERRNO, NULL, "self_exec() failed");
 			(void)write(pipe1_fd[1], CHAR_SET_FAILED, 1);
 			exit(0);
 		}
@@ -570,8 +547,7 @@ void child1_rout()
 		/*
 		 *  The fork of child A failed.
 		 */
-		(void)sprintf(mesg, SYS_FAIL, "fork", errno, strerror(errno));
-		tst_brkm(TBROK, NULL, mesg);
+		tst_brkm(TBROK|TERRNO, NULL, "fork() failed");
 		(void)write(pipe1_fd[1], CHAR_SET_FAILED, 1);
 		exit(0);
 	}
@@ -763,7 +739,6 @@ void setup()
 {
 	int errno_buf;		/*indicates the errno if pipe set up fails.             */
 	int err_flag = FALSE;	/*Indicates if an error has occurred in pipe set up.    */
-	char mesg[MAXMESG];	/*Used to buffer messages for tst_res.                  */
 
 	/*
 	 *  Set the process group ID to be equal between the parent and children.
@@ -780,18 +755,12 @@ void setup()
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	if (signal(SIGUSR1, SIG_IGN) == SIG_ERR) {
-		(void)sprintf(mesg,
-			      "Setting to ignore signal SIGCLD failed. Errno: %d, Error message %s.",
-			      errno, strerror(errno));
-		tst_brkm(TBROK, NULL, mesg);
+		tst_brkm(TBROK|TFAIL, NULL, "signal(SIGUSR1, SIG_IGN) failed");
 		tst_exit();
 	}
 
 	if (signal(SIGCLD, SIG_IGN) == SIG_ERR) {
-		(void)sprintf(mesg,
-			      "Setting to ignore signal SIGCLD failed. Errno: %d, Error message %s.",
-			      errno, strerror(errno));
-		tst_brkm(TBROK, NULL, mesg);
+		tst_brkm(TBROK|TERRNO, NULL, "signal(SIGCLD, SIG_IGN) failed");
 		tst_exit();
 	}
 
@@ -832,9 +801,7 @@ void setup()
 	 *  Check for errors.
 	 */
 	if (err_flag == TRUE) {
-		(void)sprintf(mesg, SYS_FAIL, "pipe", errno_buf,
-			      strerror(errno_buf));
-		tst_brkm(TBROK, NULL, mesg);
+		tst_brkm(TBROK|TERRNO, NULL, "pipe() failed");
 		tst_exit();
 	}
 	return;
@@ -846,8 +813,6 @@ void setup()
  **********************************************************/
 void usr1_rout()
 {
-	char mesg[MAXMESG];	/*Used to buffer messages for tst_res.  */
-
 	switch (who_am_i) {
 	case '1':
 		if (write(pipe1_fd[1], SIG_CAUGHT, 1) == -1)
@@ -870,10 +835,9 @@ void usr1_rout()
 				 "Writing signal catching status failed in child B.");
 		break;
 	default:
-		sprintf(mesg,
-			"Unexpected value %d for who_am_i in usr1_rout().",
+		tst_resm(TWARN,
+			"Unexpected value %d for who_am_i in usr1_rout()",
 			who_am_i);
-		tst_resm(TWARN, mesg);
 		break;
 	}
 
@@ -896,17 +860,14 @@ void notify_timeout()
  **********************************************************/
 void par_kill()
 {
-	char mesg[MAXMESG];	/*Used to buffer messages for tst_res.  */
 	int status;
 
 	/*
 	 *  Indicate to child1 that it can remove it's children and itself now.
 	 */
 	if (kill(pid1, SIGUSR2) == -1 && errno != ESRCH) {
-		(void)sprintf(mesg, SYS_FAIL, "kill", errno, strerror(errno));
-		tst_resm(TWARN, mesg);
-		tst_resm(TWARN,
-			 "Child 1 and it's children may still be alive.");
+		tst_resm(TWARN|TERRNO, "kill() failed");
+		tst_resm(TWARN, "Child 1 and it's children may still be alive.");
 	}
 
 	/*
@@ -926,26 +887,16 @@ void par_kill()
  ********************************************************************/
 void chld1_kill()
 {
-	char mesg[MAXMESG];	/*Used to buffer messages for tst_resm. */
-
 	/*
 	 *  Remove children A & B.
 	 */
-	if (kill(pidA, SIGKILL) == -1 && errno != ESRCH) {
-		(void)sprintf(mesg,
-			      "The system call kill failed. Child 1's(A) child may still be alive. Errno: %d, Error message %s.",
-			      errno, strerror(errno));
-		tst_resm(TWARN, mesg);
-	}
+	if (kill(pidA, SIGKILL) == -1 && errno != ESRCH)
+		tst_resm(TWARN|TERRNO, "kill(%d) failed; child 1's(A) child may still be alive", pidA);
 
 	(void)write(pipe1_fd[1], CHAR_SET_PASSED, 1);
 
-	if (kill(pidB, SIGKILL) == -1 && errno != ESRCH) {
-		(void)sprintf(mesg,
-			      "The system call kill failed. Child 1's(B) child may still be alive. Errno: %d, Error message %s.",
-			      errno, strerror(errno));
-		tst_resm(TWARN, mesg);
-	}
+	if (kill(pidB, SIGKILL) == -1 && errno != ESRCH)
+		tst_resm(TWARN|TERRNO, "kill(%d) failed; child 1's(B) child may still be alive", pidB);
 
 	exit(0);
 
