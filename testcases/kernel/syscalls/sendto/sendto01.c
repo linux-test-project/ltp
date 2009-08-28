@@ -149,33 +149,28 @@ pid_t start_server(struct sockaddr_in *sin0)
 
 	sfd = socket(PF_INET, SOCK_STREAM, 0);
 	if (sfd < 0) {
-		tst_brkm(TBROK, cleanup, "server socket failed: %s",
-			 strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "server socket failed");
 		return -1;
 	}
 	if (bind(sfd, (struct sockaddr *)&sin1, sizeof(sin1)) < 0) {
-		tst_brkm(TBROK, cleanup, "server bind failed: %s",
-			 strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "server bind failed");
 		return -1;
 	}
 	if (listen(sfd, 10) < 0) {
-		tst_brkm(TBROK, cleanup, "server listen failed: %s",
-			 strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "server listen failed");
 		return -1;
 	}
 	switch ((pid = FORK_OR_VFORK())) {
 	case 0:		/* child */
 #ifdef UCLINUX
-		if (self_exec(argv0, "d", sfd) < 0) {
-			tst_brkm(TBROK, cleanup, "server self_exec failed");
-		}
+		if (self_exec(argv0, "d", sfd) < 0)
+			tst_brkm(TBROK|TERRNO, cleanup, "server self_exec failed");
 #else
 		do_child();
 #endif
 		break;
 	case -1:
-		tst_brkm(TBROK, cleanup, "server fork failed: %s",
-			 strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "server fork failed");
 		/* fall through */
 	default:		/* parent */
 		(void)close(sfd);
@@ -266,7 +261,7 @@ int main(int ac, char *av[])
 			    (TEST_RETURN < 0 &&
 			     TEST_ERRNO != tdat[testno].experrno)) {
 				tst_resm(TFAIL, "%s ; returned"
-					 " %d (expected %d), errno %d (expected"
+					 " %ld (expected %d), errno %d (expected"
 					 " %d)", tdat[testno].desc,
 					 TEST_RETURN, tdat[testno].retval,
 					 TEST_ERRNO, tdat[testno].experrno);
@@ -309,8 +304,7 @@ void setup0(void)
 	if (tdat[testno].experrno == EBADF)
 		s = 400;	/* anything not an open file */
 	else if ((s = open("/dev/null", O_WRONLY)) == -1)
-		tst_brkm(TBROK, cleanup, "error opening /dev/null - "
-			 "errno: %s", strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "open(/dev/null) failed");
 }
 
 void cleanup0(void)
@@ -321,13 +315,10 @@ void cleanup0(void)
 void setup1(void)
 {
 	s = socket(tdat[testno].domain, tdat[testno].type, tdat[testno].proto);
-	if (s < 0) {
-		tst_brkm(TBROK, cleanup, "socket setup failed: %s",
-			 strerror(errno));
-	}
-	if (connect(s, (const struct sockaddr *)&sin1, sizeof(sin1)) < 0) {
-		tst_brkm(TBROK, cleanup, "connect failed: ", strerror(errno));
-	}
+	if (s < 0)
+		tst_brkm(TBROK|TERRNO, cleanup, "socket setup failed");
+	if (connect(s, (const struct sockaddr *)&sin1, sizeof(sin1)) < 0)
+		tst_brkm(TBROK|TERRNO, cleanup, "connect failed");
 }
 
 void cleanup1(void)
@@ -339,16 +330,13 @@ void cleanup1(void)
 void setup2(void)
 {
 	setup1();		/* get a socket in s */
-	if (shutdown(s, 1) < 0) {
-		tst_brkm(TBROK, cleanup, "socket setup failed connect "
-			 "test %d: %s", testno, strerror(errno));
-	}
+	if (shutdown(s, 1) < 0)
+		tst_brkm(TBROK|TERRNO, cleanup, "socket setup failed connect "
+			 "test %d", testno);
 }
 void setup3(void)
 {
 	s = socket(tdat[testno].domain, tdat[testno].type, tdat[testno].proto);
-	if (s < 0) {
-		tst_brkm(TBROK, cleanup, "socket setup failed: %s",
-			 strerror(errno));
-	}
+	if (s < 0)
+		tst_brkm(TBROK|TERRNO, cleanup, "socket setup failed");
 }

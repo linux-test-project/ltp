@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: select01.c,v 1.5 2009/03/23 13:36:02 subrata_modak Exp $ */
+/* $Id: select01.c,v 1.6 2009/08/28 14:32:05 vapier Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -224,11 +224,9 @@ void setup()
 	/* create a temporary directory and go to it */
 	tst_tmpdir();
 
-	if ((Fd = open(FILENAME, O_CREAT | O_RDWR, 0777)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_CREAT | O_RDWR) failed: errno:%d\n",
-			 errno);
-	}
+	if ((Fd = open(FILENAME, O_CREAT | O_RDWR, 0777)) == -1)
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "open(%s, O_CREAT | O_RDWR) failed", FILENAME);
 
 	/*
 	 * Initializing and assigning the standard output file descriptor to
@@ -252,10 +250,8 @@ void cleanup()
 	TEST_CLEANUP;
 
 	if (Fd >= 0) {
-		if (close(Fd) == -1) {
-			tst_resm(TWARN, "close(%s) Failed, errno=%d : %s",
-				 FILENAME, errno, strerror(errno));
-		}
+		if (close(Fd) == -1)
+			tst_resm(TWARN|TERRNO, "close(%s) failed", FILENAME);
 		Fd = -1;
 	}
 
