@@ -296,7 +296,7 @@ static int do_test(struct test_case *tc)
                         TEST(rc = syscall(__NR_set_mempolicy, tc->policy,&nodemask, maxnode));
 
 		if (TEST_RETURN < 0) {
-			tst_resm(TFAIL, "set_mempolicy() failed - errno = %d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TTERRNO, "set_mempolicy() failed");
                         result = 1;
 			cleanup();
                         tst_exit();
@@ -307,7 +307,7 @@ static int do_test(struct test_case *tc)
                 // mmap memory
                 p = mmap(NULL, len, PROT_READ|PROT_WRITE,MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
                 if (p == (void*)-1) {
-			tst_resm(TFAIL, "malloc failed - errno = %d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TERRNO, "mmap() failed");
                         result = 1;
 			cleanup();
                         tst_exit();
@@ -349,7 +349,6 @@ TEST_END:
          */
         result |= (sys_errno != tc->err) || !cmp_ok;
         PRINT_RESULT_CMP(0, tc->ret, tc->err, sys_ret, sys_errno, cmp_ok);
-EXIT:
         return result;
 }
 
