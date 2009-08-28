@@ -365,12 +365,12 @@ static const char *result_strings[] = {
 #define EPOLL_CTL_TEST_FAIL(msg , ...) \
 ({ \
 	if (ev_ptr != NULL){ \
-		tst_resm(TFAIL, ( "(epoll_ctl(%d,%0.8x,%d,%p = {%0.8x,%0.8d}) returned %d:%s)" ) , ##__VA_ARGS__ , \
+		tst_resm(TFAIL, ( "(epoll_ctl(%d,%08x,%d,%p = {%08x,%08d}) returned %d:%s)" ) , ##__VA_ARGS__ , \
 			epoll_fds[epfd_index], epoll_ctl_ops[op_index], \
 			epoll_fds[fd_index], ev_ptr, ev_ptr->events, ev_ptr->data, errno, \
 			strerror(errno)); \
 	} else { \
-		tst_resm(TFAIL, ( "(epoll_ctl(%d,%0.8x,%d,%p) returned %d:%s)" ) , ##__VA_ARGS__  , \
+		tst_resm(TFAIL, ( "(epoll_ctl(%d,%08x,%d,%p) returned %d:%s)" ) , ##__VA_ARGS__  , \
 			epoll_fds[epfd_index], epoll_ctl_ops[op_index], \
 			epoll_fds[fd_index], ev_ptr, errno, strerror(errno)); \
 	} \
@@ -379,12 +379,12 @@ static const char *result_strings[] = {
 #define EPOLL_CTL_TEST_PASS(msg , ...) \
 ({ \
 	if (ev_ptr != NULL){ \
-		tst_resm(TPASS, ( "(epoll_ctl(%d,%0.8x,%d,%p = {%0.8x,%0.8d}) returned %d:%s)" ) , ##__VA_ARGS__ , \
+		tst_resm(TPASS, ( "(epoll_ctl(%d,%08x,%d,%p = {%08x,%08d}) returned %d:%s)" ) , ##__VA_ARGS__ , \
 			epoll_fds[epfd_index], epoll_ctl_ops[op_index], \
 			epoll_fds[fd_index], ev_ptr, ev_ptr->events, ev_ptr->data, errno, \
 			strerror(errno)); \
 	} else { \
-		tst_resm(TPASS, ( "(epoll_ctl(%d,%0.8x,%d,%p) returned %d:%s)" ) , ##__VA_ARGS__  , \
+		tst_resm(TPASS, ( "(epoll_ctl(%d,%08x,%d,%p) returned %d:%s)" ) , ##__VA_ARGS__  , \
 			epoll_fds[epfd_index], epoll_ctl_ops[op_index], \
 			epoll_fds[fd_index], ev_ptr, errno, strerror(errno)); \
 	} \
@@ -681,7 +681,7 @@ int main(int argc, char **argv)
 
 	/* Set up RNG */
 	srand(tv.tv_usec);
-	tst_resm(TINFO, "random number seeded with gettimeofday() [seed = %d] works", tv.tv_usec);
+	tst_resm(TINFO, "random number seeded with gettimeofday() [seed = %ld] works", tv.tv_usec);
 
 	tst_resm(TINFO, "Testing epoll_create");
 	/* Testing epoll_create with some different sizes */
