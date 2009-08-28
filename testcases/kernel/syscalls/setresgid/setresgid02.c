@@ -162,7 +162,7 @@ int main(int argc, char **argv)
 				}
 			} else {
 				tst_resm(TFAIL, "Test for %s failed; returned"
-					 " %d (expected %d), errno %d (expected"
+					 " %ld (expected %d), errno %d (expected"
 					 " 0)", tdat[testno].desc,
 					 TEST_RETURN, EXP_RET_VAL, TEST_ERRNO);
 			}

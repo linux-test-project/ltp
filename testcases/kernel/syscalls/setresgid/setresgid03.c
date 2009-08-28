@@ -160,8 +160,8 @@ int main(int argc, char **argv)
 			} else {
 				tst_resm(TFAIL, "setresgid() returned "
 					 "unexpected results for %s ; returned"
-					 " %d (expected %d), errno %d (expected"
-					 " 0)", TEST_DESC,
+					 " %ld (expected %d), errno %d (expected"
+					 " %d)", TEST_DESC,
 					 TEST_RETURN, EXP_RET_VAL, TEST_ERRNO,
 					 EXP_ERRNO);
 			}
