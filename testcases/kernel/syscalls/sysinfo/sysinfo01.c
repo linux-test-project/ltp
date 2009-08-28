@@ -147,8 +147,7 @@ int main(int ac, char **av)
 				printf("procs %lu\n",
 				       (unsigned long)sys_buf->procs);
 			} else {
-				tst_resm(TPASS, "Test to check the return code",
-					 "PASSED");
+				tst_resm(TPASS, "Test to check the return code PASSED");
 			}
 		}
 	}

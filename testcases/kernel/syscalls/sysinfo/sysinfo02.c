@@ -107,12 +107,12 @@ int main(int ac, char **av)
 		/* check return code */
 		if (TEST_RETURN != 0 && TEST_ERRNO == EFAULT) {
 			/* Test succeeded as it was supposed to return -1 */
-			tst_resm(TPASS, "Test to check the error code %d",
-				 TEST_ERRNO, "PASSED");
+			tst_resm(TPASS, "Test to check the error code %d PASSED",
+				 TEST_ERRNO);
 		} else {
 			/* Test Failed */
 			tst_brkm(TFAIL, cleanup, "sysinfo() Failed, Expected -1"
-				 "returned %d/n", TEST_ERRNO, "FAILED");
+				 "returned %d/n", TEST_ERRNO);
 		 /*NOTREACHED*/}
 	}
 	cleanup();
