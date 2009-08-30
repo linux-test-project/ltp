@@ -1,6 +1,7 @@
 #!/bin/sh -x
 
 pthserv &
+sleep 5
 pthcli 127.0.0.1 $LTPROOT/testcases/bin/data
 clientCode=$?
 killall pthserv
