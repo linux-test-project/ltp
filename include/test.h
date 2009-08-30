@@ -31,7 +31,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: test.h,v 1.21 2009/08/28 12:43:06 vapier Exp $ */
+/* $Id: test.h,v 1.22 2009/08/30 17:18:18 subrata_modak Exp $ */
 
 #ifndef __TEST_H__
 #define __TEST_H__
@@ -186,12 +186,18 @@
  * Functions from lib/tst_res.c
  */
 const char *strttype(int ttype);
-void tst_res(int ttype, char *fname, char *arg_fmt, ...);
-void tst_resm(int ttype, char *arg_fmt, ...);
-void tst_brk(int ttype, char *fname, void (*func)(void), char *arg_fmt, ...);
-void tst_brkloop(int ttype, char *fname, void (*func)(void), char *arg_fmt, ...);
-void tst_brkm(int ttype, void (*func)(void), char *arg_fmt, ...);
-void tst_brkloopm(int ttype, void (*func)(void), char *arg_fmt, ...);
+void tst_res(int ttype, char *fname, char *arg_fmt, ...)
+	__attribute__ ((format (printf, 3, 4)));
+void tst_resm(int ttype, char *arg_fmt, ...)
+	__attribute__ ((format (printf, 2, 3)));
+void tst_brk(int ttype, char *fname, void (*func)(void), char *arg_fmt, ...)
+	__attribute__ ((format (printf, 4, 5)));
+void tst_brkloop(int ttype, char *fname, void (*func)(void), char *arg_fmt, ...)
+	__attribute__ ((format (printf, 4, 5)));
+void tst_brkm(int ttype, void (*func)(void), char *arg_fmt, ...)
+	__attribute__ ((format (printf, 3, 4)));
+void tst_brkloopm(int ttype, void (*func)(void), char *arg_fmt, ...)
+	__attribute__ ((format (printf, 3, 4)));
 void tst_require_root(void (*func)(void));
 int  tst_environ(void);
 void tst_exit(void) LTP_ATTRIBUTE_NORETURN;
