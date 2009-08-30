@@ -43,7 +43,8 @@ def main(argv=None):
         print "INFO: Created table mapping cpu to package"
         background="no"
         duration=60
-        trigger_workld(options.work_ld, options.stress, duration, background)
+        pinned ="no"
+        trigger_workld(options.work_ld, options.stress, duration, background, pinned)
         generate_report()
         status = validate_cpu_consolidation(options.work_ld,options.mc_level, options.smt_level)
         reset_schedmc()
