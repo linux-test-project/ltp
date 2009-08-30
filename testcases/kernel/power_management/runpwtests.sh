@@ -69,7 +69,7 @@ is_dual_core; dual_core=$?
 #Checking sched_mc sysfs interface
 #check_config.sh config_sched_mc || RC=$?
 TST_COUNT=1
-if [ $multi_socket -eq $YES -a $dual_core -eq $YES ] ; then
+if [ $multi_socket -eq $YES -a $multi_core -eq $YES ] ; then
 	if [ -f /sys/devices/system/cpu/sched_mc_power_savings ] ; then
 		if test_sched_mc.sh ; then
 			tst_resm TPASS "SCHED_MC sysfs tests"
@@ -232,7 +232,7 @@ if [ $# -gt 0 -a "$1" = "-exclusive" ]; then
 			if [ $hyper_threaded -eq $YES ]; then
 				for sched_smt in `seq 0 $max_sched_smt`; do
 					for work_load in ${work_loads_list}; do
-                   		: $(( TST_COUNT += 1 ))
+                   				: $(( TST_COUNT += 1 ))
 						sched_mc_smt_pass_cnt=0
 						for repeat_test in `seq 1  10`; do
 							# Testcase to validate CPU consolidation for
@@ -259,6 +259,60 @@ if [ $# -gt 0 -a "$1" = "-exclusive" ]; then
 			fi
 		done
 		analyze_core_consolidation_result $sched_smt $work_load $sched_smt_pass_cnt
+	fi
+        # Verify ILB runs in same package as workload
+        if [ $multi_socket -eq $YES -a $multi_core -eq $YES ]; then
+		work_loads_list="ebizzy kernbench"	
+		for sched_mc in `seq 0 $max_sched_mc`; do
+			for work_load in ${work_loads_list}
+			do
+				: $(( TST_COUNT += 1 ))
+                                ilb_test.py -c $sched_mc -w $work_load; RC=$?
+				if [ $RC -eq 0 ]; then
+					tst_resm TPASS "ILB & workload in same package for sched_mc=$sched_mc"
+				else
+					if [ $sched_mc -eq 0 ]; then
+						tst_resm TPASS "ILB & workload is not in same package when sched_mc=0"
+					else
+						tst_resm TFAIL "ILB did not run in same package"
+					fi
+				fi
+			done
+			if [ $hyper_threaded -eq $YES ]; then
+				for sched_smt in `seq 0 $max_sched_smt`; do
+					for work_load in ${work_loads_list}; do
+						: $(( TST_COUNT += 1 ))
+						ilb_test.py -c $sched_mc -t sched_smt -w $work_load; RC=$?
+ 						if [ $RC -eq 0 ]; then
+							tst_resm TPASS "ILB & workload in same package for sched_mc=$sched_mc"
+						else
+							if [ $sched_mc -eq 0 ]; then
+								tst_resm TPASS "ILB & workload is not in same package when sched_mc=0"
+							else
+								tst_resm TFAIL "ILB did not run in same package"    
+							fi
+						fi
+					done
+				done
+			fi
+		done
+	fi
+	if [ $multi_socket -eq $YES -a $hyper_threaded -eq $YES -a $multi_core -eq $YES ]; then
+		for sched_smt in `seq 0 $max_sched_smt`; do
+			for work_load in ${work_loads_list}; do
+				: $(( TST_COUNT += 1 ))
+				ilb_test.py -t $sched_smt -w $work_load; RC=$?
+				if [ $RC -eq 0 ]; then
+					tst_resm TPASS "ILB & workload not load not in same package for sched_smt=$sched_smt"
+				else
+					if [ $sched_smt -eq 0 ]; then
+						tst_resm TPASS "Its oky if ILB is not in same package when sched_smt=0"
+					else
+						tst_resm TFAIL "ILB did not run in same package"
+					fi
+				fi
+			done
+		done
 	fi
 fi
 
