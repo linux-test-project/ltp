@@ -23,11 +23,15 @@
 #include <sys/socket.h>
 #include <signal.h>
 
+#include "config.h"
+
 #include <linux/genetlink.h>
 #include <linux/taskstats.h>
-#include <linux/cgroupstats.h>
 
-#include "config.h"
+#ifdef HAVE_LINUX_CGROUPSTATS_H
+#include <linux/cgroupstats.h>
+#endif
+
 /*
  * Generic macros for dealing with netlink sockets. Might be duplicated
  * elsewhere. It is recommended that commercial grade applications use
@@ -232,6 +236,8 @@ void task_context_switch_counts(struct taskstats *t)
 #endif
 }
 
+#ifdef HAVE_LINUX_CGROUPSTATS_H
+
 void print_cgroupstats(struct cgroupstats *c)
 {
 	printf("sleeping %llu, blocked %llu, running %llu, stopped %llu, "
@@ -242,6 +248,7 @@ void print_cgroupstats(struct cgroupstats *c)
 		(unsigned long long)c->nr_uninterruptible);
 }
 
+#endif
 
 void print_ioacct(struct taskstats *t)
 {
@@ -390,6 +397,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (containerset) {
+		#ifdef HAVE_LINUX_CGROUPSTAT_H
 		cfd = open(containerpath, O_RDONLY);
 		if (cfd < 0) {
 			perror("error opening container file");
@@ -401,6 +409,10 @@ int main(int argc, char *argv[])
 			perror("error sending cgroupstats command");
 			exit(1);
 		}
+		#else
+			printf("Header linux/cgroupstat.h was missing during compilation,"
+			       "you may have old or incomplete kernel-headers.\n");
+		#endif
 	}
 	if (!maskset && !tid && !containerset) {
 		usage();
@@ -484,10 +496,11 @@ int main(int argc, char *argv[])
 					na = (struct nlattr *) ((char *) na + len2);
 				}
 				break;
-
+			#ifdef HAVE_LINUX_CGROUPSTATS_H
 			case CGROUPSTATS_TYPE_CGROUP_STATS:
 				print_cgroupstats(NLA_DATA(na));
 				break;
+			#endif
 			default:
 				fprintf(stderr, "Unknown nla_type %d\n",
 					na->nla_type);
@@ -513,3 +526,4 @@ done:
 		close(cfd);
 	return 0;
 }
+
