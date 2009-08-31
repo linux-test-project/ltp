@@ -1,3 +1,1101 @@
+LTP-20090831
+
+1) Log Message:
+Enable traversing down the performance_counter directory and as noted in email to ltp-list about C file changes. This simply fixes some missing declarations and linux_syscall_number.h cleanup related compiler warnings. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>.
+
+Modified File(s):
+ltp/testcases/kernel/performance_counters/performance_counter02.c
+
+2) Log Message:
+As just emailed to ltp-list...
+1. The indentation in this script was off (defacto standard for shell scripts is 4-space indents).
+2. rsh is becoming a deprecated app, so the likelihood of someone executing this app and having it fail the first time and succeed in the remaining runs is low. So let's do two things:
+    i. Provide a means to toggle immediately failure to provide a quick failure short circuit (FAIL_IMMEDIATELY => 1).
+    ii. Fail on the first try if FAIL_IMMEDIATELY is set and exit the script.
+3. Export TCID, TST_COUNT, and TST_TOTAL so tst_resm doesn't complain.
+4. Prefix the number of tries so folks don't need to scroll up the terminal buffer and count to see what iteration they're executing.
+5. Convert `"$CHECK" -eq 9' to `"$CHECK" = "9"' so test(1) doesn't complain if and when the rsh(1) fails, and thus doesn't return an integer value to stdout.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>.
+
+Modified File(s):
+ltp/testcases/network/tcp_cmds/rsh/rsh01
+
+3) Log Message:
+fcntl24,25,26 fail when run on tmpfs: Attached is a patch to skip testcases fcntl24, fcntl25 and fcntl26 if the host is running on tmpfs. The reason being that, as documented here http://bugzilla.kernel.org/show_bug.cgi?id=13626, F_SETLEASE and F_WRLCK cannot work on tmpfs. Signed-off-by: Matt Fleming <matt@console-pimps.org>.
+
+Modified Files:
+ltp/testcases/kernel/syscalls/fcntl/fcntl24.c
+ltp/testcases/kernel/syscalls/fcntl/fcntl25.c
+ltp/testcases/kernel/syscalls/fcntl/fcntl26.c
+
+4) Log Message:
+We need to verify the validity of using MAP_FIXED in this manner. The tests do no checking to see whether the address space is safe to use or not. It should be safe after  removing the flag MAP_FIXED from all calls to mmap in the remap_file_pages tests.  If mmap is called without that flag, the kernel will find a safe memory space to map, and the test will pass. Signed-off-by: Srikanth Krishnakar <skrishnakar@celestialsys.com>.
+
+Modified Files:
+ltp/testcases/kernel/syscalls/remap_file_pages/remap_file_pages01.c
+ltp/testcases/kernel/syscalls/remap_file_pages/remap_file_pages02.c
+
+5) Log Message:
+Remove getgid02 from all runtest files (was "[PATCH] Remove getgid02 from ltplite runtest file"). And it appears that I missed some spots. This removes _all_ references to getgid02 from _all_ of the runtest files: Signed-off-by: Garrett Cooper <yanegomi@gmail.com>.
+
+Modified Files:
+ltp/runtest/ltplite
+ltp/runtest/stress.part3
+ltp/runtest/syscalls
+
+6) Log Message:
+This set of 3 patches adds a new API stats_container_append to libstats. This function adds new stats_record_t to the record list in stats_container_t. It also replaces the occurrences of data->size with data->index and modifies the test-cases to call the append function. Changelog
+---------
+- Added index to stats_container_t struct
+- Added Append function to add new stats_record_t to records list of stats_container_t
+- Replaced the occurrences of data->size by data->index in libstats.c
+- Modified the realtime testcases to include call to the append function.
+[PATCH 1/3] libstats: add append API to libstats: This patch adds a new API stats_container_append to libstats. This function adds a new stats_record_t to the records list in stats_container_t.
+Signed-off-by: Kiran Prakash <kiran@linux.vnet.ibm.com>,
+Acked-by: Gowrishankar <gowrishankar.m@in.ibm.com>,
+Acked-by: Darren Hart <dvhltc@us.ibm.com>,
+Acked-by: Sripathi Kodi <sripathik@in.ibm.com>,
+
+Modified Files:
+ltp/testcases/realtime/include/libstats.h
+ltp/testcases/realtime/lib/libstats.c
+
+7) Log Message:
+This set of 3 patches adds a new API stats_container_append to libstats. This function adds new stats_record_t to the record list in stats_container_t. It also replaces the occurrences of data->size with data->index and modifies the test-cases to call the append function. Changelog
+---------
+- Added index to stats_container_t struct
+- Added Append function to add new stats_record_t to records list of stats_container_t
+- Replaced the occurrences of data->size by data->index in libstats.c
+- Modified the realtime testcases to include call to the append function.
+[PATCH 2/3] libstats: replace data->size by data->index: This patch replaces the occurrences of data->size by data->index+1 as the index starts with 0 and ends at data->size-1. data->size holds the max size of the records list in data->container_t. data->index holds the index of the last record in the list. Since the records list may not be completely filled, data->index + 1 gives the total number of records currently in the list and it may not be equal to data->size.
+Signed-off-by: Kiran Prakash <kiran@linux.vnet.ibm.com>,
+Acked-by: Gowrishankar <gowrishankar.m@in.ibm.com>,
+Acked-by: Darren Hart <dvhltc@us.ibm.com>,
+Acked-by: Sripathi Kodi <sripathik@in.ibm.com> ,
+
+Modified Files:
+ltp/testcases/realtime/lib/libstats.c
+
+8) Log Message:
+his set of 3 patches adds a new API stats_container_append to libstats. This function adds new stats_record_t to the record list in stats_container_t. It also replaces the occurrences of data->size with data->index and modifies the test-cases to call the append function. Changelog
+---------
+- Added index to stats_container_t struct
+- Added Append function to add new stats_record_t to records list of stats_container_t
+- Replaced the occurrences of data->size by data->index in libstats.c
+- Modified the realtime testcases to include call to the append function.
+[PATCH 3/3] libstats: Modify testcases to call the append function: This patch modifies the testcases to call the stats_container_append function.
+Signed-off-by: Kiran Prakash <kiran@linux.vnet.ibm.com>,
+Acked-by: Gowrishankar <gowrishankar.m@in.ibm.com>,
+Acked-by: Darren Hart <dvhltc@us.ibm.com>,
+Acked-by: Sripathi Kodi <sripathik@in.ibm.com>,
+
+Modified Files:
+ltp/testcases/realtime/func/async_handler/async_handler.c
+ltp/testcases/realtime/func/async_handler/async_handler_tsc.c
+ltp/testcases/realtime/func/gtod_latency/gtod_latency.c
+ltp/testcases/realtime/func/hrtimer-prio/hrtimer-prio.c
+ltp/testcases/realtime/func/periodic_cpu_load/periodic_cpu_load.c
+ltp/testcases/realtime/func/periodic_cpu_load/periodic_cpu_load_single.c
+ltp/testcases/realtime/func/pi_perf/pi_perf.c
+ltp/testcases/realtime/func/pthread_kill_latency/pthread_kill_latency.c
+ltp/testcases/realtime/func/sched_jitter/sched_jitter.c
+ltp/testcases/realtime/func/sched_latency/sched_latency.c
+ltp/testcases/realtime/perf/latency/pthread_cond_many.c
+
+9) Log Message:
+Fixed static build which needs to link the pthread library in pidns and pipeio. Signed-off-by: nobuhiro <nobuhiro@andestech.com>. Matt Helsley <matthltc@us.ibm.com> replied: I'm not sure this is correct. I just did a CVS update and grepped for "pthread". I don't see a single use of pthreads in there. What output suggested all of these tests need to link to pthreads? Could you at least stick that in the changelog? Regardless, I'm satisfied with the patch itself. As I said before the changelog would be nicer if it included a snippet of the output that justifies it (included here for convenience): When static linking, the pthread stuff is due to the undefined pthread symbols in librt.a and libgcc_eh.a.
+make[4]: Entering directory `/home/nobuhiro/git_repo/os/ltp/testcases/kernel/ipc/pipeio'
+cc -Wall  -static -Wall  -I../../../../include   pipeio.c  -L../../../../lib -lltp -lrt -o pipeio
+/usr/lib/gcc/x86_64-pc-linux-gnu/4.3.3/../../../../lib64/librt.a(aio_suspend.o):
+In function `cleanup': (.text+0xa): undefined reference to `pthread_mutex_lock'.
+
+Modified Files:
+ltp/testcases/kernel/containers/pidns/Makefile
+ltp/testcases/kernel/ipc/pipeio/Makefile
+
+10) Log Message:
+[RESEND][PATCH 3/3] libstats: Modify testcases to call the append function. I am resending the patch after checking with the latest CVS version of LTP. 
+Signed-off-by: Kiran Prakash <kiran@linux.vnet.ibm.com>,
+Acked-by: Gowrishankar <gowrishankar.m@in.ibm.com>,
+Acked-by: Darren Hart <dvhltc@us.ibm.com>,
+Acked-by: Sripathi Kodi <sripathik@in.ibm.com>,
+
+Modified Files:
+ltp/testcases/realtime/func/async_handler/async_handler.c
+ltp/testcases/realtime/func/async_handler/async_handler_tsc.c
+ltp/testcases/realtime/func/gtod_latency/gtod_latency.c
+ltp/testcases/realtime/func/hrtimer-prio/hrtimer-prio.c
+ltp/testcases/realtime/func/periodic_cpu_load/periodic_cpu_load.c
+ltp/testcases/realtime/func/periodic_cpu_load/periodic_cpu_load_single.c
+ltp/testcases/realtime/func/pi_perf/pi_perf.c
+ltp/testcases/realtime/func/pthread_kill_latency/pthread_kill_latency.c
+ltp/testcases/realtime/func/sched_jitter/sched_jitter.c
+ltp/testcases/realtime/func/sched_latency/sched_latency.c
+ltp/testcases/realtime/perf/latency/pthread_cond_many.c
+
+11) Log Message:
+As per the execute.sh script file there is time limit of two minutes for each test case execution if it takes more time it will be reported as HUNG. shm_open/23-1.c test case under posix test suite which executes more than two minutes so test case reported as HUNG. I have changed time limit from 120 to 300 sec. that is nothing but two minutes to five minutes. In low end machines this test case taking 4 min to complete execution. Now test cases reported as PASS. I have attached patch and below.
+/*****************************************************/
+Before Patch:
+conformance/interfaces/shm_open/23-1.test:execution:HUNG
+After Patch:
+conformance/interfaces/shm_open/23-1.test:execution:PASS
+/*****************************************************/
+Signed-off-by: Naresh Kamboju < naresh.kernel@gmail.com >.
+
+Modified Files:
+ltp/testcases/open_posix_testsuite/execute.sh
+
+12) Log Message:
+clone01 -c 10 on x86: Michal Simek <michal.simek@petalogix.com> reported: can you please to run clone01 syscall test on any x86 machine? I am getting fault there when I run it 10 times for example. The same problem I have on Microblaze.
+$> ./clone01  -c 10
+clone01     1  TPASS  :  clone() returned 22738
+clone01     1  TPASS  :  clone() returned 22740
+clone01     1  TPASS  :  clone() returned 22742
+clone01     1  TPASS  :  clone() returned 22748
+clone01     1  TPASS  :  clone() returned 22750
+clone01     1  TPASS  :  clone() returned 22752
+clone01     1  TPASS  :  clone() returned 22754
+clone01     1  TFAIL  :  clone() returned 134919589, errno = 22755
+clone01     1  TPASS  :  clone() returned 22744
+clone01     1  TPASS  :  clone() returned 22746,
+"Serge E. Hallyn" <serue@us.ibm.com> replied: All right I don't have the patiente to wade through the parse_opts and usc_lib crap, but this is not a clone failure.  What appears to be happening is setup() at the top of clone01.c is calling lib/parse_opts.c:usc_global_setup_hook(), with STD_COPIES set to the count option you passed in.  That forks of 10 copies of the test. I don't know what happens with the actual loop then, but the reason you get the error for the last clone test is that one of those forked copies of clone01 (*not* one of the cloned children) exits, and wait() catches that one.  That is why wait() returned 22744, which isn't any of the cloned children. So one stupid way of fixing this without dealing with the convoluted setup junk would be to change the waitpid chunk of the code like so.
+
+Modified Files:
+ltp/testcases/kernel/syscalls/clone/clone01.c
+
+13) Log Message:
+Regresion testing for Microblaze: here 4 tests are from my regresion testing for Microblaze kernel debug. There is one extension for testing aligned/unaligned get/put_user macros. The rest of changes are easy. [PATCH 1/4] utimensat: Remove utimensat_user from script: We can use nobody user instead of creating new one for this special test. Latest busybox source code not support userdel, useradd that's why is better to use user which exists. Signed-off-by: Michal Simek <monstr@monstr.eu>.
+
+Modified Files:
+ltp/testcases/kernel/syscalls/utimensat/utimensat_tests.sh
+
+14) Log Message:
+Regresion testing for Microblaze: here 4 tests are from my regresion testing for Microblaze kernel debug. There is one extension for testing aligned/unaligned get/put_user macros. The rest of changes are easy. [PATCH 2/4] tst_is_cwd: Add support for ramfs: I added support for testing ramfs and add together tests for nfs, tmpfs and ramfs. Signed-off-by: Michal Simek <monstr@monstr.eu>.
+
+Added Files:
+ltp/lib/tst_is_cwd.c
+Removed Files:
+ltp/lib/tst_is_cwd_nfs.c
+ltp/lib/tst_is_cwd_tmpfs.c
+
+15) Log Message:
+Regresion testing for Microblaze: here 4 tests are from my regresion testing for Microblaze kernel debug. There is one extension for testing aligned/unaligned get/put_user macros. The rest of changes are easy. [PATCH 3/4] fcntl24,25,26: F_SETLEASE and F_WRLCK cannot work on ramfs: The same reason as was in previous patch for tmpfs. Signed-off-by: Michal Simek <monstr@monstr.eu>.
+
+Modified Files:
+ltp/testcases/kernel/syscalls/fcntl/fcntl24.c
+ltp/testcases/kernel/syscalls/fcntl/fcntl25.c
+ltp/testcases/kernel/syscalls/fcntl/fcntl26.c
+
+16) Log Message:
+Regresion testing for Microblaze: here 4 tests are from my regresion testing for Microblaze kernel debug. There is one extension for testing aligned/unaligned get/put_user macros. The rest of changes are easy. [PATCH 4/4] Add unaligned tests which tests get/put_user macros: getpeername01 and getsockname01 tests get_user macro socketpair01 tests put_user macro. Signed-off-by: Michal Simek <monstr@monstr.eu>. 
+
+Modified Files:
+ltp/testcases/kernel/syscalls/getpeername/getpeername01.c
+ltp/testcases/kernel/syscalls/getsockname/getsockname01.c
+ltp/testcases/kernel/syscalls/socketpair/socketpair01.c
+
+17) Log Message:
+Alternatively, since digsig never went upstream and isn't being maintained, it might be best to drop this from LTP. "Serge E. Hallyn" <serue@us.ibm.com>. 
+
+Removed Files:
+ltp/testcases/kernel/security/digsig/Makefile
+ltp/testcases/kernel/security/digsig/README
+ltp/testcases/kernel/security/digsig/builddigsig.sh
+ltp/testcases/kernel/security/digsig/test.sh
+ltp/testcases/kernel/security/digsig/twiddlebit/Makefile
+ltp/testcases/kernel/security/digsig/twiddlebit/bsigntest.sh
+ltp/testcases/kernel/security/digsig/twiddlebit/digsigtest.sh
+ltp/testcases/kernel/security/digsig/twiddlebit/hw.c
+ltp/testcases/kernel/security/digsig/twiddlebit/pubring.gpg
+ltp/testcases/kernel/security/digsig/twiddlebit/random_seed
+ltp/testcases/kernel/security/digsig/twiddlebit/secring.gpg
+ltp/testcases/kernel/security/digsig/twiddlebit/swapbit.c
+ltp/testcases/kernel/security/digsig/twiddlebit/test_pub_key
+ltp/testcases/kernel/security/digsig/twiddlebit/trustdb.gpg
+ltp/testcases/kernel/security/digsig/twiddlebit/twiddletest.sh
+ltp/testcases/kernel/security/digsig/writeexec/Makefile
+ltp/testcases/kernel/security/digsig/writeexec/edit_write.c
+ltp/testcases/kernel/security/digsig/writeexec/libwritetest.c
+ltp/testcases/kernel/security/digsig/writeexec/shared.c
+
+18) Log Message:
+Make the test result codes a real bitfield again: the commit "extend the test result to a bit field so we can extend the output further" from July 20th unfortunately changes the code, that was previously a bitfield, to a non-bitfield. This causes FAILED tests to return erroneously 0. This patch changes the test result codes to be individual bits in the bitfield (effectively reverting  a small part of aforementioned patch). Signed-off-by: Jiri Palecek <jpalecek@web.de>. 
+
+Modified Files:
+ltp/include/test.h
+
+19) Log Message:
+Added one more approach for data integrity. Data integrity is performed on two fragmented files.
+1. Creating two fragmented files each of size DiskSize/2.
+2. Then comapring against the original file.
+3. If not equal test case fails.
+My ultimate goal in creating fragmented files is that,
+1. It creates many extents (fragments for each file)
+2. FS code may behave wrong at corner cases which may come into picture after many extents gets added to the file.
+3. Data corruption chances are there
+     i. when file metadata updation is not proper(corner cases when fragments are more)
+     ii.If write and read is not matching (write operation might have updated the block number some where and read may skip that block in some corner cases)
+4. In reality fragments can occur only after much usage of the disk(create/delete file)
+5. This is good test case for bigger size disk.(it can create more extents)
+6. fsync() is called after every write, which makes it slow.
+Signed-off-by: Jyoti Vantagodi <jyotiv@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/testcases/kernel/fs/fs_di/fs_di
+Added Files:
+ltp/testcases/kernel/fs/fs_di/frag.c
+
+20) Log Message:
+Remove pidns14 test case reference: pidns14 test case is removed in the July 2009 LTP release. So remove the reference to pidns14 test case in the runpidnstest.sh script. Signed-off-by: M. Mohan Kumar <mohan@in.ibm.com>.
+
+Modified File(s):
+ltp/testcases/kernel/containers/pidns/runpidnstest.sh
+
+21) Log Message:
+Pls find attached patch for waitid02 test case.I have modified the test case.I have also added 2 test scenarios in the test case using WSTOPPED and WNOWAIT. Note: The testcase was failing in LTP July, 2009 release. The warning- "implicit declaration of function 'getpgid", has been removed. Signed-off-by: rohit verma <rohit170309@gmail.com>.
+
+Modified Files:
+ltp/testcases/kernel/syscalls/waitid/waitid02.c
+
+22) Log Message:
+I have noticed UNTESTED behavior with sched_setparam/26-1.c test case under open_posix_testsuite. Test needs to be executed as non-root user. So I have changed user id from root to non-root user by adding set_nonroot() function. Now test case got PASSED. I have attached patch and results before and after the patch. please review the same.
+/*********************************************************************************************/
+Before Patch:
+/*********************************************************************************************/
+# ./26-1.test
+Run this test case as a Regular User, but not ROOT
+conformance/interfaces/sched_setparam/26-1.test:execution:UNTESTED
+/*********************************************************************************************/
+After Patch:
+/*********************************************************************************************/
+# ./26-1.test
+Testing with user 'bin' (uid: 1) Test PASSED
+conformance/interfaces/sched_setparam/26-1.test:execution:PASSED
+/*********************************************************************************************/
+Signed-off-by: Naresh Kamboju <naresh.kernel@gmail.com>.
+
+Modified Files:
+ltp/testcases/open_posix_testsuite/conformance/interfaces/sched_setparam/26-1.c
+
+23) Log Message:
+Top of tree fails to build on PPC fc11 box: This failure is being caused because .in files in kernel/includes are wrong. The prefixes for the names (__NR_) and the plus signs were removed. I've noticed it in .in files for several architectures in the latest LTP release (July 2009). This patch fixes bad updates to syscalls declarations for powerpc, that are causing build failures. This should be fixed for other archs accordingly. Signed-off-by Lucio Correia <luciojhc@br.ibm.com>.
+
+Modified Files:
+ltp/testcases/kernel/include/powerpc.in
+ltp/testcases/kernel/include/powerpc64.in
+
+24) Log Message:
+Issue with rt_sigqueueinfo testcase in LTP: rohit verma <rohit.170309@gmail.com> reported: I have found an issue with
+rt_sigqueueinfo test-case. Following is the test output:
+rt_sigqueueinfo01    1  PASS  :  Test Succeeded
+rt_sigqueueinfo01    1  FAIL  :  Test Failed, errno=1 : Operation not permitted
+rt_sigqueueinfo01    1  PASS  :  Test Succeeded
+rt_sigqueueinfo01    1  FAIL  :  Test Failed, errno=1 : Operation not permitted
+rt_sigqueueinfo01    0  WARN  :  tst_rmdir(): rmobj(/tmp/rt_3FaSpK) failed: lstat(/tmp/rt_3FaSpK) failed; errno=2: No such file or directory
+I think the following lines are causing the failures:
+(Line - 164)
+uinfo.si_errno = 0;
+uinfo.si_code = 0;//SI_USER
+TEST(retval = syscall(__NR_rt_sigqueueinfo, getpid(), 17, &uinfo));
+Reason -
+You can observe the following comment & source when you look at the Linux source (v 2.6.29) (linux-2.6.29/kernel/signal.c):
+           /* Not even root can pretend to send signals from the kernel.
+            Nor can they impersonate a kill(), which adds source info.  */
+         if (info.si_code >= 0)
+                 return -EPERM;
+which implies that si_code cannot be set to ' 0 ' (SI_USER) when invoking the rt_sigqueueinfo syscall. I am not sure how to fix this issue. But, a possible fix would be to remove the second set of fork & rt_sigqueueinfo invocations and use the first set (with SI_QUEUE). If needed, the loop count can be increased.
+Henry Yei <hyei@mvista.com> replied: Yes, I had just noticed this as well. Since it was "passing", it took awhile to spot. Returning pass even with tst_resm(TFAIL,.. Being called must have something to do with the forking, but I'm not familiar with how the LTP framework deals with that. In any case, I've
+create this patch for our internal tree that does the following: 
+- cleans up spacing for tabs, it was mix of two before
+- removes the second testcase which is I think is invalid (this gets rid of the bad return code as well).
+- removed the inner loop, it doesn't make sense as the tst_exit in the original code would never let it run past the first loop.
+- moved cleanup() and setup() to the appropriate places where they will only be called in pairs.
+Garrett Cooper <yanegomi@gmail.com> replied: I don't think that's the problem. I think that the real problem is how the testcase itself is written, because I don't see any code that checks WIFEXITED and WIFSIGNALED (I would check for both those items when doing sigqueue), and I don't see where the child(ren) actually exit... HMMM...
+
+Modified Files:
+ltp/testcases/kernel/syscalls/rt_sigqueueinfo/rt_sigqueueinfo01.c
+
+25) Log Message:
+lcov: improvements
+- added --from-package and --to-package options
+- improved gcov-kernel handling
+
+Modified File(s):
+ltp/utils/analysis/lcov/bin/geninfo
+ltp/utils/analysis/lcov/bin/lcov
+ltp/utils/analysis/lcov/man/lcov.1
+
+26) Log Message:
+RANLIB isn't a predefined variable in make(1):
+gcooper@orangebox ~ $ make -p idontexist | grep RANLIB
+make: *** No rule to make target `idontexist'.  Stop.
+This solves that issue. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>.
+
+Modified File(s):
+ltp/testcases/network/lib6/Makefile
+
+27) Log Message:
+Commit "move leading __NR_ to script to make all the .in files simpler" accidentally removed all plus signs surrounded by spaces from the syscall definition files for hppa/powerpc{,64}/s390{,x}/sh/sparc{,64}, breaking the build like:
+        fstatat01.c: In function ‘main’:
+        fstatat01.c:126: error: expected ‘)’ before numeric constant
+        make[4]: *** [fstatat01_64.o] Error 1
+Re-add the missing plus signs to fix it. Signed-off-by: Geert Uytterhoeven <Geert.Uytterhoeven@sonycom.com>.
+
+Modified Files:
+ltp/testcases/kernel/include/hppa.in
+ltp/testcases/kernel/include/powerpc.in
+ltp/testcases/kernel/include/powerpc64.in
+ltp/testcases/kernel/include/s390.in
+ltp/testcases/kernel/include/s390x.in
+ltp/testcases/kernel/include/sh.in
+ltp/testcases/kernel/include/sparc.in
+ltp/testcases/kernel/include/sparc64.in
+
+28) Log Message:
+I have noticed issues for patch applied on 12-Dec-2008. Because it is fixing the mq_send/5-1.c problem, but at the same time patch is affecting the building of few test cases in the same directory. I have listed the build log before and after the patch. So I have modified the patch such a way that it should not affect other test cases. Modifications:
+1.    remove function definitions from “include/posixtest.h”
+2.    add function definitions to new header file “include/mq_send.h”
+3.    add #include ”mq_send.h” line to mq_send/5-1.c test cases
+I have attached modified patch and below. Please review the same. Signed-off-by: naresh kamboju <naresh.kernel@gmail.com>.
+
+Modified Files:
+ltp/testcases/open_posix_testsuite/conformance/interfaces/mq_send/5-1.c
+ltp/testcases/open_posix_testsuite/include/posixtest.h
+Added Files:
+ltp/testcases/open_posix_testsuite/include/mq_send.h
+
+29) Log Message:
+Add option to skip tests: One problem that LTP has long suffered is that certain tests are known to be broken, sometimes for long periods of time.  In an ideal world, I think it best that these should be skipped, or at least removed from the default list of tests to run, but this isn't always practical due to a number of reasons.  Of course, another option is that a 'whitelist' of tests to run can be created and passed to runltp, but this becomes hard to maintain as there are often new tests that you may want to keep up with, and with each release of LTP, the list would have to be reexamined. So I wanted to see what people thought about a simple option, -S, to specify a list of tests that you want to blacklist from the current run. This is handy if you have an automated testing environment with an architecture that doesn't always get great attention and a list of tests that you know to be broken on that arch. The skipfile is simply a list of test names, one per line. Add a -S option to runltp that allows the user to specify a SKIPFILE of tests to skip. Signed-off-by: Paul Larson <paul.larson@canonical.com>.
+
+Modified File(s):
+ltp/runltp
+
+30) Log Message:
+gcov-kernel: update to Linux 2.6.30
+
+Added File(s):
+ltp/utils/analysis/gcov-kernel/linux-2.6.30-gcov-arm-eabi.patch
+ltp/utils/analysis/gcov-kernel/linux-2.6.30-gcov-arm-hack.patch
+ltp/utils/analysis/gcov-kernel/linux-2.6.30-gcov.patch
+
+31) Log Message:
+lcov: ignore gcov errors for unnamed source files: When specifying "--ignore-errors gcov", lcov/geninfo should not abort when they cannot read a .gcov file. Fix this by introducing warnings in the respective places. Peter Oberparleiter <oberpapr@users.sourceforge.net>.
+
+Modified Files:
+ltp/utils/analysis/lcov/bin/geninfo
+
+32) Log Message:
+RANLIB isn't a standard Make variable, which means that when it's exported to leaf callers as an empty value, builds fail. testcases/network/lib6/Makefile is a prime example. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>.
+
+Modified File(s):
+ltp/Makefile
+
+33) Log Message:
+Introducing the "Kernel Fault Injection Framework" generation and testing capability in LTP. This is in line with the recent proposal made through LTP Paper at OLS 2009: "Putting LTP to test - Validating both the Linux kernel and Test-cases" (http://ltp.sourceforge.net/documentation/technical_papers/Putting_LTP_to_Test.pdf). This infrasturcture will help LTP directly in the following ways:
+1) Allow test developers to test their new test cases against a faulted kernel, and then compare it on stable kernel run, impacting in better test development,
+2) Allow test engineers to be able to generate more code coverage by traversing the rarely touched parts of the kernel code, As we move forward in using this, we would definitely find some other advantages of this framework. This is V2 of patchset after incorporating comments from Mike, Paul & Garret.
+[PATCH v2 01/05] Provide all necessary information through ltp/README: Provide all necessary information to create/use "Fault Injection Framework" through ltp/README. This is necessary before any test case(s) can be run on this harness. Also describes the general algorithm that would be followed while running LTP tests in "Fault Injection" harness. Changed the debugfs mount point from /debug/ to /sys/kernel/debug/ as pointed out by Mike. Signed-off-by: Subrata Modak<subrata@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/README
+
+34) Log Message:
+Introducing the "Kernel Fault Injection Framework" generation and testing capability in LTP. This is in line with the recent proposal made through LTP Paper at OLS 2009: "Putting LTP to test - Validating both the Linux kernel and Test-cases" (http://ltp.sourceforge.net/documentation/technical_papers/Putting_LTP_to_Test.pdf). This infrasturcture will help LTP directly in the following ways:
+1) Allow test developers to test their new test cases against a faulted kernel, and then compare it on stable kernel run, impacting in better test development,
+2) Allow test engineers to be able to generate more code coverage by traversing the rarely touched parts of the kernel code, As we move forward in using this, we would definitely find some other advantages of this framework. This is V2 of patchset after incorporating comments from Mike, Paul & Garret.
+[PATCH v2 02/05] Add Script which would actually do the job of injecting faults: Script which would actually do the job of injecting faults by changing various parametrs available under /debug/fail*. This would be done dynamically during LTP run, and, is capable of taking parameters from 0 to 100 to vary the probability of Fault the user wants to inject in the running kernel. Signed-off-by: Subrata Modak<subrata@linux.vnet.ibm.com>.
+
+Added Files:
+ltp/tools/insert_kernel_faults.sh
+
+35) Log Message:
+Introducing the "Kernel Fault Injection Framework" generation and testing capability in LTP. This is in line with the recent proposal made through LTP Paper at OLS 2009: "Putting LTP to test - Validating both the Linux kernel and Test-cases" (http://ltp.sourceforge.net/documentation/technical_papers/Putting_LTP_to_Test.pdf). This infrasturcture will help LTP directly in the following ways:
+1) Allow test developers to test their new test cases against a faulted kernel, and then compare it on stable kernel run, impacting in better test development,
+2) Allow test engineers to be able to generate more code coverage by traversing the rarely touched parts of the kernel code, As we move forward in using this, we would definitely find some other advantages of this framework. This is V2 of patchset after incorporating comments from Mike, Paul & Garret.
+[PATCH v2 03/05] Add Script so the kernel is restored back to its original pristine form: Once the faults has been injected and all the concerned tests have been run completely, the kernel needs to be restored back to its original pristine form so that it is stable again. This Script does just exactly that. This again has changes regarding the debugfs mount point. Signed-off-by: Subrata Modak<subrata@linux.vnet.ibm.com>.
+
+Added Files:
+ltp/tools/restore_kernel_faults_default.sh
+
+36) Log Message:
+Introducing the "Kernel Fault Injection Framework" generation and testing capability in LTP. This is in line with the recent proposal made through LTP Paper at OLS 2009: "Putting LTP to test - Validating both the Linux kernel and Test-cases" (http://ltp.sourceforge.net/documentation/technical_papers/Putting_LTP_to_Test.pdf). This infrasturcture will help LTP directly in the following ways:
+1) Allow test developers to test their new test cases against a faulted  kernel, and then compare it on stable kernel run, impacting in better test development,
+2) Allow test engineers to be able to generate more code coverage by traversing the rarely touched parts of the kernel code, As we move forward in using this, we would definitely find some other advantages of this framework. This is V2 of patchset after incorporating comments from Mike, Paul & Garret.
+[PATCH v2 04/05] Add Script which will be at the heart of this infrastructure: At the heart of this infrastructure is this Script, which will actually:
+1) Change the temporary command file generated by runltp,
+2) Create a new temporary command file which will have the following entries against each one entry in the command file:
+        i) Same TAG COMMAND_LINE entry,
+        ii) Entry to call the script to insert faults,
+        iii) Entry to run as many loops as specified by the user,
+        iv) Entry to call the script to restore kernel to default state,
+It is capable of creating new entries in the temporary command file with the following tags and command lines:
+TAG_NAME=tag1,  COMMANDLINE="test1",
+TAG_NAME=tag1_loop1_under_kernel_fault,
+COMMANDLINE="insert_fault_in_kernel; test1",
+TAG_NAME=tag1_loop2_under_kernel_fault,    COMMANDLINE="test1",
+...
+TAG_NAME=tag1_loopn_under_kernel_fault,    COMMANDLINE="test1; restore_default_kernel",
+Changes from V1 include:
+1) Paul's suggestion to tag the results to say when a fault was, or, was not in the process of being generated. Garrett and Mike wanted this to be in Shell script. So, Garret will change this to a Shell script in future. Signed-off-by: Subrata Modak<subrata@linux.vnet.ibm.com>.
+
+Added Files:
+ltp/tools/create_kernel_faults_in_loops_and_probability.pl
+
+37) Log Message:
+Introducing the "Kernel Fault Injection Framework" generation and testing capability in LTP. This is in line with the recent proposal made through LTP Paper at OLS 2009: "Putting LTP to test - Validating both the Linux kernel and Test-cases" (http://ltp.sourceforge.net/documentation/technical_papers/Putting_LTP_to_Test.pdf). This infrasturcture will help LTP directly in the following ways: 
+1) Allow test developers to test their new test cases against a faulted kernel, and then compare it on stable kernel run, impacting in better test development,
+2) Allow test engineers to be able to generate more code coverage by traversing the rarely touched parts of the kernel code, As we move forward in using this, we would definitely find some other advantages of this framework. This is V2 of patchset after incorporating comments from Mike, Paul & Garret.
+[PATCH v2 05/05] Add the necessary Interface and Option through "runltp": Change the runltp script to actually create an interface for the user:
+1) Introduce a new option "-F" for ability to run tests under "Fault Injection Framework", 
+2) "./runltp -h" will display the new option,
+3) Verifies whether Kernel has built-in capabilities for "Fault Injection",
+This has no much difference from the last version, except that 'runltp' has changed in between to include Paul's -S option. This has just been created over top of it. I will try to move the 'debugfs' checking logic out of 'runltp' some time in future. Signed-off-by: Subrata Modak<subrata@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/runltp
+
+38) Log Message:
+open10, use tst_tmpdir and tst_rmdir functions. This patch adds functions to create and cleanup temporary test directories, code style changes to match other open tests. Signed-off-by: Henry Yei<hyei@mvista.com>.
+
+Modified Files:
+ltp/testcases/kernel/syscalls/open/open10.c
+
+39) Log Message:
+I have noticed UNRESOLVED of following test cases:
+mlockall/15-1.c
+mlockall/speculative/15-1.c
+These test cases are fixed by setting the Rlimit to zero to get EPERM as per the kernel code. I have attached patch and below. Please review the same.
+/***********************************************************/
+Results: Before patch:
+=============
+conformance/interfaces/mlockall/15-1.test:execution:UNRESOLVED
+conformance/interfaces/mlockall/speculative/15-1.test:execution:UNRESOLVED
+After Patch:
+============
+conformance/interfaces/mlockall/15-1.test:execution:PASS
+conformance/interfaces/mlockall/speculative/15-1.test:execution:PASS
+/***********************************************************/
+Signed-off-by: Naresh Kamboju <naresh.kernel@gmail.com>.
+
+Modified Files:
+ltp/testcases/open_posix_testsuite/conformance/interfaces/mlockall/15-1.c
+ltp/testcases/open_posix_testsuite/conformance/interfaces/mlockall/speculative/15-1.c
+
+40) Log Message:
+I have noticed build warnings for the following test case. This patch will fix warnings by removing unused variables in test code.
+Before patch:
+==========
+conformance/interfaces/mq_send/5-1: build: FAILED: Compiler output: cc1: warnings being treated as errors
+In file included from conformance/interfaces/mq_send/5-1.c:40:
+include/mq_send.h: In function 'sync_pipe_wait_select':
+include/mq_send.h:49: warning: unused variable 'buf'
+conformance/interfaces/mq_send/5-1.c: In function 'main':
+conformance/interfaces/mq_send/5-1.c:107: warning: unused variable 'r'
+conformance/interfaces/mq_send/5-1.c:105: warning: unused variable 'act'
+==========
+After patch:
+==========
+conformance/interfaces/mq_send/5-1: build: PASS
+conformance/interfaces/mq_send/5-1: link: PASS
+Signed-off-by: Naresh Kamboju <naresh.kernel@gmail.com>,
+
+Modified Files:
+ltp/testcases/open_posix_testsuite/conformance/interfaces/mq_send/5-1.c
+ltp/testcases/open_posix_testsuite/include/mq_send.h
+
+41) Log Message:
+I have noticed build warnings for the following test case. This patch will fix warnings by adding <string.h> header file. 
+========================================
+Before patch:
+==========
+conformance/interfaces/sched_setparam/26-1: build: FAILED: Compiler output: cc1: warnings being treated as errors
+conformance/interfaces/sched_setparam/26-1.c: In function 'set_nonroot':
+conformance/interfaces/sched_setparam/26-1.c:30: warning: implicit
+declaration of function 'strcmp'
+============
+After patch:
+============
+conformance/interfaces/sched_setparam/26-1: build: PASS
+conformance/interfaces/sched_setparam/26-1: link: PASS
+========================================
+Signed-off-by: Naresh Kamboju <naresh.kernel@gmail.com>.
+
+Modified Files:
+ltp/testcases/open_posix_testsuite/conformance/interfaces/sched_setparam/26-1.c
+
+42) Log Message:
+I have noticed sched_setscheduler/17-6.c test case as UNTESTED. Test needs to be executed as non-root user. So I have changed user id from root to non-root user by adding set_nonroot() function. Now test case got PASSED.
+/************************************************************/
+Before patch:
+conformance/interfaces/sched_setscheduler/17-6.test:execution:UNTESTED
+After patch:
+conformance/interfaces/sched_setscheduler/17-6.test:execution:PASS
+/*************************************************************/
+Signed-off-by: Naresh Kamboju <naresh.kernel@gmail.com>.
+
+Modified Files:
+ltp/testcases/open_posix_testsuite/conformance/interfaces/sched_setscheduler/17-6.c
+
+43) Log Message:
+Integrate MCE test suite into LTP: mce-test is a collection of tools and test scripts for testing the Linux kernel x86 MCE (Machine Check Exception) processing features. This patch integrate that into LTP. Signed-off-by: Huang Ying <ying.huang@intel.com>, Signed-off-by: Andi Kleen <ak@linux.intel.com>.
+
+Added Files:
+ltp/testcases/mce-test/COPYING ltp/testcases/mce-test/Makefile
+ltp/testcases/mce-test/README
+ltp/testcases/mce-test/cases/soft-inj/non-panic/cases.sh
+ltp/testcases/mce-test/cases/soft-inj/non-panic/data/corrected
+ltp/testcases/mce-test/cases/soft-inj/non-panic/data/corrected_hold
+ltp/testcases/mce-test/cases/soft-inj/non-panic/data/corrected_no_en
+ltp/testcases/mce-test/cases/soft-inj/non-panic/data/corrected_over
+ltp/testcases/mce-test/cases/soft-inj/panic/cases.sh
+ltp/testcases/mce-test/cases/soft-inj/panic/data/fatal
+ltp/testcases/mce-test/cases/soft-inj/panic/data/fatal_eipv
+ltp/testcases/mce-test/cases/soft-inj/panic/data/fatal_irq
+ltp/testcases/mce-test/cases/soft-inj/panic/data/fatal_no_en
+ltp/testcases/mce-test/cases/soft-inj/panic/data/fatal_over
+ltp/testcases/mce-test/cases/soft-inj/panic/data/fatal_ripv
+ltp/testcases/mce-test/cases/soft-inj/panic/data/fatal_timeout
+ltp/testcases/mce-test/cases/soft-inj/panic/data/fatal_timeout_ripv
+ltp/testcases/mce-test/cases/soft-inj/panic/data/fatal_userspace
+ltp/testcases/mce-test/cases/soft-inj/panic/refer/fatal_no_en
+ltp/testcases/mce-test/cases/soft-inj/panic_noser/cases.sh
+ltp/testcases/mce-test/cases/soft-inj/panic_noser/data/uc_over
+ltp/testcases/mce-test/cases/soft-inj/panic_noser/data/uc_over_corrected
+ltp/testcases/mce-test/cases/soft-inj/panic_noser/data/uc_over_timeout
+ltp/testcases/mce-test/cases/soft-inj/panic_npcc/cases.sh
+ltp/testcases/mce-test/cases/soft-inj/panic_npcc/data/fatal_severity
+ltp/testcases/mce-test/cases/soft-inj/panic_npcc/data/uc_no_eripv
+ltp/testcases/mce-test/cases/soft-inj/panic_npcc/data/uc_no_eripv_timeout
+ltp/testcases/mce-test/cases/soft-inj/panic_npcc/data/uc_no_mcip
+ltp/testcases/mce-test/cases/soft-inj/panic_npcc/data/uc_no_mcip_timeout
+ltp/testcases/mce-test/cases/soft-inj/panic_npcc/data/uncorrected
+ltp/testcases/mce-test/cases/soft-inj/panic_npcc/data/uncorrected_timeout
+ltp/testcases/mce-test/cases/soft-inj/panic_npcc/data/unknown
+ltp/testcases/mce-test/cases/soft-inj/panic_ucr/cases.sh
+ltp/testcases/mce-test/cases/soft-inj/panic_ucr/data/s0_ar1
+ltp/testcases/mce-test/cases/soft-inj/panic_ucr/data/srao_ewb_noripv
+ltp/testcases/mce-test/cases/soft-inj/panic_ucr/data/srao_mem_scrub_noripv
+ltp/testcases/mce-test/cases/soft-inj/panic_ucr/data/srar_no_en
+ltp/testcases/mce-test/cases/soft-inj/panic_ucr/data/srar_over
+ltp/testcases/mce-test/cases/soft-inj/panic_ucr/data/srar_unkown
+ltp/testcases/mce-test/cases/soft-inj/panic_ucr/refer/srar_no_en
+ltp/testcases/mce-test/cases/soft-inj/poll_ucr/cases.sh
+ltp/testcases/mce-test/cases/soft-inj/poll_ucr/data/ucna
+ltp/testcases/mce-test/cases/soft-inj/poll_ucr/data/ucna_over
+ltp/testcases/mce-test/cases/soft-inj/recoverable_ucr/cases.sh
+ltp/testcases/mce-test/cases/soft-inj/recoverable_ucr/data/srao_corrected
+ltp/testcases/mce-test/cases/soft-inj/recoverable_ucr/data/srao_ewb
+ltp/testcases/mce-test/cases/soft-inj/recoverable_ucr/data/srao_mem_scrub
+ltp/testcases/mce-test/cases/soft-inj/recoverable_ucr/data/srao_no_en
+ltp/testcases/mce-test/cases/soft-inj/recoverable_ucr/data/srao_over
+ltp/testcases/mce-test/cases/soft-inj/recoverable_ucr/data/srao_ucna
+ltp/testcases/mce-test/cases/soft-inj/recoverable_ucr/data/srao_unknown
+ltp/testcases/mce-test/cases/soft-inj/recoverable_ucr/refer/srao_corrected
+ltp/testcases/mce-test/cases/soft-inj/recoverable_ucr/refer/srao_no_en
+ltp/testcases/mce-test/cases/soft-inj/recoverable_ucr/refer/srao_ucna
+ltp/testcases/mce-test/config/kdump.conf
+ltp/testcases/mce-test/config/kdump_noser.conf
+ltp/testcases/mce-test/config/kdump_panic.conf
+ltp/testcases/mce-test/config/kdump_panic_noser.conf
+ltp/testcases/mce-test/config/kdump_panic_npcc.conf
+ltp/testcases/mce-test/config/kdump_panic_ucr.conf
+ltp/testcases/mce-test/config/kdump_ser.conf
+ltp/testcases/mce-test/config/simple.conf
+ltp/testcases/mce-test/config/simple_non_panic.conf
+ltp/testcases/mce-test/config/simple_nopanic_noser.conf
+ltp/testcases/mce-test/config/simple_nopanic_ser.conf
+ltp/testcases/mce-test/config/simple_noser.conf
+ltp/testcases/mce-test/config/simple_panic.conf
+ltp/testcases/mce-test/config/simple_panic_noser.conf
+ltp/testcases/mce-test/config/simple_panic_npcc.conf
+ltp/testcases/mce-test/config/simple_panic_ucr.conf
+ltp/testcases/mce-test/config/simple_poll_ucr.conf
+ltp/testcases/mce-test/config/simple_recoverable_ucr.conf
+ltp/testcases/mce-test/config/simple_ser.conf
+ltp/testcases/mce-test/doc/howto.txt
+ltp/testcases/mce-test/doc/verify.txt
+ltp/testcases/mce-test/doc/cases/soft-inj_non-panic.txt
+ltp/testcases/mce-test/doc/cases/soft-inj_panic.txt
+ltp/testcases/mce-test/doc/cases/soft-inj_panic_noser.txt
+ltp/testcases/mce-test/doc/cases/soft-inj_panic_npcc.txt
+ltp/testcases/mce-test/doc/cases/soft-inj_panic_ucr.txt
+ltp/testcases/mce-test/doc/cases/soft-inj_poll_ucr.txt
+ltp/testcases/mce-test/doc/cases/soft-inj_recoverable_ucr.txt
+ltp/testcases/mce-test/drivers/kdump/driver.sh
+ltp/testcases/mce-test/drivers/kdump/setup.sh
+ltp/testcases/mce-test/drivers/simple/driver.sh
+ltp/testcases/mce-test/lib/dirs.sh
+ltp/testcases/mce-test/lib/functions.sh
+ltp/testcases/mce-test/lib/mce.sh
+ltp/testcases/mce-test/lib/soft-inject.sh
+ltp/testcases/mce-test/tools/Makefile
+ltp/testcases/mce-test/tools/gcov_merge.py
+ltp/testcases/mce-test/tools/grep_result.sh
+ltp/testcases/mce-test/tools/mce_shell.sh
+ltp/testcases/mce-test/tools/scov_merge.py
+ltp/testcases/mce-test/tsrc/Makefile
+ltp/testcases/mce-test/tsrc/README
+ltp/testcases/mce-test/tsrc/tcases.c
+ltp/testcases/mce-test/tsrc/tinjpage-working.c
+ltp/testcases/mce-test/tsrc/tinjpage.c
+ltp/testcases/mce-test/tsrc/tkillpoison.c
+ltp/testcases/mce-test/tsrc/tring.c
+ltp/testcases/mce-test/tsrc/ttable.c
+ltp/testcases/mce-test/tsrc/kinclude/README
+ltp/testcases/mce-test/tsrc/kinclude/linux/debugfs.h
+ltp/testcases/mce-test/tsrc/kinclude/linux/fs.h
+ltp/testcases/mce-test/tsrc/kinclude/linux/init.h
+ltp/testcases/mce-test/tsrc/kinclude/linux/percpu.h
+ltp/testcases/mce-test/tsrc/kinclude/linux/seq_file.h
+ltp/testcases/mce-test/tsrc/kinclude/linux/sysdev.h
+
+44) Log Message:
+fix for file_test for systems without rpm installed: Here's the fixed version, forgot I needed to redo these...If you run file_test.sh on a system without rpm installed, it should return tconf instead of tfail. Signed-off-by: Paul Larson <paul.larson@canonical.com>.
+
+Modified Files:
+ltp/testcases/commands/ade/file/file_test.sh
+
+45) Log Message:
+fix mail_tests for systems without mail installed: mail_tests should return tconf instead of tfail if mail is not installed. Signed-off-by: Paul Larson <paul.larson@canonical.com>.
+
+Modified Files:
+ltp/testcases/commands/mail/mail_tests.sh
+
+46) Log Message:
+cron tests: autodetect crond vs. cron: The cron tests check for Red Hat to decide whether to use /etc/init.d/crond or /etc/init.d/cron. This fails on other distros that use crond, e.g. on Yellow Dog Linux. Replace the distro test by an actual file existence test, as is done in testcases/kdump/runkdump.sh. Signed-off-by: Geert Uytterhoeven <Geert.Uytterhoeven@sonycom.com>.
+
+Modified Files:
+ltp/testcases/commands/cron/cron02
+ltp/testcases/commands/cron/cron03
+
+47) Log Message:
+Spelling fixes: commad => command: Signed-off-by: Geert Uytterhoeven <Geert.Uytterhoeven@sonycom.com>. 
+
+Modified Files:
+ltp/ChangeLog
+ltp/testcases/commands/ade/file/file_test.sh
+ltp/testcases/commands/eject/eject-tests.sh
+ltp/testcases/open_hpi_testsuite/plugins/ilo2_ribcl/ilo2_ribcl_reset.c
+ltp/tools/mkrootfs/mkrootfs
+
+48) Log Message:
+Spelling fixes: exectue => execute: Signed-off-by: Geert Uytterhoeven <Geert.Uytterhoeven@sonycom.com>.
+
+Modified Files:
+ltp/testcases/commands/at/at_allow01
+ltp/testcases/commands/at/at_deny01
+ltp/testcases/commands/cron/cron_allow01
+ltp/testcases/commands/cron/cron_deny01
+
+49) Log Message:
+Spelling fixes: brok -> broke: Signed-off-by: Geert Uytterhoeven <Geert.Uytterhoeven@sonycom.com>.
+
+Modified Files:
+ltp/testcases/commands/ade/file/file_test.sh
+
+50) Log Message:
+Patch to include workload for consolidation verification: Modified to pass workload as a parameter for cpu cosolidation verifcation function. This is required to verify cpu consolidation on Hypre threaded system for kernbench workload. Signed-off-by: poornima nayak <mpnayak@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/testcases/kernel/power_management/cpu_consolidation.py
+
+51) Log Message:
+Patch to get max sched mc & smt values based on kernel version: Replaces shell function with C functions to get max sched_mc & sched_smt value. Since this uses LTP libraray function to analyze kernel version maintenence of the code will be easier. Signed-off-by: poornima nayak <mpnayak@linux.vnet.ibm.com>.
+
+Added Files:
+ltp/testcases/kernel/power_management/get_sched_values.c
+
+52) Log Message:
+Patch for PM Master script to integrate new testcases: Modified Master script of power management testcases to include new test case and to increase test coverage on system which is not multi core but hyper threaded. Signed-off-by: poornima nayak <mpnayak@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/testcases/kernel/power_management/runpwtests.sh
+
+53) Log Message:
+New & modified reusable functions for new & existing testcases: Implemente reusable functions to learn system architecture before executing architecture specific testcases. Signed-off-by: poornima nayak <mpnayak@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/testcases/kernel/power_management/pm_include.sh
+
+54) Log Message:
+Patch to fix make install issue in ebizzy: install: was missing in Makefile of ebizzy, hence make install was throwing error. This patch will fix make install error. Signed-off-by: poornima nayak <mpnayak@linux.vnet.ibm.com>. 
+
+Modified Files:
+ltp/utils/benchmark/ebizzy-0.3/Makefile
+
+55) Log Message:
+New testcase to test timer_migration interface: This is the new tescase to test timer migration interface. Signed-off-by: poornima nayak <mpnayak@linux.vnet.ibm.com>.
+
+Added Files:
+ltp/testcases/kernel/power_management/test_timer_migration.sh
+
+56) Log Message:
+Patch to fix cpu consolidation failure for kernbench on HT system: Threshold and validation functions modified for testcases run on HT systems. Signed-off-by: poornima nayak <mpnayak@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/testcases/kernel/power_management/lib/sched_mc.py
+
+57) Log Message:
+Patch for PM makefile for new testcases & fix test_sched_smt integration issue: Patch to integrate test_sched_smt and timer_migration testcase to LTP. Also intergrates the new file get_sched_value to LTP. Signed-off-by: poornima nayak <mpnayak@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/testcases/kernel/power_management/Makefile
+
+58) Log Message:
+Patch to fix kernbench integration issue: Kernbench script's mode was not getting modified to executable as 'utils install' was missing in LTP Makefile. Hence this patch fixes this issue. Signed-off-by: poornima nayak <mpnayak@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/Makefile
+
+59) Log Message:
+FYI -- there's already one change. The value of the MADV_POISON injection interface has changed in linux-next (12->100). That's fixed in the git tree now. "Kleen, Andi" <andi.kleen@intel.com>.
+
+Modified Files:
+ltp/testcases/mce-test/tsrc/tinjpage-working.c
+ltp/testcases/mce-test/tsrc/tinjpage.c
+
+60) Log Message:
+Check unshare Function: This patch set fixes several problems for unshare tests. The first one is to add a build-time checking for unshare function. The second one is to fix unshare01 test,
+* deal with no unshare implementation in both glibc and kernel.
+* simplify logic.
+* fix coding style.
+The final one is to fix unshare02 test,
+* deal with no unshare implementation in both glibc and kernel.
+* fix an incorrect expected result and simplify logic.
+* fix coding style.
+Signed-off-by: CAI Qian <caiqian@cclom.cn>.
+
+Modified Files:
+ltp/configure.ac
+Added Files:
+ltp/m4/ltp-unshare.m4
+
+61) Log Message:
+Fix unshare01: v3: simplify reporting by using TERRNO. v2: remove unneeded linux_syscall_numbers.h and simplify the checking of errno according to Mike's suggestion. When no unshare function found during the build-time checking or the kernel returns ENOSYS, it reports TCONF. It also simplify logic a little bit and fix some coding style issues. Signed-off-by: CAI Qian <caiqian@cclom.cn>.
+
+Modified Files:
+ltp/testcases/kernel/syscalls/unshare/unshare01.c
+
+62) Log Message:
+Fix unshare02: v3: simplify reporting by using TERRNO. v2: remove unneeded linux_syscall_numbers.h and simplify the checking of errno according to Mike's suggestion. When no unshare function found during the build-time checking or the kernel returns ENOSYS, it reports TCONF. It also simplify logic a little bit and fix some coding style issues. In addition, the original test expects the following call to return 0,   TEST_RETURN = unshare(-1); and checking TEST_ERRNO for errors. Those look like incorrect, since "-1" looks like an invalid flag, and TEST_ERRNO does not set to errno from the syscall. It has been modified to expect,   TEST_RETURN = -1;   errno = EINVAL; Signed-off-by: CAI Qian <caiqian@cclom.cn>.
+
+Modified Files:
+ltp/testcases/kernel/syscalls/unshare/unshare02.c
+
+63) Log Message:
+Bug in memory controller test - memctl test #4: When running the Memory Controller test # 4, I'm seeing this behavior below. 
+TEST 4: MEMORY CONTROLLER TESTING
+RUNNING SETUP.....
+TEST STARTED: Please avoid using system while this test executes /mnt/tests/kernel/distribution/ltp/20090731/ltp-full-20090731/testcases/bin/run_memctl_test.sh:
+line 327: [: 62955520: unary operator expected 
+TINFO   Memory Resource Controller: stat check test fails in first run /mnt/tests/kernel/distribution/ltp/20090731/ltp-full-20090731/testcases/bin/run_memctl_test.sh:
+line 364: [: 78704640: unary operator expected
+TFAIL   Memory Resource Controller: stat check test FAILED *** infinite loop
+here, script exists memctl_test01 remains running ***
+^Cincrementing stop
+The bash error is due to the 'grep -w "active"' not matching anything so one of the variables isn't getting set like it is supposed to. I believe the test was written with an old version of the memory controller what put a field called memory.stat.active in the file memory.stat. The current memory controller I am testing appears to have replaced this field with "rss". There are fields showing anonymous and file backed pages in memory.stat, but I don't think they are ever going to match the memory.usage.in.bytes the test is looking for. Rss always matches and I believe that is what we should update the check in the test to look for. The attached patch fixes test #4 to compare memory.usage.in.bytes with rss. Signed-off-by: Mike Gahagan <mgahagan@redhat.com>.
+
+Modified Files:
+ltp/testcases/kernel/controllers/memctl/run_memctl_test.sh
+
+64) Log Message:
+Add support for long options: Incorporating existing tests (like pthread_cond_many) may require support for long options if the existing arguments are to remain supported.  This patch adds support for long options, while keeping the default of only short options in place.  long opts MUST have an equivalent short opt so as to not require changing (and complicating) the parse_arg signature. This patch tests for this in the rt_init routine.
+Signed-off-by: Darren Hart <dvhltc@us.ibm.com>,
+Acked-by: Vernon Mauery <vernux@us.ibm.com>,
+
+Modified Files:
+ltp/testcases/realtime/include/librttest.h
+ltp/testcases/realtime/lib/librttest.c
+
+65) Log Message:
+Use librttest arg parsing and init_pi_mutex: This patch converts pthread_cond_many to use the librttest infrastructure for argument parsing and mutex initialization.  The default behavior of the test changes from using a non-pi mutex to a pi mutex.  This is because -p defaults to 1 in librttest. We could update run.sh with -p0, but I feel inside a realtime testsuite this test should be using PI mutexes anyway.
+Signed-off-by: Darren Hart <dvhltc@us.ibm.com>,
+Acked-by: Gowrishankar <gowrishankar.m@in.ibm.com>,
+CC: Paul McKenney <paulmck@linux.vnet.ibm.com>,
+
+Modified Files:
+ltp/testcases/realtime/perf/latency/pthread_cond_many.c
+ltp/testcases/realtime/perf/latency/run.sh
+
+66) Log Message:
+prio-wake: Allow for optional locking prior to broadcast: Allow the user to decide if the mutex should be held prior to calling pthread_cond_broadcast(). Default remains the same. Tested with and without the argument as well as with both 0 and 1 passed to the argument. Values other than 0 and 1 will result in locking the mutex.
+Signed-off-by: Darren Hart <dvhltc@us.ibm.com>,
+Acked-By: Dinakar Guniguntala <dino@in.ibm.com>,
+Acked-by: Vernon Mauery <vernux@us.ibm.com>,
+Acked-by: Gowrishankar <gowrishankar.m@in.ibm.com>,
+
+Modified Files:
+ltp/testcases/realtime/func/prio-wake/prio-wake.c
+
+67) Log Message:
+prio-wake: Enable using more than 95 threads: prio-wake will currently spew pthread errors on systems with more than 95 CPUS, or if an -n value > 95 is specified on the command line. To avoid this, spread threads out equally over the priorities by calculated the number of threads per priority. Tested with all pathological numbers (i.e. mod=0 mod=1, etc) of threads. Ran 10000 times in parallel.  Confirmed failure continues to exist without requeue PI (as it should) and success is seen with requeue PI (as it should be).
+Signed-off-by: Darren Hart <dvhltc@us.ibm.com>,
+Acked-By: Dinakar Guniguntala <dino@in.ibm.com>,
+Acked-by: Vernon Mauery <vernux@us.ibm.com>,
+Acked-by: Gowrishankar <gowrishankar.m@in.ibm.com>,
+
+Modified Files:
+ltp/testcases/realtime/func/prio-wake/prio-wake.c 
+
+68) Log Message:
+smt_smp_ affinity test case is passing on Fedora but fails on Ubuntu for the same H/W.On Ubuntu system, after doing strace i observed that system call sched_getaffinity was returning -1 [ERROR:EINVAL] due to second argument. sched_getaffinity(pid, sizeof(unsigned int), &mask1). Please find attached herewith the patch which fixes the issue. Signed-off-by: Rohit Verma <rohit170309@gmail.com>.
+
+Modified Files:
+ltp/testcases/kernel/sched/hyperthreading/ht_affinity/HTaffinity.c
+
+69) Log Message:
+Add new testcases for cgroup: We has created some testcases for cgroup in the last year. There are total 194 testcases that have been added. These testcases contain the basis operation test, part functionality test and stress test of cgroup. How to run this test: # runltp -f controllers. Signed-off-by: Shi Weihua <shiwh@cn.fujitsu.com>.
+
+Modified Files:
+ltp/runtest/controllers
+ltp/testcases/kernel/controllers/Makefile
+Added Files:
+ltp/testcases/kernel/controllers/cgroup_fj/Makefile
+ltp/testcases/kernel/controllers/cgroup_fj/README
+ltp/testcases/kernel/controllers/cgroup_fj/cgroup_fj_function.sh
+ltp/testcases/kernel/controllers/cgroup_fj/cgroup_fj_function2.sh
+ltp/testcases/kernel/controllers/cgroup_fj/cgroup_fj_proc.c
+ltp/testcases/kernel/controllers/cgroup_fj/cgroup_fj_release_agent
+ltp/testcases/kernel/controllers/cgroup_fj/cgroup_fj_stress.sh
+ltp/testcases/kernel/controllers/cgroup_fj/cgroup_fj_testcases
+ltp/testcases/kernel/controllers/cgroup_fj/cgroup_fj_utility.sh
+ltp/testcases/kernel/controllers/cgroup_fj/run_cgroup_test_fj.sh
+
+70) Log Message:
+CPU Accounting Controller test case for LTP: I have developed a testcase for CPU Accounting Controller which is used to group tasks using cgroups and account the CPU usage of these groups of tasks. here is the update cpuaccounting controller patch, in which I have modified it as per the earlier coments, please review this patch and let me know if it needs any more changes. I am pasting the LOG also here for reveiwing it. Signed-off-by: Duddu Rajasekhar<rajduddu@in.ibm.com>.
+
+Modified Files:
+ltp/testcases/kernel/controllers/Makefile
+ltp/testcases/kernel/controllers/README
+ltp/testcases/kernel/controllers/test_controllers.sh
+Added Files:
+ltp/runtest/cpuacct
+ltp/testcases/kernel/controllers/cpuacct/Makefile
+ltp/testcases/kernel/controllers/cpuacct/README
+ltp/testcases/kernel/controllers/cpuacct/cpuacct_setup.sh
+ltp/testcases/kernel/controllers/cpuacct/cpuacct_task01.c
+ltp/testcases/kernel/controllers/cpuacct/cpuacct_testplan.txt
+ltp/testcases/kernel/controllers/cpuacct/run_cpuacct_test.sh
+
+71) Log Message:
+NETNS: don't run sysfsview testcase: It can't pass right now, and leaves the system in a bad state on its inevitable failure. Leave the testcase there though since one day we will hopefully support it. Signed-off-by: Serge Hallyn <serge@us.ibm.com>.
+
+Modified File(s):
+ltp/testcases/kernel/containers/netns/runnetnstest.sh
+
+72) Log Message:
+Let set_thread_area Choose either user_desc or modify_ldt_ldt_s: Old glibc (like in RHEL4) has modify_ldt_ldt_s instead of user_desc structure defined in asm/ldt.h. It should follow the example of modify_ldt test cases to choose the feasible structure based on build-time checking. Also, a new header file has been created to handle code duplication. Signed-off-by: CAI Qian <caiqian@cclom.cn>.
+
+Modified Files:
+ltp/testcases/kernel/syscalls/set_thread_area/set_thread_area01.c
+ltp/testcases/kernel/syscalls/set_thread_area/set_thread_area02.c
+Added Files:
+ltp/testcases/kernel/syscalls/set_thread_area/set_thread_area.h
+
+73) Log Message:
+Integrate Valgrind Memory Check Tool to LTP: Introducing and Integrating the Valgrind Memory Leak Check tools to LTP. This again is in line with the OLS 2009 paper where we proposed that memory leak check for LTP test cases will become part of LTP soon. Valgrind is one of the best Memory Leak Check tools available to the open source community and being widely used by many maintainers of Open Source Projects to regularly check the health of their code. On similar lines, we would like it to check the various dynamic issues related to Memory Leaks, Thread Concurrencies for the LTP tests so that we minimize those errors for the LTP tests. The following set of Patches will:
+1) Integrate within LTP infrastructure the use of VALGRIND tool,
+2) Internal check against unavailability of this tools on your machine,
+3) Running through runltp, the various:
+        3.1) Memory Leak Checks,
+        3.2) Thread Concurrency Checks,
+on all LTP tests that the user intents to run/check,
+4) Comparisn of how a normal test run differs from the the test run through Valgrind, Now, you may ask the question why donB4t we use Valgrind independantly ? True, it can be done. But, it becomes more simple when we can ask runltp to do the job for us and remaining everything remains in LTP format. And, this is handy for test case developers who can do a quick check on the tests they have just developed. When you want to run your tests/sub-tests through Valgrind tool, what you have to just do is:
+./runltp -f <your-command-file> -M [1,2,3]
+CHECK_TYPE=1 => Full Memory Leak Check tracing children as well
+CHECK_TYPE=2 => Thread Concurrency Check tracing children as well
+CHECK_TYPE=3 => Full Memory Leak & Thread Concurrency Check tracing children as well
+The above options in LTP will usher in better Test Case development. [PATCH 01/02] Create the necessary Interface with runltp: Introducing a new Option "-M" in LTP, which will take 1 argument of the type of Checks that you would need to do for the LTP tests. Even, if you would like to use these check options, it internally checks whether the desired tool is available on your machine. It goes ahead and then does the necessary checks on your tests. One limitation is that if you choose both the "Fault Injection" and "Memory Leak Checks" simultaneously, then "Memory Leak Checks" will not work, as we would not like to test how "Fault Injection" works when "Valgrind" is running. Signed-off-by: Subrata Modak<subrata@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/runltp
+
+74) Log Message:
+Integrate Valgrind Memory Check Tool to LTP: Introducing and Integrating the Valgrind Memory Leak Check tools to LTP. This again is in line with the OLS 2009 paper where we proposed that memory leak check for LTP test cases will become part of LTP soon. Valgrind is one of the best Memory Leak Check tools available to the open source community and being widely used by many maintainers of Open Source Projects to regularly check the health of their code. On similar lines, we would like it to check the various dynamic issues related to Memory Leaks, Thread Concurrencies for the LTP tests so that we minimize those errors for the LTP tests. The following set of Patches will:
+1) Integrate within LTP infrastructure the use of VALGRIND tool,
+2) Internal check against unavailability of this tools on your machine,
+3) Running through runltp, the various:
+        3.1) Memory Leak Checks,
+        3.2) Thread Concurrency Checks,
+on all LTP tests that the user intents to run/check,
+4) Comparisn of how a normal test run differs from the the test run through Valgrind, Now, you may ask the question why donB4t we use Valgrind independantly ? True, it can be done. But, it becomes more simple when we can ask runltp to do the job for us and remaining everything remains in LTP format. And, this is handy for test case developers who can do a quick check on the tests they have just developed. When you want to run your tests/sub-tests through Valgrind tool, what you have to just do is:
+./runltp -f <your-command-file> -M [1,2,3]
+CHECK_TYPE=1 => Full Memory Leak Check tracing children as well
+CHECK_TYPE=2 => Thread Concurrency Check tracing children as well
+CHECK_TYPE=3 => Full Memory Leak & Thread Concurrency Check tracing children as well
+The above options in LTP will usher in better Test Case development. [PATCH 02/02] Script that will actually create the COMMAND File entries: This is again a simple perl file which takes the temporary COMMAND file generated by "runltp", parses it one line by line, and then recreates single or multiple entries which will contain instruction for "cmdline" to invoke the "Valgrind" tool in itś various forms:
+        1) Full "Memory Leak Check",
+        2) Full "Thread Concurrency Check",
+        3) Both the above,
+This has been written(code reused) from the "create_kernel_faults_in_loops_and_probability.pl", and works on the similar logic for creating "cmdline" entries in the temporary COMMAND file generated. Now, this increases Garrettś work again as he hates perl. I hope he will agree to work on this to convert to Shell Script ;-). Signed-off-by: Subrata Modak<subrata@linux.vnet.ibm.com>.
+
+Added Files:
+ltp/tools/create_valgrind_check.pl
+
+75) Log Message:
+Geert Uytterhoeven <Geert.Uytterhoeven@sonycom.com> reported: undefined macro: _m4_divert_diversion: When trying to autoconfigure current LTP on YDL, I get an error:
+# make autotools
+    touch config.mk
+    aclocal -I m4
+    m4/ltp-unshare.m4:2: error: m4_defn: undefined macro: _m4_divert_diversion
+    m4/ltp-unshare.m4:2: the top level
+    autom4te: /usr/local/bin/m4 failed with exit status: 1
+    aclocal: autom4te failed with exit status: 1
+    make: *** [aclocal.m4] Error 1
+Autoconf, automake, and m4 have been compiled from source, using the versions specified in INSTALL: (I'm seeing the same thing on stock Ubuntu 9.04, but that one has autoconf 2.63, and only automake 1.9.6 and m4 1.4.11.). I also tried installing the latest m4 (1.4.13), but that didn't help. I also tried installing the latest autoconf (2.64), but that failed even harder: Anyone with a clue?
+Nicolas Joly <njoly@pasteur.fr> replied: This is a quoting problem ... The following patch should fix it. Signed-off-by: Nicolas Joly <njoly@pasteur.fr>.
+
+Modified File(s):
+ltp/m4/ltp-unshare.m4
+
+76) Log Message:
+lcov: add exclusion markers. Users can exclude lines of code from coverage reports by adding keywords to the source code. Peter Oberparleiter <oberpapr@users.sourceforge.net>,
+
+Modified File(s):
+ltp/utils/analysis/lcov/man/geninfo.1
+ltp/utils/analysis/lcov/man/lcov.1
+ltp/utils/analysis/lcov/bin/geninfo
+ltp/utils/analysis/lcov/bin/lcov
+
+77) Log Message:
+lcov: fix help text typo. Peter Oberparleiter <oberpapr@users.sourceforge.net>.
+
+Modified File(s):
+ltp/utils/analysis/lcov/bin/geninfo
+ltp/utils/analysis/lcov/bin/lcov
+
+78) Log Message:
+Spelling fixes: excute => execute: Signed-off-by: Geert Uytterhoeven <Geert.Uytterhoeven@sonycom.com>.
+
+Modified Files:
+ltp/testcases/kernel/sched/hyperthreading/ht_affinity/HTaffinity.c
+ltp/testcases/kernel/sched/hyperthreading/ht_enabled/HTenabled.c
+ltp/testcases/kernel/sched/hyperthreading/ht_interrupt/HTinterrupt.c
+
+79) Log Message:
+Spelling fixes: initalization => initialization: Signed-off-by: Geert Uytterhoeven <Geert.Uytterhoeven@sonycom.com>.
+
+Modified Files:
+ltp/testcases/network/nfsv4/locks/locktests.c
+
+80) Log Message:
+Matt Helsley <matthltc@us.ibm.com> reported: Looks like this should be 12. Why not just use the subsystem names both to iterate over and to print out? Then it will be a little clearer what test has[n't] passed. e.g.:
+SUBSYSTEMS=( debug cpuset ns cpu cpuacct memory debug,debug freezer \
+                devices nonexistent none all )
+Then when you're running the test cases or printing usage you could do:
+for SUBSYS in "${SUBSYSTEMS[@]}" ; do
+        ...
+done
+Sadly I didn't have a close enough look at all of the code to tell if this is do-able. Is it? If you could similarly map the other numbers it may be easier to read the output and the code.
+Shi Weihua <shiwh@cn.fujitsu.com> replied: Yes, here should be 12. Sorry for it. The following small patch fixed it. Signed-off-by: Shi Weihua <shiwh@cn.fujitsu.com>. Thanks for your advice. Basically, I agree. But using strings to instead of number will need one or more weeks, I will do this improvement work base on August Release.
+
+Modified Files:
+ltp/testcases/kernel/controllers/cgroup_fj/cgroup_fj_function.sh
+
+81) Log Message:
+lcov: apply excluded lines also to function coverage data. Peter Oberparleiter <oberpapr@users.sourceforge.net>
+
+Modified File(s):
+ltp/utils/analysis/lcov/bin/geninfo
+
+82) Log Message:
+LTP must be extracted to an accessible location: If extracted to /root and /root has permissions 750, the following tests will fail:
+  - cron02: bash: /root/ltp-cvs/testcases/bin/cron_pos_tests.sh: Permission denied
+  - cron_allow01: bash: /root/ltp-cvs/testcases/bin/cron_allow01: Permission denied
+    bash: /root/ltp-cvs/testcases/bin/cron_allow01: Permission denied
+  - cron_deny01: bash: /root/ltp-cvs/testcases/bin/cron_deny01: Permission denied
+    bash: /root/ltp-cvs/testcases/bin/cron_deny01: Permission denied
+  - su01: bash: /root/ltp-cvs/testcases/bin/su01_s1: Permission denied
+Signed-off-by: Geert Uytterhoeven <Geert.Uytterhoeven@sonycom.com>.
+
+Modified Files:
+ltp/INSTALL
+
+83) Log Message:
+Annotate tst_*() helpers with __attribute__ ((format (printf, M, N))) (was: Re:  [PATCH] quotactl01: Fix tst_resm() format causing crash): This bug encouraged me to add annotations to the test helpers that take printf()-style formats, cfr. the patch below. It causes a massive amount of compiler warnings, most of them caused by TEST_ERRNO being long. According to CVS history, both TEST_RETURN and TEST_ERRNO have been changed from int to long to accomodate 64-bit platforms, but to me the change of TEST_ERRNO looks bogus. As errno is int according to C99, TEST_ERRNO should actually be int too, right? Note that there are also a few other cases where integers are used on pointer type format specifiers. These will cause crashes when the code path is executed. Signed-off-by: Geert Uytterhoeven <Geert.Uytterhoeven@sonycom.com>.
+
+Modified Files:
+ltp/include/test.h
+
+84) Log Message:
+Fix mail_tests for systems without mail installed: Worse, as $MAIL_NOT_INSTALLED is always "0" or "1", -z always return false...`-z' tests for a string length of zero, not for a zero value, causing the test always to return false. Initialize $MAIL_NOT_INSTALLED to an empty string instead of a numerical zero to fix this. Signed-off-by: Geert Uytterhoeven <Geert.Uytterhoeven@sonycom.com>.
+
+Modified Files:
+ltp/testcases/commands/mail/mail_tests.sh
+
+85) Log Message:
+File: Autodetect RPM topdir: Query RPM for the location of the RPM topdir, instead of guessing, which failed on YDEL6 (/usr/src/yellowdog) and Debian/Ubuntu (/usr/src/rpm). Signed-off-by: Geert Uytterhoeven <Geert.Uytterhoeven@sonycom.com>.
+
+Modified Files:
+ltp/testcases/commands/ade/file/file_test.sh
+
+86) Log Message:
+To test ILB feature in Power management a set of testcases has been developed. These patches tests ILB with respect to different test variables sched_mc, sched_smt and workload. The patches sent has been tested on Quad core machine. New testcase to validate Ideal Load Balancer Functionality. By default sets sched_mc_power_savings & sched_smt_power savings to the value passed as argument and then triggers kernbench by pinning it to the CPUn. Signed-off-by: poornima nayak <mpnayak@linux.vnet.ibm.com>.
+
+Added Files:
+ltp/testcases/kernel/power_management/ilb_test.py
+
+87) Log Message:
+To test ILB feature in Power management a set of testcases has been developed. These patches tests ILB with respect to different test variables sched_mc, sched_smt and workload. The patches sent has been tested on Quad core machine. [Patch 2/8] Power management master script modified to integrate ILB testcase: Power management master script modified to integrate ILB testcases. Signed-off-by: poornima nayak <mpnayak@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/testcases/kernel/power_management/runpwtests.sh
+
+88) Log Message:
+To test ILB feature in Power management a set of testcases has been developed. These patches tests ILB with respect to different test variables sched_mc, sched_smt and workload. The patches sent has been tested on Quad core machine. [Patch 3/8] Patch to integrate ILB testcase to LTP: Signed-off-by: poornima nayak <mpnayak@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/testcases/kernel/power_management/Makefile
+
+89) Log Message:
+To test ILB feature in Power management a set of testcases has been developed. These patches tests ILB with respect to different test variables sched_mc, sched_smt and workload. The patches sent has been tested on Quad core machine. [Patch 4/8] Addional new reusable functions for ILB testing: Developed new functions to support ILB test execution and result verification. Minimal changes has been done for exisitng function to support ILB test execution. Signed-off-by: poornima nayak <mpnayak@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/testcases/kernel/power_management/lib/sched_mc.py
+
+90) Log Message:
+To test ILB feature in Power management a set of testcases has been developed. These patches tests ILB with respect to different test variables sched_mc, sched_smt and workload. The patches sent has been tested on Quad core machine. [Patch 5/8] Modified library functions based on review comments: Incorporated Garrett Cooper's comments & hence modified code. Signed-off-by: poornima nayak <mpnayak@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/testcases/kernel/power_management/pm_include.sh
+
+91) Log Message:
+To test ILB feature in Power management a set of testcases has been developed. These patches tests ILB with respect to different test variables sched_mc, sched_smt and workload. The patches sent has been tested on Quad core machine. [Patch 6/8] Included new function to check feature versus kernel version. Signed-off-by: poornima nayak <mpnayak@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/testcases/kernel/power_management/check_kv_arch.c
+
+92) Log Message:
+To test ILB feature in Power management a set of testcases has been developed. These patches tests ILB with respect to different test variables sched_mc, sched_smt and workload. The patches sent has been tested on Quad core machine. [Patch 7/8] Patch for cpu_consolidation to incorporate changes in reusable function. Signed-off-by: poornima nayak <mpnayak@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/testcases/kernel/power_management/cpu_consolidation.py
+
+93) Log Message:
+To test ILB feature in Power management a set of testcases has been developed. These patches tests ILB with respect to different test variables sched_mc, sched_smt and workload. The patches sent has been tested on Quad core machine. [Patch 8/8]Patch to modify Readme file as new functionality testcase is integrated. Signed-off-by: poornima nayak <mpnayak@linux.vnet.ibm.com>.
+
+Modified Files:
+ltp/testcases/kernel/power_management/README
+
+94) Log Message:
+sched_cli_serv: Wait a bit before trying to connect: The sched_cli_serv test launches the server in the background and expects the client to be able to connect to it immediately. Depending on (earlier) system load, that may fail. Wait a bit before starting the client. Signed-off-by: Geert Uytterhoeven <Geert.Uytterhoeven@sonycom.com>.
+
+Modified Files:
+ltp/testcases/kernel/sched/clisrv/run_sched_cliserv.sh
+
+95) Log Message:
+This problem has been forgotten for some time but it still makes trouble with too strict buildsystems. See attached patch that also fixes minor style problems. Signed-off-by: chrubis@suse.cz.
+
+Modified Files:
+ltp/testcases/kernel/io/aio/aio01/aio01.c
+
+96) Log Message:
+Add autoconf tests for taskstats members not present on older kernels: The autoconf part is okay, but getdelays.c needs some more #ifdef HAVE_LINUX_CGROUPSTAT_H to build correctly on all I have here. Patch attached, however it may need minor cleanups. Signed-off-by: Cyril Hrubis <chrubis@suse.cz>.
+
+Modified Files:
+ltp/testcases/kernel/controllers/cgroup/getdelays.c
+
 LTP-20090731
 
 1) Log Message:
