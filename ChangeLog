@@ -18584,7 +18584,6 @@ tests.init
  but more tests are available in testcases/network/lib6 directory. 
  ipv6_lib
 
-=======
 LTP-20060918
 
 -Code was added to disable tests that will not run on kernels lower 
