@@ -81,6 +81,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <string.h>
+#include <inttypes.h>
 #include "dataascii.h"
 #include "random_range.h"
 #include "databin.h"
@@ -2125,8 +2126,8 @@ long *curr_size_ptr;	/* BUG:14136 */
 			if( (io_type & LIO_IO_ASYNC_TYPES) || (io_type & LIO_RANDOM) ){
 				if( tmp != Woffset + grow_incr ){
 					if( Debug > 5 ){
-						printf("%s: %d DEBUG6 %s/%d: posix fudge, forcing tmp (%d) to match Woffset+grow_incr (%d)\n",
-						       Progname, Pid, __FILE__, __LINE__, tmp, Woffset+grow_incr);
+						printf("%s: %d DEBUG6 %s/%d: posix fudge, forcing tmp (%"PRId64") to match Woffset+grow_incr (%"PRId64")\n",
+						       Progname, Pid, __FILE__, __LINE__, (int64_t)tmp, (int64_t)Woffset+grow_incr);
 					}
 					tmp = Woffset + grow_incr;
 				}

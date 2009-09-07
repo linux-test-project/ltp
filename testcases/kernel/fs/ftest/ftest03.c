@@ -59,8 +59,9 @@
 #include <errno.h>
 #include <sys/uio.h>
 #include <fcntl.h>
-#include <signal.h>		/* DEM - added SIGTERM support */
-#include <stdio.h>		/* needed by testhead.h		*/
+#include <signal.h>
+#include <stdio.h>
+#include <inttypes.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -71,22 +72,21 @@ extern int Tst_count;
 #define PASSED 1
 #define FAILED 0
 
-void setup();
-int runtest();
-int dotest(int, int, int);
-int domisc(int, int, char*);
-int bfill(char*, char, int);
-int dumpiov(struct iovec*);
-int dumpbits(char*, int);
-int orbits(char*, char*, int);
-int term();
+static void setup(void);
+static void runtest(void);
+static void dotest(int, int, int);
+static void domisc(int, int, char*);
+static void bfill(char*, char, int);
+static void dumpiov(struct iovec*);
+static void dumpbits(char*, int);
+static void orbits(char*, char*, int);
+static void term(int sig);
 
 #define MAXCHILD	25	/* max number of children to allow */
 #define K_1		1024
 #define K_2		2048
 #define K_4		4096
 #define	MAXIOVCNT	16
-
 
 int	csize;				/* chunk size */
 int	iterations;			/* # total iterations */
@@ -104,21 +104,18 @@ char	fuss[40] = "";		/* directory to do this in */
 char	homedir[200]= "";	/* where we started */
 
 int 	local_flag;
-/*--------------------------------------------------------------*/
-int main (ac, av)
-	int  ac;
-	char *av[];
+
+int main (int ac, char *av[])
 {
-        int lc;                 /* loop counter */
-        char *msg;              /* message returned from parse_opts */
+        int lc;
+        char *msg;
 
         /*
          * parse standard options
          */
-        if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 	                tst_resm(TBROK, "OPTION PARSING ERROR - %s", msg);
 			tst_exit();
-                        /*NOTREACHED*/
         }
 
 	setup();
@@ -136,26 +133,26 @@ int main (ac, av)
                 }
 
 		tst_rmdir();
+		/* ??? so we are doing only one loop here ??? */
 		tst_exit();
-	} /* end for */
+	}
+
 	return 0;
 }
-/*--------------------------------------------------------------*/
 
-void
-setup()
+static void setup(void)
 {
-	char wdbuf[MAXPATHLEN],  *cwd ;
-	int term();
+	char wdbuf[MAXPATHLEN];
 
 	/*
 	 * Make a directory to do this in; ignore error if already exists.
 	 * Save starting directory.
 	 */
 	tst_tmpdir();
-	if ( (cwd = getcwd(homedir, sizeof( homedir))) == NULL ) {
-	  tst_resm(TBROK, "pwd") ;
-	  tst_exit() ;
+
+	if (getcwd(homedir, sizeof(homedir)) == NULL) {
+		tst_resm(TBROK, "getcwd() failed");
+		tst_exit();
 	}
 
 	parent_pid = getpid();
@@ -170,47 +167,41 @@ setup()
 		tst_exit() ;
 	}
 
-
 	/*
 	 * Default values for run conditions.
 	 */
-
 	iterations = 10;
 	nchild = 5;
 	csize = K_2;		/* should run with 1, 2, and 4 K sizes */
 	max_size = K_1 * K_1;
 	misc_intvl = 10;
 
-	if (sigset(SIGTERM, (void (*)())term) == SIG_ERR) {
+	if (sigset(SIGTERM, term) == SIG_ERR) {
 		perror("sigset failed");
 		tst_resm(TBROK, " sigset failed: signo = 15") ;
 		tst_exit() ;
 	}
-
 }
 
-
-int runtest()
+static void runtest(void)
 {
-	register int i;
-	int	pid;
-	int	child;
-	int	status;
-	int	count;
-
-
+	int i, pid, child, status, count;
 
 	for(i = 0; i < nchild; i++) {
+
 		test_name[0] = 'a' + i;
 		test_name[1] = '\0';
+
 		fd = open(test_name, O_RDWR|O_CREAT|O_TRUNC, 0666);
+
 		if (fd < 0) {
 			tst_resm(TBROK, "\tError %d creating %s/%s.", errno, fuss, test_name);
 			tst_exit();
 		}
-		if ((child = fork()) == 0) {		/* child */
-			dotest(nchild, i, fd);		/* do it! */
-			tst_exit();			/* when done, exit */
+
+		if ((child = fork()) == 0) {
+			dotest(nchild, i, fd);
+			tst_exit();
 		}
 
 		close(fd);
@@ -230,29 +221,25 @@ int runtest()
 	/*
 	 * Wait for children to finish.
 	 */
-
 	count = 0;
-	while(1)
-	{
-	if ((child = wait(&status)) >= 0) {
-		//tst_resm(TINFO, "\tTest{%d} exited status = 0x%x", child, status);
-		if (status) {
-			tst_resm(TFAIL, "\tTest{%d} failed, expected 0 exit.", child);
-			local_flag = FAILED;
+
+	while (1) {
+		if ((child = wait(&status)) >= 0) {
+			//tst_resm(TINFO, "\tTest{%d} exited status = 0x%x", child, status);
+			if (status) {
+				tst_resm(TFAIL, "\tTest{%d} failed, expected 0 exit.", child);
+				local_flag = FAILED;
+			}
+			++count;
+		} else {
+			if (errno != EINTR)
+				break;
 		}
-		++count;
-	}
-	else
-	{
-		if (errno != EINTR)
-			break;
-	}
 	}
 
 	/*
 	 * Should have collected all children.
 	 */
-
 	if (count != nwait) {
 		tst_resm(TFAIL, "\tWrong # children waited on, count = %d", count);
 		local_flag = FAILED;
@@ -261,11 +248,12 @@ int runtest()
 	chdir(homedir);
 
 	pid = fork();
+
 	if (pid < 0) {
 		tst_resm(TINFO, "System resource may be too low, fork() malloc()"
                               " etc are likely to fail.");
                 tst_resm(TBROK, "Test broken due to inability of fork.");
-		sync();				/* safeness */
+		sync();
 		tst_exit();
 	}
 
@@ -274,14 +262,14 @@ int runtest()
 		tst_exit();
 	} else
 		wait(&status);
+
 	if (status) {
 		tst_resm(TINFO, "CAUTION - ftest03, '%s' may not be removed", fuss);
 		tst_resm(TINFO, "CAUTION - ftest03, '%s' may not be removed",
 		  fuss);
 	}
 
-	sync();				/* safeness */
-	return 0;
+	sync();
 }
 
 /*
@@ -308,20 +296,11 @@ enum	m_type type = m_fsync;
 #define	CHUNK(i)	((i) * csize)
 #define	NEXTMISC	((rand() % misc_intvl) + 5)
 
-int dotest(testers, me, fd)
-	int	testers;
-	int	me;
-	int	fd;
+static void dotest(int testers, int me, int fd)
 {
-	register int	i;
-	char	*bits;
-	char	*hold_bits;
-	int	count;
-	int	collide;
-	char	val;
-	int	chunk;
-	int	whenmisc;
-	int	xfr;
+	char *bits, *hold_bits;
+	char val;
+	int chunk, whenmisc, xfr, count, collide, i;
 
 	/* Stuff for the readv call */
 	struct	iovec	r_iovec[MAXIOVCNT];
@@ -329,30 +308,29 @@ int dotest(testers, me, fd)
 
 	/* Stuff for the writev call */
 	struct	iovec	val_iovec[MAXIOVCNT];
-
 	struct	iovec	zero_iovec[MAXIOVCNT];
 	int	w_ioveclen;
 
 	nchunks = max_size / csize;
-	if( (bits = (char*)malloc((nchunks+7) / 8)) == 0) {
-		tst_resm(TBROK, "\tmalloc failed");
-		tst_exit();
-	}
-	if( (hold_bits = (char*)malloc((nchunks+7) / 8)) == 0) {
+
+	if ((bits = malloc((nchunks+7) / 8)) == 0) {
 		tst_resm(TBROK, "\tmalloc failed");
 		tst_exit();
 	}
 
-	/*Allocate memory for the iovec buffers and init the iovec arrays
-	 */
+	if((hold_bits = malloc((nchunks+7) / 8)) == 0) {
+		tst_resm(TBROK, "\tmalloc failed");
+		tst_exit();
+	}
+
+	/*Allocate memory for the iovec buffers and init the iovec arrays*/
 	r_ioveclen = w_ioveclen = csize / MAXIOVCNT;
 
-		/* Please note that the above statement implies that csize
-		 * be evenly divisible by MAXIOVCNT.
-		 */
-
+	/* Please note that the above statement implies that csize
+	 * be evenly divisible by MAXIOVCNT.
+	 */
 	for (i = 0; i < MAXIOVCNT; i++) {
-		if( (r_iovec[i].iov_base = (char*)calloc(r_ioveclen, 1)) == 0) {
+		if ((r_iovec[i].iov_base = calloc(r_ioveclen, 1)) == 0) {
 			tst_brkm(TBROK, NULL, "\tmalloc failed");
 			/* tst_exit(); */
 		}
@@ -361,27 +339,30 @@ int dotest(testers, me, fd)
 		/* Allocate unused memory areas between all the buffers to
 		 * make things more diffult for the OS.
 		 */
-
-		if(malloc((i+1)*8) == 0) {
+		if (malloc((i+1)*8) == NULL) {
 			tst_brkm(TBROK,NULL, "\tmalloc failed");
 		}
-		if( (val_iovec[i].iov_base = (char*)calloc(w_ioveclen, 1)) == 0) {
+
+		if ((val_iovec[i].iov_base = calloc(w_ioveclen, 1)) == 0) {
 			tst_resm(TBROK, "\tmalloc failed");
 			tst_exit();
 		}
+
 		val_iovec[i].iov_len = w_ioveclen;
 	
-		if(malloc((i+1)*8) == 0) {
+		if (malloc((i+1)*8) == NULL) {
 			tst_resm(TBROK, "\tmalloc failed");
 			tst_exit();
 		}
-		if( (zero_iovec[i].iov_base = (char*)calloc(w_ioveclen, 1)) == 0) {
+
+		if ((zero_iovec[i].iov_base = calloc(w_ioveclen, 1)) == 0) {
 			tst_resm(TBROK, "\tmalloc failed");
 			tst_exit();
 		}
+
 		zero_iovec[i].iov_len = w_ioveclen;
 
-		if(malloc((i+1)*8) == 0) {
+		if (malloc((i+1)*8) == NULL) {
 			tst_resm(TBROK, "\tmalloc failed");
 			tst_exit();
 		}
@@ -406,11 +387,16 @@ int dotest(testers, me, fd)
 	 *	++val.
          */
 
-	 srand(getpid());
-	 if (misc_intvl) whenmisc = NEXTMISC;
- 	while(iterations-- > 0) {
+	srand(getpid());
+
+	if (misc_intvl)
+		whenmisc = NEXTMISC;
+
+	while (iterations-- > 0) {
+
 		for(i = 0; i < NMISC; i++)
 			misc_cnt[i] = 0;
+
 		ftruncate(fd,0);
 		file_max = 0;
 		bfill(bits, 0, (nchunks+7) / 8);
@@ -418,19 +404,21 @@ int dotest(testers, me, fd)
 
 		/* Have to fill the val and zero iov buffers in a different manner
 		 */
-		for(i = 0; i < MAXIOVCNT; i++) {
+		for (i = 0; i < MAXIOVCNT; i++) {
 			bfill(val_iovec[i].iov_base,val,val_iovec[i].iov_len);
 			bfill(zero_iovec[i].iov_base,0,zero_iovec[i].iov_len);
 
 		}
+
 		count = 0;
 		collide = 0;
-		while(count < nchunks) {
+
+		while (count < nchunks) {
 			chunk = rand() % nchunks;
 			/*
 			 * Read it.
 			 */
-			if (lseek(fd, (long)CHUNK(chunk), 0) < 0) {
+			if (lseek(fd, CHUNK(chunk), 0) < 0) {
 				tst_resm(TFAIL, "\tTest[%d]: lseek(0) fail at %x, errno = %d.",
 					me, CHUNK(chunk), errno);
 				tst_exit();
@@ -498,7 +486,7 @@ int dotest(testers, me, fd)
 			/*
 			 * Writev it.
 			 */
-			if (lseek(fd, -((long)xfr), 1) <  0) {
+			if (lseek(fd, -xfr, 1) <  0) {
 				tst_resm(TFAIL, "\tTest[%d]: lseek(1) fail at %x, errno = %d.",
 					me, CHUNK(chunk), errno);
 				tst_exit();
@@ -532,31 +520,26 @@ int dotest(testers, me, fd)
 		 */
 
 		fsync(fd);
-		++misc_cnt[(int)m_fsync];
+		++misc_cnt[m_fsync];
 		//tst_resm(TINFO, "\tTest{%d} val %d done, count = %d, collide = {%d}",
 	        //		me, val, count, collide);
 		//for(i = 0; i < NMISC; i++)
 		//	tst_resm(TINFO, "\t\tTest{%d}: {%d} %s's.", me, misc_cnt[i], m_str[i]);
 		++val;
 	}
-	return 0;
 }
 
 /*
- * domisc()
  *	Inject misc syscalls into the thing.
  */
-
-int domisc(me, fd, bits)
-	int	me;
-	int	fd;
-	char	*bits;
+static void domisc(int me, int fd, char *bits)
 {
-	register int	chunk;
-	struct	stat sb;
+	int chunk;
+	struct stat sb;
 
-	if ((int) type > (int) m_fstat)
+	if (type > m_fstat)
 		type = m_fsync;
+
 	switch(type) {
 	case m_fsync:
 		if (fsync(fd) < 0) {
@@ -592,104 +575,90 @@ int domisc(me, fd, bits)
 			tst_exit();
 		}
 		if (sb.st_size != file_max) {
-			tst_resm(TFAIL, "\tTest[%d]: fstat() mismatch; st_size=%x,file_max=%x.",
-				me, sb.st_size, file_max);
+			tst_resm(TFAIL, "\tTest[%d]: fstat() mismatch; st_size=%"PRIx64",file_max=%x.",
+				me, (int64_t)sb.st_size, file_max);
 			tst_exit();
 		}
 		break;
 	}
-	++misc_cnt[(int)type];
-	type = (enum m_type) ((int) type + 1);
-	return 0;
+
+	++misc_cnt[type];
+	++type;
 }
 
-int bfill(buf, val, size)
-	register char *buf;
-	char	val;
-	register int size;
+static void bfill(char *buf, char val, int size)
 {
-	register int i;
+	int i;
 
-	for(i = 0; i < size; i++)
+	for (i = 0; i < size; i++)
 		buf[i] = val;
-	return 0;
 }
 
 /*
  * dumpiov
  *	Dump the contents of the r_iovec buffer.
  */
-
-int dumpiov(iovptr)
-	register struct iovec *iovptr;
+static void dumpiov(struct iovec *iovptr)
 {
-	register int i;
-	char	val;
-	int	idx;
-	int	nout;
+	int i;
+	char val, *buf;
+	int idx, nout;
 
 	nout = 0;
 	idx = 0;
-	val = ((char *)iovptr->iov_base)[0];
-	for(i = 0; i < iovptr->iov_len; i++) {
-		if (((char *)iovptr->iov_base)[i] != val) {
+
+	buf = (char*)iovptr->iov_base;
+	val = buf[0];
+
+	for (i = 0; i < iovptr->iov_len; i++) {
+
+		if (buf[i] != val) {
 			if (i == idx+1)
-				tst_resm(TINFO, "\t%x, ", ((char *)iovptr->iov_base)[idx] & 0xff);
+				tst_resm(TINFO, "\t%x, ", buf[idx] & 0xff);
 			else
-				tst_resm(TINFO, "\t%d*%x, ", i-idx, ((char *)iovptr->iov_base)[idx] & 0xff);
+				tst_resm(TINFO, "\t%d*%x, ", i-idx, buf[idx] & 0xff);
 			idx = i;
 			++nout;
 		}
+
 		if (nout > 10) {
 			tst_resm(TINFO, "\t ... more");
-			return 0;
+			return;
 		}
 	}
+
 	if (i == idx+1)
-		tst_resm(TINFO, "\t%x", ((char *)iovptr->iov_base)[idx] & 0xff);
+		tst_resm(TINFO, "\t%x", buf[idx] & 0xff);
 	else
-		tst_resm(TINFO, "\t%d*%x", i-idx, ((char *)iovptr->iov_base)[idx]);
-	return 0;
+		tst_resm(TINFO, "\t%d*%x", i-idx, buf[idx]);
 }
 
 /*
- * dumpbits
  *	Dump the bit-map.
  */
-
-int dumpbits(bits, size)
-	char	*bits;
-	register int size;
+static void dumpbits(char *bits, int size)
 {
-	register char *buf;
+	char *buf;
 
-	for(buf = bits; size > 0; --size, ++buf) {
+	for (buf = bits; size > 0; --size, ++buf) {
 		if ((buf-bits) % 16 == 0)
 			tst_resm(TINFO, "\t%04x:\t", 8*(buf-bits));
-		tst_resm(TINFO, "\t%02x ", (int)*buf & 0xff);
+		tst_resm(TINFO, "\t%02x ", *buf & 0xff);
 	}
-	return 0;
 }
 
-int orbits(hold, bits, count)
-	register char *hold;
-	register char *bits;
-	register int count;
+static void orbits(char *hold, char *bits, int count)
 {
-	while(count-- > 0)
+	while (count-- > 0)
 		*hold++ |= *bits++;
-	return 0;
 }
 
-
-/* term()
- *
- *	This is called when a SIGTERM signal arrives.
+/*
+ * SIGTERM signal handler.
  */
-
-int term()
+static void term(int sig)
 {
-	register int i;
+	int i;
 
 	tst_resm(TINFO, "\tterm -[%d]- got sig term.", getpid());
 
@@ -697,24 +666,24 @@ int term()
 	 * If run by hand we like to have the parent send the signal to
 	 * the child processes.  This makes life easy.
 	 */
-
 	if (parent_pid == getpid()) {
-		for (i=0; i < nchild; i++)
-			if (pidlist[i])		/* avoid embarassment */
+		for (i = 0; i < nchild; i++)
+			if (pidlist[i])
 				kill(pidlist[i], SIGTERM);
-		return 0;
+		return;
 	}
 
 	tst_resm(TINFO, "\tunlinking '%s'", test_name);
 
 	close(fd);
+
 	if (unlink(test_name))
 		tst_resm(TBROK, "Unlink of '%s' failed, errno = %d.",
 		  test_name, errno);
 	else
 		tst_resm(TBROK, "Unlink of '%s' successful.", test_name);
+
 	tst_exit();
-	return 0;
 }
 
 

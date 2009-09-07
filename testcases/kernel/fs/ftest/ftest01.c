@@ -47,36 +47,36 @@
  *
  */
 #define _GNU_SOURCE 1
-#include <stdio.h>		/* needed by testhead.h		*/
+#include <stdio.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <signal.h>		/* DEM - added SIGTERM support */
+#include <signal.h>
 #include <unistd.h>
+#include <inttypes.h>
 #include "test.h"
 #include "usctest.h"
 
 char *TCID = "ftest01";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
-void setup(void);
-int runtest();
-int dotest(int, int, int);
-int domisc(int, int, char*);
-int bfill(char*, char, int);
-int dumpbuf(char*);
-int dumpbits(char*, int);
-int orbits(char*, char*, int);
-void term();
-void cleanup(void);
+static void setup(void);
+static void runtest(void);
+static void dotest(int, int, int);
+static void domisc(int, int, char*);
+static void bfill(char*, char, int);
+static void dumpbuf(char*);
+static void dumpbits(char*, int);
+static void orbits(char*, char*, int);
+static void cleanup(void);
+static void term(int);
 
 #define PASSED 1
 #define FAILED 0
 
-#define MAXCHILD	25	/* max number of children to allow */
+#define MAXCHILD	25
 #define K_1		1024
 #define K_2		2048
 #define K_4		4096
@@ -92,7 +92,7 @@ int	nwait;
 int	fd;				/* file descriptor used by child */
 int	parent_pid;
 int	pidlist[MAXCHILD];
-char	test_name[2];			/* childs test directory name */
+char	test_name[2];
 char	*prog;
 
 char	fuss[40] = "";		/* directory to do this in */
@@ -100,21 +100,16 @@ char	homedir[200]= "";	/* where we started */
 
 int 	local_flag;
 
-/*--------------------------------------------------------------*/
-int main (ac, av)
-	int  ac;
-	char *av[];
+int main (int ac, char *av[])
 {
-	int lc;                 /* loop counter */
-        char *msg;              /* message returned from parse_opts */
+	int lc;
+        char *msg;
 
         /*
          * parse standard options
          */
-        if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+        if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != NULL)
                 tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-	                /*NOTREACHED*/
-        }
 
 	setup();
 
@@ -122,20 +117,17 @@ int main (ac, av)
 
 		runtest();
 
-		if (local_flag == PASSED) {
+		if (local_flag == PASSED)
 			tst_resm(TPASS, "Test passed.");
-		} else {
+		else
 			tst_resm(TFAIL, "Test failed.");
-		}
-	} /* end of for */
+	}
+
 	cleanup();
-	return 0;
+        tst_exit();
 }
-/*--------------------------------------------------------------*/
 
-
-void
-setup()
+static void setup(void)
 {
 
 	/*
@@ -143,7 +135,7 @@ setup()
 	 * Save starting directory.
 	 */
 	tst_tmpdir();
-	getcwd(homedir, sizeof( homedir));
+	getcwd(homedir, sizeof(homedir));
 	parent_pid = getpid();
 
 	if (!fuss[0])
@@ -155,17 +147,16 @@ setup()
 		tst_brkm(TBROK,0,"Can't chdir(%s): %s", fuss, strerror(errno));
 	}
 
-	 /*
-	  * Default values for run conditions.
-	  */
-
+	/*
+	 * Default values for run conditions.
+	 */
 	iterations = 10;
 	nchild = 5;
 	csize = K_2;            /* should run with 1, 2, and 4 K sizes */
 	max_size = K_1 * K_1;
 	misc_intvl = 10;
 
-	if ((sigset(SIGTERM, (void (*)())term)) == SIG_ERR) {
+	if (sigset(SIGTERM, term) == SIG_ERR) {
 		tst_resm(TBROK,"sigset failed: %s", strerror(errno));
 	        tst_exit();
 	}
@@ -174,28 +165,26 @@ setup()
 }
 
 
-int runtest()
+static void runtest(void)
 {
-	register int i;
-	int	pid;
-	int	child;
-	int	status;
-	int	count;
-
-
+	int i, pid, child, status, count;
 
 	for(i = 0; i < nchild; i++) {
+
 		test_name[0] = 'a' + i;
 		test_name[1] = '\0';
 		fd = open(test_name, O_RDWR|O_CREAT|O_TRUNC, 0666);
-		if (fd < 0) {
+
+		if (fd < 0)
 			tst_brkm(TBROK,0, "Can't creating %s/%s: %s", fuss, test_name, strerror(errno));
+
+		if ((child = fork()) == 0) {
+			dotest(nchild, i, fd);
+			exit(0);
 		}
-		if ((child = fork()) == 0) {		/* child */
-			dotest(nchild, i, fd);		/* do it! */
-			exit(0);			/* when done, exit */
-		}
+
 		close(fd);
+
 		if (child < 0) {
 			 tst_resm(TINFO, "System resource may be too low, fork() malloc()"
 				  " etc are likely to fail.");
@@ -210,19 +199,15 @@ int runtest()
 	/*
 	 * Wait for children to finish.
 	 */
-
 	count = 0;
-	while(1)
-	{
+	while (1) {
 		if ((child = wait(&status)) >= 0) {
 			if (status) {
-				tst_resm(TFAIL,0, "Test{%d} failed, expected 0 exit", child);
+				tst_resm(TFAIL, "Test{%d} failed, expected 0 exit", child);
 				local_flag = FAILED;
 			}
 			++count;
-		}
-		else
-		{
+		} else {
 			if (errno != EINTR)
 				break;
 		}
@@ -231,20 +216,19 @@ int runtest()
 	/*
 	 * Should have collected all children.
 	 */
-
 	if (count != nwait) {
 		tst_resm(TFAIL, "Wrong # children waited on, count = %d", count);
 		local_flag = FAILED;
 	}
 
-	if (local_flag == PASSED) {
+	if (local_flag == PASSED)
 		tst_resm(TPASS, "Test passed in fork and wait.");
-	} else {
+	else
 		tst_resm(TFAIL, "Test failed in fork and wait.");
-	}
 
 	chdir(homedir);
 	pid = fork();
+
 	if (pid < 0) {
 
 		tst_resm(TINFO, "System resource may be too low, fork() malloc()"
@@ -254,18 +238,18 @@ int runtest()
 		sync();
 		tst_exit();
 	}
+
 	if (pid == 0) {
 		execl("/bin/rm", "rm", "-rf", fuss, NULL);
 		tst_exit();
 	}
 
 	wait(&status);
-	if (status) {
-		tst_resm(TINFO, "CAUTION - ftest1, '%s' may not be removed", fuss);
-	}
 
-	sync();				/* safeness */
-	return 0;
+	if (status)
+		tst_resm(TINFO, "CAUTION - ftest1, '%s' may not be removed", fuss);
+
+	sync();
 }
 
 /*
@@ -278,9 +262,7 @@ int runtest()
 
 #define	NMISC	4
 enum	m_type { m_fsync, m_trunc, m_sync, m_fstat };
-char	*m_str[] = {
-		"fsync",   "trunc", "sync", "fstat"
-};
+char	*m_str[] = { "fsync", "trunc", "sync", "fstat" };
 
 int	misc_cnt[NMISC];		/* counts # of each kind of misc */
 int	file_max;			/* file-max size */
@@ -292,50 +274,42 @@ enum	m_type type = m_fsync;
 #define	CHUNK(i)	((i) * csize)
 #define	NEXTMISC	((rand() % misc_intvl) + 5)
 
-int dotest(testers, me, fd)
-	int	testers;
-	int	me;
-	int	fd;
+static void dotest(int testers, int me, int fd)
 {
-	register int	i;
-	char	*bits;
-	char	*hold_bits;
-	char	*buf;
-	char	*val_buf;
-	char	*zero_buf;
-	int	count;
-	int	collide;
-	char	val;
-	int	chunk;
-	int	whenmisc;
-	int	xfr;
+	char *bits, *hold_bits, *buf, *val_buf, *zero_buf;
+	char val;
+	int count, collide, chunk, whenmisc, xfr, i;
 
 	nchunks = max_size / csize;
-	if( (bits = (char*)calloc((nchunks+7)/8, 1)) == 0) {
+
+	if ((bits = calloc((nchunks+7)/8, 1)) == 0) {
 		tst_resm(TBROK, "Test broken due to inability of malloc(bits).");
 		tst_exit();
 	}
-	if( (hold_bits = (char*)calloc((nchunks+7)/8, 1)) == 0) {
+
+	if ((hold_bits = calloc((nchunks+7)/8, 1)) == 0) {
 		tst_resm(TBROK, "Test broken due to inability of malloc(hold_bits).");
 		tst_exit();
 	}
-	if( (buf = (char*)(calloc(csize, 1))) == 0) {
+
+	if ((buf = (calloc(csize, 1))) == 0) {
 		tst_resm(TBROK, "Test broken due to inability of malloc(buf).");
 		tst_exit();
 	}
-	if( (val_buf = (char*)(calloc(csize, 1))) == 0) {
+
+	if ((val_buf = (calloc(csize, 1))) == 0) {
 		tst_resm(TBROK, "Test broken due to inability of malloc(val_buf).");
 		tst_exit();
 	}
-	if( (zero_buf = (char*)(calloc(csize, 1))) == 0) {
-		tst_resm(TBROK, "Test broken due to inability of malloc(zero_buf)(zero_buf)(zero_buf)(zero_buf)(zero_buf)(zero_buf)(zero_buf)(zero_buf)(zero_buf).");
+
+	if ((zero_buf = (calloc(csize, 1))) == 0) {
+		tst_resm(TBROK, "Test broken due to inability of malloc(zero_buf).");
 		tst_exit();
 	}
 
 	/*
 	 * No init sectors; allow file to be sparse.
 	 */
-
 	val = (64/testers) * me + 1;
 
 	/*
@@ -354,9 +328,12 @@ int dotest(testers, me, fd)
 	 */
 
 	srand(getpid());
-	if (misc_intvl) whenmisc = NEXTMISC;
-	while(iterations-- > 0) {
-		for(i = 0; i < NMISC; i++)
+
+	if (misc_intvl)
+		whenmisc = NEXTMISC;
+
+	while (iterations-- > 0) {
+		for (i = 0; i < NMISC; i++)
 			misc_cnt[i] = 0;
 		ftruncate(fd, 0);
 		file_max = 0;
@@ -366,12 +343,12 @@ int dotest(testers, me, fd)
 		bfill(zero_buf, 0, csize);
 		count = 0;
 		collide = 0;
-		while(count < nchunks) {
+		while (count < nchunks) {
 			chunk = rand() % nchunks;
 			/*
 			 * Read it.
 			 */
-			if (lseek(fd, (long)CHUNK(chunk), 0) < 0) {
+			if (lseek(fd, CHUNK(chunk), 0) < 0) {
 				tst_resm(TFAIL, "Test[%d]: lseek(0) fail at %x, errno = %d.",
 				         me, CHUNK(chunk), errno);
 
@@ -438,7 +415,7 @@ int dotest(testers, me, fd)
 			/*
 			 * Write it.
 			 */
-			if (lseek(fd, -((long)xfr), 1) <  0) {
+			if (lseek(fd, -xfr, 1) <  0) {
 				tst_resm(TFAIL, "Test[%d]: lseek(1) fail at %x, errno = %d.",
 					me, CHUNK(chunk), errno);
 				tst_exit();
@@ -470,34 +447,28 @@ int dotest(testers, me, fd)
 		/*
 		 * End of iteration, maybe before doing all chunks.
 		 */
-
 		fsync(fd);
-		++misc_cnt[(int)m_fsync];
+		++misc_cnt[m_fsync];
 		//tst_resm(TINFO, "Test{%d} val %d done, count = %d, collide = {%d}",
 		//		me, val, count, collide);
 		//for(i = 0; i < NMISC; i++)
 		//	tst_resm(TINFO, "Test{%d}: {%d} %s's.", me, misc_cnt[i], m_str[i]);
 		++val;
 	}
-	return 0;
 }
 
 /*
  * domisc()
  *	Inject misc syscalls into the thing.
  */
-
-int domisc(me, fd, bits)
-	int	me;
-	int	fd;
-	char	*bits;
+static void domisc(int me, int fd, char *bits)
 {
-	register int	chunk;
-	struct	stat sb;
+	int chunk;
+	struct stat sb;
 
-	if ((int) type > (int) m_fstat)
+	if (type > m_fstat)
 		type = m_fsync;
-	switch(type) {
+	switch (type) {
 	case m_fsync:
 		if (fsync(fd) < 0) {
 			tst_resm(TFAIL, "Test[%d]: fsync error %d.", me, errno);
@@ -523,9 +494,9 @@ int domisc(me, fd, bits)
 			}
 			tr_flag = 1;
 		}
-		for(; chunk%8 != 0; chunk++)
+		for (; chunk%8 != 0; chunk++)
 			bits[chunk/8] &= ~(1<<(chunk%8));
-		for(; chunk < nchunks; chunk += 8)
+		for (; chunk < nchunks; chunk += 8)
 			bits[chunk/8] = 0;
 		break;
 	case m_sync:
@@ -537,47 +508,40 @@ int domisc(me, fd, bits)
 			tst_exit();
 		}
 		if (sb.st_size != file_max) {
-			tst_resm(TFAIL, "\tTest[%d]: fstat() mismatch; st_size=%x,file_max=%x.",
-				me, sb.st_size, file_max);
+			tst_resm(TFAIL, "\tTest[%d]: fstat() mismatch; st_size=%"PRIx64",file_max=%x.",
+				me, (int64_t)sb.st_size, file_max);
 			tst_exit();
 		}
 		break;
 	}
-	++misc_cnt[(int)type];
-	type = (enum m_type) ((int) type + 1);
-	return 0;
+
+	++misc_cnt[type];
+	++type;
 }
 
-int bfill(buf, val, size)
-	register char *buf;
-	char	val;
-	register int size;
+static void bfill(char *buf, char val, int size)
 {
-	register int i;
+	int i;
 
-	for(i = 0; i < size; i++)
+	for (i = 0; i < size; i++)
 		buf[i] = val;
-	return 0;
 }
 
 /*
  * dumpbuf
  *	Dump the buffer.
  */
-
-int dumpbuf(buf)
-	register char *buf;
+static void dumpbuf(char *buf)
 {
-	register int i;
-	char	val;
-	int	idx;
-	int	nout;
+	char val;
+	int idx, nout, i;
 
 	tst_resm(TINFO, "\tBuf:");
 	nout = 0;
 	idx = 0;
 	val = buf[0];
-	for(i = 0; i < csize; i++) {
+
+	for (i = 0; i < csize; i++) {
 		if (buf[i] != val) {
 			if (i == idx+1)
 				tst_resm(TINFO, "\t%x, ", buf[idx] & 0xff);
@@ -588,66 +552,57 @@ int dumpbuf(buf)
 		}
 		if (nout > 10) {
 			tst_resm(TINFO, "\t ... more");
-			return 0;
+			return;
 		}
 	}
+
 	if (i == idx+1)
 		tst_resm(TINFO, "\t%x", buf[idx] & 0xff);
 	else
 		tst_resm(TINFO, "\t%d*%x", i-idx, buf[idx]);
-	return 0;
 }
 
 /*
  * dumpbits
  *	Dump the bit-map.
  */
-
-int dumpbits(bits, size)
-	char	*bits;
-	register int size;
+static void dumpbits(char *bits, int size)
 {
-	register char *buf;
+	char *buf;
 
 	tst_resm(TINFO, "\tBits array:");
-	for(buf = bits; size > 0; --size, ++buf) {
+
+	for (buf = bits; size > 0; --size, ++buf) {
 		if ((buf-bits) % 16 == 0)
 			tst_resm(TINFO, "\t%04x:\t", 8*(buf-bits));
-		tst_resm(TINFO, "\t%02x ", (int)*buf & 0xff);
+		tst_resm(TINFO, "\t%02x ", *buf & 0xff);
 	}
+
 	tst_resm(TINFO, "\t");
-	return 0;
 }
 
-int orbits(hold, bits, count)
-	register char *hold;
-	register char *bits;
-	register int count;
+static void orbits(char *hold, char *bits, int count)
 {
-	while(count-- > 0)
+	while (count-- > 0)
 		*hold++ |= *bits++;
-	return 0;
 }
 
-/* term()
- *
- *	This is called when a SIGTERM signal arrives.
+/*
+ * SIGTERM signal handler.
  */
-
-void term()
+static void term(int sig)
 {
-	register int i;
+	int i;
 
 	tst_resm(TINFO, "\tterm -[%d]- got sig term.", getpid());
 
 	/*
 	 * If run by hand we like to have the parent send the signal to
-	 * the child processes.  This makes life easy.
+	 * the child processes.
 	 */
-
 	if (parent_pid == getpid()) {
-		for (i=0; i < nchild; i++)
-			if (pidlist[i])		/* avoid embarassment */
+		for (i = 0; i < nchild; i++)
+			if (pidlist[i])
 				kill(pidlist[i], SIGTERM);
 		tst_exit();
 	}
@@ -655,17 +610,17 @@ void term()
 	tst_resm(TINFO, "\tunlinking '%s'", test_name);
 
 	close(fd);
+
 	if (unlink(test_name))
 		tst_resm(TBROK, "Unlink of '%s' failed, errno = %d.",
 		  test_name, errno);
 	else
 		tst_resm(TINFO, "Unlink of '%s' successful.", test_name);
+
 	tst_exit();
 }
 
-
-void
-cleanup()
+static void cleanup(void)
 {
 	/*
          * print timing stats if that option was specified.
@@ -674,6 +629,4 @@ cleanup()
         TEST_CLEANUP;
 
 	tst_rmdir();
-        tst_exit();
 }
-

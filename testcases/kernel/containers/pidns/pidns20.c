@@ -224,7 +224,7 @@ int main(int argc, char *argv[])
 			tst_resm(TFAIL, "parent: user function is not called "\
 					"inside cinit");
 		else
-			tst_resm(TBROK, "parent: cinit is terminated by %s",\
+			tst_resm(TBROK, "parent: cinit is terminated by %i",\
 					WTERMSIG(status));
 	}
 
