@@ -238,8 +238,8 @@ static struct test_case tcase[] = {
         },
         { // case10
                 .ttype          = INVALID_POINTER,
-                .policy         = MPOL_DEFAULT,
-                .from_node      = NONE,
+                .policy         = MPOL_PREFERRED,
+                .from_node      = SELF,
                 .ret            = -1,
                 .err            = EFAULT,
         },
@@ -263,6 +263,7 @@ static int do_test(struct test_case *tc) {
         nodemask_t nodemask, getnodemask;
         unsigned long maxnode = NUMA_NUM_NODES;
         unsigned long len = MEM_LENGTH;
+	unsigned long *invalid_nodemask;
 
         /* We assume that there is only one node(node0). */
         nodemask_zero(&nodemask);
@@ -279,13 +280,15 @@ static int do_test(struct test_case *tc) {
                 tst_exit();
         }
         if(tc->ttype == INVALID_POINTER)
-                p = (char*)0xc0000000;
+		invalid_nodemask = (unsigned long *)0xc0000000;
 /*
          * Execute system call
          */
         errno = 0;
         if (tc->from_node == NONE)
                 TEST(sys_ret = syscall(__NR_mbind, p, len, tc->policy,NULL, 0, tc->flags));
+	else if (tc->ttype == INVALID_POINTER)
+		TEST(sys_ret = syscall(__NR_mbind, p, len, tc->policy, invalid_nodemask, maxnode, tc->flags));
         else
                 TEST(sys_ret = syscall(__NR_mbind, p, len, tc->policy,&nodemask, maxnode, tc->flags));
         sys_errno = errno;
