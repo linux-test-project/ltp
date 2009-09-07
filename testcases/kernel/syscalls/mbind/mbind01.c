@@ -389,6 +389,7 @@ int main(int ac, char **av) {
         		        int ret;
 	        	        tst_resm(TINFO,"(case%02d) START", i);
         	        	ret = do_test(&tcase[i]);
+				TEST_RETURN = ret;
 	        	        tst_resm(TINFO,"(case%02d) END => %s", i, ( TEST_RETURN== 0) ? "OK" : "NG");
 	                	result |= ret;
         		}
@@ -399,6 +400,7 @@ int main(int ac, char **av) {
 		        switch(result) {
         		case RESULT_OK:
 					tst_resm(TPASS, "mbind call succeeded --OK-- ");
+					break;
 
 		        default:
                 		tst_resm(TFAIL, "%s failed - errno = %d : %s --NG--", TCID, TEST_ERRNO, strerror(TEST_ERRNO));
