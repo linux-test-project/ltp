@@ -8,7 +8,7 @@
 #-lpthread -D_GNU_SOURCE
 #
 #Recommended flags:
-#-D_XOPEN_SOURCE=600 -lpthread -lrt -lm
+-D_XOPEN_SOURCE=600 -lpthread -lrt -lm
 #
 # For use with Linux, you may try the following flags to
 # allow for the NPTL-specific compilation (used in some test cases)
