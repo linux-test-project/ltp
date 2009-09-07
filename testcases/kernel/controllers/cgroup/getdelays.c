@@ -397,7 +397,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (containerset) {
-		#ifdef HAVE_LINUX_CGROUPSTAT_H
+#ifdef HAVE_LINUX_CGROUPSTAT_H
 		cfd = open(containerpath, O_RDONLY);
 		if (cfd < 0) {
 			perror("error opening container file");
@@ -409,10 +409,10 @@ int main(int argc, char *argv[])
 			perror("error sending cgroupstats command");
 			exit(1);
 		}
-		#else
+#else
 			printf("Header linux/cgroupstat.h was missing during compilation,"
 			       "you may have old or incomplete kernel-headers.\n");
-		#endif
+#endif
 	}
 	if (!maskset && !tid && !containerset) {
 		usage();
@@ -496,11 +496,11 @@ int main(int argc, char *argv[])
 					na = (struct nlattr *) ((char *) na + len2);
 				}
 				break;
-			#ifdef HAVE_LINUX_CGROUPSTATS_H
+#ifdef HAVE_LINUX_CGROUPSTATS_H
 			case CGROUPSTATS_TYPE_CGROUP_STATS:
 				print_cgroupstats(NLA_DATA(na));
 				break;
-			#endif
+#endif
 			default:
 				fprintf(stderr, "Unknown nla_type %d\n",
 					na->nla_type);
