@@ -60,4 +60,4 @@ func/pi-tests			testpi-4
 func/pi-tests			testpi-5
 func/pi-tests			testpi-6
 func/pi-tests			sbrk_mutex
-
+func/rt-migrate                 rt-migrate

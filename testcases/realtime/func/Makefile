@@ -17,7 +17,8 @@ SUBDIRS = \
 	sched_football \
 	sched_jitter \
 	sched_latency \
-	thread_clock
+	thread_clock \
+	rt-migrate
 
 all:
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i; done
