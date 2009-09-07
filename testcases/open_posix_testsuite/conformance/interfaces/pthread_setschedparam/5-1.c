@@ -224,23 +224,6 @@ int main ( int argc, char * argv[] )
 	/* Initialize output routine */
 	output_init();
 
-	/* We need to register the signal handlers for the PROCESS */
-	sigemptyset ( &sa.sa_mask );
-	sa.sa_flags = 0;
-	sa.sa_handler = sighdl1;
-
-	if ( ( ret = sigaction ( SIGUSR1, &sa, NULL ) ) )
-	{
-		UNRESOLVED( ret, "Unable to register signal handler1" );
-	}
-
-	sa.sa_handler = sighdl2;
-
-	if ( ( ret = sigaction ( SIGUSR2, &sa, NULL ) ) )
-	{
-		UNRESOLVED( ret, "Unable to register signal handler2" );
-	}
-
 	/* We prepare a signal set which includes SIGUSR1 and SIGUSR2 */
 	sigemptyset( &usersigs );
 
@@ -273,6 +256,23 @@ int main ( int argc, char * argv[] )
 	}
 
 #endif
+
+	/* We need to register the signal handlers for the PROCESS */
+	sigemptyset ( &sa.sa_mask );
+	sa.sa_flags = 0;
+	sa.sa_handler = sighdl1;
+
+	if ( ( ret = sigaction ( SIGUSR1, &sa, NULL ) ) )
+	{
+		UNRESOLVED( ret, "Unable to register signal handler1" );
+	}
+
+	sa.sa_handler = sighdl2;
+
+	if ( ( ret = sigaction ( SIGUSR2, &sa, NULL ) ) )
+	{
+		UNRESOLVED( ret, "Unable to register signal handler2" );
+	}
 
 	me = pthread_self();
 

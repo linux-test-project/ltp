@@ -258,16 +258,6 @@ int main (int argc, char * argv[])
 	/* Initialize thread attribute objects */
 	scenar_init();
 	
-	/* We need to register the signal handlers for the PROCESS */
-	sigemptyset (&sa.sa_mask);
-	sa.sa_flags = 0;
-	sa.sa_handler = sighdl1;
-	if ((ret = sigaction (SIGUSR1, &sa, NULL)))
-	{ UNRESOLVED(ret, "Unable to register signal handler1"); }
-	sa.sa_handler = sighdl2;
-	if ((ret = sigaction (SIGUSR2, &sa, NULL)))
-	{ UNRESOLVED(ret, "Unable to register signal handler2"); }
-
 	/* We prepare a signal set which includes SIGUSR1 and SIGUSR2 */
 	sigemptyset(&usersigs);
 	ret = sigaddset(&usersigs, SIGUSR1);
@@ -284,6 +274,16 @@ int main (int argc, char * argv[])
 	if (sem_init(&semsig2, 0, 1))
 	{ UNRESOLVED(errno, "Semsig2  init"); }
 	#endif
+
+	/* We need to register the signal handlers for the PROCESS */
+	sigemptyset (&sa.sa_mask);
+	sa.sa_flags = 0;
+	sa.sa_handler = sighdl1;
+	if ((ret = sigaction (SIGUSR1, &sa, NULL)))
+	{ UNRESOLVED(ret, "Unable to register signal handler1"); }
+	sa.sa_handler = sighdl2;
+	if ((ret = sigaction (SIGUSR2, &sa, NULL)))
+	{ UNRESOLVED(ret, "Unable to register signal handler2"); }
 
 	if ((ret = pthread_create(&th_work, NULL, test, NULL)))
 	{ UNRESOLVED(ret, "Worker thread creation failed"); }
