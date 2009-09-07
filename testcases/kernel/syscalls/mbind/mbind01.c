@@ -305,7 +305,10 @@ static int do_test(struct test_case *tc) {
 // When policy equals MPOL_DEFAULT, then get_mempolicy not return node
         if (tc->policy == MPOL_DEFAULT)
 		nodemask_zero(&nodemask);
-	cmp_ok = ((tc->policy == policy) && nodemask_equal(&nodemask,&getnodemask));
+	if ((tc->policy == MPOL_PREFERRED) && (tc->from_node == NONE))
+		cmp_ok = (tc->policy == policy);
+	else
+		cmp_ok = ((tc->policy == policy) && nodemask_equal(&nodemask,&getnodemask));
         if (opt_debug) {
 		nodemask_dump("nodemask Expect:", &nodemask);
 		nodemask_dump("nodemask Result:", &getnodemask);
