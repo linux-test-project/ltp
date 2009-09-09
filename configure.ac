@@ -13,6 +13,7 @@ AC_CHECK_HEADERS_ONCE([ \
 ifaddrs.h \
 sys/capability.h \
 sys/inotify.h \
+sys/epoll.h \
 ])
 
 LTP_CHECK_SYSCALL_EVENTFD

@@ -95,14 +95,15 @@
 #include <sys/select.h>
 #include <sys/wait.h>
 
-#ifdef LTP_EPOLL_USE_LIB
-# include <epoll.h>
-#else
-# include <sys/epoll.h>
-#endif
-
-/* Harness Specific Include Files. */
+#include "config.h"
 #include "test.h"
+
+char *TCID = "sys_epoll02";	/* test program identifier */
+int TST_TOTAL = 1;		/* total number of tests in this file */
+
+#ifdef HAVE_SYS_EPOLL_H
+
+#include <sys/epoll.h>
 #include "usctest.h"
 
 /* Local Defines */
@@ -113,11 +114,6 @@
 
 #define NUM_RAND_ATTEMPTS 16
 #define BACKING_STORE_SIZE_HINT 32
-
-/* Dummy function for tst_brk* */
-extern void cleanup(void)
-{
-}
 
 /*
   Define the beginning of a "protected region".
@@ -202,9 +198,6 @@ kid_status = kid_status;})
 extern int Tst_count;		/* counter for tst_xxx routines */
 extern char *TESTDIR;		/* temporary dir created by tst_tmpdir() */
 
-/* Global Variables */
-char *TCID = "sys_epoll02";	/* test program identifier */
-int TST_TOTAL = 1;		/* total number of tests in this file */
 
 /*
  * Given the number of random size requests to test,
@@ -367,7 +360,7 @@ static const char *result_strings[] = {
 	if (ev_ptr != NULL){ \
 		tst_resm(TFAIL, ( "(epoll_ctl(%d,%08x,%d,%p = {%08x,%08d}) returned %d:%s)" ) , ##__VA_ARGS__ , \
 			epoll_fds[epfd_index], epoll_ctl_ops[op_index], \
-			epoll_fds[fd_index], ev_ptr, ev_ptr->events, ev_ptr->data, errno, \
+			epoll_fds[fd_index], ev_ptr, ev_ptr->events, ev_ptr->data.fd, errno, \
 			strerror(errno)); \
 	} else { \
 		tst_resm(TFAIL, ( "(epoll_ctl(%d,%08x,%d,%p) returned %d:%s)" ) , ##__VA_ARGS__  , \
@@ -381,7 +374,7 @@ static const char *result_strings[] = {
 	if (ev_ptr != NULL){ \
 		tst_resm(TPASS, ( "(epoll_ctl(%d,%08x,%d,%p = {%08x,%08d}) returned %d:%s)" ) , ##__VA_ARGS__ , \
 			epoll_fds[epfd_index], epoll_ctl_ops[op_index], \
-			epoll_fds[fd_index], ev_ptr, ev_ptr->events, ev_ptr->data, errno, \
+			epoll_fds[fd_index], ev_ptr, ev_ptr->events, ev_ptr->data.fd, errno, \
 			strerror(errno)); \
 	} else { \
 		tst_resm(TPASS, ( "(epoll_ctl(%d,%08x,%d,%p) returned %d:%s)" ) , ##__VA_ARGS__  , \
@@ -390,8 +383,8 @@ static const char *result_strings[] = {
 	} \
 })
 #else
-#define EPOLL_CTL_TEST_FAIL(msg , ...) tst_resm(TFAIL, (const char*)(msg) , ##__VA_ARGS__)
-#define EPOLL_CTL_TEST_PASS(msg , ...) tst_resm(TPASS, (const char*)(msg) , ##__VA_ARGS__)
+#define EPOLL_CTL_TEST_FAIL(msg , ...) tst_resm(TFAIL, msg , ##__VA_ARGS__)
+#define EPOLL_CTL_TEST_PASS(msg , ...) tst_resm(TPASS, msg , ##__VA_ARGS__)
 #endif
 
 /****************************************************************************************/
@@ -642,12 +635,6 @@ int test_epoll_ctl(int epoll_fd)
 						} else	/* The call of epoll_ctl behaved as expected */
 							EPOLL_CTL_TEST_PASS((result_strings
 									     [result]));
-
-/* Just to be safe, undefine our macros */
-#undef EPOLL_CTL_TEST_FAIL
-#undef EPOLL_CTL_TEST_PASS
-#undef PROTECT_REGION_BEGIN
-#undef PROTECT_REGION_END
 					}
 				}
 			}
@@ -673,7 +660,7 @@ int main(int argc, char **argv)
 
 	/* Get the current time */
 	if (gettimeofday(&tv, NULL) != 0) {
-		tst_brkm(TBROK, cleanup, "gettimeofday failed");
+		tst_brkm(TBROK, NULL, "gettimeofday failed");
 		tst_exit();
 	} else {
 		tst_resm(TINFO, "gettimeofday() works");
@@ -704,3 +691,13 @@ int main(int argc, char **argv)
 
 	return 0;
 }
+
+#else
+
+int main(void)
+{
+	tst_resm(TCONF, "No epoll support found.");
+	tst_exit();
+}
+
+#endif
