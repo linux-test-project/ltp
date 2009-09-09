@@ -25,6 +25,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <pwd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
 #include "test.h"
 
 #define DEFAULT_EVENT_NUM       1
@@ -94,6 +97,7 @@ static void gen_exec(void)
 static inline void gen_fork(void)
 {
 	pid_t pid;
+	int status;
 
 	pid = fork();
 	if (pid == 0) {
@@ -102,6 +106,8 @@ static inline void gen_fork(void)
 	} else if (pid < 0) {
 		fprintf(stderr, "fork() failed\n");
 		exit(1);
+	} else {  /* Parent should wait for the child */
+		wait(&status);
 	}
 }
 
