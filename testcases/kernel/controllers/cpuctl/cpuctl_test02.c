@@ -80,7 +80,7 @@ cleanup()
 }
 
 int migrate_task ();
-int timer_expired = 0;
+volatile int timer_expired = 0;
 
 int main(int argc, char* argv[])
 {

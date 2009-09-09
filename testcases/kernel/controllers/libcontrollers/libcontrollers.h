@@ -48,7 +48,8 @@ char fullpath[PATH_MAX];
 char fullpath[1024]; /* Guess */
 #endif
 
-int FLAG, timer_expired;
+int FLAG;
+volatile int timer_expired;
 
 int retval;
 

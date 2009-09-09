@@ -82,7 +82,7 @@ extern void cleanup()
 	kill(scriptpid, SIGUSR1);/* Inform the shell to do cleanup*/
 	tst_exit();		/* Report exit status*/
 }
-int timer_expired = 0;
+volatile int timer_expired = 0;
 
 int main(int argc, char *argv[])
 {

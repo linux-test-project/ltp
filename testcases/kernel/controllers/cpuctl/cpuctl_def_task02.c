@@ -79,7 +79,7 @@ cleanup()
 	tst_exit();		/* Report exit status*/
 }
 
-int timer_expired = 0;
+volatile int timer_expired = 0;
 
 int main(int argc, char *argv[])
 {
