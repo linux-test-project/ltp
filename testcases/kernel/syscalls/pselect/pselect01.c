@@ -108,7 +108,7 @@ int main()
 			    NULL);
 		end = time(&t);
 
-		if (total_sec >= (end - start))
+		if (((end - start) == total_sec) || ((end - start) == total_sec + 1))
 			tst_resm(TPASS, "Sleep time was correct");
 		else
 			tst_resm(TFAIL, "Sleep time was incorrect:%d != %d",
