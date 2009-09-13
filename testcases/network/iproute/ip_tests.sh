@@ -310,7 +310,9 @@ test03()
 				tst_res TFAIL $LTPTMP/tst_ip.err \
 				"Test #3: ip addr del command failed. Reason: "
 				return $(($RC+1))
-		fi
+			else
+				RC=0
+			fi
 		
 		tst_resm TPASS \
 			"Test #3: ip addr command tests successful"
@@ -354,7 +356,7 @@ test04()
 		 "Test #4: ip neigh show - shows all neighbour entries in arp tables."
 
 		cat > $LTPTMP/tst_ip.exp <<-EOF
-		127.0.0.1 dev lo lladdr 00:00:00:00:00:00 nud reachable
+		127.0.0.1 dev lo lladdr 00:00:00:00:00:00 REACHABLE
 		EOF
 
 		ip neigh show 127.0.0.1 | head -n1 >$LTPTMP/tst_ip.out 2>&1 || RC=$?
@@ -384,12 +386,14 @@ test04()
 				"Test #4: ip neigh del command failed return = $RC. Reason: "
 			return $RC
 		else
-			ip neigh show | grep 127.0.0.1 grep -v "nud failed$" >$LTPTMP/tst_ip.err 2>&1 || RC=$?
+			ip neigh show | grep 127.0.0.1 | grep -v " FAILED$" >$LTPTMP/tst_ip.err 2>&1 || RC=$?
 			if [ $RC -eq 0 ]
 			then
 				tst_res TFAIL $LTPTMP/tst_ip.err \
 				"Test #4: 127.0.0.1 still listed in arp. ip cmd Error Message:"
 				return $(($RC+1))
+			else
+				RC=0
 			fi
 		fi
 		
@@ -482,6 +486,8 @@ test05()
 				tst_res TFAIL $LTPTMP/tst_ip.err \
 				"Test #5: route not deleted. ip route show:"
 				return $(($RC+1))
+			else
+				RC=0
 			fi
 		fi
 		
@@ -570,6 +576,8 @@ test06()
 				tst_res TFAIL $LTPTMP/tst_ip.err \
 				"Test #6: 66:66:00:00:00:66 is not deleted. Details:"
 				return $(($RC+1))
+			else
+				RC=0
 			fi
 		fi
 		
