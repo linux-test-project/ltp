@@ -3,7 +3,47 @@ TEST SUITE:
 The directory memcg contains the tests related to memory resource controller.
 Those testcases can reproduce bugs we found.
 
+There are total 44 testcases that have been added. These testcases
+contain the regression test, basis operation test and stress test of memctl.
+
+NOTE: the test can be run by root only.
+
 TESTS AIM:
 
-The aim of the tests is to track any future regressions.
+The aim of the tests is to track any future regressions, test the functionality
+of memctl..
 
+FILES DESCRIPTION:
+
+functional/memcgroup_function_test.sh
+--------------------
+This script runs all the 38 testcases of basis operation.
+
+functional/memcgroup_getpagesize.c
+--------------------
+The program gets page size through getpagesize().
+
+functional/memcgroup_process.c
+--------------------
+The program allocates some memory according to the user input when received SIGUSR.
+And, it frees all the allocated when received SIGUSR again.
+
+stress/memcgroup_stress_test.sh
+--------------------
+This script runs all the 2 testcases of stress test.
+
+stress/memcgroup_process_stress.c
+--------------------
+The program allocates some memory in a specified time period when received SIGUSR. 
+
+regression/memcg_regression_test.sh
+--------------------
+This script runs all the 4 testcases of regression test.
+
+regression/memcg_test_*.c/sh
+--------------------
+The programs run each regression test.
+
+README
+------
+The one you have gone through.

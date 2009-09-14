@@ -1,0 +1,125 @@
+#! /bin/sh
+
+################################################################################
+##                                                                            ##
+## Copyright (c) 2009 FUJITSU LIMITED                                         ##
+##                                                                            ##
+## This program is free software;  you can redistribute it and#or modify      ##
+## it under the terms of the GNU General Public License as published by       ##
+## the Free Software Foundation; either version 2 of the License, or          ##
+## (at your option) any later version.                                        ##
+##                                                                            ##
+## This program is distributed in the hope that it will be useful, but        ##
+## WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY ##
+## or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License   ##
+## for more details.                                                          ##
+##                                                                            ##
+## You should have received a copy of the GNU General Public License          ##
+## along with this program;  if not, write to the Free Software               ##
+## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
+##                                                                            ##
+## Author: Li Zefan <lizf@cn.fujitsu.com>                                     ##
+## Restructure for LTP: Shi Weihua <shiwh@cn.fujitsu.com>                     ##
+##                                                                            ##
+################################################################################
+
+cd $LTPROOT/testcases/bin
+export TCID="memcg_stress_test"
+export TST_TOTAL=2
+export TST_COUNT=0
+
+grep -w memory /proc/cgroups 2>&1 > /dev/null
+if [ $? -ne 0 ]; then
+	echo "WARNING:";
+	echo "Kernel does not support for memory resource controller";
+	echo "Skipping all memcgroup testcases....";
+	exit 0
+fi
+
+RUN_TIME=$(( 60 * 60 ))
+
+cleanup()
+{
+	if [ -e /dev/memcg ]; then
+		umount /dev/memcg 2>/dev/null
+		rmdir /dev/memcg 2>/dev/null
+	fi
+}
+
+
+do_mount()
+{
+	cleanup;
+
+	mkdir /dev/memcg 2> /dev/null
+	mount -t cgroup -omemory memcg /dev/memcg
+}
+
+
+# Run the stress test
+#
+# $1 - Number of cgroups
+# $2 - Allocated how much memory in one process? in MB
+# $3 - The interval to touch memory in a process
+# $4 - How long does this test run ? in second
+run_stress()
+{
+	do_mount;
+
+	for ((i = 0; i < $1; i++))
+	{
+		mkdir /memcg/$i 2> /dev/null
+		./memcg_process_stress $2 $3 &
+		pid[$i]=$!
+
+		echo ${pid[$i]} > /memcg/$i/tasks
+	}
+
+	for ((i = 0; i < $1; i++))
+	{
+		/bin/kill -s SIGUSR1 ${pid[$i]} 2> /dev/null
+	}
+
+	sleep $4
+
+	for ((i = 0; i < $1; i++))
+	{
+		/bin/kill -s SIGINT ${pid[$i]} 2> /dev/null
+		wait ${pid[$i]}
+
+		rmdir /memcg/$i 2> /dev/null
+	}
+
+	cleanup;
+}
+
+testcase_1()
+{
+	run_stress 150 $(( ($mem-150) / 150 )) 10 $RUN_TIME
+
+	tst_resm TPASS "stress test 1 passed"
+}
+
+testcase_2()
+{
+	run_stress 1 $mem 10 $RUN_TIME
+
+	tst_resm TPASS "stress test 2 passed"
+}
+
+echo 3 > /proc/sys/vm/drop_caches
+sleep 2
+mem_free=`cat /proc/meminfo | grep MemFree | awk '{ print $2 }'`
+swap_free=`cat /proc/meminfo | grep SwapFree | awk '{ print $2 }'`
+
+mem=$(( $mem_free + $swap_free / 2 ))
+mem=$(( mem / 1024 ))
+
+date
+export TST_COUNT=$(( $TST_COUNT + 1 ))
+testcase_1
+export TST_COUNT=$(( $TST_COUNT + 1 ))
+testcase_2
+date
+
+exit 0
