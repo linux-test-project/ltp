@@ -397,7 +397,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (containerset) {
-#ifdef HAVE_LINUX_CGROUPSTAT_H
+#ifdef HAVE_LINUX_CGROUPSTATS_H
 		cfd = open(containerpath, O_RDONLY);
 		if (cfd < 0) {
 			perror("error opening container file");
