@@ -76,7 +76,7 @@ clean:
 # Rule to run a build test
 # If the .o doesn't export main, then we don't need to link
 .PRECIOUS: %.test
-%.test: %.o
+%.test: %.o $(top_builddir)/t0
 	@COMPLOG=$(LOGFILE).$$$$; \
 	[ -f $< ] || exit 0; \
 	{ nm -g $< | grep -q ' T main\| D main'; } || \
@@ -96,7 +96,7 @@ clean:
 # Rule to run an executable test
 # If it is only a build test, then the binary exist, so we don't need to run
 .PHONY: %.run-test
-%.run-test: %.test $(top_builddir)/t0 $(top_builddir)/t0.val
+%.run-test: %.test $(top_builddir)/t0.val
 	@COMPLOG=$(LOGFILE).$$$$; \
 	[ -f $< ] || exit 0; \
 	$(TIMEOUT) $< > $$COMPLOG 2>&1; \
@@ -144,7 +144,7 @@ $(top_builddir)/t0: $(top_builddir)/t0.c
 $(top_builddir)/t0.val: $(top_builddir)/t0
 	echo `$(top_builddir)/t0 0; echo $$?` > $(top_builddir)/t0.val
 	
-%.run-test: %.sh $(top_builddir)/t0 $(top_builddir)/t0.val
+%.run-test: %.sh $(top_builddir)/t0.val
 	@COMPLOG=$(LOGFILE).$$$$; \
 	chmod +x $<; \
 	$(TIMEOUT) $< > $$COMPLOG 2>&1; \
