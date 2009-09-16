@@ -44,8 +44,7 @@ if [ -f ./ht_enabled ];then
 	if [ $ret_value -ne 0 ];then
 		tst_resm TCONF "SMT/SMP is not supported"
 		tst_resm TINFO "End: SMT/SMP Affinity"
-		TFAILCNT=$(( $TFAILCNT+1 ))
-		exit $TFAILCNT
+		exit 0
 	fi
 else
 	tst_resm TBROK "ht_enabled:File not found"
