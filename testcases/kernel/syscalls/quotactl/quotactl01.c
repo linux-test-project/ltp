@@ -152,7 +152,7 @@ int main(int ac, char **av) {
         			tst_resm(TPASS, "quotactl call succeeded");
                         }
                 }
-	             TEST(result = syscall(258, &newtid));     //call quotactl()
+	             TEST(result = syscall(__NR_set_tid_address, &newtid));
                      if(TEST_RETURN == getpid()) {
                         cleanup();
                      }
