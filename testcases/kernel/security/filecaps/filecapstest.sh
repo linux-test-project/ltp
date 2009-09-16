@@ -30,7 +30,8 @@ fi
 checkforfilecaps.sh
 ret=$?
 if [ $ret -ne 0 ]; then
-	exit 1
+	echo "Filecaps 0 CONF : File capabilities not available"
+	exit 0
 fi
 
 echo "Running in:"
