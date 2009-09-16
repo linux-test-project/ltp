@@ -147,7 +147,7 @@ int main(int ac, char **av) {
                 for (i = 0; i <= 7; i++){
                         TEST(retval = syscall(__NR_quotactl, cmd[i], (const char *)NULL, id, (caddr_t)NULL));
 			if(TEST_RETURN != 0){
-                 	   	tst_resm(TFAIL, "%s failed - errno = %d : %s ...cmderror=%s", TCID, TEST_ERRNO, strerror(TEST_ERRNO),cmd[i]);
+				tst_resm(TFAIL|TTERRNO, "%s failed, cmd=0x%x", TCID, cmd[i]);
                         }else{
         			tst_resm(TPASS, "quotactl call succeeded");
                         }
