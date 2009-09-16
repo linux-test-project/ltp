@@ -182,7 +182,7 @@ run_test()
     # a) pathname (pathname != NULL)
     # b) readable file descriptor (pathname == NULL, dirfd opened O_RDONLY)
     # c) writable file descriptor (pathname == NULL, dirfd opened O_RDWR).
-    #    For this case we also inclue O_APPEND in open flags, since that
+    #    For this case we also include O_APPEND in open flags, since that
     #    is needed if testing with a file that has the Append-only
     #    attribute enabled.
 
