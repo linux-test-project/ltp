@@ -218,12 +218,16 @@ void setup()
 		tst_brkm(TBROK, cleanup, "mkdir(2) of %s failed", TESTDIR);
 	}
 
-	if (chown(TESTDIR, nobody_u->pw_uid, nobody_u->pw_gid) == -1)
+	if(setgroups(1, &nobody_u->pw_gid) == -1)
+		tst_brkm(TBROK, cleanup, "Couldn't change supplementary group Id: %s",
+				strerror(errno));
+
+	if (chown(TESTDIR, nobody_u->pw_uid, bin_group->gr_gid) == -1)
 		tst_brkm(TBROK, cleanup, "Couldn't change owner of testdir: %s",
 				strerror(errno));
 
-	/* change to nobody:bin */
-	if (setegid(bin_group->gr_gid) == -1 || seteuid(nobody_u->pw_uid) == -1)
+	/* change to nobody:nobody */
+	if (setegid(nobody_u->pw_gid) == -1 || seteuid(nobody_u->pw_uid) == -1)
 		tst_brkm(TBROK, cleanup, "Couldn't switch to nobody:nobody: %s",
 				strerror(errno));
 

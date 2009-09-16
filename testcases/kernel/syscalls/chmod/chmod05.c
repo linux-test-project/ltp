@@ -236,11 +236,15 @@ void setup()
 	if (mkdir(TESTDIR, MODE_RWX) < 0)
 		tst_brkm(TBROK|TERRNO, cleanup, "mkdir(%s) failed", TESTDIR);
 
-	if (chown(TESTDIR, nobody_u->pw_uid, nobody_u->pw_gid) == -1)
+	if(setgroups(1, &nobody_u->pw_gid) == -1)
+		tst_brkm(TBROK, cleanup, "Couldn't change supplementary group Id: %s",
+				strerror(errno));
+
+	if (chown(TESTDIR, nobody_u->pw_uid, bin_group->gr_gid) == -1)
 		tst_brkm(TBROK|TERRNO, cleanup, "chown() of testdir failed");
 
-	/* change to nobody:bin */
-	if (setegid(bin_group->gr_gid) == -1 ||
+	/* change to nobody:nobody */
+	if (setegid(nobody_u->pw_gid) == -1 || 
 		 seteuid(nobody_u->pw_uid) == -1)
 		tst_brkm(TBROK|TERRNO, cleanup, "Couldn't switch to nobody:nobody");
 }				/* End setup() */
