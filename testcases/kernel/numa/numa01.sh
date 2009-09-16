@@ -239,9 +239,9 @@ init()
 
     if [ $max_node -eq 1 ]
     then 
-        tst_resm TWARN "non-NUMA aware kernel is running or your machine does not support numa policy or 
+        tst_resm TCONF "non-NUMA aware kernel is running or your machine does not support numa policy or 
                         your machine is not a NUMA machine"
-    return 1
+    exit 0
     fi
 
     RC=0
