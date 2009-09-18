@@ -1,6 +1,7 @@
 /*
  *
  *   Copyright (c) International Business Machines  Corp., 2002
+ *   Copyright (c) Cyril Hrubis chrubis@suse.cz 2009
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -44,8 +45,6 @@
 
 
 #include <stdio.h>
-#include "test.h"
-#include "usctest.h"
 #include <sys/types.h>
 #include <sys/param.h>
 #include <sys/wait.h>
@@ -55,6 +54,9 @@
 #include <sys/mount.h>
 #include <signal.h>
 #include <unistd.h>
+#include "test.h"
+#include "usctest.h"
+#include "libftest.h"
 
 #define MAXCHILD	25
 #define K_1		1024
@@ -64,7 +66,6 @@
 
 char *TCID = "ftest02";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 #define PASSED 1
 #define FAILED 0
@@ -74,30 +75,28 @@ static void unlfile(int, int);
 static void fussdir(int, int);
 static void dotest(int, int);
 static void dowarn(int, char*, char*);
-static void mkname(char*, int, int);
 static void term(int sig);
 static void cleanup(void);
 
 #define	M	(1024*1024)
 
-int	iterations;
-int	nchild;
-int	parent_pid;
-int	pidlist[MAXCHILD];
+static int iterations;
+static int nchild;
+static int parent_pid;
+static int pidlist[MAXCHILD];
 
-char	homedir[MAXPATHLEN];
-char	dirname[MAXPATHLEN];
-char	tmpname[MAXPATHLEN];
-char	*prog;
-int	dirlen;
-int 	mnt = 0;
-char	startdir[MAXPATHLEN], mntpoint[MAXPATHLEN], newfsstring[90];
-char	*partition;
-char 	*cwd;
-char 	*fstyp;
-int 	local_flag;
+static char homedir[MAXPATHLEN];
+static char dirname[MAXPATHLEN];
+static char tmpname[MAXPATHLEN];
+static int dirlen;
+static int mnt = 0;
+static char startdir[MAXPATHLEN], mntpoint[MAXPATHLEN];
+static char *partition;
+static char *cwd;
+static char *fstyp;
+static int local_flag;
 
-int main(int ac, char *av[])
+int main(void)
 {
 	int k, j, pid, child, status, count;
 	char name[128];
@@ -149,7 +148,7 @@ int main(int ac, char *av[])
 	}
 
 
-	for(k = 0; k < nchild; k++) {
+	for (k = 0; k < nchild; k++) {
 		if ((child = fork()) == 0) {
 			dotest(k, iterations);
 			exit(0);
@@ -167,7 +166,7 @@ int main(int ac, char *av[])
 	 * Wait for children to finish.
 	 */
 	count = 0;
-	while((child = wait(&status)) > 0) {
+	while ((child = wait(&status)) > 0) {
 		//tst_resm(TINFO,"Test{%d} exited status = 0x%x", child, status);
 		//tst_resm(TINFO,"status is %d",status);
 		if (status) {
@@ -195,7 +194,7 @@ int main(int ac, char *av[])
 
 	for (k = 0; k < nchild; k++)
 		for (j = 0; j < iterations + 1; j++) {
-			mkname(name, k, j);
+			ft_mkname(name, dirname, k, j);
 			rmdir(name);
 			unlink(name);
 		}
@@ -258,12 +257,10 @@ char	crmsg[] = "Gee, let's write something in the file!\n";
 
 static void crfile(int me, int count)
 {
-	int	fd;
-	int	val;
-	char	fname[128];
-	char	buf[128];
+	int fd, val;
+	char fname[128], buf[128];
 
-	mkname(fname, me, count);
+	ft_mkname(fname, dirname, me, count);
 
 	fd = open(fname, O_RDWR|O_CREAT|O_TRUNC, 0666);
 	if (fd < 0 && errno == EISDIR) {
@@ -307,8 +304,8 @@ static void unlfile(int me, int count)
 	if (i < 0)
 		i = 0;
 
-	for(; i < count; i++) {
-		mkname(fname, me, i);
+	for (; i < count; i++) {
+		ft_mkname(fname, dirname, me, i);
 		val = rmdir(fname);
 		if (val < 0 )
 			val = unlink(fname);
@@ -326,13 +323,12 @@ static void unlfile(int me, int count)
  */
 static void fussdir(int me, int count)
 {
-	int	val;
-	char	dir[128];
-	char	fname[128];
-	char	savedir[128];
+	int val;
+	char dir[128], fname[128], savedir[128];
 
-	mkname(dir, me, count);
-	rmdir(dir); unlink(dir);		/* insure not there */
+	ft_mkname(dir, dirname, me, count);
+	rmdir(dir);
+	unlink(dir);
 
 	val = mkdir(dir, 0755);
 	warn(val, "mkdir", dir);
@@ -340,7 +336,6 @@ static void fussdir(int me, int count)
 	/*
 	 * Arrange to create files in the directory.
 	 */
-
 	strcpy(savedir, dirname);
 	strcpy(dirname, "");
 
@@ -354,6 +349,7 @@ static void fussdir(int me, int count)
 	warn(val, "chdir", "..");
 
 	val = rmdir(dir);
+
 	if (val >= 0) {
 		tst_resm(TFAIL,"Test[%d]: rmdir of non-empty %s succeeds!", me, dir);
 		tst_exit();
@@ -362,11 +358,11 @@ static void fussdir(int me, int count)
 	val = chdir(dir);
 	warn(val, "chdir", dir);
 
-	mkname(fname, me, count);
+	ft_mkname(fname, dirname, me, count);
 	val = unlink(fname);
 	warn(val, "unlink", fname);
 
-	mkname(fname, me, count+1);
+	ft_mkname(fname, dirname, me, count+1);
 	val = unlink(fname);
 	warn(val, "unlink", fname);
 
@@ -412,7 +408,8 @@ static void dotest(int me, int count)
 	//tst_resm(TINFO,"Test %d pid %d starting.", me, getpid());
 
 	srand(getpid());
-	for(i = 0; i < count; i++) {
+
+	for (i = 0; i < count; i++) {
 		thing = (rand() >> 3) % NTHING;
 		(*ino_thing[thing].it_proc)(me, i, ino_thing[thing].it_name);
 		++thing_cnt[thing];
@@ -431,27 +428,10 @@ static void dowarn(int me, char *m1, char *m2)
 	tst_exit();
 }
 
-static void mkname(char *name, int me, int idx)
-{
-	int len;
-
-	strcpy(name, dirname);
-
-	if (name[0]) {
-		len = dirlen+1;
-		name[len-1] = '/';
-	} else
-		len = 0;
-
-	name[len+0] = 'A' + (me % 26);
-	name[len+1] = 'a' + (idx % 26);
-	name[len+2] = '\0';
-}
-
 /*
  * SIGTERM signal handler.
  */
-static void term(int sig)
+static void term(int sig LTP_ATTRIBUTE_UNUSED)
 {
 	int i;
 

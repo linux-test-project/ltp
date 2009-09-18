@@ -1,6 +1,7 @@
 /*
  *
  *   Copyright (c) International Business Machines  Corp., 2002
+ *   Copyright (c) Cyril Hrubis chrubis@suse.cz 2009
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -45,8 +46,8 @@
  *
  */
 
-#define  _LARGEFILE64_SOURCE 1
-#include <stdio.h>		/* needed by testhead.h		*/
+#define _LARGEFILE64_SOURCE 1
+#include <stdio.h>
 #include <sys/types.h>
 #include <sys/param.h>
 #include <fcntl.h>
@@ -54,101 +55,84 @@
 #include <sys/mount.h>
 #include <sys/wait.h>
 #include <errno.h>
-#include <signal.h>		/* DEM - added SIGTERM support */
+#include <signal.h>
 #include <unistd.h>
 #include "test.h"
 #include "usctest.h"
+#include "libftest.h"
 
 char *TCID = "ftest06";
 int TST_TOTAL = 1;
-extern int Tst_count;
-
 
 #define PASSED 1
 #define FAILED 0
 
-void crfile(int, int);
-void unlfile(int, int);
-void fussdir(int, int);
-int dotest(int, int);
-void Warn(int, char*, char*);
-int mkname(char*, int, int);
-int term();
-void cleanup();
+static void crfile(int, int);
+static void unlfile(int, int);
+static void fussdir(int, int);
+static void dotest(int, int);
+static void dowarn(int, char*, char*);
+static void term(int sig);
+static void cleanup(void);
 
-#define MAXCHILD	25	/* max number of children to allow */
+#define MAXCHILD	25
 #define K_1		1024
 #define K_2		2048
 #define K_4		4096
 
+static int local_flag;
 
-int	local_flag;
-
-/*--------------------------------------------------------------*/
 #define M       (1024*1024)
 
-int	iterations;			/* # total iterations */
-int	nchild;
-int	parent_pid;
-int	pidlist[MAXCHILD];
+static int iterations;
+static int nchild;
+static int parent_pid;
+static int pidlist[MAXCHILD];
 
-char	homedir[MAXPATHLEN];
-char	dirname[MAXPATHLEN];
-char	tmpname[MAXPATHLEN];
-int	dirlen;
-int 	mnt = 0;
-char	startdir[MAXPATHLEN], mntpoint[MAXPATHLEN], newfsstring[50];
-char	*partition;
-char 	*cwd;
-char 	*fstyp;
+static char homedir[MAXPATHLEN];
+static char dirname[MAXPATHLEN];
+static char tmpname[MAXPATHLEN];
+static int dirlen;
+static int mnt = 0;
+static char startdir[MAXPATHLEN], mntpoint[MAXPATHLEN];
+static char *partition;
+static char *cwd;
+static char *fstyp;
 
-
-/*--------------------------------------------------------------*/
-int main (ac, av)
-	int  ac;
-	char *av[];
+int main(int ac, char *av[])
 {
-	register int k, j;
-	int	pid;
-	int	child;
-	int	status;
-	int	count;
-	char	name[3];
+	int pid, child, status, count, k, j;
+	char name[3];
 
-        int lc;                 /* loop counter */
-        char *msg;              /* message returned from parse_opts */
+        int lc;
+        char *msg;
 
         /*
          * parse standard options
          */
-        if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL){
                 tst_resm(TBROK, "OPTION PARSING ERROR - %s", msg);
                 tst_exit();
-                /*NOTREACHED*/
         }
-
 
 	/*
 	 * Default values for run conditions.
 	 */
-
 	iterations = 50;
 	nchild = 5;
 
-	if (signal(SIGTERM, (void (*)())term) == SIG_ERR) {
+	if (signal(SIGTERM, term) == SIG_ERR) {
 		tst_resm(TBROK,"first signal failed");
 		tst_exit();
 	}
 
 	/* use the default values for run conditions */
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		local_flag = PASSED;
 		/*
 		 * Make a directory to do this in; ignore error if already exists.
 		 */
-	
 		parent_pid = getpid();
 		tst_tmpdir();
 
@@ -157,7 +141,7 @@ int main (ac, av)
 				tst_resm(TFAIL,"getcwd failed");
 				tst_exit();
 			}
-	}
+		}
 		cwd = startdir;
 		strcat(dirname, cwd);
 		sprintf(tmpname, "/ftest06.%d", getpid());
@@ -181,11 +165,10 @@ int main (ac, av)
 		}
 
 		/* enter block */
-
-		for(k = 0; k < nchild; k++) {
-			if ((child = fork()) == 0) {		/* child */
-				dotest(k, iterations);		/* do it! */
-				tst_exit();			/* when done, exit */
+		for (k = 0; k < nchild; k++) {
+			if ((child = fork()) == 0) {
+				dotest(k, iterations);
+				tst_exit();
 			}
 			if (child < 0) {
 				tst_resm(TINFO, "System resource may be too low, fork() malloc()"
@@ -200,9 +183,8 @@ int main (ac, av)
 		/*
 		 * Wait for children to finish.
 		 */
-
 		count = 0;
-		while((child = wait(&status)) > 0) {
+		while ((child = wait(&status)) > 0) {
 			//tst_resm(TINFO,"Test{%d} exited status = 0x%x", child, status);
 			//fprintf(stdout, "status is %d",status);
 			if (status) {
@@ -215,24 +197,22 @@ int main (ac, av)
 		/*
 		 * Should have collected all children.
 		 */
-
 		if (count != nchild) {
 			tst_resm(TFAIL,"Wrong # children waited on, count = %d", count);
 			local_flag = FAILED;
 		}
 
-		if (local_flag == PASSED) {
-                        tst_resm(TPASS, "Test passed.");
-                } else {
-                        tst_resm(TFAIL, "Test failed.");
-                }
-
+		if (local_flag == PASSED)
+			tst_resm(TPASS, "Test passed.");
+		else
+			tst_resm(TFAIL, "Test failed.");
 
 		if (iterations > 26)
 			iterations = 26;
-		for (k=0; k < nchild; k++)
-			for (j=0; j < iterations + 1; j++) {
-				mkname(name, k, j);
+
+		for (k = 0; k < nchild; k++)
+			for (j = 0; j < iterations + 1; j++) {
+				ft_mkname(name, dirname, k, j);
 				rmdir(name);
 				unlink(name);
 			}
@@ -246,11 +226,13 @@ int main (ac, av)
 			tst_resm(TBROK, "Test broken due to inability of fork.");
 			tst_exit();
 		}
+
 		if (pid == 0) {
 			execl("/bin/rm", "rm", "-rf", homedir, NULL);
 			tst_exit();
 		} else
 			wait(&status);
+
 		if (status)
 			tst_resm(TINFO,"CAUTION - ftest06, '%s' may not have been removed.",
 			  homedir);
@@ -272,36 +254,29 @@ int main (ac, av)
 			  dirname);
 		}
 
-		sync();				/* safeness */
-
+		sync();
 		cleanup();
 
-	} /* end for */
-	if (local_flag == FAILED) {
+	}
+
+	if (local_flag == FAILED)
                 tst_resm(TFAIL, "Test failed.");
-        } else {
+        else
                 tst_resm(TPASS, "Test passed.");
-        }
 
 	cleanup();
-	return 0;
+	tst_exit();
 }
 
-
-/*--------------------------------------------------------------*/
-
-
-
-#define	warn(val,m1,m2)	if ((val) < 0) Warn(me,m1,m2)
+#define	warn(val,m1,m2)	if ((val) < 0) dowarn(me,m1,m2)
 
 /*
  * crfile()
  *	Create a file and write something into it.
  */
+static char crmsg[] = "Gee, let's write something in the file!\n";
 
-char	crmsg[] = "Gee, let's write something in the file!\n";
-
-void crfile(me, count)
+static void crfile(int me, int count)
 {
 	int	fd;
 	off64_t seekval;
@@ -309,7 +284,7 @@ void crfile(me, count)
 	char	fname[128];
 	char	buf[128];
 
-	mkname(fname, me, count);
+	ft_mkname(fname, dirname, me, count);
 
 	fd = open(fname, O_RDWR|O_CREAT|O_TRUNC, 0666);
 	if (fd < 0 && errno == EISDIR) {
@@ -331,7 +306,8 @@ void crfile(me, count)
 	val = read(fd, buf, sizeof(crmsg)-1);
 	warn(val, "read", 0);
 
-	if (strncmp(crmsg, buf, sizeof(crmsg)-1)) Warn(me, "compare", 0);
+	if (strncmp(crmsg, buf, sizeof(crmsg)-1))
+		dowarn(me, "compare", 0);
 
 	val = close(fd);
 	warn(val, "close", 0);
@@ -341,24 +317,22 @@ void crfile(me, count)
  * unlfile()
  *	Unlink some of the files.
  */
-
-void unlfile(me, count)
+static void unlfile(int me, int count)
 {
-	int	i;
-	int	val;
-	char	fname[128];
+	int val, i;
+	char fname[128];
 
 	i = count - 10;
 	if (i < 0)
 		i = 0;
-	for(; i < count; i++) {
-		mkname(fname, me, i);
+	for (; i < count; i++) {
+		ft_mkname(fname, dirname, me, i);
 		val = rmdir(fname);
 		if (val < 0 )
 			val = unlink(fname);
 		if (val == 0 || errno == ENOENT)
 			continue;
-		Warn(me, "unlink", fname);
+		dowarn(me, "unlink", fname);
 	}
 }
 
@@ -368,16 +342,14 @@ void unlfile(me, count)
  *
  * Randomly leave the directory there.
  */
-
-void fussdir(me, count)
+static void fussdir(int me, int count)
 {
-	int	val;
-	char	dir[128];
-	char	fname[128];
-	char	savedir[128];
+	int val;
+	char dir[128], fname[128], savedir[128];
 
-	mkname(dir, me, count);
-	rmdir(dir); unlink(dir);		/* insure not there */
+	ft_mkname(dir, dirname, me, count);
+	rmdir(dir);
+	unlink(dir);
 
 	val = mkdir(dir, 0755);
 	warn(val, "mkdir", dir);
@@ -385,7 +357,6 @@ void fussdir(me, count)
 	/*
 	 * Arrange to create files in the directory.
 	 */
-
 	strcpy(savedir, dirname);
 	strcpy(dirname, "");
 
@@ -399,6 +370,7 @@ void fussdir(me, count)
 	warn(val, "chdir", "..");
 
 	val = rmdir(dir);
+
 	if (val >= 0) {
 		tst_resm(TFAIL,"Test[%d]: rmdir of non-empty %s succeeds!", me, dir);
 		tst_exit();
@@ -407,11 +379,11 @@ void fussdir(me, count)
 	val = chdir(dir);
 	warn(val, "chdir", dir);
 
-	mkname(fname, me, count);
+	ft_mkname(fname, dirname, me, count);
 	val = unlink(fname);
 	warn(val, "unlink", fname);
 
-	mkname(fname, me, count+1);
+	ft_mkname(fname, dirname, me, count+1);
 	val = unlink(fname);
 	warn(val, "unlink", fname);
 
@@ -433,8 +405,6 @@ void fussdir(me, count)
  *
  * Randomly do an inode thing; loop for # iterations.
  */
-
-
 #define	THING(p)	{p, "p"}
 
 struct	ino_thing {
@@ -452,16 +422,14 @@ struct	ino_thing {
 int	thing_cnt[NTHING];
 int	thing_last[NTHING];
 
-int dotest(me, count)
-	int	me;
-	int	count;
+static void dotest(int me, int count)
 {
-	int	i;
-	int	thing;
+	int thing, i;
 
 	//tst_resm(TINFO,"Test %d pid %d starting.", me, getpid());
 
 	srand(getpid());
+
 	for(i = 0; i < count; i++) {
 		thing = (rand() >> 3) % NTHING;
 		(*ino_thing[thing].it_proc)(me, i, ino_thing[thing].it_name);
@@ -469,61 +437,36 @@ int dotest(me, count)
 	}
 
 	//tst_resm(TINFO,"Test %d pid %d exiting.", me, getpid());
-	return 0;
 }
 
 
-void Warn(me, m1, m2)
-	int	me;
-	char	*m1;
-	char	*m2;
+static void dowarn(int me, char *m1, char *m2)
 {
-	int	err = errno;
+	int err = errno;
 
 	tst_resm(TFAIL,"Test[%d]: error %d on %s %s",
 		me, err, m1, (m2 ? m2 : ""));
 	tst_exit();
 }
 
-int mkname(name, me, idx)
-	register char	*name;
+static void term(int sig LTP_ATTRIBUTE_UNUSED)
 {
-	register int len;
-
-	(void) strcpy(name, dirname);
-	if (name[0]) {
-		len = dirlen+1;
-		name[len-1] = '/';
-	} else
-		len = 0;
-	name[len+0] = 'A' + (me % 26);
-	name[len+1] = 'a' + (idx % 26);
-	name[len+2] = '\0';
-	return 0;
-}
-
-/*--------------------------------------------------------------*/
-
-
-int term()
-{
-	register int i;
+	int i;
 
 	tst_resm(TINFO, "\tterm -[%d]- got sig term.", getpid());
 
 	if (parent_pid == getpid()) {
-		for (i=0; i < nchild; i++)
-			if (pidlist[i])		/* avoid embarassment */
+		for (i = 0; i < nchild; i++)
+			if (pidlist[i])
 				kill(pidlist[i], SIGTERM);
-		return 0;
+		return;
 	}
 
 	tst_resm(TBROK, "Term: Child process exiting.");
 	tst_exit();
-	return 0;
 }
 
-void cleanup()
+static void cleanup(void)
 {
 	char mount_buffer[1024];
 
@@ -532,14 +475,14 @@ void cleanup()
 			tst_resm(TINFO,"Could not change to %s ", startdir);
 		}
 		if (!strcmp(fstyp, "cfs")) {
-			sprintf(mount_buffer, "/etc/umount %s", partition);
+			sprintf(mount_buffer, "/bin/umount %s", partition);
 			if (system(mount_buffer) != 0) {
 				tst_resm(TINFO,"Unable to unmount %s from %s ", partition, mntpoint);
 				if (umount(partition)) {
 					tst_resm(TINFO,"Unable to unmount %s from %s ", partition, mntpoint);
 				}
 				else {
-					tst_resm(TINFO, "Forced umount for %s, /etc/mnttab now dirty", partition );
+					tst_resm(TINFO, "Forced umount for %s, /etc/mtab now dirty", partition );
 				}
 			}
 		}

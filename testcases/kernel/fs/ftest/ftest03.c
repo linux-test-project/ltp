@@ -1,6 +1,7 @@
 /*
  *
  *   Copyright (c) International Business Machines  Corp., 2002
+ *   Copyright (c) Cyril Hrubis chrubis@suse.cz 2009
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -64,10 +65,10 @@
 #include <inttypes.h>
 #include "test.h"
 #include "usctest.h"
+#include "libftest.h"
 
 char *TCID = "ftest03";
 int TST_TOTAL = 1;
-extern int Tst_count;
 
 #define PASSED 1
 #define FAILED 0
@@ -76,34 +77,29 @@ static void setup(void);
 static void runtest(void);
 static void dotest(int, int, int);
 static void domisc(int, int, char*);
-static void bfill(char*, char, int);
-static void dumpiov(struct iovec*);
-static void dumpbits(char*, int);
-static void orbits(char*, char*, int);
 static void term(int sig);
 
-#define MAXCHILD	25	/* max number of children to allow */
+#define MAXCHILD	25
 #define K_1		1024
 #define K_2		2048
 #define K_4		4096
 #define	MAXIOVCNT	16
 
-int	csize;				/* chunk size */
-int	iterations;			/* # total iterations */
-int	max_size;			/* max file size */
-int	misc_intvl;			/* for doing misc things; 0 ==> no */
-int	nchild;				/* how many children */
-int	nwait;
-int	fd;				/* file descriptor used by child */
-int	parent_pid;
-int	pidlist[MAXCHILD];
-char	test_name[2];			/* childs test directory name */
-char	*prog, *getcwd() ;
+static int csize;             /* chunk size */
+static int iterations;        /* # total iterations */
+static int max_size;          /* max file size */
+static int misc_intvl;        /* for doing misc things; 0 ==> no */
+static int nchild;            /* how many children */
+static int nwait;
+static int fd;                /* file descriptor used by child */
+static int parent_pid;
+static int pidlist[MAXCHILD];
+static char test_name[2];     /* childs test directory name */
 
-char	fuss[40] = "";		/* directory to do this in */
-char	homedir[200]= "";	/* where we started */
+static char fuss[40];         /* directory to do this in */
+static char homedir[200];     /* where we started */
 
-int 	local_flag;
+static int local_flag;
 
 int main (int ac, char *av[])
 {
@@ -399,14 +395,14 @@ static void dotest(int testers, int me, int fd)
 
 		ftruncate(fd,0);
 		file_max = 0;
-		bfill(bits, 0, (nchunks+7) / 8);
-		bfill(hold_bits, 0, (nchunks+7) / 8);
+		memset(bits, 0, (nchunks+7) / 8);
+		memset(hold_bits, 0, (nchunks+7) / 8);
 
 		/* Have to fill the val and zero iov buffers in a different manner
 		 */
 		for (i = 0; i < MAXIOVCNT; i++) {
-			bfill(val_iovec[i].iov_base,val,val_iovec[i].iov_len);
-			bfill(zero_iovec[i].iov_base,0,zero_iovec[i].iov_len);
+			memset(val_iovec[i].iov_base,val,val_iovec[i].iov_len);
+			memset(zero_iovec[i].iov_base,0,zero_iovec[i].iov_len);
 
 		}
 
@@ -450,11 +446,11 @@ static void dotest(int testers, int me, int fd)
 						tst_resm(TINFO, "\tTest[%d]: last_trunc = 0x%x.",
 							me, last_trunc);
 						sync();
-						dumpiov(&r_iovec[i]);
-						dumpbits(bits, (nchunks+7)/8);
-						orbits(hold_bits, bits, (nchunks+7)/8);
+						ft_dumpiov(&r_iovec[i]);
+						ft_dumpbits(bits, (nchunks+7)/8);
+						ft_orbits(hold_bits, bits, (nchunks+7)/8);
 						tst_resm(TINFO, "\tHold ");
-						dumpbits(hold_bits, (nchunks+7)/8);
+						ft_dumpbits(hold_bits, (nchunks+7)/8);
 						tst_exit();
 					}
 				}
@@ -474,11 +470,11 @@ static void dotest(int testers, int me, int fd)
 						tst_resm(TINFO, "\tTest[%d]: last_trunc = 0x%x.",
 							me, last_trunc);
 						sync();
-						dumpiov(&r_iovec[i]);
-						dumpbits(bits, (nchunks+7)/8);
-						orbits(hold_bits, bits, (nchunks+7)/8);
+						ft_dumpiov(&r_iovec[i]);
+						ft_dumpbits(bits, (nchunks+7)/8);
+						ft_orbits(hold_bits, bits, (nchunks+7)/8);
 						tst_resm(TINFO, "\tHold ");
-						dumpbits(hold_bits, (nchunks+7)/8);
+						ft_dumpbits(hold_bits, (nchunks+7)/8);
 						tst_exit();
 					}
 				}
@@ -507,7 +503,7 @@ static void dotest(int testers, int me, int fd)
 			 * If hit "misc" interval, do it.
 			 */
 			if (misc_intvl && --whenmisc <= 0) {
-				orbits(hold_bits, bits, (nchunks+7)/8);
+				ft_orbits(hold_bits, bits, (nchunks+7)/8);
 				domisc(me, fd, bits);
 				whenmisc = NEXTMISC;
 			}
@@ -586,77 +582,10 @@ static void domisc(int me, int fd, char *bits)
 	++type;
 }
 
-static void bfill(char *buf, char val, int size)
-{
-	int i;
-
-	for (i = 0; i < size; i++)
-		buf[i] = val;
-}
-
-/*
- * dumpiov
- *	Dump the contents of the r_iovec buffer.
- */
-static void dumpiov(struct iovec *iovptr)
-{
-	int i;
-	char val, *buf;
-	int idx, nout;
-
-	nout = 0;
-	idx = 0;
-
-	buf = (char*)iovptr->iov_base;
-	val = buf[0];
-
-	for (i = 0; i < iovptr->iov_len; i++) {
-
-		if (buf[i] != val) {
-			if (i == idx+1)
-				tst_resm(TINFO, "\t%x, ", buf[idx] & 0xff);
-			else
-				tst_resm(TINFO, "\t%d*%x, ", i-idx, buf[idx] & 0xff);
-			idx = i;
-			++nout;
-		}
-
-		if (nout > 10) {
-			tst_resm(TINFO, "\t ... more");
-			return;
-		}
-	}
-
-	if (i == idx+1)
-		tst_resm(TINFO, "\t%x", buf[idx] & 0xff);
-	else
-		tst_resm(TINFO, "\t%d*%x", i-idx, buf[idx]);
-}
-
-/*
- *	Dump the bit-map.
- */
-static void dumpbits(char *bits, int size)
-{
-	char *buf;
-
-	for (buf = bits; size > 0; --size, ++buf) {
-		if ((buf-bits) % 16 == 0)
-			tst_resm(TINFO, "\t%04x:\t", 8*(buf-bits));
-		tst_resm(TINFO, "\t%02x ", *buf & 0xff);
-	}
-}
-
-static void orbits(char *hold, char *bits, int count)
-{
-	while (count-- > 0)
-		*hold++ |= *bits++;
-}
-
 /*
  * SIGTERM signal handler.
  */
-static void term(int sig)
+static void term(int sig LTP_ATTRIBUTE_UNUSED)
 {
 	int i;
 
@@ -685,5 +614,3 @@ static void term(int sig)
 
 	tst_exit();
 }
-
-

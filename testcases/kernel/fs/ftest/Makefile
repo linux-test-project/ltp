@@ -1,5 +1,6 @@
 #
 #  Copyright (c) International Business Machines  Corp., 2001
+#  Copyright (c) Cyril Hrubis chrubis@suse.cz 2009
 #
 #  This program is free software;  you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -20,18 +21,18 @@
 # name of file	: Makefile						  #
 # description	: make(1) description file for the send(2) tests.	  #
 ###########################################################################
-CFLAGS+=	-I../../../../include -Wall -g
+CFLAGS+=	-I../../../../include -W -Wall -g
 LOADLIBES+=	-L../../../../lib -lltp
 
-SRCS=$(wildcard *.c)
+SRCS=$(wildcard ftest*.c)
 TARGETS=$(patsubst %.c,%,$(SRCS))
 
 all: $(TARGETS)
+
+$(TARGETS): libftest.o
 
 install:
 	@set -e; for i in $(TARGETS) ; do ln -f $$i ../../../bin/$$i ; done ;
 
 clean:
-	rm -f $(TARGETS)
-
-
+	rm -f $(TARGETS) libftest.o

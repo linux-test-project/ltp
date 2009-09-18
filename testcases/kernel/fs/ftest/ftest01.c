@@ -1,6 +1,7 @@
 /*
  *
  *   Copyright (c) International Business Machines  Corp., 2002
+ *   Copyright (c) Cyril Hrubis chrubis@suse.cz 2009
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -58,6 +59,7 @@
 #include <inttypes.h>
 #include "test.h"
 #include "usctest.h"
+#include "libftest.h"
 
 char *TCID = "ftest01";
 int TST_TOTAL = 1;
@@ -66,12 +68,8 @@ static void setup(void);
 static void runtest(void);
 static void dotest(int, int, int);
 static void domisc(int, int, char*);
-static void bfill(char*, char, int);
-static void dumpbuf(char*);
-static void dumpbits(char*, int);
-static void orbits(char*, char*, int);
 static void cleanup(void);
-static void term(int);
+static void term(int sig);
 
 #define PASSED 1
 #define FAILED 0
@@ -81,26 +79,23 @@ static void term(int);
 #define K_2		2048
 #define K_4		4096
 
-char progname[]= "ftest1()";	/* replace ++ with test name	*/
+static int csize;             /* chunk size */
+static int iterations;        /* # total iterations */
+static int max_size;          /* max file size */
+static int misc_intvl;        /* for doing misc things; 0 ==> no */
+static int nchild;            /* how many children */
+static int nwait;
+static int fd;                /* file descriptor used by child */
+static int parent_pid;
+static int pidlist[MAXCHILD];
+static char test_name[2];
 
-int	csize;				/* chunk size */
-int	iterations;			/* # total iterations */
-int	max_size;			/* max file size */
-int	misc_intvl;			/* for doing misc things; 0 ==> no */
-int	nchild;				/* how many children */
-int	nwait;
-int	fd;				/* file descriptor used by child */
-int	parent_pid;
-int	pidlist[MAXCHILD];
-char	test_name[2];
-char	*prog;
+static char fuss[40];         /* directory to do this in */
+static char homedir[200];     /* where we started */
 
-char	fuss[40] = "";		/* directory to do this in */
-char	homedir[200]= "";	/* where we started */
+static int local_flag;
 
-int 	local_flag;
-
-int main (int ac, char *av[])
+int main(int ac, char *av[])
 {
 	int lc;
         char *msg;
@@ -108,7 +103,7 @@ int main (int ac, char *av[])
         /*
          * parse standard options
          */
-        if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != NULL)
+        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
                 tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
@@ -326,7 +321,6 @@ static void dotest(int testers, int me, int fd)
 	 *		repeat until count = nchunks.
 	 *	++val.
 	 */
-
 	srand(getpid());
 
 	if (misc_intvl)
@@ -337,10 +331,10 @@ static void dotest(int testers, int me, int fd)
 			misc_cnt[i] = 0;
 		ftruncate(fd, 0);
 		file_max = 0;
-		bfill(bits, 0, (nchunks+7)/8);
-		bfill(hold_bits, 0, (nchunks+7)/8);
-		bfill(val_buf, val, csize);
-		bfill(zero_buf, 0, csize);
+		memset(bits, 0, (nchunks+7)/8);
+		memset(hold_bits, 0, (nchunks+7)/8);
+		memset(val_buf, val, csize);
+		memset(zero_buf, 0, csize);
 		count = 0;
 		collide = 0;
 		while (count < nchunks) {
@@ -381,11 +375,11 @@ static void dotest(int testers, int me, int fd)
 					tst_resm(TFAIL, "Test[%d]: last_trunc = 0x%x.",
 						me, last_trunc);
 					sync();
-					dumpbuf(buf);
-					dumpbits(bits, (nchunks+7)/8);
-					orbits(hold_bits, bits, (nchunks+7)/8);
+					ft_dumpbuf(buf, csize);
+					ft_dumpbits(bits, (nchunks+7)/8);
+					ft_orbits(hold_bits, bits, (nchunks+7)/8);
 					tst_resm(TINFO, "Hold ");
-					dumpbits(hold_bits, (nchunks+7)/8);
+					ft_dumpbits(hold_bits, (nchunks+7)/8);
 					tst_exit();
 				}
 				bits[chunk/8] |= (1<<(chunk%8));
@@ -404,11 +398,11 @@ static void dotest(int testers, int me, int fd)
 					tst_resm(TFAIL, "Test[%d]: last_trunc = 0x%x.",
 						me, last_trunc);
 					sync();
-					dumpbuf(buf);
-					dumpbits(bits, (nchunks+7)/8);
-					orbits(hold_bits, bits, (nchunks+7)/8);
+					ft_dumpbuf(buf, csize);
+					ft_dumpbits(bits, (nchunks+7)/8);
+					ft_orbits(hold_bits, bits, (nchunks+7)/8);
 					tst_resm(TINFO, "Hold ");
-					dumpbits(hold_bits, (nchunks+7)/8);
+					ft_dumpbits(hold_bits, (nchunks+7)/8);
 					tst_exit();
 				}
 			}
@@ -436,7 +430,7 @@ static void dotest(int testers, int me, int fd)
 			 * If hit "misc" interval, do it.
 			 */
 			if (misc_intvl && --whenmisc <= 0) {
-				orbits(hold_bits, bits, (nchunks+7)/8);
+				ft_orbits(hold_bits, bits, (nchunks+7)/8);
 				domisc(me, fd, bits);
 				whenmisc = NEXTMISC;
 			}
@@ -519,78 +513,10 @@ static void domisc(int me, int fd, char *bits)
 	++type;
 }
 
-static void bfill(char *buf, char val, int size)
-{
-	int i;
-
-	for (i = 0; i < size; i++)
-		buf[i] = val;
-}
-
-/*
- * dumpbuf
- *	Dump the buffer.
- */
-static void dumpbuf(char *buf)
-{
-	char val;
-	int idx, nout, i;
-
-	tst_resm(TINFO, "\tBuf:");
-	nout = 0;
-	idx = 0;
-	val = buf[0];
-
-	for (i = 0; i < csize; i++) {
-		if (buf[i] != val) {
-			if (i == idx+1)
-				tst_resm(TINFO, "\t%x, ", buf[idx] & 0xff);
-			else
-				tst_resm(TINFO, "\t%d*%x, ", i-idx, buf[idx] & 0xff);
-			idx = i;
-			++nout;
-		}
-		if (nout > 10) {
-			tst_resm(TINFO, "\t ... more");
-			return;
-		}
-	}
-
-	if (i == idx+1)
-		tst_resm(TINFO, "\t%x", buf[idx] & 0xff);
-	else
-		tst_resm(TINFO, "\t%d*%x", i-idx, buf[idx]);
-}
-
-/*
- * dumpbits
- *	Dump the bit-map.
- */
-static void dumpbits(char *bits, int size)
-{
-	char *buf;
-
-	tst_resm(TINFO, "\tBits array:");
-
-	for (buf = bits; size > 0; --size, ++buf) {
-		if ((buf-bits) % 16 == 0)
-			tst_resm(TINFO, "\t%04x:\t", 8*(buf-bits));
-		tst_resm(TINFO, "\t%02x ", *buf & 0xff);
-	}
-
-	tst_resm(TINFO, "\t");
-}
-
-static void orbits(char *hold, char *bits, int count)
-{
-	while (count-- > 0)
-		*hold++ |= *bits++;
-}
-
 /*
  * SIGTERM signal handler.
  */
-static void term(int sig)
+static void term(int sig LTP_ATTRIBUTE_UNUSED)
 {
 	int i;
 
