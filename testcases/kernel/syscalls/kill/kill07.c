@@ -219,6 +219,13 @@ void setup(void)
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
+	/*
+	 * Create a temporary directory and cd into it.
+	 * This helps to ensure that a unique msgkey is created.
+	 * See ../lib/libipc.c for more information.
+	 */
+	tst_tmpdir();
+
 	/* get an IPC resource key */
 	semkey = getipckey();
 
@@ -240,6 +247,9 @@ void cleanup(void)
 	 * remove the shared memory
 	 */
 	rm_shm(shmid1);
+
+	/* Remove the temporary directory */
+	tst_rmdir();
 
 	/* exit with return code appropriate for results */
 	tst_exit();
