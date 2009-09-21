@@ -40,14 +40,8 @@ int main(int argc, char **argv)
 	{
 		param = argv[1];
 		if (strcmp(param, "sched_mc")==0)
-			if (get_supp_sched_mc() == 0)
-				return 0;
-			else
-				return 1;
+			return (get_supp_sched_mc());
 		if (strcmp(param, "sched_smt")==0)
-                        if (get_supp_sched_smt() == 0)
-                                return 0;
-                        else
-                                return 1;
+                        return (get_supp_sched_smt());
 	}
 }
