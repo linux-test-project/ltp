@@ -21,6 +21,7 @@ cpu_count = 0
 socket_count = 0
 cpu1_max_intr = 0
 cpu2_max_intr = 0
+intr_stat_timer_0 = []
 
 def clear_dmesg():
     '''
@@ -177,6 +178,7 @@ def get_proc_loc_count(loc_stats):
                 for i in range(0, cpu_count):
                     # To skip LOC
                     loc_stats.append(data[i+1])
+                    print data[i+1]
         file_procstat.close()
     except Exception, details:
         print "Could not read interrupt statistics", details
@@ -216,12 +218,7 @@ def set_timer_migration_interface(value):
         print "Could not set timer_migration to ", value, e
         sys.exit(1)
 
-def start_cyclictest():
-    ''' Trigger cyclictest in background to increase
-        timer interrupts
-    '''
-    
-def trigger_ebizzy (stress, duration, background, pinned):
+def trigger_ebizzy (sched_smt, stress, duration, background, pinned):
     ''' Triggers ebizzy workload for sched_mc=1
         testing
     '''
@@ -230,8 +227,6 @@ def trigger_ebizzy (stress, duration, background, pinned):
             threads = get_hyper_thread_count()
         if stress == "partial":
             threads = cpu_count / socket_count
-            if is_hyper_threaded():
-                threads = threads / get_hyper_thread_count()
         if stress == "full":
 	    threads = cpu_count
         if stress == "single_job":
@@ -255,24 +250,30 @@ def trigger_ebizzy (stress, duration, background, pinned):
         if workload_dir != "":
             new_path = os.path.join(path,"%s" % workload_dir)
             get_proc_data(stats_start)
+            get_proc_loc_count(intr_start)
             try:
                 os.chdir(new_path)
                 if background == "yes":
-                    succ = os.system('./ebizzy -t%s -s4096 -S %s >/dev/null &' % (threads, duration))
+                    succ = os.system('./ebizzy -t%s -s4096 -S %s >/dev/null &'
+                        % (threads, duration))
                 else:
                     if pinned == "yes":
-                        succ = os.system('taskset -c %s ./ebizzy -t%s -s4096 -S %s >/dev/null' % (cpu_count -1, threads, duration))
+                        succ = os.system('taskset -c %s ./ebizzy -t%s -s4096 -S %s >/dev/null' 
+                            % (cpu_count -1, threads, duration))
                     else:
-                        succ = os.system('./ebizzy -t%s -s4096 -S %s >/dev/null' % (threads, duration))
+                        succ = os.system('./ebizzy -t%s -s4096 -S %s >/dev/null' 
+                            % (threads, duration))
          
                 if succ == 0: 
                     print "INFO: ebizzy workload triggerd"
                     os.chdir(olddir)
-                    get_proc_data(stats_stop)
+                    #Commented bcoz it doesnt make sense to capture it when workload triggered 
+                    #in background
+                    #get_proc_loc_count(intr_stop)
+                    #get_proc_data(stats_stop)
 		else:
                     print "INFO: ebizzy workload triggerd failed"
                     os.chdir(olddir)
-                    get_proc_data(stats_stop)
                     sys.exit(1)
             except Exception, details:
                 print "Ebizzy workload trigger failed ", details
@@ -281,7 +282,7 @@ def trigger_ebizzy (stress, duration, background, pinned):
         print "Ebizzy workload trigger failed ", details
         sys.exit(1)   
 
-def trigger_kernbench (stress, background, pinned):
+def trigger_kernbench (sched_smt, stress, background, pinned):
     ''' Trigger load on system like kernbench.
         Copys existing copy of LTP into as LTP2 and then builds it
         with make -j
@@ -292,7 +293,7 @@ def trigger_kernbench (stress, background, pinned):
 	    threads = 2
         if stress == "partial":
 	    threads = cpu_count / socket_count
-            if is_hyper_threaded():
+            if is_hyper_threaded() and int(sched_smt) !=2:
                 threads = threads / get_hyper_thread_count()
         if stress == "full":
             threads = cpu_count
@@ -326,33 +327,40 @@ def trigger_kernbench (stress, background, pinned):
         if linux_source_dir != "":
             os.chdir(linux_source_dir)
         else:
-            print "INFO: Linux kernel source not found. Kernbench cannot be executed"
+            print "INFO: Linux kernel source not found in /root. Workload\
+               Kernbench cannot be executed"
 	    sys.exit(1)
   
         get_proc_data(stats_start)
         get_proc_loc_count(intr_start)
         if pinned == "yes":
-            os.system ( 'taskset -c %s %s/kernbench -o %s -M -H -n 1 >/dev/null 2>&1' % (cpu_count-1, benchmark_path, threads))
+            os.system ( 'taskset -c %s %s/kernbench -o %s -M -H -n 1 \
+                >/dev/null 2>&1' % (cpu_count-1, benchmark_path, threads))
         else:
-            os.system ( '%s/kernbench -o %s -M -H -n 1 >/dev/null 2>&1' % (benchmark_path, threads))
+            if background == "yes":
+                os.system ( '%s/kernbench -o %s -M -H -n 1 >/dev/null 2>&1 &' \
+                    % (benchmark_path, threads))
+            else:
+                os.system ( '%s/kernbench -o %s -M -H -n 1 >/dev/null 2>&1' \
+                    % (benchmark_path, threads))
         
         print "INFO: Workload kernbench triggerd"
         os.chdir(olddir)
-        get_proc_data(stats_stop)
-        get_proc_loc_count(intr_stop)
+        #get_proc_data(stats_stop)
+        #get_proc_loc_count(intr_stop)
     except Exception, details:
         print "Workload kernbench trigger failed ", details
         sys.exit(1)
    
-def trigger_workld(workload, stress, duration, background, pinned):
+def trigger_workld(sched_smt, workload, stress, duration, background, pinned):
     ''' Triggers workload passed as argument. Number of threads 
         triggered is based on stress value.
     '''
     try:
         if workload == "ebizzy":
-            trigger_ebizzy (stress, duration, background, pinned)
+            trigger_ebizzy (sched_smt, stress, duration, background, pinned)
         if workload == "kernbench":
-            trigger_kernbench (stress, background, pinned)
+            trigger_kernbench (sched_smt, stress, background, pinned)
     except Exception, details:
         print "INFO: Trigger workload failed", details
         sys.exit(1)
@@ -364,6 +372,8 @@ def generate_report():
 	'softirq', 'x', 'y')
     if (not os.path.exists('/procstat')):
         os.mkdir('/procstat')
+
+    get_proc_data(stats_stop)
 
     reportfile = open('/procstat/cpu-utilisation', 'a')
     debugfile = open('/procstat/cpu-utilisation.debug', 'a')
@@ -438,18 +448,40 @@ def generate_report():
 def generate_loc_intr_report():
     ''' Generate interrupt report of CPU's
     '''
-    if (not os.path.exists('/procstat')):
-        os.mkdir('/procstat')
+    try:
+        if (not os.path.exists('/procstat')):
+            os.mkdir('/procstat')
 
-    reportfile = open('/procstat/cpu-loc_interrupts', 'a')
-    print >> reportfile, "=============================================================="
-    print >> reportfile, "                Local timer interrupt stats                   "
-    print >> reportfile, "=============================================================="
-    for i in range(0, cpu_count):
-        intr_stop[i] =  int(intr_stop[i]) - int(intr_start[i])
-        print >> reportfile, "CPU%s: %s" %(i, intr_stop[i])
-    print >> reportfile
-    reportfile.close()
+        get_proc_loc_count(intr_stop)
+
+        print "Before substracting"
+        for i in range(0, cpu_count):
+            print "CPU",i, intr_start[i], intr_stop[i]
+            reportfile = open('/procstat/cpu-loc_interrupts', 'a')
+            print >> reportfile, "=============================================="
+            print >> reportfile, "     Local timer interrupt stats              "
+            print >> reportfile, "=============================================="
+        for i in range(0, cpu_count):
+            intr_stop[i] =  int(intr_stop[i]) - int(intr_start[i])
+            print >> reportfile, "CPU%s: %s" %(i, intr_stop[i])
+        print >> reportfile
+        reportfile.close()
+    except Exception, details:
+        print "Generating reportfile failed: ", details
+        sys.exit(1)
+
+def record_loc_intr_count():
+    ''' Record Interrupt statistics when timer_migration
+        was disabled
+    '''
+    try:
+        global intr_start, intr_stop
+        for i in range(0, cpu_count):
+            intr_stat_timer_0.append(intr_stop[i]) 
+        intr_start = []
+        intr_stop = []
+    except Exception, details:
+        print "INFO: Record interrupt statistics when timer_migration=0",details 
 
 def expand_range(range_val):
     '''
@@ -519,7 +551,7 @@ def validate_cpugrp_map(cpu_group, sched_mc_level, sched_smt_level):
                                     if len(cpu_group) == 2 and \
                                         len(modi_cpu_grp) < len(cpu_group):
                                         print "INFO:CPUs utilized not in a core"
-                                        return 0                                        
+                                        return 1                                        
             print "INFO: CPUs utilized is not in same package or core"
             return(1)
 	else:
@@ -550,7 +582,8 @@ def verify_sched_domain_dmesg(sched_mc_level, sched_smt_level):
                     if group_info.find("(") != -1:
                         openindex=group_info.index("(")
                         closeindex=group_info.index(")")
-                        group_info=group_info.replace(group_info[openindex:closeindex+1],"")
+                        group_info=group_info.replace\
+                            (group_info[openindex:closeindex+1],"")
 
                     subgroup = group_info.split()
                     for j in range(0, len(subgroup)):
@@ -586,19 +619,20 @@ def validate_cpu_consolidation(work_ld, sched_mc_level, sched_smt_level):
                     if cpu_id[1] != '':
                         cpus_utilized.append(int(cpu_id[1]))
                 else:
-                    if stats_percentage[l][1] > 50:
+                    if stats_percentage[l][1] > 70:
                         cpu_id = stats_percentage[l][0].split("cpu")
                         if cpu_id[1] != '':
                             cpus_utilized.append(int(cpu_id[1]))
             else:
-                if stats_percentage[l][1] > 50:
+                if stats_percentage[l][1] > 70:
                     cpu_id = stats_percentage[l][0].split("cpu")
                     if cpu_id[1] != '':
                         cpus_utilized.append(int(cpu_id[1]))
                     cpus_utilized.sort()
         print "INFO: CPU's utilized ", cpus_utilized
 
-        status = validate_cpugrp_map(cpus_utilized, sched_mc_level, sched_smt_level)
+        status = validate_cpugrp_map(cpus_utilized, sched_mc_level, \
+            sched_smt_level)
         if status == 1:
             print "INFO: CPUs utilized is not in same package or core"
         return(status)
@@ -627,9 +661,9 @@ def get_cpuid_max_intr_count():
         for i in range(1, cpu_count):
             if i != cpu1_max_intr and i != cpu2_max_intr:
                 diff = second_highest - intr_stop[i]
-                ''' Threshold of difference has to be manipulated with multiple test'''
+                ''' Threshold of difference has to be manipulated '''
                 if diff < 10000:
-                    print "INFO: Difference in interrupt count is below threshold"
+                    print "INFO: Diff in interrupt count is below threshold"
                     return 1
         print "INFO: Interrupt count in other CPU's low as expected"
         return 0 
@@ -652,7 +686,7 @@ def validate_ilb (sched_mc_level, sched_smt_level):
     except Exception, details:
         print "Exception in validate_ilb: ", details
         sys.exit(1)
-    
+
 def reset_schedmc():
     ''' Routine to reset sched_mc_power_savings to Zero level
     '''
