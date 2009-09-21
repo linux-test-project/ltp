@@ -1,4 +1,4 @@
-SUBDIRS = mmc_security filecaps integrity cap_bound
+SUBDIRS = mmc_security filecaps integrity cap_bound p9auth
 
 all:
 	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i ; done

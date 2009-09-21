@@ -1,0 +1,2 @@
+#DESCRIPTION:p9auth /dev/caphash module
+p9auth		runp9auth.sh
