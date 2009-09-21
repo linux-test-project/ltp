@@ -42,13 +42,15 @@ def main(argv=None):
         background="no"
         duration=60
         pinned="yes"
-        trigger_workld(options.work_ld, "single_job", duration, background, pinned)
+
+        trigger_workld(options.smt_level,options.work_ld, "single_job", duration, background, pinned)
         generate_loc_intr_report()
         status = validate_ilb(options.mc_level, options.smt_level)
         reset_schedmc()
         if is_hyper_threaded():
             reset_schedsmt()
-        return(status)        
+        return(status)     
+   
     except Exception, details:
         print "INFO: Idle Load Balancer test failed", details
         return(1)
