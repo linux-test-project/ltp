@@ -302,7 +302,7 @@ static int do_test(struct test_case *tc)
                 // fallthrough
 	case SEND_SIGINT:
                 nfds = 0;
-                TEST(pid = create_sig_proc(100000, SIGINT)); // 100msec
+                pid = create_sig_proc(100000, SIGINT, UINT_MAX); // 100msec
                 if (pid < 0)
                         return 1;
                 break;

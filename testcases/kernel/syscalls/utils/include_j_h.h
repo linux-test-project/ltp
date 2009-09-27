@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * $Id: include_j_h.h,v 1.1 2009/05/29 10:26:02 subrata_modak Exp $
+ * $Id: include_j_h.h,v 1.2 2009/09/27 17:34:22 subrata_modak Exp $
  *
  */
 #ifndef __CJK_SYSCALL_J_H__
@@ -137,7 +137,7 @@ int setup_uid(char *uname);
 int setup_euid(char *uname, uid_t *old_uid);
 int cleanup_euid(uid_t old_uid);
 
-pid_t create_sig_proc(unsigned long usec, int sig);
+pid_t create_sig_proc(unsigned long usec, int sig, unsigned count);
 
 int _setup_file(char *testdir, char *fname, char *path, int flags, mode_t mode);
 int setup_file(char *testdir, char *fname, char *path);

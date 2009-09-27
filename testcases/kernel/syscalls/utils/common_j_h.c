@@ -19,7 +19,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * $Id: common_j_h.c,v 1.3 2009/06/23 14:15:43 subrata_modak Exp $
+ * $Id: common_j_h.c,v 1.4 2009/09/27 17:34:22 subrata_modak Exp $
  *
  */
 #include <stdio.h>
@@ -37,7 +37,18 @@
 #include <errno.h>
 #include <mqueue.h>
 #include "include_j_h.h"
+#include "test.h"
 
+#define barrier() __asm__ __volatile__("": : :"memory")
+#define WITH_SIGNALS_BLOCKED(code) {											\
+		sigset_t held_sigs_;																	\
+		sigfillset(&held_sigs_);															\
+		sigprocmask(SIG_SETMASK, &held_sigs_, &held_sigs_);	\
+		barrier(); \
+		code;																									\
+		barrier(); \
+		sigprocmask(SIG_SETMASK, &held_sigs_, NULL);					\
+	}
 
 /*
  * Change user ID
@@ -97,20 +108,31 @@ int cleanup_euid(uid_t old_uid)
 	return 0;
 }
 
-
+static void sigterm_handler(int sig)
+{
+	_exit(0);
+}
 /*
  * Generate a child process which will send a signal
  */
-pid_t create_sig_proc(unsigned long usec, int sig)
+pid_t create_sig_proc(unsigned long usec, int sig, unsigned count)
 {
 	pid_t pid, cpid;
 
 	pid = getpid();
-	cpid = fork();
+	WITH_SIGNALS_BLOCKED(
+			if((cpid = fork()) == 0) {
+				tst_sig(NOFORK, SIG_DFL, NULL);
+				signal(SIGTERM, sigterm_handler);
+			}
+	);
 	switch (cpid) {
 	case 0:
-		usleep(usec);
-		kill(pid, sig);
+		while(count-- > 0) {
+			usleep(usec);
+			if(kill(pid, sig) == -1)
+				break;
+		}
 		_exit(0);
 		break;
 	case -1:

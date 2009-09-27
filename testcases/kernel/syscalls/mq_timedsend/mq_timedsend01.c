@@ -351,8 +351,8 @@ static int do_test(struct test_case *tc)
                                 }
                         }
 			if (tc->ttype == SEND_SIGINT) {
-                                TEST(pid = create_sig_proc(200000, SIGINT));
-                                if (TEST_RETURN < 0) {
+                                pid = create_sig_proc(200000, SIGINT, UINT_MAX);
+                                if (pid < 0) {
                                         result = 1;
                                         goto EXIT;
                                 }

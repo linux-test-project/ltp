@@ -285,8 +285,8 @@ static int do_test(struct test_case *tc)
          * Check before sleep time
          */
         if (tc->ttype == SEND_SIGINT) {
-                TEST(pid = create_sig_proc(500000, SIGINT));
-                if (TEST_RETURN < 0)
+                pid = create_sig_proc(500000, SIGINT, UINT_MAX);
+                if (pid < 0)
                         return 1;
         }
 
