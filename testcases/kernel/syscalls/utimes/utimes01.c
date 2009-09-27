@@ -120,6 +120,8 @@ extern void cleanup() {
 /*                                                                            */
 /******************************************************************************/
 void setup() {
+        tst_require_root(tst_exit);
+
         /* Capture signals if any */
         /* Create temporary directories */
         TEST_PAUSE;
