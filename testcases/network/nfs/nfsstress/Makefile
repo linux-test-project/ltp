@@ -8,6 +8,7 @@ all: $(TARGETS)
 
 install:
 	ln -f nfsstress ../../../bin
+	ln -f $(TARGETS) ../../../bin
 
 clean:
 	rm -f $(TARGETS)
