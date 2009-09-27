@@ -191,7 +191,7 @@ struct test_case {
 static struct test_case tcase[] = {
 	{ // case00
                 .ttype          = NORMAL,
-                .expect_revents = POLLOUT,
+                .expect_revents = POLLIN | POLLOUT,
                 .ret            = 0,
                 .err            = 0,
         },
