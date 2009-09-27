@@ -155,6 +155,7 @@ enum test_type {
         TIMEOUT,
         FD_ALREADY_CLOSED,
         SEND_SIGINT,
+        SEND_SIGINT_RACE_TEST,
         INVALID_NFDS,
         INVALID_FDS,
         MINUS_NSEC,
@@ -219,22 +220,27 @@ static struct test_case tcase[] = {
                 .err            = EINTR,
         },
         { // case05
+                .ttype          = SEND_SIGINT_RACE_TEST,
+                .ret            = -1,
+                .err            = EINTR,
+        },
+        { // case06
                 .ttype          = INVALID_NFDS,
                 .ret            = -1,
                 .err            = EINVAL,
         },
-        { // case06
+        { // case07
                 .ttype          = INVALID_FDS,
                 .ret            = -1,
                 .err            = EFAULT,
         },
 #if 0
-        { // case07
+        { // case08
                 .ttype          = MINUS_NSEC,
                 .ret            = -1,
                 .err            = EINVAL, // RHEL4U1 + 2.6.18 returns SUCCESS
         },
-        { // case08
+        { // case09
                 .ttype          = TOO_LARGE_NSEC,
                 .ret            = -1,
                 .err            = EINVAL, // RHEL4U1 + 2.6.18 returns SUCCESS
@@ -306,6 +312,29 @@ static int do_test(struct test_case *tc)
                 if (pid < 0)
                         return 1;
                 break;
+  case SEND_SIGINT_RACE_TEST:
+    /* block the INT signal */
+                sigemptyset(&sigmask);
+                sigaddset(&sigmask, SIGINT);
+                sigprocmask(SIG_SETMASK, &sigmask, NULL);
+
+                /* and let it be unblocked when the syscall runs */
+                sigemptyset(&sigmask);
+                p_sigmask = &sigmask;
+                //sigsetsize = sizeof(sigmask);
+                sigsetsize = 8;
+                nfds = 0;
+                ts.tv_sec = 0;
+                ts.tv_nsec = 300000000; // 300msec => need to be enough for
+                                        //   waiting the signal
+                p_ts = &ts;
+                nfds = 0;
+                pid = create_sig_proc(0, SIGINT, 1);
+                if (pid < 0) {
+                  result=1;
+                  goto cleanup;
+                }
+                break;
         case INVALID_NFDS:
                 //nfds = RLIMIT_NOFILE + 1; ==> RHEL4U1 + 2.6.18 returns SUCCESS
                 nfds = -1;
@@ -344,12 +373,28 @@ TEST_END:
         /*
          * Check results
          */
+        if(tc->ttype == SEND_SIGINT_RACE_TEST) {
+          int sig;
+          sigprocmask(SIG_SETMASK, NULL, &sigmask);
+          for(sig=1; sig < SIGRTMAX; sig++) {
+              TEST(sigismember(&sigmask, sig));
+              if(TEST_RETURN < 0 && TEST_ERRNO == EINVAL && sig != SIGINT)
+                continue; /* let's ignore errors if they are for other signal than SIGINT that we set */
+              if((sig==SIGINT) != (TEST_RETURN!=0)) {
+                tst_resm(TFAIL, "Bad value of signal mask, signal %d is %s", sig, TEST_RETURN ? "on" : "off");
+                cmp_ok |=1;
+              }
+            }
+        }
         result |= (sys_errno != tc->err) || !cmp_ok;
         PRINT_RESULT_CMP(sys_ret >= 0, tc->ret, tc->err, sys_ret, sys_errno,
                          cmp_ok);
-
+ cleanup:
         if (fd >= 0)
                 cleanup_file(fpath);
+
+        sigemptyset(&sigmask);
+        sigprocmask(SIG_SETMASK, &sigmask, NULL);
         if (pid > 0) {
                 int st;
                 kill(pid, SIGTERM);
