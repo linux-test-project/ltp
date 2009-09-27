@@ -295,7 +295,7 @@ int main(int argc, char **argv)
 	ptrdiff_t	srval;
 #endif
         int             nousage=0;
-#ifndef NO_XFS	
+#ifndef NO_XFS
 	xfs_error_injection_t	err_inj;
 #endif
 
@@ -308,7 +308,7 @@ int main(int argc, char **argv)
 		switch (c) {
 		case 'c':
 			/*Don't cleanup*/
-			cleanup=1; 
+			cleanup=1;
 			break;
 		case 'd':
 			dirname = optarg;
@@ -389,13 +389,13 @@ int main(int argc, char **argv)
 					ops[i].freq = 0;
 			}
 		}
-       
+
        	 	if (!dirname) {
        	     	/* no directory specified */
     	        	if (!nousage) usage();
            	 exit(1);
         	}
-       
+
 		(void)mkdir(dirname, 0777);
 		if (chdir(dirname) < 0) {
 			perror(dirname);
@@ -472,7 +472,7 @@ int main(int argc, char **argv)
 			while (wait(&stat) > 0)
 				continue;
 		}
-#ifndef NO_XFS	
+#ifndef NO_XFS
 		if (errtag != 0) {
 			err_inj.errtag = 0;
 			err_inj.fd = fd;
@@ -724,7 +724,7 @@ doproc(void)
 		p = &ops[freq_table[random() % freq_table_size]];
 		if ((unsigned long)p->func < 4096) abort();
 
-	
+
 		p->func(opno, random());
 		/*
 		 * test for forced shutdown by stat'ing the test
@@ -1225,7 +1225,7 @@ show_ops(int flag, char *lead_str)
         if (flag<0) {
                 /* print in list form */
                 int             x = WIDTH;
-               
+
 	        for (p = ops; p < ops_end; p++) {
 			if (lead_str != NULL && x+strlen(p->name)>=WIDTH-5)
 				x=printf("%s%s", (p==ops)?"":"\n", lead_str);
@@ -1277,7 +1277,7 @@ symlink_path(const char *name1, pathname_t *name)
 	char		buf[MAXNAMELEN];
 	pathname_t	newname;
 	int		rval;
-       
+
         if (!strcmp(name1, name->path)) {
             printf("yikes! %s %s\n", name1, name->path);
             return 0;
@@ -1553,12 +1553,12 @@ bulkstat_f(int opno, long r)
 	t = malloc(nent * sizeof(*t));
 	fd = open(".", O_RDONLY);
 	total = 0;
-   
+
         bsr.lastip=&last;
         bsr.icount=nent;
         bsr.ubuffer=t;
         bsr.ocount=&count;
-           
+
 	while (ioctl(fd, XFS_IOC_FSBULKSTAT, &bsr) == 0 && count > 0)
 		total += count;
 	free(t);
@@ -1580,7 +1580,7 @@ bulkstat1_f(int opno, long r)
 	xfs_bstat_t	t;
 	int		v;
         xfs_fsop_bulkreq_t bsr;
-       
+
 
 	good = random() & 1;
 	if (good) {
@@ -1610,12 +1610,12 @@ bulkstat1_f(int opno, long r)
 		v = verbose;
 	}
 	fd = open(".", O_RDONLY);
-       
+
         bsr.lastip=&ino;
         bsr.icount=1;
         bsr.ubuffer=&t;
         bsr.ocount=NULL;
-       
+
 	e = ioctl(fd, XFS_IOC_FSBULKSTAT_SINGLE, &bsr) < 0 ? errno : 0;
 	if (v)
 		printf("%d/%d: bulkstat1 %s ino %lld %d\n",
@@ -1699,9 +1699,9 @@ creat_f(int opno, long r)
 			if (ioctl(fd, XFS_IOC_FSSETXATTR, &a) < 0)
 				e1 = errno;
 			esz = a.fsx_estsize;
-		
+
 		}
-#endif	
+#endif
 		 		 add_to_flist(type, id, parid);
 		close(fd);
 	}
@@ -1723,7 +1723,7 @@ setdirect(int fd)
 		return 0;
 
 	flags = fcntl(fd, F_GETFL, 0);
-	if (flags < 0) 
+	if (flags < 0)
 		return 0;
 
 	if (fcntl(fd, F_SETFL, flags|O_DIRECT)  < 0) {
@@ -1734,7 +1734,7 @@ setdirect(int fd)
 		printf("cannot set O_DIRECT: %s\n",strerror(errno));
 		return 0;
 	}
-			      
+
 	return 1;
 }
 
@@ -1752,7 +1752,7 @@ dread_f(int opno, long r)
 	off64_t		off;
 	struct stat64	stb;
 	int		v;
-      
+
 	init_pathname(&f);
 	if (!get_fname(FT_REGFILE, r, &f, NULL, NULL, &v)) {
 		if (v)
