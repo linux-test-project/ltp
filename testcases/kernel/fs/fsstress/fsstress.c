@@ -375,21 +375,24 @@ int main(int argc, char **argv)
 			break;
 		}
 	}
+
+	if (no_xfs && errtag) {
+		fprintf(stderr, "error injection only works on XFS\n");
+		exit(1);
+	}
+
+	if (no_xfs) {
+		int i;
+		for (i = 0; ops+i < ops_end; ++i) {
+			if (ops[i].isxfs)
+				ops[i].freq = 0;
+		}
+	}
+
+	make_freq_table();
+
 	while ( (loopcntr <= loops) || (loops == 0) )
 	{
-		if (no_xfs && errtag) {
-			fprintf(stderr, "error injection only works on XFS\n");
-			exit(1);
-		}
-
-		if (no_xfs) {
-			int i;
-			for (i = 0; ops+i < ops_end; ++i) {
-				if (ops[i].isxfs)
-					ops[i].freq = 0;
-			}
-		}
-
 		if (!dirname) {
 			/* no directory specified */
 			if (!nousage) usage();
@@ -407,7 +410,6 @@ int main(int argc, char **argv)
 			maxfsize = (off64_t)MAXFSIZE32;
 		else
 			maxfsize = (off64_t)MAXFSIZE;
-		make_freq_table();
 		dcache_init();
 		setlinebuf(stdout);
 		if (!seed) {
