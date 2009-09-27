@@ -1764,10 +1764,6 @@ dread_f(int opno, long r)
 	}
 	fd = open_path(&f, O_RDONLY);
 
-	if (!setdirect(fd)) {
-		return;
-	}
-
 	e = fd < 0 ? errno : 0;
 	check_cwd();
 	if (fd < 0) {
@@ -1777,6 +1773,13 @@ dread_f(int opno, long r)
 		free_pathname(&f);
 		return;
 	}
+
+	if (!setdirect(fd)) {
+		close(fd);
+		free_pathname(&f);
+		return;
+	}
+
 	if (fstat64(fd, &stb) < 0) {
 		if (v)
 			printf("%d/%d: dread - fstat64 %s failed %d\n",
@@ -1864,8 +1867,11 @@ dwrite_f(int opno, long r)
 		return;
 	}
 
-	if (!setdirect(fd))
+	if (!setdirect(fd)) {
+		close(fd);
+		free_pathname(&f);
 		return;
+	}
 	if (fstat64(fd, &stb) < 0) {
 		if (v)
 			printf("%d/%d: dwrite - fstat64 %s failed %d\n",
