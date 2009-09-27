@@ -31,7 +31,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: test.h,v 1.22 2009/08/30 17:18:18 subrata_modak Exp $ */
+/* $Id: test.h,v 1.23 2009/09/27 17:46:05 subrata_modak Exp $ */
 
 #ifndef __TEST_H__
 #define __TEST_H__
@@ -91,7 +91,7 @@
 /* defines for unexpected signal setup routine (set_usig.c) */
 #define FORK    1		/* SIGCLD is to be ignored */
 #define NOFORK  0		/* SIGCLD is to be caught */
-#define DEF_HANDLER 0	/* tells set_usig() to use default signal handler */
+#define DEF_HANDLER SIG_ERR	/* tells set_usig() to use default signal handler */
 
 /*
  * The following defines are used to control tst_res and t_result reporting.
