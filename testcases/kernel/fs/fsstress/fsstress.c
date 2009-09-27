@@ -491,6 +491,12 @@ int main(int argc, char **argv)
 		{
 			sprintf(cmd,"rm -rf %s/*",dirname);
 			system(cmd);
+			for (i = 0; i < FT_nft; i++) {
+				flist[i].nslots = 0;
+				flist[i].nfiles = 0;
+				free(flist[i].fents);
+				flist[i].fents = NULL;
+			}
 		}
 		loopcntr++;
 	}
