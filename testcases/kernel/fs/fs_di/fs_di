@@ -95,7 +95,6 @@ $trace_logic
     if [ "$CLEANUP" = "ON" ]; then
 	rm -rf $TCtmp
 	rm -rf ${TESTFS}
-   	rm -rf $TMPBASE/*
         rm -f $TCtmp/testfile*
     fi
 
