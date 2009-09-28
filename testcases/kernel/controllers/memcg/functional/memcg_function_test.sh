@@ -398,8 +398,12 @@ testcase_24()
 testcase_25()
 {
 	echo -1 > memory.limit_in_bytes 2> /dev/null
-#	result $(( !($? != 0) ))  "return value is $?"  //lizf
-	result $(( !($? == 0) ))  "return value is $?"
+	tst_kvercmp 2 6 31
+	if [ $? -eq 0 ]; then
+		result $(( !($? != 0) ))  "return value is $?"
+       else
+		result $(( !($? == 0) ))  "return value is $?"
+	fi
 }
 
 testcase_26()
@@ -488,8 +492,8 @@ testcase_35()
 {
 	# writing to non-empty top mem cgroup's force_empty
 	# should return failure
-	echo 1 > /memcg/memory.force_empty 2> /dev/null
-	result $(( $? )) "return value is $?"
+	echo 1 > /dev/memcg/memory.force_empty 2> /dev/null
+	result $(( !$? )) "return value is $?"
 }
 
 # Case 36 - 38: Test that group and subgroup have no relationship

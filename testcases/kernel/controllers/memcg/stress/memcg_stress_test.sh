@@ -68,11 +68,11 @@ run_stress()
 
 	for ((i = 0; i < $1; i++))
 	{
-		mkdir /memcg/$i 2> /dev/null
+		mkdir /dev/memcg/$i 2> /dev/null
 		./memcg_process_stress $2 $3 &
 		pid[$i]=$!
 
-		echo ${pid[$i]} > /memcg/$i/tasks
+		echo ${pid[$i]} > /dev/memcg/$i/tasks
 	}
 
 	for ((i = 0; i < $1; i++))
@@ -87,7 +87,7 @@ run_stress()
 		/bin/kill -s SIGINT ${pid[$i]} 2> /dev/null
 		wait ${pid[$i]}
 
-		rmdir /memcg/$i 2> /dev/null
+		rmdir /dev/memcg/$i 2> /dev/null
 	}
 
 	cleanup;
