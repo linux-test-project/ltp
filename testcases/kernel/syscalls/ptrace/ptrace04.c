@@ -8,8 +8,6 @@
 
 #define _GNU_SOURCE
 
-#if defined(__bfin__)
-
 #include <errno.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -75,7 +73,7 @@ void compare_registers(unsigned char poison)
 		long *pt_val = (void *)&pt_regs + regs[i].off;
 		if (*pt_val != ret) {
 			tst_resm(TINFO, "register %s (offset %li) did not match",
-				regs[i].name, regs[i].off, *pt_val, ret);
+				regs[i].name, regs[i].off);
 			tst_resm(TINFO, "\tGETREGS: 0x%08lx  PEEKUSER: 0x%08lx",
 				*pt_val, ret);
 			failed = true;
@@ -89,6 +87,9 @@ void compare_registers(unsigned char poison)
 int main(int argc, char *argv[])
 {
 	char *msg;
+
+	if (ARRAY_SIZE(regs) == 0)
+		tst_brkm(TCONF, tst_exit, "test not supported for your arch (yet)");
 
 	if ((msg = parse_opts(argc, argv, NULL, NULL)))
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
@@ -115,15 +116,3 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
-
-#else
-
-#include <stdio.h>
-
-int main()
-{
-	puts("ptrace04: test not supported for your arch (yet)");
-	return 0;
-}
-
-#endif
