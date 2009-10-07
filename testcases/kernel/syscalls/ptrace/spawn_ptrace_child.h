@@ -46,11 +46,24 @@ static void child_signal(int sig)
 	child_stopped = true;
 }
 
+#define vptrace(request, pid, addr, data) \
+({ \
+	errno = 0; \
+	long __ret = ptrace(request, pid, addr, data); \
+	if (__ret && errno) \
+		perror("ptrace(" #request ", " #pid ", " #addr ", " #data ")"); \
+	__ret; \
+})
+
 static void make_a_baby(int argc, char *argv[])
 {
 	if (argc > 1 && !strcmp(argv[1], "child")) {
 		/* if we're the child, just sit around doing nothing */
-		sleep(60);
+		int i = 60;
+		while (i--) {
+			close(-100);
+			sleep(1);
+		}
 		exit(1);
 	}
 
