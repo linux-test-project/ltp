@@ -1,8 +1,4 @@
 #
-# Copied from ../modify_ldt/Makefile by Masatake YAMATO 
-#
-###
-#
 #  Copyright (c) International Business Machines  Corp., 2001
 #
 #  This program is free software;  you can redistribute it and/or modify
@@ -20,20 +16,10 @@
 #  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
+top_srcdir		?= ../../../..
 
-include ../../../../config.mk
+include $(top_srcdir)/include/mk/testcases.mk
 
+LDFLAGS			+= $(AIO_LIBS)
 
-SRCS    = $(wildcard *.c)
-TARGETS = $(patsubst %.c,%,$(SRCS))
-
-CFLAGS += -I../../../../include -Wall
-LDLIBS += $(AIO_LIBS) -L../../../../lib -lltp
-
-all: $(TARGETS)
-
-install:
-	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
-
-clean:
-	rm -f $(TARGETS)
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

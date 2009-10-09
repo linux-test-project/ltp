@@ -31,90 +31,85 @@
 #	This version is intended for EAL certification, it will need modification 
 #	to conform with LTP standards in the offical LTP tree.
 
-RHOST="localhost"
-TEST_USER="anonymous"
-TEST_USER_PASSWD="noone@nowhere.com"
+do_setup()
+{
+    RHOST="localhost"
+    TEST_USER="anonymous"
+    TEST_USER_PASSWD="noone@nowhere.com"
+    VSFTP_CONF=
 
-tvar=${MACHTYPE%-*}
-tvar=${tvar#*-}
+    tst_setup
 
-if [ $tvar = "redhat" -o $tvar = "redhat-linux" ] 
-then
+    exists expect ftp vsftpd
 
-   # Check if vsftpd is on system.
-   which vsftpd
-   if [ $? != 0 ]
-   then {
-      echo "vsftpd not found.  Possible cause: does not exist on WS."
-      echo "Test ftp05 FAIL."
-      EXIT_CODE=1
-      exit 1
-   }
-   fi
+    for vsftp_conf in /etc/vsftpd /etc; do
 
-ANONYMOUS_ENABLE=`cat /etc/vsftpd/vsftpd.conf | grep "^anonymous_enable=" | awk -F= '{print $2}'`
-else
-ANONYMOUS_ENABLE=`cat /etc/vsftpd.conf | grep "^anonymous_enable=" | awk -F= '{print $2}'`
-fi
-if [ "$ANONYMOUS_ENABLE" != "NO" ]; then
-  ANONYMOUS_ENABLE="YES"
-fi 
+        if [ -r "$vsftp_confdir/vsftp.conf" ]; then
+            VSFTP_CONF="$vsftp_confdir/vsftp.conf"
+            break
+        fi
 
-EXIT_CODE=0
-
-#-----------------------------------------------------------------------
-# FUNCTION:  do_test
-#
-# DESCRIPTION: The anonymous user will ftp in and create a directory in his home directory on the remote host.
-#-----------------------------------------------------------------------
-
-do_test(){
-	echo "TEST: Ftp into a remote host as anonymous user, ANONYMOUS_ENABLE=$ANONYMOUS_ENABLE"
-
-if [ "$ANONYMOUS_ENABLE" = "YES" ]; then {
-	expect -c "
-                   spawn ftp $RHOST
-                   sleep 1
-                   expect -re \": \"
-                   send \"$TEST_USER\r\"
-                   expect -re \"Password:\"
-                   send \"$TEST_USER_PASSWD\r\"
-                   expect {
-                     # 530 - Login failed
-                           \"530\" {send_user \"==> TEST \#$TEST : FAIL (ftp rejected login attempt)\n\";exit 1}
-                     # 230 - Login successful
-                           \"230\" {send_user \"==> TEST \#$TEST : PASS (ftp allowed login attempt)\n\";exit 0}
-                   }
-                   expect \"ftp> \"
-                   send \"quit\r\"
-	"
-} else {
-        expect -c "
-                   spawn ftp $RHOST
-                   sleep 1
-                   expect -re \": \"
-                   send \"$TEST_USER\r\"
-                   expect -re \"Password:\"
-                   send \"$TEST_USER_PASSWD\r\"
-                   expect {
-                     # 230 - Login successful
-                           \"230\" {send_user \"==> TEST \#$TEST : FAIL (ftp allowed login attempt)\n\";exit 1} 
-                     # 500 - Login failed
-                           \"500\" {send_user \"==> TEST \#$TEST : PASS (ftp rejected login attempt)\n\";exit 0}
-                     # 530 - Login failed
-                           \"530\" {send_user \"==> TEST \#$TEST : PASS (ftp rejected login attempt)\n\";exit 0}
-                   }
-                   expect \"ftp> \"
-                   send \"quit\r\"
-        "
-} fi
-
-
-    if [ $? != 0 ]
-        then {
-        EXIT_CODE=1 
-        }
+    done
+    if [ ! -r "$VSFTP_CONF" ] ; then
+        end_testcase "vsftpd.conf not found."
     fi
+    ANONYMOUS_ENABLE=$(awk -F= '/^anonymous_enable=/ {print $2}' "$VSFTP_CONF")
+    if [ "$ANONYMOUS_ENABLE" != "NO" ]; then
+        ANONYMOUS_ENABLE="YES"
+    fi
+}
+
+#-----------------------------------------------------------------------
+# FUNCTION   : do_test
+#
+# DESCRIPTION: The anonymous user will ftp in and create a directory in his/her
+#              home directory on the remote host.
+#-----------------------------------------------------------------------
+
+do_test()
+{
+    tst_resm TINFO "Ftp into a remote host as anonymous user; ANONYMOUS_ENABLE=$ANONYMOUS_ENABLE"
+
+    if [ "$ANONYMOUS_ENABLE" = "YES" ]; then
+        expect -c "
+            spawn ftp $RHOST
+            sleep 1
+            expect -re \": \"
+            send \"$TEST_USER\r\"
+            expect -re \"Password:\"
+            send \"$TEST_USER_PASSWD\r\"
+            expect {
+                # 530 - Login failed
+                \"530\" {send_user \"==> TEST \#$TEST : FAIL (ftp rejected login attempt)\n\";exit 1}
+                # 230 - Login successful
+                \"230\" {send_user \"==> TEST \#$TEST : PASS (ftp allowed login attempt)\n\";exit 0}
+            }
+            expect \"ftp> \"
+            send \"quit\r\"
+	"
+    else
+        expect -c "
+            spawn ftp $RHOST
+            sleep 1
+            expect -re \": \"
+            send \"$TEST_USER\r\"
+            expect -re \"Password:\"
+            send \"$TEST_USER_PASSWD\r\"
+            expect {
+                # 230 - Login successful
+                \"230\" {send_user \"==> TEST \#$TEST : FAIL (ftp allowed login attempt)\n\";exit 1} 
+                # 500 - Login failed
+                \"500\" {send_user \"==> TEST \#$TEST : PASS (ftp rejected login attempt)\n\";exit 0}
+                # 530 - Login failed
+                \"530\" {send_user \"==> TEST \#$TEST : PASS (ftp rejected login attempt)\n\";exit 0}
+            }
+            expect \"ftp> \"
+            send \"quit\r\"
+        "
+    fi
+
+    [ $? -eq 0 ] || end_testcase "Testcase failed."
+
 }	
 
 #----------------------------------------------------------------------
@@ -122,5 +117,9 @@ if [ "$ANONYMOUS_ENABLE" = "YES" ]; then {
 # PURPOSE:  To invoke the functions to perform the tasks described in
 #           the prologue.
 #----------------------------------------------------------------------
+. net_cmdlib.sh
+
+read_opts $*
+do_setup
 do_test
-exit $EXIT_CODE
+end_testcase

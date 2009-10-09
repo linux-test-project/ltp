@@ -22,17 +22,22 @@
 #include <fcntl.h>
 #include <string.h>
 #include <unistd.h>
+//#include "config.h"
+#include "test.h"
+#if HAVE_OPENSSL_SHA_H
 #include <openssl/sha.h>
+#endif
 
 #define TCG_EVENT_NAME_LEN_MAX	255
 
-static int verbose = 0;
-static int validate = 0;
-static int verify = 0;
+char *TCID = "ima_measure";
+int TST_TOTAL = 1;
 
 #define print_info(format, arg...) \
 	if (verbose) \
 		printf(format, ##arg)
+
+#if HAVE_OPENSSL_SHA_H
 
 static u_int8_t zero[SHA_DIGEST_LENGTH];
 static u_int8_t fox[SHA_DIGEST_LENGTH];
@@ -90,6 +95,8 @@ static int verify_template_hash(struct event *template)
 	return 0;
 }
 
+#endif
+
 /*
  * ima_measurements.c - calculate the SHA1 aggregate-pcr value based
  * on the IMA runtime binary measurements.
@@ -120,13 +127,19 @@ static int verify_template_hash(struct event *template)
  * Return code: if verification enabled, returns number of verification
  * 		errors.
  */
-int main(int argc, char *argv[])
+int
+main(int argc, char *argv[])
 {
+
+#if HAVE_OPENSSL_SHA_H
 	FILE *fp;
 	struct event template;
 	u_int8_t pcr[SHA_DIGEST_LENGTH];
 	int i, count = 0, len;
-	int failed_count = 0;	/* number of template verifications failed */
+
+	int verbose = 0;
+	int validate = 0;
+	int verify = 0;
 
 	if (argc < 2) {
 		printf("format: %s binary_runtime_measurements" \
@@ -191,12 +204,17 @@ int main(int argc, char *argv[])
 		print_info(" %s\n", template.ima_data.filename);
 
 		if (verify)
-			failed_count += verify_template_hash(&template);
+			if (verify_template_hash(&template) != 0) {
+				tst_resm(TFAIL, "Hash failed");
+			}
 	}
 	fclose(fp);
 
 	verbose=1;
 	print_info("PCRAggr (re-calculated):");
 	display_sha1_digest(pcr);
-	return failed_count;
+#else
+	tst_resm(TCONF, "System doesn't have openssl/sha.h");
+#endif
+	tst_exit();
 }

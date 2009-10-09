@@ -16,22 +16,13 @@
 #  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-NEEDSPECIAL:=$(shell echo MAX_SWAPFILES | $(CC) -E -xc -include linux/swap.h 2>/dev/null - | tail -n 1 | grep 32; echo $?)
-ifeq ($(strip $(NEEDSPECIAL)),)
-export CFLAGS+=-I../../../../include -g -Wall
-else
-export CFLAGS+=-I../../../../include -g -Wall -DOLDER_DISTRO_RELEASE
+NEEDSPECIAL	:= $(shell echo MAX_SWAPFILES | $(CC) -E -xc -include linux/swap.h 2>/dev/null - | tail -n 1 | grep 32; echo $?)
+ifneq ($(strip $(NEEDSPECIAL)),)
+export CFLAGS	+= -DOLDER_DISTRO_RELEASE
 endif
 
-LDLIBS+=	-L../../../../lib -lltp 
+top_srcdir		?= ../../../..
 
-SRCS    = $(wildcard *.c)
-TARGETS = $(patsubst %.c,%,$(SRCS))
+include $(top_srcdir)/include/mk/testcases.mk
 
-all: $(TARGETS)
-
-install:
-	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
-
-clean:
-	rm -f $(TARGETS)
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

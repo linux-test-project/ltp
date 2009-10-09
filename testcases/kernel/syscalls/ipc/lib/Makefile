@@ -16,22 +16,12 @@
 #  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-SRCS   = libipc.c
-OBJS   = $(SRCS:.c=.o)
-LIBIPC = ../libipc.a
-LIBIPC_HEADERS	= ipcmsg.h ipcsem.h
+top_srcdir		?= ../../../../..
 
-CFLAGS += -I../../../../../include -Wall
-CFLAGS += -D_USC_LIB_
+include $(top_srcdir)/include/mk/env_pre.mk
 
-all: $(LIBIPC)
+LIB			:= libipc.a
 
-$(LIBIPC): $(OBJS)
-	$(AR) -rc $@ $(OBJS)
+CFLAGS			+= -D_USC_LIB_
 
-$(OBJS): $(LIBIPC_HEADERS)
-
-install:
-
-clean:
-	rm -f $(OBJS) $(LIBIPC)
+include $(top_srcdir)/include/mk/lib.mk

@@ -3,6 +3,9 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <fcntl.h>
+#include <unistd.h>
+
+int		lock_reg(int, int, off_t, int, off_t, int);
 
 #define read_lock(fd, offset, whence, len) \
 			lock_reg(fd, F_RDLCK, offset, whence, len, F_SETLK)

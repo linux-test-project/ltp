@@ -6,25 +6,10 @@
 # published by the Free Software Foundation.
 #
 
-SCRIPTS = \
-	smack_set_ambient.sh \
-	smack_set_cipso.sh \
-	smack_set_current.sh \
-	smack_set_direct.sh \
-	smack_set_doi.sh \
-	smack_set_load.sh \
-	smack_set_netlabel.sh \
-	smack_set_onlycap.sh \
-	smack_file_access.sh
+top_srcdir		?= ../../../..
 
-SRCS    = $(wildcard *.c)
-TARGETS = $(patsubst %.c,%,$(SRCS))
-INSTALLTARGETS = $(TARGETS) $(SCRIPTS)
-all: $(TARGETS)
+include $(top_srcdir)/include/mk/env_pre.mk
 
-INSTALLTARGETS = $(TARGETS) $(SCRIPTS)
-install: $(INSTALLTARGETS)
-	@set -e; for i in $(INSTALLTARGETS); do ln -f $$i ../../../bin/$$i ; chmod +x ../../../bin/$$i; done
+INSTALL_TARGETS		:= *.sh
 
-clean:
-	rm -f $(TARGETS) *.o
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

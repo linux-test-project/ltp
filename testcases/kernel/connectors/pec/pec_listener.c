@@ -20,15 +20,16 @@
 /*                                                                            */
 /******************************************************************************/
 
+#include <sys/socket.h>
+#include <sys/poll.h>
+#include <sys/types.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 #include <signal.h>
-#include <sys/socket.h>
-#include <sys/poll.h>
-
+#include <linux/types.h>
 #include <linux/netlink.h>
 
 #ifndef NETLINK_CONNECTOR

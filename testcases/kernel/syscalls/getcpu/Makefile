@@ -16,23 +16,21 @@
 #  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-CFLAGS += -I../../../../include -Wall
-LDLIBS += -L../../../../lib -lltp
+top_srcdir		?= ../../../..
 
-SRCS    = $(wildcard *.c)
-TARGETS = $(patsubst %.c,%,$(SRCS))
+include $(top_srcdir)/include/mk/testcases.mk
 
-ifeq ($(shell uname -r | grep -c "^2\.6\.*"), 1)
+ifneq ($(shell uname -r | grep -c "^2\.6\.*"), 1)
 
-all: $(TARGETS)
+MAKE_TARGETS		:=
 
-install:
-	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
-else
+.PHONY: no-all-install
 
-all install:
+all install: no-all-install
+
+no-all-install:
 	@echo "Warning: Kernel doesn't support this test case"
+
 endif
 
-clean:
-	rm -f $(TARGETS)
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

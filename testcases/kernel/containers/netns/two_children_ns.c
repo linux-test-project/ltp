@@ -42,21 +42,11 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <test.h>
-#include "../libclone/libclone.h"
+#include "libclone.h"
+#include "config.h"
 
 char *TCID = "netns_2children";
-int TST_TOTAL=1;
-
-/* Creating Network Namespace */
-int crtchild(char *s)
-{
-    char *cmd[] = { "/bin/bash", s, (char *)0 };
-   
-    execve("/bin/bash", cmd, __environ);
-    tst_resm(TINFO, "The code never reaches here on success\n");
-    perror("execve");
-    return 1;
-}
+int TST_TOTAL = 1;
 
 int main()
 {
@@ -68,9 +58,14 @@ int main()
     flags |= CLONE_NEWNS;
     flags |= CLONE_NEWNET;
 
+#if ! HAVE_UNSHARE
+    tst_resm(TCONF, "System doesn't support unshare.");
+    tst_exit();
+#endif
+    
     /* Checking for Kernel Version */
-	if (tst_kvercmp(2,6,19) < 0)
-		return 1;
+    if (tst_kvercmp(2,6,19) < 0)
+	return 1;
 
     ltproot = getenv("LTPROOT");
     if (! ltproot) {
@@ -99,15 +94,17 @@ int main()
     for(i=0;i<2;i++) {
 
         if ((pid[i] = fork()) == 0) {
-            // Child1 and Child2 based on the iteration.
+		/* Child1 and Child2 based on the iteration. */
 
-            ret = unshare(flags);
-            if (ret < 0) {
-                perror("Unshare");
-	        tst_resm(TFAIL, "Error:Unshare syscall failed for network namespace\n");
-                return ret;
-            }
-        return crtchild(child[i]);
+#if HAVE_UNSHARE
+		ret = unshare(flags);
+		if (ret < 0) {
+			perror("Unshare");
+			tst_resm(TFAIL, "Error:Unshare syscall failed for network namespace\n");
+			return ret;
+		}
+#endif
+	    return crtchild(child[i]);
         }
         else{
             //Parent

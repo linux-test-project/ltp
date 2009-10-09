@@ -80,14 +80,14 @@ setup()
     export TMPBASE="/tmp"
     export PATH="${PATH}:${LTPROOT}/testcases/bin"
 
-    [ -d $LTPROOT/testcases/bin ] ||
+    [ -d "$LTPROOT/testcases/bin" ] ||
     {
         echo "FATAL: Test suite not installed correctly"
         echo "INFO: as root user type 'make ; make install'"
         exit 1
     }
 
-    [ -e $LTPROOT/pan/ltp-pan ] ||
+    [ -e "$LTPROOT/bin/ltp-pan" ] ||
     {
         echo "FATAL: Test suite driver 'ltp-pan' not found"
         echo "INFO: as root user type 'make ; make install'"
@@ -97,7 +97,7 @@ setup()
 
 version_of_ltp()
 {
-    head -n 1  $LTPROOT/ChangeLog
+    cat "$LTPROOT/Version"
     exit 0
 }
 
@@ -189,11 +189,11 @@ main()
     local DURATION=""
     local CMDFILEADDR=""
     local FAILCMDFILE=""
-	local INJECT_KERNEL_FAULT=""
-	local INJECT_KERNEL_FAULT_PERCENTAGE=""
-	local INJECT_FAULT_LOOPS_PER_TEST=""
-	local VALGRIND_CHECK=""
-	local VALGRIND_CHECK_TYPE=""
+    local INJECT_KERNEL_FAULT=""
+    local INJECT_KERNEL_FAULT_PERCENTAGE=""
+    local INJECT_FAULT_LOOPS_PER_TEST=""
+    local VALGRIND_CHECK=""
+    local VALGRIND_CHECK_TYPE=""
     local LOGFILE_NAME=""
     local LOGFILE=""
     local OUTPUTFILE_NAME=""
@@ -205,7 +205,7 @@ main()
     local TAG_RESTRICT_STRING=""
     local PAN_COMMAND=""
     local DEFAULT_FILE_NAME_GENERATION_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
-    version_date=`head -n 1 $LTPROOT/ChangeLog`
+    version_date=$(cat "$LTPROOT/Version")
 
     while getopts a:c:C:d:D:f:F:ehi:g:l:m:M:Nno:pqr:s:S:t:T:vw:x:b:B: arg
     do  case $arg in
@@ -753,7 +753,7 @@ main()
     fi
 
     [ ! -z "$QUIET_MODE" ] && { echo "INFO: Test start time: $(date)" ; }
-    PAN_COMMAND="${LTPROOT}/pan/ltp-pan $QUIET_MODE -e -S $INSTANCES $DURATION -a $$ \
+    PAN_COMMAND="${LTPROOT}/bin/ltp-pan $QUIET_MODE -e -S $INSTANCES $DURATION -a $$ \
     -n $$ $PRETTY_PRT -f ${TMP}/alltests $LOGFILE $OUTPUTFILE $FAILCMDFILE"
     if [ ! -z "$VERBOSE_MODE" ] ; then
       echo "COMMAND:    $PAN_COMMAND"
@@ -829,7 +829,7 @@ main()
 
     # Some tests need to run inside the "bin" directory.
     cd "${LTPROOT}/testcases/bin"
-    ${LTPROOT}/pan/ltp-pan $QUIET_MODE -e -S $INSTANCES $DURATION -a $$ -n $$ $PRETTY_PRT -f ${TMP}/alltests $LOGFILE $OUTPUTFILE $FAILCMDFILE
+    "${LTPROOT}/bin/ltp-pan" $QUIET_MODE -e -S $INSTANCES $DURATION -a $$ -n $$ $PRETTY_PRT -f ${TMP}/alltests $LOGFILE $OUTPUTFILE $FAILCMDFILE
      
     if [ $? -eq 0 ]; then
       echo "INFO: ltp-pan reported all tests PASS"

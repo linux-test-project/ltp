@@ -32,24 +32,36 @@ unset LIBPATH
 #
 #
 #***********************************************************************
-#Uncomment line below for debug output.
-#trace_logic=${trace_logic:-"set -x"}
-$trace_logic
 
-TC=sine
-RHOST=${RHOST:-`hostname`}
-TCbin=${TCbin:-`pwd`}
-TCsrc=${TCsrc:-$TCbin}
-TCtmp=${TCtmp:-$TCsrc/echo$$}
-CLEANUP=${CLEANUP:-ON}
-CREATFILE=createfile
-ECHOES=echoes
+#-----------------------------------------------------------------------
+#
+# FUNCTION:  do_setup
+#
+#-----------------------------------------------------------------------
 
-EXECUTABLES=${EXECUTABLES:-"$CREATFILE $ECHOES"}
-ECHOFILE=${ECHOFILE:-echofile}
-ECHOSIZE=${ECHOSIZE:-8192}
-NUMLOOPS=${NUMLOOPS:-2}
-NUMPROCESSES=${NUMPROCESSES:-10}
+do_setup()
+{
+
+    NUMLOOPS=${NUMLOOPS:-2}
+    TST_TOTAL=$NUMLOOPS
+
+    export TST_COUNT TST_TOTAL
+
+    exists hostname sum
+    tst_setup
+
+    TC=sine
+    RHOST=${RHOST:-`hostname`}
+    TCtmp=${TCtmp:-$LTPROOT/testcases/bin/echo$$}
+    CLEANUP=${CLEANUP:-ON}
+    CREATEFILE=createfile
+    ECHOES=echoes${EXEC_SUFFIX}
+
+    ECHOFILE=${ECHOFILE:-echofile${EXEC_SUFFIX}}
+    ECHOSIZE=${ECHOSIZE:-8192}
+    NUMPROCESSES=${NUMPROCESSES:-10}
+
+}
 
 #-----------------------------------------------------------------------
 #
@@ -63,87 +75,41 @@ NUMPROCESSES=${NUMPROCESSES:-10}
 
 do_test() 
 {
-   $trace_logic
-   mkdir $TCtmp 
-   echo  "Creating echo file $ECHOFILE"
-   $TCbin/$CREATFILE $ECHOSIZE $TCtmp/$ECHOFILE
-   [ $? = 0 ] || end_testcase "$ECHOFILE not created"
+    mkdir $TCtmp 
+    echo  "Creating echo file $ECHOFILE"
+    if ! "$LTPROOT/testcases/bin/$CREATEFILE" $ECHOSIZE "$TCtmp/$ECHOFILE"; then
+        end_testcase "$ECHOFILE not created"
+    fi
 
-   echo "Compute the checksum of this file"
-   csum1=`sum $TCtmp/$ECHOFILE |awk '{print $1}'`
-   [ $csum1 ] || end_testcase "initial checksum computation failed"
+    echo "Compute the checksum of this file"
+    csum1=$(sum $TCtmp/$ECHOFILE | awk '{print $1}')
+    [ $csum1 ] || end_testcase "initial checksum computation failed"
 
-   COUNT=1
-   while [ $COUNT -le $NUMLOOPS ]
-   do
-      $TCbin/$ECHOES $RHOST $TCtmp/$ECHOFILE $NUMPROCESSES
-      [ $? = 0 ] || end_testcase "Error in $ECHOES test in loop $COUNT"
+    while [ $TST_COUNT -le $NUMLOOPS ]; do
 
-      NUM=0
-      while [ $NUM -lt $NUMPROCESSES ]
-      do
-         csum2=`sum $TCtmp/$ECHOFILE\$NUM |awk '{print $1}'`
-         [ "$csum1" -eq "$csum2" ] || end_testcase "Checksums differ in loop $COUNT"
-         NUM=`expr $NUM + 1`
-      done
+        if ! $ECHOES $RHOST "$TCtmp/$ECHOFILE" $NUMPROCESSES; then
+            end_testcase "Error in $ECHOES test in loop $TST_COUNT"
+        fi
 
-      echo "Successful execution for loop $COUNT" 
-      COUNT=`expr $COUNT + 1`
-      if [ $COUNT -le $NUMLOOPS ]; then
-        echo "Sleeping 60 seconds to avoid hitting max. connections setting for service"
-        sleep 60
-      fi
-   done
+        NUM=0
+        while [ $NUM -lt $NUMPROCESSES ]
+        do
+            csum2=$(sum "$TCtmp/${ECHOFILE}${NUM}" | awk '{print $1}')
+            if [ "$csum1" = "$csum2" ]; then
+                end_testcase "Checksums differ in loop $TST_COUNT"
+            fi
+            NUM=$(( $NUM + 1 ))
+        done
+
+        tst_resm TINFO "Execution $TST_COUNT passed."
+
+        incr_tst_count
+        if [ $TST_COUNT -le $NUMLOOPS ]; then
+            tst_resm TINFO "Sleeping 60 seconds to avoid hitting max. connections setting for service"
+            sleep 60
+        fi
+    done
 }
-
-#-----------------------------------------------------------------------
-#
-# FUNCTION:	do_cleanup
-# PURPOSE:	Called when the testcase is interrupted by the user
-#		or by interrupt_testcase() when time limit expired
-# INPUT:	None.
-# OUTPUT:	None.
-#
-#-----------------------------------------------------------------------
-
-do_cleanup()
-{
-   $trace_logic
-
-   cd /
-   if [ $TCtmp = $TCsrc ]; then
-      rm -f $TCtmp/echofile*
-   else
-      rm -rf $TCtmp
-   fi
-}
-
-#=============================================================================
-# FUNCTION NAME:        end_testcase
-# 
-# FUNCTION DESCRIPTION: Clean up
-# 
-# PARAMETERS:           string, IF AND ONLY IF the testcase fails
-# 
-# RETURNS:              None.
-#=============================================================================
-
-end_testcase()
-{  
-   $trace_logic
-    
-   # Call other cleanup functions
-   [ $CLEANUP = "ON" ] && do_cleanup
-
-   [ $# -eq 0 ] && { echo "Test Successful"; exit 0; }
-   echo "Test Failed: $@"
-   echo""
-   echo "***NOTE***"
-   echo "Make sure the streamed echo is uncommented in inetd.conf"
-   echo "on the server. Also try increasing max connections from"
-   echo "default of 40, i.e. nowait.400"
-   exit 1
-}   
 
 #-----------------------------------------------------------------------
 #
@@ -154,5 +120,10 @@ end_testcase()
 # OUTPUT:    Logged run results written to testcase run log
 #
 #-----------------------------------------------------------------------
+
+. net_cmdlib.sh
+
+read_opts $*
+do_setup
 do_test
 end_testcase

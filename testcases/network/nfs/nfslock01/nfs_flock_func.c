@@ -4,9 +4,7 @@
 #include "nfs_flock.h"
 
 int
-lock_reg(fd, type, offset, whence, len, cmd)
-   int fd, type, offset;
-   int whence, len, cmd;
+lock_reg(int fd, int type, off_t offset, int whence, off_t len, int cmd)
 {
    struct flock lock;
 
@@ -19,9 +17,7 @@ lock_reg(fd, type, offset, whence, len, cmd)
 }
 
 int 
-lock_test(fd, type, offset, whence, len)
-   int fd, type, offset;
-   int whence, len;
+lock_test(int fd, int type, off_t offset, int whence, int len)
 {
    struct flock lock;
 

@@ -28,97 +28,77 @@
 #   03/04/03 Jerone Young (jeroney@us.ibm.com)
 #   09/21/05 Kris Wilson (krisw@us.ibm.com) Check if vsftpd is on system.
 
-
-RHOST=localhost
-TEST_USER=root
-
-if [ $PASSWD ]
-then
-	TEST_USER_PASSWORD=$PASSWD
-else	
-	echo "YOU MUST EXPORT PASSWD VARIABLE"
-	exit 1
-fi
-
-
-EXIT_CODE=0
-
 #-----------------------------------------------------------------------
-# FUNCTION:  verify_user_is_in_ftpusers_db
+# FUNCTION:  do_setup
 #-----------------------------------------------------------------------
                                                                                
-verify_user_is_in_ftpusers_db(){
+do_setup()
+{
 
-tvar=${MACHTYPE%-*}
-tvar=${tvar#*-}
+    tvar=${MACHTYPE%-*}
+    tvar=${tvar#*-}
 
-       if [ $tvar = "redhat" -o $tvar = "redhat-linux" ] 
-       then
-         # Check if vsftpd is on system.
-         which vsftpd
-         if [ $? != 0 ]
-         then { 
-            echo "vsftpd not found.  Possible cause: does not exist on WS."
-            echo "Test ftp04 FAIL."
-            EXIT_CODE=1
-            exit 1
-       } 
-       fi
+    RHOST=localhost
+    TEST_USER=root
+
+    tst_setup
+
+    if [ -n "$PASSWD" ]; then
+        TEST_USER_PASSWORD=$PASSWD
+    else	
+        end_testcase "You must set your password via the PASSWD variable."
+        exit 1
+    fi
+
+    exists awk expect ftp vsftpd
+
+    if [ $tvar = "redhat" -o $tvar = "redhat-linux" ]; then
         echo "Verifying test user $TEST_USER is in /etc/vsftpd.ftpusers database..."
-        FTPUSERS=`grep $TEST_USER /etc/vsftpd.ftpusers`
-       else
+        FTPUSERS=$(awk "/$TEST_USER/" /etc/vsftpd.ftpusers)
+    else
         echo "Verifying test user $TEST_USER is in /etc/ftpusers database..."
-        FTPUSERS=`grep $TEST_USER /etc/ftpusers`
-       fi
-        if [ "x$FTPUSERS" = "x" ]
-        then {
-            echo "Test user $TEST_USER not found in /etc/ftpusers unable to run TEST, exiting 0 ..."
-			exit 0
-         }
-		 fi
-	
+        FTPUSERS=$(awk "/$TEST_USER/" /etc/ftpusers)
+    fi
+    if [ -z "$FTPUSERS" ] ; then
+        end_testcase "Test user $TEST_USER not found in /etc/ftpusers unable to run TEST, exiting 0 ..."
+    fi
+
 }
 
 #-----------------------------------------------------------------------
 # FUNCTION:  do_test
 #-----------------------------------------------------------------------
-do_test() {
+do_test()
+{
 
-		echo "TEST: Ftp should reject $TEST_USER from loging in successfully"
-        expect -c "
-                   spawn ftp $RHOST
-                   sleep 1
-                   expect -re \": \"
-                   send \"$TEST_USER\r\"
-                   expect -re \"Password:\"
-                   send \"$TEST_USER_PASSWD\r\"
-                   expect {
-                     # 230 - Login successful
-                           \"230\" {send_user \"==> TEST \#$TEST : FAIL (ftp allowed login attempt)\n\";exit 1}
-                     # 530 - Login failed
-                           \"530\" {send_user \"==> TEST \#$TEST : PASS (ftp rejected login attempt)\n\";exit 0}
-                   }
-                   expect \"ftp> \"
-                   send \"quit\r\"
-        "
-
-    if [ $? != 0 ]
-        then {
-        EXIT_CODE=1
+    tst_resm TINFO "Ftp should reject $TEST_USER from loging in successfully"
+    expect -c "
+        spawn ftp $RHOST
+        sleep 1
+        expect -re \": \"
+        send \"$TEST_USER\r\"
+        expect -re \"Password:\"
+        send \"$TEST_USER_PASSWD\r\"
+        expect {
+            # 230 - Login successful
+            \"230\" {send_user \"==> TEST \#$TEST : FAIL (ftp allowed login attempt)\n\";exit 1}
+            # 530 - Login failed
+            \"530\" {send_user \"==> TEST \#$TEST : PASS (ftp rejected login attempt)\n\";exit 0}
         }
-    fi
+        expect \"ftp> \"
+        send \"quit\r\"
+    "
+
+    [ $? -eq 0 ] || end_testcase "Testcase failed."
 
 }
 
 #----------------------------------------------------------------------
 # FUNCTION: MAIN
 #----------------------------------------------------------------------
-verify_user_is_in_ftpusers_db
+. net_cmdlib.sh
+
+read_opts $*
+do_setup
 do_test
-exit $EXIT_CODE
-
-
-
-
-
-
+end_testcase

@@ -27,24 +27,12 @@
  */
 
 #include <errno.h>
+#include "config.h"
+#if HAVE_SYS_CAPABILITY_H
 #include <sys/capability.h>
+#endif
 #include <sys/prctl.h>
 #include <test.h>
-
-#ifndef CAP_LAST_CAP
-#warning out-of-date capability.h does not define CAP_LAST_CAP
-#define CAP_LAST_CAP 28  /* be ultra-conservative */
-#endif
-
-#ifndef CAP_BSET_READ
-#warning CAP_BSET_READ not defined
-#define CAP_BSET_READ 23
-#endif
-
-#ifndef CAP_BSET_DROP
-#warning CAP_BSET_DROP not defined
-#define CAP_BSET_DROP 24
-#endif
 
 char *TCID = "exec_without_inh";
 int TST_TOTAL=1;
@@ -53,28 +41,56 @@ int errno;
 
 int main(int argc, char *argv[])
 {
+#if HAVE_SYS_CAPABILITY_H
 	int ret = 1;
 	cap_flag_value_t f;
 	cap_value_t v[1];
 	cap_t cur;
 
 	/* Make sure CAP_SYS_ADMIN is not in pI */
+#if HAVE_DECL_CAP_GET_FLAG
+#if HAVE_DECL_CAP_GET_PROC
 	cur = cap_get_proc();
 	ret = cap_get_flag(cur, CAP_SYS_ADMIN, CAP_INHERITABLE, &f);
+#else
+	ret = -1;
+	errno = ENOSYS;
+#endif
+#else
+	ret = -1;
+	errno = ENOSYS;
+#endif
 	if (f == CAP_SET) {
 		v[0] = CAP_SYS_ADMIN;
+#if HAVE_DECL_CAP_SET_FLAG
 		ret = cap_set_flag(cur, CAP_INHERITABLE, 1, v, CAP_CLEAR);
+#else
+		ret = -1;
+		errno = ENOSYS;
+#endif
+#if HAVE_DECL_CAP_SET_PROC
 		if (!ret)
 			ret = cap_set_proc(cur);
+#else
+		ret = -1;
+		errno = ENOSYS;
+#endif
 		if (ret) {
 			tst_resm(TBROK, "Failed to drop cap_sys_admin from pI\n");
 			tst_exit();
 		}
 	}
+#if HAVE_DECL_CAP_FREE
 	cap_free(cur);
+#endif
 
 	/* drop the capability from bounding set */
+#if HAVE_DECL_CAP_BSET_DROP
 	ret = prctl(CAP_BSET_DROP, CAP_SYS_ADMIN);
+#else
+	errno = ENOSYS;
+	ret = -1;
+#endif
 	if (ret) {
 		tst_resm(TFAIL, "Failed to drop CAP_SYS_ADMIN from bounding set.\n");
 		tst_resm(TINFO, "(ret=%d, errno %d)\n", ret, errno);
@@ -84,5 +100,8 @@ int main(int argc, char *argv[])
 	/* execute "check_pe 0" */
 	execl("check_pe", "check_pe", "0", NULL);
 	tst_resm(TBROK, "Failed to execute check_pe (errno %d)\n", errno);
+#else
+	tst_resm(TCONF, "System doesn't have POSIX capabilities.");
+#endif
 	tst_exit();
 }

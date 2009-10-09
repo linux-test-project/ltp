@@ -62,6 +62,8 @@ it print out the values of each counter.
 #include <poll.h>
 #include <unistd.h>
 #include <errno.h>
+#include "config.h"
+#include <sys/prctl.h>
 #include <sys/types.h>
 #include <linux/types.h>
 #include <syscall.h>
@@ -82,7 +84,7 @@ extern char *TESTDIR;                /* temporary dir created by tst_tmpdir() */
 char *TCID     = "performance_counter02"; /* test program identifier.          */
 int  TST_TOTAL = 1;                  /* total number of tests in this file.   */
 
-#define cleanup tst_exit /* for now... */
+static void cleanup(void) { /* Stub function. */ }
 
 typedef unsigned int u32;
 typedef unsigned long long u64;
@@ -141,6 +143,7 @@ void do_work(void)
 		asm volatile("" : : "g" (i));
 }
 
+int
 main(int ac, char **av)
 {
 	int tsk0;
@@ -238,5 +241,5 @@ main(int ac, char **av)
 	}
 
 	fprintf(stderr, "test passed\n");
-	exit(0);
+	tst_exit();
 }

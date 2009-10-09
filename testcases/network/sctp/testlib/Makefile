@@ -1,44 +1,40 @@
 #
-#  Copyright (c) International Business Machines  Corp., 2001
+#    testcases/network/sctp/testlib Makefile.
 #
-#  This program is free software;  you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
+#    Copyright (C) 2009, Cisco Systems Inc.
 #
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY;  without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
-#  the GNU General Public License for more details.
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
 #
-#  You should have received a copy of the GNU General Public License
-#  along with this program;  if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Garrett Cooper, July 2009
 #
 
-#########################################################################
-# name of file	: Makefile						#
-# description	: make(1) description file to build a library for the 	#
-#		  common routines in the sctp tests.			#
-#########################################################################
-INCLUDES+=-I../../../../include -I../include -I.
-LIBS+=-L../../../../lib -L../lib
+top_srcdir		?= ../../../..
 
-CFLAGS += -g $(INCLUDES) -DLTP -D_USC_LIB_
-LOADLIBES += $(LIBS) -lltp -lsctp
-SRCS=sctputil.c
-OBJS=$(SRCS:.c=.o)
-MAINS=libsctputil.a
+include $(top_srcdir)/include/mk/env_pre.mk
 
-all: libsctputil.a
+CPPFLAGS		+= -DLTP -D_USC_LIB_ -I$(abs_srcdir)/../include
 
-libsctputil.a: $(OBJS)
-	$(AR) -rc $@ $(OBJS)
+LDLIBS			+= -lltp -lsctp
 
-$(OBJS): $(SRCS) ../include/netinet/sctp.h
-	$(CC) -c $(SRCS) $(CFLAGS)
+LIB			:= libsctputil.a
 
-install:
+$(eval $(lib_target))
 
-clean:
-	/bin/rm -rf $(OBJS) libsctputil.a
+$(MAKE_TARGETS): | $(libdir)/libsctp.a
+
+$(libdir)/libsctp.a:
+	$(MAKE) -C $(builddir)/../lib
+
+include $(top_srcdir)/include/mk/lib.mk

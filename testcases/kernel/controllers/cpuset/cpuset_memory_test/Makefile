@@ -1,20 +1,30 @@
-CFLAGS += -Wall -g -Wextra
+#
+#    kernel/controllers/cpuset/cpuset_memory_test testcase Makefile.
+#
+#    Copyright (C) 2009, Cisco Systems Inc.
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Garrett Cooper, July 2009
+#
 
-LIBSRCS=$(wildcard ../cpuset_lib/*.c)
-LIBOBJECTS=$(patsubst %.c,%.o,$(LIBSRCS))
+top_srcdir              ?= ../../../../..
 
-all: cpuset_memory_test
+include $(top_srcdir)/include/mk/testcases.mk
+include $(abs_srcdir)/../Makefile.inc
 
-cpuset_memory_test: cpuset_memory_test.o $(LIBOBJECTS)
-	cc cpuset_memory_test.o $(LIBOBJECTS) -o cpuset_memory_test -lpthread
+LDLIBS		+= -lpthread
 
-clean:
-	rm -f cpuset_memory_test cpuset_memory_test.o
-	rm -f $(LIBOBJECTS)
-
-install:
-	@set -e;
-	ln -f cpuset_memory_test ../../../../bin/cpuset_memory_test;
-	ln -f cpuset_memory_testset.sh ../../../../bin/cpuset_memory_testset.sh;
-	chmod +x cpuset_memory_test;
-	chmod +x cpuset_memory_testset.sh;
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

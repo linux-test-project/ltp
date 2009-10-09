@@ -1,11 +1,57 @@
-SUBDIRS =  lib testlib func_tests 
+#
+#    network/sctp test suite Makefile.
+#
+#    Copyright (C) 2009, Cisco Systems Inc.
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Garrett Cooper, July 2009
+#
 
-all:
-	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
+top_srcdir		?= ../../..
 
-install:
-	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i install ; done
+include $(top_srcdir)/include/mk/env_pre.mk
 
-clean:
-	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i clean ; done
+LIBSCTP			:= $(DESTDIR)/$(libdir)/libsctp.a
+LIBSCTPUTIL		:= $(DESTDIR)/$(libdir)/libsctputil.a
+LIBSCTPDIR		:= lib
+LIBSCTPUTILDIR		:= testlib
 
+FILTER_OUT_DIRS		:= $(LIBSCTPDIR) $(LIBSCTPUTILDIR)
+
+$(LIBSCTPDIR) $(LIBSCTPUTILDIR):
+	mkdir -p "$@"
+
+lib-clean:: $(LIBSCTPDIR) $(LIBSCTPUTILDIR)
+	for i in $^; do \
+	    $(MAKE) -C "$$i" -f "$(abs_srcdir)/$$i/Makefile" clean; \
+	done
+
+
+$(LIBSCTP): $(LIBSCTPDIR)
+	set -e; for i in all install; do \
+	    $(MAKE) -C "$^" -f "$(abs_srcdir)/$^/Makefile" $$i; \
+	done
+
+$(LIBSCTPUTIL): $(LIBSCTPUTILDIR)
+	set -e; for i in all install; do \
+	    $(MAKE) -C "$^" -f "$(abs_srcdir)/$^/Makefile" $$i; \
+	done
+
+trunk-all: $(LIBSCTP) $(LIBSCTPUTIL)
+
+trunk-clean:: | lib-clean
+
+include $(top_srcdir)/include/mk/generic_trunk_target.mk

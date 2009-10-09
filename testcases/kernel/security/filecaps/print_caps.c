@@ -26,16 +26,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/capability.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include "config.h"
+
+#if HAVE_SYS_CAPABILITY_H
+#include <sys/capability.h>
+#endif
 
 #define FIFOFILE "caps_fifo"
 
 int main(int argc, char *argv[])
 {
+#if HAVE_SYS_CAPABILITY_H && HAVE_DECL_CAP_FREE && HAVE_DECL_CAP_GET_PROC && HAVE_DECL_CAP_TO_TEXT
 	cap_t cap = cap_get_proc();
 	int fd;
 	int seqno = 0;
@@ -60,6 +65,7 @@ int main(int argc, char *argv[])
 	close(fd);
 
 	cap_free(cap);
-
+#else
 	return 0;
+#endif
 }

@@ -2,6 +2,8 @@
 
 output="linux_syscall_numbers.h"
 
+srcdir=${0%/*}
+
 rm -f ${output}
 
 cat << EOF > ${output}
@@ -37,7 +39,7 @@ static void cleanup(void);
 })
 EOF
 
-for arch in `cat order` ; do
+for arch in $(cat ${srcdir}/order) ; do
 	echo -n "Generating data for arch $arch ... "
 
 	echo "" >> ${output}
@@ -55,7 +57,7 @@ for arch in `cat order` ; do
 		#  define $nr $*
 		# endif
 		EOF
-	done < ${arch}.in
+	done < ${srcdir}/${arch}.in
 	echo "#endif" >> ${output}
 	echo "" >> ${output}
 
@@ -65,7 +67,7 @@ done
 echo -n "Generating stub list ... "
 echo "" >> ${output}
 echo "/* Common stubs */" >> ${output}
-for nr in $(awk '{print $1}' *.in | sort -u) ; do
+for nr in $(awk '{print $1}' ${srcdir}/*.in | sort -u) ; do
 	nr="__NR_$nr"
 	cat <<-EOF >> ${output}
 	# ifndef $nr

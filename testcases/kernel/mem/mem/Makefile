@@ -16,22 +16,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
 
-###########################################################################
-# name of file	: Makefile						  #
-# description	: make(1) description file for the send(2) tests.	  #
-###########################################################################
-CFLAGS+=	-Wall -I../../../../include
-LOADLIBES+=	-L../../../../lib -lltp
+top_srcdir              ?= ../../../..
 
-SRCS=$(wildcard *.c)
-TARGETS=$(patsubst %.c,%,$(SRCS))
-
-all: $(TARGETS)
-
-install:
-	@set -e; for i in $(TARGETS) ; do ln -f $$i ../../../bin/$$i ; done
-
-clean:
-	rm -f $(TARGETS)
-
-
+include $(top_srcdir)/include/mk/testcases.mk
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

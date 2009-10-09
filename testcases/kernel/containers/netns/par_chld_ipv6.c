@@ -29,7 +29,7 @@
 #include <sched.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "../libclone/libclone.h"
+#include "libclone.h"
 #include <sched.h>
 #include <sys/syscall.h>
 #include <unistd.h>
@@ -41,21 +41,10 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <test.h>
+#include "config.h"
 
 char *TCID = "netns_ipv6";
-int TST_TOTAL=1;
-
-extern pid_t getpgid(pid_t pid);
-extern pid_t getsid(pid_t pid);
-
-int crtchild(char *s1)
-{
-    char *cmd[] = { "/bin/bash", s1, (char *)0 };
-    execve("/bin/bash", cmd, __environ);
-    tst_resm(TFAIL, "The code would not reach here on success\n");
-    perror("execve");
-    return 1;
-}
+int TST_TOTAL = 1;
 
 int main()
 {
@@ -81,7 +70,7 @@ int main()
     par = malloc (FILENAME_MAX);
     child = malloc (FILENAME_MAX);
 
-    if (par == NULL || child == NULL ) {
+    if (par == NULL || child == NULL) {
         tst_resm(TFAIL, "error while allocating mem");
         exit(1);
     }
@@ -93,12 +82,16 @@ ltproot);
     if ((pid = fork()) == 0) {
 
         // Child.
+#if HAVE_UNSHARE
         ret = unshare(flags);
         if (ret < 0) {
             perror("unshare");
 	    tst_resm(TFAIL, "Error:Unshare syscall failed for network namespace\n");
             return 1;
         }
+#else
+	tst_resm(TCONF, "System doesn't have unshare support");
+#endif
     return crtchild(child);
     }
     else{

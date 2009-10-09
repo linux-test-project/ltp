@@ -20,17 +20,11 @@
 # name of file	: Makefile						  #
 # description	: make(1) description file for the send(2) tests.	  #
 ###########################################################################
-CFLAGS   += -Wall
-CPPFLAGS += -I../../../../include
-LDLIBS   += -L../../../../lib -lltp -lrt -lpthread
 
-SRCS=$(wildcard *.c)
-TARGETS=$(patsubst %.c,%,$(SRCS))
+top_srcdir		?= ../../../..
 
-all: $(TARGETS)
+include $(top_srcdir)/include/mk/testcases.mk
 
-install:
-	@set -e; for i in $(TARGETS) ; do ln -f $$i ../../../bin/$$i ; done ;
+LDLIBS   		+= -lpthread -lrt
 
-clean:
-	rm -f $(TARGETS)
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

@@ -39,41 +39,6 @@
 #-----------------------------------------------------------------------
 #
 #----------------------------------------------------------------------
-#Uncomment line below for debug output.
-#trace_logic=${trace_logic:-"set -x"}
-$trace_logic
-
-RHOST=${RHOST:-`hostname`}
-RUSER=${RUSER:-root}
-PASSWD=${PASSWD:-.pasroot}
-
-TC=ftp
-TCbin=${TCbin:-`pwd`}
-TCtmp=${TCtmp:-$TCbin/$TC$$}
-TCdat=${TCdat:-$TCbin/datafiles}
-SLEEPTIME=${SLEEPTIME:-0}
-ASCII_FILES=${ASCII_FILES:-"ascii.sm ascii.med ascii.lg ascii.jmb"}
-BIN_FILES=${BIN_FILES:-"bin.sm bin.med bin.lg bin.jmb"}
-
-
-#-----------------------------------------------------------------------
-#
-# FUNCTION:  exists
-#
-#-----------------------------------------------------------------------
-
-exists()
-{
-   for cmd in $1
-   do
-       which $cmd 2>&1 1>/dev/null
-	   if [ $? -ne 0 ]
-	   then
-	       tst_resm TBROK "Test broke: command $cmd not found"
-		   exit 1
-       fi
-   done
-}
 
 #-----------------------------------------------------------------------
 #
@@ -83,19 +48,28 @@ exists()
 
 do_setup()
 {
-   $trace_logic
 
-   export TCID=ftp
-   export TST_TOTAL=1
-   export TST_COUNT=1
+    TC=ftp
+    TCtmp=${TCtmp:-$LTPROOT/$TC${EXEC_SUFFIX}$$}
+    TCdat=${TCdat:-$LTPROOT/datafiles}
+    SLEEPTIME=${SLEEPTIME:-0}
+    ASCII_FILES=${ASCII_FILES:-"ascii.sm ascii.med ascii.lg ascii.jmb"}
+    BIN_FILES=${BIN_FILES:-"bin.sm bin.med bin.lg bin.jmb"}
 
-   exists "rsh ftp awk"
-   mkdir -p $TCtmp
-   cd $TCtmp
+    RHOST=${RHOST:-`hostname`}
+    RUSER=${RUSER:-root}
+    PASSWD=${PASSWD:-.pasroot}
 
-   rsh -n -l root $RHOST mkdir -p $TCtmp
-   rsh -n -l root $RHOST chown -R ${RUSER} $TCtmp
-   [ $? = 0 ] || echo "Check .rhosts file on remote machine."
+    tst_setup
+
+    exists awk ftp rsh
+
+    cd "$TCtmp"
+
+    rsh -n -l root $RHOST mkdir -p "$TCtmp"
+    rsh -n -l root $RHOST chown -R ${RUSER} "$TCtmp"
+    [ $? = 0 ] || end_testcase "Check .rhosts file on remote machine."
+
 }
 
 #-----------------------------------------------------------------------
@@ -106,55 +80,53 @@ do_setup()
 
 do_test()
 {
-   $trace_logic
 
-   for i in binary ascii
-   do
-      if [ $i = "binary" ]; then
-         FILES=$BIN_FILES
-      fi
-      if [ $i = "ascii" ]; then
-	 FILES=$ASCII_FILES
-      fi
-      for j in $FILES
-      do
-         for a in get put
-         do
-            if [ $a = "get" ]; then
-               { 
-               echo user $RUSER $PASSWD
-               echo lcd $TCtmp
-               echo $i
-               echo cd $TCdat
-               echo $a $j
-               echo quit
-               } | ftp -nv $RHOST
-               SUM1=`ls -l $TCtmp/$j  | awk '{print $5}'`
-               SUM2=`ls -l $TCdat/$j | awk '{print $5}'` 
-               rm -f $TCtmp/$j 
-            else
-               {
-               echo user $RUSER $PASSWD
-               echo lcd $TCdat
-               echo $i
-               echo cd $TCtmp
-               echo $a $j
-               echo quit
-               } | ftp -nv $RHOST
-               SUM1=`rsh -n -l root $RHOST sum $TCtmp/$j  | awk '{print $1}'`
-               SUM2=`sum $TCdat/$j | awk '{print $1}'` 
-               rsh -n -l root $RHOST rm -f $TCtmp/$j
-            fi
+    for i in binary ascii; do
+
+        if [ $i = "binary" ]; then
+            FILES=$BIN_FILES
+        fi
+        if [ $i = "ascii" ]; then
+            FILES=$ASCII_FILES
+        fi
+        for j in $FILES; do
+
+            for a in get put; do
+                if [ $a = "get" ]; then
+                    { 
+                        echo user $RUSER $PASSWD
+                        echo lcd $TCtmp
+                        echo $i
+                        echo cd $TCdat
+                        echo $a $j
+                        echo quit
+                    } | ftp -nv $RHOST
+                    SUM1=`ls -l $TCtmp/$j  | awk '{print $5}'`
+                    SUM2=`ls -l $TCdat/$j | awk '{print $5}'` 
+                    rm -f $TCtmp/$j 
+                else
+                    {
+                        echo user $RUSER $PASSWD
+                        echo lcd $TCdat
+                        echo $i
+                        echo cd $TCtmp
+                        echo $a $j
+                        echo quit
+                    } | ftp -nv $RHOST
+                    SUM1=`rsh -n -l root $RHOST sum $TCtmp/$j | awk '{print $1}'`
+                    SUM2=`sum $TCdat/$j | awk '{print $1}'` 
+                    rsh -n -l root $RHOST rm -f $TCtmp/$j
+                fi
  
-            if [ $SUM1 = $SUM2 ]; then
-               tst_resm TINFO "Test Successful doing ftp $a $j $i"
-            else
-               end_testcase "Test Fail: Wrong sum while performing ftp $a $j $i"
-            fi
-            sleep $SLEEPTIME
-         done
-      done
-   done
+                if [ $SUM1 = $SUM2 ]; then
+                    tst_resm TINFO "Test Successful doing ftp $a $j $i"
+                else
+                    end_testcase "Test Fail: Wrong sum while performing ftp $a $j $i"
+                fi
+                sleep $SLEEPTIME
+            done
+        done
+    done
 }
 
 
@@ -166,32 +138,8 @@ do_test()
 
 do_cleanup()
 {
-   $trace_logic
-
-   rm -rf $TCtmp
-
-   rsh -n -l root $RHOST rmdir $TCtmp
-}
-
-#=============================================================================
-# FUNCTION NAME:        end_testcase
-#
-# FUNCTION DESCRIPTION: Clean up
-#
-# PARAMETERS:           string, IF AND ONLY IF the testcase fails
-#
-# RETURNS:              None.
-#=============================================================================
-
-end_testcase()
-{
-   $trace_logic
-   do_cleanup
-   echo "$this_file: doing $0."
-
-   [ $# = 0 ] && { tst_resm TPASS "Test Successful"; exit 0; }
-   tst_resm TFAIL "Test Failed: $@"
-   exit 1
+    rsh -n -l root $RHOST rmdir "$TCtmp"
+    tst_cleanup
 }
 
 #----------------------------------------------------------------------
@@ -202,6 +150,9 @@ end_testcase()
 # OUTPUT:   A testcase run log with the results of the execution of this
 #           test.
 #----------------------------------------------------------------------
+. net_cmdlib.sh
+
+read_opts $*
 do_setup
 do_test
 end_testcase

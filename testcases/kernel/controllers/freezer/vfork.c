@@ -38,15 +38,11 @@
 
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <sys/ptrace.h>
-#ifndef PTRACE_O_TRACEVFORK
-/* from #include <linux/ptrace.h> except we don't want to trash defines from
- * sys/ptrace.h */
-#define PTRACE_O_TRACEVFORK	0x00000004
-#endif
 #include <sys/socket.h>
+#include "config.h"
 
-/*#define _GNU_SOURCE*/
+#include <sys/ptrace.h>
+#include <linux/ptrace.h>
 
 #define str_expand(s) str(s)
 #define str(s) #s
@@ -79,55 +75,6 @@ int do_vfork(int count)
 
 	return EXIT_SUCCESS;
 }
-
-#if 0
-void dump_siginfo(pid_t child, siginfo_t *info)
-{
-	printf("%d:\n\tsi_code: %#0x\n\tsi_signo: %#0x\n",
-	       child, info->si_code, info->si_signo);
-}
-
-void dump_status(pid_t child, int status)
-{
-	if (WIFEXITED(status))
-		printf("exited: %d (with status: %d)\n", child,
-		       WEXITSTATUS(status));
-	if (WIFSIGNALED(status))
-		printf("killed: %d (by signal: %s)\n", child,
-		       sys_siglist[WTERMSIG(status)]);
-	if (WIFSTOPPED(status))
-		printf("stopped: %d (by signal: %s)\n", child,
-		       sys_siglist[WSTOPSIG(status)]);
-}
-
-#define SI_CODE_TRAP (SIGTRAP|(PTRACE_EVENT_VFORK << 8))
-
-/* This function is for debug only.
- * return the number of new children to wait for */
-int trace_child(pid_t child)
-{
-	unsigned long data;
-	pid_t grandchild = -1;
-	siginfo_t info;
-
-	if (ptrace(PTRACE_GETSIGINFO, child, NULL, &info) == -1) {
-		debug("ptrace(): ");
-		return 0;
-	}
-	/*dump_siginfo(child, &info);*/
-	if (!((info.si_code == SI_CODE_TRAP) && (info.si_signo == SIGTRAP)))
-		return 0;
-
-	printf("%d: vfork()\n", child);
-	if (ptrace(PTRACE_GETEVENTMSG, child, NULL, &data) == -1) {
-		debug("ptrace(): ");
-		return 0;
-	}
-	grandchild = (pid_t)data;
-	printf("%d: vfork() child: %d\n", child, grandchild);
-	return 1;
-}
-#endif
 
 /* Options */
 int num_vforks = 1;
@@ -215,6 +162,7 @@ void parse_opts(int argc, char **argv)
 
 int trace_grandchild(pid_t gchild)
 {
+#if HAVE_DECL_PTRACE_GETSIGINFO
 	siginfo_t info;
 
 	if (ptrace(PTRACE_GETSIGINFO, gchild, NULL, &info) == -1) {
@@ -234,6 +182,7 @@ int trace_grandchild(pid_t gchild)
 	if (ptrace(PTRACE_DETACH, gchild, NULL, NULL) == -1)
 		debug("ptrace(): ");
 	return -1; /* don't wait for gchild */
+#endif
 }
 
 int do_trace(pid_t child, int num_children)
@@ -306,8 +255,11 @@ void await_mutex(int fd)
 	} while(1);
 }
 
-int main(int argc, char** argv)
+int
+main(int argc, char** argv)
 {
+
+#if HAVE_DECL_PTRACE_SETOPTIONS && HAVE_DECL_PTRACE_O_VTRACEFORK
 	pid_t child;
 	int psync[2];
 
@@ -356,4 +308,8 @@ int main(int argc, char** argv)
 		printf("%d\n", child);
 		exit(do_trace(child, ++num_vforks));
 	}
+#else
+	printf("System doesn't support have required ptrace capabilities\n.");
+	return 1;
+#endif
 }

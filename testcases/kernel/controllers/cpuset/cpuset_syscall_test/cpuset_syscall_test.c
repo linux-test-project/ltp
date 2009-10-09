@@ -37,7 +37,10 @@
 #include <sys/mman.h>
 #include <sys/shm.h>
 #include <syscall.h>
+#include "config.h"
+#if HAVE_LINUX_MEMPOLICY_H
 #include <linux/mempolicy.h>
+#endif
 
 #include "../cpuset_lib/cpuset.h"
 #include "../cpuset_lib/bitmask.h"

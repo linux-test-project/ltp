@@ -1,20 +1,38 @@
-include ../../../../../config.mk
-# foo.
-TEST_SRCS:=$(shell find cases/ -name \*.c | sort -n -t/ -k2)
-PROGS:=$(patsubst %.c,%,$(TEST_SRCS))
-HARNESS_SRCS:=main.c
-# io_queue.c
+#
+#    kernel/io/aio/aio2 testcase Makefile.
+#
+#    Copyright (C) 2009, Cisco Systems Inc.
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Garrett Cooper, July 2009
+#
 
-CFLAGS+=-Wall  -g -O -I../../../../../include -Wall
-LDFLAGS+=-L../../../../../lib -lltp $(AIO_LIBS)
-#-lpthread -lrt
-all: $(PROGS)
+top_srcdir		?= ../../../../..
 
-$(PROGS): %: %.c $(HARNESS_SRCS) Makefile
-	$(CC) $(CFLAGS) -DTEST_NAME=\"$<\" -o $@ main.c $(LDFLAGS)
+include $(top_srcdir)/include/mk/testcases.mk
 
-clean:
-	rm -f $(PROGS) *.o runtests.out rofile wofile rwfile
+# Needed for common.h...
+CPPFLAGS		+= -D_GNU_SOURCE
 
-install:
+INSTALL_TARGETS		:= runfstests.sh
 
+LDLIBS			+= $(AIO_LIBS)
+
+MAKE_TARGETS		:= $(filter-out main,$(patsubst $(abs_srcdir)/%.c,%,$(wildcard $(abs_srcdir)/*.c)))
+
+$(MAKE_TARGETS): %: %.o main.o
+
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

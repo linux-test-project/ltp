@@ -16,16 +16,19 @@
 #  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-CFLAGS += -I../../../../include -I../utils/ -Wall -O2
-LDLIBS += -L../../../../lib -lltp
+top_srcdir		?= ../../../..
 
-SRCS    = $(wildcard *.c)
-TARGETS = $(patsubst %.c,%,$(SRCS))
+include $(top_srcdir)/include/mk/testcases.mk
 
-all: $(TARGETS)
+#
+# gcc complains about unused functions / variables when HAS_NUMA_H isn't
+# defined, so let's just skip the warning. It's nothing more than a few extra
+# variables and functions allocated on the stack, so meh... no harm, no foul.
+#
+ifeq ($(NUMA_LIBS),)
+CPPFLAGS		+= -Wno-unused
+endif
 
-install:
-	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
+CPPFLAGS		+= -I$(abs_srcdir)/../utils/
 
-clean:
-	rm -f $(TARGETS)
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

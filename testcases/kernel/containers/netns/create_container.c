@@ -27,7 +27,7 @@
 * Author: Sudhir Kumar <skumar@linux.vnet.ibm.com>   26/08/2008
 * ============================================================================*/
 
-#include<../libclone/libclone.h>
+#include "libclone.h"
 
 int main()
 {

@@ -1,90 +1,47 @@
-ifdef CROSS_COMPILE
-CHECK_CGROUP := $(shell test -f $(TARGET_DIR)/usr/include/linux/cgroupstats.h && echo 'cgroup')
-else
-CHECK_CGROUP := $(shell test -f /proc/cgroups && echo 'cgroup')
-CHECK_CPUCTL := $(shell grep -w cpu /proc/cgroups 2>/dev/null|cut -f1)
-CHECK_MEMCTL := $(shell grep -w memory /proc/cgroups 2>/dev/null|cut -f1)
-CHECK_BLOCKIOCTL := $(shell grep -w blockio /proc/cgroups 2>/dev/null|cut -f1)
-CHECK_FREEZER := $(shell grep -w freezer /proc/cgroups 2>/dev/null| cut -f1)
-CHECK_CPUSETCTL = $(shell grep -w cpuset /proc/cgroups 2>/dev/null|cut -f1)
-CHECK_CPUACCTCTL := $(shell grep -w cpuacct /proc/cgroups 2>/dev/null|cut -f1)
-endif
+#
+#    kernel/controllers test suite Makefile.
+#
+#    Copyright (C) 2009, Cisco Systems Inc.
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Garrett Cooper, July 2009
+#
 
-ifdef CROSS_COMPILE
-ifeq ($(CHECK_CGROUP),cgroup)
-SUBDIRS += cgroup
-SUBDIRS += cgroup_fj
-SUBDIRS += cpuctl
-SUBDIRS += cpuctl_fj
-SUBDIRS += memctl
-SUBDIRS += io-throttle
-SUBDIRS += freezer
-SUBDIRS += cpuset
-SUBDIRS += cpuacct
-else
-$(info "Kernel is not compiled with control cgroup support")
-endif
-else
-ifeq ($(CHECK_CGROUP),cgroup)
-SUBDIRS += cgroup
-SUBDIRS += cgroup_fj
-else
-$(info "Kernel is not compiled with control cgroup support")
-endif
+top_srcdir		?= ../../..
 
-ifeq ($(CHECK_MEMCTL),memory)
-SUBDIRS += memcg
-else
-$(info "Kernel is not compiled with memory resource controller support")
-endif
+include $(top_srcdir)/include/mk/env_pre.mk
 
-ifeq ($(CHECK_CPUCTL),cpu)
-SUBDIRS += cpuctl
-SUBDIRS += cpuctl_fj
-else
-$(info "Kernel is not compiled with cpu controller support")
-endif
-ifeq ($(CHECK_MEMCTL),memory)
-SUBDIRS += memctl
-else
-$(info "Kernel is not compiled with memory resource controller support")
-endif
-ifeq ($(CHECK_BLOCKIOCTL),blockio)
-SUBDIRS += io-throttle
-else
-$(info "Kernel is not compiled with blockio resource controller support")
-endif
-ifeq ($(CHECK_FREEZER),freezer)
-SUBDIRS += freezer
-else
-$(info "Kernel is not compiled with cgroup freezer support")
-endif
-ifeq ($(CHECK_CPUSETCTL),cpuset)
-SUBDIRS += cpuset
-else
-$(info "Kernel is not compiled with cpuset resource controller support")
-endif
-ifeq ($(CHECK_CPUACCTCTL),cpuacct)
-SUBDIRS += cpuacct
-else
-$(info "Kernel is not compiled with cpuacct resource controller support")
-endif
-endif
+INSTALL_TARGETS		:= *.sh
+LIB			:= $(DESTDIR)/$(libdir)/libcontrollers.a
+LIBDIR			:= libcontrollers
+FILTER_OUT_DIRS		:= $(LIBDIR)
 
-# If at least one of the controllers is available then build libcontrollers.
-ifneq ($(SUBDIRS),)
-SUBDIRS := libcontrollers $(SUBDIRS)
-endif
+$(LIBDIR):
+	mkdir -p "$@"
 
-.PHONY: all install clean
+$(LIB): $(LIBDIR)
+	for i in all install; do \
+	    $(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" $$i; \
+	done
 
-all:
-	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i $@ ; done
+trunk-all: $(LIB)
 
-install: test_controllers.sh
-	@chmod ugo+x test_controllers.sh
-	@ln -f test_controllers.sh ../../bin/test_controllers.sh
-	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i $@ ; done
+trunk-clean:: | lib-clean
 
-clean:
-	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i $@ ; done
+lib-clean:: $(LIBDIR)
+	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" clean
+
+include $(top_srcdir)/include/mk/generic_trunk_target.mk

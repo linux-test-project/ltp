@@ -23,7 +23,9 @@
  */
 
 #include <stdlib.h>
+#if HAVE_SYS_JFSDMAPI_H
 #include <sys/jfsdmapi.h>
+#endif
 #include "dm_vars.h"
 
 /* The following constants are implementation-independent */
@@ -130,6 +132,7 @@ void dm_FailVariation(void);
 void dm_SkipVariation(void);
 void dm_EndVariation_SuccessExpected(char *funcname, int expectedRC, int actualRC);
 void dm_EndVariation_FailureExpected(char *funcname, int expectedRC, int actualRC, int expectedErrno);
+#if HAVE_SYS_JFSDMAPI_H
 int dm_CheckVariation_SuccessExpected(int expectedRC, int actualRC, dm_eventtype_t expectedEvent, dm_eventtype_t actualEvent);
 int dm_CheckVariation_FailureExpected(int expectedRC, int actualRC, int expectedErrno, dm_eventtype_t expectedEvent, dm_eventtype_t actualEvent);
 void dm_LogHandle(char *hdl, int len);
@@ -165,3 +168,4 @@ int dmimpl_mount(char **mountPt, char **deviceNm);
 extern configResult_t dmimpl_expectedResults[];
 extern eventValidity_t dmimpl_validEvents[];
 extern dm_eventset_t dmimpl_eventset;
+#endif

@@ -15,17 +15,9 @@
 #  along with this program;  if not, write to the Free Software
 #  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
-CFLAGS += -I../../../../include -g -Wall -Wall
-LDLIBS += -L../../../../lib -lltp
 
-SRCS    = $(wildcard *.c)
-TARGETS = $(patsubst %.c,%,$(SRCS))
+top_srcdir		?= ../../../..
 
-all: $(TARGETS)
+include $(top_srcdir)/include/mk/testcases.mk
 
-install:
-	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
-
-clean:
-	rm -f $(TARGETS)
-
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

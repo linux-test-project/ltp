@@ -1,6 +1,0 @@
-#!/bin/sh
-#set -x
-cd $3
-exec 1< /dev/null       # open descriptor 1
-exec 2< /dev/null       # open descriptor 2
-nohup ./testsf_s6 $1 $2 &

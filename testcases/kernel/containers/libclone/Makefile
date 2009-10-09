@@ -18,28 +18,10 @@
 ##                                                                            ##
 ################################################################################
 
-SRCS := $(wildcard *.c)
-OBJS := $(SRCS:%.c=%.o)
+top_srcdir		?= ../../../..
 
-CFLAGS += -I../../../../include
+include $(top_srcdir)/include/mk/env_pre.mk
 
-HAS_UNSHARE ?= $(shell ../check_for_unshare && echo y)
-ifeq ($(HAS_UNSHARE),y)
-TARGET := libclone.a libnetns.a
-else
-TARGET :=
-endif
+LIB			:= libclone.a
 
-all: $(TARGET)
-
-libclone.a: $(OBJS)
-	$(AR) -cr $@ libclone.o
-
-libnetns.a: $(OBJS)
-	$(AR) -cr $@ libnetns.o 
-#	$(AR) -cr $@ $^
-
-clean:
-	rm -f $(TARGET) $(OBJS)
-
-install:
+include $(top_srcdir)/include/mk/lib.mk

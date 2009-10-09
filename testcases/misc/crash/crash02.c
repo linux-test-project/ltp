@@ -486,16 +486,31 @@ in_blacklist (int sysno)
   int i;
   const list[] =
     {
-#ifdef __ia64__
+#if defined(__ia64__)
       SYS_clone2,
 #else
-      /* No SYS_fork(vfork) on IA-64. Instead, it uses,
-         clone(child_stack=0, flags=CLONE_VM|CLONE_VFORK|SIGCHLD)
-         clone2() */
+      /*
+       * No SYS_fork(vfork) on IA-64. Instead, it uses,
+       * clone(child_stack=0, flags=CLONE_VM|CLONE_VFORK|SIGCHLD)
+       * clone2()
+       */
+      
+      /*
+       * NOTE (garrcoop):
+       *  Could not find reference to SYS_fork(vfork) on mips32
+       *  with the Montavista / Octeon toolchain. Need to develop an
+       *  autoconf check for this item.
+       */   
+#if defined(__NR_vfork) && __NR_vfork
       SYS_vfork,
+#endif
+#if defined(__NR_fork) && __NR_fork
       SYS_fork,
+#endif
 #endif /* __ia64__ */
+#if defined(__NR_clone) && __NR_clone
       SYS_clone,
+#endif
       -1
     };
 

@@ -1,17 +1,31 @@
-SCRIPTS = icmp4-multi-diffnic01 \
-	  icmp4-multi-diffnic02 icmp4-multi-diffnic03 \
-	  icmp4-multi-diffnic04 icmp4-multi-diffnic05 \
-	  icmp4-multi-diffnic06 icmp4-multi-diffnic07 \
-	  icmp6-multi-diffnic01 \
-	  icmp6-multi-diffnic02 icmp6-multi-diffnic03 \
-	  icmp6-multi-diffnic04 icmp6-multi-diffnic05 \
-	  icmp6-multi-diffnic06 icmp6-multi-diffnic07
+#
+#    network/stress/icmp/multi-diffnic testcases Makefile.
+#
+#    Copyright (C) 2009, Cisco Systems Inc.
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Garrett Cooper, October 2009
+#
 
-all:
-	@chmod +x $(SCRIPTS)
+top_srcdir		?= ../../../../..
 
-install:
-	@set -e; for i in $(SCRIPTS); do ln -f $$i ../../../../bin ; done
+include $(top_srcdir)/include/mk/env_pre.mk
 
-clean:
-	@set -e; for i in $(SCRIPTS); do rm -f ../../../../bin/$$i ; done
+INSTALL_TARGETS		:= icmp*
+
+MAKE_TARGETS		:=
+
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

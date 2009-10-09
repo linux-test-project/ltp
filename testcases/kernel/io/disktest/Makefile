@@ -23,8 +23,24 @@
 #  Project Website:  TBD
 #
 #
-# $Id: Makefile,v 1.11 2008/02/14 08:22:22 subrata_modak Exp $
+# $Id: Makefile,v 1.12 2009/10/09 17:55:48 yaberauneya Exp $
 # $Log: Makefile,v $
+# Revision 1.12  2009/10/09 17:55:48  yaberauneya
+# 1. Please see README.mk-devel for a full description of the changes
+# from a Make perspective.
+# 2. Several files were changed to accomodate correct installation
+# practices, most notably ones in testcases/network/{ipv6,tcp_cmds},
+# testcases/kernel/sched/hyperthreading/ht_enabled/..., and some items
+# in tools/..., and also to avoid collisions as far as installed
+# testcases (scripts, compiled C apps) were concerned.
+# 3. Several apps weren't autoconf safe and some autoconf tests and
+# conditional statements have been placed in sourcecode and in Makefiles
+# to either a) prevent the tests from being built / installed or b) turn
+# the tests into dummy apps which print out TCONF messages due to
+# lack-of-build support.
+#
+# Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+#
 # Revision 1.11  2008/02/14 08:22:22  subrata_modak
 # Disktest application update to version 1.4.2, by, Brent Yardley <yardleyb@us.ibm.com>
 #
@@ -157,56 +173,45 @@
 # Made signal handler one function. code cleanup.
 #
 
-# -D "_LARGE_FILES" is used in AIX to support 64bit functions and data types
-# -D"_LARGEFILE64_SOURCE" -D"_FILE_OFFSET_BITS=64" is used in Linux to support 64bit functions and data types. -D"_GNU_SOURCE" is to support Linux O_DIRECT
-# These are typically taken from rpm, but, if not, defined here.
-bindir=/usr/bin
-libdir=/usr/lib
-sysconfdir=/etc
-mandir=/usr/share/man
+# 1. -D_LARGE_FILES is used in AIX to support 64bit functions and data types.
+# 2. For Linux:
+#     i.  -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 is used in to support
+#         64-bit functions and data types.
+#     ii. -D_GNU_SOURCE is to support Linux O_DIRECT.
+#
+#    i. and ii. are typically taken from rpm, but, if not, are defined here.
+#
 
-VER=`grep VER_STR main.h | awk -F\" '{print $$2}'`
-GBLHDRS=main.h globals.h defs.h
-ALLHDRS=$(wildcard *.h)
-SRCS=$(wildcard *.c)
-OBJS=$(SRCS:.c=.o)
+top_srcdir	?= ../../../..
 
-CFLAGS += -g -Wall -O -D"LINUX" -D"_THREAD_SAFE" -D"_GNU_SOURCE" -D"_LARGE_FILES" -D"_LARGEFILE64_SOURCE" -D"_FILE_OFFSET_BITS=64" $(RPM_OPT_FLAGS)
+include $(top_srcdir)/include/mk/env_pre.mk
 
-all: $(OBJS) disktest
+VER		:= `grep VER_STR $(abs_srcdir)/main.h | awk -F\" '{print $$2}'`
 
-disktest: $(OBJS) $(SRCS) $(ALLHDRS)
-	$(CC) $(CFLAGS) -o disktest $(OBJS) $(LDFLAGS) -lpthread
+CPPFLAGS	+= -g -Wall -O -DLINUX -D_THREAD_SAFE -D_GNU_SOURCE -D_LARGE_FILES -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 $(RPM_OPT_FLAGS)
 
-main.o: main.c $(ALLHDRS)
-sfunc.o: sfunc.c sfunc.h $(GBLHDRS)
-parse.o: parse.c parse.h sfunc.h $(GBLHDRS)
-childmain.o: childmain.c childmain.h sfunc.h parse.h threading.h $(GBLHDRS)
-threading.o: threading.c threading.h childmain.h sfunc.h $(GBLHDRS)
-globals.o: globals.c threading.h $(GBLHDRS)
-usage.o: usage.c usage.h
-Getopt.o: Getopt.c Getopt.h
-io.o: io.c io.h $(GBLHDRS)
-dump.o: dump.c dump.h $(GBLHDRS)
-timer.o: timer.c timer.h $(GBLHDRS)
-stats.o: stats.c stats.h $(GBLHDRS)
-signals.o: signals.c signals.h threading.h $(GBLHDRS)
+DISTRO_FILES	:= Makefile* *.[ch] LICENSE README CHANGELOG
 
-install: disktest
-	ln -f disktest ../../../bin
+LDLIBS		+= -lpthread
 
-clean:
-	rm -f disktest $(OBJS)
+MAKE_TARGETS	:= disktest
+
+OBJS		:= $(patsubst $(abs_srcdir)/%.c,%.o,$(wildcard $(abs_srcdir)/*.c))
+
+disktest-$(VER):
+	mkdir -p "$@"
+
+disktest: $(OBJS)
+	$(LINK.o) $^ $(LOADLIBES) $(LDLIBS) $(OUTPUT_OPTION)
 
 all-clean: clean
-	rm -f *~ *tar* *zip*
+	$(RM) -rf *~ *tar* *zip* disktest-$(VER)
 
-distro: all-clean
+distro: all-clean | disktest-$(VER)
 	mkdir -p disktest-$(VER)/man1
-	cp ./Makefile* ./*.[ch] ./LICENSE ./README ./CHANGELOG disktest-$(VER)
-	cp ./man1/disktest.1 disktest-$(VER)/man1
-	chmod 444 disktest-$(VER)/man1/disktest.1
+	cp $(addprefix $(abs_srcdir)/,$(DISTRO_FILES)) disktest-$(VER)/.
+	install -m 00444 $(abs_srcdir)/man1/disktest.1 disktest-$(VER)/man1
 	gzip disktest-$(VER)/man1/disktest.1
-	tar cvf ./disktest-$(VER).tar disktest-$(VER)
-	rm -rf disktest-$(VER)
-	gzip ./disktest-$(VER).tar
+	tar -cvzf disktest-$(VER).tar.gz disktest-$(VER)
+
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

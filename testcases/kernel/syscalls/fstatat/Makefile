@@ -16,19 +16,8 @@
 #  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-CFLAGS += -I../../../../include -Wall
-LDLIBS += -L../../../../lib -lltp
+top_srcdir		?= ../../../..
 
-include ../utils/newer_64.mk
-%_64: CFLAGS += -D_FILE_OFFSET_BITS=64
-
-SRCS    = $(wildcard *.c)
-TARGETS += $(patsubst %.c,%,$(SRCS))
-
-all: $(TARGETS)
-
-install:
-	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
-
-clean:
-	rm -f $(TARGETS)
+include $(top_srcdir)/include/mk/testcases.mk
+include $(abs_srcdir)/../utils/newer_64.mk
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

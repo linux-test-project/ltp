@@ -1,0 +1,68 @@
+#
+# RPM Package Manager (RPM) spec file for ltp-devel
+#
+Summary: Linux Test Project (LTP) Software Development Kit (SDK)
+Name: ltp-devel
+Version: 2.0
+Release: 0.0
+Prefix: @prefix@
+License: GPL
+Group: Development/Libraries
+URL: http://www.linuxtestproject.org
+Vendor: IBM Corp
+Packager: Subrata Modak <subrata.modak@@in.ibm.com>
+AutoReqProv:    0
+Provides:       LTP
+#ExclusiveArch:  i386
+ExclusiveOS:    linux
+%description
+This is a development package of the Linux Test Project (LTP).
+It is intended to be used to build testcases using the provided API.
+%files
+@prefix@/lib/libltp.a
+@datarootdir@/pkgconfig/ltp.pc
+@prefix@/bin/ltp-pan
+@prefix@/bin/ltp-scanner
+@prefix@/bin/ltp-bump
+@prefix@/include/linux_syscall_numbers.h
+@prefix@/include/libtestsuite.h
+@prefix@/include/usctest.h
+@prefix@/include/string_to_tokens.h
+@prefix@/include/str_to_bytes.h
+@prefix@/include/databin.h
+@prefix@/include/open_flags.h
+@prefix@/include/write_log.h
+@prefix@/include/dataascii.h
+@prefix@/include/forker.h
+@prefix@/include/compiler.h
+@prefix@/include/test.h
+@prefix@/include/tlibio.h
+@prefix@/include/pattern.h
+@prefix@/include/file_lock.h
+@prefix@/include/random_range.h
+@prefix@/include/search_path.h
+@prefix@/include/rmobj.h
+@mandir@/man3/tst_tmpdir.3
+@mandir@/man3/random_range_seed.3
+@mandir@/man3/pattern.3
+@mandir@/man3/parse_ranges.3
+@mandir@/man3/usctest.3
+@mandir@/man3/random_range.3
+@mandir@/man3/forker.3
+@mandir@/man3/rmobj.3
+@mandir@/man3/parse_open_flags.3
+@mandir@/man3/tst_res.3
+@mandir@/man3/write_log.3
+@mandir@/man3/str_to_bytes.3
+@mandir@/man3/tst_set_error.3
+@mandir@/man3/parse_opts.3
+@mandir@/man3/string_to_tokens.3
+@mandir@/man3/tst_sig.3
+@mandir@/man3/get_attrib.3
+@mandir@/man1/ltp-pan.1
+@mandir@/man1/doio.1
+@mandir@/man1/iogen.1
+@mandir@/man1/ltp-bump.1
+# Post-install stuff would go here.
+#EOF
+

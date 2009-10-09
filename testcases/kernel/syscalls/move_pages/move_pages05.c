@@ -56,7 +56,10 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <errno.h>
+#include "config.h"
+#if HAVE_NUMA_H
 #include <numa.h>
+#endif
 
 #include <test.h>
 #include <usctest.h>
@@ -112,11 +115,7 @@ void child(void **pages, sem_t * sem)
 
 int main(int argc, char **argv)
 {
-	unsigned int i;
-	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-	unsigned int from_node = 0;
-	unsigned int to_node = 1;
 
 	/* parse standard options */
 	msg = parse_opts(argc, argv, (option_t *) NULL, NULL);
@@ -127,6 +126,12 @@ int main(int argc, char **argv)
 	}
 
 	setup();
+
+#if HAVE_NUMA_MOVE_PAGES
+	unsigned int i;
+	int lc;			/* loop counter */
+	unsigned int from_node = 0;
+	unsigned int to_node = 1;
 
 	/* check for looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -206,6 +211,9 @@ int main(int argc, char **argv)
 	      err_free_shared:
 		free_shared_pages(pages + SHARED_PAGE, N_SHARED_PAGES);
 	}
+#else
+	tst_resm(TCONF, "move_pages support not found.");
+#endif
 
 	cleanup();
 	/* NOT REACHED */

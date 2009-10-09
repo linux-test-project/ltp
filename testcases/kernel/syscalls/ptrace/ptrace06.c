@@ -23,6 +23,7 @@
 #include "test.h"
 #include "usctest.h"
 #include "spawn_ptrace_child.h"
+#include "config.h"
 
 /* this should be sizeof(struct user), but that info is only found
  * in the kernel asm/user.h which is not exported to userspace.
@@ -140,6 +141,7 @@ struct test_case_t {
 	{ PTRACE_SETFGREGS, .data = -4 },
 #endif
 
+#if HAVE_DECL_PTRACE_GETSIGINFO
 	{ PTRACE_GETSIGINFO, .data = 0 },
 	{ PTRACE_GETSIGINFO, .data = 1 },
 	{ PTRACE_GETSIGINFO, .data = 2 },
@@ -148,7 +150,9 @@ struct test_case_t {
 	{ PTRACE_GETSIGINFO, .data = -2 },
 	{ PTRACE_GETSIGINFO, .data = -3 },
 	{ PTRACE_GETSIGINFO, .data = -4 },
-
+#endif
+	
+#if HAVE_DECL_PTRACE_SETSIGINFO
 	{ PTRACE_SETSIGINFO, .data = 0 },
 	{ PTRACE_SETSIGINFO, .data = 1 },
 	{ PTRACE_SETSIGINFO, .data = 2 },
@@ -157,6 +161,7 @@ struct test_case_t {
 	{ PTRACE_SETSIGINFO, .data = -2 },
 	{ PTRACE_SETSIGINFO, .data = -3 },
 	{ PTRACE_SETSIGINFO, .data = -4 },
+#endif
 };
 
 int TST_TOTAL = ARRAY_SIZE(test_cases);

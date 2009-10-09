@@ -9,32 +9,29 @@
 # Environment:
 #	CAP_MAC_ADMIN
 #
+
+source smack_common.sh
+
 NotTheFloorLabel="XYZZY"
-StartLabel=`cat /smack/ambient`
+StartLabel=`cat "$smackfsdir/ambient" 2>/dev/null`
 
-onlycap=`cat /smack/onlycap`
-if [ "$onlycap" != "" ]; then
-	echo The smack label reported for /smack/onlycap is \"$label\",
-	echo not the expected \"\".
-	exit 1
-fi
+echo "$NotTheFloorLabel" 2>/dev/null > "$smackfsdir/ambient"
 
-echo $NotTheFloorLabel > /smack/ambient
-
-label=`cat /smack/ambient`
+label=`cat "$smackfsdir/ambient" 2>/dev/null`
 if [ "$label" != "$NotTheFloorLabel" ]; then
-	echo The smack label reported for the current process is \"$label\",
-	echo not the expected \"$NotTheFloorLabel\".
+	cat <<EOM
+The smack label reported for the current process is "$label", not the expected 
+"$NotTheFloorLabel".
+EOM
 	exit 1
 fi
 
-echo "$StartLabel" > /smack/ambient
+echo "$StartLabel" 2>/dev/null > "$smackfsdir/ambient"
 
-label=`cat /smack/ambient`
+label=`cat "$smackfsdir/ambient" 2>/dev/null`
 if [ "$label" != "$StartLabel" ]; then
-	echo The smack label reported for the current process is \"$label\",
-	echo not the expected \"$StartLabel\".
+	cat <<EOM
+The smack label reported for the current process is "$label",  not the expected "$StartLabel".
+EOM
 	exit 1
 fi
-
-exit 0

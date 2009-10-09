@@ -53,7 +53,9 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <errno.h>
+#if HAVE_NUMA_H 
 #include <numa.h>
+#endif
 
 #include <test.h>
 #include <usctest.h>
@@ -72,7 +74,6 @@ extern int Tst_count;
 
 int main(int argc, char **argv)
 {
-	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
@@ -84,6 +85,9 @@ int main(int argc, char **argv)
 	}
 
 	setup();
+
+#if HAVE_NUMA_MOVE_PAGES
+	int lc;			/* loop counter */
 
 	/* check for looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -100,6 +104,7 @@ int main(int argc, char **argv)
 
 		ret = numa_move_pages(0, TEST_PAGES, pages, NULL, status, 0);
 		TEST_ERRNO = errno;
+
 		if (ret != 0) {
 			tst_resm(TFAIL, "retrieving NUMA nodes failed");
 			free_pages(pages, TEST_PAGES);
@@ -109,7 +114,11 @@ int main(int argc, char **argv)
 		verify_pages_linear(pages, status, TEST_PAGES);
 
 		free_pages(pages, TEST_PAGES);
+
 	}
+#else
+	tst_resm(TCONF, "move_pages support not found.");
+#endif
 
 	cleanup();
 	/* NOT REACHED */

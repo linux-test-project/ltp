@@ -25,51 +25,49 @@
 #
 ############################################################################
 
-data_dir=datafiles
-small_file='ascii.sm'
-medium_file='ascii.med'
-large_file='ascii.lg'
-jumbo_file='ascii.jmb'
+small_file=ascii.sm
+medium_file=ascii.med
+large_file=ascii.lg
+jumbo_file=ascii.jmb
 jumbo_size=1600020
 large_size=80020
 medium_size=4020
 small_size=220
 
-if [ ! -d $data_dir ] ; then
-	mkdir $data_dir
-	chmod 777 $data_dir
+set -e
+
+if [ -z "$abs_top_srcdir" ] ; then
+	echo "The variable \`abs_top_srcdir', must be defined." >&2
+	exit 1
+else
+	make_file="$abs_top_srcdir/tools/make-file.sh"
+	if [ ! -x "$make_file" ] ; then
+		echo "$make_file isn't an executable file" >&2
+		exit 1
+	fi
 fi
 
-for m in .. ../.. ../../.. ../../../.. ; do
-	makeit=$m/tools/make-file.sh
-	if [ -e $makeit ] ; then
-		break
-	fi
-done
+"$make_file" "$small_file" $small_size
+"$make_file" "$medium_file" $medium_size
+"$make_file" "$large_file" $large_size
+"$make_file" "$jumbo_file" $jumbo_size
 
-$makeit $data_dir/$small_file $small_size
-$makeit $data_dir/$medium_file $medium_size
-$makeit $data_dir/$large_file $large_size
-$makeit $data_dir/$jumbo_file $jumbo_size
-
-if [ ! -e $data_dir/bin.sm ] ; then
-	cnt=5
-	while [ $cnt -ge 0 ] ; do
-		gzip -1 -c datafiles/ascii.sm >> $data_dir/bin.sm
-		cnt=$(($cnt-1))
+if [ ! -e "bin.sm" ] ; then
+	cnt=0
+	while [ $cnt -lt 5 ] ; do
+		gzip -1 -c ascii.sm >> "bin.sm"
+		cnt=$(($cnt + 1))
 	done
 fi
 
 genfile() {
-	local input=$data_dir/$1 output=$data_dir/$2
+	local input="$1" output="$2"
 	local cnt=19
 
-	if [ -e $output ] ; then
-		return 0
-	fi
+	[ -e "$output" ] && return $?
 
 	while [ $cnt -ge 0 ] ; do
-		cat $input >> $output
+		cat "$input" >> "$output"
 		cnt=$(($cnt-1))
 	done
 }
@@ -78,4 +76,4 @@ genfile bin.sm bin.med
 genfile bin.med bin.lg
 genfile bin.lg bin.jmb
 
-chmod 666 $data_dir/bin.*
+chmod 666 bin.*

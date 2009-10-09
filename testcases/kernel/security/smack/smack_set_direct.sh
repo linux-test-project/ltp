@@ -9,32 +9,30 @@
 # Environment:
 #	CAP_MAC_ADMIN
 #
+
+source smack_common.sh
+
 NotTheStartValue="17"
-StartValue=`cat /smack/direct`
+StartValue=`cat "$smackfsdir/direct" 2>/dev/null`
 
-onlycap=`cat /smack/onlycap`
-if [ "$onlycap" != "" ]; then
-	echo The smack label reported for /smack/onlycap is \"$onlycap\",
-	echo not the expected \"\".
-	exit 1
-fi
+echo "$NotTheStartValue" 2>/dev/null > "$smackfsdir/direct"
 
-echo $NotTheStartValue > /smack/direct
-
-DirectValue=`cat /smack/direct`
+DirectValue=`cat "$smackfsdir/direct" 2>/dev/null`
 if [ "$DirectValue" != "$NotTheStartValue" ]; then
-	echo The CIPSO direct level reported is \"$DirectValue\",
-	echo not the expected \"$NotTheStartValue\".
+	cat <<EOM
+The CIPSO direct level reported is "$DirectValue",
+not the expected "$NotTheStartValue".
+EOM
 	exit 1
 fi
 
-echo "$StartValue" > /smack/direct
+echo "$StartValue" 2>/dev/null> "$smackfsdir/direct"
 
-DirectValue=`cat /smack/direct`
+DirectValue=`cat "$smackfsdir/direct" 2>/dev/null`
 if [ "$DirectValue" != "$StartValue" ]; then
-	echo The CIPSO direct level reported is \"$DirectValue\",
-	echo not the expected \"$StartValue\".
+	cat <<EOM
+The CIPSO direct level reported is "$DirectValue",
+not the expected "$StartValue".
+EOM
 	exit 1
 fi
-
-exit 0

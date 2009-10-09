@@ -2,69 +2,67 @@
 # Malcles Jacky: this file is a copy from Ridgeway Marty's aio script
 #     goal: all aio tests using the same framework
 #Running dio_sparse & dirty tests
-DI000 testcases/kernel/io/ltp-aiodio/dirty
-DS000 testcases/kernel/io/ltp-aiodio/dio_sparse
-DI001 testcases/kernel/io/ltp-aiodio/dirty
-DS001 testcases/kernel/io/ltp-aiodio/dio_sparse
-DI002 testcases/kernel/io/ltp-aiodio/dirty
-DS002 testcases/kernel/io/ltp-aiodio/dio_sparse
-DI003 testcases/kernel/io/ltp-aiodio/dirty
-DS003 testcases/kernel/io/ltp-aiodio/dio_sparse
-DI004 testcases/kernel/io/ltp-aiodio/dirty
-DS004 testcases/kernel/io/ltp-aiodio/dio_sparse
-DI005 testcases/kernel/io/ltp-aiodio/dirty
-DS005 testcases/kernel/io/ltp-aiodio/dio_sparse
-DI006 testcases/kernel/io/ltp-aiodio/dirty
-DS006 testcases/kernel/io/ltp-aiodio/dio_sparse
-DI007 testcases/kernel/io/ltp-aiodio/dirty
-DS007 testcases/kernel/io/ltp-aiodio/dio_sparse
-DI008 testcases/kernel/io/ltp-aiodio/dirty
-DS008 testcases/kernel/io/ltp-aiodio/dio_sparse
-DI009 testcases/kernel/io/ltp-aiodio/dirty
-DS009 testcases/kernel/io/ltp-aiodio/dio_sparse
+DI000 dirty
+DS000 dio_sparse
+DI001 dirty
+DS001 dio_sparse
+DI002 dirty
+DS002 dio_sparse
+DI003 dirty
+DS003 dio_sparse
+DI004 dirty
+DS004 dio_sparse
+DI005 dirty
+DS005 dio_sparse
+DI006 dirty
+DS006 dio_sparse
+DI007 dirty
+DS007 dio_sparse
+DI008 dirty
+DS008 dio_sparse
+DI009 dirty
+DS009 dio_sparse
 #iteration on dio_sparse
-DIO00 testcases/kernel/io/ltp-aiodio/dio_sparse
-DIO01 testcases/kernel/io/ltp-aiodio/dio_sparse
-DIO02 testcases/kernel/io/ltp-aiodio/dio_sparse
-DIO03 testcases/kernel/io/ltp-aiodio/dio_sparse
-DIO04 testcases/kernel/io/ltp-aiodio/dio_sparse
-DIO05 testcases/kernel/io/ltp-aiodio/dio_sparse
-DIO06 testcases/kernel/io/ltp-aiodio/dio_sparse
-DIO07 testcases/kernel/io/ltp-aiodio/dio_sparse
-DIO08 testcases/kernel/io/ltp-aiodio/dio_sparse
-DIO09 testcases/kernel/io/ltp-aiodio/dio_sparse
+DIO00 dio_sparse
+DIO01 dio_sparse
+DIO02 dio_sparse
+DIO03 dio_sparse
+DIO04 dio_sparse
+DIO05 dio_sparse
+DIO06 dio_sparse
+DIO07 dio_sparse
+DIO08 dio_sparse
+DIO09 dio_sparse
 #Running aiodio_append
-AD000 testcases/kernel/io/ltp-aiodio/aiodio_append /test/aiodio/file2
-AD001 testcases/kernel/io/ltp-aiodio/aiodio_append /test/aiodio/file2
-AD002 testcases/kernel/io/ltp-aiodio/aiodio_append /test/aiodio/file2
-AD003 testcases/kernel/io/ltp-aiodio/aiodio_append /test/aiodio/file2
-AD004 testcases/kernel/io/ltp-aiodio/aiodio_append /test/aiodio/file2
-AD005 testcases/kernel/io/ltp-aiodio/aiodio_append /test/aiodio/file2
-AD006 testcases/kernel/io/ltp-aiodio/aiodio_append /test/aiodio/file2
-AD007 testcases/kernel/io/ltp-aiodio/aiodio_append /test/aiodio/file2
-AD008 testcases/kernel/io/ltp-aiodio/aiodio_append /test/aiodio/file2
-AD009 testcases/kernel/io/ltp-aiodio/aiodio_append /test/aiodio/file2
+AD000 aiodio_append /test/aiodio/file2
+AD001 aiodio_append /test/aiodio/file2
+AD002 aiodio_append /test/aiodio/file2
+AD003 aiodio_append /test/aiodio/file2
+AD004 aiodio_append /test/aiodio/file2
+AD005 aiodio_append /test/aiodio/file2
+AD006 aiodio_append /test/aiodio/file2
+AD007 aiodio_append /test/aiodio/file2
+AD008 aiodio_append /test/aiodio/file2
+AD009 aiodio_append /test/aiodio/file2
 #Running dio_append
-ADI000 testcases/kernel/io/ltp-aiodio/dio_append
-ADI001 testcases/kernel/io/ltp-aiodio/dio_append
-ADI002 testcases/kernel/io/ltp-aiodio/dio_append
-ADI003 testcases/kernel/io/ltp-aiodio/dio_append
-ADI004 testcases/kernel/io/ltp-aiodio/dio_append
-ADI005 testcases/kernel/io/ltp-aiodio/dio_append
-ADI006 testcases/kernel/io/ltp-aiodio/dio_append
-ADI007 testcases/kernel/io/ltp-aiodio/dio_append
-ADI008 testcases/kernel/io/ltp-aiodio/dio_append
-ADI009 testcases/kernel/io/ltp-aiodio/dio_append
+ADI000 dio_append
+ADI001 dio_append
+ADI002 dio_append
+ADI003 dio_append
+ADI004 dio_append
+ADI005 dio_append
+ADI006 dio_append
+ADI007 dio_append
+ADI008 dio_append
+ADI009 dio_append
 #Running dio_truncate
-DIT000 testcases/kernel/io/ltp-aiodio/dio_truncate 
-DIT001 testcases/kernel/io/ltp-aiodio/dio_truncate 
-DIT002 testcases/kernel/io/ltp-aiodio/dio_truncate
+DIT000 dio_truncate 
+DIT001 dio_truncate 
+DIT002 dio_truncate
 #Running read_checkzero
-#testcases/kernel/io/ltp-aiodio/read_checkzero 
+#gread_checkzero 
 #Running ltp-diorh
-DOR000 testcases/kernel/io/ltp-aiodio/ltp-diorh /test/aiodio/file2
-DOR001 testcases/kernel/io/ltp-aiodio/ltp-diorh /test/aiodio/file3
-DOR002 testcases/kernel/io/ltp-aiodio/ltp-diorh /test/aiodio/file4
-DOR003 testcases/kernel/io/ltp-aiodio/ltp-diorh /test/aiodio/file5
-
-
+DOR000 ltp-diorh /test/aiodio/file2
+DOR001 ltp-diorh /test/aiodio/file3
+DOR002 ltp-diorh /test/aiodio/file4
+DOR003 ltp-diorh /test/aiodio/file5

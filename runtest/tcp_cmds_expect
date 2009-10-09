@@ -1,0 +1,8 @@
+#DESCRIPTION:TCP/IP commands tests that require expect
+#
+# PLEASE READ THE README FILE IN /tcp_cmds BEFORE RUNNING THESE.
+#
+rlogin rlogin01
+telnet telnet01
+iptables iptables_tests.sh
+dhcpd dhcpd_tests.sh

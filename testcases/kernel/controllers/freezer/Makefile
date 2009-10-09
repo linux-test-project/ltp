@@ -1,32 +1,29 @@
-# Copyright (c) International Business Machines  Corp., 2008
-# Author: Matt Helsley <matthltc@us.ibm.com>
 #
-# This library is free software; you can redistribute it and/or
-# modify it under the terms of the GNU Lesser General Public
-# License as published by the Free Software Foundation; either
-# version 2.1 of the License, or (at your option) any later version.
+#    kernel/controllers/freezer testcase suite Makefile.
 #
-# This library is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# Lesser General Public License for more details.
+#    Copyright (C) 2009, Cisco Systems Inc.
 #
-# You should have received a copy of the GNU Lesser General Public
-# License along with this library; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
 #
-CFLAGS := -Wall -O3
-PROGS := timed_forkbomb #  vfork fork_exec_loop
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Garrett Cooper, July 2009
+#
 
-.PHONY: all install clean
+top_srcdir		?= ../../../..
 
-all: $(PROGS)
-	chmod u+x *.sh
+include $(top_srcdir)/include/mk/testcases.mk
 
-install:
+INSTALL_TARGETS		:= *.sh libcgroup_freezer
 
-$(PROGS): %: %.c
-	gcc $(CFLAGS) -o $@ $^
-
-clean:
-	rm -f $(PROGS)
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

@@ -29,17 +29,15 @@ file=$1
 size=$2
 
 if [ -z "$1" ] || [ -z "$2" ] ; then
-	echo "Usage: make-file.sh <file> <size in bytes>"
+	echo "usage: ${0##*/} <file> <size in bytes>"
 	exit 1
 fi
 
-if [ -e $file ] ; then
-	exit 0
-fi
+[ -e "$file" ] && exit 0
 
-if ! perl -e "print 'A' x $size" > $file 2> /dev/null ; then
-	if ! awk 'BEGIN { cnt='$size'; while (cnt--) printf "A" }' > $file 2> /dev/null ; then
-		( while ((size--)) ; do echo -n A ; done ) > $file
+if ! perl -e "print 'A' x $size" > "$file" 2> /dev/null ; then
+	if ! awk 'BEGIN { cnt='$size'; while (cnt--) printf "A" }' > "$file" 2> /dev/null ; then
+		( while ((size--)) ; do echo -n A ; done ) > "$file"
 	fi
 fi
 

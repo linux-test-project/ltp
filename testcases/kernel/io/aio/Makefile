@@ -1,13 +1,27 @@
-SUBDIRS = `ls */Makefile | sed "s/Makefile//g"`
+#
+#  Copyright (c) International Business Machines  Corp., 2001
+#
+#  This program is free software;  you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY;  without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+#  the GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program;  if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
 
-all:
-	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
+top_srcdir		?= ../../../..
 
-install:
-	mkdir -p bin
-	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i install ; done
+include $(top_srcdir)/include/mk/testcases.mk
 
-clean:
-	rm -rf bin/
-	@set -e; for i in $(SUBDIRS) ; do $(MAKE) -C $$i clean ; done
+# XXX (garrcoop): Causing me grief with linker errors due to whacky source
+# design.
+FILTER_OUT_DIRS		:= aio02
 
+include $(top_srcdir)/include/mk/generic_trunk_target.mk

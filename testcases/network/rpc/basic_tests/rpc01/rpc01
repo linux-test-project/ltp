@@ -38,8 +38,7 @@ this_file=${0##*/}
 TC=${TC:=rpc01}
 TCbin=${TCbin:=`pwd`}
 TCdat=${TCdat:=$TCbin/datafiles}
-TCsrc=${TCsrc:=$TCbin}
-TCtmp=${TCtmp:=$TCsrc}
+TCtmp=${TCtmp:=$LTPROOT/testcases/bin}
 NUMLOOPS=${NUMLOOPS:=3}
 RHOST=${RHOST:=`hostname`}
 CLEANUP=${CLEANUP:="ON"}

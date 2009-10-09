@@ -18,23 +18,11 @@
 ##                                                                            ##
 ################################################################################
 
-CFLAGS += -I../../../../include -I../libclone -Wall
-LDLIBS += -L../../../../lib -L../libclone ../libclone/libclone.a -lltp
+top_srcdir		?= ../../../..
 
-SRCS    := $(wildcard *.c)
-TARGETS := $(SRCS:%.c=%)
+include $(top_srcdir)/include/mk/testcases.mk
+include $(abs_srcdir)/../Makefile.inc
 
-HAS_UNSHARE ?= $(shell ../check_for_unshare && echo y)
-ifneq ($(HAS_UNSHARE),y)
-TARGETS :=
-endif
+LDLIBS			+= -lclone
 
-all: $(TARGETS)
-
-clean:
-	rm -f $(TARGETS) *.o
-
-install:
-ifeq ($(HAS_UNSHARE),y)
-	@set -e; for i in $(TARGETS) runipcnstest.sh check_ipcns_enabled ; do ln -f $$i ../../../bin/$$i ; chmod +x runipcnstest.sh ; done
-endif
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

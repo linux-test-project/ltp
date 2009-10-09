@@ -47,8 +47,8 @@ spawn ftp $RHOST
 sleep 1
 # Check if connection succeeded.
 expect {
-   "Name" {}
-   timeout {send_user "\nConnection failed\n Test FAILED \n";exit 1}
+    "Name" {}
+    timeout {send_user "\nConnection failed; test FAILED\n";exit 1}
 }
 
 send "$RUSER\r"
@@ -58,15 +58,14 @@ send "$PASSWD\r"
 sleep 1
 
 expect {
-	# 530 - Login failed
-	"530" {send_user "Ftp invalid password, login test PASSED\n"}
-	# 230 - Login successful
-	"230" {send_user "Ftp invalid password, login test FAILED \n";exit 1}
+    # 530 - Login failed
+    "530" {send_user "Login failed as expected; test PASSED\n"}
+    # 230 - Login successful
+    "230" {send_user "Login succeeded unexpectedly; test FAILED\n"; exit 1}
 }
 
 expect "ftp>"
 send "exit\r"
-
 
 send_user "\nTest Successful\n\n"
 exit 0

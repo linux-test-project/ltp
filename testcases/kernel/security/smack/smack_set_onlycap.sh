@@ -9,31 +9,30 @@
 # Environment:
 #	CAP_MAC_ADMIN
 #
-MyLabel=`cat /proc/self/attr/current`
-StartLabel=`cat /smack/onlycap`
 
-if [ "$StartLabel" != "" ]; then
-	echo The smack label reported for /smack/onlycap is \"$StartLabel\",
-	echo not the expected \"\".
-	exit 1
-fi
+source smack_common.sh
 
-echo $MyLabel > /smack/onlycap
+MyLabel=`cat /proc/self/attr/current 2>/dev/null`
+StartLabel=`cat "$smackfsdir/onlycap" 2>/dev/null`
 
-label=`cat /smack/onlycap`
+echo "$MyLabel" 2>/dev/null > "$smackfsdir/onlycap"
+
+label=`cat "$smackfsdir/onlycap" 2>/dev/null`
 if [ "$label" != "$MyLabel" ]; then
-	echo The smack label reported for /smack/onlycap is \"$label\",
-	echo not the expected \"$MyLabel\".
+	cat <<EOM
+The smack label reported for $smackfsdir/onlycap is "$label",
+not the expected "$MyLabel".
+EOM
 	exit 1
 fi
 
-echo "$StartLabel" > /smack/onlycap
+echo "$StartLabel" 2>/dev/null > "$smackfsdir/onlycap"
 
-label=`cat /smack/onlycap`
+label=`cat "$smackfsdir/onlycap" 2>/dev/null`
 if [ "$label" != "$StartLabel" ]; then
-	echo The smack label reported for the current process is \"$label\",
-	echo not the expected \"$StartLabel\".
+	cat <<EOM
+The smack label reported for the current process is "$label",
+not the expected "$StartLabel".
+EOM
 	exit 1
 fi
-
-exit 0

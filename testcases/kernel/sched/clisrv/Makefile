@@ -1,21 +1,36 @@
-CFLAGS+= -Wall -O -D_LINUX
-CFILES=pthcli.c pthserv.c readline.c writen.c
-OFILES=$(CFILES:.c=.o)
-LOADLIBES+= -lpthread
-TESTS = pthcli pthserv
+#
+#    kernel/sched/cliserv test suite Makefile.
+#
+#    Copyright (C) 2009, Cisco Systems Inc.
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Garrett Cooper, July 2009
+#
 
-all: $(TESTS)
+top_srcdir		?= ../../../..
 
-pthcli: pthcli.o readline.o writen.o
-	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS) $(LOADLIBES)
+include $(top_srcdir)/include/mk/env_pre.mk
 
-pthserv: pthserv.o readline.o writen.o 
-	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS) $(LOADLIBES)
+CPPFLAGS		+= -D_LINUX
+LDLIBS			+= -lpthread
 
-install:
-	@set -e; for i in $(TESTS) ; do ln -f $$i ../../../bin/$$i ; done ;
-	ln -f run_sched_cliserv.sh ../../../bin/
-	ln -f data ../../../bin/
+INSTALL_TARGETS		:= data run_sched_cliserv.sh
 
-clean:
-	rm -fr $(OFILES) $(TESTS)
+MAKE_TARGETS		:= pthcli pthserv
+
+$(MAKE_TARGETS): %: %.o readline.o writen.o
+
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

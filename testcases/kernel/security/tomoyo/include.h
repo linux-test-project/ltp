@@ -48,10 +48,22 @@
 #include <unistd.h>
 #include <utime.h>
 
+/* 
+ * Some architectures like mips n32 don't have __NR_uselib defined in the
+ * system headers.
+ */
+#ifdef __NR_uselib
 static inline int uselib(const char *library)
 {
 	return syscall(__NR_uselib, library);
 }
+#else
+static inline int uselib(const char *library)
+{
+	errno = ENOSYS;
+	return -1;
+}
+#endif
 
 #define proc_policy_dir              "/sys/kernel/security/tomoyo/"
 #define proc_policy_domain_policy    proc_policy_dir "domain_policy"

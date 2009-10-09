@@ -20,25 +20,26 @@
 # name of file	: Makefile						  #
 # description	: make(1) description file for lib6 tests.	  	  #
 ###########################################################################
-CFLAGS+=	-I../../../include -g -D_GNU_SOURCE
-LOADLIBES+=	-L../../../lib runcc.a -lltp -lpthread
 
-RANLIB		?= ranlib
+top_srcdir		?= ../../..
 
-SRCS=$(wildcard *.c)
-TARGETS= asapi_01 asapi_02 asapi_03 asapi_04 asapi_05 asapi_06 asapi_07 \
-	getaddrinfo_01 in6_01 in6_02
+include $(top_srcdir)/include/mk/testcases.mk
 
-all: $(TARGETS)
+CPPFLAGS		+= -D_GNU_SOURCE
+LDLIBS			+= -lpthread
 
-$(TARGETS): %: %.c runcc.a
+LIB			:= $(DESTDIR)/$(libdir)/libruncc.a
 
-install:
-	@set -e; for i in $(TARGETS); do ln -f $$i ../../bin/$$i ; done
+MAKE_TARGETS		:= $(patsubst $(abs_srcdir)/%.c,%,$(filter-out %/runcc.c,$(wildcard $(abs_srcdir)/*.c)))
 
-clean:
-	rm -f $(TARGETS) *.a *.o
+$(MAKE_TARGETS): | $(LIB)
 
-runcc.a: runcc.o
-	$(AR) cr $@ $^
-	$(RANLIB) $@
+$(MAKE_TARGETS): LDLIBS	+= -lruncc
+
+$(LIB): $(builddir)/runcc.o
+	$(AR) cr "$@" $^
+	$(RANLIB) "$@"
+
+CLEAN_TARGETS		+= $(LIB)
+
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

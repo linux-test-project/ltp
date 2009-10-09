@@ -1,41 +1,73 @@
-REDHAT_RELEASE=$(shell rpm -q redhat-release)
-REDHAT_VERS=$(shell echo $(REDHAT_RELEASE) | cut -f3 -d"-" | sed -e "s/[^0-9]*//g")
-POLICYDEVEL = /usr/share/selinux/devel
-SEMODULE = /usr/sbin/semodule
-CHECKPOLICY = /usr/bin/checkpolicy
-VERS := $(shell $(CHECKPOLICY) -V |cut -f 1 -d ' ')
+#
+#    kernel/security/selinux-testsuite/refpolicy Makefile
+#
+#    Copyright (C) 2009, Cisco Systems Inc.
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Garrett Cooper, August 2009
+#
 
-TARGETS=test_global.te test_capable_file.te test_capable_net.te \
-test_capable_sys.te test_dyntrace.te test_dyntrans.te test_entrypoint.te \
-test_execshare.te test_exectrace.te test_execute_no_trans.te \
-test_fdreceive.te test_file.te test_inherit.te test_ioctl.te test_ipc.te \
-test_link.te test_mkdir.te test_open.te test_ptrace.te test_readlink.te \
-test_relabel.te test_rename.te test_rxdir.te test_setattr.te test_setnice.te \
-test_sigkill.te test_stat.te test_sysctl.te test_task_create.te \
-test_task_getpgid.te test_task_getsched.te test_task_getsid.te \
-test_task_setpgid.te test_task_setsched.te test_transition.te test_wait.te 
+top_srcdir		?= ../../../../..
 
+include	$(top_srcdir)/include/mk/env_pre.mk
 
-ifeq ($(VERS),24)
-TARGETS+= test_bounds.te
+REDHAT_RELEASE		?= $(shell rpm -q redhat-release)
+REDHAT_VERS		?= $(shell echo $(REDHAT_RELEASE) | cut -f3 -d- | sed -e "s/[^0-9]*//g")
+POLICYDEVEL		?= $(DESTDIR)/usr/share/selinux/devel
+SEMODULE		?= $(DESTDIR)/usr/sbin/semodule
+CHECKPOLICY		?= $(DESTDIR)/usr/bin/checkpolicy
+CHECKPOLICY_VERS	?= $(shell $(CHECKPOLICY) -V |cut -f 1 -d ' ')
+
+CLEAN_TARGETS		:= test_policy.te
+
+INSTALL_TARGETS		:= *.te
+
+ifeq ($(CHECKPOLICY_VERS),24)
+TARGETS			:= $(filter-out %/test_bounds.te,$(INSTALL_TARGETS))
 endif
 
-load:
+TE_SRCDIR		:= $(abs_srcdir)
+
 ifeq (redhat-release-, $(findstring redhat-release-, $(REDHAT_RELEASE)))
-	$(MAKE) -C redhat/$(REDHAT_VERS)
-else
-	@if [ -d $(POLICYDEVEL) ]; then \
-		set -e; rm -f test_policy.te; for i in $(TARGETS); do cat $$i >> test_policy.te; done; \
-		cp test_policy.* $(POLICYDEVEL); \
-		$(MAKE) -C $(POLICYDEVEL) clean test_policy.pp; \
-		$(SEMODULE) -i $(POLICYDEVEL)/test_policy.pp; \
-	else \
-		echo "ERROR: You must have selinux-policy-devel installed."; \
-	fi
+ifneq ($(wildcard $(abs_srcdir)/redhat/$(REDHAT_VER)),)
+TE_SRCDIR		:= $(abs_srcdir)/redhat/$(REDHAT_VER)
 endif
-	
-cleanup:
-	$(SEMODULE) -r test_policy
-	rm -f $(POLICYDEVEL)/test_policy.* 
-	rm -f test_policy.te 
+endif
 
+.PHONY: all clean cleanup install load
+
+all: load
+
+clean: cleanup
+
+cleanup:
+	-$(SEMODULE) -r test_policy
+	$(RM) -f $(POLICYDEVEL)/test_policy.* $(builddir)/test_policy.te 
+
+install: all
+
+# load remains for backwards compatibility...
+load: $(builddir)/test_policy.te
+	@if [ -d "$(POLICYDEVEL)" ]; then \
+	    cp -p $(builddir)/test_policy.* $(INSTALL_TARGETS) $(POLICY_DEVEL); \
+	    $(MAKE) -C $(POLICYDEVEL) clean test_policy.pp; \
+	    $(SEMODULE) -i $(POLICYDEVEL)/test_policy.pp; \
+	else \
+            echo "ERROR: You must have selinux-policy-devel installed."; \
+	fi
+
+$(builddir)/test_policy.te:
+	(cd "$(TE_SRCDIR)" && cat $(INSTALL_TARGETS)) > "$@";

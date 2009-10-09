@@ -19,33 +19,16 @@
 ## Author:      Veerendra <veeren@linux.vnet.ibm.com>                         ##
 ################################################################################
 
-CFLAGS += -Wall
-CPPFLAGS += -I../../../../include -I../libclone
-LDLIBS += -L../../../../lib -L../libclone ../libclone/libnetns.a -lltp
-SCRIPTS = initialize.sh parentns.sh childns.sh                  \
-parent.sh child.sh                                              \
-parent_view.sh parent_share.sh  child_propagate.sh              \
-parent_1.sh parent_2.sh child_1.sh child_2.sh                   \
-delchild.sh rename_net.sh                                       \
-paripv6.sh childipv6.sh                                         \
-par_ftp.sh ch_ftp.sh container_ftp.pl                           \
-runnetnstest.sh nw_under_ns.sh
+top_srcdir		?= ../../../..
 
-SRCS    = $(wildcard *.c)
-TARGETS = $(SRCS:%.c=%)
+include $(top_srcdir)/include/mk/testcases.mk
+include $(abs_srcdir)/../Makefile.inc
 
-HAS_UNSHARE ?= $(shell ../check_for_unshare && echo y)
-ifneq ($(HAS_UNSHARE),y)
-TARGETS :=
-endif
+INSTALL_TARGETS		:= *.sh
 
-all: $(TARGETS)
-	@chmod +x $(SCRIPTS)
+MAKE_TARGETS		:= create_container crtchild crtchild_delchild \
+			   par_chld_ftp par_chld_ipv6 sysfsview two_children_ns
 
-install:
-ifeq ($(HAS_UNSHARE),y)
-	@set -e; for i in $(TARGETS) $(SCRIPTS) runnetnstest.sh check_netns_enabled; do ln -f $$i ../../../bin/$$i ; chmod +x runnetnstest.sh ; done
-endif
+$(MAKE_TARGETS): %: common.o %.o
 
-clean:
-	rm -f $(TARGETS) *.o
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

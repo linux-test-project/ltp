@@ -16,23 +16,8 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
 
-###########################################################################
-# name of file	: Makefile						  #
-###########################################################################
-CFLAGS+=	-I../../../../include -O -g -Wall
-#LARGEFILE support
-#CFLAGS+=	-I../../../../include -O -g -Wall -DLARGE_FILE
-LOADLIBES+=	-L../../../../lib -lltp 
+top_srcdir              ?= ../../../..
 
-SRCS=$(wildcard *.c)
-TARGETS=$(patsubst %.c,%,$(SRCS))
-
-all: $(TARGETS)
-
-install:
-	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
-
-clean:
-	rm -f $(TARGETS)
-
-
+include $(top_srcdir)/include/mk/testcases.mk
+include $(abs_srcdir)/../Makefile.inc
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

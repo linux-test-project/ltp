@@ -90,9 +90,7 @@ then
 
 	if [ "$FREEZER" = "freezer" ]
 	then
-		pushd $LTPROOT/testcases/kernel/controllers/freezer
-		./run.sh
-		popd
+		"$LTPROOT/testcases/bin/run_freezer.sh"
 	else
 		echo "CONTROLLERS TESTCASES: WARNING";
 		echo "Kernel does not support freezer controller";

@@ -16,16 +16,20 @@
  */
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <fcntl.h>
+#include "test.h"
+
+char *TCID = "ima_mmap";
+int TST_TOTAL = 1;
 
 int main(int argc, char *argv[])
 {
 	int fd;
 	void *file;
 	char *filename;
-	int rc;
 
 	if (argc != 2)
 		printf("%s: filename\n", argv[1]);
@@ -48,6 +52,5 @@ int main(int argc, char *argv[])
 		perror("unmap");
 		return(-1);
 	}
-
-	return 0;
+	tst_exit();
 }

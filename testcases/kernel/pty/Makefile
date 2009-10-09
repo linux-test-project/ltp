@@ -1,24 +1,29 @@
+#
+#    kernel/pty testcases Makefile.
+#
+#    Copyright (C) 2009, Cisco Systems Inc.
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Garrett Cooper, July 2009
+#
 
-CFLAGS+= -O -Wall -g -D_GNU_SOURCE -I../../../include
-LDLIBS+= -L../../../lib -lltp
+top_srcdir		?= ../../..
 
-BIN= hangup01 ptem01 pty01
+include $(top_srcdir)/include/mk/testcases.mk
 
-all: $(BIN)
+CPPFLAGS		+= -D_GNU_SOURCE 
 
-clean:	FRC
-	rm -f $(BIN)
-
-install:  FRC
-	@set -e; for i in $(BIN); do ln -f $$i ../../bin/$$i ; done
-
-hangup01: hangup01.c
-	$(CC) $(CFLAGS) -o hangup01 hangup01.c $(LDFLAGS) $(LDLIBS)
-
-ptem01: ptem01.c
-	$(CC) $(CFLAGS) -o ptem01 ptem01.c $(LDFLAGS) $(LDLIBS)
-
-pty01: pty01.c	
-	$(CC) $(CFLAGS) -o pty01 pty01.c $(LDFLAGS) $(LDLIBS)
-
-FRC:
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

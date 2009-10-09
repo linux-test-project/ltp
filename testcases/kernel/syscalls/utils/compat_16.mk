@@ -27,7 +27,7 @@
 # assume the source file name for fooN is fooN.c.
 # On the above assumption, this file does:
 # 
-# * adding fooN_16 as TARGETS, 
+# * adding fooN_16 as MAKE_TARGETS, 
 # * making *.c depend on compat_16.h if the header file exists,
 # * adding rules to build fooN_16 from fooN.c (and compat_16.h), and
 # * passing a cpp symbol TST_USE_COMPAT16_SYSCALL to 
@@ -44,29 +44,37 @@
 # 4. don't forget putting compat_16.h in all fooN.c
 #    if you introduced compat_16.h.
 # 5. include this file compat_16.mk in your Makefile.
-# 6. use `+=' instead of `=' as assignment operator for TARGETS.
+# 6. use `+=' instead of `=' as assignment operator for MAKE_TARGETS.
 # 7. Added extra definitions to CFLAGS in %_16 target if needed.
 #
 # See Makefile of setuid test case.
 #
-TARGETS_16 = $(patsubst %.c,%_16,$(SRCS))
+
+SRCS			?= $(wildcard $(abs_srcdir)/*.c)
+
+MAKE_TARGETS		:= $(notdir $(patsubst %.c,%,$(SRCS)))
+
 ifneq ($(TST_COMPAT_16_SYSCALL),no)
-TARGETS  +=  $(TARGETS_16)
+MAKE_TARGETS		+= $(addsuffix _16,$(MAKE_TARGETS))
 endif
 
-DEF_16 = TST_USE_COMPAT16_SYSCALL
-COMPAT_16_H = compat_16.h
-HAS_COMPAT_16 := $(shell if [ -f $(COMPAT_16_H) ]; then	\
-	  			echo yes;		\
-			else				\
-				echo no;		\
-			fi)
+# XXX (garrcoop): This code should be put in question as it cannot be applied
+# (no .h file, no TST_USE_NEWER64_SYSCALL def).
+DEF_16			:= TST_USE_COMPAT16_SYSCALL
 
+COMPAT_16_H		:= $(abs_srcdir)/../utils/compat_16.h
 
-ifeq ($(HAS_COMPAT_16),yes)
+ifneq ($(wildcard $(COMPAT_16_H)),)
+HAS_COMPAT_16		:= 1
+
 %.c: $(COMPAT_16_H)
+
+else
+HAS_COMPAT_16		:= 0
 endif
+
+%_16: CPPFLAGS += -D$(DEF_16)=1
+# XXX (garrcoop): End section of code in question..
 
 %_16.o: %.c
 	$(COMPILE.c) $(OUTPUT_OPTION) $<
-%_16: CFLAGS += -D$(DEF_16)=1

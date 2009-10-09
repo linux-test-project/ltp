@@ -16,27 +16,17 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
 
-###########################################################################
-# name of file	: Makefile						  #
-###########################################################################
-NPTL:=$(shell getconf GNU_LIBPTHREAD_VERSION 2>/dev/null| grep NPTL; echo $?)
-ifeq ($(NPTL),)
-CFLAGS+=	-I../../../../include -g -Wall 
-else
-CFLAGS+=	-I../../../../include -g -Wall -DUSING_NPTL
+top_srcdir		?= ../../../..
+
+include $(top_srcdir)/include/mk/testcases.mk
+
+# XXX (garrcoop): Integrate in autoconf check for nptl.
+HAS_NPTL		?= $(shell getconf GNU_LIBPTHREAD_VERSION 2>/dev/null| grep -q NPTL && echo yes)
+
+ifeq ($(HAS_NPTL),yes)
+CPPFLAGS		+= -DUSING_NPTL
 endif
 
-LOADLIBES+=	-L../../../../lib -lltp -lpthread
+LDLIBS			+= -lpthread
 
-SRCS=$(wildcard *.c)
-TARGETS=$(patsubst %.c,%,$(SRCS))
-
-all: $(TARGETS)
-
-install:
-	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
-
-clean:
-	rm -f $(TARGETS)
-
-
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

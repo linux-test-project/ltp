@@ -36,7 +36,7 @@
 
 trap "exit 0" INT  # Until the smarter signal handler is engaged, below.
 
-Prog=$(basename $0)
+Prog=${0##*/}
 
 iOpts=""
 dOpts=""
@@ -289,7 +289,7 @@ fi
 # 1,000,000 blocks if no limit is specified
 #
 
-case $(uname -s) in
+case "$(uname -s)" in
 	IRIX | IRIX64 )		dfOpts="-Pb"	;;
 	Linux)			dfOpts="-P"	;;
 	*)			dfOpts="-PB"	;;

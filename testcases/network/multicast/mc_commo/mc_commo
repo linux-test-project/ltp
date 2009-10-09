@@ -39,7 +39,6 @@ $trace_logic
 
 
 TC=mc_commo
-TCsrc=${TCsrc:-`pwd`}
 TCtmp=${TCtmp:-"/tmp/mc_commo.$$"}
 CLEANUP=${CLEANUP:-ON}
 EXECUTABLES="mc_recv"
@@ -50,7 +49,7 @@ PORT=3333
 RHOST=${RHOST:-`hostname`}
 OUTFILE=$TCtmp/mc_commo_out
 NUMLOOPS=${NUMLOOPS:-2}
-INTERFACE=${INTERFACE:-$($LTPROOT/tools/gethost `hostname` | grep addresses: | awk '{print $2}')}
+INTERFACE=${INTERFACE:-$($LTPROOT/testcases/bin/gethost `hostname` | grep addresses: | awk '{print $2}')}
 
 this_file=${0##*/}
 trap "interrupt_test" 2
@@ -86,7 +85,8 @@ do_test ()
       # Start up the recv on local host
       echo "Starting mc_recv on $GROUP_ADDR $INTERFACE $PORT"
 
-      $TCsrc/$EXECUTABLES $GROUP_ADDR $INTERFACE $PORT >> $OUTFILE &
+      "$LTPROOT/testcases/bin/$EXECUTABLES" $GROUP_ADDR $INTERFACE $PORT \
+	>> $OUTFILE &
       SERVER_PID=$!
       sleep 5
       ps -ewf | grep mc_recv | grep -v grep
@@ -128,7 +128,8 @@ do_test ()
       do
          echo "Running on $HOST mc_send $GROUP_ADDR $HOST $PORT $TTL"
 
-         rsh -n -l root $HOST $TCsrc/$REMOTE_EXEC $GROUP_ADDR $HOST $PORT $TTL >/dev/null &
+         rsh -n -l root $HOST "$LTPROOT/testcases/bin$REMOTE_EXEC" $GROUP_ADDR \
+	 $HOST $PORT $TTL >/dev/null &
          sleep 10
 	rsh -n -l root $HOST "ps -ewf | grep mc_send | grep -v grep"
           [ $? = 0 ] || end_testcase "Could NOT start mc_send on $HOST"

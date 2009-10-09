@@ -16,21 +16,10 @@
 #  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
+top_srcdir		?= ../../../..
 
-include ../../../../config.mk
+include $(top_srcdir)/include/mk/testcases.mk
 
+LDLIBS			+= $(AIO_LIBS)
 
-CFLAGS += -I../../../../include -Wall
-LDLIBS += -L../../../../lib $(AIO_LIBS) -lltp
-
-SRCS    = $(wildcard *.c)
-TARGETS = $(patsubst %.c, %, $(wildcard *.c))
-
-all: $(TARGETS)
-
-install:
-	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
-
-clean:
-	rm -f $(TARGETS) a.out
-
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

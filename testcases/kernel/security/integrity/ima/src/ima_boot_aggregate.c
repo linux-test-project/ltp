@@ -23,14 +23,21 @@
 #include <fcntl.h>
 #include <string.h>
 #include <unistd.h>
+#include "config.h"
+#include "test.h"
+#if HAVE_OPENSSL_SHA_H
 #include <openssl/sha.h>
+#endif
 
 #define MAX_EVENT_SIZE 500
 #define EVENT_HEADER_SIZE 32
 #define MAX_EVENT_DATA_SIZE (MAX_EVENT_SIZE - EVENT_HEADER_SIZE)
 #define NUM_PCRS 8	/*  PCR registers 0-7 in boot aggregate */
 
-static void *display_sha1_digest(char *pcr)
+char *TCID = "ima_boot_aggregate";
+int TST_TOTAL = 1;
+
+static void display_sha1_digest(unsigned char *pcr)
 {
 	int i;
 
@@ -39,8 +46,10 @@ static void *display_sha1_digest(char *pcr)
 	printf("\n");
 }
 
-int main(int argc, char *argv[])
+int
+main(int argc, char *argv[])
 {
+#if HAVE_OPENSSL_SHA_H
 	unsigned char boot_aggregate[SHA_DIGEST_LENGTH];
 	struct {
 		struct {
@@ -74,7 +83,7 @@ int main(int argc, char *argv[])
 		memset(&pcr[i].digest, 0, SHA_DIGEST_LENGTH);
 
 	/* Extend the pseudo PCRs with the event digest */
-	while (fread(&event, sizeof event.header, 1, fp)) {
+	while (fread(&event, sizeof(event.header), 1, fp)) {
 		if (debug) {
 			printf("%03u ", event.header.pcr);
 			display_sha1_digest(event.header.digest);
@@ -105,6 +114,8 @@ int main(int argc, char *argv[])
 
 	printf("boot_aggregate:");
 	display_sha1_digest(boot_aggregate);
-
-	return 0;
+#else
+	tst_resm(TCONF, "System doesn't have openssl/sha.h");
+#endif
+	tst_exit();
 }

@@ -116,7 +116,7 @@ pause_harness : pause_harness.cpp ${OBJS}
 	${CC} -Itemplates ${CFLAGS} pause_harness.cpp ${OBJS} -o pause_harness 
 
 # clean up everything that we build
-clean :
+clean:
 	$(MAKE) -C templates clean
 	$(RM) -f *.o *.out ballista blexer bparser callGen callGen_standAlone \
-	            genCodeCreator replacer testmarshal
+	            genCodeCreator replacer testmarshal MakefileHost MakefileTarget

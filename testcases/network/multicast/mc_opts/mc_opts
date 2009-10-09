@@ -43,8 +43,7 @@ if [ -z $LTPBIN ]; then
   PATH=../../../bin/:./:$PATH
 fi
 TC=mc_opts
-TCsrc=${TCsrc:-`pwd`}
-TCtmp=${TCtmp:-$TCsrc/$TC$$}
+TCtmp=${TCtmp:-$LTPROOT/bin/$TC$$}
 CLEANUP=${CLEANUP:-ON}
 EXECUTABLES=${EXECUTABLES:-"opts opts_e"}
 NUMLOOPS=${NUMLOOPS:-10}
@@ -58,8 +57,7 @@ setup()
   mkdir -p $TCtmp
   for i in $EXECUTABLES
   do
-    cp $TCsrc/$i $TCtmp
-    chmod 755 $TCtmp/$i
+    install -m 0755 "$LTPROOT/$i" "$TCtmp/."
   done
 }
 
@@ -117,7 +115,7 @@ do_cleanup()
    echo "$this_file: doing $0."
 
    cd /
-   if [ $TCtmp != $TCsrc ]; then
+   if [ "x$TCtmp" != "x$TCsrc" ]; then
       rm -rf $TCtmp
    fi
 }

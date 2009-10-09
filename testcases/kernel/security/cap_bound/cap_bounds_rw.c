@@ -24,7 +24,10 @@
  */
 
 #include <errno.h>
+#include "config.h"
+#if HAVE_SYS_CAPABILITY_H
 #include <sys/capability.h>
+#endif
 #include <sys/prctl.h>
 #include <test.h>
 

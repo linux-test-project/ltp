@@ -23,25 +23,31 @@
 # as compat_16.mk does on foo16. See both compat_16.mk
 # and Makefile for fadvise test case.
 
-TARGETS_64 = $(patsubst %.c,%_64,$(SRCS))
+SRCS			?= $(wildcard $(abs_srcdir)/*.c)
+
+MAKE_TARGETS		:= $(notdir $(patsubst %.c,%,$(SRCS)))
 
 ifneq ($(TST_NEWER_64_SYSCALL),no)
-TARGETS  +=  $(TARGETS_64)
+MAKE_TARGETS		+= $(addsuffix _64,$(MAKE_TARGETS))
 endif
 
-DEF_64 = TST_USE_NEWER64_SYSCALL
-NEWER_64_H = newer_64.h
-HAS_NEWER_64 := $(shell if [ -f $(NEWER_64_H) ]; then	\
-	  			echo yes;		\
-			else				\
-				echo no;		\
-			fi)
+# XXX (garrcoop): This code should be put in question as it cannot be applied
+# (no .h file, no TST_USE_NEWER64_SYSCALL def).
+DEF_64			:= TST_USE_NEWER64_SYSCALL
 
+NEWER_64_H		:= $(abs_srcdir)/../utils/newer_64.h
 
-ifeq ($(HAS_NEWER_64),yes)
+ifneq ($(wildcard $(NEWER_64_H)),)
+HAS_NEWER_64		:= 1
+
 %.c: $(NEWER_64_H)
+
+else
+HAS_NEWER_64		:= 0
 endif
+
+%_64: CFLAGS += -D$(DEF_64)=1
+# XXX (garrcoop): End section of code in question..
 
 %_64.o: %.c
 	$(COMPILE.c) $(OUTPUT_OPTION) $<
-%_64: CFLAGS += -D$(DEF_64)=1

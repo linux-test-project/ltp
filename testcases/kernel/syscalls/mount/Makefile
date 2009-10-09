@@ -21,22 +21,12 @@
 #
 #############################################################################
 
-CFLAGS += -I../../../../include -Wall -D_GNU_SOURCE
-LDLIBS += -L../../../../lib -lltp
+top_srcdir		?= ../../../..
 
-SRCS    = $(wildcard *.c)
-TARGETS = $(patsubst %.c,%,$(SRCS))
+include $(top_srcdir)/include/mk/testcases.mk
 
-all: $(TARGETS)
+CFLAGS			+= -D_GNU_SOURCE
 
-install: setuid_test.mode
-	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
-	ln -f test_mount ../../../bin/
+INSTALL_TARGETS		:= test_mount
 
-clean:
-	rm -f $(TARGETS)
-
-setuid_test.mode:
-	@/bin/sh ./setuid_test.mode.sh
-
-.PHONY: setuid_test.mode
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

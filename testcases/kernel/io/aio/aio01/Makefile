@@ -20,20 +20,11 @@
 # name of file	: Makefile						  #
 # description	: make(1) description file                                #
 ###########################################################################
-include ../../../../../config.mk
 
-CFLAGS+=	-I../../../../../include -Wall
-LOADLIBES+=	$(AIO_LIBS) -L../../../../../lib -lltp
+top_srcdir		?= ../../../../..
 
-SRCS=$(wildcard *.c)
-TARGETS=$(patsubst %.c,%,$(SRCS))
+include $(top_srcdir)/include/mk/testcases.mk
 
-all: $(TARGETS)
+LDLIBS			+= $(AIO_LIBS)
 
-install:
-	@set -e; for i in $(TARGETS); do ln -f $$i ../../../../bin/$$i ; done
-
-clean:
-	rm -f $(TARGETS)
-
-
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

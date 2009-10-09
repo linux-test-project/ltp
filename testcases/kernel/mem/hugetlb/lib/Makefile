@@ -16,27 +16,10 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
 
-#########################################################################
-# name of file	: Makefile						#
-# description	: make(1) description file to build a library for the 	#
-#		  common routines in the ipc(2) tests.			#
-#########################################################################
-SRCS=libipc.c
-OBJS=$(SRCS:.c=.o)
-MAINS=libipc.a
-CFLAGS+=-I../../../../../include -g -Wall
-CFLAGS+=-D_USC_LIB_
+top_srcdir		?= ../../../../..
 
-all: libipc.a
+include $(top_srcdir)/include/mk/env_pre.mk
 
-libipc.a: $(OBJS)
-	$(AR) -rc $@ $(OBJS)
+LIB			:= libipc_hugetlb.a
 
-$(OBJS):
-	$(CC) -c $(SRCS) $(CFLAGS)
-
-install:
-
-clean:
-	/bin/rm -rf $(OBJS) libipc.a
-
+include $(top_srcdir)/include/mk/lib.mk

@@ -63,7 +63,7 @@ do_test()
 
    IFNAME=${IFNAME:-$(netstat -i -n | grep "^[b-z]\{2,4\}[0-9][^*]"|\
       awk '{print $1}')}
-   INTERFACE=${INTERFACE:-$($LTPROOT/tools/gethost `hostname` | grep addresses: | awk '{print $2}')}
+   INTERFACE=${INTERFACE:-$($LTPROOT/testcases/bin/gethost `hostname` | grep addresses: | awk '{print $2}')}
 
    echo "Testing ifconfig and netstat"
 

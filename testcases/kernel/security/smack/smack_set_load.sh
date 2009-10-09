@@ -13,45 +13,41 @@
 #
 #               1         2         3         4         5         6
 #      123456789012345678901234567890123456789012345678901234567890123456789
+
+source smack_common.sh
+
 RuleA="TheOne                  TheOther                rwxa"
 RuleB="TheOne                  TheOther                r---"
 
-onlycap=`cat /smack/onlycap`
-if [ "$onlycap" != "" ]; then
-	echo The smack label reported for /smack/onlycap is \"$label\",
-	echo not the expected \"\".
+OldRule=`grep "^TheOne" "$smackfsdir/load" 2>/dev/null | grep ' TheOther '`
+
+echo -n "$RuleA" 2>/dev/null > "$smackfsdir/load"
+NewRule=`grep "^TheOne" "$smackfsdir/load" 2>/dev/null | grep ' TheOther '`
+if [ "$NewRule" = "" ]; then
+	echo "Rule did not get set."
 	exit 1
 fi
-
-OldRule=`grep "^TheOne" /smack/load | grep ' TheOther '`
-
-echo -n "$RuleA" > /smack/load
-NewRule=`grep "^TheOne" /smack/load | grep ' TheOther '`
-if [ "$NewRule" == "" ]; then
-	echo Rule did not get set.
-	exit 1
-fi
-Mode=`echo $NewRule | sed -e 's/.* //'`
+Mode=`echo "$NewRule" | sed -e 's/.* //'`
 if [ "$Mode" != "rwxa" ]; then
-	echo Rule \"$NewRule\" is not set correctly.
+	echo "Rule \"$NewRule\" is not set correctly."
 	exit 1
 fi
 
-echo -n "$RuleB" > /smack/load
-NewRule=`grep "^TheOne" /smack/load | grep ' TheOther '`
-if [ "$NewRule" == "" ]; then
-	echo Rule did not get set.
+echo -n "$RuleB" 2>/dev/null > "$smackfsdir/load"
+NewRule=`grep "^TheOne" "$smackfsdir/load" 2>/dev/null | grep ' TheOther '`
+if [ "$NewRule" = "" ]; then
+	echo "Rule did not get set."
 	exit 1
 fi
-Mode=`echo $NewRule | sed -e 's/.* //'`
+Mode=`echo "$NewRule" | sed -e 's/.* //'`
 if [ "$Mode" != "r" ]; then
-	echo Rule \"$NewRule\" is not set correctly.
+	echo "Rule \"$NewRule\" is not set correctly."
 	exit 1
 fi
 
 if [ "$OldRule" != "$NewRule" ]; then
-	echo Notice: Test access rule changed from
-	echo \"$OldRule\" to \"$NewRule\".
+	cat <<EOM
+Notice: Test access rule changed from
+"$OldRule" to "$NewRule".
+EOM
 fi
-
-exit 0

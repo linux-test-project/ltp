@@ -159,7 +159,6 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
-
 	/* Check for mandatory option of the testcase */
 	if (!Dflag) {
 		tst_resm(TWARN, "You must specifiy the device used for "
@@ -259,7 +258,7 @@ int test_rwflag(int i, int cnt)
 	case 0:
 		/* Validate MS_RDONLY flag of mount call */
 
-		sprintf(file, "%stmp", Path_name);
+		snprintf(file, PATH_MAX, "%stmp", Path_name);
 		if ((fd = open(file, O_CREAT | O_RDWR, S_IRWXU)) == -1) {
 			if (errno == EROFS) {
 				return 0;
@@ -275,7 +274,8 @@ int test_rwflag(int i, int cnt)
 	case 1:
 		/* Validate MS_NODEV flag of mount call */
 
-		sprintf(file, "%smynod_%d_%d", Path_name, getpid(), cnt);
+		snprintf(file, PATH_MAX, "%smynod_%d_%d", Path_name, getpid(),
+			       cnt);
 		if (mknod(file, S_IFBLK | 0777, 0) == 0) {
 			if ((fd = open(file, O_RDWR, S_IRWXU)) == -1) {
 				if (errno == EACCES) {
@@ -298,7 +298,7 @@ int test_rwflag(int i, int cnt)
 	case 2:
 		/* Validate MS_NOEXEC flag of mount call */
 
-		sprintf(file, "%stmp1", Path_name);
+		snprintf(file, PATH_MAX, "%stmp1", Path_name);
 		if ((fd = open(file, O_CREAT | O_RDWR, S_IRWXU)) == -1) {
 			tst_resm(TWARN,
 				 "open() of %s failed with error" " %d : %s",
@@ -321,7 +321,7 @@ int test_rwflag(int i, int cnt)
 		strcpy(write_buffer, "abcdefghijklmnopqrstuvwxyz");
 
 		/* Creat a temporary file under above directory */
-		sprintf(file, "%s%s", Path_name, TEMP_FILE);
+		snprintf(file, PATH_MAX, "%s%s", Path_name, TEMP_FILE);
 		if ((fildes = open(file, O_RDWR | O_CREAT, FILE_MODE))
 		    == -1) {
 			tst_resm(TWARN, "open(%s, O_RDWR | O_CREAT,"
@@ -376,7 +376,7 @@ int test_rwflag(int i, int cnt)
 				 strerror(TEST_ERRNO));
 			return 1;
 		} else {
-			sprintf(file, "%stmp2", Path_name);
+			snprintf(file, PATH_MAX, "%stmp2", Path_name);
 			if ((fd = open(file, O_CREAT | O_RDWR, S_IRWXU))
 			    == -1) {
 				tst_resm(TWARN, "open(%s) on readonly "
@@ -392,7 +392,7 @@ int test_rwflag(int i, int cnt)
 
 		setup_uid();
 		if ((pid = fork()) == 0) {
-			sprintf(file, "%ssetuid_test", Path_name);
+			snprintf(file, PATH_MAX, "%ssetuid_test", Path_name);
 			if (chmod(file, SUID_MODE) != 0) {
 				tst_resm(TWARN, "chmod() failed to "
 					 "change mode  %d errno = %d : %s",
@@ -461,6 +461,7 @@ void setup_uid()
 void setup()
 {
 	char *test_home;	/* variable to hold TESTHOME env */
+	struct stat setuid_test_stat;
 
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -485,7 +486,6 @@ void setup()
 			 "errno = %d: %s", mntpoint, DIR_MODE, errno,
 			 strerror(errno));
 	}
-
 	/* Get the current working directory of the process */
 	if (getcwd(Path_name, sizeof(Path_name)) == NULL) {
 		tst_brkm(TBROK, cleanup,
@@ -496,12 +496,27 @@ void setup()
 			 "errno = %d : %s", DIR_MODE, TEST_ERRNO,
 			 strerror(TEST_ERRNO));
 	}
+	snprintf(file, PATH_MAX, "%ssetuid_test", Path_name);
+	if (stat(file, &setuid_test_stat) < 0) {
+		tst_brkm(TBROK, cleanup, "stat for setuid_test failed");
+	} else {
+		if ((setuid_test_stat.st_uid || setuid_test_stat.st_gid) &&
+		     chown(file, 0, 0) < 0) {
+			tst_brkm(TBROK, cleanup,
+					"chown for setuid_test failed");
+		}
+		if (setuid_test_stat.st_mode != 04511 &&
+		    chmod(file, 04511) < 0) {
+			tst_brkm(TBROK, cleanup,
+					"setuid for setuid_test failed");
+		}
+	}
 
 	/*
 	 * Get the complete path of TESTDIR created
 	 * under temporary directory
 	 */
-	sprintf(Path_name, "%s/%s/", Path_name, mntpoint);
+	snprintf(Path_name, PATH_MAX, "%s/%s/", Path_name, mntpoint);
 
 	strcpy(testhome_path, test_home);
 

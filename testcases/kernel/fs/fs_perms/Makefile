@@ -1,15 +1,29 @@
-CFLAGS += -Wall
-CPPFLAGS += -I../../../../include
-LDLIBS += -lltp
-LDFLAGS += -L../../../../lib
+#
+#    kernel/fs/fs_perms testcases Makefile.
+#
+#    Copyright (C) 2009, Cisco Systems Inc.
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Garrett Cooper, July 2009
+#
 
-TARGETS = fs_perms testx
+top_srcdir			?= ../../../..
 
-all: fs_perms testx
+include $(top_srcdir)/include/mk/testcases.mk
 
-install:
-	@set -e; for i in $(TARGETS) ; do ln -f $$i ../../../bin/$$i ; done
-	cp fs_perms_simpletest.sh ../../../bin/
+INSTALL_TARGETS			:= fs_perms_simpletest.sh
 
-clean:
-	rm -f *.o fs_perms testx
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

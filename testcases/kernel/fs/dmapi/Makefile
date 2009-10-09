@@ -16,16 +16,17 @@
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
 
-#
-#	Makefile
-#
+top_srcdir		?= ../../../..
+
+include	$(top_srcdir)/include/mk/testcases.mk
 
 # dmapi_imp is platform for DMAPI implementation (currently supported: JFS)
-dmapi_imp = JFS
-# dmapi_lib is path of user space library for DMAPI implementation
-dmapi_lib = /usr/lib/libjfsdm.a
+dmapi_imp		:= JFS
 
-std_cflags = -I. -g -Wall -D$(dmapi_imp)
+# dmapi_lib is path of user space library for DMAPI implementation
+LDLIBS			+= -ljfsdm
+
+CFLAGS			+= -g -Wall -D$(dmapi_imp)
 
 #	Define USER_SPACE_FAULTS if DMAPI implementation handles user space
 #	  faults (JFS has plenty of handle code in user space, which causes
@@ -42,88 +43,20 @@ std_cflags = -I. -g -Wall -D$(dmapi_imp)
 #extra_cflags = -DDIRECTORY_LINKS
 #extra_cflags = -DINTERIOR_HOLES
 #extra_cflags = -DMULTIPLE_REGIONS
-extra_cflags = -DINTERIOR_HOLES -DMULTIPLE_REGIONS
+CFLAGS			+= -DINTERIOR_HOLES -DMULTIPLE_REGIONS
 
 cflags = $(std_cflags) $(extra_cflags)
 
 lflags = $(dmapi_lib)
 lflags_thd = $(dmapi_lib) -lpthread
 
-progs = handle session event_sn event_sd event_an pmr_pre pmr_post event_am \
-	  hole invis attr event_us disp config objref mount token right mmap \
-	  mmapfile event
+# Establish the original set of programs to compile.
+MAKE_TARGETS		:= $(patsubst %.c,%,$(wildcard $(abs_srcdir)/*.c))
+# Toss the chaff and normalize to the object directory.
+MAKE_TARGETS		:= $(filter-out %dm_test,$(MAKE_TARGETS))
 
-all	: $(progs)
+$(MAKE_TARGETS): %: %.o dm_test.o dm_test.h
 
-dm_test.h	: dm_vars.h Makefile
-	touch dm_test.h
+dm_test.o: dm_test.c dm_impl.h
 
-dm_test.o	: dm_test.c dm_test.h dm_impl.h Makefile
-	cc -c $(cflags) dm_test.c
-
-handle	: handle.c dm_test.h Makefile dm_test.o
-	cc $(cflags) -o handle handle.c dm_test.o $(lflags)
-
-session	: session.c dm_test.h Makefile dm_test.o
-	cc $(cflags) -o session session.c dm_test.o $(lflags)
-
-event_sn: event_sn.c dm_test.h Makefile dm_test.o
-	cc $(cflags) -o event_sn event_sn.c dm_test.o $(lflags_thd)
-
-event_sd: event_sd.c dm_test.h Makefile dm_test.o
-	cc $(cflags) -o event_sd event_sd.c dm_test.o $(lflags_thd)
-
-event_an: event_an.c dm_test.h Makefile dm_test.o
-	cc $(cflags) -o event_an event_an.c dm_test.o $(lflags_thd)
-
-pmr_pre : pmr_pre.c dm_test.h Makefile dm_test.o
-	cc $(cflags) -o pmr_pre pmr_pre.c dm_test.o $(lflags_thd)
-
-pmr_post: pmr_post.c dm_test.h Makefile dm_test.o
-	cc $(cflags) -o pmr_post pmr_post.c dm_test.o $(lflags_thd)
-
-event_am: event_am.c dm_test.h Makefile dm_test.o
-	cc $(cflags) -o event_am event_am.c dm_test.o $(lflags_thd)
-
-hole	: hole.c dm_test.h Makefile dm_test.o
-	cc $(cflags) -o hole hole.c dm_test.o $(lflags)
-
-invis	: invis.c dm_test.h Makefile dm_test.o
-	cc $(cflags) -o invis invis.c dm_test.o $(lflags_thd)
-
-attr	: attr.c dm_test.h Makefile dm_test.o
-	cc $(cflags) -o attr attr.c dm_test.o $(lflags)
-
-event_us: event_us.c dm_test.h Makefile dm_test.o
-	cc $(cflags) -o event_us event_us.c dm_test.o $(lflags_thd)
-
-disp	: disp.c dm_test.h Makefile dm_test.o
-	cc $(cflags) -o disp disp.c dm_test.o $(lflags_thd)
-
-config	: config.c dm_test.h Makefile dm_test.o
-	cc $(cflags) -o config config.c dm_test.o $(lflags)
-
-objref	: objref.c dm_test.h Makefile dm_test.o
-	cc $(cflags) -o objref objref.c dm_test.o $(lflags_thd)
-
-mount	: mount.c dm_test.h Makefile dm_test.o
-	cc $(cflags) -o mount mount.c dm_test.o $(lflags_thd)
-
-token	: token.c dm_test.h Makefile dm_test.o
-	cc $(cflags) -o token token.c dm_test.o $(lflags_thd)
-
-right	: right.c dm_test.h Makefile dm_test.o
-	cc $(cflags) -o right right.c dm_test.o $(lflags_thd)
-
-mmap	: mmap.c dm_test.h Makefile dm_test.o
-	cc $(cflags) -o mmap mmap.c dm_test.o $(lflags_thd)
-
-mmapfile: mmapfile.c dm_test.h Makefile
-	cc $(cflags) -o mmapfile mmapfile.c $(lflags)
-
-event	: event.c dm_test.h Makefile dm_test.o
-	cc $(cflags) -o event event.c dm_test.o $(lflags_thd)
-
-clean	: 
-	rm -f *.o
-	rm -f $(progs)
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

@@ -1,58 +1,33 @@
 #
-# Makefile for diotests
+#  Copyright (c) International Business Machines  Corp., 2001
 #
-# History:
-# 04/10/2002	nsharoff	nsharoff@us.ibm.com
+#  This program is free software;  you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY;  without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+#  the GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program;  if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
 
+top_srcdir		?= ../../../..
 
-CFLAGS+=		 -O -Wall -DSHARED_OFILE -D_GNU_SOURCE -I../../../../include -L../../../../lib 
-LOADLIBES+= -lltp
+include $(top_srcdir)/include/mk/testcases.mk
 
-SRCS=	diotest1.c diotest2.c diotest3.c diotest4.c diotest5.c \
-	diotest6.c dma_thread_diotest7.c
+CFLAGS			+= -DSHARED_OFILE -D_GNU_SOURCE 
 
-BINS=	diotest1 diotest2 diotest3 diotest4 diotest5 \
-	diotest6 dma_thread_diotest7  
+LDLIBS			+= -lpthread
 
-all:	diotest_routines.o bins
+MAKE_TARGETS		:= $(filter-out diotest_routines,$(patsubst $(abs_srcdir)/%.c,%,$(wildcard $(abs_srcdir)/*.c)))
 
-bins: $& $(BINS)
+$(MAKE_TARGETS): %: %.o diotest_routines.o
 
-diotest_routines.o: diotest_routines.c
-		 $(CC) -c diotest_routines.c $(CFLAGS) 
+INSTALL_TARGETS		:= test_dma_thread_diotest7.sh
 
-diotest1: diotest1.c diotest_routines.o
-	$(CC) -o diotest1 diotest_routines.o diotest1.c  $(CFLAGS) $(LDFLAGS) $(LOADLIBES)
-	rm -f diotest1.o
-
-diotest2: diotest2.c diotest_routines.o
-	$(CC) -o diotest2 diotest_routines.o diotest2.c $(CFLAGS) $(LDFLAGS) $(LOADLIBES)
-	rm -f diotest2.o
-
-diotest3: diotest3.c diotest_routines.o 
-	$(CC) -o diotest3 diotest_routines.o diotest3.c $(CFLAGS) $(LDFLAGS) $(LOADLIBES)
-	rm -f diotest3.o
-
-diotest4: diotest4.c diotest_routines.o
-	$(CC) -o diotest4 diotest_routines.o diotest4.c $(CFLAGS) $(LDFLAGS) $(LOADLIBES)
-	rm -f diotest4.o
-
-diotest5: diotest5.c diotest_routines.o
-	$(CC) -o diotest5 diotest_routines.o diotest5.c $(CFLAGS) $(LDFLAGS) $(LOADLIBES)
-	rm -f diotest5.o
-
-diotest6: diotest6.c diotest_routines.o
-	$(CC) -o diotest6 diotest_routines.o diotest6.c $(CFLAGS) $(LDFLAGS) $(LOADLIBES)
-	rm -f diotest6.o
-
-dma_thread_diotest7: dma_thread_diotest7.c
-	$(CC) -g -o dma_thread_diotest7 dma_thread_diotest7.c -lpthread
-
-clean:	
-	rm -f $(BINS) diotest_routines.o
-
-install:
-	ln -f $(BINS) ../../../bin
-	ln -f test_dma_thread_diotest7.sh ../../../bin/
-
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

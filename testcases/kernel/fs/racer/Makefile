@@ -1,5 +1,5 @@
 #
-#  Copyright (c) International Business Machines  Corp., 2008
+#  Copyright (c) International Business Machines  Corp., 2001
 #
 #  This program is free software;  you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -16,12 +16,10 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
 
-###########################################################################
+top_srcdir		?= ../../../..
 
-all:
+include $(top_srcdir)/include/mk/testcases.mk
 
-install:
-	cp -r *.sh ../../../bin/
+INSTALL_TARGETS		:= *.sh
 
-clean:
-
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

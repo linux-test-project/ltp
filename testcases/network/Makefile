@@ -1,11 +1,48 @@
-SUBDIRS = `ls */Makefile | sed "s/Makefile//g"`
+#
+#    network test suite Makefile.
+#
+#    Copyright (C) 2009, Cisco Systems Inc.
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Garrett Cooper, July 2009
+#
 
-all:
-	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
+top_srcdir		?= ../..
 
-install:
-	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i install ; done
+include $(top_srcdir)/include/mk/env_pre.mk
 
-clean:
-	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i clean ; done
+DIR			:= datafiles
 
+CLEAN_TARGETS		+= $(DIR)
+
+INSTALL_DIR		:= testcases/bin
+
+MAKE_TARGETS		:= $(addprefix $(DIR)/bin.,sm med lg jmb)
+
+RM			+= -r
+
+$(MAKE_TARGETS): | generate 
+
+.PHONY: generate
+
+include $(top_srcdir)/include/mk/generic_trunk_target.mk
+
+$(DESTDIR)/$(INSTALL_DIR)/$(DIR) $(DIR): %:
+	mkdir -p "$@"
+
+generate: $(DIR) $(DESTDIR)/$(INSTALL_DIR)/$(DIR)
+	cd "$(DIR)" && \
+	abs_top_srcdir="$(abs_top_srcdir)" "$(abs_srcdir)/generate.sh"

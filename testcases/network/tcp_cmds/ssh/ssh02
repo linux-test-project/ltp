@@ -26,57 +26,69 @@
 #    03/03 Jerone Young (jeroney@us.ibm.com)
 #
 
-export RHOST="localhost"
-export TEST_USER="ssh_usr2"
-export TEST_USER_PASSWD="now_this_is_a_good_ltp_test_password"
-export TEST_USER_ENCRYPTED_PASSWD="42VmxaOByKwlA"
-export TEST_USER_HOMEDIR="/home/$TEST_USER"
-
 #-----------------------------------------------------------------------
 # FUNCTION:  do_setup
 #-----------------------------------------------------------------------
 
-do_setup(){
-	#erase user if he may exist , so we can have a clean env
-        rm -rf /home/$TEST_USER
-        userdel $TEST_USER 
-        sleep 1
-	
-        useradd -m -p $TEST_USER_ENCRYPTED_PASSWD $TEST_USER 
-        if [ $? != 0 ]
-        then {
-                echo "Could not add test user $TEST_USER to system $RHOST."
-                exit 1
-        }
-        fi
-	
-	#create users home diretory (SLES 8 does not do this, even when specified in adduser)
-        USER_UID=`id -u $TEST_USER`
-        USER_GID=`id -g $TEST_USER`
-        mkdir $TEST_USER_HOMEDIR
-        chown -R $USER_UID.$USER_GID $TEST_USER_HOMEDIR
-	
+do_setup()
+{
+
+    export RHOST="localhost"
+    export TEST_USER="ssh_usr2"
+    export TEST_USER_PASSWD="now_this_is_a_good_ltp_test_password"
+    export TEST_USER_ENCRYPTED_PASSWD="42VmxaOByKwlA"
+    export TEST_USER_HOMEDIR="/home/$TEST_USER"
+
+    # erase user if he/she already exists, so we can have a clean env
+    TCtmp=/home/$TEST_USER
+
+    rm -Rf $TCtmp
+
+    tst_setup
+
+    exists expect ssh ssh02_s1 useradd userdel
+
+    userdel $TEST_USER 
+    sleep 1
+
+    if ! useradd -m -p $TEST_USER_ENCRYPTED_PASSWD $TEST_USER; then
+        end_testcase "Could not add test user $TEST_USER to system $RHOST."
+    fi
+
+    # create users home diretory (SLES 8 does not do this, even when specified
+    # in adduser)
+    USER_UID=$(id -u $TEST_USER)
+    USER_GID=$(id -g $TEST_USER)
+    if ! mkdir "$TEST_USER_HOMEDIR"; then
+        end_testcase "Failed to create $TEST_USER_HOMEDIR"
+    fi
+    chown -R $USER_UID.$USER_GID "$TEST_USER_HOMEDIR"
+
+    trap do_cleanup EXIT
+
 }
 
 #-----------------------------------------------------------------------
 # FUNCTION:  do_cleanup
 #-----------------------------------------------------------------------
 
-do_cleanup(){
-        rm -rf /home/$TEST_USER
-        userdel $TEST_USER
+do_cleanup()
+{
+    userdel $TEST_USER
+    tst_cleanup
 }
 
 #-----------------------------------------------------------------------
 # FUNCTION:  MAIN
 #
 # DESCRIPTION: Create Test User
-#              Call upon script to make sure an invalid user can not have access 
-#              Cleanup Test User from system
-#              Exit with exit code of script called upon
+#          Call upon script to make sure an invalid user can not have access 
+#          Cleanup Test User from system
+#          Exit with exit code of script called upon
 #-----------------------------------------------------------------------
+. net_cmdlib.sh
+
+read_opts $*
 do_setup
-ssh02_s1
-EXIT_CODE=$?
+ssh02_s1 || end_testcase "Testcase failed"
 do_cleanup
-exit $EXIT_CODE

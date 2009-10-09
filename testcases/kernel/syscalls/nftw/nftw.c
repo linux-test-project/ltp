@@ -17,8 +17,8 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-/* 10/31/2002   Port to LTP	robbiew@us.ibm.com */
-/* 06/30/2001	Port to Linux	nsharoff@us.ibm.com */
+/* 10/31/2002   Port to LTP     robbiew@us.ibm.com */
+/* 06/30/2001   Port to Linux   nsharoff@us.ibm.com */
 
 /*
  * NAME
@@ -48,7 +48,6 @@ int TST_TOTAL = 10;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 struct passwd *ltpuser;		/* password struct for ltpuser */
-
 /**************/
 
 /* Used for error return for some library routines */
@@ -242,7 +241,7 @@ struct list mnem[] = {
 	{"FTW_DNR", FTW_DNR},
 	{"FTW_NS", FTW_NS},
 	{"FTW_SL", FTW_SL},
-#ifndef LINUX
+#ifndef __linux__
 /* How do we define __USE_XOPEN_EXTENDED ? Following depends on that */
 	{"FTW_DP", FTW_DP},
 	{"FTW_SLN", FTW_SLN},
@@ -252,11 +251,7 @@ struct list mnem[] = {
 int npathdats, ngoods, nbads, nmnem;
 
 /*--------------------------------------------------------------*/
-#ifdef LINUX
 int
-#else
-void
-#endif
 main(void)
 {
 	setup();		/* temp file is now open        */

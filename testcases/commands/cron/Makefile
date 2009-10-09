@@ -1,20 +1,29 @@
-all: cron_dirs_check
+#
+#    commands/cron testcases Makefile.
+#
+#    Copyright (C) 2009, Cisco Systems Inc.
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Garrett Cooper, July 2009
+#
 
-cron_dirs_check:
-	$(CC) $(CROSS_CFLAGS) $(LDFLAGS) -o cron_dirs_check cron_dirs_check.c
+top_srcdir		?= ../../..
 
-install:
-	chmod 755 cron_tests.sh
-	@ln -f cron_tests.sh ../../bin/cron_tests.sh
-	@ln -f cron02  ../../bin/cron02
-	@ln -f cron03  ../../bin/cron03
-	@ln -f cron_illegal_cron_lines ../../bin/cron_illegal_cron_lines
-	@ln -f cron_pos_tests.sh ../../bin/cron_pos_tests.sh
-	@ln -f cron_neg_tests.sh ../../bin/cron_neg_tests.sh
-	@ln -f cron_allow01 ../../bin/cron_allow01
-	@ln -f cron_deny01 ../../bin/cron_deny01
-	@ln -f cron_dirs_checks01 ../../bin/cron_dirs_checks01
-	@ln -f cron_dirs_check ../../bin/cron_dirs_check
-clean:
-	rm -f cron_dirs_check
+include $(top_srcdir)/include/mk/env_pre.mk
 
+INSTALL_TARGETS		:= cron0[23] cron_illegal_cron_lines cron_allow01 cron_deny01 cron_dirs_checks01 *.sh
+
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

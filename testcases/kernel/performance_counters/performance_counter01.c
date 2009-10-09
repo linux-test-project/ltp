@@ -50,7 +50,7 @@ extern char *TESTDIR;                /* temporary dir created by tst_tmpdir() */
 char *TCID     = "performance_counter01"; /* test program identifier.          */
 int  TST_TOTAL = 1; 
 
-#define cleanup tst_exit /* for now... */
+static void cleanup(void) { /* Stub function. */ }
 
 int perf_counter_open(int		hw_event_type,
                       unsigned int	hw_event_period,
@@ -71,7 +71,8 @@ enum hw_event_types {
 	PERF_COUNT_BRANCH_MISSES,
 };
 
-int main(void) {
+int
+main(void) {
 	unsigned long long count1, count2;
 	int fd1, fd2, ret;
 	fd1 = perf_counter_open(PERF_COUNT_INSTRUCTIONS, 0, 0, 0, -1);

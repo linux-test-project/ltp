@@ -1,11 +1,11 @@
 #DESCRIPTION:IPV6 related tests that do not require expect
-echo6 export TCbin=$LTPROOT/testcases/network/ipv6/echo6;echo601
-finger6 finger601
-ftp6 export TCbin=$LTPROOT/testcases/network/ipv6/ftp6; ftp01
-perf_lan6 export TCbin=$LTPROOT/testcases/network/ipv6/perf_lan6; perf_lan6
-ping6 ping601
-rcp6 export TCbin=$LTPROOT/testcases/network/ipv6/rcp6; rcp01
-rsh6 rsh01
-rwho6 rwho01
-sendfile6 export TCbin=$LTPROOT/testcases/network/ipv6/sendfile6; sendfile60
-tcpdump6 tcpdump601
+echo6 echo01 -6
+finger6 finger01
+ftp6 ftp01 -6
+perf_lan6 perf_lan -6
+ping6 ping01 -6
+rcp6 rcp01 -6
+rsh6 rsh01 -6
+rwho6 rwho01 -6
+sendfile6 sendfile01 -6
+tcpdump6 tcpdump01 -6

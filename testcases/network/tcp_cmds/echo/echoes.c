@@ -12,310 +12,393 @@
 @! # SPEC. EXEC. REQS: May require multiple of this test to run
 @! #		       to target machines from multiple machine in order
 @! #		       to create stress condition
-@! # 			echoes <REMOTE HOST> <echofile> <number of process>
+@! # 			echoes <REMOTE HOST> <echofile> <number of processes>
 */
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/stat.h>
+#include <sys/wait.h>
+#include <errno.h>
+#include <libgen.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <netdb.h>
-#include <sys/types.h>
-#include <sys/socket.h>
 #include <netinet/in.h>
 #include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/wait.h>
-#include <unistd.h>
+#include "test.h"
+#include "netdefs.h"
 
-#define TRUE 1
-#define FALSE 0
+#if INET6
+char *TCID = "echoes6";
+#else
+char *TCID = "echoes";
+#endif
 
-void echofile (struct servent *, struct hostent *, char *, char *);
-void getfilename(char *, char*, int);
-int checkfile(char *, char *);
-void itoa(int, char []);
-void reverse(char []);
-void cleanup(int);
+int	TST_TOTAL = 1;
+
+void	echofile (struct servent *, struct addrinfo *, char *, char *);
+int	checkfile(char *, char *);
+void	cleanup(int);
 
 
-int main (int argc,char *argv[],char *env[])
+int
+main (int argc, char *argv[], char *env[])
 {
 
-	int	i,j,k,wait_stat,pid,finish;
-	struct	servent *sp;
-	struct 	hostent *hp;
+	unsigned int	finish, i, j, k;
+	int		gai, wait_stat;
+	pid_t		pid;
+	struct addrinfo hints, *hp;
+	struct		servent *sp;
 	struct  {
-		char	resultfile[35];
-		int	pid;
-		int	status;
-	}echo_struc[200];
+		char	resultfile[FILENAME_MAX+1];
+		pid_t	pid;
+	} echo_struc[200];
 
-	hp = gethostbyname(argv[1]);
-	if ((sp=getservbyname("echo","tcp"))==NULL) {
-		printf("ERROR service is not available\n");
-		perror("echo");
-		exit(1);
+	memset(&hints, 0, sizeof(hints));
+	hints.ai_family = PFI;
+	hints.ai_socktype = SOCK_STREAM;
+
+	if (argc != 4) {
+		tst_resm(TBROK, "usage: remote-addr file num-procs");
+		tst_exit();
 	}
-	i=atoi(argv[3]);
-	j=0;
-	while ( i-- > 0 )  {
-		echo_struc[j].status=0;
-		switch (pid=fork())  {
+
+	if ((sp = getservbyname("echo", "tcp")) == NULL) {
+		tst_resm(TBROK, "echo service not found (check "
+				"/etc/services?)");
+		tst_exit();
+	}
+
+	if ((gai = getaddrinfo(argv[1], NULL, &hints, &hp)) != 0) {
+		tst_resm(TBROK, "Unknown subject address %s: %s\n",
+				argv[1], gai_strerror(gai));
+		tst_exit();
+	}
+	if (!hp || !hp->ai_addr || hp->ai_addr->sa_family != AFI) {
+		tst_resm(TBROK, "getaddrinfo failed");
+		tst_exit();
+	}
+	i = (unsigned int) strtol(argv[3], (char**) NULL, 10);
+	j = 0;
+	while (i-- > 0)  {
+		switch (pid = fork()) {
 		case 0:
-			getfilename(argv[2],echo_struc[j].resultfile,j);
-			echofile(sp,hp,echo_struc[j].resultfile,argv[2]); 
+			snprintf(echo_struc[j].resultfile,
+				 FILENAME_MAX, "%s%u", argv[2], j);
+			echofile(sp, hp, echo_struc[j].resultfile, argv[2]);
 			break;
 		case -1:
-			printf("ERROR when forking a new process\n");
-			perror("echo");
-			exit(1);
+			tst_resm(TFAIL, "Failed to fork a new process: %s",
+					strerror(errno));
+			tst_exit();
 			break;
 		default:
-			echo_struc[j].pid=pid;
-			echo_struc[j].status=1;
+			echo_struc[j].pid = pid;
 			j++;
 			break;
 		}
 	}
-	finish=atoi(argv[3]);
-	i=finish;
+	finish = (unsigned int) strtol(argv[3], (char**) NULL, 10);
+	i = finish;
+	/* Consume all operating threads until we're done... */
 	while (finish != 0) {
-		if ((pid=wait(&wait_stat)) == -1) {
-			printf("ERROR in wait process\n");
-			perror("echo");
-			exit(1);
+
+		if ((pid = wait(&wait_stat)) == -1) {
+			tst_resm(TFAIL, "ERROR in wait process");
+			tst_exit();
 		}
-		if (wait_stat==0) 
-			for (j=0;j<i;j++) {
-				if(echo_struc[j].pid==pid) {
-					echo_struc[j].status=2;
+		if (wait_stat == 0) {
+			for (j = 0; j < i; j++) {
+				if (echo_struc[j].pid == pid) {
 					finish--;
-					j=i;
+					j = i;
 				}
 			}
-		else {
-			for (k=0;k < i;k++)
-				if (echo_struc[k].status==1) {
-					kill(echo_struc[k].pid,9);
+		} else {
+
+			tst_resm(TFAIL, "wait(2) status was non-zero");
+
+			if (WIFEXITED(wait_stat)) {
+				tst_resm(TINFO, "exit status: %d",
+						WEXITSTATUS(wait_stat));
+			} else if (WIFSIGNALED(wait_stat)) {
+				tst_resm(TINFO, "signaled: %d",
+						WTERMSIG(wait_stat));
+			}
+
+			for (k = 0; k < i; k++) {
+				if (kill(echo_struc[k].pid, 0) == 0) {
+					kill(echo_struc[k].pid, 9);
 				}
-			exit(1);
+			}
+
+			tst_exit();
+
 		}
+
 	}
-	exit(0);
+
+	return 0;
 }
 
-void echofile (struct servent *sp, struct hostent *hp, char *resultfile, char *orgfile)
+void
+echofile (struct servent *sp, struct addrinfo *ai, char *resultfile,
+		char *srcfile)
 {
-	int	n;
-	int	port;
-	char	wr_buffer[BUFSIZ];
-	char	rd_buffer[BUFSIZ];
-	struct	in_addr	hostaddr;
-	struct sockaddr_in sa;
+	int		n;
+	int		port;
+	char		wr_buffer[BUFSIZ];
+	char		rd_buffer[BUFSIZ];
+	sai_t		sa;
 #ifdef DEBUG
-	struct	sockaddr_in address;
-	u_short	addrlen;
-	u_short	portnum;
+	sa_t		address;
+	socklen_t	addrlen;
 #endif
-	int	s;
-	int	finish;
-	int	fdw,fdr;
-	int	nread,nwrite;
-	int	pid;
-	int	count;
-#ifdef 	DEBUG
-	printf("Create socket .....\n");
-#endif
-	pid=getpid();
-	if ((s=socket(AF_INET,SOCK_STREAM,0)) < 0 ) {
-		printf("ERROR occured during socket operation(%d)\n",pid);
-		perror("echo:socket");
-		cleanup(s);
-		exit(1);
-	}
-	port=sp->s_port;
-	memcpy(&hostaddr,hp->h_addr_list[0],sizeof(struct in_addr));
-	memset((char *)&sa,0x00,sizeof (sa));
-	sa.sin_port=port;
-	sa.sin_family=AF_INET;
-	sa.sin_addr=hostaddr;
+	int		s;
+	int		finish;
+	int		fdw, fdr;
+	int		nread, nwrite;
+	int		count;
+	pid_t		pid;
 
 #ifdef 	DEBUG
-	printf("sizeof (hostaddr)=%d\n",sizeof (hostaddr));
-	printf("port=%d hostaddr=%x", ntohs(port), hostaddr);
-	printf("Connect .......\n");
+	printf("Creating socket .....\n");
 #endif
-	if (connect(s,(struct sockaddr *) &sa,sizeof(sa))==-1) {
-		printf ("ERROR occured during connect socket operation(%d)\n",pid);
+
+	pid = getpid();
+	if ((s = socket(AFI, SOCK_STREAM, 0)) < 0 ) {
+		tst_resm(TBROK, "Failed to create listener socket (pid=%d)",
+				pid);
+		perror("echo:socket");
+		cleanup(s);
+		tst_exit();
+	}
+	port = sp->s_port;
+
+	/*
+	 * TODO: Old code did something of the form:
+	 *
+	 * struct hostent *hp;
+	 *
+	 * hp = gethostbyname(argv[1]);
+	 *
+	 * ...
+	 *
+	 * struct	in_addr	hostaddr;
+	 *
+	 * memcpy(&hostaddr,hp->h_addr_list[0],sizeof(struct in_addr));
+	 *
+	 * This is all fine and dandy, but gethostbyname has been deprecated
+	 * for some time, and doesn't work too well with IPV6 (from what I've
+	 * read), so I have to push it over to getaddrinfo. getaddrinfo isn't
+	 * a 1:1 mapping though, so I have to do some work to shoehorn the old
+	 * code to fit the new code.
+	 *
+	 * Some notes (from a test app)...
+	 *
+	 * (gdb) set args 127.0.0.1
+	 * (gdb) list
+	 * 33              for (int i = 1; i < argc; i++) {
+	 * 34
+	 * 35                      gai = getaddrinfo(argv[i], NULL, &hints, &ai);
+	 * 36                      hp = gethostbyname(argv[i]);
+	 * 37
+	 * 38                      if (gai != 0) {
+	 * 39                              printf("Error: %s\n", gai_strerror(gai));
+	 * 40                              error = 2;
+	 * 41                      } else {
+	 * 42                              printf("Host IP: 0x%x\n", ai->ai_addr);
+	 * (gdb) p *hp
+	 * $16 = {h_name = 0x1a60198 "127.0.0.1", h_aliases = 0x1a60190, h_addrtype = 2, 
+	 *   h_length = 4, h_addr_list = 0x1a60180}
+	 * (gdb) p *hp->h_addr_list
+	 * $14 = 0x1a60170 "\177"
+	 * (gdb) p *ai
+	 * $15 = {ai_flags = 0, ai_family = 2, ai_socktype = 1, ai_protocol = 6, 
+	 *   ai_addrlen = 16, ai_addr = 0x1a600b0, ai_canonname = 0x0, 
+	 *     ai_next = 0x1a600d0}
+	 *
+	 * If one continues down this path, SIGPIPE will get tossed at the first
+	 * write(2), as opposed to Connection refused (the old code). So I'm not
+	 * passing in the correct info to connect(2).
+	 *
+	 * That and using -DDEBUG with the getpeername(3) call below always fails
+	 * (that alone should be a sufficient to note that my sockaddr* data is
+	 * skewed).
+	 *
+	 * For now let's just mark it broken.
+	 *
+	 */
+	//tst_resm(TBROK, "FIX ME GARRETT!");
+	//tst_exit();
+
+	memset((char*) &sa, 0, sizeof(sa));
+	memcpy(&sa, ai->ai_addr, ai->ai_addrlen);
+
+#if INET6
+	sa.sin6_port = port;
+#else
+	sa.sin_port = port;
+#endif
+
+	if (connect(s, (sa_t*) &sa, sizeof(sa)) == -1) {
+		tst_resm(TBROK, "Failed to create connector socket (pid=%d)",
+				pid);
 		perror("echo:connect");
 		cleanup(s);
-		exit(1);
+		tst_exit();
 	}
+
 #ifdef DEBUG
-	addrlen=sizeof(address);
-	printf("addrlen=%d\n",addrlen);
-	printf("hp->h_length=%d\n",hp->h_length);
-	printf("hp->h_addrtype=%d\n",hp->h_addrtype);
-	printf("hp->h_addr=%d\n",inet_ntoa(hp->h_addr));
-	if (getsockname(s,&address,&addrlen) == -1 ) {
-		printf ("ERROR occured during getsockname(%d)\n",pid);
+	/* printf("addrlen=%d\n", addrlen); */
+	/* printf("ai->ai_addr=%s\n", inet_ntoa(ai->ai_addr)); */
+	if (getsockname(s, &address, &addrlen) == -1) {
+		tst_resm (TBROK, "getsockname call failed (pid=%d): %s",
+				 pid, strerror(errno));
 		perror("echo");
 		cleanup(s);
-		exit(1);
+		tst_exit();
 	}
-	portnum=ntohs(address.sin_port);
-	printf ("local port is: %d\n",portnum);
-	if (getpeername(s,&address,&addrlen) == -1) {
-		printf ("ERROR occured during getpeername(%d)\n",pid);
-		perror("echo");
+
+	printf ("local port is: %d\n", port);
+
+	if (getpeername(s, &address, &addrlen) == -1) {
+		tst_resm (TBROK, "getpeername call failed (pid=%d): %s",
+				 pid, strerror(errno));
 		cleanup(s);
-		exit(1);
+		tst_exit();
 	}
-	portnum=ntohs(address.sin_port);
-	/*	printf ("remote address is: %d\n",portnum);
-*/
+
+	tst_resm (TINFO, "The remote port is: %d\n", port);
 #endif
-	if ((fdr=open(orgfile,O_RDONLY)) < 0 ) {
-		printf("ERROR when opening the input file(%d)\n",pid);
+	if ((fdr = open(srcfile, O_RDONLY)) < 0) {
+		tst_resm(TBROK, "Failed to open input file (pid=%d)", pid);
 		perror("echo:orginal file");
 		cleanup(s);
-		exit(1);
+		tst_exit();
 	}
-	if ((fdw=creat(resultfile,0644)) < 0 ) {
-		printf("ERROR when opening the temporary temp file(%d)\n",pid);
+
+	if ((fdw = creat(resultfile, 0644)) < 0) {
+		tst_resm(TBROK, "Failed to create a temporary file (pid=%d)",
+				pid);
 		perror("echo:resultfile");
 		cleanup(s);
-		exit(1);
+		tst_exit();
 	}
-	finish=FALSE;
-	count=0;
-	while (!finish) {
-		if ((nwrite=read(fdr,wr_buffer,BUFSIZ))==-1) {
-			printf("ERROR when reading input file(%d)\n",pid);
-			perror("echo:orginal file");
+#if DEBUG
+	tst_resm (TINFO, "creat(resultfile,...) done.");
+#endif
+	finish = FALSE;
+	count = 0;
+	while (finish == FALSE) {
+
+		if ((nwrite = read(fdr, wr_buffer, BUFSIZ)) == -1) {
+			tst_resm(TFAIL, "Failed to read from file (pid=%d)",
+					pid);
 			cleanup(s);
-			exit(1);
+			perror("read srcfile");
 		}
-		if (nwrite==0)
-			finish=TRUE;
+#if DEBUG
+		tst_resm (TINFO, "Read %d bytes from file", nwrite);
+#endif
+		if (nwrite == 0)
+			finish = TRUE;
 		else {
 			count++;
-			if((n=write(s,wr_buffer,nwrite))!=nwrite) {
-				printf("ERROR during write to socket(%d)\n",pid);
-				perror("echo:socket write");
+			if((n = write(s, wr_buffer, nwrite)) != nwrite) {
+				tst_resm(TFAIL, "Failed to write to socket "
+						"(pid=%d)", pid);
 				cleanup(s);
-				exit(1);
+				perror("write");
 			}
 #ifdef 	DEBUG
-/*
-			printf("Writing .......%d\n",count);
-*/
+			tst_resm(TINFO, "Writing %d bytes to remote socket",
+					count);
 #endif
-			while (nwrite!=0) {
-				if((nread=read(s,rd_buffer,BUFSIZ))==-1) {
-					printf("read size:%d\n",n);
-					printf("ERROR during read from socket(%d)\n",pid);
-					perror("echo:socket read");
+			while (nwrite != 0) {
+
+				nread = read(s, rd_buffer, BUFSIZ);
+				if (nread == -1) {
+					printf("read size: %d\n", n);
+					tst_resm(TFAIL, "Failed to read from "
+							"socket [2nd time] "
+							"(pid=%d)", pid);
 					cleanup(s);
-					exit(1);
+					perror("socket read");
 				}
 #ifdef 	DEBUG
-/*
-				printf("Reading .......    %d\n",count);
-*/
+				printf("Reading ....... %d\n",count);
 #endif
-				if((n=write(fdw,rd_buffer,nread))!=nread) {
-					printf("read size:%d\n",n);
-					printf("ERROR during write to result file(%d)\n",pid);
-					perror("echo:result file");
+				n = write(fdw, rd_buffer, nread);
+				if (n != nread) {
+					tst_resm(TFAIL, "ERROR during write to "
+							"result file (pid=%d); "
+							"read amount: %d",
+							pid, n);
 					cleanup(s);
-					exit(1);
+					perror("write resultfile");
 				}
-				nwrite-=nread;
+
+				nwrite -= nread;
+
 			}
 
 		}/* end of else */
+
 	} /* end of while */
-	if ((n=close(s)) == -1) {
-		printf("ERROR in closing socket(%d)\n",pid);
-		perror("echo");
-		exit(1);
+
+	if ((n = close(s)) == -1) {
+		tst_resm(TBROK, "Failed to cleanly close socket (pid=%d)",
+				pid);
+		perror("close");
+		tst_exit();
 	}
-	if ((n=close(fdr)) == -1) {
-		printf("ERROR in closing input file(%d)\n",pid);
-		perror("echo");
-		exit(1);
+	if ((n = close(fdr)) == -1) {
+		tst_resm(TBROK, "Failed to cleanly close input file (pid=%d)",
+				pid);
+		perror("close srcfile");
+		tst_exit();
 	}
-	if ((n=close(fdw) ) == -1) {
-		printf("ERROR in closing temp file(%d)\n",pid);
-		perror("echo");
-		exit(1);
+	if ((n = close(fdw) ) == -1) {
+		tst_resm(TBROK, "Failed to cleanly close temp file (pid=%d)",
+				pid);
+		perror("close");
+		tst_exit();
 	}
-	if (checkfile(orgfile,resultfile)) {
-		printf("ERROR input file and output file are not equal(%d)\n",pid);
-		exit(1);
+	if (checkfile(srcfile, resultfile) != TRUE) {
+		tst_resm(TFAIL, "Input file and output file are not equal "
+				"(pid=%d)", pid);
+		tst_exit();
 	}
-	printf("Finish ....%d\n",pid);
+	tst_resm(TINFO, "Finish .... (pid=%d)", pid);
 	exit(0);
 }
 
-void getfilename(char *strptr, char* filename, int j)
+int
+checkfile(char *file1, char *file2)
 {
-	int 	i;
-	char	s[10],*sptr=&s[0];
-
-	strcpy(filename,strptr);
-	itoa(j,s);
-	strcat(filename,s);
-}
-
-int checkfile(char *file1, char *file2)
-{
-	int	n;
-	struct	stat buffer,*bufptr=&buffer;
-	stat(file1,bufptr);
-	n=bufptr->st_size;
+	off_t	n;
+	struct	stat buffer;
+	stat(file1, &buffer);
+	n = buffer.st_size;
 #ifdef 	DEBUG
-	/*	printf("%s size= %d \n",file1,n);
-*/
+	printf("%s size=%lu\n", file1, n);
 #endif
-	stat(file2,bufptr);
+	stat(file2, &buffer);
 #ifdef 	DEBUG
-	/*	printf("%s size= %d \n",file2,bufptr->st_size);
-*/
+	printf("%s size=%lu\n", file2, buffer.st_size);
 #endif
-	if(n != buffer.st_size)
-		return(TRUE);
-	else return(FALSE);
+	if (n != buffer.st_size)
+		return FALSE;
+	else
+		return TRUE;
 }
 
-void itoa(int n, char s[])
-{
-	int i, sign;
-
-	if ((sign = n) < 0)
-		n = -n;
-	i = 0;
-	do {
-		s[i++] = n % 10 + '0';
-	} while ((n /= 10) > 0);
-	if (sign < 0)
-		s[i++] = '-';
-	s[i] = '\0';
-	reverse(s);
-}
-
-void reverse(char s[])
-{
-	int c, i, j;
-
-	for (i=0, j=strlen(s)-1; i < j; i++, j--) {
-		c = s[i];
-		s[i] = s[j];
-		s[j] = c;
-	}
-}
-
-void cleanup(int s) 
+void
+cleanup(int s) 
 {
 	close(s);
 }

@@ -16,18 +16,10 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
 
-include ../../../../config.mk
+top_srcdir		?= ../../../..
 
-CFLAGS+=	-I../../../../include
-LDLIBS+=	-L../../../../lib -lltp $(SELINUX_LIBS)
+include $(top_srcdir)/include/mk/testcases.mk
 
-SRCS=$(wildcard *.c)
-TARGETS=$(patsubst %.c,%,$(SRCS))
+LDLIBS			+= $(SELINUX_LIBS)
 
-all: $(TARGETS)
-
-install:
-	@set -e; for i in $(TARGETS) ; do ln -f $$i ../../../bin/$$i ; done ;
-
-clean:
-	rm -f $(TARGETS)
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

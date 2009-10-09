@@ -66,10 +66,6 @@
 #define IO_PENDING 1
 #define RUN_FOREVER -1
 
-#ifndef O_DIRECT
-#define O_DIRECT         040000 /* direct disk access hint */
-#endif
-
 enum {
     WRITE,
     READ,

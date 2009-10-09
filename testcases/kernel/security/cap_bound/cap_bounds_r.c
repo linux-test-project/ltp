@@ -25,7 +25,10 @@
  */
 
 #include <errno.h>
+#include "config.h"
+#if HAVE_SYS_CAPABILITY_H
 #include <sys/capability.h>
+#endif
 #include <sys/prctl.h>
 #include <test.h>
 
@@ -51,6 +54,7 @@ int errno;
 
 int main(int argc, char *argv[])
 {
+#if HAVE_SYS_CAPABILITY_H
 	int ret = 1;
 	int i;
 
@@ -82,5 +86,8 @@ int main(int argc, char *argv[])
 		tst_exit();
 	}
 	tst_resm(TPASS, "CAP_BSET_READ tests passed\n");
+#else
+	tst_resm(TCONF, "System doesn't have POSIX capabilities.");
+#endif
 	tst_exit();
 }

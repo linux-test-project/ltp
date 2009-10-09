@@ -18,40 +18,14 @@
 ##                                                                            ##
 ################################################################################
 
-SUBDIRS := 
+top_srcdir		?= ../../..
 
-all: 
-	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i $@; done;
-	$(MAKE) check_kv_arch ;
-	$(MAKE) get_sched_values ;
+include $(top_srcdir)/include/mk/testcases.mk
 
-check_kv_arch: check_kv_arch.c 
-	$(CC) -o $@ $< ../../../lib/tst_kvercmp.c -I../../../include
-get_sched_values: get_sched_values.c
-	$(CC) -o $@ $< ../../../lib/tst_kvercmp.c -I../../../include
+$(eval $(call generate_vpath_rule,c,$(srcdir):$(top_srcdir)/lib))
 
-install:
-	@set -e; ln -f check_kv_arch ../../bin/check_kv_arch; \
-	ln -f get_sched_values ../../bin/get_sched_values; \
-	ln -f  change_freq.sh ../../bin/change_freq.sh; \
-	ln -f  change_govr.sh ../../bin/change_govr.sh; \
-	ln -f  check_cpufreq_sysfs_files.sh ../../bin/check_cpufreq_sysfs_files.sh; \
-	ln -f  check_config.sh ../../bin/check_config.sh; \
-	ln -f  pwkm_load_unload.sh ../../bin/pwkm_load_unload.sh; \
-	ln -f  pm_include.sh ../../bin/pm_include.sh; \
-	ln -f  runpwtests.sh ../../bin/runpwtests.sh; \
-	ln -f  test_sched_mc.sh ../../bin/test_sched_mc.sh; \
-	ln -f  test_sched_mc.sh ../../bin/test_sched_smt.sh; \
-	ln -f  test_sched_mc.sh ../../bin/test_timer_migration.sh; \
-	ln -f  config_cpu_freq ../../bin/config_cpu_freq; \
-	ln -f  config_cpu_idle ../../bin/config_cpu_idle; \
-	ln -f  config_sched_mc ../../bin/config_sched_mc;
-	ln -f  check_cpuidle_sysfs_files.sh ../../bin/check_cpuidle_sysfs_files.sh;
-	ln -f  cpu_consolidation.py ../../bin/cpu_consolidation.py
-	ln -f  sched_domain.py ../../bin/sched_domain.py
-	ln -f  ilb_test.py ../../bin/ilb_test.py
-	chmod ugo+x *.sh
-clean:
-	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i $@ ; done
-	rm -f check_kv_arch
-	rm -f get_sched_values
+INSTALL_TARGETS		:= lib/*.py *.py *.sh
+
+MAKE_TARGETS		:=
+
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

@@ -9,31 +9,31 @@
 # Environment:
 #	CAP_MAC_ADMIN
 #
+
+source smack_common.sh
+
 NotTheStartValue="17"
-StartValue=`cat /smack/doi`
+StartValue=`cat "$smackfsdir/doi" 2>/dev/null`
 
-onlycap=`cat /smack/onlycap`
-if [ "$onlycap" != "" ]; then
-	echo The smack label reported for /smack/onlycap is \"$onlycap\",
-	echo not the expected \"\".
-	exit 1
-fi
+echo "$NotTheStartValue" 2>/dev/null > "$smackfsdir/doi"
 
-echo $NotTheStartValue > /smack/doi
-
-DirectValue=`cat /smack/doi`
+DirectValue=`cat "$smackfsdir/doi" 2>/dev/null`
 if [ "$DirectValue" != "$NotTheStartValue" ]; then
-	echo The CIPSO doi reported is \"$DirectValue\",
-	echo not the expected \"$NotTheStartValue\".
+	cat <<EOM
+The CIPSO doi reported is "$DirectValue",
+not the expected "$NotTheStartValue".
+EOM
 	exit 1
 fi
 
-echo "$StartValue" > /smack/doi
+echo "$StartValue" 2>/dev/null > "$smackfsdir/doi"
 
-DirectValue=`cat /smack/doi`
+DirectValue=`cat "$smackfsdir/doi" 2>/dev/null`
 if [ "$DirectValue" != "$StartValue" ]; then
-	echo The CIPSO doi reported is \"$DirectValue\",
-	echo not the expected \"$StartValue\".
+	cat <<EOM
+The CIPSO doi reported is "$DirectValue",
+not the expected "$StartValue".
+EOM
 	exit 1
 fi
 

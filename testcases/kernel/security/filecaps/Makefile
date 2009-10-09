@@ -18,45 +18,14 @@
 ##                                                                            ##
 ################################################################################
 
-HAVE_LIBCAP := $(shell sh checkforlibcap.sh yesno)
+top_srcdir		?= ../../../..
 
-SCRIPTS = filecapstest.sh checkforlibcap.sh checkforfilecaps.sh
-TARGETS = checkforlibcap
+include $(top_srcdir)/include/mk/testcases.mk
 
-CFLAGS += -I../../../../include -Wall
-LDLIBS += -L../../../../lib -lltp -lcap
+INSTALL_TARGETS		:= filecapstest.sh
 
-ifeq ($(HAVE_LIBCAP),yes)
-SRCS    = $(wildcard *.c)
-TARGETS+= $(patsubst %.c,%,$(SRCS))
-endif
+CPPFLAGS		+= -D_GNU_SOURCE
+DEBUG_CPPFLAGS		+= -DDEBUG=1
+LDLIBS			+= $(CAP_LIBS)
 
-all: $(TARGETS)
-ifeq ($(HAVE_LIBCAP),yes)
-checkforlibcap:
-	echo "#!/bin/sh" > $@
-	echo true >> $@
-	chmod a+rx $@
-else
-	@echo "setcap or xattr headers not installed.  Please install libcap from"; \
-	echo "ftp://ftp.kernel.org/pub/linux/libs/security/linux-privs/libcap2."; \
-	echo "You must use libcap-2.11 or newer."; \
-	echo "Then make clean in ltp or ltp/testcases/kernel/security/filecaps, and recompile ltp."
-checkforlibcap:
-	echo "#!/bin/sh" > $@
-	echo false >> $@
-	chmod a+rx $@
-endif
-
-numcaps.h: makenumcapsh.c
-	$(CC) -o makenumcapsh makenumcapsh.c
-	./makenumcapsh > numcaps.h
-
-verify_caps_exec: verify_caps_exec.c numcaps.h
-
-INSTALLTARGETS = $(TARGETS) $(SCRIPTS) checkforlibcap
-install: $(INSTALLTARGETS)
-	@set -e; for i in $(INSTALLTARGETS); do ln -f $$i ../../../bin/$$i ; chmod +x ../../../bin/$$i; done
-
-clean:
-	rm -f $(TARGETS) *.o caps_fifo checkforlibcap numcaps.h makenumcapsh
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

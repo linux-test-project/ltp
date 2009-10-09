@@ -1,37 +1,47 @@
-################################################################################
-##                                                                            ##
-## Copyright (c) International Business Machines  Corp., 2007                 ##
-##                                                                            ##
-## This program is free software;  you can redistribute it and#or modify      ##
-## it under the terms of the GNU General Public License as published by       ##
-## the Free Software Foundation; either version 2 of the License, or          ##
-## (at your option) any later version.                                        ##
-##                                                                            ##
-## This program is distributed in the hope that it will be useful, but        ##
-## WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY ##
-## or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License   ##
-## for more details.                                                          ##
-##                                                                            ##
-## You should have received a copy of the GNU General Public License          ##
-## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
-##                                                                            ##
-################################################################################
+#
+# Copyright (c) International Business Machines  Corp., 2007
+#
+# This program is free software;  you can redistribute it and#or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program;  if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
 
-SUBDIRS := libclone utsname sysvipc pidns netns mqns
+top_srcdir		?= ../../..
 
-all: check_for_unshare
-	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i $@; done
+include $(top_srcdir)/include/mk/env_pre.mk
 
-check_for_unshare: check_for_unshare.c
-	$(CC) $(CFLAGS) -rdynamic -o $@ $< ../../../lib/tst_kvercmp.c -I../../../include -ldl
+LIB			:= $(DESTDIR)/$(libdir)/libclone.a
+LIBDIR			:= libclone
 
-install: check_for_unshare
-	@set -e; ln -f check_for_unshare ../../bin/check_for_unshare; \
-	ln -f container_test.sh ../../bin/container_test.sh; \
-	for i in $(SUBDIRS); do $(MAKE) -C $$i $@ ; done; \
-	chmod ugo+x container_test.sh
+FILTER_OUT_DIRS		:= $(LIBDIR)
 
-clean:
-	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i $@ ; done
-	rm -f check_for_unshare
+INSTALL_TARGETS		:= *.sh 
+
+$(LIBDIR):
+	mkdir -p "$@"
+
+# Make the target the real lib so we don't have to deal with rebuilding this
+# every time the dependency is evaluated, like with PHONY rules.
+$(LIB): $(LIBDIR)
+	for i in all install; do \
+	    $(MAKE) -C $^ -f "$(abs_srcdir)/$(LIBDIR)/Makefile" $$i; \
+	done
+
+trunk-all: $(LIB)
+
+trunk-clean:: | lib-clean
+
+lib-clean:: $(LIBDIR)
+	$(MAKE) -C $^ -f "$(abs_srcdir)/$(LIBDIR)/Makefile" clean
+
+include $(top_srcdir)/include/mk/generic_trunk_target.mk

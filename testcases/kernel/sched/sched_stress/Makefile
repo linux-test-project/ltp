@@ -1,19 +1,41 @@
-CFLAGS += -Wall
+#
+#    kernel/sched/sched_stress testcases Makefile.
+#
+#    Copyright (C) 2009, Cisco Systems Inc.
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Garrett Cooper, July 2009
+#
 
-SRCS=$(wildcard *_tc*.c)
-TARGETS=sched_driver sched_tc0 sched_tc1 sched_tc2 sched_tc3 sched_tc4 sched_tc5 sched_tc6 
+top_srcdir		?= ../../../..
 
-all: $(TARGETS) sched_datafile
+include $(top_srcdir)/include/mk/testcases.mk
+
+INSTALL_TARGETS		:= sched_stress.sh
+
+LDLIBS			+= -lpthread
+
+MAKE_TARGETS		:= $(patsubst $(abs_srcdir)/%.c,%,$(filter-out %sched.c,$(wildcard $(abs_srcdir)/*.c))) \
+			   sched_datafile
+
+RM			+= -r
+
+$(filter-out sched_datafile,$(MAKE_TARGETS)): %: %.o sched.o
 
 sched_datafile:
-	../../../../tools/make-file.sh sched_datafile 1200010
+	"$(top_srcdir)/tools/make-file.sh" "$@" 1200010
 
-sched.o: sched.h sched.c
-
-$(TARGETS): sched.o
-
-install:
-	@set -e; for i in $(TARGETS) sched_datafile ; do ln -f $$i ../../../bin/$$i ; done ;
-	ln -f sched_stress.sh ../../../bin/sched_stress.sh
-clean:
-	rm -f $(TARGETS) sched.o sched_datafile
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

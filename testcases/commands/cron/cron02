@@ -54,10 +54,13 @@ do_setup(){
 
 	# restart cron daemon
 	# Red Hat uses crond, SuSE/Other uses cron.
-	if [ -f /etc/init.d/crond ]; then
+	if [ -x /etc/init.d/crond ]; then
 		/etc/init.d/crond restart
-	else
+	elif [ -x /etc/init.d/cron ]; then
 		/etc/init.d/cron restart
+	else
+		echo "Could not determine cron init.d script."
+		exit 1
 	fi
 }
 

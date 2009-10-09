@@ -33,32 +33,22 @@
 #
 #
 #----------------------------------------------------------------------
-#Uncomment line below for debug output.
-#trace_logic=${trace_logic:-"set -x"}
-$trace_logic
 
-RHOST=${RHOST:-`hostname`}
-SLEEPTIME=${SLEEPTIME:-0}
-NUMLOOPS=${NUMLOOPS:-25}
-
-
-#-----------------------------------------------------------------------
-#
-# FUNCTION:  exists
-#
-#-----------------------------------------------------------------------
-
-exists()
+do_setup()
 {
-   for cmd in $1
-   do
-       which $cmd 2>&1 1>/dev/null
-	   if [ $? -ne 0 ]
-	   then
-	       tst_resm TBROK "Test broke: command $cmd not found"
-		   exit 1
-       fi
-   done
+
+    FAIL_IMMEDIATELY=${FAIL_IMMEDIATELY:-1}
+    SLEEPTIME=${SLEEPTIME:-0}
+    NUMLOOPS=${NUMLOOPS:-1}
+
+    export TST_TOTAL=$NUMLOOPS
+
+    tst_setup
+
+    exists awk hostname rsh
+
+    RHOST=${RHOST:-`hostname`}
+
 }
 
 #-----------------------------------------------------------------------
@@ -69,40 +59,44 @@ exists()
 
 do_test()
 {
-   $trace_logic
 
-   COUNT=1
-   while [ $COUNT -le $NUMLOOPS ]
-   do
-      CHECK=$(rsh -n -l root $RHOST "ls -l /etc/hosts | wc -w")
+    while [ $TST_COUNT -le $NUMLOOPS ]; do
 
-      if [ "$CHECK" -eq 9 ]; then 
-         tst_resm TINFO "rsh Test successful in loop $COUNT"
-      else
-         tst_resm TBROK "FAILED: rsh failed"
-      fi
-      sleep $SLEEPTIME
-      COUNT=$(( $COUNT + 1 ))
-   done
-}
+        PASSED=0
 
-#=============================================================================
-# FUNCTION NAME:        end_testcase
-#
-# FUNCTION DESCRIPADDRTION: Clean up
-#
-# PARAMETERS:           string, IF AND ONLY IF the testcase fails
-#
-# RETURNS:              None.
-#=============================================================================
+        if OUT=$(rsh -n -l root $RHOST 'ls -l /etc/hosts'); then 
 
-end_testcase()
-{
-   $trace_logic
+            #
+            # Successful output would be something of the form:
+            #
+            # gcooper@orangebox ~ $ ls -l /etc/hosts         
+            # -rw-r--r-- 1 root root 463 Jul  5 09:26 /etc/hosts
+            #
+            echo "$OUT" | \
+                awk 'NF == 9 && $NF == "/etc/hosts" { exit 0 } END { exit 1 }' \
+                >& /dev/null
 
-   [ $# -eq 0 ] && { tst_resm TPASS "Test Successful"; exit 0; }
-   tst_resm TFAIL "Test Failed: $@"
-   exit 1
+            if [ $? -eq 0 ] ; then
+                tst_resm TPASS "rsh to $RHOST test succeeded"
+                PASSED=1
+            fi
+
+        fi
+
+        if [ $PASSED -ne 1 ] ; then
+            tst_resm TFAIL "rsh to $RHOST failed"
+            # If the first rsh failed, the likelihood that the rest will
+            # succeed is low.
+            if [ "$FAIL_IMMEDIATELY" = "1" ] && [ $COUNT -eq 1 ]; then
+                exit 2
+            fi
+        fi
+
+        sleep $SLEEPTIME
+        incr_tst_count
+
+    done
+
 }
 
 #----------------------------------------------------------------------
@@ -113,9 +107,9 @@ end_testcase()
 # OUTPUT:   A testcase run log with the results of the execution of this
 #           test.
 #----------------------------------------------------------------------
-export TCID=rsh01
-export TST_TOTAL=1
-export TST_COUNT=1
-exists "rsh wc"
+. net_cmdlib.sh
+
+read_opts $*
+do_setup
 do_test
 end_testcase

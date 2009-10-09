@@ -31,32 +31,16 @@
 #
 #
 #-----------------------------------------------------------------------
-# Uncomment line below for debug output.
-#trace_logic=${trace_logic:-"set -x"}
-$trace_logic
 
-NUMLOOPS=${NUMLOOPS:-5}
-SLEEPTIME=${SLEEPTIME:-0}
-
-#-----------------------------------------------------------------------
-#
-# FUNCTION:  exists
-#
-#-----------------------------------------------------------------------
-
-exists()
+do_setup()
 {
-   for cmd in $1
-   do
-       which $cmd 2>&1 1>/dev/null
-	   if [ $? -ne 0 ]
-	   then
-	       tst_resm TBROK "Test broke: command $cmd not found"
-		   exit 1
-       fi
-   done
-}
+    NUMLOOPS=${NUMLOOPS:-1}
+    SLEEPTIME=${SLEEPTIME:-0}
 
+    tst_setup
+
+    exists netstat
+}
 
 #-------------------------------------------------------------------------
 # FUNCTION:  do_test
@@ -70,39 +54,21 @@ exists()
 #-----------------------------------------------------------------------
 
 do_test() { 
-   $trace_logic
 
-   COUNT=1
-   while [ $COUNT -le $NUMLOOPS ]
-   do
-      for COMMAND in "netstat -s" "netstat -rn" "netstat -i" "netstat -gn" "netstat -apn"
-      do
-         $COMMAND 2>&1 1>/dev/null
-         [ $? -eq 0 ] || end_testcase "$COMMAND failed" 
-      done
+    while [ $TST_COUNT -le $NUMLOOPS ]; do
 
-      COUNT=$(( $COUNT + 1 ))
-      sleep $SLEEPTIME
+        for flag in "-s" "-rn" "-i" "-gn" "-apn"; do
+            if ! netstat $flag 2>&1 1>/dev/null; then
+                end_testcase "$COMMAND failed"
+            fi
+        done
+
+        incr_tst_count
+
+        sleep $SLEEPTIME
+
    done
-}
 
-#=============================================================================
-# FUNCTION NAME:        end_testcase
-#
-# FUNCTION DESCRIPTION: Clean up
-#
-# PARAMETERS:           string, IF AND ONLY IF the testcase fails
-#
-# RETURNS:              None.
-#=============================================================================
-
-end_testcase()
-{
-   $trace_logic
-
-   [ $# -eq 0 ] && { tst_resm TPASS "Test Successful"; exit 0; }
-   tst_resm TFAIL "Test Failed: $@"
-   exit 1
 }
 
 #-----------------------------------------------------------------------
@@ -114,9 +80,9 @@ end_testcase()
 # OUTPUT:    Logged run results written to testcase run log
 #
 #-----------------------------------------------------------------------
-export TCID="netstat01"
-export TST_TOTAL=1
-export TST_COUNT=1
-exists "netstat"
+. net_cmdlib.sh
+
+read_opts $*
+do_setup
 do_test
 end_testcase

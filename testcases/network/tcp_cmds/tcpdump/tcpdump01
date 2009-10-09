@@ -32,49 +32,6 @@
 #      -Written
 #
 #-----------------------------------------------------------------------
-#Uncomment line below for debug output.
-#trace_logic=${trace_logic:-"set -x"}
-$trace_logic
-
-TC=tcpdump
-TCtmp=${TCtmp:-/tmp/$TC$$}
-RHOST=${RHOST:-`hostname`}
-IP=`host ${RHOST}|awk '{print $4}'`
-IFNUMS=`netstat -i|wc -l`
-IFNUMS=$(( $IFNUMS - 2 ))
-IFNAME=${IFNAME:-$(netstat -i|awk '{print $1}'|tail -n${IFNUMS})}
-for i in ${IFNAME}
-do
-    ifconfig ${i}|grep $IP
-    [ $? = 0 ] && IF=$i && break
-done
-[ -z "${IF}" ] && echo "Test broke: Could not identify interface" && exit 1
-IFNAME=${IF}
-NUMLOOPS=${NUMLOOPS:-20}
-OUTFILE=$TCtmp/tcpdump_out
-LTPROOT=${LTPROOT:-"../../../../"}
-
-
-#-----------------------------------------------------------------------
-#
-# FUNCTION:  exists
-# PURPOSE:   Check if commands used by this testcase exists.
-#
-#-----------------------------------------------------------------------
-
-exists()
-{
-   for cmd in $1
-   do
-       which $cmd 2>&1 1>/dev/null
-	   if [ $? -ne 0 ]
-	   then
-	       tst_resm TBROK "Test broke: command $cmd not found"
-		   exit 1
-       fi
-   done
-}
-
 
 #******************************************************************************
 #
@@ -84,40 +41,45 @@ exists()
 #
 #******************************************************************************
 
-do_test()
+do_setup()
 {
-   $trace_logic
 
-   mkdir -p $TCtmp
-   [ $? -eq 0 ] || end_testcase "mkdir -p $TCtmp failed"
-   ping -f $RHOST > /dev/null 2>&1 &
-   /usr/sbin/tcpdump -i $IFNAME -c $NUMLOOPS > $OUTFILE
-   [ $? -eq 0 ] || end_testcase "Problems trying to launch tcpdump"
-   grep "$RHOST\>" $OUTFILE 
-   [ $? -eq 0 ] || end_testcase "$RHOST was not listed in network traffic"
-   PID=`ps -ef | grep "ping -f $RHOST" | grep -v grep | awk '{print $2}'`
-   kill -9 $PID
-   rm -rf $OUTFILE
+    tst_setup
+
+    exists awk grep host hostname ifconfig netstat ping tail tcpdump
+    RHOST=${RHOST:-`hostname`}
+    IP=`host ${RHOST} 2>/dev/null | awk '{print $4}'`
+    IFNUMS=`netstat -i|wc -l`
+    IFNUMS=$(( $IFNUMS - 2 ))
+    IFNAME=${IFNAME:-$(netstat -i | awk '{print $1}' | tail -n ${IFNUMS})}
+
+    for i in ${IFNAME}; do
+        if ifconfig ${i} | grep $IP; then
+            IF=$i
+            break
+        fi
+    done
+    if [ -z "${IF}" ]; then
+        end_testcase "Could not identify interface"
+        exit 1
+    fi
+    IFNAME=${IF}
+    NUMLOOPS=${NUMLOOPS:-20}
+    OUTFILE=$TCtmp/tcpdump_out
+
 }
 
-#=============================================================================
-# FUNCTION NAME:        end_testcase
-#
-# FUNCTION DESCRIPTION: Clean up
-#
-# PARAMETERS:           string, IF AND ONLY IF the testcase fails
-#
-# RETURNS:              None.
-#=============================================================================
-
-end_testcase()
+do_test()
 {
-   $trace_logic
-   tst_resm TINFO "$this_file: doing $0."
-   rm -rf $TCtmp
-   [ $# -eq 0 ] && { tst_resm TPASS "Test Successful"; exit 0; }
-   tst_resm TFAIL "Test Failed: $@"
-   exit 1
+    ping -f $RHOST > /dev/null 2>&1 &
+    if ! tcpdump -i $IFNAME -c $NUMLOOPS > $OUTFILE; then
+        end_testcase "Problems trying to launch tcpdump"
+    fi
+    if ! grep "$RHOST\>" $OUTFILE; then
+        end_testcase "$RHOST was not listed in network traffic"
+    fi
+    kill -15 %1
+    rm -rf $OUTFILE
 }
 
 #-----------------------------------------------------------------------
@@ -129,10 +91,9 @@ end_testcase()
 # OUTPUT:    Logged run results written to testcase run log
 #
 #-----------------------------------------------------------------------
-export TCID="tcpdump01"
-export TST_TOTAL=1
-export TST_COUNT=1
+. net_cmdlib.sh
 
-exists "ping awk tcpdump"
+read_opts $*
+do_setup
 do_test
 end_testcase

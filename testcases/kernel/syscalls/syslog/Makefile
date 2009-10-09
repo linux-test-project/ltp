@@ -16,17 +16,12 @@
 #  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-CFLAGS += -I../../../../include -Wall
-LDLIBS += -L../../../../lib -lltp
+top_srcdir		?= ../../../..
 
-SRCS    = $(wildcard *.c)
-TARGETS = $(patsubst %.c,%,$(SRCS))
-SCRIPTS = syslog01 syslog02 syslog03 syslog04 syslog05 syslog06 syslog07 syslog08 syslog09 syslog10
+include $(top_srcdir)/include/mk/testcases.mk
 
-all: $(TARGETS)
+# Not all of the files are bourne shell scripts; hence, I removed the syslog*
+# glob to avoid overridden target command noise from make.
+INSTALL_TARGETS		:= syslog0* syslog10
 
-install:
-	@set -e; for i in $(TARGETS) $(SCRIPTS); do ln -f $$i ../../../bin/$$i ; done
-
-clean:
-	rm -f $(TARGETS)
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

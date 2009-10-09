@@ -43,9 +43,18 @@
 #include <stdio.h>
 #include <errno.h>
 #include <linux/fs.h>
-#include <sys/quota.h>
 #include <sys/types.h>
-
+#include "config.h"
+#if HAS_NEW_QUOTACTL
+#include <sys/quota.h>
+#elif HAS_OLD_QUOTACTL
+#include <linux/quota.h>
+#include <xfs/xqm.h>
+#include <linux/dqblk_v1.h>
+#include <linux/dqblk_v2.h>
+#else
+#define BROKEN_QUOTACTL 1
+#endif
 
 /* Harness Specific Include Files. */
 #include "test.h"
@@ -121,6 +130,14 @@ void setup() {
 * To use this testcase , the quota function must be turned on and the user must be * the super user
 */
 
+
+#if BROKEN_QUOTACTL
+int
+main(void) {
+	tst_resm(TBROK, "The copy of quotactl is broken/missing on this system");
+	tst_exit();
+}
+#else
 int cmd[] = {Q_QUOTAON, Q_QUOTAOFF, Q_GETQUOTA, Q_SETQUOTA, Q_GETINFO, Q_SETINFO, Q_GETFMT, Q_SYNC};
 int retval = 0, id = 0, i = 0;
 
@@ -165,4 +182,4 @@ int main(int ac, char **av) {
         cleanup();
 	tst_exit();
 }
-
+#endif

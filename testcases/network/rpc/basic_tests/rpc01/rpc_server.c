@@ -1,10 +1,11 @@
+#include <sys/ioctl.h>
 #include <stdio.h>
-#include <rpc/rpc.h>
 #include <netdb.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <sys/ioctl.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <rpc/rpc.h>
 
 int debug = 0;
 int program = 2000333;
@@ -19,16 +20,13 @@ struct data {
     char *data;
 };
 
+void breakpoint(void);
+void service_request(struct svc_req *rqstp, SVCXPRT *transp);
+int xdr_receive_data(XDR *xdrs, struct data **buffer);
+int xdr_send_data(XDR *xdrs, struct data *buffer);
 
-
-void service_request();
-int xdr_receive_data();
-int xdr_send_data();
-
-
-main(argc, argv)
-int argc;
-char *argv[];
+int
+main (int argc, char *argv[])
 {
     SVCXPRT *transp;
     struct hostent *hp;
@@ -98,16 +96,9 @@ char *argv[];
     exit(1);
 }
 
-
-
-
 void
-service_request(rqstp, transp)
-struct svc_req *rqstp;
-SVCXPRT *transp;
+service_request(struct svc_req *rqstp, SVCXPRT *transp)
 {
-    char *s;
-    int ret;
     struct data *buffer;
 
     switch (rqstp->rq_proc) {
@@ -132,11 +123,8 @@ SVCXPRT *transp;
     }
 }
 
-
-
-xdr_receive_data(xdrs, buffer)
-XDR *xdrs;
-struct data **buffer;
+int
+xdr_receive_data(XDR *xdrs, struct data **buffer)
 {
     struct data *bp;
     int i, rc;
@@ -152,10 +140,8 @@ struct data **buffer;
     return(rc);
 }
 
-
-xdr_send_data(xdrs, buffer)
-XDR *xdrs;
-struct data *buffer;
+int
+xdr_send_data(XDR *xdrs, struct data *buffer)
 {
     int i, rc;
     char *p;
@@ -168,12 +154,7 @@ struct data *buffer;
     return(rc);
 }
 
-
-
-
-
-
-breakpoint()
+void breakpoint(void)
 {
     if (debug)
 	printf("breakpoint\n");

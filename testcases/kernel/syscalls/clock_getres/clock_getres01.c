@@ -53,9 +53,8 @@
 #include <errno.h>
 #include <stdio.h>
 #include <time.h>
-
-
-#include "../utils/include_j_h.h"
+#include "config.h"
+#include "include_j_h.h"
 
 /* Harness Specific Include Files. */
 #include "test.h"
@@ -223,7 +222,7 @@ static int do_test(struct test_case *tc)
          * Execute system call
          */
         errno = 0;
-        if (tc->ttype == NULL_POINTER)
+	if (tc->ttype == NULL_POINTER)
                 TEST(sys_ret = clock_getres(tc->clk_id, NULL));
         else
                 TEST(sys_ret = clock_getres(tc->clk_id, &res));

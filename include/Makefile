@@ -1,27 +1,47 @@
+#
+#    include Makefile.
+#
+#    Copyright (C) 2009, Cisco Systems Inc.
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Garrett Cooper, July 2009
+#
 
+top_srcdir		?= ..
 
-PREFIX=/opt/ltp
-HEADERS=compiler.h dataascii.h databin.h file_lock.h forker.h open_flags.h \
-	pattern.h random_range.h rmobj.h search_path.h string_to_tokens.h \
-	str_to_bytes.h test.h tlibio.h usctest.h write_log.h \
-	linux_syscall_numbers.h libtestsuite.h config.h
+include $(top_srcdir)/include/mk/env_pre.mk
 
-.PHONY: all install
-all:
+clean:: ac-clean
 
-install: $(HEADERS)
-	@set -e; for i in $(HEADERS); do \
-		install -D -m 644 $$i $(DESTDIR)/$(PREFIX)/include/ltp/$$i; \
-	done
+INSTALL_DIR		:= $(includedir)
 
-.PHONY: clean distclean maintainer-clean
-clean: ac-clean
-distclean: clean ac-distclean
-maintainer-clean: distclean ac-maintainer-clean
+INSTALL_MODE		:= 00644
 
-.PHONY: ac-clean ac-distclean ac-maintainerclean
-ac-clean:
-ac-distclean:
-	rm -f config.h
-ac-maintainer-clean:
-	rm -f config.h.in
+INSTALL_TARGETS		:= *.h
+
+MAKE_TARGETS		:=
+
+.PHONY: ac-clean ac-distclean ac-maintainer-clean distclean maintainer-clean
+distclean:: clean ac-distclean
+maintainer-clean:: distclean ac-maintainer-clean
+ac-clean ac-distclean::
+	$(RM) -f config.h
+ac-maintainer-clean::
+	$(RM) -f config.h.in
+
+$(eval $(call generate_vpath_rule,h))
+
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

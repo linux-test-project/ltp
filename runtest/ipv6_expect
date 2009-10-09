@@ -1,0 +1,2 @@
+#DESCRIPTION:IPV6 related tests which require expect
+rlogin6 rlogin01 -6

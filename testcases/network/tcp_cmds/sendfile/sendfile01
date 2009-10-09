@@ -37,26 +37,6 @@
 #
 #
 #***********************************************************************
-#Uncomment line below for debug output.
-#trace_logic=${trace_logic:-"set -x"}
-$trace_logic
-
-this_file=${0##*/}
-
-TC=sendfile01
-RHOST=${RHOST:-`hostname`}
-TCbin=${TCbin:-`pwd`}
-TCsrc=${TCsrc:-$TCbin}
-TCdat=${TCdat:-$TCsrc/datafiles}
-TCtmp=${TCtmp:-$TCsrc/$TC$$}
-CLEANUP=${CLEANUP:-ON}
-EXECUTABLES="testsf_c"
-REMOTE_EXEC="testsf_s"
-LTPROOT=${LTPROOT:-../../../..}
-FILES=${FILES:-"ascii.sm ascii.med ascii.lg ascii.jmb"}
-
-IPADDR=$($LTPROOT/tools/gethost $RHOST | grep addresses: | awk '{print $2}')
-
 
 #-----------------------------------------------------------------------
 #
@@ -66,17 +46,23 @@ IPADDR=$($LTPROOT/tools/gethost $RHOST | grep addresses: | awk '{print $2}')
 #
 #-----------------------------------------------------------------------
 
-exists()
+do_setup()
 {
-   for cmd in $1
-   do
-       which $cmd 2>&1 1>/dev/null
-	   if [ $? -ne 0 ]
-	   then
-	       tst_resm TBROK "Test broke: command $cmd not found"
-		   exit 1
-       fi
-   done
+    TC=sendfile01
+    RHOST=${RHOST:-`hostname`}
+    TCdat=${TCdat:-$LTPROOT/testcases/bin/datafiles}
+    TCtmp=${TCtmp:-$LTPROOT/testcases/bin/$TC${EXEC_SUFFIX}$$}
+    CLIENT="testsf_c${EXEC_SUFFIX}"
+    SERVER="testsf_s${EXEC_SUFFIX}"
+    LTPROOT=${LTPROOT:-../../../..}
+    FILES=${FILES:-"ascii.sm ascii.med ascii.lg ascii.jmb"}
+
+    tst_setup
+
+    exists awk diff gethost grep rsh stat
+
+    IPADDR=$(gethost $RHOST | awk '/addresses:/ {print $2}')
+
 }
 
 
@@ -85,38 +71,39 @@ exists()
 #
 # FUNCTION DESCRIPTION: Perform the test
 #
-# PARAMETERS:   	None.
+# PARAMETERS:       None.
 #
-# RETURNS:      	None.
+# RETURNS:          None.
 #=============================================================================
 do_test()
 {
-   $trace_logic
-   tst_resm TINFO "$this_file: doing $0."
+    tst_resm TINFO "Doing $0."
   
-   mkdir -p $TCtmp
-   PORT=$$ 
-   rsh -n -l root $IPADDR "$TCsrc/SF_Server $IPADDR $PORT $TCsrc"
-   sleep 10
-   PID=$(rsh -n -l root $IPADDR "ps -ef "|grep $REMOTE_EXEC | grep $PORT | grep -v grep|awk '{print $2}')
-   [ "$PID" ] || end_testcase "Could not start server"
+    mkdir -p $TCtmp
+    PORT=$$ 
+    if ! rsh -l root $IPADDR "$LTPROOT/testcases/bin/SF_Server $IPADDR $PORT $LTPROOT/testcases/bin"; then
+        end_testcase "rsh failed to $IPADDR as root failed"
+    fi
+    sleep 10
+    PID=$(rsh -l root $IPADDR "ps -ef" | awk "\$0 !~ /awk/ && /$SERVER/ && /$PORT/ {print \$1}")
+    [ -n "$PID" ] || end_testcase "Could not start server"
 
-   for clnt_fname in $FILES
-      do
-	 serv_fname=$TCdat/$clnt_fname
-	 SIZE=`ls -l $serv_fname|awk '{print $5}'`
-	 tst_resm TINFO "Starting $EXECUTABLES $IPADDR Client_filename Server_filename Size "
+    for clnt_fname in $FILES; do
+        serv_fname=$TCdat/$clnt_fname
+        SIZE=`stat -c '%s' $serv_fname`
+        tst_resm TINFO "Starting $SERVER $IPADDR Client_filename Server_filename Size "
   
-	 $TCsrc/$EXECUTABLES $IPADDR $PORT $TCtmp/$clnt_fname $serv_fname $SIZE 
-	 RetVal=$?
+        $CLIENT $IPADDR $PORT "$TCtmp/$clnt_fname" $serv_fname $SIZE 
+        RetVal=$?
   
-         [ $RetVal -eq 0 ] || end_testcase "$EXECUTABLES returned error $RetVal"
+        [ $RetVal -eq 0 ] || end_testcase "$CLIENT returned error $RetVal"
 
-	 diff $serv_fname $TCtmp/$clnt_fname
-	 DiffVal=$?
-	 [ $DiffVal -gt 1 ] && end_testcase "ERROR: Cannot compare files"
-	 [ $DiffVal -eq 1 ] && end_testcase "The file copied differs from the original"
-      done
+        diff $serv_fname $TCtmp/$clnt_fname
+        DiffVal=$?
+        [ $DiffVal -gt 1 ] && end_testcase "ERROR: Cannot compare files"
+        [ $DiffVal -eq 1 ] && end_testcase "The file copied differs from the original"
+    done
+
 }
 
 #=============================================================================
@@ -124,51 +111,24 @@ do_test()
 #
 # FUNCTION DESCRIPTION: Clean up
 #
-# PARAMETERS:   	None.
+# PARAMETERS:       None.
 #
-# RETURNS:      	None.
+# RETURNS:          None.
 #=============================================================================
 
 do_cleanup()
 {
-   $trace_logic
-   PID=$(rsh -n -l root $RHOST "ps -ef|grep \"$REMOTE_EXEC $IPADDR\""| grep $PORT|
-      grep -v grep|grep -v vi|awk '{print $2}')
-   [ "$PID" ] && rsh -n -l root $RHOST kill -9 $PID
-      
-   rm -rf $TCtmp
-}
-
-#=============================================================================
-# FUNCTION NAME:        end_testcase
-# 
-# FUNCTION DESCRIPTION: Clean up
-# 
-# PARAMETERS:           string, IF AND ONLY IF the testcase fails
-# 
-# RETURNS:              None.
-#=============================================================================
-
-end_testcase()
-{  
-   $trace_logic
-   tst_resm TINFO "$this_file: doing $0."
-
-   
-   # Call other cleanup functions
-   [ $CLEANUP = "ON" ] && do_cleanup
-   
-   [ $# -eq 0 ] && { tst_resm TPASS "Test Successful"; exit 0; }
-   tst_resm TFAIL "Test Failed: $@"
-   exit 1
+      PID=$(rsh -n -l root $RHOST "ps -ef" | awk "\$0 !~ /awk/ && /$SERVER/ && /$PORT/ {print \$1}")
+      [ -n "$PID" ] && rsh -n -l root $RHOST kill -9 $PID
+      tst_cleanup
 }
 
 #=============================================================================
 # MAIN PROCEDURE
 #=============================================================================
-export TCID="sendfile01"
-export TST_TOTAL=1
-export TST_COUNT=1
-exists "rsh diff awk grep"
+. net_cmdlib.sh
+
+read_opts $*
+do_setup
 do_test
 end_testcase

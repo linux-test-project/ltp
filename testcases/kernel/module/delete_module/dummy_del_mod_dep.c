@@ -21,7 +21,9 @@
  *		(calls function of dummy_del_mod during initialization).
  *************************************************************************/
 
+#ifndef MODULE
 #define MODULE
+#endif
 /* #define __KERNEL__    Commented this line out b/c it causes errors with
  *                       module.h when it calls /usr/include/linux/version.h
  *                       -11/22/02 Robbie Williamson <robbiew@us.ibm.com>

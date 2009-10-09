@@ -28,7 +28,10 @@
  */
 
 #include <errno.h>
+#include "config.h"
+#if HAVE_SYS_CAPABILITY_H
 #include <sys/capability.h>
+#endif
 #include <sys/prctl.h>
 #include <test.h>
 
@@ -39,6 +42,7 @@ int errno;
 
 int main(int argc, char *argv[])
 {
+#if HAVE_SYS_CAPABILITY_H
 	int ret = 1;
 	cap_flag_value_t f;
 	cap_t cur;
@@ -54,14 +58,26 @@ int main(int argc, char *argv[])
 		tst_exit();
 	}
 
+#if HAVE_DECL_CAP_GET_FLAG
+#if HAVE_DECL_CAP_GET_PROC
 	cur = cap_get_proc();
 	ret = cap_get_flag(cur, CAP_SYS_ADMIN, CAP_EFFECTIVE, &f);
+#else
+	ret = -1;
+	errno = ENOSYS;
+#endif
+#else
+	ret = -1;
+	errno = ENOSYS;
+#endif
 	if (ret) {
 		tst_resm(TBROK, "cap_get_flag failed (errno %d)\n", errno);
 		tst_exit();
 	}
-	
+
+#if HAVE_DECL_CAP_FREE
 	cap_free(cur);
+#endif
 	if (n == 1) {
 		if (f == CAP_SET) {
 			tst_resm(TPASS, "cap is in pE\n");
@@ -75,6 +91,8 @@ int main(int argc, char *argv[])
 		tst_exit();
 	}
 	tst_resm(TFAIL, "Cap is in pE\n");
+#else
+	tst_resm(TCONF, "System doesn't have POSIX capabilities.");
+#endif
 	tst_exit();
-
 }

@@ -38,44 +38,9 @@
 #
 #==============================================================================
 # error codes:  0 rwho/ruptime successful
-# 	        1 rwho failed no local and remote host in file
-# 	        2 ruptime failed no local and remote host in file
+#             1 rwho failed no local and remote host in file
+#             2 ruptime failed no local and remote host in file
 #==============================================================================
-#Uncomment line below for debug output.
-#trace_logic=${trace_logic:-"set -x"}
-$trace_logic
-
-LHOST=`hostname | cut -f1 -d.`
-RHOST=${RHOST:-$LHOST}
-TC=rwho
-TCtmp=${TCtmp:-/tmp/$TC}
-CLEANUP=${CLEANUP:-ON}
-
-PID=0
-RHOST_PID=0
-SLEEPTIME=${SLEEPTIME:-20}
-NUMLOOPS=${NUMLOOPS:-25}
-OUTFILE=${OUTFILE:-$TCtmp/rwho.out}
-
-#-----------------------------------------------------------------------
-#
-# FUNCTION:  exists
-#
-#-----------------------------------------------------------------------
-
-exists()
-{
-   for cmd in $1
-   do
-       which $cmd 2>&1 1>/dev/null
-	   if [ $? -ne 0 ]
-	   then
-	       tst_resm TBROK "Test broke: command $cmd not found"
-		   exit 1
-       fi
-   done
-}
-
 
 #-----------------------------------------------------------------------
 #
@@ -85,44 +50,49 @@ exists()
 
 do_setup()
 {
-   $trace_logic
 
-   export TCID=rwho01
-   export TST_TOTAL=1
-   export TST_COUNT=1
+    TCtmp=${TCtmp:-$LTPROOT/testcases/bin/$TC${EXEC_SUFFIX}$$}
 
-   exists "rwho rsh killall grep awk cut"
+    PID=0
+    RHOST_PID=0
+    SLEEPTIME=${SLEEPTIME:-20}
+    NUMLOOPS=${NUMLOOPS:-25}
+    OUTFILE=${OUTFILE:-$TCtmp/${TC}.out}
 
-   ps -ef | grep rwhod | grep -v grep 
-   if [ $? -ne 0 ]; then
-      tst_resm TINFO "Starting rwhod on $LHOST"
-      /usr/sbin/rwhod  
-      [ $? -eq 0 ] || end_testcase "Unable to start rwhod on $LHOST"
-      PID=1
-      sleep $SLEEPTIME
-   fi
+    tst_setup
 
-   rsh -n -l root $RHOST ps -ef | grep rwhod
-   if [ $? -ne 0 ]; then
-      tst_resm TINFO "Starting rwhod on $RHOST"
-      rsh -n -l root $RHOST /usr/sbin/rwhod
-      if [ $? -ne 0 ]; then
-	  end_testcase "Unable to start rwhod on $RHOST"
-      fi
-      RHOST_PID=$(rsh -n -l root $RHOST ps -ef | grep rwhod | grep -v grep | awk '{print $2 ; exit}')
-      if [ -z "$RHOST_PID" ]; then
-	  RHOST_PID=0
-	  end_testcase "Unable to start rwhod on $RHOST"
-      fi
-      sleep $SLEEPTIME
-   fi
+    exists awk cut hostname killall ps rsh rwho
 
-   RHOSTNAME=`rsh -n -l root $RHOST hostname | cut -f1 -d.`
-   if [ -z "$RHOSTNAME" ]; then
-       end_testcase "Unable to determine RHOSTNAME"
-   fi
+    LHOST=`hostname | cut -f1 -d.`
+    RHOST=${RHOST:-$LHOST}
 
-   mkdir -p $TCtmp
+    trap do_cleanup EXIT
+
+    if ! ps -ef | awk '/rwhod/ && $0 !~ /awk/'; then
+        tst_resm TINFO "Starting rwhod on $LHOST"
+        rwhod || end_testcase "Unable to start rwhod on $LHOST"
+        PID=1
+        sleep $SLEEPTIME
+    fi
+
+    if ! rsh -n -l root $RHOST ps -ef | awk '/rwhod/ && $0 !~ /awk/'; then
+        tst_resm TINFO "Starting rwhod on $RHOST"
+        if ! rsh -n -l root $RHOST /usr/sbin/rwhod; then
+            end_testcase "Unable to start rwhod on $RHOST"
+        fi
+        RHOST_PID=$(rsh -n -l root $RHOST ps -ef | awk '/rwhod/ && $0 !~ /awk/ {print $2 ; exit}')
+        if [ -z "$RHOST_PID" ]; then
+            RHOST_PID=0
+            end_testcase "Unable to start rwhod on $RHOST"
+        fi
+        sleep $SLEEPTIME
+    fi
+
+    RHOSTNAME=`rsh -n -l root $RHOST hostname | cut -f1 -d.`
+    if [ -z "$RHOSTNAME" ]; then
+        end_testcase "Unable to determine RHOSTNAME"
+    fi
+
 }
 
 #-----------------------------------------------------------------------
@@ -133,26 +103,23 @@ do_setup()
 
 do_test()
 {
-   $trace_logic
 
-   COUNT=1
-   while [ $COUNT -le $NUMLOOPS ]
-   do
-      rwho -a > $OUTFILE
-      HOST=`awk '{print $2}' $OUTFILE|grep "$LHOST\>"|cut -f1 -d:|sort -u`
-      [ "$HOST" = "$LHOST" ] || end_testcase "$LHOST is not in rwho outfile"
-      HOST=`awk '{print $2}' $OUTFILE|grep "$RHOSTNAME\>"|cut -f1 -d:|sort -u`
-      [ "$HOST" = "$RHOSTNAME" ] || end_testcase "$RHOSTNAME is not in rwho outfile"
+    while [ $TST_COUNT -le $NUMLOOPS ]; do
+        rwho -a > $OUTFILE
+        HOST=`awk "\$2 ~ /$LHOST>/" $OUTFILE | cut -f1 -d: | sort -u`
+        [ "$HOST" = "$LHOST" ] || end_testcase "$LHOST is not in rwho outfile"
+        HOST=`awk "\$2 ~ /$RHOSTNAME>/" $OUTFILE | cut -f1 -d: | sort -u`
+        [ "$HOST" = "$RHOSTNAME" ] || end_testcase "$RHOSTNAME is not in rwho outfile"
 
-      ruptime -a > $OUTFILE
-      HOST=`awk '{print $1}' $OUTFILE|grep "$LHOST\>"|sort -u`
-      [ "$HOST" = "$LHOST" ] || end_testcase "$LHOST is not in ruptime outfile"
-      HOST=`awk '{print $1}' $OUTFILE|grep "$RHOSTNAME\>"|sort -u`
-      [ "$HOST" = "$RHOSTNAME" ] || end_testcase "$RHOSTNAME is not in ruptime outfile"
+        ruptime -a > $OUTFILE
+        HOST=`awk "\$1 ~ /$LHOST>/" $OUTFILE | sort -u`
+        [ "$HOST" = "$LHOST" ] || end_testcase "$LHOST is not in ruptime outfile"
+        HOST=`awk "\$1 ~ /$RHOSTNAME>/" $OUTFILE | sort -u`
+        [ "$HOST" = "$RHOSTNAME" ] || end_testcase "$RHOSTNAME is not in ruptime outfile"
 
-      tst_resm TINFO "Test $COUNT of $NUMLOOPS complete"
-      COUNT=$(( $COUNT + 1 ))
-   done
+        tst_resm TINFO "Test $COUNT of $NUMLOOPS complete"
+        incr_tst_count
+    done
 }
 
 #-----------------------------------------------------------------------
@@ -163,38 +130,18 @@ do_test()
 
 do_cleanup()
 {
- rm -fr $TCtmp
- if [ $PID -ne 0 ]; then
-    tst_resm TINFO "Stopping rwhod on $LHOST"
-    killall rwhod 
- fi
+    if [ $PID -ne 0 ]; then
+        tst_resm TINFO "Stopping rwhod on $LHOST"
+        killall rwhod 
+    fi
 
- if [ $RHOST_PID -ne 0 ]; then
-    tst_resm TINFO "Stopping rwhod on $RHOST"
-    rsh -n -l root $RHOST "killall rwhod"
- fi
-}
- 
-#=============================================================================
-# FUNCTION NAME:        end_testcase
-#
-# FUNCTION DESCRIPTION: Clean up
-#
-# PARAMETERS:           string, IF AND ONLY IF the testcase fails
-#
-# RETURNS:              None.
-#=============================================================================
+    if [ $RHOST_PID -ne 0 ]; then
+        tst_resm TINFO "Stopping rwhod on $RHOST"
+        rsh -n -l root $RHOST "killall rwhod"
+    fi
 
-end_testcase()
-{
-   $trace_logic
-   
-   if [ $CLEANUP = "ON" ]; then
-     do_cleanup
-   fi
-   [ $# -eq 0 ] && { tst_resm TPASS "Test Successful"; exit 0; }
-   tst_resm TFAIL "Test Failed: $@"
-   exit 1
+    tst_cleanup
+
 }
 
 #-----------------------------------------------------------------------
@@ -202,6 +149,9 @@ end_testcase()
 # FUNCTION:  MAIN
 #
 #-----------------------------------------------------------------------
+. net_cmdlib.sh
+
+read_opts $*
 do_setup
 do_test
 end_testcase

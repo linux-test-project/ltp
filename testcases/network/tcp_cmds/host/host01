@@ -32,32 +32,18 @@
 #
 #
 #-----------------------------------------------------------------------
-# Uncomment line below for debug output
-#trace_logic=${trace_logic:-"set -x"}
-$trace_logic
 
-RHOST=${RHOST:-`hostname`}
-NUMLOOPS=${NUMLOOPS:-20}
-SLEEPTIME=${SLEEPTIME:-0}
-
-this_file=${0##*/}
-#-----------------------------------------------------------------------
-#
-# FUNCTION:  exists
-#
-#-----------------------------------------------------------------------
-
-exists()
+do_setup()
 {
-   for cmd in $1
-   do
-       which $cmd 2>&1 1>/dev/null
-	   if [ $? -ne 0 ]
-	   then
-	       tst_resm TBROK "Test broke: command $cmd not found"
-		   exit 1
-       fi
-   done
+    NUMLOOPS=${NUMLOOPS:-1}
+    SLEEPTIME=${SLEEPTIME:-0}
+
+    tst_setup
+
+    exists awk host hostname
+
+    RHOST=${RHOST:-`hostname`}
+
 }
 
 #-----------------------------------------------------------------------
@@ -68,52 +54,34 @@ exists()
 
 do_test()
 {
-   $trace_logic
-   tst_resm TINFO "$this_file: test the basic functionality of the `host` command."
 
-   count=0
-   while [ $count -lt $NUMLOOPS ]
-   do
-      host $RHOST
-      if [ $? -eq 0 ]; then
-         rhost_addr=`host $RHOST | tr -s ',' ' ' | awk '{print $NF}'` 2>&1 \
-                     >/dev/null
-         host $rhost_addr  2>&1 >/dev/null
-         [ $? -eq 0 ] || end_testcase "host can not do a reverse lookup"
-      else 
-         end_testcase "host $RHOST on local machine failed"
-      fi
-      count=$(( $count + 1 ))
-      sleep $SLEEPTIME
-   done
-}
+    tst_resm TINFO "test basic functionality of the \`$TC' command."
 
-#=============================================================================
-# FUNCTION NAME:        end_testcase
-#
-# FUNCTION DESCRIPTION: Clean up
-#
-# PARAMETERS:           string, IF AND ONLY IF the testcase fails
-#
-# RETURNS:              None.
-#=============================================================================
+    while [ $TST_COUNT -lt $NUMLOOPS ]; do
 
-end_testcase()
-{
-   $trace_logic
-   tst_resm TINFO "$this_file: doing $0."
+        if rhost_addr=$(host $RHOST); then
+            rhost_addr=$(echo "$rhost_addr" | awk -F, '{print $NF}') 2>&1 >/dev/null
+            if ! host $rhost_addr 2>&1 >/dev/null; then
+                end_testcase "reverse lookup with host failed"
+            fi
 
-   [ $# -eq 0 ] && { tst_resm TPASS "Test Successful"; exit 0; }
-   tst_resm TFAIL "Test Failed: $@"
-   exit 1
+        else 
+            end_testcase "host $RHOST on local machine failed"
+        fi
+
+        incr_tst_count
+        sleep $SLEEPTIME
+
+    done
+
 }
 
 #-----------------------------------------------------------------------
 # FUNCTION: MAIN
 #-----------------------------------------------------------------------
-export TCID="host01"
-export TST_TOTAL=1
-export TST_COUNT=1
-exists "host awk"
+. net_cmdlib.sh
+
+read_opts $*
+do_setup
 do_test
 end_testcase

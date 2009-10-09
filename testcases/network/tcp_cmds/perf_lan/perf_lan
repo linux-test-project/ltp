@@ -21,7 +21,7 @@ unset LIBPATH
 #
 #  FILE   : perf_lan
 #
-#  PURPOSE: Generates LAN traffic using ICMP tst_resm TINFO packets.
+#  PURPOSE: Generates LAN traffic using ICMP echo packets.
 #           
 #
 #  SETUP: The home directory of root on the machine exported as "RHOST"
@@ -36,30 +36,20 @@ unset LIBPATH
 #
 #
 #***********************************************************************
-#Uncomment line below for debug output.
-#trace_logic=${trace_logic:-"set -x"}
-$trace_logic
-
-TC=slan
-RHOST=${RHOST:-`hostname`}
-TCbin=${TCbin:-`pwd`}
-TCsrc=${TCsrc:-$TCbin}
-TCtmp=${TCtmp:-$TCsrc/perf_lan$$}
-CLEANUP=${CLEANUP:-ON}
-
-PACKETSIZE=${PACKETSIZE:-512}
-NUMPACKETS=${NUMPACKETS:-1}
-NUMLOOPS=${NUMLOOPS:-10}
-EXECUTABLES="pingpong"
-
-trap "interrupt_testcase" 2 15 16 30
 
 do_setup()
 {
-  export TCID="perf_lan"
-  export TST_TOTAL=1
-  export TST_COUNT=1
-  mkdir -p $TCtmp
+    RHOST=${RHOST:-`hostname`}
+    TCtmp=${TCtmp:-$LTPROOT/testcases/bin/${TC}$$}
+
+    PACKETSIZE=${PACKETSIZE:-512}
+    NUMPACKETS=${NUMPACKETS:-1}
+    NUMLOOPS=${NUMLOOPS:-10}
+    PINGPONG="pingpong${EXEC_SUFFIX}"
+
+    tst_setup
+
+    trap interrupt_testcase INT TERM URG USR1
 }
 
 #-----------------------------------------------------------------------
@@ -72,75 +62,29 @@ do_setup()
 
 do_test() 
 {
-   $trace_logic
-   tst_resm TINFO "$this_file: doing $0."
+    tst_resm TINFO "Executing $0"
 
-   TLOOP=1
-   COUNT=1
-   [ $NUMLOOPS -gt 0 ] || TLOOP=$NUMLOOPS
-   while [ $TLOOP -le $NUMLOOPS ]
-   do
-      $TCbin/$EXECUTABLES $RHOST $PACKETSIZE $NUMPACKETS
-      RETVALUE=$?
+    while [ $TST_COUNT -le $NUMLOOPS ]; do
 
-      case "$RETVALUE" in
-         0) tst_resm TINFO "Successful execution for loop $COUNT" ;;
-         1) end_testcase "Error trying to send to host" ;;
-         2) end_testcase "Error - Data length is too long";;
-         3) end_testcase "Usage error ";;
-         5) end_testcase "Error - Socket setting" ;;
-         6) end_testcase "Error - Pipe broken";;
-         7) end_testcase "Error - Fork fail";;
-         10)end_testcase "Error - wrong Protocol" ;;
-         *) end_testcase "Return code from $EXECUTABLES is $RETVALUE" ;;
-      esac
-      if [ $NUMLOOPS -gt 0 ] ; then TLOOP=$(( $TLOOP + 1 )); fi
-      COUNT=$(( $COUNT + 1 ))
-   done
-}
+        $PINGPONG $RHOST $PACKETSIZE $NUMPACKETS
 
-#-----------------------------------------------------------------------
-#
-# FUNCTION:     do_cleanup
-# PURPOSE:      Called when the testcase is interrupted by the user
-#               or by interrupt_testcase() when time limit expired
-# INPUT:        None.
-# OUTPUT:       None.
-#
-#-----------------------------------------------------------------------
+        RETVALUE=$?
 
-do_cleanup()
-{
-   $trace_logic
-   tst_resm TINFO "$this_file: doing $0."
+        case "$RETVALUE" in
+            0)  tst_resm TINFO "Successful execution for loop $TST_COUNT";;
+            1)  end_testcase "Error trying to send to host";;
+            2)  end_testcase "Error - Data length is too long";;
+            3)  end_testcase "Usage error ";;
+            5)  end_testcase "Error - Socket setting";;
+            6)  end_testcase "Error - Pipe broken";;
+            7)  end_testcase "Error - Fork fail";;
+            10) end_testcase "Error - wrong Protocol";;
+            *)  end_testcase "Unexpected exit code from $PINGPONG: $RETVALUE";;
+       esac
+       incr_tst_count
 
-   cd /
-   if [ $TCtmp != $TCsrc ]; then
-      rm -rf $TCtmp
-   fi
-}
+    done
 
-#=============================================================================
-# FUNCTION NAME:        end_testcase
-# 
-# FUNCTION DESCRIPTION: Clean up
-# 
-# PARAMETERS:           string, IF AND ONLY IF the testcase fails
-# 
-# RETURNS:              None.
-#=============================================================================
-
-end_testcase()
-{  
-   $trace_logic
-   tst_resm TINFO "$this_file: doing $0."
-   
-   # Call other cleanup functions
-   [ $CLEANUP = "ON" ] && do_cleanup
-   
-   [ $# -eq 0 ] && { tst_resm TPASS "Test Successful"; exit 0; }
-   tst_resm TFAIL "Test Failed: $@"
-   exit 1
 }
 
 #-----------------------------------------------------------------------
@@ -154,13 +98,10 @@ end_testcase()
 
 interrupt_testcase()
 {
-   $trace_logic
-   tst_resm TINFO "$this_file: doing $0."
-
-   tst_resm TINFO "Testcase interrupted - cleaning up"
-   tst_resm TINFO "Killing background process if it is still running"
-   kill -9 $CHILDPID
-   end_testcase
+    tst_resm TINFO "Testcase interrupted - cleaning up"
+    tst_resm TINFO "Killing background process if it is still running"
+    kill -9 $CHILDPID
+    end_testcase
 }
 
 #-----------------------------------------------------------------------
@@ -172,6 +113,10 @@ interrupt_testcase()
 # OUTPUT:    Logged run results written to testcase run log
 #
 #-----------------------------------------------------------------------
+. tcpcmds.sh
+
+read_args $*
+
 do_setup
 do_test
 end_testcase

@@ -18,23 +18,10 @@
 ##                                                                            ##
 ################################################################################
 
-HAVE_P9AUTH := $(shell sh checkp9auth.sh yesno)
+top_srcdir		?= ../../../..
 
-SCRIPTS = runp9auth.sh checkp9auth.sh p9priv.sh p9unpriv.sh
+include	$(top_srcdir)/include/mk/testcases.mk
 
-CFLAGS += -I../../../../include -Wall
-LDLIBS += -L../../../../lib -lltp -lcap
+INSTALL_TARGETS		:= *.sh
 
-ifeq ($(HAVE_P9AUTH),yes)
-SRCS    = $(wildcard *.c)
-TARGETS+= $(patsubst %.c,%,$(SRCS))
-endif
-
-all: $(TARGETS)
-
-INSTALLTARGETS = $(TARGETS) $(SCRIPTS)
-install: $(INSTALLTARGETS)
-	@set -e; for i in $(INSTALLTARGETS); do ln -f $$i ../../../bin/$$i ; chmod +x ../../../bin/$$i; done
-
-clean:
-	rm -f $(TARGETS) *.o unhex
+include	$(top_srcdir)/include/mk/generic_leaf_target.mk

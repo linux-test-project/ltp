@@ -234,8 +234,10 @@ int main(int ac, char **av)
  */
 void setup()
 {
+	char file[PATH_MAX];
 	int ind;		/* counter for setup functions */
-
+	struct stat change_link_stat;
+	
 	/* Capture unexpected signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
@@ -269,6 +271,22 @@ void setup()
 	if (getcwd(main_test_dir, sizeof(main_test_dir)) == NULL) {
 		tst_brkm(TBROK, cleanup,
 			 "getcwd(3) fails to get working directory of process");
+	}
+
+	snprintf(file, PATH_MAX, "%schange_link", EXEC_DIR);
+	if (stat(file, &change_link_stat) < 0) {
+		tst_brkm(TBROK, cleanup, "stat for change_link failed");
+	} else {
+		if ((change_link_stat.st_uid || change_link_stat.st_gid) &&
+		     chown(file, 0, 0) < 0) {
+			tst_brkm(TBROK, cleanup,
+					"chown for change_link failed");
+		}
+		if (change_link_stat.st_mode != 04511 &&
+		    chmod(file, 04755) < 0) {
+			tst_brkm(TBROK, cleanup,
+					"setuid for change_link failed");
+		}
 	}
 
 	/* Make a temp dir and cd to it */

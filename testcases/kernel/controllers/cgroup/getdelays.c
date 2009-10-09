@@ -22,16 +22,20 @@
 #include <sys/stat.h>
 #include <sys/socket.h>
 #include <signal.h>
-
+#include <linux/types.h>
 #include "config.h"
 
+#if HAVE_LINUX_GENETLINK_H
 #include <linux/genetlink.h>
+#endif
+#if HAVE_LINUX_TASKSTATS_H
 #include <linux/taskstats.h>
-
+#endif
 #ifdef HAVE_LINUX_CGROUPSTATS_H
 #include <linux/cgroupstats.h>
 #endif
 
+#if HAVE_LINUX_GENETLINK_H
 /*
  * Generic macros for dealing with netlink sockets. Might be duplicated
  * elsewhere. It is recommended that commercial grade applications use
@@ -47,6 +51,7 @@
 		fprintf(stderr, fmt, ##arg);	\
 		exit(code);			\
 	} while (0)
+#endif
 
 int done;
 int rcvbufsz;
@@ -68,11 +73,13 @@ __u64 stime, utime;
 /* Maximum number of cpus expected to be specified in a cpumask */
 #define MAX_CPUS	32
 
+#if HAVE_LINUX_GENETLINK_H
 struct msgtemplate {
 	struct nlmsghdr n;
 	struct genlmsghdr g;
 	char buf[MAX_MSG_SIZE];
 };
+#endif
 
 char cpumask[100+6*MAX_CPUS];
 
@@ -87,6 +94,7 @@ static void usage(void)
 	fprintf(stderr, "  -C: container path\n");
 }
 
+#if HAVE_LINUX_GENETLINK_H
 /*
  * Create a raw netlink socket and bind
  */
@@ -119,7 +127,6 @@ error:
 	close(fd);
 	return -1;
 }
-
 
 int send_cmd(int sd, __u16 nlmsg_type, __u32 nlmsg_pid,
 	     __u8 genl_cmd, __u16 nla_type,
@@ -160,7 +167,6 @@ int send_cmd(int sd, __u16 nlmsg_type, __u32 nlmsg_pid,
 	return 0;
 }
 
-
 /*
  * Probe the controller in genetlink to find the family id
  * for the TASKSTATS family
@@ -194,7 +200,9 @@ int get_family_id(int sd)
 	}
 	return id;
 }
+#endif
 
+#if HAVE_LINUX_TASKSTATS_H
 void print_delayacct(struct taskstats *t)
 {
 	printf("\n\nCPU   %15s%15s%15s%15s\n"
@@ -260,9 +268,12 @@ void print_ioacct(struct taskstats *t)
 		(unsigned long long)t->cancelled_write_bytes);
 #endif
 }
+#endif
 
 int main(int argc, char *argv[])
 {
+
+#if HAVE_LINUX_GENETLINK_H
 	int c, rc, rep_len, aggr_len, len2, cmd_type;
 	__u16 id;
 	__u32 mypid;
@@ -525,5 +536,8 @@ done:
 	if (cfd)
 		close(cfd);
 	return 0;
+#else
+	printf("System doesn't have netlink support.\n");
+	return 1;
+#endif
 }
-

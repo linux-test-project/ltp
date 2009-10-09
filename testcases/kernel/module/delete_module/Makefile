@@ -14,40 +14,40 @@
 # Temple Place - Suite 330, Boston MA 02111-1307, USA.
 #
 ###########################################################################
-# name of file		 : Makefile		 		 		 		 		 		   #
-# description		 : make file for the delete_module(2) testcases		 		   #
+# name of file		 : Makefile		 		 	  #
+# description		 : make file for the delete_module(2) testcases	  #
 ###########################################################################
 
-EXTRA_CFLAGS+=		 -I../../../../include -Wall
-MODCFLAGS+=		 /lib/modules/`uname -r`/build
-LOADLIBES+=		 -L../../../../lib -lltp
+top_srcdir		?= ../../../..
 
-obj-m := dummy_del_mod.o dummy_del_mod_dep.o
-TARGETS=delete_module01 delete_module02 delete_module03
-MODULES=dummy_del_mod.ko dummy_del_mod_dep.ko
+include $(top_srcdir)/include/mk/testcases.mk
 
-all: $(TARGETS)
-		 make -C $(MODCFLAGS) SUBDIRS=`pwd` modules
-#		 chmod 755 $(OBJS)
+CFLAGS			+= -D_GNU_SOURCE
 
-delete_module01: delete_module01.c
-		 $(CC) $(EXTRA_CFLAGS) delete_module01.c $(LOADLIBES) -o $@
+LOCALVERSION		?= $(shell uname -r)
 
-delete_module02: delete_module02.c
-		 $(CC) $(EXTRA_CFLAGS) delete_module02.c $(LOADLIBES) -o $@
+MODULEDIR		:= $(DESTDIR)/lib/modules/$(LOCALVERSION)/build
 
-delete_module03: delete_module03.c
-		 $(CC) $(EXTRA_CFLAGS) delete_module03.c $(LOADLIBES) -o $@
+# KBuild make variables...
+MODCFLAGS		+= $(MODULEDIR)
 
-install:
-		 @set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
-		 @set -e; for i in $(MODULES); do cp -f $$i /tmp/$$i ; done
+export EXTRA_CFLAGS	:= $(CFLAGS)
+export EXTRA_CPPFLAGS	:= $(CPPFLAGS)
+export EXTRA_LDFLAGS	:= $(LDFLAGS)
 
-clean:
-		 rm -f $(TARGETS)
-		 rm -rf .tmp_versions
-		 rm -f /tmp/dummy*.ko
-		 rm -f .dummy*
-		 rm -f *.o
-		 rm -f *.ko
-		 rm -f *.mod.c
+obj-m			:= dummy_del_mod.o dummy_del_mod_dep.o
+MODULES			:= dummy_del_mod.ko dummy_del_mod_dep.ko
+
+# New make infra variables...
+CLEAN_TARGETS		:= .dummy* *.mod.c .tmp_version *.ko
+INSTALL_TARGETS		:= $(MODULES)
+MAKE_TARGETS		:= delete_module01 delete_module02 delete_module03
+
+include $(top_srcdir)/include/mk/generic_leaf_target.mk
+
+$(MAKE_TARGETS): | make-module
+
+# KBuild will gripe because we redefine CFLAGS if KBUILD_NOPEDANTIC isn't set.
+.PHONY: make-module
+make-module:
+	make -C $(MODULEDIR) KBUILD_NOPEDANTIC=1 SUBDIRS=$(abs_srcdir) modules

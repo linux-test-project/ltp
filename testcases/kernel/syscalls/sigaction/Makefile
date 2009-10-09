@@ -16,20 +16,12 @@
 #  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-CFLAGS += -I../../../../include -Wall
-LDLIBS += -L../../../../lib -lltp
-CFLAGS += -DGLIBC_SIGACTION_BUG=1 -D_GNU_SOURCE
+top_srcdir		?= ../../../..
 
-SRCS    = $(wildcard *.c)
-TARGETS = $(patsubst %.c,%,$(SRCS))
+include $(top_srcdir)/include/mk/testcases.mk
 
-all: $(TARGETS)
+CFLAGS			+= -DGLIBC_SIGACTION_BUG=1 -D_GNU_SOURCE
 
-sigaction01:
-	$(CC) -o sigaction01 sigaction01.c $(CFLAGS) $(LDFLAGS) $(LDLIBS) -lpthread $(LOADLIBES2)
+LDLIBS			+= -lpthread
 
-install:
-	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
-
-clean:
-	rm -f $(TARGETS)
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

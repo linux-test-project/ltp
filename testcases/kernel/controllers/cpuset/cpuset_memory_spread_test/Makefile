@@ -1,16 +1,27 @@
-CFLAGS += -Wall -g -Wextra
+#
+#    kernel/controllers/cpuset/cpuset_memory_spread_test testcase Makefile.
+#
+#    Copyright (C) 2009, Cisco Systems Inc.
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Garrett Cooper, July 2009
+#
 
-all: cpuset_mem_hog
+top_srcdir              ?= ../../../../..
 
-cpuset_mem_hog: cpuset_mem_hog.o
-	cc cpuset_mem_hog.o -o cpuset_mem_hog
-
-clean:
-	rm -f cpuset_mem_hog.o cpuset_mem_hog
-
-install:
-	@set -e;
-	ln -f cpuset_mem_hog ../../../../bin/cpuset_mem_hog;
-	ln -f cpuset_memory_spread_testset.sh ../../../../bin/cpuset_memory_spread_testset.sh;
-	chmod +x cpuset_mem_hog;
-	chmod +x cpuset_memory_spread_testset.sh;
+include $(top_srcdir)/include/mk/testcases.mk
+include $(abs_srcdir)/../Makefile.inc
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

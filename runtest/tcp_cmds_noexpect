@@ -3,16 +3,16 @@
 # PLEASE READ THE README FILE IN /tcp_cmds BEFORE RUNNING THESE.
 #
 arp arp01
-echo export TCbin=$LTPROOT/testcases/network/tcp_cmds/echo; echo01 
+echo echo01
 finger finger01
-ftp export TCbin=$LTPROOT/testcases/network/tcp_cmds/ftp; ftp01
+ftp ftp01
 host host01
 netstat netstat01
-perf_lan export TCbin=$LTPROOT/testcases/network/tcp_cmds/perf_lan; perf_lan
+perf_lan perf_lan
 ping ping01
-rcp export TCbin=$LTPROOT/testcases/network/tcp_cmds/rcp; rcp01
-rdist export TCbin=$LTPROOT/testcases/network/tcp_cmds/rdist; rdist01
+rcp rcp01
+rdist rdist01
 rsh rsh01
 rwho rwho01
-sendfile export TCbin=$LTPROOT/testcases/network/tcp_cmds/sendfile; sendfile01
+sendfile sendfile01
 tcpdump tcpdump01

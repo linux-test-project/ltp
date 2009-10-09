@@ -23,16 +23,13 @@ struct data {
     char *data;
 };
 
-
 int xdr_receive_data(XDR *, struct data **);
 int xdr_send_data(XDR *, struct data *);
 void do_compare(int, char *, struct data *, char *);
+void usage_error(char *program_name);
 
-
-
-main(argc, argv)
-int argc;
-char *argv[];
+int
+main(int argc, char *argv[])
 {
     struct hostent *hp;
     struct data buffer, *return_buffer;
@@ -170,8 +167,6 @@ char *argv[];
     exit(0);
 }
 
-
-
 void
 do_compare(int rpc_rc, char *msg, struct data *buffer, char *ret_data)
 {
@@ -190,11 +185,8 @@ do_compare(int rpc_rc, char *msg, struct data *buffer, char *ret_data)
     }
 }
 
-
-
-xdr_receive_data(xdrs, buffer)
-XDR *xdrs;
-struct data **buffer;
+int
+xdr_receive_data(XDR *xdrs, struct data **buffer)
 {
     struct data *bp;
     int i, rc;
@@ -210,10 +202,8 @@ struct data **buffer;
     return(rc);
 }
 
-
-xdr_send_data(xdrs, buffer)
-XDR *xdrs;
-struct data *buffer;
+int
+xdr_send_data(XDR *xdrs, struct data *buffer)
 {
     int i, rc;
     char *p;
@@ -226,12 +216,10 @@ struct data *buffer;
     return(rc);
 }
 
-
-usage_error(program_name)
-char *program_name;
+void
+usage_error(char *program_name)
 {
     fprintf(stderr, "Usage: %s -s server -f file [-p program-number] [-v version]\n",
 	    program_name);
     exit(2);
 }
-

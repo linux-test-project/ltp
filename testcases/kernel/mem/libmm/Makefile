@@ -16,22 +16,10 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
 
-###########################################################################
-# name of file	: Makefile						  #
-# description	: make(1) description file for the send(2) tests.	  #
-###########################################################################
-CFLAGS+=	-I../../../../include -Wall
-LOADLIBES+=	-L../../../../lib -lltp -lmm
+top_srcdir		?= ../../../..
 
-SRCS=$(wildcard *.c)
-TARGETS=$(patsubst %.c,%,$(SRCS))
+include $(top_srcdir)/include/mk/env_pre.mk
 
-all: $(TARGETS)
+LIB			:= libmm.a
 
-install:
-	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
-
-clean:
-	rm -f $(TARGETS)
-
-
+include $(top_srcdir)/include/mk/lib.mk

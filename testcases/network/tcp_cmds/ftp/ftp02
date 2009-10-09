@@ -29,38 +29,45 @@
 #       This version is intended for EAL certification, it will need modification
 #       to conform with LTP standards in the offical LTP tree.
 
-export RHOST="localhost"
-export TEST_USER="ftpuser2"
-export TEST_USER_PASSWD="eal"
-export TEST_USER_ENCRYPTED_PASSWD="42VmxaOByKwlA"
-export TEST_USER_HOMEDIR="/home/$TEST_USER"
-
 #-----------------------------------------------------------------------
 # FUNCTION:  do_setup
 #-----------------------------------------------------------------------
 
-do_setup(){
-	#erase user if he may exist , so we can have a clean env
-        rm -rf /home/$TEST_USER
-        userdel $TEST_USER 
-        sleep 1
+do_setup()
+{
 
-        useradd -m -p $TEST_USER_ENCRYPTED_PASSWD $TEST_USER 
-        if [ $? != 0 ]
-        then {
-                echo "Could not add test user $TEST_USER to system $RHOST."
-                exit 1
-        }
-        fi
+    export RHOST="localhost"
+    export TEST_USER="ftpuser2"
+    export TEST_USER_PASSWD="eal"
+    export TEST_USER_ENCRYPTED_PASSWD="42VmxaOByKwlA"
+    export TEST_USER_HOMEDIR="/home/$TEST_USER"
+
+    # erase user if he may exist, so we can have a clean env
+    TCtmp="/home/$TEST_USER"
+
+    tst_setup
+
+    exists expect ftp ftp02_s1 useradd userdel
+    
+    userdel $TEST_USER 
+    sleep 1
+
+    if ! useradd -m -p $TEST_USER_ENCRYPTED_PASSWD $TEST_USER; then
+        end_testcase "Could not add test user $TEST_USER to system $RHOST."
+    fi
+
+    trap do_cleanup EXIT
+
 }
 
 #-----------------------------------------------------------------------
 # FUNCTION:  do_cleanup
 #-----------------------------------------------------------------------
 
-do_cleanup(){
-        rm -rf /home/$TEST_USER
-        userdel $TEST_USER
+do_cleanup()
+{
+    userdel $TEST_USER
+    tst_cleanup
 }
 
 #-----------------------------------------------------------------------
@@ -71,9 +78,9 @@ do_cleanup(){
 #	       Cleanup Test User from system
 #              Exit with exit code of script called upon
 #-----------------------------------------------------------------------
-do_setup
-ftp02_s1
-EXIT_CODE=$?
-do_cleanup
-exit $EXIT_CODE
+. net_cmdlib.sh
 
+read_opts $*
+do_setup
+ftp02_s1 || end_testcase "Testcase failed."
+end_testcase

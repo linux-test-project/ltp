@@ -8,7 +8,7 @@
 #
 
 if { [llength $argv] < 2} {
-	exit 1
+    exit 1
 }
  
 set USER [lindex $argv 0]

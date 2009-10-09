@@ -1,22 +1,34 @@
-CFLAGS+=	-D_GNU_SOURCE -I../../include
-LOADLIBES+=	-L../../lib -lltp
+#
+#    Makefile for all tst_* API commands.
+#
+#    Copyright (C) 2009, Cisco Systems Inc.
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Garrett Cooper, July 2009
+#
 
-SRCS=$(wildcard *.c)
-TARGETS=$(patsubst %.c,%,$(SRCS))
-CMDLIST=tst_brk tst_brkm tst_res tst_resm tst_exit tst_flush tst_brkloop tst_brkloopm tst_kvercmp
+top_srcdir		?= ../..
 
-all: $(TARGETS)
+include $(top_srcdir)/include/mk/testcases.mk
 
-install:
-	@ln -f $(TARGETS) ../../testcases/bin/tst_brk
-	@ln -f $(TARGETS) ../../testcases/bin/tst_brkm 
-	@ln -f $(TARGETS) ../../testcases/bin/tst_res
-	@ln -f $(TARGETS) ../../testcases/bin/tst_resm
-	@ln -f $(TARGETS) ../../testcases/bin/tst_exit
-	@ln -f $(TARGETS) ../../testcases/bin/tst_flush
-	@ln -f $(TARGETS) ../../testcases/bin/tst_brkloop
-	@ln -f $(TARGETS) ../../testcases/bin/tst_brkloopm
-	@ln -f $(TARGETS) ../../testcases/bin/tst_kvercmp
+CPPFLAGS		+= -D_GNU_SOURCE
 
-clean:
-	rm -f $(TARGETS)
+MAKE_TARGETS		:= $(addprefix tst_,brkloop brkloopm brk brkm exit flush kvercmp res resm)
+
+include $(top_srcdir)/include/mk/generic_leaf_target.mk
+
+$(MAKE_TARGETS): %: ltpapicmd.o
+	$(LINK.o) $^ $(LOADLIBES) $(LDLIBS) $(OUTPUT_OPTION)

@@ -1,17 +1,47 @@
-SUBDIRS = cpuset_base_ops_test cpuset_lib cpuset_inherit_test
-SUBDIRS += cpuset_exclusive_test cpuset_hierarchy_test cpuset_syscall_test
-SUBDIRS += cpuset_hotplug_test cpuset_load_balance_test
-SUBDIRS += cpuset_memory_pressure_test cpuset_memory_spread_test
-SUBDIRS += cpuset_memory_test
-all:
-	@set -e; \
-	for i in $(SUBDIRS); do $(MAKE) -C $$i $@ ;done;
+#
+#    kernel/controllers/cpuset testcase suite Makefile.
+#
+#    Copyright (C) 2009, Cisco Systems Inc.
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Garrett Cooper, July 2009
+#
 
-install:
-	@set -e; \
-	for i in $(SUBDIRS); do $(MAKE) -C $$i install ; done;
-	ln -f run_cpuset_test.sh ../../../bin/run_cpuset_test.sh;
-	chmod +x run_cpuset_test.sh;
+top_srcdir		?= ../../../..
 
-clean:
-	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i clean ; done
+include $(top_srcdir)/include/mk/env_pre.mk
+
+INSTALL_TARGETS		:= *.sh
+LIB			:= $(DESTDIR)/$(libdir)/libcpu_set.a
+LIBDIR			:= cpuset_lib
+FILTER_OUT_DIRS		:= $(LIBDIR)
+
+$(LIBDIR):
+	mkdir -p "$@"
+
+$(LIB): $(LIBDIR)
+	for i in all install; do \
+	    $(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" $$i; \
+	done
+
+trunk-all: $(LIB)
+
+trunk-clean:: | lib-clean
+
+lib-clean:: $(LIBDIR)
+	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" clean
+
+include $(top_srcdir)/include/mk/generic_trunk_target.mk

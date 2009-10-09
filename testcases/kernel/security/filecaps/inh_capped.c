@@ -24,28 +24,31 @@
  * Uses no command line arguments.
  */
 
-#define _GNU_SOURCE
 #include <stdio.h>
+#include "config.h"
+#if HAVE_SYS_CAPABILITY_H
 #include <sys/capability.h>
+#endif
 #include <test.h>
 
 char *TCID = "filecaps";
 int TST_TOTAL=1;
-
-#define DEBUG 1
 
 void debug_print_caps(char *when)
 {
 #ifdef DEBUG
 	char buf[2000];
 	tst_resm(TINFO, "%s", when);
+#if HAVE_DECL_SET_CAP_TO_TEXT
 	snprintf(buf, 2000, "%s", cap_to_text(cap_get_proc(), NULL));
+#endif
 	tst_resm(TINFO, "%s", buf);
 #endif
 }
 
 int set_caps_from_text(char *capstr)
 {
+#if HAVE_SYS_CAPABILITY_H && HAVE_DECL_SET_CAP_SET_PROC && HAVE_DECL_SET_CAP_FREE
 	cap_t caps = cap_from_text(capstr);
 	int ret;
 
@@ -56,10 +59,14 @@ int set_caps_from_text(char *capstr)
 	ret = cap_set_proc(caps);
 	cap_free(caps);
 	return ret;
+#else
+	return -1;
+#endif
 }
 
 int main()
 {
+#if HAVE_SYS_CAPABILITY_H && HAVE_DECL_SET_CAPS_FROM_TEXT
 	int ret;
 
 	debug_print_caps("start");
@@ -109,5 +116,8 @@ int main()
 
 	tst_resm(TFAIL, "succeeded raising capsysadmin in pI "
 			"without having setpcap");
+#else
+	tst_resm(TCONF, "System doesn't have POSIX capabilities support.");
+#endif
 	tst_exit();
 }

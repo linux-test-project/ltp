@@ -1,22 +1,33 @@
-CFLAGS += -w -O
-TESTS	= nfs_flock nfs_flock_dgen nfs_flock_frk
+#
+#    network/nfs/nfslock01 testcases Makefile.
+#
+#    Copyright (C) 2009, Cisco Systems Inc.
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Garrett Cooper, July 2009
+#
 
-all: $(TESTS)
+top_srcdir		?= ../../../..
 
-install:
-	ln -f nfslock01 ../../../bin
-	ln -f $(TESTS) ../../../bin
+include $(top_srcdir)/include/mk/env_pre.mk
 
-nfs_flock:
-	$(CC) $(CFLAGS) $(LDFLAGS) -o nfs_flock nfs_flock.c nfs_flock_func.c
+INSTALL_TARGETS		:= nfslock01
 
-nfs_flock_frk:
-	$(CC) $(CFLAGS) $(LDFLAGS) -o nfs_flock_frk nfs_flock_frk.c
+MAKE_TARGETS		:= $(patsubst $(abs_srcdir)/%.c,%,$(filter-out %nfs_flock_func.c,$(wildcard $(abs_srcdir)/*.c)))
 
-nfs_flock_dgen:
-	$(CC) $(CFLAGS) $(LDFLAGS) -o nfs_flock_dgen nfs_flock_dgen.c
+$(MAKE_TARGETS): %: %.o nfs_flock_func.o
 
-clean:
-	rm -f $(TESTS)
-
-
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

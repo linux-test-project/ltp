@@ -1,17 +1,31 @@
-CFLAGS += -Wall
-LOADLIBES = -lm
+#
+#    testcases/misc/math/float/trigo test suite Makefile.
+#
+#    Copyright (C) 2009, Cisco Systems Inc.
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Garrett Cooper, September 2009
+#
 
-BIN = gensin gencos gentan genatan genatan2 genacos genasin gentrigo
-DATA = dtan rtan datan ratan dsin rsin datan2 ratan2 dcos rcos dasin rasin dacos racos
+top_srcdir		?= ../../../../..
 
-all:	$(BIN)
+include $(top_srcdir)/include/mk/env_pre.mk
 
+CLEAN_TARGETS		:= [dr]*
 
-clean:
-	rm -f $(BIN)
-	@set -e; for i in $(BIN); do rm -f ../../../../bin/$$i ; done
-	rm -f $(DATA)
-	@set -e; for i in $(DATA); do rm -f ../../../../bin/$$i ; done
+LDLIBS			+= -lm
 
-install:
-	@set -e; for i in $(BIN); do ln -f $$i ../../../../bin/$$i ; done
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

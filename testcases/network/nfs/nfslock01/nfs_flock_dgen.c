@@ -6,54 +6,52 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-int main(argc, argv)
-int argc;
-char **argv;
+int
+main (int argc, char **argv)
 {
-   int i, j, k, nlines, nchars, ctype;
-   char c, buf[BUFSIZ];
-   FILE *fp;
+	int i, j, k, nlines, nchars, ctype;
+	char c, buf[BUFSIZ];
+	FILE *fp;
 
-   if (argc != 5) {
-      printf("Usage:<nfs_flock_dgen > <file> <char/line> <lines> <ctype>\n");
-      exit(2);
-   }
+	if (argc != 5) {
+		printf("usage: <nfs_flock_dgen> <file> <char/line> <lines> <ctype>\n");
+		exit(2);
+	}
 
-   fp = fopen(argv[1], "w");
+	fp = fopen(argv[1], "w");
 
-   nchars = atoi(argv[2]);
-   if (nchars > BUFSIZ) {
-      printf("Exceeded the maximum limit of the buffer (4096)\n");
-      exit(3);
-   }
-   nlines = atoi(argv[3]);
-   ctype = atoi(argv[4]);
+	nchars = atoi(argv[2]);
+	if (nchars > BUFSIZ) {
+		printf("Exceeded the maximum limit of the buffer (%d)\n", BUFSIZ);
+		exit(3);
+	}
+	nlines = atoi(argv[3]);
+	ctype = atoi(argv[4]);
 
-   k = 0;
-   for(i = 1; i <= nlines; i++) {
-      if (ctype) {
-         if ((i%2) == 0)
-            c = '0';
-         else
-            c = '1';
-      }
-      else
-         c = 'A' + k;
+	k = 0;
+	for (i = 1; i <= nlines; i++) {
 
-      for(j=0; j < nchars; j++)
-         buf[j] = c;
+		if (ctype)
+			c = ((i % 2) ? '1' : '0');
+		else
+			c = 'A' + k;
 
-      fprintf(fp,"%s\n",buf);
+	for (j = 0; j < nchars; j++)
 
-      if (!ctype) {
-         if (i != 1 && i%26 == 0) {
-            k = 0;
-         } else
-            k++;
-      }
-   }
+		buf[j] = c;
 
-   fclose(fp);
-   return(0);
+		fprintf(fp, "%s\n", buf);
+
+		if (!ctype) {
+			if (i != 1 && i % 26 == 0)
+				k = 0;
+			else
+				k++;
+		}
+
+	}
+
+	fclose(fp);
+	return(0);
 }
 

@@ -54,32 +54,35 @@
  *
  * USAGE:  <for command-line>
  *  delete_module03 [-c n] [-e] [-f] [-h] [-i n] [-I x] [-p] [-P x] [-t]
- *		 		 where,  -c n : Run n copies concurrently. (no effect)
- *		 		 		 -e   : Turn on errno logging.
- *		 		 		 -f   : Turn off functional testing
- *		 		 		 -h   : Show help screen
- *		 		 		 -i n : Execute test n times.
- *		 		 		 -I x : Execute test for x seconds.
- *		 		 		 -p   : Pause for SIGUSR1 before starting
- *		 		 		 -P x : Pause for x seconds between iterations.
- *		 		 		 -t   : Turn on syscall timing.
+ *		 		 where,  -c n : Run n copies concurrently. (no
+ *		 		 		effect)
+ *	 		 		 -e   : Turn on errno logging.
+ *	 		 		 -f   : Turn off functional testing
+ *	 		 		 -h   : Show help screen
+ *	 		 		 -i n : Execute test n times.
+ *	 		 		 -I x : Execute test for x seconds.
+ *	 		 		 -p   : Pause for SIGUSR1 before
+ *	 		 		 	starting
+ *	 		 		 -P x : Pause for x seconds between
+ *	 		 		 	iterations.
+ *	 		 		 -t   : Turn on syscall timing.
  *
  * RESTRICTIONS
- *		 -c option has no effect for this testcase, even if used allows only
- *		 one instance to run at a time.
+ *		 -c option has no effect for this testcase, even if used allows
+ *		 only one instance to run at a time.
  *
  * CHANGELOG
  *   
- *  11/22/02 - Added "--force" to insmod options and redirected output to /dev/null.
- *             This was done to allow kernel mismatches, b/c it doesn't matter in
- *             this case.
- *           Robbie Williamson <robbiew@us.ibm.com>
+ *  11/22/02 -	Added "--force" to insmod options and redirected output to
+ *  		/dev/null. This was done to allow kernel mismatches, b/c it
+ *  		doesn't matter in this case.
+ *		Robbie Williamson <robbiew@us.ibm.com>
  *
  ****************************************************************/
 
+#include <libgen.h>
 #include <errno.h>
 #include <pwd.h>
-//#include <linux/module.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -89,10 +92,10 @@ extern int Tst_count;
 #define DUMMY_MOD_DEP		 "dummy_del_mod_dep"
 #define EXP_RET_VAL		 -1
 #define EXP_ERRNO		 EWOULDBLOCK
-//#define EXP_ERRNO		 EBUSY
+/*#define EXP_ERRNO		 EBUSY */
 
 char *TCID = "delete_module03";
-//static int exp_enos[] = {EBUSY, 0};
+/*static int exp_enos[] = {EBUSY, 0}; */
 static int exp_enos[] = {EWOULDBLOCK, 0};
 int TST_TOTAL = 1;
 
@@ -102,137 +105,138 @@ static void cleanup(void);
 int
 main(int argc, char **argv)
 {
-		 int lc;		 		 		 		 /* loop counter */
-		 char *msg;		 		 		 /* message returned from parse_opts */
-		 char cmd[50];
+	int lc;		 		 /* loop counter */
+	char *msg;	 		 /* message returned from parse_opts */
+	char cmd[50];
 
-		 /* parse standard options */
-		 if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) !=
-		     (char *)NULL) {
-		 		 tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-		 }
+	/* parse standard options */
+	if ((msg = parse_opts(argc, argv, (option_t*) NULL, NULL)) !=
+	    (char *) NULL) {
+		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+	}
 
-		 if(STD_COPIES != 1) {
-		 		 tst_resm(TINFO, "-c option has no effect for this testcase - "
-		 		 		 "doesn't allow running more than one instance "
-		 		 		 "at a time");
-		 		 STD_COPIES = 1;
-		 }
+	if(STD_COPIES != 1) {
+		tst_resm(TINFO, "-c option has no effect for this testcase - "
+				"doesn't allow running more than one instance "
+		 		"at a time");
+		STD_COPIES = 1;
+	}
 
-		 /* Load first kernel module */
-        if( sprintf(cmd, "/sbin/insmod /tmp/%s.ko", DUMMY_MOD) <= 0) {
-                tst_resm(TBROK, "sprintf failed");
-                return 1;
-        }
+	/* Load first kernel module */
+	if( sprintf(cmd, "/sbin/insmod %s/%s.ko", dirname(argv[0]),
+		DUMMY_MOD) <= 0) {
+		tst_resm(TBROK, "sprintf failed");
+		return 1;
+	}
+	if( (system(cmd)) != 0 ) {
+		tst_resm(TBROK, "Failed to load %s module", DUMMY_MOD);
+		return 1;
+	}
+
+	/* Load dependant kernel module */
+        if( sprintf(cmd, "/sbin/insmod %s/%s.ko", dirname(argv[0]),
+		DUMMY_MOD_DEP) <= 0) {
+		tst_resm(TBROK, "sprintf failed");
+		goto END;
+	}
         if( (system(cmd)) != 0 ) {
-                tst_resm(TBROK, "Failed to load %s module", DUMMY_MOD);
-                return 1;
+		tst_resm(TBROK, "Failed to load %s module", DUMMY_MOD_DEP);
+		goto END;
         }
 
-		 /* Load dependant kernel module */
-        if( sprintf(cmd, "/sbin/insmod /tmp/%s.ko", DUMMY_MOD_DEP) <= 0) {
-                tst_resm(TBROK, "sprintf failed");
-                goto END;
-        }
-        if( (system(cmd)) != 0 ) {
-                tst_resm(TBROK, "Failed to load %s module", DUMMY_MOD_DEP);
-                goto END;
-        }
+	tst_tmpdir();
+	if(setup() != 0) {
+		return 1;
+	}
 
-		 tst_tmpdir();
-		 if(setup() != 0) {
-		 		 return 1;
-		 }
+	/* check looping state if -i option is given */
+	for (lc = 0; TEST_LOOPING(lc); lc++) {
+		/* reset Tst_count in case we are looping */
+		Tst_count = 0;
 
-		 /* check looping state if -i option is given */
-		 for (lc = 0; TEST_LOOPING(lc); lc++) {
-		 		 /* reset Tst_count in case we are looping */
-		 		 Tst_count = 0;
+		/* Test the system call */
+		TEST(delete_module(DUMMY_MOD));
 
-		 		 /* Test the system call */
-		 		 TEST(delete_module(DUMMY_MOD));
-
-		 		 TEST_ERROR_LOG(TEST_ERRNO);
-		 		 if ( (TEST_RETURN == (int) EXP_RET_VAL ) &&
-		 		 		 		 (TEST_ERRNO == EXP_ERRNO) ) {
-		 		 		 tst_resm(TPASS, "Expected failure for module in-use, "
-		 		 		 		 "errno: %d", TEST_ERRNO);
-		 		 } else {
-		 		 		 tst_resm(TFAIL, "Unexpected results for module in-use; "
-		 		 		 		 "returned %d (expected %d), errno %d "
-		 		 		 		 "(expected %d)", TEST_RETURN, EXP_RET_VAL,
-		 		 		 		 TEST_ERRNO, EXP_ERRNO);
-		 		 }
-		 }
-		 cleanup();
+		TEST_ERROR_LOG(TEST_ERRNO);
+		if ( (TEST_RETURN == (int) EXP_RET_VAL ) &&
+		     (TEST_ERRNO == EXP_ERRNO) ) {
+			tst_resm(TPASS, "Expected failure for module in-use, "
+		 			"errno: %d", TEST_ERRNO);
+		} else {
+			tst_resm(TFAIL, "Unexpected results for module in-use; "
+		 			"returned %d (expected %d), errno %d "
+					"(expected %d)", TEST_RETURN,
+					EXP_RET_VAL, TEST_ERRNO, EXP_ERRNO);
+		}
+	}
+	cleanup();
 END:
-		 if(system("rmmod "DUMMY_MOD) != 0) {
-		 		 tst_resm(TBROK, "Failed to unload %s module", DUMMY_MOD);
-		 		 return 1;
-		 }
+	if(system("rmmod "DUMMY_MOD) != 0) {
+		tst_resm(TBROK, "Failed to unload %s module", DUMMY_MOD);
+		return 1;
+	}
 
-		 /*NOTREACHED*/
-		 return 0;
+	/*NOTREACHED*/
+	return 0;
 }
 
 /*
  * setup()
- *		 performs all ONE TIME setup for this test
+ *	performs all ONE TIME setup for this test
  */
 int
 setup(void)
 {
-		 /* capture signals */
-		 tst_sig(FORK, DEF_HANDLER, cleanup);
+	/* capture signals */
+	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-		 /* Check whether it is root  */
-		 if (geteuid() != 0) {
-		 		 tst_resm(TBROK, "Must be root for this test!");
-		 		 return 1;
-		 }
+	/* Check whether it is root  */
+	if (geteuid() != 0) {
+		tst_resm(TBROK, "Must be root for this test!");
+		return 1;
+	}
 
-		 /*
-		 if (tst_kvercmp(2,5,48) >= 0)
-		 		 tst_brkm(TCONF, tst_exit, "This test will not work on "
-		 		 		 		 "kernels after 2.5.48");
-		 */
+	/*
+	if (tst_kvercmp(2,5,48) >= 0)
+		tst_brkm(TCONF, tst_exit, "This test will not work on "
+					  "kernels after 2.5.48");
+	*/
 
-		 /* set the expected errnos... */
-		 TEST_EXP_ENOS(exp_enos);
+	/* set the expected errnos... */
+	TEST_EXP_ENOS(exp_enos);
 
-		 /* Pause if that option was specified
-		  * TEST_PAUSE contains the code to fork the test with the -c option.
-		  */
-		 TEST_PAUSE;
-		 return 0;
+	/* Pause if that option was specified
+	 * TEST_PAUSE contains the code to fork the test with the -c option.
+	 */
+	TEST_PAUSE;
+	return 0;
 
 }
 
 /*
  * cleanup()
- *		 performs all ONE TIME cleanup for this test at
- *		 completion or premature exit
+ *	performs all ONE TIME cleanup for this test at
+ *	completion or premature exit
  */
 void
 cleanup(void)
 {
-		 /* Unload dependent kernel module */
-		 if(system("rmmod "DUMMY_MOD_DEP) != 0) {
-		 		 tst_resm(TBROK, "Failed to unload %s module",
-		 		 		 DUMMY_MOD_DEP);
-		 }
-		 /* Unload first kernel module */
-		 if(system("rmmod "DUMMY_MOD) != 0) {
-		 		 tst_resm(TBROK, "Failed to unload %s module",
-		 		 		 DUMMY_MOD);
-		 }
-		 /*
-		  * print timing stats if that option was specified.
-		  * print errno log if that option was specified.
-		  */
-		 TEST_CLEANUP;
-		 tst_rmdir();
-		 /* exit with return code appropriate for results */
-		 tst_exit();
-		 /*NOTREACHED*/
+	/* Unload dependent kernel module */
+	if(system("rmmod "DUMMY_MOD_DEP) != 0) {
+		tst_resm(TBROK, "Failed to unload %s module", DUMMY_MOD_DEP);
+	}
+	/* Unload first kernel module */
+	if(system("rmmod "DUMMY_MOD) != 0) {
+		tst_resm(TBROK, "Failed to unload %s module",
+		DUMMY_MOD);
+	}
+	/*
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
+	TEST_CLEANUP;
+	tst_rmdir();
+	/* exit with return code appropriate for results */
+	tst_exit();
+	/*NOTREACHED*/
 }

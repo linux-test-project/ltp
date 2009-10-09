@@ -1,44 +1,30 @@
-CFLAGS+= -Wall -O -g -DAIO -I../../../../include
-LDLIBS+= -L../../../../lib -laio -lltp
+#
+#    kernel/io/ltp-aiodio testcases Makefile.
+#
+#    Copyright (C) 2009, Cisco Systems Inc.
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Garrett Cooper, July 2009
 
-TARGETS=ltp-diorh aiocp aiodio_append aiodio_sparse dio_append dio_sparse dio_truncate dirty read_checkzero aio-stress
-SRCS=$(wildcard *.c)
-OBJS=$(patsubst %.c,%.o,$(SRCS))
+top_srcdir		?= ../../../..
 
-all: $(TARGETS)
+include $(top_srcdir)/include/mk/testcases.mk
 
-ltp-diorh: ltp-diorh.o
-		 $(CC) -o $@ $^ -I. $(CFLAGS) $(LDLIBS)
+CPPFLAGS		+= -DAIO -D_GNU_SOURCE
 
-aiocp: aiocp.o
-		 $(CC) -o $@ $^ -I. $(CFLAGS) $(LDLIBS)
+LDLIBS			+= -lpthread $(AIO_LIBS)
 
-aiodio_append: aiodio_append.o
-		 $(CC) -o $@ $^ $(CFLAGS) $(LDLIBS)
-
-aiodio_sparse: aiodio_sparse.o
-		 $(CC) -o $@ $^ $(CFLAGS) $(LDLIBS)
-
-dio_append: dio_append.o
-		 $(CC) -o $@ $^ $(CFLAGS) $(LDLIBS)
-
-dio_sparse: dio_sparse.o
-		 $(CC) -o $@ $^ $(CFLAGS) $(LDLIBS)
-
-dio_truncate: dio_truncate.o
-		 $(CC) -o $@ $^ $(CFLAGS) $(LDLIBS)
-
-dirty: dirty.o
-		 $(CC) -o $@ $^ $(CFLAGS) $(LDLIBS)
-
-read_checkzero: read_checkzero.o
-		 $(CC) -o $@ $^ $(CFLAGS) $(LDLIBS)
-
-aio-stress: aio-stress.o
-		 $(CC) -o $@ $^ $(CFLAGS) $(LDLIBS) -lpthread
-
-install:
-	@set -e; for i in $(TARGETS) ; do ln -f $$i ../../../bin/$$i ; done ;
-
-clean:
-	rm -f $(OBJS) $(TARGETS)
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

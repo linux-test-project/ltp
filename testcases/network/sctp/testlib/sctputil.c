@@ -50,8 +50,8 @@
 #include <sys/uio.h>
 #include <netinet/in.h> 
 #include <malloc.h>
-#include <netinet/sctp.h>
-#include <sctputil.h>
+#include "netinet/sctp.h"
+#include "sctputil.h"
 
 /* This function prints the cmsg data. */
 void

@@ -34,38 +34,6 @@
 #
 #
 #-----------------------------------------------------------------------
-# Uncomment line below for debug output.
-#trace_logic=${trace_logic:-"set -x"}
-$trace_logic
-
-TC=rcp
-TCbin=${TCbin:-`pwd`}
-TCtmp=${TCtmp:-$TCbin/$TC$$}
-TCdat=${TCdat:-$TCbin/datafiles}
-LHOST=`hostname`
-RHOST=${RHOST:-$LHOST}
-SLEEPTIME=${SLEEPTIME:-0}
-FILES=${FILES:-"bin.sm bin.med bin.lg bin.jmb"}
-
-
-#-----------------------------------------------------------------------
-#
-# FUNCTION:  exists
-#
-#-----------------------------------------------------------------------
-
-exists()
-{
-   for cmd in $1
-   do
-       which $cmd 2>&1 1>/dev/null
-	   if [ $? -ne 0 ]
-	   then
-	       tst_resm TBROK "Test broke: command $cmd not found"
-		   exit 1
-       fi
-   done
-}
 
 #-----------------------------------------------------------------------
 #
@@ -75,11 +43,24 @@ exists()
 
 do_setup()
 {
-   $trace_logic
 
-   exists "rcp rsh awk"
-   rsh -n -l root $RHOST mkdir -p $TCtmp 2>&1 1>/dev/null
-   mkdir -p $TCtmp
+    TCtmp=${TCtmp:-$LTPROOT/testcases/bin/$TC${EXEC_SUFFIX}$$}
+    TCdat=${TCdat:-$LTPROOT/testcases/bin/datafiles}
+    LHOST=`hostname`
+    RHOST=${RHOST:-$LHOST}
+    SLEEPTIME=${SLEEPTIME:-0}
+    FILES=${FILES:-"bin.sm bin.med bin.lg bin.jmb"}
+
+    tst_setup
+
+    exists awk rcp rsh sum
+
+    if ! rsh -n -l root $RHOST mkdir -p $TCtmp 2>&1 1>/dev/null; then
+        end_testcase "Remote mkdir failed"
+    fi
+
+    trap do_cleanup EXIT
+
 }
 
 #-----------------------------------------------------------------------
@@ -90,44 +71,49 @@ do_setup()
 
 do_test()
 {
-   $trace_logic
 
-   for j in $FILES
-   do
-      rcp $TCdat/$j $RHOST:$TCtmp/$j
+    for j in $FILES; do
 
-      SUM1=`sum $TCdat/$j | awk '{print $1}'`
-      SUM2=`rsh -n -l root $RHOST sum $TCtmp/$j | awk '{print $1}'`
-      rsh -n -l root $RHOST "rm -f $TCtmp/$j"
-      sleep $SLEEPTIME
+        if ! rcp $TCdat/$j $RHOST:$TCtmp/$j; then
+            end_testcase "Failed to rcp file."
+        fi
 
-      if [ $SUM1 = $SUM2 ]
-      then
-         tst_resm TINFO "rcp $TCdat/$j $RHOST:$TCtmp/$j successful"
-      else
-         end_testcase "FAILED: wrong sum in transfer to $RHOST"
-      fi
-      sleep $SLEEPTIME
-   done
+        SUM1=`sum $TCdat/$j | awk '{print $1}'`
+        SUM2=`rsh -n -l root $RHOST sum $TCtmp/$j | awk '{print $1}'`
+        rsh -n -l root $RHOST "rm -f $TCtmp/$j"
+        sleep $SLEEPTIME
 
-   for j in $FILES
-   do
-      tst_resm TINFO "remote coping  $RHOST:$TCdat/$j $TCtmp/$j "
-      rcp $RHOST:$TCdat/$j $TCtmp/$j 2>&1 1>/dev/null
+        if [ "$SUM1 = $SUM2" ]; then
+            tst_resm TINFO "rcp $TCdat/$j $RHOST:$TCtmp/$j successful"
+        else
+            end_testcase "FAILED: wrong sum in transfer to $RHOST"
+        fi
 
-      SUM1=`sum $TCtmp/$j | awk '{print $1}'`
-      SUM2=`rsh -n -l root $RHOST sum $TCdat/$j | awk '{print $1}'`
-      rm -f $TCtmp/$j
-      sleep $SLEEPTIME
+        sleep $SLEEPTIME
 
-      if [ $SUM1 = $SUM2 ]
-      then
-         tst_resm TINFO "rcp $RHOST:$TCdat/$j $TCtmp/$j successful"
-      else
-         end_testcase "FAILED: wrong sum in transfer to $LHOST from $RHOST"
-      fi
-      sleep $SLEEPTIME
-   done
+    done
+
+    for j in $FILES; do
+
+        tst_resm TINFO "remote copying $RHOST:$TCdat/$j to $TCtmp/$j"
+        if ! rcp $RHOST:$TCdat/$j $TCtmp/$j 2>&1 1>/dev/null; then
+            tst_resm TFAIL "Failed to rcp file."; continue
+        fi
+
+        SUM1=`sum $TCtmp/$j | awk '{print $1}'`
+        SUM2=`rsh -n -l root $RHOST sum $TCdat/$j | awk '{print $1}'`
+        rm -f $TCtmp/$j
+        sleep $SLEEPTIME
+
+        if [ "$SUM1" = "$SUM2" ]; then
+            tst_resm TINFO "rcp $RHOST:$TCdat/$j $TCtmp/$j successful"
+        else
+            end_testcase "FAILED: wrong sum in transfer to $LHOST from $RHOST"
+        fi
+        sleep $SLEEPTIME
+
+    done
+
 }
 
 #-----------------------------------------------------------------------
@@ -138,30 +124,8 @@ do_test()
 
 do_cleanup()
 {
-   $trace_logic
-
-   rsh -n -l root $RHOST rmdir $TCtmp
-   rmdir $TCtmp
-}
-
-#=============================================================================
-# FUNCTION NAME:        end_testcase
-#
-# FUNCTION DESCRIPTION: Clean up
-#
-# PARAMETERS:           string, IF AND ONLY IF the testcase fails
-#
-# RETURNS:              None.
-#=============================================================================
-
-end_testcase()
-{
-   $trace_logic
-   do_cleanup
-
-   [ $# -eq 0 ] && { tst_resm TPASS "Test Successful"; exit 0; }
-   tst_resm TFAIL "Test Failed: $@"
-   exit 1
+    rsh -n -l root $RHOST rmdir $TCtmp
+    tst_cleanup
 }
 
 #----------------------------------------------------------------------
@@ -172,9 +136,9 @@ end_testcase()
 # OUTPUT:   A testcase run log with the results of the execution of this
 #           test.
 #----------------------------------------------------------------------
-export TCID=rcp01
-export TST_TOTAL=1
-export TST_COUNT=1
+. net_cmdlib.sh
+
+read_opts $*
 do_setup
 do_test
 end_testcase

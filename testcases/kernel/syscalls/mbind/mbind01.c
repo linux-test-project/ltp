@@ -55,7 +55,9 @@
 #include <errno.h>
 #include <stdio.h>
 #include <unistd.h>
-#include "numaif.h"
+#if HAS_NUMAIF_H
+#include <numaif.h>
+#endif
 #include "include_j_h.h"
 
 /* Harness Specific Include Files. */
@@ -174,6 +176,7 @@ struct test_case {
  *                      (only we can do is simulate 1-node NUMA)
  */
 
+#if HAS_NUMA_H
 static struct test_case tcase[] = {
         { // case00
                 .policy         = MPOL_DEFAULT,
@@ -244,6 +247,9 @@ static struct test_case tcase[] = {
                 .err            = EFAULT,
         },
 };
+#else
+static struct test_case tcase[] = { };
+#endif
 
 #define MEM_LENGTH              (4 * 1024 * 1024)
 /*
@@ -255,6 +261,7 @@ static struct test_case tcase[] = {
  */
 
 static int do_test(struct test_case *tc) {
+#if HAS_NUMA_H
         int sys_ret;
         int sys_errno;
         int result = RESULT_OK;
@@ -269,6 +276,7 @@ static int do_test(struct test_case *tc) {
         nodemask_zero(&nodemask);
         nodemask_set(&nodemask, 0);
         nodemask_zero(&getnodemask);
+
 
         /*
          * mmap memory
@@ -326,6 +334,9 @@ TEST_END:
         result |= ((sys_errno != tc->err) || (!cmp_ok));
         PRINT_RESULT_CMP(0, tc->ret, tc->err, sys_ret, sys_errno, cmp_ok);
         return result;
+#else
+	return -1;
+#endif
 }
 
 /*
@@ -346,8 +357,6 @@ static void usage(char *progname) {
 
 
 int main(int ac, char **av) {
-	int result = 0;
-	int lc, i;                 /* loop counter */
 	char *msg;              /* message returned from parse_opts */
 
 	struct option long_options[] = {
@@ -366,6 +375,10 @@ int main(int ac, char **av) {
 
 	progname = strchr(av[0],'/');
 	progname = (progname ? progname + 1 : av[0]);
+
+#if HAS_NUMA_H
+	int result = 0;
+	int lc, i;                 /* loop counter */
 
         /* Check looping state if -i option given */
         for (lc = 0; TEST_LOOPING(lc); ++lc) {
@@ -416,8 +429,10 @@ int main(int ac, char **av) {
 
 
                 }
-        }	
+        }
+#else
+	tst_resm(TCONF, "NUMA support not provided.");
+#endif
         cleanup();
 	tst_exit();
 }
-

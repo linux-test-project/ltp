@@ -16,16 +16,14 @@
 #  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-CFLAGS += -I../../../../include -Wall -I../include -D_GNU_SOURCE
-LDLIBS += -L ../../../../lib -lpthread -lltp
+top_srcdir		?= ../../../..
 
-SRCS    = $(wildcard *.c)
-TARGETS = $(patsubst %.c,%,$(SRCS))
+include $(top_srcdir)/include/mk/testcases.mk
 
-all: $(TARGETS)
+CFLAGS			+= -D_GNU_SOURCE
 
-install:
-	set -e; for i in $(TARGETS) ; do ln -f $$i ../../../bin/$$i ; done ;
+CPPFLAGS		+= -I$(abs_srcdir)/../include
 
-clean:
-	rm -f $(TARGETS)
+LDLIBS			+= -lpthread
+
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

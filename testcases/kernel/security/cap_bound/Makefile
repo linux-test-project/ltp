@@ -18,41 +18,12 @@
 ##                                                                            ##
 ################################################################################
 
-HAVE_LIBCAP := $(shell sh check_for_libcap.sh yesno)
+top_srcdir		?= ../../../..
 
-SCRIPTS = run_capbounds.sh
-TARGETS = checkforlibcap
+include $(top_srcdir)/include/mk/testcases.mk
 
-CFLAGS += -I../../../../include -Wall
-LDLIBS += -L../../../../lib -lltp -lcap
+INSTALL_TARGETS		:= run_capbounds.sh
 
-ifeq ($(HAVE_LIBCAP),yes)
-SRCS    = $(wildcard *.c)
-TARGETS+= $(patsubst %.c,%,$(SRCS))
-endif
+LDLIBS			+= $(CAP_LIBS)
 
-all: $(TARGETS)
-
-ifeq ($(HAVE_LIBCAP),yes)
-checkforlibcap:
-	echo "#!/bin/sh" > $@
-	echo true >> $@
-	chmod a+rx $@
-else
-	@echo "libcap is not installed.  Please install libcap from"; \
-	echo "ftp://ftp.kernel.org/pub/linux/libs/security/linux-privs/libcap2."; \
-	echo "You must use libcap-2.11 or newer."; \
-	echo "Then make clean in ltp or ltp/testcases/kernel/security/filecaps, and recompile ltp."
-checkforlibcap:
-	echo "#!/bin/sh" > $@
-	echo false >> $@
-	chmod a+rx $@
-endif
-
-
-INSTALLTARGETS = $(TARGETS) $(SCRIPTS) checkforlibcap
-install: $(INSTALLTARGETS)
-	@set -e; for i in $(INSTALLTARGETS); do ln -f $$i ../../../bin/$$i ; chmod +x ../../../bin/$$i; done
-
-clean:
-	rm -f $(TARGETS) *.o checkforlibcap
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

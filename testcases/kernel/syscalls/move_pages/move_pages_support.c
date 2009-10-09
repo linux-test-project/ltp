@@ -20,8 +20,15 @@
 #include <syscall.h>
 #include <unistd.h>
 #include <semaphore.h>
+#include "config.h"
+#if HAVE_NUMA_H
 #include <numa.h>
-#include <numaif.h>
+#endif
+/*
+ * #if HAVE_NUMAIF_H
+   #include <numaif.h>
+   #endif
+ */
 #include <errno.h>
 
 #include <test.h>
@@ -48,6 +55,8 @@ long get_page_size()
  */
 void free_pages(void **pages, unsigned int num)
 {
+
+#if HAS_NUMA_H
 	int i;
 	size_t onepage = get_page_size();
 
@@ -56,6 +65,7 @@ void free_pages(void **pages, unsigned int num)
 			numa_free(pages[i], onepage);
 		}
 	}
+#endif
 }
 
 /*
@@ -73,7 +83,9 @@ void free_pages(void **pages, unsigned int num)
 int alloc_pages_on_nodes(void **pages, unsigned int num, int *nodes)
 {
 	int i;
+#if HAVE_NUMA_ALLOC_ONNODE
 	size_t onepage = get_page_size();
+#endif
 
 	for (i = 0; i < num; i++) {
 		pages[i] = NULL;
@@ -82,7 +94,9 @@ int alloc_pages_on_nodes(void **pages, unsigned int num, int *nodes)
 	for (i = 0; i < num; i++) {
 		char *page;
 
+#if HAVE_NUMA_ALLOC_ONNODE
 		pages[i] = numa_alloc_onnode(onepage, nodes[i]);
+#endif
 		if (pages[i] == NULL) {
 			tst_resm(TBROK, "allocation of page on node "
 				 "%d failed", nodes[i]);
@@ -115,9 +129,11 @@ int alloc_pages_on_nodes(void **pages, unsigned int num, int *nodes)
  */
 int alloc_pages_linear(void **pages, unsigned int num)
 {
+	int nodes[num];
+
+#if HAS_NUMA_H
 	unsigned int i;
 	unsigned int n;
-	int nodes[num];
 
 	n = 0;
 	for (i = 0; i < num; i++) {
@@ -127,6 +143,7 @@ int alloc_pages_linear(void **pages, unsigned int num)
 		if (n > numa_max_node())
 			n = 0;
 	}
+#endif
 
 	return alloc_pages_on_nodes(pages, num, nodes);
 }
@@ -164,6 +181,7 @@ int alloc_pages_on_node(void **pages, unsigned int num, int node)
 void
 verify_pages_on_nodes(void **pages, int *status, unsigned int num, int *nodes)
 {
+#if HAVE_NUMA_H
 	unsigned int i;
 	int which_node;
 	int ret;
@@ -196,6 +214,9 @@ verify_pages_on_nodes(void **pages, int *status, unsigned int num, int *nodes)
 	}
 
 	tst_resm(TPASS, "pages are present in expected nodes");
+#else
+	tst_resm(TCONF, "NUMA support not provided");
+#endif
 }
 
 /*
@@ -206,11 +227,13 @@ verify_pages_on_nodes(void **pages, int *status, unsigned int num, int *nodes)
  */
 void verify_pages_linear(void **pages, int *status, unsigned int num)
 {
+#if HAS_NUMA_H
 	unsigned int i;
 	unsigned int n;
 	int nodes[num];
 
 	n = 0;
+
 	for (i = 0; i < num; i++) {
 		nodes[i] = i;
 
@@ -220,6 +243,7 @@ void verify_pages_linear(void **pages, int *status, unsigned int num)
 	}
 
 	verify_pages_on_nodes(pages, status, num, nodes);
+#endif
 }
 
 /*
@@ -252,6 +276,7 @@ void verify_pages_on_node(void **pages, int *status, unsigned int num, int node)
  */
 int alloc_shared_pages_on_node(void **pages, unsigned int num, int node)
 {
+#if HAS_NUMA_H
 	char *shared;
 	unsigned int i;
 	int nodes[num];
@@ -281,6 +306,9 @@ int alloc_shared_pages_on_node(void **pages, unsigned int num, int node)
 	}
 
 	return 0;
+#else
+	return -1;
+#endif
 }
 
 /*
@@ -377,6 +405,7 @@ void free_sem(sem_t * sem, int num)
  */
 void check_config(unsigned int min_nodes)
 {
+#if HAS_NUMA_H
 	if (numa_available() < 0) {
 		tst_resm(TCONF, "NUMA support is not available");
 		tst_exit();
@@ -396,4 +425,8 @@ void check_config(unsigned int min_nodes)
 		tst_resm(TCONF, "this arch does not support move_pages");
 		tst_exit();
 	}
+#else
+	tst_resm(TCONF, "NUMA support not provided");
+	tst_exit();
+#endif
 }

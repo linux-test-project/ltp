@@ -20,6 +20,10 @@
 ##                                                                            ##
 ################################################################################
 
+export TCID=dma_thread_diotest7
+export TST_TOTAL=3
+export TST_COUNT=3
+
 tst_resm TINFO "Generating Test Files"
 ./dma_thread_diotest7
 

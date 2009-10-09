@@ -19,19 +19,12 @@
 #  along with this program;  if not, write to the Free Software
 #  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
-CFLAGS += -I../../../../include -Wall
-LDLIBS += -L../../../../lib -lltp
 
-include ../utils/newer_64.mk
-%_64: CFLAGS += -D_FILE_OFFSET_BITS=64
+top_srcdir		?= ../../../..
 
-SRCS      = $(wildcard *.c)
-TARGETS   += $(patsubst %.c,%,$(SRCS))
+include $(top_srcdir)/include/mk/testcases.mk
+include $(abs_srcdir)/../utils/newer_64.mk
 
-all: $(TARGETS)
+%_64: CPPFLAGS += -D_FILE_OFFSET_BITS=64 -D$(DEF_64)=1
 
-install:
-	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
-
-clean:
-	rm -f $(TARGETS)
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

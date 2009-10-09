@@ -35,39 +35,6 @@
 #
 #
 #***********************************************************************
-# Uncomment line below for debug output.
-# trace_logic=${trace_logic:-"set -x"}
-$trace_logic
-
-RHOST=${RHOST:-`hostname`}
-USER_LIST=${USER_LIST:-'root'}
-TCbin=${TCbin:-`pwd`}
-TCdat=${TCdat:-$TCbin}
-TCtmp=${TCtmp:-$TCbin/rdist$$}
-FILES=${FILES:-'bin.sm bin.med bin.lg bin.jmb file.dir/bin.sm file.dir/bin.med file.dir/bin.jmb'}
-SLEEPTIME=${SLEEPTIME:-10}
-CLEANUP=${CLEANUP:-ON}
-
-
-#-----------------------------------------------------------------------
-#
-# FUNCTION:  exists
-#
-#-----------------------------------------------------------------------
-
-exists()
-{
-   for cmd in $1
-   do
-       which $cmd 2>&1 1>/dev/null
-	   if [ $? -ne 0 ]
-	   then
-	       tst_resm TBROK "Test broke: command $cmd not found"
-		   exit 1
-       fi
-   done
-}
-
 
 #-----------------------------------------------------------------------
 #
@@ -77,41 +44,43 @@ exists()
 
 do_setup()
 {
-   $trace_logic
 
-   export TCID=rdist01
-   export TST_TOTAL=1
-   export TST_COUNT=1
+    USER_LIST=${USER_LIST:-'root'}
+    TCdat=${TCdat:-$LTPROOT/testcases/bin/datafiles}
+    TCtmp=${TCtmp:-$LTPROOT/testcases/bin/$TC${EXEC_SUFFIX}$$}
+    FILES=${FILES:-'bin.sm bin.med bin.lg bin.jmb file.dir/bin.sm file.dir/bin.med file.dir/bin.jmb'}
+    SLEEPTIME=${SLEEPTIME:-10}
 
+    tst_setup
 
-   exists "dirname basename rdist"
+    exists awk hostname rdist
 
-   mkdir -p $TCtmp
-   cd $TCtmp
+    RHOST=${RHOST:-`hostname`}
 
-   # start with a clean LHOST
-   for i in $FILES
-   do
-     rm -rf $i
-   done
+    # start with a clean LHOST
+    for i in $FILES; do
+        rm -rf $i
+    done
 
-   for i in $FILES
-   do
-      BASE=`basename $i`
-      DIR=`dirname $i`
-      mkdir -p $DIR
-      cp $TCdat/datafiles/$BASE $DIR
-      [ $? -eq 0 ] || end_testcase "failed to cp $TCdat/datafiles/$BASE to $DIR"
-      chmod 764 $i
-   done
+    for i in $FILES; do
+        BASE=${i##*/}
+        DIR=${%%/*}
+        test -d "$DIR" || mkdir -p "$DIR"
+        if [ $? -ne 0 ] ; then
+            end_testcase "failed to create $DIR"
+        fi
+        if ! cp $TCdat/$BASE $DIR; then
+            end_testcase "failed to copy $TCdat/$BASE to $DIR"
+        fi
+        chmod 764 $i
+    done
 
-   # get the sum of all the files to rdist on the local machine
-   LSUM=0
-   SUM=`sum -s $FILES|awk '{ print $1 }'`
-   for i in $SUM
-   do
-      LSUM=$(( $LSUM + $i ))
-   done
+    # get the sum of all the files to rdist on the local machine
+    LSUM=0
+    SUM=`sum -s $FILES | awk '{ print $1 }'`
+    for i in $SUM; do
+        LSUM=$(( $LSUM + $i ))
+    done
 }
 
 #-----------------------------------------------------------------------
@@ -123,33 +92,29 @@ do_setup()
 
 create_distfile()
 {
-   $trace_logic
+    T_FILES="FILES = ( "
+    for i in $FILES; do
+        if [ "${i%%*/}" = "." ]; then
+            T_FILES="$T_FILES $i"
+        else
+            T_FILES="$T_FILES $DIR"
+        fi
+    done
+    T_FILES="$T_FILES )"
 
-   T_FILES="FILES = ( "
-   for i in $FILES
-   do
-      DIR=`dirname $i`
-      if [ $DIR = "." ]; then
-         T_FILES="$T_FILES $i"
-      else
-         T_FILES="$T_FILES $DIR"
-      fi
-   done
-   T_FILES="$T_FILES )"
-
-   T_HOST="HOSTS = ("
-   for c_ruser in $RUSERS
-   do
-      for c_rhost in $HOSTS
-      do
+    T_HOST="HOSTS = ("
+    for c_ruser in $RUSERS; do
+        for c_rhost in $HOSTS; do
          T_HOST=$T_HOST"$c_ruser@$c_rhost "
-      done
-   done
+        done
+    done
 
-   T_HOST=$T_HOST")"
-   echo "$T_HOST" > $TCtmp/distfile
-   echo "$T_FILES" >> $TCtmp/distfile
-   echo '${FILES} -> ${HOSTS}' >> $TCtmp/distfile
+    T_HOST="$T_HOST)"
+    cat <<EOF > "$TCtmp/distfile"
+$T_HOST
+$T_FILES
+${FILES} -> ${HOSTS}
+EOF
 }
 
 #-----------------------------------------------------------------------
@@ -162,26 +127,22 @@ create_distfile()
 
 check_result()
 {
-   $trace_logic
-   cd $TCtmp
-   for c_rhost in $HOSTS
-   do
-      for c_ruser in $RUSERS
-      do
-         TOTAL_SUM=`rsh -n -l $c_ruser $c_rhost \
-            x=0;SUM=\$(sum -s $FILES|awk '{ print \$1 }')
-            for i in \$SUM
-            do
-               x=\$(( \$x + \$i ))
+    cd $TCtmp
+    for c_rhost in $HOSTS; do
+        for c_ruser in $RUSERS; do
+            TOTAL_SUM=`rsh -n -l $c_ruser $c_rhost \
+            x=0; SUM=\$(sum -s $FILES|awk '{ print \$1 }')
+            for i in \$SUM; do
+                x=\$(( \$x + \$i ))
             done
             echo \$x`
-         if [ $TOTAL_SUM = $LSUM ]; then 
-            tst_resm TINFO "Success rdist in $c_ruser@$c_rhost "
-  	    rsh -n -l $c_ruser $c_rhost "rm -rf $FILES $DIRECTORIES"
-         else
-            end_testcase "Wrong sum doing  rdist in $curr_ruser@$curr_rhost"
-         fi
-      done
+            if [ $TOTAL_SUM = $LSUM ]; then 
+                tst_resm TINFO "Success rdist in $c_ruser@$c_rhost "
+                rsh -n -l $c_ruser $c_rhost "rm -rf $FILES $DIRECTORIES"
+            else
+                end_testcase "Wrong sum doing  rdist in $curr_ruser@$curr_rhost"
+            fi
+       done
    done
 }
 
@@ -195,63 +156,21 @@ check_result()
 
 do_test()
 {
-   $trace_logic
+    HOSTS=""
+    RUSERS=""
 
-   HOSTS=""
-   RUSERS=""
-
-   for cur_host in $RHOST
-   do
-      HOSTS=$HOSTS" $cur_host"
-      for cur_user in $USER_LIST
-      do
-         RUSERS=$RUSERS" $cur_user"
-         create_distfile
-         rdist -f $TCtmp/distfile
-         [ $? -eq 0 ] || end_testcase "error doing rdist -f $TCtmp/distfile"
-         check_result
-         sleep $SLEEPTIME
-      done
-   done
-}
-
-#-----------------------------------------------------------------------
-#
-# FUNCTION:     do_cleanup
-# PURPOSE:      Called when the testcase is interrupted by the user
-#               or by interrupt_testcase() when time limit expired
-# INPUT:        None.
-# OUTPUT:       None.
-#
-#-----------------------------------------------------------------------
-
-do_cleanup()
-{
-   $trace_logic
-
-   rm -rf $TCtmp
-}
-
-#=============================================================================
-# FUNCTION NAME:        end_testcase
-#
-# FUNCTION DESCRIPTION: Clean up
-#
-# PARAMETERS:           string, IF AND ONLY IF the testcase fails
-#
-# RETURNS:              None.
-#=============================================================================
-
-end_testcase()
-{
-   $trace_logic
-
-   # Call other cleanup functions
-   [ $CLEANUP = "ON" ] && do_cleanup
-
-   [ $# -eq 0 ] && { tst_resm TPASS "Test Successful"; exit 0; }
-   tst_resm TFAIL "Test Failed: $@"
-   exit 1
+    for cur_host in $RHOST; do
+        HOSTS=$HOSTS" $cur_host"
+        for cur_user in $USER_LIST; do
+            RUSERS=$RUSERS" $cur_user"
+            create_distfile
+            if ! rdist -f $TCtmp/distfile; then
+                end_testcase "error doing rdist -f $TCtmp/distfile"
+            fi
+            check_result
+            sleep $SLEEPTIME
+        done
+    done
 }
 
 #----------------------------------------------------------------------
@@ -262,6 +181,9 @@ end_testcase()
 # OUTPUT:   A testcase run log with the results of the execution of this
 #           test.
 #----------------------------------------------------------------------
+. net_cmdlib.sh
+
+read_opts $*
 do_setup
 do_test
 end_testcase

@@ -9,41 +9,40 @@
 # Environment:
 #	CAP_MAC_ADMIN
 #
+
+source smack_common.sh
+
 RuleA="191.191.191.191 TheOne"
 RuleA1="191.191.191.191/32 TheOne"
 RuleB="191.190.190.0/24 TheOne"
 
-onlycap=`cat /smack/onlycap`
-if [ "$onlycap" != "" ]; then
-	echo The smack label reported for /smack/onlycap is \"$label\",
-	echo not the expected \"\".
-	exit 1
-fi
+Old32=`grep "^191.191.191.191/32" "$smackfsdir/netlabel" 2>/dev/null`
+Old24=`grep "^191.190.190.0/24" "$smackfsdir/netlabel" 2>/dev/null`
 
-Old32=`grep "^191.191.191.191/32" /smack/netlabel`
-Old24=`grep "^191.190.190.0/24" /smack/netlabel`
-
-echo -n "$RuleA" > /smack/netlabel
-New32=`grep "$RuleA1" /smack/netlabel`
+echo -n "$RuleA" 2>/dev/null > "$smackfsdir/netlabel"
+New32=`grep "$RuleA1" $smackfsdir/netlabel 2>/dev/null`
 if [ "$New32" != "$RuleA1" ]; then
-	echo Rule \"$RuleA\" did not get set.
+	echo "Rule \"$RuleA\" did not get set."
 	exit 1
 fi
 
-echo -n "$RuleB" > /smack/netlabel
-New24=`grep "$RuleB" /smack/netlabel`
+echo -n "$RuleB" 2>/dev/null > "$smackfsdir/netlabel"
+New24=`grep "$RuleB" "$smackfsdir/netlabel" 2>/dev/null`
 if [ "$New24" != "$RuleB" ]; then
-	echo Rule \"$RuleB\" did not get set.
+	echo "Rule \"$RuleB\" did not get set."
 	exit 1
 fi
 
 if [ "$Old24" != "$New24" ]; then
-	echo Notice: Test access rule changed from
-	echo \"$Old24\" to \"$New24\".
-fi
-if [ "$Old32" != "$New32" ]; then
-	echo Notice: Test access rule changed from
-	echo \"$Old32\" to \"$New32\".
+	cat <<EOM
+Notice: Test access rule changed from
+"$Old24" to "$New24".
+EOM
 fi
 
-exit 0
+if [ "$Old32" != "$New32" ]; then
+	cat <<EOM
+Notice: Test access rule changed from
+"$Old32" to "$New32".
+EOM
+fi

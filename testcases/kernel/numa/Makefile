@@ -16,25 +16,14 @@
 #  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-CFLAGS += -I../../../include -Wall -DNUMA_VERSION1_COMPATIBILITY
+top_srcdir		:= ../../..
 
-LDLIBS += -L../../../lib -lltp 
+include $(top_srcdir)/include/mk/testcases.mk
 
-ifeq ($(HAS_NUMA),yes)    #its a numa machine
-LDLIBS += -L../../../lib  -lnuma
-SRCS    = $(wildcard *.c)
-TARGETS = $(patsubst %.c,%,$(SRCS))
-else                                    #its not a numa machine
-SRCS    = support_numa.c
-TARGETS = $(patsubst %.c,%,$(SRCS))
-endif
+CPPFLAGS		+= -D_GNU_SOURCE -DNUMA_VERSION1_COMPATIBILITY
 
-all: $(TARGETS) 
+LDLIBS 			+= $(NUMA_LIBS)
 
+INSTALL_TARGETS		:= numa01.sh
 
-install:
-	@set -e; for i in $(TARGETS); do ln -f $$i ../../bin/$$i ; done
-	chmod 755 numa01.sh; cp numa01.sh ../../bin/.
-
-clean:
-	rm -f $(TARGETS)
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

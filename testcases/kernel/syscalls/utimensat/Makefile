@@ -16,25 +16,12 @@
 #  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-CFLAGS += -I../../../../include -Wall
-LDLIBS += -L../../../../lib -lltp
+top_srcdir		?= ../../../..
 
-SRCS    = $(wildcard *.c)
-TARGETS = $(patsubst %.c,%,$(SRCS))
+include $(top_srcdir)/include/mk/testcases.mk
 
-all:
-	@set -e; $(MAKE) check_for_utimensat_support;
-	$(MAKE) utimensat01;
+$(eval $(call generate_vpath_rule,c,$(srcdir):$(top_srcdir)/lib))
 
-check_for_utimensat_support: check_for_utimensat_support.c
-	$(CC) $(CFLAGS) -o $@ $< ../../../../lib/tst_kvercmp.c -I../../../../include
+INSTALL_TARGETS		:= utimensat_tests.sh
 
-install:
-	@set -e; \
-	chmod 755 utimensat_tests.sh; \
-	ln -f utimensat_tests.sh ../../../bin/utimensat_tests.sh; \
-	for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
-
-clean:
-	rm -f $(TARGETS)
-	rm -rf check_for_utimensat_support
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

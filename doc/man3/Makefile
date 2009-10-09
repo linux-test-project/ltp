@@ -1,15 +1,27 @@
+#
+#    man3 Makefile.
+# 
+#    Copyright (C) 2009, Cisco Systems Inc.
+# 
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+# 
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+# 
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+# 
+# Garrett Cooper, July 2009
+#
 
+MANPREFIX		:= 3
 
-PREFIX=/usr
-MANPAGES=forker.3 get_attrib.3 parse_open_flags.3 parse_opts.3 \
-	parse_ranges.3 pattern.3 random_range.3 random_range_seed.3 \
-	rmobj.3 string_to_tokens.3 str_to_bytes.3 tst_res.3 \
-	tst_set_error.3 tst_sig.3 tst_tmpdir.3 usctest.3 write_log.3
+top_srcdir		?= ../..
 
-all:
-
-install: $(MANPAGES)
-	@set -e; for i in $(MANPAGES); do \
-		install -D -m 644 $$i $(DESTDIR)/$(PREFIX)/share/man/man3/$$i; \
-	done
-
+include $(top_srcdir)/include/mk/man.mk

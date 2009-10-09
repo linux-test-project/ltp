@@ -2,8 +2,8 @@
 #
 # PLEASE READ THE README FILE IN /rpc BEFORE RUNNING THESE.
 #
-run_rpc_tests.sh export TCbin=$LTPROOT/testcases/network/rpc/rpc-tirpc-full-test-suite; run_rpc_tests.sh
-rpc01 export TCbin=$LTPROOT/testcases/network/rpc/basic_tests/rpc01; rpc01
-rpcinfo export TCbin=$LTPROOT/testcases/network/rpc/basic_tests/rpcinfo01; rpcinfo01
-rup export TCbin=$LTPROOT/testcases/network/rpc/basic_tests/rup; rup01
-rusers export TCbin=$LTPROOT/testcases/network/rpc/basic_tests/rusers; rusers01
+run_rpc_tests.sh run_rpc_tests.sh
+rpc01 rpc01
+rpcinfo rpcinfo01
+rup rup01
+rusers rusers01

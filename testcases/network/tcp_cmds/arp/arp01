@@ -34,32 +34,6 @@
 #      -Ported
 #
 #-----------------------------------------------------------------------
-#Uncomment line below for debug output.
-#trace_logic=${trace_logic:-"set -x"}
-$trace_logic
-
-RHOST=${RHOST:-`hostname`}
-SLEEPTIME=${SLEEPTIME:-1}
-NUMLOOPS=${NUMLOOPS:-20}
-
-#-----------------------------------------------------------------------
-#
-# FUNCTION:  exists
-#
-#-----------------------------------------------------------------------
-
-exists()
-{
-   for cmd in $1
-   do
-       which $cmd 2>&1 1>/dev/null
-	   if [ $? -ne 0 ]
-	   then
-	       tst_resm TBROK "Test broke: command $cmd not found"
-		   exit 1
-       fi
-   done
-}
 
 #-----------------------------------------------------------------------
 #
@@ -69,15 +43,19 @@ exists()
 
 do_setup()
 {
-   $trace_logic
-   export TCID="arp01"
-   export TST_TOTAL=1
-   export TST_COUNT=1
 
-   exists "arp tr awk ping sleep"
+    NUMLOOPS=${NUMLOOPS:-20}
+    TST_TOTAL=$(( $NUMLOOPS * 2 ))
 
-   LUSER=`id | tr -s '()' '  ' | awk '{print $2}'`
-   [ "$LUSER" = "root" ] || end_testcase "Must be root to run this test!"
+    tst_setup
+    exists arp grep hostname ping sleep whoami
+
+    RHOST=${RHOST:-$(hostname)}
+    SLEEPTIME=${SLEEPTIME:-1}
+    LUSER=$(whoami)
+
+    [ "$LUSER" = "root" ] || end_testcase "Must be root to run this test!"
+
 }
 
 #-----------------------------------------------------------------------
@@ -88,52 +66,34 @@ do_setup()
 
 do_test()
 {
-   $trace_logic
+    while [ $TST_COUNT -le $NUMLOOPS ]; do
+        arp -a 2>&1 1>/dev/null || end_testcase "arp -a failed"
+        incr_tst_count
+    done
 
-   COUNT=1
-   while [ $COUNT -le $NUMLOOPS ]
-   do
-      arp -a 2>&1 1>/dev/null
-      [ $? -eq 0 ] || end_testcase "arp -a failed"
-      COUNT=`expr $COUNT + 1`
-   done
+    sleep $SLEEPTIME
 
-   sleep $SLEEPTIME
+    # PURPOSE:  stress the automatic creation of arp entries by pinging a host 
+    #           and deleting the arp entry again.
 
-   # PURPOSE:  stress the automatic creation of arp entries by pinging a host 
-   #           and deleting the arp entry again.
+    while [ $TST_COUNT -le $TST_TOTAL ]; do
 
-   COUNT=1
-   while [ $COUNT -le $NUMLOOPS ]
-   do
-      ping -c1 $RHOST 2>&1 1>/dev/null
-      [ $? = 0 ] || end_testcase "ping $RHOST failed"
-      arp -a | grep "$RHOST\>" 2>&1 1>/dev/null
-      [ $? = 0 ] || end_testcase "arp -a failed"
-      arp -d $RHOST 2>&1 1>/dev/null
-      [ $? = 0 ] || end_testcase "arp -d $RHOST failed"
-      COUNT=`expr $COUNT + 1`
-      sleep $SLEEPTIME
-   done
-}
+        ping -c1 $RHOST 2>&1 1>/dev/null || end_testcase "ping $RHOST failed"
 
-#=============================================================================
-# FUNCTION NAME:        end_testcase
-#
-# FUNCTION DESCRIPTION: Clean up
-#
-# PARAMETERS:           string, IF AND ONLY IF the testcase fails
-#
-# RETURNS:              None.
-#=============================================================================
+        if ! arp -a | grep "$RHOST\>" 2>&1 1>/dev/null; then
+            end_testcase "arp -a failed"
+        fi
 
-end_testcase()
-{
-   $trace_logic
+        if ! arp -d $RHOST 2>&1 1>/dev/null; then
+            end_testcase "arp -d $RHOST failed"
+        fi
 
-   [ $# = 0 ] && { echo "Test Successful"; exit 0; }
-   tst_resm TFAIL "Test Failed: $@"
-   exit 1
+        incr_tst_count
+
+        sleep $SLEEPTIME
+
+    done
+
 }
 
 #-----------------------------------------------------------------------
@@ -143,6 +103,10 @@ end_testcase()
 # INPUT:    None.
 # OUTPUT:   None.
 #-----------------------------------------------------------------------
+
+. net_cmdlib.sh
+
+read_opts $*
 do_setup
 do_test
 end_testcase

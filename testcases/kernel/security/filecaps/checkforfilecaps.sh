@@ -19,9 +19,7 @@
 ##                                                                            ##
 ################################################################################
 
-check_simple_capset
-ret=$?
-if [ $ret -ne 0 ]; then
+if ! check_simple_capset; then
 	echo Posix capabilities not compiled into the kernel.  Please
 	echo modprobe capability or recompile your kernel with
 	echo CONFIG_SECURITY_CAPABILITIES=y.

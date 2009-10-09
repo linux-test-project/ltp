@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+includedir=@includedir@
+libdir=@libdir@
+
+Name: LTP
+Description: Linux Test Project
+Version: 1.0
+Libs: -L${libdir} -lltp
+Cflags: -I${includedir}

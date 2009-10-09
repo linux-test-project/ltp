@@ -1,0 +1,178 @@
+The following items need fixing with the new Makefile infrastructure:
+
+testcases/kernel/controllers/memcg/functional/Makefile:
+1. For whatever reason this Makefile's are calling up relative CPPFLAGS
+   (the old ../../../../include value) for -I$(include), despite the fact that
+   the Makefile infra been updated. This should be investigated and fixed, but
+   for now it's just an observation; not a blocking point.
+
+include/mk/functions.mk:
+1. The dependency work for $(@D) isn't 100% functional in generate_install_rule.
+   Thus `test -d .. || mkdir -p ..' is required today to ensure that things
+   function in specific cases, like testcases/kernel/power_management/... with
+   lib/sched_mc.py .
+
+testcases/Makefile:
+1. mce-test doesn't fit cleanly in the build, yet.
+2. pounder21 is just broken (wasn't traversed before).
+3. Not sure why realtime should still be disabled for build; the aggregated
+   list was the original list of disabled items for UCLINUX != 1.
+
+testcases/commands/ade/Makefile:
+1. .../objdump's Makefile needs fixing. Basically some of the obj files used
+   as stimuli are .o files, which a) is a bad idea, and b) are intermediary's
+   for some apps. Either the tests or the Makefiles need to be fixed, and
+   this is a call that needs to be made by someone else including myself.
+
+testcases/kernel/aio/aio02/Makefile:
+1. Not sure why, but ld fails to link these two files together properly, even
+   though I have a function prototype defined at the top of main.c and as you
+   can see below, gcc is trying to link the right pieces together. Hrmmm...
+
+  gcooper@orangebox /scratch2/ltp-makefile-infra-rework $ make -C /scratch2/ltp-makefile-infra-rework/testcases/kernel/io/aio/aio02/ all  
+  make: Entering directory `/scratch2/ltp-makefile-infra-rework/testcases/kernel/io/aio/aio02'
+  gcc -g -O2 -g -O2 -fno-strict-aliasing -pipe -Wall  -I//scratch/ltp-install5/include -D_GNU_SOURCE -I../../../../../include  -c -o main.o main.c
+  gcc  -L//scratch/ltp-install5/lib   aio_tio.o main.o  -laio -lltp -laio -o aio_tio
+  main.o: In function `main':
+  /scratch2/ltp-makefile-infra-rework/testcases/kernel/io/aio/aio02/main.c:26: undefined reference to `test_main'
+  collect2: ld returned 1 exit status
+  make: *** [aio_tio] Error 1
+  make: Leaving directory `/scratch2/ltp-makefile-infra-rework/testcases/kernel/io/aio/aio02'
+
+testcases/kernel/fs/dmapi/Makefile:
+1. This test requires JFS support, which most systems don't have. So a set of
+   proper autoconf tests need to be added for this as well.
+
+testcases/kernel/fs/doio/rwtest.sh:
+1. rwtest.sh isn't determining where to pick up the files from appropriately
+   (bad relative path logic somewhere... not sure where).
+
+testcases/kernel/sched/nptl/Makefile:
+1. There's a $(shell ) call in the Makefile that needs to be replaced.
+
+testcases/kernel/syscalls/utils/*.mk:
+1. There are unused variables and unneeded logic that needs to be evaluated
+   and potentially removed.
+
+testcases/misc/crash/crash02.c:
+#if defined(__ia64__)
+      SYS_clone2,
+#else
+      /*
+       * No SYS_fork(vfork) on IA-64. Instead, it uses,
+       * clone(child_stack=0, flags=CLONE_VM|CLONE_VFORK|SIGCHLD)
+       * clone2()
+       */
+
+      /*
+       * NOTE (garrcoop):
+       *  Could not find reference to SYS_fork(vfork) on mips32
+       *  with the Montavista / Octeon toolchain. Need to develop an
+       *  autoconf check for this item.
+       */
+#if defined(__NR_vfork) && __NR_vfork
+      SYS_vfork,
+#endif
+#if defined(__NR_fork) && __NR_fork
+      SYS_fork,
+#endif
+#endif /* __ia64__ */
+#if defined(__NR_clone) && __NR_clone
+      SYS_clone,
+#endif
+
+testcases/network/tcp_cmds/perf_lan/Makefile:
+1. There are duplicate sourcefiles because I don't feel confident as far as
+   the changes were concerned on the sourcefiles and I was running into
+   compile issues with the IPv6 code.
+
+testcases/network/stress/udp/...:
+1. Many of the scripts are installing themselves using the old-status quo
+   method of hardlinking into $(abs_top_srcdir)/testcases/bin, which means
+   that all of the scripts are being linked to the file
+   $(abs_top_srcdir)/testcases/bin .
+
+tools/Makefile:
+1. netpipe* needs fixing and reorg, because it's referencing /home/mpich, etc.
+
+utils/benchmark/Makefile:
+1. kernbench needs to be fixed because its makefile doesn't have support
+   out-of-build-tree building.
+
+Other items of issue are listed below (from testscripts/ltp-missing-install-files.py):
+
+io-output.log: Tag | App
+io-output.log: runfstests.sh runfstests.sh
+ipv6-output.log: Tag | App
+ipv6-output.log: finger601 finger601
+ipv6-output.log: ping601 ping601
+ipv6-output.log: rlogin01 rlogin01
+ipv6-output.log: tcpdump601 tcpdump601
+ipv6-output.log: telnet01 telnet01
+ipv6_expect-output.log: Tag | App
+ipv6_expect-output.log: rlogin01 rlogin01
+ipv6_noexpect-output.log: Tag | App
+ipv6_noexpect-output.log: /scratch/ltp-install5/testcases/bin/echo01 /scratch/ltp-install5/testcases/bin/createfile
+modules-output.log: Tag | App
+modules-output.log: delete_module01 delete_module01
+modules-output.log: delete_module02 delete_module02
+modules-output.log: delete_module03 delete_module03
+multicast-output.log: Tag | App
+multicast-output.log: /scratch/ltp-install5/testcases/bin/mc_opts /scratch/ltp-install5/bin/mc_opts9521/opts
+selinux-output.log: Tag | App
+selinux-output.log: selinux_capable_file.sh selinux_capable_file.sh
+selinux-output.log: selinux_capable_net.sh selinux_capable_net.sh
+selinux-output.log: selinux_capable_sys.sh selinux_capable_sys.sh
+selinux-output.log: selinux_domain_trans.sh selinux_domain_trans.sh
+selinux-output.log: selinux_entrypoint.sh selinux_entrypoint.sh
+selinux-output.log: selinux_execshare.sh selinux_execshare.sh
+selinux-output.log: selinux_exectrace.sh selinux_exectrace.sh
+selinux-output.log: selinux_execute_no_trans.sh selinux_execute_no_trans.sh
+selinux-output.log: selinux_fdreceive.sh selinux_fdreceive.sh
+selinux-output.log: selinux_file.sh selinux_file.sh
+selinux-output.log: selinux_inherit.sh selinux_inherit.sh
+selinux-output.log: selinux_ioctl.sh selinux_ioctl.sh
+selinux-output.log: selinux_link.sh selinux_link.sh
+selinux-output.log: selinux_mkdir.sh selinux_mkdir.sh
+selinux-output.log: selinux_msg.sh selinux_msg.sh
+selinux-output.log: selinux_open.sh selinux_open.sh
+selinux-output.log: selinux_ptrace.sh selinux_ptrace.sh
+selinux-output.log: selinux_readlink.sh selinux_readlink.sh
+selinux-output.log: selinux_relabel.sh selinux_relabel.sh
+selinux-output.log: selinux_rename.sh selinux_rename.sh
+selinux-output.log: selinux_rxdir.sh selinux_rxdir.sh
+selinux-output.log: selinux_sem.sh selinux_sem.sh
+selinux-output.log: selinux_setattr.sh selinux_setattr.sh
+selinux-output.log: selinux_setnice.sh selinux_setnice.sh
+selinux-output.log: selinux_shm.sh selinux_shm.sh
+selinux-output.log: selinux_sigkill.sh selinux_sigkill.sh
+selinux-output.log: selinux_stat.sh selinux_stat.sh
+selinux-output.log: selinux_sysctl.sh selinux_sysctl.sh
+selinux-output.log: selinux_task_create.sh selinux_task_create.sh
+selinux-output.log: selinux_task_getpgid.sh selinux_task_getpgid.sh
+selinux-output.log: selinux_task_getscheduler.sh selinux_task_getscheduler.sh
+selinux-output.log: selinux_task_getsid.sh selinux_task_getsid.sh
+selinux-output.log: selinux_task_setnice.sh selinux_task_setnice.sh
+selinux-output.log: selinux_task_setpgid.sh selinux_task_setpgid.sh
+selinux-output.log: selinux_task_setscheduler.sh selinux_task_setscheduler.sh
+selinux-output.log: selinux_wait.sh selinux_wait.sh
+selinux-output.log: selinux_dyntrace.sh selinux_dyntrace.sh
+selinux-output.log: selinux_dyntrans.sh selinux_dyntrans.sh
+selinux-output.log: selinux_bounds.sh selinux_bounds.sh
+stress.part3-output.log: Tag | App
+stress.part3-output.log: /scratch/ltp-install5/testcases/bin/mc_opts /scratch/ltp-install5/bin/mc_opts4243/opts
+tcp_cmds-output.log: Tag | App
+tcp_cmds-output.log: /scratch/ltp-install5/testcases/bin/echo01 /scratch/ltp-install5/testcases/bin/createfile
+tcp_cmds-output.log: rlogin01 rlogin01
+tcp_cmds-output.log: telnet01 telnet01
+tcp_cmds_expect-output.log: Tag | App
+tcp_cmds_expect-output.log: rlogin01 rlogin01
+tcp_cmds_expect-output.log: telnet01 telnet01
+tcp_cmds_noexpect-output.log: Tag | App
+tcp_cmds_noexpect-output.log: /scratch/ltp-install5/testcases/bin/echo01 /scratch/ltp-install5/testcases/bin/createfile
+
+1. selinux is disabled on purpose (doesn't fit within build and probably won't
+   until autoconf tests are created to detect SELinux).
+2. Unsure why the tcp_cmds scripts aren't showing up.
+3. runfstests.sh is missing because aio02 is disabled right now (being a pain
+   and won't compile for me >:(...).

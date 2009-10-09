@@ -1,14 +1,36 @@
-CFLAGS += -c -O -fpic
-LDFLAGS += 
+#
+#    commands/ade/ldd testcases Makefile.
+#
+#    Copyright (C) 2009, Cisco Systems Inc.
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Garrett Cooper, July 2009
+#
 
-SRCS:=$(wildcard *.c)
-TARGETS:=$(patsubst %.c,%.o,$(SRCS))
+top_srcdir		?= ../../../..
 
-all: $(TARGETS)
+include $(top_srcdir)/include/mk/env_pre.mk
 
-install:
-	ln -f ldd01 ../../../bin
-	ln -f *.o ../../../bin
+CPPFLAGS		+= -fpic
 
-clean:
-	rm -f $(TARGETS)
+INSTALL_TARGETS		:= ldd01
+
+MAKE_TARGETS		:= $(patsubst $(abs_srcdir)/%.c,%.obj,$(wildcard $(abs_srcdir)/*.c))
+
+$(MAKE_TARGETS): %.obj: %.o
+	mv $^ $@
+
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

@@ -96,7 +96,7 @@ runcc(char *tname, char *filename0, char *program)
 		cflags, filename0, filename);
 	es = system(cmd);
 	if (WEXITSTATUS(es) == 127) {
-		tst_resm(TBROK, "%s: can't run C compiler: \"%s\"", cmd);
+		tst_resm(TBROK, "can't run C compiler: \"%s\"", cmd);
 		if (unlink(filename) < 0)
 			tst_resm(TWARN, "%s; unlink \"%s\" failed: %s", tname,
 				filename, strerror(errno));

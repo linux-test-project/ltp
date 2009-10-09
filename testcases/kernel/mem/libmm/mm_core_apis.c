@@ -41,9 +41,11 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <signal.h>
-#include <mm.h>
 #include "test.h"
 #include "usctest.h"
+
+#if HAVE_MM_H
+#include <mm.h>
 
 #if !defined(TRUE) && !defined(FALSE)
 #define TRUE 1
@@ -402,3 +404,9 @@ main(int  argc,            /* argument count                                  */
     }
     exit(ret);
 }
+#else
+int main(void) {
+    tst_resm(TCONF, "System doesn't have libmm support\n");
+    tst_exit();
+}
+#endif

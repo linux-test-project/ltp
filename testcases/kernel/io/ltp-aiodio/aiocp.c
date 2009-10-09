@@ -23,7 +23,6 @@
 
 #define _GNU_SOURCE
 
-
 #include <unistd.h>
 #include <stdio.h>
 #include <sys/types.h>
@@ -33,6 +32,9 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <sys/select.h>
+#include "config.h"
+
+#if HAVE_LIBAIO_H
 
 #include <libaio.h>
 
@@ -510,3 +512,13 @@ int main(int argc, char *const *argv)
  * rrrwwwwwwwrrrrwwrrrrrrrrrrrrwrwrrrrwwwwwwwwwwwwwwrwrrrrwwwwrwrrrrwrwwwrrrwww
  * rwwrrrrrrrwrrrrrrrrrrrrwwwwrrrwwwrwrrwwwwwwwwwwwwwwwwwwwwwrrrrrrrwwwwwwwrw
  */
+
+#else
+
+int
+main(void) {
+	fprintf(stderr, "System doesn't have libaio support.\n");
+	return 1;
+}
+
+#endif

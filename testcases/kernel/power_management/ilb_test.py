@@ -5,7 +5,7 @@
 
 import os
 import sys
-LIB_DIR = "%s/testcases/kernel/power_management/lib" % os.environ['LTPROOT']
+LIB_DIR = "%s/lib" % os.path.dirname(__file__)
 sys.path.append(LIB_DIR)
 from optparse import OptionParser
 from sched_mc import *

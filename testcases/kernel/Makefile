@@ -1,23 +1,50 @@
-include ../../config.mk
+#
+#    kernel test suite Makefile.
+#
+#    Copyright (C) 2009, Cisco Systems Inc.
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Garrett Cooper, July 2009
+#
 
-SUBDIRS = power_management numa containers connectors include fs io ipc mem pty sched security syscalls timers
-UCLINUX_SUBDIRS = include syscalls
+top_srcdir	?= ../..
 
-ifeq ($(LTP_CHECK_CGROUPSTATS_HEADER),yes)
-	SUBDIRS+= controllers
+include $(top_srcdir)/include/mk/env_pre.mk
+
+ifneq ($(UCLINUX),1)
+SUBDIRS		:= containers connectors controllers fs io ipc mem numa \
+		   performance_counters power_management pty sched security \
+		   syscalls timers
+else
+SUBDIRS		:= syscalls
 endif
 
-all:
-	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i ; done
+trunk-all: $(includedir)/linux_syscall_numbers.h
 
-install:
-	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i install ; done
+trunk-clean:: | linux-syscall-numbers-clean
 
-uclinux:
-	@set -e; for i in $(UCLINUX_SUBDIRS); do $(MAKE) -C $$i uclinux ; done
+include:
+	mkdir -p "$@"
 
-uclinux_install:
-	@set -e; for i in $(UCLINUX_SUBDIRS); do $(MAKE) -C $$i uclinux_install ; done
+linux-syscall-numbers-clean:: include
+	$(MAKE) -C $^ -f "$(abs_srcdir)/include/Makefile" clean
 
-clean:
-	@set -e; for i in $(SUBDIRS) timers; do $(MAKE) -C $$i clean ; done
+$(includedir)/linux_syscall_numbers.h: include
+	set -e; for i in all install; do \
+	    $(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" $$i; \
+	done
+
+include $(top_srcdir)/include/mk/generic_trunk_target.mk

@@ -18,15 +18,13 @@
 ####
 ################################################################################
 
-SUBDIRS := ebizzy-0.3 kernbench-0.42
+top_srcdir		?= ../..
 
-configure:
-	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i $@; done;
+include $(top_srcdir)/include/mk/env_pre.mk
 
-all: configure
-	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i $@; done;
+# XXX (garrcoop): kernbench needs fixing for out-of-build-tree support.
+FILTER_OUT_DIRS		:= $(if $(OUT_OF_BUILD_TREE),kernbench%)
 
-install:
-	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i $@; done;
-clean:
-	@set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i $@; done;
+RECURSIVE_TARGETS	:= all configure install
+
+include $(top_srcdir)/include/mk/generic_trunk_target.mk

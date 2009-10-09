@@ -19,7 +19,9 @@
 #ifndef MOVE_PAGES_SUPPORT_H
 #define MOVE_PAGES_SUPPORT_H
 
+#if HAVE_NUMAIF_H
 #include <numaif.h>
+#endif
 #include <semaphore.h>
 
 long get_page_size();

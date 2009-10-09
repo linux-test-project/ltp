@@ -16,48 +16,21 @@
 #  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-CFLAGS += -I../../../../include -Wall
-LDLIBS += -L../../../../lib -lltp -lnuma -lrt
+top_srcdir		?= ../../../..
 
-check_numa_move_pages = $(shell \
-	if printf \
-	"\#include <numa.h>\n\
-	int main() \
-	{ \
-	numa_move_pages(0, 0, NULL, NULL, NULL, 0); \
-	return 0; \
-	}" | $(CC) -xc -lnuma - > /dev/null 2>&1 ; \
-	then echo yes ; \
-	else echo no ; fi)
+include $(top_srcdir)/include/mk/testcases.mk
 
-HAS_NUMA_MOVE_PAGES := $(call check_numa_move_pages)
+INSTALL_TARGETS		:= move_pages.sh
 
-ifeq ($(HAS_NUMA_MOVE_PAGES),yes)
-SRCS    = $(wildcard *.c)
-TARGETS = $(patsubst %.c, %, $(wildcard *[0-9].c))
-endif
+MAKE_TARGETS		:= $(patsubst $(abs_srcdir)/%.c,%,$(wildcard $(abs_srcdir)/*[0-9].c))
 
-all: $(TARGETS)
-ifeq ($(HAS_NUMA_MOVE_PAGES),no)
-	@echo "Note: Libnuma with move_pages support is required for" \
-	"move_pages testcases.";
-endif
+# linux_syscall_numbers.h is forcing move_pages_support.o to complain about
+# cleanup being undefined [and when defined] unused. Let's just skip this
+# warning...
+move_pages_support.o: CFLAGS += -Wno-unused-function
 
-move_pages_support.o: move_pages_support.h move_pages_support.c
+$(MAKE_TARGETS): %: %.o move_pages_support.o
 
-$(TARGETS): move_pages_support.o
+LDLIBS			+= $(NUMA_LIBS) -lpthread -lrt
 
-install: move_page03.mode move_page11.mode
-	@set -e; for i in $(TARGETS); do ln -f $$i ../../../bin/$$i ; done
-	chmod 755 move_pages.sh; cp move_pages.sh ../../../bin/.
-
-clean:
-	rm -f $(TARGETS) a.out move_pages_support.o
-
-move_page03.mode:
-	@/bin/sh ./move_pages03.mode.sh
-
-move_page11.mode:
-	@/bin/sh ./move_pages11.mode.sh
-
-.PHONY: move_pages03.mode
+include $(top_srcdir)/include/mk/generic_leaf_target.mk
