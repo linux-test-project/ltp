@@ -35,18 +35,21 @@ $(eval $(call generate_vpath_rule,c))
 # For config.h, et all.
 CPPFLAGS			+= -I$(top_builddir)/include
 
-MAKE_TARGETS			?= $(notdir $(patsubst %.c,%,$(wildcard $(abs_srcdir)/*.c)))
+LDFLAGS				+= -L$(top_builddir)/lib
+
+MAKE_TARGETS			?= $(filter-out $(FILTER_OUT_MAKE_TARGETS),$(notdir $(patsubst %.c,%,$(wildcard $(abs_srcdir)/*.c))))
 
 CLEAN_TARGETS			+= $(MAKE_TARGETS) *.o *.pyc
 
 # Majority of the files end up in testcases/bin...
 INSTALL_DIR			?= testcases/bin
 
+ifneq ($(filter %install,MAKECMDGOALS),)
+
 ifeq ($(strip $(INSTALL_DIR)),)
 INSTALL_DIR			:= $(error You must define INSTALL_DIR before including this file)
 endif
 
-ifneq ($(filter %install,MAKECMDGOALS),)
 ifneq ($(strip $(prefix)),)
 # Value specified by INSTALL_DIR isn't an absolute path, so let's tack on $(prefix).
 ifneq ($(patsubst /%,,$(INSTALL_DIR)),)

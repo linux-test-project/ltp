@@ -57,7 +57,7 @@ $(LIB): $(notdir $(LIBOBJS))
 		echo "Cowardly refusing to create empty archive"; \
 		exit 1; \
 	fi
-	$(AR) -rc "$@" $^
-	$(RANLIB) "$@"
+	$(if $(AR),$(AR),ar) -rc "$@" $^
+	$(if $(RANLIB),$(RANLIB),ranlib) "$@"
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

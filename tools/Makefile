@@ -30,4 +30,6 @@ FILTER_OUT_DIRS		:= netpipe% top-LTP
 
 INSTALL_TARGETS		:= *.pl *.sh
 
+INSTALL_DIR		:= tools
+
 include $(top_srcdir)/include/mk/generic_trunk_target.mk
