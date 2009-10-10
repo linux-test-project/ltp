@@ -28,4 +28,6 @@ include $(top_srcdir)/include/mk/testcases.mk
 # reorganization..
 FILTER_OUT_DIRS		:= netpipe% top-LTP
 
+INSTALL_TARGETS		:= *.pl *.sh
+
 include $(top_srcdir)/include/mk/generic_trunk_target.mk
