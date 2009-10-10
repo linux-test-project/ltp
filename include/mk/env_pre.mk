@@ -62,8 +62,6 @@ endif
 # just these two vars and $(CURDIR).
 export abs_top_srcdir abs_top_builddir
 
-ifneq ($(filter-out %clean,$(MAKECMDGOALS)),)
-include $(top_builddir)/include/mk/config.mk
-endif
+-include $(top_builddir)/include/mk/config.mk
 
 endif
