@@ -20,18 +20,19 @@
 # Garrett Cooper, July 2009
 #
 
-LIB			:= $(DESTDIR)/$(libdir)/libcpu_set.a
-LIBDIR			:= cpuset_lib
+LIBDIR			:= ../cpuset_lib
 
-../$(LIBDIR):
+LIB			:= $(LIBDIR)/libcpu_set.a
+
+$(LIBDIR):
 	mkdir -p "$@"
 
-$(LIB): ../$(LIBDIR)
-	for i in all install; do \
-	    $(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" $$i; \
-	done
+$(LIB): $(LIBDIR)
+	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" all
 
 all: | $(LIB)
+
+LDFLAGS			+= -L$(abs_builddir)/$(LIBDIR)
 
 LDLIBS			+= -lcpu_set
 

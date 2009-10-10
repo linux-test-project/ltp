@@ -37,6 +37,8 @@ all: | $(LIB)
 
 CPPFLAGS		+= -I$(abs_srcdir)/../$(LIBDIR)
 
+LDFLAGS			+= -L$(abs_builddir)/../$(LIBDIR)
+
 LDLIBS			+= -lcontrollers
 
 INSTALL_TARGETS		?= *.sh

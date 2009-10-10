@@ -21,19 +21,18 @@
 #
 
 # DO NOT USE THIS FILE FOR hugetlb / lib!!!
+LIBDIR			:= ../lib
+LIB			:= $(LIBDIR)/libipc_hugetlb.a
 
-CPPFLAGS		+= -I$(abs_srcdir)/../lib
-LIB			:= $(DESTDIR)/$(libdir)/libipc_hugetlb.a
-LIBDIR			:= lib
-
-../$(LIBDIR):
+$(LIBDIR):
 	mkdir -p "$@"
 
-$(LIB): ../$(LIBDIR)
-	for i in all install; do \
-	    $(MAKE) -I "$(abs_srcdir)" -C "$^" -f "$(abs_srcdir)/$^/Makefile" \
-	    $$i; \
-	done
+$(LIB): $(LIBDIR)
+	$(MAKE) -C "$^" -f "$(abs_srcdir)/$^/Makefile" all
+
+CPPFLAGS		+= -I$(abs_srcdir)/$(LIBDIR)
+
+LDFLAGS			+= -L$(abs_builddir)/$(LIBDIR)
 
 LDLIBS			+= -lmm -lipc_hugetlb
 

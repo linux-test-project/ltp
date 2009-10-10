@@ -22,19 +22,21 @@
 
 # DO NOT USE THIS FILE FOR ipc / lib!!!
 
-CPPFLAGS		+= -I$(abs_srcdir)/../lib
 LDLIBS			+= -lipc
-LIB			:= $(DESTDIR)/$(libdir)/libipc.a
-LIBDIR			:= lib
+LIBDIR			:= ../lib
 
-../$(LIBDIR):
+LIB			:= $(LIBDIR)/libipc.a
+
+$(LIBDIR):
 	mkdir -p "$@"
 
-$(LIB): ../$(LIBDIR)
-	for i in all install; do \
-	    $(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" $$i; \
-	done
+$(LIB): $(LIBDIR)
+	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" all
 
 all: | $(LIB)
+
+CPPFLAGS		+= -I$(abs_srcdir)/$(LIBDIR)
+
+LDFLAGS			+= -L$(abs_builddir)/$(LIBDIR)
 
 # vim: syntax=make

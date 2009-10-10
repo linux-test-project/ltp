@@ -22,22 +22,21 @@
 
 # DO NOT USE THIS FILE FOR containers / libclone!!!
 
-LIBS			:= $(DESTDIR)/$(libdir)/libclone.a
+LIBDIR			:= ../libclone
 
-LIBDIR			:= libclone
+LIBS			:= $(LIBDIR)/libclone.a
 
-CPPFLAGS		+= -I$(abs_srcdir)/../$(LIBDIR)
+CPPFLAGS		+= -I$(abs_srcdir)/$(LIBDIR)
+
+LDFLAGS			+= -L$(abs_builddir)/$(LIBDIR)
 
 ../$(LIBDIR):
 	mkdir -p "$@"
 
 # Make the target the real lib so we don't have to deal with rebuilding this
 # every time the dependency is evaluated, like with PHONY rules.
-$(LIBS): ../$(LIBDIR)
-	for i in all install; do \
-	    $(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" \
-	    $$i; \
-	done
+$(LIBS): $(LIBDIR)
+	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" all
 
 INSTALL_TARGETS		?= *.sh
 

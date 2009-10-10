@@ -23,16 +23,14 @@
 # DO NOT USE THIS FILE FOR mem / libmm!!!
 
 LDLIBS			+= -lmm
-LIB			:= $(DESTDIR)/$(libdir)/libmm.a
-LIBDIR			:= libmm
+LIBDIR			:= ../libmm
+LIB			:= $(LIBDIR)/libmm.a
 
-../$(LIBDIR):
+$(LIBDIR):
 	mkdir -p "$@"
 
-$(LIB): ../$(LIBDIR)
-	for i in all install; do \
-	    $(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" $$i; \
-	done
+$(LIB): $(LIBDIR)
+	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" all
 
 all: | $(LIB)
 
