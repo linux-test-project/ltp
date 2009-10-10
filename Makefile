@@ -99,8 +99,10 @@ $(MAKE_TARGETS): lib-install
 .PHONY: include-all include-install
 include-install: include/config.h include/mk/config.mk include-all
 
-# build tree bootstrap targets.
-$(addprefix $(abs_top_builddir)/,$(BOOTSTRAP_TARGETS)) $(INSTALL_DIR): %:
+INSTALL_DIR		:= $(DESTDIR)/$(prefix)
+
+# build tree bootstrap targets and $(INSTALL_DIR) target.
+$(addprefix $(abs_top_builddir)/,$(BOOTSTRAP_TARGETS)) $(INSTALL_DIR):
 	mkdir -m 00755 -p "$@"
 
 ## Pattern based subtarget rules.
@@ -138,11 +140,8 @@ include-clean:: $(INCLUDE_CLEAN_RDEPS) $(abs_top_builddir)/include
 # include-install is separate to avoid creating a circular dependency below in
 # the install target.
 .SECONDEXPANSION:
-$(INSTALL_TARGETS) include-install lib-install: %-install: \
-    $(abs_top_builddir)/$$*
+$(INSTALL_TARGETS) include-install lib-install: %-install: $(abs_top_builddir)/$$*
 	$(MAKE) -C $* -f "$(abs_top_srcdir)/$*/Makefile" install 
-
-INSTALL_DIR		:= $(DESTDIR)/$(prefix)
 
 # Just in case configure hasn't been run yet, let's not overambitiously remove
 # the $(INSTALL_DIR).
