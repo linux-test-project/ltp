@@ -24,9 +24,7 @@ top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-CFLAGS			+= -g
-
-CPPFLAGS		+= -I$(abs_srcdir)/../include
+CPPFLAGS		+= -D_GNU_SOURCE -I$(abs_srcdir)/../include
 
 INSTALL_TARGETS		:= perf_lan
 

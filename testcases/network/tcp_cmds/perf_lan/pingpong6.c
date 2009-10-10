@@ -42,6 +42,7 @@
 #include <sys/socket.h>
 #include <sys/file.h>
 #include <sys/signal.h>
+#include <unistd.h>
 
 #include <netinet/in_systm.h>
 #include <netinet/in.h>
