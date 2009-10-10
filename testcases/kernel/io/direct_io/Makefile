@@ -16,18 +16,18 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
 
-top_srcdir		?= ../../../..
+top_srcdir			?= ../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-CFLAGS			+= -DSHARED_OFILE -D_GNU_SOURCE 
+CFLAGS				+= -DSHARED_OFILE -D_GNU_SOURCE 
 
-LDLIBS			+= -lpthread
+LDLIBS				+= -lpthread
 
-MAKE_TARGETS		:= $(filter-out diotest_routines,$(patsubst $(abs_srcdir)/%.c,%,$(wildcard $(abs_srcdir)/*.c)))
+FILTER_OUT_MAKE_TARGETS		:= diotest_routines
 
-$(MAKE_TARGETS): %: %.o diotest_routines.o
-
-INSTALL_TARGETS		:= test_dma_thread_diotest7.sh
+INSTALL_TARGETS			:= test_dma_thread_diotest7.sh
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
+
+$(MAKE_TARGETS): %: %.o diotest_routines.o

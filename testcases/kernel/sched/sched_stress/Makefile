@@ -28,12 +28,13 @@ INSTALL_TARGETS		:= sched_stress.sh
 
 LDLIBS			+= -lpthread
 
-MAKE_TARGETS		:= $(patsubst $(abs_srcdir)/%.c,%,$(filter-out %sched.c,$(wildcard $(abs_srcdir)/*.c))) \
-			   sched_datafile
+MAKE_TARGETS		:= $(filter-out sched,$(patsubst $(abs_srcdir)/%.c,%,$(wildcard $(abs_srcdir)/*.c)))
 
 RM			+= -r
 
 $(filter-out sched_datafile,$(MAKE_TARGETS)): %: %.o sched.o
+
+MAKE_TARGETS		+= sched_datafile
 
 sched_datafile:
 	"$(top_srcdir)/tools/make-file.sh" "$@" 1200010

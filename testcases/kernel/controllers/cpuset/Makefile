@@ -25,17 +25,15 @@ top_srcdir		?= ../../../..
 include $(top_srcdir)/include/mk/env_pre.mk
 
 INSTALL_TARGETS		:= *.sh
-LIB			:= $(DESTDIR)/$(libdir)/libcpu_set.a
 LIBDIR			:= cpuset_lib
 FILTER_OUT_DIRS		:= $(LIBDIR)
+LIB			:= $(LIBDIR)/libcpu_set.a
 
 $(LIBDIR):
 	mkdir -p "$@"
 
 $(LIB): $(LIBDIR)
-	for i in all install; do \
-	    $(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" $$i; \
-	done
+	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" all
 
 trunk-all: $(LIB)
 

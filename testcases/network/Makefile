@@ -30,11 +30,11 @@ CLEAN_TARGETS		+= $(DIR)
 
 INSTALL_DIR		:= testcases/bin
 
-MAKE_TARGETS		:= $(addprefix $(DIR)/bin.,sm med lg jmb)
+INSTALL_TARGETS		:= $(addprefix $(DIR)/bin.,sm med lg jmb)
 
 RM			+= -r
 
-$(MAKE_TARGETS): | generate 
+$(INSTALL_TARGETS): | generate 
 
 .PHONY: generate
 
@@ -43,6 +43,6 @@ include $(top_srcdir)/include/mk/generic_trunk_target.mk
 $(DESTDIR)/$(INSTALL_DIR)/$(DIR) $(DIR): %:
 	mkdir -p "$@"
 
-generate: $(DIR) $(DESTDIR)/$(INSTALL_DIR)/$(DIR)
+generate: $(DIR)
 	cd "$(DIR)" && \
 	abs_top_srcdir="$(abs_top_srcdir)" "$(abs_srcdir)/generate.sh"

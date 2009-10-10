@@ -36,7 +36,7 @@ CLEAN_TARGETS		:= test_policy.te
 INSTALL_TARGETS		:= *.te
 
 ifeq ($(CHECKPOLICY_VERS),24)
-TARGETS			:= $(filter-out %/test_bounds.te,$(INSTALL_TARGETS))
+INSTALL_TARGETS		:= $(filter-out %/test_bounds.te,$(INSTALL_TARGETS))
 endif
 
 TE_SRCDIR		:= $(abs_srcdir)

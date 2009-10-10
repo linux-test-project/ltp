@@ -24,8 +24,8 @@ top_srcdir			?= ../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-MAKE_TARGETS			:= $(patsubst $(abs_srcdir)/%.c,%,$(filter-out %/libftest.c,$(wildcard $(abs_srcdir)/*.c)))
-
-$(MAKE_TARGETS): %: %.o libftest.o
+FILTER_OUT_MAKE_TARGETS		:= libftest
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
+
+$(MAKE_TARGETS): %: %.o libftest.o

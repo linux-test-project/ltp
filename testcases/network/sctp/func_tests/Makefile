@@ -26,6 +26,8 @@ include $(top_srcdir)/include/mk/testcases.mk
 
 CPPFLAGS	+= -I$(abs_srcdir)/../include -I$(abs_srcdir)/../testlib -DLTP
 
+LDFLAGS		+= $(addprefix -L$(abs_builddir)/../,lib testlib)
+
 LDLIBS		+= -lsctputil -lsctp -lpthread
 
 V4_TARGETS	:= $(patsubst $(abs_srcdir)/%.c,%,$(wildcard $(abs_srcdir)/*.c))

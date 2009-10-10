@@ -20,17 +20,15 @@ top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-LIB			:= $(DESTDIR)/$(libdir)/libipc.a
 LIBDIR			:= lib
 FILTER_OUT_DIRS		:= $(LIBDIR)
+LIB			:= $(LIBDIR)/libipc.a
 
 $(LIBDIR):
 	mkdir -p "$@"
 
 $(LIB): $(LIBDIR)
-	for i in all install; do \
-	    $(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" $$i; \
-	done
+	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" all
 
 trunk-all: $(LIB)
 

@@ -44,6 +44,6 @@ include $(top_srcdir)/include/mk/testcases.mk
 #  make: *** [testcases-all] Error 2
 #
 
-MAKE_TARGETS		:= $(filter-out ptrace06 simple_tracer,$(patsubst $(abs_srcdir)/%.c,%,$(wildcard $(abs_srcdir)/*.c)))
+FILTER_OUT_MAKE_TARGETS	:= ptrace06 simple_tracer
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

@@ -31,7 +31,7 @@ INSTALL_TARGETS		:= runfstests.sh
 
 LDLIBS			+= $(AIO_LIBS)
 
-MAKE_TARGETS		:= $(filter-out main,$(patsubst $(abs_srcdir)/%.c,%,$(wildcard $(abs_srcdir)/*.c)))
+FILTER_OUT_MAKE_TARGETS	:= main
 
 $(MAKE_TARGETS): %: %.o main.o
 

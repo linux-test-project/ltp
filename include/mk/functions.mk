@@ -49,7 +49,9 @@ endef
 #
 define generate_install_rule
 
-CLEAN_TARGETS		+= $(DESTDIR)/$(3)/$(1)
+# This doesn't do Jack currently, as per the $(MAKECMDGOALS) check in
+# env_post.mk. I can revisit this `enhancement' later.
+#CLEAN_TARGETS		+= $(DESTDIR)/$(3)/$(1)
 INSTALL_FILES		+= $(DESTDIR)/$(3)/$(1)
 
 # $$(warning Called generate_install_rule for $(2)/$(1) -> $(DESTDIR)/$(3)/$(1) )

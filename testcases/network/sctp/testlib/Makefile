@@ -30,11 +30,12 @@ LDLIBS			+= -lltp -lsctp
 
 LIB			:= libsctputil.a
 
-$(eval $(lib_target))
-
-$(MAKE_TARGETS): | $(libdir)/libsctp.a
-
-$(libdir)/libsctp.a:
-	$(MAKE) -C $(builddir)/../lib
+#
+#DEPLIBDIR		:= ../lib
 
 include $(top_srcdir)/include/mk/lib.mk
+
+#$(MAKE_TARGETS): | libsctp.a
+
+#$()/libsctp.a:
+#	$(MAKE) -C $(builddir)/../lib all

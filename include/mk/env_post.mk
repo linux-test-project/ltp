@@ -44,7 +44,7 @@ CLEAN_TARGETS			+= $(MAKE_TARGETS) *.o *.pyc
 # Majority of the files end up in testcases/bin...
 INSTALL_DIR			?= testcases/bin
 
-ifneq ($(filter %install,MAKECMDGOALS),)
+ifneq ($(filter-out install,$(MAKECMDGOALS)),$(MAKECMDGOALS))
 
 ifeq ($(strip $(INSTALL_DIR)),)
 INSTALL_DIR			:= $(error You must define INSTALL_DIR before including this file)

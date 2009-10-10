@@ -20,10 +20,11 @@ top_srcdir		?= ../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-LIB			:= $(DESTDIR)/$(libdir)/libclone.a
 LIBDIR			:= libclone
 
 FILTER_OUT_DIRS		:= $(LIBDIR)
+
+LIB			:= $(LIBDIR)/libclone.a
 
 INSTALL_TARGETS		:= *.sh 
 
@@ -33,9 +34,7 @@ $(LIBDIR):
 # Make the target the real lib so we don't have to deal with rebuilding this
 # every time the dependency is evaluated, like with PHONY rules.
 $(LIB): $(LIBDIR)
-	for i in all install; do \
-	    $(MAKE) -C $^ -f "$(abs_srcdir)/$(LIBDIR)/Makefile" $$i; \
-	done
+	$(MAKE) -C $^ -f "$(abs_srcdir)/$(LIBDIR)/Makefile" all
 
 trunk-all: $(LIB)
 

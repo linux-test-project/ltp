@@ -22,6 +22,9 @@
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
+# For linux_syscall_numbers.h
+CPPFLAGS		+= -I$(abs_top_builddir)/testcases/kernel/include
+
 INSTALL_DIR		:= testcases/bin
 
 LDLIBS			+= -lltp

@@ -20,14 +20,14 @@
 # Garrett Cooper, July 2009
 #
 
-top_srcdir		?= ../../../..
+top_srcdir			?= ../../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-INSTALL_TARGETS		:= nfslock01
+FILTER_OUT_MAKE_TARGETS		:= nfs_flock_func
 
-MAKE_TARGETS		:= $(patsubst $(abs_srcdir)/%.c,%,$(filter-out %nfs_flock_func.c,$(wildcard $(abs_srcdir)/*.c)))
-
-$(MAKE_TARGETS): %: %.o nfs_flock_func.o
+INSTALL_TARGETS			:= nfslock01
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
+
+$(MAKE_TARGETS): %: %.o nfs_flock_func.o

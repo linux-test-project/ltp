@@ -30,7 +30,7 @@ CPPFLAGS		+= -I$(abs_srcdir)/$(LIBDIR)
 
 LDFLAGS			+= -L$(abs_builddir)/$(LIBDIR)
 
-../$(LIBDIR):
+$(LIBDIR):
 	mkdir -p "$@"
 
 # Make the target the real lib so we don't have to deal with rebuilding this

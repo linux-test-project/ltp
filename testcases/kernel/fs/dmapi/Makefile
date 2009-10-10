@@ -50,13 +50,10 @@ cflags = $(std_cflags) $(extra_cflags)
 lflags = $(dmapi_lib)
 lflags_thd = $(dmapi_lib) -lpthread
 
-# Establish the original set of programs to compile.
-MAKE_TARGETS		:= $(patsubst %.c,%,$(wildcard $(abs_srcdir)/*.c))
-# Toss the chaff and normalize to the object directory.
-MAKE_TARGETS		:= $(filter-out %dm_test,$(MAKE_TARGETS))
-
-$(MAKE_TARGETS): %: %.o dm_test.o dm_test.h
+FILTER_OUT_MAKE_TARGETS	:= dm_test
 
 dm_test.o: dm_test.c dm_impl.h
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
+
+$(MAKE_TARGETS): %: %.o dm_test.o dm_test.h

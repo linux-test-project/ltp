@@ -23,6 +23,7 @@
 top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
+include $(abs_srcdir)/../Makefile.inc
 
 INSTALL_TARGETS		:= run_cpuctl_test.sh run_cpuctl_stress_test.sh parameters.sh run_cpuctl_latency_test.sh
 

@@ -38,7 +38,7 @@ if test "X${CDPATH+set}" = Xset; then CDPATH=:; export CDPATH; fi
 
 # ### BEGIN LIBTOOL CONFIG
 
-# Libtool was configured on host vapier:
+# Libtool was configured on host orangebox:
 
 # Shell to use when invoking shell scripts.
 SHELL="/bin/sh"
@@ -147,7 +147,7 @@ dlopen_self_static=unknown
 link_static_flag="-static"
 
 # Compiler flag to turn off builtin functions.
-no_builtin_flag=" -fno-builtin -fno-rtti -fno-exceptions"
+no_builtin_flag=" -fno-builtin"
 
 # Compiler flag to allow reflexive dlopens.
 export_dynamic_flag_spec="\${wl}--export-dynamic"

@@ -21,25 +21,18 @@
 # description	: make(1) description file for lib6 tests.	  	  #
 ###########################################################################
 
-top_srcdir		?= ../../..
+top_srcdir			?= ../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-CPPFLAGS		+= -D_GNU_SOURCE
-LDLIBS			+= -lpthread
+CPPFLAGS			+= -D_GNU_SOURCE
 
-LIB			:= $(DESTDIR)/$(libdir)/libruncc.a
+LDLIBS				+= -lpthread
 
-MAKE_TARGETS		:= $(patsubst $(abs_srcdir)/%.c,%,$(filter-out %/runcc.c,$(wildcard $(abs_srcdir)/*.c)))
+CLEAN_TARGETS			+= $(LIB)
 
-$(MAKE_TARGETS): | $(LIB)
-
-$(MAKE_TARGETS): LDLIBS	+= -lruncc
-
-$(LIB): $(builddir)/runcc.o
-	$(AR) cr "$@" $^
-	$(RANLIB) "$@"
-
-CLEAN_TARGETS		+= $(LIB)
+FILTER_OUT_MAKE_TARGETS		:= runcc
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
+
+$(MAKE_TARGETS): %: %.o runcc.o

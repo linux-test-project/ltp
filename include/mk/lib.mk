@@ -28,8 +28,6 @@
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-.DEFAULT_GOAL	:= install
-
 INSTALL_DIR	:= $(libdir)
 
 # An extension of generic_leaf_target, strictly for libraries.
