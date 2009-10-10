@@ -46,6 +46,8 @@ ifeq ($(strip $(INSTALL_DIR)),)
 INSTALL_DIR			:= $(error You must define INSTALL_DIR before including this file)
 endif
 
+ifneq ($(filter %install,MAKECMDGOALS),)
+ifneq ($(strip $(prefix)),)
 # Value specified by INSTALL_DIR isn't an absolute path, so let's tack on $(prefix).
 ifneq ($(patsubst /%,,$(INSTALL_DIR)),)
 INSTALL_DIR			:= $(prefix)/$(INSTALL_DIR)
@@ -65,5 +67,9 @@ INSTALL_MODE			?= 00775
 $(foreach im_dir,$(sort $(dir $(INSTALL_TARGETS) $(MAKE_TARGETS))),$(eval $(call generate_install_rule_dir_dep,$(im_dir),$(INSTALL_DIR))))
 $(foreach install_target,$(INSTALL_TARGETS),$(eval $(call generate_install_rule,$(install_target),$(abs_srcdir),$(INSTALL_DIR))))
 $(foreach make_target,$(MAKE_TARGETS),$(eval $(call generate_install_rule,$(make_target),$(abs_builddir),$(INSTALL_DIR))))
+else
+$(error You must define $$(prefix) before executing install)
+endif
+endif
 
 endif
