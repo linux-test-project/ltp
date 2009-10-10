@@ -68,7 +68,8 @@ m4/Makefile.in: m4/Makefile.am
 ac-clean::
 	$(RM) -rf autom4te.cache
 	$(RM) -f aclocal.m4 config.log config.status
-	$(RM) -f include/config.h* include/stamp-h1 m4/Makefile m4/ltp-version.m4
+	$(RM) -f include/config.h include/config.h.in include/stamp-h1
+	$(RM) -f m4/Makefile m4/ltp-version.m4
 	-for d in $(AUTOCONFED_SUBDIRS); do \
 	    $(MAKE) -C "$(top_srcdir)/$$d" $@; \
 	done
