@@ -22,10 +22,6 @@
 
 # Makefile to include for libraries.
 
-# Change the default goal when nothing is specified to install because we want
-# to ensure that the libraries get installed ASAP so they can be properly
-# linked in with all required apps.
-
 include $(top_srcdir)/include/mk/env_pre.mk
 
 INSTALL_DIR	:= $(libdir)
@@ -38,8 +34,6 @@ $(error You must define LIB when including this Makefile)
 endif
 
 install_headers: $(addprefix $(DESTDIR)/$(includedir)/,$(notdir $(HEADER_FILES)))
-
-.DEFAULT_GOAL	:= install
 
 INSTALL_MODE	?= 00664
 
