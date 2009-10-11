@@ -34,6 +34,8 @@
 #include "config.h"
 #include "common.h"
 #include "test.h"
+#include <string.h>
+#include <errno.h>
 
 #if HAVE_LIBAIO_H
 
@@ -98,7 +100,7 @@ int io_tio(char *pathname, int flag, int n, int operation)
 
 	fd = open (pathname, flag, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 	if (fd <= 0) {
-		perror (" open : file ");
+		printf("open for %s failed: %s\n", pathname, strerror(errno));
 		return -1;
 	}
 
