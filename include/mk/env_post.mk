@@ -60,14 +60,14 @@ endif
 # reference at the start of the filename instead of using $(notdir), so that
 # way we don't accidentally nuke the relative path from $(abs_srcdir) that
 # may have been set in the Makefile.
-INSTALL_TARGETS			:= $(addprefix $(abs_srcdir)/,$(wildcard $(INSTALL_TARGETS)))
+INSTALL_TARGETS			:= $(wildcard $(addprefix $(abs_srcdir)/,$(INSTALL_TARGETS)))
 INSTALL_TARGETS			:= $(patsubst $(abs_srcdir)/%,%,$(INSTALL_TARGETS))
 
 # The large majority of the files that we install are going to be apps and
 # scripts, so let's chmod them like that.
 INSTALL_MODE			?= 00775
 
-$(foreach im_dir,$(sort $(dir $(INSTALL_TARGETS) $(MAKE_TARGETS))),$(eval $(call generate_install_rule_dir_dep,$(im_dir),$(INSTALL_DIR))))
+$(foreach im_dir,$(sort $(dir $(INSTALL_TARGETS) $(MAKE_TARGETS))),$(eval $(call generate_install_rule_dir_dep,$(INSTALL_DIR),$(im_dir))))
 $(foreach install_target,$(INSTALL_TARGETS),$(eval $(call generate_install_rule,$(install_target),$(abs_srcdir),$(INSTALL_DIR))))
 $(foreach make_target,$(MAKE_TARGETS),$(eval $(call generate_install_rule,$(make_target),$(abs_builddir),$(INSTALL_DIR))))
 else

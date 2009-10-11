@@ -1,17 +1,5 @@
 The following items need fixing with the new Makefile infrastructure:
 
-testcases/kernel/controllers/memcg/functional/Makefile:
-1. For whatever reason this Makefile's are calling up relative CPPFLAGS
-   (the old ../../../../include value) for -I$(include), despite the fact that
-   the Makefile infra been updated. This should be investigated and fixed, but
-   for now it's just an observation; not a blocking point.
-
-include/mk/functions.mk:
-1. The dependency work for $(@D) isn't 100% functional in generate_install_rule.
-   Thus `test -d .. || mkdir -p ..' is required today to ensure that things
-   function in specific cases, like testcases/kernel/power_management/... with
-   lib/sched_mc.py .
-
 testcases/Makefile:
 1. mce-test doesn't fit cleanly in the build, yet.
 2. pounder21 is just broken (wasn't traversed before).
@@ -23,6 +11,12 @@ testcases/commands/ade/Makefile:
    as stimuli are .o files, which a) is a bad idea, and b) are intermediary's
    for some apps. Either the tests or the Makefiles need to be fixed, and
    this is a call that needs to be made by someone else including myself.
+
+testcases/kernel/controllers/memcg/functional/Makefile:
+1. For whatever reason this Makefile's are calling up relative CPPFLAGS
+   (the old ../../../../include value) for -I$(include), despite the fact that
+   the Makefile infra been updated. This should be investigated and fixed, but
+   for now it's just an observation; not a blocking point.
 
 testcases/kernel/aio/aio02/Makefile:
 1. Not sure why, but ld fails to link these two files together properly, even

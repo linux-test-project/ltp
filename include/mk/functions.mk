@@ -31,9 +31,7 @@
 #
 define generate_install_rule_dir_dep
 
-#$$(warning Called generate_install_rule_dir_dep for $(abspath $(DESTDIR)/$(1)/$(2)) )
-
-$(abspath $(DESTDIR)/$(1)/$(2)):
+$$(abspath $(DESTDIR)/$(1)/$(2)):
 	mkdir -p "$$@"
 
 endef
@@ -51,20 +49,14 @@ define generate_install_rule
 
 # This doesn't do Jack currently, as per the $(MAKECMDGOALS) check in
 # env_post.mk. I can revisit this `enhancement' later.
-#CLEAN_TARGETS		+= $(DESTDIR)/$(3)/$(1)
-INSTALL_FILES		+= $(DESTDIR)/$(3)/$(1)
+#CLEAN_TARGETS		+= $$(INSTALL_FILE)
+INSTALL_FILES		+= $$(abspath $(DESTDIR)/$(3)/$(1))
 
-# $$(warning Called generate_install_rule for $(2)/$(1) -> $(DESTDIR)/$(3)/$(1) )
-
-# XXX (garrcoop): FIXME -- relative path install based logic doesn't work
-# 100%, as proven by `testcases/network/tcp_cmds/generate'. This needs to be
-# seriously fixed.
-$(DESTDIR)/$(3)/$(1): $$(abspath $(DESTDIR)/$(3))
+$$(abspath $(DESTDIR)/$(3)/$(1)): $$(abspath $$(dir $(DESTDIR)/$(3)/$(1)))
 ifdef INSTALL_PRE
 	@echo "Executing preinstall command."
 	$$(INSTALL_PRE)
 endif
-	test -d "$$(@D)" || mkdir -p "$$(@D)"
 	install -m $$(INSTALL_MODE) "$(2)/$(1)" "$$@"
 ifdef INSTALL_POST
 	@echo "Executing preinstall command."
