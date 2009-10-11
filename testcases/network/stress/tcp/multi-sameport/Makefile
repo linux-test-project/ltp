@@ -1,25 +1,31 @@
-SCRIPTS = tcp4-multi-sameport01 \
-	  tcp4-multi-sameport02 tcp4-multi-sameport03 \
-	  tcp4-multi-sameport04 tcp4-multi-sameport05 \
-	  tcp4-multi-sameport06 tcp4-multi-sameport07 \
-	  tcp4-multi-sameport08 \
-	  tcp4-multi-sameport09 tcp4-multi-sameport10 \
-	  tcp4-multi-sameport11 tcp4-multi-sameport12 \
-	  tcp4-multi-sameport13 tcp4-multi-sameport14 \
-	  tcp6-multi-sameport01 \
-	  tcp6-multi-sameport02 tcp6-multi-sameport03 \
-	  tcp6-multi-sameport04 tcp6-multi-sameport05 \
-	  tcp6-multi-sameport06 tcp6-multi-sameport07 \
-	  tcp6-multi-sameport08 \
-	  tcp6-multi-sameport09 tcp6-multi-sameport10 \
-	  tcp6-multi-sameport11 tcp6-multi-sameport12 \
-	  tcp6-multi-sameport13 tcp6-multi-sameport14
+#
+#    network/stress/tcp/multi-sameport testcases Makefile.
+#
+#    Copyright (C) 2009, Cisco Systems Inc.
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Garrett Cooper, October 2009
+#
 
-all:
-	@chmod +x $(SCRIPTS)
+top_srcdir		?= ../../../../..
 
-install:
-	@set -e; for i in $(SCRIPTS); do ln -f $$i ../../../../bin ; done
+include $(top_srcdir)/include/mk/env_pre.mk
 
-clean:
-	@set -e; for i in $(SCRIPTS); do rm -f ../../../../bin/$$i ; done
+INSTALL_TARGETS		:= tcp*
+
+MAKE_TARGETS		:=
+
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

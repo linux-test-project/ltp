@@ -1,25 +1,31 @@
-SCRIPTS = tcp4-uni-tso01 \
-	  tcp4-uni-tso02 tcp4-uni-tso03 \
-	  tcp4-uni-tso04 tcp4-uni-tso05 \
-	  tcp4-uni-tso06 tcp4-uni-tso07 \
-	  tcp4-uni-tso08 \
-	  tcp4-uni-tso09 tcp4-uni-tso10 \
-	  tcp4-uni-tso11 tcp4-uni-tso12 \
-	  tcp4-uni-tso13 tcp4-uni-tso14 \
-	  tcp6-uni-tso01 \
-	  tcp6-uni-tso02 tcp6-uni-tso03 \
-	  tcp6-uni-tso04 tcp6-uni-tso05 \
-	  tcp6-uni-tso06 tcp6-uni-tso07 \
-	  tcp6-uni-tso08 \
-	  tcp6-uni-tso09 tcp6-uni-tso10 \
-	  tcp6-uni-tso11 tcp6-uni-tso12 \
-	  tcp6-uni-tso13 tcp6-uni-tso14
+#
+#    network/stress/tcp/uni-tso testcases Makefile.
+#
+#    Copyright (C) 2009, Cisco Systems Inc.
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Garrett Cooper, October 2009
+#
 
-all:
-	@chmod +x $(SCRIPTS)
+top_srcdir		?= ../../../../..
 
-install:
-	@set -e; for i in $(SCRIPTS); do ln -f $$i ../../../../bin ; done
+include $(top_srcdir)/include/mk/env_pre.mk
 
-clean:
-	@set -e; for i in $(SCRIPTS); do rm -f ../../../../bin/$$i ; done
+INSTALL_TARGETS		:= tcp*
+
+MAKE_TARGETS		:=
+
+include $(top_srcdir)/include/mk/generic_leaf_target.mk
