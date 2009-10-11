@@ -64,4 +64,6 @@ export abs_top_srcdir abs_top_builddir
 
 -include $(top_builddir)/include/mk/config.mk
 
+.DEFAULT_GOAL			:= all
+
 endif
