@@ -33,6 +33,6 @@ LDLIBS			+= $(AIO_LIBS)
 
 FILTER_OUT_MAKE_TARGETS	:= main
 
-$(MAKE_TARGETS): %: %.o main.o
-
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
+
+$(MAKE_TARGETS): %: %.o main.o

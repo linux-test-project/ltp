@@ -15,7 +15,7 @@
 char *TCID = "aio02/" TEST_NAME;
 int TST_TOTAL = 0;
 
-#ifdef HAVE_LIBAIO_H
+#if HAVE_LIBAIO_H
 
 #include <libaio.h>
 
