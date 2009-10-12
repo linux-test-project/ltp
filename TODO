@@ -6,6 +6,14 @@ testcases/Makefile:
 3. Not sure why realtime should still be disabled for build; the aggregated
    list was the original list of disabled items for UCLINUX != 1.
 
+testcases/ballista:
+1. a) Not integrated with the Make infrastructure (and thus the output isn't
+      guaranteed to function with cross-compilation based envs).
+   b) Is a mess (there's a lot of shoddy Make and perl code that I'm cleaning
+      up right now).
+   c) Uses cshell for some weird arse reason, instead of using Bourne shell
+      compat scripts.
+
 testcases/commands/ade/Makefile:
 1. .../objdump's Makefile needs fixing. Basically some of the obj files used
    as stimuli are .o files, which a) is a bad idea, and b) are intermediary's
@@ -150,8 +158,6 @@ tcp_cmds_expect-output.log: telnet01 telnet01
 tcp_cmds_noexpect-output.log: Tag | App
 tcp_cmds_noexpect-output.log: /scratch/ltp-install5/testcases/bin/echo01 /scratch/ltp-install5/testcases/bin/createfile
 
-1. selinux is disabled on purpose (doesn't fit within build and probably won't
-   until autoconf tests are created to detect SELinux).
-2. Unsure why the tcp_cmds scripts aren't showing up.
-3. runfstests.sh is missing because aio02 is disabled right now (being a pain
-   and won't compile for me >:(...).
+testcases/kernel/security/selinux:
+   Is disabled on purpose (doesn't fit within build and probably won't until
+   autoconf tests are created to detect SELinux).

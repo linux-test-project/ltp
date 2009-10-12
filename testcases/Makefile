@@ -25,15 +25,10 @@ top_srcdir		?= ..
 include $(top_srcdir)/include/mk/env_pre.mk
 
 # XXX (garrcoop):
-# 1. mce-test doesn't fit cleanly in the build, yet.
-# 2. pounder21 is just broken.
-FILTER_OUT_DIRS		:= mce-test pounder21
-
-# ballista needs to be fixed so that out-of-build-tree support functions
-# properly.
-ifneq ($(abs_builddir),$(abs_srcdir))
-FILTER_OUT_DIRS		+= $(if $(OUT_OF_BUILD_TREE),ballista)
-endif
+# 1. ballista is broken (working on it).
+# 2. mce-test doesn't fit cleanly in the build, yet.
+# 3. pounder21 is just broken.
+FILTER_OUT_DIRS		:= ballista mce-test pounder21
 
 # XXX (garrcoop): Not sure why realtime is still in this list; this was the
 # original list of disabled items...
