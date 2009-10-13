@@ -398,11 +398,12 @@ testcase_24()
 testcase_25()
 {
 	echo -1 > memory.limit_in_bytes 2> /dev/null
+	ret=$?
 	tst_kvercmp 2 6 31
 	if [ $? -eq 0 ]; then
-		result $(( !($? != 0) ))  "return value is $?"
+		result $(( !($ret != 0) ))  "return value is $ret"
        else
-		result $(( !($? == 0) ))  "return value is $?"
+		result $(( !($ret == 0) ))  "return value is $ret"
 	fi
 }
 
