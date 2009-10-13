@@ -179,31 +179,31 @@ foreach my $file (@ARGV) {
                         }
                         if ( $flag2 == 1 ) {
 			    $row_line = $row_line . "$line \n";
-			    if ($line =~ /\ FAIL\ / ) {
+			    if ($line =~ /\ TFAIL\ / ) {
 				$detected_fail = 1;
 				if ( $failed_test_counter_flag == 0 ) {
 				    $failed_test_counter++;
 				    $failed_test_counter_flag=1;
 				}
-			    } elsif ($line =~ /\ BROK\ / ) {
+			    } elsif ($line =~ /\ TBROK\ / ) {
 				$detected_brok = 1;
 				if ( $brok_test_counter_flag == 0 ) {
 				    $brok_test_counter++;
 				    $brok_test_counter_flag=1;
 				}
-			    } elsif ($line =~ /\ WARN\ / ) {
+			    } elsif ($line =~ /\ TWARN\ / ) {
 				$detected_warn = 1;
 				if ( $warn_test_counter_flag == 0 ) {
 				    $warn_test_counter++;
 				    $warn_test_counter_flag=1;
 				}
-			    } elsif ($line =~ /\ RETR\ / ) {
+			    } elsif ($line =~ /\ TRETR\ / ) {
 				$detected_retr = 1;
 				if ( $retr_test_counter_flag == 0 ) {
 				    $retr_test_counter++;
 				    $retr_test_counter_flag=1;
 				}
-			    } elsif ($line =~ /\ CONF\ / ) {
+			    } elsif ($line =~ /\ TCONF\ / ) {
 				$detected_conf = 1;
 				if ( $conf_test_counter_flag == 0 ) {
 				    $conf_test_counter++;
