@@ -107,8 +107,12 @@ static char *strings[] = {
 #ifdef PTRACE_SETREGS
 	SPT(SETREGS)
 #endif
+#ifdef PTRACE_GETSIGINFO
 	SPT(GETSIGINFO)
+#endif
+#ifdef PTRACE_SETSIGINFO
 	SPT(SETSIGINFO)
+#endif
 #ifdef PTRACE_GETFGREGS
 	SPT(GETFGREGS)
 #endif
