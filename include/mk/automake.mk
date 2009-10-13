@@ -51,7 +51,7 @@ include/config.h.in: configure.ac $(wildcard m4/*.m4) m4/ltp-version.m4
 	$(AUTOHEADER)
 	touch $@
 
-include/config.h: include/config.h.default | include
+include/config.h: $(abs_srcdir)/include/config.h.default | include
 	cp $^ $@
 
 m4/ltp-version.m4: ChangeLog
