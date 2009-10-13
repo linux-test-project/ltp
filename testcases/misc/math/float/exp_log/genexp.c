@@ -51,7 +51,7 @@ int create_Result_file()
 	Inc = log( exp(1)/10 );
 
 	for (i=0; i<nbVal; i++)
-		tabR[i] = log ( (Inc*i) + Inc );
+		tabR[i] = exp ( (Inc*i) + Inc );
 
 
 	fp = open(F_name,O_RDWR|O_CREAT|O_TRUNC,0777);

@@ -124,7 +124,7 @@ static void check_error(TH_DATA *th_data, double e, double r, int index)
 
 	x = fabs(r - e); /* diff expected/computed */
 
-	if(x > EPS) { /* error ? */
+	if ((x > EPS) || (x != x)) { /* error ? */
 		/* compute exponent parts */
 		(void)frexp(r, &pr); /* for computed */
 		(void)frexp(x, &px); /* for difference */
