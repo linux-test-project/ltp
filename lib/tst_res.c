@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
- * Copyring  (c) 2009 Cyril Hrubis chrubis@suse.cz
+ * Copyright (c) 2009 Cyril Hrubis chrubis@suse.cz
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
@@ -32,7 +32,7 @@
  */
 
 
-/* $Id: tst_res.c,v 1.12 2009/08/28 11:05:36 vapier Exp $ */
+/* $Id: tst_res.c,v 1.13 2009/10/13 13:59:29 subrata_modak Exp $ */
 
 /**********************************************************
  *
@@ -131,20 +131,18 @@
  * EXPAND_VAR_ARGS - Expand the variable portion (arg_fmt) of a result
  *                   message into the specified string.
  */
-#define EXPAND_VAR_ARGS(arg_fmt, str) {   \
-   va_list ap; /* varargs mechanism */    \
-                                          \
-   if (arg_fmt != NULL) {                 \
-      if ( Expand_varargs == TRUE ) {     \
-         va_start(ap, arg_fmt);           \
-         vsprintf(str, arg_fmt, ap);      \
-         va_end(ap);                      \
-      } else {                            \
-         strcpy(str, arg_fmt);            \
-      }                                   \
-   } else {                               \
-      str[0] = '\0';                      \
-   }                                      \
+#define EXPAND_VAR_ARGS(buf, arg_fmt, buf_len) {              \
+	va_list ap;                                           \
+	                                                      \
+	if (arg_fmt != NULL) {                                \
+		if (Expand_varargs) {                         \
+			va_start(ap, arg_fmt);                \
+			vsnprintf(buf, buf_len, arg_fmt, ap); \
+			va_end(ap);                           \
+		} else                                        \
+			strncpy(buf, arg_fmt, buf_len);       \
+	} else                                                \
+		buf[0] = '\0';                                \
 }
 
 /*
@@ -300,7 +298,7 @@ void tst_res(int ttype, char *fname, char *arg_fmt, ...)
 	       Tst_count, Tst_range); fflush(stdout);
 #endif
 
-	EXPAND_VAR_ARGS(arg_fmt, tmesg);
+	EXPAND_VAR_ARGS(tmesg, arg_fmt, USERMESG);
 
 	/*
 	 * Save the test result type by ORing ttype into the current exit
@@ -625,7 +623,7 @@ void tst_brk(int ttype, char *fname, void (*func)(void), char *arg_fmt, ...)
 	fflush(stdout);
 #endif
 
-	EXPAND_VAR_ARGS(arg_fmt, tmesg);
+	EXPAND_VAR_ARGS(tmesg, arg_fmt, USERMESG);
 
 	/*
 	 * Only FAIL, BROK, CONF, and RETR are supported by tst_brk().
@@ -686,7 +684,7 @@ void tst_brkloop(int ttype, char *fname, void (*func)(void), char *arg_fmt, ...)
 	fflush(stdout);
 #endif
 
-	EXPAND_VAR_ARGS(arg_fmt, tmesg);
+	EXPAND_VAR_ARGS(tmesg, arg_fmt, USERMESG);
 
 	if (Tst_lpstart < 0 || Tst_lptotal < 0) {
 		tst_print(TCID, 0, 1, TWARN,
@@ -748,7 +746,7 @@ void tst_resm(int ttype, char *arg_fmt, ...)
 	fflush(stdout);
 #endif
 
-	EXPAND_VAR_ARGS(arg_fmt, tmesg);
+	EXPAND_VAR_ARGS(tmesg, arg_fmt, USERMESG);
 
 	tst_res(ttype, NULL, "%s", tmesg);
 }
@@ -766,7 +764,7 @@ void tst_brkm(int ttype, void (*func)(void), char *arg_fmt, ...)
 	fflush(stdout);
 #endif
 
-	EXPAND_VAR_ARGS(arg_fmt, tmesg);
+	EXPAND_VAR_ARGS(tmesg, arg_fmt, USERMESG);
 
 	tst_brk(ttype, NULL, func, "%s", tmesg);
 }
@@ -784,7 +782,7 @@ void tst_brkloopm(int ttype, void (*func)(void), char *arg_fmt, ...)
 	fflush(stdout);
 #endif
 
-	EXPAND_VAR_ARGS(arg_fmt, tmesg);
+	EXPAND_VAR_ARGS(tmesg, arg_fmt, USERMESG);
 
 	tst_brkloop(ttype, NULL, func, "%s", tmesg);
 }
