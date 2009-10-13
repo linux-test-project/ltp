@@ -71,7 +71,7 @@ get_supporting_govr() {
 is_hyper_threaded() {
 	siblings=`cat /proc/cpuinfo | grep siblings | uniq | cut -f2 -d':'`
 	cpu_cores=`cat /proc/cpuinfo | grep "cpu cores" | uniq | cut -f2 -d':'`
-	[ $siblings > $cpu_cores ]; return $?
+	[ $siblings -gt $cpu_cores ]; return $?
 }
 
 check_input() {
@@ -148,8 +148,8 @@ get_valid_input() {
 		
 analyze_result_hyperthreaded() {
 	sched_mc=$1
-    pass_count=$3
-    sched_smt=$4
+    pass_count=$2
+    sched_smt=$3
 
 	case "$sched_mc" in
 	0)
@@ -165,7 +165,7 @@ $sched_mc & sched_smt=$sched_smt"
 			fi
 			;;
 		*)
-           	if [ $pass_count -lt 5 ]; then
+			if [ $pass_count -lt 5 ]; then
                	tst_resm TFAIL "cpu consolidation for sched_mc=\
 $sched_mc & sched_smt=$sched_smt"
            	else
@@ -190,10 +190,16 @@ $sched_mc & sched_smt=$sched_smt"
 
 analyze_package_consolidation_result() {
 	sched_mc=$1
-    pass_count=$3
-	sched_smt=$4
+    pass_count=$2
 
-	if [ $hyper_threaded -eq $YES -a $sched_smt ]; then
+	if [ $# -gt 2 ]
+	then
+		sched_smt=$3
+	else
+		sched_smt=-1
+	fi
+
+	if [ $hyper_threaded -eq $YES -a $sched_smt -gt -1 ]; then
 		analyze_result_hyperthreaded $sched_mc $pass_count $sched_smt
 	else
 		case "$sched_mc" in
@@ -209,10 +215,10 @@ $sched_mc"
     	*)
 			if [ $pass_count -lt 5 ]; then
 				tst_resm TFAIL "Consolidation at package level failed for \
-sched_mc=$sched_mc & sched_smt=$sched_smt"
+sched_mc=$sched_mc"
 			else
 				tst_resm TPASS "Consolidation at package level passed for \
-sched_mc=$sched_mc & sched_smt=$sched_smt"
+sched_mc=$sched_mc"
 			fi	
         	;;
     	esac
@@ -221,7 +227,7 @@ sched_mc=$sched_mc & sched_smt=$sched_smt"
 
 analyze_core_consolidation_result() {
 	sched_smt=$1
-	pass_count=$3
+	pass_count=$2
 
 	case "$sched_smt" in
 	0)
