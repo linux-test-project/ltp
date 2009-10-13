@@ -46,11 +46,13 @@ CONFIG_IMA_LSM_RULES=y
 
 Dependency
 ----------
-The testsuite is dependent on the default policy being enabled, which
+The testsuite is dependent on the default TCB policy being enabled, which
 measures all executables, all files mmapped for execute and all files
-open for read by root. If the default policy has been replaced, loading
-another measurement policy will fail, as the policy may only be replaced
-once per boot. Some of the policy dependency tests might also fail as well.
+open for read by root.  For kernels 2.6.31 and greater, enable the
+trusted computing base(TCB) policy using the ima_tcb=1 boot parameter.
+If the TCB policy has been replaced, loading another measurement
+policy will fail, as the policy may only be replaced once per boot.
+Some of the policy dependency tests might also fail as well.
 
 ima_tpm.sh: test02, verifying the PCR-10 value, requires a hard reboot.
 [On Ubuntu, before running the ltp tests, disable /etc/init.d/kexec-load
