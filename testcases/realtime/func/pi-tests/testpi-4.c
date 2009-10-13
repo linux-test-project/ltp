@@ -92,9 +92,8 @@ void* func_nonrt(void* arg)
      printf("Thread %d: Can't set affinity: %d %s\n", tid, rc, strerror(rc));
      exit(-1);
   }
-  rc = sched_getaffinity(0, sizeof(mask), &mask);
 
-  printf("Thread %d started running with priority %d on CPU %ld\n", tid, pthr->priority, (long)mask.__bits);
+  printf("Thread %d started running with priority %d\n", tid, pthr->priority);
   pthread_mutex_lock(glob_mutex);
   printf("Thread %d at start pthread pol %d pri %d - Got global lock\n", tid, pthr->policy, pthr->priority);
   pthread_barrier_wait(&barrier);
@@ -127,9 +126,8 @@ void* func_rt(void* arg)
      printf("Thread %d: Can't set affinity: %d %s\n", tid, rc, strerror(rc));
      exit(-1);
   }
-  rc = sched_getaffinity(0, sizeof(mask), &mask);
 
-  printf("Thread %d started running with prio %d on CPU %ld\n", tid, pthr->priority, (long)mask.__bits);
+  printf("Thread %d started running with prio %d\n", tid, pthr->priority);
   pthread_barrier_wait(&barrier);
   pthread_mutex_lock(glob_mutex);
   printf("Thread %d at start pthread pol %d pri %d - Got global lock\n", tid, pthr->policy, pthr->priority);
@@ -167,9 +165,8 @@ void* func_noise(void* arg)
      printf("Thread %d: Can't set affinity: %d %s\n", tid, rc, strerror(rc));
      exit(-1);
   }
-  rc = sched_getaffinity(0, sizeof(mask), &mask);
 
-  printf("Noise Thread started running with prio %d on CPU %ld\n", pthr->priority, (long)mask.__bits);
+  printf("Noise Thread started running with prio %d\n", pthr->priority);
   pthread_barrier_wait(&barrier);
 
   for (i=0;i<10000;i++) {
@@ -209,7 +206,6 @@ int main(int argc, char* argv[]) {
      printf("Main Thread: Can't set affinity: %d %s\n", retc, strerror(retc));
      exit(-1);
   }
-  retc = sched_getaffinity(0, sizeof(mask), &mask);
   for (i=0;i<argc;i++) {
     if (strcmp(argv[i],"nopi") == 0) nopi = 1;
   }
