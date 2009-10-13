@@ -156,7 +156,6 @@ usage()
                       -t 24h = 24 hours
                       -t 2d  = 2 days
     -T REPETITION   Execute the testsuite for REPETITION no. of times
-    -v              Print more verbose output to screen.                   
     -w CMDFILEADDR  Uses wget to get the user's list of testcases.
     -x INSTANCES    Run multiple instances of this testsuite.
     -b DEVICE       Some tests require an unmounted block device
@@ -182,7 +181,6 @@ main()
     local RUN_NETEST=0
     local RUN_REPEATED=0
     local QUIET_MODE=""
-    local VERBOSE_MODE=""
     local NETPIPE=0
     local GENLOAD=0
     local MEMSIZE=0
@@ -207,7 +205,7 @@ main()
     local DEFAULT_FILE_NAME_GENERATION_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
     version_date=$(cat "$LTPROOT/Version")
 
-    while getopts a:c:C:d:D:f:F:ehi:g:l:m:M:Nno:pqr:s:S:t:T:vw:x:b:B: arg
+    while getopts a:c:C:d:D:f:F:ehi:g:l:m:M:Nno:pqr:s:S:t:T:w:x:b:B: arg
     do  case $arg in
         a)  EMAIL_TO=$OPTARG
             ALT_EMAIL_OUT=1;;
@@ -397,8 +395,6 @@ main()
 
         T)  # In case you want the testcases to runsequentially RUN_REPEATED times
             RUN_REPEATED=$OPTARG;;
-
-        v)  VERBOSE_MODE=1;;
 
         w)  CMDFILEADDR=$OPTARG;;
    
@@ -755,11 +751,9 @@ main()
     [ ! -z "$QUIET_MODE" ] && { echo "INFO: Test start time: $(date)" ; }
     PAN_COMMAND="${LTPROOT}/bin/ltp-pan $QUIET_MODE -e -S $INSTANCES $DURATION -a $$ \
     -n $$ $PRETTY_PRT -f ${TMP}/alltests $LOGFILE $OUTPUTFILE $FAILCMDFILE"
-    if [ ! -z "$VERBOSE_MODE" ] ; then
-      echo "COMMAND:    $PAN_COMMAND"
-      if [ ! -z "$TAG_RESTRICT_STRING" ] ; then
-        echo "INFO: Restricted to $TAG_RESTRICT_STRING"
-      fi
+    echo "COMMAND:    $PAN_COMMAND"
+    if [ ! -z "$TAG_RESTRICT_STRING" ] ; then
+      echo "INFO: Restricted to $TAG_RESTRICT_STRING"
     fi
     #$PAN_COMMAND #Duplicated code here, because otherwise if we fail, only "PAN_COMMAND" gets output
     

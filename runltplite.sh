@@ -85,7 +85,6 @@ usage()
     -p              Human readable format logfiles. 
     -q              Print less verbose output to screen.
     -r LTPROOT      Fully qualified path where testsuite is installed.
-    -v              Print more verbose output to screen.                   
 
     example: ./${0##*/} -i 1024 -m 128 -p -q  -l /tmp/resultlog.$$ -d ${PWD}
 
@@ -114,7 +113,7 @@ main()
     local TAG_RESTRICT_STRING=""
     local PAN_COMMAND=""
 
-    while getopts c:d:hi:l:m:No:pqr:v arg
+    while getopts c:d:hi:l:m:No:pqr: arg
     do  case $arg in
         c)       
 	    NUM_PROCS=$(($OPTARG))
@@ -171,8 +170,6 @@ main()
     
         r)  LTPROOT=$OPTARG;;
     
-        v)  VERBOSE_MODE=1;;
-   
         \?) usage;;
         esac
     done
