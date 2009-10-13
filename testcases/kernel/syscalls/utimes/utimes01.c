@@ -191,8 +191,6 @@ static struct test_case tcase[] = {
         },
         { // case02
                 .ttype          = NORMAL,
-                .a_sec          = 1000,
-                .m_sec          = 2000,
                 .user           = "nobody",
                 .ret            = -1,
                 .err            = EACCES, // RHEL4U1 + 2.6.18 returns EPERM
@@ -270,9 +268,13 @@ static int do_test(struct test_case *tc)
                 const char *dummy = NULL;
                 TEST(sys_ret = utimes(dummy, tv));
         }
-	else
-                TEST(sys_ret = utimes(fpath, tv));
-        sys_errno = errno;
+        else {
+                if (tc->user == NULL)
+                        TEST(sys_ret = utimes(fpath, tv));
+                else
+                        TEST(sys_ret = utimes(fpath, (struct timeval *)NULL));
+        }
+	sys_errno = errno;
         if (tc->ttype == FILE_NOT_EXIST)
                 fpath[len - 1] = c;
         if (sys_ret < 0)
