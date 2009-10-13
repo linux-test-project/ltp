@@ -1050,7 +1050,6 @@ sigpending02 sigpending02
 sigprocmask01 sigprocmask01
 
 sigrelse01 sigrelse01
-sigreturn01 sigreturn01
 
 sigsuspend01 sigsuspend01
 
