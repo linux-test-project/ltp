@@ -29,8 +29,7 @@
 echo "*****************************************************"
 echo "Running network testcases under containers..."
 
-create_container;
-if [ $? -ne 0 ]; then
-	echo "some of the network testcases under netns failled"
+if ! create_container; then
+	echo "some of the network testcases under netns failed"
 	exit 1;
 fi

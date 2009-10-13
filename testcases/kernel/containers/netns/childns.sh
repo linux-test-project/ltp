@@ -32,59 +32,58 @@
 # set -x
 # The test case ID, the test case count and the total number of test case
 
-TCID=${TCID:-childns.sh}
-TST_TOTAL=1
-TST_COUNT=1
-export TCID
-export TST_COUNT
-export TST_TOTAL
-.  initialize.sh
+export TCID=${TCID:-childns.sh}
+. cmdlib.sh
+exists awk grep ip ping sshd
+. initialize.sh
 status=0
     
-    if [ $# = 1 ] ; then
-        childscrpt=$1
-        debug "INFO: The script to be executed in child NS is $childscrpt"
-    fi
-    
-    # Passing the PID of child 
-    echo "child ready" > /tmp/FIFO1;
-    
-    # waiting for the device name from parent
-    vnet1=`cat /tmp/FIFO2`;
-    debug "INFO: network dev name received $vnet1";
-    # Assigning the dev addresses
-    ifconfig $vnet1 $IP2/24 up > /dev/null 2>&1
-	if [ $? -ne 0 ]; then
-		debug "Failed to make interface $vnet1 up in child....."
-	fi
+if [ $# -eq 1 ] ; then
+    childscrpt=$1
+    debug "INFO: The script to be executed in child NS is $childscrpt"
+fi
 
-    ifconfig lo up ; 
-    sleep 2
-    
-    #starting the sshd inside the child NS
-    /usr/sbin/sshd -p $PORT
-    if [ $? = 0 ]; then
-        debug "INFO: started the sshd @ port no $PORT"
-        sshpid=`ps -ef | grep "sshd -p $PORT" | awk '{ print $2 ; exit 0} ' `
-    else
-        tst_resm TFAIL "Failed in starting ssh @ port $PORT"
-        status=1
-    fi
-    
+# Passing the PID of child 
+echo "child ready" > /tmp/FIFO1;
+
+# waiting for the device name from parent
+vnet1=`cat /tmp/FIFO2`;
+debug "INFO: network dev name received $vnet1";
+# Assigning the dev addresses
+if ! ifconfig $vnet1 $IP2/24 up > /dev/null 2>&1 ; then
+    debug "Failed to make interface $vnet1 up in child....."
+fi
+
+ifconfig lo up
+sleep 2
+
+#starting the sshd inside the child NS
+if ! sshd -p $PORT; then
+    debug "INFO: started the sshd @ port no $PORT"
+    sshpid=`ps -ef | grep "sshd -p $PORT" | grep -v grep | awk '{ print $2 ; exit 0} ' `
+else
+    tst_resm TFAIL "Failed in starting ssh @ port $PORT"
+    cleanup $vnet1
+    status=1
+fi
+
+if [ $status -eq 0 ] ; then
+
     # checking if parent ns responding
-    ping -q -c 2 $IP1 > /dev/null
-    if [ $? != 0 ] ; then
+    if ! ping -q -c 2 $IP1 > /dev/null ; then
         tst_resm TFAIL "FAIL: ParentNS not responding"
         status=1
         cleanup $sshpid $vnet1
         exit $status
     fi
-    
-    if [ -f  $childscrpt ]; then
-        . $childscrpt
+
+    if [ -f "$childscrpt" ]; then
+        . "$childscrpt"
     fi
-    
+
     cleanup $sshpid $vnet1
     debug "INFO: Done with executing child script $0, status is $status"
-    
-    exit $status 
+
+fi
+
+exit $status 
