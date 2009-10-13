@@ -27,14 +27,14 @@
 
 #include "config.h"
 
-#include <errno.h>		/* for errno */
-#include <stdio.h>		/* for NULL */
-#include <stdlib.h>		/* for malloc() */
-#include <string.h>		/* for string function */
-#include <limits.h>		/* for PATH_MAX */
-#include <sys/types.h>		/* for opendir(), readdir(), closedir(), stat() */
-#include <sys/stat.h>		/* for [l]stat() */
-#include <dirent.h>		/* for opendir(), readdir(), closedir() */
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <limits.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <dirent.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <fnmatch.h>
@@ -67,12 +67,12 @@ size_t buffsize = 1024;
 size_t total_read = 0;
 unsigned int total_obj = 0;
 
-struct mapping
-{
-  char func[MAX_FUNC_NAME];
-  char file[PATH_MAX];
-  int err;
+struct mapping {
+	char func[MAX_FUNC_NAME];
+	char file[PATH_MAX];
+	int err;
 };
+
 typedef struct mapping Mapping;
 
 /* Those are known failures for 2.6.18 baremetal kernel and Xen dom0
@@ -388,7 +388,7 @@ int main(int argc, char *argv[])
 	char *msg;
 	int lc;
 
-	if ((msg = parse_opts(argc, argv, options, help)) != (char *)NULL)
+	if ((msg = parse_opts(argc, argv, options, help)) != NULL)
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 
 	if (opt_buffsize) {
@@ -414,7 +414,7 @@ int main(int argc, char *argv[])
 		TEST(readproc(procpath));
 
 		if (TEST_RETURN != 0) {
-			tst_resm(TFAIL, "readproc() failed with %d errors.",
+			tst_resm(TFAIL, "readproc() failed with %ld errors.",
 				 TEST_RETURN);
 		} else {
 			tst_resm(TPASS, "readproc() completed successfully, "

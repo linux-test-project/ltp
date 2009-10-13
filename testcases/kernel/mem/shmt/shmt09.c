@@ -125,8 +125,8 @@ int main()
 	c2 = (char *)shmat(shmid, vp, 0);
 	if (c2 != (char *)-1) {
 		tst_resm(TFAIL,
-			 "ERROR: shmat: succeeded!: shmid = %d, shmaddr = 0x%08x, "
-			 "att_addr = 0x%08x\n", shmid, c2, vp);
+			 "ERROR: shmat: succeeded!: shmid = %d, shmaddr = %p, "
+			 "att_addr = %p", shmid, c2, vp);
 		rm_shm(shmid);
 		tst_exit();
 	}
@@ -173,7 +173,7 @@ int main()
 #else
 	if ((vp = sbrk(INCREMENT)) != (void *)-1) {
 		tst_resm(TFAIL,
-			 "Error: sbrk succeeded!  ret = 0x%08x, curbrk = 0x%08x, ",
+			 "Error: sbrk succeeded!  ret = %p, curbrk = %p, ",
 			 vp, sbrk(0));
 		rm_shm(shmid);
 		tst_exit();

@@ -57,7 +57,7 @@ key_t key[2];
 
 int rm_shm(int);
 
-int main()
+int main(void)
 {
 	int shmid, shmid1;
 	char *cp, *cp1;
@@ -97,7 +97,7 @@ int main()
 		if (cp1 != (char *)-1) {
 			perror("shmat");
 			tst_resm(TFAIL,
-				 "Error: shmat: shmid1 = %d, addr= %#x, errno = %d\n",
+				 "Error: shmat: shmid1 = %d, addr= %p, errno = %d\n",
 				 shmid1, cp1, errno);
 		}
 		else{

@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: dup03.c,v 1.4 2009/03/23 13:35:40 subrata_modak Exp $ */
+/* $Id: dup03.c,v 1.5 2009/10/13 14:00:46 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -176,7 +176,7 @@ int main(int ac, char **av)
 			}
 		} else {
 			tst_resm(TFAIL,
-				 "dup(%d) returned %d, expected -1, errno:%d (EMFILE)",
+				 "dup(%d) returned %ld, expected -1, errno:%d (EMFILE)",
 				 Fd[0], TEST_RETURN, EMFILE);
 
 			/* close the new file so loops do not open too many files */
@@ -252,7 +252,7 @@ void setup()
 	}
 	if (Nfds > maxfds) {
 		tst_brkm(TBROK, cleanup,
-			 "Unable to open enough files to use all file descriptors, tried %d",
+			 "Unable to open enough files to use all file descriptors, tried %ld",
 			 maxfds);
 	}
 }				/* End setup() */

@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: dup04.c,v 1.5 2009/03/23 13:35:40 subrata_modak Exp $ */
+/* $Id: dup04.c,v 1.6 2009/10/13 14:00:46 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -179,7 +179,7 @@ int main(int ac, char **av)
 			if (STD_FUNCTIONAL_TEST) {
 				/* No Verification test, yet... */
 				tst_resm(TPASS,
-					 "dup(%d) read side of syspipe returned %d",
+					 "dup(%d) read side of syspipe returned %ld",
 					 Fd[0], TEST_RETURN);
 
 			} else
@@ -188,7 +188,7 @@ int main(int ac, char **av)
 			/* close the new file so loops do not open too many files */
 			if (close(TEST_RETURN) == -1) {
 				tst_brkm(TBROK, cleanup,
-					 "close(%d) Failed, errno=%d : %s",
+					 "close(%ld) Failed, errno=%d : %s",
 					 TEST_RETURN, errno, strerror(errno));
 			}
 		}
@@ -212,7 +212,7 @@ int main(int ac, char **av)
 			if (STD_FUNCTIONAL_TEST) {
 				/* No Verification test, yet... */
 				tst_resm(TPASS,
-					 "dup(%d) write side of syspipe returned %d",
+					 "dup(%d) write side of syspipe returned %ld",
 					 Fd[1], TEST_RETURN);
 
 			} else
@@ -221,7 +221,7 @@ int main(int ac, char **av)
 			/* close the new file so loops do not open too many files */
 			if (close(TEST_RETURN) == -1) {
 				tst_brkm(TBROK, cleanup,
-					 "close(%d) Failed, errno=%d : %s",
+					 "close(%ld) Failed, errno=%d : %s",
 					 TEST_RETURN, errno, strerror(errno));
 			}
 		}

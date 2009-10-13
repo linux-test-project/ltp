@@ -92,7 +92,6 @@
 /*	        read must be a success between map and unmap of the region.   */
 /*									      */
 /******************************************************************************/
-/* Include Files.							      */
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -114,7 +113,6 @@
 #include "test.h"
 #include "usctest.h"
 
-/* Defines								      */
 #define M_SUCCESS 	0	/* exit code - on success, clone functions    */
 #define MWU_FAIL 	1	/* error code - map_write_unmap()  on error   */
 #define RM_FAIL 	1	/* error code - read_mem()  on error          */
@@ -137,7 +135,6 @@
 
 
 
-/* Global Variables						              */
 int 	   verbose_print = FALSE;/* when called with -v print more info       */
 caddr_t    *map_address;	/* address of the file mapped.	              */
 sigjmp_buf jmpbuf;		/* argument to sigsetjmp and siglongjmp       */
@@ -532,7 +529,7 @@ main(int  argc,		/* number of input parameters.			      */
     if (verbose_print)
         tst_resm(TINFO, "Input parameters are: "
                     "File size:  %d; "
-                    "Scheduled to run:  %ld hours; "
+                    "Scheduled to run:  %lf hours; "
                     "Number of mmap/write/read:  %d",
 			file_size, exec_time, num_iter);
     set_timer(exec_time);

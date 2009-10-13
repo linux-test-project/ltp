@@ -89,7 +89,7 @@ int usage(prog)
 	char	*prog;
 {
 	tst_resm(TCONF,"Usage: %s <nchild> <size> <chunk_size> <iterations>",prog);
-	tst_resm(TCONF,"DEFAULTS: 10 1024*1024 4096 25", prog);
+	tst_resm(TCONF,"DEFAULTS: 10 1024*1024 4096 25");
 	tst_exit();
 	return 0;
 }
@@ -323,7 +323,7 @@ int dotest(testers, me)
 			{
 				if (memcmp(buf, zero_buf, csize))
 				{
-					tst_resm(TFAIL, "\t%s[%d] bad verify @ %d (0x%x) for val %d count %d, should be 0x%x.\n",
+					tst_resm(TFAIL, "\t%s[%d] bad verify @ %d (%p) for val %d count %d, should be 0x%x.\n",
 						prog, me, chunk, buf, val, count, val - 1);
 					tst_resm(TINFO, "\tPrev "); dumpbuf(buf-csize);
 					dumpbuf(buf);
@@ -338,7 +338,7 @@ int dotest(testers, me)
 				++collide;
 				if (memcmp(buf, val_buf, csize))
 				{
-					tst_resm(TFAIL, "\t%s[%d] bad verify @ %d (0x%x) for val %d count %d.\n",
+					tst_resm(TFAIL, "\t%s[%d] bad verify @ %d (%p) for val %d count %d.\n",
 						prog, me, chunk, buf, val, count);
 					tst_resm(TINFO, "\tPrev "); dumpbuf(buf-csize);
 					dumpbuf(buf);

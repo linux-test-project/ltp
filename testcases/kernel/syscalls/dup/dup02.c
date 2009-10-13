@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: dup02.c,v 1.5 2009/03/23 13:35:40 subrata_modak Exp $ */
+/* $Id: dup02.c,v 1.6 2009/10/13 14:00:46 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -186,13 +186,13 @@ int main(int ac, char **av)
 				}
 			} else {
 				tst_resm(TFAIL,
-					 "dup(%d) returned %d, expected -1, errno:%d (EBADF)",
+					 "dup(%d) returned %ld, expected -1, errno:%d (EBADF)",
 					 Fds[ind], TEST_RETURN, EBADF);
 
 				/* close the new file so loops do not open too many files */
 				if (close(TEST_RETURN) == -1) {
 					tst_brkm(TBROK, cleanup,
-						 "close(%d) Failed, errno=%d : %s",
+						 "close(%ld) Failed, errno=%d : %s",
 						 TEST_RETURN, errno,
 						 strerror(errno));
 				}
