@@ -24,17 +24,12 @@ ifeq ($(strip $(MANPREFIX)),)
 $(error $$(MANPREFIX) not defined)
 endif
 
-include $(top_srcdir)/include/mk/config.mk
+include $(top_srcdir)/include/mk/env_pre.mk
 
-MANPAGES	?= $(wildcard $(abs_srcdir)/*.$(MANPREFIX))
+INSTALL_DIR	:= $(mandir)/man$(MANPREFIX)
 
-clean:
-	-(cd $(DESTDIR)/$(mandir)/man$(MANPREFIX) && $(RM) -f $(MANPAGES))
+INSTALL_TARGETS	?= *.$(MANPREFIX)
 
-$(DESTDIR)/$(mandir)/man$(MANPREFIX):
-	mkdir -p "$@"
+MAKE_TARGETS	:=
 
-install: $(DESTDIR)/$(mandir)/man$(MANPREFIX) $(MANPAGES)
-	@set -e; for i in $(filter-out $<,$^); do \
-	    install -m 644 "$$i" "$</$$i"; \
-	done
+include $(top_srcdir)/include/mk/generic_leaf_target.mk
