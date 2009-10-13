@@ -210,7 +210,7 @@ fi
 if [ $# -gt 0 -a "$1" = "-exclusive" ]; then 
 	# Test CPU consolidation 
 	if [ $multi_socket -eq $YES -a $multi_core -eq $YES ]; then
-		for sched_mc in `seq 0 $max_sched_mc`; do
+		for sched_mc in `seq 0  $max_sched_mc`; do
 			: $(( TST_COUNT += 1 ))
 			sched_mc_pass_cnt=0
 			if [ $sched_mc -eq 2 ]; then
@@ -243,111 +243,108 @@ if [ $# -gt 0 -a "$1" = "-exclusive" ]; then
 		done
 
 	fi
-	if [ $hyper_threaded -eq $YES -a $multi_socket -eq $YES ]; then
-		#Testcase to validate consolidation at core level
-		work_load="ebizzy"
-		sched_smt_pass_cnt=0
-		: $(( TST_COUNT += 1 ))
-		stress="thread"
-		for repeat_test in `seq 1  10`; do
-			if cpu_consolidation.py -c $sched_mc -t $sched_smt -w $work_load -s $stress; then
-				: $(( sched_smt_pass_cnt += 1 ))
-			fi
-		done
-		analyze_core_consolidation_result $sched_smt $work_load $sched_smt_pass_cnt
 
-		# Vary only sched_smt from 1 to 0 when workload is running and ensure that
-		# tasks do not consolidate to single core when sched_smt is set to 0
-		: $(( TST_COUNT += 1 ))
-		if cpu_consolidation.py -vt; then
-			tst_resm TPASS "CPU consolidation test by varying sched_smt"
-		else
-			tst_resm TFAIL "CPU consolidation test by varying sched_smt"
-		fi
+	if [ $hyper_threaded -eq $YES -a $multi_socket -eq $YES -a $multi_core -eq $NO ]; then
+			#Testcase to validate consolidation at core level
+			for sched_smt in `seq 0 $max_sched_smt`; do
+				if [ $sched_smt -eq 2 ]; then
+				 	work_load="kernbench"
+				else	
+					work_load="ebizzy"
+				fi
+				sched_smt_pass_cnt=0
+				: $(( TST_COUNT += 1 ))
+				stress="thread"
+				for repeat_test in `seq 1  10`; do
+					if cpu_consolidation.py -t $sched_smt -w $work_load -s $stress; then
+						: $(( sched_smt_pass_cnt += 1 ))
+					fi
+				done
+				analyze_core_consolidation_result $sched_smt $sched_smt_pass_cnt
+			done
 	fi
 
 	# Verify threads consolidation stops when sched_mc &(/) sched_smt is disabled
     if [ $multi_socket -eq $YES -a $multi_core -eq $YES ]; then
-		: $(( TST_COUNT += 1 ))
-		# Vary sched_mc from 1 to 0 when workload is running and ensure that
-		# tasks do not consolidate to single package when sched_mc is set to 0
-		if cpu_consolidation.py -v -c 1; then
-            tst_resm TPASS "CPU consolidation test by varying sched_mc 1 to 0"
-        else
-            tst_resm TFAIL "CPU consolidation test by varying sched_mc 1 to 0"
-        fi
-
-		# Vary sched_mc from 2 to 0 when workload is running and ensure that
-        # tasks do not consolidate to single package when sched_mc is set to 0
-		: $(( TST_COUNT += 1 ))
-		if cpu_consolidation.py -v -c 2; then
-			tst_resm TPASS "CPU consolidation test by varying sched_mc 2 to 0"
-		else
-			tst_resm TFAIL "CPU consolidation test by varying sched_mc 2 to 0"
-		fi
-
-		if [ $hyper_threaded -eq $YES ]; then
-			# Vary sched_mc & sched_smt from 1 to 0 & 2 to 0 when workload is running and ensure that
-            # tasks do not consolidate to single package when sched_mc is set to 0
-            : $(( TST_COUNT += 1 ))
-			if cpu_consolidation.py -v -c 1 -t 1; then
-				tst_resm TPASS "CPU consolidation test by varying sched_mc \
-& sched_smt from 1 to 0"
-			else
-				tst_resm TFAIL "CPU consolidation test by varying sched_mc \
-& sched_smt from 1 to 0"
-			fi
-
+        for sched_mc in `seq 1  $max_sched_mc`; do
 			: $(( TST_COUNT += 1 ))
-			if cpu_consolidation.py -v -c 2 -t 2; then
-				tst_resm TPASS "CPU consolidation test by varying sched_mc \
- & sched_smt from 2 to 0"
-			else
-				tst_resm TFAIL "CPU consolidation test by varying sched_mc \
- & sched_smt from 2 to 0"
+		
+			# Vary sched_mc from 1/2 to 0 when workload is running and ensure that
+			# tasks do not consolidate to single package when sched_mc is set to 0
+			if cpu_consolidation.py -v -c $sched_mc; then
+            	tst_resm TPASS "CPU consolidation test by varying sched_mc $sched_mc to 0"
+        	else
+            	tst_resm TFAIL "CPU consolidation test by varying sched_mc $sched_mc to 0"
+        	fi
+
+			if [ $hyper_threaded -eq $YES ]; then
+				for sched_smt in `seq 1  $max_sched_smt`; do		
+					if [ $sched_smt -eq $sched_mc ]; then
+						# Vary sched_mc & sched_smt from 1 to 0 & 2 to 0 when workload is running and ensure that
+            			# tasks do not consolidate to single package when sched_mc is set to 0
+            			: $(( TST_COUNT += 1 ))
+						if cpu_consolidation.py -v -c $sched_mc -t $sched_smt; then
+							tst_resm TPASS "CPU consolidation test by varying sched_mc \
+& sched_smt from $sched_mc to 0"
+						else
+							tst_resm TFAIL "CPU consolidation test by varying sched_mc \
+& sched_smt from $sched_mc to 0"
+						fi
+					fi
+				done
 			fi
-		fi
+		done
 	fi
 
-    # Verify threads consolidation stops when is disabled in HT systems
+    # Verify threads consolidation stops when sched_smt is disabled in HT systems
 	if [ $hyper_threaded -eq $YES -a $multi_socket -eq $YES ]; then
 		# Vary only sched_smt from 1 to 0 when workload is running and ensure that
 		# tasks do not consolidate to single core when sched_smt is set to 0
 		: $(( TST_COUNT += 1 ))
 		if cpu_consolidation.py -v -t 1; then
-			tst_resm TPASS "CPU consolidation test by varying sched_smt 1 to 0"
+			tst_resm TPASS "CPU consolidation test by varying sched_smt from 1 to 0"
 		else
-			tst_resm TFAIL "CPU consolidation test by varying sched_smt 1 to 0"
+			tst_resm TFAIL "CPU consolidation test by varying sched_smt from 1 to 0"
 		fi
+        
+        # Vary only sched_smt from 2 to 0 when workload is running and ensure that
+        # tasks do not consolidate to single core when sched_smt is set to 0
+        : $(( TST_COUNT += 1 )) 
+        if cpu_consolidation.py -v -t 2; then 
+            tst_resm TPASS "CPU consolidation test by varying sched_smt 2 to 0"
+        else
+            tst_resm TFAIL "CPU consolidation test by varying sched_smt 2 to 0"
+        fi
+
 	fi
 
 	# Verify ILB runs in same package as workload
     if [ $multi_socket -eq $YES -a $multi_core -eq $YES ]; then
-		for sched_mc in `seq 0 $max_sched_mc`; do
+		for sched_mc in `seq 1 $max_sched_mc`; do
 			: $(( TST_COUNT += 1 ))
-            ilb_test.py -c $sched_mc; RC=$?
+            if [ $sched_mc -eq 2 ]; then
+                work_load="kernbench"
+            else
+                work_load="ebizzy"
+            fi
+
+            ilb_test.py -c $sched_mc -w $work_load; RC=$?
 			if [ $RC -eq 0 ]; then
 				tst_resm TPASS "ILB & workload in same package for sched_mc=$sched_mc"
 			else
-				if [ $sched_mc -eq 0 ]; then
-					tst_resm TPASS "ILB & workload is not in same package when sched_mc=0"
-				else
-					tst_resm TFAIL "ILB did not run in same package"
-				fi
+				tst_resm TFAIL "ILB & workload did not run in same package for sched_mc=$sched_mc\
+. Ensure CONFIG_NO_HZ is set"
 			fi
 			if [ $hyper_threaded -eq $YES ]; then
-				for sched_smt in `seq 0 $max_sched_smt`; do
+				for sched_smt in `seq 1 $max_sched_smt`; do
 					: $(( TST_COUNT += 1 ))
-					ilb_test.py -c $sched_mc -t sched_smt; RC=$?
+					ilb_test.py -c $sched_mc -t sched_smt -w $work_load; RC=$?
  					if [ $RC -eq 0 ]; then
-						tst_resm TPASS "ILB & workload in same package for sched_mc=$sched_mc"
+						tst_resm TPASS "ILB & workload in same package for sched_mc=$sched_mc \
+& sched_smt=$sched_smt"
 					else
-						if [ $sched_mc -eq 0 -a $sched_smt -eq 0 ]; then
-							tst_resm TPASS "ILB & workload is not in same package when\
-sched_mc & sched_smt is 0"
-						else
-							tst_resm TFAIL "ILB did not run in same package"    
-						fi
+						tst_resm TFAIL "ILB & workload did not execute in same package for \
+sched_mc=$sched_mc & sched_smt=$sched_smt. Ensure CONFIG_NO_HZ is set"    
 					fi
 				done
 			fi
