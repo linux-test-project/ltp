@@ -94,8 +94,8 @@ else
 	fi
 fi
 
-ssh -n $RHOST "ps -ewf" | grep portmap | grep -v grep > /dev/null
-[ $? -eq 0 ] || ssh -n $RHOST "ps -ewf" | grep rpcbind | grep -v grep > /dev/null
+rsh -n $RHOST "ps -ewf" | grep portmap | grep -v grep > /dev/null
+[ $? -eq 0 ] || rsh -n $RHOST "ps -ewf" | grep rpcbind | grep -v grep > /dev/null
 [ $? -eq 0 ] || end_testcase "The portmap or rpcbind daemon is NOT running on $RHOST"
 
 echo "Test rpcinfo with default options"
