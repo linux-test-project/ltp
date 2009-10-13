@@ -41,7 +41,7 @@ PORT2=9876
 DEBUG=0
 
 # set the LTPROOT directory
-cd "${0##*/}"
+cd "$(dirname "$0")"
 if [ -n "${LTPROOT:-}" ]; then
     FS_BIND=${LTPROOT}/testcases/bin/smount
     if [ -f $FS_BIND ] ; then
