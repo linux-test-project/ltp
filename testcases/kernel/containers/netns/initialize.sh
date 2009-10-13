@@ -30,9 +30,9 @@ export TST_TOTAL=1
 export TST_COUNT=1
 
 TEST_SUBNET=${TEST_SUBNET:=192.168.0}
-i=0
-while [ $i -lt 4 ] ; do
-    eval "IP${i}=\"$TEST_SUBNET.181\""
+i=1
+while [ $i -le 4 ] ; do
+    eval "IP${i}=\"$TEST_SUBNET.18$i\""
     : $(( i += 1 ))
 done
 mask=/24
