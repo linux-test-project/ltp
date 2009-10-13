@@ -27,7 +27,7 @@ def main(argv=None):
     parser.add_option("-t", "--smt_level", dest="smt_level",
         default=0, help="Sched smt power saving value 0/1/2")
     parser.add_option("-w", "--workload", dest="work_ld",
-        default="kernbench", help="Workload can be ebizzy/kernbench")
+        default="ebizzy", help="Workload can be ebizzy/kernbench")
     (options, args) = parser.parse_args()
 
     try:
@@ -40,10 +40,10 @@ def main(argv=None):
         map_cpuid_pkgid()
         print "INFO: Created table mapping cpu to package"
         background="no"
-        duration=60
+        duration=120
         pinned="yes"
 
-        trigger_workld(options.smt_level,options.work_ld, "single_job", duration, background, pinned)
+        trigger_workld(options.smt_level,options.work_ld, "single_job", duration, background, pinned, "no")
         generate_loc_intr_report()
         status = validate_ilb(options.mc_level, options.smt_level)
         reset_schedmc()
