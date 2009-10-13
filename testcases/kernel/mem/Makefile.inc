@@ -34,4 +34,6 @@ $(LIB): $(LIBDIR)
 
 all: | $(LIB)
 
+LDFLAGS			+= -L$(LIBDIR)
+
 # vim: syntax=make

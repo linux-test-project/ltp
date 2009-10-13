@@ -21,18 +21,24 @@
 #
 
 # DO NOT USE THIS FILE FOR hugetlb / lib!!!
-LIBDIR			:= ../lib
-LIB			:= $(LIBDIR)/libipc_hugetlb.a
 
-$(LIBDIR):
+LIBIPCDIR		:= ../lib
+LIBIPC			:= $(LIBIPCDIR)/libipc_hugetlb.a
+LIBMMDIR		:= ../../libmm
+LIBMM			:= $(LIBMMDIR)/libmm.a
+
+$(LIBIPCDIR) $(LIBMMDIR): %:
 	mkdir -p "$@"
 
-$(LIB): $(LIBDIR)
+$(LIBMM): $(LIBMMDIR)
 	$(MAKE) -C "$^" -f "$(abs_srcdir)/$^/Makefile" all
 
-CPPFLAGS		+= -I$(abs_srcdir)/$(LIBDIR)
+$(LIBIPC): $(LIBIPCDIR)
+	$(MAKE) -C "$^" -f "$(abs_srcdir)/$^/Makefile" all
 
-LDFLAGS			+= -L$(abs_builddir)/$(LIBDIR)
+CPPFLAGS		+= -I$(abs_srcdir)/$(LIBMMDIR) -I$(abs_srcdir)/$(LIBIPCDIR)
+
+LDFLAGS			+= -L$(abs_builddir)/$(LIBMMDIR) -L$(abs_builddir)/$(LIBIPCDIR)
 
 LDLIBS			+= -lmm -lipc_hugetlb
 
