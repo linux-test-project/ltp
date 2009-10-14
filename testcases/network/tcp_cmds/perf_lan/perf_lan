@@ -113,7 +113,7 @@ interrupt_testcase()
 # OUTPUT:    Logged run results written to testcase run log
 #
 #-----------------------------------------------------------------------
-. tcpcmds.sh
+. net_cmdlib.sh
 
 read_args $*
 
