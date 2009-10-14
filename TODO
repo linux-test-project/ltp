@@ -239,3 +239,14 @@ tcp_cmds_noexpect-output.log: /scratch/ltp-install5/testcases/bin/echo01 /scratc
 testcases/kernel/security/selinux:
    Is disabled on purpose (doesn't fit within build and probably won't until
    autoconf tests are created to detect SELinux).
+
+Other missing items in an out-of-build-tree configuration:
+
+/tests/ltp/output/io_floppy-output.log:sh: stress_floppy: command not found
+/tests/ltp/output/ipv6-output.log:sh: echo601: command not found
+/tests/ltp/output/ipv6-output.log:ftp01       1  TFAIL  :  Test broken: ftp: command not found
+/tests/ltp/output/ipv6-output.log:sh: perf_lan6: command not found
+/tests/ltp/output/ipv6-output.log:rcp01       1  TFAIL  :  Test broken: rcp: command not found
+/tests/ltp/output/ipv6-output.log:rsh01       1  TFAIL  :  Test broken: rsh: command not found
+/tests/ltp/output/ipv6-output.log:rwho01      1  TFAIL  :  Test broken: rsh: command not found
+/tests/ltp/output/ipv6-output.log:sh: sendfile601: command not found
