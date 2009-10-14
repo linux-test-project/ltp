@@ -19,9 +19,4 @@
 top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
-
-# XXX (garrcoop): Causing me grief with linker errors due to whacky source
-# design.
-FILTER_OUT_DIRS		:= aio02
-
 include $(top_srcdir)/include/mk/generic_trunk_target.mk
