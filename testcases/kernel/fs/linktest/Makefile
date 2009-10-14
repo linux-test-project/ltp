@@ -24,6 +24,6 @@ top_srcdir			?= ../../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-INSTALL_TARGETS			:= linktest.pl
+INSTALL_TARGETS			:= linktest.sh
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

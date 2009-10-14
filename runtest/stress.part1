@@ -156,7 +156,7 @@ rwtest05 export LTPROOT; rwtest.sh -N rwtest05 -c -q -i 50 -T 64b 500b:/tmp/rwte
 iogen01 export LTPROOT; rwtest.sh -N iogen01 -i 120s -s read,write -Da -Dv -n 2 500b:doio.f1.$$ 1000b:doio.f2.$$
 
 fs_inod01 fs_inod $TMP 10 10 1
-linker01 linktest.pl
+linker01 linktest.sh
 openfile01 openfile -f10 -t10
 inode01 inode01
 inode02 inode02
