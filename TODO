@@ -68,6 +68,10 @@ testcases/misc/crash/crash02.c:
       SYS_clone,
 #endif
 
+testcases/network/rpc/rpc-tirpc-full-test-suite:
+1. This needs to be integrated into the build with a Makefile, as it's not
+   getting copied over with the install.
+
 testcases/network/tcp_cmds/perf_lan/Makefile:
 1. There are duplicate sourcefiles because I don't feel confident as far as
    the changes were concerned on the sourcefiles and I was running into
