@@ -43,9 +43,12 @@ cutime=2 cstime=1
 
 testcases/kernel/containers/container_test.sh:
 
-1. The check_for_unshare command was removed because it appeared to only be
-   used at build time, but it appears to be used at runtime too. Maybe the
-   logic that was removed should be added to the testcases that require it as a
+1. The check_for_unshare, check_mqns_enabled, check_pidns_enabled, and
+   check_netns_enabled commands applications were removed because (at first
+   glance) they appeared to only be used for conditional building when users
+   compiled LTP with the old makefile infrastructure. After inspecting the
+   runtime logs though, it appears to be used at runtime too. Maybe the logic
+   that was removed should be added to the testcases that require it as a
    common file?
 
 <<<test_start>>>
@@ -57,6 +60,14 @@ analysis=exit
 /tests/ltp/testcases/bin/container_test.sh: line 13: check_for_unshare: command not found
 Running utsns tests.
 unshare tests
+
+/tests/ltp/testcases/bin/container_test.sh: line 49: check_pidns_enabled: command not found
+Process id namespaces not enabled in kernel.  Not running pidns tests.
+/tests/ltp/testcases/bin/container_test.sh: line 57: check_mqns_enabled: command not found
+Posix message queues or ipc namespaces not enabled in kernel.
+Not running mqns tests.
+/tests/ltp/testcases/bin/container_test.sh: line 66: check_netns_enabled: command not found
+Network namespaces not enabled in kernel.  Not running netns tests.
 
 testcases/kernel/controllers/memcg/functional/Makefile:
 1. For whatever reason this Makefile's are calling up relative CPPFLAGS
