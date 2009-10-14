@@ -41,6 +41,23 @@ duration=1 termination_type=exited termination_id=1 corefile=no
 cutime=2 cstime=1
 <<<test_end>>>
 
+testcases/kernel/containers/container_test.sh:
+
+1. The check_for_unshare command was removed because it appeared to only be
+   used at build time, but it appears to be used at runtime too. Maybe the
+   logic that was removed should be added to the testcases that require it as a
+   common file?
+
+<<<test_start>>>
+tag=Containers stime=1255508072
+cmdline="container_test.sh"
+contacts=""
+analysis=exit
+<<<test_output>>>
+/tests/ltp/testcases/bin/container_test.sh: line 13: check_for_unshare: command not found
+Running utsns tests.
+unshare tests
+
 testcases/kernel/controllers/memcg/functional/Makefile:
 1. For whatever reason this Makefile's are calling up relative CPPFLAGS
    (the old ../../../../include value) for -I$(include), despite the fact that
