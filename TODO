@@ -20,6 +20,27 @@ testcases/commands/ade/Makefile:
    for some apps. Either the tests or the Makefiles need to be fixed, and
    this is a call that needs to be made by someone else including myself.
 
+testcases/commands/unzip/Makefile:
+
+1. This test requires a test zip file in order to function and it isn't
+   generated at build time anymore:
+
+<<<test_start>>>
+tag=unzip01 stime=1255544779
+cmdline="unzip_tests.sh $LTPROOT/testcases/commands/unzip/tst_unzip_file.zip"
+contacts=""
+analysis=exit
+<<<test_output>>>
+stat: cannot stat `/tests/ltp/testcases/commands/unzip/tst_unzip_file.zip': No such file or directory
+/tests/ltp/testcases/bin/31631.H31633 /tests/ltp/testcases/bin
+/tests/ltp/testcases/bin
+unzip01     0  TINFO  :  CLEAN: removing "31631.H31633"
+<<<execution_status>>>
+initiation_status="ok"
+duration=1 termination_type=exited termination_id=1 corefile=no
+cutime=2 cstime=1
+<<<test_end>>>
+
 testcases/kernel/controllers/memcg/functional/Makefile:
 1. For whatever reason this Makefile's are calling up relative CPPFLAGS
    (the old ../../../../include value) for -I$(include), despite the fact that
