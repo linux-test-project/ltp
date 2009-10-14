@@ -68,6 +68,31 @@ testcases/misc/crash/crash02.c:
       SYS_clone,
 #endif
 
+testcases/network/multicast/...:
+1. These tests need to be fixed because they use make / install logic in the
+   tests:
+
+<<<test_start>>>
+tag=mc_opts stime=1255502705
+cmdline="export TCsrc=$LTPROOT/testcases/network/multicast/mc_opts; mc_opts"
+contacts=""
+analysis=exit
+<<<test_output>>>
+gethostbyname*: Host name lookup failure
+install: cannot stat `/tests/ltp/opts': No such file or directory
+install: cannot stat `/tests/ltp/opts_e': No such file or directory
+mc_opts: doing /tests/ltp/testcases/bin/mc_opts.
+Running mc_opts opts_e on 
+/tests/ltp/testcases/bin/mc_opts: line 86: /tests/ltp/bin/mc_opts13780/opts: No such file or directory
+mc_opts: doing /tests/ltp/testcases/bin/mc_opts.
+mc_opts: doing /tests/ltp/testcases/bin/mc_opts
+Test Failed: opts  failed
+<<<execution_status>>>
+initiation_status="ok"
+duration=1 termination_type=exited termination_id=1 corefile=no
+cutime=1 cstime=6
+<<<test_end>>>
+
 testcases/network/rpc/rpc-tirpc-full-test-suite:
 1. This needs to be integrated into the build with a Makefile, as it's not
    getting copied over with the install.
