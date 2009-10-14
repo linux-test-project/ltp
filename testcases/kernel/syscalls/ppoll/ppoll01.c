@@ -106,6 +106,8 @@ extern void cleanup() {
         tst_exit();
 }
 
+void sighandler(int sig);       /* signals handler function for the test */
+
 /* Local  Functions */
 /******************************************************************************/
 /*                                                                            */
@@ -126,6 +128,8 @@ extern void cleanup() {
 /******************************************************************************/
 void setup() {
         /* Capture signals if any */
+	signal(SIGINT, &sighandler);
+
         /* Create temporary directories */
         TEST_PAUSE;
         tst_tmpdir();
