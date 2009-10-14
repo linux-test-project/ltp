@@ -242,6 +242,20 @@ testcases/kernel/security/selinux:
 
 Other missing items in an out-of-build-tree configuration:
 
+/tests/ltp/output/power_management_tests-output.log:/tests/ltp/testcases/bin/runpwtests.sh: line 57: check_kv_arch: comman
+d not found
+/tests/ltp/output/power_management_tests-output.log:/tests/ltp/testcases/bin/runpwtests.sh: line 172: get_sched_values: co
+mmand not found
+/tests/ltp/output/power_management_tests-output.log:/tests/ltp/testcases/bin/runpwtests.sh: line 191: check_kv_arch: comma
+nd not found
+/tests/ltp/output/power_management_tests_exclusive-output.log:/tests/ltp/testcases/bin/runpwtests.sh: line 57: check_kv_ar
+ch: command not found
+/tests/ltp/output/power_management_tests_exclusive-output.log:/tests/ltp/testcases/bin/runpwtests.sh: line 172: get_sched_
+values: command not found
+/tests/ltp/output/power_management_tests_exclusive-output.log:/tests/ltp/testcases/bin/runpwtests.sh: line 191: check_kv_a
+rch: command not found
+/tests/ltp/output/tcp_cmds_noexpect-output.log:sendfile01    1  TFAIL  :  Test broken: gethost: command not found
+
 /tests/ltp/output/io_floppy-output.log:sh: stress_floppy: command not found
 /tests/ltp/output/ipv6-output.log:sh: echo601: command not found
 /tests/ltp/output/ipv6-output.log:ftp01       1  TFAIL  :  Test broken: ftp: command not found
