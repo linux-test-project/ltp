@@ -456,9 +456,9 @@ main()
     # If we need, create the output directory
     [ "$ALT_DIR_OUT" -eq 1 ] && \
     {
-        echo "INFO: creating $LTPROOT/output directory"
         [ ! -d $LTPROOT/output ] && \
         {
+           echo "INFO: creating $LTPROOT/output directory"
            mkdir -p $LTPROOT/output || \
            {
                echo "ERROR: failed to create $LTPROOT/output"
