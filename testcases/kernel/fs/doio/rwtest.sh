@@ -1,33 +1,33 @@
 #!/bin/bash
 
 # Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
-# 
+#
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of version 2 of the GNU General Public License as
 # published by the Free Software Foundation.
-# 
+#
 # This program is distributed in the hope that it would be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-# 
+#
 # Further, this software is distributed without any warranty that it is
 # free of the rightful claim of any third person regarding infringement
 # or the like.  Any license provided herein, whether implied or
 # otherwise, applies only to this software file.  Patent licenses, if
 # any, provided herein do not apply to combinations of this program with
 # other software, or any other product whatsoever.
-# 
+#
 # You should have received a copy of the GNU General Public License along
 # with this program; if not, write the Free Software Foundation, Inc., 59
 # Temple Place - Suite 330, Boston MA 02111-1307, USA.
-# 
+#
 # Contact information: Silicon Graphics, Inc., 1600 Amphitheatre Pkwy,
 # Mountain View, CA  94043, or:
-# 
-# http://www.sgi.com 
-# 
-# For further information regarding this notice, see: 
-# 
+#
+# http://www.sgi.com
+#
+# For further information regarding this notice, see:
+#
 # http://oss.sgi.com/projects/GenInfo/NoticeExplan/
 
 #
@@ -59,7 +59,7 @@ help()
 {
 	echo "\
     -c           Cleanup test files created by this invocation on exit.
-                 Default is to leave them.  
+                 Default is to leave them.
     -h           This help - ignore all other options/arguments
     -F		 Only process filenames - does not run iogen & doio.
     -P Places	 Not used
@@ -78,7 +78,7 @@ help()
                  Default is 1.  If -n is non-zero, doio's -k option (use
 		 file locking) is forced.
 
-    files        Files to test on.  File names have the following fomat:
+    files        Files to test on.  File names have the following format:
 		 [ size: ] path
 		 [ free% [ max size ] : ] path
 		 If no size is specified, the files must exist
@@ -86,7 +86,7 @@ help()
                  writea system calls.  If a size is supplied, an attempt to
                  create/grow/shrink path to the desired size will be made.
                  size is an integer which defaults to bytes, but may be
-                 suffixed by 'b', 'k', or 'm' for blocks (4096 byte units), 
+                 suffixed by 'b', 'k', or 'm' for blocks (4096 byte units),
 	         kilobytes (1024 byte units), or megabytes (2^20 byte units).
 
 		 If the size is a percentage, df is used to find how much
@@ -112,7 +112,7 @@ cleanup_and_exit()
 	then
 		if [ -n "$Files_To_Remove" ]
 		then
-			rm -f $Files_To_Remove
+			rm -rf $Files_To_Remove
 		fi
 	fi
 
@@ -304,6 +304,12 @@ do
 	fi
 
 	dir=$(dirname $file)
+	# create directory for file if non-existent
+	if [ ! -d "$dir" ]
+	then
+		mkdir -p $dir
+		Files_To_Remove="$Files_To_Remove $dir"
+	fi
 	size=${f%%:*}
 	if [[ $size = *%* ]]
 	then
@@ -326,8 +332,8 @@ do
                         if test -h $(which df)
                            then
                                dir=""; dfOpts="";
-                        fi      
-	
+                        fi
+
 			blks=$(df $dfOpts $dir |
 			(while read fs blks used avail cap mountpoint
 			 do
@@ -336,33 +342,38 @@ do
 			 done
 			 echo $b) )
 
-			case $(uname) in
-			Linux)  blks=$( expr $blks / 2 ) ;;
-			esac
+			# check if blks is a number, else set a default value for blks
+			default_sz=1000000
+			if [ $blks -eq $blks 2> /dev/null ]
+			then
 
-			szcache[${#szcache[*]}+1]=$dir
-			szblks[${#szblks[*]}+1]=$blks
-		fi
+				case $(uname) in
+				Linux)  blks=$( expr $blks / 2 ) ;;
+				esac
 
-		max=${size##*\%}
-		if [[ "$max" = "" ]]
-		then
-			max=1000000
-		fi
-		size=${size%%\%*}
+				szcache[${#szcache[*]}+1]=$dir
+				szblks[${#szblks[*]}+1]=$blks
 
-		case $(uname) in
-		IRIX*)
-		  sz=$( perl -le 'print int( '$blks' * '$size' / 100 )' )
-		  ;;
-		*)
-		  sz=$(expr \( $blks '*' $size \) / 100)
-		  ;;
-		esac
+				max=${size##*\%}
+				[ "x$max" = "x" ] && max=$default_sz
+				size=${size%%\%*}
 
-		if [ $sz -gt $max ]
-		then
-			sz=$max
+				case $(uname) in
+				IRIX*)
+				  sz=$( perl -le 'print int( '$blks' * '$size' / 100 )' )
+				  ;;
+				*)
+				  sz=$(expr \( $blks '*' $size \) / 100)
+				  ;;
+				esac
+
+				if [ $sz -gt $max ]
+				then
+					sz=$max
+				fi
+			else
+				sz=$default_sz
+			fi
 		fi
 		f=$sz"b:"$file
 	fi
