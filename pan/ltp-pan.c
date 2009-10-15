@@ -49,7 +49,7 @@
  *			   - added option to create a command file with all failed tests.
  * 	
  */
-/* $Id: ltp-pan.c,v 1.3 2009/06/09 16:14:40 subrata_modak Exp $ */
+/* $Id: ltp-pan.c,v 1.4 2009/10/15 18:45:55 yaberauneya Exp $ */
 
 #include <errno.h>
 #include <string.h>
@@ -337,6 +337,11 @@ main(int argc, char **argv)
 
     /* a place to store the pgrps we're watching */
     running = (struct tag_pgrp *)malloc((keep_active + 1) * sizeof(struct tag_pgrp));
+    if (running == NULL) {
+        fprintf(stderr, "pan(%s): Failed to allocate memory: %s\n", panname,
+                strerror(errno));
+	exit(2);
+    }
     memset(running, 0, keep_active * sizeof(struct tag_pgrp));
     running[keep_active].pgrp = -1;	/* end sentinel */
 
@@ -397,7 +402,7 @@ main(int argc, char **argv)
     if (outputfilename) {
 	if (!freopen(outputfilename, "a+", stdout)) {
 	    fprintf(stderr,
-		    "pan(%s): Error %s (%d) openning output file '%s'\n",
+		    "pan(%s): Error %s (%d) opening output file '%s'\n",
 		    panname, strerror(errno), errno, outputfilename);
 	    exit(1);
 	}
@@ -743,7 +748,7 @@ check_pids(struct tag_pgrp *running, int *num_active, int keep_active,
 							w);
 			}
 
-				fflush(logfile);
+			fflush(logfile);
 		}
 
 		if ((failcmdfile != NULL) && (w !=0)) {
