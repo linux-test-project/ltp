@@ -44,8 +44,10 @@
 #include <errno.h>
 #include <test.h>
 #include <usctest.h>
+#include "compat_16.h"
 
-char *TCID = "getuid03";
+
+TCID_DEFINE(getuid03);
 int TST_TOTAL = 1;
 extern int Tst_count;
 
@@ -72,7 +74,7 @@ int main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		TEST(getuid());
+		TEST(GETUID());
 
 		if (TEST_RETURN < 0) {
 			tst_brkm(TBROK, cleanup, "This should never happen");
@@ -84,6 +86,12 @@ int main(int ac, char **av)
 			if (pwent == NULL) {
 				tst_resm(TFAIL, "getuid() returned unexpected "
 					 "value %d", TEST_RETURN);
+			} else if (!UID_SIZE_CHECK(pwent->pw_uid)) {
+				tst_brkm(TBROK,
+					 cleanup,
+					 "uid(%d) is too large for testing getuid16",
+					 TEST_RETURN);
+			  
 			} else {
 				if (pwent->pw_uid != TEST_RETURN) {
 					tst_resm(TFAIL, "getpwuid() value, %d, "
