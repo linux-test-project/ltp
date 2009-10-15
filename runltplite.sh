@@ -137,9 +137,9 @@ main()
     
         l)      
 
-            echo "INFO: creating $LTPROOT/results directory"
             [ ! -d $LTPROOT/results ] && \
             {
+               echo "INFO: creating $LTPROOT/results directory"
                mkdir -p $LTPROOT/results || \
                {
                    echo "ERROR: failed to create $LTPROOT/results"
