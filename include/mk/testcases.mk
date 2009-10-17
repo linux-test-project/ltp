@@ -22,9 +22,25 @@
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
+TKI_DIR		:= testcases/kernel/include
+
+LSN_H		:= $(abs_top_builddir)/$(TKI_DIR)/linux_syscall_numbers.h
+
+LIBLTP_DIR	:= $(abs_top_builddir)/lib
+
+LIBLTP		:= $(LIBLTP_DIR)/libltp.a
+
+$(LIBLTP): $(LIBLTP_DIR)
+	$(MAKE) -C "$^" -f "$(abs_top_srcdir)/lib/Makefile" all
+
+$(LSN_H): $(abs_top_builddir)/$(TKI_DIR)
+	$(MAKE) -C "$^" -f "$(abs_top_srcdir)/$(TKI_DIR)/Makefile" all
+
+BUILD_DEPS	:= $(LIBLTP) $(LSN_H)
+
 # For linux_syscall_numbers.h
-CPPFLAGS		+= -I$(abs_top_builddir)/testcases/kernel/include
+CPPFLAGS	+= -I$(abs_top_builddir)/$(TKI_DIR)
 
-INSTALL_DIR		:= testcases/bin
+INSTALL_DIR	:= testcases/bin
 
-LDLIBS			+= -lltp
+LDLIBS		+= -lltp

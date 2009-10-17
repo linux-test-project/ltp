@@ -57,7 +57,7 @@ $(eval $(get_make_dirs))
 $(SUBDIRS): %:
 	mkdir -m 00755 -p "$@"
 
-trunk-all: $(MAKE_TARGETS)
+trunk-all: $(BUILD_DEPS) | $(MAKE_TARGETS)
 
 trunk-clean:: | $(SUBDIRS)
 	$(if $(strip $(CLEAN_TARGETS)),$(RM) -f $(CLEAN_TARGETS))
