@@ -16,6 +16,9 @@ AM_CONDITIONAL(CROSS_COMPILATION, test x$cross_compiling = xyes)
 AC_CANONICAL_HOST
 
 AC_PROG_CC
+# <= autoconf 2.61 doesn't have AC_PROG_AR, but 2.63 has it. Not sure about
+# 2.62.
+AC_DEFUN([AC_PROG_AR], [AC_CHECK_TOOL(AR, ar, :)])
 AC_PROG_AR
 AC_PROG_LEX
 AC_PROG_RANLIB
