@@ -2,6 +2,7 @@ vmsplice 25
 splice 232
 tee 280
 openat 284
+ppoll 298
 mkdirat (__NR_openat + 1)
 mknodat (__NR_openat + 2)
 fchownat (__NR_openat + 3)

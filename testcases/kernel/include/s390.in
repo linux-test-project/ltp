@@ -14,6 +14,7 @@ symlinkat (__NR_openat + 9)
 readlinkat (__NR_openat + 10)
 fchmodat (__NR_openat + 11)
 faccessat (__NR_openat + 12)
+ppoll 302
 splice 306
 tee 308
 vmsplice 309

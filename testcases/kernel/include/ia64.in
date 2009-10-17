@@ -30,6 +30,7 @@ symlinkat 1290
 readlinkat 1291
 fchmodat 1292
 faccessat 1293
+ppoll 1295
 splice 1297
 tee 1301
 vmsplice 1302
