@@ -26,7 +26,7 @@
 # Generate a set of basic targets (all, clean, install) for a leaf directory
 # (no subdirectories).
 #
-# $(BUILD_DEPS)			: What should we execute beforehand as a
+# $(MAKE_DEPS)			: What should we execute beforehand as a
 #				  dependency of $(MAKE_TARGETS)?
 #
 # $(INSTALL_FILES) -> install
@@ -92,7 +92,7 @@
 
 .PHONY: all clean install
 
-all: $(BUILD_DEPS) | $(MAKE_TARGETS)
+all: $(MAKE_DEPS) | $(MAKE_TARGETS)
 
 clean::
 	-$(RM) -f $(CLEAN_TARGETS)

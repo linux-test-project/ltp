@@ -36,7 +36,7 @@ $(LIBLTP): $(LIBLTP_DIR)
 $(LSN_H): $(abs_top_builddir)/$(TKI_DIR)
 	$(MAKE) -C "$^" -f "$(abs_top_srcdir)/$(TKI_DIR)/Makefile" all
 
-BUILD_DEPS	:= $(LIBLTP) $(LSN_H)
+MAKE_DEPS	:= $(LIBLTP) $(LSN_H)
 
 # For linux_syscall_numbers.h
 CPPFLAGS	+= -I$(abs_top_builddir)/$(TKI_DIR)
