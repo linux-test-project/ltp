@@ -42,6 +42,7 @@
 #include <sys/socket.h>
 #include <sys/file.h>
 #include <sys/signal.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 #include <netinet/in_systm.h>
@@ -83,6 +84,7 @@ int nwrite;
 /*
  * 			M A I N
  */
+int
 main(argc, argv)
 char *argv[];
 {
@@ -193,6 +195,7 @@ char *argv[];
 				nreceived++;
 		}
 	}
+	return 0;
 }
 
 echopkt(datalen,npackets)
