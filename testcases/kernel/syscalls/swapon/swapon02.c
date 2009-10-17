@@ -89,10 +89,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
-#include <sys/swap.h>
-#ifdef OLDER_DISTRO_RELEASE
-#include <linux/swap.h>
-#endif
 #include <fcntl.h>
 #include <pwd.h>
 #include <string.h>
@@ -100,6 +96,13 @@
 #include <signal.h>
 #include "test.h"
 #include "usctest.h"
+#include "config.h"
+#include <sys/swap.h>
+#if defined(HAVE_OLD_SWAPONOFF)
+#include <linux/swap.h>
+#elif ! defined(HAVE_NEW_SWAPONOFF)
+#error "Cannot determine what copy of swapon/swapoff you are using."
+#endif
 
 #ifndef OLDER_DISTRO_RELEASE
 #define MAX_SWAPFILES 32

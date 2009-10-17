@@ -18,11 +18,12 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 # Garrett Cooper, July 2009
+# Cyril Hrubis, October 2009
 #
 
 top_srcdir 		?= ../../../../..
 
-include $(top_srcdir)/include/mk/env_pre.mk
+include $(top_srcdir)/include/mk/testcases.mk
 
 LDLIBS			+= -lm -lcontrollers
 

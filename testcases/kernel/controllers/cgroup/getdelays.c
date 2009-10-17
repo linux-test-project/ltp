@@ -25,17 +25,18 @@
 #include <linux/types.h>
 #include "config.h"
 
-#if HAVE_LINUX_GENETLINK_H
+#ifdef HAVE_LINUX_GENETLINK_H
 #include <linux/genetlink.h>
 #endif
-#if HAVE_LINUX_TASKSTATS_H
+#ifdef HAVE_LINUX_TASKSTATS_H
 #include <linux/taskstats.h>
 #endif
 #ifdef HAVE_LINUX_CGROUPSTATS_H
 #include <linux/cgroupstats.h>
 #endif
 
-#if HAVE_LINUX_GENETLINK_H
+#if defined(HAVE_LINUX_GENETLINK_H) && defined(HAVE_LINUX_TASKSTATS_H)
+
 /*
  * Generic macros for dealing with netlink sockets. Might be duplicated
  * elsewhere. It is recommended that commercial grade applications use
@@ -51,7 +52,6 @@
 		fprintf(stderr, fmt, ##arg);	\
 		exit(code);			\
 	} while (0)
-#endif
 
 int done;
 int rcvbufsz;
@@ -73,14 +73,6 @@ __u64 stime, utime;
 /* Maximum number of cpus expected to be specified in a cpumask */
 #define MAX_CPUS	32
 
-#if HAVE_LINUX_GENETLINK_H
-struct msgtemplate {
-	struct nlmsghdr n;
-	struct genlmsghdr g;
-	char buf[MAX_MSG_SIZE];
-};
-#endif
-
 char cpumask[100+6*MAX_CPUS];
 
 static void usage(void)
@@ -94,7 +86,12 @@ static void usage(void)
 	fprintf(stderr, "  -C: container path\n");
 }
 
-#if HAVE_LINUX_GENETLINK_H
+struct msgtemplate {
+	struct nlmsghdr n;
+	struct genlmsghdr g;
+	char buf[MAX_MSG_SIZE];
+};
+
 /*
  * Create a raw netlink socket and bind
  */
@@ -200,52 +197,49 @@ int get_family_id(int sd)
 	}
 	return id;
 }
-#endif
 
-#if HAVE_LINUX_TASKSTATS_H
 void print_delayacct(struct taskstats *t)
 {
 	printf("\n\nCPU   %15s%15s%15s%15s\n"
-	       "      %15llu%15llu%15llu%15llu\n"
-	       "IO    %15s%15s\n"
-	       "      %15llu%15llu\n"
-	       "SWAP  %15s%15s\n"
-	       "      %15llu%15llu\n"
-	       "RECLAIM  %12s%15s\n"
+		"      %15llu%15llu%15llu%15llu\n"
+		"IO    %15s%15s\n"
+		"      %15llu%15llu\n"
+		"SWAP  %15s%15s\n"
+		"      %15llu%15llu\n"
+		"RECLAIM  %12s%15s\n"
 #ifdef HAVE_STRUCT_TASKSTATS_FREEPAGES_COUNT
-	       "      %15llu%15llu\n"
+		 "      %15llu%15llu\n"
 #endif
-	       , "count", "real total", "virtual total", "delay total",
-	       (unsigned long long)t->cpu_count,
-	       (unsigned long long)t->cpu_run_real_total,
-	       (unsigned long long)t->cpu_run_virtual_total,
-	       (unsigned long long)t->cpu_delay_total,
-	       "count", "delay total",
-	       (unsigned long long)t->blkio_count,
-	       (unsigned long long)t->blkio_delay_total,
-	       "count", "delay total",
-	       (unsigned long long)t->swapin_count,
-	       (unsigned long long)t->swapin_delay_total,
-	       "count", "delay total"
+		, "count", "real total", "virtual total", "delay total",
+		(unsigned long long)t->cpu_count,
+		(unsigned long long)t->cpu_run_real_total,
+		(unsigned long long)t->cpu_run_virtual_total,
+		(unsigned long long)t->cpu_delay_total,
+		"count", "delay total",
+		(unsigned long long)t->blkio_count,
+		(unsigned long long)t->blkio_delay_total,
+		"count", "delay total",
+		(unsigned long long)t->swapin_count,
+		(unsigned long long)t->swapin_delay_total,
+		"count", "delay total"
 #ifdef HAVE_STRUCT_TASKSTATS_FREEPAGES_COUNT
-	       , (unsigned long long)t->freepages_count,
-	       (unsigned long long)t->freepages_delay_total
+		, (unsigned long long)t->freepages_count,
+		(unsigned long long)t->freepages_delay_total
 #endif
-	       );
+		);
 }
 
 void task_context_switch_counts(struct taskstats *t)
 {
 #ifdef HAVE_STRUCT_TASKSTATS_NVCSW
 	printf("\n\nTask   %15s%15s\n"
-	       "       %15llu%15llu\n",
-	       "voluntary", "nonvoluntary",
-	       (unsigned long long)t->nvcsw, (unsigned long long)t->nivcsw);
+		"	%15llu%15llu\n",
+		"voluntary", "nonvoluntary",
+		(unsigned long long)t->nvcsw, (unsigned long long)t->nivcsw);
 #endif
 }
 
 #ifdef HAVE_LINUX_CGROUPSTATS_H
-
 void print_cgroupstats(struct cgroupstats *c)
 {
 	printf("sleeping %llu, blocked %llu, running %llu, stopped %llu, "
@@ -255,7 +249,6 @@ void print_cgroupstats(struct cgroupstats *c)
 		(unsigned long long)c->nr_stopped,
 		(unsigned long long)c->nr_uninterruptible);
 }
-
 #endif
 
 void print_ioacct(struct taskstats *t)
@@ -268,12 +261,9 @@ void print_ioacct(struct taskstats *t)
 		(unsigned long long)t->cancelled_write_bytes);
 #endif
 }
-#endif
 
 int main(int argc, char *argv[])
 {
-
-#if HAVE_LINUX_GENETLINK_H
 	int c, rc, rep_len, aggr_len, len2, cmd_type;
 	__u16 id;
 	__u32 mypid;
@@ -408,22 +398,22 @@ int main(int argc, char *argv[])
 	}
 
 	if (containerset) {
-#ifdef HAVE_LINUX_CGROUPSTATS_H
 		cfd = open(containerpath, O_RDONLY);
 		if (cfd < 0) {
 			perror("error opening container file");
 			exit(1);
 		}
+#ifdef HAVE_LINUX_CGROUPSTATS_H
 		rc = send_cmd(nl_sd, id, mypid, CGROUPSTATS_CMD_GET,
 			      CGROUPSTATS_CMD_ATTR_FD, &cfd, sizeof(__u32));
+#else
+		errno = ENOSYS;
+		rc = -1;
+#endif
 		if (rc < 0) {
 			perror("error sending cgroupstats command");
 			exit(1);
 		}
-#else
-			printf("Header linux/cgroupstat.h was missing during compilation,"
-			       "you may have old or incomplete kernel-headers.\n");
-#endif
 	}
 	if (!maskset && !tid && !containerset) {
 		usage();
@@ -450,7 +440,7 @@ int main(int argc, char *argv[])
 		}
 
 		PRINTF("nlmsghdr size=%zu, nlmsg_len=%d, rep_len=%d\n",
-		       sizeof(struct nlmsghdr), msg.n.nlmsg_len, rep_len);
+			sizeof(struct nlmsghdr), msg.n.nlmsg_len, rep_len);
 
 
 		rep_len = GENLMSG_PAYLOAD(&msg.n);
@@ -507,7 +497,7 @@ int main(int argc, char *argv[])
 					na = (struct nlattr *) ((char *) na + len2);
 				}
 				break;
-#ifdef HAVE_LINUX_CGROUPSTATS_H
+#if HAVE_LINUX_CGROUPSTATS_H
 			case CGROUPSTATS_TYPE_CGROUP_STATS:
 				print_cgroupstats(NLA_DATA(na));
 				break;
@@ -536,8 +526,10 @@ done:
 	if (cfd)
 		close(cfd);
 	return 0;
-#else
-	printf("System doesn't have netlink support.\n");
-	return 1;
-#endif
 }
+#else
+int main (void) {
+	printf("System doesn't have needed netlink / taskstats support.\n");
+	return 1;
+}
+#endif

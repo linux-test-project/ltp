@@ -16,7 +16,6 @@ dnl along with this program;  if not, write to the Free Software
 dnl Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 dnl
 
-
 AC_DEFUN([LTP_CHECK_TASKSTATS],
 _LTP_CHECK_TASKSTATS_FREEPAGES
 )dnl
@@ -29,12 +28,12 @@ dnl in commit 016ae219 in July 2008
 dnl
 
 AC_DEFUN([_LTP_CHECK_TASKSTATS_FREEPAGES],[
-AC_CHECK_HEADERS(linux/taskstats.h,[
-	LINUX_TASKSTATS_HEADER=yes
-	AC_CHECK_MEMBERS([struct taskstats.freepages_count, struct taskstats.nvcsw, struct taskstats.read_bytes],[],[],[dnl
-#include <asm/types.h>
-#include <linux/types.h>
+AC_CHECK_HEADERS([linux/taskstats.h],[
+    AC_CHECK_MEMBERS([struct taskstats.freepages_count, struct taskstats.nvcsw, struct taskstats.read_bytes],
+                     [],[],[dnl
 #include <linux/taskstats.h>
 ]) dnl AC_CHECK_MEMBERS
-]) dnl AC_CHECK_HEADERS
+],[],[
+#include <linux/types.h>
+]) dnl AC_CHECK_HEADERS_ONCE
 ]) dnl _LTP_CHECK_TASKSTATS_FREEPAGES

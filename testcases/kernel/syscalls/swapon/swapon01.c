@@ -74,11 +74,17 @@
  *****************************************************************************/
 
 #include <unistd.h>
+#include <errno.h>
+#include <stdlib.h>
 #include "test.h"
 #include "usctest.h"
-#include <errno.h>
+#include "config.h"
 #include <sys/swap.h>
-#include <stdlib.h>
+#if defined(HAVE_OLD_SWAPONOFF)
+#include <linux/swap.h>
+#elif ! defined(HAVE_NEW_SWAPONOFF)
+#error "Cannot determine what copy of swapon/swapoff you are using."
+#endif
 
 static void setup();
 static void cleanup();

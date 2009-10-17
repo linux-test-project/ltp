@@ -3,6 +3,8 @@ timer_settime 241
 timer_delete 244
 clock_settime 245
 clock_gettime 246
+get_mempolicy 269
+set_mempolicy 270
 splice 283
 tee 284
 vmsplice 285

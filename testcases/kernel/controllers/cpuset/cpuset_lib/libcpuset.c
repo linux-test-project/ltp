@@ -47,6 +47,8 @@
 #include "bitmask.h"
 #include "cpuset.h"
 #include "common.h"
+#include "test.h"
+#include "linux_syscall_numbers.h"
 
 /* Bump version, and update Change History, when libcpuset API changes */
 #define CPUSET_VERSION 3
