@@ -8,7 +8,7 @@ test()
     res=${1}
 
     ./fs_perms ${arg} ${res}
-    if [ $? -ne ${res} ]; then
+    if [ $? -ne 0 ]; then
        Code=$((Code + 1))
     fi
 }

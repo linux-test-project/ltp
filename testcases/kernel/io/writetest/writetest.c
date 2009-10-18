@@ -43,6 +43,8 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "test.h"
+
 #define BLOCKSIZE (1024*1024)
 #define FILE_OUT    "fileout"
 #define FILE_MODE   0644
@@ -52,22 +54,8 @@ int Verbosity = 0;
 int DefaultSeed = 0;
 char Filename[MAX_FILENAME_LEN] = FILE_OUT;
 off_t NumBlocks = 1;
-const char *ProgramName = "writetest";
-
-
-inline void verbose(int level, const char *fmt, ...)
-    __attribute__((format (printf, 2, 3)));
-
-inline void verbose(int level, const char *fmt, ...)
-{
-    va_list ap;
-    if( Verbosity >= level ) {
-        va_start(ap, fmt);
-        vprintf(fmt, ap);
-        fflush(stdout);
-        va_end(ap);
-    }
-}
+char *TCID = "writetest";
+int TST_TOTAL = 2;
 
 void buf_init(void )
 {
@@ -95,12 +83,13 @@ int write_file(off_t num_blocks, const char *filename)
 
     fd = open(filename, O_RDWR|O_CREAT|O_TRUNC|O_LARGEFILE, FILE_MODE);
     if( fd < 0 ) {
-        perror(ProgramName);
+        perror(TCID);
         return(-1);
     }
     for(block=0; block<num_blocks; block++) {
         int rv;
-        verbose(3, "Block: %lld/%lld  (%3lld%%)\r", (long long int)block, (long long int)num_blocks, (long long int)(block*100/num_blocks));
+        if (Verbosity > 2)
+			tst_resm(TINFO, "Block: %lld/%lld  (%3lld%%)\r", (long long int)block, (long long int)num_blocks, (long long int)(block*100/num_blocks));
         buf_fill(buf);
         rv = write(fd, buf, BLOCKSIZE);
         if( rv != BLOCKSIZE ) {
@@ -108,8 +97,8 @@ int write_file(off_t num_blocks, const char *filename)
             break;
         }
     }
-    verbose(3, "Block: %lld/%lld  (%3lld%%)\r", (long long int)block, (long long int)num_blocks, (long long int)(block*100/num_blocks));
-    verbose(3, "\n");
+    if (Verbosity > 2)
+    	tst_resm(TINFO, "Block: %lld/%lld  (%3lld%%)\r", (long long int)block, (long long int)num_blocks, (long long int)(block*100/num_blocks));
     close(fd);
     return(ret);
 }
@@ -124,13 +113,14 @@ int verify_file(off_t num_blocks, const char *filename)
 
     fd = open(filename, O_RDONLY);
     if( fd < 0 ) {
-        perror(ProgramName);
+        perror(TCID);
         return(-1);
     }
     for(block=0; block<num_blocks; block++) {
         int rv;
         int n;
-        verbose(3, "Block: %lld/%lld  (%3lld%%)\r", (long long int)block, (long long int)num_blocks, (long long int)(block*100/num_blocks));
+        if (Verbosity > 2)
+        	tst_resm(TINFO, "Block: %lld/%lld  (%3lld%%)\r", (long long int)block, (long long int)num_blocks, (long long int)(block*100/num_blocks));
         buf_fill(buf_actual);
         rv = read(fd, buf_read, BLOCKSIZE);
         if( rv != BLOCKSIZE ) {
@@ -142,22 +132,22 @@ int verify_file(off_t num_blocks, const char *filename)
             ba = buf_actual[n] & 0xff;
             br = buf_read[n] & 0xff;
             if( ba != br ) {
-                verbose(1, "Mismatch: block=%lld +%d bytes offset=%lld read: %02xh actual: %02xh\n",
+                if (Verbosity > 2)
+                	tst_resm(TINFO, "Mismatch: block=%lld +%d bytes offset=%lld read: %02xh actual: %02xh\n",
                     (long long int)block, n, (long long int)((block*BLOCKSIZE)+n), br, ba);
                 ret++;
             }
         }
     }
     close(fd);
-
-    verbose(3, "Block: %lld/%lld  (%3lld%%)\r", (long long int)block, (long long int)num_blocks, (long long int)(block*100/num_blocks));
-    verbose(3, "\n");
+    if (Verbosity > 2)
+    	tst_resm(TINFO, "Block: %lld/%lld  (%3lld%%)\r", (long long int)block, (long long int)num_blocks, (long long int)(block*100/num_blocks));
     return(ret);
 }
 
 void usage(void)
 {
-    printf("%s [-v] [-b blocks] [-s seed] [-o filename]\n", ProgramName);
+    printf("%s [-v] [-b blocks] [-s seed] [-o filename]\n", TCID);
     printf(
         "\n"
         "   -v          - increase verbosity level\n"
@@ -170,8 +160,8 @@ void usage(void)
 void parse_args(int argc, char **argv)
 {
     int c;
-    ProgramName = argv[0];
-   
+    TCID = argv[0];
+
     while(1) {
         int option_index = 0;
         static struct option long_options[] = {
@@ -206,39 +196,49 @@ void parse_args(int argc, char **argv)
     }
 }
 
+void setup()
+{
+    tst_tmpdir();
+
+}
+
+void cleanup(void)
+{
+    tst_rmdir();
+    tst_exit();
+}
+
 int main(int argc, char *argv[])
 {
     int rv;
-    int status = 0;
+
+    setup();
 
     DefaultSeed = time(NULL);
     parse_args(argc, argv);
-    verbose(2, "Blocks:       %lld\n", (long long int)NumBlocks);
-    verbose(2, "Seed:         %d\n", DefaultSeed);
-    verbose(2, "Output file: '%s'\n", Filename);
+    tst_resm(TINFO, "Blocks:       %lld\n", (long long int)NumBlocks);
+    tst_resm(TINFO, "Seed:         %d\n", DefaultSeed);
+    tst_resm(TINFO, "Output file: '%s'\n", Filename);
 
-    verbose(1, "Writing %lld blocks of %d bytes to '%s'\n", (long long int)NumBlocks, BLOCKSIZE, Filename);
+    tst_resm(TINFO, "Writing %lld blocks of %d bytes to '%s'\n", (long long int)NumBlocks, BLOCKSIZE, Filename);
     buf_init();
     rv = write_file(NumBlocks, Filename);
     if( rv == 0 ) {
-        verbose(1, "Write: Success\n");
+        tst_resm(TPASS, "Write: Success");
     } else {
-        verbose(1, "Write: Failure\n");
-        status = rv;
+        tst_resm(TFAIL, "Write: Failure");
     }
 
-    verbose(1, "Verifing %lld blocks in '%s'\n", (long long int)NumBlocks, Filename);
+    tst_resm(TINFO, "Verifying %lld blocks in '%s'\n", (long long int)NumBlocks, Filename);
     buf_init();
     rv = verify_file(NumBlocks, Filename);
     if( rv == 0 ) {
-        verbose(1, "Verify: Success\n");
+        tst_resm(TPASS ,"Verify: Success\n");
     } else {
-        verbose(1, "Verify: Failure\n");
-        status = rv;
-    }
-    if( rv > 0 ) {
-        verbose(1, "Total mismatches: %d bytes\n", rv);
+        tst_resm(TFAIL, "Verify: Failure");
+        tst_resm(TINFO, "Total mismatches: %d bytes\n", rv);
     }
 
-    return status;
+    cleanup();
+    return 0;
 }

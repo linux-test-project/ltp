@@ -52,7 +52,7 @@ $trace_logic
 #-----------------------------------------------------------------------
 TC=${TC:=fs_di}
 TCbin=${TCbin:=`pwd`}
-TCtmp=${TCtmp:=/tmp/$TC$$}
+TCtmp=${TCtmp:=$TMPDIR/$TC$$}
 export PATH=$PATH:$TCbin:../../../bin
 export TCID=$TC
 export TST_TOTAL=1

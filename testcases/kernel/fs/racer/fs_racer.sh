@@ -29,7 +29,7 @@
 
 MAX_FILES=20
 CLEAR_SECS=30
-DIR="race"
+DIR="$TMPDIR/race"
 
 execute_test()
 {

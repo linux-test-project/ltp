@@ -45,11 +45,15 @@ int TST_TOTAL = 1;
 static int testsetup(mode_t mode, int cuserId, int cgroupId)
 {
 	int ret;
+	char cmd_str[256];
+
+	sprintf(cmd_str, "cp %s/testx test.file", getcwd(NULL, 0));
+	tst_tmpdir();
 
 	ret = unlink("test.file");
 	if (ret && errno != ENOENT)
 		goto done;
-	ret = system("cp testx test.file");
+	ret = system(cmd_str);
 	if (ret)
 		goto done;
 	ret = chmod("test.file", mode);
@@ -61,17 +65,23 @@ static int testsetup(mode_t mode, int cuserId, int cgroupId)
 	return ret;
 }
 
+void cleanup(void)
+{
+	tst_rmdir();
+	tst_exit();
+}
+
 static int testfperm(int userId, int groupId, char *fperm)
 {
 	/* SET CURRENT USER/GROUP PERMISSIONS */
 	if (setegid(groupId)) {
-		tst_brkm(TBROK, NULL, "could not setegid to %d: %s", groupId, strerror(errno));
+		tst_brkm(TBROK, cleanup, "could not setegid to %d: %s", groupId, strerror(errno));
 		seteuid(0);
 		setegid(0);
 		return -1;
 	}
 	if (seteuid(userId)) {
-		tst_brkm(TBROK, NULL, "could not seteuid to %d: %s", userId, strerror(errno));
+		tst_brkm(TBROK, cleanup, "could not seteuid to %d: %s", userId, strerror(errno));
 		seteuid(0);
 		setegid(0);
 		return -1;
@@ -130,13 +140,13 @@ int main(int argc, char *argv[])
 
 	result = testsetup(mode, cuserId, cgroupId);
 	if (result) {
-		tst_brkm(TBROK, tst_exit, "testsetup() failed: %s", strerror(errno));
-		return result;
+		tst_brkm(TBROK, cleanup, "testsetup() failed: %s", strerror(errno));
 	}
 
 	result = testfperm(userId, groupId, fperm);
 	unlink("test.file");
 	tst_resm(exresult == result ? TPASS : TFAIL, "%c a %03o file owned by (%d/%d) as user/group(%d/%d)",
 		fperm[0], mode, cuserId, cgroupId, userId, groupId);
-	return result;
+	cleanup();
+	return 0;
 }

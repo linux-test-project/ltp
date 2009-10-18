@@ -41,7 +41,10 @@ export TCID=quota_remount_test01
 export TST_TOTAL=1
 export TST_COUNT=0
 
-TMPDIR=/tmp
+if [ -z $TMPDIR ]
+then
+	TMPDIR=/tmp
+fi
 MNTDIR=$TMPDIR/mnt
 
 uname -r | {
