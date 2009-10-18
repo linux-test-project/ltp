@@ -70,6 +70,18 @@ extern char *TESTDIR;           /* temporary dir created by tst_tmpdir() */
 char *TCID = "clock_nanosleep01";  /* Test program identifier.*/
 int  testno;
 int  TST_TOTAL = 1;                   /* total number of tests in this file.   */
+struct sigaction act;
+
+/*
+ * sighandler()
+ */
+void sighandler(int sig)
+{
+        if (sig == SIGINT)
+                return;
+        // NOTREACHED
+        return;
+}
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -118,6 +130,10 @@ extern void cleanup() {
 /******************************************************************************/
 void setup() {
         /* Capture signals if any */
+	act.sa_handler = sighandler;
+	sigfillset(&act.sa_mask);
+	sigaction(SIGINT, &act, NULL);
+
         /* Create temporary directories */
         TEST_PAUSE;
         tst_tmpdir();
@@ -353,17 +369,6 @@ EXIT:
         return result;
 }
 
-/*
- * sighandler()
- */
-void sighandler(int sig)
-{
-        if (sig == SIGINT)
-                return;
-        // NOTREACHED
-        return;
-}
-
 
 /*
  * usage()
@@ -437,7 +442,6 @@ int main(int ac, char **av) {
 		/*
 		* Execute test
          	*/
-		TEST(signal(SIGINT, sighandler));
 	        for (i = 0; i < (int)(sizeof(tcase) / sizeof(tcase[0])); i++) {
         	        int ret;
 	                tst_resm(TINFO,"(case%02d) START", i);

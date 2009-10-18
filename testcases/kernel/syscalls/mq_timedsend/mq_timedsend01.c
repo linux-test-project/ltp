@@ -77,6 +77,18 @@ extern char *TESTDIR;           /* temporary dir created by tst_tmpdir() */
 char *TCID = "mq_timedsend01";  /* Test program identifier.*/
 int  testno;
 int  TST_TOTAL = 1;                   /* total number of tests in this file.   */
+struct sigaction act;
+
+/*
+ * sighandler()
+ */
+void sighandler(int sig)
+{
+        if (sig == SIGINT)
+                return;
+        // NOTREACHED
+        return;
+}
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -124,7 +136,12 @@ extern void cleanup() {
 /*                                                                            */
 /******************************************************************************/
 void setup() {
+	
         /* Capture signals if any */
+	act.sa_handler = sighandler;
+	sigfillset(&act.sa_mask);
+
+	sigaction(SIGINT, &act, NULL);
         /* Create temporary directories */
         TEST_PAUSE;
         tst_tmpdir();
@@ -282,6 +299,8 @@ static struct test_case tcase[] = {
                 .ttype          = SEND_SIGINT,
                 .len            = 16,
                 .ret            = -1,
+                .sec            = 3,
+                .nsec           = 0,
                 .err            = EINTR,
         },
 };
@@ -303,7 +322,7 @@ static int do_test(struct test_case *tc)
 	int oflag;
         int i, rc, cmp_ok = 1, fd = -1;
         char smsg[MAX_MSGSIZE], rmsg[MAX_MSGSIZE];
-        struct timespec ts, *p_ts;
+        struct timespec ts = {0,0};
         pid_t pid = 0;
         unsigned prio;
 
@@ -343,7 +362,7 @@ static int do_test(struct test_case *tc)
                 }
                 if (tc->ttype == FULL_QUEUE || tc->ttype == SEND_SIGINT) {
                         for (i = 0; i < MAX_MSG; i++) {
-                                TEST(rc = mq_timedsend(fd, smsg, tc->len, 0, NULL));
+                                TEST(rc = mq_timedsend(fd, smsg, tc->len, 0, &ts));
                                 if (rc < 0) {
                  	   		tst_resm(TFAIL, "mq_timedsend failed - errno = %d : %s\n",TEST_ERRNO, strerror(TEST_ERRNO));
                                         result = 1;
@@ -372,15 +391,14 @@ static int do_test(struct test_case *tc)
          */
         ts.tv_sec = tc->sec;
         ts.tv_nsec = tc->nsec;
-        p_ts = &ts;
-        if (tc->sec == 0 && tc->nsec == 0)
-                p_ts = NULL;
+	if (tc->sec >= 0 || tc->nsec != 0)
+		ts.tv_sec += time(NULL);
 
         /*
         * Execut test system call
          */
         errno = 0;
-        TEST(sys_ret = mq_timedsend(fd, smsg, tc->len, tc->prio, p_ts));
+        TEST(sys_ret = mq_timedsend(fd, smsg, tc->len, tc->prio, &ts));
         sys_errno = errno;
         if (sys_ret < 0)
                 goto TEST_END;
@@ -388,7 +406,9 @@ static int do_test(struct test_case *tc)
         /*
          * Receive echoed message and compare
          */
-        TEST(rc = mq_timedreceive(fd, rmsg, MAX_MSGSIZE, &prio, NULL));
+	ts.tv_sec = 0;
+	ts.tv_nsec = 0;
+        TEST(rc = mq_timedreceive(fd, rmsg, MAX_MSGSIZE, &prio, &ts));
         if (rc < 0) {
                 tst_resm(TFAIL, "mq_timedreceive failed - errno = %d : %s\n",TEST_ERRNO, strerror(TEST_ERRNO));
                 result = 1;
@@ -420,20 +440,9 @@ EXIT:
                 kill(pid, SIGTERM);
                 wait(&st);
         }
-        exit(result);
+        return result;
 }
 
-
-/*
- * sighandler()
- */
-void sighandler(int sig)
-{
-        if (sig == SIGINT)
-                return;
-        // NOTREACHED
-        return;
-}
 
 
 /*
@@ -507,7 +516,6 @@ int main(int ac, char **av) {
 		/*
         	 * Execute test
         	 */
-        	signal(SIGINT, sighandler);
 
 	        for (i = 0; i < (int)(sizeof(tcase) / sizeof(tcase[0])); i++) {
         	        int ret;

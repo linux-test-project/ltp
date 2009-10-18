@@ -78,6 +78,18 @@ extern char *TESTDIR;           /* temporary dir created by tst_tmpdir() */
 char *TCID = "mq_timedreceive01";  /* Test program identifier.*/
 int  testno;
 int  TST_TOTAL = 1;                   /* total number of tests in this file.   */
+struct sigaction act;
+
+/*
+ * sighandler()
+ */
+void sighandler(int sig)
+{
+        if (sig == SIGINT)
+                return;
+        // NOTREACHED
+        return;
+}
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -106,12 +118,6 @@ extern void cleanup() {
         tst_exit();
 }
 
-/*
- * sighandler()
- */
-void sighandler(int sig)
-{
-}
 
 /* Local  Functions */
 /******************************************************************************/
@@ -132,8 +138,10 @@ void sighandler(int sig)
 /*                                                                            */
 /******************************************************************************/
 void setup() {
-        /* Capture signals if any */
-	signal(SIGINT, sighandler);
+	    /* Capture signals if any */
+        act.sa_handler = sighandler;
+        sigfillset(&act.sa_mask);
+        sigaction(SIGINT, &act, NULL);
         /* Create temporary directories */
         TEST_PAUSE;
         tst_tmpdir();
@@ -284,6 +292,8 @@ static struct test_case tcase[] = {
         { // case13
                 .ttype          = SEND_SIGINT,
                 .len            = 16,
+                .sec            = 3,
+                .nsec           = 0,
                 .ret            = -1,
                 .err            = EINTR,
         },
@@ -306,10 +316,10 @@ static int do_test(struct test_case *tc)
         int sys_ret;
         int sys_errno;
         int result = RESULT_OK;
-	int oflag;
+        int oflag;
         int i, rc, cmp_ok = 1, fd = -1;
         char smsg[MAX_MSGSIZE], rmsg[MAX_MSGSIZE];
-        struct timespec ts, *p_ts = NULL;
+        struct timespec ts = {0,0};
         pid_t pid = 0;
         unsigned prio;
         size_t msg_len;
@@ -376,7 +386,7 @@ switch (tc->ttype) {
         case FD_FILE:
                 break;
         default:
-		TEST(rc = mq_timedsend(fd, smsg, tc->len, tc->prio, p_ts));
+                TEST(rc = mq_timedsend(fd, smsg, tc->len, tc->prio, &ts));
                 if (TEST_RETURN < 0) {
                  	tst_resm(TFAIL, "mq_timedsend failed - errno = %d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
                         result = 1;
@@ -393,19 +403,18 @@ switch (tc->ttype) {
                 msg_len -= 1;
         ts.tv_sec = tc->sec;
         ts.tv_nsec = tc->nsec;
-        p_ts = &ts;
-        if (tc->sec == 0 && tc->nsec == 0)
-                p_ts = NULL;
+        if (tc->sec >= 0 || tc->nsec != 0)
+                ts.tv_sec += time(NULL);
 
 	/*
          * Execute system call
          */
         errno = 0;
-        TEST(sys_ret = mq_timedreceive(fd, rmsg, msg_len, &prio, p_ts));
+        TEST(sys_ret = mq_timedreceive(fd, rmsg, msg_len, &prio, &ts));
         sys_errno = errno;
         if (sys_ret < 0)
                 goto TEST_END;
- 
+
 	 /*
          * Compare received message
          */
@@ -478,8 +487,8 @@ int main(int ac, char **av) {
         };
 
 	progname = strchr(av[0], '/');
-        progname = progname ? progname + 1 : av[0];	
-	
+        progname = progname ? progname + 1 : av[0];
+
         /* parse standard options */
         if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
              tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
@@ -521,7 +530,7 @@ int main(int ac, char **av) {
 	                tst_resm(TINFO,"(case%02d) END => %s", i, (ret == 0) ? "OK" : "NG");
 	                result |= ret;
         	}
-		
+
 		/*
         	 * Check results
          	*/
@@ -539,7 +548,7 @@ int main(int ac, char **av) {
         	}
 
                 }
-        }	
+        }
         cleanup();
 	tst_exit();
 }
