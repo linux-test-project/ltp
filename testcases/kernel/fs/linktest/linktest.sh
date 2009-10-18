@@ -25,19 +25,34 @@
 #  HISTORY     : 
 #	A rewrite of testcases/kernel/fs/linktest.pl
 
-# XXX: Change to a temp dir via mktemp -d.
-cd "${0%/*}"
-
 export TCID=linker01
 export TST_TOTAL=2
 export TST_COUNT=1
 
 if [ $# -ne 2 ]; then
-	tst_res TBROK "" "Usage: $0 {softlink count} {hardlink count}"
-	exit -1
+	tst_res TBROK "" "usage: $0 {softlink count} {hardlink count}"
+	exit 1
 fi
 
-mkdir hlink slink && touch hlink/hfile slink/sfile
+# TMPDIR not specified.
+if [ "x$TMPDIR" = x -o ! -d "$TMPDIR" ] ; then
+
+	if ! TMPDIR=$(mktemp -d) ; then
+		tst_res TBROK "" 'Failed to create $TMPDIR'
+		exit 1
+	fi
+	# We created the directory, so we have the power to delete it as well.
+	trap "rm -Rf '$TMPDIR'" EXIT
+
+# Most likely runltp provided; don't delete $TMPDIR, but instead delete the
+# files under it belonging to this process.
+else
+	trap "rm -Rf '$TMPDIR/[hs]link.$$'" EXIT
+fi
+
+cd "$TMPDIR" || tst_res TBROK "" "Failed to cd to $TMPDIR"
+
+mkdir hlink.$$ slink.$$ && touch hlink.$$/hfile slink.$$/sfile
 
 do_link() {
 	pfix=$1
@@ -49,7 +64,7 @@ do_link() {
 
 	i=0
 
-	cd ${pfix}link
+	cd "${pfix}link.$$"
 	while [ $i -lt $limit ]; do
 		if ! ln ${ln_opts} "$PWD/${pfix}file" ${pfix}file${i}; then
 			: $(( lerrors += 1 ))
@@ -73,4 +88,4 @@ do_link() {
 do_link s "-s" ${1} "Symbolic"
 do_link h   "" ${2} "Hard"
 
-rm -Rf hlink slink
+rm -Rf hlink.$$ slink.$$
