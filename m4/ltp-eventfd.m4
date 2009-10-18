@@ -28,7 +28,6 @@ AH_TEMPLATE(HAVE_IO_SET_EVENTFD,
 [Define to 1 if you have the `io_set_eventfd' function.])
 AC_CHECK_HEADERS(libaio.h,[
 	AC_CHECK_LIB(aio,io_setup,[
-		LIBS="$LIBS -laio"
 		AIO_LIBS="-laio"
 		AC_MSG_CHECKING([io_set_eventfd is defined in aio library or aio header])
 		AC_TRY_LINK([#include <stdio.h>
