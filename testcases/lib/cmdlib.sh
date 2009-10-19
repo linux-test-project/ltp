@@ -35,6 +35,8 @@ fi
 #=============================================================================
 tst_cleanup()
 {
+    # Disable the trap EXIT handler.
+    trap '' EXIT
     # To ensure set -u passes...
     TCtmp=${TCtmp:=}
     tst_resm TINFO "Cleaning up."
