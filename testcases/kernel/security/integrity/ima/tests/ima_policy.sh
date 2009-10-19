@@ -163,10 +163,9 @@ test03()
 RC=0    # Return value from setup, init, and test functions.
 EXIT_VAL=0
 
-. `dirname $0`\/ima_setup.sh
-setup || exit $RC
-
-init || exit $RC
+. $(dirname "$0")/ima_setup.sh
+setup || exit $?
+init || exit $?
 test01 || EXIT_VAL=$RC
 test02 || EXIT_VAL=$RC
 test03 || EXIT_VAL=$RC

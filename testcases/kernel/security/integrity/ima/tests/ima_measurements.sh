@@ -37,15 +37,10 @@ init()
         export TST_COUNT=0
 	RC=0
 
-	# check that sha1sum is installed
-	which sha1sum >/dev/null 2>&1 || RC=$?
-	if [ $RC -ne 0 ]; then
-		tst_brkm TBROK NULL "$TCID: sha1sum not found"
-		return $RC
-	fi
+	exists sha1sum
 
 	# verify using default policy
-	if [ ! -f $IMA_DIR/policy ]; then
+	if [ ! -f "$IMA_DIR/policy" ]; then
 		tst_res TINFO $LTPTMP/imalog.$$ \
 		 "$TCID: not using default policy"
 	fi
@@ -66,7 +61,7 @@ test01()
 	`date` - this is a test file
 	EOF
 	if [ $RC -ne 0 ]; then
-		tst_brkm TBROK $LTPTMP/imalog.$$ \
+		tst_res TBROK $LTPTMP/imalog.$$ "" \
 		 "$TCID: Unable to create test file"
 		return $RC
 	fi
@@ -74,7 +69,7 @@ test01()
 	# Calculating the sha1sum of $LTPTMP/test.txt should add
 	# the measurement to the measurement list.
 	# (Assumes SHA1 IMA measurements.)
-	hash=`cat $LTPIMA/test.txt | sha1sum | sed 's/  -//'`
+	hash=$(sha1sum < "$LTPIMA/test.txt" | sed 's/  -//')
 
 	# Check if the file is measured
 	# (i.e. contained in the ascii measurement list.)
@@ -178,9 +173,10 @@ test03()
 #
 RC=0
 EXIT_VAL=0
-. `dirname $0`\/ima_setup.sh
-setup || exit $RC
-init
+
+. $(dirname "$0")/ima_setup.sh
+setup || exit $?
+init || exit $?
 test01 || EXIT_VAL=$RC
 test02 || EXIT_VAL=$RC
 test03 || EXIT_VAL=$RC

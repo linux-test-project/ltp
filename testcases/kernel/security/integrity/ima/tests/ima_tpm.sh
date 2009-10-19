@@ -37,20 +37,8 @@ init()
 	RC=0
 
 	# verify ima_boot_aggregate is available
-	which ima_boot_aggregate >/dev/null 2>&1 || RC=$?
-	if [ $RC -ne 0 ]; then
-		tst_res TINFO $LTPTMP/imalog.$$ \
-		 "$TCID: ima_tpm.sh test requires openssl-devel, skipping"
-		return $RC
-	fi
+	exists ima_boot_aggregate ima_measure
 
-	# verify ima_measure is available
-	which ima_measure > /dev/null 2>&1 || RC=$?
-	if [ $RC -ne 0 ]; then
-		tst_res TINFO $LTPTMP/imalog.$$ \
-		 "$TCID: ima_tpm.sh test requires openssl-devel, skipping"
-	fi
-	return $RC
 }
 
 # Function:     test01
@@ -69,7 +57,7 @@ test01()
 
 	# verify TPM is available and enabled.
 	tpm_bios=$SECURITYFS/tpm0/binary_bios_measurements
-	if [ ! -f $tpm_bios ]; then
+	if [ ! -f "$tpm_bios" ]; then
 		tst_res TINFO $LTPTMP/imalog.$$ \
 		 "$TCID: no TPM, TPM not builtin kernel, or TPM not enabled"
 
@@ -84,7 +72,7 @@ test01()
 	else
 		boot_aggregate=`ima_boot_aggregate $tpm_bios`
 		boot_aggr=`expr substr $boot_aggregate 16 40`
-		[ ${ima_aggr} = ${boot_aggr} ] || RC=$?
+		[ "x${ima_aggr}" = "x${boot_aggr}" ] || RC=$?
 		if [ $RC -eq 0 ]; then
 			tst_res TPASS $LTPTMP/imalog.$$ \
 			 "$TCID: bios aggregate matches IMA boot aggregate."
@@ -103,7 +91,7 @@ test01()
 validate_pcr()
 {
 	ima_measurements=$SECURITYFS/ima/binary_runtime_measurements
-	aggregate_pcr=`ima_measure $ima_measurements --validate`
+	aggregate_pcr=$(ima_measure $ima_measurements --validate)
 	dev_pcrs=$1
 	RC=0
 
@@ -127,7 +115,7 @@ test02()
 	TST_COUNT=2
 	RC=0
 
-#	Would be nice to know where the PCRs are located.  Is this safe?
+	# Would be nice to know where the PCRs are located.  Is this safe?
 	PCRS_PATH=`find /$SYSFS/devices/ | grep pcrs` || RC=$?
 	if [ $RC -eq 0 ]; then
 		validate_pcr $PCRS_PATH || RC=$?
@@ -177,11 +165,9 @@ test03()
 RC=0    # Return value from setup, and test functions.
 EXIT_VAL=0
 
-# set the testcases/bin directory
-. `dirname $0`\/ima_setup.sh
-setup || exit $RC
-
-init || exit $RC
+. $(dirname "$0")/ima_setup.sh
+setup || exit $?
+init || exit $?
 test01 || EXIT_VAL=$RC
 test02 || EXIT_VAL=$RC
 test03 || EXIT_VAL=$RC

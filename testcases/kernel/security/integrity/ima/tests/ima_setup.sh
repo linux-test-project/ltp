@@ -30,33 +30,49 @@
 ################################################################################
 mount_sysfs()
 {
-	SYSFS=`mount | grep sysfs` || RC=$?
-	if [ $RC -eq 1 ]; then
+
+	SYSFS=$(mount 2>/dev/null | awk '$5 == "sysfs" { print $3 }')
+	if [ "x$SYSFS" = x ] ; then
+
 		SYSFS=/sys
-		mkdir -p $SYSFS
-		`mount -t sysfs sysfs $SYSFS`
-		RC=$?
-		return $RC
-	else
-		SYSFS=`echo $SYSFS |  sed 's/sysfs on //' | sed 's/ type .*//'`
+
+		test -d $SYSFS || mkdir -p $SYSFS 2>/dev/null
+		if [ $? -ne 0 ] ; then
+			tst_resm TBROK "Failed to mkdir $SYSFS"
+			return 1
+		fi
+		if ! mount -t sysfs sysfs $SYSFS 2>/dev/null ; then
+			tst_resm TBROK "Failed to mount $SYSFS"
+			return 1
+		fi
+
 	fi
+
 	return 0
 }
 
 mount_securityfs()
 {
-	SECURITYFS=`mount | grep securityfs` || RC=$?
-	if [ $RC -eq 1 ]; then
-		SECURITYFS=$SYSFS/kernel/security
-		`mkdir -p $SECURITYFS`
-		`mount -t securityfs securityfs $SECURITYFS`
-		RC=$?
-		return $RC
-	else
-		SECURITYFS=`echo $SECURITYFS |  sed 's/securityfs on //' \
-			| sed 's/ type .*//'`
+
+	SECURITYFS=$(mount 2>/dev/null | awk '$5 == "securityfs" { print $3 }')
+	if [ "x$SECURITYFS" = x ] ; then
+
+		SECURITYFS="$SYSFS/kernel/security"
+
+		test -d $SECURITYFS || mkdir -p $SECURITYFS 2>/dev/null
+		if [ $? -ne 0 ] ; then
+			tst_resm TBROK "Failed to mkdir $SECURITYFS"
+			return 1
+		fi
+		if ! mount -t securityfs securityfs $SECURITYFS 2>/dev/null ; then
+			tst_resm TBROK "Failed to mount $SECURITYFS"
+			return 1
+		fi
+
 	fi
+
 	return 0
+
 }
 
 setup()
@@ -65,29 +81,24 @@ setup()
 	export TCID="setup"
         export TST_COUNT=0
 
+	LTPBIN=
+	LTPIMA=
+
 	trap "cleanup" 0
-	if [ -z $TMP ]; then
+	if [ -z "$TMPDIR" ]; then
 		LTPTMP=/tmp
 	else
-		LTPTMP=${TMP}
+		LTPTMP=${TMPDIR}
 	fi
-	if [ -z $LTPBIN ]; then
+	if [ -z "$LTPBIN" ]; then
 		LTPBIN=../../../../../bin
 		PATH=$PATH:$LTPBIN
 	fi
 
 	# Must be root
-	userid=`id -u`
-	if [ $userid -ne 0 ]; then
-		tst_brkm TBROK $LTPTMP/imalog.$$ \
-		 "$TCID: Must be root to execute test"
+	if ! is_root; then
+		tst_resm TCONF "You must be root to execute this test"
 		return 1
-	fi
-
-	if [ -z $TMP ]; then
-		LTPTMP=/tmp
-	else
-		LTPTMP=${TMP}
 	fi
 
 	# create the temporary directory used by this testcase
@@ -95,32 +106,30 @@ setup()
 	umask 077
 	mkdir $LTPIMA > /dev/null 2>&1 || RC=$?
 	if [ $RC -ne 0 ]; then
-		tst_brk TBROK "$TCID: Unable to create temporary directory"
+		tst_resm TBROK "Unable to create temporary directory"
 		return $RC
 	fi
 
 	# mount sysfs if it is not already mounted
 	mount_sysfs || RC=$?
 	if [ $RC -ne 0 ]; then
-		tst_brkm TBROK $LTPTMP/imalog.$$ "$TCID: cannot mount sysfs"
+		tst_resm TBROK "Cannot mount sysfs"
 		return $RC
 	fi
 
 	# mount securityfs if it is not already mounted
 	mount_securityfs || RC=$?
 	if [ $RC -ne 0 ]; then
-		tst_brkm TBROK $LTPTMP/imalog.$$ "$TCID: cannot mount securityfs"
+		tst_resm TBROK "Cannot mount securityfs"
 		return $RC
 	fi
 
-	SECURITYFS=`echo $SECURITYFS |  sed 's/securityfs on //' \
-		| sed 's/ type .*//'`
+	mount
 
 	# IMA must be configured in the kernel
 	IMA_DIR=$SECURITYFS/ima
-	if [ ! -d $IMA_DIR ]; then
-		tst_brkm TBROK $LTPTMP/imalog.$$\
-		 "INIT: IMA not enabled in kernel"
+	if [ ! -d "$IMA_DIR" ]; then
+		tst_resm TCONF "IMA not enabled in kernel"
 		RC=1
 	fi
 	return $RC
@@ -135,6 +144,8 @@ setup()
 cleanup()
 {
 	tst_resm TINFO "CLEAN: removing $LTPIMA"
-	rm -rf $LTPIMA || RC $?
+	rm -rf "$LTPIMA" || RC=$?
 	return $RC
 }
+
+. cmdlib.sh
