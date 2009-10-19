@@ -42,6 +42,10 @@
 #trace_logic=${trace_logic:-"set -x"}
 $trace_logic
 
+. cmdlib.sh
+
+exists cut locale rsh
+
 # Unset the locale cocerned variables
 for env in `locale | cut -f 1 -d '='` ; do
     unset $env
@@ -49,24 +53,28 @@ done
 unset LANGUAGE
 
 # RHOST
+RHOST=${RHOST:=127.0.0.1}
 if [ x${RHOST} = x ]; then
     tst_resm TBROK "Environment variable RHOST is not set."
     exit 1
 fi
 
 # LHOST_HWADDRS
+LHOST_HWADDRS=${LHOST_HWADDRS:=}
 if [ x"${LHOST_HWADDRS}" = x ]; then
     tst_resm TBROK "Environment variable LHOST_HWADDRS is not set."
     exit 1
 fi
 
 # RHOST_HWADDRS
+RHOST_HWADDRS=${RHOST_HWADDRS:=}
 if [ x"${RHOST_HWADDRS}" = x ]; then
     tst_resm TBROK "Environment variable RHOST_HWADDRS is not set."
     exit 1
 fi
 
 # LTP_RSH
+LTP_RSH=${LTP_RSH:=}
 if [ x"${LTP_RSH}" = x ]; then
     LTP_RSH="rsh -n"
 elif [ "$LTP_RSH" = "rsh" ]; then
@@ -74,6 +82,7 @@ elif [ "$LTP_RSH" = "rsh" ]; then
 fi
 
 # TMPDIR
+TMPDIR=${TMPDIR:=}
 if [ x"${TMPDIR}" = x ]; then 
     TMPDIR=/tmp
 fi
