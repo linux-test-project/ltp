@@ -48,9 +48,9 @@ do_setup()
 
     tst_setup
 
-    exists hostname ping
+    exists ping
 
-    RHOST=${RHOST:-`hostname`}
+    RHOST=${RHOST:-127.0.0.1}
 }
 
 
