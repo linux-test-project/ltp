@@ -23,6 +23,8 @@
 # as compat_16.mk does on foo16. See both compat_16.mk
 # and Makefile for fadvise test case.
 
+CPPFLAGS		+= -I$(abs_srcdir) -I$(abs_srcdir)/../utils
+
 SRCS			?= $(wildcard $(abs_srcdir)/*.c)
 
 MAKE_TARGETS		:= $(notdir $(patsubst %.c,%,$(SRCS)))

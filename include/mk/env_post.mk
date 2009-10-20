@@ -33,7 +33,7 @@ ENV_PRE_LOADED = 1
 $(eval $(call generate_vpath_rule,c))
 
 # For config.h, et all.
-CPPFLAGS			+= -I$(top_builddir)/include
+CPPFLAGS			+= -I$(top_srcdir)/include -I$(top_builddir)/include
 
 LDFLAGS				+= -L$(top_builddir)/lib
 
