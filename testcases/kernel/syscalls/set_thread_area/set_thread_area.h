@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <errno.h>
-#include <linux/unistd.h>
 
 /* Harness Specific Include Files. */
 #include "test.h"
@@ -9,6 +8,7 @@
 #include "config.h"
 
 #if defined HAVE_ASM_LDT_H
+#include <linux/unistd.h>
 #include <asm/ldt.h>
 
 #if defined HAVE_STRUCT_USER_DESC
