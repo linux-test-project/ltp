@@ -75,7 +75,7 @@ int stats_container_append(stats_container_t *data, stats_record_t rec)
 {
 	int myindex = ++data->index;
 	if (myindex >= data->size) {
-		debug(DBG_ERR, "Number of elements cannot be more than %d\n",
+		debug(DBG_ERR, "Number of elements cannot be more than %ld\n",
 				data->size);
 		data->index--;
 		return -1;
