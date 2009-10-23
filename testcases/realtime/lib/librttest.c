@@ -141,7 +141,7 @@ int rt_init_long(const char *options, const struct option *longopts,
 			exit(1);
 		}
 		if (!strchr(all_options, cur_opt->val)) {
-			fprintf(stderr, "Progreammer error -- argument --%s "
+			fprintf(stderr, "Programmer error -- argument --%s "
 				"shortopt -%c wasn't listed in options (%s)\n",
 				cur_opt->name, cur_opt->val, all_options);
 			exit(1);
@@ -152,7 +152,10 @@ int rt_init_long(const char *options, const struct option *longopts,
 				cur_opt->name, cur_opt->val);
 			exit(1);
 		}
-		asprintf(&longopt_vals, "%s%c", longopt_vals, cur_opt->val);
+		if (asprintf(&longopt_vals, "%s%c", longopt_vals, cur_opt->val) < 0) {
+			perror("asprintf");
+			exit(2);
+		}
 		cur_opt++;
 	}
 	
