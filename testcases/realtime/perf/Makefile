@@ -20,7 +20,7 @@
 # Garrett Cooper, September 2009
 #
 
-top_srcdir		?= ../../../..
+top_srcdir		?= ../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 include $(abs_srcdir)/../config.mk
