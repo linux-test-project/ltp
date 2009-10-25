@@ -186,7 +186,8 @@ endif
 ## Help
 .PHONY: help
 help:
-	@cat "$(top_srcdir)/README.mk-user"; exit 1
+	@echo "Please read the Configuration section in $(top_srcdir)/INSTALL"
+	@exit 1
 
 ## Menuconfig
 menuconfig:
