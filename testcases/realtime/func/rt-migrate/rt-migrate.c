@@ -46,7 +46,9 @@
  *                    testcases by Kiran Prakash
  *
  */
+#ifndef _GNU_SOURCE
 #define _GNU_SOURCE
+#endif
 #include <stdio.h>
 #ifndef __USE_XOPEN2K
 # define __USE_XOPEN2K
@@ -116,7 +118,13 @@ static void ftrace_write(const char *fmt, ...)
 	n = vsnprintf(buff, BUFSIZ, fmt, ap);
 	va_end(ap);
 
-	write(mark_fd, buff, n);
+	/*
+	 * This doesn't return any valid vs invalid exit codes, so printing out
+	 * a perror to warn the end-user of an issue is sufficient.
+	 */
+	if (write(mark_fd, buff, n) < 0) {
+		perror("write");
+	}
 }
 
 #define INTERVAL 100ULL * NS_PER_MS
@@ -185,21 +193,35 @@ static void usage()
 	      );
 }
 
-static void parse_args(int c, char *v)
+/*
+int rt_init(const char *options, int (*parse_arg)(int option, char *value),
+            int argc, char *argv[]);
+ */
+static int parse_args(int c, char *v)
 {
-		switch (c) {
-		case 'a': prio_start = atoi(v); break;
-		case 'r':
-			run_interval = atoi(v);
-			break;
-		case 't': interval = atoi(v); break;
-		case 'l': nr_runs = atoi(v); break;
-		case 'e': max_err = atoi(v) * NS_PER_US; break;
-		case '?':
-		case 'h':
-			usage();
-			exit(0);
-		}
+	int handled = 1;
+	switch (c) {
+	case 'a':
+		prio_start = atoi(v);
+		break;
+	case 'r':
+		run_interval = atoi(v);
+		break;
+	case 't':
+		interval = atoi(v);
+		break;
+	case 'l':
+		nr_runs = atoi(v);
+		break;
+	case 'e':
+		max_err = atoi(v) * NS_PER_US;
+		break;
+	case '?':
+	case 'h':
+		usage();
+		handled = 0;
+	}
+	return handled;
 }
 
 static void record_time(int id, unsigned long long time, unsigned long l)
@@ -247,12 +269,12 @@ static void print_results(void)
 	for (i = 0; i < nr_runs; i++) {
 		printf("%4d:   ", i);
 		for (t = 0; t < nr_tasks; t++)
-			printf("%6lld  ", intervals[t].records[i].y);
+			printf("%6ld  ", intervals[t].records[i].y);
 
 		printf("\n");
 		printf(" len:   ");
 		for (t = 0; t < nr_tasks; t++)
-			printf("%6lld  ", intervals_length[t].records[i].y);
+			printf("%6ld  ", intervals_length[t].records[i].y);
 
 		printf("\n");
 		printf(" loops: ");

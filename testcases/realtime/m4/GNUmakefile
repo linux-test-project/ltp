@@ -1,5 +1,5 @@
 #
-#    Default include definitions for realtime test suite Makefile.
+#    m4 Makefile.
 #
 #    Copyright (C) 2009, Cisco Systems Inc.
 #
@@ -17,18 +17,21 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Garrett Cooper, September 2009
+# Garrett Cooper, July 2009
 #
 
+top_srcdir		?= ../../..
 
-# Default stuff common to all testcases
-#
-# THIS IS NOT TO BE INCLUDED WITH lib!!!
+include $(top_srcdir)/include/mk/env_pre.mk
 
-realtime_builddir	:= $(abs_top_builddir)/testcases/realtime
-realtime_srcdir		:= $(abs_top_srcdir)/testcases/realtime
+M4MACROS		:= $(notdir $(wildcard *.m4))
 
-CPPFLAGS		+= -I$(realtime_srcdir)/include
-CFLAGS			+= -D_GNU_SOURCE
-LDLIBS			+= -lrealtime -lpthread -lrt -lm
-LDFLAGS			+= -L$(realtime_builddir)/lib
+INSTALL_DIR		:= $(datarootdir)/aclocal
+
+INSTALL_MODE		:= 00644
+
+INSTALL_TARGETS		:= $(M4_MACROS)
+
+MAKE_TARGETS		:=
+
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

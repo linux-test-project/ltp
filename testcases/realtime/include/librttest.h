@@ -55,6 +55,7 @@
 #include <sys/syscall.h>
 #include <math.h>
 #include "list.h"
+#include "realtime_config.h"
 
 extern void setup();
 extern void cleanup();

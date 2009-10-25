@@ -43,7 +43,9 @@
 #include <sched.h>
 #include <errno.h>
 #include <unistd.h>
-#include <librttest.h>
+#include "librttest.h"
+
+#if defined(HAS_PTHREAD_MUTEXTATTR_ROBUST_APIS)
 
 #define NUM_MUTEXES 5000
 #define NUM_THREADS 50
@@ -147,3 +149,10 @@ int main(int argc, char* argv[])
 	}
 	return 0;
 }
+
+#else
+int main(void) {
+	printf("Your system doesn't support the pthread robust mutexattr API's\n");
+	return 1;
+}
+#endif

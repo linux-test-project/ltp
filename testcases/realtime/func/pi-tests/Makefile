@@ -24,4 +24,7 @@ top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 include $(abs_srcdir)/../../config.mk
+
+MAKE_TARGETS		:= testpi-* sbrk_mutex
+
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

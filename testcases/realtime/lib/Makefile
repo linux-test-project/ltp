@@ -24,6 +24,12 @@ top_srcdir		?= ../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
+CPPFLAGS		+= -I$(abs_srcdir)/../include
+
+CFLAGS			+= -D_GNU_SOURCE
+
+LDLIBS			+= -lrealtime -lpthread -lrt -lm
+
 LIB			:= librealtime.a
 
-include $(top_srcdir)/include/mk/generic_leaf_target.mk
+include $(top_srcdir)/include/mk/lib.mk

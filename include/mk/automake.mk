@@ -26,8 +26,15 @@ AUTOCONF	?= autoconf
 AUTOHEADER	?= autoheader
 AUTOMAKE	?= automake
 
+AUTOCONFED_SUBDIRS	= \
+			testcases/kernel/syscalls/pcllib \
+			testcases/realtime
+
+testcases/realtime/configure:
+	$(MAKE) -C $(@D) autotools
+
 .PHONY: autotools
-autotools: aclocal autoconf autoheader automake
+autotools: aclocal autoconf autoheader automake $(addsuffix /configure,$(AUTOCONFED_SUBDIRS))
 
 .PHONY: aclocal
 aclocal: aclocal.m4
@@ -76,10 +83,14 @@ ac-clean::
 
 ac-distclean:: ac-clean
 ac-maintainer-clean:: ac-distclean
+	-for d in $(AUTOCONFED_SUBDIRS); do \
+	    $(MAKE) -C "$(top_srcdir)/$$d" $@; \
+	done
 	$(RM) -f aclocal.m4 configure $(AUTOMAKE_FILES) m4/Makefile.in
 
 AUTOCONFED_SUBDIRS	= \
-			testcases/kernel/syscalls/pcllib
+			testcases/kernel/syscalls/pcllib \
+			testcases/realtime
 
 # Don't include config.h, or make will (rightfully) whine about overriding
 # rules.
