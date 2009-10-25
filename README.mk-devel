@@ -142,8 +142,9 @@ Make System Variables
 ==============================
 
 A series of variables are used within the make system that direct what actions
-need to be taken. Rather than me listing the variables here, please instead
-refer to the comments contained in `.../include/mk/env_pre.mk'.
+need to be taken. Rather than me listing the variables here, please with their
+intended uses, please refer to the comments contained in
+`.../include/mk/env_pre.mk'.
 
 ==============================
 Guidelines and Recommendations
@@ -161,24 +162,8 @@ here are the following sections and chapters I suggest reviewing:
 Before Committing
 ==============================
 
-One should rebuild from scratch before committing. Here's an example of how to
-do that:
-#!/bin/sh
-
-TOOLS_PATH=/path/to/tools
-
-# Replace [options] with any make specific options and variables, for each
-# step, example: -j 4, DESTDIR=/path/for/install, etc.
-make maintainer-clean [options]
-make \
-  ACLOCAL=$TOOLS_PATH/bin/aclocal \
-  AUTOCONF=$TOOLS_PATH/bin/autoconf \
-  AUTOHEADER=$TOOLS_PATH/bin/autoheader \
-  AUTOMAKE=$TOOLS_PATH/bin/automake \
-  autotools
-./configure [options]
-make all [options]
-make install [options]
+One should rebuild from scratch before committing. Please see INSTALL for more
+details.
 
 ==============================
 Other Errata

@@ -15,10 +15,10 @@ This is a README to describe the ltp-devel.patch functional changes.
 	/usr/src/redhat/RPMS/i386/ltp-devel-1.0-0.0.i386.rpm
 
 For someone wanting to write a standalone test that uses "libltp.a", then
-their Makefile would compile their test program like this:
+the Makefile to compile their test program would look like this:
 
 	test: test.c
-		cc test.c `pkg-config --cflags --libs ltp`
+		$(COMPILE.o) $(OUTPUT_OPTION) $^ `pkg-config --cflags --libs ltp`
 
 To read manual pages, then the developer would type:
 (Most Important man pages)
