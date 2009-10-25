@@ -28,7 +28,7 @@ CPPFLAGS		+= -I$(abs_srcdir)/../include
 
 CFLAGS			+= -D_GNU_SOURCE
 
-LDLIBS			+= -lrealtime -lpthread -lrt -lm
+LDLIBS			+= -lpthread -lrt -lm
 
 LIB			:= librealtime.a
 
