@@ -1,4 +1,4 @@
-$Id: INSTALL,v 1.26 2009/10/25 06:35:08 yaberauneya Exp $
+$Id: INSTALL,v 1.27 2009/10/25 10:44:14 yaberauneya Exp $
 
 Requirements
 -------------------
@@ -32,7 +32,7 @@ downloaded from:
 Configuring
 -------------------
 Using autoconf:
-        $ make autotools
+        $ make autotools # This must be run from "$TOP_SRCDIR!"
 	$ test -d "$TOP_BUILDDIR" || mkdir -p "$TOP_BUILDDIR"
         $ cd "$TOP_BUILDDIR" && "$TOP_SRCDIR/configure" \
 	  # [configure args go here, e.g. CC=$CC, LDFLAGS=$LDFLAGS, etc]
