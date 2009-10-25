@@ -50,9 +50,6 @@
 #define _GNU_SOURCE
 #endif
 #include <stdio.h>
-#ifndef __USE_XOPEN2K
-# define __USE_XOPEN2K
-#endif
 #include <stdlib.h>
 #include <string.h>
 #include <getopt.h>
