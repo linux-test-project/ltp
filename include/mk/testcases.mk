@@ -23,6 +23,8 @@
 include $(top_srcdir)/include/mk/env_pre.mk
 include $(top_srcdir)/include/mk/functions.mk
 
+APICMDS_DIR	:= $(abs_top_builddir)/tools/apicmds
+
 TKI_DIR		:= testcases/kernel/include
 
 LSN_H		:= $(abs_top_builddir)/$(TKI_DIR)/linux_syscall_numbers.h
@@ -30,6 +32,9 @@ LSN_H		:= $(abs_top_builddir)/$(TKI_DIR)/linux_syscall_numbers.h
 LIBLTP_DIR	:= $(abs_top_builddir)/lib
 
 LIBLTP		:= $(LIBLTP_DIR)/libltp.a
+
+$(APICMDS_DIR)/tst_kvercmp: $(APICMDS_DIR)
+	$(MAKE) -C "$^" -f "$(abs_top_srcdir)/tools/apicmds/Makefile" all
 
 $(LIBLTP): $(LIBLTP_DIR)
 	$(MAKE) -C "$^" -f "$(abs_top_srcdir)/lib/Makefile" all
