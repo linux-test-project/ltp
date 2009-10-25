@@ -24,16 +24,16 @@
 # http://www.gnu.org/software/hello/manual/autoconf/Particular-Programs.html
 
 # Application specifying variables. You should never have to change these.
-#AR			:= ar
-#CC			:= gcc
-#LEX			:= flex
-#RANLIB			:= ranlib
-#YACC			:= bison -y
+AR			:= ar
+CC			:= gcc
+LEX			:= flex
+RANLIB			:= ranlib
+YACC			:= bison -y
 
 #AIO_LIBS		:= -laio
 #CAP_LIBS		:= -lcap
 #CRYPTO_LIBS		:= -lcrypto
-#LEXLIB			:= -lfl
+LEXLIB			:= -lfl
 #NUMA_LIBS		:= -lnuma
 #SELINUX_LIBS		:= -lselinux
 
