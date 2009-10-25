@@ -97,15 +97,15 @@
 #include "test.h"
 #include "usctest.h"
 #include "config.h"
-#include <sys/swap.h>
 #if defined(HAVE_OLD_SWAPONOFF)
+#define MAX_SWAPFILES 30
+#include <sys/swap.h>
 #include <linux/swap.h>
-#elif ! defined(HAVE_NEW_SWAPONOFF)
-#error "Cannot determine what copy of swapon/swapoff you are using."
-#endif
-
-#ifndef OLDER_DISTRO_RELEASE
+#elif defined(HAVE_NEW_SWAPONOFF)
 #define MAX_SWAPFILES 32
+#include <sys/swap.h>
+#else
+#error "Cannot determine what copy of swapon/swapoff you are using."
 #endif
 
 static void setup();

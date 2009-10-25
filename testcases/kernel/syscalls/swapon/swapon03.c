@@ -72,15 +72,16 @@
 #include "test.h"
 #include "usctest.h"
 #include "config.h"
-#include <sys/swap.h>
 #if defined(HAVE_OLD_SWAPONOFF)
+#define MAX_SWAPFILES 30
+#include <sys/swap.h>
 #include <linux/swap.h>
-#elif ! defined(HAVE_NEW_SWAPONOFF)
+#elif defined(HAVE_NEW_SWAPONOFF)
+#define MAX_SWAPFILES 32
+#include <sys/swap.h>
+#else
 #error "Cannot determine what copy of swapon/swapoff you are using."
 #endif
-
-/* This handle when we have MAX_SWAPFILES = 30 or 32 */
-#define TEST_MAX_SWAPFILES 30
 
 void setup();
 void cleanup();
@@ -264,9 +265,9 @@ int setup_swap()
 	}
 
 	/* Determine how many more files are to be created */
-	swapfiles = TEST_MAX_SWAPFILES - swapfiles;
-	if (swapfiles > TEST_MAX_SWAPFILES) {
-		swapfiles = TEST_MAX_SWAPFILES;
+	swapfiles = MAX_SWAPFILES - swapfiles;
+	if (swapfiles > MAX_SWAPFILES) {
+		swapfiles = MAX_SWAPFILES;
 	}
 
 	/* args for dd */
