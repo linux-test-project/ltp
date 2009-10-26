@@ -19,7 +19,7 @@
 ##                                                                            ##
 ################################################################################
 
-if [ $UID -ne 0 ]; then
+if [ $(id -ru) -ne 0 ]; then
      echo You need to be root to execute these tests
      exit 1
 fi

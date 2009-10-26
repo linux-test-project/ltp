@@ -9,8 +9,8 @@ loop=${HOTPLUG04_LOOPS:-1}
 
 # Includes:
 LHCS_PATH=${LHCS_PATH:-".."}
-source $LHCS_PATH/include/testsuite.fns
-source $LHCS_PATH/include/hotplug.fns
+. $LHCS_PATH/include/testsuite.fns
+. $LHCS_PATH/include/hotplug.fns
 
 echo "Name:   $CASE"
 echo "Date:   `date`"
@@ -26,7 +26,7 @@ until [ $loop = 0 ]; do
         online_cpu $i
         RC=$?
         if [ $RC != 0 ]; then
-            let "cpu = cpu + 1"
+            : $(( cpu += 1 ))
             on[${cpu}]=$i
             echo "${on[${cpu}]}"
         fi
@@ -51,7 +51,7 @@ until [ $loop = 0 ]; do
     # Online the ones that were on initially
     until [ $cpu = 0 ]; do
         online_cpu ${on[${cpu}]}
-        let "cpu = cpu - 1"
+        : $(( cpu -= 1 ))
     done
 
     # Return CPU 0 to its initial state
@@ -61,7 +61,7 @@ until [ $loop = 0 ]; do
         offline_cpu 0
     fi
 
-    let "loop = loop -1"
+    : $(( loop -=1 ))
 done
 
 exit_clean

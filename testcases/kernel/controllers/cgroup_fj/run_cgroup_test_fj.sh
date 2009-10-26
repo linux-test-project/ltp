@@ -33,7 +33,7 @@ export TMPFILE=$TESTROOT/tmp_tasks
 export CASENO1=0
 export CASENO2=0
 
-if [ "$UID" -ne 0 ]; then
+if [ "$(id -ru)" -ne 0 ]; then
 	echo "***error***:you must use root to test"
 	exit -1
 fi
@@ -107,17 +107,17 @@ do
 	if [ $? -ne 0 ]; then
 		case $CASETYPE in
 		"function" )
-			let "CASENO1 = $CASENO1 + 1"
+			: $(( CASENO1 += 1 ))
 			export CASENO1=$CASENO1
 			$TESTROOT/cgroup_fj_function.sh $CASECMD
 			;;
 		"function2" )
-			let "CASENO1 = $CASENO1 + 1"
+			: $(( CASENO1 += 1 ))
 			export CASENO1=$CASENO1
 			$TESTROOT/cgroup_fj_function2.sh $CASECMD
 			;;
 		"stress" )
-			let "CASENO2 = $CASENO2 + 1"
+			: $(( CASENO2 += 1 ))
 			export CASENO2=$CASENO2
 			$TESTROOT/cgroup_fj_stress.sh $CASECMD
 			;;

@@ -201,10 +201,10 @@ $trace_logic
 		end_testcase "Could not create testfile of size ${SIZE}Mb"
 	  fi
 	RANDOM_DEPTH=$RANDOM
-	let "RANDOM_DEPTH %= 500"
+	: $(( RANDOM_DEPTH %= 500 ))
 
 	RANDOM_LENGTH=$RANDOM
-	let "RANDOM_LENGTH %= 500"
+	: $(( RANDOM_LENGTH %= 500 ))
 	RANDOM_LENGTH=$(( $RANDOM_LENGTH / 10 ))
 
 	NameCount=0

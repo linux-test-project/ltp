@@ -51,7 +51,7 @@ if [ "z$iam" = "z$TEST_USER1" ]
 then
 	echo ""
 else
-if [ $UID != 0 ]
+if [ $(id -ru) != 0 ]
 then
         echo "FAILED: Must have root access to execute this script"
         exit 1
@@ -76,7 +76,7 @@ if [ $? != 0 ]
 then
         echo ""
         echo "FAILED:  [ losetup ] Must have loop device support by kernel"
-        echo -e "\t to execute this script"
+        printf "\t to execute this script\n"
         exit 1
 fi
 
@@ -90,8 +90,8 @@ then
         then
                 echo ""
                 echo "FAILED: [ mount ] Make sure that ACL (Access Control List)"
-                echo -e "\t and Extended Attribute are built into the kernel"
-                echo -e "\t Can not mount ext3 file system with acl and user_xattr options"
+                printf "\t and Extended Attribute are built into the kernel\n"
+                printf "\t Can not mount ext3 file system with acl and user_xattr options\n"
                 exit 1
         fi
 else
@@ -102,8 +102,8 @@ else
         then
                 echo ""
                 echo "FAILED: [ mount ] Make sure that ACL (Access Control List)"
-                echo -e "\t and Extended Attribute are built into the kernel"
-                echo -e "\t Can not mount ext2 file system with acl and user_xattr options"
+                printf "\t and Extended Attribute are built into the kernel\n"
+                printf "\t Can not mount ext2 file system with acl and user_xattr options\n"
                 exit 1
         fi
 fi

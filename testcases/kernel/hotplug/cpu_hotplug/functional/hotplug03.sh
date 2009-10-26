@@ -15,8 +15,8 @@ fi
 
 # Includes:
 LHCS_PATH=${LHCS_PATH:-".."}
-source $LHCS_PATH/include/testsuite.fns
-source $LHCS_PATH/include/hotplug.fns
+. $LHCS_PATH/include/testsuite.fns
+. $LHCS_PATH/include/hotplug.fns
 
 echo "Name:   $CASE"
 echo "Date:   `date`"
@@ -48,7 +48,7 @@ do_clean()
     # Turn off the CPUs that were off before the test start
     until [ $cpu = 0 ];do
         offline_cpu ${on[${cpu}]}
-        let "cpu = cpu - 1"
+        : $(( cpu -= 1 ))
     done
 }
 
@@ -60,10 +60,10 @@ until [ $loop = 0 ]; do
     for i in $( get_all_cpus ); do 
         online_cpu $1
         if [ $? = 0 ]; then
-            let "cpu = cpu + 1"
+            : $(( cpu += 1 ))
             on[${cpu}]=$i
         fi
-        let "number_of_cpus = number_of_cpus + 1"
+        : $(( number_of_cpus += 1 ))
     done
 
     offline_cpu ${CPU_TO_TEST}
@@ -76,11 +76,11 @@ until [ $loop = 0 ]; do
     # CPUs we have.  This is to help ensure we've got enough processes
     # that at least one will migrate to the new CPU.  Store the PIDs 
     # so we can kill them later.
-    let "number_of_cpus = number_of_cpus * 2"
+    : $(( number_of_cpus *= 2 ))
     until [ $number_of_cpus = 0 ]; do
         $LHCS_PATH/tools/do_spin_loop > /dev/null 2>&1 &
         echo $! >> /var/run/hotplug4_$$.pid
-        let "number_of_cpus = number_of_cpus - 1"
+        : $(( number_of_cpus -= 1 ))
     done
 
     ps aux | head -n 1
@@ -111,7 +111,7 @@ until [ $loop = 0 ]; do
 
     do_clean
 
-    let "loop = loop -1"
+    : $(( loop -=1 ))
 done
 
 exit_clean

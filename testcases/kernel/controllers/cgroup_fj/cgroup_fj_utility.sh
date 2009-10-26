@@ -547,7 +547,7 @@ reclaim_foundling()
 		if [ -e /proc/$cur_pid/ ];then
 			echo "ERROR: pid $cur_pid reclaimed"
 			do_echo 0 1 "$cur_pid" "/dev/cgroup/tasks"
-			let "foundlings = $foundlings + 1"
+			: $((foundlings += 1))
 		fi
 	done
 

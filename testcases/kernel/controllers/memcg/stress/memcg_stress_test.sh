@@ -66,29 +66,29 @@ run_stress()
 {
 	do_mount;
 
-	for ((i = 0; i < $1; i++))
-	{
+	for i in $(seq 0 $(($1-1)))
+	do
 		mkdir /dev/memcg/$i 2> /dev/null
 		./memcg_process_stress $2 $3 &
 		pid[$i]=$!
 
 		echo ${pid[$i]} > /dev/memcg/$i/tasks
-	}
+	done
 
-	for ((i = 0; i < $1; i++))
-	{
+	for i in $(seq 0 $(($1-1)))
+	do
 		/bin/kill -s SIGUSR1 ${pid[$i]} 2> /dev/null
-	}
+	done
 
 	sleep $4
 
-	for ((i = 0; i < $1; i++))
-	{
+	for i in $(seq 0 $(($1-1)))
+	do
 		/bin/kill -s SIGINT ${pid[$i]} 2> /dev/null
 		wait ${pid[$i]}
 
 		rmdir /dev/memcg/$i 2> /dev/null
-	}
+	done
 
 	cleanup;
 }

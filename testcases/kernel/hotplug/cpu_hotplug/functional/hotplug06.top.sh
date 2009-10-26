@@ -15,8 +15,8 @@ fi
 
 # Includes:
 LHCS_PATH=${LHCS_PATH:-".."}
-source $LHCS_PATH/include/testsuite.fns
-source $LHCS_PATH/include/hotplug.fns
+. $LHCS_PATH/include/testsuite.fns
+. $LHCS_PATH/include/hotplug.fns
 
 echo "Name:   $CASE"
 echo "Date:   `date`"
@@ -76,7 +76,7 @@ until [ $loop = 0 ]; do
         exit_clean -1
     fi
 
-    let "loop = loop - 1"
+    : $(( loop -= 1 ))
 
 done
 

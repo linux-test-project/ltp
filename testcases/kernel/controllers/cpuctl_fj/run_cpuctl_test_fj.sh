@@ -58,8 +58,8 @@ setup()
 # Write the cleanup function
 cleanup()
 {
-	mount | grep "$CPUCTL" &> /dev/null || {
-		rm -rf "$CPUCTL" &> /dev/null
+	mount | grep "$CPUCTL" > /dev/null 2>&1 || {
+		rm -rf "$CPUCTL" > /dev/null 2>&1
 		return 0
 	}
 
@@ -73,22 +73,19 @@ cleanup()
 	done
 
 	umount $CPUCTL || return 1
-	rmdir $CPUCTL &> /dev/null
+	rmdir $CPUCTL > /dev/null 2>&1
 }
 
 creat_process()
 {
 	cat /dev/zero > /dev/null 2>/dev/null &
-	taskset -p 1 $! &>/dev/null
+	taskset -p 1 $! >/dev/null 2>&1
 	echo $!
 }
 
 get_cpu_usage()
 {
-	top=($(top -b -n 1 -p $1 | tail -2 | head -1))
-	top=${top[8]}
-	top=`echo $top | awk -F "." '{print $1}'`
-	echo "$top"
+	top -b -n 1 -p $1 | tail -2 | head -1 | awk 'print $9' | awk -F "." '{print $1}'
 }
 
 kill_all_pid()
@@ -424,7 +421,7 @@ case12 ()
 	wait $pid
 }
 
-max_shares=$((2**18))
+max_shares=$((1 << 18))
 
 # echo MAX_SHARES into shares
 case13 ()
@@ -589,7 +586,7 @@ case19()
 	echo "pid $pid cpu_usage $cpu_usage"
 
 	kill -9 $pid $pid_other
-	expr 96 \< "$cpu_usage" \& "$cpu_usage" \< 103 &> /dev/null || return 1
+	expr 96 \< "$cpu_usage" \& "$cpu_usage" \< 103 > /dev/null 2>&1 || return 1
 	return 0
 }
 
@@ -605,7 +602,7 @@ case20()
 	echo "pid $pid cpu_usage $cpu_usage"
 
 	kill -9 $pid $pid_other
-	expr 96 \< "$cpu_usage" \& "$cpu_usage" \< 103 &> /dev/null || return 1
+	expr 96 \< "$cpu_usage" \& "$cpu_usage" \< 103 > /dev/null 2>&1 || return 1
 	return 0
 }
 
@@ -615,7 +612,7 @@ case21()
 	pid=$(creat_process)
 	echo $pid > "$CPUCTL/1/tasks"
 
-	while ((1))
+	while true
 	do
 		creat_process > "$CPUCTL/1/2/tasks"
 		sleep 1
@@ -625,18 +622,20 @@ case21()
 	sleep 10
 	ret=0
 
-	for ((top_times=0; top_times<10 && ret==0; top_times++))
+	top_times=0
+	while [ "$top_times" -lt 10 -a "$ret" = 0 ]
 	do
 		cpu_usage=$(get_cpu_usage $pid)
 		echo "pid $pid cpu_usage $cpu_usage"
-		expr 44 \< "$cpu_usage" \& "$cpu_usage" \< 56 &> /dev/null
+		expr 44 \< "$cpu_usage" \& "$cpu_usage" \< 56 > /dev/null 2>&1
 		ret=$?
+		: $(( top_times+=1 ))
 	done
 
-	kill -9 $pid $loop_pid &> /dev/null
-	wait $pid $loop_pid &>/dev/null
+	kill -9 $pid $loop_pid > /dev/null 2>&1
+	wait $pid $loop_pid >/dev/null 2>&1
 	sleep 2
-	kill_all_pid < "$CPUCTL/1/2/tasks" &>/dev/null
+	kill_all_pid < "$CPUCTL/1/2/tasks"  >/dev/null 2>&1
 	sleep 2
 	return $ret
 }
@@ -645,7 +644,7 @@ case22()
 {
 	mkdir "$CPUCTL/1" "$CPUCTL/1/2"
 	pid=$(creat_process)
-	while ((1))
+	while true
 	do
 		echo $pid > "$CPUCTL/1/tasks"
 		echo $pid > "$CPUCTL/1/2/tasks"
@@ -656,26 +655,28 @@ case22()
 	sleep 10
 	ret=0
 
-	for ((top_times=0; top_times<10 && ret==0; top_times++))
+	top_times=0
+	while [ "$top_times" -lt 10 -a "$ret" = 0 ]
 	do
 		cpu_usage=$(get_cpu_usage $pid)
 		echo "pid $pid cpu_usage $cpu_usage"
-		expr 94 \< "$cpu_usage" \& "$cpu_usage" \< 106 &> /dev/null
+		expr 94 \< "$cpu_usage" \& "$cpu_usage" \< 106 > /dev/null 2>&1
 		ret=$?
+		: $(( top_times+=1 ))
 	done
 	
-	kill -9 $pid $loop_pid &> /dev/null
-	wait $pid $loop_pid &>/dev/null
+	kill -s KILL $pid $loop_pid > /dev/null 2>&1
+	wait $pid $loop_pid >/dev/null 2>&1
 	return $ret
 }
 
-rm -rf "$CPUCTL_TMP" &>/dev/null || exit 1
+rm -rf "$CPUCTL_TMP" >/dev/null 2>&1 || exit 1
 mkdir -p "$CPUCTL_TMP" || exit 1
 
 # test
 do_test ()
 {
-	for (( i=1; i<=$TST_TOTAL; i++ ))
+	for i in $(seq 1 $TST_TOTAL)
 	do
 		setup || {
 			tst_resm TFAIL "case$i    FAIL"
@@ -698,5 +699,5 @@ do_test ()
 
 do_test
 
-rm -rf "$CPUCTL_TMP" &>/dev/null
+rm -rf "$CPUCTL_TMP" >/dev/null 2>&1
 

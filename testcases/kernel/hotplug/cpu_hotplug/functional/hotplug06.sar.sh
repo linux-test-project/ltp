@@ -15,8 +15,8 @@ fi
 
 # Includes:
 LHCS_PATH=${LHCS_PATH:-".."}
-source $LHCS_PATH/include/testsuite.fns
-source $LHCS_PATH/include/hotplug.fns
+. $LHCS_PATH/include/testsuite.fns
+. $LHCS_PATH/include/hotplug.fns
 
 echo "Name:   $CASE"
 echo "Date:   `date`"
@@ -81,7 +81,7 @@ until [ $loop = 0 ]; do
 
     # Check that SAR registered the change in CPU online/offline states
     NEW_NUMBER_CPU_OFF=`cat /tmp/log_$$ | grep ${time} | grep -i nan | wc -l`
-    let "NUMBER_CPU_OFF = NUMBER_CPU_OFF - 1"
+    : $(( NUMBER_CPU_OFF -= 1 ))
     if [ $NUMBER_CPU_OFF = $NEW_NUMBER_CPU_OFF ]; then
         echo "$CASE     PASS: CPU was found after turned on."
     else

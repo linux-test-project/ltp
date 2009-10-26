@@ -536,8 +536,8 @@ do_mount()
 }
 
 # Run all the test cases
-for ((i = 1; i <= $TST_TOTAL; i++))
-{
+for i in $(seq 1 $TST_TOTAL)
+do
 	export TST_COUNT=$(( $TST_COUNT + 1 ))
 	cur_id=$i
 
@@ -556,7 +556,7 @@ for ((i = 1; i <= $TST_TOTAL; i++))
 	rmdir /dev/memcg/$i
 
 	cleanup;
-}
+done
 
 echo $shmmax > /proc/sys/kernel/shmmax
 

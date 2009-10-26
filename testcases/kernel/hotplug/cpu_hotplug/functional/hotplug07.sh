@@ -11,8 +11,8 @@ loop_one=${HOTPLUG07_LOOPS:-1}
 
 # Includes:
 LHCS_PATH=${LHCS_PATH:-".."}
-source $LHCS_PATH/include/testsuite.fns
-source $LHCS_PATH/include/hotplug.fns
+. $LHCS_PATH/include/testsuite.fns
+. $LHCS_PATH/include/hotplug.fns
 
 echo "Name:   HotPlug Test - Test Case 7"
 echo "Date:   `date`"
@@ -89,7 +89,7 @@ do
   RC=$?
   echo "Onlining cpu${CPU_TO_TEST}: Return Code = ${RC}"
 
-  let "loop_one = loop_one - 1"
+  : $(( loop_one -= 1 ))
 
 done
 
