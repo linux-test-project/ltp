@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: geteuid01.c,v 1.6 2009/10/26 14:55:47 subrata_modak Exp $ */
+/* $Id: geteuid01.c,v 1.7 2009/10/26 16:02:46 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -116,10 +116,12 @@
 #include "test.h"
 #include "usctest.h"
 
+#include "compat_16.h"
+
 void setup();
 void cleanup();
 
-char *TCID = "geteuid01";	/* Test program identifier.    */
+TCID_DEFINE(geteuid01);	        /* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
@@ -161,7 +163,7 @@ int main(int ac, char **av)
 		;
 
 		/* Call geteuid(2) */
-		TEST(geteuid());
+		TEST(GETEUID());
 
 		/* check return code */
 		if (TEST_RETURN < 0) {
