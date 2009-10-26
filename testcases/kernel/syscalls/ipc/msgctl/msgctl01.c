@@ -94,9 +94,7 @@ int main(int ac, char **av)
 		TEST(msgctl(msg_q_1, IPC_STAT, &qs_buf));
 
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL, "%s call failed - errno = %d"
-				 " : %s", TCID, TEST_ERRNO,
-				 strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TTERRNO, "msgctl() call failed");
 		} else {
 			if (STD_FUNCTIONAL_TEST) {
 				if (qs_buf.msg_qbytes > 0) {

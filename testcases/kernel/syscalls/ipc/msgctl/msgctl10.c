@@ -283,8 +283,8 @@ int child_process;
 	sighold(SIGTERM);
 	TEST(msgget(key, IPC_CREAT | S_IRUSR | S_IWUSR));
 	if (TEST_RETURN < 0) {
-		tst_resm(TFAIL, "Msgget error in child %d, errno = %d",
-			 child_process, TEST_ERRNO);
+		tst_resm(TFAIL|TTERRNO, "Msgget error in child %d",
+			 child_process);
 		tst_exit();
 	}
 	tid = id = TEST_RETURN;
@@ -295,8 +295,7 @@ int child_process;
 		tst_resm(TWARN, "\tFork failed (may be OK if under stress)");
 		TEST(msgctl(tid, IPC_RMID, 0));
 		if (TEST_RETURN < 0) {
-			tst_resm(TFAIL, "Msgctl error in cleanup, errno = %d",
-				 errno);
+			tst_resm(TFAIL|TTERRNO, "Msgctl error in cleanup");
 		}
 		tst_exit();
 	}
@@ -307,8 +306,7 @@ int child_process;
 			tst_resm(TWARN, "self_exec failed");
 			TEST(msgctl(tid, IPC_RMID, 0));
 			if (TEST_RETURN < 0) {
-				tst_resm(TFAIL, "\tMsgctl error in cleanup, "
-					 "errno = %d\n", errno);
+				tst_resm(TFAIL|TTERRNO, "Msgctl error in cleanup");
 			}
 			tst_exit();
 		}
@@ -323,7 +321,7 @@ int child_process;
 	wait(0);
 	TEST(msgctl(id, IPC_RMID, 0));
 	if (TEST_RETURN < 0) {
-		tst_resm(TFAIL, "msgctl errno %d", TEST_ERRNO);
+		tst_resm(TFAIL|TTERRNO, "msgctl failed");
 		tst_exit();
 	}
 	exit(PASS);
@@ -337,9 +335,9 @@ long key;
 
 	for (i = 0; i < nreps; i++) {
 		if ((size = msgrcv(id, &buffer, 100, 0, 0)) < 0) {
-			tst_brkm(TBROK, cleanup,
-				 "Msgrcv error in child %d, read # = %d, errno = %d",
-				 (i + 1), child, errno);
+			tst_brkm(TBROK|TERRNO, cleanup,
+				 "Msgrcv error in child %d, read # = %d",
+				 (i + 1), child);
 			tst_exit();
 		}
 		if (buffer.data.len + 1 != size) {
@@ -376,9 +374,9 @@ long key;
 		buffer.type = 1;
 		TEST(msgsnd(id, &buffer, size + 1, 0));
 		if (TEST_RETURN < 0) {
-			tst_brkm(TBROK, cleanup,
-				 "Msgsnd error in child %d, key =   %lx errno  = %d",
-				 child, key, TEST_ERRNO);
+			tst_brkm(TBROK|TTERRNO, cleanup,
+				 "Msgsnd error in child %d, key =   %lx",
+				 child, key);
 		}
 		key++;
 	}

@@ -101,9 +101,7 @@ int main(int ac, char **av)
 		do_child();
 	} else {		/* parent */
 		if (waitpid(pid, NULL, 0) == -1) {
-			tst_resm(TBROK, "waitpid() failed");
-			tst_resm(TINFO, "waitpid() error = %d : %s", errno,
-				 strerror(errno));
+			tst_resm(TBROK|TERRNO, "waitpid() failed");
 		}
 
 		/* if it exists, remove the message queue */

@@ -39,7 +39,6 @@
 #include <sys/ipc.h>		/* needed for test              */
 #include <sys/msg.h>		/* needed for test              */
 #include <stdio.h>		/* needed by testhead.h         */
-#include <errno.h>		/* definitions needed for errno */
 #include "test.h"
 #include "usctest.h"
 #include "ipcmsg.h"
@@ -80,16 +79,15 @@ int main(int argc, char *argv[])
 	TEST(msgget(key, IPC_CREAT | IPC_EXCL));
 	msqid = TEST_RETURN;
 	if (TEST_RETURN == -1) {
-		tst_resm(TFAIL, "msgget() failed errno = %d", errno);
+		tst_resm(TFAIL|TTERRNO, "msgget() failed");
 		tst_exit();
 	}
 
 	TEST(msgctl(msqid, IPC_STAT, &buf));
 	status = TEST_RETURN;
 	if (TEST_RETURN == -1) {
-		tst_resm(TFAIL,
-			 "msgctl(msqid, IPC_STAT, &buf) failed errno = %d",
-			 errno);
+		tst_resm(TFAIL|TTERRNO,
+			 "msgctl(msqid, IPC_STAT, &buf) failed");
 		(void)msgctl(msqid, IPC_RMID, (struct msqid_ds *)NULL);
 		tst_exit();
 	}

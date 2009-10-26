@@ -137,12 +137,9 @@ int main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 
 			if (TEST_ERRNO == TC[i].error) {
-				tst_resm(TPASS, "expected failure - "
-					 "errno = %d : %s", TEST_ERRNO,
-					 strerror(TEST_ERRNO));
+				tst_resm(TPASS|TTERRNO, "expected failure");
 			} else {
-				tst_resm(TFAIL, "unexpected error - %d : %s -",
-					 TEST_ERRNO, strerror(TEST_ERRNO));
+				tst_resm(TFAIL|TTERRNO, "unexpected error");
 				tst_resm(TINFO, "expected error is - %d : %s",
 					 TC[i].error, strerror(TC[i].error));
 			}
@@ -192,15 +189,13 @@ void setup(void)
 
 	/* now we have a key, so let's create a message queue */
 	if ((msg_q_1 = msgget(msgkey, IPC_CREAT | IPC_EXCL)) == -1) {
-		tst_brkm(TBROK, cleanup, "Can't create message queue #1: %s",
-			 strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "Can't create message queue #1");
 	}
 
 	/* now let's create another message queue with read & write access */
 	if ((msg_q_2 =
 	     msgget(msgkey2, IPC_CREAT | IPC_EXCL | MSG_RD | MSG_WR)) == -1) {
-		tst_brkm(TBROK, cleanup, "Can't create message queue #2: %s",
-			 strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "Can't create message queue #2");
 	}
 }
 
