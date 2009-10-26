@@ -133,7 +133,7 @@ main(int argc, char *argv[])
 	-- sreeni
 	*/
 
-	if (!(fd = mkstemp(tmpname))) {
+	if ((fd = mkstemp(tmpname))==-1) {
 		ERROR("mkstemp failed");
 		anyfail();
 	}
@@ -146,10 +146,6 @@ main(int argc, char *argv[])
 	CATCH_SIG(SIGINT);
         CATCH_SIG(SIGQUIT);
         CATCH_SIG(SIGTERM);
-	if ((fd = open(tmpname, O_RDWR|O_CREAT, 0777)) == -1) {
-		ERROR("open failed");
-		anyfail();
-	}
 	for (i = 0; i < pagesize; i++)
 		buf[i] = 'a';
 	if (write(fd, buf, pagesize) != pagesize) {

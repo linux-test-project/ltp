@@ -101,7 +101,7 @@ main(int argc, char *argv[]) {
 		return 1;
 	}
 	(void)time(&t);
-	if (!(fd = mkstemp(tmpname))) {
+	if ((fd = mkstemp(tmpname)) == -1) {
 		ERROR("mkstemp failed");
 		anyfail();
 	}
@@ -114,10 +114,6 @@ main(int argc, char *argv[]) {
         CATCH_SIG(SIGINT);
         CATCH_SIG(SIGQUIT);
         CATCH_SIG(SIGTERM);
-	if ((fd = open(tmpname, O_CREAT|O_RDWR, 0777)) == -1) {
-		ERROR("couldn't open temporary file");
-		anyfail();
-	}
 	if (sbrk(2*pagesize - ((ulong)sbrk(0) & (pagesize-1))) == (char *)-1) {
 		CLEANERROR("couldn't round up brk");
 		anyfail();
