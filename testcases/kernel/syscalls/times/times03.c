@@ -144,13 +144,14 @@ int main(int argc, char **argv)
 			}
 			if (buf1.tms_cutime != 0) {
 				tst_resm(TFAIL, "Error: times() report "
-					 "%d child user time", buf1.tms_cutime);
+					 "%ld child user time",
+					 buf1.tms_cutime);
 				fail = 1;
 			}
 			if (buf1.tms_cstime != 0) {
 				tst_resm(TFAIL,
 					 "Error: times() report "
-					 "%d child system time",
+					 "%ld child system time",
 					 buf1.tms_cstime);
 				fail = 1;
 			}
@@ -205,22 +206,22 @@ int main(int argc, char **argv)
 			}
 			if (buf1.tms_utime > buf2.tms_utime) {
 				tst_resm(TFAIL, "Error: parents's "
-					 "user time(%d) before child "
-					 "> parent's user time (%d) "
+					 "user time(%ld) before child "
+					 "> parent's user time (%ld) "
 					 "after child",
 					 buf1.tms_utime, buf2.tms_utime);
 				fail = 1;
 			}
 			if (buf2.tms_cutime == 0) {
 				tst_resm(TFAIL, "Error: times() "
-					 "report %d child user "
+					 "report %ld child user "
 					 "time should be > than "
 					 "zero", buf2.tms_cutime);
 				fail = 1;
 			}
 			if (buf2.tms_cstime == 0) {
 				tst_resm(TFAIL, "Error: times() "
-					 "report %d child system time "
+					 "report %ld child system time "
 					 "should be > than zero",
 					 buf2.tms_cstime);
 				fail = 1;
