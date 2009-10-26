@@ -29,7 +29,7 @@ iam=`whoami`
 tvar=${MACHTYPE%-*}
 tvar=${tvar#*-}
 
-if [ $tvar = "redhat" -o $tvar = "redhat-linux" ] 
+if [ "$tvar" = "redhat" -o "$tvar" = "redhat-linux" ] 
 then
 CRON_DENY="/etc/cron.deny"
 CRON_ALLOW="/etc/cron.allow"

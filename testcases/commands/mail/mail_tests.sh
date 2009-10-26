@@ -60,7 +60,7 @@ export TCID=SETUP
 export TST_COUNT=1
 
 MAIL_NOT_INSTALLED=
-`type mail &> /dev/null`
+type mail > /dev/null 2>&1
 if [ $? != 0 ]; then
     MAIL_NOT_INSTALLED=1
 fi

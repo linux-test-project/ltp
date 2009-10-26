@@ -472,7 +472,7 @@ export TCID=file09
 export TST_COUNT=9
 
 $LTPBIN/tst_resm TINFO "TEST #9: file command recognizes RPM files"
-`type rpm &> /dev/null`
+type rpm > /dev/null 2>&1
 if [ $? = 0 ]; then
 bDIR=$(rpm --eval "%{_topdir}")
 bCMD=rpmbuild

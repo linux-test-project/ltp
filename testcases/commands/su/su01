@@ -43,7 +43,7 @@ tvar=${tvar#*-}
 export tvar
 printf "Machine type is: $tvar\n\n"
 
-if [ $tvar = "redhat" -o $tvar = "redhat-linux" ] 
+if [ "$tvar" = "redhat" -o "$tvar" = "redhat-linux" ] 
 # Need to also set group for TEST_USER2
 then
 export TEST_USER1_GROUP="wheel"
@@ -99,7 +99,7 @@ rm -f $TEST_ENV_FILE > /dev/null 2>&1
 
 	#create users home directory (SLES 8 does not do this, even when specified in adduser)
 # Only do this if not RH; RH creates the directory.
-	if [ $tvar != "redhat" -a $tvar != "redhat-linux" ]
+	if [ "$tvar" != "redhat" -a "$tvar" != "redhat-linux" ]
 	then {
           USER_UID=`id -u $TEST_USER1`
           USER_GID=`id -g $TEST_USER1`
@@ -135,7 +135,7 @@ rm -f $TEST_ENV_FILE > /dev/null 2>&1
 	
 	#create users home diretory (SLES 8 does not do this, even when specified in adduser)
 # Only do this if not RH; RH creates the directory.
-        if [ $tvar != "redhat" -a $tvar != "redhat-linux" ]
+        if [ "$tvar" != "redhat" -a "$tvar" != "redhat-linux" ]
         then {
           USER_UID=`id -u $TEST_USER2`
           USER_GID=`id -g $TEST_USER2`
