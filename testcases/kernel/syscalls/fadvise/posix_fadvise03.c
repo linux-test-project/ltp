@@ -151,12 +151,12 @@ int main(int ac, char **av)
 			if (TEST_RETURN == expected_error) {
 				tst_resm(TPASS,
 					 "expected failure - "
-					 "returned value = %d, advise = %d : %s",
+					 "returned value = %ld, advise = %d : %s",
 					 TEST_RETURN,
 					 advise, strerror(TEST_RETURN));
 			} else {
 				tst_resm(TFAIL,
-					 "unexpected return value - %d : %s, advise %d - "
+					 "unexpected return value - %ld : %s, advise %d - "
 					 "expected %d",
 					 TEST_RETURN,
 					 strerror(TEST_RETURN),

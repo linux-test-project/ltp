@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fork01.c,v 1.5 2009/03/23 13:35:41 subrata_modak Exp $ */
+/* $Id: fork01.c,v 1.6 2009/10/26 14:55:46 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -178,7 +178,7 @@ void parent_pid()
 			child_id = atoi(tmp_line);
 			if (TEST_RETURN != child_id) {
 				tst_resm(TFAIL,
-					 "child reported a pid of %d. parent received %d from fork()",
+					 "child reported a pid of %d. parent received %ld from fork()",
 					 child_id, TEST_RETURN);
 			} else {
 				tst_resm(TPASS,
@@ -246,7 +246,7 @@ int main(int ac, char **av)
 		} else {
 			/* parent */
 			if (STD_FUNCTIONAL_TEST) {
-				tst_resm(TPASS, "fork() returned %d",
+				tst_resm(TPASS, "fork() returned %ld",
 					 TEST_RETURN);
 			}
 			/* wait for the child to complete */

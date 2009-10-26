@@ -102,11 +102,11 @@ ERRORS
 			tst_resm(TFAIL, "call succeeded unexpectedly");
 		} else if (TEST_RETURN == expected_return) {
 			tst_resm(TPASS, "expected failure - "
-				 "returned value = %d : %s", TEST_RETURN,
+				 "returned value = %ld : %s", TEST_RETURN,
 				 strerror(-1 * TEST_RETURN));
 		} else {
-			tst_resm(TFAIL, "unexpected returned value - %d - "
-				 "expected %d", TEST_RETURN, expected_return);
+			tst_resm(TFAIL, "unexpected returned value - %ld - "
+				 "expected %ld", TEST_RETURN, expected_return);
 		}
 
 		/*

@@ -171,7 +171,7 @@ int main(int ac, char **av)
 
 			/* check return code of lseek(2) */
 			if (TEST_RETURN != (off_t) - 1) {
-				tst_resm(TFAIL, "lseek() returned %d, expected "
+				tst_resm(TFAIL, "lseek() returned %ld, expected "
 					 "-1, errno:%d", TEST_RETURN,
 					 Test_cases[ind].exp_errno);
 				continue;

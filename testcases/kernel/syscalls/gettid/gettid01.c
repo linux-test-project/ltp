@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * $Id: gettid01.c,v 1.4 2009/03/23 13:35:45 subrata_modak Exp $
+ * $Id: gettid01.c,v 1.5 2009/10/26 14:55:47 subrata_modak Exp $
  *
  */
 
@@ -77,7 +77,7 @@ int main(int ac, char **av)
 	     ***************************************************************/
 			if (STD_FUNCTIONAL_TEST) {
 				/* No Verification test, yet... */
-				tst_resm(TPASS, "gettid() returned %d",
+				tst_resm(TPASS, "gettid() returned %ld",
 					 TEST_RETURN);
 			}
 		}

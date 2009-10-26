@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: link02.c,v 1.4 2009/03/23 13:35:53 subrata_modak Exp $ */
+/* $Id: link02.c,v 1.5 2009/10/26 14:55:47 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -186,11 +186,11 @@ int main(int ac, char **av)
 				    fbuf.st_nlink == lbuf.st_nlink)
 
 					tst_resm(TPASS,
-						 "link(%s, %s) returned %d and link cnts match",
+						 "link(%s, %s) returned %ld and link cnts match",
 						 Fname, Lname, TEST_RETURN);
 				else {
 					tst_resm(TFAIL,
-						 "link(%s, %s) returned %d, stat link cnts do not match %d %d",
+						 "link(%s, %s) returned %ld, stat link cnts do not match %d %d",
 						 Fname, Lname, TEST_RETURN,
 						 fbuf.st_nlink, lbuf.st_nlink);
 				}

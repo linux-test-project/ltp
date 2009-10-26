@@ -209,7 +209,7 @@ int main(int ac, char **av)
 						 Test_cases[ind].exp_errno);
 				}
 			} else {
-				tst_resm(TFAIL, "lchown() returned %d, "
+				tst_resm(TFAIL, "lchown() returned %ld, "
 					 "expected -1, errno:%d", TEST_RETURN,
 					 Test_cases[ind].exp_errno);
 			}

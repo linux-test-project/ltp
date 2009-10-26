@@ -140,7 +140,7 @@ int main(int ac, char **av)
 			 */
 			if (TEST_RETURN != 3) {
 				tst_resm(TFAIL, "lseek() returned incorrect "
-					 "value %d, expected 4", TEST_RETURN);
+					 "value %ld, expected 4", TEST_RETURN);
 				continue;
 			}
 			/*

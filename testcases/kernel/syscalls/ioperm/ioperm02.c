@@ -152,7 +152,7 @@ int main(int ac, char **av)
 					 TEST_ERRNO);
 			} else {
 				tst_resm(TFAIL, "Unexpected results for %s ; "
-					 "returned %d (expected %d), errno %d "
+					 "returned %ld (expected %d), errno %d "
 					 "(expected errno  %d)",
 					 test_cases[i].desc,
 					 TEST_RETURN, EXP_RET_VAL,

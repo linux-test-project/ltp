@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: lseek03.c,v 1.5 2009/03/23 13:35:54 subrata_modak Exp $ */
+/* $Id: lseek03.c,v 1.6 2009/10/26 14:55:48 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -215,7 +215,7 @@ But SIGSYS signal was NOT received.", fname, whence, TEST_ERRNO, strerror
 					Tst_count++;
 			} else {
 
-				tst_resm(TFAIL, "lseek(%s, 1, %d) returned %d",
+				tst_resm(TFAIL, "lseek(%s, 1, %d) returned %ld",
 					 fname, whence, TEST_RETURN);
 			}
 		}

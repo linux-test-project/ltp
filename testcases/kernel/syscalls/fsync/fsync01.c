@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fsync01.c,v 1.5 2009/03/23 13:35:41 subrata_modak Exp $ */
+/* $Id: fsync01.c,v 1.6 2009/10/26 14:55:47 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -181,7 +181,7 @@ int main(int ac, char **av)
 	     ***************************************************************/
 			if (STD_FUNCTIONAL_TEST) {
 				/* No Verification test, yet... */
-				tst_resm(TPASS, "fsync(%s) returned %d", fname,
+				tst_resm(TPASS, "fsync(%s) returned %ld", fname,
 					 TEST_RETURN);
 			}
 		}

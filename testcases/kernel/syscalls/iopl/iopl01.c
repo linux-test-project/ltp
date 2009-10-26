@@ -118,7 +118,7 @@ int main(int ac, char **av)
 					 TEST_ERRNO, strerror(TEST_ERRNO));
 			} else {
 				tst_resm(TPASS, "iopl() passed for level %d, "
-					 "returned %d", level, TEST_RETURN);
+					 "returned %ld", level, TEST_RETURN);
 			}
 		}
 	}			/* End for TEST_LOOPING */

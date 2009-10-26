@@ -125,7 +125,7 @@ int main(int ac, char **av)
 			if (TEST_RETURN == -1) {
 				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_resm(TFAIL, "mlock(%p, %d) Failed with "
-					 "return=%d, errno=%d : %s",
+					 "return=%ld, errno=%d : %s",
 					 TC[i].addr, TC[i].len,
 					 TEST_RETURN, TEST_ERRNO,
 					 strerror(TEST_ERRNO));

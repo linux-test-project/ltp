@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fcntl08.c,v 1.5 2009/03/23 13:35:41 subrata_modak Exp $ */
+/* $Id: fcntl08.c,v 1.6 2009/10/26 14:55:46 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -173,7 +173,7 @@ int main(int ac, char **av)
 			if (STD_FUNCTIONAL_TEST) {
 				/* No Verification test, yet... */
 				tst_resm(TPASS,
-					 "fcntl(%s, F_SETFL, %d) returned %d",
+					 "fcntl(%s, F_SETFL, %d) returned %ld",
 					 fname, arg, TEST_RETURN);
 			}
 		}

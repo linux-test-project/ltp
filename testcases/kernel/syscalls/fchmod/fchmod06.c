@@ -188,7 +188,7 @@ int main(int ac, char **av)
 						 Test_cases[ind].exp_errno);
 				}
 			} else {
-				tst_resm(TFAIL, "fchmod() returned %d, expected"
+				tst_resm(TFAIL, "fchmod() returned %ld, expected"
 					 " -1, errno:%d", TEST_RETURN,
 					 Test_cases[ind].exp_errno);
 			}

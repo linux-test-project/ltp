@@ -110,7 +110,7 @@ int main(int ac, char **av)
 				tst_resm(TPASS, "TEST Passed");
 			} else {
 				tst_resm(TFAIL, "test Failed,"
-					 "getrusage() returned %d"
+					 "getrusage() returned %ld"
 					 " errno = %d : %s", TEST_RETURN,
 					 TEST_ERRNO, strerror(TEST_ERRNO));
 			}

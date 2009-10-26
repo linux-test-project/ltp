@@ -254,7 +254,7 @@ void check_and_print(char *advice)
 	if (TEST_RETURN == -1) {
 		tst_resm(TFAIL,
 			 "madvise test for %s failed with "
-			 "return = %d, errno = %d : %s",
+			 "return = %ld, errno = %d : %s",
 			 advice, TEST_RETURN, TEST_ERRNO, strerror(TEST_ERRNO));
 	} else if (STD_FUNCTIONAL_TEST) {
 		tst_resm(TPASS, "madvise test for %s PASSED", advice);

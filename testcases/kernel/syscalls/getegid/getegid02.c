@@ -116,10 +116,10 @@ int main(int ac, char **av)
 			} else {
 				if (pwent->pw_gid != TEST_RETURN) {
 					tst_resm(TFAIL, "getegid() return value"
-						 " %d unexpected - expected %d",
+						 " %ld unexpected - expected %d",
 						 TEST_RETURN, pwent->pw_gid);
 				} else {
-					tst_resm(TPASS, "effective group id %d "
+					tst_resm(TPASS, "effective group id %ld "
 						 "is correct", TEST_RETURN);
 				}
 			}

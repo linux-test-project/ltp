@@ -126,7 +126,7 @@ int main(int ac, char **av)
 					 strerror(TEST_ERRNO));
 			} else {
 				tst_resm(TPASS, "getpriority(%d, 0) returned "
-					 "%d priority value",
+					 "%ld priority value",
 					 which, TEST_RETURN);
 			}
 		}		/* End of TEST CASE LOOPING */

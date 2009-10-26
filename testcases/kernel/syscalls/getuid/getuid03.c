@@ -85,18 +85,18 @@ int main(int ac, char **av)
 			pwent = getpwuid(TEST_RETURN);
 			if (pwent == NULL) {
 				tst_resm(TFAIL, "getuid() returned unexpected "
-					 "value %d", TEST_RETURN);
+					 "value %ld", TEST_RETURN);
 			} else if (!UID_SIZE_CHECK(pwent->pw_uid)) {
 				tst_brkm(TBROK,
 					 cleanup,
-					 "uid(%d) is too large for testing getuid16",
+					 "uid(%ld) is too large for testing getuid16",
 					 TEST_RETURN);
 			  
 			} else {
 				if (pwent->pw_uid != TEST_RETURN) {
 					tst_resm(TFAIL, "getpwuid() value, %d, "
 						 "does not match getuid() "
-						 "value, %d", pwent->pw_uid,
+						 "value, %ld", pwent->pw_uid,
 						 TEST_RETURN);
 				} else {
 					tst_resm(TPASS, "values from getuid()"

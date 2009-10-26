@@ -167,7 +167,7 @@ int main(int ac, char **av)
 
 			/* check return code of llseek(2) */
 			if (TEST_RETURN != (loff_t) - 1) {
-				tst_resm(TFAIL, "llseek() returned %d, expected"
+				tst_resm(TFAIL, "llseek() returned %ld, expected"
 					 " -1, errno:%d", TEST_RETURN,
 					 Test_cases[ind].exp_errno);
 				continue;

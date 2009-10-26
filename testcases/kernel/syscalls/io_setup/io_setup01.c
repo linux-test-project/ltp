@@ -100,7 +100,7 @@ int main(int argc, char **argv)
 			tst_resm(TPASS, "call succeeded expectedly");
 			io_destroy(ctx);
 		} else {
-			tst_resm(TFAIL, "unexpected returned value - %d - "
+			tst_resm(TFAIL, "unexpected returned value - %ld - "
 				 "expected %d", TEST_RETURN, expected_return);
 		}
 
@@ -122,10 +122,10 @@ int main(int argc, char **argv)
 			io_destroy(ctx);
 		} else if (TEST_RETURN == expected_return) {
 			tst_resm(TPASS, "expected failure - "
-				 "returned value = %d : %s", TEST_RETURN,
+				 "returned value = %ld : %s", TEST_RETURN,
 				 strerror(-1 * TEST_RETURN));
 		} else {
-			tst_resm(TFAIL, "unexpected returned value - %d - "
+			tst_resm(TFAIL, "unexpected returned value - %ld - "
 				 "expected %d", TEST_RETURN, expected_return);
 		}
 
@@ -137,10 +137,10 @@ int main(int argc, char **argv)
 			io_destroy(ctx);
 		} else if (TEST_RETURN == expected_return) {
 			tst_resm(TPASS, "expected failure - "
-				 "returned value = %d : %s", TEST_RETURN,
+				 "returned value = %ld : %s", TEST_RETURN,
 				 strerror(-1 * TEST_RETURN));
 		} else {
-			tst_resm(TFAIL, "unexpected returned value - %d - "
+			tst_resm(TFAIL, "unexpected returned value - %ld - "
 				 "expected %d", TEST_RETURN, expected_return);
 		}
 
@@ -155,10 +155,10 @@ int main(int argc, char **argv)
 			io_destroy(ctx);
 		} else if (TEST_RETURN == expected_return) {
 			tst_resm(TPASS, "expected failure - "
-				 "returned value = %d : %s", TEST_RETURN,
+				 "returned value = %ld : %s", TEST_RETURN,
 				 strerror(-1 * TEST_RETURN));
 		} else {
-			tst_resm(TFAIL, "unexpected returned value - %d - "
+			tst_resm(TFAIL, "unexpected returned value - %ld - "
 				 "expected %d", TEST_RETURN, expected_return);
 		}
 

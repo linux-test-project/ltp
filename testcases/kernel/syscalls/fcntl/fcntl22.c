@@ -134,7 +134,7 @@ int main(int ac, char **av)
 
 			/* Check return code from fcntl(2) */
 			if (TEST_RETURN != -1) {
-				tst_resm(TFAIL, "fcntl() returned %d,"
+				tst_resm(TFAIL, "fcntl() returned %ld,"
 					 "expected -1, errno=%d", TEST_RETURN,
 					 exp_enos[0]);
 			} else {

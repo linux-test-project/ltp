@@ -340,6 +340,6 @@ void check_and_print(int expected_errno)
 		}
 	} else {
 		tst_resm(TFAIL, "madvise failed, expected "
-			 "return value = -1, got %d", TEST_RETURN);
+			 "return value = -1, got %ld", TEST_RETURN);
 	}
 }

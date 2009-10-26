@@ -136,7 +136,7 @@ int main(int ac, char **av)
 
 		/* Check return code from link(2) */
 		if (TEST_RETURN != -1) {
-			tst_resm(TFAIL, "link() returned %d,"
+			tst_resm(TFAIL, "link() returned %ld,"
 				 "expected -1, errno=%d", TEST_RETURN,
 				 exp_enos[0]);
 		} else {

@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fchown01.c,v 1.3 2007/04/13 20:58:17 vapier Exp $ */
+/* $Id: fchown01.c,v 1.4 2009/10/26 14:55:46 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -167,7 +167,7 @@ int main(int ac, char **av)
 			if (STD_FUNCTIONAL_TEST) {
 				/* Perform functional verification here */
 				tst_resm(TPASS,
-					 "fchown(Fd, geteuid(), getegid()) returned %d",
+					 "fchown(Fd, geteuid(), getegid()) returned %ld",
 					 TEST_RETURN);
 			}
 		}

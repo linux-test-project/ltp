@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: link04.c,v 1.8 2009/03/23 13:35:53 subrata_modak Exp $ */
+/* $Id: link04.c,v 1.9 2009/10/26 14:55:47 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -276,7 +276,7 @@ int main(int ac, char **av)
 					Tst_count++;
 			} else {
 				tst_resm(TFAIL,
-					 "link(<%s>, <%s>) returned %d, expected -1, errno:%d",
+					 "link(<%s>, <%s>) returned %ld, expected -1, errno:%d",
 					 desc1, desc2, TEST_RETURN,
 					 Test_cases[ind].exp_errno);
 			}

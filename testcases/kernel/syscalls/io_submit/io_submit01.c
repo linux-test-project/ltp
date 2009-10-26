@@ -112,11 +112,11 @@ int main(int argc, char **argv)
 			tst_resm(TFAIL, "call succeeded unexpectedly");
 		} else if (TEST_RETURN == expected_return) {
 			tst_resm(TPASS, "expected failure - "
-				 "returned value = %d : %s", (-1 * TEST_RETURN),
+				 "returned value = %ld : %s", (-1 * TEST_RETURN),
 				 strerror(-1 * TEST_RETURN));
 		} else {
-			tst_resm(TFAIL, "unexpected returned value - %d - "
-				 "expected %d", TEST_RETURN, expected_return);
+			tst_resm(TFAIL, "unexpected returned value - %ld - "
+				 "expected %ld", TEST_RETURN, expected_return);
 		}
 
 		/*
@@ -128,11 +128,11 @@ int main(int argc, char **argv)
 			tst_resm(TFAIL, "call succeeded unexpectedly");
 		} else if (TEST_RETURN == expected_return) {
 			tst_resm(TPASS, "expected failure - "
-				 "returned value = %d : %s", (-1 * TEST_RETURN),
+				 "returned value = %ld : %s", (-1 * TEST_RETURN),
 				 strerror(-1 * TEST_RETURN));
 		} else {
-			tst_resm(TFAIL, "unexpected returned value - %d - "
-				 "expected %d", TEST_RETURN, expected_return);
+			tst_resm(TFAIL, "unexpected returned value - %ld - "
+				 "expected %ld", TEST_RETURN, expected_return);
 		}
 
 		/* Special case EFAULT or EINVAL (indetermination)
@@ -150,13 +150,13 @@ int main(int argc, char **argv)
 			} else if (TEST_RETURN == expected_fault
 				   || TEST_RETURN == expected_inval) {
 				tst_resm(TPASS, "expected failure - "
-					 "returned value = %d : %s",
+					 "returned value = %ld : %s",
 					 (-1 * TEST_RETURN),
 					 strerror(-1 * TEST_RETURN));
 			} else {
 				tst_resm(TFAIL,
-					 "unexpected returned value - %d - "
-					 "expected %d(%s) or %d(%s)",
+					 "unexpected returned value - %ld - "
+					 "expected %ld(%s) or %ld(%s)",
 					 TEST_RETURN, expected_fault,
 					 strerror(-1 * expected_fault),
 					 expected_inval,
@@ -182,11 +182,11 @@ int main(int argc, char **argv)
 			tst_resm(TFAIL, "call succeeded unexpectedly");
 		} else if (TEST_RETURN == expected_return) {
 			tst_resm(TPASS, "expected failure - "
-				 "returned value = %d : %s", (-1 * TEST_RETURN),
+				 "returned value = %ld : %s", (-1 * TEST_RETURN),
 				 strerror(-1 * TEST_RETURN));
 		} else {
-			tst_resm(TFAIL, "unexpected returned value - %d - "
-				 "expected %d", TEST_RETURN, expected_return);
+			tst_resm(TFAIL, "unexpected returned value - %ld - "
+				 "expected %ld", TEST_RETURN, expected_return);
 		}
 
 		/*

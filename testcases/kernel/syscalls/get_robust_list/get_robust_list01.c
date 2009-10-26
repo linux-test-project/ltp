@@ -110,17 +110,17 @@ int main(int argc, char **argv)
 		if (TEST_RETURN) {
 			if (TEST_ERRNO == EFAULT)
 				tst_resm(TPASS,
-					 "get_robust_list: retval = %d (expected %d), "
+					 "get_robust_list: retval = %ld (expected %d), "
 					 "errno = %d (expected %d)",
 					 TEST_RETURN, -1, TEST_ERRNO, EFAULT);
 			else
 				tst_resm(TFAIL,
-					 "get_robust_list: retval = %d (expected %d), "
+					 "get_robust_list: retval = %ld (expected %d), "
 					 "errno = %d (expected %d)",
 					 TEST_RETURN, -1, TEST_ERRNO, EFAULT);
 		} else {
 			tst_resm(TFAIL,
-				 "get_robust_list: retval = %d (expected %d), "
+				 "get_robust_list: retval = %ld (expected %d), "
 				 "errno = %d (expected %d)", TEST_RETURN, -1,
 				 TEST_ERRNO, EFAULT);
 		}
@@ -132,17 +132,17 @@ int main(int argc, char **argv)
 		if (TEST_RETURN) {
 			if (TEST_ERRNO == EFAULT)
 				tst_resm(TPASS,
-					 "get_robust_list: retval = %d (expected %d), "
+					 "get_robust_list: retval = %ld (expected %d), "
 					 "errno = %d (expected %d)",
 					 TEST_RETURN, -1, TEST_ERRNO, EFAULT);
 			else
 				tst_resm(TFAIL,
-					 "get_robust_list: retval = %d (expected %d), "
+					 "get_robust_list: retval = %ld (expected %d), "
 					 "errno = %d (expected %d)",
 					 TEST_RETURN, -1, TEST_ERRNO, EFAULT);
 		} else {
 			tst_resm(TFAIL,
-				 "get_robust_list: retval = %d (expected %d), "
+				 "get_robust_list: retval = %ld (expected %d), "
 				 "errno = %d (expected %d)", TEST_RETURN, -1,
 				 TEST_ERRNO, EFAULT);
 		}
@@ -160,17 +160,17 @@ int main(int argc, char **argv)
 		if (TEST_RETURN) {
 			if (TEST_ERRNO == ESRCH)
 				tst_resm(TPASS,
-					 "get_robust_list: retval = %d (expected %d), "
+					 "get_robust_list: retval = %ld (expected %d), "
 					 "errno = %d (expected %d)",
 					 TEST_RETURN, -1, TEST_ERRNO, ESRCH);
 			else
 				tst_resm(TFAIL,
-					 "get_robust_list: retval = %d (expected %d), "
+					 "get_robust_list: retval = %ld (expected %d), "
 					 "errno = %d (expected %d)",
 					 TEST_RETURN, -1, TEST_ERRNO, ESRCH);
 		} else {
 			tst_resm(TFAIL,
-				 "get_robust_list: retval = %d (expected %d), "
+				 "get_robust_list: retval = %ld (expected %d), "
 				 "errno = %d (expected %d)", TEST_RETURN, -1,
 				 TEST_ERRNO, ESRCH);
 		}
@@ -194,17 +194,17 @@ int main(int argc, char **argv)
 		if (TEST_RETURN) {
 			if (TEST_ERRNO == EPERM)
 				tst_resm(TPASS,
-					 "get_robust_list: retval = %d (expected %d), "
+					 "get_robust_list: retval = %ld (expected %d), "
 					 "errno = %d (expected %d)",
 					 TEST_RETURN, -1, TEST_ERRNO, EPERM);
 			else
 				tst_resm(TFAIL,
-					 "get_robust_list: retval = %d (expected %d), "
+					 "get_robust_list: retval = %ld (expected %d), "
 					 "errno = %d (expected %d)",
 					 TEST_RETURN, -1, TEST_ERRNO, EPERM);
 		} else {
 			tst_resm(TFAIL,
-				 "get_robust_list: retval = %d (expected %d), "
+				 "get_robust_list: retval = %ld (expected %d), "
 				 "errno = %d (expected %d)", TEST_RETURN, -1,
 				 TEST_ERRNO, EPERM);
 		}
@@ -224,12 +224,12 @@ int main(int argc, char **argv)
 
 		if (TEST_RETURN == 0) {
 			tst_resm(TPASS,
-				 "get_robust_list: retval = %d (expected %d), "
+				 "get_robust_list: retval = %ld (expected %d), "
 				 "errno = %d (expected %d)", TEST_RETURN, 0,
 				 TEST_ERRNO, 0);
 		} else {
 			tst_resm(TFAIL,
-				 "get_robust_list: retval = %d (expected %d), "
+				 "get_robust_list: retval = %ld (expected %d), "
 				 "errno = %d (expected %d)", TEST_RETURN, 0,
 				 TEST_ERRNO, 0);
 		}

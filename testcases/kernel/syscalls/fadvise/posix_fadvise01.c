@@ -122,7 +122,7 @@ int main(int ac, char **av)
 				tst_resm(TPASS, "call succeeded expectedly");
 			} else {
 				tst_resm(TFAIL,
-					 "unexpected return value - %d : %s, advise %d - "
+					 "unexpected return value - %ld : %s, advise %d - "
 					 "expected %d",
 					 TEST_RETURN,
 					 strerror(TEST_RETURN),

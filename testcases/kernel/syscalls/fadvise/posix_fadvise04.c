@@ -132,11 +132,11 @@ int main(int ac, char **av)
 			   "On error, an error number is returned." */
 			if (TEST_RETURN == TC[i].error) {
 				tst_resm(TPASS, "expected failure - "
-					 "returned value = %d : %s",
+					 "returned value = %ld : %s",
 					 TEST_RETURN, strerror(TEST_RETURN));
 			} else {
 				tst_resm(TFAIL,
-					 "unexpected return value - %d : %s - "
+					 "unexpected return value - %ld : %s - "
 					 "expected %d", TEST_RETURN,
 					 strerror(TEST_RETURN), TC[i].error);
 			}
