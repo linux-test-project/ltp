@@ -55,7 +55,7 @@
 #include "usctest.h"
 
 #define PAGE_SIZE      ((1UL) << 12) 	/* Normal page size */
-#define HIGH_ADDR      (void *)(0x10000000000)
+#define HIGH_ADDR      (void *)(0x1000000000000)
 
 char* TEMPFILE="mmapfile";
 
@@ -130,6 +130,7 @@ main(int ac, char **av)
 			continue;
 		} else {
 			tst_resm(TPASS, "Normal mmap() into high region failed correctly");
+			break;
 		}
 
 		close(fildes);
