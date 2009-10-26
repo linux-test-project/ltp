@@ -1,0 +1,7 @@
+The Flexible Filesystem Benchmark (FFSB) is a filesystem performance measurement tool.  It is a multi-threaded application (using pthreads), written entirely in C with cross-platform portability in mind.  It differs from other filesystem benchmarks in that the user may supply a profile to create custom workloads, while most other filesystem benchmarks use a fixed set of workloads.
+
+It is currently known to support Linux, AIX, and Solaris, although almost all development and testing has occurred on Linux.  We intend to add support for HP-UX, IRIX, and possibly others in the near future.
+
+FFSB is currently at version 5.0, and has been an internal tool at IBM for about four years.  I has already been used to conduct a study of Linux Kernel 2.6 IO-schedulers, and a great deal of future filesystem performance work is planned with FFSB as the primary tool.
+
+In version 5.0, it supports six different basic operations, support for multiple groups of threads with different operation mixtures, support for operation across multiple filesystems, and support for filesystem aging prior to benchmarking.

@@ -1,0 +1,29 @@
+directio=0
+time=0
+
+[filesystem0]
+	location=mnt_point/
+	num_files=1
+	num_dirs=1
+	max_filesize=409600
+	min_filesize=40960
+	agefs=1
+	[threadgroup0]
+		num_threads=10
+		write_size=409600
+		write_blocksize=40960
+		create_weight=10
+		append_weight=10
+		delete_weight=1
+	[end0]
+		desired_util=0.80
+[end0]
+
+[threadgroup0]
+	num_threads=32
+	read_weight=1
+
+	read_size=4096
+	read_blocksize=4096
+[end0]
+

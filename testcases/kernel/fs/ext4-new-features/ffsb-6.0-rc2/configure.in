@@ -1,0 +1,49 @@
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(main.c)
+AM_INIT_AUTOMAKE(ffsb, 6.0-RC2)
+
+AM_CONFIG_HEADER(config.h)
+AC_CANONICAL_HOST
+
+dnl need to define _ALL_SOURCE and _THREAD_SAFE on AIX
+AC_AIX
+
+case "${host}" in
+  *aix*)
+    CFLAGS="${CFLAGS} -D_THREAD_SAFE"
+    ;;
+  *linux*)
+    CFLAGS="${CFLAGS} -D_REENTRANT"
+    ;;
+  *)
+    echo "detected unknown platform : ${host} : compiles may fail"
+    CFLAGS="${CFLAGS} -D_REENTRANT"
+    ;;
+esac
+
+dnl Checks for programs.
+AC_PROG_CC
+
+dnl Checks for libraries.
+dnl Replace `main' with a function in -lm:
+AC_CHECK_LIB(m, main)
+dnl Replace `main' with a function in -lpthread:
+AC_CHECK_LIB(pthread, main)
+
+
+dnl Checks for header files.
+AC_HEADER_STDC
+AC_HEADER_SYS_WAIT
+AC_CHECK_HEADERS(pthread.h fcntl.h limits.h stdint.h sys/time.h unistd.h sys/vfs.h sys/limits.h)
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_HEADER_TIME
+
+dnl Checks for library functions.
+AC_FUNC_SETVBUF_REVERSED
+AC_CHECK_FUNCS(system gettimeofday mkdir strerror open64 stat64 fseeko64 lrand48_r srand48_r)
+
+AC_SUBST(CFLAGS)
+AC_SUBST(CC)
+AC_OUTPUT(Makefile, echo timestamp > stamp-h)

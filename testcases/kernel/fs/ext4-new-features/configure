@@ -1,0 +1,23 @@
+#!/bin/sh
+
+echo "Run the ffsb's configure"
+cd ./ffsb-6.0-rc2
+./configure
+cd ..
+
+EXT4_DEV=
+RESULT=
+
+echo "Ext4 new features test configure"
+echo "Please specify a partition to create ext4 filesystem:"
+read EXT4_DEV
+
+echo "The partition is: $EXT4_DEV, Are you sure(Y/N)?"
+read RESULT
+if [ "$RESULT" == "Y" ] || [ "$RESULT" == "y" ]; then
+	echo "EXT4_DEV=$EXT4_DEV" > ./ext4-test-config
+elif [ "$RESULT" == "N" ]; then
+	echo "Give up specifing a partition!"
+else
+	echo "Your input is wrong($RESULT)."
+fi

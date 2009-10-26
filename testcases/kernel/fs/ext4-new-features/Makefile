@@ -1,5 +1,5 @@
 #
-#    kernel/fs testcases Makefile.
+#    kernel/fs/ext4-new-features testcases Makefile.
 #
 #    Copyright (C) 2009, Cisco Systems Inc.
 #
@@ -17,16 +17,22 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Garrett Cooper, July 2009
-#
 
-top_srcdir		?= ../../..
+top_srcdir              ?= ../../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-# XXX (garrcoop): Need to add autoconf checks for JFS.
-# ext4-new-features: This test need to be configured be user.
-# Please read $LTPROOT/README to see the detail information
-FILTER_OUT_DIRS		:= dmapi ext4-new-features
+INSTALL_TARGETS		:= *.sh
+INSTALL_TARGETS		:= ext4-test-config
+INSTALL_TARGETS		:= ffsb-6.0-rc2/ffsb
+
+FILTER_OUT_DIRS		:= ffsb-6.0-rc2
+
+trunk-all: ffsb-6.0-rc2
+
+trunk-clean:: | ffsb-clean
+
+ffsb-clean:: ffsb-6.0-rc2
+	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" clean
 
 include $(top_srcdir)/include/mk/generic_trunk_target.mk

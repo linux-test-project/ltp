@@ -405,3 +405,21 @@ end
 1) Add as many framework as they get added/modifed in the kernel
 ---------------------------------
 
+---------------------------------
+Enabling Kernel Configuration to test ext4 new features
+---------------------------------
+CONFIG_EXT4_FS=y
+CONFIG_EXT4DEV_COMPAT=y
+CONFIG_EXT4_FS_XATTR=y
+CONFIG_EXT4_FS_POSIX_ACL=y
+CONFIG_EXT4_FS_SECURITY=y
+
+Beside that, the following packages are necessary.
+  e2fsprogs
+  e2fsprogs-devel
+  e2fsprogs-libs
+And the version of packages must be 1.41.4 or above.
+
+For more information to build/install/run these tests, look through:
+ltp/testcases/kernel/fs/ext4-new-features/README
+---------------------------------

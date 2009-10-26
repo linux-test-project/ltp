@@ -1,0 +1,4 @@
+The Flexible Filesystem Benchmark (FFSB) is a filesystem performance
+measurement tool.  It uses customizable profiles to measure of different
+workloads, and it supports multiple groups of threads across multiple
+filesystems.

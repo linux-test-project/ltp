@@ -1,0 +1,413 @@
+Introduction:
+
+The Flexible Filesystem Benchmark (FFSB) is a filesystem performance
+measurement tool.  It is a multi-threaded application (using
+pthreads), written entirely in C with cross-platform portability in
+mind.  It differs from other filesystem benchmarks in that the user
+may supply a profile to create custom workloads, while most other
+filesystem benchmarks use a fixed set of workloads.
+
+As of version 5.1, it supports seven different basic operations, support
+for multiple groups of threads with different operation mixtures,
+support for operation across multiple filesystems, and support for
+filesystem aging prior to benchmarking.
+
+
+Differences from version 4.0 and older:
+
+Version 5.0 and above represent almost a total re-write and many
+things have changed.  In version 5.0 and above FFSB moved to a
+time-regulated run versus doing a set number of different operations
+and timing the whole thing.  This is primarily to better deal with the
+use of multiple threadgroups which would otherwise not be synchronized
+at termination time.
+
+Additionally, the FFSB configuration file format has changed in
+version 5.0, although we do support old-style configuration files
+along with a run-time passed on the command line.  In this mode,
+version 5.0 and above ignores the iterations parameter, and simply
+uses the time specified on the command line.
+
+Behaviorally, most of the old operations are the same -- sequential
+reads and sequential writes work as they did before.  One change in
+version 5.0 is the skip-read behavior of reading then seeking forward
+a fixed amount then reading again is removed, we now support fully
+randomized reads and writes from random offsets within the file.
+
+Version 4.0 didn't support overwrites (only appends) so we interpret
+writes in old config files to be append operations.
+
+On Linux, CPU utilization information will only be accurate for
+systems using NPTL, older Linuxthreads systems will probably only see
+zeros for CPU utilization because Linuxthreads is non-compliant to
+POSIX. Version 4.0 and older could be recompiled to work on
+Linuxthreads, but in 5.0 and later we no longer support this.
+
+We no longer support the "outputfile" on the command line.
+
+One should simply use tee or similar to capture the output.  FFSB
+unbuffers standard out for this purpose, and errors are sent on
+standard error.
+
+Global options:
+
+There are eight valid global options placed at the beginning of the
+profile.  Three of them are required: num_filesystems (number of
+filesystems), num_threadgroups (number of threadgroups), and time
+(running time of the benchmark).  The other five options are:
+
+directio   - each call to open will be made using O_DIRECT
+alignio    - aligns all block operations for random reads and writes
+             on 4k boundaries.
+bufferedio - currently ignorred: it is intended to use libc
+             fread,rwrite, instead of just unix read and write calls
+verbose    - currently ignored
+
+callout    - calls and external command and waits for its termination
+	     before FFSB begins the benchmark phase.
+	     This is useful for synchronizing distributed clients,
+	     starting profilers, etc.
+
+They must be specified in the above order (num_filesystems,
+num_threadgroups, time, directio, alignio, bufferedio, verbose,
+callout).
+
+
+
+Filesystems:
+
+Filesystems are specified to FFSB in the form of a directory.  FFSB
+assumes that the filesystem is mounted at this directory and will not
+do any verification of this fact beyond ensuring it can read/write to
+the location.  So be careful to ensure something with enough space to
+handle the dataset is in fact mounted at the specified location.
+
+In the filesystem clause of the profile, one may set the starting
+number of files and directories as well as a minimum and maximum
+filesize for the filesystem.  One may also specify the blocksize
+used for creating the files separately in the filesystem clause.
+
+Also, if a filesystem is to be aged, a special threadgroup clause may
+be embedded in a filesystem clause to specify the operation mixture
+and number of threads used to age the filesystem.  This threadgroup is
+run until filesystem utilization reaches the specified amount.
+
+Inheritance --  if you are using multiple filesystems, all attributes
+except the location should be inherited from the previous filesystem.
+This is done to make it easier to add groups of similar filesystems.
+In this case, only the location is required in the filesystem clause.
+
+As of version 5.1, filesystem re-use is supported if a given
+filesystem hasn't been modified beyond it's orginal specifications
+(number of files and directories is correct, and file sizes are within
+specifications).  This can be a huge time saver if one wishes to do
+multiple runs on the same data-set without altering it during a run,
+because the fileset doesn't need to be recreated before each run.
+
+To do this, specify "reuse=1" in the filesystem clause, and FFSB will
+verify the fileset first, and if it checks out it will use it.
+Otherwise, it will remove everything and re-create the filesets for
+that filesystem.
+
+Threadgroups:
+
+An arbitrary number of threadgroups with differing numbers of threads
+and operation mixes can be specified.  The operations are specified
+using a weighting for each operation, if an operation isn't specified
+it's weighting is assumed to be zero (not used).
+
+"Think-time" for a threadgroup may also be specified in millisecond
+amounts using the "op_delay" parameter, where every thread will wait
+for the specified amount between each operation.
+
+Operations:
+
+All operations begin by randomly selecting a filesystem from the list
+of filesystems specified in the profile.  The distribution aims to be
+uniform across all filesystems.
+
+
+The seven operations are:
+
+reads  - read() calls with an overall amount and a blocksize
+         operates on existing files.  Care must be taken to ensure
+         that the read amount is smaller than the size of any possible
+         file.
+
+	 If random_read is specified, then the each individual blocks
+         will be read starting from a random point with the file, and
+         this will continune until the entire amount specifed has been
+         read.  This offset of each random block will be totally
+         random to the byte level, unless the "alignio" global parameter
+         is on, and then the reads will be 4096 byte aligned.  This is
+         generally recommended.
+
+
+readall - Very similar to read above, except it doesn't take an
+          amount; it simply reads the entire file sequentially using the
+          read_blocksize.   This is useful for situations where
+	  different filesystems have differently sized files, and sequential
+	  read patterns across all filesystems are desired.
+
+writes - write() calls with an overall amount and blocksize
+         this is an overwrite operation and will not enlarge an existing
+         file, again one must be careful not to specify a write amount
+         that is larger than any possible file in the data set.
+
+	 If random_write is specified, then the each individual blocks
+         will be written starting from a random point with the file, and
+         this will continune until the entire amount specifed has been
+         written out.  This offset of each random block will be totally
+         random to the byte level, unless the "alignio" global parameter
+         is on, and then the writes will be 4096 byte aligned.  This
+         is generally recommended.
+
+	 If the fsync_flag parameter for the threadgroup is non-zero,
+	 then after all of the write calls are finished, fsync() will
+	 be called on the file descriptor before the file is closed.
+
+
+creates - creates a file using open() call and determines the size
+          randomly between on the constraints (min_filesize and
+          max_filesize) for the selected filesystem. Write operations will
+          be done using the same blocksize as is specified for the
+          write operation.
+deletes - calls unlink() on a filename and removes it from the
+          internal data-structures.  One must be careful to ensure
+          there are enough files to delete at all times or else the benchmark
+          will terminate.
+appends - calls write() using the append flag with an overall amount
+          and a blocksize to be appended onto a randomly chosen file.
+metas   - this is actually a mix of several different directory
+          operations.  Each "meta" operation consists of two directory
+          creates, one directory remove, and a directory rename.
+          These operations are all carried out separately from the
+          other 5 operations.
+
+Operation accounting:
+
+Each operation which uses a blocksize counts each read/write of a
+blocksize as an operation (reads,writes,creates, and appends) whereas
+deletes and metas are considered single operations.
+
+Running the benchmark:
+
+There are three phases to running the benchmark, aging, fileset
+creates, and the benchmark phase.
+
+The create phase is carried out across all filesystems simultanously
+with one dedicated thread per filesystem.
+
+After the create phase, sync() is called to ensure all dirty data gets
+written out before the benchmark phase begins, and sync() is again
+called at the end of the benchmark phase.  The time in sync() at the
+end of the benchmark phase is counted as part of the benchmark phase.
+
+Caveats/Holes/Bugs:
+
+Aging and aging across multiple filesystems simultaneously hasn't been tested
+very much.
+
+If *any* i/o operation or system call/libc call fails, the benchmark
+will terminate immediately.
+
+The parser doesn't handle mal-formed or incorrect profiles very well
+(or at all).
+
+The parser doesn't check to make sure all of the appropriate options
+have been specified.  For example, if writes are specified in a
+threadgroup but write_blocksize isn't specified, the parse won't catch
+it, but the benchmark run will fail later on.
+
+
+Configuration Files (new style):
+
+New Style Configuration allows for arbitrary newlines between lines,
+and comments using '#' at the start of a line.  Also it allows tabs,
+whitespace before and after configuration parameters.
+
+The new style configuration file is broken up into three main parts:
+
+global parameters, filesystems, and threadgroups
+
+The sections must be in the above order.
+
+Global parameters:
+
+Global Paramters are described above, the first three are always
+required. Example:
+
+----------
+
+num_filesystems=1
+num_threadgroups=1
+time=30 		# time is in seconds
+
+directio=0 		# don't use direct io
+alignio=1  		# align random IOs to 4k
+bufferedio=0		# this does nothing right now
+verbose=0		# this does nothing right now
+
+			# calls and external command and waits
+			# everything until the newline is taken
+			# so you can have abritrary parmeters
+callout=synchronize.sh myhostname
+
+---------
+
+All of these must appear in this order, though you can leave out the
+optional ones.
+
+Filesystems:
+
+Filesystems describe differnt logical sets of files residing in
+different directorys.  There is no strict requirement that they
+actually be on different filesystems, only that the directory
+specified already exists.
+
+Filesystems are specified by a clause with a filesystem number like
+this:
+
+[filesystem0]
+	location=/mnt/testing/
+	num_files=10
+	num_dirs=1
+	max_filesize=4096
+	min_filesize=4096
+[end0]
+
+
+The clause must always begin with [filesystemX] and end with [endX]
+where X is the number of that filesystem.
+
+You should start wiht X = 0, and increment by one for each following
+filesystem.  If they are out of order, things will likely break.
+
+The required information for each filesystem is: location, num_files,
+num_dirs, max_filesize, and min_filesize.  Beyond those the following
+four options are supported:
+
+
+
+reuse=1 # check the filesystem to see if it is reusable
+
+	# filesystem aging, three components required
+	# takes agefs=1 to turn it on
+	# then a valid threadgroup specification
+	# then a desired utilization percentage
+
+agefs=1 # age the filesystem according to the following threadgroup
+	[threadgroup0]
+		num_threads=10
+		write_size=40960
+		write_blocksize=4096
+		create_weight=10
+		append_weight=10
+		delete_weight=1
+	[end0]
+desired_util=0.20	# In this case, age until the fs is 20% full
+
+create_blocksize=4096   # specify the blocksize to write()
+		        # for creating the fileset, defaults to 4096
+
+age_blocksize=4096      # specify the blocksize to write() for aging
+
+
+Also, to allow lazy people to use lots of filesystems, we support
+filesystem inheritance, which simply copies all options but the
+location from the previous filesystem clause if nothing is specified.
+Obviously, this doesn't work for filesystem0. (May not work for aging
+either?)
+
+Full blown filesystem clause example:
+
+----
+
+[filesystem0]
+
+	# required parts
+
+	location=/home/sonny/tmp
+	num_files=100
+	num_dirs=100
+	max_filesize=65536
+	min_filesize=4096
+
+	# aging part
+	agefs=0
+	[threadgroup0]
+		num_threads=10
+		write_size=40960
+		write_blocksize=4096
+		create_weight=10
+		append_weight=10
+		delete_weight=1
+	[end0]
+		desired_util=0.02	# age until 2% full
+
+	# other optional commands
+
+	create_blocksize=1024		# use a small create blocksize
+	age_blocksize=1024		# and smaller age create blocksize
+	reuse=0	                        # don't reuse it
+[end0]
+
+
+
+--
+
+Threadgroups:
+
+Threadgropus are very similar to filesystems in that any number of
+them can be specified in clauses, and they must be in order starting
+with threadgroup0.
+
+Example:
+
+---
+
+[threadgroup0]
+	num_threads=32
+	read_weight=4
+	append_weight=1
+
+	write_size=4096
+	write_blocksize=4096
+
+	read_size=4096
+	read_blocksize=4096
+[end0]
+
+---
+
+In a threadgroup clause, num_threads is required and must be at least
+1.  Then, at least one operation must be given a weight greater than 0
+to be a valid threadgroup.  Operations can be given a weighting of 0,
+and in this case they are ignored.
+
+Certain operations will also require other commands, for example, if
+read_weight is greater than zero, then one must also include a
+read_size and a read_blocksize.  Here's the table of requirements and
+options:
+
+
+Operation		Requirements			Options
+--			--				--
+read_weight		read_size, read_blocksize	read_random
+readall_weight		read_blocksize			none
+write_weight		write_size, write_blocksize	write_random,fsync_file
+create_weight		write_blocksize or create_blocksize	none
+append_weight		write_blocksize, write_size	none
+delete_weight		none				none
+meta_weight		none				none
+
+
+
+Other threadgroup options:
+
+op_delay=10  # specify a wait between operations in milli-seconds
+
+bindfs=3     # This allows you to restrict a threadgroup's operation
+             # to a specific filesystem number.  Currently only
+	     # binding to one specific filesystem is supported
+

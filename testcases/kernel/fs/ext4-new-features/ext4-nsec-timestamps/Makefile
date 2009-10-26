@@ -1,7 +1,4 @@
-#
-#    kernel/fs testcases Makefile.
-#
-#    Copyright (C) 2009, Cisco Systems Inc.
+#    Copyright (C) 2009, FUJITSU LIMITED
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -17,16 +14,12 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Garrett Cooper, July 2009
-#
 
-top_srcdir		?= ../../..
+top_srcdir              ?= ../../../../..
 
-include $(top_srcdir)/include/mk/env_pre.mk
+include $(top_srcdir)/include/mk/testcases.mk
 
-# XXX (garrcoop): Need to add autoconf checks for JFS.
-# ext4-new-features: This test need to be configured be user.
-# Please read $LTPROOT/README to see the detail information
-FILTER_OUT_DIRS		:= dmapi ext4-new-features
+LDLIBS += -lm
+INSTALL_TARGETS		?= *.sh
 
-include $(top_srcdir)/include/mk/generic_trunk_target.mk
+include $(top_srcdir)/include/mk/generic_leaf_target.mk
