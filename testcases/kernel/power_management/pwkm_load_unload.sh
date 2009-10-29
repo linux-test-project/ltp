@@ -3,7 +3,7 @@
 #Loading modules
 RC=0
 loaded_governor=`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor`
-for module in cpufreq_conservative cpufreq_powersave cpufreq_userspace
+for module in `modprobe -l | grep cpufreq_ | cut -f8 -d"/" | cut -f1 -d"."`
 do
 	#echo -n "Loading $module ... "
     if [ $module != "cpufreq_$loaded_governor" ];
@@ -15,7 +15,7 @@ do
 		fi
 	fi
 done
-for module in cpufreq_conservative cpufreq_powersave cpufreq_userspace
+for module in `modprobe -l | grep cpufreq_ | cut -f8 -d"/" | cut -f1 -d"."`
 do
 	#echo -n "Unloading $module ... "
     if [ $module != "cpufreq_$loaded_governor" ];
