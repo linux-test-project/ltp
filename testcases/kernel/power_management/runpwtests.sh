@@ -169,22 +169,24 @@ if [ $? -ne 0 ] ; then
 	tst_resm TCONF "Python is not installed, CPU Consoldation\
 test cannot run"
 else
-	get_sched_values sched_mc; max_sched_mc=$?
-    echo "max sched mc $max_sched_mc"
-	for sched_mc in `seq 0 $max_sched_mc`; do
-		: $(( TST_COUNT+=1))
-		sched_domain.py -c $sched_mc; RC=$?
-		analyze_sched_domain_result $sched_mc $RC 
-		if [ $hyper_threaded -eq $YES ]; then
-			get_sched_values sched_smt; max_sched_smt=$?
-			for sched_smt in `seq 0 $max_sched_smt`; do
-				# Testcase to validate sched_domain tree
-				: $(( TST_COUNT+=1))
-				sched_domain.py -c $sched_mc -t $sched_smt; RC=$?
-				analyze_sched_domain_result $sched_mc $RC $sched_smt ;
-			done
-		fi
-	done
+	if [ -f /sys/devices/system/cpu/sched_mc_power_savings ] ; then
+		get_sched_values sched_mc; max_sched_mc=$?
+    	echo "max sched mc $max_sched_mc"
+		for sched_mc in `seq 0 $max_sched_mc`; do
+			: $(( TST_COUNT+=1))
+			sched_domain.py -c $sched_mc; RC=$?
+			analyze_sched_domain_result $sched_mc $RC 
+			if [ $hyper_threaded -eq $YES -a -f /sys/devices/system/cpu/sched_smt_power_savings ]; then
+				get_sched_values sched_smt; max_sched_smt=$?
+				for sched_smt in `seq 0 $max_sched_smt`; do
+					# Testcase to validate sched_domain tree
+					: $(( TST_COUNT+=1))
+					sched_domain.py -c $sched_mc -t $sched_smt; RC=$?
+					analyze_sched_domain_result $sched_mc $RC $sched_smt ;
+				done
+			fi
+		done
+	fi
 fi
 
 : $(( TST_COUNT+=1))
