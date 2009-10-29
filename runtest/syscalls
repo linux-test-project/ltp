@@ -731,6 +731,7 @@ ptrace01 ptrace01
 ptrace02 ptrace02
 ptrace03 ptrace03
 ptrace04 ptrace04
+ptrace05 ptrace05
 # Broken test; See: testcases/kernel/syscalls/ptrace/Makefile for more details.
 #ptrace06 ptrace06
 
