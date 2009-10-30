@@ -26,7 +26,7 @@ TEST_DIR=testdir
 
 
    		#should be root  to execute this script .
-	if [ $UID -ne 0 ]; then
+	if [ $(id -ru) -ne 0 ]; then
 		echo "This script must be run as root"
 		exit
 	fi
@@ -52,8 +52,7 @@ modprobe loop
 	fi
 
 	#run the mongo test on reiserfs file system type 
-function reiserfs
-
+reiserfs()
 {
 cat > fs.sh <<EOF
 echo "performing mongo on reiserfs"
@@ -71,8 +70,7 @@ EOF
 	
 
 #To run on jfs file system type 
-function  JFS
-
+JFS()
 {
 cat >> fs.sh <<EOF
 echo "performing mongo on jfs file system"

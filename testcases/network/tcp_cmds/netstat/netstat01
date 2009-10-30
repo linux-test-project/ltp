@@ -58,7 +58,7 @@ do_test() {
     while [ $TST_COUNT -le $NUMLOOPS ]; do
 
         for flag in "-s" "-rn" "-i" "-gn" "-apn"; do
-            if ! netstat $flag 2>&1 1>/dev/null; then
+            if ! netstat $flag 1>/dev/null 2>&1; then
                 end_testcase "$COMMAND failed"
             fi
         done

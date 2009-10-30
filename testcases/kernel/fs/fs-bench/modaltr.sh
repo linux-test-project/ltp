@@ -43,7 +43,7 @@ LOG_DIR1=/tmp/log1
 HOME_DIR=/home
 BLOCK_DIR=/dev/mtdblock
 export PATH=$PATH:/sbin
-	if [ $UID -ne 0 ]; 
+	if [ $(id -ru) -ne 0 ]; 
 then 
 	echo "must be root to run this"
 	exit
