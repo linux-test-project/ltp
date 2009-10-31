@@ -115,7 +115,7 @@ incr_tst_count()
 
 is_root()
 {
-	[ $UID -eq 0 ]
+    [ "x$(id -ru)" = x0 ]
 }
 
 #
