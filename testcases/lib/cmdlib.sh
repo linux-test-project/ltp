@@ -25,7 +25,7 @@
 set -u
 
 export SHELL_DEBUG=${SHELL_DEBUG:=0}
-if [ "$SHELL_DEBUG" = 1 ] ; then
+if [ "x$SHELL_DEBUG" = x1 ] ; then
     set -x
 fi
 
