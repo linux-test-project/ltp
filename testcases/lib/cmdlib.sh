@@ -110,7 +110,7 @@ exists()
 
 incr_tst_count()
 {
-    : $(( TST_COUNT + 1 ))
+    : $(( TST_COUNT += 1 ))
 }
 
 is_root()
