@@ -61,16 +61,7 @@ set_def_group() #default group spinning a task to create ideal scenario
 
 get_num_groups()        # Number of tasks should be >= number of cpu's (to check scheduling fairness)
 {
-        num_grps=$(echo "$NUM_CPUS * 1.5"|bc)   # temp variable num_grps
-        int_part=`echo $num_grps | cut -d"." -f1`
-        dec_part=`echo $num_grps | cut -d"." -f2`
-
-        if [ $dec_part -gt 0 ]
-        then
-                NUM_GROUPS=$(echo "$int_part + 1"|bc)
-        else
-                NUM_GROUPS=$int_part;
-        fi
+        NUM_GROUPS=$(( (NUM_CPUS*3 + 1)/2 ))
 }
 
 	# Write the cleanup function
