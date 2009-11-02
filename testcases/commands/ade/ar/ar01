@@ -573,7 +573,7 @@ rm -rf $TCtmp/lib.a;cd $TCdat $TCtmp/lib.a.exp *out
 ar -cr $TCtmp/lib.a file1.in file2.in file3.in
 crtest
 
-ls -ln --time-style=+%b" "%d" "%H:%M file1.in file2.in file3.in |
+ls -ln --time-style=+%b" "%e" "%H:%M file1.in file2.in file3.in |
 while
 read permissions link uid gid size month day time file_name
 do
