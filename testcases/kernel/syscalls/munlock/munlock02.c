@@ -142,7 +142,7 @@ int main(int ac, char **av)
 			} else {
 				tst_brkm(TFAIL, cleanup,
 					 "munlock() Failed, expected "
-					 "return value=-1, got %d",
+					 "return value=-1, got %ld",
 					 TEST_RETURN);
 			}
 		}
@@ -177,9 +177,8 @@ void setup()
 
 	/* check return code */
 	if (TEST_RETURN == -1) {
-		tst_brkm(TFAIL, cleanup, "mlock(%p, %d) Failed with return=%d,"
-			 "errno=%d : %s", address, TC[0].len, TEST_RETURN,
-			 TEST_ERRNO, strerror(TEST_ERRNO));
+		tst_brkm(TFAIL|TTERRNO, cleanup, "mlock(%p, %d) Failed with return=%ld",
+			 address, TC[0].len, TEST_RETURN);
 	}
 	TC[0].addr = address;
 	/*

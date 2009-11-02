@@ -141,8 +141,8 @@ int main(int ac, char **av)
 			if (TEST_RETURN == -1) {
 				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_resm(TBROK, "setregid(%d, %d) failed",
-					 test_data[i].real_gid,
-					 test_data[i].eff_gid);
+					 *test_data[i].real_gid,
+					 *test_data[i].eff_gid);
 			} else {
 				/*
 				 * Perform functional verification if test

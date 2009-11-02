@@ -122,11 +122,10 @@ int main(int ac, char **av)
 			/* check return code */
 			if (TEST_RETURN == -1) {
 				TEST_ERROR_LOG(TEST_ERRNO);
-				tst_resm(TFAIL, "mlock(%p, %d) Failed with "
-					 "return=%d, errno=%d : %s",
+				tst_resm(TFAIL|TTERRNO, "mlock(%p, %d) Failed with "
+					 "return=%ld",
 					 TC[i].addr, TC[i].len,
-					 TEST_RETURN, TEST_ERRNO,
-					 strerror(TEST_ERRNO));
+					 TEST_RETURN);
 			} else {
 				tst_resm(TPASS, "test %d passed length = %d",
 					 i, TC[i].len);
@@ -150,9 +149,8 @@ void setup1(int i)
 	/* check return code */
 	if (TEST_RETURN == -1) {
 		TEST_ERROR_LOG(TEST_ERRNO);
-		tst_brkm(TFAIL, cleanup, "mlock(%p, %d) Failed with return=%d,"
-			 "errno=%d : %s", TC[i].addr, TC[i].len, TEST_RETURN,
-			 TEST_ERRNO, strerror(TEST_ERRNO));
+		tst_brkm(TFAIL|TTERRNO, cleanup, "mlock(%p, %d) Failed with return=%ld",
+			 TC[i].addr, TC[i].len, TEST_RETURN);
 	}
 }
 

@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: fcntl02.c,v 1.7 2009/10/26 14:55:46 subrata_modak Exp $ */
+/* $Id: fcntl02.c,v 1.8 2009/11/02 13:57:16 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -181,9 +181,9 @@ int main(int ac, char **av)
 					 fname, TEST_RETURN);
 			}
 			if (close(TEST_RETURN) == -1) {
-				tst_resm(TWARN,
-					 "close(%s) Failed, errno=%d : %s",
-					 fname, errno, strerror(errno));
+				tst_resm(TWARN | TERRNO,
+					 "close(%s) Failed",
+					 fname);
 			}
 		}
 

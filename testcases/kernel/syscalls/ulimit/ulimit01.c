@@ -29,7 +29,7 @@
  *
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: ulimit01.c,v 1.5 2009/03/23 13:36:13 subrata_modak Exp $ */
+/* $Id: ulimit01.c,v 1.6 2009/11/02 13:57:19 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -196,25 +196,23 @@ int main(int ac, char **av)
 			if (TEST_RETURN == -1) {
 				if (Scenarios[i].exp_fail) {
 					if (STD_FUNCTIONAL_TEST) {
-						tst_resm(TPASS,
-							 "ulimit(%d, %d) Failed, errno=%d : %s",
-							 cmd, limit, TEST_ERRNO,
-							 strerror(TEST_ERRNO));
+						tst_resm(TPASS|TTERRNO,
+							 "ulimit(%d, %ld) Failed expectedly",
+							 cmd, limit);
 					}
 				} else {
-					tst_resm(TFAIL,
-						 "ulimit(%d, %d) Failed, errno=%d : %s",
-						 cmd, limit, TEST_ERRNO,
-						 strerror(TEST_ERRNO));
+					tst_resm(TFAIL|TTERRNO,
+						 "ulimit(%d, %ld) Failed",
+						 cmd, limit);
 				}
 			} else {
 				if (Scenarios[i].exp_fail) {
 					tst_resm(TFAIL,
-						 "ulimit(%d, %d) returned %d",
+						 "ulimit(%d, %ld) returned %ld, succeeded unexpectedly",
 						 cmd, limit, TEST_RETURN);
 				} else if (STD_FUNCTIONAL_TEST) {
 					tst_resm(TPASS,
-						 "ulimit(%d, %d) returned %d",
+						 "ulimit(%d, %ld) returned %ld",
 						 cmd, limit, TEST_RETURN);
 				}
 

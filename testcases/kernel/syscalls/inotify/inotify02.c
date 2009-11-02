@@ -179,9 +179,9 @@ int main(int ac, char **av)
 		Tst_count++;
 
 		if (getcwd(fname1, BUF_SIZE) == NULL) {
-			tst_brkm(TBROK, cleanup,
-				 "getcwd(%x, %d) Failed, errno=%d : %s", fname1,
-				 BUF_SIZE, errno, strerror(errno));
+			tst_brkm(TBROK | TERRNO, cleanup,
+				 "getcwd(%p, %d) Failed", fname1,
+				 BUF_SIZE);
 		}
 
 		snprintf(fname2, BUF_SIZE, "%s.rename1", fname1);

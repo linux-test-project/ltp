@@ -117,25 +117,25 @@ n2itest()
 		TEST(if_nametoindex(n2i[i].name));
 		fail = !TEST_RETURN != !n2i[i].nonzero;
 		if (fail) {
-			tst_resm(TFAIL, "if_nametoindex(\"%s\") %d "
+			tst_resm(TFAIL, "if_nametoindex(\"%s\") %ld "
 				"[should be %szero]", n2i[i].name,
 				TEST_RETURN, n2i[i].nonzero ? "non" : "");
 			continue;
 		}
 		if (!TEST_RETURN) {
-			tst_resm(TPASS, "if_nametoindex(\"%s\") %d",
+			tst_resm(TPASS, "if_nametoindex(\"%s\") %ld",
 				n2i[i].name, TEST_RETURN);
 			continue;
 		}
 
 		pifn = if_indextoname(TEST_RETURN, ifname);
 		if (!pifn || strcmp(n2i[i].name, pifn)) {
-			tst_resm(TFAIL, "if_nametoindex(\"%s\") %d doesn't "
-				"match if_indextoname(%d) \"%s\"", n2i[i].name,
+			tst_resm(TFAIL, "if_nametoindex(\"%s\") %ld doesn't "
+				"match if_indextoname(%ld) \"%s\"", n2i[i].name,
 				TEST_RETURN, TEST_RETURN, pifn ? pifn : "");
 			continue;
 		}
-		tst_resm(TPASS, "if_nametoindex(\"%s\") %d", n2i[i].name,
+		tst_resm(TPASS, "if_nametoindex(\"%s\") %ld", n2i[i].name,
 			TEST_RETURN);
 	}
 }
@@ -149,7 +149,7 @@ i2ntest1(unsigned int if_index)
 	TEST((ifname == if_indextoname(if_index, ifname)));
 	if (!TEST_RETURN) {
 		if (TEST_ERRNO != ENXIO) {
-			tst_resm(TFAIL, "if_indextoname(%d) returns %d "
+			tst_resm(TFAIL, "if_indextoname(%d) returns %ld "
 				"but errno %d != ENXIO", if_index, TEST_RETURN,
 				TEST_ERRNO);
 			return 0;
@@ -160,9 +160,9 @@ i2ntest1(unsigned int if_index)
 	/* else, a valid interface-- double check name */
 	idx = if_nametoindex(ifname);
 	if (idx != if_index) {
-		tst_resm(TFAIL, "if_indextoname(%d) returns \"%s\" but "
-			"doesn't if_nametoindex(\"%s\") returns %d",
-			if_index, TEST_RETURN, TEST_RETURN, idx);
+		tst_resm(TFAIL, "if_indextoname(%u) returns \"%s\" but "
+			"doesn't if_nametoindex(\"%s\") returns %u",
+			if_index, ifname, ifname, idx);
 		return 0;
 	}
 	tst_resm(TPASS, "if_indextoname(%d) returns \"%s\"", if_index,

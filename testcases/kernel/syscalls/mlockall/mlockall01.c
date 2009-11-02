@@ -122,10 +122,9 @@ int main(int ac, char **av)
 
 			if (TEST_RETURN == -1) {
 				TEST_ERROR_LOG(TEST_ERRNO);
-				tst_resm(TFAIL, "mlockall(%s) Failed with "
-					 "return=%d, errno=%d : %s",
-					 TC[i].fdesc, TEST_RETURN, TEST_ERRNO,
-					 strerror(TEST_ERRNO));
+				tst_resm(TFAIL|TTERRNO, "mlockall(%s) Failed with "
+					 "return=%ld",
+					 TC[i].fdesc, TEST_RETURN);
 			} else {
 				tst_resm(TPASS, "mlockall test passed for %s",
 					 TC[i].fdesc);

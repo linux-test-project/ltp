@@ -152,7 +152,7 @@ int main(int ac, char **av)
 						 "correct", SYMFILE);
 				}
 			} else {
-				tst_resm(TFAIL, "readlink() return value %d "
+				tst_resm(TFAIL, "readlink() return value %ld "
 					 "doesn't match, Expected %d",
 					 TEST_RETURN, exp_val);
 			}

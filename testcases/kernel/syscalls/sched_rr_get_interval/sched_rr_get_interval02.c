@@ -113,8 +113,8 @@ int main(int ac, char **av)
 			tst_resm(TPASS, "Test passed");
 		} else {
 			tst_resm(TFAIL, "Test Failed, sched_rr_get_interval()"
-				 "returned %d, errno = %d : %s, tp.tv_sec = %d,"
-				 " tp.tv_nsec = %d", TEST_RETURN, TEST_ERRNO,
+				 "returned %ld, errno = %d : %s, tp.tv_sec = %d,"
+				 " tp.tv_nsec = %ld", TEST_RETURN, TEST_ERRNO,
 				 strerror(TEST_ERRNO), (int)tp.tv_sec,
 				 tp.tv_nsec);
 		}

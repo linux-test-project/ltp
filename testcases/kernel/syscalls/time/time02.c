@@ -73,6 +73,7 @@
 #include <signal.h>
 #include <time.h>
 #include <sys/types.h>
+#include <stdint.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -128,13 +129,13 @@ int main(int ac, char **av)
 			if (STD_FUNCTIONAL_TEST) {
 				if (tloc == TEST_RETURN) {
 					tst_resm(TPASS, "time() returned value "
-						 "%d, stored value %d are same",
-						 TEST_RETURN, tloc);
+						 "%ld, stored value %jd are same",
+						 TEST_RETURN, (intmax_t)tloc);
 				} else {
 					tst_resm(TFAIL, "time() returned value "
-						 "%d, stored value %d are "
+						 "%ld, stored value %jd are "
 						 "different", TEST_RETURN,
-						 tloc);
+						 (intmax_t)tloc);
 				}
 			} else {
 				tst_resm(TPASS, "call succeeded");

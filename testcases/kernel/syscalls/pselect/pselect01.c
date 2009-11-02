@@ -44,6 +44,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <errno.h>
+#include <stdint.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -100,8 +101,8 @@ int main()
 		tv.tv_nsec = 0;
 
 		tst_resm(TINFO,
-			 "Testing basic pselect sanity,Sleeping for %d secs",
-			 tv.tv_sec);
+			 "Testing basic pselect sanity,Sleeping for %jd secs",
+			 (intmax_t)tv.tv_sec);
 		start = time(&t);
 		retval =
 		    pselect(0, &readfds, NULL, NULL, (struct timespec *)&tv,
@@ -126,7 +127,7 @@ int main()
 		tv.tv_nsec = total_nsec;
 
 		tst_resm(TINFO,
-			 "Testing basic pselect sanity,Sleeping for %d nano secs",
+			 "Testing basic pselect sanity,Sleeping for %ld nano secs",
 			 tv.tv_nsec);
 		gettimeofday(&tv_start, NULL);
 		retval =

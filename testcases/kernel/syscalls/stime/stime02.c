@@ -132,7 +132,7 @@ int main(int ac, char **av)
 					 TEST_ERRNO, EPERM);
 			}
 		} else {
-			tst_resm(TFAIL, "stime(2) returned %d, expected -1, "
+			tst_resm(TFAIL, "stime(2) returned %ld, expected -1, "
 				 "errno:%d", TEST_RETURN, EPERM);
 		}
 		Tst_count++;	/* incr TEST_LOOP counter */

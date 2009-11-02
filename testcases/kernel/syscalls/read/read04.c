@@ -99,7 +99,7 @@ int main(int ac, char **av)
 
 		if (STD_FUNCTIONAL_TEST) {
 			if (TEST_RETURN != TST_SIZE) {
-				tst_resm(TFAIL, "Bad read count - got %d - "
+				tst_resm(TFAIL, "Bad read count - got %ld - "
 					 "expected %d", TEST_RETURN, TST_SIZE);
 				continue;
 			}

@@ -74,6 +74,7 @@
 #include <time.h>
 #include <wait.h>
 #include <sys/time.h>
+#include <stdint.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -266,8 +267,8 @@ void do_child()
 				 "due to the limitation of the way it calculates the");
 			tst_resm(TWARN, "system call execution time.");
 			tst_resm(TFAIL, "Child execution not "
-				 "suspended for %d seconds %lu nanoseconds",
-				 timereq.tv_sec, timereq.tv_nsec);
+				 "suspended for %jd seconds %lu nanoseconds",
+				 (intmax_t)timereq.tv_sec, timereq.tv_nsec);
 			exit(1);
 		}
 	} else {

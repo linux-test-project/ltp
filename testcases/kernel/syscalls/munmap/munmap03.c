@@ -124,7 +124,7 @@ int main(int ac, char **av)
 
 		/* Check for the return value of munmap() */
 		if (TEST_RETURN != -1) {
-			tst_resm(TFAIL, "munmap() returned %d, expected -1",
+			tst_resm(TFAIL, "munmap() returned %ld, expected -1",
 				 TEST_RETURN);
 			continue;
 		}

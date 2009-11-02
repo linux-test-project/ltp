@@ -101,11 +101,11 @@ int main(int ac, char **av)
 		}
 
 		if (TEST_RETURN == gid) {
-			tst_resm(TFAIL, "setfsgid() returned %d, expeceted %d",
+			tst_resm(TFAIL, "setfsgid() returned %ld, expected %d",
 				 TEST_RETURN, gid);
 		} else {
 			tst_resm(TPASS, "setfsgid() returned expected value : "
-				 "%d", TEST_RETURN);
+				 "%ld", TEST_RETURN);
 		}
 	}
 	cleanup();

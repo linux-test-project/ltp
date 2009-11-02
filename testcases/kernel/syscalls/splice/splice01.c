@@ -133,7 +133,7 @@ int main(int ac, char **av)
 			 */
 			if (STD_FUNCTIONAL_TEST) {
 				/* No Verification test, yet... */
-				tst_resm(TPASS, "splice() returned %d",
+				tst_resm(TPASS, "splice() returned %ld",
 					 TEST_RETURN);
 			}
 		}

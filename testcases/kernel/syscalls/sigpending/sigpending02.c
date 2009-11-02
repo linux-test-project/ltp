@@ -120,7 +120,7 @@ int main(int ac, char **av)
 		} else {
 			tst_brkm(TFAIL, cleanup,
 				 "sigpending() Failed, expected "
-				 "return value=-1, got %d", TEST_RETURN);
+				 "return value=-1, got %ld", TEST_RETURN);
 		}
 	}			/* End for TEST_LOOPING */
 

@@ -171,7 +171,7 @@ int main(int ac, char **av)
 				}
 			} else {
 				tst_resm(TFAIL, "setregid(%d, %d) "
-					 "did not fail (ret: %d) as expected (ret: -1).",
+					 "did not fail (ret: %ld) as expected (ret: -1).",
 					 *test_data[i].real_gid,
 					 *test_data[i].eff_gid, TEST_RETURN);
 			}

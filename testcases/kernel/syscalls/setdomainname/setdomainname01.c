@@ -113,7 +113,7 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "setdomainname() Failed, errno = %d :"
 				 " %s", TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
-			tst_resm(TPASS, "setdomainname() returned %d, "
+			tst_resm(TPASS, "setdomainname() returned %ld, "
 				 "Domain name set to \"%s\"", TEST_RETURN,
 				 test_domain_name);
 		}

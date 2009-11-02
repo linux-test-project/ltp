@@ -75,6 +75,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <signal.h>
+#include <inttypes.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -141,8 +142,8 @@ int main(int ac, char **av)
 			 */
 			if (TEST_RETURN != offset) {
 				tst_resm(TFAIL, "lseek() returned "
-					 "incorrect value %d, expected "
-					 "%d", TEST_RETURN, offset);
+					 "incorrect value %ld, expected "
+					 "%"PRId64, TEST_RETURN, (int64_t)offset);
 				continue;
 			}
 			/*

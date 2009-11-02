@@ -129,12 +129,12 @@ int main(int ac, char **av)
 			/* check return code from nice(2) */
 			if (TEST_RETURN == -1) {
 				TEST_ERROR_LOG(TEST_ERRNO);
-				tst_resm(TPASS, "nice(2) returned %d for %s",
+				tst_resm(TPASS, "nice(2) returned %ld for %s",
 					 TEST_RETURN, test_desc);
 			} else {
-				tst_resm(TFAIL,
-					 "nice() returned %d for %s, errno:%d",
-					 TEST_RETURN, test_desc, errno);
+				tst_resm(TFAIL|TTERRNO,
+					 "nice() returned %ld for %s",
+					 TEST_RETURN, test_desc);
 			}
 		}		/* End of TEST CASE LOOPING. */
 	}			/* End for TEST_LOOPING */

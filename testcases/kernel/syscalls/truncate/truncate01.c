@@ -74,6 +74,7 @@
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
+#include <inttypes.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -154,8 +155,8 @@ int main(int ac, char **av)
 				 */
 				if (file_length != TRUNC_LEN) {
 					tst_resm(TFAIL, "%s: Incorrect file "
-						 "size %d, Expected %d",
-						 TESTFILE, file_length,
+						 "size %"PRId64", Expected %d",
+						 TESTFILE, (int64_t)file_length,
 						 TRUNC_LEN);
 				} else {
 					tst_resm(TPASS, "Functionality of "

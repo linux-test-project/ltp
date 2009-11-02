@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: lseek01.c,v 1.4 2009/03/23 13:35:54 subrata_modak Exp $ */
+/* $Id: lseek01.c,v 1.5 2009/11/02 13:57:17 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -177,7 +177,7 @@ int main(int ac, char **av)
 			if (TEST_RETURN == -1) {
 				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_resm(TFAIL,
-					 "lseek(%s, %ld, 0) Failed, errno=%d : %s",
+					 "lseek(%s, %d, 0) Failed, errno=%d : %s",
 					 Fname, offset, TEST_ERRNO,
 					 strerror(TEST_ERRNO));
 			} else {
@@ -188,7 +188,7 @@ int main(int ac, char **av)
 				if (STD_FUNCTIONAL_TEST) {
 					/* No Verification test, yet... */
 					tst_resm(TPASS,
-						 "lseek(%s, %ld, %d) returned %d",
+						 "lseek(%s, %d, %d) returned %ld",
 						 Fname, offset, Whence[ind],
 						 TEST_RETURN);
 				} else

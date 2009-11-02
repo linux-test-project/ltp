@@ -130,13 +130,12 @@ int main(int ac, char **av)
 
 			/* check return code */
 			if (TEST_RETURN == -1) {
-				tst_resm(TFAIL, "socketcall() Failed with"
-					 " return=%d, errno=%d : %s",
-					 TEST_RETURN, TEST_ERRNO,
-					 strerror(TEST_ERRNO));
+				tst_resm(TFAIL|TTERRNO, "socketcall() Failed with"
+					 " return=%ld",
+					 TEST_RETURN);
 			} else {
 				tst_resm(TPASS, "socketcall() passed for"
-					 " :%s with return=%d ",
+					 " :%s with return=%ld ",
 					 TC[i].desc, TEST_RETURN);
 				close(TEST_RETURN);
 			}

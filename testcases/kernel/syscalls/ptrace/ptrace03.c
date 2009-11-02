@@ -176,10 +176,8 @@ int main(int ac, char **av)
 							    exp_errno)) {
 					exit(TEST_ERRNO);
 				} else {
-					tst_resm(TWARN, "ptrace() returned %d;"
-						 " errno: %d, %s", TEST_RETURN,
-						 TEST_ERRNO,
-						 strerror(TEST_ERRNO));
+					tst_resm(TWARN|TTERRNO, "ptrace() returned %ld",
+						 TEST_RETURN);
 					exit(TEST_ERRNO);
 				}
 

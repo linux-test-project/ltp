@@ -55,6 +55,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <inttypes.h>
 
 #include "usctest.h"
 #include "test.h"
@@ -132,19 +133,19 @@ void do_sendfile(OFF_T offset, int i)
 		if (TEST_RETURN != testcases[i].exp_retval) {
 			tst_resm(TFAIL, "sendfile(2) failed to return "
 				 "expected value, expected: %d, "
-				 "got: %d", testcases[i].exp_retval,
+				 "got: %ld", testcases[i].exp_retval,
 				 TEST_RETURN);
 			kill(child_pid, SIGKILL);
 		} else if (offset != testcases[i].exp_updated_offset) {
 			tst_resm(TFAIL, "sendfile(2) failed to update "
 				 "OFFSET parameter to expected value, "
-				 "expected: %d, got: %d",
-				 testcases[i].exp_updated_offset, offset);
+				 "expected: %d, got: %"PRId64,
+				 testcases[i].exp_updated_offset, (int64_t)offset);
 		} else if (before_pos != after_pos) {
 			tst_resm(TFAIL, "sendfile(2) updated the file position "
-				 " of in_fd unexpectedly, expected file position: %d, "
-				 " actual file position %d",
-				 before_pos, after_pos);
+				 " of in_fd unexpectedly, expected file position: %"PRId64", "
+				 " actual file position %"PRId64,
+				 (int64_t)before_pos, (int64_t)after_pos);
 		} else {
 			tst_resm(TPASS, "functionality of sendfile() is "
 				 "correct");

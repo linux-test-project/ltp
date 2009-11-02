@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: unlink06.c,v 1.4 2009/03/23 13:36:14 subrata_modak Exp $ */
+/* $Id: unlink06.c,v 1.5 2009/11/02 13:57:19 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -178,10 +178,10 @@ int main(int ac, char **av)
 		} else if (STD_FUNCTIONAL_TEST) {
 			if (access(Fname, F_OK) != -1) {
 				tst_resm(TFAIL,
-					 "unlink(%s) returned %d, but access says file still exists.",
+					 "unlink(%s) returned %ld, but access says file still exists.",
 					 Fname, TEST_RETURN);
 			} else {
-				tst_resm(TPASS, "unlink(%s) returned %d", Fname,
+				tst_resm(TPASS, "unlink(%s) returned %ld", Fname,
 					 TEST_RETURN);
 			}
 		} else

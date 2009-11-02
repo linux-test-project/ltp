@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: stat06.c,v 1.9 2009/03/23 13:36:06 subrata_modak Exp $ */
+/* $Id: stat06.c,v 1.10 2009/11/02 13:57:19 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -257,7 +257,7 @@ int main(int ac, char **av)
 					Tst_count++;
 			} else {
 				tst_resm(TFAIL,
-					 "stat(<%s>, &stbuf) returned %d, expected -1, errno:%d",
+					 "stat(<%s>, &stbuf) returned %ld, expected -1, errno:%d",
 					 desc, TEST_RETURN,
 					 Test_cases[ind].exp_errno);
 			}

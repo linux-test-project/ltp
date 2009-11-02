@@ -170,7 +170,7 @@ int main(int ac, char **av)
 						 "expected.");
 				}
 			} else {
-				tst_resm(TFAIL, "sigaltstack() returned %d, "
+				tst_resm(TFAIL, "sigaltstack() returned %ld, "
 					 "expected -1, errno:%d", TEST_RETURN,
 					 Test_cases[ind].exp_errno);
 			}

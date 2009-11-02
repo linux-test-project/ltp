@@ -115,17 +115,17 @@ int main(int argc, char **argv)
 		if (TEST_RETURN) {
 			if (TEST_ERRNO == EINVAL)
 				tst_resm(TPASS,
-					 "set_robust_list: retval = %d (expected %d), "
+					 "set_robust_list: retval = %ld (expected %d), "
 					 "errno = %d (expected %d)",
 					 TEST_RETURN, -1, TEST_ERRNO, EINVAL);
 			else
 				tst_resm(TFAIL,
-					 "set_robust_list: retval = %d (expected %d), "
+					 "set_robust_list: retval = %ld (expected %d), "
 					 "errno = %d (expected %d)",
 					 TEST_RETURN, -1, TEST_ERRNO, EINVAL);
 		} else {
 			tst_resm(TFAIL,
-				 "set_robust_list: retval = %d (expected %d), "
+				 "set_robust_list: retval = %ld (expected %d), "
 				 "errno = %d (expected %d)", TEST_RETURN, -1,
 				 TEST_ERRNO, EINVAL);
 		}
@@ -138,12 +138,12 @@ int main(int argc, char **argv)
 
 		if (TEST_RETURN == 0) {
 			tst_resm(TPASS,
-				 "set_robust_list: retval = %d (expected %d), "
+				 "set_robust_list: retval = %ld (expected %d), "
 				 "errno = %d (expected %d)", TEST_RETURN, 0,
 				 TEST_ERRNO, 0);
 		} else {
 			tst_resm(TFAIL,
-				 "set_robust_list: retval = %d (expected %d), "
+				 "set_robust_list: retval = %ld (expected %d), "
 				 "errno = %d (expected %d)", TEST_RETURN, 0,
 				 TEST_ERRNO, 0);
 		}

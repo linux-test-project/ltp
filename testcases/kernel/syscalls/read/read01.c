@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: read01.c,v 1.7 2009/03/23 13:36:01 subrata_modak Exp $ */
+/* $Id: read01.c,v 1.8 2009/11/02 13:57:17 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -197,7 +197,7 @@ int main(int ac, char **av)
 	     ***************************************************************/
 			if (STD_FUNCTIONAL_TEST) {
 				/* No Verification test, yet... */
-				tst_resm(TPASS, "read(pfds) returned %d",
+				tst_resm(TPASS, "read(pfds) returned %ld",
 					 TEST_RETURN);
 			}
 		}

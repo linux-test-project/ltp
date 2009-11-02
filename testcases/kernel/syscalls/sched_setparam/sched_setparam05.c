@@ -145,9 +145,9 @@ int main(int ac, char **av)
 				exit(0);
 			}
 
-			tst_resm(TWARN, "Test failed, sched_setparam()"
-				 " returned : %d, Error number: %d, %s",
-				 TEST_RETURN, TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TWARN|TTERRNO, "Test failed, sched_setparam()"
+				 " returned : %ld",
+				 TEST_RETURN);
 			TEST_ERROR_LOG(TEST_ERRNO);
 			exit(1);
 

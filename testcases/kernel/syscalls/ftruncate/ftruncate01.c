@@ -147,7 +147,7 @@ int main(int ac, char **av)
 			 */
 			if (file_length != TRUNC_LEN) {
 				tst_resm(TFAIL, "%s: Incorrect file size %"PRId64", "
-					 "Expected %d", TESTFILE, file_length,
+					 "Expected %d", TESTFILE, (int64_t)file_length,
 					 TRUNC_LEN);
 			} else {
 				tst_resm(TPASS, "Functionality of ftruncate() "

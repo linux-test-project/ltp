@@ -38,6 +38,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <sys/statvfs.h>
+#include <stdint.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -106,13 +107,13 @@ int main(int ac, char **av)
 	tst_resm(TINFO, "This call is similar to statfs");
 	tst_resm(TINFO, "Extracting info about the '%s' file system",
 		 TEST_PATH);
-	tst_resm(TINFO, "file system block size = %u bytes", buf.f_bsize);
-	tst_resm(TINFO, "file system fragment size = %u bytes", buf.f_frsize);
-	tst_resm(TINFO, "file system free blocks = %d", buf.f_bfree);
-	tst_resm(TINFO, "file system total inodes = %u", buf.f_files);
-	tst_resm(TINFO, "file system free inodes = %u", buf.f_ffree);
-	tst_resm(TINFO, "file system id = %u", buf.f_fsid);
-	tst_resm(TINFO, "file system max filename length = %u", buf.f_namemax);
+	tst_resm(TINFO, "file system block size = %lu bytes", buf.f_bsize);
+	tst_resm(TINFO, "file system fragment size = %lu bytes", buf.f_frsize);
+	tst_resm(TINFO, "file system free blocks = %ju", (uintmax_t)buf.f_bfree);
+	tst_resm(TINFO, "file system total inodes = %ju", (uintmax_t)buf.f_files);
+	tst_resm(TINFO, "file system free inodes = %ju", (uintmax_t)buf.f_ffree);
+	tst_resm(TINFO, "file system id = %lu", buf.f_fsid);
+	tst_resm(TINFO, "file system max filename length = %lu", buf.f_namemax);
 
     /***************************************************************
      * cleanup and exit

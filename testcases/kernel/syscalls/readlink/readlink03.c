@@ -187,7 +187,7 @@ int main(int ac, char **av)
 
 			/* Check return code of readlink(2) */
 			if (TEST_RETURN != -1) {
-				tst_resm(TFAIL, "readlink() returned %d, "
+				tst_resm(TFAIL, "readlink() returned %ld, "
 					 "expected -1, errno:%d", TEST_RETURN,
 					 Test_cases[i].exp_errno);
 				continue;

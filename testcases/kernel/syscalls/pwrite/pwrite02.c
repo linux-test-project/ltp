@@ -162,7 +162,7 @@ int main(int ac, char **av)
 
 			/* Check for the return code of pwrite() */
 			if (TEST_RETURN != -1) {
-				tst_resm(TFAIL, "pwrite() returned %d, "
+				tst_resm(TFAIL, "pwrite() returned %ld, "
 					 "expected -1, errno:%d",
 					 TEST_RETURN, Test_cases[i].exp_errno);
 				continue;

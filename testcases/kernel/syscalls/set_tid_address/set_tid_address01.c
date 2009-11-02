@@ -126,7 +126,7 @@ int main(int ac, char **av) {
                 for (testno = 0; testno < TST_TOTAL; ++testno) {
                      TEST(syscall(__NR_set_tid_address, &newtid));     //call set_tid_address()
                      if(TEST_RETURN == getpid()) {
-        		tst_resm(TPASS, "set_tid_address call succeeded:  as expected %d",TEST_RETURN);
+        		tst_resm(TPASS, "set_tid_address call succeeded:  as expected %ld",TEST_RETURN);
                      }
                      else {
                  	   tst_resm(TFAIL, "%s failed - errno = %d : %s", TCID, TEST_ERRNO, strerror(TEST_ERRNO));

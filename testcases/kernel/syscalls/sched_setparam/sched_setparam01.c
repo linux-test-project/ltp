@@ -104,12 +104,11 @@ int main(int ac, char **av)
 		TEST(sched_setparam(0, &param));
 
 		if (TEST_RETURN == 0) {
-			tst_resm(TPASS, "sched_setparam() returned %d",
+			tst_resm(TPASS, "sched_setparam() returned %ld",
 				 TEST_RETURN);
 		} else {
-			tst_resm(TFAIL, "Test Failed, sched_setparam()"
-				 "returned %d, errno = %d : %s", TEST_RETURN,
-				 TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TTERRNO, "Test Failed, sched_setparam()"
+				 "returned %ld", TEST_RETURN);
 		}
 	}			/* End for TEST_LOOPING */
 

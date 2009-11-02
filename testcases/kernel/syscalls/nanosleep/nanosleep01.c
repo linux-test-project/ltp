@@ -69,6 +69,7 @@
 #include <time.h>
 #include <sys/time.h>
 #include <sys/wait.h>
+#include <stdint.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -158,8 +159,8 @@ int main(int ac, char **av)
 				if (got_ms < want_ms) {
 					retval = 1;
 					tst_resm(TFAIL, "Child execution not "
-						 "suspended for %d seconds.  (Wanted %ld ms, got %ld ms)",
-						 timereq.tv_sec, want_ms,
+						 "suspended for %jd seconds.  (Wanted %ld ms, got %ld ms)",
+						 (intmax_t)timereq.tv_sec, want_ms,
 						 got_ms);
 				} else {
 					tst_resm(TPASS, "nanosleep "

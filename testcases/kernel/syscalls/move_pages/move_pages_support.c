@@ -189,7 +189,7 @@ verify_pages_on_nodes(void **pages, int *status, unsigned int num, int *nodes)
 	for (i = 0; i < num; i++) {
 		if (status[i] != nodes[i]) {
 			tst_resm(TFAIL, "page %d on node %d, "
-				 "expected on node %p", i, status[i], nodes[i]);
+				 "expected on node %d", i, status[i], nodes[i]);
 			return;
 		}
 

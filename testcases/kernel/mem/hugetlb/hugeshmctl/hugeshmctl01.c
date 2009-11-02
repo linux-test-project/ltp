@@ -352,8 +352,8 @@ func_stat()
 	 * that memory so the attaches equal N_ATTACH + stat_time (1).
 	 */
 	if (!fail && buf.shm_nattch != N_ATTACH + stat_time) {
-		tst_resm(TFAIL, "# of attaches is incorrect - %d",
-			 buf.shm_nattch);
+		tst_resm(TFAIL, "# of attaches is incorrect - %lu",
+			 (unsigned long)buf.shm_nattch);
 		fail = 1;
 	}
 

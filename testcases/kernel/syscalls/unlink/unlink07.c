@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: unlink07.c,v 1.7 2009/03/23 13:36:14 subrata_modak Exp $ */
+/* $Id: unlink07.c,v 1.8 2009/11/02 13:57:19 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -235,7 +235,7 @@ int main(int ac, char **av)
 					Tst_count++;
 			} else {
 				tst_resm(TFAIL,
-					 "unlink(<%s>) returned %d, expected -1, errno:%d",
+					 "unlink(<%s>) returned %ld, expected -1, errno:%d",
 					 desc, TEST_RETURN,
 					 Test_cases[ind].exp_errno);
 			}

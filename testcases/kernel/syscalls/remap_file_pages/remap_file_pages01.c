@@ -188,10 +188,9 @@ static void test_nonlinear(int fd)
 
 		if (remap_file_pages(page, page_sz * 2, 0,
 				     (window_pages - i - 2), 0) == -1) {
-			tst_resm(TFAIL,
-				 "remap_file_pages error for page=%d, page_sz=%d, window_pages=%d (errno=%d : %s)",
-				 page, (page_sz * 2), (window_pages - i - 2),
-				 errno, strerror(errno));
+			tst_resm(TFAIL|TERRNO,
+				 "remap_file_pages error for page=%p, page_sz=%d, window_pages=%d",
+				 page, (page_sz * 2), (window_pages - i - 2));
 			cleanup(data);
 		}
 	}

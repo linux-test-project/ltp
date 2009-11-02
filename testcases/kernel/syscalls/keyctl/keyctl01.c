@@ -145,10 +145,10 @@ int main(int ac, char **av) {
 				if(TEST_ERRNO == ENOKEY)	//Check for correct error no.	
 								//if no  matching key was found or an invalid key was specified. 
                            	{
-					tst_resm(TPASS,"KEYCTL_REVOKE got expected errno:%ld",TEST_ERRNO);
+					tst_resm(TPASS|TTERRNO,"KEYCTL_REVOKE got expected errno");
                         		cleanup();
 				}else{
-					tst_resm(TFAIL,"KEYCTL_REVOKE got unexpected errno:%ld", TEST_ERRNO);
+					tst_resm(TFAIL|TTERRNO,"KEYCTL_REVOKE got unexpected errno");
                         		cleanup();
 					tst_exit();
 				}

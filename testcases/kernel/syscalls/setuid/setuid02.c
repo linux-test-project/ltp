@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: setuid02.c,v 1.5 2009/03/23 13:36:04 subrata_modak Exp $ */
+/* $Id: setuid02.c,v 1.6 2009/11/02 13:57:18 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -178,7 +178,7 @@ int main(int ac, char **av)
 			if (STD_FUNCTIONAL_TEST) {
 				/* No Verification test, yet... */
 				tst_resm(TPASS,
-					 "setuid -  Set the effective user ID to the current real uid returned %d",
+					 "setuid -  Set the effective user ID to the current real uid returned %ld",
 					 TEST_RETURN);
 			}
 		}

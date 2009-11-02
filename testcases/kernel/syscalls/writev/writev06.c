@@ -137,13 +137,13 @@ int main(int argc, char **argv)
 				tst_resm(TINFO, "writev returned %d as expected", 2);
 			} else {
 				tst_resm(TFAIL, "Expected nbytes = %d, got "
-					 "%d", 2, TEST_RETURN);
+					 "%ld", 2, TEST_RETURN);
 				fail = 1;
 			}
 		} else {
 			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL, "Error writev return value = %d,"
-				 " errno = %d", TEST_RETURN, TEST_ERRNO);
+			tst_resm(TFAIL|TTERRNO, "Error writev return value = %ld",
+				 TEST_RETURN);
 			fail = 1;
 		}
 		if (fail) {

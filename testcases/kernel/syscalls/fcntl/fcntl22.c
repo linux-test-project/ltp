@@ -199,8 +199,8 @@ void setup()
 
 	/* lock file */
 	if (fcntl(file, F_SETLK, &fl) < 0) {
-		tst_resm(TFAIL, "fcntl on file %s failed, errno =%d",
-			 file, errno);
+		tst_resm(TFAIL|TERRNO, "fcntl on file %d failed",
+			 file);
 	}
 
 }

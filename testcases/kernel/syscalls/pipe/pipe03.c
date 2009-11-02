@@ -98,9 +98,9 @@ int main(int ac, char **av)
 			tst_resm(TPASS, "expected failure writing to "
 				 "read end of pipe");
 		else
-			tst_resm(TFAIL, "success when writing to read "
-				 "end of pipe ret=%d, errno=%d",
-				 TEST_RETURN, TEST_ERRNO);
+			tst_resm(TFAIL|TTERRNO, "success when writing to read "
+				 "end of pipe ret=%ld",
+				 TEST_RETURN);
 
 		TEST(safe_read(fildes[1], rbuf, 1));
 		if (TEST_RETURN == -1 && TEST_ERRNO == EBADF)
@@ -108,7 +108,7 @@ int main(int ac, char **av)
 				 "write end of pipe");
 		else
 			tst_resm(TFAIL, "success when reading from "
-				 "write end of pipe ret=%d, "
+				 "write end of pipe ret=%ld, "
 				 "errno=%d", TEST_RETURN, TEST_ERRNO);
 	}
 	cleanup();

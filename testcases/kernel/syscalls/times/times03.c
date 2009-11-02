@@ -53,6 +53,7 @@
 #include <test.h>
 #include <usctest.h>
 #include <signal.h>
+#include <stdint.h>
 
 char *TCID = "times03";
 int TST_TOTAL = 1;
@@ -209,21 +210,21 @@ int main(int argc, char **argv)
 					 "user time(%ld) before child "
 					 "> parent's user time (%ld) "
 					 "after child",
-					 buf1.tms_utime, buf2.tms_utime);
+					 (intmax_t)buf1.tms_utime, (intmax_t)buf2.tms_utime);
 				fail = 1;
 			}
 			if (buf2.tms_cutime == 0) {
 				tst_resm(TFAIL, "Error: times() "
 					 "report %ld child user "
 					 "time should be > than "
-					 "zero", buf2.tms_cutime);
+					 "zero", (intmax_t)buf2.tms_cutime);
 				fail = 1;
 			}
 			if (buf2.tms_cstime == 0) {
 				tst_resm(TFAIL, "Error: times() "
 					 "report %ld child system time "
 					 "should be > than zero",
-					 buf2.tms_cstime);
+					 (intmax_t)buf2.tms_cstime);
 				fail = 1;
 			}
 			if (fail == 0) {

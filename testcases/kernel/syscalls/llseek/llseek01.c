@@ -80,6 +80,7 @@
 #include <sys/resource.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <inttypes.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -142,8 +143,8 @@ int main(int ac, char **av)
 			 */
 			if (TEST_RETURN != (loff_t) (80 * BUFSIZ)) {
 				tst_resm(TFAIL, "llseek() returned incorrect "
-					 "value %d, expected %d",
-					 offset, BUFSIZ);
+					 "value %"PRId64", expected %d",
+					 (int64_t)offset, BUFSIZ);
 				continue;
 			}
 

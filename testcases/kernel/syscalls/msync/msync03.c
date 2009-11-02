@@ -113,7 +113,7 @@ int main(int ac, char **av)
 		/* Check for the return value of msync() */
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "msync() returns unexpected "
-				 "value %d, expected:-1", TEST_RETURN);
+				 "value %ld, expected:-1", TEST_RETURN);
 			continue;
 		}
 

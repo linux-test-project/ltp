@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: readlink02.c,v 1.5 2009/03/23 13:36:01 subrata_modak Exp $ */
+/* $Id: readlink02.c,v 1.6 2009/11/02 13:57:17 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -174,7 +174,7 @@ int main(int ac, char **av)
 			if (STD_FUNCTIONAL_TEST) {
 				/* No Verification test, yet... */
 				tst_resm(TPASS,
-					 "readlink(%s, buf, 255) returned %d",
+					 "readlink(%s, buf, 255) returned %ld",
 					 symlnk, TEST_RETURN);
 			}
 		}

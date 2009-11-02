@@ -161,7 +161,7 @@ int main(int ac, char **av)
 			/* Check for the return code of pread() */
 			if (TEST_RETURN != -1) {
 				tst_brkm(TFAIL, cleanup, "pread() returned "
-					 "%d, expected -1, errno:%d",
+					 "%ld, expected -1, errno:%d",
 					 TEST_RETURN, Test_cases[i].exp_errno);
 			}
 

@@ -51,6 +51,8 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <inttypes.h>
+
 #include "test.h"
 #include "usctest.h"
 
@@ -301,13 +303,13 @@ int do_test(struct flock *lock, pid_t pid)
 
 	if (fl.l_start != lock->l_start) {
 		tst_resm(TFAIL, "region starts in wrong place, "
-			 "should be %d is %d", lock->l_start, fl.l_start);
+			 "should be %"PRId64" is %"PRId64, (int64_t)lock->l_start, (int64_t)fl.l_start);
 		return 1;
 	}
 
 	if (fl.l_len != lock->l_len) {
-		tst_resm(TFAIL, "region length is wrong, should be %d is %d",
-			 lock->l_len, fl.l_len);
+		tst_resm(TFAIL, "region length is wrong, should be %"PRId64" is %"PRId64,
+			 (int64_t)lock->l_len, (int64_t)fl.l_len);
 		return 1;
 	}
 

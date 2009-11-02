@@ -147,11 +147,11 @@ int main(int ac, char **av)
 				 */
 				if (rval == first) {
 					tst_resm(TPASS, "%s call succeeded "
-						 "received %d.", TCID, rval);
+						 "received %p.", TCID, rval);
 				} else {
 					tst_brkm(TFAIL, cleanup, "return "
 						 "values for signal(%d) don't "
-						 "match. Got %d, expected %d.",
+						 "match. Got %p, expected %p.",
 						 siglist[i], rval, first);
 				 /*NOTREACHED*/}
 			} else {

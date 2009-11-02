@@ -120,9 +120,9 @@ int main(int ac, char **av)
 		TEST(SETGROUPS(gidsetsize, sbrk(0)));
 		/* check return code of setgroups */
 		if (TEST_RETURN != -1) {
-			tst_resm(TFAIL, "setgroups() returned %d, "
+			tst_resm(TFAIL, "setgroups() returned %ld, "
 				 "expected -1, errno=%d", TEST_RETURN,
-				 exp_enos);
+				 exp_enos[0]);
 		} else {
 
 			TEST_ERROR_LOG(TEST_ERRNO);

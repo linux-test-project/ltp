@@ -75,6 +75,7 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
+#include <inttypes.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -271,10 +272,10 @@ void l_seek(int fdesc, off_t offset, int whence, off_t checkoff)
 	off_t offloc;		/* offset ret. from lseek() */
 
 	if ((offloc = lseek(fdesc, offset, whence)) != checkoff) {
-		tst_resm(TWARN, "lseek returned %d, expected %d", offloc,
-			 checkoff);
-		tst_brkm(TBROK, cleanup, "lseek() on %s Failed, error=%d : %s",
-			 TEMPFILE, errno, strerror(errno));
+		tst_resm(TWARN, "lseek returned %"PRId64", expected %"PRId64, (int64_t)offloc,
+			 (int64_t)checkoff);
+		tst_brkm(TBROK|TERRNO, cleanup, "lseek() on %s Failed",
+			 TEMPFILE);
 	}
 }
 
@@ -302,17 +303,17 @@ void check_file_contents()
 		/* Seek to specified offset position from beginning */
 		offloc = lseek(fildes, count * K1, SEEK_SET);
 		if (offloc != (count * K1)) {
-			tst_brkm(TBROK, cleanup,
-				 "lseek() failed: offloc=%d, errno=%d",
-				 offloc, errno);
+			tst_brkm(TBROK|TERRNO, cleanup,
+				 "lseek() failed: offloc=%"PRId64,
+				 (int64_t)offloc);
 		}
 
 		/* Read the data from file into a buffer */
 		nread = read(fildes, read_buf, K1);
 		if (nread != K1) {
-			tst_brkm(TBROK, cleanup,
-				 "read() failed: nread=%d, errno=%d",
-				 nread, errno);
+			tst_brkm(TBROK|TERRNO, cleanup,
+				 "read() failed: nread=%d",
+				 nread);
 		}
 
 		/* Compare the read data with the data written using pwrite */

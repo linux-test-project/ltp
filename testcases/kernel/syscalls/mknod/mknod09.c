@@ -117,7 +117,7 @@ int main(int ac, char **av)
 
 		/* Check return code from mknod(2) */
 		if (TEST_RETURN != -1) {
-			tst_resm(TFAIL, "mknod() returned %d,"
+			tst_resm(TFAIL, "mknod() returned %ld,"
 				 "expected -1, errno=%d", TEST_RETURN,
 				 exp_enos[0]);
 		} else {

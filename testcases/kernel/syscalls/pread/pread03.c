@@ -131,8 +131,8 @@ int main(int ac, char **av)
 		/* Check for the return code of pread() */
 		if (TEST_RETURN != -1) {
 			tst_brkm(TFAIL, cleanup, "pread() returned "
-				 "%d, expected -1, errno:%d\n",
-				 TEST_RETURN, exp_enos);
+				 "%ld, expected -1, errno:%d\n",
+				 TEST_RETURN, EISDIR);
 		}
 
 		TEST_ERROR_LOG(TEST_ERRNO);

@@ -137,7 +137,7 @@ int main(int ac, char **av)
 			 */
 			if (STD_FUNCTIONAL_TEST) {
 				/* No Verification test, yet... */
-				tst_resm(TPASS, "tee() returned %d",
+				tst_resm(TPASS, "tee() returned %ld",
 					 TEST_RETURN);
 			}
 		}

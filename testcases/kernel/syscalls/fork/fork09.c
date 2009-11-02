@@ -100,7 +100,7 @@ int main(int ac, char **av)
 
 		mypid = getpid();
 
-		tst_resm(TINFO, "OPEN_MAX is %d", OPEN_MAX);
+		tst_resm(TINFO, "OPEN_MAX is %ld", OPEN_MAX);
 
 		/* establish first free file */
 		sprintf(filname, "fork09.%d", mypid);

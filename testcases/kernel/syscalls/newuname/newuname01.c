@@ -133,7 +133,7 @@ int main(int ac, char **av) {
                            cleanup();
 	  	           tst_exit();
                      }else {
-	   		tst_resm(TPASS, "newuname call succeed: return value = %d ",TEST_RETURN);
+	   		tst_resm(TPASS, "newuname call succeed: return value = %ld ",TEST_RETURN);
 			TEST(strcmp(name.sysname,"Linux")); //Linux ?
 			if(TEST_RETURN == 0){
 				tst_resm(TINFO,"This system is %s",name.sysname);

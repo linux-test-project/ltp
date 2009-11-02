@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: setpgrp01.c,v 1.6 2009/06/09 16:01:21 subrata_modak Exp $ */
+/* $Id: setpgrp01.c,v 1.7 2009/11/02 13:57:18 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -175,7 +175,7 @@ int main(int ac, char **av)
 			if (STD_FUNCTIONAL_TEST) {
 				/* No Verification test, yet... */
 				tst_resm(TPASS,
-					 "setpgrp -  Call the setpgrp system call returned %d",
+					 "setpgrp -  Call the setpgrp system call returned %ld",
 					 TEST_RETURN);
 			}
 		}

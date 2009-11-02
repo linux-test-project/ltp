@@ -74,7 +74,7 @@ char *TCID = "ioperm01";	/* Test program identifier.    */
 #include "test.h"
 #include "usctest.h"
 
-int io_addr;			/*kernel version dependant io start address */
+unsigned long io_addr;			/*kernel version dependant io start address */
 #define NUM_BYTES 3		/* number of bytes from start address */
 #define TURN_ON 1
 #define TURN_OFF 0
@@ -116,11 +116,11 @@ int main(int ac, char **av)
 
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "ioperm() failed for port address "
-				 "%ld,  errno=%d : %s", io_addr,
+				 "%lu,  errno=%d : %s", io_addr,
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
 			tst_resm(TPASS, "ioperm() passed for port "
-				 "address %ld, returned %d",
+				 "address %lu, returned %lu",
 				 io_addr, TEST_RETURN);
 		}
 	}			/* End for TEST_LOOPING */

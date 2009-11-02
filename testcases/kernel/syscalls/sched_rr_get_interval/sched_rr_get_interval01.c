@@ -107,12 +107,11 @@ int main(int ac, char **av)
 		TEST(sched_rr_get_interval(0, &tp));
 
 		if (TEST_RETURN == 0) {
-			tst_resm(TPASS, "sched_rr_get_interval() returned %d",
+			tst_resm(TPASS, "sched_rr_get_interval() returned %ld",
 				 TEST_RETURN);
 		} else {
-			tst_resm(TFAIL, "Test Failed, sched_rr_get_interval()"
-				 "returned %d, errno = %d : %s", TEST_RETURN,
-				 TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TTERRNO, "Test Failed, sched_rr_get_interval()"
+				 "returned %ld", TEST_RETURN);
 		}
 	}			/* End for TEST_LOOPING */
 

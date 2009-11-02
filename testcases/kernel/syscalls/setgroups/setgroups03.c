@@ -156,7 +156,7 @@ int main(int ac, char **av)
 
 			/* check return code of setgroups(2) */
 			if (TEST_RETURN != -1) {
-				tst_resm(TFAIL, "setgroups(%d) returned %d, "
+				tst_resm(TFAIL, "setgroups(%d) returned %ld, "
 					 "expected -1, errno=%d", gidsetsize,
 					 TEST_RETURN, Test_cases[i].exp_errno);
 				continue;

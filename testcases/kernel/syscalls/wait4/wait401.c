@@ -136,8 +136,8 @@ int main(int ac, char **av)
 					 "- %d", TCID, WIFEXITED(status));
 			} else if (TEST_RETURN != pid) {
 				tst_resm(TFAIL, "%s did not return the "
-					 "expected value. %d", TCID,
-					 TEST_RETURN);
+					 "expected value (%d), actual: %ld", TCID,
+					 pid, TEST_RETURN);
 			} else {
 
 				tst_resm(TPASS,

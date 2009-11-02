@@ -159,9 +159,9 @@ int main(int ac, char **av)
 					 "Received expected return value.");
 			}
 		} else {
-			tst_resm(TFAIL,
-				 "sigsuspend() returned value %d, error:%d",
-				 TEST_RETURN, TEST_ERRNO);
+			tst_resm(TFAIL|TTERRNO,
+				 "sigsuspend() returned value %ld",
+				 TEST_RETURN);
 		}
 
 		Tst_count++;	/* incr TEST_LOOP counter */

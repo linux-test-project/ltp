@@ -46,6 +46,7 @@
 #include <signal.h>
 #include <errno.h>
 #include <sys/wait.h>
+#include <inttypes.h>
 #include <usctest.h>
 #include <test.h>
 
@@ -667,17 +668,17 @@ void dochild()
 
 			if (flock.l_start != thiscase->c_start) {
 				tst_resm(TFAIL,
-					 "Test case %d, GETLK: start = %d, "
-					 "should have remained %d", test + 1,
-					 flock.l_start, thiscase->c_start);
+					 "Test case %d, GETLK: start = %"PRId64", "
+					 "should have remained %"PRId64, test + 1,
+					 (int64_t)flock.l_start, (int64_t)thiscase->c_start);
 				fail = 1;
 			}
 
 			if (flock.l_len != thiscase->c_len) {
 				tst_resm(TFAIL,
-					 "Test case %d, GETLK: len = %d, "
-					 "should have remained %d", test + 1,
-					 flock.l_len, thiscase->c_len);
+					 "Test case %d, GETLK: len = %"PRId64", "
+					 "should have remained %"PRId64, test + 1,
+					 (int64_t)flock.l_len, (int64_t)thiscase->c_len);
 				fail = 1;
 			}
 

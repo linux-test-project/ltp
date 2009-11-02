@@ -134,10 +134,8 @@ int main(int ac, char **av)
 			    (TEST_ERRNO == test_cases[i].exp_errno)) {
 				tst_resm(TPASS, "Test Passed");
 			} else {
-				tst_resm(TFAIL, "Test Failed,"
-					 " sched_rr_get_interval() returned %d,"
-					 " errno = %d : %s", TEST_RETURN,
-					 TEST_ERRNO, strerror(TEST_ERRNO));
+				tst_resm(TFAIL|TTERRNO, "Test Failed,"
+					 " sched_rr_get_interval() returned %ld", TEST_RETURN);
 			}
 			TEST_ERROR_LOG(TEST_ERRNO);
 		}

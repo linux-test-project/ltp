@@ -46,6 +46,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <inttypes.h>
 #include "test.h"
 #include "usctest.h"
 
@@ -201,13 +202,13 @@ compare_lock(struct flock *fl, short type, short whence, int start, int len,
 
 	if (fl->l_start != start) {
 		tst_resm(TFAIL, "region starts in wrong place, should be"
-			 "%d is %d", start, fl->l_start);
+			 "%d is %"PRId64, start, (int64_t)fl->l_start);
 		fail = 1;
 	}
 
 	if (fl->l_len != len) {
-		tst_resm(TFAIL, "region length is wrong, should be %d is %d",
-			 len, fl->l_len);
+		tst_resm(TFAIL, "region length is wrong, should be %d is %"PRId64,
+			 len, (int64_t)fl->l_len);
 		fail = 1;
 	}
 

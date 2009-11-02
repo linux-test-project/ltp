@@ -186,7 +186,7 @@ int main(int ac, char **av) {
 	                        	 TEST(set_handler(signal, 0, test_flags[flag]));
 						 if (TEST_RETURN == 0) {
         					tst_resm(TINFO,"signal: %d ", signal);
-        					tst_resm(TPASS, "rt_sigaction call succeeded: result = %d ",TEST_RETURN );
+        					tst_resm(TPASS, "rt_sigaction call succeeded: result = %ld ",TEST_RETURN );
         					tst_resm(TINFO, "sa.sa_flags = %s ",test_flags_list[flag]);
 						kill(getpid(),signal);
 			                         } else {

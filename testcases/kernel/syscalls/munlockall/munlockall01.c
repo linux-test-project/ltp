@@ -99,12 +99,12 @@ int main(int ac, char **av)
 
 		/* check return code */
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL, "munlockall() Failed with"
-				 " return=%d, errno=%d : %s",
-				 TEST_RETURN, TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TTERRNO, "munlockall() Failed with"
+				 " return=%ld",
+				 TEST_RETURN);
 		} else {
 			tst_resm(TPASS, "munlockall() passed with"
-				 " return=%d ", TEST_RETURN);
+				 " return=%ld ", TEST_RETURN);
 
 		}
 	}

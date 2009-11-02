@@ -135,7 +135,7 @@ void setup()
 	/* make a temporary directory and cd to it */
 	tst_tmpdir();
 	if (chmod(TESTDIR, S_IRWXU) == -1)
-		tst_brkm(TBROK, cleanup, "chmod(%S,700) failed; errno %d: %s",
+		tst_brkm(TBROK, cleanup, "chmod(%s,700) failed; errno %d: %s",
 			 TESTDIR, errno, strerror(errno));
 
 	/* create a test file */

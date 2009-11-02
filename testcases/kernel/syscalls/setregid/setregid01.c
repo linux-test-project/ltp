@@ -30,7 +30,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
-/* $Id: setregid01.c,v 1.5 2009/03/23 13:36:04 subrata_modak Exp $ */
+/* $Id: setregid01.c,v 1.6 2009/11/02 13:57:18 subrata_modak Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -179,7 +179,7 @@ int main(int ac, char **av)
 			if (STD_FUNCTIONAL_TEST) {
 				/* No Verification test, yet... */
 				tst_resm(TPASS,
-					 "setregid -  Dont change either real or effective gid returned %d",
+					 "setregid -  Dont change either real or effective gid returned %ld",
 					 TEST_RETURN);
 			}
 		}
@@ -205,7 +205,7 @@ int main(int ac, char **av)
 			if (STD_FUNCTIONAL_TEST) {
 				/* No Verification test, yet... */
 				tst_resm(TPASS,
-					 "setregid -  change effective to effective gid returned %d",
+					 "setregid -  change effective to effective gid returned %ld",
 					 TEST_RETURN);
 			}
 		}
@@ -231,7 +231,7 @@ int main(int ac, char **av)
 			if (STD_FUNCTIONAL_TEST) {
 				/* No Verification test, yet... */
 				tst_resm(TPASS,
-					 "setregid -  change real to real gid returned %d",
+					 "setregid -  change real to real gid returned %ld",
 					 TEST_RETURN);
 			}
 		}
@@ -257,7 +257,7 @@ int main(int ac, char **av)
 			if (STD_FUNCTIONAL_TEST) {
 				/* No Verification test, yet... */
 				tst_resm(TPASS,
-					 "setregid -  change effective to real gid returned %d",
+					 "setregid -  change effective to real gid returned %ld",
 					 TEST_RETURN);
 			}
 		}
@@ -283,7 +283,7 @@ int main(int ac, char **av)
 			if (STD_FUNCTIONAL_TEST) {
 				/* No Verification test, yet... */
 				tst_resm(TPASS,
-					 "setregid -  try to change real to current real returned %d",
+					 "setregid -  try to change real to current real returned %ld",
 					 TEST_RETURN);
 			}
 		}

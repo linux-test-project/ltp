@@ -137,7 +137,7 @@ int main(int ac, char **av)
 				exit(0);
 			} else {
 				tst_resm(TWARN, "sched_getparam()"
-					 "returned %d, errno = %d : %s;"
+					 "returned %ld, errno = %d : %s;"
 					 " returned process priority value"
 					 " is %d", TEST_RETURN, TEST_ERRNO,
 					 strerror(TEST_ERRNO),

@@ -135,7 +135,7 @@ int main(int ac, char **av)
 					exit(1);
 				}
 			} else {
-				tst_resm(TFAIL, "nanosleep() returns %d, "
+				tst_resm(TFAIL, "nanosleep() returns %ld, "
 					 "expected -1, errno:%d",
 					 TEST_RETURN, EINVAL);
 				exit(1);

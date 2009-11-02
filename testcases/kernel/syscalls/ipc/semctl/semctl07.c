@@ -97,7 +97,7 @@ char *argv[];
 	 */
 
 	if (arg.buf->sem_nsems != nsems) {
-		tst_resm(TFAIL, "error: unexpected number of sems %d",
+		tst_resm(TFAIL, "error: unexpected number of sems %lu",
 			 arg.buf->sem_nsems);
 		tst_exit();
 	}

@@ -41,6 +41,7 @@
  * RESTRICTIONS
  *	NONE
  */
+#include <inttypes.h>
 #include <stdio.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -109,15 +110,15 @@ void do_sendfile(void)
 		shutdown(s, SHUT_RDWR);
 		if (TEST_RETURN != sb.st_size) {
 			tst_resm(TFAIL, "sendfile(2) failed to return "
-				 "expected value, expected: %d, "
-				 "got: %d", sb.st_size, TEST_RETURN);
+				 "expected value, expected: %"PRId64", "
+				 "got: %ld", (int64_t)sb.st_size, TEST_RETURN);
 			kill(child_pid, SIGKILL);
 		} else if (after_pos != sb.st_size) {
 			tst_resm(TFAIL, "sendfile(2) failed to update "
 				 " the file position of in_fd, "
-				 "expected file position: %d, "
-				 "actual file position %d",
-				 sb.st_size, after_pos);
+				 "expected file position: %"PRId64", "
+				 "actual file position %"PRId64,
+				 (int64_t)sb.st_size, (int64_t)after_pos);
 			kill(child_pid, SIGKILL);
 		} else {
 			tst_resm(TPASS, "functionality of sendfile() is "

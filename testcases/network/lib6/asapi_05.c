@@ -389,8 +389,7 @@ icmp6_ft(void)
 		    ftab[i].ft_test != T_WILLPASS) {
 			if (setsockopt(sf, IPPROTO_ICMPV6, ICMP6_FILTER, &i6f,
 					sizeof(i6f)) < 0) {
-				tst_resm(TFAIL, "%s: setsockopt ICMP6_FILTER:"
-					" %s\n", strerror(errno));
+				tst_resm(TFAIL|TERRNO, "setsockopt ICMP6_FILTER");
 				continue;
 			}
 			if (ic6_send1(ftab[i].ft_tname, ftab[i].ft_sndtype))

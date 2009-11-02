@@ -185,7 +185,7 @@ void do_child()
 			exit(1);
 		}
 	} else {
-		tst_resm(TFAIL, "nanosleep() returns %d, "
+		tst_resm(TFAIL, "nanosleep() returns %ld, "
 			 "expected -1, errno:%d", TEST_RETURN, EINTR);
 		exit(1);
 	}

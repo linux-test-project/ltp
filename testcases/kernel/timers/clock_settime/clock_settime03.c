@@ -195,7 +195,7 @@ main(int ac, char **av)
 			} else {
 				tst_resm(TFAIL, "clock_settime(2) failed to"
 						" produce expected error; %d"
-						" , errno : %s and got %d",
+						" , errno : %s and got %ld",
 						testcase[i].exp_errno,
 						testcase[i].exp_errval,
 						TEST_RETURN);

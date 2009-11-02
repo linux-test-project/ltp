@@ -127,9 +127,7 @@ int main(int ac, char **av)
 			TEST(sched_setparam(getppid(), &param));
 
 			if (TEST_RETURN == -1) {
-				tst_resm(TWARN, "sched_setparam() returned %d,"
-					 " errno = %d : %s", TEST_RETURN,
-					 TEST_ERRNO, strerror(TEST_ERRNO));
+				tst_resm(TWARN|TTERRNO, "sched_setparam() returned %ld", TEST_RETURN);
 				exit(0);
 			}
 			exit(1);

@@ -112,11 +112,11 @@ int main(int ac, char **av)
 		 * get 0 for priority value
 		 */
 		if ((TEST_RETURN == 0) && (param.sched_priority == 0)) {
-			tst_resm(TPASS, "sched_getparam() returned %d",
+			tst_resm(TPASS, "sched_getparam() returned %ld",
 				 TEST_RETURN);
 		} else {
 			tst_resm(TFAIL, "Test Failed, sched_getparam()"
-				 "returned %d, errno = %d : %s; returned "
+				 "returned %ld, errno = %d : %s; returned "
 				 "process priority value is %d", TEST_RETURN,
 				 TEST_ERRNO, strerror(TEST_ERRNO),
 				 param.sched_priority);

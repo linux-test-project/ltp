@@ -177,7 +177,7 @@ int main(int ac, char **av) {
         						tst_resm(TINFO, "sa.sa_flags = %s ",test_flags_list[flag]);
                  	   				tst_resm(TPASS, "%s failure with sig: %d as expected errno  = %s : %s", TCID, signal,test_cases[0].errdesc, strerror(TEST_ERRNO));
 			                         } else {
-        					tst_resm(TFAIL, "rt_sigaction call succeeded: result = %d got error %d:but expected  %d", TEST_RETURN, TEST_ERRNO, test_cases[0].exp_errno);
+        					tst_resm(TFAIL, "rt_sigaction call succeeded: result = %ld got error %d:but expected  %d", TEST_RETURN, TEST_ERRNO, test_cases[0].exp_errno);
         					tst_resm(TINFO, "sa.sa_flags = %s ",test_flags_list[flag]);
 						}
                 			}

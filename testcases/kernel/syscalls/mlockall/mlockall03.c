@@ -176,7 +176,7 @@ int main(int ac, char **av)
 			} else {
 				tst_brkm(TFAIL, cleanup,
 					 "mlockall() Failed, expected "
-					 "return value=-1, got %d",
+					 "return value=-1, got %ld",
 					 TEST_RETURN);
 			}
 			cleanup_test(i);

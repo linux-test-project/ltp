@@ -29,7 +29,7 @@
  * 
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: symlink01.c,v 1.19 2009/08/28 14:17:14 vapier Exp $ */
+/* $Id: symlink01.c,v 1.20 2009/11/02 13:57:19 subrata_modak Exp $ */
 /*
  *	OS Test - Silicon Graphics, Inc.
  *
@@ -213,6 +213,7 @@
 #include <utime.h>		/* utime(2) system call */
 #include <sys/param.h>
 #include <sys/stat.h>		/* stat(2) and lstat(2) system calls */
+#include <stdint.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -1408,28 +1409,28 @@ struct all_test_cases *tc_ptr;
 {
 	if (statter.st_dev != asymlink.st_dev)
 		tst_resm(TFAIL,
-			 "stat of symbolic link reference to object device info %ld != stat of object file device info %ld",
-			 statter.st_dev, asymlink.st_dev);
+			 "stat of symbolic link reference to object device info %jd != stat of object file device info %jd",
+			 (intmax_t)statter.st_dev, (intmax_t)asymlink.st_dev);
 
 	else if (statter.st_mode != asymlink.st_mode)
 		tst_resm(TFAIL,
-			 "stat of symbolic link reference to object file permissions %ld != stat of object file permissions %ld",
-			 statter.st_mode, asymlink.st_mode);
+			 "stat of symbolic link reference to object file permissions %jd != stat of object file permissions %jd",
+			 (intmax_t)statter.st_mode, (intmax_t)asymlink.st_mode);
 
 	else if (statter.st_nlink != asymlink.st_nlink)
 		tst_resm(TFAIL,
-			 "stat of symbolic link reference to object file link count %ld != stat of object file link count %ld",
-			 statter.st_nlink, asymlink.st_nlink);
+			 "stat of symbolic link reference to object file link count %jd != stat of object file link count %jd",
+			 (intmax_t)statter.st_nlink, (intmax_t)asymlink.st_nlink);
 
 	else if (statter.st_uid != asymlink.st_uid)
 		tst_resm(TFAIL,
-			 "stat of symbolic link reference to object file uid %ld != stat of object file uid %ld",
-			 statter.st_uid, asymlink.st_uid);
+			 "stat of symbolic link reference to object file uid %jd != stat of object file uid %jd",
+			 (intmax_t)statter.st_uid, (intmax_t)asymlink.st_uid);
 
 	else if (statter.st_gid != asymlink.st_gid)
 		tst_resm(TFAIL,
-			 "stat of symbolic link reference to object file gid %ld != stat of object file gid %ld",
-			 statter.st_gid, asymlink.st_gid);
+			 "stat of symbolic link reference to object file gid %jd != stat of object file gid %jd",
+			 (intmax_t)statter.st_gid, (intmax_t)asymlink.st_gid);
 
 	else if (statter.st_size != asymlink.st_size)
 		tst_resm(TFAIL,
@@ -1559,8 +1560,8 @@ struct all_test_cases *tc_ptr;
 							 stbuf.st_nlink);
 					}
 				} else {
-					tst_resm(TFAIL, "%sA lstat of %s (ino:%d) and of\n\t\t\
-%s (ino:%d), does not show them being the same ino.", Buffer, tc_ptr->fn_arg[1], asymlink.st_ino, "nick", statter.st_ino);
+					tst_resm(TFAIL, "%sA lstat of %s (ino:%jd) and of\n\t\t\
+%s (ino:%jd), does not show them being the same ino.", Buffer, tc_ptr->fn_arg[1], (intmax_t)asymlink.st_ino, "nick", (intmax_t)statter.st_ino);
 				}
 			}
 		}
@@ -1691,10 +1692,10 @@ struct all_test_cases *tc_ptr;
 						Tst_count++;
 				else
 					tst_resm(TFAIL,
-						 "%s %s %d greater than original times",
+						 "%s %s %jd greater than original times",
 						 "utime(2) failed to change object file access and",
 						 "modify times through symbolic link to a value",
-						 a_time_value);
+						 (intmax_t)a_time_value);
 			}
 		}
 	}

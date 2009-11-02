@@ -133,10 +133,8 @@ int main(int ac, char **av)
 				if (TEST_RETURN == 0) {
 					exit(0);
 				} else {
-					tst_resm(TWARN, "prctl() returned %d"
-						 " errno = %d : %s",
-						 TEST_RETURN, TEST_ERRNO,
-						 strerror(TEST_ERRNO));
+					tst_resm(TWARN|TTERRNO, "prctl() returned %ld",
+						 TEST_RETURN);
 					exit(1);
 				}
 

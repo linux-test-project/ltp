@@ -203,7 +203,7 @@ int main(int ac, char **av)
 				}
 			} else {
 				tst_resm(TFAIL,
-					 "stat(2) returned %d, expected -1, errno:%d",
+					 "stat(2) returned %ld, expected -1, errno:%d",
 					 TEST_RETURN,
 					 Test_cases[ind].exp_errno);
 			}

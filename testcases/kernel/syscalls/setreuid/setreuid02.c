@@ -136,8 +136,8 @@ int main(int ac, char **av)
 			if (TEST_RETURN == -1) {
 				TEST_ERROR_LOG(TEST_ERRNO);
 				tst_resm(TBROK, "setreuid(%d, %d) failed",
-					 test_data[i].real_uid,
-					 test_data[i].eff_uid);
+					 *test_data[i].real_uid,
+					 *test_data[i].eff_uid);
 			} else {
 				/*
 				 * Perform functional verification if test

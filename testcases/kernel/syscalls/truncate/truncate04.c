@@ -142,10 +142,10 @@ int main(int ac, char **av)
 			} else {
 				tst_resm(TFAIL, "truncate() fails, %s, "
 					 "errno=%d, expected errno:%d",
-					 test_desc, TEST_ERRNO, exp_enos);
+					 test_desc, TEST_ERRNO, EISDIR);
 			}
 		} else {
-			tst_resm(TFAIL, "truncate() returned %d, "
+			tst_resm(TFAIL, "truncate() returned %ld, "
 				 "expected -1, errno EISDIR", TEST_RETURN);
 		}
 	}			/* End for TEST_LOOPING */

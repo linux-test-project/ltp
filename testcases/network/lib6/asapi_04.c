@@ -287,9 +287,9 @@ static int client(int prot, int sfd)
 		TEST(setsockopt(sd, IPPROTO_IPV6, IPV6_CHECKSUM, &offset,
 				sizeof(offset)));
 		if (TEST_RETURN != cstab[i].cs_setresult) {
-			tst_resm(TFAIL, "IPV6_CHECKSUM offset %d len %d "
-				"- result %d != %d errno %d", offset, len,
-				TEST_RETURN, cstab[i].cs_setresult, TEST_ERRNO);
+			tst_resm(TFAIL|TTERRNO, "IPV6_CHECKSUM offset %d len %d "
+				"- result %ld != %d", offset, len,
+				TEST_RETURN, cstab[i].cs_setresult);
 			continue;
 		}
 		if (TEST_RETURN < 0) {
@@ -308,9 +308,9 @@ static int client(int prot, int sfd)
 			sizeof(rsin6)));
 		xlen = (cstab[i].cs_sndresult < 0) ? -1 : len;
 		if (TEST_RETURN != xlen) {
-			tst_resm(TFAIL, "IPV6_CHECKSUM offset %d len %d "
-				"- sndresult %d != %d snderrno %d",
-				offset, len, TEST_RETURN, xlen, TEST_ERRNO);
+			tst_resm(TFAIL|TTERRNO, "IPV6_CHECKSUM offset %d len %d "
+				"- sndresult %ld != %d",
+				offset, len, TEST_RETURN, xlen);
 			continue;
 		}
 		if (TEST_RETURN < 0 && TEST_ERRNO != cstab[i].cs_snderrno) {

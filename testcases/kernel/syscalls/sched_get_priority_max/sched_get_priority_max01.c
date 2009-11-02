@@ -118,11 +118,9 @@ int main(int ac, char **av)
 				tst_resm(TPASS, "%s Passed",
 					 test_cases[ind].desc);
 			} else {
-				tst_resm(TFAIL, "%s Failed,"
-					 "sched_get_priority_max() returned %d"
-					 " errno = %d : %s",
-					 test_cases[ind].desc, TEST_RETURN,
-					 TEST_ERRNO, strerror(TEST_ERRNO));
+				tst_resm(TFAIL|TTERRNO, "%s Failed,"
+					 "sched_get_priority_max() returned %ld",
+					 test_cases[ind].desc, TEST_RETURN);
 			}
 		}
 	}			/* End for TEST_LOOPING */

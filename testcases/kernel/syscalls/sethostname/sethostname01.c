@@ -113,7 +113,7 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "sethostname() failed , errno=%d : %s",
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 		} else {
-			tst_resm(TPASS, "sethostname() returned %d,"
+			tst_resm(TPASS, "sethostname() returned %ld,"
 				 " Hostname set to \"%s\"", TEST_RETURN,
 				 ltphost);
 		}

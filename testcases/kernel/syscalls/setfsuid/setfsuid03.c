@@ -107,11 +107,11 @@ int main(int ac, char **av)
 
 		if (TEST_RETURN == uid) {
 			tst_resm(TFAIL,
-				 "setfsuid() returned %d, expected anything but %d",
+				 "setfsuid() returned %ld, expected anything but %d",
 				 TEST_RETURN, uid);
 		} else {
 			tst_resm(TPASS, "setfsuid() returned expected value : "
-				 "%d", TEST_RETURN);
+				 "%ld", TEST_RETURN);
 		}
 	}
 	cleanup();

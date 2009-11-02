@@ -197,7 +197,7 @@ int main(int ac, char **av)
 							 exp_errno);
 					}
 				} else {
-					tst_resm(TFAIL, "utime(2) returned %d, "
+					tst_resm(TFAIL, "utime(2) returned %ld, "
 						 "expected -1, errno:%d",
 						 TEST_RETURN,
 						 Test_cases[ind].exp_errno);
