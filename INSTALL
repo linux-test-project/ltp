@@ -1,8 +1,9 @@
-$Id: INSTALL,v 1.27 2009/10/25 10:44:14 yaberauneya Exp $
+$Id: INSTALL,v 1.28 2009/11/03 16:12:12 yaberauneya Exp $
 
 Requirements
 -------------------
-In order to compile and use pan, you must have bison/yacc and flex installed.
+In order to compile and use pan, you must have bison/yacc, flex, and make
+3.81+ installed.
 
 bison can be obtained here:
 - http://ftp.gnu.org/gnu/bison/bison-2.4.1.tar.gz
@@ -12,6 +13,9 @@ Berkeley yacc can be obtained here:
 
 flex can be obtained here:
 - http://downloads.sourceforge.net/project/flex/flex/flex-2.5.33/flex-2.5.33.tar.bz2
+
+make 3.81 can be obtained here:
+- http://ftp.gnu.org/gnu/make/make-3.81.tar.bz2
 
 If you want to use auto configuration, be sure autoconf-2.61+ & automake-1.10+
 are installed.
