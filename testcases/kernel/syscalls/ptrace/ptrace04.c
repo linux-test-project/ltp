@@ -13,8 +13,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <sys/ptrace.h>
-#include <asm/ptrace.h>
+
+#include <config.h>
+#include "ptrace.h"
 
 #include "test.h"
 #include "usctest.h"

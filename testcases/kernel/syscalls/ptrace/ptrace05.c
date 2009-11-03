@@ -23,7 +23,6 @@
  ******************************************************************************
  */
 
-#include <sys/ptrace.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <signal.h>
@@ -34,6 +33,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+
+#include <config.h>
+#include "ptrace.h"
+
 #include "test.h"
 #include "usctest.h"
 

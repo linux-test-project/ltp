@@ -41,8 +41,7 @@
 #include <sys/socket.h>
 #include "config.h"
 
-#include <sys/ptrace.h>
-#include <linux/ptrace.h>
+#include "../../syscalls/ptrace/ptrace.h"
 
 #define str_expand(s) str(s)
 #define str(s) #s

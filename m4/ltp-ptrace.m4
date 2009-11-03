@@ -28,11 +28,17 @@ dnl Check for ptrace support
 dnl in commit 016ae219 in July 2008
 dnl
 
-AC_DEFUN([_LTP_CHECK_LINUX_PTRACE],[
-AC_CHECK_HEADERS(linux/ptrace.h,[
-	LINUX_PTRACE_HEADER=yes
-	AC_CHECK_DECLS([PTRACE_GETSIGINFO, PTRACE_O_TRACEVFORKDONE, PTRACE_SETOPTIONS],[],[],[dnl
-#include <linux/ptrace.h>
-]) dnl AC_CHECK_DECLS
-]) dnl AC_CHECK_HEADERS
-]) dnl _LTP_CHECK_TASKSTATS_FREEPAGES
+AC_DEFUN([_LTP_CHECK_LINUX_PTRACE],[dnl
+dnl order of headers checked here is significant
+AC_CHECK_HEADERS_ONCE([ \
+	sys/ptrace.h \
+	sys/reg.h \
+	asm/ptrace.h \
+	linux/ptrace.h \
+])
+save_CPPFLAGS=$CPPFLAGS
+CPPFLAGS="$CPPFLAGS -I$srcdir/testcases/kernel/syscalls/ptrace"
+AC_CHECK_TYPES([struct user_regs_struct, struct pt_regs],,,[#include "ptrace.h"])
+AC_CHECK_DECLS([PTRACE_GETSIGINFO, PTRACE_O_TRACEVFORKDONE, PTRACE_SETOPTIONS],,,[#include "ptrace.h"])
+CPPFLAGS=$save_CPPFLAGS
+])
