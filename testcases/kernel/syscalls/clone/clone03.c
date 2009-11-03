@@ -125,14 +125,8 @@ int main(int ac, char **av)
 		/*
 		 * Call clone(2)
 		 */
-#if defined(__hppa__)
-		TEST(clone(child_fn, child_stack, 0, NULL));
-#elif defined(__ia64__)
-		TEST(clone2(child_fn, child_stack,
-			    CHILD_STACK_SIZE, 0, NULL, NULL, NULL, NULL));
-#else
-		TEST(clone(child_fn, child_stack + CHILD_STACK_SIZE, 0, NULL));
-#endif
+		TEST(ltp_clone(0, child_fn, NULL, CHILD_STACK_SIZE,
+				child_stack));
 
 		/* check return code */
 		if (TEST_RETURN == -1) {

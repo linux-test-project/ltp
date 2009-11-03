@@ -213,11 +213,11 @@ int main(int argc, char *argv[])
 
 	/* Create container 1 */
 	*cinit_no = 1;
-	cpid1 = do_clone(CLONE_NEWPID|SIGCHLD, child_fn, cinit_no);
+	cpid1 = ltp_clone_quick(CLONE_NEWPID|SIGCHLD, child_fn, cinit_no);
 
 	/* Create container 2 */
 	*cinit_no = 2;
-	cpid2 = do_clone(CLONE_NEWPID|SIGCHLD, child_fn, cinit_no);
+	cpid2 = ltp_clone_quick(CLONE_NEWPID|SIGCHLD, child_fn, cinit_no);
 	if (cpid1 < 0 || cpid2 < 0) {
 		tst_resm(TBROK, "parent: clone() failed.");
 		cleanup();

@@ -1,6 +1,6 @@
 /******************************************************************************/
 /*                                                                            */
-/* Copyright (c) Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>, 2009      */
+/* Copyright (c) Tutsi Handa <penguin-kernel@I-love.SAKURA.ne.jp>, 2009      */
 /*                                                                            */
 /* This program is free software;  you can redistribute it and/or modify      */
 /* it under the terms of the GNU General Public License as published by       */
@@ -25,6 +25,7 @@
 #include <sched.h>
 #include <errno.h>
 #include <stdlib.h>
+#include "test.h"
 
 static int child(void *arg)
 {
@@ -38,9 +39,7 @@ static int child(void *arg)
 int main(int argc, char *argv[])
 {
 	char c = 0;
-	char *stack = malloc(8192);
-	const pid_t pid = clone(child, stack + (8192 / 2), CLONE_NEWNS,
-				(void *) argv);
+	const pid_t pid = ltp_clone_quick(CLONE_NEWNS, child, (void *) argv);
 	while (waitpid(pid, NULL, __WALL) == EOF && errno == EINTR)
 		c++; /* Dummy. */
 	return 0;

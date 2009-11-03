@@ -49,7 +49,7 @@ RPMBUILD		?= rpmbuild
 
 CPPFLAGS		:= 
 CFLAGS			:= -g -O2
-LDLIBS			:= 
+LDLIBS			+= 
 LDFLAGS			:= 
 
 DEBUG_CFLAGS		?= -g

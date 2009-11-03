@@ -16,43 +16,13 @@
 ***************************************************************************/
 #include "libclone.h"
 
-/* Serge: should I be passing in strings for error messages? */
-
-int do_clone(unsigned long clone_flags,
-			int(*fn1)(void *arg), void *arg1)
-{
-	int ret;
-	int stack_size = getpagesize() * 4;
-	void *stack = malloc (stack_size);
-
-	if (!stack) {
-		perror("malloc");
-		return -1;
-	}
-
-#if defined(__hppa__)
-	ret = clone(fn1, stack, clone_flags, arg1);
-#elif defined(__ia64__)
-	ret = clone2(fn1, stack, stack_size, clone_flags, arg1, NULL, NULL, NULL);
-#else
-	ret = clone(fn1, stack + stack_size, clone_flags, arg1);
-#endif
-
-	if (ret == -1) {
-		perror("clone");
-		free(stack);
-	}
-
-	return ret;
-}
-
 int do_clone_tests(unsigned long clone_flags,
 			int(*fn1)(void *arg), void *arg1,
 			int(*fn2)(void *arg), void *arg2)
 {
 	int ret;
 
-	ret = do_clone(clone_flags | SIGCHLD, fn1, arg1);
+	ret = ltp_clone_quick(clone_flags | SIGCHLD, fn1, arg1);
 
 	if (ret == -1) {
 		return -1;

@@ -269,7 +269,7 @@ int main(int argc, char *argv[])
 	tst_resm(TINFO, "parent: successfully created posix mqueue");
 
 	/* container creation on PID namespace */
-	cpid = do_clone(CLONE_NEWPID|SIGCHLD, child_fn, NULL);
+	cpid = ltp_clone_quick(CLONE_NEWPID|SIGCHLD, child_fn, NULL);
 	if (cpid < 0) {
 		tst_resm(TBROK, "parent: clone() failed(%s)", strerror(errno));
 		cleanup(TBROK, F_STEP_1, mqd);

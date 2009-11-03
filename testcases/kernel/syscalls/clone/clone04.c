@@ -133,18 +133,8 @@ int main(int ac, char **av)
 			/*
 			 * call the system call with the TEST() macro
 			 */
-#if defined(__hppa__)
-			TEST(clone(test_cases[ind].child_fn, test_stack,
-				   SIGCHLD, NULL));
-#elif defined(__ia64__)
-			test_cases[ind].child_fn = NULL;
-			TEST(clone2(test_cases[ind].child_fn, test_stack,
-				    CHILD_STACK_SIZE, SIGCHLD, NULL,
-				    NULL, NULL, NULL));
-#else
-			TEST(clone(test_cases[ind].child_fn, test_stack,
-				   0, NULL));
-#endif
+			TEST(ltp_clone(0,test_cases[ind].child_fn, NULL,
+					CHILD_STACK_SIZE, test_stack));
 
 			if ((TEST_RETURN == -1) &&
 			    (TEST_ERRNO == test_cases[ind].exp_errno)) {

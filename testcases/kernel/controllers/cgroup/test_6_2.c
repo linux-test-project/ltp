@@ -24,16 +24,12 @@
 #include <unistd.h>
 #include <sched.h>
 
-#include "clone_platform.h"
-
 #define DEFAULT_USEC	30000
 
 int foo(void __attribute__((unused)) *arg)
 {
 	return 0;
 }
-
-char *stack[4096];
 
 int main(int argc, char **argv)
 {
@@ -44,15 +40,7 @@ int main(int argc, char **argv)
 
 	while (1) {
 		usleep(usec);
-#if defined(__hppa__)
-		clone(foo, stack, CLONE_NEWNS, NULL);
-#elif defined(__ia64__)
-		clone2(foo, stack,
-			    4096, CLONE_NEWNS, NULL, NULL, NULL, NULL);
-#else
-		clone
-		     (foo, stack + 4096, CLONE_NEWNS, NULL);
-#endif
+		ltp_clone_quick(CLONE_NEWNS, foo, NULL);
 	}
 
 	return 0;

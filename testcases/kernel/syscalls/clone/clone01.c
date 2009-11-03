@@ -120,15 +120,8 @@ int main(int ac, char **av)
 		/*
 		 * Call clone(2)
 		 */
-#if defined(__hppa__)
-		TEST(clone(do_child, child_stack, SIGCHLD, NULL));
-#elif defined(__ia64__)
-		TEST(clone2(do_child, child_stack,
-			    CHILD_STACK_SIZE, SIGCHLD, NULL, NULL, NULL, NULL));
-#else
-		TEST(clone
-		     (do_child, child_stack + CHILD_STACK_SIZE, SIGCHLD, NULL));
-#endif
+		TEST(ltp_clone(SIGCHLD, do_child, NULL, CHILD_STACK_SIZE,
+				child_stack));
 
 again:
 		if ((child_pid = wait(&status)) == -1)

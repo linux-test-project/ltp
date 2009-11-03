@@ -190,17 +190,8 @@ int main(int ac, char **av)
 			}
 
 			/* Test the system call */
-#if defined(__hppa__)
-			TEST(clone(child_fn, child_stack,
-				   test_cases[i].flags, NULL));
-#elif defined(__ia64__)
-			TEST(clone2(child_fn, child_stack,
-				    CHILD_STACK_SIZE, test_cases[i].flags, NULL,
-				    NULL, NULL, NULL));
-#else
-			TEST(clone(child_fn, child_stack + CHILD_STACK_SIZE,
-				   test_cases[i].flags, NULL));
-#endif
+			TEST(ltp_clone(test_cases[i].flags, child_fn, NULL,
+				CHILD_STACK_SIZE, child_stack));
 
 			/* check return code */
 			if (TEST_RETURN == -1) {

@@ -22,17 +22,9 @@
 #include <sched.h>
 #include <signal.h>
 #include <unistd.h>
+#include <test.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-
-#ifdef __ia64__
-#define clone2 __clone2
-extern int  __clone2(int (*fn) (void *arg), void *child_stack_base,
-		     size_t child_stack_size, int flags, void *arg,
-		     pid_t *parent_tid, void *tls, pid_t *child_tid);
-#endif
-
-char somemem[4096];
 
 int myfunc(void *arg){
 	return system(arg);
@@ -59,12 +51,9 @@ int main(int argc, char *argv[])
 	parent_cmd = (char *)strdup(argv[1]);
 
 	printf("1\n");
-#ifdef __ia64__
-	if (clone2(myfunc, somemem, getpagesize(), CLONE_NEWNS|SIGCHLD,
-		   child_cmd, NULL, NULL, NULL) != -1) {
-#else
-	if (clone(myfunc, somemem, CLONE_NEWNS|SIGCHLD, child_cmd) != -1) {
-#endif
+	ret = ltp_clone_quick(CLONE_NEWNS|SIGCHLD, myfunc,
+				(void *)child_cmd);
+	if (ret != -1) {
 		system(parent_cmd);
 		wait(&childret);
 	} else {

@@ -31,7 +31,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: test.h,v 1.23 2009/09/27 17:46:05 subrata_modak Exp $ */
+/* $Id: test.h,v 1.24 2009/11/03 20:07:35 vapier Exp $ */
 
 #ifndef __TEST_H__
 #define __TEST_H__
@@ -244,6 +244,17 @@ int tst_cwd_has_free(int required_kib);
  */
 void maybe_run_child(void (*child)(), char *fmt, ...);
 int self_exec(char *argv0, char *fmt, ...);
+
+/*
+ * Functions from lib/cloner.c
+ */
+int ltp_clone(unsigned long clone_flags, int (*fn)(void *arg), void *arg,
+		size_t stack_size, void *stack);
+int ltp_clone_malloc(unsigned long clone_flags, int (*fn)(void *arg),
+		void *arg, size_t stacksize);
+int ltp_clone_quick(unsigned long clone_flags, int (*fn)(void *arg),
+		void *arg);
+#define clone(...) use_the_ltp_clone_functions,do_not_use_clone
 
 #ifdef TST_USE_COMPAT16_SYSCALL
 #define TCID_BIT_SUFFIX "_16"

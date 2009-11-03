@@ -126,17 +126,8 @@ int main(int ac, char **av)
 		/*
 		 * Call clone(2)
 		 */
-#if defined(__hppa__)
-		child_pid = clone(do_child, child_stack, SIGCHLD, NULL);
-#elif defined(__ia64__)
-		child_pid = clone2(do_child, child_stack,
-				   CHILD_STACK_SIZE, SIGCHLD, NULL,
-				   NULL, NULL, NULL);
-#else
-		child_pid =
-		    (clone
-		     (do_child, child_stack + CHILD_STACK_SIZE, SIGCHLD, NULL));
-#endif
+		child_pid = ltp_clone(SIGCHLD, do_child, NULL,
+				CHILD_STACK_SIZE, child_stack);
 		wait(NULL);
 		free(child_stack);
 	}			/* End for TEST_LOOPING */

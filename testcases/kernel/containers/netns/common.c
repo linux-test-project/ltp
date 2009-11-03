@@ -57,18 +57,9 @@ int create_net_namespace(char *p1, char *c1)
 	int pid, status = 0, ret;
 	char *ltproot, *par;
 	long int clone_flags = 0;
-	int stack_size = getpagesize() * 4;
-	void *childstack, *stack;
 
 	if (tst_kvercmp(2, 6, 19) < 0)
 		return 1;
-
-	stack = malloc(stack_size);
-	if (!stack) {
-		perror("failled to malloc memory for stack...");
-		return -1;
-	}
-	childstack = stack + stack_size;
 
 	clone_flags |= CLONE_NEWNS;
 /* Enable other namespaces too optionally */
@@ -76,16 +67,10 @@ int create_net_namespace(char *p1, char *c1)
 	clone_flags |= CLONE_NEWPID;
 #endif
 
-#ifdef __ia64__
-	pid = clone2(child_fn, childstack, getpagesize(), clone_flags | SIGCHLD,
-						(void *)c1, NULL, NULL, NULL);
-#else
-	pid = clone(child_fn, childstack, clone_flags | SIGCHLD, (void *)c1);
-#endif
+	pid = ltp_clone_quick(clone_flags, child_fn, (void *) c1);
 
 	if (pid == -1) {
 		perror("Failed to do clone...");
-		free(stack);
 		return -1;
 	}
 
