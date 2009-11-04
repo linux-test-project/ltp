@@ -105,13 +105,6 @@
 
 #define BLOCKS_WRITTEN 12
 
-#ifndef __NR_fallocate
-#	define __NR_fallocate -1	//Dummy Value
-int arch_support = 0;		/* Architecure is not supported */
-#else
-int arch_support = 1;		/* Architecture is supported */
-#endif
-
 /* Local Function */
 static inline long fallocate();
 void get_blocksize(int);
@@ -235,16 +228,6 @@ int main(int ac, char **av)
 	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL)
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 
-	/* This test needs kernel version > 2.6.23 and
-	 * either of x86, x86_64 or ppc architecture
-	 */
-	if (!arch_support || (tst_kvercmp(2, 6, 23) < 0)) {
-		tst_resm(TCONF,
-			 " System doesn't support execution of the test");
-
-		exit(0);
-	}
-
 	/* perform global test setup, call setup() function. */
 	setup();
 
@@ -309,7 +292,7 @@ void runtest(int mode, int fd, loff_t expected_size)
 	TEST(fallocate(fd, mode, offset, len));
 	/* check return code */
 	if (TEST_RETURN != 0) {
-		if (TEST_ERRNO == EOPNOTSUPP) {
+		if (TEST_ERRNO == EOPNOTSUPP || TEST_ERRNO == ENOSYS) {
 			tst_brkm(TCONF, cleanup,
 				 "fallocate system call is not implemented");
 		}

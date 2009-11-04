@@ -104,13 +104,6 @@
 #define FALLOC_FL_KEEP_SIZE 1	//Need to be removed once the glibce support is provided
 #define TRUE 0
 
-#ifndef __NR_fallocate
-#	define __NR_fallocate -1	//DUMMY VALUE
-int arch_support = 0;
-#else
-int arch_support = 1;
-#endif
-
 /*Local Functions*/
 static inline long fallocate();
 void get_blocksize(int);
@@ -270,14 +263,6 @@ int main(int ac, char **av)
 	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL)
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 
-	/* This test needs kernel version > 2.6.23 and
-	 * either of x86, x86_64 or ppc architecture
-	 */
-	if (!arch_support || (tst_kvercmp(2, 6, 23) < 0)) {
-		tst_resm(TCONF, " System doesn't support execution of the test");
-		exit(0);
-	}
-
 	/* perform global test setup, call setup() function */
 	setup();
 
@@ -292,7 +277,7 @@ int main(int ac, char **av)
 
 			/* check return code */
 			if (TEST_RETURN != test_data[test_index].error) {
-				if (TEST_ERRNO == EOPNOTSUPP) {
+				if (TEST_ERRNO == EOPNOTSUPP || TEST_ERRNO == ENOSYS) {
 					tst_resm(TCONF,
 						 "fallocate system call is not implemented");
 					cleanup();	/* calls tst_exit */

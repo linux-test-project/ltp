@@ -107,13 +107,6 @@
 #define DEFAULT_TEST_MODE 1	//FALLOC_FL_KEEP_SIZE MODE
 #endif
 
-#ifndef __NR_fallocate
-#	define __NR_fallocate -1	//DUMMY VALUE
-int arch_support = 0;
-#else
-int arch_support = 1;
-#endif
-
 #define OFFSET 12
 
 /*Local Functions*/
@@ -284,15 +277,6 @@ int main(int ac, char **av)
 	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL)
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 
-	/* This test needs kernel version > 2.6.23 and
-	 * either of x86, x86_64 or ppc architecture
-	 */
-	if (!arch_support || (tst_kvercmp(2, 6, 23) < 0)) {
-		tst_resm(TCONF,
-			 " System doesn't support execution of the test");
-		exit(0);
-	}
-
 	/* perform global test setup, call setup() function. */
 	setup();
 
@@ -317,7 +301,7 @@ int main(int ac, char **av)
 			      test_data[test_index].len * block_size));
 			/* check return code */
 			if (TEST_ERRNO != test_data[test_index].error) {
-				if (TEST_ERRNO == EOPNOTSUPP) {
+				if (TEST_ERRNO == EOPNOTSUPP || TEST_ERRNO == ENOSYS) {
 					tst_brkm(TCONF, cleanup,
 						 "fallocate system call is not implemented");
 				}
