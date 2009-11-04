@@ -27,9 +27,6 @@ AC_DEFUN([LTP_CHECK_SYSCALL_NUMA],
 AC_CHECK_HEADERS(numa.h,[
 	LTP_SYSCALL_NUMA_HEADER=yes
 	AC_CHECK_FUNCS(numa_alloc_onnode,numa_move_pages)
-	AC_CHECK_HEADERS(numaif.h,[LTP_SYSCALL_NUMAIF_HEADER=yes], [], [], [
-#include <numa.h>
-])
 ]
 	AC_CHECK_LIB(numa,numa_available,[
 		NUMA_LIBS="-lnuma"

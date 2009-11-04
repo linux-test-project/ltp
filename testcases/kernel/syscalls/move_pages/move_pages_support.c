@@ -24,11 +24,6 @@
 #if HAVE_NUMA_H
 #include <numa.h>
 #endif
-/*
- * #if HAVE_NUMAIF_H
-   #include <numaif.h>
-   #endif
- */
 #include <errno.h>
 
 #include <test.h>
@@ -408,25 +403,15 @@ void check_config(unsigned int min_nodes)
 #if HAS_NUMA_H
 	if (numa_available() < 0) {
 		tst_resm(TCONF, "NUMA support is not available");
-		tst_exit();
-	}
-
-	if (numa_max_node() < (min_nodes - 1)) {
+	} else if (numa_max_node() < (min_nodes - 1)) {
 		tst_resm(TCONF, "atleast 2 NUMA nodes are required");
-		tst_exit();
-	}
-
-	if (tst_kvercmp(2, 6, 18) < 0) {
+	} else if (tst_kvercmp(2, 6, 18) < 0) {
 		tst_resm(TCONF, "2.6.18 or greater kernel required");
-		tst_exit();
-	}
-
-	if (arch_support == 0) {
+	} else if (arch_support == 0) {
 		tst_resm(TCONF, "this arch does not support move_pages");
-		tst_exit();
 	}
 #else
 	tst_resm(TCONF, "NUMA support not provided");
-	tst_exit();
 #endif
+	tst_exit();
 }

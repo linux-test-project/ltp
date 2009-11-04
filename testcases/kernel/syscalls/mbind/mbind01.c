@@ -59,14 +59,11 @@
 #include "include_j_h.h"
 #include "config.h"
 
-#if HAVE_NUMAIF_H
-#include <numaif.h>
-#endif
+#include "numaif.h"
 
 /* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
-#include "linux_syscall_numbers.h"
 
 /* Extern Global Variables */
 extern int Tst_count;		/* counter for tst_xxx routines.	 */
@@ -76,8 +73,6 @@ extern char *TESTDIR;		/* temporary dir created by tst_tmpdir() */
 char *TCID = "mbind01";		/* Test program identifier.*/
 int  testno;
 int  TST_TOTAL = 2;		/* total number of tests in this file.   */
-
-#if defined(HAVE_NUMAIF_H) && defined(__NR_get_mempolicy) && defined(__NR_mbind)
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -411,10 +406,3 @@ int main(int argc, char **argv) {
 	cleanup();
 	tst_exit();
 }
-
-#else
-int main (void) {
-	tst_resm(TCONF, "NUMA support not provided.");
-	tst_exit();
-}
-#endif

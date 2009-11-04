@@ -1,49 +1,49 @@
 /******************************************************************************/
-/* Copyright (c) Crackerjack Project., 2007-2008 ,Hitachi, Ltd		*/
+/* Copyright (c) Crackerjack Project., 2007-2008 ,Hitachi, Ltd		      */
 /*	  Author(s): Takahiro Yasui <takahiro.yasui.mp@hitachi.com>,	      */
 /*		       Yumiko Sugita <yumiko.sugita.yf@hitachi.com>, 	      */
 /*		       Satoshi Fujiwara <sa-fuji@sdl.hitachi.co.jp>	      */
 /*								  	      */
 /* This program is free software;  you can redistribute it and/or modify      */
 /* it under the terms of the GNU General Public License as published by       */
-/* the Free Software Foundation; either version 2 of the License, or	  */
-/* (at your option) any later version.					*/
-/*									    */
-/* This program is distributed in the hope that it will be useful,	    */
-/* but WITHOUT ANY WARRANTY;  without even the implied warranty of	    */
-/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See		  */
-/* the GNU General Public License for more details.			   */
-/*									    */
-/* You should have received a copy of the GNU General Public License	  */
-/* along with this program;  if not, write to the Free Software	       */
+/* the Free Software Foundation; either version 2 of the License, or	      */
+/* (at your option) any later version.					      */
+/*									      */
+/* This program is distributed in the hope that it will be useful,	      */
+/* but WITHOUT ANY WARRANTY;  without even the implied warranty of	      */
+/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See		      */
+/* the GNU General Public License for more details.			      */
+/*									      */
+/* You should have received a copy of the GNU General Public License	      */
+/* along with this program;  if not, write to the Free Software	              */
 /* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    */
-/*									    */
+/*									      */
 /******************************************************************************/
 /******************************************************************************/
-/*									    */
-/* File:	get_mempolicy01.c					     */
-/*									    */
-/* Description: This tests the get_mempolicy() syscall			*/
+/*									      */
+/* File:	get_mempolicy01.c					      */
+/*									      */
+/* Description: This tests the get_mempolicy() syscall			      */
 /*									      */
 /* 									      */
 /*									      */
 /*									      */
 /*									      */
-/*									    */
-/* Usage:  <for command-line>						 */
-/* get_mempolicy01 [-c n] [-e][-i n] [-I x] [-p x] [-t]			*/
-/*      where,  -c n : Run n copies concurrently.			     */
-/*	      -e   : Turn on errno logging.				 */
-/*	      -i n : Execute test n times.				  */
-/*	      -I x : Execute test for x seconds.			    */
-/*	      -P x : Pause for x seconds between iterations.		*/
-/*	      -t   : Turn on syscall timing.				*/
-/*									    */
-/* Total Tests: 1							     */
-/*									    */
-/* Test Name:   get_mempolicy01					     */
-/* History:     Porting from Crackerjack to LTP is done by		    */
-/*	      Manas Kumar Nayak maknayak@in.ibm.com>			*/
+/*									      */
+/* Usage:  <for command-line>						      */
+/* get_mempolicy01 [-c n] [-e][-i n] [-I x] [-p x] [-t]			      */
+/*      where,  -c n : Run n copies concurrently.			      */
+/*	      -e   : Turn on errno logging.				      */
+/*	      -i n : Execute test n times.				      */
+/*	      -I x : Execute test for x seconds.			      */
+/*	      -P x : Pause for x seconds between iterations.		      */
+/*	      -t   : Turn on syscall timing.				      */
+/*									      */
+/* Total Tests: 1							      */
+/*									      */
+/* Test Name:   get_mempolicy01					              */
+/* History:     Porting from Crackerjack to LTP is done by		      */
+/*	      Manas Kumar Nayak maknayak@in.ibm.com>			      */
 /******************************************************************************/
 #include <sys/syscall.h>
 #include <sys/types.h>
@@ -55,14 +55,13 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <libgen.h>
-#include "../utils/numaif.h"
-#include "../utils/include_j_h.h"
-#include "../utils/common_j_h.c"
+#include "numaif.h"
+#include "include_j_h.h"
+#include "common_j_h.c"
 
 /* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
-#include "linux_syscall_numbers.h"
 
 /* Extern Global Variables */
 extern int Tst_count;	   /* counter for tst_xxx routines.	 */
@@ -77,9 +76,6 @@ int  TST_TOTAL = 1;		   /* total number of tests in this file.   */
  * Macros
  */
 #define SYSCALL_NAME    "get_mempolicy"
-
-/* s390x doesn't support numa. */
-#if defined(__NR_get_mempolicy) && defined(__NR_mbind) && defined(__NR_set_mempolicy)
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -436,14 +432,3 @@ int main(int argc, char **argv) {
 	tst_exit();
 
 }
-
-#else /* Non-existent numa implementation. */
-void cleanup () { };
-
-int
-main(int argc, char **argv) {
-	tst_resm(TCONF, "Your system doesn't properly support: %s",
-			SYSCALL_NAME);
-	tst_exit();
-}
-#endif /* defined(__NR_get_mempolicy) && defined(__NR_mbind) && defined(__NR_set_mempolicy) */
