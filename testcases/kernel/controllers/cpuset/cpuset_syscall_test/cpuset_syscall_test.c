@@ -37,7 +37,11 @@
 #include <sys/mman.h>
 #include <sys/shm.h>
 #include <syscall.h>
+#include <inttypes.h>
 #include "config.h"
+#include "linux_syscall_numbers.h"
+#include "test.h"
+#include "usctest.h"
 #if HAVE_LINUX_MEMPOLICY_H
 #include <linux/mempolicy.h>
 #endif
@@ -97,7 +101,6 @@ void process_options(int argc, char *argv[])
 {
 	int c;
 	char *end;
-	FILE *file;
 
 	while (1) {
 		c = getopt_long(argc, argv, "", long_opts, NULL);
@@ -174,7 +177,7 @@ void test_mbind(void)
 		ret = 1;
 		return;
 	}
-	printf("%lx\n", addr);
+	printf("%" __PRI64_PREFIX "x\n", (long) addr);
 	ret = mbind(addr, len, MPOL_BIND, &mask, 8 * sizeof(mask), 0);
 }
 
@@ -203,7 +206,7 @@ void test_get_mempolicy(void)
 		return;
 	}
 	ret = get_mempolicy(NULL, bitmask_mask(nmask), bitmask_nbits(nmask), 0,
-			MPOL_F_MEMS_ALLOWED);
+				MPOL_F_MEMS_ALLOWED);
 
 	bitmask_displaylist(str, 256, nmask);
 	printf("%s", str);
