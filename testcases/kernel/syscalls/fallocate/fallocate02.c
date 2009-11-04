@@ -293,6 +293,9 @@ int main(int ac, char **av)
 				fd = fdw;
 				strcpy(fname, fnamew);
 				break;
+			default:
+				tst_brkm(TCONF, cleanup, "invalid test setting");
+				return 0;
 			}
 
 			TEST(fallocate
