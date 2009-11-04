@@ -58,18 +58,24 @@ int do_unshare_tests(unsigned long clone_flags,
 		close(retpipe[0]);
 		ret = syscall(SYS_unshare, clone_flags);
 		if (ret == -1) {
-			write(retpipe[1], "0", 2);
+			if (write(retpipe[1], "0", 2) < 0) {
+				perror("unshare:write(retpipe[1], ..)");
+			}
 			close(retpipe[1]);
-			perror("unshare");
 			exit(1);
-		} else
-			write(retpipe[1], "1", 2);
+		} else {
+			if (write(retpipe[1], "1", 2) < 0) {
+				perror("unshare:write(retpipe[1], ..)");
+			}
+		}
 		close(retpipe[1]);
 		ret = fn1(arg1);
 		exit(ret);
 	} else {
 		close(retpipe[1]);
-		read(retpipe[0], &buf, 2);
+		if (read(retpipe[0], &buf, 2) < 0) {
+			perror("unshare:read(retpipe[0], ..)");
+		}
 		close(retpipe[0]);
 		if (*buf == '0')
 			return -1;
