@@ -1,4 +1,4 @@
-$Id: INSTALL,v 1.28 2009/11/03 16:12:12 yaberauneya Exp $
+$Id: INSTALL,v 1.29 2009/11/05 08:38:40 yaberauneya Exp $
 
 Requirements
 -------------------
@@ -256,3 +256,28 @@ LDLIBS   - libraries listed after objects during link, e.g. -lc, -lpthread,
            -lltp.
 
 See README.mk-devel for a more terse description of what's available.
+
+Common Issues
+----------------------
+
+Issue:    When executing make [all] it says:
+
+    " *** No rule to make target `/$*', needed by `pan-all'.  Stop."
+
+Solution: You must upgrade to make 3.81. Please see the Requirements section above.
+
+Issue:    When executing make [all] it says something like:
+
+    # ...
+    install -m 00644 "/scratch/ltp-dev2/ltp/include/test.h" "/scratch/ltp-install12/include/test.h"
+    install -m 00644 "/scratch/ltp-dev2/ltp/include/tlibio.h" "/scratch/ltp-install12/include/tlibio.h"
+    install -m 00644 "/scratch/ltp-dev2/ltp/include/usctest.h" "/scratch/ltp-install12/include/usctest.h"
+    install -m 00644 "/scratch/ltp-dev2/ltp/include/write_log.h" "/scratch/ltp-install12/include/write_log.h"
+    make[1]: Leaving directory `/scratch/ltp-dev2/ltp/include'
+    make -C lib -f "/scratch/ltp-dev2/ltp/lib/Makefile" all 
+    make[1]: Entering directory `/scratch/ltp-dev2/ltp/lib'
+    " *** No rule to make target `dataascii.o', needed by `libltp.a'.  Stop." # <-- the error
+
+Solution: You cannot build LTP with -r / --no-builtin-rules and/or
+          -R / --no-builtin-variables specified. LTP relies heavily on built-in
+          implicit rules and variables to function properly.
