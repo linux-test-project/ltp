@@ -1,5 +1,5 @@
 #
-#    testcases/kernel/timers Makefile.
+#    testcases/kernel/syscalls Makefile.
 #
 #    Copyright (C) 2009, Cisco Systems Inc.
 #
