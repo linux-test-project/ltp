@@ -20,7 +20,9 @@
 /*                                                                            */
 /******************************************************************************/
 
+#include <libgen.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <unistd.h>
 #include <string.h>
 #include <sys/mman.h>
@@ -29,15 +31,23 @@ int unit = 1024 * 1024;
 
 //argv[1] memory use(M) (>0)
 
-int main(int argc, char *argv[])
+int
+main(int argc, char *argv[])
 {
-	long use;
-	if (argc > 1)
-		use = atoi(argv[1]);
+	long int use;
+	if (argc != 2) {
+		fprintf(stderr, "usage: %s mmap-size-in-kB\n", basename(argv[0]));
+		exit(1);
+	}
+	if ((use = strtol(argv[1], NULL, 10)) < 0) {
+		fprintf(stderr, "Invalid mmap size specified (must be a long "
+				"int greater than 1)\n");
+		exit(1);
+	}
 
-	long pagesize = getpagesize();
-	long mmap_block = use * unit / 10 / pagesize;
-	long total_block = 0;
+	long int pagesize = getpagesize();
+	long int mmap_block = use * unit / 10 / pagesize;
+	long int total_block = 0;
 
 	while (pagesize * mmap_block > 2 * unit) {
 		unsigned long *addr = mmap(NULL, pagesize * mmap_block, 
@@ -53,5 +63,3 @@ int main(int argc, char *argv[])
 	}
 	return 0;
 }
-
-
