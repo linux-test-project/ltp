@@ -35,6 +35,7 @@
 #include <errno.h>
 #include <libgen.h>
 #include <fcntl.h>
+#include <inttypes.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include "libclone.h"
@@ -91,7 +92,7 @@ int create_net_namespace(char *p1, char *c1)
 	}
 
 	/* We need to pass the child pid to the parentns.sh script */
-	sprintf(par, "parentns.sh %s %u", ltproot, p1, pid);
+	sprintf(par, "parentns.sh '%s' %s %" PRId32 , ltproot, p1, pid);
 
 	ret = system(par);
 	status = WEXITSTATUS(ret);
@@ -140,7 +141,7 @@ int child_fn(void *c1)
 		exit(1);
 	}
 
-	sprintf(child, "childns.sh", ltproot);
+	sprintf(child, "childns.sh '%s'", ltproot);
 
 	/* Unshare the network namespace in the child */
 #if HAVE_UNSHARE
