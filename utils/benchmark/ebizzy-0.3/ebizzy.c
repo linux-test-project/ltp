@@ -361,10 +361,10 @@ compare(const void *p1, const void *p2)
  */
 
 static inline unsigned int
-rand_num(unsigned int max, unsigned int state)
+rand_num(unsigned int max, unsigned int *state)
 {
-	state = state * 1103515245 + 12345;
-	return ((state/65536) % max);
+	*state *= 1103515245 + 12345;
+	return ((*state/65536) % max);
 }
 
 /*
@@ -387,17 +387,17 @@ search_mem(void)
 	unsigned int chunk;
 	size_t copy_size = chunk_size;
 	unsigned int i;
-	unsigned int state;
+	unsigned int state = 0;
 
 	for (i = 0; threads_go == 1; i++) {
-		chunk = rand_num(chunks, state);
+		chunk = rand_num(chunks, &state);
 		src = mem[chunk];
 		/*
 		 * If we're doing random sizes, we need a non-zero
 		 * multiple of record size.
 		 */
 		if (random_size)
-			copy_size = (rand_num(chunk_size / record_size, state)
+			copy_size = (rand_num(chunk_size / record_size, &state)
 				     + 1) * record_size;
 		copy = alloc_mem(copy_size);
 
@@ -410,7 +410,7 @@ search_mem(void)
 			else
 				memcpy(copy, src, copy_size);
 
-			key = rand_num(copy_size / record_size, state);
+			key = rand_num(copy_size / record_size, &state);
 
 			if (verbose > 2)
 				printf("Search key %zu, copy size %zu\n", key, copy_size);
