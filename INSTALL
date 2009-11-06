@@ -1,9 +1,9 @@
-$Id: INSTALL,v 1.30 2009/11/06 18:21:37 yaberauneya Exp $
+$Id: INSTALL,v 1.31 2009/11/06 18:23:01 yaberauneya Exp $
 
 Requirements
 -------------------
 
-1. In order to compile ltp YOU MUST have make 3.81+.
+1. In order to compile ltp you must have make 3.81+.
 2. In order to compile and use pan, you must have bison/yacc, and flex installed.
 
 bison can be obtained here:
