@@ -1,9 +1,10 @@
-$Id: INSTALL,v 1.29 2009/11/05 08:38:40 yaberauneya Exp $
+$Id: INSTALL,v 1.30 2009/11/06 18:21:37 yaberauneya Exp $
 
 Requirements
 -------------------
-In order to compile and use pan, you must have bison/yacc, flex, and make
-3.81+ installed.
+
+1. In order to compile ltp YOU MUST have make 3.81+.
+2. In order to compile and use pan, you must have bison/yacc, and flex installed.
 
 bison can be obtained here:
 - http://ftp.gnu.org/gnu/bison/bison-2.4.1.tar.gz
