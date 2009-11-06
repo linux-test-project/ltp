@@ -23,8 +23,21 @@
 #  Project Website:  TBD
 #
 #
-# $Id: Makefile,v 1.12 2009/10/09 17:55:48 yaberauneya Exp $
+# $Id: Makefile,v 1.13 2009/11/06 20:07:30 vapier Exp $
 # $Log: Makefile,v $
+# Revision 1.13  2009/11/06 20:07:30  vapier
+# drop adding of -O/-W type flags that are already handled in common .mk files
+#
+# for the few makefiles that arent yet converted to the .mk infrastructure:
+# Lately gcc developers introduced -Wextra flag that does the same as -W but is
+# more descriptive. According to this using -W flag should be safe (as gcc is
+# backward compatlible) but using -Wextra is limited to newer gcc releases.
+#
+# Attached patch replaces all -Wextra occurences with -W and thus fixes
+# compliation failures with older gcc (mine was gcc-3.3.3 on sles).
+#
+# patch by Cyril Hrubis
+#
 # Revision 1.12  2009/10/09 17:55:48  yaberauneya
 # 1. Please see README.mk-devel for a full description of the changes
 # from a Make perspective.
@@ -188,7 +201,7 @@ include $(top_srcdir)/include/mk/env_pre.mk
 
 VER		:= `grep VER_STR $(abs_srcdir)/main.h | awk -F\" '{print $$2}'`
 
-CPPFLAGS	+= -g -Wall -O -DLINUX -D_THREAD_SAFE -D_GNU_SOURCE -D_LARGE_FILES -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 $(RPM_OPT_FLAGS)
+CPPFLAGS	+= -DLINUX -D_THREAD_SAFE -D_GNU_SOURCE -D_LARGE_FILES -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 $(RPM_OPT_FLAGS)
 
 DISTRO_FILES	:= Makefile* *.[ch] LICENSE README CHANGELOG
 

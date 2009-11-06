@@ -2,7 +2,7 @@
 # Makefile for GCOV profiling kernel module
 #
 
-EXTRA_CFLAGS := -Wall -Wextra -Wno-unused-parameter
+EXTRA_CFLAGS := -Wall -W -Wno-unused-parameter
 
 ifneq ($(KERNELRELEASE),)
 

@@ -33,7 +33,7 @@
 # Released under GPL
 #
 
-CFLAGS = -O2 -Wall -Wextra
+CFLAGS = -O2 -Wall -W
 #CFLAGS += -g
 LDFLAGS = -lcunit
 

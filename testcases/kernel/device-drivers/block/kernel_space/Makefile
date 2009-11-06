@@ -1,5 +1,5 @@
 
-EXTRA_CFLAGS += -Wall -Wextra -Wno-unused-parameter
+EXTRA_CFLAGS += -Wall -W -Wno-unused-parameter
 
 ifneq ($(KERNELRELEASE),)
 

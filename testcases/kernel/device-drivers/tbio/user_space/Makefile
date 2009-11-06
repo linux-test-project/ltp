@@ -1,5 +1,5 @@
 
-CFLAGS += -O2 -Wall -Wextra -g
+CFLAGS += -O2 -Wall -W -g
 OBJS = tbio_ki.o user_tbio.o
 
 test_bio: $(OBJS)

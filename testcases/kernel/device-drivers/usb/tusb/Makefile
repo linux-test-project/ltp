@@ -3,7 +3,7 @@
 #
 
 #KERNELDIR := /usr/src/linux-2.5.64-gcov
-EXTRA_CFLAGS := -Wall -Wextra -Wno-unused-parameter
+EXTRA_CFLAGS := -Wall -W -Wno-unused-parameter
 
 ifneq ($(KERNELRELEASE),)
 
