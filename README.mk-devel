@@ -11,18 +11,17 @@ The Problem
 
 The problem with the old Makefile system is that it was very difficult to
 maintain and it lacked any sense of formal structure, thus developing for LTP
-and including new targets was very more difficult than it should have been
+and including new targets was more difficult than it should have been
 (maintenance). Furthermore, proper option-based cross-compilation was
 impossible due to the fact that the Makefiles didn't support a prefixing
 system, and the appropriate implicit / static rules hadn't been configured to
-compile into multiple object directories for out-of-tree build support (easy of
+compile into multiple object directories for out-of-tree build support (ease of
 use / functionality). Finally, there wasn't a means to setup dependencies
 between components, such that if a component required libltp.a in order to
-compile, it would go off and compile libltp.a first (easy of use).
+compile, it would go off and compile libltp.a first (ease of use).
 
 These items needed to be fixed to reduce maintenance nightmares for the
-development community contributing to LTP, as well as the individuals
-maintaining the project.
+development community contributing to LTP, and the project maintainers.
 
 ==============================
 Design
@@ -70,7 +69,7 @@ include $(top_srcdir)/include/mk/generic_leaf_target.mk
 Make Rules and Make Variables
 ==============================
 
-When using make rules, avoid writing adhoc rules like:
+When using make rules, avoid writing ad hoc rules like:
 
 [prog]: [dependencies]
 	cc -I../../include $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(LDLIBS) \
