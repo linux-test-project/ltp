@@ -1,4 +1,4 @@
-$Id: INSTALL,v 1.31 2009/11/06 18:23:01 yaberauneya Exp $
+$Id: INSTALL,v 1.32 2009/11/07 01:30:29 yaberauneya Exp $
 
 Requirements
 -------------------
@@ -34,10 +34,10 @@ downloaded from:
 - http://ftp.gnu.org/gnu/m4/m4-1.4.7.tar.bz2
 - http://ftp.gnu.org/gnu/m4/m4-1.4.7.tar.gz
 
-Configuring
+Configuration
 -------------------
 Using autoconf:
-        $ make autotools # This must be run from "$TOP_SRCDIR!"
+        $ make autotools # This must be run from "$TOP_SRCDIR"!
 	$ test -d "$TOP_BUILDDIR" || mkdir -p "$TOP_BUILDDIR"
         $ cd "$TOP_BUILDDIR" && "$TOP_SRCDIR/configure" \
 	  # [configure args go here, e.g. CC=$CC, LDFLAGS=$LDFLAGS, etc]
@@ -124,9 +124,10 @@ Quick Start
 
 1> tar xzf ltp-XXXXXXXX.tar.gz
 2> cd ltp
-3> make
-4> make install
-5> ./runalltests.sh
+3> ./configure
+4> make all
+5> make install
+6> ./runalltests.sh
 
 *NOTE: The LTP assumes the existence of the nobody, bin, and daemon users and
 their groups.  If these IDs do not exist, certain tests will fail. The users
