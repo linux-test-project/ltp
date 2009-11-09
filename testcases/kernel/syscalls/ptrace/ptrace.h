@@ -5,6 +5,7 @@
 #ifndef __LTP_PTRACE_H__
 #define __LTP_PTRACE_H__
 
+/* Ordering matters. Do not move this code block below the #include's */
 #ifdef __ia64__ /* what a pos */
 # define ia64_fpreg FU_ia64_fpreg
 # define pt_all_user_regs FU_pt_all_user_regs
