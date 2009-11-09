@@ -390,7 +390,7 @@ int backgrnd = 1;		/* return control to user */
 struct stat statbuf;
 int time_iterval = -1;
 time_t start_time;
-char reason[40];		/* reason for loop termination */
+char reason[128];		/* reason for loop termination */
 int num_procs=1;
 int forker_mode=0;
 int reexec=REXEC_INIT;		/* reexec info */
