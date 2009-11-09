@@ -48,7 +48,8 @@ tst_cleanup()
 # FUNCTION:  setup
 # PURPOSE:   Setup the test environment.
 #=============================================================================
-tst_setup() {
+tst_setup()
+{
 
     TST_COUNT=1
     TST_TOTAL=${TST_TOTAL:=1}
