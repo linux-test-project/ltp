@@ -42,7 +42,8 @@ if [ ! -x "$CGROUPS_TESTROOT/vfork" ] ; then
 ${0##*/}: ERROR: you must run \`make all' in $CGROUPS_TESTROOT before running
 this script.
 EOF
-	exit 1
+		exit 1
+	fi
 fi
 
 . "${CGROUPS_TESTROOT}/libcgroup_freezer"
@@ -53,6 +54,7 @@ declare -r TST_TOTAL
 export TCID TST_COUNT TST_TOTAL
 
 TMPDIR=${TMPDIR:=/tmp}
+TMPLOG="$TMPDIR/${0##*/}.$$.txt"
 
 # We replace the normal sample process with a process which uses vfork to
 # create new processes. The vfork'ed processes then sleep, causing the
@@ -60,11 +62,11 @@ TMPDIR=${TMPDIR:=/tmp}
 # for the duration of the sleep.
 function vfork_sleep()
 {
-	vfork -s$sample_sleep 1 > "$TMPDIR/${0##*/}.$$.txt" &
+	vfork -s$sample_sleep 1 -f "$TMPLOG" &
 	local rc=$?
 	export vfork_proc=$!
-	read sample_proc < /tmp/tmp.txt
-	rm -f /tmp/tmp.txt
+	read sample_proc < "$TMPLOG"
+	rm -f "$TMPLOG"
 	export sample_proc
 
 	return $rc
@@ -110,7 +112,7 @@ kill_sample_proc ; export sample_proc=$vfork_proc ; kill_sample_proc ; }
 rm_sample_cgroup ; }
 umount_freezer ; }
 
-rm -f "$TMPDIR/${0##*/}.$$.txt"
+rm -f "$TMPLOG"
 
 # Failsafe cleanup
 cleanup_freezer || /bin/true

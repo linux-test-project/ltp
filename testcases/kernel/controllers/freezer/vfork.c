@@ -49,20 +49,54 @@
 #define debug(s) \
 perror("ERROR at " __FILE__ ":" str_expand(__LINE__) ": " s )
 
+char *filename = NULL;
+FILE *fp = NULL;
+int psync[2];
+pid_t child = -1;
+
 int   TST_TOTAL = 1;
 char* TCID = "vfork";
 
 /* for signal handlers */
-void do_nothing(int sig)
+void parent_cleanup(void)
 {
-	return;
+	close(psync[1]);
+	if (fp) {
+		fflush(fp);
+		if (filename) {
+			fclose(fp);
+			(void) unlink(filename);
+		}
+	}
+	tst_exit();
+}
+
+void kill_child(void) {
+
+	/* Avoid killing all processes at the current user's level, and the
+	 * test app as well =].
+	 */
+	if (0 < child && kill(child, 0) == 0) {
+		/* Shouldn't happen, but I've seen it before... */
+		if (ptrace(PTRACE_KILL, child, NULL, NULL) < 0) {
+			tst_resm(TBROK | TERRNO,
+				"ptrace(PTRACE_KILL, %d, ..) failed", child);
+		}
+		(void) waitpid(child, NULL, WNOHANG); /* Zombie children are bad. */
+	}
+
+}
+
+void child_cleanup()
+{
+	close(psync[0]);
+	tst_exit();
 }
 
 int do_vfork(int count)
 {
 	pid_t child;
 
-	signal(SIGCHLD, SIG_IGN); /* Avoid waiting for vfork'd processes */
 	while (count) {
 		child = vfork();
 		if (child == 0)
@@ -70,8 +104,8 @@ int do_vfork(int count)
 		else if (child > 0)
 			count--;
 		else {
-			debug("vfork(): ");
-			exit(EXIT_FAILURE);
+			tst_resm(TFAIL | TERRNO, "vfork failed");
+			tst_exit();
 		}
 	}
 
@@ -95,18 +129,19 @@ void sleepy_time(void)
 	} while(1);
 }
 
-void usage(const char *prog)
+void usage()
 {
-	fprintf(stderr, "%s [-s [NUM]] [-p] [NUM]\n\n"
+	tst_resm(TBROK, "usage: %s [-f [FILE]] [-s [NUM]] [-p] [NUM]\n\n"
+		"\t-f FILE\t\tFile to output trace data to.\n"
 		"\t-s NUM\t\tSleep for NUM seconds. [Default: 1 second]\n"
 		"\t\t\t\tSuffixes ms, us, s, m, and h correspond to\n"
 		"\t\t\t\tmilliseconds, microseconds, seconds [Default],\n"
 		"\t\t\t\tminutes, and hours respectively.\n\n"
 		"\t-p\t\tPause.\n\n"
-		"\tNUM\t\tExecute vfork NUM times.\n", prog);
+		"\tNUM\t\tExecute vfork NUM times.\n", TCID);
 }
 
-void parse_opts(int argc, char **argv)
+void _parse_opts(int argc, char **argv)
 {
 	int opt;
 	char *units;
@@ -115,8 +150,13 @@ void parse_opts(int argc, char **argv)
 	sleep_duration.tv_sec = 0U;
 	sleep_duration.tv_nsec = 0U;
 
-	while((opt = getopt(argc, argv, "ps::")) != -1) {
+	while((opt = getopt(argc, argv, "f:ps::")) != -1) {
 		switch(opt) {
+		case 'f':
+			if ((fp = fopen(optarg, "w")) != NULL) {
+				filename = optarg;
+			}
+			break;
 		case 'p':
 			do_pause = 1;
 			break;
@@ -142,16 +182,14 @@ void parse_opts(int argc, char **argv)
 			else if (!strcmp(units, "h"))
 				sleep_duration.tv_sec = duration * 3600U;
 			else {
-				fprintf(stderr, "%s: Unrecognized time units: %s\n", argv[0], units);
-				usage(argv[0]);
-				exit(EXIT_FAILURE);
+				tst_resm(TBROK, "Unrecognized time units: %s",
+						units);
+				usage();
 			}
 			do_sleep = 1;
 			break;
 		default:
-			usage(argv[0]);
-			exit(EXIT_FAILURE);
-			break;
+			usage();
 		}
 	}
 
@@ -175,8 +213,9 @@ int trace_grandchild(pid_t gchild)
 	if ((info.si_code != 0) || (info.si_signo != SIGSTOP))
 		return 0;
 
-	fprintf(stderr, "Grandchild spawn's pid=%d", gchild);
-	printf("\t%d\n", gchild);
+	tst_resm(TINFO, "Grandchild spawn's pid=%d", gchild);
+	fprintf(fp, "\t%d\n", gchild);
+	fflush(fp);
 	if (do_pause)
 		pause();
 	if (do_sleep)
@@ -264,61 +303,93 @@ main(int argc, char** argv)
 {
 
 #if defined(HAVE_DECL_PTRACE_SETOPTIONS) && defined(HAVE_DECL_PTRACE_O_TRACEVFORK)
-	pid_t child;
-	int exit_status, psync[2];
+	int exit_status;
 
-	parse_opts(argc, argv);
+	_parse_opts(argc, argv);
+
+	if (fp == NULL) {
+		fp = stderr;
+	}
 
 	if (socketpair(AF_UNIX, SOCK_STREAM, 0, psync) == -1) {
-		debug("socketpair(): ");
-		exit(EXIT_FAILURE);
-	}
-
-	child = fork();
-	if (child == -1) {
-		tst_resm(TBROK | TERRNO, "fork() failed");
-	} else if (child == 0) {
-		close(psync[1]);
-
-		await_mutex(psync[0]); /* sleep until parent wakes us up */
-
-		close(psync[0]);
-		_exit(do_vfork(num_vforks));
+		tst_resm(TBROK | TERRNO, "socketpair() failed");
 	} else {
-		close(psync[0]);
 
-		/* Set up ptrace */
-		if (ptrace(PTRACE_ATTACH, child, NULL, NULL) == -1) {
-			debug("ptrace(ATTACH): ");
-			kill(child, SIGKILL);
-			exit(EXIT_FAILURE);
+		child = fork();
+		if (child == -1) {
+			tst_resm(TBROK | TERRNO, "fork() failed");
+		} else if (child == 0) {
+
+			int rc = EXIT_FAILURE;
+
+			tst_sig(FORK, DEF_HANDLER, child_cleanup);
+
+			if (close(psync[1])) {
+				tst_resm(TBROK, "close(psync[1]) failed)");
+			} else {
+				/* sleep until the parent wakes us up */
+				await_mutex(psync[0]);
+				rc = do_vfork(num_vforks);
+			}
+			_exit(rc);
+
+		} else {
+
+			tst_sig(FORK, kill_child, parent_cleanup);
+
+			close(psync[0]);
+
+			/* Set up ptrace */
+			if (ptrace(PTRACE_ATTACH, child, NULL, NULL) == -1) {
+				tst_resm(TBROK | TERRNO,
+					 "ptrace(ATTACH) failed");
+				tst_exit();
+			}
+			if (waitpid(child, NULL, 0) != child) {
+				tst_resm(TBROK | TERRNO, "waitpid(%d) failed",
+							 child);
+				kill_child();
+			} else {
+
+				if (ptrace(PTRACE_SETOPTIONS, child, NULL,
+					   PTRACE_O_TRACEVFORK) == -1) {
+					tst_resm(TINFO | TERRNO,
+						"ptrace(PTRACE_SETOPTIONS) "
+						"failed.");
+				}
+				if (ptrace(PTRACE_CONT, child, NULL, NULL) == -1) {
+					tst_resm(TINFO | TERRNO,
+						"ptrace(PTRACE_CONT) failed.");
+				}
+			
+
+				send_mutex(psync[1]);
+
+				close(psync[1]);
+
+				tst_resm(TINFO, "Child spawn's pid=%d", child);
+				fprintf(fp, "%d\n", child);
+				fflush(fp);
+
+				exit_status = do_trace(child, ++num_vforks);
+
+				tst_resm(exit_status == 0 ? TPASS : TFAIL,
+					"do_trace %s",
+					(exit_status == 0 ? "succeeded" : "failed"));
+
+				parent_cleanup();
+
+			}
+
 		}
-		if (waitpid(child, NULL, 0) != child) {
-			debug("waitpid(): ");
-			exit(EXIT_FAILURE);
-		}
-		if (ptrace(PTRACE_SETOPTIONS, child, NULL,
-			   PTRACE_O_TRACEVFORK) == -1)
-			debug("ptrace(SETOPTIONS): ");
-		if (ptrace(PTRACE_CONT, child, NULL, NULL) == -1)
-			debug("ptrace(CONT): ");
-
-		send_mutex(psync[1]);
-
-		close(psync[1]);
-		fprintf(stderr, "Child spawn's pid=%d", child);
-		printf("%d\n", child);
-
-		exit_status = do_trace(child, ++num_vforks);
-
-		tst_resm(exit_status == 0 ? TPASS : TFAIL, "do_trace exit status %s",
-			 (exit_status == 0 ? "succeeded" : "failed"));
 
 	}
+
 #else
 	tst_resm(TCONF, "System doesn't support have required ptrace "
-			"capabilities.\n");
+		        "capabilities.");
 #endif
+	tst_resm(TINFO, "Exiting...");
 	tst_exit();
 
 }
