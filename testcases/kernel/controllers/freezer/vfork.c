@@ -181,6 +181,8 @@ int trace_grandchild(pid_t gchild)
 	if (ptrace(PTRACE_DETACH, gchild, NULL, NULL) == -1)
 		debug("ptrace(): ");
 	return -1; /* don't wait for gchild */
+#else
+	return 0;
 #endif
 }
 
