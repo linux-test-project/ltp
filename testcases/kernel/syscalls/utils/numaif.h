@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * $Id: numaif.h,v 1.3 2009/11/09 05:39:52 yaberauneya Exp $
+ * $Id: numaif.h,v 1.4 2009/11/09 18:36:06 yaberauneya Exp $
  *
  */
 
@@ -35,6 +35,11 @@
 #endif
 
 #define NUMA_NUM_NODES 	128
+
+#if HAVE_NUMA_H
+#include <numa.h>
+#else /* The following symbols clash with the numa.h ones. */
+
 typedef struct { 
 	unsigned long n[NUMA_NUM_NODES/(sizeof(unsigned long)*8)];
 } nodemask_t;
@@ -74,6 +79,7 @@ static inline int nodemask_equal(const nodemask_t *a, const nodemask_t *b)
 			return 0; 
 	return 1;
 } 
+#endif
 
 static inline void nodemask_dump(const char *header, const nodemask_t *mask)
 {
@@ -83,7 +89,6 @@ static inline void nodemask_dump(const char *header, const nodemask_t *mask)
 		EPRINTF(" 0x%08lx", mask->n[i]);
 	EPRINTF("\n");
 }
-
 
 #ifndef MPOL_DEFAULT
    // Policies
@@ -99,4 +104,3 @@ static inline void nodemask_dump(const char *header, const nodemask_t *mask)
 #  define MPOL_MF_MOVE			(1<<1)
 #  define MPOL_MF_MOVE_ALL		(1<<2)
 #endif
-
