@@ -29,7 +29,7 @@
  *
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
-/* $Id: access01.c,v 1.7 2009/08/28 10:46:41 vapier Exp $ */
+/* $Id: access01.c,v 1.8 2009/11/09 05:56:58 yaberauneya Exp $ */
 /**********************************************************
  *
  *    OS Test - Silicon Graphics, Inc.
@@ -251,7 +251,10 @@ void setup()
 	 * Since files inherit group ids, make sure our dir has a valid grp
 	 * to us.
 	 */
-	chown(".", -1, getgid());
+	if (chown(".", -1, getegid()) < 0) {
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "chown(\".\", -1, %d) failed", getegid());
+	}
 
 	sprintf(Fname, "accessfile");
 
