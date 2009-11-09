@@ -5,6 +5,10 @@
 #ifndef __LTP_PTRACE_H__
 #define __LTP_PTRACE_H__
 
+#ifdef __ia64__ /* what a pos */
+# define ia64_fpreg FU_ia64_fpreg
+# define pt_all_user_regs FU_pt_all_user_regs
+#endif
 #ifdef HAVE_SYS_PTRACE_H
 # include <sys/ptrace.h>
 #elif defined(HAVE_LINUX_PTRACE_H)
@@ -12,10 +16,6 @@
 #endif
 #ifdef HAVE_SYS_REG_H
 # include <sys/reg.h>
-#endif
-#ifdef __ia64__ /* what a pos */
-# define ia64_fpreg FU_ia64_fpreg
-# define pt_all_user_regs FU_pt_all_user_regs
 #endif
 #ifdef HAVE_ASM_PTRACE_H
 # include <asm/ptrace.h>
