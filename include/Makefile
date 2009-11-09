@@ -26,6 +26,9 @@ include $(top_srcdir)/include/mk/env_pre.mk
 
 clean:: ac-clean
 
+# Don't nuke config.h with clean.
+FILTER_OUT_MAKE_TARGETS	:= config.h
+
 INSTALL_DIR		:= $(includedir)
 
 INSTALL_MODE		:= 00644
