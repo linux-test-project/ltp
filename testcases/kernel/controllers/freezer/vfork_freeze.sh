@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Copyright (c) International Business Machines  Corp., 2008
 # Author: Matt Helsley <matthltc@us.ibm.com>
@@ -25,10 +25,25 @@
 #
 
 # we need the vfork test binary -- ensure it's been built
-make vfork || {
-	echo "ERROR: Failed to build vfork test binary." 1>&2
-	exit -1
-}
+CGROUPS_TESTROOT=${CGROUPS_TESTROOT:=$(dirname "$0")}
+
+if [ ! -x "$CGROUPS_TESTROOT/vfork" ] ; then
+
+	print_make_message=1
+
+	# Maintain ease-of-use backwards compatibility so Matt doesn't want to
+	# hang me for the script change :].
+	if type make > /dev/null ; then
+		make all && print_make_message=0
+	fi
+
+	if [ $print_make_message -eq 1 ] ; then
+		cat <<EOF
+${0##*/}: ERROR: you must run \`make all' in $CGROUPS_TESTROOT before running
+this script.
+EOF
+	exit 1
+fi
 
 . "${CGROUPS_TESTROOT}/libcgroup_freezer"
 SETS_DEFAULTS="${TCID=vfork_freeze.sh} ${TST_COUNT=1} ${TST_TOTAL=1}"
@@ -37,14 +52,15 @@ declare -r TST_COUNT
 declare -r TST_TOTAL
 export TCID TST_COUNT TST_TOTAL
 
+TMPDIR=${TMPDIR:=/tmp}
+
 # We replace the normal sample process with a process which uses vfork to
 # create new processes. The vfork'ed processes then sleep, causing the
 # parent process ($sample_proc) to enter the TASK_UNINTERRUPTIBLE state
 # for the duration of the sleep.
 function vfork_sleep()
 {
-	# TODO use a proper temp file
-	./vfork -s$sample_sleep 1 > /tmp/tmp.txt &
+	vfork -s$sample_sleep 1 > "$TMPDIR/${0##*/}.$$.txt" &
 	local rc=$?
 	export vfork_proc=$!
 	read sample_proc < /tmp/tmp.txt
@@ -62,7 +78,7 @@ assert_cgroup_freezer_state "THAWED" \
 
 vfork_sleep && {
 
-while /bin/true ; do
+while [ 1 ] ; do
 	trap 'break' ERR
 
 	add_sample_proc_to_cgroup
@@ -94,7 +110,7 @@ kill_sample_proc ; export sample_proc=$vfork_proc ; kill_sample_proc ; }
 rm_sample_cgroup ; }
 umount_freezer ; }
 
-rm -f tmp.txt
+rm -f "$TMPDIR/${0##*/}.$$.txt"
 
 # Failsafe cleanup
 cleanup_freezer || /bin/true

@@ -39,8 +39,8 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/socket.h>
+#include "test.h"
 #include "config.h"
-
 #include "../../syscalls/ptrace/ptrace.h"
 
 #define str_expand(s) str(s)
@@ -48,6 +48,9 @@
 
 #define debug(s) \
 perror("ERROR at " __FILE__ ":" str_expand(__LINE__) ": " s )
+
+int   TST_TOTAL = 1;
+char* TCID = "vfork";
 
 /* for signal handlers */
 void do_nothing(int sig)
@@ -172,7 +175,7 @@ int trace_grandchild(pid_t gchild)
 	if ((info.si_code != 0) || (info.si_signo != SIGSTOP))
 		return 0;
 
-	/*printf("pausing for vfork() child: %d\n", gchild);*/
+	fprintf(stderr, "Grandchild spawn's pid=%d", gchild);
 	printf("\t%d\n", gchild);
 	if (do_pause)
 		pause();
@@ -260,9 +263,9 @@ int
 main(int argc, char** argv)
 {
 
-#if HAVE_DECL_PTRACE_SETOPTIONS && HAVE_DECL_PTRACE_O_VTRACEFORK
+#if defined(HAVE_DECL_PTRACE_SETOPTIONS) && defined(HAVE_DECL_PTRACE_O_TRACEVFORK)
 	pid_t child;
-	int psync[2];
+	int exit_status, psync[2];
 
 	parse_opts(argc, argv);
 
@@ -273,11 +276,8 @@ main(int argc, char** argv)
 
 	child = fork();
 	if (child == -1) {
-		debug("fork(): ");
-		exit(EXIT_FAILURE);
-	}
-
-	if (child == 0) {
+		tst_resm(TBROK | TERRNO, "fork() failed");
+	} else if (child == 0) {
 		close(psync[1]);
 
 		await_mutex(psync[0]); /* sleep until parent wakes us up */
@@ -306,11 +306,19 @@ main(int argc, char** argv)
 		send_mutex(psync[1]);
 
 		close(psync[1]);
-		printf("%d\n", child);
-		exit(do_trace(child, ++num_vforks));
+		fprintf(stderr, "Child spawn's pid=%d", child);
+		printf("\t%d\n", gchild);
+
+		exit_status = do_trace(child, ++num_vforks);
+
+		tst_resm(exit_status == 0 ? TPASS : TFAIL, "do_trace exit status %s",
+			 (exit_status == 0 ? "succeeded" : "failed"));
+
 	}
 #else
-	printf("System doesn't support have required ptrace capabilities\n.");
-	return 1;
+	tst_resm(TCONF, "System doesn't support have required ptrace "
+			"capabilities.\n");
 #endif
+	tst_exit();
+
 }
