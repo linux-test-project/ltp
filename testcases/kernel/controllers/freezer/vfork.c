@@ -307,7 +307,7 @@ main(int argc, char** argv)
 
 		close(psync[1]);
 		fprintf(stderr, "Child spawn's pid=%d", child);
-		printf("\t%d\n", gchild);
+		printf("\t%d\n", child);
 
 		exit_status = do_trace(child, ++num_vforks);
 
