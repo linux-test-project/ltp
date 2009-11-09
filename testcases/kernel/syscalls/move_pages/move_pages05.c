@@ -56,14 +56,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <errno.h>
-#include "config.h"
-#if HAVE_NUMA_H
-#include <numa.h>
-#endif
-
 #include <test.h>
 #include <usctest.h>
-
 #include "move_pages_support.h"
 
 #define SHARED_PAGE 0
@@ -104,11 +98,11 @@ void child(void **pages, sem_t * sem)
 
 	/* Setup complete. Ask parent to continue. */
 	if (sem_post(&sem[SEM_CHILD_SETUP]) == -1)
-		tst_resm(TWARN, "error post semaphore: %s", strerror(errno));
+		tst_resm(TWARN | TERRNO, "error post semaphore");
 
 	/* Wait for testcase in parent to complete. */
 	if (sem_wait(&sem[SEM_PARENT_TEST]) == -1)
-		tst_resm(TWARN, "error wait semaphore: %s", strerror(errno));
+		tst_resm(TWARN | TERRNO, "error waiting for semaphore");
 
 	exit(0);
 }
@@ -178,15 +172,13 @@ int main(int argc, char **argv)
 
 		/* Wait for child to setup and signal. */
 		if (sem_wait(&sem[SEM_CHILD_SETUP]) == -1)
-			tst_resm(TWARN, "error wait semaphore: %s",
-				 strerror(errno));
+			tst_resm(TWARN | TERRNO, "error wait semaphore");
 
 		ret = numa_move_pages(0, N_TEST_PAGES, pages, nodes,
 				      status, MPOL_MF_MOVE);
 		TEST_ERRNO = errno;
 		if (ret == -1) {
-			tst_resm(TFAIL, "move_pages unexpectedly failed: %s",
-				 strerror(errno));
+			tst_resm(TFAIL | TERRNO, "move_pages unexpectedly failed");
 			goto err_kill_child;
 		}
 
@@ -200,8 +192,7 @@ int main(int argc, char **argv)
 	      err_kill_child:
 		/* Test done. Ask child to terminate. */
 		if (sem_post(&sem[SEM_PARENT_TEST]) == -1)
-			tst_resm(TWARN, "error post semaphore: %s",
-				 strerror(errno));
+			tst_resm(TWARN | TERRNO, "error post semaphore");
 		/* Read the status, no zombies! */
 		wait(NULL);
 	      err_free_sem:

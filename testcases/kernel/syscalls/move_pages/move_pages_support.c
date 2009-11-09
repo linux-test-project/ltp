@@ -20,23 +20,9 @@
 #include <syscall.h>
 #include <unistd.h>
 #include <semaphore.h>
-#include "config.h"
-#if HAVE_NUMA_H
-#include <numa.h>
-#endif
-#include <errno.h>
-
 #include <test.h>
 #include <usctest.h>
-#include <linux_syscall_numbers.h>
-
 #include "move_pages_support.h"
-
-#ifndef __NR_move_pages
-int arch_support = 0;
-#else
-int arch_support = 1;
-#endif
 
 long get_page_size()
 {
@@ -196,8 +182,8 @@ verify_pages_on_nodes(void **pages, int *status, unsigned int num, int *nodes)
 		ret = get_mempolicy(&which_node, NULL, 0,
 				    pages[i], MPOL_F_NODE | MPOL_F_ADDR);
 		if (ret == -1) {
-			tst_resm(TBROK, "error getting memory policy for "
-				 "page %p: %s", pages[i], strerror(errno));
+			tst_resm(TBROK | TERRNO, "error getting memory policy "
+				 		 "for page %p", pages[i]);
 			return;
 		}
 
@@ -280,8 +266,7 @@ int alloc_shared_pages_on_node(void **pages, unsigned int num, int node)
 	shared = mmap(NULL, total_size,
 		      PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, 0, 0);
 	if (shared == MAP_FAILED) {
-		tst_resm(TBROK, "allocation of shared pages failed: %s",
-			 strerror(errno));
+		tst_resm(TBROK | TERRNO, "allocation of shared pages failed");
 		return -1;
 	}
 
@@ -317,8 +302,7 @@ void free_shared_pages(void **pages, unsigned int num)
 
 	ret = munmap(pages[0], num * get_page_size());
 	if (ret == -1)
-		tst_resm(TWARN, "unmapping of shared pages failed: %s",
-			 strerror(errno));
+		tst_resm(TWARN | TERRNO, "unmapping of shared pages failed");
 }
 
 /*
@@ -341,8 +325,7 @@ sem_t *alloc_sem(int num)
 		       PROT_READ | PROT_WRITE,
 		       MAP_SHARED | MAP_ANONYMOUS, 0, 0);
 	if (sem_mem == MAP_FAILED) {
-		tst_resm(TBROK, "allocation of semaphore page failed: %s",
-			 strerror(errno));
+		tst_resm(TBROK | TERRNO, "allocation of semaphore page failed");
 		goto err_exit;
 	}
 
@@ -351,20 +334,19 @@ sem_t *alloc_sem(int num)
 	for (i = 0; i < num; i++) {
 		ret = sem_init(&sem[i], 1, 0);
 		if (ret == -1) {
-			tst_resm(TBROK, "semaphore initialization failed: %s",
-				 strerror(errno));
+			tst_resm(TBROK | TERRNO, "semaphore initialization "
+						 "failed");
 			goto err_free_mem;
 		}
 	}
 
 	return sem;
 
-      err_free_mem:
+err_free_mem:
 	ret = munmap(sem_mem, get_page_size());
 	if (ret == -1)
-		tst_resm(TWARN, "error freeing semaphore memory: %s",
-			 strerror(errno));
-      err_exit:
+		tst_resm(TWARN | TERRNO, "error freeing semaphore memory");
+err_exit:
 	return NULL;
 }
 
@@ -381,14 +363,12 @@ void free_sem(sem_t * sem, int num)
 	for (i = 0; i < num; i++) {
 		ret = sem_destroy(&sem[i]);
 		if (ret == -1)
-			tst_resm(TWARN, "error destroying semaphore: %s",
-				 strerror(errno));
+			tst_resm(TWARN | TERRNO, "error destroying semaphore");
 	}
 
 	ret = munmap(sem, get_page_size());
 	if (ret == -1)
-		tst_resm(TWARN, "error freeing semaphore memory: %s",
-			 strerror(errno));
+		tst_resm(TWARN | TERRNO, "error freeing semaphore memory");
 }
 
 /*
@@ -407,8 +387,6 @@ void check_config(unsigned int min_nodes)
 		tst_resm(TCONF, "atleast 2 NUMA nodes are required");
 	} else if (tst_kvercmp(2, 6, 18) < 0) {
 		tst_resm(TCONF, "2.6.18 or greater kernel required");
-	} else if (arch_support == 0) {
-		tst_resm(TCONF, "this arch does not support move_pages");
 	}
 #else
 	tst_resm(TCONF, "NUMA support not provided");

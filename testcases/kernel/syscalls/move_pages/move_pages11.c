@@ -57,15 +57,9 @@
 #include <signal.h>
 #include <semaphore.h>
 #include <errno.h>
-#include "config.h"
-#if HAVE_NUMA_H
-#include <numa.h>
-#endif
 #include <pwd.h>
-
 #include <test.h>
 #include <usctest.h>
-
 #include "move_pages_support.h"
 
 #define TEST_PAGES 2

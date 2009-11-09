@@ -56,14 +56,8 @@
 #include <unistd.h>
 #include <signal.h>
 #include <errno.h>
-#include "config.h"
-#if HAVE_NUMA_H
-#include <numa.h>
-#endif
-
 #include <test.h>
 #include <usctest.h>
-
 #include "move_pages_support.h"
 
 #define TEST_PAGES 2
@@ -130,8 +124,7 @@ int main(int argc, char **argv)
 				      status, MPOL_MF_MOVE);
 		TEST_ERRNO = errno;
 		if (ret == -1) {
-			tst_resm(TFAIL, "move_pages unexpectedly failed: %s",
-				 strerror(errno));
+			tst_resm(TFAIL | TERRNO, "move_pages unexpectedly failed");
 			goto err_free_pages;
 		}
 
