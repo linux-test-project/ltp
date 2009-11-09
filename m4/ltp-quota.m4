@@ -46,7 +46,7 @@ int main(void) {
 if test "x$has_rhel46_quotactl" = "xyes"; then
 	AC_DEFINE(HAS_RHEL46_QUOTACTL,1,[Define to 1 if you have the RHEL ~4.6 version of quotactl, e.g. require linux/quota.h instead of sys/quota.h])
 elif test "x$has_rhel48_quotactl" = "xyes"; then
-	AC_DEFINE(HAS_RHEL48_QUOTACTL,1,[Define to 1 if you have the RHEL 4.8+ version of quotactl, e.g. require sys/quota.h instead of sys/quota.h])
+	AC_DEFINE(HAS_RHEL48_QUOTACTL,1,[Define to 1 if you have the RHEL 4.8+ version of quotactl, e.g. require sys/quota.h instead of linux/quota.h])
 elif test "x$has_new_minimal_quotactl" = "xyes"; then
 	AC_DEFINE(HAS_NEW_MINIMAL_QUOTACTL,1,[Define to 1 if you have the new implementation of quotactl that only requires sys/types.h and sys/quota.h])
 fi
