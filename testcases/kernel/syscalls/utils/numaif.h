@@ -22,12 +22,17 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * $Id: numaif.h,v 1.2 2009/06/23 14:21:32 subrata_modak Exp $
+ * $Id: numaif.h,v 1.3 2009/11/09 05:39:52 yaberauneya Exp $
  *
  */
 
-#include "./include_j_h.h"
+#include "config.h"
+#include "include_j_h.h"
 #include "linux_syscall_numbers.h"
+
+#if HAVE_NUMA_H
+#include <numa.h>
+#endif
 
 #define NUMA_NUM_NODES 	128
 typedef struct { 
