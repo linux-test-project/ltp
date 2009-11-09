@@ -365,7 +365,6 @@ int main(int argc, char **argv) {
 
 	setup();
 
-	int result = 0;
 	int lc, i, ret;		 /* loop counter */
 
 	/* Check looping state if -i option given */
