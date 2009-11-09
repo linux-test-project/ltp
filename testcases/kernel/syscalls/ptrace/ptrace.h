@@ -7,6 +7,8 @@
 
 #ifdef HAVE_SYS_PTRACE_H
 # include <sys/ptrace.h>
+#elif defined(HAVE_LINUX_PTRACE_H)
+# include <linux/ptrace.h>
 #endif
 #ifdef HAVE_SYS_REG_H
 # include <sys/reg.h>
@@ -15,12 +17,8 @@
 # define ia64_fpreg FU_ia64_fpreg
 # define pt_all_user_regs FU_pt_all_user_regs
 #endif
-#ifndef HAVE_SYS_PTRACE_H
 #ifdef HAVE_ASM_PTRACE_H
 # include <asm/ptrace.h>
-#elif defined(HAVE_LINUX_PTRACE_H)
-# include <linux/ptrace.h>
-#endif
 #endif
 #undef FU_ia64_fpreg
 #undef FU_pt_all_user_regs
