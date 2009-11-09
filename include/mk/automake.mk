@@ -58,9 +58,6 @@ include/config.h.in: configure.ac $(wildcard m4/*.m4) m4/ltp-version.m4
 	$(AUTOHEADER)
 	touch $@
 
-include/config.h: $(abs_srcdir)/include/config.h.default | include
-	cp $^ $@
-
 m4/ltp-version.m4: ChangeLog
 	sed -n '1{s:LTP-:AC_DEFUN([LTP_VERSION],[:;s:$$:]):;p;q}' $< > $@
 
