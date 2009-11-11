@@ -180,13 +180,13 @@ ext4_setup
 RET=0
 
 ext4_test_sec_timestamps
-if [$? -ne 0 ]; then
+if [ $? -ne 0 ]; then
 	RET=1
 fi
 : $((TST_COUNT++))
 
 ext4_test_nsec_timestamps
-if [$? -ne 0 ]; then
+if [ $? -ne 0 ]; then
 	RET=1
 fi
 : $((TST_COUNT++))
