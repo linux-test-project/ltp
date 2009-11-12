@@ -1,4 +1,4 @@
-$Id: INSTALL,v 1.33 2009/11/12 11:57:37 yaberauneya Exp $
+$Id: INSTALL,v 1.34 2009/11/12 12:08:09 yaberauneya Exp $
 
 Requirements
 -------------------
@@ -270,7 +270,7 @@ checking for gawk... gawk
 checking whether make sets $(MAKE)... yes
 configure: error: cannot run /bin/sh ./config.sub
 
-Solution: You must upgrade m4 to 1.4.7+. 1.4.5 (at least) has known issues where it doesn't produce the config.sub file, unlike 1.4.7+.
+Solution: You must upgrade autoconf to 0.10.2+ and m4 to 1.4.7+; config.guess and config.sub aren't necessarily generated with older revisions of the Gnu autotools chain.
 
 Issue:    When executing make [all] it says:
 
