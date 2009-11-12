@@ -1,4 +1,4 @@
-$Id: INSTALL,v 1.32 2009/11/07 01:30:29 yaberauneya Exp $
+$Id: INSTALL,v 1.33 2009/11/12 11:57:37 yaberauneya Exp $
 
 Requirements
 -------------------
@@ -261,6 +261,16 @@ See README.mk-devel for a more terse description of what's available.
 
 Common Issues
 ----------------------
+
+Issue:    When executing configure it says:
+
+checking for a BSD-compatible install... /usr/bin/install -c
+checking whether build environment is sane... yes
+checking for gawk... gawk
+checking whether make sets $(MAKE)... yes
+configure: error: cannot run /bin/sh ./config.sub
+
+Solution: You must upgrade m4 to 1.4.7+. 1.4.5 (at least) has known issues where it doesn't produce the config.sub file, unlike 1.4.7+.
 
 Issue:    When executing make [all] it says:
 
