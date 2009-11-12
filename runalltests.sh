@@ -209,6 +209,11 @@ export HOSTNAME=$(uname -n)
 export KERNEL_VERSION=$(uname -r)
 export HTML_OUTPUT_FILE_NAME=$LTP_VERSION_$HOSTNAME_$KERNEL_VERSION_$HARDWARE_TYPE_$TEST_START_TIME.html
 
+if ! cd "${LTPROOT}"; then
+    rc=$?
+    echo "${0##*/}: ERROR : Could not cd to ${LTPROOT}"
+    exit $rc
+fi
 
 ## The First one i plan to run is the default LTP run ##
 ## START => Test Series 1                             ##
