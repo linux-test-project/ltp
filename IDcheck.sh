@@ -40,11 +40,10 @@ passwd="$DESTDIR/etc/passwd"
 
 # find entry.
 fe() {
-    ID=$1; shift
-    FILE=$1; shift
+    ID=$1
+    FILE=$2
     [ -e "$FILE" ] || return $?
-    awk "/^$ID:/ { FOUND=1 } END { if (\$FOUND == 1) { exit 1; } exit 0; }" \
-    "$FILE"
+    grep -q "^$ID:" "$FILE"
 }
 
 prompt_for_create() {
@@ -54,8 +53,8 @@ prompt_for_create() {
 			echo -n "If any required user ids and/or groups are missing, would you like these created? [y/N]"
 			read ans
 			case "$ans" in
-				Y*|y*) CREATE_ENTRIES=1 ;;
-				*)     CREATE_ENTRIES=0 ;;
+			Y*|y*) CREATE_ENTRIES=1 ;;
+			*)     CREATE_ENTRIES=0 ;;
 			esac
 		else
 			CREATE_ENTRIES=0
@@ -164,7 +163,7 @@ done
 
 # For entries that only exist in $group.
 for i in users sys; do
-    if ! fe "$i" "$file"; then
+    if ! fe "$i" "$group" ; then
         MISSING_ENTRY=1
     fi
 done
