@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * $Id: numaif.h,v 1.4 2009/11/09 18:36:06 yaberauneya Exp $
+ * $Id: numaif.h,v 1.5 2009/11/12 20:30:36 yaberauneya Exp $
  *
  */
 
@@ -47,12 +47,6 @@ typedef struct {
 static inline void nodemask_zero(nodemask_t *mask)
 { 
 	memset(mask->n, 0, sizeof(mask->n)); 
-} 
-
-static inline void nodemask_set(nodemask_t *mask, int node)
-{
-	mask->n[node / (8*sizeof(unsigned long))] |=
-		(1UL << (node % (8*sizeof(unsigned long))));		
 } 
 
 static inline void nodemask_clr(nodemask_t *mask, int node)
@@ -89,6 +83,12 @@ static inline void nodemask_dump(const char *header, const nodemask_t *mask)
 		EPRINTF(" 0x%08lx", mask->n[i]);
 	EPRINTF("\n");
 }
+
+static inline void nodemask_set(nodemask_t *mask, int node)
+{
+	mask->n[node / (8*sizeof(unsigned long))] |=
+		(1UL << (node % (8*sizeof(unsigned long))));		
+} 
 
 #ifndef MPOL_DEFAULT
    // Policies

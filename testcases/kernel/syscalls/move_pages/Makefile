@@ -22,6 +22,8 @@ include $(top_srcdir)/include/mk/testcases.mk
 
 CPPFLAGS		+= -I$(abs_srcdir)/../utils
 
+LDLIBS			+= $(NUMA_LIBS)
+
 INSTALL_TARGETS		:= move_pages.sh
 
 MAKE_TARGETS		:= $(patsubst $(abs_srcdir)/%.c,%,$(wildcard $(abs_srcdir)/*[0-9].c))

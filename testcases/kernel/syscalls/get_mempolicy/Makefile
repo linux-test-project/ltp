@@ -22,4 +22,6 @@ include $(top_srcdir)/include/mk/testcases.mk
 
 CPPFLAGS		+= -I$(abs_srcdir)/../utils
 
+LDLIBS			+= $(NUMA_LIBS)
+
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
