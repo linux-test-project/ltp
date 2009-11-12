@@ -86,36 +86,10 @@ testcases/kernel/fs/doio/rwtest.sh:
 testcases/kernel/sched/nptl/Makefile:
 1. There's a $(shell ) call in the Makefile that needs to be replaced.
 
-testcases/kernel/syscalls/utils/*.mk:
-1. There are unused variables and unneeded logic that needs to be evaluated
-   and potentially removed.
-
-testcases/misc/crash/crash02.c:
-#if defined(__ia64__)
-      SYS_clone2,
-#else
-      /*
-       * No SYS_fork(vfork) on IA-64. Instead, it uses,
-       * clone(child_stack=0, flags=CLONE_VM|CLONE_VFORK|SIGCHLD)
-       * clone2()
-       */
-
-      /*
-       * NOTE (garrcoop):
-       *  Could not find reference to SYS_fork(vfork) on mips32
-       *  with the Montavista / Octeon toolchain. Need to develop an
-       *  autoconf check for this item.
-       */
-#if defined(__NR_vfork) && __NR_vfork
-      SYS_vfork,
-#endif
-#if defined(__NR_fork) && __NR_fork
-      SYS_fork,
-#endif
-#endif /* __ia64__ */
-#if defined(__NR_clone) && __NR_clone
-      SYS_clone,
-#endif
+testcases/kernel/syscalls/libevent:
+1. The runtest file only works if you're doing in-build-tree and install.
+2. The test is run as part of $(MAKE) -C testcases/kernel/syscalls/libevent all (WTF).
+3. This needs to be integrated into configure with the rest of the herd.
 
 testcases/network/multicast/...:
 1. These tests need to be fixed because they use make / install logic in the
