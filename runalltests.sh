@@ -29,19 +29,21 @@
 ##                                                                            ##
 ################################################################################
 
+export LTPROOT=${0%/*}
+RUNLTP="$LTPROOT/runltp"
+
 echo  "*******************************************************************"
 echo  "*******************************************************************"
 echo  "**                                                               **"
-echo "** This script is being re-written to cover all aspects of    **"
-echo "** testing LTP, which includes running all those tests which  **"
-echo "** are not run by default with ./runltp script. Special setup **"
-echo "** in system environment will be done to run all those tests  **"
-echo "** like the File System tests, SELinuxtest, etc               **"
+echo  "** This script is being re-written to cover all aspects of    **"
+echo  "** testing LTP, which includes running all those tests which  **"
+echo  "** are not run by default with $RUNLTP script. Special setup **"
+echo  "** in system environment will be done to run all those tests  **"
+echo  "** like the File System tests, SELinuxtest, etc               **"
 echo  "**                                                               **"
 echo  "*******************************************************************"
 echo  "*******************************************************************"
 
-export LTPROOT=${PWD}
 export RUN_BALLISTA=0
 export RUN_OPENPOSIX=0
 ## Set this to 1 if mm-1.4.2.tar.gz is already installed in your system
@@ -200,7 +202,7 @@ export RUN_SMACK_SECURITY_TESTS=0
 ##Set this to 1 if you wish to run the Basic PERFORMANCE COUNTER tests
 export RUN_PERFORMANCE_COUNTERS_TESTS=0
 
-export LTP_VERSION=`./runltp -e`
+export LTP_VERSION=`"${RUNLTP}" -e`
 export TEST_START_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
 export HARDWARE_TYPE=$(uname -i)
 export HOSTNAME=$(uname -n)
@@ -211,7 +213,7 @@ export HTML_OUTPUT_FILE_NAME=$LTP_VERSION_$HOSTNAME_$KERNEL_VERSION_$HARDWARE_TY
 ## The First one i plan to run is the default LTP run ##
 ## START => Test Series 1                             ##
 echo "Running Default LTP..."
-./runltp -g $HTML_OUTPUT_FILE_NAME
+"${RUNLTP}" -g $HTML_OUTPUT_FILE_NAME
 printf "Completed running Default LTP\n\n\n"
 ## END => Test Series 1                               ##
 
@@ -221,7 +223,7 @@ if [ $RUN_BALLISTA -eq 1 ]
 then
     echo "Running Ballista..."
     export TEST_START_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
-    ./runltp -f ballista -o $LTP_VERSION-BALLISTA_RUN_ON-$HOSTNAME-$KERNEL_VERSION-$HARDWARE_TYPE-$TEST_START_TIME.out
+    "${RUNLTP}" -f ballista -o $LTP_VERSION-BALLISTA_RUN_ON-$HOSTNAME-$KERNEL_VERSION-$HARDWARE_TYPE-$TEST_START_TIME.out
     printf "Completed running Ballista\n\n\n"
 fi
 ## END => Test Series 2                               ##
@@ -339,7 +341,7 @@ then
         echo "Building & Running ltp/testcases/kernel/security/filecaps"
         (cd ltp/testcases/kernel/security/filecaps; \
          make && make install > /dev/null; )
-         ./runltp -f filecaps
+         "${RUNLTP}" -f filecaps
          printf "Completed running ltp/testcases/kernel/io/aio...\n\n\n"
     fi
 fi
@@ -348,12 +350,12 @@ fi
 
 ## The next one i plan to run is tpm_tools            ##
 ## START => Test Series 7                             ##
-./runltp -f tpm_tools
+"${RUNLTP}" -f tpm_tools
 ## END => Test Series 7                               ##
 
 ## The next one i plan to run is tcore_patch_test_suites
 ## START => Test Series 8                             ##
-./runltp -f tcore
+"${RUNLTP}" -f tcore
 ## END => Test Series 8                               ##
 
 
@@ -361,7 +363,7 @@ fi
 ## START => Test Series 9                             ##
 if [ $RUN_STRESS_CD -eq 1 ]
 then
-./runltp -f io_cd
+"${RUNLTP}" -f io_cd
 fi
 ## END => Test Series 9                               ##
 
@@ -369,7 +371,7 @@ fi
 ## START => Test Series 10                             ##
 if [ $RUN_STRESS_FLOPPY -eq 1 ]
 then
-./runltp -f io_floppy
+"${RUNLTP}" -f io_floppy
 fi
 ## END => Test Series 10                               ##
 
@@ -377,7 +379,7 @@ fi
 ## START => Test Series 11                             ##
 if [ $RUN_CPU_HOTPLUG -eq 1 ]
 then
-./runltp -f cpuhotplug
+"${RUNLTP}" -f cpuhotplug
 fi
 ## END => Test Series 11                               ##
 
@@ -503,7 +505,7 @@ fi
 ## START => Test Series 24                             ##
 if [ $RUN_LTP_TIRPC_TEST -eq 1 ]
 then
-./runltp -f rpctirpc
+"${RUNLTP}" -f rpctirpc
 fi
 ## END => Test Series 24                               ##
 
@@ -520,7 +522,7 @@ fi
 ## START => Test Series 26                             ##
 if [ $RUN_DMA_THREAD_DIOTEST7 -eq 1 ]
 then
-     ./runltp -f test_dma_thread_diotest7
+     "${RUNLTP}" -f test_dma_thread_diotest7
 fi
 ## END => Test Series 26                               ##
 
@@ -529,7 +531,7 @@ fi
 ## START => Test Series 27                             ##
 if [ $RUN_CONTROLLER_AREA_NETWORK_TESTS -eq 1 ]
 then
-     ./runltp -f can
+     "${RUNLTP}" -f can
 fi
 ## END => Test Series 27                               ##
 
@@ -537,7 +539,7 @@ fi
 ## START => Test Series 28                             ##
 if [ $RUN_SMACK_SECURITY_TESTS -eq 1 ]
 then
-     ./runltp -f smack
+     "${RUNLTP}" -f smack
 fi
 ## END => Test Series 28                               ##
 
@@ -546,7 +548,7 @@ fi
 if [ $RUN_PERFORMANCE_COUNTERS_TESTS -eq 1 ]
 then
      (cd $LTPROOT/testcases/kernel/performance_counters; make && make install)
-     ./runltp -f perfcounters
+     "${RUNLTP}" -f perfcounters
 fi
 ## END => Test Series 29                               ##
 
