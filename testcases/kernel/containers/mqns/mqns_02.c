@@ -54,25 +54,51 @@ int check_mqueue(void *vtest)
 	close(p1[1]);
 	close(p2[0]);
 
-	read(p1[0], buf, 3);
+	if (read(p1[0], buf, 3) < 0)
+		tst_resm(TBROK | TERRNO, "read(p1[0], ..) failed");
+	else {
 
-	mqd = mq_open(SLASH_MQ1, O_RDWR|O_CREAT|O_EXCL, 0777, NULL);
-	if (mqd == -1) {
-		write(p2[1], "mqfail", 7);
-		tst_exit();
+		mqd = mq_open(SLASH_MQ1, O_RDWR|O_CREAT|O_EXCL, 0777, NULL);
+		if (mqd == -1) {
+			if (write(p2[1], "mqfail", strlen("mqfail") + 1) < 0) {
+				tst_resm(TBROK | TERRNO,
+					"write(p2[1], \"mqfail\", ..) failed");
+			}
+			tst_exit();
+		} else {
+
+			if (write(p2[1], "mqopen", strlen("mqopen") + 1) < 0)
+				tst_resm(TBROK | TERRNO,
+					"write(p2[1], \"mqopen\", ..) failed");
+
+			else {
+
+				if (read(p1[0], buf, 5))
+					tst_resm(TBROK | TERRNO,
+						"read(p1[0], ..) failed");
+				else {
+
+					/* destroy the mqueue */
+					if (mq_close(mqd) < 0) {
+						tst_resm(TBROK | TERRNO,
+							"mq_close(mqd) failed");
+					} else if (mq_unlink(SLASH_MQ1) < 0) {
+						tst_resm(TBROK | TERRNO,
+							"mq_unlink(" SLASH_MQ1 ") failed");
+					} else if (write(p2[1], "done", strlen("done") + 1) < 0) {
+						tst_resm(TBROK | TERRNO,
+							"write(p2[1], \"done\", ..) failed");
+					}
+
+				}
+
+			}
+
+		}
+
 	}
-
-	write(p2[1], "mqopen", 7);
-
-	read(p1[0], buf, 5);
-
-	/* destroy the mqueue */
-	mq_close(mqd);
-	mq_unlink(SLASH_MQ1);
-
-	write(p2[1], "done", 5);
-
 	tst_exit();
+
 }
 
 
@@ -103,10 +129,13 @@ int main(int argc, char *argv[])
 
 	close(p1[0]);
 	close(p2[1]);
-	write(p1[1], "go", 3);
+	if (write(p1[1], "go", strlen("go") + 1) < 0) {
+		tst_resm(TBROK, "write(p1[1], \"go\", ..) failed");
+	}
 
-	read(p2[0], buf, 7);
-	if (!strcmp(buf, "mqfail")) {
+	if (read(p2[0], buf, 7) < 0) {
+		tst_resm(TBROK, "read(p1[0], ..) failed");
+	} else if (!strcmp(buf, "mqfail")) {
 		tst_resm(TFAIL, "child process could not create mqueue\n");
 		umount(DEV_MQUEUE);
 		tst_exit();
@@ -114,17 +143,20 @@ int main(int argc, char *argv[])
 		tst_resm(TFAIL, "child process could not create mqueue\n");
 		umount(DEV_MQUEUE);
 		tst_exit();
-	}
-
-	mqd = mq_open(SLASH_MQ1, O_RDONLY);
-	if (mqd == -1) {
-		tst_resm(TPASS, "Father process doesn't see mqueue\n");
 	} else {
-		tst_resm(TFAIL, "Father process found mqueue\n");
-		mq_close(mqd);
-	}
 
-	write(p1[1], "cont", 5);
+		mqd = mq_open(SLASH_MQ1, O_RDONLY);
+		if (mqd == -1) {
+			tst_resm(TPASS, "Parent process cann't see the mqueue\n");
+		} else {
+			tst_resm(TFAIL, "Parent process found mqueue\n");
+			mq_close(mqd);
+		}
+		if (write(p1[1], "cont", 5)) {
+			tst_resm(TBROK, "read(p1[0], ..) failed");
+
+		}
+	}
 	read(p2[0], buf, 7);
 
 	tst_exit();
