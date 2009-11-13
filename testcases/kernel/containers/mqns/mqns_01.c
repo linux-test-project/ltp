@@ -27,7 +27,9 @@
 
 ***************************************************************************/
 
+#ifndef _GNU_SOURCE
 #define _GNU_SOURCE 1
+#endif
 #include <sys/wait.h>
 #include <assert.h>
 #include <stdio.h>
@@ -51,19 +53,24 @@ int check_mqueue(void *vtest)
 	close(p1[1]);
 	close(p2[0]);
 
-	read(p1[0], buf, 3);
+	if (read(p1[0], buf, strlen("go") + 1) < 0)
+		tst_resm(TBROK | TERRNO, "read(p1[0], ...) failed");
 	mqd = mq_open(SLASH_MQ1, O_RDONLY);
 	if (mqd == -1) {
-		write(p2[1], "notfnd", 7);
+		if (write(p2[1], "notfnd", strlen("notfnd") + 1) < 0)
+			tst_resm(TBROK | TERRNO, "write(p2[1], ...) failed");
 	} else {
-		write(p2[1], "exists", 7);
-		mq_close(mqd);
+		if (write(p2[1], "exists", strlen("exists") + 1) < 0)
+			tst_resm(TBROK | TERRNO, "write(p2[1], \"exists\", 7) failed");
+		else if (mq_close(mqd) < 0)
+			tst_resm(TBROK | TERRNO, "mq_close(mqd) failed");
 	}
 
 	tst_exit();
 }
 
-int main(int argc, char *argv[])
+int
+main(int argc, char *argv[])
 {
 	int r;
 	mqd_t mqd;
@@ -98,14 +105,18 @@ int main(int argc, char *argv[])
 
 	close(p1[0]);
 	close(p2[1]);
-	write(p1[1], "go", 3);
-	read(p2[0], buf, 7);
-	if (!strcmp(buf, "exists")) {
-		tst_resm(TFAIL, "child process found mqueue\n");
-	} else if (!strcmp(buf, "notfnd")) {
-		tst_resm(TPASS, "child process didn't find mqueue\n");
-	} else {
-		tst_resm(TFAIL, "UNKNOWN RESULT\n");
+	if (write(p1[1], "go", strlen("go") + 1) < 0)
+		tst_resm(TBROK | TERRNO, "write(p1[1], \"go\", ...) failed");
+	else if (read(p2[0], buf, 7) < 0)
+		tst_resm(TBROK | TERRNO, "read(p2[0], buf, ...) failed");
+	else {
+		if (!strcmp(buf, "exists")) {
+			tst_resm(TFAIL, "child process found mqueue\n");
+		} else if (!strcmp(buf, "notfnd")) {
+			tst_resm(TPASS, "child process didn't find mqueue\n");
+		} else {
+			tst_resm(TFAIL, "UNKNOWN RESULT\n");
+		}
 	}
 
 	/* destroy the mqueue */

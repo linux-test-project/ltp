@@ -3,9 +3,8 @@
 
 #include <sys/mount.h>
 #include <mqueue.h>
-#include <test.h>
-#include <libclone.h>
-
+#include "test.h"
+#include "libclone.h"
 
 #define DEV_MQUEUE "/dev/mqueue"
 #define DEV_MQUEUE2 "/dev/mqueue2"
