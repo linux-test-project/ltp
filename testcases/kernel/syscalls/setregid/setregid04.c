@@ -76,7 +76,8 @@ gid_t users_gr_gid, root_gr_gid, daemon_gr_gid, bin_gr_gid;
 gid_t neg_one = -1;
 int exp_enos[] = { 0 };
 
-struct group users, daemongr, root, bin;
+/* Avoid clashing with daemon in unistd.h. */
+struct group users_gr, daemon_gr, root_gr, bin_gr;
 
 /*
  * The following structure contains all test data.  Each structure in the array
@@ -88,29 +89,43 @@ struct test_data_t {
 	gid_t *eff_gid;
 	struct group *exp_real_usr;
 	struct group *exp_eff_usr;
-	char *test_msg;
+	const char *test_msg;
 } test_data[] = {
 	{
-	&root_gr_gid, &root_gr_gid, &root, &root,
-		    "After setregid(root, root),"}, {
-	&users_gr_gid, &neg_one, &users, &root, "After setregid(users, -1)"},
-	{
-	&root_gr_gid, &neg_one, &root, &root, "After setregid(root,-1),"}, {
-	&neg_one, &neg_one, &root, &root, "After setregid(-1, -1),"}, {
-	&neg_one, &root_gr_gid, &root, &root, "After setregid(-1, root)"}, {
-	&root_gr_gid, &neg_one, &root, &root, "After setregid(root, -1),"},
-	{
-	&daemon_gr_gid, &users_gr_gid, &daemongr, &users,
-		    "After setregid(daemongr, users)"}, {
-	&neg_one, &neg_one, &daemongr, &users, "After setregid(-1, -1)"}, {
-&neg_one, &users_gr_gid, &daemongr, &users,
-		    "After setregid(-1, users)"},};
+		&root_gr_gid, &root_gr_gid, &root_gr, &root_gr,
+		"After setregid(root, root),"
+	}, {
+		&users_gr_gid, &neg_one, &users_gr, &root_gr,
+		"After setregid(users, -1)"
+	}, {
+		&root_gr_gid, &neg_one, &root_gr, &root_gr,
+		"After setregid(root,-1),"
+	}, {
+		&neg_one, &neg_one, &root_gr, &root_gr,
+		"After setregid(-1, -1),"
+	}, {
+		&neg_one, &root_gr_gid, &root_gr, &root_gr,
+		"After setregid(-1, root)"
+	}, {
+		&root_gr_gid, &neg_one, &root_gr, &root_gr,
+		"After setregid(root, -1),"
+	}, {
+		&daemon_gr_gid, &users_gr_gid, &daemon_gr, &users_gr,
+		"After setregid(daemon, users)"
+	}, {
+		&neg_one, &neg_one, &daemon_gr, &users_gr,
+		"After setregid(-1, -1)"
+	}, {
+		&neg_one, &users_gr_gid, &daemon_gr, &users_gr,
+		"After setregid(-1, users)"
+	}
+};
 
 int TST_TOTAL = sizeof(test_data) / sizeof(test_data[0]);
 
 void setup(void);		/* Setup function for the test */
 void cleanup(void);		/* Cleanup function for the test */
-void gid_verify(struct group *ru, struct group *eu, char *when);
+void gid_verify(struct group *ru, struct group *eu, const char *when);
 
 int main(int ac, char **av)
 {
@@ -161,8 +176,16 @@ int main(int ac, char **av)
 	}
 	cleanup();
 	/*NOTREACHED*/
-
+	return 0;
 }
+
+#define SAFE_GETGROUP(GROUPNAME)	\
+	if ((junk = getgrnam(#GROUPNAME)) == NULL) { \
+		tst_brkm(TBROK, NULL, "Couldn't find the `" #GROUPNAME "' group"); \
+		tst_exit(); \
+	} \
+	memcpy((void*) &GROUPNAME ## _gr, (const void*) junk, sizeof(struct group)); \
+	GROUPNAME ## _gr_gid = GROUPNAME ## _gr.gr_gid
 
 /*
  * setup()
@@ -170,6 +193,8 @@ int main(int ac, char **av)
  */
 void setup(void)
 {
+	struct group *junk;
+
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
@@ -182,29 +207,10 @@ void setup(void)
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	if ((root = getgrnam("root")) == NULL) {
-		tst_brkm(TBROK, NULL, "Couldn't find the `root' group");
-		tst_exit();
-	}
-	root_gr_gid = root->gr_gid;
-
-	if ((users = getgrnam("users")) == NULL) {
-		tst_brkm(TBROK, NULL, "Couldn't find the `users' group");
-		tst_exit();
-	}
-	users_gr_gid = users.gr_gid;
-
-	if ((daemongr = getgrnam("daemon")) == NULL) {
-		tst_brkm(TBROK, NULL, "Couldn't find the `daemon' group");
-		tst_exit();
-	}
-	daemon_gr_gid = daemongr->gr_gid;
-
-	if ((bin = getgrnam("bin")) == NULL) {
-		tst_brkm(TBROK, NULL, "Couldn't find the `bin' group");
-		tst_exit();
-	}
-	bin_gr_gid = bin->gr_gid;
+	SAFE_GETGROUP(root);
+	SAFE_GETGROUP(users);
+	SAFE_GETGROUP(daemon);
+	SAFE_GETGROUP(bin);
 
 	/* Pause if that option was specified
 	 * TEST_PAUSE contains the code to fork the test with the -c option.
@@ -227,9 +233,10 @@ void cleanup(void)
 
 	/* exit with return code appropriate for results */
 	tst_exit();
- /*NOTREACHED*/}
+	/*NOTREACHED*/
+}
 
-void gid_verify(struct group *rg, struct group *eg, char *when)
+void gid_verify(struct group *rg, struct group *eg, const char *when)
 {
 	if ((getgid() != rg->gr_gid) || (getegid() != eg->gr_gid)) {
 		tst_resm(TFAIL, "ERROR: %s real gid = %d; effective gid = %d",
