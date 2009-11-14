@@ -70,7 +70,7 @@ int check_mqueue(void *vtest)
 		tst_exit();
 	}
 
-	syscall(__NR_mq_close, mqd);
+	mq_close(mqd);
 
 	rc = mount("mqueue", DEV_MQUEUE2, "mqueue", 0, NULL);
 	if (rc == -1) {

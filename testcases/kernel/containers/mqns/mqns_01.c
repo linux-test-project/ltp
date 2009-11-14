@@ -62,7 +62,7 @@ int check_mqueue(void *vtest)
 	} else {
 		if (write(p2[1], "exists", strlen("exists") + 1) < 0)
 			tst_resm(TBROK | TERRNO, "write(p2[1], \"exists\", 7) failed");
-		else if (syscall(__NR_mq_close, mqd) < 0)
+		else if (mq_close(mqd) < 0)
 			tst_resm(TBROK | TERRNO, "mq_close(mqd) failed");
 	}
 
@@ -86,7 +86,7 @@ main(int argc, char *argv[])
 	if (pipe(p1) == -1) { perror("pipe"); exit(EXIT_FAILURE); }
 	if (pipe(p2) == -1) { perror("pipe"); exit(EXIT_FAILURE); }
 
-	mqd = syscall(, __NR_mq_open, SLASH_MQ1, O_RDWR|O_CREAT|O_EXCL, 0777,
+	mqd = syscall(__NR_mq_open, SLASH_MQ1, O_RDWR|O_CREAT|O_EXCL, 0777,
 			NULL);
 	if (mqd == -1) {
 		perror("mq_open");
@@ -99,7 +99,7 @@ main(int argc, char *argv[])
 	r = do_clone_unshare_test(use_clone, CLONE_NEWIPC, check_mqueue, NULL);
 	if (r < 0) {
 		tst_resm(TFAIL, "failed clone/unshare\n");
-		syscall(__NR_mq_close, mqd);
+		mq_close(mqd);
 		syscall(__NR_mq_unlink, SLASH_MQ1);
 		tst_exit();
 	}
@@ -121,7 +121,7 @@ main(int argc, char *argv[])
 	}
 
 	/* destroy the mqueue */
-	syscall(__NR_mq_close, mqd);
+	mq_close(mqd);
 	syscall(__NR_mq_unlink, SLASH_MQ1);
 
 	tst_exit();

@@ -4,6 +4,7 @@
 #include <sys/mount.h>
 #include <mqueue.h>
 #include "test.h"
+#include "linux_syscall_numbers.h"
 #include "libclone.h"
 
 #define DEV_MQUEUE "/dev/mqueue"

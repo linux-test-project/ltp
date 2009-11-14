@@ -82,7 +82,7 @@ int check_mqueue(void *vtest)
 				else {
 
 					/* destroy the mqueue */
-					if (syscall(__NR_mq_close, mqd) < 0) {
+					if (mq_close(mqd) < 0) {
 						tst_resm(TBROK | TERRNO,
 							"mq_close(mqd) failed");
 					} else if (syscall(__NR_mq_unlink,
@@ -155,10 +155,10 @@ int main(int argc, char *argv[])
 
 		mqd = syscall(__NR_mq_open, SLASH_MQ1, O_RDONLY);
 		if (mqd == -1) {
-			tst_resm(TPASS, "Parent process cann't see the mqueue\n");
+			tst_resm(TPASS, "Parent process can't see the mqueue\n");
 		} else {
 			tst_resm(TFAIL, "Parent process found mqueue\n");
-			syscall(__NR_mq_close, mqd);
+			mq_close(mqd);
 		}
 		if (write(p1[1], "cont", 5)) {
 			tst_resm(TBROK, "read(p1[0], ..) failed");
