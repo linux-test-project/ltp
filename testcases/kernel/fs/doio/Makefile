@@ -27,6 +27,6 @@ include $(top_srcdir)/include/mk/testcases.mk
 CFLAGS			+= -D_LARGEFILE64_SOURCE
 LDLIBS			+= -lrt -lpthread
 
-INSTALL_TARGETS		:= rwtest.sh
+INSTALL_TARGETS		:= rwtest
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
