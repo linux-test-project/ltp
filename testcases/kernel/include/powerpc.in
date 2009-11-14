@@ -6,6 +6,7 @@ clock_gettime 246
 get_mempolicy 260
 set_mempolicy 261
 add_key 269
+keyctl 271
 ppoll 281
 splice 283
 tee 284

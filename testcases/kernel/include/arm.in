@@ -1,4 +1,5 @@
 add_key (__NR_SYSCALL_BASE+309)
+keyctl (__NR_SYSCALL_BASE+311)
 get_mempolicy (__NR_SYSCALL_BASE+320)
 set_mempolicy (__NR_SYSCALL_BASE+321)
 openat (__NR_SYSCALL_BASE+322)

@@ -31,6 +31,7 @@ set_mempolicy 276
 mq_open 277
 mq_getsetattr (__NR_mq_open+5)
 add_key 286
+keyctl 288
 migrate_pages 294
 openat 295
 mkdirat 296

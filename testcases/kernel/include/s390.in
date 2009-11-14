@@ -1,6 +1,7 @@
 get_mempolicy 269
 set_mempolicy 270
 add_key 278
+keyctl 280
 openat 288
 mkdirat (__NR_openat + 1)
 mknodat (__NR_openat + 2)
