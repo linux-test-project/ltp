@@ -30,7 +30,9 @@
 
 ***************************************************************************/
 
-#define _GNU_SOURCE 1
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
 #include <sys/wait.h>
 #include <assert.h>
 #include <stdio.h>
@@ -58,7 +60,8 @@ int check_mqueue(void *vtest)
 		tst_resm(TBROK | TERRNO, "read(p1[0], ..) failed");
 	else {
 
-		mqd = mq_open(SLASH_MQ1, O_RDWR|O_CREAT|O_EXCL, 0777, NULL);
+		mqd = syscall(__NR_mq_open, SLASH_MQ1, O_RDWR|O_CREAT|O_EXCL,
+				0777, NULL);
 		if (mqd == -1) {
 			if (write(p2[1], "mqfail", strlen("mqfail") + 1) < 0) {
 				tst_resm(TBROK | TERRNO,
@@ -79,15 +82,20 @@ int check_mqueue(void *vtest)
 				else {
 
 					/* destroy the mqueue */
-					if (mq_close(mqd) < 0) {
+					if (syscall(__NR_mq_close, mqd) < 0) {
 						tst_resm(TBROK | TERRNO,
 							"mq_close(mqd) failed");
-					} else if (mq_unlink(SLASH_MQ1) < 0) {
+					} else if (syscall(__NR_mq_unlink,
+							SLASH_MQ1) < 0) {
 						tst_resm(TBROK | TERRNO,
-							"mq_unlink(" SLASH_MQ1 ") failed");
-					} else if (write(p2[1], "done", strlen("done") + 1) < 0) {
+							"mq_unlink(" SLASH_MQ1
+							") failed");
+					} else if (write(p2[1], "done",
+							strlen("done") + 1)
+							< 0) {
 						tst_resm(TBROK | TERRNO,
-							"write(p2[1], \"done\", ..) failed");
+							"write(p2[1], "
+							"\"done\", ..) failed");
 					}
 
 				}
@@ -145,12 +153,12 @@ int main(int argc, char *argv[])
 		tst_exit();
 	} else {
 
-		mqd = mq_open(SLASH_MQ1, O_RDONLY);
+		mqd = syscall(__NR_mq_open, SLASH_MQ1, O_RDONLY);
 		if (mqd == -1) {
 			tst_resm(TPASS, "Parent process cann't see the mqueue\n");
 		} else {
 			tst_resm(TFAIL, "Parent process found mqueue\n");
-			mq_close(mqd);
+			syscall(__NR_mq_close, mqd);
 		}
 		if (write(p1[1], "cont", 5)) {
 			tst_resm(TBROK, "read(p1[0], ..) failed");

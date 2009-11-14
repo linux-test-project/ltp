@@ -53,7 +53,7 @@
 #include <mqueue.h>
 #include <usctest.h>
 #include <test.h>
-#include <libclone.h>
+#include "libclone.h"
 
 char *TCID = "pidns30";
 int TST_TOTAL = 1;
@@ -88,8 +88,8 @@ static void remove_pipe(int *fd)
 
 static void remove_mqueue(mqd_t mqd)
 {
-	mq_close(mqd);
-	mq_unlink(mqname);
+	syscall(__NR_mq_close, mqd);
+	syscall(__NR_mq_unlink, mqname);
 }
 
 /*
@@ -102,14 +102,14 @@ static void cleanup_resources(int step, mqd_t mqd)
 	case C_STEP_2:
 		close(child_to_father[1]);
 		close(father_to_child[0]);
-		mq_close(mqd);
+		syscall(__NR_mq_close, mqd);
 		break;
 
 	case C_STEP_1:
-		mq_notify(mqd, NULL);
+		syscall(__NR_mq_notify, mqd, NULL);
 		/* fall through */
 	case C_STEP_0:
-		mq_close(mqd);
+		syscall(__NR_mq_close, mqd);
 		break;
 
 	case F_STEP_3:
@@ -215,7 +215,7 @@ int child_fn(void *arg)
 	close(child_to_father[0]);
 	close(father_to_child[1]);
 
-	mqd = mq_open(mqname, O_RDONLY);
+	mqd = syscall(__NR_mq_open, mqname, O_RDONLY);
 	if (mqd == (mqd_t)-1) {
 		tst_resm(TBROK, "cinit: mq_open() failed (%s)",
 			strerror(errno));
@@ -227,7 +227,7 @@ int child_fn(void *arg)
 	notif.sigev_notify = SIGEV_SIGNAL;
 	notif.sigev_signo = SIGUSR1;
 	notif.sigev_value.sival_int = mqd;
-	if (mq_notify(mqd, &notif) == (mqd_t)-1) {
+	if (syscall(__NR_mq_notify, mqd, &notif) == (mqd_t)-1) {
 		tst_resm(TBROK, "cinit: mq_notify() failed (%s)",
 			strerror(errno));
 		cleanup(TBROK, C_STEP_0, mqd);
@@ -289,8 +289,8 @@ int main(int argc, char *argv[])
 		cleanup(TBROK, F_STEP_0, 0);
 	}
 
-	mq_unlink(mqname);
-	mqd = mq_open(mqname, O_RDWR|O_CREAT|O_EXCL, 0777, NULL);
+	syscall(__NR_mq_unlink, mqname);
+	mqd = syscall(__NR_mq_open, mqname, O_RDWR|O_CREAT|O_EXCL, 0777, NULL);
 	if (mqd == (mqd_t)-1) {
 		tst_resm(TBROK, "parent: mq_open() failed (%s)",
 			strerror(errno));
@@ -316,7 +316,7 @@ int main(int argc, char *argv[])
 		cleanup(TBROK, F_STEP_2, mqd);
 	}
 
-	rc = mq_send(mqd, MSG, strlen(MSG), MSG_PRIO);
+	rc = syscall(__NR_mq_send, mqd, MSG, strlen(MSG), MSG_PRIO);
 	if (rc == (mqd_t)-1) {
 		tst_resm(TBROK, "parent: mq_send() failed (%s)",
 			strerror(errno));

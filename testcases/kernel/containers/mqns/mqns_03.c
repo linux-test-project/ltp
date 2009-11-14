@@ -30,7 +30,9 @@
 
 ***************************************************************************/
 
-#define _GNU_SOURCE 1
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
 #include <sys/wait.h>
 #include <assert.h>
 #include <stdio.h>
@@ -61,13 +63,14 @@ int check_mqueue(void *vtest)
 
 	read(p1[0], buf, 3); /* go */
 
-	mqd = mq_open(SLASH_MQ1, O_RDWR|O_CREAT|O_EXCL, 0755, NULL);
+	mqd = syscall(__NR_mq_open, SLASH_MQ1, O_RDWR|O_CREAT|O_EXCL, 0755,
+			NULL);
 	if (mqd == -1) {
 		write(p2[1], "mqfail", 7);
 		tst_exit();
 	}
 
-	mq_close(mqd);
+	syscall(__NR_mq_close, mqd);
 
 	rc = mount("mqueue", DEV_MQUEUE2, "mqueue", 0, NULL);
 	if (rc == -1) {

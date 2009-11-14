@@ -28,6 +28,7 @@
 #include <sys/syscall.h>
 #include <unistd.h>
 #include <signal.h>
+#include "linux_syscall_numbers.h"
 
 #define T_UNSHARE 0
 #define T_CLONE 1

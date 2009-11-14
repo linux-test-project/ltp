@@ -28,7 +28,7 @@
 ***************************************************************************/
 
 #ifndef _GNU_SOURCE
-#define _GNU_SOURCE 1
+#define _GNU_SOURCE
 #endif
 #include <sys/wait.h>
 #include <assert.h>
@@ -55,14 +55,14 @@ int check_mqueue(void *vtest)
 
 	if (read(p1[0], buf, strlen("go") + 1) < 0)
 		tst_resm(TBROK | TERRNO, "read(p1[0], ...) failed");
-	mqd = mq_open(SLASH_MQ1, O_RDONLY);
+	mqd = syscall(__NR_mq_open, SLASH_MQ1, O_RDONLY);
 	if (mqd == -1) {
 		if (write(p2[1], "notfnd", strlen("notfnd") + 1) < 0)
 			tst_resm(TBROK | TERRNO, "write(p2[1], ...) failed");
 	} else {
 		if (write(p2[1], "exists", strlen("exists") + 1) < 0)
 			tst_resm(TBROK | TERRNO, "write(p2[1], \"exists\", 7) failed");
-		else if (mq_close(mqd) < 0)
+		else if (syscall(__NR_mq_close, mqd) < 0)
 			tst_resm(TBROK | TERRNO, "mq_close(mqd) failed");
 	}
 
@@ -86,7 +86,8 @@ main(int argc, char *argv[])
 	if (pipe(p1) == -1) { perror("pipe"); exit(EXIT_FAILURE); }
 	if (pipe(p2) == -1) { perror("pipe"); exit(EXIT_FAILURE); }
 
-	mqd = mq_open(SLASH_MQ1, O_RDWR|O_CREAT|O_EXCL, 0777, NULL);
+	mqd = syscall(, __NR_mq_open, SLASH_MQ1, O_RDWR|O_CREAT|O_EXCL, 0777,
+			NULL);
 	if (mqd == -1) {
 		perror("mq_open");
 		tst_resm(TFAIL, "mq_open failed\n");
@@ -98,8 +99,8 @@ main(int argc, char *argv[])
 	r = do_clone_unshare_test(use_clone, CLONE_NEWIPC, check_mqueue, NULL);
 	if (r < 0) {
 		tst_resm(TFAIL, "failed clone/unshare\n");
-		mq_close(mqd);
-		mq_unlink(SLASH_MQ1);
+		syscall(__NR_mq_close, mqd);
+		syscall(__NR_mq_unlink, SLASH_MQ1);
 		tst_exit();
 	}
 
@@ -120,8 +121,8 @@ main(int argc, char *argv[])
 	}
 
 	/* destroy the mqueue */
-	mq_close(mqd);
-	mq_unlink(SLASH_MQ1);
+	syscall(__NR_mq_close, mqd);
+	syscall(__NR_mq_unlink, SLASH_MQ1);
 
 	tst_exit();
 }

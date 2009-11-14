@@ -43,7 +43,9 @@
 *              <Nadia.Derbey@bull.net>
 *
 ******************************************************************************/
-#define _GNU_SOURCE 1
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <signal.h>
@@ -51,9 +53,9 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <mqueue.h>
-#include <usctest.h>
-#include <test.h>
-#include <libclone.h>
+#include "usctest.h"
+#include "test.h"
+#include "libclone.h"
 
 char *TCID = "pidns31";
 int TST_TOTAL = 1;
@@ -91,8 +93,8 @@ static void remove_pipe(int *fd)
 
 static void remove_mqueue(mqd_t mqd)
 {
-	mq_close(mqd);
-	mq_unlink(mqname);
+	syscall(__NR_mq_close, mqd);
+	syscall(__NR_mq_unlink, mqname);
 }
 
 /*
@@ -106,7 +108,7 @@ static void cleanup_resources(int step, mqd_t mqd)
 		close(father_to_child[0]);
 		/* fall through */
 	case C_STEP_0:
-		mq_close(mqd);
+		syscall(__NR_mq_close, mqd);
 		break;
 
 	case F_STEP_3:
@@ -115,7 +117,7 @@ static void cleanup_resources(int step, mqd_t mqd)
 		break;
 
 	case F_STEP_2:
-		mq_notify(mqd, NULL);
+		syscall(__NR_mq_notify, mqd, NULL);
 		/* fall through */
 	case F_STEP_1:
 		remove_mqueue(mqd);
@@ -175,7 +177,7 @@ int child_fn(void *arg)
 	}
 	tst_resm(TINFO, "cinit: my father is ready to receive a message");
 
-	mqd = mq_open(mqname, O_WRONLY);
+	mqd = syscall(__NR_mq_open, mqname, O_WRONLY);
 	if (mqd == (mqd_t)-1) {
 		tst_resm(TBROK, "cinit: mq_open() failed (%s)",
 			strerror(errno));
@@ -183,7 +185,8 @@ int child_fn(void *arg)
 	}
 	tst_resm(TINFO, "cinit: mq_open succeeded");
 
-	if (mq_send(mqd, MSG, strlen(MSG), MSG_PRIO) == (mqd_t)-1) {
+	if (syscall(__NR_mq_send, mqd, MSG, strlen(MSG), MSG_PRIO) ==
+		(mqd_t)-1) {
 		tst_resm(TBROK, "cinit: mq_send() failed (%s)",
 			strerror(errno));
 		cleanup(TBROK, C_STEP_0, mqd);
@@ -237,8 +240,8 @@ static void father_signal_handler(int sig, siginfo_t *si, void *unused)
 	 * Now read the message - Be silent on errors since this is not the
 	 * test purpose.
 	 */
-	if (!mq_getattr(info->mqd, &attr))
-		mq_receive(info->mqd, buf, attr.mq_msgsize, NULL);
+	if (!syscall(__NR_mq_getattr, info->mqd, &attr))
+		syscall(__NR_mq_receive, info->mqd, buf, attr.mq_msgsize, NULL);
 }
 
 /***********************************************************************
@@ -259,8 +262,8 @@ int main(int argc, char *argv[])
 		cleanup(TBROK, NO_STEP, 0);
 	}
 
-	mq_unlink(mqname);
-	mqd = mq_open(mqname, O_RDWR|O_CREAT|O_EXCL, 0777, NULL);
+	syscall(__NR_mq_unlink, mqname);
+	mqd = syscall(__NR_mq_open, mqname, O_RDWR|O_CREAT|O_EXCL, 0777, NULL);
 	if (mqd == (mqd_t)-1) {
 		tst_resm(TBROK, "parent: mq_open() failed (%s)",
 			strerror(errno));
@@ -282,7 +285,7 @@ int main(int argc, char *argv[])
 	info.mqd = mqd;
 	info.pid = cpid;
 	notif.sigev_value.sival_ptr = &info;
-	if (mq_notify(mqd, &notif) == (mqd_t)-1) {
+	if (syscall(__NR_mq_notify, mqd, &notif) == (mqd_t)-1) {
 		tst_resm(TBROK, "parent: mq_notify() failed (%s)",
 			strerror(errno));
 		cleanup(TBROK, F_STEP_1, mqd);
