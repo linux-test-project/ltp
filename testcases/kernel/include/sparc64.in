@@ -1,5 +1,11 @@
 vmsplice 25
 splice 232
+mq_open 273
+mq_unlink 274
+mq_timedsend 275
+mq_timedreceive 276
+mq_notify 277
+mq_getsetattr 278
 tee 280
 add_key 281
 keyctl 283

@@ -29,6 +29,10 @@ mbind 274
 get_mempolicy 275
 set_mempolicy 276
 mq_open 277
+mq_unlink (__NR_mq_open+1)
+mq_timedsend (__NR_mq_open+2)
+mq_timedreceive (__NR_mq_open+3)
+mq_notify (__NR_mq_open+4)
 mq_getsetattr (__NR_mq_open+5)
 add_key 286
 keyctl 288

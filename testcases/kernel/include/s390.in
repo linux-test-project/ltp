@@ -1,5 +1,11 @@
 get_mempolicy 269
 set_mempolicy 270
+mq_open 271
+mq_unlink 272
+mq_timedsend 273
+mq_timedreceive 274
+mq_notify 275
+mq_getsetattr 276
 add_key 278
 keyctl 280
 openat 288

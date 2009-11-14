@@ -19,6 +19,12 @@ clock_settime 227
 clock_gettime 228
 set_mempolicy 238
 get_mempolicy 239
+mq_open 240
+mq_unlink 241
+mq_timedsend 242
+mq_timedreceive 243
+mq_notify 244
+mq_getsetattr 245
 add_key 248
 keyctl 250
 openat 257

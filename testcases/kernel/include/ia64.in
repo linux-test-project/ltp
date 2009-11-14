@@ -18,6 +18,12 @@ clock_settime 1253
 clock_gettime 1254
 get_mempolicy 1260
 set_mempolicy 1261
+mq_open 1262
+mq_unlink 1263
+mq_timedsend 1264
+mq_timedreceive 1265
+mq_notify 1266
+mq_getsetattr 1267
 add_key 1271
 keyctl 1273
 migrate_pages 1280
