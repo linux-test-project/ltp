@@ -118,10 +118,11 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL)	{
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
-	 /*NOTREACHED*/}
+		/*NOTREACHED*/
+	}
 
 	/* Perform global setup for test */
 	setup();
@@ -159,7 +160,7 @@ int main(int ac, char **av)
 		}
 	}
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	/*NOTREACHED*/
 
 }
 
@@ -181,17 +182,29 @@ void setup(void)
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-	root = *(getgrnam("root"));
-	root_gr_gid = root.gr_gid;
+	if ((root = getgrnam("root")) == NULL) {
+		tst_brkm(TBROK, NULL, "Couldn't find the `root' group");
+		tst_exit();
+	}
+	root_gr_gid = root->gr_gid;
 
-	users = *(getgrnam("users"));
+	if ((users = getgrnam("users")) == NULL) {
+		tst_brkm(TBROK, NULL, "Couldn't find the `users' group");
+		tst_exit();
+	}
 	users_gr_gid = users.gr_gid;
 
-	daemongr = *(getgrnam("daemon"));
-	daemon_gr_gid = daemongr.gr_gid;
+	if ((daemongr = getgrnam("daemon")) == NULL) {
+		tst_brkm(TBROK, NULL, "Couldn't find the `daemon' group");
+		tst_exit();
+	}
+	daemon_gr_gid = daemongr->gr_gid;
 
-	bin = *(getgrnam("bin"));
-	bin_gr_gid = bin.gr_gid;
+	if ((bin = getgrnam("bin")) == NULL) {
+		tst_brkm(TBROK, NULL, "Couldn't find the `bin' group");
+		tst_exit();
+	}
+	bin_gr_gid = bin->gr_gid;
 
 	/* Pause if that option was specified
 	 * TEST_PAUSE contains the code to fork the test with the -c option.
