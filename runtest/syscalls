@@ -462,10 +462,10 @@ kill12 kill12
 
 lchown01 lchown01
 lchown01_16 lchown01_16
-lchown02 cp -p $LTPROOT/testcases/bin/create_link $TMP; lchown02
-lchown02_16 cp -p $LTPROOT/testcases/bin/create_link $TMP; lchown02_16
+lchown02 prep_create_link; lchown02
+lchown02_16 prep_create_link; lchown02_16
 
-libevent01 (cd ${LTPROOT}/testcases/kernel/syscalls/libevent; ./run_libevent.sh)
+libevent01 run_libevent.sh
 
 link01 symlink01 -T link01
 link02 link02
