@@ -46,19 +46,38 @@ char *TCID = "sysconf01";	/* Test program identifier.    */
 int TST_TOTAL = 56;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-static void _test_sysconf(int name, const char *strname)
+static void _test_sysconf(long name, const char *strname)
 {
 	long retval;
 
 	/* make sure we reset this as sysconf() will not */
 	errno = 0;
 	retval = sysconf(name);
-	if ((retval == -1) && (errno))
-		tst_resm(TWARN, "Bad option %s\n", strname);
-	else if ((retval == -1) && (!errno))
-		tst_resm(TINFO, "%s NOT SUPPORTED\n", strname);
-	else
+	if (retval == -1) {
+
+		/*
+		 * The manpage for sysconf(2) specifically states that:
+		 * 1. If -1 is returned and errno is EINVAL, then the resource
+		 * name doesn't exist.
+		 * 2. If errno remains 0, then the limit isn't implemented.
+		 * 3. Else, something weird happened with the syscall.
+		 */
+		switch (errno) {
+		case EINVAL:
+			tst_resm(TCONF, "Resource doesn't exist: %s", strname);
+			break;
+		case 0:
+			tst_resm(TCONF, "Not supported sysconf resource: %s",
+					strname);
+			break;
+		default:
+			tst_resm(TFAIL | TERRNO, "Unexpected errno value for "
+						 "%s", strname);
+			break;
+		}
+	} else
 		tst_resm(TPASS, "%s = %li", strname, retval);
+
 }
 
 #define test_sysconf(name) _test_sysconf(name, #name)
@@ -138,16 +157,18 @@ int main()
 		errno = 0;
 		retval = sysconf(INVAL_FLAG);
 		actual = errno;
-		if (retval != -1)
+		if (retval != -1) {
 			tst_resm(TFAIL,
-				 "sysconf succeeded for invalid flag (%i), retval=%d errno=%d: %s",
+				 "sysconf succeeded for invalid flag (%i), "
+				 " retval=%d errno=%d: %s",
 				 INVAL_FLAG, retval, actual, strerror(actual));
-		else if (actual != EINVAL)
+		} else if (actual != EINVAL) {
 			tst_resm(TFAIL,
-				 "sysconf correctly failed, but expected errno (%i) != actual (%i)\n",
-				 EINVAL, actual);
-		else
-			tst_resm(TPASS, "using invalid name");
+				 "sysconf correctly failed, but expected "
+				 "errno (%i) != actual (%i)", EINVAL, actual);
+		} else
+			tst_resm(TPASS, "The invalid sysconf key was trapped "
+					"appropriately");
 	}
 
 	tst_exit();
