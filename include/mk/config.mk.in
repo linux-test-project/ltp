@@ -49,7 +49,7 @@ RPMBUILD		?= rpmbuild
 
 CPPFLAGS		:= @CPPFLAGS@
 CFLAGS			:= @CFLAGS@
-LDLIBS			+= @LIBS@
+LDLIBS			:= @LIBS@
 LDFLAGS			:= @LDFLAGS@
 
 DEBUG_CFLAGS		?= -g
