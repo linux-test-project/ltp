@@ -130,17 +130,21 @@ void try_bind()
 int main(int argc, char *argv[])
 {
 
+	/* FreeBSD has set limits for user login name -- MAXLOGNAME, but
+	 * Linux doesn't have that limitation apparently. */
+	char *username = NULL;
+
 	if (argc != 2) {
 		tst_resm(TINFO, "Defaulting to user nobody");
-		pw = getpwnam(nobody_uid);
+		username = strdup(nobody_uid);
 	} else {
-		/*
-		 * Get test user uid/gid.
-		 */
-		if ((pw = getpwnam(argv[1])) == NULL) {
-			tst_brkm(TBROK, 0, "User %s not found", argv[1]);
-			tst_exit();
-		}
+		/* Get test user uid/gid. */
+		username = argv[1];
+	}
+
+	if ((pw = getpwnam(username)) == NULL) {
+		tst_brkm(TBROK, 0, "Username - %s - not found", username);
+		tst_exit();
 	}
 
 	if ((gr = getgrgid(pw->pw_gid)) == NULL) {
