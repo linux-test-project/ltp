@@ -27,6 +27,8 @@
  *		This function exit with 0 or 1 depending upon the
  *		success/failure each system call.
  */
+
+#include <libgen.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -42,6 +44,7 @@
 
 int main(int argc, char **argv)
 {
+	int rc = 1;		/* Failed until proven passed ;). */
 	struct passwd *ltpuser;	/* password struct for nobody */
 	struct group *ltpgroup;	/* group struct for nobody */
 	uid_t user_uid;		/* user id of nobody */
@@ -50,46 +53,42 @@ int main(int argc, char **argv)
 
 	path_name = argv[1];
 
-	/*
-	 * Get the user id and group id of "ltpuser" user from password
-	 * and group files.
-	 */
-	if ((ltpuser = getpwnam(LTPUSER)) == NULL) {
-		fprintf(stderr, "change_owner: %s not found in /etc/passwd\n",
+	if (argc != 2) {
+		fprintf(stderr, "usage: %s filename\n", basename(*argv));
+		exit (1);
+	} else if ((ltpuser = getpwnam(LTPUSER)) == NULL)
+		/*
+		 * Get the user id and group id of "ltpuser" user from password
+		 * and group files.
+		 */
+		fprintf(stderr, "change_owner: %s not found in /etc/passwd",
 			LTPUSER);
-		exit(1);
-	}
-	if ((ltpgroup = getgrnam(LTPGRP)) == NULL) {
-		fprintf(stderr, "change_owner: %s not found in /etc/group\n",
+	else if ((ltpgroup = getgrnam(LTPGRP)) == NULL)
+		fprintf(stderr, "change_owner: %s not found in /etc/group",
 			LTPGRP);
-		exit(1);
-	}
-	user_uid = ltpuser->pw_uid;
-	group_gid = ltpgroup->gr_gid;
+	else {
 
-	/*
-	 * Change the ownership of test directory/file specified by
-	 * pathname to that of LTPUSER user_uid and group_gid.
-	 */
-	if (chown(path_name, user_uid, group_gid) < 0) {
-		fprintf(stderr, "change_owner: chown() of %s failed, "
-			"error %d\n", path_name, errno);
-		exit(1);
-	}
+		user_uid = ltpuser->pw_uid;
+		group_gid = ltpgroup->gr_gid;
 
-	/* Set the process uid to that LTPUSER */
-	if (setuid(user_uid) < 0) {
-		fprintf(stderr, "change_owner: setuid() to %s fails, error:%d",
-			LTPUSER, errno);
-		exit(1);
-	}
+		/*
+		 * Change the ownership of test directory/file specified by
+		 * pathname to that of LTPUSER user_uid and group_gid.
+		 */
+		if (chown(path_name, user_uid, group_gid) < 0)
+			fprintf(stderr, "change_owner: chown() of %s failed, "
+				"error %d\n", path_name, errno);
+		else if (setuid(user_uid) < 0)
+			fprintf(stderr, "change_owner: setuid() to %s fails, error=%d",
+				LTPUSER, errno);
+		else if (symlink(path_name, SFILE1) < 0)
+			fprintf(stderr, "change_owner: symlink() of %s Failed, "
+				"errno=%d : %s", path_name, errno, strerror(errno));
+		else
+			rc = 0;
 
-	/* Creat a symlink of testfile created above */
-	if (symlink(path_name, SFILE1) < 0) {
-		fprintf(stderr, "change_owner: symlink() of %s Failed, "
-			"errno=%d : %s", path_name, errno, strerror(errno));
-		exit(1);
 	}
 
-	exit(0);
+	return rc;
+
 }

@@ -234,10 +234,8 @@ int main(int ac, char **av)
  */
 void setup()
 {
-	char file[PATH_MAX];
 	int ind;		/* counter for setup functions */
-	struct stat change_link_stat;
-	
+
 	/* Capture unexpected signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
@@ -269,24 +267,8 @@ void setup()
 
 	/* remember current dir, because create_link has been copied here */
 	if (getcwd(main_test_dir, sizeof(main_test_dir)) == NULL) {
-		tst_brkm(TBROK, cleanup,
-			 "getcwd(3) fails to get working directory of process");
-	}
-
-	snprintf(file, PATH_MAX, "%schange_link", EXEC_DIR);
-	if (stat(file, &change_link_stat) < 0) {
-		tst_brkm(TBROK, cleanup, "stat for change_link failed");
-	} else {
-		if ((change_link_stat.st_uid || change_link_stat.st_gid) &&
-		     chown(file, 0, 0) < 0) {
-			tst_brkm(TBROK, cleanup,
-					"chown for change_link failed");
-		}
-		if (change_link_stat.st_mode != 04511 &&
-		    chmod(file, 04755) < 0) {
-			tst_brkm(TBROK, cleanup,
-					"setuid for change_link failed");
-		}
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "failed to get the current working directory.");
 	}
 
 	/* Make a temp dir and cd to it */
@@ -294,13 +276,13 @@ void setup()
 
 	/* fix permissions on the tmpdir */
 	if (chmod(".", 0711) != 0) {
-		tst_brkm(TBROK, cleanup, "chmod() failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "chmod() failed");
 	}
 
 	bad_addr = mmap(0, 1, PROT_NONE,
 			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
 	if (bad_addr == MAP_FAILED) {
-		tst_brkm(TBROK, cleanup, "mmap failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "mmap failed");
 	}
 	Test_cases[3].pathname = bad_addr;
 
@@ -337,27 +319,22 @@ int setup1()
 
 	/* Creat a testfile and close it */
 	if ((fd = open(TEST_FILE1, O_RDWR | O_CREAT, 0666)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, 0666) failed, errno=%d : %s",
-			 TEST_FILE1, errno, strerror(errno));
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT, 0666) failed", TEST_FILE1);
 	}
 	if (close(fd) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "close(%s) Failed, errno=%d : %s",
-			 TEST_FILE1, errno, strerror(errno));
+		tst_brkm(TBROK, cleanup, "close(%s) Failed", TEST_FILE1);
 	}
 
 	/* Get the current working directory of the process */
 	if (getcwd(Path_name, sizeof(Path_name)) == NULL) {
-		tst_brkm(TBROK, cleanup,
-			 "getcwd(3) fails to get working directory of process");
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "failed to get the current working directory.");
 	}
 
 	/* Provide permissions for temporary directory */
 	if (chmod(Path_name, 0777) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "chmod() on %s Fails, errno=%d : %s",
-			 Path_name, errno, strerror(errno));
+		tst_brkm(TBROK | TERRNO, cleanup, "chmod(%s, 0777) failed", Path_name);
 	}
 
 	strcpy(Path2_name, Path_name);
