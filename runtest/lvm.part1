@@ -30,11 +30,11 @@ gf127 growfiles -W gf127 -b -D 0 -w -g 8b -C 1 -b -i 1000 -u /test/growfiles/msd
 gf128 growfiles -W gf128 -b -D 0 -w -g 16b -C 1 -b -i 1000 -u /test/growfiles/msdos/gfsparse-2-$$
 gf129 growfiles -W gf129 -b -D 0 -r 1-4096 -R 0-33554432 -i 0 -L 60 -C 1 -u /test/growfiles/msdos/gfsparse-3-$$
 gf130 growfiles -W gf130 -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -o O_RDWR,O_CREAT,O_SYNC -g 20480 -T 10 -t 20480 /test/growfiles/msdos/gf-sync-$$
-rwtest01 export LTPROOT; rwtest.sh -N rwtest01 -c -q -i 60s  -f sync 10%25000:rw-sync-$$ 500b:/test/growfiles/msdos/rwtest01%f
-rwtest02 export LTPROOT; rwtest.sh -N rwtest02 -c -q -i 60s  -f buffered 10%25000:rw-buffered-$$ 500b:/test/growfiles/msdos/rwtest02%f
-rwtest03 export LTPROOT; rwtest.sh -N rwtest03 -c -q -i 60s -n 2  -f buffered -s mmread,mmwrite -m random -Dv 10%25000:mm-buff-$$ 500b:/test/growfiles/msdos/rwtest03%f
-rwtest04 export LTPROOT; rwtest.sh -N rwtest04 -c -q -i 60s -n 2  -f sync -s mmread,mmwrite -m random -Dv 10%25000:mm-sync-$$ 500b:/test/growfiles/msdos/rwtest04%f
-rwtest05 export LTPROOT; rwtest.sh -N rwtest05 -c -q -i 50 -T 64b 500b:/test/growfiles/msdos/rwtest05%f
+rwtest01 export LTPROOT; rwtest -N rwtest01 -c -q -i 60s  -f sync 10%25000:rw-sync-$$ 500b:/test/growfiles/msdos/rwtest01%f
+rwtest02 export LTPROOT; rwtest -N rwtest02 -c -q -i 60s  -f buffered 10%25000:rw-buffered-$$ 500b:/test/growfiles/msdos/rwtest02%f
+rwtest03 export LTPROOT; rwtest -N rwtest03 -c -q -i 60s -n 2  -f buffered -s mmread,mmwrite -m random -Dv 10%25000:mm-buff-$$ 500b:/test/growfiles/msdos/rwtest03%f
+rwtest04 export LTPROOT; rwtest -N rwtest04 -c -q -i 60s -n 2  -f sync -s mmread,mmwrite -m random -Dv 10%25000:mm-sync-$$ 500b:/test/growfiles/msdos/rwtest04%f
+rwtest05 export LTPROOT; rwtest -N rwtest05 -c -q -i 50 -T 64b 500b:/test/growfiles/msdos/rwtest05%f
 # Check the Reiserfs filesystem
 gf202 growfiles -W gf202 -d /test/growfiles/reiser -b -e 1 -L 10 -i 100 -I p -S 2 -u -f gf03_
 gf203 growfiles -W gf203 -d /test/growfiles/reiser -b -e 1 -g 1 -i 1 -S 150 -u -f gf05_
@@ -66,11 +66,11 @@ gf227 growfiles -W gf227 -b -D 0 -w -g 8b -C 1 -b -i 1000 -u /test/growfiles/rei
 gf228 growfiles -W gf228 -b -D 0 -w -g 16b -C 1 -b -i 1000 -u /test/growfiles/reiser/gfsparse-2-$$
 gf229 growfiles -W gf229 -b -D 0 -r 1-4096 -R 0-33554432 -i 0 -L 60 -C 1 -u /test/growfiles/reiser/gfsparse-3-$$
 gf230 growfiles -W gf230 -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -o O_RDWR,O_CREAT,O_SYNC -g 20480 -T 10 -t 20480 /test/growfiles/reiser/gf-sync-$$
-rwtest01 export LTPROOT; rwtest.sh -N rwtest01 -c -q -i 60s  -f sync 10%25000:rw-sync-$$ 500b:/test/growfiles/reiser/rwtest06%f
-rwtest02 export LTPROOT; rwtest.sh -N rwtest02 -c -q -i 60s  -f buffered 10%25000:rw-buffered-$$ 500b:/test/growfiles/reiser/rwtest07%f
-rwtest03 export LTPROOT; rwtest.sh -N rwtest03 -c -q -i 60s -n 2  -f buffered -s mmread,mmwrite -m random -Dv 10%25000:mm-buff-$$ 500b:/test/growfiles/reiser/rwtest08%f
-rwtest04 export LTPROOT; rwtest.sh -N rwtest04 -c -q -i 60s -n 2  -f sync -s mmread,mmwrite -m random -Dv 10%25000:mm-sync-$$ 500b:/test/growfiles/reiser/rwtest09%f
-rwtest05 export LTPROOT; rwtest.sh -N rwtest05 -c -q -i 50 -T 64b 500b:/test/growfiles/reiser/rwtest10%f
+rwtest01 export LTPROOT; rwtest -N rwtest01 -c -q -i 60s  -f sync 10%25000:rw-sync-$$ 500b:/test/growfiles/reiser/rwtest06%f
+rwtest02 export LTPROOT; rwtest -N rwtest02 -c -q -i 60s  -f buffered 10%25000:rw-buffered-$$ 500b:/test/growfiles/reiser/rwtest07%f
+rwtest03 export LTPROOT; rwtest -N rwtest03 -c -q -i 60s -n 2  -f buffered -s mmread,mmwrite -m random -Dv 10%25000:mm-buff-$$ 500b:/test/growfiles/reiser/rwtest08%f
+rwtest04 export LTPROOT; rwtest -N rwtest04 -c -q -i 60s -n 2  -f sync -s mmread,mmwrite -m random -Dv 10%25000:mm-sync-$$ 500b:/test/growfiles/reiser/rwtest09%f
+rwtest05 export LTPROOT; rwtest -N rwtest05 -c -q -i 50 -T 64b 500b:/test/growfiles/reiser/rwtest10%f
 # Check the EXT2 filesystem
 gf302 growfiles -W gf302 -d /test/growfiles/ext2 -b -e 1 -L 10 -i 100 -I p -S 2 -u -f gf03_
 gf303 growfiles -W gf303 -d /test/growfiles/ext2 -b -e 1 -g 1 -i 1 -S 150 -u -f gf05_
@@ -102,11 +102,11 @@ gf327 growfiles -W gf327 -b -D 0 -w -g 8b -C 1 -b -i 1000 -u /test/growfiles/ext
 gf328 growfiles -W gf328 -b -D 0 -w -g 16b -C 1 -b -i 1000 -u /test/growfiles/ext2/gfsparse-2-$$
 gf329 growfiles -W gf329 -b -D 0 -r 1-4096 -R 0-33554432 -i 0 -L 60 -C 1 -u /test/growfiles/ext2/gfsparse-3-$$
 gf330 growfiles -W gf330 -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -o O_RDWR,O_CREAT,O_SYNC -g 20480 -T 10 -t 20480 /test/growfiles/ext2/gf-sync-$$
-rwtest01 export LTPROOT; rwtest.sh -N rwtest01 -c -q -i 60s  -f sync 10%25000:rw-sync-$$ 500b:/test/growfiles/ext2/rwtest11%f
-rwtest02 export LTPROOT; rwtest.sh -N rwtest02 -c -q -i 60s  -f buffered 10%25000:rw-buffered-$$ 500b:/test/growfiles/ext2/rwtest12%f
-rwtest03 export LTPROOT; rwtest.sh -N rwtest03 -c -q -i 60s -n 2  -f buffered -s mmread,mmwrite -m random -Dv 10%25000:mm-buff-$$ 500b:/test/growfiles/ext2/rwtest13%f
-rwtest04 export LTPROOT; rwtest.sh -N rwtest04 -c -q -i 60s -n 2  -f sync -s mmread,mmwrite -m random -Dv 10%25000:mm-sync-$$ 500b:/test/growfiles/ext2/rwtest14%f
-rwtest05 export LTPROOT; rwtest.sh -N rwtest05 -c -q -i 50 -T 64b 500b:/test/growfiles/ext2/rwtest15%f
+rwtest01 export LTPROOT; rwtest -N rwtest01 -c -q -i 60s  -f sync 10%25000:rw-sync-$$ 500b:/test/growfiles/ext2/rwtest11%f
+rwtest02 export LTPROOT; rwtest -N rwtest02 -c -q -i 60s  -f buffered 10%25000:rw-buffered-$$ 500b:/test/growfiles/ext2/rwtest12%f
+rwtest03 export LTPROOT; rwtest -N rwtest03 -c -q -i 60s -n 2  -f buffered -s mmread,mmwrite -m random -Dv 10%25000:mm-buff-$$ 500b:/test/growfiles/ext2/rwtest13%f
+rwtest04 export LTPROOT; rwtest -N rwtest04 -c -q -i 60s -n 2  -f sync -s mmread,mmwrite -m random -Dv 10%25000:mm-sync-$$ 500b:/test/growfiles/ext2/rwtest14%f
+rwtest05 export LTPROOT; rwtest -N rwtest05 -c -q -i 50 -T 64b 500b:/test/growfiles/ext2/rwtest15%f
 # Check an NFS filesystem
 gf402 growfiles -W gf402 -d /test/growfiles/nfs -b -e 1 -L 10 -i 100 -I p -S 2 -u -f gf03_
 gf403 growfiles -W gf403 -d /test/growfiles/nfs -b -e 1 -g 1 -i 1 -S 150 -u -f gf05_
@@ -138,11 +138,11 @@ gf427 growfiles -W gf427 -b -D 0 -w -g 8b -C 1 -b -i 1000 -u /test/growfiles/nfs
 gf428 growfiles -W gf428 -b -D 0 -w -g 16b -C 1 -b -i 1000 -u /test/growfiles/nfs/gfsparse-2-$$
 gf429 growfiles -W gf429 -b -D 0 -r 1-4096 -R 0-33554432 -i 0 -L 60 -C 1 -u /test/growfiles/nfs/gfsparse-3-$$
 gf430 growfiles -W gf430 -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -o O_RDWR,O_CREAT,O_SYNC -g 20480 -T 10 -t 20480 /test/growfiles/nfs/gf-sync-$$
-rwtest01 export LTPROOT; rwtest.sh -N rwtest01 -c -q -i 60s  -f sync 10%25000:rw-sync-$$ 500b:/test/growfiles/nfs/rwtest16%f
-rwtest02 export LTPROOT; rwtest.sh -N rwtest02 -c -q -i 60s  -f buffered 10%25000:rw-buffered-$$ 500b:/test/growfiles/nfs/rwtest17%f
-rwtest03 export LTPROOT; rwtest.sh -N rwtest03 -c -q -i 60s -n 2  -f buffered -s mmread,mmwrite -m random -Dv 10%25000:mm-buff-$$ 500b:/test/growfiles/nfs/rwtest18%f
-rwtest04 export LTPROOT; rwtest.sh -N rwtest04 -c -q -i 60s -n 2  -f sync -s mmread,mmwrite -m random -Dv 10%25000:mm-sync-$$ 500b:/test/growfiles/nfs/rwtest19%f
-rwtest05 export LTPROOT; rwtest.sh -N rwtest05 -c -q -i 50 -T 64b 500b:/test/growfiles/nfs/rwtest20%f
+rwtest01 export LTPROOT; rwtest -N rwtest01 -c -q -i 60s  -f sync 10%25000:rw-sync-$$ 500b:/test/growfiles/nfs/rwtest16%f
+rwtest02 export LTPROOT; rwtest -N rwtest02 -c -q -i 60s  -f buffered 10%25000:rw-buffered-$$ 500b:/test/growfiles/nfs/rwtest17%f
+rwtest03 export LTPROOT; rwtest -N rwtest03 -c -q -i 60s -n 2  -f buffered -s mmread,mmwrite -m random -Dv 10%25000:mm-buff-$$ 500b:/test/growfiles/nfs/rwtest18%f
+rwtest04 export LTPROOT; rwtest -N rwtest04 -c -q -i 60s -n 2  -f sync -s mmread,mmwrite -m random -Dv 10%25000:mm-sync-$$ 500b:/test/growfiles/nfs/rwtest19%f
+rwtest05 export LTPROOT; rwtest -N rwtest05 -c -q -i 50 -T 64b 500b:/test/growfiles/nfs/rwtest20%f
 # Check a Ram Disk filesystem
 gf502 growfiles -W gf502 -d /test/growfiles/ramdisk -b -e 1 -L 10 -i 100 -I p -S 2 -u -f gf03_
 gf503 growfiles -W gf503 -d /test/growfiles/ramdisk -b -e 1 -g 1 -i 1 -S 150 -u -f gf05_
@@ -174,11 +174,11 @@ gf527 growfiles -W gf527 -b -D 0 -w -g 8b -C 1 -b -i 1000 -u /test/growfiles/ram
 gf528 growfiles -W gf528 -b -D 0 -w -g 16b -C 1 -b -i 1000 -u /test/growfiles/ramdisk/gfsparse-2-$$
 gf529 growfiles -W gf529 -b -D 0 -r 1-4096 -R 0-33554432 -i 0 -L 60 -C 1 -u /test/growfiles/ramdisk/gfsparse-3-$$
 gf530 growfiles -W gf530 -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -o O_RDWR,O_CREAT,O_SYNC -g 20480 -T 10 -t 20480 /test/growfiles/ramdisk/gf-sync-$$
-rwtest01 export LTPROOT; rwtest.sh -N rwtest01 -c -q -i 60s  -f sync 10%25000:rw-sync-$$ 500b:/test/growfiles/ramdisk/rwtest21%f
-rwtest02 export LTPROOT; rwtest.sh -N rwtest02 -c -q -i 60s  -f buffered 10%25000:rw-buffered-$$ 500b:/test/growfiles/ramdisk/rwtest22%f
-rwtest03 export LTPROOT; rwtest.sh -N rwtest03 -c -q -i 60s -n 2  -f buffered -s mmread,mmwrite -m random -Dv 10%25000:mm-buff-$$ 500b:/test/growfiles/ramdisk/rwtest23%f
-rwtest04 export LTPROOT; rwtest.sh -N rwtest04 -c -q -i 60s -n 2  -f sync -s mmread,mmwrite -m random -Dv 10%25000:mm-sync-$$ 500b:/test/growfiles/ramdisk/rwtest24%f
-rwtest05 export LTPROOT; rwtest.sh -N rwtest05 -c -q -i 50 -T 64b 500b:/test/growfiles/ramdisk/rwtest25%f
+rwtest01 export LTPROOT; rwtest -N rwtest01 -c -q -i 60s  -f sync 10%25000:rw-sync-$$ 500b:/test/growfiles/ramdisk/rwtest21%f
+rwtest02 export LTPROOT; rwtest -N rwtest02 -c -q -i 60s  -f buffered 10%25000:rw-buffered-$$ 500b:/test/growfiles/ramdisk/rwtest22%f
+rwtest03 export LTPROOT; rwtest -N rwtest03 -c -q -i 60s -n 2  -f buffered -s mmread,mmwrite -m random -Dv 10%25000:mm-buff-$$ 500b:/test/growfiles/ramdisk/rwtest23%f
+rwtest04 export LTPROOT; rwtest -N rwtest04 -c -q -i 60s -n 2  -f sync -s mmread,mmwrite -m random -Dv 10%25000:mm-sync-$$ 500b:/test/growfiles/ramdisk/rwtest24%f
+rwtest05 export LTPROOT; rwtest -N rwtest05 -c -q -i 50 -T 64b 500b:/test/growfiles/ramdisk/rwtest25%f
 # Check the MINIX filesystem
 gf602 growfiles -W gf602 -d /test/growfiles/minix -b -e 1 -L 10 -i 100 -I p -S 2 -u -f gf03_
 gf603 growfiles -W gf603 -d /test/growfiles/minix -b -e 1 -g 1 -i 1 -S 150 -u -f gf05_
@@ -210,8 +210,8 @@ gf627 growfiles -W gf627 -b -D 0 -w -g 8b -C 1 -b -i 1000 -u /test/growfiles/min
 gf628 growfiles -W gf628 -b -D 0 -w -g 16b -C 1 -b -i 1000 -u /test/growfiles/minix/gfsparse-2-$$
 gf629 growfiles -W gf629 -b -D 0 -r 1-4096 -R 0-33554432 -i 0 -L 60 -C 1 -u /test/growfiles/minix/gfsparse-3-$$
 gf630 growfiles -W gf630 -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -o O_RDWR,O_CREAT,O_SYNC -g 20480 -T 10 -t 20480 /test/growfiles/minix/gf-sync-$$
-rwtest01 export LTPROOT; rwtest.sh -N rwtest01 -c -q -i 60s  -f sync 10%25000:rw-sync-$$ 500b:/test/growfiles/minix/rwtest26%f
-rwtest02 export LTPROOT; rwtest.sh -N rwtest02 -c -q -i 60s  -f buffered 10%25000:rw-buffered-$$ 500b:/test/growfiles/minix/rwtest27%f
-rwtest03 export LTPROOT; rwtest.sh -N rwtest03 -c -q -i 60s -n 2  -f buffered -s mmread,mmwrite -m random -Dv 10%25000:mm-buff-$$ 500b:/test/growfiles/minix/rwtest28%f
-rwtest04 export LTPROOT; rwtest.sh -N rwtest04 -c -q -i 60s -n 2  -f sync -s mmread,mmwrite -m random -Dv 10%25000:mm-sync-$$ 500b:/test/growfiles/minix/rwtest29%f
-rwtest05 export LTPROOT; rwtest.sh -N rwtest05 -c -q -i 50 -T 64b 500b:/test/growfiles/minix/rwtest30%f
+rwtest01 export LTPROOT; rwtest -N rwtest01 -c -q -i 60s  -f sync 10%25000:rw-sync-$$ 500b:/test/growfiles/minix/rwtest26%f
+rwtest02 export LTPROOT; rwtest -N rwtest02 -c -q -i 60s  -f buffered 10%25000:rw-buffered-$$ 500b:/test/growfiles/minix/rwtest27%f
+rwtest03 export LTPROOT; rwtest -N rwtest03 -c -q -i 60s -n 2  -f buffered -s mmread,mmwrite -m random -Dv 10%25000:mm-buff-$$ 500b:/test/growfiles/minix/rwtest28%f
+rwtest04 export LTPROOT; rwtest -N rwtest04 -c -q -i 60s -n 2  -f sync -s mmread,mmwrite -m random -Dv 10%25000:mm-sync-$$ 500b:/test/growfiles/minix/rwtest29%f
+rwtest05 export LTPROOT; rwtest -N rwtest05 -c -q -i 50 -T 64b 500b:/test/growfiles/minix/rwtest30%f

@@ -34,16 +34,16 @@ DIO07 dio_sparse
 DIO08 dio_sparse
 DIO09 dio_sparse
 #Running aiodio_append
-AD000 aiodio_append /test/aiodio/file2
-AD001 aiodio_append /test/aiodio/file2
-AD002 aiodio_append /test/aiodio/file2
-AD003 aiodio_append /test/aiodio/file2
-AD004 aiodio_append /test/aiodio/file2
-AD005 aiodio_append /test/aiodio/file2
-AD006 aiodio_append /test/aiodio/file2
-AD007 aiodio_append /test/aiodio/file2
-AD008 aiodio_append /test/aiodio/file2
-AD009 aiodio_append /test/aiodio/file2
+AD000 aiodio_append $TMPDIR/aiodio.$$/file2
+AD001 aiodio_append $TMPDIR/aiodio.$$/file2
+AD002 aiodio_append $TMPDIR/aiodio.$$/file2
+AD003 aiodio_append $TMPDIR/aiodio.$$/file2
+AD004 aiodio_append $TMPDIR/aiodio.$$/file2
+AD005 aiodio_append $TMPDIR/aiodio.$$/file2
+AD006 aiodio_append $TMPDIR/aiodio.$$/file2
+AD007 aiodio_append $TMPDIR/aiodio.$$/file2
+AD008 aiodio_append $TMPDIR/aiodio.$$/file2
+AD009 aiodio_append $TMPDIR/aiodio.$$/file2
 #Running dio_append
 ADI000 dio_append
 ADI001 dio_append
@@ -62,7 +62,7 @@ DIT002 dio_truncate
 #Running read_checkzero
 #gread_checkzero 
 #Running ltp-diorh
-DOR000 ltp-diorh /test/aiodio/file2
-DOR001 ltp-diorh /test/aiodio/file3
-DOR002 ltp-diorh /test/aiodio/file4
-DOR003 ltp-diorh /test/aiodio/file5
+DOR000 ltp-diorh $TMPDIR/aiodio.$$/file2
+DOR001 ltp-diorh $TMPDIR/aiodio.$$/file3
+DOR002 ltp-diorh $TMPDIR/aiodio.$$/file4
+DOR003 ltp-diorh $TMPDIR/aiodio.$$/file5
