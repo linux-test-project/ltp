@@ -46,10 +46,27 @@ static void child_signal(int sig)
 	child_stopped = true;
 }
 
+#ifdef __sparc__
+/* sparce swaps addr/data for get/set regs */
+# define maybe_swap(request, addr, data) \
+do { \
+	if (request == PTRACE_GETREGS || request == PTRACE_SETREGS) { \
+		void *__s = addr; \
+		addr = data; \
+		data = __s; \
+	} \
+} while (0)
+#else
+# define maybe_swap(...)
+#endif
 #define vptrace(request, pid, addr, data) \
 ({ \
 	errno = 0; \
-	long __ret = ptrace(request, pid, addr, data); \
+	long __ret; \
+	void *__addr = (void *)(addr); \
+	void *__data = (void *)(data); \
+	maybe_swap(request, __addr, __data); \
+	__ret = ptrace(request, pid, __addr, __data); \
 	if (__ret && errno) \
 		perror("ptrace(" #request ", " #pid ", " #addr ", " #data ")"); \
 	__ret; \
