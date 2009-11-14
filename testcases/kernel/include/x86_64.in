@@ -19,6 +19,7 @@ clock_settime 227
 clock_gettime 228
 set_mempolicy 238
 get_mempolicy 239
+add_key 248
 openat 257
 mkdirat 258
 mknodat 259
