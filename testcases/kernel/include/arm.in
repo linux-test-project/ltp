@@ -1,3 +1,6 @@
+add_key (__NR_SYSCALL_BASE+309)
+get_mempolicy (__NR_SYSCALL_BASE+320)
+set_mempolicy (__NR_SYSCALL_BASE+321)
 openat (__NR_SYSCALL_BASE+322)
 mkdirat (__NR_SYSCALL_BASE+323)
 mknodat (__NR_SYSCALL_BASE+324)

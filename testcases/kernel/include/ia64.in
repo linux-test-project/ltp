@@ -16,6 +16,9 @@ timer_settime 1249
 timer_delete 1252
 clock_settime 1253
 clock_gettime 1254
+get_mempolicy 1260
+set_mempolicy 1261
+add_key 1271
 migrate_pages 1280
 openat 1281
 mkdirat 1282

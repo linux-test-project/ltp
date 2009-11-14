@@ -2,7 +2,6 @@ vmsplice 25
 splice 232
 tee 280
 openat 284
-ppoll 298
 mkdirat (__NR_openat + 1)
 mknodat (__NR_openat + 2)
 fchownat (__NR_openat + 3)
@@ -16,5 +15,8 @@ symlinkat (__NR_openat + 9)
 readlinkat (__NR_openat + 10)
 fchmodat (__NR_openat + 11)
 faccessat (__NR_openat + 12)
+ppoll 298
+get_mempolicy 304
+set_mempolicy 305
 eventfd 313
 fallocate 314

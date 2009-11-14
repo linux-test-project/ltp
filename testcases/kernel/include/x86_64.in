@@ -17,6 +17,8 @@ timer_settime 223
 timer_delete 226
 clock_settime 227
 clock_gettime 228
+set_mempolicy 238
+get_mempolicy 239
 openat 257
 mkdirat 258
 mknodat 259
