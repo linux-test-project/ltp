@@ -53,18 +53,18 @@ char *TCID = "proc01";
 int TST_TOTAL = 1;
 extern int Tst_count;
 
-static int opt_verbose = 0;
-static int opt_procpath = 0;
-static char *opt_procpathstr;
-static int opt_buffsize = 0;
-static char *opt_buffsizestr;
+static int	 opt_verbose = 0;
+static int	 opt_procpath = 0;
+static char	*opt_procpathstr;
+static int	 opt_buffsize = 0;
+static int	 opt_readirq = 0;
+static char	*opt_buffsizestr;
 
-static char *procpath = "/proc";
-static char selfpath[] = "/proc/self";
-size_t buffsize = 1024;
+static char	*procpath = "/proc";
+static char	 selfpath[] = "/proc/self";
+size_t		 buffsize = 1024;
 
-/* FIXME: would it overflow on 32bits systems with >4Go RAM (HIGHMEM) ? */
-size_t total_read = 0;
+unsigned long long total_read = 0;
 unsigned int total_obj = 0;
 
 struct mapping {
@@ -79,8 +79,7 @@ typedef struct mapping Mapping;
    kernel on i686, x86_64, ia64, ppc64 and s390x. In addition, It looks
    like if SELinux is disabled, the test may still fail on some other
    entries. */
-const Mapping known_issues[] =
-  {
+const Mapping known_issues[] = {
     {"open", "/proc/acpi/event", EBUSY},
     {"open", "/proc/sal/cpe/data", EBUSY},
     {"open", "/proc/sal/cmc/data", EBUSY},
@@ -103,7 +102,7 @@ const Mapping known_issues[] =
     {"read", "/proc/fs/nfsd/.getfs", EINVAL},
     {"read", "/proc/fs/nfsd/.getfd", EINVAL},
     {"", "", 0}
-  };
+};
 
 /*
  * If a particular LSM is enabled, it is expected that some entries can
@@ -116,69 +115,60 @@ const Mapping known_issues[] =
  * installed.
  */
 #ifdef HAVE_LIBSELINUX_DEVEL
-const char lsm_should_work[][PATH_MAX] =
-  {
+const char lsm_should_work[][PATH_MAX] = {
     "/proc/self/attr/*",
     "/proc/self/task/[0-9]*/attr/*",
     ""
-  };
+};
 /* Place holder for none of LSM is detected. */
 #else
-const char lsm_should_work[][PATH_MAX] =
-  {
+const char lsm_should_work[][PATH_MAX] = {
     ""
-  };
+};
 #endif
 
 /* Known files that does not honor O_NONBLOCK, so they will hang
    the test while being read. */
-const char error_nonblock[][PATH_MAX] =
-  {
+const char error_nonblock[][PATH_MAX] = {
     "/proc/xen/xenbus",
     ""
-  };
+};
 
-/*
- * Here to add any function to check if a particular LSM is enabled.
- * Return non-zero if enabled, and zero otherwise.
+/* 
+ * Verify expected failures, and then let the test to continue.
+ *
+ * Return 0 when a problem errno is found.
+ * Return 1 when a known issue is found.
+ *
  */
-int is_lsm_enabled(void)
-{
-#ifdef HAVE_LIBSELINUX_DEVEL
-  return is_selinux_enabled();
-#else
-  return 0;
-#endif
-}
-
-/* Verify expected failures, and then let the test to continue. */
 int found_errno(const char *syscall, const char *obj, int tmperr)
 {
-  int i;
+	int i;
 
-/* Should not see any error for certain entries if a LSM is enabled. */
-  if (is_lsm_enabled())
-    {
-      for (i = 0; lsm_should_work[i][0] != '\0'; i++)
-        {
-          if (!strcmp(obj, lsm_should_work[i])
-              || !fnmatch(lsm_should_work[i], obj, FNM_PATHNAME))
-            return 0;
-        }
-    }
-
-  for (i = 0; known_issues[i].err != 0; i++)
-    if (tmperr == known_issues[i].err
-        && (!strcmp(obj, known_issues[i].file)
-            || !fnmatch(known_issues[i].file, obj, FNM_PATHNAME))
-        && !strcmp(syscall, known_issues[i].func))
-      {
-        tst_resm(TINFO, "%s: %s: known issue: %s", obj, syscall,
-                 strerror(tmperr));
-        return 1;
-      }
-
-  return 0;
+	/* Should not see any error for certain entries if a LSM is enabled. */
+#ifdef HAVE_LIBSELINUX_DEVEL
+	if (is_selinux_enabled()) {
+		for (i = 0; lsm_should_work[i][0] != '\0'; i++) {
+			if (!strcmp(obj, lsm_should_work[i]) ||
+			    !fnmatch(lsm_should_work[i], obj, FNM_PATHNAME)) {
+				return 0;
+			}
+		}
+	}
+#endif
+	for (i = 0; known_issues[i].err != 0; i++) {
+		if (tmperr == known_issues[i].err &&
+		    (!strcmp(obj, known_issues[i].file) ||
+		     !fnmatch(known_issues[i].file, obj, FNM_PATHNAME)) &&
+		    !strcmp(syscall, known_issues[i].func)) {
+			/* Using strcmp / fnmatch could have messed up the
+			 * errno value. */
+			errno = tmperr;
+			tst_resm(TINFO | TERRNO, "%s: known issue", obj);
+			return 1;
+		}
+	}
+	return 0; 
 }
 
 void cleanup()
@@ -186,12 +176,10 @@ void cleanup()
 	/*
 	 * remove the tmp directory and exit
 	 */
-
 	TEST_CLEANUP;
-
 	tst_rmdir();
-
 	tst_exit();
+
 }
 
 void setup()
@@ -201,15 +189,14 @@ void setup()
 	 * temporary working directory.
 	 */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-
 	TEST_PAUSE;
-
 	tst_tmpdir();
 }
 
 void help()
 {
 	printf("  -b x    read byte count\n");
+	printf("  -q      read .../irq/... entries\n");
 	printf("  -r x    proc pathname\n");
 	printf("  -v      verbose mode\n");
 }
@@ -219,17 +206,18 @@ void help()
  * pages that should be mapped.
  */
 option_t options[] = {
-	{"b:", &opt_buffsize, &opt_buffsizestr},
-	{"r:", &opt_procpath, &opt_procpathstr},
-	{"v", &opt_verbose, NULL},
-	{NULL, NULL, NULL}
+	{ "b:", &opt_buffsize,	&opt_buffsizestr},
+	{ "q",	&opt_readirq,	NULL },
+	{ "r:", &opt_procpath,	&opt_procpathstr},
+	{ "v",  &opt_verbose,	NULL },
+	{ NULL, NULL,		NULL }
 };
 
 /*
  * NB: this function is recursive
  * returns 0 if no error encountered, otherwise number of errors (objs)
  *
- * REM: Funny enough, while devloping this function (actually replacing
+ * REM: Funny enough, while developing this function (actually replacing
  *	streamed fopen by standard open), I hit a real /proc bug.
  *	On a 2.2.13-SuSE kernel, "cat /proc/tty/driver/serial" would fail
  *	with EFAULT, while "cat /proc/tty/driver/serial > somefile" wouldn't.
@@ -238,17 +226,16 @@ option_t options[] = {
  *	of read (1024 bytes vs 4096 bytes). So I tested further..
  *	read count of 512 bytes adds /proc/tty/drivers to the list
  *	of broken proc files, while 64 bytes reads removes
- *	/proc/tty/driver/serial from the list. Interresting, isn't it?
+ *	/proc/tty/driver/serial from the list. Interesting, isn't it?
  *	Now, there's a -b option to this test, so you can try your luck. --SF
  *
  * It's more fun to run this test it as root, as all the files will be accessible!
  * (however, be careful, there might be some bufferoverflow holes..)
  * reading proc files might be also a good kernel latency killer.
  */
-int readproc(const char *obj)
+long readproc(const char *obj)
 {
-	int ret_val = 0;	/* return value from this routine */
-	DIR *dir;		/* pointer to a directory */
+	DIR *dir = NULL;	/* pointer to a directory */
 	struct dirent *dir_ent;	/* pointer to directory entries */
 	char dirobj[PATH_MAX];	/* object inside directory to modify */
 	struct stat statbuf;	/* used to hold stat information */
@@ -258,15 +245,17 @@ int readproc(const char *obj)
 
 	/* Determine the file type */
 	if (lstat(obj, &statbuf) < 0) {
+
 		/* permission denied is not considered as error */
 		if (errno != EACCES) {
-			tst_resm(TFAIL, "%s: lstat: %s", obj, strerror(errno));
+			tst_resm(TFAIL | TERRNO, "%s: lstat", obj);
 			return 1;
 		}
 		return 0;
+
 	}
 
-	/* prevent loops, but read /proc/self. */
+	/* Prevent loops, but read /proc/self. */
 	if (S_ISLNK(statbuf.st_mode) && strcmp(obj, selfpath))
 		return 0;
 
@@ -274,113 +263,166 @@ int readproc(const char *obj)
 
 	/* Take appropriate action, depending on the file type */
 	if (S_ISDIR(statbuf.st_mode) || !strcmp(obj, selfpath)) {
+
 		/* object is a directory */
 
+		/*
+		 * Skip over the /proc/irq directory, unless the user
+		 * requested that we read the directory because it could
+		 * map to a broken driver which effectively `hangs' the
+		 * test.
+		 */
+		if (!opt_readirq && !strcmp(obj, "irq")) {
+			return 0;
 		/* Open the directory to get access to what is in it */
-		if ((dir = opendir(obj)) == NULL) {
+		} else if ((dir = opendir(obj)) == NULL) {
 			if (errno != EACCES) {
-				tst_resm(TFAIL, "%s: opendir: %s", obj,
-					 strerror(errno));
+				tst_resm(TFAIL | TERRNO, "%s: opendir",
+					obj);
 				return 1;
 			}
 			return 0;
+		} else {
+
+			long ret_val = 0;
+
+			/* Loop through the entries in the directory */
+			for (dir_ent = (struct dirent *)readdir(dir);
+			     dir_ent != NULL;
+			     dir_ent = (struct dirent *)readdir(dir)) {
+
+				/* Ignore ".", "..", "kcore", and
+				 * "/proc/<pid>" (unless this is our
+				 * starting point as directed by the
+				 * user).
+				 */
+				if ( strcmp(dir_ent->d_name, ".") &&
+				     strcmp(dir_ent->d_name, "..") &&
+				     strcmp(dir_ent->d_name, "kcore") &&
+				     (fnmatch("[0-9]*", dir_ent->d_name,
+					      FNM_PATHNAME) ||
+				      strcmp(obj, procpath))) {
+
+					if (opt_verbose) {
+						fprintf(stderr, "%s\n",
+							dir_ent->d_name);
+					}
+
+					/* Recursively call this routine to test the
+					 * current entry */
+					snprintf(dirobj, PATH_MAX,
+						"%s/%s", obj,
+						 dir_ent->d_name);
+					ret_val += readproc(dirobj);
+
+				}
+
+			}
+
+			/* Close the directory */
+			if (dir)
+				(void) closedir(dir);
+
+			return ret_val;
+
 		}
 
-		/* Loop through the entries in the directory */
-		for (dir_ent = (struct dirent *)readdir(dir);
-		     dir_ent != NULL; dir_ent = (struct dirent *)readdir(dir)) {
-
-			/* Ignore ".", "..", "kcore", and "/proc/<pid>". */
-			if (!strcmp(dir_ent->d_name, ".")
-			    || !strcmp(dir_ent->d_name, "..")
-			    || !strcmp(dir_ent->d_name, "kcore")
-                           || (!fnmatch("[0-9]*", dir_ent->d_name, FNM_PATHNAME)
-                               && !strcmp(obj, procpath)))
-				continue;
-
-			if (opt_verbose)
-                          fprintf(stderr, "%s\n", dir_ent->d_name);
-
-			/* Recursively call this routine to test the current entry */
-			snprintf(dirobj, PATH_MAX, "%s/%s", obj,
-				 dir_ent->d_name);
-			ret_val += readproc(dirobj);
-		}
-
-		/* Close the directory */
-		closedir(dir);
-		return ret_val;
 	} else {		/* if it's not a dir, read it! */
 
 		if (!S_ISREG(statbuf.st_mode))
 			return 0;
 
-		/* is NONBLOCK enough to escape from FIFO's ? */
-		fd = open(obj, O_RDONLY | O_NONBLOCK);
-		if (fd < 0) {
-                  tmperr = errno;
+#ifdef DEBUG
+		fprintf(stderr, "%s", obj);
+#endif
 
-                  if (!found_errno("open", obj, tmperr))
-			if (tmperr != EACCES) {
-				tst_resm(TFAIL, "%s: open: %s", obj,
-					 strerror(errno));
-				return 1;
+		/* is O_NONBLOCK enough to escape from FIFO's ? */
+		if ((fd = open(obj, O_RDONLY | O_NONBLOCK)) < 0) {
+
+			tmperr = errno;
+
+			if (!found_errno("open", obj, tmperr)) {
+
+				errno = tmperr;
+
+				if (errno != EACCES) {
+					tst_resm(TFAIL | TERRNO,
+						"%s: open failed", obj);
+					return 1;
+				}
+
 			}
+			return 0;
+
+		}
+
+        	/* Skip write-only files. */
+	        if ((statbuf.st_mode & S_IRUSR) == 0 &&
+		    (statbuf.st_mode & S_IWUSR) != 0) {
+			tst_resm(TINFO, "%s: is write-only.", obj);
 			return 0;
 		}
 
-                /* Skip write-only files. */
-                if ((statbuf.st_mode & S_IRUSR) == 0
-                    && statbuf.st_mode & S_IWUSR) {
-                  tst_resm(TINFO, "%s: is write-only.", obj);
-                  close(fd);
-                  return 0;
-                }
-
-                /* Skip files does not honor O_NONBLOCK. */
-                for (i = 0; error_nonblock[i][0] != '\0'; i++)
-                  if (!strcmp(obj, error_nonblock[i])) {
-                    tst_resm(TWARN, "%s: does not honor O_NONBLOCK.", obj);
-                    close (fd);
-                    return 0;
-                  }
-
-		nread = 1;
-		while (nread > 0) {
-			nread = read(fd, buf, buffsize);
-			if (nread < 0) {
-                          tmperr = errno;
-
-                          if (!found_errno("read", obj, tmperr)) {
-				/* ignore no perm (not root) and no process (terminated) errors */
-				if (errno != EACCES && errno != ESRCH) {
-					tst_resm(TFAIL, "%s: read: %s", obj,
-						 strerror(errno));
-					close(fd);
-					return 1;
-				}
-				close(fd);
+		/* Skip files does not honor O_NONBLOCK. */
+		for (i = 0; error_nonblock[i][0] != '\0'; i++) {
+			if (!strcmp(obj, error_nonblock[i])) {
+				tst_resm(TWARN,	"%s: does not honor "
+						"O_NONBLOCK", obj);
 				return 0;
-                          }
 			}
+		}
+
+		do {
+
+			nread = read(fd, buf, buffsize);
+
+			if (nread < 0) {
+
+                		tmperr = errno;
+				(void) close(fd);
+
+				/* ignore no perm (not root) and no
+				 * process (terminated) errors */
+				if (!found_errno("read", obj,
+						tmperr)) {
+
+					errno = tmperr;
+
+					if (errno != EACCES &&
+					    errno != ESRCH) {
+						tst_resm(TFAIL | TERRNO,
+							"read failed: "
+							"%s", obj);
+						return 1;
+					}
+					return 0;
+
+                		}
+
+			}
+
 			if (opt_verbose) {
 #ifdef DEBUG
-				printf("%d", nread);
+				fprintf(stderr, "%ld", nread);
 #endif
 				fprintf(stderr, ".");
 			}
 
 			total_read += nread;
-		}
-		close(fd);
+
+		} while (0 < nread);
+
 		if (opt_verbose)
-                  fprintf(stderr, "\n");
+			fprintf(stderr, "\n");
+
+		if (0 <= fd)
+			(void) close(fd);
+
 	}
 
-	/*
-	 * Everything must have went ok.
-	 */
+	/* It's better to assume success by default rather than failure. */
 	return 0;
+
 }
 
 int main(int argc, char *argv[])
@@ -402,9 +444,8 @@ int main(int argc, char *argv[])
 				 MAX_BUFF_SIZE, opt_buffsizestr);
 	}
 
-	if (opt_procpath) {
+	if (opt_procpath)
 		procpath = opt_procpathstr;
-	}
 
 	setup();
 
@@ -418,7 +459,7 @@ int main(int argc, char *argv[])
 				 TEST_RETURN);
 		} else {
 			tst_resm(TPASS, "readproc() completed successfully, "
-				 "total read: %u bytes, %u objs", total_read,
+				 "total read: %llu bytes, %u objs", total_read,
 				 total_obj);
 		}
 	}
