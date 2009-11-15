@@ -61,7 +61,6 @@
 #include <signal.h>
 #include "asm/poll.h"
 
-
 #include "../utils/include_j_h.h"
 #include "../utils/common_j_h.c"
 
@@ -71,13 +70,13 @@
 #include "linux_syscall_numbers.h"
 
 /* Extern Global Variables */
-extern int Tst_count;           /* counter for tst_xxx routines.         */
-extern char *TESTDIR;           /* temporary dir created by tst_tmpdir() */
+extern int Tst_count; /* counter for tst_xxx routines.         */
+extern char *TESTDIR; /* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
-char *TCID = "ppoll01";  /* Test program identifier.*/
-int  testno;
-int  TST_TOTAL = 1;                   /* total number of tests in this file.   */
+char *TCID = "ppoll01"; /* Test program identifier.*/
+int testno;
+int TST_TOTAL = 1; /* total number of tests in this file.   */
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -98,15 +97,15 @@ int  TST_TOTAL = 1;                   /* total number of tests in this file.   *
 /*                                                                            */
 /******************************************************************************/
 extern void cleanup() {
-        /* Remove tmp dir and all files in it */
-        TEST_CLEANUP;
-        tst_rmdir();
+	/* Remove tmp dir and all files in it */
+	TEST_CLEANUP;
+	tst_rmdir();
 
-        /* Exit with appropriate return code. */
-        tst_exit();
+	/* Exit with appropriate return code. */
+	tst_exit();
 }
 
-void sighandler(int sig);       /* signals handler function for the test */
+void sighandler(int sig); /* signals handler function for the test */
 
 /* Local  Functions */
 /******************************************************************************/
@@ -127,14 +126,13 @@ void sighandler(int sig);       /* signals handler function for the test */
 /*                                                                            */
 /******************************************************************************/
 void setup() {
-        /* Capture signals if any */
+	/* Capture signals if any */
 	signal(SIGINT, &sighandler);
 
-        /* Create temporary directories */
-        TEST_PAUSE;
-        tst_tmpdir();
+	/* Create temporary directories */
+	TEST_PAUSE;
+	tst_tmpdir();
 }
-
 
 /*
  * Macros
@@ -142,42 +140,42 @@ void setup() {
 #define SYSCALL_NAME    "ppoll"
 
 #ifndef POLLRDHUP
-#  define POLLRDHUP     0x2000
+#define POLLRDHUP     0x2000
 #endif
 
+#if defined (__mips__)
+#define SIGSETSIZE 16
+#else
+#define SIGSETSIZE 8
+#endif
 
 /*
  * Global variables
  */
-static int opt_debug;
-static char *progname;
-static char *progdir;
 
 enum test_type {
 	NORMAL,
-        MASK_SIGNAL,
-        TIMEOUT,
-        FD_ALREADY_CLOSED,
-        SEND_SIGINT,
-        SEND_SIGINT_RACE_TEST,
-        INVALID_NFDS,
-        INVALID_FDS,
-        MINUS_NSEC,
-        TOO_LARGE_NSEC,
+	MASK_SIGNAL,
+	TIMEOUT,
+	FD_ALREADY_CLOSED,
+	SEND_SIGINT,
+	SEND_SIGINT_RACE_TEST,
+	INVALID_NFDS,
+	INVALID_FDS,
+	MINUS_NSEC,
+	TOO_LARGE_NSEC,
 
 };
-
 
 /*
  * Data Structure
  */
 struct test_case {
 	short expect_revents;
-        int ttype;
-        int ret;
-        int err;
+	int ttype;
+	int ret;
+	int err;
 };
-
 
 /* Test cases
  *
@@ -192,65 +190,62 @@ struct test_case {
  *   ENOMEM             can't check because it's difficult to create no-memory
  */
 
-
 static struct test_case tcase[] = {
-	{ // case00
-                .ttype          = NORMAL,
-                .expect_revents = POLLIN | POLLOUT,
-                .ret            = 0,
-                .err            = 0,
-        },
-        { // case01
-                .ttype          = MASK_SIGNAL,
-                .expect_revents = 0, // don't care
-                .ret            = 0,
-                .err            = 0,
-        },
-        { // case02
-                .ttype          = TIMEOUT,
-                .expect_revents = 0, // don't care
-                .ret            = 0,
-                .err            = 0,
-        },
-        { // case03
-                .ttype          = FD_ALREADY_CLOSED,
-                .expect_revents = POLLNVAL,
-                .ret            = 0,
-                .err            = 0,
-        },
-        { // case04
-                .ttype          = SEND_SIGINT,
-                .ret            = -1,
-                .err            = EINTR,
-        },
-        { // case05
-                .ttype          = SEND_SIGINT_RACE_TEST,
-                .ret            = -1,
-                .err            = EINTR,
-        },
-        { // case06
-                .ttype          = INVALID_NFDS,
-                .ret            = -1,
-                .err            = EINVAL,
-        },
-        { // case07
-                .ttype          = INVALID_FDS,
-                .ret            = -1,
-                .err            = EFAULT,
-        },
+		{ // case00
+			.ttype = NORMAL,
+			.expect_revents = POLLIN | POLLOUT,
+			.ret = 0,
+			.err = 0,
+		},
+		{ // case01
+			.ttype = MASK_SIGNAL,
+			.expect_revents = 0, // don't care
+			.ret = 0,
+			.err = 0,
+		},
+		{ // case02
+			.ttype = TIMEOUT,
+			.expect_revents = 0, // don't care
+			.ret = 0,
+			.err = 0,
+		},
+		{ // case03
+			.ttype = FD_ALREADY_CLOSED,
+			.expect_revents = POLLNVAL,
+			.ret = 0, .err = 0,
+		},
+		{ // case04
+			.ttype = SEND_SIGINT,
+			.ret = -1,
+			.err = EINTR,
+		},
+		{ // case05
+			.ttype = SEND_SIGINT_RACE_TEST,
+			.ret = -1,
+			.err = EINTR,
+		},
+		{ // case06
+			.ttype = INVALID_NFDS,
+			.ret = -1,
+			.err = EINVAL,
+		},
+		{ // case07
+			.ttype = INVALID_FDS,
+			.ret = -1,
+			.err = EFAULT, },
 #if 0
-        { // case08
-                .ttype          = MINUS_NSEC,
-                .ret            = -1,
-                .err            = EINVAL, // RHEL4U1 + 2.6.18 returns SUCCESS
-        },
-        { // case09
-                .ttype          = TOO_LARGE_NSEC,
-                .ret            = -1,
-                .err            = EINVAL, // RHEL4U1 + 2.6.18 returns SUCCESS
-        },
+		{ // case08
+			.ttype = MINUS_NSEC,
+			.ret = -1,
+			.err = EINVAL, // RHEL4U1 + 2.6.18 returns SUCCESS
+		},
+		{ // case09
+			.ttype = TOO_LARGE_NSEC,
+			.ret = -1,
+			.err = EINVAL, // RHEL4U1 + 2.6.18 returns SUCCESS
+		},
 #endif
-};
+		};
 
 #define NUM_TEST_FDS    1
 
@@ -262,266 +257,203 @@ static struct test_case tcase[] = {
  *
  */
 
-static int do_test(struct test_case *tc)
-{
-        int sys_ret;
-        int sys_errno;
-        int result = RESULT_OK;
-	int fd = -1 , cmp_ok = 1;
+static int do_test(struct test_case *tc) {
+	int sys_ret, sys_errno;
+	int result = RESULT_OK;
+	int fd = -1, cmp_ok = 1;
 	char fpath[PATH_MAX];
 	struct pollfd *p_fds, fds[NUM_TEST_FDS];
-        unsigned int nfds = NUM_TEST_FDS;
-        struct timespec *p_ts, ts;
-        sigset_t *p_sigmask, sigmask;
-        size_t sigsetsize = 0;
-        pid_t pid = 0;
+	unsigned int nfds = NUM_TEST_FDS;
+	struct timespec *p_ts, ts;
+	sigset_t *p_sigmask, sigmask;
+	pid_t pid = 0;
 
-	TEST(fd = setup_file(progdir, "test.file", fpath));
-        if (fd < 0)
-                return 1;
-        fds[0].fd = fd;
-        fds[0].events = POLLIN | POLLPRI | POLLOUT | POLLRDHUP;
-        fds[0].revents = 0;
-        p_fds = fds;
-        p_ts = NULL;
-        p_sigmask = NULL;
+	TEST(fd = setup_file(".", "test.file", fpath));
+	if (fd < 0)
+		return 1;
+	fds[0].fd = fd;
+	fds[0].events = POLLIN | POLLPRI | POLLOUT | POLLRDHUP;
+	fds[0].revents = 0;
+	p_fds = fds;
+	p_ts = NULL;
+	p_sigmask = NULL;
 
 	switch (tc->ttype) {
-        case TIMEOUT:
-                nfds = 0;
-                ts.tv_sec = 0;
-                ts.tv_nsec = 50000000;  // 50msec
-                p_ts = &ts;
-                break;
+	case TIMEOUT:
+		nfds = 0;
+		ts.tv_sec = 0;
+		ts.tv_nsec = 50000000; // 50msec
+		p_ts = &ts;
+		break;
 	case FD_ALREADY_CLOSED:
-                TEST(close(fd));
-                fd = -1;
-                TEST(cleanup_file(fpath));
-                break;
-        case MASK_SIGNAL:
-                TEST(sigemptyset(&sigmask));
-                TEST(sigaddset(&sigmask, SIGINT));
-                p_sigmask = &sigmask;
-                //sigsetsize = sizeof(sigmask);
-                sigsetsize = 8;
-                nfds = 0;
-                ts.tv_sec = 0;
-                ts.tv_nsec = 300000000; // 300msec => need to be enough for
-                                        //   waiting the signal
-                p_ts = &ts;
-                // fallthrough
+		TEST(close(fd));
+		fd = -1;
+		TEST(cleanup_file(fpath));
+		break;
+	case MASK_SIGNAL:
+		TEST(sigemptyset(&sigmask));
+		TEST(sigaddset(&sigmask, SIGINT));
+		p_sigmask = &sigmask;
+		nfds = 0;
+		ts.tv_sec = 0;
+		ts.tv_nsec = 300000000; // 300msec => need to be enough for
+		//   waiting the signal
+		p_ts = &ts;
+		// fallthrough
 	case SEND_SIGINT:
-                nfds = 0;
-                pid = create_sig_proc(100000, SIGINT, UINT_MAX); // 100msec
-                if (pid < 0)
-                        return 1;
-                break;
-  case SEND_SIGINT_RACE_TEST:
-    /* block the INT signal */
-                sigemptyset(&sigmask);
-                sigaddset(&sigmask, SIGINT);
-                sigprocmask(SIG_SETMASK, &sigmask, NULL);
+		nfds = 0;
+		pid = create_sig_proc(100000, SIGINT, UINT_MAX); // 100msec
+		if (pid < 0)
+			return 1;
+		break;
+	case SEND_SIGINT_RACE_TEST:
+		/* block the INT signal */
+		sigemptyset(&sigmask);
+		sigaddset(&sigmask, SIGINT);
+		sigprocmask(SIG_SETMASK, &sigmask, NULL);
 
-                /* and let it be unblocked when the syscall runs */
-                sigemptyset(&sigmask);
-                p_sigmask = &sigmask;
-                //sigsetsize = sizeof(sigmask);
-                sigsetsize = 8;
-                nfds = 0;
-                ts.tv_sec = 0;
-                ts.tv_nsec = 300000000; // 300msec => need to be enough for
-                                        //   waiting the signal
-                p_ts = &ts;
-                nfds = 0;
-                pid = create_sig_proc(0, SIGINT, 1);
-                if (pid < 0) {
-                  result=1;
-                  goto cleanup;
-                }
-                break;
-        case INVALID_NFDS:
-                //nfds = RLIMIT_NOFILE + 1; ==> RHEL4U1 + 2.6.18 returns SUCCESS
-                nfds = -1;
-                break;
-        case INVALID_FDS:
-                p_fds = (void*)0xc0000000;
-                break;
-        case MINUS_NSEC:
-                ts.tv_sec = 0;
-                ts.tv_nsec = -1;
-                p_ts = &ts;
-                break;
+		/* and let it be unblocked when the syscall runs */
+		sigemptyset(&sigmask);
+		p_sigmask = &sigmask;
+		nfds = 0;
+		ts.tv_sec = 0;
+		ts.tv_nsec = 300000000; // 300msec => need to be enough for
+		//   waiting the signal
+		p_ts = &ts;
+		nfds = 0;
+		pid = create_sig_proc(0, SIGINT, 1);
+		if (pid < 0) {
+			result = 1;
+			goto cleanup;
+		}
+		break;
+	case INVALID_NFDS:
+		//nfds = RLIMIT_NOFILE + 1; //==> RHEL4U1 + 2.6.18 returns SUCCESS
+		nfds = -1;
+		break;
+	case INVALID_FDS:
+		p_fds = (void*) 0xc0000000;
+		break;
+	case MINUS_NSEC:
+		ts.tv_sec = 0;
+		ts.tv_nsec = -1;
+		p_ts = &ts;
+		break;
 	case TOO_LARGE_NSEC:
-                ts.tv_sec = 0;
-                ts.tv_nsec = 1000000000;
-                p_ts = &ts;
-                break;
-        }
+		ts.tv_sec = 0;
+		ts.tv_nsec = 1000000000;
+		p_ts = &ts;
+		break;
+	}
 
 	/*
-	   * Execute system call
-         */
-        errno = 0;
-        TEST(sys_ret = syscall(__NR_ppoll, p_fds, nfds, p_ts, p_sigmask, sigsetsize));
-        sys_errno = errno;
-        if (sys_ret <= 0 || tc->ret < 0)
-                goto TEST_END;
+	 * Execute system call
+	 */
+	errno = 0;
+	TEST(sys_ret = syscall(__NR_ppoll, p_fds, nfds, p_ts, p_sigmask, SIGSETSIZE));
+		sys_errno = errno;
+	if (sys_ret <= 0 || tc->ret < 0)
+		goto TEST_END;
 
-        cmp_ok = fds[0].revents == tc->expect_revents;
-        if (opt_debug) {
-                tst_resm(TINFO,"EXPECT: revents=0x%04x", tc->expect_revents);
-                tst_resm(TINFO,"RESULT: revents=0x%04x", fds[0].revents);
-        }
+	cmp_ok = fds[0].revents == tc->expect_revents;
+	tst_resm(TINFO, "EXPECT: revents=0x%04x", tc->expect_revents);
+	tst_resm(TINFO, "RESULT: revents=0x%04x", fds[0].revents);
 
-TEST_END:
-        /*
-         * Check results
-         */
-        if(tc->ttype == SEND_SIGINT_RACE_TEST) {
-          int sig;
-          sigprocmask(SIG_SETMASK, NULL, &sigmask);
-          for(sig=1; sig < SIGRTMAX; sig++) {
-              TEST(sigismember(&sigmask, sig));
-              if(TEST_RETURN < 0 && TEST_ERRNO == EINVAL && sig != SIGINT)
-                continue; /* let's ignore errors if they are for other signal than SIGINT that we set */
-              if((sig==SIGINT) != (TEST_RETURN!=0)) {
-                tst_resm(TFAIL, "Bad value of signal mask, signal %d is %s", sig, TEST_RETURN ? "on" : "off");
-                cmp_ok |=1;
-              }
-            }
-        }
-        result |= (sys_errno != tc->err) || !cmp_ok;
-        PRINT_RESULT_CMP(sys_ret >= 0, tc->ret, tc->err, sys_ret, sys_errno,
-                         cmp_ok);
- cleanup:
-        if (fd >= 0)
-                cleanup_file(fpath);
+	TEST_END:
+	/*
+	 * Check results
+	 */
+	if (tc->ttype == SEND_SIGINT_RACE_TEST) {
+		int sig;
+		sigprocmask(SIG_SETMASK, NULL, &sigmask);
+		for (sig = 1; sig < SIGRTMAX; sig++) {
+			TEST(sigismember(&sigmask, sig));
+			if (TEST_RETURN < 0 && TEST_ERRNO == EINVAL && sig != SIGINT)
+				continue; /* let's ignore errors if they are for other signal than SIGINT that we set */
+			if ((sig == SIGINT) != (TEST_RETURN != 0)) {
+				tst_resm(TFAIL, "Bad value of signal mask, signal %d is %s",
+						sig, TEST_RETURN ? "on" : "off");
+				cmp_ok |= 1;
+			}
+		}
+	}
+	result |= (sys_errno != tc->err) || !cmp_ok;
+	PRINT_RESULT_CMP(sys_ret >= 0, tc->ret, tc->err, sys_ret, sys_errno, cmp_ok);
+	cleanup: if (fd >= 0)
+		cleanup_file(fpath);
 
-        sigemptyset(&sigmask);
-        sigprocmask(SIG_SETMASK, &sigmask, NULL);
-        if (pid > 0) {
-                int st;
-                kill(pid, SIGTERM);
-                wait(&st);
-        }
+	sigemptyset(&sigmask);
+	sigprocmask(SIG_SETMASK, &sigmask, NULL);
+	if (pid > 0) {
+		int st;
+		kill(pid, SIGTERM);
+		wait(&st);
+	}
 	return result;
 }
-
 
 /*
  * sighandler()
  */
-void sighandler(int sig)
-{
-        if (sig == SIGINT)
-                return;
-        // NOTREACHED
-        return;
+void sighandler(int sig) {
+	if (sig == SIGINT)
+		return;
+	// NOTREACHED
+	return;
 }
-
-
-/*
- * usage()
- */
-
-static void usage(const char *progname)
-{
-        tst_resm(TINFO,"usage: %s [options]", progname);
-        tst_resm(TINFO,"This is a regression test program of %s system call.",SYSCALL_NAME);
-        tst_resm(TINFO,"options:");
-        tst_resm(TINFO,"    -d --debug           Show debug messages");
-        tst_resm(TINFO,"    -h --help            Show this message");
-        tst_resm(TINFO,"NG");
-        exit(1);
-}
-
 
 /*
  * main()
  */
 
-
-
 int main(int ac, char **av) {
 	int result = RESULT_OK;
-        int c;
-        int i;
-        int lc;                 /* loop counter */
-        char *msg;              /* message returned from parse_opts */
+	int i;
+	int lc; /* loop counter */
+	char *msg; /* message returned from parse_opts */
 
-	struct option long_options[] = {
-                { "debug", no_argument, 0, 'd' },
-                { "help",  no_argument, 0, 'h' },
-                { NULL, 0, NULL, 0 }
-        };
+	/* parse standard options */
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *) NULL) {
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+	}
 
-	progname = strchr(av[0], '/');
-        progname = progname ? progname + 1 : av[0];	
+	setup();
 
-	progdir = strdup(av[0]);
-        progdir = dirname(progdir);
-	
-        /* parse standard options */
-        if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
-             tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-             tst_exit();
-           }
+	/* Check looping state if -i option given */
+	for (lc = 0; TEST_LOOPING(lc); ++lc) {
+		Tst_count = 0;
+		for (testno = 0; testno < TST_TOTAL; ++testno) {
+			/*
+			 * Execute test
+			 */
+			for (i = 0; i < (int) (sizeof(tcase) / sizeof(tcase[0])); i++) {
+				int ret;
+				tst_resm(TINFO, "(case%02d) START", i);
+				ret = do_test(&tcase[i]);
+				tst_resm(TINFO, "(case%02d) END => %s", i, (ret == 0) ? "OK"
+						: "NG");
+				TEST_ERROR_LOG(TEST_ERRNO);
+				result |= ret;
+			}
 
-        setup();
+			/*
+			 * Check results
+			 */
+			switch (result) {
+			case RESULT_OK:
+				tst_resm(TPASS, "ppoll01 call succeeded ");
+				break;
 
-        /* Check looping state if -i option given */
-        for (lc = 0; TEST_LOOPING(lc); ++lc) {
-                Tst_count = 0;
-                for (testno = 0; testno < TST_TOTAL; ++testno) {
-			 TEST(c = getopt_long(ac, av, "dh", long_options, NULL));
-			 while(TEST_RETURN != -1) {
-		                switch (c) {
-                		case 'd':
-		                        opt_debug = 1;
-                		        break;
-		                default:
-                		        usage(progname);
-                        		// NOTREACHED
-                		}
-		        }
-
-
-		if (ac != optind) {
-        	        tst_resm(TINFO,"Options are not match.");
-                	usage(progname);
-                	// NOTREACHED
-	        }
-
-		/*
-		* Execute test
-         	*/
-	        for (i = 0; i < (int)(sizeof(tcase) / sizeof(tcase[0])); i++) {
-        	        int ret;
-	                tst_resm(TINFO,"(case%02d) START", i);
-	                ret = do_test(&tcase[i]);
-	                tst_resm(TINFO,"(case%02d) END => %s", i, (ret == 0) ? "OK" : "NG");
-	                result |= ret;
-        	}
-		
-		/*
-        	 * Check results
-         	*/
-        	switch(result) {
-	        case RESULT_OK:
-        			tst_resm(TPASS, "ppoll01 call succeeded ");
-		                break;
-
-	        default:
-                 	   	tst_resm(TFAIL, "%s failed - errno = %d : %s", TCID, TEST_ERRNO, strerror(TEST_ERRNO));
-        		        RPRINTF("NG");
+			default:
+				tst_resm(TFAIL | TTERRNO, "%s failed", TCID);
+				RPRINTF("NG");
 				cleanup();
-				tst_exit();
-		                break;
-        	}
+				break;
+			}
 
-                }
-        }	
-        cleanup();
-	tst_exit();
+		}
+	}
+	cleanup();
+	return 0;
 }
 
