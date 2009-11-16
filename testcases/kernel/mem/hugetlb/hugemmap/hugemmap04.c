@@ -72,6 +72,7 @@
 
 #include "test.h"
 #include "usctest.h"
+#include "system_specific_hugepages_info.h"
 
 #define BUFFER_SIZE  256
 
@@ -123,6 +124,11 @@ main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "-H option is REQUIRED for this test, use -h for options help");
 		tst_exit();
 	}
+
+	/* Check number of hugepages */
+	if (get_no_of_hugepages() <= 0 || hugepages_size() <= 0)
+		tst_brkm(TBROK, cleanup, "Test cannot be continued owning to \
+				sufficient availability of Hugepages on the system");
 
 	/* Perform global setup for test */
 	setup();
