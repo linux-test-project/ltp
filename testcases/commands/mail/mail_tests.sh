@@ -172,28 +172,27 @@ else
     echo "d" | mail -u root > $LTPTMP/tst_mail.res 2>&1
     RC1=$(awk '/^>N/ {IGNORECASE=1; print match($3, "Mailer-Daemon")}' \
 	$LTPTMP/tst_mail.res)
-    RC2=$(awk '/^>N/ {print match($9 $10 $11, "Maildeliveryfailed:")}' \
-        $LTPTMP/tst_mail.res)
-#####
-# Some mailers (e.g., Red Hat's sendmail) print different messages 
-#####
-if [ -f /etc/redhat-release ] 
-then 
-  [ -z "$RC2" -o "X$RC2" = "X0" ] && \
+##################################################################
+# In this testcase, mail will get "Returnedmail:", while mailx will
+# get "UndeliveredMailReturned:".
+# Either of mail and mailx may be linked to another.
+# For example,
+# /bin/mail -> /bin/mailx
+# or
+# /bin/mailx -> /bin/mail
+##################################################################
      RC2=$(awk '/^>N/ {print match($9 $10, "Returnedmail:")}' \
              $LTPTMP/tst_mail.res)
-else 
-  [ -z "$RC2" -o "X$RC2" = "X0" ] && \
-     RC2=$(awk '/^>N/ {print match($9 $10 $11, "UndeliveredMailReturned")}' \
+     RC3=$(awk '/^>N/ {print match($9 $10, "UndeliveredMail")}' \
              $LTPTMP/tst_mail.res)
 fi 
-    if [ -z "$RC1" -a -z "$RC2" ]
+    if [ -z "$RC1" -a -z "$RC2" -a -z "$RC3" ]
     then
         $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.res \
         "Test #2: No new mail for root. Reason:"
         TFAILCNT=$(( $TFAILCNT+1 ))
     else
-        if [ $RC1 -ne 0 -a $RC2 -ne 0 ]
+        if [ $RC1 -ne 0 -a $RC2 -ne 0 ] || [ $RC1 -ne 0 -a $RC3 -ne 0 ]
         then
             $LTPBIN/tst_resm TPASS \
                 "Test #2: Mailer-Deamon reported delivery failure"
@@ -203,7 +202,6 @@ fi
             TFAILCNT=$(( $TFAILCNT+1 ))
         fi
     fi
-fi
 else
     $LTPBIN/tst_resm TCONF "mail command not installed"
 fi    
@@ -242,29 +240,28 @@ else
     echo "d" | mail -u root > $LTPTMP/tst_mail.res 2>&1
     RC1=$(awk '/^>N/ {IGNORECASE=1; print match($3, "Mailer-Daemon")}' \
 	$LTPTMP/tst_mail.res)
-    RC2=$(awk '/^>N/ {print match($9 $10 $11, "Maildeliveryfailed:")}' \
-        $LTPTMP/tst_mail.res)
-#####
-# Some mailers (e.g., Red Hat's sendmail) print different messages 
-#####
-if [ -f /etc/redhat-release ] 
-then 
-   [ -z "$RC2" -o "X$RC2" = "X0" ] && \
-      RC2=$(awk '/^>N/ {print match($9 $10, "Returnedmail:")}' \
-              $LTPTMP/tst_mail.res)
-else 
-    [ -z "$RC2" -o "X$RC2" = "X0" ] && \
-        RC2=$(awk '/^>N/ {print match($9 $10 $11, "UndeliveredMailReturned")}' \
-                $LTPTMP/tst_mail.res)
-fi 
-    if [ -z "$RC1" -a -z "$RC2" ]
+##################################################################
+# In this testcase, mail will get "Returnedmail:", while mailx will
+# get "UndeliveredMailReturned:".
+# Either of mail and mailx may be linked to another.
+# For example,
+# /bin/mail -> /bin/mailx
+# or
+# /bin/mailx -> /bin/mail
+##################################################################
+     RC2=$(awk '/^>N/ {print match($9 $10, "Returnedmail:")}' \
+             $LTPTMP/tst_mail.res)
+     RC3=$(awk '/^>N/ {print match($9 $10, "UndeliveredMail")}' \
+             $LTPTMP/tst_mail.res)
+fi
+    if [ -z "$RC1" -a -z "$RC2" -a -z "$RC3" ]
     then
         $LTPBIN/tst_res TFAIL $LTPTMP/tst_mail.res \
-        "Test #3: No new mail for root. Reason:"
+        "Test #2: No new mail for root. Reason:"
         TFAILCNT=$(( $TFAILCNT+1 ))
     else
-        if [ $RC1 -ne 0 -a $RC2 -ne 0 ]
-        then
+        if [ $RC1 -ne 0 -a $RC2 -ne 0 ] || [ $RC1 -ne 0 -a $RC3 -ne 0 ]
+	then
             $LTPBIN/tst_resm TPASS \
                 "Test #3: Mailer-Deamon reported delivery failure"
         else
@@ -273,7 +270,7 @@ fi
             TFAILCNT=$(( $TFAILCNT+1 ))
         fi
     fi
-fi
+
 else
     $LTPBIN/tst_resm TCONF "mail command not installed"
 fi
