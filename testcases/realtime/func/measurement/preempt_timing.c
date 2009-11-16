@@ -52,7 +52,7 @@
 #include <sys/mman.h>
 #include <stdint.h>
 #include <librttest.h>
-
+#include <libtsc.h>
 
 #define ITERATIONS 1000000ULL
 #define INTERVALS 10
@@ -86,6 +86,12 @@ int main(int argc, char *argv[])
 	struct sched_param param;
 	cpu_set_t mask;
 	int err;
+
+#ifdef TSC_UNSUPPORTED
+	printf("Error: test cannot be executed on an arch wihout TSC.\n");
+	return ENOTSUP;
+#endif
+
 	max = avg = 0;
 	min = -1;
 	setup();

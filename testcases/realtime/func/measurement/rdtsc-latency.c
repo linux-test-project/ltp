@@ -44,6 +44,7 @@
 #include <errno.h>
 #include <stdint.h>
 #include <librttest.h>
+#include <libtsc.h>
 
 #define ITERATIONS 1000000
 
@@ -101,6 +102,12 @@ int main(int argc, char *argv[])
 	unsigned long long deltas[ITERATIONS];
 	unsigned long long max, min, avg, tsc_a, tsc_b, tsc_period;
 	struct sched_param param;
+
+#ifdef TSC_UNSUPPORTED
+	printf("Error: test cannot be executed on an arch wihout TSC.\n");
+	return ENOTSUP;
+#endif
+
 	setup();
 
 	rt_init("h",parse_args,argc,argv);

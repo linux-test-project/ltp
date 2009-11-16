@@ -46,6 +46,7 @@
 #include <pthread.h>
 #include <librttest.h>
 #include <libstats.h>
+#include <libtsc.h>
 
 #define HANDLER_PRIO 98
 #define SIGNAL_PRIO 99
@@ -193,6 +194,11 @@ void *signal_thread(void *arg)
 int main(int argc, char *argv[])
 {
 	int signal_id, handler_id;
+
+#ifdef TSC_UNSUPPORTED
+	printf("Error: test cannot be executed on an arch wihout TSC.\n");
+	return ENOTSUP;
+#endif
 	setup();
 
 	rt_init("h", parse_args, argc, argv);
