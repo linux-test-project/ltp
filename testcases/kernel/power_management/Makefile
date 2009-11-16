@@ -26,6 +26,6 @@ $(eval $(call generate_vpath_rule,c,$(srcdir):$(top_srcdir)/lib))
 
 INSTALL_TARGETS		:= lib/*.py *.py *.sh
 
-MAKE_TARGETS		:=
+MAKE_DEPS		+= $(APICMDS_DIR)/tst_kvercmp
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

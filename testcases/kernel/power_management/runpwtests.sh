@@ -30,7 +30,6 @@
 #
 
 # Exporting Required variables
-echo Are we really executing this ?
 export TST_TOTAL=1
 #LTPTMP=${TMP}
 export PATH=${PATH}:.
@@ -54,11 +53,35 @@ NO=1
 RC=0		#Return status
 
 # Checking required kernel version and architecture
-check_kv_arch
-RC=$?
-if [ $RC -eq 1 ] ; then
-	tst_resm TCONF "Kernel version or Architecture not supported: Not running testcases"
+tst_kvercmp 2 6 21; rc=$?
+if [ $rc -ne 1 -a $rc -ne 2 ] ; then
+	tst_resm TCONF "Kernel version not supported; not running testcases"
 	exit 0
+else
+	case "$(uname -m)" in
+	i[4-6]86|x86_64)
+		;;
+	*)
+		tst_resm TCONF "Arch not supported; not running testcases"
+		exit 0
+		;;
+	esac
+fi
+
+tst_kvercmp 2 6 29; rc=$?
+if [ $rc -eq 2 ] ; then
+	max_sched_mc=2
+	max_sched_smt=2
+else
+	max_sched_mc=1
+	max_sched_smt=1
+fi
+
+tst_kvercmp 2 6 31; rc=$?
+if [ $rc -eq 1 -o $rc -eq 2 ] ; then
+	timer_migr_support_compatible=1
+else
+	timer_migr_support_compatible=0
 fi
 
 is_hyper_threaded; hyper_threaded=$?
@@ -164,14 +187,12 @@ else
 fi
 
 # sched_domain test
-which python > /dev/null
-if [ $? -ne 0 ] ; then
+if ! type python > /dev/null ; then
 	tst_resm TCONF "Python is not installed, CPU Consoldation\
 test cannot run"
 else
 	if [ -f /sys/devices/system/cpu/sched_mc_power_savings ] ; then
-		get_sched_values sched_mc; max_sched_mc=$?
-    	echo "max sched mc $max_sched_mc"
+    		echo "max sched mc $max_sched_mc"
 		for sched_mc in `seq 0 $max_sched_mc`; do
 			: $(( TST_COUNT+=1))
 			sched_domain.py -c $sched_mc; RC=$?
@@ -190,9 +211,8 @@ else
 fi
 
 : $(( TST_COUNT+=1))
-check_kv_arch "timer_migration"; supp=$?
 if [ -f /proc/sys/kernel/timer_migration ]; then
-	if [ $supp -eq $YES ]; then
+	if [ $timer_migr_support_compatible -eq $YES ]; then
 		if test_timer_migration.sh; then
         	tst_resm TPASS "Timer Migration interface test"
     	else
@@ -201,7 +221,7 @@ if [ -f /proc/sys/kernel/timer_migration ]; then
 		fi
 	fi
 else
-	if [ $supp -eq $YES ]; then
+	if [ $timer_migr_support_compatible -eq $YES ]; then
 		RC=$?
 		tst_resm TFAIL "Timer migration interface missing"
 	else
