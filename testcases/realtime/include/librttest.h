@@ -136,7 +136,7 @@ extern double pass_criteria;
 
 /* function prototypes */
 
-/* atomic_add - add integer to atomic variable
+/* atomic_add - add integer to atomic variable and returns a value.
  * i: integer value to add
  * v: pointer of type atomic_t
  */
@@ -164,6 +164,20 @@ static inline int atomic_add(int i, atomic_t *v)
 	: "=&r" (t)
 	: "r" (i), "r" (&v->counter)
 	: "cc", "memory");
+
+	return t;
+#elif defined(__sh__)
+	unsigned long t;
+
+	__asm__ __volatile__ (
+"1:	 movli.l @%2, %0	\n"
+"	 add     %1, %0		\n"
+"	 movco.l %0, @%2	\n"
+"	 bf      1b		\n"
+"       synco			\n"
+	: "=&z" (t)
+	: "r" (i), "r" (&v->counter)
+	: "t");
 
 	return t;
 #else
