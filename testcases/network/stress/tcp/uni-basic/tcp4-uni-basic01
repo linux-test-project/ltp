@@ -378,6 +378,8 @@ do_setup()
 	;;
     esac
 
+    netem_param=
+
     # Make the network delay
     if $DO_NET_DELAY ; then
 	netem_param="delay ${NET_DELAY}ms ${NET_DELAY_DEFL}ms distribution normal"

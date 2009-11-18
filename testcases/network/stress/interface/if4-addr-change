@@ -70,7 +70,7 @@ CHECK_INTERVAL=${CHECK_INTERVAL:-`expr $NS_TIMES \/ 100`}
 LINK_NUM=0
 
 # Network portion of the IPv4 address
-IPV4_NETWORK=${IPV4_NETWORK-"10.0.0"}
+IPV4_NETWORK=${IPV4_NETWORK:-"10.0.0"}
 
 # Netmask of for the tested network
 IPV4_NETMASK="255.255.255.0"
