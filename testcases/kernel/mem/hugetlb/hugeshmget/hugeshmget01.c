@@ -109,7 +109,7 @@ int main(int ac, char **av)
 					continue;
 				}
 				/* check the seqment size */
-				if (buf.shm_segsz != HUGE_SHM_SIZE) {
+				if (buf.shm_segsz != huge_pages_shm_to_be_allocated) {
 					tst_resm(TFAIL, "seqment size is not "
 						 "correct");
 					continue;

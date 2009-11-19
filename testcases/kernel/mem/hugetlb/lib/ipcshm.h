@@ -42,7 +42,6 @@ void setup(void);
 #define SHM_HUGETLB   04000    /* segment is mapped via hugetlb */
 #endif
 
-#define HUGE_SHM_SIZE	(256UL*1024UL*1024UL)	/* a resonable size for a large page segment */
 
 #define MODE_MASK	0x01FF			/* to get the lower nine permission bits */
 						/* from shmid_ds.ipc_perm.mode		 */
