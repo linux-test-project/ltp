@@ -93,7 +93,7 @@ echo "blah" >$MNTDIR/file || die 2 "Could not write to the filesystem"
 tst_resm TINFO "Successfully wrote to the filesystem"
 
 # Get current quota usage
-BLOCKS=`quota  -f $MNTDIR -v -w | tail -1 | sed -e 's/ *[^ ]* *\([0-9]*\) .*/\1/'`
+BLOCKS=`quota  -f $MNTDIR -v -w | tail -n 1 | sed -e 's/ *[^ ]* *\([0-9]*\) .*/\1/'`
 mount -o remount,ro $MNTDIR || die 1 "Could not remount read-only"
 tst_resm TINFO "Successfully Remounted Read-Only FS"
 
@@ -102,7 +102,7 @@ tst_resm TINFO "Successfully Remounted Read-Write FS"
 
 rm $MNTDIR/file
 # Get quota usage after removing the file
-NEWBLOCKS=`quota  -f $MNTDIR -v -w | tail -1 | sed -e 's/ *[^ ]* *\([0-9]*\) .*/\1/'`
+NEWBLOCKS=`quota  -f $MNTDIR -v -w | tail -n 1 | sed -e 's/ *[^ ]* *\([0-9]*\) .*/\1/'`
 # Has quota usage changed properly?
 if [ $BLOCKS -eq $NEWBLOCKS ]; then
   die 1 "Usage did not change after remount"

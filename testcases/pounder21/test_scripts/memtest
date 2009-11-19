@@ -34,7 +34,7 @@ SPACE_REQUIRED=`expr $RAM \* 2`
 MEMTESTDIR="$POUNDER_TMPDIR/memtest/"
 rm -rf "$MEMTESTDIR"
 mkdir -p "$MEMTESTDIR"
-FREE_SPACE=`df -k -P "$MEMTESTDIR" | tail -1 | awk -F " " '{print $4}'`
+FREE_SPACE=`df -k -P "$MEMTESTDIR" | tail -n 1 | awk -F " " '{print $4}'`
 if [ "$FREE_SPACE" -lt "$SPACE_REQUIRED" ]; then
 	echo "Insufficient space; not running memtest."
 	exit -1

@@ -139,7 +139,7 @@ sub gather_results()
            next;
       }
 
-      chomp($stat = `tail -n1 $LTP_RUNALL_OUT`);
+      chomp($stat = `tail -n 1 $LTP_RUNALL_OUT`);
       print "\t\t$stat\n";
 
       $num_success = `grep "stat=0" $LTP_LOGFILE | wc -l`;
@@ -176,19 +176,19 @@ sub gather_results()
       $line = "Pass $pass_percent % : $num_success succeeded : $num_fail failed";
       print "$line\n";
 
-      $line1 = `sar -f $SAR_OUTFILE |tail -1`;
+      $line1 = `sar -f $SAR_OUTFILE |tail -n 1`;
       if ($line1 =~ /(.+)/) {
         @sarstats1 = split(/\s+/, $line1);
         print "Cpu user = $sarstats1[2]%\n";
         print "Cpu nice = $sarstats1[3]%\n";
         print "Cpu system = $sarstats1[4]%\n";
 
-        $line2 = `sar -r -f $SAR_OUTFILE |tail -1`;
+        $line2 = `sar -r -f $SAR_OUTFILE |tail -n 1`;
         @sarstats2 = split(/\s+/, $line2);
         print "Memory used = $sarstats2[3]%\n";
         print "Swap used = $sarstats2[9]%\n";
 
-        $line3 = `sar -c -f $SAR_OUTFILE |tail -1`;
+        $line3 = `sar -c -f $SAR_OUTFILE |tail -n 1`;
         @sarstats3 = split(/\s+/, $line3);
         print "Processes created per second = $sarstats3[1]%\n";
       }  

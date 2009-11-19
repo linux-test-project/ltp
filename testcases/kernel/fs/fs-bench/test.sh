@@ -15,7 +15,7 @@ time ~/fs-bench/cr
 
 echo ""
 echo "## tar all "
-MAXFILE=`tar cBf - 00 | tar tvBf - 2>&1 | tail -1 | awk '{print $6;}'| awk -F'/' '{print $4;}'`
+MAXFILE=`tar cBf - 00 | tar tvBf - 2>&1 | tail -n 1 | awk '{print $6;}'| awk -F'/' '{print $4;}'`
 
 echo ""
 echo "## Change owner"

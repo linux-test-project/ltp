@@ -160,7 +160,7 @@ function testdir
     echo TDIR is $TDIRECTORY;
     if [ $RO == false ] ; then                          # Testing Read-Write dir
         for tests in `seq $testnums` ; do
-            cmd=`cat $FS_Tests | head -$tests | tail -1`
+            cmd=`cat $FS_Tests | head -$tests | tail -n 1`
 #            eval $cmd 2>&1 /dev/null
             eval $cmd 2> /dev/null 1> /dev/null 
             if [ $? -eq 0 ]; then
@@ -174,7 +174,7 @@ function testdir
 
     else                                                # Testing Read-Only dir
         for tests in `seq $testnums` ; do
-            cmd=`cat $FS_Tests | head -$tests | tail -1`
+            cmd=`cat $FS_Tests | head -$tests | tail -n 1`
             eval $cmd 2> /dev/null 1> /dev/null 
             if [ $? -ne 0 ]; then
                 echo "$tests. '$cmd' PASS " >> $PASSLOG 
