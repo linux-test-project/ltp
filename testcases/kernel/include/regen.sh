@@ -1,12 +1,11 @@
 #!/bin/sh
 
 output="linux_syscall_numbers.h"
+output_pid="linux_syscall_numbers.$$.h"
 
 srcdir=${0%/*}
 
-rm -f ${output}
-
-cat << EOF > ${output}
+cat << EOF > "${output_pid}"
 /************************************************
  * GENERATED FILE: DO NOT EDIT/PATCH THIS FILE  *
  *  change your arch specific .in file instead  *
@@ -42,8 +41,8 @@ EOF
 for arch in $(cat ${srcdir}/order) ; do
 	echo -n "Generating data for arch $arch ... "
 
-	echo "" >> ${output}
-	echo "#ifdef __${arch}__" >> ${output}
+	echo "" >> "${output_pid}"
+	echo "#ifdef __${arch}__" >> "${output_pid}"
 	while read line ; do
 		set -- $line
 		nr="__NR_$1"
@@ -52,31 +51,34 @@ for arch in $(cat ${srcdir}/order) ; do
 			echo "invalid line found"
 			exit 1
 		fi
-		cat <<-EOF >> ${output}
+		cat <<-EOF >> "${output_pid}"
 		# ifndef $nr
 		#  define $nr $*
 		# endif
 		EOF
 	done < ${srcdir}/${arch}.in
-	echo "#endif" >> ${output}
-	echo "" >> ${output}
+	echo "#endif" >> "${output_pid}"
+	echo "" >> "${output_pid}"
 
 	echo "OK!"
 done
 
 echo -n "Generating stub list ... "
-echo "" >> ${output}
-echo "/* Common stubs */" >> ${output}
+echo "" >> "${output_pid}"
+echo "/* Common stubs */" >> "${output_pid}"
 for nr in $(awk '{print $1}' ${srcdir}/*.in | sort -u) ; do
 	nr="__NR_$nr"
-	cat <<-EOF >> ${output}
+	cat <<-EOF >> "${output_pid}"
 	# ifndef $nr
 	#  define $nr 0
 	# endif
 	EOF
 done
-echo "" >> ${output}
+echo "" >> "${output_pid}"
 echo "OK!"
 
-echo "" >> ${output}
-echo "#endif" >> ${output}
+echo "" >> "${output_pid}"
+echo "#endif" >> "${output_pid}"
+
+# There's still a race here, but it's much lower than before...
+mv "${output_pid}" "${output}"
