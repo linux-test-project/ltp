@@ -19,18 +19,19 @@
 ##                                                                            ##
 ################################################################################
 
+export LTPROOT=${LTPROOT:=$(readlink -f "$(dirname "$0")")}
 export TCID=libevent01
 export TST_TOTAL=1
 export TST_COUNT=0
 
-if [ $EUID -eq 0 ]
-then
-   ./configure > /dev/null
-   make 1>&2
-   make install > /dev/null
+. cmdlib.sh
+
+tst_setup
+if ! is_root ; then
+	tst_resm TCONF "You need to be root to run these tests"
+	TST_EXIT=0
 else
-   ${LTPROOT}/testcases/bin/tst_resm TCONF "You need to be root to run these tests"
+	"$LTPROOT/testcases/bin/tests/test-libevent.sh"
+	TST_EXIT=$?
 fi
-
-${LTPROOT}/testcases/bin/tst_exit
-
+tst_cleanup

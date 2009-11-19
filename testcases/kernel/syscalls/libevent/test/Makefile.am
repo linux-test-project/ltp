@@ -1,8 +1,8 @@
 AUTOMAKE_OPTIONS = foreign no-dependencies
 
 LDADD = -L.. -levent
-CPPFPLAGS = -I.. 
-CFLAGS = -I../compat -Wall @CFLAGS@
+CPPFPLAGS = -I$(abs_srcdir)
+CFLAGS = -I$(abs_srcdir)/../compat -Wall @CFLAGS@
 
 noinst_PROGRAMS = test-init test-eof test-weof test-time regress bench
 
@@ -18,6 +18,6 @@ DISTCLEANFILES = *~
 all:	test
 
 test: test-init test-eof test-weof test-time regress
-	@./test.sh
+	@$(SHELL) "$(CURDIR)/test.sh"
 
 bench test-init test-eof test-weof test-time regress: ../libevent.a

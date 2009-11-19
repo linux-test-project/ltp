@@ -1,1 +1,1 @@
-ballista_test cd $LTPROOT/testcases/ballista/ballista; perl ostest_new.pl 75 
+ballista_test testcases/ballista/ballista/bin/ostest.pl 75 

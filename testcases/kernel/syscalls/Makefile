@@ -24,8 +24,31 @@ top_srcdir		?= ../../..
 
 include	$(top_srcdir)/include/mk/env_pre.mk
 
+# libevent requires some massaging to get this to work.
+FILTER_OUT_DIRS		:= libevent
 # pcllib is busted as all heck because of libtool
-FILTER_OUT_DIRS		:= pcllib
+FILTER_OUT_DIRS		+= pcllib
+
+CLEAN_DEPS		:= libevent-clean
+
+INSTALL_DEPS		:= libevent-install
+
+MAKE_DEPS		:= libevent-all
+
+INSTALL_TARGETS		:= libevent/run-libevent.sh libevent/test/test-libevent.sh
+
+LIBEVENT_APPS		:= regress test-eof test-init test-time test-weof
+
+MAKE_TARGETS		:= $(addprefix libevent/test/,$(LIBEVENT_APPS))
+
+libevent/lib libevent/test: %:
+	mkdir -p "$@"
+
+libevent-all: $(abs_srcdir)/libevent/test/Makefile libevent/test
+	$(MAKE) -C libevent/test -f "$(firstword $^)" $(LIBEVENT_APPS)
+
+libevent-clean libevent-install: libevent-%: $(abs_srcdir)/libevent/test/Makefile libevent/test
+	$(MAKE) -C libevent/test -f "$(firstword $^)" $*
 
 ifeq ($(UCLINUX),1)
 FILTER_OUT_DIRS	+= capget capset chmod chown clone fork getcontext llseek \

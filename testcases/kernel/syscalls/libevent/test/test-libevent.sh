@@ -1,43 +1,44 @@
 #!/bin/sh
 
+export PATH=$PATH
+
 setup () {
-	 export EVENT_NOKQUEUE=yes
-	 export EVENT_NOPOLL=yes
-	 export EVENT_NOSELECT=yes
-	 export EVENT_NOEPOLL=yes
-	 export EVENT_NORTSIG=yes
+	export EVENT_NOKQUEUE=yes
+	export EVENT_NOPOLL=yes
+	export EVENT_NOSELECT=yes
+	export EVENT_NOEPOLL=yes
+	export EVENT_NORTSIG=yes
 }
 
-test () {
-	if ! ./test-init 2>/dev/null ;
-	then
+test_libevent () {
+	if ! test-init 2>/dev/null ; then
 		echo Skipping test
 		return
 	fi	
 
 echo -n " test-eof: "
-if ./test-eof >/dev/null ;
+if test-eof >/dev/null ;
 then
 	echo OKAY ;
 else
 	echo FAILED ;
 fi
 echo -n " test-weof: "
-if ./test-weof >/dev/null ;
+if test-weof >/dev/null ;
 then
 	echo OKAY ;
 else
 	echo FAILED ;
 fi
 echo -n " test-time: "
-if ./test-time >/dev/null ;
+if test-time >/dev/null ;
 then
 	echo OKAY ;
 else
 	echo FAILED ;
 fi
 echo -n " regress: "
-if ./regress >/dev/null ;
+if regress >/dev/null ;
 then
 	echo OKAY ;
 else
@@ -51,27 +52,24 @@ echo "Running tests:"
 setup
 unset EVENT_NOKQUEUE
 echo "KQUEUE"
-test
+test_libevent
 
 setup
 unset EVENT_NOPOLL
 echo "POLL"
-test
+test_libevent
 
 setup
 unset EVENT_NOSELECT
 echo "SELECT"
-test
+test_libevent
 
 setup
 unset EVENT_NORTSIG
 echo "RTSIG"
-test
+test_libevent
 
 setup
 unset EVENT_NOEPOLL
 echo "EPOLL"
-test
-
-
-
+test_libevent
