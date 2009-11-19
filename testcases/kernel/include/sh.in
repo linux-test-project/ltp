@@ -5,6 +5,7 @@ timer_getoverrun (__NR_timer_create+3)
 timer_delete (__NR_timer_create+4)
 clock_settime (__NR_timer_create+5)
 clock_gettime (__NR_timer_create+6)
+mbind 274
 get_mempolicy 275
 set_mempolicy 276
 mq_open 277

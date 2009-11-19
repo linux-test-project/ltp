@@ -36,6 +36,9 @@ mq_notify (__NR_mq_open+4)
 mq_getsetattr (__NR_mq_open+5)
 add_key 286
 keyctl 288
+inotify_init 291
+inotify_add_watch 292
+inotify_rm_watch 293
 migrate_pages 294
 openat 295
 mkdirat 296
