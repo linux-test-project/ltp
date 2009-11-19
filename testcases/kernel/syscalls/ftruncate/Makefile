@@ -23,6 +23,6 @@ include $(abs_srcdir)/../utils/newer_64.mk
 
 %_64: CPPFLAGS += -D_FILE_OFFSET_BITS=64
 
-INSTALL_TARGETS		:= ftruncate.sh ftruncate_64.sh
+INSTALL_TARGETS		:= ftruncate04.sh
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

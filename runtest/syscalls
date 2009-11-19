@@ -307,8 +307,8 @@ ftruncate02 ftruncate02
 ftruncate02_64 ftruncate02_64
 ftruncate03 ftruncate03
 ftruncate03_64 ftruncate03_64
-ftruncate04 ftruncate.sh
-ftruncate04_64 ftruncate_64.sh
+ftruncate04 ftruncate04.sh
+ftruncate04_64 ftruncate04.sh 64
 
 #futimesat test cases
 futimesat01 futimesat01
