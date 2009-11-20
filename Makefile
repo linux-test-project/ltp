@@ -148,7 +148,7 @@ clean:: $(CLEAN_TARGETS)
 	$(RM) -f Version
 	$(if $(DESTDIR)$(prefix),-$(RM) -Rf "$(INSTALL_DIR)")
 
-SRCDIR_INSTALL_SCRIPTS	:= IDcheck.sh runalltests.sh runltp runltplite.sh ver_linux
+SRCDIR_INSTALL_SCRIPTS	:= execltp IDcheck.sh runalltests.sh runltp runltplite.sh ver_linux
 SRCDIR_INSTALL_READONLY	:= Version
 SRCDIR_INSTALL_TARGETS	:= $(SRCDIR_INSTALL_SCRIPTS) $(SRCDIR_INSTALL_READONLY)
 

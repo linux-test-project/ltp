@@ -8,6 +8,7 @@ AC_CONFIG_FILES([ \
     lib/ltp.pc \
     ltp-devel.spec \
     m4/Makefile \
+    execltp \
     README.ltp-devel \
 ])
 
