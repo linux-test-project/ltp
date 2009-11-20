@@ -57,6 +57,7 @@
 #include <sys/mman.h>
 
 #define ITERATIONS 10000000
+#define MIN_ITERATION 10000
 #define HIST_BUCKETS 20
 
 #define SCATTER_FILENAME	0
@@ -82,13 +83,14 @@ char *labels[] = {"scatter plot x-axis",
 		  "histogram y-axis"};
 
 static unsigned long long latency_threshold = 0;
+static unsigned int iterations = ITERATIONS;
 
 void stats_cmdline_help(void)
 {
 	printf("Usage: ./gtod_latency {-[so|scatter-output] -[ho|hist-output]"
 		" -[st|scatter-title] -[ht|hist-title] -[sxl|scatter-xlabel]"
 		" -[syl|scatter-ylabel] -[hxl|hist-xlabel] -[hyl|hist-ylabel]"
-		" -[lt|latency-trace]}"
+		" -[lt|latency-trace] -[i|iterations]}"
 		" -[help] \n");
 	printf("**command-line options are not supported yet for this testcase\n");
 }
@@ -195,6 +197,15 @@ int stats_cmdline(int argc, char *argv[])
 			continue;
 		}
 
+		if (!strcmp(flag, "i") || !strcmp(flag, "iterations")) {
+			if (i + 1 == argc) {
+				printf("flag has missing argument\n");
+				return -1;
+			}
+			iterations = strtoull(argv[++i], NULL, 0);
+			continue;
+		}
+
 		printf("unknown flag given\n");
 		return -1;
 	}
@@ -211,9 +222,6 @@ long long timespec_subtract(struct timespec * a, struct timespec *b)
 	return ns;
 }
 
-struct timespec start_data[ITERATIONS];
-struct timespec stop_data[ITERATIONS];
-
 int main(int argc, char *argv[])
 {
 	int i, j, k, err;
@@ -224,16 +232,38 @@ int main(int argc, char *argv[])
 	stats_container_t hist;
 	stats_quantiles_t quantiles;
 	stats_record_t rec;
+	struct timespec *start_data;
+	struct timespec *stop_data;
 
-	stats_container_init(&dat, ITERATIONS);
+	if (stats_cmdline(argc, argv) < 0) {
+		printf("usage: %s help\n", argv[0]);
+		exit(1);
+	}
+
+	if (iterations < MIN_ITERATION) {
+		iterations = MIN_ITERATION ;
+		printf("user \"iterations\" value is too small (use: %d)\n",
+			iterations);
+	}
+
+	stats_container_init(&dat, iterations);
 	stats_container_init(&hist, HIST_BUCKETS);
-	stats_quantiles_init(&quantiles, (int)log10(ITERATIONS));
+	stats_quantiles_init(&quantiles, (int)log10(iterations));
 	setup();
 
 	mlockall(MCL_CURRENT|MCL_FUTURE);
 
-	if (stats_cmdline(argc, argv) < 0) {
-		printf("usage: %s help\n", argv[0]);
+	start_data = calloc(iterations, sizeof(struct timespec));
+	if (start_data == NULL) {
+		printf("Memory allocation Failed (too many Iteration: %d)\n",
+			iterations);
+		exit(1);
+	}
+	stop_data = calloc(iterations, sizeof(struct timespec));
+	if (stop_data == NULL) {
+		printf("Memory allocation Failed (too many Iteration: %d)\n",
+			iterations);
+		free(start_data);
 		exit(1);
 	}
 
@@ -255,9 +285,9 @@ int main(int argc, char *argv[])
 	printf("\n----------------------\n");
 	printf("Gettimeofday() Latency\n");
 	printf("----------------------\n");
-	printf("Iterations: %d\n\n", ITERATIONS);
+	printf("Iterations: %d\n\n", iterations);
 
-	/* collect ITERATIONS pairs of gtod calls */
+	/* collect iterations pairs of gtod calls */
 	max = min = 0;
 	if (latency_threshold) {
 		latency_trace_enable();
@@ -265,7 +295,7 @@ int main(int argc, char *argv[])
 	}
 	/* This loop runs for a long time, hence can cause soft lockups.
 	   Calling sleep periodically avoids this. */
-	for (i=0; i<(ITERATIONS/10000); i++) {
+	for (i = 0; i < (iterations/10000); i++) {
 		for (j=0; j < 10000; j++) {
 			k = (i * 10000) + j;
 			clock_gettime(CLOCK_MONOTONIC,&start_data[k]);
@@ -273,7 +303,7 @@ int main(int argc, char *argv[])
 		}
 		usleep(1000);
 	}
-	for (i = 0; i < ITERATIONS; i++) {
+	for (i = 0; i < iterations; i++) {
 		delta = timespec_subtract(&start_data[i], &stop_data[i]);
 		rec.x = i;
 		rec.y = delta;
@@ -285,7 +315,7 @@ int main(int argc, char *argv[])
 	}
 	if (latency_threshold) {
 		latency_trace_stop();
-		if (i != ITERATIONS) {
+		if (i != iterations) {
 			printf("Latency threshold (%lluus) exceeded at iteration %d\n",
 				latency_threshold, i);
 			latency_trace_print();
@@ -307,6 +337,10 @@ int main(int argc, char *argv[])
 	printf("Quantiles:\n");
 	stats_quantiles_calc(&dat, &quantiles);
 	stats_quantiles_print(&quantiles);
+
+	stats_container_free(&dat);
+	stats_container_free(&hist);
+	stats_quantiles_free(&quantiles);
 
 	return 0;
 }
