@@ -76,9 +76,17 @@ main(void) {
 	unsigned long long count1, count2;
 	int fd1, fd2, ret;
 	fd1 = perf_counter_open(PERF_COUNT_INSTRUCTIONS, 0, 0, 0, -1);
-	assert(fd1 >= 0);
+	if (fd1 < 0) {
+		tst_resm(TBROK | TERRNO,
+			"Failed to create PERF_COUNT_INSTRUCTIONS fd");
+		tst_exit();
+	}
 	fd2 = perf_counter_open(PERF_COUNT_CACHE_MISSES, 0, 0, 0, -1);
-	assert(fd1 >= 0);
+	if (fd2 < 0) {
+		tst_resm(TBROK | TERRNO,
+			"Failed to create PERF_COUNT_CACHE_MISSES fd");
+		tst_exit();
+	}
 
 	for (;;) {
 		ret = read(fd1, &count1, sizeof(count1));
