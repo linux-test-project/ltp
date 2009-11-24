@@ -272,7 +272,7 @@ long readproc(const char *obj)
 		 * map to a broken driver which effectively `hangs' the
 		 * test.
 		 */
-		if (!opt_readirq && !strcmp(obj, "irq")) {
+		if (!opt_readirq && !strcmp("/proc/irq", obj)) {
 			return 0;
 		/* Open the directory to get access to what is in it */
 		} else if ((dir = opendir(obj)) == NULL) {
