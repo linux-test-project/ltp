@@ -131,21 +131,24 @@ int main(int ac, char **av) {
 					KEY_SPEC_USER_SESSION_KEYRING));
 			if (TEST_RETURN != -1) {
 				tst_resm(TPASS,"KEYCTL_GET_KEYRING_ID succeed");
+			} else if (TTERRNO == ENOSYS) {
+				tst_brkm(TCONF, cleanup,
+					"keyctl syscall not implemented");
 			} else {
-		 		tst_resm(TFAIL | TERRNO, "KEYCTL_GET_KEYRING_ID");
+		 		tst_resm(TFAIL | TTERRNO, "KEYCTL_GET_KEYRING_ID");
 			}
 
 			/* Call keyctl. */
 			TEST(syscall(__NR_keyctl, KEYCTL_REVOKE, "MyKey"));
 			if (TEST_RETURN != -1) {
-				tst_resm(TFAIL | TERRNO, "KEYCTL_REVOKE succeeded unexpectly");
+				tst_resm(TFAIL | TTERRNO, "KEYCTL_REVOKE succeeded unexpectly");
 		     	} else {
 				/* Check for the correct error num. */
 				if (TEST_ERRNO == ENOKEY) {
-					tst_resm(TPASS | TERRNO,
+					tst_resm(TPASS | TTERRNO,
 						"KEYCTL_REVOKE got expected errno");
 				} else {
-					tst_resm(TFAIL | TERRNO,
+					tst_resm(TFAIL | TTERRNO,
 						"KEYCTL_REVOKE got unexpected errno");
 				}
 
