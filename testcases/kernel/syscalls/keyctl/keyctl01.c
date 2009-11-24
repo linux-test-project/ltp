@@ -108,6 +108,7 @@ void setup() {
 }
 
 int main(int ac, char **av) {
+	int ret;
 	int lc;		/* loop counter */
 	char *msg;	/* message returned from parse_opts */
 
@@ -127,28 +128,28 @@ int main(int ac, char **av) {
 		for (testno = 1; testno < TST_TOTAL; ++testno) {
 	
 			/* Call keyctl() and ask for a keyring's ID. */
-			TEST(syscall(__NR_keyctl, KEYCTL_GET_KEYRING_ID,
-					KEY_SPEC_USER_SESSION_KEYRING));
-			if (TEST_RETURN != -1) {
-				tst_resm(TPASS,"KEYCTL_GET_KEYRING_ID succeed");
-			} else if (TTERRNO == ENOSYS) {
+			ret = syscall(__NR_keyctl, KEYCTL_GET_KEYRING_ID,
+					KEY_SPEC_USER_SESSION_KEYRING);
+			if (ret != -1) {
+				tst_resm(TPASS,"KEYCTL_GET_KEYRING_ID succeeded");
+			} else if (errno == ENOSYS) {
 				tst_brkm(TCONF, cleanup,
 					"keyctl syscall not implemented");
 			} else {
-		 		tst_resm(TFAIL | TTERRNO, "KEYCTL_GET_KEYRING_ID");
+		 		tst_resm(TFAIL | TERRNO, "KEYCTL_GET_KEYRING_ID");
 			}
 
 			/* Call keyctl. */
-			TEST(syscall(__NR_keyctl, KEYCTL_REVOKE, "MyKey"));
-			if (TEST_RETURN != -1) {
-				tst_resm(TFAIL | TTERRNO, "KEYCTL_REVOKE succeeded unexpectly");
-		     	} else {
+			ret = syscall(__NR_keyctl, KEYCTL_REVOKE, "MyKey");
+			if (ret != -1) {
+				tst_resm(TFAIL | TERRNO, "KEYCTL_REVOKE succeeded unexpectly");
+			} else {
 				/* Check for the correct error num. */
-				if (TEST_ERRNO == ENOKEY) {
-					tst_resm(TPASS | TTERRNO,
+				if (errno == ENOKEY) {
+					tst_resm(TPASS | TERRNO,
 						"KEYCTL_REVOKE got expected errno");
 				} else {
-					tst_resm(TFAIL | TTERRNO,
+					tst_resm(TFAIL | TERRNO,
 						"KEYCTL_REVOKE got unexpected errno");
 				}
 
