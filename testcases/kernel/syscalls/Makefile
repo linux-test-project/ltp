@@ -29,6 +29,12 @@ FILTER_OUT_DIRS		:= libevent
 # pcllib is busted as all heck because of libtool
 FILTER_OUT_DIRS		+= pcllib
 
+ifeq ($(wildcard $(abs_srcdir)/libevent/test/Makefile),)
+$(warning libevent/test/Makefile does not exist; skipping to avoid compile errors)
+$(warning Please run "make autotools" and "configure" at the top-level LTP)
+$(warning directory if you want to run this test)
+else
+
 CLEAN_DEPS		:= libevent-clean
 
 INSTALL_DEPS		:= libevent-install
@@ -41,14 +47,19 @@ LIBEVENT_APPS		:= regress test-eof test-init test-time test-weof
 
 MAKE_TARGETS		:= $(addprefix libevent/test/,$(LIBEVENT_APPS))
 
-libevent/lib libevent/test: %:
+libevent libevent/test: %:
 	mkdir -p "$@"
 
-libevent-all: $(abs_srcdir)/libevent/test/Makefile libevent/test
+libevent/libevent.a: $(abs_srcdir)/libevent/Makefile libevent
+	$(MAKE) -C libevent -f "$(firstword $^)" libevent.a
+
+libevent-all: $(abs_srcdir)/libevent/test/Makefile libevent/libevent.a libevent/test
 	$(MAKE) -C libevent/test -f "$(firstword $^)" $(LIBEVENT_APPS)
 
 libevent-clean libevent-install: libevent-%: $(abs_srcdir)/libevent/test/Makefile libevent/test
 	$(MAKE) -C libevent/test -f "$(firstword $^)" $*
+
+endif
 
 ifeq ($(UCLINUX),1)
 FILTER_OUT_DIRS	+= capget capset chmod chown clone fork getcontext llseek \

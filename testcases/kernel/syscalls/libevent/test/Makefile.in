@@ -315,7 +315,7 @@ mostlyclean distclean maintainer-clean
 all:	test
 
 test: test-init test-eof test-weof test-time regress
-	@./test.sh
+	@./test-libevent.sh
 
 bench test-init test-eof test-weof test-time regress: ../libevent.a
 

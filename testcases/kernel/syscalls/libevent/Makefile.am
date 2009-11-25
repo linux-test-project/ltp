@@ -9,7 +9,7 @@ EXTRA_DIST = acconfig.h err.c event.h evsignal.h event.3 kqueue.c \
 	sample/signal-test.c sample/time-test.c \
 	test/Makefile.am test/Makefile.in test/bench.c test/regress.c \
 	test/test-eof.c test/test-weof.c test/test-time.c \
-	test/test-init.c test/test.sh \
+	test/test-init.c test/test-libevent.sh \
 	compat/err.h compat/sys/queue.h compat/sys/tree.h compat/sys/_time.h \
 	WIN32-Code WIN32-Code/config.h WIN32-Code/misc.c \
 	WIN32-Code/win32.c WIN32-Code/misc.h \
