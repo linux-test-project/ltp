@@ -152,12 +152,7 @@ int main(int ac, char **av) {
 						fail++;
 					} else {
 
-						if (errno == ENOSYS) {
-							tst_brkm(TCONF, cleanup,
-								"add_key "
-								"syscall not "
-								"implemented");
-						} else if (errno == test_cases[i].exp_errno) {
+						if (errno == test_cases[i].exp_errno) {
 							tst_resm(TINFO | TTERRNO,
 								"called "
 								"add_key() "

@@ -134,9 +134,6 @@ int main(int ac, char **av) {
 				if (TEST_RETURN != -1) {
 					tst_resm(TPASS, "add_key call succeeded");
 					cleanup();
-				} else if (TEST_ERRNO == ENOSYS) {
-					tst_brkm(TCONF, cleanup,
-						"keyctl syscall not implemented");
 				} else {
 					tst_resm(TFAIL | TTERRNO, "%s failed", TCID);
 				}

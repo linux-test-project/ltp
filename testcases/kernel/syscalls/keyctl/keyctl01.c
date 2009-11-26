@@ -132,9 +132,6 @@ int main(int ac, char **av) {
 					KEY_SPEC_USER_SESSION_KEYRING);
 			if (ret != -1) {
 				tst_resm(TPASS,"KEYCTL_GET_KEYRING_ID succeeded");
-			} else if (errno == ENOSYS) {
-				tst_brkm(TCONF, cleanup,
-					"keyctl syscall not implemented");
 			} else {
 		 		tst_resm(TFAIL | TERRNO, "KEYCTL_GET_KEYRING_ID");
 			}
