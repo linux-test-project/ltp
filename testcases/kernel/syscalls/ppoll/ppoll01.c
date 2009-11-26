@@ -45,6 +45,10 @@
 /* History:     Porting from Crackerjack to LTP is done by                    */
 /*              Manas Kumar Nayak maknayak@in.ibm.com>                        */
 /******************************************************************************/
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+
 #include <sys/syscall.h>
 #include <sys/types.h>
 #include <sys/select.h>
@@ -59,12 +63,13 @@
 #include <libgen.h>
 #include <limits.h>
 #include <signal.h>
-#include "asm/poll.h"
+#include <poll.h>
 
 #include "../utils/include_j_h.h"
 #include "../utils/common_j_h.c"
 
 /* Harness Specific Include Files. */
+#include "ltp_signal.h"
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
@@ -139,16 +144,6 @@ void setup() {
  */
 #define SYSCALL_NAME    "ppoll"
 
-#ifndef POLLRDHUP
-#define POLLRDHUP     0x2000
-#endif
-
-#if defined (__mips__)
-#define SIGSETSIZE 16
-#else
-#define SIGSETSIZE 8
-#endif
-
 /*
  * Global variables
  */
@@ -164,7 +159,6 @@ enum test_type {
 	INVALID_FDS,
 	MINUS_NSEC,
 	TOO_LARGE_NSEC,
-
 };
 
 /*
