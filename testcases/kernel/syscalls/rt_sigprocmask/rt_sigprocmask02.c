@@ -74,15 +74,15 @@
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
+#include "ltp_signal.h"
 
 /* Extern Global Variables */
-extern int Tst_count;           /* counter for tst_xxx routines.         */
-extern char *TESTDIR;           /* temporary dir created by tst_tmpdir() */
+extern int Tst_count;		/* counter for tst_xxx routines.         */
+extern char *TESTDIR;		/* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
-char *TCID = "rt_sigprocmask02";  /* Test program identifier.*/
-int  testno;
-int  TST_TOTAL = 2;                   /* total number of tests in this file.   */
+char *TCID = "rt_sigprocmask02";/* Test program identifier.*/
+int  TST_TOTAL = 2;		/* total number of tests in this file.   */
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -103,12 +103,12 @@ int  TST_TOTAL = 2;                   /* total number of tests in this file.   *
 /*                                                                            */
 /******************************************************************************/
 extern void cleanup() {
-        /* Remove tmp dir and all files in it */
-        TEST_CLEANUP;
-        tst_rmdir();
+	/* Remove tmp dir and all files in it */
+	TEST_CLEANUP;
+	tst_rmdir();
 
-        /* Exit with appropriate return code. */
-        tst_exit();
+	/* Exit with appropriate return code. */
+	tst_exit();
 }
 
 /* Local  Functions */
@@ -130,84 +130,65 @@ extern void cleanup() {
 /*                                                                            */
 /******************************************************************************/
 void setup() {
-        /* Capture signals if any */
-        /* Create temporary directories */
-        TEST_PAUSE;
-        tst_tmpdir();
+	/* Capture signals if any */
+	/* Create temporary directories */
+	TEST_PAUSE;
+	tst_tmpdir();
 }
 
 sigset_t set;
 
 struct test_case_t {
-        sigset_t *ss;
-        int sssize;
-        int exp_errno;
+	sigset_t *ss;
+	int sssize;
+	int exp_errno;
 } test_cases[] = {
-        { &set, 1, EINVAL },
-        { (sigset_t *)-1, 8, EFAULT }
+	{ &set, 1, EINVAL },
+	{ (sigset_t *)-1, SIGSETSIZE, EFAULT }
 };
 
 int test_count = sizeof(test_cases) / sizeof(struct test_case_t);
 
 int main(int ac, char **av) {
-	int i, succeed=0, fail=0;
-        sigset_t s;
-        int lc;                 /* loop counter */
-        char *msg;              /* message returned from parse_opts */
+	int i;
+	sigset_t s;
+	char *msg;	/* message returned from parse_opts */
 	
-        /* parse standard options */
-        if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
-             tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-             tst_exit();
-           }
+	/* parse standard options */
+	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+		tst_exit();
+	}
 
-        setup();
+	setup();
 
-        /* Check looping state if -i option given */
-        for (lc = 0; TEST_LOOPING(lc); ++lc) {
-                Tst_count = 0;
-                for (testno = 0; testno < TST_TOTAL; ++testno) {
-			TEST(sigfillset(&s));
-			if(TEST_RETURN == -1){
-				tst_resm(TFAIL,"Call to sigfillset() Failed, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
-                        	cleanup();
-				tst_exit();
-			}
+	Tst_count = 0;
 
-			for(i=0; i<test_count; i++)
-		        {
-				TEST(syscall(__NR_rt_sigprocmask, SIG_BLOCK, &s, test_cases[i].ss, test_cases[i].sssize));
-				if(TEST_RETURN == 0){
-					tst_resm(TFAIL,"Call to rt_sigprocmask()succeeded,but should failed, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
-					fail++;
-				}
-				else {
-					if(TEST_ERRNO == test_cases[i].exp_errno) {
-						tst_resm(TINFO,"got expected errno:%d", TEST_ERRNO);
-		                                succeed++;
-		                        }
-		                        else {
-		                                tst_resm(TINFO,"got unexpected errno:%d", TEST_ERRNO);
-                                		fail++;
-		                        }
-		                }
-		        }
+	TEST(sigfillset(&s));
+	if (TEST_RETURN == -1){
+		tst_resm(TFAIL | TTERRNO,
+			"Call to sigfillset() failed.");
+		cleanup();
+		tst_exit();
+	}
 
-			if(fail != 0) {
-				tst_resm(TFAIL,"Test Failed, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
-                        	cleanup();
-				tst_exit();
-		        }
-		        else {
-				tst_resm(TPASS,"Test PASSED");
-                        	cleanup();
-				tst_exit();
-		        }
+	for(i=0; i < test_count; i++) {
+		TEST(syscall(__NR_rt_sigprocmask, SIG_BLOCK,
+				&s, test_cases[i].ss,
+				test_cases[i].sssize));
+		if (TEST_RETURN == 0) {
+			tst_resm(TFAIL | TTERRNO,
+				"Call to rt_sigprocmask() succeeded, "
+				"but should failed");
+		} else if (TEST_ERRNO == test_cases[i].exp_errno) {
+			tst_resm(TPASS | TTERRNO, "Got expected errno");
+		} else {
+			tst_resm(TFAIL | TTERRNO, "Got unexpected errno");
+		}
 
-	
-                }
-	Tst_count++;
-        }	
-        tst_exit();
+	}
+
+	cleanup();
+	tst_exit();
+
 }
-
