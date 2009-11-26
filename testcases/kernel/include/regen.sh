@@ -24,7 +24,12 @@ cat << EOF > "${output_pid}"
 #include <errno.h>
 #include <sys/syscall.h>
 
-static void cleanup(void);
+/*
+ * Allow callers to implement their own cleanup functions so that this doesn't
+ * result in compile-time errors and folks get the granularity they desire
+ * when writing testcases.
+ */
+void cleanup(void) __attribute__ ((weak));
 
 #define syscall(NR, ...) ({ \\
 	int __ret; \\
@@ -40,6 +45,7 @@ static void cleanup(void);
 	} \\
 	__ret; \\
 })
+
 EOF
 
 for arch in $(cat ${srcdir}/order) ; do
