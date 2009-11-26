@@ -29,11 +29,15 @@ static void cleanup(void);
 #define syscall(NR, ...) ({ \\
 	int __ret; \\
 	if (NR == 0) { \\
-		tst_brkm(TCONF, cleanup, "syscall " #NR " not supported on your arch"); \\
 		errno = ENOSYS; \\
 		__ret = -1; \\
-	} else \\
+	} else { \\
 		__ret = syscall(NR, ##__VA_ARGS__); \\
+	} \\
+	if (__ret == -1 && errno == ENOSYS) { \\
+		tst_brkm(TCONF, cleanup, "syscall " #NR " not supported on your arch"); \\
+		errno = ENOSYS; \\
+	} \\
 	__ret; \\
 })
 EOF
