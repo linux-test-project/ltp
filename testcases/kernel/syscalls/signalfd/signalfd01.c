@@ -44,6 +44,8 @@
 #include <signal.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <inttypes.h>
+#include "ltp_signal.h"
 
 TCID_DEFINE(signalfd01);
 int TST_TOTAL = 1;
@@ -88,7 +90,7 @@ int main(int argc, char **argv)
 int signalfd(int fd, const sigset_t * mask, int flags)
 {
 	/* Taken from GLIBC. */
-	return (syscall(__NR_signalfd, fd, mask, _NSIG / 8));
+	return (syscall(__NR_signalfd, fd, mask, SIGSETSIZE));
 }
 #endif
 
@@ -146,7 +148,7 @@ int do_test1(int ntst, int sig)
 	if ((s > 0) && (s != sizeof(struct signalfd_siginfo))) {
 		tst_resm(TFAIL,
 			 "getting incomplete signalfd_siginfo data: "
-			 "actual-size=%d, expected-size= %d",
+			 "actual-size=%"PRId32", expected-size=%"PRId32,
 			 s, sizeof(struct signalfd_siginfo));
 		sfd_for_next = -1;
 		close(sfd);
@@ -236,7 +238,7 @@ void do_test2(int ntst, int fd, int sig)
 	if ((s > 0) && (s != sizeof(struct signalfd_siginfo))) {
 		tst_resm(TFAIL,
 			 "getting incomplete signalfd_siginfo data: "
-			 "actual-size=%d, expected-size= %d",
+			 "actual-size=%"PRId32", expected-size= %"PRId32,
 			 s, sizeof(struct signalfd_siginfo));
 		goto out;
 	} else if (s < 0) {
