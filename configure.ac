@@ -1,4 +1,4 @@
-AC_PREREQ([2.61])
+AC_PREREQ(2.61)
 AC_INIT([ltp], [LTP_VERSION], [ltp-results@lists.sourceforge.net])
 AC_CONFIG_AUX_DIR([.])
 AM_INIT_AUTOMAKE
@@ -32,6 +32,7 @@ AC_CHECK_HEADERS_ONCE([ \
     ifaddrs.h \
     libaio.h \
     mm.h \
+    pthread.h \
     linux/genetlink.h \
     linux/module.h \
     linux/netlink.h \
@@ -44,12 +45,16 @@ AC_CHECK_HEADERS_ONCE([ \
 
 # open_hpi_testsuite does NOT fit cleanly in the build. BLAH.
 #AC_CONFIG_SUBDIRS([ \
+#    testcases/kernel/syscalls/libevent \
 #    testcases/open_hpi_testsuite/ \
 #    testcases/kernel/syscalls/pcllib/ \
+#    testcases/realtime \
 #])
 
 AC_CONFIG_SUBDIRS([ \
+    testcases/kernel/syscalls/libevent \
     testcases/kernel/syscalls/pcllib/ \
+    testcases/realtime \
 ])
 
 LTP_CHECK_CAPABILITY_SUPPORT
