@@ -9,9 +9,9 @@ ssetmask 69
 setreuid 70
 setregid 71
 setgroups 81
+swapon 87
 fchown 95
-sgetmask 68
-ssetmask 69
+swapoff 115
 sigprocmask 126
 bdflush 134
 setfsgid 139

@@ -1,3 +1,5 @@
+swapon 87
+swapoff 115
 timer_create 259
 timer_settime (__NR_timer_create+1)
 timer_gettime (__NR_timer_create+2)

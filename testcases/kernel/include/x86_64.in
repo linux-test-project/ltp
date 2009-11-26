@@ -1,4 +1,6 @@
 fork 57
+chown 92
+fchown 93
 lchown 94
 setuid 105
 setgid 106
@@ -7,11 +9,11 @@ getegid 108
 setreuid 113
 setregid 114
 setgroups 116
-fchown 93
 setfsgid 123
 setresuid 117
 setresgid 119
-chown 92
+swapon 167
+swapoff 168
 timer_create 222
 timer_settime 223
 timer_delete 226

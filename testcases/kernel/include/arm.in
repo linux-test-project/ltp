@@ -1,3 +1,5 @@
+swapon (__NR_SYSCALL_BASE+ 87)
+swapoff (__NR_SYSCALL_BASE+115)
 mq_open (__NR_SYSCALL_BASE+274)
 mq_unlink (__NR_SYSCALL_BASE+275)
 mq_timedsend (__NR_SYSCALL_BASE+276)

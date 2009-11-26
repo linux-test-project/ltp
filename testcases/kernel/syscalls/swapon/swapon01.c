@@ -79,16 +79,8 @@
 #include "test.h"
 #include "usctest.h"
 #include "config.h"
-#if defined(HAVE_OLD_SWAPONOFF)
-#define MAX_SWAPFILES 30
-#include <sys/swap.h>
-#include <linux/swap.h>
-#elif defined(HAVE_NEW_SWAPONOFF)
-#define MAX_SWAPFILES 32
-#include <sys/swap.h>
-#else
-#error "Cannot determine what copy of swapon/swapoff you are using."
-#endif
+#include "linux_syscall_numbers.h"
+#include "swaponoff.h"
 
 static void setup();
 static void cleanup();
@@ -118,7 +110,7 @@ int main(int ac, char **av)
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-		TEST(swapon("./swapfile01", 0));
+		TEST(syscall(__NR_swapon, "./swapfile01", 0));
 
 		/* check return code */
 		if (TEST_RETURN == -1) {
@@ -129,7 +121,7 @@ int main(int ac, char **av)
 			tst_resm(TPASS, "swapon(2) passed and turned on"
 				 " swapfile");
 			/*we need to turn this swap file off for -i option */
-			if (swapoff("./swapfile01") != 0) {
+			if (syscall(__NR_swapoff, "./swapfile01") != 0) {
 				tst_brkm(TBROK, cleanup, "Failed to turn off"
 					 " swapfile. system"
 					 " reboot after"

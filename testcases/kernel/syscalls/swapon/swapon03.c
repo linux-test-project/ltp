@@ -58,10 +58,10 @@
  *
 ******************************************************************************/
 
+#include <sys/types.h>
 #include <unistd.h>
 #include <errno.h>
 #include <stdlib.h>
-#include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -72,16 +72,8 @@
 #include "test.h"
 #include "usctest.h"
 #include "config.h"
-#if defined(HAVE_OLD_SWAPONOFF)
-#define MAX_SWAPFILES 30
-#include <sys/swap.h>
-#include <linux/swap.h>
-#elif defined(HAVE_NEW_SWAPONOFF)
-#define MAX_SWAPFILES 32
-#include <sys/swap.h>
-#else
-#error "Cannot determine what copy of swapon/swapoff you are using."
-#endif
+#include "linux_syscall_numbers.h"
+#include "swaponoff.h"
 
 void setup();
 void cleanup();
@@ -145,7 +137,7 @@ int main(int ac, char **av)
 		}
 
 		/* Call swapon sys call for the first time */
-		TEST(swapon(swap_testfiles[0].filename, 0));
+		TEST(syscall(__NR_swapon,swap_testfiles[0].filename, 0));
 
 		/* Check return code */
 		if ((TEST_RETURN == -1) && (TEST_ERRNO == expected_errno)) {
@@ -164,7 +156,7 @@ int main(int ac, char **av)
 
 			/* Call swapon sys call once again for 32
 			 * now we can't receive an error */
-			TEST(swapon(swap_testfiles[1].filename, 0));
+			TEST(syscall(__NR_swapon, swap_testfiles[1].filename, 0));
 
 			/* Check return code (now we're expecting success) */
 			if (TEST_RETURN < 0) {
@@ -175,7 +167,7 @@ int main(int ac, char **av)
 			} else {
 				/* Call swapon sys call once again for 33
 				 * now we have to receive an error */
-				TEST(swapon(swap_testfiles[2].filename, 0));
+				TEST(syscall(__NR_swapon, swap_testfiles[2].filename, 0));
 
 				/* Check return code (should be an error) */
 				if ((TEST_RETURN == -1)
@@ -227,41 +219,39 @@ int setup_swap()
 	int res = 0, pagesize = getpagesize();
 	int bs, count;
 	char filename[15];	/* array to store new filename */
-#define BUFSZ		 1023
-	char buf[BUFSZ + 1];	/* temp buffer for reading /proc/swaps */
+	char buf[BUFSIZ + 1];	/* temp buffer for reading /proc/swaps */
 
 	/* Find out how many swapfiles (1 line per entry) already exist */
 	swapfiles = 0;
 
+	if (seteuid(0) < 0) {
+		tst_brkm(TFAIL | TERRNO, cleanup, "Failed to call seteuid");
+	}
+
 	/* This includes the first (header) line */
 	if ((fd = open("/proc/swaps", O_RDONLY)) == -1) {
-		tst_resm(TWARN,
+		tst_brkm(TFAIL | TERRNO, cleanup,
 			 "Failed to find out existing number of swap files");
-		exit(1);
 	}
-	while (1) {
+	do {
 		char *p = buf;
-		res = read(fd, buf, BUFSZ);
+		res = read(fd, buf, BUFSIZ);
 		if (res < 0) {
-			tst_resm(TWARN,
+			tst_brkm(TFAIL | TERRNO, cleanup,
 				 "Failed to find out existing number of swap files");
-			exit(1);
 		}
 		buf[res] = '\0';
 		while ((p = strchr(p, '\n'))) {
 			p++;
 			swapfiles++;
 		}
-		if (res < BUFSZ)
-			break;
-	}
+	} while (BUFSIZ <= res);
 	close(fd);
 	if (swapfiles)
 		swapfiles--;	/* don't count the /proc/swaps header */
 
 	if (swapfiles < 0) {
-		tst_resm(TWARN, "Failed to find existing number of swapfiles");
-		exit(1);
+		tst_brkm(TFAIL, cleanup, "Failed to find existing number of swapfiles");
 	}
 
 	/* Determine how many more files are to be created */
@@ -289,22 +279,20 @@ int setup_swap()
 
 			/* prepare filename for the iteration */
 			if (sprintf(filename, "swapfile%02d", j + 2) < 0) {
-				tst_resm(TWARN,
+				tst_brkm(TFAIL | TERRNO, cleanup,
 					 "sprintf() failed to create filename");
-				exit(1);
 			}
 
 			/* Create the swapfile */
 			if (create_swapfile(filename, bs, count) < 0) {
-				tst_resm(TWARN,
+				tst_brkm(TFAIL | TERRNO, cleanup,
 					 "Failed to create swapfile for the test");
-				exit(1);
 			}
 
 			/* turn on the swap file */
-			if ((res = swapon(filename, 0)) != 0) {
-				tst_resm(TWARN, "Failed swapon for file %s"
-					 " returned %d", filename, res);
+			if ((res = syscall(__NR_swapon, filename, 0)) != 0) {
+				tst_brkm(TFAIL | TERRNO, cleanup,
+					 "Failed swapon for file %s", filename);
 				/* must cleanup already swapon files */
 				clean_swap();
 				exit(1);
@@ -415,7 +403,7 @@ int check_and_swapoff(char *filename)
 	}
 	if (system(cmd_buffer) == 0) {
 		/* now we need to swapoff the file */
-		if (swapoff(filename) != 0) {
+		if (syscall(__NR_swapoff,filename) != 0) {
 			tst_resm(TWARN, "Failed to turn off swap file. system"
 				 " reboot after execution of LTP test"
 				 " suite is recommended");
@@ -478,4 +466,4 @@ void cleanup()
 	/* exit with return code appropriate for results */
 	tst_exit();
 
-}				/* End cleanup() */
+}	/* End cleanup() */

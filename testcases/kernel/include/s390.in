@@ -1,3 +1,5 @@
+swapon 87
+swapoff 115
 get_mempolicy 269
 set_mempolicy 270
 mq_open 271

@@ -97,16 +97,7 @@
 #include "test.h"
 #include "usctest.h"
 #include "config.h"
-#if defined(HAVE_OLD_SWAPONOFF)
-#define MAX_SWAPFILES 30
-#include <sys/swap.h>
-#include <linux/swap.h>
-#elif defined(HAVE_NEW_SWAPONOFF)
-#define MAX_SWAPFILES 32
-#include <sys/swap.h>
-#else
-#error "Cannot determine what copy of swapon/swapoff you are using."
-#endif
+#include "swaponoff.h"
 
 static void setup();
 static void cleanup();
@@ -175,7 +166,7 @@ int main(int ac, char **av)
 				continue;
 			} else {
 				/* run the test */
-				TEST(swapon(testcase[i].path, 0));
+				TEST(syscall(__NR_swapon,testcase[i].path, 0));
 			}
 			/* do the clean if the test have one */
 			if (testcase[i].cleanfunc
@@ -204,7 +195,7 @@ int main(int ac, char **av)
 					 testcase[i].exp_errval, TEST_ERRNO);
 				/*If swapfile is turned on, turn it off */
 				if (TEST_RETURN == 0) {
-					if (swapoff(testcase[i].path) != 0) {
+					if (syscall(__NR_swapoff, testcase[i].path) != 0) {
 						tst_resm(TWARN, "Failed to"
 							 " turn off swapfile"
 							 " swapfile. System"
@@ -339,7 +330,7 @@ int setup03()
 	}
 
 	/* turn on the swap file */
-	if ((res = swapon("alreadyused", 0)) != 0) {
+	if ((res = syscall(__NR_swapon, "alreadyused", 0)) != 0) {
 		tst_resm(TWARN, "Failed swapon for file alreadyused"
 			 " returned %d", res);
 		return -1;
@@ -354,7 +345,7 @@ int setup03()
 int cleanup03()
 {
 	/* give swapoff to the test swap file */
-	if (swapoff("alreadyused") != 0) {
+	if (syscall(__NR_swapoff, "alreadyused") != 0) {
 		tst_resm(TWARN, "Failed to turn off swap files. system"
 			 " reboot after execution of LTP test"
 			 " suite is recommended");

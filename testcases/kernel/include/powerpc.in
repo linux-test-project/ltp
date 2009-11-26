@@ -1,3 +1,5 @@
+swapon 87
+swapoff 115
 timer_create 240
 timer_settime 241
 timer_delete 244

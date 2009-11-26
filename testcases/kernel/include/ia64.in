@@ -11,6 +11,8 @@ setfsgid 1143
 setresuid 1074
 setresgid 1076
 chown 1039
+swapon 1094
+swapoff 1095
 timer_create 1248
 timer_settime 1249
 timer_delete 1252

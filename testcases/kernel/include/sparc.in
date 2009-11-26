@@ -1,4 +1,6 @@
 vmsplice 25
+swapon 85
+swapoff 213
 splice 232
 mq_open 273
 mq_unlink 274
