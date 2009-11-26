@@ -21,10 +21,4 @@
 top_srcdir		?= ../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
-
-# XXX (garrcoop): kernbench needs fixing for out-of-build-tree support.
-FILTER_OUT_DIRS		:= $(if $(OUT_OF_BUILD_TREE),kernbench%)
-
-RECURSIVE_TARGETS	:= all configure install
-
 include $(top_srcdir)/include/mk/generic_trunk_target.mk

@@ -27,8 +27,8 @@ top_srcdir		?= ../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-WCPPFLAGS		+= -Wshadow
-
 LDLIBS			+= -lpthread
+
+WCPPFLAGS		+= -Wshadow
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
