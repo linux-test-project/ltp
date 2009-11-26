@@ -97,6 +97,7 @@
 #include "test.h"
 #include "usctest.h"
 #include "config.h"
+#include "linux_syscall_numbers.h"
 #include "swaponoff.h"
 
 static void setup();

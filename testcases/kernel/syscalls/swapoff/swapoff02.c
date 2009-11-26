@@ -86,16 +86,8 @@
 #include "usctest.h"
 #include <stdlib.h>
 #include "config.h"
-#if defined(HAVE_OLD_SWAPONOFF)
-#define MAX_SWAPFILES 30
-#include <sys/swap.h>
-#include <linux/swap.h>
-#elif defined(HAVE_NEW_SWAPONOFF)
-#define MAX_SWAPFILES 32
-#include <sys/swap.h>
-#else
-#error "Cannot determine what copy of swapon/swapoff you are using."
-#endif
+#include "linux_syscall_numbers.h"
+#include "swaponoff.h"
 
 static void setup();
 static void cleanup();
@@ -156,7 +148,7 @@ int main(int ac, char **av)
 					 " Skipping test", i);
 				continue;
 			} else {
-				TEST(swapoff(testcase[i].path));
+				TEST(syscall(__NR_swapoff, testcase[i].path));
 			}
 
 			if (testcase[i].cleanfunc &&
@@ -181,7 +173,7 @@ int main(int ac, char **av)
 					 testcase[i].exp_errval, TEST_ERRNO);
 
 				if ((TEST_RETURN == 0) && (i == 2)) {
-					if (swapon("./swapfile01", 0) != 0) {
+					if (syscall(__NR_swapon, "./swapfile01", 0) != 0) {
 						tst_brkm(TBROK, cleanup,
 							 " Failed to turn on"
 							 " swap file");
@@ -289,7 +281,7 @@ void setup()
 		tst_brkm(TBROK, cleanup, "Failed to make swapfile");
 	}
 
-	if (swapon("./swapfile01", 0) != 0) {
+	if (syscall(__NR_swapon, "./swapfile01", 0) != 0) {
 		tst_brkm(TBROK, cleanup, "Failed to turn on the swap file."
 			 " skipping  the test iteration");
 	}
@@ -310,7 +302,7 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	if (need_swapfile_cleanup && (swapoff("./swapfile01") != 0)) {
+	if (need_swapfile_cleanup && (syscall(__NR_swapoff, "./swapfile01") != 0)) {
 		tst_resm(TWARN, " Failed to turn off swap file. System reboot"
 			 " after execution of LTP test suite is"
 			 " recommended.");

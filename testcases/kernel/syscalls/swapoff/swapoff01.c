@@ -80,16 +80,8 @@
 #include <errno.h>
 #include <stdlib.h>
 #include "config.h"
-#if defined(HAVE_OLD_SWAPONOFF)
-#define MAX_SWAPFILES 30
-#include <sys/swap.h>
-#include <linux/swap.h>
-#elif defined(HAVE_NEW_SWAPONOFF)
-#define MAX_SWAPFILES 32
-#include <sys/swap.h>
-#else
-#error "Cannot determine what copy of swapon/swapoff you are using."
-#endif
+#include "linux_syscall_numbers.h"
+#include "swaponoff.h"
 
 static void setup();
 static void cleanup();
@@ -119,13 +111,13 @@ int main(int ac, char **av)
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-		if (swapon("./swapfile01", 0) != 0) {
+		if (syscall(__NR_swapon, "./swapfile01", 0) != 0) {
 			tst_resm(TWARN, "Failed to turn on the swap file"
 				 ", skipping test iteration");
 			continue;
 		}
 
-		TEST(swapoff("./swapfile01"));
+		TEST(syscall(__NR_swapoff, "./swapfile01"));
 
 		/* check return code */
 		if (TEST_RETURN == -1) {
@@ -144,7 +136,7 @@ int main(int ac, char **av)
 	/*Clean up and exit */
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	/*NOTREACHED*/ return 0;
 }
 
 /* setup() - performs all ONE TIME setup for this test */
