@@ -39,28 +39,22 @@
 /* Test Name:   cacheflush01                                                  */
 /******************************************************************************/
 
-#include <sys/syscall.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
 
-#if defined __mips__
-#include <asm/cachectl.h>
-int cacheflush(char *addr, int nbytes, int cache)
-{
-return syscall(__NR_cacheflush, addr, nbytes, cache);
-}
-#endif /* __mips__ */
+/* cacheflush man page states that cacheflush() is only applicable to
+ * MIPS architecture -- regardless, it's a good negative test.. */
 
 #ifndef   ICACHE
-#define   ICACHE   (1<<0)      /* flush instruction cache        */
+#define   ICACHE   (1<<0)		/* flush instruction cache        */
 #endif
 #ifndef   DCACHE
-#define   DCACHE   (1<<1)      /* writeback and flush data cache */
+#define   DCACHE   (1<<1)		/* writeback and flush data cache */
 #endif
 #ifndef   BCACHE
-#define   BCACHE   (ICACHE|DCACHE)   /* flush both caches              */
+#define   BCACHE   (ICACHE|DCACHE)	/* flush both caches              */
 #endif
 
 /* Harness Specific Incnude Files. */
@@ -68,16 +62,24 @@ return syscall(__NR_cacheflush, addr, nbytes, cache);
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
 
+/* cacheflush man page states that cacheflush() is only applicable to
+ * MIPS architecture -- regardless, it's a good negative test.. */
+#if defined __mips__
+#include <asm/cachectl.h>
+#define __NR_cacheflush		(__NR_Linux + 197)
+#else
+/* Fake linux_syscall_numbers.h */
+#define __NR_cacheflush		0
+#endif
+
 /* Extern Global Variables */
 extern int Tst_count;           /* counter for tst_xxx routines.         */
 extern char *TESTDIR;           /* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
-char *TCID = "cacheflush01";  /* Test program identifier.*/
-int  testno;
-int  TST_TOTAL = 1;                   /* total number of tests in this file.   */
+char *TCID = "cacheflush01";	/* Test program identifier.*/
+int  TST_TOTAL = 1;		/* total number of tests in this file.   */
 
-#if defined __mips__
 /* Extern Global Functions */
 /******************************************************************************/
 /*                                                                            */
@@ -100,9 +102,6 @@ extern void cleanup() {
         /* Remove tmp dir and all files in it */
         TEST_CLEANUP;
         tst_rmdir();
-
-        /* Exit with appropriate return code. */
-        tst_exit();
 }
 
 /* Local  Functions */
@@ -130,63 +129,43 @@ void setup() {
         tst_tmpdir();
 }
 
-int main(int ac, char **av) {
+int main(int ac, char **av)
+{
 
-		/* cacheflush man page states that cacheflush() is only applicable to MIPS architecture */
 	char *addr = NULL;
-        int lc;                 /* loop counter */
         char *msg;              /* message returned from parse_opts */
 	
         /* parse standard options */
         if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
-             tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-             tst_exit();
-           }
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+		tst_exit();
+        }
 
         setup();
 
-        /* Check looping state if -i option given */
-        for (lc = 0; TEST_LOOPING(lc); ++lc) {
-                Tst_count = 0;
-                for (testno = 0; testno < TST_TOTAL; ++testno) {
-		/* Create some user address range */
-		     addr = malloc(getpagesize());
-		     if (addr == NULL) {
-			tst_resm(TFAIL, "%s, Malloc error errno = %d : %s",TCID, TEST_ERRNO, strerror(TEST_ERRNO));
-			cleanup();
-			tst_exit();
-		     }
+	Tst_count = 0;
+	/* Create some user address range */
+	addr = malloc(getpagesize());
+	if (addr == NULL) {
+		tst_brkm(TFAIL | TTERRNO, cleanup, "malloc failed");
+	}
 
-		     /* Invokes cacheflush() with proper parameters */
-		     TEST(cacheflush(addr, getpagesize(), ICACHE));
-		     TEST(cacheflush(addr, getpagesize(), DCACHE));
-		     TEST(cacheflush(addr, getpagesize(), BCACHE));
+	/* Invokes cacheflush() with proper parameters */
+	TEST(syscall(__NR_cacheflush, addr, getpagesize(), ICACHE));
+	TEST(syscall(__NR_cacheflush, addr, getpagesize(), DCACHE));
+	TEST(syscall(__NR_cacheflush, addr, getpagesize(), BCACHE));
 
-		     /* Tests whether cacheflush() returns -EINVAL */
-		     TEST(cacheflush(addr, getpagesize(), 0));
-		     if(TEST_RETURN < 0){
-			if (TEST_ERRNO == EINVAL) {
-				tst_resm(TPASS, "%s PASS -with expected errno = %d : %s\n", TCID, TEST_ERRNO, strerror(TEST_ERRNO));
-				cleanup();
-				tst_exit();
-			} else {
-				tst_resm(TFAIL, "%s FAIL -with unexpected errno = %d : %s\n", TCID, TEST_ERRNO, strerror(TEST_ERRNO));
-				cleanup();
-				tst_exit();
-			}			
-		     }
-	             tst_resm(TFAIL, "%s FAIL -with unexpected errno = %d : %s\n", TCID, TEST_ERRNO, strerror(TEST_ERRNO));
-                     cleanup();
-                }
-        
-	}	
+	/* Tests whether cacheflush() returns -EINVAL */
+	TEST(syscall(__NR_cacheflush, addr, getpagesize(), 0));
+	if (TEST_RETURN < 0) {
+		if (TEST_ERRNO == EINVAL) {
+			tst_resm(TPASS | TTERRNO, "passed with expected errno");
+		} else {
+			tst_resm(TFAIL | TTERRNO, "failed with unexpected errno");
+		}		
+	} else {
+	        tst_resm(TFAIL, "passed unexpectedly");
+        }
+	cleanup(); 
         tst_exit();
 }
-
-#else
-int main(int ac, char **av) {
-    
-    tst_resm(TCONF, "is not available for this architecture");
-    tst_exit();
-}
-#endif

@@ -67,7 +67,6 @@
 #endif
 
 static void setup(void);
-static void cleanup(void);
 
 TCID_DEFINE(eventfd01);
 int TST_TOTAL = 15;
@@ -552,10 +551,10 @@ static int trigger_eventfd_overflow(int evfd, int *fd, io_context_t * ctx)
 
 	return 0;
 
-      err_close_file:
+err_close_file:
 	close(*fd);
 
-      err_io_destroy:
+err_io_destroy:
 	io_destroy(*ctx);
 
 	return -1;
@@ -586,15 +585,12 @@ static void overflow_select_test(int evfd)
 	ret = select(evfd + 1, &readfds, NULL, NULL, &timeout);
 	if (ret == -1) {
 		tst_resm(TBROK|TERRNO, "error getting evfd status with select");
-		goto err_cleanup;
+	} else {
+		if (FD_ISSET(evfd, &readfds))
+			tst_resm(TPASS, "read fd set as expected");
+		else
+			tst_resm(TFAIL, "read fd not set");
 	}
-
-	if (FD_ISSET(evfd, &readfds))
-		tst_resm(TPASS, "read fd set as expected");
-	else
-		tst_resm(TFAIL, "read fd not set");
-
-      err_cleanup:
 	cleanup_overflow(fd, ctx);
 }
 
@@ -617,14 +613,12 @@ static void overflow_poll_test(int evfd)
 	ret = poll(&pollfd, 1, 10000);
 	if (ret == -1) {
 		tst_resm(TBROK|TERRNO, "error getting evfd status with poll");
-		goto err_cleanup;
+	} else {
+		if (pollfd.revents & POLLERR)
+			tst_resm(TPASS, "POLLERR occurred as expected");
+		else
+			tst_resm(TFAIL, "POLLERR did not occur");
 	}
-	if (pollfd.revents & POLLERR)
-		tst_resm(TPASS, "POLLERR occurred as expected");
-	else
-		tst_resm(TFAIL, "POLLERR did not occur");
-
-      err_cleanup:
 	cleanup_overflow(fd, ctx);
 }
 
@@ -644,15 +638,13 @@ static void overflow_read_test(int evfd)
 	ret = read(evfd, &count, sizeof(count));
 	if (ret == -1) {
 		tst_resm(TBROK|TERRNO, "error reading eventfd");
-		goto err_cleanup;
+	} else {
+
+		if (count == UINT64_MAX)
+			tst_resm(TPASS, "overflow occurred as expected");
+		else
+			tst_resm(TFAIL, "overflow did not occur");
 	}
-
-	if (count == UINT64_MAX)
-		tst_resm(TPASS, "overflow occurred as expected");
-	else
-		tst_resm(TFAIL, "overflow did not occur");
-
-      err_cleanup:
 	cleanup_overflow(fd, ctx);
 }
 #else
@@ -724,9 +716,8 @@ int main(int argc, char **argv)
 	}
 
 	cleanup();
-	/* NOT REACHED */
-
-	return 0;
+	/* exit with return code appropriate for results */
+	tst_exit();
 }
 
 /*
@@ -751,7 +742,7 @@ static void setup(void)
 /*
  * cleanup() - performs all ONE TIME cleanup for this test
  */
-static void cleanup(void)
+void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.
@@ -760,6 +751,4 @@ static void cleanup(void)
 	TEST_CLEANUP;
 
 	tst_rmdir();
-	/* exit with return code appropriate for results */
-	tst_exit();
- /*NOTREACHED*/}
+}
