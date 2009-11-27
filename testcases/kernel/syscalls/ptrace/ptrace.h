@@ -20,8 +20,12 @@
 #if defined(__ia64__)
 #undef FU_ia64_fpreg
 #undef FU_pt_all_user_regs
-#define ia64_fpreg FU_ia64_fpreg
-#define pt_all_user_regs FU_pt_all_user_regs
+#if ! defined(ia64_fpreg)
+# define ia64_fpreg FU_ia64_fpreg
+#endif
+#if ! defined(pt_all_user_regs)
+# define pt_all_user_regs FU_pt_all_user_regs
+#endif
 #endif
 
 #define HAVE_STRUCT_PTRACE_REGS 1

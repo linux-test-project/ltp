@@ -49,14 +49,14 @@ int TST_TOTAL = 2;
 void compare_registers(unsigned char poison)
 {
 #ifdef HAVE_STRUCT_PTRACE_REGS
-	struct ptrace_regs pt_regs;
+	ptrace_regs _pt_regs;
 	size_t i;
 	long ret;
 	bool failed = false;
 
-	memset(&pt_regs, poison, sizeof(pt_regs));
+	memset(&_pt_regs, poison, sizeof(_pt_regs));
 	errno = 0;
-	ret = ptrace(PTRACE_GETREGS, pid, NULL, &pt_regs);
+	ret = ptrace(PTRACE_GETREGS, pid, NULL, &_pt_regs);
 	if (ret && errno) {
 		tst_resm(TFAIL | TERRNO, "PTRACE_GETREGS failed");
 	} else {
@@ -74,7 +74,7 @@ void compare_registers(unsigned char poison)
 				continue;
 			}
 
-			long *pt_val = (void *)&pt_regs + regs[i].off;
+			long *pt_val = (void *)&_pt_regs + regs[i].off;
 			if (*pt_val != ret) {
 				tst_resm(TFAIL,
 					"register %s (offset %li) did not "
