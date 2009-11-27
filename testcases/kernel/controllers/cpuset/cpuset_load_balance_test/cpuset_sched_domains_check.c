@@ -28,10 +28,15 @@
 #include <err.h>
 #include <errno.h>
 
+#include "test.h"
+
 #include "../cpuset_lib/bitmask.h"
 #include "../cpuset_lib/cpuset.h"
 #include "../cpuset_lib/common.h"
 #include "../cpuset_lib/cpuinfo.h"
+
+char *TCID = "cpuset_check_domains";
+int TST_TOTAL = 1;
 
 /*
  * check sched domains in system
@@ -40,36 +45,35 @@
  *        1  - sched domains is wrong, and print error info
  *        -1 - other error
  */
-int check_sched_domains(void)
+void check_sched_domains(void)
 {
 	int i;
 	char buf1[128], buf2[128];
 	struct bitmask *alldomains = NULL;
-	int ret = 0;
 
 	/* get the bitmask's len */
 	if (!cpus_nbits) {
 		cpus_nbits = cpuset_cpus_nbits();
 		if (cpus_nbits <= 0) {
-			warnx("get cpus nbits failed.");
-			return -1;
+			tst_resm(TFAIL, "get cpus nbits failed");
+			return;
 		}
 	}
 
 	if (getcpuinfo()) {
-		warnx("getcpuinfo failed");
-		return -1;
+		tst_resm(TFAIL, "getcpuinfo failed");
+		return;
 	}
 
 	if (partition_domains()) {
-		warnx("partition domains failed.");
-		return -1;
+		tst_resm(TFAIL, "partition domains failed.");
+		return;
 	}
 
 	alldomains = bitmask_alloc(cpus_nbits);
 	if (alldomains == NULL) {
-		warnx("alloc alldomains space failed.");
-		return -1;
+		tst_resm(TFAIL, "alloc alldomains space failed.");
+		return;
 	}
 	
 	for (i = 0; i < ndomains; i++) {
@@ -81,14 +85,13 @@ int check_sched_domains(void)
 		     cpu = bitmask_next(domains[i], cpu + 1)) {
 			if (bitmask_weight(domains[i]) == 1) {
 				if (cpus[cpu].sched_domain != NULL) {
-					ret = 1;
 				    	bitmask_displaylist(buf1, sizeof(buf1),
 							domains[i]);
 					bitmask_displaylist(buf2, sizeof(buf2),
 							cpus[cpu].sched_domain);
-					warnx("cpu%d's sched domain is not "
-						"NULL(Domain: %s, "
-						"CPU's Sched Domain: %s).\n",
+					tst_resm(TFAIL, "cpu%d's sched domain is not "
+							"NULL(Domain: %s, "
+							"CPU's Sched Domain: %s).",
 						cpu, buf1, buf2);
 					goto err;
 				}
@@ -100,11 +103,9 @@ int check_sched_domains(void)
 						domains[i]);
 				bitmask_displaylist(buf2, sizeof(buf2),
 				    cpus[cpu].sched_domain);
-				warnx("cpu%d's sched domain is wrong"
-					"(Domain: %s, "
-					"CPU's Sched Domain: %s).\n",
+				tst_resm(TFAIL, "cpu%d's sched domain is wrong"
+					"(Domain: %s, CPU's Sched Domain: %s).",
 					cpu, buf1, buf2);
-				ret = 1;
 				goto err;
 			}
 		}
@@ -114,22 +115,19 @@ int check_sched_domains(void)
 		if (bitmask_isbitset(alldomains, i))
 			continue;
 		if (cpus[i].sched_domain) {
-			warnx("cpu%d has redundant sched domain", i);
-			ret = 1;
+			tst_resm(TFAIL, "cpu%d has redundant sched domain", i);
 			goto err;
 		}
 	}
 
+	tst_resm(TPASS, "check_sched_domains passed");
+
 err:
 	bitmask_free(alldomains);
-	return ret;
 }
 
 int main(void)
 {
-	int ret = 0;
-
-	ret = check_sched_domains();
-
-	return ret;
+	check_sched_domains();
+	tst_exit();
 }
