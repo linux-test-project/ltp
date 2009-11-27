@@ -66,7 +66,6 @@ it print out the values of each counter.
 #include <sys/prctl.h>
 #include <sys/types.h>
 #include <linux/types.h>
-#include <syscall.h>
 
 /* Harness Specific Include Files. */
 #include "test.h"
@@ -83,8 +82,6 @@ extern char *TESTDIR;                /* temporary dir created by tst_tmpdir() */
 /* Global Variables */
 char *TCID     = "performance_counter02"; /* test program identifier.          */
 int  TST_TOTAL = 1;                  /* total number of tests in this file.   */
-
-static void cleanup(void) { /* Stub function. */ }
 
 typedef unsigned int u32;
 typedef unsigned long long u64;
@@ -143,6 +140,8 @@ void do_work(void)
 		asm volatile("" : : "g" (i));
 }
 
+void cleanup(void) { /* Stub function. */ }
+
 int
 main(int ac, char **av)
 {
@@ -188,17 +187,19 @@ main(int ac, char **av)
 
 	tsk0 = sys_perf_counter_open(&tsk_event, 0, -1, -1, 0);
 	if (tsk0 == -1) {
-		perror("perf_counter_open");
-		exit(1);
-	}
+		tst_brkm(TBROK | TERRNO, cleanup, "perf_counter_open failed (1)");
+	} else {
 
-	tsk_event.disabled = 0;
-	for (i = 0; i < n; ++i) {
-		hwfd[i] =  sys_perf_counter_open(&hw_event, 0, -1, -1, 0);
-		tskfd[i] = sys_perf_counter_open(&tsk_event, 0, -1, hwfd[i], 0);
-		if (tskfd[i] == -1 || hwfd[i] == -1) {
-			perror("perf_counter_open");
-			exit(1);
+		tsk_event.disabled = 0;
+		for (i = 0; i < n; ++i) {
+			hwfd[i] =  sys_perf_counter_open(&hw_event, 0, -1,
+							 -1, 0);
+			tskfd[i] = sys_perf_counter_open(&tsk_event, 0, -1,
+							 hwfd[i], 0);
+			if (tskfd[i] == -1 || hwfd[i] == -1) {
+				tst_brkm(TBROK | TERRNO, cleanup,
+					"perf_counter_open failed (2)");
+			}
 		}
 	}
 
@@ -207,23 +208,23 @@ main(int ac, char **av)
 	prctl(PR_TASK_PERF_COUNTERS_DISABLE);
 
 	if (read(tsk0, &vt0, sizeof(vt0)) != sizeof(vt0)) {
-		fprintf(stderr, "error reading task clock counter\n");
-		exit(1);
+		tst_brkm(TBROK | TERRNO, cleanup,
+			"error reading task clock counter");
 	}
 
 	vtsum = vhsum = 0;
 	for (i = 0; i < n; ++i) {
 		if (read(tskfd[i], &vt[i], sizeof(vt[i])) != sizeof(vt[i]) ||
 		    read(hwfd[i], &vh[i], sizeof(vh[i])) != sizeof(vh[i])) {
-			fprintf(stderr, "error reading counter(s)\n");
-			exit(1);
+			tst_brkm(TBROK | TERRNO, cleanup,
+				"error reading counter(s)");
 		}
 		vtsum += vt[i];
 		vhsum += vh[i];
 	}
 
-	printf("overall task clock: %lld\n", vt0);
-	printf("hw sum: %lld, task clock sum: %lld\n", vhsum, vtsum);
+	tst_resm(TINFO, "overall task clock: %lld", vt0);
+	tst_resm(TINFO, "hw sum: %lld, task clock sum: %lld", vhsum, vtsum);
 	if (verbose) {
 		printf("hw counters:");
 		for (i = 0; i < n; ++i)
@@ -234,12 +235,11 @@ main(int ac, char **av)
 		printf("\n");
 	}
 	ratio = (double)vtsum / vt0;
-	printf("ratio: %.2f\n", ratio);
+	tst_resm(TINFO, "ratio: %.2f", ratio);
 	if (ratio > nhw + 0.0001) {
-		fprintf(stderr, "test failed\n");
-		exit(1);
+		tst_resm(TFAIL, "test failed (ratio was greater than )");
+	} else {
+		tst_resm(TINFO, "test passed");
 	}
-
-	fprintf(stderr, "test passed\n");
 	tst_exit();
 }

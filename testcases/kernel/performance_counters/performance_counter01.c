@@ -22,7 +22,6 @@
  * Very simple performance counter testcase.
  * Picked up from: http://lkml.org/lkml/2008/12/5/17
  */
-#include <sys/syscall.h>
 #include <sys/types.h>
 #include <sys/ioctl.h>
 #include <sys/stat.h>
@@ -50,18 +49,6 @@ extern char *TESTDIR;                /* temporary dir created by tst_tmpdir() */
 char *TCID     = "performance_counter01"; /* test program identifier.          */
 int  TST_TOTAL = 1; 
 
-static void cleanup(void) { /* Stub function. */ }
-
-int perf_counter_open(int		hw_event_type,
-                      unsigned int	hw_event_period,
-                      unsigned int	record_type,
-                      pid_t		pid,
-                      int		cpu)
-{
-	return syscall(__NR_perf_counter_open, hw_event_type, hw_event_period,
-			record_type, pid, cpu);
-}
-
 enum hw_event_types {
 	PERF_COUNT_CYCLES,
 	PERF_COUNT_INSTRUCTIONS,
@@ -71,17 +58,21 @@ enum hw_event_types {
 	PERF_COUNT_BRANCH_MISSES,
 };
 
+void cleanup(void) { /* Stub function. */ }
+
 int
 main(void) {
 	unsigned long long count1, count2;
 	int fd1, fd2, ret;
-	fd1 = perf_counter_open(PERF_COUNT_INSTRUCTIONS, 0, 0, 0, -1);
+	fd1 = syscall(__NR_perf_counter_open,
+			PERF_COUNT_INSTRUCTIONS, 0, 0, 0, -1);
 	if (fd1 < 0) {
 		tst_resm(TBROK | TERRNO,
 			"Failed to create PERF_COUNT_INSTRUCTIONS fd");
 		tst_exit();
 	}
-	fd2 = perf_counter_open(PERF_COUNT_CACHE_MISSES, 0, 0, 0, -1);
+	fd2 = syscall(__NR_perf_counter_open,
+			PERF_COUNT_CACHE_MISSES, 0, 0, 0, -1);
 	if (fd2 < 0) {
 		tst_resm(TBROK | TERRNO,
 			"Failed to create PERF_COUNT_CACHE_MISSES fd");
