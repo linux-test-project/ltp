@@ -78,6 +78,10 @@ COMMON_TARGETS		:= pan utils
 INSTALL_TARGETS		:= doc
 endif
 
+define target_to_dir_dep_mapping
+$(1): | $$(abs_top_builddir)/$(patsubst %-,%,$(1))
+endef
+
 COMMON_TARGETS		+= testcases tools
 INSTALL_TARGETS		+= $(COMMON_TARGETS) runtest
 CLEAN_TARGETS		+= $(COMMON_TARGETS) lib include runtest
@@ -96,7 +100,7 @@ all: $(addsuffix -all,$(COMMON_TARGETS))
 $(MAKE_TARGETS): lib-install
 
 .PHONY: include-all include-install
-include-install: include/config.h include/mk/config.mk include-all
+include-install: $(top_builddir)/include/config.h include/mk/config.mk include-all
 
 INSTALL_DIR		:= $(DESTDIR)/$(prefix)
 
@@ -109,14 +113,14 @@ lib-all: include-install
 
 lib-install: lib-all
 
-.SECONDEXPANSION:
-$(MAKE_TARGETS) include-all lib-all: %-all: $(abs_top_builddir)/$$*
-	$(MAKE) -C $* -f "$(abs_top_srcdir)/$*/Makefile" all 
+$(MAKE_TARGETS) include-all lib-all:
+	$(MAKE) -C "$(subst -all,,$@)" \
+		-f "$(abs_top_srcdir)/$(subst -all,,$@)/Makefile" all
 
 # Let's not conflict with ac-clean, maintainer-clean, etc, so.
-.SECONDEXPANSION:
-$(filter-out include-clean,$(CLEAN_TARGETS)):: %-clean: $(abs_top_builddir)/$$*
-	-$(MAKE) -C $* -f "$(abs_top_srcdir)/$*/Makefile" clean
+$(filter-out include-clean,$(CLEAN_TARGETS))::
+	-$(MAKE) -C "$(subst -clean,,$@)" \
+		 -f "$(abs_top_srcdir)/$(subst -clean,,$@)/Makefile" clean 
 
 # Just like everything depends on include-all / -install, we need to get rid
 # of include last to ensure that things won't be monkey screwed up. Only do
@@ -133,20 +137,24 @@ endif
 INCLUDE_CLEAN_RDEPS		:= $(filter-out include-clean,\
 						$(INCLUDE_CLEAN_RDEP_SUBJECT))
 
-include-clean:: $(INCLUDE_CLEAN_RDEPS) $(abs_top_builddir)/include
+include-clean:: $(INCLUDE_CLEAN_RDEPS) | $(abs_top_builddir)/include
 	-$(MAKE) -C include -f "$(abs_top_srcdir)/include/Makefile" clean
 
 # include-install is separate to avoid creating a circular dependency below in
 # the install target.
-.SECONDEXPANSION:
-$(INSTALL_TARGETS) include-install lib-install: %-install: $(abs_top_builddir)/$$*
-	$(MAKE) -C $* -f "$(abs_top_srcdir)/$*/Makefile" install 
+$(INSTALL_TARGETS) include-install lib-install:
+	$(MAKE) -C "$(subst -install,,$@)" \
+		-f "$(abs_top_srcdir)/$(subst -install,,$@)/Makefile" all
 
 # Just in case configure hasn't been run yet, let's not overambitiously remove
 # the $(INSTALL_DIR).
 clean:: $(CLEAN_TARGETS)
 	$(RM) -f Version
 	$(if $(DESTDIR)$(prefix),-$(RM) -Rf "$(INSTALL_DIR)")
+
+$(foreach tgt,$(eval $(call target_to_dir_dep_mapping,$(tgt))),\
+	$(MAKE_TARGETS) include-all lib-all $(CLEAN_TARGETS) \
+	$(INSTALL_TARGETS) include-install lib-install)
 
 SRCDIR_INSTALL_SCRIPTS	:= execltp IDcheck.sh runalltests.sh runltp runltplite.sh ver_linux
 SRCDIR_INSTALL_READONLY	:= Version

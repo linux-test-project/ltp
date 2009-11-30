@@ -20,6 +20,12 @@
 # Garrett Cooper, July 2009
 #
 
+SQUOTE			:= '
+
+# ' # to keep colorized editors from going nuts
+
+MAKE_3_80_abspath	= $(shell readlink -f '$(subst $(SQUOTE),\\$(SQUOTE),$(1))')
+
 #
 # Generate the directory install dependency separate from generate_install_rule
 # to avoid noise from Make about redefining existing targets, for good reason.
@@ -30,10 +36,13 @@
 #      likely be `empty'.
 #
 define generate_install_rule_dir_dep
-
-$$(abspath $(DESTDIR)/$(1)/$(2)):
+ifdef MAKE_3_80_COMPAT
+DIR	:= $$(call MAKE_3_80_abspath,$(DESTDIR)/$(1)/$(2))
+else
+DIR	:= $$(abspath $(DESTDIR)/$(1)/$(2))
+endif
+$$(DIR):
 	mkdir -p "$$@"
-
 endef
 
 #
@@ -50,9 +59,20 @@ define generate_install_rule
 # This doesn't do Jack currently, as per the $(MAKECMDGOALS) check in
 # env_post.mk. I can revisit this `enhancement' later.
 #CLEAN_TARGETS		+= $$(INSTALL_FILE)
-INSTALL_FILES		+= $$(abspath $(DESTDIR)/$(3)/$(1))
 
-$$(abspath $(DESTDIR)/$(3)/$(1)): $$(abspath $$(dir $(DESTDIR)/$(3)/$(1)))
+ifdef MAKE_3_80_COMPAT
+INSTALL_FILES		+= $$(call MAKE_3_80_abspath,$(DESTDIR)/$(3)/$(1))
+else
+INSTALL_FILES		+= $$(abspath $(DESTDIR)/$(3)/$(1))
+endif # MAKE_3_80_COMPAT
+
+ifdef MAKE_3_80_COMPAT
+$$(call MAKE_3_80_abspath,$(DESTDIR)/$(3)/$(1)): \
+    $$(call MAKE_3_80_abspath,$$(dir $(DESTDIR)/$(3)/$(1)))
+else
+$$(abspath $(DESTDIR)/$(3)/$(1)): \
+    $$(abspath $$(dir $(DESTDIR)/$(3)/$(1)))
+endif # MAKE_3_80_COMPAT
 ifdef INSTALL_PRE
 	@echo "Executing preinstall command."
 	$$(INSTALL_PRE)
@@ -71,7 +91,15 @@ endef
 # 2 -> search directory. Defaults to $(abs_srcdir) if not specified.
 # 
 define generate_vpath_rule
+ifdef MAKE_3_80_COMPAT
+ifeq ($$(strip $(2)),)
+vpath %.$(1)	$(abs_srcdir)
+else
+vpath %.$(1)	$(2)
+endif # End $$(strip $(2))
+else
 vpath %.$(1)	$$(if $(2),$(2),$(abs_srcdir))
+endif # End ifdef MAKE_3_80_COMPAT
 endef
 
 #
