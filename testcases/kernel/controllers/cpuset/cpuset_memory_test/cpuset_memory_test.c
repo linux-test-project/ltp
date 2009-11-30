@@ -38,6 +38,9 @@
 
 #include "../cpuset_lib/cpuset.h"
 
+char *TCID = "cpuset_memory_test";
+int TST_TOTAL = 1;
+
 int fd;
 int flag_exit;
 

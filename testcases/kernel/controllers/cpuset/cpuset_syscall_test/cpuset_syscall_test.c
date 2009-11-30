@@ -49,6 +49,9 @@
 #include "../cpuset_lib/cpuset.h"
 #include "../cpuset_lib/bitmask.h"
 
+char *TCID = "cpuset_syscall_test";
+int TST_TOTAL = 1;
+
 unsigned long mask;
 int test = -1;
 int flag_exit;

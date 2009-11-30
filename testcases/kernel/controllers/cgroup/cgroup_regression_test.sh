@@ -257,8 +257,8 @@ test_5()
 		return
 	fi
 
-	subsys1=`tail -1 /proc/cgroups | awk '{ print $1 }'`
-	subsys2=`tail -2 /proc/cgroups | head -1 | awk '{ print $1 }'`
+	subsys1=`tail -n 1 /proc/cgroups | awk '{ print $1 }'`
+	subsys2=`tail -n 2 /proc/cgroups | head -1 | awk '{ print $1 }'`
 
 	mount -t cgroup -o $subsys1,$subsys xxx cgroup/
 	if [ $? -ne 0 ]; then
@@ -406,7 +406,7 @@ test_7()
 		return
 	fi
 
-	subsys=`tail -1 /proc/cgroups | awk '{ print $1 }'`
+	subsys=`tail -n 1 /proc/cgroups | awk '{ print $1 }'`
 
 	# remount to add new subsystems to the hierarchy
 	for ((i = 1; i <= 2; i++))

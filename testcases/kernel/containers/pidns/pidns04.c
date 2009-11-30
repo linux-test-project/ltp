@@ -67,7 +67,6 @@
 char *TCID = "pid_namespace4";
 int TST_TOTAL=1;
 int     fd[2] ;
-void cleanup(void);
 
 /*
  * child_fn1() - Inside container

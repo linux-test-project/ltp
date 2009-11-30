@@ -50,7 +50,6 @@ int TST_TOTAL = 1;
 int errno;
 
 int child_fn(void *);
-void cleanup(void);
 
 #define CHILD_PID       1
 #define PARENT_PID      0

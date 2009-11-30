@@ -43,6 +43,9 @@
 		 "\t\tThe num of the procs. [Default = 2 * nr_cpus]\n"	\
 		 "\t-h\tHelp.\n")
 
+char *TCID = "cpuset_cpu_hog";
+int TST_TOTAL = 1;
+
 unsigned long count;
 int nprocs;
 volatile int end;

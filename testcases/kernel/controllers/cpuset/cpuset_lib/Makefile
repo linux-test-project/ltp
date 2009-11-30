@@ -25,7 +25,7 @@ top_srcdir 		?= ../../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-LDLIBS			+= -lm -lcontrollers
+LDLIBS			+= -lm -lcontrollers -lltp
 
 LIB			:= libcpu_set.a
 
