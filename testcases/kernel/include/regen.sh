@@ -29,7 +29,9 @@ cat << EOF > "${output_pid}"
  * result in compile-time errors and folks get the granularity they desire
  * when writing testcases.
  */
-void cleanup(void) __attribute__ ((weak));
+static void syscall_cleanup_stub(void) __attribute__ ((weakref ("cleanup")));
+
+static void cleanup(void);
 
 #define syscall(NR, ...) ({ \\
 	int __ret; \\
@@ -40,7 +42,8 @@ void cleanup(void) __attribute__ ((weak));
 		__ret = syscall(NR, ##__VA_ARGS__); \\
 	} \\
 	if (__ret == -1 && errno == ENOSYS) { \\
-		tst_brkm(TCONF, cleanup, "syscall " #NR " not supported on your arch"); \\
+		tst_brkm(TCONF, syscall_cleanup_stub, \\
+			"syscall " #NR " not supported on your arch"); \\
 		errno = ENOSYS; \\
 	} \\
 	__ret; \\
