@@ -37,7 +37,9 @@ CPPFLAGS			+= -I$(top_srcdir)/include -I$(top_builddir)/include
 
 LDFLAGS				+= -L$(top_builddir)/lib
 
-MAKE_TARGETS			?= $(filter-out $(FILTER_OUT_MAKE_TARGETS),$(notdir $(patsubst %.c,%,$(wildcard $(abs_srcdir)/*.c))))
+MAKE_TARGETS			?= $(notdir $(patsubst %.c,%,$(wildcard $(abs_srcdir)/*.c)))
+
+MAKE_TARGETS			:= $(filter-out $(FILTER_OUT_MAKE_TARGETS),$(MAKE_TARGETS))
 
 CLEAN_TARGETS			+= $(MAKE_TARGETS) *.o *.pyc
 

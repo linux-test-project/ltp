@@ -94,7 +94,7 @@
 
 all: $(MAKE_DEPS) | $(MAKE_TARGETS)
 
-clean::
+clean:: $(CLEAN_DEPS)
 	-$(RM) -f $(CLEAN_TARGETS)
 
 install: $(INSTALL_FILES) | $(INSTALL_DEPS)
