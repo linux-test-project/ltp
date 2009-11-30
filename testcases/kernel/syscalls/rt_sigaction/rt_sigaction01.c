@@ -43,7 +43,6 @@
 /*	      Manas Kumar Nayak maknayak@in.ibm.com>			*/
 /******************************************************************************/
 #define _GNU_SOURCE
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -56,6 +55,7 @@
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
+#define LTP_RT_SIG_TEST
 #include "ltp_signal.h"
 
 /* Extern Global Variables */
@@ -64,8 +64,25 @@ extern char *TESTDIR;	   /* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
 char *TCID = "rt_sigaction01";  /* Test program identifier.*/
+int  expected_signal_number = 0;
+int  pass_count = 0;
 int  testno;
 int  TST_TOTAL = 1;		   /* total number of tests in this file.   */
+
+int test_flags[] = {
+	SA_RESETHAND|SA_SIGINFO,
+	SA_RESETHAND,
+	SA_RESETHAND|SA_SIGINFO,
+	SA_RESETHAND|SA_SIGINFO,
+	SA_NOMASK
+};
+char *test_flags_list[] = {
+	"SA_RESETHAND|SA_SIGINFO",
+	"SA_RESETHAND",
+	"SA_RESETHAND|SA_SIGINFO",
+	"SA_RESETHAND|SA_SIGINFO",
+	"SA_NOMASK"
+};
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -85,13 +102,10 @@ int  TST_TOTAL = 1;		   /* total number of tests in this file.   */
 /*	      On success - Exits calling tst_exit(). With '0' return code.  */
 /*									    */
 /******************************************************************************/
-extern void cleanup() {
+static void cleanup() {
 	/* Remove tmp dir and all files in it */
 	TEST_CLEANUP;
 	tst_rmdir();
-
-	/* Exit with appropriate return code. */
-	tst_exit();
 }
 
 /* Local  Functions */
@@ -112,56 +126,62 @@ extern void cleanup() {
 /*	      On success - returns 0.				       */
 /*									    */
 /******************************************************************************/
-void setup() {
-	/* Capture signals if any */
-	/* Create temporary directories */
+void
+setup()
+{
+	(void) setup_sigsegv_sigaction_handler();
+	/* Wait for SIGUSR1 if requested */
 	TEST_PAUSE;
+	/* Create temporary directories */
 	tst_tmpdir();
 }
-
-int test_flags[] = {
-	SA_RESETHAND|SA_SIGINFO,
-	SA_RESETHAND,
-	SA_RESETHAND|SA_SIGINFO,
-	SA_RESETHAND|SA_SIGINFO,
-	SA_NOMASK
-};
-char *test_flags_list[] = {
-	"SA_RESETHAND|SA_SIGINFO",
-	"SA_RESETHAND",
-	"SA_RESETHAND|SA_SIGINFO",
-	"SA_RESETHAND|SA_SIGINFO",
-	"SA_NOMASK"
-};
 
 void
 handler(int sig)
 {
-	tst_resm(TINFO, "Signal Handler Called with signal number %d", sig);
-	return;
+	tst_resm(TINFO, "Signal handler (non-sigaction) called with signal number %d", sig);
+	pass_count++;
 }
 
 void
-restorer(void) {
-
+sigaction_handler(int sig, siginfo_t *siginfo, void *ucontext) {
+	tst_resm(TINFO, "Signal handler (sigaction) called with signal number %d", sig);
+	if (sig == expected_signal_number)
+		pass_count++;
 }
 
 int
 set_handler(int sig, int mask_flags)
 {
 	int rc = -1;
-	struct sigaction sa, oldaction;
+	struct sigaction sa;
 
-	memset(&sa, 0, SIGSETSIZE);
+	//memset(&sa, 0, SIGSETSIZE);
 
-	sa.sa_sigaction = (void *)handler;
 	sa.sa_flags = mask_flags;
+
+	ARCH_SPECIFIC_RT_SIGACTION_SETUP(sa);
+
+#if HAVE_STRUCT_SIGACTION_SA_SIGACTION
+	/*
+         *  SA_SIGINFO (since Linux 2.2)
+         *        The  signal  handler  takes  3  arguments, not one.  In this
+         *        case, sa_sigaction should  be  set  instead  of  sa_handler.
+         *        This flag is only meaningful when establishing a signal han-
+         *        dler.
+         *
+	 */
+	if (sa.sa_flags & SA_SIGINFO)
+		sa.sa_sigaction = (void *) sigaction_handler;
+	else
+#endif
+		sa.sa_handler = (void *) handler;
 
 	if (sigemptyset(&sa.sa_mask) < 0) {
 		tst_resm(TINFO, "sigemptyset(..) failed");
 	} else if (sigaddset(&sa.sa_mask, sig) < 0) {
 		tst_resm(TFAIL | TINFO, "sigaddset(..) failed");
-	} else if (syscall(__NR_rt_sigaction, sig, &sa, &oldaction, SIGSETSIZE)) {
+	} else if (syscall(__NR_rt_sigaction, sig, &sa, (struct sigaction*) NULL, SIGSETSIZE)) {
 		tst_resm(TFAIL | TERRNO, "rt_sigaction(%d, ..) failed", sig);
 	} else {
 		rc = 0;
@@ -169,9 +189,9 @@ set_handler(int sig, int mask_flags)
 	return rc;
 }
 
-int main(int ac, char **av) {
-	int signal, flag;
-	int lc;		/* loop counter */
+int
+main(int ac, char **av) {
+
 	char *msg;	/* message returned from parse_opts */
 
 	/* parse standard options */
@@ -182,6 +202,16 @@ int main(int ac, char **av) {
 
 	setup();
 
+#if HAVE_STRUCT_SIGACTION_SA_SIGACTION
+	int flag;
+	int last_pass_count;
+	int num_tests_per_signal = sizeof(test_flags) / sizeof(*test_flags);
+	int tests_passed;
+	int lc;		/* loop counter */
+
+	tst_resm(TINFO, "Will run %d tests per signal in set [%d, %d]",
+			num_tests_per_signal, SIGRTMIN, SIGRTMAX);
+
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 
@@ -190,28 +220,46 @@ int main(int ac, char **av) {
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 
 			/* 34 (NPTL) or 35 (LinuxThreads) to 65 (or 128 on mips). */
-			for (signal = SIGRTMIN; signal <= SIGRTMAX; signal++) { 
+			for (expected_signal_number = SIGRTMIN; expected_signal_number <= SIGRTMAX; expected_signal_number++) { 
 
-				tst_resm(TINFO, "signal: %d ", signal);
+				last_pass_count = pass_count;
 
-			 	for (flag = 0; flag < sizeof(test_flags) / sizeof(int); flag++) {
+				tst_resm(TINFO, "signal: %d ", expected_signal_number);
 
-					if (set_handler(signal, test_flags[flag]) == 0) {
+			 	for (flag = 0; flag < num_tests_per_signal; flag++) {
+
+					if (set_handler(expected_signal_number, test_flags[flag]) == 0) {
+
 						tst_resm(TINFO,
-							"sa.sa_flags = %s",
+							"\tsa.sa_flags = %s",
 							test_flags_list[flag]);
-						kill(getpid(), signal);
+
+						if (kill(getpid(), expected_signal_number) < 0) {
+							tst_resm(TINFO | TERRNO, "kill failed");
+						}
+
 		       			}
 
 				}
-	
+
+				tests_passed = ((pass_count - last_pass_count) ==
+						 num_tests_per_signal);
+
+				tst_resm(tests_passed ? TPASS : TFAIL,
+					"tests %s for signal = %d",
+					tests_passed ? "passed" : "failed",
+					expected_signal_number);
+
 			}
 
-
-
 		}
-	}	
 
+	}
+#else
+	tst_brkm(TCONF, NULL,
+			"Your architecture doesn't support this test (no "
+			"sa_sigaction field in struct sigaction).");
+#endif
 	cleanup();
 	tst_exit();
 
