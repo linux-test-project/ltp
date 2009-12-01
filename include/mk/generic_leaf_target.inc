@@ -92,11 +92,15 @@
 
 .PHONY: all clean install
 
-all: $(MAKE_DEPS) | $(MAKE_TARGETS)
+$(MAKE_TARGETS): | $(MAKE_DEPS)
+
+all: $(MAKE_TARGETS)
 
 clean:: $(CLEAN_DEPS)
 	-$(RM) -f $(CLEAN_TARGETS)
 
-install: $(INSTALL_FILES) | $(INSTALL_DEPS)
+$(INSTALL_FILES): | $(INSTALL_DEPS)
+
+install: $(INSTALL_FILES)
 
 # vim: syntax=make

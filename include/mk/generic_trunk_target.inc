@@ -57,10 +57,14 @@ $(eval $(get_make_dirs))
 $(SUBDIRS): %:
 	mkdir -m 00755 -p "$@"
 
-trunk-all: $(MAKE_DEPS) | $(MAKE_TARGETS)
+$(MAKE_TARGETS): | $(MAKE_DEPS)
+
+trunk-all: $(MAKE_TARGETS)
 
 trunk-clean:: | $(SUBDIRS)
 	$(if $(strip $(CLEAN_TARGETS)),$(RM) -f $(CLEAN_TARGETS))
+
+$(INSTALL_FILES): | $(INSTALL_DEPS)
 
 trunk-install: $(INSTALL_FILES)
 

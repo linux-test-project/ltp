@@ -1,7 +1,7 @@
 #!/bin/sh
 
 output="linux_syscall_numbers.h"
-output_pid="linux_syscall_numbers.$$.h"
+output_pid="${output}.$$"
 
 srcdir=${0%/*}
 
@@ -31,7 +31,9 @@ cat << EOF > "${output_pid}"
  */
 static void syscall_cleanup_stub(void) __attribute__ ((weakref ("cleanup")));
 
+#pragma GCC visibility push(hidden)
 static void cleanup(void);
+#pragma GCC visibility pop
 
 #define syscall(NR, ...) ({ \\
 	int __ret; \\
@@ -51,7 +53,7 @@ static void cleanup(void);
 
 EOF
 
-for arch in $(cat ${srcdir}/order) ; do
+for arch in $(cat "${srcdir}/order") ; do
 	echo -n "Generating data for arch $arch ... "
 
 	echo "" >> "${output_pid}"
@@ -69,7 +71,7 @@ for arch in $(cat ${srcdir}/order) ; do
 		#  define $nr $*
 		# endif
 		EOF
-	done < ${srcdir}/${arch}.in
+	done < "${srcdir}/${arch}.in"
 	echo "#endif" >> "${output_pid}"
 	echo "" >> "${output_pid}"
 
@@ -79,7 +81,7 @@ done
 echo -n "Generating stub list ... "
 echo "" >> "${output_pid}"
 echo "/* Common stubs */" >> "${output_pid}"
-for nr in $(awk '{print $1}' ${srcdir}/*.in | sort -u) ; do
+for nr in $(awk '{print $1}' "${srcdir}/"*.in | sort -u) ; do
 	nr="__NR_$nr"
 	cat <<-EOF >> "${output_pid}"
 	# ifndef $nr
@@ -87,11 +89,19 @@ for nr in $(awk '{print $1}' ${srcdir}/*.in | sort -u) ; do
 	# endif
 	EOF
 done
-echo "" >> "${output_pid}"
-echo "OK!"
+cat <<EOF >> "${output_pid}"
+#endif
 
-echo "" >> "${output_pid}"
-echo "#endif" >> "${output_pid}"
-
-# There's still a race here, but it's much lower than before...
+/* Another beautiful syscall that doesn't get exported outside of the kernel
+ * headers (namely \$KERN_SRC/linux/perf_counter.h).
+ */
+#if !defined(__NR_perf_counter_open)
+# if defined (__NR_perf_event_open)
+#  define __NR_perf_counter_open __NR_perf_event_open
+# else
+#  define __NR_perf_counter_open 0
+# endif
+#endif
+EOF
 mv "${output_pid}" "${output}"
+echo "OK!"
