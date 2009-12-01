@@ -62,32 +62,52 @@ void cleanup(void) { /* Stub function. */ }
 
 int
 main(void) {
+
 	unsigned long long count1, count2;
 	int fd1, fd2, ret;
+
+	/*
+	 * Kernel performance counters weren't available until 2.6.31 --
+	 * http://lwn.net/Articles/311850/
+	 *
+	 * The syscalls don't return -1 // errno == ENOSYS either. Weird.
+	 */
 	fd1 = syscall(__NR_perf_counter_open,
 			PERF_COUNT_INSTRUCTIONS, 0, 0, 0, -1);
 	if (fd1 < 0) {
-		tst_resm(TBROK | TERRNO,
+		tst_brkm(TBROK | TERRNO, cleanup,
 			"Failed to create PERF_COUNT_INSTRUCTIONS fd");
-		tst_exit();
 	}
 	fd2 = syscall(__NR_perf_counter_open,
 			PERF_COUNT_CACHE_MISSES, 0, 0, 0, -1);
 	if (fd2 < 0) {
-		tst_resm(TBROK | TERRNO,
+		tst_brkm(TBROK | TERRNO, cleanup,
 			"Failed to create PERF_COUNT_CACHE_MISSES fd");
-		tst_exit();
 	}
 
-	for (;;) {
+	do {
+
 		ret = read(fd1, &count1, sizeof(count1));
-		assert(ret == 8);
-		ret = read(fd2, &count2, sizeof(count2));
-		assert(ret == 8);
-		printf("counter1 value: %Ld instructions\n", count1);
-		printf("counter2 value: %Ld cachemisses\n",  count2);
-		sleep(1);
-	}
-	return 0;
+
+		if (ret == sizeof(count1)) {
+
+			ret = read(fd2, &count2, sizeof(count2));
+
+			if (ret == sizeof(count2)) {
+				tst_resm(TINFO,
+					"counter1 value: %Ld instructions",
+					count1);
+				tst_resm(TINFO,
+					"counter2 value: %Ld cachemisses",
+					count2);
+				sleep(1);
+			}
+
+		}
+
+	} while (ret == sizeof(unsigned long long));
+
+	tst_exit();
+
 }
 
