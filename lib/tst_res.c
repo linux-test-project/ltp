@@ -32,7 +32,7 @@
  */
 
 
-/* $Id: tst_res.c,v 1.13 2009/10/13 13:59:29 subrata_modak Exp $ */
+/* $Id: tst_res.c,v 1.14 2009/12/01 08:57:20 yaberauneya Exp $ */
 
 /**********************************************************
  *
@@ -457,6 +457,11 @@ void tst_flush(void)
  */
 static void tst_print(char *tcid, int tnum, int trange, int ttype, char *tmesg)
 {
+	/*
+	 * avoid unintended side effects from failures with fprintf when
+	 * calling write(2), et all.
+	 */
+	int err = errno; 
 	const char *type;
 	int ttype_result = TTYPE_RESULT(ttype);
 
@@ -500,13 +505,14 @@ static void tst_print(char *tcid, int tnum, int trange, int ttype, char *tmesg)
 				tcid, tnum, type, tmesg);
 	}
 	if (ttype & TERRNO) {
-		int err = errno; /* avoid unintended side effects */
 		fprintf(T_out, ": errno=%s(%i): %s", strerrnodef(err),
 			err, strerror(err));
 	}
-	if (ttype & TTERRNO)
-		fprintf(T_out, ": TEST_ERRNO=%s(%i): %s", strerrnodef(TEST_ERRNO),
-			(int)TEST_ERRNO, strerror(TEST_ERRNO));
+	if (ttype & TTERRNO) {
+		fprintf(T_out, ": TEST_ERRNO=%s(%i): %s",
+			strerrnodef(TEST_ERRNO), (int)TEST_ERRNO,
+			strerror(TEST_ERRNO));
+	}
 	fprintf(T_out, "\n");
 
 	/*
