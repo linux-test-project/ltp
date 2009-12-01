@@ -20,10 +20,8 @@ top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-CFLAGS			+= -D_GNU_SOURCE
+CPPFLAGS		+= -D_GNU_SOURCE -I$(abs_srcdir)/../include
 
-CPPFLAGS		+= -I$(abs_srcdir)/../include
-
-LDLIBS			+= -lpthread
+LDLIBS			+= -lpthread -lrt
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

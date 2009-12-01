@@ -16,24 +16,24 @@
  */
 /**************************************************************************
  *
- *    TEST IDENTIFIER	: clock_settime03
+ *	TEST IDENTIFIER	: clock_settime03
  *
- *    EXECUTED BY	: root / superuser
+ *	EXECUTED BY	: root / superuser
  *
- *    TEST TITLE	: Test checking for basic error conditions for
- *    			  clock_settime(2)
+ *	TEST TITLE	: Test checking for basic error conditions for
+ *				  clock_settime(2)
  *
- *    TEST CASE TOTAL	: 6
+ *	TEST CASE TOTAL	: 6
  *
- *    AUTHOR		: Aniruddha Marathe <aniruddha.marathe@wipro.com>
+ *	AUTHOR		: Aniruddha Marathe <aniruddha.marathe@wipro.com>
  *
- *    SIGNALS
+ *	SIGNALS
  * 	Uses SIGUSR1 to pause before test if option set.
  * 	(See the parse_opts(3) man page).
  *
- *    DESCRIPTION
- *    	This test case check whether clock_settime(2) returns appropriate error
- *    	value for invalid parameter
+ *	DESCRIPTION
+ *		This test case check whether clock_settime(2) returns appropriate error
+ *		value for invalid parameter
  *
  * 	Setup:
  *	 Setup signal handling.
@@ -77,16 +77,17 @@
 
 #include "test.h"
 #include "usctest.h"
+#include "linux_syscall_numbers.h"
 #include "common_timers.h"
 
 static void setup();
 static void cleanup();
 static int setup_test(int option);
 
-char *TCID = "clock_settime03"; /* Test program identifier.    */
+char *TCID = "clock_settime03"; /* Test program identifier.	*/
 int TST_TOTAL;			/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-static int exp_enos[] = {EINVAL, EFAULT, EPERM, 0};
+static int exp_enos[] = { EINVAL, EFAULT, EPERM, 0 };
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 static struct timespec spec, *temp, saved;
@@ -103,18 +104,14 @@ clockid_t clocks[] = {
 	CLOCK_THREAD_CPUTIME_ID
 };
 
-static struct test_case_t {
-	char *err_desc;		/* error description */
-	int  exp_errno;		/* expected error number */
-	char *exp_errval;	/* Expected errorvalue string */
-} testcase[9] = {
-	{"Bad address", EFAULT, "EFAULT"},				/* tp bad 			  */
-	{"Invalid parameter", EINVAL, "EINVAL"},		/* CLOCK_MONOTONIC    */
-	{"Invalid parameter", EINVAL, "EINVAL"},		/* MAX_CLOCKS 		  */
-	{"Invalid parameter", EINVAL, "EINVAL"},		/* MAX_CLOCKS + 1 	  */
-	{"Invalid parameter", EINVAL, "EINVAL"},		/* Invalid timespec   */
-	{"Invalid parameter", EINVAL, "EINVAL"},		/* NSEC_PER_SEC + 1   */
-	{"Operation not permitted", EPERM, "EPERM"}		/* non-root user 	  */
+int testcase[9] = {
+	EFAULT,	/* tp bad		*/
+	EINVAL,	/* CLOCK_MONOTONIC	*/
+	EINVAL,	/* MAX_CLOCKS		*/
+	EINVAL,	/* MAX_CLOCKS + 1	*/
+	EINVAL,	/* Invalid timespec	*/
+	EINVAL,	/* NSEC_PER_SEC + 1	*/
+	EPERM	/* non-root user	*/
 };
 
 int
@@ -131,25 +128,17 @@ main(int ac, char **av)
 
 	TST_TOTAL = sizeof(testcase) / sizeof(testcase[0]);
 
-    /* PROCESS_CPUTIME_ID & THREAD_CPUTIME_ID are not supported on
-     * kernel versions lower than 2.6.12
-     */
-    if((tst_kvercmp(2, 6, 12)) < 0) {
-        testcase[7].err_desc = "Invalid parameter"; /* PROCESS_CPUTIME_ID */
-        testcase[7].exp_errno = EINVAL;
-        testcase[7].exp_errval = "EINVAL";
-        testcase[8].err_desc = "Invalid parameter"; /* THREAD_CPUTIME_ID */
-        testcase[8].exp_errno = EINVAL;
-        testcase[8].exp_errval = "EINVAL";
-    }
-    else {
-        testcase[7].err_desc = "Bad address";   /* Bad timespec pointer */
-        testcase[7].exp_errno = EFAULT;
-        testcase[7].exp_errval = "EFAULT";
-        testcase[8].err_desc = "Bad address";   /* Bad timespec pointer */
-        testcase[8].exp_errno = EFAULT;
-        testcase[8].exp_errval = "EFAULT";
-    }
+	/* PROCESS_CPUTIME_ID & THREAD_CPUTIME_ID are not supported on
+	 * kernel versions lower than 2.6.12
+	 */
+	if((tst_kvercmp(2, 6, 12)) < 0) {
+		testcase[7] = EINVAL;
+		testcase[8] = EINVAL;
+	}
+	else {
+		testcase[7] = EFAULT;
+		testcase[8] = EFAULT;
+	}
 
 	/* perform global setup for test */
 	setup();
@@ -166,39 +155,27 @@ main(int ac, char **av)
 				continue;
 			}
 
-			TEST(clock_settime(clocks[i], temp));
-
-			if (TEST_ERRNO == ENOSYS) {
-				/* System call not implemented */
-				Tst_count = TST_TOTAL;
-				perror("clock_settime");
-				tst_brkm(TBROK, cleanup, "");
-			}
+			TEST(syscall(__NR_clock_settime, clocks[i], temp));
 
 			/* Change the UID back to root */
 			if (i == TST_TOTAL - 1) {
 				if (seteuid(0) == -1) {
-					perror("seteuid");
-					tst_brkm(TBROK, tst_exit, "Failed to"
-							" set the effective"
-							" uid to root");
+					tst_brkm(TBROK | TERRNO, tst_exit,
+						"Failed to set the effective "
+						"uid to root");
 				}
 			}
 
 			/* check return code */
-			if ((TEST_RETURN == -1) && (TEST_ERRNO == testcase[i].
-						exp_errno)) {
-				tst_resm(TPASS, "clock_settime(2) expected"
-						" failure; Got errno - %s : %s"
-						, testcase[i].exp_errval,
-						testcase[i].err_desc);
+			if (TEST_RETURN == -1 && TEST_ERRNO == testcase[i]) {
+				tst_resm(TPASS | TTERRNO,
+					"clock_settime(2) got expected "
+					"failure.");
 			} else {
-				tst_resm(TFAIL, "clock_settime(2) failed to"
-						" produce expected error; %d"
-						" , errno : %s and got %ld",
-						testcase[i].exp_errno,
-						testcase[i].exp_errval,
-						TEST_RETURN);
+				tst_resm(TFAIL | TTERRNO,
+					"clock_settime(2) failed to produce "
+					"expected error (return code = %ld)",
+					TEST_RETURN);
 				if (TEST_RETURN == 0) {
 					if (clock_settime(CLOCK_REALTIME,
 								&saved) < 0) {
@@ -247,14 +224,14 @@ setup_test(int option)
 			spec.tv_nsec = 0;
 			if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
 				tst_resm(TWARN, "\"nobody\" user not present."
-					       	" skipping test");
+						" skipping test");
 				return -1;
 			}
 			if (seteuid(ltpuser->pw_uid) == -1) {
-				tst_resm(TWARN, "seteuid failed to set the"
-						" effective uid to %d",
-						ltpuser->pw_uid);
-				perror("seteuid");
+				tst_resm(TWARN | TERRNO,
+					"seteuid failed to set the effective "
+					"uid to %d (nobody)",
+					ltpuser->pw_uid);
 				return -1;
 			}
 			break;
@@ -280,15 +257,8 @@ setup()
 		tst_brkm(TBROK, tst_exit, "Test must be run as root");
 	}
 
-	if (clock_gettime(CLOCK_REALTIME, &saved) < 0) {
-		if (errno == ENOSYS) {
-			/* System call not implemented */
-			perror("clock_gettime");
-			TST_TOTAL = 1;
-			tst_brkm(TBROK, cleanup, "");
-		}
+	if (syscall(__NR_clock_gettime, CLOCK_REALTIME, &saved) < 0)
 		tst_brkm(TBROK, tst_exit, "Clock gettime failed");
-	}
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);

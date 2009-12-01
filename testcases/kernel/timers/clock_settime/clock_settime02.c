@@ -106,16 +106,9 @@ main(int ac, char **av)
 		spec.tv_sec = 1;
 		spec.tv_nsec = 0;
 
-		TEST(clock_settime(CLOCK_REALTIME, &spec));
+		TEST(syscall(__NR_clock_settime, CLOCK_REALTIME, &spec));
 
-		/* system call not implemented */
-		if (TEST_ERRNO == ENOSYS) {
-			Tst_count = TST_TOTAL;
-			perror("clock_settime");
-			tst_brkm(TBROK, cleanup, "");
-		}
 		if (TEST_RETURN == -1) {
-
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL, "clock_settime(2) Failed and set errno"
 					" to %d", TEST_ERRNO);
@@ -143,14 +136,8 @@ setup()
 		tst_brkm(TBROK, tst_exit, "Test must be run as root");
 	}
 	/* Save the current time specifications */
-	if (clock_gettime(CLOCK_REALTIME, &saved) < 0) {
-		if (errno == ENOSYS) {
-			/* System call not implemened */
-			perror("clock_gettime");
-			tst_brkm(TBROK, tst_exit, "");
-		}
+	if (syscall(__NR_clock_gettime, CLOCK_REALTIME, &saved) < 0)
 		tst_brkm(TBROK, tst_exit, "Could not save the current time");
-	}
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;

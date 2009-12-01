@@ -2,6 +2,8 @@ vmsplice 25
 swapon 85
 swapoff 213
 splice 232
+clock_settime 256
+clock_gettime 257
 mq_open 273
 mq_unlink 274
 mq_timedsend 275
