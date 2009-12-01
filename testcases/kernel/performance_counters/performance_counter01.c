@@ -66,12 +66,6 @@ main(void) {
 	unsigned long long count1, count2;
 	int fd1, fd2, ret;
 
-	/*
-	 * Kernel performance counters weren't available until 2.6.31 --
-	 * http://lwn.net/Articles/311850/
-	 *
-	 * The syscalls don't return -1 // errno == ENOSYS either. Weird.
-	 */
 	fd1 = syscall(__NR_perf_counter_open,
 			PERF_COUNT_INSTRUCTIONS, 0, 0, 0, -1);
 	if (fd1 < 0) {

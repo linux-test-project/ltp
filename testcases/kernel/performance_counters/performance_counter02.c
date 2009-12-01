@@ -154,12 +154,6 @@ main(int ac, char **av)
 	int verbose = 0;
 	double ratio;
 
-	/*
-	 * Kernel performance counters weren't available until 2.6.31 --
-	 * http://lwn.net/Articles/311850/
-	 *
-	 * The syscalls don't return -1 // errno == ENOSYS either. Weird.
-	 */
 	nhw = 8;
 	while ((i = getopt(ac, av, "c:v")) != -1) {
 		switch (i) {
