@@ -51,8 +51,5 @@ INSTALL_DIR	:= testcases/bin
 
 LDLIBS		+= -lltp
 
-# Should be using this. Not enough time to implement this before commit. BLEH.
-#$(foreach dep_dir,$(LIBLTP_DIR) $(abs_top_builddir)/$(TKI_DIR),$(eval $(call generate_install_rule_dir_dep,$(dep_dir))))
-
 $(LIBLTP_DIR) $(abs_top_builddir)/$(TKI_DIR): %:
 	mkdir -p "$@"
