@@ -1,5 +1,6 @@
 swapon (__NR_SYSCALL_BASE+ 87)
 swapoff (__NR_SYSCALL_BASE+115)
+clock_settime (__NR_SYSCALL_BASE+262)
 clock_gettime (__NR_SYSCALL_BASE+263)
 mq_open (__NR_SYSCALL_BASE+274)
 mq_unlink (__NR_SYSCALL_BASE+275)
