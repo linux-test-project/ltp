@@ -95,7 +95,7 @@ do_test()
         while [ $NUM -lt $NUMPROCESSES ]
         do
             csum2=$(sum "$TCtmp/${ECHOFILE}${NUM}" | awk '{print $1}')
-            if [ "$csum1" = "$csum2" ]; then
+            if [ "$csum1" != "$csum2" ]; then
                 end_testcase "Checksums differ in loop $TST_COUNT"
             fi
             NUM=$(( $NUM + 1 ))
