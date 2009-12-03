@@ -72,9 +72,9 @@ do_test()
             # gcooper@orangebox ~ $ ls -l /etc/hosts         
             # -rw-r--r-- 1 root root 463 Jul  5 09:26 /etc/hosts
             #
-            echo "$OUT" | \
-                awk 'NF == 9 && $NF == "/etc/hosts" { exit 0 } END { exit 1 }' \
-                >& /dev/null
+            echo "$OUT" |
+                awk 'BEGIN { RET=1 } NF == 9 && $NF == "/etc/hosts" { RET=0 } END { exit RET }' \
+                > /dev/null 2>&1
 
             if [ $? -eq 0 ] ; then
                 tst_resm TPASS "rsh to $RHOST test succeeded"
