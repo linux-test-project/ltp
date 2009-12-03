@@ -59,7 +59,7 @@ do_setup()
     # in adduser)
     USER_UID=$(id -u $TEST_USER)
     USER_GID=$(id -g $TEST_USER)
-    if ! mkdir "$TEST_USER_HOMEDIR"; then
+    if ! mkdir -p "$TEST_USER_HOMEDIR"; then
         end_testcase "Failed to create $TEST_USER_HOMEDIR"
     fi
     chown -R $USER_UID.$USER_GID "$TEST_USER_HOMEDIR"
