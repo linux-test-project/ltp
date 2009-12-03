@@ -19,7 +19,7 @@
 ##                                                                            ##
 ################################################################################
 
-checkforlibcap
+checkforlibcap.sh
 ret=$?
 if [ $ret -ne 0 ]; then
 	echo "Filecaps 0 CONF : System doesn't support execution of the test"
