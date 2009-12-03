@@ -39,8 +39,8 @@ do_setup()
 {
 	
     RHOST="localhost"
-    TCtmp=/home/$TEST_USER
     TEST_USER="ftpuser1"
+    TCtmp=/home/$TEST_USER
     TEST_USER_PASSWD="eal"
     TEST_USER_ENCRYPTED_PASSWD="42VmxaOByKwlA"
     TEST_USER_HOMEDIR="/home/$TEST_USER"

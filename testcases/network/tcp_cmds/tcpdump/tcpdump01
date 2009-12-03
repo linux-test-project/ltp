@@ -59,7 +59,8 @@ do_setup()
             break
         fi
     done
-    if [ -z "${IF}" ]; then
+    # Default to empty string if unset, to avoid errors caused by set -u, which we use (see cmdlib.sh)
+    if [ -z "${IF:-}" ]; then
         end_testcase "Could not identify interface"
         exit 1
     fi

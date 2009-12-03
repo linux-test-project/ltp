@@ -59,7 +59,7 @@ do_test() {
 
         for flag in "-s" "-rn" "-i" "-gn" "-apn"; do
             if ! netstat $flag 1>/dev/null 2>&1; then
-                end_testcase "$COMMAND failed"
+                end_testcase "netstat $flag failed"
             fi
         done
 

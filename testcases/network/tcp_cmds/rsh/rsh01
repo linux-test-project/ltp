@@ -87,7 +87,7 @@ do_test()
             tst_resm TFAIL "rsh to $RHOST failed"
             # If the first rsh failed, the likelihood that the rest will
             # succeed is low.
-            if [ "$FAIL_IMMEDIATELY" = "1" ] && [ $COUNT -eq 1 ]; then
+            if [ "$FAIL_IMMEDIATELY" = "1" ] && [ $TST_COUNT -eq 1 ]; then
                 exit 2
             fi
         fi
