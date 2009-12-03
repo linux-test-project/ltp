@@ -105,8 +105,6 @@ typedef Pr_ret_t (*hpi_ui_print_cb_t)(char *buf);
 typedef int (*get_int_param_t)(char *buf, int *val);
 
 extern char *hex_codes;
-extern char *bcdplus_codes;
-extern char ascii6_codes[];
 
 extern SaErrorT	find_rdr_by_num(SaHpiSessionIdT sessionid, SaHpiResourceIdT resourceid,
 			SaHpiInstrumentIdT num, SaHpiRdrTypeT type, int as,

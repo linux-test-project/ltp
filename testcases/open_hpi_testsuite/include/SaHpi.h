@@ -9606,7 +9606,7 @@ SaErrorT SAHPI_API saHpiFumiAutoRollbackDisableSet (
 **   operation will be associated with that bank.
 **
 *******************************************************************************/
-SaErrorT SAHPI_API saHpiFumiRollback (
+SaErrorT SAHPI_API saHpiFumiRollbackStart (
     SAHPI_IN    SaHpiSessionIdT       SessionId,
     SAHPI_IN    SaHpiResourceIdT      ResourceId,
     SAHPI_IN    SaHpiFumiNumT	      FumiNum

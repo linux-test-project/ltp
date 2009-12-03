@@ -31,7 +31,7 @@
 #include <oh_utils.h>
 #include <oh_clients.h>
 
-#define OH_SVN_REV "$Revision: 1.5 $"
+#define OH_SVN_REV "$Revision: 1.6 $"
 
 /* 
  * Function prototypes
@@ -219,6 +219,13 @@ SaErrorT list_resources(SaHpiSessionIdT sessionid,SaHpiResourceIdT resourceid)
 
 				if (rvRdrGet == SA_OK)
 				{
+					// Add zero terminator to RDR Id String
+					SaHpiUint32T last = rdr.IdString.DataLength;
+					if ( last >= SAHPI_MAX_TEXT_BUFFER_LENGTH ) {
+						last = SAHPI_MAX_TEXT_BUFFER_LENGTH - 1;
+					}
+					rdr.IdString.Data[last] = '\0';
+
 					if (f_overview) list_rdr(sessionid, &rptentry, &rdr, l_resourceid);
 					if (f_inv) show_inv(sessionid, &rptentry, &rdr, l_resourceid); 
 					if (f_sensor) show_sens(sessionid, &rptentry, &rdr, l_resourceid); 

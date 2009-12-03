@@ -99,7 +99,7 @@ SaErrorT oa_soap_cancel_fumi_upgrade(void *oh_handler,
                                 SaHpiFumiNumT num,
                                 SaHpiBankNumT banknum);
 
-SaErrorT oa_soap_rollback_fumi(void *oh_handler,
+SaErrorT oa_soap_start_fumi_rollback(void *oh_handler,
                                 SaHpiResourceIdT resource_id,
                                 SaHpiFumiNumT num);
 

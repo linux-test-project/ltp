@@ -38,7 +38,7 @@
 #include <oh_utils.h>
 #endif
 
-#define OH_SVN_REV "$Revision: 1.5 $"
+#define OH_SVN_REV "$Revision: 1.6 $"
 
 #define NCT 25
 #define MAX_STRSIZE  64
@@ -455,7 +455,7 @@ int
 main(int argc, char **argv)
 {
   int c;
-  SaErrorT rv;
+  SaErrorT rv,rv_rdr;
   SaHpiSessionIdT sessionid;
   SaHpiDomainInfoT rptinfo;
   SaHpiRptEntryT rptentry;
@@ -541,11 +541,12 @@ main(int argc, char **argv)
       if (rptentry.ResourceCapabilities & SAHPI_CAPABILITY_INVENTORY_DATA)
       {
         printf("Resource[%d] Tag: %s \thas inventory capability\n", rptentryid,rptentry.ResourceTag.Data);
-	while ((rv == SA_OK) && (entryid != SAHPI_LAST_ENTRY))
+	rv_rdr = SA_OK;
+	while ((rv_rdr == SA_OK) && (entryid != SAHPI_LAST_ENTRY))
 	{
-          rv = saHpiRdrGet(sessionid,resourceid, entryid,&nextentryid, &rdr);
-  	  if (fdebug) printf("saHpiRdrGet[%x] rv = %d\n",entryid,rv);
-	  if (rv == SA_OK)
+          rv_rdr = saHpiRdrGet(sessionid,resourceid, entryid,&nextentryid, &rdr);
+  	  if (fdebug) printf("saHpiRdrGet[%x] rv = %d\n",entryid,rv_rdr);
+	  if (rv_rdr == SA_OK)
 	  {
   	    if (fdebug) printf("Rdr[%x] type = %d tag = %s\n",entryid,
 				rdr.RdrType,rdr.IdString.Data);
@@ -564,17 +565,17 @@ main(int argc, char **argv)
 	      {
 		/* Get all of the inventory data areas and fields */
 		memset(inv,0,buffersize);
-		rv = saHpiIdrInfoGet(sessionid, resourceid, idrid, &idrInfo);
-		if (rv != SA_OK) {
-		   printf("IDR Info error: rv = %d\n",rv);
+		rv_rdr = saHpiIdrInfoGet(sessionid, resourceid, idrid, &idrInfo);
+		if (rv_rdr != SA_OK) {
+		   printf("IDR Info error: rv_rdr = %d\n",rv_rdr);
 		} else {  /* idrInfo is ok */
 		   if (fdebug) printf("IDR Info: ok \n");
 		   print_epath(&rptentry.ResourceEntity, 1);
 	           printf("RDR[%x]: Inventory, IdrId=%x %s\n",rdr.RecordId,
 			idrid,rdr.IdString.Data);
 		   print_idrinfo(&idrInfo,4);
-		   rv = walkInventory(sessionid, resourceid, &idrInfo);
-		   if (fdebug) printf("walkInventory rv = %d\n",rv);
+		   rv_rdr = walkInventory(sessionid, resourceid, &idrInfo);
+		   if (fdebug) printf("walkInventory rv_rdr = %d\n",rv_rdr);
 		}
 		
 		if (!ent_writable(&rptentry.ResourceEntity,&idrInfo))
@@ -592,13 +593,13 @@ main(int argc, char **argv)
 			strncpy((char *)strptr->Data, atag.tag, atag.tlen);
 			strptr->Data[atag.tlen] = 0;
 			printf( "Writing new asset tag: %s\n",strptr->Data);
-		        rv = saHpiIdrFieldSet(sessionid, resourceid, 
+		        rv_rdr = saHpiIdrFieldSet(sessionid, resourceid, 
 						atag.idrid, &atagField);
-			printf("Return Write Status = %d\n", rv);
-			if (rv == SA_OK) {
+			printf("Return Write Status = %d\n", rv_rdr);
+			if (rv_rdr == SA_OK) {
 			   printf ("Good write - re-reading!\n");
-			   rv = walkInventory(sessionid, resourceid, &idrInfo);
-			   if (fdebug) printf("walkInventory rv = %d\n",rv);
+			   rv_rdr = walkInventory(sessionid, resourceid, &idrInfo);
+			   if (fdebug) printf("walkInventory rv_rdr = %d\n",rv_rdr);
 			} /* Good write - re-read */
 		   }  /*endif fasset*/
   		}  /*endif RDR tag ok*/

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2008, Hewlett-Packard Development Company, LLP
+ * Copyright (C) 2007-2009, Hewlett-Packard Development Company, LLP
  *                     All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or
@@ -33,6 +33,7 @@
  *      Vivek Kumar <vivek.kumar2@hp.com>
  *      Raghavendra M.S. <raghavendra.ms@hp.com>
  *      Shuah Khan <shuah.khan@hp.com>
+ *      Mohan Devarajulu <mohan@fc.hp.com>
  *
  * This file implements the re-discovery functionality. The resources of the
  * HP BladeSystem c-Class are re-discovered, whenever the connection to the
@@ -124,7 +125,7 @@ static SaErrorT oa_soap_re_disc_therm_subsys_sen(struct oh_handler_state
  *      SA_ERR_HPI_INTERNAL_ERROR - on failure.
  **/
 SaErrorT oa_soap_re_discover_resources(struct oh_handler_state *oh_handler,
-                                       struct oa_info *oa)
+                                       struct oa_info *oa, int oa_switched)
 {
         SaErrorT rv = SA_OK;
         struct oa_soap_handler *oa_handler = NULL;
@@ -137,6 +138,21 @@ SaErrorT oa_soap_re_discover_resources(struct oh_handler_state *oh_handler,
         }
 
         err("Re-discovery started");
+
+	/* The following is applicable only to OA Switchover cases
+	Just rediscover oa and end the whole thing. If some other hardware
+	is removed at the same time, then it is a separate case that needs to
+	be handled separately */
+
+        if ( oa_switched == SAHPI_TRUE ) {
+                OA_SOAP_CHEK_SHUTDOWN_REQ(oa_handler, oa_handler->mutex, oa->mutex,
+				  NULL);
+                rv = re_discover_oa(oh_handler, oa->event_con);
+                if (rv != SA_OK) {
+                        err("Re-discovery of OA failed");
+                }
+                return rv;
+        }
 
 	/* Re-discovery is called by locking the OA handler mutex and oa_info
 	 * mutex. Hence on getting request to shutdown, pass the locked mutexes
@@ -447,7 +463,6 @@ SaErrorT remove_oa(struct oh_handler_state *oh_handler,
                                        bay_number, "",
                                        SAHPI_UNSPECIFIED_RESOURCE_ID,
                                        RES_ABSENT);
-
         return SA_OK;
 }
 
@@ -631,7 +646,7 @@ SaErrorT add_oa(struct oh_handler_state *oh_handler,
 	}
 
         return SA_OK;
-}
+} /* add_oa */
 
 /**
  * re_discover_blade

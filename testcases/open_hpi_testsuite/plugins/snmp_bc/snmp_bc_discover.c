@@ -575,29 +575,26 @@ SaErrorT snmp_bc_mod_sensor_ep(SaHpiRdrT *rdrptr,
 SaErrorT snmp_bc_add_ep(SaHpiRdrT *rdrptr, SaHpiEntityPathT *ep_add)
 {
 
-	int i;
-	
-	if ( !rdrptr || !ep_add) {
-		err("Invalid parameter.");
-		return(SA_ERR_HPI_INVALID_PARAMS);	
-	}
-	
-	for (i=0; i<SAHPI_MAX_ENTITY_PATH; i++) {
-        	ep_add->Entry[i+1].EntityLocation = 
-				rdrptr->Entity.Entry[i].EntityLocation;
-                ep_add->Entry[i+1].EntityType = 
-				rdrptr->Entity.Entry[i].EntityType;
-                if (rdrptr->Entity.Entry[i].EntityType == SAHPI_ENT_ROOT) break;
-       	}
+    int i, j;
+    SaHpiEntityPathT ep_copy;
 
-        for (i=0; i<SAHPI_MAX_ENTITY_PATH; i++) {
-                rdrptr->Entity.Entry[i].EntityLocation = ep_add->Entry[i].EntityLocation;
-                rdrptr->Entity.Entry[i].EntityType = ep_add->Entry[i].EntityType;
-                if (ep_add->Entry[i].EntityType == SAHPI_ENT_ROOT) break;
-       	 }
-
-	return(SA_OK);
-
+    if ( !rdrptr || !ep_add) {
+        err("Invalid parameter.");
+        return(SA_ERR_HPI_INVALID_PARAMS);
+    }
+    for (i=0; i<SAHPI_MAX_ENTITY_PATH;++i) {
+        ep_copy.Entry[i] = rdrptr->Entity.Entry[i];
+        if (ep_copy.Entry[i].EntityType == SAHPI_ENT_ROOT) break;
+    }
+    for (i=0; i<SAHPI_MAX_ENTITY_PATH;++i) {
+        if (ep_add->Entry[i].EntityType == SAHPI_ENT_ROOT) break;
+        rdrptr->Entity.Entry[i] = ep_add->Entry[i];
+    }
+    for (j=0; i<SAHPI_MAX_ENTITY_PATH; ++i, ++j) {
+        rdrptr->Entity.Entry[i] = ep_copy.Entry[j];
+        if (ep_copy.Entry[j].EntityType == SAHPI_ENT_ROOT) break;
+    }
+    return(SA_OK);
 }
 
 /**

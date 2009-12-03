@@ -122,7 +122,7 @@ typedef enum
   eFsaHpiFumiUpgradeStatusGet,
   eFsaHpiFumiTargetVerifyStart,
   eFsaHpiFumiUpgradeCancel,
-  eFsaHpiFumiRollback,
+  eFsaHpiFumiRollbackStart,
   eFsaHpiFumiActivate,
   eFsaHpiHotSwapPolicyCancel,
   eFsaHpiResourceActiveSet,

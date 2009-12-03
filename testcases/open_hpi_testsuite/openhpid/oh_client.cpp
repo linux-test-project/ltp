@@ -4826,7 +4826,7 @@ SaErrorT SAHPI_API saHpiFumiAutoRollbackDisableSet(
         return err;
 }
 
-SaErrorT SAHPI_API saHpiFumiRollback (
+SaErrorT SAHPI_API saHpiFumiRollbackStart (
 	SAHPI_IN    SaHpiSessionIdT       SessionId,
 	SAHPI_IN    SaHpiResourceIdT      ResourceId,
 	SAHPI_IN    SaHpiFumiNumT         FumiNum)
@@ -4834,7 +4834,7 @@ SaErrorT SAHPI_API saHpiFumiRollback (
         void *request;
         char reply[dMaxMessageLength];
         SaErrorT err = SA_OK;
-        char cmd[] = "saHpiFumiRollback";
+        char cmd[] = "saHpiFumiRollbackStart";
         pcstrmsock pinst;
 		SaHpiSessionIdT dsid = 0;
         SaHpiDomainIdT did = 0;
@@ -4844,8 +4844,8 @@ SaErrorT SAHPI_API saHpiFumiRollback (
         err = oh_get_connx(SessionId, &dsid, &pinst, &did);
         if (err) return err;
 
-        cHpiMarshal *hm = HpiMarshalFind(eFsaHpiFumiRollback);
-        pinst->MessageHeaderInit(eMhMsg, 0, eFsaHpiFumiRollback, hm->m_request_len);
+        cHpiMarshal *hm = HpiMarshalFind(eFsaHpiFumiRollbackStart);
+        pinst->MessageHeaderInit(eMhMsg, 0, eFsaHpiFumiRollbackStart, hm->m_request_len);
         request = malloc(hm->m_request_len);
 
         pinst->header.m_len = HpiMarshalRequest3(hm, request,

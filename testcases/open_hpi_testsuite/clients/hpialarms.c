@@ -50,7 +50,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <SaHpi.h>
 #include <oh_clients.h>
 
-#define OH_SVN_REV "$Revision: 1.5 $"
+#define OH_SVN_REV "$Revision: 1.6 $"
 
 #define uchar unsigned char
 #define SAHPI_OEM_ALARM_LED 0x10

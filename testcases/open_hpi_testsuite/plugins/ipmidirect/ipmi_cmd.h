@@ -259,7 +259,9 @@ enum tIpmiNetfn
   eIpmiNetfnTransport      = 0x0c,
   eIpmiNetfnTransportRsp   = 0x0d,
   eIpmiNetfnPicmg          = 0x2c,
-  eIpmiNetfnPicmgRsp       = 0x2d
+  eIpmiNetfnPicmgRsp       = 0x2d,
+  eIpmiNetfnOem            = 0x2e,
+  eIpmiNetfnOemRsp         = 0x2f
 };
 
 const char *IpmiNetfnToString( tIpmiNetfn netfn );

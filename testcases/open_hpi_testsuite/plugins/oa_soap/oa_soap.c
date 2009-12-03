@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2008, Hewlett-Packard Development Company, LLP
+ * Copyright (C) 2007-2009, Hewlett-Packard Development Company, LLP
  *                     All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or
@@ -34,6 +34,7 @@
  *      Raja Kumar Thatte <raja-kumar.thatte@hp.com>
  *      Sudesh Acharya <sudesh.acharya@hp.com>
  *      Vivek Kumar <vivek.kumar2@hp.com>
+ *      Mohan Devarajulu <mohan@fc.hp.com>
  *
  * This file implements the entry point of the oa soap plug-in. This handles
  * customer handler for oa soap interface for handling the any request for soap
@@ -121,6 +122,7 @@ SaErrorT build_oa_soap_custom_handler(struct oh_handler_state *oh_handler)
                 oa_handler->mutex = g_mutex_new();
                 oa_handler->oa_1 = NULL;
                 oa_handler->oa_2 = NULL;
+                oa_handler->oa_switching=SAHPI_FALSE;
                 oa_handler->shutdown_event_thread = SAHPI_FALSE;
 
                 /* Initialize the oa_info structure */

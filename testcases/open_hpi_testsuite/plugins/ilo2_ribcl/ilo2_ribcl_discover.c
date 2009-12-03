@@ -39,7 +39,6 @@
 #include <ilo2_ribcl_xml.h>
 #include <ilo2_ribcl_sensor.h>
 #include <ilo2_ribcl_idr.h>
-
 #ifdef ILO2_RIBCL_SIMULATE_iLO2_RESPONSE
 #include <sys/stat.h>   /* For test routine ilo2_ribcl_getfile() */
 #include <fcntl.h>      /* For test routine ilo2_ribcl_getfile() */
@@ -2162,12 +2161,14 @@ static int ilo2_ribcl_getfile( char *fname, char *buffer, int bufsize)
 
 	if( fstat( fd, &stbuf) != 0){
 		err("ilo2_ribcl_getfile: Stat failed for file %s", fname);
+		close(fd);
 		return( 1);
 	}
 
 	if( (stbuf.st_size + 1) > bufsize){
 		err("ilo2_ribcl_getfile(): File exceeds buffer by %ld bytes.",
 			(stbuf.st_size + 1) - bufsize);
+		close(fd);
 		return( 1);
 	}
 
@@ -2175,6 +2176,7 @@ static int ilo2_ribcl_getfile( char *fname, char *buffer, int bufsize)
 	while( (rcount = read( fd, &buffer[i], 1)) != 0){
 		if( rcount == -1){
 			err("ilo2_ribcl_getfile(): Read error at byte %d", i);
+			close(fd);
 			return( 1);
 		}
 		i++;
@@ -2188,6 +2190,7 @@ static int ilo2_ribcl_getfile( char *fname, char *buffer, int bufsize)
 	}
 	buffer[i] = 0; /* Null terminate */
 
+	close(fd);
 	return( 0); /* Success */
 
 } /* end ilo2_ribcl_getfile() */

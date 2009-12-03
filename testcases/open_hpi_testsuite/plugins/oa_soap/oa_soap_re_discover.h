@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2008, Hewlett-Packard Development Company, LLP
+ * Copyright (C) 2007-2009, Hewlett-Packard Development Company, LLP
  *                     All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or
@@ -30,6 +30,7 @@
  *
  * Author(s)
  *      Raghavendra P.G. <raghavendra.pg@hp.com>
+ *      Mohan Devarajulu <mohan@fc.hp.com>
  */
 
 #ifndef _OA_SOAP_RE_DISCOVER_H
@@ -45,7 +46,7 @@
 #include "oa_soap_lcd_event.h"
 
 SaErrorT oa_soap_re_discover_resources(struct oh_handler_state *oh_handler,
-                                       struct oa_info *oa);
+                                       struct oa_info *oa, int oa_switched);
 
 SaErrorT re_discover_oa(struct oh_handler_state *oh_handler,
                         SOAP_CON *con);

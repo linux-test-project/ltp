@@ -272,9 +272,9 @@ static ret_code_t start_rollback( SaHpiSessionIdT sessionId,
 {
     SaErrorT rv;
 
-    rv = saHpiFumiRollback( sessionId, rptid, fuminum );
+    rv = saHpiFumiRollbackStart( sessionId, rptid, fuminum );
     if ( rv != SA_OK ) {
-        printf( "ERROR!!! saHpiFumiRollback: %s\n", oh_lookup_error( rv ) );
+        printf( "ERROR!!! saHpiFumiRollbackStart: %s\n", oh_lookup_error( rv ) );
         return HPI_SHELL_CMD_ERROR;
     }
     return HPI_SHELL_OK;

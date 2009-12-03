@@ -28,7 +28,7 @@
 #include <oh_utils.h>
 #include <oh_clients.h>
 
-#define OH_SVN_REV "$Revision: 1.6 $"
+#define OH_SVN_REV "$Revision: 1.7 $"
 
 #include <unistd.h>
 

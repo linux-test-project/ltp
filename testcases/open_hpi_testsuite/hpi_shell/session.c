@@ -115,7 +115,7 @@ static void* get_event(void *unused)
 				SAHPI_TIMEOUT_BLOCK, &event,
 				&rdr, &rptentry, NULL);		
 			if (rv != SA_OK ) {
-				printf("saHpiEventGet failed with error <%d>", rv);
+				printf("saHpiEventGet failed with error <%d>\n", rv);
 				break;
 			}
 			if (prt_flag == 1) {

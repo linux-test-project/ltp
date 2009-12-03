@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2008, Hewlett-Packard Development Company, LLP
+ * Copyright (C) 2007-2009, Hewlett-Packard Development Company, LLP
  *                     All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or
@@ -34,6 +34,7 @@
  *      Raja Kumar Thatte <raja-kumar.thatte@hp.com>
  *      Vivek Kumar <vivek.kumar2@hp.com>
  *      Shuah Khan <shuah.khan@hp.com>
+ *      Mohan Devarajulu <mohan@fc.hp.com>
  */
 
 #ifndef _OA_SOAP_H
@@ -134,9 +135,9 @@
 #define OA_2_21 2.21
 
 /* OA switchover re-try wait period */
-#define WAIT_ON_SWITCHOVER 1
+#define WAIT_ON_SWITCHOVER 10
 /* OA switchover max re-try */
-#define MAX_RETRY_ON_SWITCHOVER 1
+#define MAX_RETRY_ON_SWITCHOVER 10
 
 /* Enum for storing the status of the plugin */
 enum oa_soap_plugin_status {
@@ -202,6 +203,7 @@ struct oa_soap_handler
 	/* Type of the enclsoure */
 	SaHpiInt32T enc_type; 
 	SaHpiBoolT shutdown_event_thread;
+        SaHpiInt32T oa_switching; 
         GMutex *mutex;
 };
 

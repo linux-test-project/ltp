@@ -518,7 +518,7 @@ SaErrorT SAHPI_API saHpiGetIdByEntityPath (
                 rdr = oh_get_rdr_by_type_first(&d->rpt, rid, InstrumentType);
         } else {
                 rdr = oh_get_rdr_by_type(&d->rpt, rid,
-                                         InstrumentType, *InstanceId);
+                                         InstrumentType, oh_get_rdr_num(*InstanceId));
         }
         
         if (rdr == NULL) {
@@ -532,7 +532,7 @@ SaErrorT SAHPI_API saHpiGetIdByEntityPath (
         if (rdr == NULL) {
                 *InstanceId = SAHPI_LAST_ENTRY;
         } else {
-                *InstanceId == oh_get_rdr_num(rdr->RecordId);
+                *InstanceId = oh_get_rdr_uid(rdr->RdrType, oh_get_rdr_num(rdr->RecordId) );
         }                
         
         oh_release_domain(d);
@@ -5563,7 +5563,7 @@ SaErrorT SAHPI_API saHpiFumiAutoRollbackDisableSet(
         return error;
 }
 
-SaErrorT SAHPI_API saHpiFumiRollback (
+SaErrorT SAHPI_API saHpiFumiRollbackStart (
     SAHPI_IN    SaHpiSessionIdT       SessionId,
     SAHPI_IN    SaHpiResourceIdT      ResourceId,
     SAHPI_IN    SaHpiFumiNumT         FumiNum)
@@ -5599,7 +5599,7 @@ SaErrorT SAHPI_API saHpiFumiRollback (
                 oh_release_domain(d);
                 return SA_ERR_HPI_NOT_PRESENT;
         } else if (!(rdr->RdrTypeUnion.FumiRec.Capability & SAHPI_FUMI_CAP_ROLLBACK)) {
-                err("FUMI %u does not support target verification for"
+                err("FUMI %u does not support rollback for"
                     " Resource %u in Domain %u",
                     FumiNum, ResourceId, did);
                 oh_release_domain(d);
@@ -5609,7 +5609,7 @@ SaErrorT SAHPI_API saHpiFumiRollback (
         OH_HANDLER_GET(d, ResourceId, h);
         oh_release_domain(d);
 
-        OH_CALL_ABI(h, rollback_fumi, SA_ERR_HPI_INVALID_CMD, error,
+        OH_CALL_ABI(h, start_fumi_rollback, SA_ERR_HPI_INVALID_CMD, error,
                     ResourceId, FumiNum);
         oh_release_handler(h);
         

@@ -1450,7 +1450,7 @@ SaErrorT oh_build_threshold_mask(oh_big_textbuffer *buffer,
  **/
 SaErrorT oh_fprint_idrfield(FILE *stream, const SaHpiIdrFieldT *thisfield, int offsets)
 {
-        char str[SAHPI_MAX_TEXT_BUFFER_LENGTH];
+        char str[SAHPI_MAX_TEXT_BUFFER_LENGTH+1];
         oh_big_textbuffer mybuf;
         SaErrorT err;
 
@@ -1488,8 +1488,11 @@ SaErrorT oh_fprint_idrfield(FILE *stream, const SaHpiIdrFieldT *thisfield, int o
         else {
                 if (thisfield->Field.DataType == SAHPI_TL_TYPE_BINARY)
                         oh_append_data(&mybuf, thisfield->Field.Data, thisfield->Field.DataLength);
-                else
-                        oh_append_bigtext(&mybuf, (const char *)thisfield->Field.Data);
+                else {
+                        memcpy( str, thisfield->Field.Data, thisfield->Field.DataLength );
+                        str[thisfield->Field.DataLength] = '\0';
+                        oh_append_bigtext(&mybuf, str);
+                }
         }
 
         err = oh_fprint_bigtext(stream, &mybuf);

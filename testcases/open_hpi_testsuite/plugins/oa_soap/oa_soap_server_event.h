@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2008, Hewlett-Packard Development Company, LLP
+ * Copyright (C) 2007-2009, Hewlett-Packard Development Company, LLP
  *                     All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or
@@ -31,6 +31,7 @@
  * Author(s)
  *      Raghavendra P.G. <raghavendra.pg@hp.com>
  *      Raghavendra M.S. <raghavendra.ms@hp.com>
+ *      Mohan Devarajulu <mohan@fc.hp.com>
  */
 
 #ifndef _OA_SOAP_SERVER_EVENT_H
@@ -53,7 +54,8 @@ SaErrorT process_server_power_event(struct oh_handler_state *oh_handler,
 
 SaErrorT process_server_insertion_event(struct oh_handler_state *oh_handler,
                                         SOAP_CON *con,
-                                        struct eventInfo *oa_event);
+                                        struct eventInfo *oa_event,
+                                        SaHpiInt32T loc);
 
 SaErrorT process_server_extraction_event(struct oh_handler_state *oh_handler,
                                          struct eventInfo *oa_event);

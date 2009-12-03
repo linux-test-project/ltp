@@ -102,7 +102,6 @@ int oh_client_init(void)
                         g_hash_table_insert(ohd_domains,
                                             &domain_conf->did, domain_conf);
                 }
-                g_static_rec_mutex_unlock(&ohd_sessions_sem);
         }
 
         g_static_rec_mutex_unlock(&ohd_sessions_sem);

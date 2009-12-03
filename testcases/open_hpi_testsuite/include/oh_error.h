@@ -28,8 +28,13 @@
  * of unqualified sprintf calls in plugin code. Use snprintf instead
  * to ensure there are no buffer overruns 
  */
+/* Unfortunately, sprintf is used in the system headers of some versions
+ * of Solaris, so we can't poison sprintf there.
+ */
+#if !defined(__sun) || !defined(__SVR4)
 #undef sprintf
 #pragma GCC poison sprintf
+#endif
 
 #define OH_ERROR "OPENHPI_ERROR"
 #define OH_DEBUG "OPENHPI_DEBUG"

@@ -39,10 +39,10 @@ extern void ilo2_ribcl_free_discoverydata( ilo2_ribcl_handler_t *);
 
 /* The size used for the temporary buffer to contain the response
  * of the IR_CMD_GET_SERVER_DATA command. The current return size is
- * a little over 12K, so we use 24K to give us some margin for the
+ * a little over 24K, so we use 48K to give us some margin for the
  * future.
  */
-#define ILO2_RIBCL_DISCOVER_RESP_MAX 1024*24
+#define ILO2_RIBCL_DISCOVER_RESP_MAX 1024*48
 
 /* This define is the IANA-assigned private enterprise number for 
    Hewlett-Packard. A complete list of IANA numbers can be found at

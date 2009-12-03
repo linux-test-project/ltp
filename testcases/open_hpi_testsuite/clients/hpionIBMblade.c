@@ -71,7 +71,7 @@
 #include <oHpi.h>
 #include <oh_clients.h>
 
-#define OH_SVN_REV "$Revision: 1.6 $"
+#define OH_SVN_REV "$Revision: 1.7 $"
 
 #define READ_BUF_SIZE	1024
 #define MAX_BYTE_COUNT 128

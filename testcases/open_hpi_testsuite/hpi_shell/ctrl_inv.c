@@ -610,47 +610,6 @@ ret_code_t ctrl_block(void)
 	return HPI_SHELL_OK;
 }
 
-static int stringtoascii6(char *str, char *ascii)
-{
-	int	ascii_ind = 0, ascii_len, i, j;
-	int	res = 0, n;
-	char	byte = 0, c;
-
-	n = strlen(str);
-	if (n == 0) return(0);
-	ascii_len = (n * 6 + 7) / 8;
-	memset(ascii, 0, ascii_len);
-	for (i = 0; i < n; i++) {
-		c = str[i];
-		for (j = 0; j < 64; j++)
-			if (c == ascii6_codes[j]) break;
-		if (byte >= 64) return(-1);
-		byte = j;
-		switch (i % 4) {
-			case 0:
-				ascii[ascii_ind] |= (byte & 0x3F);
-				break;
-			case 1:
-				res = (byte & 0x03) << 6;
-				ascii[ascii_ind++] |= res;
-				res = (byte & 0x3C) >> 2;
-				ascii[ascii_ind] |= res;
-				break;
-			case 2:
-				res = (byte & 0x0F) << 4;
-				ascii[ascii_ind++] |= res;
-				res = (byte & 0x30) >> 4;
-				ascii[ascii_ind] |= res;
-				break;
-			case 3:
-				res = byte << 2;
-				ascii[ascii_ind++] |= res;
-				break;
-		}
-	};
-	return(ascii_len);
-}
-
 int set_text_buffer(SaHpiTextBufferT *buf)
 {
 	int		i, j, ind;
@@ -678,21 +637,44 @@ int set_text_buffer(SaHpiTextBufferT *buf)
 			printf("UNICODE: not implemented");
 			return(-1);
 		case SAHPI_TL_TYPE_BCDPLUS:
-			str1 = (char *)&(buf->Data);
-			ind = 0;
 			for (i = 0; i < strlen(str); i++) {
-				for (j = 0; j < 0x0D; j++)
-					if (bcdplus_codes[j] == str[i]) break;
-				if (j >= 0x0D) return(-1);
-				if (i % 2) str1[ind++] += j << 4;
-				else str1[ind] = j;
-			};
-			buf->DataLength = (i + 1)/ 2;
+				switch ( str[i] ) {
+					case '0':
+					case '1':
+					case '2':
+					case '3':
+					case '4':
+					case '5':
+					case '6':
+					case '7':
+					case '8':
+					case '9':
+					case ' ':
+					case '-':
+					case '.':
+					case ':':
+					case ',':
+					case '_':
+						break;
+					default:
+						printf( "BCD+: Illegal symbol \'%c\'(0x%x)\n", str[i], str[i] );
+						return -1;
+				}
+			}
+			snprintf((char *)&(buf->Data), SAHPI_MAX_TEXT_BUFFER_LENGTH, "%s", str);
+			buf->DataLength = strlen(str);
+			buf->Language = lang;
 			break;
 		case SAHPI_TL_TYPE_ASCII6:
-			i = stringtoascii6(str, (char *)&(buf->Data));
-			if (i < 0) return(-1);
-			buf->DataLength = i;
+			for (i = 0; i < strlen(str); i++) {
+				if ( ( str[i] < 0x20 ) || ( str[i] > 0x5F ) ) {
+					printf( "ASCII6: Illegal symbol \'%c\'(0x%x)\n", str[i], str[i] );
+					return -1;
+				}
+			}
+			snprintf((char *)&(buf->Data), SAHPI_MAX_TEXT_BUFFER_LENGTH, "%s", str);
+			buf->DataLength = strlen(str);
+			buf->Language = lang;
 			break;
 		case SAHPI_TL_TYPE_TEXT:
 			snprintf((char *)&(buf->Data), SAHPI_MAX_TEXT_BUFFER_LENGTH, "%s", str);

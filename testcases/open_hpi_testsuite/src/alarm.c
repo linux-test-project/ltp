@@ -405,6 +405,13 @@ static void oh_detect_sensor_event_alarm(struct oh_domain *d, SaHpiEventT *event
 
         if (!d || !event) return;
 
+        if ( ( event->EventDataUnion.SensorEvent.OptionalDataPresent & SAHPI_SOD_CURRENT_STATE ) != 0 ) {
+                SaHpiEventStateT deasserted = ~ ( event->EventDataUnion.SensorEvent.CurrentState );
+                oh_remove_alarm(d, NULL, &type, &event->Source, NULL,
+                                &event->EventDataUnion.SensorEvent.SensorNum,
+                                NULL,
+                                &deasserted, 1);
+        }
         if (!event->EventDataUnion.SensorEvent.Assertion) {
                 /* Check for possible sensor alarm removals,
                    since sensor is not asserted. */

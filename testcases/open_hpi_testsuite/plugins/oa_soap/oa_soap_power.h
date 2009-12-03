@@ -44,6 +44,10 @@
 /* Max number of times to poll when checking for powerdown */
 #define OA_MAX_POWEROFF_POLLS		100
 
+/* Delay (in seconds) before sending a "power on" command after having sent
+ * a "power off" command. */
+#define OA_SERVER_POWER_OFF_WAIT_PERIOD 5
+
 SaErrorT get_server_power_state(SOAP_CON *con,
                                 SaHpiInt32T bay_number,
                                 SaHpiPowerStateT *state);

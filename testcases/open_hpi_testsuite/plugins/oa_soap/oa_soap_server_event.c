@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2008, Hewlett-Packard Development Company, LLP
+ * Copyright (C) 2007-2009, Hewlett-Packard Development Company, LLP
  *                     All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or
@@ -32,6 +32,7 @@
  *      Raghavendra P.G. <raghavendra.pg@hp.com>
  *      Shuah Khan <shuah.khan@hp.com>
  *      Raghavendra M.S. <raghavendra.ms@hp.com>
+ *      Mohan Devarajulu <mohan@fc.hp.com>
  *
  * This file has the server blade related events handling
  *
@@ -291,7 +292,7 @@ SaErrorT process_server_power_event(struct oh_handler_state *oh_handler,
         SaHpiRptEntryT *rpt = NULL;
         struct oa_soap_handler *oa_handler = NULL;
         struct oa_soap_hotswap_state hotswap_state;
-        SaHpiInt32T bay_number;
+        SaHpiInt32T bay_number, loc=1;
         struct oh_event event;
         SaHpiResourceIdT resource_id;
 
@@ -306,11 +307,40 @@ SaErrorT process_server_power_event(struct oh_handler_state *oh_handler,
         oa_handler = (struct oa_soap_handler *) oh_handler->data;
         resource_id =
            oa_handler->oa_soap_resources.server.resource_id[bay_number - 1];
+
         /* Get the rpt entry of the resource */
         rpt = oh_get_resource_by_id(oh_handler->rptcache, resource_id);
         if (rpt == NULL) {
-                err("resource RPT is NULL");
-                return SA_ERR_HPI_INTERNAL_ERROR;
+                /* rpt does not exist When EVENT_BLADE_POWER_STATE comes 
+                   before EVENT_BLADE_INSERT_COMPLETED event. But some times 
+                   (<5%) OA sends these two events out of order.
+                   EVENT_BLADE_INSERT_COMPLETED creates the rpt entry. 
+                   EVENT_BLADE_POWER_STATE with POWER_ON comes only if the
+                   "Automatically power on server" is set to yes for that
+                   blade in the iLO, otherwise it does not.
+
+                   This workaround fixes the problem by doing opposite of 
+                   what OA is doing, when it sends the events out of order.
+
+                   a. When the EVENT_BLADE_POWER_STATE comes when the RPT is 
+                   empty for that blade, then assume that we missed the 
+                   EVENT_BLADE_INSERT_COMPLETED event and execute that code. 
+
+                   b. Avoid calling EVENT_BLADE_POWER_STATE code by knowing 
+                   where it is called from and whether the POWER_ON state is 
+                   set or not. POWER_ON is set in EVENT_BLADE_INSERT_COMPLETED 
+                   event, if it arrives later.
+
+                   c. When the EVENT_BLADE_INSERT_COMPLETED eventually comes 
+                   with the POWER_ON state call the EVENT_BLADE_POWER_STATE 
+                   code to set the active state.
+
+                   d. When OA fixes their code, this workaround code will not 
+                   get executed at all. */
+
+                dbg("resource RPT is NULL, starting Workaround");
+                rv = process_server_insertion_event(oh_handler, con, oa_event, loc); 
+                return rv;
         }
 
         /* For blades that do not support managed hotswap, ignore power event */
@@ -379,6 +409,7 @@ SaErrorT process_server_power_event(struct oh_handler_state *oh_handler,
  *      @oh_handler: Pointer to openhpi handler structure
  *      @con:        Pointer to SOAP_CON structure
  *      @oa_event:   Pointer to the OA event structure
+ *      @loc:        Location, 0 default, 1 Workaround 
  *
  * Purpose:
  *      Creates the server insertion hpi hotswap event
@@ -396,7 +427,8 @@ SaErrorT process_server_power_event(struct oh_handler_state *oh_handler,
  **/
 SaErrorT process_server_insertion_event(struct oh_handler_state *oh_handler,
                                         SOAP_CON *con,
-                                        struct eventInfo *oa_event)
+                                        struct eventInfo *oa_event,
+                                        SaHpiInt32T loc)
 {
         SaErrorT rv = SA_OK;
         struct getBladeInfo info;
@@ -416,6 +448,16 @@ SaErrorT process_server_insertion_event(struct oh_handler_state *oh_handler,
         oa_handler = (struct oa_soap_handler *) oh_handler->data;
         update_hotswap_event(oh_handler, &event);
         bay_number = oa_event->eventData.bladeStatus.bayNumber;
+
+        if ((oa_event->eventData.bladeStatus.powered == POWER_ON) &&
+            (loc == 0)) {
+                /* Usually power ON event comes after insertion complete, but 5% of the
+                   time it comes first. So out of order events are processed out of order.
+                   The power_on event code calls this function with loc=1 to avoid 
+                   recursion */
+                rv = process_server_power_event(oh_handler, con, oa_event);
+                return rv;
+        }
 
         info.bayNumber = bay_number;
         rv = soap_getBladeInfo(con, &info, &response);

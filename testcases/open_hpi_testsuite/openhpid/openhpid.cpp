@@ -2449,19 +2449,19 @@ static tResult HandleMsg(psstrmsock thrdinst,
                 }
                 break;
 
-                case eFsaHpiFumiRollback: {
+                case eFsaHpiFumiRollbackStart: {
                         SaHpiSessionIdT session_id;
                         SaHpiResourceIdT resource_id;
                         SaHpiFumiNumT fumi_num;
 
-                        PVERBOSE1("%p Processing saHpiFumiRollback.", thrdid);
+                        PVERBOSE1("%p Processing saHpiFumiRollbackStart.", thrdid);
                         if (HpiDemarshalRequest3(request_mFlags & dMhEndianBit,
                                         hm, pReq,
                                         &session_id, &resource_id,
                                         &fumi_num) < 0)
                                 return eResultError;
 
-                        ret = saHpiFumiRollback(session_id, resource_id,
+                        ret = saHpiFumiRollbackStart(session_id, resource_id,
                                 fumi_num);
 
                         thrdinst->header.m_len = HpiMarshalReply0(hm, pReq, &ret);

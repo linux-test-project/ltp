@@ -317,6 +317,8 @@ SaErrorT get_interconnect_power_state(SOAP_CON *con,
         return SA_OK;
 }
 
+
+
 /**
  * set_server_power_state
  *      @con:        Pointer to the soap client handler
@@ -428,6 +430,14 @@ SaErrorT set_server_power_state(SOAP_CON *con,
 							 OA_MAX_POWEROFF_POLLS);
 					return( SA_ERR_HPI_INTERNAL_ERROR);
 				}
+
+				/* There is a race condition if a "power on"
+				 * command is sent immediately after a 
+				 * "power off" command, and we may hit this
+				 * even if we have polled for the current 
+				 * power state, unless we wait a bit first.
+				 */
+				sleep(OA_SERVER_POWER_OFF_WAIT_PERIOD);
 
 			} /* end if tmp != SAHPI_POWER_OFF */
 

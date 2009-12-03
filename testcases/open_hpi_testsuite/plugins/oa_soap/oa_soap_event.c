@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2008, Hewlett-Packard Development Company, LLP
+ * Copyright (C) 2007-2009, Hewlett-Packard Development Company, LLP
  *                     All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or
@@ -30,6 +30,7 @@
  *
  * Author(s)
  *      Raghavendra P.G. <raghavendra.pg@hp.com>
+ *      Mohan Devarajulu <mohan@fc.hp.com>
  *
  * This file is having the code for handling the events which
  * are coming from OA.
@@ -157,6 +158,20 @@ gpointer oa_soap_event_thread(gpointer oa_pointer)
                 }
         }
 
+        /* If the OA server is NULL, do not even try to open the connection
+           just get out */
+        if (!strcmp(oa->server,"")) { 
+                err("oa->server is NULL. Exiting the thread");
+                g_thread_exit((gpointer *)NULL);
+        } 
+
+        /* The following is an workaround for an OA bug, where the IP is 
+           returned as 0.0.0.0 Just quit in that case also */
+        if (!strcmp(oa->server,"0.0.0.0")) { 
+                err("OA returned IP is 0.0.0.0.");
+                g_thread_exit((gpointer *)NULL);
+        } 
+
         /* Check whether OA Status is ABSENT
          * If yes, wait till the OA status becomes ACTIVE or STANDBY
          */
@@ -199,7 +214,7 @@ gpointer oa_soap_event_thread(gpointer oa_pointer)
         	OA_SOAP_CHEK_SHUTDOWN_REQ(oa_handler, NULL, NULL, NULL);
                 oa->event_con2 = soap_open(url, user_name, password,
                                            HPI_CALL_TIMEOUT);
-                if (oa->event_con2 == NULL)
+                if (oa->event_con2 == NULL) 
                         sleep(2);
         }
 
@@ -263,11 +278,17 @@ gpointer oa_soap_event_thread(gpointer oa_pointer)
 						soap_open(url, user_name,
 							  password,
 							  HPI_CALL_TIMEOUT);
-                                        if (oa->event_con2 == NULL)
-                                                sleep(2);
+                                        if (oa->event_con2 == NULL) {
+                                                if (oa->oa_status == OA_ABSENT)
+                                                          sleep(60);
+                                                else
+                                                          sleep(5);
+                                                err("soap_open for oa->event_con2 failed\n");
+                                        }
                                 }
                         } /* end of else (non-switchover error handling) */
                 } /* end of else (SOAP call failure handling) */
+
         } /* end of 'while(listen_for_events == SAHPI_TRUE)' loop */
 
         return (gpointer *) SA_OK;
@@ -293,6 +314,7 @@ void oa_soap_error_handling(struct oh_handler_state *oh_handler,
                             struct oa_info *oa)
 {
         SaErrorT rv = SA_OK;
+        int is_switchover = SAHPI_FALSE;
         SaHpiBoolT is_oa_accessible = SAHPI_FALSE;
         struct oa_soap_handler *oa_handler = NULL;
         SaHpiInt32T error_code;
@@ -304,6 +326,10 @@ void oa_soap_error_handling(struct oh_handler_state *oh_handler,
         }
 
         oa_handler = (struct oa_soap_handler *) oh_handler->data;
+
+        /* If the OA is not PRESENT, then do not even try. Just get out */
+        if ( oa->oa_status == OA_ABSENT ) 
+                return;
 
         /* Check whether OA was present. If not, event_con will be NULL */
         g_mutex_lock(oa->mutex);
@@ -367,7 +393,7 @@ void oa_soap_error_handling(struct oh_handler_state *oh_handler,
                          */
                 	OA_SOAP_CHEK_SHUTDOWN_REQ(oa_handler, oa_handler->mutex,
 						  oa->mutex, NULL);
-                        rv = oa_soap_re_discover_resources(oh_handler, oa);
+                        rv = oa_soap_re_discover_resources(oh_handler, oa, is_switchover);
                         g_mutex_unlock(oa->mutex);
                         g_mutex_unlock(oa_handler->mutex);
                         if (rv != SA_OK) {
@@ -455,9 +481,9 @@ void process_oa_out_of_access(struct oh_handler_state *oh_handler,
 
                                 oa_was_removed = SAHPI_TRUE;
                                 /* OA is not present,
-                                 * wait for 5 seconds and check again
+                                 * wait for 30 seconds and check again
                                  */
-                                sleep(5);
+                                sleep(30);
                         }
                 }
 
@@ -523,8 +549,13 @@ void process_oa_out_of_access(struct oh_handler_state *oh_handler,
                         if (rv == SA_OK) {
                                 is_oa_reachable = SAHPI_TRUE;
                         } else {
-                                /* Wait for 2 seconds and try again */
-                                sleep(2);
+                                /* If switchover is in progress, then sleep longer */
+                                if (( oa_handler->oa_switching == SAHPI_TRUE ) ||
+                                    ( oa->oa_status == OA_ABSENT )) 
+                                        sleep(30);
+                                else
+                                        sleep(2);
+                                dbg("check_oa_status failed, oa_status is %d\n",oa->oa_status);
                                 /* OA is not accessible. Restart the timer */
                                 g_timer_start(timer);
                                 /* Double the timeout value until it reaches
@@ -566,6 +597,7 @@ void process_oa_events(struct oh_handler_state *oh_handler,
                        struct getAllEventsResponse *response)
 {
         SaErrorT rv;
+        SaHpiInt32T loc=0;
         struct eventInfo event;
         struct oa_soap_handler *oa_handler = NULL;
 
@@ -894,6 +926,7 @@ void process_oa_events(struct oh_handler_state *oh_handler,
                                     "-- Not processed");
                                 break;
                         case EVENT_MEDIA_INSERTED:
+                                /* EVENT_OA_INFO that arrives later is processed */
                                 dbg("EVENT_MEDIA_INSERTED -- Not processed");
                                 break;
                         case EVENT_MEDIA_REMOVED:
@@ -1183,7 +1216,7 @@ void process_oa_events(struct oh_handler_state *oh_handler,
                                 dbg("EVENT_BLADE_INSERT_COMPLETED");
                                 rv = process_server_insertion_event(oh_handler,
                                                                  oa->event_con2,
-                                                                 &event);
+                                                                 &event, loc);
                                 break;
                         case EVENT_EBIPA_INFO_CHANGED_EX:
                                 dbg("EVENT_EBIPA_INFO_CHANGED_EX "

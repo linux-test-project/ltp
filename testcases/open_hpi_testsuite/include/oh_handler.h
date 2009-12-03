@@ -837,15 +837,15 @@ struct oh_abi_v2 {
                                 SaHpiBoolT disable);
 
         /***
-         * saHpiFumiRollback
+         * saHpiFumiRollbackStart
          **/
-        SaErrorT (*rollback_fumi)(
+        SaErrorT (*start_fumi_rollback)(
                                 void *hnd,
                                 SaHpiResourceIdT id,
                                 SaHpiFumiNumT num);
 
         /***
-         * saHpiFumiRollback
+         * saHpiFumiActivate
          **/
         SaErrorT (*activate_fumi)(
                                 void *hnd,

@@ -880,8 +880,8 @@ int oh_load_plugin_functions(struct oh_plugin *plugin, struct oh_abi_v2 **abi)
                                                 "oh_get_fumi_autorollback_disable");
         (*abi)->set_fumi_autorollback_disable = lt_dlsym(plugin->dl_handle,
                                                 "oh_set_fumi_autorollback_disable");
-        (*abi)->rollback_fumi             = lt_dlsym(plugin->dl_handle,
-                                                "oh_rollback_fumi");
+        (*abi)->start_fumi_rollback       = lt_dlsym(plugin->dl_handle,
+                                                "oh_start_fumi_rollback");
         (*abi)->activate_fumi             = lt_dlsym(plugin->dl_handle,
                                                 "oh_activate_fumi");
         (*abi)->start_fumi_activate       = lt_dlsym(plugin->dl_handle,

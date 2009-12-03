@@ -26,6 +26,7 @@ extern "C" {
 #include "ipmi_mc_vendor.h"
 #include "ipmi_mc_vendor_force.h"
 #include "ipmi_mc_vendor_intel.h"
+#include "ipmi_mc_vendor_sun.h"
 #include "ipmi_mc_vendor_fix_sdr.h"
 #include "ipmi_domain.h"
 #include "ipmi_control_fan.h"
@@ -83,6 +84,8 @@ cIpmiMcVendorFactory::InitFactory()
        m_factory->Register( new cIpmiMcVendorIntelBmc( 0x0900 ) ); /*HSC*/
        m_factory->Register( new cIpmiMcVendorIntelBmc( 0x0911 ) ); /*HSC*/
        m_factory->Register( new cIpmiMcVendorIntelBmc( 0x0A0C ) ); /*HSC*/
+       // Sun BMC specific stuff
+       m_factory->Register( new cIpmiMcVendorSunBmc( 0x4701 ) );
 
        // Enabling this code will fix badly formed SDR
        // found on various boards tested with the plugin

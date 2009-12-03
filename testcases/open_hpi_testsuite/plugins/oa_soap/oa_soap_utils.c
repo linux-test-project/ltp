@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2008, Hewlett-Packard Development Company, LLP
+ * Copyright (C) 2007-2009, Hewlett-Packard Development Company, LLP
  *                     All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or
@@ -32,6 +32,7 @@
  *      Raghavendra P.G. <raghavendra.pg@hp.com>
  *      Vivek Kumar <vivek.kumar2@hp.com>
  *      Shuah Khan <shuah.khan@hp.com>
+ *      Mohan Devarajulu <mohan@fc.hp.com>
  *
  * This file implements all the utility functions which will be useful of oa
  * soap functioning. Majority of the functions are helper functions for
@@ -1029,9 +1030,9 @@ void create_oa_connection(struct oa_soap_handler *oa_handler,
                         } else {
                                 g_mutex_unlock(oa->mutex);
                                 /* OA is not present,
-                                 * wait for 5 seconds and check again
+                                 * wait for 30 seconds and check again
                                  */
-                                sleep(5);
+                                sleep(30);
                         }
                 }
 
@@ -1048,7 +1049,7 @@ void create_oa_connection(struct oa_soap_handler *oa_handler,
                 g_mutex_unlock(oa->mutex);
 
                 rv = initialize_oa_con(oa, user_name, password);
-                if (rv != SA_OK) {
+                if ((rv != SA_OK) && (oa->oa_status != OA_ABSENT)) {
                         /* OA may not be reachable
                          * wait for 2 seconds and check again
                          */

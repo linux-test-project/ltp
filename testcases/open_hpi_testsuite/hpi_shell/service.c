@@ -1005,52 +1005,6 @@ SaErrorT find_rdr_by_num(SaHpiSessionIdT sessionid, SaHpiResourceIdT resourceid,
 }
 
 char *hex_codes = "0123456789ABCDEF";
-char *bcdplus_codes = "0123456789 -.???";
-
-char ascii6_codes[64] = {
-	' ', '!', '"', '#', '$',  '%', '&', '\'',
-	'(', ')', '*', '+', ',',  '-', '.', '/', 
-	'0', '1', '2', '3', '4',  '5', '6', '7',
-	'8', '9', ':', ';', '<',  '=', '>', '?',
-	'&', 'A', 'B', 'C', 'D',  'E', 'F', 'G',
-	'H', 'I', 'J', 'K', 'L',  'M', 'N', 'O', 
-	'P', 'Q', 'R', 'S', 'T',  'U', 'V', 'W',
-	'X', 'Y', 'Z', '[', '\\', ']', '^', '_' };
-
-static int ascii6tostring(char *ascii, int n_ascii, char *str, int n)
-{
-	int	ascii_ind = 0, ascii_len, i;
-	int	res = 0;
-	char	byte = 0;
-
-	ascii_len = n_ascii * 8 / 6;
-	memset(str, 0, n);
-	if (ascii_len > n) ascii_len = n;
-	for (i = 0; i < ascii_len; i++) {
-		switch (i % 4) {
-			case 0:
-				byte = ascii[ascii_ind++];
-				res = byte & 0x3F;
-				break;
-			case 1:
-				res = (byte & 0xC0) >> 6;
-				byte = ascii[ascii_ind++];
-				res += (byte & 0x0F) << 2;
-				break;
-			case 2:
-				res = (byte & 0xF0) >> 4;
-				byte = ascii[ascii_ind++];
-				res += (byte & 0x03) << 4;
-				break;
-			case 3:
-				res = byte & 0xFC;
-				res >>= 2;
-				break;
-		};
-		str[i] = ascii6_codes[res];
-	};
-	return(ascii_len);
-}
 
 Pr_ret_t print_text_buffer_type(char *mes, SaHpiTextBufferT *buf, char *meslast,
 	hpi_ui_print_cb_t proc)
@@ -1093,38 +1047,9 @@ void get_text_buffer_text(char *mes, SaHpiTextBufferT *buf, char *meslast,
 			strcat(outbuf, "UNICODE does not implement");
 			break;
 		case SAHPI_TL_TYPE_BCDPLUS:
-			len = buf->DataLength * 2 + 1;
-			tmp = malloc(len);
-			memset(tmp, 0, len);
-			tmp_ind = 0;
-			memset(tmp, 0, len);
-			for (i = 0; i < buf->DataLength; i++) {
-				c = buf->Data[i] & 0x0F;
-				tmp[tmp_ind++] = bcdplus_codes[c];
-				c = (buf->Data[i] & 0xF0) >> 4;
-				tmp[tmp_ind++] = bcdplus_codes[c];
-			};
-			strcat(outbuf, tmp);
-			free(tmp);
-			break;
 		case SAHPI_TL_TYPE_ASCII6:
-			len = buf->DataLength * 8 / 6;
-			tmp = malloc(len + 1);
-			memset(tmp, 0, len + 1);
-			i = ascii6tostring((char *)(buf->Data), buf->DataLength,
-				tmp, len);
-			if (i == 0) break;
-			strcat(outbuf, tmp);
-			free(tmp);
-			break;
 		case SAHPI_TL_TYPE_TEXT:
-			/* Ensure NULL terminated string */
-			if ( buf->DataLength < SAHPI_MAX_TEXT_BUFFER_LENGTH ) {
-			     buf->Data[buf->DataLength] = '\0';
-			} else {
-			     buf->Data[SAHPI_MAX_TEXT_BUFFER_LENGTH - 1] = '\0';
-			}
-			strcat(outbuf, (char *)(buf->Data));
+			strncat(outbuf, (char *)(buf->Data), buf->DataLength);
 			break;
 		case SAHPI_TL_TYPE_BINARY:
 			len = buf->DataLength * 2 + 1;

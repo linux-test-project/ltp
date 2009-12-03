@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2008, Hewlett-Packard Development Company, LLP
+ * Copyright (C) 2007-2009, Hewlett-Packard Development Company, LLP
  *                     All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or
@@ -30,6 +30,7 @@
  *
  * Author(s)
  *     Bryan Sutula <Bryan.Sutula@hp.com>
+ *      Mohan Devarajulu <mohan@fc.hp.com>
  *
  *
  * This file implements support functions that are used to perform SOAP
@@ -530,7 +531,7 @@ SOAP_CON        *soap_open(char *server,
 
         /* Login to the OA, saving session information */
         if (soap_login(connection)) {
-                err("OA login failed");
+                err("OA login failed for server %s", connection->server);
                 if (oh_ssl_ctx_free(connection->ctx)) {
                         err("oh_ssl_ctx_free() failed");
                 }
@@ -1095,7 +1096,7 @@ int             soap_call(SOAP_CON *connection)
                  */
                 if (! connection->session_id[0]) {
                         if (soap_login(connection)) {
-                                err("OA login failed");
+                                err("OA login failed in soap call");
                                 return(-1);
                         }
                 } /* If we don't have a session key */

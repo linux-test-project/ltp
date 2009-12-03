@@ -70,8 +70,8 @@ static int ir_xml_scan_health_at_a_glance( ilo2_ribcl_handler_t *, xmlNodePtr);
 static int ir_xml_stat_to_reading( char *);
 static int ir_xml_scan_smbios_1( ilo2_ribcl_handler_t *, xmlNodePtr);
 static int ir_xml_scan_smbios_4( ilo2_ribcl_handler_t *, xmlNodePtr);
-static int ir_xml_scan_smbios_17( ilo2_ribcl_handler_t *, xmlNodePtr);
-static int ir_xml_record_memdata( ilo2_ribcl_handler_t *, char *, char *,
+static int ir_xml_scan_smbios_17( ilo2_ribcl_handler_t *, xmlNodePtr, int *);
+static int ir_xml_record_memdata( ilo2_ribcl_handler_t *, int *, char *, char *,
 		char *);
 static xmlChar *ir_xml_smb_get_value( char *, xmlNodePtr);
 static int ir_xml_insert_logininfo( char *, int, char *, char *, char *);
@@ -254,6 +254,7 @@ int ir_xml_parse_discoveryinfo( ilo2_ribcl_handler_t *ir_handler,
 	xmlDocPtr doc;
 	xmlNodePtr h_node;
 	xmlChar *typ;
+	int mem_slotindex;
 	int ret;
 
 	/* Convert the RIBCL command output into a single XML document,
@@ -291,6 +292,7 @@ int ir_xml_parse_discoveryinfo( ilo2_ribcl_handler_t *ir_handler,
 	 * all of them, rather that calling  ir_xml_find_node() */
 
 	h_node = h_node->xmlChildrenNode;
+	mem_slotindex = 1;
 
 	while( h_node != NULL){
 
@@ -311,7 +313,8 @@ int ir_xml_parse_discoveryinfo( ilo2_ribcl_handler_t *ir_handler,
 			} else if( !xmlStrcmp( typ, (const xmlChar *)"17")){
 				/* Scan type 17 node for memory */
 				ret = ir_xml_scan_smbios_17( ir_handler,
-								h_node);
+							     h_node,
+							     &mem_slotindex);
 			}
 
 			if( ret != RIBCL_SUCCESS){
@@ -404,6 +407,7 @@ int ir_xml_parse_hostdata( ilo2_ribcl_handler_t *ir_handler, char *ribcl_outbuf)
 	xmlDocPtr doc;
 	xmlNodePtr hd_node;
 	xmlChar *typ;
+	int mem_slotindex;
 	int ret;
 
 	/* Convert the RIBCL command output into a single XML document,
@@ -441,6 +445,7 @@ int ir_xml_parse_hostdata( ilo2_ribcl_handler_t *ir_handler, char *ribcl_outbuf)
 	 * all of them, rather that calling  ir_xml_find_node() */
 
 	hd_node = hd_node->xmlChildrenNode;
+	mem_slotindex = 1;
 
 	while( hd_node != NULL){
 
@@ -461,7 +466,8 @@ int ir_xml_parse_hostdata( ilo2_ribcl_handler_t *ir_handler, char *ribcl_outbuf)
 			} else if( !xmlStrcmp( typ, (const xmlChar *)"17")){
 				/* Scan type 17 node for memory */
 				ret = ir_xml_scan_smbios_17( ir_handler,
-								 hd_node);
+							     hd_node,
+							     &mem_slotindex);
 			}
 
 			if( ret != RIBCL_SUCCESS){
@@ -619,7 +625,8 @@ int ir_xml_parse_uid_status(char *ribcl_outbuf, int *uid_status,
 	else {
 		xmlFree( status);
 		xmlFreeDoc( doc);
-		err("ir_xml_parse_uid_status(): Unkown UID status."); 
+		err("ir_xml_parse_uid_status(): Unknown UID status : %s",
+			(char *)status);
 		return(-1);
 	}
 
@@ -2117,6 +2124,7 @@ static int ir_xml_scan_smbios_4( ilo2_ribcl_handler_t *ir_handler,
  * ir_xml_scan_smbios_17
  * @ir_handler: Ptr to this instance's custom handler.
  * @b_node: porinter to an SMBIOS_RECORD node of type 17.
+ * @mem_slotindex: pointer to an integer value for the current slot index.
  *
  * This routine will parse a SMBIOS_RECORD type 17 node, which should contain
  * memory DIMM information. We currently extract the label, size and speed.
@@ -2134,7 +2142,8 @@ static int ir_xml_scan_smbios_4( ilo2_ribcl_handler_t *ir_handler,
  * Return value: RIBCL_SUCCESS if success, -1 if failure.
  **/
 static int ir_xml_scan_smbios_17( ilo2_ribcl_handler_t *ir_handler,
-			xmlNodePtr b_node)
+			xmlNodePtr b_node,
+			int *mem_slotindex)
 {
 
 	xmlChar *mem_label = NULL;
@@ -2149,11 +2158,16 @@ static int ir_xml_scan_smbios_17( ilo2_ribcl_handler_t *ir_handler,
 	
 	if( xmlStrcmp( mem_size, (xmlChar *)"not installed") != 0 ){
 
-		ret = ir_xml_record_memdata( ir_handler, (char *)mem_label,
+		/* Record data for a populated DIMM slot */
+		ret = ir_xml_record_memdata( ir_handler, mem_slotindex,
+			(char *)mem_label,
 			(char *)mem_size, (char *) mem_speed);
 
 
 	}
+
+	/* Increment the slot index for both populated and unpopulated slots */
+	(*mem_slotindex)++;
 
 	if( mem_label){
 		xmlFree( mem_label);
@@ -2174,6 +2188,7 @@ static int ir_xml_scan_smbios_17( ilo2_ribcl_handler_t *ir_handler,
 /**
  * ir_xml_record_memdata
  * @ir_handler:	ptr to the ilo2_ribcl plugin private handler.
+ * @memcount:   ptr to an int that contains a mem slot count.
  * @memlabel:	string memory DIMM label from iLO2.
  * @memsize:	string memory DIMM size from iLO2.
  * @memspeed:	string memory DIMM speed from iLO2.
@@ -2191,9 +2206,11 @@ static int ir_xml_scan_smbios_17( ilo2_ribcl_handler_t *ir_handler,
  * Return value: RIBCL_SUCCESS if success, -1 if failure. 
  **/
 static int ir_xml_record_memdata( ilo2_ribcl_handler_t *ir_handler,
+			int *memcount,
 			char *memlabel, char *memsize, char *memspeed)
 {
 	int dimmindex = 0;
+	int procindex = 0;
 	int ret;
 	ir_memdata_t *dimmdat;
 
@@ -2204,10 +2221,27 @@ static int ir_xml_record_memdata( ilo2_ribcl_handler_t *ir_handler,
 
 	ret = sscanf( (char *)memlabel, "DIMM %d", &dimmindex);
 	if( ret != 1){
-		/* We didn't parse the DIMM label correctly */
-		err("ir_xml_record_memdata: incorrect DIMM label string: %s",
+
+		/* Try for an alternate format. We will also accept a label
+		 * of the format 'PROC k DIMM nX' where k and n are integers
+		 * and X is a capital letter. Since n may not be unique across
+		 * all DIMMS, we will use the memcount parameter as the index
+		 * for the DIMM. */
+
+		ret = sscanf( (char*)memlabel, "PROC %d DIMM %d", &procindex,
+			      &dimmindex);
+
+		/* In this case, we use the memory slot count passed to us via
+		 * parameter memcount as the memory index. */
+		dimmindex = *memcount;  
+
+		if( ret != 2){
+
+			/* We didn't parse the DIMM label correctly */
+			err("ir_xml_record_memdata: incorrect DIMM label string: %s",
 			memlabel);
-		return( -1);
+			return( -1);
+		}
 	}
 
 	/* The index for this DIMM should be between 1 and
@@ -2436,7 +2470,11 @@ static int ir_xml_scan_response( xmlNodePtr RIBCLnode, char *ilostring)
  *
  * The libxml2 parser also doesn't like multiple occurences of the XML
  * header <?xml version=X.X ?>, so we filter those out as we encounter
- * them druing the buffer copy. 
+ * them during the buffer copy. 
+ *
+ * The DL380 G6 also has a <DRIVES> section that causes errors with the
+ * libxml2 parser. Since we don't use this information, we filter this out
+ * during the buffer copy as well.
  *
  * Return value: Ptr to the new buffer on success, or NULL if failure.
  **/
@@ -2446,11 +2484,15 @@ static char *ir_xml_convert_buffer( char* oldbuffer, int *ret_size)
 	int newsize;
 
 	static char declmatch[] = "<?xml version=";
+	static char drives_start[] ="<DRIVES>";
+	static char drives_end[] ="</DRIVES>";
 	static char prefix[] = "<RIBCL_RESPONSE_OUTPUT>";
 	static char suffix[] = "</RIBCL_RESPONSE_OUTPUT>";
 	int prefix_len = (int)strlen( prefix);
 	int suffix_len = (int)strlen( suffix);
 	int matchlen = (int)strlen( declmatch);
+	int drives_startlen = (int)(strlen(drives_start));
+	int drives_endlen = (int)(strlen(drives_end));
 	char *newbuffer;
 	char *retbuffer;
 
@@ -2488,7 +2530,24 @@ static char *ir_xml_convert_buffer( char* oldbuffer, int *ret_size)
 				oldbuffer++; /* Skip trailing '>' */
 				continue;
 			}
-		}
+			/* Filter out <DRIVES>...</DRIVES> section */
+			else if( strncmp( oldbuffer, drives_start,
+							drives_startlen) == 0){
+
+				while( strncmp( oldbuffer, drives_end,
+								drives_endlen)){
+					/* Unclosed XML decl - Error */
+					if( *oldbuffer == '\0'){
+						free( newbuffer);
+						return( NULL);
+					}
+					oldbuffer++;
+				}
+				oldbuffer += drives_endlen;
+				continue;
+			}
+
+		} /* end if *oldbuffer == '<' */
 
 		*newbuffer++ = *oldbuffer++;
 	}

@@ -323,7 +323,7 @@ SaErrorT oa_soap_set_fumi_source(void *oh_handler,
 }
 
 /**
- * oa_soap_rollback_fumi
+ * oa_soap_start_fumi_rollback
  *      @oh_handler:  Handler data pointer
  *      @resource_id: Resource ID
  *      @num:         FUMI number
@@ -338,11 +338,11 @@ SaErrorT oa_soap_set_fumi_source(void *oh_handler,
  *      SA_ERR_HPI_UNSUPPORTED_API - current oa_soap implementation does not
  *                                   support this API
  **/
- SaErrorT oa_soap_rollback_fumi(void *oh_handler,
+ SaErrorT oa_soap_start_fumi_rollback(void *oh_handler,
                                 SaHpiResourceIdT resource_id,
                                 SaHpiFumiNumT num)
 {
-        err("oa_soap_rollback_fumi not implemented");
+        err("oa_soap_start_fumi_rollback not implemented");
         return SA_ERR_HPI_UNSUPPORTED_API;
 }
 
@@ -442,10 +442,10 @@ void * oh_cancel_fumi_upgrade (void *,
                                 SaHpiBankNumT)
                 __attribute__ ((weak, alias("oa_soap_cancel_fumi_upgrade")));
 
-void * oh_rollback_fumi (void *,
+void * oh_start_fumi_rollback (void *,
                                 SaHpiResourceIdT,
                                 SaHpiFumiNumT)
-                __attribute__ ((weak, alias("oa_soap_rollback_fumi")));
+                __attribute__ ((weak, alias("oa_soap_start_fumi_rollback")));
 
 void * oh_activate_fumi (void *,
                                 SaHpiResourceIdT,

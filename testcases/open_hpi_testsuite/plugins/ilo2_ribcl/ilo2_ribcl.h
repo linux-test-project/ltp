@@ -98,7 +98,7 @@
  * RIBCL command and response buffer length - static for now.
  * Change to dynamic if need be.
  */
-#define ILO2_RIBCL_BUFFER_LEN	4096
+#define ILO2_RIBCL_BUFFER_LEN	4096 
 
 /*
  * Power and reset status definitions
@@ -346,11 +346,11 @@ typedef struct ir_fwdata{
 } ir_fwdata_t;
 
 #define ILO2_RIBCL_DISCOVER_CPU_MAX 16
-#define ILO2_RIBCL_DISCOVER_MEM_MAX 16
+#define ILO2_RIBCL_DISCOVER_MEM_MAX 32
 #define ILO2_RIBCL_DISCOVER_FAN_MAX 16
 #define ILO2_RIBCL_DISCOVER_PSU_MAX 8
 #define ILO2_RIBCL_DISCOVER_VRM_MAX 8
-#define ILO2_RIBCL_DISCOVER_TS_MAX  16
+#define ILO2_RIBCL_DISCOVER_TS_MAX  48
 
 #define ILO2_RIBCL_CHASSIS_INDEX    -1;	/* Index is not aplicable to chassis */
  

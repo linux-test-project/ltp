@@ -119,7 +119,7 @@ static GTokenType get_next_good_token(GScanner *oh_scanner) {
         next_token = g_scanner_get_next_token(oh_scanner);
         while (next_token != G_TOKEN_RIGHT_CURLY &&
                next_token != HPI_CLIENT_CONF_TOKEN_HOST &&
-               next_token != HPI_CLIENT_CONF_TOKEN_HOST) {
+               next_token != HPI_CLIENT_CONF_TOKEN_PORT) {
                 if (next_token == G_TOKEN_EOF) break;
                 next_token = g_scanner_get_next_token(oh_scanner);
         }

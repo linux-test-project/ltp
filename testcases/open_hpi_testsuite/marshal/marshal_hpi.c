@@ -1552,14 +1552,14 @@ static const cMarshalType *saHpiFumiAutoRollbackDisableSetOut[] =
 };
 
 
-static const cMarshalType *saHpiFumiRollbackIn[]=
+static const cMarshalType *saHpiFumiRollbackStartIn[]=
 {
         &SaHpiSessionIdType,
         &SaHpiResourceIdType,
         &SaHpiFumiNumType,
         0
 };
-static const cMarshalType *saHpiFumiRollbackOut[] =
+static const cMarshalType *saHpiFumiRollbackStartOut[] =
 {
         &SaErrorType,
         0
@@ -2089,7 +2089,7 @@ static cHpiMarshal hpi_marshal[] =
   dHpiMarshalEntry( saHpiFumiUpgradeStatusGet ),
   dHpiMarshalEntry( saHpiFumiTargetVerifyStart ),
   dHpiMarshalEntry( saHpiFumiUpgradeCancel ),
-  dHpiMarshalEntry( saHpiFumiRollback ),
+  dHpiMarshalEntry( saHpiFumiRollbackStart ),
   dHpiMarshalEntry( saHpiFumiActivate ),
   dHpiMarshalEntry( saHpiHotSwapPolicyCancel ),
   dHpiMarshalEntry( saHpiResourceActiveSet ),

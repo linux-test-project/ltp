@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2008, Hewlett-Packard Development Company, LLP
+ * Copyright (C) 2007-2009, Hewlett-Packard Development Company, LLP
  *                     All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or
@@ -30,6 +30,7 @@
  *
  * Author(s)
  *      Raghavendra P.G. <raghavendra.pg@hp.com>
+ *      Mohan Devarajulu <mohan@fc.hp.com>
  *
  * This file has the OA related events handling
  *
@@ -150,6 +151,7 @@ SaErrorT process_oa_failover_event(struct oh_handler_state *oh_handler,
         GTimer *timer = NULL;
         gulong micro_seconds;
         gdouble time_elapsed = 0;
+        int is_switchover = SAHPI_TRUE;
 
         if (oh_handler == NULL || oa == NULL) {
                 err("Invalid parameters");
@@ -167,8 +169,9 @@ SaErrorT process_oa_failover_event(struct oh_handler_state *oh_handler,
                 return SA_OK;
         }
 
-        err("OA got switched over");
+        err("OA switching started");
         oa_handler = (struct oa_soap_handler *) oh_handler->data;
+        oa_handler->oa_switching=SAHPI_TRUE;
 
         /* Always lock the oa_handler mutex and then oa_info mutex
          * This is to avoid the deadlock
@@ -272,6 +275,7 @@ SaErrorT process_oa_failover_event(struct oh_handler_state *oh_handler,
         }
 	OA_SOAP_CHEK_SHUTDOWN_REQ(oa_handler, NULL, NULL, NULL);
 
+
         /* Check the OA staus there may be change in OA state */
         rv = check_oa_status(oa_handler, oa, oa->event_con);
         if (rv != SA_OK) {
@@ -290,6 +294,8 @@ SaErrorT process_oa_failover_event(struct oh_handler_state *oh_handler,
         g_mutex_lock(oa->mutex);
         if (oa->oa_status != ACTIVE) {
                 g_mutex_unlock(oa->mutex);
+                oa_handler->oa_switching=SAHPI_FALSE;
+                err("OA status already changed. OA switching completed");
                 return SA_OK;
         }
         g_mutex_unlock(oa->mutex);
@@ -306,9 +312,13 @@ SaErrorT process_oa_failover_event(struct oh_handler_state *oh_handler,
          */
 	OA_SOAP_CHEK_SHUTDOWN_REQ(oa_handler, oa_handler->mutex, oa->mutex,
 				  NULL);
-        rv = oa_soap_re_discover_resources(oh_handler, oa);
+        rv = oa_soap_re_discover_resources(oh_handler, oa, is_switchover);
         g_mutex_unlock(oa->mutex);
         g_mutex_unlock(oa_handler->mutex);
+
+        /* At this point assume that switchover is complete */
+        oa_handler->oa_switching=SAHPI_FALSE;
+        err("OA switching completed");
 
         if (rv != SA_OK) {
                 err("Re-discovery failed for OA %s", oa->server);

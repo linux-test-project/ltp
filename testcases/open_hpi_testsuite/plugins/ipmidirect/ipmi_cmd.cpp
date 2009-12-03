@@ -46,6 +46,7 @@ static cConvMap netfn_map[] =
   { "Storage "   , eIpmiNetfnStorage     },
   { "Transport"  , eIpmiNetfnTransport   },
   { "Picmg "     , eIpmiNetfnPicmg       },
+  { "Oem"        , eIpmiNetfnOem         },
   { 0, 0 }
 };
  

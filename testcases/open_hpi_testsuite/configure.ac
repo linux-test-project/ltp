@@ -5,7 +5,7 @@ dnl   various hacks by Sean Dague <http://dague.net/sean> 4/23/03
 
 
 AC_PREREQ(2.57)
-AC_INIT(openhpi, 2.14.0)
+AC_INIT(openhpi, 2.14.1)
 AC_CONFIG_SRCDIR(openhpi.spec.in)
 AM_INIT_AUTOMAKE([1.8])
 
@@ -23,7 +23,7 @@ AH_BOTTOM([#endif /* __OPENHPI_CONFIG_H */])
 # minor version: 11 = 11
 # patch version: 4  = 4
 #
-HPI_LIB_VERSION=16:0:14
+HPI_LIB_VERSION=16:1:14
 HPI_PKG=$PACKAGE_NAME
 HPI_UTIL_PKG=${PACKAGE_NAME}utils
 HPI_CLIENT_PKG=${PACKAGE_NAME}client
@@ -44,15 +44,32 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
 
+enabled_non32bit="no"
+AC_ARG_ENABLE([non32bit-int],
+    [  --enable-non32bit-int   Allow compile on non 32bit int architectures [[default=no]]],
+    [if test "x$enableval" = "xyes"; then
+        enabled_non32bit="yes"
+    fi])
+
 dnl die on int != 32bits.  This is too instrumental to our code right now.
 dnl AC_MSG_CHECKING(int is 4 bytes)
 OH_SET_SIZES
 if test "x$OH_SIZEOF_INT" != "x4"; then
-    AC_MSG_ERROR([
-*** int is not 4 bytes, it is $OH_SIZEOF_INT bytes on this platform
-*** undefined behavior will result
-*** please contact the openhpi development team to fix this
-])
+    if test "x$enabled_non32bit" = "xyes"; then
+        AC_MSG_WARN([
+*** Size of int is not 4 bytes, it is $OH_SIZEOF_INT bytes on this platform.
+*** The --enable_non32bit_int arg has been used to force compilation regardless.
+*** Execution on this platform is not supported and could produce undefined
+*** behavior.
+        ])
+    else
+        AC_MSG_ERROR([
+*** Size of int is not 4 bytes, it is $OH_SIZEOF_INT bytes on this platform.
+*** Execution on this platform is not supported and could produce undefined
+*** behavior.
+*** Please contact the openhpi development team to fix this
+        ])
+    fi
 fi
 
 AM_CONDITIONAL(CROSS_COMPILATION, test x$cross_compiling = xyes)
@@ -93,6 +110,15 @@ fi
 exact_version=`pkg-config --modversion $GLIB`;
 GLIB_CFLAGS=`pkg-config --cflags $GLIB gthread-2.0`
 GLIB_LIBS=`pkg-config --libs $GLIB gthread-2.0`
+
+# On some versions of Solaris the pkg-config file for gthread-2.0 contains a
+# compiler option, '-mt', that is incompatible with gcc
+case $host_os in
+    solaris2.10)
+        GLIB_CFLAGS=`echo $GLIB_CFLAGS | sed -e 's/-mt/-D_REENTRANT/g'`
+        GLIB_LIBS=`echo $GLIB_LIBS | sed -e 's/-mt//g'`
+        ;;
+esac
 
 AC_MSG_CHECKING(for GLIB - version >= $GLIB_REQUIRED_VERSION)
 AC_MSG_RESULT(yes (version $exact_version))
@@ -154,7 +180,6 @@ AC_ARG_ENABLE([daemon],
     [openhpid_static="no"])
 
 AM_CONDITIONAL(OPENHPID_STATIC, test x$openhpid_static = xyes)
-
 
 AC_ARG_ENABLE([clients],
     [  --enable-clients        build HPI client programs [[default=yes]]],
