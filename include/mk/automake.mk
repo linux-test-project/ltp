@@ -54,7 +54,7 @@ autoheader: include/config.h.in
 include:
 	mkdir -p "$@"
 
-include/config.h.in: configure.ac $(wildcard m4/*.m4) m4/ltp-version.m4
+include/config.h.in: configure.ac $(wildcard m4/*.m4) m4/ltp-version.m4 aclocal.m4
 	$(AUTOHEADER)
 	touch $@
 
@@ -65,7 +65,7 @@ m4/ltp-version.m4: ChangeLog
 AUTOMAKE_FILES := config.guess config.sub install-sh missing stamp-h1
 automake: aclocal $(AUTOMAKE_FILES)
 $(AUTOMAKE_FILES): m4/Makefile.in
-m4/Makefile.in: m4/Makefile.am
+m4/Makefile.in: m4/Makefile.am aclocal.m4
 	$(AUTOMAKE) -c -a
 
 .PHONY: ac-clean ac-distclean ac-maintainer-clean
