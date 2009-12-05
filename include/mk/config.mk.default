@@ -28,6 +28,7 @@ AR			:= ar
 CC			:= gcc
 LEX			:= flex
 RANLIB			:= ranlib
+STRIP			:= strip
 YACC			:= bison -y
 
 #AIO_LIBS		:= -laio

@@ -28,6 +28,7 @@ AR			:= @AR@
 CC			:= @CC@
 LEX			:= @LEX@
 RANLIB			:= @RANLIB@
+STRIP			:= @STRIP@
 YACC			:= @YACC@
 
 AIO_LIBS		:= @AIO_LIBS@
