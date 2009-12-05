@@ -596,7 +596,7 @@ $LTPBIN/tst_resm TINFO "TEST #10: file command recognizes $KERNEL file"
 #>2      leshort         x       \b, first line number %d
 
 # Red Hat creates a user-mode-linux vmlinuz file (ends in .uml) - ignore it
-KERNFILE=$(find /boot ! -type l -name "$KERNEL*" | grep -v '.uml' | tail -1)
+KERNFILE=$(find /boot ! -type l -name "$KERNEL*" | grep -v '.uml' | tail -n 1)
 file $KERNFILE > $LTPTMP/file.out 2>&1
 
 if [ $? -eq 0 ]
