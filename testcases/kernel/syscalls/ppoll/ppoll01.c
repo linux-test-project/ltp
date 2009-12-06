@@ -74,6 +74,11 @@
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
 
+/* Older versions of glibc don't publish this constant's value. */
+#ifndef POLLRDHUP
+#define POLLRDHUP 0x2000
+#endif
+
 /* Extern Global Variables */
 extern int Tst_count; /* counter for tst_xxx routines.         */
 extern char *TESTDIR; /* temporary dir created by tst_tmpdir() */
