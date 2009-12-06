@@ -23,17 +23,7 @@ cat << EOF > "${output_pid}"
 
 #include <errno.h>
 #include <sys/syscall.h>
-
-/*
- * Allow callers to implement their own cleanup functions so that this doesn't
- * result in compile-time errors and folks get the granularity they desire
- * when writing testcases.
- */
-static void syscall_cleanup_stub(void) __attribute__ ((weakref ("cleanup")));
-
-#pragma GCC visibility push(hidden)
-static void cleanup(void);
-#pragma GCC visibility pop
+#include "cleanup.c"
 
 #define syscall(NR, ...) ({ \\
 	int __ret; \\
@@ -44,7 +34,7 @@ static void cleanup(void);
 		__ret = syscall(NR, ##__VA_ARGS__); \\
 	} \\
 	if (__ret == -1 && errno == ENOSYS) { \\
-		tst_brkm(TCONF, syscall_cleanup_stub, \\
+		tst_brkm(TCONF, CLEANUP, \\
 			"syscall " #NR " not supported on your arch"); \\
 		errno = ENOSYS; \\
 	} \\

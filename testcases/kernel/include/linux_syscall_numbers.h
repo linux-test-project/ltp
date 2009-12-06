@@ -15,17 +15,7 @@
 
 #include <errno.h>
 #include <sys/syscall.h>
-
-/*
- * Allow callers to implement their own cleanup functions so that this doesn't
- * result in compile-time errors and folks get the granularity they desire
- * when writing testcases.
- */
-static void syscall_cleanup_stub(void) __attribute__ ((weakref ("cleanup")));
-
-#pragma GCC visibility push(hidden)
-static void cleanup(void);
-#pragma GCC visibility pop
+#include "cleanup.c"
 
 #define syscall(NR, ...) ({ \
 	int __ret; \
@@ -36,7 +26,7 @@ static void cleanup(void);
 		__ret = syscall(NR, ##__VA_ARGS__); \
 	} \
 	if (__ret == -1 && errno == ENOSYS) { \
-		tst_brkm(TCONF, syscall_cleanup_stub, \
+		tst_brkm(TCONF, CLEANUP, \
 			"syscall " #NR " not supported on your arch"); \
 		errno = ENOSYS; \
 	} \
@@ -8349,18 +8339,6 @@ static void cleanup(void);
 # ifndef __NR_futimesat
 #  define __NR_futimesat 0
 # endif
-# ifndef __NR_get_kernel_syms
-#  define __NR_get_kernel_syms 0
-# endif
-# ifndef __NR_get_mempolicy
-#  define __NR_get_mempolicy 0
-# endif
-# ifndef __NR_get_robust_list
-#  define __NR_get_robust_list 0
-# endif
-# ifndef __NR_get_thread_area
-#  define __NR_get_thread_area 0
-# endif
 # ifndef __NR_getcpu
 #  define __NR_getcpu 0
 # endif
@@ -8403,6 +8381,12 @@ static void cleanup(void);
 # ifndef __NR_getitimer
 #  define __NR_getitimer 0
 # endif
+# ifndef __NR_get_kernel_syms
+#  define __NR_get_kernel_syms 0
+# endif
+# ifndef __NR_get_mempolicy
+#  define __NR_get_mempolicy 0
+# endif
 # ifndef __NR_getpagesize
 #  define __NR_getpagesize 0
 # endif
@@ -8442,6 +8426,9 @@ static void cleanup(void);
 # ifndef __NR_getrlimit
 #  define __NR_getrlimit 0
 # endif
+# ifndef __NR_get_robust_list
+#  define __NR_get_robust_list 0
+# endif
 # ifndef __NR_getrusage
 #  define __NR_getrusage 0
 # endif
@@ -8453,6 +8440,9 @@ static void cleanup(void);
 # endif
 # ifndef __NR_getsockopt
 #  define __NR_getsockopt 0
+# endif
+# ifndef __NR_get_thread_area
+#  define __NR_get_thread_area 0
 # endif
 # ifndef __NR_gettid
 #  define __NR_gettid 0
@@ -8496,20 +8486,14 @@ static void cleanup(void);
 # ifndef __NR_io_cancel
 #  define __NR_io_cancel 0
 # endif
+# ifndef __NR_ioctl
+#  define __NR_ioctl 0
+# endif
 # ifndef __NR_io_destroy
 #  define __NR_io_destroy 0
 # endif
 # ifndef __NR_io_getevents
 #  define __NR_io_getevents 0
-# endif
-# ifndef __NR_io_setup
-#  define __NR_io_setup 0
-# endif
-# ifndef __NR_io_submit
-#  define __NR_io_submit 0
-# endif
-# ifndef __NR_ioctl
-#  define __NR_ioctl 0
 # endif
 # ifndef __NR_ioperm
 #  define __NR_ioperm 0
@@ -8522,6 +8506,12 @@ static void cleanup(void);
 # endif
 # ifndef __NR_ioprio_set
 #  define __NR_ioprio_set 0
+# endif
+# ifndef __NR_io_setup
+#  define __NR_io_setup 0
+# endif
+# ifndef __NR_io_submit
+#  define __NR_io_submit 0
 # endif
 # ifndef __NR_ipc
 #  define __NR_ipc 0
@@ -8694,11 +8684,11 @@ static void cleanup(void);
 # ifndef __NR_nfsservctl
 #  define __NR_nfsservctl 0
 # endif
-# ifndef __NR_ni_syscall
-#  define __NR_ni_syscall 0
-# endif
 # ifndef __NR_nice
 #  define __NR_nice 0
+# endif
+# ifndef __NR_ni_syscall
+#  define __NR_ni_syscall 0
 # endif
 # ifndef __NR_oldfstat
 #  define __NR_oldfstat 0
@@ -8733,11 +8723,11 @@ static void cleanup(void);
 # ifndef __NR_pciconfig_write
 #  define __NR_pciconfig_write 0
 # endif
-# ifndef __NR_perf_event_open
-#  define __NR_perf_event_open 0
-# endif
 # ifndef __NR_perfctr
 #  define __NR_perfctr 0
+# endif
+# ifndef __NR_perf_event_open
+#  define __NR_perf_event_open 0
 # endif
 # ifndef __NR_perfmonctl
 #  define __NR_perfmonctl 0
@@ -8847,6 +8837,9 @@ static void cleanup(void);
 # ifndef __NR_rmdir
 #  define __NR_rmdir 0
 # endif
+# ifndef __NR_rtas
+#  define __NR_rtas 0
+# endif
 # ifndef __NR_rt_sigaction
 #  define __NR_rt_sigaction 0
 # endif
@@ -8871,11 +8864,14 @@ static void cleanup(void);
 # ifndef __NR_rt_tgsigqueueinfo
 #  define __NR_rt_tgsigqueueinfo 0
 # endif
-# ifndef __NR_rtas
-#  define __NR_rtas 0
+# ifndef __NR_sched_getaffinity
+#  define __NR_sched_getaffinity 0
 # endif
 # ifndef __NR_sched_get_affinity
 #  define __NR_sched_get_affinity 0
+# endif
+# ifndef __NR_sched_getparam
+#  define __NR_sched_getparam 0
 # endif
 # ifndef __NR_sched_get_priority_max
 #  define __NR_sched_get_priority_max 0
@@ -8883,23 +8879,17 @@ static void cleanup(void);
 # ifndef __NR_sched_get_priority_min
 #  define __NR_sched_get_priority_min 0
 # endif
-# ifndef __NR_sched_getaffinity
-#  define __NR_sched_getaffinity 0
-# endif
-# ifndef __NR_sched_getparam
-#  define __NR_sched_getparam 0
-# endif
 # ifndef __NR_sched_getscheduler
 #  define __NR_sched_getscheduler 0
 # endif
 # ifndef __NR_sched_rr_get_interval
 #  define __NR_sched_rr_get_interval 0
 # endif
-# ifndef __NR_sched_set_affinity
-#  define __NR_sched_set_affinity 0
-# endif
 # ifndef __NR_sched_setaffinity
 #  define __NR_sched_setaffinity 0
+# endif
+# ifndef __NR_sched_set_affinity
+#  define __NR_sched_set_affinity 0
 # endif
 # ifndef __NR_sched_setparam
 #  define __NR_sched_setparam 0
@@ -8943,18 +8933,6 @@ static void cleanup(void);
 # ifndef __NR_sendto
 #  define __NR_sendto 0
 # endif
-# ifndef __NR_set_mempolicy
-#  define __NR_set_mempolicy 0
-# endif
-# ifndef __NR_set_robust_list
-#  define __NR_set_robust_list 0
-# endif
-# ifndef __NR_set_thread_area
-#  define __NR_set_thread_area 0
-# endif
-# ifndef __NR_set_tid_address
-#  define __NR_set_tid_address 0
-# endif
 # ifndef __NR_setdomainname
 #  define __NR_setdomainname 0
 # endif
@@ -8987,6 +8965,9 @@ static void cleanup(void);
 # endif
 # ifndef __NR_setitimer
 #  define __NR_setitimer 0
+# endif
+# ifndef __NR_set_mempolicy
+#  define __NR_set_mempolicy 0
 # endif
 # ifndef __NR_setpgid
 #  define __NR_setpgid 0
@@ -9021,11 +9002,20 @@ static void cleanup(void);
 # ifndef __NR_setrlimit
 #  define __NR_setrlimit 0
 # endif
+# ifndef __NR_set_robust_list
+#  define __NR_set_robust_list 0
+# endif
 # ifndef __NR_setsid
 #  define __NR_setsid 0
 # endif
 # ifndef __NR_setsockopt
 #  define __NR_setsockopt 0
+# endif
+# ifndef __NR_set_thread_area
+#  define __NR_set_thread_area 0
+# endif
+# ifndef __NR_set_tid_address
+#  define __NR_set_tid_address 0
 # endif
 # ifndef __NR_settimeofday
 #  define __NR_settimeofday 0
@@ -9159,14 +9149,14 @@ static void cleanup(void);
 # ifndef __NR_sync_file_range2
 #  define __NR_sync_file_range2 0
 # endif
-# ifndef __NR_sys_debug_setcontext
-#  define __NR_sys_debug_setcontext 0
-# endif
 # ifndef __NR_syscall
 #  define __NR_syscall 0
 # endif
 # ifndef __NR_syscalls
 #  define __NR_syscalls 0
+# endif
+# ifndef __NR_sys_debug_setcontext
+#  define __NR_sys_debug_setcontext 0
 # endif
 # ifndef __NR_sysfs
 #  define __NR_sysfs 0
@@ -9192,15 +9182,6 @@ static void cleanup(void);
 # ifndef __NR_timer_delete
 #  define __NR_timer_delete 0
 # endif
-# ifndef __NR_timer_getoverrun
-#  define __NR_timer_getoverrun 0
-# endif
-# ifndef __NR_timer_gettime
-#  define __NR_timer_gettime 0
-# endif
-# ifndef __NR_timer_settime
-#  define __NR_timer_settime 0
-# endif
 # ifndef __NR_timerfd
 #  define __NR_timerfd 0
 # endif
@@ -9212,6 +9193,15 @@ static void cleanup(void);
 # endif
 # ifndef __NR_timerfd_settime
 #  define __NR_timerfd_settime 0
+# endif
+# ifndef __NR_timer_getoverrun
+#  define __NR_timer_getoverrun 0
+# endif
+# ifndef __NR_timer_gettime
+#  define __NR_timer_gettime 0
+# endif
+# ifndef __NR_timer_settime
+#  define __NR_timer_settime 0
 # endif
 # ifndef __NR_times
 #  define __NR_times 0

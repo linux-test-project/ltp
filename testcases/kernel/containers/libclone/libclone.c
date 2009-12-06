@@ -16,6 +16,8 @@
 ***************************************************************************/
 #include "libclone.h"
 
+static void cleanup();
+
 int do_clone_tests(unsigned long clone_flags,
 			int(*fn1)(void *arg), void *arg1,
 			int(*fn2)(void *arg), void *arg2)

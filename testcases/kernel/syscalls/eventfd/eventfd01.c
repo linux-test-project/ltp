@@ -34,7 +34,6 @@
  *              -i n : Execute test n times.
  *              -I x : Execute test for x seconds.
  *              -P x : Pause for x seconds between iterations.
- *              -t   : Turn on syscall timing.
  *
  * History
  *	07/2008 Vijay Kumar
@@ -60,7 +59,8 @@
 
 #include <test.h>
 #include <usctest.h>
-#include <linux_syscall_numbers.h>
+#define CLEANUP cleanup
+#include "linux_syscall_numbers.h"
 
 #ifdef HAVE_LIBAIO_H
 #include <libaio.h>
@@ -690,11 +690,11 @@ int main(int argc, char **argv)
 
 		fd = myeventfd(einit, 0);
 		if (fd == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "error creating eventfd");
+			tst_brkm(TBROK|TERRNO, CLEANUP, "error creating eventfd");
 
 		ret = fcntl(fd, F_SETFL, O_NONBLOCK);
 		if (ret == -1)
-			tst_brkm(TBROK|TERRNO, cleanup, "error setting non-block mode");
+			tst_brkm(TBROK|TERRNO, CLEANUP, "error setting non-block mode");
 
 		read_test(fd, einit);
 		read_eagain_test(fd);
@@ -742,7 +742,7 @@ static void setup(void)
 /*
  * cleanup() - performs all ONE TIME cleanup for this test
  */
-void cleanup(void)
+static void cleanup(void)
 {
 	/*
 	 * print timing stats if that option was specified.

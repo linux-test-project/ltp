@@ -131,13 +131,13 @@ setup_sigsegv_sigaction_handler()
 	sa.sa_flags = SA_SIGINFO;
 
 	if (sigemptyset(&sa.sa_mask) < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup,
+		tst_brkm(TBROK | TERRNO, CLEANUP,
 			"Failed to call sigemptyset for SIGSEGV");
 	} else if (sigaddset(&sigset, SIGSEGV) < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup,
+		tst_brkm(TBROK | TERRNO, CLEANUP,
 			"Failed to do sigaddset for SIGSEGV");
 	} else if (sigaction(SIGSEGV, &sa, (struct sigaction *) NULL) < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup,
+		tst_brkm(TBROK | TERRNO, CLEANUP,
 			"Failed to setup sighandler for SIGSEGV");
 	} else {
 		rc = 0;
