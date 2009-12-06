@@ -21,9 +21,11 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <linux/ip.h>
-#include <linux/udp.h>
+#include <netinet/ip.h>
+#include <netinet/udp.h>
+#ifdef HAVE_LINUX_NETLINK_H
 #include <linux/netlink.h>
+#endif
 
 #include <sys/xattr.h>
 
