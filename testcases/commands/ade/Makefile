@@ -23,8 +23,4 @@
 top_srcdir		?= ../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
-
-# XXX (garrcoop): objdump's Makefile needs fixing.
-FILTER_OUT_DIRS		:= objdump
-
 include $(top_srcdir)/include/mk/generic_trunk_target.mk

@@ -24,16 +24,20 @@ top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-test: CPPFLAGS += -O
+CFLAGS			+= -g
 
-test_arch.obj: test.o
-	mv $< "$@"
+test_arch.obj: test_arch.o
+	cp $< $@
 
-test_D: test.o
-	$(LINK.o) $^ $(LOADLIBES) $(LDLIBS) $(OUTPUT_OPTION) $@
+test_arch_debug: test_arch.o
+	$(LINK.o) $^ $(LOADLIBES) $(LDLIBS) $(OUTPUT_OPTION)
+
+test_arch_stripped: test_arch.o
+	$(LINK.o) $^ $(LOADLIBES) $(LDLIBS) $(OUTPUT_OPTION)
+	$(STRIP) $@
 
 INSTALL_TARGETS		:= objdump01
  
-MAKE_TARGETS		:= test test_arch.obj test_D
+MAKE_TARGETS		:= test_arch_debug test_arch_stripped test_arch.obj
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

@@ -34,396 +34,362 @@
 #trace_logic=${trace_logic:-"set -x"}
 $trace_logic
 
-TCsrc=${TCsrc:-`pwd`}
+TCsrc=${TCsrc:-${0%/*}}
 TCtmp=${TCtmp:-/tmp/objdump$$}
-export DUMP=/usr/bin/objdump
 
 do_setup()
 {
-mkdir $TCtmp
-/usr/bin/ar -cr $TCtmp/lib.a $TCsrc/test_arch.o
+	mkdir $TCtmp
+	ar -cr $TCtmp/lib.a $TCsrc/test_arch.obj
 
-echo 1; $DUMP -f $TCsrc/test > $TCtmp/er_dump_f
-echo 2; $DUMP -h $TCsrc/test > $TCtmp/er_dump_h
-echo 3; $DUMP -R $TCsrc/test > $TCtmp/er_dump_R
-echo 4; $DUMP -r $TCsrc/test > $TCtmp/er_dump_r
-echo 5; $DUMP -t $TCsrc/test > $TCtmp/er_dump_t
-echo 6; $DUMP -f --show-raw-insn $TCsrc/test > $TCtmp/er_dump_fshow
-echo 7; $DUMP -h --show-raw-insn $TCsrc/test > $TCtmp/er_dump_hshow
-echo 7; $DUMP -s --show-raw-insn $TCsrc/test > $TCtmp/er_dump_sshow
-echo 8; $DUMP -t --show-raw-insn $TCsrc/test > $TCtmp/er_dump_tshow
-echo 9; $DUMP -R --show-raw-insn $TCsrc/test > $TCtmp/er_dump_Rshow
-echo 10; $DUMP -r --show-raw-insn $TCsrc/test > $TCtmp/er_dump_rshow
-echo 11; $DUMP -T $TCsrc/test > $TCtmp/er_dump_T
-echo 12; $DUMP -a $TCtmp/lib.a > $TCtmp/er_dump_a
-echo 13; $DUMP -a --show-raw-insn $TCtmp/lib.a > $TCtmp/er_dump_ashow
-echo 14; $DUMP --debugging $TCsrc/test_D > $TCtmp/er_dump_D
+	echo 1; objdump -f $TCsrc/test_arch_stripped > $TCtmp/er_dump_f
+	echo 2; objdump -h $TCsrc/test_arch_stripped > $TCtmp/er_dump_h
+	echo 3; objdump -R $TCsrc/test_arch_stripped > $TCtmp/er_dump_R
+	echo 4; objdump -r $TCsrc/test_arch_stripped > $TCtmp/er_dump_reloc
+	echo 5; objdump -t $TCsrc/test_arch_stripped > $TCtmp/er_dump_symbols
+	echo 6; objdump -f --show-raw-insn $TCsrc/test_arch_stripped > $TCtmp/er_dump_fshow
+	echo 7; objdump -h --show-raw-insn $TCsrc/test_arch_stripped > $TCtmp/er_dump_hshow
+	echo 7; objdump -s --show-raw-insn $TCsrc/test_arch_stripped > $TCtmp/er_dump_sshow
+	echo 8; objdump -t --show-raw-insn $TCsrc/test_arch_stripped > $TCtmp/er_dump_tshow
+	echo 9; objdump -R --show-raw-insn $TCsrc/test_arch_stripped > $TCtmp/er_dump_Rshow
+	echo 10; objdump -r --show-raw-insn $TCsrc/test_arch_stripped > $TCtmp/er_dump_rshow
+	echo 11; objdump -T $TCsrc/test_arch_stripped > $TCtmp/er_dump_dynamic_symbols
+	echo 12; objdump -a $TCtmp/lib.a > $TCtmp/er_dump_a
+	echo 13; objdump -a --show-raw-insn $TCtmp/lib.a > $TCtmp/er_dump_ashow
+	echo 14; objdump --debugging $TCsrc/test_arch_debug > $TCtmp/er_dump_debug
 }
 
 do_test()
 {
-#ASSERTION POSIX NEXT_AVAILABLE C
-#
-#-f   Dump each file header.
-#
-#CODE
+	#ASSERTION POSIX NEXT_AVAILABLE C
+	#
+	#-f   Dump each file header.
+	#
+	#CODE
 
-$DUMP -f $TCsrc/test > $TCtmp/ar_dump_f
+	objdump -f $TCsrc/test_arch_stripped > $TCtmp/ar_dump_f
 
-diff -bw  $TCtmp/ar_dump_f  $TCtmp/er_dump_f 2>&1 1>/dev/null
+	diff -bw  $TCtmp/ar_dump_f  $TCtmp/er_dump_f 2>&1 1>/dev/null
 
-if [ $? -eq 0 ]
+	if [ $? -eq 0 ]
 	then
-		echo  "$DUMP -f"
+		echo  "objdump -f"
 	else
-		echo "FAIL - $DUMP -f"
+		echo "FAIL - objdump -f"
 		exit 1
-fi
+	fi
 
-rm -f $TCtmp/ar_dump_f
-rm -f $TCtmp/er_dump_f
+	rm -f $TCtmp/[ae]r_dump_f
 
-##ASSERTION POSIX NEXT_AVAILABLE C
-#
-#-h  Dump the section headers.
-#
-#CODE
+	##ASSERTION POSIX NEXT_AVAILABLE C
+	#
+	#-h  Dump the section headers.
+	#
+	#CODE
 
-$DUMP -h $TCsrc/test > $TCtmp/ar_dump_h
+	objdump -h $TCsrc/test_arch_stripped > $TCtmp/ar_dump_h
 
-diff -bw  $TCtmp/ar_dump_h $TCtmp/er_dump_h 2>&1 1>/dev/null
+	diff -bw  $TCtmp/ar_dump_h $TCtmp/er_dump_h 2>&1 1>/dev/null
 
-if [ $? -eq 0 ]
-	then
-		echo  "$DUMP -h"
+	if [ $? -eq 0 ]; then
+		echo  "objdump -h"
 	else
-		echo "FAIL - $DUMP -h"
+		echo "FAIL - objdump -h"
 		exit 1
-fi
+	fi
 
-rm -f $TCtmp/ar_dump_h
-rm -f $TCtmp/er_dump_h
+	rm -f $TCtmp/[ae]r_dump_h
 
-##ASSERTION POSIX NEXT_AVAILABLE C
-#
-#-R Dump dynamic linking information and static shared library information, if
-#available. 
-#
-#CODE
+	##ASSERTION POSIX NEXT_AVAILABLE C
+	#
+	#-R Dump dynamic linking information and static shared library information, if
+	#available. 
+	#
+	#CODE
 
-$DUMP -R $TCsrc/test > $TCtmp/ar_dump_R
+	objdump -R $TCsrc/test_arch_stripped > $TCtmp/ar_dump_R
 
-diff -bw  $TCtmp/ar_dump_R $TCtmp/er_dump_R 2>&1 1>/dev/null
+	diff -bw  $TCtmp/ar_dump_R $TCtmp/er_dump_R 2>&1 1>/dev/null
 
-if [ $? -eq 0 ]
-	then
-		echo  "$DUMP -R"
+	if [ $? -eq 0 ]; then
+		echo  "objdump -R"
 	else
-		echo "FAIL - $DUMP -R"
+		echo "FAIL - objdump -R"
 		exit 1
-fi
+	fi
 
-rm -f $TCtmp/ar_dump_R
-rm -f $TCtmp/er_dump_R
+	rm -f $TCtmp/[ae]r_dump_R
 
+	##ASSERTION POSIX NEXT_AVAILABLE C
+	#
+	# -r  Dump relocation information.
+	#
+	#CODE
 
-##ASSERTION POSIX NEXT_AVAILABLE C
-#
-# -r  Dump relocation information.
-#
-#CODE
+	objdump -r $TCsrc/test_arch_stripped > $TCtmp/ar_dump_reloc
 
-$DUMP -r $TCsrc/test > $TCtmp/ar_dump_r
+	diff -bw  $TCtmp/ar_dump_reloc $TCtmp/er_dump_reloc 2>&1 1>/dev/null
 
-diff -bw  $TCtmp/ar_dump_r $TCtmp/er_dump_r 2>&1 1>/dev/null
-
-if [ $? -eq 0 ]
-	then
-		echo  "$DUMP -r"
+	if [ $? -eq 0 ]; then
+		echo  "objdump -r"
 	else
-		echo "FAIL - $DUMP -r"
+		echo "FAIL - objdump -r"
 		exit 1
-fi
+	fi
 
-rm -f $TCtmp/ar_dump_r
-rm -f $TCtmp/er_dump_r
+	rm -f $TCtmp/[ae]r_dump_reloc
 
+	##ASSERTION POSIX NEXT_AVAILABLE C
+	#
+	#-t  Dump symbol table entries.
+	#
+	#CODE
 
-##ASSERTION POSIX NEXT_AVAILABLE C
-#
-#-t  Dump symbol table entries.
-#
-#CODE
+	objdump -t $TCsrc/test_arch_stripped > $TCtmp/ar_dump_symbols
 
-$DUMP -t $TCsrc/test > $TCtmp/ar_dump_t
+	diff -bw  $TCtmp/ar_dump_symbols $TCtmp/er_dump_symbols 2>&1 1>/dev/null
 
-diff -bw  $TCtmp/ar_dump_t  $TCtmp/er_dump_t 2>&1 1>/dev/null
-
-if [ $? -eq 0 ]
-	then
-		echo  "$DUMP -t"
+	if [ $? -eq 0 ]; then
+		echo  "objdump -t"
 	else
-		echo "FAIL - $DUMP -t"
+		echo "FAIL - objdump -t"
 		exit 1
-fi
+	fi
 
-rm -f $TCtmp/ar_dump_t
-rm -f $TCtmp/er_dump_t
+	rm -f $TCtmp/[ae]r_dump_symbols
 
 
-##ASSERTION POSIX NEXT_AVAILABLE C
-#
-#-f --show-raw-insn
-#
-#--show-raw-insn
-#
-#When disassembling instructions, print the instruction  in  hex  as
-#well  as  in symbolic form.  This is the default except when 
-#--prefix-addresses is used.
-#
-#CODE
+	##ASSERTION POSIX NEXT_AVAILABLE C
+	#
+	#-f --show-raw-insn
+	#
+	#--show-raw-insn
+	#
+	#When disassembling instructions, print the instruction  in  hex  as
+	#well  as  in symbolic form.  This is the default except when 
+	#--prefix-addresses is used.
+	#
+	#CODE
 
-$DUMP -f --show-raw-insn $TCsrc/test > $TCtmp/ar_dump_fshow
+	objdump -f --show-raw-insn $TCsrc/test_arch_stripped > $TCtmp/ar_dump_fshow
 
-diff -bw   $TCtmp/ar_dump_fshow  $TCtmp/er_dump_fshow 2>&1 1>/dev/null
+	diff -bw   $TCtmp/ar_dump_fshow  $TCtmp/er_dump_fshow 2>&1 1>/dev/null
 
-if [ $? -eq 0 ]
-	then
-		echo  "$DUMP -f --show-raw-insn"
+	if [ $? -eq 0 ]; then
+		echo  "objdump -f --show-raw-insn"
 	else
-		echo "FAIL - $DUMP -f --show-raw-insn"
+		echo "FAIL - objdump -f --show-raw-insn"
 		exit 1
-fi
+	fi
 
-rm -f $TCtmp/ar_dump_fshow
-rm -f $TCtmp/er_dump_fshow
+	rm -f $TCtmp/[ae]r_dump_fshow
 
-##ASSERTION POSIX NEXT_AVAILABLE C
-#
-#-h --show-raw-insn 
-#
-#When disassembling instructions, print the instruction  in  hex  as
-#well  as  in symbolic form.  This is the default except when
-#--prefix-addresses is used.
-#
-#CODE
+	##ASSERTION POSIX NEXT_AVAILABLE C
+	#
+	#-h --show-raw-insn 
+	#
+	#When disassembling instructions, print the instruction  in  hex  as
+	#well  as  in symbolic form.  This is the default except when
+	#--prefix-addresses is used.
+	#
+	#CODE
 
-$DUMP -h --show-raw-insn $TCsrc/test > $TCtmp/ar_dump_hshow
+	objdump -h --show-raw-insn $TCsrc/test_arch_stripped > $TCtmp/ar_dump_hshow
 
-diff -bw   $TCtmp/ar_dump_hshow  $TCtmp/er_dump_hshow 2>&1 1>/dev/null
+	diff -bw   $TCtmp/ar_dump_hshow  $TCtmp/er_dump_hshow 2>&1 1>/dev/null
 
-if [ $? -eq 0 ]
-        then
-                echo  "$DUMP -h --show-raw-insn"
-        else
-                echo "FAIL - $DUMP -h --show-raw-insn"
-		exit 1
-fi
-
-rm -f $TCtmp/ar_dump_hshow
-rm -f $TCtmp/er_dump_hshow
-
-
-##ASSERTION POSIX NEXT_AVAILABLE C
-#
-#-s --show-raw-insn
-#
-#--show-raw-insn
-#
-#When disassembling instructions, print the instruction  in  hex  as
-#well  as  in symbolic form.  This is the default except when
-#--prefix-addresses is used.
-#
-#
-#CODE
-
-$DUMP -s --show-raw-insn $TCsrc/test > $TCtmp/ar_dump_sshow
-
-diff -bw   $TCtmp/ar_dump_sshow  $TCtmp/er_dump_sshow 2>&1 1>/dev/null
-
-if [ $? -eq 0 ]
-	then
-		echo  "$DUMP -s --show-raw-insn"
+	if [ $? -eq 0 ]; then
+		echo  "objdump -h --show-raw-insn"
 	else
-		echo "FAIL - $DUMP -s --show-raw-insn"
+		echo "FAIL - objdump -h --show-raw-insn"
 		exit 1
-fi
+	fi
 
-rm -f $TCtmp/ar_dump_sshow
-rm -f $TCtmp/er_dump_sshow 
+	rm -f $TCtmp/[ae]r_dump_hshow
 
+	##ASSERTION POSIX NEXT_AVAILABLE C
+	#
+	#-s --show-raw-insn
+	#
+	#--show-raw-insn
+	#
+	#When disassembling instructions, print the instruction  in  hex  as
+	#well  as  in symbolic form.  This is the default except when
+	#--prefix-addresses is used.
+	#
+	#
+	#CODE
 
-##ASSERTION POSIX NEXT_AVAILABLE C
-#
-#-t--show-raw-insn
-#
-#--show-raw-insn
-#
-#When disassembling instructions, print the instruction  in  hex  as
-#well  as  in symbolic form.  This is the default except when
-#--prefix-addresses is used.
-#
-#
-#CODE
+	objdump -s --show-raw-insn $TCsrc/test_arch_stripped > $TCtmp/ar_dump_sshow
 
-$DUMP -t --show-raw-insn $TCsrc/test > $TCtmp/ar_dump_tshow
+	diff -bw   $TCtmp/ar_dump_sshow  $TCtmp/er_dump_sshow 2>&1 1>/dev/null
 
-diff -bw   $TCtmp/ar_dump_tshow  $TCtmp/er_dump_tshow 2>&1 1>/dev/null
-
-if [ $? -eq 0 ]
-	then
-		echo  "$DUMP -t --show-raw-insn"
+	if [ $? -eq 0 ]; then
+		echo  "objdump -s --show-raw-insn"
 	else
-		echo "FAIL - $DUMP -t --show-raw-insn"
+		echo "FAIL - objdump -s --show-raw-insn"
 		exit 1
-fi
+	fi
 
-rm -f $TCtmp/ar_dump_tshow
-rm -f $TCtmp/er_dump_tshow 
+	rm -f $TCtmp/[ae]r_dump_sshow
 
-##ASSERTION POSIX NEXT_AVAILABLE C
-#
-#-R --show-raw-insn
-#
-#--show-raw-insn
-#
-#When disassembling instructions, print the instruction  in  hex  as
-#well  as  in symbolic form.  This is the default except when
-#--prefix-addresses is used.
-#
-#
-$DUMP -R --show-raw-insn $TCsrc/test > $TCtmp/ar_dump_Rshow
+	##ASSERTION POSIX NEXT_AVAILABLE C
+	#
+	#-t--show-raw-insn
+	#
+	#--show-raw-insn
+	#
+	#When disassembling instructions, print the instruction  in  hex  as
+	#well  as  in symbolic form.  This is the default except when
+	#--prefix-addresses is used.
+	#
+	#
+	#CODE
 
-diff -bw   $TCtmp/ar_dump_Rshow  $TCtmp/er_dump_Rshow 2>&1 1>/dev/null
+	objdump -t --show-raw-insn $TCsrc/test_arch_stripped > $TCtmp/ar_dump_tshow
 
-if [ $? -eq 0 ]
-	then
-		echo  "$DUMP -R --show-raw-insn"
+	diff -bw   $TCtmp/ar_dump_tshow  $TCtmp/er_dump_tshow 2>&1 1>/dev/null
+
+	if [ $? -eq 0 ]; then
+		echo  "objdump -t --show-raw-insn"
 	else
-		echo "FAIL - $DUMP -R --show-raw-insn"
+		echo "FAIL - objdump -t --show-raw-insn"
 		exit 1
-fi
+	fi
 
-rm -f $TCtmp/ar_dump_Rshow
-rm -f $TCtmp/er_dump_Rshow 
+	rm -f $TCtmp/[ae]r_dump_tshow
 
-##ASSERTION POSIX NEXT_AVAILABLE C
-#
-#-r --show-raw-insn
-#
-#--show-raw-insn
-#
-#When disassembling instructions, print the instruction  in  hex  as
-#well  as  in symbolic form.  This is the default except when
-#--prefix-addresses is used.
-#
-#
-#CODE
+	##ASSERTION POSIX NEXT_AVAILABLE C
+	#
+	#-R --show-raw-insn
+	#
+	#--show-raw-insn
+	#
+	#When disassembling instructions, print the instruction  in  hex  as
+	#well  as  in symbolic form.  This is the default except when
+	#--prefix-addresses is used.
+	#
+	#
+	objdump -R --show-raw-insn $TCsrc/test_arch_stripped > $TCtmp/ar_dump_Rshow
 
-$DUMP -r --show-raw-insn $TCsrc/test > $TCtmp/ar_dump_rshow
+	diff -bw   $TCtmp/ar_dump_Rshow  $TCtmp/er_dump_Rshow 2>&1 1>/dev/null
 
-diff -bw   $TCtmp/ar_dump_rshow  $TCtmp/er_dump_rshow 2>&1 1>/dev/null
-
-if [ $? -eq 0 ]
-	then
-		echo  "$DUMP -r --show-raw-insn"
+	if [ $? -eq 0 ]; then
+		echo  "objdump -R --show-raw-insn"
 	else
-		echo "FAIL - $DUMP -r --show-raw-insn"
+		echo "FAIL - objdump -R --show-raw-insn"
 		exit 1
-fi
+	fi
 
-rm -f $TCtmp/ar_dump_rshow
-rm -f $TCtmp/er_dump_rshow 
+	rm -f $TCtmp/[ae]r_dump_Rshow
 
+	##ASSERTION POSIX NEXT_AVAILABLE C
+	#
+	#-r --show-raw-insn
+	#
+	#--show-raw-insn
+	#
+	#When disassembling instructions, print the instruction  in  hex  as
+	#well  as  in symbolic form.  This is the default except when
+	#--prefix-addresses is used.
+	#
+	#
+	#CODE
 
-##ASSERTION POSIX NEXT_AVAILABLE C
-#
-#-T
-#
-#Dumps the dynamic symbol table entries - dumps all of .dynsym
-#
-#
-#CODE
+	objdump -r --show-raw-insn $TCsrc/test_arch_stripped > $TCtmp/ar_dump_rshow
 
-$DUMP -T $TCsrc/test > $TCtmp/ar_dump_T
+	diff -bw   $TCtmp/ar_dump_rshow  $TCtmp/er_dump_rshow 2>&1 1>/dev/null
 
-diff -bw   $TCtmp/ar_dump_T  $TCtmp/er_dump_T 2>&1 1>/dev/null
-
-if [ $? -eq 0 ]
-        then
-                echo  "$DUMP -T"
-        else
-                echo "FAIL - $DUMP -T"
+	if [ $? -eq 0 ]; then
+		echo  "objdump -r --show-raw-insn"
+	else
+		echo "FAIL - objdump -r --show-raw-insn"
 		exit 1
-fi
+	fi
 
-rm -f $TCtmp/ar_dump_T
-rm -f $TCtmp/er_dump_T
+	rm -f $TCtmp/[ae]r_dump_rshow
 
+	##ASSERTION POSIX NEXT_AVAILABLE C
+	#
+	#-T
+	#
+	#Dumps the dynamic symbol table entries - dumps all of .dynsym
+	#
+	#
+	#CODE
 
-##ASSERTION POSIX NEXT_AVAILABLE C
-#-a
-#
-#CODE
+	objdump -T $TCsrc/test_arch_stripped > $TCtmp/ar_dump_dynamic_symbols
 
-$DUMP -a $TCtmp/lib.a > $TCtmp/ar_dump_a
+	diff -bw   $TCtmp/ar_dump_dynamic_symbols  $TCtmp/er_dump_dynamic_symbols 2>&1 1>/dev/null
 
-diff -bw $TCtmp/ar_dump_a $TCtmp/er_dump_a 2>&1 1>/dev/null
-
-if [ $? -eq 0 ]
-        then
-                echo  "$DUMP -a"
-        else
-                echo "FAIL - $DUMP -a"
+	if [ $? -eq 0 ]; then
+		echo  "objdump -T"
+	else
+		echo "FAIL - objdump -T"
 		exit 1
-fi
+	fi
 
-rm -f $TCtmp/ar_dump_a
-rm -f $TCtmp/er_dump_a
+	rm -f $TCtmp/[ae]r_dump_dynamic_symbols
 
+	##ASSERTION POSIX NEXT_AVAILABLE C
+	#-a
+	#
+	#CODE
 
-##ASSERTION POSIX NEXT_AVAILABLE C
-#- --show-raw-insn
-#
-#CODE
+	objdump -a $TCtmp/lib.a > $TCtmp/ar_dump_a
 
-$DUMP -a --show-raw-insn $TCtmp/lib.a > $TCtmp/ar_dump_ashow
+	diff -bw $TCtmp/ar_dump_a $TCtmp/er_dump_a 2>&1 1>/dev/null
 
-diff -bw $TCtmp/ar_dump_ashow $TCtmp/er_dump_ashow 2>&1 1>/dev/null
-
-if [ $? -eq 0 ]
-        then
-                echo  "$DUMP -a --show-raw-insn"
-        else
-                echo "FAIL - $DUMP -a --show-raw-insn"
+	if [ $? -eq 0 ]; then
+		echo  "objdump -a"
+	else
+		echo "FAIL - objdump -a"
 		exit 1
-fi
+	fi
 
-rm -f $TCtmp/ar_dump_ashow
-rm -f $TCtmp/er_dump_ashow
+	rm -f $TCtmp/[ae]r_dump_a
 
+	##ASSERTION POSIX NEXT_AVAILABLE C
+	#- --show-raw-insn
+	#
+	#CODE
 
-##ASSERTION POSIX NEXT_AVAILABLE C
-#--debugging
-#
-#CODE
+	objdump -a --show-raw-insn $TCtmp/lib.a > $TCtmp/ar_dump_ashow
 
-$DUMP --debugging $TCsrc/test_D > $TCtmp/ar_dump_D
+	diff -bw $TCtmp/ar_dump_ashow $TCtmp/er_dump_ashow 2>&1 1>/dev/null
 
-diff -bw $TCtmp/ar_dump_D $TCtmp/er_dump_D 2>&1 1>/dev/null
-
-if [ $? -eq 0 ]
-        then
-                echo  "$DUMP --debugging"
-        else
-               echo "FAIL - $DUMP --debugging"
+	if [ $? -eq 0 ]; then
+		echo  "objdump -a --show-raw-insn"
+	else
+		echo "FAIL - objdump -a --show-raw-insn"
 		exit 1
-fi
+	fi
 
-rm -rf $TCtmp
+	rm -f $TCtmp/[ae]r_dump_ashow
 
-echo PASS
-exit 0
+	##ASSERTION POSIX NEXT_AVAILABLE C
+	#--debugging
+	#
+	#CODE
+
+	if ! objdump --debugging $TCsrc/test_arch_debug > $TCtmp/ar_dump_debug; then
+		echo "FAIL - objdump --debugging"
+		exit 1
+	else
+		diff -bw $TCtmp/ar_dump_debug $TCtmp/er_dump_debug 2>&1 1>/dev/null
+		if [ $? -eq 0 ]; then
+			echo  "objdump --debugging"
+		else
+			echo "FAIL - objdump --debugging"
+			exit 1
+		fi
+
+	fi
+
+	rm -rf $TCtmp
+
+	echo PASS
+	exit 0
 }
 
 do_setup
