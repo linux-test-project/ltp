@@ -55,14 +55,14 @@
 #include <string.h>
 #include <errno.h>
 #include <dirent.h>
-#include <usctest.h>
-#include <test.h>
-#include <libclone.h>
+#include "usctest.h"
+#include "test.h"
+#define CLEANUP cleanup
+#include "libclone.h"
 
 char *TCID = "pid_namespace3";
 int TST_TOTAL;
 
-static void cleanup();
 static int child_fn();
 
 /***********************************************************************
@@ -88,14 +88,14 @@ char **argv;
 			" %s", ret,
 		strerror(ret));
 		/* Cleanup & continue with next test case */
-		cleanup();
+		CLEANUP();
 	}
 	/* Wait for child to finish */
 	if ((wait(&status)) < 0) {
 		tst_resm(TWARN, "wait() failed, skipping this"
 			" test case");
 		/* Cleanup & continue with next test case */
-		cleanup();
+		CLEANUP();
 	}
 
 	if (WTERMSIG(status)) {
@@ -103,8 +103,8 @@ char **argv;
 			 WTERMSIG(status));
 	}
 
-	/* cleanup and exit */
-	cleanup();
+	/* CLEANUP and exit */
+	CLEANUP();
 
 	/*NOTREACHED*/
 	return 0;
@@ -128,7 +128,7 @@ child_fn(pid_t *Ppid)
 	tst_resm(TINFO, " Checking pid for parent ns and container-init\n"
 			"\t\t\t\tParent namespace pid = %d,"
 			"container parent pid = %d,"
-			"and container pid = %d\n",
+			"and container pid = %d",
 			*Ppid, parent_pid, cloned_pid);
 
 	/* do any /proc setup which winds up being necessary. */
@@ -140,22 +140,20 @@ child_fn(pid_t *Ppid)
 
 	d = opendir(dirnam);
 	if (!d) {
-		tst_resm(TPASS, \
-		"Got the proc file directory created by parent ns %d\n", *Ppid);
-		umount("/proc");
+		tst_resm(TFAIL, "Failed to open /proc directory");
 	} else {
-		tst_resm(TFAIL, "Failed to open /proc directory \n");
 		closedir(d);
+		umount("/proc");
+		tst_resm(TPASS, "Got the proc file directory created by "
+				"parent ns %d", *Ppid);
 	}
 
-	cleanup();
-
-	/* NOT REACHED */
-	return 0;
+	CLEANUP();
+	tst_exit();
 }
 
 /*
- *cleanup() -  performs all ONE TIME cleanup for this test at
+ * cleanup() -  performs all ONE TIME CLEANUP for this test at
  *              completion or premature exit.
  */
 void
@@ -168,7 +166,4 @@ cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
-
-}       /* End cleanup() */
+}       /* End CLEANUP() */

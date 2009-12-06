@@ -48,7 +48,7 @@
 *
 *******************************************************************************************/
 
-#define _GNU_SOURCE 1
+#define _GNU_SOURCE
 #include <sys/wait.h>
 #include <assert.h>
 #include <stdio.h>
@@ -58,12 +58,11 @@
 #include <errno.h>
 #include <usctest.h>
 #include <test.h>
-#include <libclone.h>
+#define CLEANUP cleanup
+#include "libclone.h"
 
 char *TCID = "pid_namespace2";
 int TST_TOTAL=1;
-
-void cleanup(void);
 
 #define PGID  	1
 #define SID	1
@@ -81,7 +80,7 @@ int child_fn1(void *vtest)
 	sid  = getsid(0);
 
 	tst_resm(TINFO, "Checking session id & group id inside container\n");
-	if(( pgid == PGID) && ( sid == SID ) )
+	if (pgid == PGID && sid == SID)
 	{
                 tst_resm(TPASS, "Success: Got Group ID = %d"
 				" & Session ID = %d \n",pgid, sid);
@@ -89,7 +88,7 @@ int child_fn1(void *vtest)
 	else
 		tst_resm(TFAIL, "Got unexpected result of"
 			"Group ID = %d & Session ID = %d\n", pgid, sid);
-	cleanup();
+	CLEANUP();
         return 0;
 }
 
@@ -101,22 +100,21 @@ int main(int argc, char *argv[])
 {
 	int ret, status;
 
-	ret = do_clone_unshare_test(T_CLONE,
-			CLONE_NEWPID, child_fn1, NULL);
+	ret = do_clone_unshare_test(T_CLONE, CLONE_NEWPID, child_fn1, NULL);
 	/* check return code */
 	if (ret == -1) {
 		tst_resm(TFAIL, "clone() Failed, errno = %d :"
 			" %s", ret, strerror(ret));
 		/* Cleanup & continue with next test case */
-		cleanup();
+		CLEANUP();
 	}
 
 	/* Wait for child to finish */
 	if ((wait(&status)) < 0) {
-		tst_resm(TWARN, "wait() failed, skipping this"
-			" test case");
+		tst_resm(TWARN | TERRNO, "wait() failed, skipping this "
+					" test case");
 		/* Cleanup & continue with next test case */
-		cleanup();
+		CLEANUP();
 	}
 
 	if (WTERMSIG(status)) {
@@ -124,25 +122,19 @@ int main(int argc, char *argv[])
 			 WTERMSIG(status));
 	}
 
-        /* cleanup and exit */
-	cleanup();
-
-	/*NOTREACHED*/
-	return 0;
+        /* CLEANUP and exit */
+	CLEANUP();
+	tst_exit();
 
 }	/* End main */
 
 /*
- * cleanup() - performs all ONE TIME cleanup for this test at
+ * cleanup() - performs all ONE TIME CLEANUP for this test at
  *             completion or premature exit.
  */
 void
 cleanup()
 {
-
 	/* Clean the test testcase as LTP wants*/
 	TEST_CLEANUP;
-
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

@@ -56,6 +56,7 @@
 #include <errno.h>
 #include <usctest.h>
 #include <test.h>
+#define CLEANUP cleanup
 #include "libclone.h"
 
 char *TCID = "pid_namespace1";
@@ -63,7 +64,6 @@ int TST_TOTAL=1;
 
 #define CHILD_PID       1
 #define PARENT_PID      0
-
 
 /*
  * child_fn1() - Inside container
@@ -131,19 +131,14 @@ int main(int argc, char *argv[])
 
 }	/* End main */
 
-#undef cleanup
-
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at
  *             completion or premature exit.
  */
-void
-cleanup()
+static void cleanup()
 {
-
-	/* Clean the test testcase as LTP wants*/
+	/* Clean the test testcase as LTP wants */
 	TEST_CLEANUP;
-
 	/* exit with return code appropriate for results */
 	tst_exit();
 }

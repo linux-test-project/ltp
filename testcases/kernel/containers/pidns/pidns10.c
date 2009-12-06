@@ -43,7 +43,8 @@
 #include <errno.h>
 #include <usctest.h>
 #include <test.h>
-#include <libclone.h>
+#define CLEANUP cleanup
+#include "libclone.h"
 
 char *TCID = "pidns10";
 int TST_TOTAL = 1;
@@ -66,12 +67,12 @@ int child_fn(void *arg)
 	ppid = getppid();
 	if (pid != CHILD_PID || ppid != PARENT_PID) {
 		tst_resm(TBROK, "cinit: pidns is not created.");
-		cleanup();
+		CLEANUP();
 	}
 
 	if (kill(-1, SIGUSR1) != -1) {
 		tst_resm(TFAIL, "cinit: kill(-1, sig) should have failed");
-		cleanup();
+		CLEANUP();
 	}
 
 	if (errno == ESRCH)
@@ -80,8 +81,8 @@ int child_fn(void *arg)
 		tst_resm(TFAIL, "cinit: kill(-1, sig) failure is not ESRCH, "
 				"but %s", strerror(errno));
 
-	/* cleanup and exit */
-	cleanup();
+	/* CLEANUP and exit */
+	CLEANUP();
 	exit(0);
 }
 
@@ -103,7 +104,7 @@ int main(int argc, char *argv[])
 		tst_resm(TBROK, "parent: clone() failed. rc=%d(%s)",\
 				ret, strerror(errno));
 		/* Cleanup & continue with next test case */
-		cleanup();
+		CLEANUP();
 	}
 
 	sleep(1);
@@ -114,15 +115,15 @@ int main(int argc, char *argv[])
 		tst_resm(TBROK, "parent: container was terminated by %s",\
 				strsignal(WTERMSIG(status)));
 
-	cleanup();
+	CLEANUP();
 	exit(0);
 }	/* End main */
 
 /*
- * cleanup() - performs all ONE TIME cleanup for this test at
+ * cleanup() - performs all ONE TIME CLEANUP for this test at
  *             completion or premature exit.
  */
-void cleanup()
+static void cleanup()
 {
 	/* Clean the test testcase as LTP wants*/
 	TEST_CLEANUP;

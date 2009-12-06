@@ -1,4 +1,7 @@
 /*
+ * Default cleanup logic because linux_syscall_numbers.h's need for cleanup
+ * and binutils bugs suck.
+ *
  * Copyright (c) 2009 Cisco Systems, Inc.  All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -24,9 +27,19 @@
  
 #ifndef __CLEANUP_C__
 #define __CLEANUP_C__
+
+/* Did the user define a cleanup function? */
 #ifndef CLEANUP
-#define CLEANUP dummy_cleanup
+# define USING_DUMMY_CLEANUP 1
+# define CLEANUP dummy_cleanup
 #endif
-static void CLEANUP();
-static void dummy_cleanup() { /* Stub function */ }
+
+/* A freebie for defining the function prototype. */
+static void CLEANUP() __attribute__((unused));
+
+#ifdef USING_DUMMY_CLEANUP
+/* The stub function. Wewt.. */
+static void dummy_cleanup() { }
+#endif
+
 #endif
