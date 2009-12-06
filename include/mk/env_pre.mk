@@ -29,7 +29,7 @@ ENV_PRE_LOADED = 1
 
 ifndef MAKE_VERSION_CHECK
 export MAKE_VERSION_CHECK = 1
-ifneq ($(MAKE_VERSION),3.81)
+ifeq ($(filter 3.81%,$(MAKE_VERSION)),)
 $(error Only make 3.81 is supported at this time. Please read the Requirements section in INSTALL)
 endif
 # XXX (garrcoop): Junk for later...
