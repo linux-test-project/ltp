@@ -179,7 +179,7 @@ $(INSTALL_TARGETS): $(INSTALL_DIR)
 ## Install
 install: $(INSTALL_TARGETS)
 ifeq ($(SKIP_IDCHECK),0)
-	@CREATE_ENTRIES=$(CREATE_ENTRIES) \
+	-@CREATE_ENTRIES=$(CREATE_ENTRIES) \
 	 DESTDIR="$(DESTDIR)" \
 	 "$(top_srcdir)/IDcheck.sh"
 else
