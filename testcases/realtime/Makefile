@@ -61,7 +61,6 @@ autoconf: configure
 
 include/realtime_config.h.in: configure.in $(wildcard m4/*.m4) aclocal.m4
 	$(AUTOHEADER)
-	touch $@
 
 configure: configure.in aclocal.m4
 	$(AUTOCONF)
