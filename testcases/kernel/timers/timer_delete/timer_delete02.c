@@ -74,7 +74,6 @@
 #include "common_timers.h"
 
 static void setup();
-static void cleanup();
 
 char *TCID = "timer_delete02";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
@@ -103,45 +102,25 @@ main(int ac, char **av)
 		Tst_count = 0;
 
 		/* Create a Posix timer */
-		if (timer_create(CLOCK_REALTIME, NULL, &timer_id) < 0) {
-
-			/* If timer_create system call is not implemented
-			 * in the running kernel, this will fail with ENOSYS
-			 */
+		if (syscall(__NR_timer_create, CLOCK_REALTIME, NULL, &timer_id) < 0) {
 			Tst_count = TST_TOTAL;
-			perror("timer_create");
-			tst_brkm(TBROK, cleanup, "timer_delete can't be"
-					" tested because timer_create failed");
+			tst_brkm(TBROK | TERRNO, cleanup,
+				"timer_delete can't be tested because "
+				"timer_create failed");
 		}
-
-		TEST(timer_delete(timer_id));
-
-		if (TEST_RETURN == -1) {
-			/* If timer_delete system call is not implemented
-			 * in the running kernel, test will fail with ENOSYS
-			 */
-			if (TEST_ERRNO == ENOSYS) {
-				Tst_count = TST_TOTAL;
-				perror("timer_delete");
-				tst_brkm(TBROK, cleanup, "");
-			}
-			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL, "timer_delete(2) Failed and set errno"
-					" to %d", TEST_ERRNO);
-		} else {
-			tst_resm(TPASS, "timer_delete(2) Passed");
-		}
+		TEST(syscall(__NR_timer_delete, timer_id));
+		tst_resm((TEST_RETURN == 0 ? TPASS : TFAIL | TTERRNO),
+			"%s",
+			(TEST_RETURN == 0 ? "passed" : "failed"));
 	}	/* End for TEST_LOOPING */
 
 	/* Clean up and exit */
 	cleanup();
-
-	/* NOTREACHED */
-	return 0;
+	tst_exit();
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-void
+static void
 setup()
 {
 	/* capture signals */
@@ -155,9 +134,8 @@ setup()
  * cleanup() - Performs one time cleanup for this test at
  * completion or premature exit
  */
-
-void
-cleanup()
+static void
+cleanup(void)
 {
 	/*
 	* print timing stats if that option was specified.
@@ -165,6 +143,4 @@ cleanup()
 	*/
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }	/* End cleanup() */

@@ -76,7 +76,6 @@
 #define INVALID_ID ((timer_t)-1)
 
 static void setup();
-static void cleanup();
 
 char *TCID = "timer_delete03"; 	/* Test program identifier.    */
 int TST_TOTAL;		       	/* Total number of test cases. */
@@ -84,12 +83,8 @@ extern int Tst_count;    	/* Test Case counter for tst_* routines */
 
 static int exp_enos[] = {EINVAL, 0};
 
-static struct test_case_t {
-	char *err_desc;		/* error description */
-	int  exp_errno;		/* expected error number*/
-	char *exp_errval;	/* Expected errorvalue string*/
-} testcase[] = {
-	{"Invalid parameter", EINVAL, "EINVAL"} /* Invalid timer ID */
+int testcase[] = {
+	EINVAL /* Invalid timer ID */
 };
 
 int
@@ -117,45 +112,32 @@ main(int ac, char **av)
 
 		for (i = 0; i < TST_TOTAL; i++) {
 
-			TEST(timer_delete(INVALID_ID));
+			TEST(syscall(__NR_timer_delete, INVALID_ID));
 
-			if (TEST_ERRNO == ENOSYS) {
-				/* System call is not implemented
-				 * In the running kernel
-				 */
-				Tst_count = TST_TOTAL;
-				perror("timer_delete");
-				tst_brkm(TBROK, cleanup, "");
-			}
 			/* check return code */
-			if ((TEST_RETURN == -1) && (TEST_ERRNO == testcase[i].
-						exp_errno)) {
-				tst_resm(TPASS, "timer_delete(2) expected"
-						" failure; Got errno - %s : %s"
-						, testcase[i].exp_errval,
-						testcase[i].err_desc);
+			if (TEST_RETURN == -1 && TEST_ERRNO == testcase[i]) {
+				tst_resm(TPASS | TTERRNO,
+					"failed as expected failure");
 			} else {
-				tst_resm(TFAIL, "timer_delete(2) failed to"
-						" produce expected error; %d"
-						" , errno : %s and got %d",
-						testcase[i].exp_errno,
-						testcase[i].exp_errval,
-						TEST_ERRNO);
+				tst_resm(TFAIL | TTERRNO,
+					"didn't fail as expected [expected "
+					"errno = %d (%s)]",
+					testcase[i],
+					strerror(testcase[i]));
 			} /* end of else */
 
-			TEST_ERROR_LOG(TEST_ERRNO);
 		}	/* End of TEST CASE LOOPING*/
+
 	}	/* End for TEST_LOOPING*/
 
 	/* Clean up and exit */
 	cleanup();
+	tst_exit();
 
-	/* NOTREACHED */
-	return 0;
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-void
+static void
 setup()
 {
 	/* capture signals */
@@ -172,16 +154,12 @@ setup()
  * cleanup() - Performs one time cleanup for this test at
  * completion or premature exit
  */
-
-void
-cleanup()
+static void
+cleanup(void)
 {
 	/*
 	* print timing stats if that option was specified.
 	* print errno log if that option was specified.
 	*/
 	TEST_CLEANUP;
-
-	/* exit with return code appropriate for results */
-	tst_exit();
 }	/* End cleanup() */

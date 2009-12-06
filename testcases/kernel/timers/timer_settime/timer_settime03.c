@@ -74,7 +74,6 @@
 #include "common_timers.h"
 
 static void setup();
-static void cleanup();
 static void setup_test(int option);
 
 char *TCID = "timer_settime03"; 	/* Test program identifier.    */
@@ -86,17 +85,13 @@ static timer_t timer, tim;
 
 static int exp_enos[] = {EINVAL, EFAULT, 0};
 
-static struct test_case_t {
-	char *err_desc;		/* error description */
-	int  exp_errno;		/* expected error number */
-	char *exp_errval;	/* Expected errorvalue string */
-} testcase[] = {
-	{"Invalid parameter", EINVAL, "EINVAL"},	/* New setting null */
-	{"Invalid parameter", EINVAL, "EINVAL"},	/* tv_nsec < 0 */
-	{"Invalid parameter", EINVAL, "EINVAL"},	/* nsec > NSEC/SEC */
-	{"Invalid parameter", EINVAL, "EINVAL"},	/* Invalid timerid */
-	{"Bad address", EFAULT, "EFAULT"},		/* bad newsetting * */
-	{"Bad address", EFAULT, "EFAULT"}		/* bad oldsetting * */
+int testcase[] = {
+	EINVAL,	/* New setting null */
+	EINVAL,	/* tv_nsec < 0 */
+	EINVAL,	/* nsec > NSEC/SEC */
+	EINVAL,	/* Invalid timerid */
+	EFAULT,	/* bad newsetting * */
+	EFAULT	/* bad oldsetting * */
 };
 
 int
@@ -126,97 +121,77 @@ main(int ac, char **av)
 
 			/* Set up individual tests */
 			setup_test(i);
-			TEST(timer_settime(tim, 0, new_temp, old_temp));
-
-			if (TEST_ERRNO == ENOSYS) {
-			/* system call not implemented */
-				Tst_count = TST_TOTAL;
-				perror("timer_settime");
-				tst_brkm(TBROK, cleanup, "");
-			}
+			TEST(syscall(__NR_timer_settime, tim, 0, new_temp,
+					old_temp));
 
 			/* check return code */
-			if ((TEST_RETURN == -1) && (TEST_ERRNO == testcase[i].
-						exp_errno)) {
-				tst_resm(TPASS, "timer_create(2) expected"
-						" failure; Got errno - %s : %s"
-						, testcase[i].exp_errval,
-						testcase[i].err_desc);
+			if (TEST_RETURN == -1 && TEST_ERRNO == testcase[i]) {
+				tst_resm(TPASS | TTERRNO, "failed as expected");
 			} else {
-				tst_resm(TFAIL, "timer_create(2) failed to"
-						" produce expected error; %d"
-						" , errno : %s and got %d",
-						testcase[i].exp_errno,
-						testcase[i].exp_errval,
-						TEST_ERRNO);
+				tst_resm(TFAIL | TTERRNO,
+					"didn't fail as expected [expected "
+					"errno = %d (%s)]",
+					testcase[i], strerror(testcase[i]));
 			} /* end of else */
 
-			TEST_ERROR_LOG(TEST_ERRNO);
 		}	/* End of TEST CASE LOOPING */
+
 	}	/* End for TEST_LOOPING */
 
 	/* Clean up and exit */
 	cleanup();
-
-	/* NOTREACHED */
-	return 0;
+	tst_exit();
 }
 
 /* This function sets up individual tests */
-void
+static void
 setup_test(int option)
 {
 	switch (option) {
-		case 0:
-			/* Pass NULL structure as new setting */
-			new_temp = (struct itimerspec *) NULL;
-			tim = timer;
-			old_temp = &old_set;
-			break;
-		case 1:
-			/* Make tv_nsec value less than 0 */
-			new_set.it_value.tv_nsec = -1;
-			new_set.it_value.tv_sec = 5;
-			new_set.it_interval.tv_sec = 0;
-			new_set.it_interval.tv_nsec = 0;
-			new_temp = &new_set;
-			break;
-		case 2:
-			/* Make tv_nsec more than NSEC_PER_SEC */
-			new_set.it_value.tv_nsec = NSEC_PER_SEC + 1;
-			break;
-		case 3:
-			/* make timer_id invalid */
-			tim = (timer_t)-1;
-			new_set.it_value.tv_nsec = 0;
-			break;
-		case 4:
-			/* make new_setting a bad pointer */
-			tim = timer;
-			new_temp = (struct itimerspec *) -1;
-			break;
-		case 5:
-			/* make old_setting a bad pointer */
-			new_temp = &new_set;
-			old_temp = (struct itimerspec *) -1;
-			break;
+	case 0:
+		/* Pass NULL structure as new setting */
+		new_temp = (struct itimerspec *) NULL;
+		tim = timer;
+		old_temp = &old_set;
+		break;
+	case 1:
+		/* Make tv_nsec value less than 0 */
+		new_set.it_value.tv_nsec = -1;
+		new_set.it_value.tv_sec = 5;
+		new_set.it_interval.tv_sec = 0;
+		new_set.it_interval.tv_nsec = 0;
+		new_temp = &new_set;
+		break;
+	case 2:
+		/* Make tv_nsec more than NSEC_PER_SEC */
+		new_set.it_value.tv_nsec = NSEC_PER_SEC + 1;
+		break;
+	case 3:
+		/* make timer_id invalid */
+		tim = (timer_t)-1;
+		new_set.it_value.tv_nsec = 0;
+		break;
+	case 4:
+		/* make new_setting a bad pointer */
+		tim = timer;
+		new_temp = (struct itimerspec *) -1;
+		break;
+	case 5:
+		/* make old_setting a bad pointer */
+		new_temp = &new_set;
+		old_temp = (struct itimerspec *) -1;
+		break;
 	}
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-void
+static void
 setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	if (timer_create(CLOCK_REALTIME, NULL, &timer) < 0) {
-		if (errno == ENOSYS) {
-			/* System call not implemented */
-			TST_TOTAL = 1;
-			perror("timer_create");
-			tst_brkm(TBROK, tst_exit, "");
-		}
+	if (syscall(__NR_timer_create, CLOCK_REALTIME, NULL, &timer) < 0) {
 		tst_brkm(TBROK, tst_exit, "Timer create failed. Cannot"
 				" setup test");
 	}
@@ -232,9 +207,8 @@ setup()
  * cleanup() - Performs one time cleanup for this test at
  * completion or premature exit
  */
-
-void
-cleanup()
+static void
+cleanup(void)
 {
 	/*
 	* print timing stats if that option was specified.
@@ -242,6 +216,4 @@ cleanup()
 	*/
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }	/* End cleanup() */

@@ -74,7 +74,6 @@
 #include "common_timers.h"
 
 static void setup();
-static void cleanup();
 static void setup_test(int option);
 
 char *TCID = "timer_create03";	/* Test program identifier. */
@@ -82,13 +81,27 @@ int TST_TOTAL = 3;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 static struct sigevent evp, *evp_ptr;
 
+/*
+ * cleanup() - Performs one time cleanup for this test at
+ * completion or premature exit
+ */
+static void
+cleanup(void)
+{
+	/*
+	* print timing stats if that option was specified.
+	* print errno log if that option was specified.
+	*/
+	TEST_CLEANUP;
+}	/* End cleanup() */
+
 int
 main(int ac, char **av)
 {
 	int lc, i;			/* loop counter */
 	char *msg;			/* message returned from parse_opts */
 	timer_t created_timer_id;	/* holds the returned timer_id */
-	char *message[3] = {
+	char *message[] = {
 		"SIGEV_SIGNAL",
 		"NULL",
 		"SIGEV_NONE"
@@ -112,59 +125,48 @@ main(int ac, char **av)
 		for (i = 0; i < TST_TOTAL; i++) {
 
 			setup_test(i);
-			TEST(timer_create(CLOCK_MONOTONIC, evp_ptr,
-						&created_timer_id));
+			TEST(syscall(__NR_timer_create, CLOCK_MONOTONIC,
+					evp_ptr, &created_timer_id));
 
-			if (TEST_RETURN == -1) {
-				if (TEST_ERRNO == ENOSYS) {
-					Tst_count = TST_TOTAL;
-					perror("timer_create");
-					tst_brkm(TBROK, cleanup, "System call"
-							" is not implemented");
-				}
-				TEST_ERROR_LOG(TEST_ERRNO);
-				tst_resm(TFAIL, "timer_create(2) Failed and"
-						" set errno to %d", TEST_ERRNO);
-			} else {
-				tst_resm(TPASS, "timer_create(2) Passed for"
-						" notification type %s",
-						message[i]);
-			}
+			tst_resm((TEST_RETURN == 0 ? TPASS : TFAIL | TTERRNO),
+				"%s with notification type = %s",
+				(TEST_RETURN == 0 ? "passed" : "failed"),
+				message[i]);
+
 		}	/* End of TEST CASE LOOPING */
+
 	}		/* End for TEST_LOOPING */
 
 	/* Clean up and exit */
 	cleanup();
-
-	/* NOTREACHED */
-	return 0;
+	tst_exit();
 }
 
 /* setup_test() - sets up individual test */
-void
+static void
 setup_test(int option)
 {
 	switch (option) {
-		case 0:
-			evp.sigev_value = (sigval_t) 0;
-			evp.sigev_signo = SIGALRM;
-			evp.sigev_notify = SIGEV_SIGNAL;
-			evp_ptr = &evp;
-			break;
-		case 1:
-			evp_ptr = NULL;
-			break;
-		case 2:
-			evp.sigev_value =  (sigval_t) 0;
-			evp.sigev_signo = SIGALRM; /* any will do */
-			evp.sigev_notify = SIGEV_NONE;
-			evp_ptr = &evp;
-			break;
+	case 0:
+		evp.sigev_value = (sigval_t) 0;
+		evp.sigev_signo = SIGALRM;
+		evp.sigev_notify = SIGEV_SIGNAL;
+		evp_ptr = &evp;
+		break;
+	case 1:
+		evp_ptr = NULL;
+		break;
+	case 2:
+		evp.sigev_value =  (sigval_t) 0;
+		evp.sigev_signo = SIGALRM; /* any will do */
+		evp.sigev_notify = SIGEV_NONE;
+		evp_ptr = &evp;
+		break;
 	}
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-void
+static void
 setup()
 {
 	/* capture signals */
@@ -173,21 +175,3 @@ setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 }	/* End setup() */
-
-/*
- * cleanup() - Performs one time cleanup for this test at
- * completion or premature exit
- */
-
-void
-cleanup()
-{
-	/*
-	* print timing stats if that option was specified.
-	* print errno log if that option was specified.
-	*/
-	TEST_CLEANUP;
-
-	/* exit with return code appropriate for results */
-	tst_exit();
-}	/* End cleanup() */

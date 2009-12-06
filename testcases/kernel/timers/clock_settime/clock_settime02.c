@@ -74,7 +74,6 @@
 #include "common_timers.h"
 
 static void setup();
-static void cleanup();
 
 char *TCID = "clock_settime02";	/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
@@ -107,25 +106,18 @@ main(int ac, char **av)
 		spec.tv_nsec = 0;
 
 		TEST(syscall(__NR_clock_settime, CLOCK_REALTIME, &spec));
-
-		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL, "clock_settime(2) Failed and set errno"
-					" to %d", TEST_ERRNO);
-		} else {
-			tst_resm(TPASS, "clock_settime(2) Passed");
-		}
+		tst_resm((TEST_RETURN < 0 ? TFAIL | TTERRNO : TPASS),
+			"clock_settime %s",
+			(TEST_RETURN == 0 ? "passed" : "failed"));
 	}		/* End for TEST_LOOPING */
 
 	/* Clean up and exit */
 	cleanup();
-
-	/* NOTREACHED */
-	return 0;
+	tst_exit();
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-void
+static void
 setup()
 {
 	/* capture signals */
@@ -148,8 +140,8 @@ setup()
  * completion or premature exit
  */
 
-void
-cleanup()
+static void
+cleanup(void)
 {
 	/* Set the saved time */
 	if (clock_settime(CLOCK_REALTIME, &saved) < 0) {
@@ -162,7 +154,4 @@ cleanup()
 	* print errno log if that option was specified.
 	*/
 	TEST_CLEANUP;
-
-	/* exit with return code appropriate for results */
-	tst_exit();
 }	/* End cleanup() */

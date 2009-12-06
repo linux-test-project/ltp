@@ -73,7 +73,6 @@
 #include "common_timers.h"
 
 static void setup();
-static void cleanup();
 
 char *TCID = "clock_gettime02";	/* Test program identifier.    */
 int TST_TOTAL;			/* Total number of test cases. */
@@ -105,57 +104,38 @@ main(int ac, char **av)
 		Tst_count = 0;
 
 		for (i = 0; i < TST_TOTAL; i++) {
-
-			TEST(clock_gettime(clocks[i], &spec));
-
-			if (TEST_ERRNO == ENOSYS) {
-				/* System call is not implemented */
-				Tst_count = TST_TOTAL;
-				perror("clock_gettime");
-				tst_brkm(TBROK, cleanup, "");
-			}
-			if (TEST_RETURN == -1) {
-				TEST_ERROR_LOG(TEST_ERRNO);
-				tst_resm(TFAIL, "clock_gettime(2) Failed and"
-						" set errno to %d", TEST_ERRNO);
-			} else {
-				tst_resm(TPASS, "clock_gettime(2) Passed");
-			}
+			TEST(syscall(__NR_clock_gettime, clocks[i], &spec));
+			tst_resm((TEST_RETURN < 0 ? TFAIL | TTERRNO : TPASS),
+				"%s", (TEST_RETURN == 0 ? "passed" : "failed"));
 		}	/* End of TEST CASE LOOPING */
 	}		/* End for TEST_LOOPING */
 
 	/* Clean up and exit */
-	cleanup();
-
-	/* NOTREACHED */
-	return 0;
+	CLEANUP();
+	tst_exit();
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-void
+static void
 setup()
 {
 	/* capture signals */
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	tst_sig(NOFORK, DEF_HANDLER, CLEANUP);
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 }	/* End setup() */
 
 /*
- * cleanup() - Performs one time cleanup for this test at
+ * CLEANUP() - Performs one time CLEANUP for this test at
  * completion or premature exit
  */
-
-void
-cleanup()
+static void
+cleanup(void)
 {
 	/*
 	* print timing stats if that option was specified.
 	* print errno log if that option was specified.
 	*/
 	TEST_CLEANUP;
-
-	/* exit with return code appropriate for results */
-	tst_exit();
-}	/* End cleanup() */
+}	/* End CLEANUP() */

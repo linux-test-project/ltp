@@ -24,6 +24,6 @@ CFLAGS			+= -D_GNU_SOURCE
 
 CPPFLAGS		+= -I$(abs_srcdir)/../include
 
-LDLIBS			+= -lpthread
+LDLIBS			+= -lpthread -lrt
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

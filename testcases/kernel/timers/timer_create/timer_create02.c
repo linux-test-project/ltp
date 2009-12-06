@@ -74,7 +74,6 @@
 #include "common_timers.h"
 
 static void setup();
-static void cleanup();
 static void setup_test(int option);
 
 char *TCID = "timer_create02";	/* Test program identifier.    */
@@ -115,9 +114,13 @@ main(int ac, char **av)
 			setup_test(i);
 
 			for (j = 0; j < MAX_CLOCKS; ++j) {
-				if(strstr(get_clock_str(clock_list[j]),"CPUTIME_ID")) {
-					/* PROCESS_CPUTIME_ID & THREAD_CPUTIME_ID are not supported on
-					 * kernel versions lower than 2.6.12
+
+				if (strstr(get_clock_str(clock_list[j]),
+						"CPUTIME_ID")) {
+					/* (PROCESS_CPUTIME_ID &
+					 *  THREAD_CPUTIME_ID)
+					 * is not supported on kernel versions
+					 * lower than 2.6.12
 					 */
 					if((tst_kvercmp(2, 6, 12)) < 0) {
 						continue;
@@ -126,66 +129,52 @@ main(int ac, char **av)
 				if (strstr(get_clock_str(clock_list[j]), mrstr))
 					continue;
 
-				TEST(timer_create(clock_list[j], evp_ptr,
-							&created_timer_id));
+				TEST(syscall(__NR_timer_create, clock_list[j],
+						evp_ptr, &created_timer_id));
 
-				if (TEST_RETURN == -1) {
-					if (TEST_ERRNO == ENOSYS) {
-						/* Following statement ensures that
-						 * 'remaining testcases broken' message
-						 * is not displayed even though we are
-						 * using tst_brkm function
-						 */
-						Tst_count = TST_TOTAL;
-						perror("timer_create");
-						tst_brkm(TBROK, cleanup,"");
-					}
-
-					TEST_ERROR_LOG(TEST_ERRNO);
-					tst_resm(TFAIL, "%s with notification type %s"
-							" failed with errno %d: %s",
-							get_clock_str(clock_list[j]), message[i],
-							TEST_ERRNO, strerror(TEST_ERRNO));
-				} else {
-					tst_resm(TPASS, "%s with notification type %s",
-							get_clock_str(clock_list[j]), message[i]);
-				}
+				tst_resm((TEST_RETURN == 0 ?
+							TPASS :
+							TFAIL | TTERRNO),
+					"%s %s with notification type = %s",
+					get_clock_str(clock_list[j]),
+					(TEST_RETURN == 0 ?
+							"passed" :
+							"failed"),
+					message[i]);
 			}
 		}	/* End of TEST CASE LOOPING */
 	}		/* End for TEST_LOOPING */
 
 	/* Clean up and exit */
 	cleanup();
-
-	/* NOTREACHED */
-	return 0;
+	tst_exit();
 }
 
 /* setup_test() - sets up individual test */
-void
+static void
 setup_test(int option)
 {
 	switch (option) {
-		case 0:
-			evp.sigev_value = (sigval_t) 0;
-			evp.sigev_signo = SIGALRM;
-			evp.sigev_notify = SIGEV_SIGNAL;
-			evp_ptr = &evp;
-			break;
-		case 1:
-			evp_ptr = NULL;
-			break;
-		case 2:
-			evp.sigev_value =  (sigval_t) 0;
-			evp.sigev_signo = SIGALRM; /* any will do */
-			evp.sigev_notify = SIGEV_NONE;
-			evp_ptr = &evp;
-			break;
+	case 0:
+		evp.sigev_value = (sigval_t) 0;
+		evp.sigev_signo = SIGALRM;
+		evp.sigev_notify = SIGEV_SIGNAL;
+		evp_ptr = &evp;
+		break;
+	case 1:
+		evp_ptr = NULL;
+		break;
+	case 2:
+		evp.sigev_value =  (sigval_t) 0;
+		evp.sigev_signo = SIGALRM; /* any will do */
+		evp.sigev_notify = SIGEV_NONE;
+		evp_ptr = &evp;
+		break;
 	}
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-void
+static void
 setup()
 {
 	/* capture signals */
@@ -199,9 +188,8 @@ setup()
  * cleanup() - Performs one time cleanup for this test at
  * completion or premature exit
  */
-
-void
-cleanup()
+static void
+cleanup(void)
 {
 	/*
 	* print timing stats if that option was specified.
@@ -209,6 +197,4 @@ cleanup()
 	*/
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }	/* End cleanup() */

@@ -77,11 +77,9 @@
 
 #include "test.h"
 #include "usctest.h"
-#include "linux_syscall_numbers.h"
 #include "common_timers.h"
 
 static void setup();
-static void cleanup();
 static int setup_test(int option);
 
 char *TCID = "clock_settime03"; /* Test program identifier.	*/
@@ -134,8 +132,7 @@ main(int ac, char **av)
 	if((tst_kvercmp(2, 6, 12)) < 0) {
 		testcase[7] = EINVAL;
 		testcase[8] = EINVAL;
-	}
-	else {
+	} else {
 		testcase[7] = EFAULT;
 		testcase[8] = EFAULT;
 	}
@@ -160,7 +157,7 @@ main(int ac, char **av)
 			/* Change the UID back to root */
 			if (i == TST_TOTAL - 1) {
 				if (seteuid(0) == -1) {
-					tst_brkm(TBROK | TERRNO, tst_exit,
+					tst_brkm(TBROK | TERRNO, cleanup,
 						"Failed to set the effective "
 						"uid to root");
 				}
@@ -176,29 +173,28 @@ main(int ac, char **av)
 					"clock_settime(2) failed to produce "
 					"expected error (return code = %ld)",
 					TEST_RETURN);
+				/* Restore the clock to its previous state. */
 				if (TEST_RETURN == 0) {
-					if (clock_settime(CLOCK_REALTIME,
-								&saved) < 0) {
-						tst_resm(TWARN, "FATAL, COULD"
-								" NOT SET THE"
-								" CLOCK");
+					if (syscall(__NR_clock_settime,
+						CLOCK_REALTIME,	&saved) < 0) {
+						tst_resm(TWARN | TERRNO,
+							"FATAL: could not set "
+							"the clock!");
 					}
 				}
 			} /* end of else */
 
-			TEST_ERROR_LOG(TEST_ERRNO);
 		}	/* End of TEST CASE LOOPING */
+
 	}	/* End for TEST_LOOPING */
 
 	/* Clean up and exit */
 	cleanup();
-
-	/* NOTREACHED */
-	return 0;
+	tst_exit();
 }
 
 /* This function sets up the individual test */
-int
+static int
 setup_test(int option)
 {
 	/* valid timespec */
@@ -207,55 +203,53 @@ setup_test(int option)
 
 	/* error sceanrios */
 	switch (option) {
-		case 0:
-			/* Make tp argument bad pointer */
+	case 0:
+		/* Make tp argument bad pointer */
+		temp = (struct timespec *) -1;
+		break;
+	case 4:
+		/* Make the parameter of timespec invalid */
+		spec.tv_nsec = -1;
+		break;
+	case 5:
+		/* Make the parameter of timespec invalid */
+		spec.tv_nsec = NSEC_PER_SEC + 1;
+		break;
+	case 6:
+		/* change the User to non-root */
+		spec.tv_nsec = 0;
+		if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
+			tst_resm(TWARN, "\"nobody\" user not present."
+					" skipping test");
+			return -1;
+		}
+		if (seteuid(ltpuser->pw_uid) == -1) {
+			tst_resm(TWARN | TERRNO,
+				"seteuid failed to set the effective "
+				"uid to %d (nobody)",
+				ltpuser->pw_uid);
+			return -1;
+		}
+		break;
+	case 7:
+	case 8:
+		/* Make tp argument bad pointer */
+		if (tst_kvercmp(2, 6, 12) >= 0)
 			temp = (struct timespec *) -1;
-			break;
-		case 4:
-			/* Make the parameter of timespec invalid */
-			spec.tv_nsec = -1;
-			break;
-		case 5:
-			/* Make the parameter of timespec invalid */
-			spec.tv_nsec = NSEC_PER_SEC + 1;
-			break;
-		case 6:
-			/* change the User to non-root */
-			spec.tv_nsec = 0;
-			if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
-				tst_resm(TWARN, "\"nobody\" user not present."
-						" skipping test");
-				return -1;
-			}
-			if (seteuid(ltpuser->pw_uid) == -1) {
-				tst_resm(TWARN | TERRNO,
-					"seteuid failed to set the effective "
-					"uid to %d (nobody)",
-					ltpuser->pw_uid);
-				return -1;
-			}
-			break;
-		case 7:
-		case 8:
-			if (tst_kvercmp(2, 6, 12) >= 0) {
-				/* Make tp argument bad pointer */
-				temp = (struct timespec *) -1;
-			}
 	}
 	return 0;
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-void
+static void
 setup()
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Check whether we are root*/
-	if (geteuid() != 0) {
+	if (geteuid() != 0)
 		tst_brkm(TBROK, tst_exit, "Test must be run as root");
-	}
 
 	if (syscall(__NR_clock_gettime, CLOCK_REALTIME, &saved) < 0)
 		tst_brkm(TBROK, tst_exit, "Clock gettime failed");
@@ -274,8 +268,8 @@ setup()
  * completion or premature exit
  */
 
-void
-cleanup()
+static void
+cleanup(void)
 {
 	/*
 	* print timing stats if that option was specified.
@@ -283,6 +277,4 @@ cleanup()
 	*/
 	TEST_CLEANUP;
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }	/* End cleanup() */

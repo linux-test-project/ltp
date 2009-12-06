@@ -74,7 +74,6 @@
 #include "common_timers.h"
 
 static void setup();
-static void cleanup();
 static int setup_test(int option);
 
 char *TCID = "timer_settime02";	/* Test program identifier.    */
@@ -108,86 +107,84 @@ main(int ac, char **av)
 		for (i = 0; i < TST_TOTAL; i++) {
 
 			/* Set up individual test */
-			if (setup_test(i) < 0) {
-				continue;	/* We are skipping this test */
+			if (setup_test(i) == 0) {
+				TEST(syscall(__NR_timer_settime, timer, flag,
+						&new_set, old_temp));
+				tst_resm((TEST_RETURN == 0 ?
+							TPASS :
+							TFAIL | TTERRNO),
+					"%s",
+					(TEST_RETURN == 0 ? "passed" : "failed")
+				);
 			}
 
-			TEST(timer_settime(timer, flag, &new_set, old_temp));
-
-			if (TEST_ERRNO == ENOSYS) {
-				/* system call is not implemented */
-				Tst_count = TST_TOTAL;
-				perror("timer_settime");
-				tst_brkm(TBROK, cleanup, "");
-			}
-			if (TEST_RETURN == -1) {
-				TEST_ERROR_LOG(TEST_ERRNO);
-				tst_resm(TFAIL, "timer_settime(2) Failed and"
-						" set errno to %d", TEST_ERRNO);
-			} else {
-				tst_resm(TPASS, "timer_settime(2) Passed");
-			}
 		}	/* End of TEST CASE LOOPING */
 	}		/* End for TEST_LOOPING */
 
 	/* Clean up and exit */
 	cleanup();
-
-	/* NOTREACHED */
-	return 0;
+	tst_exit();
 }
 
 /* This function does set up for individual tests */
-int
+static int
 setup_test(int option)
 {
 	struct timespec timenow;	/* Used to obtain current time */
+	int rc = 0;
 
 	switch (option) {
-		case 0:
-			/* This is general initialization.
-			 * make old_setting NULL
-			 * make flags equal to zero
-			 * use one-shot timer
-			 */
-			old_temp = (struct itimerspec *) NULL;
-			new_set.it_interval.tv_sec = 0;
-			new_set.it_interval.tv_nsec = 0;
-			new_set.it_value.tv_sec = 5;
-			new_set.it_value.tv_nsec = 0;
-			flag = 0;
-			break;
-		case 1:
-			/* get the old_setting in old_set
-			 * This test case also takes care
-			 * of situation where the timerid is
-			 * already armed
-			 */
-			old_temp = &old_set;
-			break;
-		case 2:
-			/* Use the periodic timer */
-			new_set.it_interval.tv_sec = 5;
-		        new_set.it_value.tv_sec = 0;
-			break;
-		case 3:
-			/* Use TIMER_ABSTIME flag for setting
-			 * absolute time for timer
-			 */
-			flag = TIMER_ABSTIME;
-			if (clock_gettime(CLOCK_REALTIME, &timenow) < 0) {
-				tst_resm(TWARN, "clock_gettime failed"
-						" skipping the test");
-				return -1;
-			}
+	case 0:
+		/* This is general initialization.
+		 * make old_setting NULL
+		 * make flags equal to zero
+		 * use one-shot timer
+		 */
+		old_temp = (struct itimerspec *) NULL;
+		new_set.it_interval.tv_sec = 0;
+		new_set.it_interval.tv_nsec = 0;
+		new_set.it_value.tv_sec = 5;
+		new_set.it_value.tv_nsec = 0;
+		flag = 0;
+		break;
+	case 1:
+		/* get the old_setting in old_set
+		 * This test case also takes care
+		 * of situation where the timerid is
+		 * already armed
+		 */
+		old_temp = &old_set;
+		break;
+	case 2:
+		/* Use the periodic timer */
+		new_set.it_interval.tv_sec = 5;
+	        new_set.it_value.tv_sec = 0;
+		break;
+	case 3:
+		/* Use TIMER_ABSTIME flag for setting
+		 * absolute time for timer
+		 */
+		flag = TIMER_ABSTIME;
+		/* 
+		 * Let's not use the linux_syscall_number syscall(2)
+		 * wrapper here because our primary test focus is
+		 * timer_create, not clock_gettime. That's covered in
+		 * those respective tests.
+		 */
+		if (clock_gettime(CLOCK_REALTIME, &timenow) < 0) {
+			tst_resm(TWARN | TERRNO,
+				"clock_gettime failed; skipping the test");
+			rc = -1;
+		} else {
 			new_set.it_value.tv_sec = timenow.tv_sec + 25;
-			break;
+		}
+		break;
 	}
-	return 0;
+	return rc;
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-void
+static void
 setup()
 {
 	/* capture signals */
@@ -196,24 +193,16 @@ setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	if (timer_create(CLOCK_REALTIME, NULL, &timer) < 0) {
-		if (errno == ENOSYS) {
-			/* system call is not implemented */
-			TST_TOTAL = 1;
-			perror("timer_create");
-			tst_brkm(TBROK, tst_exit, "");
-		}
-		tst_brkm(TBROK, tst_exit, "timer_create(2) failed");
-	}
+	if (syscall(__NR_timer_create, CLOCK_REALTIME, NULL, &timer) < 0)
+		tst_brkm(TBROK, tst_exit, "timer_create failed");
 }	/* End setup() */
 
 /*
  * cleanup() - Performs one time cleanup for this test at
  * completion or premature exit
  */
-
-void
-cleanup()
+static void
+cleanup(void)
 {
 	/*
 	* print timing stats if that option was specified.

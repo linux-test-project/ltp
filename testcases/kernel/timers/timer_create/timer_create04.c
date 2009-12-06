@@ -68,6 +68,7 @@
 
 #include <stdlib.h>
 #include <errno.h>
+#include <string.h>
 #include <time.h>
 #include <signal.h>
 
@@ -76,24 +77,34 @@
 #include "common_timers.h"
 
 static void setup();
-static void cleanup();
 
 char *TCID = "timer_create04"; 	/* Test program identifier.    */
 int TST_TOTAL;			/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
-static int exp_enos[] = {EINVAL, EFAULT, ENOSYS, 0};
+static int exp_enos[] = {EINVAL, EFAULT, 0};
 
-static struct test_case_t {
-	char *err_desc;		/* error description */
-	int  exp_errno;		/* expected error number */
-	char *exp_errval;	/* Expected errorvalue string */
-} testcase[6] = {
-	{"Invalid parameter", EINVAL, "EINVAL"},	/* MAX_CLOCKS     */
-	{"Invalid parameter", EINVAL, "EINVAL"},	/* MAX_CLOCKS + 1 */
-	{"Bad address", EFAULT, "EFAULT"},			/* bad sigevent   */
-	{"Bad address", EFAULT, "EFAULT"}			/* bad timer_id   */
+int testcase[6] = {
+	EINVAL,	/* MAX_CLOCKS     */
+	EINVAL,	/* MAX_CLOCKS + 1 */
+	EFAULT,	/* bad sigevent   */
+	EFAULT	/* bad timer_id   */
 };
+
+/*
+ * cleanup() - Performs one time cleanup for this test at
+ * completion or premature exit
+ */
+static void
+cleanup(void)
+{
+	/*
+	* print timing stats if that option was specified.
+	* print errno log if that option was specified.
+	*/
+	TEST_CLEANUP;
+
+}	/* End cleanup() */
 
 int
 main(int ac, char **av)
@@ -123,21 +134,12 @@ main(int ac, char **av)
 	/* PROCESS_CPUTIME_ID & THREAD_CPUTIME_ID are not supported on
 	 * kernel versions lower than 2.6.12
 	 */
-	if((tst_kvercmp(2, 6, 12)) < 0) {
-		testcase[4].err_desc = "Invalid parameter";	/* PROCESS_CPUTIME_ID */
-		testcase[4].exp_errno = EINVAL;
-		testcase[4].exp_errval = "EINVAL";
-		testcase[5].err_desc = "Invalid parameter";	/* THREAD_CPUTIME_ID */
-		testcase[5].exp_errno = EINVAL;
-		testcase[5].exp_errval = "EINVAL";
-	}
-	else {
-		testcase[4].err_desc = "Bad address";	/* bad sigevent pointer */
-		testcase[4].exp_errno = EFAULT;
-		testcase[4].exp_errval = "EFAULT";
-		testcase[5].err_desc = "Bad address";	/* bad timer_id pointer */
-		testcase[5].exp_errno = EFAULT;
-		testcase[5].exp_errval = "EFAULT";
+	if (tst_kvercmp(2, 6, 12) < 0) {
+		testcase[4] = EINVAL;
+		testcase[5] = EINVAL;
+	} else {
+		testcase[4] = EFAULT;
+		testcase[5] = EFAULT;
 	}
 
 	/* perform global setup for test */
@@ -154,63 +156,50 @@ main(int ac, char **av)
 			temp_ev = (struct sigevent *) NULL;
 			temp_id = &timer_id;
 
-			switch (i)
-			{
+			switch (i) {
 			case 2: /* make the timer_id bad address */
+				temp_id = (timer_t *) -1;
+				break;
+			case 3:
+				/* make the event bad address */
+				temp_ev = (struct sigevent *) -1;
+				break;
+			case 4:
+				/* Produce an invalid timer_id address. */
+				if(tst_kvercmp(2, 6, 12) >= 0)
 					temp_id = (timer_t *) -1;
-					break;
-			case 3: /* make the event bad address */
+				break;
+			case 5:
+				/* Produce an invalid event address. */
+				if(tst_kvercmp(2, 6, 12) >= 0)
 					temp_ev = (struct sigevent *) -1;
-					break;
-			case 4:	if((tst_kvercmp(2, 6, 12)) >= 0) {
-						/* make the timer_id bad address */
-						temp_id = (timer_t *) -1;
-					}
-					break;
-			case 5: if((tst_kvercmp(2, 6, 12)) >= 0) {
-						/* make the event bad address */
-						temp_ev = (struct sigevent *) -1;
-					}
 			}
 
-			TEST(timer_create(clocks[i], temp_ev, temp_id));
-
-			if (TEST_ERRNO == ENOSYS) {
-				Tst_count = TST_TOTAL;
-				perror("timer_create");
-				tst_brkm(TBROK, cleanup, "System call is not"
-						" implemented");
-			}
+			TEST(syscall(__NR_timer_create, clocks[i], temp_ev,
+					temp_id));
 
 			/* check return code */
-			if ((TEST_RETURN == -1) && (TEST_ERRNO == testcase[i].
-						exp_errno)) {
-				tst_resm(TPASS, "timer_create(2) expected"
-						" failure; Got errno - %s : %s"
-						, testcase[i].exp_errval,
-						testcase[i].err_desc);
+			if (TEST_RETURN == -1 && TEST_ERRNO == testcase[i]) {
+				tst_resm(TPASS | TTERRNO, "failed as expected");
 			} else {
-				tst_resm(TFAIL, "timer_create(2) failed to"
-						" produce expected error; %d"
-						" , errno : %s and got %d",
-						testcase[i].exp_errno,
-						testcase[i].exp_errval,
-						TEST_ERRNO);
+				tst_resm(TFAIL | TTERRNO,
+					"didn't fail as expected [expected "
+					"errno = %d (%s)]",
+					testcase[i],
+					strerror(testcase[i]));
 			} /* end of else */
 
-			TEST_ERROR_LOG(TEST_ERRNO);
 		}	/* End of TEST CASE LOOPING */
+
 	}	/* End for TEST_LOOPING */
 
 	/* Clean up and exit */
 	cleanup();
-
-	/* NOTREACHED */
-	return 0;
+	tst_exit();
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-void
+static void
 setup()
 {
 	/* capture signals */
@@ -222,21 +211,3 @@ setup()
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 }	/* End setup() */
-
-/*
- * cleanup() - Performs one time cleanup for this test at
- * completion or premature exit
- */
-
-void
-cleanup()
-{
-	/*
-	* print timing stats if that option was specified.
-	* print errno log if that option was specified.
-	*/
-	TEST_CLEANUP;
-
-	/* exit with return code appropriate for results */
-	tst_exit();
-}	/* End cleanup() */
