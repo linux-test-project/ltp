@@ -26,41 +26,41 @@
 #       -x turn off thread stonewalling
 #       -h this message
 #
-ADS1000 aio-stress -I500  -o2 -S -r4   /test/aiodio/file1 
+ADS1000 aio-stress -I500  -o2 -S -r4   /test/aiodio/file1
 ADS1001 aio-stress -I500  -o2 -S -r8   /test/aiodio/file1
-ADS1002 aio-stress -I500  -o2 -S -r16  /test/aiodio/file1 
+ADS1002 aio-stress -I500  -o2 -S -r16  /test/aiodio/file1
 ADS1003 aio-stress -I500  -o2 -S -r32  -t2  /test/aiodio/junkfile /test/aiodio/file2
-ADS1004 aio-stress -I500  -o2 -S -r64   /test/aiodio/junkfile /test/aiodio/file2 
-ADS1005 aio-stress -I500  -o3 -S -r4    /test/aiodio/junkfile /test/aiodio/file2 
-ADS1006 aio-stress -I500  -o3 -S -r8   -t2  /test/aiodio/junkfile /test/aiodio/file2 
-ADS1007 aio-stress -I500  -o3 -S -r16  -t2  /test/aiodio/junkfile /test/aiodio/file2      
-ADS1008 aio-stress -I500  -o3 -S -r32  -t4  /test/aiodio/junkfile /test/aiodio/file2     /test/aiodio/file3  /test/aiodio/file4       
-ADS1009 aio-stress -I500  -o3 -S -r64  -t4  /test/aiodio/junkfile /test/aiodio/file2  /test/aiodio/file3  /test/aiodio/file4        
-ADS1010 aio-stress -I500  -o3 -S -r128 -t4  /test/aiodio/junkfile /test/aiodio/file2  /test/aiodio/file3  /test/aiodio/file4    
+ADS1004 aio-stress -I500  -o2 -S -r64   /test/aiodio/junkfile /test/aiodio/file2
+ADS1005 aio-stress -I500  -o3 -S -r4    /test/aiodio/junkfile /test/aiodio/file2
+ADS1006 aio-stress -I500  -o3 -S -r8   -t2  /test/aiodio/junkfile /test/aiodio/file2
+ADS1007 aio-stress -I500  -o3 -S -r16  -t2  /test/aiodio/junkfile /test/aiodio/file2
+ADS1008 aio-stress -I500  -o3 -S -r32  -t4  /test/aiodio/junkfile /test/aiodio/file2  /test/aiodio/file3  /test/aiodio/file4
+ADS1009 aio-stress -I500  -o3 -S -r64  -t4  /test/aiodio/junkfile /test/aiodio/file2  /test/aiodio/file3  /test/aiodio/file4
+ADS1010 aio-stress -I500  -o3 -S -r128 -t4  /test/aiodio/junkfile /test/aiodio/file2  /test/aiodio/file3  /test/aiodio/file4
 ADS1011 aio-stress -I500  -o3 -S -r256 -t8  /test/aiodio/junkfile /test/aiodio/file2  /test/aiodio/file3  /test/aiodio/file4 /test/aiodio/file5  /test/aiodio/file6 /test/aiodio/file7  /test/aiodio/file8
 ADS1012 aio-stress -I500  -o3 -S -r512 -t8  /test/aiodio/junkfile /test/aiodio/file2 /test/aiodio/file3  /test/aiodio/file4 /test/aiodio/file5  /test/aiodio/file6 /test/aiodio/file7  /test/aiodio/file8
 ADS1013 aio-stress -I500  -o2 -O -r4    -t8  /test/aiodio/junkfile /test/aiodio/file2 /test/aiodio/file3  /test/aiodio/file4 /test/aiodio/file5  /test/aiodio/file6 /test/aiodio/file7  /test/aiodio/file8
-ADS1014 aio-stress -I500  -o2 -O -r8         /test/aiodio/file1 /test/aiodio/file2            
-ADS1015 aio-stress -I500  -o2 -O -r16        /test/aiodio/file1 /test/aiodio/file2         
-ADS1016 aio-stress -I500  -o2 -O -r32   -t2  /test/aiodio/junkfile /test/aiodio/file2 
-ADS1017 aio-stress -I500  -o2 -O -r64   -t2  /test/aiodio/junkfile /test/aiodio/file2 
-ADS1018 aio-stress -I500  -o3 -O -r4    -t2  /test/aiodio/junkfile /test/aiodio/file2 
-ADS1019 aio-stress -I500  -o3 -O -r8    -t2  /test/aiodio/junkfile /test/aiodio/file2 
-ADS1020 aio-stress -I500  -o3 -O -r16   -t2  /test/aiodio/junkfile /test/aiodio/file2 
-ADS1021 aio-stress -I500  -o3 -O -r32   -t4  /test/aiodio/junkfile /test/aiodio/file2       /test/aiodio/file7  /test/aiodio/file8     
-ADS1022 aio-stress -I500  -o3 -O -r64   -t4  /test/aiodio/junkfile /test/aiodio/file2    /test/aiodio/file7  /test/aiodio/file8   
-ADS1023 aio-stress -I500  -o3 -O -r128  -t4  /test/aiodio/junkfile /test/aiodio/file2    /test/aiodio/file7  /test/aiodio/file8  
-ADS1024 aio-stress -I500  -o3 -O -r256  -t8  /test/aiodio/junkfile /test/aiodio/file2    /test/aiodio/file7  /test/aiodio/file8 /test/aiodio/file4  /test/aiodio/file3  /test/aiodio/file5  /test/aiodio/file6 
-ADS1025 aio-stress -I500  -o3 -O -r512  -t8  /test/aiodio/junkfile /test/aiodio/file2 /test/aiodio/file7  /test/aiodio/file8 /test/aiodio/file3  /test/aiodio/file4  /test/aiodio/file5  /test/aiodio/file6 
-ADS1026 aio-stress -I500  -o0 -S -r4    -t8  /test/aiodio/junkfile /test/aiodio/file2       /test/aiodio/file7  /test/aiodio/file8 /test/aiodio/file3  /test/aiodio/file4  /test/aiodio/file5  /test/aiodio/file6    
-ADS1027 aio-stress -I500  -o0 -S -r8           /test/aiodio/file2            
-ADS1028 aio-stress -I500  -o0 -S -r16          /test/aiodio/file2         
-ADS1029 aio-stress -I500  -o0 -S -r32   -t2    /test/aiodio/junkfile /test/aiodio/file2         
-ADS1030 aio-stress -I500  -o0 -S -r64   -t2    /test/aiodio/junkfile /test/aiodio/file2         
-ADS1031 aio-stress -I500  -o1 -S -r4    -t2    /test/aiodio/junkfile /test/aiodio/file2         
-ADS1032 aio-stress -I500  -o1 -S -r8    -t2    /test/aiodio/junkfile /test/aiodio/file2      
-ADS1033 aio-stress -I500  -o1 -S -r16   -t2    /test/aiodio/junkfile /test/aiodio/file2      
-ADS1034 aio-stress -I500  -o1 -S -r32   -t4    /test/aiodio/junkfile /test/aiodio/file2        /test/aiodio/file7  /test/aiodio/file8                                                                               
+ADS1014 aio-stress -I500  -o2 -O -r8         /test/aiodio/file1 /test/aiodio/file2
+ADS1015 aio-stress -I500  -o2 -O -r16        /test/aiodio/file1 /test/aiodio/file2
+ADS1016 aio-stress -I500  -o2 -O -r32   -t2  /test/aiodio/junkfile /test/aiodio/file2
+ADS1017 aio-stress -I500  -o2 -O -r64   -t2  /test/aiodio/junkfile /test/aiodio/file2
+ADS1018 aio-stress -I500  -o3 -O -r4    -t2  /test/aiodio/junkfile /test/aiodio/file2
+ADS1019 aio-stress -I500  -o3 -O -r8    -t2  /test/aiodio/junkfile /test/aiodio/file2
+ADS1020 aio-stress -I500  -o3 -O -r16   -t2  /test/aiodio/junkfile /test/aiodio/file2
+ADS1021 aio-stress -I500  -o3 -O -r32   -t4  /test/aiodio/junkfile /test/aiodio/file2  /test/aiodio/file7  /test/aiodio/file8
+ADS1022 aio-stress -I500  -o3 -O -r64   -t4  /test/aiodio/junkfile /test/aiodio/file2  /test/aiodio/file7  /test/aiodio/file8
+ADS1023 aio-stress -I500  -o3 -O -r128  -t4  /test/aiodio/junkfile /test/aiodio/file2  /test/aiodio/file7  /test/aiodio/file8
+ADS1024 aio-stress -I500  -o3 -O -r256  -t8  /test/aiodio/junkfile /test/aiodio/file2  /test/aiodio/file7  /test/aiodio/file8 /test/aiodio/file4  /test/aiodio/file3  /test/aiodio/file5  /test/aiodio/file6
+ADS1025 aio-stress -I500  -o3 -O -r512  -t8  /test/aiodio/junkfile /test/aiodio/file2 /test/aiodio/file7  /test/aiodio/file8 /test/aiodio/file3  /test/aiodio/file4  /test/aiodio/file5  /test/aiodio/file6
+ADS1026 aio-stress -I500  -o0 -S -r4    -t8  /test/aiodio/junkfile /test/aiodio/file2       /test/aiodio/file7  /test/aiodio/file8 /test/aiodio/file3  /test/aiodio/file4  /test/aiodio/file5  /test/aiodio/file6
+ADS1027 aio-stress -I500  -o0 -S -r8           /test/aiodio/file2
+ADS1028 aio-stress -I500  -o0 -S -r16          /test/aiodio/file2
+ADS1029 aio-stress -I500  -o0 -S -r32   -t2    /test/aiodio/junkfile /test/aiodio/file2
+ADS1030 aio-stress -I500  -o0 -S -r64   -t2    /test/aiodio/junkfile /test/aiodio/file2
+ADS1031 aio-stress -I500  -o1 -S -r4    -t2    /test/aiodio/junkfile /test/aiodio/file2
+ADS1032 aio-stress -I500  -o1 -S -r8    -t2    /test/aiodio/junkfile /test/aiodio/file2
+ADS1033 aio-stress -I500  -o1 -S -r16   -t2    /test/aiodio/junkfile /test/aiodio/file2
+ADS1034 aio-stress -I500  -o1 -S -r32   -t4    /test/aiodio/junkfile /test/aiodio/file2  /test/aiodio/file7  /test/aiodio/file8
 ADS1035 aio-stress -I500  -o1 -S -r64   -t4    /test/aiodio/junkfile /test/aiodio/file2     /test/aiodio/file7  /test/aiodio/file8                                                                               
 ADS1036 aio-stress -I500  -o1 -S -r128  -t4    /test/aiodio/junkfile /test/aiodio/file2     /test/aiodio/file7  /test/aiodio/file8                                                                               
 ADS1037 aio-stress -I500  -o1 -S -r256  -t8  /test/aiodio/junkfile /test/aiodio/file2     /test/aiodio/file7  /test/aiodio/file8 /test/aiodio/file4  /test/aiodio/file3  /test/aiodio/file5  /test/aiodio/file6
@@ -76,4 +76,4 @@ ADS1046 aio-stress -I500  -o1 -O -r16   -t4   /test/aiodio/junkfile /test/aiodio
 ADS1047 aio-stress -I500  -o1 -O -r32   -t8   /test/aiodio/junkfile /test/aiodio/file2     /test/aiodio/file7  /test/aiodio/file8 /test/aiodio/file4  /test/aiodio/file3  /test/aiodio/file5  /test/aiodio/file6
 ADS1048 aio-stress -I500  -o1 -O -r64   -t8   /test/aiodio/junkfile /test/aiodio/file2  /test/aiodio/file7  /test/aiodio/file8 /test/aiodio/file3  /test/aiodio/file4  /test/aiodio/file5  /test/aiodio/file6
 ADS1049 aio-stress -I500  -o1 -O -r128  -t8   /test/aiodio/junkfile /test/aiodio/file2        /test/aiodio/file7  /test/aiodio/file8 /test/aiodio/file3  /test/aiodio/file4  /test/aiodio/file5  /test/aiodio/file6
-ADS1050 aio-stress -I500  -o1 -O -r256  -t2   /test/aiodio/junkfile /test/aiodio/file2                                                    
+ADS1050 aio-stress -I500  -o1 -O -r256  -t2   /test/aiodio/junkfile /test/aiodio/file2
