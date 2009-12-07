@@ -24,7 +24,8 @@ top_srcdir		?= ../../../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-CLEAN_TARGETS		:= [dr]*
+CLEAN_TARGETS		:= [rd]*sin [rd]sinh [rd]*cos [rd]cosh [rd]*tan [rd]*tan2		\
+[rd]tanh
 
 LDLIBS			+= -lm
 
