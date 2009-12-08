@@ -144,7 +144,7 @@ include-clean:: $(INCLUDE_CLEAN_RDEPS) | $(abs_top_builddir)/include
 # the install target.
 $(INSTALL_TARGETS) include-install lib-install:
 	$(MAKE) -C "$(subst -install,,$@)" \
-		-f "$(abs_top_srcdir)/$(subst -install,,$@)/Makefile" all
+		-f "$(abs_top_srcdir)/$(subst -install,,$@)/Makefile" install
 
 # Just in case configure hasn't been run yet, let's not overambitiously remove
 # the $(INSTALL_DIR).
