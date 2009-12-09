@@ -9,7 +9,7 @@ with increasing disk capacities and state-of-the-art feature requirements. More
 extensive information of ext4 can be found at the ext4 wiki site at the URL:
 http://ext4.wiki.kernel.org
 
-There are total 119 testcases for ext4 new features test that have been added.
+There are total 117 testcases for ext4 new features test that have been added.
 Now, these testcases can test multi-block alloc/delayed alloc, inode version
 field on disk, journal checksumming, nanosec timestamps, online defrag, persist
 prealloc, subdirectory limit and uninit groups of ext4.
@@ -110,11 +110,6 @@ ext4-subdir-limit
 Directory containing the shell script which is used to test subdirectory limit
 of ext4. According to the kernel documentation, we create more than 32000
 subdirectorys on the ext4 filesystem.
-
-But, when then block size is small, such as 1024, and the name of every
-subdirectory is very long, such as every name is 255 bytes, we can just create
-less than 20000 subdirectory. In this test suite, there is two FAIL cases by
-reason of it.
 
 ext4-uninit-groups
 ------------------

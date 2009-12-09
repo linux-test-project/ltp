@@ -94,23 +94,23 @@ my_e4defrag()
 {
 	if [ $1 -eq $FILE ]; then
 		if [ $2 -eq $SMALL ]; then
-			./e4defrag mnt_point/data0/
+			./e4defrag -v mnt_point/data0/
 			return $?
 		# EMPTY or LARGE
 		else
-			./e4defrag mnt_point/tmp_file
+			./e4defrag -v mnt_point/tmp_file
 			return $?
 		fi
 	elif [ $1 -eq $DIR ]; then
 		if [ $2 -eq $SMALL ]; then
-			./e4defrag mnt_point/data0/
+			./e4defrag -v mnt_point/data0/
 			return $?
 		else
-			./e4defrag mnt_point/tmp_dir
+			./e4defrag -v mnt_point/tmp_dir
 			return $?
 		fi
 	else
-		./e4defrag $EXT4_DEV
+		./e4defrag -v $EXT4_DEV
 		return $?
 	fi
 }
@@ -121,15 +121,20 @@ my_e4defrag()
 # $3: block size
 ext4_test_online_defrag()
 {
+	echo Test $TST_COUNT start >> \
+		 $LTPROOT/output/ext4_online_defrag_result.txt
+
 	tst_resm TINFO "defrag type: $1, defrag obj: $2, block size: $3"
 
-	mkfs.ext4 -m 0 -b $3 -O ^flex_bg $EXT4_DEV > /dev/null
+	mkfs.ext4 -m 0 -b $3 -O ^flex_bg $EXT4_DEV >> \
+		$LTPROOT/output/ext4_online_defrag_result.txt 2>&1
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to create ext4 filesystem"
 		return 1
 	fi
 
-	tune2fs -E test_fs -O extents $EXT4_DEV
+	tune2fs -O extents $EXT4_DEV >> \
+		 $LTPROOT/output/ext4_online_defrag_result.txt 2>&1
 
 	mount -t ext4 -o nodelalloc $EXT4_DEV mnt_point
 	if [ $? -ne 0 ]; then
@@ -137,7 +142,7 @@ ext4_test_online_defrag()
 		return 1
 	fi
 
-	age_filesystem $2 $1
+	age_filesystem $2 $1 >> $LTPROOT/output/ext4_online_defrag_result.txt 2>&1
 
 	my_e4defrag $1 $2 >> $LTPROOT/output/ext4_online_defrag_result.txt
 	if [ $? -ne 0 ]; then
@@ -152,17 +157,20 @@ ext4_test_online_defrag()
 		return 1
 	fi
 
-	e2fsck -p $EXT4_DEV
+	e2fsck -p $EXT4_DEV >> \
+		 $LTPROOT/output/ext4_online_defrag_result.txt 2>&1
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "fsck returned failure"
 		return 1
 	fi
 
-	tst_resm TPASS "ext4 online defrag test pass(defrag type: $1, Aging: $2, block size: $3)"
+	tst_resm TPASS "ext4 online defrag test pass"
 }
 
 # main
 ext4_setup
+
+rm -f $LTPROOT/output/ext4_online_defrag_result.txt
 
 DEFRAG=( $FILE $DIR $FILESYSTEM )
 AGING=( $EMPTY $SMALL $LARGE )

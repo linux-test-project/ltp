@@ -59,17 +59,17 @@ ext4_test_journal_checksum()
 		async_commit="Used"
 	fi
 
-	tst_resm TINFO "journal mode: $1, commit interval: $2, \
-		journal_checksum: $checksum, \
-		journal_async_commit: $async_commit, barrier: $5"
+	tst_resm TINFO "journal mode: $1, commit interval: $2, " \
+		"journal_checksum: $checksum, " \
+		"journal_async_commit: $async_commit, barrier: $5"
 
-	mkfs.ext4 -I 256 $EXT4_DEV > /dev/null
+	mkfs.ext4 -I 256 $EXT4_DEV &> /dev/null
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to create ext4 filesystem"
 		return 1
 	fi
 
-	tune2fs -E test_fs -O extents $EXT4_DEV
+	tune2fs -O extents $EXT4_DEV &> /dev/null
 
 	mount -t ext4 -o data=$1,commit=$2,$3,$4,barrier=$5 $EXT4_DEV mnt_point
 	if [ $? -ne 0 ]; then
@@ -90,7 +90,7 @@ ext4_test_journal_checksum()
 		return 1
 	fi
 
-	e2fsck -p $EXT4_DEV
+	e2fsck -p $EXT4_DEV &> /dev/null
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "fsck returned failure"
 		return 1

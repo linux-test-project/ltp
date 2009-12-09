@@ -28,7 +28,7 @@ cd $LTPROOT/testcases/bin
 . ./ext4_funcs.sh
 
 export TCID="ext4-subdir-limit"
-export TST_TOTAL=12
+export TST_TOTAL=10
 export TST_COUNT=1
 
 # $1: the test config
@@ -59,20 +59,20 @@ ext4_run_case()
 		dir_name_len="long name"
 	fi
 
-	tst_resm TINFO "Num of dirs to create: $1, Dir name len: $dir_name_len \
-			Parent dir: $3, Block size: $4"
+	tst_resm TINFO "Num of dirs to create: $1, Dir name len: $dir_name_len, " \
+			"Parent dir: $3, Block size: $4"
 
 	# only mkfs if block size has been changed,
 	# or previous case failed
 	if [ $prev_result -ne $PASS -o $4 -ne $prev_block_size ]; then
-		mkfs.ext4 -b $4 -I 256 $EXT4_DEV > /dev/null
+		mkfs.ext4 -b $4 -I 256 $EXT4_DEV &> /dev/null
 		if [ $? -ne 0 ]; then
 			tst_resm TFAIL "failed to create ext4 filesystem"
 			return 1
 		fi
 		prev_block_size=$4
 
-		tune2fs -E test_fs -O extents $EXT4_DEV
+		tune2fs -O extents $EXT4_DEV &> /dev/null
 	fi
 
 	prev_result=$FAIL
@@ -120,14 +120,14 @@ ext4_run_case()
 	fi
 
 	# run fsck to make sure the filesystem has no errors
-	e2fsck -p $EXT4_DEV
+	e2fsck -p $EXT4_DEV &> /dev/null
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "fsck: the filesystem has errors"
 		return 1
 	fi
 
 	# check dir_nlink is set
-	dumpe2fs $EXT4_DEV | grep '^Filesystem features' | grep -q dir_nlink
+	dumpe2fs $EXT4_DEV 2> /dev/null | grep '^Filesystem features' | grep -q dir_nlink
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "feature dir_nlink is not set"
 		return 1
@@ -152,6 +152,9 @@ for ((i = 0; i < 3; i++))
 	{
 		for ((k = 0; k < 2; k++))
 		{
+			if [ $i -eq $LONG_DIR -a $k -eq 1024 ]; then
+				continue
+			fi
 			ext4_run_case 65537 ${DIR_LEN[$k]} ${PARENT_DIR[$j]} \
 					${BLOCK_SIZE[$i]}
 			if [ $? -ne 0 ]; then

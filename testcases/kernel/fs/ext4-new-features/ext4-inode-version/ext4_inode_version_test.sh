@@ -41,13 +41,13 @@ ext4_test_128_inode_version()
 {
 	tst_resm TINFO "Test inode version is 32 bits with 128 inode size"
 
-	mkfs.ext4 -I 128 $EXT4_DEV > /dev/null
+	mkfs.ext4 -I 128 $EXT4_DEV &> /dev/null
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to create ext4 filesystem"
 		return 1
 	fi
 
-	tune2fs -E test_fs -O extents $EXT4_DEV
+	tune2fs -O extents $EXT4_DEV &> /dev/null
 
 	mount -t ext4 -o i_version $EXT4_DEV mnt_point
 	if [ $? -ne 0 ]; then
@@ -67,7 +67,7 @@ ext4_test_128_inode_version()
 	fi
 
 	# inode version is 32 bits: 0x00000000
-	version=`debugfs $EXT4_DEV -R "stat tmp_file" | grep 'Version'`
+	version=`debugfs $EXT4_DEV -R "stat tmp_file" 2> /dev/null | grep 'Version'`
 	version=`echo $version | awk '{ print $NF }'`
 	version=`echo $version | sed 's/^0x//'`
 	len=${#version}
@@ -91,13 +91,11 @@ ext4_test_128_inode_version()
 # $1: file operation
 test_inode_version()
 {
-	mkfs.ext3 -I 256 $EXT4_DEV > /dev/null
+	mkfs.ext3 -I 256 $EXT4_DEV &> /dev/null
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to create ext4 filesystem"
 		return 1
 	fi
-
-	tune2fs -E test_fs $EXT4_DEV > /dev/null
 
 	mount -t ext4 -o i_version $EXT4_DEV mnt_point
 	if [ $? -ne 0 ]; then

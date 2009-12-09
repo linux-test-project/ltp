@@ -24,7 +24,7 @@
 #$2: 1  - return inode version by return value
 #    !1 - writting inode version to stddev
 
-inode_version=`debugfs -R "stat $1" $EXT4_DEV | grep 'Version' | awk '{
+inode_version=`debugfs -R "stat $1" $EXT4_DEV 2> /dev/null | grep 'Version' | awk '{
 print $NF }'`
 
 # The inode_version's format: '0x0000000a' or '0x00000000:0000000a',

@@ -40,8 +40,8 @@ LARGE=3
 # filesystem free size in bytes: blocks_size * free_blocks
 filesystem_free_size()
 {
-	bsize=`dumpe2fs -h $EXT4_DEV | grep 'Block size' | awk '{ print $2 }'`
-	blocks=`dumpe2fs -h $EXT4_DEV | grep 'Free blocks'| awk '{ print $2 }'`
+	bsize=`dumpe2fs -h $EXT4_DEV 2> /dev/null | grep 'Block size' | awk '{ print $2 }'`
+	blocks=`dumpe2fs -h $EXT4_DEV 2> /dev/null | grep 'Free blocks'| awk '{ print $2 }'`
 
 	echo $bsize * $blocks
 }
@@ -61,9 +61,9 @@ age_filesystem()
 		}
 	elif [ $1 -eq $LARGE ]; then
 		rm -rf mnt_point/*
-		bsize=`dumpe2fs -h $EXT4_DEV | grep 'Block size'`
+		bsize=`dumpe2fs -h $EXT4_DEV 2> /dev/null | grep 'Block size'`
 		bsize=`echo $bsize | awk '{ print $3 }'`
-		bcount=`dumpe2fs -h $EXT4_DEV | grep 'Free blocks'`
+		bcount=`dumpe2fs -h $EXT4_DEV 2> /dev/null | grep 'Free blocks'`
 		bcount=`echo $bcount | awk '{ print $3 }'`
 		dd if=/dev/zero of=mnt_point/tmp_dir bs=$bsize count=$bcount
 	else
@@ -80,7 +80,9 @@ age_filesystem()
 # $4: age filesystem: $EMPTY, $SMALL, $LARGE
 ext4_test_uninit_groups()
 {
-	mkfs.ext4 -I 256 -m 0 $EXT4_DEV > /dev/null
+	echo "Test $TST_COUNT" >> $LTPROOT/output/ext4_uninit_groups_result.txt
+
+	mkfs.ext4 -I 256 -m 0 $EXT4_DEV &> /dev/null
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to create ext4 filesystem"
 		return 1
@@ -92,10 +94,10 @@ ext4_test_uninit_groups()
 		flag=$3
 	fi
 
-	tune2fs -E test_fs -O extents,uninit_groups,$flag $EXT4_DEV
+	tune2fs -O extents,uninit_groups,$flag $EXT4_DEV &> /dev/null
 
 	# Must run fsck after setting uninit_groups
-	fsck -p $EXT4_DEV > /dev/null
+	fsck -p $EXT4_DEV &> /dev/null
 
 	mount -t ext4 -o $1,$2 $EXT4_DEV mnt_point
 	if [ $? -ne 0 ]; then
@@ -103,7 +105,7 @@ ext4_test_uninit_groups()
 		return 1
 	fi
 
-	age_filesystem $4
+	age_filesystem $4 >> $LTPROOT/output/ext4_uninit_groups_result.txt 2>&1
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "age filesystem failed"
 		umount mnt_point
@@ -116,7 +118,7 @@ ext4_test_uninit_groups()
 		return 1
 	fi
 
-	fsck -p $EXT4_DEV
+	fsck -p $EXT4_DEV &> /dev/null
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "fsck returned failure"
 		return 1
@@ -134,6 +136,8 @@ FLEX_BG=( "flex_bg" "no_flex_bg" )
 AGING=( $EMPTY $SMALL $LARGE )
 
 RET=0
+
+rm -f $LTPROOT/output/ext4_uninit_groups_result.txt
 
 for ((i = 0; i < 2; i++))
 {

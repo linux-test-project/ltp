@@ -43,7 +43,7 @@ export TDIRECTORY=$PWD/mnt_point/
 # $1: 1024 or 4096
 ext4_test_persist_prealloc()
 {
-	mkfs.ext4 -I 256 -b $1 $EXT4_DEV > /dev/null
+	mkfs.ext4 -I 256 -b $1 $EXT4_DEV &> /dev/null
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "failed to create ext4 filesystem"
 		return 1
@@ -81,7 +81,7 @@ ext4_test_persist_prealloc()
 		return 1
 	fi
 
-	e2fsck -p $EXT4_DEV
+	e2fsck -p $EXT4_DEV &> /dev/null
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "fsck returned failure"
 		return 1
