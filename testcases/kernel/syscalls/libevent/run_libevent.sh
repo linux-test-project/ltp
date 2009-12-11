@@ -31,7 +31,7 @@ if ! is_root ; then
 	tst_resm TCONF "You need to be root to run these tests"
 	TST_EXIT=0
 else
-	"$LTPROOT/testcases/bin/tests/test-libevent.sh"
+	"$LTPROOT/testcases/bin/libevent/test/test-libevent.sh"
 	TST_EXIT=$?
 fi
 tst_cleanup
