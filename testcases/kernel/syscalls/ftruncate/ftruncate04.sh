@@ -12,15 +12,19 @@ if [ $# -gt 1 ] || [ -n "$1" -a "$1" != 64 ] ; then
     usage
     exit 1
 else
-    FTRUNCATE=$(readlink -f "$(dirname "$0")/ftruncate04${1+_${1}}")
-    if [ ! -x "$FTRUNCATE" ] ; then
-        error "$FTRUNCATE is not executable"
-        exit 1
-    fi
+    FTRUNCATE=ftruncate04${1+_${1}}
+    export TCID=$FTRUNCATE
+    export TST_COUNT=1
+    export TST_TOTAL=1
 fi
 cd ${TMPDIR:=/tmp}
-DEV=$(df . | awk '/^\// { print $1 }')
-MOUNT_POINT=$(df . | tail -n 1 | awk '{ print $NF }')
+set -- $(df . | awk '/^\// { print $1, $NF }')
+DEV=$1; MOUNT_POINT=$2
+if [ "x$DEV" = x -o "x$MOUNT_POINT" = x ] ; then
+    tst_resm TCONF "backend mountpoint for $TMPDIR does not correspond to a real device:"
+    df .
+    exit 0 
+fi
 FLAG=$(mount | grep ${DEV} | sed 's/.*(\(.*\)).*/\1/g')
 cat <<EOF
 DEV:         $DEV
