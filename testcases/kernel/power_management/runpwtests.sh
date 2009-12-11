@@ -41,7 +41,7 @@ export analysis="/proctstat"
 YES=0
 NO=1
 #List of reusable functions defined in pm_include.sh
-. ./pm_include.sh
+. pm_include.sh
 
 # Function:     main
 #
