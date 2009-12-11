@@ -10,23 +10,32 @@
 #elif defined(HAVE_LINUX_PTRACE_H)
 # include <linux/ptrace.h>
 #endif
-#ifdef HAVE_SYS_REG_H
-# include <sys/reg.h>
-#endif
 #if defined(HAVE_ASM_PTRACE_H)
 # include <asm/ptrace.h>
 #endif
-/* ia64's a real pain.. */
+/* For ptrace register array indexing. */
+#ifdef HAVE_SYS_REG_H
+# include <sys/reg.h>
+#endif
+
+/* 
+ * ia64's a real pain..
+ *
+ * These are internal datatypes for fields in pt_regs used strictly in ia64.
+ */
 #if defined(__ia64__)
-#undef FU_ia64_fpreg
-#undef FU_pt_all_user_regs
-#if ! defined(ia64_fpreg)
+
+#if !defined(ia64_fpreg)
 # define ia64_fpreg FU_ia64_fpreg
 #endif
-#if ! defined(pt_all_user_regs)
+#if !defined(pt_all_user_regs)
 # define pt_all_user_regs FU_pt_all_user_regs
 #endif
-#endif
+
+#undef FU_ia64_fpreg
+#undef FU_pt_all_user_regs
+
+#endif /* defined(__ia64__) */
 
 #define HAVE_STRUCT_PTRACE_REGS 1
 #if defined(HAVE_STRUCT_PT_REGS)

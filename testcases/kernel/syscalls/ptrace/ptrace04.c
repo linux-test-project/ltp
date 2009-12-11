@@ -23,6 +23,8 @@
 
 char *TCID = "ptrace04";
 
+static void cleanup ();
+
 #define R(r) { .name = "PT_" #r, .off = PT_##r },
 static struct {
 	const char *name;
@@ -129,3 +131,5 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
+
+static void cleanup() { }
