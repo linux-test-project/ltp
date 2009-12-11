@@ -87,8 +87,8 @@ endif
 endef
 
 COMMON_TARGETS		+= testcases tools
-INSTALL_TARGETS		+= $(COMMON_TARGETS) runtest
-CLEAN_TARGETS		+= $(COMMON_TARGETS) lib include runtest
+INSTALL_TARGETS		+= $(COMMON_TARGETS) runtest testscripts
+CLEAN_TARGETS		+= $(COMMON_TARGETS) lib include runtest testscripts
 BOOTSTRAP_TARGETS	:= $(sort $(COMMON_TARGETS) $(CLEAN_TARGETS)\
 				  $(INSTALL_TARGETS))
 
@@ -109,7 +109,7 @@ include-install: $(top_builddir)/include/config.h include/mk/config.mk include-a
 INSTALL_DIR		:= $(DESTDIR)/$(prefix)
 
 # build tree bootstrap targets and $(INSTALL_DIR) target.
-$(addprefix $(abs_top_builddir)/,$(BOOTSTRAP_TARGETS)) $(INSTALL_DIR) $(DESTDIR)/$(bindir):
+$(sort $(addprefix $(abs_top_builddir)/,$(BOOTSTRAP_TARGETS)) $(INSTALL_DIR) $(DESTDIR)/$(bindir)):
 	mkdir -m 00755 -p "$@"
 
 ## Pattern based subtarget rules.
@@ -154,7 +154,9 @@ $(INSTALL_TARGETS) include-install lib-install:
 # the $(INSTALL_DIR).
 clean:: $(CLEAN_TARGETS)
 	$(RM) -f Version
-	$(if $(DESTDIR)$(prefix),-$(RM) -Rf "$(INSTALL_DIR)")
+ifneq ($(INSTALL_IN_BUILD_TREE),1)
+	-$(RM) -Rf "$(INSTALL_DIR)"
+endif
 
 $(foreach tgt,\
 	$(MAKE_TARGETS) include-all lib-all $(CLEAN_TARGETS) \

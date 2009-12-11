@@ -93,6 +93,12 @@ endif
 
 ifneq ($(abs_builddir),$(abs_srcdir))
 OUT_OF_BUILD_TREE		:= 1
+else
+# Stub support for installing directly in the build tree; the support is not
+# there yet, but the variable itself has its own uses...
+ifeq ($(strip $(DESTDIR)$(prefix)),)
+INSTALL_IN_BUILD_TREE		:= 1
+endif
 endif
 
 # We can piece together where we're located in the source and object trees with
