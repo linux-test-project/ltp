@@ -29,21 +29,30 @@ HAVE_ZIPTOOLS		:= $(shell if which zip >/dev/null; then echo yes; else echo no; 
 
 DIR			:= tst_unzip.dir
 
-MAKE_TARGETS		:=
+RM			+= -r
+
+TESTCASES_DATA_DIR	:= $(DESTDIR)/$(prefix)/testcases/data
+
+ZIPFILE			:= $(TESTCASES_DATA_DIR)/tst_unzip_file.zip
 
 ifeq ($(HAVE_ZIPTOOLS),yes)
+CLEAN_TARGETS		:= $(DIR) $(ZIPFILE)
 INSTALL_TARGETS		:= unzip_tests.sh
-$(INSTALL_TARGETS): $(ZIPFILE)
 endif
 
-$(ZIPFILE): $(DIR)
-	$(ZIP) -r $@ $(DIR) && chmod 777 $@
+INSTALL_DEPS		+= $(ZIPFILE)
 
-CLEAN_TARGETS		:= $(DIR)
+$(TESTCASES_DATA_DIR):
+	mkdir -p "$@"
+
+$(ZIPFILE): | $(TESTCASES_DATA_DIR) $(DIR)
+	zip -r "$@" $(DIR)
+	chmod 00666 "$@"
 
 # This target should be auto-removed by Make
-.INTERMEDIATE: $(DIR)
-$(DIR): unzip_genfile.sh
-	./$^ $(DIR)
+$(DIR): $(abs_srcdir)/unzip_genfile.sh
+	$(SHELL) "$^" $(DIR)
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
+
+INSTALL_TARGETS		:= $(ZIPFILE)
