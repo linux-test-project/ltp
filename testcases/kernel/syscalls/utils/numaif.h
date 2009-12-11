@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * $Id: numaif.h,v 1.5 2009/11/12 20:30:36 yaberauneya Exp $
+ * $Id: numaif.h,v 1.6 2009/12/11 13:18:26 yaberauneya Exp $
  *
  */
 
@@ -32,13 +32,13 @@
 
 #if HAVE_NUMA_H
 #include <numa.h>
-#endif
+#else /* numa.h doesn't exist on the system. */
 
+#if defined(__x86_64__) || defined(__i386__)
 #define NUMA_NUM_NODES 	128
-
-#if HAVE_NUMA_H
-#include <numa.h>
-#else /* The following symbols clash with the numa.h ones. */
+#else 
+#define NUMA_NUM_NODES	2048
+#endif
 
 typedef struct { 
 	unsigned long n[NUMA_NUM_NODES/(sizeof(unsigned long)*8)];
@@ -72,7 +72,13 @@ static inline int nodemask_equal(const nodemask_t *a, const nodemask_t *b)
 		if (a->n[i] != b->n[i]) 
 			return 0; 
 	return 1;
-} 
+}
+
+static inline void nodemask_set(nodemask_t *mask, int node)
+{
+	mask->n[node / (8*sizeof(unsigned long))] |=
+		(1UL << (node % (8*sizeof(unsigned long))));		
+}
 #endif
 
 static inline void nodemask_dump(const char *header, const nodemask_t *mask)
@@ -83,12 +89,6 @@ static inline void nodemask_dump(const char *header, const nodemask_t *mask)
 		EPRINTF(" 0x%08lx", mask->n[i]);
 	EPRINTF("\n");
 }
-
-static inline void nodemask_set(nodemask_t *mask, int node)
-{
-	mask->n[node / (8*sizeof(unsigned long))] |=
-		(1UL << (node % (8*sizeof(unsigned long))));		
-} 
 
 #ifndef MPOL_DEFAULT
    // Policies
