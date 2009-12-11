@@ -79,7 +79,11 @@ INSTALL_TARGETS		:= doc
 endif
 
 define target_to_dir_dep_mapping
-$(1): | $$(abs_top_builddir)/$(patsubst %-,%,$(1))
+ifeq ($$(filter %-clean,$(1)),) # not *-clean
+$(1): | $$(abs_top_builddir)/$$(basename $$(subst -,.,$(1)))
+else				# clean
+$(1):: | $$(abs_top_builddir)/$$(basename $$(subst -,.,$(1)))
+endif
 endef
 
 COMMON_TARGETS		+= testcases tools
@@ -105,7 +109,7 @@ include-install: $(top_builddir)/include/config.h include/mk/config.mk include-a
 INSTALL_DIR		:= $(DESTDIR)/$(prefix)
 
 # build tree bootstrap targets and $(INSTALL_DIR) target.
-$(addprefix $(abs_top_builddir)/,$(BOOTSTRAP_TARGETS)) $(INSTALL_DIR):
+$(addprefix $(abs_top_builddir)/,$(BOOTSTRAP_TARGETS)) $(INSTALL_DIR) $(DESTDIR)/$(bindir):
 	mkdir -m 00755 -p "$@"
 
 ## Pattern based subtarget rules.
@@ -152,11 +156,13 @@ clean:: $(CLEAN_TARGETS)
 	$(RM) -f Version
 	$(if $(DESTDIR)$(prefix),-$(RM) -Rf "$(INSTALL_DIR)")
 
-$(foreach tgt,$(eval $(call target_to_dir_dep_mapping,$(tgt))),\
+$(foreach tgt,\
 	$(MAKE_TARGETS) include-all lib-all $(CLEAN_TARGETS) \
-	$(INSTALL_TARGETS) include-install lib-install)
+	$(INSTALL_TARGETS) include-install lib-install,\
+	$(eval $(call target_to_dir_dep_mapping,$(tgt))))
 
-SRCDIR_INSTALL_SCRIPTS	:= execltp IDcheck.sh runalltests.sh runltp runltplite.sh ver_linux
+BINDIR_INSTALL_SCRIPTS	:= execltp
+SRCDIR_INSTALL_SCRIPTS	:= IDcheck.sh runalltests.sh runltp runltplite.sh ver_linux
 SRCDIR_INSTALL_READONLY	:= Version
 SRCDIR_INSTALL_TARGETS	:= $(SRCDIR_INSTALL_SCRIPTS) $(SRCDIR_INSTALL_READONLY)
 
@@ -167,14 +173,18 @@ Version: $(top_srcdir)/ChangeLog
 $(INSTALL_DIR)/Version: Version
 	install -m 00644 "$(top_builddir)/$(@F)" "$@"
 
-$(addprefix $(DESTDIR)/$(bindir)/,$(BINDIR_INSTALL_SCRIPTS)) \
+$(addprefix $(DESTDIR)/$(bindir)/,$(BINDIR_INSTALL_SCRIPTS)): %:
+	install -m 00755 "$(top_builddir)/$(@F)" "$@"
+
 $(addprefix $(INSTALL_DIR)/,$(SRCDIR_INSTALL_SCRIPTS)): %:
 	install -m 00755 "$(top_srcdir)/$(@F)" "$@"
 
 INSTALL_TARGETS		+= $(addprefix $(INSTALL_DIR)/,\
-				$(SRCDIR_INSTALL_TARGETS))
+				$(SRCDIR_INSTALL_TARGETS))\
+			   $(addprefix $(DESTDIR)/$(bindir)/,\
+				$(BINDIR_INSTALL_SCRIPTS))
 
-$(INSTALL_TARGETS): $(INSTALL_DIR)
+$(INSTALL_TARGETS): $(INSTALL_DIR) $(DESTDIR)/$(bindir)
 
 ## Install
 install: $(INSTALL_TARGETS)

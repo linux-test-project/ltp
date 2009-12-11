@@ -51,5 +51,5 @@ INSTALL_DIR	:= testcases/bin
 
 LDLIBS		+= -lltp
 
-$(LIBLTP_DIR) $(abs_top_builddir)/$(TKI_DIR): %:
+$(APICMDS_DIR) $(LIBLTP_DIR) $(abs_top_builddir)/$(TKI_DIR): %:
 	mkdir -p "$@"

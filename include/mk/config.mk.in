@@ -43,6 +43,7 @@ prefix			:= @prefix@
 datarootdir		:= @datarootdir@
 includedir		:= @includedir@
 exec_prefix		:= @exec_prefix@
+bindir			:= @bindir@
 libdir			:= @libdir@
 mandir			:= @mandir@
 

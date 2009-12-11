@@ -43,6 +43,7 @@ prefix			:= /opt/ltp
 datarootdir		:= ${prefix}/share
 includedir		:= ${prefix}/include
 exec_prefix		:= ${prefix}
+bindir			:= ${exec_prefix}/bin
 libdir			:= ${exec_prefix}/lib
 mandir			:= ${datarootdir}/man
 
