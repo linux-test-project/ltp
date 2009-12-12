@@ -137,43 +137,46 @@ def parse_ltp_results(exec_log, output_log, verbose=0):
 
             grab_output = False
 
-            i = 0
-
             local_context = ''
-
-            line_len = len(lines)
 
             search_tag = None
 
-            while i < line_len:
+            line_iterator = lines.__iter__()
 
-                if lines[i].startswith(end_output):
+            try:
 
-                    if search_tag:
-                        context[search_tag] = local_context
+                while True:
 
-                    grab_output = False
-                    local_context = ''
-                    search_tag = None
+                    line = line_iterator.next()
 
-                if not search_tag:
+                    if line.startswith(end_output):
 
-                    while i < len(lines):
+                        if search_tag:
+                            context[search_tag] = local_context
 
-                        match = tag_re.match(lines[i])
+                        grab_output = False
+                        local_context = ''
+                        search_tag = None
 
-                        if match and match.group(1) in search_tags:
-                            search_tag = match.group(1)
-                            break
+                    if not search_tag:
 
-                        i += 1
+                        while True:
 
-                elif lines[i].startswith(output_start):
-                    grab_output = True
-                elif grab_output:
-                    local_context += lines[i]
+                            line = line_iterator.next()
 
-                i += 1
+                            match = tag_re.match(line)
+
+                            if match and match.group(1) in search_tags:
+                                search_tag = match.group(1)
+                                break
+
+                    elif line.startswith(output_start):
+                        grab_output = True
+                    elif grab_output:
+                        local_context += line
+
+            except StopIteration:
+                pass
 
             for k in context.keys():
                 if k not in search_tags:
