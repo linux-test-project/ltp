@@ -29,9 +29,6 @@ FILTER_OUT_DIRS		:= libevent
 # pcllib is busted as all heck because of libtool
 FILTER_OUT_DIRS		+= pcllib
 
-# libevent doesn't compile right now... I have no bloody clue what breaks it
-# when doing make clean...
-ifdef DO_NO_COMPILE_ME
 ifeq ($(wildcard $(abs_srcdir)/libevent/test/Makefile),)
 $(warning libevent/test/Makefile does not exist; skipping to avoid compile errors)
 $(warning Please run "make autotools" and "configure" at the top-level LTP)
@@ -40,11 +37,9 @@ else
 
 LIBEVENT		:= libevent/lib/libevent.a
 
-LIBEVENT_LINK		:= libevent/libevent.a
-
 CLEAN_DEPS		:= libevent-clean
 
-CLEAN_TARGETS		:= $(LIBEVENT) $(LIBEVENT_LINK)
+CLEAN_TARGETS		:= $(LIBEVENT)
 
 INSTALL_DEPS		:= libevent-install
 
@@ -52,12 +47,17 @@ INSTALL_TARGETS		:= libevent/run_libevent.sh libevent/test/test-libevent.sh
 
 LIBEVENT_APPS		:= regress test-eof test-init test-time test-weof
 
+TEST_APPS		:= $(addprefix libevent/test/,$(LIBEVENT_APPS))
+
 MAKE_DEPS		:= libevent-all
 
-MAKE_TARGETS		:= $(addprefix libevent/test/,$(LIBEVENT_APPS))
+MAKE_TARGETS		+= $(TEST_APPS)
 
 libevent libevent/test: %:
 	mkdir -p "$@"
+
+$(TEST_APPS): LDFLAGS += -L$(abs_builddir)/libevent/lib
+$(TEST_APPS): LDLIBS += -levent
 
 $(LIBEVENT): $(abs_srcdir)/libevent/Makefile libevent
 	$(MAKE) -C libevent -f "$(firstword $^)" libevent.a
@@ -68,7 +68,6 @@ libevent-all: $(abs_srcdir)/libevent/test/Makefile | $(LIBEVENT) libevent/test
 libevent-clean libevent-install: libevent-%: $(abs_srcdir)/libevent/test/Makefile | libevent/test
 	$(MAKE) -C libevent/test -f "$(firstword $^)" $*
 
-endif
 endif
 
 ifeq ($(UCLINUX),1)
