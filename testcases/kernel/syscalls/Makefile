@@ -48,7 +48,7 @@ CLEAN_TARGETS		:= $(LIBEVENT) $(LIBEVENT_LINK)
 
 INSTALL_DEPS		:= libevent-install
 
-INSTALL_TARGETS		:= libevent/run-libevent.sh libevent/test/test-libevent.sh
+INSTALL_TARGETS		:= libevent/run_libevent.sh libevent/test/test-libevent.sh
 
 LIBEVENT_APPS		:= regress test-eof test-init test-time test-weof
 
