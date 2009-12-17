@@ -32,42 +32,44 @@
 #trace_logic=${trace_logic:-"set -x"}
 $trace_logic
 
+CC=${CC:=gcc}
+LDD=${LDD:=ldd}
 TCdat=${TCdat:-`pwd`}
 TCtmp=${TCtmp:-/tmp/ldd01-$$}
 
 do_cleanup()
 {
-rm -rf $TCtmp
+	rm -rf $TCtmp
 }
 
 do_setup()
 {
-mkdir $TCtmp
+	mkdir $TCtmp
 
-# Check for ppc64 architecture
-file lddfile1.o | grep PowerPC | grep 64-bit >/dev/null 2>&1
-if [ $? -eq 0 ]; then
-  cc -m64 -shared -o $TCtmp/lddfile1.o.so $TCdat/lddfile1.o
-  cc -m64 -shared -o $TCtmp/lddfile2.o.so $TCdat/lddfile2.o
-  cc -m64 -shared -o $TCtmp/lddfile3.o.so $TCdat/lddfile3.o
-  cc -m64 -shared -o $TCtmp/lddfile4.o.so $TCdat/lddfile4.o
-  cc -m64 -shared -o $TCtmp/lddfile5.o.so $TCdat/lddfile5.o
-  cc -m64 -O -o $TCtmp/a.out $TCtmp/lddfile*.o.so $TCdat/main.o
-else
-  cc -shared -o $TCtmp/lddfile1.o.so $TCdat/lddfile1.o
-  cc -shared -o $TCtmp/lddfile2.o.so $TCdat/lddfile2.o
-  cc -shared -o $TCtmp/lddfile3.o.so $TCdat/lddfile3.o
-  cc -shared -o $TCtmp/lddfile4.o.so $TCdat/lddfile4.o
-  cc -shared -o $TCtmp/lddfile5.o.so $TCdat/lddfile5.o
-  cc -O -o $TCtmp/a.out $TCtmp/lddfile*.o.so $TCdat/main.o
-fi
+	# Check for ppc64 architecture
+	file lddfile1.obj | grep PowerPC | grep 64-bit >/dev/null 2>&1
+	if [ $? -eq 0 ]; then
+		$CC -m64 -shared -o $TCtmp/lddfile1.obj.so $TCdat/lddfile1.obj
+		$CC -m64 -shared -o $TCtmp/lddfile2.obj.so $TCdat/lddfile2.obj
+		$CC -m64 -shared -o $TCtmp/lddfile3.obj.so $TCdat/lddfile3.obj
+		$CC -m64 -shared -o $TCtmp/lddfile4.obj.so $TCdat/lddfile4.obj
+		$CC -m64 -shared -o $TCtmp/lddfile5.obj.so $TCdat/lddfile5.obj
+		$CC -m64 -O -o $TCtmp/a.out $TCtmp/lddfile*.obj.so $TCdat/main.obj
+	else
+		$CC -shared -o $TCtmp/lddfile1.obj.so $TCdat/lddfile1.obj
+		$CC -shared -o $TCtmp/lddfile2.obj.so $TCdat/lddfile2.obj
+		$CC -shared -o $TCtmp/lddfile3.obj.so $TCdat/lddfile3.obj
+		$CC -shared -o $TCtmp/lddfile4.obj.so $TCdat/lddfile4.obj
+		$CC -shared -o $TCtmp/lddfile5.obj.so $TCdat/lddfile5.obj
+		$CC -O -o $TCtmp/a.out $TCtmp/lddfile*.obj.so $TCdat/main.obj
+	fi
 } 
 
 do_test()
 {
 echo "  ASSERTION 1  "
 
-ldd $TCtmp/a.out | grep -E "lddfile1.o.so|lddfile2.o.so|lddfile3.o.so|lddfile4.o.so|lddfile5.o.so" 
+$LDD $TCtmp/a.out | grep -E "lddfile1.obj.so|lddfile2.obj.so|lddfile3.obj.so|lddfile4.obj.so|lddfile5.obj.so" 
 if [ $? -eq 0 ]
 then
 	echo "ASSERTION #1 PASS"
@@ -79,7 +81,7 @@ fi
 
 echo " ASSERTION 2  "
 
-ldd -v $TCtmp/a.out | grep -E "GLIBC|lddfile1.o.so|lddfile2.o.so|lddfile3.o.so|lddfile4.o.so|lddfile5.o.so" 
+$LDD -v $TCtmp/a.out | grep -E "GLIBC|lddfile1.obj.so|lddfile2.obj.so|lddfile3.obj.so|lddfile4.obj.so|lddfile5.obj.so" 
 if [ $? -eq 0 ]
 then
 	echo "ASSERTION #2 PASS"

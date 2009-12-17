@@ -31,6 +31,8 @@
 #Uncomment line below for debug output
 #trace_logic=${trace_logic:-"set -x"}
 
+CC=${CC:=gcc}
+NM=${NM:=nm}
 TCtmp=${TCtmp:-/tmp/nm$$}
 TCdat=${TCdat:-`pwd`}
 LOOP=1
@@ -38,10 +40,10 @@ do_setup()
 {
 $trace_logic
   mkdir $TCtmp
-  cc -o $TCtmp/nmfile $TCdat/nmfile.c
-  cc -o $TCtmp/nmfile1 $TCdat/nmfile1.c
-  cc -o $TCtmp/nmfile2 $TCdat/nmfile2.c
-  cc -o $TCtmp/nmfile3 $TCdat/nmfile3.c
+  $CC -o $TCtmp/nmfile $TCdat/nmfile.c
+  $CC -o $TCtmp/nmfile1 $TCdat/nmfile1.c
+  $CC -o $TCtmp/nmfile2 $TCdat/nmfile2.c
+  $CC -o $TCtmp/nmfile3 $TCdat/nmfile3.c
 }
 
 do_cleanup()
@@ -56,9 +58,9 @@ $trace_logic
 TCRESULT=0
 while [ $LOOP -gt 0 ]
 do
-echo "-------System test for nm command------"
+echo "-------System test for $NM command------"
 cd $TCdat
-ar -cr $TCtmp/lib.a nmfile1.o nmfile1.o nmfile2.o nmfile3.o
+ar -cr $TCtmp/lib.a nmfile1.obj nmfile1.obj nmfile2.obj nmfile3.obj
 
 # -A  Displays either the full path name or library name of an object
 # on each line.                   
@@ -69,10 +71,10 @@ RC2=0
 
 mkdir -p $TCtmp/a/b/c/d
 
-nm -f posix -A $TCtmp/lib.a | grep "$TCtmp/lib.a\[nmfile2.o\]\:" 2>&1 1>/dev/null
+$NM -f posix -A $TCtmp/lib.a | grep "$TCtmp/lib.a\[nmfile2.obj\]\:" 2>&1 1>/dev/null
 RC1=$? 
 cp $TCtmp/lib.a $TCtmp/a/b/c/d/
-nm -f posix -A $TCtmp/a/b/c/d/lib.a | grep "$TCtmp/a/b/c/d/lib.a\[nmfile2.o\]\:"  2>&1 1>/dev/null
+$NM -f posix -A $TCtmp/a/b/c/d/lib.a | grep "$TCtmp/a/b/c/d/lib.a\[nmfile2.obj\]\:"  2>&1 1>/dev/null
 RC2=$? 
 
 
@@ -90,8 +92,7 @@ fi
 
 # CODE
 
-COUNT=0
-COUNT=`nm -f posix -g $TCtmp/nmfile1 | awk '{print $2 }' | grep "[a,b,d,f,t]"  | wc -l` 2>&1 1>/dev/null
+COUNT=`$NM -f posix -g $TCtmp/nmfile1 | awk '{print $2 }' | grep "[a,b,d,f,t]"  | wc -l` 2>&1 1>/dev/null
 if [ $COUNT -eq 0 ] 
 then
 	echo "-)2"
@@ -105,7 +106,7 @@ fi
 # a decimal number.               
 
 # CODE
-nm -f posix -t o $TCtmp/nmfile1 | awk '{print $3}' | grep "[8-9]" >/dev/null 2>&1
+$NM -f posix -t o $TCtmp/nmfile1 | awk '{print $3}' | grep "[8-9]" >/dev/null 2>&1
 if [ $? -eq "1" ] 
 then
 	echo "-)3"
@@ -120,7 +121,7 @@ fi
 # CODE
 
 count=0
-nm -f sysv $TCtmp/nmfile1 | grep Name > /dev/null 2>&1
+$NM -f sysv $TCtmp/nmfile1 | grep Name > /dev/null 2>&1
 count=$?
 if [ $count -eq 0 ]
 then
@@ -135,8 +136,8 @@ fi
 
 # -f bsd Displays information in a BSD output format 
 # CODE
-nm -f bsd $TCtmp/nmfile1 | grep printf | awk '{print $2}' > $TCtmp/nm.diff1
-nm -f posix $TCtmp/nmfile1 | grep printf | awk '{print $1}' > $TCtmp/nm.diff2
+$NM -f bsd $TCtmp/nmfile1 | grep printf | awk '{print $2}' > $TCtmp/nm.diff1
+$NM -f posix $TCtmp/nmfile1 | grep printf | awk '{print $1}' > $TCtmp/nm.diff2
 diff $TCtmp/nm.diff1 $TCtmp/nm.diff2
 if [ $? -eq 0  ]
 then
@@ -152,7 +153,7 @@ fi
 
 # CODE
 COUNT=0
-nm -f sysv -u $TCtmp/nmfile1 | grep "Undefined symbols from" 2>&1 1>/dev/null
+$NM -f sysv -u $TCtmp/nmfile1 | grep "Undefined symbols from" 2>&1 1>/dev/null
 if [ $? -eq 0 ]
 then
 	echo "-)6"
@@ -166,8 +167,8 @@ fi
 
 # -v  Sorts output by value instead of alphabetically.
 # CODE
-nm $TCtmp/nmfile1 | sort | awk '{print $1}'| grep [0-9] > $TCtmp/nm.res1
-nm -v $TCtmp/nmfile1 | awk '{print $1}' | grep [0-9] > $TCtmp/nm.res2
+$NM $TCtmp/nmfile1 | sort | awk '{print $1}'| grep [0-9] > $TCtmp/nm.res1
+$NM -v $TCtmp/nmfile1 | awk '{print $1}' | grep [0-9] > $TCtmp/nm.res2
 diff $TCtmp/nm.res1 $TCtmp/nm.res2 2>&1 1>/dev/null
 
 if [ $? -eq 0 ]
@@ -182,7 +183,7 @@ fi
 # -s Print archive index.
 # CODE
 
-nm -s $TCtmp/lib.a | grep "index" 2>&1 1>/dev/null
+$NM -s $TCtmp/lib.a | grep "index" 2>&1 1>/dev/null
 if [ $? -eq 0 ]
 then
 	echo "-)8"
@@ -193,7 +194,7 @@ else
 fi
 #-----------------------------------------------------------------------------
 
-LOOP=`expr $LOOP - 1`
+: $(( LOOP -= 1 ))
 done
 
 echo "nm01: PASS"
