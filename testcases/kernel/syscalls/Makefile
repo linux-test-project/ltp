@@ -56,6 +56,7 @@ MAKE_TARGETS		+= $(TEST_APPS)
 libevent libevent/test: %:
 	mkdir -p "$@"
 
+$(TEST_APPS): CPPFLAGS += -I$(abs_srcdir)/libevent
 $(TEST_APPS): LDFLAGS += -L$(abs_builddir)/libevent/lib
 $(TEST_APPS): LDLIBS += -levent
 
