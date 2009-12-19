@@ -79,19 +79,7 @@ for nr in $(awk '{print $1}' "${srcdir}/"*.in | sort -u) ; do
 	# endif
 	EOF
 done
-cat <<EOF >> "${output_pid}"
-#endif
+echo "#endif" >> "${output_pid}"
 
-/* Another beautiful syscall that doesn't get exported outside of the kernel
- * headers (namely \$KERN_SRC/linux/perf_counter.h).
- */
-#if !defined(__NR_perf_counter_open)
-# if defined (__NR_perf_event_open)
-#  define __NR_perf_counter_open __NR_perf_event_open
-# else
-#  define __NR_perf_counter_open 0
-# endif
-#endif
-EOF
 mv "${output_pid}" "${output}"
 echo "OK!"

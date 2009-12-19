@@ -9297,14 +9297,3 @@
 #  define __NR_writev 0
 # endif
 #endif
-
-/* Another beautiful syscall that doesn't get exported outside of the kernel
- * headers (namely $KERN_SRC/linux/perf_counter.h).
- */
-#if !defined(__NR_perf_counter_open)
-# if defined (__NR_perf_event_open)
-#  define __NR_perf_counter_open __NR_perf_event_open
-# else
-#  define __NR_perf_counter_open 0
-# endif
-#endif
