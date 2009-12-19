@@ -5,50 +5,6 @@
 #ifndef __LTP_PTRACE_H__
 #define __LTP_PTRACE_H__
 
-#define GARRETT_IS_AN_IDIOT
-#ifndef GARRETT_IS_AN_IDIOT
-#if defined(HAVE_SYS_PTRACE_H)
-# include <sys/ptrace.h>
-#elif defined(HAVE_LINUX_PTRACE_H)
-# include <linux/ptrace.h>
-#endif
-#if defined(HAVE_ASM_PTRACE_H)
-# include <asm/ptrace.h>
-#endif
-/* For ptrace register array indexing. */
-#ifdef HAVE_SYS_REG_H
-# include <sys/reg.h>
-#endif
-#undef
-
-/* 
- * ia64's a real pain..
- *
- * These are internal datatypes for fields in pt_regs used strictly in ia64.
- */
-#if defined(__ia64__)
-
-#if !defined(ia64_fpreg)
-# define ia64_fpreg FU_ia64_fpreg
-#endif
-#if !defined(pt_all_user_regs)
-# define pt_all_user_regs FU_pt_all_user_regs
-#endif
-
-#undef FU_ia64_fpreg
-#undef FU_pt_all_user_regs
-
-#endif /* defined(__ia64__) */
-
-#define HAVE_STRUCT_PTRACE_REGS 1
-#if defined(HAVE_STRUCT_PT_REGS)
-typedef struct pt_regs ptrace_regs;
-#elif defined(HAVE_STRUCT_USER_REGS_STRUCT)
-typedef struct user_regs_struct ptrace_regs;
-#else
-#undef HAVE_STRUCT_PTRACE_REGS
-#endif
-#else
 #ifdef HAVE_SYS_PTRACE_H
 # include <sys/ptrace.h>
 #endif
@@ -72,7 +28,6 @@ typedef struct user_regs_struct ptrace_regs;
 typedef struct pt_regs ptrace_regs;
 #elif defined(HAVE_STRUCT_USER_REGS_STRUCT)
 typedef struct user_regs_struct ptrace_regs;
-#endif
 #endif
 
 #endif
