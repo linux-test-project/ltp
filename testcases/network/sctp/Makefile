@@ -24,10 +24,10 @@ top_srcdir		?= ../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-LIBSCTP			:= $(DESTDIR)/$(libdir)/libsctp.a
-LIBSCTPUTIL		:= $(DESTDIR)/$(libdir)/libsctputil.a
 LIBSCTPDIR		:= lib
 LIBSCTPUTILDIR		:= testlib
+LIBSCTP			:= $(LIBSCTPDIR)/libsctp.a
+LIBSCTPUTIL		:= $(LIBSCTPUTILDIR)/libsctputil.a
 
 FILTER_OUT_DIRS		:= $(LIBSCTPDIR) $(LIBSCTPUTILDIR)
 
