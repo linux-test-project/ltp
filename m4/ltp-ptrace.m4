@@ -30,7 +30,7 @@ dnl
 
 AC_DEFUN([_LTP_CHECK_LINUX_PTRACE],[dnl
 dnl order of headers checked here is significant
-AC_CHECK_HEADERS_ONCE([ \
+AC_CHECK_HEADERS([ \
 	sys/ptrace.h \
 	sys/reg.h \
 	asm/ptrace.h \
