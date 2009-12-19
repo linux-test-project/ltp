@@ -125,7 +125,7 @@ enum hw_event_types {
 int sys_perf_counter_open(struct perf_counter_hw_event *hw_event,
 			  pid_t pid, int cpu, int group_fd, unsigned long flags)
 {
-	return syscall(__NR_perf_counter_open, hw_event, pid, cpu, group_fd,
+	return syscall(__NR_perf_event_open, hw_event, pid, cpu, group_fd,
 		       flags);
 }
 

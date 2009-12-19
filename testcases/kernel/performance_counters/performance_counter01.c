@@ -66,13 +66,13 @@ main(void) {
 	unsigned long long count1, count2;
 	int fd1, fd2, ret;
 
-	fd1 = syscall(__NR_perf_counter_open,
+	fd1 = syscall(__NR_perf_event_open,
 			PERF_COUNT_INSTRUCTIONS, 0, 0, 0, -1);
 	if (fd1 < 0) {
 		tst_brkm(TBROK | TERRNO, cleanup,
 			"Failed to create PERF_COUNT_INSTRUCTIONS fd");
 	}
-	fd2 = syscall(__NR_perf_counter_open,
+	fd2 = syscall(__NR_perf_event_open,
 			PERF_COUNT_CACHE_MISSES, 0, 0, 0, -1);
 	if (fd2 < 0) {
 		tst_brkm(TBROK | TERRNO, cleanup,
