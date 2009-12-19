@@ -180,7 +180,7 @@ void test_mbind(void)
 		ret = 1;
 		return;
 	}
-	printf("%" __PRI64_PREFIX "x\n", (long) addr);
+	printf("%p\n", addr);
 	ret = mbind(addr, len, MPOL_BIND, &mask, 8 * sizeof(mask), 0);
 }
 

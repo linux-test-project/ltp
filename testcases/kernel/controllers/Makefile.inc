@@ -22,8 +22,8 @@
 
 # DO NOT USE THIS FILE FOR controllers / libcontrollers!!!
 
-LIB			:= $(DESTDIR)/$(libdir)/libcontrollers.a
 LIBDIR			:= libcontrollers
+LIB			:= $(LIBDIR)/libcontrollers.a
 
 ../$(LIBDIR):
 	mkdir -p "$@"

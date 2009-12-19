@@ -25,8 +25,8 @@ top_srcdir		?= ../../..
 include $(top_srcdir)/include/mk/env_pre.mk
 
 INSTALL_TARGETS		:= *.sh
-LIB			:= $(DESTDIR)/$(libdir)/libcontrollers.a
 LIBDIR			:= libcontrollers
+LIB			:= $(LIBDIR)/libcontrollers.a
 FILTER_OUT_DIRS		:= $(LIBDIR)
 
 $(LIBDIR):
