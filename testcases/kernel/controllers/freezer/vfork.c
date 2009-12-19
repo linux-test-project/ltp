@@ -302,7 +302,7 @@ int
 main(int argc, char** argv)
 {
 
-#if defined(HAVE_DECL_PTRACE_SETOPTIONS) && defined(HAVE_DECL_PTRACE_O_TRACEVFORK)
+#if defined(HAVE_DECL_PTRACE_SETOPTIONS) && defined(HAVE_DECL_PTRACE_O_TRACEVFORKDONE)
 	int exit_status;
 
 	_parse_opts(argc, argv);
