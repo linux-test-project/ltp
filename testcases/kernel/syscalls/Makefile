@@ -57,7 +57,7 @@ libevent libevent/test: %:
 	mkdir -p "$@"
 
 $(TEST_APPS): CPPFLAGS += -I$(abs_srcdir)/libevent
-$(TEST_APPS): LDFLAGS += -L$(abs_builddir)/libevent/lib
+$(TEST_APPS): LDFLAGS += -L$(abs_builddir)/libevent
 $(TEST_APPS): LDLIBS += -levent
 
 $(LIBEVENT): $(abs_srcdir)/libevent/Makefile libevent
