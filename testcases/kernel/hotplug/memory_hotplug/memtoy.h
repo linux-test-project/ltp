@@ -26,8 +26,6 @@
 #include <sys/types.h>
 #include <sys/time.h>
 
-#include <numa.h>
-#include <numaif.h>
 #include <setjmp.h>
 #include <signal.h>
 

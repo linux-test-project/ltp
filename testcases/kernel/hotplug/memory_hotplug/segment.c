@@ -26,17 +26,20 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  */
+
+#include "config.h"
+#if HAVE_NUMA_H && HAVE_NUMAIF_H && LINUX_MEMPOLICY_H
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/mman.h>
 #include <sys/shm.h>
 #include <sys/stat.h>
 #include <sys/time.h>
-
 #include <errno.h>
 #include <fcntl.h>
 #include <libgen.h>
 #include <numa.h>
+#include <numaif.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -124,7 +127,7 @@ get_seg_slot(void)
 	/*
 	 * simple linear scan for first available slot
 	 */
-	for (segpp = gcp->seglist; segp = *segpp; ++segpp) {
+	for (segpp = gcp->seglist; (segp = *segpp); ++segpp) {
 		if (segp->seg_type == SEGT_NONE)
 			return segp;
 	}
@@ -213,7 +216,7 @@ segment_cleanup(struct global_context *gcp)
 	if (segpp == NULL)
 		return;
 
-	for (; segp = *segpp; ++segpp) {
+	for (; (segp = *segpp); ++segpp) {
 		if (segp->seg_type != SEGT_SHM) {
 			continue;
 		}
@@ -472,7 +475,7 @@ map_shm_segment(segment_t *segp)
 	segp->seg_start = shmat(segp->seg_shmid, NULL, 0);
 	if (segp->seg_start == MAP_FAILED) {
 		int err = errno;
-		fprintf(stderr, "%s:  failed to attach shm segment %s\n",
+		fprintf(stderr, "%s:  failed to attach shm segment %s: %s\n",
 			gcp->program_name, segp->seg_name,
 			strerror(err));
 		return SEG_ERR;
@@ -499,7 +502,7 @@ segment_get(char *name)
 	glctx_t   *gcp = &glctx;
 	segment_t *segp, **segpp;
 
-	for (segpp = gcp->seglist; segp = *segpp; ++segpp) {
+	for (segpp = gcp->seglist; (segp = *segpp); ++segpp) {
 		if (segp->seg_type == SEGT_NONE) {
 			if (gcp->seg_avail == NULL)
 				gcp->seg_avail = *segpp;
@@ -589,7 +592,6 @@ static char seg_type[] = { '.', 'a', 'f', 's' };
 static int
 show_one_segment(segment_t *segp, bool header)
 {
-	glctx_t   *gcp = &glctx;
 	char *protection, *share, *name;
 
 	switch (segp->seg_prot & (PROT_READ|PROT_WRITE)) {
@@ -618,10 +620,10 @@ show_one_segment(segment_t *segp, bool header)
 	name = (segp->seg_type == SEGT_FILE) ? segp->seg_path : segp->seg_name;
 
 	if (header)
-		printf(segment_header);
+		puts(segment_header);
 
 	if (segp->seg_start != MAP_FAILED) {
-		printf("%c 0x%016lx 0x%012lx 0x%012lx  %s  %s %s\n",
+		printf("%c 0x%p 0x%012lx 0x%012lx  %s  %s %s\n",
 			seg_type[segp->seg_type],
 			segp->seg_start,
 			segp->seg_length,
@@ -663,7 +665,7 @@ segment_show(char *name)
 	 * show all
 	 */
 	header = true;
-	for(segpp = gcp->seglist; segp = *segpp; ++segpp) {
+	for(segpp = gcp->seglist; (segp = *segpp); ++segpp) {
 		if (segp->seg_type != SEGT_NONE) {
 			show_one_segment(segp, header);
 			header = false;		/* first time only */
@@ -780,6 +782,9 @@ segment_unmap(char *name)
 	case SEGT_SHM:
 			//TODO:  shmdt()...
 		break;
+	/* Handle default to get rid of -Wswitch-enum */
+	default:
+		break;
 	}
 
 	segp->seg_start = MAP_FAILED;
@@ -829,6 +834,9 @@ segment_map(char *name, range_t *range, int flags)
 
 	case SEGT_SHM:
 		return map_shm_segment(segp);
+		break;
+	/* Handle default to get rid of -Wswitch-enum */
+	default:
 		break;
 	}
 
@@ -963,7 +971,7 @@ segment_location(char *name, range_t *range)
 		 * start partial line
 		 */
 		int pgid2 = pgid & ~PPL_MASK;
-		printf("%12lx: ", pgid2);
+		printf("%12x: ", pgid2);
 		while (pgid2 < pgid) {
 			printf("    ");
 			++pgid2;
@@ -986,7 +994,7 @@ segment_location(char *name, range_t *range)
 		if ((pgid & PPL_MASK) == 0) {
 			if (need_nl)
 				printf("\n");
-			printf("%12lx: ", pgid);	/* start a new line */
+			printf("%12x: ", pgid);	/* start a new line */
 			need_nl = true;
 		}
 		printf(" %3d", node);
@@ -1000,3 +1008,4 @@ segment_location(char *name, range_t *range)
 
 	return SEG_OK;
 }
+#endif

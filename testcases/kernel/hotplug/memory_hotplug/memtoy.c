@@ -22,19 +22,21 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  */
 
+#include <stdio.h>
+#include "config.h"
+/* Shortcut because the test requires numa and mempolicy support. */
+#if HAVE_NUMA_H && HAVE_NUMAIF_H && LINUX_MEMPOLICY_H
 #include <sys/types.h>
 #include <sys/time.h>
 #include <sys/mman.h>
-
+#include <libgen.h>
 #include <errno.h>
 #include <numa.h>
 #include <signal.h>
 #include <stdarg.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-
 #include "memtoy.h"
 
 /*
@@ -496,7 +498,7 @@ main(int argc, char *argv[])
 	 */
 	printf("memtoy pid:  %d\n", getpid());
 	vprint("%s:  pagesize = %d\n", gcp->program_name, gcp->pagesize);
-	if (gcp->numa_max_node >= 0)
+	if (gcp->numa_max_node >= 0) 
 		vprint("%s:  NUMA available - max node: %d\n",
 			gcp->program_name, gcp->numa_max_node);
 
@@ -504,6 +506,12 @@ main(int argc, char *argv[])
 
 	process_commands();
 
-	exit(0);
+	return 0;
 
 }
+#else	/* ! (HAVE_NUMA_H && HAVE_NUMAIF_H) */
+int main(void) {
+	printf("System doesn't have required numa support.\n");
+	return 0;
+}
+#endif	/* HAVE_NUMA_H && HAVE_NUMAIF_H */

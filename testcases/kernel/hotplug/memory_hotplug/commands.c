@@ -27,10 +27,12 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  */
+
+#include "config.h"
+#if HAVE_NUMA_H && HAVE_NUMAIF_H && LINUX_MEMPOLICY_H
 #include <sys/types.h>
 #include <sys/time.h>
 #include <sys/mman.h>
-
 #include <ctype.h>
 #include <errno.h>
 #include <numa.h>
@@ -42,7 +44,8 @@
 #include <unistd.h>
 
 #include "memtoy.h"
-#include "migrate_pages.h"
+#include "test.h"
+#include "linux_syscall_numbers.h"
 
 #define CMD_SUCCESS 0
 #define CMD_ERROR   1
@@ -429,6 +432,10 @@ get_arg_nodeid_list(char *args, unsigned int *list)
 static int
 get_current_nodeid_list(unsigned int *fromids)
 {
+	/*
+	 * FIXME (garrcoop): gcp is unitialized and shortly hereafter used in
+	 * an initialization statement..... UHHHHHHH... test writer fail?
+	 */
 	glctx_t    *gcp;
 	nodemask_t my_allowed_nodes;
 	int        nr_nodes = 0, max_node = gcp->numa_max_node;
@@ -446,11 +453,15 @@ get_current_nodeid_list(unsigned int *fromids)
 	 */
 	if (nr_nodes == 0)
 		fprintf(stderr, "%s:  my allowed node mask is empty !!???\n",
-
 			gcp->program_name);
 	return nr_nodes;
 }
 
+/*
+ * NOTE (garrcoop): Get rid of an -Wunused warning. This wasn't deleted because
+ * I don't know what the original intent was for this code.
+ */
+#if 0
 static void
 not_implemented()
 {
@@ -459,6 +470,7 @@ not_implemented()
 	fprintf(stderr, "%s:  %s not implemented yet\n",
 		gcp->program_name, gcp->cmd_name);
 }
+#endif
 
 /*
  * =========================================================================
@@ -521,7 +533,7 @@ numa_info(char *args)
 
 		if (do_header) {
 			do_header = false;
-			printf(numa_header);
+			puts(numa_header);
 		}
 		printf("  %3d  %9ld      %8ld\n", node,
 			 node_size/(1024*1024), node_free/(1024*1024));
@@ -619,7 +631,7 @@ migrate_process(char *args)
 	}
 
 	gettimeofday(&t_start, NULL);
-	nr_migrated = migrate_pages(getpid(), nr_from, fromids, toids);
+	nr_migrated = syscall(__NR_migrate_pages, getpid(), nr_from, fromids, toids);
 	if (nr_migrated < 0) {
 		int err = errno;
 		fprintf(stderr, "%s: migrate_pages failed - %s\n",
@@ -752,7 +764,7 @@ remove_seg(char *args)
 
 		segment_remove(segname);
 	}
-
+	return 0;
 }
 
 /*
@@ -1174,8 +1186,10 @@ help_me(char *args)
 	if (*args != '\0') {
 		cmd    = strtok_r(args, whitespace, &nextarg);
 		cmdlen = strlen(cmd);
-	} else
+	} else {
 		cmd = NULL;
+		cmdlen = 0;
+	}
 
 	for( cmdp = cmd_table; cmdp->cmd_name != NULL; ++cmdp) {
 		if (cmd == NULL ||
@@ -1319,3 +1333,4 @@ process_commands()
 
 	} while(1);
 }
+#endif

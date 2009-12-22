@@ -24,8 +24,8 @@ dnl ----------------------------
 dnl
 AC_DEFUN([LTP_CHECK_SYSCALL_NUMA],
 [dnl
-AC_CHECK_HEADERS(numa.h,[
-	LTP_SYSCALL_NUMA_HEADER=yes
+AC_CHECK_HEADERS([numa.h numaif.h],[
+	LTP_SYSCALL_NUMA_HEADERS=yes
 	AC_CHECK_FUNCS(numa_alloc_onnode,numa_move_pages)
 ]
 	AC_CHECK_LIB(numa,numa_available,[

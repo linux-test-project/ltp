@@ -36,6 +36,7 @@ AC_CHECK_HEADERS([ \
     mm.h \
     pthread.h \
     linux/genetlink.h \
+    linux/mempolicy.h \
     linux/module.h \
     linux/netlink.h \
     sys/acl.h \

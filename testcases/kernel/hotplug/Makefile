@@ -1,5 +1,5 @@
 #
-#    kernel/hotplug/memory_hotplug test suite Makefile.
+#    kernel/hotplug test suite Makefile.
 #
 #    Copyright (C) 2009, Cisco Systems Inc.
 #
@@ -17,19 +17,10 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Garrett Cooper, July 2009
+# Garrett Cooper, December 2009
 #
 
-top_srcdir	?= ../../../..
+top_srcdir	?= ../../..
 
-include $(top_srcdir)/include/mk/testcases.mk
-
-CPPFLAGS	+= -I$(abs_srcdir)
-
-LDLIBS		+= $(NUMA_LIBS)
-
-MAKE_TARGETS	:= memtoy
-
-memtoy: $(patsubst $(abs_srcdir)/%.c,%.o,$(wildcard $(abs_srcdir)/*.c))
-
-include $(top_srcdir)/include/mk/generic_leaf_target.mk
+include $(top_srcdir)/include/mk/env_pre.mk
+include $(top_srcdir)/include/mk/generic_trunk_target.mk
