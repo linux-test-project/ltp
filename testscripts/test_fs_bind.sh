@@ -60,7 +60,7 @@ test_setup()
 		LTPROOT="${PWD}"
 	fi
 	
-	FS_BIND_ROOT="${LTPROOT}/testcases/kernel/fs/fs_bind"
+	FS_BIND_ROOT="${LTPROOT}/testcases/bin/fs_bind"
 
 	total=0 # total number of tests
 	for dir in "${test_dirs[@]}" ; do

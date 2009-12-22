@@ -24,6 +24,10 @@ top_srcdir			?= ../../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
+INSTALL_DIR			:= $(prefix)/testcases/bin/fs_bind
+
+INSTALL_TARGETS			:= */test*
+
 RECURSIVE_TARGETS		:= all install uninstall
 
 include $(top_srcdir)/include/mk/generic_trunk_target.mk

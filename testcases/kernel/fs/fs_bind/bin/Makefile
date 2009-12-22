@@ -24,4 +24,8 @@ top_srcdir		?= ../../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
+INSTALL_DIR		:= $(prefix)/testcases/bin/fs_bind/bin
+
+INSTALL_TARGETS		:= check_prop lockfile makedir setup setupnslock
+
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

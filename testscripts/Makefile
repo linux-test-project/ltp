@@ -26,7 +26,7 @@ include $(top_srcdir)/include/mk/env_pre.mk
 
 INSTALL_DIR		:= testscripts
 
-INSTALL_MODE		:= 00644
+INSTALL_MODE		:= 00755
 
 INSTALL_TARGETS		:= *.sh
 
