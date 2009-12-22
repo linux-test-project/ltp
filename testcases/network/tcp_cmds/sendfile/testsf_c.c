@@ -120,7 +120,7 @@ main (int argc, char *argv[])
 		}
 	}
 
-	tst_res(TINFO, "Asking for remote file: %s", serv_fname);
+	tst_resm(TINFO, "Asking for remote file: %s", serv_fname);
 
 	tst_resm(TINFO, "File %s received\n", argv[4]);
 

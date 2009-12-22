@@ -61,7 +61,10 @@ do_setup()
 
     exists awk diff gethost grep rsh stat
 
-    IPADDR=$(gethost $RHOST | awk '/addresses:/ {print $2}')
+    if ! IPADDR=$(gethost ${EXEC_SUFFIX:+6} $RHOST | awk 'BEGIN { ec=1 } /addresses:/ {print $2; ec=0 } END { exit ec }'); then
+        # XXX (garrcoop): || exit 1 is there to prevent the test from hanging in the event of an install error.
+        end_testcase "Failed to determine the appropriate IP address for the machine." || exit 1
+    fi
 
 }
 
@@ -81,11 +84,11 @@ do_test()
   
     mkdir -p $TCtmp
     PORT=$$ 
-    if ! rsh -l root $IPADDR "$LTPROOT/testcases/bin/SF_Server $IPADDR $PORT $LTPROOT/testcases/bin"; then
+    if ! rsh -l root $IPADDR "$LTPROOT/testcases/bin/SF_Server $IPADDR $PORT $LTPROOT/testcases/bin $SERVER"; then
         end_testcase "rsh failed to $IPADDR as root failed"
     fi
     sleep 10
-    PID=$(rsh -l root $IPADDR "ps -ef" | awk "\$0 !~ /awk/ && /$SERVER/ && /$PORT/ {print \$1}")
+    PID=$(rsh -l root $IPADDR "ps -ef" | awk "\$0 !~ /awk/ && /$SERVER/ && /$PORT/ {print \$2}")
     [ -n "$PID" ] || end_testcase "Could not start server"
 
     for clnt_fname in $FILES; do
@@ -118,7 +121,7 @@ do_test()
 
 do_cleanup()
 {
-      PID=$(rsh -n -l root $RHOST "ps -ef" | awk "\$0 !~ /awk/ && /$SERVER/ && /$PORT/ {print \$1}")
+      PID=$(rsh -n -l root $RHOST "ps -eopid,cmd" | awk "\$0 !~ /awk/ && /$SERVER/ && /$PORT/ {print \$1}")
       [ -n "$PID" ] && rsh -n -l root $RHOST kill -9 $PID
       tst_cleanup
 }

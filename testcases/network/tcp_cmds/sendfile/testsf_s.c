@@ -92,7 +92,7 @@ main(int argc, char *argv[])
 		tst_exit();
 	}
 
-	socklen_t fromlen;
+	socklen_t fromlen = sizeof(from);
 
 	/* process connections */
 	while (1) {
