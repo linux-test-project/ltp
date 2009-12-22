@@ -75,6 +75,7 @@
 #include <wait.h>
 #include <sys/time.h>
 #include <stdint.h>
+#include <inttypes.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -162,11 +163,12 @@ int main(int ac, char **av)
 
 		/* Wait for child to execute */
 		wait(&status);
-		if (WEXITSTATUS(status) == 0) {
-			tst_resm(TPASS, "Functionality of nanosleep() "
-				 "is correct");
-		} else if (WEXITSTATUS(status) == 1) {
-			tst_resm(TFAIL, "child process exited abnormally");
+		if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
+			tst_resm(TPASS, "Functionality of nanosleep() is "
+					"correct");
+		} else {
+			tst_resm(TFAIL, "child process exited abnormally; "
+					"status = %d", status);
 		}
 	}			/* End for TEST_LOOPING */
 

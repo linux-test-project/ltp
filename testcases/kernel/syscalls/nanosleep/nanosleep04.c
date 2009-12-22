@@ -147,11 +147,13 @@ int main(int ac, char **av)
 
 		/* Wait for child to execute */
 		wait(&status);
-		if (WEXITSTATUS(status) == 0) {
-			tst_resm(TPASS, "nanosleep() fails, invalid pause "
-				 "time, error:%d", EINVAL);
+		if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
+			tst_resm(TPASS, "nanosleep() failed, when provided "
+					"invalid pause time, with expected "
+					"errno: %d", EINVAL);
 		} else if (WEXITSTATUS(status) == 1) {
-			tst_resm(TFAIL, "child process exited abnormally");
+			tst_resm(TFAIL, "child process exited abnormally; "
+					"status = %d", status);
 		}
 	}			/* End for TEST_LOOPING */
 
