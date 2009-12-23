@@ -28,7 +28,7 @@
  */
 
 #include "config.h"
-#if HAVE_NUMA_H && HAVE_NUMAIF_H && LINUX_MEMPOLICY_H
+#if HAVE_NUMA_H && HAVE_NUMAIF_H && HAVE_LINUX_MEMPOLICY_H
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/mman.h>
