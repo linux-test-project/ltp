@@ -28,22 +28,16 @@ export TCID="cgroup_regression_test"
 export TST_TOTAL=10
 export TST_COUNT=1
 
-if [ ! -f /proc/cgroups ]; then
-        echo "CONTROLLERS TESTCASES: WARNING"
-        echo "Kernel does not support for control groups";
-        echo "Skipping all controllers testcases....";
-	exit 0
-fi
-
-if [ "$USER" != root ]; then
-	tst_brkm TBROK ignored "Test must be run as root"
-	exit 0
-fi
-
 tst_kvercmp 2 6 29
 if [ $? -eq 0 ]; then
-	tst_brkm TBROK ignored "Test should be run with kernel 2.6.29 or newer"
+	tst_brkm TCONF ignored "test must be run with kernel 2.6.29 or newer"
 	exit 1
+elif [ ! -f /proc/cgroups ]; then
+	tst_brkm TCONF ignored "Kernel does not support for control groups; skipping testcases";
+	exit 0
+elif [ "x$(id -ru)" != x0 ]; then
+	tst_brkm TCONF ignored "Test must be run as root"
+	exit 0
 fi
 
 nr_bug=`dmesg | grep -c "kernel BUG"`
@@ -390,11 +384,12 @@ test_7_2()
 		return
 	fi
 
-	for ((tmp = 0; tmp < 50; tmp++))
-	{
+	tmp=0
+	while [ $tmp -lt 50 ] ; do
 		echo 3 > /proc/sys/vm/drop_caches
 		cat /proc/sched_debug > /dev/null
-	}
+		: $(( tmp += 1 ))
+	done
 }
 
 test_7()
@@ -409,8 +404,8 @@ test_7()
 	subsys=`tail -n 1 /proc/cgroups | awk '{ print $1 }'`
 
 	# remount to add new subsystems to the hierarchy
-	for ((i = 1; i <= 2; i++))
-	{
+	i=1
+	while [ $i -le 2 ] ; do
 		test_7_$i
 		if [ $? -ne 0 ]; then
 			return
@@ -420,7 +415,8 @@ test_7()
 		if [ $? -eq 0 ]; then
 			return
 		fi
-	}
+		: $(( i += 1 ))
+	done
 
 	tst_resm TPASS "no kernel bug was found"
 }
