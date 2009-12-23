@@ -33,20 +33,17 @@ export TMPFILE=$TESTROOT/tmp_tasks
 export CASENO1=0
 export CASENO2=0
 
-if [ "$(id -ru)" -ne 0 ]; then
-	echo "***error***:you must use root to test"
-	exit -1
+if [ ! -f /proc/cgroups ]; then
+	tst_brkm TCONF ignored "Kernel does not support for control groups; skipping testcases";
+	exit 0
+elif [ "x$(id -ru)" != x0 ]; then
+	tst_brkm TCONF ignored "Test must be run as root"
+	exit 0
 fi
 
-if ! [ -f /proc/cgroups ]; then
-	echo "***error***:you must enable cgroup config in kernel";
-	exit -3;
-fi
-
-if [ ! -x $TESTROOT/cgroup_fj_proc ]; then
-	echo "***warning***:file \"cgroup_fj_proc\" is not exist or not executable";
-	echo "please do make and check execution permission"
-	exit -4;
+if [ ! -x "$TESTROOT/cgroup_fj_proc" ]; then
+	tst_resm TBROK "Test application - cgroup_fj_proc - does not exist or is not executable";
+	exit 1
 fi
 
 CPUSET=`grep -w cpuset /proc/cgroups | cut -f1`;
