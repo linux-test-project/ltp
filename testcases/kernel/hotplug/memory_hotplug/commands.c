@@ -30,9 +30,6 @@
 
 #include "config.h"
 #if HAVE_NUMA_H && HAVE_NUMAIF_H && HAVE_LINUX_MEMPOLICY_H
-#ifndef MPOL_MF_WAIT
-#define MPOL_MF_WAIT    (1<<2)  /* Wait for existing pages to migrate */
-#endif
 #include <linux/mempolicy.h>
 #include <sys/types.h>
 #include <sys/time.h>
@@ -53,6 +50,14 @@
 
 #define CMD_SUCCESS 0
 #define CMD_ERROR   1
+
+#ifndef __NR_migrate_pages
+#define __NR_migrate_pages 0
+#endif
+
+#ifndef MPOL_MF_WAIT
+#define MPOL_MF_WAIT    (1<<2)  /* Wait for existing pages to migrate */
+#endif
 
 static inline int nodemask_isset(nodemask_t *mask, int node)
 {
