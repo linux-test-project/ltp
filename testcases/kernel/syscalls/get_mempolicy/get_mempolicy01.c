@@ -45,23 +45,11 @@
 /* History:     Porting from Crackerjack to LTP is done by		      */
 /*	      Manas Kumar Nayak maknayak@in.ibm.com>			      */
 /******************************************************************************/
-#include <sys/syscall.h>
-#include <sys/types.h>
-#include <sys/mman.h>
-#include <getopt.h>
-#include <string.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <libgen.h>
-#include "numaif.h"
-#include "include_j_h.h"
-#include "common_j_h.c"
 
 /* Harness Specific Include Files. */
-#include "test.h"
 #include "usctest.h"
+#include "test.h"
+#include "config.h"
 
 /* Extern Global Variables */
 extern int Tst_count;	   /* counter for tst_xxx routines.	 */
@@ -71,6 +59,69 @@ extern char *TESTDIR;	   /* temporary dir created by tst_tmpdir() */
 char *TCID = "get_mempolicy01";  /* Test program identifier.*/
 int  testno;
 int  TST_TOTAL = 1;		   /* total number of tests in this file.   */
+
+#if HAVE_NUMA_H && HAVE_NUMAIF_H
+/*
+ * This test needs to be rewritten for libnuma v2 because of the following issue:
+ *
+ * gcooper@orangebox /scratch/ltp-dev2/ltp/testcases/kernel/syscalls/get_mempolicy $ make all
+ * make -C "/scratch/ltp-dev2/ltp/lib" -f "/scratch/ltp-dev2/ltp/lib/Makefile" all
+ * make[1]: Entering directory `/scratch/ltp-dev2/ltp/lib'
+ * make[1]: Nothing to be done for `all'.
+ * make[1]: Leaving directory `/scratch/ltp-dev2/ltp/lib'
+ * gcc -g -O2 -g -O2 -fno-strict-aliasing -pipe -Wall  -I/scratch/ltp-dev2/ltp/testcases/kernel/include -g -I/scratch/ltp-dev2/ltp/testcases/kernel/syscalls/get_mempolicy/../utils -DNUMA_VERSION1_COMPATIBILITY -I../../../../include -I../../../../include   -L../../../../lib  get_mempolicy01.c   -lltp -lnuma -o get_mempolicy01
+ * get_mempolicy01.c: In function 'do_test':
+ * get_mempolicy01.c:303: warning: passing argument 1 of 'nodemask_zero' from incompatible pointer type
+ * get_mempolicy01.c:305: warning: passing argument 1 of 'nodemask_zero' from incompatible pointer type
+ * get_mempolicy01.c:358: warning: passing argument 1 of 'nodemask_zero' from incompatible pointer type
+ * get_mempolicy01.c:359: warning: passing argument 1 of 'nodemask_equal' from incompatible pointer type
+ * get_mempolicy01.c:359: warning: passing argument 2 of 'nodemask_equal' from incompatible pointer type
+ * ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ * gcooper@orangebox /scratch/ltp-dev2/ltp/testcases/kernel/syscalls/get_mempolicy $ ./get_mempolicy01 
+ * get_mempolicy01    0  TINFO  :  (case00) START
+ * Segmentation fault
+ * gcooper@orangebox /scratch/ltp-dev2/ltp/testcases/kernel/syscalls/get_mempolicy $ gdb ./get_mempolicy01 
+ * GNU gdb 6.8
+ * Copyright (C) 2008 Free Software Foundation, Inc.
+ * License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+ * This is free software: you are free to change and redistribute it.
+ * There is NO WARRANTY, to the extent permitted by law.  Type "show copying"
+ * and "show warranty" for details.
+ * This GDB was configured as "x86_64-pc-linux-gnu"...
+ * (gdb) r
+ * Starting program: /scratch/ltp-dev2/ltp/testcases/kernel/syscalls/get_mempolicy/get_mempolicy01 
+ * get_mempolicy01    0  TINFO  :  (case00) START
+ *
+ * Program received signal SIGSEGV, Segmentation fault.
+ * 0x00007f3c46145a09 in ?? () from /usr/lib/libnuma.so.1
+ * (gdb) where
+ * #0  0x00007f3c46145a09 in ?? () from /usr/lib/libnuma.so.1
+ * #1  0x00007f3c46145aae in numa_bitmask_clearall () from /usr/lib/libnuma.so.1
+ * #2  0x0000000000402eeb in main (argc=1, argv=0x7ffffd3378b8) at /usr/include/numa.h:66
+ *
+ * It should be struct bitmask, which is a completely different structure
+ * altogether from nodemask_t (hence that's why numa is segfaulting .. it's
+ * accessing out-of-bounds memory).
+ *
+ * If it wasn't for the fact that this blocks newer systems from compiling,
+ * this version wouldn't be checked in yet.
+ */
+#include <sys/types.h>
+#include <sys/mman.h>
+#include <getopt.h>
+#include <string.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <libgen.h>
+#include <numa.h>
+#include <numaif.h>
+#include "linux_syscall_numbers.h"
+#include "include_j_h.h"
+#include "common_j_h.c"
+#include "numa_helpers.h"
+#if ! defined(LIBNUMA_API_VERSION) || LIBNUMA_API_VERSION < 2
 
 /*
  * Macros
@@ -273,13 +324,22 @@ static int do_test (struct test_case *tc)
 	int sys_errno;
 	int result = RESULT_OK;
 	int rc, policy, flags, cmp_ok = 1;
+
+/*
+#if LIBNUMA_API_VERSION == 2
+	struct bitmask nodemask, getnodemask;
+#else
+ */
 	nodemask_t nodemask, getnodemask;
+/*
+#endif
+ */
 	unsigned long maxnode = NUMA_NUM_NODES;
 	char *p = NULL;
 	unsigned long len = MEM_LENGTH;
 
 	/* We assume that there is only one node(node0). */
-	nodemask_zero(&nodemask);
+	nodemask_zero(&nodemask); /* Segfaults here with libnuma v2. */
 	nodemask_set(&nodemask, 0);
 	nodemask_zero(&getnodemask);
 
@@ -431,4 +491,17 @@ int main(int argc, char **argv) {
 	cleanup();
 	tst_exit();
 
+
 }
+#else
+int main(void) {
+	tst_resm(TBROK, "XXX: test is broken on libnuma v2 (read the source for more details).");
+	return 0;
+}
+#endif
+#else
+int main(void) {
+	tst_resm(TCONF, "System doesn't have required numa support");
+	tst_exit();
+}
+#endif

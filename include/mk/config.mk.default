@@ -35,6 +35,7 @@ YACC			:= bison -y
 #CAP_LIBS		:= -lcap
 #CRYPTO_LIBS		:= -lcrypto
 LEXLIB			:= -lfl
+#NUMA_CPPFLAGS		:= -DNUMA_VERSION1_COMPATIBILITY
 #NUMA_LIBS		:= -lnuma
 #SELINUX_LIBS		:= -lselinux
 

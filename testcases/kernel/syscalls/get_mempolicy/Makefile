@@ -20,7 +20,9 @@ top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-CPPFLAGS		+= -I$(abs_srcdir)/../utils
+CPPFLAGS		+= -g
+
+CPPFLAGS		+= -I$(abs_srcdir)/../utils $(NUMA_CPPFLAGS)
 
 LDLIBS			+= $(NUMA_LIBS)
 

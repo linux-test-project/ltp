@@ -29,7 +29,9 @@ AC_CHECK_HEADERS([numa.h numaif.h],[
 	AC_CHECK_FUNCS(numa_alloc_onnode,numa_move_pages)
 ]
 	AC_CHECK_LIB(numa,numa_available,[
-		NUMA_LIBS="-lnuma"
+NUMA_CPPFLAGS="-DNUMA_VERSION1_COMPATIBILITY"
+NUMA_LIBS="-lnuma"
 	])
+AC_SUBST(NUMA_CPPFLAGS)
 AC_SUBST(NUMA_LIBS)
 )])
