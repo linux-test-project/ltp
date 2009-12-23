@@ -29,7 +29,11 @@
  */
 
 #include "config.h"
-#if HAVE_NUMA_H && HAVE_NUMAIF_H && LINUX_MEMPOLICY_H
+#if HAVE_NUMA_H && HAVE_NUMAIF_H && HAVE_LINUX_MEMPOLICY_H
+#ifndef MPOL_MF_WAIT
+#define MPOL_MF_WAIT    (1<<2)  /* Wait for existing pages to migrate */
+#endif
+#include <linux/mempolicy.h>
 #include <sys/types.h>
 #include <sys/time.h>
 #include <sys/mman.h>
@@ -42,10 +46,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/syscall.h>
 
 #include "memtoy.h"
 #include "test.h"
-#include "linux_syscall_numbers.h"
 
 #define CMD_SUCCESS 0
 #define CMD_ERROR   1

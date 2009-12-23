@@ -24,9 +24,10 @@ top_srcdir	?= ../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-CPPFLAGS	+= -I$(abs_srcdir)
+CPPFLAGS	+= -D_GNU_SOURCE -I$(abs_srcdir)
 
 LDLIBS		+= $(NUMA_LIBS)
+LDLIBS		:= $(filter-out -lltp,$(LDLIBS))
 
 MAKE_TARGETS	:= memtoy
 

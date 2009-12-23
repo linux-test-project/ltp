@@ -25,7 +25,7 @@
 #include <stdio.h>
 #include "config.h"
 /* Shortcut because the test requires numa and mempolicy support. */
-#if HAVE_NUMA_H && HAVE_NUMAIF_H && LINUX_MEMPOLICY_H
+#if HAVE_NUMA_H && HAVE_NUMAIF_H && HAVE_LINUX_MEMPOLICY_H
 #include <sys/types.h>
 #include <sys/time.h>
 #include <sys/mman.h>
