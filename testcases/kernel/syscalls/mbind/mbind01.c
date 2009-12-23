@@ -41,6 +41,22 @@
 /*	      Manas Kumar Nayak maknayak@in.ibm.com>			      */
 /******************************************************************************/
 
+/* Harness Specific Include Files. */
+#include "test.h"
+#include "usctest.h"
+
+/* Extern Global Variables */
+extern int Tst_count;		/* counter for tst_xxx routines.	 */
+extern char *TESTDIR;		/* temporary dir created by tst_tmpdir() */
+
+/* Global Variables */
+char *TCID = "mbind01";		/* Test program identifier.*/
+int  testno;
+int  TST_TOTAL = 2;		/* total number of tests in this file.   */
+
+#include "config.h"
+
+#if HAVE_NUMA_H && HAVE_NUMAIF_H
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -57,22 +73,9 @@
 #include <stdio.h>
 #include <unistd.h>
 #include "include_j_h.h"
-#include "config.h"
+#include "numa_helpers.h"
 
-#include "numaif.h"
-
-/* Harness Specific Include Files. */
-#include "test.h"
-#include "usctest.h"
-
-/* Extern Global Variables */
-extern int Tst_count;		/* counter for tst_xxx routines.	 */
-extern char *TESTDIR;		/* temporary dir created by tst_tmpdir() */
-
-/* Global Variables */
-char *TCID = "mbind01";		/* Test program identifier.*/
-int  testno;
-int  TST_TOTAL = 2;		/* total number of tests in this file.   */
+#if ! defined(LIBNUMA_API_VERSION) || LIBNUMA_API_VERSION < 2
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -405,3 +408,15 @@ int main(int argc, char **argv) {
 	cleanup();
 	tst_exit();
 }
+#else
+int main(void) {
+	tst_resm(TBROK, "XXX: test is broken on libnuma v2 (read numa_helpers.h for more details).");
+	return 0;
+}
+#endif
+#else
+int main(void) {
+	tst_resm(TCONF, "System doesn't have required numa support");
+	tst_exit();
+}
+#endif
