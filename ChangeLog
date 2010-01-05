@@ -1,3 +1,600 @@
+LTP-20091231
+
+1) Log Message:
+Don't fail the ssh tests if the home directory we are creating already exists (eg. when it was created by adduser): this patch silences the error message "mkdir: directory already exists" in ssh tests, caused by the code that handles home directory creation in case adduser didn't do it. Unfortunately, the same code failed when adduser did create the directory. Signed-off-by: Jiri Palecek <jpalecek@web.de>.
+
+Modified Files:
+ltp/testcases/network/tcp_cmds/ssh/ssh01
+ltp/testcases/network/tcp_cmds/ssh/ssh02
+ltp/testcases/network/tcp_cmds/ssh/ssh03
+
+2) Log Message:
+Fixes of some errors discovered by "set -u": this patch fixes the following problems:
+ - read of $TEST_USER before it's set in ftp03,
+ - remnants of the $COMMAND variable which isn't really there anymore in netstat01,
+ - probably a typo in rsh01 ($COUNT vs. $TST_COUNT),
+ - $2 has to be escaped twice in rwho01, to appear in the awk script,
+ - when no interface is found tcpdump01, $IF is unset. Don't spit out an error in that case,
+This is a version with changes reflecting Mike's comments. Signed-off-by: Jiri Palecek <jpalecek@web.de>.
+
+Modified Files:
+ltp/testcases/network/tcp_cmds/ftp/ftp03
+ltp/testcases/network/tcp_cmds/netstat/netstat01
+ltp/testcases/network/tcp_cmds/rsh/rsh01
+ltp/testcases/network/tcp_cmds/rwho/rwho01
+ltp/testcases/network/tcp_cmds/tcpdump/tcpdump01
+
+3) Log Message:
+Fix a bug in awk code in rsh01: this patch fixes the following problem with awk code in rsh01. It caused the test to fail. The END label is executed always, even in the event of exit. Therefore, the "exit 1" statement was executed even when the line matched (as a consequence of "exit 0") and awk always returned 1 (ie. failure). Signed-off-by: Jiri Palecek <jpalecek@web.de>.
+
+Modified Files:
+ltp/testcases/network/tcp_cmds/rsh/rsh01
+
+4) Log Message:
+Remove the use of bash arrays from memcg_stress_test: this patch removes the use of bash arrays from memcg_stress_test.sh, thus making the script more POSIX friendly. I changed the array into a series of variables, read and written using eval. Signed-off-by: Jiri Palecek <jpalecek@web.de>.
+
+Modified Files:
+ltp/testcases/kernel/controllers/memcg/stress/memcg_stress_test.sh
+
+5) Log Message:
+Fix small errors in the runtest files: this patch fixes the following problems in the runtest files:
+ - rwtest has been renamed to rwtest.sh,
+ - there is no ipv6 variant of rlogin test
+Signed-off-by: Jiri Palecek <jpalecek@web.de>,
+
+Modified Files:
+ltp/runtest/fs ltp/runtest/ipv6_expect
+
+6) Log Message:
+Refer to checkforlibcap.sh by its real name: checkforlibcap doesn't exist, the script's proper name is checkforlibcap.sh. Signed-off-by: Jiri Palecek <jpalecek@web.de>.
+
+Modified Files:
+ltp/testcases/kernel/security/filecaps/filecapstest.sh
+
+7) Log Message:
+Fix a wrong (reversed) success condition in echo01: This patch reverses the success check in echo01, obviously the checksums being equal is the right outcome. This is the version with the changes Mike Frysinger requested.Signed-off-by: Jiri Palecek <jpalecek@web.de>.
+
+Modified Files:
+ltp/testcases/network/tcp_cmds/echo/echo01
+
+8) Log Message:
+rename readme file to avoid clean glob
+
+Added Files:
+ltp/testcases/misc/math/float/iperb/README
+ltp/testcases/misc/math/float/trigo/README
+
+Removed Files:
+ltp/testcases/misc/math/float/iperb/readme
+ltp/testcases/misc/math/float/trigo/readme
+
+9) Log Message:
+Hello, I tried to make ltp with the -j switch and found the following problems:
+ - the autotools target fail because of missing dependency on aclocal.m4 (almost all autotools targets depend on it)
+ - the shell loop in generic_trunk_target makes the "all" rules of the subdirectories run strictly sequentially
+This patch fixes these issues by adding dependencies to the autotools targets (it also deletes some of the duplicated targets from the realtime Makefile), and by making one target for each subdirectory in generic_trunk_target. Note that I really don't know if this works on an arbitrary make version. Signed-off-by: Jiri Palecek <jpalecek@web.de>.
+
+Modified Files:
+ltp/include/mk/utomake.mk
+ltp/testcases/realtime/Makefile
+
+10) Log Message:
+Use tail -n 1 instead of tail -1. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>.
+
+Modified Files:
+ltp/testcases/commands/ade/file/file_test.sh
+
+11) Log Message:
+Add support for a user specified strip application via configure. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/configure.ac
+ltp/include/mk/config.mk.default
+ltp/include/mk/config.mk.in
+
+12) Log Message:
+As noted by Jiri, the objdump tests were disabled in the infrastructure upgrade because they didn't fit exactly into the new infrastructure.
+1. Makefile: Reenable the test.
+2. objdump/Makefile: Fix compilation so that it deterministically compiles with -g (needed for the test, even though it currently fails because objdump expects DWARF and that's currently unsupported with ld(1) from what I've been reading).
+3. objdump/test.c -> objdump/test_arch.c: for the sake of clarity and to ensure that the command doesn't conflict with test(1), rename test.c to test_arch.c.
+4. objdump/objdump01: Clarify the purpose and error check --debugging in the test.
+Props go to Jiri for the original observations and suggestions. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>.
+
+Modified Files:
+ltp/testcases/commands/ade/Makefile
+ltp/testcases/commands/ade/objdump/Makefile
+ltp/testcases/commands/ade/objdump/objdump01 
+Added Files:
+ltp/testcases/commands/ade/objdump/test_arch.c 
+Removed Files:
+ltp/testcases/commands/ade/objdump/test.c
+
+13) Log Message:
+Some distributions will tack on additional versioning info to the official version, so let's account for that. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>.
+
+Modified Files:
+ltp/include/mk/env_pre.mk
+
+14) Log Message:
+Don't use linux/* headers. They don't compile out of the box on Ubuntu Dapper Drake. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>.
+
+Modified Files:
+ltp/testcases/kernel/security/smack/smack_set_socket_labels.c
+
+15) Log Message:
+Fix compilation with older glibc releases by restoring the POLLHDRDUP constant on-demand definition. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>.
+
+Modified Files:
+ltp/testcases/kernel/syscalls/ppoll/ppoll01.c
+
+16) Log Message:
+IDcheck.sh failing shouldn't be a hard error. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>.
+
+Modified Files:
+ltp/Makefile
+
+17) Log Message:
+Older versions of binutils / gcc don't properly grok the weak symbols solution I put in before the 200911 release, so instead implement the code using a preprocessor define (CLEANUP), which can be defined before including cleanup.c, and thus the user can specify what cleanup function they wish to use before it's defined. This works on Ubuntu 6.02 (dapper drake) with gcc 4.0 and binutils 2.16.9, but I'm not sure if it works with older tools, as I couldn't hunt down older distro sources... Signed-off-by: Garrett Cooper <yanegomi@gmail.com>.
+
+Modified Files:
+ltp/testcases/kernel/containers/libclone/libclone.c
+ltp/testcases/kernel/containers/pidns/pidns01.c
+ltp/testcases/kernel/include/linux_syscall_numbers.h
+ltp/testcases/kernel/include/regen.sh
+ltp/testcases/kernel/syscalls/eventfd/eventfd01.c
+ltp/include/ltp_signal.h 
+Added Files:
+ltp/include/cleanup.c
+
+18) Log Message:
+Wholesale testcase cleanup. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>.
+
+Modified Files:
+ltp/testcases/kernel/timers/timer_settime/Makefile
+ltp/testcases/kernel/timers/timer_settime/timer_settime02.c
+ltp/testcases/kernel/timers/timer_settime/timer_settime03.c
+ltp/testcases/kernel/timers/timer_create/Makefile
+ltp/testcases/kernel/timers/timer_create/timer_create02.c
+ltp/testcases/kernel/timers/timer_create/timer_create03.c
+ltp/testcases/kernel/timers/timer_create/timer_create04.c
+ltp/testcases/kernel/timers/include/common_timers.h
+ltp/testcases/kernel/timers/clock_settime/clock_settime02.c
+ltp/testcases/kernel/timers/clock_settime/clock_settime03.c
+ltp/testcases/kernel/timers/clock_gettime/Makefile
+ltp/testcases/kernel/timers/clock_gettime/clock_gettime02.c
+ltp/testcases/kernel/timers/clock_gettime/clock_gettime03.c
+ltp/testcases/kernel/timers/timer_delete/timer_delete02.c
+ltp/testcases/kernel/timers/timer_delete/timer_delete03.c
+
+19) Log Message:
+Polish up clean logic a bit further. Later versions of gcc (rightfully) whine more about function attributes, et all. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>.
+
+Modified Files:
+ltp/testcases/kernel/containers/pidns/pidns01.c
+ltp/testcases/kernel/containers/pidns/pidns02.c
+ltp/testcases/kernel/containers/pidns/pidns03.c
+ltp/testcases/kernel/containers/pidns/pidns04.c
+ltp/testcases/kernel/containers/pidns/pidns10.c
+ltp/testcases/kernel/containers/pidns/pidns17.c
+ltp/testcases/kernel/containers/libclone/libclone.c
+ltp/include/cleanup.c
+
+20) Log Message:
+1. Make the autotools process more straightforward.
+2. Fix a corner case where executing distclean after autotools was failing to find testcases/realtime/include/realtime_config.h.in.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/include/mk/automake.mk
+ltp/testcases/realtime/Makefile
+
+21) Log Message:
+This patch fixes one overlooked line and also removes trailing whitespaces. Signed-off-by: <chrubis@suse.cz>.
+
+Modified Files:
+ltp/runtest/ltp-aio-stress.part1
+ltp/runtest/ltp-aio-stress.part2
+
+22) Log Message:
+Fix overreaching clean targets in Makefiles that cleaned the readme files: the makefiles in some of the float tests contain the glob "[dr]*" in their clean targets. Unfortunately, this deletes not only the generated reference files, but also the readme files shipped in those directories. This patch fixes it by changing CLEAN_TARGETS to more specific patterns (that capture all generated files in all float tests, however). Signed-off-by: Jiri Palecek <jpalecek@web.de>.
+
+Modified Files:
+ltp/testcases/misc/math/float/iperb/Makefile
+ltp/testcases/misc/math/float/trigo/Makefile
+
+23) Log Message:
+New sigwaitinfo test: this is the test for the rt_sigtimedwait et al. functions I promised earlier. The code is unchanged since I sent it for the first time, but the Makefiles are adapted to the new build system, with the help of Garret Cooper. Signed-off-by: Jiri Palecek <jpalecek@web.de>.
+
+Added Files:
+ltp/testcases/kernel/syscalls/rt_sigtimedwait/Makefile
+ltp/testcases/kernel/syscalls/sigtimedwait/Makefile
+ltp/testcases/kernel/syscalls/sigwait/Makefile
+ltp/testcases/kernel/syscalls/sigwaitinfo/Makefile
+ltp/testcases/kernel/syscalls/sigwaitinfo/sigwaitinfo01.c
+
+24) Log Message:
+if4-alias-addlarge - default values for IPV4_NETWORK and  IPV4_HOST: The testcase code expects class A (or /8 ) network addresses to be assigned to the tested interfaces and fails with the default values of class C (or /24). Signed-off-by: Radoslav Kolev <radoslav.kolev@rnd.bg>.
+
+Modified Files:
+ltp/testcases/network/stress/interface/if4-alias-addlarge
+
+25) Log Message:
+Stupid typo noticed by Paul Larson. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Modified Files:
+ltp/Makefile
+
+26) Log Message:
+The following is changelog. This patch can fix the following problem:
+-- delete the code of setting the test_fs flag
+-- open the verbose mode of e4defrag, it is useful to find the problem of online defrag
+-- fix some bug of the Makefile
+-- throw the utilities version info away
+-- delete two unnecessary testcases about ext4 subdir limit test
+Signed-off-by: Miao Xie <miaox@cn.fujitsu.com>,
+
+Modified Files:
+ltp/testcases/kernel/fs/ext4-new-features/Makefile
+ltp/testcases/kernel/fs/ext4-new-features/README
+ltp/testcases/kernel/fs/ext4-new-features/ext4-delalloc-mballoc/ext4-alloc-test.sh
+ltp/testcases/kernel/fs/ext4-new-features/ext4-inode-version/ext4_get_inode_version.sh
+ltp/testcases/kernel/fs/ext4-new-features/ext4-inode-version/ext4_inode_version_test.sh
+ltp/testcases/kernel/fs/ext4-new-features/ext4-journal-checksum/ext4_journal_checksum.sh
+ltp/testcases/kernel/fs/ext4-new-features/ext4-nsec-timestamps/ext4_nsec_timestamps_test.sh
+ltp/testcases/kernel/fs/ext4-new-features/ext4-online-defrag/ext4_online_defrag_test.sh
+ltp/testcases/kernel/fs/ext4-new-features/ext4-persist-prealloc/ext4_persist_prealloc_test.sh
+ltp/testcases/kernel/fs/ext4-new-features/ext4-subdir-limit/ext4_subdir_limit_test.sh
+ltp/testcases/kernel/fs/ext4-new-features/ext4-uninit-groups/ext4_uninit_groups_test.sh
+
+27) Log Message:
+math/float/thread_code.c, revert previous patch which added check for NaN. Here is a patch that reverts the previous patch applied to thread_cod.c. Some of the float tests were reporting a failure where it detected the difference between the result and expected result was NaN(not a number).  As some of the results and expected results resolved to inf(infinity), the difference calculation would result in NaN. With the previous patch, float_power and float_bessel tests were consistently failing on all architectures tried. Signed-off by: Henry Yei <hyei@mvista.com>. 
+
+Modified Files:
+ltp/testcases/misc/math/float/thread_code.c
+
+28) Log Message:
+1. Fix out-of-build-tree support (hit a few snags).
+2. Enable ${bindir} support.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/Makefile
+ltp/include/mk/automake.mk
+ltp/include/mk/config.mk.default
+ltp/include/mk/config.mk.in
+ltp/include/mk/testcases.mk
+
+29) Log Message:
+As several folks have noticed (Mitani-san, etc), the entries in runtest/fs was incorrect and wasn't switched over from rwtest.sh to rwtest. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>.
+
+Modified Files:
+ltp/runtest/fs
+
+30) Log Message:
+run_libevent.sh was looking for test-libevent.sh in the wrong directory as pointed out by Mitani-san, because the Makefile was installing from and to the relative path. Signed-off-by: Tomori Mitani <mitani@ryobi.co.jp>, Acked-by: Garrett Cooper <yanegomi@gmail.com>
+
+Modified Files:
+ltp/testcases/kernel/syscalls/libevent/run_libevent.sh
+
+31) Log Message:
+Fix the install and execution of the unzip01 test as it wasn't being done properly after the Makefile infra restructure. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>.
+
+Modified Files:
+ltp/runtest/commands
+ltp/testcases/commands/unzip/Makefile
+
+32) Log Message:
+Update the TODO list a bit. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/TODO
+
+33) Log Message:
+Fix compilation on systems where numa.h is present as nodemask_set is present in version 1 copy of numa.h. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/syscalls/utils/numaif.h
+
+34) Log Message:
+ptrace.h: Let's try THIS for solving the compile issue on ia64... ptrace04.c: Need to add a stub cleanup() function for ptrace04 to compile. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/syscalls/ptrace/ptrace.h
+ltp/testcases/kernel/syscalls/ptrace/ptrace04.c
+
+35) Log Message:
+Search path shouldn't be relative from current directory. Please use PATH instead. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/power_management/runpwtests.sh
+
+36) Log Message:
+Improve filesystem checks for psuedo-fs'es like NFS rootfs through improved awk call. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/syscalls/ftruncate/ftruncate04.sh
+
+37) Log Message:
+1. Install the testscripts with LTP again.
+2. Setup the initial piece for installing in the build tree, as requested by KD and a few others.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/Makefile
+ltp/include/mk/env_pre.mk
+ltp/testscripts/Makefile
+
+38) Log Message:
+Replace the while loop + counter with a more resource efficient iterator. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/execltp.in
+
+39) Log Message:
+It's run_libevent.sh, not run-libevent.sh. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/syscalls/Makefile
+
+40) Log Message:
+Fix the libevent compilation because it was half-assed before. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/syscalls/Makefile
+
+41) Log Message:
+As pointed out by Casper, the path to run_libevent.sh is actually specified incorrectly in runtest/syscalls. It should be $LTPROOT/testcases/bin/libevent/run_libevent.sh. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/runtest/syscalls
+
+42) Log Message:
+As noted by luibo...
+`According to case ld, ldd and nm's Makefile, s/*.o/*.obj/'.
+1. ld01: Also, fix version parsing (newer versions don't have `version' in the same line as the version) and remove the hardcoded /usr/bin/ld // ld.
+2. ldd01: Remove hardcoded cc // ldd.
+3. nm01: Remove hardcoded cc // nm.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/commands/ade/ld/ld01
+ltp/testcases/commands/ade/ldd/ldd01
+ltp/testcases/commands/ade/nm/nm01
+
+43) Log Message:
+Remove one last hardcoded $CC. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/commands/ade/ld/ld01
+
+44) Log Message:
+Fix the missing event.h error found by Tomomori-san on systems without event.h by picking it up from the src directory as described in the following message. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/syscalls/Makefile
+
+45) Log Message:
+Hello, The command "export X=Y cmd" means export variable X (valued Y) and variable cmd; it does not run cmd. To do the latter, you can write  "X=Y cmd" (as in this patch) or "export X=Y; cmd". Signed-off-by: Jiri Palecek <jpalecek@web.de>,
+
+Modified Files:
+ltp/runtest/nfs
+
+46) Log Message:
+Hello, linktest.sh is failing when ran using the stress.part1 file, because it lacks command line arguments. This patch just adds them (taken from the fs runtest file). Signed-off-by: Jiri Palecek <jpalecek@web.de>,
+
+Modified Files:
+ltp/runtest/stress.part1
+
+47) Log Message:
+Fix autoconf preprocessor defines. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/controllers/freezer/vfork.c
+
+48) Log Message:
+Revert to Mike's original copy of ptrace.h. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/syscalls/ptrace/ptrace.h
+
+49) Log Message:
+Remove the idiot reference. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/syscalls/ptrace/ptrace.h
+
+50) Log Message:
+Fix absolute path to library, as we're no longer directly installing libraries into $(libdir). Issue found by Caspar Zhang <czhang@redhat.com>.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/network/sctp/Makefile
+
+51) Log Message:
+Fix the remaining `lib-not-found' error when compiling for the second time as reported by Caspar Zhang <czhang@redhat.com>. Signed-off-by: Garrett Cooper
+<yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/controllers/cpuset/cpuset_syscall_test/cpuset_syscall_test.c
+ltp/testcases/kernel/controllers/Makefile
+ltp/testcases/kernel/controllers/Makefile.inc
+
+52) Log Message:
+use the renamed syscall perf_event_open. Signed-off-by: Mike Frysinger <vapier@users.sourceforge.net>,
+
+Modified Files:
+ltp/testcases/kernel/performance_counters/performance_counter01.c
+ltp/testcases/kernel/performance_counters/performance_counter02.c
+
+53) Log Message:
+drop old __NR_perf_counter_open syscall name and force everyone to use new __NR_perf_event_open. Mike Frysinger <vapier@users.sourceforge.net>
+
+Modified Files:
+ltp/testcases/kernel/include/linux_syscall_numbers.h
+ltp/testcases/kernel/include/regen.sh
+
+54) Log Message:
+update config.sub/config.guess files. Mike Frysinger <vapier@users.sourceforge.net>,
+
+Modified Files:
+ltp/testcases/kernel/syscalls/pcllib/config.guess
+ltp/testcases/kernel/syscalls/pcllib/config.sub
+ltp/testcases/kernel/fs/ext4-new-features/ffsb-6.0-rc2/config.guess
+ltp/testcases/kernel/fs/ext4-new-features/ffsb-6.0-rc2/config.sub
+ltp/testcases/open_hpi_testsuite/config.guess
+ltp/testcases/open_hpi_testsuite/config.sub
+
+55) Log Message:
+autoconf 2.61 on my work box pukes when CHECK_HEADERS_ONCE is used. Replace it with CHECK_HEADERS. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/m4/ltp-ptrace.m4
+
+56) Log Message:
+1. Fix the 2.x quota autoconf test
+2. Disable the 1.x RHEL quota autoconf test (don't have a system to verify the requirement on).
+3. Fix indentation in quotactl01.c
+4. Block off some quotactl constants that only exist on quota 2.x.
+5. Add a check for geteuid() => root. This is required for quotactl; seems funny that the test fails with EADDR though instead of properly setting the errno to EPERM for quotactl(QUOTA_ON, ...). Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/syscalls/quotactl/quotactl01.c
+ltp/m4/ltp-quota.m4
+
+57) Log Message:
+1. ltp-signalfd.m4: be more strict with AC_CHECK_HEADERS by encapsulating the header items in [].
+2. Change AC_CHECK_HEADERS_ONCE with AC_CHECK_HEADERS as my work copy of autoconf 2.61 / m4 pukes on this defun and improperly parses the header tokens.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/configure.ac
+ltp/m4/ltp-signalfd.m4
+
+58) Log Message:
+Need to check if the preprocessor define is true or false, not if the definition exists as autoconf sets the preprocessor define to 0 if the DECL doesn't exist. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/controllers/freezer/vfork.c
+
+59) Log Message:
+libevent.a gets put in the libevent directory, not libevent/lib directory. Adjust LDFLAGS accordingly. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/syscalls/Makefile
+
+60) Log Message:
+Hello, I've found some problems with the sendfile01 testcase (the one under network/tcp_cmds). This patch fixes them: Pass the -6 parameter to gethost if we are to use ipv6 and run the ipv6 server in that case. Also, fix the awk code for getting the PID: The PID is the second column, which is $2, not $1. Also: 
+ - initialize addrlen for accept syscall in the server (=> avoid EINVAL)
+ - use tst_resm in the client instead of tst_res, to avoid an error message interpreted as a filename
+The patch originally sent via email was modified so that the POSIX form of ps was called (with the -), and the PID was in the first column. Furthermore, this patch was modified to ensure that IPADDR was in fact being set to a valid value to avoid hangs as gethost could be missing (as well as netlib.sh), which symbolizes an install failure, which would ultimately result in a test hang. Signed-off-by: Jiri Palecek <jpalecek@web.de>,
+
+Modified Files:
+ltp/testcases/network/tcp_cmds/sendfile/sendfile01
+ltp/testcases/network/tcp_cmds/sendfile/testsf_c.c
+ltp/testcases/network/tcp_cmds/sendfile/testsf_s.c
+
+61) Log Message:
+Apply the fix for the issue noted below. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>. Tomonori Mitani
+
+Modified Files:
+ltp/testscripts/Makefile
+ltp/testscripts/test_fs_bind.sh
+ltp/testcases/kernel/fs/fs_bind/bin/Makefile
+
+62) Log Message:
+Apply the fix for the issue noted below. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/fs/fs_bind/Makefile
+
+63) Log Message:
+Resolve the issue reported in the following email by using WIFEXITED(status) && WEXITSTATUS(status) == 0 as the pass criteria, as it should be according to wait(2). Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/syscalls/nanosleep/nanosleep02.c
+ltp/testcases/kernel/syscalls/nanosleep/nanosleep03.c
+ltp/testcases/kernel/syscalls/nanosleep/nanosleep04.c
+
+64) Log Message:
+Address the issue reported in the following email by installing all .c files. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/commands/ade/nm/Makefile
+
+65) Log Message:
+configure.ac: add a check for linux/mempolicy.h testcases/kernel/hotplug/...:
+- Enable memory hotplug build and install
+- Cordon off mempolicy / numa dependent logic on systems where it isn't available for compile / linux.
+- Remove ad hoc / mostly incorrect move_mempages logic.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/m4/ltp-numa.m4
+ltp/testcases/kernel/hotplug/Makefile
+ltp/configure.ac
+ltp/testcases/kernel/hotplug/memory_hotplug/Makefile
+ltp/testcases/kernel/hotplug/memory_hotplug/commands.c
+ltp/testcases/kernel/hotplug/memory_hotplug/memtoy.c
+ltp/testcases/kernel/hotplug/memory_hotplug/memtoy.h
+ltp/testcases/kernel/hotplug/memory_hotplug/segment.c
+
+66) Log Message:
+Fix the build for systems with newer versions of libnuma because it causes compilation errors (example: RHEL 5.2). The test was using libnuma 1.x API's and thus needs to be adapted to 2.x's API's. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/m4/ltp-numa.m4
+
+Removed Files:
+ltp/testcases/kernel/hotplug/memory_hotplug/migrate_pages.c
+ltp/testcases/kernel/hotplug/memory_hotplug/migrate_pages.h
+ltp/include/mk/config.mk.default
+ltp/include/mk/config.mk.in
+ltp/testcases/kernel/syscalls/get_mempolicy/Makefile
+ltp/testcases/kernel/syscalls/get_mempolicy/get_mempolicy01.c
+
+67) Log Message:
+get_mempolicy01: move libnuma v2 note to numa_helpers.h. mbind01.c: wash, rinse, repeat. numa_helpers.h: move libnuma v2 note here. Garrett Cooper <yaberauneya@users.sourceforge.net>,
+
+Modified Files:
+ltp/testcases/kernel/syscalls/mbind/mbind01.c
+
+Added Files:
+ltp/testcases/kernel/syscalls/utils/numa_helpers.h
+ltp/testcases/kernel/syscalls/get_mempolicy/get_mempolicy01.c
+
+68) Log Message:
+Fix a typo. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/hotplug/memory_hotplug/segment.c
+
+69) Log Message:
+1) memtoy is a standalone tool, not a test. So let's not LTP-ify it too much.
+2) Resolve a lot of other delightful typos... Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/hotplug/memory_hotplug/Makefile
+ltp/testcases/kernel/hotplug/memory_hotplug/commands.c
+ltp/testcases/kernel/hotplug/memory_hotplug/memtoy.c
+
+70) Log Message:
+Shuffle around macros, and put a safe-ish default in for __NR_migrate_pages (0). Signed-off-by: Garrett Cooper <yanegomi@gmail.com>. 
+
+Modified Files:
+ltp/testcases/kernel/hotplug/memory_hotplug/commands.c
+
+71) Log Message:
+Fix part 1 of the issue described in the following email: Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/controllers/cgroup_fj/run_cgroup_test_fj.sh
+
+72) Log Message:
+Fix part two of the email below... and fix some bash-isms while I'm at it... Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/controllers/cgroup/cgroup_regression_test.sh
+
 LTP-20091130
 
 1) Log Message:
