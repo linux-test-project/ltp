@@ -19,32 +19,32 @@
 ##                                                                            ##
 ################################################################################
 
-LTPTMP=/tmp/p9auth_ltp
+export TMPDIR=${TMPDIR:-/tmp}
+export LTPTMP=${TMPDIR}/p9auth_ltp
+export TST_TOTAL=3
+export TCID="p9auth"
+
+export TST_COUNT=1
+
 rm -rf $LTPTMP
 mkdir $LTPTMP
 chmod 755 $LTPTMP
 
 comms="$LTPTMP/childgo $LTPTMP/d/childready $LTPTMP/d/childfail $LTPTMP/d/childpass $LTPTMP/childexit"
 
-RM=`which rm`
-MKDIR=`which mkdir`
-CHOWN=`which chown`
-
 cleanup() {
-	$RM -rf $LTPTMP/d $comms
-	$MKDIR -p $LTPTMP/d
-	$CHOWN -R ltp $LTPTMP/d
+	rm -rf $LTPTMP/d $comms
+	mkdir -p $LTPTMP/d
+	chown -R ltp $LTPTMP/d
 }
 
-if [ `id -u` -ne 0 ]; then
-	echo "Must start p9auth tests as root"
+if [ "$(id -ru)" -ne 0 ]; then
+	tst_resm TBROK "Must start p9auth tests as root"
 	exit 1
 fi
 
-ltpuid=`grep ltp /etc/passwd | head -1 | awk -F: '{ print $3 '}`
-ret=$?
-if [ $? -ne 0 ]; then
-	echo "Failed to find ltp userid"
+if ! ltpuid=$(id -u ltp); then
+	tst_resm TCONF "Failed to find ltp userid"
 	exit 1
 fi
 
@@ -55,12 +55,12 @@ cleanup
 su ltp p9unpriv.sh &
 while [ ! -f $LTPTMP/d/childready ]; do :; done
 touch $LTPTMP/childgo
-while [ ! -f $LTPTMP/d/childfail -a ! -f $LTPTMP/d/childpass ]; do :; done;
+until [ -f $LTPTMP/d/childfail -o -f $LTPTMP/d/childpass ]; do :; done
 if [ -f $LTPTMP/d/childpass ]; then
-	echo "FAIL: child could setuid with bad hash"
+	tst_resm TFAIL "child could setuid with bad hash"
 	exit 1
 fi
-echo "PASS: child couldn't setuid with bad hash"
+tst_resm TPASS "child couldn't setuid with bad hash"
 
 # TEST 2: ltp setuids to 0 with valid hash
 
@@ -78,12 +78,12 @@ chown ltp $LTPTMP/d/txtfile
 su ltp p9unpriv.sh &
 while [ ! -f $LTPTMP/d/childready ]; do :; done
 touch $LTPTMP/childgo
-while [ ! -f $LTPTMP/d/childfail -a ! -f $LTPTMP/d/childpass ]; do :; done;
+until [ -f $LTPTMP/d/childfail -o -f $LTPTMP/d/childpass ]; do :; done
 if [ -f $LTPTMP/d/childfail ]; then
-	echo "FAIL: child couldn't setuid with good hash"
+	tst_resm TFAIL "child couldn't setuid with good hash"
 	exit 1
 fi
-echo "PASS: child could setuid with good hash"
+tst_resm TPASS "child could setuid with good hash"
 
 # TEST 3: 0 setuids to 0 with hash valid for ltp user
 cleanup
@@ -99,12 +99,12 @@ chown ltp $LTPTMP/d/txtfile
 su ltp p9unpriv.sh &
 while [ ! -f $LTPTMP/d/childready ]; do :; done
 touch $LTPTMP/childgo
-while [ ! -f $LTPTMP/d/childfail -a ! -f $LTPTMP/d/childpass ]; do :; done;
+until [ -f $LTPTMP/d/childfail -o -f $LTPTMP/d/childpass ]; do :; done;
 if [ -f $LTPTMP/d/childpass ]; then
-	echo "PASS: child could setuid from wrong source uid"
+	tst_resm TFAIL "child could setuid from wrong source uid"
 	exit 1
 fi
-echo "PASS: child couldn't setuid from wrong source uid"
+tst_resm TPASS "child couldn't setuid from wrong source uid"
 
 touch $LTPTMP/childexit
 
