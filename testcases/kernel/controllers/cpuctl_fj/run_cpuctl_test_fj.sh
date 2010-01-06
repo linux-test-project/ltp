@@ -85,7 +85,7 @@ creat_process()
 
 get_cpu_usage()
 {
-	ps -eo 'pid,pcpu' | awk '/'$1'/ && $0 !~ /awk/ { sub(/(\.[[:digit:]])*$/, "", $2); print $2 }'
+	ps -eo 'pid,pcpu' | awk '$1 == "'$1'" { sub(/(\.[[:digit:]])*$/, "", $2); print $2 }'
 }
 
 kill_all_pid()
