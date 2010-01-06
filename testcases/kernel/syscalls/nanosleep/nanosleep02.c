@@ -223,60 +223,61 @@ void do_child()
 		tst_resm(TFAIL, "Remaining sleep time %lu usec doesn't "
 			 "match with the expected %lu usec time",
 			 rem, (req - elapsed));
-		exit(1);
-	}
-
-	/* Record the time before suspension */
-	gettimeofday(&otime, NULL);
-
-	/*
-	 * Invoke nanosleep() again to suspend child
-	 * for the specified sleep time specified by
-	 * 'timereq' structure.
-	 */
-	TEST(nanosleep(&timereq, &timerem));
-
-	/* Record the time after suspension */
-	gettimeofday(&ntime, NULL);
-
-	/* check return code of nanosleep() */
-	if (TEST_RETURN == -1) {
-		tst_resm(TFAIL,
-			 "nanosleep() Failed, errno=%d : %s",
-			 TEST_ERRNO, strerror(TEST_ERRNO));
-		exit(1);
-	}
-
-	/*
-	 * Perform functional verification if test
-	 * executed without (-f) option.
-	 */
-	if (STD_FUNCTIONAL_TEST) {
-		/*
-		 * Verify whether child execution was
-		 * actually suspended for the remaining
-		 * sleep time specified by 'timerem'
-		 * structure.
-		 */
-		req = timereq.tv_sec * 1000000 + timereq.tv_nsec / 1000;
-		elapsed =
-		    (ntime.tv_sec - otime.tv_sec) * 1000000 + ntime.tv_usec -
-		    otime.tv_usec;
-		if (elapsed - req > USEC_PRECISION) {
-			tst_resm(TWARN,
-				 "This test could fail if the system was under load");
-			tst_resm(TWARN,
-				 "due to the limitation of the way it calculates the");
-			tst_resm(TWARN, "system call execution time.");
-			tst_resm(TFAIL, "Child execution not "
-				 "suspended for %jd seconds %lu nanoseconds",
-				 (intmax_t)timereq.tv_sec, timereq.tv_nsec);
-			exit(1);
-		}
 	} else {
-		tst_resm(TPASS, "call succeeded");
-		exit(0);
+
+		/* Record the time before suspension */
+		gettimeofday(&otime, NULL);
+
+		/*
+		 * Invoke nanosleep() again to suspend child
+		 * for the specified sleep time specified by
+		 * 'timereq' structure.
+		 */
+		TEST(nanosleep(&timereq, &timerem));
+
+		/* Record the time after suspension */
+		gettimeofday(&ntime, NULL);
+
+		/* check return code of nanosleep() */
+		if (TEST_RETURN == -1) {
+			tst_resm(TFAIL | TTERRNO, "nanosleep() failed");
+		}
+		/*
+		 * Perform functional verification if test
+		 * executed without (-f) option.
+		 */
+		else if (STD_FUNCTIONAL_TEST) {
+			/*
+			 * Verify whether child execution was
+			 * actually suspended for the remaining
+			 * sleep time specified by 'timerem'
+			 * structure.
+			 */
+			req = timereq.tv_sec * 1000000 + timereq.tv_nsec / 1000;
+			elapsed =
+			    (ntime.tv_sec - otime.tv_sec) * 1000000 + ntime.tv_usec -
+			    otime.tv_usec;
+			if (elapsed - req > USEC_PRECISION) {
+				tst_resm(TWARN,
+					 "This test could fail if the system "
+					 "was under load due to the limitation "
+					 "of the way it calculates the system "
+					 "call execution time.");
+				tst_resm(TFAIL, "Child execution not suspended "
+						"for %jd seconds %lu "
+						"nanoseconds",
+						(intmax_t)timereq.tv_sec,
+						timereq.tv_nsec);
+			} else {
+				tst_resm(TINFO, "call succeeded");
+			}
+
+		}
+
 	}
+
+	tst_exit();
+
 }
 
 /*
