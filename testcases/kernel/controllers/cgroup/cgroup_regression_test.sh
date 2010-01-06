@@ -31,7 +31,7 @@ export TST_COUNT=1
 tst_kvercmp 2 6 29
 if [ $? -eq 0 ]; then
 	tst_brkm TCONF ignored "test must be run with kernel 2.6.29 or newer"
-	exit 1
+	exit 0 
 elif [ ! -f /proc/cgroups ]; then
 	tst_brkm TCONF ignored "Kernel does not support for control groups; skipping testcases";
 	exit 0
