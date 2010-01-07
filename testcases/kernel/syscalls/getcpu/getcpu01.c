@@ -77,12 +77,16 @@ int sys_support = 0;
 int sys_support = 0;
 #endif
 
+#if !(__GLIBC_PREREQ(2, 7))
+#define CPU_FREE(ptr) free(ptr)
+#endif
+
 void cleanup(void);
 void setup(void);
 static inline int getcpu(unsigned int *, unsigned int *, void *);
 unsigned int set_cpu_affinity();
 unsigned int get_nodeid(unsigned int);
-unsigned int max_cpuid(cpu_set_t *);
+unsigned int max_cpuid(size_t, cpu_set_t *);
 
 char *TCID = "getcpu01";
 int TST_TOTAL = 1;
@@ -189,18 +193,56 @@ void setup(void)
 unsigned int set_cpu_affinity()
 {
 	unsigned cpu_max;
-	cpu_set_t set;
-	if (sched_getaffinity(0, sizeof(cpu_set_t), &set) < 0) {
-		tst_resm(TFAIL, "sched_getaffinity:errno:%d", errno);
+	cpu_set_t *set;
+	size_t size;
+	int nrcpus = 1024;
+#if __GLIBC_PREREQ(2, 7)
+realloc:
+	set = CPU_ALLOC(nrcpus);
+#else
+	set = malloc(sizeof(cpu_set_t));
+#endif
+	if (set == NULL) {
+		tst_resm(TFAIL, "CPU_ALLOC:errno:%d", errno);
 		tst_exit();
 	}
-	cpu_max = max_cpuid(&set);
-	CPU_ZERO(&set);
-	CPU_SET(cpu_max, &set);
-	if (sched_setaffinity(0, sizeof(cpu_set_t), &set) < 0) {
+
+#if __GLIBC_PREREQ(2, 7)
+	size = CPU_ALLOC_SIZE(nrcpus);
+	CPU_ZERO_S(size, set);
+#else
+	size = sizeof(cpu_set_t);
+	CPU_ZERO(set);
+#endif
+	if (sched_getaffinity(0, size, set) < 0) {
+		CPU_FREE(set);
+#if __GLIBC_PREREQ(2, 7)
+		if (errno == EINVAL && nrcpus < (1024 << 8)) {
+			nrcpus = nrcpus << 2;
+			goto realloc;
+		}
+#else
+		if (errno == EINVAL)
+			tst_resm(TFAIL, "NR_CPUS of the kernel is more than 1024, so we'd better use a newer glibc(>= 2.7)");
+		else
+#endif
+			tst_resm(TFAIL, "sched_getaffinity:errno:%d", errno);
+		tst_exit();
+	}
+	cpu_max = max_cpuid(size, set);
+#if __GLIBC_PREREQ(2, 7)
+	CPU_ZERO_S(size, set);
+	CPU_SET_S(cpu_max, size, set);
+#else
+	CPU_ZERO(set);
+	CPU_SET(cpu_max, set);
+#endif
+	if (sched_setaffinity(0, size, set) < 0) {
+		CPU_FREE(set);
 		tst_resm(TFAIL, "sched_setaffinity:errno:%d", errno);
 		tst_exit();
 	}
+	CPU_FREE(set);
 	return cpu_max;
 }
 
@@ -208,11 +250,15 @@ unsigned int set_cpu_affinity()
  * Return the maximum cpu id
  */
 #define BITS_PER_BYTE 8
-unsigned int max_cpuid(cpu_set_t * set)
+unsigned int max_cpuid(size_t size, cpu_set_t * set)
 {
 	unsigned int index, max = 0;
-	for (index = 0; index < sizeof(cpu_set_t) * BITS_PER_BYTE; index++)
+	for (index = 0; index < size * BITS_PER_BYTE; index++)
+#if __GLIBC_PREREQ(2, 7)
+		if (CPU_ISSET_S(index, size, set))
+#else
 		if (CPU_ISSET(index, set))
+#endif
 			max = index;
 	return max;
 }
