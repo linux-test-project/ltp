@@ -30,16 +30,15 @@ export TCID="memcg_regression_test"
 export TST_TOTAL=4
 export TST_COUNT=1
 
-if [ "$USER" != root ]; then
+if [ "$(id -ru)" != 0 ]; then
 	tst_brkm TBROK ignored "Test must be run as root"
 	exit 0
 fi
 
-if [ ! "grep -w memory /proc/cgroups | cut -f4" == "1" ]
+if [ "$(grep -w memory /proc/cgroups | cut -f4)" != "1" ]
 then
-        echo "WARNING:";
-        echo "Either Kernel does not support for memory resource controller or feature not enabled";
-        echo "Skipping all memcgroup testcases....";
+	tst_resm TCONF "Either memory resource controller kernel support absent"
+	tst_resm TCONF "or feature is not enabled; skipping all memcgroup testcases."
         exit 0
 fi
 
