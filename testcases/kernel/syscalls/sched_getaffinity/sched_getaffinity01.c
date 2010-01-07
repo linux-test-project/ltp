@@ -119,11 +119,15 @@ do { \
 	tst_resm((TEST_RETURN == -1 ? TPASS : TFAIL) | TTERRNO, #t); \
 } while (0)
 
+#if !(__GLIBC_PREREQ(2,7))
+#define CPU_FREE(ptr)	free(ptr)
+#endif
 int main(int ac, char **av) {
         int lc,num,i;                 /* loop counter */
         char *msg;              /* message returned from parse_opts */
-	cpu_set_t mask;
-	unsigned int len = sizeof(cpu_set_t);
+	cpu_set_t *mask;
+	int nrcpus = 1024;
+	unsigned int len;
 
         /* parse standard options */
         if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
@@ -140,30 +144,67 @@ int main(int ac, char **av) {
         for (lc = 0; TEST_LOOPING(lc); ++lc) {
                 Tst_count = 0;
                 for (testno = 0; testno < TST_TOTAL; ++testno) {
-                     QUICK_TEST(sched_getaffinity(0, len, (cpu_set_t *)-1));
-                     QUICK_TEST(sched_getaffinity(0, 0, &mask));
-                     QUICK_TEST(sched_getaffinity(getpid() + 1, len, &mask));
+#if __GLIBC_PREREQ(2,7)
+realloc:
+		     mask = CPU_ALLOC(nrcpus);
+# else
+		     mask = malloc(sizeof(cpu_set_t));
+#endif
+		     if (mask == NULL) {
+		           tst_resm(TFAIL|TTERRNO, "cann't get enough memory");
+		           cleanup();
+		           tst_exit();
+		     }
 
-		     CPU_ZERO(&mask); //clear
-                     TEST(sched_getaffinity(0,len,&mask));     //call sched_getaffinity()
+#if __GLIBC_PREREQ(2,7)
+		     len = CPU_ALLOC_SIZE(nrcpus);
+		     CPU_ZERO_S(len, mask); //clear
+#else
+		     len = sizeof(cpu_set_t);
+		     CPU_ZERO(mask); //clear
+#endif
+                     TEST(sched_getaffinity(0, len, mask));     //call sched_getaffinity()
 		     if(TEST_RETURN == -1) {
-                 	   tst_resm(TFAIL|TTERRNO, "could not get cpu affinity");
-			cleanup();
-			tst_exit();
+			   CPU_FREE(mask);
+#if __GLIBC_PREREQ(2,7)
+			   if (errno == EINVAL && nrcpus < (1024 << 8)) {
+				nrcpus = nrcpus << 2;
+				goto realloc;
+			   }
+#else
+			   if (errno == EINVAL)
+				tst_resm(TFAIL, "NR_CPUS of the kernel is more than 1024, so we'd better use a newer glibc(>= 2.7)");
+			   else
+#endif
+                 		tst_resm(TFAIL|TTERRNO, "could not get cpu affinity");
+			   cleanup();
+			   tst_exit();
                      } else {
 				tst_resm(TINFO,"cpusetsize is %d", len);
-				tst_resm(TINFO,"mask.__bits[0] = %lu ",mask.__bits[0]);
+				tst_resm(TINFO,"mask.__bits[0] = %lu ",mask->__bits[0]);
 				for(i=0;i<num;i++){    // check the processor
-	                        	TEST(CPU_ISSET(i,&mask));
+#if __GLIBC_PREREQ(2,7)
+	                        	TEST(CPU_ISSET_S(i, len, mask));
+#else
+					TEST(CPU_ISSET(i, mask));
+#endif
 					if (TEST_RETURN != -1 ){
                                 	tst_resm(TPASS,"sched_getaffinity() succeed ,this process %d is running processor: %d",getpid(), i);
-					}
-			        }
-	                    }
+				}
+			    }
+	             }
 
-
-                     }
-		}
+#if __GLIBC_PREREQ(2,7)
+		     CPU_ZERO_S(len, mask); //clear
+#else
+		     CPU_ZERO(mask);	//clear
+#endif
+                     QUICK_TEST(sched_getaffinity(0, len, (cpu_set_t *)-1));
+                     QUICK_TEST(sched_getaffinity(0, 0, mask));
+                     QUICK_TEST(sched_getaffinity(getpid() + 1, len, mask));
+		     CPU_FREE(mask);
+                }
+	}
         cleanup();
 	tst_exit();
 }
