@@ -20,6 +20,8 @@
 ##                                                                            ##
 ## Author: Li Zefan <lizf@cn.fujitsu.com>                                     ##
 ## Restructure for LTP: Shi Weihua <shiwh@cn.fujitsu.com>                     ##
+## Added memcg enable/disable functinality: Rishikesh K Rajak		      ##
+##						<risrajak@linux.vnet.ibm.com  ##
 ##                                                                            ##
 ################################################################################
 
@@ -28,13 +30,14 @@ export TCID="memcg_function_test"
 export TST_TOTAL=38
 export TST_COUNT=0
 
-grep -w memory /proc/cgroups 2>&1 > /dev/null
-if [ $? -ne 0 ]; then
-	echo "WARNING:";
-	echo "Kernel does not support for memory resource controller";
-	echo "Skipping all memcgroup testcases....";
-	exit 0
+if [ ! "grep -w memory /proc/cgroups | cut -f4" == "1" ]
+then
+        echo "WARNING:";
+        echo "Either Kernel does not support for memory resource controller or feature not enabled";
+        echo "Skipping all memcgroup testcases....";
+        exit 0
 fi
+
 
 TEST_PATH=$PWD
 

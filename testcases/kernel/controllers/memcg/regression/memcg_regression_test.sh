@@ -19,6 +19,8 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    ##
 ##                                                                            ##
 ## Author: Li Zefan <lizf@cn.fujitsu.com>                                     ##
+## Added memcg enable/disable functinality: Rishikesh K Rajak                 ##
+##                                              <risrajak@linux.vnet.ibm.com  ##
 ##                                                                            ##
 ################################################################################
 
@@ -31,6 +33,14 @@ export TST_COUNT=1
 if [ "$USER" != root ]; then
 	tst_brkm TBROK ignored "Test must be run as root"
 	exit 0
+fi
+
+if [ ! "grep -w memory /proc/cgroups | cut -f4" == "1" ]
+then
+        echo "WARNING:";
+        echo "Either Kernel does not support for memory resource controller or feature not enabled";
+        echo "Skipping all memcgroup testcases....";
+        exit 0
 fi
 
 tst_kvercmp 2 6 30

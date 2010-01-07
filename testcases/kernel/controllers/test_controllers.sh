@@ -33,19 +33,26 @@
 #  20/12/07  Sudhir Kumar <sudhirkumarmalik@in.ibm.com>   Created this test      #
 #  02/03/09  Miao Xie     <miaox@cn.fujitsu.com>          Add cpuset testset     #
 #  07/07/09  Shi Weihua   <shiwh@cn.fujitsu.com>      Add cpu testset of Fujitsu #
+#  30/12/09  Rishikesh    <risrajak@linux.vnet.ibm.com> Added enable/disable     #
 #                                                                                #
 ##################################################################################
 
 if [ -f /proc/cgroups ]
 then
 	CPU_CONTROLLER=`grep -w cpu /proc/cgroups | cut -f1`;
+	CPU_CONTROLLER_VALUE=`grep -w cpu /proc/cgroups | cut -f4`;
 	MEM_CONTROLLER=`grep -w memory /proc/cgroups | cut -f1`;
+	MEM_CONTROLLER_VALUE=`grep -w memory /proc/cgroups | cut -f4`;
 	IOTHROTTLE_CONTROLLER=`grep -w blockio /proc/cgroups | cut -f1`;
+	IOTHROTTLE_CONTROLLER_VALUE=`grep -w blockio /proc/cgroups | cut -f4`;
 	FREEZER=`grep -w freezer /proc/cgroups | cut -f1`;
+	FREEZER_VALUE=`grep -w freezer /proc/cgroups | cut -f4`;
 	CPUSET_CONTROLLER=`grep -w cpuset /proc/cgroups | cut -f1`
+	CPUSET_CONTROLLER_VALUE=`grep -w cpuset /proc/cgroups | cut -f4`
 	CPUACCOUNT_CONTROLLER=`grep -w cpuacct /proc/cgroups | cut -f1`
+	CPUACCOUNT_CONTROLLER_VALUE=`grep -w cpuacct /proc/cgroups | cut -f4`
 
-	if [ "$CPU_CONTROLLER" = "cpu" ]
+	if [ "$CPU_CONTROLLER" = "cpu" ] && [ "$CPU_CONTROLLER_VALUE" = "1" ]
 	then
 		$LTPROOT/testcases/bin/run_cpuctl_test.sh 1;
 		$LTPROOT/testcases/bin/run_cpuctl_test.sh 3;
@@ -63,11 +70,11 @@ then
 		$LTPROOT/testcases/bin/run_cpuctl_test_fj.sh
 	else
 		echo "CONTROLLERS TESTCASES: WARNING";
-		echo "Kernel does not support for cpu controller";
+		echo "Either Kernel does not support for cpu controller or functionality is not enabled";
 		echo "Skipping all cpu controller testcases....";
 	fi;
 
-	if [ "$MEM_CONTROLLER" = "memory" ]
+	if [ "$MEM_CONTROLLER" = "memory" ] && [ "$MEM_CONTROLLER_VALUE" = "1" ]
 	then
 		$LTPROOT/testcases/bin/run_memctl_test.sh 1;
 		$LTPROOT/testcases/bin/run_memctl_test.sh 2;
@@ -75,28 +82,29 @@ then
 		$LTPROOT/testcases/bin/run_memctl_test.sh 4;
 	else
 		echo "CONTROLLERS TESTCASES: WARNING";
-		echo "Kernel does not support for memory controller";
+		echo "Either Kernel does not support for memory controller or functionality is not enabled";
 		echo "Skipping all memory controller testcases....";
 	fi
 
-	if [ "$IOTHROTTLE_CONTROLLER" = "blockio" ]
+	if [ "$IOTHROTTLE_CONTROLLER" = "blockio" ] && [ "$IOTHROTTLE_CONTROLLER_VALUE" = "1" ]
 	then
 		$LTPROOT/testcases/bin/run_io_throttle_test.sh;
 	else
 		echo "CONTROLLERS TESTCASES: WARNING";
-		echo "Kernel does not support blockio controller";
+		echo "Either Kernel does not support for io controller or functionality is not enabled";
 		echo "Skipping all block device I/O throttling testcases....";
 	fi
 
-	if [ "$FREEZER" = "freezer" ]
+	if [ "$FREEZER" = "freezer" ] && [ "$FREEZER_VALUE" = "1" ]
 	then
 		"$LTPROOT/testcases/bin/run_freezer.sh"
 	else
 		echo "CONTROLLERS TESTCASES: WARNING";
+		echo "Either Kernel does not support for freezer or functionality is not enabled";
 		echo "Kernel does not support freezer controller";
 		echo "Skipping all freezer testcases....";
 	fi
-	if [ "$CPUSET_CONTROLLER" = "cpuset" ]
+	if [ "$CPUSET_CONTROLLER" = "cpuset" ] && [ "$CPUSET_CONTROLLER_VALUE" = "1" ]
 	then
 		$LTPROOT/testcases/bin/run_cpuset_test.sh 1;
 		$LTPROOT/testcases/bin/run_cpuset_test.sh 2;
@@ -111,21 +119,22 @@ then
 		$LTPROOT/testcases/bin/run_cpuset_test.sh 11;
 	else
 		echo "CONTROLLERS TESTCASES: WARNING";
-		echo "Kernel does not support cpuset controller";
+		echo "Either Kernel does not support for cpuset controller or functionality is not enabled";
 		echo "Skipping all cpuset controller testcases....";
 	fi
-	if [ "$CPUACCOUNT_CONTROLLER" = "cpuacct" ]
+	if [ "$CPUACCOUNT_CONTROLLER" = "cpuacct" ] && [ "$CPUACCOUNT_CONTROLLER_VALUE" = "1" ]
         then
                 $LTPROOT/testcases/bin/run_cpuacct_test.sh 1;
                 $LTPROOT/testcases/bin/run_cpuacct_test.sh 2;
         else
                 echo "Could not start cpu accounting controller test";
+		echo "Either Kernel does not support for cpu accounting controller or functionality is not enabled";
                 echo "usage: run_cpuacct_test.sh $TEST_NUM ";
                 echo "Skipping the cpu accounting controller test...";
         fi
 else
 	echo "CONTROLLERS TESTCASES: WARNING"
-	echo "Kernel does not support for control groups";
+	echo "Kernel does not support any controller";
 	echo "Skipping all controllers testcases....";
 fi
 
