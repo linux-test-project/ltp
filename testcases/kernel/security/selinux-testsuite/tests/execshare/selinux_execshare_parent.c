@@ -18,9 +18,11 @@
 #include <selinux/selinux.h>
 #include <selinux/context.h>
 #include <sched.h>
+#include "test.h"
 
-int clone_fn(char **argv)
+int clone_fn(void *in)
 {
+	char **argv = (char **) in;
 	execv(argv[3], argv+3);
 	perror(argv[3]);
 	return -1;
@@ -73,7 +75,7 @@ int main(int argc, char **argv)
 		fprintf(stderr, "%s:  unable to set exec context to %s\n", argv[0], context_s);
 		exit(-1);
 	}
-	pid = ltp_clone_quick(cloneflags | SIGCHLD, child_fn, argv);
+	pid = ltp_clone_quick(cloneflags | SIGCHLD, clone_fn, argv);
 	if (pid < 0) {
 		perror("clone");
 		exit(-1);
