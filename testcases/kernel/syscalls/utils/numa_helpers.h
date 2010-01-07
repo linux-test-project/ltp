@@ -13,7 +13,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * $Id: numa_helpers.h,v 1.1 2009/12/23 00:13:20 yaberauneya Exp $
+ * $Id: numa_helpers.h,v 1.2 2010/01/07 09:32:40 yaberauneya Exp $
  */
 
 #ifndef LTP_NUMA_HELPERS_H
@@ -68,20 +68,6 @@
  * If it wasn't for the fact that this blocks newer systems from compiling,
  * this version wouldn't be checked in yet.
  */
-
-/*
-#if LIBNUMA_API_VERSION == 2
-static inline void nodemask_set(struct bitmask *mask, int node)
-#else
- */
-static inline void nodemask_set(nodemask_t *mask, int node)
-/*
-#endif
- */
-{
-	mask->n[node / (8*sizeof(unsigned long))] |=
-		(1UL << (node % (8*sizeof(unsigned long))));		
-}
 
 /*
 #if LIBNUMA_API_VERSION == 2
