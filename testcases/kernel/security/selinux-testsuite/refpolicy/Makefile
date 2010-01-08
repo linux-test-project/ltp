@@ -24,55 +24,71 @@ top_srcdir		?= ../../../../..
 
 include	$(top_srcdir)/include/mk/env_pre.mk
 
-REDHAT_RELEASE		?= $(shell rpm -q redhat-release)
-REDHAT_VERS		?= $(shell echo $(REDHAT_RELEASE) | cut -f3 -d- | sed -e "s/[^0-9]*//g")
-POLICYDEVEL		?= $(DESTDIR)/usr/share/selinux/devel
-SEMODULE		?= $(DESTDIR)/usr/sbin/semodule
+ARGS			= -m
+# Don't want to pass the -d option unless DESTDIR is a non-zero length string.
+ifneq ($(strip $(DESTDIR)),)
+ARGS			+= -d $(DESTDIR)
+endif
+
+DISTRO_VER		:= $(shell $(top_srcdir)/scripts/detect_distro.sh $(ARGS))
+
+ifeq ($(strip $(DISTRO_VER)),)
+DISTRO_VER		:= generic
+endif
+
 CHECKPOLICY		?= $(DESTDIR)/usr/bin/checkpolicy
 CHECKPOLICY_VERS	?= $(shell $(CHECKPOLICY) -V |cut -f 1 -d ' ')
+POLICY_DEVEL_DIR	?= $(DESTDIR)/usr/share/selinux/devel
+SEMODULE		?= $(DESTDIR)/usr/sbin/semodule
 
-CLEAN_TARGETS		:= test_policy.te
+INSTALL_DIR		:= testcases/kernel/security/selinux-testsuite
 
-INSTALL_TARGETS		:= $(REDHAT_VERS)/*.te
-INSTALL_TARGETS_FULL	:= redhat/$(INSTALL_TARGETS)
-
-ifeq ($(CHECKPOLICY_VERS),24)
-INSTALL_TARGETS		:= $(filter-out %/test_bounds.te,$(INSTALL_TARGETS))
-endif
-
-TE_SRCDIR		:= $(abs_srcdir)
-
-ifeq (redhat-release-, $(findstring redhat-release-, $(REDHAT_RELEASE)))
-ifneq ($(wildcard $(abs_srcdir)/redhat/$(REDHAT_VER)),)
-TE_SRCDIR		:= $(abs_srcdir)/redhat/$(REDHAT_VER)
-endif
-endif
+TEST_POLICY_DIR		:= $(abs_srcdir)/policy_files
 
 .PHONY: all clean cleanup install load
 
-all: load
+CLEAN_DEPS		:= cleanup
 
-clean: cleanup
+INSTALL_DEPS		:= load
 
 cleanup:
 	-$(SEMODULE) -r test_policy
-	$(RM) -f $(POLICYDEVEL)/test_policy.* test_policy.te 
+	$(RM) -f $(POLICY_DEVEL_DIR)/test_policy.* test_policy.*
 
-install: all
+ifneq ($(wildcard $(TEST_POLICY_DIR)/$(DISTRO_VER)/Makefile),)
+MAKE_TARGETS		:=
+
+TEST_POLICY_DIR		:= $(TEST_POLICY_DIR)/$(DISTRO_VER)
 
 # load remains for backwards compatibility...
-load: test_policy.te
-ifeq (redhat-release-, $(findstring redhat-release-, $(REDHAT_RELEASE)))
-	$(MAKE) -C redhat/$(REDHAT_VERS)
+load:
+	$(MAKE) -C $(TEST_POLICY_DIR)
 else
-	@if [ -d "$(POLICYDEVEL)" ]; then \
-	    cp -p test_policy.* $(INSTALL_TARGETS_FULL) $(POLICYDEVEL); \
-	    $(MAKE) -C $(POLICYDEVEL) clean test_policy.pp; \
-	    $(SEMODULE) -i $(POLICYDEVEL)/test_policy.pp; \
-	else \
-            echo "ERROR: You must have selinux-policy-devel installed."; \
-	fi
+
+MAKE_TARGETS		:= test_policy.te
+
+TEST_POLICY_DIR		:= $(TEST_POLICY_DIR)/generic
+
+POLICY_FILES		:= test_global.te $(filter-out test_global.te,$(notdir $(wildcard $(TEST_POLICY_DIR)/*.te)))
+
+ifneq ($(CHECKPOLICY_VERS),24)
+POLICY_FILES		:= $(filter-out test_bounds.te,$(POLICY_FILES))
 endif
 
-test_policy.te:
-	(cd "$(TE_SRCDIR)" && cat $(filter-out $@,$(addprefix $(srcdir)/,$(INSTALL_TARGETS))) > "$@";
+load:
+	@if [ -d "$(POLICY_DEVEL_DIR)" ]; then \
+	    cp -p $(TEST_POLICY_DIR)/test_policy.* $(POLICY_DEVEL_DIR); \
+	    $(MAKE) -C $(POLICY_DEVEL_DIR) clean; \
+	    $(MAKE) -C $(POLICY_DEVEL_DIR) test_policy.pp; \
+	    $(SEMODULE) -i $(POLICY_DEVEL_DIR)/test_policy.pp; \
+	else \
+            echo "ERROR: You must have selinux-policy-devel installed."; \
+	    false; \
+	fi
+
+test_policy.te: $(addprefix $(TEST_POLICY_DIR)/,$(POLICY_FILES))
+	(cd "$(TEST_POLICY_DIR)" && cat $(POLICY_FILES)) > $@
+
+endif
+
+include $(top_srcdir)/include/mk/generic_leaf_target.mk
