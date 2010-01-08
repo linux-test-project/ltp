@@ -53,7 +53,7 @@ INSTALL_DEPS		:= load
 
 cleanup:
 	-$(SEMODULE) -r test_policy
-	$(RM) -f $(POLICY_DEVEL_DIR)/test_policy.* test_policy.*
+	$(RM) -f $(POLICY_DEVEL_DIR)/test_policy.* test_policy.te
 
 ifneq ($(wildcard $(TEST_POLICY_DIR)/$(DISTRO_VER)/Makefile),)
 MAKE_TARGETS		:=
