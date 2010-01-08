@@ -8,6 +8,10 @@
  *
  */
 
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+
 #include <stdio.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -16,7 +20,6 @@
 int main(void)
 {
 	pid_t pid, group_id;
-	int status;
 
 	pid = getpid();
 	if ((group_id = getpgid(pid)) < 0) {

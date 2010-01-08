@@ -33,7 +33,8 @@ CHECKPOLICY_VERS	?= $(shell $(CHECKPOLICY) -V |cut -f 1 -d ' ')
 
 CLEAN_TARGETS		:= test_policy.te
 
-INSTALL_TARGETS		:= *.te
+INSTALL_TARGETS		:= $(REDHAT_VERS)/*.te
+INSTALL_TARGETS_FULL	:= redhat/$(INSTALL_TARGETS)
 
 ifeq ($(CHECKPOLICY_VERS),24)
 INSTALL_TARGETS		:= $(filter-out %/test_bounds.te,$(INSTALL_TARGETS))
@@ -55,19 +56,23 @@ clean: cleanup
 
 cleanup:
 	-$(SEMODULE) -r test_policy
-	$(RM) -f $(POLICYDEVEL)/test_policy.* $(builddir)/test_policy.te 
+	$(RM) -f $(POLICYDEVEL)/test_policy.* test_policy.te 
 
 install: all
 
 # load remains for backwards compatibility...
-load: $(builddir)/test_policy.te
+load: test_policy.te
+ifeq (redhat-release-, $(findstring redhat-release-, $(REDHAT_RELEASE)))
+	$(MAKE) -C redhat/$(REDHAT_VERS)
+else
 	@if [ -d "$(POLICYDEVEL)" ]; then \
-	    cp -p $(builddir)/test_policy.* $(INSTALL_TARGETS) $(POLICY_DEVEL); \
+	    cp -p test_policy.* $(INSTALL_TARGETS_FULL) $(POLICYDEVEL); \
 	    $(MAKE) -C $(POLICYDEVEL) clean test_policy.pp; \
 	    $(SEMODULE) -i $(POLICYDEVEL)/test_policy.pp; \
 	else \
             echo "ERROR: You must have selinux-policy-devel installed."; \
 	fi
+endif
 
-$(builddir)/test_policy.te:
-	(cd "$(TE_SRCDIR)" && cat $(INSTALL_TARGETS)) > "$@";
+test_policy.te:
+	(cd "$(TE_SRCDIR)" && cat $(filter-out $@,$(addprefix $(srcdir)/,$(INSTALL_TARGETS))) > "$@";
