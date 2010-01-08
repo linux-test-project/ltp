@@ -2,16 +2,35 @@
 #
 # Answer the question: what distro are we installing.
 #
+#
 
 error() {
 	echo "${0##*/}: ERROR: $*" >&2
 }
 
-ROOTFS_PREFIX=${DESTDIR:-${DESTDIR}/}
-ETC_DIR="${ROOTFS_PREFIX}etc"
+destdir=
+omit_minor_version=0
 
-if [ ! -d "$ETC_DIR" ] ; then
-	error "$ETC_DIR doesn't exist"
+while getopts "d:m" opt; do
+
+	case "$opt" in 
+	d)
+		if [ ! -d "$OPTARG" ] ; then
+			error "$OPTARG doesn't exist"
+			exit 1
+		fi
+		destdir=$OPTARG
+		;;
+	m)
+		omit_minor_version=1
+		;;
+	esac
+done
+
+etc_dir="$destdir/etc"
+
+if [ ! -d "$etc_dir" ] ; then
+	error "$etc_dir doesn't exist"
 	exit 1
 fi
 
@@ -21,7 +40,7 @@ fi
 # XXX (garrcoop): add more..
 #
 for i in "gentoo-release" "redhat-release"; do
-	if [ -f "$ETC_DIR/$i" ] ; then
+	if [ -f "$etc_dir/$i" ] ; then
 		DISTRO_RELEASE_FILE="$i"
 		break
 	fi
@@ -32,7 +51,7 @@ if [ "x$DISTRO_RELEASE_FILE" = x ] ; then
 	error "Please send an email with your distro's details, if you believe this is in error"
 	exit 1
 else
-	DISTRO_RELEASE_ABS_FILE="$ETC_DIR/$DISTRO_RELEASE_FILE"
+	DISTRO_RELEASE_ABS_FILE="$etc_dir/$DISTRO_RELEASE_FILE"
 
 	case "$i" in
 	gentoo-release)
@@ -71,15 +90,17 @@ else
 			;;
 		redhat)
 			MAJOR_VER=$1
-			MINOR_VER=$(echo "$@" | sed -e 's/[\(\)]//g' -e 's/.*Update //')
-			VERSION="$MAJOR_VER${MINOR_VER:+.${MINOR_VER}}"
+			if [ $omit_minor_version -eq 0 ] ; then
+				MINOR_VER=$(echo "$@" | sed -e 's/[\(\)]//g' -e 's/.*Update //')
+				VERSION="$MAJOR_VER${MINOR_VER:+.${MINOR_VER}}"
+			fi
 			;;
 		esac
 
 	fi
 
 	if [ "x$VERSION" = x ] ; then
-		error "Bad release file: $ETC_DIR/$DISTRO_RELEASE_FILE"
+		error "Bad release file: $etc_dir/$DISTRO_RELEASE_FILE"
 		exit 2
 	else
 		echo "$DISTRO-$VERSION"
