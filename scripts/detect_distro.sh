@@ -40,12 +40,13 @@ else
 		RELEASE_FORMAT_FILE=1
 		;;
 	redhat-release)
+		RELEASE_FORMAT_FILE=1
 		if grep -q '^Red Hat' "$DISTRO_RELEASE_ABS_FILE"; then
 			DISTRO=redhat
-			RELEASE_FORMAT_FILE=1
-			VERSION=
 		elif grep -q '^Fedora' "$DISTRO_RELEASE_ABS_FILE"; then
 			DISTRO=fedora
+		else
+			RELEASE_FORMAT_FILE=0
 		fi
 		;;
 	esac
@@ -71,7 +72,7 @@ else
 		redhat)
 			MAJOR_VER=$1
 			MINOR_VER=$(echo "$@" | sed -e 's/[\(\)]//g' -e 's/.*Update //')
-			VERSION="$MAJOR_VER${MINOR_VER:-.${MINOR_VER}}"
+			VERSION="$MAJOR_VER${MINOR_VER:+.${MINOR_VER}}"
 			;;
 		esac
 
