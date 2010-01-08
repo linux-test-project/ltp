@@ -92,8 +92,8 @@ else
 			MAJOR_VER=$1
 			if [ $omit_minor_version -eq 0 ] ; then
 				MINOR_VER=$(echo "$@" | sed -e 's/[\(\)]//g' -e 's/.*Update //')
-				VERSION="$MAJOR_VER${MINOR_VER:+.${MINOR_VER}}"
 			fi
+			VERSION="$MAJOR_VER${MINOR_VER:+.${MINOR_VER}}"
 			;;
 		esac
 
