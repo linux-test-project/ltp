@@ -9,7 +9,7 @@ error() {
 }
 
 destdir=
-omit_minor_version=0
+omit_redhat_minor_version=0
 
 while getopts "d:m" opt; do
 
@@ -22,7 +22,7 @@ while getopts "d:m" opt; do
 		destdir=$OPTARG
 		;;
 	m)
-		omit_minor_version=1
+		omit_redhat_minor_version=1
 		;;
 	esac
 done
@@ -88,9 +88,9 @@ else
 		gentoo)
 			VERSION=$1
 			;;
-		redhat)
+		fedora|redhat)
 			MAJOR_VER=$1
-			if [ $omit_minor_version -eq 0 ] ; then
+			if [ $omit_redhat_minor_version -eq 0 ] ; then
 				MINOR_VER=$(echo "$@" | sed -e 's/[\(\)]//g' -e 's/.*Update //')
 			fi
 			VERSION="$MAJOR_VER${MINOR_VER:+.${MINOR_VER}}"
