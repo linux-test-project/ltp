@@ -203,7 +203,9 @@ main(int ac, char **av)
 						(const char *)NULL, id,
 						(caddr_t)NULL);
 				if (ret != 0) {
-					tst_resm(TFAIL|TTERRNO, "cmd=0x%x", cmd[i]);
+					tst_resm(TFAIL|TERRNO,
+						"cmd=0x%x failed with return "
+						"code = %d", cmd[i], ret);
 				} else {
 					tst_resm(TPASS, "quotactl call succeeded");
 				}
