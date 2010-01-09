@@ -103,8 +103,6 @@ $(sort $(addprefix $(abs_top_builddir)/,$(BOOTSTRAP_TARGETS)) $(INSTALL_DIR) $(D
 	mkdir -m 00755 -p "$@"
 
 ## Pattern based subtarget rules.
-lib-all: include-install
-
 lib-install: lib-all
 
 $(MAKE_TARGETS) include-all lib-all:
