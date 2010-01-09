@@ -53,16 +53,6 @@ SKIP_IDCHECK		?= 0
 
 # User wants uclinux binaries?
 UCLINUX			?= 0
-
-# User wants uclinux binaries. Do this for backwards compatibility, but
-# print out a warning.
-ifneq ($(filter uclinux%,$(MAKECMDGOALS)),)
-$(warning uclinux* targets will be deprecated in the future.)
-$(warning Please specify UCLINUX=1 on the command line to achieve the same)
-$(warning functionality.)
-UCLINUX			:= 1
-endif
-
 export UCLINUX
 
 # CLEAN_TARGETS:	Targets which exist solely in clean.
