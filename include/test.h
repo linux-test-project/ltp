@@ -31,7 +31,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: test.h,v 1.25 2010/01/10 08:01:15 yaberauneya Exp $ */
+/* $Id: test.h,v 1.26 2010/01/10 22:27:15 yaberauneya Exp $ */
 
 #ifndef __TEST_H__
 #define __TEST_H__
@@ -257,9 +257,10 @@ int ltp_clone_quick(unsigned long clone_flags, int (*fn)(void *arg),
 #define clone(...) use_the_ltp_clone_functions,do_not_use_clone
 
 /*
- * Functions from lib/get_block_dev.c
+ * Functions from lib/mount_utils.c
  */
 char *get_block_device(const char *path);
+char *get_mountpoint(const char *path);
 
 #ifdef TST_USE_COMPAT16_SYSCALL
 #define TCID_BIT_SUFFIX "_16"

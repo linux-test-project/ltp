@@ -88,7 +88,20 @@ char *TCID = "quotactl01";		/* Test program identifier.		*/
 int  testno;
 int  TST_TOTAL = 1;			/* total number of tests in this file.	*/
 
-static char *block_dev = NULL;
+#define QUOTACTL(cmd, addr) \
+	syscall(__NR_quotactl, QCMD(cmd, USRQUOTA), block_dev, id, \
+					(caddr_t) addr)
+#if defined(HAS_QUOTAV2)
+
+#ifndef QUOTAFILE
+/* Default name of the quota file in Fedora 12. */
+#define QUOTAFILE "aquota.user"
+#endif
+
+char quota_started = 0;
+static char *block_dev = NULL, *mountpoint = NULL, *quota_loc = NULL;
+int id;
+struct dqblk dq;
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -108,17 +121,32 @@ static char *block_dev = NULL;
 /*		On success - Exits calling tst_exit(). With '0' return code.  */
 /*									      */
 /******************************************************************************/
-extern void cleanup() {
+extern void cleanup()
+{
+
 	/* Remove tmp dir and all files in it */
 	TEST_CLEANUP;
 	tst_rmdir();
 
 	if (block_dev) {
+		if (quota_started == 1 && QUOTACTL(Q_QUOTAOFF, &dq)) {
+			tst_brkm(TBROK | TERRNO, NULL,
+				"failed to disable the quota on %s", block_dev);
+		}
 		free(block_dev);
+	}
+
+	if (mountpoint) {
+		free(mountpoint);
+	}
+
+	if (quota_loc) {
+		free(quota_loc);
 	}
 
 	/* Exit with appropriate return code. */
 	tst_exit();
+
 }
 
 /* Local  Functions */
@@ -140,30 +168,62 @@ extern void cleanup() {
 /*									      */
 /******************************************************************************/
 void setup() {
+
+	char *cwd;
+
 	/* Capture signals if any */
 	/* Create temporary directories */
+
 	if (geteuid() != 0) {
 		tst_brkm(TCONF, tst_exit,
 			"You must be root in order to execute this test");
 	}
+	if ((quota_loc = malloc(FILENAME_MAX)) == NULL) {
+		tst_brkm(TCONF | TERRNO, tst_exit,
+			"couldn't allocate memory for the quota loc buffer");
+	}
+
 	TEST_PAUSE;
 	tst_tmpdir();
 
-	char *cwd = get_current_dir_name();
+	cwd = get_current_dir_name();
 
 	if (cwd == NULL) {
 		tst_brkm(TCONF | TERRNO, cleanup,
 			"couldn't determine the current working directory");
 	} else {
 		block_dev = get_block_device(cwd);
+		mountpoint = get_mountpoint(cwd);
+		free(cwd);
 		if (block_dev == NULL) {
 			tst_brkm(TCONF | TERRNO, cleanup,
-					"failed to obtain a valid block device");
+				"failed to obtain a valid block device");
 		}
-		free(cwd);
+	}
+
+	snprintf(quota_loc, FILENAME_MAX, "%s/%s", mountpoint, QUOTAFILE);
+
+	if (QUOTACTL(Q_QUOTAON, quota_loc) != 0) {
+		
+		if (errno == ENOENT) {
+			tst_brkm(TCONF, cleanup,
+				"quota file - %s - doesn't exist (is the name "
+				"correct?)", quota_loc);
+		} else {
+			/* Provide a terse explanation for why the command
+			 * failed.. */
+			tst_brkm(TCONF | TERRNO, cleanup,
+				"failed to enable quotas on block device: %s; "
+				"1. Ensure that the device is mounted with the "
+				"quota option. 2. Check the filesystem status "
+				"with `quotacheck %s'", block_dev, block_dev);
+		}
+	} else {
+		quota_started = 1;
 	}
 
 }
+#endif
 
 /*
 *  WARNING!! This test may cause the potential harm to the system, we DO NOT
@@ -182,8 +242,6 @@ main(void) {
 }
 #else
 int cmd[] = {
-	Q_QUOTAON,
-	Q_QUOTAOFF,
 	Q_GETQUOTA,
 	Q_SETQUOTA,
 /* Only available in quota v2 */
@@ -198,16 +256,12 @@ int cmd[] = {
 int
 main(int ac, char **av)
 {
-	int id = getuid();
 	int newtid = -1;
 	int result;
 	int ret;
 	int i;
-	int lc;				 /* loop counter */
-	char *msg;			  /* message returned from parse_opts */
-	/* Example gleamed from:
-	 * http://souptonuts.sourceforge.net/quota_tutorial.html */
-	struct dqblk dq;
+	int lc;			/* loop counter */
+	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
@@ -224,12 +278,11 @@ main(int ac, char **av)
 
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 
-			for (i = 0; i <= 7; i++){
+			for (i = 0; i <= sizeof(cmd)/sizeof(cmd[0]); i++){
 
-				ret = syscall(__NR_quotactl, cmd[i], block_dev,
-						id, (caddr_t) &dq);
+				ret = QUOTACTL(cmd[i], &dq);
 				if (ret != 0) {
-					tst_resm(TFAIL|TERRNO,
+					tst_resm(TFAIL | TERRNO,
 						"cmd=0x%x failed", cmd[i]);
 				} else {
 					tst_resm(TPASS, "quotactl call succeeded");

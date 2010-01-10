@@ -105,6 +105,84 @@ get_block_device(const char *path)
 
 }
 
+/*
+ * Return the mountpoint for a given path. You must free the string after you
+ * call this function.
+ *
+ * Returns NULL if memory couldn't be allocated.
+ */
+char *
+get_mountpoint(const char *path)
+{
+
+	char *mnt_dir = NULL;
+	char *resolved_path = NULL;
+	FILE *mtab_f;
+	int done = 0;
+	struct mntent *entry;
+
+	if (path == NULL) {
+		errno = EINVAL;
+	} else if ((resolved_path = realpath(path, NULL)) != NULL &&
+		   (mtab_f = setmntent("/etc/mtab", "r")) != NULL)
+	{
+
+		do {
+
+			entry = getmntent(mtab_f);
+
+			if (entry != NULL) {
+
+				if (!strncmp(entry->mnt_dir, resolved_path, strlen(entry->mnt_dir))) {
+
+					char copy_string = 0;
+
+					if (mnt_dir == NULL) {
+
+						mnt_dir = malloc(strlen(entry->mnt_dir)+1);
+						copy_string = mnt_dir != NULL;
+
+					} else {
+
+						if (!strncmp(entry->mnt_dir, mnt_dir, strlen(entry->mnt_dir))) {
+
+							mnt_dir = realloc(mnt_dir, strlen(entry->mnt_dir));
+							copy_string = 1;
+
+						}
+
+					}
+
+					if (copy_string != 0) {
+						strcpy(mnt_dir, entry->mnt_dir);
+#if DEBUG
+						printf("%s is a subset of %s\n", path, entry->mnt_dir);
+					} else {
+						printf("%s is not a subset of %s\n", path, entry->mnt_dir);
+#endif
+					}
+
+#if DEBUG
+				} else {
+					printf("%s is not a subset of %s\n", path, entry->mnt_dir);
+#endif
+				}
+
+			}
+
+		} while (done == 0 && entry != NULL);
+
+		endmntent(mtab_f);
+
+	}
+
+	if (resolved_path != NULL) {
+		free(resolved_path);
+	}
+
+	return mnt_dir;
+
+}
 #if UNIT_TEST
 int
 main(void)
