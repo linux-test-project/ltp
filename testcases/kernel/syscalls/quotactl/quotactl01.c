@@ -50,7 +50,7 @@
 #include "config.h"
 #if defined(HAS_QUOTAV2)
 #define _LINUX_QUOTA_VERSION 2
-#include <linux/quota.h>
+#include <sys/quota.h>
 /*
  * See m4/ltp-quota.m4 about the quota v1 vs quota v2 item.
 #elif defined(HAS_RHEL_QUOTAV1)
@@ -207,7 +207,7 @@ main(int ac, char **av)
 	char *msg;			  /* message returned from parse_opts */
 	/* Example gleamed from:
 	 * http://souptonuts.sourceforge.net/quota_tutorial.html */
-	struct if_dqblk dq;
+	struct dqblk dq;
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){

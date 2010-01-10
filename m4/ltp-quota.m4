@@ -33,10 +33,12 @@ dnl}],[has_24_quotactl="yes"],
 [AC_TRY_COMPILE([
 #define _LINUX_QUOTA_VERSION 2
 #include <sys/types.h>
-#include <linux/quota.h>
+#include <sys/quota.h>
 #include <unistd.h>],[
 int main(void) {
-	return quotactl(Q_GETINFO, (const char *)NULL, geteuid(), (caddr_t)NULL);
+	struct dqblk dq;
+	return quotactl(Q_GETINFO, (const char *) "/dev/null", geteuid(),
+			(caddr_t) &dq);
 }],[has_quotav2="yes"],[AC_MSG_ERROR([Couldn't find functional copy of quota v2 - are you running 2.4.x?])])
 dnl if test "x$has_24_quotactl" = "xyes"; then
 dnl	AC_DEFINE(HAS_24_QUOTACTL,1,[Define to 1 if you have the 2.4.x version of quotactl, e.g. require linux/quota.h instead of sys/quota.h])
