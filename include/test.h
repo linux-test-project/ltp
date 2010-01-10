@@ -31,7 +31,7 @@
  * http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  */
 
-/* $Id: test.h,v 1.24 2009/11/03 20:07:35 vapier Exp $ */
+/* $Id: test.h,v 1.25 2010/01/10 08:01:15 yaberauneya Exp $ */
 
 #ifndef __TEST_H__
 #define __TEST_H__
@@ -255,6 +255,11 @@ int ltp_clone_malloc(unsigned long clone_flags, int (*fn)(void *arg),
 int ltp_clone_quick(unsigned long clone_flags, int (*fn)(void *arg),
 		void *arg);
 #define clone(...) use_the_ltp_clone_functions,do_not_use_clone
+
+/*
+ * Functions from lib/get_block_dev.c
+ */
+char *get_block_device(const char *path);
 
 #ifdef TST_USE_COMPAT16_SYSCALL
 #define TCID_BIT_SUFFIX "_16"

@@ -37,6 +37,9 @@
 /* History:	 Porting from Crackerjack to LTP is done by		      */
 /*			  Manas Kumar Nayak maknayak@in.ibm.com>	      */
 /******************************************************************************/
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/syscall.h>
@@ -47,7 +50,7 @@
 #include "config.h"
 #if defined(HAS_QUOTAV2)
 #define _LINUX_QUOTA_VERSION 2
-#include <sys/quota.h>
+#include <linux/quota.h>
 /*
  * See m4/ltp-quota.m4 about the quota v1 vs quota v2 item.
 #elif defined(HAS_RHEL_QUOTAV1)
@@ -85,6 +88,8 @@ char *TCID = "quotactl01";		/* Test program identifier.		*/
 int  testno;
 int  TST_TOTAL = 1;			/* total number of tests in this file.	*/
 
+static char *block_dev = NULL;
+
 /* Extern Global Functions */
 /******************************************************************************/
 /*									      */
@@ -107,6 +112,10 @@ extern void cleanup() {
 	/* Remove tmp dir and all files in it */
 	TEST_CLEANUP;
 	tst_rmdir();
+
+	if (block_dev) {
+		free(block_dev);
+	}
 
 	/* Exit with appropriate return code. */
 	tst_exit();
@@ -139,6 +148,21 @@ void setup() {
 	}
 	TEST_PAUSE;
 	tst_tmpdir();
+
+	char *cwd = get_current_dir_name();
+
+	if (cwd == NULL) {
+		tst_brkm(TCONF | TERRNO, cleanup,
+			"couldn't determine the current working directory");
+	} else {
+		block_dev = get_block_device(cwd);
+		if (block_dev == NULL) {
+			tst_brkm(TCONF | TERRNO, cleanup,
+					"failed to obtain a valid block device");
+		}
+		free(cwd);
+	}
+
 }
 
 /*
@@ -181,7 +205,10 @@ main(int ac, char **av)
 	int i;
 	int lc;				 /* loop counter */
 	char *msg;			  /* message returned from parse_opts */
-	
+	/* Example gleamed from:
+	 * http://souptonuts.sourceforge.net/quota_tutorial.html */
+	struct if_dqblk dq;
+
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
 		 tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
@@ -199,9 +226,8 @@ main(int ac, char **av)
 
 			for (i = 0; i <= 7; i++){
 
-				ret = syscall(__NR_quotactl, cmd[i],
-						(const char *)NULL, id,
-						(caddr_t)NULL);
+				ret = syscall(__NR_quotactl, cmd[i], block_dev,
+						id, (caddr_t) &dq);
 				if (ret != 0) {
 					tst_resm(TFAIL|TERRNO,
 						"cmd=0x%x failed with return "

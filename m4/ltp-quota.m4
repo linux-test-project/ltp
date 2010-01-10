@@ -33,7 +33,7 @@ dnl}],[has_24_quotactl="yes"],
 [AC_TRY_COMPILE([
 #define _LINUX_QUOTA_VERSION 2
 #include <sys/types.h>
-#include <sys/quota.h>
+#include <linux/quota.h>
 #include <unistd.h>],[
 int main(void) {
 	return quotactl(Q_GETINFO, (const char *)NULL, geteuid(), (caddr_t)NULL);
