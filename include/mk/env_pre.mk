@@ -91,6 +91,13 @@ ifeq ($(srcdir),)
 srcdir				:= .
 endif
 
+# We can piece together where we're located in the source and object trees with
+# just these two vars and $(CURDIR).
+export abs_top_srcdir abs_top_builddir
+
+-include $(top_builddir)/include/mk/config.mk
+
+# NOTE NOTE NOTE NOTE -- DO NOT MOVE THIS BELOW THE include ABOVE!
 ifneq ($(abs_builddir),$(abs_srcdir))
 OUT_OF_BUILD_TREE		:= 1
 else
@@ -100,12 +107,6 @@ ifeq ($(strip $(DESTDIR)$(prefix)),)
 INSTALL_IN_BUILD_TREE		:= 1
 endif
 endif
-
-# We can piece together where we're located in the source and object trees with
-# just these two vars and $(CURDIR).
-export abs_top_srcdir abs_top_builddir
-
--include $(top_builddir)/include/mk/config.mk
 
 .DEFAULT_GOAL			:= all
 
