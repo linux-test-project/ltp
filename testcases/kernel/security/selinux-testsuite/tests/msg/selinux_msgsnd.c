@@ -29,7 +29,6 @@ int main(int argc, char **argv)
 	int id;
 	int error;
 	struct msgbuf msgp;
-	size_t msgsz;
 
 	while ((ch = getopt(argc, argv, "k:")) != -1) {
 		switch ((char)ch) {

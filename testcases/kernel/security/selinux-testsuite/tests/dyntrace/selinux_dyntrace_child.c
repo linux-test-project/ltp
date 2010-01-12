@@ -10,6 +10,7 @@
 
 #include <stdlib.h>
 #include <selinux/selinux.h>
+#include <stdio.h>
 
 int main(int argc, char **argv)
 {
