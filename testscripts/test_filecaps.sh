@@ -41,7 +41,7 @@ fi
 # Check the role and mode testsuite is being executed under.
 echo "Running the file capabilities testsuite..."
 
-$LTPROOT/pan/ltp-pan -S -a $LTPROOT/results/filecaps -n ltp-filecaps -l $LTPROOT/results/filecaps.logfile -o $LTPROOT/results/filecaps.outfile -p -f $LTPROOT/runtest/filecaps
+$LTPROOT/bin/ltp-pan -S -a $LTPROOT/results/filecaps -n ltp-filecaps -l $LTPROOT/results/filecaps.logfile -o $LTPROOT/results/filecaps.outfile -p -f $LTPROOT/runtest/filecaps
 
 echo "Done."
 exit 0

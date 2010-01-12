@@ -41,7 +41,7 @@ fi
 # Check the role and mode testsuite is being executed under.
 echo "Running the containers testsuite..."
 
-$LTPROOT/pan/ltp-pan -S -a $LTPROOT/results/containers -n ltp-containers -l $LTPROOT/results/containers.logfile -o $LTPROOT/results/containers.outfile -p -f $LTPROOT/runtest/containers
+$LTPROOT/bin/ltp-pan -S -a $LTPROOT/results/containers -n ltp-containers -l $LTPROOT/results/containers.logfile -o $LTPROOT/results/containers.outfile -p -f $LTPROOT/runtest/containers
 
 echo "Done."
 exit 0

@@ -42,6 +42,7 @@ fi
 # set the LTPROOT directory
 cd `dirname $0`
 LTPROOT=${PWD}
+TMP=${TMP:-/tmp}
 echo $LTPROOT | grep testscripts > /dev/null 2>&1
 if [ $? -eq 0 ] 
 then
@@ -78,9 +79,9 @@ fi
 SEMODULE="/usr/sbin/semodule"
 
 if [ -f $SEMODULE ]; then
-    POLICYDIR="$LTPROOT/testcases/kernel/security/selinux-testsuite/refpolicy"
+    POLICYDIR="$LTPROOT/testcases/selinux-testsuite/refpolicy"
 else
-    POLICYDIR="$LTPROOT/testcases/kernel/security/selinux-testsuite/policy"
+    POLICYDIR="$LTPROOT/testcases/selinux-testsuite/policy"
 fi
 
 config_set_expandcheck
@@ -106,20 +107,20 @@ cd $LTPROOT
 
 echo "Running the SELinux testsuite..."
 
-mkdir /tmp/selinux > /dev/null 2>&1
-/usr/bin/chcon -t test_file_t /tmp/selinux
-export SELINUXTMPDIR=/tmp/selinux
+mkdir $TMP/selinux > /dev/null 2>&1
+/usr/bin/chcon -t test_file_t $TMP/selinux
+export SELINUXTMPDIR=$TMP/selinux
 
 # The ../testcases/bin directory needs to have the test_file_t type.
 # Save and restore later.
 SAVEBINTYPE=`ls -Zd $LTPROOT/testcases/bin | awk '{ print $4 }' | awk -F: '{ print $3 }'`
 /usr/bin/chcon -t test_file_t $LTPROOT/testcases/bin
 
-$LTPROOT/pan/ltp-pan -S -a $LTPROOT/results/selinux -n ltp-selinux -l $LTPROOT/results/selinux.logfile -o $LTPROOT/results/selinux.outfile -p -f $LTPROOT/runtest/selinux  
+$LTPROOT/bin/ltp-pan -S -a $LTPROOT/results/selinux -n ltp-selinux -l $LTPROOT/results/selinux.logfile -o $LTPROOT/results/selinux.outfile -p -f $LTPROOT/runtest/selinux  
 
 # cleanup before exiting    
 
-rm -rf /tmp/selinux
+rm -rf $TMP/selinux
 
 # Restore type of .../testcases/bin directory
 /usr/bin/chcon -t $SAVEBINTYPE $LTPROOT/testcases/bin
