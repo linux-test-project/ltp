@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 /*
  * Test the chroot() call on a directory whose name is given as the first

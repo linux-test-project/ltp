@@ -8,9 +8,11 @@
  *
  */
 
-#include<stdio.h>
-#include<stdlib.h>
-#include<sys/ptrace.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/ptrace.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 int main(int argc,char **argv){
   int rc;

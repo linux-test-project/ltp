@@ -8,16 +8,21 @@
  *
  */
 
-#define _GNU_SOURCE 3
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
 #include <string.h>
-#include<stdio.h>
-#include<stdlib.h>
-#include<sys/types.h>
-#include<sys/file.h>
-#include<fcntl.h>
-#include<unistd.h>
-#include<signal.h>
-#include<asm/ioctls.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/file.h>
+#include <sys/ioctl.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <signal.h>
+#include <asm/ioctls.h>
+#include <libgen.h>
 
 /*
  * Test the sigio operations by creating a child and registering that process
@@ -31,7 +36,6 @@ int main(int argc, char **argv) {
   int flags;
   pid_t pid;
   char key = '\r';
-  char ex_name[255];
 
   fd = open(ctermid(NULL), O_RDWR, 0);
  
@@ -53,9 +57,10 @@ int main(int argc, char **argv) {
   */
   if( pid == 0 ) {
     /* Create the path to the executable the child will run */
-    sprintf(ex_name, "%s/selinux_wait_io", dirname(strdup(argv[0])));
-printf("ex_name is %s\n", ex_name);
-    if( execl(ex_name, (char *) 0) < 0 ) {
+    char exname[FILENAME_MAX+1];
+    snprintf(exname, sizeof(exname), "%s/selinux_wait_io", dirname(argv[0]));
+    printf("exname is %s\n", exname);
+    if( execl(exname, "selinux_wait_io", (char *) 0) < 0 ) {
       perror("selinux_sigiotask:execl");
       exit(2);
     }

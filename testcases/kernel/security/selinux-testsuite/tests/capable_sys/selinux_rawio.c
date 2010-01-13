@@ -13,6 +13,7 @@
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <linux/fs.h>
+#include <unistd.h>
 
 /*
  * Test the FIBMAP ioctl() call on a file whose name is given as the first

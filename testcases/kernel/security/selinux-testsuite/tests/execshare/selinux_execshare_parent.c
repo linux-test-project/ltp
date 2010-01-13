@@ -30,7 +30,7 @@ int clone_fn(void *in)
 
 int main(int argc, char **argv)
 {
-	int pid, rc, len, status, cloneflags;
+	int pid, rc, status, cloneflags;
 	security_context_t context_s;
 	context_t context;
 

@@ -21,7 +21,7 @@
 int main(int argc, char **argv)
 {
   char buf[1];
-  int pid, rc, rc2, len, status, fd[2], fd2[2];
+  int pid, rc, rc2, fd[2], fd2[2];
   security_context_t context_s;
   context_t context;
  
@@ -82,25 +82,26 @@ int main(int argc, char **argv)
     dup2(fd2[1],1);
     execv(argv[2], argv+2);
     buf[0] = -1;
-    write(1, buf, sizeof buf);
-    perror(argv[2]);
+    if (write(1, buf, sizeof(buf)) < 0) {
+        perror(argv[2]);
+    }
     exit(-1);
   }
 
-  rc = read(fd2[0], buf, sizeof buf);
+  rc = read(fd2[0], buf, sizeof(buf));
   if (rc < 0) {
     perror("read");
     exit(-1);
   }
  
   if (buf[0]) {
-    fprintf(stderr, "%s:  child died unexpectedly\n");
+    fprintf(stderr, "%s:  child died unexpectedly\n", argv[0]);
     exit(-1);
   }
    
  
   rc =  setpriority(0,pid,10);
-  rc2 = write(fd[1], buf, sizeof buf);
+  rc2 = write(fd[1], buf, sizeof(buf));
 
   if (rc2 < 0) {
     perror("write");

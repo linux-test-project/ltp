@@ -8,11 +8,12 @@
  *
  */
 
-#include<stdio.h>
-#include<stdlib.h>
-#include<sys/types.h>
-#include<sys/file.h>
-#include<fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/file.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 /*
  * Test the fcntl file operation on a file whose name is given as the first

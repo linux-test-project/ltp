@@ -22,7 +22,7 @@ int main(int argc, char **argv)
 {
 	struct sockaddr_un sun;
 	char buf[1024];
-	int s, sunlen, ret, buflen, c;
+	int s, sunlen, ret, buflen;
 	struct msghdr msg = { 0 };
 	struct iovec iov;
 	struct cmsghdr *cmsg;
@@ -31,20 +31,20 @@ int main(int argc, char **argv)
 	int *fdptr;
 
 	if (argc != 3) {
-		fprintf(stderr, "usage:  %s testfile address\n");
-		exit(-1);
+		fprintf(stderr, "usage:  %s testfile address\n", argv[0]);
+		exit(1);
 	}
 
 	myfd = open(argv[1], O_RDWR);
 	if (myfd < 0) {
 		perror(argv[1]);
-		exit(-1);
+		exit(1);
 	}
 
 	s = socket(AF_UNIX, SOCK_STREAM, 0);
 	if (s < 0) {
 		perror("socket");
-		exit(-1);
+		exit(1);
 	}
 
 	sun.sun_family = AF_UNIX;
@@ -53,7 +53,7 @@ int main(int argc, char **argv)
 	ret = connect(s, (struct sockaddr *)&sun, sunlen);
 	if (ret < 0) {
 		perror("connect");
-		exit(-1);
+		exit(1);
 	}
 
 	printf("client: Connected to server via %s\n", sun.sun_path);
@@ -79,7 +79,7 @@ int main(int argc, char **argv)
 	ret = sendmsg(s, &msg, 0);
 	if (ret < 0) {
 		perror("sendmsg");
-		exit(-1);
+		exit(1);
 	}
 	printf("client: Sent descriptor, waiting for reply\n");
 
@@ -87,7 +87,7 @@ int main(int argc, char **argv)
 	ret = recv(s, buf, sizeof(buf), 0);
 	if (ret < 0) {
 		perror("recv");
-		exit(-1);
+		exit(1);
 	}
 	printf("client: Received reply, code=%d\n", buf[0]);
 	if (buf[0])

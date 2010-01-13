@@ -27,10 +27,6 @@ union semun {
 
 int main(int argc, char **argv)
 {
-	int ch;
-	int num = 1;
-	int key = 0x8888;
-	int id;
 	int error;
 	union semun arg;
 	struct seminfo seminfo;

@@ -37,10 +37,10 @@ int main(int argc, char **argv)
 
 	id = shmget(key, 2048, IPC_CREAT|0777);
 	if (id == -1)
-	  return 1;
+		return 1;
 
 	buf = shmat(id, 0, 0);
-	error = (buf==-1)?-1:0;
+	error = (*buf == -1) ? -1 : 0;
 	printf("shmat: buf=%p, returned %d\n", buf, error);
 	return error;
 }

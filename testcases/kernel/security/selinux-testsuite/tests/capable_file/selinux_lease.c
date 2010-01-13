@@ -8,11 +8,12 @@
  *
  */
 
-#include<stdio.h>
-#include<stdlib.h>
-#include<sys/types.h>
-#include<linux/posix_types.h>
-#include<linux/fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <linux/posix_types.h>
+#include <linux/fcntl.h>
+#include <unistd.h>
 
 /*
  * Test the fcntl F_SETLEASE operation on a file whose name is given as
@@ -22,7 +23,6 @@ int main(int argc, char **argv) {
 
   int fd;
   int rc;
-  struct flock my_lock;
 
   if( argc != 2 ) {
     printf("usage: %s filename\n", argv[0]);

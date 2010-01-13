@@ -30,14 +30,14 @@ int main(int argc, char **argv)
 {
 	struct sockaddr_un sun;
 	char buf[1024];
-	int i, s, sunlen, ret, buflen, ctrl, c, contextlen, *fdptr, fd;
+	int i, s, sunlen, ret, ctrl, *fdptr, fd;
 	struct msghdr msg = { 0 };
 	struct iovec iov;
 	struct cmsghdr *cmsg;
 	char cmsgbuf[CMSG_SPACE(sizeof(int))];
 
 	if (argc != 2) {
-		fprintf(stderr, "usage:  %s address\n");
+		fprintf(stderr, "usage:  %s address\n", argv[0]);
 		exit(-1);
 	}
 

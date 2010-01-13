@@ -20,7 +20,7 @@
 
 int main(int argc, char **argv)
 {
-	int pid, rc, len, status;
+	int pid, rc, status;
 	security_context_t context_s;
 	context_t context;
 
