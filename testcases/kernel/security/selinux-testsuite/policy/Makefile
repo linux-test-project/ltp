@@ -25,6 +25,8 @@ top_srcdir		?= ../../../../..
 include	$(top_srcdir)/include/mk/env_pre.mk
 include $(DESTDIR)/etc/selinux/config
 
+INSTALL_DIR		:= testcases/kernel/security/selinux-testsuite/policy
+
 SELINUX_SRC		?= $(DESTDIR)/etc/selinux/$(SELINUXTYPE)/src/policy
 
 # cleanup and load remain for backwards compatibility...

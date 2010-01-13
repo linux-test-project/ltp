@@ -17,7 +17,7 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Garrett Cooper, August 2009
+# Garrett Cooper, January 2010
 #
 
 top_srcdir		?= ../../../../..
@@ -32,6 +32,7 @@ endif
 
 DISTRO_VER		:= $(shell $(top_srcdir)/scripts/detect_distro.sh $(ARGS))
 
+# Avoid empty strings.
 ifeq ($(strip $(DISTRO_VER)),)
 DISTRO_VER		:= generic
 endif
@@ -41,9 +42,16 @@ CHECKPOLICY_VERS	?= $(shell $(CHECKPOLICY) -V |cut -f 1 -d ' ')
 POLICY_DEVEL_DIR	?= $(DESTDIR)/usr/share/selinux/devel
 SEMODULE		?= $(DESTDIR)/usr/sbin/semodule
 
-INSTALL_DIR		:= testcases/kernel/security/selinux-testsuite
+INSTALL_DIR		:= testcases/kernel/security/selinux-testsuite/refpolicy
 
 TEST_POLICY_DIR		:= $(abs_srcdir)/policy_files
+
+# Do we have a special set of policies in the SCM to install?
+ifneq ($(wildcard $(TEST_POLICY_DIR)/$(DISTRO_VER)/),)
+TEST_POLICY_DIR		:= $(TEST_POLICY_DIR)/$(DISTRO_VER)
+else
+TEST_POLICY_DIR		:= $(TEST_POLICY_DIR)/generic
+endif
 
 .PHONY: all clean cleanup install load
 
@@ -55,40 +63,28 @@ cleanup:
 	-$(SEMODULE) -r test_policy
 	$(RM) -f $(POLICY_DEVEL_DIR)/test_policy.* test_policy.te
 
-ifneq ($(wildcard $(TEST_POLICY_DIR)/$(DISTRO_VER)/Makefile),)
-MAKE_TARGETS		:=
-
-TEST_POLICY_DIR		:= $(TEST_POLICY_DIR)/$(DISTRO_VER)
-
-# load remains for backwards compatibility...
-load:
-	$(MAKE) -C $(TEST_POLICY_DIR)
-else
-
 MAKE_TARGETS		:= test_policy.te
-
-TEST_POLICY_DIR		:= $(TEST_POLICY_DIR)/generic
-
-POLICY_FILES		:= test_global.te $(filter-out test_global.te,$(notdir $(wildcard $(TEST_POLICY_DIR)/*.te)))
 
 ifneq ($(CHECKPOLICY_VERS),24)
 POLICY_FILES		:= $(filter-out test_bounds.te,$(POLICY_FILES))
 endif
 
+# This is being done to preserve precedence; test_global.te must come first.
+POLICY_FILES		:= test_global.te \
+			   $(filter-out test_global.te,$(notdir $(wildcard $(TEST_POLICY_DIR)/*.te)))
+
 load:
-	@if [ -d "$(POLICY_DEVEL_DIR)" ]; then \
-	    cp -p $(TEST_POLICY_DIR)/test_policy.* $(POLICY_DEVEL_DIR); \
+	@set -e; if [ -d "$(POLICY_DEVEL_DIR)" ]; then \
+	    cp -p test_policy.* $(POLICY_DEVEL_DIR); \
 	    $(MAKE) -C $(POLICY_DEVEL_DIR) clean; \
 	    $(MAKE) -C $(POLICY_DEVEL_DIR) test_policy.pp; \
 	    $(SEMODULE) -i $(POLICY_DEVEL_DIR)/test_policy.pp; \
 	else \
-            echo "ERROR: You must have selinux-policy-devel installed."; \
+            echo "ERROR: You must have selinux-policy?-devel? installed."; \
 	    false; \
 	fi
 
 test_policy.te: $(addprefix $(TEST_POLICY_DIR)/,$(POLICY_FILES))
 	(cd "$(TEST_POLICY_DIR)" && cat $(POLICY_FILES)) > $@
-
-endif
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

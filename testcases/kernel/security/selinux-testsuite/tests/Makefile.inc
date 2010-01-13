@@ -30,6 +30,8 @@ define INSTALL_POST
 	-chcon -t test_file_t $@
 endef
 
+#INSTALL_DIR		:=
+
 INSTALL_TARGETS		:= selinux_$(CURDIR_DIRNAME)*.sh
 
 # vim: syntax=make

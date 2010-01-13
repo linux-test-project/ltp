@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # Copyright (c) International Business Machines  Corp., 2005
 #
@@ -23,32 +23,33 @@ config_unset_expandcheck() {
 }
 
 config_allow_domain_fd_use () {
-    setval=$1
-    /usr/sbin/getsebool allow_domain_fd_use
-    getseRC=$?
-    if [ "$getseRC" -eq "0" ]; then
-	echo "allow_domain_fd_use exists setting"
-	/usr/sbin/setsebool allow_domain_fd_use=$setval
-    fi
+	setval=$1
+	if /usr/sbin/getsebool allow_domain_fd_use; then
+		echo "allow_domain_fd_use exists setting"
+		/usr/sbin/setsebool allow_domain_fd_use=$setval
+	fi
 }
 
 # Must be root to run the selinux testsuite
-if [ $UID != 0 ]
+if [ $(id -ru) -ne 0 ]
 then
         echo "FAILED: Must be root to execute this script"
         exit 1
 fi
 
 # set the LTPROOT directory
-cd `dirname $0`
-LTPROOT=${PWD}
-TMP=${TMP:-/tmp}
-echo $LTPROOT | grep testscripts > /dev/null 2>&1
-if [ $? -eq 0 ] 
+LTPROOT=${LTPROOT:=${0%/*}}
+cd "$LTPROOT"
+export TMP=${TMP:-/tmp}
+# If we're in the testscripts directory, go down a dir..
+LTPROOT_TMP=${LTPROOT%/testscripts}
+if [ "x${LTPROOT_TMP}" != "x${LTPROOT}" ]
 then
 	cd ..
-	LTPROOT=${PWD}
+	LTPROOT=$LTPROOT_TMP
 fi
+export LTPROOT
+unset LTPROOT_TMP
 
 # set the PATH to include testcase/bin
 
@@ -57,11 +58,8 @@ export LTPBIN=$LTPROOT/testcases/bin
 
 # We will store the logfiles in $LTPROOT/results, so make sure
 # it exists.
-if [ ! -d $LTPROOT/results ]
-then 
-	/bin/mkdir $LTPROOT/results
-fi
-	
+test -d $LTPROOT/results || /bin/mkdir $LTPROOT/results
+
 # Check the role and mode testsuite is being executed under.
 
 SELINUX_CONTEXT=`/usr/bin/id | sed 's/.* //'`
@@ -78,10 +76,12 @@ fi
 
 SEMODULE="/usr/sbin/semodule"
 
-if [ -f $SEMODULE ]; then
-    POLICYDIR="$LTPROOT/testcases/selinux-testsuite/refpolicy"
+POLICYDIR="$LTPROOT/testcases/kernel/security/selinux-testsuite"
+
+if [ -x $SEMODULE ]; then
+	POLICYDIR="$POLICYDIR/refpolicy"
 else
-    POLICYDIR="$LTPROOT/testcases/selinux-testsuite/policy"
+	POLICYDIR="$POLICYDIR/policy"
 fi
 
 config_set_expandcheck
@@ -137,4 +137,3 @@ config_allow_domain_fd_use 1
 
 cd $LTPROOT
 echo "Done."
-exit 0

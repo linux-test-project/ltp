@@ -12,7 +12,7 @@
 global_setup()
 {
 	# Must be root to run the selinux testsuite
-	if [ $UID != 0 ]
+	if [ $(id -ru) -ne 0 ]
 	then
         	echo "FAILED: Must be root to execute this script"
         	exit 1
@@ -38,14 +38,14 @@ global_setup()
 		exit
 	fi
 
-	# Save and later restore /tmp's type.
+	# Save and later restore $TMP's type.
 	# We need to change it's type to work within test domain
-	SAVETMPTYPE=`ls -Zd /tmp | awk '{ print $4 }' | awk -F: '{ print $3 }'`
-	chcon -t test_file_t /tmp
+	SAVETMPTYPE=`ls -Zd $TMP | awk '{ print $4 }' | awk -F: '{ print $3 }'`
+	chcon -t test_file_t $TMP
 
-	mkdir /tmp/selinux > /dev/null 2>&1
-	chcon -t test_file_t /tmp/selinux
-	export SELINUXTMPDIR=/tmp/selinux
+	mkdir $TMP/selinux > /dev/null 2>&1
+	chcon -t test_file_t $TMP/selinux
+	export SELINUXTMPDIR=$TMP/selinux
 	
 	# It seems LTP wants executables to reside in the
 	# $LTPROOT/testcases/bin directory. However, this directory
@@ -61,9 +61,9 @@ global_setup()
 global_cleanup()
 {
 
-	# Restore original type of /tmp
-	chcon -t $SAVETMPTYPE /tmp
-	rm -rf /tmp/selinux
+	# Restore original type of $TMP
+	chcon -t $SAVETMPTYPE $TMP
+	rm -rf $TMP/selinux
 
 	# Restore original type of .../testcases/bin directory
 	chcon -t $SAVEBINTYPE $LTPBIN
@@ -71,6 +71,7 @@ global_cleanup()
 	exit 0
 }
 
+export TMP=${TMP:-/tmp}
 global_setup
-./$1/selinux_$1.sh
+selinux_$1.sh
 global_cleanup

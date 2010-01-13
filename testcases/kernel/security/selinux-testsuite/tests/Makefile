@@ -24,11 +24,28 @@ top_srcdir		?= ../../../../..
 
 include	$(top_srcdir)/include/mk/env_pre.mk
 
-RECURSIVE_TARGETS	:= install
+ARGS			= -m
+# Don't want to pass the -d option unless DESTDIR is a non-zero length string.
+ifneq ($(strip $(DESTDIR)),)
+ARGS			+= -d $(DESTDIR)
+endif
+
+DISTRO_VER		:= $(shell $(top_srcdir)/scripts/detect_distro.sh $(ARGS))
+
+#
+# Certain tests should be excluded on RHEL [45].x as their kernels don't
+# support the tests.
+#
+# XXX (garrcoop): actually complete the work to add proper checks to the tests
+# to report TCONF on configuration failure.
+
+# RHEL 4.x and 5.x don't support the bounds test.
+ifneq ($(findstring $(DISTRO_VER),redhat-4 redhat-5),)
+FILTER_OUT_DIRS		+= bounds
+endif
+# RHEL 4.x doesn't support the dyntrace and dyntrans tests.
+ifeq (redhat-5,$(DISTRO_VER))
+FILTER_OUT_DIRS		+= dyntrace dyntrans
+endif
 
 include $(top_srcdir)/include/mk/generic_trunk_target.mk
-
-all: 
-	@set -e; for i in $(SUBDIRS); do \
-	    $(MAKE) -C $$i $@; \
-	done
