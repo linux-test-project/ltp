@@ -34,7 +34,7 @@ SELINUX_SRC		?= $(DESTDIR)/etc/selinux/$(SELINUXTYPE)/src/policy
 # cleanup and load remain for backwards compatibility...
 .PHONY: all clean cleanup install load
 
-all: load
+all:
 
 clean: | cleanup
 

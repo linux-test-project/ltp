@@ -59,8 +59,6 @@ endif
 
 CLEAN_DEPS		:= cleanup
 
-INSTALL_DEPS		:= load
-
 cleanup:
 	-$(SEMODULE) -r test_policy
 	$(RM) -f $(POLICY_DEVEL_DIR)/test_policy.* test_policy.te
