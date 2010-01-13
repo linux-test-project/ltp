@@ -39,7 +39,7 @@ int main(void) {
 	struct dqblk dq;
 	return quotactl(Q_GETINFO, (const char *) "/dev/null", geteuid(),
 			(caddr_t) &dq);
-}],[has_quotav2="yes"],[AC_MSG_ERROR([Couldn't find functional copy of quota v2 - are you running 2.4.x?])])
+}],[has_quotav2="yes"],[AC_MSG_ERROR([Couldn't find functional copy of quota v2 - are you running 2.4.x? (PLEASE SUBMIT YOUR config.log SO THIS AUTOCONF TEST CAN BE IMPROVED!)])])
 dnl if test "x$has_24_quotactl" = "xyes"; then
 dnl	AC_DEFINE(HAS_24_QUOTACTL,1,[Define to 1 if you have the 2.4.x version of quotactl, e.g. require linux/quota.h instead of sys/quota.h])
 dnl elif test "x$has_new_26_quotactl" = "xyes"; then
