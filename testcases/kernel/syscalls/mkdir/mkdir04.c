@@ -235,9 +235,6 @@ void setup()
 	/* Create a temporary directory and make it current. */
 	tst_tmpdir();
 
-	/* give the write rights to all user */
-	chmod(".", 0777);
-
 	umask(0);
 }
 

@@ -338,9 +338,6 @@ void setup()
 	/* Create a temporary directory and make it current. */
 	tst_tmpdir();
 
-	/* give write permission to all users */
-	chmod(".", 0777);
-
 	umask(0);
 
 	sprintf(tstdir1, "./tstdir1_%d", getpid());
