@@ -53,4 +53,5 @@ load:
 	else \
 	    echo "ERROR: You must have selinux-policy-targeted-sources " \
 	         "installed."; \
+	    false; \
 	fi
