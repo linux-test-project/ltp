@@ -178,7 +178,8 @@ test7()
 {
 	do_syscall_test 0 0 --mbind=1 0 || return 1
 	memory_addr="$(cat $TEST_OUTPUT)"
-	allowed_list=$(cat $TEST_PROCNUMA | grep "\b$memory_addr" | \
+	memory_addr=${memory_addr##*0x}
+	allowed_list=$(cat $TEST_PROCNUMA | grep "$memory_addr" | \
 			awk '{print $2}')
 	allowed_list="$(echo $allowed_list | sed -e s/bind://)"
 	test "$allowed_list" = "0" || return 1
@@ -193,7 +194,8 @@ test8()
 {
 	do_syscall_test 0 0-1 --mbind=1 0 || return 1
 	memory_addr="$(cat $TEST_OUTPUT)"
-	allowed_list=$(cat $TEST_PROCNUMA | grep "\b$memory_addr" | \
+	memory_addr=${memory_addr##*0x}
+	allowed_list=$(cat $TEST_PROCNUMA | grep "$memory_addr" | \
 			awk '{print $2}')
 	allowed_list="$(echo $allowed_list | sed -e s/bind://)"
 	test "$allowed_list" = "0"
@@ -208,7 +210,8 @@ test9()
 {
 	do_syscall_test 0 0-1 --mbind=6 0 || return 1
 	memory_addr="$(cat $TEST_OUTPUT)"
-	allowed_list=$(cat $TEST_PROCNUMA | grep "\b$memory_addr" | \
+	memory_addr=${memory_addr##*0x}
+	allowed_list=$(cat $TEST_PROCNUMA | grep "$memory_addr" | \
 			awk '{print $2}')
 	allowed_list="$(echo $allowed_list | sed -e s/bind://)"
 	test "$allowed_list" = "1"
@@ -223,7 +226,8 @@ test10()
 {
 	do_syscall_test 0 0 --mbind=6 1 || return 1
 	memory_addr="$(cat $TEST_OUTPUT)"
-	allowed_list=$(cat $TEST_PROCNUMA | grep "\b$memory_addr" | \
+	memory_addr=${memory_addr##*0x}
+	allowed_list=$(cat $TEST_PROCNUMA | grep "$memory_addr" | \
 			awk '{print $2}')
 	allowed_list="$(echo $allowed_list | sed -e s/bind://)"
 	test "$allowed_list" = "default"
