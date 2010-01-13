@@ -27,6 +27,8 @@ include $(DESTDIR)/etc/selinux/config
 
 INSTALL_DIR		:= testcases/kernel/security/selinux-testsuite/policy
 
+INSTALL_TARGETS		:= Makefile
+
 SELINUX_SRC		?= $(DESTDIR)/etc/selinux/$(SELINUXTYPE)/src/policy
 
 # cleanup and load remain for backwards compatibility...

@@ -44,6 +44,8 @@ SEMODULE		?= $(DESTDIR)/usr/sbin/semodule
 
 INSTALL_DIR		:= testcases/kernel/security/selinux-testsuite/refpolicy
 
+INSTALL_TARGETS		:= Makefile
+
 TEST_POLICY_DIR		:= $(abs_srcdir)/policy_files
 
 # Do we have a special set of policies in the SCM to install?
