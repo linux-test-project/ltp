@@ -48,11 +48,12 @@ autotools: aclocal autoconf autoheader automake
 ac-clean::
 	$(RM) -rf autom4te.cache
 	$(RM) -f aclocal.m4 config.log config.status
-	$(RM) -f include/realtime_config.h include/realtime_config.h.in include/stamp-h1
+	$(RM) -f include/realtime_config.h include/stamp-h1
 
 ac-distclean:: ac-clean
 ac-maintainer-clean:: ac-distclean
 	$(RM) -f aclocal.m4 configure $(AUTOMAKE_FILES) m4/Makefile.in
+	$(RM) -f include/realtime_config.h.in
 
 aclocal.m4:
 	$(ACLOCAL) -I $(abs_srcdir)/m4

@@ -27,6 +27,7 @@ AUTOHEADER	?= autoheader
 AUTOMAKE	?= automake
 
 AUTOCONFED_SUBDIRS	= \
+			testcases/kernel/syscalls/libevent \
 			testcases/kernel/syscalls/pcllib \
 			testcases/realtime
 
