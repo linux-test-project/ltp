@@ -57,17 +57,6 @@ int test = -1;
 int flag_exit;
 int ret;
 
-/* Policies for set_mempolicy() */
-#define MPOL_DEFAULT     0
-#define MPOL_PREFERRED   1
-#define MPOL_BIND        2
-#define MPOL_INTERLEAVE  3
-
-/* Flags for get_mempolicy() */
-#define MPOL_F_NODE (1<<0) /* return next interleave node or node of addr */
-#define MPOL_F_ADDR (1<<1) /* look up vma using address */
-#define MPOL_F_MEMS_ALLOWED (1<<2) /* return allowed memories */
-
 static int get_mempolicy(int *policy, unsigned long *nmask,
 			unsigned long maxnode, void *addr, int flags)
 {
@@ -181,12 +170,20 @@ void test_mbind(void)
 		return;
 	}
 	printf("%p\n", addr);
+#if HAVE_MPOL_BIND_DECL
 	ret = mbind(addr, len, MPOL_BIND, &mask, 8 * sizeof(mask), 0);
+#else
+	ret = 1;
+#endif
 }
 
 void test_set_mempolicy(void)
 {
+#if HAVE_MPOL_BIND_DECL
 	ret = set_mempolicy(MPOL_BIND, &mask, 8 * sizeof(mask));
+#else
+	ret = -1;
+#endif
 }
 
 void test_get_mempolicy(void)
@@ -208,8 +205,12 @@ void test_get_mempolicy(void)
 		ret = 1;
 		return;
 	}
+#if HAVE_MPOL_F_MEMS_ALLOWED_DECL
 	ret = get_mempolicy(NULL, bitmask_mask(nmask), bitmask_nbits(nmask), 0,
 				MPOL_F_MEMS_ALLOWED);
+#else
+	ret = -1;
+#endif
 
 	bitmask_displaylist(str, 256, nmask);
 	printf("%s", str);

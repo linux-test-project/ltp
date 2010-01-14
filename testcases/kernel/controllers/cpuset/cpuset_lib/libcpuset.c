@@ -3073,16 +3073,6 @@ done:
  * that we care about.
  */
 
-/* Policies for set_mempolicy() */
-#define MPOL_DEFAULT     0
-#define MPOL_PREFERRED   1
-#define MPOL_BIND        2
-#define MPOL_INTERLEAVE  3
-
-/* Flags for get_mempolicy() */
-#define MPOL_F_NODE (1<<0) /* return next interleave node or node of addr */
-#define MPOL_F_ADDR (1<<1) /* look up vma using address */
-
 static int sched_setaffinity(pid_t pid, unsigned len, unsigned long *mask)
 {
 	return syscall(__NR_sched_setaffinity, pid, len, mask);
@@ -3442,8 +3432,13 @@ int cpuset_membind(int mem)
 	if ((bmp = bitmask_alloc(cpuset_mems_nbits())) == NULL)
 		return -1;
 	bitmask_setbit(bmp, mem);
+#if HAVE_MPOL_BIND_DECL
 	r = set_mempolicy(MPOL_BIND, bitmask_mask(bmp),
 		bitmask_nbits(bmp) + 1);
+#else
+	r = -1;
+	errno = ENOSYS;
+#endif
 	bitmask_free(bmp);
 	return r;
 }
@@ -3451,10 +3446,15 @@ int cpuset_membind(int mem)
 /* [optional] Return Memory Node holding page at specified addr */
 int cpuset_addr2node(void *addr)
 {
-	int node;
+	int node = -1;
 
-	if (get_mempolicy(&node, NULL, 0, addr, MPOL_F_NODE|MPOL_F_ADDR))
-		return -1;
+#if HAVE_MPOL_F_NODE_DECL && HAVE_MPOL_F_ADDR_DECL
+	if (get_mempolicy(&node, NULL, 0, addr, MPOL_F_NODE|MPOL_F_ADDR)) {
+		/* I realize this seems redundant, but I _want_ to make sure
+		 * that this value is -1. */
+		node = -1;
+	}
+#endif
 	return node;
 }
 
@@ -3745,10 +3745,12 @@ int cpuset_unpin()
 
 	if ((mems = bitmask_alloc(cpuset_mems_nbits())) == NULL)
 		goto err;
+#if HAVE_MPOL_DEFAULT_DECL
 	if (set_mempolicy(MPOL_DEFAULT, bitmask_mask(mems),
 						bitmask_nbits(mems) + 1) < 0)
 		goto err;
 	r = 0;
+#endif
 	/* fall into ... */
 err:
 	bitmask_free(cpus);

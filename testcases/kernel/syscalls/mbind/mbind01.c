@@ -56,7 +56,7 @@ int  TST_TOTAL = 2;		/* total number of tests in this file.   */
 
 #include "config.h"
 
-#if HAVE_NUMA_H && HAVE_NUMAIF_H && HAVE_MBIND_CONSTANTS
+#if HAVE_NUMA_H && HAVE_NUMAIF_H && HAVE_MPOL_CONSTANTS
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>

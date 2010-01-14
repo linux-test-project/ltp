@@ -60,7 +60,7 @@ char *TCID = "get_mempolicy01";  /* Test program identifier.*/
 int  testno;
 int  TST_TOTAL = 1;		   /* total number of tests in this file.   */
 
-#if HAVE_NUMA_H && HAVE_NUMAIF_H
+#if HAVE_NUMA_H && HAVE_NUMAIF_H && HAVE_MPOL_CONSTANTS
 #include <sys/types.h>
 #include <sys/mman.h>
 #include <getopt.h>
