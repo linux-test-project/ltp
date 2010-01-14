@@ -59,7 +59,7 @@ include:
 	mkdir -p "$@"
 
 m4/ltp-version.m4: ChangeLog
-	sed -n '1{s:LTP-:AC_DEFUN([LTP_VERSION],[:;s:$$:]):;p;q}' $< > $@
+	sed -n '1{s:LTP-:m4_define([LTP_VERSION],[:;s:$$:]):;p;q}' $< > $@
 
 .PHONY: automake
 AUTOMAKE_FILES := config.guess config.sub install-sh missing stamp-h1
