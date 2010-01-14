@@ -32,6 +32,11 @@ AC_CHECK_HEADERS([numa.h numaif.h],[
 NUMA_CPPFLAGS="-DNUMA_VERSION1_COMPATIBILITY"
 NUMA_LIBS="-lnuma"
 	])
+dnl For testcases/kernel/syscalls/mbind
+AC_CHECK_DECLS([MPOL_BIND, MPOL_DEFAULT, MPOL_F_ADDR, MPOL_INTERLEAVE, MPOL_PREFERRED],[have_mbind_constants="yes"],,[#include <numaif.h>])
 AC_SUBST(NUMA_CPPFLAGS)
 AC_SUBST(NUMA_LIBS)
+if test "x$have_mbind_constants" = "xyes"; then
+	AC_DEFINE(HAVE_MBIND_CONSTANTS,1,[define to 1 if you have all constants required to use mbind])
+fi
 )])

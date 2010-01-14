@@ -56,7 +56,7 @@ int  TST_TOTAL = 2;		/* total number of tests in this file.   */
 
 #include "config.h"
 
-#if HAVE_NUMA_H && HAVE_NUMAIF_H
+#if HAVE_NUMA_H && HAVE_NUMAIF_H && HAVE_MBIND_CONSTANTS
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -408,13 +408,13 @@ int main(int argc, char **argv) {
 	cleanup();
 	tst_exit();
 }
-#else
+#else /* libnuma v2 */
 int main(void) {
 	tst_resm(TBROK, "XXX: test is broken on libnuma v2 (read numa_helpers.h for more details).");
 	return 0;
 }
 #endif
-#else
+#else /* no numaif.h // numa.h */
 int main(void) {
 	tst_resm(TCONF, "System doesn't have required numa support");
 	tst_exit();
