@@ -170,7 +170,7 @@ void test_mbind(void)
 		return;
 	}
 	printf("%p\n", addr);
-#if HAVE_MPOL_BIND_DECL
+#if HAVE_DECL_MPOL_BIND
 	ret = mbind(addr, len, MPOL_BIND, &mask, 8 * sizeof(mask), 0);
 #else
 	ret = 1;
@@ -179,7 +179,7 @@ void test_mbind(void)
 
 void test_set_mempolicy(void)
 {
-#if HAVE_MPOL_BIND_DECL
+#if HAVE_DECL_MPOL_BIND
 	ret = set_mempolicy(MPOL_BIND, &mask, 8 * sizeof(mask));
 #else
 	ret = -1;
@@ -205,7 +205,7 @@ void test_get_mempolicy(void)
 		ret = 1;
 		return;
 	}
-#if HAVE_MPOL_F_MEMS_ALLOWED_DECL
+#if HAVE_DECL_MPOL_F_MEMS_ALLOWED
 	ret = get_mempolicy(NULL, bitmask_mask(nmask), bitmask_nbits(nmask), 0,
 				MPOL_F_MEMS_ALLOWED);
 #else

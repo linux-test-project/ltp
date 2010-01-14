@@ -49,6 +49,10 @@
 #include "common.h"
 #include "test.h"
 #include "linux_syscall_numbers.h"
+#include "config.h"
+#if HAVE_LINUX_MEMPOLICY_H
+#include <linux/mempolicy.h>
+#endif
 
 /* Bump version, and update Change History, when libcpuset API changes */
 #define CPUSET_VERSION 3
@@ -3432,7 +3436,7 @@ int cpuset_membind(int mem)
 	if ((bmp = bitmask_alloc(cpuset_mems_nbits())) == NULL)
 		return -1;
 	bitmask_setbit(bmp, mem);
-#if HAVE_MPOL_BIND_DECL
+#if HAVE_DECL_MPOL_BIND
 	r = set_mempolicy(MPOL_BIND, bitmask_mask(bmp),
 		bitmask_nbits(bmp) + 1);
 #else
@@ -3448,7 +3452,7 @@ int cpuset_addr2node(void *addr)
 {
 	int node = -1;
 
-#if HAVE_MPOL_F_NODE_DECL && HAVE_MPOL_F_ADDR_DECL
+#if HAVE_DECL_MPOL_F_ADDR && HAVE_DECL_MPOL_F_NODE
 	if (get_mempolicy(&node, NULL, 0, addr, MPOL_F_NODE|MPOL_F_ADDR)) {
 		/* I realize this seems redundant, but I _want_ to make sure
 		 * that this value is -1. */
@@ -3745,7 +3749,7 @@ int cpuset_unpin()
 
 	if ((mems = bitmask_alloc(cpuset_mems_nbits())) == NULL)
 		goto err;
-#if HAVE_MPOL_DEFAULT_DECL
+#if HAVE_DECL_MPOL_DEFAULT
 	if (set_mempolicy(MPOL_DEFAULT, bitmask_mask(mems),
 						bitmask_nbits(mems) + 1) < 0)
 		goto err;

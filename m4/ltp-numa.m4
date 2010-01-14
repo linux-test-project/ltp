@@ -24,7 +24,7 @@ dnl ----------------------------
 dnl
 AC_DEFUN([LTP_CHECK_SYSCALL_NUMA],
 [dnl
-AC_CHECK_HEADERS([numa.h numaif.h],[
+AC_CHECK_HEADERS([linux/mempolicy.h numa.h numaif.h],[
 	LTP_SYSCALL_NUMA_HEADERS=yes
 	AC_CHECK_FUNCS(numa_alloc_onnode,numa_move_pages)
 ]
@@ -32,11 +32,12 @@ AC_CHECK_HEADERS([numa.h numaif.h],[
 NUMA_CPPFLAGS="-DNUMA_VERSION1_COMPATIBILITY"
 NUMA_LIBS="-lnuma"
 	])
-dnl For testcases/kernel/controllers/cpuset, testcases/kernel/syscalls/get_mempolicy, testcases/kernel/syscalls/mbind
-AC_CHECK_DECLS([MPOL_BIND, MPOL_DEFAULT, MPOL_F_ADDR, MPOL_F_MEMS_ALLOWED, MPOL_INTERLEAVE, MPOL_PREFERRED],[have_mpol_constants="yes"],,[#include <numaif.h>])
+dnl For testcases/kernel/controllers/cpuset, testcases/kernel/syscalls/get_mempolicy,
+dnl testcases/kernel/syscalls/mbind
+AC_CHECK_DECLS([MPOL_BIND, MPOL_DEFAULT, MPOL_F_ADDR, MPOL_F_MEMS_ALLOWED, MPOL_F_NODE, MPOL_INTERLEAVE, MPOL_PREFERRED],[have_mpol_constants="yes"],,[#include <numaif.h>])
 AC_SUBST(NUMA_CPPFLAGS)
 AC_SUBST(NUMA_LIBS)
 if test "x$have_mpol_constants" = "xyes"; then
-	AC_DEFINE(HAVE_MPOL_CONSTANTS,1,[define to 1 if you have all constants required to use mempolicy tests])
+	AC_DEFINE(HAVE_MPOL_CONSTANTS,1,[define to 1 if you have all constants required to use mbind tests])
 fi
 )])
