@@ -37,12 +37,12 @@ MAKE_3_80_abspath	= $(shell readlink -f '$(subst $(SQUOTE),\\$(SQUOTE),$(1))')
 #
 define generate_install_rule_dir_dep
 ifdef MAKE_3_80_COMPAT
-DIR	:= $$(call MAKE_3_80_abspath,$(DESTDIR)/$(1)/$(2))
-else
-DIR	:= $$(abspath $(DESTDIR)/$(1)/$(2))
-endif
-$$(DIR):
+$$(call MAKE_3_80_abspath,$(DESTDIR)/$(1)/$(2)):
 	mkdir -p "$$@"
+else
+$$(abspath $(DESTDIR)/$(1)/$(2)):
+	mkdir -p "$$@"
+endif
 endef
 
 #
@@ -58,7 +58,7 @@ define generate_install_rule
 
 # This doesn't do Jack currently, as per the $(MAKECMDGOALS) check in
 # env_post.mk. I can revisit this `enhancement' later.
-#CLEAN_TARGETS		+= $$(INSTALL_FILE)
+# -- CLEAN_TARGETS		+= $$(INSTALL_FILE)
 
 ifdef MAKE_3_80_COMPAT
 INSTALL_FILES		+= $$(call MAKE_3_80_abspath,$(DESTDIR)/$(3)/$(1))
@@ -93,12 +93,12 @@ endef
 define generate_vpath_rule
 ifdef MAKE_3_80_COMPAT
 ifeq ($$(strip $(2)),)
-vpath %.$(1)	$(abs_srcdir)
+vpath %.$(1)	$$(abs_srcdir)
 else
 vpath %.$(1)	$(2)
-endif # End $$(strip $(2))
+endif # End -- strip $(2)
 else
-vpath %.$(1)	$$(if $(2),$(2),$(abs_srcdir))
+vpath %.$(1)	$$(if $(2),$(2),$$(abs_srcdir))
 endif # End ifdef MAKE_3_80_COMPAT
 endef
 
