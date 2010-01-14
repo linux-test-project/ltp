@@ -91,7 +91,7 @@ config_allow_domain_fd_use 0
 # build and install the test policy...
 echo "building and installing test_policy module..."
 cd $POLICYDIR
-make load
+make -f Makefile.selinux load
 if [ $? != 0 ]; then
 	echo "Failed to build and load test_policy module, aborting test run."
 	config_unset_expandcheck
@@ -127,7 +127,7 @@ rm -rf $TMP/selinux
 
 echo "Removing test_policy module..."
 cd $POLICYDIR
-make cleanup 2>&1
+make -f Makefile.selinux cleanup 2>&1
 if [ $? != 0 ]; then
 	echo "Failed to remove test_policy module."
 	exit 1

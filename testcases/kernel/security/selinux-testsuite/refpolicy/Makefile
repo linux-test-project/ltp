@@ -39,8 +39,6 @@ endif
 
 CHECKPOLICY		?= $(DESTDIR)/usr/bin/checkpolicy
 CHECKPOLICY_VERS	?= $(shell $(CHECKPOLICY) -V |cut -f 1 -d ' ')
-POLICY_DEVEL_DIR	?= $(DESTDIR)/usr/share/selinux/devel
-SEMODULE		?= $(DESTDIR)/usr/sbin/semodule
 
 INSTALL_DIR		:= testcases/kernel/security/selinux-testsuite/refpolicy
 
@@ -55,14 +53,6 @@ else
 TEST_POLICY_DIR		:= $(TEST_POLICY_DIR)/generic
 endif
 
-.PHONY: all clean cleanup install load
-
-CLEAN_DEPS		:= cleanup
-
-cleanup:
-	-$(SEMODULE) -r test_policy
-	$(RM) -f $(POLICY_DEVEL_DIR)/test_policy.* test_policy.te
-
 MAKE_TARGETS		:= test_policy.te
 
 ifneq ($(CHECKPOLICY_VERS),24)
@@ -73,18 +63,8 @@ endif
 POLICY_FILES		:= test_global.te \
 			   $(filter-out test_global.te,$(notdir $(wildcard $(TEST_POLICY_DIR)/*.te)))
 
-load:
-	@set -e; if [ -d "$(POLICY_DEVEL_DIR)" ]; then \
-	    cp -p test_policy.* $(POLICY_DEVEL_DIR); \
-	    $(MAKE) -C $(POLICY_DEVEL_DIR) clean; \
-	    $(MAKE) -C $(POLICY_DEVEL_DIR) test_policy.pp; \
-	    $(SEMODULE) -i $(POLICY_DEVEL_DIR)/test_policy.pp; \
-	else \
-            echo "ERROR: You must have selinux-policy?-devel? installed."; \
-	    false; \
-	fi
-
 test_policy.te: $(addprefix $(TEST_POLICY_DIR)/,$(POLICY_FILES))
 	(cd "$(TEST_POLICY_DIR)" && cat $(POLICY_FILES)) > $@
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
+include $(abs_srcdir)/Makefile.selinux

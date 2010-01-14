@@ -24,14 +24,6 @@ CURDIR_DIRNAME		:= $(lastword $(subst /, ,$(abs_srcdir)))
 
 LDLIBS			+= -lselinux -lpthread
 
-# This is a soft error because it won't work if you're not root and doing a
-# cross-compilation based install.
-define INSTALL_POST
-	-chcon -t test_file_t $@
-endef
-
-#INSTALL_DIR		:=
-
 INSTALL_TARGETS		:= selinux_$(CURDIR_DIRNAME)*.sh
 
 # vim: syntax=make
