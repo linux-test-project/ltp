@@ -42,7 +42,7 @@ CHECKPOLICY_VERS	?= $(shell $(CHECKPOLICY) -V |cut -f 1 -d ' ')
 
 INSTALL_DIR		:= testcases/kernel/security/selinux-testsuite/refpolicy
 
-INSTALL_TARGETS		:= Makefile
+INSTALL_TARGETS		:= Makefile.selinux
 
 TEST_POLICY_DIR		:= $(abs_srcdir)/policy_files
 
