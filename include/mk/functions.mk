@@ -58,6 +58,10 @@ define generate_install_rule
 
 # This doesn't do Jack currently, as per the $(MAKECMDGOALS) check in
 # env_post.mk. I can revisit this `enhancement' later.
+#
+# NOTE (garrcoop): Don't remove the following dashes. They're make 3.80 parser
+# bug related.
+#
 # -- CLEAN_TARGETS		+= $$(INSTALL_FILE)
 
 ifdef MAKE_3_80_COMPAT
