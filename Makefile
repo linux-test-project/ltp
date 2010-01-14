@@ -79,8 +79,7 @@ endef
 COMMON_TARGETS		+= testcases tools
 INSTALL_TARGETS		+= $(COMMON_TARGETS) runtest testscripts
 CLEAN_TARGETS		+= $(COMMON_TARGETS) lib include runtest testscripts
-BOOTSTRAP_TARGETS	:= $(sort $(COMMON_TARGETS) $(CLEAN_TARGETS)\
-				  $(INSTALL_TARGETS))
+BOOTSTRAP_TARGETS	:= $(sort $(COMMON_TARGETS) $(CLEAN_TARGETS) $(INSTALL_TARGETS))
 
 CLEAN_TARGETS		:= $(addsuffix -clean,$(CLEAN_TARGETS))
 INSTALL_TARGETS		:= $(addsuffix -install,$(INSTALL_TARGETS))
@@ -126,8 +125,7 @@ endif
 endif
 
 # Remove potential for circular dependencies.
-INCLUDE_CLEAN_RDEPS		:= $(filter-out include-clean,\
-						$(INCLUDE_CLEAN_RDEP_SUBJECT))
+INCLUDE_CLEAN_RDEPS		:= $(filter-out include-clean,$(INCLUDE_CLEAN_RDEP_SUBJECT))
 
 include-clean:: $(INCLUDE_CLEAN_RDEPS) | $(abs_top_builddir)/include
 	-$(MAKE) -C include -f "$(abs_top_srcdir)/include/Makefile" clean
@@ -140,16 +138,18 @@ $(INSTALL_TARGETS) include-install lib-install:
 
 # Just in case configure hasn't been run yet, let's not overambitiously remove
 # the $(INSTALL_DIR).
-clean:: $(CLEAN_TARGETS)
-	$(RM) -f Version
+.PHONY: clean_install_dir
+clean_install_dir::
+	$(RM) -Rf "$(INSTALL_DIR)"
+
 ifneq ($(INSTALL_IN_BUILD_TREE),1)
-	-$(RM) -Rf "$(INSTALL_DIR)"
+CLEAN_TARGETS	+= clean_install_dir
 endif
 
-$(foreach tgt,\
-	$(MAKE_TARGETS) include-all lib-all $(CLEAN_TARGETS) \
-	$(INSTALL_TARGETS) include-install lib-install,\
-	$(eval $(call target_to_dir_dep_mapping,$(tgt))))
+clean:: $(CLEAN_TARGETS)
+	$(RM) -f Version
+
+$(foreach tgt,$(MAKE_TARGETS) include-all lib-all $(filter-out clean_install_dir,$(CLEAN_TARGETS)) $(INSTALL_TARGETS) include-install lib-install,$(eval $(call target_to_dir_dep_mapping,$(tgt))))
 
 BINDIR_INSTALL_SCRIPTS	:= execltp
 SRCDIR_INSTALL_SCRIPTS	:= IDcheck.sh runalltests.sh runltp runltplite.sh ver_linux
