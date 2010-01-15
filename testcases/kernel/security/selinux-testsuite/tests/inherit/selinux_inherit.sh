@@ -25,6 +25,7 @@ setup()
 
 	# run tests in $LTPROOT/testcases/bin directory
 	SAVEPWD=${PWD}
+	LTPBIN=${LTPBIN:-$LTPROOT/testcases/bin}
 	cd ${LTPBIN}
 	CURRENTDIR="."
 }
@@ -39,7 +40,7 @@ test01()
 	# the test_file from test_inherit_parent_t.
 	# Should fail on fd use permission.
 
-	runcon -t test_inherit_parent_t -- selinux_inherit_parent test_inherit_nouse_t $SELINUXTMPDIR/test_file selinux_inherit_child 2>&1
+	runcon -t test_inherit_parent_t -- $CURRENTDIR/selinux_inherit_parent test_inherit_nouse_t $SELINUXTMPDIR/test_file $CURRENTDIR/selinux_inherit_child 2>&1
 	RC=$?
 	if [ $RC -ne 0 ]
 	then

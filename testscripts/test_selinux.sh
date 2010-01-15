@@ -108,7 +108,7 @@ cd $LTPROOT
 echo "Running the SELinux testsuite..."
 
 mkdir $TMP/selinux > /dev/null 2>&1
-/usr/bin/chcon -t test_file_t $TMP/selinux
+/usr/bin/chcon -R -t test_file_t $TMP/selinux
 export SELINUXTMPDIR=$TMP/selinux
 
 # The ../testcases/bin directory needs to have the test_file_t type.
@@ -123,7 +123,7 @@ $LTPROOT/bin/ltp-pan -S -a $LTPROOT/results/selinux -n ltp-selinux -l $LTPROOT/r
 rm -rf $TMP/selinux
 
 # Restore type of .../testcases/bin directory
-/usr/bin/chcon -t $SAVEBINTYPE $LTPROOT/testcases/bin
+/usr/bin/chcon -R -t $SAVEBINTYPE $LTPROOT/testcases/bin
 
 echo "Removing test_policy module..."
 cd $POLICYDIR
