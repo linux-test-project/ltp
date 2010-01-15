@@ -193,7 +193,7 @@ test07()
 	fi
 	
 	# return to $LTPROOT directory
-	cd ${PWD}
+	cd ${SAVEPWD}
 
 	return $RC
 }

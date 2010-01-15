@@ -39,6 +39,7 @@ endif
 
 CHECKPOLICY		?= $(DESTDIR)/usr/bin/checkpolicy
 CHECKPOLICY_VERS	?= $(shell $(CHECKPOLICY) -V |cut -f 1 -d ' ')
+POLICY_DEVEL_DIR	?= $(DESTDIR)/usr/share/selinux
 
 INSTALL_DIR		:= testcases/kernel/security/selinux-testsuite/refpolicy
 
@@ -53,7 +54,7 @@ else
 TEST_POLICY_DIR		:= $(TEST_POLICY_DIR)/generic
 endif
 
-MAKE_TARGETS		:= test_policy.te
+MAKE_TARGETS		:= test_policy.te test_policy.pp
 
 ifneq ($(CHECKPOLICY_VERS),24)
 POLICY_FILES		:= $(filter-out test_bounds.te,$(POLICY_FILES))
@@ -65,6 +66,14 @@ POLICY_FILES		:= test_global.te \
 
 test_policy.te: $(addprefix $(TEST_POLICY_DIR)/,$(POLICY_FILES))
 	(cd "$(TEST_POLICY_DIR)" && cat $(POLICY_FILES)) > $@
+
+test_policy.pp: test_policy.te
+	@set -e; if [ -d "$(POLICY_DEVEL_DIR)" ]; then \
+		$(MAKE) -f $(POLICY_DEVEL_DIR)/Makefile test_policy.pp; \
+	else \
+		echo "ERROR: You must have selinux-policy?-devel? installed."; \
+		false; \
+	fi
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
 include $(abs_srcdir)/Makefile.selinux
