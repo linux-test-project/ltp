@@ -22,7 +22,7 @@ top_srcdir		?= ../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-$(eval $(call generate_vpath_rule,c,$(srcdir):$(top_srcdir)/lib))
+vpath %.c $(srcdir):$(top_srcdir)/lib
 
 INSTALL_TARGETS		:= lib/*.py *.py *.sh
 
