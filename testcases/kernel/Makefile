@@ -32,19 +32,15 @@ else
 SUBDIRS		:= syscalls
 endif
 
-trunk-all: $(includedir)/linux_syscall_numbers.h
-
-trunk-clean:: | linux-syscall-numbers-clean
+trunk-all: include/linux_syscall_numbers.h
 
 include:
 	mkdir -p "$@"
 
 linux-syscall-numbers-clean:: include
-	$(MAKE) -C $^ -f "$(abs_srcdir)/include/Makefile" clean
+	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" clean
 
-$(includedir)/linux_syscall_numbers.h: include
-	set -e; for i in all install; do \
-	    $(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" $$i; \
-	done
+include/linux_syscall_numbers.h: include
+	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" all
 
 include $(top_srcdir)/include/mk/generic_trunk_target.mk
