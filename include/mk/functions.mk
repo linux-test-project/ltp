@@ -24,7 +24,9 @@ SQUOTE			:= '
 
 # ' # to keep colorized editors from going nuts
 
-MAKE_3_80_abspath	= $(shell readlink -f '$(subst $(SQUOTE),\\$(SQUOTE),$(1))')
+MAKE_3_80_realpath	= $(shell $(top_srcdir)/scripts/realpath.sh '$(subst $(SQUOTE),\\$(SQUOTE),$(1))')
+
+MAKE_3_80_abspath	= $(shell $(top_srcdir)/scripts/abspath.sh '$(subst $(SQUOTE),\\$(SQUOTE),$(1))')
 
 #
 # Generate the directory install dependency separate from generate_install_rule
@@ -86,24 +88,6 @@ ifdef INSTALL_POST
 	@echo "Executing preinstall command."
 	$$(INSTALL_POST)
 endif
-endef
-
-#
-# Create a vpath rule for a given extension.
-#
-# 1 -> file extension
-# 2 -> search directory. Defaults to $(abs_srcdir) if not specified.
-# 
-define generate_vpath_rule
-ifdef MAKE_3_80_COMPAT
-ifeq ($$(strip $(2)),)
-vpath %.$(1)	$$(abs_srcdir)
-else
-vpath %.$(1)	$(2)
-endif # End -- strip $(2)
-else
-vpath %.$(1)	$$(if $(2),$(2),$$(abs_srcdir))
-endif # End ifdef MAKE_3_80_COMPAT
 endef
 
 #
