@@ -30,14 +30,6 @@ top_srcdir		?= $(CURDIR)
 include $(top_srcdir)/include/mk/env_pre.mk
 include $(top_srcdir)/include/mk/automake.mk
 
-# This variable is automatically changed from help to all once someone has
-# run configure, or the equivalent steps manually, as described in INSTALL.
-ifeq ($(wildcard $(top_builddir)/include/config.h),)
-.DEFAULT_GOAL		:= help
-else
-.DEFAULT_GOAL		:= all
-endif
-
 .SUFFIXES:
 .SUFFIXES: .am .default .h .in .m4 .mk
 
