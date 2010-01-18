@@ -30,7 +30,7 @@ ENV_PRE_LOADED = 1
 # Default source search path. Modify as necessary, but I would call that
 # poor software design if you need more than one search directory, and
 # would suggest creating a general purpose static library to that end.
-$(eval $(call generate_vpath_rule,c))
+vpath %.c $(abs_srcdir)
 
 # For config.h, et all.
 CPPFLAGS			+= -I$(top_srcdir)/include -I$(top_builddir)/include
@@ -72,9 +72,10 @@ INSTALL_MODE			?= 00775
 $(foreach im_dir,$(sort $(dir $(INSTALL_TARGETS) $(MAKE_TARGETS))),$(eval $(call generate_install_rule_dir_dep,$(INSTALL_DIR),$(im_dir))))
 $(foreach install_target,$(INSTALL_TARGETS),$(eval $(call generate_install_rule,$(install_target),$(abs_srcdir),$(INSTALL_DIR))))
 $(foreach make_target,$(MAKE_TARGETS),$(eval $(call generate_install_rule,$(make_target),$(abs_builddir),$(INSTALL_DIR))))
-else
+
+else  # else ! $(filter-out install,$(MAKECMDGOALS)),$(MAKECMDGOALS)
 $(error You must define $$(prefix) before executing install)
-endif
+endif # END $(filter-out install,$(MAKECMDGOALS)),$(MAKECMDGOALS)
 endif
 
 endif
