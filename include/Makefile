@@ -40,6 +40,6 @@ ac-clean ac-distclean::
 ac-maintainer-clean::
 	$(RM) -f config.h.in
 
-$(eval $(call generate_vpath_rule,h))
+vpath %.h $(abs_srcdir)
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
