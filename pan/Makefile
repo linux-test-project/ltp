@@ -33,7 +33,13 @@ LFLAGS			+= -l
 
 INSTALL_DIR		:= bin
 
-MAKE_TARGETS		:= ltp-bump ltp-pan ltp-scanner
+MAKE_TARGETS		:= ltp-bump ltp-pan
+
+ifeq ($(strip $(LEXLIB)),)
+$(warning ltp-scanner will not be built because a working copy of lex was not found)
+else
+MAKE_TARGETS		+= ltp-scanner
+endif
 
 ltp-bump: ltp-bump.o zoolib.o
 
