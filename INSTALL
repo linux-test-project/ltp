@@ -1,10 +1,11 @@
-$Id: INSTALL,v 1.35 2010/01/07 10:43:24 yaberauneya Exp $
+$Id: INSTALL,v 1.36 2010/01/18 23:46:09 yaberauneya Exp $
 
 Requirements
 -------------------
 
 1. In order to compile ltp you must have make 3.81+.
-2. In order to compile and use pan, you must have bison/yacc, and flex installed.
+2. In order to compile and use ltp-scanner (a utility in the pan directory),
+   you must have bison/yacc, and flex installed.
 
 bison can be obtained here:
 - http://ftp.gnu.org/gnu/bison/bison-2.4.1.tar.gz
@@ -295,3 +296,11 @@ Issue:    When executing make [all] it says something like:
 Solution: You cannot build LTP with -r / --no-builtin-rules and/or
           -R / --no-builtin-variables specified. LTP relies heavily on built-in
           implicit rules and variables to function properly.
+
+Issue:    When executing make (no target, 3.80), it does the following, and doesn't execute all:
+
+    #
+    make -C testcases/realtime autotools
+    make[1]: Entering directory `/scratch/ltp/testcases/realtime'
+    autoheader
+    make[1]: Leaving directory `/scratch/ltp/testcases/realtime'
