@@ -82,7 +82,7 @@ MAKE_TARGETS		:= $(addsuffix -all,$(filter-out lib,$(COMMON_TARGETS)))
 # overtaxed one, or one where -j => 1 was specified.
 all: $(addsuffix -all,$(COMMON_TARGETS))
 
-$(MAKE_TARGETS): lib-install
+$(MAKE_TARGETS): lib-all
 
 .PHONY: include-all include-install
 include-install: $(top_builddir)/include/config.h include/mk/config.mk include-all
