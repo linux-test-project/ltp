@@ -90,7 +90,10 @@ endif
 # just these two vars and $(CURDIR).
 export abs_top_srcdir abs_top_builddir
 
-# NOTE NOTE NOTE NOTE -- DO NOT MOVE THIS BELOW THE include ABOVE!
+#$(warning abs_builddir, $(abs_builddir), abs_srcdir, $(abs_srcdir), abs_top_builddir, $(abs_top_builddir), abs_top_srcdir, $(abs_top_srcdir), top_srcdir, $(top_srcdir))
+
+# DO NOT MOVE THIS BELOW include [..]/config.mk (will break out-of-build tree
+# checks)!
 ifneq ($(abs_builddir),$(abs_srcdir))
 OUT_OF_BUILD_TREE		:= 1
 else
