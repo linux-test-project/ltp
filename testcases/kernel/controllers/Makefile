@@ -33,9 +33,7 @@ $(LIBDIR):
 	mkdir -p "$@"
 
 $(LIB): $(LIBDIR)
-	for i in all install; do \
-	    $(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" $$i; \
-	done
+	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" all
 
 trunk-all: $(LIB)
 

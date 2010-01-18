@@ -41,14 +41,10 @@ lib-clean:: $(LIBSCTPDIR) $(LIBSCTPUTILDIR)
 
 
 $(LIBSCTP): $(LIBSCTPDIR)
-	set -e; for i in all install; do \
-	    $(MAKE) -C "$^" -f "$(abs_srcdir)/$^/Makefile" $$i; \
-	done
+	$(MAKE) -C "$^" -f "$(abs_srcdir)/$^/Makefile" all
 
 $(LIBSCTPUTIL): $(LIBSCTPUTILDIR)
-	set -e; for i in all install; do \
-	    $(MAKE) -C "$^" -f "$(abs_srcdir)/$^/Makefile" $$i; \
-	done
+	$(MAKE) -C "$^" -f "$(abs_srcdir)/$^/Makefile" all
 
 trunk-all: $(LIBSCTP) $(LIBSCTPUTIL)
 
