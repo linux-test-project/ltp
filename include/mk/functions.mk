@@ -54,7 +54,6 @@ INSTALL_FILES		+= $$(call MAKE_3_80_abspath,$$(DESTDIR)/$(3)/$(1))
 
 $$(call MAKE_3_80_abspath,$$(DESTDIR)/$(3)/$(1)): \
     $$(call MAKE_3_80_abspath,$$(dir $$(DESTDIR)/$(3)/$(1)))
-	test -d "$$(@D)" || mkdir -p "$$(@D)"
 	install -m $$(INSTALL_MODE) "$(2)/$(1)" "$$@"
 endef
 else # not MAKE_3_80_COMPAT
