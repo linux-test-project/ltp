@@ -29,19 +29,14 @@ ENV_PRE_LOADED = 1
 
 ifndef MAKE_VERSION_CHECK
 export MAKE_VERSION_CHECK = 1
-ifeq ($(filter 3.81%,$(MAKE_VERSION)),)
-$(error Only make 3.81 is supported at this time. Please read the Requirements section in INSTALL)
-endif
-# XXX (garrcoop): Junk for later...
-#ifneq ($(firstword $(sort 3.80 $(MAKE_VERSION))),3.80)
-#$(error Your version of make $(MAKE_VERSION) is too old. Upgrade to at least 3.80 (3.81+ preferred))
-#else
-#ifeq ($(MAKE_VERSION),3.80)
-#$(warning make 3.80 is not currently supported in LTP)
-#$(error I apologize for the inconvenience, but I am working on it as quickly as I can! -Garrett)
-#export MAKE_3_80_COMPAT	:= 1
-#endif # make 3.80?
-#endif # At least make 3.80?
+ifneq ($(firstword $(sort 3.80 $(MAKE_VERSION))),3.80)
+$(error Your version of make $(MAKE_VERSION) is too old. Upgrade to at least 3.80; 3.81+ is preferred)
+else
+ifneq ($(filter 3.80%,$(MAKE_VERSION)),)
+$(error make 3.80 is not currently supported in LTP. I apologize for the inconvenience, but I am working on it as quickly as I can! -Garrett)
+export MAKE_3_80_COMPAT	:= 1
+endif # make 3.80?
+endif # At least make 3.80?
 endif # MAKE_VERSION_CHECK
 
 # Get the absolute path for the source directory.
@@ -95,8 +90,6 @@ endif
 # just these two vars and $(CURDIR).
 export abs_top_srcdir abs_top_builddir
 
--include $(top_builddir)/include/mk/config.mk
-
 # NOTE NOTE NOTE NOTE -- DO NOT MOVE THIS BELOW THE include ABOVE!
 ifneq ($(abs_builddir),$(abs_srcdir))
 OUT_OF_BUILD_TREE		:= 1
@@ -106,6 +99,10 @@ else
 ifeq ($(strip $(DESTDIR)$(prefix)),)
 INSTALL_IN_BUILD_TREE		:= 1
 endif
+endif
+
+ifeq ($(filter autotools %clean help,$(MAKECMDGOALS)),)
+include $(abs_top_builddir)/include/mk/config.mk
 endif
 
 .DEFAULT_GOAL			:= all

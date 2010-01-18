@@ -28,6 +28,16 @@ MAKE_3_80_realpath	= $(shell $(top_srcdir)/scripts/realpath.sh '$(subst $(SQUOTE
 
 MAKE_3_80_abspath	= $(shell $(top_srcdir)/scripts/abspath.sh '$(subst $(SQUOTE),\\$(SQUOTE),$(1))')
 
+# NOTE (garrcoop):
+#
+# The following functions are (sometimes) split into 3.80 and 3.81+
+# counterparts, and not conditionalized inside of the define(s) to work around
+# the following issue:
+# http://www.linuxfromscratch.org/patches/downloads/make/make-3.80-eval-1.patch
+#
+# SO DO NOT INTERNALIZE CONDITIONALS IN DEFINES OR YOU WILL BREAK MAKE 3.80!
+#
+
 #
 # Generate the directory install dependency separate from generate_install_rule
 # to avoid noise from Make about redefining existing targets, for good reason.
@@ -37,15 +47,17 @@ MAKE_3_80_abspath	= $(shell $(top_srcdir)/scripts/abspath.sh '$(subst $(SQUOTE),
 # 2 -> The install target. This can be relative to $(srcdir), but will most
 #      likely be `empty'.
 #
-define generate_install_rule_dir_dep
 ifdef MAKE_3_80_COMPAT
+define generate_install_rule_dir_dep
 $$(call MAKE_3_80_abspath,$(DESTDIR)/$(1)/$(2)):
 	mkdir -p "$$@"
-else
+endef
+else  # ! MAKE_3_80_COMPAT
+define generate_install_rule_dir_dep
 $$(abspath $(DESTDIR)/$(1)/$(2)):
 	mkdir -p "$$@"
-endif
 endef
+endif # END MAKE_3_80_COMPAT
 
 #
 # Generate an install rule which also creates the install directory if needed
@@ -56,29 +68,13 @@ endef
 # 2 -> Source directory.
 # 3 -> Destination directory.
 #
+ifdef MAKE_3_80_COMPAT
 define generate_install_rule
 
-# This doesn't do Jack currently, as per the $(MAKECMDGOALS) check in
-# env_post.mk. I can revisit this `enhancement' later.
-#
-# NOTE (garrcoop): Don't remove the following dashes. They're make 3.80 parser
-# bug related.
-#
-# -- CLEAN_TARGETS		+= $$(INSTALL_FILE)
-
-ifdef MAKE_3_80_COMPAT
 INSTALL_FILES		+= $$(call MAKE_3_80_abspath,$(DESTDIR)/$(3)/$(1))
-else
-INSTALL_FILES		+= $$(abspath $(DESTDIR)/$(3)/$(1))
-endif # MAKE_3_80_COMPAT
 
-ifdef MAKE_3_80_COMPAT
 $$(call MAKE_3_80_abspath,$(DESTDIR)/$(3)/$(1)): \
     $$(call MAKE_3_80_abspath,$$(dir $(DESTDIR)/$(3)/$(1)))
-else
-$$(abspath $(DESTDIR)/$(3)/$(1)): \
-    $$(abspath $$(dir $(DESTDIR)/$(3)/$(1)))
-endif # MAKE_3_80_COMPAT
 ifdef INSTALL_PRE
 	@echo "Executing preinstall command."
 	$$(INSTALL_PRE)
@@ -89,6 +85,24 @@ ifdef INSTALL_POST
 	$$(INSTALL_POST)
 endif
 endef
+else # ! MAKE_3_80_COMPAT
+define generate_install_rule
+
+INSTALL_FILES		+= $$(abspath $(DESTDIR)/$(3)/$(1))
+
+$$(abspath $(DESTDIR)/$(3)/$(1)): \
+    $$(abspath $$(dir $(DESTDIR)/$(3)/$(1)))
+ifdef INSTALL_PRE
+	@echo "Executing preinstall command."
+	$$(INSTALL_PRE)
+endif
+	install -m $$(INSTALL_MODE) "$(2)/$(1)" "$$@"
+ifdef INSTALL_POST
+	@echo "Executing preinstall command."
+	$$(INSTALL_POST)
+endif
+endef
+endif # END MAKE_3_80_COMPAT
 
 #
 # Set SUBDIRS to the subdirectories where Makefiles were found.
