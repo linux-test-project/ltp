@@ -40,7 +40,14 @@ INSTALL_MODE	?= 00664
 MAKE_TARGETS	:= $(LIB)
 
 LIBSRCS		?= $(wildcard $(abs_srcdir)/*.c)
-LIBSRCS		:= $(subst $(abs_srcdir)/,,$(wildcard $(abspath $(LIBSRCS))))
+
+ifdef MAKE_3_80_COMPAT
+LIBSRCS		:= $(call MAKE_3_80_abspath,$(LIBSRCS)) 
+else
+LIBSRCS		:= $(abspath $(LIBSRCS))
+endif
+
+LIBSRCS	:= $(subst $(abs_srcdir)/,,$(wildcard $(LIBSRCS)))
 
 LIBOBJS		:= $(LIBSRCS:.c=.o)
 
