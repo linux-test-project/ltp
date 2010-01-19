@@ -33,7 +33,6 @@ ifneq ($(firstword $(sort 3.80 $(MAKE_VERSION))),3.80)
 $(error Your version of make $(MAKE_VERSION) is too old. Upgrade to at least 3.80; 3.81+ is preferred)
 else
 ifneq ($(filter 3.80%,$(MAKE_VERSION)),)
-$(error make 3.80 is not currently supported in LTP. I apologize for the inconvenience, but I am working on it as quickly as I can! -Garrett)
 export MAKE_3_80_COMPAT	:= 1
 endif # make 3.80?
 endif # At least make 3.80?
@@ -89,8 +88,6 @@ endif
 # We can piece together where we're located in the source and object trees with
 # just these two vars and $(CURDIR).
 export abs_top_srcdir abs_top_builddir
-
-#$(warning abs_builddir, $(abs_builddir), abs_srcdir, $(abs_srcdir), abs_top_builddir, $(abs_top_builddir), abs_top_srcdir, $(abs_top_srcdir), top_srcdir, $(top_srcdir))
 
 # DO NOT MOVE THIS BELOW include [..]/config.mk (will break out-of-build tree
 # checks)!
