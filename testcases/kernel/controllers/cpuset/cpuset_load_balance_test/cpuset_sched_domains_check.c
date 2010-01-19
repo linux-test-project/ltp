@@ -38,6 +38,8 @@
 char *TCID = "cpuset_check_domains";
 int TST_TOTAL = 1;
 
+#ifdef HAVE_LINUX_MEMPOLICY_H
+
 /*
  * check sched domains in system
  * 
@@ -131,3 +133,11 @@ int main(void)
 	check_sched_domains();
 	tst_exit();
 }
+
+#else
+int main(void)
+{
+	tst_resm(TCONF, "System doesn't have required mempolicy support");
+	tst_exit();
+}
+#endif

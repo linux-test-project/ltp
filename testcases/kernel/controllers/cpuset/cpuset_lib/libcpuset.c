@@ -52,7 +52,6 @@
 #include "config.h"
 #if HAVE_LINUX_MEMPOLICY_H
 #include <linux/mempolicy.h>
-#endif
 
 /* Bump version, and update Change History, when libcpuset API changes */
 #define CPUSET_VERSION 3
@@ -3858,3 +3857,5 @@ int cpuset_pin_(int *ptr_relcpu) {return cpuset_pin(*ptr_relcpu);}
 int cpuset_size_(void) { return cpuset_size(); }
 int cpuset_where_(void) { return cpuset_where(); }
 int cpuset_unpin_(void) { return cpuset_unpin(); }
+
+#endif /* HAVE_LINUX_MEMPOLICY_H */

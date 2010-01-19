@@ -37,6 +37,8 @@
 #include "../cpuset_lib/bitmask.h"
 #include "../cpuset_lib/cpuset.h"
 
+#if HAVE_LINUX_MEMPOLICY_H
+
 #define MAX_NPROCS	1000
 #define USAGE	("Usage: %s [-p nprocs] [-h]\n"		\
 		 "\t-p nprocs\n"					\
@@ -317,3 +319,9 @@ int main(int argc, char **argv)
 	return ret;
 }
 
+#else /* ! HAVE_LINUX_MEMPOLICY_H */
+int main(void) {
+	printf("System doesn't have required mempolicy support\n");
+	return 1;
+}
+#endif

@@ -41,6 +41,8 @@
 char *TCID = "cpuset_memory_test";
 int TST_TOTAL = 1;
 
+#if HAVE_LINUX_MEMPOLICY_TEST
+
 int fd;
 int flag_exit;
 
@@ -388,3 +390,10 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
+
+#else
+int main (void) {
+	printf("System doesn't have required mempolicy support\n");
+	return 1;
+}
+#endif

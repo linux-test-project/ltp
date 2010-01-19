@@ -11,6 +11,8 @@
 #include "common.h"
 #include "cpuinfo.h"
 
+#if HAVE_LINUX_MEMPOLICY_H
+
 #define CPUINFO_FILE		"/proc/cpuinfo"
 #define SCHEDSTAT_FILE		"/proc/schedstat"
 #define CGROUPINFO_FILE		"/proc/cgroups"
@@ -480,3 +482,5 @@ errcpusb:
 	bitmask_free(cpusa);
 	return ret;
 }
+
+#endif

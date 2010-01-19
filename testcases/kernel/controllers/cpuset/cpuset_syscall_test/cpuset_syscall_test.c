@@ -44,7 +44,6 @@
 #include "usctest.h"
 #if HAVE_LINUX_MEMPOLICY_H
 #include <linux/mempolicy.h>
-#endif
 
 #include "../cpuset_lib/cpuset.h"
 #include "../cpuset_lib/bitmask.h"
@@ -213,7 +212,7 @@ void test_get_mempolicy(void)
 #endif
 
 	bitmask_displaylist(str, 256, nmask);
-	printf("%s", str);
+	puts(str);
 }
 
 void sigusr_handler(int __attribute__((unused)) signo)
@@ -249,3 +248,8 @@ int main(int argc, char *argv[])
 
 	return ret;
 }
+#else
+int main (void) {
+	printf("System doesn't have required mempolicy support\n");
+}
+#endif
