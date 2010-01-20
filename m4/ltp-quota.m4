@@ -20,30 +20,30 @@ dnl
 dnl LTP_CHECK_SYSCALL_QUOTACTL
 dnl ----------------------------
 dnl
-AC_DEFUN([LTP_CHECK_SYSCALL_QUOTACTL],
-dnl Backstory: this autoconf test is bogus because it (and the quotactl test)
-dnl uses Q_GETINFO which only exists in the quota 2.x code. Thus, it's
-dnl commented out now until a proper 2.4.x test can be written, if necessary...
-dnl[AC_TRY_COMPILE([
-dnl #include <linux/quota.h>
-dnl #include <unistd.h>],[
-dnl int main(void) {
-dnl	return quotactl(Q_GETINFO, (const char *)NULL, geteuid(), (caddr_t)NULL);
-dnl}],[has_24_quotactl="yes"],
-[AC_TRY_COMPILE([
-#define _LINUX_QUOTA_VERSION 2
+AC_DEFUN([LTP_CHECK_SYSCALL_QUOTACTL],[AC_TRY_COMPILE([
+#define _LINUX_QUOTA_VERSION 2 
 #include <sys/types.h>
 #include <sys/quota.h>
 #include <unistd.h>],[
 int main(void) {
 	struct dqblk dq;
-	return quotactl(Q_GETINFO, (const char *) "/dev/null", geteuid(),
-			(caddr_t) &dq);
-}],[has_quotav2="yes"],[AC_MSG_ERROR([Couldn't find functional copy of quota v2 - are you running 2.4.x? (PLEASE SUBMIT YOUR config.log SO THIS AUTOCONF TEST CAN BE IMPROVED!)])])
-dnl if test "x$has_24_quotactl" = "xyes"; then
-dnl	AC_DEFINE(HAS_24_QUOTACTL,1,[Define to 1 if you have the 2.4.x version of quotactl, e.g. require linux/quota.h instead of sys/quota.h])
-dnl elif test "x$has_new_26_quotactl" = "xyes"; then
-if test "x$has_quotav2" = "xyes"; then
-	AC_DEFINE(HAS_QUOTAV2,1,[Define to 1 if you have quota v2 code, e.g. are running 2.6.x])
+	return quotactl(QCMD(Q_GETINFO, USRQUOTA), (const char *) "/dev/null",
+			geteuid(), (caddr_t) &dq);
+}],[has_quotav2="yes"],[dnl END quota v2 check
+AC_TRY_COMPILE([
+#define _LINUX_QUOTA_VERSION 1
+#include <sys/types.h>
+#include <sys/quota.h>
+#include <unistd.h>],[
+int main(void) {
+	struct dqblk dq;
+	return quotactl(QCMD(Q_GETQUOTA, USRQUOTA), (const char *) "/dev/null",
+			geteuid(), (caddr_t) &dq);
+}],[has_quotav2="yes"],AC_MSG_WARN(Couldn't determine quota version (please submit config.log and manpage details for inspectionto ltp-list@lists.sourceforge.net))) dnl END quota v1 check
+]) 
+if test "x$has_quotav1" = "xyes"; then
+	AC_DEFINE(HAS_QUOTAV1,1,[Define to 1 if you have quota v1])
+elif test "x$has_quotav2" = "xyes"; then
+	AC_DEFINE(HAS_QUOTAV2,1,[Define to 1 if you have quota v2])
 fi
 ])

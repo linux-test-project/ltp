@@ -48,31 +48,17 @@
 #include <linux/fs.h>
 #include <sys/types.h>
 #include "config.h"
+#if defined(HAS_QUOTAV2) || defined(HAS_QUOTAV1)
 #if defined(HAS_QUOTAV2)
 #define _LINUX_QUOTA_VERSION 2
+#else	/* HAS_QUOTAV1 */
+#define _LINUX_QUOTA_VERSION 1
+#endif
 #include <sys/quota.h>
-/*
- * See m4/ltp-quota.m4 about the quota v1 vs quota v2 item.
-#elif defined(HAS_RHEL_QUOTAV1)
-#include <linux/quota.h>
- */
-#else
+#else	/* ! (HAS_QUOTAV2 || HAS_QUOTAV1) */
 /* Not HAS_QUOTAV2 */
 #define BROKEN_QUOTACTL 1
 #endif
-/*
- * The broken manpage on my corporation's version of RHEL 4.6 says that these
- * headers are required (for quota v1), but I can't verify this requirement
- * because RHEL 4.6 doesn't RUN 2.4.x.
- *
- * Stale documentation ftl.
- * 
-#if defined(HAS_RHEL_QUOTAV1)
-#include <xfs/xqm.h>
-#include <linux/dqblk_v1.h>
-#include <linux/dqblk_v2.h>
-#endif
- */
 
 /* Harness Specific Include Files. */
 #include "test.h"
@@ -91,7 +77,7 @@ int  TST_TOTAL = 1;			/* total number of tests in this file.	*/
 #define QUOTACTL(cmd, addr) \
 	syscall(__NR_quotactl, QCMD(cmd, USRQUOTA), block_dev, id, \
 					(caddr_t) addr)
-#if defined(HAS_QUOTAV2)
+#ifndef BROKEN_QUOTACTL
 
 #ifndef QUOTAFILE
 /* Default name of the quota file in Fedora 12. */
@@ -99,7 +85,7 @@ int  TST_TOTAL = 1;			/* total number of tests in this file.	*/
 #endif
 
 char quota_started = 0;
-static char *block_dev = NULL, *mountpoint = NULL, *quota_loc = NULL;
+static char *block_dev, *mountpoint, *quota_file, *quota_loc = NULL;
 int id;
 struct dqblk dq;
 
@@ -133,15 +119,6 @@ extern void cleanup()
 			tst_brkm(TBROK | TERRNO, NULL,
 				"failed to disable the quota on %s", block_dev);
 		}
-		free(block_dev);
-	}
-
-	if (mountpoint) {
-		free(mountpoint);
-	}
-
-	if (quota_loc) {
-		free(quota_loc);
 	}
 
 	/* Exit with appropriate return code. */
@@ -169,8 +146,6 @@ extern void cleanup()
 /******************************************************************************/
 void setup() {
 
-	char *cwd;
-
 	/* Capture signals if any */
 	/* Create temporary directories */
 
@@ -186,22 +161,7 @@ void setup() {
 	TEST_PAUSE;
 	tst_tmpdir();
 
-	cwd = get_current_dir_name();
-
-	if (cwd == NULL) {
-		tst_brkm(TCONF | TERRNO, cleanup,
-			"couldn't determine the current working directory");
-	} else {
-		block_dev = get_block_device(cwd);
-		mountpoint = get_mountpoint(cwd);
-		free(cwd);
-		if (block_dev == NULL) {
-			tst_brkm(TCONF | TERRNO, cleanup,
-				"failed to obtain a valid block device");
-		}
-	}
-
-	snprintf(quota_loc, FILENAME_MAX, "%s/%s", mountpoint, QUOTAFILE);
+	snprintf(quota_loc, FILENAME_MAX, "%s/%s", mountpoint, quota_file);
 
 	if (QUOTACTL(Q_QUOTAON, quota_loc) != 0) {
 		
@@ -256,6 +216,15 @@ int cmd[] = {
 int
 main(int ac, char **av)
 {
+
+	static int block_dev_FLAG = 0, mountpoint_FLAG = 0, quota_file_FLAG = 0;
+	option_t opts[] = {
+		{ .option = "b:", .flag = &block_dev_FLAG, .arg = &block_dev },
+		{ .option = "m:", .flag = &mountpoint_FLAG, .arg = &mountpoint },
+		{ .option = "q:", .flag = &quota_file_FLAG, .arg = &quota_file },
+		{ .option = '\0' }
+	};
+
 	int newtid = -1;
 	int result;
 	int ret;
@@ -264,9 +233,8 @@ main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
-		 tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-		 tst_exit();
+	if ((msg = parse_opts(ac, av, (option_t*) opts, NULL)) != (char*)NULL) {
+		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
 	setup();
