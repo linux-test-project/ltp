@@ -39,7 +39,7 @@ int main(void) {
 	struct dqblk dq;
 	return quotactl(QCMD(Q_GETQUOTA, USRQUOTA), (const char *) "/dev/null",
 			geteuid(), (caddr_t) &dq);
-}],[has_quotav2="yes"],AC_MSG_WARN(Couldn't determine quota version (please submit config.log and manpage details for inspectionto ltp-list@lists.sourceforge.net))) dnl END quota v1 check
+}],[has_quotav1="yes"],AC_MSG_WARN(Couldn't determine quota version (please submit config.log and manpage details for inspectionto ltp-list@lists.sourceforge.net))) dnl END quota v1 check
 ]) 
 if test "x$has_quotav1" = "xyes"; then
 	AC_DEFINE(HAS_QUOTAV1,1,[Define to 1 if you have quota v1])
