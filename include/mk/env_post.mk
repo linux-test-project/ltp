@@ -86,7 +86,7 @@ $(MAKE_TARGETS_ABS):
 	test -d "$(@D)" || mkdir -p "$(@D)"
 	install -m $(INSTALL_MODE) "$(abs_builddir)/$(subst $(INSTALL_PATH)/,,$@)" "$@"
 else
-$(addprefix $(DESTDIR)/$(INSTALL_DIR),$(sort $(dir $(INSTALL_TARGETS) $(MAKE_TARGETS)))):
+$(abspath $(addprefix $(DESTDIR)/$(INSTALL_DIR)/,$(sort $(dir $(INSTALL_TARGETS) $(MAKE_TARGETS))))):
 	mkdir -p "$@"
 $(foreach install_target,$(INSTALL_TARGETS),$(eval $(call generate_install_rule,$(install_target),$(abs_srcdir),$(INSTALL_DIR))))
 $(foreach make_target,$(MAKE_TARGETS),$(eval $(call generate_install_rule,$(make_target),$(abs_builddir),$(INSTALL_DIR))))
