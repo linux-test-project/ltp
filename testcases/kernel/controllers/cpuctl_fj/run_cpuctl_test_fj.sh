@@ -85,7 +85,17 @@ creat_process()
 
 get_cpu_usage()
 {
-	ps -eo 'pid,pcpu' | awk '$1 == "'$1'" { sub(/(\.[[:digit:]])*$/, "", $2); print $2 }'
+	# XXX (garrcoop): expr(1) can't do float point comparisons
+	# apparently...
+	#
+	# gcooper@optimus ~ $ expr 0 \< 42 \& 42 \< 100
+	# 1
+	# gcooper@optimus ~ $ expr 0 \< 42.0 \& 42.0 \< 100
+	# 0
+	# gcooper@optimus ~ $ expr 0.0 \< 42.0 \& 42.0 \< 100.0
+	# 0
+	# ... so we have to lop off the fractional piece.
+	ps -p $1 pcpu | awk -F. '{ print $1 }'
 }
 
 kill_all_pid()
