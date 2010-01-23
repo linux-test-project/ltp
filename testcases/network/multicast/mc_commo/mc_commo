@@ -128,7 +128,7 @@ do_test ()
       do
          echo "Running on $HOST mc_send $GROUP_ADDR $HOST $PORT $TTL"
 
-         rsh -n -l root $HOST "$LTPROOT/testcases/bin$REMOTE_EXEC" $GROUP_ADDR \
+         rsh -n -l root $HOST "$LTPROOT/testcases/bin/$REMOTE_EXEC" $GROUP_ADDR \
 	 $HOST $PORT $TTL >/dev/null &
          sleep 10
 	rsh -n -l root $HOST "ps -ewf | grep mc_send | grep -v grep"
