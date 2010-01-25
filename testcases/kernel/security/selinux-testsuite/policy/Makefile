@@ -26,7 +26,4 @@ include	$(top_srcdir)/include/mk/env_pre.mk
 
 INSTALL_DIR		:= testcases/kernel/security/selinux-testsuite/policy
 
-INSTALL_TARGETS		:= Makefile.selinux
-
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
-include $(abs_srcdir)/Makefile.selinux

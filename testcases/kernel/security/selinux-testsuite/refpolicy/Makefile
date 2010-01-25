@@ -39,11 +39,9 @@ endif
 
 CHECKPOLICY		?= $(DESTDIR)/usr/bin/checkpolicy
 CHECKPOLICY_VERS	?= $(shell $(CHECKPOLICY) -V |cut -f 1 -d ' ')
-POLICY_DEVEL_DIR	?= $(DESTDIR)/usr/share/selinux
+POLICY_DEVEL_DIR	?= $(DESTDIR)/usr/share/selinux/devel
 
 INSTALL_DIR		:= testcases/kernel/security/selinux-testsuite/refpolicy
-
-INSTALL_TARGETS		:= Makefile.selinux
 
 TEST_POLICY_DIR		:= $(abs_srcdir)/policy_files
 
@@ -76,4 +74,3 @@ test_policy.pp: test_policy.te
 	fi
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
-include $(abs_srcdir)/Makefile.selinux

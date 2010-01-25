@@ -1,5 +1,5 @@
 #
-#    kernel/security/selinux-testsuite include Makefile
+#    kernel/security/selinux-testsuite/tests include Makefile
 #
 #    Copyright (C) 2009, Cisco Systems Inc.
 #
@@ -23,6 +23,8 @@
 CURDIR_DIRNAME		:= $(lastword $(subst /, ,$(abs_srcdir)))
 
 LDLIBS			+= -lselinux -lpthread
+
+INSTALL_DIR		:= testcases/bin/kernel/security/selinux-testsuite/tests
 
 INSTALL_TARGETS		:= selinux_$(CURDIR_DIRNAME)*.sh
 
