@@ -27,9 +27,9 @@ test01()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "$TCID   PASS : task_setpgid passed."
+		tst_resm TPASS "task_setpgid passed."
 	else
-		echo "$TCID   FAIL : task_setpgid failed."
+		tst_resm TFAIL "task_setpgid failed."
 	fi
 	return $RC
 }
@@ -45,10 +45,10 @@ test02()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   PASS : task_setpgid passed."
+		tst_resm TPASS "task_setpgid passed."
 		RC=0
 	else
-		echo "$TCID   FAIL : task_setpgid failed."
+		tst_resm TFAIL "task_setpgid failed."
 		RC=1
 	fi
 	return $RC

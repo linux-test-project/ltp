@@ -34,10 +34,10 @@ test01()
 	RC=$?		# this should fail
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   PASS : execute_no_trans passed."
+		tst_resm TPASS "execute_no_trans passed."
 		RC=0
         else
-                echo "$TCID   FAIL : execute_no_trans failed."
+                tst_resm TFAIL "execute_no_trans failed."
 		RC=1
         fi
 	return $RC
@@ -57,9 +57,9 @@ test02()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   FAIL : execute_no_trans failed."
+		tst_resm TFAIL "execute_no_trans failed."
         else
-                echo "$TCID   PASS : execute_no_trans passed."
+                tst_resm TPASS "execute_no_trans passed."
         fi
 	return $RC
 }

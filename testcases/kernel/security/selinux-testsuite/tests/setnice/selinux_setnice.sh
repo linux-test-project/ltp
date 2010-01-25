@@ -33,9 +33,9 @@ test01()
         RC=$?
         if [ $RC -eq 0 ]
         then
-		echo "$TCID   PASS : setnice passed."
+		tst_resm TPASS "setnice passed."
         else
-		echo "$TCID   FAIL : setnice failed."
+		tst_resm TFAIL "setnice failed."
         fi
         return $RC
 }
@@ -53,10 +53,10 @@ test02()
         RC=$?
         if [ $RC -ne 0 ]
         then
-		echo "$TCID   PASS : setnice passed."
+		tst_resm TPASS "setnice passed."
 		RC=0
         else
-                echo "$TCID   FAIL : setnice failed."
+                tst_resm TFAIL "setnice failed."
 		RC=1
         fi
 	return $RC

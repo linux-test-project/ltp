@@ -38,9 +38,9 @@ test01()
 	RC=$?
         if [ $RC -eq 0 ]
         then
-                echo "$TCID   PASS : readlink passed."
+                tst_resm TPASS "readlink passed."
         else
-                echo "$TCID   FAIL : readlink failed."
+                tst_resm TFAIL "readlink failed."
         fi
         return $RC
 }
@@ -56,10 +56,10 @@ test02()
 	RC=$?
         if [ $RC -ne 0 ]
         then
-                echo "$TCID   PASS : readlink passed."
+                tst_resm TPASS "readlink passed."
 		RC=0
         else
-                echo "$TCID   FAIL : readlink failed."
+                tst_resm TFAIL "readlink failed."
 		RC=1
         fi
 	return $RC
@@ -75,10 +75,10 @@ test03()
 	RC=$?
         if [ $RC -ne 0 ]
         then
-                echo "$TCID   PASS : readlink passed."
+                tst_resm TPASS "readlink passed."
 		RC=0
         else
-                echo "$TCID   FAIL : readlink failed."
+                tst_resm TFAIL "readlink failed."
 		RC=1
         fi
 	return $RC

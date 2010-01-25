@@ -38,9 +38,9 @@ test01()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "$TCID   PASS : ioctl passed."
+		tst_resm TPASS "ioctl passed."
 	else
-		echo "$TCID   FAIL : ioctl failed."
+		tst_resm TFAIL "ioctl failed."
 	fi
 	return $RC
 }
@@ -59,9 +59,9 @@ test02()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "$TCID   PASS : ioctl passed."
+		tst_resm TPASS "ioctl passed."
 	else
-		echo "$TCID   FAIL : ioctl failed."
+		tst_resm TFAIL "ioctl failed."
 	fi
 	return $RC
 }

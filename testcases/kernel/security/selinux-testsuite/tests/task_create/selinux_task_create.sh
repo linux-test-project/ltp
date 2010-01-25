@@ -27,9 +27,9 @@ test01()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "$TCID   PASS : task_create passed."
+		tst_resm TPASS "task_create passed."
 	else
-		echo "$TCID   FAIL : task_create failed."
+		tst_resm TFAIL "task_create failed."
 	fi
 	return $RC
 }
@@ -46,10 +46,10 @@ test02()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   PASS : task_create passed."
+		tst_resm TPASS "task_create passed."
 		RC=0
 	else
-		echo "$TCID   FAIL : task_create failed."
+		tst_resm TFAIL "task_create failed."
 		RC=1
 	fi
 	return $RC

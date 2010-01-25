@@ -33,9 +33,9 @@ test01()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-                echo "$TCID   FAIL : execshare failed."
+                tst_resm TFAIL "execshare failed."
         else
-                echo "$TCID   PASS : execshare passed."
+                tst_resm TPASS "execshare passed."
         fi
         return $RC
 }
@@ -53,10 +53,10 @@ test02()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-                echo "$TCID   PASS : execshare passed."
+                tst_resm TPASS "execshare passed."
 		RC=0
         else
-                echo "$TCID   FAIL : execshare failed."
+                tst_resm TFAIL "execshare failed."
 		RC=1
         fi
 	return $RC

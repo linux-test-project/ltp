@@ -35,9 +35,9 @@ test01()
         RC=$?
         if [ $RC -eq 0 ]
         then
-                echo "$TCID   PASS : setattr passed."
+                tst_resm TPASS "setattr passed."
         else
-                echo "$TCID   FAIL : setattr failed."
+                tst_resm TFAIL "setattr failed."
         fi
         return $RC
 }
@@ -52,9 +52,9 @@ test02()
         RC=$?
         if [ $RC -eq 0 ]
         then
-                echo "$TCID   PASS : setattr passed."
+                tst_resm TPASS "setattr passed."
         else
-                echo "$TCID   FAIL : setattr failed."
+                tst_resm TFAIL "setattr failed."
         fi
         return $RC
 }
@@ -70,10 +70,10 @@ test03()
         RC=$?
         if [ $RC -ne 0 ]
         then
-                echo "$TCID   PASS : setattr passed."
+                tst_resm TPASS "setattr passed."
 		RC=0
         else
-                echo "$TCID   FAIL : setattr failed."
+                tst_resm TFAIL "setattr failed."
 		RC=1
         fi
 	return $RC
@@ -89,10 +89,10 @@ test04()
         RC=$?
         if [ $RC -ne 0 ]
         then
-                echo "$TCID   PASS : setattr passed."
+                tst_resm TPASS "setattr passed."
 		RC=0
         else
-                echo "$TCID   FAIL : setattr failed."
+                tst_resm TFAIL "setattr failed."
 		RC=1
         fi
 	return $RC

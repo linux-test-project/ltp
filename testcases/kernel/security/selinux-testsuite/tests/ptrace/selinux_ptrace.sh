@@ -41,10 +41,10 @@ test01()
         RC=$?
         if [ $RC -ne 0 ]
         then
-                echo "$TCID   PASS : ptrace passed."
+                tst_resm TPASS "ptrace passed."
 		RC=0
         else
-                echo "$TCID   FAIL : ptrace failed."
+                tst_resm TFAIL "ptrace failed."
 		RC=1
         fi
 	return $RC
@@ -61,9 +61,9 @@ test02()
         RC=$?
         if [ $RC -eq 0 ]
         then
-                echo "$TCID   PASS : ptrace passed."
+                tst_resm TPASS "ptrace passed."
         else
-                echo "$TCID   FAIL : ptrace failed."
+                tst_resm TFAIL "ptrace failed."
         fi
 	return $RC
 }

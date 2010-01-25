@@ -28,10 +28,10 @@ test01()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   PASS : domain_trans passed."
+		tst_resm TPASS "domain_trans passed."
 		RC=0
 	else
-		echo "$TCID   FAIL : domain_trans failed."
+		tst_resm TFAIL "domain_trans failed."
 		RC=1
 	fi
 	return $RC
@@ -48,9 +48,9 @@ test02()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   FAIL : domain_trans failed."
+		tst_resm TFAIL "domain_trans failed."
 	else
-		echo "$TCID   PASS : domain_trans passed."
+		tst_resm TPASS "domain_trans passed."
 	fi
 	return $RC
 }

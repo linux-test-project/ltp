@@ -32,9 +32,9 @@ test01()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "$TCID   PASS : task_setnice passed."
+		tst_resm TPASS "task_setnice passed."
         else
-		echo "$TCID   FAIL : task_setnice failed."
+		tst_resm TFAIL "task_setnice failed."
         fi
         return $RC
 }
@@ -51,9 +51,9 @@ test02()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "$TCID   PASS : task_setnice passed."
+		tst_resm TPASS "task_setnice passed."
         else
-		echo "$TCID   FAIL : task_setnice failed."
+		tst_resm TFAIL "task_setnice failed."
         fi
         return $RC
 }
@@ -70,10 +70,10 @@ test03()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   PASS : task_setnice passed."
+		tst_resm TPASS "task_setnice passed."
 		RC=0
         else
-		echo "$TCID   FAIL : task_setnice failed."
+		tst_resm TFAIL "task_setnice failed."
 		RC=1
         fi
 	return $RC
@@ -89,10 +89,10 @@ test04()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   PASS : task_setnice passed."
+		tst_resm TPASS "task_setnice passed."
 		RC=0
         else
-		echo "$TCID   FAIL : task_setnice failed."
+		tst_resm TFAIL "task_setnice failed."
 		RC=1
         fi
 	return $RC

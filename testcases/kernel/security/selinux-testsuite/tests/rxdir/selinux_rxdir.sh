@@ -38,9 +38,9 @@ test01()
         RC=$?
         if [ $RC -eq 0 ]
         then
-                echo "$TCID   PASS : rxdir passed."
+                tst_resm TPASS "rxdir passed."
         else
-                echo "$TCID   FAIL : rxdir failed."
+                tst_resm TFAIL "rxdir failed."
         fi
         return $RC
 }
@@ -55,10 +55,10 @@ test02()
         RC=$?
         if [ $RC -ne 0 ]
         then
-                echo "$TCID   PASS : rxdir passed."
+                tst_resm TPASS "rxdir passed."
 		RC=0
         else
-                echo "$TCID   FAIL : rxdir failed."
+                tst_resm TFAIL "rxdir failed."
 		RC=1
         fi
 	return $RC
@@ -75,9 +75,9 @@ test03()
         RC=$?
         if [ $RC -eq 0 ]
         then
-                echo "$TCID   PASS : rxdir passed."
+                tst_resm TPASS "rxdir passed."
         else
-                echo "$TCID   FAIL : rxdir failed."
+                tst_resm TFAIL "rxdir failed."
         fi
 	return $RC
 }
@@ -92,10 +92,10 @@ test04()
         RC=$?
         if [ $RC -ne 0 ]
         then
-                echo "$TCID   PASS : rxdir passed."
+                tst_resm TPASS "rxdir passed."
 		RC=0
         else
-                echo "$TCID   FAIL : rxdir failed."
+                tst_resm TFAIL "rxdir failed."
 		RC=1
         fi
 	return $RC

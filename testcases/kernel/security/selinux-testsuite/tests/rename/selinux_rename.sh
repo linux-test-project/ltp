@@ -45,9 +45,9 @@ test01()
         RC=$?
         if [ $RC -eq 0 ]
         then
-                echo "$TCID   PASS : rename passed."
+                tst_resm TPASS "rename passed."
         else
-                echo "$TCID   FAIL : rename failed."
+                tst_resm TFAIL "rename failed."
         fi
         return $RC
 }
@@ -70,9 +70,9 @@ test02()
         RC=$?
         if [ $RC -eq 0 ]
         then
-                echo "$TCID   PASS : rename passed."
+                tst_resm TPASS "rename passed."
         else
-                echo "$TCID   FAIL : rename failed."
+                tst_resm TFAIL "rename failed."
         fi
         return $RC
 }
@@ -91,9 +91,9 @@ test03()
         RC=$?
         if [ $RC -eq 0 ]
         then
-                echo "$TCID   PASS : rename passed."
+                tst_resm TPASS "rename passed."
         else
-                echo "$TCID   FAIL : rename failed."
+                tst_resm TFAIL "rename failed."
         fi
         return $RC
 }
@@ -113,10 +113,10 @@ test04()
         RC=$?
         if [ $RC -ne 0 ]
         then
-                echo "$TCID   PASS : rename passed."
+                tst_resm TPASS "rename passed."
 		RC=0
         else
-                echo "$TCID   FAIL : rename failed."
+                tst_resm TFAIL "rename failed."
 		RC=1
         fi
 	return $RC
@@ -134,10 +134,10 @@ test05()
         RC=$?
         if [ $RC -ne 0 ]
         then
-                echo "$TCID   PASS : rename passed."
+                tst_resm TPASS "rename passed."
 		RC=0
         else
-                echo "$TCID   FAIL : rename failed."
+                tst_resm TFAIL "rename failed."
 		RC=1
 	fi
 	return $RC
@@ -155,10 +155,10 @@ test06()
         RC=$?
         if [ $RC -ne 0 ]
         then
-                echo "$TCID   PASS : rename passed."
+                tst_resm TPASS "rename passed."
 		RC=0
         else
-                echo "$TCID   FAIL : rename failed."
+                tst_resm TFAIL "rename failed."
 		RC=1
 	fi
 	return $RC
@@ -180,10 +180,10 @@ test07()
         RC=$?
         if [ $RC -ne 0 ]
         then
-                echo "$TCID   PASS : rename passed."
+                tst_resm TPASS "rename passed."
 		RC=0
         else
-                echo "$TCID   FAIL : rename failed."
+                tst_resm TFAIL "rename failed."
 		RC=1
 	fi
 	return $RC
@@ -202,10 +202,10 @@ test08()
         RC=$?
         if [ $RC -ne 0 ]
         then
-                echo "$TCID   PASS : rename passed."
+                tst_resm TPASS "rename passed."
 		RC=0
         else
-                echo "$TCID   FAIL : rename failed."
+                tst_resm TFAIL "rename failed."
 		RC=1
 	fi
 	return $RC
@@ -223,10 +223,10 @@ test09()
         RC=$?
         if [ $RC -ne 0 ]
         then
-                echo "$TCID   PASS : rename passed."
+                tst_resm TPASS "rename passed."
 		RC=0
         else
-                echo "$TCID   FAIL : rename failed."
+                tst_resm TFAIL "rename failed."
 		RC=1
 	fi
 	return $RC

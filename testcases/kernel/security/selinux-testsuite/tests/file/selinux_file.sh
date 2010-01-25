@@ -17,7 +17,6 @@ setup()
 	export TST_COUNT=0
 	export TST_TOTAL=14
 
-	LTPBIN=${LTPBIN:-$LTPROOT/testcases/bin}
 	SELINUXTMPDIR=$(mktemp -d)
 	chcon -t test_file_t $SELINUXTMPDIR
 
@@ -48,7 +47,7 @@ setup()
 	# 
 	# Change the context of the test executable
 	#
-	chcon -t fileop_exec_t $LTPBIN/selinux_wait_io 2>&1 > /dev/null
+	chcon -t fileop_exec_t ${0%/*}/selinux_wait_io 2>&1 > /dev/null
 
 	#
 	# Get the SID of the good file.
@@ -71,9 +70,9 @@ test01()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   FAIL : file failed."
+		tst_resm TFAIL "file failed."
 	else
-		echo "$TCID   PASS : file passed."
+		tst_resm TPASS "file passed."
 	fi
 	return $RC
 }
@@ -88,9 +87,9 @@ test02()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   FAIL : file failed."
+		tst_resm TFAIL "file failed."
         else
-		echo "$TCID   PASS : file passed."
+		tst_resm TPASS "file passed."
 	fi
 	return $RC
 }
@@ -105,9 +104,9 @@ test03()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   FAIL : file failed."
+		tst_resm TFAIL "file failed."
 	else
-		echo "$TCID   PASS : file passed."
+		tst_resm TPASS "file passed."
 	fi
 	return $RC
 }
@@ -122,9 +121,9 @@ test04()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   FAIL : file failed."
+		tst_resm TFAIL "file failed."
 	else
-		echo "$TCID   PASS : file passed."
+		tst_resm TPASS "file passed."
 	fi
 	return $RC
 }
@@ -139,9 +138,9 @@ test05()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   FAIL : file failed."
+		tst_resm TFAIL "file failed."
 	else
-		echo "$TCID   PASS : file passed."
+		tst_resm TPASS "file passed."
 	fi
 	return $RC
 }
@@ -156,9 +155,9 @@ test06()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   FAIL : file failed."
+		tst_resm TFAIL "file failed."
 	else
-		echo "$TCID   PASS : file passed."
+		tst_resm TPASS "file passed."
 	fi
 	return $RC
 }
@@ -180,16 +179,15 @@ test07()
 
 	# Run testcase in $LTPROOT/testcases/bin directory
 	SAVEPWD=${PWD}
-	cd ${LTPBIN}
-	CURRENTDIR="."
+	cd ${0%/*}
 
-	runcon -t test_fileop_t -- $CURRENTDIR/selinux_sigiotask 2>&1
+	runcon -t test_fileop_t -- selinux_sigiotask 2>&1
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   FAIL : file failed."
+		tst_resm TFAIL "file failed."
 	else
-		echo "$TCID   PASS : file passed."
+		tst_resm TPASS "file passed."
 	fi
 	
 	# return to $LTPROOT directory
@@ -213,10 +211,10 @@ test08()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   PASS : file passed."
+		tst_resm TPASS "file passed."
 		RC=0
 	else
-		echo "$TCID   FAIL : file failed."
+		tst_resm TFAIL "file failed."
 		RC=1
 	fi
 	return $RC
@@ -242,9 +240,9 @@ test09()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   FAIL : file failed."
+		tst_resm TFAIL "file failed."
 	else
-		echo "$TCID   PASS : file passed."
+		tst_resm TPASS "file passed."
 	fi
 	return $RC
 }
@@ -259,10 +257,10 @@ test10()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   PASS : file passed."
+		tst_resm TPASS "file passed."
 		RC=0
 	else
-		echo "$TCID   FAIL : file failed."
+		tst_resm TFAIL "file failed."
 		RC=1
 	fi
 	return $RC
@@ -279,10 +277,10 @@ test11()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   PASS : file passed."
+		tst_resm TPASS "file passed."
 		RC=0
 	else
-		echo "$TCID   FAIL : file failed."
+		tst_resm TFAIL "file failed."
 		RC=1
 	fi
 	return $RC
@@ -299,10 +297,10 @@ test12()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   PASS : file passed."
+		tst_resm TPASS "file passed."
 		RC=0
 	else
-		echo "$TCID   FAIL : file failed."
+		tst_resm TFAIL "file failed."
 		RC=1
 	fi
 	return $RC
@@ -324,9 +322,9 @@ test13()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   FAIL : file failed."
+		tst_resm TFAIL "file failed."
 	else
-		echo "$TCID   PASS : file passed."
+		tst_resm TPASS "file passed."
 	fi
 	return $RC
 }
@@ -349,10 +347,10 @@ test14()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   PASS : file passed."
+		tst_resm TPASS "file passed."
 		RC=0
 	else
-		echo "$TCID   FAIL : file failed."
+		tst_resm TFAIL "file failed."
 		RC=1
 	fi
 	return $RC

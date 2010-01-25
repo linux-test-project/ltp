@@ -33,9 +33,9 @@ test01()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "$TCID   PASS : task_getsid passed."
+		tst_resm TPASS "task_getsid passed."
 	else
-		echo "$TCID   FAIL : task_getsid failed."
+		tst_resm TFAIL "task_getsid failed."
 	fi
 	return $RC
 }
@@ -51,10 +51,10 @@ test02()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   PASS : task_getsid passed."
+		tst_resm TPASS "task_getsid passed."
 		RC=0
 	else
-		echo "$TCID   FAIL : task_getsid failed."
+		tst_resm TFAIL "task_getsid failed."
 		RC=1
 	fi
 	return $RC

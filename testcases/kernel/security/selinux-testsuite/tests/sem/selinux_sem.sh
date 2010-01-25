@@ -31,9 +31,9 @@ test01()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "$TCID   PASS : sem passed."
+		tst_resm TPASS "sem passed."
 	else
-		echo "$TCID   FAIL : sem failed."
+		tst_resm TFAIL "sem failed."
 		return $RC
 	fi
 
@@ -56,9 +56,9 @@ test02()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "$TCID   PASS : sem passed."
+		tst_resm TPASS "sem passed."
 	else
-		echo "$TCID   FAIL : sem failed."
+		tst_resm TFAIL "sem failed."
 	fi
 	return $RC
 }
@@ -73,10 +73,10 @@ test03()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   PASS : sem passed."
+		tst_resm TPASS "sem passed."
 		RC=0 
 	else
-		echo "$TCID   FAIL : sem failed."
+		tst_resm TFAIL "sem failed."
 		RC=1
 	fi
 	return $RC
@@ -93,9 +93,9 @@ test04()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "$TCID   PASS : sem passed."
+		tst_resm TPASS "sem passed."
 	else
-		echo "$TCID   FAIL : sem failed."
+		tst_resm TFAIL "sem failed."
 	fi
 	return $RC
 }
@@ -111,9 +111,9 @@ test05()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "$TCID   PASS : sem passed."
+		tst_resm TPASS "sem passed."
 	else
-		echo "$TCID   FAIL : sem failed."
+		tst_resm TFAIL "sem failed."
 		return $RC
 	fi
 
@@ -136,9 +136,9 @@ test06()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "$TCID   PASS : sem passed."
+		tst_resm TPASS "sem passed."
 	else
-		echo "$TCID   FAIL : sem failed."
+		tst_resm TFAIL "sem failed."
 		return $RC
 	fi
 
@@ -159,10 +159,10 @@ test07()
 	# Make sure they match
 	if [ $ipcid = $ipcid2 ]
 	then
-		echo "$TCID   PASS : sem passed."
+		tst_resm TPASS "sem passed."
 		RC=0
 	else
-		echo "$TCID   FAIL : sem failed."
+		tst_resm TFAIL "sem failed."
 		RC=1
 	fi
 	return $RC
@@ -179,9 +179,9 @@ test08()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "$TCID   PASS : sem passed."
+		tst_resm TPASS "sem passed."
 	else
-		echo "$TCID   FAIL : sem failed."
+		tst_resm TFAIL "sem failed."
 		return $RC
 	fi
 	ipcid=`echo $output | grep -o id\ =\ [0-9]*$ | awk '{ print $NF }'`
@@ -203,10 +203,10 @@ test09()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   PASS : sem passed."
+		tst_resm TPASS "sem passed."
 		RC=0
 	else
-		echo "$TCID   FAIL : sem failed."
+		tst_resm TFAIL "sem failed."
 		RC=1
 	fi
 	return $RC
@@ -233,10 +233,10 @@ test10()
 	# Change this if there is a better way to do this check in shell.
 	if [ $result = "-$number" ]
 	then
-		echo "$TCID   PASS : sem passed."
+		tst_resm TPASS "sem passed."
 		RC=0
 	else
-		echo "$TCID   FAIL : sem failed."
+		tst_resm TFAIL "sem failed."
 		RC=1
 	fi
 	return $RC
@@ -259,10 +259,10 @@ test11()
 	# Change this if there is a better way to do this check in shell.
 	if [ $result = 0 ]
 	then
-		echo "$TCID   PASS : sem passed."
+		tst_resm TPASS "sem passed."
 		RC=0
 	else
-		echo "$TCID   FAIL : sem failed."
+		tst_resm TFAIL "sem failed."
 		RC=1
 	fi
 	return $RC
@@ -282,9 +282,9 @@ test12()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "$TCID   PASS : sem passed."
+		tst_resm TPASS "sem passed."
 	else
-		echo "$TCID   FAIL : sem failed."
+		tst_resm TFAIL "sem failed."
 	fi
 	return $RC
 }
@@ -299,10 +299,10 @@ test13()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   PASS : sem passed."
+		tst_resm TPASS "sem passed."
 		RC=0
 	else
-		echo "$TCID   FAIL : sem failed."
+		tst_resm TFAIL "sem failed."
 		RC=1
 	fi
 	return $RC

@@ -37,9 +37,9 @@ test01()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "$TCID   PASS : capable_file passed."
+		tst_resm TPASS "capable_file passed."
 	else
-		echo "$TCID   FAIL : capable_file failed."
+		tst_resm TFAIL "capable_file failed."
 	fi
 	return $RC
 }
@@ -56,9 +56,9 @@ test02()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then 
-		echo "$TCID   PASS : capable_file passed."
+		tst_resm TPASS "capable_file passed."
 	else
-		echo "$TCID   FAIL : capable_file failed."
+		tst_resm TFAIL "capable_file failed."
 	fi
 	return $RC
 }
@@ -78,10 +78,10 @@ test03()
 	# prior mode should not be same as current mode
 	if [ $MODE_BEFORE -eq $MODE_AFTER ] 
 	then
-		echo "$TCID   FAIL : capable_file failed."
+		tst_resm TFAIL "capable_file failed."
 		RC=1
 	else
-		echo "$TCID   PASS : capable_file passed."
+		tst_resm TPASS "capable_file passed."
 	fi
 	return $RC
 }
@@ -97,9 +97,9 @@ test04()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "$TCID   PASS : capable_file passed."
+		tst_resm TPASS "capable_file passed."
 	else
-		echo "$TCID   FAIL : capable_file failed."
+		tst_resm TFAIL "capable_file failed."
 	fi
 	return $RC
 }
@@ -116,9 +116,9 @@ test05()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "$TCID   PASS : capable_file passed."
+		tst_resm TPASS "capable_file passed."
 	else
-		echo "$TCID   FAIL : capable_file failed."
+		tst_resm TFAIL "capable_file failed."
 	fi
 	return $RC
 }
@@ -138,10 +138,10 @@ test06()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   PASS : capable_file passed."
+		tst_resm TPASS "capable_file passed."
 		RC=0
 	else
-		echo "$TCID   FAIL : capable_file failed."
+		tst_resm TFAIL "capable_file failed."
 		RC=1
 	fi
 	return $RC
@@ -159,10 +159,10 @@ test07()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   PASS : capable_file passed."
+		tst_resm TPASS "capable_file passed."
 		RC=0
 	else
-		echo "$TCID   FAIL : capable_file failed."
+		tst_resm TFAIL "capable_file failed."
 		RC=1
 	fi
 	return $RC
@@ -182,9 +182,9 @@ test08()
 	# prior mode should be same as current mode
 	if [ $MODE_BEFORE -eq $MODE_AFTER ] 
 	then
-		echo "$TCID   PASS : capable_file passed."
+		tst_resm TPASS "capable_file passed."
 	else
-		echo "$TCID   FAIL : capable_file failed."
+		tst_resm TFAIL "capable_file failed."
 	 	RC=1	
 	fi 
 	return $RC
@@ -201,10 +201,10 @@ test09()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   PASS : capable_file passed."
+		tst_resm TPASS "capable_file passed."
 		RC=0
 	else
-		echo "$TCID   FAIL : capable_file failed."
+		tst_resm TFAIL "capable_file failed."
 		RC=1
 	fi
 	return $RC
@@ -221,10 +221,10 @@ test10()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   PASS : capable_file passed."
+		tst_resm TPASS "capable_file passed."
 		RC=0
 	else
-		echo "$TCID   FAIL : capable_file failed."
+		tst_resm TFAIL "capable_file failed."
 		RC=1
 	fi
 	return $RC

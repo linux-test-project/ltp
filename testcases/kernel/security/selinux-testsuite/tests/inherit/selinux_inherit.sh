@@ -44,10 +44,10 @@ test01()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   PASS : inherit passed."
+		tst_resm TPASS "inherit passed."
 		RC=0
 	else
-		echo "$TCID   FAIL : inherit failed."
+		tst_resm TFAIL "inherit failed."
 		RC=1
 	fi
 	return $RC
@@ -67,10 +67,10 @@ test02()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   PASS : inherit passed."
+		tst_resm TPASS "inherit passed."
 		RC=0
 	else
-		echo "$TCID   FAIL : inherit failed."
+		tst_resm TFAIL "inherit failed."
 		RC=1
 	fi
 	return $RC
@@ -89,9 +89,9 @@ test03()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   FAIL : inherit failed."
+		tst_resm TFAIL "inherit failed."
 	else
-		echo "$TCID   PASS : inherit passed."
+		tst_resm TPASS "inherit passed."
 	fi
 	return $RC
 }

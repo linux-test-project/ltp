@@ -31,10 +31,10 @@ test01()
 	RC=$?   # this should fail
         if [ $RC -ne 0 ]
         then
-		echo "$TCID   PASS : entrypoint passed."
+		tst_resm TPASS "entrypoint passed."
 		RC=0
 	else
-		echo "$TCID   FAIL : entrypoint failed."
+		tst_resm TFAIL "entrypoint failed."
 		RC=1
 	fi
 	return $RC
@@ -55,9 +55,9 @@ test02()
 	RC=$?
         if [ $RC -ne 0 ]
         then
-		echo "$TCID   FAIL : entrypoint failed."
+		tst_resm TFAIL "entrypoint failed."
 	else
-		echo "$TCID   PASS : entrypoint passed."
+		tst_resm TPASS "entrypoint passed."
 	fi
 	return $RC
 }

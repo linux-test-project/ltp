@@ -18,8 +18,7 @@ setup()
 	# run tests in $LTPROOT/testcases/bin directory
         SAVEPWD=${PWD}
         cd ${LTPBIN}
-        CURRENTDIR="."
-}
+	export PATH="$PATH:${0%/*}"
 
 test01()
 {
@@ -28,13 +27,12 @@ test01()
 	RC=0
 
 	# Verify that test_wait_parent_t can wait on test_wait_child_t.
-	runcon -t test_wait_parent_t -- $CURRENTDIR/selinux_wait_parent test_wait_child_t $CURRENTDIR/selinux_wait_child 2>&1
+	runcon -t test_wait_parent_t -- selinux_wait_parent test_wait_child_t selinux_wait_child 2>&1
 	RC=$?
-	if [ $RC -eq 0 ]
-	then
-		echo "$TCID   PASS : wait passed."
+	if [ $RC -eq 0 ]; then
+		tst_resm TPASS "wait passed."
 	else
-		echo "$TCID   FAIL : wait failed."
+		tst_resm TFAIL " wait failed."
 	fi
 	return $RC
 }
@@ -46,14 +44,14 @@ test02()
 	RC=0
 
 	# Verify that test_wait_parent_t cannot wait on test_wait_notchild_t.
-	runcon -t test_wait_parent_t -- $CURRENTDIR/selinux_wait_parent test_wait_notchild_t $CURRENTDIR/selinux_wait_child 2>&1
+	runcon -t test_wait_parent_t -- selinux_wait_parent test_wait_notchild_t selinux_wait_child 2>&1
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   PASS : wait passed."
+		tst_resm TPASS "wait passed."
 		RC=0
 	else
-		echo "$TCID   FAIL : wait failed."
+		tst_resm TFAIL " wait failed."
 		RC=1
 	fi
 	return $RC
@@ -75,8 +73,11 @@ cleanup()
 RC=0    # Return value from setup, and test functions.
 EXIT_VAL=0
 
-setup 
-test01 || EXIT_VAL=$RC
-test02 || EXIT_VAL=$RC
-cleanup
+if setup ; then
+	test01 || EXIT_VAL=$RC
+	test02 || EXIT_VAL=$RC
+	cleanup
+else
+	tst_resm TBROK "setup failed"
+fi
 exit $EXIT_VAL

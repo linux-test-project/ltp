@@ -42,9 +42,9 @@ test01()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "$TCID   PASS : fdreceive passed."
+		tst_resm TPASS "fdreceive passed."
 	else
-		echo "$TCID   FAIL : fdreceive failed."
+		tst_resm TFAIL "fdreceive failed."
 	fi
 	return $RC
 }
@@ -63,10 +63,10 @@ test02()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   PASS : fdreceive passed."
+		tst_resm TPASS "fdreceive passed."
 		RC=0
 	else
-		echo "$TCID   FAIL : fdreceive failed."
+		tst_resm TFAIL "fdreceive failed."
 		RC=1
 	fi
 	return $RC
@@ -86,10 +86,10 @@ test03()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   PASS : fdreceive passed."
+		tst_resm TPASS "fdreceive passed."
 		RC=0
 	else
-		echo "$TCID   FAIL : fdreceive failed."
+		tst_resm TFAIL "fdreceive failed."
 		RC=1
 	fi
 	return $RC

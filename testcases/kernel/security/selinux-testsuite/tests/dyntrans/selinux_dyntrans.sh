@@ -28,10 +28,10 @@ test01()
 	RC=$?
 	if [ $RC -ne 0 ]	# we expect this to fail
 	then
-		echo "$TCID   PASS : dyntrans passed."
+		tst_resm TPASS "dyntrans passed."
 		RC=0
 	else
-		echo "$TCID   FAIL : dynstrans failed."
+		tst_resm TFAIL "dynstrans failed."
 		RC=1
 	fi
 	return $RC
@@ -48,9 +48,9 @@ test02()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "$TCID   PASS : dyntrans passed."
+		tst_resm TPASS "dyntrans passed."
 	else
-		echo "$TCID   FAIL : dynstrans failed."
+		tst_resm TFAIL "dynstrans failed."
 	fi
 	return $RC
 }

@@ -31,9 +31,9 @@ test01()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "$TCID   PASS : shm passed."
+		tst_resm TPASS "shm passed."
 	else
-		echo "$TCID   FAIL : shm failed."
+		tst_resm TFAIL "shm failed."
 		return $RC
 	fi
 
@@ -56,9 +56,9 @@ test02()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "$TCID   PASS : shm passed."
+		tst_resm TPASS "shm passed."
 	else
-		echo "$TCID   FAIL : shm failed."
+		tst_resm TFAIL "shm failed."
 	fi
 	return $RC
 }
@@ -74,9 +74,9 @@ test03()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "$TCID   PASS : shm passed."
+		tst_resm TPASS "shm passed."
 	else
-		echo "$TCID   FAIL : shm failed."
+		tst_resm TFAIL "shm failed."
 		return $RC
 	fi
 
@@ -99,9 +99,9 @@ test04()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "$TCID   PASS : shm passed."
+		tst_resm TPASS "shm passed."
 	else
-		echo "$TCID   FAIL : shm failed."
+		tst_resm TFAIL "shm failed."
 		return $RC
 	fi
 
@@ -122,10 +122,10 @@ test05()
 	# Make sure they match
 	if [ $ipcid2 = $ipcid ]
 	then
-		echo "$TCID   PASS : shm passed."
+		tst_resm TPASS "shm passed."
 		RC=0
 	else
-		echo "$TCID   FAIL : shm failed."
+		tst_resm TFAIL "shm failed."
 		RC=1
 	fi
 	return $RC
@@ -142,10 +142,10 @@ test06()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   PASS : shm passed."
+		tst_resm TPASS "shm passed."
 		RC=0
 	else
-		echo "$TCID   FAIL : shm failed."
+		tst_resm TFAIL "shm failed."
 		RC=1	
 	fi
 	return $RC
@@ -175,10 +175,10 @@ test07()
 
         if [ $result = "-$number" ]
         then
-                echo "$TCID   PASS : shm passed."
+                tst_resm TPASS "shm passed."
                 RC=0
         else
-                echo "$TCID   FAIL : shm failed."
+                tst_resm TFAIL "shm failed."
                 RC=1
         fi
 	return $RC
@@ -201,10 +201,10 @@ test08()
         # Change this if there is a better way to do this check in shell.
         if [ $result = 0 ]
         then
-                echo "$TCID   PASS : shm passed."
+                tst_resm TPASS "shm passed."
                 RC=0
         else
-                echo "$TCID   FAIL : shm failed."
+                tst_resm TFAIL "shm failed."
                 RC=1
         fi
 	return $RC
@@ -225,9 +225,9 @@ test09()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "$TCID   PASS : shm passed."
+		tst_resm TPASS "shm passed."
 	else
-		echo "$TCID   FAIL : shm failed."
+		tst_resm TFAIL "shm failed."
 	fi
 	return $RC
 }
@@ -242,10 +242,10 @@ test10()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   PASS : shm passed."
+		tst_resm TPASS "shm passed."
 		RC=0
 	else
-		echo "$TCID   FAIL : shm failed."
+		tst_resm TFAIL "shm failed."
 		RC=1
 	fi
 	return $RC

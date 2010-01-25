@@ -30,9 +30,9 @@ test01()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "$TCID   PASS : msg passed."
+		tst_resm TPASS "msg passed."
 	else
-		echo "$TCID   FAIL : msg failed."
+		tst_resm TFAIL "msg failed."
 	fi
 	return $RC
 }
@@ -55,9 +55,9 @@ test02()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "$TCID   PASS : msg passed."
+		tst_resm TPASS "msg passed."
 	else
-		echo "$TCID   FAIL : msg failed."
+		tst_resm TFAIL "msg failed."
 	fi
 	return $RC
 }
@@ -73,9 +73,9 @@ test03()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "$TCID   PASS : msg passed."
+		tst_resm TPASS "msg passed."
 	else
-		echo "$TCID   FAIL : msg failed."
+		tst_resm TFAIL "msg failed."
 	fi
 	return $RC
 }
@@ -98,7 +98,7 @@ test04()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   FAIL : msg failed."
+		tst_resm TFAIL "msg failed."
 		return $RC
 	fi
 
@@ -113,10 +113,10 @@ test04()
 	# Make sure they match
 	if [ $ipcid2 = $ipcid ]
 	then
-		echo "$TCID   PASS : msg passed"
+		tst_resm TPASS "msg passed"
 		RC=0
 	else
-		echo "$TCID   FAIL : msg failed"
+		tst_resm TFAIL "msg failed"
 		RC=1
 	fi
 	return $RC
@@ -133,9 +133,9 @@ test05()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "$TCID   PASS : msg passed."
+		tst_resm TPASS "msg passed."
 	else
-		echo "$TCID   FAIL : msg failed."
+		tst_resm TFAIL "msg failed."
 	fi
 	return $RC
 }
@@ -151,10 +151,10 @@ test06()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   PASS : msg passed."
+		tst_resm TPASS "msg passed."
 		RC=0 
 	else
-		echo "$TCID   FAIL : msg failed."
+		tst_resm TFAIL "msg failed."
 		RC=1 
 	fi
 	return $RC
@@ -181,10 +181,10 @@ test07()
 	# Change this if there is a better way to do this check in shell.
 	if [ $result = "-$number" ]
 	then
-		echo "$TCID   PASS : msg passed."
+		tst_resm TPASS "msg passed."
 		RC=0 
 	else
-		echo "$TCID   FAIL : msg failed."
+		tst_resm TFAIL "msg failed."
 		RC=1 
 	fi
 	return $RC
@@ -207,10 +207,10 @@ test08()
 	# Change this if there is a better way to do this check in shell.
 	if [ $result = 0 ]
 	then
-		echo "$TCID   PASS : msg passed."
+		tst_resm TPASS "msg passed."
 		RC=0 
 	else
-		echo "$TCID   FAIL : msg failed."
+		tst_resm TFAIL "msg failed."
 		RC=1 
 	fi
 	return $RC
@@ -232,7 +232,7 @@ test09()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   FAIL : msg failed."
+		tst_resm TFAIL "msg failed."
 		return $RC
 	fi
 
@@ -250,7 +250,7 @@ test09()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   FAIL : msg failed."
+		tst_resm TFAIL "msg failed."
 		return $RC
 	fi	
 
@@ -259,9 +259,9 @@ test09()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "$TCID   PASS : msg passed."
+		tst_resm TPASS "msg passed."
 	else
-		echo "$TCID   FAIL : msg failed."
+		tst_resm TFAIL "msg failed."
 	fi	
 	return $RC
 }
@@ -276,9 +276,9 @@ test10()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "$TCID   PASS : msg passed."
+		tst_resm TPASS "msg passed."
 	else
-		echo "$TCID   FAIL : msg failed."
+		tst_resm TFAIL "msg failed."
 	fi	
 	return $RC
 }
@@ -294,10 +294,10 @@ test11()
 	RC=$?
 	if [ $RC -ne 0 ]	#write denied
 	then
-		echo "$TCID   PASS : msg passed."
+		tst_resm TPASS "msg passed."
 		RC=0
 	else
-		echo "$TCID   FAIL : msg failed."
+		tst_resm TFAIL "msg failed."
 		RC=1
 	fi	
 	return $RC
@@ -313,9 +313,9 @@ test12()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "$TCID   PASS : msg passed."
+		tst_resm TPASS "msg passed."
 	else
-		echo "$TCID   FAIL : msg failed."
+		tst_resm TFAIL "msg failed."
 	fi	
 	return $RC
 }
@@ -330,9 +330,9 @@ test13()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "$TCID   PASS : msg passed."
+		tst_resm TPASS "msg passed."
 	else
-		echo "$TCID   FAIL : msg failed."
+		tst_resm TFAIL "msg failed."
 	fi	
 	return $RC
 }
@@ -348,9 +348,9 @@ test14()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "$TCID   PASS : msg passed."
+		tst_resm TPASS "msg passed."
 	else
-		echo "$TCID   FAIL : msg failed."
+		tst_resm TFAIL "msg failed."
 	fi	
 	return $RC
 }
@@ -365,10 +365,10 @@ test15()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   PASS : msg passed."
+		tst_resm TPASS "msg passed."
 		RC=0
 	else
-		echo "$TCID   FAIL : msg failed."
+		tst_resm TFAIL "msg failed."
 		RC=1
 	fi	
 	return $RC

@@ -36,9 +36,9 @@ test01()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   FAIL : capable_sys failed."
+		tst_resm TFAIL "capable_sys failed."
 	else
-		echo "$TCID   PASS : capable_sys passed."
+		tst_resm TPASS "capable_sys passed."
 	fi
 	return $RC
 }
@@ -54,9 +54,9 @@ test02()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   FAIL : capable_sys failed."
+		tst_resm TFAIL "capable_sys failed."
 	else
-		echo "$TCID   PASS : capable_sys passed."
+		tst_resm TPASS "capable_sys passed."
 	fi
 	return $RC
 }
@@ -75,9 +75,9 @@ test03()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   FAIL : capable_sys failed."
+		tst_resm TFAIL "capable_sys failed."
 	else
-		echo "$TCID   PASS : capable_sys passed."
+		tst_resm TPASS "capable_sys passed."
 	fi
 	return $RC
 }
@@ -95,9 +95,9 @@ test04()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   FAIL : capable_sys failed."
+		tst_resm TFAIL "capable_sys failed."
 	else
-		echo "$TCID   PASS : capable_sys passed."
+		tst_resm TPASS "capable_sys passed."
 	fi
 	return $RC
 }
@@ -124,10 +124,10 @@ test05()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   PASS : capable_sys passed."
+		tst_resm TPASS "capable_sys passed."
 		RC=0
 	else
-		echo "$TCID   FAIL : capable_sys failed."
+		tst_resm TFAIL "capable_sys failed."
 		RC=1
 	fi
 	return $RC
@@ -144,10 +144,10 @@ test06()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   PASS : capable_sys passed."
+		tst_resm TPASS "capable_sys passed."
 		RC=0
 	else
-		echo "$TCID   FAIL : capable_sys failed."
+		tst_resm TFAIL "capable_sys failed."
 		RC=1
 	fi
 	return $RC
@@ -164,10 +164,10 @@ test07()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   PASS : capable_sys passed."
+		tst_resm TPASS "capable_sys passed."
 		RC=0
 	else
-		echo "$TCID   FAIL : capable_sys failed."
+		tst_resm TFAIL "capable_sys failed."
 		RC=1
 	fi
 	return $RC
@@ -184,10 +184,10 @@ test08()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   PASS : capable_sys passed."
+		tst_resm TPASS "capable_sys passed."
 		RC=0
 	else
-		echo "$TCID   FAIL : capable_sys failed."
+		tst_resm TFAIL "capable_sys failed."
 		RC=1
 	fi
 	return $RC

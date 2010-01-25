@@ -35,9 +35,9 @@ test01()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "$TCID   PASS : task_setscheduler passed."
+		tst_resm TPASS "task_setscheduler passed."
 	else
-		echo "$TCID   FAIL : task_setscheduler failed."
+		tst_resm TFAIL "task_setscheduler failed."
 	fi
 	return $RC
 }
@@ -53,10 +53,10 @@ test02()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   PASS : task_setscheduler passed."
+		tst_resm TPASS "task_setscheduler passed."
 		RC=0
 	else
-		echo "$TCID   FAIL : task_setscheduler failed."
+		tst_resm TFAIL "task_setscheduler failed."
 		RC=1
 	fi
 	return $RC

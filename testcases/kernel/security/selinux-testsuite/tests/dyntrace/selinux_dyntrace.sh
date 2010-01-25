@@ -35,7 +35,7 @@ test01()
 	then
 		echo "$TCID  PASS : dyntrace passed."
         else
-                echo "$TCID   FAIL : dyntrace failed."
+                tst_resm TFAIL "dyntrace failed."
         fi
         return $RC
 }
@@ -54,10 +54,10 @@ test02()
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
-		echo "$TCID   PASS : dyntrace passed."
+		tst_resm TPASS "dyntrace passed."
 		RC=0
         else
-                echo "$TCID   FAIL : dyntrace failed."
+                tst_resm TFAIL "dyntrace failed."
 		RC=1
         fi
 	return $RC

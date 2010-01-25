@@ -35,9 +35,9 @@ test01()
         RC=$?
         if [ $RC -eq 0 ]
         then
-                echo "$TCID   PASS : stat passed."
+                tst_resm TPASS "stat passed."
         else
-                echo "$TCID   FAIL : stat failed."
+                tst_resm TFAIL "stat failed."
         fi
         return $RC
 }
@@ -53,10 +53,10 @@ test02()
         RC=$?
         if [ $RC -ne 0 ]
         then
-		echo "$TCID   PASS : stat passed."
+		tst_resm TPASS "stat passed."
 		RC=0
         else
-		echo "$TCID   FAIL : stat failed."
+		tst_resm TFAIL "stat failed."
 		RC=1
         fi
 	return $RC

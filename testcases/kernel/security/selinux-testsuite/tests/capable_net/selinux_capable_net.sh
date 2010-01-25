@@ -33,9 +33,9 @@ test01()
         RC=$?
         if [ $RC -ne 0 ]
         then
-                echo "$TCID   FAIL : capable_net failed."
+                tst_resm TFAIL "capable_net failed."
         else
-                echo "$TCID   PASS : capable_net passed."
+                tst_resm TPASS "capable_net passed."
         fi
         return $RC
 }	
@@ -51,9 +51,9 @@ test02()
 	RC=$?
         if [ $RC -ne 0 ]
         then
-                echo "$TCID   FAIL : capable_net failed."
+                tst_resm TFAIL "capable_net failed."
         else
-                echo "$TCID   PASS : capable_net passed."
+                tst_resm TPASS "capable_net passed."
         fi
         return $RC
 }
@@ -72,9 +72,9 @@ test03()
 	RC=$?
         if [ $RC -ne 0 ]
         then
-                echo "$TCID   FAIL : capable_net failed."
+                tst_resm TFAIL "capable_net failed."
         else
-                echo "$TCID   PASS : capable_net passed."
+                tst_resm TPASS "capable_net passed."
         fi
         return $RC
 }
@@ -94,7 +94,7 @@ test04()
 	RC=$?
         if [ $RC -ne 0 ]
         then
-                echo "$TCID   PASS : capable_net passed."
+                tst_resm TPASS "capable_net passed."
 		RC=0
         else
                 echo "$TCID    FAIL : capable_net failed."
@@ -117,10 +117,10 @@ test05()
 	RC=$?
         if [ $RC -ne 0 ]
         then
-                echo "$TCID   PASS : capable_net passed."
+                tst_resm TPASS "capable_net passed."
 		RC=0
         else
-                echo "$TCID   FAIL : capable_net failed."
+                tst_resm TFAIL "capable_net failed."
 		RC=1
         fi
 	return $RC
