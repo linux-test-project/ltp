@@ -14,16 +14,23 @@ setup()
 	export TST_COUNT=0
 	export TST_TOTAL=4
 
-	SELINUXTMPDIR=$(mktemp -d)
-	chcon -t test_file_t $SELINUXTMPDIR
+	if ! SELINUXTMPDIR=$(mktemp -d); then
+		tst_resm TCONF "mktemp -d failed"
+	elif ! chcon -t test_file_t $SELINUXTMPDIR; then
+		tst_resm TCONF "chcon -t test_file_t $SELINUXTMPDIR failed"
+	else
 
-	# Create test files
-	dd if=/dev/zero of=$SELINUXTMPDIR/bounds_file      count=1
-	dd if=/dev/zero of=$SELINUXTMPDIR/bounds_file_red  count=1
-        dd if=/dev/zero of=$SELINUXTMPDIR/bounds_file_blue count=1
-	chcon -t test_bounds_file_t      $SELINUXTMPDIR/bounds_file
-	chcon -t test_bounds_file_red_t  $SELINUXTMPDIR/bounds_file_red
-	chcon -t test_bounds_file_blue_t $SELINUXTMPDIR/bounds_file_blue
+		# Create test files
+		dd if=/dev/zero of=$SELINUXTMPDIR/bounds_file      count=1
+		dd if=/dev/zero of=$SELINUXTMPDIR/bounds_file_red  count=1
+		dd if=/dev/zero of=$SELINUXTMPDIR/bounds_file_blue count=1
+
+		chcon -t test_bounds_file_t      $SELINUXTMPDIR/bounds_file
+		chcon -t test_bounds_file_red_t  $SELINUXTMPDIR/bounds_file_red
+		chcon -t test_bounds_file_blue_t $SELINUXTMPDIR/bounds_file_blue
+
+	fi
+
 }
 
 test01()
@@ -37,9 +44,9 @@ test01()
 	RC=$?
 	if [ $RC -eq 0 ];
 	then
-		echo "$TCID   PASS : thread dyntrans passed."
+		tst_resm TPASS "thread dyntrans passed."
 	else
-		echo "$TCID   FAIL : thread dynstrans failed."
+		tst_resm TFAIL "thread dynstrans failed."
 	fi
 	return $RC
 }
@@ -55,10 +62,10 @@ test02()
 	RC=$?
 	if [ $RC -ne 0 ];	# we expect this to fail
 	then
-		echo "$TCID   PASS : thread dyntrans to unbound domain failed."
+		tst_resm TPASS "thread dyntrans to unbound domain failed."
 		RC=0
 	else
-		echo "$TCID   FAIL : thread dyntrans to unbound domain succeeded."
+		tst_resm TFAIL "thread dyntrans to unbound domain succeeded."
 		RC=1
 	fi
 	return $RC
@@ -75,9 +82,9 @@ test03()
 	RC=$?
 	if [ $RC -eq 0 ];
 	then
-		echo "$TCID   PASS : unbounded action to be allowed."
+		tst_resm TPASS "unbounded action to be allowed."
 	else
-		echo "$TCID   FAIL : unbounded action to be allowed."
+		tst_resm TFAIL "unbounded action to be allowed."
 	fi
 	return $RC
 }
@@ -93,10 +100,10 @@ test04()
 	RC=$?
 	if [ $RC -ne 0 ];	# we expect this to fail
 	then
-		echo "$TCID   PASS : bounded action to be denied."
+		tst_resm TPASS "bounded action to be denied."
 		RC=0
 	else
-		echo "$TCID   FAIL : bounded action to be denied."
+		tst_resm TFAIL "bounded action to be denied."
 		RC=1
 	fi
 	return $RC
@@ -113,10 +120,10 @@ test05()
 	RC=$?
 	if [ $RC -ne 0 ];	# we expect this to fail
 	then
-		echo "$TCID   PASS : actions to bounded type to be denied."
+		tst_resm TPASS "actions to bounded type to be denied."
 		RC=0
 	else
-		echo "$TCID   FAIL : actions to bounded type to be denied."
+		tst_resm TFAIL "actions to bounded type to be denied."
 		RC=1
 	fi
 	return $RC
@@ -132,9 +139,9 @@ test06()
 	RC=$?
 	if [ $RC -eq 0 ];
 	then
-		echo "$TCID   PASS : bounds of subject can setattr bounds of target"
+		tst_resm TPASS "bounds of subject can setattr bounds of target"
 	else
-		echo "$TCID   FAIL : bounds of subject can setattr bounds of target"
+		tst_resm TFAIL "bounds of subject can setattr bounds of target"
 	fi
 	return $RC
 }
@@ -154,12 +161,17 @@ cleanup()
 RC=0	# Return value from setup, and test functions.
 EXIT_VAL=0
 
-setup
-test01 || EXIT_VAL=$RC
-test02 || EXIT_VAL=$RC
-test03 || EXIT_VAL=$RC
-test04 || EXIT_VAL=$RC
-test05 || EXIT_VAL=$RC
-test06 || EXIT_VAL=$RC
-cleanup
+if setup ; then
+	i=1
+	while [ $i -le 6 ] ; do
+		if ! eval "test0$i"; then
+			 : $(( EXIT_VAL |= $RC ))
+		fi
+		: $(( i += 1 ))
+	done
+	cleanup
+else
+	tst_resm TCONF "setup failed"
+	EXIT_VAL=1
+fi
 exit $EXIT_VAL

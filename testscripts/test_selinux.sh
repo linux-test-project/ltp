@@ -10,16 +10,16 @@
 # test_selinux.sh - Run the selinux test suite.
 
 config_set_expandcheck() {
-	pushd /etc/selinux
+	pushd /etc/selinux > /dev/null
 	cp --preserve semanage.conf semanage.conf.orig
 	echo "expand-check=0" >> semanage.conf
-	popd
+	popd > /dev/null
 }
 
 config_unset_expandcheck() {
-	pushd /etc/selinux
+	pushd /etc/selinux > /dev/null
 	mv semanage.conf.orig semanage.conf
-	popd
+	popd > /dev/null
 }
 
 config_allow_domain_fd_use () {
@@ -31,9 +31,8 @@ config_allow_domain_fd_use () {
 }
 
 # Must be root to run the selinux testsuite
-if [ $(id -ru) -ne 0 ]
-then
-        echo "FAILED: Must be root to execute this script"
+if [ $(id -ru) -ne 0 ]; then
+        echo "${0##*/} FAILED: Must be root to execute this script"
         exit 1
 fi
 
@@ -89,14 +88,14 @@ config_set_expandcheck
 config_allow_domain_fd_use 0
 
 # install the test policy...
-echo "installing test_policy module..."
+echo "Installing test_policy module..."
 cd $POLICYDIR
 if ! semodule -i $POLICYDIR/test_policy.pp; then
 	echo "Failed to install test_policy module, aborting test run."
 	config_unset_expandcheck
 	exit 1
 else
-	echo "Successfully built and loaded test_policy module."
+	echo "Successfully loaded test_policy module."
 fi
 
 config_unset_expandcheck
@@ -115,8 +114,10 @@ export SELINUXTMPDIR=$TMP/selinux
 SAVEBINTYPE=`ls -Zd $LTPROOT/testcases/bin | awk '{ print $4 }' | awk -F: '{ print $3 }'`
 /usr/bin/chcon -t test_file_t $LTPROOT/testcases/bin
 
-$LTPROOT/bin/ltp-pan -S -a $LTPROOT/results/selinux -n ltp-selinux -l $LTPROOT/results/selinux.logfile -o $LTPROOT/results/selinux.outfile -p -f $LTPROOT/runtest/selinux  
-
+$LTPROOT/bin/ltp-pan -S -a $LTPROOT/results/selinux -n ltp-selinux \
+	-l $LTPROOT/results/selinux.logfile \
+	-o $LTPROOT/results/selinux.outfile -p \
+	-f $LTPROOT/runtest/selinux
 # cleanup before exiting    
 
 rm -rf $TMP/selinux
@@ -133,5 +134,4 @@ fi
 
 config_allow_domain_fd_use 1
 
-cd $LTPROOT
 echo "Done."
