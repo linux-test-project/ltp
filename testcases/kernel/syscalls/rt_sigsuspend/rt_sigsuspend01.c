@@ -18,12 +18,12 @@
 /******************************************************************************	*/
 /******************************************************************************	*/
 /*                                                                            	*/
-/* File:        rt_sigsuspend01.c                                           	*/
+/* File:        rt_sigsuspend01.c                                           	      	*/
 /*                                                                            	*/
-/* Description: This tests the rt_sigsuspend() syscall.                      	*/
+/* Description: This tests the rt_sigsuspend() syscall.                      	      	*/
 /*		                                                               	*/
 /* Usage:  <for command-line>                                                 	*/
-/* rt_sigsuspend01 [-c n] [-e][-i n] [-I x] [-p x] [-t]                     	*/
+/* rt_sigsuspend01 [-c n] [-e][-i n] [-I x] [-p x] [-t]                     		*/
 /*      where,  -c n : Run n copies concurrently.                             	*/
 /*              -e   : Turn on errno logging.                                 	*/
 /*              -i n : Execute test n times.                                  	*/
@@ -33,14 +33,10 @@
 /*                                                                            	*/
 /* Total Tests: 2                                                             	*/
 /*                                                                            	*/
-/* Test Name:   rt_sigsuspend01                                             	*/
+/* Test Name:   rt_sigsuspend01                                             		*/
 /* History:     Porting from Crackerjack to LTP is done by                    	*/
 /*              Manas Kumar Nayak maknayak@in.ibm.com>                        	*/
 /********************************************************************************/
-
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif
 
 #include <stdio.h>
 #include <signal.h>
@@ -50,16 +46,15 @@
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
-#include "ltp_signal.h"
 
 /* Extern Global Variables */
-extern int Tst_count;            /* counter for tst_xxx routines.         */
-extern char *TESTDIR;            /* temporary dir created by tst_tmpdir() */
+extern int Tst_count;           /* counter for tst_xxx routines.         */
+extern char *TESTDIR;           /* temporary dir created by tst_tmpdir() */
 
 /* Global Variables */
 char *TCID = "rt_sigsuspend01";  /* Test program identifier.*/
 int  testno;
-int  TST_TOTAL = 4;              /* total number of tests in this file.   */
+int  TST_TOTAL =4;                   /* total number of tests in this file.   */
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -69,20 +64,23 @@ int  TST_TOTAL = 4;              /* total number of tests in this file.   */
 /* Description: Performs all one time clean up for this test on successful    */
 /*              completion,  premature exit or  failure. Closes all temporary */
 /*              files, removes all temporary directories exits the test with  */
-/*              appropriate return code by calling tst_exit() function.       */
+/*              appropriate TEST_RETURNurn code by calling tst_exit() function.       */
 /*                                                                            */
 /* Input:       None.                                                         */
 /*                                                                            */
 /* Output:      None.                                                         */
 /*                                                                            */
-/* Return:      On failure - Exits calling tst_exit(). Non '0' return code.   */
-/*              On success - Exits calling tst_exit(). With '0' return code.  */
+/* Return:      On failure - Exits calling tst_exit(). Non '0' TEST_RETURNurn code.   */
+/*              On success - Exits calling tst_exit(). With '0' TEST_RETURNurn code.  */
 /*                                                                            */
 /******************************************************************************/
-void cleanup() {
-	/* Remove tmp dir and all files in it */
-	TEST_CLEANUP;
-	tst_rmdir();
+extern void cleanup() {
+        /* Remove tmp dir and all files in it */
+        TEST_CLEANUP;
+        tst_rmdir();
+
+        /* Exit with appropriate TEST_RETURNurn code. */
+        tst_exit();
 }
 
 /* Local  Functions */
@@ -100,14 +98,14 @@ void cleanup() {
 /* Output:      None.                                                         */
 /*                                                                            */
 /* Return:      On failure - Exits by calling cleanup().                      */
-/*              On success - Returns 0.					      */
+/*              On success - TEST_RETURNurns 0.                                       */
 /*                                                                            */
 /******************************************************************************/
 void setup() {
-/* Capture signals if any */
-/* Create temporary directories */
-TEST_PAUSE;
-tst_tmpdir();
+        /* Capture signals if any */
+        /* Create temporary directories */
+        TEST_PAUSE;
+        tst_tmpdir();
 }
 
 
@@ -120,55 +118,70 @@ void sig_handler(int sig)
 int main(int ac, char **av) {
 	
 	sigset_t set, set1, set2;
-	char *msg;		/* message returned from parse_opts */
+	int lc;                 /* loop counter */
+        char *msg;              /* message TEST_RETURNurned from parse_opts */
 	
-	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
-		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
-	}
+        /* parse standard options */
+        if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+             tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+             tst_exit();
+           }
 
-	setup();
+        setup();
 
-	Tst_count = 0;
-	TEST(sigemptyset(&set));
-	if (TEST_RETURN == -1){
-		tst_brkm(TFAIL | TTERRNO, cleanup, "sigemptyset() failed");
-	}
-	struct sigaction act, oact;
-	act.sa_handler = sig_handler;
+        /* Check looping state if -i option given */
+        for (lc = 0; TEST_LOOPING(lc); ++lc) {
+                Tst_count = 0;
+                for (testno = 0; testno < TST_TOTAL; ++testno) {
+			TEST(sigemptyset(&set));
+			if(TEST_RETURN == -1){
+				tst_resm(TFAIL,"sigemptyset() Failed, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
+				cleanup();
+				tst_exit();
+			}
+			struct sigaction act, oact;
+		        act.sa_handler = sig_handler;
 			
-	TEST(syscall(__NR_rt_sigaction, SIGALRM, &act, &oact, SIGSETSIZE));
-	if (TEST_RETURN == -1){
-	       	tst_brkm(TFAIL | TTERRNO, cleanup, "rt_sigaction() failed");
-	}
-	TEST(syscall(__NR_rt_sigprocmask, SIG_UNBLOCK, 0, &set1, SIGSETSIZE));
-	if (TEST_RETURN == -1){
-		tst_brkm(TFAIL | TTERRNO, cleanup, "rt_sigprocmask() failed");
-		cleanup();
-		tst_exit();
-	}
+			TEST(syscall(__NR_rt_sigaction, SIGALRM, &act, &oact, 8));
+			if(TEST_RETURN == -1){
+		        	tst_resm(TFAIL,"rt_sigaction() Failed, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
+				cleanup();
+				tst_exit();
+			}
+			TEST(syscall(__NR_rt_sigprocmask, SIG_UNBLOCK, 0, &set1, 8));
+			if(TEST_RETURN == -1){
+		        	tst_resm(TFAIL,"rt_sigprocmask() Failed, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
+				cleanup();
+				tst_exit();
+			}
 			
-	TEST(alarm(5));
-	int result;
-	TEST(result = syscall(__NR_rt_sigsuspend, &set, SIGSETSIZE));
-	TEST(alarm(0));
-	if (result == -1 && TEST_ERRNO != EINTR) {
-		TEST(syscall(__NR_rt_sigprocmask, SIG_UNBLOCK, 0, &set2,
-				SIGSETSIZE));
-		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL | TTERRNO, "rt_sigprocmask() failed");
-		} else if (set1.__val[0] != set2.__val[0]) {
-			tst_resm(TFAIL | TTERRNO,
-				"rt_sigsuspend failed to preserve signal mask");
-	        } else {
-			tst_resm(TPASS, "rt_sigsuspend PASSED");
-		}
-	} else {
-		tst_resm(TFAIL | TTERRNO, "rt_sigsuspend failed");
-	}
-
+			TEST(alarm(5));
+		        int result;
+			TEST(result = syscall(__NR_rt_sigsuspend, &set, 8));
+		        TEST(alarm(0));
+			if((result == -1) && (TEST_ERRNO != EINTR)){
+				TEST(syscall(__NR_rt_sigprocmask, SIG_UNBLOCK, 0, &set2, 8));
+				if(TEST_RETURN == -1){
+		        		tst_resm(TFAIL,"rt_sigprocmask() Failed, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
+					cleanup();
+					tst_exit();
+				} else if(set1.__val[0] != set2.__val[0]){
+		                        tst_resm(TFAIL," rt_sigsuspend failed to preserve signal mask,errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
+					cleanup();
+					tst_exit();
+			        } else {
+		                        tst_resm(TPASS,"rt_sigsuspend PASSED");
+		                }
+		        }else{
+		             tst_resm(TFAIL," rt_sigsuspend failed ,errrno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
+	                     cleanup();
+			     tst_exit();
+			}
+		
+	
+                }
+	 }
 	cleanup();
-	tst_exit();
-
+        tst_exit();
 }
+
