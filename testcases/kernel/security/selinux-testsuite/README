@@ -76,41 +76,6 @@ The 'selinux.outfile' contains all test output. View this file
 if you want more detailed information about each testcase's execution.
 
 
-Run Individual Testcases
---------------------------
-First build the test policy manually. Do this by first changing 
-to the $POLICYDIR directory and build the policy by doing:
-	make load
-
-This will build and install the test policy files. Once the 
-policy has been installed, individual testcases can be run. 
-To run an individual selinux testcase, change to the tests directory 
-(cd to $LTPROOT/testcases/kernel/security/selinux-testsuite/tests)
-and execute,
-	runtest.sh <testcase>
-	<testcase> - names one of the directories off of the
-	selinux-testsuite/tests diretcory. For example, 
-				runtest.sh capable_file
-				runtest.sh capable_net
-				runtest.sh entrypoint
-				runtest.sh task_create
-
-Most output, errors, and whether testcases have failed or succeeded 
-will be sent to standard output for viewing.
-
-To debug a test and get more detailed information,
-a "set -x" can be added to the top of the *.sh file in the 
-testcase directory of the testcase being debugged.	
-
-To remove the test policy and restore original policy, run:
-        cd $POLICYDIR && make cleanup
-
-Remember to remove test policy and restore original policy after
-running/debugging individual testcases and it is desired to restore
-system policy. None of the testscripts will do this for you when 
-running in "individual" mode.
-
-
 Kernel Configuration
 --------------------
 
