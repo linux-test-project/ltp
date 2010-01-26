@@ -47,7 +47,7 @@ setup()
 	# 
 	# Change the context of the test executable
 	#
-	chcon -t fileop_exec_t ${0%/*}/selinux_wait_io 2>&1 > /dev/null
+	chcon -t fileop_exec_t selinux_wait_io 2>&1 > /dev/null
 
 	#
 	# Get the SID of the good file.

@@ -16,7 +16,7 @@ setup()
 	export TST_TOTAL=2
 
 	# Start the target process.
-	runcon -t test_getpgid_target_t selinux_task_getpgid_target &
+	runcon -t test_getpgid_target_t "${0%/*}/selinux_task_getpgid_target" &
 	PID=$!
 
 	# Give it a second to start
@@ -31,7 +31,7 @@ test01()
 
 	# Verify that test_getpgid_yes_t can get the 
 	# target's process group ID.
-	runcon -t test_getpgid_yes_t -- selinux_task_getpgid_source $PID 2>&1
+	runcon -t test_getpgid_yes_t -- "${0%/*}/selinux_task_getpgid_source" $PID 2>&1
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
@@ -50,7 +50,7 @@ test02()
 
 	# Verify that test_getpgid_no_t cannot get the
 	#  target's process group ID.
-	runcon -t test_getpgid_no_t -- selinux_task_getpgid_source $PID 2>&1
+	runcon -t test_getpgid_no_t -- "${0%/*}/selinux_task_getpgid_source" $PID 2>&1
 	RC=$?
 	if [ $RC -ne 0 ]
 	then

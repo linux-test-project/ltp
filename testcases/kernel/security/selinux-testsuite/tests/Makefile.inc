@@ -24,8 +24,6 @@ CURDIR_DIRNAME		:= $(lastword $(subst /, ,$(abs_srcdir)))
 
 LDLIBS			+= -lselinux -lpthread
 
-INSTALL_DIR		:= testcases/bin/kernel/security/selinux-testsuite/tests
-
 INSTALL_TARGETS		:= selinux_$(CURDIR_DIRNAME)*.sh
 
 # vim: syntax=make

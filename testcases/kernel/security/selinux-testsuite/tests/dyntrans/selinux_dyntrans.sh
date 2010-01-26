@@ -24,7 +24,7 @@ test01()
 
 	# Verify that notfromdomain cannot transition to todomain.
 	# Should fail on the transition permission check.
-	runcon -t test_dyntrans_notfromdomain_t -- selinux_dyntrans_parent test_dyntrans_todomain_t 2>&1
+	runcon -t test_dyntrans_notfromdomain_t -- "selinux_dyntrans_parent" test_dyntrans_todomain_t 2>&1
 	RC=$?
 	if [ $RC -ne 0 ]	# we expect this to fail
 	then
@@ -44,7 +44,7 @@ test02()
         RC=0
 
 	# Verify that fromdomain can transition to todomain.
-	runcon -t test_dyntrans_fromdomain_t -- selinux_dyntrans_parent test_dyntrans_todomain_t 2>&1
+	runcon -t test_dyntrans_fromdomain_t -- "selinux_dyntrans_parent" test_dyntrans_todomain_t 2>&1
 	RC=$?
 	if [ $RC -eq 0 ]
 	then

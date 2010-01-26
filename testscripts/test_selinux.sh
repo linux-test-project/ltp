@@ -112,7 +112,8 @@ export SELINUXTMPDIR=$TMP/selinux
 # The ../testcases/bin directory needs to have the test_file_t type.
 # Save and restore later.
 SAVEBINTYPE=`ls -Zd $LTPROOT/testcases/bin | awk '{ print $4 }' | awk -F: '{ print $3 }'`
-/usr/bin/chcon -t test_file_t $LTPROOT/testcases/bin
+/usr/bin/chcon -t test_file_t	$LTPROOT/testcases/bin \
+				$(awk '$1 !~ /^#/ { print $2 }' "$LTPROOT/runtest/selinux")
 
 $LTPROOT/bin/ltp-pan -S -a $LTPROOT/results/selinux -n ltp-selinux \
 	-l $LTPROOT/results/selinux.logfile \

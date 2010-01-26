@@ -18,7 +18,7 @@ setup()
 	# run tests in $LTPROOT/testcases/bin directory
         SAVEPWD=${PWD}
         cd ${LTPBIN}
-	export PATH="$PATH:${0%/*}"
+}
 
 test01()
 {
@@ -27,7 +27,7 @@ test01()
 	RC=0
 
 	# Verify that test_wait_parent_t can wait on test_wait_child_t.
-	runcon -t test_wait_parent_t -- selinux_wait_parent test_wait_child_t selinux_wait_child 2>&1
+	runcon -t test_wait_parent_t -- selinux_wait_parent test_wait_child_t "selinux_wait_child" 2>&1
 	RC=$?
 	if [ $RC -eq 0 ]; then
 		tst_resm TPASS "wait passed."
@@ -44,7 +44,7 @@ test02()
 	RC=0
 
 	# Verify that test_wait_parent_t cannot wait on test_wait_notchild_t.
-	runcon -t test_wait_parent_t -- selinux_wait_parent test_wait_notchild_t selinux_wait_child 2>&1
+	runcon -t test_wait_parent_t -- selinux_wait_parent test_wait_notchild_t "selinux_wait_child" 2>&1
 	RC=$?
 	if [ $RC -ne 0 ]
 	then
