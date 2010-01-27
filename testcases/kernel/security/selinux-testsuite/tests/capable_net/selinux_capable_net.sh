@@ -97,7 +97,7 @@ test04()
                 tst_resm TPASS "capable_net passed."
 		RC=0
         else
-                echo "$TCID    FAIL : capable_net failed."
+                tst_resm TFAIL "capable_net failed."
 		RC=1
         fi
 	return $RC
