@@ -33,7 +33,7 @@ test01()
 	RC=$?
 	if [ $RC -eq 0 ]
 	then
-		echo "$TCID  PASS : dyntrace passed."
+		tst_resm TPASS "dyntrace passed."
         else
                 tst_resm TFAIL "dyntrace failed."
         fi
