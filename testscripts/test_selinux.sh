@@ -40,7 +40,7 @@ fi
 LTPROOT=${LTPROOT:=${0%/*}}
 cd "$LTPROOT"
 export TMP=${TMP:-/tmp}
-# If we're in the testscripts directory, go down a dir..
+# If we're in the testscripts directory, go up a dir..
 LTPROOT_TMP=${LTPROOT%/testscripts}
 if [ "x${LTPROOT_TMP}" != "x${LTPROOT}" ]
 then
@@ -89,7 +89,6 @@ config_allow_domain_fd_use 0
 
 # install the test policy...
 echo "Installing test_policy module..."
-cd $POLICYDIR
 if ! semodule -i $POLICYDIR/test_policy.pp; then
 	echo "Failed to install test_policy module, aborting test run."
 	config_unset_expandcheck
@@ -100,9 +99,6 @@ fi
 
 config_unset_expandcheck
 
-# go back to test's root directory
-cd $LTPROOT
-
 echo "Running the SELinux testsuite..."
 
 mkdir $TMP/selinux > /dev/null 2>&1
@@ -112,8 +108,7 @@ export SELINUXTMPDIR=$TMP/selinux
 # The ../testcases/bin directory needs to have the test_file_t type.
 # Save and restore later.
 SAVEBINTYPE=`ls -Zd $LTPROOT/testcases/bin | awk '{ print $4 }' | awk -F: '{ print $3 }'`
-/usr/bin/chcon -t test_file_t	$LTPROOT/testcases/bin \
-				$(awk '$1 !~ /^#/ { print $2 }' "$LTPROOT/runtest/selinux")
+/usr/bin/chcon -R -t test_file_t "$LTPROOT/testcases/bin"
 
 $LTPROOT/bin/ltp-pan -S -a $LTPROOT/results/selinux -n ltp-selinux \
 	-l $LTPROOT/results/selinux.logfile \
@@ -127,7 +122,6 @@ rm -rf $TMP/selinux
 /usr/bin/chcon -R -t $SAVEBINTYPE $LTPROOT/testcases/bin
 
 echo "Removing test_policy module..."
-cd $POLICYDIR
 if ! semodule -r test_policy; then
 	echo "Failed to remove test_policy module."
 	exit 1
