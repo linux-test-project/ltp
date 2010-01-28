@@ -28,12 +28,12 @@ set -e
 # 0. Setup the environment.
 setup_env
 # 1. Pull the SCM.
-pull_scm "$srcdir"
+pull_scm cvs "$tmp_srcdir"
 # 2. Configure.
 configure "$srcdir" "$srcdir" "$prefix" "$destdir"
 # 3. -->> Compile out-of-build-tree. <<--
 build "$srcdir" "$srcdir"
 # 4. Install.
-install "$srcdir" "$srcdir" "$destdir"
+install_ltp "$srcdir" "$srcdir" "$destdir"
 # 5. Test.
 test_ltp "$install_dir"
