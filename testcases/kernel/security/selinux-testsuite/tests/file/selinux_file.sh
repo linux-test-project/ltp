@@ -17,42 +17,54 @@ setup()
 	export TST_COUNT=0
 	export TST_TOTAL=14
 
+	LTPBIN=${LTPBIN:-$LTPROOT/testcases/bin}
 	SELINUXTMPDIR=$(mktemp -d)
 	chcon -t test_file_t $SELINUXTMPDIR
 
-	#
-	# Create the temp files
-	#
-	dd if=/dev/zero of=$SELINUXTMPDIR/temp_file count=2 ibs=1024 2>&1 > /dev/null
-	dd if=/dev/zero of=$SELINUXTMPDIR/temp_file2 count=2 ibs=1024 2>&1 > /dev/null
-	dd if=/dev/zero of=$SELINUXTMPDIR/temp_file3 count=2 ibs=1024 2>&1 > /dev/null
-	chmod 775 $SELINUXTMPDIR/temp_file 2>&1 > /dev/null
-	chmod 775 $SELINUXTMPDIR/temp_file2 2>&1 > /dev/null
+	if SELINUXTMPDIR=$(mktemp -d); then
 
-	#
-	# Change the context for the file the good domain only has access to.
-	#
-	chcon -t fileop_file_t $SELINUXTMPDIR/temp_file 2>&1 > /dev/null
+		chcon -t test_file_t $SELINUXTMPDIR
 
-	#
-	# Change the context for the r/w file for the bad domain
-	#
-	chcon -t nofileop_rw_file_t $SELINUXTMPDIR/temp_file2 2>&1 > /dev/null
+		#
+		# Create the temp files
+		#
+		dd if=/dev/zero of=$SELINUXTMPDIR/temp_file count=2 ibs=1024 2>&1 > /dev/null
+		dd if=/dev/zero of=$SELINUXTMPDIR/temp_file2 count=2 ibs=1024 2>&1 > /dev/null
+		dd if=/dev/zero of=$SELINUXTMPDIR/temp_file3 count=2 ibs=1024 2>&1 > /dev/null
+		chmod 775 $SELINUXTMPDIR/temp_file 2>&1 > /dev/null
+		chmod 775 $SELINUXTMPDIR/temp_file2 2>&1 > /dev/null
 
-	#
-	# Change the context for the read-only access file for the bad domain
-	#
-	chcon -t nofileop_ra_file_t $SELINUXTMPDIR/temp_file3 2>&1 > /dev/null
+		#
+		# Change the context for the file the good domain only has access to.
+		#
+		chcon -t fileop_file_t $SELINUXTMPDIR/temp_file 2>&1 > /dev/null
 
+		#
+		# Change the context for the r/w file for the bad domain
+		#
+		chcon -t nofileop_rw_file_t $SELINUXTMPDIR/temp_file2 2>&1 > /dev/null
+
+		#
+		# Change the context for the read-only access file for the bad domain
+		#
+		chcon -t nofileop_ra_file_t $SELINUXTMPDIR/temp_file3 2>&1 > /dev/null
+
+		# 
+		# Change the context of the test executable
+		#
+		chcon -t fileop_exec_t $LTPBIN/selinux_wait_io 2>&1 > /dev/null
+
+		#
+		# Get the SID of the good file.
+		#
+		good_file_sid=`ls -Z $SELINUXTMPDIR/temp_file | awk '{print $4}'`
+
+	fi
 	# 
 	# Change the context of the test executable
 	#
 	chcon -t fileop_exec_t selinux_wait_io 2>&1 > /dev/null
 
-	#
-	# Get the SID of the good file.
-	#
-	good_file_sid=`ls -Z $SELINUXTMPDIR/temp_file | awk '{print $4}'`
 }
 
 test01()
@@ -372,20 +384,21 @@ cleanup()
 RC=0    # Return value from setup, and test functions.
 EXIT_VAL=0
 
-setup  
-test01 || EXIT_VAL=$RC
-test02 || EXIT_VAL=$RC
-test03 || EXIT_VAL=$RC
-test04 || EXIT_VAL=$RC
-test05 || EXIT_VAL=$RC
-test06 || EXIT_VAL=$RC
-test07 || EXIT_VAL=$RC
-test08 || EXIT_VAL=$RC
-test09 || EXIT_VAL=$RC
-test10 || EXIT_VAL=$RC
-test11 || EXIT_VAL=$RC
-test12 || EXIT_VAL=$RC
-test13 || EXIT_VAL=$RC
-test14 || EXIT_VAL=$RC
-cleanup
+if setup ; then
+	test01 || EXIT_VAL=$RC
+	test02 || EXIT_VAL=$RC
+	test03 || EXIT_VAL=$RC
+	test04 || EXIT_VAL=$RC
+	test05 || EXIT_VAL=$RC
+	test06 || EXIT_VAL=$RC
+	test07 || EXIT_VAL=$RC
+	test08 || EXIT_VAL=$RC
+	test09 || EXIT_VAL=$RC
+	test10 || EXIT_VAL=$RC
+	test11 || EXIT_VAL=$RC
+	test12 || EXIT_VAL=$RC
+	test13 || EXIT_VAL=$RC
+	test14 || EXIT_VAL=$RC
+	cleanup
+fi
 exit $EXIT_VAL 
