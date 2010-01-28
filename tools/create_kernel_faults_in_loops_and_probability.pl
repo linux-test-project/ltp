@@ -79,7 +79,7 @@ while ($line = <FILE>) {
 			}
 			if ($token_counter == 1 && $counter == 1) {
 				#Time to include the fault injection script in the first loop
-				print "\$LTPROOT/tools/insert_kernel_faults.sh " . $failure_probability . "; " . $token;
+				print "\$LTPROOT/bin/insert_kernel_faults.sh " . $failure_probability . "; " . $token;
 				$token_counter++;
 				next;
 			}
@@ -89,7 +89,7 @@ while ($line = <FILE>) {
 			#Time to withdraw the faults once the last loop has been executed
 			#Until all faults has been successfully restored to default values...
 			#Keep restoring them
-			print "; " . "\$LTPROOT/tools/restore_kernel_faults_default.sh; RC=\$?; while [ \$RC -ne 0 ]; do \$LTPROOT/tools/restore_kernel_faults_default.sh; RC=\$?; done\n"
+			print "; " . "\$LTPROOT/bin/restore_kernel_faults_default.sh; RC=\$?; while [ \$RC -ne 0 ]; do \$LTPROOT/bin/restore_kernel_faults_default.sh; RC=\$?; done\n"
 		} else {
 			print "\n"
 		}
