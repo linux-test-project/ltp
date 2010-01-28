@@ -40,7 +40,7 @@ int main(int argc, char **argv)
 		return 1;
 
 	buf = shmat(id, 0, 0);
-	error = (*buf == -1) ? -1 : 0;
+	error = (buf == (void*) -1) ? -1 : 0;
 	printf("shmat: buf=%p, returned %d\n", buf, error);
 	return error;
 }
