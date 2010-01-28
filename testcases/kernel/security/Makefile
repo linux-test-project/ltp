@@ -30,8 +30,8 @@ ifeq ($(strip $(CAP_LIBS)),)
 FILTER_OUT_DIRS		:= cap_bound filecaps
 endif
 
-# Omit the selinux-testsuite if -lselinux is missing and the policy-devel code
-# is present.
+# Omit the selinux-testsuite if -lselinux is missing or the policy-devel
+# package isn't present.
 ifneq ($(strip $(SELINUX_LIBS)),)
 FILTER_OUT_DIRS		+= selinux-testsuite
 else
