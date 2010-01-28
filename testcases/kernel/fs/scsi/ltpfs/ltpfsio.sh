@@ -83,7 +83,7 @@ mount -v /dev/$part1 /test/growfiles/ext2
 
 
 echo "************ Running tests " 
-${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/ltpfs.part1 > ${TMPBASE}/ltpfs.part1
+${LTPROOT}/bin/rand_lines -g ${LTPROOT}/runtest/ltpfs.part1 > ${TMPBASE}/ltpfs.part1
 
 ${LTPROOT}/pan/pan -e -S -a ltpfspart1 -n ltpfspart1 -l lvmlogfile -f ${TMPBASE}/ltpfs.part1 &
 
@@ -95,7 +95,7 @@ mkfs.xfs -f   /dev/$part1
 mount -v /dev/$part1 /test/growfiles/xfs                             
 
 
-${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/ltpfs.part2 > ${TMPBASE}/ltpfs.part2
+${LTPROOT}/bin/rand_lines -g ${LTPROOT}/runtest/ltpfs.part2 > ${TMPBASE}/ltpfs.part2
 
 ${LTPROOT}/pan/pan -e -S -a ltpfspart2 -n ltpfspart2 -l lvmlogfile -f ${TMPBASE}/ltpfs.part2 &
 
@@ -105,7 +105,7 @@ mkfs -V -t msdos    /dev/$part1
 umount -v /dev/$part1
 mount -v /dev/$part1 /test/growfiles/msdos                             
 
-${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/ltpfs.part3 > ${TMPBASE}/ltpfs.part3
+${LTPROOT}/bin/rand_lines -g ${LTPROOT}/runtest/ltpfs.part3 > ${TMPBASE}/ltpfs.part3
 
 ${LTPROOT}/pan/pan -e -S -a ltpfspart3 -n ltpfspart3 -l lvmlogfile -f ${TMPBASE}/ltpfs.part3 &
 
@@ -115,7 +115,7 @@ umount -v /dev/$part1
 mkreiserfs          /dev/$part1 <yesenter.txt
 mount -v /dev/$part1 /test/growfiles/reiser                            
 
-${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/ltpfs.part4 > ${TMPBASE}/ltpfs.part4
+${LTPROOT}/bin/rand_lines -g ${LTPROOT}/runtest/ltpfs.part4 > ${TMPBASE}/ltpfs.part4
 
 ${LTPROOT}/pan/pan -e -S -a ltpfspart4 -n ltpfspart4 -l lvmlogfile -f ${TMPBASE}/ltpfs.part4 &
 
@@ -125,7 +125,7 @@ umount -v /dev/$part1
 mkfs -V -t minix    /dev/$part1
 mount -v /dev/$part1 /test/growfiles/minix                             
 
-${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/ltpfs.part5 > ${TMPBASE}/ltpfs.part5
+${LTPROOT}/bin/rand_lines -g ${LTPROOT}/runtest/ltpfs.part5 > ${TMPBASE}/ltpfs.part5
 
 ${LTPROOT}/pan/pan -e -S -a ltpfspart5 -n ltpfspart5 -l lvmlogfile -f ${TMPBASE}/ltpfs.part5 &
 
@@ -135,7 +135,7 @@ umount -v /dev/$part1
 mkfs -V -t ext3     /dev/$part1
 mount -v /dev/$part1 /test/growfiles/ext3                              
 
-${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/ltpfs.part6 > ${TMPBASE}/ltpfs.part6
+${LTPROOT}/bin/rand_lines -g ${LTPROOT}/runtest/ltpfs.part6 > ${TMPBASE}/ltpfs.part6
 
 ${LTPROOT}/pan/pan -e -S -a ltpfspart6 -n ltpfspart6 -l lvmlogfile -f ${TMPBASE}/ltpfs.part6 &
 
@@ -145,7 +145,7 @@ umount -v /dev/$part1
 mkfs -V -t jfs /dev/$part1  <yesenter.txt
 mount -v -t jfs    /dev/$part1           /test/growfiles/jfs
 
-${LTPROOT}/tools/rand_lines -g ${LTPROOT}/runtest/ltpfs.part7 > ${TMPBASE}/ltpfs.part7
+${LTPROOT}/bin/rand_lines -g ${LTPROOT}/runtest/ltpfs.part7 > ${TMPBASE}/ltpfs.part7
 
 ${LTPROOT}/pan/pan -e -S -a ltpfspart7 -n ltpfspart7 -l lvmlogfile -f ${TMPBASE}/ltpfs.part7 &
 

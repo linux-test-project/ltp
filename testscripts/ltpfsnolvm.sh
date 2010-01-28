@@ -116,7 +116,7 @@ mount -v /dev/$part4                    /test/growfiles/minix
 mount -v /dev/ram                       /test/growfiles/ramdisk                              
 
 echo "************ Running tests " 
-${LTPROOT}/../tools/rand_lines -g ${LTPROOT}/../runtest/lvm.part1 > ${TMPBASE}/lvm.part1
+${LTPROOT}/../bin/rand_lines -g ${LTPROOT}/../runtest/lvm.part1 > ${TMPBASE}/lvm.part1
 
 ${LTPROOT}/../pan/ltp-pan -e -S -a lvmpart1 -n lvmpart1 -l lvmlogfile -f ${TMPBASE}/lvm.part1 &
 
@@ -138,7 +138,7 @@ mount -v -t ext3   /dev/$part4         /test/growfiles/ext3
 mount -v -t jfs    /dev/$part1         /test/growfiles/jfs
 
 echo "************ Running EXT3 & JFS tests...  " 
-${LTPROOT}/../tools/rand_lines -g ${LTPROOT}/../runtest/lvm.part2 > ${TMPBASE}/lvm.part2
+${LTPROOT}/../bin/rand_lines -g ${LTPROOT}/../runtest/lvm.part2 > ${TMPBASE}/lvm.part2
 
 ${LTPROOT}/../pan/ltp-pan -e -S -a lvmpart2 -n lvmpart2 -l lvmlogfile -f ${TMPBASE}/lvm.part2 &
 
