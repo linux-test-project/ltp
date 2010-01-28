@@ -81,13 +81,10 @@ int main()
 		}
 	}
 
-	list[0] = NULL;
+	memset(&list, 0, sizeof(list));
 	list[2] = &aiocb[0];
-	list[3] = NULL;
-	list[4] = NULL;
 	list[5] = &aiocb[1];
 	list[6] = &aiocb[2];
-	list[7] = NULL;
 
 	if (aio_suspend(list, NENT, NULL) != 0)
 	{
