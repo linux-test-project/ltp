@@ -30,9 +30,10 @@ ifeq ($(strip $(CAP_LIBS)),)
 FILTER_OUT_DIRS		:= cap_bound filecaps
 endif
 
-# selinux-testsuite doesn't compile cleanly, so let the user manually compile
-# the testcases for it.
+# Omit the selinux-testsuite if -lselinux is missing.
+ifeq ($(strip $(SELINUX_LIBS)),)
 FILTER_OUT_DIRS		+= selinux-testsuite
+endif
 
 OPT_CFLAGS		+= -O
 DEBUG_LDFLAGS		+= -s
