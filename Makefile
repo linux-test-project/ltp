@@ -166,10 +166,10 @@ $(addprefix $(DESTDIR)/$(bindir)/,$(BINDIR_INSTALL_SCRIPTS)): %:
 $(addprefix $(INSTALL_DIR)/,$(SRCDIR_INSTALL_SCRIPTS)): %:
 	install -m 00755 "$(top_srcdir)/$(@F)" "$@"
 
-INSTALL_TARGETS		+= $(addprefix $(INSTALL_DIR)/,\
-				$(SRCDIR_INSTALL_TARGETS))\
-			   $(addprefix $(DESTDIR)/$(bindir)/,\
-				$(BINDIR_INSTALL_SCRIPTS))
+ifneq ($(INSTALL_IN_BUILD_TREE),1)
+INSTALL_TARGETS		+= $(addprefix $(INSTALL_DIR)/,$(SRCDIR_INSTALL_TARGETS))
+endif
+INSTALL_TARGETS		+= $(addprefix $(DESTDIR)/$(bindir)/,$(BINDIR_INSTALL_SCRIPTS))
 
 $(INSTALL_TARGETS): $(INSTALL_DIR) $(DESTDIR)/$(bindir)
 
