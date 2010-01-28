@@ -30,9 +30,12 @@ ifeq ($(strip $(CAP_LIBS)),)
 FILTER_OUT_DIRS		:= cap_bound filecaps
 endif
 
-# Omit the selinux-testsuite if -lselinux is missing.
+# Omit the selinux-testsuite if -lselinux is missing and the policy-devel code
+# is present.
 ifeq ($(strip $(SELINUX_LIBS)),)
+ifeq ($(wildcard $(DESTDIR)/usr/share/selinux),)
 FILTER_OUT_DIRS		+= selinux-testsuite
+endif
 endif
 
 OPT_CFLAGS		+= -O
