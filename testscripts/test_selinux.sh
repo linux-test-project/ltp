@@ -37,7 +37,7 @@ if [ $(id -ru) -ne 0 ]; then
 fi
 
 # set the LTPROOT directory
-LTPROOT=${LTPROOT:=${0%/*}}
+LTPROOT=$(readlink -f "${LTPROOT:=${0%/*}}")
 cd "$LTPROOT"
 export TMP=${TMP:-/tmp}
 # If we're in the testscripts directory, go up a dir..
@@ -52,8 +52,8 @@ unset LTPROOT_TMP
 
 # set the PATH to include testcase/bin
 
-export PATH=$PATH:/usr/sbin:$LTPROOT/testcases/bin
 export LTPBIN=$LTPROOT/testcases/bin
+export PATH=$PATH:/usr/sbin:$LTPBIN
 
 # We will store the logfiles in $LTPROOT/results, so make sure
 # it exists.
