@@ -54,7 +54,7 @@
 #               - cleaning and removing duplicated code
 #
 #               Oct 27 2007 - Modified - Ricardo Salveti de Araujo and Subrata Modak
-#               - better ways to integrate "ltp/bin/genload/stress" with "ltp/runltp"
+#               - better ways to integrate "ltp/tools/genload/stress" with "ltp/runltp"
 #               Nov 24 2007 - Modified - Subrata Modak
 #               - Added a new option to generate output in HTML format also. Also retaining
 #                 the original test format
@@ -62,64 +62,55 @@
 #               - Added a new option to mail back LTP reports
 #               May 19 2008 - Modified - Subrata Modak
 #               - Added capability for default Log file generation
-#                Aug 17 2009 - Modified - Subrata Modak
-#                - Added Fault Injection generation Capability through -F Option
+#		Aug 17 2009 - Modified - Subrata Modak
+#		- Added Fault Injection generation Capability through -F Option
 #
 #################################################################################
 
-die()
-{
-    error "$*"
-    exit 1
-}
 
-error()
-{
-    echo "$RUNLTP: ERROR : $*" >&2
-}
-
-info()
-{
-    [ "x$QUIET_MODE" != x1 ] && echo "$RUNLTP: INFO : $*"
-}
-
-warning()
-{
-    echo "$RUNLTP: WARNING : $*" >&2
-}
 
 setup()
 {
-    OLDCWD=$(pwd)
-    RUNLTP=${0##*/}
-    export LTPROOT=$(dirname "$0")
-    if ! cd "$LTPROOT"; then
-        die "unable to change directory to $LTPROOT"
-    fi
+    cd `dirname $0` || \
+    {
+        echo "FATAL: unable to change directory to $(dirname $0)"
+        exit 1
+    }
+    export LTPROOT=${PWD}
     export TMPBASE="/tmp"
-    export PATH="$LTPROOT/testcases/bin:$PATH"
+    export PATH="${PATH}:${LTPROOT}/testcases/bin"
 
-    if [ ! -d "$LTPROOT/testcases/bin" -o ! -x "$LTPROOT/bin/ltp-pan" ] ; then
-        die "test suite not installed correctly; please read INSTALL"
-    fi
+    [ -d "$LTPROOT/testcases/bin" ] ||
+    {
+        echo "FATAL: Test suite not installed correctly"
+        echo "INFO: as root user type 'make ; make install'"
+        exit 1
+    }
+
+    [ -e "$LTPROOT/bin/ltp-pan" ] ||
+    {
+        echo "FATAL: Test suite driver 'ltp-pan' not found"
+        echo "INFO: as root user type 'make ; make install'"
+        exit 1
+    }
 }
 
 version_of_ltp()
 {
     cat "$LTPROOT/Version"
-    return 0
+    exit 0
 }
 
 usage() 
 {
-    cat <<EOF >&2
+    cat <<-EOF >&2
 
-    usage: $RUNLTP [ -a EMAIL_TO ] [ -c NUM_PROCS ] [ -C FAILCMDFILE ] [ -d TMPDIR ]
+    usage: ./${0##*/} [ -a EMAIL_TO ] [ -c NUM_PROCS ] [ -C FAILCMDFILE ] [ -d TMPDIR ]
     [ -D NUM_PROCS,NUM_FILES,NUM_BYTES,CLEAN_FLAG ] -e [ -f CMDFILES(,...) ] [ -g HTMLFILE]
     [ -i NUM_PROCS ] [ -l LOGFILE ] [ -m NUM_PROCS,CHUNKS,BYTES,HANGUP_FLAG ] 
     -N -n [ -o OUTPUTFILE ] -p -q [ -r LTPROOT ] [ -s PATTERN ] [ -t DURATION ]
     -v [ -w CMDFILEADDR ] [ -x INSTANCES ] [ -b DEVICE ] [-B DEVICE_FS_TYPE]
-        [ -F LOOPS,PERCENTAGE ]
+	[ -F LOOPS,PERCENTAGE ]
                 
     -a EMAIL_TO     EMAIL all your Reports to this E-mail Address
     -c NUM_PROCS    Run LTP under additional background CPU load
@@ -135,7 +126,7 @@ usage()
                     [CLEAN_FLAG  = unlink file to which random data written, when value 1]
     -e              Prints the date of the current LTP release
     -f CMDFILES     Execute user defined list of testcases (separate with ',')
-        -F LOOPS,PERCENTAGE Induce PERCENTAGE Fault in the Kernel Subsystems, and, run each test for LOOPS loop
+	-F LOOPS,PERCENTAGE Induce PERCENTAGE Fault in the Kernel Subsystems, and, run each test for LOOPS loop
     -g HTMLFILE     Create an additional HTML output format
     -h              Help. Prints all available options.
     -i NUM_PROCS    Run LTP under additional background Load on IO Bus
@@ -147,10 +138,10 @@ usage()
                     [CHUNKS      = malloc these many chunks (default is 1 when value 0 or undefined)]
                     [BYTES       = malloc CHUNKS of BYTES bytes (default is 256MB when value 0 or undefined) ]
                     [HANGUP_FLAG = hang in a sleep loop after memory allocated, when value 1]
-        -M CHECK_TYPE
-                [CHECK_TYPE=1 => Full Memory Leak Check tracing children as well]
-                [CHECK_TYPE=2 => Thread Concurrency Check tracing children as well]
-                [CHECK_TYPE=3 => Full Memory Leak & Thread Concurrency Check tracing children as well]
+	-M CHECK_TYPE
+		[CHECK_TYPE=1 => Full Memory Leak Check tracing children as well]
+		[CHECK_TYPE=2 => Thread Concurrency Check tracing children as well]
+		[CHECK_TYPE=3 => Full Memory Leak & Thread Concurrency Check tracing children as well]
     -N              Run all the networking tests. 
     -n              Run LTP with network traffic in background.
     -o OUTPUTFILE   Redirect test output to a file.
@@ -172,15 +163,11 @@ usage()
     -B DEVICE_FS_TYPE The file system of test block devices.
 
 
-    Example:
-
-        $RUNLTP -c 2 -i 2 -m 2,4,10240,1 -D 2,10,10240,1 -p -q \
-                -l /tmp/result-log.$$ -o /tmp/result-output.$$ \
-                -C /tmp/result-failed.$$ -d $PWD
+    example: ./${0##*/} -c 2 -i 2 -m 2,4,10240,1 -D 2,10,10240,1 -p -q  -l /tmp/result-log.$$ -o /tmp/result-output.$$ -C /tmp/result-failed.$$ -d ${PWD}
 
 
-EOF
-    exit 0
+	EOF
+exit 0
 }
 
 main()
@@ -193,8 +180,7 @@ main()
     local ALT_EMAIL_OUT=0
     local RUN_NETEST=0
     local RUN_REPEATED=0
-    local QUIET_MODE=0
-    local PAN_QUIET_MODE=""
+    local QUIET_MODE=""
     local NETPIPE=0
     local GENLOAD=0
     local MEMSIZE=0
@@ -219,8 +205,8 @@ main()
     local DEFAULT_FILE_NAME_GENERATION_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
     version_date=$(cat "$LTPROOT/Version")
 
-    while getopts a:c:C:d:D:f:F:ehi:g:l:m:M:Nno:pqr:s:S:t:T:w:x:b:B: arg; do
-        case "$arg" in
+    while getopts a:c:C:d:D:f:F:ehi:g:l:m:M:Nno:pqr:s:S:t:T:w:x:b:B: arg
+    do  case $arg in
         a)  EMAIL_TO=$OPTARG
             ALT_EMAIL_OUT=1;;
         c)       
@@ -230,7 +216,7 @@ main()
                 # hence, prevent from creating infinite processes
                 NUM_PROCS=1
             fi
-            "$LTPROOT/testcases/bin/genload" --cpu $NUM_PROCS >/dev/null 2>&1 &
+            $LTPROOT/testcases/bin/genload --cpu $NUM_PROCS >/dev/null 2>&1 &
             GENLOAD=1 ;;
 
         C)  
@@ -243,8 +229,7 @@ main()
             esac ;;
                    
         d)  # convert the user path to absolute path.
-            export TMPBASE=$(cd $(dirname "${OPTARG}"); pwd)/$(basename "${OPTARG}")
-            ;;
+            export TMPBASE=`cd \`dirname ${OPTARG}\`; pwd`/`basename ${OPTARG}` ;;
 
         D)  NUM_PROCS=1; NUM_FILES=1; NUM_BYTES=$((1024 * 1024 * 1024)); CLEAN_FLAG=0
             ARGUMENT_LIST=$OPTARG
@@ -252,12 +237,12 @@ main()
             for ARGUMENT in `echo "$ARGUMENT_LIST" | sed 's/,/\n/g'`      # Store all value in a Loop
             do
                 case $TOTAL_ARGUMENTS in
-                1) NUM_PROCS="$ARGUMENT" ;;
-                2) NUM_FILES="$ARGUMENT" ;;
-                3) NUM_BYTES="$ARGUMENT" ;;
-                4) CLEAN_FLAG="$ARGUMENT" ;;
+                    1) NUM_PROCS="$ARGUMENT" ;;
+                    2) NUM_FILES="$ARGUMENT" ;;
+                    3) NUM_BYTES="$ARGUMENT" ;;
+                    4) CLEAN_FLAG="$ARGUMENT" ;;
                 esac
-                : $((TOTAL_ARGUMENTS += 1))
+                TOTAL_ARGUMENTS=`expr $TOTAL_ARGUMENTS + 1`
             done
             # just to get the default values if the user passed 0
             if [ "$NUM_PROCS" -eq 0 ]; then
@@ -274,34 +259,34 @@ main()
             fi
             if [ "$CLEAN_FLAG" -eq 1 ]; then
                 # Do not unlink file in this case
-                "$LTPROOT/testcases/bin/genload" --hdd $NUM_PROCS --hdd-files \
+                $LTPROOT/testcases/bin/genload --hdd $NUM_PROCS --hdd-files \
                     $NUM_FILES --hdd-bytes $NUM_BYTES >/dev/null 2>&1 &
             else
                 # Cleanup otherwise
-                "$LTPROOT/testcases/bin/genload" --hdd $NUM_PROCS --hdd-files \
+                $LTPROOT/testcases/bin/genload --hdd $NUM_PROCS --hdd-files \
                     $NUM_FILES --hdd-bytes $NUM_BYTES --hdd-noclean >/dev/null 2>&1 &
             fi
             GENLOAD=1;;
 
         e)  # Print out the version of LTP
             version_of_ltp
-            ;;
+	    ;;
         f)  # Execute user defined set of testcases.
             # Can be more then one file, just separate it with ',', like:
             # -f nfs,commands,/tmp/testfile
             CMDFILES=$OPTARG;;
-        F)        INJECT_KERNEL_FAULT=1
-                #Seperate out the NO_OF_LOOPS & FAULT_PERCENTAGE
-                INJECT_FAULT_LOOPS_PER_TEST=`echo $OPTARG |cut -d',' -f1 | tr -d '\n' | tr -d ' '`
-                INJECT_KERNEL_FAULT_PERCENTAGE=`echo $OPTARG |cut -d',' -f2 | tr -d '\n' | tr -d ' '`
-                if [ ! $INJECT_FAULT_LOOPS_PER_TEST ]; then
-                    warning "Loops not properly defined. Defaulting to 5..."
-                    export INJECT_FAULT_LOOPS_PER_TEST=5
-                fi
-                if [ ! $INJECT_KERNEL_FAULT_PERCENTAGE ]; then
-                    warning "Fault percentage not properly defined. Defaulting to 10..."
-                    export INJECT_KERNEL_FAULT_PERCENTAGE=10
-                fi;;
+	F)	INJECT_KERNEL_FAULT=1
+		#Seperate out the NO_OF_LOOPS & FAULT_PERCENTAGE
+		INJECT_FAULT_LOOPS_PER_TEST=`echo $OPTARG |cut -d',' -f1 | tr -d '\n' | tr -d ' '`
+		INJECT_KERNEL_FAULT_PERCENTAGE=`echo $OPTARG |cut -d',' -f2 | tr -d '\n' | tr -d ' '`
+		if [ ! $INJECT_FAULT_LOOPS_PER_TEST ]; then
+			echo "Loops not properly defined. Resorting to default 5..."
+			export INJECT_FAULT_LOOPS_PER_TEST=5
+		fi
+		if [ ! $INJECT_KERNEL_FAULT_PERCENTAGE ]; then
+			echo "Fault Persentage not properly defined. Resorting to default 10..."
+			export INJECT_KERNEL_FAULT_PERCENTAGE=10
+		fi;;
         g)  HTMLFILE_NAME="$OPTARG"
             case $OPTARG in
             /*)
@@ -320,7 +305,7 @@ main()
                 # hence, prevent from creating infinite processes
                 NUM_PROCS=1
             fi
-            "$LTPROOT/testcases/bin/genload" --io $NUM_PROCS >/dev/null 2>&1 &
+            $LTPROOT/testcases/bin/genload --io $NUM_PROCS >/dev/null 2>&1 &
             GENLOAD=1 ;;
     
         l)      
@@ -339,35 +324,44 @@ main()
             for ARGUMENT in `echo "$ARGUMENT_LIST" | sed 's/,/\n/g'`      # Store all value in a Loop
             do
                 case $TOTAL_ARGUMENTS in
-                1) NUM_PROCS="$ARGUMENT" ;;
-                2) CHUNKS="$ARGUMENT" ;;
-                3) BYTES="$ARGUMENT" ;;
-                4) HANGUP_FLAG="$ARGUMENT" ;;
+                    1) NUM_PROCS="$ARGUMENT" ;;
+                    2) CHUNKS="$ARGUMENT" ;;
+                    3) BYTES="$ARGUMENT" ;;
+                    4) HANGUP_FLAG="$ARGUMENT" ;;
                 esac
-                : $(( TOTAL_ARGUMENTS += 1 ))
+                TOTAL_ARGUMENTS=`expr $TOTAL_ARGUMENTS + 1`
             done
             # just to get the default values if the user passed 0
-            [ "x$NUM_PROCS" = x0 ] && NUM_PROCS=1
-            [ "x$CHUNKS" != x0 ] && CHUNKS=1
-            [ "x$BYTES" = x0 ] && BYTES=$((256 * 1024 * 1024))
-            [ "x$HANGUP_FLAG" != x1 ] && HANGUP_FLAG=0
+            if [ "$NUM_PROCS" -eq 0 ]; then
+                NUM_PROCS=1
+            fi
+            if [ "$CHUNKS" -eq 0 ]; then
+                CHUNKS=1
+            fi
+            if [ "$BYTES" -eq 0 ]; then
+                BYTES=$((256 * 1024 * 1024))
+            fi
+            if [ "$HANGUP_FLAG" -ne 1 ]; then
+                HANGUP_FLAG=0
+            fi
             if [ "$HANGUP_FLAG" -eq 1 ]; then
                 # Hang in a Sleep loop after memory allocated
-                "$LTPROOT/testcases/bin/genload" --vm $NUM_PROCS --vm-chunks \
+                $LTPROOT/testcases/bin/genload --vm $NUM_PROCS --vm-chunks \
                     $CHUNKS --vm-bytes $BYTES --vm-hang >/dev/null 2>&1 &
             else
                 # Otherwise Do not Hangup
-                "$LTPROOT/testcases/bin/genload" --vm $NUM_PROCS --vm-chunks \
+                $LTPROOT/testcases/bin/genload --vm $NUM_PROCS --vm-chunks \
                     $CHUNKS --vm-bytes $BYTES >/dev/null 2>&1 &
             fi
             GENLOAD=1;;
-        M)
-            VALGRIND_CHECK_TYPE="$OPTARG";;
+	M)
+		VALGRIND_CHECK=1
+		VALGRIND_CHECK_TYPE="$OPTARG";;
 
         N)  RUN_NETEST=1;;
     
         n)  
-            "$LTPROOT/testcases/bin/netpipe.sh"
+            $LTPROOT/testcases/bin/netpipe.sh
             NETPIPE=1;;
     
         o)  OUTPUTFILE_NAME="$OPTARG"
@@ -377,27 +371,22 @@ main()
             *)
                 OUTPUTFILE="-o $LTPROOT/output/$OPTARG"
                 ALT_DIR_OUT=1 ;;
-            esac
-            ;;
+            esac ;;
     
         p)  PRETTY_PRT=" -p ";;
    
-        q)
-            PAN_QUIET_MODE=" -q "
-            QUIET_MODE=1
-            ;;
+        q)  QUIET_MODE=" -q ";;
     
         r)  LTPROOT=$OPTARG;;
     
         s)  TAG_RESTRICT_STRING=$OPTARG;;
 
-        S)  case $OPTARG in
+	S)  case $OPTARG in
             /*)
                 SKIPFILE=$OPTARG;;
             *)
                 SKIPFILE="$LTPROOT/$OPTARG";;
-            esac
-            ;;
+            esac ;;
     
         t)  # In case you want to specify the time 
             # to run from the command line 
@@ -410,13 +399,14 @@ main()
         w)  CMDFILEADDR=$OPTARG;;
    
         x)  # number of ltp's to run
-            warning "Concurrent invocations of ltp-pan (-x option) can cause"
-            warning "unpredictable failures, because some tests cannot be run"
-            warning "in parallel."
-            warning "Pausing for 10 seconds."
+            cat <<-EOF >&1
+            WARNING: The use of -x can cause unpredictable failures, as a
+                     result of concurrently running multiple tests designed
+                     to be ran exclusively.
+                     Pausing for 10 seconds..."
+	EOF
             sleep 10 
-            INSTANCES="-x $OPTARG"
-            ;;
+            INSTANCES="-x $OPTARG";;
         b) DEVICE=$OPTARG;;
         B) DEVICE_FS_TYPE=$OPTARG;;
         \?) usage;;
@@ -433,227 +423,286 @@ main()
    
     ## It would be nice if a Failed File is compulsorily created (gives User better Idea of Tests that failed)  
 
-    ## User didn't request for a failed file to be created.
-    if [ -n "$FAILCMDFILE" ]; then                           
+    if [ ! "$FAILCMDFILE" ]; then                            ## User has not mentioned about Failed File name
          ALT_DIR_OUT=1
-         # User didn't request that an output log be created.
-         if [ -n "$OUTPUTFILE" ]; then
-            # User didn't request that a log file be created.
-            if [ -n "$LOGFILE" ]; then
-               FAILCMDFILE_TAG="$DEFAULT_FILE_NAME_GENERATION_TIME"
-            # User explicitly requested a log filename.
-            else
-               FAILCMDFILE_TAG=${LOGFILE_NAME##*/}
+         if [ ! "$OUTPUTFILE" ]; then		             ## User has not mentioned about Output File name either
+            if [ ! "$LOGFILE" ]; then                        ## User has not mentioned about Log File name either
+               FAILED_FILE_NAME=$DEFAULT_FILE_NAME_GENERATION_TIME
+               FAILCMDFILE="-C $LTPROOT/output/LTP_RUN_ON-$FAILED_FILE_NAME.failed"
+            else					     ## User Fortunately wanted a log file,
+               FAILED_FILE_NAME=`basename $LOGFILE_NAME`     ## Extract log file name and use it to construct Failed file name
+               FAILCMDFILE="-C $LTPROOT/output/LTP_RUN_ON-$FAILED_FILE_NAME.failed"
             fi
-         # User requested for a specific output log filename.
-         else
-             FAILCMDFILE_TAG="${OUTPUTFILE_NAME##*/}"
+         else                                                ## User Fortunately wanted a Output file
+               FAILED_FILE_NAME=`basename $OUTPUTFILE_NAME`  ## Extract output file name and use it to construct Failed file name
+               FAILCMDFILE="-C $LTPROOT/output/LTP_RUN_ON-$FAILED_FILE_NAME.failed"
          fi
-         FAILCMDFILE="-C '$LTPROOT/output/LTP_RUN_ON-${FAILCMDFILE_TAG}.failed'"
     fi
 
     if [ "$ALT_HTML_OUT" -eq 1 ] ; then                      ## User wants the HTML version of the output
+       QUIET_MODE=""                                         ## Suppressing this guy as it will prevent generation of proper output
                                                              ## which the HTML parser will require
-       if [ "x$OUTPUTFILE" != x ]; then                      ## User has not mentioned about the Outputfile name, then we need to definitely generate one
+       if [ ! "$OUTPUTFILE" ]; then                          ## User has not mentioned about the Outputfile name, then we need to definitely generate one
           OUTPUTFILE_NAME=$DEFAULT_FILE_NAME_GENERATION_TIME
           OUTPUTFILE="-o $LTPROOT/output/LTP_RUN_ON-$OUTPUTFILE_NAME.output"
           ALT_DIR_OUT=1
-          if [ "x$HTMLFILE" != x ] ; then                    ## User has not mentioned HTML File name, We need to create one
-             HTMLFILE_NAME=${OUTPUTFILE_NAME##*/}
+          if [ ! "$HTMLFILE" ] ; then                        ## User has not mentioned HTML File name, We need to create one
+             HTMLFILE_NAME=`basename $OUTPUTFILE_NAME`
              HTMLFILE="$LTPROOT/output/$HTMLFILE_NAME.html"
           fi
        fi
     fi
 
     # If we need, create the output directory
-    if [ "$ALT_DIR_OUT" -eq 1 ] ; then
-        if ! (test -d "$LTPROOT/output" || mkdir -p "$LTPROOT/output") ; then
-           die "failed to create $LTPROOT/output"
-        fi
-    fi
+    [ "$ALT_DIR_OUT" -eq 1 ] && \
+    {
+        [ ! -d $LTPROOT/output ] && \
+        {
+           echo "INFO: creating $LTPROOT/output directory"
+           mkdir -p $LTPROOT/output || \
+           {
+               echo "ERROR: failed to create $LTPROOT/output"
+               exit 1
+            }
+        }
+    }
     # If we need, create the results directory
-    if [ "$ALT_DIR_RES" -eq 1 ] ; then
-        if ! (test -d "$LTPROOT/results" || mkdir -p "$LTPROOT/results"); then
-           die "failed to create $LTPROOT/results"
-        fi
-    fi
+    [ "$ALT_DIR_RES" -eq 1 ] && \
+    {
+        echo "INFO: creating $LTPROOT/results directory"
+        [ ! -d $LTPROOT/results ] && \
+        {
+           mkdir -p $LTPROOT/results || \
+           {
+               echo "ERROR: failed to create $LTPROOT/results"
+               exit 1
+            }
+        }
+    }
 
     # Added -m 777 for tests that call tst_tmpdir() and try to 
     #  write to it as user nobody
-    if ! mkdir -m 777 -p $TMPBASE ; then
-        die "unable to make temporary directory $TMPBASE"
-    fi
+    mkdir -m 777 -p $TMPBASE || \
+    {
+        echo "FATAL: Unable to make temporary directory $TMPBASE"
+        exit 1
+    }
     # use mktemp to create "safe" temporary directories
     export TMPTEMPLATE="${TMPBASE}/ltp-XXXXXXXXXX"
-    if ! export TMP=$(mktemp -d "$TMPTEMPLATE" 2>&1); then
-        die "unable to make temp directory: $TMP"
-    fi
+    TMP=`mktemp -d $TMPTEMPLATE` || \
+    {
+        echo "FATAL: Unable to make temporary directory: $TMP"
+        exit 1
+    }
+    export TMP
     # To be invoked by tst_tmpdir()
     # write to it as user nobody
     export TMPDIR=$TMP
 
-    if chmod 777 "$TMP" ; then
-        die "unable to chmod 777 $TMP ... aborting"
-    fi
+    chmod 777 $TMP || \
+    {
+      echo "unable to chmod 777 $TMP ... aborting"
+        exit 1
+    }
     
-    if ! cd $TMP ; then
-        die "could not cd ${TMP} ... exiting"
-    fi
+    cd $TMP || \
+    {
+      echo "could not cd ${TMP} ... exiting"
+      exit 1
+    }
     
-    if [ -n $INSTANCES ] ; then
-        INSTANCES="$INSTANCES -O ${TMP}"
-    fi
+    ! [ -z $INSTANCES ] && \
+    {
+	    INSTANCES="$INSTANCES -O ${TMP}"
+    }
     
-    if [ "$RUN_NETEST" -eq 1 ] ; then
-
-        if [ -z "$RHOST" -o -z "$PASSWD" ] ; then
-
-            if [ -z "$RHOST" ] ; then
+    [ "$RUN_NETEST" -eq 1 ] && \
+    {
+        [ -z "$RHOST" ] || [ -z "$PASSWD" ] && \
+        {
+            [ -z "$RHOST" ] && \
+            {
                 echo \
                 "INFO: Enter RHOST = 'name of the remote host machine'"
                 echo -n "-> "
                 read RHOST
-            fi
+            }
 
-            if [ -z "$PASSWD" ] ; then
-                echo
+            [ -z "$PASSWD" ] && \
+            {
+                echo " "
                 echo \
                 "INFO: Enter PASSWD = 'root passwd of the remote host machine'"
                 echo -n "-> "
                 read PASSWD
-            fi
+            }
             export RHOST=$RHOST
             export PASSWD=$PASSWD
-        fi
-    fi
+            echo "WARNING: security of $RHOST may be compromised"
+        }
+    }
     
     # If user does not provide a command file select a default set of testcases
     # to execute.
-    if [ -z "$CMDFILES" -a -z "$CMDFILEADDR" ] ; then
+    if [ -z "$CMDFILES" ] && [ -z "$CMDFILEADDR" ]
+    then
+        cat <<-EOF >&1
 
-        info "No command files were provided; executing the following default "
-        info "test scenario's:"
+    INFO: no command files were provided, using default,
+          system calls, memory management, IPC, scheduler
+          direct io, file system, math and pty tests will 
+          now be executed
+    
+	EOF
 
-        SCENFILES="syscalls fs fsx dio io mm ipc sched math nptl pty containers"
-        SCENFILES="$SCENFILES fs_bind controllers filecaps cap_bounds"
-        SCENFILES="$SCENFILES fcntl-locktests connectors admin_tools timers"
-        SCENFILES="$SCENFILES power_management_tests numa hugetlb commands"
+        for SCENFILES in ${LTPROOT}/runtest/syscalls                \
+                         ${LTPROOT}/runtest/fs                      \
+                         ${LTPROOT}/runtest/fsx                     \
+                         ${LTPROOT}/runtest/dio                     \
+                         ${LTPROOT}/runtest/io                      \
+                         ${LTPROOT}/runtest/mm                      \
+                         ${LTPROOT}/runtest/ipc                     \
+                         ${LTPROOT}/runtest/sched                   \
+                         ${LTPROOT}/runtest/math                    \
+                         ${LTPROOT}/runtest/nptl                    \
+                         ${LTPROOT}/runtest/pty                     \
+                         ${LTPROOT}/runtest/containers              \
+                         ${LTPROOT}/runtest/fs_bind                 \
+                         ${LTPROOT}/runtest/controllers             \
+                         ${LTPROOT}/runtest/filecaps                \
+                         ${LTPROOT}/runtest/cap_bounds              \
+                         ${LTPROOT}/runtest/fcntl-locktests         \
+                         ${LTPROOT}/runtest/connectors              \
+                         ${LTPROOT}/runtest/admin_tools             \
+                         ${LTPROOT}/runtest/timers                  \
+                         ${LTPROOT}/runtest/power_management_tests  \
+                         ${LTPROOT}/runtest/numa                    \
+                         ${LTPROOT}/runtest/hugetlb                 \
+                         ${LTPROOT}/runtest/commands                \
+                         ${LTPROOT}/runtest/hyperthreading
+        do
+            [ -e "$SCENFILES" ] || \
+            {
+                echo "FATAL: missing scenario file $SCENFILES"
+                exit 1
+            }
 
-        case "$(uname -m)" in
-        *86*)
-            # No sense in even trying to run hyperthreading tests if it
-            # isn't an Intel platform.
-            SCENFILES="$SCENFILES hyperthreading"
-            ;;
-        esac
-
-        info "No command files were provided; executing the following default "
-        info "test scenario's:"
-        if [ "x$QUIET_MODE" != x1 ] ; then
-            for SCENARIO in $SCENFILES; do
-                echo "	$SCENARIO"
-            done
-        fi
-
-    elif [ "x$CMDFILEADDR" = x ] ; then
-        SCENFILES=$(echo "$CMDFILES" | awk 'BEGIN { RS=","; } { print }')
+            cat $SCENFILES >> ${TMP}/alltests || \
+            {
+                echo "FATAL: unable to create command file"
+                exit 1
+            }
+       done
     fi
 
-    if [ "x$SCENFILES" != x ] ; then
-
-        for SCENARIO in "$SCENFILES"; do
-        
-            # Most likely not an absolute path.
-            if [ ! -f "$SCENARIO" ] ; then 
-                # Relative path from $OLDCWD.
-                if [ -f "$OLDCWD/$SCENFILES" ] ; then 
-                    SCENFILE="$OLDCWD/$SCENARIO"
-                # Let's assume it's just a runtest filename -- we'll figure
-                # out whether or not this assumption is correct in a
-                # second ;)...
-                else
-                    SCENFILE="$LTPROOT/runtest/$SCENARIO"
-                fi
-            fi
-            # Print out a user readable message that makes sense, because the
-            # `unable to create command file' one isn't helpful in this regard
-            # if the file doesn't exist...
-            if [ ! -f "$SCENFILE" ] ; then
-                die "scenario file - $SCENFILE - doesn't exist."
-            elif ! cat "$SCENFILE" >> "$TMP/alltests"; then
-                die "unable add $SCENFILE to command file \`$TMP/alltests'"
-            fi
-
+    [ -n "$CMDFILES" ] && \
+    {
+        for SCENFILES in `echo "$CMDFILES" | sed 's/,/\n/g'`
+        do
+            [ -f "$SCENFILES" ] || SCENFILES="$LTPROOT/runtest/$SCENFILES"
+            cat "$SCENFILES" >> ${TMP}/alltests || \
+            {
+                echo "FATAL: unable to create command file"
+                exit 1
+            }
         done
-
-    elif [ "x$CMDFILEADDR" != x ] ; then
-        if ! type wget >/dev/null; then
-            die "You must have wget to get $CMDFILEADDR"
-        elif wget -q "$CMDFILEADDR" -O "$TMP/wgetcmdfile" ; then
-            die "the file transfer with wget failed (address $CMDFILEADDR)"
-        elif ! cat "$TMP/wgetcmdfile" >> "$TMP/alltests" ; then
-            die "unable to add scenario - $SCENFILE - to the command file"
+    }
+    
+    [ -n "$CMDFILEADDR" ] && \
+    {
+        wget -q "${CMDFILEADDR}" -O ${TMP}/wgetcmdfile
+        if [ $? -ne 0 ]; then
+            echo "FATAL: error while getting the command file with wget (address $CMDFILEADDR)"
+            exit 1
         fi
-    fi
+        cat "${TMP}/wgetcmdfile" >> ${TMP}/alltests || \
+        {
+            echo "FATAL: unable to create command file"
+            exit 1
+        }
+    }
 
-    if [ "$RUN_NETEST" -eq 1 ] ; then
-
-        for SCENARIO in tcp_cmds multicast rpc nfs ; do
-
-            SCENFILE="$LTPROOT/runtest/$SCENARIO"
-            if [ ! -e "$SCENFILE" ] ; then
-                die "missing scenario file: $SCENFILE"
-            fi
+    [ "$RUN_NETEST" -eq 1 ] && \
+    {
+        for SCENFILES in ${LTPROOT}/runtest/tcp_cmds \
+                         ${LTPROOT}/runtest/multicast \
+                         ${LTPROOT}/runtest/rpc \
+                         ${LTPROOT}/runtest/nfs
+        do
+            [ -e "$SCENFILES" ] || \
+            { 
+                echo "FATAL: missing scenario file $SCENFILES"
+                exit 1
+            }
                          
-            if ! cat "$SCENFILE" >> ${TMP}/alltests ; then
-                die "unable to add scenario - $SCENFILE - to $TMP/alltests"
-            fi
-
+            cat "$SCENFILES" >> ${TMP}/alltests || \
+            {
+                echo "FATAL: unable to create command file"
+                exit 1
+            }
         done
-
-    fi
+    } 
 
     # The fsx-linux tests use the SCRATCHDEV environment variable as a location
     # that can be reformatted and run on.  Set SCRATCHDEV if you want to run 
     # these tests.  As a safeguard, this is disabled.
     unset SCRATCHDEV
-    if [ "x$SCRATCHDEV" != x ] ; then
-        if ! cat "$LTPROOT/runtest/fsx" >> "$TMP/alltests"; then
-            die "unable to create fsx-linux tests command file: $TMP/alltests"
-        fi
-    fi
+    [ -n "$SCRATCHDEV" ] && \
+    {
+         cat ${LTPROOT}/runtest/fsx >> ${TMP}/alltests ||
+         {
+             echo "FATAL: unable to create  fsx-linux tests command file"
+             exit 1
+         }
+    }
 
     # If enabled, execute only test cases that match the PATTERN
-    if [ -n "$TAG_RESTRICT_STRING" ]; then
-        mv -f "$TMP/alltests" "$TMP/alltests.orig"
-        # Filter out all non-restricted tags.
-        grep "$TAG_RESTRICT_STRING" "$TMP/alltests.orig" > "$TMP/alltests"
+    if [ -n "$TAG_RESTRICT_STRING" ]
+    then
+        mv -f ${TMP}/alltests ${TMP}/alltests.orig
+	    grep $TAG_RESTRICT_STRING ${TMP}/alltests.orig > ${TMP}/alltests #Not worth checking return codes for this case
     fi
 
     # Blacklist or skip tests if a SKIPFILE was specified with -S
-    if [ -n "$SKIPFILE" ]; then
+    if [ -n "$SKIPFILE" ]
+    then
         for file in $( cat $SKIPFILE ); do
-            sed -i "/$file/d" "${TMP}/alltests"
+            sed -i "/$file/d" ${TMP}/alltests
         done
     fi
     
     # check for required users and groups
-    if "$LTPROOT/IDcheck.sh" &>/dev/null ; then
-        warning "missing some required users and/or groups; some testcases will fail"
-    fi
+    ${LTPROOT}/IDcheck.sh &>/dev/null || \
+    {
+        echo "WARNING: required users and groups not present"
+        echo "WARNING: some test cases may fail"
+    }
+       
     # display versions of installed software
-    if [ -z "$QUIET_MODE" ] ; then
-        if ! "$LTPROOT/ver_linux" ; then
-            die "unable to display versions of software installed"
-        fi
+    [ -z "$QUIET_MODE" ] && \
+    { 
+        ${LTPROOT}/ver_linux || \
+        {
+            echo "WARNING: unable to display versions of software installed"
+            exit 1
+    }
+    }
+
+    if [ -n "$DEVICE" ]; then
+        sed -i "s|DEVICE|$DEVICE|"  ${TMP}/alltests
+    else
+        echo "remove test cases which require the block device."
+    echo "You can specify it with option -b"
+        sed -i "/DEVICE/d"  ${TMP}/alltests
     fi
 
-    if [ "x$DEVICE" != x ]; then
-        if ! sed -i "s|DEVICE|$DEVICE|" "$TMP/alltests" ; then
-            die "the sed operation on alltests failed (DEVICE)"
-        elif ! mnt_pnt=$(mktemp -d --tmpdir=${TMP} mnt_pnt.XXXXXX); then
-            die "Failed to create a temporary mountpoint"
-        fi
+    if [ $? -ne 0 ]; then
+            echo "FATAL: error during prcessing alltests file by sed"
+            exit 1
+    fi
+
+    if [ -n "$DEVICE" ]; then
+        mnt_pnt=`mktemp -d --tmpdir=${TMP} mnt_pnt.XXXXXX`
         if [ -n "$DEVICE_FS_TYPE" ]; then
             mount -t $DEVICE_FS_TYPE $DEVICE $mnt_pnt
         else
@@ -661,256 +710,230 @@ main()
         fi
 
         if [ $? -ne 0 ]; then
-            die "can't mount block device $DEVICE."
+            echo "FATAL: can't mount block device $DEVICE."
+            exit 1
         fi
 
         if [ -z "$DEVICE_FS_TYPE" ]; then
-            DEVICE_FS_TYPE=$(awk "{if (\\\$1 == \"$DEVICE\") print \\\$3; }" /proc/mounts)
-            info "determining the file system $DEVICE_FS_TYPE on block device $DEVICE"
+            DEVICE_FS_TYPE=`cat /proc/mounts | awk "{if (\\\$1 == \"$DEVICE\") print \\\$3; }"`
+            echo "determine file system $DEVICE_FS_TYPE on block device $DEVICE"
         fi
 
-        if ! umount $DEVICE; then
-            die "can't umount $DEVICE"
+        umount $DEVICE
+        if [ $? -ne 0 ]; then
+            echo "FATAL: can't umount $DEVICE"
+            exit 1
         fi
-    else
-        info "removing testcases which require block devices."
-        if ! sed -i "/DEVICE/d" "$TMP/alltests"; then
-            die "the sed operation on alltests failed (DEVICE)"
-        fi
+        rm -rf $mnt_pnt
     fi
 
-    if [ "x$DEVICE_FS_TYPE" != x ]; then
-        if ! sed -i "s|DEVICE_FS_TYPE|$DEVICE_FS_TYPE|" "$TMP/alltests" ; then
-            die "the sed operation on alltests failed (DEVICE_FS_TYPE)"
-        fi
+    if [ -n "$DEVICE" ]; then
+        sed -i "s|DEVICE_FS_TYPE|$DEVICE_FS_TYPE|"  ${TMP}/alltests
+    fi
+
+    if [ $? -ne 0 ]; then
+        echo "FATAL: error during prcessing alltests file by sed"
+        exit 1
     fi
 
     if [ $RUN_REPEATED -gt 1 ]; then # You need to specify at least more than 1 sequential run, else it runs default
-        info "PAN will run these test cases $RUN_REPEATED times."
-        info "Test Tags will be prefixed with iteration"
-        inc=1
-        ## Remove all whitespace.
-        sed -e '/^$/ d' -e 's/^[ ,\t]*//' -e '/^#/ d' < "$TMP/alltests" > "$TMP/alltests.temp"
-        ## .temp is the baseline file
-        sed 's/^[0-9,a-z,A-Z]*/'"$inc"'_ITERATION_&/' < "$TMP/alltests.temp" > "$TMP/alltests"
-        while [ $inc -lt $RUN_REPEATED ] ; do
-            : $(( inc += 1 ))
-            # Append the iteration number.
-            sed 's/^[0-9,a-z,A-Z]*/'"$inc"'_ITERATION_&/' < "$TMP/alltests.temp" >> "$TMP/alltests"
-        done
+         echo "PAN will run these test cases $RUN_REPEATED times....."
+         echo "Test Tags will be Prepended with ITERATION NO.s....."
+         inc=1
+         sed -e '/^$/ d' -e 's/^[ ,\t]*//' -e '/^#/ d' < ${TMP}/alltests > ${TMP}/alltests.temp ##This removes all newlines, leading spaces, tabs, #
+         sed 's/^[0-9,a-z,A-Z]*/'"$inc"'_ITERATION_&/' < ${TMP}/alltests.temp > ${TMP}/alltests ## .temp is kept as Base file
+         while [ $inc -lt $RUN_REPEATED ] ; do
+               inc=`expr $inc + 1`
+               sed 's/^[0-9,a-z,A-Z]*/'"$inc"'_ITERATION_&/' < ${TMP}/alltests.temp >> ${TMP}/alltests #Keep appending with Iteration No.s
+         done
     fi
 
-    info "Test start time: $(date)"
-    PAN_COMMAND="\"${LTPROOT}/bin/ltp-pan\" $PAN_QUIET_MODE -e -S $INSTANCES"
-    PAN_COMMAND="$PAN_COMMAND $DURATION -a $$ -n $$ $PRETTY_PRT"
-    PAN_COMMAND="$PAN_COMMAND -f \"$TMP/alltests\" $LOGFILE $OUTPUTFILE "
-    PAN_COMMAND="$PAN_COMMAND $FAILCMDFILE"
-    info "COMMAND:    $PAN_COMMAND"
-    if [ -n "$TAG_RESTRICT_STRING" ] ; then
-        info "Restricting testcase tags to: $TAG_RESTRICT_STRING"
+    [ ! -z "$QUIET_MODE" ] && { echo "INFO: Test start time: $(date)" ; }
+    PAN_COMMAND="${LTPROOT}/bin/ltp-pan $QUIET_MODE -e -S $INSTANCES $DURATION -a $$ \
+    -n $$ $PRETTY_PRT -f ${TMP}/alltests $LOGFILE $OUTPUTFILE $FAILCMDFILE"
+    echo "COMMAND:    $PAN_COMMAND"
+    if [ ! -z "$TAG_RESTRICT_STRING" ] ; then
+      echo "INFO: Restricted to $TAG_RESTRICT_STRING"
     fi
-
+    #$PAN_COMMAND #Duplicated code here, because otherwise if we fail, only "PAN_COMMAND" gets output
+    
     ## Display the Output/Log/Failed/HTML file names here
-    info "LOG File: $(cut -b4- < "$LOGFILE")"
+    echo -e "LOG File: \c"
+    echo $LOGFILE | cut -b4-
 
-    [ -n "$OUTPUTFILE" ] && info "OUTPUT File: $(cut -b4- < "$OUTPUTFILE")"
-    info "FAILED COMMAND File: $(cut -b4- < "$FAILCMDFILE")"
-
-    [ -n "$HTMLFILE" ] && info "HTML File: $HTMLFILE"
-
-    # User wants testing with Kernel Fault Injection
-    if [ "x$INJECT_KERNEL_FAULT" = x1 ] ; then
-        #See if Debugfs is mounted, and
-        #Fault Injection Framework available through Debugfs
-        if [ -d "/sys/kernel/debug/fail_io_timeout" -o \
-             -d "/sys/kernel/debug/fail_make_request" -o \
-             -d "/sys/kernel/debug/fail_page_alloc" -o \
-             -d "/sys/kernel/debug/failslab" ]; then
-            # If atleast one of the Framework is available
-            # Go ahead to Inject Fault & Create required
-            # Command Files for LTP run
-            info "Running tests with Fault Injection Enabled in the Kernel..."
-            "${LTPROOT}/bin/create_kernel_faults_in_loops_and_probability.pl"\
-                "${TMP}/alltests" $INJECT_FAULT_LOOPS_PER_TEST \
-                $INJECT_KERNEL_FAULT_PERCENTAGE > "${TMP}/alltests.tmp"
-            cp "${TMP}/alltests.tmp" "${TMP}/alltests"
-            rm -f "${TMP}/alltests.tmp"
-        else
-            warning "Fault injection not enabled in the kernel; will run"
-            warning "testcases normally."
-        fi
-    ## Valgrind Check will work only when Kernel Fault Injection is not expected,
-    ## We do not want to test Faults when valgrind is running
-    elif [ "x$VALGRIND_CHECK_TYPE" = x1 ]; then
-        if ! type valgrind 2>/dev/null ; then
-            error "valgrind isn't available"
-        else
-            case "$VALGRIND_CHECK_TYPE" in
-            [1-3])
-                "${LTPROOT}/bin/create_valgrind_check.pl" "$TMP/alltests" \
-                    $VALGRIND_CHECK_TYPE > "$TMP/alltests.tmp"
-                cp "$TMP/alltests.tmp" "$TMP/alltests"
-                rm -rf "$TMP/alltests.tmp"
-                ;;
-            *)
-            error "Invalid valgrind memory check type: $VALGRIND_CHECK_TYPE.";;
-            esac
-        fi
+    if [ "$OUTPUTFILE" ]; then
+       echo -e "OUTPUT File: \c"
+       echo $OUTPUTFILE | cut -b4-
     fi
 
-    info "Running tests......."
+    echo -e "FAILED COMMAND File: \c"
+    echo $FAILCMDFILE | cut -b4-
+
+    if [ "$HTMLFILE" ]; then
+       echo "HTML File: $HTMLFILE"
+    fi
+
+    echo "Running tests......."
     test_start_time=$(date)
+
+	# User wants testing with Kernel Fault Injection
+	if [ $INJECT_KERNEL_FAULT ] ; then
+		#See if Debugfs is mounted, and
+		#Fault Injection Framework available through Debugfs
+		if [ -d "/sys/kernel/debug/fail_io_timeout" -o \
+			-d "/sys/kernel/debug/fail_make_request" -o \
+			-d "/sys/kernel/debug/fail_page_alloc" -o \
+			-d "/sys/kernel/debug/failslab" ]; then
+			#If atleast one of the Framework is available
+			#Go ahead to Inject Fault & Create required
+			#Command Files for LTP run
+			echo Running tests with Fault Injection Enabled in the Kernel...
+			${LTPROOT}/tools/create_kernel_faults_in_loops_and_probability.pl\
+				${TMP}/alltests $INJECT_FAULT_LOOPS_PER_TEST $INJECT_KERNEL_FAULT_PERCENTAGE > ${TMP}/alltests.tmp
+			cp ${TMP}/alltests.tmp ${TMP}/alltests
+			rm -rf ${TMP}/alltests.tmp
+		else
+			echo Fault Injection not enabled in the Kernel..
+			echo Running tests normally...
+		fi
+	fi
+
+	## Valgrind Check will work only when Kernel Fault Injection is not expected,
+	## We do not want to test Faults when valgrind is running
+	if [ $VALGRIND_CHECK ]; then
+		if [ ! $INJECT_KERNEL_FAULT ]; then
+			which valgrind || VALGRIND_CHECK_TYPE=XYZ
+			case $VALGRIND_CHECK_TYPE in
+				1)
+				${LTPROOT}/tools/create_valgrind_check.pl ${TMP}/alltests 1 > ${TMP}/alltests.tmp
+				cp ${TMP}/alltests.tmp ${TMP}/alltests
+				rm -rf ${TMP}/alltests.tmp;;
+				2)
+				${LTPROOT}/tools/create_valgrind_check.pl ${TMP}/alltests 2 > ${TMP}/alltests.tmp
+				cp ${TMP}/alltests.tmp ${TMP}/alltests
+				rm -rf ${TMP}/alltests.tmp;;
+				3)
+				${LTPROOT}/tools/create_valgrind_check.pl ${TMP}/alltests 3 > ${TMP}/alltests.tmp
+				cp ${TMP}/alltests.tmp ${TMP}/alltests
+				rm -rf ${TMP}/alltests.tmp;;
+				*) echo "Invalid Memory Check Type, or, Valgrind is not available";;
+			esac
+		fi
+	fi
 
     # Some tests need to run inside the "bin" directory.
     cd "${LTPROOT}/testcases/bin"
-    "${PAN_COMMAND}"
-    #"${LTPROOT}/bin/ltp-pan" $PAN_QUIET_MODE -e -S $INSTANCES $DURATION -a $$ \
-    #    -n $$ $PRETTY_PRT -f "$TMP/alltests" "$LOGFILE" "$OUTPUTFILE" \
-    #    "$FAILCMDFILE"
+    "${LTPROOT}/bin/ltp-pan" $QUIET_MODE -e -S $INSTANCES $DURATION -a $$ -n $$ $PRETTY_PRT -f ${TMP}/alltests $LOGFILE $OUTPUTFILE $FAILCMDFILE
      
     if [ $? -eq 0 ]; then
-        info "ltp-pan reported all tests PASS'ed"
-        LTP_EXIT_VALUE=0
+      echo "INFO: ltp-pan reported all tests PASS"
+      VALUE=0
+      export LTP_EXIT_VALUE=0;
     else
-        info "ltp-pan reported some tests FAIL'ed"
-        LTP_EXIT_VALUE=1
+      echo "INFO: ltp-pan reported some tests FAIL"
+      VALUE=1
+      export LTP_EXIT_VALUE=1;
     fi
     cd ..
-    info "LTP Version: $version_date"
+    echo "LTP Version: $version_date"
 
-    # Punt out 
     if [ "$ALT_HTML_OUT" -eq 1 ] ; then        #User wants the HTML output to be created, it then needs to be generated
        export LTP_VERSION=$version_date
        export TEST_START_TIME=$test_start_time
        export TEST_END_TIME=$(date)
-       OUTPUT_DIRECTORY=$(cut -c4- < "$OUTPUTFILE")
+       OUTPUT_DIRECTORY=`echo $OUTPUTFILE | cut -c4-`
        LOGS_DIRECTORY="$LTPROOT/results"
        export TEST_OUTPUT_DIRECTORY="$LTPROOT/output"
        export TEST_LOGS_DIRECTORY=$LOGS_DIRECTORY
-       info "Generating HTML Output.....!!"
-       ( perl $LTPROOT/bin/genhtml.pl $LTPROOT/bin/html_report_header.txt \
-         test_start test_end test_output execution_status \
-         "$OUTPUT_DIRECTORY" > "$HTMLFILE" )
-       info "Generated HTML Output.....!!"
-       info "Location: $HTMLFILE"
+       echo "Generating HTML Output.....!!"
+       ( perl $LTPROOT/tools/genhtml.pl $LTPROOT/tools/html_report_header.txt test_start test_end test_output execution_status $OUTPUT_DIRECTORY  > $HTMLFILE; )   
+       echo "Generated HTML Output.....!!"
+       echo "Location: $HTMLFILE";
+
     fi
  
-    # Send email report
-    if [ "$ALT_EMAIL_OUT" -eq 1 ] ; then
-
-       if [ ! -r "$HTMLFILE_NAME" -a ! -r "$OUTPUTFILE_NAME" -a ! -r "$LOGFILE_NAME" ] ; then
-           ## User does not have output/logs/html-output, nothing to be
-           ## mailed in this situation
-           info "Nothing to be mailed"
-       elif ! MUTT=$(which mutt 2>/dev/null) && ! MAIL=$(which mail 2>/dev/null) ; then
-           error "********************************************"
-           error "Cannot find a working copy of mail or mutt."
-           error "Will not email report."
-           error "********************************************"
-       elif ! type gzip 2>/dev/null; then
-           error "********************************************"
-           error "Cannot find a working copy of gzip"
-           error "Will not email report."
-           error "********************************************"
+    if [ "$ALT_EMAIL_OUT" -eq 1 ] ; then                      ## User wants reports to be e-mailed
+       if [ [ ! "$HTMLFILE_NAME" ] -o [ ! "$OUTPUTFILE_NAME" ] -o [ ! "$LOGFILE_NAME" ] ] ; then  
+          ##User does not have output/logs/html-output, nothing to be mailed in this situation
+          echo "Nothing to be mailed here...."
        else
-
            TAR_FILE_NAME=LTP_RUN_$version_date$DEFAULT_FILE_NAME_GENERATION_TIME.tar
-
-           # Got HTML file.
-           for f in "$HTMLFILE_NAME" "$OUTPUTFILE_NAME" ; do
-
-               if [ -r "$f" -a "$(readlink -f "$(dirname "$f")")" != "$(readlink -f "$LTPROOT/output")" ] ; then
-
-                   test -d "$LTPROOT/output" || mkdir -p "$LTPROOT/output"
-                   if [ $? -eq 0 ] ; then
-                       cp $HTMLFILE_NAME "$LTPROOT/output/."
-                   else
-                       error "Failed to create \`$LTPROOT/output/'."
-                       error "Skipping tar for all files in $LTPROOT/output/."
-                   fi
-
-               fi
-
-           done
-
-           if [ -r "$LOGFILE_NAME" -a "$(readlink -f "$(dirname "$LOGFILE_NAME")")" != "$(readlink -f "$LTPROOT/results")" ] ; then
-               test -d mkdir -p "$LTPROOT/results"                ## We need to create this Directory
-                   cp "$LOGFILE_NAME" "$LTPROOT/results/."
-               fi
-               test -d "$LTPROOT/output" || mkdir -p "$LTPROOT/output"
-               if [ $? -eq 0 ] ; then
-                   cp "$LOGFILE_NAME" "$LTPROOT/results/."
-               else
-                   error "Failed to create \`$LTPROOT/results/'."
-                   error "Skipping tar for all files in $LTPROOT/results/."
-               fi
+           if [ "$HTMLFILE_NAME" ] ; then                          ## HTML file Exists
+              if [ "$ALT_HTML_OUT" -ne 1 ] ; then                  ## The HTML file path is absolute and not $LTPROOT/output
+                 mkdir -p $LTPROOT/output                          ## We need to create this Directory
+                 cp $HTMLFILE_NAME $LTPROOT/output/
+              fi
            fi
-           # Got output log(s)
-           if [ -d "$LTPROOT/output" ] ; then
-               if tar -cf  "./$TAR_FILE_NAME" "$LTPROOT/output"; then
-                   info "Created TAR File: ./$TAR_FILE_NAME successfully, added $LTPROOT/output"
-               else
-                   error "Cannot Create TAR File: ./$TAR_FILE_NAME for adding $LTPROOT/output"
-               fi
-           fi # END: output log(s)
-           # Got results file(s)
-           if [ -d "$LTPROOT/results" ] ; then
-               if tar -uf "./$TAR_FILE_NAME" "$LTPROOT/results"; then
-                   info "Updated TAR File: ./$TAR_FILE_NAME successfully, added $LTPROOT/results"
-               else
-                   error "Cannot Update TAR File: ./$TAR_FILE_NAME for adding $LTPROOT/results"
-               fi
-           fi # END: results file(s)
-           if [ -e "$LTPROOT/nohup.out" ] ; then
-               if tar -uf "./$TAR_FILE_NAME" "$LTPROOT/nohup.out"; then
-                   info "Updated TAR File: ./$TAR_FILE_NAME successfully, added $LTPROOT/nohup.out"
-               else
-                   error "Cannot Update TAR File: ./$TAR_FILE_NAME for adding $LTPROOT/nohup.out"
-               fi
+           if [ "$OUTPUTFILE_NAME" ] ; then                        ## Output file exists
+              if [ "$ALT_DIR_OUT" -ne 1 ] ; then                   ## The Output file path is absolute and not $LTPROOT/output
+                 mkdir -p $LTPROOT/output                          ## We need to create this Directory
+                 cp $OUTPUTFILE_NAME $LTPROOT/output/
+              fi
            fi
-           if gzip "./$TAR_FILE_NAME"; then
-
-               info "Gunzipped TAR File: ./$TAR_FILE_NAME"
-
-               # Use mutt(1)
-               if [ -n "$MUTT" ] ; then
-                   info "Starting mailing reports to: $EMAIL_TO, file: ./$TAR_FILE_NAME.gz"
-                   mutt -a ./$TAR_FILE_NAME.gz -s "LTP Reports on $test_start_time" $EMAIL_TO < /dev/null
-                   if [ $? -eq 0 ]; then
-                       info "Reports Successfully mailed to: $EMAIL_TO"
-                   else
-                       error "Email operation failed"
-                   fi
-               # Use mail(1)
-               elif [ -n "$MAIL" ] ; then
-                   echo "Starting mailing reports to: $EMAIL_TO, file: ./$TAR_FILE_NAME.gz"
-                   uuencode ./$TAR_FILE_NAME.gz $TAR_FILE_NAME.gz | mail  $EMAIL_TO -s "LTP Reports on $test_start_time"
-                   if [ $? -eq 0 ]; then
-                       info "Reports Successfully mailed to: $EMAIL_TO"
-                   else
-                       error "Email operation failed"
-                   fi
-
-               else
-                   die "Programmer error; please report bug (\$MAIL and \$MUTT were both zero-length strings)."
-               fi # END: Send email via client mail or mutt.
+           if [ "$LOGFILE_NAME" ] ; then                           ## Log file exists
+              if [ "$ALT_DIR_RES" -ne 1 ] ; then                   ## The Log file path is absolute and not $LTPROOT/results
+                 mkdir -p $LTPROOT/results                         ## We need to create this Directory
+                 cp $LOGFILE_NAME $LTPROOT/results/
+              fi
+           fi
+           if [ -d $LTPROOT/output ] ; then
+              tar -cf  ./$TAR_FILE_NAME $LTPROOT/output
+              if [ $? -eq 0 ]; then
+                 echo "Created TAR File: ./$TAR_FILE_NAME successfully, added $LTPROOT/output"
+              else
+                 echo "Cannot Create TAR File: ./$TAR_FILE_NAME for adding $LTPROOT/output"
+              fi
+           fi
+           if [ -d $LTPROOT/results ] ; then
+              tar -uf ./$TAR_FILE_NAME $LTPROOT/results
+              if [ $? -eq 0 ]; then
+                 echo "Updated TAR File: ./$TAR_FILE_NAME successfully, added $LTPROOT/results"
+              else
+                 echo "Cannot Update TAR File: ./$TAR_FILE_NAME for adding $LTPROOT/results"
+              fi
+           fi
+           if [ -e $LTPROOT/nohup.out ] ; then                     ## If User would have Chosen nohup to do ltprun
+              tar -uf ./$TAR_FILE_NAME $LTPROOT/nohup.out
+              if [ $? -eq 0 ]; then
+                 echo "Updated TAR File: ./$TAR_FILE_NAME successfully, added $LTPROOT/nohup.out"
+              else
+                 echo "Cannot Update TAR File: ./$TAR_FILE_NAME for adding $LTPROOT/nohup.out"
+              fi
+           fi
+           gzip ./$TAR_FILE_NAME                                     ## gzip this guy
+           if [ $? -eq 0 ]; then
+              echo "Gunzipped TAR File: ./$TAR_FILE_NAME"
            else
-               error "Cannot Gunzip TAR File: ./$TAR_FILE_NAME"
+              echo "Cannot Gunzip TAR File: ./$TAR_FILE_NAME"
            fi
-
+           if [ -e /usr/bin/mutt ] ; then                          ## This is a better mail client than others
+              echo "Starting mailing reports to: $EMAIL_TO, file: ./$TAR_FILE_NAME.gz"
+              mutt -a ./$TAR_FILE_NAME.gz -s "LTP Reports on $test_start_time" $EMAIL_TO < /dev/null
+              if [ $? -eq 0 ]; then
+                 echo "Reports Successfully mailed to: $EMAIL_TO"
+              else
+                 echo "Reports cannot be mailed to: $EMAIL_TO"
+              fi
+           else ## Use our Ageold mail program
+              echo "Starting mailing reports to: $EMAIL_TO, file: ./$TAR_FILE_NAME.gz"
+              uuencode ./$TAR_FILE_NAME.gz $TAR_FILE_NAME.gz | mail  $EMAIL_TO -s "LTP Reports on $test_start_time"
+              if [ $? -eq 0 ]; then
+                 echo "Reports Successfully mailed to: $EMAIL_TO"
+              else
+                 echo "Reports cannot be mailed to: $EMAIL_TO"
+              fi
+           fi 
        fi
-       # END: Got something to email? // got a client to email with? //
-       #      got gzip? // send report.
-
-    fi # END: Send email report?
+    fi
    
-    info "Test end time: $(date)"
+    [ ! -z "$QUIET_MODE" ] && { echo "INFO: Test end time: $(date)" ; }
     
-    [ "x$GENLOAD" = x1 ] && (killall -9 genload >/dev/null 2>&1)
-    [ "x$NETPIPE" = x1 ] && (killall -9 NPtcp >/dev/null 2>&1)
+    [ "$GENLOAD" -eq 1 ] && { killall -9 genload  >/dev/null 2>&1; }
+    [ "$NETPIPE" -eq 1 ] && { killall -9 NPtcp  >/dev/null 2>&1; }
     
-    if [ "x$ALT_DIR_OUT" = x1 -o "x$ALT_DIR_RES" = x1 ] ; then
-        cat <<-EOF
+    [ "$ALT_DIR_OUT" -eq 1 ] || [ "$ALT_DIR_RES" -eq 1 ] && \
+    {
+    cat <<-EOF >&1
         
        ###############################################################"
         
@@ -918,15 +941,14 @@ main()
             LTP Version:  $version_date
        ###############################################################"
        
-        EOF
-    fi
-    exit $LTP_EXIT_VALUE
-
+	EOF
+    }
+    exit $VALUE
 }
 
 cleanup()
 {
-    rm -rf "${TMP}"
+    rm -rf ${TMP}
 }
 
 trap "cleanup" 0
