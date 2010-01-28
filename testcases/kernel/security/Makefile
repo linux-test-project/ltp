@@ -32,8 +32,12 @@ endif
 
 # Omit the selinux-testsuite if -lselinux is missing and the policy-devel code
 # is present.
-ifeq ($(strip $(SELINUX_LIBS)),)
-ifeq ($(wildcard $(DESTDIR)/usr/share/selinux),)
+ifneq ($(strip $(SELINUX_LIBS)),)
+FILTER_OUT_DIRS		+= selinux-testsuite
+else
+# NOTE (garrcoop): Keep this in sync with
+# testcases/kernel/security/selinux-testsuite/refpolicy/Makefile
+ifeq ($(wildcard $(DESTDIR)/usr/share/selinux/devel),)
 FILTER_OUT_DIRS		+= selinux-testsuite
 endif
 endif
