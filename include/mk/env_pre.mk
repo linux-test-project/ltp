@@ -98,6 +98,9 @@ else
 # there yet, but the variable itself has its own uses...
 ifeq ($(strip $(DESTDIR)$(prefix)),)
 INSTALL_IN_BUILD_TREE		:= 1
+else
+ifeq ($(subst $(abs_top_srcdir),,$(prefix)),)
+INSTALL_IN_BUILD_TREE		:= 1
 endif
 endif
 
@@ -105,6 +108,7 @@ ifeq ($(filter autotools %clean help,$(MAKECMDGOALS)),)
 include $(abs_top_builddir)/include/mk/config.mk
 endif
 
+# make 3.80 called it .DEFAULT_TARGET.
 .DEFAULT_GOAL			:= all
 
 endif

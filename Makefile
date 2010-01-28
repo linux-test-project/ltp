@@ -69,8 +69,13 @@ endif
 endef
 
 COMMON_TARGETS		+= testcases tools
-INSTALL_TARGETS		+= $(COMMON_TARGETS) runtest testscripts
-CLEAN_TARGETS		+= $(COMMON_TARGETS) lib include runtest testscripts
+# Don't want to nuke the original files if we're installing in-build-tree.
+ifneq ($(INSTALL_IN_BUILD_TREE),1)
+INSTALL_TARGETS		+= runtest testscripts
+CLEAN_TARGETS		+= include runtest testscripts
+endif
+INSTALL_TARGETS		+= $(COMMON_TARGETS)
+CLEAN_TARGETS		+= $(COMMON_TARGETS) lib
 BOOTSTRAP_TARGETS	:= $(sort $(COMMON_TARGETS) $(CLEAN_TARGETS) $(INSTALL_TARGETS))
 
 CLEAN_TARGETS		:= $(addsuffix -clean,$(CLEAN_TARGETS))
