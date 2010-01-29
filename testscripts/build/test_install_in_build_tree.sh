@@ -36,4 +36,4 @@ build "$srcdir" "$srcdir"
 # 4. -->> Install in-build-tree. <<--
 install_ltp "$srcdir" "$srcdir" ""
 # 5. Test.
-test_ltp "$install_dir"
+test_ltp ""

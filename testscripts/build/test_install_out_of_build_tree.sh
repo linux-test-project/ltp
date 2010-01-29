@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#    install outside build-tree script.
+#    build / install outside build-tree script.
 #
 #    Copyright (C) 2010, Cisco Systems Inc.
 #
@@ -30,10 +30,10 @@ setup_env
 # 1. Pull the SCM.
 pull_scm cvs "$tmp_srcdir"
 # 2. Configure.
-configure "$srcdir" "$srcdir" "$prefix" "$destdir"
+configure "$srcdir" "$srcdir" "$tmp_prefix" "$tmp_destdir"
 # 3. -->> Compile out-of-build-tree. <<--
 build "$srcdir" "$srcdir"
 # 4. Install.
-install_ltp "$srcdir" "$srcdir" "$destdir"
+install_ltp "$srcdir" "$srcdir" "$tmp_destdir"
 # 5. Test.
-test_ltp "$install_dir"
+test_ltp "$("$abspath" "$tmp_destdir/${tmp_prefix:-/opt/ltp}")"

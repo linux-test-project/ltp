@@ -70,7 +70,7 @@ endef
 
 COMMON_TARGETS		+= testcases tools
 # Don't want to nuke the original files if we're installing in-build-tree.
-ifneq ($(INSTALL_IN_BUILD_TREE),1)
+ifneq ($(BUILD_TREE_STATE),$(BUILD_TREE_SRCDIR_INSTALL))
 INSTALL_TARGETS		+= runtest testscripts
 CLEAN_TARGETS		+= include runtest testscripts
 endif
@@ -139,7 +139,9 @@ $(INSTALL_TARGETS) include-install lib-install:
 clean_install_dir::
 	$(RM) -Rf "$(INSTALL_DIR)"
 
-ifneq ($(INSTALL_IN_BUILD_TREE),1)
+# Don't clean the directory if the build-tree is set to the srcdir, or the
+# build tree is unconfigured.
+ifneq ($(filter $(BUILD_TREE_STATE),$(BUILD_TREE_SRCDIR_INSTALL) $(BUILD_TREE_UNCONFIGURED)),)
 CLEAN_TARGETS	+= clean_install_dir
 endif
 
@@ -166,7 +168,7 @@ $(addprefix $(DESTDIR)/$(bindir)/,$(BINDIR_INSTALL_SCRIPTS)): %:
 $(addprefix $(INSTALL_DIR)/,$(SRCDIR_INSTALL_SCRIPTS)): %:
 	install -m 00755 "$(top_srcdir)/$(@F)" "$@"
 
-ifneq ($(INSTALL_IN_BUILD_TREE),1)
+ifneq ($(BUILD_TREE_STATE),$(BUILD_TREE_SRCDIR_INSTALL))
 INSTALL_TARGETS		+= $(addprefix $(INSTALL_DIR)/,$(SRCDIR_INSTALL_TARGETS))
 endif
 INSTALL_TARGETS		+= $(addprefix $(DESTDIR)/$(bindir)/,$(BINDIR_INSTALL_SCRIPTS))

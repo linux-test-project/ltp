@@ -27,6 +27,15 @@
 ifndef ENV_PRE_LOADED
 ENV_PRE_LOADED = 1
 
+# "out-of-build-tree" build.
+BUILD_TREE_BUILDDIR_INSTALL	:= 1
+# "in-srcdir" build / install.
+BUILD_TREE_SRCDIR_INSTALL	:= 2
+# "in-srcdir" build, non-srcdir install.
+BUILD_TREE_NONSRCDIR_INSTALL	:= 3
+# configure not run.
+BUILD_TREE_UNCONFIGURED		:= 4
+
 ifndef MAKE_VERSION_CHECK
 export MAKE_VERSION_CHECK = 1
 ifneq ($(firstword $(sort 3.80 $(MAKE_VERSION))),3.80)
@@ -85,31 +94,45 @@ ifeq ($(srcdir),)
 srcdir				:= .
 endif
 
-# We can piece together where we're located in the source and object trees with
-# just these two vars and $(CURDIR).
-export abs_top_srcdir abs_top_builddir
-
-# DO NOT MOVE THIS BELOW include [..]/config.mk (will break out-of-build tree
-# checks)!
-ifneq ($(abs_builddir),$(abs_srcdir))
-OUT_OF_BUILD_TREE		:= 1
-else
-# Stub support for installing directly in the build tree; the support is not
-# there yet, but the variable itself has its own uses...
-ifeq ($(strip $(DESTDIR)$(prefix)),)
-INSTALL_IN_BUILD_TREE		:= 1
-else
-ifeq ($(subst $(abs_top_srcdir),,$(prefix)),)
-INSTALL_IN_BUILD_TREE		:= 1
-endif
-endif
-endif
-
+# autotools, *clean, and help don't require config.mk...
 ifeq ($(filter autotools %clean help,$(MAKECMDGOALS)),)
+
 include $(abs_top_builddir)/include/mk/config.mk
+
+# START out-of-build-tree check.
+ifneq ($(abs_builddir),$(abs_srcdir))
+BUILD_TREE_STATE		:= $(BUILD_TREE_BUILDDIR_INSTALL)
+else
+# Else, not out of build tree..
+
+# START srcdir build-tree install checks
+ifeq ($(strip $(DESTDIR)$(prefix)),)
+BUILD_TREE_STATE		:= $(BUILD_TREE_SRCDIR_INSTALL)
+else  # Empty $(DESTDIR)$(prefix)
+ifeq ($(abs_top_srcdir),$(prefix))
+BUILD_TREE_STATE		:= $(BUILD_TREE_SRCDIR_INSTALL)
+endif
+# END srcdir build-tree install checks
+endif
+# END out-of-build-tree check.
+endif
+
+# Is the build-tree configured yet?
+ifeq ($(BUILD_TREE_STATE),)
+ifneq ($(wildcard $(abs_top_builddir)/include/mk/config.mk),)
+BUILD_TREE_STATE		:= $(BUILD_TREE_NONSRCDIR_INSTALL)
+endif
 endif
 
 # make 3.80 called it .DEFAULT_TARGET.
 .DEFAULT_GOAL			:= all
+
+endif	# END autotools, *clean...
+
+BUILD_TREE_STATE		?= $(BUILD_TREE_UNCONFIGURED)
+
+# We can piece together where we're located in the source and object trees with
+# just these two vars and $(CURDIR).
+export abs_top_srcdir abs_top_builddir BUILD_TREE_STATE
 
 endif
