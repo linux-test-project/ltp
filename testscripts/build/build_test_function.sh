@@ -147,13 +147,25 @@ install_ltp() {
 # 1 - install directory for tree, e.g. $(DESTDIR)/$(prefix)
 test_ltp() {
 
-	[ "x${1}" != x ] && export LTPROOT="$1"
-
 	# XXX (garrcoop): I haven't tracked down the root cause for the
 	# issue, but some versions of sed combined with some terminal
 	# configurations cause sed to block waiting for EOF on certain
 	# platforms when executing runltp. Thus, we should effectively close
 	# /dev/stdin before executing runltp via execltp.
-	"${1:-.}/bin/execltp" -v < /dev/null
+	CMD="${1:-.}/bin/execltp"
+
+	if [ "x${1}" != x ] ; then
+		export LTPROOT="$1"
+	fi
+
+	if type su > /dev/null && groups | grep wheel ; then
+		CMD="su -c \"${CMD}\""
+	elif type sudo > /dev/null && sudo sh -c 'exit 0' ; then
+		CMD="sudo -- \"$CMD\""
+	fi
+
+	echo "Will execute using: $CMD"
+
+	$CMD
 
 }
