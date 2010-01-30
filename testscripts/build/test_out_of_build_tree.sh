@@ -26,7 +26,7 @@ set -e
 . build_test_function.sh
 
 # 0. Setup the environment.
-setup_env
+setup_env "Build out of build tree"
 # 1. Pull the SCM.
 pull_scm cvs "$tmp_srcdir"
 # 2. Configure.

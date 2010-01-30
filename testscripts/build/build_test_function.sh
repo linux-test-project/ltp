@@ -46,20 +46,20 @@ setup_env() {
 	fi
 	trap cleanup EXIT
 	cat <<EOF
-================================
-SUMMARY OF VARIABLES:
-================================
+========================================
+SUMMARY FOR: $1 Scenario
+========================================
 builddir 	-> $tmp_builddir
 destdir		-> $tmp_destdir
 prefix		-> $tmp_prefix
 srcdir		-> $tmp_srcdir
-================================
+========================================
 EOF
 
 }
 
 cleanup() {
-	if [ "x${NO_CLEAN:-0}" != 1 ] ; then
+	if [ "x${CLEAN:-1}" = x1 ] ; then
 		cd /
 		trap '' EXIT
 		rm -Rf $vars
