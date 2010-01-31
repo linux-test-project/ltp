@@ -27,30 +27,9 @@ set -x
 setup_env() {
 	testscript_dir=$(readlink -f "${0%/*}")
 	unset vars
-	if tmp_builddir=$(mktemp -d) ; then
-		vars="$vars $tmp_builddir"
-	else
-		echo "${0##*/}: failed to create tmp_builddir";
-		false
-	fi
-	if tmp_destdir=$(mktemp -d) ; then
-		vars="$vars $tmp_destdir"
-	else
-		echo "${0##*/}: failed to create tmp_destdir";
-		false
-	fi
-	if tmp_prefix=$(mktemp -d) ; then
-		vars="$vars $tmp_prefix"
-	else
-		echo "${0##*/}: failed to create tmp_prefix";
-		false
-	fi
-	if tmp_srcdir=$(mktemp -d) ; then
-		vars="$vars $tmp_srcdir"
-	else
-		echo "${0##*/}: failed to create tmp_srcdir";
-		false
-	fi
+	for i in tmp_builddir tmp_destdir tmp_prefix tmp_srcdir; do
+		eval "if $i=\$(mktemp -d) ; then vars=\"\$vars \$${i}\"; else echo ${0##*/}: failed to create temporary directory for $i; false; fi"
+	done
 	trap cleanup EXIT
 	cat <<EOF
 ========================================
@@ -70,7 +49,7 @@ EOF
 # $CLEAN_TEMPFILES - !1 -> don't clean.
 #                  - 1 -> clean.
 cleanup() {
-	if [ "x${CLEAN_TEMPFILES:-1}" = x1 ] ; then
+	if [ "x${CLEAN_TEMPFILES:-0}" = x1 -a "x${TEST_PASSED:-0}" = x1 ] ; then
 		cd /
 		trap '' EXIT
 		rm -Rf $vars
@@ -80,10 +59,11 @@ cleanup() {
 # Pull from CVS.
 cvs_pull() {
 
-	export CVSROOT=:pserver:anonymous@ltp.cvs.sourceforge.net:/cvsroot/ltp
+	export CVSROOT=${CVSROOT:=:pserver:anonymous@ltp.cvs.sf.net:/cvsroot/ltp}
 
 	if ( [ -f ~/.cvspass ] || touch ~/.cvspass ) ; then
-		cvs -d$CVSROOT login && cvs -z3 export -f -r HEAD ltp && srcdir="$PWD/ltp"
+		echo "$CVSROOT" | grep -v '^:pserver:' || cvs -d$CVSROOT login
+		cvs -z3 export -f -r HEAD ltp && srcdir="$PWD/ltp"
 	fi
 
 }
@@ -134,7 +114,7 @@ configure() {
 		${MAKEFLAGS} \
 		autotools
 
-	cd "$2" && "$1/configure" ${3:+--prefix=$("$abspath" $3)}
+	cd "$2" && "$1/configure" ${3:+--prefix=$("$abspath" "$3")}
 
 }
 
@@ -175,35 +155,56 @@ install_ltp() {
 # 1 - install directory for tree, e.g. $(DESTDIR)/$(prefix)
 test_ltp() {
 
-	test_ltp="${1:-.}/test_ltp.sh"
+	installdir=$(readlink -f "${1:-.}")
+	test_ltp="$installdir/test_ltp.sh"
 
 	# XXX (garrcoop): I haven't tracked down the root cause for the
 	# issue, but some versions of sed combined with some terminal
 	# configurations cause sed to block waiting for EOF on certain
 	# platforms when executing runltp. Thus, we should effectively close
 	# /dev/stdin before executing runltp via execltp.
-	echo "${1:-.}/bin/execltp < /dev/null" > "$test_ltp"
+	cat <<EOF > "$test_ltp"
+#!/bin/sh
 
-	if [ "x${1}" != x ] ; then
-		export LTPROOT="$1"
-	fi
+export AR="$AR"
+export ARFLAGS="$ARFLAGS"
+export CC="$CC"
+export CFLAGS="$CFLAGS"
+export CXX="$CXX"
+export CXXFLAGS="$CXXFLAGS"
+export LD="$LD"
+export LDFLAGS="$LDFLAGS"
+export NM="$NM"
+
+# Optional variables required for some of the testcases.
+for i in AR ARFLAGS CC CFLAGS CXX CXXFLAGS LD LDFLAGS NM; do
+	eval "[ \"x\\\$\$i\" = x ] && unset \$i"
+done
+
+export LTPROOT="$LTPROOT"
+export PATH="\$PATH:$installdir/bin:$PATH"
+
+execltp -l "$installdir" -vv < /dev/null
+EOF
+
+	pre_cmd=
 
 	if [ "x$(id -ru)" != "x0" ] ; then
 
-		if type su > /dev/null && groups | grep wheel ; then
-			PRE_CMD="su -c"
-		elif type sudo > /dev/null && sudo sh -c 'exit 0' ; then
-			PRE_CMD="sudo --"
+		# Make sure that environment is translated properly with sudo.
+		if type sudo > /dev/null && sudo -- sh -c 'exit 0' ; then
+			pre_cmd='sudo --'
+		elif type su > /dev/null && groups | grep wheel ; then
+			pre_cmd='su -c'
 		fi
 
-		if [ "x$PRE_CMD" != x ] ; then
-			echo "chown -Rf $(id -ru) *" >> "$test_ltp"
-			CMD="${PRE_CMD} '$test_ltp'"
+		if [ "x$pre_cmd" != x ] ; then
+			echo "chown -Rf $(id -ru) \"$installdir\"" >> "$test_ltp"
 		fi
 
 	fi
 
-	echo "${0##*/}: will execute test_ltp $CMD"
+	echo "${0##*/}: will execute test_ltp via ${pre_cmd:-$pre_cmd }$test_ltp"
 	chmod +x "$test_ltp"
 	# XXX (garrcoop): uncommenting the following would work around a
 	# craptacular `bug' with libpam where it outputs the Password: prompt
@@ -211,7 +212,7 @@ test_ltp() {
 	# runltp, etc to the console instead of a log -- therefore if you do
 	# cat all output to a log, just tail -f it and enter in your password
 	# when necessary.
-	#${CMD} > /dev/tty 2>&1
-	${CMD}
+	#${pre_cmd} "${test_ltp}" > /dev/tty 2>&1 && TEST_PASSED=1
+	${pre_cmd} "${test_ltp}" && TEST_PASSED=1
 
 }
