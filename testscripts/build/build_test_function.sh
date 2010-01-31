@@ -17,32 +17,35 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 # Garrett Cooper, January 2010
+#
 
 set -x
 
 # Temporary directory setup.
+#
+# $TMPDIR - base temporary directory; see mktemp(1) for more details.
 setup_env() {
 	testscript_dir=$(readlink -f "${0%/*}")
 	unset vars
 	if tmp_builddir=$(mktemp -d) ; then
 		vars="$vars $tmp_builddir"
 	else
-		tst_brkm tst_exit TBROK 'Failed to create tmp_builddir';
+		echo "${0##*/}: failed to create tmp_builddir";
 	fi
 	if tmp_destdir=$(mktemp -d) ; then
 		vars="$vars $tmp_destdir"
 	else
-		tst_brkm tst_exit TBROK 'Failed to create tmp_destdir';
+		echo "${0##*/}: failed to create tmp_destdir";
 	fi
 	if tmp_prefix=$(mktemp -d) ; then
 		vars="$vars $tmp_prefix"
 	else
-		tst_brkm tst_exit TBROK 'Failed to create tmp_prefix';
+		echo "${0##*/}: failed to create tmp_prefix";
 	fi
 	if tmp_srcdir=$(mktemp -d) ; then
 		vars="$vars $tmp_srcdir"
 	else
-		tst_brkm tst_exit TBROK 'Failed to create tmp_srcdir';
+		echo "${0##*/}: failed to create tmp_srcdir";
 	fi
 	trap cleanup EXIT
 	cat <<EOF
@@ -58,8 +61,12 @@ EOF
 
 }
 
+# Clean up the generated directories.
+#
+# $CLEAN_TEMPFILES - !1 -> don't clean.
+#                  - 1 -> clean.
 cleanup() {
-	if [ "x${CLEAN:-1}" = x1 ] ; then
+	if [ "x${CLEAN_TEMPFILES:-1}" = x1 ] ; then
 		cd /
 		trap '' EXIT
 		rm -Rf $vars
@@ -84,14 +91,21 @@ cvs_pull() {
 #	git clone git://ltp.git.sourceforge.net/gitroot/ltp/ltp
 #}
 
+#
 # Pull a fresh copy of the repository for building.
 #
 # 1 - pull method (currently only cvs is supported, but git may be supported
 #     in the future).
 # 2 - source directory.
 #
+# $LTP_PATCH - -p0 based patch to apply after the pull is complete for
+# precommit testing. THE PATH TO THE PATCH MUST BE ABSOLUTE!
+#
 pull_scm() {
 	cd "$2" && eval "${1}_pull"
+	if [ "x$LTP_PATCH" != x ] ; then
+		patch -p0 < "$LTP_PATCH"
+	fi
 }
 
 # Configure a source tree for building.
@@ -109,10 +123,12 @@ configure() {
 	abspath=$(readlink -f "$testscript_dir/../../scripts/abspath.sh")
 
 	if [ "x$2" != x ] ; then
-		(test -d "$2" || mkdir -p "$2") || return $?
+		test -d "$2" || mkdir -p "$2"
 	fi
 
-	make -C "$1" autotools || return $?
+	make -C "$1" \
+		${MAKEFLAGS} \
+		autotools
 
 	cd "$2" && "$1/configure" ${3:+--prefix=$("$abspath" $3)}
 
@@ -122,10 +138,14 @@ configure() {
 #
 # 1 - source directory
 # 2 - build directory
+#
+# $MAKEFLAGS - flags to pass directly to gmake(1).
+#
 build() {
 	make ${2:+-C "$2"} \
 	     ${1:+-f "$1/Makefile" "top_srcdir=$1"} \
 	     ${2:+"top_builddir=$2"} \
+	     ${MAKEFLAGS} \
 	     all
 }
 
@@ -134,11 +154,15 @@ build() {
 # 1 - source directory
 # 2 - build directory
 # 3 - DESTDIR
+#
+# $MAKEFLAGS - flags to pass directly to gmake(1).
+#
 install_ltp() {
 	make ${2:+-C "$2"} \
 	     ${1:+-f "$1/Makefile" "top_srcdir=$1"} \
 	     ${2:+"top_builddir=$2"} \
 	     ${3:+"DESTDIR=$3"} \
+	     ${MAKEFLAGS} \
 	     install
 }
 
@@ -147,25 +171,43 @@ install_ltp() {
 # 1 - install directory for tree, e.g. $(DESTDIR)/$(prefix)
 test_ltp() {
 
+	test_ltp="${1:-.}/test_ltp.sh"
+
 	# XXX (garrcoop): I haven't tracked down the root cause for the
 	# issue, but some versions of sed combined with some terminal
 	# configurations cause sed to block waiting for EOF on certain
 	# platforms when executing runltp. Thus, we should effectively close
 	# /dev/stdin before executing runltp via execltp.
-	CMD="${1:-.}/bin/execltp"
+	echo "${1:-.}/bin/execltp < /dev/null" > "$test_ltp"
 
 	if [ "x${1}" != x ] ; then
 		export LTPROOT="$1"
 	fi
 
-	if type su > /dev/null && groups | grep wheel ; then
-		CMD="su -c \"${CMD}\""
-	elif type sudo > /dev/null && sudo sh -c 'exit 0' ; then
-		CMD="sudo -- \"$CMD\""
+	if [ "x$(id -ru)" != "x0" ] ; then
+
+		if type su > /dev/null && groups | grep wheel ; then
+			PRE_CMD="su -c"
+		elif type sudo > /dev/null && sudo sh -c 'exit 0' ; then
+			PRE_CMD="sudo --"
+		fi
+
+		if [ "x$PRE_CMD" != x ] ; then
+			echo "chown -Rf $(id -ru) *" >> "$test_ltp"
+			CMD="${PRE_CMD} '$test_ltp'"
+		fi
+
 	fi
 
-	echo "Will execute using: $CMD"
-
-	$CMD
+	echo "${0##*/}: will execute test_ltp $CMD"
+	chmod +x "$test_ltp"
+	# XXX (garrcoop): uncommenting the following would work around a
+	# craptacular `bug' with libpam where it outputs the Password: prompt
+	# to /dev/stdout instead of /dev/tty, but it also dumps all output from
+	# runltp, etc to the console instead of a log -- therefore if you do
+	# cat all output to a log, just tail -f it and enter in your password
+	# when necessary.
+	#${CMD} > /dev/tty 2>&1
+	${CMD}
 
 }
