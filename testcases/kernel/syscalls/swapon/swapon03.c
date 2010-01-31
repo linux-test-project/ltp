@@ -285,7 +285,7 @@ int setup_swap()
 
 			/* Create the swapfile */
 			if (create_swapfile(filename, bs, count) < 0) {
-				tst_brkm(TFAIL | TERRNO, cleanup,
+				tst_brkm(TFAIL, cleanup,
 					 "Failed to create swapfile for the test");
 			}
 
@@ -346,7 +346,8 @@ int create_swapfile(char *swapfile, int bs, int count)
 		return -1;
 	}
 	if (system(cmd_buffer) != 0) {
-		tst_resm(TWARN, "failed to make swap file %s", swapfile);
+		tst_resm(TWARN, "failed to make swap file %s via command %s",
+			 swapfile, cmd_buffer);
 		return -1;
 	}
 
