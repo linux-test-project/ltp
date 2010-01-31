@@ -27,12 +27,13 @@
 #           04/03 Jerone Young (jyoung5@us.ibm.com)
 #
 
+TMP=${TMP:=/tmp}
 allow="/etc/at.allow"
 test_user1="test_user_1"
 test_user2="test_user_2"
 test_user2_home="/home/${test_user2}"
 test_user1_home="/home/${test_user1}"
-tmpfile="/tmp/at_allow_test"
+tmpfile="$TMP/at_allow_test"
 
 #-----------------------------------------------------------------------
 # FUNCTION:  do_setup
@@ -50,15 +51,13 @@ do_setup()
     userdel -r "${test_user2}" >/dev/null 2>&1
 
     # Create the 1st user.
-    useradd -g users -d "${test_user1_home}"  -m "${test_user1}"
-    if [ $? != 0 ]; then
+    if ! useradd -g users -d "${test_user1_home}"  -m "${test_user1}"; then
 	echo "Could not add test user ${test_user1} to system."
 	exit 1
     fi
 
     # Create the 2nd user.
-    useradd -g users -d "${test_user2_home}" -m "${test_user2}"
-    if [ $? != 0 ]; then
+    if ! useradd -g users -d "${test_user2_home}" -m "${test_user2}"; then
 	echo "Could not add test user ${test_user2} to system."
 	exit 1
     fi
@@ -148,7 +147,9 @@ run_test()
 #-----------------------------------------------------------------------
 # FUNCTION: main
 #-----------------------------------------------------------------------
-if [ $(whoami) = "root" ]; then
+if type at > /dev/null; then
+    tst_resm TCONF "at command not found on system"
+elif [ "$(id -ru)" = 0 ]; then
     do_setup
     echo "${test_user1}" >"${allow}"
     exit_code=0
