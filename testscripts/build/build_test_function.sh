@@ -31,21 +31,25 @@ setup_env() {
 		vars="$vars $tmp_builddir"
 	else
 		echo "${0##*/}: failed to create tmp_builddir";
+		false
 	fi
 	if tmp_destdir=$(mktemp -d) ; then
 		vars="$vars $tmp_destdir"
 	else
 		echo "${0##*/}: failed to create tmp_destdir";
+		false
 	fi
 	if tmp_prefix=$(mktemp -d) ; then
 		vars="$vars $tmp_prefix"
 	else
 		echo "${0##*/}: failed to create tmp_prefix";
+		false
 	fi
 	if tmp_srcdir=$(mktemp -d) ; then
 		vars="$vars $tmp_srcdir"
 	else
 		echo "${0##*/}: failed to create tmp_srcdir";
+		false
 	fi
 	trap cleanup EXIT
 	cat <<EOF
