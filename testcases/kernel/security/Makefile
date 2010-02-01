@@ -32,7 +32,9 @@ endif
 
 # XXX (garrcoop): avoid compilation failures on RHEL 5.4, as reported by
 # Mitani-san, because of policy versioning issues...
-ifneq (1,1)
+ifeq (1,1)
+FILTER_OUT_DIRS		+= selinux-testsuite
+else
 # Omit the selinux-testsuite if -lselinux is missing or the policy-devel
 # package isn't present.
 ifneq ($(strip $(SELINUX_LIBS)),)
