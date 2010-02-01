@@ -30,6 +30,9 @@ ifeq ($(strip $(CAP_LIBS)),)
 FILTER_OUT_DIRS		:= cap_bound filecaps
 endif
 
+# XXX (garrcoop): avoid compilation failures on RHEL 5.4, as reported by
+# Mitani-san, because of policy versioning issues...
+ifneq (1,1)
 # Omit the selinux-testsuite if -lselinux is missing or the policy-devel
 # package isn't present.
 ifneq ($(strip $(SELINUX_LIBS)),)
@@ -39,6 +42,7 @@ else
 # testcases/kernel/security/selinux-testsuite/refpolicy/Makefile
 ifeq ($(wildcard $(DESTDIR)/usr/share/selinux/devel),)
 FILTER_OUT_DIRS		+= selinux-testsuite
+endif
 endif
 endif
 
