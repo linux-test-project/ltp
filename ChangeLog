@@ -1,3 +1,738 @@
+LTP-20100131
+
+1) Log Message:
+Fix prep_create_link as noticed by Michal Simek. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Added Files:
+ltp/testcases/kernel/syscalls/lchown/prep_create_link
+
+2) Log Message:
+This change was originally designated for changing a fail to a pass, but morphed into more than that. This takes all of the ad hoc echoes and converts them into tst_resm calls, and makes a few other modifications to called commands and converts them into more simplified logic. Originally (and largely submitted by Serge), modified slightly after some clarification with him. Signed-off-by: Serge E. Hallyn <serue@us.ibm.com>, Modified-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/security/p9auth/p9priv.sh
+
+3) Log Message:
+Noob mistake: forgot to unawk the awk call. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/controllers/cpuctl_fj/run_cpuctl_test_fj.sh
+
+4) Log Message:
+Actually, that doesn't make sense. No where in the awk call does it actually have awk or the pid listed as being awked. Something else is fishy here... Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/controllers/cpuctl_fj/run_cpuctl_test_fj.sh
+
+5) Log Message:
+In latest ltp version, the following message occured when run the case of cpuset.
+-----
+./cpuset_hotplug_test.sh: line 39: ./cpuset_list_compute: No such file or directory
+./cpuset_hotplug_test.sh: line 227: ./cpuset_list_compute: No such file or directory
+-----
+The reason is that cpuset_list_compute.c(in testcases/kernel/controllers/cpuset/cpuset_hotplug_test/) has not been compiled. This patch fix it. Signed-off-by: Shi Weihua <shiwh@cn.fujitsu.com>,
+
+Modified Files:
+ltp/testcases/kernel/controllers/cpuset/cpuset_hotplug_test/Makefile
+
+6) Log Message:
+Hi, Thank you for fixing "cgroup" and "cgroup_fj". However, I found a new problem in revised "cgroup" testcases. It's in "cgroup_regression_test.sh". In my original patch, I didn't revise about "tst_kvercmp 2 6 29" judgment. But in fixed version, the error route of above judgment revised from "TBROK" to "TCONF". If "TCONF" is used, the shell should end by exit 0, I think. But "cgroup_regression_test.sh" does not end by exit 0. Please consider about the following patch: Signed-off-by: Tomomori Mitani <mitani@ryobi.co.jp>,
+
+Modified Files:
+ltp/testcases/kernel/controllers/cgroup/cgroup_regression_test.sh
+
+7) Log Message:
+Shuffle around the code and exit _once_ at the bottom of the child process. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/syscalls/nanosleep/nanosleep02.c
+
+8) Log Message:
+Readd the script so that it gets run when the test is executed... This was in my original patch submission but somehow didn't make its way into the ltp tree. Signed-off-by: Serge E. Hallyn <serue@us.ibm.com>, Acked-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Added Files:
+ltp/testcases/kernel/security/p9auth/checkp9auth.sh
+
+9) Log Message:
+Fix breakage caused by ltp_clone_quick move. Signed-off-by: Garrett Cooper,
+
+Modified Files:
+ltp/testcases/kernel/security/selinux-testsuite/tests/execshare/Makefile
+ltp/testcases/kernel/security/selinux-testsuite/tests/execshare/selinux_execshare_parent.c
+
+10) Log Message:
+1. Get rid of ad hoc numaif.h (forgotten delete I was going to do before Christmas... ho ho ho... -_-).
+2. Get rid of nodemask_set (only applies for v2 of libnuma).
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/syscalls/utils/numa_helpers.h 
+Removed Files:
+ltp/testcases/kernel/syscalls/utils/numaif.h
+
+11) Log Message:
+Added check for memory controller (functional, regression & stress). Signed-off By : Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>, Acked-by: Li Zefan <lizf@cn.fujitsu.com>,
+
+Modified Files:
+ltp/testcases/kernel/controllers/test_controllers.sh
+ltp/testcases/kernel/controllers/memcg/regression/memcg_regression_test.sh
+ltp/testcases/kernel/controllers/memcg/stress/memcg_stress_test.sh
+ltp/testcases/kernel/controllers/memcg/functional/memcg_function_test.sh
+
+12) Log Message:
+Fix the bug of the smaller cpu_set_t's length in getcpu01. getcpu01 test failed because the len of cpu_set_t in the glibc is smaller than the length of the cpumask in the kernel. So we must use the dynamically sized CPU sets instead of the standard cpu_set_t. This patch fix this problem. Before using this patch, the test result is following:
+getcpu01    1  TFAIL  :  sched_getaffinity:errno:22
+After using this patch, the test result is following:
+getcpu01    1  TPASS  :  getcpu() returned proper cpuid:3, node id:0
+Signed-off-by: Miao Xie <miaox@cn.fujitsu.com>,
+
+Modified Files:
+ltp/testcases/kernel/syscalls/getcpu/getcpu01.c
+
+13) Log Message:
+Fix the bug of the smaller cpu_set_t's length in sched_getaffinity01. sched_getaffinity01 test failed because the len of cpu_set_t in the glibc is smaller than the length of the cpumask in the kernel. So we must use the dynamically sized CPU sets instead of the standard cpu_set_t. This patch fix this problem. Before using this patch, the test result is following:
+sched_getaffinity01    0  TINFO  :  system has 4 processor(s).
+sched_getaffinity01    1  TPASS  :  sched_getaffinity(0, len, (cpu_set_t *)-1): TEST_ERRNO=EINVAL(22): Invalid argument
+sched_getaffinity01    2  TPASS  :  sched_getaffinity(0, 0, &mask): TEST_ERRNO=EINVAL(22): Invalid argument
+sched_getaffinity01    3  TPASS  :  sched_getaffinity(getpid() + 1, len, &mask): TEST_ERRNO=EINVAL(22): Invalid argument
+sched_getaffinity01    4  TFAIL  :  could not get cpu affinity: TEST_ERRNO=EINVAL(22): Invalid argument
+The subcases1-3 of this test also failed though they were successful according to the log. Becuase the errnos returned were wrong.
+After using this patch, the test result is following:
+sched_getaffinity01    0  TINFO  :  system has 4 processor(s).
+sched_getaffinity01    0  TINFO  :  cpusetsize is 512
+sched_getaffinity01    0  TINFO  :  mask.__bits[0] = 15
+sched_getaffinity01    1  TPASS  :  sched_getaffinity() succeed ,this process 2239 is running processor: 0
+sched_getaffinity01    2  TPASS  :  sched_getaffinity() succeed ,this process 2239 is running processor: 1
+sched_getaffinity01    3  TPASS  :  sched_getaffinity() succeed ,this process 2239 is running processor: 2
+sched_getaffinity01    4  TPASS  :  sched_getaffinity() succeed ,this process 2239 is running processor: 3
+sched_getaffinity01    5  TPASS  :  sched_getaffinity(0, len, (cpu_set_t *)-1): TEST_ERRNO=EFAULT(14): Bad address
+sched_getaffinity01    6  TPASS  :  sched_getaffinity(0, 0, mask): TEST_ERRNO=EINVAL(22): Invalid argument
+sched_getaffinity01    7  TPASS  :  sched_getaffinity(getpid() + 1, len, mask): TEST_ERRNO=ESRCH(3): No such process
+Signed-off-by: Miao Xie <miaox@cn.fujitsu.com>,
+
+Modified Files:
+ltp/testcases/kernel/syscalls/sched_getaffinity/sched_getaffinity01.c
+
+14) Log Message:
+Here is a patch/attachment to fix the  error number and error message, when the capset() syscall fails.
+*After applying patch:*
+capset01    1    TBROK    capget() failed: errno=???(38): Function not implemented
+*Before applying patch:*
+capset01    1    TBROK    capget() failed: TEST_ERRNO=???(0): Success
+Note: This is in the custom built linux kernel where the capset/capget syscall is not implemented. In normal linux kernel this testcase would just work fine without any errors. *Normal kernel:*
+capset01    1  TPASS  :  capset() returned 0
+Signed-off-by: Veerendra C <veeren@linux.vnet.ibm.com>,
+
+Modified Files:
+ltp/testcases/kernel/syscalls/capset/capset01.c
+
+15) Log Message:
+Fix check. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/controllers/memcg/regression/memcg_regression_test.sh
+
+16) Log Message:
+Clarify location and roles of install paths and directions as requested by Mark Ver. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/INSTALL
+
+17) Log Message:
+Fix missing #include. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/security/selinux-testsuite/tests/task_setscheduler/selinux_task_setscheduler_target.c
+
+18) Log Message:
+1. Fix the all target.
+2. Fix a missing _GNU_SOURCE #define and a -Wunused warning.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/security/selinux-testsuite/tests/task_setpgid/selinux_task_setpgid_source.c
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/Makefile
+
+19) Log Message:
+Add a basic Linux distro detection script. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Added Files:
+ltp/scripts/detect_distro.sh
+
+20) Log Message:
+Modify script to properly separate major and minor versions with Redhat. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/scripts/detect_distro.sh
+
+21) Log Message:
+Improve usability through -d ($DESTDIR) and -m (omit minor version) options. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/scripts/detect_distro.sh
+
+22) Log Message:
+Stupid... move VERSION set outside of minor version check. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/scripts/detect_distro.sh
+
+23) Log Message:
+Make a step to properly fix up the Makefile and policy file items... next step would be to template the Makefile to get rid of the ad hoc Makefile in policy_files/redhat-5. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/Makefile 
+Removed Files:
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_bounds.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_capable_file.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_capable_net.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_capable_sys.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_dyntrace.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_dyntrans.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_entrypoint.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_execshare.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_exectrace.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_execute_no_trans.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_fdreceive.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_file.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_global.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_inherit.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_ioctl.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_ipc.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_link.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_mkdir.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_open.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_ptrace.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_readlink.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_relabel.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_rename.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_rxdir.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_setattr.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_setnice.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_sigkill.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_stat.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_sysctl.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_task_create.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_task_getpgid.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_task_getsched.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_task_getsid.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_task_setpgid.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_task_setsched.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_transition.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/test_wait.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/Makefile
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/test_capable_file.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/test_capable_net.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/test_capable_sys.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/test_dyntrace.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/test_dyntrans.te 
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/test_entrypoint.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/test_execshare.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/test_exectrace.te 
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/test_execute_no_trans.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/test_fdreceive.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/test_file.te 
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/test_global.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/test_inherit.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/test_ioctl.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/test_ipc.te 
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/test_link.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/test_mkdir.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/test_open.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/test_policy.if 
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/test_ptrace.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/test_readlink.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/test_relabel.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/test_rename.te 
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/test_rxdir.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/test_setattr.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/test_setnice.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/test_sigkill.te 
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/test_stat.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/test_sysctl.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/test_task_create.te 
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/test_task_getpgid.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/test_task_getsched.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/test_task_getsid.te 
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/test_task_setpgid.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/test_task_setsched.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/test_transition.te 
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/redhat/5/test_wait.te
+Added Files:
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/Makefile
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/test_capable_file.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/test_capable_net.te 
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/test_capable_sys.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/test_dyntrace.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/test_dyntrans.te 
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/test_entrypoint.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/test_execshare.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/test_exectrace.te 
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/test_execute_no_trans.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/test_fdreceive.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/test_file.te 
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/test_global.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/test_inherit.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/test_ioctl.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/test_ipc.te 
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/test_link.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/test_mkdir.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/test_open.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/test_policy.if 
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/test_ptrace.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/test_readlink.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/test_relabel.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/test_rename.te 
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/test_rxdir.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/test_setattr.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/test_setnice.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/test_sigkill.te 
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/test_stat.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/test_sysctl.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/test_task_create.te 
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/test_task_getpgid.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/test_task_getsched.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/test_task_getsid.te 
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/test_task_setpgid.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/test_task_setsched.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/test_transition.te 
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/redhat-5/test_wait.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/generic/test_bounds.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/generic/test_capable_file.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/generic/test_capable_net.te 
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/generic/test_capable_sys.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/generic/test_dyntrace.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/generic/test_dyntrans.te 
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/generic/test_entrypoint.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/generic/test_execshare.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/generic/test_exectrace.te 
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/generic/test_execute_no_trans.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/generic/test_fdreceive.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/generic/test_file.te 
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/generic/test_global.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/generic/test_inherit.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/generic/test_ioctl.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/generic/test_ipc.te 
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/generic/test_link.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/generic/test_mkdir.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/generic/test_open.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/generic/test_ptrace.te 
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/generic/test_readlink.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/generic/test_relabel.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/generic/test_rename.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/generic/test_rxdir.te 
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/generic/test_setattr.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/generic/test_setnice.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/generic/test_sigkill.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/generic/test_stat.te 
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/generic/test_sysctl.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/generic/test_task_create.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/generic/test_task_getpgid.te 
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/generic/test_task_getsched.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/generic/test_task_getsid.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/generic/test_task_setpgid.te 
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/generic/test_task_setsched.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/generic/test_transition.te
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/policy_files/generic/test_wait.te
+
+24) Log Message:
+Don't nuke some files that are checked in for test_policy... Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/Makefile
+
+25) Log Message:
+1. Change omit_minor_version to omit_redhat_minor_version, as it only applies to redhat's versioning scheme.
+2. Clump Redhat and Fedora detection together like I should have been doing in the beginning.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/scripts/detect_distro.sh
+
+26) Log Message:
+Properly test for whether or not the update string is embedded in the release file with Redhat, and thus properly omit the release version if you're using a non-update version of Redhat or Fedora. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/scripts/detect_distro.sh
+
+27) Log Message:
+Remove uclinux target warning, considering that no uclinux targets exist anymore.. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/Makefile
+
+28) Log Message:
+lib-all shouldn't depend on include-install now... Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/Makefile
+
+29) Log Message:
+1. Print out the return code.
+2. Use TERRNO because we're not using the TEST() macro.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/syscalls/quotactl/quotactl01.c
+
+30) Log Message:
+Add block device detection. It's the first step towards getting the quotactl crud to work. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Added Files:
+ltp/lib/get_block_dev.c
+Modified Files:
+ltp/m4/ltp-quota.m4
+ltp/testcases/kernel/syscalls/quotactl/quotactl01.c
+ltp/include/test.h
+
+31) Log Message:
+Remove return code printout. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/syscalls/quotactl/quotactl01.c
+
+32) Log Message:
+1. Go back to sys/quota.h
+2. Make the autoconf test a bit more meaningful...
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/syscalls/quotactl/quotactl01.c
+ltp/m4/ltp-quota.m4
+
+33) Log Message:
+Get closer to getting a working quotactl01 test. There were many setup related items missing, and I'm still bumbling around in the dark trying to figure out how this works, but I'm getting closer to an answer at least... Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Added Files:
+ltp/lib/mount_utils.c 
+Removed Files:
+ltp/lib/get_block_dev.c
+Modified Files:
+ltp/include/test.h
+ltp/testcases/kernel/syscalls/quotactl/quotactl01.c
+
+34) Log Message:
+gcov-kernel: added patch for android toolchain 4.4.0 support. Peter Oberparleiter <oberpapr@users.sourceforge.net>, Wangwei Chen <mkw348@motorola.com>,
+
+Added Files:
+ltp/utils/analysis/gcov-kernel/linux-2.6.30-gcov-android-toolchain-4.4.0.patch
+
+35) Log Message:
+Move $(OUT_OF_BUILDTREE), and $(IN_BUILD_TREE) checks above config.mk include as correctly noted by Mitani-san. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/include/mk/env_pre.mk
+
+36) Log Message:
+ltp-pan is installed in bin/ not pan/ now as noticed by Serge. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testscripts/test_containers.sh
+ltp/testscripts/test_filecaps.sh
+ltp/testscripts/test_selinux.sh
+
+37) Log Message:
+Remove numaif.h as noticed by Mitani-san. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/syscalls/move_pages/move_pages_support.h
+
+38) Log Message:
+Fix some missing headers and missing #define _GNU_SOURCE defs. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/security/selinux-testsuite/tests/dyntrace/selinux_dyntrace_child.c
+ltp/testcases/kernel/security/selinux-testsuite/tests/task_getsid/selinux_task_getsid_source.c
+ltp/testcases/kernel/security/selinux-testsuite/tests/task_getsid/selinux_task_getsid_target.c
+ltp/testcases/kernel/security/selinux-testsuite/tests/task_getpgid/selinux_task_getpgid_source.c
+ltp/testcases/kernel/security/selinux-testsuite/tests/task_getpgid/selinux_task_getpgid_target.c
+ltp/testcases/kernel/security/selinux-testsuite/tests/task_getscheduler/selinux_task_getscheduler_target.c
+ltp/testcases/kernel/security/selinux-testsuite/tests/wait/selinux_wait_parent.c
+ltp/testcases/kernel/security/selinux-testsuite/tests/msg/selinux_msgrcv.c
+ltp/testcases/kernel/security/selinux-testsuite/tests/msg/selinux_msgsnd.c
+
+39) Log Message:
+Fix a lot of compile warnings. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/security/selinux-testsuite/tests/execshare/selinux_execshare_parent.c
+ltp/testcases/kernel/security/selinux-testsuite/tests/capable_net/selinux_bind.c
+ltp/testcases/kernel/security/selinux-testsuite/tests/capable_net/selinux_raw.c
+ltp/testcases/kernel/security/selinux-testsuite/tests/capable_file/selinux_lease.c
+ltp/testcases/kernel/security/selinux-testsuite/tests/capable_sys/selinux_chroot.c
+ltp/testcases/kernel/security/selinux-testsuite/tests/capable_sys/selinux_hostname.c
+ltp/testcases/kernel/security/selinux-testsuite/tests/capable_sys/selinux_nice.c 
+ltp/testcases/kernel/security/selinux-testsuite/tests/capable_sys/selinux_rawio.c
+ltp/testcases/kernel/security/selinux-testsuite/tests/dyntrace/selinux_dyntrace_parent.c
+ltp/testcases/kernel/security/selinux-testsuite/tests/dyntrans/selinux_dyntrans_parent.c
+ltp/testcases/kernel/security/selinux-testsuite/tests/shm/selinux_shmat.c
+ltp/testcases/kernel/security/selinux-testsuite/tests/task_setnice/selinux_task_setnice_target.c
+ltp/testcases/kernel/security/selinux-testsuite/tests/fdreceive/selinux_fdreceive_client.c
+ltp/testcases/kernel/security/selinux-testsuite/tests/fdreceive/selinux_fdreceive_server.c
+ltp/testcases/kernel/security/selinux-testsuite/tests/sem/selinux_getinfo.c
+ltp/testcases/kernel/security/selinux-testsuite/tests/ioctl/selinux_ioctl.c
+ltp/testcases/kernel/security/selinux-testsuite/tests/ioctl/selinux_noioctl.c
+ltp/testcases/kernel/security/selinux-testsuite/tests/inherit/selinux_inherit_parent.c
+ltp/testcases/kernel/security/selinux-testsuite/tests/exectrace/selinux_exectrace_parent.c
+ltp/testcases/kernel/security/selinux-testsuite/tests/ptrace/selinux_ptrace.c
+ltp/testcases/kernel/security/selinux-testsuite/tests/setnice/selinux_setnice_child.c
+ltp/testcases/kernel/security/selinux-testsuite/tests/setnice/selinux_setnice_parent.c
+ltp/testcases/kernel/security/selinux-testsuite/tests/file/selinux_fcntl.c
+ltp/testcases/kernel/security/selinux-testsuite/tests/file/selinux_nofcntl.c
+ltp/testcases/kernel/security/selinux-testsuite/tests/file/selinux_sigiotask.c
+ltp/testcases/kernel/security/selinux-testsuite/tests/file/selinux_wait_io.c
+
+40) Log Message:
+kill unneeded chmod calls on created tmp directory: The following patch kills some unneeded chmod(2) calls on newly created temporary directory; the tst_tmpdir() function do already set the correct permissions. Signed-off-by: Nicolas Joly <njoly@pasteur.fr>.
+
+Modified Files:
+ltp/testcases/kernel/syscalls/mkdir/mkdir02.c
+ltp/testcases/kernel/syscalls/mkdir/mkdir04.c
+ltp/testcases/kernel/syscalls/rename/rename09.c
+ltp/testcases/kernel/syscalls/rename/rename12.c
+ltp/testcases/kernel/syscalls/rmdir/rmdir03.c
+
+41) Log Message:
+cpuset_syscall_test: delete '0x' from hex string: By the latest ltp version, the following fail message outputted on my x86_64 box.
+------------
+TEST 5: CPUSET CONTROLLER TESTING
+TEST STARTED: Please avoid using system while this test executes
+...
+cpuset05    8  TFAIL  :  Result(/proc/<pid>/status) = "", expect = "0")
+cpuset05    9  TFAIL  :  Result(/proc/<pid>/status) = "", expect = "1")
+cpuset05   10  TFAIL  :  Result(/proc/<pid>/status) = "", expect = "default")
+------------
+The reason is:
+1, '0x' wasn't deleted from a hex string's head. e.g. 7f343c900000 is expected, but 0x7f343c900000 outputted.
+2, a wrong '\b' was used in a grep command.
+This patch fix the upper problem. Now the message is:
+------------
+cpuset05    7  TPASS  :  Cpuset vs systemcall test succeeded.
+cpuset05    8  TPASS  :  Cpuset vs systemcall test succeeded.
+cpuset05    9  TPASS  :  Cpuset vs systemcall test succeeded.
+cpuset05   10  TPASS  :  Cpuset vs systemcall test succeeded.
+------------
+Signed-off-by: Shi Weihua <shiwh@cn.fujitsu.com>,
+
+Modified Files:
+ltp/testcases/kernel/controllers/cpuset/cpuset_syscall_test/cpuset_syscall_testset.sh
+
+42) Log Message:
+Make my choice of AC_MSG_ERROR more apparent. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/m4/ltp-quota.m4
+
+43) Log Message:
+Things have worked out ok so far for the Makefiles, so let's keep on going trying to fix the selinux test suite (as requested by Steven)... Signed-off-by: Garrett Cooper <yanegomi@gmail.com>.
+
+Modified Files:
+ltp/testcases/kernel/security/selinux-testsuite/tests/Makefile
+ltp/testcases/kernel/security/selinux-testsuite/tests/Makefile.inc
+ltp/testcases/kernel/security/selinux-testsuite/tests/runtest.sh
+ltp/testcases/kernel/security/selinux-testsuite/policy/Makefile
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/Makefile
+ltp/testscripts/test_selinux.sh
+
+44) 
+Log Message:
+We need to install the Makefiles into the tree as well so the test scripts can run make load. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/Makefile
+ltp/testcases/kernel/security/selinux-testsuite/policy/Makefile
+
+45) Log Message:
+Error out when /etc/selinux/.../policy/src isn't found. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Modified Files:
+ltp/testcases/kernel/security/selinux-testsuite/policy/Makefile
+
+46) Log Message:
+Don't do load as part of a normal make operation. This splits the make into 2 stages: 
+1. The stuff we can do on/off the target.
+2. The setup pieces that we must do on the target.
+That way we can clean up 1. in the future so the test won't require make.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/Makefile
+ltp/testcases/kernel/security/selinux-testsuite/policy/Makefile
+
+47) Log Message:
+Make autotools seems to break on more recent versions without this. Signed-off-by: Paul Larson <paul.larson@canonical.com>,
+
+Modified Files:
+ltp/include/mk/automake.mk
+
+48) Log Message:
+Add improved checks for mbind(2) syscalls, because...
+Hi,
+I tried to make with 2010-01-14's cvs in RHEL4.8 (2.6.9-89.ELsmp). But It failed in "mbind01.c" by following message.
+------------
+gcc -g -O2 -g -O2 -fno-strict-aliasing -pipe -Wall
+-I/home/LTP/ltp-2010-01-12/testcases/kernel/include
+-I/home/LTP/ltp-2010-01-12/testcases/kernel/syscalls/mbind/../utils/
+-I../../../../include -I../../../../include   -L../../../../lib  mbind01.c -lltp -lnuma -o mbind01
+mbind01.c:184: error: `MPOL_DEFAULT' undeclared here (not in a function)
+mbind01.c:184: error: initializer element is not constant
+mbind01.c:184: error: (near initialization for `tcase[0].policy')
+mbind01.c:188: error: initializer element is not constant
+mbind01.c:188: error: (near initialization for `tcase[0]')
+mbind01.c:190: error: initializer element is not constant
+mbind01.c:190: error: (near initialization for `tcase[1].policy')
+mbind01.c:194: error: initializer element is not constant
+mbind01.c:194: error: (near initialization for `tcase[1]')
+mbind01.c:196: error: `MPOL_BIND' undeclared here (not in a function)
+mbind01.c:196: error: initializer element is not constant
+mbind01.c:196: error: (near initialization for `tcase[2].policy')
+mbind01.c:200: error: initializer element is not constant
+mbind01.c:200: error: (near initialization for `tcase[2]')
+mbind01.c:202: error: initializer element is not constant
+mbind01.c:202: error: (near initialization for `tcase[3].policy')
+mbind01.c:206: error: initializer element is not constant
+mbind01.c:206: error: (near initialization for `tcase[3]')
+mbind01.c:208: error: `MPOL_INTERLEAVE' undeclared here (not in a function)
+mbind01.c:208: error: initializer element is not constant
+mbind01.c:208: error: (near initialization for `tcase[4].policy')
+mbind01.c:212: error: initializer element is not constant
+mbind01.c:212: error: (near initialization for `tcase[4]')
+mbind01.c:214: error: initializer element is not constant
+mbind01.c:214: error: (near initialization for `tcase[5].policy')
+mbind01.c:218: error: initializer element is not constant
+mbind01.c:218: error: (near initialization for `tcase[5]')
+mbind01.c:220: error: `MPOL_PREFERRED' undeclared here (not in a function)
+mbind01.c:220: error: initializer element is not constant
+mbind01.c:220: error: (near initialization for `tcase[6].policy')
+mbind01.c:224: error: initializer element is not constant
+mbind01.c:224: error: (near initialization for `tcase[6]')
+mbind01.c:226: error: initializer element is not constant
+mbind01.c:226: error: (near initialization for `tcase[7].policy')
+mbind01.c:230: error: initializer element is not constant
+mbind01.c:230: error: (near initialization for `tcase[7]')
+mbind01.c:236: error: initializer element is not constant
+mbind01.c:236: error: (near initialization for `tcase[8]')
+mbind01.c:238: error: initializer element is not constant
+mbind01.c:238: error: (near initialization for `tcase[9].policy')
+mbind01.c:243: error: initializer element is not constant
+mbind01.c:243: error: (near initialization for `tcase[9]')
+mbind01.c:246: error: initializer element is not constant
+mbind01.c:246: error: (near initialization for `tcase[10].policy')
+mbind01.c:250: error: initializer element is not constant
+mbind01.c:250: error: (near initialization for `tcase[10]')
+mbind01.c: In function `do_test':
+mbind01.c:309: error: `MPOL_F_ADDR' undeclared (first use in this function)
+mbind01.c:309: error: (Each undeclared identifier is reported only once
+mbind01.c:309: error: for each function it appears in.)
+make[4]: *** [mbind01] Error 1
+------------
+Following version's cvs's bring same results.
+ - 2010-01-08
+ - 2010-01-12
+ - 2010-01-13
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Modified Files:
+ltp/testcases/kernel/syscalls/mbind/mbind01.c
+ltp/m4/ltp-numa.m4
+
+49) Log Message:
+Properly resolve mbind stuff... it was actually mempolicy tests... and it was present in more than just mbind01.c. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>.
+
+Modified Files:
+ltp/testcases/kernel/syscalls/mbind/mbind01.c
+ltp/testcases/kernel/controllers/cpuset/cpuset_syscall_test/cpuset_syscall_test.c
+ltp/testcases/kernel/syscalls/get_mempolicy/get_mempolicy01.c
+ltp/testcases/kernel/controllers/cpuset/cpuset_lib/libcpuset.c
+
+50)  Log Message:
+Finish this mempolicy crud off for good, after a fair amount of tweaking. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/controllers/cpuset/cpuset_lib/libcpuset.c
+ltp/m4/ltp-numa.m4
+ltp/testcases/kernel/controllers/cpuset/cpuset_syscall_test/cpuset_syscall_test.c
+
+51) Log Message:
+1. Resolve some compatibility issues with make 3.80.
+2. Fix a bug with clean_install_dir being included in `target_to_dir_mapping'...
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Modified Files:
+ltp/Makefile
+
+52) Log Message:
+1. Fix an out-of-sync variable (automake.mk), and an incorrect clean (*.in needs to be cleaned with ac-maintainer-clean, NOT distclean). Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/include/mk/automake.mk
+
+53) Log Message:
+Get rid of $(DIR) variable in define block. Never should have bloody been there in the first place... stupid stupid. Problem noted by Mitani-san with zip test (defines the same variable). Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/include/mk/functions.mk
+
+54) Log Message:
+Note the reasoning for the -- before CLEAN_TARGETS :)... Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/include/mk/functions.mk
+
+55) Log Message:
+Check in skeleton scripts for testing out LTP, end-to-end, from scratch -- that way less trivial issues will get into the tree. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Added Files:
+ltp/testscripts/build/README
+ltp/testscripts/build/test_install_in_build_tree.sh
+ltp/testscripts/build/test_install_out_of_build_tree.sh
+ltp/testscripts/build/test_out_of_build_tree.sh
+
+56) Log Message:
+Move the build scripts to the build directory as well. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Removed Files:
+ltp/testscripts/default_runtest_set.awk
+ltp/testscripts/ltp-missing-install-files.py
+Added Files:
+ltp/testscripts/build/default_runtest_set.awk
+ltp/testscripts/buildltp-missing-install-files.py
+
+57) Log Message:
+Keep on working on fixing the selinux-testsuite... Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/Makefile
+ltp/testcases/kernel/security/selinux-testsuite/policy/Makefile
+ltp/testcases/kernel/security/selinux-testsuite/tests/Makefile.inc
+ltp/testscripts/test_selinux.sh
+Added Files:
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/Makefile.selinux
+ltp/testcases/kernel/security/selinux-testsuite/policy/Makefile.selinux
+
+58) Log Message:
+Install Makefile.selinux, not Makefile. Signed-off-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testcases/kernel/security/selinux-testsuite/refpolicy/Makefile
+
+59) Log Message:
+Further diff on top of the prior one to resolve a few remaining issues in getting the tests to pass.  With these two patches, all tests appear to pass on Fedora 12. 
+Things that remain unresolved:
+- RHEL4 support.  Is RHEL4 to be supported still by ltp, given dependencies?
+  RHEL4 has been using the test policy under policy/ and has a different build/load process.
+- Running individual tests manually.  As described in the selinux-testsuite
+  README, it used to be possible to run individual tests via tests/runtest.sh
+in order to more easily hunt down specific failures and get more verbose output than we get from any of the results/* files.
+Signed-off-by: Stephen Smalley <sds@tycho.nsa.gov>,
+Acked-by: Garrett Cooper <yanegomi@gmail.com>,
+
+Modified Files:
+ltp/testscripts/test_selinux.sh
+ltp/testcases/kernel/security/selinux-testsuite/tests/inherit/selinux_inherit.sh
+
+And much much more......!!
+
 LTP-20091231
 
 1) Log Message:
