@@ -29,7 +29,13 @@ AUTOHEADER		?= autoheader
 AUTOMAKE		?= automake
 
 include $(top_srcdir)/include/mk/env_pre.mk
+# Ensure that this error / warning only applies for build targets.
+#
+# NOTE (garrcoop): this criterium should be in-sync with include/mk/env_pre.mk
+# (minus help as that's only invoked in the top-level Makefile).
+ifeq ($(filter autotools %clean,$(MAKECMDGOALS)),)
 include $(abs_srcdir)/config.mk
+endif
 
 LIBDIR			:= lib
 FILTER_OUT_DIRS		:= $(LIBDIR)
