@@ -139,11 +139,11 @@ $(INSTALL_TARGETS) include-install lib-install:
 clean_install_dir::
 	$(RM) -Rf "$(INSTALL_DIR)"
 
-# Don't clean the directory if the build-tree is set to the srcdir, or the
-# build tree is unconfigured.
-ifneq ($(filter $(BUILD_TREE_STATE),$(BUILD_TREE_SRCDIR_INSTALL) $(BUILD_TREE_UNCONFIGURED)),)
-CLEAN_TARGETS	+= clean_install_dir
-endif
+# Clean the directory if the build-tree is properly configured and not set to
+# the srcdir.
+#ifeq ($(filter $(BUILD_TREE_STATE),$(BUILD_TREE_SRCDIR_INSTALL) $(BUILD_TREE_UNCONFIGURED)),)
+#CLEAN_TARGETS	+= clean_install_dir
+#endif
 
 clean:: $(CLEAN_TARGETS)
 	$(RM) -f Version
