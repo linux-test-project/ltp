@@ -98,7 +98,7 @@ lib-clean:: $(LIBDIR)
 	$(MAKE) -C $^ -f "$(abs_srcdir)/$(LIBDIR)/Makefile" clean
 
 # Stub reference for config.mk
-$(abs_srcdir)/config.mk
+$(abs_srcdir)/config.mk:
 	$(MAKE) -C $(top_srcdir) help; false
 
 include $(top_srcdir)/include/mk/generic_trunk_target.mk
