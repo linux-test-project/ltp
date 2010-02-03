@@ -94,6 +94,13 @@ include-install: $(top_builddir)/include/config.h include/mk/config.mk include-a
 
 INSTALL_DIR		:= $(DESTDIR)/$(prefix)
 
+# DO NOT REMOVE THIS CALL (see clean_install_dir call below...)!!!!
+ifdef MAKE_3_80_COMPAT
+INSTALL_DIR		:= $(call MAKE_3_80_abspath,$(INSTALL_DIR))
+else
+INSTALL_DIR		:= $(abspath $(INSTALL_DIR))
+endif
+
 # build tree bootstrap targets and $(INSTALL_DIR) target.
 $(sort $(addprefix $(abs_top_builddir)/,$(BOOTSTRAP_TARGETS)) $(INSTALL_DIR) $(DESTDIR)/$(bindir)):
 	mkdir -m 00755 -p "$@"
@@ -141,9 +148,12 @@ clean_install_dir::
 
 # Clean the directory if the build-tree is properly configured and not set to
 # the srcdir.
-#ifeq ($(filter $(BUILD_TREE_STATE),$(BUILD_TREE_SRCDIR_INSTALL) $(BUILD_TREE_UNCONFIGURED)),)
-#CLEAN_TARGETS	+= clean_install_dir
-#endif
+ifeq ($(filter $(BUILD_TREE_STATE),$(BUILD_TREE_SRCDIR_INSTALL) $(BUILD_TREE_UNCONFIGURED)),)
+# Make sure that we don't whack `/'!!!!!
+ifneq ($(INSTALL_DIR),/)
+CLEAN_TARGETS	+= clean_install_dir
+endif
+endif
 
 clean:: $(CLEAN_TARGETS)
 	$(RM) -f Version
