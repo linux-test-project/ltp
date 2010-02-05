@@ -34,7 +34,7 @@ void ft_dumpiov(struct iovec *iov);
 /*
  * Dump bits string.
  */
-void ft_dumpbits(char *bits, int size);
+void ft_dumpbits(void *bits, size_t size);
 
 /*
  * Do logical or of hold and bits (of size)

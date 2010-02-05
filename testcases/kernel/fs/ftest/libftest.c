@@ -17,6 +17,7 @@
  */
 
 #include <sys/uio.h>
+#include <assert.h>
 #include "test.h"
 #include "libftest.h"
 
@@ -61,16 +62,18 @@ void ft_dumpiov(struct iovec *iov)
 /*
  * Dump bits string.
  */
-void ft_dumpbits(char *bits, int size)
+void ft_dumpbits(void *bits, size_t size)
 {
-	char *buf;
+	void *buf;
 
 	tst_resm(TINFO, "\tBits array:");
 
 	for (buf = bits; size > 0; --size, ++buf) {
-		if ((buf-bits) % 16 == 0)
-			tst_resm(TINFO, "\t%04x:\t", 8*(buf-bits));
-		tst_resm(TINFO, "\t%02x ", *buf & 0xff);
+		if ((buf-bits) % 16 == 0) {
+			assert (0 < (buf-bits));
+			tst_resm(TINFO, "\t%lu:\t", 8*(buf-bits));
+		}
+		tst_resm(TINFO, "\t%02x ", *((char*) buf) & 0xff);
 	}
 
 	tst_resm(TINFO, "\t");
