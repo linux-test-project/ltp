@@ -61,7 +61,7 @@ setup_file()
 
     FILE=$1
 
-    # Make sure any old verion of file is deleted
+    # Make sure any old version of file is deleted
 
     if test -e $FILE; then
         sudo chattr -ai $FILE
@@ -126,7 +126,7 @@ check_result()
     fi
 
     read res atime mtime < $RESULT_FILE
-   
+
     echo "EXPECTED: $EXPECTED_RESULT $EXPECT_ATIME_CHANGED "\
          "$EXPECT_MTIME_CHANGED"
     echo "RESULT:   $res $atime $mtime"
@@ -245,7 +245,7 @@ run_test()
 
 user_tester=nobody
 sudo -u $user_tester mkdir -p $TEST_DIR
-
+cd $TEST_DIR
 chown root $LTPROOT/testcases/bin/$TEST_PROG
 chmod ugo+x,u+s $LTPROOT/testcases/bin/$TEST_PROG
 
