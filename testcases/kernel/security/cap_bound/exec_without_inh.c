@@ -78,7 +78,10 @@ int main(int argc, char *argv[])
 		if (ret) {
 			tst_resm(TBROK, "Failed to drop cap_sys_admin from pI\n");
 			tst_exit();
-		}
+		i}
+	} else if (ret) {
+		tst_brkm(TBROK | TERRNO, tst_exit, "Failed to add \
+			CAP_SYS_ADMIN to pI");
 	}
 #if HAVE_DECL_CAP_FREE
 	cap_free(cur);
