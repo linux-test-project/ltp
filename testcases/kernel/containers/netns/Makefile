@@ -31,4 +31,6 @@ MAKE_TARGETS		:= create_container crtchild crtchild_delchild \
 
 $(MAKE_TARGETS): %: common.o %.o
 
+MAKE_TARGETS		+= check_netns_enabled
+
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
