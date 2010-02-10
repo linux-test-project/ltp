@@ -21,26 +21,32 @@
 ***************************************************************************/
 #include <stdio.h>
 #include <sched.h>
-#include "../libclone/libclone.h"
+#include "config.h"
+#include "linux_syscall_numbers.h"
+#include "libclone/libclone.h"
 #include "test.h"
 
-int main()
+#ifndef CLONE_NEWNET
+#define CLONE_NEWNET -1
+#endif
+
+#ifndef CLONE_NEWNS
+#define CLONE_NEWNS -1
+#endif
+
+int
+main()
 {
-    int ret;
-    long flags = 0;
+	int rc;
 
-    flags |= CLONE_NEWNS;
-    flags |= CLONE_NEWNET;
-
-
-	// Checking if the kernel ver is enough to do NET-NS testing.
-	if (tst_kvercmp(2,6,24) < 0)
-		return 1;
-
-        ret = unshare(flags);
-	if ( ret < 0 ) {
+	/* Checking if the kernel ver is enough to do NET-NS testing. */
+	if (tst_kvercmp(2, 6, 24) < 0) {
+		rc = 1;
+        } else if (syscall(__NR_unshare, CLONE_NEWNET | CLONE_NEWNS) < 0) {
 		printf ("Error:Unshare syscall failed for network namespace\n");
-		return 3;
+		rc = 3;
+	} else {
+		rc = 0;
 	}
-	return 0;
+	return rc;
 }
