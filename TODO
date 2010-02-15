@@ -1,5 +1,8 @@
 The following items need fixing with the new Makefile infrastructure:
 
+Repo conversion
+1. Convert the CVS repo to git repo
+
 include/mk/{env_pre,functions}.mk:
 1. Complete make 3.80 backwards compatibility support.
 
