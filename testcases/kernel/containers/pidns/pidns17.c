@@ -104,7 +104,6 @@ int child_fn(void *arg)
 
 	/* cleanup and exit */
 	CLEANUP();
-	tst_exit();
 }
 
 /***********************************************************************
@@ -136,7 +135,6 @@ int main(int argc, char *argv[])
 
 	/* cleanup and exit */
 	CLEANUP();
-	tst_exit();
 }	/* End main */
 
 /*
@@ -147,4 +145,5 @@ void cleanup()
 {
 	/* Clean the test testcase as LTP wants*/
 	TEST_CLEANUP;
+	cleanup();
 }
