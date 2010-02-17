@@ -270,7 +270,7 @@ static int do_test(struct test_case *tc)
          * When test ended with SIGTERM etc, mq discriptor is left remains.
          * So we delete it first.
          */
-        TEST(mq_unlink(QUEUE_NAME));
+        mq_unlink(QUEUE_NAME);
 
         switch (tc->ttype) {
         case FD_NOT_EXIST:
@@ -336,7 +336,7 @@ static int do_test(struct test_case *tc)
          */
         errno = 0;
         sys_ret = mq_notify(fd, &ev);
-        sys_errno = errno;
+        sys_errno = sys_ret != 0 ? errno : 0;
         if (sys_ret < 0)
                 goto TEST_END;
 
