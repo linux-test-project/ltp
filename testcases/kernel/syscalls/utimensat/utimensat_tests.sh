@@ -64,13 +64,13 @@ setup_file()
     # Make sure any old version of file is deleted
 
     if test -e $FILE; then
-        sudo chattr -ai $FILE
-        sudo rm -f $FILE
+        sudo -n chattr -ai $FILE || return $?
+        sudo -n rm -f $FILE || return $?
     fi
 
     # Create file and make atime and mtime zero.
 
-    sudo -u $user_tester touch $FILE
+    sudo -n -u $user_tester touch $FILE || return $?
     if ! $TEST_PROG -q $FILE 0 0 0 0 > $RESULT_FILE; then
         echo "Failed to set up test file $FILE" 1>&2
         exit 1
@@ -86,19 +86,23 @@ setup_file()
     # Set owner, permissions, and EFAs for file.
 
     if test -n "$2"; then
-        sudo chown $2 $FILE
+        sudo -n chown $2 $FILE || return $?
     fi
 
-    sudo chmod $3 $FILE
+    sudo -n chmod $3 $FILE || return $?
 
     if test -n "$4"; then
-        sudo chattr $4 $FILE
+        sudo -n chattr $4 $FILE || return $?
     fi
 
     # Display file setup, for visual verification
 
     ls -l $FILE | awk '{ printf "Owner=%s; perms=%s; ", $3, $1}'
-    sudo lsattr -l $FILE | sed 's/, /,/g' | awk '{print "EFAs=" $2}'
+    if ! sudo -n lsattr -l $FILE | sed 's/, /,/g' | awk '{print "EFAs=" $2}'
+    then
+        return $?
+    fi
+
 }
 
 test_failed()
@@ -211,7 +215,7 @@ run_test()
     cp $LTPROOT/testcases/bin/$TEST_PROG ./
     CMD="./$TEST_PROG -q $FILE $4"
     echo "$CMD"
-    sudo -u $user_tester $CMD > $RESULT_FILE
+    sudo -n -u $user_tester $CMD > $RESULT_FILE
     check_result $? $5 $6 $7
     echo
 
@@ -220,7 +224,7 @@ run_test()
         setup_file $FILE "$1" "$2" "$3"
         CMD="./$TEST_PROG -q -d $FILE NULL $4"
         echo "$CMD"
-        sudo -u $user_tester $CMD > $RESULT_FILE
+        sudo -n -u $user_tester $CMD > $RESULT_FILE
         check_result $? $5 $6 $7
         echo
     fi
@@ -233,18 +237,18 @@ run_test()
         setup_file $FILE "$1" "$2" "$3"
         CMD="./$TEST_PROG -q -w -d $FILE NULL $4"
         echo "$CMD"
-        sudo -u $user_tester $CMD > $RESULT_FILE
+        sudo -n -u $user_tester $CMD > $RESULT_FILE
         check_result $? $5 $6 $7
         echo
     fi
 
-    sudo chattr -ai $FILE
-    sudo rm -f $FILE
+    sudo -n chattr -ai $FILE
+    sudo -n rm -f $FILE
 }
 #=====================================================================
 
 user_tester=nobody
-sudo -u $user_tester mkdir -p $TEST_DIR
+sudo -n -u $user_tester mkdir -p $TEST_DIR
 cd $TEST_DIR
 chown root $LTPROOT/testcases/bin/$TEST_PROG
 chmod ugo+x,u+s $LTPROOT/testcases/bin/$TEST_PROG

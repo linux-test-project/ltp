@@ -139,8 +139,8 @@ test03()
 
 	# As user nobody, create and cat the new file
 	# (The LTP tests assumes existence of 'nobody'.)
-	sudo -u nobody sh -c "echo `date` - create test.txt > ./test.txt;
-				cat ./test.txt > /dev/null"
+	sudo -n -u nobody sh -c "echo `date` - create test.txt > ./test.txt;
+				 cat ./test.txt > /dev/null"
 
 	# Calculating the hash will add the measurement to the measurement
 	# list, so only calc the hash value after getting the measurement
