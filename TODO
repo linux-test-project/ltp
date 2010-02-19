@@ -1,11 +1,5 @@
 The following items need fixing with the new Makefile infrastructure:
 
-Repo conversion
-1. Convert the CVS repo to git repo
-
-include/mk/{env_pre,functions}.mk:
-1. Complete make 3.80 backwards compatibility support.
-
 testcases/Makefile:
 1. mce-test doesn't fit cleanly in the build, yet.
 2. pounder21 is just broken (wasn't traversed before).
@@ -88,46 +82,6 @@ modules-output.log: delete_module02 delete_module02
 modules-output.log: delete_module03 delete_module03
 multicast-output.log: Tag | App
 multicast-output.log: /scratch/ltp-install5/testcases/bin/mc_opts /scratch/ltp-install5/bin/mc_opts9521/opts
-selinux-output.log: Tag | App
-selinux-output.log: selinux_capable_file.sh selinux_capable_file.sh
-selinux-output.log: selinux_capable_net.sh selinux_capable_net.sh
-selinux-output.log: selinux_capable_sys.sh selinux_capable_sys.sh
-selinux-output.log: selinux_domain_trans.sh selinux_domain_trans.sh
-selinux-output.log: selinux_entrypoint.sh selinux_entrypoint.sh
-selinux-output.log: selinux_execshare.sh selinux_execshare.sh
-selinux-output.log: selinux_exectrace.sh selinux_exectrace.sh
-selinux-output.log: selinux_execute_no_trans.sh selinux_execute_no_trans.sh
-selinux-output.log: selinux_fdreceive.sh selinux_fdreceive.sh
-selinux-output.log: selinux_file.sh selinux_file.sh
-selinux-output.log: selinux_inherit.sh selinux_inherit.sh
-selinux-output.log: selinux_ioctl.sh selinux_ioctl.sh
-selinux-output.log: selinux_link.sh selinux_link.sh
-selinux-output.log: selinux_mkdir.sh selinux_mkdir.sh
-selinux-output.log: selinux_msg.sh selinux_msg.sh
-selinux-output.log: selinux_open.sh selinux_open.sh
-selinux-output.log: selinux_ptrace.sh selinux_ptrace.sh
-selinux-output.log: selinux_readlink.sh selinux_readlink.sh
-selinux-output.log: selinux_relabel.sh selinux_relabel.sh
-selinux-output.log: selinux_rename.sh selinux_rename.sh
-selinux-output.log: selinux_rxdir.sh selinux_rxdir.sh
-selinux-output.log: selinux_sem.sh selinux_sem.sh
-selinux-output.log: selinux_setattr.sh selinux_setattr.sh
-selinux-output.log: selinux_setnice.sh selinux_setnice.sh
-selinux-output.log: selinux_shm.sh selinux_shm.sh
-selinux-output.log: selinux_sigkill.sh selinux_sigkill.sh
-selinux-output.log: selinux_stat.sh selinux_stat.sh
-selinux-output.log: selinux_sysctl.sh selinux_sysctl.sh
-selinux-output.log: selinux_task_create.sh selinux_task_create.sh
-selinux-output.log: selinux_task_getpgid.sh selinux_task_getpgid.sh
-selinux-output.log: selinux_task_getscheduler.sh selinux_task_getscheduler.sh
-selinux-output.log: selinux_task_getsid.sh selinux_task_getsid.sh
-selinux-output.log: selinux_task_setnice.sh selinux_task_setnice.sh
-selinux-output.log: selinux_task_setpgid.sh selinux_task_setpgid.sh
-selinux-output.log: selinux_task_setscheduler.sh selinux_task_setscheduler.sh
-selinux-output.log: selinux_wait.sh selinux_wait.sh
-selinux-output.log: selinux_dyntrace.sh selinux_dyntrace.sh
-selinux-output.log: selinux_dyntrans.sh selinux_dyntrans.sh
-selinux-output.log: selinux_bounds.sh selinux_bounds.sh
 stress.part3-output.log: Tag | App
 stress.part3-output.log: /scratch/ltp-install5/testcases/bin/mc_opts /scratch/ltp-install5/bin/mc_opts4243/opts
 tcp_cmds-output.log: Tag | App
@@ -139,10 +93,6 @@ tcp_cmds_expect-output.log: rlogin01 rlogin01
 tcp_cmds_expect-output.log: telnet01 telnet01
 tcp_cmds_noexpect-output.log: Tag | App
 tcp_cmds_noexpect-output.log: /scratch/ltp-install5/testcases/bin/echo01 /scratch/ltp-install5/testcases/bin/createfile
-
-testcases/kernel/security/selinux:
-   Is disabled on purpose (doesn't fit within build and probably won't until
-   autoconf tests are created to detect SELinux).
 
 /tests/ltp/output/tcp_cmds_noexpect-output.log:sendfile01    1  TFAIL  :  Test broken: gethost: command not found
 
