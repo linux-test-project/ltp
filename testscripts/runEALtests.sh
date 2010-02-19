@@ -207,7 +207,7 @@ fi
 # display versions of installed software
 ${LTPROOT}/../ver_linux
 
-${LTPROOT}/../pan/ltp-pan $quiet_mode -e -S $instances $duration -a $$ -n $$ $pretty_prt -f ${TMP}/alltests $logfile 
+${LTPROOT}/../bin/ltp-pan $quiet_mode -e -S $instances $duration -a $$ -n $$ $pretty_prt -f ${TMP}/alltests $logfile 
 
 if [ $? -eq 0 ]; then
   echo ltp-pan reported PASS

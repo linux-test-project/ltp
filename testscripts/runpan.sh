@@ -14,7 +14,7 @@ cd /tmp/runpan-$$
 
 export PATH="${PATH}:${LTPROOT}/doio:${LTPROOT}/testcases/bin"
  
-${LTPROOT}/pan/ltp-pan -e $@ -a ltp -n ltp -f ${LTPROOT}/runtest/quickhit
+${LTPROOT}/bin/ltp-pan -e $@ -a ltp -n ltp -f ${LTPROOT}/runtest/quickhit
 
 if [ $? -eq "0" ]; then
   echo ltp-pan reported PASS

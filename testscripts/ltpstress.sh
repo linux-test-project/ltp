@@ -275,9 +275,9 @@ output1=${TMPBASE}/ltpstress.$$.output1
 output2=${TMPBASE}/ltpstress.$$.output2
 output3=${TMPBASE}/ltpstress.$$.output3
 
-${LTPROOT}/pan/ltp-pan -e -p -q -S -t ${hours}h -a stress1 -n stress1 -l $logfile -f ${TMP}/stress.part1 -o $output1 & 
-${LTPROOT}/pan/ltp-pan -e -p -q -S -t ${hours}h -a stress2 -n stress2 -l $logfile -f ${TMP}/stress.part2 -o $output2 &
-${LTPROOT}/pan/ltp-pan -e -p -q -S -t ${hours}h -a stress3 -n stress3 -l $logfile -f ${TMP}/stress.part3 -o $output3 &
+${LTPROOT}/bin/ltp-pan -e -p -q -S -t ${hours}h -a stress1 -n stress1 -l $logfile -f ${TMP}/stress.part1 -o $output1 & 
+${LTPROOT}/bin/ltp-pan -e -p -q -S -t ${hours}h -a stress2 -n stress2 -l $logfile -f ${TMP}/stress.part2 -o $output2 &
+${LTPROOT}/bin/ltp-pan -e -p -q -S -t ${hours}h -a stress3 -n stress3 -l $logfile -f ${TMP}/stress.part3 -o $output3 &
 
 echo "Running LTP Stress for $hours hour(s) using $(($memsize/1024)) Mb"
 echo ""
