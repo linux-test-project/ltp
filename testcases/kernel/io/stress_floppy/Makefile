@@ -24,6 +24,8 @@ CLEAN_TARGETS		:= 10*K_file dumpdir
 
 INSTALL_DEPS		:= dumpdir 
 
+INSTALL_TARGETS		:= stress_floppy
+
 MAKE_TARGETS		:=
 
 # dumpdir's a directory.
