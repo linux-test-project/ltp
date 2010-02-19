@@ -53,6 +53,7 @@
 #include <errno.h>
 #include <signal.h>
 #include <unistd.h>
+#include <inttypes.h>
 #include "test.h"
 #include "usctest.h"
 #include "libftest.h"
@@ -348,12 +349,12 @@ static void dotest(int testers, int me, int fd)
 			 * Read it.
 			 */
 			if (lseek64(fd, CHUNK(chunk), 0) < 0) {
-				tst_resm(TFAIL, "\tTest[%d]: lseek64(0) fail at %Lx, errno = %d.",
+				tst_resm(TFAIL, "\tTest[%d]: lseek64(0) fail at %"PRIx64"x, errno = %d.",
 					me, CHUNK(chunk), errno);
 				tst_exit();
 			}
 			if ((xfr = readv(fd, &r_iovec[0], MAXIOVCNT)) < 0) {
-				tst_resm(TFAIL, "\tTest[%d]: readv fail at %Lx, errno = %d.",
+				tst_resm(TFAIL, "\tTest[%d]: readv fail at %"PRIx64"x, errno = %d.",
 					me, CHUNK(chunk), errno);
 				tst_exit();
 			}
@@ -372,7 +373,7 @@ static void dotest(int testers, int me, int fd)
 				}
 				for (i = 0; i < MAXIOVCNT; i++) {
 					if (memcmp(r_iovec[i].iov_base, val0_iovec[i].iov_base, r_iovec[i].iov_len)) {
-						tst_resm(TFAIL, "\tTest[%d] bad verify @ 0x%Lx for val %d count %d xfr %d.",
+						tst_resm(TFAIL, "\tTest[%d] bad verify @ 0x%"PRIx64" for val %d count %d xfr %d.",
 							me, CHUNK(chunk), val0, count, xfr);
 						ft_dumpiov(&r_iovec[i]);
 						ft_dumpbits(bits, (nchunks+7)/8);
@@ -390,7 +391,7 @@ static void dotest(int testers, int me, int fd)
 				++collide;
 				for (i = 0; i < MAXIOVCNT; i++) {
 					if (memcmp(r_iovec[i].iov_base, val_iovec[i].iov_base, r_iovec[i].iov_len)) {
-						tst_resm(TFAIL, "\tTest[%d] bad verify @ 0x%Lx for val %d count %d xfr %d.",
+						tst_resm(TFAIL, "\tTest[%d] bad verify @ 0x%"PRIx64" for val %d count %d xfr %d.",
 							me, CHUNK(chunk), val, count, xfr);
 						ft_dumpiov(&r_iovec[i]);
 						ft_dumpbits(bits, (nchunks+7)/8);
@@ -402,7 +403,7 @@ static void dotest(int testers, int me, int fd)
 			 * Write it.
 			 */
 			if (lseek64(fd, -xfr, 1) < 0) {
-				tst_resm(TFAIL, "\tTest[%d]: lseek64(1) fail at %Lx, errno = %d.",
+				tst_resm(TFAIL, "\tTest[%d]: lseek64(1) fail at %"PRIx64", errno = %d.",
 					me, CHUNK(chunk), errno);
 				tst_exit();
 			}
@@ -412,7 +413,7 @@ static void dotest(int testers, int me, int fd)
 					fsync(fd);
 					tst_exit();
 				}
-				tst_resm(TFAIL, "\tTest[%d]: writev fail at %Lx xfr %d, errno = %d.",
+				tst_resm(TFAIL, "\tTest[%d]: writev fail at %"PRIx64"x xfr %d, errno = %d.",
 					me, CHUNK(chunk), xfr, errno);
 				tst_exit();
 			}
@@ -437,12 +438,12 @@ static void dotest(int testers, int me, int fd)
 			for(i = 0; i < nchunks; i++) {
 				if ((bits[i/8] & (1<<(i%8))) == 0) {
 					if (lseek64(fd, CHUNK(i), 0) < (off64_t)0) {
-						tst_resm(TFAIL, "\tTest[%d]: lseek64 fail at %Lx, errno = %d.",
+						tst_resm(TFAIL, "\tTest[%d]: lseek64 fail at %"PRIx64"x, errno = %d.",
 							me, CHUNK(i), errno);
 						tst_exit();
 					}
 					if (writev(fd, &val_iovec[0], MAXIOVCNT) != csize) {
-						tst_resm(TFAIL, "\tTest[%d]: writev fail at %Lx, errno = %d.",
+						tst_resm(TFAIL, "\tTest[%d]: writev fail at %"PRIx64"x, errno = %d.",
 							me, CHUNK(i), errno);
 						tst_exit();
 					}

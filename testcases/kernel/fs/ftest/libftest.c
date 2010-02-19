@@ -17,6 +17,8 @@
  */
 
 #include <sys/uio.h>
+#include <inttypes.h>
+#include <limits.h>
 #include <assert.h>
 #include "test.h"
 #include "libftest.h"
@@ -26,7 +28,7 @@
  */
 void ft_dumpiov(struct iovec *iov)
 {
-	char val, *buf;
+	char *buf, val;
 	int idx, nout, i;
 
 	tst_resm(TINFO, "\tBuf:");
@@ -34,15 +36,15 @@ void ft_dumpiov(struct iovec *iov)
 	nout = 0;
 	idx  = 0;
 	buf  = (char*)iov->iov_base;
-	val  = buf[0];
+	val  = *((char*) buf);
 
 	for (i = 0; (unsigned int)i < iov->iov_len; i++) {
 
 		if (buf[i] != val) {
 			if (i == idx+1)
-				tst_resm(TINFO, "\t%x, ", buf[idx] & 0xff);
+				tst_resm(TINFO, "\t%"PRIx32"x,", buf[idx] & 0xff);
 			else
-				tst_resm(TINFO, "\t%d*%x, ", i-idx, buf[idx] & 0xff);
+				tst_resm(TINFO, "\t%d*%"PRIx32"x, ", i-idx, buf[idx] & 0xff);
 			idx = i;
 			++nout;
 		}
@@ -54,9 +56,9 @@ void ft_dumpiov(struct iovec *iov)
 	}
 
 	if (i == idx+1)
-		tst_resm(TINFO, "\t%x", buf[idx] & 0xff);
+		tst_resm(TINFO, "\t%"PRIx32"x", buf[idx] & 0xff);
 	else
-		tst_resm(TINFO, "\t%d*%x", i-idx, buf[idx]);
+		tst_resm(TINFO, "\t%d*%"PRIx32"x", i-idx, buf[idx]);
 }
 
 /*
@@ -69,11 +71,12 @@ void ft_dumpbits(void *bits, size_t size)
 	tst_resm(TINFO, "\tBits array:");
 
 	for (buf = bits; size > 0; --size, ++buf) {
+		tst_resm(TINFO, "\t%lu:\t", 8*(buf-bits));
 		if ((buf-bits) % 16 == 0) {
 			assert (0 < (buf-bits));
 			tst_resm(TINFO, "\t%lu:\t", 8*(buf-bits));
 		}
-		tst_resm(TINFO, "\t%02x ", *((char*) buf) & 0xff);
+		tst_resm(TINFO, "\t%02"PRIx32"x ", *((char*) buf) & 0xff);
 	}
 
 	tst_resm(TINFO, "\t");
@@ -136,7 +139,7 @@ void ft_mkname(char *name, char *dirname, int me, int idx)
 	b = 'a' + (idx % 26);
 
 	if (dirname[0] != '\0')
-		sprintf(name, "%s/%c%c", dirname, a, b);
+		snprintf(name, PATH_MAX, "%s/%c%c", dirname, a, b);
 	else
-		sprintf(name, "%c%c", a, b);
+		snprintf(name, PATH_MAX, "%c%c", a, b);
 }
