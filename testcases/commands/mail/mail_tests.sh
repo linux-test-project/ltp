@@ -55,6 +55,25 @@ else
     LTPBIN=$LTPROOT/testcases/bin
 fi
 
+isHeirloomMail=0
+checkHeirloomMail()
+{
+    isHeirloomMail=0
+
+    if [ $# -ne 1 ]; then
+        return
+    fi
+
+    if [ ! -f $1 ]; then
+	return
+    fi
+
+    cat $1 | grep "Heirloom"
+    if [ $? -eq 0 ]; then
+	isHeirloomMail=1
+    fi
+}
+
 RC=0
 export TCID=SETUP
 export TST_COUNT=1
@@ -170,8 +189,14 @@ else
     # but wait for the mail to arrive first, sleep 5s.
     sleep 5s
     echo "d" | mail -u root > $LTPTMP/tst_mail.res 2>&1
-    RC1=$(awk '/^>N/ {IGNORECASE=1; print match($3, "Mailer-Daemon")}' \
-	$LTPTMP/tst_mail.res)
+    checkHeirloomMail $LTPTMP/tst_mail.res
+    if [ $isHeirloomMail -eq 0 ]; then
+	RC1=$(awk '/^>N/ {IGNORECASE=1; print match($3, "Mailer-Daemon")}' \
+		$LTPTMP/tst_mail.res)
+    else
+	RC1=$(awk '/^>N/ {IGNORECASE=1; print match($3 $4 $5, "MailDeliverySubsys")}' \
+		$LTPTMP/tst_mail.res)
+    fi
 ##################################################################
 # In this testcase, mail will get "Returnedmail:", while mailx will
 # get "UndeliveredMailReturned:".
@@ -181,10 +206,17 @@ else
 # or
 # /bin/mailx -> /bin/mail
 ##################################################################
-     RC2=$(awk '/^>N/ {print match($9 $10, "Returnedmail:")}' \
-             $LTPTMP/tst_mail.res)
-     RC3=$(awk '/^>N/ {print match($9 $10, "UndeliveredMail")}' \
-             $LTPTMP/tst_mail.res)
+     if [ $isHeirloomMail -eq 0 ]; then
+	RC2=$(awk '/^>N/ {print match($9 $10, "Returnedmail:")}' \
+		$LTPTMP/tst_mail.res)
+	RC3=$(awk '/^>N/ {print match($9 $10, "UndeliveredMail")}' \
+		$LTPTMP/tst_mail.res)
+     else
+	RC2=$(awk '/^>N/ {print match($11 $12, "Returnedmail:")}' \
+		$LTPTMP/tst_mail.res)
+	RC3=$(awk '/^>N/ {print match($11 $12, "UndeliveredMail")}' \
+		$LTPTMP/tst_mail.res)
+     fi
 fi 
     if [ -z "$RC1" -a -z "$RC2" -a -z "$RC3" ]
     then
@@ -238,8 +270,14 @@ else
     # but wait for the mail to arrive first, sleep 5s.
     sleep 5s
     echo "d" | mail -u root > $LTPTMP/tst_mail.res 2>&1
-    RC1=$(awk '/^>N/ {IGNORECASE=1; print match($3, "Mailer-Daemon")}' \
-	$LTPTMP/tst_mail.res)
+    checkHeirloomMail $LTPTMP/tst_mail.res
+    if [ $isHeirloomMail -eq 0 ]; then
+	RC1=$(awk '/^>N/ {IGNORECASE=1; print match($3, "Mailer-Daemon")}' \
+		$LTPTMP/tst_mail.res)
+    else
+	RC1=$(awk '/^>N/ {IGNORECASE=1; print match($3 $4 $5, "MailDeliverySubsys")}' \
+		$LTPTMP/tst_mail.res)
+    fi
 ##################################################################
 # In this testcase, mail will get "Returnedmail:", while mailx will
 # get "UndeliveredMailReturned:".
@@ -248,11 +286,18 @@ else
 # /bin/mail -> /bin/mailx
 # or
 # /bin/mailx -> /bin/mail
-##################################################################
-     RC2=$(awk '/^>N/ {print match($9 $10, "Returnedmail:")}' \
-             $LTPTMP/tst_mail.res)
-     RC3=$(awk '/^>N/ {print match($9 $10, "UndeliveredMail")}' \
-             $LTPTMP/tst_mail.res)
+#################################################################
+     if [ $isHeirloomMail -eq 0 ]; then
+	RC2=$(awk '/^>N/ {print match($9 $10, "Returnedmail:")}' \
+		$LTPTMP/tst_mail.res)
+	RC3=$(awk '/^>N/ {print match($9 $10, "UndeliveredMail")}' \
+		$LTPTMP/tst_mail.res)
+     else
+	RC2=$(awk '/^>N/ {print match($11 $12, "Returnedmail:")}' \
+		$LTPTMP/tst_mail.res)
+	RC3=$(awk '/^>N/ {print match($11 $12, "UndeliveredMail")}' \
+		$LTPTMP/tst_mail.res)
+     fi
 fi
     if [ -z "$RC1" -a -z "$RC2" -a -z "$RC3" ]
     then

@@ -4,7 +4,7 @@ Linux Test Project
 The latest image is always available at http://ltp.sf.net
 
 
-About the Linux Test Project
+About the Linux Test Project::
 
 The Linux Test Project is a joint project with SGI, IBM, OSDL, and Bull with a
 goal to deliver test suites to the open source community that validate the
