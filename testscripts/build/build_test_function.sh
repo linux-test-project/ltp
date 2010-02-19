@@ -19,13 +19,12 @@
 # Garrett Cooper, January 2010
 #
 
-set -x
-
 # Temporary directory setup.
 #
 # $TMPDIR - base temporary directory; see mktemp(1) for more details.
 setup_env() {
 	testscript_dir=$(readlink -f "${0%/*}")
+	abspath=$(readlink -f "$testscript_dir/../../scripts/abspath.sh")
 	unset vars
 	for i in tmp_builddir tmp_destdir tmp_prefix tmp_srcdir; do
 		eval "if $i=\$(mktemp -d) ; then vars=\"\$vars \$${i}\"; else echo ${0##*/}: failed to create temporary directory for $i; false; fi"
@@ -59,21 +58,21 @@ cleanup() {
 # Pull from CVS.
 cvs_pull() {
 
-	export CVSROOT=${CVSROOT:=:pserver:anonymous@ltp.cvs.sf.net:/cvsroot/ltp}
+	export CVSROOT=${CVSROOT:-:pserver:anonymous@ltp.cvs.sf.net:/cvsroot/ltp}
 
 	if ( [ -f ~/.cvspass ] || touch ~/.cvspass ) ; then
-		echo "$CVSROOT" | grep -v '^:pserver:' || cvs -d$CVSROOT login
+		echo "$CVSROOT" | grep -qv '^:pserver:' || cvs -d$CVSROOT login
 		cvs -z3 export -f -r HEAD ltp && srcdir="$PWD/ltp"
 	fi
 
 }
 
 # Pull from git.
-#
-# XXX (garrcoop): doesn't work (produces an empty repository).
-#git_pull() {
-#	git clone git://ltp.git.sourceforge.net/gitroot/ltp/ltp
-#}
+git_pull() {
+	GIT_REPO=${GIT_REPO:-ltp-dev}
+	git archive master \
+	    --remote=git://ltp.git.sourceforge.net/gitroot/ltp/$GIT_REPO . | tar -xf -
+}
 
 #
 # Pull a fresh copy of the repository for building.
@@ -92,29 +91,46 @@ pull_scm() {
 	fi
 }
 
+# Verify that clean is sane so peoples' rootfs' / host systems don't get
+# cleaned out by accident [sorry Mitani-san :(...].
+#
+# 1 - source directory
+# 2 - build directory (where to deposit the files produced by configure).
+# 3 - the DESTDIR.
+clean_is_sane() {
+	set +e; for i in distclean ac-maintainer-clean; do
+		output=$(make ${2:+-C "$2"} \
+		     ${1:+-f "$1/Makefile" "top_srcdir=$1"} \
+		     ${2:+"top_builddir=$2"} \
+		     ${MAKEFLAGS} \
+		     DESTDIR="$4" \
+		     RM="$1/scripts/safe_rm.sh" $i)
+		if echo "$output" | egrep 'ERROR : not removing .+ to avoid removing root directory'; then
+			return $?
+		fi
+	done
+}
+
 # Configure a source tree for building.
 #
 # 1 - source directory
 # 2 - build directory (where to deposit the files produced by configure).
 # 3 - the argument to pass to --prefix.
-# 4 - DESTDIR.
-#
-# NOTE (garrcoop): Only --prefix argument needs to be passed to configure; I
-# set it up to pass DESTDIR as well so it will properly set the installdir
-# global and thus I won't need to include the same checks down below...
 configure() {
-
-	abspath=$(readlink -f "$testscript_dir/../../scripts/abspath.sh")
 
 	if [ "x$2" != x ] ; then
 		test -d "$2" || mkdir -p "$2"
 	fi
 
-	make -C "$1" \
-		${MAKEFLAGS} \
-		autotools
+	make ${1:+-C "$1"} \
+	     ${MAKEFLAGS} \
+	     autotools
 
-	cd "$2" && "$1/configure" ${3:+--prefix=$("$abspath" "$3")}
+	if [ -d "${2:-}" ] ; then
+		cd "$2"
+	fi
+
+	"${1:-.}/configure" ${3:+--prefix=$("$abspath" "$3")}
 
 }
 
@@ -204,7 +220,7 @@ EOF
 
 	fi
 
-	echo "${0##*/}: will execute test_ltp via ${pre_cmd:-$pre_cmd }$test_ltp"
+	echo "${0##*/}: will execute test_ltp via ${pre_cmd:+$pre_cmd }$test_ltp"
 	chmod +x "$test_ltp"
 	# XXX (garrcoop): uncommenting the following would work around a
 	# craptacular `bug' with libpam where it outputs the Password: prompt
@@ -216,3 +232,10 @@ EOF
 	${pre_cmd} "${test_ltp}" && TEST_PASSED=1
 
 }
+
+if [ "x$I_HAVE_READ_THE_README_WARNING" != x1 ] ; then
+	echo 'WARNING: Read '${0%/*}'/README before executing this script ('${0##*/}')!' >&2
+	false
+fi
+
+set -x
