@@ -341,7 +341,6 @@ static int do_test(struct test_case *tc)
          */
         errno = 0;
         sys_ret = mq_notify(fd, &ev);
-        sys_errno = sys_ret != 0 ? errno : 0;
         if (sys_ret < 0)
                 goto TEST_END;
 
