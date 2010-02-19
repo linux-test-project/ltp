@@ -387,7 +387,7 @@ debugfs		/sys/kernel/debug/		debugfs
 5) Choose your own test(or default) to run with fault injection as follows:
 	./runltp -f <command_file> -F <LOOPS>,<FAULT_PROBABILITY>
 
-The agorithm will work as:
+The algorithm functions like:
 loop (for each testcase)
 begin
 	execute_testcase(inside_stable_kernel)
@@ -401,8 +401,8 @@ begin
 	end
 end
 
-# Eternal TODOs:
-1) Add as many framework as they get added/modifed in the kernel
+# External TODOs:
+1) Add or modify testcases when relevant kernel functionality changes.
 ---------------------------------
 
 ---------------------------------
