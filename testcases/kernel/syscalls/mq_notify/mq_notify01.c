@@ -45,7 +45,7 @@
 /* History:     Porting from Crackerjack to LTP is done by                    */
 /*              Manas Kumar Nayak maknayak@in.ibm.com>                        */
 /******************************************************************************/
-#define _XOPEN_SOURCE 500
+#define _XOPEN_SOURCE 600
 #include <sys/syscall.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -262,15 +262,20 @@ static int do_test(struct test_case *tc)
         int rc, i, fd = -1;
         struct sigevent ev;
         struct sigaction sigact;
+	struct timespec abs_timeout;
         char smsg[MAX_MSGSIZE];
 
         notified = cmp_ok = 1;
+
+	/* Don't timeout. */
+	abs_timeout.tv_sec = 0;
+	abs_timeout.tv_nsec = 0;
 
         /*
          * When test ended with SIGTERM etc, mq discriptor is left remains.
          * So we delete it first.
          */
-        TEST(mq_unlink(QUEUE_NAME));
+        mq_unlink(QUEUE_NAME);
 
         switch (tc->ttype) {
         case FD_NOT_EXIST:
@@ -345,7 +350,7 @@ static int do_test(struct test_case *tc)
          */
         for (i = 0; i < MSG_SIZE; i++)
                 smsg[i] = i;
-        TEST(rc = mq_timedsend(fd, smsg, MSG_SIZE, 0, NULL));
+        TEST(rc = mq_timedsend(fd, smsg, MSG_SIZE, 0, &abs_timeout));
         if (rc < 0) {
                 tst_resm(TFAIL,"mq_timedsend failed errno = %d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
                 result = 1;
@@ -359,7 +364,7 @@ TEST_END:
         /*
          * Check results
          */
-        result |= (sys_errno != tc->err) || !cmp_ok;
+        result |= (sys_ret != 0 && sys_errno != tc->err) || !cmp_ok;
         PRINT_RESULT_CMP(sys_ret >= 0, tc->ret, tc->err, sys_ret, sys_errno,
                          cmp_ok);
 
