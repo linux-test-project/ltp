@@ -40,6 +40,6 @@ $(LIBS): $(LIBDIR)
 
 INSTALL_TARGETS		?= *.sh
 
-$(MAKE_TARGETS): | $(LIBS)
+MAKE_DEPS		:= $(LIBS)
 
 # vim: syntax=make
