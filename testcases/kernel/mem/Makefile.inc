@@ -32,7 +32,7 @@ $(LIBDIR):
 $(LIB): $(LIBDIR)
 	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" all
 
-all: | $(LIB)
+MAKE_DEPS		:= $(LIB)
 
 LDFLAGS			+= -L$(LIBDIR)
 

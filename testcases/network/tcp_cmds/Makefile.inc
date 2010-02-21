@@ -20,10 +20,13 @@
 # Garrett Cooper, September 2009
 #
 
-all: | ../../datafiles/bin.sm
+GENERATE_FILE_DIR	:= ../..
 
-../../datafiles/bin.sm:
-	$(MAKE) -C ../.. -f "$(abs_srcdir)/../../Makefile" generate
+MAKE_DEPS		:= $(GENERATE_FILE_DIR)/datafiles/bin.sm
+
+$(MAKE_DEPS):
+	$(MAKE) -C $(GENERATE_FILE_DIR) \
+	    -f "$(abs_srcdir)/$(GENERATE_FILE_DIR)/Makefile" generate
 
 .PHONY: generate
 

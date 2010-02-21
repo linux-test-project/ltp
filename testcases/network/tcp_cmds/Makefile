@@ -24,7 +24,7 @@ top_srcdir		?= ../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-trunk-all: | ../datafiles/bin.sm
+INSTALL_DEPS		:= ../datafiles/bin.sm
 
 ../datafiles/bin.sm:
 	$(MAKE) -C .. -f "$(abs_srcdir)/../Makefile" generate

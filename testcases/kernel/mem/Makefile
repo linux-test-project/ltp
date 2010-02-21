@@ -34,7 +34,7 @@ $(LIBDIR):
 $(LIB): $(LIBDIR)
 	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" all
 
-trunk-all: $(LIB)
+MAKE_DEPS		:= $(LIB)
 
 trunk-clean:: | lib-clean
 
