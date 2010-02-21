@@ -72,6 +72,7 @@ git_pull() {
 	GIT_REPO=${GIT_REPO:-ltp-dev}
 	git archive master \
 	    --remote=git://ltp.git.sourceforge.net/gitroot/ltp/$GIT_REPO . | tar -xf -
+	srcdir="$PWD"
 }
 
 #
@@ -89,6 +90,7 @@ pull_scm() {
 	if [ "x$LTP_PATCH" != x ] ; then
 		patch -p0 < "$LTP_PATCH"
 	fi
+	safe_rm="$srcdir/scripts/safe_rm.sh"
 }
 
 # Verify that clean is sane so peoples' rootfs' / host systems don't get
@@ -104,7 +106,7 @@ clean_is_sane() {
 		     ${2:+"top_builddir=$2"} \
 		     ${MAKEFLAGS} \
 		     DESTDIR="$4" \
-		     RM="$1/scripts/safe_rm.sh" $i)
+		     RM="$safe_rm" $i)
 		if echo "$output" | egrep 'ERROR : not removing .+ to avoid removing root directory'; then
 			return $?
 		fi
