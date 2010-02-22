@@ -3,7 +3,7 @@ $Id: INSTALL,v 1.36 2010/01/18 23:46:09 yaberauneya Exp $
 Requirements
 -------------------
 
-1. In order to compile ltp you must have make 3.81+.
+1. In order to compile ltp you must have make 3.80+ (make 3.81 preferred).
 2. In order to compile and use ltp-scanner (a utility in the pan directory),
    you must have bison/yacc, and flex installed.
 
