@@ -28,12 +28,24 @@ set -e
 # 0. Setup the environment.
 setup_env "Build out of build tree"
 # 1. Pull the SCM.
-pull_scm cvs "$tmp_srcdir"
-# 2. Configure.
-configure "$srcdir" "$tmp_builddir" "$tmp_prefix" "$tmp_destdir"
-# 3. -->> Compile out-of-build-tree. <<--
+pull_scm git "$tmp_srcdir"
+# 2. Pre-configure clean sanity.
+# i.   Is srcdir still there (should be)?
+# ii.  Is builddir there (shouldn't be)?
+# iii. Is $DESTDIR/$prefix there (shouldn't be)?
+clean_is_sane "$srcdir" "$tmp_builddir" "$("$abspath" "$tmp_destdir/$tmp_prefix")"
+[ -d "$srcdir" -a ! -d "$tmp_builddir" -a ! -d "$tmp_destdir/$tmp_prefix" ]
+# 3. Configure.
+configure "$srcdir" "$tmp_builddir" "$tmp_prefix"
+# 4. -->> Compile out-of-build-tree. <<--
 build "$srcdir" "$tmp_builddir"
-# 4. Install.
+# 5. Install.
 install_ltp "$srcdir" "$tmp_builddir" "$tmp_destdir"
-# 5. Test.
-test_ltp "$("$abspath" "$tmp_destdir/${tmp_prefix:-/opt/ltp}")"
+# 6. Test.
+test_ltp "$("$abspath" "$tmp_destdir/$tmp_prefix")"
+# 7. Post-test clean sanity.
+# i.   Is srcdir still there (should be)?
+# ii.  Is builddir there (shouldn't be)?
+# iii. Is $DESTDIR/$prefix there (shouldn't be)?
+clean_is_sane "$srcdir" "$tmp_builddir" "$("$abspath" "$tmp_destdir/$tmp_prefix")" 
+[ -d "$srcdir" -a ! -d "$tmp_builddir" -a ! -d "$tmp_destdir/$tmp_prefix" ]

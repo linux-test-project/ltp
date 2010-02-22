@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#    build / install outside build-tree script.
+#    build in srcdir / install outside build-tree script.
 #
 #    Copyright (C) 2010, Cisco Systems Inc.
 #
@@ -28,12 +28,22 @@ set -e
 # 0. Setup the environment.
 setup_env "Install out of srcdir"
 # 1. Pull the SCM.
-pull_scm cvs "$tmp_srcdir"
-# 2. Configure.
-configure "$srcdir" "$srcdir" "$tmp_prefix" "$tmp_destdir"
-# 3. -->> Compile out-of-build-tree. <<--
+pull_scm git "$tmp_srcdir"
+# 2. Pre-configure clean sanity.
+# i.   Is srcdir still there (should be)?
+# ii.  Is $DESTDIR/$prefix there (shouldn't be)?
+clean_is_sane "$srcdir" "$srcdir" "$("$abspath" "$tmp_destdir/$tmp_prefix")"
+[ -d "$srcdir" -a ! -d "$tmp_destdir/$tmp_prefix" ]
+# 3. Configure.
+configure "$srcdir" "$srcdir" "$tmp_prefix"
+# 4. -->> Compile in-build-tree. <<--
 build "$srcdir" "$srcdir"
-# 4. Install.
+# 5. -->> Install out-of-build-tree. <<--
 install_ltp "$srcdir" "$srcdir" "$tmp_destdir"
-# 5. Test.
-test_ltp "$("$abspath" "$tmp_destdir/${tmp_prefix:-/opt/ltp}")"
+# 6. Test.
+test_ltp "$("$abspath" "$tmp_destdir/$tmp_prefix")"
+# 7. Post-test clean sanity.
+# i.   Is srcdir still there (should be)?
+# ii.  Is $DESTDIR/$prefix there (shouldn't be)?
+clean_is_sane "$srcdir" "$srcdir" "$("$abspath" "$tmp_destdir/$tmp_prefix")"
+[ -d "$srcdir" -a ! -d "$tmp_destdir/$tmp_prefix" ]
