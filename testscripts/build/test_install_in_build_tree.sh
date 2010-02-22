@@ -28,12 +28,20 @@ set -e
 # 0. Setup the environment.
 setup_env "Install in build tree"
 # 1. Pull the SCM.
-pull_scm cvs "$tmp_srcdir"
-# 2. Configure.
-configure "$srcdir" "$srcdir" "$srcdir" ""
-# 3. -->> Compile in-build-tree. <<--
-build "$srcdir" "$srcdir"
-# 4. -->> Install in-build-tree. <<--
-install_ltp "$srcdir" "$srcdir" ""
-# 5. Test.
-test_ltp ""
+pull_scm git "$tmp_srcdir"
+# 2. Pre-configure clean sanity.
+# i.   Is srcdir still there (should be)?
+clean_is_sane
+[ -d "$srcdir" ]
+# 3. Configure.
+configure "$srcdir" "$srcdir" "$srcdir"
+# 4. -->> Compile in-build-tree. <<--
+build
+# 5. -->> Install in-build-tree. <<--
+install_ltp
+# 6. Test.
+test_ltp
+# 7. Post-test clean sanity.
+# i.   Is srcdir still there (should be)?
+clean_is_sane
+[ -d "$srcdir" ]
