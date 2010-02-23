@@ -74,6 +74,7 @@ int  TST_TOTAL = 2;		/* total number of tests in this file.   */
 #include <unistd.h>
 #include "include_j_h.h"
 #include "numa_helpers.h"
+#include <numaif.h>
 
 #if ! defined(LIBNUMA_API_VERSION) || LIBNUMA_API_VERSION < 2
 
