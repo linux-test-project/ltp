@@ -72,7 +72,7 @@ m4/Makefile.in: m4/Makefile.am aclocal.m4
 .PHONY: ac-clean ac-distclean ac-maintainer-clean
 ac-clean::
 	$(RM) -rf autom4te.cache
-	$(RM) -f aclocal.m4 config.log config.status
+	$(RM) -f config.log config.status
 	$(RM) -f include/config.h include/stamp-h1
 	$(RM) -f m4/Makefile m4/ltp-version.m4
 	for d in $(AUTOCONFED_SUBDIRS); do \
