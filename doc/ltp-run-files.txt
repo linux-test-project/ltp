@@ -1,5 +1,5 @@
 List of scripts or executables that need to be run for complete LTP execution. 
-The tests listed are NOT executed with the runalltest.sh script
+The tests listed are NOT executed with the runalltests.sh script
 
 runalltests.sh
  - syscalls  (except epoll, see below)
@@ -23,7 +23,7 @@ To test filesystem with LVM
 w/o LVM
 - ltpfsnolvm.sh
 
-Deveice Mapper tests
+Device Mapper tests
  - ltpdmmapper.sh
 
 Network tests

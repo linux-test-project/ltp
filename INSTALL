@@ -97,8 +97,8 @@ objects, generated files) outside of the directory where the source files
 reside. This is typically used when cross-compiling for multiple targets.
 
 NOTE: This is by and large correctly implemented, but there are several corner
-case, where this isn't implemented properly. Please see TODO for a list of items
-which need fixing in the LTP tree.
+cases, where this isn't implemented properly. Please see TODO for a list of
+items which need fixing in the LTP tree.
 
 	$ mkdir "$OUT_OF_BUILD_TREE_DIR"
 	$ make \
@@ -128,15 +128,17 @@ Quick Start
 3> ./configure
 4> make all
 5> make install
-6> cd /opt/ltp
-7> ./runalltests.sh
+6> /opt/ltp/runltp
 
 *NOTE:
 - LTP assumes the existence of the nobody, bin, and daemon users and their
-groups.  If these IDs do not exist, certain tests will fail. The users and
-groups IDs should be the same, i.e. if user "nobody" is 99, then it's group
-should also be "99". The names of the groups are irrelevant.
-- The installation directory is /opt/ltp by default. Please see "Using autoconf" above and specify the appropriate path via --prefix. DESTDIR= is also honored for install and will install into $DESTDIR/$prefix, if you want to install into a chroot or a rootfs for instance.
+groups.  If these IDs do not exist, certain tests will fail. The respective
+user and group IDs should be the same, i.e. if `nobody's' user ID is 99, then
+its group ID should also be 99. The names of the groups are irrelevant.
+- The installation directory is /opt/ltp by default. Please see
+"Using autoconf" above and specify the appropriate path via --prefix.
+DESTDIR= is also honored for install and will install into $DESTDIR/$prefix,
+if you want to install into a chroot or a rootfs for instance.
 
 Detailed Installation
 ---------------------
@@ -163,9 +165,9 @@ contributions are welcome.
    See ltp-pan(1) for more information on the test driver we have provided.
    It is simple, but it can do a lot of stuff.
 
-   NOTE: The diskio and network tests will NOT be run by the runalltests.sh
-   script. They are separate from the other tests because of the additional
-   required setup overhead.
+   NOTE: The diskio and network tests will NOT be run by the runltp script;
+   they are separate from the other tests because of additional required setup
+   overhead.
 
 5. The disk I/O tests can be run by executing the diskio.sh script.  In order
    for these tests to successfully operate a writable high-density 3.5" floppy
