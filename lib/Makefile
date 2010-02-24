@@ -28,6 +28,8 @@ ifeq ($(UCLINUX),1)
 CFLAGS			+= -D_USC_LIB_ -D__UCLIBC__ -DUCLINUX
 endif
 
+FILTER_OUT_LIBSRCS	:= mount_utils.c
+
 LIB			:= libltp.a
 
 pc_file			:= $(DESTDIR)/$(datarootdir)/pkgconfig/ltp.pc

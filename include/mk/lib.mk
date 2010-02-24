@@ -47,7 +47,9 @@ else
 LIBSRCS		:= $(abspath $(LIBSRCS))
 endif
 
-LIBSRCS	:= $(subst $(abs_srcdir)/,,$(wildcard $(LIBSRCS)))
+LIBSRCS		:= $(subst $(abs_srcdir)/,,$(wildcard $(LIBSRCS)))
+
+LIBSRCS		:= $(filter-out $(FILTER_OUT_LIBSRCS),$(LIBSRCS))
 
 LIBOBJS		:= $(LIBSRCS:.c=.o)
 
