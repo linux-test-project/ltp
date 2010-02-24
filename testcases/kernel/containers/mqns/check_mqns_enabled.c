@@ -46,7 +46,7 @@ int main()
     mq_close(mqd);
     mq_unlink("/checkmqnsenabled");
 
-    pid = do_clone(CLONE_NEWIPC, dummy, NULL);
+    pid = ltp_clone_quick(CLONE_NEWIPC, dummy, NULL);
 
     if (pid == -1)
 	return 5;
