@@ -1,3 +1,22 @@
+The following things need to be rewritten // fixed:
+
+get_mempolicy01 // mbind01: They're using numa v1 calls which means that all
+versions of Linux / numa as of a few years ago aren't compatible with the API
+calls and thus you aren't truly testing the calls via libnuma properly.
+
+This was implemented via ad hoc static v1 code previously, but this isn't what
+we want as all consumers outside of LTP will be using either v1 or v2 code,
+depending on what libraries, APIs, etc are packaged with their copy of
+libnuma // kernel.
+
+swap*:
+
+This should generate dummy swap files and delete them after the testcase is
+done as this test isn't executable on systems sans swap devices. A good amount
+of legwork was done with lib/mount_utils.c, but I've backed that out because it
+needed more polishing to get to a functional state, and the swap device
+*should* be generated outside of the swap tests and destroyed at the end.
+
 The following items need fixing with the new Makefile infrastructure:
 
 testcases/Makefile:
@@ -96,7 +115,6 @@ tcp_cmds_noexpect-output.log: /scratch/ltp-install5/testcases/bin/echo01 /scratc
 
 /tests/ltp/output/tcp_cmds_noexpect-output.log:sendfile01    1  TFAIL  :  Test broken: gethost: command not found
 
-/tests/ltp/output/io_floppy-output.log:sh: stress_floppy: command not found
 /tests/ltp/output/ipv6-output.log:sh: echo601: command not found
 /tests/ltp/output/ipv6-output.log:ftp01       1  TFAIL  :  Test broken: ftp: command not found
 /tests/ltp/output/ipv6-output.log:sh: perf_lan6: command not found
