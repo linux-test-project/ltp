@@ -57,6 +57,9 @@ int main()
 {
         int pid;
 
+        if (tst_kvercmp(2,6,24) < 0)
+                return 1;
+
         pid = do_clone_unshare_test(T_CLONE, CLONE_NEWPID, dummy, NULL);
 
 	/* Check for the clone function return value */
