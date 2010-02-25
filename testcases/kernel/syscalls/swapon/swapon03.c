@@ -64,10 +64,10 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
+#include <sys/utsname.h>
 #include <fcntl.h>
 #include <pwd.h>
 #include <string.h>
-#include <sys/utsname.h>
 #include <signal.h>
 #include "test.h"
 #include "usctest.h"
@@ -137,7 +137,7 @@ int main(int ac, char **av)
 		}
 
 		/* Call swapon sys call for the first time */
-		TEST(syscall(__NR_swapon,swap_testfiles[0].filename, 0));
+		TEST(syscall(__NR_swapon, swap_testfiles[0].filename, 0));
 
 		/* Check return code */
 		if ((TEST_RETURN == -1) && (TEST_ERRNO == expected_errno)) {
@@ -325,33 +325,43 @@ int setup_swap()
  ***************************************************************/
 int create_swapfile(char *swapfile, int bs, int count)
 {
-	char cmd_buffer[100];	/* temp buffer for commands */
 
+	char *cmd_buffer;
+	int rc = -1;
+
+	/* prepare the buffer. */
+	if ((cmd_buffer = calloc(sysconf(_SC_ARG_MAX)+1, sizeof(char))) == NULL) {
+		tst_resm(TWARN,
+			"failed to allocate enough memory for the command "
+			"buffer");
 	/* prepare the path string for dd command */
-	if (sprintf(cmd_buffer, "dd if=/dev/zero of=%s bs=%d"
-		    " count=%d > tmpfile 2>&1", swapfile, bs, count) < 0) {
+	} else if (snprintf(cmd_buffer, sysconf(_SC_ARG_MAX),
+		    "dd if=/dev/zero of=%s bs=%d "
+		    "count=%d > tmpfile 2>&1", swapfile, bs, count) < 0) {
 		tst_resm(TWARN,
 			 "sprintf() failed to create the command string");
-		return -1;
 	}
-	if (system(cmd_buffer) != 0) {
-		tst_resm(TWARN, "dd command failed to create file");
-		return -1;
+	else if (system(cmd_buffer) != 0) {
+		tst_resm(TWARN, "dd command failed to create file via "
+				"command: %s", cmd_buffer);
 	}
-
 	/* make the file swapfile */
-	if (sprintf(cmd_buffer, "mkswap %s > tmpfile 2>&1", swapfile) < 0) {
+	else if (snprintf(cmd_buffer, sysconf(_SC_ARG_MAX),
+		    "mkswap %s > tmpfile 2>&1", swapfile) < 0) {
 		tst_resm(TWARN,
-			 "sprintf() failed to create mkswap command string");
-		return -1;
-	}
-	if (system(cmd_buffer) != 0) {
+			 "snprintf() failed to create mkswap command string");
+	} else if (system(cmd_buffer) != 0) {
 		tst_resm(TWARN, "failed to make swap file %s via command %s",
 			 swapfile, cmd_buffer);
-		return -1;
+	} else {
+		rc = 0;
 	}
 
-	return 0;
+	if (cmd_buffer != NULL) {
+		free(cmd_buffer);
+	}
+
+	return rc;
 }
 
 /***************************************************************
@@ -360,10 +370,11 @@ int create_swapfile(char *swapfile, int bs, int count)
 int clean_swap()
 {
 	int j;			/* loop counter */
-	char filename[15];
+	char filename[FILENAME_MAX];
 
 	for (j = 0; j < swapfiles; j++) {
-		if (sprintf(filename, "swapfile%02d", j + 2) < 0) {
+		if (snprintf(filename, sizeof(filename),
+			    "swapfile%02d", j+2) < 0) {
 			tst_resm(TWARN, "sprintf() failed to create filename");
 			tst_resm(TWARN, "Failed to turn off swap files. System"
 				 " reboot after execution of LTP test"
@@ -394,25 +405,44 @@ int clean_swap()
  ***************************************************************/
 int check_and_swapoff(char *filename)
 {
-	char cmd_buffer[100];	/* temp buffer for commands */
+	char *cmd_buffer;	/* temp buffer for commands */
+	int rc = -1;
 
-	/* prepare the cmd string for grep command */
-	if (sprintf(cmd_buffer, "grep -q '%s.*file' /proc/swaps", filename) < 0) {
+	if ((cmd_buffer = calloc(sysconf(_SC_ARG_MAX)+1, sizeof(char))) == NULL) {
+		/* prepare the cmd string for grep command */
+		tst_resm(TWARN,
+			"failed to allocate enough memory for the command "
+			"buffer");
+	} else if (snprintf(cmd_buffer, sysconf(_SC_ARG_MAX),
+		    "grep -q '%s.*file' /proc/swaps", filename) < 0) {
 		tst_resm(TWARN,
 			 "sprintf() failed to create the command string");
-		return -1;
+	} else {
+
+		rc = 0;
+
+		if (system(cmd_buffer) == 0) {
+
+			/* now we need to swapoff the file */
+			if (syscall(__NR_swapoff, filename) != 0) {
+
+				tst_resm(TWARN, "Failed to turn off swap "
+						"file. system reboot after "
+						"execution of LTP test suite "
+						"is recommended");
+				rc = -1;
+
+			} 
+
+		} /* else nothing to clean up. */
+
 	}
-	if (system(cmd_buffer) == 0) {
-		/* now we need to swapoff the file */
-		if (syscall(__NR_swapoff,filename) != 0) {
-			tst_resm(TWARN, "Failed to turn off swap file. system"
-				 " reboot after execution of LTP test"
-				 " suite is recommended");
-			return -1;
-		}
+	if (cmd_buffer != NULL) {
+		free(cmd_buffer);
 	}
 
-	return 0;
+	return rc;
+
 }
 
 /***************************************************************
@@ -460,6 +490,9 @@ void cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
+
+	/* Remove any remaining swap files */
+	clean_swap();
 
 	/* Remove tmp dir and all files inside it */
 	tst_rmdir();
