@@ -193,8 +193,8 @@ int main(int ac, char **av)
 
 	}			/* End for TEST_LOOPING */
 
-	tst_exit();
-
+	cleanup();
+	return 0;
 }				/* End main */
 
 /*
