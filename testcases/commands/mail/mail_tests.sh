@@ -347,7 +347,7 @@ else
 		    "Test #5: Mail was carbon copied to user mail_test"
 	else
 		tst_res TFAIL $LTPTMP/tst_mail.res \
-		    "Test #5: mail failed to carbon copy user mail_testi. Reason:"
+		    "Test #5: mail failed to carbon copy user mail_test. Reason:"
 		: $(( TFAILCNT += 1 ))
 	fi
 
