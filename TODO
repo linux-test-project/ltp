@@ -9,13 +9,14 @@ we want as all consumers outside of LTP will be using either v1 or v2 code,
 depending on what libraries, APIs, etc are packaged with their copy of
 libnuma // kernel.
 
-swap*:
+quotactl01:
 
-This should generate dummy swap files and delete them after the testcase is
-done as this test isn't executable on systems sans swap devices. A good amount
-of legwork was done with lib/mount_utils.c, but I've backed that out because it
-needed more polishing to get to a functional state, and the swap device
-*should* be generated outside of the swap tests and destroyed at the end.
+This should generate dummy tmpfs partitions and delete them after the testcase is
+done as this test isn't executable on most systems (unless we're lucky and
+someone setup quotas on it already). A good amount of legwork was done with
+lib/mount_utils.c, but I've backed that out because it needed more polishing to
+get to a functional state, and the device *should* be generated outside of the
+quotactl01 test and destroyed at the end.
 
 The following items need fixing with the new Makefile infrastructure:
 
