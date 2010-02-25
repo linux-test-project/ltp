@@ -8,25 +8,11 @@
 #define __COMMON_TIMERS_H__
 
 #define CLEANUP cleanup
+#include "config.h"
 #include "linux_syscall_numbers.h"
 
 #ifndef NSEC_PER_SEC
 #define NSEC_PER_SEC (1000000000L)
-#endif
-#ifndef CLOCK_REALTIME
-#define CLOCK_REALTIME 0
-#endif
-#ifndef CLOCK_MONOTONIC
-#define CLOCK_MONOTONIC 1
-#endif
-#ifndef CLOCK_PROCESS_CPUTIME_ID
-#define CLOCK_PROCESS_CPUTIME_ID 2
-#endif
-#ifndef CLOCK_THREAD_CPUTIME_ID
-#define CLOCK_THREAD_CPUTIME_ID 3
-#endif
-#ifndef CLOCK_MONOTONIC_RAW
-#define CLOCK_MONOTONIC_RAW 4
 #endif
 clock_t clock_list[] = {
 	CLOCK_REALTIME,
@@ -34,22 +20,33 @@ clock_t clock_list[] = {
 	CLOCK_PROCESS_CPUTIME_ID,
 	CLOCK_THREAD_CPUTIME_ID,
 	CLOCK_MONOTONIC_RAW,
+#if HAVE_CLOCK_REALTIME_COARSE
+	CLOCK_REALTIME_COARSE,
+#endif
+#if HAVE_CLOCK_MONOTONIC_COARSE
+	CLOCK_MONOTONIC_COARSE,
+#endif
 };
 #define MAX_CLOCKS (sizeof(clock_list) / sizeof(*clock_list))
+
+#define CLOCK_TO_STR(def_name)	\
+	case def_name:		\
+		return #def_name;
 
 const char *get_clock_str(const int clock_id)
 {
 	switch(clock_id) {
-	case CLOCK_REALTIME:
-		return "CLOCK_REALTIME";
-	case CLOCK_MONOTONIC:
-		return "CLOCK_MONOTONIC";
-	case CLOCK_PROCESS_CPUTIME_ID:
-		return "CLOCK_PROCESS_CPUTIME_ID";
-	case CLOCK_THREAD_CPUTIME_ID:
-		return "CLOCK_THREAD_CPUTIME_ID";
-	case CLOCK_MONOTONIC_RAW:
-		return "CLOCK_MONOTONIC_RAW";
+	CLOCK_TO_STR(CLOCK_REALTIME);
+	CLOCK_TO_STR(CLOCK_MONOTONIC);
+	CLOCK_TO_STR(CLOCK_PROCESS_CPUTIME_ID);
+	CLOCK_TO_STR(CLOCK_THREAD_CPUTIME_ID);
+	CLOCK_TO_STR(CLOCK_MONOTONIC_RAW);
+#if HAVE_CLOCK_REALTIME_COARSE
+	CLOCK_TO_STR(CLOCK_REALTIME_COARSE);
+#endif
+#if HAVE_CLOCK_MONOTONIC_COARSE
+	CLOCK_TO_STR(CLOCK_MONOTONIC_COARSE);
+#endif
 	default:
 		return "CLOCK_!?!?!?";
 	}
