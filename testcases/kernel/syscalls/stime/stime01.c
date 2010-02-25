@@ -74,18 +74,20 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <signal.h>
+#include <sys/time.h>
 
 #include "test.h"
 #include "usctest.h"
 
-#define INCR_TIME	10	/* increment in the system's current time */
+#define INCR_TIME	30	/* increment in the system's current time */
+
+#define BASH_CLOCK	
 
 char *TCID = "stime01";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
-time_t curr_time;		/* system's current time in seconds */
+struct timeval real_time_tv, pres_time_tv;
 time_t new_time;		/* system's new time */
-time_t tloc;			/* argument var. for time() */
 int exp_enos[] = { 0 };
 
 void setup();			/* Main setup function of test */
@@ -95,7 +97,6 @@ int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
-	time_t pres_time;	/* system's present time */
 
 	/* Parse standard options given to run the test. */
 	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
@@ -112,57 +113,87 @@ int main(int ac, char **av)
 
 	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
+
+		/*
+		 * ``Break`` the clock.
+		 *
+		 * This is being done inline here so that the offset is
+		 * automatically reset based on the elapsed time, and not a
+		 * fixed time sampled once in setup.
+		 *
+		 * The big assumption here is the clock state isn't super
+		 * fubared if so, the executing party needs to go fix their
+		 * RTC's battery, or they have more pressing issues to attend
+		 * to as far as clock skew is concerned :P.
+		 */
+		if (gettimeofday(&real_time_tv, NULL) < 0) {
+			tst_brkm(TBROK|TERRNO, tst_exit,
+				"failed to get current time via gettimeofday(2)");
+		}
+
+		/* Get the system's new time */
+		new_time = real_time_tv.tv_sec + INCR_TIME;
+
 		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
 		/*
-		 * Invoke stime(2) to set the system's time
-		 * to the specified new_time.
+		 * Invoke stime(2) to set the system's time to the specified
+		 * new_time.
 		 */
-		TEST(stime(&new_time));
-
-		/* check return code of stime(2) */
-		if (TEST_RETURN == -1) {
-			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL, "stime(%ld) Failed, errno=%d : %s",
-				 new_time, TEST_ERRNO, strerror(TEST_ERRNO));
+		if (stime(&new_time) < 0) {
+			tst_resm(TFAIL|TERRNO, "stime(%ld) failed", new_time);
 		} else {
+
 			/*
 			 * Perform functional verification if test
 			 * executed without (-f) option.
 			 */
 			if (STD_FUNCTIONAL_TEST) {
+
 				/*
 				 * Get the system's current time after call
 				 * to stime().
 				 */
-				if ((pres_time = time(&tloc)) < 0) {
-					tst_brkm(TFAIL, cleanup,
+				if (gettimeofday(&pres_time_tv, NULL) < 0) {
+					tst_brkm(TFAIL|TERRNO, cleanup,
 						 "time() failed to get "
-						 "system's time after stime, "
-						 "error=%d", errno);
-				 /*NOTREACHED*/}
+						 "system's time after stime");
+				}
 
 				/* Now do the actual verification */
-				if ((pres_time != new_time) &&
-				    (pres_time != new_time + 1)) {
-					tst_resm(TFAIL, "stime() fails to set "
-						 "system's time");
-				} else {
-					tst_resm(TPASS, "Functionality of "
-						 "stime(%ld) successful",
-						 new_time);
+				switch(pres_time_tv.tv_sec - new_time) {
+				case 0:
+				case 1:
+					tst_resm(TINFO, "pt.tv_sec: %ld",
+							pres_time_tv.tv_sec);
+					tst_resm(TPASS, "system time was set "
+							"to %ld", new_time);
+					break;
+				default:
+					tst_resm(TFAIL, "system time was not "
+							"set to %ld (time is "
+							"actually: %ld)",
+							new_time,
+							pres_time_tv.tv_sec);
 				}
+
 			} else {
 				tst_resm(TPASS, "Call succeeded");
 			}
+
+			if (settimeofday(&real_time_tv, NULL) < 0) {
+				tst_resm(TBROK | TERRNO,
+					 "failed to restore time to original "
+					 "value; system clock may need to be "
+					 "fixed manually");
+			}
+
 		}
-		Tst_count++;	/* incr TEST_LOOP counter */
+
 	}			/* End for TEST_LOOPING */
 
-	/* Call cleanup() to undo setup done for the test. */
-	cleanup();
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 
 }				/* End main */
 
@@ -173,26 +204,16 @@ int main(int ac, char **av)
  */
 void setup()
 {
-	/* capture signals */
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Check that the test process id is super/root  */
 	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Must be super/root for this test!");
-		tst_exit();
-	 /*NOTREACHED*/}
+		tst_brkm(TBROK, tst_exit,
+			"you must be root to execute this test!");
+	}
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
 
-	/* Get the current time */
-	if ((curr_time = time(&tloc)) < 0) {
-		tst_brkm(TBROK, cleanup,
-			 "time() failed to get current time, errno=%d", errno);
-	 /*NOTREACHED*/}
-
-	/* Get the system's new time */
-	new_time = curr_time + INCR_TIME;
 }				/* End setup() */
 
 /*
@@ -207,6 +228,13 @@ void cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
+
+	/* Restore the original system time. */
+	if (settimeofday(&real_time_tv, NULL) != 0) {
+		tst_resm(TBROK | TERRNO, "failed to restore time to original "
+					 "value; system clock may need to be "
+					 "fixed manually");
+	}
 
 	/* exit with return code appropriate for results */
 	tst_exit();
