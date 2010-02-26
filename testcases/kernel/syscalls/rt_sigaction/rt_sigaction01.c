@@ -51,28 +51,11 @@
 #include <string.h>
 
 /* Harness Specific Include Files. */
+#define LTP_RT_SIG_TEST
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
-
-/*
- * For all but __mips__:
- *
- * _COMPAT_NSIG / _COMPAT_NSIG_BPW == 2.
- *
- * For __mips__:
- *
- * _COMPAT_NSIG / _COMPAT_NSIG_BPW == 4.
- *
- * See asm/compat.h under the kernel source for more details.
- *
- * Multiply that by a fudge factor of 4 and you have your SIGSETSIZE.
- */
-#if defined (__mips__)
-#define SIGSETSIZE 16
-#else
-#define SIGSETSIZE 8
-#endif
+#include "ltp_signal.h"
 
 /* Extern Global Variables */
 extern int Tst_count;           /* counter for tst_xxx routines.         */
@@ -101,13 +84,13 @@ int  TST_TOTAL = 1;                   /* total number of tests in this file.   *
 /*              On success - Exits calling tst_exit(). With '0' return code.  */
 /*                                                                            */
 /******************************************************************************/
-extern void cleanup() {
-        /* Remove tmp dir and all files in it */
-        TEST_CLEANUP;
-        tst_rmdir();
+void cleanup() {
+	/* Remove tmp dir and all files in it */
+	TEST_CLEANUP;
+	tst_rmdir();
 
-        /* Exit with appropriate return code. */
-        tst_exit();
+	/* Exit with appropriate return code. */
+	tst_exit();
 }
 
 /* Local  Functions */
@@ -129,10 +112,10 @@ extern void cleanup() {
 /*                                                                            */
 /******************************************************************************/
 void setup() {
-        /* Capture signals if any */
-        /* Create temporary directories */
-        TEST_PAUSE;
-        tst_tmpdir();
+	/* Capture signals if any */
+	/* Create temporary directories */
+	TEST_PAUSE;
+	tst_tmpdir();
 }
 
 int test_flags[] = {SA_RESETHAND|SA_SIGINFO, SA_RESETHAND, SA_RESETHAND|SA_SIGINFO, SA_RESETHAND|SA_SIGINFO, SA_NOMASK};
@@ -141,66 +124,78 @@ char *test_flags_list[] = {"SA_RESETHAND|SA_SIGINFO", "SA_RESETHAND", "SA_RESETH
 void
 handler(int sig)
 {
-        tst_resm(TINFO,"Signal Handler Called with signal number %d\n",sig);
-        return;
+	tst_resm(TINFO, "Signal Handler Called with signal number %d\n", sig);
+	return;
 }
 
 int
 set_handler(int sig, int sig_to_mask, int mask_flags)
 {
-        struct sigaction sa, oldaction;
+#ifdef __x86_64__
+	struct kernel_sigaction sa, oldaction;
+	mask_flags |= SA_RESTORER;
+	sa.sa_restorer = restore_rt;
+	sa.k_sa_handler = (void *)handler;
+#else
+	struct sigaction sa, oldaction;
+	sa.sa_handler = (void *)handler;
+#endif
+	sa.sa_flags = mask_flags;
+	sigemptyset(&sa.sa_mask);
+	sigaddset(&sa.sa_mask, sig);
 
-                sa.sa_sigaction = (void *)handler;
-                sa.sa_flags = mask_flags;
-                sigemptyset(&sa.sa_mask);
-                sigaddset(&sa.sa_mask, sig_to_mask);
-                TEST(syscall(__NR_rt_sigaction,sig, &sa, &oldaction,SIGSETSIZE));
-        if (TEST_RETURN == 0) {
-                return 0;
-        } else {
-                        return TEST_RETURN;
-        }
+	return syscall(__NR_rt_sigaction, sig, &sa, &oldaction,SIGSETSIZE);
+
 }
-
 
 int main(int ac, char **av) {
 	int signal, flag;
-        int lc;                 /* loop counter */
-        char *msg;              /* message returned from parse_opts */
+	int lc;                 /* loop counter */
+	char *msg;              /* message returned from parse_opts */
 	
-        /* parse standard options */
-        if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
-             tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-             tst_exit();
-           }
+	/* parse standard options */
+	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+	}
 
-        setup();
+	setup();
 
-        /* Check looping state if -i option given */
-        for (lc = 0; TEST_LOOPING(lc); ++lc) {
-                Tst_count = 0;
-                for (testno = 0; testno < TST_TOTAL; ++testno) {
-                
+	/* Check looping state if -i option given */
+	for (lc = 0; TEST_LOOPING(lc); ++lc) {
+
+		Tst_count = 0;
+
+		for (testno = 0; testno < TST_TOTAL; ++testno) {
+
 			for (signal = SIGRTMIN; signal <= (SIGRTMAX ); signal++){//signal for 34 to 65 
-			 	for(flag=0; flag<5;flag++) {
-	                        	 TEST(set_handler(signal, 0, test_flags[flag]));
-						 if (TEST_RETURN == 0) {
-        					tst_resm(TINFO,"signal: %d ", signal);
-        					tst_resm(TPASS, "rt_sigaction call succeeded: result = %ld ",TEST_RETURN );
-        					tst_resm(TINFO, "sa.sa_flags = %s ",test_flags_list[flag]);
+
+#ifdef __x86_64__
+				sig_initial(signal);
+#endif
+
+				for(flag = 0; flag < (sizeof(test_flags) / sizeof(test_flags[0])); flag++) {
+
+					TEST(set_handler(signal, 0, test_flags[flag]));
+
+					if (TEST_RETURN == 0) {
+						tst_resm(TINFO,"signal: %d ", signal);
+						tst_resm(TPASS, "rt_sigaction call succeeded: result = %ld ",TEST_RETURN );
+						tst_resm(TINFO, "sa.sa_flags = %s ",test_flags_list[flag]);
 						kill(getpid(),signal);
-			                         } else {
-                 	   				tst_resm(TFAIL, "%s failed - errno = %d : %s", TCID, TEST_ERRNO, strerror(TEST_ERRNO));
-                       				}
-                			}
-		 	printf("\n");	
-        		}
+					} else {
+	         	   			tst_resm(TFAIL | TTERRNO,
+							"rt_sigaction call "
+							"failed");
+	               			}
 
+	        		}
 
+			}
 
-                }
-        }	
+	        }
+
+	}	
 	cleanup();
-        tst_exit();
+	return 0;
 }
 
