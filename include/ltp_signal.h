@@ -61,7 +61,7 @@
 #define SA_RESTORER	0x04000000
 
 struct kernel_sigaction {
-	__sighandler_t ka_sa_handler;
+	__sighandler_t k_sa_handler;
 	unsigned long sa_flags;
 	void (*sa_restorer) (void);
 	sigset_t sa_mask;
@@ -70,7 +70,7 @@ struct kernel_sigaction {
 void (*restore_rt) (void);
 
 inline void
-restorer_h(int signal)
+handler_h (int signal)
 {
 	return;
 }
@@ -79,18 +79,27 @@ restorer_h(int signal)
 inline int
 sig_initial(int sig)
 {
+	int ret_code = -1;
 	struct sigaction act, oact;
 
 	act.sa_handler = handler_h;
-	sigemptyset(&act.sa_mask);
-	sigaddset(&act.sa_mask, sig);
-	/* Set act.sa_restorer via syscall(2) */
-	sigaction(sig, &act, &oact);
-	/* Copy oact.sa_restorer via syscall(2) */
-	sigaction(sig, &act, &oact);
-	/* And voila -- we just tricked the kernel into giving us our restorer
-	 * function! */
-	restore_rt = oact.sa_restorer;
+	/* Clear out the signal set. */
+	if (sigemptyset(&act.sa_mask) < 0) {
+		/* Add the signal to the mask set. */
+	} else if (sigaddset(&act.sa_mask, sig) < 0) {
+		/* Set act.sa_restorer via syscall(2) */
+	} else if (sigaction(sig, &act, &oact) < 0) {
+		/* Copy oact.sa_restorer via syscall(2) */
+	} else if (sigaction(sig, &act, &oact) < 0) {
+		/* And voila -- we just tricked the kernel into giving us our
+		 * restorer function! */
+	} else {
+		restore_rt = oact.sa_restorer;
+		ret_code = 0;
+	}
+
+	return ret_code;
+
 }
 
 #endif /* __x86_64__ */
