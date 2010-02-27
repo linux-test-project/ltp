@@ -5,7 +5,7 @@ mail02
 	Test that mail user@bad-domain will result in a warning from the mailer daemon that the domain does not exist.
 
 mail03
-	Test that mail non_existant_user@localhost will result in delivery failure.  Mailer-Deamon will report this failure.
+	Test that mail non_existent_user@localhost will result in delivery failure.  Mailer-Daemon will report this failure.
 
 mail04
 	Test that mail -c user@domain option will carbon copy that user.
