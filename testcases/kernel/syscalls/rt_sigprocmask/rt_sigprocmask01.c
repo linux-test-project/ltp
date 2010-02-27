@@ -13,7 +13,7 @@
 /*                                                                            */
 /* You should have received a copy of the GNU General Public License          */
 /* along with this program;  if not, write to the Free Software               */
-/* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA    */
+/* Foundation, Inc., 59 Temple Place, Suite TEST_SIG0, Boston, MA 02111-1307 USA    */
 /*                                                                            */
 /******************************************************************************/
 /******************************************************************************/
@@ -51,7 +51,7 @@
 /*                                                                            */
 /* Test Name:   rt_sigprocmask01                                              */
 /* History:     Porting from Crackerjack to LTP is done by                    */
-/*              Manas Kumar Nayak maknayak@in.ibm.com>                        */
+/*              Manas Kumar Nayak <maknayak@in.ibm.com>                       */
 /******************************************************************************/
 #include <stdio.h>
 #include <signal.h>
@@ -61,6 +61,8 @@
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
+#define LTP_RT_SIG_TEST
+#include "ltp_signal.h"
 
 /* Extern Global Variables */
 extern int Tst_count;           /* counter for tst_xxx routines.         */
@@ -70,6 +72,8 @@ extern char *TESTDIR;           /* temporary dir created by tst_tmpdir() */
 char *TCID = "rt_sigprocmask01";  /* Test program identifier.*/
 int  testno;
 int  TST_TOTAL = 8;                   /* total number of tests in this file.   */
+
+#define TEST_SIG SIGRTMIN+1
 
 /* Extern Global Functions */
 /******************************************************************************/
@@ -89,13 +93,12 @@ int  TST_TOTAL = 8;                   /* total number of tests in this file.   *
 /*              On success - Exits calling tst_exit(). With '0' return code.  */
 /*                                                                            */
 /******************************************************************************/
-extern void cleanup() {
-        /* Remove tmp dir and all files in it */
-        TEST_CLEANUP;
-        tst_rmdir();
-
-        /* Exit with appropriate return code. */
-        tst_exit();
+void cleanup() {
+	/* Remove tmp dir and all files in it */
+	TEST_CLEANUP;
+	tst_rmdir();
+	/* Exit with appropriate return code. */
+	tst_exit();
 }
 
 /* Local  Functions */
@@ -117,117 +120,125 @@ extern void cleanup() {
 /*                                                                            */
 /******************************************************************************/
 void setup() {
-        /* Capture signals if any */
-        /* Create temporary directories */
-        TEST_PAUSE;
-        tst_tmpdir();
+	/* Capture signals if any */
+	/* Create temporary directories */
+	TEST_PAUSE;
+	tst_tmpdir();
 }
 
 int sig_count = 0;
 
 void sig_handler(int sig)
 {
-        sig_count++;
+	sig_count++;
 }
 
 int main(int ac, char **av) {
+#if __x86_64
+	struct kernel_sigaction act, oact;
+	sig_initial(TEST_SIG);
+	act.sa_flags |= SA_RESTORER;
+	act.sa_restorer = restore_rt;
+	act.k_sa_handler = sig_handler;
+#else
 	struct sigaction act, oact;
-        sigset_t set, oset;
-        int lc;                 /* loop counter */
-        char *msg;              /* message returned from parse_opts */
+	act.sa_handler = sig_handler;
+#endif
+	sigset_t set, oset;
+	int lc;                 /* loop counter */
+	char *msg;              /* message returned from parse_opts */
 	
-        /* parse standard options */
-        if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
-             tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-             tst_exit();
-           }
+	/* parse standard options */
+	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	     tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+	}
 
-        setup();
+	setup();
 
-        /* Check looping state if -i option given */
-        for (lc = 0; TEST_LOOPING(lc); ++lc) {
-                Tst_count = 0;
-                for (testno = 0; testno < TST_TOTAL; ++testno) {
-			TEST(sigemptyset(&set));
-			if(TEST_RETURN == -1){
-				tst_resm(TFAIL,"Call to sigemptyset() Failed, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
-                        	cleanup();
-				tst_exit();
+	/* Check looping state if -i option given */
+	for (lc = 0; TEST_LOOPING(lc); ++lc) {
+	        Tst_count = 0;
+	        for (testno = 0; testno < TST_TOTAL; ++testno) {
+
+			if (sigemptyset(&set) < 0) {
+				tst_brkm(TFAIL|TERRNO, cleanup,
+					"sigemptyset call failed");
 			}
-			TEST(sigaddset(&set, 33));
-			if(TEST_RETURN == -1){
-				tst_resm(TFAIL,"Call to sigaddset() Failed, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
-                        	cleanup();
-				tst_exit();
+			if (sigaddset(&set, TEST_SIG) < 0) {
+				tst_brkm(TFAIL|TERRNO, cleanup,
+					"sigaddset call failed");
 			}
-			
+
 			/* call rt_sigaction() */
-			act.sa_handler = sig_handler;
-                        TEST(syscall(__NR_rt_sigaction, 33, &act, &oact, 8));
-			if(TEST_RETURN != 0){
-				tst_resm(TFAIL,"Call to rt_sigaction() Failed, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
-                        	cleanup();
-				tst_exit();
+			TEST(syscall(__NR_rt_sigaction, TEST_SIG, &act, &oact,
+			    SIGSETSIZE));
+			if (TEST_RETURN < 0) {
+				tst_brkm(TFAIL|TTERRNO, cleanup,
+					"rt_sigaction call failed");
 			}
-			/* call rt_sigprocmask() to block signal#33 */
-                        TEST(syscall(__NR_rt_sigprocmask, SIG_BLOCK, &set, &oset, 8));
-			if(TEST_RETURN == -1){
-				tst_resm(TFAIL,"Call to rt_sigprocmask()**** Failed, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
-                        	cleanup();
-				tst_exit();
+			/* call rt_sigprocmask() to block signal#TEST_SIG */
+	                TEST(syscall(__NR_rt_sigprocmask, SIG_BLOCK, &set,
+					&oset, SIGSETSIZE));
+			if (TEST_RETURN == -1) {
+				tst_brkm(TFAIL|TTERRNO, cleanup,
+					"rt_sigprocmask call failed");
 			}
-			
-			else {
-				TEST(kill(getpid(), 33));
-				if(TEST_RETURN != 0){
-					tst_resm(TFAIL,"Call to kill() Failed, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
-                        		cleanup();
-					tst_exit();
-					
+			/* Make sure that the masked process is indeed
+			 * masked. */
+			if (kill(getpid(), TEST_SIG) < 0) {
+				tst_brkm(TFAIL | TERRNO, cleanup,
+					"call to kill() failed");
+			}
+			if (sig_count) {
+				tst_brkm(TFAIL|TERRNO, cleanup,
+					"rt_sigprocmask() failed to change "
+					"the process's signal mask");
+			} else {
+				/* call rt_sigpending() */
+				TEST(syscall(__NR_rt_sigpending, &oset,
+				    SIGSETSIZE));
+				if (TEST_RETURN == -1) {
+					tst_brkm(TFAIL|TTERRNO,	cleanup,
+						"rt_sigpending call failed");
 				}
-				if(sig_count){
-					tst_resm(TFAIL,"FAIL --- rt_sigprocmask() fail to change the process's signal mask, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
-                        		cleanup();
-					tst_exit();
+				TEST(sigismember(&oset, TEST_SIG));
+				if (TEST_RETURN == 0) {
+					tst_brkm(TFAIL|TTERRNO,
+						cleanup,
+						"sigismember call failed");
 				}
-				else {
-					/* call rt_sigpending() */
-					TEST(syscall(__NR_rt_sigpending, &oset, 8));
-					if(TEST_RETURN == -1){
-						tst_resm(TFAIL,"call rt_sigpending() failed, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
-                        			cleanup();
-						tst_exit();
-					}
-					TEST(sigismember(&oset, 33));
-					if(TEST_RETURN == 0 ){
-						tst_resm(TFAIL,"call sigismember() Failed, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
-                        			cleanup();
-						tst_exit();
-					}
-					/* call rt_sigprocmask() to unblock signal#33 */
-					TEST(syscall(__NR_rt_sigprocmask, SIG_UNBLOCK, &set, &oset, 8));
-					if(TEST_RETURN == -1){
-						tst_resm(TFAIL,"Call to rt_sigprocmask() Failed, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
-                        			cleanup();
-						tst_exit();
-					}
-					if(sig_count) {
-						tst_resm(TPASS,"rt_sigprocmask() PASSED");
-                        			cleanup();
-						tst_exit();
-					}
-		                        else {
-						tst_resm(TFAIL,"rt_sigprocmask() functionality failed, errno=%d : %s",TEST_ERRNO, strerror(TEST_ERRNO));
-		                                cleanup();
-						tst_exit();
-		                        }
+				/* call rt_sigprocmask() to unblock
+				 * signal#TEST_SIG */
+				TEST(syscall(__NR_rt_sigprocmask,
+					SIG_UNBLOCK, &set, &oset, 8));
+				if (TEST_RETURN == -1) {
+					tst_brkm(TFAIL|TTERRNO,
+						cleanup,
+						"rt_sigprocmask call failed");
+				}
+				if (sig_count) {
+					tst_resm(TPASS,
+						"rt_sigprocmask "
+						"functionality passed");
+					break;
+				} else {
+					tst_brkm(TFAIL|TERRNO,
+						cleanup,
+						"rt_sigprocmask "
+						"functionality failed");
+				}
 
-				}
 			}
 
-                }
-	Tst_count++;
-        }	
-        tst_exit();
+	        }
+
+		Tst_count++;
+
+	}	
+
+	cleanup();
+	/* NOTREACHED */
+	return 1;
+
 }
 
