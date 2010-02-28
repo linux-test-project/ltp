@@ -15,6 +15,16 @@ of memctl..
 
 FILES DESCRIPTION:
 
+control/memcg_control_test.sh
+--------------------
+This script runs the testcases of control test.
+
+control/mem_process.c
+--------------------
+The program allocates memory specified using the '-m' option when 'm' is received 
+through the named pipe "status_pipe" and frees it on receiving 'm' again. 
+It exits on receiving 'x'. It gets the page size on specifying the '-p' option.
+
 functional/memcgroup_function_test.sh
 --------------------
 This script runs all the 38 testcases of basis operation.
