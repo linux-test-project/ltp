@@ -1,39 +1,1128 @@
 LTP-20100228
 
-1) Avoid sudo blocking for tty input indefinitely; this issue will need to
-be `properly' fixed by not having a password for the sudo'er's acct.
-2) Add the library to MAKE_DEPS so it gets built prior to the other goals
-in this directory.
-3) Switch all of these Makefiles over to MAKE_DEPS instead of ad hoc
-trunk-all // incorrectly specified all: | type dependencies.
-4) 1. Fix a bug in the git pull method (wasn't setting srcdir).     2. Set
-safe_rm when ltp is pulled so we can opt out of using srcdir
-5) Update README as per recent changes to build / test scripts.
-6) Update the install-in-build-tree script.
-7) make 3.80 has been legit since 201001, so let's mark it legit in the
-INSTALL instructions.
-8) Reviving check_pidns_enabled test.
-9) aclocal.m4 shouldn't be removed in ac-clean.
-10) Add a dumb mechanism for creating release tarballs in a clean manner.
-11) MPOL_* constants were missing as noted by Rishi and Iranna.
-12) Clean up some typos.     Update LTP maintainer name/email address.
-13) Implement simple filter-out mechanism for libraries.
-14) Update TODO a little bit noting the issues with libnuma and     the
-swapon/swapoff testcases.
-15) Added clean_swap() to cleanup routine.  This makes sure all leftover
-swap files are removed.
-16) Add check for CLOCK_REALTIME_COARSE and CLOCK_MONOTONIC_COARSE --     new
-modifiers in 2.6.33-something...
-17) Include definitions for CLOCK_MONOTONIC_COARSE and CLOCK_REALTIME_COARSE
--- new functionality is 2.6.33, as per this commit:
-18) In the previous mailx version, the command "echo "d" | mail -u root" will
-output like the following.
-19) Adding runtest entries for rt_sigaction0[23], as noted by Mitani-san, and
-forgotten by your's truly...
-20) Fixed typo found by Mitani-san.
-21) Not everyone has unshare capability... thanks for the reminder
-Mitani-san...
-22) etc.. and many more ...
+Commit: 4847120ca53436585fc86aba403628ae0fde8c92
+Date:   Mon, 1 Mar 2010 20:04:44 +0530
+
+Changes since 6thFeb to 28Feb 2010.
+
+Changed Files:
+
+ChangeLog
+
+Commit: ede8524bff2068c78f1a1f8b8fe87b263a45a31a
+Date:   Sat, 27 Feb 2010 12:12:19 -0800
+
+Do some minor spring cleaning on the script to improve whitespace, quote a few strings passed to echo, etc.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+runalltests.sh
+
+Commit: 0094e1ab8460697a9efcc440d140d6087e0eba68
+Date:   Fri, 26 Feb 2010 20:27:42 -0800
+
+Do a minor bit of cleanup with the README.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/commands/mail/00_Descriptions.txt
+
+Commit: 90e3e1e6ebdae376650bff696a889118cb6537c6
+Date:   Fri, 26 Feb 2010 20:26:09 -0800
+
+Remove space.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/syscalls/rt_sigprocmask/Makefile
+
+Commit: 181f8dc85aa7a92438600f2cfe1d4104c72a1374
+Date:   Fri, 26 Feb 2010 20:23:40 -0800
+
+Comment on function, and return an appropriate integer value. Update function names as well.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+include/ltp_signal.h
+
+Commit: 85a1755e1389c41d2933e83e96a9ced57dc73472
+Date:   Fri, 26 Feb 2010 20:10:07 -0800
+
+Finish up the remainder of the needed commits to fix the segfault issues with the rt_sig* syscalls.
+Signed-off-by: Liu Bo <liubo2009@cn.fujitsu.com>
+
+Patch up once again to work with ltp_signal.h. Also clean up test.
+
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/syscalls/rt_sigprocmask/rt_sigprocmask01.c
+
+Commit: 141cf77113ae4a46bc07cfcfa8451a101b9e943b
+Date:   Fri, 26 Feb 2010 20:08:59 -0800
+
+Finish up the remainder of the needed commits to fix the segfault issues with the rt_sig* syscalls.
+Signed-off-by: Liu Bo <liubo2009@cn.fujitsu.com>
+
+Patch up once again to work with ltp_signal.h. Also clean up test.
+
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+foo
+
+Commit: 135924f74656fba37a43d43e454cbc87b6e08e03
+Date:   Fri, 26 Feb 2010 19:52:32 -0800
+
+Fix rt_sigsuspend01, as per the patches provided s.t. it will pass on x86_64.
+Signed-off-by: Liu Bo <liubo2009@cn.fujitsu.com>
+
+Clean up test and adjust to match ltp_signal.h.
+
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/syscalls/rt_sigsuspend/rt_sigsuspend01.c
+
+Commit: 64fd9678ba7e1bf268c11d835149225238e79557
+Date:   Fri, 26 Feb 2010 05:12:13 -0800
+
+Fudge code provided by Liu Bo a bit to make it fit ltp_signal.h; most of the code was untouched.
+Tested and passed on IA32 and IA64.
+
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Commit fixed copy of rt_sigaction01 as per Liubo's provided changes.
+
+Signed-off-by: Liu Bo <liubo2009@cn.fujitsu.com>
+
+Changed Files:
+
+testcases/kernel/syscalls/rt_sigaction/rt_sigaction01.c
+
+Commit: cdb5d0fce58d72633fda52cfaebc7196743b0988
+Date:   Fri, 26 Feb 2010 04:55:11 -0800
+
+Commit version with changes provided by Liubo for the rt_sig* fixup diff to avoid creating a whole new file.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+include/ltp_signal.h
+
+Commit: a15d642cf6dd9667aa45b02f445a9f93781c9a6a
+Date:   Thu, 25 Feb 2010 03:52:44 -0800
+
+Add fud for CLOCK_MONOTONIC_RAW, even though (FWIW) it doesn't work on my system, which is bizarre, but I'm spying a delightful inconsistency with this constant in the glibc headers and how the value is exported.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+m4/ltp-time.m4
+testcases/kernel/timers/include/common_timers.h
+
+Commit: 36e9e44491335006055b95439a2a0c8431b5ae6b
+Date:   Wed, 24 Feb 2010 20:17:13 -0800
+
+Fix typo.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/commands/mail/mail_tests.sh
+
+Commit: be744dab2bad95fa15ebe1b2fa17eca9252d97c3
+Date:   Wed, 24 Feb 2010 20:15:46 -0800
+
+Clean up the test.. It was a royal mess before.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/commands/mail/mail_tests.sh
+
+Commit: 917b2f96e8effe6c97f23b78f23e84588d9ec9a4
+Date:   Wed, 24 Feb 2010 19:19:55 -0800
+
+Include definitions for CLOCK_MONOTONIC_COARSE and CLOCK_REALTIME_COARSE -- new functionality is 2.6.33, as per this commit:
+http://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=commitdiff;h=da15cfdae03351c689736f8d142618592e3cebc3
+
+as reported by Shi Weihua <shiwh@cn.fujitsu.com>.
+
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/timers/include/common_timers.h
+
+Commit: 06c96f38830dbb4d5cf8bb81ba9b44232b20b5eb
+Date:   Wed, 24 Feb 2010 19:16:01 -0800
+
+Add check for CLOCK_REALTIME_COARSE and CLOCK_MONOTONIC_COARSE -- new modifiers in 2.6.33-something...
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+configure.ac
+m4/ltp-time.m4
+
+Commit: e9cca934fab0aeaf497512ed7cde60b6650d750b
+Date:   Wed, 24 Feb 2010 18:42:58 -0800
+
+We actually need to call cleanup regardless, so let's readd that to the bottom of main.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/syscalls/stime/stime01.c
+
+Commit: ee8d486ac67d9bf6877dd36a7b63c6c633ddf003
+Date:   Wed, 24 Feb 2010 18:35:08 -0800
+
+Clean up test to use gettimeofday and settimeofday syscalls for restoration and verification.
+Also, remove tst_sig because for whatever reason cleanup was being
+called regardless of whether or not the test passed or failed.
+
+Increase the skew time by 20 seconds.
+
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/syscalls/stime/stime01.c
+
+Commit: a9b4a7cee1e7f57f5dbf5622bbd94dd2f262636f
+Date:   Wed, 24 Feb 2010 17:08:07 -0800
+
+swap* comment was incorrect. I meant quotactl01.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+TODO
+
+Commit: a83e7dce7d8e4068752979b2fc196fa4be2e4443
+Date:   Wed, 24 Feb 2010 17:05:14 -0800
+
+Added clean_swap() to cleanup routine.  This makes sure all leftover swap files are removed.
+Signed-off-By:  Murlin Ray Wenzel <mwenzel@novell.com>
+
+Clean up testcase by making it more buffer overflow resistant using
+appropriate limits, buffer setup and cleanup routines, etc.
+
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/syscalls/swapon/swapon03.c
+
+Commit: 23b6cc832066579cf6b3268c6eeaa2e8c829ae31
+Date:   Wed, 24 Feb 2010 13:48:27 -0800
+
+Update TODO a little bit noting the issues with libnuma and the swapon/swapoff testcases.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+TODO
+
+Commit: c9639c859fdd46337bc1413f5a785b7b5bdf8014
+Date:   Wed, 24 Feb 2010 13:36:31 -0800
+
+Implement simple filter-out mechanism for libraries.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+include/mk/lib.mk
+lib/Makefile
+
+Commit: aea809e6e7411e8e0f20d00e84ec4ac39cf743a4
+Date:   Wed, 24 Feb 2010 13:25:16 -0800
+
+Merge branch 'master' of ssh://ltp.git.sourceforge.net/gitroot/ltp/ltp-dev
+
+Changed Files:
+
+Commit: c41bb21aa439445d422b9e6b4dbf5b9a4c283335
+Date:   Wed, 24 Feb 2010 13:24:15 -0800
+
+Clean up some typos. Update LTP maintainer name/email address. Replace runalltests.sh with runltp in a few places. Don't use quotation marks in here-documents in shell script.
+Signed-off-by: Randy Dunlap <randy.dunlap@oracle.com>
+
+Changed Files:
+
+INSTALL
+doc/ltp-run-files.txt
+
+Commit: 4b20806b387e4c4c3b491b8093c4032f9ab20860
+Date:   Wed, 24 Feb 2010 13:18:57 -0800
+
+Add Rishi's full name.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+README
+
+Commit: 541938f4d584c2d67012ee5424b1f3afddae97e9
+Date:   Wed, 24 Feb 2010 10:45:29 +0530
+
+Oops i did not know the API has got changed.
+Signed-off By: Rishikesh K Rajak<risrajak@in.ibm.com>
+
+Changed Files:
+
+testcases/kernel/containers/mqns/check_mqns_enabled.c
+
+Commit: df4e7fb7d5ab2c505b6104bf88594b64209a8369
+Date:   Wed, 24 Feb 2010 10:31:12 +0530
+
+For running container testcase smoothly on older distro, these changes are required for now, looking for better solution once i go through all the latest changes.
+Signed-off By: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
+
+Changed Files:
+
+testcases/kernel/containers/container_test.sh
+testcases/kernel/containers/mqns/check_mqns_enabled.c
+testcases/kernel/containers/pidns/check_pidns_enabled.c
+
+Commit: 2a5fdcaf2ddc92fa87f3d0ebf6bd653305e96134
+Date:   Tue, 23 Feb 2010 11:41:51 -0800
+
+Merge branch 'master' of ssh://ltp.git.sourceforge.net/gitroot/ltp/ltp-dev
+
+Changed Files:
+
+Commit: 8e1a94708902d1c3d8212022c72c3dabb2be3598
+Date:   Tue, 23 Feb 2010 11:34:54 -0800
+
+MPOL_* constants were missing as noted by Rishi and Iranna.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/syscalls/mbind/mbind01.c
+
+Commit: b212df49678cd133677614554d5cece897cfbc63
+Date:   Tue, 23 Feb 2010 13:49:31 +0530
+
+Revert "check_pidns_enabled doesn't exist anymore. Just run the test as-is... Noticed by Rishi."
+This reverts commit 1590cf03a9206efe4eaa1fb37125f7b2128c4fb0.
+
+Signed-off-by: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
+
+Changed Files:
+
+testcases/kernel/containers/container_test.sh
+
+Commit: d025e1f5d653e5b148bd7255dd4e5d29f775ae6c
+Date:   Mon, 22 Feb 2010 23:18:27 -0800
+
+Add a dumb mechanism for creating release tarballs in a clean manner.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+Makefile.release
+
+Commit: e332c01cef2cf5583ee5f3b50940e943ebbff3c4
+Date:   Mon, 22 Feb 2010 22:59:42 -0800
+
+aclocal.m4 shouldn't be removed in ac-clean.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+include/mk/automake.mk
+
+Commit: 622eb54f68e8e854cb80fc25d624cb417cfcc163
+Date:   Mon, 22 Feb 2010 22:17:21 -0800
+
+Reviving check_pidns_enabled test.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/containers/pidns/check_pidns_enabled.c
+
+Commit: 67974b71b3b81d637fa4c3cfa2ebf10de1eefe14
+Date:   Mon, 22 Feb 2010 15:40:51 -0800
+
+Commit changes for out-of-build-tree and install-out-of-build-tree scripts.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testscripts/build/test_install_out_of_build_tree.sh
+testscripts/build/test_out_of_build_tree.sh
+
+Commit: 525c4d23139cc7bc45a6e9c8c0909f013e7d9c5f
+Date:   Mon, 22 Feb 2010 10:11:46 -0800
+
+make 3.80 has been legit since 201001, so let's mark it legit in the INSTALL instructions.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+INSTALL
+
+Commit: a6ff3058e577983a1052b333adfb3038a3c6f53e
+Date:   Sun, 21 Feb 2010 19:23:10 -0800
+
+Update the install-in-build-tree script.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testscripts/build/test_install_in_build_tree.sh
+
+Commit: c2c8d7f6d8d77f9755a919bf8fdd858ba4c9fbdb
+Date:   Sun, 21 Feb 2010 18:12:18 -0800
+
+Detecting potential fork errors in the test.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/containers/pidns/pidns17.c
+
+Commit: 0ebb1487d747f128c9f63c5ae0121d387ada87bc
+Date:   Sun, 21 Feb 2010 08:14:18 -0800
+
+Update README as per recent changes to build / test scripts.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testscripts/build/README
+
+Commit: 0a383ab2d22d7ba20128429592ec31be055a5aa9
+Date:   Sun, 21 Feb 2010 08:11:52 -0800
+
+1. Fix a bug in the git pull method (wasn't setting srcdir). 2. Set safe_rm when ltp is pulled so we can opt out of using srcdir with install-in-build-tree s.t. we can _truly_ test install-in-build-tree.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testscripts/build/build_test_function.sh
+
+Commit: e520c3189f54b690d057ccdae29167d33771584c
+Date:   Sun, 21 Feb 2010 08:10:03 -0800
+
+Switch all of these Makefiles over to MAKE_DEPS instead of ad hoc trunk-all // incorrectly specified all: | type dependencies.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/containers/Makefile
+testcases/kernel/controllers/Makefile
+testcases/kernel/controllers/Makefile.inc
+testcases/kernel/controllers/cpuset/Makefile
+testcases/kernel/controllers/cpuset/Makefile.inc
+testcases/kernel/mem/Makefile
+testcases/kernel/mem/Makefile.inc
+testcases/kernel/mem/hugetlb/Makefile
+testcases/kernel/mem/hugetlb/Makefile.inc
+testcases/kernel/syscalls/ipc/Makefile
+testcases/kernel/syscalls/ipc/Makefile.inc
+testcases/network/tcp_cmds/Makefile
+testcases/network/tcp_cmds/Makefile.inc
+
+Commit: 225c2e31425d5f4b8f67bc69c309fe70dfe8fcf1
+Date:   Sat, 20 Feb 2010 22:51:42 -0800
+
+Add the library to MAKE_DEPS so it gets built prior to the other goals in this directory.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/containers/Makefile.inc
+
+Commit: 02f8fe875ea4f13caf3452b9a60f4b4db49e45df
+Date:   Fri, 19 Feb 2010 09:42:56 -0800
+
+Hi,
+Scripts under LTPROOT/testscripts/ need to access ltp-pan from some
+other loaction now. Moreover there are scripts to run MATH and SYSCALL
+tests which are not required as they can be directly run through
+./runltp -f <math/runltp>
+This patch fixes them. Probably the scripts need to be looked on
+more to fix such anomalies.
+
+Signed-off-by: Subrata Modak <subrata@linux.vnet.ibm.com>
+
+Changed Files:
+
+testscripts/diskio.sh
+testscripts/ltp-aiodio.sh
+testscripts/ltp-scsi_debug.sh
+testscripts/ltpfslvm.sh
+testscripts/ltpfsnolvm.sh
+testscripts/ltpstress.sh
+testscripts/networkstress.sh
+testscripts/networktests.sh
+testscripts/runEALtests.sh
+testscripts/runpan.sh
+testscripts/tpm_tools.sh
+
+Commit: 031c65bd3f6172d5cc80df0b577c025a139b3577
+Date:   Fri, 19 Feb 2010 09:38:36 -0800
+
+Hi,
+I have tried to execute the 'io_floppy' test in  LTP Version:  LTP-20100131.1
+
+maxin@maxin-laptop:/opt/ltp$ ./runltp -f io_floppy
+
+This test failed since the 'stress_floppy' script was not installed properly.
+Please find the below given log:
+-----------------------------------------------------------
+....
+Running tests.......
+<<<test_start>>>
+tag=stress_floppy stime=1266516562
+cmdline="export TCdat=$LTPROOT/testcases/kernel/io/stress_floppy; stress_floppy"
+contacts=""
+analysis=exit
+<<<test_output>>>
+sh: stress_floppy: not found
+incrementing stop
+<<<execution_status>>>
+initiation_status="ok"
+duration=0 termination_type=exited termination_id=127 corefile=no
+cutime=0 cstime=0
+<<<test_end>>>
+INFO: ltp-pan reported some tests FAIL
+LTP Version: LTP-20100131.1
+
+      ###############################################################"
+
+           Done executing testcases."
+           LTP Version:  LTP-20100131.1
+      ###############################################################"
+-----------------------------------------------------------
+
+Attached patch(stress_floppy_Makefile.patch) fixes Makefile and the
+'stress_floppy' script gets installed properly.
+
+-----------------------------------------------------------
+Running tests.......
+<<<test_start>>>
+tag=stress_floppy stime=1266518427
+cmdline="export TCdat=$LTPROOT/testcases/kernel/io/stress_floppy; stress_floppy"
+contacts=""
+analysis=exit
+<<<test_output>>>
+incrementing stop
+Testing format...
+/dev/fd0: No such file or directory
+Format failed!
+<<<execution_status>>>
+initiation_status="ok"
+duration=0 termination_type=exited termination_id=1 corefile=no
+cutime=0 cstime=0
+<<<test_end>>>
+INFO: ltp-pan reported some tests FAIL
+LTP Version: LTP-20100131.1
+-----------------------------------------------------------
+
+Well, after applying this patch, the 'io_floppy' test fails successfully :)
+(Expected failure as I don't have a floppy drive)
+
+Signed-off-by: Maxin B. John <maxin.john@gmail.com>
+
+Changed Files:
+
+testcases/kernel/io/stress_floppy/Makefile
+
+Commit: ad99f1087d63aae7563534c0b6f66461671050cb
+Date:   Fri, 19 Feb 2010 01:24:05 -0800
+
+Work on the previous buffer overflow problem a bit more; ftest0[38] still fail from time to time, oddly enough even though I can't exactly pinpoint the root cause.
+Clean some of the format strings up though while I'm here...
+
+Signed-off-by: root <root@orangebox.(none)>
+
+Changed Files:
+
+testcases/kernel/fs/ftest/ftest08.c
+testcases/kernel/fs/ftest/libftest.c
+
+Commit: d639eef7e81a3c8768b13b471647deee41c8ff48
+Date:   Thu, 18 Feb 2010 23:47:44 -0800
+
+Fix a typo; improve some sentence wording.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+README
+
+Commit: 2aa40f7e10518977881b933cc93b8f50847cf3cf
+Date:   Thu, 18 Feb 2010 23:43:02 -0800
+
+Avoid sudo blocking for tty input indefinitely; this issue will need to be `properly' fixed by not having a password for the sudo'er's acct.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/security/integrity/ima/tests/ima_measurements.sh
+testcases/kernel/syscalls/utimensat/utimensat_tests.sh
+
+Commit: e03cee01ad68f7b8449a6eb091f7f739c3013e21
+Date:   Thu, 18 Feb 2010 22:23:31 -0800
+
+Fix a cosmetic bug where Version wasn't being generated for install-in-build-tree scenarios.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+Makefile
+
+Commit: 3fceccbde835affc869f91cbc60c7a91fa0add0b
+Date:   Thu, 18 Feb 2010 21:43:51 -0800
+
+Merge the remote changes, again?? git's really complicated...
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/syscalls/mq_notify/mq_notify01.c
+
+Commit: 1ca6b265f9af0ffdbeee03411c38489899723fc1
+Date:   Thu, 18 Feb 2010 21:43:07 -0800
+
+Merge the remote changes (!)
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/syscalls/mq_notify/mq_notify01.c
+
+Commit: 4c2f39a8aaf619086a73efc1819be4dd5a0c2822
+Date:   Thu, 18 Feb 2010 21:41:48 -0800
+
+Merge branch 'master' of ssh://ltp.git.sourceforge.net/gitroot/ltp/ltp-dev
+
+Changed Files:
+
+Commit: 103b26251758c4582af5ebf6a9b8774832be643a
+Date:   Thu, 18 Feb 2010 21:27:53 -0800
+
+Clean up the TODO.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+TODO
+
+Commit: 09cbd9c271a3a74ccf7bd3401f6bb528c3c7d119
+Date:   Thu, 18 Feb 2010 21:24:03 -0800
+
+1. Correct compile time warnings by defining the timeout to 0 sec, 0 nsec, instead of NULL. 2. Make sure that the syscall errno applies to the entire test, not just the portion that Jiri noted the error with.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/syscalls/mq_notify/mq_notify01.c
+
+Commit: a2a0763133d7d8d2464b2018b6bf287a03847592
+Date:   Thu, 18 Feb 2010 21:11:40 -0800
+
+Update the build_functions script to add clean sanity support, git pull support, and also do some minor refactoring in terms of how some variables are set as well as when they're set.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testscripts/build/build_test_function.sh
+
+Commit: 53786432b7db7d066563c42e0d87df755dbbf321
+Date:   Wed, 17 Feb 2010 09:32:01 -0800
+
+acl_test01 today... 1. Should use $TMP. 2. Should use tst_resm today. 3. Should exit 0 on setup failure. 4. Doesn't cleanup in the event of a test failure. 5. Has a hardcoded loopback device instead of looking for the next available one via losetup -f. 6. Other stylistic nits:     a. [ $? != 0 ] -> [ $? -ne 0 ]     b. Incorrect whitespace conventions / indentation issues.     c. Etc...
+This test will need to be enhanced [still] to support non-ext2 //
+-ext3 filesystems (my kernel only supports ext4 fs's for instance...).
+
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/fs/acls/acl_test01
+
+Commit: 77ed5b4eb6a65b90b38defd8aa981e8e9f04b5d9
+Date:   Wed, 17 Feb 2010 18:57:58 +0530
+
+Merge branch 'test'
+
+Changed Files:
+
+Commit: 98f38120c682e64818e0a13abe62ffab94910e8d
+Date:   Wed, 17 Feb 2010 18:57:23 +0530
+
+ I've seen failures reporting "return value=0, errno=EACCESS" in the mq_notify01 test. This is because the syscall actually succeeded (as expected by the test), but, as it is implemented by a library function, some of the (more) syscalls it invoked failed. The POSIX specification of errno says it should only be read when the call in question failed - therefore, this patch hardcodes errno 0 when return value is 0.
+ Also, this patch removes a useless TEST macro usage in a place the
+TEST_RETURN nor TEST_ERRNO variables are never checked.
+
+Regards
+    Jiri Palecek
+
+Signed-off-by: Jiri Palecek <jpalecek@web.de>
+
+Changed Files:
+
+testcases/kernel/syscalls/mq_notify/mq_notify01.c
+
+Commit: 77312d8f35ad3c516636bce1401c78ac09e08a5f
+Date:   Wed, 17 Feb 2010 18:45:56 +0530
+
+In the previous mailx version, the command "echo "d" | mail -u root" will output like the following. ----------------------------- Mail version 8.1 6/6/93.  Type ? for help. "/var/mail/root": 1 message 1 new >N  1 MAILER-DAEMON@localh  Mon Jan 25 09:11  63/2367  "Returned mail: see tr" -----------------------------
+Buy in Heirloom Mail, the command will output.
+-----------------------------
+Heirloom Mail version 12.4 7/29/08.  Type ? for help.
+"/var/mail/root": 1 message 1 new
+>N  1 Mail Delivery Subsys  Mon Jan 25 14:16  67/2195  "Returned mail: see tr"
+-----------------------------
+
+"MAILER-DAEMON@localh" is been changed to "Mail Delivery Subsys".
+We should make mail_tests.sh to supporting Heirloom Mail.
+
+Signed-off-by: Shi Weihua <shiwh@cn.fujitsu.com>
+
+Changed Files:
+
+testcases/commands/mail/mail_tests.sh
+
+Commit: d4eb64c5715c44479ce90abd9292019dfe8377e3
+Date:   Mon, 15 Feb 2010 19:30:34 +0530
+
+Deleted the scratch dir for testing
+
+Changed Files:
+
+scratch/cache_leak
+scratch/googlemmtest.txt
+scratch/hackbench.c
+scratch/lat-sched.c
+scratch/runltp.orig
+scratch/runltp.robbie
+
+Commit: 6feffd8c46093216f795597c7d12739504583f64
+Date:   Mon, 15 Feb 2010 19:20:14 +0530
+
+Testing with different branch and merging with main
+
+Changed Files:
+
+README
+
+Commit: e0984c4239b07eb6d83b2445d3d77b53576a5889
+Date:   Mon, 15 Feb 2010 19:17:35 +0530
+
+Testing with different branch
+
+Changed Files:
+
+README
+
+Commit: dd04033034f9e550029178f9d85c95f411ef1009
+Date:   Sun, 14 Feb 2010 23:16:22 -0800
+
+Correct at least one of these lousy diagnostic messages for not finding nobody in /etc/passwd...
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/syscalls/mknod/mknod02.c
+
+Commit: 8686ad72fbe76a7de8fe8e93ef68a71fff8a049d
+Date:   Sun, 14 Feb 2010 23:12:10 -0800
+
+Correctly consolidate tst_exit() calls in cleanup() as noted by Mitani-san.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/containers/pidns/pidns17.c
+
+Commit: 4086783fafe6afd70a6d647ae8bf5ded0548be79
+Date:   Mon, 15 Feb 2010 12:08:23 +0530
+
+Added one TODO for conversion of CVS to GIT
+
+Changed Files:
+
+TODO
+
+Commit: f4f57997f7809f1c85a1d124ba277e7f3a510d08
+Date:   Sun, 14 Feb 2010 22:41:20 +0530
+
+Testing for push to ltp.sf.net
+
+Changed Files:
+
+README
+
+Commit: 186613249384740cfd5c8346c1b6659613c6a2a6
+Date:   Fri, 12 Feb 2010 09:15:37 +0000
+
+*** empty log message ***
+
+Changed Files:
+
+foo
+
+Commit: dfac29ccbb03db3e4ee3fa5674cbbbf0104b08aa
+Date:   Fri, 12 Feb 2010 09:02:50 +0000
+
+Remove test file.
+
+Changed Files:
+
+foo
+
+Commit: 2279bf46ad12b3e75c512e9f146bc60a49220444
+Date:   Fri, 12 Feb 2010 09:02:34 +0000
+
+Test.
+
+Changed Files:
+
+foo
+
+Commit: 98379aa37cbc3dd8ac41ee6628b5033743f47165
+Date:   Wed, 10 Feb 2010 23:24:45 +0000
+
+1. Simplify smoke test further by only checking to see whether or not the syscall works as opposed to checking the kernel version because people can backport support as seen fit and shouldn't be hindered by a stupid kernel version check... 2. Correct compile because I originally checked in the change on a box without a proper toolchain and thus couldn't build before now.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/containers/netns/check_netns_enabled.c
+
+Commit: eea384d34e99680de3ba09f6fe6916ecc1d960b0
+Date:   Wed, 10 Feb 2010 23:12:53 +0000
+
+Not everyone has unshare capability... thanks for the reminder Mitani-san...
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/containers/netns/check_netns_enabled.c
+
+Commit: 903f68fcdcf31ee426190ac72adb9eaa293baaeb
+Date:   Wed, 10 Feb 2010 23:04:09 +0000
+
+Fixed typo found by Mitani-san.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/security/cap_bound/exec_without_inh.c
+
+Commit: a962b7f8f0fae7b34edcc1b7619944e1137cd057
+Date:   Wed, 10 Feb 2010 01:28:25 +0000
+
+Adding runtest entries for rt_sigaction0[23], as noted by Mitani-san, and forgotten by your's truly...
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+runtest/syscalls
+
+Commit: 7a0b567320b80b2cb361c9481549508ea772d73f
+Date:   Tue, 9 Feb 2010 14:49:02 +0000
+
+An error occured on my i386 box. (OS: Fedora8, Kernel: 2.6.33-rc6, libcap: libcap-2.16) ------------- exec_without_inh    1  TFAIL  :  Failed to drop CAP_SYS_ADMIN from bounding set. exec_without_inh    0  TINFO  :  (ret=-1, errno 38) ------------- If the macro HAVE_DECL_CAP_BSET_DROP is 0, this error will occurs. But the program should to be broken when f != CAP_SET, like the similar code "if (ret || f != CAP_SET) {" in exec_with_inh.c.
+The TBROK message will be outputted if my patch merged.
+-------------
+exec_without_inh    1  TBROK  :  Failed to add CAP_SYS_ADMIN to pI
+-------------
+
+Signed-off-by: Shi Weihua <shiwh@cn.fujitsu.com>
+---
+
+Changed Files:
+
+testcases/kernel/security/cap_bound/exec_without_inh.c
+
+Commit: 4f16ee0005cce6fc23727e39e1762c1e1f5a1285
+Date:   Tue, 9 Feb 2010 14:45:29 +0000
+
+1. Remove mqns check app check. It no longer exists in the repo and thus gates these tests unnecessarily from being run.. 2. Compile the netns check app.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/containers/container_test.sh
+testcases/kernel/containers/netns/Makefile
+
+Commit: 0d5ca4fefaeae85f5a39ea63fe017d9092ccdd6c
+Date:   Sat, 6 Feb 2010 08:34:00 +0000
+
+This patch makes the test script cd into the tmp directory before running the tests. This makes sure the script does not delete the original utimensat binary, causing the test to fail on a second run.
+Signed-off-by: Henry Yei<hyei@mvista.com>
+
+Changed Files:
+
+testcases/kernel/syscalls/utimensat/utimensat_tests.sh
+
+Commit: 1590cf03a9206efe4eaa1fb37125f7b2128c4fb0
+Date:   Sat, 6 Feb 2010 06:39:57 +0000
+
+check_pidns_enabled doesn't exist anymore. Just run the test as-is... Noticed by Rishi.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/containers/container_test.sh
+
+Commit: 3ea1ca7e4ef0ec65a0523068095c115b8228b802
+Date:   Fri, 5 Feb 2010 16:07:12 +0000
+
+More whitespace only changes.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/fs/acls/acl_link_test.c
+
+Commit: d9746f48dddf61b222671e2263e9c3ef1cff3f6c
+Date:   Fri, 5 Feb 2010 16:05:39 +0000
+
+Whitespace only change.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/fs/acls/acl_file_test.c
+
+Commit: 4edbf6d75380203c7baec6d591085cf279e200ea
+Date:   Fri, 5 Feb 2010 15:35:30 +0000
+
+Resolve buffer overflow issue with ftest[37] reported by glibc by changing char* type to void* type. I didn't use caddr_t because caddr_t has its own set of caveats with 32-bit userland vs 64-bit kernel, etc...
+Hi,
+   I've been seeing the following messages when ftest03 and ftest07
+are executed on a regular basis as of late (may be due to a recent
+glibc upgrade):
+
+*** buffer overflow detected ***: ftest03 terminated
+======= Backtrace: =========
+/lib/libc.so.6(__fortify_fail+0x37)[0x7f100b0c3867]
+/lib/libc.so.6[0x7f100b0c1680]
+/lib/libc.so.6[0x7f100b0c0979]
+/lib/libc.so.6(_IO_default_xsputn+0x85)[0x7f100b04ef25]
+/lib/libc.so.6(_IO_vfprintf+0x1fed)[0x7f100b0216dd]
+/lib/libc.so.6(__vsprintf_chk+0x9d)[0x7f100b0c0a1d]
+/lib/libc.so.6(__sprintf_chk+0x80)[0x7f100b0c0960]
+ftest03[0x401f05]
+ftest03[0x402a76]
+/lib/libc.so.6(__libc_start_main+0xe6)[0x7f100affba26]
+ftest03[0x401d59]
+======= Memory map: ========
+00400000-00408000 r-xp 00000000 fd:03 74957
+ /tmp/tmp.9O93FRsMhN/ltp/testcases/bin/ftest03
+00608000-00609000 r--p 00008000 fd:03 74957
+ /tmp/tmp.9O93FRsMhN/ltp/testcases/bin/ftest03
+00609000-0060a000 rw-p 00009000 fd:03 74957
+ /tmp/tmp.9O93FRsMhN/ltp/testcases/bin/ftest03
+0060a000-0060f000 rw-p 00000000 00:00 0
+01f91000-01fb2000 rw-p 00000000 00:00 0                                  [heap]
+7f100adc6000-7f100addc000 r-xp 00000000 fd:03 6454
+ /lib64/libgcc_s.so.1
+7f100addc000-7f100afdb000 ---p 00016000 fd:03 6454
+ /lib64/libgcc_s.so.1
+7f100afdb000-7f100afdc000 r--p 00015000 fd:03 6454
+ /lib64/libgcc_s.so.1
+7f100afdc000-7f100afdd000 rw-p 00016000 fd:03 6454
+ /lib64/libgcc_s.so.1
+7f100afdd000-7f100b12c000 r-xp 00000000 fd:03 5882
+ /lib64/libc-2.10.1.so
+7f100b12c000-7f100b32c000 ---p 0014f000 fd:03 5882
+ /lib64/libc-2.10.1.so
+7f100b32c000-7f100b330000 r--p 0014f000 fd:03 5882
+ /lib64/libc-2.10.1.so
+7f100b330000-7f100b331000 rw-p 00153000 fd:03 5882
+ /lib64/libc-2.10.1.so
+7f100b331000-7f100b336000 rw-p 00000000 00:00 0
+7f100b336000-7f100b353000 r-xp 00000000 fd:03 5871
+ /lib64/ld-2.10.1.so
+7f100b536000-7f100b538000 rw-p 00000000 00:00 0
+7f100b550000-7f100b552000 rw-p 00000000 00:00 0
+7f100b552000-7f100b553000 r--p 0001c000 fd:03 5871
+ /lib64/ld-2.10.1.so
+7f100b553000-7f100b554000 rw-p 0001d000 fd:03 5871
+ /lib64/ld-2.10.1.so
+7fffe07b0000-7fffe07c5000 rw-p 00000000 00:00 0                          [stack]
+7fffe07ff000-7fffe0800000 r-xp 00000000 00:00 0                          [vdso]
+ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0
+ [vsyscall]
+*** buffer overflow detected ***: ftest07 terminated
+======= Backtrace: =========
+/lib/libc.so.6(__fortify_fail+0x37)[0x7f8678b10867]
+/lib/libc.so.6[0x7f8678b0e680]
+/lib/libc.so.6[0x7f8678b0d979]
+/lib/libc.so.6(_IO_default_xsputn+0x85)[0x7f8678a9bf25]
+/lib/libc.so.6(_IO_vfprintf+0x1fed)[0x7f8678a6e6dd]
+/lib/libc.so.6(__vsprintf_chk+0x9d)[0x7f8678b0da1d]
+/lib/libc.so.6(__sprintf_chk+0x80)[0x7f8678b0d960]
+ftest07[0x401ec5]
+ftest07[0x402a76]
+/lib/libc.so.6(__libc_start_main+0xe6)[0x7f8678a48a26]
+ftest07[0x401d19]
+======= Memory map: ========
+00400000-00408000 r-xp 00000000 fd:03 74961
+ /tmp/tmp.9O93FRsMhN/ltp/testcases/bin/ftest07
+00608000-00609000 r--p 00008000 fd:03 74961
+ /tmp/tmp.9O93FRsMhN/ltp/testcases/bin/ftest07
+00609000-0060a000 rw-p 00009000 fd:03 74961
+ /tmp/tmp.9O93FRsMhN/ltp/testcases/bin/ftest07
+0060a000-0060f000 rw-p 00000000 00:00 0
+01f3f000-01f60000 rw-p 00000000 00:00 0                                  [heap]
+7f8678813000-7f8678829000 r-xp 00000000 fd:03 6454
+ /lib64/libgcc_s.so.1
+7f8678829000-7f8678a28000 ---p 00016000 fd:03 6454
+ /lib64/libgcc_s.so.1
+7f8678a28000-7f8678a29000 r--p 00015000 fd:03 6454
+ /lib64/libgcc_s.so.1
+7f8678a29000-7f8678a2a000 rw-p 00016000 fd:03 6454
+ /lib64/libgcc_s.so.1
+7f8678a2a000-7f8678b79000 r-xp 00000000 fd:03 5882
+ /lib64/libc-2.10.1.so
+7f8678b79000-7f8678d79000 ---p 0014f000 fd:03 5882
+ /lib64/libc-2.10.1.so
+7f8678d79000-7f8678d7d000 r--p 0014f000 fd:03 5882
+ /lib64/libc-2.10.1.so
+7f8678d7d000-7f8678d7e000 rw-p 00153000 fd:03 5882
+ /lib64/libc-2.10.1.so
+7f8678d7e000-7f8678d83000 rw-p 00000000 00:00 0
+7f8678d83000-7f8678da0000 r-xp 00000000 fd:03 5871
+ /lib64/ld-2.10.1.so
+7f8678f83000-7f8678f85000 rw-p 00000000 00:00 0
+7f8678f9d000-7f8678f9f000 rw-p 00000000 00:00 0
+7f8678f9f000-7f8678fa0000 r--p 0001c000 fd:03 5871
+ /lib64/ld-2.10.1.so
+7f8678fa0000-7f8678fa1000 rw-p 0001d000 fd:03 5871
+ /lib64/ld-2.10.1.so
+7fffeffa2000-7fffeffb7000 rw-p 00000000 00:00 0                          [stack]
+7fffeffff000-7ffff0000000 r-xp 00000000 00:00 0                          [vdso]
+ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0
+ [vsyscall]
+
+   gcooper@orangebox /scratch/ltp $ emerge --info
+Portage 2.1.6.13 (default/linux/amd64/10.0, gcc-4.3.4,
+glibc-2.10.1-r1, 2.6.31-gentoo-r6 x86_64)
+=================================================================
+System uname: Linux-2.6.31-gentoo-r6-x86_64-Intel-R-_Core-TM-2_Quad_CPU_Q9400_@_2.66GHz-with-gentoo-1.12.13
+Timestamp of tree: Sun, 24 Jan 2010 07:00:21 +0000
+app-shells/bash:     4.0_p35
+dev-java/java-config: 2.1.9-r2
+dev-lang/python:     2.6.4
+sys-apps/baselayout: 1.12.13
+sys-apps/sandbox:    1.6-r2
+sys-devel/autoconf:  2.13, 2.63-r1
+sys-devel/automake:  1.9.6-r2, 1.10.2
+sys-devel/binutils:  2.18-r3
+sys-devel/gcc-config: 1.4.1
+sys-devel/libtool:   2.2.6b
+virtual/os-headers:  2.6.27-r2
+
+   Figuring that ftest07.c compiled (mostly) without warnings, I
+thought it might be an issue common to both tests.
+
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+Acked-by: K.D. Lucas <kdlucas@gmail.com>
+
+Changed Files:
+
+testcases/kernel/fs/ftest/libftest.c
+testcases/kernel/fs/ftest/libftest.h
+
+Commit: 5009532096f9c877fbf6660d5b3a791c3da6d28c
+Date:   Wed, 3 Feb 2010 10:19:32 +0000
+
+Fix ordering of $(filter-out ) as noted by Stephen.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/security/selinux-testsuite/refpolicy/Makefile
+
+Commit: aee37bbb5789856b2e9af39f05a641fae6f2afac
+Date:   Wed, 3 Feb 2010 07:44:18 +0000
+
+Avoid accidental rm -Rf / regression in last release by calling $(*abspath) on $(INSTALL_DIR) beforehand -- sure it sets it to $(abs_top_srcdir), but it's a lot safer safety net to not clean as opposed to blowing away /.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+Makefile
+
+Commit: 1d7745f2ac2e22a08c825ead0229c929315458b9
+Date:   Wed, 3 Feb 2010 07:42:12 +0000
+
+Get people to corral into proper make usage, just in case it wasn't 100% clear, so people avoid shooting themselves in the foot by accident.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+include/mk/config.mk.in
+
+Commit: ee807014bc06d7254cc6a0fb697979eec41b1b4d
+Date:   Tue, 2 Feb 2010 08:51:53 +0000
+
+testcases/realtime/config.mk isn't a hard requirement for autotools and %clean.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/realtime/Makefile
+
+Commit: cafe6dc77c7fdbc28890a4f500ff8b3865d3e809
+Date:   Tue, 2 Feb 2010 08:42:47 +0000
+
+Idiot... forgot the :
+
+Changed Files:
+
+testcases/realtime/Makefile
+
+Commit: 6b77f08cca9c5c5622af71505f2b327782c86520
+Date:   Tue, 2 Feb 2010 08:40:50 +0000
+
+Add a reference to INSTALL for testcases/realtime's config.mk...
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/realtime/Makefile
+
+Commit: 7279a86c79cc63d69dd9b07ea3c6bbc3f3959e92
+Date:   Tue, 2 Feb 2010 08:25:09 +0000
+
+Don't clean up the install directory for now until I unfubar this mess.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+Makefile
+
+Commit: 192b7462762773814f62a27685ea705fb0a0e1bc
+Date:   Tue, 2 Feb 2010 08:23:15 +0000
+
+Add a safe_rm.sh script and test in light of accidental f-up with Mitani's system...
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+scripts/safe_rm.sh
+scripts/tests/test_safe_rm.sh
 
 LTP-20100131
 
