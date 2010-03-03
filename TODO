@@ -36,6 +36,10 @@ testcases/kernel/fs/dmapi/Makefile:
 1. This test requires JFS support, which most systems don't have. So a set of
    proper autoconf tests need to be added for this as well.
 
+testcases/kernel/hotplug/cpu_hotplug/...:
+1. Add in logic to install at runtime; you have to run it from the source tree
+   today, s.t. the runtest file is broken.
+
 testcases/kernel/sched/nptl/Makefile:
 1. There's a $(shell ) call in the Makefile that needs to be replaced.
 
