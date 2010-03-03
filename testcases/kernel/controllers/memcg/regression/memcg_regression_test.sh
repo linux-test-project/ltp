@@ -35,8 +35,7 @@ if [ "$(id -ru)" != 0 ]; then
 	exit 0
 fi
 
-if [ "$(grep -w memory /proc/cgroups | cut -f4)" != "1" ]
-then
+if [ "$(grep -w memory /proc/cgroups | cut -f4)" != "1" ]; then
 	tst_resm TCONF "Either memory resource controller kernel support absent"
 	tst_resm TCONF "or feature is not enabled; skipping all memcgroup testcases."
         exit 0

@@ -30,8 +30,7 @@ export TCID="memcg_function_test"
 export TST_TOTAL=38
 export TST_COUNT=0
 
-if [ ! "grep -w memory /proc/cgroups | cut -f4" == "1" ]
-then
+if [ "$(grep -w memory /proc/cgroups | cut -f4)" != "1" ]; then
         echo "WARNING:";
         echo "Either Kernel does not support for memory resource controller or feature not enabled";
         echo "Skipping all memcgroup testcases....";

@@ -1,3 +1,40 @@
+LTP-20100228
+
+1) Avoid sudo blocking for tty input indefinitely; this issue will need to
+be `properly' fixed by not having a password for the sudo'er's acct.
+2) Add the library to MAKE_DEPS so it gets built prior to the other goals
+in this directory.
+3) Switch all of these Makefiles over to MAKE_DEPS instead of ad hoc
+trunk-all // incorrectly specified all: | type dependencies.
+4) 1. Fix a bug in the git pull method (wasn't setting srcdir).     2. Set
+safe_rm when ltp is pulled so we can opt out of using srcdir
+5) Update README as per recent changes to build / test scripts.
+6) Update the install-in-build-tree script.
+7) make 3.80 has been legit since 201001, so let's mark it legit in the
+INSTALL instructions.
+8) Reviving check_pidns_enabled test.
+9) aclocal.m4 shouldn't be removed in ac-clean.
+10) Add a dumb mechanism for creating release tarballs in a clean manner.
+11) MPOL_* constants were missing as noted by Rishi and Iranna.
+12) Clean up some typos.     Update LTP maintainer name/email address.
+13) Implement simple filter-out mechanism for libraries.
+14) Update TODO a little bit noting the issues with libnuma and     the
+swapon/swapoff testcases.
+15) Added clean_swap() to cleanup routine.  This makes sure all leftover
+swap files are removed.
+16) Add check for CLOCK_REALTIME_COARSE and CLOCK_MONOTONIC_COARSE --     new
+modifiers in 2.6.33-something...
+17) Include definitions for CLOCK_MONOTONIC_COARSE and CLOCK_REALTIME_COARSE
+-- new functionality is 2.6.33, as per this commit:
+18) In the previous mailx version, the command "echo "d" | mail -u root" will
+output like the following.
+19) Adding runtest entries for rt_sigaction0[23], as noted by Mitani-san, and
+forgotten by your's truly...
+20) Fixed typo found by Mitani-san.
+21) Not everyone has unshare capability... thanks for the reminder
+Mitani-san...
+22) etc.. and many more ...
+
 LTP-20100131
 
 1) Log Message:

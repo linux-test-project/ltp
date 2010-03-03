@@ -34,13 +34,13 @@ RUNLTP="$LTPROOT/runltp"
 
 echo  "*******************************************************************"
 echo  "*******************************************************************"
-echo  "**                                                               **"
-echo  "** This script is being re-written to cover all aspects of    **"
-echo  "** testing LTP, which includes running all those tests which  **"
-echo  "** are not run by default with $RUNLTP script. Special setup **"
-echo  "** in system environment will be done to run all those tests  **"
-echo  "** like the File System tests, SELinuxtest, etc               **"
-echo  "**                                                               **"
+echo  "**								**"
+echo  "** This script is being re-written to cover all aspects of	**"
+echo  "** testing LTP, which includes running all those tests which	**"
+echo  "** are not run by default with ${RUNLTP##*/} script. Special setup	**"
+echo  "** in system environment will be done to run all those tests	**"
+echo  "** like the File System tests, SELinuxtest, etc			**"
+echo  "**								**"
 echo  "*******************************************************************"
 echo  "*******************************************************************"
 
@@ -210,9 +210,9 @@ export KERNEL_VERSION=$(uname -r)
 export HTML_OUTPUT_FILE_NAME=$LTP_VERSION_$HOSTNAME_$KERNEL_VERSION_$HARDWARE_TYPE_$TEST_START_TIME.html
 
 if ! cd "${LTPROOT}"; then
-    rc=$?
-    echo "${0##*/}: ERROR : Could not cd to ${LTPROOT}"
-    exit $rc
+	rc=$?
+	echo "${0##*/}: ERROR : Could not cd to ${LTPROOT}"
+	exit $rc
 fi
 
 ## The First one i plan to run is the default LTP run ##
@@ -226,10 +226,10 @@ printf "Completed running Default LTP\n\n\n"
 ## START => Test Series 2                             ##
 if [ $RUN_BALLISTA -eq 1 ]
 then
-    echo "Running Ballista..."
-    export TEST_START_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
-    "${RUNLTP}" -f ballista -o $LTP_VERSION-BALLISTA_RUN_ON-$HOSTNAME-$KERNEL_VERSION-$HARDWARE_TYPE-$TEST_START_TIME.out
-    printf "Completed running Ballista\n\n\n"
+	echo "Running Ballista..."
+	export TEST_START_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
+	"${RUNLTP}" -f ballista -o $LTP_VERSION-BALLISTA_RUN_ON-$HOSTNAME-$KERNEL_VERSION-$HARDWARE_TYPE-$TEST_START_TIME.out
+	printf "Completed running Ballista\n\n\n"
 fi
 ## END => Test Series 2                               ##
 
@@ -237,9 +237,9 @@ fi
 ## START => Test Series 3                             ##
 if [ $RUN_OPENPOSIX -eq 1 ]
 then
-    echo "Running Open Posix Tests..."
-    (cd testcases/open_posix_testsuite; make)
-    printf "Completed running Open Posix Tests\n\n\n"
+	echo "Running Open Posix Tests..."
+	(cd testcases/open_posix_testsuite; make)
+	printf "Completed running Open Posix Tests\n\n\n"
 fi
 ## END => Test Series 3                               ##
 
@@ -249,33 +249,33 @@ fi
 ## START => Test Series 4                             ##
 if [ $RUN_MM_CORE_APIS -eq 1 ]
 then
-    echo "Initializing ltp/testcases/kernel/mem/libmm/mm_core_apis ..."
-    # Check to see if User is Root
-    if [ $(id -u) -ne 0 ]
-    then
-        echo You need to be root to Install libmm and run mem/libmm/mm_core_apis
-        echo Aborting ltp/testcases/kernel/mem/libmm/mm_core_apis
-    else
-        if [ $LIBMM_INSTALLED -ne 1 ]
-        then
-            echo Installing libmm-1.4.2 .............
-            (cd /tmp; \
-             wget -c ftp://ftp.ossp.org/pkg/lib/mm/mm-1.4.2.tar.gz; \
-             tar -xzf mm-1.4.2.tar.gz; \
-             cd mm-1.4.2; \
-             ./configure && make && make install )
-             rm -rf /tmp/mm-1.4.2*
-            echo libmm-1.4.2 Installed .............
-        else
-            echo libmm-1.4.2 already installed in your system
-        fi
-        echo "Running ltp/testcases/kernel/mem/libmm/mm_core_apis ..."
-        (cd testcases/kernel/mem/libmm; \
-         make; \
-         make install; \
-         $LTPROOT/testcases/bin/mm_core_apis; )
-    fi
-    printf "Completed running ltp/testcases/kernel/mem/libmm/mm_core_apis...\n\n\n"
+	echo "Initializing ltp/testcases/kernel/mem/libmm/mm_core_apis ..."
+	# Check to see if User is Root
+	if [ $(id -ru) -ne 0 ]
+	then
+		echo -n "You need to be root to Install libmm and run "
+		echo -n "mem/libmm/mm_core_apis; aborting "
+		echo "ltp/testcases/kernel/mem/libmm/mm_core_apis"
+	else
+		if [ $LIBMM_INSTALLED -ne 1 ]
+		then
+			echo Installing libmm-1.4.2 .............
+			(cd /tmp;
+			 wget -c ftp://ftp.ossp.org/pkg/lib/mm/mm-1.4.2.tar.gz;
+			 tar -xzf mm-1.4.2.tar.gz;
+			 cd mm-1.4.2;
+			 ./configure && make all install)
+			rm -rf /tmp/mm-1.4.2*
+			echo "libmm-1.4.2 Installed ............."
+		else
+			echo "libmm-1.4.2 already installed in your system"
+		fi
+			echo -n "Running "
+			echo "ltp/testcases/kernel/mem/libmm/mm_core_apis ..."
+	   (make -C testcases/kernel/mem/libmm all install;
+	    $LTPROOT/testcases/bin/mm_core_apis; )
+	fi
+	printf "Completed running ltp/testcases/kernel/mem/libmm/mm_core_apis...\n\n\n"
 fi
 ## END => Test Series 4                               ##
 
@@ -284,71 +284,72 @@ fi
 ## ltp/testcases/kernel/io/aio                        ## 
 ## START => Test Series 5                             ##
 if [ $RUN_AIOTESTS -eq 1 ]
-    then
-    echo "Initializing ltp/testcases/kernel/io/aio ..."
-    # Check to see if User is Root
-    if [ $(id -u) -ne 0 ]
-    then
-        echo You need to be root to Install libaio-0.3.92 and run ltp/testcases/kernel/io/aio
-        echo Aborting ltp/testcases/kernel/io/aio
-    else
-        if [ $LIBAIO_INSTALLED -ne 1 ]
-        then
-            echo Installing libaio-0.3.92.............
-            (cd /tmp; \
-             wget -c http://www.kernel.org/pub/linux/kernel/people/bcrl/aio/libaio-0.3.92.tar.gz; \
-             tar -xzf libaio-0.3.92.tar.gz; \
-             cd libaio-0.3.92; \
-             make > /dev/null && make install > /dev/null)
-             rm -rf /tmp/libaio-0.3.92*
-             echo libaio-0.3.92 Installed .............
-        else
-             echo libaio-0.3.92 already installed in your system
-        fi
-        echo "Building & Running ltp/testcases/kernel/io/aio..."
-        (cd testcases/kernel/io/aio; \
-         make > /dev/null; \
-         ./aio01/aio01; \
-         ./aio02/runfstests.sh -a aio02/cases/aio_tio; \
-         make clean 1>&2 > /dev/null )
-         printf "Completed running ltp/testcases/kernel/io/aio...\n\n\n"
-    fi
+then
+	echo "Initializing ltp/testcases/kernel/io/aio ..."
+	# Check to see if User is Root
+	if [ $(id -ru) -ne 0 ]
+	then
+		echo -n "You need to be root to Install libaio-0.3.92 and run"
+		echo -n "ltp/testcases/kernel/io/aio; aborting "
+		echo "ltp/testcases/kernel/io/aio"
+	else
+		if [ $LIBAIO_INSTALLED -ne 1 ]
+		then
+			echo "Installing libaio-0.3.92............."
+			(cd /tmp;
+			 wget -c http://www.kernel.org/pub/linux/kernel/people/bcrl/aio/libaio-0.3.92.tar.gz;
+			 tar -xzf libaio-0.3.92.tar.gz;
+			 make -C libaio-0.3.92 all install)
+			rm -rf /tmp/libaio-0.3.92*
+			echo "libaio-0.3.92 Installed ............."
+		else
+			echo "libaio-0.3.92 already installed in your system"
+		fi
+		# XXX (garrcoop): this needs to be fixed so that it's callable
+		# via standalone runltp in a standard installed tree.
+		echo "Building & Running ltp/testcases/kernel/io/aio..."
+		(make -C testcases/kernel/io/aio all;
+		 ./aio01/aio01;
+		 ./aio02/runfstests.sh -a aio02/cases/aio_tio;
+		 make clean 1>&2 > /dev/null )
+		printf "Completed running ltp/testcases/kernel/io/aio...\n\n\n"
+	fi
 fi
 ## END => Test Series 5                               ##
-
-
 
 ## The next one i plan to run is                      ##
 ## ltp/testcases/kernel/security/filecaps             ## 
 ## START => Test Series 6                             ##
 if [ $RUN_FILECAPS -eq 1 ]
 then
-    echo "Initializing ltp/testcases/kernel/security/filecaps ..."
-    # Check to see if User is Root
-    if [ $(id -u) -ne 0 ]
-    then
-        echo You need to be root to Install libcaps and run ltp/testcases/kernel/security/filecaps
-        echo Aborting ltp/testcases/kernel/security/filecaps
-    else
-        if [ $LIBCAPS_INSTALLED -ne 1 ]
-        then
-            echo Installing libcaps.............
-            (cd /tmp; \
-             wget -c ftp://ftp.kernel.org/pub/linux/libs/security/linux-privs/libcap2/libcap-2.14.tar.gz; \
-             tar -xzf libcap-2.14.tar.gz; \
-             cd libcap-2.14; \
-             make > /dev/null && make install > /dev/null)
-             rm -rf /tmp/libcap-2.14*
-             echo libcaps Installed .............
-        else
-             echo libcaps already installed in your system
-        fi
-        echo "Building & Running ltp/testcases/kernel/security/filecaps"
-        (cd ltp/testcases/kernel/security/filecaps; \
-         make && make install > /dev/null; )
-         "${RUNLTP}" -f filecaps
-         printf "Completed running ltp/testcases/kernel/io/aio...\n\n\n"
-    fi
+	echo "Initializing ltp/testcases/kernel/security/filecaps ..."
+	# Check to see if User is Root
+	if [ $(id -ru) -ne 0 ]
+	then
+		echo -n "You need to be root to Install libcaps and run "
+		echo -n "ltp/testcases/kernel/security/filecaps; aborting "
+		echo "ltp/testcases/kernel/security/filecaps"
+	else
+		if [ $LIBCAPS_INSTALLED -ne 1 ]
+		then
+			echo "Installing libcaps............."
+			(cd /tmp;
+			 wget -c ftp://ftp.kernel.org/pub/linux/libs/security/linux-privs/libcap2/libcap-2.14.tar.gz;
+			 tar -xzf libcap-2.14.tar.gz;
+			 make -C libcap-2.14 all install)
+			rm -rf /tmp/libcap-2.14*
+			echo "libcaps Installed ............."
+		else
+			echo "libcaps already installed in your system"
+		fi
+		echo -n "Building & Running "
+		echo "ltp/testcases/kernel/security/filecaps"
+		make -C ltp/testcases/kernel/security/filecaps all install
+		"${RUNLTP}" -f filecaps
+		printf "Completed running ltp/testcases/kernel/io/aio...\n\n\n"
+
+	fi
+
 fi
 ## END => Test Series 6                               ##
 
@@ -368,7 +369,7 @@ fi
 ## START => Test Series 9                             ##
 if [ $RUN_STRESS_CD -eq 1 ]
 then
-"${RUNLTP}" -f io_cd
+	"${RUNLTP}" -f io_cd
 fi
 ## END => Test Series 9                               ##
 
@@ -376,7 +377,7 @@ fi
 ## START => Test Series 10                             ##
 if [ $RUN_STRESS_FLOPPY -eq 1 ]
 then
-"${RUNLTP}" -f io_floppy
+	"${RUNLTP}" -f io_floppy
 fi
 ## END => Test Series 10                               ##
 
@@ -384,7 +385,7 @@ fi
 ## START => Test Series 11                             ##
 if [ $RUN_CPU_HOTPLUG -eq 1 ]
 then
-"${RUNLTP}" -f cpuhotplug
+	"${RUNLTP}" -f cpuhotplug
 fi
 ## END => Test Series 11                               ##
 
@@ -392,7 +393,7 @@ fi
 ## START => Test Series 12                             ##
 if [ $RUN_LTP_NETWORK_TESTS -eq 1 ]
 then
-(cd $LTPROOT/testscripts/; ./networktests.sh)
+	(cd $LTPROOT/testscripts/; ./networktests.sh)
 fi
 ## END => Test Series 12                               ##
 
@@ -400,7 +401,7 @@ fi
 ## START => Test Series 13                             ##
 if [ $RUN_LTP_NETWORK_STRESS_TESTS -eq 1 ]
 then
-(cd $LTPROOT/testscripts/; ./networkstress.sh)
+	(cd $LTPROOT/testscripts/; ./networkstress.sh)
 fi
 ## END => Test Series 13                               ##
 
@@ -409,7 +410,7 @@ fi
 ## START => Test Series 14                             ##
 if [ $RUN_LTP_ADP_TESTS -eq 1 ]
 then
-(cd $LTPROOT/testscripts/; ./adp.sh -d 3 -n 100)
+	(cd $LTPROOT/testscripts/; ./adp.sh -d 3 -n 100)
 fi
 ## END => Test Series 14                               ##
 
@@ -418,21 +419,21 @@ fi
 ## START => Test Series 15                             ##
 if [ $RUN_LTP_AUTOFS1_TESTS -eq 1 ]
 then
-    if [ $DISK_PARTITION1 ]
-    then
-        (cd $LTPROOT/testscripts/; ./autofs1.sh $DISK_PARTITION1)
-    else
-        echo Disk Partition not set. Aborting running AUTOFS1
-    fi
+	if [ $DISK_PARTITION1 ]
+	then
+		(cd $LTPROOT/testscripts/; ./autofs1.sh $DISK_PARTITION1)
+	else
+		echo "Disk Partition not set. Aborting running AUTOFS1"
+	fi
 fi
 if [ $RUN_LTP_AUTOFS4_TESTS -eq 1 ]
 then
-    if [ $DISK_PARTITION1 ]
-    then
-        (cd $LTPROOT/testscripts/; ./autofs4.sh $DISK_PARTITION1)
-    else
-        echo Disk Partition not set. Aborting running AUTOFS4
-    fi
+	if [ $DISK_PARTITION1 ]
+	then
+		(cd $LTPROOT/testscripts/; ./autofs4.sh $DISK_PARTITION1)
+	else
+		echo "Disk Partition not set. Aborting running AUTOFS4"
+	fi
 fi
 ## END => Test Series 15                               ##
 
@@ -441,7 +442,7 @@ fi
 ## START => Test Series 16                             ##
 if [ $RUN_EXPORTFS_TESTS -eq 1 ]
 then
-(cd $LTPROOT/testscripts/; ./exportfs.sh -h $NFS_SERVER1 -d $NFS_SERVER_DISK_PARTITION1 -t $NFS_SERVER_FS_TYPE1)
+	(cd $LTPROOT/testscripts/; ./exportfs.sh -h $NFS_SERVER1 -d $NFS_SERVER_DISK_PARTITION1 -t $NFS_SERVER_FS_TYPE1)
 fi
 ## END => Test Series 16                               ##
 
@@ -450,7 +451,7 @@ fi
 ## START => Test Series 17                             ##
 if [ $RUN_RO_ONLY_FS_TESTS -eq 1 ]
 then
-(cd $READ_ONLY_DIRECTORY1; sh $LTPROOT/testscripts/test_robind.sh)
+	(cd $READ_ONLY_DIRECTORY1; $LTPROOT/testscripts/test_robind.sh)
 fi
 ## END => Test Series 17                               ##
 
@@ -459,7 +460,7 @@ fi
 ## START => Test Series 18                             ##
 if [ $RUN_ISOFS_TESTS -eq 1 ]
 then
-(cd $LTPROOT/testscripts/; ./isofs.sh)
+	(cd $LTPROOT/testscripts/; ./isofs.sh)
 fi
 ## END => Test Series 18                               ##
 
@@ -468,7 +469,7 @@ fi
 ## START => Test Series 19                             ##
 if [ $RUN_DMMAPPER_TESTS -eq 1 ]
 then
-(cd $LTPROOT/testscripts/; ./ltpdmmapper.sh -a $DISK_PARTITION2 -b $DISK_PARTITION3)
+	(cd $LTPROOT/testscripts/; ./ltpdmmapper.sh -a $DISK_PARTITION2 -b $DISK_PARTITION3)
 fi
 ## END => Test Series 19                               ##
 
@@ -477,7 +478,7 @@ fi
 ## START => Test Series 20                             ##
 if [ $RUN_FSLVM_TESTS -eq 1 ]
 then
-(cd $LTPROOT/testscripts/; ./ltpfslvm.sh -a $DISK_PARTITION4 -b $DISK_PARTITION5 -c $DISK_PARTITION6 -d $DISK_PARTITION7 -n $NFS_PARTITION1)
+	(cd $LTPROOT/testscripts/; ./ltpfslvm.sh -a $DISK_PARTITION4 -b $DISK_PARTITION5 -c $DISK_PARTITION6 -d $DISK_PARTITION7 -n $NFS_PARTITION1)
 fi
 ## END => Test Series 20                               ##
 
@@ -486,7 +487,7 @@ fi
 ## START => Test Series 21                             ##
 if [ $RUN_FSNOLVM_TESTS -eq 1 ]
 then
-(cd $LTPROOT/testscripts/; ./ltpfsnolvm.sh -a $DISK_PARTITION4 -b $DISK_PARTITION5 -c $DISK_PARTITION6 -d $DISK_PARTITION7 -n $NFS_PARTITION1)
+	(cd $LTPROOT/testscripts/; ./ltpfsnolvm.sh -a $DISK_PARTITION4 -b $DISK_PARTITION5 -c $DISK_PARTITION6 -d $DISK_PARTITION7 -n $NFS_PARTITION1)
 fi
 ## END => Test Series 21                               ##
 
@@ -494,7 +495,7 @@ fi
 ## START => Test Series 22                             ##
 if [ $RUN_LTP_SCSI_DEBUG_TEST -eq 1 ]
 then
-(cd $LTPROOT/testscripts/; ./ltp-scsi_debug.sh)
+	(cd $LTPROOT/testscripts/; ./ltp-scsi_debug.sh)
 fi
 ## END => Test Series 22                               ##
 
@@ -502,7 +503,7 @@ fi
 ## START => Test Series 23                             ##
 if [ $RUN_LTP_SYSFS_TEST -eq 1 ]
 then
-(cd $LTPROOT/testscripts/; ./sysfs.sh -k $KERNEL_MODULE1)
+	(cd $LTPROOT/testscripts/; ./sysfs.sh -k $KERNEL_MODULE1)
 fi
 ## END => Test Series 23                               ##
 
@@ -510,7 +511,7 @@ fi
 ## START => Test Series 24                             ##
 if [ $RUN_LTP_TIRPC_TEST -eq 1 ]
 then
-"${RUNLTP}" -f rpctirpc
+	"${RUNLTP}" -f rpctirpc
 fi
 ## END => Test Series 24                               ##
 
@@ -518,8 +519,9 @@ fi
 ## START => Test Series 25                             ##
 if [ $RUN_SE_LINUX_TESTS -eq 1 ]
 then
-    (cd $LTPROOT/testcases/kernel/security/selinux-testsuite; make && make install)
-    (cd $LTPROOT/testscripts/; ./test_selinux.sh)
+	make -C $LTPROOT/testcases/kernel/security/selinux-testsuite \
+	 all install
+	(cd $LTPROOT/testscripts/; ./test_selinux.sh)
 fi
 ## END => Test Series 25                               ##
 
@@ -527,7 +529,7 @@ fi
 ## START => Test Series 26                             ##
 if [ $RUN_DMA_THREAD_DIOTEST7 -eq 1 ]
 then
-     "${RUNLTP}" -f test_dma_thread_diotest7
+	"${RUNLTP}" -f test_dma_thread_diotest7
 fi
 ## END => Test Series 26                               ##
 
@@ -536,7 +538,7 @@ fi
 ## START => Test Series 27                             ##
 if [ $RUN_CONTROLLER_AREA_NETWORK_TESTS -eq 1 ]
 then
-     "${RUNLTP}" -f can
+	"${RUNLTP}" -f can
 fi
 ## END => Test Series 27                               ##
 
@@ -544,7 +546,7 @@ fi
 ## START => Test Series 28                             ##
 if [ $RUN_SMACK_SECURITY_TESTS -eq 1 ]
 then
-     "${RUNLTP}" -f smack
+	"${RUNLTP}" -f smack
 fi
 ## END => Test Series 28                               ##
 
@@ -552,8 +554,7 @@ fi
 ## START => Test Series 29                             ##
 if [ $RUN_PERFORMANCE_COUNTERS_TESTS -eq 1 ]
 then
-     (cd $LTPROOT/testcases/kernel/performance_counters; make && make install)
-     "${RUNLTP}" -f perfcounters
+	"${RUNLTP}" -f perfcounters
 fi
 ## END => Test Series 29                               ##
 
