@@ -1,5 +1,5 @@
 #
-#    network/tcp_cmds/echo testcases Makefile.
+#    kernel/controllers/memcg/stress testcase suite Makefile.
 #
 #    Copyright (C) 2009, Cisco Systems Inc.
 #
@@ -17,22 +17,17 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Garrett Cooper, July 2009
+# Garrett Cooper, September 2009
 #
 
-top_srcdir		?= ../../../..
+top_srcdir		?= ../../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-CPPFLAGS		+= -DDEBUG -I$(abs_srcdir)/../include
+CPPFLAGS		+= -I$(abs_srcdir)/../../libcontrollers
 
-INSTALL_TARGETS		:= echo01
+INSTALL_TARGETS		:= *.sh
 
-MAKE_TARGETS		:= echoes echoes6 createfile
-
-%6: CPPFLAGS += -DINET6
-
-%6.o: %.c
-	$(COMPILE.c) $(OUTPUT_OPTION) $<
+LDLIBS			+= -lm
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
