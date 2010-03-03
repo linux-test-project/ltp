@@ -28,7 +28,7 @@ CPPFLAGS		+= -DDEBUG -I$(abs_srcdir)/../include
 
 INSTALL_TARGETS		:= echo01
 
-MAKE_TARGETS		:= echoes echoes6
+MAKE_TARGETS		:= echoes echoes6 createfile
 
 %6: CPPFLAGS += -DINET6
 
