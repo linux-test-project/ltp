@@ -89,7 +89,7 @@ TIME=${TIME:-""}
 
 # Allows overriding the filename to use for storing time
 # measurements.  Required in order to 
-TIME_TMP_FILE=${TIME_TMP_FILE:-"/tmp/cpu_$$"}
+TIME_TMP_FILE=${TIME_TMP_FILE:-"${TMP:-/tmp}/cpu_$$"}
 
 # perform_timings()
 #
