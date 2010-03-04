@@ -24,6 +24,9 @@ top_srcdir	?= ../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
+# NOTE (garrcoop): directories to traverse for building testcases.
+#
+# KEEP THIS LIST ALPHABETIZED PLEASE!
 ifneq ($(UCLINUX),1)
 SUBDIRS		:= containers connectors controllers fs hotplug io ipc mem \
 		   numa performance_counters power_management pty sched \
