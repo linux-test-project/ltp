@@ -3,32 +3,35 @@
 # Test Case 4
 #
 
-CASE="hotplug04"
+export TCID="hotplug04"
 HOTPLUG04_LOOPS=${HOTPLUG04_LOOPS:-${LOOPS}}
-loop=${HOTPLUG04_LOOPS:-1}
+export TST_COUNT=1
+export TST_TOTAL=${HOTPLUG04_LOOPS:-1}
 
 # Includes:
-LHCS_PATH=${LHCS_PATH:-".."}
+LHCS_PATH=${LHCS_PATH:-${LTPROOT:+$LTPROOT/testcases/bin/cpu_hotplug}}
 . $LHCS_PATH/include/testsuite.fns
 . $LHCS_PATH/include/hotplug.fns
 
-echo "Name:   $CASE"
-echo "Date:   `date`"
-echo "Desc:   Does it prevent us from offlining the last CPU?"
-echo
+cat <<EOF
+Name:   $CASE
+Date:   `date`
+Desc:   Does it prevent us from offlining the last CPU?
+
+EOF
 
 cpu=0
-until [ $loop = 0 ]; do
+until [ $TST_COUNT -gt $TST_TOTAL ]; do
     cpustate=1
 
     # Online all the CPUs' keep track of which were already on
-    for i in $( get_all_cpus ); do
+    for i in $(get_all_cpus); do
         online_cpu $i
         RC=$?
         if [ $RC != 0 ]; then
             : $(( cpu += 1 ))
-            on[${cpu}]=$i
-            echo "${on[${cpu}]}"
+            eval "on_${cpu}=$i"
+            echo $i
         fi
         if [ $RC = 0 -a "$i" = "cpu0" ]; then
             cpustate=0
@@ -36,21 +39,21 @@ until [ $loop = 0 ]; do
     done
 
     # Now offline all the CPUs
-    for i in $( get_all_cpus ); do
+    for i in $(get_all_cpus); do
         offline_cpu $i
         RC=$?
         if [ $RC = 1 ]; then
             if [ "$i" != "cpu0" ]; then
-                echo "$CASE      FAIL: Could not shutdown $i (Maybe:  No Hotplug available)"
+                tst_resm TFAIL "Could not shutdown CPU : $i (is hotplug available?)"
             else
-                echo "$CASE      PASS: Could not shutdown $i"
+                tst_resm TPASS "Successfully shutdown offlined first CPU, $i"
             fi
         fi
     done
 
     # Online the ones that were on initially
     until [ $cpu = 0 ]; do
-        online_cpu ${on[${cpu}]}
+        online_cpu $(eval "echo \$on_${cpu}")
         : $(( cpu -= 1 ))
     done
 
@@ -61,7 +64,8 @@ until [ $loop = 0 ]; do
         offline_cpu 0
     fi
 
-    : $(( loop -=1 ))
+    : $(( TST_COUNT += 1 ))
+
 done
 
 exit_clean
