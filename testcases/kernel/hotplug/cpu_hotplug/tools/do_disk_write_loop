@@ -1,17 +1,19 @@
-#!/bin/bash
+#!/bin/sh
 
-TMP_FILE=/tmp/cpu_$$
+TMP_FILE=${TMP:-/tmp}/cpu_$$
 TM_DLY=1    # Time delay before start of entire new cycle.
 
 
 CNT=0
 while : 
 do
-    CNT=$(($CNT+1))
-    echo "Loop Count $CNT"
 
-    echo 1 > $TMP_FILE
-    # TODO:  Verify writes are complete and correct
+	: $(( CNT += 1 ))
+	echo "Loop Count $CNT"
 
-    sleep $TM_DLY
+	echo 1 > $TMP_FILE
+	# TODO:  Verify writes are complete and correct
+
+	sleep $TM_DLY
+
 done
