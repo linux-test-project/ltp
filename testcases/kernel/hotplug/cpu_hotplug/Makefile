@@ -21,6 +21,10 @@ top_srcdir                      ?= ../../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
+# Avoid namespace collisions because the installation filenames are pretty
+# generic.
+INSTALL_DIR			:= testcases/bin/cpu_hotplug
+
 INSTALL_TARGETS                 := runtests.sh functional/* include/* tools/*
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
