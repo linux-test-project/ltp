@@ -4,5 +4,5 @@ echo $$
 
 while :
 do
-  NOOP=1
+	NOOP=1
 done
