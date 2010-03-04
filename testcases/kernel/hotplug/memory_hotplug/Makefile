@@ -29,6 +29,8 @@ CPPFLAGS	+= -D_GNU_SOURCE -I$(abs_srcdir)
 LDLIBS		+= $(NUMA_LIBS)
 LDLIBS		:= $(filter-out -lltp,$(LDLIBS))
 
+INSTALL_TARGETS := memtoy
+
 MAKE_TARGETS	:= memtoy
 
 memtoy: $(patsubst $(abs_srcdir)/%.c,%.o,$(wildcard $(abs_srcdir)/*.c))

@@ -1,7 +1,5 @@
 #
-#    kernel test suite Makefile.
-#
-#    Copyright (C) 2009, Cisco Systems Inc.
+#    kernel/hotplug/cpu_hotplug test suite Makefile.
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -17,30 +15,13 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Garrett Cooper, July 2009
-#
+# Maxin B. John, March 2010
 
-top_srcdir	?= ../..
+top_srcdir                      ?= ../../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-ifneq ($(UCLINUX),1)
-SUBDIRS		:= containers connectors controllers fs io ipc mem numa \
-		   performance_counters power_management pty sched security \
-		   syscalls timers hotplug
-else
-SUBDIRS		:= syscalls
-endif
+INSTALL_TARGETS                 := runtests.sh functional/* include/* tools/*
 
-trunk-all: include/linux_syscall_numbers.h
+include $(top_srcdir)/include/mk/generic_leaf_target.mk
 
-include:
-	mkdir -p "$@"
-
-linux-syscall-numbers-clean:: include
-	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" clean
-
-include/linux_syscall_numbers.h: include
-	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" all
-
-include $(top_srcdir)/include/mk/generic_trunk_target.mk
