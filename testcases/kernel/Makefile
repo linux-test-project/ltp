@@ -25,14 +25,14 @@ top_srcdir	?= ../..
 include $(top_srcdir)/include/mk/env_pre.mk
 
 ifneq ($(UCLINUX),1)
-SUBDIRS		:= containers connectors controllers fs io ipc mem numa \
-		   performance_counters power_management pty sched security \
-		   syscalls timers hotplug
+SUBDIRS		:= containers connectors controllers fs hotplug io ipc mem \
+		   numa performance_counters power_management pty sched \
+		   security syscalls timers
 else
 SUBDIRS		:= syscalls
 endif
 
-trunk-all: include/linux_syscall_numbers.h
+MAKE_DEPS	:= include/linux_syscall_numbers.h
 
 include:
 	mkdir -p "$@"
