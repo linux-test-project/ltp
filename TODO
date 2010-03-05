@@ -25,16 +25,19 @@ testcases/Makefile:
 2. pounder21 is just broken (wasn't traversed before).
 
 testcases/ballista:
-1. a) Not integrated with the Make infrastructure (and thus the output isn't
-      guaranteed to function with cross-compilation based envs).
-   b) Is a mess (there's a lot of shoddy Make and perl code that I'm cleaning
-      up right now).
-   c) Uses cshell for some weird arse reason, instead of using Bourne shell
-      compat scripts.
+1. Not integrated with the Make infrastructure (and thus the output isn't
+   guaranteed to function with cross-compilation based envs).
+2. Is a mess (there's a lot of shoddy Make and perl code that I'm cleaning up
+   up right now).
+3. Uses cshell for some weird arse reason, instead of using Bourne shell
+   compat scripts.
 
 testcases/kernel/fs/dmapi/Makefile:
 1. This test requires JFS support, which most systems don't have. So a set of
    proper autoconf tests need to be added for this as well.
+
+testcases/kernel/hotplug/cpu_hotplug/tools/report_proc_interrupts:
+-  Is written in perl; should be rewritten in POSIX compliant bourne shell.
 
 testcases/kernel/hotplug/cpu_hotplug/...:
 1. Add in logic to install at runtime; you have to run it from the source tree
@@ -85,6 +88,10 @@ testcases/network/stress/udp/...:
 
 tools/Makefile:
 1. netpipe* needs fixing and reorg, because it's referencing /home/mpich, etc.
+
+tools/create_kernel_faults_in_loops_and_probability.pl:
+tools/create_valgrind_check.pl:
+1. Could and should be rewritten in a unified awk wrapper.
 
 Other items of issue are listed below (from testscripts/ltp-missing-install-files.py):
 
