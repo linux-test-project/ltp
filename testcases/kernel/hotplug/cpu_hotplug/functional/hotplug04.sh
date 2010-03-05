@@ -3,8 +3,8 @@
 # Test Case 4
 #
 
-export TCID="hotplug04"
 HOTPLUG04_LOOPS=${HOTPLUG04_LOOPS:-${LOOPS}}
+export TCID="hotplug04"
 export TST_COUNT=1
 export TST_TOTAL=${HOTPLUG04_LOOPS:-1}
 
@@ -14,7 +14,7 @@ LHCS_PATH=${LHCS_PATH:-${LTPROOT:+$LTPROOT/testcases/bin/cpu_hotplug}}
 . $LHCS_PATH/include/hotplug.fns
 
 cat <<EOF
-Name:   $CASE
+Name:   $TCID
 Date:   `date`
 Desc:   Does it prevent us from offlining the last CPU?
 
@@ -42,7 +42,7 @@ until [ $TST_COUNT -gt $TST_TOTAL ]; do
 	for i in $(get_all_cpus); do
 		offline_cpu $i
 		RC=$?
-		if [ $RC = 1 ]; then
+		if [ $RC -eq 1 ]; then
 			if [ "x$i" != "xcpu0" ]; then
 				tst_resm TFAIL "Did not offline first CPU (offlined $i instead)"
 			else
@@ -52,7 +52,7 @@ until [ $TST_COUNT -gt $TST_TOTAL ]; do
 	done
 
 	# Online the ones that were on initially
-	until [ $cpu = 0 ]; do
+	until [ $cpu -eq 0 ]; do
 		online_cpu $(eval "echo \$on_${cpu}")
 		: $(( cpu -= 1 ))
 	done

@@ -10,12 +10,12 @@ export TCID="hotplug03"
 
 CPU_TO_TEST=${1#cpu}
 if [ -z $CPU_TO_TEST ]; then
-	echo "Usage:  $0 <CPU to online>"
+	echo "usage: ${0##*} <CPU to online>"
 	exit 1
 fi
 
 # Includes:
-LHCS_PATH=${LHCS_PATH:-".."}
+LHCS_PATH=${LHCS_PATH:-${LTPROOT:+$LTPROOT/testcases/bin/cpu_hotplug}}
 . $LHCS_PATH/include/testsuite.fns
 . $LHCS_PATH/include/hotplug.fns
 

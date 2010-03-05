@@ -37,18 +37,20 @@ TM_OFFLINE=${HOTPLUG01_TM_OFFLINE:-1}
 # Time delay before start of entire new cycle.
 TM_DLY=${HOTPLUG01_TM_DLY:-6}	
 
-if ! type -P perl; then
-	tst_brk TCONF tst_exit "analysis script - report_proc_interrupts - requires perl"
+if ! type -P perl > /dev/null; then
+	tst_brk TCONF "analysis script - report_proc_interrupts - requires perl"
+	exit 1
 fi
 
 if ! get_all_cpus >/dev/null 2>&1; then
-	tst_brkm TCONF tst_exit "system doesn't have required CPU hotplug support"
+	tst_brkm TCONF "system doesn't have required CPU hotplug support"
+	exit 1
 fi
 
 # Validate the specified CPU exists
 if ! cpu_is_valid "${CPU_TO_TEST}" ; then
 	tst_resm TFAIL "cpu${CPU_TO_TEST} not found"
-	exit_clean 1
+	exit 1
 fi
 
 CPU_COUNT=0
@@ -183,7 +185,6 @@ do
 	if [ $RC -eq 0 ] ; then
 
 		sleep $TM_DLY
-		tst_resm TPASS "$TST_COUNT loops left.."
 		: $(( TST_COUNT += 1 ))
 
 	fi
