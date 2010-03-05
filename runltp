@@ -105,7 +105,7 @@ usage()
 {
     cat <<-EOF >&2
 
-    usage: ./${0##*/} [ -a EMAIL_TO ] [ -c NUM_PROCS ] [ -C FAILCMDFILE ] [ -d TMPDIR ]
+    usage: ${0##*/} [ -a EMAIL_TO ] [ -c NUM_PROCS ] [ -C FAILCMDFILE ] [ -d TMPDIR ]
     [ -D NUM_PROCS,NUM_FILES,NUM_BYTES,CLEAN_FLAG ] -e [ -f CMDFILES(,...) ] [ -g HTMLFILE]
     [ -i NUM_PROCS ] [ -l LOGFILE ] [ -m NUM_PROCS,CHUNKS,BYTES,HANGUP_FLAG ] 
     -N -n [ -o OUTPUTFILE ] -p -q [ -r LTPROOT ] [ -s PATTERN ] [ -t DURATION ]
@@ -163,7 +163,7 @@ usage()
     -B DEVICE_FS_TYPE The file system of test block devices.
 
 
-    example: ./${0##*/} -c 2 -i 2 -m 2,4,10240,1 -D 2,10,10240,1 -p -q  -l /tmp/result-log.$$ -o /tmp/result-output.$$ -C /tmp/result-failed.$$ -d ${PWD}
+    example: ${0##*/} -c 2 -i 2 -m 2,4,10240,1 -D 2,10,10240,1 -p -q  -l /tmp/result-log.$$ -o /tmp/result-output.$$ -C /tmp/result-failed.$$ -d ${PWD}
 
 
 	EOF

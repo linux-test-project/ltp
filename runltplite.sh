@@ -86,7 +86,7 @@ usage()
     -q              Print less verbose output to screen.
     -r LTPROOT      Fully qualified path where testsuite is installed.
 
-    example: ./${0##*/} -i 1024 -m 128 -p -q  -l /tmp/resultlog.$$ -d ${PWD}
+    example: ${0##*/} -i 1024 -m 128 -p -q  -l /tmp/resultlog.$$ -d ${PWD}
 
 
 	EOF
