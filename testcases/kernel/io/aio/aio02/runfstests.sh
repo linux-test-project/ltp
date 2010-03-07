@@ -45,10 +45,10 @@ fi
    res=$?
    if [ $res -eq 0 ] ; 
    then str="";
-   passes=$[passes +1];
+	: $(( passes += 1 ))
    else
    str=" -- FAILED";
-   fails=$[fails +1];
+	: $(( fails += 1 ))
    fi
 #done
 
