@@ -46,10 +46,8 @@ fi
 	$this_test 
 	res=$?
 	if [ $res -eq 0 ] ; then
-		str="";
 		: $(( passes += 1 ))
 	else
-		str=" -- FAILED";
 		: $(( fails += 1 ))
 	fi
 #done
