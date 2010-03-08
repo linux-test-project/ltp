@@ -37,8 +37,8 @@
 
 #include <err.h>
 #include <errno.h>
-/* FIXME (garrcoop): this is a bug according to the manpage; need this for
- * vasprintf(3). */
+/* FIXME (garrcoop): this wasn't present in the upstream sources [is
+ * requirement according to the manpage for vasprintf(3)]. */
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
