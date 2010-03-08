@@ -51,6 +51,7 @@ unset XRGSV
 
 export UNFINISHED=""
 export FINISHED=0
+export TMP=${TMP:-/tmp}
 
 #
 # Tests are either running or cleaning up. Cleanup phases do not emit TFAIL.
@@ -89,34 +90,34 @@ function mount_cgroup_subsys()
 {
 	local rc=0
 
-	mkdir -p /tmp/${cgroup_subsys}_test > /dev/null 2>&1
+	mkdir -p $TMP/${cgroup_subsys}_test > /dev/null 2>&1
 	rc=$?
 
 	# Don't test status because we don't care if the directory already
 	# exists.
 
-	if [ ! -d /tmp/${cgroup_subsys}_test ]; then
+	if [ ! -d $TMP/${cgroup_subsys}_test ]; then
 		result=${result:-$rc}
 		tst_brkm TBROK "Failed to make mount point for cgroup filesystem"
 		return $result
 	fi
 
-	mount -t cgroup -o${cgroup_subsys} test_cgroup_${cgroup_subsys} /tmp/${cgroup_subsys}_test
+	mount -t cgroup -o${cgroup_subsys} test_cgroup_${cgroup_subsys} $TMP/${cgroup_subsys}_test
 	rc=$?
 	if [ $rc -ne 0 ]; then
 		result=${result:-$rc}
 		tst_resm TINFO "Failed to mount cgroup filesystem with ${cgroup_subsys} subsystem."
-		rmdir /tmp/${cgroup_subsys}_test 2> /dev/null
+		rmdir $TMP/${cgroup_subsys}_test 2> /dev/null
 		return $rc
 	fi
 
-	pushd /tmp/${cgroup_subsys}_test > /dev/null 2>&1
+	pushd $TMP/${cgroup_subsys}_test > /dev/null 2>&1
 	rc=$?
 	if [ $rc -ne 0 ]; then
 		result=${result:-$rc}
 		tst_brkm TBROK "Failed to change working directory into cgroup filesystem (pwd: \"$(pwd)\")"
-		umount /tmp/${cgroup_subsys}_test || umount -l /tmp/${cgroup_subsys}_test || tst_brkm TBROK "Failed to unmount cgroup filesystem with ${cgroup_subsys} subsystem"
-		rmdir /tmp/${cgroup_subsys}_test 2> /dev/null
+		umount $TMP/${cgroup_subsys}_test || umount -l $TMP/${cgroup_subsys}_test || tst_brkm TBROK "Failed to unmount cgroup filesystem with ${cgroup_subsys} subsystem"
+		rmdir $TMP/${cgroup_subsys}_test 2> /dev/null
 		return $rc
 	fi
 
@@ -140,8 +141,8 @@ function umount_cgroup_subsys()
 {
 	popd > /dev/null 2>&1
 	local popd_result=$?
-	umount /tmp/${cgroup_subsys}_test > /dev/null 2>&1 \
-	  || umount -l /tmp/${cgroup_subsys}_test || \
+	umount $TMP/${cgroup_subsys}_test > /dev/null 2>&1 \
+	  || umount -l $TMP/${cgroup_subsys}_test || \
 	    tst_brkm TBROK "Failed to unmount cgroup filesystem (umount exit status: $?)"
 	local umnt_result=$?
 	local rc=0
@@ -153,7 +154,7 @@ function umount_cgroup_subsys()
 		result=${result:-$umnt_result}
 		rc=$umnt_result
 	elif [ $umnt_result -eq 0 -a $popd_result -eq 0 ]; then
-		rmdir /tmp/${cgroup_subsys}_test
+		rmdir $TMP/${cgroup_subsys}_test
 		return 0
 	fi
 
@@ -181,33 +182,33 @@ function cleanup_freezer()
 		# group
 		# Kill any leftover tasks
 		disown -a
-		find /tmp/${cgroup_subsys}_test -mindepth 1 -depth -type d -print0 | \
+		find $TMP/${cgroup_subsys}_test -mindepth 1 -depth -type d -print0 | \
 		xargs -0r -n 1 ${XARGS_REPL_OPT} /bin/bash -c 'kill $(cat "'"${XARGS_REPL_STR}"'/tasks") 2> /dev/null'
 
 		# For each group in the freezer hierarch, that its tasks
-		find /tmp/${cgroup_subsys}_test -mindepth 1 -depth -type d -print0 | \
+		find $TMP/${cgroup_subsys}_test -mindepth 1 -depth -type d -print0 | \
 		xargs -0r -n 1 ${XARGS_REPL_OPT} /bin/bash -c "\"${CG_FILE_WRITE}\" \"${THAW}\" > '${XARGS_REPL_STR}/freezer.state'"
 
 		# Kill any leftover tasks
-		find /tmp/${cgroup_subsys}_test -mindepth 1 -depth -type d -print0 | \
+		find $TMP/${cgroup_subsys}_test -mindepth 1 -depth -type d -print0 | \
 		xargs -0r -n 1 ${XARGS_REPL_OPT} /bin/bash -c 'kill $(cat "'"${XARGS_REPL_STR}"'/tasks") 2> /dev/null'
 
 		sleep 2
 
 		# Really kill any leftover tasks
-		find /tmp/${cgroup_subsys}_test -mindepth 1 -depth -type d -print0 | \
+		find $TMP/${cgroup_subsys}_test -mindepth 1 -depth -type d -print0 | \
 		xargs -0r -n 1 ${XARGS_REPL_OPT} /bin/bash -c 'kill -s SIGKILL $(cat "'"${XARGS_REPL_STR}"'/tasks") 2> /dev/null'
 
 		# Don't need to run these xargs commands in bash since we want
 		# to see what's left on stdout
-		LINES=$(find /tmp/${cgroup_subsys}_test -mindepth 1 -depth -type d -print0 | \
+		LINES=$(find $TMP/${cgroup_subsys}_test -mindepth 1 -depth -type d -print0 | \
 			xargs -0r -n 1 ${XARGS_REPL_OPT} cat "${XARGS_REPL_STR}/tasks" | wc -l)
 		if (( LINES == 0 )); then
 			# Remove the empty groups
-			find /tmp/${cgroup_subsys}_test -mindepth 1 -depth -type d -print0 | xargs -r0 rmdir
+			find $TMP/${cgroup_subsys}_test -mindepth 1 -depth -type d -print0 | xargs -r0 rmdir
 		else
 			tst_resm TWARN "Could not cleanup:"
-			find /tmp/${cgroup_subsys}_test -mindepth 1 -depth -type d -print0 | xargs -0r -n 1 ${XARGS_REPL_OPT} ls -ld "${XARGS_REPL_STR}/tasks"
+			find $TMP/${cgroup_subsys}_test -mindepth 1 -depth -type d -print0 | xargs -0r -n 1 ${XARGS_REPL_OPT} ls -ld "${XARGS_REPL_STR}/tasks"
 		fi
 
 		umount_freezer
@@ -237,7 +238,7 @@ function cleanup_signal()
 	local save_pwd="$(pwd)"
 
 	mount_signal && {
-		find /tmp/${cgroup_subsys}_test -mindepth 1 -depth -type d -print0 | xargs -r0 rmdir
+		find $TMP/${cgroup_subsys}_test -mindepth 1 -depth -type d -print0 | xargs -r0 rmdir
 		umount_signal
 	}
 
