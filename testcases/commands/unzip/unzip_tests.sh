@@ -61,7 +61,7 @@ chk_ifexists()
 # 				- non-zero on failure.
 cleanup()
 {
-	popd
+	cd /	
 	# remove all the temporary files created by this test.
 	tst_resm TINFO "CLEAN: removing \"$LTPTMP\""
 	rm -fr "$LTPTMP"
@@ -89,7 +89,7 @@ init()
 	# create the temporary directory used by this testcase
 	LTPTMP=`mktemp -d $$.XXXXXX` || tst_resm TBROK "Unable to create temporary directory with: mktemp -d $$.XXXXXX"
 	trap "cleanup" 0
-	pushd "$LTPTMP"
+	cd "$LTPTMP"
 
 	# check if commands tst_*, unzip, awk, etc exists.
 	chk_ifexists INIT tst_resm  || return $RC
