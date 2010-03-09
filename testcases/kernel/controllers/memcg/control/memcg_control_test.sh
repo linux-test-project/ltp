@@ -54,9 +54,7 @@ FAIL=1
 # Check if the test process is killed on crossing boundary
 test_proc_kill()
 {
-	pushd $TMP > /dev/null
-	mem_process -m $PROC_MEM &
-	popd > /dev/null
+	( cd $TMP && mem_process -m $PROC_MEM & )
 	sleep 1
 	echo $! > tasks
  
@@ -84,8 +82,7 @@ testcase_1()
 	echo "$TOT_MEM_LIMIT" > $TST_PATH/mnt/$TST_NUM/memory.memsw.limit_in_bytes
 
 	mkdir sub
-	pushd sub > /dev/null
-
+	(cd sub
 	KILLED_CNT=0
 	test_proc_kill
 
@@ -93,9 +90,7 @@ testcase_1()
 		result $FAIL "Test #1: failed"
 	else
 		result $PASS "Test #1: passed"
-	fi
-
-	popd > /dev/null
+	fi)
 	rmdir sub
 }
 
@@ -146,11 +141,7 @@ FAILED_CNT=0
 TST_NUM=1
 while [ $TST_NUM -le $TST_TOTAL ]; do
 	mkdir $TST_PATH/mnt/$TST_NUM
-	pushd $TST_PATH/mnt/$TST_NUM > /dev/null
-
-	testcase_$TST_NUM
-
-	popd > /dev/null
+	(cd $TST_PATH/mnt/$TST_NUM && testcase_$TST_NUM)
 	rmdir $TST_PATH/mnt/$TST_NUM
 	: $((TST_NUM += 1))
 done

@@ -3,98 +3,91 @@
 # Test Case 6 - sar
 #
 
-CASE="hotplug06.sar"
-HOTPLUG06_LOOPS=${HOTPLUG06_LOOPS:-${LOOPS}}
-loop=${HOTPLUG06_LOOPS:-1}
+TST_TOTAL=${HOTPLUG06_LOOPS:-${LOOPS}}
+export TCID="hotplug06.sar"
+export TMP=${TMP:=/tmp}
+export TST_COUNT=1
+export TST_TOTAL=${HOTPLUG06_LOOPS:-1}
 
 CPU_TO_TEST=$1
-if [ -z $CPU_TO_TEST ]; then
-    echo "Usage:  $0 <CPU to offline>"
-    exit -1
+if [ -z "$CPU_TO_TEST" ]; then
+	echo "usage: ${0##*} <CPU to offline>"
+	exit 1
 fi
 
 # Includes:
-LHCS_PATH=${LHCS_PATH:-".."}
+LHCS_PATH=${LHCS_PATH:-${LTPROOT:+$LTPROOT/testcases/bin/cpu_hotplug}}
 . $LHCS_PATH/include/testsuite.fns
 . $LHCS_PATH/include/hotplug.fns
 
-echo "Name:   $CASE"
-echo "Date:   `date`"
-echo "Desc:   Does sar behave properly during CPU hotplug events?"
-echo
+cat <<EOF
+Name:   $TCID
+Date:   `date`
+Desc:   Does sar behave properly during CPU hotplug events?
+
+EOF
 
 # Verify the specified CPU is available
 if ! cpu_is_valid "${CPU_TO_TEST}" ; then
-    echo "Error: CPU${CPU_TO_TEST} not found"
-    echo "$CASE      FAIL: CPU${CPU_TO_TEST} not found!"
-    exit_clean -1
+	tst_resm TBROK"CPU${CPU_TO_TEST} not found"
+	exit_clean 1
 fi
 
 # Check that the specified CPU is offline; if not, offline it
 if cpu_is_online "${CPU_TO_TEST}" ; then
-    offline_cpu ${CPU_TO_TEST}
-    if [ $? != 0 ]; then
-        echo "Error:  CPU${CPU_TO_TEST} cannot be offlined"
-        echo "$CASE     FAIL: CPU${CPU_TO_TEST} cannot be offlined line: 30"
-        exit_clean -1
-    fi
+	if ! offline_cpu ${CPU_TO_TEST} ; then
+		tst_resm TBROK "CPU${CPU_TO_TEST} cannot be offlined"
+		exit_clean 1
+	fi
 fi
 
 do_clean()
 {
-    kill_pid ${SAR_PID}
+	kill_pid ${SAR_PID}
 }
 
-until [ $loop = 0 ]; do
-    # Start up SAR and give it a couple cycles to run
-    sar -P ALL 1 0 > /tmp/log_$$ &
-    sleep 2
-    SAR_PID=$!
-    
-    # Verify that SAR has correctly listed the missing CPU as 'nan'
-    cat /tmp/log_$$ | grep -i nan > /dev/null
-    while [ $? != 0 ]; do 
-        echo "$CASE    FAIL: CPU${CPU_TO_TEST} Not Found on SAR!"
-        exit_clean -1
-    done
-    time=`date +%X`
-    sleep .5
+until [ $TST_COUNT -gt $TST_TOTAL ]; do
+	# Start up SAR and give it a couple cycles to run
+	sar -P ALL 1 0 > $TMP/log_$$ &
+	sleep 2
+	SAR_PID=$!
+	
+	# Verify that SAR has correctly listed the missing CPU as 'nan'
+	while ! grep -iq nan $TMP/log_$$; do
+		tst_resm TFAIL "CPU${CPU_TO_TEST} Not Found on SAR!"
+		exit_clean 1
+	done
+	time=`date +%X`
+	sleep .5
 
-    # Verify that at least some of the CPUs are offline
-    NUMBER_CPU_OFF=`cat /tmp/log_$$ | grep "${time}" | grep -i nan | wc -l`
-    if [ ${NUMBER_CPU_OFF} = 0 ]; then
-        echo "$CASE    FAIL: No CPUs found to be off"
-        exit_clean -1
-    fi
+	# Verify that at least some of the CPUs are offline
+	NUMBER_CPU_OFF=$(grep "$time" $TMP/log_$$ | grep -i nan | wc -l)
+	if [ ${NUMBER_CPU_OFF} -eq 0 ]; then
+		tst_resm TBROK "no CPUs found offline"
+		exit_clean 1
+	fi
 
-    # Online the CPU
-    online_cpu ${CPU_TO_TEST}
-    if [ $? != 0 ]; then
-        echo "Error:  CPU${CPU_TO_TEST} cannot be onlined"
-        echo "$CASE     FAIL: CPU${CPU_TO_TEST} cannot be onlined line: 60"
-        exit_clean -1
-    fi
-    
-    sleep 1
-    time=`date +%T`
-    sleep .5
+	# Online the CPU
+	if ! online_cpu ${CPU_TO_TEST}; then
+		tst_resm TFAIL "CPU${CPU_TO_TEST} cannot be onlined line"
+		exit_clean 1
+	fi
+	
+	sleep 1
+	time=$(date +%T)
+	sleep .5
 
-    # Check that SAR registered the change in CPU online/offline states
-    NEW_NUMBER_CPU_OFF=`cat /tmp/log_$$ | grep ${time} | grep -i nan | wc -l`
-    : $(( NUMBER_CPU_OFF -= 1 ))
-    if [ $NUMBER_CPU_OFF = $NEW_NUMBER_CPU_OFF ]; then
-        echo "$CASE     PASS: CPU was found after turned on."
-    else
-        echo "$CASE     FAIL: No Change in number of offline CPUs was found."
-    fi
+	# Check that SAR registered the change in CPU online/offline states
+	NEW_NUMBER_CPU_OFF=$(grep "$time" $TMP/log_$$ | grep -i nan | wc -l)
+	: $(( NUMBER_CPU_OFF -= 1 ))
+	if [ "$NUMBER_CPU_OFF" = "$NEW_NUMBER_CPU_OFF" ]; then
+		tst_resm TPASS "CPU was found after turned on."
+	else
+		tst_resm TFAIL "no change in number of offline CPUs was found."
+	fi
 
-    if [ $? != 0 ]; then
-        echo "Error:  CPU${CPU_TO_TEST} cannot be onlined"
-        echo "$CASE     FAIL: CPU${CPU_TO_TEST} cannot be onlined line: 60"
-        exit_clean -1
-    fi
+	: $(( TST_COUNT += 1 ))
 
-    let "loop = loop - 1"
 done
 
 exit_clean

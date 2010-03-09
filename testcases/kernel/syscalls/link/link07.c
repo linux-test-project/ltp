@@ -81,12 +81,12 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <pwd.h>
 
 #include "test.h"
 #include "usctest.h"
 
 #define ROOT_USER	0
-#define NOBODY_USER	99
 
 #define MODE_TO S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP|S_IWGRP|S_IXGRP|S_IXOTH|S_IROTH|S_IWOTH
 #define MODE_TE S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH
@@ -175,6 +175,7 @@ void setup()
 {
 	char Path_name[PATH_MAX];	/* Buffer to hold current path */
 	int fd;
+	struct passwd *nobody_pwd;
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -222,10 +223,16 @@ void setup()
 	file1 = TEST_FILE2;
 	file2 = NEW_TEST_FILE2;
 
-	/* set effective user ID to NOBODY_USER using seteuid */
-	if (seteuid(NOBODY_USER) != 0) {
-		tst_resm(TFAIL, "seteuid to NOBODY_USER failed");
-		cleanup();
+	if ((nobody_pwd = getpwnam("nobody")) == NULL) {
+		tst_brkm(TCONF|TERRNO, cleanup,
+			"couldn't determine login information for nobody");
+	}
+
+	/* set effective user ID to "nobody"'s UID using seteuid */
+	if (seteuid(nobody_pwd->pw_uid) != 0) {
+		tst_brkm(TCONF|TERRNO, cleanup,
+			"seteuid to %d for %s failed",
+			nobody_pwd->pw_uid, nobody_pwd->pw_name);
 	}
 
 }				/* End setup() */
@@ -238,7 +245,7 @@ void cleanup()
 {
 	/* set back effective user ID to ROOT_USER using seteuid */
 	if (seteuid(ROOT_USER) != 0) {
-		tst_resm(TFAIL, "seteuid to ROOT_USER failed");
+		tst_resm(TFAIL|TERRNO, "seteuid(%d) failed", ROOT_USER);
 	}
 
 	/*

@@ -4,18 +4,18 @@
 
 echo $$
 
-KERNEL_DIR=$1
+KERNEL_DIR=${1:-/usr/src/linux}
 
 if [ ! -d $KERNEL_DIR ]; then
-    echo "Error:  $KERNEL_DIR does not exist"
-    exit 1
+	echo "${0##*/}: ERROR: kernel directory - $KERNEL_DIR - does not exist"
+	exit 1
 fi
 
-cd $KERNEL_DIR
+cd $KERNEL_DIR || exit $?
 
 while :
 do
-  make mrproper
-  make defconfig
-  make -j20 bzImage
+	make mrproper
+	make defconfig
+	make -j20 bzImage
 done

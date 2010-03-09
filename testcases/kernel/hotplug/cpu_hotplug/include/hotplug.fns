@@ -105,8 +105,8 @@ offline_cpu()
 #
 get_all_cpus()
 {
-    echo `ls -r /sys/devices/system/cpu/ | grep cpu`
-    return
+    [ -d /sys/devices/system/cpu/cpu0 ] || return 1
+    ls -dr /sys/devices/system/cpu/cpu[0-9]* || return 2
 }
 
 

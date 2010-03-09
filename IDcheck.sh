@@ -53,7 +53,7 @@ prompt_for_create() {
 			echo -n "If any required user ids and/or groups are missing, would you like these created? [y/N]"
 			read ans
 			case "$ans" in
-			Y*|y*) CREATE_ENTRIES=1 ;;
+			[Yy]*) CREATE_ENTRIES=1 ;;
 			*)     CREATE_ENTRIES=0 ;;
 			esac
 		else
@@ -80,7 +80,7 @@ fe nobody "$passwd"; NO_NOBODY_ID=$?
 
 fe bin "$group"; NO_BIN_GRP=$?
 fe daemon "$group"; NO_DAEMON_GRP=$?
-fe nobody "$group"; NO_NOBODY_GRP=$?
+fe nobody "$group" || fe nogroup "$group"; NO_NOBODY_GRP=$?
 fe sys "$group"; NO_SYS_GRP=$?
 fe users "$group"; NO_USERS_GRP=$?
 
@@ -89,16 +89,16 @@ prompt_for_create
 debug_vals() {
 
 echo "Missing the following group / user entries:"
-echo "Group file:    $group"
-echo "Password file: $passwd"
-echo "nobody:        $NO_NOBODY_ID"
-echo "bin:           $NO_BIN_ID"
-echo "daemon:        $NO_DAEMON_ID"
-echo "nobody grp:    $NO_NOBODY_GRP"
-echo "bin grp:       $NO_BIN_GRP"
-echo "daemon grp:    $NO_DAEMON_GRP"
-echo "sys grp:       $NO_SYS_GRP"
-echo "users grp:     $NO_USERS_GRP"
+echo "Group file:		$group"
+echo "Password file:		$passwd"
+echo "nobody:			$NO_NOBODY_ID"
+echo "bin:			$NO_BIN_ID"
+echo "daemon:			$NO_DAEMON_ID"
+echo "nobody[/nogroup] grp:	$NO_NOBODY_GRP"
+echo "bin grp:			$NO_BIN_GRP"
+echo "daemon grp:		$NO_DAEMON_GRP"
+echo "sys grp:			$NO_SYS_GRP"
+echo "users grp:		$NO_USERS_GRP"
 echo ""
 
 }
@@ -130,7 +130,7 @@ make_user_group() {
 		fi
 	fi
 }
-make_user_group nobody 99 $NO_NOBODY_ID $NO_NOBODY_GRP
+make_user_group nobody 65534 $NO_NOBODY_ID $NO_NOBODY_GRP
 make_user_group bin 1 $NO_BIN_ID $NO_BIN_GRP
 make_user_group daemon 2 $NO_DAEMON_ID $NO_DAEMON_GRP
 
@@ -149,7 +149,7 @@ fi
 MISSING_ENTRY=0
 
 # For entries that exist in both $group and $passwd.
-for i in nobody bin daemon; do
+for i in bin daemon; do
     for file in "$group" "$passwd"; do
         if ! fe "$i" "$file"; then
             MISSING_ENTRY=1
@@ -160,6 +160,13 @@ for i in nobody bin daemon; do
         break
     fi
 done
+
+# nobody is a standard group on all distros, apart from debian based ones;
+# let's account for the fact that they use the nogroup group instead.
+if ! fe "nobody" "$passwd" || ! (fe "nogroup" "$group" || fe "nobody" "$group")
+then
+    MISSING_ENTRY=1
+fi
 
 # For entries that only exist in $group.
 for i in users sys; do
