@@ -99,6 +99,7 @@ LIBS = @LIBS@
 libevent_a_DEPENDENCIES =  @LIBOBJS@
 libevent_a_OBJECTS =  event.o buffer.o evbuffer.o
 AR = ar
+AR_FLAGS = cr
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
@@ -219,7 +220,7 @@ maintainer-clean-compile:
 
 libevent.a: $(libevent_a_OBJECTS) $(libevent_a_DEPENDENCIES)
 	-rm -f libevent.a
-	$(AR) cru libevent.a $(libevent_a_OBJECTS) $(libevent_a_LIBADD)
+	$(AR) $(AR_FLAGS) libevent.a $(libevent_a_OBJECTS) $(libevent_a_LIBADD)
 	$(RANLIB) libevent.a
 
 install-man3:
