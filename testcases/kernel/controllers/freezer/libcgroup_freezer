@@ -111,7 +111,8 @@ function mount_cgroup_subsys()
 		return $rc
 	fi
 
-	pushd $TMP/${cgroup_subsys}_test > /dev/null 2>&1
+	export mount_cgroup_freezer_saved_dir="$(pwd)"
+	cd $TMP/${cgroup_subsys}_test > /dev/null 2>&1
 	rc=$?
 	if [ $rc -ne 0 ]; then
 		result=${result:-$rc}
@@ -139,21 +140,21 @@ function mount_signal()
 # umounts the cgroup filesystem and pops the dir stack
 function umount_cgroup_subsys()
 {
-	popd > /dev/null 2>&1
-	local popd_result=$?
+	cd "${mount_cgroup_freezer_saved_dir}"
+	local cwd_result=$?
 	umount $TMP/${cgroup_subsys}_test > /dev/null 2>&1 \
 	  || umount -l $TMP/${cgroup_subsys}_test || \
 	    tst_brkm TBROK "Failed to unmount cgroup filesystem (umount exit status: $?)"
 	local umnt_result=$?
 	local rc=0
 
-	if [ $popd_result -ne 0 ]; then
-		result=${result:-$popd_result}
-		rc=$popd_result
+	if [ $cwd_result -ne 0 ]; then
+		result=${result:-$cwd_result}
+		rc=$cwd_result
 	elif [ $umnt_result -ne 0 ]; then
 		result=${result:-$umnt_result}
 		rc=$umnt_result
-	elif [ $umnt_result -eq 0 -a $popd_result -eq 0 ]; then
+	elif [ $umnt_result -eq 0 -a $cwd_result -eq 0 ]; then
 		rmdir $TMP/${cgroup_subsys}_test
 		return 0
 	fi
@@ -528,6 +529,7 @@ function assert_cgroup_freezer_state()
 function make_sample_cgroup_named()
 {
 	local name="$1"
+	local saved_dir="$(pwd)"
 	mkdir "${name}"
 	local rc=$?
 
@@ -538,7 +540,8 @@ function make_sample_cgroup_named()
 		return $rc
 	fi
 
-	pushd "${name}" > /dev/null 2>&1
+	cd "${name}" > /dev/null 2>&1
+
 	rc=$?
 	if [ $rc -ne 0 ]; then
 		result=${result:-$rc}
@@ -546,18 +549,18 @@ function make_sample_cgroup_named()
 	fi
 
 	assert_cgroup_tasks_rwfile || {
-		popd > /dev/null 2>&1
+		cd "${saved_dir}"
 		return $?
 	}
 	assert_cgroup_tasks_empty || {
-		popd > /dev/null 2>&1
+		cd "${saved_dir}"
 		return $?
 	}
 	assert_cgroup_subsys_state_rwfile || {
-		popd > /dev/null 2>&1
+		cd "${saved_dir}"
 		return $?
 	}
-	popd > /dev/null 2>&1
+	cd "${saved_dir}"
 	return 0
 }
 
@@ -579,22 +582,23 @@ function make_sample_cgroup()
 function rm_sample_cgroup_named()
 {
 	local cgroup_name="$1"
+	local saved_dir="$(pwd)"
 	local rc=0
 
-	pushd "${cgroup_name}" > /dev/null 2>&1 && {
+	cd "${cgroup_name}" && {
 		assert_cgroup_tasks_rwfile || {
-			popd > /dev/null 2>&1
+			cd "${saved_dir}"
 			return $?
 		}
 		assert_cgroup_tasks_empty || {
-			popd > /dev/null 2>&1
+			cd "${saved_dir}"
 			return $?
 		}
 		assert_cgroup_subsys_state_rwfile || {
-			popd > /dev/null 2>&1
+			cd "${saved_dir}"
 			return $?
 		}
-		popd > /dev/null 2>&1
+		cd "${saved_dir}"
 	} || {
 		rc=$?
 		result=${result:-$rc}
