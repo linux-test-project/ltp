@@ -26,6 +26,8 @@ FILTER_OUT_DIRS		:= $(LIBDIR)
 
 LIB			:= $(LIBDIR)/libclone.a
 
+LIB			:= -ld
+
 INSTALL_TARGETS		:= *.sh 
 
 $(LIBDIR):
