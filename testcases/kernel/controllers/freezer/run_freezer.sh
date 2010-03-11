@@ -69,7 +69,8 @@ function test_setup()
 	export LTPBIN PATH TCID TST_COUNT TST_TOTAL CGROUPS_TESTROOT
 	tst_resm TINFO "Preparing to run: ${P} $@"
 
-	make all
+	# this is not require here
+	#make all
 }
 
 function test_prereqs()

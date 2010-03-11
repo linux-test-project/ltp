@@ -22,7 +22,7 @@ top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-INSTALL_TARGETS		:= filecapstest.sh
+INSTALL_TARGETS		:= *.sh
 
 CPPFLAGS		+= -D_GNU_SOURCE
 DEBUG_CPPFLAGS		+= -DDEBUG=1

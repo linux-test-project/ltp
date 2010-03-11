@@ -1,4 +1,4 @@
-The following things need to be rewritten // fixed:
+The following things need to be rewritten // fixed
 
 get_mempolicy01 // mbind01: They're using numa v1 calls which means that all
 versions of Linux / numa as of a few years ago aren't compatible with the API
