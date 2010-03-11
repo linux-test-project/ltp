@@ -32,6 +32,9 @@ testcases/ballista:
 3. Uses cshell for some weird arse reason, instead of using Bourne shell
    compat scripts.
 
+testcases/kernel/controllers/freezer/libcgroup_freezer:
+1. Uses pushd / popd, which isn't present in busybox.
+
 testcases/kernel/fs/dmapi/Makefile:
 1. This test requires JFS support, which most systems don't have. So a set of
    proper autoconf tests need to be added for this as well.
@@ -85,6 +88,9 @@ testcases/network/stress/udp/...:
    method of hardlinking into $(abs_top_srcdir)/testcases/bin, which means
    that all of the scripts are being linked to the file
    $(abs_top_srcdir)/testcases/bin .
+
+testcases/realtime/run.sh:
+1. Uses pushd / popd, which isn't present in busybox.
 
 tools/Makefile:
 1. netpipe* needs fixing and reorg, because it's referencing /home/mpich, etc.
