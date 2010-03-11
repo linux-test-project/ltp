@@ -27,7 +27,7 @@
 ##                                                                            ##
 ################################################################################
 
-if [ "$(grep -w memory /proc/cgroups | cut -f4)" -ne "1" ]; then
+if [ "x$(grep -w memory /proc/cgroups | cut -f4)" != "x1" ]; then
 	echo "WARNING:"
 	echo "Either kernel does not support memory resource controller or feature not enabled"
 	echo "Skipping all memcg_control testcases...."
