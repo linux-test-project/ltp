@@ -1,0 +1,29 @@
+rtc-test.c : Test the Real Time Clock driver
+
+Tests supported as of now
+--------------------------
+1. Read test : This reads the time/date from the RTC
+   ioctls tested :- RTC_RD_TIME.
+
+2. Alarm Test: Sets the alarm to 5 seconds in future and makes sure it rings.
+   ioctls tested :- RTC_ALM_SET, RTC_ALM_READ,  RTC_AIE_ON, RTC_AIE_OFF.
+
+3. Update interrupts test : Sets Update interrupts enable on, waits for five
+   interrupts and then turns it off.
+   ioctls tested :- RTC_UIE_ON, RTC_UIE_OFF.
+
+
+How to Build
+------------
+You have to build the complete LTP package before trying to build these tests.
+After building the complete LTP sources enter this directory and issue a 'make'.
+
+How to Run
+----------
+
+       The tests assume the rtc device node to be "/dev/rtc". If you have a
+different node run the test with the name of the node as a parameter.
+
+Eg. If your node is /dev/rtc0, then run the test as
+
+       $ ./rtc-test /dev/rtc0
