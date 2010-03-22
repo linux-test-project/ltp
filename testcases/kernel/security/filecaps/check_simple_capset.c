@@ -27,28 +27,21 @@
 
 int main()
 {
-#if HAVE_SYS_CAPABILITY_H
+#ifdef HAVE_LIBCAP
 	cap_t caps, caps2;
 	int ret;
 
-#if HAVE_DECL_CAP_FROM_TEXT && HAVE_DECL_CAP_SET_PROC && HAVE_DECL_CAP_COMPARE
 	caps = cap_from_text("cap_setpcap+ep");
 	caps2 = cap_from_text("cap_setpcap+ep");
 	ret = cap_set_proc(caps);
 	ret = cap_compare(caps, caps2);
-#else
-	printf("System doesn't support full POSIX capabilities.\n");
-	return 1;
-#endif
 	printf("Caps were %sthe same\n", ret ? "not " : "");
 
-#if HAVE_DECL_CAP_FREE
 	cap_free(caps);
 	cap_free(caps2);
-#endif
 	return ret;
 #else
-	printf("System doesn't support POSIX capabilities.\n");
+	printf("System doesn't support full POSIX capabilities.\n");
 	return 1;
 #endif
 }

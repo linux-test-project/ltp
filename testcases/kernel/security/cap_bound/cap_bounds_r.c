@@ -32,21 +32,6 @@
 #include <sys/prctl.h>
 #include <test.h>
 
-#ifndef CAP_LAST_CAP
-#warning out-of-date capability.h does not define CAP_LAST_CAP
-#define CAP_LAST_CAP 28  /* be ultra-conservative */
-#endif
-
-#ifndef CAP_BSET_READ
-#warning CAP_BSET_READ not defined
-#define CAP_BSET_READ 23
-#endif
-
-#ifndef CAP_BSET_DROP
-#warning CAP_BSET_DROP not defined
-#define CAP_BSET_DROP 24
-#endif
-
 char *TCID = "cap_bounds_r";
 int TST_TOTAL=1;
 
@@ -59,17 +44,27 @@ int main(int argc, char *argv[])
 	int i;
 
 	for (i=0; i<=CAP_LAST_CAP; i++) {
-		ret = prctl(CAP_BSET_READ, i);
+#if HAVE_DECL_PR_CAPBSET_READ
+		ret = prctl(PR_CAPBSET_READ, i);
+#else
+		errno = ENOSYS;
+		ret = -1;
+#endif
 		if (ret != 1) {
-			tst_resm(TFAIL, "prctl(CAP_BSET_READ, %d) returned %d\n", i, ret);
+			tst_resm(TFAIL, "prctl(PR_CAPBSET_READ, %d) returned %d\n", i, ret);
 			if (ret == -1)
 				tst_resm(TINFO, "errno was %d\n", errno);
 			tst_exit();
 		}
 	}
-	ret = prctl(CAP_BSET_READ, -1);
+#if HAVE_DECL_PR_CAPBSET_READ
+	ret = prctl(PR_CAPBSET_READ, -1);
+#else
+	errno = ENOSYS;
+	ret = -1;
+#endif
 	if (ret != -1) {
-		tst_resm(TFAIL, "prctl(CAP_BSET_READ, -1) returned %d\n", -1, ret);
+		tst_resm(TFAIL, "prctl(PR_CAPBSET_READ, -1) returned %d\n", ret);
 		tst_exit();
 	}
 
@@ -79,13 +74,18 @@ int main(int argc, char *argv[])
 	 * testing...  So let's take an insanely high value */
 #define INSANE 63
 #define max(x,y) (x > y ? x : y)
-	ret = prctl(CAP_BSET_READ, max(INSANE,CAP_LAST_CAP+1));
+#if HAVE_DECL_PR_CAPBSET_READ
+	ret = prctl(PR_CAPBSET_READ, max(INSANE,CAP_LAST_CAP+1));
+#else
+	errno = ENOSYS;
+	ret = -1;
+#endif
 	if (ret != -1) {
-		tst_resm(TFAIL, "prctl(CAP_BSET_READ, %d) returned %d\n", CAP_LAST_CAP+1, ret);
+		tst_resm(TFAIL, "prctl(PR_CAPBSET_READ, %d) returned %d\n", CAP_LAST_CAP+1, ret);
 		tst_resm(TINFO, " %d is CAP_LAST_CAP+1 and should not exist\n", CAP_LAST_CAP+1);
 		tst_exit();
 	}
-	tst_resm(TPASS, "CAP_BSET_READ tests passed\n");
+	tst_resm(TPASS, "PR_CAPBSET_READ tests passed\n");
 #else
 	tst_resm(TCONF, "System doesn't have POSIX capabilities.");
 #endif

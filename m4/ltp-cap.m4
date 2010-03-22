@@ -23,21 +23,12 @@ dnl LTP_CHECK_CAPABILITY_SUPPORT
 dnl ----------------------------
 dnl
 AC_DEFUN([LTP_CHECK_CAPABILITY_SUPPORT],[
+AH_TEMPLATE(HAVE_LIBCAP,
+[Define to 1 if you have libcap-2 installed.])
 AC_CHECK_HEADERS(sys/capability.h,[
-	AC_CHECK_HEADERS(attr/xattr.h)
 	LTP_CAPABILITY_SUPPORT=yes
-	AC_CHECK_LIB(cap,cap_free,[
-		AC_CHECK_LIB(cap,cap_from_text,[
-			AC_CHECK_LIB(cap,cap_set_proc,[
-				AC_CHECK_LIB(cap,cap_compare,[
-					CAP_LIBS="-lcap"
-				])
-			])
-		])
-	])
-	AC_CHECK_DECLS([CAP_BSET_DROP, CAP_BSET_READ, PR_CAPBSET_READ, cap_compare, cap_free, cap_from_text, cap_get_proc, cap_set_file, cap_set_flag, cap_set_proc, cap_to_text],[],[],[dnl
-#include <sys/capability.h>
-]) dnl AC_CHECK_DECLS
+	AC_CHECK_LIB(cap,cap_compare,[AC_DEFINE(HAVE_LIBCAP) CAP_LIBS="-lcap"], [CAP_LIBS=""])
+	AC_CHECK_PROG(HAVE_SETCAP,setcap,setcap,false)
 ])]
 AC_SUBST(CAP_LIBS)
 )

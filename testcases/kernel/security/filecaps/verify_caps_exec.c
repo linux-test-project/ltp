@@ -60,20 +60,18 @@ void usage(char *me)
 #define DROP_PERMS 0
 #define KEEP_PERMS 1
 
+#ifdef HAVE_LIBCAP
 void print_my_caps()
 {
-#if HAVE_SYS_CAPABILITY_H && HAVE_DECL_CAP_FREE && HAVE_DECL_CAP_GET_PROC && HAVE_DECL_CAP_TO_TEXT
 	cap_t cap = cap_get_proc();
 	char *txt = cap_to_text(cap, NULL);
 	tst_resm(TINFO, "\ncaps are %s\n", txt);
 	cap_free(cap);
 	cap_free(txt);
-#endif
 }
 
 int drop_root(int keep_perms)
 {
-#if HAVE_SYS_CAPABILITY_H && HAVE_DECL_CAP_FREE && HAVE_DECL_CAP_FROM_TEXT && HAVE_DECL_CAP_SET_PROC
 	int ret;
 
 	if (keep_perms)
@@ -89,15 +87,11 @@ int drop_root(int keep_perms)
 		cap_set_proc(cap);
 		cap_free(cap);
 	}
-#else
-	tst_resm(TCONF, "System doesn't have full POSIX capabilities support.\n");
-#endif
 	tst_exit();
 }
 
 int perms_test(void)
 {
-#if HAVE_SYS_CAPABILITY_H && HAVE_DECL_CAP_FREE && HAVE_DECL_CAP_SET_FILE
 	int ret;
 	cap_t cap;
 
@@ -118,9 +112,6 @@ int perms_test(void)
 
 	cap_free(cap);
 	return ret;
-#else
-	return -1;
-#endif
 }
 
 #define FIFOFILE "caps_fifo"
@@ -160,7 +151,6 @@ void read_from_fifo(char *buf)
 	close(fd);
 }
 
-#if HAVE_SYS_CAPABILITY_H && HAVE_DECL_CAP_COMPARE && HAVE_DECL_CAP_FREE && HAVE_DECL_CAP_TO_TEXT
 int fork_drop_and_exec(int keepperms, cap_t expected_caps)
 {
 
@@ -219,12 +209,9 @@ int fork_drop_and_exec(int keepperms, cap_t expected_caps)
 	}
 	return ret;
 }
-#endif
 
 int caps_actually_set_test(void)
 {
-
-#if HAVE_SYS_CAPABILITY_H && HAVE_DECL_PR_CAPBSET_READ
 	int  whichcap, finalret = 0, ret;
 	cap_t fcap, pcap, cap_fullpi;
 	cap_value_t capvalue[1];
@@ -399,17 +386,15 @@ int caps_actually_set_test(void)
 	cap_free(cap_fullpi);
 
 	return finalret;
-#else
-	return -1;
-#endif
 }
+#endif
 
 int main(int argc, char *argv[])
 {
+#ifdef HAVE_LIBCAP
 	if (argc < 2)
 		usage(argv[0]);
 
-#if HAVE_SYS_CAPABILITY_H
 	int ret = 0;
 
 	switch(atoi(argv[1])) {

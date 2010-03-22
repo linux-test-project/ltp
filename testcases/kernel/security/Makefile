@@ -29,6 +29,9 @@ include	$(top_srcdir)/include/mk/env_pre.mk
 ifeq ($(strip $(CAP_LIBS)),)
 FILTER_OUT_DIRS		:= cap_bound filecaps
 endif
+ifeq ($(HAVE_SETCAP),false)
+FILTER_OUT_DIRS		+= filecaps
+endif
 
 # XXX (garrcoop): avoid compilation failures on RHEL 5.4, as reported by
 # Mitani-san, because of policy versioning issues...
