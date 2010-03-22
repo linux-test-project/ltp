@@ -83,18 +83,15 @@
 /***************************    Test case   ***********************************/
 /******************************************************************************/
 
-void * threaded ( void * arg )
+void *threaded(void * arg)
 {
 	int ret;
 
-	do
-	{
+	do {
 		ret = sem_wait( arg );
-	}
-	while ( ( ret != 0 ) && ( errno == EINTR ) );
+	} while (( ret != 0 ) && (errno == EINTR));
 
-	if ( ret != 0 )
-	{
+	if (ret != 0) {
 		UNRESOLVED( errno, "Failed to wait for the semaphore" );
 	}
 
@@ -103,7 +100,7 @@ void * threaded ( void * arg )
 
 
 /* The main test function. */
-int main( int argc, char * argv[] )
+int main(int argc, char *argv[])
 {
 	int ret, val;
 	sem_t sem;
@@ -113,71 +110,61 @@ int main( int argc, char * argv[] )
 	output_init();
 
 	/* Initialize semaphore */
-	ret = sem_init( &sem, 0, 0 );
+	ret = sem_init(&sem, 0, 0);
 
-	if ( ret != 0 )
-	{
+	if (ret != 0) {
 		UNRESOLVED( errno, "Failed to init semaphore" );
 	}
 
 	/* Create the thread */
-	ret = pthread_create( &th, NULL, threaded, &sem );
+	ret = pthread_create(&th, NULL, threaded, &sem);
 
-	if ( ret != 0 )
-	{
+	if (ret != 0) {
 		UNRESOLVED( ret, "Failed to create the thread" );
 	}
 
 	/* Sleep 1 sec so the thread enters the sem_wait call */
-	sleep( 1 );
+	sleep(1);
 
 	/* Check value */
-	ret = sem_getvalue( &sem, &val );
+	ret = sem_getvalue(&sem, &val);
 
-	if ( ret != 0 )
-	{
+	if (ret != 0) {
 		UNRESOLVED( errno, "Failed to get semaphore value" );
 	}
 
-	if ( ( val != 0 ) && ( val != -1 ) )
-	{
-		output( "Val: %d\n", val );
-		FAILED( "Semaphore count is neither 0 nor # of waiting processes" );
+	if ((val != 0) && (val != -1)) {
+		output("Val: %d\n", val );
+		FAILED("Semaphore count is neither 0 nor # of waiting processes");
 	}
 
 	/* Post the semaphore */
-	ret = sem_post( &sem );
+	ret = sem_post(&sem);
 
-	if ( ret != 0 )
-	{
-		UNRESOLVED( errno, "Failed to post the semaphore" );
+	if (ret != 0) {
+		UNRESOLVED(errno, "Failed to post the semaphore");
 	}
 
 	/* Join the thread */
-	ret = pthread_join( th, NULL );
+	ret = pthread_join(th, NULL);
 
-	if ( ret != 0 )
-	{
+	if (ret != 0) {
 		UNRESOLVED( ret, "Failed to join the thread" );
 	}
 
-
 	/* Destroy the semaphore */
-	ret = sem_destroy( &sem );
+	ret = sem_destroy(&sem);
 
-	if ( ret != 0 )
-	{
+	if (ret != 0) {
 		UNRESOLVED( errno, "Failed to sem_destroy" );
 	}
 
 	/* Test passed */
 #if VERBOSE > 0
 
-	output( "Test passed\n" );
+	output("Test passed\n");
 
 #endif
 
 	PASSED;
 }
-
-
