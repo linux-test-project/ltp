@@ -161,7 +161,6 @@ int main()
 	}
 	fprintf(stderr, "P: child_1:%d forked\n", c_1);
 	
-	sleep(1);
 	c_2 = fork();
 	if (c_2 == 0)
 	{
@@ -198,6 +197,9 @@ int main()
 		//printf("val = %d\n", val);
 	} while (val != 0);
 	*/
+
+	/* Synchronization required before release the lock */
+	sleep(1);
 	/* Ok, let's release the lock */
 	fprintf(stderr, "P: release lock\n");
 	sem_post(sem);
