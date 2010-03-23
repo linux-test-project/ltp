@@ -24,10 +24,11 @@
 
 int main()
 {
+
+#ifdef HAVE_LIBCAP
 	cap_t caps, caps2;
 	int ret;
 
-#ifdef HAVE_LIBCAP
 	caps = cap_from_text("cap_setpcap+ep");
 	caps2 = cap_from_text("cap_setpcap+ep");
 	ret = cap_set_proc(caps);
