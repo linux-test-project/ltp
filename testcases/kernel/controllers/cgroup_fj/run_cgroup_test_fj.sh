@@ -129,4 +129,4 @@ do
 	fi
 done
 
-exit 0;
+exit $ret;
