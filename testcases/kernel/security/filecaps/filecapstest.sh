@@ -20,8 +20,8 @@
 ################################################################################
 
 echo "Running in:"
-rm -f print_caps
-cp $LTPROOT/testcases/bin/print_caps .
+#rm -f print_caps
+#cp $LTPROOT/testcases/bin/print_caps .
 mkfifo caps_fifo
 chmod 777 caps_fifo
 exit_code=0
@@ -46,4 +46,5 @@ if [ $tmp -ne 0 ]; then
 	exit_code=$tmp
 fi
 
+unlink caps_fifo
 exit $exit_code
