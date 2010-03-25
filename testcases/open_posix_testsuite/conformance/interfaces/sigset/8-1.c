@@ -15,12 +15,22 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
+#include <string.h>
 #include "posixtest.h"
 
-int main()
+int main(void)
 {
+	sigset_t st;
+	sigemptyset(&st);
+	sigaddset(&st, SIGCHLD);
 
-        if (sigset(SIGCHLD,SIG_HOLD) != SIG_HOLD) {
+	if (sigprocmask(SIG_BLOCK, &st, NULL) < 0) {
+		printf("Test FAILED: sigprocmask(): %s\n", strerror(errno));
+		return PTS_FAIL;
+	}
+
+        if (sigset(SIGCHLD, SIG_HOLD) != SIG_HOLD) {
 		printf("Test FAILED: sigset() didn't return SIG_HOLD\n");
 		return PTS_FAIL;
 	}

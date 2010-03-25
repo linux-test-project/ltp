@@ -39,9 +39,11 @@ int TST_TOTAL=2;
 
 int errno;
 
+#if HAVE_SYS_CAPABILITY_H
+#if HAVE_DECL_PR_CAPBSET_READ && HAVE_DECL_PR_CAPBSET_DROP
+#ifdef HAVE_LIBCAP
 int main(int argc, char *argv[])
 {
-#if HAVE_SYS_CAPABILITY_H
 	int ret = 1;
 	cap_value_t v[1];
 	cap_flag_value_t f;
@@ -49,12 +51,7 @@ int main(int argc, char *argv[])
 
 	/* We pick a random capability... let's use CAP_SYS_ADMIN */
 	/* make sure we have the capability now */
-#if HAVE_DECL_CAP_BSET_READ
-	ret = prctl(CAP_BSET_READ, CAP_SYS_ADMIN);
-#else
-	errno = ENOSYS;
-	ret = -1;
-#endif
+	ret = prctl(PR_CAPBSET_READ, CAP_SYS_ADMIN);
 	if (ret != 1) {
 		tst_resm(TBROK, "Not starting with CAP_SYS_ADMIN\n");
 		tst_exit();
@@ -66,47 +63,23 @@ int main(int argc, char *argv[])
 		tst_resm(TBROK, "Failed to create cap_sys_admin+i cap_t (errno %d)\n", errno);
 		tst_exit();
 	}
-#if HAVE_DECL_CAP_SET_PROC
 	ret = cap_set_proc(cur);
-#else
-	errno = ENOSYS;
-	ret = -1;
-#endif
 	if (ret) {
 		tst_resm(TBROK, "Failed to cap_set_proc with cap_sys_admin+i (ret %d errno %d)\n",
 			ret, errno);
 		tst_exit();
 	}
-#if HAVE_DECL_CAP_FREE
 	cap_free(cur);
-#endif
-#if HAVE_DECL_CAP_GET_FLAG
-#if HAVE_DECL_CAP_GET_PROC
 	cur = cap_get_proc();
 	ret = cap_get_flag(cur, CAP_SYS_ADMIN, CAP_INHERITABLE, &f);
-#else
-	errno = ENOSYS;
-	ret = -1;
-#endif
-#else
-	errno = ENOSYS;
-	ret = -1;
-#endif
 	if (ret || f != CAP_SET) {
 		tst_resm(TBROK, "Failed to add CAP_SYS_ADMIN to pI\n");
 		tst_exit();
 	}
-#if HAVE_DECL_CAP_FREE
 	cap_free(cur);
-#endif
 
 	/* drop the capability from bounding set */
-#if HAVE_DECL_CAP_BSET_DROP
-	ret = prctl(CAP_BSET_DROP, CAP_SYS_ADMIN);
-#else
-	errno = ENOSYS;
-	ret = -1;
-#endif
+	ret = prctl(PR_CAPBSET_DROP, CAP_SYS_ADMIN);
 	if (ret) {
 		tst_resm(TFAIL, "Failed to drop CAP_SYS_ADMIN from bounding set.\n");
 		tst_resm(TINFO, "(ret=%d, errno %d)\n", ret, errno);
@@ -114,18 +87,8 @@ int main(int argc, char *argv[])
 	}
 
 	/* test 1: is CAP_SYS_ADMIN still in pI? */
-#if HAVE_DECL_CAP_GET_FLAG
-#if HAVE_DECL_CAP_GET_PROC
 	cur = cap_get_proc();
 	ret = cap_get_flag(cur, CAP_SYS_ADMIN, CAP_INHERITABLE, &f);
-#else
-	errno = ENOSYS;
-	ret = -1;
-#endif
-#else
-	errno = ENOSYS;
-	ret = -1;
-#endif
 	if (ret || f != CAP_SET) {
 		tst_resm(TFAIL, "CAP_SYS_ADMIN not in pI after dropping from bounding set\n");
 		tst_exit();
@@ -144,24 +107,24 @@ int main(int argc, char *argv[])
 		tst_resm(TFAIL, "Failed to drop CAP_SYS_ADMIN from pI\n");
 		tst_exit();
 	}
-#if HAVE_DECL_CAP_FREE
 	cap_free(tmpcap);
-#endif
 	/* test 2: can we put it back in pI? */
-#if HAVE_DECL_CAP_SET_PROC
 	ret = cap_set_proc(cur);
-#endif
 	if (ret == 0) { /* success means pI was not bounded by X */
 		tst_resm(TFAIL, "Managed to put CAP_SYS_ADMIN back into pI though not in X\n");
 		tst_exit();
 	}
-#if HAVE_DECL_CAP_FREE
 	cap_free(cur);
-#endif
 
 	tst_resm(TPASS, "Couldn't put CAP_SYS_ADMIN back into pI when not in bounding set\n");
-#else
+#else /* HAVE_LIBCAP */
 	tst_resm(TCONF, "System doesn't have POSIX capabilities.");
+#endif
+#else /* HAVE_DECL_PR_CAPBSET_READ && HAVE_DECL_PR_CAPBSET_DROP */
+	tst_resm(TCONF, "System doesn't have CAPBSET prctls.");
+#endif
+#else /* HAVE_SYS_CAPABILITY_H */
+	tst_resm(TCONF, "System doesn't have sys/capability.h.");
 #endif
 	tst_exit();
 }

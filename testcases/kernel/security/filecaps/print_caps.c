@@ -40,7 +40,7 @@
 
 int main(int argc, char *argv[])
 {
-#if HAVE_SYS_CAPABILITY_H && HAVE_DECL_CAP_FREE && HAVE_DECL_CAP_GET_PROC && HAVE_DECL_CAP_TO_TEXT
+#ifdef HAVE_LIBCAP
 	cap_t cap = cap_get_proc();
 	int fd;
 	int seqno = 0;

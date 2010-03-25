@@ -20,13 +20,11 @@
 
 
 #include <stdio.h>
-#include "config.h"
-#if HAVE_SYS_CAPABILITY_H
 #include <sys/capability.h>
-#endif
 
 int main()
 {
+
 #ifdef HAVE_LIBCAP
 	cap_t caps, caps2;
 	int ret;

@@ -17,3 +17,6 @@ lib*.a
 /include/stamp-h1
 /m4/Makefile
 /m4/Makefile.in
+.gitattributes
+.pc/
+patches/

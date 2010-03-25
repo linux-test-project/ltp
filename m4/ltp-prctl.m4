@@ -19,16 +19,13 @@ dnl Author: Garrett Cooper <yanegomi@gmail.com>
 dnl
 
 dnl
-dnl LTP_CHECK_CAPABILITY_SUPPORT
+dnl LTP_CHECK_PRCTL_SUPPORT
 dnl ----------------------------
 dnl
-AC_DEFUN([LTP_CHECK_CAPABILITY_SUPPORT],[
-AH_TEMPLATE(HAVE_LIBCAP,
-[Define to 1 if you have libcap-2 installed.])
-AC_CHECK_HEADERS(sys/capability.h,[
-	LTP_CAPABILITY_SUPPORT=yes
-	AC_CHECK_LIB(cap,cap_compare,[AC_DEFINE(HAVE_LIBCAP) CAP_LIBS="-lcap"], [CAP_LIBS=""])
-	AC_CHECK_PROG(HAVE_SETCAP,setcap,setcap,false)
+AC_DEFUN([LTP_CHECK_PRCTL_SUPPORT],[
+AC_CHECK_HEADERS(sys/prctl.h,[
+	AC_CHECK_DECLS([PR_CAPBSET_DROP, PR_CAPBSET_READ], [],[],[dnl
+#include <sys/prctl.h>
+]) dnl AC_CHECK_DECLS
 ])]
-AC_SUBST(CAP_LIBS)
 )
