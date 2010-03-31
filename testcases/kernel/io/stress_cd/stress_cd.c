@@ -222,7 +222,7 @@ int read_data (int num, unsigned long cksum)
 	   printf("\tThread [%d]: read_data()\n", num);
 
 	if ((fd = open (file, O_RDONLY, NULL)) < 0)
-	   sys_error ("open failed", __LINE__);
+	   sys_error ("open failed /dev/cdrom", __LINE__);
 
         buffer = (char *) malloc (sizeof(char) * bufSize);
 	assert (buffer);
