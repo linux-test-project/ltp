@@ -23,7 +23,7 @@ SRC = rtc-test.c
 
 
 all: $(SRC)
-       $(CC) $(SRC) $(CFLAGS) $(LIBS) -o rtc-test
+	$(CC) $(SRC) $(CFLAGS) $(LIBS) -o rtc-test
 
 clean:
-       rm -f rtc-test
+	rm -f rtc-test
