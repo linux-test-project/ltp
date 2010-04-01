@@ -1,4 +1,1182 @@
-LTP-20100228
+LTP-20100331
+
+commit f269fc8247563f3fe4c412fcd8fc6522d8a34753
+Author: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
+Date:   Wed Mar 31 18:48:05 2010 +0530
+
+./runltp -f fs_readonly fails with:
+
+wc: /opt/ltp/testscripts/fs_ro_tests: No such file or directory
+TDIR is /tmp/fs19258/dir2-bound
+seq: missing operand
+...
+<<<test_end>>>
+INFO: ltp-pan reported all tests PASS
+
+This patch fixes the problem.
+
+Signed-off-by: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
+
+commit c58cf0cff52cc72179c6fb4303509a3f2db19945
+Author: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
+Date:   Wed Mar 31 15:30:14 2010 +0530
+
+cgroup_fj_release_agent is not getting installed as it does not end with
+*.sh.
+
+And
+
+Other fix is about the indentation of rtc device driver
+testcases
+
+Signed-off-by: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
+
+Commit: 566d1af5a7111408601ea6cb64218585bee8d04a
+Date:   Thu, 25 Mar 2010 20:04:07 +0530
+
+Merge commit '391e757d43b3ac33a4a435e319ee77b1daa6da76'
+
+Changed Files:
+
+Commit: 391e757d43b3ac33a4a435e319ee77b1daa6da76
+Date:   Tue, 23 Mar 2010 20:07:34 +0530
+
+Fix the proper return for testcase.
+Reported By: Srinivasa R Chamarthy <schamart@linux.vnet.ibm.com>
+Signed-off By: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
+
+Changed Files:
+
+testcases/kernel/controllers/cgroup_fj/run_cgroup_test_fj.sh
+
+Commit: 008f0d2c45d52af059d7981685921fc53d7354bf
+Date:   Tue, 23 Mar 2010 20:05:26 +0530
+
+These warning will appear when HAVE_LIBCAP is not defined.
+c.c: In function ‘main’:
+c.c:28: warning: unused variable ‘ret’
+c.c:27: warning: unused variable ‘caps2’
+c.c:27: warning: unused variable ‘caps’
+
+Signed-off By: Rishikesh K Rajak<risrajak@linux.vnet.ibm.com>
+
+Changed Files:
+
+testcases/kernel/security/filecaps/c.c
+
+Commit: b72a24c9eb339841a0c4b82d384a5b3ba10c9ecb
+Date:   Tue, 23 Mar 2010 14:26:21 +0530
+
+Merge branches 'maint' and 'master'
+
+Changed Files:
+
+Commit: f102fd9735f01b4e2c9ae44f3c90d1a56d4d81f8
+Date:   Tue, 23 Mar 2010 14:20:36 +0530
+
+I have tested these on MIPS architecture and  reproduced infinite waiting situation after applying this patch. (with strace no issue found ex: #strace ./8-1.test) As you said there may be issues in MIPS-POSIX library. it may take some time to fix these issues or may not be fixed. However, I’ll discuss this issue with MIPS folks in different thread.
+ATM, my patch is not a good idea for MIPS architectures.
+So, after your comments I have modified my patch and tested.
+Here in this latest patch i did not change any thing regarding while loop.
+I replaced sleep() in an appropriate place.
+It is working fine on X86, ARM and MIPS.
+
+Signed-off-by: Naresh Kamboju < naresh.kernel@gmail.com >
+Signed-off-by: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
+
+Changed Files:
+
+testcases/open_posix_testsuite/conformance/interfaces/sem_post/8-1.c
+
+Commit: 7ad24180d690306e129b84d49806f9f176a28d57
+Date:   Tue, 23 Mar 2010 14:19:01 +0530
+
+while running i found some unwanted messages and fixed those. You can Ack if it is correct fix.
+===== error log =====
+Running in:
+cp: cannot stat `/opt/ltp/testcases/bin/print_caps': No such file or directory
+mkfifo: cannot create fifo `caps_fifo': File exists
+cap_sys_admin tests
+==== error log ======
+
+Signed-off-by: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
+
+Changed Files:
+
+testcases/kernel/security/filecaps/filecapstest.sh
+
+Commit: 2df915dc1da7c5d92e03856095d3f66601178e58
+Date:   Mon, 22 Mar 2010 13:50:11 +0530
+
+Revert "I have found abnormal behavior of sem_post/8-1.c test case under posix."
+This reverts commit d40fd32af0d0ad7713b0cf6cd23daf1ee639d479.
+
+Signed-off-by: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
+
+Changed Files:
+
+.gitignore
+
+Commit: c65b70531c8d383a957654ad5179cb302b405a3b
+Date:   Mon, 22 Mar 2010 13:38:45 +0530
+
+Remaining patch for new file addition for commit:6e3dd83d9f575d98d76b8b3f642ad6e8793dbdfc
+
+Changed Files:
+
+m4/ltp-prctl.m4
+testcases/kernel/security/filecaps/c.c
+
+Commit: 95a376d4e50acd0c90bf749060a1974338a082a9
+Date:   Mon, 22 Mar 2010 12:07:05 +0530
+
+As pointed out by Cheng Shun Xia one of open posix conformace tests is testing return value from sigset(SIGCHLD, SIG_HOLD) and expect this value to be SIG_HOLD, however this is true only if SIGCHLD is already blocked so we must ensure that. Patch is attached.
+Signed-off-by: Cyril Hrubis chrubis@suse.cz
+Signed-off-by: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
+
+Changed Files:
+
+testcases/open_posix_testsuite/conformance/interfaces/sigset/8-1.c
+
+Commit: 6e3dd83d9f575d98d76b8b3f642ad6e8793dbdfc
+Date:   Mon, 22 Mar 2010 12:04:09 +0530
+
+Here's an attempt at fixing up and simplifying the autoconf for detecting libcap and prctl support.  After this, make autotools etc work fine on my f12 system, and runltp -f cap_bounds passes. the filecaps tests refuse to run claiming to be unable to find setcap, which I'll worry about next week.
+(I'm sure there is an AC_ macro for finding a command)
+
+And second patch :
+
+Remove the run-time checks and just have autoconf check for
+libcap and setcap presence.
+
+After this, filecaps tests compile, install, and pass on f10 at least.
+
+Signed-off-by: Serge E. Hallyn <serue@us.ibm.com>
+Signed-off-by: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
+
+Changed Files:
+
+configure.ac
+m4/ltp-cap.m4
+testcases/kernel/security/Makefile
+testcases/kernel/security/cap_bound/cap_bounds_r.c
+testcases/kernel/security/cap_bound/cap_bounds_rw.c
+testcases/kernel/security/cap_bound/cap_bset_inh_bounds.c
+testcases/kernel/security/cap_bound/check_pe.c
+testcases/kernel/security/cap_bound/dummy.c
+testcases/kernel/security/cap_bound/exec_with_inh.c
+testcases/kernel/security/cap_bound/exec_without_inh.c
+testcases/kernel/security/filecaps/check_simple_capset.c
+testcases/kernel/security/filecaps/checkforfilecaps.sh
+testcases/kernel/security/filecaps/checkforlibcap.sh
+testcases/kernel/security/filecaps/filecapstest.sh
+testcases/kernel/security/filecaps/inh_capped.c
+testcases/kernel/security/filecaps/print_caps.c
+testcases/kernel/security/filecaps/verify_caps_exec.c
+
+Commit: 96a4822d72478abce6dceabc816f658ba4ded0d3
+Date:   Mon, 22 Mar 2010 11:53:21 +0530
+
+Merge branches 'next' and 'master'
+
+Changed Files:
+
+Commit: c700433fe26d24b975bf241668a9701548e6c21d
+Date:   Mon, 22 Mar 2010 11:16:51 +0530
+
+Attached patch fixes possible buffer oveflow in sem_getvalue tests (the buffer overflow happens when getpid() returns number that couldn't fit into buffer) and also cleans coding style.
+Signed-off-by: Cyril Hrubis chrubis@suse.cz
+Acked-by: Garrett Cooper <yanegomi@gmail.com>
+
+Signed-off-by: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
+
+Changed Files:
+
+testcases/open_posix_testsuite/conformance/interfaces/sem_getvalue/1-1.c
+testcases/open_posix_testsuite/conformance/interfaces/sem_getvalue/2-1.c
+testcases/open_posix_testsuite/conformance/interfaces/sem_getvalue/2-2.c
+testcases/open_posix_testsuite/conformance/interfaces/sem_getvalue/4-1.c
+testcases/open_posix_testsuite/conformance/interfaces/sem_getvalue/5-1.c
+
+Commit: 4d574b9f3c82a58d88b97e201ac49cddf7bc5c24
+Date:   Mon, 22 Mar 2010 10:43:41 +0530
+
+Merge branch 'next' of ssh://ltp.git.sourceforge.net/gitroot/ltp/ltp-dev into next
+
+Changed Files:
+
+Commit: e7ed287c04bef2108fa544b0b86629e554403970
+Date:   Mon, 22 Mar 2010 10:42:05 +0530
+
+This commit contains Linux RTC device driver test cases. Currently RTC read test, Alarm test and Update interrupts tests are supported.
+Tested-by: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
+Signed-off-by: Silesh C V <Silesh.Vellattu@lntinfotech.com>
+
+Changed Files:
+
+testcases/kernel/device-drivers/rtc/Makefile
+testcases/kernel/device-drivers/rtc/README
+testcases/kernel/device-drivers/rtc/rtc-test.c
+
+Commit: 965127e99f1c3e4035a3de621ca0c295de14448b
+Date:   Mon, 15 Mar 2010 11:53:31 +0530
+
+Merge branches 'pu' and 'maint' into maint
+
+Changed Files:
+
+Commit: 0a52859d55cf93cdd310ec678868cb4d10e80728
+Date:   Mon, 15 Mar 2010 11:50:53 +0530
+
+Adding a wordy informationi, 2005 here represents as year not version of kernels.
+Though we need to work on this testcase to provide under TCONF.
+
+Signed-off-by: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
+
+Changed Files:
+
+testcases/network/multicast/mc_cmds/mc_cmds
+
+Commit: d05498f44de5d3e542b2031b458d84e907604728
+Date:   Sat, 13 Mar 2010 12:50:13 +0530
+
+Merge branches 'master' and 'pu' into pu
+
+Changed Files:
+
+Commit: 2784e9a6e36cacad4192f41a8c9044a85428ed27
+Date:   Sat, 13 Mar 2010 12:49:29 +0530
+
+Merge branches 'master' and 'maint' into maint
+
+Changed Files:
+
+Commit: b80fdefbd1843484e5a3ccc3d5748fee5b4cd1f7
+Date:   Sat, 13 Mar 2010 12:47:38 +0530
+
+Merge branches 'master' and 'next' into next
+
+Changed Files:
+
+Commit: 00c8b3450d151482e9f7424224fc8a64bff27fdd
+Date:   Wed, 10 Mar 2010 20:29:15 -0800
+
+Merge branch 'master' of ssh://yaberauneya@ltp.git.sourceforge.net/gitroot/ltp/ltp-dev
+
+Changed Files:
+
+Commit: a25f31b6f0a774b75ad2bf664f84ff0500086785
+Date:   Wed, 10 Mar 2010 20:28:33 -0800
+
+Update TODO with note about needing to replace pushd and popd logic in a few tests.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+TODO
+
+Commit: 007dce57f645ad796f8cb60a13de936ac04fd1e8
+Date:   Wed, 10 Mar 2010 20:26:15 -0800
+
+Hi,
+I found following problem about "memcg_control" test.
+---------
+/opt/ltp/testcases/bin/memcg_control_test.sh: line 30: [: : integer
+expression expected
+----------
+
+This happens because of following process.
+[ memcg_control_test.sh: line 30 ]
+---------
+if [ "$(grep -w memory /proc/cgroups | cut -f4)" -ne "1" ]; then
+       echo "WARNING:"
+       echo "Either kernel does not support memory resource controller or
+feature not ena
+bled"
+       echo "Skipping all memcg_control testcases...."
+       exit 0
+fi
+---------
+
+"$(grep -w memory /proc/cgroups | cut -f4)" can't comparable with "1"
+if "$(grep -w memory /proc/cgroups | cut -f4)" = nothing.
+
+How about fixing like the other "memcg" tests?
+
+Signed-off-by: Yuki Yao<y_yao@ryobi.co.jp>
+Acked-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/controllers/memcg/control/memcg_control_test.sh
+
+Commit: a3bb7abd2c1fb20dc4d93bef9cda2980f4339a6f
+Date:   Wed, 10 Mar 2010 18:34:57 +0530
+
+Merge branches 'next' and 'master'
+
+Changed Files:
+
+Commit: 737694964966bcf7a807b335d51923ee9c9c27a5
+Date:   Wed, 10 Mar 2010 18:32:35 +0530
+
+To run filecap test, checkforlibcap.sh file is required to be there in /opt/ltp/testcases/bin
+Otherwise you will get this error when you run filecap test.
+
+>>>>
+/opt/ltp/testcases/bin/filecapstest.sh: line 22: checkforlibcap.sh: command not found
+<<<<
+
+Signed-off-by: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
+
+Changed Files:
+
+testcases/kernel/security/filecaps/Makefile
+
+Commit: 615e1e37de053855b6bd56bae8b00d8a17133f8a
+Date:   Wed, 10 Mar 2010 11:05:40 +0530
+
+Merge branches 'master' and 'pu' into pu
+
+Changed Files:
+
+Commit: b8ed5460176838d9b714dddbc17685983b4a8b9b
+Date:   Wed, 10 Mar 2010 11:03:55 +0530
+
+Merge branches 'master' and 'maint' into maint
+
+Changed Files:
+
+Commit: ce944320bea9e3d7044a36c64ef2e1719312370d
+Date:   Wed, 10 Mar 2010 11:03:42 +0530
+
+Merge branches 'master' and 'next' into next
+
+Changed Files:
+
+Commit: 1a5506c97dcfda0bd16f83ca855bb633c47eea4c
+Date:   Wed, 10 Mar 2010 11:01:47 +0530
+
+Fix make filed,, reported by Shi Weihua <shiwh@cn.fujitsu.com> It was my bad :( .
+Signed-off-by: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
+
+Changed Files:
+
+testcases/kernel/containers/Makefile
+
+Commit: 48c52fcd4e7668bc36bbe080f53462d410712b69
+Date:   Wed, 10 Mar 2010 10:00:22 +0530
+
+Instead of LIBS, it should be LDLIBS in container/Makefile
+Signed-off-by: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
+
+Changed Files:
+
+testcases/kernel/containers/Makefile
+
+Commit: c962f51674b971496e14ac4be0cc75da98b75fca
+Date:   Tue, 9 Mar 2010 21:53:25 +0530
+
+Testing for post-receive-email
+Signed-off-by: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
+
+Changed Files:
+
+TODO
+
+Commit: 17905ceabf2dc20e978dfa4ea3682197ad01bf9a
+Date:   Tue, 9 Mar 2010 14:11:41 +0530
+
+Merge branches 'next' and 'master'
+
+Changed Files:
+
+Commit: bdfe0b2a9dd720c3013225cc4aa1628e77888b24
+Date:   Tue, 9 Mar 2010 14:05:46 +0530
+
+Adding check_for_unshare.c file and linking the porper lib.
+Signed-off-by: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
+Reported-By: Shi Weihua <shiwh@cn.fujitsu.com>
+
+Changed Files:
+
+testcases/kernel/containers/Makefile
+testcases/kernel/containers/check_for_unshare.c
+
+Commit: 716d29883b11107c32313b1836bea447fecbaf1e
+Date:   Tue, 9 Mar 2010 12:48:53 +0530
+
+Quick fix for build failure with 8th Mar master tree.
+Getting compilation error as:
+==================================================================
+buffer.c: In function ‘evbuffer_add_printf’:
+buffer.c:96: warning: implicit declaration of function ‘vasprintf’
+buffer.c:100: warning: pointer targets in passing argument 2 of ‘evbuffer_add’ differ in signedness
+gcc -DHAVE_CONFIG_H -I. -I. -I. -Icompat    -Wall -g -O2 -c evbuffer.c
+gcc -DHAVE_CONFIG_H -I. -I. -I. -Icompat    -Wall -g -O2 -c select.c
+gcc -DHAVE_CONFIG_H -I. -I. -I. -Icompat    -Wall -g -O2 -c poll.c
+gcc -DHAVE_CONFIG_H -I. -I. -I. -Icompat    -Wall -g -O2 -c epoll.c
+gcc -DHAVE_CONFIG_H -I. -I. -I. -Icompat    -Wall -g -O2 -c signal.c
+rm -f libevent.a
+ar cru libevent.a event.o buffer.o evbuffer.o select.o poll.o epoll.o signal.o
+ar: -u: (PROGRAM ERROR) Option should have been recognized!?
+Try `ar --help' or `ar --usage' for more information.
+make[2]: *** [libevent.a] Error 64
+make[2]: Leaving directory `/root/ltp-dev/testcases/kernel/syscalls/libevent'
+make[1]: *** [all-recursive] Error 1
+make[1]: Leaving directory `/root/ltp-dev/testcases/kernel/syscalls/libevent'
+make: *** [all-recursive-am] Error 2
+:~/ltp-dev/testcases/kernel/syscalls/libevent #
+=================================================================
+
+Signed-off-by: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
+
+Changed Files:
+
+testcases/kernel/syscalls/libevent/Makefile.in
+
+Commit: 58854395050b8a3bb2fa4e5e4401546925f6aad8
+Date:   Tue, 9 Mar 2010 12:24:47 +0530
+
+Commenting "make all" in run_freezer.sh file as it is stopping to run the freezer testcase
+Signed-off By: Rishikesh K Rajak<risrajak@linux.vnet.ibm.com>
+
+Changed Files:
+
+testcases/kernel/controllers/freezer/run_freezer.sh
+
+Commit: 886918830ae73a7f4b5cc2d9bf8554ee9f393ed8
+Date:   Tue, 9 Mar 2010 12:07:48 +0530
+
+Merge branches 'master' and 'next' into next
+
+Changed Files:
+
+Commit: e8e3c7598b82b54a7770c48a2422d5d6fa127045
+Date:   Tue, 9 Mar 2010 12:04:03 +0530
+
+Merge branches 'master' and 'maint' into maint
+
+Changed Files:
+
+Commit: 63f0a8f554d28b28b207f41e42182e1b789333b6
+Date:   Tue, 9 Mar 2010 12:00:53 +0530
+
+libcgroup_freezer , pushd/popd removal.
+>     I went over the libcgroup_freezer testcase and there are a number
+> of areas which use pushd / popd. I realize this was for ease-of-use,
+> but pushd / popd aren't functional built-ins with busybox and so the
+> testcases fail on Debian based distros. Could you please fix this?
+> Thanks,
+> -Garrett
+
+I ported and tested your patch on top of latest git. And it works fine.
+
+Tested & Ported-By: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
+Reported-By :Garrett Cooper <yanegomi@gmail.com>
+Signed-off By: Matt Helsley <matthltc@linux.vnet.ibm.com>
+
+Changed Files:
+
+testcases/kernel/controllers/freezer/libcgroup_freezer
+
+Commit: 71256e18bb4d21d1b82c4031a1983cb72ef215aa
+Date:   Mon, 8 Mar 2010 08:53:05 -0800
+
+Clean up comment to note the actual problem. It was confusing before.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/syscalls/libevent/buffer.c
+
+Commit: 6d722f4ff2317c60f9fff1287af5d41cddca937e
+Date:   Mon, 8 Mar 2010 08:48:14 -0800
+
+Use $TMP (which defaults to /tmp) rather than /tmp as $TMP can be parameterized via runltp, et all.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/controllers/freezer/libcgroup_freezer
+
+Commit: fb5821d2af94dd631dbd0ccfa80df1cf104f9a1f
+Date:   Mon, 8 Mar 2010 08:42:23 -0800
+
+Replace pushd / popd with proper cd logic as busybox doesn't have pushd / popd.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/commands/unzip/unzip_tests.sh
+
+Commit: 4a1e63a8acc3f77459f6e308fc791f4205e027fd
+Date:   Mon, 8 Mar 2010 08:00:46 -0800
+
+Fix _GNU_SOURCES macro requirement error.
+It appears that there's a bug in our version of libevent where the requirement that _GNU_SOURCES be set prior to stdio being #include'd for vasprintf(3) wasn't being required until recent versions of glibc:
+
+...
+buffer.c: In function ‘evbuffer_add_printf’:
+buffer.c:91: warning: implicit declaration of function ‘vasprintf’
+buffer.c:95: warning: pointer targets in passing argument 2 of
+‘evbuffer_add’ differ in signedness
+rm -f libevent.a
+ar cru libevent.a event.o buffer.o evbuffer.o select.o poll.o epoll.o
+signal.o
+ar: -u: (PROGRAM ERROR) Option should have been recognized!?
+Try `ar --help' or `ar --usage' for more information.
+make[4]: *** [libevent.a] Error 64
+make[4]: Leaving directory
+`/root/ltp-dev/testcases/kernel/syscalls/libevent'
+make[3]: *** [libevent/lib/libevent.a] Error 2
+make[3]: Leaving directory `/root/ltp-dev/testcases/kernel/syscalls'
+make[2]: *** [all] Error 2
+make[2]: Leaving directory `/root/ltp-dev/testcases/kernel'
+make[1]: *** [all] Error 2
+make[1]: Leaving directory `/root/ltp-dev/testcases'
+make: *** [testcases-all] Error 2
+mls41:~/ltp-dev # uname -a
+Linux mls41 2.6.32.8-0.3-default #1 SMP 2010-02-22 16:22:25 +0100 x86_64
+x86_64 x86_64 GNU/Linux
+mls41:~/ltp-dev #
+
+So let's fix this nasty issue in a nasty way, see whether or not the problem still exists upstream, resolve there if necessary and sync the new version / change back down here.
+
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/syscalls/libevent/buffer.c
+
+Commit: 223e12ee3f7fdb525746462747954552f0e07538
+Date:   Mon, 8 Mar 2010 07:46:02 -0800
+
+Fix install for cgroup_fj_testcases.
+Turns out this script wasn't being installed properly, and thus its testcases were failing; fix by suffixing with .sh
+
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/controllers/cgroup_fj/cgroup_fj_testcases
+testcases/kernel/controllers/cgroup_fj/cgroup_fj_testcases.sh
+
+Commit: 49010e502a74cb6461fe9c64c90dd878c8edd398
+Date:   Mon, 8 Mar 2010 07:42:52 -0800
+
+Replace pushd // popd with cd calls.
+Busybox doesn't have a concept of the pushd // popd builtins available in bash and tcsh, so let's convert the calls to cd. This is just something I noticed after executing this test, and I know there are other locations that need to be cleaned up like this in the tree...
+
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/controllers/memcg/control/memcg_control_test.sh
+
+Commit: 9116567e3fd8646442f85518e6698ee0fef024a4
+Date:   Sun, 7 Mar 2010 14:32:56 -0800
+
+Fix nobody group check and change default uid/gid for nobody.
+This was failing unnecessarily on Ubuntu because Debian uses nogroup instead of nobody for an anonymous group.
+
+Also change the default gid so that it's 65534, not 99. Standard copies of Unix (sans Redhat and Solaris apparently) use gid -> 65534 for nobody:
+
+FreeBSD:
+
+$ id nobody
+uid=65534(nobody) gid=65534(nobody) groups=65534(nobody)
+
+RHEL 4.6:
+
+$ id nobody
+uid=99(nobody) gid=99 groups=99
+
+Solaris:
+
+% id nobody
+uid=60001(nobody) gid=60001(nobody)
+
+Ubuntu:
+
+uid=65534(nobody) gid=65534(nogroup) groups=65534(nogroup)
+
+For grins, OSX Leopard just uses some whacky UINT32_MAX value for nobody XD...
+
+$ id nobody
+uid=4294967294(nobody) gid=4294967294(nobody) groups=4294967294(nobody)
+
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+IDcheck.sh
+
+Commit: 91ec53d1a811594976df4811a43113a0913da222
+Date:   Sun, 7 Mar 2010 14:19:11 -0800
+
+Correct setuid() logic for "nobody" uid.
+The problem with the previous logic is that it was incorrectly hardcoding uid_t -> 99 for nobody, and thus on systems with nobody -> 65535, this is incorrect. Use getpwnam(3) to derive the correct value for the nobody's uid_t.
+
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/syscalls/link/link06.c
+testcases/kernel/syscalls/link/link07.c
+
+Commit: 373c91c072a7a85dfe2719dc8dee4e8cdd066d94
+Date:   Sun, 7 Mar 2010 13:54:38 -0800
+
+Remove unused variable $str based on closer inspection via git commit history.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/io/aio/aio02/runfstests.sh
+
+Commit: 50b265b120a1fad3ec6fa7a6d3522ca66017368e
+Date:   Sun, 7 Mar 2010 13:51:33 -0800
+
+Fix style in runfstests.sh
+1. Indentation was off (was using tabs and spaces ; standardize on tabs like we should).
+2. Branch statements like case ... esac or if ... then ... fi were being inlined with statements on the following line, which was making things harder to read.
+
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/io/aio/aio02/runfstests.sh
+
+Commit: 4a03d3d7f55d2b0fdbb47d036bfd2e33b7e61a3d
+Date:   Sun, 7 Mar 2010 13:38:20 -0800
+
+Hi All,
+I have observed that, while executing the io tests in LTP, the 'aio02'
+test failed to get executed:
+
+--------------------------------------------------------------------------------------------------
+$./runtests -f  io
+
+Running tests.......
+<<<test_start>>>
+tag=aio01 stime=1267980185
+cmdline="aio01"
+contacts=""
+analysis=exit
+<<<test_output>>>
+aio01       1  TPASS  :  Test 1: 10 writes in   0.000102 sec
+aio01       2  TPASS  :  Test 2: 10 reads in   0.000056 sec
+aio01       3  TPASS  :  Test 3: 10 prep,writes in   0.000070 sec
+aio01       4  TPASS  :  Test 4: 10 prep,reads in   0.000051 sec
+aio01       5  TPASS  :  Test 5: 10 reads and writes in   0.000108 sec
+aio01       6  TPASS  :  Test 6: 10 read,write,verify in 0.000108 sec
+<<<execution_status>>>
+initiation_status="ok"
+duration=0 termination_type=exited termination_id=0 corefile=no
+cutime=0 cstime=0
+<<<test_end>>>
+<<<test_start>>>
+tag=aio02 stime=1267980185
+cmdline="runfstests.sh aio_tio"
+contacts=""
+analysis=exit
+<<<test_output>>>
+Starting the Tests
+incrementing stop
+Test run starting at  Sun Mar 7 22:13:05 IST 2010
+Missing the test program. You must pass a test path/name for testing
+usage: runfstests.sh [ -a test name ]
+
+example: runfstests.sh -a cases/aio_tio
+
+<<<execution_status>>>
+initiation_status="ok"
+duration=0 termination_type=exited termination_id=0 corefile=no
+cutime=0 cstime=0
+<<<test_end>>>
+INFO: ltp-pan reported all tests PASS
+LTP Version: LTP-20100228
+
+-------------------------------------------------------------------------------------------------------
+
+The "aio02_io_runtest.patch" makes the necessary changes in  "io" file
+in "runtest" directory.
+
+Signed-off-by: Maxin B. John <maxin.john@gmail.com>
+Acked-by: Garrett Cooper <gcooper@orangebox.local>
+
+Changed Files:
+
+runtest/io
+
+Commit: 31d0645afe4dbe63d16e9c8697bd03baea9dfd63
+Date:   Sun, 7 Mar 2010 13:35:57 -0800
+
+Hi All,
+I have observed that, while executing the io tests in LTP, the 'aio02'
+test failed to get executed:
+
+--------------------------------------------------------------------------------------------------
+$./runtests -f  io
+
+Running tests.......
+<<<test_start>>>
+tag=aio01 stime=1267980185
+cmdline="aio01"
+contacts=""
+analysis=exit
+<<<test_output>>>
+aio01       1  TPASS  :  Test 1: 10 writes in   0.000102 sec
+aio01       2  TPASS  :  Test 2: 10 reads in   0.000056 sec
+aio01       3  TPASS  :  Test 3: 10 prep,writes in   0.000070 sec
+aio01       4  TPASS  :  Test 4: 10 prep,reads in   0.000051 sec
+aio01       5  TPASS  :  Test 5: 10 reads and writes in   0.000108 sec
+aio01       6  TPASS  :  Test 6: 10 read,write,verify in 0.000108 sec
+<<<execution_status>>>
+initiation_status="ok"
+duration=0 termination_type=exited termination_id=0 corefile=no
+cutime=0 cstime=0
+<<<test_end>>>
+<<<test_start>>>
+tag=aio02 stime=1267980185
+cmdline="runfstests.sh aio_tio"
+contacts=""
+analysis=exit
+<<<test_output>>>
+Starting the Tests
+incrementing stop
+Test run starting at  Sun Mar 7 22:13:05 IST 2010
+Missing the test program. You must pass a test path/name for testing
+usage: runfstests.sh [ -a test name ]
+
+example: runfstests.sh -a cases/aio_tio
+
+<<<execution_status>>>
+initiation_status="ok"
+duration=0 termination_type=exited termination_id=0 corefile=no
+cutime=0 cstime=0
+<<<test_end>>>
+INFO: ltp-pan reported all tests PASS
+LTP Version: LTP-20100228
+
+-------------------------------------------------------------------------------------------------------
+
+The "aio02_io_runtest.patch" makes the necessary changes in  "io" file
+in "runtest" directory.
+
+Signed-off-by: Maxin B. John <maxin.john@gmail.com>
+Acked-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/io/aio/aio02/runfstests.sh
+
+Commit: 5f174e6c7e31f7f45717d5fc873c6ed2638753d7
+Date:   Sat, 6 Mar 2010 20:03:43 -0800
+
+Well obviously that test didn't trigger anything with the precommit hook -_-...
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+foo
+
+Commit: 44c0b0cbc597496bd2b5373a7361d37f3612a377
+Date:   Sat, 6 Mar 2010 19:45:59 -0800
+
+Testing..
+
+Changed Files:
+
+foo
+
+Commit: f95875a852db24d449b10627dc5006a95c8a4db9
+Date:   Fri, 5 Mar 2010 02:44:39 -0800
+
+Remove ./ suffix in usage message and examples.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+runltp
+runltplite.sh
+
+Commit: b3fb75df0076a12276071ff06421ee41e415d01d
+Date:   Fri, 5 Mar 2010 02:41:49 -0800
+
+Clean up some logic.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/hotplug/cpu_hotplug/include/hotplug.fns
+testcases/kernel/hotplug/cpu_hotplug/runtests.sh
+
+Commit: baf5c4c8412373f527431b55590d88066fd5afce
+Date:   Fri, 5 Mar 2010 02:38:56 -0800
+
+... Finish off cleanup:
+1. POSIXify.
+2. Whitespace cleanup.
+3. Convert to tst_resm(1) standard variables and reporting.
+4. Prune away some complicated logic.
+
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/hotplug/cpu_hotplug/functional/hotplug01.sh
+testcases/kernel/hotplug/cpu_hotplug/functional/hotplug02.sh
+testcases/kernel/hotplug/cpu_hotplug/functional/hotplug03.sh
+testcases/kernel/hotplug/cpu_hotplug/functional/hotplug04.sh
+testcases/kernel/hotplug/cpu_hotplug/functional/hotplug06.sar.sh
+testcases/kernel/hotplug/cpu_hotplug/functional/hotplug06.sh
+testcases/kernel/hotplug/cpu_hotplug/functional/hotplug06.top.sh
+testcases/kernel/hotplug/cpu_hotplug/functional/hotplug07.sh
+
+Commit: 08941a3fa41efe7a832ac356833c2c389ab71050
+Date:   Fri, 5 Mar 2010 01:37:03 -0800
+
+1. POSIXify. 2. Cleanup space.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/hotplug/cpu_hotplug/functional/hotplug04.sh
+
+Commit: 7edded454a877368665cd1d450161a4442403340
+Date:   Fri, 5 Mar 2010 01:33:41 -0800
+
+1. POSIXify. 2. Clean up whitespace. 3. Make more relative-path agnostic.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/hotplug/cpu_hotplug/functional/hotplug03.sh
+
+Commit: b7306d6267231eca3b751167f9ea3651cbdd134d
+Date:   Fri, 5 Mar 2010 00:58:28 -0800
+
+1. POSIXify. 2. Convert over to tst_resm(1), like hotplug01.sh
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/hotplug/cpu_hotplug/functional/hotplug02.sh
+
+Commit: 37ef4019e587c57ea70b0eb3e4c55eb5aa863455
+Date:   Fri, 5 Mar 2010 00:51:18 -0800
+
+1. POSIXify 2. Clean up test. 3. Make more path agnostic.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/hotplug/cpu_hotplug/functional/hotplug01.sh
+
+Commit: a2d684889450c2cb5cea6ea6adae0a5ce3efad9d
+Date:   Fri, 5 Mar 2010 00:09:35 -0800
+
+Update TODO with some items that need to be rewritten.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+TODO
+
+Commit: 039e4bbd522168a5145d236faa4e13f402037390
+Date:   Thu, 4 Mar 2010 19:01:36 +0530
+
+Merge branches 'master' and 'next' into next
+
+Changed Files:
+
+Commit: c0e37ca6731cada152573522d48d08513029e44a
+Date:   Thu, 4 Mar 2010 00:22:27 -0800
+
+1. Add default kernel source dir as /usr/src/linux. 2. Clean up indentation.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/hotplug/cpu_hotplug/tools/do_kcompile_loop
+
+Commit: a3bd68ba8e3e22f906d2bdb10c7e3f1b1c99d743
+Date:   Thu, 4 Mar 2010 00:20:46 -0800
+
+Fix indentation.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/hotplug/cpu_hotplug/tools/do_spin_loop
+
+Commit: ca0d5a5723863c8197fffa42aab5598cd22e4259
+Date:   Thu, 4 Mar 2010 00:20:13 -0800
+
+POSIXify.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/hotplug/cpu_hotplug/tools/do_disk_write_loop
+
+Commit: 48ae82cefc1e4b19834b5d52ad42937303a18f92
+Date:   Thu, 4 Mar 2010 00:01:27 -0800
+
+All for parameterized $TMP.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/hotplug/cpu_hotplug/include/testsuite.fns
+
+Commit: b1b5563970f07e8130130c607855a4f96b41f701
+Date:   Wed, 3 Mar 2010 23:54:22 -0800
+
+Remove bashisms. Clean up.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/hotplug/cpu_hotplug/functional/hotplug04.sh
+
+Commit: 099b86b8c8cf67026eb0d07ef55805ec1cc4623f
+Date:   Wed, 3 Mar 2010 22:59:00 -0800
+
+Install in testcases/bin/cpu_hotplug to avoid collision with installed filenames.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/hotplug/cpu_hotplug/Makefile
+
+Commit: 354afd2f792ab051e60febf9314d93aca0d67b71
+Date:   Wed, 3 Mar 2010 22:57:24 -0800
+
+Make sure this can run wherever -- update the install path in the runtest file for cpu_hotplug...
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+runtest/cpuhotplug
+
+Commit: 84e0adcdb4f5be00a51d77fadf210355416f8544
+Date:   Wed, 3 Mar 2010 22:53:26 -0800
+
+Make alphabetical ordering more apparent by adding a comment.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/Makefile
+
+Commit: fed24575bdd713d89125830c97c2a865b2e5e92f
+Date:   Wed, 3 Mar 2010 22:52:12 -0800
+
+Fix order by properly alphabetizing it again.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/Makefile
+
+Commit: 87dadac27add4059d351c131a9eb138e9c5ca9da
+Date:   Wed, 3 Mar 2010 22:48:13 -0800
+
+Remove unnecessary variable set; all MAKE_TARGETS get added to INSTALL_TARGETS.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/hotplug/memory_hotplug/Makefile
+
+Commit: 909edbcfc9074fd44a1f3dcb980362c0b63df5ac
+Date:   Thu, 4 Mar 2010 11:52:21 +0530
+
+(cpu_hotplugin_makefile.patch) to execute cpuhotplugin test. I have observed that the 'hotplug' directory is not included in "testcases/kernel/Makefile". I have also created a Makefile in 'hotplug/cpu_hotplug' directory.
+After applying this patch, I have followed the usual ./configure;
+make; sudo make install steps and executed
+the cpuhotplug test and observed the below given output . It seems
+like the test execution is "not so good" in
+my machine. Your mileage may vary.
+
+Signed-off-by: Maxin B. John <maxin.john@gmail.com>
+Reviewed-By: Rishikesh K Rajak<risrajak@linux.vnet.ibm.com>
+
+ Please enter the commit message for your changes. Lines starting
+
+Changed Files:
+
+testcases/kernel/Makefile
+testcases/kernel/hotplug/cpu_hotplug/Makefile
+testcases/kernel/hotplug/memory_hotplug/Makefile
+
+Commit: d822fce8b5b1c353cc879070774875984cd44b2c
+Date:   Wed, 3 Mar 2010 22:29:54 +0530
+
+Merge branch 'next' of ssh://ltp.git.sourceforge.net/gitroot/ltp/ltp-dev
+
+Changed Files:
+
+Commit: ea7f641bc4389d7b93c329461533fe69e5263e45
+Date:   Wed, 3 Mar 2010 05:53:02 -0800
+
+Update ChangeLog.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+ChangeLog
+
+Commit: 3d6a7101e8e8fad797cb5dd79c77f7ac233b90e6
+Date:   Wed, 3 Mar 2010 05:52:31 -0800
+
+Remove overly complicated git log ChangeLog script.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+scripts/gitlog2changelog.py
+
+Commit: 4a930519a3c63d83bf5c24828bddfacde78279c7
+Date:   Wed, 3 Mar 2010 05:51:33 -0800
+
+Add a simpler git ChangeLog script.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+scripts/git2changelog.sh
+
+Commit: 29f9058ae39c9f51a4c6c8d5008947394382929c
+Date:   Wed, 3 Mar 2010 04:49:50 -0800
+
+Grab ChangeLog script from http://github.com/cryos/avogadro/raw/master/scripts/gitlog2changelog.py .
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+scripts/gitlog2changelog.py
+
+Commit: 4b3a324a31b57ce86b2354e62a3e847126a3d6cd
+Date:   Wed, 3 Mar 2010 04:42:42 -0800
+
+Note caveat about cpu_hotplug test needing to be run from the source tree directory.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+TODO
+
+Commit: b60acfe85c751a8996df7e9648e031a16b27fe15
+Date:   Wed, 3 Mar 2010 04:26:16 -0800
+
+Inspite of memcg kernel support being available, memcg_[functional|regression |stress] test script fails to execute with message
+"Either Kernel does not support for memory resource controller or feature not enabled"
+"Skipping all memcgroup testcases...."
+
+Fix the scripts to use proper if []; then .. fi statements.
+
+Signed-off-by : Sachin Sant <sachinp@in.ibm.com>
+
+Changed Files:
+
+testcases/kernel/controllers/memcg/functional/memcg_function_test.sh
+testcases/kernel/controllers/memcg/regression/memcg_regression_test.sh
+testcases/kernel/controllers/memcg/stress/memcg_stress_test.sh
+
+Commit: ca619b228f727108c38641f56b49833abc98508d
+Date:   Wed, 3 Mar 2010 15:05:23 +0530
+
+Revertin the commit d40fd32af0d0ad7713b0cf6cd23daf1ee639d479 for now.
+Will apply freshly once Naresh will provide new patch.
+
+Thanks
+Rishi
+
+Changed Files:
+
+testcases/open_posix_testsuite/conformance/interfaces/sem_post/8-1.c
+
+Commit: d40fd32af0d0ad7713b0cf6cd23daf1ee639d479
+Date:   Wed, 3 Mar 2010 12:31:25 +0530
+
+I have found abnormal behavior of sem_post/8-1.c test case under posix. This test case passes in some times and failed in many times :-(
+After my investigation found synchronization is missing between the
+child processes.
+Made a patch to fix this issue.
+
+Patch includes
+1.      Reverting back changes made by mreed on Sep 25 2006. Making sure
+child has been waiting for the lock (below Refs).
+2.      using sleep in while loop is not a good idea, so sleep is removed
+from while loop
+3.      For the synchronization I have added sleep before releasing the lock.
+
+After applying this patch I have tested this test case 1000 times continuously.
+All the times test case reported as Test Pass :-)
+
+Signed-off-by: Naresh Kamboju < naresh.kernel@gmail.com >
+
+Changed Files:
+
+testcases/open_posix_testsuite/conformance/interfaces/sem_post/8-1.c
+
+Commit: 08c16de673d332bb8ab2827818dbab1468a2eefe
+Date:   Wed, 3 Mar 2010 10:17:22 +0530
+
+I have observed that the 'createfile.c' in testcases/network/tcp_cmds/echo directory is not getting compiled and installed during the LTP build. The "echo_createfile.patch" makes the necessary changes in the Makefile.
+Signed-off-by: Maxin B. John <maxin.john@gmail.com>
+
+Changed Files:
+
+testcases/network/tcp_cmds/echo/Makefile
+
+Commit: 88a1dde39cc27bd9db20297c640376ef413a8aad
+Date:   Wed, 3 Mar 2010 09:55:54 +0530
+
+Merge branches 'master' and 'next' into next
+
+Changed Files:
+
+Commit: c65443529ee1ab84f98777cdd4827066f4a69c96
+Date:   Tue, 2 Mar 2010 21:46:29 +0530
+
+Inspite of memcg kernel support being available, memcg_[functional|regression |stress] test script fails to execute with message
+"Either Kernel does not support for memory resource controller or feature not enabled"
+"Skipping all memcgroup testcases...."
+
+Fix the scripts to use proper if []; then .. fi statements.
+
+Signed-off-by : Sachin Sant <sachinp@in.ibm.com>
+Acked-By & Tested-By: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
+
+Thanks
+Rishi
+
+Changed Files:
+
+testcases/kernel/controllers/memcg/functional/memcg_function_test.sh
+testcases/kernel/controllers/memcg/regression/memcg_regression_test.sh
+testcases/kernel/controllers/memcg/stress/memcg_stress_test.sh
+
+Commit: c288167e111d34d5146dbbe5ebb19c84153ee67b
+Date:   Mon, 1 Mar 2010 20:32:24 +0530
+
+Fixed the typo in changelog
+
+Changed Files:
+
+ChangeLog
+
+Commit: 45bfc17b467610d6fcda439c1c48916ed3370ddc
+Date:   Mon, 1 Mar 2010 20:08:58 +0530
+
+Merge ssh://ltp.git.sourceforge.net/gitroot/ltp/ltp-dev
+
+Changed Files:
 
 Commit: 4847120ca53436585fc86aba403628ae0fde8c92
 Date:   Mon, 1 Mar 2010 20:04:44 +0530
@@ -8,6 +1186,69 @@ Changes since 6thFeb to 28Feb 2010.
 Changed Files:
 
 ChangeLog
+
+Commit: c0b8157365beb18a627fe197be6ab111e8281e86
+Date:   Mon, 1 Mar 2010 14:21:09 +0530
+
+New testcase added by Naufal.
+These are the testcases I plan to implement (taken from
+http://workouts.foss.in/2009/index.php/Hacking_Linux_Kernel_Through_testing)
+
+1. Validate the upper limit imposed by the topmost hierarchy.
+
+2. Test the testcase no 1 for subgroups far below in hierarchy.
+
+3. A group has n siblings. They start consuming memory and the total
+increases to more than parent's limit. Check if the group with max memory
+consumption gets it's task killed.
+
+4. Write a test which uses lots of memory, reaches swap limits and ensure it
+gets killed.
+
+5. A task is running in a group which has a limit N on memory.limit_in_bytes
+but no limit on memory.memsw.limit_in_bytes. The system has swap memory in
+use and the task's memory consumption is >> N. Therefore the task should be
+using a big amount of swap memory(say M) > N. Try to set the
+memory.memsw.limit_in_bytes to a low value say N. It should fail to change
+the limits.
+
+6. In test no 5 instead of changing the mem+swap limits turn the swap off.
+Since the memory usage of the task is more than the current limits the task
+should be killed.
+
+The first testcase has been attached. Reimplemented using named pipes.
+
+Naufal
+
+Signed-off-by Mohamed Naufal Basheer <naufal11@gmail.com>
+
+Changed Files:
+
+runtest/controllers
+testcases/kernel/controllers/memcg/README
+testcases/kernel/controllers/memcg/control/Makefile
+testcases/kernel/controllers/memcg/control/mem_process.c
+testcases/kernel/controllers/memcg/control/memcg_control_test.sh
+
+Commit: e180e61b301cf49c9c7357706ecbcd57c99991a4
+Date:   Mon, 1 Mar 2010 11:34:29 +0530
+
+Reverting the commit id: 3bc8ecdb69b29436e2987173ffdd7244d8897942
+
+Changed Files:
+
+runtest/controllers
+testcases/kernel/controllers/memcg/README
+
+Commit: 4847120ca53436585fc86aba403628ae0fde8c92
+Date:   Mon, 1 Mar 2010 20:04:44 +0530
+
+Changes since 6thFeb to 28Feb 2010.
+
+Changed Files:
+
+ChangeLog
+LTP-20100228
 
 Commit: ede8524bff2068c78f1a1f8b8fe87b263a45a31a
 Date:   Sat, 27 Feb 2010 12:12:19 -0800

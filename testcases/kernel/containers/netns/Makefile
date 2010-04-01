@@ -24,7 +24,7 @@ top_srcdir		?= ../../../..
 include $(top_srcdir)/include/mk/testcases.mk
 include $(abs_srcdir)/../Makefile.inc
 
-INSTALL_TARGETS		:= *.sh
+INSTALL_TARGETS		:= *.sh container_ftp.pl
 
 MAKE_TARGETS		:= create_container crtchild crtchild_delchild \
 			   par_chld_ftp par_chld_ipv6 sysfsview two_children_ns
