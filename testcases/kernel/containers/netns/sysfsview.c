@@ -56,7 +56,7 @@ int main()
         exit(1);
     }
 
-    sprintf(script, "%s/testcases/kernel/containers/netns/parent_share.sh" , ltproot);
+    sprintf(script, "%s/testcases/bin/parent_share.sh" , ltproot);
 
     /* Parent should be able to view child sysfs and vice versa */
     ret = system(script);

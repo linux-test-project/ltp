@@ -85,10 +85,10 @@ int main()
         	exit(1);
     }
 
-    sprintf(child[0], "%s/testcases/kernel/containers/netns/child_1.sh" , ltproot);
-    sprintf(child[1], "%s/testcases/kernel/containers/netns/child_2.sh" , ltproot);
-    sprintf(par[0], "%s/testcases/kernel/containers/netns/parent_1.sh" , ltproot);
-    sprintf(par[1], "%s/testcases/kernel/containers/netns/parent_2.sh" , ltproot);
+    sprintf(child[0], "%s/testcases/bin/child_1.sh" , ltproot);
+    sprintf(child[1], "%s/testcases/bin/child_2.sh" , ltproot);
+    sprintf(par[0], "%s/testcases/bin/parent_1.sh" , ltproot);
+    sprintf(par[1], "%s/testcases/bin/parent_2.sh" , ltproot);
 
     /* Loop for creating two child Network Namespaces */
     for(i=0;i<2;i++) {
