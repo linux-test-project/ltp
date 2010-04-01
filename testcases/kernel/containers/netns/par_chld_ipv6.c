@@ -74,10 +74,8 @@ int main()
         tst_resm(TFAIL, "error while allocating mem");
         exit(1);
     }
-    sprintf(par, "%s/testcases/kernel/containers/netns/paripv6.sh" ,     \
-ltproot);
-    sprintf(child, "%s/testcases/kernel/containers/netns/childipv6.sh" , \
-ltproot);
+    sprintf(par, "%s/testcases/bin/paripv6.sh", ltproot);
+    sprintf(child, "%s/testcases/bin/childipv6.sh", ltproot);
 
     if ((pid = fork()) == 0) {
 
