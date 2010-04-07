@@ -34,7 +34,7 @@
 #include <sys/wait.h>
 #include "posixtest.h"
 
-#ifdef __FreeBSD__ || __NetBSD__ || __OpenBSD__ 
+#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
 #define BSD
 # include <sys/types.h>
 # include <sys/param.h>
