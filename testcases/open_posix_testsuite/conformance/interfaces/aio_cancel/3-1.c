@@ -35,8 +35,8 @@
 #include <fcntl.h>
 #include <string.h>
 #include <errno.h>
+#include <signal.h>
 #include <stdlib.h>
-#include <malloc.h>
 #include <aio.h>
 
 #include "posixtest.h"
