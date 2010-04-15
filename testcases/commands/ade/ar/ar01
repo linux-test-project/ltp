@@ -519,19 +519,19 @@ echo "-)19 SKIPPED due to binutils ar automatically adds a symbol."
 rm -rf $TCtmp/lib.a;cd $TCdat
 ar -cr $TCtmp/lib.a file0.in file2.in 
 crtest
-File1time=`ar -tv $TCtmp/lib.a | grep file0.in | cut -f2 -d: | cut -f1 -d" "`
-File2time=`ar -tv $TCtmp/lib.a | grep file2.in | cut -f2 -d: | cut -f1 -d" "`
+File1time=`ar -tv $TCtmp/lib.a | grep file0.in`
+File2time=`ar -tv $TCtmp/lib.a | grep file2.in`
 
 #sleep 5
 touch -c -t 201503030303.55 file0.in
 
 ar -ru $TCtmp/lib.a file0.in file2.in 2>&1 1>/dev/null
-File1time1=`ar -tv $TCtmp/lib.a | grep file0.in | cut -f2 -d: | cut -f1 -d" "`
-File2time2=`ar -tv $TCtmp/lib.a | grep file2.in | cut -f2 -d: | cut -f1 -d" "`
+File1time1=`ar -tv $TCtmp/lib.a | grep file0.in`
+File2time2=`ar -tv $TCtmp/lib.a | grep file2.in`
 
-if [ $File2time = $File2time2 ]
+if [ "$File2time" = "$File2time2" ]
 then
-	if [ $File1time = $File1time1 ]
+	if [ "$File1time" = "$File1time1" ]
 	then
     		TCRESULT=20
     		echo "FAIL - ar with -u flag failed"
