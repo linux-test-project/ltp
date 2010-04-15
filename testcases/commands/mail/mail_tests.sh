@@ -326,7 +326,7 @@ RC=0
 tst_resm TINFO "Test #5: Test that mail -b user@domain will"
 tst_resm TINFO "Test #5: blind carbon copy user@domain"
 
-# send mail to root and carbon copy mail_test 
+# send mail to root and blind carbon copy mail_test 
 mail -s "Test" root@localhost -c mail_test@localhost < \
 	$LTPTMP/tst_mail.in > $LTPTMP/tst_mail.out 2>&1
 if [ $? -ne 0 ]; then
