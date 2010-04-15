@@ -127,8 +127,7 @@ main(int ac, char **av)
 
 	/* Check number of hugepages */
 	if (get_no_of_hugepages() <= 0 || hugepages_size() <= 0)
-		tst_brkm(TBROK, cleanup, "Test cannot be continued owning to \
-				sufficient availability of Hugepages on the system");
+		tst_brkm(TCONF, cleanup, "Not enough available Hugepages");
 
 	/* Perform global setup for test */
 	setup();
