@@ -19,9 +19,8 @@
  *  4. Launch a thread which call sched_yield() and check that the counter has
  *     changed since the call.
  */
-#define LINUX
 
-#ifdef LINUX 
+#ifdef __linux__ 
 #define _GNU_SOURCE
 #endif
 
@@ -35,7 +34,8 @@
 #include <sys/wait.h>
 #include "posixtest.h"
 
-#ifdef BSD
+#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+#define BSD
 # include <sys/types.h>
 # include <sys/param.h>
 # include <sys/sysctl.h>
@@ -78,7 +78,7 @@ int get_ncpu() {
 	return ncpu;
 }
 
-#ifdef LINUX
+#ifdef __linux__
 int set_process_affinity(int cpu)
 {
 	int retval = -1;
@@ -131,7 +131,7 @@ int set_thread_affinity(int cpu)
 void * runner(void * arg) {
 	int i=0, nc;
 	long result = 0;
-#ifdef LINUX        
+#ifdef __linux__       
         set_thread_affinity(*(int *)arg);
         fprintf(stderr, "%ld bind to cpu: %d\n", pthread_self(), *(int*)arg);
 #endif
@@ -154,7 +154,7 @@ void * runner(void * arg) {
 }
 
 void * busy_thread(void *arg){
-#ifdef LINUX        
+#ifdef __linux__
         set_thread_affinity(*(int *)arg);
         fprintf(stderr, "%ld bind to cpu: %d\n", pthread_self(), *(int*)arg);
 #endif
@@ -170,7 +170,7 @@ void * busy_thread(void *arg){
 void buzy_process(int cpu){
         struct sched_param param;
 
-#ifdef LINUX        
+#ifdef __linux__        
         /* Bind to a processor */
         set_process_affinity(cpu);
         fprintf(stderr, "%d bind to cpu: %d\n", getpid(), cpu);

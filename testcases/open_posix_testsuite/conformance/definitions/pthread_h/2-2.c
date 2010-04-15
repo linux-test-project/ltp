@@ -11,6 +11,15 @@
 
 #include <pthread.h>
 
+/* 
+ * XXX (garrcoop): the following #ifndef checks are invalid on many platforms; POSIX
+ * doesn't state whether or not these these can or cannot be either global variables
+ * or indices in enums (FreeBSD does the latter with
+ * PTHREAD_MUTEX_{ERRORCHECK,NORMAL.RECURSIVE}
+ *
+ * These tests need to be sorted out into proper functional tests.
+ */
+
 /* BAR */
 #ifndef PTHREAD_BARRIER_SERIAL_THREAD
 #error PTHREAD_BARRIER_SERIAL_THREAD not defined

@@ -1,5 +1,5 @@
 /*
- *Following symbles need to be defined in errno.h
+ *Following symbols need to be defined in errno.h
  *author:ysun@lnxw.com
  */
 

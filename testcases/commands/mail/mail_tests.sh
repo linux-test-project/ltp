@@ -77,8 +77,7 @@ fi
 
 # check if the user mail_test exists on this system.
 # if not add that user mail_test, will removed before exiting test.
-id -u mail_test >/dev/null 2>&1
-if [ $? -ne 0 ] ; then
+if id -u mail_test >/dev/null 2>&1; then
 	tst_resm TINFO "INIT: Adding temporary user mail_test"
 	useradd -m -s /sbin/nologin mail_test > $LTPTMP/tst_mail.out 2>&1
 	if [ $? -ne 0 ]; then
@@ -328,7 +327,7 @@ tst_resm TINFO "Test #5: Test that mail -b user@domain will"
 tst_resm TINFO "Test #5: blind carbon copy user@domain"
 
 # send mail to root and carbon copy mail_test 
-mail -s "Test" root@localhost -b mail_test@localhost < \
+mail -s "Test" root@localhost -c mail_test@localhost < \
 	$LTPTMP/tst_mail.in > $LTPTMP/tst_mail.out 2>&1
 if [ $? -ne 0 ]; then
 	tst_res TFAIL $LTPTMP/tst_mail.out \
@@ -345,10 +344,10 @@ else
 
 	if [ "x$RC1" != x0 -a "x$RC2" != x0 ]; then
 		tst_resm TPASS \
-		    "Test #5: Mail was blind carbon copied to user mail_test"
+		    "Test #5: Mail was carbon copied to user mail_test"
 	else
 		tst_res TFAIL $LTPTMP/tst_mail.res \
-		    "Test #5: mail failed to blind carbon copy user mail_test. Reason:"
+		    "Test #5: mail failed to carbon copy user mail_test. Reason:"
 		: $(( TFAILCNT += 1 ))
 	fi
 
