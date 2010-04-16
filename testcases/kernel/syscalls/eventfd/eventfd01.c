@@ -729,7 +729,7 @@ static void setup(void)
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	if (tst_kvercmp(2, 6, 22) < 0)
-		tst_brkm(TCONF, cleanup, "2.6.22 or greater kernel required");
+		tst_brkm(TCONF, tst_exit, "2.6.22 or greater kernel required");
 
 	/* Create a temporary directory & chdir there */
 	tst_tmpdir();

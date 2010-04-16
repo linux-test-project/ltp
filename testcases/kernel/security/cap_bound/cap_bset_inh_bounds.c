@@ -39,11 +39,11 @@ int TST_TOTAL=2;
 
 int errno;
 
+int main(int argc, char *argv[])
+{
 #if HAVE_SYS_CAPABILITY_H
 #if HAVE_DECL_PR_CAPBSET_READ && HAVE_DECL_PR_CAPBSET_DROP
 #ifdef HAVE_LIBCAP
-int main(int argc, char *argv[])
-{
 	int ret = 1;
 	cap_value_t v[1];
 	cap_flag_value_t f;
