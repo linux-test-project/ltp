@@ -437,7 +437,7 @@ echo "============================================================"
 
 echo
 
-rm -rf $TEST_PROG
+rm -rf "$TEST_DIR"
 uname -a
 date
 echo "Total tests: $test_num; passed: $passed_cnt; failed: $failed_cnt"
