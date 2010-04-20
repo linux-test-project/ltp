@@ -65,12 +65,8 @@ extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 int exp_enos[] = { 0 };		/* List must end with 0 */
 
-#ifndef CONFIG_COLDFIRE
-#define MAXNPROCS	1000000	/* This value is set to an arbitrary high limit. */
-#else
-#define MAXNPROCS	 100000	/* Coldfire can't deal with 1000000 */
-#endif
-#define MAXNREPS	100000
+#define MAXNPROCS	10000 /*These should be sufficient*/
+#define MAXNREPS	10000 /*Else they srewup the system un-necessarily*/
 #define FAIL		1
 #define PASS		0
 
