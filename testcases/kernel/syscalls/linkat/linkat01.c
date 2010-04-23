@@ -158,7 +158,7 @@ struct test_struct {
 	{ &cwd_fd, "/proc/cpuinfo", &newdirfd, TEST_FILE1, 0,
 	  0, 0, EXDEV },
 	/* 21. directory link */
-	{ &cwd_fd, "/tmp", &newdirfd, TEST_FILE1, 0,
+	{ &olddirfd, ".", &newdirfd, TEST_FILE1, 0,
 	  0, 0, EPERM },
 	/* 22. invalid flag */
 	{ &olddirfd, TEST_FILE1, &newdirfd, TEST_FILE1, 1,
