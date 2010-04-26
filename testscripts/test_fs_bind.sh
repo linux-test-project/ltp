@@ -238,7 +238,7 @@ restore_proc_mounts()
 	# new mounts around and will never remove mounts outside the test
 	# directory
 	( while grep_proc_mounts ; do
-		grep_proc_mounts | awk '{print $2}' | xargs -r --max-args=1 umount -l
+		grep_proc_mounts | awk '{print $2}' | xargs -r -n 1 umount -l
 	done ) >& /dev/null
 	
 	# mount list and exit with 0
