@@ -28,6 +28,8 @@ include $(top_srcdir)/include/mk/env_pre.mk
 
 INSTALL_DIR	:= $(mandir)/man$(MANPREFIX)
 
+INSTALL_MODE    := 00644
+
 INSTALL_TARGETS	?= *.$(MANPREFIX)
 
 MAKE_TARGETS	:=
