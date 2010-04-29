@@ -59,7 +59,7 @@
 char *TCID = "pidns30";
 int TST_TOTAL = 1;
 
-char *mqname = "/mq1";
+char *mqname = "mq1";
 int result = TFAIL;
 
 int errno;
