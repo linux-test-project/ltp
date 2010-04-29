@@ -60,7 +60,7 @@ int check_mqueue(void *vtest)
 		tst_resm(TBROK | TERRNO, "read(p1[0], ..) failed");
 	else {
 
-		mqd = syscall(__NR_mq_open, SLASH_MQ1, O_RDWR|O_CREAT|O_EXCL,
+		mqd = syscall(__NR_mq_open, NOSLASH_MQ1, O_RDWR|O_CREAT|O_EXCL,
 				0777, NULL);
 		if (mqd == -1) {
 			if (write(p2[1], "mqfail", strlen("mqfail") + 1) < 0) {
@@ -86,9 +86,9 @@ int check_mqueue(void *vtest)
 						tst_resm(TBROK | TERRNO,
 							"mq_close(mqd) failed");
 					} else if (syscall(__NR_mq_unlink,
-							SLASH_MQ1) < 0) {
+							NOSLASH_MQ1) < 0) {
 						tst_resm(TBROK | TERRNO,
-							"mq_unlink(" SLASH_MQ1
+							"mq_unlink(" NOSLASH_MQ1
 							") failed");
 					} else if (write(p2[1], "done",
 							strlen("done") + 1)
@@ -153,7 +153,7 @@ int main(int argc, char *argv[])
 		tst_exit();
 	} else {
 
-		mqd = syscall(__NR_mq_open, SLASH_MQ1, O_RDONLY);
+		mqd = syscall(__NR_mq_open, NOSLASH_MQ1, O_RDONLY);
 		if (mqd == -1) {
 			tst_resm(TPASS, "Parent process can't see the mqueue\n");
 		} else {
