@@ -76,7 +76,7 @@ int check_mqueue(void *vtest)
 
 			else {
 
-				if (read(p1[0], buf, 5))
+				if (read(p1[0], buf, 5) < 0)
 					tst_resm(TBROK | TERRNO,
 						"read(p1[0], ..) failed");
 				else {
@@ -142,7 +142,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (read(p2[0], buf, 7) < 0) {
-		tst_resm(TBROK, "read(p1[0], ..) failed");
+		tst_resm(TBROK, "read(p2[0], ..) failed");
 	} else if (!strcmp(buf, "mqfail")) {
 		tst_resm(TFAIL, "child process could not create mqueue\n");
 		umount(DEV_MQUEUE);
@@ -160,8 +160,8 @@ int main(int argc, char *argv[])
 			tst_resm(TFAIL, "Parent process found mqueue\n");
 			mq_close(mqd);
 		}
-		if (write(p1[1], "cont", 5)) {
-			tst_resm(TBROK, "read(p1[0], ..) failed");
+		if (write(p1[1], "cont", 5) < 0) {
+			tst_resm(TBROK, "write(p1[1], ..) failed");
 
 		}
 	}
