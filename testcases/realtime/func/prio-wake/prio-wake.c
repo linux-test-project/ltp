@@ -108,7 +108,11 @@ void *master_thread(void* arg)
 
 	/* make sure children are started */
 	while (running_threads < rt_threads)
-		sleep(1);
+	    usleep(1000);
+	/* give the worker threads a chance to get to sleep in the kernel
+	 * in the unlocked broadcast case. */
+	usleep(1000);
+
 
 	start = rt_gettime() - beginrun;
 
@@ -120,8 +124,6 @@ void *master_thread(void* arg)
 	if (locked_broadcast)
 		rc = pthread_mutex_unlock(&mutex);
 
-	while (running_threads > 0)
-		sleep(1);
 	return NULL;
 }
 
@@ -157,9 +159,6 @@ void *worker_thread(void* arg)
 
 	rc = pthread_mutex_unlock(&mutex);
 
-	/* wait for all threads to quit */
-	while (running_threads > 0)
-		sleep(1);
 	return NULL;
 }
 
