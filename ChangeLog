@@ -1,3 +1,636 @@
+LTP-20100430
+Commit: 84f2e35f109a9fe6591af83be0ddbda4a5f7c78c
+Date:   Thu, 29 Apr 2010 19:02:46 +0530
+
+Fix for mqns testcase failure reported by Muni
+Signed-off-by: Serge Hallyn <serue@us.ibm.com>
+Reported by: Munipradeep <mbeeraka@in.ibm.com>
+
+Changed Files:
+
+testcases/kernel/containers/mqns/mqns.h
+testcases/kernel/containers/mqns/mqns_01.c
+testcases/kernel/containers/mqns/mqns_02.c
+testcases/kernel/containers/mqns/mqns_03.c
+testcases/kernel/containers/mqns/mqns_04.c
+
+Commit: 5936767b86201d8409bb62a74770e60de1796adc
+Date:   Thu, 29 Apr 2010 19:00:01 +0530
+
+pidns30 fix
+    Signed-off-by: Serge Hallyn <serue@us.ibm.com>
+    Acked-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/containers/pidns/pidns30.c
+
+Commit: 742cfadb46d5fe1952396b9568c18afccdb2c489
+Date:   Thu, 29 Apr 2010 18:56:12 +0530
+
+Fix for mqns by Serge.
+Signed-off-by: Serge Hallyn <serue@us.ibm.com>
+Acked-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/kernel/containers/mqns/mqns_02.c
+
+Commit: e6dc1b454e09e3e38532c37c3fb54c77eb3050cf
+Date:   Thu, 29 Apr 2010 18:50:22 +0530
+
+While packaging ltp-full-20100228 I've found out that man files are installed with executable bits and that's caused by INSTALL_MODE := 00775 that is pulled from generic_leaf_target.mk that pulls in env_post.mk. Fixing explicitly INSTALL_MODE to 00644 in man.mk fixes this for me. Patch attached.
+Signed-off-by: Cyril Hrubis chrubis@suse.cz
+
+Changed Files:
+
+include/mk/man.mk
+
+Commit: 40f8829df38ecfe64c0fcd16a6ce7b5b19b83f25
+Date:   Thu, 29 Apr 2010 14:50:16 +0530
+
+Merge branch 'pu'
+
+Changed Files:
+
+Commit: acaf3cd41451b41f7bdc51cdf06e017f2eaf4a45
+Date:   Thu, 29 Apr 2010 14:48:45 +0530
+
+Merge branch 'master' into next
+
+Changed Files:
+
+Commit: c2ce5363adf4a3f8482d7c4476a9beeaf7bc8aef
+Date:   Wed, 28 Apr 2010 11:39:03 +0530
+
+Generating HTML Output.....!! Can't open perl script "/opt/ltp/tools/genhtml.pl": No such file or directory
+Following patch fixes the same.
+
+Signed-off-by: Subrata Modak <subrata@linux.vnet.ibm.com>
+Acked-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+runltp
+
+Commit: d9f3d25b9db35073c7104b759d526869d9867692
+Date:   Mon, 26 Apr 2010 13:19:40 +0530
+
+The test_fs_bind testscript hangs indefinitely when run on a machine where busybox applets are used.
+The test hangs while trying to restore the mounts after a test run.
+
+This happens because the "xargs" applet from busybox doesn't understand
+the --max-args=1 option. Thus, the mounts from the test are not removed
+and this goes on in a loop, indefinitely.
+
+This could be avoided by using "-n" option which is supported by both
+the implementations of xargs.
+
+Signed-off-by: Suzuki K P <suzuki@in.ibm.com>
+
+Changed Files:
+
+testscripts/test_fs_bind.sh
+
+Commit: 23e7806fec4c6be42fdf577559df5498cce45118
+Date:   Fri, 23 Apr 2010 12:35:10 +0530
+
+Running the ltp suite on ChromeOS (x86 with a 2.6.32 kernel) fails linkat01 testcase 21:
+linkat01   21  TFAIL  :  linkat() failed: TEST_ERRNO=EXDEV(18): Invalid
+cross-device link
+
+This is probably because my /tmp is mounted from someplace other than the
+filesystem that contains newdirfd.
+The goal of testcase 21 is to demonstrate that linking a directory will fail
+EPERM.  The fix is to use olddir/. instead of /tmp.
+
+Tested-by: Henry Yei <hyei@mvista.com>
+Signed-off-by: Bryan Freed <bfreed@google.com>
+Signed-off-by: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
+
+Changed Files:
+
+testcases/kernel/syscalls/linkat/linkat01.c
+
+Commit: 5162b710bfc574107d915093c08b198f0a15727e
+Date:   Thu, 22 Apr 2010 11:36:48 +0530
+
+ prio-wake: avoid glibc to kernel sleep race
+ In the unlocked broadcast scenario, there exists a race between when the
+ running_threads variable reaches rt_threads and when the last worker_thread
+ blocks in the kernel after a cond_wait(). It is possible for a thread to miss
+ the broadcast if it fails to sleep before the broadcast is issued.
+
+ The previous code did not guarantee a small window of time to allow the threads
+ to get to sleep.  It also used an unreasonably large sleep time which
+ unnecessarily extended the length of the test run time.  This patch ensures some
+ time is given to the threads to get to sleep and at the same time uses a much
+ shorter (1000x) sleep period which results in a 50-100x reduction in test run
+ time. Lastly, two unecessary loops waiting for the threads to complete were
+ removed, relying on pthread_join() instead to wait for the threads to complete.
+
+ Signed-off-by: Darren Hart <dvhltc@us.ibm.com>
+ Acked-by: Will Schmidt <will_schmidt@vnet.ibm.com>
+
+Changed Files:
+
+testcases/realtime/func/prio-wake/prio-wake.c
+
+Commit: d0605c4e9525bd5ecdd0ba28ba27b8b237d1cfc8
+Date:   Tue, 20 Apr 2010 17:15:13 +0530
+
+msgctl10() un-necessarily eats up all the PIDs of the system leading to system becoming un-responsive. The changed no.s would better do the job.
+Signed-off-by: Subrata Modak<subrata@linux.vnet.ibm.com>
+Acked/Tested-By: Caspar ZHANG <czhang@redhat.com>
+Signed-off-by: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
+
+Changed Files:
+
+testcases/kernel/syscalls/ipc/msgctl/msgctl10.c
+
+Commit: adf53e68cf2b513b67a19dc0ff8869b53f9f22a3
+Date:   Fri, 16 Apr 2010 08:44:17 +0530
+
+Script utimensat_tests.sh deletes the test it is executing instead of deleting temporary directory. Patch attached.
+Signed-off-by: Cyril Hrubis <chrubis@suse.cz>
+
+Changed Files:
+
+testcases/kernel/syscalls/utimensat/utimensat_tests.sh
+
+Commit: 1c9ec5ec1389062a4a091fee7295b36a6583df5d
+Date:   Thu, 15 Apr 2010 14:56:14 +0530
+
+Merge branches 'next' and 'pu' into pu
+
+Changed Files:
+
+Commit: 4eca2b5b7d3f4dfb1fd661eab2931d3564a4a85f
+Date:   Thu, 15 Apr 2010 14:55:31 +0530
+
+Merge branches 'pu' and 'next' into next
+
+Changed Files:
+
+Commit: 6fc71a4987f658ac48b476defb8cc341cb7361c3
+Date:   Thu, 15 Apr 2010 14:54:39 +0530
+
+merge with pu branch changed by Garret
+Signed-off-by: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
+
+Changed Files:
+
+testcases/commands/mail/mail_tests.sh
+testcases/open_posix_testsuite/conformance/definitions/aio_h/2-1.c
+testcases/open_posix_testsuite/conformance/definitions/errno_h/3-1.c
+testcases/open_posix_testsuite/conformance/definitions/pthread_h/2-2.c
+testcases/open_posix_testsuite/conformance/interfaces/aio_cancel/3-1.c
+testcases/open_posix_testsuite/conformance/interfaces/aio_cancel/4-1.c
+testcases/open_posix_testsuite/conformance/interfaces/aio_cancel/5-1.c
+testcases/open_posix_testsuite/conformance/interfaces/aio_cancel/6-1.c
+testcases/open_posix_testsuite/conformance/interfaces/aio_cancel/7-1.c
+testcases/open_posix_testsuite/conformance/interfaces/aio_error/2-1.c
+testcases/open_posix_testsuite/conformance/interfaces/sched_yield/1-1.c
+
+Commit: 1ff0128460531d9f9c46353eba65dd79ca27bbc8
+Date:   Thu, 15 Apr 2010 01:34:13 -0700
+
+Correct comment so that it filters its way up to next (eventually).
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/commands/mail/mail_tests.sh
+
+Commit: c150e9b196b1267beeefdaec4dde9933503448f3
+Date:   Thu, 15 Apr 2010 12:17:56 +0530
+
+I tried "eventfd01" test in my system. This test failed with TWARN (return code:4) :
+------------
+  eventfd01    1  TCONF  :  2.6.22 or greater kernel required
+  eventfd01    2  TCONF  :  Remaining cases not appropriate for
+configuration
+  eventfd01    3  TCONF  :  Remaining cases not appropriate for
+configuration
+  eventfd01    4  TCONF  :  Remaining cases not appropriate for
+configuration
+  eventfd01    5  TCONF  :  Remaining cases not appropriate for
+configuration
+  eventfd01    6  TCONF  :  Remaining cases not appropriate for
+configuration
+  eventfd01    7  TCONF  :  Remaining cases not appropriate for
+configuration
+  eventfd01    8  TCONF  :  Remaining cases not appropriate for
+configuration
+  eventfd01    9  TCONF  :  Remaining cases not appropriate for
+configuration
+  eventfd01   10  TCONF  :  Remaining cases not appropriate for
+configuration
+  eventfd01   11  TCONF  :  Remaining cases not appropriate for
+configuration
+  eventfd01   12  TCONF  :  Remaining cases not appropriate for
+configuration
+  eventfd01   13  TCONF  :  Remaining cases not appropriate for
+configuration
+  eventfd01   14  TCONF  :  Remaining cases not appropriate for
+configuration
+  eventfd01   15  TCONF  :  Remaining cases not appropriate for
+configuration
+  eventfd01    0  TWARN  :  tst_rmdir(): TESTDIR was NULL; no removal
+attempted
+------------
+
+Signed-off-by: Tomonori Mitani <mitani@ryobi.co.jp>
+Signed-off-by: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
+
+Changed Files:
+
+testcases/kernel/syscalls/eventfd/eventfd01.c
+
+Commit: eaf73222df286c200475aadac78122b182b5f388
+Date:   Thu, 15 Apr 2010 12:14:19 +0530
+
+I found out that "-)20" test of "ar01" failed once in a while. Its code is as follows: ------------ ... rm -rf $TCtmp/lib.a;cd $TCdat ar -cr $TCtmp/lib.a file0.in file2.in crtest File1time=`ar -tv $TCtmp/lib.a | grep file0.in | cut -f2 -d: | cut -f1 -d" "` File2time=`ar -tv $TCtmp/lib.a | grep file2.in | cut -f2 -d: | cut -f1 -d" "`
+touch -c -t 201503030303.55 file0.in
+
+ar -ru $TCtmp/lib.a file0.in file2.in 2>&1 1>/dev/null
+File1time1=`ar -tv $TCtmp/lib.a | grep file0.in | cut -f2 -d: | cut -f1 -d"
+"`
+File2time2=`ar -tv $TCtmp/lib.a | grep file2.in | cut -f2 -d: | cut -f1 -d"
+"`
+
+if [ $File2time = $File2time2 ]
+then
+        if [ $File1time = $File1time1 ]
+        then
+                TCRESULT
+                echo "FAIL - ar with -u flag failed"
+        else
+                echo "-)20"
+        fi
+else
+        TCRESULT
+        echo "FAIL - ar with -u flag failed"
+fi
+touch file0.in
+...
+------------
+
+"file0.in" and "file2.in" are offered with "ar01" source, and they are
+copied when "make install" is executed.
+
+In this code, "File1time" and "File1time1" are times of before and
+after time-stamp changing of "file0.in" by "touch -c -t ..." command.
+But "File1time" and "File1time1" are only minute numbers.
+It's problem, I think.
+
+If installation is at 2010.04.06 XX:03 accidentally, both of
+"File1time" and "File1time1" are "03".
+And this code ends as "FAIL".
+This happens with a one-60th probability.
+
+Signed-off-by: Tomonori Mitani <mitani@ryobi.co.jp>
+Signed-off-by: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
+
+Changed Files:
+
+testcases/commands/ade/ar/ar01
+
+Commit: cc7c7035a60b40f9a417b5e437ca6ea43ebfd783
+Date:   Thu, 15 Apr 2010 12:08:07 +0530
+
+I tried to build by using yesterday's git in my system (RHEL4.8 x86).  (ltp-dev-4837fee8a7c2de6a83c8927a574c792ca6dabe4e.tar.gz) But build failed in "cap_bset_inh_bounds.c" with following message. This is different from "cap_bounds_r.c"'s problem (another thread), I think
+------------
+gcc -g -O2 -g -O2 -fno-strict-aliasing -pipe -Wall
+-I/home/LTP/ltp-dev-20100401-3/testcases/kernel/include
+-I../../../../include -I../../../../include   -L../../../../lib
+cap_bset_inh_bounds.c   -lltp -lcap -o cap_bset_inh_bounds
+cap_bset_inh_bounds.c:124: error: syntax error before numeric constant
+cap_bset_inh_bounds.c:124: warning: type defaults to `int' in declaration of
+`tst_resm'
+cap_bset_inh_bounds.c:124: error: conflicting types for 'tst_resm'
+../../../../include/test.h:192: error: previous declaration of 'tst_resm'
+was here
+cap_bset_inh_bounds.c:124: error: conflicting types for 'tst_resm'
+../../../../include/test.h:192: error: previous declaration of 'tst_resm'
+was here
+cap_bset_inh_bounds.c:124: warning: data definition has no type or storage
+class
+cap_bset_inh_bounds.c:129: warning: type defaults to `int' in declaration of
+`tst_exit'
+cap_bset_inh_bounds.c:129: error: conflicting types for 'tst_exit'
+../../../../include/test.h:203: error: previous declaration of 'tst_exit'
+was here
+cap_bset_inh_bounds.c:129: error: conflicting types for 'tst_exit'
+../../../../include/test.h:203: error: previous declaration of 'tst_exit'
+was here
+cap_bset_inh_bounds.c:129: warning: data definition has no type or storage
+class
+cap_bset_inh_bounds.c:130: error: syntax error before '}' token
+------------
+
+In this source, the pair of "ifdef" start/end and the pair of
+main() function's "parenthesis" are alternate, I think.
+
+Acked-by: Serge Hallyn <serue@us.ibm.com>
+Signed-off-by : Tomonori Mitani <mitani@ryobi.co.jp>
+Signed-off-by: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
+
+Changed Files:
+
+testcases/kernel/security/cap_bound/cap_bset_inh_bounds.c
+
+Commit: 2a276cf8bb5b94259482ec039edc2ae7fbaf953e
+Date:   Thu, 15 Apr 2010 12:06:23 +0530
+
+I found two problems in mail test. (${LTPROOT}/testcases/commands/mail/mail_tests.sh) They are simple mistakes, I think.
+1) About judgment for making a user name
+In line 80 of "mail_tests.sh", there is following sentence.
+------------
+if id -u mail_test >/dev/null 2>&1; then
+------------
+This control sentence is going to judge whether the result of
+"id -u mail_test" command is normal or not, I think.
+But this sentence is not effective.
+Therefore the user name "make_test" cannot be made when this user name
+isn't exist.
+
+2) About "blind carbon copy" option
+In "mail_tests.sh", there are 5 tests about mail.
+5th is "blind carbon copy" test.
+However, this test doesn't use "-b" option but uses "-c" option.
+
+Signed-off-by: Tomonori Mitani <mitani@ryobi.co.jp>
+Signed-off-by: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
+
+Changed Files:
+
+testcases/commands/mail/mail_tests.sh
+
+Commit: a9d5600c78943e9e7e1b52c5ec81e9772a47b44f
+Date:   Thu, 15 Apr 2010 12:04:09 +0530
+
+I tried "hugemmap", "hugeshmat", "hugeshmctl", "hugeshmdt" and "hugeshmget" tests. And I found several fails in them: ------------<at "${LTPROOT}/testcases/kernel/mem/hugetlb/" directory>  - ./hugemmap/    1) hugemmap04   : return code = 2
+ - ./hugeshmat/
+   2) hugeshmat01  : return code = 6
+   3) hugeshmat02  : return code = 6
+   4) hugeshmat03  : return code = 2
+
+ - ./hugeshmctl/
+   5) hugeshmctl01 : return code = 6
+   6) hugeshmctl02 : return code = 6
+   7) hugeshmctl03 : return code = 2
+
+ - ./hugeshmdt/
+   8) hugeshmdt01  : return code = 6
+
+ - ./hugeshmget/
+   9) hugeshmget01 : return code = 2
+  10) hugeshmget02 : return code = 6
+  11) hugeshmget03 : return code = 6
+  12) hugeshmget05 : return code = 2
+------------
+
+These tests output following messages:
+------------
+ a) All tests:
+"TBROK  :  Test cannot be continued owning to sufficient availability of
+Hugepages on the system"
+
+ b) 2), 3), 5), 6), 8), 10), 11) tests:
+"TWARN  :  tst_rmdir(): TESTDIR was NULL; no removal attempted"
+------------
+
+Both case a) and case b) are caused by the same reason.
+
+All of case a) failures occured at the following points (for example
+hugemmap04):
+------------<hugemmap04.c - main()>
+        /* Check number of hugepages */
+        if (get_no_of_hugepages() <= 0 || hugepages_size() <= 0)
+                tst_brkm(TBROK, cleanup, "Test cannot be continued owning to
+\
+                                sufficient availability of Hugepages on the
+system");
+------------
+
+I found out that "HugePages_Total" parameter of "/proc/meminfo" file
+is set to "0". This caused above TBROK failure. It is environment problem.
+
+But, in this case, tests must not return with TBROK, but with TCONF,
+I think.
+
+And, in case b), these tests try to delete "TESTDIR" directory by
+calling "tst_rmdir()" function in "cleanup()" function.
+But, "TESTDIR" never set if "tst_tmpdir()" function isn't called.
+I think that case b)'s tests must not call cleanup() function.
+
+I want to suggest following patch.
+
+Signed-off-by: Tomonori Mitani <mitani@ryobi.co.jp>
+Signed-off-by: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
+
+Changed Files:
+
+testcases/kernel/mem/hugetlb/hugemmap/hugemmap04.c
+testcases/kernel/mem/hugetlb/hugeshmat/hugeshmat01.c
+testcases/kernel/mem/hugetlb/hugeshmat/hugeshmat02.c
+testcases/kernel/mem/hugetlb/hugeshmat/hugeshmat03.c
+testcases/kernel/mem/hugetlb/hugeshmctl/hugeshmctl01.c
+testcases/kernel/mem/hugetlb/hugeshmctl/hugeshmctl02.c
+testcases/kernel/mem/hugetlb/hugeshmctl/hugeshmctl03.c
+testcases/kernel/mem/hugetlb/hugeshmdt/hugeshmdt01.c
+testcases/kernel/mem/hugetlb/hugeshmget/hugeshmget01.c
+testcases/kernel/mem/hugetlb/hugeshmget/hugeshmget02.c
+testcases/kernel/mem/hugetlb/hugeshmget/hugeshmget03.c
+testcases/kernel/mem/hugetlb/hugeshmget/hugeshmget05.c
+
+Commit: 2e271475913722d7c29463c64703575dff69c4fb
+Date:   Thu, 8 Apr 2010 00:27:08 -0700
+
+Note #define vs enum conformance issue with signal_h/26-1.c
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/open_posix_testsuite/conformance/definitions/pthread_h/2-2.c
+
+Commit: 2eb2342d3a9db5a089742473895af4fdf1e6f4c8
+Date:   Wed, 7 Apr 2010 21:57:26 -0700
+
+Fix more deprecated malloc.h includes.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/open_posix_testsuite/conformance/interfaces/aio_cancel/4-1.c
+testcases/open_posix_testsuite/conformance/interfaces/aio_cancel/5-1.c
+testcases/open_posix_testsuite/conformance/interfaces/aio_cancel/6-1.c
+testcases/open_posix_testsuite/conformance/interfaces/aio_cancel/7-1.c
+testcases/open_posix_testsuite/conformance/interfaces/aio_error/2-1.c
+
+Commit: 5da1b33941b513ac1f693cf86e27b5750b43dea2
+Date:   Wed, 7 Apr 2010 21:53:54 -0700
+
+Fix incorrect / missing included headers.
+POSIX 1003.1 2004 states that stdlib.h supplants malloc.h and signal.h is required for sigaction and sigemptyset.
+
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/open_posix_testsuite/conformance/interfaces/aio_cancel/3-1.c
+
+Commit: e90e0138cb7444d5db967183397b776979efd593
+Date:   Wed, 7 Apr 2010 21:37:13 -0700
+
+Fix a typo and add a missing definition for non-Linux platforms.
+aio.h appears to either define or pull in other headers that define NULL. This isn't true on FreeBSD.
+
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/open_posix_testsuite/conformance/definitions/aio_h/2-1.c
+testcases/open_posix_testsuite/conformance/definitions/errno_h/3-1.c
+
+Commit: 001227f859f24bde222d0813d9327afe4c132a33
+Date:   Wed, 7 Apr 2010 03:08:43 -0700
+
+Fix a rookie typo with #ifdef vs #if defined()
+Ok, I'm tired... need to stop making such rookie mistakes with #ifdef :P.
+
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/open_posix_testsuite/conformance/interfaces/sched_yield/1-1.c
+
+Commit: 1d67dc1564c73d49fc681679e4a5b9be48420e48
+Date:   Wed, 7 Apr 2010 02:50:32 -0700
+
+Add proper checks for Linux and the BSDs.
+Signed-off-by: Garrett Cooper <yanegomi@gmail.com>
+
+Changed Files:
+
+testcases/open_posix_testsuite/conformance/interfaces/sched_yield/1-1.c
+
+Commit: 4837fee8a7c2de6a83c8927a574c792ca6dabe4e
+Date:   Thu, 1 Apr 2010 12:45:00 +0530
+
+Merge branches 'next' and 'master'
+
+Changed Files:
+
+Commit: aabf191024aacc91784593b0d3f8d5fa37434b25
+Date:   Thu, 1 Apr 2010 12:43:27 +0530
+
+Added a new file called result where maintainer need to provide the result on which he has run before releasing the tar ball for month end release.
+Signed-off-by: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
+
+Changed Files:
+
+result
+
+Commit: 3bf514769d060a64d0f38f4b97c00d8bb0de74f8
+Date:   Thu, 1 Apr 2010 11:34:36 +0530
+
+Merge branches 'next' and 'pu' into pu
+
+Changed Files:
+
+Commit: 44fba94453ca4f446cde4db08b0a760862b55cfa
+Date:   Thu, 1 Apr 2010 11:30:52 +0530
+
+Merge branches 'next' and 'master'
+
+Changed Files:
+
+Commit: f50539e0bcb0f9bab88101ce40a8e09a1d76d4a9
+Date:   Thu, 1 Apr 2010 11:25:49 +0530
+
+Modified nets/Makefile for appending one file which needs in /opt/ltp/tetscases/bin directory while install.
+=======================================================================================
+parentns.sh    0  TINFO  :  Pinging ChildNS from ParentNS
+sshd re-exec requires execution with an absolute path
+/opt/ltp/testcases/bin/ch_ftp.sh: line 37: ./container_ftp.pl: No such file or directory
+childns.sh    1  TFAIL  :  ftp failed
+Error while running the script
+two_children_ns: return code is 1 ; par_chld_ftp: FAIL 1 ;
+=======================================================================================
+
+After patch applied the resule is like this:
+
+=======================================================================================
+parentns.sh    0  TINFO  :  Pinging ChildNS from ParentNS
+sshd re-exec requires execution with an absolute path
+Error: Can't ftp to 192.168.0.181: Connection refused
+childns.sh    1  TFAIL  :  ftp failed
+Error while running the script
+two_children_ns: return code is 1 ; par_chld_ftp: FAIL 1 ;
+=======================================================================================
+
+Signed-off-by: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
+
+Changed Files:
+
+testcases/kernel/containers/netns/Makefile
+
+Commit: 4ccf10848def0a6f48e0fa1302056101564fedb0
+Date:   Thu, 1 Apr 2010 11:17:51 +0530
+
+NETNS tests from containers fails to execute with following message
+Running netns tests.
+--: childns.sh '/opt/ltp': No such file or directory
+
+LTP infrastructure fails to locate the childns.sh script. Fix this.
+There were few hardcoded paths within various tests which are not available
+during runtime.
+
+eg : %s/testcases/kernel/containers/netns/paripv6.sh
+
+Fix those occurences by specifying proper paths (%s/testcases/bin/paripv6.sh)
+
+The following patch allows the test to be executed properly on my Fedora 12
+system.
+
+Signed-off-by : Sachin Sant <sachinp@in.ibm.com>
+Signed-off-by: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
+
+Changed Files:
+
+testcases/kernel/containers/netns/common.c
+testcases/kernel/containers/netns/par_chld_ipv6.c
+testcases/kernel/containers/netns/sysfsview.c
+testcases/kernel/containers/netns/two_children_ns.c
+
+Commit: aca4428b38701e46e0da38fd7583028216c32c66
+Date:   Thu, 1 Apr 2010 10:24:25 +0530
+
+Added Maintainer Notes new file
+Signed-off-by: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
+
+Changed Files:
+
+doc/MaintNotes
+
+Commit: d2a9b9d3e04807fb4744dc7e778fe6e0c9543bc1
+Date:   Thu, 1 Apr 2010 10:10:33 +0530
+
+Merge branches 'next' and 'master'
+
+Changed Files:
+
+Commit: 613db220bc78b3109934dbdf617a7d2b3b437295
+Date:   Thu, 1 Apr 2010 10:09:49 +0530
+
+Changelog from 2010-03-01 to 2010-03-31
+Signed-off-by: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
+
+Changed Files:
+
+ChangeLog
 LTP-20100331
 
 commit f269fc8247563f3fe4c412fcd8fc6522d8a34753
