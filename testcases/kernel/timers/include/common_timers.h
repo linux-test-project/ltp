@@ -29,7 +29,10 @@ clock_t clock_list[] = {
 	CLOCK_MONOTONIC_COARSE,
 #endif
 };
-#define MAX_CLOCKS (sizeof(clock_list) / sizeof(*clock_list))
+/* CLOCKS_DEFINED is the number of clock sources defined for sure */
+#define CLOCKS_DEFINED (sizeof(clock_list) / sizeof(*clock_list))
+/* MAX_CLOCKS is the maximum number of clock sources supported by kernel */
+#define MAX_CLOCKS 16
 
 #define CLOCK_TO_STR(def_name)	\
 	case def_name:		\

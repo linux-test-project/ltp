@@ -113,7 +113,7 @@ main(int ac, char **av)
 
 			setup_test(i);
 
-			for (j = 0; j < MAX_CLOCKS; ++j) {
+			for (j = 0; j < CLOCKS_DEFINED; ++j) {
 
 				if (strstr(get_clock_str(clock_list[j]),
 						"CPUTIME_ID")) {
