@@ -602,7 +602,7 @@ static void overflow_poll_test(int evfd)
 	int ret;
 
 	ret = trigger_eventfd_overflow(evfd, &fd, &ctx);
-	if (fd == -1) {
+	if (ret == -1) {
 		tst_resm(TBROK, "error triggering eventfd overflow");
 		return;
 	}
