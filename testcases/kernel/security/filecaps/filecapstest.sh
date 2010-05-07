@@ -22,8 +22,12 @@
 echo "Running in:"
 #rm -f print_caps
 #cp $LTPROOT/testcases/bin/print_caps .
-mkfifo caps_fifo
-chmod 777 caps_fifo
+#FIFOFILE="$LTPROOT/testcases/bin/caps_fifo"
+TMP=${TMP:=/tmp}
+FIFOFILE="$TMP/caps_fifo"
+rm -f $FIFOFILE
+mkfifo $FIFOFILE
+chmod 777 $FIFOFILE
 exit_code=0
 echo "cap_sys_admin tests"
 verify_caps_exec 0
@@ -46,5 +50,5 @@ if [ $tmp -ne 0 ]; then
 	exit_code=$tmp
 fi
 
-unlink caps_fifo
+unlink $FIFOFILE
 exit $exit_code

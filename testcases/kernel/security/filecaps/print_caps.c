@@ -36,7 +36,7 @@
 #include <sys/capability.h>
 #endif
 
-#define FIFOFILE "caps_fifo"
+#define FIFOFILE "/tmp/caps_fifo"
 
 int main(int argc, char *argv[])
 {
@@ -65,7 +65,6 @@ int main(int argc, char *argv[])
 	close(fd);
 
 	cap_free(cap);
-#else
-	return 0;
 #endif
+	return 0;
 }
