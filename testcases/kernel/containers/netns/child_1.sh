@@ -30,6 +30,7 @@ export TST_COUNT
 export TST_TOTAL
 
 . initialize.sh
+status=0
 
     # Writing child PID number into /tmp/FIFO
     echo $$ > /tmp/FIFO2

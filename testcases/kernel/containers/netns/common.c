@@ -48,8 +48,7 @@ int crtchild(char *s1 , char *s2)
 {
 	char *cmd[] = { "--", s1, s2, (char *)0 };
 	execve("/bin/sh", cmd, __environ);
-	printf("The code would not reach here on success\n");
-	perror("execve");
+	fprintf(stderr, "Failed to execve(%s, %s): %m\n", s1, s2);
 	return 1;
 }
 

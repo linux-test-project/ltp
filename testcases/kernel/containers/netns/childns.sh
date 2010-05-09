@@ -38,6 +38,8 @@ exists awk grep ip ping sshd
 . initialize.sh
 status=0
     
+SSHD=`which sshd`
+
 if [ $# -eq 1 ] ; then
     childscrpt=$1
     debug "INFO: The script to be executed in child NS is $childscrpt"
@@ -58,7 +60,7 @@ ifconfig lo up
 sleep 2
 
 #starting the sshd inside the child NS
-if ! sshd -p $PORT; then
+if $SSHD -p $PORT; then
     debug "INFO: started the sshd @ port no $PORT"
     sshpid=`ps -ef | grep "sshd -p $PORT" | grep -v grep | awk '{ print $2 ; exit 0} ' `
 else

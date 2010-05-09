@@ -51,4 +51,4 @@ export TST_TOTAL
     echo $vnet3 > /tmp/FIFO3
 
     debug "INFO: PARENT-2: End of $0"
-    exit $status
+    exit 0
