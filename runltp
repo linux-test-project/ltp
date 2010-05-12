@@ -131,6 +131,8 @@ usage()
     -h              Help. Prints all available options.
     -i NUM_PROCS    Run LTP under additional background Load on IO Bus
                     [NUM_PROCS   = no. of processes creating IO Bus Load by spinning over sync()]
+    -K DMESG_LOG_DIR
+			Log Kernel messages generated for each test cases inside this directory 
     -l LOGFILE      Log results of test in a logfile.
     -m NUM_PROCS,CHUNKS,BYTES,HANGUP_FLAG
                     Run LTP under additional background Load on Main memory (Seperate by comma)
@@ -178,6 +180,7 @@ main()
     local ALT_DIR_RES=0
     local ALT_HTML_OUT=0
     local ALT_EMAIL_OUT=0
+    local ALT_DMESG_OUT=0
     local RUN_NETEST=0
     local RUN_REPEATED=0
     local QUIET_MODE=""
@@ -198,6 +201,7 @@ main()
     local OUTPUTFILE=""
     local HTMLFILE_NAME=""
     local HTMLFILE=""
+    local DMESG_DIR=""
     local EMAIL_TO=""
     local SCENFILES=""
     local TAG_RESTRICT_STRING=""
@@ -205,7 +209,7 @@ main()
     local DEFAULT_FILE_NAME_GENERATION_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
     version_date=$(cat "$LTPROOT/Version")
 
-    while getopts a:c:C:d:D:f:F:ehi:g:l:m:M:Nno:pqr:s:S:t:T:w:x:b:B: arg
+    while getopts a:c:C:d:D:f:F:ehi:K:g:l:m:M:Nno:pqr:s:S:t:T:w:x:b:B: arg
     do  case $arg in
         a)  EMAIL_TO=$OPTARG
             ALT_EMAIL_OUT=1;;
@@ -308,6 +312,15 @@ main()
             $LTPROOT/testcases/bin/genload --io $NUM_PROCS >/dev/null 2>&1 &
             GENLOAD=1 ;;
     
+        K)  
+	    case $OPTARG in
+        	   /*)
+                	DMESG_DIR="$OPTARG-dmesg-output-`echo $$-``date +%X | tr -d ' '`";;
+	            *)
+        	        DMESG_DIR="$LTPROOT/output/$OPTARG-dmesg-output-`echo $$-``date +%X | tr -d ' '`";;
+	    esac
+            mkdir -p $DMESG_DIR
+            ALT_DMESG_OUT=1;;
         l)      
             LOGFILE_NAME="$OPTARG"
             case $OPTARG in
@@ -821,6 +834,13 @@ main()
 		fi
 	fi
 
+	if [ $ALT_DMESG_OUT -eq 1 ] ; then
+		#We want to print dmesg output for each test,lets do the trick inside the script
+		echo Enabling dmesg output logging for each test...
+		${LTPROOT}/bin/create_dmesg_entries_for_each_test.pl ${TMP}/alltests $DMESG_DIR > ${TMP}/alltests.tmp
+		cp ${TMP}/alltests.tmp ${TMP}/alltests
+		rm -rf ${TMP}/alltests.tmp
+	fi
     # Some tests need to run inside the "bin" directory.
     cd "${LTPROOT}/testcases/bin"
     "${LTPROOT}/bin/ltp-pan" $QUIET_MODE -e -S $INSTANCES $DURATION -a $$ -n $$ $PRETTY_PRT -f ${TMP}/alltests $LOGFILE $OUTPUTFILE $FAILCMDFILE
