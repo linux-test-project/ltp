@@ -66,6 +66,8 @@
 #include <inttypes.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/mount.h>
+#include <sys/statvfs.h>
 #include "test.h"
 #include "usctest.h"
 #include "libtestsuite.h"
@@ -285,6 +287,7 @@ int main(int ac, char **av)
 	struct sigaction act;
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
+	struct statvfs fs;
 
 	/*
 	 * parse standard options
@@ -300,9 +303,12 @@ int main(int ac, char **av)
 
 	local_flag = PASSED;
 	tst_tmpdir();
-	if (system
-	    ("mount | grep `df . | grep ^/ | awk {'print $1'}` | grep mand >/dev/null")
-	    != 0) {
+	if (statvfs(".", &fs) == -1) {
+		tst_resm(TFAIL|TERRNO, "statvfs failed");
+		tst_rmdir();
+		tst_exit();
+	}
+	if ((fs.f_flag & MS_MANDLOCK) == 0) {
 		tst_resm(TCONF,
 			 "The filesystem where /tmp is mounted does"
 			 " not support mandatory locks. Cannot run this test.");
