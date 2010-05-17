@@ -570,6 +570,7 @@ main()
 
         for SCENFILES in ${LTPROOT}/runtest/syscalls                \
                          ${LTPROOT}/runtest/fs                      \
+                         ${LTPROOT}/runtest/fs_perms_simple         \
                          ${LTPROOT}/runtest/fsx                     \
                          ${LTPROOT}/runtest/dio                     \
                          ${LTPROOT}/runtest/io                      \

@@ -1,5 +1,6 @@
 /*
  *   Copyright (c) International Business Machines  Corp., 2000
+ *   Copyright (c) 2010 Cyril Hrubis chrubis@suse.cz
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -25,9 +26,12 @@
  *     (04/19/01)v1.0  Added test for execute bit.
  *     (05/23/01)v1.1  Added command line parameter to specify test file.
  *     (07/12/01)v1.2  Removed conf file and went to command line parameters.
+ *     (10/19/04)      Rewritten to fit ltp test interface.
+ *                     Also now we try to run two different files, one is executed by execl,
+ *                     has shebang and should end up executed by kernel, other one is empty
+ *                     is executed by execlp and should end up executed by libc.
  */
 
-#include <errno.h>
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
@@ -36,117 +40,190 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <wait.h>
+#include <linux/limits.h>
 
 #include "test.h"
+
+#define TEST_FILE_NAME1 "./test.file1"
+#define TEST_FILE_NAME2 "./test.file2"
 
 char *TCID = "fs_perms";
 int TST_TOTAL = 1;
 
-static int testsetup(mode_t mode, int cuserId, int cgroupId)
+static void cleanup(void)
 {
-	int ret;
-	char cmd_str[256];
-
-	sprintf(cmd_str, "cp %s/testx test.file", getcwd(NULL, 0));
-	tst_tmpdir();
-
-	ret = unlink("test.file");
-	if (ret && errno != ENOENT)
-		goto done;
-	ret = system(cmd_str);
-	if (ret)
-		goto done;
-	ret = chmod("test.file", mode);
-	if (ret)
-		goto done;
-	ret = chown("test.file", cuserId, cgroupId);
-
- done:
-	return ret;
-}
-
-void cleanup(void)
-{
+	seteuid(0);
+	setegid(0);
+	
 	tst_rmdir();
 	tst_exit();
 }
 
-static int testfperm(int userId, int groupId, char *fperm)
+/*
+ * Create file and set permissions, user id, group id.
+ *
+ * If flag is non zero, the file contains #!/PATH/sh shebang otherwise it's
+ * empty.
+ */
+static void testsetup(const char *file_name, int flag, mode_t mode, 
+                      int user_id, int group_id)
 {
-	/* SET CURRENT USER/GROUP PERMISSIONS */
-	if (setegid(groupId)) {
-		tst_brkm(TBROK, cleanup, "could not setegid to %d: %s", groupId, strerror(errno));
-		seteuid(0);
-		setegid(0);
-		return -1;
-	}
-	if (seteuid(userId)) {
-		tst_brkm(TBROK, cleanup, "could not seteuid to %d: %s", userId, strerror(errno));
-		seteuid(0);
-		setegid(0);
-		return -1;
+	FILE *file;
+
+	file = fopen(file_name, "w");
+	
+	if (file == NULL)
+		tst_brkm(TBROK | TERRNO, cleanup,
+		         "Could not create test file %s.", file_name);
+	
+	/* create file with shebang */
+	if (flag) {
+		char buf[PATH_MAX];
+
+		if (tst_get_path("sh", buf, PATH_MAX))
+			tst_brkm(TBROK, cleanup,
+			         "Could not find path to sh in $PATH.");
+
+		if (fprintf(file, "#!%s\n", buf) < 0)
+			tst_brkm(TBROK, cleanup, "Calling fprintf failed.");
 	}
 
-	switch (tolower(fperm[0])) {
-	case 'x': {
+	if (fclose(file))
+		tst_brkm(TBROK | TERRNO, cleanup, "Calling fclose failed.");
+
+	if (chmod(file_name, mode))
+		tst_brkm(TBROK | TERRNO, cleanup,
+		         "Could not chmod test file %s.", file_name); 
+
+	if (chown(file_name, user_id, group_id))
+		tst_brkm(TBROK | TERRNO, cleanup,
+		         "Could not chown test file %s.", file_name); 
+}
+
+/*
+ * Test permissions.
+ */
+static int testfperm(const char *file_name, int flag, int user_id,
+                     int group_id, char *fperm)
+
+{
+	FILE *file;
+	int ret;
+	
+	if (setegid(group_id))
+		tst_brkm(TBROK | TERRNO, cleanup, "Could not setegid to %d.",
+		         group_id);
+
+	if (seteuid(user_id))
+		tst_brkm(TBROK | TERRNO, cleanup, "Could not seteuid to %d.",
+		         user_id);
+
+	if (tolower(fperm[0]) == 'x') {
 		int status;
+		
 		if (fork() == 0) {
-			execlp("./test.file", "test.file", NULL);
+			/*
+			 * execlp runs file with sh in case kernel has
+			 * no binmft handler for it, execl does not.
+			 */
+			if (flag)
+				execl(file_name, file_name, NULL);
+			else
+				execlp(file_name, "test", NULL);
+	
 			exit(1);
 		}
+		
 		wait(&status);
+		
 		seteuid(0);
 		setegid(0);
+		
 		return WEXITSTATUS(status);
 	}
-	default: {
-		FILE *testfile;
-		if ((testfile = fopen("test.file", fperm))) {
-			fclose(testfile);
-			seteuid(0);
-			setegid(0);
-			return 0;
-		} else {
-			seteuid(0);
-			setegid(0);
-			return 1;
-		}
-	}
-	}
+
+	if ((file = fopen(file_name, fperm)) != NULL) {
+		fclose(file);
+		ret = 0;
+	} else
+		ret = 1;
+
+	seteuid(0);
+	setegid(0);
+
+	return ret;
+}
+
+static void print_usage(const char *bname)
+{
+	char *usage = "<file mode> <file UID> <file GID> "
+                      "<tester UID> <tester GID> <permission "
+                      "to test r|w|x> <expected result 0|1>";
+
+	printf("Usage: %s %s\n", bname, usage);
+}
+
+static long str_to_l(const char *str, const char *name)
+{
+	char *end;
+	long i = strtol(str, &end, 10);
+
+	if (*end != '\0')
+		tst_brkm(TBROK, tst_exit, "Invalid parameter '%s' passed. (%s)",
+		         name, str);
+
+	return i;
 }
 
 int main(int argc, char *argv[])
 {
 	char *fperm;
-	int result, exresult = 0, cuserId = 0, cgroupId = 0, userId = 0, groupId = 0;
-	mode_t mode;
+	gid_t fgroup_id, group_id;
+	uid_t fuser_id, user_id;
+	mode_t fmode;
+	int exp_res;
+	int res1, res2 = 1;
 
 	tst_require_root(tst_exit);
 
-	switch (argc) {
-	case 8:
-		mode = strtol(argv[1], (char **)NULL, 010);
-		cuserId = atoi(argv[2]);
-		cgroupId = atoi(argv[3]);
-		userId = atoi(argv[4]);
-		groupId = atoi(argv[5]);
-		fperm = argv[6];
-		exresult = atoi(argv[7]);
-		break;
-	default:
-		printf("Usage: %s <mode of file> <UID of file> <GID of file> <UID of tester> <GID of tester> <permission to test r|w|x> <expected result as 0|1>\n", argv[0]);
-		return 1;
+	if (argc != 8) {
+		print_usage(argv[0]);
+		tst_exit();
 	}
 
-	result = testsetup(mode, cuserId, cgroupId);
-	if (result) {
-		tst_brkm(TBROK, cleanup, "testsetup() failed: %s", strerror(errno));
+	if (strlen(argv[6]) > 1) {
+		print_usage(argv[0]);
+		tst_exit();
 	}
 
-	result = testfperm(userId, groupId, fperm);
-	unlink("test.file");
-	tst_resm(exresult == result ? TPASS : TFAIL, "%c a %03o file owned by (%d/%d) as user/group(%d/%d)",
-		fperm[0], mode, cuserId, cgroupId, userId, groupId);
-	cleanup();
-	return 0;
+	fmode     = str_to_l(argv[1], "file mode");
+	fuser_id  = str_to_l(argv[2], "file uid");
+	fgroup_id = str_to_l(argv[3], "file gid");
+	user_id   = str_to_l(argv[4], "tester uid");
+	group_id  = str_to_l(argv[5], "tester gid");
+	fperm     = argv[6];
+	exp_res   = str_to_l(argv[7], "expected result");
+
+	tst_tmpdir();
+	testsetup(TEST_FILE_NAME1, 0, fmode, fuser_id, fgroup_id);
+	
+	/* more tests for 'x' flag */
+	if (tolower(fperm[0]) == 'x') {
+		testsetup(TEST_FILE_NAME2, 1, fmode, fuser_id, fgroup_id);
+		res2 = testfperm(TEST_FILE_NAME2, 1, user_id, group_id, fperm);
+
+		if (res2 == exp_res)
+			res2 = 1;
+		else
+			res2 = 0;
+	}
+
+	res1 = testfperm(TEST_FILE_NAME1, 0, user_id, group_id, fperm);
+
+	tst_resm((exp_res == res1) && res2 ? TPASS : TFAIL,
+	         "%c a %03o file owned by (%d/%d) as user/group (%d/%d)",
+	         fperm[0], fmode, fuser_id, fgroup_id, user_id, group_id);
+
+	tst_rmdir();
+	tst_exit();
 }

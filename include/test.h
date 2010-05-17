@@ -262,6 +262,11 @@ int ltp_clone_quick(unsigned long clone_flags, int (*fn)(void *arg),
 char *get_block_device(const char *path);
 char *get_mountpoint(const char *path);
 
+/*
+ * Function from lib/get_path.c
+ */
+int tst_get_path(const char *prog_name, char *buf, size_t buf_len);
+
 #ifdef TST_USE_COMPAT16_SYSCALL
 #define TCID_BIT_SUFFIX "_16"
 #elif  TST_USE_NEWER64_SYSCALL

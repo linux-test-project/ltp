@@ -64,9 +64,6 @@ writetest01	writetest
 #Also run the fs_di (Data Integrity tests)
 fs_di fs_di -d $TMPDIR
 
-#Also run the fs_perms (File System Permission Tests)
-fs_perms fs_perms_simpletest.sh
-
 # Read every file in /proc. Not likely to crash, but does enough 
 # to disturb the kernel. A good kernel latency killer too.
 # Was not sure why it should reside in runtest/crashme and won´t get tested ever
