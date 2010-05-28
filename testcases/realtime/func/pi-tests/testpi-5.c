@@ -20,8 +20,8 @@
  *      testpi-5.c
  *
  * DESCRIPTION
- *
- *
+ *      This testcase verifies if a thread can lock the priority inheritance
+ *      mutex multiple times.
  *
  * USAGE:
  *      Use run_auto.sh script in current directory to build and run test.
