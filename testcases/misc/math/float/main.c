@@ -393,7 +393,9 @@ static void *handle_signals (void *arg)
 		default:
 			exit (-1);
 		}
-	}while (TRUE);
+	} while (TRUE);
+
+	return NULL;
 }
 /*---------------------------------------------------------------------+
 |                               error ()                               |
