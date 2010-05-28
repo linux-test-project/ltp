@@ -1,0 +1,26 @@
+#
+# These tests are setting file permissions/group/uid and are trying to
+# open/write/execute the file.
+#
+#
+#
+# fs_perms file_mode file_uid file_gid test_uid test_gid mode (r|w|x) expected_result
+#
+fs_perms01 fs_perms 001 99 99 12 100 x 0
+fs_perms02 fs_perms 010 99 99 200 99 x 0
+fs_perms03 fs_perms 100 99 99 99 500 x 0
+fs_perms04 fs_perms 002 99 99 12 100 w 0
+fs_perms05 fs_perms 020 99 99 200 99 w 0
+fs_perms06 fs_perms 200 99 99 99 500 w 0
+fs_perms07 fs_perms 004 99 99 12 100 r 0
+fs_perms08 fs_perms 040 99 99 200 99 r 0
+fs_perms09 fs_perms 400 99 99 99 500 r 0
+fs_perms10 fs_perms 000 99 99 99 99  r 1
+fs_perms11 fs_perms 000 99 99 99 99  w 1
+fs_perms12 fs_perms 000 99 99 99 99  x 1
+fs_perms13 fs_perms 010 99 99 99 500 x 1
+fs_perms14 fs_perms 100 99 99 200 99 x 1
+fs_perms15 fs_perms 020 99 99 99 500 w 1
+fs_perms16 fs_perms 200 99 99 200 99 w 1
+fs_perms17 fs_perms 040 99 99 99 500 r 1
+fs_perms18 fs_perms 400 99 99 200 99 r 1
