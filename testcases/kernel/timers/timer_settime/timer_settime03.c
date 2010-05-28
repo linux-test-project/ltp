@@ -81,7 +81,7 @@ int TST_TOTAL;				/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 static struct itimerspec new_set, old_set, *old_temp, *new_temp;
-static timer_t timer, tim;
+static kernel_timer_t timer, tim;
 
 static int exp_enos[] = {EINVAL, EFAULT, 0};
 
@@ -168,7 +168,7 @@ setup_test(int option)
 		break;
 	case 3:
 		/* make timer_id invalid */
-		tim = (timer_t)-1;
+		tim = (kernel_timer_t)-1;
 		new_set.it_value.tv_nsec = 0;
 		break;
 	case 4:

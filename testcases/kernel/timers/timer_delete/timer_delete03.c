@@ -73,7 +73,7 @@
 #include "usctest.h"
 #include "common_timers.h"
 
-#define INVALID_ID ((timer_t)-1)
+#define INVALID_ID ((kernel_timer_t)-1)
 
 static void setup();
 

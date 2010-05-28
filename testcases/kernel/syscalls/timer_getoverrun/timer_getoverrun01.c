@@ -49,6 +49,11 @@
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
 
+/* timer_t in kernel(int) is different from  Glibc definition(void*).
+ * Use the kernel definition.
+ */
+typedef int kernel_timer_t;
+
 /* Extern Global Variables */
 extern int Tst_count;           /* counter for tst_xxx routines.         */
 extern char *TESTDIR;           /* temporary dir created by tst_tmpdir() */
@@ -120,7 +125,7 @@ int block = 1;
 int main(int ac, char **av) {
         int lc;                 /* loop counter */
         char *msg;              /* message returned from parse_opts */
-	timer_t created_timer_id;
+	kernel_timer_t created_timer_id;
         struct sigevent ev;
 	
         /* parse standard options */

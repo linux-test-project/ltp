@@ -64,4 +64,9 @@ const char *get_clock_str(const int clock_id)
 #include <time.h>
 #include <unistd.h>
 
+/* timer_t in kernel(int) is different from  Glibc definition(void*).
+ * Use the kernel definition for syscall tests
+ */
+typedef int kernel_timer_t;
+
 #endif

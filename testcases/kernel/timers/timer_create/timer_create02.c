@@ -86,7 +86,7 @@ main(int ac, char **av)
 {
 	int lc, i, j;		/* loop counter */
 	char *msg;			/* message returned from parse_opts */
-	timer_t created_timer_id;	/* holds the returned timer_id */
+	kernel_timer_t created_timer_id;	/* holds the returned timer_id */
 	char *message[3] = {
 		"SIGEV_SIGNAL",
 		"NULL",

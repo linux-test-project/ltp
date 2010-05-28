@@ -84,7 +84,7 @@ main(int ac, char **av)
 {
 	int lc;		/* loop counter */
 	char *msg;	/* message returned from parse_opts */
-	timer_t timer_id;
+	kernel_timer_t timer_id;
 
 	/* parse standard options */
 	if ((msg = parse_opts (ac, av, (option_t *) NULL, NULL)) !=

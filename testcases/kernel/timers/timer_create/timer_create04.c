@@ -111,7 +111,7 @@ main(int ac, char **av)
 {
 	int lc, i;			/* loop counter */
 	char *msg;			/* message returned from parse_opts */
-	timer_t timer_id, *temp_id;	/* stores the returned timer_id */
+	kernel_timer_t timer_id, *temp_id;	/* stores the returned timer_id */
 	struct sigevent *temp_ev;	/* used for bad address test case */
 
 	clockid_t clocks[6] = {
@@ -158,7 +158,7 @@ main(int ac, char **av)
 
 			switch (i) {
 			case 2: /* make the timer_id bad address */
-				temp_id = (timer_t *) -1;
+				temp_id = (kernel_timer_t *) -1;
 				break;
 			case 3:
 				/* make the event bad address */
@@ -167,7 +167,7 @@ main(int ac, char **av)
 			case 4:
 				/* Produce an invalid timer_id address. */
 				if(tst_kvercmp(2, 6, 12) >= 0)
-					temp_id = (timer_t *) -1;
+					temp_id = (kernel_timer_t *) -1;
 				break;
 			case 5:
 				/* Produce an invalid event address. */

@@ -81,7 +81,7 @@ int TST_TOTAL = 4;		/* Total number of test cases. */
 extern int Tst_count;		/* Test Case counter for tst_* routines */
 
 static struct itimerspec new_set, old_set, *old_temp;
-static timer_t timer;
+static kernel_timer_t timer;
 static int flag;
 
 int
