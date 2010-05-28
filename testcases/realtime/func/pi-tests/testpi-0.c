@@ -30,6 +30,7 @@
  *
  *
  * HISTORY
+ *      2010-04-22 Code cleanup by Gowrishankar (gowrishankar.m@in.ibm.com)
  *
  *
  *****************************************************************************/
@@ -45,53 +46,57 @@
 
 void usage(void)
 {
-        rt_help();
-        printf("testpi-0 specific options:\n");
-        printf("testpi-0 doesn't require any commandline options\n");
+	rt_help();
+	printf("testpi-0 specific options:\n");
+	printf("testpi-0 doesn't require any commandline options\n");
 }
 
 int parse_args(int c, char *v)
 {
 
-        int handled = 1;
-        switch (c) {
-                case 'h':
-                        usage();
-                        exit(0);
-                default:
-                        handled = 0;
-                        break;
-        }
-        return handled;
+	int handled = 1;
+	switch (c) {
+	case 'h':
+		usage();
+		exit(0);
+	default:
+		handled = 0;
+		break;
+	}
+	return handled;
 }
 
 /*
  * Test pthread creation at different thread priorities.
  */
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
-  char *pathbuf; size_t n;
+	char *pathbuf; size_t n;
 
-  rt_init("h",parse_args,argc,argv);
+	rt_init("h", parse_args, argc, argv);
 
-  n = confstr(_CS_GNU_LIBC_VERSION, NULL, (size_t)0);
-  if ((pathbuf = malloc(n)) == NULL) abort();
-  confstr(_CS_GNU_LIBC_VERSION, pathbuf, n);
+	n = confstr(_CS_GNU_LIBC_VERSION, NULL, (size_t)0);
+	pathbuf = malloc(n);
+	if (!pathbuf)
+		abort();
+	confstr(_CS_GNU_LIBC_VERSION, pathbuf, n);
 
-  printf("LIBC_VERSION: %s\n", pathbuf);
-  free(pathbuf);
+	printf("LIBC_VERSION: %s\n", pathbuf);
+	free(pathbuf);
 
-  n = confstr(_CS_GNU_LIBPTHREAD_VERSION, NULL, (size_t)0);
-  if ((pathbuf = malloc(n)) == NULL) abort();
-  confstr(_CS_GNU_LIBPTHREAD_VERSION, pathbuf, n);
+	n = confstr(_CS_GNU_LIBPTHREAD_VERSION, NULL, (size_t)0);
+	pathbuf = malloc(n);
+	if (!pathbuf)
+		abort();
+	confstr(_CS_GNU_LIBPTHREAD_VERSION, pathbuf, n);
 
-  printf("LIBPTHREAD_VERSION: %s\n", pathbuf);
-  free(pathbuf);
+	printf("LIBPTHREAD_VERSION: %s\n", pathbuf);
+	free(pathbuf);
 
-  if (sysconf(_SC_THREAD_PRIO_INHERIT) == -1) {
-	printf("No Prio inheritance support\n");
-  }
-  printf("Prio inheritance support present\n");
+	if (sysconf(_SC_THREAD_PRIO_INHERIT) == -1)
+		printf("No Prio inheritance support\n");
 
-  return 0;
+	printf("Prio inheritance support present\n");
+
+	return 0;
 }

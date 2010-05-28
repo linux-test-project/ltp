@@ -30,6 +30,7 @@
  *
  *
  * HISTORY
+ *      2010-04-22 Code cleanup by Gowrishankar
  *
  *
  *****************************************************************************/
@@ -39,54 +40,55 @@
 #include <string.h>
 #include <unistd.h>
 #include <librttest.h>
-pthread_mutex_t  child_mutex;
+pthread_mutex_t child_mutex;
 
-void* child_thread (void* arg)
+void *child_thread(void *arg)
 {
-    int ret;
+	int ret;
 
-    ret = pthread_mutex_lock(&child_mutex);
-    if (ret != 0)
-	printf("child thread: Failed to lock child_mutex: %d\n", ret);
-    else
-	printf("child_thread: got lock\n");
+	ret = pthread_mutex_lock(&child_mutex);
+	if (ret != 0)
+		printf("child thread: Failed to lock child_mutex: %d\n", ret);
+	else
+		printf("child_thread: got lock\n");
 
-    sleep(2);
+	sleep(2);
 
-    printf("child_thread: Trying to get lock 2nd time\n");
-    ret = pthread_mutex_lock(&child_mutex);
-    if (ret != 0)
-	printf("child thread: Failed to lock child_mutex: %d\n", ret);
-    else
-	printf("child_thread: got lock 2nd time !!\n");
+	printf("child_thread: Trying to get lock 2nd time\n");
+	ret = pthread_mutex_lock(&child_mutex);
+	if (ret != 0)
+		printf("child thread: Failed to lock child_mutex: %d\n", ret);
+	else
+		printf("child_thread: got lock 2nd time !!\n");
 
-    return NULL;
+	return NULL;
 }
 
 int do_test(int argc, char **argv)
 {
-    pthread_mutexattr_t mutexattr;
-    int retc, robust;
+	pthread_mutexattr_t mutexattr;
+	int retc, robust;
 
-    if (pthread_mutexattr_init(&mutexattr) != 0) {
-      printf("Failed to init mutexattr\n");
-    };
-    if (pthread_mutexattr_setrobust_np(&mutexattr, PTHREAD_MUTEX_ROBUST_NP) != 0) {
-      printf("Can't set robust mutex\n");
-    }
-    if (pthread_mutexattr_getrobust_np(&mutexattr, &robust) != 0) {
-      printf("Can't get mutexattr protocol\n");
-    } else {
-      printf("robust in mutexattr is %d\n", robust);
-    }
-    if ((retc = pthread_mutex_init(&child_mutex, &mutexattr)) != 0) {
-      printf("Failed to init mutex: %d\n", retc);
-    }
+	if (pthread_mutexattr_init(&mutexattr) != 0)
+		printf("Failed to init mutexattr\n");
 
-    create_other_thread(child_thread, NULL);
-    join_threads();
+	if (pthread_mutexattr_setrobust_np(&mutexattr,\
+		PTHREAD_MUTEX_ROBUST_NP) != 0)
+		printf("Can't set robust mutex\n");
 
-    return 0;
+	if (pthread_mutexattr_getrobust_np(&mutexattr, &robust) != 0)
+		printf("Can't get mutexattr protocol\n");
+	else
+		printf("robust in mutexattr is %d\n", robust);
+
+	retc = pthread_mutex_init(&child_mutex, &mutexattr);
+	if (retc != 0)
+		printf("Failed to init mutex: %d\n", retc);
+
+	create_other_thread(child_thread, NULL);
+	join_threads();
+
+	return 0;
 }
 
 #include "test-skeleton.c"
