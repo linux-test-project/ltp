@@ -152,7 +152,8 @@ for ((i = 0; i < 3; i++))
 	{
 		for ((k = 0; k < 2; k++))
 		{
-			if [ $i -eq $LONG_DIR -a $k -eq 1024 ]; then
+			if [ ${DIR_LEN[$k]} -eq $LONG_DIR -a \
+				${BLOCK_SIZE[$i]} -eq 1024 ]; then
 				continue
 			fi
 			ext4_run_case 65537 ${DIR_LEN[$k]} ${PARENT_DIR[$j]} \
