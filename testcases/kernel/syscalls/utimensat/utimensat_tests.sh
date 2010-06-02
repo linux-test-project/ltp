@@ -64,13 +64,13 @@ setup_file()
     # Make sure any old version of file is deleted
 
     if test -e $FILE; then
-        sudo -n chattr -ai $FILE || return $?
-        sudo -n rm -f $FILE || return $?
+        sudo $s_arg chattr -ai $FILE || return $?
+        sudo $s_arg rm -f $FILE || return $?
     fi
 
     # Create file and make atime and mtime zero.
 
-    sudo -n -u $user_tester touch $FILE || return $?
+    sudo $s_arg -u $user_tester touch $FILE || return $?
     if ! $TEST_PROG -q $FILE 0 0 0 0 > $RESULT_FILE; then
         echo "Failed to set up test file $FILE" 1>&2
         exit 1
@@ -86,19 +86,19 @@ setup_file()
     # Set owner, permissions, and EFAs for file.
 
     if test -n "$2"; then
-        sudo -n chown $2 $FILE || return $?
+        sudo $s_arg chown $2 $FILE || return $?
     fi
 
-    sudo -n chmod $3 $FILE || return $?
+    sudo $s_arg chmod $3 $FILE || return $?
 
     if test -n "$4"; then
-        sudo -n chattr $4 $FILE || return $?
+        sudo $s_arg chattr $4 $FILE || return $?
     fi
 
     # Display file setup, for visual verification
 
     ls -l $FILE | awk '{ printf "Owner=%s; perms=%s; ", $3, $1}'
-    if ! sudo -n lsattr -l $FILE | sed 's/, /,/g' | awk '{print "EFAs=" $2}'
+    if ! sudo $s_arg lsattr -l $FILE | sed 's/, /,/g' | awk '{print "EFAs=" $2}'
     then
         return $?
     fi
@@ -215,7 +215,7 @@ run_test()
     cp $LTPROOT/testcases/bin/$TEST_PROG ./
     CMD="./$TEST_PROG -q $FILE $4"
     echo "$CMD"
-    sudo -n -u $user_tester $CMD > $RESULT_FILE
+    sudo $s_arg -u $user_tester $CMD > $RESULT_FILE
     check_result $? $5 $6 $7
     echo
 
@@ -224,7 +224,7 @@ run_test()
         setup_file $FILE "$1" "$2" "$3"
         CMD="./$TEST_PROG -q -d $FILE NULL $4"
         echo "$CMD"
-        sudo -n -u $user_tester $CMD > $RESULT_FILE
+        sudo $s_arg -u $user_tester $CMD > $RESULT_FILE
         check_result $? $5 $6 $7
         echo
     fi
@@ -237,18 +237,43 @@ run_test()
         setup_file $FILE "$1" "$2" "$3"
         CMD="./$TEST_PROG -q -w -d $FILE NULL $4"
         echo "$CMD"
-        sudo -n -u $user_tester $CMD > $RESULT_FILE
+        sudo $s_arg -u $user_tester $CMD > $RESULT_FILE
         check_result $? $5 $6 $7
         echo
     fi
 
-    sudo -n chattr -ai $FILE
-    sudo -n rm -f $FILE
+    sudo $s_arg chattr -ai $FILE
+    sudo $s_arg rm -f $FILE
+}
+
+cleanup_test()
+{
+	if test $sudoers_clean; then
+		sudo rm -f $sudoers
+	fi
 }
 #=====================================================================
 
 user_tester=nobody
-sudo -n -u $user_tester mkdir -p $TEST_DIR
+echo "test sudo for -n option, non-interactive"
+sudo -n true
+if test $? -eq 0; then
+	s_arg="-n"
+	echo "sudo supports -n"
+else
+	s_arg=
+	echo "sudo does not support -n"
+fi
+sudoers=/etc/sudoers
+if test ! -e $sudoers
+then
+	echo "root    ALL=(ALL)    ALL" > $sudoers
+	sudoers_clean=1
+	chmod 440 $sudoers
+	trap 'trap "" EXIT; cleanup_test' EXIT
+fi
+
+sudo $s_arg -u $user_tester mkdir -p $TEST_DIR
 cd $TEST_DIR
 chown root $LTPROOT/testcases/bin/$TEST_PROG
 chmod ugo+x,u+s $LTPROOT/testcases/bin/$TEST_PROG
