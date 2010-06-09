@@ -1,5 +1,5 @@
 Always look here for latest version of these tests:
-http://sourceforge.jp/projects/tomoyo/svn/view/trunk/2.2.x/kernel_test/?root=tomoyo
+http://sourceforge.jp/projects/tomoyo/svn/view/trunk/2.3.x/tomoyo-tools/kernel_test/?root=tomoyo
 
 These testcases test the TOMOYO Security Module. And they are not part of
 default LTP build/install/run.
@@ -9,20 +9,19 @@ The securityfs filesystem must be mounted at /sys/kernel/security .
 
 Preparation steps are:
 
-1) Download ccs-tools package from http://osdn.dl.sourceforge.jp/tomoyo/30298/
-   and extract and build and install.
+1) Download tomoyo-tools package and extract and build and install.
 
-  # wget http://osdn.dl.sourceforge.jp/tomoyo/30298/ccs-tools-1.6.8-20090623.tar.gz
-  # tar -zxf ccs-tools-1.6.8-20090623.tar.gz
-  # make -C ccstools/ install 
+  # wget -O tomoyo-tools.tar.gz 'http://sourceforge.jp/projects/tomoyo/svn/view/trunk/2.3.x/tomoyo-tools.tar.gz?root=tomoyo&view=tar'
+  # tar -zxf tomoyo-tools.tar.gz
+  # make -C tomoyo-tools/ install
 
-  Programs are installed in /usr/lib/ccs/ directory and some symlinks are
-  created in /usr/sbin/ directory with prefix "ccs-".
+  Programs are installed in /usr/sbin/ with prefix "tomoyo-" and
+  /usr/lib/tomoyo/ directory without prefix "tomoyo-".
 
-  You can make a RPM package by "rpmbuild -bb ccstools/ccs-tools.spec" and
+  You can make a RPM package by "rpmbuild -bb tomoyo-tools/tomoyo-tools.spec" and
   a DEB package by "alien -k" after "rpmbuild -bb".
 
-2) Run /usr/lib/ccs/tomoyo_init_policy.sh .
+2) Run /usr/lib/tomoyo/init_policy .
 
    This will take several minutes.
 
@@ -40,10 +39,12 @@ Preparation steps are:
 4) Build the tests.
 
    # (extract the tar ball containing the tests.)
+   # make autotools
+   # ./configure
    # cd testcases/kernel/security/tomoyo/
    # make
    # find `/bin/pwd` -type f -perm +100 >> /etc/tomoyo/manager.conf
-   # /usr/sbin/ccs-loadpolicy m
+   # /usr/sbin/tomoyo-loadpolicy m
 
 Test steps are:
 

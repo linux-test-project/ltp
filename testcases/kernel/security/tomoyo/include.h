@@ -22,10 +22,7 @@
  *
  * Common functions for testing TOMOYO Linux's kernel.
  *
- * Copyright (C) 2005-2009  NTT DATA CORPORATION
- *
- * Version: 2.2.0   2009/06/23
- *
+ * Copyright (C) 2005-2010  NTT DATA CORPORATION
  */
 #include <errno.h>
 #include <fcntl.h>
@@ -47,6 +44,13 @@
 #include <time.h>
 #include <unistd.h>
 #include <utime.h>
+#include "test.h"
+#include <sched.h>
+#include <stdarg.h>
+#include <sys/mount.h>
+#include <arpa/inet.h>
+#include <net/if.h>
+#include <linux/ip.h>
 
 /* 
  * Some architectures like mips n32 don't have __NR_uselib defined in the
@@ -65,53 +69,80 @@ static inline int uselib(const char *library)
 }
 #endif
 
+/* Is there an architecture without __NR_pivot_root defined? */
+#ifdef __NR_pivot_root
+static inline int pivot_root(const char *new_root, const char *put_old)
+{
+	return syscall(__NR_pivot_root, new_root, put_old);
+}
+#else
+static inline int pivot_root(const char *new_root, const char *put_old)
+{
+	errno = ENOSYS;
+	return -1;
+}
+#endif
+
 #define proc_policy_dir              "/sys/kernel/security/tomoyo/"
-#define proc_policy_domain_policy    proc_policy_dir "domain_policy"
-#define proc_policy_exception_policy proc_policy_dir "exception_policy"
-#define proc_policy_profile          proc_policy_dir "profile"
-#define proc_policy_self_domain      proc_policy_dir "self_domain"
+#define proc_policy_domain_policy    "/sys/kernel/security/tomoyo/domain_policy"
+#define proc_policy_exception_policy "/sys/kernel/security/tomoyo/exception_policy"
+#define proc_policy_profile          "/sys/kernel/security/tomoyo/profile"
+#define proc_policy_manager          "/sys/kernel/security/tomoyo/manager"
+#define proc_policy_query            "/sys/kernel/security/tomoyo/query"
+#define proc_policy_grant_log        "/sys/kernel/security/tomoyo/grant_log"
+#define proc_policy_reject_log       "/sys/kernel/security/tomoyo/reject_log"
+#define proc_policy_domain_status    "/sys/kernel/security/tomoyo/.domain_status"
+#define proc_policy_process_status   "/sys/kernel/security/tomoyo/.process_status"
+#define proc_policy_self_domain      "/sys/kernel/security/tomoyo/self_domain"
 
-static void fprintf_encoded(FILE *fp, const char *pathname)
-{
-	while (1) {
-		unsigned char c = *(const unsigned char *) pathname++;
-		if (!c)
-			break;
-		if (c == '\\') {
-			fputc('\\', fp);
-			fputc('\\', fp);
-		} else if (c > ' ' && c < 127) {
-			fputc(c, fp);
-		} else {
-			fprintf(fp, "\\%c%c%c", (c >> 6) + '0',
-				((c >> 3) & 7) + '0', (c & 7) + '0');
-		}
-	}
-}
-
+static FILE *profile_fp = NULL;
+static FILE *domain_fp = NULL;
+static FILE *exception_fp = NULL;
 static char self_domain[4096] = "";
-static FILE *fp_domain = NULL;
-static FILE *fp_exception = NULL;
-static FILE *fp_profile = NULL;
-
-static void write_profile(const char *cp)
-{
-	fprintf(fp_profile, "%s", cp);
-	fflush(fp_profile);
-}
+static pid_t pid = 0;
 
 static void clear_status(void)
 {
+	static const char *keywords[] = {
+		"file::execute",
+		"file::open",
+		"file::create",
+		"file::unlink",
+		"file::mkdir",
+		"file::rmdir",
+		"file::mkfifo",
+		"file::mksock",
+		"file::truncate",
+		"file::symlink",
+		"file::rewrite",
+		"file::mkblock",
+		"file::mkchar",
+		"file::link",
+		"file::rename",
+		"file::chmod",
+		"file::chown",
+		"file::chgrp",
+		"file::ioctl",
+		"file::chroot",
+		"file::mount",
+		"file::umount",
+		"file::pivot_root",
+		NULL
+	};
+	int i;
 	FILE *fp = fopen(proc_policy_profile, "r");
 	static char buffer[4096];
 	if (!fp) {
 		fprintf(stderr, "Can't open %s\n", proc_policy_profile);
 		exit(1);
 	}
+	for (i = 0; keywords[i]; i++)
+		fprintf(profile_fp,
+			"255-CONFIG::%s={ mode=disabled }\n",
+			keywords[i]);
 	while (memset(buffer, 0, sizeof(buffer)),
 	       fgets(buffer, sizeof(buffer) - 10, fp)) {
 		const char *mode;
-		int v;
 		char *cp = strchr(buffer, '=');
 		if (!cp)
 			continue;
@@ -123,61 +154,196 @@ static void clear_status(void)
 		*cp++ = '\0';
 		if (strcmp(buffer, "0"))
 			continue;
+		fprintf(profile_fp, "255-%s", cp);
 		if (!strcmp(cp, "COMMENT"))
-			mode = "=Profile for kernel test";
-		else if (sscanf(mode, "%u", &v) == 1)
-			mode = "=0";
+			mode = "Profile for kernel test\n";
 		else
-			mode = "=disabled";
-		fprintf(fp_profile, "255-%s%s\n", cp, mode);
+			mode = "{ mode=disabled verbose=no }\n";
+		fprintf(profile_fp, "255-%s=%s", cp, mode);
 	}
+	fprintf(profile_fp, "255-PREFERENCE::learning= verbose=no\n");
+	fprintf(profile_fp, "255-PREFERENCE::enforcing= verbose=no\n");
+	fprintf(profile_fp, "255-PREFERENCE::permissive= verbose=no\n");
+	fprintf(profile_fp, "255-PREFERENCE::disabled= verbose=no\n");
+	fprintf(profile_fp, "255-PREFERENCE::learning= max_entry=2048\n");
+	fflush(profile_fp);
 	fclose(fp);
-	fflush(fp_profile);
 }
 
-static void ccs_test_init(void)
+static void tomoyo_test_init(void)
 {
-	int fd = open(proc_policy_self_domain, O_RDONLY);
-	memset(self_domain, 0, sizeof(self_domain));
-	read(fd, self_domain, sizeof(self_domain) - 1);
-	close(fd);
-	errno = 0;
-	fp_profile = fopen(proc_policy_profile, "w");
-	fp_domain = fopen(proc_policy_domain_policy, "w");
-	fp_exception = fopen(proc_policy_exception_policy, "w");
-	if (!fp_domain || !fp_exception || !fp_profile) {
-		if (errno != ENOENT)
-			fprintf(stderr, "Please run \n"
-				"# echo 255-MAC_FOR_FILE=disabled | "
-				"/usr/sbin/ccs-loadpolicy -p\n");
-		else
-			fprintf(stderr, "You can't use this program "
-				"for this kernel.\n");
+	pid = getpid();
+	if (access(proc_policy_dir, F_OK)) {
+		fprintf(stderr, "You can't use this program for this kernel."
+			"\n");
 		exit(1);
 	}
-	if (fwrite("\n", 1, 1, fp_profile) != 1 || fflush(fp_profile)) {
-		memset(self_domain, 0, sizeof(self_domain));
-		readlink("/proc/self/exe", self_domain,
-			 sizeof(self_domain) - 1);
-		if (self_domain[0] != '/')
-			snprintf(self_domain, sizeof(self_domain) - 1,
-				 "path_to_this_program");
-		fprintf(stderr, "Please do either\n"
-			"(a) run\n"
-			"    # echo ");
-		fprintf_encoded(stderr, self_domain);
-		fprintf(stderr, " >> /etc/tomoyo/manager.conf\n"
-			"    and reboot\n"
-			"or\n"
-			"(b) run\n"
-			"    # echo ");
-		fprintf_encoded(stderr, self_domain);
-		fprintf(stderr, " | /usr/sbin/ccs-loadpolicy -m\n"
-			"before running this program.\n");
+	profile_fp = fopen(proc_policy_profile, "w");
+	if (!profile_fp) {
+		fprintf(stderr, "Can't open %s .\n", proc_policy_profile);
+		exit(1);
+	}
+	setlinebuf(profile_fp);
+	domain_fp = fopen(proc_policy_domain_policy, "w");
+	if (!domain_fp) {
+		fprintf(stderr, "Can't open %s .\n",
+			proc_policy_domain_policy);
+		exit(1);
+	}
+	setlinebuf(domain_fp);
+	exception_fp = fopen(proc_policy_exception_policy, "w");
+	if (!exception_fp) {
+		fprintf(stderr, "Can't open %s .\n",
+			proc_policy_exception_policy);
+		exit(1);
+	}
+	setlinebuf(exception_fp);
+	if (fputc('\n', profile_fp) != '\n' || fflush(profile_fp)) {
+		fprintf(stderr, "You need to register this program to %s to "
+			"run this program.\n", proc_policy_manager);
 		exit(1);
 	}
 	clear_status();
-	fprintf(fp_domain, "%s\nuse_profile 255\n", self_domain);
-	fflush(fp_domain);
-	write_profile("255-TOMOYO_VERBOSE=enabled\n");
+	{
+		FILE *fp = fopen(proc_policy_self_domain, "r");
+		memset(self_domain, 0, sizeof(self_domain));
+		if (!fp || !fgets(self_domain, sizeof(self_domain) - 1, fp) ||
+		    fclose(fp)) {
+			fprintf(stderr, "Can't open %s .\n",
+				proc_policy_self_domain);
+			exit(1);
+		}
+	}
+	fprintf(domain_fp, "select pid=%u\n", pid);
+	fprintf(domain_fp, "use_profile 255\n");
+	fprintf(domain_fp, "allow_read/write /sys/kernel/security/tomoyo/domain_policy\n");
+	fprintf(domain_fp, "allow_truncate /sys/kernel/security/tomoyo/domain_policy\n");
+	fprintf(domain_fp, "allow_read/write /sys/kernel/security/tomoyo/exception_policy\n");
+	fprintf(domain_fp, "allow_truncate /sys/kernel/security/tomoyo/exception_policy\n");
+	fprintf(domain_fp, "allow_read/write /sys/kernel/security/tomoyo/profile\n");
+	fprintf(domain_fp, "allow_truncate /sys/kernel/security/tomoyo/profile\n");
+}
+
+static void BUG(const char *fmt, ...)
+	__attribute__ ((format(printf, 1, 2)));
+
+static void BUG(const char *fmt, ...)
+{
+	va_list args;
+	printf("BUG: ");
+	va_start(args, fmt);
+	vprintf(fmt, args);
+	va_end(args);
+	putchar('\n');
+	fflush(stdout);
+	while (1)
+		sleep(100);
+}
+
+static int write_domain_policy(const char *policy, int is_delete)
+{
+	FILE *fp = fopen(proc_policy_domain_policy, "r");
+	char buffer[8192];
+	int domain_found = 0;
+	int policy_found = 0;
+	memset(buffer, 0, sizeof(buffer));
+	if (!fp) {
+		BUG("Can't read %s", proc_policy_domain_policy);
+		return 0;
+	}
+	if (is_delete)
+		fprintf(domain_fp, "delete ");
+	fprintf(domain_fp, "%s\n", policy);
+	while (fgets(buffer, sizeof(buffer) - 1, fp)) {
+		char *cp = strchr(buffer, '\n');
+		if (cp)
+			*cp = '\0';
+		if (!strncmp(buffer, "<kernel>", 8))
+			domain_found = !strcmp(self_domain, buffer);
+		if (!domain_found)
+			continue;
+		/* printf("<%s>\n", buffer); */
+		if (strcmp(buffer, policy))
+			continue;
+		policy_found = 1;
+		break;
+	}
+	fclose(fp);
+	if (policy_found == is_delete) {
+		BUG("Can't %s %s", is_delete ? "delete" : "append",
+		    policy);
+		return 0;
+	}
+	errno = 0;
+	return 1;
+
+}
+
+static int write_exception_policy(const char *policy, int is_delete)
+{
+	FILE *fp = fopen(proc_policy_exception_policy, "r");
+	char buffer[8192];
+	int policy_found = 0;
+	memset(buffer, 0, sizeof(buffer));
+	if (!fp) {
+		BUG("Can't read %s", proc_policy_exception_policy);
+		return 0;
+	}
+	if (is_delete)
+		fprintf(exception_fp, "delete ");
+	fprintf(exception_fp, "%s\n", policy);
+	while (fgets(buffer, sizeof(buffer) - 1, fp)) {
+		char *cp = strchr(buffer, '\n');
+		if (cp)
+			*cp = '\0';
+		if (strcmp(buffer, policy))
+			continue;
+		policy_found = 1;
+		break;
+	}
+	fclose(fp);
+	if (policy_found == is_delete) {
+		BUG("Can't %s %s", is_delete ? "delete" : "append",
+		    policy);
+		return 0;
+	}
+	errno = 0;
+	return 1;
+
+}
+
+static int set_profile(const int mode, const char *name)
+{
+	static const char *modes[4] = { "disabled", "learning", "permissive",
+					"enforcing" };
+	FILE *fp = fopen(proc_policy_profile, "r");
+	char buffer[8192];
+	int policy_found = 0;
+	const int len = strlen(name);
+	if (!fp) {
+		BUG("Can't read %s", proc_policy_profile);
+		return 0;
+	}
+	fprintf(profile_fp, "255-CONFIG::%s=%s\n", name, modes[mode]);
+	while (memset(buffer, 0, sizeof(buffer)),
+	       fgets(buffer, sizeof(buffer) - 1, fp)) {
+		char *cp = strchr(buffer, '\n');
+		if (cp)
+			*cp = '\0';
+		if (strncmp(buffer, "255-CONFIG::", 12) ||
+		    strncmp(buffer + 12, name, len) ||
+		    buffer[12 + len] != '=')
+			continue;
+		if (strstr(buffer + 13 + len, modes[mode]))
+			policy_found = 1;
+		break;
+	}
+	fclose(fp);
+	if (!policy_found) {
+		BUG("Can't change profile to 255-CONFIG::%s=%s",
+		    name, modes[mode]);
+		return 0;
+	}
+	errno = 0;
+	return 1;
 }
