@@ -253,6 +253,7 @@ echofile (struct servent *sp, struct addrinfo *ai, char *resultfile,
 	}
 
 #ifdef DEBUG
+	addrlen = sizeof(struct sockaddr);
 	/* printf("addrlen=%d\n", addrlen); */
 	/* printf("ai->ai_addr=%s\n", inet_ntoa(ai->ai_addr)); */
 	if (getsockname(s, &address, &addrlen) == -1) {
