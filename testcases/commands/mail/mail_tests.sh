@@ -140,13 +140,17 @@ fi
 
 export TCID=mail_tests::mail02
 export TST_COUNT=2
-RC=0
 RC1=0
 RC2=0
+RC3=0
+RC4=0
 
 tst_resm TINFO "Test #2: mail user@bad-domain will result in failure"
 tst_resm TINFO "Test #2: to deliver the mail. Mailer daemon should"
 tst_resm TINFO "Test #2: report this failure."
+
+tvar=${MACHTYPE%-*}
+tvar=${tvar#*-}
 
 # Don't use underscores in domain names (they're illegal)...
 mail -s "Test" root@thisdomaindoesnotexist < $LTPTMP/tst_mail.in \
@@ -190,9 +194,16 @@ else
 		    $LTPTMP/tst_mail.res)
 	fi
 	if [ -z "$RC1" -a -z "$RC2" -a -z "$RC3" ]; then
-		tst_res TFAIL $LTPTMP/tst_mail.res \
-		    "Test #2: No new mail for root. Reason:"
-		: $(( TFAILCNT += 1 ))
+		RC4=$(awk '{print match($1 $2 $3, "Nomailfor")}' \
+        	    $LTPTMP/tst_mail.res)
+		if [ \( "$tvar" = "redhat" -o "$tvar" = "redhat-linux" \) -a -n "$RC4" ]; then
+			tst_resm TPASS \
+				"Test #2: No new mail for root as expected"
+		else
+			tst_res TFAIL $LTPTMP/tst_mail.res \
+			    "Test #2: No new mail for root. Reason:"
+			: $(( TFAILCNT += 1 ))
+		fi
 	else
 
 		if [ $RC1 -ne 0 -a $RC2 -ne 0 ] || [ $RC1 -ne 0 -a $RC3 -ne 0 ]; then
