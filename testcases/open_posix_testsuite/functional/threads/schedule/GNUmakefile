@@ -4,12 +4,11 @@
 # of this license, see the COPYING file at the top level of this
 # source tree.
 
-CFLAGS := -Wall -I../../../include -O2
-LDFLAGS := -lpthread -lrt
-
-TARGETS := 1-1 1-2 
+CFLAGS=		-I../../../include
+LDLIBS=		-lpthread -lrt
+TARGETS=	1-1 1-2 
 
 all: $(TARGETS)
 
 clean:
-	rm -f $(TARGETS)
+	-rm -f $(TARGETS)

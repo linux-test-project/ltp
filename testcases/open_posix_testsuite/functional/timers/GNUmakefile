@@ -5,10 +5,9 @@
 # source tree.
 #
 
-all:
-	make -C clocks
-	make -C timers
+SUBDIRS=	clocks timers
 
-clean :
-	make -C clocks clean
-	make -C timers clean
+all clean:
+	for d in $(SUBDIRS); do \
+		$(MAKE) -C $$d $@; \
+	done

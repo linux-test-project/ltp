@@ -1,10 +1,9 @@
-include ../Makefile.inc
+CFLAGS+=	-I../include
+LDLIBS=		-lpthread
+TARGETS=	robust1-mode2 robust1-sun robust2-mode2 robust2-sun \
+		robust3-mode2
 
-SRCS=$(wildcard *.c)
-TARGETS=$(patsubst %.c,%,$(SRCS))
-CFLAGS+=-Wall -g -I../include
-
-all:$(TARGETS)
+all: $(TARGETS)
 
 clean:
-	rm -rf $(TARGETS)
+	-rm -rf $(TARGETS)
