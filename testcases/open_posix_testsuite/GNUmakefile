@@ -66,8 +66,8 @@ clean:
 	-@# Build runnable tests
 	-@find $(top_builddir) -iname \*.test | xargs -n 40 rm -f {}
 	-@find $(top_builddir) -iname \*~ -o -iname \*.o | xargs -n 40 rm -f {}
-	-@for d in $(FUNCTIONAL_MAKE); do \
-	    $(MAKE) -C $$d clean; \
+	@for d in $(FUNCTIONAL_MAKE); do \
+	    $(MAKE) -C $$d clean >/dev/null; \
 	done
 
 # Rule to run a build test
