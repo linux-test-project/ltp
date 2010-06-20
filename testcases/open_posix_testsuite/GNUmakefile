@@ -31,6 +31,8 @@ LOGFILE = $(top_builddir)/logfile
 
 LDFLAGS := $(shell cat LDFLAGS | grep -v \^\#)
 
+LDLIBS= -lrt
+
 RUN_TESTS := $(shell $(top_builddir)/locate-test \
              --execs $(top_builddir)/$(POSIX_TARGET))
 BUILD_TESTS := $(shell $(top_builddir)/locate-test \
