@@ -23,7 +23,6 @@ TIMEOUT_VAL = 240
 # The following value is the shell return value of a timedout application.
 # with the bash shell, the ret val of a killed application is 128 + signum
 # and under Linux, SIGALRM=14, so we have (Linux+bash) 142.
-TIMEOUT_RET = $(shell cat $(top_builddir)/t0.val)
 
 top_builddir = .
 
@@ -59,18 +58,17 @@ tests-pretty:
 CFLAGS += -D_POSIX_C_SOURCE=200112L
 
 # add -std=c99, -std=gnu99 if compiler supports it (gcc-2.95.3 does not).
-check_gcc = $(shell if $(CC) $(1) -S -o /dev/null -xc /dev/null > /dev/null 2>&1; then echo "$(1)"; else echo "$(2)"; fi)
-CFLAGS += $(call check_gcc,-std=c99,)
-CFLAGS += $(call check_gcc,-std=gnu99,)
+CFLAGS += `$(CC) -std=c99 -S -o /dev/null -xc /dev/null >/dev/null 2>&1 && echo "-std=c99"`
+CFLAGS += `$(CC) -std=gnu99 -S -o /dev/null -xc /dev/null >/dev/null 2>&1 && echo "-std=gnu99"`
 
 INCLUDE = -Iinclude
 
 # FIXME: exhaust cmd line length
 clean:
 	@rm -f $(LOGFILE)
-# Timeout helper files
-	@rm -f $(top_builddir)/t0{,.val}
-# Built runnable tests
+	@# Timeout helper files
+	@rm -f $(top_builddir)/t0.val $(top_builddir)/t0
+	@# Build runnable tests
 	@find $(top_builddir) -iname \*.test | xargs -n 40 rm -f {}
 	@find $(top_builddir) -iname \*~ -o -iname \*.o | xargs -n 40 rm -f {}
 	@$(foreach DIR,$(FUNCTIONAL_MAKE),$(MAKE) -C $(DIR) clean >> /dev/null 2>&1;) >> /dev/null 2>&1
@@ -80,18 +78,19 @@ clean:
 .PRECIOUS: %.test
 %.test: %.o $(top_builddir)/t0
 	@COMPLOG=$(LOGFILE).$$$$; \
+	TEST=`echo "$@" | sed -e 's,.test$$,,'`; \
 	[ -f $< ] || exit 0; \
 	{ nm -g $< | grep -q ' T main\| D main'; } || \
-	{ echo "$(@:.test=): link: SKIP" | tee -a $(LOGFILE) && exit 0; }; \
+	{ echo "$$TEST: link: SKIP" | tee -a $(LOGFILE) && exit 0; }; \
 	if $(CC) $(CFLAGS) $< -o $@ $(LDFLAGS) > $$COMPLOG 2>&1; \
 	then \
-		echo "$(@:.test=): link: PASS" | tee -a $(LOGFILE); \
+		echo "$$TEST: link: PASS" | tee -a $(LOGFILE); \
 	else \
 		( \
 			echo "$(@:.test=): link: FAILED. Linker output: "; \
 			cat $$COMPLOG; \
 		) >> $(LOGFILE); \
-		echo "$(@:.test=): link: FAILED "; \
+		echo "$$TEST: link: FAILED "; \
 	fi; \
 	rm -f $$COMPLOG;
 
@@ -100,6 +99,8 @@ clean:
 .PHONY: %.run-test
 %.run-test: %.test $(top_builddir)/t0.val
 	@COMPLOG=$(LOGFILE).$$$$; \
+	TEST=`echo "$@" | sed -e 's,.run-test$$,,'`; \
+	TIMEOUT_RET=`cat $(top_builddir)/t0.val`; \
 	[ -f $< ] || exit 0; \
 	$(TIMEOUT) $< > $$COMPLOG 2>&1; \
 	RESULT=$$?; \
@@ -119,47 +120,48 @@ clean:
 	then \
 		MSG="UNTESTED"; \
 	fi; \
-	if [ $$RESULT -eq $(TIMEOUT_RET) ]; \
+	if [ $$RESULT -eq $$TIMEOUT_RET ]; \
 	then \
 		MSG="HUNG"; \
 	fi; \
-	if [  $$RESULT -gt 5  -a  $$RESULT -ne $(TIMEOUT_RET)  ]; \
+	if [  $$RESULT -gt 5  -a  $$RESULT -ne $$TIMEOUT_RET ]; \
 	then \
 		MSG="INTERRUPTED"; \
 	fi; \
 	if [ $$RESULT -eq 0 ]; \
 	then \
-		echo "$(@:.run-test=): execution: PASS" | tee -a $(LOGFILE); \
+		echo "$$TEST: execution: PASS" | tee -a $(LOGFILE); \
 	else \
 		( \
-			echo "$(@:.run-test=): execution: $$MSG: Output: "; \
+			echo "$$TEST: execution: $$MSG: Output: "; \
 			cat $$COMPLOG; \
 		) >> $(LOGFILE); \
-		echo "$(@:.run-test=): execution: $$MSG "; \
+		echo "$$TEST: execution: $$MSG "; \
 	fi; \
 	rm -f $$COMPLOG;
 
 $(top_builddir)/t0: $(top_builddir)/t0.c
 	@echo Building timeout helper files; \
 	$(CC) -O2 -o $@ $<
-	
+
 $(top_builddir)/t0.val: $(top_builddir)/t0
 	echo `$(top_builddir)/t0 0; echo $$?` > $(top_builddir)/t0.val
-	
+
 %.run-test: %.sh $(top_builddir)/t0.val
 	@COMPLOG=$(LOGFILE).$$$$; \
+	TEST=`echo "$@" | sed -e 's,.run-test$$,,'`; \
 	chmod +x $<; \
 	$(TIMEOUT) $< > $$COMPLOG 2>&1; \
 	RESULT=$$?; \
 	if [ $$RESULT -eq 0 ]; \
 	then \
-		echo "$(@:.run-test=): execution: PASS" | tee -a $(LOGFILE);\
+		echo "$$TEST: execution: PASS" | tee -a $(LOGFILE);\
 	else \
 		( \
-			echo "$(@:.run-test=): execution: FAILED: Output: ";\
+			echo "$$TEST: execution: FAILED: Output: ";\
 			cat $$COMPLOG; \
 		) >> $(LOGFILE); \
-		echo "$(@:.run-test=): execution: FAILED "; \
+		echo "$$TEST: execution: FAILED "; \
 	fi; \
 	rm -f $$COMPLOG;
 
@@ -167,15 +169,16 @@ $(top_builddir)/t0.val: $(top_builddir)/t0
 .PRECIOUS: %.o
 %.o: %.c
 	@COMPLOG=$(LOGFILE).$$$$; \
+	TEST=`echo "$@" | sed -e 's,.o$$,,'`; \
 	if $(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@ $(LDFLAGS) > $$COMPLOG 2>&1; \
 	then \
-		echo "$(@:.o=): build: PASS" | tee -a $(LOGFILE); \
+		echo "$$TEST: build: PASS" | tee -a $(LOGFILE); \
 	else \
 		( \
-			echo "$(@:.o=): build: FAILED: Compiler output: "; \
+			echo "$$TEST: build: FAILED: Compiler output: "; \
 			cat $$COMPLOG; \
 		) >> $(LOGFILE); \
-		echo "$(@:.o=): build: FAILED "; \
+		echo "$$TEST: build: FAILED "; \
 	fi; \
 	rm -f $$COMPLOG;
 
@@ -201,4 +204,3 @@ stress-run: $(STRESS_RUN)
 $(STRESS_RUN): 
 	cd $@; ./run.sh
 	cd $(PWD)
-
