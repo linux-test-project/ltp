@@ -26,22 +26,16 @@ TIMEOUT_VAL = 240
 
 top_builddir = .
 
-LOGFILE = $(top_builddir)/logfile
+LOGFILE=	$(top_builddir)/logfile
 
-LDFLAGS := $(shell cat LDFLAGS | grep -v \^\#)
-
-LDLIBS= -lrt
-
-RUN_TESTS := $(shell $(top_builddir)/locate-test \
-             --execs $(top_builddir)/$(POSIX_TARGET))
-BUILD_TESTS := $(shell $(top_builddir)/locate-test \
-               --buildable $(top_builddir)/$(POSIX_TARGET))
-FUNCTIONAL_MAKE := $(shell $(top_builddir)/locate-test --fmake)
-FUNCTIONAL_RUN := $(shell $(top_builddir)/locate-test --frun)
-STRESS_MAKE := $(shell $(top_builddir)/locate-test --smake)
-STRESS_RUN := $(shell $(top_builddir)/locate-test --srun)
-PWD := $(shell pwd)
-TIMEOUT = $(top_builddir)/t0 $(TIMEOUT_VAL)
+RUN_TESTS=	$(shell $(top_builddir)/locate-test --execs $(top_builddir)/$(POSIX_TARGET))
+BUILD_TESTS=	$(shell $(top_builddir)/locate-test --buildable $(top_builddir)/$(POSIX_TARGET))
+FUNCTIONAL_MAKE=`$(top_builddir)/locate-test --fmake`
+FUNCTIONAL_RUN=	$(shell $(top_builddir)/locate-test --frun)
+STRESS_MAKE=	`$(top_builddir)/locate-test --smake`
+STRESS_RUN=	$(shell $(top_builddir)/locate-test --srun)
+PWD=		`pwd`
+TIMEOUT=	$(top_builddir)/t0 $(TIMEOUT_VAL)
 
 
 all: build-tests run-tests 
@@ -55,23 +49,26 @@ stress-tests: stress-make stress-run
 tests-pretty:
 	$(MAKE) all | column -t -s:
 
-CFLAGS += -D_POSIX_C_SOURCE=200112L
-
 # add -std=c99, -std=gnu99 if compiler supports it (gcc-2.95.3 does not).
-CFLAGS += `$(CC) -std=c99 -S -o /dev/null -xc /dev/null >/dev/null 2>&1 && echo "-std=c99"`
-CFLAGS += `$(CC) -std=gnu99 -S -o /dev/null -xc /dev/null >/dev/null 2>&1 && echo "-std=gnu99"`
+CPPFLAGS+=	`$(CC) -std=c99 -S -o /dev/null -xc /dev/null >/dev/null 2>&1 && echo "-std=c99"`
+CPPFLAGS+=	`$(CC) -std=gnu99 -S -o /dev/null -xc /dev/null >/dev/null 2>&1 && echo "-std=gnu99"`
+CPPFLAGS+=	-D_POSIX_C_SOURCE=200112L -D_XOPEN_SOURCE=600
+CPPFLAGS+=	-I$(PWD)/include
 
-INCLUDE = -Iinclude
+LDFLAGS+=
+LDLIBS+=	-lpthread -lrt -lm
 
 # FIXME: exhaust cmd line length
 clean:
-	@rm -f $(LOGFILE)
-	@# Timeout helper files
-	@rm -f $(top_builddir)/t0.val $(top_builddir)/t0
-	@# Build runnable tests
-	@find $(top_builddir) -iname \*.test | xargs -n 40 rm -f {}
-	@find $(top_builddir) -iname \*~ -o -iname \*.o | xargs -n 40 rm -f {}
-	@$(foreach DIR,$(FUNCTIONAL_MAKE),$(MAKE) -C $(DIR) clean >> /dev/null 2>&1;) >> /dev/null 2>&1
+	-@rm -f $(LOGFILE)*
+	-@# Timeout helper files
+	-@rm -f $(top_builddir)/t0.val $(top_builddir)/t0
+	-@# Build runnable tests
+	-@find $(top_builddir) -iname \*.test | xargs -n 40 rm -f {}
+	-@find $(top_builddir) -iname \*~ -o -iname \*.o | xargs -n 40 rm -f {}
+	-@for d in $(FUNCTIONAL_MAKE); do \
+	    $(MAKE) -C $$d clean; \
+	done
 
 # Rule to run a build test
 # If the .o doesn't export main, then we don't need to link
@@ -82,7 +79,7 @@ clean:
 	[ -f $< ] || exit 0; \
 	{ nm -g $< | grep -q ' T main\| D main'; } || \
 	{ echo "$$TEST: link: SKIP" | tee -a $(LOGFILE) && exit 0; }; \
-	if $(CC) $(CFLAGS) $< -o $@ $(LDFLAGS) > $$COMPLOG 2>&1; \
+	if $(LINK.o) $< $(LOADLIBES) $(LDLIBS) -o $@ >$$COMPLOG 2>&1; \
 	then \
 		echo "$$TEST: link: PASS" | tee -a $(LOGFILE); \
 	else \
@@ -107,28 +104,22 @@ clean:
 	if [ $$RESULT -eq 1 ]; \
 	then \
 		MSG="FAILED"; \
-	fi; \
-	if [ $$RESULT -eq 2 ]; \
+	elif [ $$RESULT -eq 2 ]; \
 	then \
 		MSG="UNRESOLVED"; \
-	fi; \
-	if [ $$RESULT -eq 4 ]; \
+	elif [ $$RESULT -eq 4 ]; \
 	then \
 		MSG="UNSUPPORTED"; \
-	fi; \
-	if [ $$RESULT -eq 5 ]; \
+	elif [ $$RESULT -eq 5 ]; \
 	then \
 		MSG="UNTESTED"; \
-	fi; \
-	if [ $$RESULT -eq $$TIMEOUT_RET ]; \
+	elif [ $$RESULT -eq $$TIMEOUT_RET ]; \
 	then \
 		MSG="HUNG"; \
-	fi; \
-	if [  $$RESULT -gt 5  -a  $$RESULT -ne $$TIMEOUT_RET ]; \
+	elif [ $$RESULT -gt 5 -a $$RESULT -ne $$TIMEOUT_RET ]; \
 	then \
 		MSG="INTERRUPTED"; \
-	fi; \
-	if [ $$RESULT -eq 0 ]; \
+	elif [ $$RESULT -eq 0 ]; \
 	then \
 		echo "$$TEST: execution: PASS" | tee -a $(LOGFILE); \
 	else \
@@ -170,7 +161,7 @@ $(top_builddir)/t0.val: $(top_builddir)/t0
 %.o: %.c
 	@COMPLOG=$(LOGFILE).$$$$; \
 	TEST=`echo "$@" | sed -e 's,.o$$,,'`; \
-	if $(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@ $(LDFLAGS) > $$COMPLOG 2>&1; \
+	if $(COMPILE.c) $(OUTPUT_OPTION) $< >$$COMPLOG 2>&1; \
 	then \
 		echo "$$TEST: build: PASS" | tee -a $(LOGFILE); \
 	else \
@@ -184,7 +175,9 @@ $(top_builddir)/t0.val: $(top_builddir)/t0
 
 # Functional/Stress test build and execution
 functional-make:
-	$(foreach DIR,$(FUNCTIONAL_MAKE),$(MAKE) -C $(DIR);)
+	@for d in $(FUNCTIONAL_MAKE); do \
+		$(MAKE) -C $$d; \
+	done
 
 .PHONY: $(FUNCTIONAL_RUN)
 
@@ -192,10 +185,11 @@ functional-run: $(FUNCTIONAL_RUN)
 
 $(FUNCTIONAL_RUN): 
 	cd $@; ./run.sh
-	cd $(PWD)
 
 stress-make:
-	$(foreach DIR,$(STRESS_MAKE),$(MAKE) -C $(DIR);)
+	for d in $(STRESS_MAKE); do \
+		$(MAKE) -C $$d; \
+	done
 
 .PHONY: $(STRESS_RUN)
 
@@ -203,4 +197,3 @@ stress-run: $(STRESS_RUN)
 
 $(STRESS_RUN): 
 	cd $@; ./run.sh
-	cd $(PWD)
