@@ -71,7 +71,7 @@ clean:
 # Built runnable tests
 	@find $(top_builddir) -iname \*.test | xargs -n 40 rm -f {}
 	@find $(top_builddir) -iname \*~ -o -iname \*.o | xargs -n 40 rm -f {}
-	@$(foreach DIR,$(FUNCTIONAL_MAKE),make -C $(DIR) clean >> /dev/null 2>&1;) >> /dev/null 2>&1
+	@$(foreach DIR,$(FUNCTIONAL_MAKE),$(MAKE) -C $(DIR) clean >> /dev/null 2>&1;) >> /dev/null 2>&1
 
 # Rule to run a build test
 # If the .o doesn't export main, then we don't need to link
@@ -179,7 +179,7 @@ $(top_builddir)/t0.val: $(top_builddir)/t0
 
 # Functional/Stress test build and execution
 functional-make:
-	$(foreach DIR,$(FUNCTIONAL_MAKE),make -C $(DIR);)
+	$(foreach DIR,$(FUNCTIONAL_MAKE),$(MAKE) -C $(DIR);)
 
 .PHONY: $(FUNCTIONAL_RUN)
 
@@ -190,7 +190,7 @@ $(FUNCTIONAL_RUN):
 	cd $(PWD)
 
 stress-make:
-	$(foreach DIR,$(STRESS_MAKE),make -C $(DIR);)
+	$(foreach DIR,$(STRESS_MAKE),$(MAKE) -C $(DIR);)
 
 .PHONY: $(STRESS_RUN)
 
