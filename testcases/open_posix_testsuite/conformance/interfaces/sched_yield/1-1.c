@@ -167,7 +167,7 @@ void * busy_thread(void *arg){
 }
 
 
-void buzy_process(int cpu){
+void busy_process(int cpu){
         struct sched_param param;
 
 #ifdef __linux__        
@@ -226,7 +226,7 @@ int main() {
 			return PTS_UNRESOLVED;
 		} else if (child_pid[i] == 0){
 			
-			buzy_process(i);
+			busy_process(i);
 
 			printf("This code should not be executed.\n");
 			return PTS_UNRESOLVED;
