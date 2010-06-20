@@ -63,7 +63,7 @@ CFLAGS += $(call check_gcc,-std=gnu99,)
 
 INCLUDE = -Iinclude
 
-# FIXME: exaust cmd line length
+# FIXME: exhaust cmd line length
 clean:
 	@rm -f $(LOGFILE)
 # Timeout helper files
