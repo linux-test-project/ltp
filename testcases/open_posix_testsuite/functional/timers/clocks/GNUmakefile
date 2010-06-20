@@ -5,19 +5,15 @@
 # source tree.
 #
 
-#CFLAGS = -g -O2 -Wall -Werror
-CFLAGS = -g -O2 -Wall -Werror -DDEBUG
+CPPFLAGS+=	-I../../../include
+LDLIBS+=	-lrt
 
-INCLUDE = -I../../../include
+TARGETS=	twopsetclock.test invaliddates.test
 
-LDPATH =
+all: $(TARGETS)
 
-LIB = -lrt
-
-all:	twopsetclock.test invaliddates.test
-
-%.test : %.c
-	$(CC) $(CFLAGS) $(INCLUDE) $< -o $@ $(LDPATH) $(LIB)
-
-clean :
-	rm *.test
+%.test: %.o
+	$(LINK.o) $< $(LOADLIBES) $(LDLIBS) -o $@
+	
+clean:
+	rm -f $(TARGETS)

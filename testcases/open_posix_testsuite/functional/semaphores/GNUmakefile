@@ -1,15 +1,13 @@
+CPPFLAGS+=	-I../../include
+LDLIBS+=	-lpthread
 
-INCLUDE = -I../../include
-LIB=
+TARGETS=	sem_lock.test sem_conpro.test sem_readerwriter.test \
+		sem_philosopher.test sem_sleepingbarber.test
 
-CFLAGS=-Wall -O2 -g 
+all: $(TARGETS)
 
-all:  make-test
-make-test: sem_lock.test sem_conpro.test sem_readerwriter.test sem_philosopher.test sem_sleepingbarber.test
+%.test: %.o
+	$(LINK.o) $< $(LOADLIBES) $(LDLIBS) -o $@
 
-%.test : %.c
-	$(CC) $(CFLAGS) $(INCLUDE) $< -o $@ $(LIB) -lpthread  
 clean: 
-	rm *.test
-
- 
+	rm -f $(TARGETS)

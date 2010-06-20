@@ -5,18 +5,15 @@
 # source tree.
 #
 
-CFLAGS = -g -O2 -Wall -Werror
+CPPFLAGS+=	-I../../../include
+LDLIBS=		-lrt
 
-INCLUDE = -I../../../include
+TARGETS=	twoevtimers.test twoptimers.test
 
-LDPATH =
+all: $(TARGETS)
 
-LIB = -lrt
+%.test: %.o
+	$(LINK.o) $< $(LOADLIBES) $(LDLIBS) -o $@
 
-all:	twoevtimers.test twoptimers.test
-
-%.test : %.c
-	$(CC) $(CFLAGS) $(INCLUDE) $< -o $@ $(LDPATH) $(LIB)
-
-clean :
-	rm *.test
+clean:
+	rm -f $(TARGETS)
