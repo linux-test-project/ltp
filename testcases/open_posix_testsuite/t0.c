@@ -38,28 +38,25 @@
 #define _POSIX_C_SOURCE 200112L
 
 #include <pthread.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
-#include <signal.h>
-
-#include <assert.h>
 
 int main (int argc, char * argv[])
 {
 	int ret, timeout;
 	
 	/* Special case: t0 0 */
-	if (argc==2 && (strcmp(argv[1], "0") == 0))
-	{
+	if (argc == 2 && (strncmp(argv[1], "0", 1) == 0)) {
 		kill(getpid(), SIGALRM);
 		sleep(1);
-		return 2;
+		return 1;
 	}
 	
 	/* General case */
-	if (argc < 3)
-	{
+	if (argc < 3) {
 		printf("\nUsage: \n");
 		printf("  $ %s n exe arglist\n", argv[0]);
 		printf("  $ %s 0\n", argv[0]);
@@ -68,14 +65,14 @@ int main (int argc, char * argv[])
 		printf("  exe     is the executable filename to run,\n");
 		printf("  arglist is the arguments to be passed to executable.\n\n");
 		printf("  The second use case will emulate an immediate timeout.\n\n");
-		return 2;
+		return 1;
 	}
 	
 	timeout = atoi(argv[1]);
 	if (timeout < 1)
 	{
 		fprintf(stderr, "Invalid timeout value \"%s\". Timeout must be a positive integer.\n", argv[1]);
-		return 2;
+		return 1;
 	}
 	
 	/* Set the timeout */
@@ -83,15 +80,8 @@ int main (int argc, char * argv[])
 	
 	/* Execute the command */
 	ret = execvp(argv[2], &argv[2]);
-	if (ret == -1)
-	{
-		/* Application was not launched */
-		perror("Unable to run child application");
-		return 2;
-	}
-	
-	assert(0);
-	perror("Should not see me");
-	return 2;
+
+	/* Application was not launched */
+	perror("Unable to run child application");
+	return 1;
 }
-		
