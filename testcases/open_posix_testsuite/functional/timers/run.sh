@@ -11,46 +11,52 @@
 RunTest()
 {
 	echo "TEST: " $1
+	: $(( TOTAL += 1 ))
 	$1
-	if [ $? == 0 ]; then
-		PASS=$PASS+1
-		echo -ne "\t\t\t***TEST PASSED***\n\n"
+	if [ $? -eq 0 ]; then
+		: $(( PASS += 1 ))
+		echo "			***TEST PASSED***"
+		echo ""
 	else
-		FAIL=$FAIL+1
-		echo -ne "\t\t\t***TEST FAILED***\n\n"
+		: $(( FAIL += 1 ))
+		echo "			***TEST FAILED***"
+		echo ""
 	fi
 }
 
 # Main program
 
-declare -i PASS=0
-declare -i FAIL=0
+TOTAL=0
+PASS=0
+FAIL=0
 
 # Add lists of tests to these variables for execution
 CLOCKSTESTS="clocks/twopsetclock.test"
 TIMERSTESTS="timers/twoevtimers.test timers/twoptimers.test"
 
 echo "Run the clocks and timers functional tests"
-echo "=========================================="
+echo "====================="
 
 echo "Run clocks tests"
-echo "================"
+echo "========"
 
 for test in $CLOCKSTESTS; do 
 	RunTest $test
 done
 
 echo "Run timers tests"
-echo "================"
+echo "========"
 
 for test in $TIMERSTESTS; do 
 	RunTest $test
 done
 
-echo
-echo -ne "\t\t\t****************\n"
-echo -ne "\t\t\t* PASSED: " $PASS "\n"
-echo -ne "\t\t\t* FAILED: " $FAIL "\n"
-echo -ne "\t\t\t****************\n"
+cat <<EOF
+		****************
+		* TOTAL:  $TOTAL
+		* PASSED: $PASS
+		* FAILED: $FAIL
+		****************
+EOF
 
 exit 0

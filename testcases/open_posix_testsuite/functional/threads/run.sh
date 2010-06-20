@@ -7,7 +7,7 @@ for test_dir in $TEST_DIRS; do
 
 echo ""
 echo "Run $test_dir tests"
-echo "=============================="
+echo "==============="
 echo ""
         cd $CURRENT_DIR/$test_dir;
 	./run.sh

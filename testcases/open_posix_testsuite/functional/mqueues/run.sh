@@ -11,39 +11,42 @@
 RunTest()
 {
 	echo "TEST: " $1
-	TOTAL=$TOTAL+1
+	: $(( TOTAL += 1 ))
 	./$1
-	if [ $? == 0 ]; then
-		PASS=$PASS+1
-		echo -ne "\t\t\t***TEST PASSED***\n\n"
+	if [ $? -eq 0 ]; then
+		: $(( PASS += 1 ))
+		echo "			***TEST PASSED***"
+		echo ""
 	else
-		FAIL=$FAIL+1
-		echo -ne "\t\t\t***TEST FAILED***\n\n"
+		: $(( FAIL += 1 ))
+		echo "			***TEST FAILED***"
+		echo ""
 	fi
 }
 
 # Main program
 
-declare -i TOTAL=0
-declare -i PASS=0
-declare -i FAIL=0
+TOTAL=0
+PASS=0
+FAIL=0
 
 # Add lists of tests to these variables for execution
 TESTS="notify.test send_rev_1.test send_rev_2.test"
 
 echo "Run the message queue functional tests"
-echo "=========================================="
+echo "====================="
 
 for test in $TESTS; do 
 	RunTest $test
 done
 
-echo
-echo -ne "\t\t****************\n"
-echo -ne "\t\t* TOTAL:  " $TOTAL "\n"
-echo -ne "\t\t* PASSED: " $PASS "\n"
-echo -ne "\t\t* FAILED: " $FAIL "\n"
-echo -ne "\t\t****************\n"
+cat <<EOF
+		****************
+		* TOTAL:  $TOTAL
+		* PASSED: $PASS
+		* FAILED: $FAIL
+		****************
+EOF
 
 exit 0
 
