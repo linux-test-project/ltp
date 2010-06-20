@@ -1,10 +1,8 @@
-include ../Makefile.inc
+CFLAGS+=	-I../include
+LDLIBS=		-lpthread
+TARGETS=	pitest-1 pitest-2 pitest-3 pitest-4 pitest-5 pitest-6
 
-SRCS=$(wildcard *.c)
-TARGETS=$(patsubst %.c,%,$(SRCS))
-CFLAGS+=-Wall -D_GNU_SOURCE -g -I../include
-
-all:$(TARGETS)
+all: $(TARGETS)
 
 clean:
-	rm -rf $(TARGETS)
+	-rm -rf $(TARGETS)
