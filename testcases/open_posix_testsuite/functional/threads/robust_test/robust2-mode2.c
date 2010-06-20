@@ -16,6 +16,13 @@
  * will change back to normal. 
  */ 
 
+/*
+ * XXX: pthread_mutexattr_setrobust_np and PTHREAD_MUTEX_ROBUST_NP isn't POSIX.
+ */
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE	1
+#warning "Uses GNU-isms; needs fixing."
+#endif
 #include <pthread.h>
 #include <stdio.h>
 #include <unistd.h>
