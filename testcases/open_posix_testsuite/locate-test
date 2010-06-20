@@ -92,16 +92,16 @@ do
   esac
 done
 
+# Simple version right now, just locate all:
+WHERE=${1:-$PWD}
+
 # Need the DIRECTORY arg ...
-if [ -z "$1" ]
+if [ ! -d "$WHERE" ]
 then
     echo "Error: no root directory specified" 1>&2
-    usage 1>&2;
-    exit 1;
+    usage >&2
+    exit 1
 fi
-
-# Simple version right now, just locate all:
-WHERE="$1"
 
 # Force something .c or .sh
 # Avoid .o, backups
@@ -112,12 +112,10 @@ find "$WHERE" -type f \
        \( -name "[0-9]*-*.c" -o -name "[0-9]*-[0-9]*.sh" \) \
        ! -name \*.o ! -name \*~ \
     \) \
-    $buildable $execs \
-    | if [ $print_execs -eq 1 ]
-        then
-            sed 's/\.\(sh\|c\)$/.test/' 
-        else
-            cat
-        fi
-
-
+    $buildable $execs | \
+    if [ $print_execs -eq 1 ]
+    then
+        sed 's/\.\(sh\|c\)$/.test/' 
+    else
+        cat
+    fi
