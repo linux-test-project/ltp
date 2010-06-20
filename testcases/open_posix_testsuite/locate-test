@@ -42,6 +42,8 @@ not support TESTs compiled from many different sources.
 EOF
 }
 
+MAKEFILE=GNUmakefile
+
 buildable="";
 execs=""
 print_execs=0
@@ -60,7 +62,7 @@ do
           shift;
           ;;
       "--fmake")
-          find functional/ -maxdepth 2 -mindepth 2 -type f -name "Makefile" -exec dirname '{}' ';'
+          find functional/ -maxdepth 2 -mindepth 2 -type f -name $MAKEFILE -exec dirname '{}' ';'
           exit 0;
           ;;
       "--frun")
@@ -68,7 +70,7 @@ do
           exit 0;
           ;;
       "--smake")
-          find stress/ -maxdepth 2 -mindepth 2 -type f -name "Makefile" -exec dirname '{}' ';'
+          find stress/ -maxdepth 2 -mindepth 2 -type f -name $MAKEFILE -exec dirname '{}' ';'
           exit 0;
           ;;
       "--srun")
