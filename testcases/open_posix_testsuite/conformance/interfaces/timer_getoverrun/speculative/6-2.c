@@ -13,12 +13,13 @@
  * will be used.
  */
 
-#include <time.h>
+#include <sys/types.h>
+#include <errno.h>
 #include <signal.h>
 #include <stdio.h>
-#include <unistd.h>
 #include <stdlib.h>
-#include <errno.h>
+#include <time.h>
+#include <unistd.h>
 #include "posixtest.h"
 
 #define TIMERSEC 3

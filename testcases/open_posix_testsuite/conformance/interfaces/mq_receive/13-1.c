@@ -12,17 +12,18 @@
  *
  */
 
-#include <stdio.h>
-#include <errno.h>
-#include <limits.h>
-#include <mqueue.h>
-#include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <unistd.h>
-#include <string.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <limits.h>
+#include <mqueue.h>
+#include <signal.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 #include "posixtest.h"
 
 #define TEST "13-1"

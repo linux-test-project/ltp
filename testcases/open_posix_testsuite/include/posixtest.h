@@ -9,6 +9,13 @@
 /*
  * return codes
  */
+
+#if defined(_BSD_SOURCE)
+#error "Contains BSD-isms that need fixing."
+#elif defined(_GNU_SOURCE)
+#error "Contains GNU-isms that need fixing."
+#endif
+
 #define PTS_PASS        0
 #define PTS_FAIL        1
 #define PTS_UNRESOLVED  2

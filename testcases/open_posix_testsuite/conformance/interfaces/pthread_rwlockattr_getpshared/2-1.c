@@ -25,13 +25,14 @@
 
 
 #define _XOPEN_SOURCE 600
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <sys/wait.h>
+#include <errno.h>
+#include <fcntl.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <errno.h>
-#include <sys/mman.h>
-#include <fcntl.h>
-#include <sys/wait.h>
 #include "posixtest.h"
 
 struct shmstruct{

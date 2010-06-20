@@ -14,10 +14,11 @@
  * will be used.
  */
 
-#include <time.h>
+#include <sys/types.h>
+#include <errno.h>
 #include <signal.h>
 #include <stdio.h>
-#include <errno.h>
+#include <time.h>
 #include "posixtest.h"
 
 int main(int argc, char *argv[])

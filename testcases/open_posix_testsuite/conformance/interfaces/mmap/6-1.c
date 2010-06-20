@@ -23,22 +23,23 @@
  * Please refer to IEEE_1003.1-2001. 2.8.3.3 Memory Protection.
  */
 #define _XOPEN_SOURCE 600
-#include <pthread.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
-#include <fcntl.h>
-#include <string.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <pthread.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 #include "posixtest.h"
  
 #define TNAME "mmap/6-1.c"
 
-int main()
+int main(void)
 {
 #ifdef _POSIX_MEMORY_PROTECTION
   char tmpfname[256];
