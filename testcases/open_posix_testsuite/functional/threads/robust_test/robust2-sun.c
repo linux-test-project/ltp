@@ -17,11 +17,19 @@
  * will remain as EOWNERDEAD.
  */ 
 
+/*
+ * XXX: pthread_mutexattr_setrobust_np and PTHREAD_MUTEX_ROBUST_SUN_NP isn't
+ * POSIX.
+ */
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE	1
+#warning "Uses GNU-isms; needs fixing."
+#endif
 #include <pthread.h>
 #include <stdio.h>
-#include <unistd.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 #include "test.h"
 
 #define THREAD_NUM	2	
