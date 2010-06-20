@@ -49,7 +49,7 @@ else
 
 fi
 }
-if [ "$CROSS_COMPILER" == "" ] then
+if [ "$CROSS_COMPILER" = "" ] then
 	chk_ifexist
 else
     echo no;
