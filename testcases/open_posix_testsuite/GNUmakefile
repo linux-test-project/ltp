@@ -78,13 +78,14 @@ clean:
 	TEST=`echo "$@" | sed -e 's,.test$$,,'`; \
 	[ -f $< ] || exit 0; \
 	{ nm -g $< | grep -q ' T main\| D main'; } || \
-	{ echo "$$TEST: link: SKIP" | tee -a $(LOGFILE) && exit 0; }; \
+	{ echo "$$TEST: link: SKIP" >> $(LOGFILE) && exit 0; }; \
 	if $(LINK.o) $< $(LOADLIBES) $(LDLIBS) -o $@ >$$COMPLOG 2>&1; \
 	then \
-		echo "$$TEST: link: PASS" | tee -a $(LOGFILE); \
+		echo "$$TEST: link: PASS" >> $(LOGFILE); \
+		echo "$$TEST: link: PASS"; \
 	else \
 		( \
-			echo "$(@:.test=): link: FAILED. Linker output: "; \
+			echo "$$TEST: link: FAILED. Linker output: "; \
 			cat $$COMPLOG; \
 		) >> $(LOGFILE); \
 		echo "$$TEST: link: FAILED "; \
@@ -121,7 +122,7 @@ clean:
 		MSG="INTERRUPTED"; \
 	elif [ $$RESULT -eq 0 ]; \
 	then \
-		echo "$$TEST: execution: PASS" | tee -a $(LOGFILE); \
+		echo "$$TEST: execution: PASS" >> $(LOGFILE); \
 	else \
 		( \
 			echo "$$TEST: execution: $$MSG: Output: "; \
@@ -146,7 +147,7 @@ $(top_builddir)/t0.val: $(top_builddir)/t0
 	RESULT=$$?; \
 	if [ $$RESULT -eq 0 ]; \
 	then \
-		echo "$$TEST: execution: PASS" | tee -a $(LOGFILE);\
+		echo "$$TEST: execution: PASS" >> $(LOGFILE);\
 	else \
 		( \
 			echo "$$TEST: execution: FAILED: Output: ";\
@@ -163,7 +164,8 @@ $(top_builddir)/t0.val: $(top_builddir)/t0
 	TEST=`echo "$@" | sed -e 's,.o$$,,'`; \
 	if $(COMPILE.c) $(OUTPUT_OPTION) $< >$$COMPLOG 2>&1; \
 	then \
-		echo "$$TEST: build: PASS" | tee -a $(LOGFILE); \
+		echo "$$TEST: build: PASS" >> $(LOGFILE); \
+		echo "$$TEST: build: PASS"; \
 	else \
 		( \
 			echo "$$TEST: build: FAILED: Compiler output: "; \
@@ -184,7 +186,7 @@ functional-make:
 functional-run: $(FUNCTIONAL_RUN)
 
 $(FUNCTIONAL_RUN): 
-	cd $@; ./run.sh
+	cd $@ && ./run.sh
 
 stress-make:
 	for d in $(STRESS_MAKE); do \
