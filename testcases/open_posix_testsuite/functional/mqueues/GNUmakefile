@@ -1,6 +1,6 @@
 CFLAGS+=	-Wall
 CPPFLAGS+=	-I../../include
-LDLIBS=		-lrt -lpthread
+LDLIBS=		-lpthread -lrt
 
 all: send_rev_1.test send_rev_2.test 
 
