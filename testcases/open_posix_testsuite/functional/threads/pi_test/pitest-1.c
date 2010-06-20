@@ -33,14 +33,17 @@
  * Thanks Inaky.Perez-Gonzalez's suggestion and code
  */
 
-#include <pthread.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
-#include <stdlib.h>
-#include <time.h>
-#include <sched.h>
+
+#warning "Contains Linux-isms that need fixing."
+
 #include <errno.h>
+#include <pthread.h>
+#include <sched.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <unistd.h>
 #include "test.h"
 #include "pitest.h"
 
@@ -62,10 +65,9 @@ struct thread_param
 	volatile unsigned futex;
 	volatile unsigned should_stall;
 	volatile unsigned progress;
-} tp[] = 
-{
+} tp[] = {
 	{ 0,   0,   0, 1, SCHED_FIFO, "TL", 0, 0, 0, 0 },
-	{ 1,   0, 50, 2, SCHED_FIFO, "TP", 0, 0, 0, 0 },
+	{ 1,   0,  50, 2, SCHED_FIFO, "TP", 0, 0, 0, 0 },
 	{ 2,   0,   0, 3, SCHED_FIFO, "TF", 1, 0, 0, 0 },
 	{ 3,   0,   0, 3, SCHED_FIFO, "TF", 2, 0, 0, 0 },
 	{ 4,   0,   0, 3, SCHED_FIFO, "TF", 3, 0, 0, 0 },
@@ -97,12 +99,14 @@ void *thread_fn(void *param)
 	int rc;
 	unsigned long mask = 1 << tp->cpu;
 
+#if __linux__
 	rc = sched_setaffinity(0, sizeof(mask), &mask);
 	if (rc < 0) {
 		EPRINTF("UNRESOLVED: Thread %s index %d: Can't set affinity: "
 			"%d %s", tp->name, tp->index, rc, strerror(rc));
 		exit(UNRESOLVED);
 	}
+#endif
 	test_set_priority(pthread_self(), SCHED_FIFO, tp->priority);
 	
 	DPRINTF(stdout, "#EVENT %f %s Thread Started\n", 
@@ -133,7 +137,9 @@ void *thread_tl(void *param)
 	unsigned long mask = 1 << tp->cpu;
 	int rc;
 
+#if __linux__
 	rc = sched_setaffinity((pid_t)0, sizeof(mask), &mask);
+#endif
 	test_set_priority(pthread_self(), SCHED_FIFO, tp->priority);
 	if (rc < 0) {
 		EPRINTF("UNRESOLVED: Thread %s index %d: Can't set affinity: %d %s",
