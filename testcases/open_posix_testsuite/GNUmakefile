@@ -30,10 +30,6 @@ LOGFILE=	$(top_builddir)/logfile
 
 RUN_TESTS=	$(shell $(top_builddir)/locate-test --execs $(top_builddir)/$(POSIX_TARGET))
 BUILD_TESTS=	$(shell $(top_builddir)/locate-test --buildable $(top_builddir)/$(POSIX_TARGET))
-FUNCTIONAL_MAKE=`$(top_builddir)/locate-test --fmake`
-FUNCTIONAL_RUN=	$(shell $(top_builddir)/locate-test --frun)
-STRESS_MAKE=	`$(top_builddir)/locate-test --smake`
-STRESS_RUN=	$(shell $(top_builddir)/locate-test --srun)
 PWD=		`pwd`
 TIMEOUT=	$(top_builddir)/t0 $(TIMEOUT_VAL)
 
@@ -66,7 +62,7 @@ clean:
 	-@# Build runnable tests
 	-@find $(top_builddir) -iname \*.test | xargs -n 40 rm -f {}
 	-@find $(top_builddir) -iname \*~ -o -iname \*.o | xargs -n 40 rm -f {}
-	-@for d in $(FUNCTIONAL_MAKE); do \
+	-@for d in functional stress; do \
 	    $(MAKE) -C $$d clean >/dev/null; \
 	done
 
@@ -177,25 +173,15 @@ $(top_builddir)/t0.val: $(top_builddir)/t0
 
 # Functional/Stress test build and execution
 functional-make:
-	@for d in $(FUNCTIONAL_MAKE); do \
-		$(MAKE) -C $$d; \
-	done
+	$(MAKE) -C functional all
 
-.PHONY: $(FUNCTIONAL_RUN)
-
-functional-run: $(FUNCTIONAL_RUN)
-
-$(FUNCTIONAL_RUN): 
-	cd $@ && ./run.sh
+.PHONY: functional-test
+functional-test: functional-make
+	$(MAKE) -C functional test
 
 stress-make:
-	for d in $(STRESS_MAKE); do \
-		$(MAKE) -C $$d; \
-	done
+	$(MAKE) -C stress all
 
-.PHONY: $(STRESS_RUN)
-
-stress-run: $(STRESS_RUN)
-
-$(STRESS_RUN): 
-	cd $@; ./run.sh
+.PHONY: stress-test
+stress-test: stress-make
+	$(MAKE) -C stress test

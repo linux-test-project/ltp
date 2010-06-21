@@ -61,22 +61,6 @@ do
           execs="( ( -name [0-9]*-[0-9]*.c -o -name [0-9]*-[0-9]*.sh ) -a ! -name *-buildonly* )";
           shift;
           ;;
-      "--fmake")
-          find functional/ -maxdepth 2 -mindepth 2 -type f -name $MAKEFILE -exec dirname '{}' ';'
-          exit 0;
-          ;;
-      "--frun")
-          find functional/ -maxdepth 2 -mindepth 2 -type f -name "run.sh" -exec dirname '{}' ';' 
-          exit 0;
-          ;;
-      "--smake")
-          find stress/ -maxdepth 2 -mindepth 2 -type f -name $MAKEFILE -exec dirname '{}' ';'
-          exit 0;
-          ;;
-      "--srun")
-          find stress/ -maxdepth 2 -mindepth 2 -type f -name "run.sh" -exec dirname '{}' ';'
-          exit 0;
-          ;;
       "--help")
           usage;
           exit 0;
