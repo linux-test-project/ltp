@@ -9,3 +9,6 @@ all: send_rev_1.test send_rev_2.test
 
 clean: 
 	rm -f *.test
+
+test:
+	./run.sh

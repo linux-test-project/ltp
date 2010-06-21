@@ -11,3 +11,6 @@ all: $(TARGETS)
 
 clean: 
 	rm -f $(TARGETS)
+
+test:
+	./run.sh
