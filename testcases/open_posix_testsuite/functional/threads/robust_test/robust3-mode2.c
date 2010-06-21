@@ -58,6 +58,7 @@ void *thread_2(void *arg)
 	     exit(UNRESOLVED);
         }
 
+#if __linux__
 	rc = pthread_mutex_lock(&mutex);
 	if (rc != EOWNERDEAD)  {
 		EPRINTF("FAIL:pthread_mutex_lock didn't return EOWNERDEAD \n");
@@ -102,6 +103,7 @@ void *thread_2(void *arg)
 			pthread_mutex_unlock(&mutex);
 		}
 	} 
+#endif
 	pthread_exit(NULL);
 	return NULL;
 }
@@ -119,12 +121,14 @@ int main()
 			rc, strerror(rc));
 		return UNRESOLVED;
 	}
+#if __linux__
 	rc = pthread_mutexattr_setrobust_np(&attr, PTHREAD_MUTEX_ROBUST_NP);
 	if (rc != 0) {
 		EPRINTF("UNRESOLVED: pthread_mutexattr_setrobust_np %d %s", 
 			rc, strerror(rc));
 		return UNRESOLVED;
 	}
+#endif
 	rc = pthread_mutex_init(&mutex, &attr);
 	if (rc != 0) {
 		EPRINTF("UNRESOLVED: pthread_mutex_init %d %s", 
