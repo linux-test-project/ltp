@@ -42,8 +42,6 @@ not support TESTs compiled from many different sources.
 EOF
 }
 
-MAKEFILE=GNUmakefile
-
 buildable="";
 execs=""
 print_execs=0
@@ -51,29 +49,29 @@ print_execs=0
 # Go through the cmd line options
 while true
 do
-  case "$1" in
-      "--buildable")
-          buildable="( -name [0-9]*-*.c ! -name [0-9]*-[0-9]*.sh )";
-          shift;
-          ;;
-      "--execs")
-          print_execs=1;
-          execs="( ( -name [0-9]*-[0-9]*.c -o -name [0-9]*-[0-9]*.sh ) -a ! -name *-buildonly* )";
-          shift;
-          ;;
-      "--help")
-          usage;
-          exit 0;
-          ;; 
-      --*)
-          echo "Unknown option $1" 1>&2;
-          usage 1>&2;
-          exit 1;
-          ;;
-      *)
-          break 2;
-          ;;
-  esac
+	case "$1" in
+	"--buildable")
+		buildable="( -name [0-9]*-*.c ! -name [0-9]*-[0-9]*.sh )"
+		shift
+		;;
+	"--execs")
+		print_execs=1
+		execs="( ( -name [0-9]*-[0-9]*.c -o -name [0-9]*-[0-9]*.sh ) -a ! -name *-buildonly* )"
+		shift
+		;;
+	"--help")
+		usage
+		exit 0
+		;;
+	--*)
+		echo  >&2 "Unknown option $1"
+		usage >&2
+		exit 1
+		;;
+	*)
+		break 2
+	;;
+	esac
 done
 
 # Simple version right now, just locate all:
@@ -82,9 +80,9 @@ WHERE=${1:-$PWD}
 # Need the DIRECTORY arg ...
 if [ ! -d "$WHERE" ]
 then
-    echo "Error: no root directory specified" 1>&2
-    usage >&2
-    exit 1
+	echo  >&2 "Error: no root directory specified"
+	usage >&2
+	exit 1
 fi
 
 # Force something .c or .sh
@@ -92,14 +90,14 @@ fi
 # IF --execs, force it has no "-buildonly"
 # If --buildable, remove the .sh files
 find "$WHERE" -type f \
-    \( \
-       \( -name "[0-9]*-*.c" -o -name "[0-9]*-[0-9]*.sh" \) \
-       ! -name \*.o ! -name \*~ \
-    \) \
-    $buildable $execs | \
-    if [ $print_execs -eq 1 ]
-    then
-        sed 's/\.\(sh\|c\)$/.test/' 
-    else
-        cat
-    fi
+	\( \
+		\( -name "[0-9]*-*.c" -o -name "[0-9]*-[0-9]*.sh" \) \
+		! -name \*.o ! -name \*~ \
+	\) \
+	$buildable $execs | \
+	if [ $print_execs -eq 1 ]
+	then
+		sed 's/\.\(sh\|c\)$/.test/' 
+	else
+		cat
+	fi
