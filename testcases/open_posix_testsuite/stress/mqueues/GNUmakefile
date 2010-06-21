@@ -1,13 +1,18 @@
-INCLUDE = -I../../include
-LIB=-lrt
+CFLAGS+=	-I../../include
+LDLIBS+=	-lrt
 
-CFLAGS=-Wall -O2 -g
+TARGETS=	multi_send_rev_1.test multi_send_rev_2.test
 
-all: multi_send_rev_1.test multi_send_rev_2.test
+all: $(TARGETS)
 
-%.test : %.c
-	$(CC) $(CFLAGS) $(INCLUDE) $< -o $@ $(LIB)   
+multi_send_rev_1.test: multi_send_rev_1.c
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $< $(LDLIBS)
+
+multi_send_rev_2.test: multi_send_rev_2.c
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $< $(LDLIBS)
+
 clean: 
-	rm *.test
+	rm -f $(TARGETS)
 
- 
+test:
+	@./run.sh

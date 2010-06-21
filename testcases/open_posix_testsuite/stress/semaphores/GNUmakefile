@@ -1,12 +1,15 @@
-INCLUDE = -I../../include
+CFLAGS+=	-I../../include
+LDLIBS+=	-lpthread
 
-CFLAGS=-Wall -O2 -g
+TARGETS+=	multi_con_pro.test
 
-all:  multi_con_pro.test
+all: $(TARGETS)
 
-%.test : %.c
-	$(CC) $(CFLAGS) $(INCLUDE) $< -o $@ -lpthread
+multi_con_pro.test: multi_con_pro.c
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $< $(LDLIBS)
+
 clean: 
-	rm *.test
+	rm -f $(TARGETS)
 
- 
+test:
+	@./run.sh
