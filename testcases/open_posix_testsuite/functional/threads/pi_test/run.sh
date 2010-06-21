@@ -12,7 +12,7 @@ PRIORITY=20
 
 killall -9 watchdogtimer.sh
 rm -rf output.*
-chrt -f $PRIORITY ../tools/watchdogtimer.sh &
+../tools/watchdogtimer.sh &
 
 TOTAL=0
 FAIL=0
