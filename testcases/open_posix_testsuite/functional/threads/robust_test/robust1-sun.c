@@ -56,11 +56,12 @@ void *thread_2(void *arg)
 	    exit(UNRESOLVED);
 	}
 
+#if __linux__
 	if (pthread_mutex_lock(&mutex) != EOWNERDEAD)  {
 		EPRINTF("FAIL: pthread_mutex_lock didn't return EOWNERDEAD");
 		exit(FAIL);
 	}
-	DPRINTF(stdout,"Thread 2 lock the mutex and return EOWNERDEAD\n");
+	DPRINTF(stdout, "Thread 2 lock the mutex and return EOWNERDEAD\n");
 	pthread_mutex_unlock(&mutex);
 	
 	if (pthread_mutex_lock(&mutex) != ENOTRECOVERABLE) {
@@ -69,6 +70,7 @@ void *thread_2(void *arg)
                 pthread_mutex_unlock(&mutex);
 		exit(FAIL);
 	}
+#endif
 	pthread_exit(NULL);
 	return NULL;
 }
@@ -86,12 +88,14 @@ int main()
 			rc, strerror(rc));
 		return UNRESOLVED;
 	}
+#if __linux__
 	rc = pthread_mutexattr_setrobust_np(&attr, PTHREAD_MUTEX_ROBUST_SUN_NP);
 	if (rc != 0) {
 		EPRINTF("UNRESOLVED: pthread_mutexattr_setrobust_np %d %s", 
 			rc, strerror(rc));
 		return UNRESOLVED;
 	}
+#endif
 	rc = pthread_mutex_init(&mutex, &attr);
 	if (rc != 0) {
 		EPRINTF("UNRESOLVED: pthread_mutex_init %d %s", 

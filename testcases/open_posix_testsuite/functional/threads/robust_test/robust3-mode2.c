@@ -148,7 +148,7 @@ int main()
 		return UNRESOLVED;
 	}
 	pthread_join(threads[0], NULL);
-	DPRINTF(stdout,"Thread 1 exit without unlock the mutex...\n ");
+	DPRINTF(stdout, "Thread 1 exit without unlock the mutex...\n");
 
 	rc = pthread_create(&threads[1], &threadattr, thread_2, NULL);
 	if (rc != 0) {
@@ -157,7 +157,7 @@ int main()
 		return UNRESOLVED;
 	}
 	pthread_join(threads[1], NULL );
-	DPRINTF(stdout,"Thread 2 exit ...\n ");
+	DPRINTF(stdout, "Thread 2 exit ...\n");
 
 	DPRINTF(stdout,"PASS: Test PASSED\n");
 	return PASS;
