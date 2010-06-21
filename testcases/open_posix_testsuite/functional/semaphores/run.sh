@@ -11,7 +11,7 @@
 RunTest()
 {
 	echo "TEST: " $1
-	TOTAL=$TOTAL+1
+	: $(( TOTAL += 1 ))
 	./$1
 	if [ $? -eq 0 ]; then
 		: $(( PASS += 1 ))
