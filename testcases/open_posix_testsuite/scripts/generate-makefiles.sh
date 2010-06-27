@@ -23,6 +23,8 @@ generate_locate_test_makefile() {
 
 	local maketype=$1; shift
 
+	echo "Generating $maketype Makefiles"
+
 	locate-test --$maketype | sed -e 's,^./,,g' > make-gen.$maketype
 
 	generate_makefile make-gen.$maketype $*
@@ -145,6 +147,7 @@ EOF
 DEFAULT_PREFIX=
 
 if uname -a | grep -i linux
+then
 	DEFAULT_PREFIX=/opt
 else
 	DEFAULT_PREFIX=/usr/local
@@ -156,5 +159,3 @@ EXEC_PREFIX="${PREFIX}/bin"
 # For the generic cases.
 generate_locate_test_makefile buildable "test" -c
 generate_locate_test_makefile execs "run-test"
-
-
