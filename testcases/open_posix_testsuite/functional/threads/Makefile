@@ -1,12 +1,10 @@
-SUBDIRS=	robust_test pi_test
+#
+# Read COPYING for licensing details.
+#
+# Garrett Cooper, June 2010
+#
 
-all test:
-	for d in $(SUBDIRS); do \
-		$(MAKE) -C $$d $@; \
-	done
-
-clean:
-	rm -f *~
-	for d in $(SUBDIRS); do \
-		$(MAKE) -C $$d $@; \
+all clean install test:
+	for dir in `ls -d */Makefile 2>/dev/null | sed -e 's,/Makefile$$,,g'`; do \
+		$(MAKE) -C $$dir $@;						  \
 	done
