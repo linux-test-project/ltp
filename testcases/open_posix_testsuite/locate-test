@@ -1,11 +1,9 @@
 #! /bin/sh
 # Copyright (c) 2002, Intel Corporation. All rights reserved.
 # Created by:  inaky.perez-gonzalez REMOVE-THIS AT intel DOT com
-# This file is licensed under the GPL license.  For the full content
+# This file is licensed under the GPLv2 license.  For the full content
 # of this license, see the COPYING file at the top level of this
 # source tree.
-
-# Added FreeBSD compatibility changes by Craig Rodrigues
 
 usage()
 {
@@ -20,10 +18,6 @@ and down.
                   If you just want to build a test, but not run it,
                   do not include a main function into the .c file or
                   name it something including the "-buildonly" string.
-  --fmake         Find functional makefiles.
-  --smake         Find stress makefiles.
-  --frun          Find functional run.sh files.
-  --srun          Find stress run.sh files.
   --help          Show this help and exit
 
 Filenames need to follow some standarized format for them to be picked
@@ -75,7 +69,7 @@ do
 done
 
 # Simple version right now, just locate all:
-WHERE=${1:-$PWD}
+WHERE=${1:-.}
 
 # Need the DIRECTORY arg ...
 if [ ! -d "$WHERE" ]
