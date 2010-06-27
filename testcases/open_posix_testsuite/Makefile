@@ -35,40 +35,24 @@ top_srcdir?=		.
 all: conformance-all functional-all stress-all t0
 
 clean:
-	rm -f $(LOGFILE)* t0.val t0
+	rm -f $(LOGFILE)* t0 t0.val
 	for d in $(SUBDIRS); do \
 	    $(MAKE) -C $$d clean >/dev/null; \
 	done
 
 distclean:
-	@find conformance/*/*/ functional/*/*/ -name Makefile -print0 | xargs rm -f
+	for dir in $(SUBDIRS); do \
+	  (cd $$dir && for subdir in */; do \
+	      (cd $$subdir && find */ -name Makefile 2>/dev/null | xargs rm -f); \
+	  done); \
+	done
 
 generate-makefiles:
 	@export top_srcdir=$(top_srcdir); \
 	$(top_srcdir)/scripts/generate-makefiles.sh
 
 $(CRITICAL_MAKEFILES): scripts/generate-makefiles.sh
-	$(MAKE) generate-makefiles
-
-.PRECIOUS: %.test
-%.test: %.o t0
-	@COMPLOG=$(LOGFILE).$$$$; \
-	TEST=`echo "$@" | sed -e 's,.test$$,,'`; \
-	[ -f $< ] || exit 0; \
-	{ nm -g $< | grep -q ' T main\| D main'; } || \
-	{ echo "$$TEST: link: SKIP" >> $(LOGFILE) && exit 0; }; \
-	if $(LINK.o) $< $(LOADLIBES) $(LDLIBS) -o $@ >$$COMPLOG 2>&1; \
-	then \
-		echo "$$TEST: link: PASS" >> $(LOGFILE); \
-		echo "$$TEST: link: PASS"; \
-	else \
-		( \
-			echo "$$TEST: link: FAILED. Linker output: "; \
-			cat $$COMPLOG; \
-		) >> $(LOGFILE); \
-		echo "$$TEST: link: FAILED "; \
-	fi; \
-	rm -f $$COMPLOG;
+	@$(MAKE) generate-makefiles
 
 t0: $(top_srcdir)/t0.c
 	@echo Building timeout helper files
