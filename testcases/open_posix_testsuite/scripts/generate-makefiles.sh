@@ -82,10 +82,11 @@ generate_makefile() {
 
 # Path variables.
 top_srcdir?=		$(echo "$(dirname "$filename")" | sed -E -e 's,[^/]+,\.\.,g')
-srcdir=			\$(top_srcdir)
 subdir=			$prereq_cache_dir
+srcdir=			\$(top_srcdir)/\$(subdir)
 
 EXEC_PREFIX=		$EXEC_PREFIX
+INSTALL_DIR=		\$(DESTDIR)/\$(EXEC_PREFIX)/\$(subdir)
 
 # Build variables
 CFLAGS+=		-I\$(top_srcdir)/include
@@ -93,18 +94,21 @@ CFLAGS+=		-I\$(top_srcdir)/include
 INSTALL_TARGETS=
 MAKE_TARGETS=
 
-all: \$(MAKE_TARGETS)
+all: \$\$(MAKE_TARGETS)
 
 clean:
-	rm -f \$(MAKE_TARGETS) *.core
+	rm -f \$\$(MAKE_TARGETS) *.core
 
-install:
-	for i in \$(INSTALL_TARGETS); do				\
-		install $$i \$(DESTDIR)/\$(EXEC_PREFIX)/\$(subdir)/$$i;	\
+install: \$(INSTALL_DIR)
+	for i in \$\$(INSTALL_TARGETS); do \\
+		install \$\$i \$(INSTALL_DIR)/\$\$i;\\
 	done
 
 test: all
 	\$(top_srcdir)/scripts/run.sh \$(MAKE_TARGETS)
+
+\$(INSTALL_DIR):
+	mkdir -p \$@
 
 EOF
 			fi
@@ -119,11 +123,13 @@ EOF
 			# Produce _awesome_ target rules for everything that
 			# needs it.
 			for prereq in ${make_target_prereq_cache}; do
-				cat >> "$makefile" <<EOF
 
-$prereq: \$(srcdir)/$(echo "$prereq" | sed -e "s,\.$suffix,\.c,")
-	\$(CC) $compiler_args \$(CFLAGS) \$(LDFLAGS) -o \$@ \$(srcdir)/\$(@F) \$(LDLIBS)
+				c_file=$(echo "$prereq" | sed -e "s,\.$suffix,\.c,")
+				cat >> "$makefile" <<EOF
+$prereq: $c_file
+	\$(CC) $compiler_args \$(CFLAGS) \$(LDFLAGS) -o \$@ $c_file \$(LDLIBS)
 EOF
+
 			done
 
 			# Prep for the next round..
@@ -157,5 +163,5 @@ PREFIX=${PREFIX:=$DEFAULT_PREFIX/openposix_testsuite}
 EXEC_PREFIX="${PREFIX}/bin"
 
 # For the generic cases.
-generate_locate_test_makefile buildable "test" -c
-generate_locate_test_makefile execs "run-test"
+generate_locate_test_makefile buildonly "test" -c
+generate_locate_test_makefile runnable "run-test"
