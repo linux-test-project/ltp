@@ -13,8 +13,8 @@ Usage: $(basename $0) [OPTIONs] DIRECTORY
 Lists the tests (source/binary) available from the DIRECTORY directory
 and down.
 
-  --buildable     List only tests that require building
-  --execs         List only tests that are executable
+  --buildonly     List only tests that require building
+  --runnable      List only tests that are executable
                   If you just want to build a test, but not run it,
                   do not include a main function into the .c file or
                   name it something including the "-buildonly" string.
@@ -36,19 +36,18 @@ not support TESTs compiled from many different sources.
 EOF
 }
 
-buildable=
-execs=
+mode=
 
 # Go through the cmd line options
 while true
 do
 	case "$1" in
-	"--buildable")
-		buildable="-name [0-9]*-*.c"
+	"--buildonly")
+		mode="buildable"
 		shift
 		;;
-	"--execs")
-		execs="( ( -name [0-9]*-[0-9]*.c -o -name [0-9]*-[0-9]*.sh ) -a ! -name *-buildonly* )"
+	"--runnable")
+		mode="runnable"
 		shift
 		;;
 	"--help")
@@ -61,8 +60,8 @@ do
 		exit 1
 		;;
 	*)
-		break 2
-	;;
+		break
+		;;
 	esac
 done
 
@@ -70,15 +69,20 @@ done
 WHERE=${1:-.}
 
 # Need the DIRECTORY arg ...
-if [ ! -d "$WHERE" ]
-then
-	echo  >&2 "Error: no root directory specified"
-	usage >&2
+if [ ! -d "$WHERE" ]; then
+	echo >&2 "Error: $WHERE: no such directory"
 	exit 1
-elif [ "x$buildable" = x -a "x$execs" = x ]; then
+elif [ "x$mode" = x ]; then
 	echo >&2 "Error: no options specified"
 	usage >&2
 	exit 1
 fi
 
-find "$WHERE" -type f $buildable $execs
+case "$mode" in
+buildonly)
+	find "$WHERE" -type f -name "*-buildonly*.c"
+	;;
+runnable)
+	find "$WHERE" -type f \( -name '*.c' -a ! -name '*-buildonly*.c' \) -o -name '[0-9]*-[0-9]*.sh'
+	;;
+esac
