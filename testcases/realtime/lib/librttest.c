@@ -295,8 +295,8 @@ int create_thread(void*(*func)(void*), void *arg, int prio, int policy)
 
 	pthread_attr_init(&thread->attr);
 	pthread_attr_setinheritsched(&thread->attr, PTHREAD_EXPLICIT_SCHED);
-	pthread_attr_setschedparam(&thread->attr, &param);
 	pthread_attr_setschedpolicy(&thread->attr, thread->policy);
+	pthread_attr_setschedparam(&thread->attr, &param);
 
 	if ((ret = pthread_create(&thread->pthread, &thread->attr, func, (void*)thread))) {
 		printf("pthread_create failed: %d (%s)\n", ret, strerror(ret));
