@@ -222,6 +222,7 @@ void main_thread(void)
 
 	/* run matrix mult operation sequentially */
 	curdat = &sdat;
+	curdat->index = iterations-1;
 	printf("\nRunning sequential operations\n");
 	start = rt_gettime();
 	for (i = 0; i < iterations; i++)
@@ -252,6 +253,7 @@ void main_thread(void)
 	pthread_barrier_init(&mult_start, NULL, numcpus+1);
 	set_priority(PRIO);
 	curdat = &cdat;
+	curdat->index = iterations-1;
 	online_cpu_id = -1; /* Redispatch cpus */
 	/* Create numcpus-1 concurrent threads */
 	for (j = 0; j < numcpus; j++) {
