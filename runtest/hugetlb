@@ -7,14 +7,14 @@ hugeshmat01 hugeshmat01 -i 5
 hugeshmat02 hugeshmat02 -i 5
 hugeshmat03 hugeshmat03 -i 5
 
-hugeshmctl01 hugeshmctl01 -i 5 -c 3
-hugeshmctl02 hugeshmctl02 -i 5 -c 3
-hugeshmctl03 hugeshmctl03 -i 5 -c 3
+hugeshmctl01 hugeshmctl01 -i 5
+hugeshmctl02 hugeshmctl02 -i 5
+hugeshmctl03 hugeshmctl03 -i 5
 
-hugeshmdt01 hugeshmdt01 -I 5 -c10
+hugeshmdt01 hugeshmdt01 -I 5
 
-hugeshmget01 hugeshmget01 -c 10 -i 10
-hugeshmget02 hugeshmget02 -c 10 -i 10
-hugeshmget03 hugeshmget03 -c 10 -i 10
-hugeshmget05 hugeshmget05 -c 10 -i 10
+hugeshmget01 hugeshmget01 -i 10
+hugeshmget02 hugeshmget02 -i 10
+hugeshmget03 hugeshmget03 -i 10
+hugeshmget05 hugeshmget05 -i 10
 
