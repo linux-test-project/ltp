@@ -22,7 +22,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include <unistd.h>
-//#include "config.h"
+#include "config.h"
 #include "test.h"
 #if HAVE_OPENSSL_SHA_H
 #include <openssl/sha.h>
@@ -32,6 +32,8 @@
 
 char *TCID = "ima_measure";
 int TST_TOTAL = 1;
+
+static int verbose;
 
 #define print_info(format, arg...) \
 	if (verbose) \
@@ -135,9 +137,8 @@ main(int argc, char *argv[])
 	FILE *fp;
 	struct event template;
 	u_int8_t pcr[SHA_DIGEST_LENGTH];
-	int i, count = 0, len;
+	int i, count = 0;
 
-	int verbose = 0;
 	int validate = 0;
 	int verify = 0;
 
