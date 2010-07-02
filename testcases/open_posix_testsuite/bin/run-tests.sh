@@ -28,14 +28,14 @@ run_test_loop() {
 	done
 
 	cat <<EOF
-*****************
+*******************
 SUMMARY
-*****************
-PASS		$NUM_PASS
-FAIL		$NUM_FAIL
-*****************
-TOTAL		$NUM_TESTS
-*****************
+*******************
+`printf "PASS\t\t%3d" $NUM_PASS`
+`printf "FAIL\t\t%3d" $NUM_FAIL`
+*******************
+`printf "TOTAL\t\t%3d" $NUM_TESTS`
+*******************
 EOF
 
 }
