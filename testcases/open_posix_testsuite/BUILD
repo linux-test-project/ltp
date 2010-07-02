@@ -1,6 +1,6 @@
 Build Notes for POSIX Test Suite
 ================================
-Last update : 2004-04-04 updated for posixtestsuite-1.4.0 
+Last update : 2010-07-10 updated for LTP-head (based off of posixtestsuite 1.40)
 
 The POSIX Test Suite should be able to be run independently of any given
 OS, so the OS-specific steps for configuring the POSIX Test Suite to run
@@ -9,8 +9,40 @@ are currently manual.
 IN GENERAL
 ==========
 In general, when calling *make:
-- If you need pass in any libraries for linking, set the value via LDLIBS.
-- If you need pass any other values to the linker, set the value via LDFLAGS.
+- If you need to pass in any header locations, preprocessor definitions, etc,
+  set the value via CFLAGS.
+- If you need to pass in any libraries for linking, set the value via LDLIBS.
+- If you need to pass any other values to the linker, set the value via LDFLAGS.
+
+FREEBSD
+=======
+
+================
+Message Queues
+================
+POSIX message queues have been available in FreeBSD since 6.x. Please add:
+
+options		P1003_1B_MQUEUE 
+
+to your kernel conf or build, install, and load the mqueue module.
+
+================
+Realtime Support
+================
+Realtime support has been available for a long time (I think 3.x). Please add:
+
+options		_KPOSIX_PRIORITY_SCHEDULING
+
+to your kernel conf. There isn't a corresponding module for this feature.
+
+================
+Semaphores
+================
+POSIX semaphores have been available in FreeBSD since 5.x. Please add:
+
+options		P1003_1B_SEMAPHORES
+
+to your kernel conf or build, install, and load the sem module.
 
 LINUX
 =====
@@ -24,12 +56,6 @@ library information.
 
 Notes for each test section are here. It is targeted for general linux 
 kernel 2.6 and glibc-2.3.3.
-
-=============
-Clocks/Timers
-=============
-Both Linux kernel 2.6 and Glibc support Clocks/Timers now.
-Add '-lrt' to LDLIBS.
 
 =======
 Threads
@@ -140,4 +166,4 @@ Maintainers:	Julie Fleischer
 		Adam Li
 Contributors:	Jerome Marchand 
 		Ulrich Drepper
-
+		Garrett Cooper
