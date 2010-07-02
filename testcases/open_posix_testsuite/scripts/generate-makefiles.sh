@@ -142,8 +142,8 @@ install: \$(INSTALL_DIR) run.sh
 	done
 
 test: run.sh
-	chmod +x run.sh
-	./run.sh
+	@chmod +x run.sh
+	@./run.sh
 
 \$(INSTALL_DIR):
 	mkdir -p \$@
