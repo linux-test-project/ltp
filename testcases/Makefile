@@ -30,13 +30,13 @@ include $(top_srcdir)/include/mk/env_pre.mk
 #    WILL crash the build host (the tests need to be fixed to just build, not run).
 # 3. mce-test doesn't fit cleanly in the build, yet.
 # 4. pounder21 is just broken.
-FILTER_OUT_DIRS		:= ballista kdump mce-test pounder21
+FILTER_OUT_DIRS		:= ballista kdump mce-test open% pounder21
 
 # XXX (garrcoop): Not sure why realtime is still in this list; this was the
 # original list of disabled items...
 # XXX (garrcoop): kdump was in this list.
 ifneq ($(UCLINUX),1)
-FILTER_OUT_DIRS		+= audit-test DOTS open_hpi_testsuite realtime
+FILTER_OUT_DIRS		+= audit-test DOTS realtime
 endif
 
 include $(top_srcdir)/include/mk/generic_trunk_target.mk
