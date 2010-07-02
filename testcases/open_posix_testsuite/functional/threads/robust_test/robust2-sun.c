@@ -21,10 +21,7 @@
  * XXX: pthread_mutexattr_setrobust_np and PTHREAD_MUTEX_ROBUST_SUN_NP isn't
  * POSIX.
  */
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE	1
-#warning "Uses GNU-isms; needs fixing."
-#endif
+#error "Uses GNU-isms; needs fixing."
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
