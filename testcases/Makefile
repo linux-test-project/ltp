@@ -50,6 +50,6 @@ trunk-clean:: open_posix_testsuite-clean
 trunk-install: open_posix_testsuite-install
 
 open_posix_testsuite-%: open_posix_testsuite
-	$(MAKE) -C $^ top_srcdir=$(top_srcdir)/testcases/$^ $*
+	$(MAKE) -C $^ top_srcdir=$(abs_top_srcdir)/testcases/$^ $*
 
 include $(top_srcdir)/include/mk/generic_trunk_target.mk
