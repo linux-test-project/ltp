@@ -88,6 +88,8 @@
     [ETXTBSY]
     [EWOULDBLOCK]
     [EXDEV]
+    	NOTE: The constants, [EBADMSG], [ENODATA], [ENOSR], [ENOSTR] are
+    	optional as per the XSR specification.
   </assertion>
   <assertion id="4" tag="ref:BD:{headers:error.h:DESCRIPTION}">
     errno.h shall give positive values for the following symbolic constants
@@ -170,5 +172,7 @@
     [ETXTBSY]
     [EWOULDBLOCK]
     [EXDEV]
+    	NOTE: The constants, [EBADMSG], [ENODATA], [ENOSR], [ENOSTR] are
+    	optional as per the XSR specification.
   </assertion>
 </assertions>

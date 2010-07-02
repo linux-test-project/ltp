@@ -24,31 +24,17 @@
 #define _GNU_SOURCE
 #endif
 
-#include <sched.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <signal.h>
-#include <pthread.h>
-#include <errno.h>
 #include <sys/wait.h>
+#include <errno.h>
+#include <pthread.h>
+#include <sched.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 #include "posixtest.h"
 
-#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
-#define BSD
-# include <sys/types.h>
-# include <sys/param.h>
-# include <sys/sysctl.h>
-#endif
-
-#ifdef HPUX
-# include <sys/param.h>
-# include <sys/pstat.h>
-#endif
-
-
 #define LOOP 1000     /* Shall be >= 1 */
-
 
 volatile int nb_call = 0;
 
@@ -59,21 +45,7 @@ int get_ncpu() {
 	/* This syscall is not POSIX but it should work on many system */
 #ifdef _SC_NPROCESSORS_ONLN
 	ncpu = sysconf(_SC_NPROCESSORS_ONLN);
-#else
-# ifdef BSD
-	int mib[2];
-	size_t len = sizeof(ncpu);
-	mib[0] = CTL_HW;
-	mib[1] = HW_NCPU;
-	sysctl(mib, 2, &ncpu, &len, NULL, 0);
-# else
-#  ifdef HPUX
-	struct pst_dynamic psd; 
-	pstat_getdynamic(&psd, sizeof(psd), 1, 0);
-	ncpu = (int)psd.psd_proc_cnt; 
-#  endif /* HPUX */
-# endif /* BSD */
-#endif /* _SC_NPROCESSORS_ONLN */  
+#endif
 
 	return ncpu;
 }
@@ -167,7 +139,7 @@ void * busy_thread(void *arg){
 }
 
 
-void buzy_process(int cpu){
+void busy_process(int cpu){
         struct sched_param param;
 
 #ifdef __linux__        
@@ -226,7 +198,7 @@ int main() {
 			return PTS_UNRESOLVED;
 		} else if (child_pid[i] == 0){
 			
-			buzy_process(i);
+			busy_process(i);
 
 			printf("This code should not be executed.\n");
 			return PTS_UNRESOLVED;

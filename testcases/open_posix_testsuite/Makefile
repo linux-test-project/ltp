@@ -1,202 +1,108 @@
-# Copyright (c) 2002, Intel Corporation. All rights reserved.
-# Created by:  inaky.perez-gonzalez REMOVE-THIS AT intel DOT com
-# This file is licensed under the GPL license.  For the full content
-# of this license, see the COPYING file at the top level of this
-# source tree.
 #
-# Kind of a little bit bastardized automakefile ... This is the
-# temporary glue to hold it all together; once our needs change or we
-# need something more advanced, we'll implement it.
+# Read COPYING for licensing details.
 #
-# So far, I understand Make is not the best language, but I felt lazy
-# today and wanted to use the default rules of automake [did I alredy
-# mentioned I am bastardizing it?].
-#
-# Ok, I don't use Automake any more
-#
-# Added patch from dank REMOVE-THIS AT kegel DOT com
+# Garrett Cooper, June 2010
 #
 
-# Added tests timeout from Sebastien Decugis (http://nptl.bullopensource.org) 
-# Expiration delay is 240 seconds
-TIMEOUT_VAL = 240
-# The following value is the shell return value of a timedout application.
-# with the bash shell, the ret val of a killed application is 128 + signum
-# and under Linux, SIGALRM=14, so we have (Linux+bash) 142.
-TIMEOUT_RET = $(shell cat $(top_builddir)/t0.val)
+# Makefiles that are considered critical to execution; if they don't exist
+# all of the Makefiles will be rebuilt by default.
+CRITICAL_CONFORMANCE_MAKEFILE=	conformance/interfaces/timer_settime/Makefile
+CRITICAL_FUNCTIONAL_MAKEFILE=	functional/threads/pi_test/Makefile
+CRITICAL_SECTION_MAKEFILE=	stress/threads/sem_open/Makefile
 
-top_builddir = .
+CRITICAL_MAKEFILES=	$(CRITICAL_CONFORMANCE_MAKEFILE) \
+			$(CRITICAL_FUNCTIONAL_MAKEFILE) \
+			$(CRITICAL_SECTION_MAKEFILE)
 
-LOGFILE = $(top_builddir)/logfile
+# The default expiration delay is 240 seconds
+TIMEOUT_VAL?=		240
+# The default logfile for the tests.
+LOGFILE?=		logfile
+# Subdirectories to traverse down.
+SUBDIRS=		conformance functional stress
 
-LDFLAGS := $(shell cat LDFLAGS | grep -v \^\#)
+MAKE_ENV=		LOGFILE=`if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
 
-RUN_TESTS := $(shell $(top_builddir)/locate-test \
-             --execs $(top_builddir)/$(POSIX_TARGET))
-BUILD_TESTS := $(shell $(top_builddir)/locate-test \
-               --buildable $(top_builddir)/$(POSIX_TARGET))
-FUNCTIONAL_MAKE := $(shell $(top_builddir)/locate-test --fmake)
-FUNCTIONAL_RUN := $(shell $(top_builddir)/locate-test --frun)
-STRESS_MAKE := $(shell $(top_builddir)/locate-test --smake)
-STRESS_RUN := $(shell $(top_builddir)/locate-test --srun)
-PWD := $(shell pwd)
-TIMEOUT = $(top_builddir)/t0 $(TIMEOUT_VAL)
+BUILD_MAKE_ENV=		"CFLAGS=$(CFLAGS)" "LDFLAGS=$(LDFLAGS)"
+BUILD_MAKE_ENV+=	"LDLIBS=$(LDLIBS)" $(MAKE_ENV)
 
+TEST_MAKE_ENV=		$(MAKE_ENV)
 
-all: build-tests run-tests 
+BUILD_MAKE=		env $(BUILD_MAKE_ENV) $(MAKE)
 
-build-tests: $(BUILD_TESTS:.c=.test)
-run-tests: $(RUN_TESTS:.test=.run-test)
+TEST_MAKE=		env $(TEST_MAKE_ENV) $(MAKE)
 
-functional-tests: functional-make functional-run
-stress-tests: stress-make stress-run
+top_srcdir?=		.
 
-tests-pretty:
-	$(MAKE) all | column -t -s:
+all: conformance-all functional-all stress-all tools-all
 
-CFLAGS += -D_POSIX_C_SOURCE=200112L
+clean: $(CRITICAL_MAKEFILES) 
+	@rm -f $(LOGFILE)*
+	@for dir in $(SUBDIRS) tools; do \
+	    $(MAKE) -C $$dir clean >/dev/null; \
+	done
 
-# add -std=c99, -std=gnu99 if compiler supports it (gcc-2.95.3 does not).
-check_gcc = $(shell if $(CC) $(1) -S -o /dev/null -xc /dev/null > /dev/null 2>&1; then echo "$(1)"; else echo "$(2)"; fi)
-CFLAGS += $(call check_gcc,-std=c99,)
-CFLAGS += $(call check_gcc,-std=gnu99,)
+# Clean out all of the generated Makefiles.
+distclean-makefiles:
+	@for dir in $(SUBDIRS); do \
+		$(MAKE) -C $$dir $@; \
+	done
 
-INCLUDE = -Iinclude
+generate-makefiles: distclean-makefiles
+	@env top_srcdir=$(top_srcdir) \
+	    $(top_srcdir)/scripts/generate-makefiles.sh
 
-# FIXME: exaust cmd line length
-clean:
-	@rm -f $(LOGFILE)
-# Timeout helper files
-	@rm -f $(top_builddir)/t0{,.val}
-# Built runnable tests
-	@find $(top_builddir) -iname \*.test | xargs -n 40 rm -f {}
-	@find $(top_builddir) -iname \*~ -o -iname \*.o | xargs -n 40 rm -f {}
-	@$(foreach DIR,$(FUNCTIONAL_MAKE),make -C $(DIR) clean >> /dev/null 2>&1;) >> /dev/null 2>&1
+install: bin-install conformance-install functional-install stress-install
 
-# Rule to run a build test
-# If the .o doesn't export main, then we don't need to link
-.PRECIOUS: %.test
-%.test: %.o $(top_builddir)/t0
-	@COMPLOG=$(LOGFILE).$$$$; \
-	[ -f $< ] || exit 0; \
-	{ nm -g $< | grep -q ' T main\| D main'; } || \
-	{ echo "$(@:.test=): link: SKIP" | tee -a $(LOGFILE) && exit 0; }; \
-	if $(CC) $(CFLAGS) $< -o $@ $(LDFLAGS) > $$COMPLOG 2>&1; \
-	then \
-		echo "$(@:.test=): link: PASS" | tee -a $(LOGFILE); \
-	else \
-		( \
-			echo "$(@:.test=): link: FAILED. Linker output: "; \
-			cat $$COMPLOG; \
-		) >> $(LOGFILE); \
-		echo "$(@:.test=): link: FAILED "; \
-	fi; \
-	rm -f $$COMPLOG;
+test: conformance-test functional-test stress-test
 
-# Rule to run an executable test
-# If it is only a build test, then the binary exist, so we don't need to run
-.PHONY: %.run-test
-%.run-test: %.test $(top_builddir)/t0.val
-	@COMPLOG=$(LOGFILE).$$$$; \
-	[ -f $< ] || exit 0; \
-	$(TIMEOUT) $< > $$COMPLOG 2>&1; \
-	RESULT=$$?; \
-	if [ $$RESULT -eq 1 ]; \
-	then \
-		MSG="FAILED"; \
-	fi; \
-	if [ $$RESULT -eq 2 ]; \
-	then \
-		MSG="UNRESOLVED"; \
-	fi; \
-	if [ $$RESULT -eq 4 ]; \
-	then \
-		MSG="UNSUPPORTED"; \
-	fi; \
-	if [ $$RESULT -eq 5 ]; \
-	then \
-		MSG="UNTESTED"; \
-	fi; \
-	if [ $$RESULT -eq $(TIMEOUT_RET) ]; \
-	then \
-		MSG="HUNG"; \
-	fi; \
-	if [  $$RESULT -gt 5  -a  $$RESULT -ne $(TIMEOUT_RET)  ]; \
-	then \
-		MSG="INTERRUPTED"; \
-	fi; \
-	if [ $$RESULT -eq 0 ]; \
-	then \
-		echo "$(@:.run-test=): execution: PASS" | tee -a $(LOGFILE); \
-	else \
-		( \
-			echo "$(@:.run-test=): execution: $$MSG: Output: "; \
-			cat $$COMPLOG; \
-		) >> $(LOGFILE); \
-		echo "$(@:.run-test=): execution: $$MSG "; \
-	fi; \
-	rm -f $$COMPLOG;
+# Test build and execution targets.
+conformance-all: $(CRITICAL_CONFORMANCE_MAKEFILE)
+	@rm -f `if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
+	@$(BUILD_MAKE) -C conformance -j1 all
 
-$(top_builddir)/t0: $(top_builddir)/t0.c
-	@echo Building timeout helper files; \
-	$(CC) -O2 -o $@ $<
-	
-$(top_builddir)/t0.val: $(top_builddir)/t0
-	echo `$(top_builddir)/t0 0; echo $$?` > $(top_builddir)/t0.val
-	
-%.run-test: %.sh $(top_builddir)/t0.val
-	@COMPLOG=$(LOGFILE).$$$$; \
-	chmod +x $<; \
-	$(TIMEOUT) $< > $$COMPLOG 2>&1; \
-	RESULT=$$?; \
-	if [ $$RESULT -eq 0 ]; \
-	then \
-		echo "$(@:.run-test=): execution: PASS" | tee -a $(LOGFILE);\
-	else \
-		( \
-			echo "$(@:.run-test=): execution: FAILED: Output: ";\
-			cat $$COMPLOG; \
-		) >> $(LOGFILE); \
-		echo "$(@:.run-test=): execution: FAILED "; \
-	fi; \
-	rm -f $$COMPLOG;
+conformance-install:
+	@$(MAKE) -C conformance install
 
+conformance-test:
+	@rm -f `if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
+	@$(TEST_MAKE) -C conformance test
 
-.PRECIOUS: %.o
-%.o: %.c
-	@COMPLOG=$(LOGFILE).$$$$; \
-	if $(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@ $(LDFLAGS) > $$COMPLOG 2>&1; \
-	then \
-		echo "$(@:.o=): build: PASS" | tee -a $(LOGFILE); \
-	else \
-		( \
-			echo "$(@:.o=): build: FAILED: Compiler output: "; \
-			cat $$COMPLOG; \
-		) >> $(LOGFILE); \
-		echo "$(@:.o=): build: FAILED "; \
-	fi; \
-	rm -f $$COMPLOG;
+functional-all: $(CRITICAL_FUNCTIONAL_MAKEFILE)
+	@rm -f `if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
+	@$(BUILD_MAKE) -C functional -j1 all
 
-# Functional/Stress test build and execution
-functional-make:
-	$(foreach DIR,$(FUNCTIONAL_MAKE),make -C $(DIR);)
+functional-install:
+	@$(MAKE) -C functional install
 
-.PHONY: $(FUNCTIONAL_RUN)
+functional-test:
+	@rm -f `if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
+	@$(TEST_MAKE) -C functional test
 
-functional-run: $(FUNCTIONAL_RUN)
+stress-all: $(CRITICAL_STRESS_MAKEFILE)
+	@rm -f `if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
+	@$(BUILD_MAKE) -C stress -j1 all
 
-$(FUNCTIONAL_RUN): 
-	cd $@; ./run.sh
-	cd $(PWD)
+stress-install:
+	@$(MAKE) -C stress install
 
-stress-make:
-	$(foreach DIR,$(STRESS_MAKE),make -C $(DIR);)
+stress-test:
+	@rm -f `if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
+	@$(TEST_MAKE) -C stress test
 
-.PHONY: $(STRESS_RUN)
+# Tools build and install targets.
+bin-install:
+	@$(MAKE) -C bin install
 
-stress-run: $(STRESS_RUN)
+tools-all:
+	@$(MAKE) -C tools all
 
-$(STRESS_RUN): 
-	cd $@; ./run.sh
-	cd $(PWD)
+$(CRITICAL_MAKEFILES): \
+    $(top_srcdir)/scripts/generate-makefiles.sh	\
+    $(top_srcdir)/CFLAGS			\
+    $(top_srcdir)/LDFLAGS			\
+    $(top_srcdir)/LDLIBS
+	@$(MAKE) generate-makefiles
 
+#tests-pretty:
+#	$(MAKE) all | column -t -s:

@@ -26,27 +26,26 @@
  * 
  */
 
+#include <errno.h>
 #include <limits.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <errno.h>
 #include "posixtest.h"
 
-int NUM_OF_KEYS = PTHREAD_KEYS_MAX;
-
+pthread_key_t keys[PTHREAD_KEYS_MAX];
 
 int main()
 {
 	int i, rc;
 
-	for(i = 0;i<=NUM_OF_KEYS;i++)
+	for(i = 0; i<= PTHREAD_KEYS_MAX; i++)
 	{
 		rc = pthread_key_create(&keys[i], NULL);
 		pthread_key_t key;
 		rc = pthread_key_create(&key, NULL);
-		if(i == NUM_OF_KEYS)
+		if(i == PTHREAD_KEYS_MAX)
 		{
 			if(rc != EAGAIN)
 			{

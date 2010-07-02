@@ -16,9 +16,6 @@ Setting up your machine
 depending on what specific area you are concentrating on. 
 (Signals, Semaphores, Threads, Timers or Message Qs).  
 
-* "LDFLAGS" is a file used by the Makefile to link to what you specify in it. e.g. if you want to link with lpthread, you would open LDFLAGS and insert the line "-lpthread".  LDFLAGS has a few
-simple examples contained in it.
-
 ===================
 Running the tests
 ===================
@@ -45,7 +42,6 @@ Documentation & Resources
 POSIX* Test Suite project page: http://posixtest.sf.net
 
 BUILD			- describes how to set up your developer machine to build and test
-LDFLAGS			- File that Makefile uses to link to what you specify
 
 The following files give developers information on how to write test
 cases for the project (under Documentation):
