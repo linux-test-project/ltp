@@ -142,6 +142,8 @@ install: \$(INSTALL_DIR) run.sh
 	done
 
 test: run.sh
+	chmod +x run.sh
+	./run.sh
 
 \$(INSTALL_DIR):
 	mkdir -p \$@
@@ -150,7 +152,7 @@ EOF
 
 	fi
 
-	if [ "$tests" != "" ]; then
+	if [ "$tests" != "" ] && ! grep -q '^run.sh' "$makefile.3"; then
 		cat >> "$makefile.3" <<EOF
 run.sh:
 	@echo '#/bin/sh' > \$@
