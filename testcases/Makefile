@@ -35,6 +35,7 @@ FILTER_OUT_DIRS		:= ballista kdump mce-test open% pounder21
 # XXX (garrcoop): Not sure why realtime is still in this list; this was the
 # original list of disabled items...
 # XXX (garrcoop): kdump was in this list.
+# XXX (garrcoop): open_hpi_testsuite was in this list.
 ifneq ($(UCLINUX),1)
 FILTER_OUT_DIRS		+= audit-test DOTS realtime
 endif
