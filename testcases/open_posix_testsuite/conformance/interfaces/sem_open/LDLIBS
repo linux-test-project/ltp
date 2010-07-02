@@ -1,1 +1,1 @@
--lrt
+-lpthread -lrt
