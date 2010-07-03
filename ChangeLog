@@ -1,3 +1,425 @@
+LTP-20100630
+
+commit e3bc3758d3e4d17a0e04009ef873df53819b9ec6
+Author: Subrata Modak <subratamodak@subratamodak.linux.ibm.com>
+Date:   Sat Jul 3 23:32:27 2010 +0530
+
+    [PATCH v4] Remove files which does not have a dmesg entry
+    
+    The recently introduced option:
+    
+    -K DMESG_LOG_DIR
+            Log Kernel messages generated for each test cases inside this directory,
+    
+    when used will generate huge no. of files inside the DMESG_DIR. Many of them will be ZERO size as we do not expect KERNEL MESSAGE to be generated against all the LTP TE
+    Signed-off-by: Subrata Modak <subrata@linux.vnet.ibm.com>,
+
+commit 9e365e8e209904086b18420438b4792851c219b8
+Author: Subrata Modak <subratamodak@subratamodak.linux.ibm.com>
+Date:   Sat Jul 3 23:13:41 2010 +0530
+
+    semctl01 and shmctl01 will hang during uClinux test: ltp test case shmctl01 and semctl01 can not execute. When press ctrl and c, it can not exist.
+    --
+    root:/> shmctl01
+    
+    ^Cshmctl01    0  INFO  :  received unexpected signal 2
+    ^Cshmctl01    0  INFO  :  received unexpected signal 2
+    --
+    The reason is the child will unlink the pipe if pipename isn't NULL，which may make the parent waitting forever. Signed-off-by: Bob Liu <lliubbo@gmail.com>.
+
+commit 65f7070cb3f67eba009e68413187727f508623e1
+Author: Subrata Modak <subratamodak@subratamodak.linux.ibm.com>
+Date:   Sat Jul 3 23:10:38 2010 +0530
+
+    From: gowrishankar <gowrishankar.m@linux.vnet.ibm.com>
+    
+    In a scenario where a thread other than high priority noise thread is scheduled after the barrier, a priority inversion will not occur, defeating the purpose of test. W
+    Signed-off-by: Gowrishankar<gowrishankar.m@in.ibm.com>
+    Tested-by: Gowrishankar<gowrishankar.m@in.ibm.com>
+    Acked-by: Darren Hart <dvhltc@us.ibm.com>
+
+commit 785ef40630157d66067b1577a238184e0170e383
+Author: Subrata Modak <subratamodak@subratamodak.linux.ibm.com>
+Date:   Sat Jul 3 23:10:14 2010 +0530
+
+    From: gowrishankar <gowrishankar.m@linux.vnet.ibm.com>
+    
+    testpi-4 defines THREAD_STOP which is not used anywhere in the program.
+    
+    Signed-off-by: Gowrishankar <gowrishankar.m@in.ibm.com>
+    Tested-by: Gowrishankar <gowrishankar.m@in.ibm.com>
+    Acked-by: Darren Hart <dvhltc@us.ibm.com>
+
+Author: Subrata Modak <subratamodak@subratamodak.linux.ibm.com>
+Date:   Sat Jul 3 23:09:55 2010 +0530
+
+    From: gowrishankar <gowrishankar.m@linux.vnet.ibm.com>
+    
+    Instead of lock/unlock of mutex to burn cpu cycles, we can use busy_work_ms
+    from librttest which is more explicit (burn cycles, not provide some
+    synchronization).
+    
+    Also this patch removes the id increment since it is not used.
+    
+    Signed-off-by: Gowrishankar <gowrishankar.m@in.ibm.com>
+    Tested-by: Gowrishankar <gowrishankar.m@in.ibm.com>
+    Acked-by: Darren Hart <dvhltc@us.ibm.com>
+
+commit a9e2238be689fd8e4d25bc7eefca1cb11535ce7a
+Author: Subrata Modak <subratamodak@subratamodak.linux.ibm.com>
+Date:   Sat Jul 3 23:09:32 2010 +0530
+
+    From: gowrishankar <gowrishankar.m@linux.vnet.ibm.com>
+    
+    Since main() sets the cpu affinity, it is not necessary for the
+    spawned threads to do so, as the threads inherit the cpu affinity.
+    
+    Signed-off-by: Gowrishankar <gowrishankar.m@in.ibm.com>
+    Tested-by: Gowrishankar <gowrishankar.m@in.ibm.com>
+    Acked-by: Darren Hart <dvhltc@us.ibm.com>
+
+commit 5305c4a10cf26799c81e6f0362750988457d3002
+Author: Subrata Modak <subratamodak@subratamodak.linux.ibm.com>
+Date:   Sat Jul 3 23:09:02 2010 +0530
+
+    From: gowrishankar <gowrishankar.m@linux.vnet.ibm.com>
+    
+    This patch adds the description to the test testpi-4.
+    Signed-off-by: Gowrishankar <gowrishankar.m@in.ibm.com>
+    Tested-by: Gowrishankar <gowrishankar.m@in.ibm.
+
+commit a21dab25b7ef183d049b31b0d3fed1d48c16dc2b
+Author: Subrata Modak <subratamodak@subratamodak.linux.ibm.com>
+Date:   Sat Jul 3 23:06:38 2010 +0530
+
+    From: gowrishankar <gowrishankar.m@linux.vnet.ibm.com>
+    
+    testpi-4 is initializing mutex step by step which can be done
+    by reusing the init_pi_mutex() funtion available in librttest.
+    
+    Signed-off-by: Gowrishankar <gowrishankar.m@in.ibm.com>
+    Tested-by: Gowrishankar <gowrishankar.m@in.ibm.com>
+    Acked-by: Darren Hart <dvhltc@us.ibm.com>
+
+commit b4f57c7d26b58f3d80b46340f10a397d21957866
+Author: Subrata Modak <subratamodak@subratamodak.linux.ibm.com>
+Date:   Sat Jul 3 23:06:16 2010 +0530
+
+    From: gowrishankar <gowrishankar.m@linux.vnet.ibm.com>
+    
+    This patch cleans up the testpi-4 so as to follow the
+    C coding style standards.
+    
+    Signed-off-by: Gowrishankar <gowrishankar.m@in.ibm.com>
+    Tested-by: Gowrishankar <gowrishankar.m@in.ibm.com>
+    Acked-by: Darren Hart <dvhltc@us.ibm.com>
+
+commit 76a720a381f351b33eb203c7c519e6f44bbe7219
+Author: Subrata Modak <subratamodak@subratamodak.linux.ibm.com>
+Date:   Sat Jul 3 21:08:18 2010 +0530
+
+    While executing the ltp on an nfs root mounted system, I faced a problem with some of the ltp test cases. These tests either did not close their file descriptors or did
+
+commit 13adcb0c4496e75bdcdbc02410b46b9fbc6120a8
+Author: Subrata Modak <subratamodak@subratamodak.linux.ibm.com>
+Date:   Fri Jul 2 22:47:57 2010 +0530
+
+    ima_measure doesn't build correctly.  It needs config.h to determine whether openssl headers are present, and verbose needs to be global. Broken by commit ef77253961f90
+    Signed-off-by:  Stephen D. Smalley <sds@tycho.nsa.gov>,
+    Acked-by: Garrett Cooper <yanegomi@gmail.com>,
+
+commit 04b500a71b8a410adf5b92978c9d93d659912c20
+Author: Subrata Modak <subratamodak@subratamodak.linux.ibm.com>
+Date:   Thu Jul 1 22:33:51 2010 +0530
+
+    fix hugetlb tests: I want to suggest a patch for hugetlb tests. There are "-c" options in this "${LTPROOT}/runtest/hugetlb" file:
+    ------------
+    hugeshmat01 hugeshmat01 -i 5
+    hugeshmat02 hugeshmat02 -i 5
+    hugeshmat03 hugeshmat03 -i 5
+    hugeshmctl01 hugeshmctl01 -i 5 -c 3
+    hugeshmctl02 hugeshmctl02 -i 5 -c 3
+    hugeshmctl03 hugeshmctl03 -i 5 -c 3
+    hugeshmdt01 hugeshmdt01 -I 5 -c10
+    hugeshmget01 hugeshmget01 -c 10 -i 10
+    hugeshmget02 hugeshmget02 -c 10 -i 10
+    hugeshmget03 hugeshmget03 -c 10 -i 10
+    hugeshmget05 hugeshmget05 -c 10 -i 10
+    ------------
+    But I think that these "-c" options have not important meanings. I think that the test for several times may not be necessary. For example, the purpose of "hugeshmget02
+    Signed-off-by: Tomonori Mitani <mitani@ryobi.co.jp>,
+
+commit 0591a5dcc4c5d8b1cb282e4afd163f70b62350ce
+Author: Subrata Modak <subratamodak@subratamodak.linux.ibm.com>
+Date:   Thu Jul 1 22:29:20 2010 +0530
+
+    [PATCH] realtime: rearrange the pthread attr functions order in librttest,
+    From: gowrishankar <gowrishankar.m@linux.vnet.ibm.com>
+    
+    In the recent pthread libraries, order of calling pthread_attr_setschedpolicy and pthread_attr_setschedparam plays important role in a way that, former should always be
+    Signed-off-by: Gowrishankar <gowrishankar.m@in.ibm.com>,
+    Tested-by: Gowrishankar <gowrishankar.m@in.ibm.com>,
+    Acked-by: Will Schmidt <will_schmidt@vnet.ibm.com>,
+    Acked-by: Darren Hart <dvhltc@us.ibm.com>,
+
+commit 66c15baaa8be08c5baae5a0c819df3b6a8c834dd
+Author: Subrata Modak <subratamodak@subratamodak.linux.ibm.com>
+Date:   Thu Jul 1 22:27:54 2010 +0530
+
+    [PATCH] realtime: fix min and max calculations in matrix multiplication test.
+    From: gowrishankar <gowrishankar.m@linux.vnet.ibm.com>
+    
+    In matrix multiplication test, the min and max calculations are done on stats_container_t data with its index field never set to the last element position. Due to this 
+    Signed-off-by: Gowrishankar <gowrishankar.m@in.ibm.com>,
+    Tested-by: Gowrishankar <gowrishankar.m@in.ibm.com>,
+    Acked-by: Will Schmidt <will_schmidt@vnet.ibm.com>,
+    Acked-by: Darren Hart <dvhltc@us.ibm.com>,
+
+commit 95e8b61433efcefb83699aaf859e92ad2b576373
+Author: Subrata Modak <subratamodak@subratamodak.linux.ibm.com>
+Date:   Mon Jun 14 17:59:09 2010 +0530
+
+    Fix issue where growfiles tests still not creating temp files in directory specified by TMPDIR as expected. This is an updated patch which changes the arguments for gf1
+    Scripts which use growfiles with command-line file names are not performing the tests in the expected target directory. When file names are provided on the growfiles co
+    
+    gf01 growfiles -B 800000 -W gf01 -b -e 1 -u -i 0 -L 20 -w -C 1 -l -I r -T 10 glseek20 glseek20.2 -d $TMPDIR
+    
+    The -d $TMPDIR construct is almost always used in the scripts to point to the filesystem under test. However, the presence of the glseek20 glseek20.2 command line param
+    
+    -f specifies the 'auto_file' which is the base file name (gf is used if it's missing)
+    -d specifies the 'auto_dir' to be used ('.' is used if it's missing)
+    -S specifies the number of 'auto seq' files to be used. These files are of the form: "%s/%s%d" using auto_dir, auto_file, file_number.
+    Signed-off-by: Henry Yei <hyei@mvista.com>,
+
+commit 73c785ff2eb296091d06d3b7184bddf9bec8ec7e
+Author: Subrata Modak <subratamodak@subratamodak.linux.ibm.com>
+Date:   Mon Jun 14 17:56:43 2010 +0530
+
+    I want to suggest a patch for #2 test of "mail_tests.sh". The failure of #2 is as following:
+    ------------
+    mail_tests::mail02    0  TINFO  :  Test #2: mail u...@bad-domain will result in failure
+    mail_tests::mail02    0  TINFO  :  Test #2: to deliver the mail. Mailer daemon should
+    mail_tests::mail02    0  TINFO  :  Test #2: report this failure.
+    mail_tests::mail02    2  TFAIL  :  Test #2: No new mail for root. Reason: No mail for root
+    ------------
+    I use RHEL5.4, RHEL4.8 systems and x86, x86_64, ia64 architectures. "#2" test failed in all combinations. At "#2" test, there is "No mail for root" in "tst_mail.res" fi
+:
+commit 82d3ded3632c79c62e231f3f8d7a632ce3da4e40
+Author: Subrata Modak <subratamodak@subratamodak.linux.ibm.com>
+Date:   Mon Jun 14 17:54:59 2010 +0530
+
+    echo test is failing with the below errors as we didn't initialized the 'addrlen' parameter of getsockname.
+    Creating socket .....
+    echoes      1  TBROK  :  getsockname call failed (pid=7086): Invalid argument
+    echo: Invalid argument
+    So, attached the patch which initializes the 'addrlen' parameter. Signed-off-by: Munipradeep Beerakam <mpradeep@linux.vnet.ibm.com>. Please correct if anything is wrong
+
+commit a9ff0b53d9e45e89ea4ec794fc87bbf67620e2c4
+Author: Subrata Modak <subratamodak@subratamodak.linux.ibm.com>
+Date:   Mon Jun 14 17:52:10 2010 +0530
+
+    We need to add the below entry:
+    {"read", "/proc/powerpc/rtas/error_log", EINVAL},
+    to the "Mapping known_issues[]" array, as the new kernels are having /proc/powerpc directory along with /proc/ppc64. Attached the patch to this mail. Signed-off-by: Mun
+    Please correct me if any thing is wrong.
+
+commit f2e36d93c856782c4292ad0c21729c35776c1e31
+Author: Subrata Modak <subratamodak@subratamodak.linux.ibm.com>
+Date:   Wed Jun 9 23:45:26 2010 +0530
+
+    TOMOYO Linux update. Update test programs for TOMOYO LSM module. This patch updates test programs for TOMOYO 2.3 which will be included into Linux kernel 2.6.36. Signed
+
+commit 7f20a3add6c7f2166dbab5a712713ae8b5943448
+Author: Subrata Modak <subratamodak@subratamodak.linux.ibm.com>
+Date:   Wed Jun 2 18:16:46 2010 +0530
+
+    Fix ext4_subdir_limit fix: We get the following error results since the if condition in ext4_subdir_limit_tset.sh does not work fine. The patch fixes this issue.
+    [root@bsd086 ltp]# ./runltp -f fs_ext4
+    <snip>
+    Ext4 subdir limit test
+    ext4-subdir-limit    0  TINFO  :  Num of dirs to create: 65537, Dir name len: long name, mkdir: No space left on device
+    ext4-subdir-limit    2  TFAIL  :  failed to create directories - 19118
+    <snip>
+    ext4-subdir-limit    0  TINFO  :  Num of dirs to create: 65537, Dir name len: long name, mkdir: No space left on device
+    ext4-subdir-limit    4  TFAIL  :  failed to create directories - 19592
+    Signed-off-by: Akira Fujita <a-fujita@rs.jp.nec.com>,
+
+commit 76ec975d298e3890a4ab2f9471940e164de0c643
+Author: Subrata Modak <subratamodak@subratamodak.linux.ibm.com>
+Date:   Wed Jun 2 18:15:19 2010 +0530
+
+    Fix for UTIMENSAT test fails hugely: This patch installs the trap for cleanup_test which removes the sudoers file only if it was installed by utimensat script, and also
+
+commit 91f337f9ee05b028af8506c7e83dc1b8c23a3b32
+Author: Subrata Modak <subratamodak@subratamodak.linux.ibm.com>
+Date:   Fri May 28 12:57:36 2010 +0530
+    fix io_xxxx Makefiles:
+    Makefiles for io_xxx syscall tests contains line:
+    LDFLAGS                 += $(AIO_LIBS)
+    Which leads to wrong order of flags passed to the linker and compilation failure on certain linux systems. Changing these lines to:
+    LDLIBS                  += $(AIO_LIBS)
+    Fixes this problem. Patch is attached.
+    Signed-off-by: Cyril Hrubis chrubis@suse.cz
+
+commit 6a19cb6ea8f0b160438288f87a96f57d8e63aad2
+Author: Subrata Modak <subratamodak@subratamodak.linux.ibm.com>
+Date:   Fri May 28 12:53:59 2010 +0530
+
+    It seems like file runtest/fs_perms_simple doesn't made it into ltp-dev git tree (also it seems to be included in the patch).
+    see:
+    http://ltp.git.sourceforge.net/git/gitweb.cgi?p=ltp/ltp-dev.git;a=commit;h=ca758b73afff8200df5e1a24e9abe8a6468c9e06
+    --
+    Cyril Hrubis
+    chrubis@suse.cz
+
+commit 4e94765d753c0ea91b4745ffac30df427a4d9202
+Author: Subrata Modak <subratamodak@subratamodak.linux.ibm.com>
+Date:   Fri May 28 12:50:38 2010 +0530
+
+    Timer related syscalls for LTP test: Signed-off-by: Suzuki K P <suzuki@in.ibm.com>,
+    Fix timer_t argument for timer related direct syscalls. The tests timer_getoverrun and timer_gettime should be moved to testcases/kernel/timers directory. If that is do
+     /*  Description */
+    There is a mismatch in the "timer_t" type defined by the Linux kernel and the GNU Libc.
+    Linux kernel defines it as an int for all architectures.
+    include/linux/types.h :
+    typedef __kernel_timer_t timer_t;
+    arch/powerpc/include/asm/posix_types.h :
+    typedef int __kernel_timer_t;
+    Now, the glibc provides a wrapper to the timer related system calls. While providing the wrapper, Glibc stores some internal data associated with the timer. So it defin
+    /usr/include/time.h :
+    /* Timer ID returned by `timer_create'.  */
+    typedef __timer_t timer_t;
+    in /usr/include/bits/types.h :
+    /* Timer ID returned by `timer_create'.  */
+    __STD_TYPE __TIMER_T_TYPE __timer_t;
+    in /usr/include/bits/typesizes.h
+    So that leads to the definiton of timer_t as void* by glibc. And this cannot be changed. But the glibc uses the "proper" typed argument for the syscalls it issues by de
+
+commit 82f8e8fdfe892266d7346792b71783ac23bfa1a2
+Author: Subrata Modak <subratamodak@subratamodak.linux.ibm.com>
+Date:   Fri May 28 12:45:16 2010 +0530
+
+    Following set of patches applies functional changes in pi-tests for better reliability in recent kernels and their order is:
+    [PATCH 1/6] realtime: reuse init_pi_mutex from librttest
+    [PATCH 2/6] realtime: add test descriptions
+    [PATCH 3/6] realtime: threads need not set cpu affinity while main does
+    [PATCH 4/6] realtime: use busy_work_ms from librttest to burn cpu cycles
+    [PATCH 5/6] realtime: remove thread_stop which is not used anywhere
+    [PATCH 6/6] realtime: synchronization fixes for high priority noise thread
+    
+    All need to be applied in their order on top or code clean up patch series sent previously.
+    Signed-off-by: Gowrishankar <gowrishankar.m@in.ibm.com>,
+    Tested-by: Gowrishankar <gowrishankar.m@in.ibm.com>,
+    Acked-by: Darren Hart <dvhltc@us.ibm.com>,
+
+commit e1c39ef4f1d61c05f176d063d1afa6f704bc6740
+Author: Subrata Modak <subratamodak@subratamodak.linux.ibm.com>
+Date:   Fri May 28 12:36:06 2010 +0530
+
+    realtime: code cleanup on pi-tests to adapt C coding standard: Following bulk of patches applies the coding style in pi-tests to follow the C coding standard. All are t
+    [PATCH 1/5] realtime: code cleanup on pi-test 0
+    [PATCH 2/5] realtime: code cleanup on pi-test 1
+    [PATCH 3/5] realtime: code cleanup on pi-test 2
+    [PATCH 4/5] realtime: code cleanup on pi-test 5
+    [PATCH 5/5] realtime: code cleanup on pi-test 6
+    Signed-off-by: Gowrishankar <gowrishankar.m@in.ibm.com>,
+    Tested-by: Gowrishankar <gowrishankar.m@in.ibm.com>,
+    Acked-by: John Stultz <johnstul@us.ibm.com>,
+    Acked-by: Darren Hart <dvhltc@us.ibm.com>,
+
+commit c81df6233bca8b3ad601a3a7dd6c02319a32a76b
+Author: Subrata Modak <subratamodak@subratamodak.linux.ibm.com>
+Date:   Fri May 28 12:25:20 2010 +0530
+
+    Following patch adds "return NULL;" to the function returning void* in math float tests. This change silences compiler warnings. Signed-off-by: Cyril Hrubis chrubis@sus
+
+commit 4aafc2802f0c2c05e4891cea1f721f414b41ac67
+Author: Subrata Modak <subratamodak@subratamodak.linux.ibm.com>
+Date:   Fri May 28 12:22:02 2010 +0530
+
+    The mq_timedreceive01.c test defines _XOPEN_SOURCE 500 on the beginning but this causes missing prototypes for seteuid() and mq_timedreceive() as they need _XOPEN_SOURC
+
+commit e75668f99ade62e18e34891b2c522c8d97ee982b
+Author: Subrata Modak <subratamodak@subratamodak.linux.ibm.com>
+Date:   Tue May 18 01:34:04 2010 +0530
+
+    ftruncate04.c: cleanup mandatory locking check. The attached patch tries to cleanup the `mandatory locking' check in the ftruncate04.c testcase. The currently test is m
+
+commit 6e9c735833c19ad5031a4116b2e74ee77ff53424
+Author: Subrata Modak <subratamodak@subratamodak.linux.ibm.com>
+Date:   Tue May 18 01:31:35 2010 +0530
+
+    New: open("a/", O_NOFOLLOW) fails with ELOOP if "a" is a symbolic link to a directory. Add O_NOFOLLOW open test with trailing slash. In a situation where symlink (say '
+
+commit ca758b73afff8200df5e1a24e9abe8a6468c9e06
+Author: Subrata Modak <subratamodak@subratamodak.linux.ibm.com>
+Date:   Tue May 18 01:28:14 2010 +0530
+    fix fs_perms tests. Signed-off-by: Cyril Hrubis <chrubis@suse.cz>.
+
+commit 440fa0f6d857d4a15802b5ecdfdf6057e59975bf
+Author: Subrata Modak <subratamodak@subratamodak.linux.ibm.com>
+Date:   Wed May 12 22:07:14 2010 +0530
+
+    Add an Option '-K' to Create dmesg logs for each test:
+    Recently while running LTP , i found that the system had generated many kernel messages worth investigating. However, there was a loose gap to find out which test exact
+    1) Absolute path(s) as specified by the user, else
+    2) Inside $LTPROOT/output/
+    Comments welcome.
+    Signed-off-by: Subrata Modak <subrata@linux.vnet.ibm.com>
+
+commit bd9d440be1da8020c93ac92e497e3a16e66e9fa3
+Author: Subrata Modak <subratamodak@subratamodak.linux.ibm.com>
+Date:   Wed May 12 22:03:21 2010 +0530
+
+    Add an Option '-K' to Create dmesg logs for each test:
+    Recently while running LTP , i found that the system had generated many kernel messages worth investigating. However, there was a loose gap to find out which test exact
+    1) Absolute path(s) as specified by the user, else
+    2) Inside $LTPROOT/output/
+    Comments welcome.
+    Signed-off-by: Subrata Modak <subrata@linux.vnet.ibm.com>,
+
+commit 0ce709315c3f2493d8ff97d574641cb91f1b1fa6
+Author: Subrata Modak <subratamodak@subratamodak.linux.ibm.com>
+Date:   Sun May 9 19:44:04 2010 +0530
+
+    NetNS test fixes: By the way, these tests appear to start up sshd for no reason other than possibly checking that basic sockets work in the netns. Given the frailty and
+    NetNS test fixes (v2):
+    This patch fixes a couple of netns test issues that cause invalid failures relating to exiting with a status variable that doesn't exist.  It also fixes an instance of 
+    Changes in v2:
+    - Initialize status=0 at the top of child_1.sh to prevent overshadowing a (meaningless) sshd failure,
+    Signed-off-by: Dan Smith <danms@us.ibm.com>,
+    Acked-by: Serge E. Hallyn <serue@us.ibm.com>,
+
+commit 3aabc944423945e4857372fe726584f7889cbb8e
+Author: Subrata Modak <subratamodak@subratamodak.linux.ibm.com>
+Date:   Fri May 7 14:28:18 2010 +0530
+
+    Most of these are belated cleanup after the move to using /opt/ltp. But come on, replacing 'return' with tst_exit(), are you just trying to mess with my head?
+    Changelog:
+     may 4: address Garrett's feedback
+      1. single return 0 in print_caps.c
+      2. use $TMP if defined for location of caps_fifo
+      3. use tst_brkm in place of tst_resm.
+     may 5: address Garrett's comment:
+      don't add 1 to null pointer and then check for 1
+    Signed-off-by: Serge E. Hallyn <serue@us.ibm.com>,
+    Acked-by: Garrett Cooper <yanegomi@gmail.com>,
+commit c98956ba8f40b4c9004ff5767db2b2d87ab46e41
+Author: Subrata Modak <subratamodak@subratamodak.linux.ibm.com>
+Date:   Fri May 7 14:21:00 2010 +0530
+
+    The MAX_CLOCKS supported by the kernel is 16. But the kernel may not have all the clock sources defined in the range 0-15. Hence, to test whether kernel returns error f
+    Signed-off-by: Suzuki K P <suzuki@in.ibm.com>,
+    Acked-by: Garrett Cooper <yanegomi@gmail.com>,
+
+commit f0be8b0c4489defeb6eaf6715576524a48b8998a
+Author: Subrata Modak <subratamodak@subratamodak.linux.ibm.com>
+Date:   Fri May 7 10:33:00 2010 +0530
+
+    We should to check the return value of trigger_eventfd_overflow() in overflow_poll_test().
+    Signed-off-by: Shi Weihua <shiwh@cn.fujitsu.com>,
+    Acked-by: Garrett Cooper <yanegomi@gmail.com>,
+
 LTP-20100430
 Commit: 84f2e35f109a9fe6591af83be0ddbda4a5f7c78c
 Date:   Thu, 29 Apr 2010 19:02:46 +0530
