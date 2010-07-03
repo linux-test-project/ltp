@@ -383,7 +383,11 @@ void child_cnt()
 	if (sync_pipe_notify(sync_pipes) == -1)
 		tst_brkm(TBROK, cleanup, "sync_pipe_notify failed");
 
+#ifdef UCLINUX
+	if (sync_pipe_close(sync_pipes, NULL) == -1)
+#else
 	if (sync_pipe_close(sync_pipes, PIPE_NAME) == -1)
+#endif
 		tst_brkm(TBROK, cleanup, "sync_pipe_close failed");
 
 	sops.sem_num = SEM4;
