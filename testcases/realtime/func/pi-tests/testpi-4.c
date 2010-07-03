@@ -81,7 +81,7 @@ pthread_mutex_t *glob_mutex;
 void *func_nonrt(void *arg)
 {
 	struct thread *pthr = (struct thread *)arg;
-	int i, j, tid = gettid();
+	int i, tid = gettid();
 
 	printf("Thread %d started running with priority %d\n", tid,
 		pthr->priority);
@@ -96,11 +96,7 @@ void *func_nonrt(void *arg)
 				tid, i, pthr->policy, pthr->priority);
 			fflush(NULL);
 		}
-		pthr->id++;
-		for (j = 0; j < 5000; j++) {
-			pthread_mutex_lock(&(pthr->mutex));
-			pthread_mutex_unlock(&(pthr->mutex));
-		}
+		busy_work_ms(1);
 	}
 	pthread_mutex_unlock(glob_mutex);
 	return NULL;
@@ -109,7 +105,7 @@ void *func_nonrt(void *arg)
 void *func_rt(void *arg)
 {
 	struct thread *pthr = (struct thread *)arg;
-	int i, j, tid = gettid();
+	int i, tid = gettid();
 
 	printf("Thread %d started running with prio %d\n", tid,
 		pthr->priority);
@@ -129,11 +125,7 @@ void *func_rt(void *arg)
 				tid, i, pthr->policy, pthr->priority);
 			fflush(NULL);
 		}
-		pthr->id++;
-		for (j = 0; j < 5000; j++) {
-			pthread_mutex_lock(&(pthr->mutex));
-			pthread_mutex_unlock(&(pthr->mutex));
-		}
+		busy_work_ms(1);
 	}
 	pthread_mutex_unlock(glob_mutex);
 	return NULL;
@@ -142,7 +134,7 @@ void *func_rt(void *arg)
 void *func_noise(void *arg)
 {
 	struct thread *pthr = (struct thread *)arg;
-	int i, j, tid = gettid();
+	int i, tid = gettid();
 
 	printf("Noise Thread started running with prio %d\n",
 		pthr->priority);
@@ -155,11 +147,7 @@ void *func_noise(void *arg)
 				pthr->priority);
 			fflush(NULL);
 		}
-		pthr->id++;
-		for (j = 0; j < 5000; j++) {
-			pthread_mutex_lock(&(pthr->mutex));
-			pthread_mutex_unlock(&(pthr->mutex));
-		}
+		busy_work_ms(1);
 	}
 	return NULL;
 }
