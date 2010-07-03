@@ -81,17 +81,7 @@ pthread_mutex_t *glob_mutex;
 void *func_nonrt(void *arg)
 {
 	struct thread *pthr = (struct thread *)arg;
-	int rc, i, j, tid = gettid();
-	cpu_set_t mask;
-	CPU_ZERO(&mask);
-	CPU_SET(0, &mask);
-
-	rc = sched_setaffinity(0, sizeof(mask), &mask);
-	if (rc < 0) {
-		printf("Thread %d: Can't set affinity: %d %s\n",
-			tid, rc, strerror(rc));
-		exit(-1);
-	}
+	int i, j, tid = gettid();
 
 	printf("Thread %d started running with priority %d\n", tid,
 		pthr->priority);
@@ -119,17 +109,7 @@ void *func_nonrt(void *arg)
 void *func_rt(void *arg)
 {
 	struct thread *pthr = (struct thread *)arg;
-	int rc, i, j, tid = gettid();
-	cpu_set_t mask;
-	CPU_ZERO(&mask);
-	CPU_SET(0, &mask);
-
-	rc = sched_setaffinity(0, sizeof(mask), &mask);
-	if (rc < 0) {
-		printf("Thread %d: Can't set affinity: %d %s\n",
-			tid, rc, strerror(rc));
-		exit(-1);
-	}
+	int i, j, tid = gettid();
 
 	printf("Thread %d started running with prio %d\n", tid,
 		pthr->priority);
@@ -162,17 +142,7 @@ void *func_rt(void *arg)
 void *func_noise(void *arg)
 {
 	struct thread *pthr = (struct thread *)arg;
-	int rc, i, j, tid = gettid();
-	cpu_set_t mask;
-	CPU_ZERO(&mask);
-	CPU_SET(0, &mask);
-
-	rc = sched_setaffinity(0, sizeof(mask), &mask);
-	if (rc < 0) {
-		printf("Thread %d: Can't set affinity: %d %s\n", tid, rc,
-			strerror(rc));
-		exit(-1);
-	}
+	int i, j, tid = gettid();
 
 	printf("Noise Thread started running with prio %d\n",
 		pthr->priority);
