@@ -73,9 +73,6 @@ int gettid(void)
 }
 
 typedef void *(*entrypoint_t)(void *);
-
-#define THREAD_STOP    1
-
 pthread_mutex_t *glob_mutex;
 
 void *func_nonrt(void *arg)
