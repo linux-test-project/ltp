@@ -30,7 +30,9 @@
  *
  *
  * HISTORY
- *
+ *      2010-06-29 Thread synchronization changes by using
+ *                 conditional variables by Gowrishankar.
+ *                 by Gowrishankar <gowrishankar.m@in.ibm.com>
  *
  *****************************************************************************/
 
@@ -74,6 +76,8 @@ int gettid(void)
 
 typedef void *(*entrypoint_t)(void *);
 pthread_mutex_t *glob_mutex;
+static pthread_mutex_t cond_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_cond_t cond_var = PTHREAD_COND_INITIALIZER;
 
 void *func_nonrt(void *arg)
 {
@@ -85,7 +89,14 @@ void *func_nonrt(void *arg)
 	pthread_mutex_lock(glob_mutex);
 	printf("Thread %d at start pthread pol %d pri %d - Got global lock\n",
 		tid, pthr->policy, pthr->priority);
+
+	/* Wait for other RT threads to start up */
 	pthread_barrier_wait(&barrier);
+
+	/* Wait for the high priority noise thread to start and signal us */
+	pthread_mutex_lock(&cond_mutex);
+	pthread_cond_wait(&cond_var, &cond_mutex);
+	pthread_mutex_unlock(&cond_mutex);
 
 	for (i = 0; i < 10000; i++) {
 		if (i%100 == 0) {
@@ -136,6 +147,14 @@ void *func_noise(void *arg)
 	printf("Noise Thread started running with prio %d\n",
 		pthr->priority);
 	pthread_barrier_wait(&barrier);
+
+	/* Give the other threads time to wait on the condition variable.*/
+	usleep(1000);
+
+	/* Noise thread begins the test */
+	pthread_mutex_lock(&cond_mutex);
+	pthread_cond_broadcast(&cond_var);
+	pthread_mutex_unlock(&cond_mutex);
 
 	for (i = 0; i < 10000; i++) {
 		if (i%100 == 0) {
@@ -200,5 +219,8 @@ int main(int argc, char *argv[])
 	join_threads();
 	printf("Done\n");
 
+	pthread_mutex_destroy(glob_mutex);
+	pthread_mutex_destroy(&cond_mutex);
+	pthread_cond_destroy(&cond_var);
 	return 0;
 }
