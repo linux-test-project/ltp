@@ -199,8 +199,7 @@ void *func_noise(void *arg)
  */
 int main(int argc, char *argv[])
 {
-	pthread_mutexattr_t mutexattr;
-	int i, retc, protocol, nopi = 0;
+	int i, retc, nopi = 0;
 	cpu_set_t mask;
 	CPU_ZERO(&mask);
 	CPU_SET(0, &mask);
@@ -233,23 +232,8 @@ int main(int argc, char *argv[])
 		exit(errno);
 	}
 
-	if (!nopi) {
-		if (pthread_mutexattr_init(&mutexattr) != 0)
-			printf("Failed to init mutexattr\n");
-
-		if (pthread_mutexattr_setprotocol(&mutexattr,
-			 PTHREAD_PRIO_INHERIT) != 0)
-			printf("Can't set protocol prio inherit\n");
-
-		if (pthread_mutexattr_getprotocol(&mutexattr, &protocol) != 0)
-			printf("Can't get mutexattr protocol\n");
-		else
-			printf("protocol in mutexattr is %d\n", protocol);
-
-		retc = pthread_mutex_init(glob_mutex, &mutexattr);
-		if (retc != 0)
-			printf("Failed to init mutex: %d\n", retc);
-	}
+	if (!nopi)
+		init_pi_mutex(glob_mutex);
 
 	create_other_thread(func_nonrt, NULL);
 	create_rr_thread(func_rt, NULL, 20);
