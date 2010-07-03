@@ -154,6 +154,15 @@ unsigned do_offset = 0;
 unsigned pattern = 0;
 char filename[64];
 
+void clean_mapper(int sig);
+void clean_writer(int sig);
+
+int fd_mapper = 0;
+caddr_t maddr_mapper;
+size_t mapsize_mapper;
+
+int fd_writer = 0;
+
 int
 main(int argc, char *argv[])
 {
@@ -484,8 +493,8 @@ main(int argc, char *argv[])
 
 cleanup:
 	for (i = 0; i < nprocs; i++)
-		(void)kill(pidarray[i], SIGKILL);
-	(void)kill(wr_pid, SIGKILL);
+		(void)kill(pidarray[i], SIGUSR1);
+	(void)kill(wr_pid, SIGUSR1);
 
 	while (wait(&wait_stat) != -1 || errno != ECHILD)
 		continue;
@@ -531,9 +540,7 @@ child_mapper(char *file, unsigned procno, unsigned nprocs)
 	off_t offset;
 #endif /* LARGE_FILE */
 	size_t validsize;
-	size_t mapsize;
-	caddr_t maddr, paddr;
-	int fd;
+	caddr_t paddr;
 	int pagesize = sysconf(_SC_PAGE_SIZE);
 	unsigned randpage;
 	unsigned int seed;
@@ -542,25 +549,38 @@ child_mapper(char *file, unsigned procno, unsigned nprocs)
 	unsigned mappages;
 	unsigned mapflags;
 	unsigned i;
+	struct sigaction sa_mapper;
 
 	mapflags = MAP_SHARED;
 
 	seed = initrand();		/* initialize random seed */
 
+	sa_mapper.sa_handler = clean_mapper;
+	sa_mapper.sa_flags = 0;
+	if (sigemptyset(&sa_mapper.sa_mask)) {
+		perror("sigempty error");
+                anyfail();
+	}
+
+	if (sigaction(SIGUSR1, &sa_mapper, 0) == -1) {
+		perror("sigaction error SIGUSR1");
+                anyfail();
+	}
+
 
 #ifdef LARGE_FILE
-	if ((fd = open64(file, O_RDWR)) == -1) {
+	if ((fd_mapper = open64(file, O_RDWR)) == -1) {
 #else /* LARGE_FILE */
-	if ((fd = open(file, O_RDWR)) == -1) {
+	if ((fd_mapper = open(file, O_RDWR)) == -1) {
 #endif /* LARGE_FILE */
 		perror("open error");
                 anyfail();
 	}
 
 #ifdef LARGE_FILE
-	if (fstat64(fd, &statbuf) == -1) {
+	if (fstat64(fd_mapper, &statbuf) == -1) {
 #else /* LARGE_FILE */
-	if (fstat(fd, &statbuf) == -1) {
+	if (fstat(fd_mapper, &statbuf) == -1) {
 #endif /* LARGE_FILE */
 		perror("stat error");
                 anyfail();
@@ -571,29 +591,29 @@ child_mapper(char *file, unsigned procno, unsigned nprocs)
 		fprintf(stderr, "size_t overflow when setting up map\n");
                 anyfail();
 	}
-	mapsize = (size_t)(statbuf.st_size - sparseoffset);
-	mappages = roundup(mapsize, pagesize) / pagesize;
+	mapsize_mapper = (size_t)(statbuf.st_size - sparseoffset);
+	mappages = roundup(mapsize_mapper, pagesize) / pagesize;
 	offset = sparseoffset;
 	if (do_offset) {
 		int pageoffset = lrand48() % mappages;
 		int byteoffset = pageoffset * pagesize;
 		offset += byteoffset;
-		mapsize -= byteoffset;
+		mapsize_mapper -= byteoffset;
 		mappages -= pageoffset;
 	}
 
 #ifdef LARGE_FILE
-	if ((maddr = mmap64(0, mapsize, PROT_READ|PROT_WRITE,
-			mapflags, fd, offset)) == (caddr_t)-1) {
+	if ((maddr_mapper = mmap64(0, mapsize_mapper, PROT_READ|PROT_WRITE,
+			mapflags, fd_mapper, offset)) == (caddr_t)-1) {
 #else /* LARGE_FILE */
-	if ((maddr = mmap(0, mapsize, PROT_READ|PROT_WRITE,
-			mapflags, fd, offset)) == (caddr_t)-1) {
+	if ((maddr_mapper = mmap(0, mapsize_mapper, PROT_READ|PROT_WRITE,
+			mapflags, fd_mapper, offset)) == (caddr_t)-1) {
 #endif /* LARGE_FILE */
 		perror("mmap error");
                 anyfail();
 	}
 
-	(void)close(fd);
+	(void)close(fd_mapper);
 
 	nloops = (randloops) ? (lrand48() % MAXLOOPS) : MAXLOOPS;
 
@@ -601,12 +621,12 @@ child_mapper(char *file, unsigned procno, unsigned nprocs)
 #ifdef LARGE_FILE
 		(void)printf("child %d (pid %ld): seed %d, fsize %Ld, "
 			"mapsize %d, off %Ld, loop %d\n",
-			procno, getpid(), seed, filesize, mapsize,
+			procno, getpid(), seed, filesize, mapsize_mapper,
 			offset/pagesize, nloops);
 #else /* LARGE_FILE */
 		(void)printf("child %d (pid %d): seed %d, fsize %ld, "
 			"mapsize %ld, off %ld, loop %d\n",
-			procno, getpid(), seed, filesize, (long)mapsize,
+			procno, getpid(), seed, filesize, (long)mapsize_mapper,
 			offset/pagesize, nloops);
 #endif /* LARGE_FILE */
 	}
@@ -616,13 +636,13 @@ child_mapper(char *file, unsigned procno, unsigned nprocs)
 	 */
 	for (loopcnt = 0; loopcnt < nloops; loopcnt++) {
 		randpage = lrand48() % mappages;
-		paddr = maddr + (randpage * pagesize);	 /* page address */
+		paddr = maddr_mapper + (randpage * pagesize);	 /* page address */
 
 		if (randpage < mappages - 1
-		    || !(mapsize % pagesize))
+		    || !(mapsize_mapper % pagesize))
 			validsize = pagesize;
 		else
-			validsize = mapsize % pagesize;
+			validsize = mapsize_mapper % pagesize;
 
 		/*
 		 * Because one child is mapping file in extend mode,
@@ -652,14 +672,17 @@ child_mapper(char *file, unsigned procno, unsigned nprocs)
 		 * Exercise msync() as well!
 		 */
 		randpage = lrand48() % mappages;
-		paddr = maddr + (randpage * pagesize);	 /* page address */
+		paddr = maddr_mapper + (randpage * pagesize);	 /* page address */
 		if (msync(paddr, (mappages - randpage)*pagesize,
 		    MS_SYNC) == -1) {
 			perror("msync error");
                         anyfail();
 		}
 	}
-
+	if ( munmap(maddr_mapper,mapsize_mapper) == -1 ) {
+		perror("munmap failed");
+		anyfail();
+	}
 	exit(0);
 }
 
@@ -675,7 +698,20 @@ child_mapper(char *file, unsigned procno, unsigned nprocs)
 void
 child_writer(char *file, uchar_t *buf)	/* buf already set up in main */
 {
-	int fd;
+	struct sigaction sa_writer;
+
+	sa_writer.sa_handler = clean_writer;
+	sa_writer.sa_flags = 0;
+	if (sigemptyset(&sa_writer.sa_mask)) {
+		perror("sigempty error");
+                anyfail();
+	}
+
+	if (sigaction(SIGUSR1, &sa_writer, 0) == -1) {
+		perror("sigaction error SIGUSR1");
+                anyfail();
+	}
+
 #ifdef LARGE_FILE
 	struct stat64 statbuf;
 	off64_t off;
@@ -688,18 +724,18 @@ child_writer(char *file, uchar_t *buf)	/* buf already set up in main */
 	int cnt;
 
 #ifdef LARGE_FILE
-	if ((fd = open64(file, O_RDWR)) == -1) {
+	if ((fd_writer = open64(file, O_RDWR)) == -1) {
 #else /* LARGE_FILE */
-	if ((fd = open(file, O_RDWR)) == -1) {
+	if ((fd_writer = open(file, O_RDWR)) == -1) {
 #endif /* LARGE_FILE */
 		perror("open error");
                 anyfail();
 	}
 
 #ifdef LARGE_FILE
-	if ((off = lseek64(fd, 0, SEEK_END)) == -1) {
+	if ((off = lseek64(fd_writer, 0, SEEK_END)) == -1) {
 #else /* LARGE_FILE */
-	if ((off = lseek(fd, 0, SEEK_END)) == -1) {
+	if ((off = lseek(fd_writer, 0, SEEK_END)) == -1) {
 #endif /* LARGE_FILE */
 		perror("lseek error");
                 anyfail();
@@ -708,9 +744,9 @@ child_writer(char *file, uchar_t *buf)	/* buf already set up in main */
 
 	for (;;) {
 #ifdef LARGE_FILE
-		if (fstat64(fd, &statbuf) == -1) {
+		if (fstat64(fd_writer, &statbuf) == -1) {
 #else /* LARGE_FILE */
-		if (fstat(fd, &statbuf) == -1) {
+		if (fstat(fd_writer, &statbuf) == -1) {
 #endif /* LARGE_FILE */
 			perror("fstat error");
                         anyfail();
@@ -734,7 +770,7 @@ child_writer(char *file, uchar_t *buf)	/* buf already set up in main */
 
 		p = buf + (off % pagesize);
 
-		if ((cnt = write(fd, p, growsize)) != growsize) {
+		if ((cnt = write(fd_writer, p, growsize)) != growsize) {
 			if (cnt == -1)
 				perror("write error");
 			else
@@ -747,12 +783,13 @@ child_writer(char *file, uchar_t *buf)	/* buf already set up in main */
 
 		(void)sleep(sleeptime);
 		if (dosync) {
-			if (fsync(fd) == -1) {
+			if (fsync(fd_writer) == -1) {
 				perror("fsync error");
                                 anyfail();
 			}
 		}
 	}
+	close(fd_writer);
 }
 
 
@@ -814,6 +851,7 @@ fileokay(char *file, uchar_t *expbuf)
 		cnt = read(fd, (char *)readbuf, pagesize);
 		if (cnt == -1) {
 			perror("read error");
+			close(fd);
 			return 0;
 		} else if (cnt != pagesize) {
 			/*
@@ -822,6 +860,7 @@ fileokay(char *file, uchar_t *expbuf)
 			if ((i * pagesize) + cnt != mapsize) {
 				(void)fprintf(stderr, "read %d of %ld bytes\n",
 					(i*pagesize)+cnt, (long)mapsize);
+				close(fd);
 				return 0;
 			}
 		}
@@ -841,6 +880,7 @@ fileokay(char *file, uchar_t *expbuf)
 				(void)fprintf(stderr, ", pg %d off %d, "
 					"(fsize %ld)\n", i, j, statbuf.st_size);
 #endif /* LARGE_FILE */
+				close(fd);
 				return 0;
 			}
 		}
@@ -866,6 +906,21 @@ clean_up_file(int sig)
 	exit(1);
 }
 
+void clean_mapper(int sig)
+{
+	if (fd_mapper)
+		close(fd_mapper);
+	munmap(maddr_mapper,mapsize_mapper);
+	exit (0);
+}
+
+void clean_writer(int sig)
+{
+	if (fd_writer)
+		close(fd_writer);
+	exit(0);
+}
+
 unsigned int
 initrand(void)
 {
@@ -886,7 +941,6 @@ initrand(void)
 	srand48((long int)seed);
 	return (seed);
 }
-
 
 /*****  LTP Port        *****/
 void ok_exit()

@@ -61,6 +61,15 @@ void ok_exit();
 #define ERROR(M)	(void)fprintf(stderr, "%s:  errno = %d; " M "\n", \
 				progname, errno);
 #define CLEAN	(void)close(fd); \
+		if (munmap(mmapaddr+pagesize, pagesize) == -1) { \
+			ERROR("munmap failed"); \
+		} \
+		if (munmap(mmapaddr, pagesize) == -1) { \
+			ERROR("munmap failed"); \
+		} \
+		if (munmap(mmapaddr+2*pagesize, pagesize) == -1) { \
+			ERROR("munmap failed"); \
+		} \
 		if (unlink(tmpname)) { \
 			ERROR("couldn't clean up temp file"); \
 		}

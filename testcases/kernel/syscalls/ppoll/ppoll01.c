@@ -378,8 +378,10 @@ static int do_test(struct test_case *tc) {
 	}
 	result |= (sys_errno != tc->err) || !cmp_ok;
 	PRINT_RESULT_CMP(sys_ret >= 0, tc->ret, tc->err, sys_ret, sys_errno, cmp_ok);
-	cleanup: if (fd >= 0)
+	cleanup: if (fd >= 0) {
+		close(fd);
 		cleanup_file(fpath);
+	}
 
 	sigemptyset(&sigmask);
 	sigprocmask(SIG_SETMASK, &sigmask, NULL);

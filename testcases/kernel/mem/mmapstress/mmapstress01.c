@@ -590,7 +590,11 @@ child_mapper(char *file, unsigned procno, unsigned nprocs)
 			anyfail();
 		}
 	}
-
+	if (munmap(maddr, mapsize) == -1) {
+		perror("munmap failed");
+		local_flag = FAILED;
+		anyfail();
+	}
 	exit(0);
 }
 
@@ -694,6 +698,7 @@ fileokay(char *file, uchar_t *expbuf)
 			}
 		}
 	}
+	close(fd);
 				
 	return 1;
 }

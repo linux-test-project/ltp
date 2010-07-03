@@ -234,6 +234,8 @@ static int do_test(struct test_case *tc)
         TEST(rc = setup_file(TESTDIR, "test.file", fpath));
         if (rc < 0)
                 return 1;
+	/* The test just needs the file, so no need to keep it open. */
+	close(rc);
 
 	/*
          * Change effective user id

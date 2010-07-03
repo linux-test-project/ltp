@@ -148,6 +148,7 @@ int main(int ac, char **av) {
 	    } else
             if (TEST_RETURN == 0){
 							tst_resm(TPASS, "splice() system call Passed");
+		close(fd);
 	        cleanup();
 	        tst_exit();
 	    }

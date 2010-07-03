@@ -309,6 +309,7 @@ static void setup(void)
 	if ((fd1 = open(filename, O_DIRECT, 0600)) < 0) {
 		tst_brkm(TCONF, cleanup, "O_DIRECT is not supported by this filesystem. %s", strerror(errno));
 	}
+	close(fd1);
 }
 
 static void cleanup(void)

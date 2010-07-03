@@ -165,6 +165,10 @@ main(int argc, char *argv[]) {
 		CLEANERROR("close failed");
 		anyfail();
 	}
+	if (munmap(mmapaddr, pagesize) == -1) {
+		CLEANERROR("munmap failed");
+		anyfail();
+	}
 	if (unlink(tmpname) == -1) {
 		ERROR("unlink failed");
 		anyfail();

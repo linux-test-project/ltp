@@ -282,6 +282,7 @@ int main(int ac, char *av[])
 			tst_resm(TFAIL|TERRNO, "open(%s) failed", nosetgid_A);
 			local_flag = FAILED;
 		}
+		close(ret);
 
 		if ((ret = stat(nosetgid_A, &buf)) < 0) {
 			tst_resm(TFAIL|TERRNO, "stat(%s) failed", nosetgid_A);
@@ -310,6 +311,7 @@ int main(int ac, char *av[])
 			tst_resm(TFAIL|TERRNO, "open(%s) failed", setgid_A);
 			local_flag = FAILED;
 		}
+		close(ret);
 
 		if ((ret = stat(setgid_A, &buf)) < 0) {
 			tst_resm(TFAIL|TERRNO, "stat(%s) failed", setgid_A);
@@ -357,6 +359,7 @@ int main(int ac, char *av[])
 			tst_resm(TFAIL|TERRNO, "open(%s) failed", nosetgid_B);
 			local_flag = FAILED;
 		}
+		close(ret);
 
 		if ((ret = stat(nosetgid_B, &buf)) < 0) {
 			tst_resm(TFAIL|TERRNO, "stat(%s) failed", nosetgid_B);
@@ -386,6 +389,7 @@ int main(int ac, char *av[])
 			tst_resm(TFAIL|TERRNO, "open(%s) failed", setgid_B);
 			local_flag = FAILED;
 		}
+		close(ret);
 
 		if ((ret = stat(setgid_B, &buf)) < 0) {
 			tst_resm(TFAIL|TERRNO, "stat(%s) failed", setgid_B);
@@ -436,6 +440,7 @@ int main(int ac, char *av[])
 			tst_resm(TFAIL|TERRNO, "open(%s) failed", root_setgid_B);
 			local_flag = FAILED;
 		}
+		close(ret);
 
 		if ((ret = stat(root_setgid_B, &buf)) < 0) {
 			tst_resm(TFAIL|TERRNO, "stat(%s) failed", root_setgid_B);
