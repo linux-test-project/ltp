@@ -20,8 +20,8 @@
  *      testpi-4.c
  *
  * DESCRIPTION
- *
- *
+ *     This testcase verifies that the SCHED_OTHER thread can preempt
+ *     the SCHED_RR thread via priority inheritance.
  *
  * USAGE:
  *      Use run_auto.sh script in current directory to build and run test.
