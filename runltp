@@ -858,6 +858,21 @@ main()
     cd ..
     echo "LTP Version: $version_date"
 
+	# $DMESG_DIR is used to cache messages obtained from dmesg after a test run.
+	# Proactively reap all of the 0-byte files in $DMESG_DIR as they have zero value
+	# and only clutter up the filesystem.
+
+	if [ $ALT_DMESG_OUT -eq 1 ] ; then
+		if ! find "$DMESG_DIR" -size 0 -exec rm {} + ; then
+			echo "cd to $DMESG_DIR failed: $?"
+		fi
+		if [ -n "$(ls "$DMESG_DIR")" ] ; then
+			echo "Kernel messages were generated for LTP tests $version_date"
+		else
+			echo "No Kernel messages were generated for LTP tests $version_date"
+		fi
+	fi
+
     if [ "$ALT_HTML_OUT" -eq 1 ] ; then        #User wants the HTML output to be created, it then needs to be generated
        export LTP_VERSION=$version_date
        export TEST_START_TIME=$test_start_time
