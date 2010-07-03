@@ -47,7 +47,7 @@ trunk-all: open_posix_testsuite-all
 
 trunk-clean:: open_posix_testsuite-clean
 
-trunk-install: open_posix_testsuite-install
+#trunk-install: open_posix_testsuite-install
 
 open_posix_testsuite-%: open_posix_testsuite
 	$(MAKE) -C $^ top_srcdir=$(abs_top_srcdir)/testcases/$^ $*
