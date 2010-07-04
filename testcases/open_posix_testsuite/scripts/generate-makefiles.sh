@@ -100,6 +100,7 @@ EOF
 				# Include top-level definitions
 				cat >> "$makefile.1" <<EOF
 CFLAGS+=		`grep -v '^#' 2>/dev/null CFLAGS`
+
 EOF
 
 				for var in CFLAGS LDFLAGS LDLIBS; do
