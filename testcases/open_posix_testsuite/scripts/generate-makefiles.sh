@@ -81,7 +81,7 @@ generate_makefile() {
 #
 
 # Path variables.
-top_srcdir?=		$(echo "$(dirname "$filename")" | sed -E -e 's,[^/]+,\.\.,g')
+top_srcdir?=		$(echo "$prereq_cache_dir" | sed -E -e 's,[^/]+,\.\.,g')
 subdir=			$prereq_cache_dir
 srcdir=			\$(top_srcdir)/\$(subdir)
 
@@ -92,6 +92,18 @@ INSTALL_DIR=		\$(DESTDIR)/\$(EXEC_PREFIX)/\$(subdir)
 CFLAGS+=		-I\$(top_srcdir)/include
 
 EOF
+
+				for var in CFLAGS LDFLAGS LDLIBS; do
+
+					if [ -f "$prereq_cache_dir/$var" ]; then
+
+						cat >> "$makefile.1" <<EOF
+$var+=			`grep -v '^#' 2>/dev/null $prereq_cache_dir/$var`
+
+EOF
+					fi
+
+				done
 
 				cat > "$makefile.3" <<EOF
 
@@ -125,10 +137,31 @@ EOF
 			# needs it.
 			for prereq in ${make_target_prereq_cache}; do
 
-				c_file=$(echo "$prereq" | sed -e "s,\.$suffix,\.c,")
+				test_name=$(echo "$prereq" | sed -e "s,\.$suffix,,")
+				c_file="$test_name.c"
+
+				case "$suffix" in
+				run-test)
+					grep -q 'main' "$prereq_cache_dir/$c_file" || echo >&2 "$prereq_cache_dir/$c_file should be test."
+					;;
+				test)
+					grep -q 'main' "$prereq_cache_dir/$c_file" && echo >&2 "$prereq_cache_dir/$c_file should be run-test."
+					;;
+				esac
+
+				COMPILE_STR="\$(CC) $compiler_args \$(CFLAGS) \$(LDFLAGS) -o \$@ \$(srcdir)/$c_file \$(LDLIBS)"
+
 				cat >> "$makefile.4" <<EOF
+
 $prereq: \$(srcdir)/$c_file
-	\$(CC) $compiler_args \$(CFLAGS) \$(LDFLAGS) -o \$@ \$(srcdir)/$c_file \$(LDLIBS)
+	@if $COMPILE_STR >logfile.\$\$\$\$ 2>&1; then \\
+		 echo "$prereq_cache_dir/$test_name compile PASSED"; \\
+		 echo "$prereq_cache_dir/$test_name compile PASSED" >> \$(LOGFILE); \\
+	else \\
+		 echo "$prereq_cache_dir/$test_name compile FAILED"; \\
+		(echo "$prereq_cache_dir/$test_name compile FAILED"; cat logfile.\$\$\$\$) >> \$(LOGFILE); \\
+	fi; \\
+	rm -f logfile.\$\$\$\$
 EOF
 
 			done
