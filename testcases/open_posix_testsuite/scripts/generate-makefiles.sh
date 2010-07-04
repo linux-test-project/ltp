@@ -120,7 +120,7 @@ EOF
 all: \$(MAKE_TARGETS)
 
 clean:
-	rm -f \$(MAKE_TARGETS) *.core
+	rm -f \$(MAKE_TARGETS) logfile* *.core
 
 install: \$(INSTALL_DIR)
 	for i in \$(INSTALL_TARGETS); do \\
