@@ -91,6 +91,9 @@ INSTALL_DIR=		\$(DESTDIR)/\$(EXEC_PREFIX)/\$(subdir)
 # Build variables
 CFLAGS+=		-I\$(top_srcdir)/include
 
+# XXX: for testfrmw.c -- needs to be moved into a library.
+CFLAGS+=		-I\$(srcdir)
+
 EOF
 
 				for var in CFLAGS LDFLAGS LDLIBS; do

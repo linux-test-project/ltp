@@ -87,6 +87,9 @@ runnable)
 	# waltz down the tools directory and try and build t0 (which doesn't
 	# make sense as it's a tool, not a test). Better criterion needs to
 	# be established for this file.
-	find "$WHERE" -type f -name '*.c' -o -name '[0-9]*-[0-9]*.sh' | grep -v buildonly | grep -v '^./tools'
+	# XXX (garrcoop): remove all testfrmw files because there're actually
+	# used as includes in the make process; they really should be
+	# functions in a library.
+	find "$WHERE" -type f -name '*.c' -o -name '[0-9]*-[0-9]*.sh' | grep -v buildonly | grep -v '^./tools' | grep -v testfrmw
 	;;
 esac
