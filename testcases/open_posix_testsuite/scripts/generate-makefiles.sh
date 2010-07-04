@@ -45,10 +45,10 @@ generate_makefile() {
 	while read filename; do
 
 		prereq_dir=$(dirname "$filename")
-		makefile="$prereq_dir/Makefile"
 
 		# First run.
 		if [ "$prereq_cache_dir" = "" ] ; then
+			makefile="$prereq_dir/Makefile"
 			prereq_cache_dir="$prereq_dir"
 		elif [ "$prereq_cache_dir" != "$prereq_dir" ]; then
 
@@ -127,14 +127,15 @@ EOF
 
 				c_file=$(echo "$prereq" | sed -e "s,\.$suffix,\.c,")
 				cat >> "$makefile.4" <<EOF
-$prereq: $c_file
-	\$(CC) $compiler_args \$(CFLAGS) \$(LDFLAGS) -o \$@ $c_file \$(LDLIBS)
+$prereq: \$(srcdir)/$c_file
+	\$(CC) $compiler_args \$(CFLAGS) \$(LDFLAGS) -o \$@ \$(srcdir)/$c_file \$(LDLIBS)
 EOF
 
 			done
 
 			# Prep for the next round..
 			make_target_prereq_cache=
+			makefile="$prereq_dir/Makefile"
 			prereq_cache=
 			prereq_cache_dir="$prereq_dir"
 
