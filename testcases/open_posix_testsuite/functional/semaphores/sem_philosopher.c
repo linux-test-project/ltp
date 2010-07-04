@@ -15,7 +15,6 @@
 #include <sys/wait.h>
 #include <sys/mman.h>
 #include <string.h>
-#include <getopt.h>
 #include <errno.h>
 #include <semaphore.h>
 #include <pthread.h>
