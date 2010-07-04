@@ -31,6 +31,9 @@ CFLAGS+=		`$(CC) -std=c99 -S -o /dev/null -xc /dev/null >/dev/null 2>&1 && echo 
 CFLAGS+=		`$(CC) -std=gnu99 -S -o /dev/null -xc /dev/null >/dev/null 2>&1 && echo "-std=gnu99"`
 CFLAGS+=		-D_POSIX_C_SOURCE=200112L -D_XOPEN_SOURCE=600
 
+# Force to -j1 so the output in the logfile won't be wonky.
+MAKE+=			-j1 LOGFILE=`if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
+
 #LDFLAGS+=
 #LDLIBS+=	-lpthread -lrt -lm
 
@@ -39,16 +42,16 @@ top_srcdir?=		.
 all: conformance-all functional-all stress-all tools
 
 clean:
-	rm -f $(LOGFILE)*
-	for d in $(SUBDIRS) tools; do \
-	    $(MAKE) -C $$d clean >/dev/null; \
+	@rm -f $(LOGFILE)*
+	@for dir in $(SUBDIRS) tools; do \
+	    $(MAKE) -C $$dir clean >/dev/null; \
 	done
 
 # Clean out all of the generated Makefiles; this is done this way to ensure
 # there won't be an argument overflow, and to remain POSIXly correct (POSIX
 # find(1) doesn't support -mindepth like BSD and GNU find do...).
 distclean-makefiles:
-	for dir in $(SUBDIRS); do \
+	@for dir in $(SUBDIRS); do \
 	  (cd $$dir && for subdir in */; do \
 	      (cd $$subdir && find */ -name Makefile 2>/dev/null | xargs rm -f); \
 	  done); \
@@ -64,30 +67,30 @@ $(CRITICAL_MAKEFILES): scripts/generate-makefiles.sh
 tools:
 	@$(MAKE) -C tools all
 
-tools/t0: $(srcdir)/tools/t0.c
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(srcdir)/$(@F) $(LDLIBS)
-
-#build/t0.val: build/t0
-#	echo `./t0 0; echo $$?` > t0.val
-
 # Test build and execution targets.
 conformance-all: $(CRITICAL_CONFORMANCE_MAKEFILE)
-	$(MAKE) -C conformance all
+	@rm -f `if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
+	@$(MAKE) -C conformance all
 
 conformance-test:
-	$(MAKE) -C conformance all
+	@rm -f `if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
+	@$(MAKE) -C conformance test
 
 functional-all: $(CRITICAL_FUNCTIONAL_MAKEFILE)
-	$(MAKE) -C functional all
+	@rm -f `if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
+	@$(MAKE) -C functional all
 
 functional-test:
-	$(MAKE) -C functional test
+	@rm -f `if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
+	@$(MAKE) -C functional test
 
 stress-all: $(CRITICAL_STRESS_MAKEFILE)
-	$(MAKE) -C stress all
+	@rm -f `if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
+	@$(MAKE) -C stress all
 
 stress-test:
-	$(MAKE) -C stress test
+	@rm -f `if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
+	@$(MAKE) -C stress test
 
 tests-pretty:
-	$(MAKE) all | column -t -s:
+	@$(MAKE) all | column -t -s:
