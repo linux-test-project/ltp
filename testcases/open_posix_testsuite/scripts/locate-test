@@ -8,7 +8,7 @@
 usage()
 {
     cat <<EOF 
-Usage: $(basename $0) [OPTIONs] DIRECTORY
+Usage: $(basename "$0") [OPTIONs] DIRECTORY
 
 Lists the tests (source/binary) available from the DIRECTORY directory
 and down.
@@ -43,7 +43,7 @@ while true
 do
 	case "$1" in
 	"--buildonly")
-		mode="buildable"
+		mode="buildonly"
 		shift
 		;;
 	"--runnable")
@@ -80,9 +80,13 @@ fi
 
 case "$mode" in
 buildonly)
-	find "$WHERE" -type f -name "*-buildonly*.c"
+	find "$WHERE" -type f -name "*.c" | grep buildonly
 	;;
 runnable)
-	find "$WHERE" -type f \( -name '*.c' -a ! -name '*-buildonly*.c' \) -o -name '[0-9]*-[0-9]*.sh'
+	# XXX (garrcoop): the tools part is a hack to ensure that we don't
+	# waltz down the tools directory and try and build t0 (which doesn't
+	# make sense as it's a tool, not a test). Better criterion needs to
+	# be established for this file.
+	find "$WHERE" -type f -name '*.c' -o -name '[0-9]*-[0-9]*.sh' | grep -v buildonly | grep -v '^./tools'
 	;;
 esac
