@@ -87,6 +87,7 @@ srcdir=			\$(top_srcdir)/\$(subdir)
 
 EXEC_PREFIX=		$EXEC_PREFIX
 INSTALL_DIR=		\$(DESTDIR)/\$(EXEC_PREFIX)/\$(subdir)
+LOGFILE?=		logfile
 
 # Build variables
 CFLAGS+=		-I\$(top_srcdir)/include
@@ -94,6 +95,11 @@ CFLAGS+=		-I\$(top_srcdir)/include
 # XXX: for testfrmw.c -- needs to be moved into a library.
 CFLAGS+=		-I\$(srcdir)
 
+EOF
+
+				# Include top-level definitions
+				cat >> "$makefile.1" <<EOF
+CFLAGS+=		`grep -v '^#' 2>/dev/null CFLAGS`
 EOF
 
 				for var in CFLAGS LDFLAGS LDLIBS; do

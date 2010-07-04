@@ -1,0 +1,3 @@
+# add -std=c99, -std=gnu99 if compiler supports it (gcc-2.95.3 does not).
+# Add appropriate POSIX support as well (needs fixing).
+`$(CC) -std=c99 -S -o /dev/null -xc /dev/null >/dev/null 2>&1 && echo "-std=c99"` `$(CC) -std=gnu99 -S -o /dev/null -xc /dev/null >/dev/null 2>&1 && echo "-std=gnu99"` -D_POSIX_C_SOURCE=200112L -D_XOPEN_SOURCE=600

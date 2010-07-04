@@ -26,13 +26,10 @@ LOGFILE?=		logfile
 # Subdirectories to traverse down.
 SUBDIRS=		conformance functional stress
 
-# add -std=c99, -std=gnu99 if compiler supports it (gcc-2.95.3 does not).
-CFLAGS+=		`$(CC) -std=c99 -S -o /dev/null -xc /dev/null >/dev/null 2>&1 && echo "-std=c99"`
-CFLAGS+=		`$(CC) -std=gnu99 -S -o /dev/null -xc /dev/null >/dev/null 2>&1 && echo "-std=gnu99"`
-CFLAGS+=		-D_POSIX_C_SOURCE=200112L -D_XOPEN_SOURCE=600
-
 # Force to -j1 so the output in the logfile won't be wonky.
-MAKE+=			-j1 LOGFILE=`if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
+MAKE+=			-j1 "CFLAGS=$(CFLAGS)" "LDFLAGS=$(LDFLAGS)"
+MAKE+=			"LDLIBS=$(LDLIBS)"
+MAKE+=			LOGFILE=`if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
 
 #LDFLAGS+=
 #LDLIBS+=	-lpthread -lrt -lm
