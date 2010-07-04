@@ -39,8 +39,8 @@ top_srcdir?=		.
 all: conformance-all functional-all stress-all tools
 
 clean:
-	rm -f $(LOGFILE)* t0 t0.val
-	for d in $(SUBDIRS); do \
+	rm -f $(LOGFILE)*
+	for d in $(SUBDIRS) tools; do \
 	    $(MAKE) -C $$d clean >/dev/null; \
 	done
 
