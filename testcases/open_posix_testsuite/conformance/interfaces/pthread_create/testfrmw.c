@@ -27,8 +27,10 @@
  * The are used to output informative text (as a printf).
  */
 
-#include <time.h>
 #include <sys/types.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <time.h>
  
 /* We use a mutex to avoid conflicts in traces */
 static pthread_mutex_t m_trace = PTHREAD_MUTEX_INITIALIZER;

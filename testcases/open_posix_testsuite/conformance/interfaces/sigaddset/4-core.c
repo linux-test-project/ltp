@@ -13,9 +13,9 @@
    3)  Verify that -1 is returned, the invalid signal is not a member of
        the signal set, and errno is set to indicate the error.
  */
-#include <stdio.h>
-#include <signal.h>
 #include <errno.h>
+#include <signal.h>
+#include <stdio.h>
 #include <stdint.h>
 #include "posixtest.h"
 

@@ -9,4 +9,4 @@
 #   Test various methods of adding invalid signals to sigaddset().
 # 
 
-conformance/interfaces/sigaddset/4-core-buildonly.test 1
+conformance/interfaces/sigaddset/4-core.run-test 1

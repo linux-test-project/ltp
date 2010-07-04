@@ -5,6 +5,6 @@
 #
 
 all clean install test:
-	for dir in `ls -d */Makefile 2>/dev/null | sed -e 's,/Makefile$$,,g'`; do \
-		$(MAKE) -C $$dir $@;						  \
+	@for dir in `ls -d */Makefile 2>/dev/null | sed -e 's,/Makefile$$,,g'`; do \
+		$(MAKE) -C $$dir $@;						   \
 	done
