@@ -103,7 +103,9 @@ MAKE_TARGETS+=		${make_target_prereq_cache}
 
 EOF
 
-	cat > "$makefile.3" <<EOF
+	if [ ! -f "$makefile.3" ]; then
+
+		cat > "$makefile.3" <<EOF
 all: \$(MAKE_TARGETS)
 
 clean:
@@ -121,6 +123,8 @@ test: all
 	mkdir -p \$@
 
 EOF
+
+	fi
 
 	# Produce _awesome_ target rules for everything that needs it.
 	for prereq in ${make_target_prereq_cache}; do
