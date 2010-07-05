@@ -117,9 +117,12 @@ all: \$(MAKE_TARGETS)
 clean:
 	rm -f \$(MAKE_TARGETS) logfile* *.core
 
-install: \$(INSTALL_DIR)
-	for i in \$(INSTALL_TARGETS); do \\
-		install \$\$i \$(INSTALL_DIR)/\$\$i;\\
+install: \$(INSTALL_DIR) run.sh
+	set -e; for file in \$(INSTALL_TARGETS); do		\\
+		if [ -f "\$\$file" ] ; then			\\
+			install -m 00755 \$\$file		\\
+				\$(INSTALL_DIR)/\$\$file;	\\
+		fi;						\\
 	done
 
 test: all
@@ -128,6 +131,10 @@ test: all
 \$(INSTALL_DIR):
 	mkdir -p \$@
 
+run.sh:
+	@echo '\#/bin/sh' > \$@
+	@echo '\$(top_srcdir)/run-test.sh \$(INSTALL_TARGETS)' >> \$@
+
 EOF
 
 	fi
@@ -135,7 +142,7 @@ EOF
 	# Produce _awesome_ target rules for everything that needs it.
 	for prereq in ${make_target_prereq_cache}; do
 
-		test_name=$(echo "$prereq" | sed -e "s,.$suffix,,")
+		test_name=`echo "$prereq" | sed -e "s,.$suffix,,"`
 		c_file="$test_name.c"
 
 		case "$suffix" in
@@ -176,7 +183,7 @@ generate_makefiles() {
 
 	while read filename; do
 
-		prereq_dir=$(dirname "$filename")
+		prereq_dir=`dirname "$filename"`
 
 		# First run.
 		if [ "$prereq_cache_dir" = "" ] ; then
@@ -196,7 +203,7 @@ generate_makefiles() {
 		if [ "$prereq_cache" != "" ] ; then
 			prereq_cache="$prereq_cache "
 		fi
-		prereq_cache="$prereq_cache$(basename "$filename" | sed "s,.c\$,.$suffix,g")"
+		prereq_cache="$prereq_cache"`basename "$filename" | sed "s,.c\$,.$suffix,g"`
 
 	done < $make_gen_list
 
@@ -205,19 +212,10 @@ generate_makefiles() {
 
 }
 
-DEFAULT_PREFIX=
-
-if uname -a | grep -iq linux
-then
-	DEFAULT_PREFIX=/opt
-else
-	DEFAULT_PREFIX=/usr/local
-fi
-
 export PATH="$PATH:`dirname "$0"`"
 
 AUTHORDATE=`grep "Garrett Cooper" "$0" | head -n 1 | sed 's,# *,,'`
-PREFIX=${PREFIX:=$DEFAULT_PREFIX/openposix_testsuite}
+PREFIX=`print-prefix.sh`
 EXEC_PREFIX="${PREFIX}/bin"
 TOP_SRCDIR=${TOP_SRCDIR:=`dirname "$0"`/..}
 
