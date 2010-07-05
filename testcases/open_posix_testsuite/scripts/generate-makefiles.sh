@@ -95,28 +95,19 @@ CFLAGS+=		-I\$(top_srcdir)/include
 # XXX: for testfrmw.c -- needs to be moved into a library.
 CFLAGS+=		-I\$(srcdir)
 
-EOF
+# Include top-level make definitions and submake make definitions.
+CFLAGS+=		\`grep -v ^\# 2>/dev/null \$(top_srcdir)/CFLAGS\`
+CFLAGS+=		\`grep -v ^\# 2>/dev/null \$(srcdir)/CFLAGS\`
 
-				# Include top-level definitions
-				cat >> "$makefile.1" <<EOF
-CFLAGS+=		`grep -v '^#' 2>/dev/null CFLAGS`
+LDFLAGS+=		\`grep -v ^\# 2>/dev/null \$(top_srcdir)/LDFLAGS\`
+LDFLAGS+=		\`grep -v ^\# 2>/dev/null \$(srcdir)/LDFLAGS\`
 
-EOF
-
-				for var in CFLAGS LDFLAGS LDLIBS; do
-
-					if [ -f "$prereq_cache_dir/$var" ]; then
-
-						cat >> "$makefile.1" <<EOF
-$var+=			`grep -v '^#' 2>/dev/null $prereq_cache_dir/$var`
+LDLIBS+=		\`grep -v ^\# 2>/dev/null \$(top_srcdir)/LDLIBS\`
+LDLIBS+=		\`grep -v ^\# 2>/dev/null \$(srcdir)/LDLIBS\`
 
 EOF
-					fi
-
-				done
 
 				cat > "$makefile.3" <<EOF
-
 all: \$(MAKE_TARGETS)
 
 clean:
