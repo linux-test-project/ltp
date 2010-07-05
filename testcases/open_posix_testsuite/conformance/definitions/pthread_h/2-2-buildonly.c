@@ -5,68 +5,45 @@
  * This file is licensed under the GPL license.  For the full content
  * of this license, see the COPYING file at the top level of this 
  * source tree.
-
-  Test the following symbols are defined by pthread.h
-  */
+ *
+ * Test the following symbols are defined by pthread.h
+ *
+ * This is done with functions, not #ifdefs because the spec doesn't state
+ * that they have to be #define's, and instead can be values in an enum, like
+ * on FreeBSD.
+ */
 
 #include <pthread.h>
 
-/* 
- * XXX (garrcoop): the following #ifndef checks are invalid on many platforms; POSIX
- * doesn't state whether or not these these can or cannot be either global variables
- * or indices in enums (FreeBSD does the latter with
- * PTHREAD_MUTEX_{ERRORCHECK,NORMAL.RECURSIVE}
- *
- * These tests need to be sorted out into proper functional tests.
- */
+#define TEST_MACRO(CONSTANT) \
+	void test_ ## CONSTANT(void) { int dummy = #CONSTANT; }
 
 /* BAR */
-#ifndef PTHREAD_BARRIER_SERIAL_THREAD
-#error PTHREAD_BARRIER_SERIAL_THREAD not defined
-#endif
+TEST_MACRO(PTHREAD_BARRIER_SERIAL_THREAD)
 
 /* XSI */
-#ifndef PTHREAD_MUTEX_DEFAULT
-#error PTHREAD_MUTEX_DEFAULT not defined
-#endif
+TEST_MACRO(PTHREAD_MUTEX_DEFAULT)
 
 /* XSI */
-#ifndef PTHREAD_MUTEX_ERRORCHECK
-#error PTHREAD_MUTEX_ERRORCHECK not defined
-#endif
+TEST_MACRO(PTHREAD_MUTEX_ERRORCHECK)
 
 /* XSI */
-#ifndef PTHREAD_MUTEX_NORMAL
-#error PTHREAD_MUTEX_NORMAL not defined
-#endif
+TEST_MACRO(PTHREAD_MUTEX_NORMAL)
 
 /* XSI */
-#ifndef PTHREAD_MUTEX_RECURSIVE
-#error PTHREAD_MUTEX_RECURSIVE not defined
-#endif 
+TEST_MACRO(PTHREAD_MUTEX_RECURSIVE)
 
 /* TPP|TPI */
-#ifndef PTHREAD_PRIO_INHERIT
-#error PTHREAD_PRIO_INHERIT not defined
-#endif
+TEST_MACRO(PTHREAD_PRIO_INHERIT)
 
 /* TPP|TPI */
-#ifndef PTHREAD_PRIO_NONE
-#error PTHREAD_PRIO_NONE not defined
-#endif
+TEST_MACRO(PTHREAD_PRIO_NONE)
 
 /* TPP|TPI */
-#ifndef PTHREAD_PRIO_PROTECT
-#error PTHREAD_PRIO_PROTECT not defined
-#endif
+TEST_MACRO(PTHREAD_PRIO_PROTECT)
 
 /* TPS */
-#ifndef PTHREAD_SCOPE_PROCESS
-#error PTHREAD_SCOPE_PROCESS not defined
-#endif
+TEST_MACRO(PTHREAD_SCOPE_PROCESS)
 
 /* TPS */
-#ifndef PTHREAD_SCOPE_SYSTEM
-#error PTHREAD_SCOPE_SYSTEM not defined
-#endif
-
+TEST_MACRO(PTHREAD_SCOPE_SYSTEM)
