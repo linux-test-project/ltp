@@ -83,14 +83,14 @@ CFLAGS+=		-I\$(top_srcdir)/include
 CFLAGS+=		-I\$(srcdir)
 
 # Include top-level make definitions and submake make definitions.
-CFLAGS+=		\`grep -v '^#' 2>/dev/null \$(top_srcdir)/CFLAGS\`
-CFLAGS+=		\`grep -v '^#' 2>/dev/null \$(srcdir)/CFLAGS\`
+CFLAGS+=		\`cat 2>/dev/null \$(top_srcdir)/CFLAGS\`
+CFLAGS+=		\`cat 2>/dev/null \$(srcdir)/CFLAGS\`
 
-LDFLAGS+=		\`grep -v '^#' 2>/dev/null \$(top_srcdir)/LDFLAGS\`
-LDFLAGS+=		\`grep -v '^#' 2>/dev/null \$(srcdir)/LDFLAGS\`
+LDFLAGS+=		\`cat 2>/dev/null \$(top_srcdir)/LDFLAGS\`
+LDFLAGS+=		\`cat 2>/dev/null \$(srcdir)/LDFLAGS\`
 
-LDLIBS+=		\`grep -v '^#' 2>/dev/null \$(top_srcdir)/LDLIBS\`
-LDLIBS+=		\`grep -v '^#' 2>/dev/null \$(srcdir)/LDLIBS\`
+LDLIBS+=		\`cat 2>/dev/null \$(top_srcdir)/LDLIBS\`
+LDLIBS+=		\`cat 2>/dev/null \$(srcdir)/LDLIBS\`
 
 EOF
 
