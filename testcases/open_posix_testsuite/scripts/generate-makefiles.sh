@@ -207,7 +207,7 @@ generate_makefiles() {
 
 DEFAULT_PREFIX=
 
-if uname -a | grep -i linux
+if uname -a | grep -iq linux
 then
 	DEFAULT_PREFIX=/opt
 else
