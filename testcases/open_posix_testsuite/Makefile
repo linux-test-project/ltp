@@ -28,10 +28,9 @@ SUBDIRS=		conformance functional stress
 
 # Force to -j1 so the output in the logfile won't be wonky.
 MAKE+=			-j1
-MAKE+=			LOGFILE=`if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
-
 MAKE_ENV=		"CFLAGS=$(CFLAGS)" "LDFLAGS=$(LDFLAGS)"
 MAKE_ENV+=		"LDLIBS=$(LDLIBS)"
+MAKE_ENV+=		LOGFILE=`if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
 
 BUILD_MAKE=		env $(MAKE_ENV) $(MAKE)
 
@@ -39,56 +38,54 @@ top_srcdir?=		.
 
 all: conformance-all functional-all stress-all tools
 
-clean:
+clean: $(CRITICAL_MAKEFILES) 
 	@rm -f $(LOGFILE)*
 	@for dir in $(SUBDIRS) tools; do \
-	    $(BUILD_MAKE) -C $$dir clean >/dev/null; \
+	    $(MAKE) -C $$dir clean >/dev/null; \
 	done
 
 # Clean out all of the generated Makefiles; this is done this way to ensure
 # there won't be an argument overflow, and to remain POSIXly correct (POSIX
 # find(1) doesn't support -mindepth like BSD and GNU find do...).
 distclean-makefiles:
-	@for dir in $(SUBDIRS); do \
-	  (cd $$dir && for subdir in */; do \
-	      (cd $$subdir && find */ -name Makefile 2>/dev/null | xargs rm -f); \
-	  done); \
+	for dir in $(SUBDIRS); do \
+		$(MAKE) -C $$dir $@; \
 	done
 
 generate-makefiles: distclean-makefiles
 	@export top_srcdir=$(top_srcdir); \
 	$(top_srcdir)/scripts/generate-makefiles.sh
 
-$(CRITICAL_MAKEFILES): scripts/generate-makefiles.sh
-	@$(BUILD_MAKE) generate-makefiles
+$(CRITICAL_MAKEFILES): $(top_srcdir)/scripts/generate-makefiles.sh
+	$(MAKE) generate-makefiles
 
 tools:
-	@$(BUILD_MAKE) -C tools all
+	$(MAKE) -C tools all
 
 # Test build and execution targets.
 conformance-all: $(CRITICAL_CONFORMANCE_MAKEFILE)
 	@rm -f `if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
-	@$(BUILD_MAKE) -C conformance all
+	$(BUILD_MAKE) -C conformance all
 
 conformance-test:
 	@rm -f `if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
-	@$(MAKE) -C conformance test
+	$(MAKE) -C conformance test
 
 functional-all: $(CRITICAL_FUNCTIONAL_MAKEFILE)
 	@rm -f `if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
-	@$(BUILD_MAKE) -C functional all
+	$(BUILD_MAKE) -C functional all
 
 functional-test:
 	@rm -f `if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
-	@$(MAKE) -C functional test
+	$(MAKE) -C functional test
 
 stress-all: $(CRITICAL_STRESS_MAKEFILE)
 	@rm -f `if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
-	@$(BUILD_MAKE) -C stress all
+	$(BUILD_MAKE) -C stress all
 
 stress-test:
 	@rm -f `if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
-	@$(MAKE) -C stress test
+	$(MAKE) -C stress test
 
-tests-pretty:
-	@$(MAKE) all | column -t -s:
+#tests-pretty:
+#	$(MAKE) all | column -t -s:
