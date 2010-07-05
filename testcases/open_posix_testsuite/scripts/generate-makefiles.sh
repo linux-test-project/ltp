@@ -31,7 +31,7 @@ generate_locate_test_makefile() {
 
 	rm -f make-gen.$maketype
 
-u
+}
 
 generate_makefile() {
 
