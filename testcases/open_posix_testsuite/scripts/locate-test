@@ -90,6 +90,9 @@ runnable)
 	# XXX (garrcoop): remove all testfrmw files because there're actually
 	# used as includes in the make process; they really should be
 	# functions in a library.
-	find "$WHERE" -type f -name '*.c' -o -name '[0-9]*-[0-9]*.sh' | grep -v buildonly | grep -v '^./tools' | grep -v testfrmw
+	# XXX (garrcoop): determine whether or not the *scenarii.c files can be
+	# moved out into a local library of some kind, or the compile can be
+	# improved at least...
+	find "$WHERE" -type f -name '*.c' -o -name '[0-9]*-[0-9]*.sh' | grep -v buildonly | grep -v '^./tools' | grep -v testfrmw | grep -v '_scenarii'
 	;;
 esac
