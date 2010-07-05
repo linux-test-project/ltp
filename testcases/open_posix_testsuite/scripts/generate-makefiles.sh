@@ -31,7 +31,7 @@ generate_locate_test_makefile() {
 
 	rm -f make-gen.$maketype
 
-}
+u
 
 generate_makefile() {
 
@@ -117,7 +117,7 @@ install: \$(INSTALL_DIR)
 	done
 
 test: all
-	\$(top_srcdir)/scripts/run.sh \$(MAKE_TARGETS)
+	\$(top_srcdir)/scripts/run-test.sh \$(MAKE_TARGETS)
 
 \$(INSTALL_DIR):
 	mkdir -p \$@
