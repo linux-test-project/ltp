@@ -74,11 +74,14 @@ int main(){
 	}
 }
 
-#else
-int main()
+#elif _POSIX_SPORADIC_SERVER == -1
+int
+main (void)
 {
-	printf("Does not support SS (SPORADIC SERVER)\n");
+	printf("_POSIX_SPORADIC_SERVER support not available\n");
 	return PTS_UNSUPPORTED;
 }
 
+#else
+#error "_POSIX_SPORADIC_SERVER support not defined"
 #endif
