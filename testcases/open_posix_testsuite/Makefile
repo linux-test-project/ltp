@@ -1,4 +1,4 @@
-# Copyright (c) 2002, Intel Corporation. All rights reserved.
+# Copyright (c) 2003, Intel Corporation. All rights reserved.
 # Created by:  inaky.perez-gonzalez REMOVE-THIS AT intel DOT com
 # This file is licensed under the GPL license.  For the full content
 # of this license, see the COPYING file at the top level of this
@@ -65,7 +65,7 @@ tools:
 # Test build and execution targets.
 conformance-all: $(CRITICAL_CONFORMANCE_MAKEFILE)
 	@rm -f `if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
-	$(BUILD_MAKE) -C conformance all
+	@$(BUILD_MAKE) -C conformance all
 
 conformance-test:
 	@rm -f `if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
@@ -73,7 +73,7 @@ conformance-test:
 
 functional-all: $(CRITICAL_FUNCTIONAL_MAKEFILE)
 	@rm -f `if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
-	$(BUILD_MAKE) -C functional all
+	@$(BUILD_MAKE) -C functional all
 
 functional-test:
 	@rm -f `if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
@@ -81,7 +81,7 @@ functional-test:
 
 stress-all: $(CRITICAL_STRESS_MAKEFILE)
 	@rm -f `if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
-	$(BUILD_MAKE) -C stress all
+	@$(BUILD_MAKE) -C stress all
 
 stress-test:
 	@rm -f `if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
