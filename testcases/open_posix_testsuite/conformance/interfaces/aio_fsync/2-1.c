@@ -80,7 +80,8 @@ main (void)
 int
 main (void)
 {
-	printf(TNAME " sufficient _POSIX_ASYNCHRONOUS_IO isn't supported\n");
+	printf(TNAME " required _POSIX_ASYNCHRONOUS_IO support isn't "
+	    "available\n");
 	exit(PTS_UNSUPPORTED);
 }
 #endif
