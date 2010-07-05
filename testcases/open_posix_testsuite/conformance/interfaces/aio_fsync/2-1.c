@@ -23,7 +23,9 @@
 
 #define BUF_SIZE 1024
 
-int main()
+#if defined(_POSIX_ASYNCHRONOUS_IO) && 200112L <= _POSIX_ASYNCHRONOUS_IO
+int
+main (void)
 {
 	char tmpfname[256];
 	char buf[BUF_SIZE];
@@ -31,9 +33,7 @@ int main()
 	struct aiocb aiocb_write;
 	struct aiocb aiocb_fsync;
 
-#if _POSIX_ASYNCHRONOUS_IO != 200112L
 	exit(PTS_UNSUPPORTED);
-#endif
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_fsync_2_1_%d", 
 		  getpid());
@@ -76,3 +76,11 @@ int main()
 
 	return PTS_UNTESTED;
 }
+#else
+int
+main (void)
+{
+	printf(TNAME " sufficient _POSIX_ASYNCHRONOUS_IO isn't supported\n");
+	exit(PTS_UNSUPPORTED);
+}
+#endif
