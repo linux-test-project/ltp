@@ -55,7 +55,7 @@ generate_makefile() {
 		fi
 	done
 
-	if [ -f "$makefile.1" ]; then
+	if [ ! -f "$makefile.1" ]; then
 
 		cat > "$makefile.1" <<EOF
 #
