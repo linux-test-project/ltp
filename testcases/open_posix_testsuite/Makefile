@@ -51,7 +51,11 @@ generate-makefiles: distclean-makefiles
 	@export top_srcdir=$(top_srcdir); \
 	$(top_srcdir)/scripts/generate-makefiles.sh
 
-$(CRITICAL_MAKEFILES): $(top_srcdir)/scripts/generate-makefiles.sh
+$(CRITICAL_MAKEFILES): \
+    $(top_srcdir)/scripts/generate-makefiles.sh	\
+    $(top_srcdir)/CFLAGS			\
+    $(top_srcdir)/LDFLAGS			\
+    $(top_srcdir)/LDLIBS
 	$(MAKE) generate-makefiles
 
 tools:
