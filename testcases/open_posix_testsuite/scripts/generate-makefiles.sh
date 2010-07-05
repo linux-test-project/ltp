@@ -152,7 +152,7 @@ EOF
 		cat >> "$makefile.3" <<EOF
 
 $prereq: \$(srcdir)/$c_file
-	if $COMPILE_STR >logfile.\$\$\$\$ 2>&1; then \\
+	@if $COMPILE_STR >logfile.\$\$\$\$ 2>&1; then \\
 		 echo "$prereq_dir/$test_name compile PASSED"; \\
 		 echo "$prereq_dir/$test_name compile PASSED" >> \$(LOGFILE); \\
 	else \\
