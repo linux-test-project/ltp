@@ -1,6 +1,8 @@
 /*
- *Following symbols need to be defined in errno.h
- *author:ysun@lnxw.com
+ * Following symbols need to be defined in errno.h
+ * author:ysun@lnxw.com
+ *
+ * All #ifdef'ed constants are optional, depending on the spec definition.
  */
 
 #include <errno.h>
@@ -13,7 +15,9 @@ int dummy5 = EAFNOSUPPORT;
 int dummy6 = EAGAIN;
 int dummy7 = EALREADY;
 int dummy8 = EBADF;
+#ifdef EBADMSG
 int dummy9 = EBADMSG;
+#endif
 int dummy10 = EBUSY;
 int dummy11 = ECANCELED;
 int dummy12 = ECHILD;
@@ -47,7 +51,9 @@ int dummy39 = ENETRESET;
 int dummy40 = ENETUNREACH;
 int dummy41 = ENFILE;
 int dummy42 = ENOBUFS;
+#ifdef ENODATA
 int dummy43 = ENODATA;
+#endif
 int dummy44 = ENODEV;
 int dummy45 = ENOENT;
 int dummy46 = ENOEXEC;
@@ -57,8 +63,12 @@ int dummy49 = ENOMEM;
 int dummy50 = ENOMSG;
 int dummy51 = ENOPROTOOPT;
 int dummy52 = ENOSPC;
+#ifdef ENOSR
 int dummy53 = ENOSR;
+#endif
+#ifdef ENOSTR
 int dummy54 = ENOSTR;
+#endif
 int dummy55 = ENOSYS;
 int dummy56 = ENOTCONN;
 int dummy57 = ENOTDIR;
@@ -79,7 +89,9 @@ int dummy71 = EROFS;
 int dummy72 = ESPIPE;
 int dummy73 = ESRCH;
 int dummy74 = ESTALE;
+#ifdef ETIME
 int dummy75 = ETIME;
+#endif
 int dummy76 = ETIMEDOUT;
 int dummy77 = ETXTBSY;
 int dummy78 = EWOULDBLOCK;
