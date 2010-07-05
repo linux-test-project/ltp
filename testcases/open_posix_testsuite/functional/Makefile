@@ -10,4 +10,4 @@ all clean install test:
 	done
 
 distclean-makefiles:
-	find */ -name 'Makefile*' | grep -v threads/Makefile | xargs rm -f
+	@find */ -name 'Makefile*' | grep -v threads/Makefile | xargs rm -f

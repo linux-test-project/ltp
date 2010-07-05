@@ -7,7 +7,7 @@
 srcdir?=	.
 
 clean:
-	rm -f t0
+	@rm -f t0
 
 t0: $(srcdir)/t0.c
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $< $(LDLIBS)
