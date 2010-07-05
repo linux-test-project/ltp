@@ -1,1 +1,1 @@
--std=c99 `$(CC) -std=gnu99 -S -o /dev/null -xc /dev/null >/dev/null 2>&1 && echo "-std=gnu99"` -D_POSIX_C_SOURCE=200112L -D_XOPEN_SOURCE=600
+-std=c99 -D_POSIX_C_SOURCE=200112L -D_XOPEN_SOURCE=600
