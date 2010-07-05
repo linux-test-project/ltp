@@ -1,12 +1,7 @@
-# Copyright (c) 2003, Intel Corporation. All rights reserved.
-# Created by:  inaky.perez-gonzalez REMOVE-THIS AT intel DOT com
-# This file is licensed under the GPL license.  For the full content
-# of this license, see the COPYING file at the top level of this
-# source tree.
 #
-# This file has almost been entirely rewritten by Garrett Cooper, but in
-# order to note the bits which were acquired from previous versions, the Intel
-# copyright notice stands above.
+# Read COPYING for licensing details.
+#
+# Garrett Cooper, June 2010
 #
 
 # Makefiles that are considered critical to execution; if they don't exist
