@@ -16,14 +16,14 @@ NUM_TESTS=0
 
 run_test_loop() {
 
-	for test in $*; do
+	for t in "$@"; do
 
-		if run_test $test; then
-			: $(( NUM_PASS += 1 ))
+		if run_test "$t"; then
+			NUM_PASS=`expr $NUM_PASS + 1`
 		else
-			: $(( NUM_FAIL += 1 ))
+			NUM_FAIL=`expr $NUM_FAIL + 1`
 		fi
-		: $(( NUM_TESTS += 1 ))
+		NUM_TESTS=`expr $NUM_TESTS + 1`
 
 	done
 
@@ -46,12 +46,12 @@ run_test() {
 
 	complog=$testname.log.$$
 
-	$SHELL -c "'$(dirname "$0")/t0' ./$1" > $complog 2>&1
+	$SHELL -c "$SCRIPT_DIR/t0 $TIMEOUT_VAL ./$1" > $complog 2>&1
 
 	ret_code=$?
 
 	if [ "$ret_code" = "0" ]; then
-		echo "$testname: execution: PASS" >> $(LOGFILE)
+		echo "$testname: execution: PASS" >> "${LOGFILE}"
 	else
 		case "$ret_code" in
 		1)
@@ -73,7 +73,7 @@ run_test() {
 			msg="SIGNALED"
 		esac
 		(echo "$testname: execution: $msg: Output: "; cat $complog) >> \
-		 ${LOGFILE}
+		 "${LOGFILE}"
 		echo "$testname: execution: $msg "
 	fi
 
@@ -84,13 +84,20 @@ run_test() {
 }
 
 # SETUP
-if echo > "$LOGFILE"; then
-	:
-else
+if ! echo > "$LOGFILE"; then
 	echo >&2 "ERROR: $LOGFILE not writable"
 	exit 1
 fi
-if TIMEOUT_RET=$(cat "$(dirname "$0")/t0.val"); then
+
+SCRIPT_DIR=`dirname "$0"`
+T0_VAL=$SCRIPT_DIR/t0.val
+
+if [ ! -f "$T0_VAL" ]; then
+	$SCRIPT_DIR/t0 0
+	echo $? > "$T0_VAL"
+fi
+if TIMEOUT_RET=$(cat "$T0_VAL"); then
+
 	TIMEOUT_VAL=${TIMEOUT_VAL:=240}
 	if [ -f test_defs ] ; then
 		. ./test_defs || exit $?
@@ -98,8 +105,9 @@ if TIMEOUT_RET=$(cat "$(dirname "$0")/t0.val"); then
 	trap '' INT
 
 	# RUN
-	run_test_loop $@
+	run_test_loop "$@"
 	exit $NUM_FAIL
+
 else
 	exit $? 
 fi
