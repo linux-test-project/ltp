@@ -92,7 +92,7 @@ runnable)
 	# waltz down the tools directory and try and build t0 (which doesn't
 	# make sense as it's a tool, not a test). Better criterion needs to
 	# be established for this file.
-	find "$WHERE" -type f -name '*[0-9].c' -o -name '[0-9]*-[0-9]*.sh' | grep -v buildonly | grep -v '^./tools'
+	find "$WHERE/conformance" "$WHERE/stress" -type f -name '*[0-9].c' -o -name '[0-9]*-[0-9]*.sh' | grep -v buildonly | grep -v '^./tools'
 	find "$WHERE/functional" -type f -name '*.c'
 	;;
 test-tools)
