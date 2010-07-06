@@ -18,6 +18,7 @@ and down.
                   If you just want to build a test, but not run it,
                   do not include a main function into the .c file or
                   name it something including the "-buildonly" string.
+  --test-tools	  List all test tools that require building.
   --help          Show this help and exit
 
 Filenames need to follow some standarized format for them to be picked
@@ -48,6 +49,10 @@ do
 		;;
 	"--runnable")
 		mode="runnable"
+		shift
+		;;
+	"--test-tools")
+		mode="test-tools"
 		shift
 		;;
 	"--help")
@@ -93,6 +98,9 @@ runnable)
 	# XXX (garrcoop): determine whether or not the *scenarii.c files can be
 	# moved out into a local library of some kind, or the compile can be
 	# improved at least...
-	find "$WHERE" -type f -name '*.c' -o -name '[0-9]*-[0-9]*.sh' | grep -v buildonly | grep -v '^./tools' | grep -v testfrmw | grep -v '_scenarii'
+	find "$WHERE" -type f -name '*[0-9].c' -o -name '[0-9]*-[0-9]*.sh' | grep -v buildonly | grep -v '^./tools'
+	;;
+test-tools)
+	find "$WHERE" -type f -name '*-core.c'
 	;;
 esac
