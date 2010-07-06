@@ -6,6 +6,8 @@
 
 srcdir?=	.
 
+all: t0
+
 clean:
 	@rm -f t0
 
