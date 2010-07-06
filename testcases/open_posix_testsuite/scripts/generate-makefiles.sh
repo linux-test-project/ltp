@@ -125,8 +125,8 @@ install: \$(INSTALL_DIR) run.sh
 		fi;						\\
 	done
 
-test: all
-	\$(top_srcdir)/scripts/run-test.sh \$(MAKE_TARGETS)
+test: all run.sh
+	\$(SHELL) ./run.sh
 
 \$(INSTALL_DIR):
 	mkdir -p \$@
