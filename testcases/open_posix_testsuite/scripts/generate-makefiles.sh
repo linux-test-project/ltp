@@ -16,6 +16,8 @@
 # Garrett Cooper, June 2010
 #
 
+set -x
+
 generate_locate_test_makefile() {
 
 	local maketype=$1; shift
@@ -201,9 +203,9 @@ generate_makefiles() {
 
 	local prereq_cache=
 
-	local make_gen_list=$1; shift
-	local suffix=$1; shift
-	local compiler_args="$@"
+	local make_gen_list=$1
+	local suffix=$2
+	local compiler_args="$3"
 
 	while read filename; do
 
@@ -214,7 +216,7 @@ generate_makefiles() {
 			prereq_cache_dir="$prereq_dir"
 		elif [ "$prereq_cache_dir" != "$prereq_dir" ]; then
 
-			generate_makefile "$prereq_cache_dir/Makefile" $prereq_cache_dir "$compiler_args" $prereq_cache
+			generate_makefile "$prereq_cache_dir/Makefile" "$prereq_cache_dir" "$compiler_args" $prereq_cache
 
 			# Prep for the next round..
 			prereq_cache=
@@ -256,7 +258,7 @@ EOF
 done
 
 # For the generic cases.
-generate_locate_test_makefile buildonly '.test' -c
+generate_locate_test_makefile buildonly '.test' '-c'
 generate_locate_test_makefile runnable '.run-test'
 generate_locate_test_makefile test-tools ''
 
