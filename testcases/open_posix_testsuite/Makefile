@@ -53,7 +53,7 @@ generate-makefiles: distclean-makefiles
 	    $(top_srcdir)/scripts/generate-makefiles.sh
 
 install: conformance-install functional-install stress-install
-	@install -m 0755 scripts/run-test.sh \
+	@install -m 0755 scripts/run-tests.sh \
 	    $(DESTDIR)/`$(SHELL) $(top_srcdir)/scripts/print-prefix.sh`/.
 
 test: conformance-test functional-test stress-test
