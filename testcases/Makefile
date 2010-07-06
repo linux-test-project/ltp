@@ -33,7 +33,7 @@ FILTER_OUT_DIRS		:= ballista mce-test pounder21
 # XXX (garrcoop): Not sure why realtime is still in this list; this was the
 # original list of disabled items...
 ifneq ($(UCLINUX),1)
-FILTER_OUT_DIRS		+= audit-test DOTS kdump open% realtime
+FILTER_OUT_DIRS		+= audit-test DOTS kdump open_hpi_testsuite realtime
 else
 SUBDIRS			:= kernel
 endif
