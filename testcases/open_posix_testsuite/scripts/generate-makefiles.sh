@@ -131,9 +131,9 @@ test: all run.sh
 \$(INSTALL_DIR):
 	mkdir -p \$@
 
-run.sh:
+run.sh: \$(srcdir)/Makefile
 	@echo '#/bin/sh' > \$@
-	@echo '\$(top_srcdir)/run-test.sh \$(INSTALL_TARGETS)' >> \$@
+	@echo '\$(top_srcdir)/bin/run-test.sh \$(INSTALL_TARGETS)' >> \$@
 
 EOF
 
