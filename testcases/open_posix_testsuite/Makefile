@@ -21,11 +21,16 @@ LOGFILE?=		logfile
 # Subdirectories to traverse down.
 SUBDIRS=		conformance functional stress
 
-MAKE_ENV=		"CFLAGS=$(CFLAGS)" "LDFLAGS=$(LDFLAGS)"
-MAKE_ENV+=		"LDLIBS=$(LDLIBS)"
-MAKE_ENV+=		LOGFILE=`if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
+MAKE_ENV=		LOGFILE=`if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
 
-BUILD_MAKE=		env $(MAKE_ENV) $(MAKE)
+BUILD_MAKE_ENV=		"CFLAGS=$(CFLAGS)" "LDFLAGS=$(LDFLAGS)"
+BUILD_MAKE_ENV+=	"LDLIBS=$(LDLIBS)" $(MAKE_ENV)
+
+TEST_MAKE_ENV=		$(MAKE_ENV)
+
+BUILD_MAKE=		env $(BUILD_MAKE_ENV) $(MAKE)
+
+TEST_MAKE=		env $(TEST_MAKE_ENV) $(MAKE)
 
 top_srcdir?=		.
 
@@ -63,7 +68,7 @@ conformance-install:
 	@$(MAKE) -C conformance install
 
 conformance-test:
-	@$(MAKE) -C conformance test
+	@$(TEST_MAKE) -C conformance test
 
 functional-all: $(CRITICAL_FUNCTIONAL_MAKEFILE)
 	@rm -f `if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
@@ -73,7 +78,7 @@ functional-install:
 	@$(MAKE) -C functional install
 
 functional-test:
-	@$(MAKE) -C functional test
+	@$(TEST_MAKE) -C functional test
 
 stress-all: $(CRITICAL_STRESS_MAKEFILE)
 	@rm -f `if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
@@ -83,7 +88,7 @@ stress-install:
 	@$(MAKE) -C stress install
 
 stress-test:
-	@$(MAKE) -C stress test
+	@$(TEST_MAKE) -C stress test
 
 tools-all:
 	@$(MAKE) -C tools all
