@@ -6,9 +6,38 @@
 # run_test contains logic moved out of Makefile.
 #
 # Garrett Cooper, June 2010
+#
+
+LOGFILE=${LOGFILE:=logfile}
+
+NUM_FAIL=0
+NUM_PASS=0
+NUM_TESTS=0
 
 run_test_loop() {
-	for i in 
+
+	for test in $*; do
+
+		if run_test $test; then
+			: $(( NUM_PASS += 1 ))
+		else
+			: $(( NUM_FAIL += 1 ))
+		fi
+		: $(( NUM_TESTS += 1 ))
+
+	done
+
+	cat <<EOF
+*****************
+SUMMARY
+*****************
+PASS		$NUM_PASS
+FAIL		$NUM_FAIL
+*****************
+TOTAL		$NUM_TESTS
+*****************
+EOF
+
 }
 
 run_test() {
@@ -17,7 +46,7 @@ run_test() {
 
 	complog=$testname.log.$$
 
-	"$(dirname "$0")/t0" ./$1 > $complog 2>&1
+	$SHELL -c "'$(dirname "$0")/t0' ./$1" > $complog 2>&1
 
 	ret_code=$?
 
@@ -55,18 +84,22 @@ run_test() {
 }
 
 # SETUP
-if [ "x$1" = x ]; then
-	LOGFILE=/dev/stdout
-elif echo > "$1"; then
-	echo >&2 "ERROR: $1 not readable"
+if echo > "$LOGFILE"; then
+	:
 else
-	LOGFILE=$1
+	echo >&2 "ERROR: $LOGFILE not writable"
+	exit 1
 fi
-TIMEOUT_RET=$(cat "$(dirname "$0")/t0.val")
-TIMEOUT_VAL=${TIMEOUT_VAL:=240}
-if [ -f test_defs ] ; then
-	. ./test_defs || exit $?
-fi
+if TIMEOUT_RET=$(cat "$(dirname "$0")/t0.val"); then
+	TIMEOUT_VAL=${TIMEOUT_VAL:=240}
+	if [ -f test_defs ] ; then
+		. ./test_defs || exit $?
+	fi
+	trap '' INT
 
-# RUN
-run_test "$@"
+	# RUN
+	run_test_loop $@
+	exit $NUM_FAIL
+else
+	exit $? 
+fi
