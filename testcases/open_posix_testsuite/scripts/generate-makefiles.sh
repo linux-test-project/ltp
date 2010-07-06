@@ -103,8 +103,8 @@ EOF
 	fi
 
 	cat >> "$makefile.2" <<EOF
-INSTALL_TARGETS+=	${prereq_cache}
 
+INSTALL_TARGETS+=	${prereq_cache}
 MAKE_TARGETS+=		${make_target_prereq_cache}
 
 EOF
@@ -115,7 +115,7 @@ EOF
 all: \$(MAKE_TARGETS)
 
 clean:
-	rm -f \$(MAKE_TARGETS) logfile* *.core
+	rm -f \$(MAKE_TARGETS) logfile* run.sh *.core
 
 install: \$(INSTALL_DIR) run.sh
 	set -e; for file in \$(INSTALL_TARGETS); do		\\
@@ -132,7 +132,7 @@ test: all run.sh
 	mkdir -p \$@
 
 run.sh:
-	@echo '\#/bin/sh' > \$@
+	@echo '#/bin/sh' > \$@
 	@echo '\$(top_srcdir)/run-test.sh \$(INSTALL_TARGETS)' >> \$@
 
 EOF
