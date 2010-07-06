@@ -12,7 +12,7 @@ clean:
 	@rm -f t0
 
 t0: $(srcdir)/t0.c
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $< $(LDLIBS)
+	@$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $< $(LDLIBS)
 
 #build/t0.val: build/t0
 #	echo `./t0 0; echo $$?` > t0.val
