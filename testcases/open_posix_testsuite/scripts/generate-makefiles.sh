@@ -126,7 +126,7 @@ install: \$(INSTALL_DIR) run.sh
 	done
 
 test: all run.sh
-	\$(SHELL) ./run.sh
+	@\$(SHELL) ./run.sh
 
 \$(INSTALL_DIR):
 	mkdir -p \$@
