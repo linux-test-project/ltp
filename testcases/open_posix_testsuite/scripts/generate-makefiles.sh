@@ -16,8 +16,6 @@
 # Garrett Cooper, June 2010
 #
 
-set -x
-
 generate_locate_test_makefile() {
 
 	local maketype=$1; shift
@@ -136,15 +134,14 @@ clean:
 	rm -f \$(MAKE_TARGETS) logfile* run.sh *.core
 
 install: \$(INSTALL_DIR) run.sh
-	set -e; for file in \$(INSTALL_TARGETS); do		\\
+	set -e; for file in \$(INSTALL_TARGETS) run.sh; do	\\
 		if [ -f "\$\$file" ] ; then			\\
 			install -m 00755 \$\$file		\\
 				\$(INSTALL_DIR)/\$\$file;	\\
 		fi;						\\
 	done
 
-test: all run.sh
-	@\$(SHELL) ./run.sh
+test: run.sh
 
 \$(INSTALL_DIR):
 	mkdir -p \$@
@@ -155,9 +152,9 @@ EOF
 
 	if [ "$tests" != "" ]; then
 		cat >> "$makefile.3" <<EOF
-run.sh: \$(srcdir)/Makefile
+run.sh:
 	@echo '#/bin/sh' > \$@
-	@echo \$(top_srcdir)/bin/run-tests.sh $tests >> \$@
+	@echo "\$(top_srcdir)/bin/run-tests.sh \$(subdir) $tests" >> \$@
 
 EOF
 	fi
