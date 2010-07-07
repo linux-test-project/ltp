@@ -4,16 +4,17 @@
 # Garrett Cooper, June 2010
 #
 
-srcdir?=	.
+top_srcdir?=	..
 
-all: t0
+srcdir=		$(top_srcdir)/tools
+
+all: ../bin/t0
 
 clean:
-	@rm -f t0
+	@rm -f ../bin/t0
 
-t0: $(srcdir)/t0.c
-	@$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $< $(LDLIBS)
+../bin:
+	mkdir $@
 
-#build/t0.val: build/t0
-#	echo `./t0 0; echo $$?` > t0.val
-
+../bin/t0: ../bin $(srcdir)/t0.c
+	@$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(srcdir)/t0.c $(LDLIBS)

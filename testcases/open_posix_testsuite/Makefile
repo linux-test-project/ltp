@@ -52,12 +52,9 @@ generate-makefiles: distclean-makefiles
 	@env top_srcdir=$(top_srcdir) \
 	    $(top_srcdir)/scripts/generate-makefiles.sh
 
-install: conformance-install functional-install stress-install
-	@install -m 0755 scripts/run-tests.sh \
-	    $(DESTDIR)/`$(SHELL) $(top_srcdir)/scripts/print-prefix.sh`/.
+install: bin-install conformance-install functional-install stress-install
 
 test: conformance-test functional-test stress-test
-	@ln tools/t0 bin/t0
 
 # Test build and execution targets.
 conformance-all: $(CRITICAL_CONFORMANCE_MAKEFILE)
@@ -68,6 +65,7 @@ conformance-install:
 	@$(MAKE) -C conformance install
 
 conformance-test:
+	@rm -f `if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
 	@$(TEST_MAKE) -C conformance test
 
 functional-all: $(CRITICAL_FUNCTIONAL_MAKEFILE)
@@ -78,6 +76,7 @@ functional-install:
 	@$(MAKE) -C functional install
 
 functional-test:
+	@rm -f `if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
 	@$(TEST_MAKE) -C functional test
 
 stress-all: $(CRITICAL_STRESS_MAKEFILE)
@@ -88,13 +87,15 @@ stress-install:
 	@$(MAKE) -C stress install
 
 stress-test:
+	@rm -f `if echo "$(LOGFILE)" | grep -q '^/'; then echo "$(LOGFILE)"; else echo "\`pwd\`/$(LOGFILE)"; fi`.$@
 	@$(TEST_MAKE) -C stress test
+
+# Tools build and install targets.
+bin-install:
+	@$(MAKE) -C bin install
 
 tools-all:
 	@$(MAKE) -C tools all
-
-tools-install:
-	@$(MAKE) -C tools install
 
 $(CRITICAL_MAKEFILES): \
     $(top_srcdir)/scripts/generate-makefiles.sh	\
