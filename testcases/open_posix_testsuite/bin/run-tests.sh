@@ -16,7 +16,7 @@ NUM_TESTS=0
 
 run_test_loop() {
 
-	for t in "$@"; do
+	for t in $*; do
 
 		if run_test "$t"; then
 			NUM_PASS=`expr $NUM_PASS + 1`
@@ -42,9 +42,9 @@ EOF
 
 run_test() {
 
-	testname=`echo "$1" | sed -e 's,.run-test$,,'`
+	testname="$TEST_PATH/${1%.*}"
 
-	complog=$testname.log.$$
+	complog=`basename $testname`.log.$$
 
 	$SHELL -c "$SCRIPT_DIR/t0 $TIMEOUT_VAL ./$1" > $complog 2>&1
 
@@ -72,8 +72,8 @@ run_test() {
 		*)
 			msg="SIGNALED"
 		esac
-		(echo "$testname: execution: $msg: Output: "; cat $complog) >> \
-		 "${LOGFILE}"
+		echo "$testname: execution: $msg: Output: " >> "${LOGFILE}"
+		cat $complog >> "${LOGFILE}"
 		echo "$testname: execution: $msg "
 	fi
 
@@ -84,19 +84,22 @@ run_test() {
 }
 
 # SETUP
-if ! echo > "$LOGFILE"; then
+if [ -w "$LOGFILE" ] || echo "" > "$LOGFILE"; then
+	:
+else
 	echo >&2 "ERROR: $LOGFILE not writable"
 	exit 1
 fi
 
 SCRIPT_DIR=`dirname "$0"`
+TEST_PATH=$1; shift
 T0_VAL=$SCRIPT_DIR/t0.val
 
 if [ ! -f "$T0_VAL" ]; then
 	$SCRIPT_DIR/t0 0
 	echo $? > "$T0_VAL"
 fi
-if TIMEOUT_RET=$(cat "$T0_VAL"); then
+if TIMEOUT_RET=`cat "$T0_VAL"`; then
 
 	TIMEOUT_VAL=${TIMEOUT_VAL:=240}
 	if [ -f test_defs ] ; then
@@ -105,7 +108,7 @@ if TIMEOUT_RET=$(cat "$T0_VAL"); then
 	trap '' INT
 
 	# RUN
-	run_test_loop "$@"
+	run_test_loop $*
 	exit $NUM_FAIL
 
 else
