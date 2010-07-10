@@ -1,5 +1,8 @@
 #include <math.h>
+#include <stdlib.h>
+
 #define M_2PI (M_PI*2)
+
 int box_muler(int min, int max)
 {
   double u1,u2,z;

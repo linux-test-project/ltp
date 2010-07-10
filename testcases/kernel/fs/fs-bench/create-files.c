@@ -15,11 +15,14 @@
 char wbuf[MAXFSIZE];
 static int filecount=0;
 
+void makedir(char *dir1);
+void changedir(char *dir);
+void create_file(char *filename);
 
 extern int box_muler(int, int);
 
 int startc=0;
-main(int ac,char *av[])
+int main(int ac,char *av[])
 {
   int i=0;
   int j=0;
@@ -71,18 +74,21 @@ main(int ac,char *av[])
 end:
   fprintf(stderr,"\nTotal create files: %d\n",filecount);
   printf("Done\n");
+  return 0;
 }
 
 int showchar[]={124,47,45,92,124,47,45,92};
-static int mkdir_counter=0;
-makedir(char *dir1)
+
+void makedir(char *dir1)
 {
   if (mkdir(dir1, S_IRWXU) < 0) {
     perror(dir1);
     exit(1);
   }
 }
-changedir(char *dir) {
+
+void changedir(char *dir)
+{
   if ( chdir(dir) < 0 ) {
     perror(dir);
     exit(1);
@@ -90,7 +96,7 @@ changedir(char *dir) {
 }
 
 
-create_file(char *filename)
+void create_file(char *filename)
 {
   int fd;
   int randomsize;

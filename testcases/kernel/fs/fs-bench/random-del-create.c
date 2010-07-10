@@ -24,7 +24,7 @@ int cfilecount=0;
 int dfilecount=0;
 int errorcount=0;
 
-main(int ac, char **av)
+int main(int ac, char **av)
 {
   int r;
   char fname[1024];
@@ -91,7 +91,7 @@ void create_or_delete(char *fname)
   }
 }
 
-create_file(char *filename)
+int create_file(char *filename)
 {
   int fd;
   int randomsize;
@@ -111,12 +111,13 @@ create_file(char *filename)
   cfilecount++;
   disk_space_pool -= randomsize;
   close(fd);
+  return 0;
 }
 
 #include <sys/stat.h>
 #include <unistd.h>
 
-delete_file(char *filename)
+int delete_file(char *filename)
 {
   struct stat buf;
   int st;
@@ -131,4 +132,5 @@ delete_file(char *filename)
     return(-1);
   }
   dfilecount++;
+  return 0;
 }

@@ -15,10 +15,12 @@ int openlog[2]={0,0};
 
 #define MAXNUM 0x100000
 
+void open_read_close(char *fname);
+
 int nullfd;
-main(int ac, char **av)
+
+int main(int ac, char **av)
 {
-  int fd;
   int r;
   char fname[1024];
   time_t t;
@@ -62,7 +64,7 @@ main(int ac, char **av)
 }
 
 #define BUFS 8192
-open_read_close(char *fname)
+void open_read_close(char *fname)
 {
   int fd;
   char buf[BUFS];
