@@ -1,33 +1,31 @@
-
 SECTIONS:
 1. Overview
 2. Framework Functionality
 3. Building and Running the Tests
-
 
 1. Overview
 ------------
 This document describes how to run the tests in the POSIX Test Suite.
 
 Our framework currently has the ability to build and run conformance,
-functional, and stress tests.  Only conformance and functional tests are
-built when a user tries to "make all" as stress tests leave the system
-in an indeterminate state and should generally be run manually.
+functional, and stress tests.  All tests are built with make all, but
+certain care should be used when running the stress test suite as the
+tests may leave the system in an indeterminate state.
 
 2. Framework Functionality
 ----------------------------------------------------
 
   * Conformance Tests
-The build and execution process varies per conformance tests.
+The build and execution process varies for conformance tests.
 
 For definitions tests, the build and execution process is the same since
-the "test" is that the file compiles.  A definitions test will be compiled,
-not linked, by the compiler.
+the pass/fail criterion is determine by whether or not the test compiles.
+A definitions test will be compiled, not linked, by the toolchain.
 
 For all other tests, they will have one test for the compile, one for the
-link, and one for the execution of the test.  Successfull tests return
-PTS_PASS, which the compiler interprets as success.  All other return
-values are failures.  [For more info, see HOWTO_ResultCodes.]
+link, and one for the execution of the test.  Successful tests return
+PTS_PASS, which the interprets as success.  All other return values are
+considered failures [For more info, see HOWTO_ResultCodes].
 
   * Functional/Stress Tests
 Functional and stress tests have their own Makefile and method for running,
@@ -39,60 +37,47 @@ functional area.
 3. Building and Running the Tests
 ----------------------------------
 
-**See the BUILD file for info on how to set up the build for the specific
-area you are testing (threads, mqs, semaphores, etc.)
+** See the BUILD file for info on how to set up the build for the specific
+area you are testing (threads, mqs, semaphores, etc.), as well as setup the
+build specific to your environment.
 
-To build and run the tests, you should be in the main posixtestsuite/
-directory.  
+To build and run the tests, you should be in the main posix test suite
+directory.
 
 From there, execute:
-# make
+    # make all
 
-This will build and run all conformance and functional tests [See above
-for why stress tests are not built.].
+This will build all of the conformance, functional, and stress tests.
 
-If you'd like to build and run conformance tests for a specific area (threads,
-timers, semaphores, message queues, signals), use the script run_tests and
-run:
-# ./run_tests [SIG|SEM|THR|TMR|MSG]
- the argument is the 3 letter POSIX abbreviation for area
+* Conformance-specific items *
 
-  * Conformance-specific items
-To run conformance tests for a specific directory, first export the
-POSIX_TARGET variable to the directory desired.
-Ex.
-# export POSIX_TARGET=conformance/definitions/time_h
+To run conformance tests for a specific directory, just cd to the directory
+and run make all test.
 
-  * Linking in a library
-To link in a library or add any other flags at build or link time,
-modify file LDFLAGS with the -L... -l... or -D... lines you would like
-added.
+Example:
+    # cd conformance/definitions/time_h ; make all test
 
 To just build conformance tests, run:
-# make build-tests
+    # make conformance-all
 
 To just run conformance tests, run:
-# make run-tests
+    # make conformance-test
 
-  * Functional/Stress-specific items
+* Functional/Stress-specific items *
+
 To run only functional tests, run:
-# make functional-tests
+    # make functional-test
 
 To run only stress tests, run:
-# make stress-tests
+    # make stress-test
 
 To make only functional tests, run:
-# make functional-make
+    # make functional-all
 
 To make only stress tests, run:
-# make stress-make
-
-To only run functional tests, run:
-# make functional-run
-
-To only run stress tests, run:
-# make stress-run
+    # make stress-all
 
 Contributors:	rusty.lynch REMOVE-THIS AT intel DOT com
 		julie.n.fleischer REMOVE-THIS AT intel DOT com
 		rolla.n.selbak REMOVE-THIS AT intel DOT com
+		yanegomi REMOTE-THIS AT gmail DOT com

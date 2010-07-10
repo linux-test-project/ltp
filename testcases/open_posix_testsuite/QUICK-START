@@ -12,25 +12,28 @@ Setting up your machine
 
 * There is nothing to install, the suite is intended to be run directly.
 
-* See the "BUILD" file for info on how to set up the Makefile and your developer machine,  
-depending on what specific area you are concentrating on. 
-(Signals, Semaphores, Threads, Timers or Message Qs).  
+* See the "BUILD" file for info on how to set up the Makefile and your machine,
+  depending on what specific area you are concentrating on. 
+(Signals, Semaphores, Threads, Timers or Message Queues).
 
 ===================
 Running the tests
 ===================
 
-* Easiest way to run all the tests is to do a "make" in the top-level directory.
+* Easiest way to run all the tests is to do a "make all" in the top-level
+  directory.
 
-* To run tests for a specific directory, first export the POSIX_TARGET variable
-to the directory you want, then perform a "make".  e.g.:
-	# export POSIX_TARGET=conformance/interfaces/pthread_create 
-	# make
+* To run tests for a specific directory, do the following
+  - make generate-makefiles # only required for the first shot.
+  - cd <subdir> ; make all test
 
-* An easy way to run all tests specific to your area of focus, run:
+  Example:
 
-	# ./run_tests [MEM|MSG|SEM|SIG|THR|TMR|TPS]
-	the argument is the 3 letter POSIX abbreviation for area
+  - make generate-makefiles
+  - cd conformance/interfaces/pthread_create ; make all test
+
+* Running tests for a specific focus is currently unavailable (but will be made
+  available again soon).
 
 * For additional information on how to build and run the tests in this
 suite, see Documentation/HOWTO_RunTests.

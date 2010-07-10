@@ -1,8 +1,8 @@
 10-19-2005      1.5.2 Release
-		 - Code cleanups by Sebastien Decugis
+		 - Code cleanups by Sebastien Dugue
 		 - Add a patch for cleaner build in cross environment from Joseph S. Myers
 		 - Add a patch to _POSIX_CPUTIME and_POSIX_THREAD_CPUTIME handling from Joseph S. Myers
-		 - Make the aio_read/write tests concerningthe offset maximum return PTS_UNTESTED by Sebastien Decugis
+		 - Make the aio_read/write tests concerningthe offset maximum return PTS_UNTESTED by Sebastien Dugue
 		 - A patch from Randy.Dunlap to fix shm conformance uninitialzedvariables
 		 - A patch from Randy.Dunlap to fix 2 pthread conformance problems
 		 - The patches for sem_post_5_1 and sem_post_8_1 from Yi Xu
@@ -11,7 +11,7 @@
 06-03-2005	1.5.1 Release
 		 - conformance/interfaces/aio_* and 
 		   conformance/interface/lio_listio: add new cases and bug
-		   fixes by Sebastien Decugis.
+		   fixes by Sebastien Dugue.
 		 - add execute.sh by B. Thangaraju.
 
 01-05-2005	1.5.0 Release
@@ -21,26 +21,26 @@
 07-05-2004	adam.li@intel.com
 		 - functional/schedule/1-1.c 1-2.c: New case by Abhijeet Bisain.
 		 - stress/threads/pthread_cond_timedwait/stress1.c stress2.c: 
-		   New case by Sebastien Decugis.
+		   New case by Sebastien Dugue.
 07-01-2004	adam.li@intel.com
 		 - pthread_attr_setschedparam/1-3.c 1-4.c:
 		   Add test cases by Abhijeet Bisain. 
 		 - stress/threads/assertions.xml, 
-		   stress/threads/pthread_cond_timedwait/: New case by Sebastien Decugis
+		   stress/threads/pthread_cond_timedwait/: New case by Sebastien Dugue
 06-29-2004	adam.li@intel.com
 		 - pthread_attr_setinheritsched/2-3.c, 2-4.c
 		 - functional/threads/condvar/, README:
 		   Add test cases by Abhijeet Bisain. 
 06-28-2004	adam.li@intel.com
 		 - stress/threads/pthread_mutex_init/, pthread_mutex_lock/, 
-		   pthread_cond_init/: Add stress/scalability cases by Sebastien Decugis
+		   pthread_cond_init/: Add stress/scalability cases by Sebastien Dugue
 06-22-2004	adam.li@intel.com
 		 - pthread_cond_destroy/speculative/4-1.c, pthread_mutex_destroy/
 		   speculative/4-2.c, pthread_exit/3-1.c: 
 		   Add new test case by Abhijeet Bisain
 06-15-2004	adam.li@intel.com
 		 - pthread_cond_init/1-2.c, 2-2.c,4-1.c 4-2.c: Add test case by
-		   Sebastien Decugis.
+		   Sebastien Dugue.
 		 - pthread_cancel/2-2.c, 2-3.c, 3-3.c: Add test case by 
 		   Abhijeet Bisain.
 06-11-2004	adam.li@intel.com
@@ -70,7 +70,7 @@
                  - sched_yield/1-1.c: Fix. Incorrect thread return
                    status.
                  - Add test case by Sebastien
-                   Decugis(sebastien.decugis@ext.bull.net)
+                   Dugue(sebastien.decugis@ext.bull.net)
                    pthread_mutex_unlock/5-1.c, 5-2.c
                  - pthread_mutexattr_settype/coverage.txt: Fix.
                  - behavior/signal.h/18-1.c,19-1.c,20-1.c,21-1.c: Fix 
@@ -79,7 +79,7 @@
 		 - Add case pthread_mutex_init/5-1.c,
 		   pthread_mutex_init/speculative/5-2.c, 
 		   pthread_mutex_lock/3-1.c, 4-1.c, 5-1.c 
-		   by Sebastien Decugis(sebastien.decugis@ext.bull.net)
+		   by Sebastien Dugue(sebastien.decugis@ext.bull.net)
 		 - sem_post/8-1.c: Fix. Will leave Zombie process if fail.
 05-10-2004	adam.li@intel.com
 		 - Apply Ulrich Drepper's patch:
@@ -89,7 +89,7 @@
 		   pthread_attr_setstacksize/2-1.c: define _GNU_SOURCE correctly.
 05-09-2004	adam.li@intle.com
 		 - Add cases pthread_mutex_init/1-2.c, 3-2.c, 5-3.c 
-		   by Sebastien Decugis(sebastien.decugis@ext.bull.net)
+		   by Sebastien Dugue(sebastien.decugis@ext.bull.net)
 05-01-2004	1.4.1 Release
 04-30-2004	adam.li@intel.com 
 		 - sigqueue/12-1.c: Use setuid() instead of seteuid()
