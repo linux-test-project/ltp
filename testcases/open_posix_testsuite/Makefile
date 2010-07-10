@@ -14,8 +14,6 @@ CRITICAL_MAKEFILES=	$(CRITICAL_CONFORMANCE_MAKEFILE) \
 			$(CRITICAL_FUNCTIONAL_MAKEFILE) \
 			$(CRITICAL_SECTION_MAKEFILE)
 
-# The default expiration delay is 240 seconds
-TIMEOUT_VAL?=		240
 # The default logfile for the tests.
 LOGFILE?=		logfile
 # Subdirectories to traverse down.
