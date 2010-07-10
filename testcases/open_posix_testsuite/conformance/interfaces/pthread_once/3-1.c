@@ -25,11 +25,11 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-/* Global pthread_once_t object */
-pthread_once_t once_control;
-
 /* Keeps track of how many times the init function has been called. */
 int init_flag;
+
+/* Global pthread_once_t object */
+pthread_once_t once_control = PTHREAD_ONCE_INIT;
 
 /* The init function that pthread_once calls */
 void *an_init_func()
@@ -68,7 +68,6 @@ void *an_init_func2()
 int main()
 {
 	pthread_t new_th;
-	once_control = PTHREAD_ONCE_INIT;
 	init_flag=0;
 	
 	/* Create a thread that will execute the first call to pthread_once() */

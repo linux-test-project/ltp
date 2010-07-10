@@ -15,7 +15,6 @@
 #include <sys/wait.h>
 #include <sys/mman.h>
 #include <string.h>
-#include <getopt.h>
 #include <errno.h>
 #include <semaphore.h>
 
@@ -30,8 +29,8 @@ int main(int argc, char *argv[])
 	sem_t *sem_lock;
 	int shared = 1;
 	int value = 1;
-	pid_t pid=0;
-	int i, num=0;
+	pid_t pid = 0;
+	int i, num = 0;
 	char buf[BUF_SIZE];
 	char *c;
 
@@ -40,29 +39,40 @@ int main(int argc, char *argv[])
 	return PTS_UNRESOLVED;
 #endif
 	if ( (2 != argc) || (( num = atoi(argv[1])) <= 0)) {
-		fprintf(stdout, "Usage: %s number_of_processes\n", argv[0]);
-		printf("Set num_of_processes to default value %d \n", DEFAULT_THREADS);
+		printf("Setting num_of_processes to default value: %d\n",
+		    DEFAULT_THREADS);
 		num = DEFAULT_THREADS;
 	}
-	sem_lock = (sem_t *)malloc(sizeof(sem_t));
-	if (-1 == sem_init(sem_lock, shared, value)) {
+	if ((sem_lock = (sem_t *)malloc(sizeof(sem_t))) == NULL) {
+		perror("malloc");
+		return PTS_UNRESOLVED;
+	}
+	if (sem_init(sem_lock, shared, value) == -1) {
 		perror("sem_init didn't return success\n");
 		return PTS_UNRESOLVED;
 	}
-	for (i=1; i<num; i++) 
-		if ((pid = fork())!=0) 
-		{
+	for (i = 1; i < num; i++) 
+		switch ((pid = fork())) {
+		case -1:
+			perror("fork");
+			return PTS_UNRESOLVED;
+		case 0:
+			break;
+		default:
 			sleep(2);
 			break;
 		}
-	sprintf(buf, "%d process_ID:%ld parent_process_ID:%ld child_process_ID:%ld \n", i, (long)getpid(), (long)getppid(), (long)pid);
 
-	if (-1 == sem_wait(sem_lock)) {
+	sprintf(buf, "%d process_ID: %ld parent_process_ID: %ld "
+	    "child_process_ID: %ld\n", i, (long)getpid(),
+	    (long)getppid(), (long)pid);
+
+	if (sem_wait(sem_lock) == -1) {
 		perror("sem_wait didn't return success\n");
 		return PTS_UNRESOLVED;
 	} 
-	for (i = 1; i<= 10; i++) {
-		c=buf;
+	for (i = 1; i <= 10; i++) {
+		c = buf;
 		while (*c != '\n') {
 			fputc(*c, stdout);
 			c++;
@@ -70,7 +80,7 @@ int main(int argc, char *argv[])
 		fputc('\n', stdout); 
 	}
 
-	if (-1 == sem_post(sem_lock)) {
+	if (sem_post(sem_lock) == -1) {
 		perror("sem_wait didn't return success\n");
 		return PTS_UNRESOLVED;
 	} 

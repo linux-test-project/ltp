@@ -9,5 +9,5 @@
 #
 # This is tested implicitly via assertion 6.
 
-echo "Tested implicitly via assertion 6.  Sett output for status."
+echo "Tested implicitly via assertion 6.  Set output for status."
 exit 0

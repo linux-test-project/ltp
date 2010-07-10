@@ -14,9 +14,9 @@
  *
  * @pt:SS
  */
+#include <errno.h>
 #include <sched.h>
 #include <stdio.h>
-#include <errno.h>
 #include <unistd.h>
 #include "posixtest.h"
 
@@ -51,9 +51,19 @@ int main(){
 		printf("This process does not have the permission to set its own scheduling parameter.\nTry to launch this test as root\n");
 		return PTS_UNRESOLVED;
 	} else {
-	        perror("Unknow error");
+	        perror("Unknown error");
        	        return PTS_FAIL;
 	}
 }
 
+#elif _POSIX_SPORADIC_SERVER == -1
+int
+main (void)
+{
+	printf("_POSIX_SPORADIC_SERVER support not available\n");
+	return PTS_UNSUPPORTED;
+}
+
+#else
+#error "_POSIX_SPORADIC_SERVER not defined correctly"
 #endif

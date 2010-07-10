@@ -17,12 +17,13 @@
  *		resources
  */
 
-#include <stdio.h>
-#include <mqueue.h>
-#include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <fcntl.h>
+#include <mqueue.h>
+#include <signal.h>
+#include <stdio.h>
 #include <unistd.h>
 #include "posixtest.h"
 

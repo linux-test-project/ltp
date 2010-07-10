@@ -32,7 +32,7 @@
  
 #define TNAME "mmap/6-6.c"
 
-int main()
+int main(void)
 {
   char tmpfname[256];
   int total_size = 1024; 

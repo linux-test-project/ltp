@@ -27,8 +27,10 @@
  * The are used to output informative text (as a printf).
  */
 
-#include <time.h>
 #include <sys/types.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <time.h>
  
 /* We use a mutex to avoid conflicts in traces */
 static pthread_mutex_t m_trace = PTHREAD_MUTEX_INITIALIZER;
@@ -54,7 +56,7 @@ void output( char * string, ... )
    nw = time(NULL);
    now = localtime(&nw);
    if (now == NULL)
-      printf(ts);
+      printf("%s", ts);
    else
       printf("[%2.2d:%2.2d:%2.2d]", now->tm_hour, now->tm_min, now->tm_sec);
    va_start( ap, string);

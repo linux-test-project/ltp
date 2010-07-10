@@ -11,5 +11,5 @@
 #
 # This is tested implicitly via assertion 1, since a relative timer is used.
 
-echo "Tested implicitly via assertion 1.  Sett output for status."
+echo "Tested implicitly via assertion 1.  Set output for status."
 exit 0

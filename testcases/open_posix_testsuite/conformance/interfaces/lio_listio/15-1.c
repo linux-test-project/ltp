@@ -21,13 +21,15 @@
  */
 
 #define _XOPEN_SOURCE 600
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
-#include <errno.h>
-#include <stdlib.h>
+#include <sys/stat.h>
 #include <aio.h>
-
+#include <errno.h>
+#include <fcntl.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 #include "posixtest.h"
 
 #define TNAME "lio_listio/15-1.c"

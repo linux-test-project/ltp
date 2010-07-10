@@ -13,13 +13,15 @@
 
 #define _XOPEN_SOURCE 600
 
-#include <stdio.h>
-#include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <strings.h>
-#include <semaphore.h>
+#include <fcntl.h>
+#if __linux__
 #include <features.h>
+#endif
+#include <semaphore.h>
+#include <stdio.h>
+#include <strings.h>
 #include <time.h>
 #include <unistd.h>
 #include "posixtest.h"

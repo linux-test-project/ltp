@@ -1,0 +1,101 @@
+#! /bin/sh
+# Copyright (c) 2002, Intel Corporation. All rights reserved.
+# Created by:  inaky.perez-gonzalez REMOVE-THIS AT intel DOT com
+# This file is licensed under the GPLv2 license.  For the full content
+# of this license, see the COPYING file at the top level of this
+# source tree.
+
+usage()
+{
+    cat <<EOF 
+Usage: $(basename "$0") [OPTIONs] DIRECTORY
+
+Lists the tests (source/binary) available from the DIRECTORY directory
+and down.
+
+  --buildonly     List only tests that require building
+  --runnable      List only tests that are executable
+                  If you just want to build a test, but not run it,
+                  do not include a main function into the .c file or
+                  name it something including the "-buildonly" string.
+  --test-tools	  List all test tools that require building.
+  --help          Show this help and exit
+
+Filenames need to follow some standarized format for them to be picked
+up by this tool. This might change in the future. So far, the ones
+picked up are:
+
+NUMBER-NUMBER.c     [requires compilation]
+NUMBER-NUMBER.sh    [does not require compilation]
+NUMBER-buildonly.c  [requires compilation]
+NAME.sh             [does not require compilation]
+
+Note that the [requires compilation] tags will mean that the actual
+test name for TEST.c after compiling will be TEST. Currently it does
+not support TESTs compiled from many different sources.
+
+EOF
+}
+
+mode=
+
+# Go through the cmd line options
+while true
+do
+	case "$1" in
+	"--buildonly")
+		mode="buildonly"
+		shift
+		;;
+	"--runnable")
+		mode="runnable"
+		shift
+		;;
+	"--test-tools")
+		mode="test-tools"
+		shift
+		;;
+	"--help")
+		usage
+		exit 0
+		;;
+	--*)
+		echo  >&2 "Unknown option: $1"
+		usage >&2
+		exit 1
+		;;
+	*)
+		break
+		;;
+	esac
+done
+
+# Simple version right now, just locate all:
+WHERE=${1:-.}
+
+# Need the DIRECTORY arg ...
+if [ ! -d "$WHERE" ]; then
+	echo >&2 "Error: $WHERE: no such directory"
+	exit 1
+elif [ "x$mode" = x ]; then
+	echo >&2 "Error: no options specified"
+	usage >&2
+	exit 1
+fi
+
+case "$mode" in
+buildonly)
+	find "$WHERE" -type f -name "*.c" | grep buildonly
+	;;
+runnable)
+	# XXX (garrcoop): the tools part is a hack to ensure that we don't
+	# waltz down the tools directory and try and build t0 (which doesn't
+	# make sense as it's a tool, not a test). Better criterion needs to
+	# be established for this file.
+	find "$WHERE/conformance" "$WHERE/stress" -type f -name '*[0-9].c' -o -name '[0-9]*-[0-9]*.sh' | grep -v buildonly | grep -v '^./tools'
+	find "$WHERE/functional" -type f -name '*.c'
+	;;
+test-tools)
+	find "$WHERE" -type f -name '*-core.c'
+	;;
+esac

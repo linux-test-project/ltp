@@ -45,7 +45,17 @@ int main()
 		sigaction(SIGTOTEST, &act, 0);
 
 		/* change child's process group id */
+
+		/* 
+		 * XXX: POSIX 1003.1-2001 added setpgrp(2) to BASE, but
+		 * unfortunately BSD has had their own implementations for
+		 * ages for compatibility reasons.
+		 */
+#if __FreeBSD__ || __NetBSD__ || __OpenBSD__
+		setpgrp(0, 0);
+#else
 		setpgrp();
+#endif
 
 		sigpause(SIGABRT);
 

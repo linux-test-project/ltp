@@ -1,13 +1,10 @@
-include Makefile.inc
-SUBDIRS=robust_test pi_test
+#
+# Read COPYING for licensing details.
+#
+# Garrett Cooper, June 2010
+#
 
-.PHONY : all
-
-all:
-	$(foreach SUBDIR,$(SUBDIRS),make -C $(SUBDIR);)
-install:
-	$(foreach SUBDIR,$(SUBDIRS),make -C $(SUBDIR) install;)
-clean:
-	rm -f *~
-	$(foreach SUBDIR,$(SUBDIRS),make -C $(SUBDIR) clean;)
-
+all clean install test:
+	@for dir in `ls -d */Makefile 2>/dev/null | sed -e 's,/Makefile$$,,g'`; do \
+		$(MAKE) -C $$dir $@;						   \
+	done

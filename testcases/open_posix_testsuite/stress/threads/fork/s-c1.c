@@ -50,7 +50,6 @@
 #include <time.h>
 #include <semaphore.h>
 #include <fcntl.h> 
-//#include <assert.h>
 #include <math.h>
 
 /********************************************************************************************/

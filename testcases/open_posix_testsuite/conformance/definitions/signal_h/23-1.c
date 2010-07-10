@@ -9,7 +9,7 @@
 
 typedef void (*(*bsd_signal_test)(int, void (*)(int)))(int);
 
-int dummyfcn (void)
+int main (void)
 {
 	bsd_signal_test dummyvar;
 	dummyvar=bsd_signal;

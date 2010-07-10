@@ -20,10 +20,11 @@
  */
 
 #define _XOPEN_SOURCE 600
-#include <stdio.h>
-#include <unistd.h>
+#include <sys/resource.h>
 #include <aio.h>
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 #include "posixtest.h"
 
 int main()

@@ -9,4 +9,4 @@
 #   Test various methods of adding invalid signals to sigrelse().
 # 
 
-conformance/interfaces/sigrelse/3-core-buildonly.test 2
+conformance/interfaces/sigrelse/3-core.test 2

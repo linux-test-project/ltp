@@ -15,11 +15,18 @@
  * ENOTRECOVERABLE state after unlock. 
  */ 
 
+/*
+ * XXX: pthread_mutexattr_setrobust_np and PTHREAD_MUTEX_ROBUST_NP isn't POSIX.
+ */
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE	1
+#warning "Uses GNU-isms; needs fixing."
+#endif
 #include <pthread.h>
 #include <stdio.h>
-#include <unistd.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 #include "test.h"
 
 #define THREAD_NUM		2	
@@ -48,6 +55,7 @@ void *thread_2(void *arg)
 	            rc, strerror(rc));
 	    exit(UNRESOLVED);
 	}
+#if __linux__
 	rc = pthread_mutex_lock(&mutex);
 	if (rc != EOWNERDEAD)  {
 		EPRINTF("FAIL: pthread_mutex_lock didn't return EOWNERDEAD");
@@ -55,7 +63,7 @@ void *thread_2(void *arg)
 	}
 	DPRINTF(stdout,"Thread 2 lock the mutex and return EOWNERDEAD\n");
 	pthread_mutex_unlock(&mutex);
-	
+
 	rc = pthread_mutex_lock(&mutex);
 	if (rc != EOWNERDEAD) {
 		EPRINTF("FAIL:The mutex shall remain the state EOWNERDEAD "
@@ -63,6 +71,7 @@ void *thread_2(void *arg)
 		pthread_mutex_unlock(&mutex);
 		exit(FAIL);
 	}
+#endif
 	pthread_exit(NULL);
 	return NULL;
 }
@@ -80,6 +89,7 @@ int main()
 			rc, strerror(rc));
 		return UNRESOLVED;
 	}
+#if __linux__
 	rc = pthread_mutexattr_setrobust_np(&attr, 
 			    PTHREAD_MUTEX_ROBUST_NP);
 	if (rc != 0) {
@@ -87,6 +97,7 @@ int main()
 			rc, strerror(rc));
 		return UNRESOLVED;
 	}
+#endif
 	rc = pthread_mutex_init(&mutex, &attr);
 	if (rc != 0) {
 		EPRINTF("UNRESOLVED: pthread_mutex_init %d %s",
