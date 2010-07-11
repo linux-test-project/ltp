@@ -179,7 +179,7 @@ do_test3()
 {
 $trace_logic
    echo "do_test3 $TC "
-   chmod a-w $TCtmp/ascii.sm &
+   chmod a-wx $TCtmp/ascii.sm &
    wait $!
    ls -l $TCtmp/ascii.sm | grep "r--" 
    [ $? -eq 0 ] || end_testcase "Removal of write permissions not honored on ascii.sm"
