@@ -15,10 +15,11 @@
  * For all policy describe in the spec, the test will check the policy and the
  * param of the process after the call of sched_setscheduler.
  */
-#include <sched.h>
+
 #include <errno.h>
-#include <unistd.h>
+#include <sched.h>
 #include <stdio.h>
+#include <unistd.h>
 #include "posixtest.h"
 
 struct unique {

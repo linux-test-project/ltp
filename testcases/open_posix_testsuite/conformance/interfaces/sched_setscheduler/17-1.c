@@ -18,10 +18,11 @@
  *   2. Call sched_setscheduler with invalid args.
  *   3. Check that the policy and priority have not changed.
  */
+
+#include <errno.h>
 #include <sched.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <errno.h>
 #include "posixtest.h"
 
 struct unique {
@@ -121,4 +122,3 @@ int main(){
 	}
 	return result;
 }
-

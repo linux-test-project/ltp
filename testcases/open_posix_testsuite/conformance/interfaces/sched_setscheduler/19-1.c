@@ -13,10 +13,11 @@
  *
  * Test is done for all policy defined in the spec into a loop.
  */
+
+#include <errno.h>
 #include <sched.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <errno.h>
 #include "posixtest.h"
 
 struct unique {
@@ -92,4 +93,3 @@ int main(){
 	}
 	return result;
 }
-
