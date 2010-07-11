@@ -40,6 +40,8 @@ clean: $(CRITICAL_MAKEFILES)
 	    $(MAKE) -C $$dir clean >/dev/null; \
 	done
 
+distclean: distclean-makefiles
+
 # Clean out all of the generated Makefiles.
 distclean-makefiles:
 	@for dir in $(SUBDIRS); do \
