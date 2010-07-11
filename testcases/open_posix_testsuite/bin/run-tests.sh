@@ -93,7 +93,13 @@ fi
 
 SCRIPT_DIR=`dirname "$0"`
 TEST_PATH=$1; shift
+T0=$SCRIPT_DIR/t0
 T0_VAL=$SCRIPT_DIR/t0.val
+
+if [ ! -x $T0 ]; then
+	echo >&2 "ERROR: $T0 doesn't exist / isn't executable"
+	exit 1
+fi
 
 if [ ! -f "$T0_VAL" ]; then
 	$SCRIPT_DIR/t0 0
