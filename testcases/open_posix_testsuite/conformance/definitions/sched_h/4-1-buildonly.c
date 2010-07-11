@@ -18,7 +18,7 @@
 #include <sched.h>
 #include <unistd.h>
 
-#ifdef _POSIX_THREAD_SPORADIC_SERVER
+#if defined(_POSIX_SPORADIC_SERVER) && _POSIX_SPORADIC_SERVER != -1
 
 struct sched_param s;
 
