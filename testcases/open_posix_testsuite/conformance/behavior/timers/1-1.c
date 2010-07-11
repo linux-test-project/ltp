@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 	scTIMER_MAX=sysconf(_SC_TIMER_MAX);
 
 	for (i=0; i<scTIMER_MAX;i++) {
-		if (timer_create(CLOCK_REALTIME, NULL, &tid) != 0) {
+		if (timer_create(CLOCK_REALTIME, NULL, &tid) == -1) {
 			perror("timer_create() did not return success");
 			return PTS_FAIL;
 		}
