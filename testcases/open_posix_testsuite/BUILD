@@ -22,13 +22,24 @@ FREEBSD
 =======
 
 ================
+Asynchronous I/O
+================
+Realtime asynchronous I/O has been available in FreeBSD since 5.x. Please add:
+
+options		VFS_AIO
+
+to your kernel conf or build, install, and load the aio module.
+
+================
 Message Queues
 ================
 POSIX message queues have been available in FreeBSD since 6.x. Please add:
 
 options		P1003_1B_MQUEUE 
 
-to your kernel conf or build, install, and load the mqueue module.
+to your kernel conf or build and install the mqueue module, and load it with:
+
+kldload mqueuefs
 
 ================
 Realtime Support
