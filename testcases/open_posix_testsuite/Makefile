@@ -28,7 +28,7 @@ TEST_MAKE_ENV=		$(MAKE_ENV)
 
 BUILD_MAKE=		env $(BUILD_MAKE_ENV) $(MAKE)
 
-TEST_MAKE=		env $(TEST_MAKE_ENV) $(MAKE)
+TEST_MAKE=		env $(TEST_MAKE_ENV) $(MAKE) -k
 
 top_srcdir?=		.
 
