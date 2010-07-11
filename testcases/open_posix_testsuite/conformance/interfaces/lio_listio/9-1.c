@@ -48,9 +48,8 @@ int main()
 	int ret;
 	int i;
 
-#if _POSIX_ASYNCHRONOUS_IO != 200112L
-	exit(PTS_UNSUPPORTED);
-#endif
+	if (sysconf(_SC_ASYNCHRONOUS_IO) != 200112L)
+		exit(PTS_UNSUPPORTED);
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_lio_listio_9_1_%d", 
 		  getpid());

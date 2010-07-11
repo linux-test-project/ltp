@@ -23,16 +23,15 @@
  */
 
 #define _XOPEN_SOURCE 600
-#include <stdio.h>
-#include <sys/types.h>
-#include <unistd.h>
 #include <sys/stat.h>
-#include <fcntl.h>
-#include <string.h>
-#include <errno.h>
-#include <stdlib.h>
+#include <sys/types.h>
 #include <aio.h>
-
+#include <errno.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 #include "posixtest.h"
 
 #define NUM_AIOCBS	3
@@ -52,10 +51,8 @@ int main()
 	int err;
 	int i;
 
-
-#if _POSIX_ASYNCHRONOUS_IO != 200112L
-	exit(PTS_UNSUPPORTED);
-#endif
+	if (sysconf(_SC_ASYNCHRONOUS_IO) != 200112L)
+		exit(PTS_UNSUPPORTED);
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_lio_listio_4_1_%d", 
 		  getpid());

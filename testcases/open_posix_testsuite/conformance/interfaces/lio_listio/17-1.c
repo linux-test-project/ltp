@@ -15,9 +15,7 @@
 
 int main()
 {
-#if _POSIX_ASYNCHRONOUS_IO != 200112L
-	exit(PTS_UNSUPPORTED);
-#else
+	if (sysconf(_SC_ASYNCHRONOUS_IO) != 200112L)
+		exit(PTS_UNSUPPORTED);
 	exit(PTS_UNTESTED);
-#endif
 }

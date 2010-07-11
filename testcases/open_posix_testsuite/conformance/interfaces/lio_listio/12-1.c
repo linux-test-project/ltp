@@ -29,7 +29,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
 #include "posixtest.h"
 
 #define TNAME "lio_listio/12-1.c"
@@ -49,9 +48,8 @@ int main()
 	int err;
 	int i;
 
-#if _POSIX_ASYNCHRONOUS_IO != 200112L
-	exit(PTS_UNSUPPORTED);
-#endif
+	if (sysconf(_SC_ASYNCHRONOUS_IO) != 200112L)
+		exit(PTS_UNSUPPORTED);
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_lio_listio_12_1_%d", 
 		  getpid());

@@ -34,9 +34,9 @@
 
 int main()
 {
-#if _POSIX_ASYNCHRONOUS_IO != 200112L
-	exit(PTS_UNSUPPORTED);
-#endif
+
+	if (sysconf(_SC_ASYNCHRONOUS_IO) != 200112L)
+		exit(PTS_UNSUPPORTED);
 
 #ifndef LIO_READ
 	printf(TNAME " LIO_READ not defined\n");

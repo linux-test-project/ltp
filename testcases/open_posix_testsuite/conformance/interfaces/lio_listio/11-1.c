@@ -66,9 +66,8 @@ int main()
 	int err;
 	int i;
 
-#if _POSIX_ASYNCHRONOUS_IO != 200112L
-	exit(PTS_UNSUPPORTED);
-#endif
+	if (sysconf(_SC_ASYNCHRONOUS_IO) != 200112L)
+		exit(PTS_UNSUPPORTED);
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_lio_listio_11_1_%d", 
 		  getpid());
@@ -145,7 +144,7 @@ int main()
 	}
 
 	if (errno != EIO) {
-		printf(TNAME " lio_listio() sould set errno to EIO %d\n", errno);
+		printf(TNAME " lio_listio() should set errno to EIO %d\n", errno);
 
 		for (i=0; i<NUM_AIOCBS; i++)
 			free (aiocbs[i]);

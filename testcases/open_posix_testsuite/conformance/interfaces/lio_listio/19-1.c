@@ -7,17 +7,13 @@
  */
 
 #define _XOPEN_SOURCE 600
-#include <aio.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include "posixtest.h"
 
 int main(void)
 {
-#if _POSIX_ASYNCHRONOUS_IO != 200112L
-	exit(PTS_UNSUPPORTED);
-#else
+	if (sysconf(_SC_ASYNCHRONOUS_IO) != 200112L)
+		exit(PTS_UNSUPPORTED);
 	exit(PTS_UNTESTED);
-#endif
 }

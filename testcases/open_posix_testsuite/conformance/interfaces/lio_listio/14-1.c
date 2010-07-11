@@ -66,9 +66,8 @@ int main()
 	int err;
 	int i;
 
-#if _POSIX_ASYNCHRONOUS_IO != 200112L
-	exit(PTS_UNSUPPORTED);
-#endif
+	if (sysconf(_SC_ASYNCHRONOUS_IO) != 200112L)
+		exit(PTS_UNSUPPORTED);
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_lio_listio_14_1_%d", 
 		  getpid());
@@ -95,8 +94,14 @@ int main()
 	/* Queue up a bunch of aio writes */
 	for (i = 0; i < NUM_AIOCBS; i++) {
 
-		aiocbs[i] = (struct aiocb *)malloc(sizeof(struct aiocb));
-		memset(aiocbs[i], 0, sizeof(struct aiocb));
+		aiocbs[i] = (struct aiocb *)calloc(sizeof(struct aiocb), 1);
+		if (aiocbs == NULL) {
+			printf (TNAME " Error at malloc(): %s\n",
+			    strerror (errno));
+			free(bufs);
+			close (fd);
+			exit(PTS_UNRESOLVED);
+		}
 
 		if (i == 2)
 			aiocbs[i]->aio_fildes = -1;
@@ -147,7 +152,7 @@ int main()
 	while (received_all == 0)
 		sleep (1);
 
-	if (num_received != NUM_AIOCBS-1) {
+	if (num_received != NUM_AIOCBS) {
 		printf(TNAME " Error incomplete number of completed requests\n");
 
 		for (i=0; i<NUM_AIOCBS; i++)
