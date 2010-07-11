@@ -13,6 +13,10 @@ In general, when calling *make:
   set the value via CFLAGS.
 - If you need to pass in any libraries for linking, set the value via LDLIBS.
 - If you need to pass any other values to the linker, set the value via LDFLAGS.
+- Each subdirectory optionally contains one of the above files to denote the
+  fact that it needs special linker flags, preprocessor defines, etc. This is
+  done in this fashion to ensure that the requirements for each subdirectory is
+  correctly tuned in a deterministic manner.
 
 FREEBSD
 =======
