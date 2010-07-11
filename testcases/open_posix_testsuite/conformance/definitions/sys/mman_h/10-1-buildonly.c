@@ -15,6 +15,9 @@
  */
 
 #include <sys/mman.h>
+#include <unistd.h>
+
+#if defined(_POSIX_TYPED_MEMORY_OBJECTS) && _POSIX_TYPED_MEMORY_OBJECTS != -1
 
 struct posix_typed_mem_info this_type_should_exist, t;
 
@@ -26,3 +29,5 @@ int dummyfcn(void)
 
 	return 0;
 }
+
+#endif
