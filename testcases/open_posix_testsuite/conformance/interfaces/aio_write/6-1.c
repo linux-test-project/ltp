@@ -39,9 +39,8 @@ int main()
 {
 	struct aiocb aiocb;
 
-#if _POSIX_ASYNCHRONOUS_IO != 200112L
-	exit(PTS_UNSUPPORTED);
-#endif
+	if (sysconf(_SC_ASYNCHRONOUS_IO) != 200112L)
+		return PTS_UNSUPPORTED;
 
 	/* submit a request with a NULL buffer */
 	aiocb.aio_fildes = 0;

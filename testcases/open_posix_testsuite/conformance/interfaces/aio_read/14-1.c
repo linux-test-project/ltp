@@ -10,7 +10,7 @@
  * assertion:
  *
  * The error status of a succesfully queued operation shall be:
- * [EINVAL] if aio_offset woud be invalid, or aio_reqprio is not a valid
+ * [EINVAL] if aio_offset would be invalid, or aio_reqprio is not a valid
  * value, or aio_nbytes is an invalid value.
  *
  * method:
@@ -20,19 +20,13 @@
  */
 
 #define _XOPEN_SOURCE 600
-#include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
-#include <aio.h>
-
 #include "posixtest.h"
-
-#define TNAME "aio_read/14-1.c"
 
 int main()
 {
-#if _POSIX_ASYNCHRONOUS_IO != 200112L
-	exit(PTS_UNSUPPORTED);
-#endif
-
-	return PTS_UNTESTED;
+	if (sysconf(_SC_ASYNCHRONOUS_IO) != 200112L)
+		exit(PTS_UNSUPPORTED);
+	exit(PTS_UNTESTED);
 }

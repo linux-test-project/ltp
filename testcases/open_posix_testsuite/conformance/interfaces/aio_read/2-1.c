@@ -18,24 +18,14 @@
  */
 
 #define _XOPEN_SOURCE 600
-#include <stdio.h>
-#include <unistd.h>
 #include <stdlib.h>
-#include <aio.h>
-
+#include <unistd.h>
 #include "posixtest.h"
-
-#define TNAME "aio_read/2-1.c"
 
 int main()
 {
-#if _POSIX_ASYNCHRONOUS_IO != 200112L
-	exit(PTS_UNSUPPORTED);
-#endif
-
-#ifndef _POSIX_PRIORITIZED_IO
-	exit(PTS_UNSUPPORTED);
-#endif
-
-	return PTS_UNTESTED;
+	if (sysconf(_SC_ASYNCHRONOUS_IO) != 200112L ||
+	    sysconf(_SC_PRIORITIZED_IO) != 200112L)
+		exit(PTS_UNSUPPORTED);
+	exit(PTS_UNTESTED);
 }

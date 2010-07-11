@@ -16,23 +16,16 @@
  *
  *	UNTESTED
  */
-#define _XOPEN_SOURCE 600
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <aio.h>
 
+#define _XOPEN_SOURCE 600
+#include <stdlib.h>
+#include <unistd.h>
 #include "posixtest.h"
 
 int main()
 {
-#if _POSIX_ASYNCHRONOUS_IO != 200112L
-	exit(PTS_UNSUPPORTED);
-#endif
-
-#if _POSIX_MONOTONIC_CLOCK == 0
-	exit(PTS_UNSUPPORTED);
-#endif
-
-	return PTS_UNTESTED;
+	if (sysconf(_SC_ASYNCHRONOUS_IO) != 200112L ||
+	    sysconf(_SC_MONOTONIC_CLOCK) != 200112L)
+		exit(PTS_UNSUPPORTED);
+	exit(PTS_UNTESTED);
 }

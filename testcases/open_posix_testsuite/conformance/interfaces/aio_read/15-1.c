@@ -20,25 +20,13 @@
  */
 
 #define _XOPEN_SOURCE 600
-#include <sys/resource.h>
-#include <aio.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include "posixtest.h"
 
 int main()
 {
-	char tmpfname[256];
-#define BUF_SIZE 1024
-	char buf[BUF_SIZE];
-	int fd;
-	struct aiocb aiocb;
-	struct rlimit limit;
-
-#if _POSIX_ASYNCHRONOUS_IO != 200112L
-	exit(PTS_UNSUPPORTED);
-#endif
-
-	return PTS_UNTESTED;
+	if (sysconf(_SC_ASYNCHRONOUS_IO) != 200112L)
+		exit(PTS_UNSUPPORTED);
+	exit(PTS_UNTESTED);
 }
