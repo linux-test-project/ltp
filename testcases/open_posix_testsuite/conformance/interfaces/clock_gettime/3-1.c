@@ -20,14 +20,14 @@ int main(int argc, char *argv[])
 {
 #ifdef CLOCK_MONOTONIC
 
+	struct timespec ts1, ts2, ts3, ts4;
+
 	/* Test that MONOTONIC CLOCK functionality really exists */
-	 if(sysconf(_SC_MONOTONIC_CLOCK) == -1)
-         {
+	if(sysconf(_SC_MONOTONIC_CLOCK) == -1)
+	{
 	 	printf("CLOCK_MONOTONIC unsupported\n");
 		return PTS_UNSUPPORTED;
 	}
-	 
-	struct timespec ts1, ts2, ts3, ts4;
 
 	if (clock_gettime(CLOCK_MONOTONIC, &ts1) != 0) {
 		printf("clock_gettime() failed\n");
