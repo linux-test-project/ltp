@@ -52,7 +52,7 @@ run_test() {
 
 	if [ "$ret_code" = "0" ]; then
 		echo "$testname: execution: PASS" >> "${LOGFILE}"
-	else
+	elif [ -f "$1" ]; then
 		case "$ret_code" in
 		1)
 			msg="FAILED"
@@ -75,6 +75,8 @@ run_test() {
 		echo "$testname: execution: $msg: Output: " >> "${LOGFILE}"
 		cat $complog >> "${LOGFILE}"
 		echo "$testname: execution: $msg "
+	else
+		echo "$testname: execution: SKIPPED (test not present)"
 	fi
 
 	rm -f $complog
