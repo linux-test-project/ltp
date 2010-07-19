@@ -143,7 +143,6 @@ install: \$(INSTALL_DIR) run.sh
 	done
 
 test: run.sh
-	@chmod +x run.sh
 	@./run.sh
 
 \$(INSTALL_DIR):
@@ -158,6 +157,7 @@ EOF
 run.sh:
 	@echo '#/bin/sh' > \$@
 	@echo "\$(top_srcdir)/bin/run-tests.sh \$(subdir) $tests" >> \$@
+	@chmod +x run.sh
 
 EOF
 	fi
