@@ -94,7 +94,7 @@ test suite. The available groups are:
 
 You can run the tests by executing:
 
-	bin/run-posix-option-group.sh [OPTION-GROUP]
+	bin/run-posix-option-group-test.sh [OPTION-GROUP]
 
 or run all of the tests by executing:
 
