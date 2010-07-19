@@ -83,8 +83,9 @@ top_srcdir?=		`echo "$prereq_dir" | sed -E -e 's,[^/]+,\.\.,g'`
 subdir=			$prereq_cache_dir
 srcdir=			\$(top_srcdir)/\$(subdir)
 
-EXEC_PREFIX=		$EXEC_PREFIX
-INSTALL_DIR=		\$(DESTDIR)/\$(EXEC_PREFIX)/\$(subdir)
+prefix?=		$PREFIX
+exec_prefix?=		\$(prefix)
+INSTALL_DIR=		\$(DESTDIR)/\$(exec_prefix)/\$(subdir)
 LOGFILE?=		logfile
 
 # Build variables
