@@ -7,4 +7,4 @@ else
 	DEFAULT_PREFIX=/usr/local
 fi
 
-echo ${PREFIX:=$DEFAULT_PREFIX/openposix_testsuite}
+echo ${prefix:=$DEFAULT_PREFIX/openposix_testsuite}
