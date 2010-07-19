@@ -32,7 +32,11 @@ int is_empty(sigset_t *set) {
                 SIGCONT, SIGFPE, SIGHUP, SIGILL, SIGINT,
                 SIGPIPE, SIGQUIT, SIGSEGV,
                 SIGTERM, SIGTSTP, SIGTTIN, SIGTTOU,
-                SIGUSR1, SIGUSR2, SIGPOLL, SIGPROF, SIGSYS,
+                SIGUSR1, SIGUSR2,
+#ifdef SIGPOLL
+		SIGPOLL,
+#endif
+		SIGPROF, SIGSYS,
                 SIGTRAP, SIGURG, SIGVTALRM, SIGXCPU, SIGXFSZ };
 
         for (i=0; i<NUMSIGNALS; i++) {
@@ -52,7 +56,10 @@ int main()
 	sigset_t mask;
 	sigemptyset(&mask);
 
-	sigprocmask(SIG_SETMASK, &mask, NULL);
+	if (sigprocmask(SIG_SETMASK, &mask, NULL) == -1) {
+		perror("sigprocmask(SIG_SETMASK, &mask, NULL) failed");
+		return PTS_UNRESOLVED;
+	}
 
 	if (sigset(SIGCHLD, myhandler) == SIG_ERR) {
                 perror("Unexpected error while using sigset()");
