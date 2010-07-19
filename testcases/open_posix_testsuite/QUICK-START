@@ -32,11 +32,11 @@ Running the tests
   - make generate-makefiles
   - cd conformance/interfaces/pthread_create ; make all test
 
-* Running tests for a specific focus is currently unavailable (but will be made
-  available again soon).
+* Running tests for a specific focus can be done like so:
+  run-posix-option-group-test.sh [OPTION-GROUP]
 
 * For additional information on how to build and run the tests in this
-suite, see Documentation/HOWTO_RunTests.
+  suite, see Documentation/HOWTO_RunTests.
 
 ==========================
 Documentation & Resources

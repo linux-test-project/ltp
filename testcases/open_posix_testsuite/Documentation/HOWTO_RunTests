@@ -77,6 +77,32 @@ To make only functional tests, run:
 To make only stress tests, run:
     # make stress-all
 
+4. Running POSIX Option Group Feature Tests
+-----------------------------------------------------
+
+There are several POSIX option groups available that can be tested with this
+test suite. The available groups are:
+
+	AIO	| Asynchonous I/O
+	MEM	| Memory
+	MSG	| IPC
+	SEM	| Semaphores
+	SIG	| Signals
+	THR	| Threading
+	TMR	| Timers
+	TPS	| Thread Execution Scheduling
+
+You can run the tests by executing:
+
+	bin/run-posix-option-group.sh [OPTION-GROUP]
+
+or run all of the tests by executing:
+
+	bin/run-all-posix-option-group-tests.sh
+
+More details about these features can be found on the OpenGroup site
+(http://www.opengroup.org).
+
 Contributors:	rusty.lynch REMOVE-THIS AT intel DOT com
 		julie.n.fleischer REMOVE-THIS AT intel DOT com
 		rolla.n.selbak REMOVE-THIS AT intel DOT com
