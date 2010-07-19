@@ -32,6 +32,12 @@ TEST_MAKE=		env $(TEST_MAKE_ENV) $(MAKE) -k
 
 top_srcdir?=		.
 
+prefix?=		`$(top_srcdir)/scripts/print_prefix.sh`
+
+datadir?=		$(prefix)/share
+
+exec_prefix?=		$(prefix)
+
 all: conformance-all functional-all stress-all tools-all
 
 clean: $(CRITICAL_MAKEFILES) 
