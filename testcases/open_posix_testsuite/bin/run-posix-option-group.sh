@@ -7,12 +7,12 @@
 #
 # Use to build and run tests for a specific area
 
-BASEDIR=conformance/interfaces
+BASEDIR="$(dirname "$0")/../conformance/interfaces"
 
 usage()
 {
     cat <<EOF 
-Usage: $0 [AIO|MEM|MSG|SEM|SIG|THR|TMR|TPS]
+usage: $(basename "$0") [AIO|MEM|MSG|SEM|SIG|THR|TMR|TPS]
 
 Build and run the tests for POSIX area specified by the 3 letter tag
 in the POSIX spec
@@ -20,57 +20,57 @@ in the POSIX spec
 EOF
 }
 
-runtests()
+run_option_group_tests()
 {
-	for test in `ls -d $1`; do
-		POSIX_TARGET=$test make build-tests
-		POSIX_TARGET=$test make run-tests
+	set -x
+	for test_script in $(find $1 -name run.sh); do
+		(cd "$(dirname "$test_script")" && ./$(basename "$test_script"))
 	done
 }
 
 case $1 in
 AIO)
 	echo "Executing asynchronous I/O tests"
-	runtests "$BASEDIR/aio_*"
-	runtests "$BASEDIR/lio_listio"
+	run_option_group_tests "$BASEDIR/aio_*"
+	run_option_group_tests "$BASEDIR/lio_listio"
 	;;
 SIG)
 	echo "Executing signals tests"
-	runtests "$BASEDIR/sig*"
-	runtests $BASEDIR/raise
-	runtests $BASEDIR/kill
-	runtests $BASEDIR/killpg
-	runtests $BASEDIR/pthread_kill
-	runtests $BASEDIR/pthread_sigmask
+	run_option_group_tests "$BASEDIR/sig*"
+	run_option_group_tests $BASEDIR/raise
+	run_option_group_tests $BASEDIR/kill
+	run_option_group_tests $BASEDIR/killpg
+	run_option_group_tests $BASEDIR/pthread_kill
+	run_option_group_tests $BASEDIR/pthread_sigmask
 	;;
 SEM)
 	echo "Executing semaphores tests"
-	runtests "$BASEDIR/sem*"
+	run_option_group_tests "$BASEDIR/sem*"
 	;;
 THR)
 	echo "Executing threads tests"
-	runtests "$BASEDIR/pthread_*"
+	run_option_group_tests "$BASEDIR/pthread_*"
 	;;
 TMR)
 	echo "Executing timers and clocks tests"
-	runtests "$BASEDIR/time*"
-	runtests "$BASEDIR/*time"
-	runtests "$BASEDIR/clock*"
-	runtests $BASEDIR/nanosleep
+	run_option_group_tests "$BASEDIR/time*"
+	run_option_group_tests "$BASEDIR/*time"
+	run_option_group_tests "$BASEDIR/clock*"
+	run_option_group_tests $BASEDIR/nanosleep
 	;;
 MSG)
 	echo "Executing message queues tests"
-	runtests "$BASEDIR/mq_*"
+	run_option_group_tests "$BASEDIR/mq_*"
 	;;
 TPS)
 	echo "Executing process and thread scheduling tests"
-	runtests "$BASEDIR/*sched*"
+	run_option_group_tests "$BASEDIR/*sched*"
 	;;
 MEM)
 	echo "Executing mapped, process and shared memory tests"
-	runtests "$BASEDIR/m*lock*"
-	runtests "$BASEDIR/m*map"
-	runtests "$BASEDIR/shm_*"
+	run_option_group_tests "$BASEDIR/m*lock*"
+	run_option_group_tests "$BASEDIR/m*map"
+	run_option_group_tests "$BASEDIR/shm_*"
 	;;
 *)
 	usage
