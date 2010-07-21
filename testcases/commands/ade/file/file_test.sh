@@ -556,7 +556,7 @@ file $bDIR/SRPMS/cprog-0.0.7-3.src.rpm > $LTPTMP/file.out 2>&1
 
 if [ $? -eq 0 ]
 then
-    grep "RPM v3 src" $LTPTMP/file.out > /dev/null 2>&1
+    grep -E "RPM v3(\.0)? src" $LTPTMP/file.out > /dev/null 2>&1
     if [ $? -eq 0 ]
     then
         $LTPBIN/tst_resm TPASS "file: Recognised RPM file correctly"
