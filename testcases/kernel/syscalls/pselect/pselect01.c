@@ -141,8 +141,8 @@ int main()
 		real_nsec = (tv_end.tv_sec - tv_start.tv_sec) * 1e9 +
 			tv_end.tv_nsec - tv_start.tv_nsec;
 
-		/* allow 10% error*/
-		if (abs(real_nsec - tv.tv_nsec) < 0.1 * total_nsec)
+		/* allow 20% error*/
+		if (abs(real_nsec - tv.tv_nsec) < 0.2 * total_nsec)
 			tst_resm(TPASS, "Sleep time was correct");
 		else {
 			tst_resm(TWARN,
