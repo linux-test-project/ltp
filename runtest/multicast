@@ -3,6 +3,6 @@
 # PLEASE READ THE README FILE IN /multicast BEFORE RUNNING THESE.
 #
 mc_cmds mc_cmds
-mc_commo export TCsrc=$LTPROOT/testcases/network/multicast/mc_commo; mc_commo
-mc_member export TCsrc=$LTPROOT/testcases/network/multicast/mc_member; mc_member
-mc_opts export TCsrc=$LTPROOT/testcases/network/multicast/mc_opts; mc_opts
+mc_commo export TCsrc=$LTPROOT/testcases/bin; mc_commo
+mc_member export TCsrc=$LTPROOT/testcases/bin; mc_member
+mc_opts export TCsrc=$LTPROOT/testcases/bin; mc_opts
