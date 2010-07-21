@@ -57,7 +57,7 @@ setup()
   mkdir -p $TCtmp
   for i in $EXECUTABLES
   do
-    install -m 0755 "$LTPROOT/$i" "$TCtmp/."
+    install -m 0755 "$LTPROOT/testcases/bin/$i" "$TCtmp/."
   done
 }
 
