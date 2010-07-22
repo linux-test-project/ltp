@@ -66,7 +66,8 @@ int main()
 	int retval;
 	struct timespec tv, tv_start, tv_end;
 	long real_nsec, total_nsec;
-	int real_sec, total_sec;
+	double real_sec;
+	int total_sec;
 
 	setup();
 
@@ -107,14 +108,14 @@ int main()
 			    NULL);
 		clock_gettime(CLOCK_REALTIME, &tv_end);
 
-		/* do a rounding */
-		real_sec = (int)(0.5 + (tv_end.tv_sec - tv_start.tv_sec + 
-				1e-9 * (tv_end.tv_nsec - tv_start.tv_nsec)));
-		if (real_sec == total_sec)
-			tst_resm(TPASS, "Sleep time was correct");
+		real_sec = (0.5 + (tv_end.tv_sec - tv_start.tv_sec + 
+			    1e-9 * (tv_end.tv_nsec - tv_start.tv_nsec)));
+		if (abs(real_sec - total_sec) < 0.2 * total_sec)
+			tst_resm(TPASS, "Sleep time was correct "
+				"(%lf/%d < 20 %%)", real_sec, total_sec);
 		else
-			tst_resm(TFAIL, "Sleep time was incorrect:%d != %d",
-				 total_sec, real_sec);
+			tst_resm(TFAIL, "Sleep time was incorrect (%lf/%lf "
+				">= 20%%)", total_sec, real_sec);
 	}
 
 #ifdef DEBUG
