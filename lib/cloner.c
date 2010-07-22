@@ -59,6 +59,13 @@ ltp_clone(unsigned long clone_flags, int (*fn)(void *arg), void *arg,
 	ret = clone(fn, stack, clone_flags, arg);
 #elif defined(__ia64__)
 	ret = clone2(fn, stack, stack_size, clone_flags, arg, NULL, NULL, NULL);
+#elif defined(__arm__)
+	/*
+	 * Stack size should be a multiple of 32 bit words
+	 * & stack limit must be aligned to a 32 bit boundary
+	 */
+	ret = clone(fn, (stack ? stack + stack_size : NULL),
+			clone_flags, arg);
 #else
 	ret = clone(fn, (stack ? stack + stack_size - 1 : NULL),
 			clone_flags, arg);
