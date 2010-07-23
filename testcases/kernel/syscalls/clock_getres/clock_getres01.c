@@ -327,7 +327,7 @@ int main(int ac, char **av) {
 				break;
 
 			default:
-		 	   	tst_resm(TFAIL | TERRNO, "%s failed", TCID);
+		 	   	tst_resm(TFAIL, "%s failed", TCID);
 				RPRINTF("NG\n");
 				cleanup();
 				tst_exit();
