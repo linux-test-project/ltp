@@ -1,4 +1,4 @@
-/*   
+/*
  * Copyright (c) 2002, Intel Corporation. All rights reserved.
  * Created by:  bing.wei.liu REMOVE-THIS AT intel DOT com
  * This file is licensed under the GPL license.  For the full content
@@ -10,7 +10,7 @@
  * Gets the priority ceiling attribute of a mutexattr object (which was prev. created
  * by the function pthread_mutexattr_init()).
  *
- * Steps:i
+ * Steps:
  * 1.  Initialize a pthread_mutexattr_t object with pthread_mutexattr_init()
  * 2.  Call pthread_mutexattr_getprioceiling() to obtain the prioceiling.
  * 
@@ -19,7 +19,14 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <sched.h>
+#include <string.h>
 #include "posixtest.h"
+
+static void
+print_pthread_error(const char *fname, int ret)
+{
+	printf("Unexpected error at %s(): %s\n", fname, strerror(ret));
+}
 
 int main()
 {
@@ -30,31 +37,37 @@ int main()
 	  return PTS_UNRESOLVED;	
 	#endif */
 
-	pthread_mutexattr_t mta;
-	int prioceiling, max_prio, min_prio;
-	
+	pthread_mutexattr_t ma;
+	int prioceiling, max_prio, min_prio, ret;
+
 	/* Initialize a mutex attributes object */
-	if(pthread_mutexattr_init(&mta) != 0)
-	{
-		perror("Error at pthread_mutexattr_init()\n");
+	ret = pthread_mutexattr_init(&ma);
+	if (ret != 0) {
+		print_pthread_error("pthread_mutexattr_init", ret);
 		return PTS_UNRESOLVED;
 	}
-	
+
+	ret = pthread_mutexattr_setprotocol(&ma, PTHREAD_PRIO_PROTECT);
+	if (ret != 0) {
+		print_pthread_error("pthread_mutexattr_protocol", ret);
+		return PTS_UNRESOLVED;
+	}
+
 	/* Get the prioceiling mutex attr. */
-	if(pthread_mutexattr_getprioceiling(&mta, &prioceiling) != 0)
-	{
-		fprintf(stderr,"Error obtaining the attribute process-shared\n");
+	ret = pthread_mutexattr_getprioceiling(&ma, &prioceiling);
+	if (ret != 0) {
+		print_pthread_error("pthread_mutexattr_getprioceiling", ret);
 		return PTS_UNRESOLVED;
 	}
 	
-	/* Get the max and min prio according to SCHED_FIFO (posix scheduling policy) */
+	/* Get the max and min according to SCHED_FIFO */
 	max_prio = sched_get_priority_max(SCHED_FIFO);
 	min_prio = sched_get_priority_min(SCHED_FIFO);
 
-	/* Make sure that prioceiling is withing the legal SCHED_FIFO boundries. */
+	/* Ensure that prioceiling is within legal limits. */
 	if((prioceiling < min_prio) || (prioceiling > max_prio))
 	{
-		printf("Test FAILED: Default prioceiling %d is not compliant with SCHED_FIFO boundry. \n", prioceiling);
+		printf("Test FAILED: Default prioceiling %d is not compliant with SCHED_FIFO boundary.\n", prioceiling);
 		return PTS_FAIL;
 	}
 
