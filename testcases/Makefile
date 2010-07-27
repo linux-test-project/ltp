@@ -40,14 +40,20 @@ ifneq ($(UCLINUX),1)
 FILTER_OUT_DIRS		+= audit-test DOTS realtime
 endif
 
+#
+# XXX (garrcoop): disabling the open_posix_testsuite by request from Subrata
+# due to build times (open_posix_testsuite runs serially by design to
+# deterministically catch build errors -- see
+# testcases/open_posix_testsuite/Makefile for more details).
+#
+#trunk-all: open_posix_testsuite-all
+#
+#trunk-clean:: open_posix_testsuite-clean
+#
+#trunk-install: open_posix_testsuite-install
+
 open_posix_testsuite:
 	mkdir -p $@
-
-trunk-all: open_posix_testsuite-all
-
-trunk-clean:: open_posix_testsuite-clean
-
-#trunk-install: open_posix_testsuite-install
 
 open_posix_testsuite-%: open_posix_testsuite
 	$(MAKE) -C $^ top_srcdir=$(abs_top_srcdir)/testcases/$^ $*
