@@ -52,44 +52,48 @@ int main()
 	
 	/* printf("stack_size = %lu\n", stack_size); */
 
-	if (posix_memalign (&saddr, sysconf(_SC_PAGE_SIZE), 
-            stack_size) != 0)
+	rc = posix_memalign (&saddr, sysconf(_SC_PAGE_SIZE), stack_size);
+
+	if (rc != 0)
     	{
-      		perror (ERROR_PREFIX "out of memory while "
-                        "allocating the stack memory");
+      		printf (ERROR_PREFIX "out of memory while "
+                        "allocating the stack memory: %s", strerror(rc));
       		exit(PTS_UNRESOLVED);
     	}
 
 	rc = pthread_attr_setstacksize(&attr, stack_size);
-        if (rc != 0 ) {
-                perror(ERROR_PREFIX "pthread_attr_setstacksize");
+        if (rc != 0) {
+                printf(ERROR_PREFIX "pthread_attr_setstacksize: %s",
+			strerror(rc));
                 exit(PTS_UNRESOLVED);
         }
 
 	rc = pthread_attr_getstacksize(&attr, &ssize);
         if (rc != 0 ) {
-                perror(ERROR_PREFIX "pthread_attr_getstacksize");
+                printf(ERROR_PREFIX "pthread_attr_getstacksize: %s",
+			strerror(rc));
                 exit(PTS_UNRESOLVED);
         }
 	/* printf("stack_size = %lu\n", ssize); */
 
 	rc = pthread_create(&new_th, &attr, thread_func, NULL);
 	if (rc !=0 ) {
-		perror(ERROR_PREFIX "failed to create a thread");
+		printf(ERROR_PREFIX "failed to create a thread: %s",
+			strerror(rc));
                 exit(PTS_FAIL);
         }
 
 	rc = pthread_join(new_th, NULL);
 	if(rc != 0)
         {
-                perror(ERROR_PREFIX "pthread_join");
+                printf(ERROR_PREFIX "pthread_join: %s", strerror(rc));
 		exit(PTS_UNRESOLVED);
         }
 
 	rc = pthread_attr_destroy(&attr);
 	if(rc != 0)
         {
-                perror(ERROR_PREFIX "pthread_attr_destroy");
+                printf(ERROR_PREFIX "pthread_attr_destroy: %s", strerror(rc));
 		exit(PTS_UNRESOLVED);
         }
 	

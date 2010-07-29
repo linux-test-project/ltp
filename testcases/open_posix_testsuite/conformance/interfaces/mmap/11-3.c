@@ -50,7 +50,7 @@ int main()
   long total_size; 
 
   void *pa = NULL; 
-  void *addr = NULL;
+  void *addr;
   size_t len;
   int flag;
   int fd;
@@ -73,7 +73,7 @@ int main()
   sa.sa_handler = sigbus_handler;
   sigaction(SIGBUS, &sa, NULL);
 
-  snprintf(tmpfname, sizeof(tmpfname), "pts_mmap_11_3_%d",
+  snprintf(tmpfname, sizeof(tmpfname), "/pts_mmap_11_3_%d",
            getpid());
   /* Create shared object */
   shm_unlink(tmpfname);
