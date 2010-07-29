@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 
 	tpset.tv_sec = TESTTIME;
 	tpset.tv_nsec = 0;
-	if (getuid() != 0) {
+	if (geteuid() != 0) {
 		printf("Test must be run as superuser\n");
 		return PTS_UNRESOLVED;
 	}
