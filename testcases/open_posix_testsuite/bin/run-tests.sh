@@ -46,7 +46,7 @@ run_test() {
 
 	complog=`basename $testname`.log.$$
 
-	$SHELL -c "$SCRIPT_DIR/t0 $TIMEOUT_VAL ./$1" > $complog 2>&1
+	sh -c "$SCRIPT_DIR/t0 $TIMEOUT_VAL ./$1" > $complog 2>&1
 
 	ret_code=$?
 
