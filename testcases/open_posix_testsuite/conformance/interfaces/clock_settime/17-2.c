@@ -45,6 +45,11 @@ int main(int argc, char *argv[])
 	tpset.tv_sec = TESTTIME;
 	tpset.tv_nsec = 0;
 
+	if (geteuid() != 0) {
+		printf("Test must be run as superuser\n");
+		return PTS_UNRESOLVED;
+	}
+
 	for (i = 0; i < NUMINVALIDTESTS; i++) {
 		if (clock_settime(invalid_tests[i], &tpset) == -1) {
 			if (EINVAL != errno) {
