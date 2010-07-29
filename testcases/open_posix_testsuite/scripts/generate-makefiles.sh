@@ -79,7 +79,7 @@ generate_makefile() {
 #
 
 # Path variables.
-top_srcdir?=		`echo "$prereq_dir" | sed -E -e 's,[^/]+,\.\.,g'`
+top_srcdir?=		`echo "$prereq_dir" | awk '{ gsub(/[^\/]+/, "..", $0); print }'`
 subdir=			$prereq_cache_dir
 srcdir=			\$(top_srcdir)/\$(subdir)
 
