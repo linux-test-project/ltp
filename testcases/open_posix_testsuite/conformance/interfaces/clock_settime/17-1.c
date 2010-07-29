@@ -26,6 +26,10 @@ int main(int argc, char *argv[])
 
 	tpset.tv_sec = TESTTIME;
 	tpset.tv_nsec = 0;
+	if (geteuid() != 0) {
+		printf("This test must be run as superuser\n");
+		return PTS_UNRESOLVED;
+	}
 	if (clock_settime(BOGUSCLOCKID, &tpset) == -1) {
 		if (EINVAL == errno) {
 			printf("Test PASSED\n");
