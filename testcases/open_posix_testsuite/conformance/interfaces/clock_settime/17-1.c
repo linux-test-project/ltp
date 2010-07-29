@@ -11,9 +11,10 @@
  * The date chosen is Nov 12, 2002 ~11:13am (date when test was first
  * written).
  */
+#include <errno.h>
 #include <stdio.h>
 #include <time.h>
-#include <errno.h>
+#include <unistd.h>
 #include "posixtest.h"
 
 #define TESTTIME 1037128358

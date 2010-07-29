@@ -10,9 +10,10 @@
  *
  * The date chosen is Nov 12, 2002 ~11:13am.
  */
+#include <errno.h>
 #include <stdio.h>
 #include <time.h>
-#include <errno.h>
+#include <unistd.h>
 #include "posixtest.h"
 
 #define TESTTIME 1037128358
@@ -24,6 +25,10 @@ int main(int argc, char *argv[])
 
 	tpset.tv_sec = TESTTIME;
 	tpset.tv_nsec = 0;
+	if (getuid() != 0) {
+		printf("Test must be run as superuser\n");
+		return PTS_UNRESOLVED;
+	}
 	if (clock_settime(CLOCK_MONOTONIC, &tpset) == -1) {
 		if (EINVAL == errno) {
 			printf("Test PASSED\n");
