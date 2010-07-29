@@ -20,7 +20,7 @@
 #include "posixtest.h"
 
 #define NUMVALID 6
-#define NUMINVALID 8
+#define NUMINVALID 7
 
 #define OKSECERR 1
 
@@ -40,7 +40,6 @@ static int sleepinvalid[NUMINVALID][2] = { {-1, -1}, {0, -1},
 					{1, 1000000000}, {2, 1000000000},
 					{-2147483647, -2147483647},
 					{1, 2147483647},
-					{-1073743192, 0},
 					{0, 1075002478} };
 
 int main(int argc, char *argv[])
@@ -77,15 +76,16 @@ int main(int argc, char *argv[])
 			}
 
 			if ((slepts-tssleepfor.tv_sec) > OKSECERR) {
-				printf("FAIL - slept %ds%dns >> %ds%dns\n",
+				printf("FAIL - slept %lds%ldns >> %lds%ldns\n",
 						slepts, sleptns,
-						(int) tssleepfor.tv_sec,
-						(int) tssleepfor.tv_nsec);
+						tssleepfor.tv_sec,
+						tssleepfor.tv_nsec);
+				failure = 1;
 			} else {
-				printf("PASS - slept %ds%dns ~= %ds%dns\n",
+				printf("PASS - slept %lds%ldns ~= %lds%ldns\n",
 						slepts, sleptns,
-						(int) tssleepfor.tv_sec,
-						(int) tssleepfor.tv_nsec);
+						tssleepfor.tv_sec,
+						tssleepfor.tv_nsec);
 			}
 		} else {
 			printf("nanosleep() did not return 0 on success\n");
