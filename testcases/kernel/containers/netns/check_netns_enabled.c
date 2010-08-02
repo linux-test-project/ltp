@@ -42,8 +42,12 @@ int
 main()
 {
 	/* Checking if the kernel supports unshare with netns capabilities. */
-        if (syscall(__NR_unshare, CLONE_NEWNET | CLONE_NEWNS) < 0) {
-		tst_resm (TFAIL | TERRNO, "unshare syscall smoke test failed");
+	if (syscall(__NR_unshare, CLONE_NEWNET | CLONE_NEWNS) < 0) {
+		if (errno == EINVAL) {
+			tst_resm (TWARN | TERRNO, "unshare syscall not support CLONE_NEWNET or CLONE_NEWNS");
+		} else {
+			tst_resm (TFAIL | TERRNO, "unshare syscall smoke test failed");
+		}
 	}
 	tst_exit();
 }
