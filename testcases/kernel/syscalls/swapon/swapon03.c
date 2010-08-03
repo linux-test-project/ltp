@@ -142,8 +142,7 @@ int main(int ac, char **av)
 		/* Check return code */
 		if ((TEST_RETURN == -1) && (TEST_ERRNO == expected_errno)) {
 			tst_resm(TPASS, "swapon(2) got expected failure;"
-				 " Got errno - %d, probably your"
-				 " MAX_SWAPFILES is 30", expected_errno);
+				 " Got errno = %d," , expected_errno);
 		} else if (TEST_RETURN < 0) {
 			tst_resm(TFAIL, "swapon(2) failed to produce"
 				 " expected error: %d, got %d (%s)."
@@ -174,7 +173,7 @@ int main(int ac, char **av)
 				    && (TEST_ERRNO == expected_errno)) {
 					tst_resm(TPASS,
 						 "swapon(2) got expected failure;"
-						 " Got errno - %d, probably your"
+						 " Got errno = %d, probably your"
 						 " MAX_SWAPFILES is 32",
 						 expected_errno);
 				} else {
@@ -291,11 +290,16 @@ int setup_swap()
 
 			/* turn on the swap file */
 			if ((res = syscall(__NR_swapon, filename, 0)) != 0) {
-				tst_brkm(TFAIL | TERRNO, cleanup,
-					 "Failed swapon for file %s", filename);
-				/* must cleanup already swapon files */
-				clean_swap();
-				exit(1);
+				if (errno == EPERM) {
+					printf("Successfully created %d swapfiles\n", j);
+					break;
+				} else {
+					tst_brkm(TFAIL | TERRNO, cleanup,
+						 "Failed swapon for file %s", filename);
+					/* must cleanup already swapon files */
+					clean_swap();
+					exit(1);
+				}
 			}
 		}
 		tst_exit();
