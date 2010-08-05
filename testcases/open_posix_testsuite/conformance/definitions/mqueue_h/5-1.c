@@ -1,5 +1,5 @@
 /*
-  Test for the existance and valid prototype
+  Test for the existence and valid prototype
   of the mq_open function as specified on
   line 9687 of the Base Definitions document
 */
