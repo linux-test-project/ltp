@@ -1,8 +1,7 @@
 Linux Test Project
-(Maintained by: Rishkesh K Rajak <risrajak@linux.vnet.ibm.com>)
+(Maintained by: Subrata Modak <subrata@linux.vnet.ibm.com>)
 
 The latest image is always available at http://ltp.sf.net
-
 
 About the Linux Test Project::
 
@@ -28,18 +27,18 @@ CREDITS
 	Credits to those who have contributed to the project.
 
 COPYING
-		 GNU General Public License
+	GNU General Public License
 
 ChangeLog
 	An incomplete list of changes to the project.  We will try harder to
 	keep this up to date.
 
 Makefile
-		 Top level make file for LTP.
+	Top level make file for LTP.
 
 runalltests.sh
 	A simple script to run all of the packaged tests in sequential order and
-		 report the overall result.
+	report the overall result.
 
 diskio.sh
 	A simple script to run all the diskio tests that pertain to the CD-ROM
@@ -58,11 +57,11 @@ include/*
 lib/*
 	The include and lib directories contain headers and codes for common
 	routines used by many of the tests.  We have tried to keep this to a
-		 minimum.
+	minimum.
 
 testcases/*
 	Contains all tests that run under the LTP as well as the "bin"
-		 directory, which has hardlinks to all the test executables.
+	directory, which has hardlinks to all the test executables.
 
 runtest/*
 	It houses command lists that are used by ltp-pan for automated testing.
