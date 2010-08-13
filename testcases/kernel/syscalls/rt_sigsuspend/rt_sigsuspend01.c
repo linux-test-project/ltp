@@ -138,11 +138,15 @@ int main(int ac, char **av) {
 #ifdef __x86_64__
 		struct kernel_sigaction act, oact;
 		sig_initial(SIGALRM);
+		memset(&act,0,sizeof(act));
+		memset(&oact,0,sizeof(oact));
 		act.sa_flags |= SA_RESTORER;
 		act.sa_restorer = restore_rt;
 		act.k_sa_handler = sig_handler;
 #else
 		struct sigaction act, oact;
+		memset(&act,0,sizeof(act));
+		memset(&oact,0,sizeof(oact));
 		act.sa_handler = sig_handler;
 #endif
 
