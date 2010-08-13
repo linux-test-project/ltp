@@ -210,7 +210,7 @@ int main(int ac, char **av) {
 				/* call rt_sigprocmask() to unblock
 				 * signal#TEST_SIG */
 				TEST(syscall(__NR_rt_sigprocmask,
-					SIG_UNBLOCK, &set, &oset, 8));
+					SIG_UNBLOCK, &set, &oset, SIGSETSIZE));
 				if (TEST_RETURN == -1) {
 					tst_brkm(TFAIL|TTERRNO,
 						cleanup,
