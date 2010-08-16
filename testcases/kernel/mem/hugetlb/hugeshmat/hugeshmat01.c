@@ -70,7 +70,7 @@ unsigned long huge_pages_shm_to_be_allocated;
 #if __WORDSIZE==64
 #define UNALIGNED      0x10000000eee
 #else
-#define UNALIGNED      0x90000eee
+#define UNALIGNED      0x60000eee
 #endif
 
 int shm_id_1 = -1;

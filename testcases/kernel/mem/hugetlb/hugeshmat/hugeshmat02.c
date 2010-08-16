@@ -74,7 +74,7 @@ void	*addr;				/* for result of shmat-call */
 #if __WORDSIZE==64
 #define NADDR   0x10000000eef           /* a 64bit non alligned address value */
 #else
-#define NADDR	0x90000eef		/* a non alligned address value */
+#define NADDR	0x60000eef		/* a non alligned address value */
 #endif
 
 struct test_case_t {
