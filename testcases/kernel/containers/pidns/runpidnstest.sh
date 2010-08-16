@@ -31,12 +31,6 @@ if [ $rc -ne 0 ] && [ -z $err_code ]; then
 	err_code=$rc
 fi
 
-pidns03
-rc=$?
-if [ $rc -ne 0 ] && [ -z $err_code ]; then
-	err_code=$rc
-fi
-
 pidns04
 rc=$?
 if [ $rc -ne 0 ] && [ -z $err_code ]; then
