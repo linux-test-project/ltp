@@ -185,7 +185,7 @@ int main(int ac, char **av)
 			test_desc = Test_cases[ind].desc;
 
 			if (file_name == High_address_node) {
-				file_name = (char *)get_high_address();
+				file_name = get_high_address();
 			}
 
 			/*
