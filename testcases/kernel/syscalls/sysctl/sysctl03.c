@@ -32,6 +32,19 @@
  *		to the kernel_table[]. Since the table does not have write
  *		permission for the regular user, it should fail with EPERM.
  *
+ * NOTE: There is a documentation bug in 2.6.33-rc1 where unfortunately the
+ * behavior of sysctl(2) isn't properly documented, as discussed in detail in
+ * the following thread:
+ * http://sourceforge.net/mailarchive/message.php?msg_name=4B7BA24F.2010705%40linux.vnet.ibm.com.
+ *
+ * The documentation bug is filed as:
+ * https://bugzilla.kernel.org/show_bug.cgi?id=15446 . If you want the message
+ * removed, please ask your fellow kernel maintainer to fix his/her
+ * documentation.
+ *
+ * Thanks!
+ * -Garrett
+ *
  * USAGE:  <for command-line>
  *  sysctl03 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
  *     where,  -c n : Run n copies concurrently.
@@ -43,6 +56,7 @@
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
+ *	02/2010 Updated by shiwh@cn.fujitsu.com
  *
  * RESTRICTIONS
  *	Test must be run as root.
@@ -80,6 +94,7 @@ int exp_enos[] = { EPERM, 0 };
 
 int main(int ac, char **av)
 {
+	int exp_eno;
 	int lc;
 	char *msg;
 
@@ -90,11 +105,21 @@ int main(int ac, char **av)
 	struct passwd *ltpuser;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) !=
+	    (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
 	setup();
+
+	if ((tst_kvercmp(2, 6, 32)) <= 0) {
+		exp_eno = EPERM;
+	} else {
+		/* ^^ Look above this warning. ^^ */
+		tst_resm(TWARN, "this test's results are based on potentially undocumented behavior in the kernel. read the NOTE in the source file for more details");
+		exp_eno = EACCES;
+		exp_enos[0] = EACCES;
+	}
 
 	TEST_EXP_ENOS(exp_enos);
 
@@ -114,13 +139,10 @@ int main(int ac, char **av)
 		} else {
 			TEST_ERROR_LOG(TEST_ERRNO);
 
-			if (TEST_ERRNO != EPERM) {
-				tst_resm(TFAIL,
-					 "Expected EPERM (%d), got %d: %s",
-					 EPERM, TEST_ERRNO,
-					 strerror(TEST_ERRNO));
+			if (TEST_ERRNO == exp_eno) {
+				tst_resm(TPASS|TTERRNO, "Got expected error");
 			} else {
-				tst_resm(TPASS, "Got expected EPERM error");
+				tst_resm(TFAIL|TTERRNO, "Got unexpected error");
 			}
 		}
 
@@ -147,12 +169,12 @@ int main(int ac, char **av)
 			} else {
 				TEST_ERROR_LOG(TEST_ERRNO);
 
-				if (TEST_ERRNO != EPERM) {
-					tst_resm(TFAIL, "Expected EPERM, got "
-						 "%d", TEST_ERRNO);
+				if (TEST_ERRNO == exp_eno) {
+					tst_resm(TFAIL|TTERRNO,
+						"Got expected error");
 				} else {
-					tst_resm(TPASS, "Got expected EPERM "
-						 "error");
+					tst_resm(TPASS|TTERRNO,
+						"Got unexpected error");
 				}
 			}
 
