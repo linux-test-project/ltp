@@ -145,8 +145,8 @@ void setup();
 void cleanup();
 static void getout();
 static void timeout();
-static int read_pipe();
-static int write_pipe();
+static int read_pipe(int fd);
+static int write_pipe(int fd);
 static int setup_sigs(char *mesg);
 static void handle_sigs();
 static int set_timeout(char *mesg);
@@ -202,7 +202,7 @@ int main(int ac, char **av)
 			tst_sig(FORK, DEF_HANDLER, getout);
 
 			/* wait for "ready" message from child */
-			if (read_pipe(PARENTSREADFD, 0) != 0) {
+			if (read_pipe(PARENTSREADFD) != 0) {
 				/* read_pipe() failed. */
 				tst_brkm(TBROK, getout, "%s", p_p.mesg);
 			}
@@ -272,7 +272,7 @@ int main(int ac, char **av)
 			 * Get childs reply about received signals.
 			 */
 
-			if (read_pipe(PARENTSREADFD, 0) < 0) {
+			if (read_pipe(PARENTSREADFD) < 0) {
 				tst_brkm(TBROK, getout, "%s", p_p.mesg);
 			}
 
@@ -384,7 +384,7 @@ void do_child()
 	/*
 	 * Read pipe from parent, that will tell us that all signals were sent
 	 */
-	if (read_pipe(CHILDSREADFD, 0) != 0) {
+	if (read_pipe(CHILDSREADFD) != 0) {
 		p_p.result = TBROK;
 		strcpy(p_p.mesg, "read() pipe failed");
 	} else if (signals_received[0] == '\0') {
