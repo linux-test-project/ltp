@@ -82,6 +82,7 @@
 #define _GNU_SOURCE
 #define _LARGEFILE64_SOURCE
 #endif
+#include "config.h"
 #include <stdio.h>
 #include <ctype.h>
 #include <fcntl.h>
