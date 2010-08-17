@@ -258,7 +258,7 @@ char	crmsg[] = "Gee, let's write something in the file!\n";
 static void crfile(int me, int count)
 {
 	int fd, val;
-	char fname[128], buf[128];
+	char fname[MAXPATHLEN], buf[MAXPATHLEN];
 
 	ft_mkname(fname, dirname, me, count);
 
@@ -297,7 +297,7 @@ static void unlfile(int me, int count)
 {
 	int	i;
 	int	val;
-	char	fname[128];
+	char	fname[MAXPATHLEN];
 
 	i = count - 10;
 
@@ -324,7 +324,7 @@ static void unlfile(int me, int count)
 static void fussdir(int me, int count)
 {
 	int val;
-	char dir[128], fname[128], savedir[128];
+	char dir[MAXPATHLEN], fname[MAXPATHLEN], savedir[MAXPATHLEN];
 
 	ft_mkname(dir, dirname, me, count);
 	rmdir(dir);

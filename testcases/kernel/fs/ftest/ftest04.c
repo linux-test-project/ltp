@@ -78,7 +78,7 @@ static int nwait;
 static int parent_pid;
 static int pidlist[MAXCHILD];
 
-static char filename[128];
+static char filename[MAXPATHLEN];
 
 static int local_flag;
 

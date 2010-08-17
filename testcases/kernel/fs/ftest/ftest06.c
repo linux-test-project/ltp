@@ -281,8 +281,8 @@ static void crfile(int me, int count)
 	int	fd;
 	off64_t seekval;
 	int	val;
-	char	fname[128];
-	char	buf[128];
+	char	fname[MAXPATHLEN];
+	char	buf[MAXPATHLEN];
 
 	ft_mkname(fname, dirname, me, count);
 
@@ -320,7 +320,7 @@ static void crfile(int me, int count)
 static void unlfile(int me, int count)
 {
 	int val, i;
-	char fname[128];
+	char fname[MAXPATHLEN];
 
 	i = count - 10;
 	if (i < 0)
@@ -345,7 +345,7 @@ static void unlfile(int me, int count)
 static void fussdir(int me, int count)
 {
 	int val;
-	char dir[128], fname[128], savedir[128];
+	char dir[MAXPATHLEN], fname[MAXPATHLEN], savedir[MAXPATHLEN];
 
 	ft_mkname(dir, dirname, me, count);
 	rmdir(dir);

@@ -90,8 +90,8 @@ static int parent_pid;
 static int pidlist[MAXCHILD];
 static char test_name[2];
 
-static char fuss[40];         /* directory to do this in */
-static char homedir[200];     /* where we started */
+static char fuss[MAXPATHLEN];         /* directory to do this in */
+static char homedir[MAXPATHLEN];     /* where we started */
 
 static int local_flag;
 
