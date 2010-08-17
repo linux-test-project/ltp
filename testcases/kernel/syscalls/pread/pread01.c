@@ -183,7 +183,7 @@ int main(int ac, char **av)
 			 * with the data written to write buffer
 			 * in the setup.
 			 */
-			compare_bufers(write_buf, read_buf);
+			compare_bufers();
 		} else {
 			tst_resm(TPASS, "calls to pread() succeeded");
 		}
