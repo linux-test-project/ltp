@@ -56,10 +56,10 @@ int TST_TOTAL = 1;
 extern int Tst_COUNT;		/* Test Case counter for tst_routines */
 
 void printinfo();
-/*****	*	*	*****/
-struct mallinfo info;
 
 #if !defined(UCLINUX)
+/*****	*	*	*****/
+struct mallinfo info;
 
 /*--------------------------------------------------------------*/
 int main(int argc, char *argv[])
