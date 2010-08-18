@@ -51,7 +51,6 @@ int local_flag = PASSED;
 
 char *TCID = "mallopt01";
 int block_number;
-int errno;
 FILE *temp;
 int TST_TOTAL = 1;
 extern int Tst_COUNT;		/* Test Case counter for tst_routines */

@@ -52,7 +52,6 @@ char *TCID = "string01";
 
 int local_flag = PASSED;
 int block_number;
-int errno;
 FILE *temp;
 int TST_TOTAL = 1;
 extern int Tst_count;

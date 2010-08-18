@@ -57,7 +57,6 @@ char buf[BSIZE];
 /*****	LTP Port	*****/
 int local_flag = PASSED;
 int block_number;
-int errno;
 FILE *temp;
 int TST_TOTAL = 2;
 int anyfail();

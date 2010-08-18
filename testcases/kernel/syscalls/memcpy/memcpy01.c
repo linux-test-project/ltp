@@ -61,7 +61,6 @@ char *TCID = "memcpy1";
 /*****	LTP Port	*****/
 int local_flag = PASSED;
 int block_number;
-int errno;
 FILE *temp;
 int TST_TOTAL = 1;
 /*****	**	**	*****/

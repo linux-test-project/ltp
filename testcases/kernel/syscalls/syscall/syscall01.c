@@ -52,7 +52,6 @@
 char *TCID = "syscall01";
 int local_flag = PASSED;
 int block_number;
-int errno;
 FILE *temp;
 int TST_TOTAL = 1;
 extern int Tst_count;
@@ -63,7 +62,6 @@ extern int Tst_count;
 #define ITER		500
 
 int t_flag;
-int errno;
 
 /*****	LTP Port	*****/
 void setup();
