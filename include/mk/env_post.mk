@@ -37,6 +37,10 @@ CPPFLAGS			+= -I$(top_srcdir)/include -I$(top_builddir)/include
 
 LDFLAGS				+= -L$(top_builddir)/lib
 
+ifeq ($(UCLINUX),1)
+CPPFLAGS			+= -D__UCLIBC__ -DUCLINUX
+endif
+
 MAKE_TARGETS			?= $(notdir $(patsubst %.c,%,$(wildcard $(abs_srcdir)/*.c)))
 
 MAKE_TARGETS			:= $(filter-out $(FILTER_OUT_MAKE_TARGETS),$(MAKE_TARGETS))

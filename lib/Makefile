@@ -25,7 +25,7 @@ top_srcdir		?= ..
 include $(top_srcdir)/include/mk/env_pre.mk
 
 ifeq ($(UCLINUX),1)
-CFLAGS			+= -D_USC_LIB_ -D__UCLIBC__ -DUCLINUX
+CFLAGS			+= -D_USC_LIB_
 endif
 
 FILTER_OUT_LIBSRCS	:= mount_utils.c
