@@ -124,8 +124,13 @@ BUILD_TREE_STATE		:= $(BUILD_TREE_NONSRCDIR_INSTALL)
 endif
 endif
 
-# make 3.80 called it .DEFAULT_TARGET.
+ifeq ($(MAKE_3_80_COMPAT),1
+# Trick make 3.80 into thinking that the default goal is all.
+.PHONY: default
+default: all
+else
 .DEFAULT_GOAL			:= all
+endif
 
 endif	# END autotools, *clean...
 
