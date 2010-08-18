@@ -124,7 +124,7 @@ BUILD_TREE_STATE		:= $(BUILD_TREE_NONSRCDIR_INSTALL)
 endif
 endif
 
-ifeq ($(MAKE_3_80_COMPAT),1
+ifeq ($(MAKE_3_80_COMPAT),1)
 # Trick make 3.80 into thinking that the default goal is all.
 .PHONY: default
 default: all
