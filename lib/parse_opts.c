@@ -68,6 +68,7 @@
  *	This pointer is (char *)NULL if parsing is successful.
  *
  *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#**/
+#include "config.h"
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>

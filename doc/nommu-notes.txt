@@ -1,0 +1,171 @@
+-------------
+--- Intro ---
+-------------
+
+Linux running on processors without a memory management unit place certain
+restrictions on the userspace programs.  Here we will provide some guidelines
+for people who are not familiar with such systems.
+
+If you are not familiar with virtual memory, you might want to review some
+background such as:
+	http://en.wikipedia.org/wiki/Virtual_Memory
+	/usr/src/linux/Documentation/nommu-mmap.txt
+
+----------------------------
+--- No memory protection ---
+----------------------------
+
+By virtue of every process getting its own virtual memory space, applications
+are protected from each other.  So a bad memory access in one will not affect
+the memory of another.  When processors forgo virtual memory, they typically
+do not add memory protection back in to the hardware.  There are one or two
+exceptions to this rule, but for now, we'll assume no one supports it.
+
+In practical terms, this means you cannot dereference bad pointers directly
+and expect the kernel to catch and kill your application.  However, you can
+expect the kernel to catch some bad pointers when given to system calls.
+
+For example, this will "work" in the sense that no signal will be sent:
+	char *foo = NULL;
+	foo[0] = 'a';
+	foo[1] = 'b';
+
+However, the kernel should return errors when using "standard" bad pointers
+with system calls.  Such as:
+	char *foo = NULL;
+	write(1, foo, 10);
+	-> kernel will return EFAULT or similar
+The other bad pointer you can rely on in your tests is -1:
+	char *foo = (void *)-1;
+	read(0, foo, 10);
+	-> kernel will return EFAULT or similar
+
+Otherwise, no bad pointer may reliably be tested, either directly or
+indirectly via the kernel.  This tends to be a large part of the UCLINUX
+ifdef code that shows up in LTP.
+
+----------------
+--- No forks ---
+----------------
+
+The ubiquitous fork() function relies completely on the Copy On Write (COW)
+functionality provided by virtual memory to share pages between processes.
+Since this isn't feasible without virtual memory, there is no fork() function.
+You will either get a linker error (undefined reference to fork) or you will
+get a runtime failure of ENOSYS.
+
+Typically, fork() is used for very few programming paradigms:
+	- daemonization
+	- run a program
+	- parallelism
+
+For the daemonization functionality, simply use the daemon() function.  This
+works under both MMU and NOMMU systems.
+
+To run a program, simply use vfork() followed by an exec-style function.
+And change the error handler in the child from exit() to _exit().  This too
+works under both MMU and NOMMU systems.  But be aware of vfork() semantics --
+since the parent and child share the same memory process, the child has to be
+careful in what it does.  This is why the recommended construct is simply:
+	pid_t child = vfork();
+	if (vfork == 0)
+		_exit(execl(....));
+
+For parallelism where processes use IPC to work together, you have to options,
+neither of which are easy.  You can rewrite to use threads, or you can re-exec
+yourself with special flags to pass along updated runtime state.  This is what
+the self_exec() helper function in LTP is designed for.
+
+-------------------------
+--- No overcommitting ---
+-------------------------
+
+Virtual memory allows people to do malloc(128MiB) and get back a buffer that
+big.  But that buffer is only of virtual memory, not physical.  On a NOMMU
+system, the memory comes immediately from physical memory and takes it away
+from anyone else.
+
+Avoid large mallocs.
+
+---------------------
+--- Fragmentation ---
+---------------------
+
+On a MMU system, when physical memory gets fragmented, things slow down.  But
+they keep working.  This is because every new process gets a clean virtual
+memory address space.  While processes can fragment their own virtual address
+space, this usually takes quite a long time and a lot of effort, so generally
+it is not a problem people hit.
+
+On a NOMMU system, when physical memory gets fragmented, access to large
+contiguous blocks becomes unavailable which means requests fail.  Even if your
+system has 40MiB _total_ free, the largest contiguous block might only be 1MiB
+which means that allocations larger than that will always fail.
+
+Break up your large memory allocations when possible.  Generally speaking,
+single allocations under 2MiB aren't a problem.
+
+-----------------
+--- No paging ---
+-----------------
+
+No virtual memory means you can't mmap() a file and only have the pages read in
+(paged) on the fly.  So if you use mmap() on a file, the kernel must allocate
+memory for it and read in all the contents immediately.
+
+---------------------
+--- No swap space ---
+---------------------
+
+See the "No paging" section above.  For the same reason, there is no support
+for swap partitions.  Plus, nommu typically means embedded which means flash
+based storage which means limited storage space and limited number of times
+you can write it.
+
+-------------------------
+--- No dynamic stacks ---
+-------------------------
+
+No virtual memory means that applications can't all have their stacks at the
+top of memory and allowed to grown "indefinitely" downwards.  Stack space is
+fixed at process creation time (when it is first executed) and cannot grow.
+While the fixed size may be increased, it's best to avoid stack pressure in
+the first place.
+
+Avoid the alloca() function and use malloc()/free() instead.
+
+Avoid declaring large buffers on the stack.  Some people like to do things
+such as:
+	char buf[PATH_MAX];
+This will most likely smash the stack on nommu systems !  Use global variables
+(the bss), or use malloc()/free() type functions.
+
+-------------------------------
+--- No dynamic data segment ---
+-------------------------------
+
+No virtual memory means that mappings cannot arbitrarily be extended.  Another
+process might have its own mapping right after yours!  This is where the brk()
+and sbrk() functions come into play.  These are most often used to dynamically
+increase the heap space via the C library, but a few people use these manually.
+
+Best if you simply avoid them, and if you're writing tests to exercise these
+functions specifically, make them nops/XFAIL for nommu systems.
+
+-------------------------------
+--- Limited shared mappings ---
+-------------------------------
+
+No virtual memory means files cannot be mmapped in and have writes to it
+written back out to disk on the fly.  So you cannot use MAP_SHARED when
+mmapping a file.
+
+-------------------------
+--- No fixed mappings ---
+-------------------------
+
+The MAP_FIXED option to mmap() is not supported.  It doesn't even really work
+all that well under MMU systems.
+
+Best if you simply avoid it, and if you're writing tests to exercise this
+option specifically, make them nops/XFAIL for nommu systems.

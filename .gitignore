@@ -1,9 +1,11 @@
 CVS
+*~
 *.o
+*.gdb
 lib*.a
 
 /aclocal.m4
-/autom4te.cache
+autom4te.cache
 /configure
 /config.guess
 /config.log
@@ -17,6 +19,16 @@ lib*.a
 /include/stamp-h1
 /m4/Makefile
 /m4/Makefile.in
+
+/execltp
+/ltp-devel.spec
+/README.ltp-devel
+/m4/ltp-version.m4
+
 .gitattributes
 .pc/
 patches/
+*.diff
+*.patch
+*.rej
+*.orig

@@ -22,9 +22,12 @@
  * 55 Byward Market Square, 2nd Floor North, Ottawa, ON K1N 9C3, Canada
  */
 
+#define _GNU_SOURCE /* for asprintf */
+
+#include "config.h"
+
 #ifdef UCLINUX
 
-#define _GNU_SOURCE /* for asprintf */
 #include <stdarg.h>
 #include <string.h>
 #include <stdio.h>
