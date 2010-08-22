@@ -6,10 +6,13 @@
 
 #include <mqueue.h>
 #include "posixtest.h"
-#include <stdio.h>
 
-int main()
+void test_mq_open_prototype(void)
 {
-	fprintf(stderr, "Test not implemented!\n");
-        return PTS_UNTESTED;
+	mqd_t res;
+	int oflag;
+	const char *name;
+
+	res = mq_open(name, oflag);
+
 }

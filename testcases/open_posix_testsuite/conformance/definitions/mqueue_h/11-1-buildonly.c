@@ -6,10 +6,12 @@ line 9696 of the Base Definitions document
 
 #include <mqueue.h>
 #include "posixtest.h"
-#include <stdio.h>
 
-int main()
+void test_mqueue_unlink_prototype()
 {
-	fprintf(stderr, "Test not implemented!\n");
-        return PTS_UNTESTED;
+	const char *name;
+	int err;
+
+	err = mq_unlink(name);
+
 }
