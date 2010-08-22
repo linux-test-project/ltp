@@ -82,6 +82,13 @@ int main()
 		exit(PTS_UNRESOLVED);
 	}
 
+	/* 
+	 * Use smallest usable stack size for us to be able to call
+	 * printf(3) / pthread_exit(3) without segfaulting.
+	 *
+	 * If for whatever reason PTHREAD_STACK_MIN is set to 0 (which it can
+	 * be according to POSIX), posix_memalign will fail with EINVAL.
+	 */
 	stack_size = PTHREAD_STACK_MIN * 4;
 
 	if ((rc = posix_memalign (&stack_addr, sysconf(_SC_PAGE_SIZE), 
