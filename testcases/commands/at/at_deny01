@@ -34,8 +34,8 @@ TMP=${TMP:=/tmp}
 deny="/etc/at.deny"
 test_user1="test_user_1"
 test_user2="test_user_2"
-test_user2_home="/home/${test_user2}"
 test_user1_home="/home/${test_user1}"
+test_user2_home="/home/${test_user2}"
 tmpfile="$TMP/at_deny_test"
 
 #-----------------------------------------------------------------------
@@ -79,6 +79,12 @@ do_setup()
 	# users' home directories, and run it from there.
 	cp "$0" "${test_user1_home}/."
 	cp "$0" "${test_user2_home}/."
+	echo "export LTPROOT='$LTPROOT'" > "${test_user1_home}/cached_ltproot"
+	echo "export LTPROOT='$LTPROOT'" > "${test_user2_home}/cached_ltproot"
+	if [ $? -ne 0 ]; then
+		tst_resm TBROK "Couldn't copy over req'd files for test users"
+		exit 1
+	fi
 
 	# Restart atd daemon.
 	/etc/init.d/atd restart
@@ -109,6 +115,9 @@ do_cleanup()
 run_test()
 {
 	if [ $(whoami) = "${test_user1}" ]; then 
+		. "${test_user1_home}/cached_ltproot" || exit 1
+		export PATH="$PATH:$LTPROOT/testcases/bin"
+
 		echo "TEST: ${deny} should deny only those who are not in the file to run jobs."
 		echo "(1) TEST THAT PERSON NOT IN ${deny} IS ABLE TO RUN JOB."
 		echo "echo 'TEST JOB RAN' >>\"${tmpfile}\" 2>&1" |
@@ -131,6 +140,10 @@ run_test()
 		exit ${exit_code}
 
 	elif [ $(whoami) = "${test_user2}" ]; then
+
+		. "${test_user2_home}/cached_ltproot" || exit 1
+		export PATH="$PATH:$LTPROOT/testcases/bin"
+
 		echo "(2) TEST THAT PERSON IN ${deny} IS NOT ABLE TO RUN JOB."
 
 		echo "echo 'TEST JOB RAN' >>\"${tmpfile}\" 2>&1" |
@@ -157,7 +170,7 @@ run_test()
 #-----------------------------------------------------------------------
 # FUNCTION: main
 #-----------------------------------------------------------------------
-if type at > /dev/null; then
+if ! type at > /dev/null; then
 	tst_resm TCONF "at command not found on system"
 elif [ "$(id -ru)" = 0 ]; then
 	if do_setup ; then
