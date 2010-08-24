@@ -156,7 +156,11 @@ void test2()
 	 * an wired value!  So, it is essential to fflush the parent's
 	 * write buffer HERE
 	 */
+	int pipefd[2];
 	fflush(stdout);
+	if (pipe(pipefd) == -1) {
+		tst_brkm(TBROK | TERRNO, NULL, "pipe creation failed");
+	}
 
 	/*
 	 * Spawn a child process, and reduce the filesize to
@@ -170,6 +174,7 @@ void test2()
 	}
 
 	if (pid == 0) {
+		close(pipefd[0]); /* close unused read end */
 		rlim.rlim_cur = 10;
 		rlim.rlim_max = 10;
 		if ((setrlimit(RLIMIT_FSIZE, &rlim)) == -1) {
@@ -181,6 +186,11 @@ void test2()
 		}
 
 		if ((bytes = write(fd, buf, 26)) != 10) {
+			if (write(pipefd[1], &bytes, sizeof(bytes))
+				< sizeof(bytes)) {
+				perror("child: write to pipe failed");
+			}
+			close(pipefd[1]); /* EOF */
 			exit(3);
 		}
 		exit(0);	/* success */
@@ -202,6 +212,11 @@ void test2()
 		tst_resm(TFAIL, "creating testfile failed");
 		break;
 	case 3:
+		close(pipefd[1]); /* close unused write end */
+		if (read(pipefd[0], &bytes, sizeof(bytes)) < sizeof(bytes)) {
+			tst_resm(TFAIL, "parent: reading pipe failed");
+		}
+		close(pipefd[0]);
 		tst_resm(TFAIL, "setrlimit failed, expected "
 			 "10 got %d", bytes);
 		break;
