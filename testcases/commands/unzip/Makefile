@@ -47,7 +47,7 @@ $(TESTCASES_DATA_DIR):
 
 $(ZIPFILE): | $(TESTCASES_DATA_DIR) $(DIR)
 	zip -r "$@" $(DIR)
-	chmod 00666 "$@"
+	chmod 00644 "$@"
 
 # This target should be auto-removed by Make
 $(DIR): $(abs_srcdir)/unzip_genfile.sh
