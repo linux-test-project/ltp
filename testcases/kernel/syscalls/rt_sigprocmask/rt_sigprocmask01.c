@@ -142,6 +142,8 @@ int main(int ac, char **av) {
 	act.k_sa_handler = sig_handler;
 #else
 	struct sigaction act, oact;
+	memset(&act,0,sizeof(act));
+	memset(&oact,0,sizeof(oact));
 	act.sa_handler = sig_handler;
 #endif
 	sigset_t set, oset;
