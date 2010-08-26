@@ -467,7 +467,7 @@ main(int  argc,		/* number of input parameters.			      */
    
     static struct signal_info
     {
-        int  signum;    /* signal number that hasto be handled                */
+        int  signum;    /* signal number that has to be handled               */
 	char *signame;  /* name of the signal to be handled.                  */
     } sig_info[] =
                    {
@@ -547,8 +547,8 @@ main(int  argc,		/* number of input parameters.			      */
                 (struct sigaction *)NULL) == -1 )
         {
             perror( "man(): sigaction()" );
-            fprintf(stderr, "could not set handler for SIGALRM, errno = %d\n",
-                    errno);
+            fprintf(stderr, "could not set handler for %s, errno = %d\n",
+                    sig_info[sig_ndx].signame, errno);
             exit(-1);
         }
     }
