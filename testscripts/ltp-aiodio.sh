@@ -16,6 +16,7 @@ if [ $? -eq 0 ]; then
  cd ..
  export LTPROOT=${PWD}
 fi
+export PATH=$LTPROOT/testcases/bin:$PATH
 
 run0=0
 runTest=0
