@@ -71,8 +71,16 @@ do_setup()
 	# As we are running in non-login shell now, we cannot run the script
 	# by simply given it a relative path. Therefore, we copy it to test
 	# users' home directories, and run it from there.
-	cp "$0" "${test_user1_home}/."
-	cp "$0" "${test_user2_home}/."
+	cp "$0" "${test_user1_home}/." &&
+	cp "$0" "${test_user2_home}/." &&
+	echo "export LTPROOT='$LTPROOT'" > \
+	    "${test_user1_home}/cached_ltproot" &&
+	echo "export LTPROOT='$LTPROOT'" > \
+	    "${test_user2_home}/cached_ltproot"
+	if [ $? -ne 0 ]; then
+		tst_resm TBROK "Couldn't copy over req'd files for test users"
+		exit 1
+	fi	
 
 	# Restart atd daemon.
 	/etc/init.d/atd restart
@@ -98,7 +106,10 @@ do_cleanup()
 #-----------------------------------------------------------------------
 run_test()
 {
-	if [ $(whoami) = "${test_user1}" ]; then 
+	if [ $(whoami) = "${test_user1}" ]; then
+		. "${test_user1_home}/cached_ltproot" || exit 1
+		export PATH="$PATH:$LTPROOT/testcases/bin"
+
 		echo "TEST: $allow should allow only those who in the file to run jobs."
 		echo "(1) TEST THAT PERSON IN ${allow} IS ABLE TO RUN JOB."
 		echo "echo 'TEST JOB RAN' >>\"${tmpfile}\" 2>&1" |
@@ -121,6 +132,10 @@ run_test()
 		exit ${exit_code}
 
 	elif [ $(whoami) = "${test_user2}" ]; then
+
+		. "${test_user2_home}/cached_ltproot" || exit 1
+		export PATH="$PATH:$LTPROOT/testcases/bin"
+
 		echo "(2) TEST PERSON THAT IS NOT IN ${allow} IS NOT ABLE TO RUN JOB."
 		echo "echo 'TEST JOB RAN' >>\"${tmpfile}\" 2>&1" |
 		if ! at -m now + 1 minutes; then
@@ -145,7 +160,7 @@ run_test()
 #-----------------------------------------------------------------------
 # FUNCTION: main
 #-----------------------------------------------------------------------
-if type at > /dev/null; then
+if ! type at > /dev/null; then
 	tst_resm TCONF "at command not found on system"
 elif [ "$(id -ru)" = 0 ]; then
 	if do_setup; then
