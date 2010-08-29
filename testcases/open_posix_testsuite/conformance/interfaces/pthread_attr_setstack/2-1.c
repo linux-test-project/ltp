@@ -44,16 +44,16 @@ void *thread_func()
 
 	if ((rc = pthread_getattr_np(pthread_self(), &attr)) != 0) {
 		printf(ERROR_PREFIX "pthread_getattr_np: %s", strerror(rc));
-		exit(PTS_UNRESOLVED);
+		pthread_exit(PTS_UNRESOLVED);
 	}
 	if ((rc = pthread_attr_getstack(&attr, &saddr, &ssize)) != 0) {
 		printf(ERROR_PREFIX "pthread_attr_getstack: %s", strerror(rc));
-		exit(PTS_UNRESOLVED);
+		pthread_exit(PTS_UNRESOLVED);
 	}
 	if (ssize != stack_size || saddr != stack_addr)
 	{	
 		printf(ERROR_PREFIX "got the wrong stacksize or stackaddr");
-		exit(PTS_FAIL);
+		pthread_exit(PTS_FAIL);
 	}	
 
 	pthread_exit(0);

@@ -18,6 +18,8 @@ int main()
 	switch (fork()) {
 	case 0:
 		/* child */
+		sleep(5);
+
 		raise(SIGABRT);
 
 		/* shouldn't get here */

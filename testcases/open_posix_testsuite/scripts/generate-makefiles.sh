@@ -188,8 +188,8 @@ $prereq: \$(srcdir)/$c_file
 		 echo "\$(subdir)/$test_name compile PASSED"; \\
 		 echo "\$(subdir)/$test_name compile PASSED" >> \$(LOGFILE); \\
 	else \\
-		 echo "\$(subdir)/$test_name compile FAILED"; \\
-		(echo "\$(subdir)/$test_name compile FAILED"; cat logfile.\$\$\$\$) >> \$(LOGFILE); \\
+		 echo "\$(subdir)/$test_name compile FAILED; SKIPPING"; \\
+		(echo "\$(subdir)/$test_name compile FAILED; SKIPPING"; cat logfile.\$\$\$\$) >> \$(LOGFILE); \\
 	fi; \\
 	rm -f logfile.\$\$\$\$
 

@@ -18,6 +18,7 @@ int main()
 	switch (fork()) {
 	case 0:
 		/* child */
+		sleep(5);
 		exit(0);
 		break;
 	case -1:
