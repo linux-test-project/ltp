@@ -13,26 +13,33 @@
 
 int main()
 {
-	if (fork() == 0) {
+	int s; 
+
+	switch (fork()) {
+	case 0:
 		/* child */
-		return -1;
-	} else {
-		int s; 
+		sleep(5);
+		exit(1);
+		break;
+	case -1:
+		perror("fork failed");
+		break;
+	default:
 
 		/* parent */
 		if (wait(&s) == -1) {
 			perror("Unexpected error while setting up test "
 			       "pre-conditions");
-			return PTS_UNRESOLVED;
+			exit(PTS_UNRESOLVED);
 		}
 
 		if (WIFEXITED(s)) {
 			printf("Test PASSED\n");
-			return PTS_PASS;
+			exit(PTS_PASS);
 		}
+		break;
 	}
 
 	printf("Test FAILED\n");
-	return PTS_FAIL;	
+	return(PTS_FAIL);	
 }
-

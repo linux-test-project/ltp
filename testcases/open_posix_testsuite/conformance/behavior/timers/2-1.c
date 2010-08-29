@@ -6,8 +6,6 @@
  * source tree.
  *
  * Test that TIMER_MAX >= _POSIX_TIMER_MAX
- *
- * For this test, clock CLOCK_REALTIME will be used.
  */
 
 #include <time.h>
