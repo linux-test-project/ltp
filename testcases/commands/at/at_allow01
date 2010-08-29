@@ -73,10 +73,8 @@ do_setup()
 	# users' home directories, and run it from there.
 	cp "$0" "${test_user1_home}/." &&
 	cp "$0" "${test_user2_home}/." &&
-	echo "export LTPROOT='$LTPROOT'" > \
-	    "${test_user1_home}/cached_ltproot" &&
-	echo "export LTPROOT='$LTPROOT'" > \
-	    "${test_user2_home}/cached_ltproot"
+	echo "export LTPROOT='$LTPROOT'" > "${test_user1_home}/cached_ltproot" &&
+	echo "export LTPROOT='$LTPROOT'" > "${test_user2_home}/cached_ltproot"
 	if [ $? -ne 0 ]; then
 		tst_resm TBROK "Couldn't copy over req'd files for test users"
 		exit 1
