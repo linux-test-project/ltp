@@ -9,32 +9,39 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include "posixtest.h"
 
 int main()
 {
-	if (fork() == 0) {
+	int s;
+
+	switch (fork()) {
+	case 0:
 		/* child */
 		raise(SIGABRT);
 
 		/* shouldn't get here */
-		return 0;
-	} else {
-		int s; 
+		exit(0);
+	case -1:
+		perror("fork failed");
+		break;
+	default:
 
 		/* parent */
 		if (wait(&s) == -1) {
 			perror("Unexpected error while setting up test "
 			       "pre-conditions");
-			return -1;
+			exit(PTS_UNRESOLVED);
 		}
 
 		if (!WIFEXITED(s)) {
 			printf("Test PASSED\n");
-			return 0;
+			exit(PTS_PASS);
 		}
+		break;
 	}
 
 	printf("Test FAILED\n");
-	return -1;	
+	exit(PTS_FAIL);
 }
 
