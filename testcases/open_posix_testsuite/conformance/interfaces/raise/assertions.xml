@@ -4,8 +4,8 @@
    executing.
   </assertion>
   <assertion id="2" tag="ref:XSH6:36082:36083 pt:CX">
-   If the signal causes a signal handler to be called, the raise() function
-   will wait for the signal handler to return before it returns.
+   If a signal handler is called, the raise() function shall not return until
+   after the signal handler does.
   </assertion>
   <assertion id="3" tag="ref:XSH6:36084:36086 pt:THR">
    If the implementation supports Threads, then raise() is equivalent to:
@@ -17,10 +17,10 @@
    kill(getpid(), sig);
   </assertion>
   <assertion id="5" tag="ref:XSH6:36092:36092">
-   Upon successful completion, raise() returns 0.
+   Upon successful completion, raise() shall return 0.
   </assertion>
   <assertion id="6" tag="ref:XSH6:36092:36093">
-   Upon unsuccessful completion, raise() returns a non-zero value.
+   Upon unsuccessful completion, raise() shall return a non-zero value.
   </assertion>
   <assertion id="7" tag="ref:XSH6:36093:36096">
    Upon unsuccessful completion, raise() sets errno to indicate the
