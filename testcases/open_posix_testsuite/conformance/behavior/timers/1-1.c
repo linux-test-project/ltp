@@ -10,9 +10,12 @@
  * For this test, clock CLOCK_REALTIME will be used.
  */
 
-#include <time.h>
-#include <stdio.h>
+#include <errno.h>
 #include <limits.h>
+#include <signal.h>
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
 #include <unistd.h>
 #include "posixtest.h"
 
@@ -24,13 +27,14 @@ int main(int argc, char *argv[])
 
 	scTIMER_MAX=sysconf(_SC_TIMER_MAX);
 
-	for (i=0; i<scTIMER_MAX;i++) {
+	for (i = 0; i < scTIMER_MAX; i++) {
 		if (timer_create(CLOCK_REALTIME, NULL, &tid) == -1) {
-			perror("timer_create() did not return success");
-			return PTS_FAIL;
+			printf("[%d] timer_create() did not return success: "
+			    "%s\n", i, strerror(errno));
+			exit(PTS_FAIL);
 		}
 	}
 
-	printf("Test PASSED\n");
-	return PTS_PASS;
+	printf("Successfully created %d timers\nTest PASSED\n");
+	exit(PTS_PASS);
 }
