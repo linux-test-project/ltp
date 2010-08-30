@@ -1,0 +1,62 @@
+<assertions>
+	<assertion id="1" tag="ref:XSH7:46648:46662 pt:CX">
+	The access() function shall check the file named by the pathname pointed to by the path argument according to the bit pattern contained in amode, using the real user ID in place of the effective user ID and the real group ID in place of the effective group ID.
+	</assertion>
+	<assertion id="2" tag="ref:XSH7:46648:46662 pt:CX">
+	The value of amode is either the bitwise-inclusive OR of the access permissions to be checked (R_OK, W_OK, X_OK) or the existence test (F_OK).
+	</assertion>
+	<assertion id="3" tag="ref:XSH7:46648:46662 pt:CX">
+	If any access permissions are checked, each shall be checked individually, as described in XBD File Access Permissions , except that where that description refers to execute permission for a process with appropriate privileges, an implementation may indicate success for X_OK even if execute permission is not granted to any user.
+	</assertion>
+	<assertion id="5" tag="ref:XSH7:46648:46662 pt:CX">
+	Upon successful completion, access() shall return 0.
+	</assertion>
+	<assertion id="6" tag="ref:XSH7:46648:46662 pt:CX">
+	Upon unsuccessful completion, access() shall return -1.
+	</assertion>
+	<assertion id="7" tag="ref:XSH7:46648:46662 pt:CX">
+	Upon unsuccessful completion, errno will be set to indicate the error.
+	</assertion>
+	<assertion id="8" tag="ref:XSH7:46648:46662 pt:CX">
+	Upon unsuccessful completion, errno will be set to indicate the error.
+	</assertion>
+	<assertion id="9" tag="ref:XSH7:46648:46662 pt:CX">
+	access() shall set EACCES if the permission bits of the file mode do not permit the requested access, or search permission is denied on a component of the path prefix.
+	</assertion>
+	<assertion id="10" tag="ref:XSH7:46648:46662 pt:CX">
+	access() shall set EACCES if the search permission is denied on a component of the path prefix.
+	</assertion>
+	<assertion id="11" tag="ref:XSH7:46648:46662 pt:CX">
+	access() shall set ELOOP if a loop exists in symbolic links encountered during resolution of the path argument.
+	</assertion>
+	<assertion id="12" tag="ref:XSH7:46648:46662 pt:CX">
+	access() shall set ENAMETOOLONG if the length of a component of a pathname is longer than {NAME_MAX}.
+	</assertion>
+	<assertion id="13" tag="ref:XSH7:46648:46662 pt:CX">
+	access() shall set ENOENT if a component of path does not name an existing file.
+	</assertion>
+	<assertion id="14" tag="ref:XSH7:46648:46662 pt:CX">
+	access() shall set ENOENT if path is an empty string.
+	</assertion>
+	<assertion id="15" tag="ref:XSH7:46648:46662 pt:CX">
+	assert() shall set ENOTDIR if a component of the path prefix is not a directory.
+	</assertion>
+	<assertion id="16" tag="ref:XSH7:46648:46662 pt:CX">
+	assert() shall set ENOTDIR if the path argument contains at least one non- &gt;slash&lt; character and ends with one or more trailing &gt;slash&lt; characters and the last pathname component names an existing file that is neither a directory nor a symbolic link to a directory..
+	</assertion>
+	<assertion id="17" tag="ref:XSH7:46648:46662 pt:CX">
+	assert() shall set EROFS if write access is requested for a file on a read-only file system.
+	</assertion>
+	<assertion id="18" tag="ref:XSH7:46648:46662 pt:CX">
+	assert() shall set EINVAL if the value of the amode argument is invalid..
+	</assertion>
+	<assertion id="19" tag="ref:XSH7:46648:46662 pt:CX">
+	assert() shall set ELOOP if more than {SYMLOOP_MAX} symbolic links were encountered during resolution of the path argument.
+	</assertion>
+	<assertion id="20" tag="ref:XSH7:46648:46662 pt:CX">
+	assert() shall set ENAMETOOLONG if the length of a pathname exceeds {PATH_MAX}, or pathname resolution of a symbolic link produced an intermediate result with a length that exceeds {PATH_MAX}.
+	</assertion>
+	<assertion id="21" tag="ref:XSH7:46648:46662 pt:CX">
+	assert() shall set ETXTBSY if the write access is requested for a pure procedure (shared text) file that is being executed.
+	</assertion>
+</assertions>
