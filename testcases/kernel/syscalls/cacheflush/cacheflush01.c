@@ -152,20 +152,26 @@ int main(int ac, char **av)
 
 	/* Invokes cacheflush() with proper parameters */
 	TEST(syscall(__NR_cacheflush, addr, getpagesize(), ICACHE));
-	TEST(syscall(__NR_cacheflush, addr, getpagesize(), DCACHE));
-	TEST(syscall(__NR_cacheflush, addr, getpagesize(), BCACHE));
-
-	/* Tests whether cacheflush() returns -EINVAL */
-	TEST(syscall(__NR_cacheflush, addr, getpagesize(), 0));
-	if (TEST_RETURN < 0) {
-		if (TEST_ERRNO == EINVAL) {
-			tst_resm(TPASS | TTERRNO, "passed with expected errno");
-		} else {
-			tst_resm(TFAIL | TTERRNO, "failed with unexpected errno");
-		}		
+	if (TEST_RETURN == 0) {
+		tst_resm(TPASS, "passed with no errno");
 	} else {
-	        tst_resm(TFAIL, "passed unexpectedly");
-        }
+		tst_resm(TFAIL, "failed with unexpected errno");
+	}		
+	
+	TEST(syscall(__NR_cacheflush, addr, getpagesize(), DCACHE));
+	if (TEST_RETURN == 0) {
+		tst_resm(TPASS, "passed with no errno");
+	} else {
+		tst_resm(TFAIL, "failed with unexpected errno");
+	}		
+	
+	TEST(syscall(__NR_cacheflush, addr, getpagesize(), BCACHE));
+	if (TEST_RETURN == 0) {
+		tst_resm(TPASS, "passed with no errno");
+	} else {
+		tst_resm(TFAIL, "failed with unexpected errno");
+	}		
+
 	cleanup(); 
         tst_exit();
 }
