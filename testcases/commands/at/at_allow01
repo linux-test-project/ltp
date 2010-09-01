@@ -34,8 +34,8 @@ TMP=${TMP:=/tmp}
 allow="/etc/at.allow"
 test_user1="test_user_1"
 test_user2="test_user_2"
-test_user2_home="/home/${test_user2}"
 test_user1_home="/home/${test_user1}"
+test_user2_home="/home/${test_user2}"
 tmpfile="$TMP/at_allow_test"
 
 #-----------------------------------------------------------------------
@@ -54,7 +54,7 @@ do_setup()
 	userdel -r "${test_user2}" >/dev/null 2>&1
 
 	# Create the 1st user.
-	if ! useradd -g users -d "${test_user1_home}"  -m "${test_user1}"; then
+	if ! useradd -g users -d "${test_user1_home}" -m "${test_user1}"; then
 		echo "Could not add test user ${test_user1} to system."
 		exit 1
 	fi
@@ -78,7 +78,7 @@ do_setup()
 	if [ $? -ne 0 ]; then
 		tst_resm TBROK "Couldn't copy over req'd files for test users"
 		exit 1
-	fi	
+	fi
 
 	# Restart atd daemon.
 	/etc/init.d/atd restart
@@ -122,11 +122,11 @@ run_test()
 		test -e "${tmpfile}" && exit_code=0
 		if [ ${exit_code} -eq 1 ]; then
 			tst_resm TFAIL "At did not allow user to execute job"
-	else
+		else
 			tst_resm TPASS "At allowed user to execute test job"
-	fi
+		fi
 
-	rm -f "${tmpfile}" >/dev/null 2>&1
+		rm -f "${tmpfile}" >/dev/null 2>&1
 		exit ${exit_code}
 
 	elif [ $(whoami) = "${test_user2}" ]; then
@@ -135,11 +135,12 @@ run_test()
 		export PATH="$PATH:$LTPROOT/testcases/bin"
 
 		echo "(2) TEST PERSON THAT IS NOT IN ${allow} IS NOT ABLE TO RUN JOB."
+
 		echo "echo 'TEST JOB RAN' >>\"${tmpfile}\" 2>&1" |
 		if ! at -m now + 1 minutes; then
 			echo "Expected error while adding job user at for user ${test_user2}"
 		fi
-	echo "Sleeping for 75 seconds...."
+		echo "Sleeping for 75 seconds...."
 		sleep 75
 
 		exit_code=1
@@ -152,6 +153,7 @@ run_test()
 
 		rm -f "${tmpfile}" >/dev/null 2>&1
 		exit ${exit_code}
+
 	fi
 }
 
@@ -171,10 +173,8 @@ elif [ "$(id -ru)" = 0 ]; then
 			exit_code=1
 		else
 			exit_code=0
-		fi 
-
+		fi
 		do_cleanup
-
 	else
 		exit_code=1
 	fi
