@@ -65,6 +65,7 @@
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
+#include "ltp_signal.h"
 
 #ifndef O_CLOEXEC
 # define O_CLOEXEC 02000000
@@ -161,7 +162,7 @@ int main(int argc, char *argv[])
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 			sigemptyset(&ss);
 			sigaddset(&ss, SIGUSR1);
-			fd = syscall(__NR_signalfd4, -1, &ss, 8, 0);
+			fd = syscall(__NR_signalfd4, -1, &ss, SIGSETSIZE, 0);
 			if (fd == -1) {
 				tst_resm(TFAIL, "signalfd4(0) failed");
 				cleanup();
@@ -180,7 +181,7 @@ int main(int argc, char *argv[])
 			}
 			close(fd);
 
-			fd = syscall(__NR_signalfd4, -1, &ss, 8, SFD_CLOEXEC);
+			fd = syscall(__NR_signalfd4, -1, &ss, SIGSETSIZE, SFD_CLOEXEC);
 			if (fd == -1) {
 				tst_resm(TFAIL,
 					 "signalfd4(SFD_CLOEXEC) failed");
