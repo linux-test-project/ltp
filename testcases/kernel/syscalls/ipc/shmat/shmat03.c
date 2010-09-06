@@ -71,11 +71,12 @@ void *addr;			/* for result of shmat-call */
 uid_t ltp_uid;
 char *ltp_user = "nobody";
 
+void do_child(void);
+
 int main(int ac, char **av)
 {
 	char *msg;		/* message returned from parse_opts */
 	int pid;
-	void do_child(void);
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
@@ -91,7 +92,7 @@ int main(int ac, char **av)
 	if (pid == 0) {		/* child */
 		/* set the user ID of the child to the non root user */
 		if (setuid(ltp_uid) == -1) {
-			tst_resm(TBROK, "setuid() failed");
+			perror("setuid() failed");
 			exit(1);
 		}
 
@@ -135,7 +136,7 @@ void do_child()
 		TEST_ERRNO = errno;
 
 		if (addr != (char *)-1) {
-			tst_resm(TFAIL, "call succeeded when error expected");
+			tst_resm(TFAIL, "call succeeded unexpectedly");
 			continue;
 		}
 
@@ -143,13 +144,12 @@ void do_child()
 
 		switch (TEST_ERRNO) {
 		case EACCES:
-			tst_resm(TPASS, "expected failure - errno = "
-				 "%d : %s", TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TPASS|TTERRNO,
+			    "expected failure - errno = ");
 			break;
 		default:
-			tst_resm(TFAIL, "call failed with an "
-				 "unexpected error - %d : %s",
-				 TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TTERRNO,
+			    "call failed with an unexpected error");
 			break;
 		}
 	}
