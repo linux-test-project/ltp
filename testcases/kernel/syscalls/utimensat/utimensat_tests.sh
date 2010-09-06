@@ -43,6 +43,23 @@ if [ ! -f $LTPROOT/testcases/bin/$TEST_PROG ]; then
      exit 1;
 fi
 
+# Since some automated testing systems have no tty while testing,
+# comment this line in /etc/sudoers to avoid the error message:
+# `sudo: sorry, you must have a tty to run sudo'
+# Use trap to restore this line after program terminates.
+pattern="[[:space:]]*Defaults[[:space:]]*requiretty.*"
+if grep -q "^${pattern}" /etc/sudoers; then
+	echo "${TEST_PROG} 0 INFO : Comment requiretty in /etc/sudoers for automated testing systems"
+	sed -E -i"" -e "s/^($pattern)/#\1/" /etc/sudoers
+	trap 'trap "" EXIT; teardown' EXIT
+fi
+
+teardown()
+{
+	echo "${TEST_PROG} 0 INFO : Restore requiretty in /etc/sudoers"
+	sed -E -i"" -e "s/^#($pattern)/\1/" /etc/sudoers
+}
+
 # Summary counters of all test results
 
 test_num=0
