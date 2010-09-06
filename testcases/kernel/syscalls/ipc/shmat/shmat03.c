@@ -144,8 +144,7 @@ void do_child()
 
 		switch (TEST_ERRNO) {
 		case EACCES:
-			tst_resm(TPASS|TTERRNO,
-			    "expected failure - errno = ");
+			tst_resm(TPASS|TTERRNO, "expected failure");
 			break;
 		default:
 			tst_resm(TFAIL|TTERRNO,
