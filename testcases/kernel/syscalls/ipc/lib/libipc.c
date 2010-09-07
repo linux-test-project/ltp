@@ -48,7 +48,7 @@
  * getipckey() - generates and returns a message key used by the "get"
  *		 calls to create an IPC resource.
  */
-int getipckey()
+key_t getipckey()
 {
 	const char a = 'a';
 	int ascii_a = (int)a;

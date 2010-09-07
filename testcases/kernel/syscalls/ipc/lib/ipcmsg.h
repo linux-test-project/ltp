@@ -27,6 +27,7 @@
 #include <errno.h>
 #include <sys/ipc.h>
 #include <sys/msg.h>
+#include <sys/types.h>
 
 #include "test.h"
 #include "usctest.h"
@@ -60,7 +61,7 @@ void check_root();
 void init_buf(MSGBUF *, int, int);
 void rm_queue(int);
 
-int getipckey();
+key_t getipckey();
 int getuserid(char *);
 
 int get_max_msgqueues(void);
