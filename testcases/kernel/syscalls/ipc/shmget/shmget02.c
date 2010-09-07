@@ -66,7 +66,7 @@ int exp_enos[] = { ENOENT, EEXIST, EINVAL, 0 };	/* 0 terminated list of */
 
 int shm_id_1 = -1;
 int shm_nonexisting_key = -1;
-int shmkey2;
+key_t shmkey2;
 
 struct test_case_t {
 	int *skey;
