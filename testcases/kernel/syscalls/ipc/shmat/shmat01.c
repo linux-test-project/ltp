@@ -60,6 +60,8 @@
 char *TCID = "shmat01";
 extern int Tst_count;
 
+void check_functionality(int);
+
 #define CASE0		10	/* values to write into the shared */
 #define CASE1		20	/* memory location.                */
 
@@ -80,31 +82,13 @@ struct test_case_t {
 
 int TST_TOTAL = 3;
 
-static void setup_tc(int i, struct test_case_t *tc)
-{
-
-	struct test_case_t TC[] = {
-		/* a straight forward read/write attach */
-		{&shm_id_1, 0, 0},
-		/* an attach using non aligned memory */
-		{&shm_id_1, SHMLBA - 1, SHM_RND},
-		/* a read only attach */
-		{&shm_id_1, 0, SHM_RDONLY}
-	};
-
-	if (i > TST_TOTAL || i < 0)
-		return;
-
-	*tc = TC[i];
-}
+struct test_case_t *TC;
 
 int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 	int i;
-	struct test_case_t tc;
-	void check_functionality(int);
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
@@ -120,9 +104,6 @@ int main(int ac, char **av)
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
-		/* setup test case paremeters */
-		setup_tc(lc, &tc);
-
 		/* loop through the test cases */
 		for (i = 0; i < TST_TOTAL; i++) {
 
@@ -130,14 +111,13 @@ int main(int ac, char **av)
 			 * Use TEST macro to make the call
 			 */
 			errno = 0;
-			addr = shmat(*(tc.shmid), base_addr + tc.offset,
-				     tc.flags);
+			addr = shmat(*(TC[i].shmid), base_addr+TC[i].offset,
+				     TC[i].flags);
 			TEST_ERRNO = errno;
 
 			if (addr == (void *)-1) {
-				tst_brkm(TFAIL, cleanup, "%s call failed - "
-					 "errno = %d : %s", TCID, TEST_ERRNO,
-					 strerror(TEST_ERRNO));
+				tst_brkm(TFAIL|TTERRNO, cleanup,
+					"shmat call failed");
 			} else {
 				if (STD_FUNCTIONAL_TEST) {
 					check_functionality(i);
@@ -159,7 +139,8 @@ int main(int ac, char **av)
 
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	/* NOTREACHED */
+	return 0;
 }
 
 /*
@@ -172,7 +153,6 @@ void check_functionality(int i)
 	int *shared;
 	int fail = 0;
 	struct shmid_ds buf;
-	struct test_case_t tc;
 
 	shared = (int *)addr;
 
@@ -212,11 +192,10 @@ void check_functionality(int i)
 		 * that the original address given was rounded down as
 		 * specified in the man page.
 		 */
-		setup_tc(1, &tc);
 
 		*shared = CASE1;
-		orig_add = addr + ((unsigned long)tc.offset % SHMLBA);
-		if (orig_add != base_addr + tc.offset) {
+		orig_add = addr + ((unsigned long)TC[1].offset % SHMLBA);
+		if (orig_add != base_addr + TC[1].offset) {
 			tst_resm(TFAIL, "shared memory address is not "
 				 "correct");
 			fail = 1;
@@ -251,6 +230,24 @@ void setup(void)
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
+
+	if ((TC = malloc(TST_TOTAL*sizeof(struct test_case_t))) == NULL)
+		tst_brkm(TFAIL|TERRNO, cleanup, "failed to allocate memory");
+
+	/* a straight forward read/write attach */
+	TC[0].shmid = &shm_id_1;
+	TC[0].offset = 0;
+	TC[0].flags = 0;
+
+	/* an attach using unaligned memory */
+	TC[1].shmid = &shm_id_1;
+	TC[1].offset = SHMLBA-1;
+	TC[1].flags = SHM_RND;
+
+	/* a read only attach */
+	TC[2].shmid = &shm_id_1;
+	TC[2].offset = 0;
+	TC[2].flags = SHM_RDONLY;
 
 	/*
 	 * Create a temporary directory and cd into it.
@@ -290,8 +287,12 @@ void setup(void)
  */
 void cleanup(void)
 {
+
 	/* if it exists, remove the shared memory resource */
 	rm_shm(shm_id_1);
+
+	if (TC != NULL)
+		free(TC);
 
 	/* Remove the temporary directory */
 	tst_rmdir();
