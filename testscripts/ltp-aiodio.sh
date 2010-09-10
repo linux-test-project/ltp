@@ -11,7 +11,7 @@
 
 cd `dirname $0`
 export LTPROOT=${PWD}
-echo $LTPROOT | grep testscripts > /dev/null 2>&1
+echo $LTPROOT | grep testscripts > /dev/nulll 2>&1
 if [ $? -eq 0 ]; then
  cd ..
  export LTPROOT=${PWD}
@@ -131,9 +131,9 @@ if [ "$run0" -eq 0 ]; then
   usage;
 fi
 
-mkdir $TMP  > /dev/nul 2>&1 
-mkdir $TMP/aiodio > /dev/nul  2>&1 
-mkdir $TMP/aiodio2 > /dev/nul  2>&1 
+mkdir $TMP  > /dev/null 2>&1 
+mkdir $TMP/aiodio > /dev/null  2>&1 
+mkdir $TMP/aiodio2 > /dev/null  2>&1 
 
 while [ "$runTest" -lt "$run0" ]
 do
