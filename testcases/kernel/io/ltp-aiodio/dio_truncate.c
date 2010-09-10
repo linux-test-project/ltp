@@ -35,6 +35,7 @@
 #include <unistd.h>
 #include <memory.h>
 #include <string.h>
+#include <limits.h>
 
 #define NUM_CHILDREN 8
 
@@ -128,10 +129,13 @@ void dio_append(char *filename, int fill)
 
 int main(int argc, char **argv)
 {
+	char filename[PATH_MAX];
 	int pid[NUM_CHILDREN];
 	int num_children = 1;
 	int i;
-	char *filename = "/test/aiodio/file";
+
+	snprintf(filename, sizeof(filename), "%s/aiodio/file",
+		getenv("TMP") ? getenv("TMP") : "/tmp");
 
 	for (i = 0; i < num_children; i++) {
 		if ((pid[i] = fork()) == 0) {

@@ -31,17 +31,20 @@
 #include <memory.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <limits.h>
 
 int main()
 {
 	int fd;
 	int i;
 	char buf[32*1024];
-	char filename[1024];
+	char filename[PATH_MAX];
 
-    printf("Starting dirty tests...\n");
+	printf("Starting dirty tests...\n");
 
-	sprintf(filename, "/test/aiodio/file.xx.%d", getpid());
+	snprintf(filename, sizeof(filename), "%s/aiodio/file.xx.%d",
+		getenv("TMP") ? getenv("TMP") : "/tmp", getpid());
+
 	fd = open(filename, O_CREAT|O_WRONLY, 0666);
 
 	memset(buf, 0xaa, sizeof(buf));
@@ -50,5 +53,5 @@ int main()
 	fsync(fd);
 	close(fd);
 	unlink(filename);
-    return 0;
+	return 0;
 }

@@ -36,6 +36,7 @@
 #include <unistd.h>
 #include <sys/mman.h>
 #include <sys/wait.h>
+#include <limits.h>
 
 #include <libaio.h>
 
@@ -393,10 +394,10 @@ long long scale_by_kmg(long long value, char scale)
 
 int main(int argc, char **argv)
 {
+	char filename[PATH_MAX];
 	int pid[NUM_CHILDREN];
 	int num_children = 1;
 	int i;
-	char *filename = "/test/aiodio/file";
 	long alignment = 512;
 	int readsize = 65536;
 	int writesize = 65536;
@@ -407,8 +408,10 @@ int main(int argc, char **argv)
 	extern char *optarg;
 	extern int optind, optopt, opterr;
 
-    printf("Begin aiodio_sparse tests...\n");
+	printf("Begin aiodio_sparse tests...\n");
 
+	snprintf(filename, sizeof(filename), "%s/aiodio/file",
+		getenv("TMP") ? getenv("TMP") : "/tmp");
 
 	while ((c = getopt(argc, argv, "dr:w:n:a:s:i:")) != -1) {
 		char *endp;
