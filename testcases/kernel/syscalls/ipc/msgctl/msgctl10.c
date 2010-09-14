@@ -452,6 +452,8 @@ void setup()
 		cleanup();
 
 	MSGMNI = nr_msgqs - get_used_msgqueues();
+	if( MSGMNI > MAXNPROCS )
+		MSGMNI = MAXNPROCS;
 	if (MSGMNI <= 0) {
 		tst_resm(TBROK,
 			 "Max number of message queues already used, cannot create more.");
