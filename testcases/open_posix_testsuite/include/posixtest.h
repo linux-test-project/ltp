@@ -10,10 +10,24 @@
  * return codes
  */
 
+/*
+ * Define PTS_DEVELOPER_MODE if you want to compile for developer scenarios,
+ * including reporting errors (as opposed to warnings), when compiling some
+ * test programs.
+ */
+
 #if defined(_GNU_SOURCE)
+#if defined(PTS_DEVELOPER_MODE)
 #error "Contains GNU-isms that need fixing."
+#else
+#warning "Contains GNU-isms that need fixing."
+#endif
 #elif defined(_BSD_SOURCE)
+#if defined(PTS_DEVELOPER_MODE)
 #error "Contains BSD-isms that need fixing."
+#else
+#warning "Contains BSD-isms that need fixing."
+#endif
 #endif
 
 #define PTS_PASS        0
