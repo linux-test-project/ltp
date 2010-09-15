@@ -1,4 +1,4 @@
-#! /bin/sh
+﻿#! /bin/sh
 
 ################################################################################
 ##                                                                            ##
@@ -85,7 +85,7 @@ run_stress()
 
 	for i in $(seq 0 $(($1-1)))
 	do
-		eval /bin/kill -s SIGINT \$pid$i 2> /dev/null
+		eval /bin/kill -s SIGKILL \$pid$i 2> /dev/null
 		eval wait \$pid$i
 
 		rmdir /dev/memcg/$i 2> /dev/null
