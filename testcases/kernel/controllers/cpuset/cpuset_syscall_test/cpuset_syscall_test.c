@@ -251,5 +251,6 @@ int main(int argc, char *argv[])
 #else
 int main (void) {
 	printf("System doesn't have required mempolicy support\n");
+	return 0;
 }
 #endif
