@@ -66,7 +66,9 @@
  * MIPS architecture -- regardless, it's a good negative test.. */
 #if defined __mips__
 #include <asm/cachectl.h>
-#define __NR_cacheflush		(__NR_Linux + 197)
+#ifndef __NR_cacheflush
+#define __NR_cacheflush		0
+#endif
 #else
 /* Fake linux_syscall_numbers.h */
 #define __NR_cacheflush		0
