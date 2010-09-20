@@ -20,7 +20,7 @@ char buffer[BUFF_SIZE];
 
 inline void cpuid(int op, int *eax, int *ebx, int *ecx, int *edx)
 {
-#ifndef __i386__
+#if (!defined __i386__ && !defined __x86_64__)
 	return;
 #else
 	__asm__("cpuid"
@@ -47,8 +47,7 @@ int is_ht_cpu()
 		/*printf("The processor in this system supports HT\n");*/
 		return 1;
 	} else {
-		/*printf("The processor in this system does not support
-		* HT\n");*/
+		/*printf("The processor in this system does not support HT\n");*/
 		return 0;
 	}
 }

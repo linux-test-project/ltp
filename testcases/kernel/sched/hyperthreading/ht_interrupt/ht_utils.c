@@ -60,7 +60,7 @@ int is_ht_kernel()
 
 inline void cpuid(int op, int *eax, int *ebx, int *ecx, int *edx)
 {
-#ifndef __i386__
+#if (!defined __i386__ && !defined __x86_64__)
 	return;
 #else
 	__asm__("cpuid"

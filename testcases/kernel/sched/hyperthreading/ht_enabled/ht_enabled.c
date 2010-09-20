@@ -22,8 +22,8 @@ int TST_TOTAL = 1;
 int main(int argc, char *argv[])
 {
 	int ret_val = 1;
-#ifndef __i386__
-	tst_brkm(TCONF, NULL, "This test suite can only execute on i386 architecture.");
+#if  (!defined __x86_64__ && !defined __i386__)
+	tst_brkm(TCONF, NULL, "This test suite can only execute on x86 architecture.");
 #else
 		ret_val = check_ht_capability();
 #endif

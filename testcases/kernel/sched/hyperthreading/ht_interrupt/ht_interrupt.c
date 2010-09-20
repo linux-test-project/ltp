@@ -111,8 +111,8 @@ int main(int argc, char *argv[])
 {
 	tst_resm(TINFO, "Begin: HyperThreading Interrupt");
 
-#ifndef __i386__
-	tst_brkm(TCONF, NULL, "This test suite can only execute on i386 architecture.");
+#if (!defined __i386__ && !defined __x86_64__)
+	tst_brkm(TCONF, NULL, "This test suite can only execute on x86 architecture.");
 #else
 	if (!check_ht_capability())
 	{
