@@ -24,12 +24,7 @@ subject line.
 Now coming to git transformation this month, you can find gitweb
 interface at :
 
-http://ltp.git.sourceforge.net/git/gitweb.cgi?p=ltp/ltp-dev.git;a=summary
-
-There are four branches in ltp-dev.git repository that track the source tree
-of ltp: "master", "maint", "next", "pu". I may add more maintanance
-branch if we have huge backward of incompatible feature updates in the
-future to keep an older release alive.
+http://ltp.git.sourceforge.net/git/gitweb.cgi?p=ltp/ltp.git;a=summary
 
 The master branch is meant to contain what are very well tested and
 ready to be used in production environment. There could occassionaly be
@@ -41,23 +36,6 @@ digit has been added to version release (e.g: YYYYMMDD.1 ), So it means
 it is more stable than YYYYMMDD release. I may be changing this format
 if i can see a better format or if you have some suggestion then it is
 most welcome.
-
-The "maint" branch is called one step before master branch, which will
-contain all features or patches that are going to following month end
-release.
-(e.g: If this month end ltp-full-YYYYMMDD is going be to released
-then all the stable patches you can find in this branch through out the
-month, and one important point for this branch is all the patches which
-has gone to this branch will be well tested and make sure that there is
-no regression or breakage and Acked/Reviewed by Someone from mailing
-list.)
-
-"next" branch will contain all the patches which has been sent on
-ltp-mailing list after getting "Acked-By" and/or "Reviewed-By" anyone
-from list. This branch is quite unstable but user can find their
-immediate patches over here to see the stability.You can find most
-unstable about this branch w.r.t feature wise or may be sometime build wise.
-
 
 NOTE:
 =====
@@ -76,11 +54,11 @@ the remainder of above branches. By the above definition of how "next"
 works, you can tell that this branch will contain quite experimental and
 obviosuly broken stuff.
 
-I would like to thanks everybody who helped me to release ltp-dev git into
+I would like to thanks everybody who helped me to release ltp git into
 current shape. Especially i would like to thank following:
     - git.git from where actually i picked up this branch
       identification.
-    - Garret, who has worked with me step by step to release this git
+    - Garrett, who has worked with me step by step to release this git
       tree implementation to ltp-list@.
     - All my team member from IBM who basically gave encourageable
       input and specially Aneesh, Subrata, Iranna & kamalesh.
@@ -90,18 +68,17 @@ current shape. Especially i would like to thank following:
 
 Usage:
 
-#git clone git://ltp.git.sourceforge.net/gitroot/ltp/ltp-dev.git ltp-dev
+# git clone git://ltp.git.sourceforge.net/gitroot/ltp/ltp.git
 (Make sure you have the latest autoconf/automake before running make
 autotools )
-#make autotools
-#./configure
-#make
-#make install
-#cd /opt/ltp
-#./runltp
+# make autotools
+# ./configure
+# make
+# make install
+# cd /opt/ltp
+# ./runltp
 
 Please do not hesitate to reply this mail if you have any query in your
 mind, it may help me to generate a good FAQ :) .
 
 Happy Testing!!!
-
