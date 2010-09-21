@@ -170,10 +170,10 @@ int main(int ac, char **av)
 				TEST_ERROR_LOG(TEST_ERRNO);
 
 				if (TEST_ERRNO == exp_eno) {
-					tst_resm(TFAIL|TTERRNO,
+					tst_resm(TPASS|TTERRNO,
 						"Got expected error");
 				} else {
-					tst_resm(TPASS|TTERRNO,
+					tst_resm(TFAIL|TTERRNO,
 						"Got unexpected error");
 				}
 			}
