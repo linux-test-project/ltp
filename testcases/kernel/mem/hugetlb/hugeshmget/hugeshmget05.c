@@ -77,7 +77,8 @@ char *ltp_user = "nobody";
 int main(int ac, char **av)
 {
 	char *msg;			/* message returned from parse_opts */
-	int pid;
+	pid_t pid;
+	int status;
 	void do_child(void);
 
 	/* parse standard options */
@@ -105,21 +106,22 @@ int main(int ac, char **av)
 
 		do_child();
 
-		cleanup();
-
+		tst_exit();
 		/*NOTREACHED*/
 	} else {		/* parent */
 		/* wait for the child to return */
-		if (waitpid(pid, NULL, 0) == -1) {
-			tst_brkm(TBROK, cleanup, "waitpid failed");
+		if (waitpid(pid, &status, 0) == -1) {
+			tst_resm(TBROK, "waitpid failed");
 		}
-
-		/* if it exists, remove the shared memory resource */
-		rm_shm(shm_id_1);
-
-		/* Remove the temporary directory */
-		tst_rmdir();
+		else if (status != 0) {
+			tst_resm(TFAIL,	"child process failed to exit cleanly "
+				"(exit status = %d)", status);
+		}
 	}
+
+	cleanup();
+
+	/* NOTREACHED */
 	return 0;
 }
 
@@ -152,13 +154,11 @@ do_child()
 
 		switch(TEST_ERRNO) {
 		case EACCES:
-			tst_resm(TPASS, "expected failure - errno = "
-				 "%d : %s", TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TPASS|TTERRNO, "expected failure");
 			break;
 		default:
-			tst_resm(TFAIL, "call failed with an "
-				 "unexpected error - %d : %s",
-				 TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TTERRNO, "call failed with an "
+				 "unexpected error");
 			break;
 		}		
 	}
@@ -209,6 +209,9 @@ setup(void)
 void
 cleanup(void)
 {
+	/* if it exists, remove the shared memory resource */
+	rm_shm(shm_id_1);
+
 	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
