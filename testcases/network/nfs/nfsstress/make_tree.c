@@ -266,13 +266,13 @@ init_compile( int  what_todo,		 /* do a compile or clean             */
     char	*dirname;	/* location where compile is initated         */
     char	*command;	/* make or make clean command.                */
 
-    if ((dirname = malloc(sizeof(char) * 1024)) == NULL) /* just paranoid */
+    if ((dirname = malloc(sizeof(char) * 2048)) == NULL) /* just paranoid */
     {
         perror("init_compile(): dirname malloc()");
         return 1;
     }
 
-    if ((command = malloc(1024)) == NULL) 		/* just paranoid */
+    if ((command = malloc(sizeof(char) * 1024)) == NULL) /* just paranoid */
     {
         perror("init_compile(): dirname malloc()");
         return 1;
@@ -364,23 +364,29 @@ rm_file_dir( int  numsdir,		/* how many subdirs to remove         */
     int		dircnt;		        /* index into directory tree          */
     int		sindex = numsdir;       /* num subdirectory tree to remove    */
     char	*dirname;		/* name of the directory to chdir()   */
+    char	*tmpdirname;		/* temp name for directory, for swap  */
     char	*filename;		/* name of the cfile to remove        */
     char	*subdir;		/* name of the sub dir to remove      */
 
-    if ((dirname = malloc(sizeof(char) * 1024)) == NULL) /* just paranoid */
+    if ((dirname = malloc(sizeof(char) * 2048)) == NULL) /* just paranoid */
     {
         perror("crte_mk_rm(): dirname malloc()");
 	return 1;
     }
     
+    if ((tmpdirname = malloc(sizeof(char) * 2048)) == NULL) /* just paranoid */
+    {
+        perror("crte_mk_rm(): tmpdirname malloc()");
+	return 1;
+    }
 
-    if ((filename = malloc(sizeof(char) * 1024)) == NULL) /* just paranoid */
+    if ((filename = malloc(sizeof(char) * 2048)) == NULL) /* just paranoid */
     {
         perror("crte_mk_rm(): filename malloc()");
 	return 1;
     }
 
-    if ((subdir = malloc(sizeof(char) * 1024)) == NULL) /* just paranoid */
+    if ((subdir = malloc(sizeof(char) * 2048)) == NULL) /* just paranoid */
     {
         perror("crte_mk_rm(): subdir malloc()");
 	return 1;
@@ -391,9 +397,16 @@ rm_file_dir( int  numsdir,		/* how many subdirs to remove         */
     {
         /* get the name of the last directory created. */
         for (dircnt = 0; dircnt < sindex; dircnt++)
-            (dircnt == 0) ? 
-	       sprintf(dirname, "%s/%s.%ld", base_dir, hname, gettid()) :
-               sprintf(dirname, "%s/%ld.%d", dirname, gettid(), dircnt);
+        {
+            if (dircnt == 0)
+                sprintf(dirname, "%s/%s.%ld", base_dir, hname, gettid());
+            else
+            {
+                 sprintf(tmpdirname, "%s/%ld.%d", dirname, gettid(), dircnt);
+                 sprintf(dirname, "%s", tmpdirname);
+            }
+            sync;
+        }
 
         dprt("pid[%d]: cd'ing to last created dir: %s\n", gettid(), dirname);
 
@@ -410,6 +423,7 @@ rm_file_dir( int  numsdir,		/* how many subdirs to remove         */
             {
                 dprt("pid[%d]: failed removing file: %s\n", gettid(), filename);
                 perror("rm_file_dir(): unlink()");
+                free(tmpdirname);
                 free(dirname);
                 free(filename);
                 free(subdir);
@@ -423,6 +437,7 @@ rm_file_dir( int  numsdir,		/* how many subdirs to remove         */
         if (unlink(filename))
         {
             perror("rm_file_dir() cound not remove makefile unlink()");
+            free(tmpdirname);
             free(dirname);
             free(filename);
             free(subdir);
@@ -442,6 +457,7 @@ rm_file_dir( int  numsdir,		/* how many subdirs to remove         */
             if (rmdir(subdir) == -1)
             {
                 perror("rm_file_dir() rmdir()");
+                free(tmpdirname);
                 free(dirname);
                 free(filename);
                 free(subdir);
@@ -451,6 +467,7 @@ rm_file_dir( int  numsdir,		/* how many subdirs to remove         */
         }
     }
 
+    free(tmpdirname);
     free(dirname);
     free(filename);
     free(subdir);
@@ -484,6 +501,7 @@ crte_mk_rm(void *args)
     int		filecnt;	/* index to the number of ".c" files created  */
     int		numchar[2];	/* number of characters written to buffer     */
     char 	*dirname;	/* name of the directory/idirectory tree      */
+    char 	*tmpdirname;	/* name of a temporary directory, for swaping */
     char	*cfilename;     /* name of the ".c" file created	      */
     char	*mkfilename;	/* name of the makefile - which is "makefile" */
     char	*hostname;	/* hostname of the client machine             */
@@ -494,19 +512,25 @@ crte_mk_rm(void *args)
                              (long *)args; 
     volatile int exit_val = 0;  /* exit value of the pthreads		      */
 
-    if ((dirname = malloc(sizeof(char) * 1024)) == NULL) /* just paranoid */
+    if ((dirname = malloc(sizeof(char) * 2048)) == NULL) /* just paranoid */
     {
         perror("crte_mk_rm(): dirname malloc()");
 	PTHREAD_EXIT(-1);
     }
 
-    if ((cfilename = malloc(sizeof(char) * 1024)) == NULL)
+    if ((tmpdirname = malloc(sizeof(char) * 2048)) == NULL)
+    {
+        perror("crte_mk_rm(): tmpdirname malloc()");
+	PTHREAD_EXIT(-1);
+    }
+
+    if ((cfilename = malloc(sizeof(char) * 2048)) == NULL)
     {
         perror("crte_mk_rm(): cfilename malloc()");
 	PTHREAD_EXIT(-1);
     }
 
-    if ((mkfilename = malloc(sizeof(char) * 1024)) == NULL)
+    if ((mkfilename = malloc(sizeof(char) * 2048)) == NULL)
     {
         perror("crte_mk_rm(): mkfilename malloc()");
 	PTHREAD_EXIT(-1);
@@ -547,9 +571,14 @@ crte_mk_rm(void *args)
     for (dircnt = 0; dircnt < (int)locargptr[0]; dircnt++)
     {
         /* First create the base directory, then create the subdirectories   */
-        (dircnt == 0) ?
-	    sprintf(dirname, "%s.%ld", hostname, gettid()):
-            sprintf(dirname, "%s/%ld.%d", dirname, gettid(), dircnt);
+        if (dircnt == 0)
+            sprintf(dirname, "%s.%ld", hostname, gettid());
+        else
+        {
+            sprintf(tmpdirname, "%s/%ld.%d", dirname, gettid(), dircnt);
+            sprintf(dirname, "%s", tmpdirname);
+        }
+        sync();
           
         dprt("pid[%d] creating directory: %s\n", gettid(), dirname); 
         if (mkdir(dirname, 0777) == -1)
@@ -563,9 +592,14 @@ crte_mk_rm(void *args)
     usleep(10);
     for (dircnt = 0; dircnt < (int)locargptr[0]; dircnt++)
     {
-        (dircnt == 0) ?
-	    sprintf(dirname, "%s/%s.%ld", pwd, hostname, gettid()):
-            sprintf(dirname, "%s/%ld.%d", dirname, gettid(), dircnt);
+        if (dircnt == 0)
+            sprintf(dirname, "%s/%s.%ld", pwd, hostname, gettid());
+        else
+        {
+            sprintf(tmpdirname, "%s/%ld.%d", dirname, gettid(), dircnt);
+            sprintf(dirname, "%s", tmpdirname);
+        }
+        sync();
         if ((make_buf = malloc(sizeof(char) * 4096)) == NULL)
         {
             perror("crte_mk_rm(): make_buf malloc()");
@@ -641,9 +675,14 @@ crte_mk_rm(void *args)
 
     for (dircnt = 0; dircnt < (int)locargptr[0]; dircnt++)
     {
-        (dircnt == 0) ?
-	    sprintf(dirname, "%s/%s.%ld", pwd, hostname, gettid()):
-            sprintf(dirname, "%s/%ld.%d", dirname, gettid(), dircnt);
+        if (dircnt == 0)
+            sprintf(dirname, "%s/%s.%ld", pwd, hostname, gettid());
+        else
+        {
+            sprintf(tmpdirname, "%s/%ld.%d", dirname, gettid(), dircnt);
+            sprintf(dirname, "%s", tmpdirname);
+        }
+        sync();
         /* In each directory create N ".c" files and a makefile. */
         for (filecnt = 0; filecnt < (int)locargptr[1]; filecnt++)
         {
