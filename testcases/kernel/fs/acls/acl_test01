@@ -125,7 +125,7 @@ else
 
 	# Avoid hardcoded loopback device values (-f tries to find the first
 	# available loopback device name)!
-	if ! (LOOP_DEV=$(loop_dev -f) && [ "x$LOOP_DEV" = x ]); then
+	if ! (LOOP_DEV=$(losetup -f) && [ "x$LOOP_DEV" = x ]); then
 		tst_resm TCONF "[ losetup.1 ] Failed to find an available loopback device -- is the required support compiled in your kernel?"
 		exit 0
 	fi
