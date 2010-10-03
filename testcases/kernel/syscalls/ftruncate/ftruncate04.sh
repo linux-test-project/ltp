@@ -22,7 +22,7 @@ set -- $(df -P . | awk '/^\// { print $1, $NF }')
 DEV=$1; MOUNT_POINT=$2
 if [ "x$DEV" = x -o "x$MOUNT_POINT" = x ] ; then
     tst_resm TCONF "backend mountpoint for $TMPDIR does not correspond to a real device:"
-    df .
+    df -P .
     exit 0 
 fi
 FLAG=$(mount | grep ${DEV} | sed 's/.*(\(.*\)).*/\1/g')
