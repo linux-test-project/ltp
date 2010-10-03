@@ -18,7 +18,7 @@ else
     export TST_TOTAL=1
 fi
 cd ${TMPDIR:=/tmp}
-set -- $(df . | awk '/^\// { print $1, $NF }')
+set -- $(df -P . | awk '/^\// { print $1, $NF }')
 DEV=$1; MOUNT_POINT=$2
 if [ "x$DEV" = x -o "x$MOUNT_POINT" = x ] ; then
     tst_resm TCONF "backend mountpoint for $TMPDIR does not correspond to a real device:"
