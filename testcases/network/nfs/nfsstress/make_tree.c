@@ -405,7 +405,7 @@ rm_file_dir( int  numsdir,		/* how many subdirs to remove         */
                  sprintf(tmpdirname, "%s/%ld.%d", dirname, gettid(), dircnt);
                  sprintf(dirname, "%s", tmpdirname);
             }
-            sync;
+            sync();
         }
 
         dprt("pid[%d]: cd'ing to last created dir: %s\n", gettid(), dirname);
