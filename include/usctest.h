@@ -65,7 +65,7 @@
  *
  *    RETURN VALUE
  * 	TEST(SCALL) - Global Variables set:
- *			int TEST_RETURN=return code from SCALL
+ *			long TEST_RETURN=return code from SCALL
  *			int TEST_ERRNO=value of errno at return from SCALL
  * 	TEST_VOID(SCALL) - Global Variables set:
  *			int TEST_ERRNO=value of errno at return from SCALL
