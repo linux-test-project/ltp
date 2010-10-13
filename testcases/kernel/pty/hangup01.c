@@ -64,6 +64,8 @@ void
 cleanup(void)
 {
 
+	int status;
+
 	if (0 < childpid) {
 
 		/* If the PID is still alive... */
