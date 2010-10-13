@@ -142,7 +142,7 @@ extern float STD_LOOP_DURATION, /* wall clock time to iterate */
 /**********************************************************************
  * Prototype for parse_opts routine
  **********************************************************************/
-extern char *parse_opts(int ac, char **av, option_t *user_optarr, void (*uhf)());
+extern char *parse_opts(int ac, char **av, const option_t *user_optarr, void (*uhf)());
 
 
 /*
