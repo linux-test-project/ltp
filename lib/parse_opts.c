@@ -203,7 +203,7 @@ extern char *child_args;	/* Arguments to child when -C is used */
  * parse_opts:
  **********************************************************************/
 char *
-parse_opts(int ac, char **av, option_t *user_optarr, void (*uhf)())
+parse_opts(int ac, char **av, const option_t *user_optarr, void (*uhf)())
 {
     int found;		/* flag to indicate that an option specified was */
 			/* found in the user's list */
