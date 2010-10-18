@@ -39,7 +39,7 @@ int main()
 	char tmpfname[256];
 #define BUF_SIZE 111
 	char buf[BUF_SIZE];
-	int fd;
+	int fd, ret;
 	struct aiocb aiocb;
 
 	if (sysconf(_SC_ASYNCHRONOUS_IO) != 200112L)
@@ -52,8 +52,7 @@ int main()
 		  S_IRUSR | S_IWUSR);
 	if (fd == -1)
 	{
-		printf(TNAME " Error at open(): %s\n",
-		       strerror(errno));
+		printf(TNAME " Error at open(): %s\n", strerror(errno));
 		return PTS_UNRESOLVED;
 	}
 
@@ -67,17 +66,16 @@ int main()
 
 	if (aio_write(&aiocb) == -1)
 	{
-		printf(TNAME " Error at aio_write(): %s\n",
-		       strerror(errno));
+		printf(TNAME " Error at aio_write(): %s\n", strerror(errno));
 		return PTS_FAIL;
 	}
 
-	while(aio_error(&aiocb) == EINPROGRESS);
+	while (aio_error(&aiocb) == EINPROGRESS);
 
-	if (aio_error(&aiocb) != 0)
+	ret = aio_error(&aiocb);
+	if (ret != 0)
 	{
-		printf(TNAME " Error at aio_error(): %s\n",
-		       strerror(errno));
+		printf(TNAME " Error at aio_error(): %s\n", strerror(ret));
 		return PTS_FAIL;
 	}
 	
