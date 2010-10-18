@@ -68,18 +68,11 @@ int main()
 	aiocb.aio_reqprio = -1;
 	aiocb.aio_nbytes = BUF_SIZE;
 
-	if (aio_write(&aiocb) != 0)
-	{
-		printf(TNAME " bad aio_read return value()\n");
-		exit(PTS_FAIL);
-	}
-
-	while (aio_error (&aiocb) == EINPROGRESS);
 	ret = aio_error(&aiocb);
 
 	if (ret != EINVAL)
 	{
-		printf(TNAME " errno is not EINVAL %s\n", strerror(errno));
+		printf(TNAME " errno is not EINVAL %s\n", strerror(ret));
 		return PTS_FAIL;
 	}
 
