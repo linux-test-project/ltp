@@ -1,0 +1,10 @@
+For more information on securebits, see the capabilities.7 manpage,
+specifically the section entitled
+
+        The "securebits" flags: establishing a capabilities-only environment
+
+To run these tests there are no kernel configuration requirements, but
+your kernel must be at least Linux 2.6.32-rc7, and you must have a
+/usr/include/linux/securebits.h which defines SECBIT_NOROOT.  You also
+need the libcap v2 development libraries installed.
+
