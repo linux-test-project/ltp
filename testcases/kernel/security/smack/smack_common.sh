@@ -28,7 +28,7 @@
 smackfsdir=${smackfsdir:=/smack}
 
 check_mounted() {
-	if [ ! -d "$smackfsdir" ]; then
+	if ! expr "$smackfsdir" : "$(df -P | awk "\$NF == \"$smackfsdir\""'{ print $NF }')"; then
 		echo "smackfs not mounted at $smackfsdir"
 		exit 1
 	fi
@@ -36,7 +36,7 @@ check_mounted() {
 
 check_onlycap() {
 	onlycap=`cat "$smackfsdir/onlycap" 2>/dev/null`
-	if [ -z "$onlycap" ]; then
+	if [ "$onlycap" != "" ]; then
 		cat <<EOM
 The smack label reported for $smackfsdir/onlycap is "$onlycap", not the expected "".
 EOM
