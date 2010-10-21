@@ -103,6 +103,7 @@ int main(void)
 		}
 
 	} else {
+		close(fd);
 		printf(TNAME " Error at aio_error(): %s\n",
 			strerror(retval));
 		exit(PTS_UNRESOLVED);

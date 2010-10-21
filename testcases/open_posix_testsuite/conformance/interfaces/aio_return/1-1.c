@@ -82,10 +82,14 @@ int main(void)
 		printf(TNAME " Error at aio_return(): %s\n",
 		       strerror(aio_error(&aiocb)));
 		exit(PTS_FAIL);
+	} else if (retval != BUF_SIZE) {
+		close(fd);
+		printf(TNAME "aio_return didn't return expected size: %d\n",
+			retval);
+		exit(PTS_FAIL);
 	}
 
 	close(fd);
-	printf("aio_return(&aiocb) = %d\n", retval);
 	printf("Test PASSED\n");
 	exit(PTS_PASS);
 }

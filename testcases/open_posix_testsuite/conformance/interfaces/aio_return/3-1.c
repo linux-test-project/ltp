@@ -104,8 +104,10 @@ int main(void)
 	retval = aio_return(&aiocb);
 
 	if (retval == -1) {
+		close(fd);
 		printf(TNAME " Error at aio_return(): %s\n",
 		       strerror(aio_error(&aiocb)));
+		exit(PTS_FAIL);
 	} else {
 
 		if (retval != (BUF_SIZE / 2)) {
