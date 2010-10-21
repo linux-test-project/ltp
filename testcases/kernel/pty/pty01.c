@@ -136,13 +136,11 @@ test1(void)
 
 	if (read(slavefd, buf, strlen(STRING)) != strlen(STRING)) {
 		/* XXX: Same as write above.. */
-		tst_resm(TFAIL|TERRNO, NULL, "read from slave");
+		tst_brkm(TFAIL|TERRNO, NULL, "read from slave");
 	}
 	if (strncmp(STRING, buf,strlen(STRING)-1) != 0) {
-		tst_resm(TFAIL, "strings are different.");
-		tst_resm(TFAIL, "STRING:%s",STRING);
-		tst_resm(TFAIL, "buf:%s",buf);
-		tst_exit();
+		tst_brkm(TFAIL, NULL,
+			"strings are different (STRING = '%s' != buf = '%s')", STRING, buf);
 	}
 
 	/*
@@ -227,7 +225,7 @@ test2(void)
 
 	slavefd = open(slavename, O_RDWR);
 	if (slavefd < 0) {
-		tst_brkm(TBROK|TERRNO, NULL "Could not open %s", slavename);
+		tst_brkm(TBROK|TERRNO, NULL, "Could not open %s", slavename);
 	}
 
 	/*
@@ -240,26 +238,26 @@ test2(void)
 
 	errno = 0;
 	if ((i = read(slavefd, &c, 1)) == 1) {
-		tst_brkm(TFAIL, NULL
+		tst_brkm(TFAIL, NULL,
 			"reading from slave fd should have failed, but didn't"
 			"(read '%c')", c);
 	}
 
 	if ((i = write(slavefd, &c, 1)) == 1) {
-		tst_resm(TFAIL, NULL,
+		tst_brkm(TFAIL, NULL,
 			"writing to slave fd should have failed, but didn't");
 	}
 
 	if (ioctl(slavefd, TIOCGWINSZ, NULL) == 0)  {
-		tst_resm(TFAIL, NULL,
+		tst_brkm(TFAIL, NULL,
 			"trying TIOCGWINSZ on slave fd should have failed, "
 			"but didn't");
 	}
 
 	if (close(slavefd) != 0) {
-		tst_resm(TBROK, NULL, "close");
+		tst_brkm(TBROK, NULL, "close");
 	}
-	tst_resm(TPASS,"test2");
+	tst_resm(TPASS, "test2");
 }
 
 /*
@@ -286,7 +284,7 @@ test3(void)
 /*
  * test multiple opens on slave side of pty
  */
-static int
+static void 
 test4(void)
 {
 	int masterfd;		/* master pty fd */
@@ -380,7 +378,7 @@ test5(void)
 				exit(1);
 			}
 			if (grantpt(masterfd) != 0) {
-				printf("proc %d: grantpt() call failed",
+				printf("proc %d: grantpt() call failed: %s",
 					i, strerror(errno));
 				exit(1);
 			}
