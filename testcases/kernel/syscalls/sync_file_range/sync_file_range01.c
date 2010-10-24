@@ -238,20 +238,19 @@ static inline long syncfilerange(int fd, off64_t offset, off64_t nbytes,
 				 unsigned int flags)
 {
 
-#if (defined(__powerpc64__) || defined(__powerpc__)) && (__WORDSIZE==32)
-
+#if (defined(__arm__) || defined(__powerpc__) || defined(__powerpc64__)) && \
+    (__WORDSIZE == 32)
+#if __BYTE_ORDER == __BIG_ENDIAN
 	return syscall(__NR_sync_file_range2, fd, flags, (int)(offset >> 32),
 		       (int)offset, (int)(nbytes >> 32), (int)nbytes);
-
-#elif (defined(__powerpc64__) || defined(__powerpc__)) && (__WORDSIZE==64)
-
-	return syscall(__NR_sync_file_range2, fd, flags, offset, nbytes);
+#elif __BYTE_ORDER == __LITTLE_ENDIAN
+	return syscall(__NR_sync_file_range2, fd, flags, (int)offset,
+		       (int)(offset >> 32), nbytes, (int)(nbytes >> 32));
+#endif
 #else
-
-	return syscall(__NR_sync_file_range, fd, offset, nbytes, flags);
+	return syscall(__NR_sync_file_range2, fd, flags, offset, nbytes);
 #endif
 
-	return 0;
 }
 
 /******************************************************************************/
