@@ -197,7 +197,6 @@ void *thread_sample(void *arg)
 
 void *thread_tb(void *arg)
 {
-	time_t timeoutsec;
 	struct timespec boost_time;
 	double seconds, t0, t1;
 	int rc;
