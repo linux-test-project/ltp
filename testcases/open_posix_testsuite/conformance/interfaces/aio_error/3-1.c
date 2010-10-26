@@ -72,7 +72,8 @@ int main()
 
 	if (ret != EINVAL)
 	{
-		printf(TNAME " errno is not EINVAL %s\n", strerror(ret));
+		printf(TNAME " return code didn't match expected "
+			"value (%d != %d).\n", ret, EINVAL);
 		return PTS_FAIL;
 	}
 
