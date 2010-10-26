@@ -46,8 +46,6 @@ run_test() {
 
 	complog=`basename $testname`.log.$$
 
-	set -x
-
 	sh -c "$SCRIPT_DIR/t0 $TIMEOUT_VAL ./$1 $(cat ./$(echo "$1" | sed 's,\.[^\.]*,,').args)" > $complog 2>&1
 
 	set +x
