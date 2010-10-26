@@ -97,22 +97,6 @@
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
 
-#if defined(__powerpc__) || defined(__powerpc64__)
-#ifndef __NR_sync_file_range2
-#define __NR_sync_file_range2 -1	//DUMMY VALUE
-int arch_support = 0;		//Architecure is not supported
-#else
-int arch_support = 1;		//Architecture is supported
-#endif
-#else
-#ifndef __NR_sync_file_range
-#define __NR_sync_file_range -1	//DUMMY Value
-int arch_support = 0;
-#else
-int arch_support = 1;
-#endif
-#endif
-
 #ifndef SYNC_FILE_RANGE_WAIT_BEFORE
 #define SYNC_FILE_RANGE_WAIT_BEFORE 1
 #define SYNC_FILE_RANGE_WRITE 2	//DUMMY VALUES
@@ -288,14 +272,14 @@ int main(int ac,		/* number of command line parameters                      */
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 
 #if defined(__powerpc__) || defined(__powerpc64__)	/* for PPC, kernel version > 2.6.21 needed */
-	if (!arch_support || (tst_kvercmp(2, 16, 22) < 0)) {
+	if (tst_kvercmp(2, 16, 22) < 0) {
 		tst_resm(TCONF, "System doesn't support execution of the test");
 		tst_exit();
 	}
 #else
 	/* For other archs, need kernel version > 2.6.16 */
 
-	if (!arch_support || (tst_kvercmp(2, 6, 17) < 0)) {
+	if (tst_kvercmp(2, 6, 17) < 0) {
 		tst_resm(TCONF, "System doesn't support execution of the test");
 		tst_exit();
 	}
