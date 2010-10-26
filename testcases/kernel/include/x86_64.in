@@ -296,3 +296,7 @@ preadv 295
 pwritev 296
 rt_tgsigqueueinfo 297
 perf_event_open 298
+recvmmsg 299
+fanotify_init 300
+fanotify_mark 301
+prlimit64 302
