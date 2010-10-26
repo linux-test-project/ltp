@@ -44,10 +44,11 @@
 $trace_logic
 
 # Make sure the value of LTPROOT
-LTPROOT=${LTPROOT:-`(cd ../../../../ ; pwd)`}
-export LTPROOT
+LTPROOT=${LTPROOT:-`(cd ../../ ; pwd)`}
+TMPDIR=${TMPDIR:-/tmp}
+export LTPROOT TMPDIR
 
-# Check the environmanet variable for the test
+# Check the environment variable for the test
 . check_envval || exit 1
 
 # Arguments
@@ -69,7 +70,7 @@ case $host_type in
     ;;
 
     *)
-    echo "$0: 1st argumet is lhost or rhost" >&2
+    echo "$0: 1st argument must be lhost or rhost" >&2
     exit 1
     ;;
 esac
@@ -82,7 +83,7 @@ if [ x${hwaddr} = x ]; then
     exit 1
 fi
 
-ip_link_show_out=`mktemp -p $TMPDIR`
+ip_link_show_out=`mktemp $TMPDIR/tmp.XXXXXXXX`
 if [ $host_type = lhost ]; then
     ip link show > $ip_link_show_out 2>&1
 else
