@@ -9,7 +9,7 @@
 /*
  * assertion:
  *
- *	aio_error() shall fail if:
+ *	aio_error() may fail if:
  *	[EINVAL] The aiocbp argument does not refer to an asynchronous
  *	operation whose return status has not yet been retrieved.
  *
@@ -74,7 +74,7 @@ int main()
 	{
 		printf(TNAME " return code didn't match expected "
 			"value (%d != %d).\n", ret, EINVAL);
-		return PTS_FAIL;
+		return PTS_UNRESOLVED;
 	}
 
 	close(fd);
