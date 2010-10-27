@@ -27,7 +27,8 @@ include $(top_srcdir)/include/mk/env_pre.mk
 # XXX (garrcoop):
 # 1. ballista is broken (working on it).
 # 2. kdump shouldn't be compiled by default, because it's runtime based and
-#    WILL crash the build host (the tests need to be fixed to just build, not run).
+#    WILL crash the build host (the tests need to be fixed to just build, not
+#    run).
 # 3. mce-test doesn't fit cleanly in the build, yet.
 # 4. pounder21 is just broken.
 FILTER_OUT_DIRS		:= ballista kdump mce-test open% pounder21
@@ -36,8 +37,8 @@ FILTER_OUT_DIRS		:= ballista kdump mce-test open% pounder21
 # original list of disabled items...
 # XXX (garrcoop): kdump was in this list.
 # XXX (garrcoop): open_hpi_testsuite was in this list.
-ifneq ($(UCLINUX),1)
-FILTER_OUT_DIRS		+= audit-test DOTS realtime
+ifeq ($(UCLINUX),1)
+FILTER_OUT_DIRS		+= DOTS realtime
 endif
 
 #
