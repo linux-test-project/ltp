@@ -91,7 +91,7 @@ int main(void)
 			printf(TNAME " Second call to aio_return() should "
 				"return -1; aio_return() returned %d\n",
 				retval);
-			exit(PTS_FAIL);
+			exit(PTS_UNRESOLVED);
 		}
 
 	} else {
