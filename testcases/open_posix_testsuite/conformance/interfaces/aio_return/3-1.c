@@ -68,7 +68,7 @@ int main(void)
 	aiocb.aio_fildes = fd;
 	aiocb.aio_buf    = buf;
 	aiocb.aio_nbytes = BUF_SIZE;
-	
+
 	if (aio_write(&aiocb) == -1) {
 		close(fd);
 		printf(TNAME " Error at aio_write(): %s\n",
@@ -107,14 +107,15 @@ int main(void)
 		close(fd);
 		printf(TNAME " Error at aio_return(): %s\n",
 		       strerror(aio_error(&aiocb)));
-		exit(PTS_FAIL);
+		exit(PTS_UNRESOLVED);
 	} else {
 
 		if (retval != (BUF_SIZE / 2)) {
 			close(fd);
-			printf(TNAME " Error at aio_return(): %d, %s\n",
-			       retval, strerror(aio_error(&aiocb)));
-			exit(PTS_FAIL);
+			printf(TNAME " aio_return() didn't fail as expected: "
+				"%d, %s\n",
+				retval, strerror(aio_error(&aiocb)));
+			exit(PTS_UNRESOLVED);
 		}
 
 	}

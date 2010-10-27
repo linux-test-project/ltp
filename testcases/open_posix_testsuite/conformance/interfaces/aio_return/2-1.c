@@ -88,7 +88,7 @@ int main(void)
 
 		if (retval != -1) {
 			close(fd);
-			printf(TNAME " Second call to aio_return() should "
+			printf(TNAME " Second call to aio_return() may "
 				"return -1; aio_return() returned %d\n",
 				retval);
 			exit(PTS_UNRESOLVED);

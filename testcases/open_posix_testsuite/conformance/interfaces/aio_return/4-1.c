@@ -87,10 +87,10 @@ int main(void)
 
 		retval = aio_return(&aiocb2);
 
-		if (retval != -1) {
+		if (retval != -1 || aio_error(&aiocb) != EINVAL) {
 			close(fd);
-			printf(TNAME " aio_return() should fail\n");
-			exit(PTS_FAIL);
+			printf(TNAME " aio_return() may fail\n");
+			exit(PTS_UNRESOLVED);
 		}
 
 		retval = aio_return(&aiocb);
@@ -99,7 +99,7 @@ int main(void)
 			close(fd);
 			printf(TNAME " Error at aio_return(): %d, %s\n", retval,
 			       strerror(aio_error(&aiocb)));
-			exit(PTS_FAIL);
+			exit(PTS_UNRESOLVED);
 		}
 
 	} else {

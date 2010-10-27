@@ -95,10 +95,10 @@ int main(void)
 
 		if (retval != -1 && aio_error(&aiocb) != EINVAL) {
 			close(fd);
-			printf(TNAME " aio_return() should fail with (-1, %d); "
+			printf(TNAME " aio_return() may fail with (-1, %d); "
 				"failed with (%d, %d) instead\n",
 				EINVAL, retval, aio_error(&aiocb));
-			exit(PTS_FAIL);
+			exit(PTS_UNRESOLVED);
 		}
 
 	}
