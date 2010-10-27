@@ -18,5 +18,5 @@ export SCRIPTS_DIR=$TESTS_DIR/scripts
 export PROFILES_DIR=$TESTS_DIR/profiles
 export LOG_DIR=$TESTS_DIR/logs
 export ARGUMENTS_INPUT_ERROR=25
-export LOG_FORMAT="`hostname --short`-`uname -m`-`uname -r`-`date +%Y-%d-%m`"
+export LOG_FORMAT="`hostname -s`-`uname -m`-`uname -r`-`date +%F`"
 
