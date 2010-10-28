@@ -1,4 +1,4 @@
-JAVAC = javac
+JAVAC ?= javac
 
 all:
 	$(JAVAC) -d ../../../classes -classpath ../../../classes BTCJ1.java
