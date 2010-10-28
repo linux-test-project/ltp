@@ -48,8 +48,6 @@ run_test() {
 
 	sh -c "$SCRIPT_DIR/t0 $TIMEOUT_VAL ./$1 $(cat ./$(echo "$1" | sed 's,\.[^\.]*,,').args 2>/dev/null)" > $complog 2>&1
 
-	set +x
-
 	ret_code=$?
 
 	if [ "$ret_code" = "0" ]; then
