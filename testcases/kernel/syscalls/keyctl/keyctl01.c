@@ -40,8 +40,10 @@
 
 #include <linux/keyctl.h>
 #include <errno.h>
+#include <keyutils.h>
 #include <limits.h>
 #include <stdio.h>
+
 /* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
