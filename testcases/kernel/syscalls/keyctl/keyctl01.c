@@ -38,6 +38,7 @@
 /*	      Manas Kumar Nayak maknayak@in.ibm.com>			*/
 /******************************************************************************/
 
+#include <sys/types.h>
 #include <linux/keyctl.h>
 #include <errno.h>
 #include <keyutils.h>
