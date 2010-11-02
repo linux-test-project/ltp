@@ -37,6 +37,15 @@ AUTOCONFED_SUBDIRS	= \
 testcases/realtime/configure:
 	$(MAKE) -C $(@D) autotools
 
+.PHONY: testcases/kernel/syscalls/pcllib/configure
+testcases/kernel/syscalls/pcllib/configure:
+	set -x; \
+	cd $(@D) && \
+	$(ACLOCAL) && \
+	$(AUTOCONF) && \
+	$(AUTOHEADER) && \
+	$(AUTOMAKE) --add-missing
+
 .PHONY: autotools
 autotools: aclocal autoconf autoheader automake $(addsuffix /configure,$(AUTOCONFED_SUBDIRS))
 
