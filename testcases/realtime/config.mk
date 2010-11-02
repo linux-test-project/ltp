@@ -25,10 +25,14 @@
 #
 # THIS IS NOT TO BE INCLUDED WITH lib!!!
 
-realtime_builddir	:= $(abs_top_builddir)/testcases/realtime
-realtime_srcdir		:= $(abs_top_srcdir)/testcases/realtime
+realtime_reldir		:= testcases/realtime
+
+realtime_builddir	:= $(abs_top_builddir)/$(realtime_reldir)
+realtime_srcdir		:= $(abs_top_srcdir)/$(realtime_reldir)
 
 CPPFLAGS		+= -I$(realtime_srcdir)/include
 CFLAGS			+= -D_GNU_SOURCE
 LDLIBS			+= -lrealtime -lpthread -lrt -lm
 LDFLAGS			+= -L$(realtime_builddir)/lib
+
+INSTALL_DIR		:= $(srcdir)
