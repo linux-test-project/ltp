@@ -98,6 +98,7 @@ endif
 ifeq ($(filter autotools %clean help,$(MAKECMDGOALS)),)
 
 include $(abs_top_builddir)/include/mk/config.mk
+include $(abs_top_builddir)/include/mk/features.mk
 
 # START out-of-build-tree check.
 ifneq ($(abs_builddir),$(abs_srcdir))
