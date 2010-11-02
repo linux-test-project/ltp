@@ -187,7 +187,7 @@ void *thread_tb1(void *arg)
 
 	pthread_mutex_lock(&mutex2);
  
-	boost_time.tv_sec = time(NULL) + *(time_t *)timeoutsec;
+	boost_time.tv_sec = time(NULL) + *(time_t *)arg;
 	boost_time.tv_nsec = 0;
 	t0 = seconds_read();
 	rc = pthread_mutex_timedlock(&mutex1, &boost_time);	

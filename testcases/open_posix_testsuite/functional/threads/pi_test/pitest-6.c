@@ -204,9 +204,9 @@ void *thread_tb(void *arg)
 	DPRINTF(stderr,"Thread TB: started\n");
 	
 	DPRINTF(stdout, "#EVENT %f TB Started, waiting for mutex for %lu s\n", 
-		seconds_read() - base_time, timeoutsec);
+		seconds_read() - base_time, *(time_t *)arg);
 
-	boost_time.tv_sec = time(NULL) + *(time_t *)timeoutsec;
+	boost_time.tv_sec = time(NULL) + *(time_t *)arg;
 	boost_time.tv_nsec = 0;
 
 	t0 = seconds_read();
