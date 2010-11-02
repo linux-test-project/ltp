@@ -20,8 +20,8 @@
 # Garrett Cooper, October 2010
 #
 
-# Does the program -- capset -- exist?
-HAVE_CAPSET		:= no
+# Path to capset program
+CAPSET			:=
 
 # Is securebits[.h], et all support available?
 HAVE_SECUREBITS		:= no
