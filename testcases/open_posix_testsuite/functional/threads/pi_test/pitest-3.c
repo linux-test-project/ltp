@@ -219,7 +219,7 @@ void *thread_tb1(void *arg)
 	DPRINTF(stdout, "#EVENT %f Thread TB1 Started\n", 
 		seconds_read() - base_time);
 
-	boost_time.tv_sec = time(NULL) + *(time_t *)timeoutsec;
+	boost_time.tv_sec = time(NULL) + *(time_t *)arg;
 	boost_time.tv_nsec = 0;
 
 	t0 = seconds_read();
@@ -247,7 +247,7 @@ void *thread_tb2(void *arg)
 	DPRINTF(stdout, "#EVENT %f Thread TB2 Started\n", 
 		seconds_read() - base_time);
 
-	boost_time.tv_sec = time(NULL) + *(time_t *)timeoutsec;
+	boost_time.tv_sec = time(NULL) + *(time_t *)arg;
 	boost_time.tv_nsec = 0;
 	t0 = seconds_read();
 	rc = pthread_mutex_timedlock(&mutex2, &boost_time);	
