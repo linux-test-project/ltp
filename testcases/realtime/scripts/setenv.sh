@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /bin/sh
 
 #
 # This is the scripts/ directory for rt-test.
