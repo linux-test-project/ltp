@@ -30,32 +30,43 @@
 # test_name is the name of a subdirectory in func/, stress/ or perf/
 #
 
-function usage()
+usage()
 {
-	echo -e "\nUsage: run.sh [-p profile] -t test-argument [-l num_of_loops]"
-	echo -e "\n-t test-arguments\tWhere test-argument can be a space separated sequence of: "
-	echo -e " \n\t\t\tfunc		all functional tests will be run "
-	echo -e " \t\t\tstress		all stress tests will be run "
-	echo -e " \t\t\tperf		all perf tests will be run "
-	echo -e " \t\t\tall		all tests will be run"
-	echo -e " \t\t\tlist		all available tests will be listed  "
-	echo -e " \t\t\tclean		all logs deleted, make clean performed "
-	echo -e " \t\t\ttest_name	only test_name subdir will be run (e.g: func/pi-tests) "
-	echo -e "\n-p profile\t\tUse profile instead of default (see doc/AUTOMATED_RUN)"
-	echo -e " \n-h\t\t\thelp"
-	echo -e "\n"
-	exit 1;
+	cat <<EOF
+usage: $(basename "$0") [-p profile] -t test-argument [-l num_of_loops]
+
+ -h			help
+ -p profile		Use profile instead of default (see
+			doc/AUTOMATED_RUN)
+ -t test-arguments	Where test-argument can be a space separated
+			sequence of:
+			func		all functional tests will be run
+			stress		all stress tests will be run
+			perf		all perf tests will be run
+			all		all tests will be run
+			list		all available tests will be listed
+			clean		all logs deleted, make clean
+					performed
+			test_name	only test_name subdir will be run
+					(e.g: func/pi-tests)
+
+EOF
+	exit 1
 }
-function check_error()
+check_error()
 {
 	if [ $? -gt 0 ]; then
-	echo -e "\n $1 Failed\n"
-	exit 1
+		echo
+		echo " $1 Failed"
+		echo
+		exit 1
 	fi
 }
 list_tests()
 {
-	echo -e "\n Available tests are:\n"
+	echo
+	echo " Available tests are:"
+	echo
 
 	pushd $TESTS_DIR >/dev/null
 	for file in `find -name run_auto.sh`
@@ -65,7 +76,7 @@ list_tests()
 		echo -e " \n"
 }
 
-function run_test()
+run_test()
 {
 	local profile
 
@@ -73,26 +84,22 @@ function run_test()
 	shift
 
 	iter=0
-	if [ -z "$2" ]; then
+	LOOPS=$(( 0 + $2 ))
+	if [ $LOOPS -eq 0 ]; then
 		LOOPS=1
-	else
-		LOOPS=$2	
 	fi
-	#Test if $LOOPS is a integer
-	if [[ ! $LOOPS =~ ^[0-9]+$ ]]; then
-		echo "\"$LOOPS\" doesn't appear to be a number"
-		usage
-		exit
-	fi 
 	if [ -d "$test" ]; then
 		pushd $test >/dev/null
 		if [ -f "run_auto.sh" ]; then
 		echo " Running $LOOPS runs of $subdir "
-		for((iter=0; $iter < $LOOPS; iter++)); do
+		iter=0
+		while [ $iter -lt $LOOPS ]; do
 			./run_auto.sh $profile
+			: $(( iter += 1 ))
 		done
-	    else
-		echo -e "\n Failed to find run script in $test \n"
+	else
+		echo
+		echo " Failed to find run script in $test \n"
 		fi
 		pushd $TESTS_DIR >/dev/null
 	else
@@ -102,7 +109,7 @@ function run_test()
 	fi
 }	
 
-function make_clean()
+make_clean()
 {
 	pushd $TESTS_DIR >/dev/null
 	rm -rf logs/*
@@ -163,13 +170,14 @@ find_test()
 			done
 			pushd $TESTS_DIR >/dev/null
 		else
-			echo -e "\n $subdir not found; check name/path with run.sh list "
+			echo
+			echo " $subdir not found; check name/path with $0 list "
 		fi
 	done
 
 }
 
-SCRIPTS_DIR="$(readlink -f ${0%/*})/scripts"
+SCRIPTS_DIR="$(readlink -f "$(dirname "$0")")/scripts"
 source $SCRIPTS_DIR/setenv.sh
 
 if [ $# -lt 1 ]; then
@@ -186,7 +194,7 @@ popd
 
 ISLOOP=0
 index=0
-while getopts ":t:l:hp:" option
+while getopts "hl:p:t:" option
 do
 	case "$option" in
 
@@ -194,11 +202,11 @@ do
 		if [ $ISLOOP -eq 1 ]; then
 			LOOP=1
 			tests[$index]=$LOOP
-			index=$((index+1))
+			: $(( index += 1 ))
 		fi
 
 		tests[$index]="$OPTARG"
-		index=$((index+1))
+		: $((index += 1 ))
 		TESTCASE="$OPTARG"
 		ISLOOP=1		
 		;;
@@ -220,6 +228,8 @@ do
 		;;
 	esac
 done
-for(( i=0; $i < $index ; $((i+=2)) )); do
+i=0
+while [ $i -lt $index ]; do
 	find_test "$profile" ${tests[$i]} ${tests[$((i+1))]}
+	: $(( i += 2 ))
 done
