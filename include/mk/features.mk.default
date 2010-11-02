@@ -1,7 +1,7 @@
 #
 #    features.mk.default - feature tuning include Makefile.
 #
-#    Copyright (C) 2009, Linux Test Project.
+#    Copyright (C) 2010, Linux Test Project.
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Garrett Cooper, July 2009
+# Garrett Cooper, October 2010
 #
 
 # Does the program -- capset -- exist?

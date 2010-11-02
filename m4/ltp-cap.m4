@@ -27,8 +27,12 @@ AH_TEMPLATE(HAVE_LIBCAP,
 [Define to 1 if you have libcap-2 installed.])
 AC_CHECK_HEADERS(sys/capability.h,[
 	LTP_CAPABILITY_SUPPORT=yes
-	AC_CHECK_LIB(cap,cap_compare,[AC_DEFINE(HAVE_LIBCAP) CAP_LIBS="-lcap"], [CAP_LIBS=""])
-	AC_CHECK_PROG(HAVE_SETCAP,setcap,setcap,false)
-])]
-AC_SUBST(CAP_LIBS)
-)
+	AC_CHECK_LIB(cap,cap_compare,[AC_DEFINE(HAVE_LIBCAP) cap_libs="-lcap"])
+	AC_CHECK_PROG(HAVE_SETCAP,capset,[have_capset="yes"])
+])
+if test "x$have_capset" != xyes; then
+	have_capset=no
+fi
+AC_SUBST(CAP_LIBS,$cap_libs)
+AC_SUBST(HAVE_CAPSET,$have_capset)
+])

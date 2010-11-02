@@ -50,6 +50,8 @@ Not using autoconf:
 	     "$TOP_BUILDDIR/include/config.h"
 	$ cp "$TOP_SRCDIR/include/mk/config.mk.default" \
 	     "$TOP_BUILDDIR/include/mk/config.mk"
+	$ cp "$TOP_SRCDIR/include/mk/features.mk.default" \
+	     "$TOP_BUILDDIR/include/mk/features.mk"
 
 	# Fire up your favorite editor and set each value appropriately in
 	# include/mk/config.mk. Uncomment all values commented out, such as

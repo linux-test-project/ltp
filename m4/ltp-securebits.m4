@@ -16,9 +16,10 @@ dnl along with this program;  if not, write to the Free Software
 dnl Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 dnl
 
-
-AC_DEFUN([LTP_CHECK_SECUREBITS],
-AC_CHECK_HEADERS(linux/securebits.h,[
-	LTP_SECUREBITS=yes
+AC_DEFUN([LTP_CHECK_SECUREBITS],[
+	AC_CHECK_HEADERS(linux/securebits.h,[have_securebits=yes])
+if test "x$have_securebits" != xyes; then
+	have_securebits=no
+fi
+AC_SUBST(HAVE_SECUREBITS,$have_securebits)
 ])
-)
