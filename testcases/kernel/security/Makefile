@@ -29,7 +29,7 @@ include	$(top_srcdir)/include/mk/env_pre.mk
 ifeq ($(strip $(CAP_LIBS)),)
 FILTER_OUT_DIRS		:= cap_bound filecaps securebits
 endif
-ifneq ($(HAVE_SETCAP),yes)
+ifeq ($(strip $(SETCAP)),)
 FILTER_OUT_DIRS		+= filecaps
 endif
 ifneq ($(HAVE_SECUREBITS),yes)

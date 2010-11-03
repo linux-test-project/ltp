@@ -20,8 +20,8 @@
 # Garrett Cooper, October 2010
 #
 
-# Does the program -- capset -- exist?
-HAVE_CAPSET		:= @HAVE_CAPSET@
+# Path to capset program
+CAPSET			:= @CAPSET@
 
 # Is securebits[.h], et all support available?
 HAVE_SECUREBITS		:= @HAVE_SECUREBITS@

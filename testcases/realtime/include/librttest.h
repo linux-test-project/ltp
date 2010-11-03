@@ -114,48 +114,7 @@ extern double pass_criteria;
  */
 static inline int atomic_add(int i, atomic_t *v)
 {
-#if defined(__x86_64__) || defined(__i386__)
-	int __i;
-	__i = i;
-	asm volatile(
-			"lock; xaddl %0, %1;"
-			:"=r"(i)
-			:"m"(v->counter), "0"(i));
-	return i + __i;
-#elif defined(__powerpc__)
-#define ISYNC_ON_SMP	"\n\tisync\n"
-#define LWSYNC_ON_SMP	__stringify(LWSYNC) "\n"
-	int t;
-	asm volatile(
-"	lwsync \n\
-1:	lwarx   %0,0,%2		# atomic_add_return	\n\
-	add     %0,%1,%0\n\
-	stwcx.  %0,0,%2 \n\
-	bne-    1b"
-	ISYNC_ON_SMP
-	: "=&r" (t)
-	: "r" (i), "r" (&v->counter)
-	: "cc", "memory");
-
-	return t;
-#elif defined(__sh__)
-	unsigned long t;
-
-	__asm__ __volatile__ (
-"1:	 movli.l @%2, %0	\n"
-"	 add     %1, %0		\n"
-"	 movco.l %0, @%2	\n"
-"	 bf      1b		\n"
-"       synco			\n"
-	: "=&z" (t)
-	: "r" (i), "r" (&v->counter)
-	: "t");
-
-	return t;
-#else
-#error
-#endif
-
+	return __sync_add_and_fetch(&v->counter, i);
 }
 /* atomic_inc: atomically increment the integer passed by reference
  */
