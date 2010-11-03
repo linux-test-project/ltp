@@ -39,11 +39,16 @@
 /******************************************************************************/
 
 #include <sys/types.h>
+#if HAVE_KEYCTL_SYSCALL
 #include <linux/keyctl.h>
+#endif
 #include <errno.h>
+#if HAVE_KEYCTL_SYSCALL
 #include <keyutils.h>
+#endif
 #include <limits.h>
 #include <stdio.h>
+#include "config.h"
 
 /* Harness Specific Include Files. */
 #include "test.h"
@@ -59,6 +64,7 @@ char *TCID = "keyctl01";/* Test program identifier.*/
 int  testno;
 int  TST_TOTAL = 2;	/* total number of tests in this file.   */
 
+#if HAVE_KEYCTL_SYSCALL
 /* Extern Global Functions */
 /******************************************************************************/
 /*									    */
@@ -175,3 +181,11 @@ int main(int ac, char **av) {
 	/* NOTREACHED */
 	return (1);
 }
+#else
+int
+main(void)
+{
+	tst_resm(TCONF, "keyctl syscall support not available on system");
+	tst_exit();
+}
+#endif
