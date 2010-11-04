@@ -38,6 +38,7 @@
 /*	      Manas Kumar Nayak maknayak@in.ibm.com>			*/
 /******************************************************************************/
 
+#include "config.h"
 #include <sys/types.h>
 #if HAVE_KEYCTL_SYSCALL
 #include <linux/keyctl.h>
@@ -48,7 +49,6 @@
 #endif
 #include <limits.h>
 #include <stdio.h>
-#include "config.h"
 
 /* Harness Specific Include Files. */
 #include "test.h"
