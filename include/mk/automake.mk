@@ -28,7 +28,6 @@ AUTOMAKE	?= automake
 
 AUTOCONFED_SUBDIRS	= \
 			testcases/kernel/syscalls/libevent \
-			testcases/kernel/syscalls/pcllib \
 			testcases/realtime
 
 # We want to run this every single time to ensure that all of the prereq files
@@ -36,15 +35,6 @@ AUTOCONFED_SUBDIRS	= \
 .PHONY: testcases/realtime/configure
 testcases/realtime/configure:
 	$(MAKE) -C $(@D) autotools
-
-.PHONY: testcases/kernel/syscalls/pcllib/configure
-testcases/kernel/syscalls/pcllib/configure:
-	set -x; \
-	cd $(@D) && \
-	$(ACLOCAL) && \
-	$(AUTOCONF) && \
-	$(AUTOHEADER) && \
-	$(AUTOMAKE) --add-missing
 
 .PHONY: autotools
 autotools: aclocal autoconf autoheader automake $(addsuffix /configure,$(AUTOCONFED_SUBDIRS))
