@@ -124,6 +124,7 @@ int main(int ac, char *av[])
 	}
 
 	cleanup();
+	return 1;
 }
 
 static void setup(void)
@@ -163,7 +164,7 @@ static void setup(void)
 
 static void runtest(void)
 {
-	int child, cound, i, nwait, pid, status;
+	int child, count, i, nwait, pid, status;
 
 	nwait = 0;
 
@@ -173,7 +174,8 @@ static void runtest(void)
 		fd = open(test_name, O_RDWR|O_CREAT|O_TRUNC, 0666);
 
 		if (fd < 0) {
-			tst_resm(TBROK|TERRNO, NULL, "\tError creating %s/%s.", fuss, test_name);
+			tst_brkm(TBROK|TERRNO, NULL,
+				"\tError creating %s/%s.", fuss, test_name);
 		}
 
 		if ((child = fork()) == 0) {
@@ -396,7 +398,7 @@ static void dotest(int testers, int me, int fd)
 			 * Write it.
 			 */
 			if (lseek64(fd, -((off64_t)xfr), 1) < (off64_t)0) {
-				tst_brkm(TFAIL|TERRNO,
+				tst_brkm(TFAIL|TERRNO, NULL,
 					"\tTest[%d]: lseek64(1) fail at %Lx",
 					me, CHUNK(chunk));
 			}
@@ -405,7 +407,7 @@ static void dotest(int testers, int me, int fd)
 					tst_resm(TFAIL, "\tTest[%d]: no space, exiting.", me);
 					fsync(fd);
 				} else {
-					tst_resmm(TFAIL|TERRNO,
+					tst_resm(TFAIL|TERRNO,
 						"\tTest[%d]: write fail at %Lx xfr %d",
 						me, CHUNK(chunk), xfr);
 				}
@@ -469,7 +471,7 @@ static void domisc(int me, int fd, char *bits)
 			tr_flag = 0;
 		} else {
 			if (truncate(test_name, file_max) < 0) {
-				tst_resm(TFAIL|TERRNO, NULL,
+				tst_brkm(TFAIL|TERRNO, NULL,
 					"\tTest[%d]: truncate error @ 0x%x.", me, file_max);
 			}
 			tr_flag = 1;

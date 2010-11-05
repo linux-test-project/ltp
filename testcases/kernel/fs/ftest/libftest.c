@@ -71,10 +71,10 @@ void ft_dumpbits(void *bits, size_t size)
 	tst_resm(TINFO, "\tBits array:");
 
 	for (buf = bits; size > 0; --size, ++buf) {
-		tst_resm(TINFO, "\t%lu:\t", 8*(buf-bits));
+		tst_resm(TINFO, "\t%td:\t", 8*(buf-bits));
 		if ((buf-bits) % 16 == 0) {
 			assert (0 < (buf-bits));
-			tst_resm(TINFO, "\t%lu:\t", 8*(buf-bits));
+			tst_resm(TINFO, "\t%td:\t", 8*(buf-bits));
 		}
 		tst_resm(TINFO, "\t%02"PRIx32"x ", *((char*) buf) & 0xff);
 	}

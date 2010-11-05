@@ -151,11 +151,11 @@ int main(int ac, char *av[])
 		mkdir(dirname, 0755);
 		mkdir(homedir, 0755);
 		if (chdir(dirname) < 0) {
-			tst_resm(TFAIL|TERRNO,"\tCan't chdir(%s)", dirname);
+			tst_brkm(TFAIL|TERRNO, cleanup, "\tCan't chdir(%s)", dirname);
 		}
 		dirlen = strlen(dirname);
 		if (chdir(homedir) < 0) {
-			tst_resm(TFAIL|TERRNO, cleanup, "\tCan't chdir(%s)", homedir);
+			tst_brkm(TFAIL|TERRNO, cleanup, "\tCan't chdir(%s)", homedir);
 		}
 
 		/* enter block */
@@ -249,6 +249,7 @@ int main(int ac, char *av[])
 		tst_resm(TPASS, "Test passed.");
 
 	cleanup();
+	return 1;
 }
 
 #define	warn(val,m1,m2)	if ((val) < 0) dowarn(me,m1,m2)

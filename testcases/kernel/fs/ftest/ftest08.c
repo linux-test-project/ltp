@@ -243,6 +243,7 @@ static void dotest(int testers, int me, int fd)
 	int	w_ioveclen;
 
 	nchunks = max_size / (testers * csize);
+	whenmisc = 0;
 
 	if ((bits = malloc((nchunks+7)/8)) == NULL) {
 		tst_resm(TBROK, "\tmalloc failed(bits)");
