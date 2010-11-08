@@ -1,5 +1,6 @@
 dnl
 dnl Copyright (c) Cisco Systems Inc., 2009
+dnl Copyright (c) Linux Test Project, 2010
 dnl
 dnl This program is free software;  you can redistribute it and/or modify
 dnl it under the terms of the GNU General Public License as published by
@@ -25,10 +26,13 @@ dnl
 AC_DEFUN([LTP_CHECK_CAPABILITY_SUPPORT],[
 AH_TEMPLATE(HAVE_LIBCAP,
 [Define to 1 if you have libcap-2 installed.])
-AC_CHECK_HEADERS(sys/capability.h,[
-	LTP_CAPABILITY_SUPPORT=yes
-	AC_CHECK_LIB(cap,cap_compare,[AC_DEFINE(HAVE_LIBCAP) CAP_LIBS="-lcap"], [CAP_LIBS=""])
-	AC_CHECK_PROG(HAVE_SETCAP,setcap,setcap,false)
-])]
-AC_SUBST(CAP_LIBS)
-)
+AC_CHECK_HEADERS([sys/capability.h],[capability_header_prefix="sys"])
+if test "x$capability_header_prefix" != x; then
+	AC_CHECK_LIB(cap,cap_compare,[cap_libs="-lcap"])
+	AC_CHECK_PROG(CAPSET,capset,capset)
+fi
+if test "x$cap_libs" != x; then
+	AC_DEFINE(HAVE_LIBCAP)
+fi
+AC_SUBST(CAP_LIBS,$cap_libs)
+])

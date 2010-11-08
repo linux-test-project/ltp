@@ -56,19 +56,51 @@ extern int Tst_count;           /* Test Case counter for tst_* routines */
 
 #define BUFSZ 4096
 
+void	cleanup(void);
+
+pid_t childpid;
+
+void
+cleanup(void)
+{
+
+	int status;
+
+	if (0 < childpid) {
+
+		/* If the PID is still alive... */
+		if (kill(childpid, 0) == 0 || errno == ESRCH) {
+
+			/* KILL IT! */
+			(void) kill(childpid, 15);
+
+			/* And take care of any leftover zombies. */
+			if (waitpid(childpid, &status, WNOHANG) < 0) {
+				tst_resm(TWARN|TERRNO,
+					"waitpid(%d, ...) failed", childpid);
+			}
+
+		}
+
+	}
+
+	tst_exit();
+
+}
+
 /*
  * parent process for hangup test
  */
-int
+void
 parent(int masterfd, int childpid)
 {
 	char buf[BUFSZ];
 	struct pollfd pollfds[1];
+	size_t len = strlen(MESSAGE1);
 	int hangupcount = 0;
 	int datacount = 0;
 	int status;
 	int i;
-	int len = strlen(MESSAGE1);
 
 	pollfds[0].fd = masterfd;
 	pollfds[0].events = POLLIN;
@@ -90,49 +122,40 @@ parent(int masterfd, int childpid)
 			case 1:
 				if (strncmp(buf, MESSAGE1,
 				    strlen(MESSAGE1)) != 0) {
-					tst_resm(TFAIL, "unexpected message 1");
-					tst_exit();
+					tst_brkm(TFAIL, cleanup,
+						"unexpected message 1");
 				}
 				len = strlen(MESSAGE2);
 				break;
 			case 2:
 				if (strncmp(buf, MESSAGE2,
 				    strlen(MESSAGE2)) != 0) {
-					tst_resm(TFAIL, "unexpected message 2");
-					tst_exit();
+					tst_brkm(TFAIL, cleanup,
+						"unexpected message 2");
 				}
 				len = strlen(MESSAGE3);
 				break;
 			case 3:
 				if (strncmp(buf, MESSAGE3,
 				    strlen(MESSAGE3)) != 0) {
-					tst_resm(TFAIL, "unexpected message 3");
-					tst_exit();
+					tst_brkm(TFAIL, cleanup,
+						"unexpected message 3");
 				}
 				break;
 			default:
-				tst_resm(TFAIL, "unexpected data message");
-				tst_exit();
+				tst_brkm(TFAIL, cleanup,
+					"unexpected data message");
 				/*NOTREACHED*/
 			}
 		}
 	}
 	if (i != 1) {
-		tst_resm(TFAIL,"poll");
-		tst_exit();
+		tst_brkm(TFAIL, cleanup, "poll");
 	}
-	while (wait(&status) != childpid) {
-		;
-	}
-	if (status != 0) {
-		tst_resm(TFAIL, "child process exited with status %d", status);
-		tst_exit();
-	}
-	tst_resm(TPASS,"Pass");
-	tst_exit();
+	while (waitpid(childpid, &status, WNOHANG) < 0 && errno != ESRCH) ;
 
-	/*NOTREACHED*/
-	return 0;
+	tst_resm((status == 0 ? TPASS : TFAIL),
+		"child process exited with status %d", status);
 }
 
 
@@ -140,53 +163,53 @@ parent(int masterfd, int childpid)
  * Child process for hangup test.  Write three messages to the slave
  * pty, with a hangup after each.
  */
-void
+int
 child(int masterfd)
 {
 	int slavefd;
 	char *slavename;
 
-
-	if ((slavename = ptsname(masterfd)) == (char *)0) {
-		tst_resm(TBROK,"ptsname");
-		tst_exit();
+	if ((slavename = ptsname(masterfd)) == NULL) {
+		printf("ptsname[child] failed: %s\n", strerror(errno));
+		return 1;
 	}
 	if ((slavefd = open(slavename, O_RDWR)) < 0) {
-		tst_resm(TBROK,slavename);
-		tst_exit();
+		printf("open[1] failed: %s\n", strerror(errno));
+		return 1;
 	}
 	if (write(slavefd, MESSAGE1, strlen(MESSAGE1)) != strlen(MESSAGE1)) {
-		tst_resm(TBROK,"write");
-		tst_exit();
+		printf("write failed: %s\n", strerror(errno));
+		return 1;
 	}
 	if (close(slavefd) != 0) {
-		tst_resm(TBROK,"close");
-		tst_exit();
+		printf("close[1] failed: %s\n", strerror(errno));
+		return 1;
 	}
 	if ((slavefd = open(slavename, O_RDWR)) < 0) {
-		tst_resm(TBROK,"open %s",slavename);
-		tst_exit();
+		printf("open[2] failed: %s\n", strerror(errno));
+		return 1;
 	}
 	if (write(slavefd, MESSAGE2, strlen(MESSAGE2)) != strlen(MESSAGE2)) {
-		tst_resm(TBROK,"write");
-		tst_exit();
+		printf("write[2] failed: %s\n", strerror(errno));
+		return 1;
 	}
 	if (close(slavefd) != 0) {
-		tst_resm(TBROK,"close");
-		tst_exit();
+		printf("close[2] failed: %s\n", strerror(errno));
+		return 1;
 	}
 	if ((slavefd = open(slavename, O_RDWR)) < 0) {
-		tst_resm(TBROK,"open %s",slavename);
-		tst_exit();
+		printf("open[3] failed: %s\n", strerror(errno));
+		return 1;
 	}
 	if (write(slavefd, MESSAGE3, strlen(MESSAGE3)) != strlen(MESSAGE3)) {
-		tst_resm(TBROK,"write");
-		tst_exit();
+		printf("write[3] failed: %s\n", strerror(errno));
+		return 1;
 	}
 	if (close(slavefd) != 0) {
-		tst_resm(TBROK,"close");
-		tst_exit();
+		printf("close[3] failed: %s\n", strerror(errno));
+		return 1;
 	}
+	return 0;
 }
 
 /*
@@ -196,43 +219,37 @@ int main(int argc, char **argv)
 {
 	int masterfd;		/* master pty fd */
 	char *slavename;
-	int childpid;
+	pid_t childpid;
 
 /*--------------------------------------------------------------------*/
 	masterfd = open(MASTERCLONE, O_RDWR);
 	if (masterfd < 0) {
-		tst_resm(TBROK,"open %s",MASTERCLONE);
-		tst_exit();
+		tst_brkm(TBROK|TERRNO, NULL, "open %s", MASTERCLONE);
 	}
 
 	slavename = ptsname(masterfd);
-	if (slavename == (char *)0) {
-		tst_resm(TBROK,"ptsname");
-		tst_exit();
+	if (slavename == NULL) {
+		tst_brkm(TBROK|TERRNO, NULL, "ptsname");
 	}
 
 	if (grantpt(masterfd) != 0) {
-		tst_resm(TBROK,"grantpt");
-		tst_exit();
+		tst_resm(TBROK|TERRNO, NULL, "grantpt");
 	}
 
 	if (unlockpt(masterfd) != 0) {
-		tst_resm(TBROK,"unlockpt");
-		tst_exit();
+		tst_brkm(TBROK|TERRNO, NULL, "unlockpt");
 	}
 
 	childpid = fork();
 	if (childpid == -1) {
-		tst_resm(TBROK,"fork");
-		tst_exit();
+		tst_brkm(TBROK|TERRNO, NULL, "fork");
 	} else if (childpid == 0) {
-		child(masterfd);
-		tst_exit();
+		exit(child(masterfd));
 	} else {
 		parent(masterfd, childpid);
 	}
 /*--------------------------------------------------------------------*/
-	tst_exit();
-	/*NOTREACHED*/
+	cleanup();
+	/* NOTREACHED */
 	return 0;
 }

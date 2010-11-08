@@ -28,7 +28,6 @@ AUTOMAKE	?= automake
 
 AUTOCONFED_SUBDIRS	= \
 			testcases/kernel/syscalls/libevent \
-			testcases/kernel/syscalls/pcllib \
 			testcases/realtime
 
 # We want to run this every single time to ensure that all of the prereq files

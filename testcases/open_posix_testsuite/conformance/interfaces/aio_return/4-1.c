@@ -74,38 +74,41 @@ int main(void)
 		exit(PTS_FAIL);
 	}
 
-	do {
-		retval = aio_error( &aiocb);
-		if (retval == -1) {
+	while (aio_error(&aiocb) == EINPROGRESS)
+		sleep(1);
+	retval = aio_error(&aiocb);
+
+	if (retval == 0) {
+
+		memset(&aiocb2, 0, sizeof(struct aiocb));
+		aiocb2.aio_fildes = fd;
+		aiocb2.aio_buf    = buf;
+		aiocb2.aio_nbytes = BUF_SIZE;
+
+		retval = aio_return(&aiocb2);
+
+		if (retval != -1 || aio_error(&aiocb) != EINVAL) {
 			close(fd);
-			printf(TNAME " Error at aio_error(): %s\n",
-				strerror(errno));
-			exit(PTS_FAIL);
+			printf(TNAME " aio_return() may fail\n");
+			exit(PTS_UNRESOLVED);
 		}
-	} while (retval == EINPROGRESS);
 
-	memset(&aiocb2, 0, sizeof(struct aiocb));
-	aiocb2.aio_fildes = fd;
-	aiocb2.aio_buf    = buf;
-	aiocb2.aio_nbytes = BUF_SIZE;
-
-	retval = aio_return(&aiocb2);
-
-	if (retval != -1) {
-		close(fd);
-		printf(TNAME " aio_return() should fail\n");
-		exit(PTS_FAIL);
-	}
-
-	retval = aio_return(&aiocb);
+		retval = aio_return(&aiocb);
 	
-	if (retval != BUF_SIZE) {
-		close(fd);
-		printf(TNAME " Error at aio_return(): %d, %s\n", retval,
-		       strerror(errno));
-		exit(PTS_FAIL);
-	}
+		if (retval != BUF_SIZE) {
+			close(fd);
+			printf(TNAME " Error at aio_return(): %d, %s\n", retval,
+			       strerror(aio_error(&aiocb)));
+			exit(PTS_UNRESOLVED);
+		}
 
+	} else {
+		close(fd);
+		printf(TNAME " Error at aio_error(): %s\n",
+			strerror(retval));
+		exit(PTS_UNRESOLVED);
+	}
+	
 	close(fd);
 	printf("Test PASSED\n");
 	exit(PTS_PASS);

@@ -82,35 +82,20 @@
 #define _GNU_SOURCE
 
 /* Standard Include Files */
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/utsname.h>
+#include <endian.h>
+#include <errno.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <errno.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <fcntl.h>
-#include <sys/utsname.h>
 #include <unistd.h>
 
 /* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
 #include "linux_syscall_numbers.h"
-
-#if defined(__powerpc__) || defined(__powerpc64__)
-#ifndef __NR_sync_file_range2
-#define __NR_sync_file_range2 -1	//DUMMY VALUE
-int arch_support = 0;		//Architecure is not supported
-#else
-int arch_support = 1;		//Architecture is supported
-#endif
-#else
-#ifndef __NR_sync_file_range
-#define __NR_sync_file_range -1	//DUMMY Value
-int arch_support = 0;
-#else
-int arch_support = 1;
-#endif
-#endif
 
 #ifndef SYNC_FILE_RANGE_WAIT_BEFORE
 #define SYNC_FILE_RANGE_WAIT_BEFORE 1
@@ -238,20 +223,19 @@ static inline long syncfilerange(int fd, off64_t offset, off64_t nbytes,
 				 unsigned int flags)
 {
 
-#if (defined(__powerpc64__) || defined(__powerpc__)) && (__WORDSIZE==32)
-
+#if (defined(__arm__) || defined(__powerpc__) || defined(__powerpc64__)) && \
+    (__WORDSIZE == 32)
+#if __BYTE_ORDER == __BIG_ENDIAN
 	return syscall(__NR_sync_file_range2, fd, flags, (int)(offset >> 32),
 		       (int)offset, (int)(nbytes >> 32), (int)nbytes);
-
-#elif (defined(__powerpc64__) || defined(__powerpc__)) && (__WORDSIZE==64)
-
-	return syscall(__NR_sync_file_range2, fd, flags, offset, nbytes);
+#elif __BYTE_ORDER == __LITTLE_ENDIAN
+	return syscall(__NR_sync_file_range2, fd, flags, (int)offset,
+		       (int)(offset >> 32), nbytes, (int)(nbytes >> 32));
+#endif
 #else
-
-	return syscall(__NR_sync_file_range, fd, offset, nbytes, flags);
+	return syscall(__NR_sync_file_range2, fd, flags, offset, nbytes);
 #endif
 
-	return 0;
 }
 
 /******************************************************************************/
@@ -288,14 +272,14 @@ int main(int ac,		/* number of command line parameters                      */
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 
 #if defined(__powerpc__) || defined(__powerpc64__)	/* for PPC, kernel version > 2.6.21 needed */
-	if (!arch_support || (tst_kvercmp(2, 16, 22) < 0)) {
+	if (tst_kvercmp(2, 16, 22) < 0) {
 		tst_resm(TCONF, "System doesn't support execution of the test");
 		tst_exit();
 	}
 #else
 	/* For other archs, need kernel version > 2.6.16 */
 
-	if (!arch_support || (tst_kvercmp(2, 6, 17) < 0)) {
+	if (tst_kvercmp(2, 6, 17) < 0) {
 		tst_resm(TCONF, "System doesn't support execution of the test");
 		tst_exit();
 	}

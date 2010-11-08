@@ -8,7 +8,7 @@
 	returned.
 	</assertion>
 	<assertion id="3" tag="ref:XSH6TC2:4028:4029">
-	aio_error() shall fail if:
+	aio_error() may fail if:
 	[EINVAL] The aiocbp argument does not refer to an asynchronous 
 	operation whose return status has not yet been retrieved.
 	</assertion>

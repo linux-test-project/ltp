@@ -17,7 +17,7 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-
+
 /******************************************************************************/
 /*                                                                            */
 /* File:         mmstress.c                                                   */
@@ -82,7 +82,7 @@
 /*        - fixed the use of the remove_files function in a conditional       */
 /*                                                                            */
 /******************************************************************************/
-
+
 
 /* GLOBAL INCLUDE FILES                                                       */
 #include <stdio.h>    /* standard C input/output routines                     */

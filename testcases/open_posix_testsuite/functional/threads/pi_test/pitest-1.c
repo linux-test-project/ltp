@@ -197,7 +197,6 @@ void *thread_sample(void *arg)
 
 void *thread_tb(void *arg)
 {
-	unsigned long timeoutsec;
 	struct timespec boost_time;
 	double seconds, t0, t1;
 	int rc;
@@ -206,8 +205,7 @@ void *thread_tb(void *arg)
 	
 	DPRINTF(stdout, "#EVENT %f TB Starts\n", seconds_read() - base_time);
 
-	timeoutsec = *(unsigned long*) arg;
-	boost_time.tv_sec = time(NULL) + (time_t)timeoutsec;
+	boost_time.tv_sec = time(NULL) + *((time_t*) arg);
 	boost_time.tv_nsec = 0;
 	
 	t0 = seconds_read();
@@ -296,8 +294,8 @@ int main(int argc, char **argv)
 
 	/* Start TB thread (boosting thread) */
 	DPRINTF(stderr,"Main Thread: start TB thread\n");
-	int timeout = multiplier * 20;
-	rc = pthread_create(&threadtb, &threadattr, thread_tb, 
+	time_t timeout = multiplier * 20;
+	rc = pthread_create(&threadtb, &threadattr, thread_tb,
 			    &timeout);
         if (rc != 0) {
                 EPRINTF("UNRESOLVED: pthread_create: %d %s",

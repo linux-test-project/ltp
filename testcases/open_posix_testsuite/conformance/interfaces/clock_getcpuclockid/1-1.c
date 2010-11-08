@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
 		printf("clock_getcpuclockid() returned an invalid clockid_t: %d\n", clockid);
 		return PTS_FAIL;
 	}
-	
+
 	printf("Test PASSED\n");
 	return PTS_PASS;
 #endif

@@ -1,5 +1,5 @@
-JAVAC = javac
-JAR = jar
+JAVAC ?= javac
+JAR ?= jar
 
 DOTS = dots
 PERFMON = perfmon
@@ -11,29 +11,29 @@ all: $(DOTS) $(PERFMON)
 
 dots: $(FRAMEWORK) $(BASECASE) $(ADVCASE)
 	$(JAVAC) -d ../classes -classpath ../classes dots/framework/Dots.java
-	cd ../classes;$(JAR) cf ../Dots.jar dots/framework dots/basecase dots/advcase
+	cd ../classes; $(JAR) cf ../Dots.jar dots/framework dots/basecase dots/advcase
 
 framework:
 	mkdir -p ../classes/dots/framework
-	cd dots/framework;make
+	cd dots/framework; $(MAKE)
 
 basecase:
 	mkdir -p ../classes/dots/basecase
-	cd dots/basecase;make
+	cd dots/basecase; $(MAKE)
 
 advcase:
 	mkdir -p ../classes/dots/advcase
-	cd dots/advcase;make
+	cd dots/advcase; $(MAKE)
 
 perfmon:
 	mkdir -p ../classes/dots/perfmon
-	cd dots/perfmon;make
+	cd dots/perfmon; $(MAKE)
 	cd ../classes;$(JAR) cf ../Perfmon.jar dots/perfmon
 
 clean:
 	rm -f ../Dots.jar
 	rm -f ../Perfmon.jar
-	cd dots/framework;make clean
-	cd dots/basecase;make clean
-	cd dots/advcase;make clean
-	cd dots/perfmon;make clean
+	cd dots/framework; $(MAKE) clean
+	cd dots/basecase; $(MAKE) clean
+	cd dots/advcase; $(MAKE) clean
+	cd dots/perfmon; $(MAKE) clean

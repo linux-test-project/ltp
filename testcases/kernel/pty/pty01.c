@@ -24,16 +24,16 @@
 #define _GNU_SOURCE 1
 #endif
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/wait.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <termio.h>
 #include <unistd.h>
-#include <string.h>
-#include <sys/wait.h>
-#include <sys/types.h>
-#include <sys/fcntl.h>
-#include <sys/stat.h>
 
 /** LTP Port **/
 #include "test.h"
@@ -86,129 +86,117 @@ test1(void)
 
 	masterfd = open(MASTERCLONE, O_RDWR);
 	if (masterfd < 0) {
-		tst_resm(TBROK,"%s",MASTERCLONE);
-		tst_exit();
+		tst_brkm(TBROK|TERRNO, NULL, MASTERCLONE);
 	}
 
 	slavename = ptsname(masterfd);
-	if (slavename == (char *)0) {
-		tst_resm(TBROK,"ptsname() call failed");
-		tst_exit();
+	if (slavename == NULL) {
+		tst_brkm(TBROK|TERRNO, NULL, "ptsname() call failed");
 	}
 
 	if (grantpt(masterfd) != 0) {
-		tst_resm(TBROK,"grantpt() call failed");
-		tst_exit();
+		tst_brkm(TBROK|TERRNO, NULL, "grantpt() call failed");
 	}
 
 	if (stat(slavename, &st) != 0) {
-		tst_resm(TBROK,"stat(%s) failed",slavename);
-		tst_exit();
+		tst_brkm(TBROK|TERRNO, NULL, "stat(%s) failed", slavename);
 	}
 	if (st.st_uid != getuid()) {
-		tst_resm(TBROK, "uid mismatch");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "uid mismatch");
 	}
 
 	if (st.st_mode != (S_IFCHR | S_IRUSR | S_IWUSR | S_IWGRP)) {
-		tst_resm(TBROK, "mode mismatch");
-		tst_resm(TBROK, "st.st_mode=%o",st.st_mode);
-		tst_exit();
+		tst_brkm(TBROK, NULL, "mode mismatch (mode=%o)", st.st_mode);
 	}
 
 	slavefd = open(slavename, O_RDWR);
-	if (slavefd < 0) {
-		/* expected */
-	} else {
-		tst_resm(TBROK, "open didn't fail!");
-		tst_exit();
+	if (slavefd >= 0) {
+		tst_brkm(TBROK, NULL, "open didn't fail as expected!");
 	}
 
 	if (unlockpt(masterfd) != 0) {
-		tst_resm(TBROK,"unlockpt() failed");
-		tst_exit();
+		tst_brkm(TBROK|TERRNO, NULL, "unlockpt() failed");
 	}
 
 	slavefd = open(slavename, O_RDWR);
 	if (slavefd < 0) {
-		tst_resm(TBROK,"Could not open %s",slavename);
-		tst_exit();
+		tst_brkm(TBROK, NULL, "Could not open %s", slavename);
 	}
 
 	/*
 	 * test writing to the master / reading from the slave
 	 */
 	if (write(masterfd, STRING, strlen(STRING)) != strlen(STRING)) {
-		tst_resm(TFAIL,"write to master");
-		tst_exit();
+		/*
+		 * XXX: the errno printout might be garbage, but better to be
+		 * safe than sorry..
+		 */
+		tst_brkm(TFAIL|TERRNO, NULL, "write to master");
 	}
 
 	if (read(slavefd, buf, strlen(STRING)) != strlen(STRING)) {
-		tst_resm(TFAIL,"read from slave");
-		tst_exit();
+		/* XXX: Same as write above.. */
+		tst_brkm(TFAIL|TERRNO, NULL, "read from slave");
 	}
 	if (strncmp(STRING, buf,strlen(STRING)-1) != 0) {
-		tst_resm(TFAIL, "strings are different.");
-		tst_resm(TFAIL, "STRING:%s",STRING);
-		tst_resm(TFAIL, "buf:%s",buf);
-		tst_exit();
+		tst_brkm(TFAIL, NULL,
+			"strings are different (STRING = '%s' != buf = '%s')", STRING, buf);
 	}
 
 	/*
 	 * test writing to the slave / reading from the master
 	 */
 	if (write(slavefd, STRING, strlen(STRING)) != strlen(STRING)) {
-		tst_resm(TFAIL,"write to slave");
-		tst_exit();
+		/* XXX: Same as write above.. */
+		tst_brkm(TFAIL|TERRNO, NULL, "write to slave");
 	}
 
 	if (read(masterfd, buf, strlen(STRING)) != strlen(STRING)) {
-		tst_resm(TFAIL,"read from master");
-		tst_exit();
+		/* XXX: Same as write above.. */
+		tst_brkm(TFAIL|TERRNO, NULL, "read from master");
 	}
 	if (strncmp(STRING, buf,strlen(STRING)-1) != 0) {
-		tst_resm(TFAIL,"strings are different.");
-		tst_resm(TFAIL, "STRING:%s",STRING);
-		tst_resm(TFAIL, "buf:%s",buf);
-		tst_exit();
+		tst_brkm(TFAIL, NULL,
+			"strings are different (STRING = '%s' != buf = '%s').",
+			STRING, buf);
 	}
 
 	/*
 	 * try an invalid ioctl on the slave...
 	 */
-	if (ioctl(slavefd, TIOCGWINSZ, (char *)0) == 0)  {
-		tst_resm(TFAIL, "invalid slave TIOCGWINSZ ioctl succeeded.. it should have failed");
-		tst_exit();
+	if (ioctl(slavefd, TIOCGWINSZ, NULL) == 0)  {
+		tst_brkm(TFAIL, NULL,
+			"invalid slave TIOCGWINSZ ioctl succeeded.. it should "
+			"have failed");
 	}
 
 	/*
 	 * try an invalid ioctl on the master...
 	 */
-	if (ioctl(masterfd, TIOCGWINSZ, (char *)0) == 0)  {
-		tst_resm(TFAIL, "invalid master TIOCGWINSZ ioctl succeeded.. it should have failed");
-		tst_exit();
+	if (ioctl(masterfd, TIOCGWINSZ, NULL) == 0)  {
+		tst_brkm(TFAIL, NULL,
+			"invalid master TIOCGWINSZ ioctl succeeded.. it should "
+			"have failed");
 	}
 
 	/*
 	 * close pty fds
 	 */
 	if (close(slavefd) != 0) {
-		tst_resm(TBROK,"close of slave");
-		tst_exit();
+		tst_brkm(TBROK|TERRNO, NULL, "close of slave");
 	}
 	if (close(masterfd) != 0) {
-		tst_resm(TBROK,"close of master");
-		tst_exit();
+		tst_brkm(TBROK|TERRNO, NULL, "close of master");
 	}
-	tst_resm(TPASS,"test1");
-	/** NOT REACHED **/
+	tst_resm(TPASS, "test1");
+	/** NOTREACHED **/
 	return 0;
 }
 
 /*
  * test slave operations with closed master
  */
-static int
+static void
 test2(void)
 {
 	int masterfd;		/* master pty fd */
@@ -219,30 +207,25 @@ test2(void)
 
 	masterfd = open(MASTERCLONE, O_RDWR);
 	if (masterfd < 0) {
-		tst_resm(TBROK,"%s",MASTERCLONE);
-		tst_exit();
+		tst_brkm(TBROK|TERRNO, NULL, MASTERCLONE);
 	}
 
 	slavename = ptsname(masterfd);
 	if (slavename == (char *)0) {
-		tst_resm(TBROK,"ptsname() call failed");
-		tst_exit();
+		tst_brkm(TBROK|TERRNO, NULL, "ptsname() call failed");
 	}
 
 	if (grantpt(masterfd) != 0) {
-		tst_resm(TBROK,"grantpt() call failed");
-		tst_exit();
+		tst_brkm(TBROK|TERRNO, NULL, "grantpt() call failed");
 	}
 
 	if (unlockpt(masterfd) != 0) {
-		tst_resm(TBROK,"unlockpt() call failed");
-		tst_exit();
+		tst_brkm(TBROK|TERRNO, NULL, "unlockpt() call failed");
 	}
 
 	slavefd = open(slavename, O_RDWR);
 	if (slavefd < 0) {
-		tst_resm(TBROK,"Could not open %s",slavename);
-		tst_exit();
+		tst_brkm(TBROK|TERRNO, NULL, "Could not open %s", slavename);
 	}
 
 	/*
@@ -250,67 +233,58 @@ test2(void)
 	 * first.
 	 */
 	if (close(masterfd) != 0) {
-		tst_resm(TBROK,"close()");
-		tst_exit();
+		tst_brkm(TBROK|TERRNO, NULL, "close()");
 	}
 
 	errno = 0;
 	if ((i = read(slavefd, &c, 1)) == 1) {
-		tst_resm(TFAIL,"Try to read from slave (should return 0)");
-		tst_resm(TFAIL, "read should have failed, but didn't");
-		tst_resm(TFAIL, "read '%c'", c);
-		tst_exit();
+		tst_brkm(TFAIL, NULL,
+			"reading from slave fd should have failed, but didn't"
+			"(read '%c')", c);
 	}
 
 	if ((i = write(slavefd, &c, 1)) == 1) {
-		tst_resm(TFAIL,"try to write to slave (should fail)");
-		tst_resm(TFAIL,"write should have failed, but didn't");
-		tst_exit();
+		tst_brkm(TFAIL, NULL,
+			"writing to slave fd should have failed, but didn't");
 	}
 
-	if (ioctl(slavefd, TIOCGWINSZ, (char *)0) == 0)  {
-		tst_resm(TFAIL,"trying TIOCGWINSZ on slave (should fail)");
-		tst_resm(TFAIL, "ioctl succeeded.. it should have failed");
-		tst_exit();
+	if (ioctl(slavefd, TIOCGWINSZ, NULL) == 0)  {
+		tst_brkm(TFAIL, NULL,
+			"trying TIOCGWINSZ on slave fd should have failed, "
+			"but didn't");
 	}
 
 	if (close(slavefd) != 0) {
-		tst_resm(TBROK,"close");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "close");
 	}
-	tst_resm(TPASS,"test2");
-	/** NOT REACHED **/
-	return 0;
+	tst_resm(TPASS, "test2");
 }
 
 /*
  * test operations on master with closed slave
  */
-static int
+static void
 test3(void)
 {
 	int masterfd;		/* master pty fd */
 
 	masterfd = open(MASTERCLONE, O_RDWR);
 	if (masterfd < 0) {
-		tst_resm(TBROK,"%s",MASTERCLONE);
-		tst_exit();
+		tst_brkm(TBROK, NULL, MASTERCLONE);
 	}
 
 	if (ioctl(masterfd, TIOCGWINSZ, (char *)0) == 0)  {
-		tst_resm(TFAIL,"trying TIOCGWINSZ on master with no open slave (should fail)");
-		tst_resm(TFAIL,"ioctl succeeded.. it should have failed");
-		tst_exit();
+		tst_brkm(TFAIL|TERRNO, NULL,
+			"trying TIOCGWINSZ on master with no open slave "
+			"succeeded unexpectedly");
 	}
 	tst_resm(TPASS,"test3");
-	/** NOT REACHED **/
-	return 0;
 }
 
 /*
  * test multiple opens on slave side of pty
  */
-static int
+static void 
 test4(void)
 {
 	int masterfd;		/* master pty fd */
@@ -337,53 +311,45 @@ test4(void)
 	}
 
 	if (unlockpt(masterfd) != 0) {
-		tst_resm(TBROK,"unlockpt() call failed");
-		tst_exit();
+		tst_brkm(TBROK|TERRNO, NULL, "unlockpt() call failed");
 	}
 
 	slavefd = open(slavename, O_RDWR);
 	if (slavefd < 0) {
-		tst_resm(TBROK,"Could not open %s",slavename);
-		tst_exit();
+		tst_brkm(TBROK|TERRNO, NULL, "Could not open %s", slavename);
 	}
 
 	slavefd2 = open(slavename, O_RDWR);
 	if (slavefd < 0) {
-		tst_resm(TFAIL,"Could not open %s (again)",slavename);
-		tst_exit();
+		tst_brkm(TFAIL|TERRNO, NULL, "Could not open %s (again)",
+			slavename);
 	}
 
 	slavefd3 = open(slavename, O_RDWR);
 	if (slavefd < 0) {
-		tst_resm(TFAIL,"Could not open %s (once more)",slavename);
-		tst_exit();
+		tst_brkm(TFAIL|TERRNO, NULL, "Could not open %s (once more)",
+			slavename);
 	}
 
 	/*
 	 * close pty fds.
 	 */
 	if (close(slavefd) != 0) {
-		tst_resm(TBROK,"close slave");
-		tst_exit();
+		tst_brkm(TBROK|TERRNO, NULL, "close slave");
 	}
 
 	if (close(slavefd2) != 0) {
-		tst_resm(TBROK,"close slave again");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "close slave again");
 	}
 
 	if (close(slavefd3) != 0) {
-		tst_resm(TBROK,"close slave once more");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "close slave once more");
 	}
 
 	if (close(masterfd) != 0) {
-		tst_resm(TBROK,"close master");
-		tst_exit();
+		tst_brkm(TBROK, NULL, "close master");
 	}
 	tst_resm(TPASS,"test4");
-	/** NOT REACHED **/
-	return 0;
 }
 
 /*
@@ -391,7 +357,7 @@ test4(void)
  * of ptys for this test depending on how the system is configured,
  * but that's not a fatal error. 
  */
-static int
+static void
 test5(void)
 {
 	int masterfd;		/* master pty fd */
@@ -402,42 +368,44 @@ test5(void)
 	for (i = 0; i < NUMPROCS; ++i) {
 		switch (fork()) {
 		case -1:
-			tst_resm(TBROK,"fork()");
+			tst_brkm(TBROK, NULL, "fork()");
 			break;
 		case 0:
 			masterfd = open(MASTERCLONE, O_RDWR);
 			if (masterfd < 0) {
-				tst_resm(TFAIL,"proc %d: %s",i,MASTERCLONE);
-				tst_exit();
+				printf("proc %d: opening %s failed: %s",
+					i, MASTERCLONE, strerror(errno));
+				exit(1);
 			}
 			if (grantpt(masterfd) != 0) {
-				tst_resm(TFAIL,"proc %d: grantpt() call failed",i);
-				tst_exit();
+				printf("proc %d: grantpt() call failed: %s",
+					i, strerror(errno));
+				exit(1);
 			}
 			slavename = ptsname(masterfd);
-			if (slavename == (char *)0) {
-				tst_resm(TFAIL,"proc %d: ptsname() call failed",i);
-				tst_exit();
+			if (slavename == NULL) {
+				printf("proc %d: ptsname() call failed: %s",
+					i, strerror(errno));
+				exit(1);
 			}
 			sleep(10);
 			if (close(masterfd) != 0) {
-				tst_resm(TFAIL,"proc %d: close",i);
-				tst_exit();
+				printf("proc %d: close failed: %s",
+					i, strerror(errno));
+				exit(1);
 			}
-			tst_exit();
+			exit(0);
 		default:
 			break;
 		}
 	}
 	while (wait(&status) > 0) {
-		if (WEXITSTATUS(status) != 0) {
-			tst_resm(TFAIL,"child exitted with non-zero status");
-			tst_exit();
+		if (status) {
+			tst_brkm(TFAIL, NULL,
+				"child exited with non-zero status %d", status);
 		}
 	}
-	tst_resm(TPASS,"test5");
-	/** NOT REACHED **/
-	return 0;
+	tst_resm(TPASS, "test5");
 }
 	
 /*
@@ -456,6 +424,4 @@ main(int argc, char **argv)
  	 * all done
 	 */
 	tst_exit();
-	/*NOTREACHED*/
-	return 0;
 }

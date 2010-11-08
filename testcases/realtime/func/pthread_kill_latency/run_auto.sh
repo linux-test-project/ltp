@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/sh
 
 profile=${1:-default}
 
@@ -8,7 +8,7 @@ if [ ! $SCRIPTS_DIR ]; then
         export SCRIPTS_DIR=../../scripts/
 fi
 
-source $SCRIPTS_DIR/setenv.sh
+. $SCRIPTS_DIR/setenv.sh
 
 # Warning: tests args are now set in profiles
 $SCRIPTS_DIR/run_c_files.sh $profile pthread_kill_latency

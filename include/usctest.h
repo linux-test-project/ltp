@@ -65,7 +65,7 @@
  *
  *    RETURN VALUE
  * 	TEST(SCALL) - Global Variables set:
- *			int TEST_RETURN=return code from SCALL
+ *			long TEST_RETURN=return code from SCALL
  *			int TEST_ERRNO=value of errno at return from SCALL
  * 	TEST_VOID(SCALL) - Global Variables set:
  *			int TEST_ERRNO=value of errno at return from SCALL
@@ -142,7 +142,7 @@ extern float STD_LOOP_DURATION, /* wall clock time to iterate */
 /**********************************************************************
  * Prototype for parse_opts routine
  **********************************************************************/
-extern char *parse_opts(int ac, char **av, option_t *user_optarr, void (*uhf)());
+extern char *parse_opts(int ac, char **av, const option_t *user_optarr, void (*uhf)());
 
 
 /*

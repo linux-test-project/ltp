@@ -31,6 +31,9 @@ RANLIB			:= ranlib
 STRIP			:= strip
 YACC			:= bison -y
 
+#JAR			:= jar
+#JAVAC			:= javac
+
 #AIO_LIBS		:= -laio
 #CAP_LIBS		:= -lcap
 #CRYPTO_LIBS		:= -lcrypto

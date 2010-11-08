@@ -255,7 +255,7 @@ int main(int argc, char **argv)
 	pthread_mutexattr_t mutex_attr;
 	pthread_attr_t	threadattr;
 	pthread_t threads[cpus - 1], threadsample, threadtp, threadtl, threadtb;
-	int multiplier = 1;
+	time_t multiplier = 1;
 	int i;
 	int rc;
 	

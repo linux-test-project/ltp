@@ -210,7 +210,6 @@ void *thread_sample(void *arg)
 
 void *thread_tb1(void *arg)
 {
-	unsigned long timeoutsec; 
 	struct timespec boost_time;
 	double t0, t1;
 	int rc;
@@ -220,8 +219,7 @@ void *thread_tb1(void *arg)
 	DPRINTF(stdout, "#EVENT %f Thread TB1 Started\n", 
 		seconds_read() - base_time);
 
-	timeoutsec = *(unsigned long*) arg;
-	boost_time.tv_sec = time(NULL) + (time_t )timeoutsec;
+	boost_time.tv_sec = time(NULL) + *(time_t *)arg;
 	boost_time.tv_nsec = 0;
 
 	t0 = seconds_read();
@@ -240,7 +238,6 @@ void *thread_tb1(void *arg)
 
 void *thread_tb2(void *arg)
 {
-	unsigned long timeoutsec;
 	struct timespec boost_time;
 	double t0, t1;
 	int rc;
@@ -250,8 +247,7 @@ void *thread_tb2(void *arg)
 	DPRINTF(stdout, "#EVENT %f Thread TB2 Started\n", 
 		seconds_read() - base_time);
 
-	timeoutsec = *(unsigned long*) arg;	
-	boost_time.tv_sec = time(NULL) + (time_t)timeoutsec;
+	boost_time.tv_sec = time(NULL) + *(time_t *)arg;
 	boost_time.tv_nsec = 0;
 	t0 = seconds_read();
 	rc = pthread_mutex_timedlock(&mutex2, &boost_time);	
@@ -276,7 +272,7 @@ int main(int argc, char **argv)
 	pthread_t threads[cpus - 1];
 	pthread_t threadsample, threadtp, threadtl, threadtb1, threadtb2;
 
-	int multiplier = 1;
+	time_t multiplier = 1;
 	int i;
 	int rc;
 	
@@ -339,7 +335,7 @@ int main(int argc, char **argv)
 	sleep(base_time + multiplier * 30 - seconds_read());
 
 	/* Start TB1 thread (boosting thread) */
-	int timeout = multiplier * 20;
+	time_t timeout = multiplier * 20;
 	rc = pthread_create(&threadtb1, &threadattr, thread_tb1, 
 			    &timeout);
         if (rc != 0) {

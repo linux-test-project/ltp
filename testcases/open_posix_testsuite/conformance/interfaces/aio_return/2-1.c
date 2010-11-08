@@ -67,36 +67,38 @@ int main(void)
 	if (aio_write(&aiocb) == -1) {
 		close(fd);
 		printf(TNAME " Error at aio_write(): %s\n",
-		       strerror(errno));
+		       strerror(aio_error(&aiocb)));
 		exit(PTS_FAIL);
 	}
 
-	do {
-		retval = aio_error(&aiocb);
-		if (retval == -1) {
+	while (aio_error(&aiocb) == EINPROGRESS)
+		sleep(1);
+	retval = aio_return(&aiocb);
+
+	if (0 < retval) {
+
+		if (retval != BUF_SIZE) {
 			close(fd);
-			printf(TNAME " Error at aio_error(): %s\n",
-				strerror(errno));
+			printf(TNAME " aio_return didn't return expected size: "
+				"%d\n",	retval);
 			exit(PTS_FAIL);
 		}
-	} while (retval == EINPROGRESS);
 
-	retval = aio_return(&aiocb);
+		retval = aio_return(&aiocb);
 
-	if (retval != BUF_SIZE) {
+		if (retval != -1) {
+			close(fd);
+			printf(TNAME " Second call to aio_return() may "
+				"return -1; aio_return() returned %d\n",
+				retval);
+			exit(PTS_UNRESOLVED);
+		}
+
+	} else {
 		close(fd);
-		printf(TNAME " Error at aio_return(): %s\n",
-		       strerror(errno));
-		exit(PTS_FAIL);
-	}
-
-	retval = aio_return(&aiocb);
-
-	if (retval != -1) {
-		close(fd);
-		printf(TNAME " Second call to aio_return() should return -1 : %d\n",
-		       retval);
-		exit(PTS_FAIL);
+		printf(TNAME " Error at aio_error(): %s\n",
+		       strerror(aio_error(&aiocb)));
+		exit(PTS_UNRESOLVED);
 	}
 
 	close(fd);

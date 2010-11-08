@@ -27,10 +27,13 @@ include	$(top_srcdir)/include/mk/env_pre.mk
 # For broken compilers and toolchains, like Montavista, that improperly detect
 # system headers when running autoconf -_-... bleh.
 ifeq ($(strip $(CAP_LIBS)),)
-FILTER_OUT_DIRS		:= cap_bound filecaps
+FILTER_OUT_DIRS		:= cap_bound filecaps securebits
 endif
-ifeq ($(HAVE_SETCAP),false)
+ifeq ($(strip $(SETCAP)),)
 FILTER_OUT_DIRS		+= filecaps
+endif
+ifneq ($(HAVE_SECUREBITS),yes)
+FILTER_OUT_DIRS		+= securebits
 endif
 
 # XXX (garrcoop): avoid compilation failures on RHEL 5.4, as reported by

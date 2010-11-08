@@ -38,9 +38,18 @@
 /*	      Manas Kumar Nayak maknayak@in.ibm.com>			*/
 /******************************************************************************/
 
-#include <stdio.h>
-#include <errno.h>
+#include "config.h"
+#include <sys/types.h>
+#if HAVE_KEYCTL_SYSCALL
 #include <linux/keyctl.h>
+#endif
+#include <errno.h>
+#if HAVE_KEYCTL_SYSCALL
+#include <keyutils.h>
+#endif
+#include <limits.h>
+#include <stdio.h>
+
 /* Harness Specific Include Files. */
 #include "test.h"
 #include "usctest.h"
@@ -55,6 +64,7 @@ char *TCID = "keyctl01";/* Test program identifier.*/
 int  testno;
 int  TST_TOTAL = 2;	/* total number of tests in this file.   */
 
+#if HAVE_KEYCTL_SYSCALL
 /* Extern Global Functions */
 /******************************************************************************/
 /*									    */
@@ -110,6 +120,7 @@ void setup() {
 int main(int ac, char **av) {
 	int ret;
 	int lc;		/* loop counter */
+	key_serial_t ne_key;
 	char *msg;	/* message returned from parse_opts */
 
 	/* parse standard options */
@@ -126,28 +137,39 @@ int main(int ac, char **av) {
 		Tst_count = 0;
 
 		for (testno = 1; testno < TST_TOTAL; ++testno) {
-	
+
 			/* Call keyctl() and ask for a keyring's ID. */
 			ret = syscall(__NR_keyctl, KEYCTL_GET_KEYRING_ID,
 					KEY_SPEC_USER_SESSION_KEYRING);
 			if (ret != -1) {
 				tst_resm(TPASS,"KEYCTL_GET_KEYRING_ID succeeded");
 			} else {
-		 		tst_resm(TFAIL | TERRNO, "KEYCTL_GET_KEYRING_ID");
+		 		tst_resm(TFAIL|TERRNO, "KEYCTL_GET_KEYRING_ID");
+			}
+
+			for (ne_key = INT32_MAX; ne_key > INT32_MIN;
+			    ne_key--) {
+				ret = syscall(__NR_keyctl, KEYCTL_READ,
+					ne_key);
+				if (ret == -1 && errno == ENOKEY)
+					break;
 			}
 
 			/* Call keyctl. */
-			ret = syscall(__NR_keyctl, KEYCTL_REVOKE, "MyKey");
+			ret = syscall(__NR_keyctl, KEYCTL_REVOKE, ne_key);
 			if (ret != -1) {
-				tst_resm(TFAIL | TERRNO, "KEYCTL_REVOKE succeeded unexpectly");
+				tst_resm(TFAIL|TERRNO,
+					"KEYCTL_REVOKE succeeded unexpectedly");
 			} else {
 				/* Check for the correct error num. */
 				if (errno == ENOKEY) {
-					tst_resm(TPASS | TERRNO,
-						"KEYCTL_REVOKE got expected errno");
+					tst_resm(TPASS|TERRNO,
+						"KEYCTL_REVOKE got expected "
+						"errno");
 				} else {
-					tst_resm(TFAIL | TERRNO,
-						"KEYCTL_REVOKE got unexpected errno");
+					tst_resm(TFAIL|TERRNO,
+						"KEYCTL_REVOKE got unexpected "
+						"errno");
 				}
 
 			}
@@ -156,6 +178,14 @@ int main(int ac, char **av) {
 
 	}
 	cleanup();
-	tst_exit();
-
+	/* NOTREACHED */
+	return (1);
 }
+#else
+int
+main(void)
+{
+	tst_resm(TCONF, "keyctl syscall support not available on system");
+	tst_exit();
+}
+#endif

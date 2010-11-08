@@ -72,13 +72,13 @@ test1(void)
 	}
 
 	slavename = ptsname(masterfd);
-	if (slavename == (char *)0) {
-		tst_resm(TBROK,"ptsname() call failed");
+	if (slavename == NULL) {
+		tst_resm(TBROK|TERRNO, "ptsname() call failed");
 		tst_exit();
 	}
 
 	if (grantpt(masterfd) != 0) {
-		tst_resm(TBROK,"grantpt() call failed");
+		tst_resm(TBROK|TERRNO, "grantpt() call failed");
 		tst_exit();
 	}
 
@@ -171,13 +171,13 @@ test2(void)
 	}
 
 	slavename = ptsname(masterfd);
-	if (slavename == (char *)0) {
-		tst_resm(TBROK,"ptsname() call failed");
+	if (slavename == NULL) {
+		tst_resm(TBROK|TERRNO, "ptsname() call failed");
 		tst_exit();
 	}
 
 	if (grantpt(masterfd) != 0) {
-		tst_resm(TBROK,"grantpt() call failed");
+		tst_resm(TBROK|TERRNO, "grantpt() call failed");
 		tst_exit();
 	}
 
@@ -269,13 +269,13 @@ test3(void)
 	}
 
 	slavename = ptsname(masterfd);
-	if (slavename == (char *)0) {
-		tst_resm(TBROK,"ptsname() call failed");
+	if (slavename == NULL) {
+		tst_resm(TBROK|TERRNO, "ptsname() call failed");
 		tst_exit();
 	}
 
 	if (grantpt(masterfd) != 0) {
-		tst_resm(TBROK,"grantpt() call failed");
+		tst_resm(TBROK|TERRNO, "grantpt() call failed");
 		tst_exit();
 	}
 
@@ -331,13 +331,13 @@ test4(void)
 	}
 
 	slavename = ptsname(masterfd);
-	if (slavename == (char *)0) {
-		tst_resm(TBROK,"ptsname() call failed");
+	if (slavename == NULL) {
+		tst_resm(TBROK|TERRNO, "ptsname() call failed");
 		tst_exit();
 	}
 
 	if (grantpt(masterfd) != 0) {
-		tst_resm(TBROK,"grantpt() call failed");
+		tst_resm(TBROK|TERRNO, "grantpt() call failed");
 		tst_exit();
 	}
 
@@ -413,13 +413,13 @@ test5(void)
 		}
 
 		slavename = ptsname(masterfd[i]);
-		if (slavename == (char *)0) {
-			tst_resm(TBROK,"ptsname() call failed");
+		if (slavename == NULL) {
+			tst_resm(TBROK|TERRNO, "ptsname() call failed");
 			tst_exit();
 		}
 
 		if (grantpt(masterfd[i]) != 0) {
-			tst_resm(TBROK,"grantpt() call failed");
+			tst_resm(TBROK|TERRNO, "grantpt() call failed");
 			tst_exit();
 		}
 
@@ -470,13 +470,13 @@ test6(void)
 	}
 
 	slavename = ptsname(masterfd);
-	if (slavename == (char *)0) {
-		tst_resm(TBROK,"ptsname() call failed");
+	if (slavename == NULL) {
+		tst_resm(TBROK|TERRNO, "ptsname() call failed");
 		tst_exit();
 	}
 
 	if (grantpt(masterfd) != 0) {
-		tst_resm(TBROK,"grantpt() call failed");
+		tst_resm(TBROK|TERRNO, "grantpt() call failed");
 		tst_exit();
 	}
 

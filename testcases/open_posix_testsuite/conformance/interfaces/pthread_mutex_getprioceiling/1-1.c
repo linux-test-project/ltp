@@ -1,62 +1,79 @@
 /*   
- * Copyright (c) 2002, Intel Corporation. All rights reserved.
- * Created by:  bing.wei.liu REMOVE-THIS AT intel DOT com
- * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
- * source tree.
-
- * Test that pthread_mutex_getprioceiling()
+ * Copyright (c) 2010, Garrett Cooper.
  *
- * returns the current prioceiling of the mutex.
+ * Test that pthread_mutex_getprioceiling() returns the current prioceiling of
+ * the mutex with PTHREAD_PRIO_INHERIT.
  *
- * Steps:i
+ * Steps:
  * 1.  Initialize a pthread_mutexattr_t object with pthread_mutexattr_init()
- * 2.  Call pthread_mutex_getprioceiling() to obtain the prioceiling.
+ * 2.  Set the protocol using PTHREAD_PRIO_INHERIT.
+ * 3.  Call pthread_mutex_getprioceiling() to obtain the prioceiling.
  * 
  */
 
 #include <pthread.h>
-#include <stdio.h>
+#include <errno.h>
 #include <sched.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
 #include "posixtest.h"
 
-int main()
+int
+main(void)
 {
-	
-	/* Make sure there is prioceiling capability. */ 
-	/* #ifndef _POSIX_PRIORITY_SCHEDULING
-	  fprintf(stderr,"prioceiling attribute is not available for testing\n");
-	  return PTS_UNRESOLVED;	
-	#endif */
+#if defined(_SC_PRIORITY_SCHEDULING)
 
+	if (sysconf(_SC_PRIORITY_SCHEDULING) == -1) {
+		printf("PRIORITY_SCHEDULING not supported\n");
+		return PTS_UNSUPPORTED;
+	}
+
+	pthread_mutexattr_t mutex_attr;
 	pthread_mutex_t mutex;
-	int prioceiling, max_prio, min_prio;
-	
-	/* Initialize a mutex object */
-	if(pthread_mutex_init(&mutex, NULL) != 0)
-	{
-		perror("Error at pthread_mutex_init()\n");
+	int error, prioceiling;
+
+	error = pthread_mutexattr_init(&mutex_attr);
+	if (error) {
+		printf("pthread_mutexattr_init failed: %s\n", strerror(error));
 		return PTS_UNRESOLVED;
 	}
-	
+
+	/* 
+	 * Has to be something other than PTHREAD_PRIO_NONE, the default as per
+	 * pthread_mutexattr_getprotocol.
+	 */
+	error = pthread_mutexattr_setprotocol(&mutex_attr,
+		PTHREAD_PRIO_INHERIT);
+	if (error) {
+		printf("pthread_mutexattr_setprotocol failed: %s\n",
+			strerror(error));
+		return PTS_UNRESOLVED;
+	}
+
+	/* Initialize a mutex object */
+	error = pthread_mutex_init(&mutex, &mutex_attr);
+	if (error) {
+		printf("pthread_mutex_init failed: %s\n", strerror(error));
+		return PTS_UNRESOLVED;
+	}
+
 	/* Get the prioceiling of the mutex. */
-	if(pthread_mutex_getprioceiling(&mutex, &prioceiling) != 0)
-	{
-		printf("Test FAILED: Error obtaining the priority ceiling\n");
-		return PTS_FAIL;
-	}
-	
-	/* Get the max and min prio according to SCHED_FIFO (posix scheduling policy) */
-	max_prio = sched_get_priority_max(SCHED_FIFO);
-	min_prio = sched_get_priority_min(SCHED_FIFO);
-
-	/* Make sure that prioceiling is withing the legal SCHED_FIFO boundries. */
-	if((prioceiling < min_prio) || (prioceiling > max_prio))
-	{
-		printf("Test FAILED: Default prioceiling %d is not compliant with SCHED_FIFO boundry. \n", prioceiling);
+	error = pthread_mutex_getprioceiling(&mutex, &prioceiling);
+	if (error) {
+		printf("pthread_mutex_getprioceiling failed: %s\n",
+			strerror(error));
 		return PTS_FAIL;
 	}
 
-	printf("Test PASSED: Prioceiling %d\n", prioceiling);
+	(void) pthread_mutexattr_destroy(&mutex_attr);
+	(void) pthread_mutex_destroy(&mutex);
+
+	printf("Prioceiling returned: %d\n", prioceiling);
 	return PTS_PASS;
+#else
+	printf("pthread_mutex_getprioceiling not supported");
+	return PTS_UNSUPPORTED;
+#endif
+
 }

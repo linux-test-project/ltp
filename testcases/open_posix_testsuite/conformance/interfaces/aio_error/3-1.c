@@ -9,7 +9,7 @@
 /*
  * assertion:
  *
- *	aio_error() shall fail if:
+ *	aio_error() may fail if:
  *	[EINVAL] The aiocbp argument does not refer to an asynchronous
  *	operation whose return status has not yet been retrieved.
  *
@@ -37,50 +37,44 @@
 int main()
 {
 
-        char tmpfname[256];
+	char tmpfname[256];
 #define BUF_SIZE 512
-        char buf[BUF_SIZE];
-        int fd;
-        struct aiocb aiocb;
+	char buf[BUF_SIZE];
+	int fd;
+	struct aiocb aiocb;
 	int ret=0;
 
 	if (sysconf(_SC_ASYNCHRONOUS_IO) != 200112L)
 		return PTS_UNSUPPORTED;
 
-        snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_error_3_1_%d",
-                  getpid());
-        unlink(tmpfname);
-        fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
-                  S_IRUSR | S_IWUSR);
-        if (fd == -1)
-        {
-                printf(TNAME " Error at open(): %s\n",
-                       strerror(errno));
-                exit(PTS_UNRESOLVED);
-        }
+	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_error_3_1_%d",
+		  getpid());
+	unlink(tmpfname);
+	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL,
+		  S_IRUSR | S_IWUSR);
+	if (fd == -1)
+	{
+		printf(TNAME " Error at open(): %s\n",
+		       strerror(errno));
+		exit(PTS_UNRESOLVED);
+	}
 
-        unlink(tmpfname);
+	unlink(tmpfname);
 
 	memset (&aiocb, 0, sizeof (struct aiocb));
 
-        aiocb.aio_fildes = fd;
-        aiocb.aio_buf = buf;
-        aiocb.aio_reqprio = -1;
-        aiocb.aio_nbytes = BUF_SIZE;
+	aiocb.aio_fildes = fd;
+	aiocb.aio_buf = buf;
+	aiocb.aio_reqprio = -1;
+	aiocb.aio_nbytes = BUF_SIZE;
 
-        if (aio_write(&aiocb) != 0)
-	{
-                printf(TNAME " bad aio_read return value()\n");
-                exit(PTS_FAIL);
-	}
-
-	while (aio_error (&aiocb) == EINPROGRESS);
 	ret = aio_error(&aiocb);
 
 	if (ret != EINVAL)
 	{
-		printf(TNAME " errno is not EINVAL %s\n", strerror(errno));
-		return PTS_FAIL;
+		printf(TNAME " return code didn't match expected "
+			"value (%d != %d).\n", ret, EINVAL);
+		return PTS_UNRESOLVED;
 	}
 
 	close(fd);

@@ -38,7 +38,7 @@ include $(abs_srcdir)/config.mk
 endif
 
 LIBDIR			:= lib
-FILTER_OUT_DIRS		:= $(LIBDIR)
+FILTER_OUT_DIRS		:= $(LIBDIR) m4
 LIB			:= $(LIBDIR)/librealtime.a
 
 # START autotools junk

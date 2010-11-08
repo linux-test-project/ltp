@@ -1,0 +1,8 @@
+This document defines the coverage for the pthread_mutex_getprioceiling function:
+
+Assertion	Tested?
+1		YES
+2		NO
+3		NO
+
+NOTE:

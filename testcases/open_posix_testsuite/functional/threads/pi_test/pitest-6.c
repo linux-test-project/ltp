@@ -196,7 +196,6 @@ void *thread_sample(void *arg)
 
 void *thread_tb(void *arg)
 {
-	unsigned long timeoutsec;
 	struct timespec boost_time;
 	double t0, t1;
 	int rc;
@@ -204,11 +203,10 @@ void *thread_tb(void *arg)
 	test_set_priority(pthread_self(), SCHED_FIFO, 4);
 	DPRINTF(stderr,"Thread TB: started\n");
 	
-	timeoutsec = *(unsigned long*) arg;
 	DPRINTF(stdout, "#EVENT %f TB Started, waiting for mutex for %lu s\n", 
-		seconds_read() - base_time, timeoutsec);
+		seconds_read() - base_time, *(time_t *)arg);
 
-	boost_time.tv_sec = time(NULL) + (time_t)timeoutsec;
+	boost_time.tv_sec = time(NULL) + *(time_t *)arg;
 	boost_time.tv_nsec = 0;
 
 	t0 = seconds_read();
@@ -235,7 +233,7 @@ int main(int argc, char **argv)
 	pthread_attr_t	threadattr;
 	pthread_t threads[cpus - 1], threadsample, threadtp, threadtl, threadtb;
 
-	int multiplier = 1;
+	time_t multiplier = 1;
 	int i;
 	int rc;
 	

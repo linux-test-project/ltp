@@ -48,15 +48,15 @@
 #include <linux/fs.h>
 #include <sys/types.h>
 #include "config.h"
-#if defined(HAS_QUOTAV2) || defined(HAS_QUOTAV1)
-#if defined(HAS_QUOTAV2)
+#if defined(HAVE_QUOTAV2) || defined(HAVE_QUOTAV1)
+#if defined(HAVE_QUOTAV2)
 #define _LINUX_QUOTA_VERSION 2
-#else	/* HAS_QUOTAV1 */
+#else	/* HAVE_QUOTAV1 */
 #define _LINUX_QUOTA_VERSION 1
 #endif
 #include <sys/quota.h>
-#else	/* ! (HAS_QUOTAV2 || HAS_QUOTAV1) */
-/* Not HAS_QUOTAV2 */
+#else	/* ! (HAVE_QUOTAV2 || HAVE_QUOTAV1) */
+/* Not HAVE_QUOTAV2 */
 #define BROKEN_QUOTACTL 1
 #endif
 
@@ -205,7 +205,7 @@ int cmd[] = {
 	Q_GETQUOTA,
 	Q_SETQUOTA,
 /* Only available in quota v2 */
-#if defined(HAS_QUOTAV2)
+#if defined(HAVE_QUOTAV2)
 	Q_GETINFO,
 	Q_SETINFO,
 	Q_GETFMT,

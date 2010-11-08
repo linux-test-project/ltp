@@ -68,30 +68,22 @@ int main(void)
 	aiocb.aio_fildes = fd;
 	aiocb.aio_buf    = buf;
 	aiocb.aio_nbytes = BUF_SIZE;
-	
+
 	if (aio_write(&aiocb) == -1) {
 		close(fd);
 		printf(TNAME " Error at aio_write(): %s\n",
-		       strerror(errno));
+		       strerror(aio_error(&aiocb)));
 		exit(PTS_FAIL);
 	}
 
-	do {
-		retval = aio_error(&aiocb);
-		if (retval == -1) {
-			close(fd);
-			printf(TNAME " Error at aio_error(): %s\n",
-				strerror(errno));
-			exit(PTS_FAIL);
-		}
-	} while (retval == EINPROGRESS);
-
+	while (aio_error(&aiocb) == EINPROGRESS)
+		sleep(1);
 	retval = aio_return(&aiocb);
 
-	if (retval != BUF_SIZE) {
+	if (retval == -1) {
 		close(fd);
 		printf(TNAME " Error at aio_return(): %d, %s\n", retval,
-		       strerror(errno));
+		       strerror(aio_error(&aiocb)));
 		exit(PTS_FAIL);
 	}
 
@@ -103,27 +95,29 @@ int main(void)
 	if (aio_write(&aiocb) == -1) {
 		close(fd);
 		printf(TNAME " Error at aio_write(): %s\n",
-		       strerror(errno));
+		       strerror(aio_error(&aiocb)));
 		exit(PTS_FAIL);
 	}
 
-	do {
-		retval = aio_error(&aiocb);
-		if (retval == -1) {
-			close(fd);
-			printf(TNAME " Error at aio_error(): %s\n",
-				strerror(errno));
-			exit(PTS_FAIL);
-		}
-	} while (retval == EINPROGRESS);
-
+	while (aio_error(&aiocb) == EINPROGRESS)
+		sleep(1);
 	retval = aio_return(&aiocb);
 
-	if (retval != BUF_SIZE / 2) {
+	if (retval == -1) {
 		close(fd);
-		printf(TNAME " Error at aio_return(): %d, %s\n", retval,
-		       strerror(errno));
-		exit(PTS_FAIL);
+		printf(TNAME " Error at aio_return(): %s\n",
+		       strerror(aio_error(&aiocb)));
+		exit(PTS_UNRESOLVED);
+	} else {
+
+		if (retval != (BUF_SIZE / 2)) {
+			close(fd);
+			printf(TNAME " aio_return() didn't fail as expected: "
+				"%d, %s\n",
+				retval, strerror(aio_error(&aiocb)));
+			exit(PTS_UNRESOLVED);
+		}
+
 	}
 	
 	close(fd);

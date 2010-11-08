@@ -17,7 +17,8 @@
 
 int main()
 {
-        printf("Will not test that the shm_open() function create an open file description\nthat refers to the shared memory object and a file descriptor that refers to\nthat open file description.");
+        printf("Test doesn't exercise requirements; read code comments for "
+		"more details of what isn't tested\n");
         return PTS_UNTESTED;
 }
 
