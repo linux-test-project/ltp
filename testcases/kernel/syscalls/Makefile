@@ -26,8 +26,6 @@ include	$(top_srcdir)/include/mk/env_pre.mk
 
 # libevent requires some massaging to get this to work.
 FILTER_OUT_DIRS		:= libevent
-# pcllib is busted as all heck because of libtool
-FILTER_OUT_DIRS		+= pcllib
 
 ifeq ($(wildcard $(abs_srcdir)/libevent/test/Makefile),)
 $(warning libevent/test/Makefile does not exist; skipping to avoid compile errors)
