@@ -1,15 +1,11 @@
 /*   
- * Copyright (c) 2002, Intel Corporation. All rights reserved.
- * Created by:  bing.wei.liu REMOVE-THIS AT intel DOT com
- * This file is licensed under the GPL license.  For the full content
- * of this license, see the COPYING file at the top level of this 
- * source tree.
-
- * Test that pthread_mutex_getprioceiling()
+ * Copyright (c) 2010, Garrett Cooper.
+ *
+ * Test that pthread_mutex_setprioceiling()
  *
  * returns the current prioceiling of the mutex.
  *
- * Steps:i
+ * Steps:
  * 1.  Initialize a pthread_mutexattr_t object with pthread_mutexattr_init()
  * 2.  Call pthread_mutex_getprioceiling() to obtain the prioceiling.
  * 
