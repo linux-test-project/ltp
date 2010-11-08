@@ -34,14 +34,12 @@
 char *TCID = "cap_bounds_rw";
 int TST_TOTAL=1;
 
-int errno;
-
 int check_remaining_caps(int lastdropped)
 {
 	int i;
 	int ret;
 
-	for (i=0; i <= lastdropped; i++) {
+	for (i = 0; i <= lastdropped; i++) {
 #if HAVE_DECL_PR_CAPBSET_READ
 		ret = prctl(PR_CAPBSET_READ, i);
 #else
@@ -57,7 +55,7 @@ int check_remaining_caps(int lastdropped)
 			return i;
 		}
 	}
-	for (; i<=CAP_LAST_CAP; i++) {
+	for (; i <= CAP_LAST_CAP; i++) {
 #if HAVE_DECL_PR_CAPBSET_READ
 		ret = prctl(PR_CAPBSET_READ, i);
 #else
@@ -108,7 +106,7 @@ int main(int argc, char *argv[])
 		tst_resm(TINFO, " %d is should not exist\n", max(INSANE, CAP_LAST_CAP+1));
 		tst_exit();
 	}
-	for (i=0; i<=CAP_LAST_CAP; i++) {
+	for (i = 0; i <= CAP_LAST_CAP; i++) {
 #if HAVE_DECL_PR_CAPBSET_DROP
 		ret = prctl(PR_CAPBSET_DROP, i);
 #else

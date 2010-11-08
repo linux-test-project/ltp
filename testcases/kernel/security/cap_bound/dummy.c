@@ -5,7 +5,7 @@
 #include <sys/capability.h>
 #endif
 
-int main()
+int main(void)
 {
 #if HAVE_SYS_CAPABILITY_H
 #ifdef HAVE_LIBCAP
