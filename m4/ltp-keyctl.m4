@@ -29,8 +29,8 @@ AC_DEFUN([LTP_CHECK_SYSCALL_KEYCTL],[AC_TRY_COMPILE([
 	return 0;
 ],[has_keyctl_syscall="yes"])
 if test "x$has_keyctl_syscall" = "xyes"; then
-	AC_DEFINE(HAS_KEYCTL_SYSCALL,1,[Define to 1 if you have the libkeyutils development package and keyctl syscall on your system])
+	AC_DEFINE(HAVE_KEYCTL_SYSCALL,1,[Define to 1 if you have the libkeyutils development package and keyctl syscall on your system])
 else
-	AC_DEFINE(HAS_KEYCTL_SYSCALL,0,[Define to 1 if you have the libkeyutils development package and keyctl syscall on your system])
+	AC_DEFINE(HAVE_KEYCTL_SYSCALL,0,[Define to 1 if you have the libkeyutils development package and keyctl syscall on your system])
 fi
 ])

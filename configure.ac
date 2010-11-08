@@ -68,13 +68,11 @@ AC_CHECK_HEADERS([ \
 #AC_CONFIG_SUBDIRS([ \
 #    testcases/kernel/syscalls/libevent \
 #    testcases/open_hpi_testsuite/ \
-#    testcases/kernel/syscalls/pcllib/ \
 #    testcases/realtime \
 #])
 
 AC_CONFIG_SUBDIRS([ \
     testcases/kernel/syscalls/libevent \
-    testcases/kernel/syscalls/pcllib/ \
     testcases/realtime \
 ])
 
