@@ -79,4 +79,5 @@ main(void)
 	printf("pthread_mutex_getprioceiling not supported");
 	return PTS_UNSUPPORTED;
 #endif
+
 }
