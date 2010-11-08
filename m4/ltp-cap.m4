@@ -26,7 +26,7 @@ dnl
 AC_DEFUN([LTP_CHECK_CAPABILITY_SUPPORT],[
 AH_TEMPLATE(HAVE_LIBCAP,
 [Define to 1 if you have libcap-2 installed.])
-AC_CHECK_HEADER([sys/capability.h],[capability_header_prefix="sys"])
+AC_CHECK_HEADERS([sys/capability.h],[capability_header_prefix="sys"])
 if test "x$capability_header_prefix" != x; then
 	AC_CHECK_LIB(cap,cap_compare,[cap_libs="-lcap"])
 	AC_CHECK_PROG(CAPSET,capset,capset)
