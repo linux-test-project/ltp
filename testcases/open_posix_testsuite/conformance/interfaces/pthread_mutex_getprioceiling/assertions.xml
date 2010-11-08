@@ -1,21 +1,18 @@
 <assertions>
   <assertion id="1" tag="ref:XSH7 ">
-   The function
-
-   int pthread_mutexattr_getprioceiling(const pthread_mutexattr_t *restrict mutex, 
-	int *restrict prioceiling);
-
-   returns the current prioceiling of the mutex.
+   The pthread_mutexattr_getprioceiling() function returns the current prioceiling of the mutex.
   </assertion>  
   <assertion id="2" tag="ref:XSH7 ">
    If successful, the pthread_mutex_getprioceiling() function shall return zero; otherwise, an error number shall be returned to indicate the error.
   </assertion>
   <assertion id="3" tag="ref:XSH7 ">
    The pthread_mutex_setprioceiling() function shall fail if:
-
-   [EINVAL]
-     The protocol attribute of mutex is PTHREAD_PRIO_NONE.
-   [EPERM]
-     The implementation requires appropriate privileges to perform the operation and the caller does not have appropriate privileges. 
+    i.  [EINVAL]
+      The protocol attribute of mutex is PTHREAD_PRIO_NONE.
+    ii. [EPERM]
+      The implementation requires appropriate privileges to perform the operation and the caller does not have appropriate privileges. 
+  </assertion>
+  <assertion id="5" tag="ref:XSH7 ">
+    These functions shall not return an error code of [EINTR].
   </assertion>
 </assertions>
