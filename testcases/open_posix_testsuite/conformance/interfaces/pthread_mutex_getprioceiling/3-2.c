@@ -1,12 +1,16 @@
 /*   
  * Copyright (c) 2010, Garrett Cooper.
  *
- * Test that pthread_mutex_getprioceiling() returns the current prioceiling of
- * the mutex with PTHREAD_PRIO_INHERIT.
+ * Test that pthread_mutex_getprioceiling() fails because:
+ *
+ * [EINVAL]
+ *     The protocol attribute of mutex is PTHREAD_PRIO_NONE.
+ *
+ * by explicitly specifying the protocol as PTHREAD_PRIO_NONE.
  *
  * Steps:
  * 1.  Initialize a pthread_mutexattr_t object with pthread_mutexattr_init()
- * 2.  Set the protocol using PTHREAD_PRIO_INHERIT.
+ * 2.  Explicitly set the protocol using PTHREAD_PRIO_NONE.
  * 3.  Call pthread_mutex_getprioceiling() to obtain the prioceiling.
  * 
  */
@@ -40,11 +44,11 @@ main(void)
 	}
 
 	/* 
-	 * Has to be something other than PTHREAD_PRIO_NONE, the default as per
+	 * The default protocol is PTHREAD_PRIO_NONE according to
 	 * pthread_mutexattr_getprotocol.
 	 */
 	error = pthread_mutexattr_setprotocol(&mutex_attr,
-		PTHREAD_PRIO_INHERIT);
+		PTHREAD_PRIO_NONE);
 	if (error) {
 		printf("pthread_mutexattr_setprotocol failed: %s\n",
 			strerror(error));
@@ -61,16 +65,17 @@ main(void)
 	/* Get the prioceiling of the mutex. */
 	error = pthread_mutex_getprioceiling(&mutex, &prioceiling);
 	if (error) {
-		printf("pthread_mutex_getprioceiling failed: %s\n",
-			strerror(error));
-		return PTS_FAIL;
-	}
+		if (error == EINVAL) {
+			printf("pthread_mutex_getprioceiling failed as "
+				"expected\n");
+		} else {
+			printf("pthread_mutex_getprioceiling did not fail as "
+				"expected: %s\n", strerror(error));
+		}
+	} else
+		printf("pthread_mutex_getprioceiling passed unexpectedly\n");
 
-	(void) pthread_mutexattr_destroy(&mutex_attr);
-	(void) pthread_mutex_destroy(&mutex);
-
-	printf("Prioceiling returned: %d\n", prioceiling);
-	return PTS_PASS;
+	return (error == EINVAL ? PTS_PASS : PTS_FAIL);
 #else
 	printf("pthread_mutex_getprioceiling not supported");
 	return PTS_UNSUPPORTED;

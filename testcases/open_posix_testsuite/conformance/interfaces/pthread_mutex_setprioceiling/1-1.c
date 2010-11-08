@@ -1,13 +1,17 @@
 /*   
- * Copyright (c) 2010, Garrett Cooper.
+ * Copyright (c) 2002, Intel Corporation. All rights reserved.
+ * Created by:  bing.wei.liu REMOVE-THIS AT intel DOT com
+ * This file is licensed under the GPL license.  For the full content
+ * of this license, see the COPYING file at the top level of this 
+ * source tree.
+
+ * Test that pthread_mutex_getprioceiling()
  *
- * Test that pthread_mutex_getprioceiling() returns the current prioceiling of
- * the mutex with PTHREAD_PRIO_INHERIT.
+ * returns the current prioceiling of the mutex.
  *
- * Steps:
+ * Steps:i
  * 1.  Initialize a pthread_mutexattr_t object with pthread_mutexattr_init()
- * 2.  Set the protocol using PTHREAD_PRIO_INHERIT.
- * 3.  Call pthread_mutex_getprioceiling() to obtain the prioceiling.
+ * 2.  Call pthread_mutex_getprioceiling() to obtain the prioceiling.
  * 
  */
 
@@ -44,7 +48,7 @@ main(void)
 	 * pthread_mutexattr_getprotocol.
 	 */
 	error = pthread_mutexattr_setprotocol(&mutex_attr,
-		PTHREAD_PRIO_INHERIT);
+		PTHREAD_PRIO_PROTECT);
 	if (error) {
 		printf("pthread_mutexattr_setprotocol failed: %s\n",
 			strerror(error));
