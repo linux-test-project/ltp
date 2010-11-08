@@ -1,0 +1,40 @@
+<assertions>
+  <assertion id="1" tag="ref:XSH7 ">
+    i.   The pthread_mutex_getprioceiling() function shall return the current priority ceiling of the mutex.
+    ii.  The pthread_mutex_setprioceiling() function shall attempt to lock the mutex as if by a call to pthread_mutex_lock(), except that the process of locking the mutex need not adhere to the priority protect protocol.
+    iii. On acquiring the mutex it shall change the mutex's priority ceiling and then release the mutex as if by a call to pthread_mutex_unlock().
+    iv.  When the change is successful, the previous value of the priority ceiling shall be returned in old_ceiling.
+  </assertion>  
+  <assertion id="2" tag="ref:XSH7 ">
+    Upon success, it returns 0, and stores the value of the prioceiling in 'prioceiling'.
+  </assertion>
+  <assertion id="3" tag="ref:XSH7 ">
+    The pthread_mutex_setprioceiling() function shall fail if:
+    i.   [EINVAL]
+      The protocol attribute of mutex is PTHREAD_PRIO_NONE.
+    ii.  [EPERM]
+      The implementation requires appropriate privileges to perform the operation and the caller does not have appropriate privileges.
+    iii. [EAGAIN]
+      The mutex could not be acquired because the maximum number of recursive locks for mutex has been exceeded.
+    iv.  [EDEADLK]
+      The mutex type is PTHREAD_MUTEX_ERRORCHECK and the current thread already owns the mutex.
+    v.   [EINVAL]
+      The mutex was created with the protocol attribute having the value PTHREAD_PRIO_PROTECT and the calling thread's priority is higher than the mutex's current priority ceiling, and the implementation adheres to the priority protect protocol in the process of locking the mutex.
+    vi.  [ENOTRECOVERABLE]
+      The mutex is a robust mutex and the state protected by the mutex is not recoverable.
+    vii. [EOWNERDEAD]
+       The mutex is a robust mutex and the process containing the previous owning thread terminated while holding the mutex lock. The mutex lock shall be acquired by the calling thread and it is up to the new owner to make the state consistent (see pthread_mutex_lock ).
+  </assertion>
+  <assertion id="4" tag="ref:XSH7 ">
+    The pthread_mutex_setprioceiling() function may fail if:
+    i.   [EDEADLK]
+        A deadlock condition was detected.
+    ii.  [EINVAL]
+        The priority requested by prioceiling is out of range.
+    iii. [EOWNERDEAD]
+        The mutex is a robust mutex and the previous owning thread terminated while holding the mutex lock. The mutex lock shall be acquired by the calling thread and it is up to the new owner to make the state consistent (see pthread_mutex_lock).
+  </assertion>
+  <assertion id="5" tag="ref:XSH7 ">
+    These functions shall not return an error code of [EINTR].
+  </assertion>
+</assertions>
