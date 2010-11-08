@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 		printf("clock_getcpuclockid(getpid(), ) failed\n");
 		return PTS_FAIL;
 	}
-	
+
 	if (clock_getcpuclockid(0, &clockid_2) != 0) {
 		printf("clock_getcpuclockid(0, ) failed\n");
 		return PTS_FAIL;
@@ -65,6 +65,6 @@ int main(int argc, char *argv[])
 	}
 	printf("Test FAILED\n");
 	return PTS_FAIL;
-	
+
 #endif
 }
