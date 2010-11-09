@@ -336,6 +336,7 @@ int main(int argc, char* argv[]) {
   printf("Start %s\n",argv[0]);
 
   if (!nopi) {
+#if HAVE_DECL_PTHREAD_PRIO_INHERIT
     if (pthread_mutexattr_init(&mutexattr) != 0) {
       printf("Failed to init mutexattr\n");
     };
@@ -350,6 +351,7 @@ int main(int argc, char* argv[]) {
     if ((retc = pthread_mutex_init(&glob_mutex, &mutexattr)) != 0) {
       printf("Failed to init mutex: %d\n", retc);
     }
+#endif
   }
 
   startThread(&arg1);

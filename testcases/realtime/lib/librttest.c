@@ -559,6 +559,7 @@ void *busy_work_us(int us)
 
 void init_pi_mutex(pthread_mutex_t *m)
 {
+#if HAVE_DECL_PTHREAD_PRIO_INHERIT
 	pthread_mutexattr_t attr;
 	int ret;
 	int protocol;
@@ -575,6 +576,7 @@ void init_pi_mutex(pthread_mutex_t *m)
 	if ((ret = pthread_mutex_init(m, &attr)) != 0) {
 		printf("Failed to init mutex: %d (%s)\n", ret, strerror(ret));
 	}
+#endif
 
 	/* FIXME: does any of this need to be destroyed ? */
 }
