@@ -41,10 +41,8 @@ ifeq ($(UCLINUX),1)
 FILTER_OUT_DIRS		+= realtime
 endif
 
-# DOTS requires javac
-ifeq ($(strip $(JAVAC)),)
+# DOTS is going away soon.
 FILTER_OUT_DIRS		+= DOTS
-endif
 
 #
 # XXX (garrcoop): disabling the open_posix_testsuite by request from Subrata
