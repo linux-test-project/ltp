@@ -37,8 +37,6 @@
 char *TCID = "exec_with_inh";
 int TST_TOTAL=1;
 
-int errno;
-
 int main(int argc, char *argv[])
 {
 #if HAVE_SYS_CAPABILITY_H

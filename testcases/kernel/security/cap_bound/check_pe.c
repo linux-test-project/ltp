@@ -38,12 +38,10 @@
 char *TCID = "check_pe";
 int TST_TOTAL=1;
 
-int errno;
-
-#if HAVE_SYS_CAPABILITY_H
-#ifdef HAVE_LIBCAP
 int main(int argc, char *argv[])
 {
+#ifdef HAVE_SYS_CAPABILITY_H
+#ifdef HAVE_LIBCAP
 	int ret = 1;
 	cap_flag_value_t f;
 	cap_t cur;
@@ -72,7 +70,7 @@ int main(int argc, char *argv[])
 			tst_resm(TPASS, "cap is in pE\n");
 			tst_exit();
 		}
-		tst_resm(TFAIL, "Cap is not in pE\n");
+		tst_resm(TFAIL, "cap is not in pE\n");
 		tst_exit();
 	}
 	if (f == CAP_CLEAR) {
