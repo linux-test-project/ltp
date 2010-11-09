@@ -93,7 +93,7 @@ void *worker_thread(void *arg)
 		usleep(DELAY);
 
 		if (_dbg_lvl)
-		    printf("thread %ld @ %d\n", (long)arg, i);
+			printf("thread %ld @ %d\n", (long)arg, i);
 	}
 	return NULL;
 }
@@ -135,7 +135,7 @@ int main(int argc, char* argv[])
 	/* start children threads to walk the array, grabbing the locks */
 	for (t = 0; t < NUM_THREADS; t++) {
 		create_fifo_thread(worker_thread, (void*)t, sched_get_priority_min(SCHED_FIFO));
-		}
+	}
 	/* wait for the children to complete */
 	printf("joining threads\n");
 	join_threads();
@@ -152,7 +152,7 @@ int main(int argc, char* argv[])
 
 #else
 int main(void) {
-	printf("Your system doesn't support the pthread robust mutexattr API's\n");
+	printf("Your system doesn't support the pthread robust mutexattr APIs\n");
 	return 1;
 }
 #endif
