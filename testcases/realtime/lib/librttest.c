@@ -27,15 +27,15 @@
  *       To be included in testcases.
  *
  * AUTHOR
- *        Darren Hart <dvhltc@us.ibm.com>
+ *	Darren Hart <dvhltc@us.ibm.com>
  *
  * HISTORY
  *      2006-Apr-26: Initial version by Darren Hart
  *      2006-May-08: Added atomic_{inc,set,get}, thread struct, debug function,
- *                      rt_init, buffered printing -- Vernon Mauery
+ *		      rt_init, buffered printing -- Vernon Mauery
  *      2006-May-09: improved command line argument handling
  *      2007-Jul-12: Added latency tracing functions and I/O helper functions
- *                                              -- Josh triplett
+ *					      -- Josh triplett
  *	2008-Jan-10: Added RR thread support to tests -- Chirag Jog
  *
  *****************************************************************************/
@@ -255,18 +255,18 @@ void buffer_fini(void)
 }
 
 void cleanup(int i) {
-       printf("Test terminated with asynchronous signal\n");
-       buffer_print();
-       buffer_fini();
-       if (i)
-               exit (i);
+	printf("Test terminated with asynchronous signal\n");
+	buffer_print();
+	buffer_fini();
+	if (i)
+		exit (i);
 }
 
 void setup()
 {
-       signal(SIGINT,cleanup);
-       signal(SIGQUIT,cleanup);
-       signal(SIGTERM,cleanup);
+	signal(SIGINT, cleanup);
+	signal(SIGQUIT,cleanup);
+	signal(SIGTERM, cleanup);
 }
 
 
@@ -553,7 +553,7 @@ void *busy_work_us(int us)
 
 	delta = (now - start)/NS_PER_US;
 	/* uncomment to tune to your machine */
-        /* printf("busy_work_us requested: %dus  actual: %dus\n", us, delta); */
+	/* printf("busy_work_us requested: %dus  actual: %dus\n", us, delta); */
 	return NULL;
 }
 
@@ -639,7 +639,7 @@ static void read_and_print(const char *pathname, int output_fd)
 		if (ret < 0) {
 			if (errno != EAGAIN && errno != EINTR) {
 				printf("Failed to read from file \"%s\": %d (%s)\n",
-				       pathname, errno, strerror(errno));
+					pathname, errno, strerror(errno));
 				break;
 			}
 		} else if (ret == 0)
@@ -650,7 +650,7 @@ static void read_and_print(const char *pathname, int output_fd)
 
 	if (close(fd) < 0) {
 		printf("Failed to close file \"%s\": %d (%s)\n",
-		       pathname, errno, strerror(errno));
+			pathname, errno, strerror(errno));
 	}
 }
 
