@@ -90,7 +90,6 @@ static int iterations;        /* # total iterations */
 static int max_size;          /* max file size */
 static int misc_intvl;        /* for doing misc things; 0 ==> no */
 static int nchild;            /* how many children */
-static int nwait;
 static int fd;                /* file descriptor used by child */
 static int parent_pid;
 static int pidlist[MAXCHILD];
@@ -110,8 +109,7 @@ int main (int ac, char *av[])
          * parse standard options
          */
         if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
-	                tst_resm(TBROK, "OPTION PARSING ERROR - %s", msg);
-			tst_exit();
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
         }
 
 	setup();
@@ -147,8 +145,7 @@ static void setup(void)
 	tst_tmpdir();
 
 	if (getcwd(homedir, sizeof(homedir)) == NULL) {
-		tst_resm(TBROK, "getcwd() failed");
-		tst_exit();
+		tst_brkm(TBROK|TERRNO, NULL, "getcwd() failed");
 	}
 
 	parent_pid = getpid();
@@ -181,7 +178,10 @@ static void setup(void)
 
 static void runtest(void)
 {
-	int i, pid, child, status, count;
+	pid_t pid;
+	int child, count, i, nwait, status;
+
+	nwait = 0;
 
 	for(i = 0; i < nchild; i++) {
 
@@ -203,11 +203,7 @@ static void runtest(void)
 		close(fd);
 
 		if (child < 0) {
-			tst_resm(TINFO, "System resource may be too low, fork() malloc()"
-					      " etc are likely to fail.");
-		        tst_resm(TBROK, "Test broken due to inability of fork.");
-		        tst_exit();
-
+			tst_brkm(TBROK|TERRNO, NULL, "fork failed");
 		} else {
 			pidlist[i] = child;
 			nwait++;
@@ -246,23 +242,18 @@ static void runtest(void)
 	pid = fork();
 
 	if (pid < 0) {
-		tst_resm(TINFO, "System resource may be too low, fork() malloc()"
-                              " etc are likely to fail.");
-                tst_resm(TBROK, "Test broken due to inability of fork.");
-		sync();
+		tst_brkm(TBROK|TERRNO, sync, "fork failed");
 		tst_exit();
 	}
 
 	if (pid == 0) {
 		execl("/bin/rm", "rm", "-rf", fuss, NULL);
-		tst_exit();
+		exit(1);
 	} else
 		wait(&status);
 
 	if (status) {
 		tst_resm(TINFO, "CAUTION - ftest03, '%s' may not be removed", fuss);
-		tst_resm(TINFO, "CAUTION - ftest03, '%s' may not be removed",
-		  fuss);
 	}
 
 	sync();

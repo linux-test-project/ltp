@@ -84,7 +84,6 @@ static int iterations;        /* # total iterations */
 static int max_size;          /* max file size */
 static int misc_intvl;        /* for doing misc things; 0 ==> no */
 static int nchild;            /* how many children */
-static int nwait;
 static int fd;                /* file descriptor used by child */
 static int parent_pid;
 static int pidlist[MAXCHILD];
@@ -98,13 +97,14 @@ static int local_flag;
 int main(int ac, char *av[])
 {
 	int lc;
-        char *msg;
+	char *msg;
 
-        /*
-         * parse standard options
-         */
-        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-                tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+	/*
+	 * parse standard options
+	 */
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+	}
 
 	setup();
 
@@ -119,7 +119,7 @@ int main(int ac, char *av[])
 	}
 
 	cleanup();
-        tst_exit();
+	tst_exit();
 }
 
 static void setup(void)
@@ -139,7 +139,7 @@ static void setup(void)
 	mkdir(fuss, 0755);
 
 	if (chdir(fuss) < 0) {
-		tst_brkm(TBROK,0,"Can't chdir(%s): %s", fuss, strerror(errno));
+		tst_brkm(TBROK|TERRNO, NULL,"Can't chdir(%s)", fuss);
 	}
 
 	/*
@@ -152,8 +152,7 @@ static void setup(void)
 	misc_intvl = 10;
 
 	if (sigset(SIGTERM, term) == SIG_ERR) {
-		tst_resm(TBROK,"sigset failed: %s", strerror(errno));
-	        tst_exit();
+		tst_brkm(TBROK|TERRNO, NULL, "sigset failed");
 	}
 
 	local_flag = PASSED;
@@ -162,7 +161,10 @@ static void setup(void)
 
 static void runtest(void)
 {
-	int i, pid, child, status, count;
+	pid_t pid;
+	int i, child, count, nwait, status;
+
+	nwait = 0;
 
 	for(i = 0; i < nchild; i++) {
 
@@ -171,7 +173,8 @@ static void runtest(void)
 		fd = open(test_name, O_RDWR|O_CREAT|O_TRUNC, 0666);
 
 		if (fd < 0)
-			tst_brkm(TBROK,0, "Can't creating %s/%s: %s", fuss, test_name, strerror(errno));
+			tst_brkm(TBROK|TERRNO, NULL, "Can't create %s/%s",
+				fuss, test_name);
 
 		if ((child = fork()) == 0) {
 			dotest(nchild, i, fd);
@@ -181,10 +184,7 @@ static void runtest(void)
 		close(fd);
 
 		if (child < 0) {
-			 tst_resm(TINFO, "System resource may be too low, fork() malloc()"
-				  " etc are likely to fail.");
-			 tst_resm(TBROK, "Test broken due to inability of fork.");
-			 tst_exit();
+			tst_brkm(TBROK|TERRNO, NULL, "fork failed");
 		} else {
 			pidlist[i] = child;
 			nwait++;
@@ -225,18 +225,13 @@ static void runtest(void)
 	pid = fork();
 
 	if (pid < 0) {
-
-		tst_resm(TINFO, "System resource may be too low, fork() malloc()"
-		          " etc are likely to fail.");
-
-		tst_resm(TBROK, "Can not remove '%s' due to inability of fork.",fuss);
-		sync();
+		tst_brkm(TBROK|TERRNO, sync, "fork failed");
 		tst_exit();
 	}
 
 	if (pid == 0) {
 		execl("/bin/rm", "rm", "-rf", fuss, NULL);
-		tst_exit();
+		exit(1);
 	}
 
 	wait(&status);
@@ -549,10 +544,10 @@ static void term(int sig LTP_ATTRIBUTE_UNUSED)
 static void cleanup(void)
 {
 	/*
-         * print timing stats if that option was specified.
-         * print errno log if that option was specified.
-         */
-        TEST_CLEANUP;
+	 * print timing stats if that option was specified.
+	 * print errno log if that option was specified.
+	 */
+	TEST_CLEANUP;
 
 	tst_rmdir();
 }

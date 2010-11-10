@@ -74,7 +74,6 @@ static int iterations;         /* # total iterations */
 static int max_size;           /* max file size */
 static int misc_intvl;         /* for doing misc things; 0 ==> no */
 static int nchild;             /* number of child processes */
-static int nwait;
 static int parent_pid;
 static int pidlist[MAXCHILD];
 
@@ -154,7 +153,9 @@ static void setup(void)
 
 static void runtest(void)
 {
-	int i, child, status, count, fd;
+	int count, child, fd, i, nwait, status;
+
+	nwait = 0;
 
 	for (i = 0; i < nchild; i++) {
 		if ((child = fork()) == 0) {
@@ -168,11 +169,7 @@ static void runtest(void)
 			tst_exit();
 		}
 		if (child < 0) {
-			 tst_resm(TINFO, "System resource may be too low, fork() malloc()"
-	                                   " etc are likely to fail.");
-                         tst_resm(TBROK, "Test broken due to inability of fork.");
-                         tst_exit();
-
+			tst_brkm(TBROK|TERRNO, NULL, "fork failed");
 		} else {
 			pidlist[i] = child;
 			nwait++;

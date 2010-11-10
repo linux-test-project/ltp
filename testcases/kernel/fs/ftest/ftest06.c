@@ -104,16 +104,15 @@ int main(int ac, char *av[])
 	int pid, child, status, count, k, j;
 	char name[3];
 
-        int lc;
-        char *msg;
+	int lc;
+	char *msg;
 
-        /*
-         * parse standard options
-         */
-        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL){
-                tst_resm(TBROK, "OPTION PARSING ERROR - %s", msg);
-                tst_exit();
-        }
+	/*
+	 * parse standard options
+	 */
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL){
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
+	}
 
 	/*
 	 * Default values for run conditions.
@@ -138,8 +137,7 @@ int main(int ac, char *av[])
 
 		if (!startdir[0]) {
 			if (getcwd(startdir, MAXPATHLEN) == NULL) {
-				tst_resm(TFAIL,"getcwd failed");
-				tst_exit();
+				tst_brkm(TFAIL|TERRNO, NULL, "getcwd failed");
 			}
 		}
 		cwd = startdir;
@@ -153,15 +151,11 @@ int main(int ac, char *av[])
 		mkdir(dirname, 0755);
 		mkdir(homedir, 0755);
 		if (chdir(dirname) < 0) {
-			tst_resm(TFAIL,"\tCan't chdir(%s), error %d.", dirname, errno);
-			cleanup();
-			tst_exit();
+			tst_resm(TFAIL|TERRNO,"\tCan't chdir(%s)", dirname);
 		}
 		dirlen = strlen(dirname);
 		if (chdir(homedir) < 0) {
-			tst_resm(TFAIL,"\tCan't chdir(%s), error %d.", homedir, errno);
-			cleanup();
-			tst_exit();
+			tst_resm(TFAIL|TERRNO, cleanup, "\tCan't chdir(%s)", homedir);
 		}
 
 		/* enter block */
@@ -171,11 +165,7 @@ int main(int ac, char *av[])
 				tst_exit();
 			}
 			if (child < 0) {
-				tst_resm(TINFO, "System resource may be too low, fork() malloc()"
-				                     " etc are likely to fail.");
-				tst_resm(TBROK, "Test broken due to inability of fork.");
-				cleanup();
-				tst_exit();
+				tst_brkm(TBROK|TERRNO, cleanup, "fork failed");
 			}
 			pidlist[k] = child;
 		}
@@ -221,10 +211,7 @@ int main(int ac, char *av[])
 
 		pid = fork();
 		if (pid < 0) {
-			tst_resm(TINFO, "System resource may be too low, fork() malloc()"
-			                         " etc are likely to fail.");
-			tst_resm(TBROK, "Test broken due to inability of fork.");
-			tst_exit();
+			tst_brkm(TBROK|TERRNO, NULL, "fork failed");
 		}
 
 		if (pid == 0) {
@@ -239,18 +226,15 @@ int main(int ac, char *av[])
 
 		pid = fork();
 		if (pid < 0) {
-			tst_resm(TINFO, "System resource may be too low, fork() malloc()"
-			                         " etc are likely to fail.");
-			tst_resm(TBROK, "Test broken due to inability of fork.");
-			tst_exit();
+			tst_brkm(TBROK|TERRNO, NULL, "fork failed");
 		}
 		if (pid == 0) {
 			execl("/bin/rm", "rm", "-rf", dirname, NULL);
-			tst_exit();
+			exit(1);
 		} else
 			wait(&status);
 		if (status) {
-			tst_resm(TINFO,"CAUTION - ftest06, '%s' may not have been removed.",
+			tst_resm(TWARN, "CAUTION - ftest06, '%s' may not have been removed.",
 			  dirname);
 		}
 
@@ -260,12 +244,11 @@ int main(int ac, char *av[])
 	}
 
 	if (local_flag == FAILED)
-                tst_resm(TFAIL, "Test failed.");
-        else
-                tst_resm(TPASS, "Test passed.");
+		tst_resm(TFAIL, "Test failed.");
+	else
+		tst_resm(TPASS, "Test passed.");
 
 	cleanup();
-	tst_exit();
 }
 
 #define	warn(val,m1,m2)	if ((val) < 0) dowarn(me,m1,m2)

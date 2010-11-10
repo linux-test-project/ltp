@@ -88,7 +88,6 @@ static int iterations;        /* # total iterations */
 static off64_t max_size;      /* max file size */
 static int misc_intvl;        /* for doing misc things; 0 ==> no */
 static int nchild;            /* how many children */
-static int nwait;
 static int fd;                /* file descriptor used by child */
 static int parent_pid;
 static int pidlist[MAXCHILD];
@@ -125,7 +124,6 @@ int main(int ac, char *av[])
 	}
 
 	cleanup();
-	tst_exit();
 }
 
 static void setup(void)
@@ -144,8 +142,7 @@ static void setup(void)
 	mkdir(fuss, 0755);
 
 	if (chdir(fuss) < 0) {
-		tst_resm(TBROK,"\tCan't chdir(%s), error %d.", fuss, errno);
-		tst_exit();
+		tst_brkm(TBROK|TERRNO, NULL, "\tCan't chdir(%s)", fuss);
 	}
 
 	/*
@@ -158,8 +155,7 @@ static void setup(void)
 	misc_intvl = 10;
 
 	if (sigset(SIGTERM, term) == SIG_ERR) {
-		perror("sigset failed");
-		exit(3);
+		tst_brkm(TBROK|TERRNO, NULL, "sigset (signo = SIGTERM) failed");
 	}
 
 	local_flag = PASSED;
@@ -167,7 +163,9 @@ static void setup(void)
 
 static void runtest(void)
 {
-	int i, pid, child, status, count;
+	int child, cound, i, nwait, pid, status;
+
+	nwait = 0;
 
 	for (i = 0; i < nchild; i++) {
 		test_name[0] = 'a' + i;
@@ -175,8 +173,7 @@ static void runtest(void)
 		fd = open(test_name, O_RDWR|O_CREAT|O_TRUNC, 0666);
 
 		if (fd < 0) {
-			tst_resm(TBROK, "\tError %d creating %s/%s.", errno, fuss, test_name);
-			tst_exit();
+			tst_resm(TBROK|TERRNO, NULL, "\tError creating %s/%s.", fuss, test_name);
 		}
 
 		if ((child = fork()) == 0) {
@@ -187,10 +184,7 @@ static void runtest(void)
 		close(fd);
 
 		if (child < 0) {
-			 tst_resm(TINFO, "System resource may be too low, fork() malloc()"
-		                          " etc are likely to fail.");
-		         tst_resm(TBROK, "Test broken due to inability of fork.");
-		         tst_exit();
+			tst_brkm(TBROK|TERRNO, NULL, "fork failed");
 		} else {
 			pidlist[i] = child;
 			nwait++;
@@ -225,16 +219,13 @@ static void runtest(void)
 	pid = fork();
 
 	if (pid < 0) {
-		tst_resm(TINFO, "System resource may be too low, fork() malloc()"
-                                 " etc are likely to fail.");
-                tst_resm(TBROK, "Test broken due to inability of fork.");
-		sync();
-                tst_exit();
+		tst_brkm(TBROK|TERRNO, sync, "fork failed");
+		tst_exit();
 	}
 
 	if (pid == 0) {
 		execl("/bin/rm", "rm", "-rf", fuss, NULL);
-		tst_exit();
+		exit(1);
 	}
 
 	wait(&status);
@@ -277,28 +268,28 @@ static void dotest(int testers, int me, int fd)
 	nchunks = max_size / csize;
 
 	if ((bits = calloc((nchunks+7)/8, 1)) == NULL) {
-		tst_resm(TFAIL, "\tmalloc failed(bits)");
-		tst_exit();
+		perror("\tmalloc (bits)");
+		exit(1);
 	}
 
 	if ((hold_bits = calloc((nchunks+7)/8, 1)) == NULL) {
-		tst_resm(TFAIL, "\tmalloc failed(bold_bits)");
-		tst_exit();
+		perror("\tmalloc (bold_bits)");
+		exit(1);
 	}
 
 	if ((buf = (calloc(csize, 1))) == NULL) {
-		tst_resm(TFAIL, "\tmalloc failed(buf)");
-		tst_exit();
+		perror("\tmalloc (buf)");
+		exit(1);
 	}
 
 	if ((val_buf = (calloc(csize, 1))) == NULL) {
-		tst_resm(TFAIL, "\tmalloc failed(val_buf)");
-		tst_exit();
+		perror("\tmalloc (val_buf)");
+		exit(1);
 	}
 
 	if ((zero_buf = (calloc(csize, 1))) == NULL) {
-		tst_resm(TFAIL, "\tmalloc failed(zero_buf)");
-		tst_exit();
+		perror("\tmalloc (zero_buf)");
+		exit(1);
 	}
 
 	/*
@@ -340,14 +331,14 @@ static void dotest(int testers, int me, int fd)
 			 * Read it.
 			 */
 			if (lseek64(fd, CHUNK(chunk), 0) < (off64_t)0) {
-				tst_resm(TFAIL, "\tTest[%d]: lseek64(0) fail at %Lx, errno = %d.",
-					me, CHUNK(chunk), errno);
-				tst_exit();
+				tst_brkm(TFAIL|TERRNO, NULL,
+					"\tTest[%d]: lseek64(0) fail at %Lx",
+					me, CHUNK(chunk));
 			}
 			if ((xfr = read(fd, buf, csize)) < 0) {
-				tst_resm(TFAIL, "\tTest[%d]: read fail at %Lx, errno = %d.",
-					me, CHUNK(chunk), errno);
-				tst_exit();
+				tst_brkm(TFAIL|TERRNO, NULL,
+					"\tTest[%d]: read fail at %Lx",
+					me, CHUNK(chunk));
 			}
 			/*
 			 * If chunk beyond EOF just write on it.
@@ -382,9 +373,9 @@ static void dotest(int testers, int me, int fd)
 				++count;
 			} else {
 				if (xfr != csize) {
-					tst_resm(TFAIL, "\tTest[%d]: xfr=%d != %d, val read.",
+					tst_brkm(TFAIL, NULL,
+						"\tTest[%d]: xfr=%d != %d, val read.",
 						me, xfr, csize);
-					tst_exit();
 				}
 				++collide;
 				if (memcmp(buf, val_buf, csize)) {
@@ -405,18 +396,19 @@ static void dotest(int testers, int me, int fd)
 			 * Write it.
 			 */
 			if (lseek64(fd, -((off64_t)xfr), 1) < (off64_t)0) {
-				tst_resm(TFAIL, "\tTest[%d]: lseek64(1) fail at %Lx, errno = %d.",
-					me, CHUNK(chunk), errno);
-				tst_exit();
+				tst_brkm(TFAIL|TERRNO,
+					"\tTest[%d]: lseek64(1) fail at %Lx",
+					me, CHUNK(chunk));
 			}
 			if ((xfr = write(fd, val_buf, csize)) < csize) {
 				if (errno == ENOSPC) {
 					tst_resm(TFAIL, "\tTest[%d]: no space, exiting.", me);
 					fsync(fd);
-					tst_exit();
+				} else {
+					tst_resmm(TFAIL|TERRNO,
+						"\tTest[%d]: write fail at %Lx xfr %d",
+						me, CHUNK(chunk), xfr);
 				}
-				tst_resm(TFAIL, "\tTest[%d]: write fail at %Lx xfr %d, errno = %d.",
-					me, CHUNK(chunk), xfr, errno);
 				tst_exit();
 			}
 			if (CHUNK(chunk) + csize > file_max)
@@ -462,8 +454,7 @@ static void domisc(int me, int fd, char *bits)
 	switch (type) {
 	case m_fsync:
 		if (fsync(fd) < 0) {
-			tst_resm(TFAIL, "\tTest[%d]: fsync error %d.", me, errno);
-			tst_exit();
+			tst_resm(TFAIL|TERRNO, "\tTest[%d]: fsync error", me);
 		}
 		break;
 	case m_trunc:
@@ -472,14 +463,14 @@ static void domisc(int me, int fd, char *bits)
 		last_trunc = file_max;
 		if (tr_flag) {
 			if (ftruncate(fd, file_max) < 0) {
-				tst_resm(TFAIL, "\tTest[%d]: ftruncate error %d @ 0x%x.", me, errno, file_max);
-				tst_exit();
+				tst_brkm(TFAIL|TERRNO, NULL,
+					"\tTest[%d]: ftruncate error @ 0x%x.", me, file_max);
 			}
 			tr_flag = 0;
 		} else {
 			if (truncate(test_name, file_max) < 0) {
-				tst_resm(TFAIL, "\tTest[%d]: truncate error %d @ 0x%x.", me, errno, file_max);
-				tst_exit();
+				tst_resm(TFAIL|TERRNO, NULL,
+					"\tTest[%d]: truncate error @ 0x%x.", me, file_max);
 			}
 			tr_flag = 1;
 		}
@@ -493,13 +484,11 @@ static void domisc(int me, int fd, char *bits)
 		break;
 	case m_fstat:
 		if (fstat(fd, &sb) < 0) {
-			tst_resm(TFAIL, "\tTest[%d]: fstat() error %d.", me, errno);
-			tst_exit();
+			tst_brkm(TFAIL|TERRNO, NULL, "\tTest[%d]: fstat() error.", me);
 		}
 		if (sb.st_size != file_max) {
-			tst_resm(TFAIL, "\tTest[%d]: fstat() mismatch; st_size=%"PRIx64",file_max=%x.",
+			tst_brkm(TFAIL, NULL, "\tTest[%d]: fstat() mismatch; st_size=%"PRIx64",file_max=%x.",
 				me, (int64_t)sb.st_size, file_max);
-			tst_exit();
 		}
 		break;
 	}

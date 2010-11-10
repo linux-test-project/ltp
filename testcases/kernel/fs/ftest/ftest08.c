@@ -82,7 +82,6 @@ static int iterations;        /* # total iterations */
 static off64_t max_size;      /* max file size */
 static int misc_intvl;        /* for doing misc things; 0 ==> no */
 static int nchild;            /* number of child processes */
-static int nwait;
 static int parent_pid;
 static int pidlist[MAXCHILD];
 
@@ -151,15 +150,16 @@ static void init(void)
 	misc_intvl = 10;
 
 	if (sigset(SIGTERM, term) == SIG_ERR) {
-		tst_resm(TBROK,"first sigset failed");
-		tst_exit();
+		tst_brkm(TBROK|TERRNO, NULL, "first sigset failed");
 	}
 
 }
 
 static void runtest(void)
 {
-	int i, child, status, count, fd;
+	int child, count, fd, i, nwait, status;
+
+	nwait = 0;
 
 	for (i = 0; i < nchild; i++) {
 
@@ -175,11 +175,7 @@ static void runtest(void)
 		}
 
 		if (child < 0) {
-			tst_resm(TINFO, "System resource may be too low, fork() malloc()"
-		                            " etc are likely to fail.");
-		        tst_resm(TBROK, "Test broken due to inability of fork.");
-		        tst_exit();
-
+			tst_brkm(TBROK|TERRNO, NULL, "fork failed");
 		} else {
 			pidlist[i] = child;
 			nwait++;

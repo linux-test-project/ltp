@@ -96,7 +96,6 @@ static int iterations;        /* # total iterations */
 static off64_t max_size;      /* max file size */
 static int misc_intvl;        /* for doing misc things; 0 ==> no */
 static int nchild;            /* how many children */
-static int nwait;
 static int fd;                /* file descriptor used by child */
 static int parent_pid;
 static int pidlist[MAXCHILD];
@@ -177,15 +176,17 @@ static void setup(void)
 	misc_intvl = 10;
 
 	if (sigset(SIGTERM, term) == SIG_ERR) {
-		tst_resm(TBROK, " sigset failed: signo = 15") ;
-		tst_exit() ;
+		tst_brkm(TBROK|TERRNO, NULL, "sigset (signo=SIGTERM) failed");
 	}
 
 }
 
 static void runtest(void)
 {
-	int pid, child, status, count, i;
+	pid_t pid;
+	int child, count, i, nwait, status;
+
+	nwait = 0;
 
 	for (i = 0; i < nchild; i++) {
 		test_name[0] = 'a' + i;
@@ -204,10 +205,7 @@ static void runtest(void)
 		close(fd);
 
 		if (child < 0) {
-			tst_resm(TINFO, "System resource may be too low, fork() malloc()"
-                                       " etc are likely to fail.");
-                        tst_resm(TBROK, "Test broken due to inability of fork.");
-                        tst_exit();
+			tst_brkm(TBROK|TERRNO, NULL, "fork failed");
 		} else {
 			pidlist[i] = child;
 			nwait++;
@@ -245,10 +243,7 @@ static void runtest(void)
 
 	pid = fork();
 	if (pid < 0) {
-		tst_resm(TINFO, "System resource may be too low, fork() malloc()"
-                                    " etc are likely to fail.");
-                tst_resm(TBROK, "Test broken due to inability of fork.");
-                tst_exit();
+		tst_brkm(TBROK|TERRNO, NULL, "fork failed");
 	}
 
 	if (pid == 0) {

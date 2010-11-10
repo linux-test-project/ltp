@@ -154,10 +154,7 @@ int main(void)
 			exit(0);
 		}
 		if (child < 0) {
-			tst_resm(TINFO, "System resource may be too low, fork() malloc()"
-					   " etc are likely to fail.");
-			tst_resm(TBROK, "Test broken due to inability of fork.");
-			cleanup();
+			tst_brkm(TBROK|TERRNO, cleanup, "fork failed");
 		}
 		pidlist[k] = child;
 	}
@@ -204,10 +201,7 @@ int main(void)
 	pid = fork();
 
 	if (pid < 0) {
-		tst_resm(TINFO, "System resource may be too low, fork() malloc()"
-				    " etc are likely to fail.");
-		tst_resm(TBROK, "Test broken due to inability of fork.");
-		cleanup();
+		tst_brkm(TBROK|TERRNO, cleanup, "fork failed");
 	}
 
 	if (pid == 0) {
@@ -223,10 +217,7 @@ int main(void)
 	pid = fork();
 
 	if (pid < 0) {
-		tst_resm(TINFO, "System resource may be too low, fork() malloc()"
-	                        " etc are likely to fail.");
-	        tst_resm(TBROK, "Test broken due to inability of fork.");
-	        cleanup();
+		tst_brkm(TBROK|TERRNO, cleanup, "fork failed");
 	}
 
 	if (pid == 0) {
