@@ -33,3 +33,11 @@ else
 	AC_MSG_RESULT(no)
 fi
 ])
+
+AC_TRY_COMPILE([
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif],[int main(void) {
+	return __sync_add_and_fetch(NULL, 1);
+}],[AC_DEFINE(HAVE___SYNC_ADD_AND_FETCH,1,[Define to 1 if you have the __sync_add_and_fetch gcc builtin function])
+])

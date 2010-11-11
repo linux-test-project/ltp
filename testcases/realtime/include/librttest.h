@@ -43,18 +43,18 @@
 #ifndef LIBRTTEST_H
 #define LIBRTTEST_H
 
+#include <sys/syscall.h>
+#include <errno.h>
+#include <getopt.h>
+#include <math.h>
+#include <pthread.h>
+#include <sched.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
-#include <time.h>
 #include <string.h>
-#include <pthread.h>
-#include <sched.h>
-#include <errno.h>
+#include <time.h>
 #include <unistd.h>
-#include <getopt.h>
-#include <sys/syscall.h>
-#include <math.h>
 #include "list.h"
 #include "realtime_config.h"
 
@@ -114,7 +114,14 @@ extern double pass_criteria;
  */
 static inline int atomic_add(int i, atomic_t *v)
 {
+	/* XXX (garrcoop): only available in later versions of gcc */
+#if HAVE___SYNC_ADD_AND_FETCH
 	return __sync_add_and_fetch(&v->counter, i);
+#else
+	printf("%s: %s\n", __func__, strerror(ENOSYS));
+	exit(1);
+	return -1;
+#endif
 }
 /* atomic_inc: atomically increment the integer passed by reference
  */
