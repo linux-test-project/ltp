@@ -50,14 +50,14 @@ int main(int argc, char *argv[])
 	}
 
 	/* Try and get the cpu clock ID for init(1) :)... */
-	error = clock_getcpuclockid(1, &clockid_1)
+	error = clock_getcpuclockid(1, &clockid_1);
 	if (error == 0) {
 		printf("clock_getcpuclockid(1, ..) passed unexpectedly\n");
 		return PTS_UNRESOLVED;
 	} else if (error != EPERM) {
 		printf("clock_getcpuclockid(1, ..) failed with an improper "
 			"error (%d != %d)\n", EPERM, error);
-		return PTS_FAILED;
+		return PTS_FAIL;
 	}
 	printf("Test PASSED\n");
 	return PTS_PASS;
