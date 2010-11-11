@@ -8,9 +8,9 @@
  * Test that TIMER_MAX >= _POSIX_TIMER_MAX
  */
 
-#include <time.h>
-#include <stdio.h>
 #include <limits.h>
+#include <stdio.h>
+#include <time.h>
 #include <unistd.h>
 #include "posixtest.h"
 
