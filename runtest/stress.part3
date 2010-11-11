@@ -46,14 +46,14 @@ chmod01A symlink01 -T chmod01
 chmod02 chmod02
 chmod03 chmod03
 chmod04 chmod04
-chmod05 cp -p $LTPROOT/testcases/bin/change_owner $TMP;chmod05 
-chmod06 cp -p $LTPROOT/testcases/bin/change_owner $TMP;chmod06
+chmod05 cp -p $LTPROOT/testcases/bin/change_owner $TMPDIR;chmod05 
+chmod06 cp -p $LTPROOT/testcases/bin/change_owner $TMPDIR;chmod06
 chmod07 chmod07
 
 chown01 chown01
 chown02 chown02
 chown03 export change_owner=$LTPROOT/testcases/bin/change_owner;chown03
-chown04 cp -p $LTPROOT/testcases/bin/change_owner $TMP;chown04
+chown04 cp -p $LTPROOT/testcases/bin/change_owner $TMPDIR;chown04
 chown05 chown05
 
 chroot01 chroot01
@@ -123,13 +123,13 @@ fchmod01 fchmod01
 fchmod02 fchmod02
 fchmod03 fchmod03
 fchmod04 fchmod04
-fchmod05 cp -p $LTPROOT/testcases/bin/change_owner $TMP;fchmod05 
-fchmod06 cp -p $LTPROOT/testcases/bin/change_owner $TMP;fchmod06
+fchmod05 cp -p $LTPROOT/testcases/bin/change_owner $TMPDIR;fchmod05 
+fchmod06 cp -p $LTPROOT/testcases/bin/change_owner $TMPDIR;fchmod06
 fchmod07 fchmod07
 
 fchown01 fchown01
 fchown02 fchown02
-fchown03 cp -p $LTPROOT/testcases/bin/change_owner $TMP;fchown03
+fchown03 cp -p $LTPROOT/testcases/bin/change_owner $TMPDIR;fchown03
 fchown04 export change_owner=$LTPROOT/testcases/bin/change_owner;fchown04
 fchown05 fchown05
 
@@ -515,7 +515,7 @@ readlink01A symlink01 -T readlink01
 readlink01 readlink01
 readlink02 readlink02
 readlink03 readlink03
-readlink04 cp -f $LTPROOT/testcases/bin/creat_slink $TMP; readlink04
+readlink04 cp -f $LTPROOT/testcases/bin/creat_slink $TMPDIR; readlink04
 
 readv01 readv01
 readv02 readv02
