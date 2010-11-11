@@ -41,9 +41,6 @@ ifeq ($(UCLINUX),1)
 FILTER_OUT_DIRS		+= realtime
 endif
 
-# DOTS is going away soon.
-FILTER_OUT_DIRS		+= DOTS
-
 #
 # XXX (garrcoop): disabling the open_posix_testsuite by request from Subrata
 # due to build times (open_posix_testsuite runs serially by design to

@@ -1,4 +1,0 @@
-sysctl -w "kernel.sem=250 64000 100 8192"
-sysctl -w kernel.msgmni=8192
-sysctl -w kernel.shmmni=8192
-sysctl -w kernel.shmmax=805306368      

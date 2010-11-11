@@ -1,7 +1,0 @@
-db2 drop database TESTDB
-db2 create database TESTDB
-db2 update db cfg for TESTDB using applheapsz 256
-db2 update db cfg for TESTDB using buffpage 512
-db2 update db cfg for TESTDB using maxappls 256
-db2 update db cfg for TESTDB using avg_appls 256
-db2 update db cfg for TESTDB using maxlocks 75

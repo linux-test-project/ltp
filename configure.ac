@@ -28,22 +28,22 @@ AC_DEFUN([AC_PROG_STRIP], [AC_CHECK_TOOL(STRIP, strip, :)])
 AC_PROG_STRIP
 AC_PROG_YACC
 
+# NOTE (garrcoop): was in use by testcases/DOTS.
 # Code mostly borrowed from
 # http://mountain.nsu.ru/doc/autoconf-archive/html/ac_prog_javac.html
-AC_DEFUN([AC_PROG_JAVAC],[
-AC_REQUIRE([AC_EXEEXT])dnl
-if test "x$JAVAPREFIX" = x; then
-	test "x$JAVAC" = x && AC_CHECK_PROGS(JAVAC, "gcj$EXEEXT -C" guavac$EXEEXT jikes$EXEEXT javac$EXEEXT)
-else
-	test "x$JAVAC" = x && AC_CHECK_PROGS(JAVAC, "gcj$EXEEXT -C" guavac$EXEEXT jikes$EXEEXT javac$EXEEXT, $JAVAPREFIX)
-fi
-if test "x$JAVAC" = x; then
-	AC_MSG_WARN([no acceptable Java compiler found in \$PATH])
-fi
-AC_PROVIDE([$0])dnl
-])
-AC_PROG_JAVAC
-
+#AC_DEFUN([AC_PROG_JAVAC],[
+#AC_REQUIRE([AC_EXEEXT])dnl
+#if test "x$JAVAPREFIX" = x; then
+#	test "x$JAVAC" = x && AC_CHECK_PROGS(JAVAC, "gcj$EXEEXT -C" guavac$EXEEXT jikes$EXEEXT javac$EXEEXT)
+#else
+#	test "x$JAVAC" = x && AC_CHECK_PROGS(JAVAC, "gcj$EXEEXT -C" guavac$EXEEXT jikes$EXEEXT javac$EXEEXT, $JAVAPREFIX)
+#fi
+#if test "x$JAVAC" = x; then
+#	AC_MSG_WARN([no acceptable Java compiler found in \$PATH])
+#fi
+#AC_PROVIDE([$0])dnl
+#])
+#AC_PROG_JAVAC
 
 AC_PREFIX_DEFAULT(/opt/ltp)
 
