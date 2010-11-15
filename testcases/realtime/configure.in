@@ -25,10 +25,10 @@ AC_TRY_COMPILE([
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
-#include <stdlib.h>],[int main(void) {
+#include <stdlib.h>],[
 	char *c;
 	return __sync_add_and_fetch(c, 1);
-}],[has___sync_add_and_fetch=yes])
+],[has___sync_add_and_fetch=yes])
 if test "x$has___sync_add_and_fetch" = xyes; then
 	AC_DEFINE(HAVE___SYNC_ADD_AND_FETCH,1,[Define to 1 if you have the __sync_add_and_fetch gcc builtin function])
 	AC_MSG_RESULT(yes)
