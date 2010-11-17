@@ -302,8 +302,7 @@ def main():
         parser.error('--summary-mode must be a value between 0 and 2.')
 
     if len(args) == 0:
-        # This matches the default test suite list in runltp when -f isn't
-        # specified. Look for `SCENFILES'.
+        # Default to scenarios also used by runltp.
         fd = open(os.path.join(ltpdir, 'scenario-groups/default'), 'r')
         try:
             args = fd.readlines()
