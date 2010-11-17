@@ -21,7 +21,7 @@ AC_PROG_AR
 AC_PROG_RANLIB
 
 AC_MSG_CHECKING([for __sync_add_and_fetch gcc builtin function])
-AC_LINK_IFELSE([
+AC_LINK_IFELSE([AC_LANG_SOURCE([
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
@@ -29,7 +29,7 @@ AC_LINK_IFELSE([
 int main(void) {
 	char *c;
 	return __sync_add_and_fetch(c, 1);
-}],[has___sync_add_and_fetch=yes])
+}])],[has___sync_add_and_fetch=yes])
 if test "x$has___sync_add_and_fetch" = xyes; then
 	AC_DEFINE(HAVE___SYNC_ADD_AND_FETCH,1,[Define to 1 if you have the __sync_add_and_fetch gcc builtin function])
 	AC_MSG_RESULT(yes)

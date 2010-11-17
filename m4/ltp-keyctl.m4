@@ -20,14 +20,14 @@ dnl
 dnl LTP_CHECK_SYSCALL_KEYCTL
 dnl ----------------------------
 dnl
-AC_DEFUN([LTP_CHECK_SYSCALL_KEYCTL],[AC_LINK_IFELSE([
+AC_DEFUN([LTP_CHECK_SYSCALL_KEYCTL],[AC_LINK_IFELSE([AC_LANG_SOURCE([
 #include <sys/types.h>
 #include <keyutils.h>
 int main(void) {
 	key_serial_t akey;
 	(void) keyctl(KEYCTL_READ, akey);
 	return 0;
-}],[has_keyctl_syscall="yes"])
+}])],[has_keyctl_syscall="yes"])
 if test "x$has_keyctl_syscall" = "xyes"; then
 	AC_DEFINE(HAVE_KEYCTL_SYSCALL,1,[Define to 1 if you have the libkeyutils development package and keyctl syscall on your system])
 else
