@@ -82,15 +82,15 @@ setup()
 
     [ -d "$LTPROOT/testcases/bin" ] ||
     {
-        echo "FATAL: Test suite not installed correctly"
-        echo "INFO: as root user type 'make ; make install'"
+        echo "FATAL: LTP not installed correctly"
+        echo "INFO:  Follow directions in INSTALL!"
         exit 1
     }
 
     [ -e "$LTPROOT/bin/ltp-pan" ] ||
     {
         echo "FATAL: Test suite driver 'ltp-pan' not found"
-        echo "INFO: as root user type 'make ; make install'"
+        echo "INFO:  Follow directions in INSTALL!"
         exit 1
     }
 }
@@ -203,10 +203,12 @@ main()
     local HTMLFILE=""
     local DMESG_DIR=""
     local EMAIL_TO=""
-    local SCENFILES=""
     local TAG_RESTRICT_STRING=""
     local PAN_COMMAND=""
     local DEFAULT_FILE_NAME_GENERATION_TIME=`date +"%Y_%b_%d-%Hh_%Mm_%Ss"`
+
+    local scenfile=
+
     version_date=$(cat "$LTPROOT/Version")
 
     while getopts a:c:C:d:D:f:F:ehi:K:g:l:m:M:Nno:pqr:s:S:t:T:w:x:b:B: arg
@@ -237,8 +239,8 @@ main()
 
         D)  NUM_PROCS=1; NUM_FILES=1; NUM_BYTES=$((1024 * 1024 * 1024)); CLEAN_FLAG=0
             ARGUMENT_LIST=$OPTARG
-            TOTAL_ARGUMENTS=1                                             # Initial Assume
-            for ARGUMENT in `echo "$ARGUMENT_LIST" | sed 's/,/\n/g'`      # Store all value in a Loop
+            TOTAL_ARGUMENTS=1
+            for ARGUMENT in `echo "$ARGUMENT_LIST" | tr ',' ' '`
             do
                 case $TOTAL_ARGUMENTS in
                     1) NUM_PROCS="$ARGUMENT" ;;
@@ -333,8 +335,8 @@ main()
     
         m)  NUM_PROCS=1; CHUNKS=1; BYTES=$((256 * 1024 * 1024)); HANGUP_FLAG=0
             ARGUMENT_LIST=$OPTARG
-            TOTAL_ARGUMENTS=1                                             # Initial Assume
-            for ARGUMENT in `echo "$ARGUMENT_LIST" | sed 's/,/\n/g'`      # Store all value in a Loop
+            TOTAL_ARGUMENTS=1
+            for ARGUMENT in `echo "$ARGUMENT_LIST" | tr ',' ' '`
             do
                 case $TOTAL_ARGUMENTS in
                     1) NUM_PROCS="$ARGUMENT" ;;
@@ -515,7 +517,7 @@ main()
     chmod 777 $TMP || \
     {
       echo "unable to chmod 777 $TMP ... aborting"
-        exit 1
+      exit 1
     }
     
     cd $TMP || \
@@ -524,9 +526,9 @@ main()
       exit 1
     }
     
-    ! [ -z $INSTANCES ] && \
+    [ -n "$INSTANCES" ] && \
     {
-	    INSTANCES="$INSTANCES -O ${TMP}"
+      INSTANCES="$INSTANCES -O ${TMP}"
     }
     
     [ "$RUN_NETEST" -eq 1 ] && \
@@ -561,67 +563,62 @@ main()
     then
         cat <<-EOF >&1
 
-    INFO: no command files were provided, using default,
-          system calls, memory management, IPC, scheduler
-          direct io, file system, math and pty tests will 
-          now be executed
+    INFO: no command files were provided. Will execute the following
+          runtest scenario files:
+          `cat scenario-groups/default`
     
 	EOF
 
-        for SCENFILES in ${LTPROOT}/runtest/syscalls                \
-                         ${LTPROOT}/runtest/fs                      \
-                         ${LTPROOT}/runtest/fs_perms_simple         \
-                         ${LTPROOT}/runtest/fsx                     \
-                         ${LTPROOT}/runtest/dio                     \
-                         ${LTPROOT}/runtest/io                      \
-                         ${LTPROOT}/runtest/mm                      \
-                         ${LTPROOT}/runtest/ipc                     \
-                         ${LTPROOT}/runtest/sched                   \
-                         ${LTPROOT}/runtest/math                    \
-                         ${LTPROOT}/runtest/nptl                    \
-                         ${LTPROOT}/runtest/pty                     \
-                         ${LTPROOT}/runtest/containers              \
-                         ${LTPROOT}/runtest/fs_bind                 \
-                         ${LTPROOT}/runtest/controllers             \
-                         ${LTPROOT}/runtest/filecaps                \
-                         ${LTPROOT}/runtest/cap_bounds              \
-                         ${LTPROOT}/runtest/fcntl-locktests         \
-                         ${LTPROOT}/runtest/connectors              \
-                         ${LTPROOT}/runtest/admin_tools             \
-                         ${LTPROOT}/runtest/timers                  \
-                         ${LTPROOT}/runtest/power_management_tests  \
-                         ${LTPROOT}/runtest/numa                    \
-                         ${LTPROOT}/runtest/hugetlb                 \
-                         ${LTPROOT}/runtest/commands                \
-                         ${LTPROOT}/runtest/hyperthreading
-        do
-            [ -e "$SCENFILES" ] || \
-            {
-                echo "FATAL: missing scenario file $SCENFILES"
-                exit 1
-            }
+	SCENARIO_LISTS="scenario-groups/default"
+        if [ "$RUN_NETEST" -eq 1 ]; then
+            SCENARIO_LISTS="$SCENARIO_LISTS scenario-groups/network"
+        fi
 
-            cat $SCENFILES >> ${TMP}/alltests || \
-            {
-                echo "FATAL: unable to create command file"
-                exit 1
-            }
-       done
+    # DO NOT INDENT/DEDENT!
+        if [ -n "$SCENARIO_LISTS" ]; then
+            # Insurance to make sure that the first element in the pipe
+            # completed successfully.
+            cat_ok_sentinel=$TMP/cat_ok.$$
+	    (cat $SCENARIO_FILES && touch "$cat_ok_sentinel") | \
+                while read scenfile; do
+
+                    scenfile=${LTPROOT}/runtest/$scenfile
+
+                    # Skip over non-existent scenario files; things are
+                    # robust enough now that the build will fail if these
+                    # files don't exist.
+                    [ -f "$scenfile" ] || continue
+
+                    cat $scenfile >> "$TMP/alltests" || {
+                        echo "FATAL: unable to append to command file"
+                        rm -Rf "$TMP"
+                        rm -f "$cat_ok_sentinel"
+                        exit 1
+                    }
+
+                done
+
+            rm -f "$cat_ok_sentinel"
+
+        fi
+    # ^^DO NOT INDENT/DEDENT!^^
+
     fi
 
     [ -n "$CMDFILES" ] && \
     {
-        for SCENFILES in `echo "$CMDFILES" | sed 's/,/\n/g'`
+        for scenfile in `echo "$CMDFILES" | tr ',' ' '`
         do
-            [ -f "$SCENFILES" ] || SCENFILES="$LTPROOT/runtest/$SCENFILES"
-            cat "$SCENFILES" >> ${TMP}/alltests || \
+            [ -f "$scenfile" ] || scenfile="$LTPROOT/runtest/$scenfile"
+            cat "$scenfile" >> ${TMP}/alltests || \
             {
                 echo "FATAL: unable to create command file"
+                rm -Rf "$TMP"
                 exit 1
             }
         done
     }
-    
+ 
     [ -n "$CMDFILEADDR" ] && \
     {
         wget -q "${CMDFILEADDR}" -O ${TMP}/wgetcmdfile
@@ -635,27 +632,6 @@ main()
             exit 1
         }
     }
-
-    [ "$RUN_NETEST" -eq 1 ] && \
-    {
-        for SCENFILES in ${LTPROOT}/runtest/tcp_cmds \
-                         ${LTPROOT}/runtest/multicast \
-                         ${LTPROOT}/runtest/rpc \
-                         ${LTPROOT}/runtest/nfs
-        do
-            [ -e "$SCENFILES" ] || \
-            { 
-                echo "FATAL: missing scenario file $SCENFILES"
-                exit 1
-            }
-                         
-            cat "$SCENFILES" >> ${TMP}/alltests || \
-            {
-                echo "FATAL: unable to create command file"
-                exit 1
-            }
-        done
-    } 
 
     # The fsx-linux tests use the SCRATCHDEV environment variable as a location
     # that can be reformatted and run on.  Set SCRATCHDEV if you want to run 
@@ -742,11 +718,11 @@ main()
     fi
 
     if [ -n "$DEVICE" ]; then
-        sed -i "s|DEVICE_FS_TYPE|$DEVICE_FS_TYPE|"  ${TMP}/alltests
+        sed -i "" -e "s|DEVICE_FS_TYPE|$DEVICE_FS_TYPE|"  ${TMP}/alltests
     fi
 
     if [ $? -ne 0 ]; then
-        echo "FATAL: error during prcessing alltests file by sed"
+        echo "FATAL: error during processing alltests file by sed"
         exit 1
     fi
 
@@ -990,3 +966,5 @@ cleanup()
 trap "cleanup" 0
 setup
 main "$@"
+
+#vim: syntax=sh

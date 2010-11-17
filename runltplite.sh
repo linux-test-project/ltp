@@ -52,15 +52,15 @@ setup()
 
     [ -d $LTPROOT/testcases/bin ] ||
     {
-        echo "FATAL: Test suite not installed correctly"
-        echo "INFO: as root user type 'make ; make install'"
+        echo "FATAL: LTP not installed correctly"
+        echo "INFO:  Follow directions in INSTALL!"
         exit 1
     }
 
     [ -e $LTPROOT/bin/ltp-pan ] ||
     {
         echo "FATAL: Test suite driver 'ltp-pan' not found"
-        echo "INFO: as root user type 'make ; make install'"
+        echo "INFO:  Follow directions in INSTALL!"
         exit 1
     }
 }
@@ -70,7 +70,7 @@ usage()
 {
     cat <<-EOF >&2
 
-    usage: ./${0##*/} -c [-d TMPDIR] [-i # (in Mb)] 
+    usage: ${0##*/} -c [-d TMPDIR] [-i # (in Mb)] 
     [ -l LOGFILE ] [ -o OUTPUTFILE ] [ -m # (in Mb)] -N -q 
     [ -r LTPROOT ] -v 
                 
@@ -108,10 +108,11 @@ main()
     local DURATION=""
     local BYTESIZE=0
     local LOGFILE=""
-    local SCENFILES=""
     local PRETTY_PRT=""
     local TAG_RESTRICT_STRING=""
     local PAN_COMMAND=""
+
+    local scenfile=""
 
     while getopts c:d:hi:l:m:No:pqr: arg
     do  case $arg in
@@ -226,28 +227,40 @@ main()
             exit 1
         }
     fi
-    
-    [ "$RUN_NETEST" -eq 1 ] && \
-    {
-        for SCENFILES in ${LTPROOT}/runtest/tcp_cmds \
-                         ${LTPROOT}/runtest/multicast \
-                         ${LTPROOT}/runtest/rpc \
-                         ${LTPROOT}/runtest/nfs
-        do
-            [ -e "$SCENFILES" ] || \
-            { 
-                echo "FATAL: missing scenario file $SCENFILES"
-                exit 1
-            }
-                         
-            cat $SCENFILES >> ${TMP}/alltests || \
-            {
-                echo "FATAL: unable to create command file"
-                exit 1
-            }
-        done
-    } 
-    
+
+    if [ "$RUN_NETEST" -eq 1 ]; then
+        SCENARIO_LISTS="$SCENARIO_LISTS scenario-groups/network"
+    fi
+ 
+    # DO NOT INDENT/DEDENT!
+        if [ -n "$SCENARIO_LISTS" ]; then
+            # Insurance to make sure that the first element in the pipe
+            # completed successfully.
+            cat_ok_sentinel=$TMP/cat_ok.$$
+	    (cat $SCENARIO_FILES && touch "$cat_ok_sentinel") | \
+                while read scenfile; do
+
+                    scenfile=${LTPROOT}/runtest/$scenfile
+
+                    # Skip over non-existent scenario files; things are
+                    # robust enough now that the build will fail if these
+                    # files don't exist.
+                    [ -f "$scenfile" ] || continue
+
+                    cat $scenfile >> "$TMP/alltests" || {
+                        echo "FATAL: unable to append to command file"
+                        rm -Rf "$TMP"
+                        rm -f "$cat_ok_sentinel"
+                        exit 1
+                    }
+
+                done
+
+            rm -f "$cat_ok_sentinel"
+
+        fi
+    # ^^DO NOT INDENT/DEDENT!^^
+
     # The fsx-linux tests use the SCRATCHDEV environment variable as a location
     # that can be reformatted and run on.  Set SCRATCHDEV if you want to run 
     # these tests.  As a safeguard, this is disabled.
@@ -268,8 +281,20 @@ main()
         echo "WARNING: some test cases may fail"
     }
     
-    
-       
+    [ -n "$CMDFILES" ] && \
+    {
+        for scenfile in `echo "$CMDFILES" | tr ',' ' '`
+        do
+            [ -f "$scenfile" ] || scenfile="$LTPROOT/runtest/$scenfile"
+            cat "$scenfile" >> ${TMP}/alltests || \
+            {
+                echo "FATAL: unable to create command file"
+                rm -Rf "$TMP"
+                exit 1
+            }
+        done
+    }
+ 
     # display versions of installed software
     [ -z "$QUIET_MODE" ] && \
     { 
@@ -277,7 +302,7 @@ main()
         {
             echo "WARNING: unable to display versions of software installed"
             exit 1
-    }
+        }
     }
 
     [ ! -z "$QUIET_MODE" ] && { echo "INFO: Test start time: $(date)" ; }
@@ -332,3 +357,5 @@ cleanup()
 trap "cleanup" 0
 setup
 main "$@"
+
+#vim: syntax=sh
