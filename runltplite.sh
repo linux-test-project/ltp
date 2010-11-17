@@ -229,7 +229,7 @@ main()
     fi
 
     if [ "$RUN_NETEST" -eq 1 ]; then
-        SCENARIO_LISTS="$SCENARIO_LISTS scenario-groups/network"
+        SCENARIO_LISTS="$SCENARIO_LISTS scenario_groups/network"
     fi
  
     # DO NOT INDENT/DEDENT!

@@ -565,13 +565,13 @@ main()
 
     INFO: no command files were provided. Will execute the following
           runtest scenario files:
-          `cat scenario-groups/default`
+          `cat scenario_groups/default`
     
 	EOF
 
-	SCENARIO_LISTS="scenario-groups/default"
+	SCENARIO_LISTS="scenario_groups/default"
         if [ "$RUN_NETEST" -eq 1 ]; then
-            SCENARIO_LISTS="$SCENARIO_LISTS scenario-groups/network"
+            SCENARIO_LISTS="$SCENARIO_LISTS scenario_groups/network"
         fi
 
     # DO NOT INDENT/DEDENT!
