@@ -225,7 +225,7 @@ def main():
 
     parser = OptionParser(prog=os.path.basename(sys.argv[0]),
                           usage='usage: %prog [options] test ...',
-                          version='0.0.1')
+                          version='0.0.2')
 
     ltpdir = os.getenv('LTPROOT', '@prefix@')
 
@@ -304,11 +304,11 @@ def main():
     if len(args) == 0:
         # This matches the default test suite list in runltp when -f isn't
         # specified. Look for `SCENFILES'.
-        args = [ 'syscalls', 'fs', 'fsx', 'dio', 'io', 'mm', 'ipc', 'sched',
-                 'math', 'nptl', 'pty', 'containers', 'fs_bind', 'controllers',
-                 'filecaps', 'cap_bounds', 'fcntl-locktests', 'connectors',
-                 'admin_tools', 'timers', 'power_management_tests', 'numa',
-                 'hugetlb', 'commands', 'hyperthreading' ]
+        fd = open(os.path.join(ltpdir, 'scenario-groups/default'), 'r')
+        try:
+            args = fd.readlines()
+        finally:
+            fd.close()
 
     if opts.output_file:
 
