@@ -1,5 +1,5 @@
 AC_DEFUN([REALTIME_CHECK_PRIO_INHERIT],[
-AC_MSG_CHECKING([Checking for PTHREAD_PRIO_INHERIT])
+AC_MSG_CHECKING([for PTHREAD_PRIO_INHERIT])
 AC_TRY_COMPILE([
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
@@ -17,7 +17,7 @@ fi
 ])
 
 AC_DEFUN([REALTIME_CHECK_ROBUST_APIS],[
-AC_MSG_CHECKING([Checking for pthread_mutexattr_*robust* APIs])
+AC_MSG_CHECKING([for pthread_mutexattr_*robust* APIs])
 AC_TRY_COMPILE([
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
@@ -35,7 +35,7 @@ fi
 ])
 
 AC_DEFUN([REALTIME_CHECK_ROBUST_APIS],[
-AC_MSG_CHECKING([Checking for pthread_mutexattr_*robust* APIs])
+AC_MSG_CHECKING([for pthread_mutexattr_*robust* APIs])
 AC_TRY_COMPILE([
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
