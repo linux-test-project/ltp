@@ -21,7 +21,17 @@
 #
 
 # Path to capset program
-CAPSET			:=
+CAPSET				:= 
 
 # Is securebits[.h], et all support available?
-HAVE_SECUREBITS		:= no
+HAVE_SECUREBITS			:= no
+
+# Enable testcases/open_posix_testsuite's compile and install?
+WITH_OPEN_POSIX_TESTSUITE	:= no
+
+# Enable testcases/realtime's compile and install?
+ifeq ($(UCLINUX),1)
+WITH_REALTIME_TESTSUITE		:= no
+else
+WITH_REALTIME_TESTSUITE		:= no
+endif

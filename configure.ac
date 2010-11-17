@@ -66,8 +66,35 @@ AC_CHECK_HEADERS([ \
 
 AC_CONFIG_SUBDIRS([ \
     testcases/kernel/syscalls/libevent \
+])
+
+AC_ARG_WITH([open-posix-testsuite],
+  [AC_HELP_STRING([--with-open-posix-testsuite],
+    [compile and install the open posix testsuite (default=no)])],
+  [with_open_posix_testsuite=yes]
+)
+if test "x$with_open_posix_testsuite" = xyes; then
+    AC_SUBST([WITH_OPEN_POSIX_TESTSUITE],["yes"])
+else
+    AC_SUBST([WITH_OPEN_POSIX_TESTSUITE],["no"])
+fi
+
+AC_ARG_WITH([realtime-testsuite],
+  [AC_HELP_STRING([--with-realtime-testsuite],
+    [compile and install the realtime testsuite (default=no)])],
+  [with_realtime_testsuite=yes]
+)
+if test "x$with_realtime_testsuite" = xyes; then
+    AC_SUBST([WITH_REALTIME_TESTSUITE],["yes"])
+else
+    AC_SUBST([WITH_REALTIME_TESTSUITE],["no"])
+fi
+
+if test "x$with_realtime_testsuite" = xyes; then
+AC_CONFIG_SUBDIRS([ \
     testcases/realtime \
 ])
+fi
 
 LTP_CHECK_CAPABILITY_SUPPORT
 LTP_CHECK_CRYPTO
