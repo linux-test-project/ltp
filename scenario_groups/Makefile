@@ -24,7 +24,7 @@ top_srcdir		?= ..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-INSTALL_DIR		:= scenario-groups
+INSTALL_DIR		:= scenario_groups
 
 # Don't copy over the Makefile
 UNWANTED_FILES		:= Makefile
