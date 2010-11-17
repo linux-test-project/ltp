@@ -2,6 +2,7 @@
 #    commands test suite Makefile.
 #
 #    Copyright (C) 2009, Cisco Systems Inc.
+#    Copyright (C) 2010, Linux Test Project.
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -21,6 +22,10 @@
 #
 
 top_srcdir		?= ../..
+
+ifneq ($(WITH_EXPECT),yes)
+FILTER_OUT_SUBDIRS	:= tpm-tools
+endif
 
 include $(top_srcdir)/include/mk/env_pre.mk
 include $(top_srcdir)/include/mk/generic_trunk_target.mk

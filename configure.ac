@@ -28,23 +28,6 @@ AC_DEFUN([AC_PROG_STRIP], [AC_CHECK_TOOL(STRIP, strip, :)])
 AC_PROG_STRIP
 AC_PROG_YACC
 
-# NOTE (garrcoop): was in use by testcases/DOTS.
-# Code mostly borrowed from
-# http://mountain.nsu.ru/doc/autoconf-archive/html/ac_prog_javac.html
-#AC_DEFUN([AC_PROG_JAVAC],[
-#AC_REQUIRE([AC_EXEEXT])dnl
-#if test "x$JAVAPREFIX" = x; then
-#	test "x$JAVAC" = x && AC_CHECK_PROGS(JAVAC, "gcj$EXEEXT -C" guavac$EXEEXT jikes$EXEEXT javac$EXEEXT)
-#else
-#	test "x$JAVAC" = x && AC_CHECK_PROGS(JAVAC, "gcj$EXEEXT -C" guavac$EXEEXT jikes$EXEEXT javac$EXEEXT, $JAVAPREFIX)
-#fi
-#if test "x$JAVAC" = x; then
-#	AC_MSG_WARN([no acceptable Java compiler found in \$PATH])
-#fi
-#AC_PROVIDE([$0])dnl
-#])
-#AC_PROG_JAVAC
-
 AC_PREFIX_DEFAULT(/opt/ltp)
 
 AC_CHECK_HEADERS([ \
@@ -64,9 +47,76 @@ AC_CHECK_HEADERS([ \
     sys/prctl.h \
 ])
 
-AC_CONFIG_SUBDIRS([ \
-    testcases/kernel/syscalls/libevent \
-])
+AC_CONFIG_SUBDIRS([testcases/kernel/syscalls/libevent])
+
+# Tools knobs
+
+# Expect
+AC_ARG_WITH([bash],
+  [AC_HELP_STRING([--with-bash],
+    [have the Bourne Again SHell interpreter (default=no)])],
+  [with_bash=yes],
+)
+if test "x$with_bash" = xyes; then
+    AC_SUBST([WITH_BASH],["yes"])
+else
+    AC_SUBST([WITH_BASH],["no"])
+fi
+
+AC_ARG_WITH([expect],
+  [AC_HELP_STRING([--with-expect],
+    [have the Tcl/expect library (default=yes)])],
+  [with_expect=yes],
+  [with_expect=no]
+)
+if test "x$with_expect" = xyes; then
+    AC_SUBST([WITH_EXPECT],["yes"])
+else
+    AC_SUBST([WITH_EXPECT],["no"])
+fi
+
+# Perl
+AC_ARG_WITH([perl],
+  [AC_HELP_STRING([--with-perl],
+    [have a perl interpreter (default=yes)])],
+  [with_perl=yes],
+  [with_perl=no]
+)
+if test "x$with_perl" = xyes; then
+    AC_SUBST([WITH_PERL],["yes"])
+else
+    AC_SUBST([WITH_PERL],["no"])
+fi
+
+# Python
+AC_ARG_WITH([python],
+  [AC_HELP_STRING([--with-python],
+    [have a python interpreter (default=yes)])],
+  [with_python=yes],
+  [with_python=no]
+)
+if test "x$with_python" = xyes; then
+    AC_SUBST([WITH_PYTHON],["yes"])
+else
+    AC_SUBST([WITH_PYTHON],["no"])
+fi
+# END tools knobs
+
+# Testsuites knobs
+
+# testcases/kernel/power_management requires python.
+if test "x$with_python" = xyes; then
+    AC_ARG_WITH([power-management-testsuite],
+      [AC_HELP_STRING([--with-power-management-testsuite],
+        [compile and install the x86 power management testsuite (default=no)])],
+      [with_power_management_testsuite=yes],
+    )
+fi
+if test "x$with_power_management_testsuite" = xyes; then
+    AC_SUBST([WITH_POWER_MANAGEMENT_TESTSUITE],["yes"])
+else
+    AC_SUBST([WITH_POWER_MANAGEMENT_TESTSUITE],["no"])
+fi
 
 AC_ARG_WITH([open-posix-testsuite],
   [AC_HELP_STRING([--with-open-posix-testsuite],
@@ -79,22 +129,23 @@ else
     AC_SUBST([WITH_OPEN_POSIX_TESTSUITE],["no"])
 fi
 
-AC_ARG_WITH([realtime-testsuite],
-  [AC_HELP_STRING([--with-realtime-testsuite],
-    [compile and install the realtime testsuite (default=no)])],
-  [with_realtime_testsuite=yes]
-)
+# testcases/realtime requires bash and python.
+if test "x$with_bash" = xyes && test "x$with_python" = xyes; then
+    AC_ARG_WITH([realtime-testsuite],
+      [AC_HELP_STRING([--with-realtime-testsuite],
+        [compile and install the realtime testsuite (default=no)])],
+      [with_realtime_testsuite=yes]
+    )
+fi
 if test "x$with_realtime_testsuite" = xyes; then
     AC_SUBST([WITH_REALTIME_TESTSUITE],["yes"])
+    # Run configure on testcases/realtime as well.
+    AC_CONFIG_SUBDIRS([testcases/realtime])
 else
     AC_SUBST([WITH_REALTIME_TESTSUITE],["no"])
 fi
 
-if test "x$with_realtime_testsuite" = xyes; then
-AC_CONFIG_SUBDIRS([ \
-    testcases/realtime \
-])
-fi
+# END testsuites knobs
 
 LTP_CHECK_CAPABILITY_SUPPORT
 LTP_CHECK_CRYPTO

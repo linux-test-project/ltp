@@ -2,6 +2,7 @@
 #    misc test suite Makefile.
 #
 #    Copyright (C) 2009, Cisco Systems Inc.
+#    Copyright (C) 2010, Linux Test Project.
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -22,6 +23,9 @@
 
 top_srcdir		?= ../..
 
-include $(top_srcdir)/include/mk/env_pre.mk
+ifneq ($(WITH_EXPECT),yes)
+FILTER_OUT_SUBDIRS	:= tcore_patch_test_suites
+endif
 
+include $(top_srcdir)/include/mk/env_pre.mk
 include $(top_srcdir)/include/mk/generic_trunk_target.mk

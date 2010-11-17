@@ -23,8 +23,26 @@
 # Path to capset program
 CAPSET				:= 
 
+# Tools enable knobs
+WITH_EXPECT			:= no
+
+WITH_PERL			:= no
+
+WITH_PYTHON			:= no
+
+# Features knobs
+
 # Is securebits[.h], et all support available?
 HAVE_SECUREBITS			:= no
+
+# Test suite knobs
+
+# Enable testcases/kernel/power_management's compile and install?
+ifeq ($(UCLINUX),1)
+WITH_POWER_MANAGEMENT_TESTSUITE	:= no
+else
+WITH_POWER_MANAGEMENT_TESTSUITE	:= 
+endif
 
 # Enable testcases/open_posix_testsuite's compile and install?
 WITH_OPEN_POSIX_TESTSUITE	:= no

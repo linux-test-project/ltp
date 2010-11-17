@@ -2,6 +2,7 @@
 #    kernel test suite Makefile.
 #
 #    Copyright (C) 2009, Cisco Systems Inc.
+#    Copyright (C) 2010, Linux Test Project.
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -20,22 +21,39 @@
 # Garrett Cooper, July 2009
 #
 
-top_srcdir	?= ../..
+top_srcdir		?= ../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
 # NOTE (garrcoop): directories to traverse for building testcases.
-#
-# KEEP THIS LIST ALPHABETIZED PLEASE!
+
+# Build syscalls in all scenarios.
+SUBDIRS			:= syscalls
 ifneq ($(UCLINUX),1)
-SUBDIRS		:= containers connectors controllers fs hotplug io ipc mem \
-		   numa performance_counters power_management pty sched \
-		   security syscalls timers tracing
-else
-SUBDIRS		:= syscalls
+# KEEP THIS LIST ALPHABETIZED PLEASE!
+SUBDIRS			+= connectors \
+			   containers \
+			   controllers \
+			   fs \
+			   hotplug \
+			   io \
+			   ipc \
+			   mem \
+			   numa \
+			   performance_counters \
+			   pty \
+			   sched \
+			   security \
+			   timers \
+			   tracing \
+
+ifeq ($(WITH_POWER_MANAGEMENT_TESTSUITE),yes)
+SUBDIRS			+= power_management
 endif
 
-MAKE_DEPS	:= include/linux_syscall_numbers.h
+endif
+
+MAKE_DEPS		:= include/linux_syscall_numbers.h
 
 include:
 	mkdir -p "$@"
