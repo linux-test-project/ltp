@@ -40,6 +40,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <librttest.h>
+
+#if defined(PTHREAD_MUTEX_ROBUST_NP)
 pthread_mutex_t child_mutex;
 
 void *child_thread(void *arg)
@@ -72,8 +74,8 @@ int do_test(int argc, char **argv)
 	if (pthread_mutexattr_init(&mutexattr) != 0)
 		printf("Failed to init mutexattr\n");
 
-	if (pthread_mutexattr_setrobust_np(&mutexattr,\
-		PTHREAD_MUTEX_ROBUST_NP) != 0)
+	if (pthread_mutexattr_setrobust_np(&mutexattr,
+	    PTHREAD_MUTEX_ROBUST_NP) != 0)
 		printf("Can't set robust mutex\n");
 
 	if (pthread_mutexattr_getrobust_np(&mutexattr, &robust) != 0)
@@ -90,5 +92,12 @@ int do_test(int argc, char **argv)
 
 	return 0;
 }
+#else
+int do_test(int argc, char **argv)
+{
+	printf("Your system doesn't have robust pthread mutex support\n");
+	return 1;
+}
+#endif
 
 #include "test-skeleton.c"

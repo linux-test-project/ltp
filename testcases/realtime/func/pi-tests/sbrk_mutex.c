@@ -45,7 +45,7 @@
 #include <unistd.h>
 #include "librttest.h"
 
-#if defined(HAS_PTHREAD_MUTEXTATTR_ROBUST_APIS)
+#if defined(HAS_PTHREAD_MUTEXTATTR_ROBUST_APIS) && defined(PTHREAD_MUTEX_ROBUST_NP)
 
 #define NUM_MUTEXES 5000
 #define NUM_THREADS 50
