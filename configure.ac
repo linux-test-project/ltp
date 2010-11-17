@@ -64,13 +64,6 @@ AC_CHECK_HEADERS([ \
     sys/prctl.h \
 ])
 
-# open_hpi_testsuite does NOT fit cleanly in the build. BLAH.
-#AC_CONFIG_SUBDIRS([ \
-#    testcases/kernel/syscalls/libevent \
-#    testcases/open_hpi_testsuite/ \
-#    testcases/realtime \
-#])
-
 AC_CONFIG_SUBDIRS([ \
     testcases/kernel/syscalls/libevent \
     testcases/realtime \
