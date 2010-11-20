@@ -14,7 +14,9 @@
  *
  */
 #define _XOPEN_SOURCE 600
+#include <errno.h>
 #include <stdio.h>
+#include <string.h>
 #include <time.h>
 #include <unistd.h>
 #include "posixtest.h"
@@ -27,14 +29,16 @@ int main(int argc, char *argv[])
 #else
 	struct timespec tp1;
 	clockid_t clockid;
+	int error;
 
 	if (sysconf(_SC_CPUTIME) == -1) {
 		printf("_POSIX_CPUTIME unsupported\n");
 		return PTS_UNSUPPORTED;
 	}
 
-	if (clock_getcpuclockid(1, &clockid) != 0) {
-		printf("clock_getcpuclockid() failed\n");
+	error = clock_getcpuclockid(1, &clockid);
+	if (error != 0) {
+		printf("clock_getcpuclockid() failed: %s\n", strerror(error));
 		return PTS_UNRESOLVED;
 	}
 
