@@ -11,21 +11,23 @@
 
 #define _XOPEN_SOURCE 600
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 #include <unistd.h>
 #include "posixtest.h"
 
 int main(int argc, char *argv[])
 {
-#if _POSIX_CPUTIME == -1
+#if !defined(_POSIX_CPUTIME) || _POSIX_CPUTIME == -1
         printf("_POSIX_CPUTIME unsupported\n");
         return PTS_UNSUPPORTED;
 #else
+	struct timespec tp1, tp2;
 	unsigned long time_to_set;	
 	clockid_t clockid_1, clockid_2;
-	struct timespec tp1, tp2;
 
 	if (sysconf(_SC_CPUTIME) == -1) {
 		printf("_POSIX_CPUTIME unsupported\n");
@@ -48,11 +50,11 @@ int main(int argc, char *argv[])
 	tp1.tv_sec = time_to_set;
 	tp1.tv_nsec = 0;	 
 	if (clock_settime(clockid_1, &tp1) != 0) {
-		printf("clock_getcpuclockid() returned an invalid clockid_t: "
-			"%d\n", clockid_1);
-		return PTS_FAIL;
+		printf("clock_settime(%d, ..) failed\n", clockid_1,
+		    strerror(errno));
+		return PTS_UNRESOLVED;
 	}
-	/* Get the time of clockid_2, should almost the same as clockid_1 */
+	/* Get the time of clockid_2; should be almost the same as clockid_1 */
 	if (clock_gettime(clockid_2, &tp2) != 0) {
 		printf("clock_getcpuclockid() returned an invalid clockid_t: "
 			"%d\n", clockid_2);
