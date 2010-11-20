@@ -38,27 +38,6 @@ main(void)
 	pthread_mutex_t mutex;
 	int error, prioceiling;
 
-	/*
-	 * Do a best effort at trying to get root demoted to "nobody" for the
-	 * duration of the test.
-	 */
-	if (getuid() == 0) {
-		struct passwd *pwd;
-
-		pwd = getpwnam("nobody");
-		if (pwd != NULL) {
-			setuid(pwd->pw_uid);
-			setgid(pwd->pw_gid);
-		}
-
-	}
-
-	/* Hmmm -- above steps failed :(... */
-	if (getuid() == 0) {
-		printf("Test must be run as non-root user\n");
-		return PTS_UNRESOLVED;
-	}
-
 	error = pthread_mutexattr_init(&mutex_attr);
 	if (error) {
 		printf("pthread_mutexattr_init failed: %s\n", strerror(error));
@@ -87,7 +66,7 @@ main(void)
 	/* Get the prioceiling of the mutex. */
 	error = pthread_mutex_getprioceiling(&mutex, &prioceiling);
 	if (error) {
-		if (error == EPERM) {
+		if (error == EINVAL) {
 			printf("pthread_mutex_getprioceiling failed as "
 				"expected\n");
 		} else {
@@ -97,7 +76,7 @@ main(void)
 	} else
 		printf("pthread_mutex_getprioceiling passed unexpectedly\n");
 
-	return (error == EPERM ? PTS_PASS : PTS_UNRESOLVED);
+	return (error == EINVAL ? PTS_PASS : PTS_UNRESOLVED);
 #else
 	printf("pthread_mutex_getprioceiling not supported");
 	return PTS_UNSUPPORTED;

@@ -229,7 +229,7 @@ main()
     fi
 
     if [ "$RUN_NETEST" -eq 1 ]; then
-        SCENARIO_LISTS="$SCENARIO_LISTS scenario_groups/network"
+        SCENARIO_LISTS="$SCENARIO_LISTS $LTPROOT/scenario_groups/network"
     fi
  
     # DO NOT INDENT/DEDENT!
@@ -237,7 +237,7 @@ main()
             # Insurance to make sure that the first element in the pipe
             # completed successfully.
             cat_ok_sentinel=$TMP/cat_ok.$$
-	    (cat $SCENARIO_FILES && touch "$cat_ok_sentinel") | \
+	    (cat $SCENARIO_LISTS && touch "$cat_ok_sentinel") | \
                 while read scenfile; do
 
                     scenfile=${LTPROOT}/runtest/$scenfile
