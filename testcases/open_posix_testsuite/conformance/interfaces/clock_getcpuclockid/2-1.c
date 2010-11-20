@@ -25,7 +25,6 @@ int main(int argc, char *argv[])
         printf("_POSIX_CPUTIME unsupported\n");
         return PTS_UNSUPPORTED;
 #else
-	struct timespec tp1, tp2;
 	unsigned long time_to_set;	
 	clockid_t clockid_1, clockid_2;
 
@@ -44,29 +43,15 @@ int main(int argc, char *argv[])
 		return PTS_FAIL;
 	}
 
-	/* Set clockid_1 as a random value from 1 sec to 10 sec */
-	srand((unsigned long)time(NULL));
-	time_to_set = rand() * 10.0 / RAND_MAX + 1;
-	tp1.tv_sec = time_to_set;
-	tp1.tv_nsec = 0;	 
-	if (clock_settime(clockid_1, &tp1) != 0) {
-		printf("clock_settime(%d, ..) failed\n", clockid_1,
-		    strerror(errno));
-		return PTS_UNRESOLVED;
-	}
-	/* Get the time of clockid_2; should be almost the same as clockid_1 */
-	if (clock_gettime(clockid_2, &tp2) != 0) {
-		printf("clock_getcpuclockid() returned an invalid clockid_t: "
-			"%d\n", clockid_2);
+	/* Get the time of clockid_1. */
+	if (clockid_1 != clockid_2) {
+		printf("clock_getcpuclockid(0, ..) != "
+		    "clock_getcpuclockid(%d, ..): (%d != %d)\n", clockid_1,
+		    clockid_2);
 		return PTS_FAIL;
 	}
-	if (tp1.tv_sec == tp2.tv_sec)	
-	{
-		printf("Test PASSED\n");
-		return PTS_PASS;
-	}
-	printf("Test FAILED\n");
-	return PTS_FAIL;
+	printf("Test PASSED\n");
+	return PTS_PASS;
 
 #endif
 }
