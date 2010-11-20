@@ -1,11 +1,13 @@
 <assertions>
   <assertion id="1" tag="ref:XSH6:6549:6551">
-   clock_getcpuclockid() takes a process ID, pid, as input and returns the
-   CPU-time clock, clock_id.
+   The clock_getcpuclockid() function shall return the clock ID of the CPU-time
+   clock of the process specified by pid. If the process described by pid
+   exists and the calling process has permission, the clock ID of this clock
+   shall be returned in clock_id.
   </assertion>
   <assertion id="2" tag="ref:XSH6:6552:6553">
-   If pid=0, then clock_getcpuclockid() will return the CPU-time clock of
-   the calling process.
+   If pid is zero, the clock_getcpuclockid() function shall return the clock ID
+   of the CPU-time clock of the process making the call, in clock_id.
   </assertion>
   <assertion id="3" tag="ref:XSH6:6557:6557">
    clock_getcpuclockid() returns 0 on success.
