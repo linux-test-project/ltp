@@ -20,7 +20,7 @@
 
 int main(int argc, char *argv[])
 {
-#if _POSIX_CPUTIME == -1
+#if !defined(_POSIX_CPUTIME) || _POSIX_CPUTIME == -1
         printf("_POSIX_CPUTIME unsupported\n");
         return PTS_UNSUPPORTED;
 #else

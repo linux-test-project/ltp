@@ -32,12 +32,12 @@ void dosomething()
 
 int main(int argc, char *argv[])
 {
-#if _POSIX_CPUTIME == -1
+#if !defined(_POSIX_CPUTIME) || _POSIX_CPUTIME == -1
         printf("_POSIX_CPUTIME unsupported\n");
         return PTS_UNSUPPORTED;
 #else
+	struct timespec tp1;
 	clockid_t clockid;
-	struct timespec tp1 = {.tv_sec = 0, .tv_nsec = 0};
 
 	if (sysconf(_SC_CPUTIME) == -1) {
 		printf("_POSIX_CPUTIME unsupported\n");
@@ -51,7 +51,10 @@ int main(int argc, char *argv[])
 		return PTS_FAIL;
 	}
 
-	/* Verify that it returned a valid clockid_t that can be used in other functions */
+	/* 
+	 * Verify that it returned a valid clockid_t that can be used in other
+	 * functions
+	 */
 	if (clock_gettime(clockid, &tp1) != 0) {
 		printf("clock_getcpuclockid() returned an invalid clockid_t: %d\n", clockid);
 		return PTS_FAIL;
