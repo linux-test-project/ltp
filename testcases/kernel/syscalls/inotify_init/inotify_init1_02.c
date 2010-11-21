@@ -140,12 +140,11 @@ int main(int argc, char *argv[])
 	msg = parse_opts(argc, argv, (option_t *) NULL, NULL);
 	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
 	}
 	if ((tst_kvercmp(2, 6, 27)) < 0) {
-		tst_resm(TCONF,
-			 "This test can only run on kernels that are 2.6.27 and higher");
-		tst_exit();
+		tst_brkm(TCONF, NULL,
+			"This test can only run on kernels that are 2.6.27 "
+			"and higher");
 	}
 	setup();
 
