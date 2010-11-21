@@ -165,7 +165,8 @@ int main(int argc, char *argv[])
 			}
 			if (fl & O_NONBLOCK) {
 				tst_resm(TFAIL,
-					 "inotify_init1(0) set non-blocking mode");
+					"inotify_init1(0) set non-blocking "
+					"mode");
 				cleanup();
 				tst_exit();
 			}
@@ -185,7 +186,8 @@ int main(int argc, char *argv[])
 			}
 			if ((fl & O_NONBLOCK) == 0) {
 				tst_resm(TFAIL,
-					 "inotify_init1(IN_NONBLOCK) set non-blocking mode");
+					"inotify_init1(IN_NONBLOCK) set "
+					"non-blocking mode");
 				cleanup();
 				tst_exit();
 			}

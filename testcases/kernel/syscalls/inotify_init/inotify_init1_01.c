@@ -143,12 +143,11 @@ int main(int argc, char *argv[])
 	msg = parse_opts(argc, argv, (option_t *) NULL, NULL);
 	if (msg != (char *)NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
 	}
 	if ((tst_kvercmp(2, 6, 27)) < 0) {
-		tst_resm(TCONF,
-			 "This test can only run on kernels that are 2.6.27 and higher");
-		tst_exit();
+		tst_brkm(TCONF, NULL,
+			"This test can only run on kernels that are 2.6.27 "
+			"and higher");
 	}
 	setup();
 
@@ -158,20 +157,16 @@ int main(int argc, char *argv[])
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 			fd = syscall(__NR_inotify_init1, 0);
 			if (fd == -1) {
-				tst_resm(TFAIL, "inotify_init1(0) failed");
-				cleanup();
-				tst_exit();
+				tst_brkm(TFAIL, cleanup,
+					"inotify_init1(0) failed");
 			}
 			coe = fcntl(fd, F_GETFD);
 			if (coe == -1) {
 				tst_brkm(TBROK, cleanup, "fcntl failed");
-				tst_exit();
 			}
 			if (coe & FD_CLOEXEC) {
-				tst_resm(TFAIL,
-					 "inotify_init1(0) set close-on-exit");
-				cleanup();
-				tst_exit();
+				tst_brkm(TFAIL, cleanup,
+					"inotify_init1(0) set close-on-exit");
 			}
 			close(fd);
 
@@ -184,17 +179,16 @@ int main(int argc, char *argv[])
 			}
 			coe = fcntl(fd, F_GETFD);
 			if (coe == -1) {
-				tst_brkm(TBROK, cleanup, "fcntl failed");
-				tst_exit();
-			}
-			if ((coe & FD_CLOEXEC) == 0) {
+				tst_resm(TBROK|TERRNO, "fcntl failed");
+			} else if ((coe & FD_CLOEXEC) == 0) {
 				tst_resm(TFAIL,
-					 "inotify_init1(O_CLOEXEC) does not set close-on-exit");
-				cleanup();
-				tst_exit();
+					"inotify_init1(O_CLOEXEC) does not "
+					"set close-on-exit");
+			} else {
+				close(fd);
+				tst_resm(TPASS, "inotify_init1(O_CLOEXEC) "
+					"PASSED");
 			}
-			close(fd);
-			tst_resm(TPASS, "inotify_init1(O_CLOEXEC) PASSED");
 			cleanup();
 		}
 	}
