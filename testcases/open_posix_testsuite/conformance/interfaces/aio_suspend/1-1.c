@@ -61,7 +61,7 @@ sigrt2_handler(int signum, siginfo_t *info, void *context)
 }
 
 int
-main ()
+main(void)
 {
 	char tmpfname[256];
 	int fd;
@@ -93,22 +93,20 @@ main ()
 
 	unlink(tmpfname);
 
-	bufs = (char *) malloc (NUM_AIOCBS*BUF_SIZE);
+	bufs = (char *)malloc(NUM_AIOCBS*BUF_SIZE);
 
 	if (bufs == NULL) {
-		printf (TNAME " Error at malloc(): %s\n", strerror (errno));
-		close (fd);
+		printf(TNAME " Error at malloc(): %s\n", strerror(errno));
+		close(fd);
 		exit(PTS_UNRESOLVED);
 	}
 
-	if (write (fd, bufs, NUM_AIOCBS*BUF_SIZE) != (NUM_AIOCBS*BUF_SIZE)) {
+	if (write(fd, bufs, NUM_AIOCBS*BUF_SIZE) != (NUM_AIOCBS*BUF_SIZE)) {
 		printf(TNAME " Error at write(): %s\n", strerror(errno));
-		free (bufs);
-		close (fd);
+		free(bufs);
+		close(fd);
 		exit(PTS_UNRESOLVED);
 	}
-
-
 
 	aiocbs = (struct aiocb**)malloc(sizeof(struct aiocb *) * NUM_AIOCBS);
 
@@ -155,25 +153,26 @@ main ()
 	ret = lio_listio(LIO_NOWAIT, aiocbs, NUM_AIOCBS, &event);
 
 	if (ret) {
-		printf(TNAME " Error at lio_listio() %d: %s\n", errno, strerror(errno));
-		for (i=0; i<NUM_AIOCBS; i++)
-			free (aiocbs[i]);
-		free (bufs);
-		free (aiocbs);
-		close (fd);
-		exit (PTS_UNRESOLVED);
+		printf(TNAME " Error at lio_listio() %d: %s\n", errno,
+		    strerror(errno));
+		for (i = 0; i < NUM_AIOCBS; i++)
+			free(aiocbs[i]);
+		free(bufs);
+		free(aiocbs);
+		close(fd);
+		exit(PTS_UNRESOLVED);
 	}
 
 	/* Check selected request has not completed yet */
 	if (received_selected) {
-		printf (TNAME " Error : AIOCB %d already completed before suspend\n",
-			WAIT_FOR_AIOCB);
-		for (i=0; i<NUM_AIOCBS; i++)
-			free (aiocbs[i]);
-		free (bufs);
-		free (aiocbs);
-		close (fd);
-		exit (PTS_FAIL);
+		printf(TNAME " Error : AIOCB %d already completed before "
+		    "suspend\n", WAIT_FOR_AIOCB);
+		for (i = 0; i < NUM_AIOCBS; i++)
+			free(aiocbs[i]);
+		free(bufs);
+		free(aiocbs);
+		close(fd);
+		exit(PTS_FAIL);
 	}
 
 	/* Suspend on selected request */
@@ -181,53 +180,57 @@ main ()
 
 	/* Check selected request has completed */
 	if (!received_selected) {
-		printf (TNAME " Error : AIOCB %d should have completed after suspend\n",
-			WAIT_FOR_AIOCB);
+		printf(TNAME " Error : AIOCB %d should have completed after "
+		    "suspend\n", WAIT_FOR_AIOCB);
 		for (i=0; i<NUM_AIOCBS; i++)
-			free (aiocbs[i]);
-		free (bufs);
-		free (aiocbs);
-		close (fd);
-		exit (PTS_FAIL);
+			free(aiocbs[i]);
+		free(bufs);
+		free(aiocbs);
+		close(fd);
+		exit(PTS_FAIL);
 	}
 
 
 	if (ret) {
-		printf (TNAME " Error at aio_suspend() %d: %s\n", errno, strerror (errno));
-		for (i=0; i<NUM_AIOCBS; i++)
-			free (aiocbs[i]);
-		free (bufs);
-		free (aiocbs);
-		close (fd);
-		exit (PTS_FAIL);
+		printf(TNAME " Error at aio_suspend() %d: %s\n", errno,
+		    strerror(errno));
+		for (i = 0; i < NUM_AIOCBS; i++)
+			free(aiocbs[i]);
+		free(bufs);
+		free(aiocbs);
+		close(fd);
+		exit(PTS_FAIL);
 	}
 
 	/* Wait for list processing completion */
 	while (!received_all)
-		sleep (1);
+		sleep(1);
 
 	/* Check return code and free things */
 	for (i = 0; i < NUM_AIOCBS; i++) {
-	  	err = aio_error(aiocbs[i]);
+		do {
+		  	err = aio_error(aiocbs[i]);
+		} while (err == EINPROGRESS);
 		ret = aio_return(aiocbs[i]);
 
 		if ((err != 0) && (ret != BUF_SIZE)) {
-			printf(TNAME " req %d: error = %d - return = %d\n", i, err, ret);
+			printf(TNAME " req %d: error = %d - return = %d\n", i,
+			    err, ret);
 			errors++;
 		}
 
-		free (aiocbs[i]);
+		free(aiocbs[i]);
 	}
 
-	free (bufs);
-	free (aiocbs);
+	free(bufs);
+	free(aiocbs);
 
 	close(fd);
 
 	if (errors != 0)
-		exit (PTS_FAIL);
+		exit(PTS_FAIL);
 
-	printf (TNAME " PASSED\n");
+	printf(TNAME " PASSED\n");
 
 	return PTS_PASS;
 }
