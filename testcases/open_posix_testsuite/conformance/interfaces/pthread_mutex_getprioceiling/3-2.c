@@ -75,6 +75,9 @@ main(void)
 	} else
 		printf("pthread_mutex_getprioceiling passed unexpectedly\n");
 
+	(void) pthread_mutexattr_destroy(&mutex_attr);
+	(void) pthread_mutex_destroy(&mutex);
+
 	return (error == EINVAL ? PTS_PASS : PTS_FAIL);
 #else
 	printf("pthread_mutex_getprioceiling not supported");
