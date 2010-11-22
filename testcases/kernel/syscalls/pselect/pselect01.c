@@ -114,7 +114,7 @@ int main()
 			tst_resm(TPASS, "Sleep time was correct "
 				"(%lf/%d < 20 %%)", real_sec, total_sec);
 		else
-			tst_resm(TFAIL, "Sleep time was incorrect (%lf/%lf "
+			tst_resm(TFAIL, "Sleep time was incorrect (%d/%lf "
 				">= 20%%)", total_sec, real_sec);
 	}
 
