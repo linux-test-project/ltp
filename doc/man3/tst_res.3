@@ -41,10 +41,6 @@ tst_brk \- Print result message and break remaining test cases
 .sp
 tst_brkm \- Print result message, including file contents, and break remaining test cases
 .sp
-tst_brkloop \- Print result message, include file contents, and break remaining test cases in loop
-.sp
-tst_brkloopm \- Print result message and break remaining test cases in loop
-.sp
 tst_flush \- Print any messages pending because of CONDENSE mode, and flush output stream
 .sp
 tst_exit \- Exit test with a meaningful exit value
@@ -62,12 +58,6 @@ tst_environ \- Keep results coming to original stdout
 char *\fItmesg, [arg ...]\fR)
 .P
 \fBvoid tst_brkm(int \fIttype\fB, void (*\fIfunc\fB)(), char *\fItmesg,
-[arg ...]\fR)
-.P
-\fBvoid tst_brkloop(int \fIttype\fB, char *\fIfname\fB, void (*\fIfunc\fB)(),
-char *\fItmesg, [arg ...]\fR)
-.P
-\fBvoid tst_brkloopm(int \fIttype\fB, void (*\fIfunc\fB)(), char *\fItmesg,
 [arg ...]\fR)
 .P
 \fBvoid tst_flush()
@@ -202,21 +192,6 @@ after all results have been printed.  If \fBtst_brk()\fR is called with a
 first reported result.  \fBtst_brk()\fR takes the \fIfname\fR argument
 whereas \fBtst_brkm()\fR does not.
 .P
-\fBtst_brkloop()\fR and \fBtst_brkloopm()\fR work just like \fBtst_brk()\fR
-and \fBtst_brkm()\fR, except they only report results for a the test cases
-remaining in the current loop.  The \fBTst_lpstart\fR and \fBTst_lptotal\fR
-global variables are used to determine how many test cases to report results
-for.  Prior to the start of the loop, the test must set \fBTst_lpstart\fR to
-\fBTst_count\fR, and \fBTst_lptotal\fR to the number of test cases in the
-loop.  If a test calls \fBtst_brkloop()\fR or \fBtst_brkloopm()\fR without
-first setting \fBTst_lpstart\fR and \fBTst_lptotal\fR to meaningful values, a
-WARN result will be reported and control will be immediately returned to the
-caller.  This will most likely cause the result messages to be out of order.
-Unlike the \fBtst_brk()\fR functions, \fBtst_brkloop()\fR and
-\fBtst_brkloopm()\fR will not call \fBtst_exit()\fR if the \fIfunc\fR
-argument is not NULL and returns.  \fBtst_brkloop()\fR takes the \fIfname\fR
-argument whereas \fBtst_brkloopm()\fR does not.
-.P
 \fBtst_flush()\fR is used to print any results pending because of
 \fBCONDENSE\fR or \fBNOPASS\fR modes (described below), and flushes the
 output stream.
@@ -294,8 +269,6 @@ All output lines are discarded.
 char *TCID = "tsttcs01"; /* set test case identifier */
 int TST_TOTAL = 15;      /* set total number of test results */
 extern int Tst_count;    /* access count of results completed */
-extern int Tst_lpstart;  /* holds value for start of loop */
-extern int Tst_lptotal;  /* holds the number of test cases in loop */
 
 main()
 {
@@ -308,24 +281,14 @@ main()
 		.
 		.
 
-   /* break all remaining test results */
+	/* break all remaining test results */
 	tst_brkm(TBROK, cleanup, "\fIwhat didn't work\fR");
 		/* or */
 	tst_brk(TBROK, file, cleanup, "\fIwhat didn't work\fR");
 		.
 		.
 
-	/* Break all remaining tests in loop */
-	Tst_lpstart = Tst_count;
-	Tst_lptotal = 5;
-
-	tst_brkloopm(TBROK, loop_setup, "\fIsetup did not work.\fR");
-		/* or */
-	tst_brkloop(TBROK, file, loop_setup, "\fIsetup did not work.\fR");
-		.
-		.
-
-   /* exit after all test results have been passed to tst_res */
+	/* exit after all test results have been passed to tst_res */
 	tst_exit();
 }
 .fi

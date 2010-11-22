@@ -182,8 +182,6 @@ static char *Last_mesg;       /* previous test result message */
  */
 int Tst_count = 0;      /* current count of test cases executed; NOTE: */
                         /* Tst_count may be externed by other programs */
-int Tst_lptotal = 0;    /* tst_brkloop() external */
-int Tst_lpstart = 0;    /* tst_brkloop() external */
 int Tst_range = 1;      /* for specifying multiple results */
 int Tst_nobuf = 1;      /* this is a no-op; buffering is never done, but */
                         /* this will stay for compatibility reasons */
@@ -294,8 +292,8 @@ void tst_res(int ttype, char *fname, char *arg_fmt, ...)
 	int ttype_result = TTYPE_RESULT(ttype);
 
 #if DEBUG
-	printf("IN tst_res; Tst_count = %d; Tst_range = %d\n",
-	       Tst_count, Tst_range); fflush(stdout);
+	printf( "IN tst_res; Tst_count = %d; Tst_range = %d\n",
+		Tst_count, Tst_range); fflush(stdout);
 #endif
 
 	EXPAND_VAR_ARGS(tmesg, arg_fmt, USERMESG);
@@ -335,7 +333,8 @@ void tst_res(int ttype, char *fname, char *arg_fmt, ...)
 	if (ttype_result == TWARN || ttype_result == TINFO) {
 		if (Tst_range > 1)
 			tst_print(TCID, 0, 1, TWARN,
-				  "tst_res(): Range not valid for TINFO or TWARN types");
+				  "tst_res(): Range not valid for TINFO or "
+				  "TWARN types");
 		tst_print(TCID, 0, 1, ttype, tmesg);
 	} else {
 		if (Tst_count < 0)
@@ -346,17 +345,21 @@ void tst_res(int ttype, char *fname, char *arg_fmt, ...)
 		 * Process each display type.
 		 */
 		switch (T_mode) {
-			case DISCARD: /* do not print any results */
+			case DISCARD:	/* do not print any results */
 			break;
 
-			case NOPASS:  /* passing result types are filtered by tst_print() */
+			case NOPASS:	/* 
+					 * passing result types are filtered
+					 * by tst_print()
+					 */
 			case CONDENSE:
 				tst_condense(Tst_count + 1, ttype, tmesg);
 			break;
 
 			default:      /* VERBOSE */
 				for (i = 1 ; i <= Tst_range ; i++)
-					tst_print(TCID, Tst_count + i, Tst_range, ttype, tmesg);
+					tst_print(TCID, Tst_count + i,
+						  Tst_range, ttype, tmesg);
 			break;
 		}
 
@@ -381,8 +384,9 @@ static void tst_condense(int tnum, int ttype, char *tmesg)
 	int ttype_result = TTYPE_RESULT(ttype);
 
 #if DEBUG
-	printf("IN tst_condense: tcid = %s, tnum = %d, ttype = %d, tmesg = %s\n",
-	       TCID, tnum, ttype, tmesg);
+	printf( "IN tst_condense: tcid = %s, tnum = %d, ttype = %d, "
+		"tmesg = %s\n",
+		TCID, tnum, ttype, tmesg);
 	fflush(stdout);
 #endif
 
@@ -466,8 +470,9 @@ static void tst_print(char *tcid, int tnum, int trange, int ttype, char *tmesg)
 	int ttype_result = TTYPE_RESULT(ttype);
 
 #if DEBUG
-	printf("IN tst_print: tnum = %d, trange = %d, ttype = %d, tmesg = %s\n",
-	       tnum, trange, ttype, tmesg);
+	printf( "IN tst_print: tnum = %d, trange = %d, ttype = %d, tmesg = "
+		"%s\n",
+		tnum, trange, ttype, tmesg);
 	fflush(stdout);
 #endif
 
@@ -636,7 +641,7 @@ void tst_brk(int ttype, char *fname, void (*func)(void), char *arg_fmt, ...)
 	 */
 	if (ttype_result != TFAIL && ttype_result != TBROK &&
 	    ttype_result != TCONF && ttype_result != TRETR) {
-		sprintf(Warn_mesg, "tst_brk(): Invalid Type: %d.  Using TBROK",
+		sprintf(Warn_mesg, "tst_brk(): Invalid Type: %d. Using TBROK",
 			ttype_result);
 		tst_print(TCID, 0, 1, TWARN, Warn_mesg);
 		ttype = TBROK;
@@ -653,92 +658,26 @@ void tst_brk(int ttype, char *fname, void (*func)(void), char *arg_fmt, ...)
 	if (Tst_range > 0) {
 		if (ttype == TCONF) {
 			tst_res(ttype, NULL,
-				"Remaining cases not appropriate for configuration");
-		} else {
-				if ( ttype == TRETR )
-					tst_res(ttype, NULL, "Remaining cases retired");
-				else
-					tst_res(TBROK, NULL, "Remaining cases broken");
-		}
-	} else {
-		Tst_range = 1;
-		Expand_varargs = TRUE;
-	}
-
-	/*
-	 * If no cleanup function was specified, just return to the caller.
-	 * Otherwise call the specified function.  If specified function
-	 * returns, call tst_exit().
-	 */
-	if (func != NULL) {
-		(*func)();
-		tst_exit();
-	}
-}
-
-
-/*
- * tst_brkloop() - Fail or break current test case, and break the
- *                 remaining test cases within test case loop.
- */
-void tst_brkloop(int ttype, char *fname, void (*func)(void), char *arg_fmt, ...)
-{
-	char tmesg[USERMESG];
-
-#if DEBUG
-	printf("IN tst_brkloop\n"); fflush(stdout);
-	fflush(stdout);
-#endif
-
-	EXPAND_VAR_ARGS(tmesg, arg_fmt, USERMESG);
-
-	if (Tst_lpstart < 0 || Tst_lptotal < 0) {
-		tst_print(TCID, 0, 1, TWARN,
-			  "tst_brkloop(): Tst_lpstart & Tst_lptotal must both be assigned non-negative values");
-		Expand_varargs = TRUE;
-		return;
-	}
-
-	/*
-	 * Only FAIL, BROK, CONF, and RETR are supported by tst_brkloop().
-	 */
-	if (ttype != TFAIL && ttype != TBROK && ttype != TCONF &&
-	    ttype != TRETR) {
-		sprintf(Warn_mesg,
-			"tst_brkloop(): Invalid Type: %d(%s).  Using TBROK",
-			ttype, strttype(ttype));
-		tst_print(TCID, 0, 1, TWARN, Warn_mesg);
-		ttype = TBROK;
-	}
-
-	/* Print the first result, if necessary. */
-	if (Tst_count < Tst_lpstart + Tst_lptotal)
-		tst_res(ttype, fname, "%s", tmesg);
-
-	/* Determine the number of results left to report. */
-	Tst_range = Tst_lptotal + Tst_lpstart - Tst_count;
-
-	/* Print the rest of the results, if necessary. */
-	if (Tst_range > 0) {
-		if (ttype == TCONF) {
-			tst_res(ttype, NULL,
-				"Remaining cases in loop not appropriate for configuration");
+				"Remaining cases not appropriate for "
+				"configuration");
 		} else {
 			if (ttype == TRETR)
-				tst_res(ttype, NULL, "Remaining cases in loop retired");
+				tst_res(ttype, NULL,
+					"Remaining cases retired");
 			else
-				tst_res(TBROK, NULL, "Remaining cases in loop broken");
+				tst_res(TBROK, NULL,
+					"Remaining cases broken");
 		}
 	} else {
 		Tst_range = 1;
 		Expand_varargs = TRUE;
 	}
 
-	/* If a cleanup function was specified, call it. */
-	if (func != NULL)
+	if (func != NULL) {
 		(*func)();
+	}
+	tst_exit();
 }
-
 
 /*
  * tst_resm() - Interface to tst_res(), with no filename.
@@ -773,24 +712,6 @@ void tst_brkm(int ttype, void (*func)(void), char *arg_fmt, ...)
 	EXPAND_VAR_ARGS(tmesg, arg_fmt, USERMESG);
 
 	tst_brk(ttype, NULL, func, "%s", tmesg);
-}
-
-
-/*
- * tst_brkloopm() - Interface to tst_brkloop(), with no filename.
- */
-void tst_brkloopm(int ttype, void (*func)(void), char *arg_fmt, ...)
-{
-	char tmesg[USERMESG];
-
-#if DEBUG
-	printf("IN tst_brkloopm\n");
-	fflush(stdout);
-#endif
-
-	EXPAND_VAR_ARGS(tmesg, arg_fmt, USERMESG);
-
-	tst_brkloop(ttype, NULL, func, "%s", tmesg);
 }
 
 
@@ -830,7 +751,8 @@ static void cat_file(char *filename)
 	while ((b_read = fread(buffer, 1, BUFSIZ, fp)) != 0) {
 		if ((b_written = fwrite(buffer, 1, b_read, T_out)) != b_read) {
 			sprintf(Warn_mesg,
-				"tst_res(): While trying to cat \"%s\", fwrite() wrote only %d of %d bytes",
+				"tst_res(): While trying to cat \"%s\", "
+				"fwrite() wrote only %d of %d bytes",
 				filename, b_written, b_read);
 			tst_print(TCID, 0, 1, TWARN, Warn_mesg);
 			break;
@@ -839,14 +761,16 @@ static void cat_file(char *filename)
 
 	if (!feof(fp)) {
 		sprintf(Warn_mesg,
-			"tst_res(): While trying to cat \"%s\", fread() failed, errno = %d: %s",
+			"tst_res(): While trying to cat \"%s\", fread() "
+			"failed, errno = %d: %s",
 			filename, errno, strerror(errno));
 		tst_print(TCID, 0, 1, TWARN, Warn_mesg);
 	}
 
 	if (fclose(fp) != 0) {
 		sprintf(Warn_mesg,
-			"tst_res(): While trying to cat \"%s\", fclose() failed, errno = %d: %s",
+			"tst_res(): While trying to cat \"%s\", fclose() "
+			"failed, errno = %d: %s",
 			filename, errno, strerror(errno));
 		tst_print(TCID, 0, 1, TWARN, Warn_mesg);
 	}
@@ -872,19 +796,18 @@ int main(void)
 	char chr;
 	char fname[MAXMESG];
 
-	printf("UNIT TEST of tst_res.c.  Options for ttype:\n\
-	       -1 : call tst_exit()\n\
-	       -2 : call tst_flush()\n\
-	       -3 : call tst_brk()\n\
-	       -4 : call tst_brkloop()\n\
-	       -5 : call tst_res() with a range\n\
-	       %2i : call tst_res(TPASS, ...)\n\
-	       %2i : call tst_res(TFAIL, ...)\n\
-	       %2i : call tst_res(TBROK, ...)\n\
-	       %2i : call tst_res(TWARN, ...)\n\
-	       %2i : call tst_res(TRETR, ...)\n\
-	       %2i : call tst_res(TINFO, ...)\n\
-	       %2i : call tst_res(TCONF, ...)\n\n",
+	printf( "UNIT TEST of tst_res.c.  Options for ttype:\n"
+		"-1 : call tst_exit()\n"
+		"-2 : call tst_flush()\n"
+		"-3 : call tst_brk()\n"
+		"-5 : call tst_res() with a range\n"
+		"%2i : call tst_res(TPASS, ...)\n"
+		"%2i : call tst_res(TFAIL, ...)\n"
+		"%2i : call tst_res(TBROK, ...)\n"
+		"%2i : call tst_res(TWARN, ...)\n"
+		"%2i : call tst_res(TRETR, ...)\n"
+		"%2i : call tst_res(TINFO, ...)\n"
+		"%2i : call tst_res(TCONF, ...)\n\n",
 		TPASS, TFAIL, TBROK, TWARN, TRETR, TINFO, TCONF);
 
 	while (1) {
@@ -893,57 +816,44 @@ int main(void)
 		scanf("%d%c", &ttype, &chr);
 
 		switch (ttype) {
-			case -1:
-				tst_exit();
+		case -1:
+			tst_exit();
 			break;
 
-			case -2:
-				tst_flush();
+		case -2:
+			tst_flush();
 			break;
 
-			case -3:
-				printf("Enter the current type (%i=FAIL, %i=BROK, %i=RETR, %i=CONF): ",
-					TFAIL, TBROK, TRETR, TCONF);
-				scanf("%d%c", &ttype, &chr);
-				printf("Enter file name (<cr> for none): ");
-				gets(fname);
-				if (strcmp(fname, "") == 0)
-					tst_brkm(ttype, tst_exit, RESM, ttype);
-				else
-					tst_brk(ttype, fname, tst_exit, RES, ttype, fname);
+		case -3:
+			printf("Enter the current type (%i=FAIL, %i=BROK, "
+				"%i=RETR, %i=CONF): ",
+				TFAIL, TBROK, TRETR, TCONF);
+			scanf("%d%c", &ttype, &chr);
+			printf("Enter file name (<cr> for none): ");
+			gets(fname);
+			if (strcmp(fname, "") == 0)
+				tst_brkm(ttype, tst_exit, RESM, ttype);
+			else
+				tst_brk(ttype, fname, tst_exit, RES, ttype,
+					fname);
 			break;
 
-			case -4:
-				printf("Enter the size of the loop: ");
-				scanf("%d%c", &range, &chr);
-				Tst_lpstart = Tst_count;
-				Tst_lptotal = range;
-				printf("Enter the current type (%i=FAIL, %i=BROK, %i=RETR, %i=CONF): ",
-					TFAIL, TBROK, TRETR, TCONF);
-				scanf("%d%c", &ttype, &chr);
-				printf("Enter file name (<cr> for none): ");
-				gets(fname);
+		case -5:
+			printf("Enter the size of the range: ");
+			scanf("%d%c", &Tst_range, &chr);
+			printf("Enter the current type "
+				"(%i,%i,%i,%i,%i,%i,%i): "
+				TPASS, TFAIL, TBROK, TWARN, TRETR, TINFO,
+				TCONF);
+			scanf("%d%c", &ttype, &chr);
+		default:
+			printf("Enter file name (<cr> for none): ");
+			gets(fname);
 
-				if (strcmp(fname, "") == 0)
-					tst_brkloopm(ttype, NULL, RESM, ttype);
-				else
-					tst_brkloop(ttype, fname, NULL, RES, ttype, fname);
-			break;
-
-			case -5:
-				printf("Enter the size of the range: ");
-				scanf("%d%c", &Tst_range, &chr);
-				printf("Enter the current type (%i,%i,%i,%i,%i,%i,%i): ",
-					TPASS, TFAIL, TBROK, TWARN, TRETR, TINFO, TCONF);
-				scanf("%d%c", &ttype, &chr);
-			default:
-				printf("Enter file name (<cr> for none): ");
-				gets(fname);
-
-				if (strcmp(fname, "") == 0)
-					tst_resm(ttype, RESM, ttype);
-				else
-					tst_res(ttype, fname, RES, ttype, fname);
+			if (strcmp(fname, "") == 0)
+				tst_resm(ttype, RESM, ttype);
+			else
+				tst_res(ttype, fname, RES, ttype, fname);
 			break;
 		}
 
