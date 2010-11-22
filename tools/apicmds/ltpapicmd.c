@@ -236,25 +236,6 @@ int main( int argc,
         tst_res(trestype, file_name, arg_fmt);
     }
     else
-    if (strcmp((char *)cmd_name, "tst_brkloop") == 0)
-    {
-        if (argc < 5)
-        {
-            fprintf(stderr, "Usage: %s TTYPE FNAME FUNC STRING\n"
-            "\tTTYPE  - Test Result Type; one of TFAIL, TBROK, TCONF, "
-            "and TRETR.\n"
-            "\tFNAME  - Print contents of this file after the message\n"
-            "\tFUNC   - Cleanup function (ignored), but MUST be provided\n"
-            "\tSTRING - Message explaining the test result\n", cmd_name);
-            exit (-1);
-        }
-        trestype = ident_ttype(argv++[0]);
-        file_name = argv++[0];
-        argv++;
-        strcpy(arg_fmt, *argv);
-        tst_brkloop(trestype, file_name, cleanup, arg_fmt);
-    }
-    else
     if (strcmp((char *)cmd_name, "tst_brkm") == 0)
     {
         if (argc < 4)
@@ -285,23 +266,6 @@ int main( int argc,
         trestype = ident_ttype(argv++[0]);
         strcpy(arg_fmt, *argv);
         tst_resm(trestype, arg_fmt);
-    }
-    else
-    if (strcmp((char *)cmd_name, "tst_brkloopm") == 0)
-    {
-        if (argc < 4)
-        {
-            fprintf(stderr, "Usage: %s TTYPE FUNC STRING\n"
-            "\tTTYPE  - Test Result Type; one of TFAIL, TBROK, TCONF, "
-            "and TRETR.\n"
-            "\tFUNC   - Cleanup function (ignored), but MUST be provided\n"
-            "\tSTRING - Message explaining the test result\n", cmd_name);
-            exit (-1);
-        }
-        trestype = ident_ttype(argv++[0]);
-        argv++;
-        strcpy(arg_fmt, *argv);
-        tst_brkloopm(trestype, cleanup, arg_fmt);
     }
     else
     if (strcmp((char *)cmd_name, "tst_exit") == 0)
