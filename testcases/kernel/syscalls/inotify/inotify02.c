@@ -359,7 +359,7 @@ void cleanup()
 char *TCID = "inotify02";	/* Test program identifier.    */
 int TST_TOTAL = 0;		/* Total number of test cases. */
 
-int main()
+int main(void)
 {
 #ifndef __NR_inotify_init
 	tst_resm(TCONF, "This test needs a kernel that has inotify syscall.");

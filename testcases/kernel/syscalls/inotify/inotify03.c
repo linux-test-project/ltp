@@ -115,8 +115,7 @@ int main(int ac, char **av)
 	int len, i, test_num;
 
 	/* parse standard options */
-	msg = parse_opts(ac, av, (option_t *) options, &help);
-	if (msg != NULL)
+	if ((msg = parse_opts(ac, av, (option_t *) options, &help)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	/* Check for mandatory option of the testcase */
@@ -124,7 +123,6 @@ int main(int ac, char **av)
 		tst_brkm(TBROK, NULL, "You must specifiy the device used for "
 			 " mounting with -D option, Run '%s  -h' for option "
 			 " information.", TCID);
-		tst_exit();
 	}
 
 	if (Tflag) {
@@ -174,9 +172,9 @@ int main(int ac, char **av)
 
 	len = read(fd_notify, event_buf, EVENT_BUF_LEN);
 	if (len < 0) {
-		tst_brkm(TBROK, cleanup,
-			 "read(%d, buf, %d) Failed, errno=%d : %s",
-			 fd_notify, EVENT_BUF_LEN, errno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "read(%d, buf, %d) failed",
+			 fd_notify, EVENT_BUF_LEN);
 	}
 
 	/* check events */
@@ -222,10 +220,8 @@ int main(int ac, char **av)
 			 "errno=%d : %s",
 			 fd_notify, wd, ret, errno, strerror(errno));
 
-	/* cleanup and exit */
 	cleanup();
-
-	return 0;
+	tst_exit();
 }				/* End main */
 
 /*
@@ -246,9 +242,8 @@ void setup()
 	(void)sprintf(mntpoint, "mnt_%d", getpid());
 
 	if (mkdir(mntpoint, DIR_MODE) < 0) {
-		tst_brkm(TBROK, cleanup, "mkdir(%s, %#o) failed; "
-			 "errno = %d: %s", mntpoint, DIR_MODE, errno,
-			 strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "mkdir(%s, %#o) failed",
+			mntpoint, DIR_MODE)
 	}
 
 	/* Call mount(2) */
@@ -258,55 +253,47 @@ void setup()
 	/* check return code */
 	if (TEST_RETURN != 0) {
 		TEST_ERROR_LOG(TEST_ERRNO);
-		tst_brkm(TBROK, cleanup, "mount(2) Failed errno = %d : %s",
-			 TEST_ERRNO, strerror(TEST_ERRNO));
+		tst_brkm(TBROK|TTERRNO, cleanup, "mount(2) failed");
 	}
 	mount_flag = 1;
 
 	sprintf(fname, "%s/tfile_%d", mntpoint, getpid());
 	fd = open(fname, O_RDWR | O_CREAT, 0700);
 	if (fd == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT,0700) Failed, errno=%d : %s",
-			 fname, errno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT,0700) failed",
+			 fname);
 	}
 
 	ret = write(fd, fname, 1);
 	if (ret == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "write(%d, %s, 1) Failed, errno=%d : %s",
-			 fd, fname, errno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "write(%d, %s, 1) failed",
+			 fd, fname);
 	}
 
 	/* close the file we have open */
 	if (close(fd) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "close(%s) Failed, errno=%d : %s",
-			 fname, errno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "close(%s) failed", fname);
 	}
 
 	fd_notify = myinotify_init();
 
 	if (fd_notify < 0) {
 		if (errno == ENOSYS) {
-			tst_resm(TCONF,
+			tst_brkm(TCONF, cleanup,
 				 "inotify is not configured in this kernel.");
-			tst_resm(TCONF, "Test will not run.");
-			cleanup();
-			tst_exit();
 		} else {
-			tst_brkm(TBROK, cleanup,
-				 "inotify_init () Failed, errno=%d : %s",
-				 errno, strerror(errno));
+			tst_brkm(TBROK|TERRNO, cleanup,
+				 "inotify_init() failed");
 		}
 	}
 
 	wd = myinotify_add_watch(fd_notify, fname, IN_ALL_EVENTS);
 	if (wd < 0) {
-		tst_brkm(TBROK, cleanup,
-			 "inotify_add_watch (%d, %s, IN_ALL_EVENTS)"
-			 "Failed, errno=%d : %s",
-			 fd_notify, fname, errno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "inotify_add_watch (%d, %s, IN_ALL_EVENTS) failed.",
+			 fd_notify, fname);
 	};
 
 }				/* End setup() */
@@ -319,17 +306,13 @@ void cleanup()
 {
 	free(Fstype);
 	if (close(fd_notify) == -1) {
-		tst_resm(TWARN, "close(%d) Failed, errno=%d : %s",
-			 fd_notify, errno, strerror(errno));
+		tst_resm(TWARN|TERRNO, "close(%d) failed", fd_notify);
 	}
 
 	if (mount_flag) {
 		TEST(umount(mntpoint));
 		if (TEST_RETURN != 0) {
-			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TWARN, "umount(2) Failed "
-				 "while unmounting errno = %d : %s",
-				 TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TWARN|TTERRNO, "umount(2) failed ");
 		}
 	}
 
@@ -341,9 +324,6 @@ void cleanup()
 
 	/* Remove tmp dir and all files in it */
 	tst_rmdir();
-
-	/* exit with return code appropriate for results */
-	tst_exit();
 }				/* End cleanup() */
 
 /*
