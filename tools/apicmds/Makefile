@@ -26,7 +26,7 @@ include $(top_srcdir)/include/mk/testcases.mk
 
 CPPFLAGS		+= -D_GNU_SOURCE
 
-MAKE_TARGETS		:= $(addprefix tst_,brkloop brkloopm brk brkm exit flush kvercmp res resm)
+MAKE_TARGETS		:= $(addprefix tst_,brk brkm exit flush kvercmp res resm)
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
 
