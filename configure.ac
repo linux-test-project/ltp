@@ -47,8 +47,6 @@ AC_CHECK_HEADERS([ \
     sys/prctl.h \
 ])
 
-AC_CONFIG_SUBDIRS([testcases/kernel/syscalls/libevent])
-
 # Tools knobs
 
 # Expect
