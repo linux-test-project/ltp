@@ -100,11 +100,8 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
-	}
 
 	/* Perform global setup for test */
 	setup();
@@ -142,8 +139,8 @@ int main(int ac, char **av)
 				 * Read the current signal mask of process,
 				 * Check whether previous signal mask preserved
 				 */
-				if (sigprocmask(SIG_UNBLOCK, 0, &sigset2)
-				    == -1) {
+				if (sigprocmask(SIG_UNBLOCK, 0, &sigset2) ==
+				    -1) {
 					tst_resm(TFAIL, "sigprocmask() Failed "
 						 "to get previous signal mask "
 						 "of process");
@@ -167,9 +164,9 @@ int main(int ac, char **av)
 		Tst_count++;	/* incr TEST_LOOP counter */
 	}			/* End for TEST_LOOPING */
 
-	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+
+	tst_exit();
 
 }				/* End main */
 

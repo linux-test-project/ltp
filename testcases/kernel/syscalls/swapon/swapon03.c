@@ -110,10 +110,7 @@ int main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
-	/***************************************************************
-	 * parse standard options
-	 ***************************************************************/
-	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL)
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != NULL)
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 
 	/***************************************************************
@@ -212,8 +209,8 @@ int main(int ac, char **av)
  ***************************************************************/
 int setup_swap()
 {
+	pid_t pid;
 	int j, fd;		/*j is loop counter, fd is file descriptor */
-	int pid;		/* used for fork */
 	int status;		/* used for fork */
 	int res = 0, pagesize = getpagesize();
 	int bs, count;
@@ -224,20 +221,21 @@ int setup_swap()
 	swapfiles = 0;
 
 	if (seteuid(0) < 0) {
-		tst_brkm(TFAIL | TERRNO, cleanup, "Failed to call seteuid");
+		tst_brkm(TFAIL|TERRNO, cleanup, "Failed to call seteuid");
 	}
 
 	/* This includes the first (header) line */
 	if ((fd = open("/proc/swaps", O_RDONLY)) == -1) {
-		tst_brkm(TFAIL | TERRNO, cleanup,
+		tst_brkm(TFAIL|TERRNO, cleanup,
 			 "Failed to find out existing number of swap files");
 	}
 	do {
 		char *p = buf;
 		res = read(fd, buf, BUFSIZ);
 		if (res < 0) {
-			tst_brkm(TFAIL | TERRNO, cleanup,
-				 "Failed to find out existing number of swap files");
+			tst_brkm(TFAIL|TERRNO, cleanup,
+				 "Failed to find out existing number of swap "
+				 "files");
 		}
 		buf[res] = '\0';
 		while ((p = strchr(p, '\n'))) {
@@ -250,7 +248,8 @@ int setup_swap()
 		swapfiles--;	/* don't count the /proc/swaps header */
 
 	if (swapfiles < 0) {
-		tst_brkm(TFAIL, cleanup, "Failed to find existing number of swapfiles");
+		tst_brkm(TFAIL, cleanup,
+			"Failed to find existing number of swapfiles");
 	}
 
 	/* Determine how many more files are to be created */
@@ -278,37 +277,35 @@ int setup_swap()
 
 			/* prepare filename for the iteration */
 			if (sprintf(filename, "swapfile%02d", j + 2) < 0) {
-				tst_brkm(TFAIL | TERRNO, cleanup,
-					 "sprintf() failed to create filename");
+				tst_brkm(TFAIL|TERRNO, cleanup,
+					 "sprintf() failed to create "
+					 "filename");
 			}
 
 			/* Create the swapfile */
 			if (create_swapfile(filename, bs, count) < 0) {
-				tst_brkm(TFAIL, cleanup,
-					 "Failed to create swapfile for the test");
+				printf("Failed to create swapfile");
 			}
 
 			/* turn on the swap file */
 			if ((res = syscall(__NR_swapon, filename, 0)) != 0) {
 				if (errno == EPERM) {
-					printf("Successfully created %d swapfiles\n", j);
+					printf(	"Successfully created %d "
+						"swapfiles\n", j);
 					break;
 				} else {
-					tst_brkm(TFAIL | TERRNO, cleanup,
-						 "Failed swapon for file %s", filename);
-					/* must cleanup already swapon files */
-					clean_swap();
+					printf( "Failed to create "
+						"swapfile: %s\n", filename);
 					exit(1);
 				}
 			}
 		}
-		tst_exit();
+		exit(0);
 	} else
 		waitpid(pid, &status, 0);
 
 	if (WEXITSTATUS(status)) {
-		tst_resm(TFAIL, "Failed to setup swaps");
-		exit(1);
+		tst_brkm(TFAIL, "Failed to setup swaps");
 	}
 
 	/* Create all needed extra swapfiles for testing */
@@ -329,7 +326,6 @@ int setup_swap()
  ***************************************************************/
 int create_swapfile(char *swapfile, int bs, int count)
 {
-
 	char *cmd_buffer;
 	int rc = -1;
 
@@ -361,9 +357,7 @@ int create_swapfile(char *swapfile, int bs, int count)
 		rc = 0;
 	}
 
-	if (cmd_buffer != NULL) {
-		free(cmd_buffer);
-	}
+	free(cmd_buffer);
 
 	return rc;
 }
@@ -441,9 +435,7 @@ int check_and_swapoff(char *filename)
 		} /* else nothing to clean up. */
 
 	}
-	if (cmd_buffer != NULL) {
-		free(cmd_buffer);
-	}
+	free(cmd_buffer);
 
 	return rc;
 

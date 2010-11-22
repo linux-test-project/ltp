@@ -143,9 +143,8 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL))
-	    != (char *)NULL) {
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != NULL) {
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
 	/* perform global setup for test */
@@ -173,8 +172,7 @@ int main(int ac, char **av)
 			if (testcase[i].cleanfunc
 			    && testcase[i].cleanfunc() == -1) {
 				tst_brkm(TBROK, cleanup,
-					 "Cleanup failed,"
-					 " quitting the test");
+					 "Cleanup failed, quitting the test");
 			}
 			/* check return code */
 			if ((TEST_RETURN == -1)
@@ -210,10 +208,9 @@ int main(int ac, char **av)
 			TEST_ERROR_LOG(TEST_ERRNO);
 		}		/*End of TEST LOOPS */
 	}			/*End of TEST LOOPING */
-	/*Clean up and exit */
-	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	cleanup();
+	tst_exit();
 }				/*End of main */
 
 /*
@@ -272,9 +269,8 @@ int setup01()
 int cleanup01()
 {
 	if (seteuid(0) == -1) {
-		tst_brkm(TBROK, cleanup, "seteuid failed to set uid to root");
-		perror("seteuid");
-		return -1;
+		tst_brkm(TBROK|TERRNO, cleanup,
+			"seteuid failed to set uid to root");
 	}
 
 	return 0;
@@ -403,7 +399,4 @@ void cleanup()
 
 	/* Remove tmp dir and all files inside it */
 	tst_rmdir();
-
-	/* exit with return code appropriate for results */
-	tst_exit();
 }				/* End cleanup() */

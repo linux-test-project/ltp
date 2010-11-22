@@ -96,10 +96,8 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL))
-	    != (char *)NULL) {
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-	}
+	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != NULL)
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	/* perform global setup for test */
 	setup();
@@ -131,10 +129,8 @@ int main(int ac, char **av)
 		}
 	}			/*End for TEST_LOOPING */
 
-	/*Clean up and exit */
 	cleanup();
-
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }
 
 /* setup() - performs all ONE TIME setup for this test */
@@ -171,7 +167,7 @@ void setup()
 	}
 
 	/*create file */
-	if (system("dd if=/dev/zero of=swapfile01 bs=1024  count=65536 >"
+	if (system("dd if=/dev/zero of=swapfile01 bs=1024 count=65536 >"
 		   " tmpfile 2>&1") != 0) {
 		tst_brkm(TBROK, cleanup, "Failed to create file for swap");
 	}
@@ -197,6 +193,4 @@ void cleanup()
 	/* Remove tmp dir and all files inside it. */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }				/* End cleanup() */
