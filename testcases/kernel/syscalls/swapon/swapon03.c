@@ -138,14 +138,13 @@ int main(int ac, char **av)
 
 		/* Check return code */
 		if ((TEST_RETURN == -1) && (TEST_ERRNO == expected_errno)) {
-			tst_resm(TPASS, "swapon(2) got expected failure;"
-				 " Got errno = %d," , expected_errno);
+			tst_resm(TPASS, "swapon(2) got expected failure (%d),",
+				expected_errno);
 		} else if (TEST_RETURN < 0) {
-			tst_resm(TFAIL, "swapon(2) failed to produce"
-				 " expected error: %d, got %d (%s)."
-				 " System reboot after execution of LTP"
-				 " test suite is recommended.", expected_errno,
-				 TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TTERRNO,
+				"swapon(2) failed to produce expected error "
+				"(%d). System reboot recommended.",
+				expected_errno);
 		} else {
 			/* Probably the system supports MAX_SWAPFILES > 30,
 			 * let's try with MAX_SWAPFILES == 32 */
@@ -156,10 +155,8 @@ int main(int ac, char **av)
 
 			/* Check return code (now we're expecting success) */
 			if (TEST_RETURN < 0) {
-				tst_resm(TFAIL,
-					 "swapon(2) got an unexpected failure;"
-					 " Got errno = %d : %s", TEST_ERRNO,
-					 strerror(TEST_ERRNO));
+				tst_resm(TFAIL|TTERRNO,
+					 "swapon(2) got an unexpected failure");
 			} else {
 				/* Call swapon sys call once again for 33
 				 * now we have to receive an error */
@@ -195,12 +192,8 @@ int main(int ac, char **av)
 
 	}			/* End of TEST LOOPING */
 
-	/***************************************************************
-	 * cleanup and exit
-	 ***************************************************************/
 	cleanup();
-
-	return (0);
+	tst_exit();
 
 }				/* End of main */
 
@@ -277,14 +270,15 @@ int setup_swap()
 
 			/* prepare filename for the iteration */
 			if (sprintf(filename, "swapfile%02d", j + 2) < 0) {
-				tst_brkm(TFAIL|TERRNO, cleanup,
-					 "sprintf() failed to create "
-					 "filename");
+				printf( "sprintf() failed to create "
+					"filename");
+				exit(1);
 			}
 
 			/* Create the swapfile */
 			if (create_swapfile(filename, bs, count) < 0) {
 				printf("Failed to create swapfile");
+				exit(1);
 			}
 
 			/* turn on the swap file */
@@ -305,7 +299,7 @@ int setup_swap()
 		waitpid(pid, &status, 0);
 
 	if (WEXITSTATUS(status)) {
-		tst_brkm(TFAIL, "Failed to setup swaps");
+		tst_brkm(TFAIL, cleanup, "Failed to setup swaps");
 	}
 
 	/* Create all needed extra swapfiles for testing */
