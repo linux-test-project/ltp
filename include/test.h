@@ -192,11 +192,7 @@ void tst_resm(int ttype, char *arg_fmt, ...)
 	__attribute__ ((format (printf, 2, 3)));
 void tst_brk(int ttype, char *fname, void (*func)(void), char *arg_fmt, ...)
 	__attribute__ ((format (printf, 4, 5)));
-void tst_brkloop(int ttype, char *fname, void (*func)(void), char *arg_fmt, ...)
-	__attribute__ ((format (printf, 4, 5)));
 void tst_brkm(int ttype, void (*func)(void), char *arg_fmt, ...)
-	__attribute__ ((format (printf, 3, 4)));
-void tst_brkloopm(int ttype, void (*func)(void), char *arg_fmt, ...)
 	__attribute__ ((format (printf, 3, 4)));
 void tst_require_root(void (*func)(void));
 int  tst_environ(void);
