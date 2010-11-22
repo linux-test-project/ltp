@@ -212,13 +212,12 @@ int main(int ac, char **av)
 	}
 	ret = myinotify_rm_watch(fd_notify, wd);
 	if (ret != -1 || errno != EINVAL)
-		tst_resm(TFAIL, "inotify_rm_watch (%d, %d) return %d "
-			 "errno=%d : %s (instead of %d)",
-			 fd_notify, wd, ret, errno, EINVAL, strerror(errno));
+		tst_resm(TFAIL|TERRNO,
+			"inotify_rm_watch (%d, %d) didn't return EINVAL",
+			fd_notify, wd);
 	else
-		tst_resm(TPASS, "inotify_rm_watch (%d, %d) return %d "
-			 "errno=%d : %s",
-			 fd_notify, wd, ret, errno, strerror(errno));
+		tst_resm(TPASS, "inotify_rm_watch (%d, %d) returned EINVAL",
+			fd_notify, wd);
 
 	cleanup();
 	tst_exit();
@@ -243,7 +242,7 @@ void setup()
 
 	if (mkdir(mntpoint, DIR_MODE) < 0) {
 		tst_brkm(TBROK|TERRNO, cleanup, "mkdir(%s, %#o) failed",
-			mntpoint, DIR_MODE)
+			mntpoint, DIR_MODE);
 	}
 
 	/* Call mount(2) */
