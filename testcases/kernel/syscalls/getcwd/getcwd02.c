@@ -91,7 +91,7 @@ int main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* parse_opts() return message */
 
-	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 	setup();
@@ -107,7 +107,7 @@ int main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "%s FAILED", TCID);
 		 /*NOTREACHED*/}
 		while (fgets(pwd_buf, sizeof(pwd_buf), fin) != NULL) {
-			if ((cp = strchr(pwd_buf, '\n')) == (char *)NULL) {
+			if ((cp = strchr(pwd_buf, '\n')) == NULL) {
 				tst_brkm(TBROK, cleanup, "pwd output too long");
 			 /*NOTREACHED*/}
 			*cp = 0;

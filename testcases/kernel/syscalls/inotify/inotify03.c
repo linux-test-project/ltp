@@ -116,7 +116,7 @@ int main(int ac, char **av)
 
 	/* parse standard options */
 	msg = parse_opts(ac, av, (option_t *) options, &help);
-	if (msg != (char *)NULL)
+	if (msg != NULL)
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 
 	/* Check for mandatory option of the testcase */

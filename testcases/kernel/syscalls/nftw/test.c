@@ -82,14 +82,14 @@ void test1A(void)
 		for (j = 0; j < ngoods; j++) {
 			if (strcmp(dirlist[i], goodlist[j]) == 0) {
 				free(dirlist[i]);
-				dirlist[i] = (char *)NULL;
+				dirlist[i] = NULL;
 				break;
 			}
 		}
 	}
 
 	for (i = 0; i < visit; i++) {
-		if (dirlist[i] != (char *)NULL) {
+		if (dirlist[i] != NULL) {
 			free(dirlist[i]);
 			fprintf(temp, "ERROR: Unexpected visit to %s\n",
 				dirlist[i]);
@@ -138,7 +138,7 @@ void test2A(void)
 	}
 
 	for (i = 0; i < visit; i++) {
-		if (dirlist[i] != (char *)NULL)
+		if (dirlist[i] != NULL)
 			free(dirlist[i]);
 	}
 }

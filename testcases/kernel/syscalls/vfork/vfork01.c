@@ -115,8 +115,8 @@ int main(int ac, char **av)
 	int exit_status;	/* exit status of child process */
 
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *)NULL) {
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -185,7 +185,7 @@ int main(int ac, char **av)
 				 * Get the pathname of current working
 				 * directory for the child process.
 				 */
-				if ((Ccwd = (char *)getcwd((char *)NULL,
+				if ((Ccwd = (char *)getcwd(NULL,
 							   BUFSIZ)) == NULL) {
 					tst_resm(TFAIL, "getcwd failed for the "
 						 "child process");
@@ -340,7 +340,7 @@ void setup()
 	 * Get the pathname of current working directory of the parent
 	 * process.
 	 */
-	if ((Pcwd = (char *)getcwd((char *)NULL, BUFSIZ)) == NULL) {
+	if ((Pcwd = (char *)getcwd(NULL, BUFSIZ)) == NULL) {
 		tst_brkm(TFAIL, cleanup,
 			 "getcwd failed for the parent process");
 	}

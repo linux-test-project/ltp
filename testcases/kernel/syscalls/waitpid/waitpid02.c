@@ -74,8 +74,8 @@ int main(int argc, char **argv)
 	int exno, nexno, status;
 
 	/* parse standard options */
-	if ((msg = parse_opts(argc, argv, (option_t *) NULL, NULL)) !=
-	    (char *)NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
+	    NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 #ifdef UCLINUX

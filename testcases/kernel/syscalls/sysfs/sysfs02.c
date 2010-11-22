@@ -84,7 +84,7 @@ int main(int ac, char **av)
 	char buf[40];		/* 40 bytes suffice to store fs name */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != NULL)
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 
 	/* perform global setup for test */

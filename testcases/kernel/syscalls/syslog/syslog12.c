@@ -111,7 +111,7 @@ static void cleanup1(void);
 
 static struct test_case_t tdat[] = {
 	{100, &buf, 0, EINVAL, NULL, NULL, "invalid type/command"},
-	{2, (char *)NULL, 0, EINVAL, NULL, NULL, "NULL buffer argument"},
+	{2, NULL, 0, EINVAL, NULL, NULL, "NULL buffer argument"},
 	{3, &buf, -1, EINVAL, NULL, NULL, "negative length argument"},
 	{2, &buf, 0, EPERM, setup1, cleanup1, "non-root user"},
 	{8, &buf, -1, EINVAL, NULL, NULL, "console level less than 0"},
@@ -134,8 +134,8 @@ int main(int argc, char **argv)
 	int ret;
 
 	/* parse standard options */
-	if ((msg = parse_opts(argc, argv, (option_t *) NULL, NULL)) !=
-	    (char *)NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
+	    NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 

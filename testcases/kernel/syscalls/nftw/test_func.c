@@ -54,7 +54,7 @@ test_func1(const char *path_name, const struct stat *stat_pointer,
 		return 999;
 	}
 
-	if ((p = strstr(path_name, NFTW)) != (char *)NULL) {
+	if ((p = strstr(path_name, NFTW)) != NULL) {
 		p += strlen(NFTW);
 	} else {
 		p = path_name;
@@ -144,7 +144,7 @@ test_func7(const char *path_name, const struct stat *stat_pointer,
 
 	do_info(path_name);
 
-	if ((p = strstr(path_name, NFTW)) != (char *)NULL) {
+	if ((p = strstr(path_name, NFTW)) != NULL) {
 		p += strlen(NFTW);
 	} else {
 		p = path_name;
@@ -175,7 +175,7 @@ test_func8(const char *path_name, const struct stat *stat_pointer,
 
 	do_info(path_name);
 
-	if ((p = strstr(path_name, NFTW)) != (char *)NULL) {
+	if ((p = strstr(path_name, NFTW)) != NULL) {
 		p += strlen(NFTW);
 	} else {
 		p = path_name;
@@ -255,7 +255,7 @@ test_func9(const char *path_name, const struct stat *stat_pointer,
 
 	do_info(path_name);
 
-	if ((p = strstr(path_name, NFTW)) != (char *)NULL) {
+	if ((p = strstr(path_name, NFTW)) != NULL) {
 		p += strlen(NFTW);
 	} else {
 		p = path_name;
@@ -290,7 +290,7 @@ test_func10(const char *path_name, const struct stat *stat_pointer,
 
 	do_info(path_name);
 
-	if ((p = strstr(path_name, NFTW)) != (char *)NULL) {
+	if ((p = strstr(path_name, NFTW)) != NULL) {
 		p += strlen(NFTW);
 	} else {
 		p = path_name;
@@ -324,7 +324,7 @@ test_func11(const char *path_name, const struct stat *stat_pointer,
 
 	do_info(path_name);
 
-	if ((p = strstr(path_name, NFTW)) != (char *)NULL) {
+	if ((p = strstr(path_name, NFTW)) != NULL) {
 		p += strlen(NFTW);
 	} else {
 		p = path_name;
@@ -358,7 +358,7 @@ test_func12(const char *path_name, const struct stat *stat_pointer,
 
 	do_info(path_name);
 
-	if ((p = strstr(path_name, NFTW)) != (char *)NULL) {
+	if ((p = strstr(path_name, NFTW)) != NULL) {
 		p += strlen(NFTW);
 	} else {
 		p = path_name;
@@ -390,7 +390,7 @@ test_func13(const char *path_name, const struct stat *stat_pointer,
 
 	do_info(path_name);
 
-	if ((p = strstr(path_name, NFTW)) != (char *)NULL) {
+	if ((p = strstr(path_name, NFTW)) != NULL) {
 		p += strlen(NFTW);
 	} else {
 		p = path_name;
@@ -425,7 +425,7 @@ test_func14(const char *path_name, const struct stat *stat_pointer,
 
 	do_info(path_name);
 
-	if ((p = strstr(path_name, NFTW)) != (char *)NULL) {
+	if ((p = strstr(path_name, NFTW)) != NULL) {
 		p += strlen(NFTW);
 	} else {
 		p = path_name;
@@ -472,7 +472,7 @@ test_func16(const char *path_name, const struct stat *stat_pointer,
 {
 	const char *p;
 
-	if ((p = strstr(path_name, NFTW2)) != (char *)NULL) {
+	if ((p = strstr(path_name, NFTW2)) != NULL) {
 		p += strlen(NFTW2) + 1;
 	} else {
 		p = path_name;

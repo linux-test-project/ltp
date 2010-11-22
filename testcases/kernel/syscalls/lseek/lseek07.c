@@ -102,8 +102,8 @@ int main(int ac, char **av)
 	off_t offset;		/* byte position in temporary file */
 
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *)NULL) {
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}

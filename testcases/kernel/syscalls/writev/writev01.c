@@ -138,8 +138,8 @@ int main(int argc, char **argv)
 	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(argc, argv, (option_t *) NULL, NULL)) !=
-	    (char *)NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
+	    NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	 /*NOTREACHED*/}
 
@@ -155,7 +155,7 @@ int main(int argc, char **argv)
 		buf_list[0] = buf1;
 		buf_list[1] = buf2;
 		buf_list[2] = buf3;
-		buf_list[3] = (char *)NULL;
+		buf_list[3] = NULL;
 
 		fd[1] = -1;	/* Invalid file descriptor  */
 
@@ -506,7 +506,7 @@ int init_buffs(char *pbufs[])
 {
 	int i;
 
-	for (i = 0; pbufs[i] != (char *)NULL; i++) {
+	for (i = 0; pbufs[i] != NULL; i++) {
 		switch (i) {
 		case 0:
 

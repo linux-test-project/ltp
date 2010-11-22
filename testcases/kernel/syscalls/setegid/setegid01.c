@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 	gid_t orig_rgid, orig_egid, orig_sgid;
 	char *msg;
 
-	if ((msg = parse_opts(argc, argv, options, help)) != (char *)NULL) {
+	if ((msg = parse_opts(argc, argv, options, help)) != NULL) {
 		tst_brkm(TBROK, NULL, "Option parsing error - %s", msg);
 		tst_exit();
 	}

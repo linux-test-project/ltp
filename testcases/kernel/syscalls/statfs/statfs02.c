@@ -118,9 +118,8 @@ int main(int ac, char **av)
 	int i;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL) {
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-	 /*NOTREACHED*/}
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
 
@@ -156,9 +155,10 @@ int main(int ac, char **av)
 			}
 		}
 	}
+
 	cleanup();
 
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 
 }
 
@@ -208,9 +208,6 @@ void cleanup()
 
 	TEST_CLEANUP;
 
-	/* delete the test directory created in setup() */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

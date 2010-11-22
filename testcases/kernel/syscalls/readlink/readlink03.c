@@ -150,8 +150,8 @@ int main(int ac, char **av)
 	size_t buf_size;	/* size of buffer for readlink */
 
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *)NULL) {
+	msg = parse_opts(ac, av, NULL, NULL);
+	if (msg != NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 

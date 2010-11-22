@@ -75,7 +75,7 @@ int main(int argc, char **argv)
 	char pwbuf[BUFSIZ + 1];
 
 	/* parse standard options */
-	if ((msg = parse_opts(argc, argv, (option_t *) NULL, NULL))) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL))) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	 /*NOTREACHED*/}
 

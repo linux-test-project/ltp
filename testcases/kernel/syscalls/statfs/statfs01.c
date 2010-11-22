@@ -136,50 +136,34 @@ int main(int ac, char **av)
 	int lc;			/* loop counter */
 	char *msg;		/* message returned from parse_opts */
 
-    /***************************************************************
-     * parse standard options
-     ***************************************************************/
-	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != (char *)NULL)
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 
-    /***************************************************************
-     * perform global setup for test
-     ***************************************************************/
 	setup();
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-    /***************************************************************
-     * check looping state if -c option given
-     ***************************************************************/
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-		/*
-		 * Call fstatfs(2)
-		 */
-#ifdef linux
-#define STATFSCALL statfs(fname, &stats)
-#else
-#define STATFSCALL statfs(fname, &stats, sizeof(struct statfs), 0)
-#endif
-
-		TEST(STATFSCALL);
+		/* Call fstatfs(2) */
+		TEST(statfs(fname, &stats, sizeof(struct statfs), 0));
 
 		/* check return code */
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL,
-				 "statfs(%s, &stats, sizeof(struct statfs), 0) Failed, errno=%d : %s",
-				 fname, TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TERRNO,
+				 "statfs(%s, .., 0) Failed, errno=%d : %s",
+				 fname);
 		} else {
 
-	    /***************************************************************
-	     * only perform functional verification if flag set (-f not given)
-	     ***************************************************************/
+	     		/* 
+			 * only perform functional verification if flag set
+			 * (-f not given)
+			 */
 			if (STD_FUNCTIONAL_TEST) {
 				/* No Verification test, yet... */
 				tst_resm(TPASS,
@@ -190,12 +174,9 @@ int main(int ac, char **av)
 
 	}			/* End for TEST_LOOPING */
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
 
-	return 0;
+	tst_exit();
 }				/* End main */
 
 /***************************************************************
@@ -240,9 +221,5 @@ void cleanup()
 	 */
 	TEST_CLEANUP;
 
-	/* Remove tmp dir and all files in it */
 	tst_rmdir();
-
-	/* exit with return code appropriate for results */
-	tst_exit();
 }				/* End cleanup() */

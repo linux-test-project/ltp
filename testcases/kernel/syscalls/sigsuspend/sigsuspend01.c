@@ -100,7 +100,7 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 
 	/* Parse standard options given to run the test. */
-	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) != NULL)
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	/* Perform global setup for test */

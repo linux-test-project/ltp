@@ -99,8 +99,8 @@ int main(int ac, char **av)
 	pid_t child_pid;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL))
-	    != (char *)NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL))
+	    != NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 

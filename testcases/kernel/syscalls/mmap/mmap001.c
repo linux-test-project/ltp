@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
 	int fd;
 	unsigned int pages, memsize;
 
-	if ((msg = parse_opts(argc, argv, options, help)) != (char *)NULL)
+	if ((msg = parse_opts(argc, argv, options, help)) != NULL)
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 
 	if (m_opt) {

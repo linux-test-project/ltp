@@ -82,8 +82,8 @@ int main(int argc, char **argv)
 	size_t len_ptr;		/* size of structure struct robust_list_head */
 	int retval;
 
-	msg = parse_opts(argc, argv, (option_t *) NULL, NULL);
-	if (msg != (char *)NULL) {
+	msg = parse_opts(argc, argv, NULL, NULL);
+	if (msg != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}

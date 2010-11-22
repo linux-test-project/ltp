@@ -468,7 +468,7 @@ int main(int argc, char *argv[])
    /***************************************************************
     * parse standard options, and exit if there is an error
     ***************************************************************/
-	if ((msg = parse_opts(argc, argv, Options, &help)) != (char *)NULL) {
+	if ((msg = parse_opts(argc, argv, Options, &help)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -751,14 +751,14 @@ char *path1, *path2, *path3;
 	int ctr, to_go, size, whole_chunks;
 	char *cwd, *getcwd();
 
-	if ((cwd = getcwd((char *)NULL, 0)) == NULL) {
+	if ((cwd = getcwd(NULL, 0)) == NULL) {
 		TEST_RESULT = TBROK;
 		sprintf(test_msg,
 			"getcwd(3) Failure in setup of %s %s %s test case object elements",
 			path1, path2, path3);
 		return 0;
 	}
-	cwd = getcwd((char *)NULL, 0);
+	cwd = getcwd(NULL, 0);
 	size = strlen(cwd);
 
 	to_go = PATH_MAX - size;
@@ -1489,7 +1489,7 @@ struct all_test_cases *tc_ptr;
 			strcat(expected_location, "/");
 			strcat(expected_location, tc_ptr->fn_arg[2]);
 
-			if ((cwd = getcwd((char *)NULL, 0)) == NULL)
+			if ((cwd = getcwd(NULL, 0)) == NULL)
 				tst_resm(TFAIL, "getcwd(3) FAILURE");
 			else if (strcmp(cwd, expected_location) == 0)
 				if (TEST_RESULT != TPASS || STD_FUNCTIONAL_TEST)
