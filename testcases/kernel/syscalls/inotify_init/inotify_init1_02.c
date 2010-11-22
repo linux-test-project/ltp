@@ -99,9 +99,6 @@ extern void cleanup()
 	/* Remove tmp dir and all files in it */
 	TEST_CLEANUP;
 	tst_rmdir();
-
-	/* Exit with appropriate return code. */
-	tst_exit();
 }
 
 /* Local  Functions */
@@ -137,10 +134,8 @@ int main(int argc, char *argv[])
 	char *msg;		/* message returned from parse_opts */
 
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(argc, argv, NULL, NULL);
-	if (msg != NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	}
 	if ((tst_kvercmp(2, 6, 27)) < 0) {
 		tst_brkm(TCONF, NULL,
 			"This test can only run on kernels that are 2.6.27 "
@@ -154,46 +149,36 @@ int main(int argc, char *argv[])
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 			fd = syscall(__NR_inotify_init1, 0);
 			if (fd == -1) {
-				tst_resm(TFAIL, "inotify_init1(0) failed");
-				cleanup();
-				tst_exit();
+				tst_brkm(TFAIL|TERRNO, cleanup,
+					"inotify_init1(0) failed");
 			}
 			fl = fcntl(fd, F_GETFL);
 			if (fl == -1) {
-				tst_brkm(TBROK, cleanup, "fcntl failed");
-				tst_exit();
+				tst_brkm(TBROK|TERRNO, cleanup, "fcntl failed");
 			}
 			if (fl & O_NONBLOCK) {
-				tst_resm(TFAIL,
+				tst_brkm(TFAIL, cleanup,
 					"inotify_init1(0) set non-blocking "
 					"mode");
-				cleanup();
-				tst_exit();
 			}
 			close(fd);
 
 			fd = syscall(__NR_inotify_init1, IN_NONBLOCK);
 			if (fd == -1) {
-				tst_resm(TFAIL,
+				tst_resm(TFAIL|TERRNO, cleanup,
 					 "inotify_init1(IN_NONBLOCK) failed");
-				cleanup();
-				tst_exit();
 			}
 			fl = fcntl(fd, F_GETFL);
 			if (fl == -1) {
-				tst_brkm(TBROK, cleanup, "fcntl failed");
-				tst_exit();
+				tst_brkm(TBROK|TERRNO, cleanup, "fcntl failed");
 			}
 			if ((fl & O_NONBLOCK) == 0) {
-				tst_resm(TFAIL,
+				tst_brkm(TFAIL, cleanup,
 					"inotify_init1(IN_NONBLOCK) set "
 					"non-blocking mode");
-				cleanup();
-				tst_exit();
 			}
 			close(fd);
 			tst_resm(TPASS, "inotify_init1(IN_NONBLOCK) PASSED");
-			cleanup();
 		}
 	}
 	tst_exit();
