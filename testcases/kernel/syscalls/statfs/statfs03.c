@@ -126,7 +126,7 @@ int main(int ac, char **av)
 void setup()
 {
 
-	tst_require_root();
+	tst_require_root(NULL);
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);

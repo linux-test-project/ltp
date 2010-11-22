@@ -99,9 +99,6 @@ extern void cleanup() {
         /* Remove tmp dir and all files in it */
         TEST_CLEANUP;
         tst_rmdir();
-
-        /* Exit with appropriate return code. */
-        tst_exit();
 }
 
 /* Local  Functions */
@@ -135,13 +132,6 @@ void setup() {
  * Macros
  */
 #define SYSCALL_NAME    "mq_ulink"
-
-
-/*
- * Global variables
- */
-static int opt_debug;
-static char *progname;
 
 enum test_type {
 	NORMAL,
@@ -290,47 +280,19 @@ EXIT:
 
 
 /*
- * usage()
- */
-
-static void usage(const char *progname)
-{
-        tst_resm(TINFO,"usage: %s [options]", progname);
-        tst_resm(TINFO,"This is a regression test program of %s system call.",SYSCALL_NAME);
-        tst_resm(TINFO,"options:");
-        tst_resm(TINFO,"    -d --debug           Show debug messages");
-        tst_resm(TINFO,"    -h --help            Show this message");
-        tst_resm(TINFO,"NG\n");
-        exit(1);
-}
-
-
-/*
  * main()
  */
 
 
-
 int main(int ac, char **av) {
 	int result = RESULT_OK;
-        int c;
         int i;
         int lc;                 /* loop counter */
         char *msg;              /* message returned from parse_opts */
 
-	struct option long_options[] = {
-                { "debug", no_argument, 0, 'd' },
-                { "help",  no_argument, 0, 'h' },
-                { NULL, 0, NULL, 0 }
-        };
-
-        progname = basename(av[0]);	
-	
         /* parse standard options */
-        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL){
-             tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-             tst_exit();
-           }
+        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
         setup();
 
@@ -338,51 +300,31 @@ int main(int ac, char **av) {
         for (lc = 0; TEST_LOOPING(lc); ++lc) {
                 Tst_count = 0;
                 for (testno = 0; testno < TST_TOTAL; ++testno) {
-			 TEST(c = getopt_long(ac, av, "dh", long_options, NULL));
-			 while(TEST_RETURN != -1) {
-		                switch (c) {
-                		case 'd':
-		                        opt_debug = 1;
-                		        break;
-		                default:
-                		        usage(progname);
-                        		// NOTREACHED
-                		}
-		        }
 
-
-		if (ac != optind) {
-        	        tst_resm(TINFO,"Options are not match.");
-                	usage(progname);
-                	// NOTREACHED
-	        }
-
-		/*
-		* Execute test
-         	*/
-	        for (i = 0; i < (int)(sizeof(tcase) / sizeof(tcase[0])); i++) {
-        	        int ret;
-	                tst_resm(TINFO,"(case%02d) START", i);
-	                ret = do_test(&tcase[i]);
-	                tst_resm(TINFO,"(case%02d) END => %s", i, (ret == 0) ? "OK" : "NG");
-	                result |= ret;
-        	}
+			/*
+			 * Execute test
+			 */
+		        for (i = 0; i < (int)(sizeof(tcase) / sizeof(tcase[0])); i++) {
+        		        int ret;
+	        	        tst_resm(TINFO,"(case%02d) START", i);
+	                	ret = do_test(&tcase[i]);
+		                tst_resm(TINFO,"(case%02d) END => %s", i,
+					(ret == 0) ? "OK" : "NG");
+		                result |= ret;
+        		}
 		
-		/*
-        	 * Check results
-         	*/
-        	switch(result) {
-	        case RESULT_OK:
-        			tst_resm(TPASS, "mq_ulink call succeeded");
+			/*
+        		 * Check results
+         		 */
+	        	switch(result) {
+		        case RESULT_OK:
+        			tst_resm(TPASS, "mq_unlink call succeeded");
 		                break;
 
-	        default:
-                 	   	tst_resm(TFAIL, "%s failed - errno = %d : %s", TCID, TEST_ERRNO, strerror(TEST_ERRNO));
-        		        RPRINTF("NG\n");
-				cleanup();
-				tst_exit();
+	        	default:
+                 	   	tst_resm(TFAIL|TTERRNO, "mq_unlink failed");
 		                break;
-        	}
+        		}
 
                 }
         }	

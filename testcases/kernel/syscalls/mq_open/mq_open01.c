@@ -131,12 +131,6 @@ void setup() {
  */
 #define SYSCALL_NAME    "mq_open"
 
-/*
- * Global variables
- */
-static int opt_debug;
-static char *progname;
-
 enum test_type {
 	NORMAL,
 	NO_FILE,
@@ -373,10 +367,8 @@ static int do_test(struct test_case *tc)
 			result = 1;
 			goto EXIT;
 		}
-		if (opt_debug) {
-			tst_resm(TINFO,"mq_maxmsg E:%ld,\tR:%ld",new.mq_maxmsg, old.mq_maxmsg);
-			tst_resm(TINFO,"mq_msgsize E:%ld,\tR:%ld",new.mq_msgsize, old.mq_msgsize);
-		}
+		tst_resm(TINFO,"mq_maxmsg E:%ld,\tR:%ld",new.mq_maxmsg, old.mq_maxmsg);
+		tst_resm(TINFO,"mq_msgsize E:%ld,\tR:%ld",new.mq_msgsize, old.mq_msgsize);
 		cmp_ok = old.mq_maxmsg == new.mq_maxmsg &&
 			 old.mq_msgsize == new.mq_msgsize;
 	}
@@ -397,7 +389,7 @@ EXIT:
 
 	if (tc->ttype == NO_FILE && oldlim != -1)
 		TEST(cleanup_ulimit_fnum(oldlim));
-	 if (fd1 >= 0)
+	if (fd1 >= 0)
 		TEST(close(fd1));
 	if (fd2 >= 0)
 		TEST(close(fd2));
@@ -409,41 +401,15 @@ EXIT:
 	return result;
 }
 
-
-/*
- * usage()
- */
-
-static void usage(const char *progname)
-{
-	tst_resm(TINFO,"usage: %s [options]", progname);
-	tst_resm(TINFO,"This is a regression test program of %s system call.",SYSCALL_NAME);
-	tst_resm(TINFO,"options:");
-	tst_resm(TINFO,"    -d --debug	   Show debug messages");
-	tst_resm(TINFO,"    -h --help	    Show this message");
-	tst_resm(TINFO,"NG");
-	exit(1);
-}
-
-
 /*
  * main()
  */
 
 int main(int ac, char **av) {
 	int result = RESULT_OK;
-	int c;
 	int i;
 	int lc;		 /* loop counter */
 	char *msg;	      /* message returned from parse_opts */
-
-	struct option long_options[] = {
-		{ "debug", no_argument, 0, 'd' },
-		{ "help",  no_argument, 0, 'h' },
-		{ NULL, 0, NULL, 0 }
-	};
-
-	progname = basename(av[0]);
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
@@ -455,24 +421,6 @@ int main(int ac, char **av) {
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		Tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
-			 TEST(c = getopt_long(ac, av, "dh", long_options, NULL));
-			 while(TEST_RETURN != -1) {
-				switch (c) {
-				case 'd':
-					opt_debug = 1;
-					break;
-				default:
-					usage(progname);
-					// NOTREACHED
-				}
-			}
-
-
-			if (ac != optind) {
-				tst_resm(TINFO,"Options are not match.");
-				usage(progname);
-				// NOTREACHED
-			}
 
 			/*
 			 * Execute test
