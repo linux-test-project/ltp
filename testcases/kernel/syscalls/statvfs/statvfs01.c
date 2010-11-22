@@ -94,9 +94,8 @@ int main(int ac, char **av)
 		/* check return code */
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL,
-				 "statvfs - Basic sanity test,failed, errno=%d : %s",
-				 TEST_ERRNO, strerror(TEST_ERRNO));
+			tst_resm(TFAIL|TTERRNO,
+				 "statvfs - Basic sanity test failed");
 		} else {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TPASS, "statvfs - Basic sanity test,PASS");
@@ -115,12 +114,8 @@ int main(int ac, char **av)
 	tst_resm(TINFO, "file system id = %lu", buf.f_fsid);
 	tst_resm(TINFO, "file system max filename length = %lu", buf.f_namemax);
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
-
-	return 0;
+	tst_exit();
 }				/* End main */
 
 /***************************************************************
@@ -146,7 +141,4 @@ void cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-
-	/* exit with return code appropriate for results */
-	tst_exit();
 }				/* End cleanup() */
