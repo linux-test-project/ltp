@@ -30,8 +30,7 @@ include $(top_srcdir)/include/mk/env_pre.mk
 #    WILL crash the build host (the tests need to be fixed to just build, not
 #    run).
 # 3. mce-test doesn't fit cleanly in the build, yet.
-# 4. pounder21 isn't supposed to fit in the build.
-FILTER_OUT_DIRS		:= ballista kdump mce-test open% pounder21
+FILTER_OUT_DIRS		:= ballista kdump mce-test open%
 
 ifneq ($(WITH_REALTIME_TESTSUITE),yes)
 FILTER_OUT_DIRS		+= realtime
