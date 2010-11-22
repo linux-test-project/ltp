@@ -155,8 +155,8 @@ int main(int ac, char **av)
 		/* check return code */
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);
-			tst_resm(TFAIL|TERRNO,
-				 "statfs(%s, .., 0) Failed", fname);
+			tst_resm(TFAIL|TERRNO, "statfs(%s, ..) failed",
+				fname);
 		} else {
 
 	     		/* 
@@ -165,8 +165,7 @@ int main(int ac, char **av)
 			 */
 			if (STD_FUNCTIONAL_TEST) {
 				/* No Verification test, yet... */
-				tst_resm(TPASS,
-					 "statfs(%s, &stats, sizeof(struct statfs), 0) returned %ld",
+				tst_resm(TPASS, "statfs(%s, ..) returned %ld",
 					 fname, TEST_RETURN);
 			}
 		}
