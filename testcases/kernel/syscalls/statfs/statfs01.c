@@ -137,7 +137,7 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
-		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	setup();
 
@@ -150,14 +150,13 @@ int main(int ac, char **av)
 		Tst_count = 0;
 
 		/* Call fstatfs(2) */
-		TEST(statfs(fname, &stats, sizeof(struct statfs), 0));
+		TEST(statfs(fname, &stats));
 
 		/* check return code */
 		if (TEST_RETURN == -1) {
 			TEST_ERROR_LOG(TEST_ERRNO);
 			tst_resm(TFAIL|TERRNO,
-				 "statfs(%s, .., 0) Failed, errno=%d : %s",
-				 fname);
+				 "statfs(%s, .., 0) Failed", fname);
 		} else {
 
 	     		/* 
