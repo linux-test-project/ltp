@@ -66,7 +66,7 @@
  *	(See the parse_opts(3) man page).
  *
  *    OUTPUT SPECIFICATIONS
- *$
+ *
  *    DURATION
  * 	Terminates - with frequency and infinite modes.
  *
@@ -290,12 +290,9 @@ int main(int ac, char **av)
 
 	}			/* End for TEST_LOOPING */
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
 
-	return 0;
+	tst_exit();
 }				/* End main */
 
 /***************************************************************
@@ -327,7 +324,4 @@ void cleanup()
 
 	/* remove files and temp dir */
 	tst_rmdir();
-
-	/* exit with return code appropriate for results */
-	tst_exit();
 }				/* End cleanup() */

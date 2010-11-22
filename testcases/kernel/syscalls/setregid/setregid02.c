@@ -80,10 +80,10 @@ gid_t neg_one = -1;
 int exp_enos[] = { EPERM, 0 };
 gid_t inval_user = (USHRT_MAX);
 char nobody_uid[] = "nobody";
-struct passwd *ltpuser;
+struct passwd *nobody;
 
 struct group users, root, bin;
-struct passwd nobody;
+struct passwd *nobody;
 
 /*
  * The following structure contains all test data.  Each structure in the array
@@ -128,10 +128,8 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
-	 /*NOTREACHED*/}
 
 	/* Perform global setup for test */
 	setup();
@@ -189,8 +187,7 @@ int main(int ac, char **av)
 		}
 	}
 	cleanup();
-	 /*NOTREACHED*/ return 0;
-
+	tst_exit();
 }
 
 /*
@@ -199,31 +196,23 @@ int main(int ac, char **av)
  */
 void setup(void)
 {
+	tst_require_root(NULL);
+	
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	if (getpwnam("nobody") == NULL) {
+	if ((nobody = getpwnam("nobody")) == NULL) {
 		tst_brkm(TBROK, NULL, "nobody must be a valid user.");
-		tst_exit();
-	 /*NOTREACHED*/}
-
-	nobody = *getpwnam("nobody");
-
-	/* Check that the test process id is nobody */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Must be root for this test!");
-		tst_exit();
 	}
 
-	ltpuser = getpwnam(nobody_uid);
-	if (setgid(ltpuser->pw_gid) == -1) {
+	if (setgid(nobody->pw_gid) == -1) {
 		tst_resm(TINFO, "setgid failed to "
-			 "to set the effective gid to %d", ltpuser->pw_gid);
+			 "to set the effective gid to %d", nobody->pw_gid);
 		perror("setgid");
 	}
-	if (setuid(ltpuser->pw_uid) == -1) {
+	if (setuid(nobody->pw_uid) == -1) {
 		tst_resm(TINFO, "setuid failed to "
-			 "to set the effective uid to %d", ltpuser->pw_uid);
+			 "to set the effective uid to %d", nobody->pw_uid);
 		perror("setuid");
 	}
 
