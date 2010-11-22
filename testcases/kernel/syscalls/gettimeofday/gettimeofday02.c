@@ -87,7 +87,7 @@ int main(int ac, char **av)
 	char *msg;
 
 	if ((msg = parse_opts(ac, av, opts, help)) != NULL) {
-		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);

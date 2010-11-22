@@ -99,28 +99,18 @@ struct test_data_t {
 	struct group *exp_eff_usr;
 	char *test_msg;
 } test_data[] = {
-	{
-	&sys_gr_gid, &bin_gr_gid, &pass, &sys, &bin,
-		    "After setregid(sys, bin),"}, {
-	&neg_one, &sys_gr_gid, &pass, &sys, &sys, "After setregid(-1, sys)"},
-	{
-	&neg_one, &bin_gr_gid, &pass, &sys, &bin, "After setregid(-1, bin),"},
-	{
-	&bin_gr_gid, &neg_one, &pass, &bin, &bin, "After setregid(bin, -1),"},
-	{
-	&neg_one, &neg_one, &pass, &bin, &bin, "After setregid(-1, -1),"}, {
-	&neg_one, &bin_gr_gid, &pass, &bin, &bin, "After setregid(-1, bin),"},
-	{
-	&bin_gr_gid, &neg_one, &pass, &bin, &bin, "After setregid(bin, -1),"},
-	{
-	&bin_gr_gid, &bin_gr_gid, &pass, &bin, &bin,
-		    "After setregid(bin, bin),"}, {
-	&sys_gr_gid, &neg_one, &fail, &bin, &bin, "After setregid(sys, -1)"},
-	{
-	&neg_one, &sys_gr_gid, &fail, &bin, &bin, "After setregid(-1, sys)"},
-	{
-&sys_gr_gid, &sys_gr_gid, &fail, &bin, &bin,
-		    "After setregid(sys, sys)"},};
+	{ &sys_gr_gid, &bin_gr_gid, &pass, &sys, &bin, "After setregid(sys, bin)," },
+	{ &neg_one, &sys_gr_gid, &pass, &sys, &sys, "After setregid(-1, sys)" },
+	{ &neg_one, &bin_gr_gid, &pass, &sys, &bin, "After setregid(-1, bin)," },
+	{ &bin_gr_gid, &neg_one, &pass, &bin, &bin, "After setregid(bin, -1)," },
+	{ &neg_one, &neg_one, &pass, &bin, &bin, "After setregid(-1, -1)," },
+	{ &neg_one, &bin_gr_gid, &pass, &bin, &bin, "After setregid(-1, bin)," },
+	{ &bin_gr_gid, &neg_one, &pass, &bin, &bin, "After setregid(bin, -1)," },
+	{ &bin_gr_gid, &bin_gr_gid, &pass, &bin, &bin, "After setregid(bin, bin)," },
+	{ &sys_gr_gid, &neg_one, &fail, &bin, &bin, "After setregid(sys, -1)" },
+	{ &neg_one, &sys_gr_gid, &fail, &bin, &bin, "After setregid(-1, sys)"},
+	{ &sys_gr_gid, &sys_gr_gid, &fail, &bin, &bin, "After setregid(sys, sys)"},
+};
 
 int TST_TOTAL = sizeof(test_data) / sizeof(test_data[0]);
 
@@ -134,33 +124,31 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
-	 /*NOTREACHED*/}
 
 	/* Perform global setup for test */
 	setup();
 
 	/* check looping state if -i option is given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		int pid, status, i;
+		pid_t pid;
+		int status, i;
 
 		/* reset Tst_count in case we are looping */
 		Tst_count = 0;
 
 		/* set the appropriate ownership values */
 		if (setregid(sys_gr_gid, bin_gr_gid) == -1) {
-			tst_brkm(TBROK, cleanup, "Initial setregid failed");
+			tst_brkm(TBROK, NULL, "Initial setregid failed");
 		 /*NOTREACHED*/}
 
 		if (seteuid(nobody_pw_uid) == -1) {
-			tst_brkm(TBROK, cleanup, "Initial seteuid failed");
-		 /*NOTREACHED*/}
-
+			tst_brkm(TBROK, NULL, "Initial seteuid failed");
+		}
 		if ((pid = FORK_OR_VFORK()) == -1) {
-			tst_brkm(TBROK, cleanup, "fork failed");
-		 /*NOTREACHED*/} else if (pid == 0) {	/* child */
+			tst_brkm(TBROK, NULL, "fork failed");
+		} else if (pid == 0) {	/* child */
 			for (i = 0; i < TST_TOTAL; i++) {
 				gid_t test_ret;
 				/* Set the real or effective group id */
@@ -230,8 +218,7 @@ int main(int ac, char **av)
 		}
 	}
 	cleanup();
-	 /*NOTREACHED*/ return 0;
-
+	tst_exit();
 }
 
 /*
@@ -240,19 +227,10 @@ int main(int ac, char **av)
  */
 void setup(void)
 {
+	tst_require_root(NULL);
+
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-
-	if (getpwnam("nobody") == NULL) {
-		tst_brkm(TBROK, NULL, "nobody must be a valid user.");
-		tst_exit();
-	 /*NOTREACHED*/}
-
-	/* Check that the test process id is super/root  */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Must be root for this test!");
-		tst_exit();
-	}
 
 	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
@@ -290,10 +268,7 @@ void cleanup(void)
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-
-	/* exit with return code appropriate for results */
-	tst_exit();
- /*NOTREACHED*/}
+}
 
 void gid_verify(struct group *rg, struct group *eg, char *when)
 {

@@ -486,14 +486,11 @@ int main(int ac, char **av) {
                 { NULL, 0, NULL, 0 }
         };
 
-	progname = strchr(av[0], '/');
-        progname = progname ? progname + 1 : av[0];
+	progname = basename(argv[0]);
 
         /* parse standard options */
-        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL){
-             tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
-             tst_exit();
-           }
+        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
         setup();
 
@@ -509,7 +506,6 @@ int main(int ac, char **av) {
                 		        break;
 		                default:
                 		        usage(progname);
-                        		// NOTREACHED
                 		}
 		        }
 
@@ -517,12 +513,11 @@ int main(int ac, char **av) {
 		if (ac != optind) {
         	        tst_resm(TINFO,"Options are not match.");
                 	usage(progname);
-                	// NOTREACHED
 	        }
 
 		/*
-		* Execute test
-         	*/
+		 * Execute test
+         	 */
 	        for (i = 0; i < (int)(sizeof(tcase) / sizeof(tcase[0])); i++) {
         	        int ret;
 	                tst_resm(TINFO,"(case%02d) START", i);
@@ -533,7 +528,7 @@ int main(int ac, char **av) {
 
 		/*
         	 * Check results
-         	*/
+         	 */
         	switch(result) {
 	        case RESULT_OK:
         			tst_resm(TPASS, "mq_timedreceive call succeeded");

@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
 	/* parse standard options */
 	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
 	    NULL) {
-		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
 	maybe_run_child(&do_child_1, "ndd", 1, &msqid, &c1_msgp.type);

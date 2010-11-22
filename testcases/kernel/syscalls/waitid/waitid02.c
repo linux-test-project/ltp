@@ -124,7 +124,7 @@ int main(int ac, char **av) {
         /* parse standard options */
 	msg = parse_opts(ac, av, NULL, NULL);
 	if (msg != NULL) {
-		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
 

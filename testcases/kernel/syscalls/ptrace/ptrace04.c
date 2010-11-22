@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
 			"test not supported for your arch (yet)");
 
 	if ((msg = parse_opts(argc, argv, NULL, NULL)))
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	make_a_baby(argc, argv);
 

@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
 	unsigned int pages, memsize;
 
 	if ((msg = parse_opts(argc, argv, options, help)) != NULL)
-		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	if (m_opt) {
 		memsize = pages = atoi(m_copt);

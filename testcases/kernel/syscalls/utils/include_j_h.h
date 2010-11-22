@@ -60,17 +60,6 @@
 		fprintf(REG_DETAIL_LOG_FP, __VA_ARGS__);	\
 	} while (0)
 
-
-/*
- * DPRINTF : macro to output debug message
- */
-#define DPRINTF(...)						\
-	do {							\
-		if (opt_debug)					\
-			PRINTF("[DEBUG] " __VA_ARGS__);		\
-	} while (0)
-
-
 /*
  * PRINT_XXX : macro to output test result and expect
  */

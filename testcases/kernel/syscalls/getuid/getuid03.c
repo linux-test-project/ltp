@@ -56,10 +56,9 @@ void cleanup(void);
 
 int main(int ac, char **av)
 {
+	struct passwd *pwent;
 	int lc;			/* loop counter */
 	char *msg;		/* message returned by parse_opts */
-
-	struct passwd *getpwuid(), *pwent;
 
 	/* parse standard options */
 	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
@@ -108,8 +107,7 @@ int main(int ac, char **av)
 		}
 	}
 	cleanup();
-
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }
 
 /*
@@ -135,7 +133,4 @@ void cleanup()
 	 * print errno log if that option was specified.
 	 */
 	TEST_CLEANUP;
-
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

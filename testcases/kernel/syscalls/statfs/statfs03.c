@@ -80,9 +80,8 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-	 /*NOTREACHED*/}
 
 	setup();
 
@@ -115,8 +114,9 @@ int main(int ac, char **av)
 			}
 		}
 	}
+
 	cleanup();
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 
 }
 
@@ -125,6 +125,8 @@ int main(int ac, char **av)
  */
 void setup()
 {
+
+	tst_require_root();
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -147,11 +149,6 @@ void setup()
 		if ((fileHandle = creat(path, 0444)) == -1) {
 			tst_resm(TFAIL, "creat (2) FAILED to creat temp file");
 		}
-	}
-
-	/* Switch to nobody user for correct error code collection */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, tst_exit, "Test must be run as root");
 	}
 
 	ltpuser = getpwnam(nobody_uid);
@@ -185,6 +182,4 @@ void cleanup()
 	/* delete the test directory created in setup() */
 	tst_rmdir();
 
-	/* exit with return code appropriate for results */
-	tst_exit();
 }
