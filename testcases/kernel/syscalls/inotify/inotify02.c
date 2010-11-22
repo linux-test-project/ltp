@@ -136,8 +136,7 @@ int main(int ac, char **av)
 		 */
 		if (chmod(".", 0755) < 0) {
 			tst_brkm(TBROK, cleanup,
-				 "chmod(\".\", 0755) Failed, errno=%d : %s",
-				 errno, strerror(errno));
+				 "chmod(\".\", 0755) failed");
 		}
 		event_set[Tst_count].mask = IN_ISDIR | IN_ATTRIB;
 		strcpy(event_set[Tst_count].name, "");
@@ -145,8 +144,8 @@ int main(int ac, char **av)
 
 		if ((fd = creat(FILE_NAME1, 0755)) == -1) {
 			tst_brkm(TBROK, cleanup,
-				 "creat(\"%s\", 755) Failed, errno=%d : %s",
-				 FILE_NAME1, errno, strerror(errno));
+				 "creat(\"%s\", 755) failed",
+				 FILE_NAME1);
 		}
 
 		event_set[Tst_count].mask = IN_CREATE;
@@ -158,8 +157,7 @@ int main(int ac, char **av)
 
 		if (close(fd) == -1) {
 			tst_brkm(TBROK, cleanup,
-				 "close(%s) Failed, errno=%d : %s", FILE_NAME1,
-				 errno, strerror(errno));
+				 "close(%s) failed", FILE_NAME1);
 		}
 		event_set[Tst_count].mask = IN_CLOSE_WRITE;
 		strcpy(event_set[Tst_count].name, FILE_NAME1);
@@ -167,9 +165,8 @@ int main(int ac, char **av)
 
 		if (rename(FILE_NAME1, FILE_NAME2) == -1) {
 			tst_brkm(TBROK, cleanup,
-				 "rename(%s, %s) Failed, errno=%d : %s",
-				 FILE_NAME1, FILE_NAME2, errno,
-				 strerror(errno));
+				 "rename(%s, %s) failed",
+				 FILE_NAME1, FILE_NAME2);
 		}
 		event_set[Tst_count].mask = IN_MOVED_FROM;
 		strcpy(event_set[Tst_count].name, FILE_NAME1);
@@ -180,15 +177,14 @@ int main(int ac, char **av)
 
 		if (getcwd(fname1, BUF_SIZE) == NULL) {
 			tst_brkm(TBROK | TERRNO, cleanup,
-				 "getcwd(%p, %d) Failed", fname1,
+				 "getcwd(%p, %d) failed", fname1,
 				 BUF_SIZE);
 		}
 
 		snprintf(fname2, BUF_SIZE, "%s.rename1", fname1);
 		if (rename(fname1, fname2) == -1) {
 			tst_brkm(TBROK, cleanup,
-				 "rename(%s, %s) Failed, errno=%d : %s", fname1,
-				 fname2, errno, strerror(errno));
+				 "rename(%s, %s) failed", fname1, fname2);
 		}
 		event_set[Tst_count].mask = IN_MOVE_SELF;
 		strcpy(event_set[Tst_count].name, "");
@@ -196,8 +192,7 @@ int main(int ac, char **av)
 
 		if (unlink(FILE_NAME2) == -1) {
 			tst_brkm(TBROK, cleanup,
-				 "unlink(%s) Failed, errno=%d : %s", FILE_NAME2,
-				 errno, strerror(errno));
+				 "unlink(%s) failed", FILE_NAME2);
 		}
 		event_set[Tst_count].mask = IN_DELETE;
 		strcpy(event_set[Tst_count].name, FILE_NAME2);
@@ -212,14 +207,12 @@ int main(int ac, char **av)
 		snprintf(fname3, BUF_SIZE, "%s.rename2", fname1);
 		if (rename(fname2, fname3) == -1) {
 			tst_brkm(TBROK, cleanup,
-				 "rename(%s, %s) Failed, errno=%d : %s", fname2,
-				 fname3, errno, strerror(errno));
+				 "rename(%s, %s) failed", fname2, fname3);
 		}
 
 		if (rename(fname3, fname1) == -1) {
 			tst_brkm(TBROK, cleanup,
-				 "rename(%s, %s) Failed, errno=%d : %s", fname3,
-				 fname1, errno, strerror(errno));
+				 "rename(%s, %s) failed", fname3, fname1);
 		}
 		event_set[Tst_count].mask = IN_MOVE_SELF;
 		strcpy(event_set[Tst_count].name, "");
@@ -235,9 +228,8 @@ int main(int ac, char **av)
 		int len, i = 0, test_num = 0;
 		if ((len = read(fd_notify, event_buf, EVENT_BUF_LEN)) < 0) {
 			tst_brkm(TBROK, cleanup,
-				 "read(%d, buf, %d) Failed, errno=%d : %s",
-				 fd_notify, EVENT_BUF_LEN, errno,
-				 strerror(errno));
+				 "read(%d, buf, %d) failed",
+				 fd_notify, EVENT_BUF_LEN);
 
 		}
 
@@ -294,15 +286,14 @@ int main(int ac, char **av)
 		}
 
 		for (; test_num < TST_TOTAL; test_num++) {
-			tst_resm(TFAIL, "don't get event: mask=%x ",
-				 event_set[test_num]);
+			tst_resm(TFAIL, "didn't get event: mask=%x ",
+				 event_set[test_num].mask);
 		}
 	}			/* End for TEST_LOOPING */
 
 	/* cleanup and exit */
 	cleanup();
-
-	return 0;
+	tst_exit();
 }				/* End main */
 
 /*
@@ -321,22 +312,18 @@ void setup()
 
 	if ((fd_notify = myinotify_init()) < 0) {
 		if (errno == ENOSYS) {
-			tst_resm(TCONF,
+			tst_brkm(TCONF, cleanup,
 				 "inotify is not configured in this kernel.");
-			tst_resm(TCONF, "Test will not run.");
-			tst_exit();
 		} else {
-			tst_brkm(TBROK, cleanup,
-				 "inotify_init () Failed, errno=%d : %s", errno,
-				 strerror(errno));
+			tst_brkm(TBROK|TERRNO, cleanup,
+				 "inotify_init () failed");
 		}
 	}
 
 	if ((wd = myinotify_add_watch(fd_notify, ".", IN_ALL_EVENTS)) < 0) {
-		tst_brkm(TBROK, cleanup,
-			 "inotify_add_watch (%d, \".\", IN_ALL_EVENTS)"
-			 "Failed, errno=%d : %s", fd_notify, errno,
-			 strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "inotify_add_watch (%d, \".\", IN_ALL_EVENTS) failed",
+			 fd_notify);
 	};
 
 }				/* End setup() */
@@ -349,14 +336,12 @@ void cleanup()
 {
 	if (myinotify_rm_watch(fd_notify, wd) < 0) {
 		tst_resm(TWARN,
-			 "inotify_rm_watch (%d, %d) Failed," "errno=%d : %s",
-			 fd_notify, wd, errno, strerror(errno));
+			 "inotify_rm_watch (%d, %d) failed,", fd_notify, wd);
 
 	}
 
 	if (close(fd_notify) == -1) {
-		tst_resm(TWARN, "close(%d) Failed, errno=%d : %s", fd_notify,
-			 errno, strerror(errno));
+		tst_resm(TWARN, "close(%d) failed", fd_notify);
 	}
 
 	/*
@@ -367,9 +352,6 @@ void cleanup()
 
 	/* Remove tmp dir and all files in it */
 	tst_rmdir();
-
-	/* exit with return code appropriate for results */
-	tst_exit();
 }				/* End cleanup() */
 
 #else

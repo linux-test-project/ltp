@@ -228,12 +228,8 @@ int main(int ac, char **av)
 
 	}			/* End for TEST_LOOPING */
 
-	/*
-	 * cleanup and exit
-	 */
 	cleanup();
-
-	return 0;
+	tst_exit();
 }				/* End main */
 
 /*
@@ -252,40 +248,35 @@ void setup()
 
 	sprintf(fname, "tfile_%d", getpid());
 	if ((fd = open(fname, O_RDWR | O_CREAT, 0700)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT,0700) Failed, errno=%d : %s",
-			 fname, errno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "open(%s, O_RDWR|O_CREAT,0700) failed",
+			 fname);
 	}
 	if ((write(fd, fname, 1)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "write(%d, %s, 1) Failed, errno=%d : %s",
-			 fd, fname, errno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "write(%d, %s, 1) failed",
+			 fd, fname);
 	}
 
 	/* close the file we have open */
 	if (close(fd) == -1) {
 		tst_brkm(TBROK, cleanup,
-			 "close(%s) Failed, errno=%d : %s",
-			 fname, errno, strerror(errno));
+			 "close(%s) failed",
+			 fname);
 	}
 	if ((fd_notify = myinotify_init()) < 0) {
 		if (errno == ENOSYS) {
-			tst_resm(TCONF,
+			tst_brkm(TCONF, cleanup,
 				 "inotify is not configured in this kernel.");
-			tst_resm(TCONF, "Test will not run.");
-			tst_exit();
 		} else {
-			tst_brkm(TBROK, cleanup,
-				 "inotify_init () Failed, errno=%d : %s",
-				 errno, strerror(errno));
+			tst_brkm(TBROK|TERRNO, cleanup, "inotify_init failed");
 		}
 	}
 
 	if ((wd = myinotify_add_watch(fd_notify, fname, IN_ALL_EVENTS)) < 0) {
-		tst_brkm(TBROK, cleanup,
-			 "inotify_add_watch (%d, %s, IN_ALL_EVENTS)"
-			 "Failed, errno=%d : %s",
-			 fd_notify, fname, errno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup,
+			 "inotify_add_watch (%d, %s, IN_ALL_EVENTS) failed",
+			 fd_notify, fname);
 	};
 
 }				/* End setup() */
@@ -297,15 +288,13 @@ void setup()
 void cleanup()
 {
 	if (myinotify_rm_watch(fd_notify, wd) < 0) {
-		tst_resm(TWARN, "inotify_rm_watch (%d, %d) Failed,"
-			 "errno=%d : %s",
-			 fd_notify, wd, errno, strerror(errno));
+		tst_resm(TWARN|TERRNO, "inotify_rm_watch (%d, %d) failed",
+			 fd_notify, wd);
 
 	}
 
 	if (close(fd_notify) == -1) {
-		tst_resm(TWARN, "close(%d) Failed, errno=%d : %s",
-			 fd_notify, errno, strerror(errno));
+		tst_resm(TWARN, "close(%d) failed", fd_notify);
 	}
 
 	/*
@@ -316,9 +305,6 @@ void cleanup()
 
 	/* Remove tmp dir and all files in it */
 	tst_rmdir();
-
-	/* exit with return code appropriate for results */
-	tst_exit();
 }				/* End cleanup() */
 
 #else
@@ -326,7 +312,7 @@ void cleanup()
 char *TCID = "inotify01";	/* Test program identifier.    */
 int TST_TOTAL = 0;		/* Total number of test cases. */
 
-int main()
+int main(void)
 {
 #ifndef __NR_inotify_init
 	tst_resm(TCONF, "This test needs a kernel that has inotify syscall.");
