@@ -26,7 +26,7 @@ include $(top_srcdir)/include/mk/testcases.mk
 
 # top-LTP is really broken, apparently, and netpipe needs some fixing and
 # reorganization..
-FILTER_OUT_DIRS		:= netpipe% top-LTP
+FILTER_OUT_DIRS		:= netpipe% pounder21 top-LTP
 
 INSTALL_TARGETS		:= *.pl *.sh html_report_header.txt
 
