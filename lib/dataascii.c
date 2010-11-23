@@ -59,7 +59,7 @@ int offset;
 	chr=buffer;
 	total=offset+bsize;
 
-	if ( listofchars == NULL ) {
+	if (listofchars == NULL) {
 	    charlist=CHARS;
 	    chars_size=CHARS_SIZE;
 	}
@@ -68,7 +68,7 @@ int offset;
 	    chars_size=strlen(listofchars);
 	}
 
-	for(cnt=offset; cnt<total;  cnt++) {
+	for (cnt=offset; cnt<total;  cnt++) {
 		ind=cnt%chars_size;
 		*chr++=charlist[ind];
 	}
@@ -95,7 +95,7 @@ char **errmsg;
 	chr=buffer;
 	total=offset+bsize;
 
-	if ( listofchars == NULL ) {
+	if (listofchars == NULL) {
 	    charlist=CHARS;
 	    chars_size=CHARS_SIZE;
 	}
@@ -104,13 +104,13 @@ char **errmsg;
 	    chars_size=strlen(listofchars);
 	}
 
-	if ( errmsg != NULL ) {
+	if (errmsg != NULL) {
 	    *errmsg = Errmsg;
 	}
 
-	for(cnt=offset; cnt<total;  chr++, cnt++) {
+	for (cnt=offset; cnt<total;  chr++, cnt++) {
 	    ind=cnt%chars_size;
-	    if ( *chr != charlist[ind] ) {
+	    if (*chr != charlist[ind]) {
 		sprintf(Errmsg,
 		    "data mismatch at offset %d, exp:%#o, act:%#o", cnt,
 		    charlist[ind], *chr);
@@ -140,7 +140,7 @@ char *buffer;
 int ret;
 char *errmsg;
 
-    if ((buffer=(char *)malloc(size)) == NULL ) {
+    if ((buffer=(char *)malloc(size)) == NULL) {
         perror("malloc");
         exit(2);
     }
@@ -152,7 +152,7 @@ char *errmsg;
     printf("dataasciichk(NULL, buffer, %d, 0, &errmsg) returned %d %s\n",
         size, ret, errmsg);
 
-    if ( ret == -1 )
+    if (ret == -1)
         printf("\tPASS return value is -1 as expected\n");
     else
         printf("\tFAIL return value is %d, expected -1\n", ret);
@@ -161,7 +161,7 @@ char *errmsg;
     printf("dataasciichk(NULL, &buffer[1], %d, 1, &errmsg) returned %d %s\n",
         size-1, ret, errmsg);
 
-    if ( ret == -1 )
+    if (ret == -1)
         printf("\tPASS return value is -1 as expected\n");
     else
         printf("\tFAIL return value is %d, expected -1\n", ret);
@@ -173,7 +173,7 @@ char *errmsg;
     printf("dataasciichk(NULL, &buffer[1], %d, 1, &errmsg) returned %d %s\n",
         size-1, ret, errmsg);
 
-    if ( ret == 25 )
+    if (ret == 25)
 	printf("\tPASS return value is 25 as expected\n");
     else
 	printf("\tFAIL return value is %d, expected 25\n", ret);
@@ -185,7 +185,7 @@ char *errmsg;
     printf("dataasciichk(\"this is a test of the my string\", buffer, %d, 0, &errmsg) returned %d %s\n",
         size, ret, errmsg);
 
-    if ( ret == -1 )
+    if (ret == -1)
         printf("\tPASS return value is -1 as expected\n");
     else
         printf("\tFAIL return value is %d, expected -1\n", ret);
@@ -194,7 +194,7 @@ char *errmsg;
     printf("dataasciichk(\"this is a test of the my string\", &buffer[1], %d, 1, &errmsg) returned %d %s\n",
         size-1, ret, errmsg);
 
-    if ( ret == -1 )
+    if (ret == -1)
         printf("\tPASS return value is -1 as expected\n");
     else
         printf("\tFAIL return value is %d, expected -1\n", ret);
@@ -206,7 +206,7 @@ char *errmsg;
     printf("dataasciichk(\"this is a test of the my string\", &buffer[1], %d, 1, &errmsg) returned %d %s\n",
         size-1, ret, errmsg);
 
-    if ( ret == 25 )
+    if (ret == 25)
 	printf("\tPASS return value is 25 as expected\n");
     else
 	printf("\tFAIL return value is %d, expected 25\n", ret);

@@ -260,7 +260,7 @@ zoo_clear(zoo_t z, pid_t p)
     if (zoo_unlock(z))
 	return -1;
 
-    if(!found) {
+    if (!found) {
 	snprintf(zoo_error, ZELEN, 
 			"zoo_clear() did not find pid(%d)", 
 			p);
@@ -387,12 +387,12 @@ cat_args(int argc, char **argv)
     int a, size;
     char *cmd;
 
-    for( size = a = 0; a < argc; a++) {
+    for (size = a = 0; a < argc; a++) {
 	size += strlen(argv[a]);
 	size++;
     }
 
-    if( (cmd = (char *)malloc(size)) == NULL ) {
+    if ((cmd = (char *)malloc(size)) == NULL) {
 	snprintf(zoo_error, ZELEN, 
 			"Malloc Error, %s/%d", 
 			__FILE__, __LINE__);
@@ -400,8 +400,8 @@ cat_args(int argc, char **argv)
     }
 
     *cmd='\0';
-    for(a = 0; a < argc ; a++) {
-	if(a != 0)
+    for (a = 0; a < argc ; a++) {
+	if (a != 0)
 	    strcat(cmd, " ");
 	strcat(cmd, argv[a]);
     }
@@ -450,12 +450,12 @@ main(int argc, char *argv[])
     zoo_mark_args(test_zoo, getpid(), test_tag, argc, argv);
     
 
-    for(j = 0; j < 5; j++) {
-	for(i = 0; i < 20; i++) {
+    for (j = 0; j < 5; j++) {
+	for (i = 0; i < 20; i++) {
 	    zt_add(test_zoo, i);
 	}
 	
-	for(; i >=0; i--) {
+	for (; i >=0; i--) {
 	    zoo_clear(test_zoo, i);
 	}
     }

@@ -655,7 +655,7 @@ void tst_brk(int ttype, char *fname, void (*func)(void), char *arg_fmt, ...)
 			tst_res(ttype, NULL,
 				"Remaining cases not appropriate for configuration");
 		} else {
-				if ( ttype == TRETR )
+				if (ttype == TRETR)
 					tst_res(ttype, NULL, "Remaining cases retired");
 				else
 					tst_res(TBROK, NULL, "Remaining cases broken");

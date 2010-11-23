@@ -226,14 +226,14 @@ long			offset;
 	    wbuf[reclen+1] = reclen % 256;
 	    reclen += 2;
 
-            if ( write(wfile->w_afd, wbuf, reclen) == -1 ) {
+            if (write(wfile->w_afd, wbuf, reclen) == -1) {
                   sprintf(Wlog_Error_String,
                           "Could not write log - write(%s, %s, %d) failed:  %s\n",
                            wfile->w_file, wbuf, reclen, strerror(errno));
                   return -1;
             } else {
                  offset = lseek(wfile->w_afd, 0, SEEK_CUR) - reclen;
-                 if ( offset == -1 ) {
+                 if (offset == -1) {
                        sprintf(Wlog_Error_String,
                                "Could not reposition file pointer - lseek(%s, 0, SEEK_CUR) failed:  %s\n",
                                 wfile->w_file, strerror(errno));
@@ -241,13 +241,13 @@ long			offset;
                  }
             }
     } else {
-            if ( (lseek(wfile->w_rfd, offset, SEEK_SET)) == -1 ) {
+            if ((lseek(wfile->w_rfd, offset, SEEK_SET)) == -1) {
                   sprintf(Wlog_Error_String,
                           "Could not reposition file pointer - lseek(%s, %ld, SEEK_SET) failed:  %s\n",
                            wfile->w_file, offset, strerror(errno));
                   return -1;
             } else {
-                  if ( (write(wfile->w_rfd, wbuf, reclen)) == -1 ) {
+                  if ((write(wfile->w_rfd, wbuf, reclen)) == -1) {
                         sprintf(Wlog_Error_String,
                                 "Could not write log - write(%s, %s, %d) failed:  %s\n",
                                  wfile->w_file, wbuf, reclen, strerror(errno));
@@ -285,14 +285,14 @@ long			data;
 	 * Move to EOF.  offset will always hold the current file offset
 	 */
 
-        if ( (lseek(fd, 0, SEEK_END)) == -1 ) {
+        if ((lseek(fd, 0, SEEK_END)) == -1) {
               sprintf(Wlog_Error_String,
                       "Could not reposition file pointer - lseek(%s, 0, SEEK_END) failed:  %s\n",
                        wfile->w_file, strerror(errno));
               return -1;
         }
 	offset = lseek(fd, 0, SEEK_CUR);
-        if ( (offset == -1) ) {
+        if ((offset == -1)) {
               sprintf(Wlog_Error_String,
                       "Could not reposition file pointer - lseek(%s, 0, SEEK_CUR) failed:  %s\n",
                        wfile->w_file, strerror(errno));
@@ -320,7 +320,7 @@ long			data;
 		/*
 		 * Move to the proper file offset, and read into buf
 		 */
-                if ( (lseek(fd, offset, SEEK_SET)) ==-1  ) {
+                if ((lseek(fd, offset, SEEK_SET)) ==-1) {
                       sprintf(Wlog_Error_String,
                               "Could not reposition file pointer - lseek(%s, %d, SEEK_SET) failed:  %s\n",
                                wfile->w_file, offset, strerror(errno));

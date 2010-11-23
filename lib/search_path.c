@@ -108,13 +108,13 @@ char **argv;
     char path[PATH_MAX];
     int ind;
 
-    if (argc <= 1 ) {
+    if (argc <= 1) {
 	printf("missing argument\n");
 	exit(1);
     }
 
-    for(ind=1;ind < argc; ind++) {
-	if ( search_path(argv[ind], path, F_OK, 0) < 0 ) {
+    for (ind=1;ind < argc; ind++) {
+	if (search_path(argv[ind], path, F_OK, 0) < 0) {
 	    printf("ERROR: %s\n", path);
 	}
 	else {
@@ -151,15 +151,15 @@ printf("search_path: cmd = %s, access_mode = %d, fullpath = %d\n", cmd, access_m
     /*
      * full or relative path was given
      */
-    if ( (cmd[0] == '/') || ( (cp=strchr(cmd, '/')) != NULL )) {
-	if ( access(cmd, access_mode) == 0 ) {
+    if ((cmd[0] == '/') || ( (cp=strchr(cmd, '/')) != NULL )) {
+	if (access(cmd, access_mode) == 0) {
 
-	    if ( cmd[0] != '/' ) { /* relative path */
-		if ( getcwd(curpath, PATH_MAX) == NULL ) {
+	    if (cmd[0] != '/') { /* relative path */
+		if (getcwd(curpath, PATH_MAX) == NULL) {
 		    strcpy(res_path, curpath);
 		    return -1;
 		}
-		if ( (strlen(curpath) + strlen(cmd) + 1) > (size_t)PATH_MAX ) {
+		if ((strlen(curpath) + strlen(cmd) + 1) > (size_t)PATH_MAX) {
 		    sprintf(res_path, "cmd (as relative path) and cwd is longer than %d",
 			PATH_MAX);
 		    return -1;
@@ -177,7 +177,7 @@ printf("search_path: cmd = %s, access_mode = %d, fullpath = %d\n", cmd, access_m
     }
 
     /* get the PATH variable */
-    if ( (pathenv=getenv("PATH")) == NULL) {
+    if ((pathenv=getenv("PATH")) == NULL) {
         /* no path to scan, return */
 	sprintf(res_path, "Unable to get PATH env. variable");
         return -1;
@@ -198,10 +198,10 @@ printf("search_path: cmd = %s, access_mode = %d, fullpath = %d\n", cmd, access_m
     lastpath = 0;
     for (;;) {
 
-	if ( lastpath )
+	if (lastpath)
 	    break;
 
-	if ( cp != pathenv )
+	if (cp != pathenv)
 	    path = ++cp;	 /* already set on first iteration */
 
 	/* find end of current path */
@@ -218,11 +218,11 @@ printf("search_path: cmd = %s, access_mode = %d, fullpath = %d\n", cmd, access_m
 printf("search_path: tmppath = %s\n", tmppath);
 #endif
 
-	if ( *cp == '\0' )
+	if (*cp == '\0')
 	    lastpath=1;		/* this is the last path entry */
 
 	/* Check lengths so not to overflow res_path */
-	if ( strlen(tmppath) + strlen(cmd) + 2 > (size_t)PATH_MAX ) {
+	if (strlen(tmppath) + strlen(cmd) + 2 > (size_t)PATH_MAX) {
 	    toolong++;
 	    continue;
 	}
@@ -239,14 +239,14 @@ printf("search_path: res_path = '%s'\n", res_path);
 	     * directory.
 	     */
 
-	if ( fullpath && res_path[0] != '/' ) {	/* not a full path */
-	    if ( curpath[0] == '\0' ) {
-		if ( getcwd(curpath, PATH_MAX) == NULL ) {
+	if (fullpath && res_path[0] != '/') {	/* not a full path */
+	    if (curpath[0] == '\0') {
+		if (getcwd(curpath, PATH_MAX) == NULL) {
                     strcpy(res_path, curpath);
                     return -1;
 	 	}
             }
-            if ( (strlen(curpath) + strlen(res_path) + 2) > (size_t)PATH_MAX ) {
+            if ((strlen(curpath) + strlen(res_path) + 2) > (size_t)PATH_MAX) {
 		toolong++;
 	        continue;
             }
@@ -259,7 +259,7 @@ printf("search_path: full res_path= '%s'\n", res_path);
 	}
 
 
-	if ( (ret=access(res_path, access_mode)) == 0 ) {
+	if ((ret=access(res_path, access_mode)) == 0) {
 #if DEBUG
 printf("search_path: found res_path = %s\n", res_path);
 #endif
@@ -268,7 +268,7 @@ printf("search_path: found res_path = %s\n", res_path);
     }
 
     /* return failure */
-    if ( toolong )
+    if (toolong)
         sprintf(res_path,
 	    "Unable to find file, %d path/file strings were too long", toolong);
     else

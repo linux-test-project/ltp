@@ -87,7 +87,7 @@ char **errormsg;
                 flocks.l_type = F_RDLCK;
         else {
                 errno = EINVAL;
-	    if ( errormsg != NULL ) {
+	    if (errormsg != NULL) {
 		sprintf(errmsg,
 		    "Programmer error, called file_lock with in valid flags\n");
 		*errormsg = errmsg;
@@ -103,8 +103,8 @@ char **errormsg;
 	while (1) {
             ret = fcntl(fd, cmd, &flocks);
 
-	    if ( ret < 0 ) {
-	        if ( cmd == F_SETLK )
+	    if (ret < 0) {
+	        if (cmd == F_SETLK)
 	            switch (errno) {
 		       /* these errors are okay */
 		        case EACCES:	/* Permission denied */
@@ -115,7 +115,7 @@ char **errormsg;
 		        case EFSEXCLWR:	/* File is write protected */
 			    continue;	/* retry getting lock */
 	        }
-	        if ( errormsg != NULL ) {
+	        if (errormsg != NULL) {
 	            sprintf(errmsg, "fcntl(%d, %d, &flocks): errno:%d %s\n",
 		        fd, cmd, errno, strerror(errno));
 		    *errormsg = errmsg;
@@ -164,7 +164,7 @@ char **errormsg;
                 flocks.l_type = F_RDLCK;
         else {
                 errno = EINVAL;
-	    if ( errormsg != NULL ) {
+	    if (errormsg != NULL) {
 		sprintf(errmsg,
 		    "Programmer error, called record_lock with in valid flags\n");
 		*errormsg = errmsg;
@@ -180,8 +180,8 @@ char **errormsg;
 	while (1) {
             ret = fcntl(fd, cmd, &flocks);
 
-	    if ( ret < 0 ) {
-	        if ( cmd == F_SETLK )
+	    if (ret < 0) {
+	        if (cmd == F_SETLK)
 	            switch (errno) {
 		       /* these errors are okay */
 		        case EACCES:	/* Permission denied */
@@ -192,7 +192,7 @@ char **errormsg;
 		        case EFSEXCLWR:	/* File is write protected */
 			    continue;	/* retry getting lock */
 	        }
-	        if ( errormsg != NULL ) {
+	        if (errormsg != NULL) {
 	            sprintf(errmsg, "fcntl(%d, %d, &flocks): errno:%d %s\n",
 		        fd, cmd, errno, strerror(errno));
 		    *errormsg = errmsg;

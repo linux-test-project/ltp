@@ -103,7 +103,7 @@ int offset;
     num_full_words = bsize/NBPW;
     boff = 0;
 
-    if ( cnt=(offset % NBPW) ) {	/* partial word */
+    if (cnt=(offset % NBPW)) {	/* partial word */
 
 	woff = offset - cnt;
 #if DEBUG
@@ -131,12 +131,12 @@ printf("partial at beginning, cnt = %d, woff = %d\n", cnt, woff);
 
     woff = offset+boff;
 
-    for (cnt=0; cnt<num_full_words; woff += NBPW, cnt++ ) {
+    for (cnt=0; cnt<num_full_words; woff += NBPW, cnt++) {
 
 	word = ((LOWER16BITS(pid) << 48) | (LOWER32BITS(woff) << 16) | LOWER16BITS(pid));
 
 	chr = (char *)&word;
-	for(tmp=0; tmp<NBPW; tmp++, chr++) {
+	for (tmp=0; tmp<NBPW; tmp++, chr++) {
 	    buffer[boff++] = *chr;
 	}
 /****** Only if wptr is a word ellined
@@ -151,7 +151,7 @@ printf("partial at beginning, cnt = %d, woff = %d\n", cnt, woff);
      * partial word at end of buffer
      */
 
-    if ( cnt=((bsize-boff) % NBPW) ) {
+    if (cnt=((bsize-boff) % NBPW)) {
 #if DEBUG
 printf("partial at end\n");
 #endif
@@ -197,7 +197,7 @@ char **errmsg;
    int num_full_words;
 
 
-    if ( errmsg != NULL ) {
+    if (errmsg != NULL) {
         *errmsg = Errmsg;
     }
 
@@ -205,7 +205,7 @@ char **errmsg;
     num_full_words = bsize/NBPW;
     boff = 0;
 
-    if ( cnt=(offset % NBPW) ) {	/* partial word */
+    if (cnt=(offset % NBPW)) {	/* partial word */
 	woff = offset - cnt;
 	word = ((LOWER16BITS(pid) << 48) | (LOWER32BITS(woff) << 16) | LOWER16BITS(pid));
 
@@ -232,12 +232,12 @@ char **errmsg;
 
     woff = offset+boff;
 
-    for (cnt=0; cnt<num_full_words; woff += NBPW, cnt++ ) {
+    for (cnt=0; cnt<num_full_words; woff += NBPW, cnt++) {
 	word = ((LOWER16BITS(pid) << 48) | (LOWER32BITS(woff) << 16) | LOWER16BITS(pid));
 
 	chr = (char *)&word;
-	for(tmp=0; tmp<NBPW; tmp++, boff++, chr++) {
-	    if ( buffer[boff] != *chr ) {
+	for (tmp=0; tmp<NBPW; tmp++, boff++, chr++) {
+	    if (buffer[boff] != *chr) {
 	        sprintf(Errmsg, "Data mismatch at offset %d, exp:%#o, act:%#o",
 	            woff, *chr, buffer[boff]);
 	        return woff;
@@ -246,7 +246,7 @@ char **errmsg;
 
 /****** only if a word elined
 	wptr = (long *)&buffer[boff];
-	if ( *wptr != word ) {
+	if (*wptr != word) {
 	    sprintf(Errmsg, "Data mismatch at offset %d, exp:%#o, act:%#o",
 	        woff, word, *wptr);
 	    return woff;
@@ -259,7 +259,7 @@ char **errmsg;
      * partial word at end of buffer
      */
 
-    if ( cnt=((bsize-boff) % NBPW) ) {
+    if (cnt=((bsize-boff) % NBPW)) {
 #if DEBUG
 printf("partial at end\n");
 #endif
@@ -269,7 +269,7 @@ printf("partial at end\n");
 
 
 	for (tmp=0; tmp<cnt && boff<bsize; boff++, tmp++, chr++) {
-	    if ( buffer[boff] != *chr ) {
+	    if (buffer[boff] != *chr) {
 		sprintf(Errmsg, "Data mismatch at offset %d, exp:%#o, act:%#o",
 		    offset+boff, *chr, buffer[boff]);
 		return offset+boff;
@@ -282,7 +282,7 @@ printf("partial at end\n");
 
 #else
 
-    if ( errmsg != NULL ) {
+    if (errmsg != NULL) {
         *errmsg = Errmsg;
     }
     sprintf(Errmsg, "Not supported on this OS.");
@@ -309,7 +309,7 @@ char *buffer;
 int ret;
 char *errmsg;
 
-    if ((buffer=(char *)malloc(size)) == NULL ) {
+    if ((buffer=(char *)malloc(size)) == NULL) {
         perror("malloc");
         exit(2);
     }

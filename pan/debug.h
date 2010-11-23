@@ -45,13 +45,13 @@ int set_debug( char * );
 
 extern int Debug[];
 #define MAXDEBUG        30
-#define DEBUG(a,l)      if(Debug[a] >= l)
-#define DEBUGO(a,l,c)   if(Debug[a] >= l || c)
+#define DEBUG(a,l)      if (Debug[a] >= l)
+#define DEBUGO(a,l,c)   if (Debug[a] >= l || c)
 
 #else
 
-#define	DEBUG(a,l)	if(0)
-#define DEBUGO(a,l,c)   if(0)
+#define	DEBUG(a,l)	if (0)
+#define DEBUGO(a,l,c)   if (0)
 
 #endif
 

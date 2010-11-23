@@ -170,7 +170,7 @@ void tst_tmpdir(void)
 			tst_brkm(TBROK, tmpdir_cleanup,
 				"%s: mkdtemp(%s) failed; errno = %d: %s",
 				FN_NAME, template, errno, strerror(errno));
-                if ( (TESTDIR = strdup(template)) == NULL ) { //Error Handling for strdup()
+                if ((TESTDIR = strdup(template)) == NULL ) { //Error Handling for strdup()
                         tst_brkm(TBROK, tmpdir_cleanup,
                                 "%s: strdup(%s) failed; errno = %d: %s",
                                 FN_NAME, template, errno, strerror(errno));
@@ -183,17 +183,17 @@ void tst_tmpdir(void)
 			tst_brkm(TBROK, tmpdir_cleanup,
 				"%s: mkstemp(%s) failed; errno = %d: %s",
 				FN_NAME, template, errno, strerror(errno));
-                if ( close(tfd) == -1 ) {
+                if (close(tfd) == -1) {
                         tst_brkm(TBROK, tmpdir_cleanup,
                                 "%s: close() failed; errno = %d: %s",
                                 FN_NAME, errno, strerror(errno));
                 }
-                if ( unlink(template) == -1) {
+                if (unlink(template) == -1) {
                         tst_brkm(TBROK, tmpdir_cleanup,
                                 "%s: unlink(%s) failed; errno = %d: %s",
                                 FN_NAME, template, errno, strerror(errno));
                 }
-                if ( (TESTDIR = strdup(template)) == NULL ) {
+                if ((TESTDIR = strdup(template)) == NULL) {
                         tst_brkm(TBROK, tmpdir_cleanup,
                                 "%s: strdup(%s) failed; errno = %d: %s",
                                 FN_NAME, template, errno, strerror(errno));
@@ -213,11 +213,11 @@ void tst_tmpdir(void)
 		 * Change the group on this temporary directory to be that of the
 		 * gid of the person running the tests and permissions to 777.
 		 */
-		if ( chown(TESTDIR, -1, getgid()) == -1 )
+		if (chown(TESTDIR, -1, getgid()) == -1)
 			tst_brkm(TBROK, tmpdir_cleanup,
 				"chown(%s, -1, %d) failed; errno = %d: %s",
 				TESTDIR, getgid(), errno, strerror(errno));
-		if ( chmod(TESTDIR,S_IRWXU | S_IRWXG | S_IRWXO) == -1 )
+		if (chmod(TESTDIR,S_IRWXU | S_IRWXG | S_IRWXO) == -1)
 			tst_brkm(TBROK, tmpdir_cleanup,
 				"chmod(%s,777) failed; errno %d: %s",
 				TESTDIR, errno, strerror(errno));
@@ -233,12 +233,12 @@ void tst_tmpdir(void)
 	 * directory (if it was created), and exit.  If the removal also
 	 * fails, also issue a TWARN message.
 	 */
-	if ( chdir(TESTDIR) == -1 ) {
+	if (chdir(TESTDIR) == -1) {
 		tst_brkm(TBROK, NULL, "%s: chdir(%s) failed; errno = %d: %s",
 				FN_NAME, TESTDIR, errno, strerror(errno) );
 
 		/* Try to remove the directory */
-		if ( !no_cleanup && rmdir(TESTDIR) == -1 )
+		if (!no_cleanup && rmdir(TESTDIR) == -1)
 			tst_resm(TWARN, "%s: rmdir(%s) failed; errno = %d: %s",
 				FN_NAME, TESTDIR, errno, strerror(errno) );
 
@@ -280,7 +280,7 @@ void tst_rmdir(void)
     * temp dir was created by tst_tmpdir().  Thus no cleanup will be
     * necessary.
     */
-   if ( (tdirectory = getenv(TDIRECTORY)) != NULL ) {
+   if ((tdirectory = getenv(TDIRECTORY)) != NULL) {
 #if UNIT_TEST
       printf("\"TDIRECORY\" env variable is set; no cleanup was performed\n");
 #endif
@@ -290,7 +290,7 @@ void tst_rmdir(void)
    /*
     * Check that TESTDIR is not NULL.
     */
-   if ( TESTDIR == NULL ) {
+   if (TESTDIR == NULL) {
       tst_resm(TWARN, "%s: TESTDIR was NULL; no removal attempted",
                FN_NAME);
       return;
@@ -300,14 +300,14 @@ void tst_rmdir(void)
     * Check that the value of TESTDIR is not "*" or "/".  These could
     * have disastrous effects in a test run by root.
     */
-   if ( strcmp(TESTDIR, "/") == 0 ) {
+   if (strcmp(TESTDIR, "/") == 0) {
       tst_resm(TWARN,
                "%s: Recursive remove of root directory not attempted",
                FN_NAME);
       return;
    }
 
-   if ( strchr(TESTDIR, '*') != NULL ) {
+   if (strchr(TESTDIR, '*') != NULL) {
       tst_resm(TWARN, "%s: Recursive remove of '*' not attempted",
                FN_NAME);
       return;
@@ -317,22 +317,22 @@ void tst_rmdir(void)
     * Get the directory name of TESTDIR.  If TESTDIR is a relative path,
     * get full path.
     */
-   if ( TESTDIR[0] != '/' ) {
-      if ( getcwd(current_dir,PATH_MAX) == NULL )
+   if (TESTDIR[0] != '/') {
+      if (getcwd(current_dir,PATH_MAX) == NULL)
          strcpy(parent_dir, TESTDIR);
       else
          sprintf(parent_dir, "%s/%s", current_dir, TESTDIR);
    } else {
       strcpy(parent_dir, TESTDIR);
    }
-   if ( (basename = strrchr(parent_dir, '/')) != NULL ) {
+   if ((basename = strrchr(parent_dir, '/')) != NULL) {
       *basename='\0';   /* terminate at end of parent_dir */
    }
 
    /*
     * Change directory to parent_dir (The dir above TESTDIR).
     */
-   if ( chdir(parent_dir) != 0 )
+   if (chdir(parent_dir) != 0)
       tst_resm(TWARN,
                "%s: chdir(%s) failed; errno = %d: %s\nAttempting to remove temp dir anyway",
                FN_NAME, parent_dir, errno, strerror(errno));
@@ -340,7 +340,7 @@ void tst_rmdir(void)
    /*
     * Attempt to remove the "TESTDIR" directory, using rmobj().
     */
-   if ( rmobj(TESTDIR, &errmsg) == -1 )
+   if (rmobj(TESTDIR, &errmsg) == -1)
       tst_resm(TWARN, "%s: rmobj(%s) failed: %s",
                FN_NAME, TESTDIR, errmsg);
 
@@ -404,6 +404,6 @@ main()
          tst_rmdir();
          break;
       }  /* switch() */
-   }  /* while() */
+   }  /* while () */
 }
 #endif  /* UNIT_TEST */
