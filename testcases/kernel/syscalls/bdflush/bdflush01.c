@@ -119,9 +119,6 @@ extern void cleanup() {
         /* Remove tmp dir and all files in it */
         TEST_CLEANUP;
         tst_rmdir();
-
-        /* Exit with appropriate return code. */
-        tst_exit();
 }
 
 /* Local  Functions */
@@ -155,10 +152,8 @@ int main(int ac, char **av) {
         char *msg;              /* message returned from parse_opts */
 	
         /* parse standard options */
-        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL){
-             tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-             tst_exit();
-           }
+        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
         setup();
 
@@ -166,22 +161,20 @@ int main(int ac, char **av) {
         for (lc = 0; TEST_LOOPING(lc); ++lc) {
                 Tst_count = 0;
                 for (testno = 0; testno < TST_TOTAL; ++testno) {
-			TEST(syscall(__NR_bdflush,0,data));	//bdflush(0,data);
+			TEST(syscall(__NR_bdflush,0,data));
 			if(TEST_RETURN < 0){
-				tst_resm(TFAIL|TTERRNO,"Call to bdflush() failed");
-                        	cleanup();
-				tst_exit();
-			}else {
-				tst_resm(TPASS,"Test PASSED and %ld is returned \n",TEST_RETURN);
-				tst_resm(TINFO,"bdflush() activated...\n");
-                        	cleanup();
-				tst_exit();
+				tst_brkm(TFAIL|TTERRNO, cleanup,
+						"bdflush failed");
+			} else {
+				tst_resm(TPASS, "Test PASSED and returned %ld",
+					TEST_RETURN);
 		        }
 
 	
                 }
-	Tst_count++;
-        }	
-        tst_exit();
+		Tst_count++;
+        }
+	cleanup();
+	tst_exit();
 }
 
