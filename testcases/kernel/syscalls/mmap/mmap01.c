@@ -96,7 +96,7 @@ char *dummy;			/* dummy string */
 size_t page_sz;			/* system page size */
 size_t file_sz;			/* mapped file size */
 int fildes;			/* file descriptor for tempfile */
-char Cmd_buffer[BUFSIZ];	/* command buffer to hold test command */
+char cmd_buffer[BUFSIZ];	/* command buffer to hold test command */
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
@@ -107,11 +107,8 @@ int main(int ac, char **av)
 	char *msg;		/* message returned from parse_opts */
 
 	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, NULL, NULL);
-	if (msg != NULL) {
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
-	}
 
 	/* Perform global setup for test */
 	setup();
@@ -128,12 +125,10 @@ int main(int ac, char **av)
 		errno = 0;
 		addr = mmap(addr, page_sz, PROT_READ | PROT_WRITE,
 			    MAP_FILE | MAP_SHARED | MAP_FIXED, fildes, 0);
-		TEST_ERRNO = errno;
 
 		/* Check for the return value of mmap() */
 		if (addr == MAP_FAILED) {
-			tst_resm(TFAIL, "mmap() Failed on %s, errno=%d : %s",
-				 TEMPFILE, errno, strerror(errno));
+			tst_resm(TFAIL|TERRNO, "mmap of %s failed", TEMPFILE);
 			continue;
 		}
 		/*
@@ -147,8 +142,9 @@ int main(int ac, char **av)
 			 * to file.
 			 */
 			if (memcmp(&addr[file_sz], dummy, page_sz - file_sz)) {
-				tst_brkm(TFAIL, cleanup, "mapped memory area "
-					 "contains invalid data");
+				tst_brkm(TFAIL, cleanup,
+					"mapped memory area contains invalid "
+					"data");
 			}
 
 			/*
@@ -163,9 +159,8 @@ int main(int ac, char **av)
 			 * with the file.
 			 */
 			if (msync(addr, page_sz, MS_SYNC) != 0) {
-				tst_brkm(TFAIL, cleanup, "msync() failed to "
-					 "synchronize mapped file, error:%d",
-					 errno);
+				tst_brkm(TFAIL|TERRNO, cleanup,
+					"failed to synchronize mapped file");
 			}
 
 			/*
@@ -173,12 +168,12 @@ int main(int ac, char **av)
 			 * temporary file.  The pattern should not be
 			 * found and the return value should be 1.
 			 */
-			if (system(Cmd_buffer) != 0) {
+			if (system(cmd_buffer) != 0) {
 				tst_resm(TPASS,
-					 "Functionality of mmap() successful");
+					"Functionality of mmap() successful");
 			} else {
 				tst_resm(TFAIL,
-					 "Specified pattern found in file");
+					"Specified pattern found in file");
 			}
 		} else {
 			tst_resm(TPASS, "call succeeded");
@@ -187,15 +182,12 @@ int main(int ac, char **av)
 		/* Clean up things in case we are looping */
 		/* Unmap the mapped memory */
 		if (munmap(addr, page_sz) != 0) {
-			tst_brkm(TFAIL, NULL, "munmap() fails to unmap the "
-				 "memory, errno=%d", errno);
+			tst_brkm(TFAIL|TERRNO, NULL, "munmap failed");
 		}
 	}			/* End for TEST_LOOPING */
 
-	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
-
-	 /*NOTREACHED*/ return 0;
+	tst_exit();
 }				/* End main */
 
 /*
@@ -225,43 +217,36 @@ void setup()
 
 	/* Get the path of temporary file to be created */
 	if (getcwd(Path_name, sizeof(Path_name)) == NULL) {
-		tst_brkm(TFAIL, cleanup,
-			 "getcwd fails to get current working directory");
+		tst_brkm(TFAIL|TERRNO, cleanup,
+			 "getcwd failed to get current working directory");
 	}
 
 	/* Creat a temporary file used for mapping */
 	if ((fildes = open(TEMPFILE, O_RDWR | O_CREAT, 0666)) < 0) {
-		tst_brkm(TFAIL, cleanup,
-			 "open() on %s Failed, errno=%d : %s",
-			 TEMPFILE, errno, strerror(errno));
+		tst_brkm(TFAIL, cleanup, "opening %s failed", TEMPFILE);
 	}
 
 	/* Write some data into temporary file */
 	if (write(fildes, write_buf, strlen(write_buf)) != strlen(write_buf)) {
-		tst_brkm(TFAIL, cleanup,
-			 "write() on %s Failed, errno=%d : %s",
-			 TEMPFILE, errno, strerror(errno));
+		tst_brkm(TFAIL, cleanup, "writing to %s", TEMPFILE);
 	}
 
 	/* Get the size of temporary file */
 	if (stat(TEMPFILE, &stat_buf) < 0) {
-		tst_brkm(TFAIL, cleanup,
-			 "stat() on %s Failed, errno=%d : %s",
-			 TEMPFILE, errno, strerror(errno));
+		tst_brkm(TFAIL|TERRNO, cleanup, "stat of %s failed",
+			TEMPFILE);
 	}
 	file_sz = stat_buf.st_size;
 
 	/* Get the system page size */
 	if ((page_sz = getpagesize()) < 0) {
 		tst_brkm(TFAIL, cleanup,
-			 "getpagesize() fails to get system page size");
-		tst_exit();
+			"getpagesize() fails to get system page size");
 	}
 
 	/* Allocate and initialize dummy string of system page size bytes */
 	if ((dummy = (char *)calloc(page_sz, sizeof(char))) == NULL) {
-		tst_brkm(TFAIL, cleanup, "calloc() failed to allocate space");
-		tst_exit();
+		tst_brkm(TFAIL, cleanup, "calloc failed (dummy)");
 	}
 
 	/*
@@ -274,14 +259,15 @@ void setup()
 	 * page size.
 	 */
 	if ((intptr_t) sbrk(SHMLBA + page_sz) == -1) {
-		tst_brkm(TFAIL, cleanup, "sbrk(SHMLBA + page_sz) failed");
+		tst_brkm(TFAIL|TERRNO, cleanup,
+			"sbrk(SHMLBA + page_sz) failed");
 	}
 
 	/* Initialize one page region from addr with 'A' */
 	memset(addr, 'A', page_sz);
 
 	/* Create the command which will be executed in the test */
-	sprintf(Cmd_buffer, "grep XYZ %s/%s > /dev/null", Path_name, TEMPFILE);
+	sprintf(cmd_buffer, "grep XYZ %s/%s > /dev/null", Path_name, TEMPFILE);
 }
 
 /*
@@ -306,7 +292,4 @@ void cleanup()
 
 	/* Remove tmp dir and all files in it */
 	tst_rmdir();
-
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

@@ -88,11 +88,8 @@ int main(int argc, char **argv)
 	int i;
 	char *msg;		/* for parse_opts */
 
-	msg = parse_opts(argc, argv, NULL, NULL);
-	if (msg != NULL) {
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) != NULL)
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
-	}
 
 	setup();
 
@@ -112,14 +109,11 @@ int main(int argc, char **argv)
 	}
 
 	cleanup();
-
-	return 0;
+	tst_exit();
 }
 
 void setup()
 {
-	int i;
-
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Pause if option was specified */
@@ -128,19 +122,19 @@ void setup()
 	tst_tmpdir();
 
 	if ((fd = open("mmaptest", O_RDWR | O_CREAT, 0666)) < 0)
-		tst_brkm(TFAIL|TERRNO, cleanup, "open(mmaptest) file failed");
+		tst_brkm(TFAIL|TERRNO, cleanup, "opening mmaptest failed");
 
 	/* ftruncate the file to 16k */
 	if (ftruncate(fd, mapsize) < 0)
-		tst_brkm(TFAIL|TERRNO, cleanup, "ftruncate() file failed");
+		tst_brkm(TFAIL|TERRNO, cleanup, "ftruncate file failed");
 
 	maddr = mmap(0, (size_t) mapsize, PROT_READ | PROT_WRITE,
-		     MAP_FILE | MAP_SHARED, fd, (off_t) 0);
+		    MAP_FILE | MAP_SHARED, fd, (off_t) 0);
 	if (maddr == MAP_FAILED)
-		tst_brkm(TFAIL|TERRNO, cleanup, "mmap() file failed");
+		tst_brkm(TFAIL|TERRNO, cleanup, "mmapping mmaptest failed");
+
 	/* fill up the file with A's */
-	for (i = 0; i < mapsize; i++)
-		maddr[i] = 'A';
+	memset(maddr, 'A', mapsize);
 
 }
 
@@ -150,5 +144,4 @@ void cleanup()
 	munmap(maddr, (size_t) mapsize);
 	close(fd);
 	tst_rmdir();
-	tst_exit();
 }
