@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
 	int pid;
 	
 	/* Check that we're root...can't call clock_settime with CLOCK_REALTIME otherwise */
-	if(getuid() != 0)
+	if (getuid() != 0)
 	{
 		printf("Run this test as ROOT, not as a Regular User\n");
 		return PTS_UNTESTED;
@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
 		}
 
 		if (tsT3.tv_sec >= tsT2.tv_sec) {
-			if ( (tsT3.tv_sec-tsT2.tv_sec) <= ACCEPTABLEDELTA) {
+			if ((tsT3.tv_sec-tsT2.tv_sec) <= ACCEPTABLEDELTA) {
 				return CHILDPASS;
 			} else {
 				printf("Ended too late.  %d >> %d\n",

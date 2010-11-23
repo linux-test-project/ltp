@@ -127,7 +127,7 @@ int main(int ac, char **av) {
 	char *msg;	      /* message returned from parse_opts */
 	
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL){
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	} else {
 
@@ -138,7 +138,7 @@ int main(int ac, char **av) {
 			Tst_count = 0;
 			for (testno = 0; testno < TST_TOTAL; ++testno) {
 
-				for(i=0; i<test_count; i++) {
+				for (i=0; i<test_count; i++) {
 
 					/* Call add_key. */
 					TEST(syscall(__NR_add_key, test_cases[i].type,

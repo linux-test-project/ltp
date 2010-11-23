@@ -91,7 +91,7 @@ void sighdl( int sig )
 	{
 		do_it = 0;
 	}
-	while ( do_it );
+	while (do_it);
 }
 
 typedef struct _tdata
@@ -114,23 +114,23 @@ void * threaded( void * arg )
 
 	struct sched_param sp;
 
-	while ( do_it )
+	while (do_it)
 	{
-		for ( i = 0; i < 4; i++ )
+		for (i = 0; i < 4; i++)
 		{
 			ret = pthread_getschedparam( td[ i ].thread, &pol, &sp );
 
-			if ( ret != 0 )
+			if (ret != 0)
 			{
 				UNRESOLVED( ret, "Failed to get sched param" );
 			}
 
-			if ( pol != td[ i ].policy )
+			if (pol != td[ i ].policy)
 			{
 				FAILED( "Wrong scheduling policy read" );
 			}
 
-			if ( sp.sched_priority != td[ i ].prio )
+			if (sp.sched_priority != td[ i ].prio)
 			{
 				FAILED( "Wrong scheduling priority read" );
 			}
@@ -152,7 +152,7 @@ void * rt_thread( void * arg )
 	/* This thread does almost nothing but wait... */
 	ret = pthread_barrier_wait( arg );
 
-	if ( ( ret != 0 ) && ( ret != PTHREAD_BARRIER_SERIAL_THREAD ) )
+	if (( ret != 0 ) && ( ret != PTHREAD_BARRIER_SERIAL_THREAD ))
 	{
 		UNRESOLVED( ret, "Failed to wait for barrier" );
 	}
@@ -183,7 +183,7 @@ int main ( int argc, char * argv[] )
 	/* Initialize barrier */
 	ret = pthread_barrier_init( &bar, NULL, 5 );
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to init barrier" );
 	}
@@ -196,12 +196,12 @@ int main ( int argc, char * argv[] )
 
 	sa.sa_handler = sighdl;
 
-	if ( ( ret = sigaction ( SIGUSR1, &sa, NULL ) ) )
+	if (( ret = sigaction ( SIGUSR1, &sa, NULL ) ))
 	{
 		UNRESOLVED( ret, "Unable to register signal handler" );
 	}
 
-	if ( ( ret = sigaction ( SIGALRM, &sa, NULL ) ) )
+	if (( ret = sigaction ( SIGALRM, &sa, NULL ) ))
 	{
 		UNRESOLVED( ret, "Unable to register signal handler" );
 	}
@@ -217,45 +217,45 @@ int main ( int argc, char * argv[] )
 
 	td[ 0 ].prio = sched_get_priority_min( SCHED_FIFO );
 
-	if ( td[ 0 ].prio == -1 )
+	if (td[ 0 ].prio == -1)
 	{
 		UNRESOLVED( errno, "Failed to get scheduler range value" );
 	}
 
 	td[ 1 ].prio = sched_get_priority_max( SCHED_FIFO );
 
-	if ( td[ 1 ].prio == -1 )
+	if (td[ 1 ].prio == -1)
 	{
 		UNRESOLVED( errno, "Failed to get scheduler range value" );
 	}
 
 	td[ 2 ].prio = sched_get_priority_min( SCHED_RR );
 
-	if ( td[ 2 ].prio == -1 )
+	if (td[ 2 ].prio == -1)
 	{
 		UNRESOLVED( errno, "Failed to get scheduler range value" );
 	}
 
 	td[ 3 ].prio = sched_get_priority_max( SCHED_RR );
 
-	if ( td[ 3 ].prio == -1 )
+	if (td[ 3 ].prio == -1)
 	{
 		UNRESOLVED( errno, "Failed to get scheduler range value" );
 	}
 
 	/* Initialize the threads attributes and create the RT threads */
-	for ( i = 0; i < 4; i++ )
+	for (i = 0; i < 4; i++)
 	{
 		ret = pthread_attr_init( &ta[ i ] );
 
-		if ( ret != 0 )
+		if (ret != 0)
 		{
 			UNRESOLVED( ret, "Failed to initialize thread attribute" );
 		}
 
 		ret = pthread_attr_setinheritsched( &ta[ i ], PTHREAD_EXPLICIT_SCHED );
 
-		if ( ret != 0 )
+		if (ret != 0)
 		{
 			UNRESOLVED( ret, "Failed to set explicit scheduling attribute" );
 		}
@@ -264,21 +264,21 @@ int main ( int argc, char * argv[] )
 
 		ret = pthread_attr_setschedparam( &ta[ i ], &sp );
 
-		if ( ret != 0 )
+		if (ret != 0)
 		{
 			UNRESOLVED( ret, "failed to set thread attribute sched param" );
 		}
 
 		ret = pthread_attr_setschedpolicy( &ta[ i ], td[ i ].policy );
 
-		if ( ret != 0 )
+		if (ret != 0)
 		{
 			UNRESOLVED( ret, "failed to set thread attribute sched prio" );
 		}
 
 		ret = pthread_create( &td[ i ].thread, &ta[ i ], rt_thread, &bar );
 
-		if ( ret != 0 )
+		if (ret != 0)
 		{
 			UNRESOLVED( ret, "Failed to create a RT thread -- need more privilege?" );
 		}
@@ -286,22 +286,22 @@ int main ( int argc, char * argv[] )
 	}
 
 	/* Create the worker threads */
-	for ( i = 0; i < NTHREADS; i++ )
+	for (i = 0; i < NTHREADS; i++)
 	{
 		ret = pthread_create( &th[ i ], NULL, threaded, NULL );
 
-		if ( ret != 0 )
+		if (ret != 0)
 		{
 			UNRESOLVED( ret, "failed to create a worker thread" );
 		}
 	}
 
 	/* Wait for the worker threads to finish */
-	for ( i = 0; i < NTHREADS; i++ )
+	for (i = 0; i < NTHREADS; i++)
 	{
 		ret = pthread_join( th[ i ], NULL );
 
-		if ( ret != 0 )
+		if (ret != 0)
 		{
 			UNRESOLVED( ret, "failed to join a worker thread" );
 		}
@@ -310,17 +310,17 @@ int main ( int argc, char * argv[] )
 	/* Join the barrier to terminate the RT threads */
 	ret = pthread_barrier_wait( &bar );
 
-	if ( ( ret != 0 ) && ( ret != PTHREAD_BARRIER_SERIAL_THREAD ) )
+	if (( ret != 0 ) && ( ret != PTHREAD_BARRIER_SERIAL_THREAD ))
 	{
 		UNRESOLVED( ret, "Failed to wait for the barrier" );
 	}
 
 	/* Join the RT threads */
-	for ( i = 0; i < 4; i++ )
+	for (i = 0; i < 4; i++)
 	{
 		ret = pthread_join( td[ i ].thread, NULL );
 
-		if ( ret != 0 )
+		if (ret != 0)
 		{
 			UNRESOLVED( ret, "Failed to join a thread" );
 		}
@@ -331,7 +331,7 @@ int main ( int argc, char * argv[] )
 
 	ret = pthread_barrier_destroy( &bar );
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to destroy the barrier" );
 	}

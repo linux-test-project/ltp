@@ -126,7 +126,7 @@
 #define OPT_MISSING(prog, opt) do {                        \
             fprintf(stderr, "%s: option -%c ", prog, opt); \
             fprintf(stderr, "requires an argument\n");    \
-                } while(0)
+                } while (0)
 
                           /* exit thread macro                                */
 #define PTHREAD_EXIT(val)      do {              \
@@ -967,7 +967,7 @@ main(int   argc,     /* number of command line parameters                     */
      */
     do
     {
-        if(!test_num)
+        if (!test_num)
         {
             int test_ndx;  /* index into the array of tests               */
 

@@ -148,7 +148,7 @@ static void setup(void)
 	 * Make a directory to do this in; ignore error if already exists.
 	 * Save starting directory.
 	 */
-	if ((cwd = getcwd(homedir, sizeof (homedir))) == NULL ) {
+	if ((cwd = getcwd(homedir, sizeof (homedir))) == NULL) {
 		tst_resm(TBROK,"Failed to get corrent directory") ;
 		tst_exit();
 	}
@@ -216,7 +216,7 @@ static void runtest(void)
 	 * Wait for children to finish.
 	 */
 	count = 0;
-	while(1) {
+	while (1) {
 		if ((child = wait(&status)) >= 0) {
 			//tst_resm(TINFO, "\tTest{%d} exited status = 0x%x", child, status);
 			if (status) {
@@ -502,7 +502,7 @@ static void dotest(int testers, int me, int fd)
 		++misc_cnt[m_fsync];
 		//tst_resm(TINFO, "\tTest{%d} val %d done, count = %d, collide = {%d}",
 		//		me, val, count, collide);
-		//for(i = 0; i < NMISC; i++)
+		//for (i = 0; i < NMISC; i++)
 		//	tst_resm(TINFO, "\t\tTest{%d}: {%d} %s's.", me, misc_cnt[i], m_str[i]);
 		++val;
 	}
@@ -543,9 +543,9 @@ static void domisc(int me, int fd, char *bits)
 			}
 			tr_flag = 1;
 		}
-		for(; chunk%8 != 0; chunk++)
+		for (; chunk%8 != 0; chunk++)
 			bits[chunk/8] &= ~(1<<(chunk%8));
-		for(; chunk < nchunks; chunk += 8)
+		for (; chunk < nchunks; chunk += 8)
 			bits[chunk/8] = 0;
 		break;
 	case m_sync:

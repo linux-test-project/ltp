@@ -29,21 +29,21 @@ int main()
 	pthread_condattr_t condattr;
 
 	/* Initialize a condition variable attributes object */
-	if(pthread_condattr_init(&condattr) != 0)
+	if (pthread_condattr_init(&condattr) != 0)
 	{
 		fprintf(stderr,"Cannot initialize condition variable attributes object\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Destroy the condition variable attributes object */
-	if(pthread_condattr_destroy(&condattr) != 0)
+	if (pthread_condattr_destroy(&condattr) != 0)
 	{
 		fprintf(stderr,"Cannot destroy the condition variable attributes object\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Initialize the condition variable attributes object again.  This shouldn't result in an error. */
-	if(pthread_condattr_init(&condattr) != 0)
+	if (pthread_condattr_init(&condattr) != 0)
 	{
 		printf("Test FAILED\n");
 		return PTS_FAIL;

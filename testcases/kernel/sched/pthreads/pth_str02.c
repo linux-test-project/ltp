@@ -87,7 +87,7 @@ int main (int argc, char **argv)
 	 */
 	parse_args (argc, argv);
 
-        if(test_limit) {
+        if (test_limit) {
 	  tst_resm (TINFO, "Creating as many threads as possible");
         } else {
 	  tst_resm (TINFO, "Creating %d threads", num_threads);

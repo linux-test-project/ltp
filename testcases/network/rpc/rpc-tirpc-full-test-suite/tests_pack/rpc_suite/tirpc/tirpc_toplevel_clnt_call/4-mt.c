@@ -67,7 +67,7 @@ void *my_thread_process (void * arg)
 	//First of all, create client using top level API
 	clnt = clnt_create(hostname, progNum, VERSNUM, nettype);	
 	
-	if (clnt == (CLIENT *)NULL)
+	if (clnt == NULL)
     {
     	clnt_pcreateerror("ERR");
     	thread_array_result[atoi(arg)] = 0;

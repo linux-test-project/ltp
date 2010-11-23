@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 		int sig;
 		int flags = 0;
 
-		if (sigemptyset(&set) == -1 ) {
+		if (sigemptyset(&set) == -1) {
 			perror("sigemptyset() failed\n");
 			return PTS_UNRESOLVED;
 		}
@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
 		int flags = 0;
 		int i;
 
-		if (sigemptyset(&set) == -1 ) {
+		if (sigemptyset(&set) == -1) {
 			perror("sigemptyset() failed\n");
 			return PTS_UNRESOLVED;
 		}

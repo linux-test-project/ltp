@@ -182,7 +182,7 @@ parse_options(int argc, char *argv[], struct icmpv4_fake *fake_p)
     int is_specified_daddr_ll = 0;
     int is_specified_daddr = 0;
 
-    while ((optc = getopt(argc, argv, "I:S:M:D:s:t:dhcfilLpv")) != EOF ) {
+    while ((optc = getopt(argc, argv, "I:S:M:D:s:t:dhcfilLpv")) != EOF) {
 	switch (optc) {
 	    case 'I':
 		fake_p->src_ifname = strdup(optarg);
@@ -499,7 +499,7 @@ thrust_fakes(struct ip4_datagram *pkt, u_int16_t fake_flag)
 		if (rand_val) {
 		    int number;
 		    int counter;
-		    for(counter=0; counter <= 0xff; counter++) {
+		    for (counter=0; counter <= 0xff; counter++) {
 			number = rand() / ((RAND_MAX + 1U) / 0x100);
 			if (getprotobynumber(number) == NULL) {
 			    pkt->hdr.protocol = number;
@@ -581,7 +581,7 @@ send_packets(struct icmpv4_fake *fake_p)
     pkt	= fake_p->pkt;
     start_time = time(NULL);
 
-    for(;;) {
+    for (;;) {
 	if (fake_p->fake_flag) {
 	    pkt	= fake_p->pkt;
 	    thrust_fakes(&pkt, fake_p->fake_flag);

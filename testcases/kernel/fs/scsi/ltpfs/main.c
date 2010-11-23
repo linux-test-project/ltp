@@ -193,7 +193,7 @@ int cleanup_files(char * file, struct stat * statBuff, int flag)
 
 
     if (flag == FTW_F) {
-        if(unlink(file)){
+        if (unlink(file)) {
             printf("ERROR:%d removing file %s\n", errno, file);
         }
     }
@@ -212,11 +212,11 @@ int cleanup_dirs(char * file, struct stat * statBuff, int flag)
     }
 
     if (flag == FTW_F) {
-        if(unlink(file)){
+        if (unlink(file)) {
             printf("ERROR:%d removing file %s\n", errno, file);
         }
     }
-    else if (flag == FTW_D){
+    else if (flag == FTW_D) {
         changedir(file);
         ftw(file, (void *)cleanup_dirs, MAXNUM);
         rmdir(file);
@@ -253,7 +253,7 @@ int do_create_file_test(char * path)
 
     printf("Creating files...\n");
 
-    for ( i = 0 ; i < FILE_CREATE_COUNT; i++) {
+    for (i = 0 ; i < FILE_CREATE_COUNT; i++) {
 
         sprintf(dir1,"%2.2x",i);
 
@@ -262,7 +262,7 @@ int do_create_file_test(char * path)
 
         changedir(dir1);
 
-        for ( j = 0 ; j < FILE_CREATE_COUNT ; j++) {
+        for (j = 0 ; j < FILE_CREATE_COUNT ; j++) {
 
             sprintf(dir2,"%2.2x",j);
 
@@ -270,13 +270,13 @@ int do_create_file_test(char * path)
 
             changedir(dir2);
 
-            for ( k = 0 ; k < FILE_CREATE_COUNT ; k++) {
+            for (k = 0 ; k < FILE_CREATE_COUNT ; k++) {
 
                 sprintf(dir3,"%2.2x",k);
                 makedir(dir3);
                 changedir(dir3);
 
-                for ( l = 0 ; l < FILE_CREATE_COUNT ; l++) {
+                for (l = 0 ; l < FILE_CREATE_COUNT ; l++) {
                     sprintf(filename,"%s%s%s%2.2x",dir1,dir2,dir3,l);
                     rc = create_file(filename);
                     if (rc != 0 || maxfiles < dFileCount++) {
@@ -309,7 +309,7 @@ int makedir(char *dir1)
 }
 
 int changedir(char *dir) {
-  if ( chdir(dir) < 0 ) {
+  if (chdir(dir) < 0) {
     perror(dir);
     return (errno);
   }
@@ -323,7 +323,7 @@ int create_file(char *filename)
   int fileHandle;
   int randomsize;
 
-  if ( (fileHandle=creat(filename, S_IRWXU)) < 0) {
+  if ((fileHandle=creat(filename, S_IRWXU)) < 0) {
 
     fprintf(stderr,"\nERROR line %d: Total create files: %d\n",__LINE__,cFileCount);
     perror(filename);
@@ -333,7 +333,7 @@ int create_file(char *filename)
   if ((randomsize = gen_random_file_size(0,MAXFSIZE)) < 0) {
     randomsize = MAXFSIZE;
   }
-  if (write(fileHandle,wbuf,randomsize) < 0 ) {
+  if (write(fileHandle,wbuf,randomsize) < 0) {
 
     fprintf(stderr,"\nERROR:%d line%d: Total create files: %d\n",errno,__LINE__,cFileCount);
     close(fileHandle);
@@ -354,7 +354,7 @@ int delete_file(char *filename)
 
     st = stat(filename, &buf);
 
-    if ( st < 0 ) {
+    if (st < 0) {
         errorCount++;
         printf("ERROR line %d: Getting file stats %s \n", __LINE__, filename);
         return(-1);
@@ -362,7 +362,7 @@ int delete_file(char *filename)
 
     disk_space_pool += buf.st_size;
 
-    if ( unlink(filename) < 0 ) {
+    if (unlink(filename) < 0) {
         errorCount++;
         printf("ERROR line %d: Removing file %s \n", __LINE__, filename);
         return(-1);
@@ -455,17 +455,17 @@ int gen_random_file_size(int min, int max)
   int ave;
   int range;
   int ZZ;
-  if ( min >= max ) {
+  if (min >= max) {
     return (-1);
   }
   range = max - min;
   ave = range/2;
-  for ( i = 0 ; i< 10 ; i++ ) {
+  for (i = 0 ; i< 10 ; i++) {
     u1 =  ((double)(random() % 1000000))/ 1000000;
     u2 =  ((double)(random() % 1000000))/ 1000000;
     z = sqrt( -2.0 * log(u1) ) * cos ( M_2PI * u2 );
     ZZ = min + (ave + (z*(ave/4)));
-    if (ZZ >= min && ZZ < max ) {
+    if (ZZ >= min && ZZ < max) {
         return (ZZ);
     }
   }
@@ -483,7 +483,7 @@ int do_random_access_test(int maxNum)
     printf("Running random access test...\n");
     changedir(rootPath);
 
-    if ( maxNum < 1 || maxNum > MAXNUM ) {
+    if (maxNum < 1 || maxNum > MAXNUM) {
         printf("out of size %d\n",maxNum);
         return 1;
     }
@@ -491,14 +491,14 @@ int do_random_access_test(int maxNum)
     time(&t);
     srandom((unsigned int)getpid()^(((unsigned int)t<<16)| (unsigned int)t>>16));
 
-    if ( (nullFileHandle = open("/dev/null",O_WRONLY)) < 0 ) {
+    if ((nullFileHandle = open("/dev/null",O_WRONLY)) < 0) {
         perror("/dev/null");
         return(errno);
     }
 
 
     /* 00/00/00/00 */
-    for ( i = 0 ; i < maxNum ; i++) {
+    for (i = 0 ; i < maxNum ; i++) {
 
         r = random() % maxNum;
 
@@ -522,13 +522,13 @@ int open_read_close(char *fname)
     char buffer[BUFFSIZE];
     int c;
 
-    if ( (fileHandle = open(fname, O_RDONLY | O_SYNC | O_ASYNC)) < 0 ) {
+    if ((fileHandle = open(fname, O_RDONLY | O_SYNC | O_ASYNC)) < 0) {
         openlog[FAIL]++;
         printf("ERROR:opening file %s failed %d \n", fname, errno);
         return (errno);
     }
 
-    if ( (fileHandle2 = open(fname, O_RDONLY |  O_SYNC | O_ASYNC)) < 0 ) {
+    if ((fileHandle2 = open(fname, O_RDONLY |  O_SYNC | O_ASYNC)) < 0) {
         openlog[FAIL]++;
         printf("ERROR:2nd opening file %s failed %d \n", fname, errno);
         return (errno);
@@ -536,16 +536,16 @@ int open_read_close(char *fname)
 
     openlog[SUCCESS]++;
 
-    while ( (c = read(fileHandle, buffer, BUFFSIZE)) > 0 ) {
-        if (write(nullFileHandle, buffer, c) < 0 ) {
+    while ((c = read(fileHandle, buffer, BUFFSIZE)) > 0) {
+        if (write(nullFileHandle, buffer, c) < 0) {
             perror("/dev/null");
             printf("Opened\t %d\nUnopend:\t%d\n",openlog[SUCCESS],openlog[FAIL]);
             close(fileHandle2);
             close(fileHandle);
             return(errno);
         }
-        if ( (c = read(fileHandle2, buffer, BUFFSIZE)) > 0 ) {
-            if (write(nullFileHandle, buffer, c) < 0 ) {
+        if ((c = read(fileHandle2, buffer, BUFFSIZE)) > 0) {
+            if (write(nullFileHandle, buffer, c) < 0) {
                 perror("/dev/null");
                 printf("Opened\t %d\nUnopend:\t%d\n",openlog[SUCCESS],openlog[FAIL]);
                 close(fileHandle2);
@@ -555,7 +555,7 @@ int open_read_close(char *fname)
         }
     }
 
-    if ( c < 0 ) {
+    if (c < 0) {
         perror(fname);
         printf("Opened\t %d\nUnopend:\t%d\n",openlog[SUCCESS],openlog[FAIL]);
         return(errno);
@@ -573,14 +573,14 @@ int create_or_delete(char *fname)
     r = (random() & 1);
 
         /* create */
-    if((create_file(fname) == 0)){
+    if ((create_file(fname) == 0)) {
         rc = delete_file(fname);
     }
     else{
         printf("Error: %d creating random file \n", errno);
     }
 
-    if ( (errorCount > dFileCount ||  errorCount > cFileCount) && (errorCount > MAXERROR)) {
+    if ((errorCount > dFileCount ||  errorCount > cFileCount) && (errorCount > MAXERROR)) {
         fprintf(stderr,"Too many errors -- Aborting test\n");
         fprintf(stderr,"Total create files: %d\n",cFileCount);
         fprintf(stderr,"Total delete files: %d\n",dFileCount);
@@ -600,7 +600,7 @@ int do_random_create_delete(int maxNum)
 
   printf("Running random create/delete test...\n");
 
-  if ( maxNum < 1 || maxNum > MAXNUM ) {
+  if (maxNum < 1 || maxNum > MAXNUM) {
     printf("MAX out of size %d\n",maxNum);
     return(maxNum);
   }
@@ -610,7 +610,7 @@ int do_random_create_delete(int maxNum)
 
 
   /* 00/00/00/00 */
-  for ( i = 0 ; i < maxNum && rc != MAXERROR; i++) {
+  for (i = 0 ; i < maxNum && rc != MAXERROR; i++) {
     r = random() % maxNum;
     sprintf(fname,"00/%2.2x/%2.2x/00%2.2x%2.2x%2.2x",
 	   ((r>>16)&0xFF),

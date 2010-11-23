@@ -148,7 +148,6 @@ void setup() {
 
 int main(int ac, char **av) {
 	long data;
-	int lc;                 /* loop counter */
         char *msg;              /* message returned from parse_opts */
 	
         /* parse standard options */
@@ -157,24 +156,16 @@ int main(int ac, char **av) {
 
         setup();
 
-        /* Check looping state if -i option given */
-        for (lc = 0; TEST_LOOPING(lc); ++lc) {
-                Tst_count = 0;
-                for (testno = 0; testno < TST_TOTAL; ++testno) {
-			TEST(syscall(__NR_bdflush,0,data));
-			if(TEST_RETURN < 0){
-				tst_brkm(TFAIL|TTERRNO, cleanup,
-						"bdflush failed");
-			} else {
-				tst_resm(TPASS, "Test PASSED and returned %ld",
-					TEST_RETURN);
-		        }
-
-	
+	Tst_count = 1;
+	for (testno = 0; testno < TST_TOTAL; ++testno) {
+		TEST(syscall(__NR_bdflush, 0, data));
+		if (TEST_RETURN < 0) {
+			tst_brkm(TFAIL|TTERRNO, cleanup, "bdflush() failed");
+		} else {
+			tst_resm(TPASS, "test PASSED; %ld was returned",
+			    TEST_RETURN);
                 }
-		Tst_count++;
         }
 	cleanup();
 	tst_exit();
 }
-

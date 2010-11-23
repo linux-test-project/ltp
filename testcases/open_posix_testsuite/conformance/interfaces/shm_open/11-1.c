@@ -21,17 +21,17 @@
 
 #define SHM_NAME "posixtest_11-1"
 
-int main(){
+int main() {
 	int fd, flags;
 
 	fd = shm_open(SHM_NAME, O_RDONLY|O_CREAT, S_IRUSR|S_IWUSR);
-	if(fd == -1) {
+	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		return PTS_UNRESOLVED;
 	}
 	
 	flags = fcntl(fd, F_GETFD);
-	if(flags == -1) {
+	if (flags == -1) {
 		perror("An error occurs when calling fcntl()");
 		shm_unlink(SHM_NAME);
 		return PTS_UNRESOLVED;
@@ -39,7 +39,7 @@ int main(){
 
 	shm_unlink(SHM_NAME);
 
-	if(flags & FD_CLOEXEC){
+	if (flags & FD_CLOEXEC) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}

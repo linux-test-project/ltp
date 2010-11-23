@@ -7,7 +7,7 @@
 #include <sys/xattr.h>
 #include <string.h>
 
-int main(int argc, char *argv[]){
+int main(int argc, char *argv[]) {
 	ssize_t s;
 	char * tok;
 	char value[1024];
@@ -16,7 +16,7 @@ int main(int argc, char *argv[]){
 	char * file;
 	int fd;
 
-	if ( argc < 2) {
+	if (argc < 2) {
 		printf ("Please enter a file name as argument.\n");
 		return -1;
 	}
@@ -29,17 +29,17 @@ int main(int argc, char *argv[]){
 		return -1;
 	}
 
-	if(-1 == (s = flistxattr(fd, list, 1024)) ) {
+	if (-1 == (s = flistxattr(fd, list, 1024))) {
 		perror("flistxattr");
 		return 1;
 	}
-	if(s == 0) {
+	if (s == 0) {
 		printf("No xattrs defined for %s, further testcase useless\n",file);
 		return 1;
 	}
 	tok = strtok(list, "\0");
 	s = fgetxattr(fd, tok, (void*)value, 1024);
-	if(s == -1) {
+	if (s == -1) {
 		perror("fgetxattr");
 		return 1;
 	}

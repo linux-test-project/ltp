@@ -103,7 +103,7 @@ int main(int argn, char *argc[])
                             	paramList[i].bufmin, paramList[i].bufmax);
 		
 		//Check result
-		if (transp == (SVCXPRT *)NULL)
+		if (transp == NULL)
 		{
 			//test has failed
 			test_status = 1;

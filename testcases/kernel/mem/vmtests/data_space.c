@@ -120,7 +120,7 @@ int main(argc, argv)
 			bd_arg(argv[i-1]);
 		if (sscanf(argv[i++], "%d", &iterations) != 1)
 			bd_arg(argv[i-1]);
-		if( nchild > MAXCHILD )
+		if (nchild > MAXCHILD)
 		{
 			tst_resm(TBROK,"FAILURE, %d children exceeded maximum allowed\n", nchild);
 			tst_exit();
@@ -164,7 +164,7 @@ int runtest()
 	int	count;
 
 
-	for(i = 0; i < nchild; i++)
+	for (i = 0; i < nchild; i++)
 	{
 		chld_flag = 0;
 		if ((child = fork()) == 0) 		/* child */
@@ -190,7 +190,7 @@ int runtest()
 	 */
 
 	count = 0;
-	while((child = wait(&status)) > 0)
+	while ((child = wait(&status)) > 0)
 	{
 #ifdef DEBUG
 		tst_resm(TINFO, "\t%s[%d] exited status = 0x%x\n", prog, child, status);
@@ -303,13 +303,13 @@ int dotest(testers, me)
 	bfill(mondobuf, 0, max_size);
 
 	srand(getpid());
-	while(iterations-- > 0)
+	while (iterations-- > 0)
 	{
 		bfill(bits, 0, (nchunks+7)/8);
 		bfill(val_buf, val, csize);
 		count = 0;
 		collide = 0;
-		while(count < nchunks)
+		while (count < nchunks)
 		{
 			chunk = rand() % nchunks;
 			buf = mondobuf + CHUNK(chunk);
@@ -365,7 +365,7 @@ int dotest(testers, me)
 		tst_resm(TINFO, "\t%s[%d] val %d done, count = %d, collide = %d.\n",
 				prog, me, val, count, collide);
 #endif
-		for(chunk = 0; chunk < nchunks; chunk++)
+		for (chunk = 0; chunk < nchunks; chunk++)
 		{
 			if ((bits[chunk/8] & (1<<(chunk%8))) == 0)
 				bfill(mondobuf+CHUNK(chunk), val, csize);
@@ -386,7 +386,7 @@ void bfill(buf, val, size)
 {
 	register int i;
 
-	for(i = 0; i < size; i++)
+	for (i = 0; i < size; i++)
 		buf[i] = val;
 }
 
@@ -405,14 +405,14 @@ int dumpbuf(buf)
 
 #ifdef DEBUG
 	tst_resm(TINFO, "Buf: ... ");
-	for(i = -10; i < 0; i++) tst_resm(TINFO, "%x, ", buf[i]);
+	for (i = -10; i < 0; i++) tst_resm(TINFO, "%x, ", buf[i]);
 	tst_resm(TINFO, "\n");
 #endif
 
 	nout = 0;
 	idx = 0;
 	val = buf[0];
-	for(i = 0; i < csize; i++)
+	for (i = 0; i < csize; i++)
 	{
 		if (buf[i] != val)
 		{
@@ -456,7 +456,7 @@ void dumpbits(bits, size)
 	register char *buf;
 
 	tst_resm(TINFO, "Bits array:");
-	for(buf = bits; size > 0; --size, ++buf)
+	for (buf = bits; size > 0; --size, ++buf)
 	{
 		if ((buf-bits) % 16 == 0)
 			tst_resm(TINFO, "\n%04x:\t", 8*(buf-bits));
@@ -501,9 +501,9 @@ int chld()
 int massmurder()
 {
 	int i;
-	for( i=0 ; i < MAXCHILD ; i++ )
+	for (i=0 ; i < MAXCHILD ; i++)
 	{
-		if( allchild[i] )
+		if (allchild[i])
 		{
 			kill(allchild[i], SIGTERM);
 		}

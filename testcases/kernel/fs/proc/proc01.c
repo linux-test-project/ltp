@@ -297,7 +297,7 @@ long readproc(const char *obj)
 				 * starting point as directed by the
 				 * user).
 				 */
-				if ( strcmp(dir_ent->d_name, ".") &&
+				if (strcmp(dir_ent->d_name, ".") &&
 				     strcmp(dir_ent->d_name, "..") &&
 				     strcmp(dir_ent->d_name, "kcore") &&
 				     (fnmatch("[0-9]*", dir_ent->d_name,

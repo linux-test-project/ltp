@@ -70,7 +70,7 @@ int main(int argn, char *argc[])
 
     client = clnt_tp_create_timed(argc[1], progNum,
                                   VERSNUM, (struct netconfig *)nconf, &tv);
-    if (client == (CLIENT *)NULL)
+    if (client == NULL)
     {
     	//No client creation
     	printf("1\n");

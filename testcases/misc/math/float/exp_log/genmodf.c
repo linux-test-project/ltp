@@ -63,7 +63,7 @@ int create_Result_file()
 		TestInputValue = ((Inc*i) + Inc);
 		tabR[i] = modf(TestInputValue, &tabRI[i]);
 		// tabR[i] = modf( ((Inc*i) + Inc), &tabRI[i]);
-		if( (TestChkSum = tabR[i] + tabRI[i]) != TestInputValue)
+		if ((TestChkSum = tabR[i] + tabRI[i]) != TestInputValue)
 		  {
 		    return -1;
 		  }
@@ -82,7 +82,7 @@ int create_Result_file()
 	}
 	else
 	{
-		for (i = 0; i<nbVal; i++ ) 
+		for (i = 0; i<nbVal; i++) 
 		{
 			write(fp,&tabR[i],sizeof(double));
 			write(fp1,&tabRI[i],sizeof(double));
@@ -120,7 +120,7 @@ int create_Data_file()
         }
         else
         {	
-		for (i = 0; i<nbVal; i++ ) 
+		for (i = 0; i<nbVal; i++) 
 		{
 			write(fp,&tabD[i],sizeof(double));
 		}

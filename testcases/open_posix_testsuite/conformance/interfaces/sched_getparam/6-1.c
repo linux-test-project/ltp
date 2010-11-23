@@ -36,17 +36,17 @@ int set_nonroot()
 	struct passwd *pw;
 	setpwent();
 	/* search for the first user which is non root */ 
-	while((pw = getpwent()) != NULL)
-		if(strcmp(pw->pw_name, "root"))
+	while ((pw = getpwent()) != NULL)
+		if (strcmp(pw->pw_name, "root"))
 			break;
 	endpwent();
-	if(pw == NULL) {
+	if (pw == NULL) {
 		printf("There is no other user than current and root.\n");
 		return 1;
 	}
 
-	if(setuid(pw->pw_uid) != 0) {
-		if(errno == EPERM) {
+	if (setuid(pw->pw_uid) != 0) {
+		if (errno == EPERM) {
 			printf("You don't have permission to change your UID.\n");
 			return 1;
 		}
@@ -77,15 +77,15 @@ int main(int argc, char **argv)
 
 	result = sched_getparam( 1, &param);
 	
-	if(result == -1 && errno == EPERM) {
+	if (result == -1 && errno == EPERM) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}
-	if(result == 0) {
+	if (result == 0) {
 		printf("The function sched_getparam has successed.\n");
 		return PTS_FAIL;
 	}
-	if(errno != EPERM ) {
+	if (errno != EPERM) {
 		perror("errno is not EPERM: The system allows a non-root" 
 			"user to use sched_getparam()");
 		return PTS_UNRESOLVED;

@@ -49,7 +49,7 @@ char *argv[];
 		      filename, errno);
 	    else {
 		if ((cid = fork())) {
-		    if(cid == -1)
+		    if (cid == -1)
 			abortx("Error forking child");
 		    else {
 			waitpid(cid, &status, 0);

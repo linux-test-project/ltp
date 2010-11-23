@@ -140,7 +140,7 @@ int main() {
 
 	/* open the module */
 	rc = tmodopen();
-        if (rc ) {
+        if (rc) {
                 printf("Test MOD Driver may not be loaded\n");
                 exit(1);
         }
@@ -148,7 +148,7 @@ int main() {
 
 
 	/* make test calls */
-	if(ki_generic(tmod_fd, LTP_OPTION1))
+	if (ki_generic(tmod_fd, LTP_OPTION1))
 		printf("Failed on option 1 test\n");
 	else
 		printf("Success on option 1 test\n");
@@ -157,7 +157,7 @@ int main() {
 
 	/* close the module */
 	rc = tmodclose();
-	if (rc ) {
+	if (rc) {
                 printf("Test MOD Driver may not be closed\n");
                 exit(1);
         }

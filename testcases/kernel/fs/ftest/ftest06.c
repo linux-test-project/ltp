@@ -110,7 +110,7 @@ int main(int ac, char *av[])
 	/*
 	 * parse standard options
 	 */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL){
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -312,7 +312,7 @@ static void unlfile(int me, int count)
 	for (; i < count; i++) {
 		ft_mkname(fname, dirname, me, i);
 		val = rmdir(fname);
-		if (val < 0 )
+		if (val < 0)
 			val = unlink(fname);
 		if (val == 0 || errno == ENOENT)
 			continue;
@@ -414,7 +414,7 @@ static void dotest(int me, int count)
 
 	srand(getpid());
 
-	for(i = 0; i < count; i++) {
+	for (i = 0; i < count; i++) {
 		thing = (rand() >> 3) % NTHING;
 		(*ino_thing[thing].it_proc)(me, i, ino_thing[thing].it_name);
 		++thing_cnt[thing];

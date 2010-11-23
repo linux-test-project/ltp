@@ -41,7 +41,7 @@ int main()
 	#endif
 
 	rc = pthread_spin_init(&spinlock, pshared);
-	if(rc != 0)
+	if (rc != 0)
 	{
 		printf("Test FAILED:  Error at pthread_spin_init(): %d\n", rc);
 		return PTS_FAIL;
@@ -50,7 +50,7 @@ int main()
 	printf("main: attempt spin lock\n");
 
 	/* We should get the lock */	
-	if(pthread_spin_lock(&spinlock) != 0)
+	if (pthread_spin_lock(&spinlock) != 0)
 	{
 		perror("Error: main cannot get spin lock when no one owns the lock\n");
 		return PTS_UNRESOLVED;
@@ -58,14 +58,14 @@ int main()
 
 	printf("main: acquired spin lock\n");
 	
-	if(pthread_spin_unlock(&spinlock) != 0)
+	if (pthread_spin_unlock(&spinlock) != 0)
 	{
 		perror("main: Error at pthread_spin_unlock()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	rc = pthread_spin_destroy(&spinlock);
-	if(rc != 0)
+	if (rc != 0)
 	{
 		printf("Error at pthread_spin_destroy(): %d\n", rc);
 		return PTS_UNRESOLVED;

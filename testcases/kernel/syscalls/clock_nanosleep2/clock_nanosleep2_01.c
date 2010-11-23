@@ -125,7 +125,7 @@ int main(int ac, char **av) {
 	struct timespec ts;
 	
         /* parse standard options */
-        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL){
+        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
              tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
              tst_exit();
            }
@@ -137,7 +137,7 @@ int main(int ac, char **av) {
                 Tst_count = 0;
                 for (testno = 0; testno < TST_TOTAL; ++testno) {
 			TEST(clock_gettime(CLOCK_TO_USE, &ts));
-			for (i=0; i<=50; i++){
+			for (i=0; i<=50; i++) {
 				ts.tv_sec++;
 				TEST(clock_nanosleep2(CLOCK_TO_USE, TIMER_ABSTIME, &ts, NULL));
                                 if (TEST_ERRNO) {

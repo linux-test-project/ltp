@@ -36,12 +36,12 @@ int main()
 	mysemp = sem_open(semname, O_CREAT|O_EXCL, 0777, 1);
 
 	
-	if ( mysemp  == SEM_FAILED || mysemp == NULL) {
+	if (mysemp  == SEM_FAILED || mysemp == NULL) {
   		perror(ERROR_PREFIX "sem_open");
 		return PTS_UNRESOLVED;
 	}
 
-	if (errno != EEXIST )
+	if (errno != EEXIST)
 	{
 		puts("TEST PASSED");
 		sem_unlink(semname);

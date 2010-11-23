@@ -25,19 +25,19 @@ int main(int argc, char **argv)
 
 	result = sched_getparam(0, &param);
 	
-	if(result == 0 &&
+	if (result == 0 &&
 	   param.sched_priority != -1 &&
 	   errno == 0) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}
 
-	if(errno != 0 ) {
+	if (errno != 0) {
 		perror("Unexpected error");
 		return PTS_FAIL;
 	}
 
-	if(result != 0) {
+	if (result != 0) {
 		printf("returned code is not zero.\n");
 		return PTS_FAIL;
 	} else {

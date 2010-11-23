@@ -12,7 +12,7 @@ int sum=0, n=0;
 
     p = str;
     while ((c=getchar()) != EOF) {
-	if (c != '\n'){
+	if (c != '\n') {
 	     *p++ = c;
 	}else {
 	    *p = '\0';

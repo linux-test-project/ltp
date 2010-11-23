@@ -120,7 +120,7 @@ int main(int ac, char **av) {
 	char *msg;		  /* message returned from parse_opts */
 	
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL){
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		tst_exit();
 	}
@@ -141,7 +141,7 @@ int main(int ac, char **av) {
 			 */
 
 			TEST(syscall(__NR_get_thread_area, &u_info));	 //call get_thread_area()
-			if(TEST_RETURN == -1) {
+			if (TEST_RETURN == -1) {
 				tst_resm(TFAIL | TTERRNO, "call get_thread_area() failed");
 				cleanup();
 				tst_exit();
@@ -153,7 +153,7 @@ int main(int ac, char **av) {
 			 */
 
 			TEST(syscall(__NR_set_thread_area, &u_info));	 //call set_thread_area()
-			if(TEST_RETURN == -1) {
+			if (TEST_RETURN == -1) {
 
 				if (TEST_ERRNO == EINVAL) {
 					tst_resm(TPASS, "Call to set_thread_area call failed with invalid entry_number  errno = %d (expected EINVAL)",TEST_ERRNO);
@@ -173,7 +173,7 @@ int main(int ac, char **av) {
 
 			TEST(syscall(__NR_set_thread_area,(struct user_desc *)-9));	 //call set_thread_area()
 			if (TEST_RETURN == -1) {
-				if(TEST_ERRNO == EFAULT){
+				if (TEST_ERRNO == EFAULT) {
 					tst_resm(TPASS, "Call to set_thread_area call with invalid entry_number errno = %d (got expected error EFAULT)",TEST_ERRNO);
 				} else {
 					tst_resm(TFAIL,"Call to set_thread_area with invalid entry_number got unexpected errno = %d (expected EFAULT)",TEST_ERRNO);

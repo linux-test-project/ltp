@@ -99,7 +99,7 @@ int main()
     	}
 
 	rc = pthread_attr_setstack(&attr, stack_addr, stack_size);
-        if (rc != 0 ) {
+        if (rc != 0) {
                 printf(ERROR_PREFIX "pthread_attr_setstack: %s\n",
 			strerror(rc));
                 exit(PTS_UNRESOLVED);
@@ -119,7 +119,7 @@ int main()
         }
 
 	rc = pthread_join(new_th, NULL);
-	if(rc != 0) {
+	if (rc != 0) {
                 printf(ERROR_PREFIX "pthread_join: %s\n", strerror(rc));
 		exit(PTS_UNRESOLVED);
         }

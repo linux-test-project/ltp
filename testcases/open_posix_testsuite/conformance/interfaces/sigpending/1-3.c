@@ -56,10 +56,10 @@ void handler(int signo)
 		exit(-1);
 	}
 
-	if ( (sigismember(&pendingset, SIGALRM) == 1) &&
+	if ((sigismember(&pendingset, SIGALRM) == 1) &&
 		(sigismember(&pendingset, SIGCONT) == 1) ) {
 		printf("All pending signals found\n");
-		if ( (sigismember(&pendingset, SIGHUP) == 0) &&
+		if ((sigismember(&pendingset, SIGHUP) == 0) &&
 			(sigismember(&pendingset, SIGABRT) == 0) &&
 			(sigismember(&pendingset, SIGUSR1) == 0) ) {
 			printf("Unsent signals not found\n");
@@ -86,14 +86,14 @@ int main()
         act.sa_handler = handler;
         act.sa_flags = 0;
 
-	if ( (sigemptyset(&blockset) == -1) ||
+	if ((sigemptyset(&blockset) == -1) ||
 		(sigemptyset(&prevset) == -1) ||
 		(sigemptyset(&act.sa_mask) == -1) ) {
 		printf("Could not call sigemptyset()\n");
 		return PTS_UNRESOLVED;
 	}
 
-        if ( (sigaddset(&blockset, SIGALRM) == -1) ||
+        if ((sigaddset(&blockset, SIGALRM) == -1) ||
                 (sigaddset(&blockset, SIGHUP) == -1) ) {
                 perror("Error calling sigaddset()\n");
                 return PTS_UNRESOLVED;
@@ -105,7 +105,7 @@ int main()
         }
 
 
-	if ( (sigaddset(&act.sa_mask, SIGCONT) == -1) ||
+	if ((sigaddset(&act.sa_mask, SIGCONT) == -1) ||
 		(sigaddset(&act.sa_mask, SIGABRT) == -1) ||
 		(sigaddset(&act.sa_mask, SIGUSR1) == -1) ) {
 		perror("Error calling sigaddset()\n");

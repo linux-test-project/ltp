@@ -65,7 +65,7 @@ int main()
 	min_prio = sched_get_priority_min(SCHED_FIFO);
 
 	/* Ensure that prioceiling is within legal limits. */
-	if((prioceiling < min_prio) || (prioceiling > max_prio))
+	if ((prioceiling < min_prio) || (prioceiling > max_prio))
 	{
 		printf("Test FAILED: Default prioceiling %d is not compliant with SCHED_FIFO boundary.\n", prioceiling);
 		return PTS_FAIL;

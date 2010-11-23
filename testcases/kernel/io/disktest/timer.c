@@ -97,18 +97,18 @@ void *ChildTimer(void *vtest)
 #ifdef _DEBUG
 		PDBG3(DBUG, args, "Continue timing %lu, %lu, %d\n", time(NULL), run_time, env->bContinue);
 #endif
-		if(args->flags & CLD_FLG_W) {
-			if((args->flags & CLD_FLG_LINEAR) && !(args->flags & CLD_FLG_NTRLVD)) {
-				if(TST_OPER(args->test_state) == WRITER) {
+		if (args->flags & CLD_FLG_W) {
+			if ((args->flags & CLD_FLG_LINEAR) && !(args->flags & CLD_FLG_NTRLVD)) {
+				if (TST_OPER(args->test_state) == WRITER) {
 					env->hbeat_stats.wtime++;
 				}
 			} else {
 				env->hbeat_stats.wtime++;
 			}
 		}
-		if(args->flags & CLD_FLG_R) {
-			if((args->flags & CLD_FLG_LINEAR) && !(args->flags & CLD_FLG_NTRLVD)) {
-				if(TST_OPER(args->test_state) == READER) {
+		if (args->flags & CLD_FLG_R) {
+			if ((args->flags & CLD_FLG_LINEAR) && !(args->flags & CLD_FLG_NTRLVD)) {
+				if (TST_OPER(args->test_state) == READER) {
 					env->hbeat_stats.rtime++;
 				}
 			} else {
@@ -127,7 +127,7 @@ void *ChildTimer(void *vtest)
 						+ env->cycle_stats.rcount		\
 						+ env->hbeat_stats.rcount;
 
-		if(cur_total_io_count == 0) {
+		if (cur_total_io_count == 0) {
 			tmp_io_count = 1;
 		} else {
 			tmp_io_count = cur_total_io_count;
@@ -144,9 +144,9 @@ void *ChildTimer(void *vtest)
 		PDBG3(DBUG, args, "average number of seconds per IO: %0.8lf\n", ((double)(total_time)/(double)(tmp_io_count)));
 #endif
 
-		if(cur_total_io_count == last_total_io_count) { /* no IOs completed in interval */
-			if(0 == (++ioTimeoutCount % args->ioTimeout)) {	/* no progress after modulo ioTimeout interval */
-				if(args->flags & CLD_FLG_TMO_ERROR) {
+		if (cur_total_io_count == last_total_io_count) { /* no IOs completed in interval */
+			if (0 == (++ioTimeoutCount % args->ioTimeout)) {	/* no progress after modulo ioTimeout interval */
+				if (args->flags & CLD_FLG_TMO_ERROR) {
 					args->test_state = SET_STS_FAIL(args->test_state);
 					env->bContinue = FALSE;
 					msg_level = ERR;
@@ -164,30 +164,30 @@ void *ChildTimer(void *vtest)
 #endif
 		}
 
-		if(((args->hbeat > 0) && ((run_time % args->hbeat) == 0)) || (signal_action & SIGNAL_STAT)) {
+		if (((args->hbeat > 0) && ((run_time % args->hbeat) == 0)) || (signal_action & SIGNAL_STAT)) {
 			print_stats(args, env, HBEAT);
 			update_cyc_stats(env);
 			clear_stat_signal();
 		}
 
-		if(glb_run == 0) { break; }					/* global run flag cleared */
-		if(signal_action & SIGNAL_STOP) { break; }	/* user request to stop */
+		if (glb_run == 0) { break; }					/* global run flag cleared */
+		if (signal_action & SIGNAL_STOP) { break; }	/* user request to stop */
 
-		if(args->flags & CLD_FLG_TMD) {			/* if timing */
-			if(run_time >= args->run_time) {	/* and run time exceeded */
+		if (args->flags & CLD_FLG_TMD) {			/* if timing */
+			if (run_time >= args->run_time) {	/* and run time exceeded */
 				break;
 			}
 		} else {					/* if not timing */
-			if(env->kids <= 1) {	/* and the timer is the only child */
+			if (env->kids <= 1) {	/* and the timer is the only child */
 				break;
 			}
 		}
-	} while(TRUE);
+	} while (TRUE);
 #ifdef _DEBUG
 	PDBG3(DBUG, args, "Out of timer %lu, %lu, %d, %d\n", time(NULL), run_time, env->bContinue, env->kids);
 #endif
 
-	if(args->flags & CLD_FLG_TMD) { /* timed test, timer exit needs to stop io threads */
+	if (args->flags & CLD_FLG_TMD) { /* timed test, timer exit needs to stop io threads */
 #ifdef _DEBUG
 		PDBG3(DBUG, args, "Setting bContinue to FALSE, timed test & timer exit\n");
 #endif

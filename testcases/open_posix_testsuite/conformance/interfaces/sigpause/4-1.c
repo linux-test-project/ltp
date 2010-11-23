@@ -43,10 +43,10 @@ int main()
 		result = 1;
 	}
 
-        if(result == 2) {
+        if (result == 2) {
                 return PTS_UNRESOLVED;
         }
-        if(result == 1) {
+        if (result == 1) {
                 return PTS_FAIL;
         }
 

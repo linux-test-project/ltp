@@ -80,7 +80,7 @@ void *my_thread_process (void * arg)
 	svcaddr.maxlen = ADDRBUFSIZE;
 	svcaddr.buf = addrbuf;
 	
-	if (svcaddr.buf == (char *)NULL)
+	if (svcaddr.buf == NULL)
 	{
     	/* if malloc() failed, print error messages and exit */
   		pthread_exit(5);

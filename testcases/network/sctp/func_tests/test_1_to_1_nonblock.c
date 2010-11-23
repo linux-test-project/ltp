@@ -196,7 +196,7 @@ main(int argc, char *argv[])
 
 	/* TEST4: recvmsg() should return EAGAIN instead blocking */
 	error = recvmsg(sk, &inmessage, MSG_WAITALL);
-	if ( error != -1 || errno != EAGAIN)
+	if (error != -1 || errno != EAGAIN)
 		tst_brkm(TBROK, tst_exit, "non-blocking recvmsg "
                          "error:%d, errno:%d", error, errno);
 

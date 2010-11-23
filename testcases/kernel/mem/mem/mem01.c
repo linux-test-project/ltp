@@ -218,13 +218,13 @@ size_t get_memsize()
 
   tst_resm(TINFO, "Total Free:\t%llu Mb", res/1024/1024);
 #if defined (__s390__)
-  if ( res > 1*1024*1024*1024 )
+  if (res > 1*1024*1024*1024)
     res = 500*1024*1024;  /* s390's unique 31bit architecture needs smaller default */
 #elif __WORDSIZE == 32
-  if ( res > 1*1024*1024*1024 )
+  if (res > 1*1024*1024*1024)
     res = 1*1024*1024*1024;
 #elif __WORDSIZE == 64
-  if ( res > (unsigned long long)3*1024*1024*1024 )
+  if (res > (unsigned long long)3*1024*1024*1024)
     res = (unsigned long long)3*1024*1024*1024;
 #endif
 
@@ -264,10 +264,10 @@ main(int argc, char *argv[])
     /***************************************************************
      * parse standard options
      ***************************************************************/
-  if ( (msg=parse_opts(argc, argv, options, help)) != (char *) NULL )
+  if ((msg=parse_opts(argc, argv, options, help)) != (char *) NULL)
    tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 
-  if ( m_opt )
+  if (m_opt)
   {
     memsize = (size_t)atoi( m_copt )*1024*1024;
 
@@ -293,7 +293,7 @@ main(int argc, char *argv[])
 	/* reset Tst_count in case we are looping. */
 	Tst_count=0;
 
-  	if ( !m_opt ) {
+  	if (!m_opt) {
 			/* find out by ourselves! */
 		memsize = get_memsize();
     		if (memsize < 1)
@@ -310,7 +310,7 @@ main(int argc, char *argv[])
 	/* virtual memory, it's magic :) */
 	bigmalloc = p = (char*)malloc(memsize);
 
-	if ( !p ) {
+	if (!p) {
 	    tst_resm(TFAIL, "malloc - alloc of %dMB failed", memsize/1024/1024);
     	    cleanup();
 	}
@@ -327,7 +327,7 @@ main(int argc, char *argv[])
 	loop_count = memsize/pagesize;
 
 	for (i=0; i<loop_count; i++) {
-		if (v_opt && (i%(PROGRESS_LEAP*1024/pagesize) == 0) ) {
+		if (v_opt && (i%(PROGRESS_LEAP*1024/pagesize) == 0)) {
 #if 0
 			printf("%dKB ",i*pagesize/1024);
 #else

@@ -71,23 +71,23 @@ int philosopher(void *ID)
 	for (i = 0; i < LOOP_NUM; i++) {
 		think(PhID);
 		sleep(1);
-		if ( -1 == sem_wait(&lock)) {
+		if (-1 == sem_wait(&lock)) {
 			perror("sem_wait didn't return success \n");
 			pthread_exit((void *)1);
 		}
 		state[PhID] = hungry;
 		test(PhID);
-		if ( -1 == sem_post(&lock)) {
+		if (-1 == sem_post(&lock)) {
 			perror("sem_post didn't return success \n");
 			pthread_exit((void *)1);
 		}
-		if ( -1 == sem_wait(&ph[PhID])) {
+		if (-1 == sem_wait(&ph[PhID])) {
 			perror("sem_wait didn't return success \n");
 			pthread_exit((void *)1);
 		}
 		eat(PhID);
 		sleep(1);
-		if ( -1 == sem_wait(&lock)) {
+		if (-1 == sem_wait(&lock)) {
 			perror("sem_wait didn't return success \n");
 			pthread_exit((void *)1);
 		}
@@ -102,7 +102,7 @@ int philosopher(void *ID)
 			postPH = (PhID + 1)%PH_NUM;
 		test(prePH);
 		test(postPH);
-		if ( -1 == sem_post(&lock)) {
+		if (-1 == sem_post(&lock)) {
 			perror("sem_post didn't return success \n");
 			pthread_exit((void *)1);
 		}

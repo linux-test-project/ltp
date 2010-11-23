@@ -66,7 +66,7 @@ void *a_thread_func(void *tmp)
 	sem = 1;
 
 	/* Sleep forever */
-	while(1)
+	while (1)
 		sleep(5);
 	return NULL;
 }
@@ -79,18 +79,18 @@ int main()
 	
 	/* Create a new thread. */
 	rc = pthread_create(&new_th, NULL, a_thread_func, NULL);
-	if(rc != 0) {	
+	if (rc != 0) {	
 		printf(ERROR_PREFIX "pthread_create\n");
 		exit(PTS_UNRESOLVED);
 	}
 
 	/* Wait for the thread to be ready */
-	while(sem == 0)
+	while (sem == 0)
 		sleep(1);
 	
 	/* Cancel the thread. */
 	rc = pthread_cancel(new_th);
-	if(rc != 0) {	
+	if (rc != 0) {	
 		printf(ERROR_PREFIX "pthread_cancel\n");
 		exit(PTS_UNRESOLVED);
 	}
@@ -98,7 +98,7 @@ int main()
 	/* Delay enough so that the destructor must have been called */
 	sleep(5);
 
-	if(cleanup_flag != 1) {
+	if (cleanup_flag != 1) {
 		printf(ERROR_PREFIX "Test FAIL: Destructor was not executed.\n");
 		exit(PTS_FAIL);
 	}

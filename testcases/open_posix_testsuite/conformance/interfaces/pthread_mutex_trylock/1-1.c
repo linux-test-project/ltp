@@ -40,12 +40,12 @@ int main()
 
 	/* Create a secondary thread and wait until it has locked the mutex */
     	pthread_create(&t1, NULL, func, NULL);
-    	while(!t1_start)
+    	while (!t1_start)
 		sleep(1);
     		
 	/* Trylock the mutex and expect it returns EBUSY */
    	rc = pthread_mutex_trylock(&mutex);
-      	if(rc!=EBUSY) {
+      	if (rc!=EBUSY) {
         	fprintf(stderr,"Expected %d(EBUSY), got %d\n",EBUSY,rc);
         	printf("Test FAILED\n");
 		return PTS_FAIL;
@@ -55,13 +55,13 @@ int main()
 	t1_pause=0;
 	
 	/* Trylock the mutex for N times */
-	for(i=0; i<5; i++) {
+	for (i=0; i<5; i++) {
 		rc = pthread_mutex_trylock(&mutex);
-		if(rc==0) {
+		if (rc==0) {
 			pthread_mutex_unlock(&mutex);
 			break;
 		}
-		else if(rc==EBUSY) {
+		else if (rc==EBUSY) {
 			sleep(1);
 			continue;
 		}
@@ -75,7 +75,7 @@ int main()
 	pthread_join(t1, NULL);
   	pthread_mutex_destroy(&mutex);
 
-	if(i>=5) {
+	if (i>=5) {
 		fprintf(stderr,"Have tried %d times but failed to get the mutex\n", i);
 		return PTS_UNRESOLVED;
 	}
@@ -87,16 +87,16 @@ void *func(void *parm)
 {
   	int rc;
 
-	if((rc=pthread_mutex_lock(&mutex))!=0) {
+	if ((rc=pthread_mutex_lock(&mutex))!=0) {
 		fprintf(stderr,"Error at pthread_mutex_lock(), rc=%d\n",rc);
 		pthread_exit((void*)PTS_UNRESOLVED);
 	}
 	t1_start=1;
 	
-	while(t1_pause)
+	while (t1_pause)
 		sleep(1);
 
-	if((rc=pthread_mutex_unlock(&mutex))!=0) {
+	if ((rc=pthread_mutex_unlock(&mutex))!=0) {
 		fprintf(stderr,"Error at pthread_mutex_unlock(), rc=%d\n",rc);
 		pthread_exit((void*)PTS_UNRESOLVED);
 	}

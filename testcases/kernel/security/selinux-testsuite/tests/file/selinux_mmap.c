@@ -29,14 +29,14 @@ int main(int argc, char **argv) {
   void *ptr;
   int rc;
 
-  if( argc != 3 ) {
+  if (argc != 3) {
     printf("usage: %s filename context\n", argv[0]);
     exit(2);
   }
 
   fd = open(argv[1], O_RDWR, 0);
  
-  if(fd == -1) {
+  if (fd == -1) {
     perror("selinux_mmap:open");
     exit(2);
   }
@@ -48,7 +48,7 @@ int main(int argc, char **argv) {
   }
 
   ptr = mmap(0, 1024, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_SHARED, fd, getpagesize());
-  if( ptr == MAP_FAILED ) {
+  if (ptr == MAP_FAILED) {
     perror("selinux_mmap:mmap");
     close(fd);
     exit(1);

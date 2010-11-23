@@ -24,7 +24,7 @@ void myhandler(int signo)
 	printf("SIGCHLD called. Inside handler\n");
 	sigset_t mask;
 	sigprocmask(SIG_SETMASK, NULL, &mask);
-	if(sigismember(&mask, SIGCHLD)) {
+	if (sigismember(&mask, SIGCHLD)) {
 		signal_blocked = 1;
 	}
 }

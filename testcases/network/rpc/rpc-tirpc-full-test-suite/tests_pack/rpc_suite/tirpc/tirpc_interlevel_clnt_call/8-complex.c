@@ -97,7 +97,7 @@ void *my_thread_process (void * arg)
 	clnt = clnt_tp_create_timed(hostname, progNum,
                                 VERSNUM, (struct netconfig *)nconf, &total_timeout);
 	
-	if (clnt == (CLIENT *)NULL)
+	if (clnt == NULL)
 	{
 		printf("5\n");
 		pthread_exit (5);

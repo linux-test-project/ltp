@@ -399,7 +399,7 @@ int main (int argc, char * argv[])
 
 
 	/* Initialize the celldatas according to scenarii */
-	for ( i=0; i< NSCENAR ; i++)
+	for (i=0; i< NSCENAR ; i++)
 	{
 		#if VERBOSE > 1
 		output("[parent] Preparing attributes for: %s\n", scenarii[i].descr);

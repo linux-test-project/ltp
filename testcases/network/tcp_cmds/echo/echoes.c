@@ -169,7 +169,7 @@ echofile (struct servent *sp, struct addrinfo *ai, char *resultfile,
 #endif
 
 	pid = getpid();
-	if ((s = socket(AFI, SOCK_STREAM, 0)) < 0 ) {
+	if ((s = socket(AFI, SOCK_STREAM, 0)) < 0) {
 		tst_resm(TBROK, "Failed to create listener socket (pid=%d)",
 				pid);
 		perror("echo:socket");
@@ -309,7 +309,7 @@ echofile (struct servent *sp, struct addrinfo *ai, char *resultfile,
 			finish = TRUE;
 		else {
 			count++;
-			if((n = write(s, wr_buffer, nwrite)) != nwrite) {
+			if ((n = write(s, wr_buffer, nwrite)) != nwrite) {
 				tst_resm(TFAIL, "Failed to write to socket "
 						"(pid=%d)", pid);
 				cleanup(s);

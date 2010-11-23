@@ -61,66 +61,67 @@ int check_mqueue(void *vtest)
 	close(p1[1]);
 	close(p2[0]);
 
-	read(p1[0], buf, 3); /* go */
+	if (read(p1[0], buf, 3) != 3) { /* go */
+		perror("read failed");
+		exit(1);
+	}
 
 	mqd = syscall(__NR_mq_open, NOSLASH_MQ1, O_RDWR|O_CREAT|O_EXCL, 0755,
 			NULL);
 	if (mqd == -1) {
 		write(p2[1], "mqfail", 7);
-		tst_exit();
+		exit(1);
 	}
 
 	mq_close(mqd);
 
 	rc = mount("mqueue", DEV_MQUEUE2, "mqueue", 0, NULL);
 	if (rc == -1) {
-		perror("mount");
 		write(p2[1], "mount1", 7);
-		tst_exit();
+		exit(1);
 	}
 
 	rc = stat(FNAM1, &statbuf);
 	if (rc == -1) {
 		write(p2[1], "stat1", 6);
-		tst_exit();
+		exit(1);
 	}
 
 	rc = creat(FNAM2, 0755);
 	if (rc == -1) {
 		write(p2[1], "creat", 6);
-		tst_exit();
+		exit(1);
 	}
 
 	close(rc);
 
 	rc = umount(DEV_MQUEUE2);
 	if (rc == -1) {
-		perror("umount");
 		write(p2[1], "umount", 7);
-		tst_exit();
+		exit(1);
 	}
 
 	rc = mount("mqueue", DEV_MQUEUE2, "mqueue", 0, NULL);
 	if (rc == -1) {
 		write(p2[1], "mount2", 7);
-		tst_exit();
+		exit(1);
 	}
 
 	rc = stat(FNAM1, &statbuf);
 	if (rc == -1) {
 		write(p2[1], "stat2", 7);
-		tst_exit();
+		exit(1);
 	}
 
 	rc = stat(FNAM2, &statbuf);
 	if (rc == -1) {
 		write(p2[1], "stat3", 7);
-		tst_exit();
+		exit(1);
 	}
 
 	write(p2[1], "done", 5);
 
-	tst_exit();
+	exit(0);
 }
 
 
@@ -131,26 +132,25 @@ int main(int argc, char *argv[])
 	int use_clone = T_UNSHARE;
 
 	if (argc == 2 && strcmp(argv[1], "-clone") == 0) {
-		tst_resm(TINFO, "Testing posix mq namespaces through clone(2).\n");
+		tst_resm(TINFO, "Testing posix mq namespaces through clone(2)");
 		use_clone = T_CLONE;
 	} else
-		tst_resm(TINFO, "Testing posix mq namespaces through unshare(2).\n");
+		tst_resm(TINFO, "Testing posix mq namespaces through unshare(2)");
 
-	if (pipe(p1) == -1) { perror("pipe"); exit(EXIT_FAILURE); }
-	if (pipe(p2) == -1) { perror("pipe"); exit(EXIT_FAILURE); }
+	if (pipe(p1) == -1 || pipe(p2) == -1) {
+		tst_resm(TBROK|TERRNO, NULL, "pipe failed");
+	}
 
 	/* fire off the test */
 	r = do_clone_unshare_test(use_clone, CLONE_NEWIPC, check_mqueue, NULL);
 	if (r < 0) {
-		tst_resm(TFAIL, "failed clone/unshare\n");
-		tst_exit();
+		tst_brkm(TBROK|TERRNO, NULL, "failed clone/unshare");
 	}
 
-	tst_resm(TINFO, "Checking correct umount+remount of mqueuefs\n");
+	tst_resm(TINFO, "Checking correct umount+remount of mqueuefs");
 
 	mkdir(DEV_MQUEUE2, 0755);
 
-	close(p1[0]);
 	close(p1[0]);
 	close(p2[1]);
 	write(p1[1], "go", 3);
@@ -158,32 +158,32 @@ int main(int argc, char *argv[])
 	read(p2[0], buf, 7);
 	r = TFAIL;
 	if (!strcmp(buf, "mqfail")) {
-		tst_resm(TFAIL, "child process could not create mqueue\n");
+		tst_resm(TFAIL, "child process could not create mqueue");
 		goto fail;
 	} else if (!strcmp(buf, "mount1")) {
-		tst_resm(TFAIL, "child process could not mount mqueue\n");
+		tst_resm(TFAIL, "child process could not mount mqueue");
 		goto fail;
 	} else if (!strcmp(buf, "stat1x")) {
-		tst_resm(TFAIL, "mq created by child is not in mqueuefs\n");
+		tst_resm(TFAIL, "mq created by child is not in mqueuefs");
 		goto fail;
 	} else if (!strcmp(buf, "creat")) {
-		tst_resm(TFAIL, "child couldn't creat mq through mqueuefs\n");
+		tst_resm(TFAIL, "child couldn't creat mq through mqueuefs");
 		goto fail;
 	} else if (!strcmp(buf, "umount")) {
-		tst_resm(TFAIL, "child couldn't umount mqueuefs\n");
+		tst_resm(TFAIL, "child couldn't umount mqueuefs");
 		goto fail;
 	} else if (!strcmp(buf, "mount2")) {
-		tst_resm(TFAIL, "child couldn't remount mqueuefs\n");
+		tst_resm(TFAIL, "child couldn't remount mqueuefs");
 		goto fail;
 	} else if (!strcmp(buf, "stat2")) {
-		tst_resm(TFAIL, "mq_open()d file gone after remount of mqueuefs\n");
+		tst_resm(TFAIL, "mq_open()d file gone after remount of mqueuefs");
 		goto fail;
 	} else if (!strcmp(buf, "stat3")) {
-		tst_resm(TFAIL, "creat(2)'d file gone after remount of mqueuefs\n");
+		tst_resm(TFAIL, "creat(2)'d file gone after remount of mqueuefs");
 		goto fail;
 	}
 
-	tst_resm(TPASS, "umount+remount of mqueuefs remounted the right fs\n");
+	tst_resm(TPASS, "umount+remount of mqueuefs remounted the right fs");
 
 	r = 0;
 fail:

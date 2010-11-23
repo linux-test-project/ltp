@@ -287,7 +287,7 @@ static void mylinkat_test(struct test_struct* desc)
 							"open(%s, 0x%x) failed",
 							desc->referencefn2,
 							O_RDONLY);
-				if((len=read(fd, &vnum, sizeof(vnum))) != sizeof(tnum)) {
+				if ((len=read(fd, &vnum, sizeof(vnum))) != sizeof(tnum)) {
 					tst_brkm(TBROK | TERRNO, cleanup,
 						"read() failed: expected %"
 						PRId64 ", returned %d",

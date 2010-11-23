@@ -21,28 +21,28 @@ int main()
 	int rc;
 
 	/* Initialize a mutex object with the default mutex attributes */
-	if((rc=pthread_mutex_init(&mutex,NULL)) != 0) {
+	if ((rc=pthread_mutex_init(&mutex,NULL)) != 0) {
 		fprintf(stderr,"Error at pthread_mutex_init(), rc=%d\n",rc);
 		return PTS_UNRESOLVED;
 	}
 	
 	/* Lock the mutex using pthread_mutex_lock() */
-	if((rc=pthread_mutex_lock(&mutex)) == 0) {
+	if ((rc=pthread_mutex_lock(&mutex)) == 0) {
 		pthread_mutex_unlock(&mutex);
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}
 	
 	/* Check if returned values are tolerable */
-	else if(rc == EINVAL) {
+	else if (rc == EINVAL) {
 		fprintf(stderr,"Invalid mutex object\n");
 		return PTS_UNRESOLVED;
 	}
-	else if(rc == EAGAIN) {
+	else if (rc == EAGAIN) {
 		fprintf(stderr,"The maximum number of recursive locks has been exceeded\n");
 		return PTS_UNRESOLVED;
 	}
-	else if(rc == EDEADLK) {
+	else if (rc == EDEADLK) {
 		fprintf(stderr,"The current thread already owns the mutex\n");
 		return PTS_UNRESOLVED;
 	}

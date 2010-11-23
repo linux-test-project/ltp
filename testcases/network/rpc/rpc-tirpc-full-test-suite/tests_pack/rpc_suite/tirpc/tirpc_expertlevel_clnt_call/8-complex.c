@@ -102,7 +102,7 @@ void *my_thread_process (void * arg)
 	svcaddr.maxlen = ADDRBUFSIZE;
 	svcaddr.buf = addrbuf;
 	
-	if (svcaddr.buf == (char *)NULL)
+	if (svcaddr.buf == NULL)
 	{
     	printf("5\n");
   		pthread_exit (5);
@@ -119,7 +119,7 @@ void *my_thread_process (void * arg)
     clnt = clnt_tli_create(RPC_ANYFD, nconf, &svcaddr,
 	                         progNum, VERSNUM, 0, 0);
 	
-	if (clnt == (CLIENT *)NULL)
+	if (clnt == NULL)
 	{
 		printf("5\n");
 		pthread_exit (5);

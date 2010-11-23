@@ -36,17 +36,17 @@ int set_nonroot()
 	struct passwd *pw;
 	setpwent();
 	/* search for the first user which is non root */ 
-	while((pw = getpwent()) != NULL)
-		if(strcmp(pw->pw_name, "root"))
+	while ((pw = getpwent()) != NULL)
+		if (strcmp(pw->pw_name, "root"))
 			break;
 	endpwent();
-	if(pw == NULL) {
+	if (pw == NULL) {
 		printf("There is no other user than current and root.\n");
 		return 1;
 	}
 
-	if(seteuid(pw->pw_uid) != 0) {
-		if(errno == EPERM) {
+	if (seteuid(pw->pw_uid) != 0) {
+		if (errno == EPERM) {
 			printf("You don't have permission to change your UID.\n");
 			return 1;
 		}
@@ -79,13 +79,13 @@ int main()
 	/* Opening the same existance SEM with write mode */
 	mysemp = sem_open(semname, O_CREAT, 0222 , 1);
 
-	if ( mysemp  != SEM_FAILED )
+	if (mysemp  != SEM_FAILED)
 	{
   		perror(ERROR_PREFIX "sem_open");
 		return PTS_UNRESOLVED;
 	}
 
-	if (errno == EACCES )  {
+	if (errno == EACCES)  {
 		puts("TEST PASSED");
 		sem_unlink(semname);
 		return PTS_PASS;

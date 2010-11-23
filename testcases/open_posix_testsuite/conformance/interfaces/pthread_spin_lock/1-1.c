@@ -72,7 +72,7 @@ static void* fn_chld(void *arg)
 
 	printf("thread: attempt spin lock\n");
 	rc = pthread_spin_lock(&spinlock);
-	if(rc != 0)
+	if (rc != 0)
 	{
 		printf("Test FAILED: thread failed to get spin lock,error code:%d\n" , rc);
 		pthread_exit((void*)PTS_FAIL);
@@ -82,7 +82,7 @@ static void* fn_chld(void *arg)
 	
 	thread_state = GET_SPIN_LOCK;
 	/* Wait 10 seconds for SIGALRM to be sent */
-	while( cnt++ < 10)
+	while (cnt++ < 10)
 	{
 		ts.tv_sec = 1;
 		ts.tv_nsec = 0;
@@ -110,7 +110,7 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 	
-	if(pthread_spin_init(&spinlock, PTHREAD_PROCESS_PRIVATE) != 0)
+	if (pthread_spin_init(&spinlock, PTHREAD_PROCESS_PRIVATE) != 0)
 	{
 		perror("main: Error at pthread_spin_init()\n");
 		return PTS_UNRESOLVED;
@@ -119,7 +119,7 @@ int main()
 	printf("main: attempt spin lock\n");
 
 	/* We should get the lock */	
-	if(pthread_spin_lock(&spinlock) != 0)
+	if (pthread_spin_lock(&spinlock) != 0)
 	{
 		printf("Test FAILED: main cannot get spin lock when no one owns the lock\n");
 		return PTS_FAIL;
@@ -130,26 +130,26 @@ int main()
 	thread_state = NOT_CREATED_THREAD;
 
 	printf("main: create thread\n");
-	if(pthread_create(&child_thread, NULL, fn_chld, NULL) != 0)
+	if (pthread_create(&child_thread, NULL, fn_chld, NULL) != 0)
 	{
 		printf("main: Error creating child thread\n");
 		return PTS_UNRESOLVED;
 	}
 	
 	/* Wait for thread to end execution */
-	if(pthread_join(child_thread, &value_ptr) != 0)
+	if (pthread_join(child_thread, &value_ptr) != 0)
 	{
 		perror("Error in pthread_join()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Check the return value of the thread */
-	if(thread_state == GET_SPIN_LOCK)
+	if (thread_state == GET_SPIN_LOCK)
 	{
 		printf("Test FAILED: Child thread did not spin on spin lock when other thread holds the lock\n");
 		exit(PTS_FAIL);
 	}
-	else if(thread_state == ENTERED_THREAD)
+	else if (thread_state == ENTERED_THREAD)
 	{
 		printf("thread: spins on spin lock\n");
 		printf("Test PASSED\n");

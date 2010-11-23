@@ -25,7 +25,7 @@
 /******************************************************************************/
 #include "tfloat.h"
 
-#define SAFE_FREE(p) { if(p) { free(p); (p)=NULL; } }
+#define SAFE_FREE(p) { if (p) { free(p); (p)=NULL; } }
 /*
  * allocates a buffer and read a file to it
  * input parameters:
@@ -51,55 +51,55 @@ static size_t read_file(char *fname, void **data)
 
 	errno = 0;
 
-	while(stat(path, &bufstat)) {
-		if(errno == ETIMEDOUT || errno == EINTR || errno == 0) {
+	while (stat(path, &bufstat)) {
+		if (errno == ETIMEDOUT || errno == EINTR || errno == 0) {
 			printf("Error stat'ing %s: %s\n",
 				path, strerror(errno));
 			pthread_testcancel();
 			/* retrying... */
-			if(maxretries--)
+			if (maxretries--)
 				continue;
 		}
 		return (size_t)0;
 	}
 
 	fsize = bufstat.st_size;
-	if(!fsize) {
+	if (!fsize) {
 		errno = ENOENT; return (size_t)0;
 	}
 
-	while((buffer = malloc(fsize)) == (void *)0) {
-		if(errno == EINTR || errno == 0) {
+	while ((buffer = malloc(fsize)) == (void *)0) {
+		if (errno == EINTR || errno == 0) {
 			printf("Error malloc'ing: %s\n", strerror(errno));
 			pthread_testcancel();
 			/* retrying... */
-			if(maxretries--)
+			if (maxretries--)
 				continue;
 		}
 		return (size_t)0;
 	}
 
-	while((fd = open(path, O_RDONLY)) < 0) {
-		if(errno == ETIMEDOUT || errno == EINTR || errno == 0) {
+	while ((fd = open(path, O_RDONLY)) < 0) {
+		if (errno == ETIMEDOUT || errno == EINTR || errno == 0) {
 			printf("Error opening %s: %s\n",
 				path, strerror(errno));
 			pthread_testcancel();
 			/* retrying... */
-			if(maxretries--)
+			if (maxretries--)
 				continue;
 		}
 		SAFE_FREE(buffer);
 		return (size_t)0;
 	}
 
-	while(read(fd, buffer, fsize) != fsize) {
-		if(errno == ETIMEDOUT || errno == EINTR || errno == 0) {
+	while (read(fd, buffer, fsize) != fsize) {
+		if (errno == ETIMEDOUT || errno == EINTR || errno == 0) {
 			printf("Error reading %s: %s\n",
 				path, strerror(errno));
 			pthread_testcancel();
 			/* retrying... */
-			if(lseek(fd, (off_t)0, SEEK_SET) == (off_t)0) {
-				if(maxretries--)
+			if (lseek(fd, (off_t)0, SEEK_SET) == (off_t)0) {
+				if (maxretries--)
 					continue;
 			}
 		}
@@ -130,12 +130,12 @@ static void check_error(TH_DATA *th_data, double e, double r, int index)
 		(void)frexp(x, &px); /* for difference */
 		(void)frexp(e, &pe); /* for dexected */
 
-		if(abs(pe - px) < th_data->th_func.precision ||
+		if (abs(pe - px) < th_data->th_func.precision ||
 		   abs(pr - px) < th_data->th_func.precision) {
 			/* not a rounding error */
 			++th_data->th_nerror;
 			/* record first error only ! */
-			if(th_data->th_result == 0) {
+			if (th_data->th_result == 0) {
 				sprintf(th_data->detail_data,
 					errtmplt,
 					th_data->th_func.fident,
@@ -190,10 +190,10 @@ static void compute_modf(TH_DATA *th_data, double *din, double *dex,
 	e = dex[index];
 	r = (*(th_data->th_func.funct))(d, &tmp);
 
-	if(tmp != dex2[index]) { /* bad integral part! */
+	if (tmp != dex2[index]) { /* bad integral part! */
 		++th_data->th_nerror;
 		/* record first error only ! */
-		if(th_data->th_result == 0) {
+		if (th_data->th_result == 0) {
 			sprintf(th_data->detail_data,
 				errtmplt1,
 				th_data->th_func.fident,
@@ -236,10 +236,10 @@ static void compute_frexp_lgamma(TH_DATA *th_data, double *din, double *dex,
 	r = (*(th_data->th_func.funct))(d, &tmp);
 
 	if (strcmp(th_data->th_func.fident,xinf) != 0) {
-	if(tmp != dex2[index]) { /* bad exponent! */
+	if (tmp != dex2[index]) { /* bad exponent! */
 		++th_data->th_nerror;
 		/* record first error only ! */
-		if(th_data->th_result == 0) {
+		if (th_data->th_result == 0) {
 			sprintf(th_data->detail_data,
 				errtmplt2,
 				th_data->th_func.fident,
@@ -284,7 +284,7 @@ void * thread_code(void * arg)
 	int imax, index;
 
 	fsize = read_file(th_data->th_func.din_fname, (void **)&din);
-	if(fsize == (size_t)0) {
+	if (fsize == (size_t)0) {
 		sprintf(th_data->detail_data,
 			"FAIL: %s: reading %s, %s\n",
 			th_data->th_func.fident,
@@ -295,7 +295,7 @@ void * thread_code(void * arg)
 		pthread_exit((void *)1);
 	}
 	fsize2 = read_file(th_data->th_func.dex_fname, (void **)&dex);
-	if(fsize2 == (size_t)0) {
+	if (fsize2 == (size_t)0) {
 		sprintf(th_data->detail_data,
 			"FAIL: %s: reading %s, %s\n",
 			th_data->th_func.fident,
@@ -317,7 +317,7 @@ void * thread_code(void * arg)
 		case FUNC_GAM:
 			fsize3 = read_file(th_data->th_func.dex2_fname,
 					(void **)&dex2);
-			if(fsize3 == (size_t)0) {
+			if (fsize3 == (size_t)0) {
 				sprintf(th_data->detail_data,
 					"FAIL: %s: reading %s, %s\n",
 					th_data->th_func.fident,
@@ -334,19 +334,19 @@ void * thread_code(void * arg)
 		case FUNC_NORMAL:
 		case FUNC_ATAN2:
 		case FUNC_HYPOT:
-			if(fsize2 != fsize)
+			if (fsize2 != fsize)
 				goto file_size_error;
 			break;
 		case FUNC_MODF:
 		case FUNC_FMOD:
 		case FUNC_POW:
-			if(fsize2 != fsize || fsize3 != fsize)
+			if (fsize2 != fsize || fsize3 != fsize)
 				goto file_size_error;
 			break;
 		case FUNC_FREXP:
 		case FUNC_LDEXP:
 		case FUNC_GAM:
-			if(fsize2 != fsize ||
+			if (fsize2 != fsize ||
 			   (sizeof(double)/sizeof(int)) * fsize3 != fsize)
 				goto file_size_error;
 			break;
@@ -358,17 +358,17 @@ file_size_error:
 			th_data->th_result = 1;
 			SAFE_FREE(din);
 			SAFE_FREE(dex);
-			if(fsize3)
+			if (fsize3)
 				SAFE_FREE(dex2);
 			pthread_exit((void *)1);
 	}
 
 	imax = fsize / sizeof(double);
 
-	while(th_data->th_nloop <= num_loops) {
+	while (th_data->th_nloop <= num_loops) {
 	/* loop stopped by pthread_cancel */
 
-		for(index = th_data->th_num;
+		for (index = th_data->th_num;
 		    index < imax;
 		    index += num_threads) { /* computation loop */
 			switch(th_data->th_func.code_funct) {
@@ -406,7 +406,7 @@ file_size_error:
 					th_data->th_result = 1;
 					SAFE_FREE(din);
 					SAFE_FREE(dex);
-					if(fsize3)
+					if (fsize3)
 						SAFE_FREE(dex2);
 					pthread_exit((void *)1);
 			}
@@ -416,7 +416,7 @@ file_size_error:
 	}   /* end of loop */
 	SAFE_FREE(din);
 	SAFE_FREE(dex);
-	if(fsize3)
+	if (fsize3)
 		SAFE_FREE(dex2);
 	pthread_exit((void *)0);
 }

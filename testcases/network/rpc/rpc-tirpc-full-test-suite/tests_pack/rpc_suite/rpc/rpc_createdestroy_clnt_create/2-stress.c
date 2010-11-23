@@ -58,7 +58,7 @@ int main(int argn, char *argc[])
 	{
 		clnt = clnt_create(argc[1], progNum, VERSNUM, proto);
 	
-		if (clnt != (CLIENT *)NULL)
+		if (clnt != NULL)
 			nbOk++;
 	}
 	

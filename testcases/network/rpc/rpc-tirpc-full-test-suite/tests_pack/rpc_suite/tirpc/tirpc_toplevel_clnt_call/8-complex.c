@@ -86,7 +86,7 @@ void *my_thread_process (void * arg)
 	
 	clnt = clnt_create(hostname, progNum, VERSNUM, nettype);
 	
-	if (clnt == (CLIENT *)NULL)
+	if (clnt == NULL)
 	{
 		printf("5\n");
 		pthread_exit (5);

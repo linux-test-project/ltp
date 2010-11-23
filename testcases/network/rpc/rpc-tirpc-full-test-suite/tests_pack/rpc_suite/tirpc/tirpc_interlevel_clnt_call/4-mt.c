@@ -76,7 +76,7 @@ void *my_thread_process (void * arg)
     client = clnt_tp_create_timed(hostname, progNum,
                                   VERSNUM, (struct netconfig *)nconf, &tv);
                                   
-    if (client == (CLIENT *)NULL)
+    if (client == NULL)
     {
     	clnt_pcreateerror("ERR");
     	thread_array_result[atoi(arg)] = 0;

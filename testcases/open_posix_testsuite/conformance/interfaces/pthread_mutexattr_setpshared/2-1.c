@@ -33,7 +33,7 @@ int main()
 	int ret;
 	
 	/* Initialize a mutex attributes object */
-	if(pthread_mutexattr_init(&mta) != 0)
+	if (pthread_mutexattr_init(&mta) != 0)
 	{
 		perror("Error at pthread_mutexattr_init()\n");
 		return PTS_UNRESOLVED;
@@ -41,7 +41,7 @@ int main()
 	
 	 /* Set the attribute to PTHREAD_PROCESS_PRIVATE.  */
 	ret=pthread_mutexattr_setpshared(&mta, PTHREAD_PROCESS_PRIVATE);
-	if(ret != 0)
+	if (ret != 0)
 	{
 		printf("Test FAILED: Expected return code 0, got: %d", ret);
 		return PTS_FAIL;

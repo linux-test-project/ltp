@@ -67,7 +67,7 @@ int main(int argn, char *argc[])
 		printf("Proto : %s\n", proto);
 	}
 	
-	if (clnt == (CLIENT *)NULL)
+	if (clnt == NULL)
 	{
 		clnt_pcreateerror("err");
 		printf("1\n");

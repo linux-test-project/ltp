@@ -77,7 +77,7 @@ int ki_generic(int fd, int flag)
 	tbio_interface_t        bif;
        
 	rc = ioctl(fd, flag, &bif);
-	if(rc) {
+	if (rc) {
 		printf("Ioctl error\n");
 		return rc;
 	}

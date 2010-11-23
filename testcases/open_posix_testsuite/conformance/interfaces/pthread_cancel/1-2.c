@@ -58,7 +58,7 @@ void *a_thread_func()
 	/* Wait until main() has sent out a cancel request, meaning until it
 	 * sets sem1==INMAIN.  Sleeping for 3 secs. to give time for the
 	 * cancel request to be sent and processed. */ 
-	while(sem1==INMAIN)
+	while (sem1==INMAIN)
 		sleep(1);
 
 	/* Should reach here if the thread correctly ignores the cancel
@@ -78,7 +78,7 @@ int main()
 	cleanup_flag=0;
 	
 	/* Create a new thread. */
-	if(pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
 	{	
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
@@ -86,10 +86,10 @@ int main()
 	
 	/* Make sure thread is created before we cancel it. (wait for 
 	 * a_thread_func() to set sem1=1.) */
-	while(sem1==INTHREAD)
+	while (sem1==INTHREAD)
 		sleep(1);
 
-	if(pthread_cancel(new_th) != 0) 
+	if (pthread_cancel(new_th) != 0) 
 	{
 		perror("Error sending cancel request\n");
 		return PTS_UNRESOLVED;
@@ -102,12 +102,12 @@ int main()
 	/* Wait for thread to return. (i.e. either canceled incorrectly and
 	 * called the cleanup function, or exited normally at the end of 
 	 * thread execution like it should do. */
-	while(cleanup_flag==0)
+	while (cleanup_flag==0)
 		sleep(1);
 
 	/* This means that the cleanup function was called, meaning the
 	 * thread was canceled rather than ignored the cancel request. */
-	if(cleanup_flag <= 0)
+	if (cleanup_flag <= 0)
 	{
 		printf("Test FAILED\n");
 		return PTS_FAIL;

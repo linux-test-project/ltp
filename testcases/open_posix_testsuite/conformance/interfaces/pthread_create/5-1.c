@@ -37,9 +37,9 @@ int main()
 	pthread_t new_th;
 	long i;
 
-	for(i=1;i<NUM_THREADS+1;i++)
+	for (i=1;i<NUM_THREADS+1;i++)
 	{	
-		if(pthread_create(&new_th, NULL, a_thread_func, (void*)i) != 0)
+		if (pthread_create(&new_th, NULL, a_thread_func, (void*)i) != 0)
 		{	
 			printf("Error creating thread\n");
 			return PTS_FAIL;

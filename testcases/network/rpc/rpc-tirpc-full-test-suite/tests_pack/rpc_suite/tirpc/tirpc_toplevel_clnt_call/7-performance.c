@@ -114,7 +114,7 @@ int main(int argn, char *argc[])
 	
 	clnt = clnt_create(argc[1], progNum, VERSNUM, nettype);	
 	
-	if (clnt == (CLIENT *)NULL)
+	if (clnt == NULL)
 	{
 		printf("5\n");
 		return 5;

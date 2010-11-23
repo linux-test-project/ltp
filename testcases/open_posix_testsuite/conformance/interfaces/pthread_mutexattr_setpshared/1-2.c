@@ -33,21 +33,21 @@ int main()
 	int pshared;
 	
 	/* Initialize a mutex attributes object */
-	if(pthread_mutexattr_init(&mta) != 0)
+	if (pthread_mutexattr_init(&mta) != 0)
 	{
 		perror("Error at pthread_mutexattr_init()\n");
 		return PTS_UNRESOLVED;
 	}
 	
 	 /* The default 'pshared' attribute should be PTHREAD_PROCESS_PRIVATE  */
-	if(pthread_mutexattr_getpshared(&mta, &pshared) != 0)
+	if (pthread_mutexattr_getpshared(&mta, &pshared) != 0)
 	{
 		fprintf(stderr,"Error obtaining the attribute process-shared\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Make sure that the default is PTHREAD_PROCESS_PRIVATE. */	
-	if(pshared != PTHREAD_PROCESS_PRIVATE)
+	if (pshared != PTHREAD_PROCESS_PRIVATE)
 	{
 		printf("Test FAILED: Incorrect default pshared value: %d\n", pshared);
 		return PTS_FAIL;

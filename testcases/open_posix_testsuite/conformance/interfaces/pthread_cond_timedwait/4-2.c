@@ -302,9 +302,9 @@ int main(int argc, char * argv[])
  * For each test scenario, initialize the attributes and other variables.
  * Do the whole thing for each time to test.
  */
-	for ( i=0; i< (sizeof(scenarii) / sizeof(scenarii[0])); i++)
+	for (i=0; i< (sizeof(scenarii) / sizeof(scenarii[0])); i++)
 	{
-		for ( j=0; j< (sizeof(junks_ts) / sizeof(junks_ts[0])); j++)
+		for (j=0; j< (sizeof(junks_ts) / sizeof(junks_ts[0])); j++)
 		{
 			#if VERBOSE > 1
 			output("[parent] Preparing attributes for: %s\n", scenarii[i].descr);

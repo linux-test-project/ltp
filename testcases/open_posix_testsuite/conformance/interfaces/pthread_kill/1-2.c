@@ -91,7 +91,7 @@ void handler( int sig )
 {
 	handler_called = sig;
 
-	if ( !pthread_equal( pthread_self(), ch ) )
+	if (!pthread_equal( pthread_self(), ch ))
 	{
 		FAILED( "The signal handler was not trigged in the killed thread" );
 	}
@@ -104,7 +104,7 @@ void * threaded( void * arg )
 
 	/* sleep up to 3 seconds */
 
-	while ( ( !handler_called ) && ( rebours-- ) )
+	while (( !handler_called ) && ( rebours-- ))
 		sleep( 1 );
 
 	/* quit */
@@ -126,14 +126,14 @@ int main( int argc, char * argv[] )
 	sa.sa_handler = handler;
 	ret = sigemptyset( &sa.sa_mask );
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to empty signal set" );
 	}
 
 	sigaction( SIGUSR2, &sa, 0 );
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to set signal handler" );
 	}
@@ -141,7 +141,7 @@ int main( int argc, char * argv[] )
 	/* Create the child */
 	ret = pthread_create( &ch, NULL, threaded, NULL );
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to create a thread" );
 	}
@@ -149,7 +149,7 @@ int main( int argc, char * argv[] )
 	/* kill the child thread */
 	ret = pthread_kill( ch, SIGUSR2 );
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to kill child thread" );
 	}
@@ -157,13 +157,13 @@ int main( int argc, char * argv[] )
 	/* Wait for child thread termination */
 	ret = pthread_join( ch, NULL );
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
 		UNRESOLVED( ret, "Failed to join the thread" );
 	}
 
 	/* Check if handler has been trigged inside the child */
-	if ( handler_called != SIGUSR2 )
+	if (handler_called != SIGUSR2)
 	{
 		FAILED( "Wrong signal received in thread" );
 	}

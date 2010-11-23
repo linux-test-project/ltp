@@ -71,7 +71,7 @@ void linear_read_write_test(test_ll_t *test)
 	OFF_T *pVal1 = (OFF_T *)test->env->shared_mem;
 	int i;
 
-	if(test->args->flags & CLD_FLG_W) {
+	if (test->args->flags & CLD_FLG_W) {
 		test->env->bContinue = TRUE;
 		*(pVal1 + OFF_WLBA) = test->args->start_lba;
 		test->args->test_state = DIRCT_INC(test->args->test_state);
@@ -83,8 +83,8 @@ void linear_read_write_test(test_ll_t *test)
 		test->env->action_list_entry = 0;
 		test->env->wcount = 0;
 		test->env->rcount = 0;
-		if(test->args->flags & CLD_FLG_CYC)
-			if(test->args->cycles == 0) {
+		if (test->args->flags & CLD_FLG_CYC)
+			if (test->args->cycles == 0) {
 				pMsg(INFO,test->args, "Starting write pass, cycle %lu\n", (unsigned long) test->env->pass_count);
 			} else {
 				pMsg(INFO,test->args, "Starting write pass, cycle %lu of %lu\n", (unsigned long) test->env->pass_count, test->args->cycles);
@@ -93,7 +93,7 @@ void linear_read_write_test(test_ll_t *test)
 			pMsg(INFO,test->args, "Starting write pass\n");
 		}
 		CreateTestChild(ChildTimer, test);
-		for(i=0;i<test->args->t_kids;i++) {
+		for (i=0;i<test->args->t_kids;i++) {
 			CreateTestChild(ChildMain, test);
 		}
 		/* Wait for the writers to finish */
@@ -101,9 +101,9 @@ void linear_read_write_test(test_ll_t *test)
 	}
 
 	/* If the write test failed don't start the read test */
-	if(!(TST_STS(test->args->test_state))) { return; }
+	if (!(TST_STS(test->args->test_state))) { return; }
 
-	if(test->args->flags & CLD_FLG_R) {
+	if (test->args->flags & CLD_FLG_R) {
 		test->env->bContinue = TRUE;
 		*(pVal1 + OFF_RLBA) = test->args->start_lba;
 		test->args->test_state = DIRCT_INC(test->args->test_state);
@@ -115,8 +115,8 @@ void linear_read_write_test(test_ll_t *test)
 		test->env->action_list_entry = 0;
 		test->env->wcount = 0;
 		test->env->rcount = 0;
-		if(test->args->flags & CLD_FLG_CYC)
-			if(test->args->cycles == 0) {
+		if (test->args->flags & CLD_FLG_CYC)
+			if (test->args->cycles == 0) {
 				pMsg(INFO,test->args, "Starting read pass, cycle %lu\n", (unsigned long) test->env->pass_count);
 			} else {
 				pMsg(INFO,test->args, "Starting read pass, cycle %lu of %lu\n", (unsigned long) test->env->pass_count, test->args->cycles);
@@ -125,7 +125,7 @@ void linear_read_write_test(test_ll_t *test)
 			pMsg(INFO,test->args, "Starting read pass\n");
 		}
 		CreateTestChild(ChildTimer, test);
-		for(i=0;i<test->args->t_kids;i++) {
+		for (i=0;i<test->args->t_kids;i++) {
 			CreateTestChild(ChildMain, test);
 		}
 		/* Wait for the readers to finish */
@@ -141,15 +141,15 @@ unsigned long init_data(test_ll_t *test, unsigned char **data_buffer_unaligned)
 	unsigned long data_buffer_size;
 
 #ifdef WINDOWS
-	if(CreateMutex(NULL, FALSE, "gbl") == NULL) {
+	if (CreateMutex(NULL, FALSE, "gbl") == NULL) {
 		pMsg(ERR, test->args, "Failed to create semaphore, error = %u\n", GetLastError());
 		return(GetLastError());
 	}
-	if((test->env->mutexs.MutexACTION = CreateMutex(NULL, FALSE, NULL)) == NULL) {
+	if ((test->env->mutexs.MutexACTION = CreateMutex(NULL, FALSE, NULL)) == NULL) {
 		pMsg(ERR, test->args, "Failed to create semaphore, error = %u\n", GetLastError());
 		return(GetLastError());
 	}
-	if((test->env->mutexs.MutexIO = CreateMutex(NULL, FALSE, NULL)) == NULL) {
+	if ((test->env->mutexs.MutexIO = CreateMutex(NULL, FALSE, NULL)) == NULL) {
 		pMsg(ERR, test->args, "Failed to create semaphore, error = %u\n", GetLastError());
 		return(GetLastError());
 	}
@@ -160,7 +160,7 @@ unsigned long init_data(test_ll_t *test, unsigned char **data_buffer_unaligned)
 
 #endif
 
-	if(test->args->seed == 0) test->args->seed = test->args->pid;
+	if (test->args->seed == 0) test->args->seed = test->args->pid;
 	srand(test->args->seed);
 
 	/* create bitmap to hold write/read context: each bit is an LBA */
@@ -170,19 +170,19 @@ unsigned long init_data(test_ll_t *test, unsigned char **data_buffer_unaligned)
 
 	/* We use that same data buffer for static data, so alloc here. */
 	data_buffer_size = ((test->args->htrsiz*BLK_SIZE)*2);
-	if((*data_buffer_unaligned = (unsigned char *) ALLOC(data_buffer_size+ALIGNSIZE)) == NULL) {
+	if ((*data_buffer_unaligned = (unsigned char *) ALLOC(data_buffer_size+ALIGNSIZE)) == NULL) {
 		pMsg(ERR,test->args,  "Failed to allocate static data buffer memory.\n");
 		return(-1);
 	}
 	/* create list to hold lbas currently be written */
-	if((test->env->action_list = (action_t *) ALLOC(sizeof(action_t)*test->args->t_kids)) == NULL) {
+	if ((test->env->action_list = (action_t *) ALLOC(sizeof(action_t)*test->args->t_kids)) == NULL) {
 		pMsg(ERR,test->args,  "Failed to allocate static data buffer memory.\n");
 		return(-1);
 	}
 
 	test->env->data_buffer = (unsigned char *) BUFALIGN(*data_buffer_unaligned);
 
-	if((test->env->shared_mem = (void *) ALLOC(test->env->bmp_siz+BMP_OFFSET)) == NULL) {
+	if ((test->env->shared_mem = (void *) ALLOC(test->env->bmp_siz+BMP_OFFSET)) == NULL) {
 		pMsg(ERR, test->args, "Failed to allocate bitmap memory\n");
 		return(-1);
 	}
@@ -199,7 +199,7 @@ unsigned long init_data(test_ll_t *test, unsigned char **data_buffer_unaligned)
 	test->args->test_state = SET_wFST_TIME(test->args->test_state);
 	test->args->test_state = SET_rFST_TIME(test->args->test_state);
 	test->args->test_state = DIRCT_INC(test->args->test_state);
-	if(test->args->flags & CLD_FLG_W) {
+	if (test->args->flags & CLD_FLG_W) {
 		test->env->lastAction.oper = WRITER;
 		test->args->test_state = SET_OPER_W(test->args->test_state);
 	} else {
@@ -210,11 +210,11 @@ unsigned long init_data(test_ll_t *test, unsigned char **data_buffer_unaligned)
 	/* prefill the data buffer with data for compares and writes */
 	switch(test->args->flags & CLD_FLG_PTYPS) {
 		case CLD_FLG_FPTYPE :
-			for(i=0;i<sizeof(test->args->pattern);i++) {
-				if((test->args->pattern & (((OFF_T) 0xff) << (((sizeof(test->args->pattern)-1)-i)*8))) != 0) break;
+			for (i=0;i<sizeof(test->args->pattern);i++) {
+				if ((test->args->pattern & (((OFF_T) 0xff) << (((sizeof(test->args->pattern)-1)-i)*8))) != 0) break;
 			}
 			/* special case for pattern = 0 */
-			if(i == sizeof(test->args->pattern)) i = 0;
+			if (i == sizeof(test->args->pattern)) i = 0;
 			fill_buffer(test->env->data_buffer, data_buffer_size, &test->args->pattern, sizeof(test->args->pattern)-i, CLD_FLG_FPTYPE);
 			break;
 		case CLD_FLG_RPTYPE :
@@ -256,9 +256,9 @@ void *threadedMain(void *vtest)
 
 	init_gbl_data(test->env);
 
-	if(make_assumptions(test->args) < 0) { TEXIT((uintptr_t)GETLASTERROR()); }
-	if(check_conclusions(test->args) < 0) { TEXIT((uintptr_t)GETLASTERROR()); }
-	if(test->args->flags & CLD_FLG_DUMP) {
+	if (make_assumptions(test->args) < 0) { TEXIT((uintptr_t)GETLASTERROR()); }
+	if (check_conclusions(test->args) < 0) { TEXIT((uintptr_t)GETLASTERROR()); }
+	if (test->args->flags & CLD_FLG_DUMP) {
 		/*
 		 * All we are doing is dumping filespec data to STDOUT, so
 		 * we will do this here and be done.
@@ -267,7 +267,7 @@ void *threadedMain(void *vtest)
 		TEXIT((uintptr_t)GETLASTERROR());
 	} else {
 		ulRV = init_data(test, &data_buffer_unaligned);
-		if(ulRV != 0) { TEXIT(ulRV); }
+		if (ulRV != 0) { TEXIT(ulRV); }
 		pVal1 = (OFF_T *)test->env->shared_mem;
 	}
 
@@ -279,12 +279,12 @@ void *threadedMain(void *vtest)
 	do {
 		test->env->pass_count++;
 		test->env->start_time = time(NULL);
-		if(test->args->flags & CLD_FLG_RPTYPE) { /* force random data to be different each cycle */
+		if (test->args->flags & CLD_FLG_RPTYPE) { /* force random data to be different each cycle */
 			fill_buffer(test->env->data_buffer, ((test->args->htrsiz*BLK_SIZE)*2), NULL, 0, CLD_FLG_RPTYPE);
 		}
 		sharedMem = test->env->shared_mem;
 		memset(sharedMem+BMP_OFFSET,0,test->env->bmp_siz);
-		if((test->args->flags & CLD_FLG_LINEAR) && !(test->args->flags & CLD_FLG_NTRLVD)) {
+		if ((test->args->flags & CLD_FLG_LINEAR) && !(test->args->flags & CLD_FLG_NTRLVD)) {
 			linear_read_write_test(test);
 		} else {
 			/* we only reset the end time if not running a linear read / write test */
@@ -294,7 +294,7 @@ void *threadedMain(void *vtest)
 			test->args->test_state = DIRCT_INC(test->args->test_state);
 			test->args->test_state = SET_wFST_TIME(test->args->test_state);
 			test->args->test_state = SET_rFST_TIME(test->args->test_state);
-			if(test->args->flags & CLD_FLG_W) {
+			if (test->args->flags & CLD_FLG_W) {
 				test->env->lastAction.oper = WRITER;
 				test->args->test_state = SET_OPER_W(test->args->test_state);
 			} else {
@@ -306,8 +306,8 @@ void *threadedMain(void *vtest)
 			test->env->wcount = 0;
 			test->env->rcount = 0;
 
-			if(test->args->flags & CLD_FLG_CYC)
-				if(test->args->cycles == 0) {
+			if (test->args->flags & CLD_FLG_CYC)
+				if (test->args->cycles == 0) {
 					pMsg(INFO,test->args, "Starting pass %lu\n", (unsigned long) test->env->pass_count);
 				} else {
 					pMsg(INFO,test->args, "Starting pass %lu of %lu\n", (unsigned long) test->env->pass_count, test->args->cycles);
@@ -317,7 +317,7 @@ void *threadedMain(void *vtest)
 			}
 
 			CreateTestChild(ChildTimer, test);
-			for(i=0;i<test->args->t_kids;i++) {
+			for (i=0;i<test->args->t_kids;i++) {
 				CreateTestChild(ChildMain, test);
 			}
 			/* Wait for the children to finish */
@@ -325,22 +325,22 @@ void *threadedMain(void *vtest)
 		}
 
 		update_cyc_stats(test->env);
-		if((test->args->flags & CLD_FLG_CYC) && (test->args->flags & CLD_FLG_PCYC)) {
+		if ((test->args->flags & CLD_FLG_CYC) && (test->args->flags & CLD_FLG_PCYC)) {
 			print_stats(test->args, test->env, CYCLE);
 		}
 		update_gbl_stats(test->env);
 
-		if(signal_action & SIGNAL_STOP) { break; }	/* user request to stop */
-		if((glb_run == 0)) { break; }				/* global request to stop */
+		if (signal_action & SIGNAL_STOP) { break; }	/* user request to stop */
+		if ((glb_run == 0)) { break; }				/* global request to stop */
 
-		if(!(test->args->flags & CLD_FLG_CYC)) {
+		if (!(test->args->flags & CLD_FLG_CYC)) {
 			break;					/* leave, unless cycle testing */
 		} else {
-			if((test->args->cycles > 0) && (test->env->pass_count >= test->args->cycles)) {
+			if ((test->args->cycles > 0) && (test->env->pass_count >= test->args->cycles)) {
 				break;				/* leave, cycle testing complete */
 			}
 		}
-	} while(TST_STS(test->args->test_state));
+	} while (TST_STS(test->args->test_state));
 	print_stats(test->args, test->env, TOTAL);
 
 	FREE(data_buffer_unaligned);
@@ -350,7 +350,7 @@ void *threadedMain(void *vtest)
 	CloseHandle(OpenMutex(SYNCHRONIZE, TRUE, "data"));
 #endif
 
-	if(TST_STS(test->args->test_state)) {
+	if (TST_STS(test->args->test_state)) {
 		if (signal_action & SIGNAL_STOP) {
 			pMsg(END, test->args, "User Interrupt: Test Done (Passed)\n");
 		} else {
@@ -376,19 +376,19 @@ void *threadedMain(void *vtest)
 test_ll_t *getNewTest(test_ll_t *testList) {
 	test_ll_t *pNewTest;
 
-	if((pNewTest = (test_ll_t *)ALLOC(sizeof(test_ll_t))) == NULL) {
+	if ((pNewTest = (test_ll_t *)ALLOC(sizeof(test_ll_t))) == NULL) {
 		pMsg(ERR, &cleanArgs, "%d : Could not allocate memory for new test.\n", GETLASTERROR());
 		return NULL;
 	}
 
 	memset(pNewTest, 0, sizeof(test_ll_t));
 
-	if((pNewTest->args = (child_args_t *)ALLOC(sizeof(child_args_t))) == NULL) {
+	if ((pNewTest->args = (child_args_t *)ALLOC(sizeof(child_args_t))) == NULL) {
 		pMsg(ERR, &cleanArgs, "%d : Could not allocate memory for new test.\n", GETLASTERROR());
 		FREE(pNewTest);
 		return NULL;
 	}
-	if((pNewTest->env = (test_env_t *)ALLOC(sizeof(test_env_t))) == NULL) {
+	if ((pNewTest->env = (test_env_t *)ALLOC(sizeof(test_env_t))) == NULL) {
 		pMsg(ERR, &cleanArgs, "%d : Could not allocate memory for new test.\n", GETLASTERROR());
 		FREE(pNewTest->args);
 		FREE(pNewTest);
@@ -405,18 +405,18 @@ test_ll_t *getNewTest(test_ll_t *testList) {
 test_ll_t *run() {
 	test_ll_t *newTest = NULL, *lastTest = NULL;
 
-	if(cleanArgs.flags & CLD_FLG_FSLIST) {
+	if (cleanArgs.flags & CLD_FLG_FSLIST) {
 		char *filespec = cleanArgs.device;
 		char *aFilespec = NULL;
 		FILE *file = NULL;
 
-		if((aFilespec = (char *)ALLOC(80)) == NULL) {
+		if ((aFilespec = (char *)ALLOC(80)) == NULL) {
 			pMsg(ERR, &cleanArgs, "Could not allocate memory to read file");
 			return newTest;
 		}
 
 		file = fopen(filespec, "r");
-			if(file == NULL) {
+			if (file == NULL) {
 				pMsg(
 					ERR,
 					&cleanArgs,
@@ -426,13 +426,13 @@ test_ll_t *run() {
 				return newTest;
 			}
 
-		while(!feof(file)) {
+		while (!feof(file)) {
 			memset(aFilespec, 0, 80);
 			fscanf(file, "%79s", aFilespec);
-			if(aFilespec[0] != 0) { /* if we read something useful */
+			if (aFilespec[0] != 0) { /* if we read something useful */
 				lastTest = newTest;
 				newTest = getNewTest(lastTest);
-				if(newTest != lastTest) {
+				if (newTest != lastTest) {
 					memset(newTest->args->device, 0, DEV_NAME_LEN);
 					strncpy(newTest->args->device, aFilespec, strlen(aFilespec));
 					createChild(threadedMain, newTest);
@@ -447,7 +447,7 @@ test_ll_t *run() {
 		FREE(aFilespec);
 	} else {
 		newTest = getNewTest(newTest);
-		if(newTest != NULL) {
+		if (newTest != NULL) {
 			createChild(threadedMain, newTest);
 		}
 	}
@@ -469,7 +469,7 @@ int main(int argc, char **argv)
 	wVersionRequested = MAKEWORD( 2, 2 );
 
 	err = WSAStartup( wVersionRequested, &wsaData );
-	if(err != 0) {
+	if (err != 0) {
 		pMsg(WARN, &cleanArgs, "Windows setup of Winsock failed, can't retrieve host name, continuing");
 	}
 #endif
@@ -479,7 +479,7 @@ int main(int argc, char **argv)
 	memset(hostname, 0, HOSTNAME_SIZE);
 	gethostname(hostname, HOSTNAME_SIZE);
 
-	setbuf(stdout, (char *)NULL);
+	setbuf(stdout, NULL);
 
 	glb_flags = 0;
 	global_start_time = time(NULL);
@@ -492,12 +492,12 @@ int main(int argc, char **argv)
 	cleanArgs.flags |= CLD_FLG_ERR_REREAD;
 	cleanArgs.flags |= CLD_FLG_LBA_SYNC;
 
-	for(i=1;i<argc-1;i++) {
+	for (i=1;i<argc-1;i++) {
 		strncat(cleanArgs.argstr, argv[i], (MAX_ARG_LEN-1)-strlen(cleanArgs.argstr));
 		strncat(cleanArgs.argstr, " ", (MAX_ARG_LEN-1)-strlen(cleanArgs.argstr));
 	}
 
-	if(fill_cld_args(argc, argv, &cleanArgs) < 0) exit(1);
+	if (fill_cld_args(argc, argv, &cleanArgs) < 0) exit(1);
 
 	cleanUp(run());
 

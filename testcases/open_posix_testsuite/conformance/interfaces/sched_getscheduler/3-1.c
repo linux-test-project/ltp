@@ -54,17 +54,17 @@ int main(int argc, char **argv)
 	tst = sym;
 	result = sched_getscheduler(0);
 
-	if(result == -1){
+	if (result == -1) {
 		printf("Returned code is -1.\n");
 		return PTS_FAIL;
 	}
-	if(errno != 0 ) {
+	if (errno != 0) {
 		perror("Unexpected error");
 		return PTS_FAIL;
 	}
 
 	while (tst->name) {
-		if(result == tst->value) {
+		if (result == tst->value) {
 			printf("Test PASSED\n");
 			return PTS_PASS;
 		}

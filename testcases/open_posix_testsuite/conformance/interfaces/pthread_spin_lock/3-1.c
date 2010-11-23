@@ -45,7 +45,7 @@ int main()
 	sigaction(SIGALRM, &act, 0);
 	
 	
-	if(pthread_spin_init(&spinlock, PTHREAD_PROCESS_PRIVATE) != 0)
+	if (pthread_spin_init(&spinlock, PTHREAD_PROCESS_PRIVATE) != 0)
 	{
 		printf("main: Error at pthread_spin_init()\n");
 		return PTS_UNRESOLVED;
@@ -54,7 +54,7 @@ int main()
 	printf("main: attempt spin lock\n");
 
 	/* We should get the lock */	
-	if(pthread_spin_lock(&spinlock) != 0)
+	if (pthread_spin_lock(&spinlock) != 0)
 	{
 		printf("Test FAILED: main cannot get spin lock when no one owns the lock\n");
 		return PTS_FAIL;
@@ -67,7 +67,7 @@ int main()
 	printf("main: re-lock spin lock\n");
 	rc = pthread_spin_lock(&spinlock);
 
-	if(rc == EDEADLK)
+	if (rc == EDEADLK)
 	{
 		printf("main: correctly got EDEADLK when re-locking the spin lock\n");
 		printf("Test PASSED\n");

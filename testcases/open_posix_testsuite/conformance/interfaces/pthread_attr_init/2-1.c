@@ -57,30 +57,30 @@ int main()
 
 	/* Initializing */
 	sem1 = INMAIN;	
-	if(pthread_attr_init(&new_attr) != 0)
+	if (pthread_attr_init(&new_attr) != 0)
 	{
 		perror("Cannot initialize attribute object\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Create a new thread passing it the new attribute object */
-	if(pthread_create(&new_th, &new_attr, a_thread_func, NULL) != 0)
+	if (pthread_create(&new_th, &new_attr, a_thread_func, NULL) != 0)
 	{	
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Wait for thread to indicate that the start routine for the thread has started. */
-	while(sem1==INMAIN)
+	while (sem1==INMAIN)
 		sleep(1);
 	
 	/* If pthread_detach fails, that means that the test fails as well. */
 	ret_val=pthread_detach(new_th);
 
-	if(ret_val != 0)
+	if (ret_val != 0)
 	{
 		/* Thread is already detached. */
-		if(ret_val == EINVAL)
+		if (ret_val == EINVAL)
 		{
 			printf("Test FAILED\n");
 			return PTS_FAIL;

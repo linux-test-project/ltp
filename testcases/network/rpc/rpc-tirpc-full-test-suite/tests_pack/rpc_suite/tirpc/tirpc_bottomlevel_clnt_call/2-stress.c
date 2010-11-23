@@ -88,7 +88,7 @@ int main(int argn, char *argc[])
 	svcaddr.maxlen = ADDRBUFSIZE;
 	svcaddr.buf = addrbuf;
 	
-	if (svcaddr.buf == (char *)NULL)
+	if (svcaddr.buf == NULL)
 	{
     	/* if malloc() failed, print error messages and exit */
 		printf("5\n");

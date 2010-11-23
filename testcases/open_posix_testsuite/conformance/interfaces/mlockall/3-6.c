@@ -36,32 +36,32 @@ int main() {
 	void *foo;
 
 	page_size = sysconf(_SC_PAGESIZE);
-	if(errno) {
+	if (errno) {
 		perror("An error occurs when calling sysconf()");
 		return PTS_UNRESOLVED;
 	}
 
 	fd = shm_open(SHM_NAME, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
-	if(fd == -1) {
+	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		return PTS_UNRESOLVED;
 	}
 	
-	if(ftruncate(fd, BUF_SIZE) != 0) {
+	if (ftruncate(fd, BUF_SIZE) != 0) {
 		perror("An error occurs when calling ftruncate()");
 		shm_unlink(SHM_NAME);
 		return PTS_UNRESOLVED;	
 	}
 
 	foo = mmap(NULL, BUF_SIZE, PROT_WRITE, MAP_SHARED, fd, 0);
-	if( foo == MAP_FAILED) {
+	if (foo == MAP_FAILED) {
 		perror("An error occurs when calling mmap()");
 		shm_unlink(SHM_NAME);
 		return PTS_UNRESOLVED;	
 	}	
 
-	if(mlockall(MCL_CURRENT) == -1) {
-		if(errno == EPERM){
+	if (mlockall(MCL_CURRENT) == -1) {
+		if (errno == EPERM) {
 			printf("You don't have permission to lock your address space.\nTry to rerun this test as root.\n");
 		} else {
 			perror("An error occurs when calling mlockall()");
@@ -72,10 +72,10 @@ int main() {
 	page_ptr = (void*) ( (long)foo - ((long)foo % page_size) );
 
 	result = msync(page_ptr, page_size, MS_SYNC|MS_INVALIDATE);
-	if(result == -1 && errno == EBUSY) {
+	if (result == -1 && errno == EBUSY) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else if(result == 0) {
+	} else if (result == 0) {
 		printf("The shared memory pages of the process are not locked.\n");
 		return PTS_FAIL;
 	}

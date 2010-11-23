@@ -60,7 +60,7 @@ int main(int argn, char *argc[])
 	for (i = 0; i < nbCall; i++)
 	{
 		svcr = svctcp_create(sock, 0, 0);
-		if (svcr != (SVCXPRT *)NULL)
+		if (svcr != NULL)
 			nbOk++;
 	}
 	

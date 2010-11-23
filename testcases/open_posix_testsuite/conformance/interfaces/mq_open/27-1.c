@@ -31,7 +31,7 @@ int main()
         sprintf(qname, "/mq_open_27-1_%d", getpid());
 
 	//Ensures queue name will have > PATH_MAX chars
-	for(i=0;i<PATH_MAX;i++) {
+	for (i=0;i<PATH_MAX;i++) {
 		strcat(qname, "0");
 	}
 

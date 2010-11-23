@@ -88,7 +88,7 @@ int main(int argn, char *argc[])
 	svcaddr.maxlen = ADDRBUFSIZE;
 	svcaddr.buf = addrbuf;
 	
-	if (svcaddr.buf == (char *)NULL)
+	if (svcaddr.buf == NULL)
 	{
     	/* if malloc() failed, print error messages and exit */
   		return 1;
@@ -128,7 +128,7 @@ int main(int argn, char *argc[])
 	                         	 progNum, VERSNUM, paramList[i].bufmin, paramList[i].bufmax);
 		
 		//Check result
-		if (client == (CLIENT *)NULL)
+		if (client == NULL)
 		{
 			//test has failed
 			test_status = 1;

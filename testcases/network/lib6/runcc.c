@@ -87,7 +87,7 @@ runcc(char *tname, char *filename0, char *program)
 	(void) close(fd);
 
 	cflags = getenv("CFLAGS");
-	if (cflags == NULL){
+	if (cflags == NULL) {
 		tst_resm(TINFO, "CFLAGS not found, using default cc arch.");
 		cflags = "";
 	}

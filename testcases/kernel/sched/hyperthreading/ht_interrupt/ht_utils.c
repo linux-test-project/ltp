@@ -22,11 +22,11 @@ int is_cmdline_para(const char *para)
 {
 	FILE *fp;
 
-	if((fp=fopen("/proc/cmdline","r"))!=NULL && para!=NULL)
+	if ((fp=fopen("/proc/cmdline","r"))!=NULL && para!=NULL)
 	{
-		while(fgets(buffer, BUFF_SIZE-1, fp) != NULL)
+		while (fgets(buffer, BUFF_SIZE-1, fp) != NULL)
 		{
-			if(strstr(buffer, para) != NULL)
+			if (strstr(buffer, para) != NULL)
 			{
 				fclose(fp);
 				return 1;
@@ -42,11 +42,11 @@ int is_ht_kernel()
 {
 	FILE *fp;
 
-	if((fp=fopen("/proc/cpuinfo","r"))!=NULL)
+	if ((fp=fopen("/proc/cpuinfo","r"))!=NULL)
 	{
-		while(fgets(buffer, BUFF_SIZE-1, fp) != NULL)
+		while (fgets(buffer, BUFF_SIZE-1, fp) != NULL)
 		{
-			if(strncmp(buffer, PACKAGE_STR, strlen(PACKAGE_STR)) == 0)
+			if (strncmp(buffer, PACKAGE_STR, strlen(PACKAGE_STR)) == 0)
 			{
 				fclose(fp);
 				return 1;
@@ -83,7 +83,7 @@ int is_ht_cpu()
 	smp_num_siblings = (ebx&0xff0000) >> 16;
 	ht = (edx&0x10000000) >> 28;
 
-	if(ht==1 && smp_num_siblings==2){
+	if (ht==1 && smp_num_siblings==2) {
 //		printf("The processor in this system supports HT\n");
 		return 1;
 	}else{
@@ -123,9 +123,9 @@ int is_ht_enabled()
                     }
                     if (strncmp(buffer, FLAG_STR, strlen(FLAG_STR)) == 0) {
                         ht_flag = buffer;
-                        while(*ht_flag != '\0'){
+                        while (*ht_flag != '\0') {
                             /*printf("ht_flag=%s",ht_flag);*/
-                            if(strncmp(ht_flag,HT_FLAG,strlen(HT_FLAG))==0){
+                            if (strncmp(ht_flag,HT_FLAG,strlen(HT_FLAG))==0) {
                                 ht_cpu[cpu_id] = 1;
                                 break;
                             }
@@ -143,29 +143,29 @@ int is_ht_enabled()
 
     fclose(fp);
 
-    for(i =0; i < logic_cpu_num; i++){
-        if(ht_cpu[i] == 1){
-            for(j = i + 1; j < logic_cpu_num; j++){
-                if(cpu_map[i]==cpu_map[j]){
-                    for(k = j +1; k < logic_cpu_num; k++){
-                        if(cpu_map[j]==cpu_map[k]){
+    for (i =0; i < logic_cpu_num; i++) {
+        if (ht_cpu[i] == 1) {
+            for (j = i + 1; j < logic_cpu_num; j++) {
+                if (cpu_map[i]==cpu_map[j]) {
+                    for (k = j +1; k < logic_cpu_num; k++) {
+                        if (cpu_map[j]==cpu_map[k]) {
                         /* Not proper HT support, with 3 logic processor in 1 cpu package*/
                             return 0;
                         }
                     }
-                    if(ht_cpu[j] ==1){
+                    if (ht_cpu[j] ==1) {
                         return 1;
                     }else
                         return 0;
                 }
             }
             /* in this case, processor[i] has ht flag, but is not ht enabled*/
-            if(j == logic_cpu_num){
+            if (j == logic_cpu_num) {
                 return 0;
             }
         }
     }
-    if(i == logic_cpu_num){
+    if (i == logic_cpu_num) {
             return 0;
     }
     return 0;
@@ -179,11 +179,11 @@ int check_ht_capability()
 {
 	int result;
 
-	if(is_ht_kernel())
+	if (is_ht_kernel())
 	{
-		if(is_ht_cpu())
+		if (is_ht_cpu())
 		{
-			if(is_ht_enabled())
+			if (is_ht_enabled())
 				result = 0; //HT is enabled by default in this system.
 			else
 				result = 1; //HT is not enabled by default in this system.
@@ -212,14 +212,14 @@ int get_cpu_count()
 	FILE *pfile;
 	int count;
 
-        if((pfile=fopen(CPUINFO_PATH, "r"))==NULL)
+        if ((pfile=fopen(CPUINFO_PATH, "r"))==NULL)
 		return 0;
 
 	count=0;
 
-	while(fgets(buf, 255, pfile)!=NULL)
+	while (fgets(buf, 255, pfile)!=NULL)
 	{
-		if(strncmp(buf, CPU_NAME, strlen(CPU_NAME))==0)
+		if (strncmp(buf, CPU_NAME, strlen(CPU_NAME))==0)
 			count++;
 	}
 
@@ -239,10 +239,10 @@ int get_current_cpu(pid_t pid)
 
         sprintf(buf, "%s%d/%s%c", PROCFS_PATH, pid, STAT_NAME, 0);
 
-	if((pfile=fopen(buf, "r"))==NULL)
+	if ((pfile=fopen(buf, "r"))==NULL)
 		return -1;
 
-	if(fscanf(pfile, "%d %s %c %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",
+	if (fscanf(pfile, "%d %s %c %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",
 		 &da, str, &ch, &da, &da, &da, &da, &da, &da, &da,\
 		 &da, &da, &da, &da, &da, &da, &da, &da, &da, &da,\
 		 &da, &da, &da, &da, &da, &da, &da, &da, &da, &da,\

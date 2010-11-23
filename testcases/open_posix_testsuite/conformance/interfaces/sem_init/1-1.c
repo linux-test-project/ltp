@@ -34,7 +34,7 @@ int main ()
 	sts = sem_init(&mysemp, 0, 1);
 
 
-        if( sem_getvalue(&mysemp, &val) == -1 ) {
+        if (sem_getvalue(&mysemp, &val) == -1) {
                 perror(ERROR_PREFIX "sem_getvalue");
                 return PTS_UNRESOLVED;
         }

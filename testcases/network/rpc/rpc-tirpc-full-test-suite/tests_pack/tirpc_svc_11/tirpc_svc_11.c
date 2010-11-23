@@ -61,7 +61,7 @@ int main(int argn, char *argc[])
 	//Initialization
 	svc_unreg(progNum, VERSNUM);
 
-	if ((nconf = getnetconfigent("udp")) == (struct netconfig *)NULL) 
+	if ((nconf = getnetconfigent("udp")) == NULL) 
     {
     	fprintf(stderr, "Cannot get netconfig entry for UDP\n");
     	exit(1);
@@ -70,7 +70,7 @@ int main(int argn, char *argc[])
 	transp = svc_tp_create(exm_proc, progNum, VERSNUM,
                            nconf);
                            
-	if (transp == (SVCXPRT *)NULL)
+	if (transp == NULL)
 	{
     	fprintf(stderr, "Cannot create service.\n");
     	exit(1);

@@ -98,7 +98,7 @@ main(int argc, char *argv[])
 	while (1) {
 
 		/* accept a connection from a client */
-		if ((as = accept(s, &from, &fromlen)) < 0 ) {
+		if ((as = accept(s, &from, &fromlen)) < 0) {
 			tst_resm(TBROK, "accept error = %d\n", errno);
 			if (errno == EINTR)
 				continue;
@@ -176,7 +176,7 @@ main(int argc, char *argv[])
 
 	}
 
-	close(s); /* close parent socket (never reached because of the while(1)) */
+	close(s); /* close parent socket (never reached because of the while (1)) */
 
 	return 0;
 

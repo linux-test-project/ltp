@@ -42,7 +42,7 @@
 #include <stdint.h>
 
 #define MAXLINE 1024
-void noprintf(char* string, ...){
+void noprintf(char* string, ...) {
 }
 
 pthread_t	th;
@@ -59,7 +59,7 @@ int sockfd;
    char line[MAXLINE];
 
    printf("sockfd = %d\n", sockfd);
-   for ( ; ; )
+   for (; ;)
    {
    prtln();
    dprt2(("%s: str_echo(): reading from sockfd %d\n", __FILE__, sockfd));
@@ -127,7 +127,7 @@ main(int argc, char *argv[])
     }
 
     prtln();
-    if (pthread_mutex_init(&current_mutex, (pthread_mutexattr_t *)NULL) != 0)
+    if (pthread_mutex_init(&current_mutex, NULL) != 0)
 	printf("current_mutex_init() failure");
     prtln();
 
@@ -140,7 +140,7 @@ main(int argc, char *argv[])
     listen(sockfd, 5);
 
     prtln();
-    for ( ; ; )
+    for (; ;)
 	{
 	    /* Wait for connection from a client process */
 	    clilen = sizeof(cli_addr);

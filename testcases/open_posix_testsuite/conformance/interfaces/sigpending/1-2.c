@@ -88,7 +88,7 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 
-	if ( (sigaddset(&act.sa_mask, SIGCONT) == -1) ||
+	if ((sigaddset(&act.sa_mask, SIGCONT) == -1) ||
 		(sigaddset(&act.sa_mask, SIGHUP) == -1) ||
 		(sigaddset(&act.sa_mask, SIGUSR1) == -1) ) {
 		perror("Error calling sigaddset()\n");

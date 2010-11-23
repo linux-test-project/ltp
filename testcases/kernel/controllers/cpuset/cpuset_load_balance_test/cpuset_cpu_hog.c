@@ -300,12 +300,12 @@ int main(int argc, char **argv)
 			sigsuspend(&sigset);
 
 		if (ret || end) {
-			for(i = 0; i < nprocs; i++) {
+			for (i = 0; i < nprocs; i++) {
 				kill(childpids[i], SIGUSR2);
 			}
 			break;
 		} else {
-			for(i = 0; i < nprocs; i++) {
+			for (i = 0; i < nprocs; i++) {
 				kill(childpids[i], SIGUSR1);
 			}
 		}

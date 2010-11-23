@@ -138,7 +138,7 @@ char *argv[];
 	sigfillset(&sigptr.sa_mask);
 	sigptr.sa_flags = 0;
 	sigaddset(&sigptr.sa_mask, SIGALRM);
-	if (sigaction(SIGALRM, &sigptr, (struct sigaction *)NULL) == -1) {
+	if (sigaction(SIGALRM, &sigptr, NULL) == -1) {
 		fprintf(temp, "Signal SIGALRM failed, errno = %d \n", errno);
 		fail_exit();
 	}

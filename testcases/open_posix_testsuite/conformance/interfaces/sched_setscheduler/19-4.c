@@ -24,12 +24,12 @@
 
 #if defined(_POSIX_SPORADIC_SERVER)&&(_POSIX_SPORADIC_SERVER != -1)
 
-int main(){
+int main() {
 	int policy, result;
 	int result_code = PTS_PASS;
 	struct sched_param param;
 
-	if(sched_getparam(0, &param) == -1) {
+	if (sched_getparam(0, &param) == -1) {
 		perror("An error occurs when calling sched_getparam()");
 		return PTS_UNRESOLVED;
 	}	
@@ -40,13 +40,13 @@ int main(){
 	param.sched_ss_max_repl = 0;		
 	result = sched_setscheduler(0, SCHED_SPORADIC, &param);
 	
-	if(result != -1) {
+	if (result != -1) {
 		printf("The returned code is not -1 when sched_ss_max_repl < 1.\n");
 		result_code = PTS_FAIL;
-	} else if(errno == EPERM) {
+	} else if (errno == EPERM) {
 		printf("This process does not have the permission to set its own scheduling policy.\nTry to launch this test as root.\n");
 		result_code = PTS_UNRESOLVED;
-	} else if(errno != EINVAL) {
+	} else if (errno != EINVAL) {
 		perror("Unknow error when testing sched_ss_max_repl < 1");
 		result_code = PTS_FAIL;
 	}
@@ -55,16 +55,16 @@ int main(){
 	param.sched_ss_max_repl = SS_REPL_MAX+1;
 	result = sched_setscheduler(0, SCHED_SPORADIC, &param);
 
-	if(result == -1 && errno == EINVAL) {
-		if(result_code == PTS_PASS){
+	if (result == -1 && errno == EINVAL) {
+		if (result_code == PTS_PASS) {
 			printf("Test PASSED\n");
 		}
 		return result_code;
-	} else if(result != -1) {
+	} else if (result != -1) {
 		printf("The returned code is not -1 when sched_ss_max_repl > SS_REPL_MAX.\n");
 		return PTS_FAIL;
-	} else if(errno == EPERM) {
-		if(result_code == PTS_FAIL){
+	} else if (errno == EPERM) {
+		if (result_code == PTS_FAIL) {
 			printf("This process does not have the permission to set its own scheduling parameter.\nTry to launch this test as root.\n");
 			return PTS_FAIL;
 		}

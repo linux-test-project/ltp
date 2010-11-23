@@ -35,11 +35,11 @@
 #endif
 
 /* A freebie for defining the function prototype. */
-static void CLEANUP() __attribute__((unused));
+static void CLEANUP(void) __attribute__((unused));
 
 #ifdef USING_DUMMY_CLEANUP
 /* The stub function. Wewt.. */
-static void dummy_cleanup() { }
+static void dummy_cleanup(void) { }
 #endif
 
 #endif

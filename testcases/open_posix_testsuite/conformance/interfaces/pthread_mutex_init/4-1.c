@@ -22,31 +22,31 @@ int main()
 	int rc;
 
 	/* Initialize a mutex attributes object */
-	if((rc=pthread_mutexattr_init(&mta)) != 0) {
+	if ((rc=pthread_mutexattr_init(&mta)) != 0) {
 		fprintf(stderr,"Error at pthread_mutexattr_init(), rc=%d\n",rc);
 		return PTS_UNRESOLVED;
 	}
 	
 	/* Initialize a mutex object with the default mutex attributes */
-	if((rc=pthread_mutex_init(&mutex,&mta)) == 0) {
+	if ((rc=pthread_mutex_init(&mutex,&mta)) == 0) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}
 	
 	/* Check if returned values are tolerable */
-	else if(rc == ENOMEM) {
+	else if (rc == ENOMEM) {
 		fprintf(stderr,"Insufficient memory to initialize the mutex\n");
 		return PTS_UNRESOLVED;
 	}
-	else if(rc == EAGAIN) {
+	else if (rc == EAGAIN) {
 		fprintf(stderr,"Lack of the necessary resources to initilize the mutex\n");
 		return PTS_UNRESOLVED;
 	}
-	else if(rc == EPERM) {
+	else if (rc == EPERM) {
 		fprintf(stderr,"Permission denied\n");
 		return PTS_UNRESOLVED;
 	}
-	else if(rc == EBUSY) {
+	else if (rc == EBUSY) {
 		fprintf(stderr,"Detected an attemp to reinitilize a previously initilized mutex\n");
 		return PTS_UNRESOLVED;
 	}

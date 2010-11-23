@@ -73,8 +73,8 @@
 #include "usctest.h"
 #include "common_timers.h"
 
-static void setup();
-static void setup_test(int option);
+void setup(void);
+void setup_test(int option);
 
 char *TCID = "timer_create02";	/* Test program identifier.    */
 int TST_TOTAL = 3;		/* Total number of test cases. */
@@ -95,10 +95,8 @@ main(int ac, char **av)
 	const char *mrstr = "MONOTONIC_RAW";
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *) NULL, NULL)) !=
-			(char *) NULL) {
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-	}
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	/* perform global setup for test */
 	setup();
@@ -122,7 +120,7 @@ main(int ac, char **av)
 					 * is not supported on kernel versions
 					 * lower than 2.6.12
 					 */
-					if((tst_kvercmp(2, 6, 12)) < 0) {
+					if ((tst_kvercmp(2, 6, 12)) < 0) {
 						continue;
 					}
 				}
@@ -145,13 +143,12 @@ main(int ac, char **av)
 		}	/* End of TEST CASE LOOPING */
 	}		/* End for TEST_LOOPING */
 
-	/* Clean up and exit */
 	cleanup();
 	tst_exit();
 }
 
 /* setup_test() - sets up individual test */
-static void
+void
 setup_test(int option)
 {
 	switch (option) {
@@ -174,21 +171,21 @@ setup_test(int option)
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-static void
-setup()
+void
+setup(void)
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
-}	/* End setup() */
+}
 
 /*
  * cleanup() - Performs one time cleanup for this test at
  * completion or premature exit
  */
-static void
+void
 cleanup(void)
 {
 	/*
@@ -196,5 +193,4 @@ cleanup(void)
 	* print errno log if that option was specified.
 	*/
 	TEST_CLEANUP;
-
-}	/* End cleanup() */
+}

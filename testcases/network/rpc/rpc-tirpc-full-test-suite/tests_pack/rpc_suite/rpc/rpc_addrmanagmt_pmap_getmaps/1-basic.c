@@ -53,7 +53,7 @@ int main(int argn, char *argc[])
 	struct sockaddr_in sin;
 	
 	//Initialization    
-	if ((hp = gethostbyname(argc[1])) == (struct hostent *)NULL)
+	if ((hp = gethostbyname(argc[1])) == NULL)
 	{
 		fprintf(stderr, "gethostbyname failed\n");
 		exit(1);
@@ -69,7 +69,7 @@ int main(int argn, char *argc[])
 		printf("Addr. %u\n", sin.sin_addr.s_addr);
     }
     
-    test_status = (ml == (struct pmaplist *)NULL);
+    test_status = (ml == NULL);
 
 	//This last printf gives the result status to the tests suite
 	//normally should be 0: test has passed or 1: test has failed

@@ -52,7 +52,7 @@ int main(int argn, char *argc[])
 	struct netconfig *nconf;
 
 	//Test initialization
-	if ((nconf = getnetconfigent("udp")) == (struct netconfig *)NULL) 
+	if ((nconf = getnetconfigent("udp")) == NULL) 
     {
     	fprintf(stderr, "Cannot get netconfig entry for UDP\n");
     	exit(1);
@@ -62,7 +62,7 @@ int main(int argn, char *argc[])
 	transp = svc_tp_create(exm_proc, progNum, VERSNUM,
                            nconf);
       
-    test_status = (transp != (SVCXPRT *)NULL) ? 0 : 1;
+    test_status = (transp != NULL) ? 0 : 1;
 
 	//This last printf gives the result status to the tests suite
 	//normally should be 0: test has passed or 1: test has failed

@@ -144,7 +144,7 @@ int main (int argc, char **argv)
 	 * Create a semaphore, set the semaphore fields and then
 	 * retrieve the fields.
 	 */
-	if ( (semid = semget (IPC_PRIVATE, nsems, IPC_CREAT|0666)) < 0)
+	if ((semid = semget (IPC_PRIVATE, nsems, IPC_CREAT|0666)) < 0)
 		sys_error ("semget (IPC_PRIVATE) failed", __LINE__);
 
 	if (semctl (semid, nsems, IPC_SET, exp_semdatap) < 0)

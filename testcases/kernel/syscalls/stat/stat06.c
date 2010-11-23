@@ -343,7 +343,7 @@ int high_address_setup()
 
 	for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
 		if (Test_cases[ind].pathname == High_address) {
-			/*if ( strcmp(Test_cases[ind].pathname, HIGH_ADDRESS) == 0 ) { ** */
+			/*if (strcmp(Test_cases[ind].pathname, HIGH_ADDRESS) == 0) { ** */
 			Test_cases[ind].pathname = (char *)(sbrk(0) + 5);
 			break;
 		}

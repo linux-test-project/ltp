@@ -61,7 +61,7 @@ int main()
 
     ltproot = getenv("LTPROOT");
 
-    if ( ! ltproot) {
+    if (! ltproot) {
         tst_resm(TINFO,"LTPROOT env variable is not set\n");
         tst_resm(TINFO,"Please set LTPROOT and re-run the test.. Thankyou\n");
         return -1;
@@ -107,7 +107,7 @@ parent & child NS\n");
 
     ret = waitpid(pid, &status, __WALL);
     status = WEXITSTATUS(status);
-    if (status != 0 || ret == -1){
+    if (status != 0 || ret == -1) {
         tst_resm(TFAIL, "waitpid() returns %d, errno %d\n", ret, errno);
         status =  errno;
     }

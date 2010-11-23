@@ -33,9 +33,9 @@ int main()
 
 	/* Create new thread and check the return value. */
 	ret = pthread_create(&new_th, NULL, a_thread_func, NULL);
-	if(ret != 0)
+	if (ret != 0)
 	{	
-		if((ret != EINVAL) && (ret != EAGAIN) && (ret != EPERM))
+		if ((ret != EINVAL) && (ret != EAGAIN) && (ret != EPERM))
 
 		printf("Test FAILED: Wrong return code: %d\n", ret);
 		return PTS_FAIL;

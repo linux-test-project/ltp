@@ -55,7 +55,7 @@ int create_Result_file()
 
 	for (i=0; i<nbVal; i++)
 	{
-		if ( (Inc*i) != (M_PIl/2) )
+		if ((Inc*i) != (M_PIl/2))
 			tabRtan[i] = tan (Inc * i);
 		else
 			tabRtan[i] = tan (0);
@@ -70,7 +70,7 @@ int create_Result_file()
 	}
 	else
 	{
-		for (i = 0; i<nbVal; i++ ) 
+		for (i = 0; i<nbVal; i++) 
 		{
 			write(fp,&tabRtan[i],sizeof(double));
 		}
@@ -95,7 +95,7 @@ int create_Data_file()
 
 	for (i=0; i<nbVal; i++)
 	{
-		if ( (Inc*i) != (M_PIl/2) )
+		if ((Inc*i) != (M_PIl/2))
 			tabDtan[i] = (Inc * i);
                 else
 			tabDtan[i] = 0;
@@ -111,7 +111,7 @@ int create_Data_file()
         }
         else
         {	
-		for (i = 0; i<nbVal; i++ ) 
+		for (i = 0; i<nbVal; i++) 
 		{
 			write(fp,&tabDtan[i],sizeof(double));
 		}

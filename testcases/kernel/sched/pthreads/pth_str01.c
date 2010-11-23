@@ -80,35 +80,35 @@ static void	parse_args( int argc, char *argv[] )
 	int		opt, errflag = 0;
 	int		bflag = 0, dflag = 0, tflag = 0;
 
-	while ( (opt = getopt( argc, argv, "b:d:t:Dh?" )) != EOF ) {
+	while ((opt = getopt( argc, argv, "b:d:t:Dh?" )) != EOF) {
 	    switch ( opt ) {
 		case 'b':
-		    if ( bflag )
+		    if (bflag)
 			errflag++;
 		    else {
 			bflag++;
 			breadth = atoi( optarg );
-			if ( breadth <= 0 )
+			if (breadth <= 0)
 			    errflag++;
 		    }
 		    break;
 		case 'd':
-		    if ( dflag )
+		    if (dflag)
 			errflag++;
 		    else {
 			dflag++;
 			depth = atoi( optarg );
-			if ( depth <= 0 )
+			if (depth <= 0)
 			    errflag++;
 		    }
 		    break;
 		case 't':
-		    if ( tflag )
+		    if (tflag)
 			errflag++;
 		    else {
 			tflag++;
 			timeout = atoi( optarg );
-			if ( timeout <= 0 )
+			if (timeout <= 0)
 			    errflag++;
 		    }
 		    break;
@@ -122,7 +122,7 @@ static void	parse_args( int argc, char *argv[] )
 	    }
 	}
 
-	if ( errflag ) {
+	if (errflag) {
 		fprintf( stderr, "usage: %s [-b <num>] [-d <num>] [-t <num>] [-D]", argv[0] );
 		fprintf( stderr, " where:\n" );
 		fprintf( stderr, "\t-b <num>\tbreadth of child nodes\n" );
@@ -150,7 +150,7 @@ int	num_nodes( int b, int d )
 	 * in this simplistic loop, we start sum at 1 (above) to compensate
 	 * and do the computations from 1->d below.
 	 */
-	for ( n = 1; n <= d; n++ ) {
+	for (n = 1; n <= d; n++) {
 		partial_exp *= b;
 		sum += partial_exp;
 	}
@@ -169,7 +169,7 @@ int	synchronize_children( c_info *parent ) {
 	c_info		*info_p;
 	struct timespec	timer;
 
-	if ( debug ) {
+	if (debug) {
 	    printf( "trying to lock node_mutex\n" );
 	    fflush( stdout );
 	}
@@ -191,7 +191,7 @@ int	synchronize_children( c_info *parent ) {
 	info_p = &child_info[my_index];
 	info_p->index = my_index;
 
-	if ( debug ) {
+	if (debug) {
 	    printf( "thread %d info_p=%p\n", my_index, info_p );
 	    fflush( stdout );
 	}
@@ -201,26 +201,26 @@ int	synchronize_children( c_info *parent ) {
 	 * Make sure we have exclusive access to that variable before we
 	 * do the increment.
 	 */
-	if ( debug ) {
+	if (debug) {
 	    printf( "thread %d locking child_mutex %p\n", my_index,
 	      &parent->child_mutex );
 	    fflush( stdout );
 	}
 	pthread_mutex_lock( &parent->child_mutex );
-	if ( debug ) {
+	if (debug) {
 	    printf( "thread %d bumping child_count (currently %d)\n",
 	      my_index, parent->child_count );
 	    fflush( stdout );
 	}
 	parent->child_ptrs[parent->child_count++] = info_p;
-	if ( debug ) {
+	if (debug) {
 	    printf( "thread %d unlocking child_mutex %p\n", my_index,
 	      &parent->child_mutex );
 	    fflush( stdout );
 	}
 	pthread_mutex_unlock( &parent->child_mutex );
 
-	if ( debug ) {
+	if (debug) {
 	    printf( "thread %d node_count = %d\n", my_index, node_count );
 	    printf( "expecting %d nodes\n", num_nodes(breadth, cdepth) );
 	    fflush( stdout );
@@ -232,19 +232,19 @@ int	synchronize_children( c_info *parent ) {
 	 * them know they can now create their children (if they are not
 	 * leaf nodes)).  Otherwise, go to sleep waiting for the broadcast.
 	 */
-	if ( node_count == num_nodes(breadth, cdepth) ) {
+	if (node_count == num_nodes(breadth, cdepth)) {
 
 	    /*
 	     * Increase the current depth variable, as the tree is now
 	     * fully one level taller.
 	     */
-	    if ( debug ) {
+	    if (debug) {
 		printf( "thread %d doing cdepth++ (%d)\n", my_index, cdepth );
 		fflush( stdout );
 	    }
 	    cdepth++;
 
-	    if ( debug ) {
+	    if (debug) {
 		printf( "thread %d sending child_mutex broadcast\n", my_index );
 		fflush( stdout );
 	    }
@@ -262,7 +262,7 @@ int	synchronize_children( c_info *parent ) {
 	     * tree have been created, so go to sleep and wait for the
 	     * broadcast on node_condvar.
 	     */
-	    if ( debug ) {
+	    if (debug) {
 		printf( "thread %d waiting for siblings to register\n",
 		  my_index );
 		fflush( stdout );
@@ -277,7 +277,7 @@ int	synchronize_children( c_info *parent ) {
 		testexit( 2 );
 	    }
 
-	    if ( debug ) {
+	    if (debug) {
 		printf( "thread %d is now unblocked\n", my_index );
 		fflush( stdout );
 	    }
@@ -288,17 +288,17 @@ int	synchronize_children( c_info *parent ) {
 	 * Unlock the node_mutex lock, as this thread is finished
 	 * initializing.
 	 */
-	if ( debug ) {
+	if (debug) {
 	    printf( "thread %d unlocking node_mutex\n", my_index );
 	    fflush( stdout );
 	}
 	pthread_mutex_unlock( &node_mutex );
-	if ( debug ) {
+	if (debug) {
 	    printf( "thread %d unlocked node_mutex\n", my_index );
 	    fflush( stdout );
 	}
 
-	if ( debug ) {
+	if (debug) {
 	    printf( "synchronize_children returning %d\n", my_index );
 	    fflush( stdout );
 	}
@@ -318,18 +318,18 @@ int	doit( c_info *parent ) {
 	c_info 		*info_p;
 	struct timespec	timer;
 
-	if ( parent != NULL ) {
+	if (parent != NULL) {
 	    /*
 	     * Synchronize with our siblings so that all the children at
 	     * a given level have been created before we allow those children
 	     * to spawn new ones (or do anything else for that matter).
 	     */
-	    if ( debug ) {
+	    if (debug) {
 		printf( "non-root child calling synchronize_children\n" );
 		fflush( stdout );
 	    }
 	    my_index = synchronize_children( parent );
-	    if ( debug ) {
+	    if (debug) {
 		printf( "non-root child has been assigned index %d\n",
 		  my_index );
 		fflush( stdout );
@@ -339,7 +339,7 @@ int	doit( c_info *parent ) {
 	     * The first thread has no one with which to synchronize, so
 	     * set some initial values for things.
 	     */
-	    if ( debug ) {
+	    if (debug) {
 		printf( "root child\n" );
 		fflush( stdout );
 	    }
@@ -353,13 +353,13 @@ int	doit( c_info *parent ) {
 	 */
 	info_p = &child_info[my_index];
 
-	if ( debug ) {
+	if (debug) {
 	    printf( "thread %d getting to heart of doit.\n", my_index );
 	    printf( "info_p=%p, cdepth=%d, depth=%d\n", info_p, cdepth, depth );
 	    fflush( stdout );
 	}
 
-	if ( cdepth <= depth ) {
+	if (cdepth <= depth) {
 
 	    /*
 	     * Since the tree is not yet complete (it is not yet tall enough),
@@ -371,8 +371,8 @@ int	doit( c_info *parent ) {
 	    /*
 	     * Create breadth children.
 	     */
-	    for ( child = 0; child < breadth; child++ ) {
-		if ( debug ) {
+	    for (child = 0; child < breadth; child++) {
+		if (debug) {
 		    printf( "thread %d making child %d, ptr=%p\n", my_index,
 		 		       child, &(info_p->threads[child]) );
 		    fflush( stdout );
@@ -383,7 +383,7 @@ int	doit( c_info *parent ) {
 		      strerror(rc) );
 		    testexit( 3 );
 		} else {
-		    if ( debug ) {
+		    if (debug) {
 		 		 		 printf( "pthread_create made thread %p\n",
 			  &(info_p->threads[child]) );
 			fflush( stdout );
@@ -391,7 +391,7 @@ int	doit( c_info *parent ) {
 		}
 	    }
 
-	    if ( debug ) {
+	    if (debug) {
 		printf( "thread %d waits on kids, cdepth=%d\n", my_index,
 		    cdepth );
 		fflush( stdout );
@@ -400,14 +400,14 @@ int	doit( c_info *parent ) {
 	    /*
 	     * Wait for our children to finish before we exit ourselves.
 	     */
-	    for ( child = 0; child < breadth; child++ ) {
-		if ( debug ) {
+	    for (child = 0; child < breadth; child++) {
+		if (debug) {
 		    printf( "attempting join on thread %p\n",
 		      &(info_p->threads[child]) );
 		    fflush( stdout );
 		}
 		if ((rc = pthread_join((info_p->threads[child]), &status))) {
-		    if ( debug ) {
+		    if (debug) {
 			printf(
 			  "join failed on thread %d, status addr=%p: %s\n",
 			  my_index, status, strerror(rc) );
@@ -415,7 +415,7 @@ int	doit( c_info *parent ) {
 		    }
 		    testexit( 4 );
 		} else {
-		    if ( debug ) {
+		    if (debug) {
 			printf( "thread %d joined child %d ok\n", my_index,
 			  child );
 			fflush( stdout );
@@ -434,14 +434,14 @@ int	doit( c_info *parent ) {
 	    /*
 	     * Talk to siblings (children of the same parent node).
 	     */
-	    if ( breadth > 1 ) {
+	    if (breadth > 1) {
 
-		for ( child = 0; child < breadth; child++ ) {
+		for (child = 0; child < breadth; child++) {
 		    /*
 		     * Don't talk to yourself.
 		     */
-		    if ( parent->child_ptrs[child] != info_p ) {
-			if ( debug ) {
+		    if (parent->child_ptrs[child] != info_p) {
+			if (debug) {
 			    printf( "thread %d locking talk_mutex\n",
 			      my_index );
 			    fflush( stdout );
@@ -450,7 +450,7 @@ int	doit( c_info *parent ) {
 			  &(parent->child_ptrs[child]->talk_mutex) );
 			if ( ++parent->child_ptrs[child]->talk_count
 			  == (breadth - 1) ) {
-			    if ( debug ) {
+			    if (debug) {
 				printf( "thread %d talk siblings\n", my_index );
 				fflush( stdout );
 			    }
@@ -461,7 +461,7 @@ int	doit( c_info *parent ) {
 				testexit( 5 );
 			    }
 			}
-			if ( debug ) {
+			if (debug) {
 			    printf( "thread %d unlocking talk_mutex\n",
 			      my_index );
 			    fflush( stdout );
@@ -474,14 +474,14 @@ int	doit( c_info *parent ) {
 		/*
 		 * Wait until the breadth - 1 siblings have contacted us.
 		 */
-		if ( debug ) {
+		if (debug) {
 		    printf( "thread %d waiting for talk siblings\n",
 		      my_index );
 		    fflush( stdout );
 		}
 
 		pthread_mutex_lock( &info_p->talk_mutex );
-		if ( info_p->talk_count < (breadth - 1) ) {
+		if (info_p->talk_count < (breadth - 1)) {
 		    time( &timer.tv_sec );
 		    timer.tv_sec += (unsigned long)timeout * 60;
 		    timer.tv_nsec = (unsigned long)0;
@@ -541,14 +541,14 @@ int	main( int argc, char *argv[] ) {
 	 */
 	total = num_nodes( breadth, depth );
 	tst_resm( TINFO, "Allocating %d nodes.", total );
-	if ( (child_info = (c_info *)malloc( total * sizeof(c_info) ))
+	if ((child_info = (c_info *)malloc( total * sizeof(c_info) ))
 	    == NULL ) {
 		perror( "malloc child_info" );
 		testexit( 10 );
 	}
 	memset( child_info, 0x00, total * sizeof(c_info) );
 
-	if ( debug ) {
+	if (debug) {
 		printf( "Initializing array for %d children\n", total );
 		fflush( stdout );
 	}
@@ -556,7 +556,7 @@ int	main( int argc, char *argv[] ) {
 	/*
 	 * Allocate array of pthreads descriptors and initialize variables.
 	 */
-	for ( ind = 0; ind < total; ind++ ) {
+	for (ind = 0; ind < total; ind++) {
 
 		if ( (child_info[ind].threads =
 		    (pthread_t *)malloc( breadth * sizeof(pthread_t) ))
@@ -603,7 +603,7 @@ int	main( int argc, char *argv[] ) {
 			testexit( 16 );
 		}
 
-		if ( debug ) {
+		if (debug) {
 			printf( "Successfully initialized child %d.\n", ind );
 			fflush( stdout );
 		}
@@ -636,7 +636,7 @@ int	main( int argc, char *argv[] ) {
 		testexit( 19 );
 	}
 
-	if ( debug ) {
+	if (debug) {
 		printf( "Doing pthread_join.\n" );
 		fflush( stdout );
 	}
@@ -649,7 +649,7 @@ int	main( int argc, char *argv[] ) {
 		testexit( 20 );
 	}
 
-	if ( debug ) {
+	if (debug) {
 		printf( "About to pthread_exit.\n" );
 		fflush( stdout );
 	}

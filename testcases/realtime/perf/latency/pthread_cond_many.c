@@ -66,7 +66,7 @@ double d_gettimeofday(void)
 	int retval;
 	struct timeval tv;
 
-	retval = gettimeofday(&tv, (struct timezone *)NULL);
+	retval = gettimeofday(&tv, NULL);
 	if (retval != 0) {
 		perror("gettimeofday");
 		exit(-1);
@@ -231,7 +231,7 @@ test_signal(long iter, long nthreads)
 		}
 	}
 	min = (unsigned long)-1;
-	for (i = 0; i < iter * nthreads; i++){
+	for (i = 0; i < iter * nthreads; i++) {
 		latency = dat.records[i].y;
 		if (latency > PASS_US)
 			fail = 1;

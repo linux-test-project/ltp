@@ -97,7 +97,7 @@ int main(int argc, char **argv)
 		fprintf(stderr, "..This shouldn't happen.\n");
 		fprintf(stderr, "..Killing the child.\n");
 		rc = kill(pid,SIGKILL);
-		if (rc < 0){
+		if (rc < 0) {
 			perror("kill");
 			exit(-1);
 		}

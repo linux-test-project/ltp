@@ -21,22 +21,22 @@ int main()
 	int rc;
 
 	/* Initialize a cond object */
-	if((rc=pthread_cond_init(&cond,NULL)) != 0) {
+	if ((rc=pthread_cond_init(&cond,NULL)) != 0) {
 		fprintf(stderr,"Fail to initialize cond, rc=%d\n",rc);
 		return PTS_UNRESOLVED;
 	}
 	
-	if((rc=pthread_cond_destroy(&cond)) == 0) {
+	if ((rc=pthread_cond_destroy(&cond)) == 0) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}
 
 	/* Check if returned values are tolerable */
-	else if(rc == EBUSY) {
+	else if (rc == EBUSY) {
 		fprintf(stderr,"Detected an attempt to destroy a cond in use\n");
 		return PTS_FAIL;
 	}
-	else if(rc == EINVAL) {
+	else if (rc == EINVAL) {
 		fprintf(stderr,"The value specified by 'cond' is invalid\n");
 		return PTS_FAIL;
 	}

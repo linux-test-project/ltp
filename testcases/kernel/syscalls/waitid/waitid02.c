@@ -184,7 +184,7 @@ int main(int ac, char **av) {
 		getpid(), pgid = __getpgid(0));
 
 	TEST(waitid(P_PGID, pgid, &infop, WEXITED));
-	if(TEST_RETURN == 0){				
+	if (TEST_RETURN == 0) {				
 		tst_resm(TPASS, "Success3 ... 0 is returned.");
 		tst_resm(TINFO, "si_pid = %d ; si_code = %d ; si_status = %d",
 		infop.si_pid, infop.si_code, infop.si_status);

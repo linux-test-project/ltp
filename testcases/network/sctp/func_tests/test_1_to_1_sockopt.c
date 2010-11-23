@@ -355,7 +355,7 @@ main(void)
 	tst_resm(TPASS, "getsockopt() SCTP_PRIMARY_ADDR - SUCCESS");
 
 	gaddr = (struct sockaddr_in *) &gprimaddr.ssp_addr;
-	if(htons(gaddr->sin_port) != lstn_addr.sin_port &&
+	if (htons(gaddr->sin_port) != lstn_addr.sin_port &&
 	   gaddr->sin_family != lstn_addr.sin_family &&
 	   gaddr->sin_addr.s_addr != lstn_addr.sin_addr.s_addr)
 		tst_brkm(TBROK, tst_exit, "getsockopt SCTP_PRIMARY_ADDR value "

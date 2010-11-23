@@ -150,7 +150,7 @@ int main(int ac, char **av) {
         char *msg;              /* message returned from parse_opts */
 	
         /* parse standard options */
-        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL){
+        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
              tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
              tst_exit();
            }
@@ -162,8 +162,8 @@ int main(int ac, char **av) {
                 Tst_count = 0;
                 for (testno = 0; testno < TST_TOTAL; ++testno) {
                 
-			for (signal = SIGRTMIN; signal <= (SIGRTMAX ); signal++){//signal for 34 to 65 
-			 	for(flag=0; flag<5;flag++) {
+			for (signal = SIGRTMIN; signal <= (SIGRTMAX ); signal++) {//signal for 34 to 65 
+			 	for (flag=0; flag<5;flag++) {
 
 				/*   							        *
 				 * long sys_rt_sigaction (int sig, const struct sigaction *act, *
@@ -173,7 +173,7 @@ int main(int ac, char **av) {
 				 */
 
 					 TEST(syscall(__NR_rt_sigaction,signal, INVAL_STRUCT, NULL,SIGSETSIZE));
-					if((TEST_RETURN == -1) && (TEST_ERRNO == test_cases[0].exp_errno)) {
+					if ((TEST_RETURN == -1) && (TEST_ERRNO == test_cases[0].exp_errno)) {
         						tst_resm(TINFO, "sa.sa_flags = %s ",test_flags_list[flag]);
                  	   				tst_resm(TPASS, "%s failure with sig: %d as expected errno  = %s : %s", TCID, signal,test_cases[0].errdesc, strerror(TEST_ERRNO));
 			                         } else {

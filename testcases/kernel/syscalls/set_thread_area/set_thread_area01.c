@@ -115,7 +115,7 @@ int main(int ac, char **av) {
 	char *msg;	/* message returned from parse_opts */
 	
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL){
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		 tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 		 tst_exit();
 	}
@@ -138,7 +138,7 @@ int main(int ac, char **av) {
 
 			/* Call get_thread_area(). */
 			TEST(syscall(__NR_get_thread_area, &u_info));
-			if(TEST_RETURN == 0) {
+			if (TEST_RETURN == 0) {
 				tst_resm(TPASS, "get_thread_area call succeeded");
 			} else {
 				tst_resm(TFAIL, "failed - errno = %d : %s",
@@ -155,7 +155,7 @@ int main(int ac, char **av) {
 			/* Call set_thread_area(). */
 			TEST(syscall(__NR_set_thread_area, &u_info));
 
-			if(TEST_RETURN == 0) {
+			if (TEST_RETURN == 0) {
 				tst_resm(TPASS, "set_thread_area call succeeded");
 			} else {
 			     	tst_resm(TFAIL, "failed - errno = %d : %s",

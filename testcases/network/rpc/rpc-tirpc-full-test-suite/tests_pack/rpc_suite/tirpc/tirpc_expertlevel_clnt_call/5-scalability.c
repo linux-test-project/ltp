@@ -82,7 +82,7 @@ void *my_thread_process (void * arg)
 	svcaddr.maxlen = ADDRBUFSIZE;
 	svcaddr.buf = addrbuf;
 	
-	if (svcaddr.buf == (char *)NULL)
+	if (svcaddr.buf == NULL)
 	{
     	printf("5\n");
   		exit(5);
@@ -99,7 +99,7 @@ void *my_thread_process (void * arg)
 	client = clnt_tli_create(RPC_ANYFD, nconf, &svcaddr,
 	                         progNum, VERSNUM, 0, 0);
 	                         
-	if (client == (CLIENT *)NULL)
+	if (client == NULL)
 	{
     	printf("5\n");
     	exit(5);
@@ -199,7 +199,7 @@ int main(int argn, char *argc[])
 		//Clean threads
 		for (j = 0; j < curThd; j++)
 		{
-			if ((pthread_t *)pThreadArray[j] != (pthread_t *)NULL)
+			if ((pthread_t *)pThreadArray[j] != NULL)
 			{
 				(void)pthread_join (pThreadArray[j], &ret);
 			}

@@ -115,7 +115,7 @@ main(int argc, char **argv)
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	if(STD_COPIES != 1) {
+	if (STD_COPIES != 1) {
 		tst_resm(TINFO, "-c option has no effect for this testcase - "
 				"doesn't allow running more than one instance "
 		 		"at a time");
@@ -123,29 +123,29 @@ main(int argc, char **argv)
 	}
 
 	/* Load first kernel module */
-	if( sprintf(cmd, "/sbin/insmod %s/%s.ko", dirname(argv[0]),
+	if (sprintf(cmd, "/sbin/insmod %s/%s.ko", dirname(argv[0]),
 		DUMMY_MOD) <= 0) {
 		tst_resm(TBROK, "sprintf failed");
 		return 1;
 	}
-	if( (system(cmd)) != 0 ) {
+	if ((system(cmd)) != 0) {
 		tst_resm(TBROK, "Failed to load %s module", DUMMY_MOD);
 		return 1;
 	}
 
 	/* Load dependant kernel module */
-        if( sprintf(cmd, "/sbin/insmod %s/%s.ko", dirname(argv[0]),
+        if (sprintf(cmd, "/sbin/insmod %s/%s.ko", dirname(argv[0]),
 		DUMMY_MOD_DEP) <= 0) {
 		tst_resm(TBROK, "sprintf failed");
 		goto END;
 	}
-        if( (system(cmd)) != 0 ) {
+        if ((system(cmd)) != 0) {
 		tst_resm(TBROK, "Failed to load %s module", DUMMY_MOD_DEP);
 		goto END;
         }
 
 	tst_tmpdir();
-	if(setup() != 0) {
+	if (setup() != 0) {
 		return 1;
 	}
 
@@ -158,7 +158,7 @@ main(int argc, char **argv)
 		TEST(delete_module(DUMMY_MOD));
 
 		TEST_ERROR_LOG(TEST_ERRNO);
-		if ( (TEST_RETURN == (int) EXP_RET_VAL ) &&
+		if ((TEST_RETURN == (int) EXP_RET_VAL) &&
 		     (TEST_ERRNO == EXP_ERRNO) ) {
 			tst_resm(TPASS, "Expected failure for module in-use, "
 		 			"errno: %d", TEST_ERRNO);
@@ -171,7 +171,7 @@ main(int argc, char **argv)
 	}
 	cleanup();
 END:
-	if(system("rmmod "DUMMY_MOD) != 0) {
+	if (system("rmmod "DUMMY_MOD) != 0) {
 		tst_resm(TBROK, "Failed to unload %s module", DUMMY_MOD);
 		return 1;
 	}
@@ -222,11 +222,11 @@ void
 cleanup(void)
 {
 	/* Unload dependent kernel module */
-	if(system("rmmod "DUMMY_MOD_DEP) != 0) {
+	if (system("rmmod "DUMMY_MOD_DEP) != 0) {
 		tst_resm(TBROK, "Failed to unload %s module", DUMMY_MOD_DEP);
 	}
 	/* Unload first kernel module */
-	if(system("rmmod "DUMMY_MOD) != 0) {
+	if (system("rmmod "DUMMY_MOD) != 0) {
 		tst_resm(TBROK, "Failed to unload %s module",
 		DUMMY_MOD);
 	}

@@ -246,7 +246,7 @@ main(int ac, char **av)
 
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 
-			for (i = 0; i <= sizeof(cmd)/sizeof(cmd[0]); i++){
+			for (i = 0; i <= sizeof(cmd)/sizeof(cmd[0]); i++) {
 
 				ret = QUOTACTL(cmd[i], &dq);
 				if (ret != 0) {

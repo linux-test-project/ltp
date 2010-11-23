@@ -31,12 +31,11 @@
 #define _GNU_SOURCE
 #endif
 #include <sys/wait.h>
-#include <assert.h>
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
-#include <errno.h>
+#include <unistd.h>
 #include "mqns.h"
 
 char *TCID = "posixmq_namespace_01";
@@ -53,20 +52,27 @@ int check_mqueue(void *vtest)
 	close(p1[1]);
 	close(p2[0]);
 
-	if (read(p1[0], buf, strlen("go") + 1) < 0)
-		tst_resm(TBROK | TERRNO, "read(p1[0], ...) failed");
+	if (read(p1[0], buf, strlen("go") + 1) < 0) {
+		printf("read(p1[0], ...) failed: %s\n", strerror(errno));
+		exit(1);
+	}
 	mqd = syscall(__NR_mq_open, NOSLASH_MQ1, O_RDONLY);
 	if (mqd == -1) {
-		if (write(p2[1], "notfnd", strlen("notfnd") + 1) < 0)
-			tst_resm(TBROK | TERRNO, "write(p2[1], ...) failed");
+		if (write(p2[1], "notfnd", strlen("notfnd") + 1) < 0) {
+			perror("write(p2[1], ...) failed");
+			exit(1);
+		}
 	} else {
-		if (write(p2[1], "exists", strlen("exists") + 1) < 0)
-			tst_resm(TBROK | TERRNO, "write(p2[1], \"exists\", 7) failed");
-		else if (mq_close(mqd) < 0)
-			tst_resm(TBROK | TERRNO, "mq_close(mqd) failed");
+		if (write(p2[1], "exists", strlen("exists") + 1) < 0) {
+			perror("write(p2[1], \"exists\", 7) failed");
+			exit(1);
+		} else if (mq_close(mqd) < 0) {
+			perror("mq_close(mqd) failed");
+			exit(1);
+		}
 	}
 
-	tst_exit();
+	exit(0);
 }
 
 int
@@ -83,8 +89,9 @@ main(int argc, char *argv[])
 	} else
 		tst_resm(TINFO, "Testing posix mq namespaces through unshare(2).\n");
 
-	if (pipe(p1) == -1) { perror("pipe"); exit(EXIT_FAILURE); }
-	if (pipe(p2) == -1) { perror("pipe"); exit(EXIT_FAILURE); }
+	if (pipe(p1) == -1 || pipe(p2) == -1) {
+		tst_brkm(TBROK|TERRNO, NULL, "pipe failed");
+	}
 
 	mqd = syscall(__NR_mq_open, NOSLASH_MQ1, O_RDWR|O_CREAT|O_EXCL, 0777,
 			NULL);
@@ -121,7 +128,9 @@ main(int argc, char *argv[])
 	}
 
 	/* destroy the mqueue */
-	mq_close(mqd);
+	if (mq_close(mqd) == -1) {
+		tst_brkm(TBROK|TERRNO, NULL, "mq_close failed");
+	}
 	syscall(__NR_mq_unlink, NOSLASH_MQ1);
 
 	tst_exit();

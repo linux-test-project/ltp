@@ -58,7 +58,7 @@
 #include <fcntl.h>	/* required by open()				      */
 #include <stdint.h>	/* required by uintptr_t			      */
 
-void noprintf(char* string, ...){
+void noprintf(char* string, ...) {
 }
 
 #ifdef DEBUG

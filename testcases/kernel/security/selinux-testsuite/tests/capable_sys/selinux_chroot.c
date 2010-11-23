@@ -20,13 +20,13 @@ int main(int argc, char **argv) {
 
   int rc;
 
-  if( argc != 2 ) {
+  if (argc != 2) {
     printf("usage: %s pathname\n", argv[0]);
     exit(2);
   }
 
   rc = chroot(argv[1]);
-  if( rc != 0 ) {
+  if (rc != 0) {
     perror("test_chroot:chroot");
     exit(1);
   }

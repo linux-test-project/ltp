@@ -41,31 +41,31 @@ int format_str(size_t iBytes, const char *ibuff, size_t ibuff_siz, char *obuff, 
 	char buff[10];
 	static size_t TotalBytes = 0;
 
-	if((iBytes == 0) &&
+	if ((iBytes == 0) &&
 	   (ibuff == NULL) && (ibuff_siz == 0) &&
 	   (obuff == NULL) && (obuff_siz == 0)) {
 		TotalBytes = 0;
 		return 0;
 	}
 
-	if((ibuff == NULL) || (obuff == NULL) || (iBytes < 1)) return -1;
+	if ((ibuff == NULL) || (obuff == NULL) || (iBytes < 1)) return -1;
 
 	memset(obuff, 0, obuff_siz);
 	sprintf(buff,"%08lX", (long)TotalBytes);
 	strncat(obuff, buff, (obuff_siz-1)-strlen(obuff));
-	for(i=0;i<iBytes;i++) {
-		if((i%4) == 0) strncat(obuff, " ", (obuff_siz-1)-strlen(obuff));
-		if((i%8) == 0) strncat(obuff, " ", (obuff_siz-1)-strlen(obuff));
+	for (i=0;i<iBytes;i++) {
+		if ((i%4) == 0) strncat(obuff, " ", (obuff_siz-1)-strlen(obuff));
+		if ((i%8) == 0) strncat(obuff, " ", (obuff_siz-1)-strlen(obuff));
 		sprintf(buff,"%02X ", *(ibuff+i));
 		strncat(obuff, buff, (obuff_siz-1)-strlen(obuff));
 	}
-	for(;i<ibuff_siz;i++) {
-		if((i%4) == 0) strncat(obuff, " ", (obuff_siz-1)-strlen(obuff));
-		if((i%8) == 0) strncat(obuff, " ", (obuff_siz-1)-strlen(obuff));
+	for (;i<ibuff_siz;i++) {
+		if ((i%4) == 0) strncat(obuff, " ", (obuff_siz-1)-strlen(obuff));
+		if ((i%8) == 0) strncat(obuff, " ", (obuff_siz-1)-strlen(obuff));
 		strncat(obuff, "   ", (obuff_siz-1)-strlen(obuff));
 	}
 	strncat(obuff, " ", (obuff_siz-1)-strlen(obuff));
-	for(i=0;i<iBytes;i++) {
+	for (i=0;i<iBytes;i++) {
 		sprintf(buff, "%c", (isprint(*(ibuff+i))) ? *(ibuff+i) : '.');
 		strncat(obuff, buff, (obuff_siz-1)-strlen(obuff));
 	}
@@ -79,18 +79,18 @@ int format_raw(size_t iBytes, const char *ibuff, char *obuff, size_t obuff_siz)
 	char buff[10];
 	static size_t TotalBytes = 0;
 
-	if((iBytes == 0) && (ibuff == NULL) &&
+	if ((iBytes == 0) && (ibuff == NULL) &&
 	   (obuff == NULL) && (obuff_siz == 0)) {
 		TotalBytes = 0;
 		return 0;
 	}
 
-	if((ibuff == NULL) || (obuff == NULL) || (iBytes < 1)) return -1;
+	if ((ibuff == NULL) || (obuff == NULL) || (iBytes < 1)) return -1;
 
 	memset(obuff, 0, obuff_siz);
 	sprintf(buff,"%08lX ", (long)TotalBytes);
 	strncat(obuff, buff, (obuff_siz-1)-strlen(obuff));
-	for(i=0;i<iBytes;i++) {
+	for (i=0;i<iBytes;i++) {
 		sprintf(buff,"%02X", *(ibuff+i));
 		strncat(obuff, buff, (obuff_siz-1)-strlen(obuff));
 	}
@@ -120,18 +120,18 @@ int dump_data(FILE *stream, const char *buff, const size_t buff_siz, const size_
 			return(-1);
 	}
 
-	if((ibuff = (char *) ALLOC(ibuff_siz)) == NULL) {
+	if ((ibuff = (char *) ALLOC(ibuff_siz)) == NULL) {
 		fprintf(stderr, "Can't allocate ibuff\n");
 		return(-1);
 	}
-	if((obuff = (char *) ALLOC(obuff_siz)) == NULL) {
+	if ((obuff = (char *) ALLOC(obuff_siz)) == NULL) {
 		FREE(ibuff);
 		fprintf(stderr, "Can't allocate obuff\n");
 		return(-1);
 	}
 
-	while(TotalRemainingBytes > 0) {
-		if(TotalRemainingBytes >= ibuff_siz) {
+	while (TotalRemainingBytes > 0) {
+		if (TotalRemainingBytes >= ibuff_siz) {
 			memcpy(ibuff, buff_curr, ibuff_siz);
 			TotalRemainingBytes -= ibuff_siz;
 			NumBytes = ibuff_siz;
@@ -166,7 +166,7 @@ int do_dump(child_args_t *args)
 	char *buff;
 	fd_t fd;
 
-	if((buff = (char *) ALLOC(args->htrsiz*BLK_SIZE)) == NULL) {
+	if ((buff = (char *) ALLOC(args->htrsiz*BLK_SIZE)) == NULL) {
 		fprintf(stderr, "Can't allocate buffer\n");
 		return(-1);
 	}
@@ -174,14 +174,14 @@ int do_dump(child_args_t *args)
 	memset(buff, 0, args->htrsiz*BLK_SIZE);
 
 	fd = Open(args->device, args->flags | CLD_FLG_R);
-	if(INVALID_FD(fd)) {
+	if (INVALID_FD(fd)) {
 		pMsg(ERR, args, "could not open %s.\n",args->device);
 		pMsg(ERR, args, "%s: Error = %u\n",args->device, GETLASTERROR());
 		return(-1);
 	}
 
 	TargetLBA = Seek(fd, args->start_lba*BLK_SIZE);
-	if(TargetLBA != (args->start_lba * (OFF_T) BLK_SIZE)) {
+	if (TargetLBA != (args->start_lba * (OFF_T) BLK_SIZE)) {
 		pMsg(ERR, args, "Could not seek to start position.\n");
 		CLOSE(fd);
 		return(-1);
@@ -189,14 +189,14 @@ int do_dump(child_args_t *args)
 
 	do {
 		NumBytes = Read(fd, buff, args->htrsiz*BLK_SIZE);
-		if((NumBytes > args->htrsiz*BLK_SIZE) || (NumBytes < 0)) {
+		if ((NumBytes > args->htrsiz*BLK_SIZE) || (NumBytes < 0)) {
 			pMsg(ERR, args, "Failure reading %s\n", args->device);
 			pMsg(ERR, args, "Last Error was %lu\n", GETLASTERROR());
 			break;
 		}
 		dump_data(stdout, buff, NumBytes, 16, 0, FMT_STR);
 		TotalBytes += (OFF_T) NumBytes;
-	} while((TotalBytes < (args->htrsiz*BLK_SIZE)) && (NumBytes > 0));
+	} while ((TotalBytes < (args->htrsiz*BLK_SIZE)) && (NumBytes > 0));
 
 	FREE(buff);
 	CLOSE(fd);

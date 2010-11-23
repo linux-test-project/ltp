@@ -86,7 +86,7 @@ int create_Result_file()
 		}
 		else
 		{
-			for (i = 0; i<nbVal; i++ ) 
+			for (i = 0; i<nbVal; i++) 
 			{
 		    	    write(fp,&tabR[i],sizeof(double));
 			}
@@ -128,7 +128,7 @@ int create_Data_file()
         }
         else
         {	
-		for (i = 0; i<nbVal; i++ ) 
+		for (i = 0; i<nbVal; i++) 
 		{
 			write(fp,&tabD[i],sizeof(double));
 			write(fp1,&tabD1[i],sizeof(double));

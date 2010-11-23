@@ -28,7 +28,7 @@ int rc;
 static void sig_handler()
 {
 	printf("main: interrupted by SIGALARM\n");
-	if(rc == EINVAL)
+	if (rc == EINVAL)
 	{
 		printf("main: correctly got EINVAL\n");
 		printf("Test PASSED\n");

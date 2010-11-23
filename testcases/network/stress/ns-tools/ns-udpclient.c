@@ -308,7 +308,7 @@ main(int argc, char *argv[])
     handler.sa_handler = set_signal_flag;
     if (sigaction(SIGHUP, &handler, NULL) < 0)
 	fatal_error("sigaction()");
-    for(;;) {
+    for (;;) {
 	int recvlen;		/* lenght of recevied message */
 	struct sockaddr_storage from_addr;	/* address of a client */
 	socklen_t from_addr_len;		/* length of `client_addr' */

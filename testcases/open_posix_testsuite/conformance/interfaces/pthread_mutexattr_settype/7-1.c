@@ -34,14 +34,14 @@ int main()
         int invalid_type = -1;
 	
 	/* Initialize a mutex attributes object */
-	if(pthread_mutexattr_init(&mta) != 0)
+	if (pthread_mutexattr_init(&mta) != 0)
 	{
 		perror("Error at pthread_mutexattr_init()\n");
 		return PTS_UNRESOLVED;
 	}
 	
 
-        while(invalid_type == PTHREAD_MUTEX_NORMAL || 
+        while (invalid_type == PTHREAD_MUTEX_NORMAL || 
 		invalid_type == PTHREAD_MUTEX_ERRORCHECK || 
 		invalid_type == PTHREAD_MUTEX_RECURSIVE || 
 		invalid_type == PTHREAD_MUTEX_DEFAULT)

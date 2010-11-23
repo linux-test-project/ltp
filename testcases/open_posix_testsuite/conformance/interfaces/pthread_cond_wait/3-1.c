@@ -49,7 +49,7 @@ void *t1_func(void *arg)
 	
 	fprintf(stderr,"Thread1 is waiting for the cond\n");
 	rc = pthread_cond_wait(&td.cond, &td.mutex);
-	if(rc != 0) {
+	if (rc != 0) {
 		if (rc == EINVAL) {
 			fprintf(stderr,"pthread_cond_wait returns EINVAL\n");
 			exit(PTS_UNRESOLVED);
@@ -62,7 +62,7 @@ void *t1_func(void *arg)
                 exit(PTS_UNRESOLVED);
 	}
 	
-	if(signaled == 0) {
+	if (signaled == 0) {
 		fprintf(stderr,"Thread1 waked up before being notified\n");
                 exit(PTS_UNRESOLVED);
 	}

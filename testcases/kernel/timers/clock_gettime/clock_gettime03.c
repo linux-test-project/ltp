@@ -76,7 +76,7 @@
 #include "usctest.h"
 #include "common_timers.h"
 
-static void setup();
+void setup(void);
 
 char *TCID = "clock_gettime03"; /* Test program identifier.    */
 int TST_TOTAL;		/* Total number of test cases. */
@@ -93,7 +93,7 @@ int testcase[6] = {
 int
 main(int ac, char **av)
 {
-	int lc, i;	/* loop counter */
+	int i, lc;	/* loop counter */
 	char *msg;	/* message returned from parse_opts */
 	struct timespec spec, *temp;
 
@@ -107,17 +107,16 @@ main(int ac, char **av)
 	};
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
-		!= (char *)NULL) {
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-	}
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	TST_TOTAL = sizeof(testcase) / sizeof(testcase[0]);
 
-	/* PROCESS_CPUTIME_ID & THREAD_CPUTIME_ID are not supported on
+	/* 
+	 * PROCESS_CPUTIME_ID & THREAD_CPUTIME_ID are not supported on
 	 * kernel versions lower than 2.6.12
 	 */
-	if((tst_kvercmp(2, 6, 12)) < 0) {
+	if ((tst_kvercmp(2, 6, 12)) < 0) {
 		testcase[4] = EINVAL;
 		testcase[5] = EINVAL;
 	}
@@ -166,14 +165,13 @@ main(int ac, char **av)
 
 	}	/*End for TEST_LOOPING*/
 
-	/* Clean up and exit */
 	cleanup();
 	tst_exit();
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-static void
-setup()
+void
+setup(void)
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -183,13 +181,13 @@ setup()
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
-}	/* End setup() */
+}
 
 /*
  * cleanup() - Performs one time cleanup for this test at
  * completion or premature exit
  */
-static void
+void
 cleanup(void)
 {
 	/*
@@ -197,4 +195,4 @@ cleanup(void)
 	* print errno log if that option was specified.
 	*/
 	TEST_CLEANUP;
-}	/* End cleanup() */
+}

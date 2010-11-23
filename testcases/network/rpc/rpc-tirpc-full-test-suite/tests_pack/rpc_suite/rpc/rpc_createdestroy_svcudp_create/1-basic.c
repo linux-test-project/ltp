@@ -57,7 +57,7 @@ int main(int argn, char *argc[])
 	svcr = svcudp_create(sock);
 	
 	//check returned value
-	test_status = (svcr != (SVCXPRT *)NULL) ? 0 : 1;
+	test_status = (svcr != NULL) ? 0 : 1;
 	
 	//clean up
 	svc_destroy(svcr);

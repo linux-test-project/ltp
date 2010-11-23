@@ -80,7 +80,7 @@ void *my_thread_process (void * arg)
 	svcaddr.maxlen = ADDRBUFSIZE;
 	svcaddr.buf = addrbuf;
 	
-	if (svcaddr.buf == (char *)NULL)
+	if (svcaddr.buf == NULL)
 	{
     	pthread_exit (1);
     }
@@ -98,7 +98,7 @@ void *my_thread_process (void * arg)
 	client = clnt_dg_create(RPC_ANYFD, &svcaddr,
 			 				progNum + atoi(arg), VERSNUM, 1024, 1024);
 			 				
-	if (client == (CLIENT *)NULL)
+	if (client == NULL)
 	{
 		clnt_pcreateerror("ERR");
 		pthread_exit (1);

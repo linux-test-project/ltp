@@ -28,7 +28,7 @@ int main()
 
 	/* Initialize a rwlock attributes object */
 	rc = pthread_rwlockattr_init(&rwla);
-	if(rc != 0)
+	if (rc != 0)
 	{
 		printf("Error at pthread_rwlockattr_init(), error code: %d\n", rc);
 		return PTS_UNRESOLVED;
@@ -36,7 +36,7 @@ int main()
 
 	/* Destroy the rwlock attributes object */
 	rc = pthread_rwlockattr_destroy(&rwla);
-	if(rc != 0)
+	if (rc != 0)
 	{
 		printf("Error at pthread_rwlockattr_destroy(), error code: %d\n", rc);
 		printf("Test FAILED\n");

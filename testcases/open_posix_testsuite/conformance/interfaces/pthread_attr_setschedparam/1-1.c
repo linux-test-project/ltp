@@ -45,31 +45,31 @@ int main()
 	int                    priority;
 
 	rc = pthread_attr_init(&attr);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_attr_init\n");
 		exit(PTS_UNRESOLVED);
 	}
 		
 	rc = pthread_attr_setschedpolicy(&attr, policy);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_attr_setschedpolicy\n");
 		exit(PTS_FAIL);
 	}
 	
 	priority = sched_get_priority_max(policy);
-	if(priority == -1) {
+	if (priority == -1) {
 		printf(ERROR_PREFIX "sched_priority_get_max\n");	
  		exit(PTS_FAIL);
 	}
 	param.sched_priority = priority;
 	rc = pthread_attr_setschedparam(&attr, &param);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_attr_setschedparam\n");
  		exit(PTS_FAIL);
 	}
 	
 	rc = pthread_create(&thread, &attr, thread_func, NULL);
-	if(rc != 0) {
+	if (rc != 0) {
 		if (rc == EPERM) {
 			printf(ERROR_PREFIX "Permission Denied when creating thread with policy %d\n", policy);
 			exit(PTS_UNRESOLVED);
@@ -82,7 +82,7 @@ int main()
 	pthread_join(thread, &status);
 	pthread_attr_destroy(&attr);
 
-	if(thread_created == 0 ) {
+	if (thread_created == 0) {
 		printf(ERROR_PREFIX "Thread was not created\n");
 		exit(PTS_FAIL);
 	}

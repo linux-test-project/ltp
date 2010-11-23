@@ -29,22 +29,22 @@
 #define SHM_NAME "posixtest_13-1"
 #define BUF_SIZE 8
 
-int main(){
+int main() {
 	int fd, result;
 
 	fd = shm_open(SHM_NAME, O_RDONLY|O_CREAT, S_IRUSR|S_IWUSR);
-	if(fd == -1) {
+	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		return PTS_UNRESOLVED;
 	}
 
 	result = ftruncate(fd, BUF_SIZE);
 
-	if(result == -1 && errno == EINVAL) {
+	if (result == -1 && errno == EINVAL) {
 		printf("Test PASSED\n");
 		shm_unlink(SHM_NAME);
 		return PTS_PASS;
-	} else if(result == 0){
+	} else if (result == 0) {
 		printf("The file is open for write acces.\n");
 		shm_unlink(SHM_NAME);
 		return PTS_FAIL;

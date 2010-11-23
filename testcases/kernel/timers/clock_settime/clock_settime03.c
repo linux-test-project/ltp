@@ -79,7 +79,7 @@
 #include "usctest.h"
 #include "common_timers.h"
 
-static void setup();
+void setup(void);
 static int setup_test(int option);
 
 char *TCID = "clock_settime03"; /* Test program identifier.	*/
@@ -119,17 +119,15 @@ main(int ac, char **av)
 	char *msg;	/* message returned from parse_opts */
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL))
-		!= (char *)NULL) {
-		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
-	}
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL)
+		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 
 	TST_TOTAL = sizeof(testcase) / sizeof(testcase[0]);
 
 	/* PROCESS_CPUTIME_ID & THREAD_CPUTIME_ID are not supported on
 	 * kernel versions lower than 2.6.12
 	 */
-	if((tst_kvercmp(2, 6, 12)) < 0) {
+	if ((tst_kvercmp(2, 6, 12)) < 0) {
 		testcase[7] = EINVAL;
 		testcase[8] = EINVAL;
 	} else {
@@ -188,7 +186,6 @@ main(int ac, char **av)
 
 	}	/* End for TEST_LOOPING */
 
-	/* Clean up and exit */
 	cleanup();
 	tst_exit();
 }
@@ -219,8 +216,8 @@ setup_test(int option)
 		/* change the User to non-root */
 		spec.tv_nsec = 0;
 		if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
-			tst_resm(TWARN, "\"nobody\" user not present."
-					" skipping test");
+			tst_resm(TWARN, "user \"nobody\" not present; "
+					"skipping test");
 			return -1;
 		}
 		if (seteuid(ltpuser->pw_uid) == -1) {
@@ -241,8 +238,8 @@ setup_test(int option)
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-static void
-setup()
+void
+setup(void)
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
@@ -261,14 +258,14 @@ setup()
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
-}	/* End setup() */
+}
 
 /*
  * cleanup() - Performs one time cleanup for this test at
  * completion or premature exit
  */
 
-static void
+void
 cleanup(void)
 {
 	/*
@@ -276,5 +273,4 @@ cleanup(void)
 	* print errno log if that option was specified.
 	*/
 	TEST_CLEANUP;
-
-}	/* End cleanup() */
+}

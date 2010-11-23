@@ -85,10 +85,10 @@ sctp_getaddrs(int sd, sctp_assoc_t id,
 	size_t bufsize = 4096; /*enough for most cases*/
 
 	struct sctp_getaddrs *getaddrs = (struct sctp_getaddrs*)malloc(bufsize);
-	if(!getaddrs)
+	if (!getaddrs)
 		return -1;
 	
-	for(;;) {
+	for (;;) {
 		char *new_buf;
 
 		len = bufsize;
@@ -105,7 +105,7 @@ sctp_getaddrs(int sd, sctp_assoc_t id,
 						 optname_num_old, optname_old,
 						 addrs);
 		}
-		if (errno != ENOMEM ) {
+		if (errno != ENOMEM) {
 			/*unknown error*/
 			return -1;
 		}

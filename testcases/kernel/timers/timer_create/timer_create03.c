@@ -73,8 +73,8 @@
 #include "usctest.h"
 #include "common_timers.h"
 
-static void setup();
-static void setup_test(int option);
+void setup(void);
+void setup_test(int option);
 
 char *TCID = "timer_create03";	/* Test program identifier. */
 int TST_TOTAL = 3;		/* Total number of test cases. */
@@ -85,7 +85,7 @@ static struct sigevent evp, *evp_ptr;
  * cleanup() - Performs one time cleanup for this test at
  * completion or premature exit
  */
-static void
+void
 cleanup(void)
 {
 	/*
@@ -137,13 +137,12 @@ main(int ac, char **av)
 
 	}		/* End for TEST_LOOPING */
 
-	/* Clean up and exit */
 	cleanup();
 	tst_exit();
 }
 
 /* setup_test() - sets up individual test */
-static void
+void
 setup_test(int option)
 {
 	switch (option) {
@@ -166,12 +165,12 @@ setup_test(int option)
 }
 
 /* setup() - performs all ONE TIME setup for this test */
-static void
-setup()
+void
+setup(void)
 {
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Pause if that option was specified */
 	TEST_PAUSE;
-}	/* End setup() */
+}

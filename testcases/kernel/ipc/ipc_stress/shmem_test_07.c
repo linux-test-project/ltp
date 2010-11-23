@@ -343,12 +343,12 @@ int main (int argc, char **argv)
 	 */
         for (i=0; i<num_writers; i++) {
 
-	if (pthread_mutex_init(&mutex_r[i] , (pthread_mutexattr_t *)NULL) != 0)
+	if (pthread_mutex_init(&mutex_r[i] , NULL) != 0)
 		sys_error ("Can't initialize mutex_r", __LINE__);
 
-	if (pthread_mutex_init (&cond_mutex[i], (pthread_mutexattr_t *)NULL))
+	if (pthread_mutex_init (&cond_mutex[i], NULL))
 		sys_error ("Can't initialize cond_mutex", __LINE__);
-	if (pthread_cond_init (&cond_var[i], (pthread_condattr_t *)NULL))
+	if (pthread_cond_init (&cond_var[i], NULL))
 		sys_error ("cond_init(&cond_var) failed", __LINE__);
         /*
          * lock the access to the shared memory data segment --
@@ -439,7 +439,7 @@ int main (int argc, char **argv)
 	ulptr=checksum[i];
 	for (j=0; j<num_readers; j++) {
 
-		if (cksum[i] != *ulptr )
+		if (cksum[i] != *ulptr)
 			error ("checksums do not match", __LINE__);
 	
 		}
@@ -704,7 +704,7 @@ void sys_error (const char *msg, int line)
 void error (const char *msg, int line)
 {
 	fprintf (stderr, "ERROR [line: %d] %s\n", line, msg);
-	if ( line >= 260 )
+	if (line >= 260)
 	release ();
 	exit (-1);
 }

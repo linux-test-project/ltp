@@ -66,7 +66,7 @@ int create_Result_file()
 	}
 	else
 	{
-		for (i = 0; i<nbVal; i++ ) 
+		for (i = 0; i<nbVal; i++) 
 		{
 			write(fp,&tabRsin[i],sizeof(double));
 		}
@@ -102,7 +102,7 @@ int create_Data_file()
         }
         else
         {	
-		for (i = 0; i<nbVal; i++ ) 
+		for (i = 0; i<nbVal; i++) 
 		{
 			write(fp,&tabDsin[i],sizeof(double));
 		}

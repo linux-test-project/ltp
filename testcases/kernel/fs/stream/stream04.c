@@ -65,7 +65,7 @@ int main(int ac, char *av[])
          /*
           * parse standard options
           */
-        if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+        if ((msg = parse_opts(ac, av, NULL) {
                          tst_resm(TBROK, "OPTION PARSING ERROR - %s", msg);
                  tst_exit();
                  /*NOTREACHED*/
@@ -78,40 +78,40 @@ int main(int ac, char *av[])
 		sprintf(tempfile1, "stream04.%d", getpid());
 	/*--------------------------------------------------------------------*/
 	//block0:
-		if((stream=fopen(tempfile1,"a+")) == NULL) {
+		if ((stream=fopen(tempfile1,"a+")) == NULL) {
 			tst_resm(TFAIL,"fopen(%s) a+ failed: %s", tempfile1, strerror(errno));
 			tst_rmdir();
 			tst_exit();
 		}
 		/* write something and check */
-		if((ret=fwrite(junk,sizeof(*junk),strlen(junk),stream)) == 0) {
+		if ((ret=fwrite(junk,sizeof(*junk),strlen(junk),stream)) == 0) {
 			tst_resm(TFAIL,"fwrite failed: %s", strerror(errno));
 			tst_rmdir();
 			tst_exit();
 		}
 
-		if((size_t)ret != strlen(junk)) {
+		if ((size_t)ret != strlen(junk)) {
 			tst_resm(TFAIL,"strlen(junk) = %zi != return value from fwrite = %zi", strlen(junk), ret);
 			local_flag = FAILED;
 		}
 
 		fclose(stream);
-		if((stream=fopen(tempfile1,"r+")) == NULL) {
+		if ((stream=fopen(tempfile1,"r+")) == NULL) {
 			tst_resm(TFAIL,"fopen(%s) r+ failed: %s", tempfile1, strerror(errno));
 			tst_rmdir();
 			tst_exit();
 		}
-		if ( (inbuf=(char *)malloc(strlen(junk))) == 0) {
+		if ((inbuf=(char *)malloc(strlen(junk))) == 0) {
 			tst_resm(TBROK, "test failed because of malloc: %s", strerror(errno));
 			tst_rmdir();
 			tst_exit();
 		}
-		if((ret=fread(inbuf,sizeof(*junk),strlen(junk),stream)) == 0) {
+		if ((ret=fread(inbuf,sizeof(*junk),strlen(junk),stream)) == 0) {
 			tst_resm(TFAIL,"fread failed: %s", strerror(errno));
 			tst_rmdir();
 			tst_exit();
 		}
-		if((size_t)ret != strlen(junk)) {
+		if ((size_t)ret != strlen(junk)) {
 			tst_resm(TFAIL,"strlen(junk) = %zi != return value from fread = %zi", strlen(junk), ret);
 			local_flag = FAILED;
 		}

@@ -29,25 +29,25 @@ int main()
   	int  rc;
 
 	/* Get the mutex using pthread_mutex_lock() */
-	if((rc=pthread_mutex_lock(&mutex)) != 0) {
+	if ((rc=pthread_mutex_lock(&mutex)) != 0) {
 		fprintf(stderr,"Error at pthread_mutex_lock(), rc=%d\n",rc);
 		return PTS_UNRESOLVED;
 	}
 
 	/* Release the mutex using pthread_mutex_unlock() */
-	if((rc=pthread_mutex_unlock(&mutex)) != 0) {
+	if ((rc=pthread_mutex_unlock(&mutex)) != 0) {
         	printf("Test FAILED\n");
 		return PTS_FAIL;
 	}
     		
 	/* Get the mutex using pthread_mutex_trylock() */
-	if((rc=pthread_mutex_trylock(&mutex)) != 0) {
+	if ((rc=pthread_mutex_trylock(&mutex)) != 0) {
         	printf("Test FAILED\n");
 		return PTS_FAIL;
 	}
 
 	/* Release the mutex using pthread_mutex_unlock() */
-	if((rc=pthread_mutex_unlock(&mutex)) != 0) {
+	if ((rc=pthread_mutex_unlock(&mutex)) != 0) {
         	printf("Test FAILED\n");
 		return PTS_FAIL;
 	}

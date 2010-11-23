@@ -138,7 +138,7 @@ int main()
 
 				/* check iocb is not modified */
 
-				if ( (aiocb[i]->aio_fildes != fd) ||
+				if ((aiocb[i]->aio_fildes != fd) ||
 				     (aiocb[i]->aio_buf != buf[i]) ||
 				     (aiocb[i]->aio_nbytes != BUF_SIZE) ||
 				     (aiocb[i]->aio_offset != 0) ||

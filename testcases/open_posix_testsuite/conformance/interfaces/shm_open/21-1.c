@@ -22,12 +22,12 @@
 
 #define SHM_NAME "posixtest_21-1"
 
-int main(){
+int main() {
 	int fd, result;
 	struct stat stat_buf;
 
 	result = shm_unlink(SHM_NAME);
-	if(result != 0 && errno != ENOENT) { 
+	if (result != 0 && errno != ENOENT) { 
 		/* The shared memory object exist and shm_unlink can not 
 		   remove it. */
 		perror("An error occurs when calling shm_unlink()");
@@ -35,13 +35,13 @@ int main(){
 	}
 
 	fd = shm_open(SHM_NAME, O_RDONLY|O_CREAT, S_IRUSR|S_IWUSR);
-	if(fd == -1) {
+	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		return PTS_UNRESOLVED;
 	}
 	
 	result = fstat(fd, &stat_buf);
-	if(result != 0) {
+	if (result != 0) {
 		perror("An error occurs when calling fstat()");
 		shm_unlink(SHM_NAME);
 		return PTS_UNRESOLVED;
@@ -49,7 +49,7 @@ int main(){
 
 	shm_unlink(SHM_NAME);
 
-	if(stat_buf.st_size == 0) {
+	if (stat_buf.st_size == 0) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}

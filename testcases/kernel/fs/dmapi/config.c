@@ -358,7 +358,7 @@ int main(int argc, char **argv)
 	 * TEST    : dm_get_config
 	 * EXPECTED: rc = 0
 	 */
-	for (i = 1; i < CONFIG_MAX; i++ ) {
+	for (i = 1; i < CONFIG_MAX; i++) {
 		if (DMVAR_EXEC(GET_CONFIG_BASE + 9 + i)) {
 			int fd;
 			void *hanp;

@@ -112,7 +112,7 @@ static int tmod_ioctl(struct inode *ino, struct file *f,
 	 * parameter to the ioctl
 	 *
 	 */
-	if (copy_from_user(&tif, (void *)l, sizeof(tif)) ) {
+	if (copy_from_user(&tif, (void *)l, sizeof(tif))) {
                 /* Bad address */
                 return(-EFAULT);
         }
@@ -121,12 +121,12 @@ static int tmod_ioctl(struct inode *ino, struct file *f,
          * Setup inparms and outparms as needed
          */
         if (tif.in_len > 0) {
-                inparms = (caddr_t *)kmalloc(tif.in_len, GFP_KERNEL);                if(!inparms) {
+                inparms = (caddr_t *)kmalloc(tif.in_len, GFP_KERNEL);                if (!inparms) {
                         return(-ENOMEM);
                 }
 
                 rc = copy_from_user(inparms, tif.in_data, tif.in_len);
-                if(rc) {
+                if (rc) {
                         kfree(inparms);
                         return(-EFAULT);
                 }
@@ -169,15 +169,15 @@ static int tmod_ioctl(struct inode *ino, struct file *f,
 	 */
 
 	/* if outparms then copy outparms into tif.out_data */
-        if(outparms) {
-                if(copy_to_user(tif.out_data, outparms, tif.out_len)) {
+        if (outparms) {
+                if (copy_to_user(tif.out_data, outparms, tif.out_len)) {
                         printk("tpci: Unsuccessful copy_to_user of outparms\n");
                         rc = -EFAULT;
                 }
         }
 
         /* copy tif structure into l so that can be used by user program */
-        if(copy_to_user((void*)l, &tif, sizeof(tif)) ) {
+        if (copy_to_user((void*)l, &tif, sizeof(tif))) {
                 printk("tpci: Unsuccessful copy_to_user of tif\n");
                 rc = -EFAULT;
         }
@@ -243,7 +243,7 @@ static int tmod_init_module(void) {
                 return rc;
         }
 
-        if(Major == 0)
+        if (Major == 0)
                 Major = rc;
 
 	/* call any other init functions you might use here */

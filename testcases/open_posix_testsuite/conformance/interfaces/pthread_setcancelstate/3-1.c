@@ -45,14 +45,14 @@ int main()
 	ret=0;
 	
 	/* Create a new thread. */
-	if(pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
 	{	
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
 	
 	/* Wait for thread to end execution. */
-	if(pthread_join(new_th, NULL) != 0)
+	if (pthread_join(new_th, NULL) != 0)
 	{
 		perror("Error in pthread_join()\n");
 		return PTS_UNRESOLVED;
@@ -60,9 +60,9 @@ int main()
 	
 	/* This means that pthread_setcancelstate() did not give an error when passed an
 	 * invalid state value of -100. */
-	if(ret != EINVAL)
+	if (ret != EINVAL)
 	{
-		if(ret == 0)
+		if (ret == 0)
 		{
 			printf("Test PASSED: *NOTE: Returned 0 on error, though standard states 'may' fail.\n");
 			return PTS_PASS;

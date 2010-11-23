@@ -59,17 +59,17 @@ static void* fn(void *arg)
 	
 	printf("thread: attempt timed write-lock\n");	
 	rc = pthread_rwlock_timedwrlock(&rwlock, &abs_timeout);
-	if(rc  == ETIMEDOUT)
+	if (rc  == ETIMEDOUT)
 	{
 		printf("thread: timer expired\n");
 		expired = 1;
 	}
-	else if(rc == 0)
+	else if (rc == 0)
 	{
 		printf("thread: acquired write lock\n");
 		expired = 0;
 		printf("thread: unlock write lock\n");
-		if(pthread_rwlock_unlock(&rwlock) != 0)
+		if (pthread_rwlock_unlock(&rwlock) != 0)
 		{
 			printf("thread: failed to release lock\n");
 			exit(PTS_UNRESOLVED);
@@ -93,7 +93,7 @@ int main()
 	int cnt = 0;
 	pthread_t thread1;
 	
-	if(pthread_rwlock_init(&rwlock, NULL) != 0)
+	if (pthread_rwlock_init(&rwlock, NULL) != 0)
 	{
 		printf("Error at pthread_rwlock_init()\n");
 		return PTS_UNRESOLVED;
@@ -101,7 +101,7 @@ int main()
 
 	printf("main: attempt write lock\n");
 	/* We have no lock, this write lock should succeed */	
-	if(pthread_rwlock_wrlock(&rwlock) != 0)
+	if (pthread_rwlock_wrlock(&rwlock) != 0)
 	{
 		printf("Error at pthread_rwlock_wrlock()\n");
 		return PTS_UNRESOLVED;
@@ -110,7 +110,7 @@ int main()
 	
 	thread_state = NOT_CREATED_THREAD;
 	printf("main: create thread\n");
-	if(pthread_create(&thread1, NULL, fn, NULL) != 0)
+	if (pthread_create(&thread1, NULL, fn, NULL) != 0)
 	{
 		printf("Error creating thread\n");
 		return PTS_UNRESOLVED;
@@ -124,10 +124,10 @@ int main()
 		sleep(1);
 	}while (thread_state !=EXITING_THREAD && cnt++ < 3); 
 		
-	if(thread_state == EXITING_THREAD)
+	if (thread_state == EXITING_THREAD)
 	{
 		/* the child thread does not block, check the time expired or not */
-		if(expired != 1)
+		if (expired != 1)
 		{
 			printf("Test FAILED: abs_timeout should expire\n");
 			exit(PTS_FAIL);
@@ -135,7 +135,7 @@ int main()
 		else
 			printf("thread correctly expired and did not wait\n");
 	}
-	else if(thread_state == ENTERED_THREAD)
+	else if (thread_state == ENTERED_THREAD)
 	{
 		printf("Test FAILED: thread blocked even when the timer expired\n");
 		exit(PTS_FAIL);
@@ -147,19 +147,19 @@ int main()
 	}
 	
 	printf("main: unlock write lock\n");
-	if(pthread_rwlock_unlock(&rwlock) != 0)
+	if (pthread_rwlock_unlock(&rwlock) != 0)
 	{
 		printf("main: Error at pthread_rwlock_unlock()\n");
 		return PTS_UNRESOLVED;
 	}
 	
-	if(pthread_join(thread1, NULL) != 0)
+	if (pthread_join(thread1, NULL) != 0)
 	{
 		printf("main: Error at pthread_join()\n");
 		return PTS_UNRESOLVED;
 	}
 
-	if(pthread_rwlock_destroy(&rwlock) != 0)
+	if (pthread_rwlock_destroy(&rwlock) != 0)
 	{
 		printf("main: Error at pthread_rwlockattr_destroy()\n");
 		return PTS_UNRESOLVED;

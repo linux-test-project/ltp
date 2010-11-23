@@ -75,7 +75,7 @@ int child_fn1(void *ttype)
 	ppid = getppid();
 
 	tst_resm(TINFO, "PIDNS test is running inside container\n");
-	if(( cpid == CHILD_PID) &&
+	if (( cpid == CHILD_PID) &&
 		( ppid == PARENT_PID ) )
 	{
                 tst_resm(TPASS, "Success:" );

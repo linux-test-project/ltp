@@ -77,7 +77,7 @@ int main(int argn, char *argc[])
 	//First of all, create client using top level API
 	clnt = clnt_create(argc[1], progNum, VERSNUM, nettype);	
 	
-	if (clnt == (CLIENT *)NULL)
+	if (clnt == NULL)
 	{
 		printf("5\n");
 		return 5;

@@ -58,7 +58,7 @@ int main()
    if (( pthread_join(prod, NULL) == 0) && ( pthread_join(cons, NULL) == 0)) {
 	puts("TEST PASS");
 	pthread_exit(NULL);
-   	if (( sem_destroy(&psem) == 0) &&( sem_destroy (&csem)) == 0 )
+   	if (( sem_destroy(&psem) == 0) &&( sem_destroy (&csem)) == 0)
 		return PTS_PASS;
    	} else {
 		puts("TEST FAILED");

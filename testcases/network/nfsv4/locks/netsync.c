@@ -13,7 +13,7 @@ char *serveur;
 int fdServeur;
 extern char message[M_SIZE];
         
-int serverReceiveClient(int c){
+int serverReceiveClient(int c) {
     char tmp[M_SIZE];
     int r,s;
     /* Il faut etre sur que l'on lit _exactement_ la trame envoyee (M_SIZE) */
@@ -23,7 +23,7 @@ int serverReceiveClient(int c){
     r=0;
     s=0;
     
-    while(s<M_SIZE){
+    while (s<M_SIZE) {
         r=read(fdClient[c],tmp, M_SIZE-s);
         /* On complete le message au fur et a mesure */
         /* Loop until we have a complete  message */
@@ -33,19 +33,19 @@ int serverReceiveClient(int c){
    return s;
 }
 
-int serverSendClient(int n){
+int serverSendClient(int n) {
     return write(fdClient[n],message, M_SIZE);
 }
      
 
-int clientReceiveNet(){
+int clientReceiveNet() {
     readFromServer(message);
     return 0;
 }
 
 
 
-int setupConnectionServeur(){
+int setupConnectionServeur() {
     struct sockaddr_in local;
     int c;
     socklen_t size;
@@ -54,7 +54,7 @@ int setupConnectionServeur(){
 
 
 
-    if((sock = socket (AF_INET, SOCK_STREAM, 0))<0){
+    if ((sock = socket (AF_INET, SOCK_STREAM, 0))<0) {
         perror ("socket");
         exit(1);
     }
@@ -64,21 +64,21 @@ int setupConnectionServeur(){
     local.sin_addr.s_addr = INADDR_ANY;
     memset(&(local.sin_zero), 0x00, 8);
 
-    if(bind(sock, (struct sockaddr *)&local, sizeof(struct sockaddr))== -1){
+    if (bind(sock, (struct sockaddr *)&local, sizeof(struct sockaddr))== -1) {
         perror("bind"); 
         exit(1);
     }
 
-    if(listen(sock, MAX_CONNECTION) == -1){
+    if (listen(sock, MAX_CONNECTION) == -1) {
         perror("listen"); 
         return 1;
     }
     size = sizeof(struct sockaddr_in);
-    for(c=0;c<maxClients; c++){
+    for (c=0;c<maxClients; c++) {
         
         /* On accepte les connections clientes */
         /* Accept incoming connections */
-        if((fdClient[c]=accept(sock, (struct sockaddr *)&remote, &size)) == -1){
+        if ((fdClient[c]=accept(sock, (struct sockaddr *)&remote, &size)) == -1) {
             perror("accept"); 
             return 1;
         }
@@ -88,13 +88,13 @@ int setupConnectionServeur(){
     return 0;
 }
 
-int writeToClient(int c, char *message){
+int writeToClient(int c, char *message) {
     return write(fdClient[c], message, 512);
 }
 
-int serverCloseConnection(){
+int serverCloseConnection() {
     int c;
-    for(c=0;c<maxClients;c++)
+    for (c=0;c<maxClients;c++)
         close(fdClient[c]);
     return 0;
 
@@ -103,15 +103,15 @@ int serverCloseConnection(){
 
     
 
-int writeToAllClients(char *foo){
+int writeToAllClients(char *foo) {
     int c;
-    for(c=0;c<maxClients;c++)
+    for (c=0;c<maxClients;c++)
         writeToClient(c, foo);
     return 0;
 }
 
 
-int setupClients(int type, char *fname, int nThread){
+int setupClients(int type, char *fname, int nThread) {
     /* 
      * Envoi des parametres a tous les clients 
      * 
@@ -136,7 +136,7 @@ int setupClients(int type, char *fname, int nThread){
     return 0;
 }
 
-int configureServeur(int  max){
+int configureServeur(int  max) {
     maxClients=max;
     fdClient=(int *)malloc(sizeof(int)*max);
     
@@ -151,7 +151,7 @@ int configureServeur(int  max){
        
 
 
-int setupConnectionClient(){
+int setupConnectionClient() {
 
     struct hostent *server;
     struct sockaddr_in serv_addr;
@@ -160,13 +160,13 @@ int setupConnectionClient(){
     
     
     
-    if (! (server=gethostbyname(serveur))){
+    if (! (server=gethostbyname(serveur))) {
         printf("erreur DNS\n");
         return 1;
     }
 
     fdServeur = socket (AF_INET, SOCK_STREAM, 0);
-    if (fdServeur < 0){
+    if (fdServeur < 0) {
         perror ("socket");
         return 1;
     }
@@ -174,14 +174,14 @@ int setupConnectionClient(){
     serv_addr.sin_addr = *(struct in_addr*)server->h_addr;
     serv_addr.sin_port = htons(PORT);
     serv_addr.sin_family = AF_INET;
-    if (connect(fdServeur, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0){
+    if (connect(fdServeur, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
         perror("connect"); 
         return 1;
     }
    return 0; 
 }
 
-int readFromServer(char *message){
+int readFromServer(char *message) {
     char tmp[M_SIZE];
     int r,s;
     /* Il faut etre sur que l'on lit _exactement_ la trame envoyee de taille M_SIZE */
@@ -189,7 +189,7 @@ int readFromServer(char *message){
     memset(message,0,M_SIZE);
     memset(tmp,0,M_SIZE);
     r=0; s=0;
-    while(s<M_SIZE){
+    while (s<M_SIZE) {
         r=read(fdServeur,tmp, M_SIZE-s);
         /* On complete le message au fur et a mesure */
         /* Loop until we have a complete message */
@@ -200,7 +200,7 @@ int readFromServer(char *message){
 }
 
 
-int getConfiguration(int *type, char *fname, int *nThread){
+int getConfiguration(int *type, char *fname, int *nThread) {
     char conf[M_SIZE];
     char *p;
     int i;
@@ -218,7 +218,7 @@ int getConfiguration(int *type, char *fname, int *nThread){
 }
 
         
-int configureClient(char *s){
+int configureClient(char *s) {
     serveur=s;
     setupConnectionClient();
     return 0;

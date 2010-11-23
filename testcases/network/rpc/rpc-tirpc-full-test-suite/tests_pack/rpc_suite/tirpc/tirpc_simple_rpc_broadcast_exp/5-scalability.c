@@ -157,7 +157,7 @@ int main(int argn, char *argc[])
 		//Clean threads
 		for (j = 0; j < curThd; j++)
 		{
-			if ((pthread_t *)pThreadArray[j] != (pthread_t *)NULL)
+			if ((pthread_t *)pThreadArray[j] != NULL)
 			{
 				(void)pthread_join (pThreadArray[j], &ret);
 			}

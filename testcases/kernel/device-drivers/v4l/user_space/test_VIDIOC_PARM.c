@@ -31,7 +31,7 @@
 int valid_v4l2_captureparm_capability(__u32 capability) {
 	int valid = 0;
 
-	if ( (capability & ~(V4L2_CAP_TIMEPERFRAME)) == 0) {
+	if ((capability & ~(V4L2_CAP_TIMEPERFRAME)) == 0) {
 		valid = 1;
 	} else {
 		valid = 0;
@@ -42,7 +42,7 @@ int valid_v4l2_captureparm_capability(__u32 capability) {
 int valid_v4l2_outputparm_capability(__u32 capability) {
 	int valid = 0;
 
-	if ( (capability & ~(V4L2_CAP_TIMEPERFRAME)) == 0) {
+	if ((capability & ~(V4L2_CAP_TIMEPERFRAME)) == 0) {
 		valid = 1;
 	} else {
 		valid = 0;
@@ -53,7 +53,7 @@ int valid_v4l2_outputparm_capability(__u32 capability) {
 int valid_v4l2_captureparm_capturemode(__u32 capturemode) {
 	int valid = 0;
 
-	if ( (capturemode & ~(V4L2_MODE_HIGHQUALITY)) == 0) {
+	if ((capturemode & ~(V4L2_MODE_HIGHQUALITY)) == 0) {
 		valid = 1;
 	} else {
 		valid = 0;
@@ -64,7 +64,7 @@ int valid_v4l2_captureparm_capturemode(__u32 capturemode) {
 int valid_v4l2_outputparm_outputpmode(__u32 outputmode) {
 	int valid = 0;
 
-	if ( (outputmode & ~(V4L2_MODE_HIGHQUALITY)) == 0) {
+	if ((outputmode & ~(V4L2_MODE_HIGHQUALITY)) == 0) {
 		valid = 1;
 	} else {
 		valid = 0;

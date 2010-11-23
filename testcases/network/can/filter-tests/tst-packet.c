@@ -117,7 +117,7 @@ int main(int argc, char **argv)
                 return 1;
         }
 
-        if(send_one_frame) {
+        if (send_one_frame) {
 
                 frame.can_id  = 0x123;
                 frame.can_dlc = 2;

@@ -36,13 +36,13 @@ int main()
 	int	rc; 
 
 	/* Set pshared to an invalid value */
-	if(pshared == PTHREAD_PROCESS_SHARED)
+	if (pshared == PTHREAD_PROCESS_SHARED)
 	{
 		pshared += 1;
 	}
 
 	/* Initialize a barrier attributes object */
-	if(pthread_barrierattr_init(&ba) != 0)
+	if (pthread_barrierattr_init(&ba) != 0)
 	{
 		printf("Error at pthread_barrierattr_init()\n");
 		return PTS_UNRESOLVED;
@@ -50,7 +50,7 @@ int main()
 
 	/* Set process-shared attribute to an invalid value */
 	rc = pthread_barrierattr_setpshared(&ba, pshared);
-	if(rc == EINVAL)
+	if (rc == EINVAL)
 		printf("Test PASSED\n");
 	else
 	{

@@ -58,7 +58,7 @@ int main()
 
 	pthread_t un_thread;
 	
-	if(pthread_rwlock_init(&rwlock, NULL) != 0)
+	if (pthread_rwlock_init(&rwlock, NULL) != 0)
 	{
 		printf("main: Error at pthread_rwlock_init()\n");
 		return PTS_UNRESOLVED;
@@ -66,7 +66,7 @@ int main()
 
 	printf("main: attempt read lock\n");
 
-	if(pthread_rwlock_rdlock(&rwlock) != 0)
+	if (pthread_rwlock_rdlock(&rwlock) != 0)
 	{
 		printf("main: Error at pthread_rwlock_rdlock()\n");
 		return PTS_UNRESOLVED;
@@ -76,7 +76,7 @@ int main()
 	thread_state = NOT_CREATED_THREAD;
 	
 	printf("main: create un_thread\n");
-	if(pthread_create(&un_thread, NULL, fn_unlk, NULL) != 0)
+	if (pthread_create(&un_thread, NULL, fn_unlk, NULL) != 0)
 	{
 		printf("main: Error at pthread_create()\n");
 		return PTS_UNRESOLVED;
@@ -88,13 +88,13 @@ int main()
 		sleep(1);
 	}while (thread_state !=EXITING_THREAD && cnt++ < 3); 
 	
-	if(thread_state != EXITING_THREAD)
+	if (thread_state != EXITING_THREAD)
 	{
 		printf("Unexpected thread state %d\n", thread_state);
 		exit(PTS_UNRESOLVED);
 	}
 	
-	if(pthread_join(un_thread, NULL) != 0)
+	if (pthread_join(un_thread, NULL) != 0)
 	{
 		printf("Error at pthread_join()\n");
 		exit(PTS_UNRESOLVED);
@@ -102,7 +102,7 @@ int main()
 	
 	/* Cleaning up */
 	pthread_rwlock_unlock(&rwlock);
-	if(pthread_rwlock_destroy(&rwlock) != 0)
+	if (pthread_rwlock_destroy(&rwlock) != 0)
 	{
 		printf("error at pthread_rwlock_destroy()\n");
 		return PTS_UNRESOLVED;
@@ -111,9 +111,9 @@ int main()
 	/* Test the return code of un_thread when it attempt to unlock the rwlock it didn't
 	 * own in the first place. */
 	
-	if(rc != 0)
+	if (rc != 0)
 	{
-		if(rc == EPERM)
+		if (rc == EPERM)
 		{
 			printf("Test PASSED\n");
 			return PTS_PASS;

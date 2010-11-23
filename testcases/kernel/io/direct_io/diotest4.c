@@ -531,7 +531,7 @@ main(int argc, char *argv[])
 	}
 	else {
 		ret = write(fd, (char *)((ulong)ADDRESS_OF_MAIN & pagemask), count);
-		if (ret < 0 ) {
+		if (ret < 0) {
 			tst_resm(TFAIL,"write to read-only space. returns %d: %s",
 				ret, strerror(errno));
 			l_fail = TRUE;
@@ -621,7 +621,7 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	if(fd1 != -1)
+	if (fd1 != -1)
 		unlink(filename);
 
 	tst_rmdir();

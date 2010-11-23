@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
 	char *funct, *bin_path;
 	pid_t  child;
 
-	if (argc != 2){
+	if (argc != 2) {
                 printf ("ERROR: need the path to generation binaries\n");
                 abort();
         }

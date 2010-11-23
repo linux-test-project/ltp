@@ -67,7 +67,7 @@ int main(void)
 
 	if ((pid = fork()) == 0) {
 		/* child */
-		while(1) {
+		while (1) {
 			/* wait forever, or until we are 
 			   interrupted by a signal */
 			tv.tv_sec = 0;

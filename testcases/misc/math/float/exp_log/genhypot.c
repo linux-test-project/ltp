@@ -63,7 +63,7 @@ int create_Result_file()
 	}
 	else
 	{
-		for (i = 0; i<nbVal; i++ ) 
+		for (i = 0; i<nbVal; i++) 
 		{
 			write(fp,&tabR[i],sizeof(double));
 		}
@@ -86,7 +86,7 @@ int create_Data_file()
 
 	Inc = (2*M_PIl)/nbVal; 
 
-	for(i=0; i<nbVal; i++) {
+	for (i=0; i<nbVal; i++) {
 		tabD[i] = (Inc * i);
 		}
 
@@ -99,7 +99,7 @@ int create_Data_file()
         }
         else
         {	
-		for (i = 0; i<nbVal; i++ ) 
+		for (i = 0; i<nbVal; i++) 
 		{
 			write(fp,&tabD[i],sizeof(double));
 		}

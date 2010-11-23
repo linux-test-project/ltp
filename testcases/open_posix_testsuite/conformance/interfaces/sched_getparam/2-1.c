@@ -31,7 +31,7 @@ int main(int argc, char **argv)
 	result0 = sched_getparam(0, &param0);
 	result1 = sched_getparam(getpid(), &param1);
 	
-	if(result0 == result1 &&
+	if (result0 == result1 &&
 	   param0.sched_priority == param1.sched_priority &&
 	   errno == 0) {
 		printf("Test PASSED\n");

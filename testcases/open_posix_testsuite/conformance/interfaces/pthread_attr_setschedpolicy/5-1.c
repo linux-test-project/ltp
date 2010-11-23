@@ -42,7 +42,7 @@ int main()
 		exit(PTS_UNRESOLVED);
 	}
   	rc = pthread_attr_destroy(&attr);
-	if( rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_attr_destroy\n");
 		exit(PTS_UNRESOLVED);
 	}

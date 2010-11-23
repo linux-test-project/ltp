@@ -175,7 +175,7 @@ void * sigthr(void * arg)
 	
 	/* Tell the other threads they can now stop */
 	do {  c->sigok = 1;  }
-	while ( c->sigok == 0 );
+	while (c->sigok == 0);
 	
 	return NULL;
 }
@@ -195,7 +195,7 @@ void sighdl(int sig)
  * This avoids the signal thread try to kill a terminated thread. */
 void waitsigend(cell_t * c)
 {
-	while ( c->sigok == 0 )
+	while (c->sigok == 0)
 	{  sched_yield();  }
 }
 

@@ -23,13 +23,13 @@ int main(int argc, char **argv) {
   char buf[255];
 
   rc = gethostname(buf, sizeof(buf));
-  if( rc != 0 ) {
+  if (rc != 0) {
     perror("test_sethostname:gethostname");
     exit(2);
   }
 
   rc = sethostname(buf, strlen(buf));
-  if( rc != 0 ) {
+  if (rc != 0) {
     perror("test_sethostname:sethostname");
     exit(1);
   }

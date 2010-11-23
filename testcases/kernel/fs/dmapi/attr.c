@@ -672,7 +672,7 @@ int main(int argc, char **argv)
 		sprintf(command, "cp %s %s", DUMMY_TMP, DUMMY_FILE);
 		if ((buf = malloc(maxAttrSize)) == NULL) {
 			/* No clean up */
-		} else if ((memset(buf, '1', maxAttrSize) == NULL ) ||
+		} else if ((memset(buf, '1', maxAttrSize) == NULL) ||
 			   ((value = malloc(maxAttrSize)) == NULL)) {
 			free(buf);
 		} else if ((memset(value, 0, maxAttrSize) == NULL) ||
@@ -5878,7 +5878,7 @@ int main(int argc, char **argv)
 			/* No clean up */
 		} else if ((rc = dm_path_to_handle(DUMMY_SUBDIR, &hanp, &hlen)) == -1) {
 			rmdir(DUMMY_SUBDIR);
-		} else if ((rc = dm_set_eventlist(sid, hanp, hlen, DM_NO_TOKEN, &eventset, DM_EVENT_MAX)) == -1 ) {
+		} else if ((rc = dm_set_eventlist(sid, hanp, hlen, DM_NO_TOKEN, &eventset, DM_EVENT_MAX)) == -1) {
 			dm_handle_free(hanp, hlen);
 			rmdir(DUMMY_SUBDIR);
 		}

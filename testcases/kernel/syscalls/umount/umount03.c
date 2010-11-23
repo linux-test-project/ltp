@@ -273,7 +273,7 @@ void setup()
 	/* set up expected error numbers */
 	TEST_EXP_ENOS(exp_enos);
 
-	if(access(device,F_OK)) {
+	if (access(device,F_OK)) {
 		tst_brkm(TBROK, cleanup1,
 			"Device '%s' does not exist", device);
 	}
