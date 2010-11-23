@@ -29,6 +29,9 @@
 #	created and that will be used as syslog.conf file.
 ##################################################################
 
+# Number of levels.
+export TST_TOTAL=8
+
 . syslog-lib.sh || exit 1
 
 syslog_case2()
@@ -47,14 +50,14 @@ syslog_case2()
 		/etc/syslog.conf|/etc/rsyslog.conf)
 			# Create the configuration file specific to this level
 			echo "$RSYSLOG_CONFIG" > $CONFIG_FILE
-			echo "mail.$level	$MAILLOG" >> $CONFIG_FILE;;
+			echo "mail.$level	$MAILLOG" >> $CONFIG_FILE
+			;;
+
 		/etc/syslog-ng/syslog-ng.conf)
 			echo "source src{ internal(); unix-dgram(\"/dev/log\"); udp(ip(\"0.0.0.0\") port(514)); };" > $CONFIG_FILE
-			echo "filter f_syslog_$level { level($level)	  and \
-			      facility(mail); };"  >> $CONFIG_FILE
+			echo "filter f_syslog_$level { level($level) and facility(mail); };"  >> $CONFIG_FILE
 			echo "destination syslog-$level { file(\"$MAILLOG\"); };"  >> $CONFIG_FILE
-			echo "log { source(src); filter(f_syslog_$level); \
-				  destination(syslog-$level); };"  >> $CONFIG_FILE;;
+			echo "log { source(src); filter(f_syslog_$level); destination(syslog-$level); };"  >> $CONFIG_FILE;;
 		esac
 
 		restart_syslog_daemon
@@ -100,6 +103,8 @@ syslog_case2()
 		fi
 		# Increment the level_no for next level...
 		: $(( level_no += 1 ))
+
+		tst_count_incr
 	done
 }
 
