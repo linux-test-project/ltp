@@ -33,148 +33,35 @@
 #         o open a file and check the returned file descriptor.  #
 #           It should be greater than 3.                         #
 ##################################################################
-#number of seconds to wait for another syslog test to complete
-wait_count=60
 
-#configuration file for syslog or syslog-ng
-CONFIG_FILE=""
-
-#Command for syslog or syslog-ng
-syslog_cmd=""
-
-cleanup()
-{
-if [ $status_flag -eq 0 ]
-then
-	tst_resm TPASS "file descriptor is greater than 3"
-else
-	tst_resm TFAIL "file descriptor is not greater than 3"
-fi
-
-
-#Restore syslog.conf
-  [ -f "$CONFIG_FILE.ltpback" ] && mv "$CONFIG_FILE.ltpback" "$CONFIG_FILE"
-
-#Restart syslog
-  [ -x "$syslog_cmd" ] && {
-      tst_resm TINFO "restart $syslog_cmd"
-      "$syslog_cmd" restart 2>&1 1>/dev/null
-  }
-
-sleep 2
-
-exit $status_flag
-}
+. syslog-lib.sh || exit 1
 
 syslog_case6()
 {
-	RSYSLOG_CONFIG=""
-	#set the trap to handle signals.
-	trap '
-			tst_resm TBROK "Testing is terminating due to a signal"
-			status_flag=1
-			cleanup
-	' 1 2 3 6 11 15
-
 	tst_resm TINFO "syslog: Testing the log option: LOG_NDELAY..."
-
-
-	# check if syslogd command exits.
-	echo
-
-
-#check to see if syslogd or syslog-ng exists
-	if [ -e /sbin/syslogd  ]
-	then
-	    CONFIG_FILE="/etc/syslog.conf"
-	    syslog_cmd="/etc/init.d/sysklogd"
-	elif [ -e /sbin/syslog-ng ] || [ -e /usr/sbin/syslog-ng ]
-        then
-	    CONFIG_FILE="/etc/syslog-ng/syslog-ng.conf"
-	    syslog_cmd="/etc/init.d/syslog-ng"
-	elif [ -e /sbin/rsyslogd ] || [ -e /usr/sbin/rsyslogd ]
-        then
-	    CONFIG_FILE="/etc/rsyslog.conf"
-	    syslog_cmd="/etc/init.d/rsyslog"
-	    RSYSLOG_CONFIG='$ModLoad imuxsock.so'
-	else
-	    tst_resm TCONF "syslogd, syslog-ng or rsyslogd no such command"
-	    status_flag=0
-	    cleanup	
-	fi
-	[ -x $syslog_cmd ] || syslog_cmd="/etc/init.d/syslog"
-
-#Back up configuration file
-        if [ ! -e $CONFIG_FILE ]
-        then
-	   tst_resm TBROK  "$CONFIG_FILE not found!"
-        else
-#Pause if another LTP syslog test is running
-           while [ -e $CONFIG_FILE.ltpback ]
-             do
-               if [ $(( wait_count-- )) -gt 0 ]
-               then
-                 sleep 1
-               else
-	        tst_resm TBROK "Another syslog test appears to be \
-                                stuck, could not run"
-                status_flag=1
-	         exit $status_flag
-               fi
-             done
-           cp $CONFIG_FILE $CONFIG_FILE.ltpback
-          fi
-
-         echo "Running tests"
-
-	# check if /etc/init/syslog script exists
-	if ! [ -e "$syslog_cmd" ]
-	then
-		tst_resm TBROK "$syslog_cmd no such script"
-		status_flag=1
-		cleanup
-	fi
 
 	# Create the configuration file specific to this test case.
 	# For this case, it's a dummy one. No use of it.
 	case "$CONFIG_FILE" in
-            "/etc/syslog.conf" |\
-	    "/etc/rsyslog.conf")
-	        echo "$RSYSLOG_CONFIG" > $CONFIG_FILE
-	        echo "user.info        /var/log/messages" >> $CONFIG_FILE;;
+	/etc/syslog.conf|/etc/rsyslog.conf)
+		echo "$RSYSLOG_CONFIG" > $CONFIG_FILE
+		echo "user.info        /var/log/messages" >> $CONFIG_FILE
+		;;
 
-	    "/etc/syslog-ng/syslog-ng.conf")
-		echo "source src{ internal(); unix-dgram(\"/dev/log\"); \
-		  udp(ip(\"0.0.0.0\") port(514)); };" > $CONFIG_FILE
-		echo "filter f_syslog_user { level(info)      and facility(user)\
-		  ; };">> $CONFIG_FILE
-		echo "destination syslog-messages { file(\"/var/log/messages\");};"\
-		  >> $CONFIG_FILE
-		echo "log { source(src); filter(f_syslog_user); \
-		  destination(syslog-messages);};" >> $CONFIG_FILE;;
+	/etc/syslog-ng/syslog-ng.conf)
+		echo "source src{ internal(); unix-dgram(\"/dev/log\"); udp(ip(\"0.0.0.0\") port(514)); };" > $CONFIG_FILE
+		echo "filter f_syslog_user { level(info) and facility(user); };">> $CONFIG_FILE
+		echo "destination syslog-messages { file(\"/var/log/messages\");};" >> $CONFIG_FILE
+		echo "log { source(src); filter(f_syslog_user); destination(syslog-messages);};" >> $CONFIG_FILE
+		;;
 	esac
 
-	#Restart syslog
-	tst_resm TINFO "Restart syslog daemon"
+	restart_syslog_daemon
 
-	$syslog_cmd restart 2>&1 1>/dev/null
-	sleep 2
-
-	# Just call syslogtst. It will do everything.
-	# It will return 0 to indicate that test has passed.
-
-	syslogtst 6 2>/dev/null
-	if [ $? -ne 0 ]; then
-			status_flag=1
+	if ! syslogtst 6 2>/dev/null; then
+		status_flag=1
 	fi
 }
-
-export TST_TOTAL=1
-export TST_COUNT=1
-export TCID=$(basename $0)
-
-RC=0
-status_flag=0
 
 tst_resm TINFO " Test the logging option: LOG_NDELAY"
 tst_resm TINFO " o Do openlog() without LOG_NDELAY option."
@@ -184,6 +71,6 @@ tst_resm TINFO " o Now do openlog() with LOG_NDELAY option."
 tst_resm TINFO " o open a file and check the returned file descriptor."
 tst_resm TINFO "   It should be greater than 3."
 
-
+setup
 syslog_case6
-cleanup
+cleanup ${status_flag:=0}

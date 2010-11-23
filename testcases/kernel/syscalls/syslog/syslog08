@@ -18,220 +18,107 @@
 
 # 12/05/02  Port to bash -Robbie Williamson <robbiew@us.ibm.com>
 # 02/05/03  Modified - Manoj Iyer <manjo@mail.utexas.edu> use USCTEST macros
-#           fixed bugs.
+#		   fixed bugs.
 # 07/26/05  Michael Reed  <mreedltp@vnet.ibm.com>
-#           Made changes to account for the replacement of syslogd
-#           with syslog-ng
+#		   Made changes to account for the replacement of syslogd
+#		   with syslog-ng
 #
 ##################################################################
-# case 8: Test all the facilities at a particular level.         #
-#                                                                #
-#         Facilities available are: LOG_KERN, LOG_USER, LOG_MAIL #
-#         LOG_DAEMON, LOG_AUTH, LOG_LPR.                         #
-#         Don't know how to send kernel messages from syslog()   #
-#                                                                #
-#         o Create seperate entries in config file for each      #
-#            facility.                                           #
-#         o Send the message and grep for the entry in log file. #
+# case 8: Test all the facilities at a particular level.	 #
+#								 #
+# Facilities available are: LOG_KERN, LOG_USER, LOG_MAIL	 #
+# LOG_DAEMON, LOG_AUTH, LOG_LPR.				 #
+# Don't know how to send kernel messages from syslog()   	 #
+#								 #
+# o Create seperate entries in config file for each facility.	 # 
+# o Send the message and grep for the entry in log file.	 #
 ##################################################################
-#number of seconds to wait for another syslog test to complete
-wait_count=60
 
-#configuration file for syslog or syslog-ng
-CONFIG_FILE=""
-
-#Command for syslog or syslog-ng
-syslog_cmd=""
-
-cleanup()
-{
-if [ $status_flag -eq 0 ]
-then
-	tst_resm TPASS "all facilities work"
-else
-	tst_resm TPASS "some facilities failed to work"
-fi
-
-#Restore syslog.conf
-  [ -f "$CONFIG_FILE.ltpback" ] && mv "$CONFIG_FILE.ltpback" "$CONFIG_FILE"
-
-#Restart syslog
-  [ -x "$syslog_cmd" ] && {
-      tst_resm TINFO "restart $syslog_cmd"
-      "$syslog_cmd" restart 2>&1 1>/dev/null
-  }
-
-sleep 2
-exit $status_flag
-}
+. syslog-lib.sh || exit 1
 
 syslog_case8()
 {
-	RSYSLOG_CONFIG=""
-	#set the trap to handle signals.
-	trap '
-		tst_resm TBROK "Testing is terminating due to a signal"
-		status_flag=1
-		cleanup
-	' 1 2 3 6 11 15
+	local facility_no=1
+	local facilities="user mail daemon auth lpr"
 
-	echo
-	tst_resm  TINFO "syslog: Testing all the facilities"
+	tst_resm TINFO "testing all the facilities"
 
- 	# check if syslogd command exits.
-	echo
+	for facility in $facilities; do
 
-	
-#check to see if syslogd or syslog-ng exists
-	if [ -e /sbin/syslogd  ]
-	then
-	    CONFIG_FILE="/etc/syslog.conf"
-	    syslog_cmd="/etc/init.d/sysklogd"
-	elif [ -e /sbin/syslog-ng ] || [ -e /usr/sbin/syslog-ng ]
-        then
-	    CONFIG_FILE="/etc/syslog-ng/syslog-ng.conf"
-	    syslog_cmd="/etc/init.d/syslog-ng"
-	elif [ -e /sbin/rsyslogd ] || [ -e /usr/sbin/rsyslogd ]
-        then
-	    CONFIG_FILE="/etc/rsyslog.conf"
-	    syslog_cmd="/etc/init.d/rsyslog"
-	    RSYSLOG_CONFIG='$ModLoad imuxsock.so'
-	else
-	    tst_resm TCONF "syslogd, syslog-ng or rsyslogd no such command"
-	    status_flag=0
-	    cleanup	
-	fi
-	[ -x $syslog_cmd ] || syslog_cmd="/etc/init.d/syslog"
-
-#Back up configuration file
-  if [ ! -e $CONFIG_FILE ]
-  then
-	tst_resm TBROK  "$CONFIG_FILE not found!"
-  else
-    #Pause if another LTP syslog test is running
-    while [ -e $CONFIG_FILE.ltpback ]
-      do
-        if [ $(( wait_count-- )) -gt 0 ]
-        then
-          sleep 1
-        else
-	  tst_resm TBROK "Another syslog test appears to be stuck, could not run"
-          status_flag=1
-	  exit $status_flag
-        fi
-      done
-       cp $CONFIG_FILE $CONFIG_FILE.ltpback
-   fi
-
-
-	# check if /etc/init/syslog script exists
-	if ! [ -e "$syslog_cmd" ]
-	then
-		tst_resm TBROK "/etc/init.d/syslog no such script"
-		status_flag=1
-		cleanup
-	fi
-
-	facility_no=1
-	facility="user mail daemon auth lpr"
-	for current in $facility
-	do
-		tst_resm TINFO "Doing facility: $current..."
+		tst_resm TINFO "Doing facility: $facility..."
 
 		# Create the configuration file specific to this facility
 		# Level is fixed at info.
 		case "$CONFIG_FILE" in
-			"/etc/syslog.conf" |\
-			"/etc/rsyslog.conf")
-		        echo "$RSYSLOG_CONFIG" > $CONFIG_FILE
-		        echo "$current.info    /var/log/messages" >> $CONFIG_FILE
-		        echo "$current.info    /var/log/maillog" >> $CONFIG_FILE;;
+		/etc/syslog.conf|/etc/rsyslog.conf)
+			echo "$RSYSLOG_CONFIG" > $CONFIG_FILE
+			echo "$facility.info	/var/log/messages" >> $CONFIG_FILE
+			echo "$facility.info	/var/log/maillog" >> $CONFIG_FILE
+			;;
 
-			"/etc/syslog-ng/syslog-ng.conf")
-				echo "source src{ internal(); unix-dgram(\"/dev/log\"); \
-                      udp(ip(\"0.0.0.0\") port(514)); };" > $CONFIG_FILE
-				echo "filter f_syslog-$current { level(info)      and \
-                      facility($current); };"  >> $CONFIG_FILE
-				echo "destination syslog-messages { file(\"/var/log/messages\");\
-                      };"  >> $CONFIG_FILE
-				echo "destination syslog-mail { file(\"/var/log/maillog\");};" \
-					>> $CONFIG_FILE
-				echo "log { source(src); filter(f_syslog-$current); \
-                      destination(syslog-mail); };"  >> $CONFIG_FILE
-				echo "log { source(src); filter(f_syslog-$current); \
-                      destination(syslog-messages); };"  >> $CONFIG_FILE
+		/etc/syslog-ng/syslog-ng.conf)
+			echo "source src{ internal(); unix-dgram(\"/dev/log\"); udp(ip(\"0.0.0.0\") port(514)); };" > $CONFIG_FILE
+			echo "filter f_syslog-$facility { level(info) and facility($facility); };" >> $CONFIG_FILE
+			echo "destination syslog-messages { file(\"/var/log/messages\"); };" >> $CONFIG_FILE
+			echo "destination syslog-mail { file(\"/var/log/maillog\");};" >> $CONFIG_FILE
+			echo "log { source(src); filter(f_syslog-$facility); destination(syslog-mail); };"  >> $CONFIG_FILE
+			echo "log { source(src); filter(f_syslog-$facility); destination(syslog-messages); };"  >> $CONFIG_FILE
+			;;
+
 		esac
 
-		#Restart syslog
-		tst_resm TINFO "Restart $syslog_cmd"
-
-		$syslog_cmd restart 2>&1 1>/dev/null
-
-		sleep 2	
+		restart_syslog_daemon
 
 		if [ -e /var/log/messages ]; then
-		    oldvalue=`grep -c "syslogtst: $current info test." \
-                    /var/log/messages`
+			oldvalue=`grep -c "syslogtst: $facility info test." /var/log/messages`
 		else
-		    oldvalue=0
+			oldvalue=0
 		fi
 
-
-	        if [ -e /var/log/maillog ]; then
-		     old_mail_check=`grep -c "syslogtst: $current info test." \
-                                     /var/log/maillog`
+		if [ -e /var/log/maillog ]; then
+			old_mail_check=`grep -c "syslogtst: $facility info test." /var/log/maillog`
 		else
-	             old_mail_check=0
-	        fi
+			old_mail_check=0
+		fi
 
 		# syslogtst has to be called with one more
-                # additional facility argument(1-6)
-		syslogtst 8 $facility_no 2>/dev/null
-		if [ $? -ne 0 ]; then
-				status_flag=1
-				return
+				# additional facility argument(1-6)
+		if ! syslogtst 8 $facility_no 2>/dev/null; then
+			status_flag=1
+			return
 		fi
 		sleep 2
 		# check if /var/log/maillog script exists
 		for logf in messages maillog
 		do
-			if ! [ -e /var/log/$logf ]
-			then
+			if [ ! -e /var/log/$logf ]; then
 				tst_resm TBROK "/var/log/$logf no such log file"
-				status_flag=1
-				cleanup
+				cleanup 1
 			fi
 		done
-		new_mail_check=`grep -c "syslogtst: $current info test."\
-                                /var/log/maillog`
-		newvalue=`grep -c "syslogtst: $current info test." \
-                          /var/log/messages`
+
+		new_mail_check=`grep -c "syslogtst: $facility info test." /var/log/maillog`
+		newvalue=`grep -c "syslogtst: $facility info test." /var/log/messages`
 		diff=$(( $newvalue - $oldvalue ))
 		mail_check=$(( $new_mail_check - $old_mail_check ))
-		if [ $current = "mail" ]; then
-				if [ $mail_check -ne 1 ]; then
-					  status_flag=1
-					  tst_resm TINFO  " Facility $current failed"
-				elif [ $mail_check -eq 1 ]; then
-					   tst_resm TINFO  " Facility $current passed"
-				fi
+
+		if [ $facility = "mail" ]; then
+			if [ $mail_check -ne 1 ]; then
+				tst_resm TFAIL " Facility $facility failed"
+				status_flag=1
+			elif [ $mail_check -eq 1 ]; then
+				tst_resm TPASS " Facility $facility passed"
+			fi
 		elif [ $diff -ne 1 ]; then
-					   status_flag=1
-					   tst_resm TINFO  " Facility $current failed"
-				else
-					    tst_resm TINFO  " Facility $current passed"
+			tst_resm TFAIL " Facility $facility failed"
+			status_flag=1
+		else
+			tst_resm TPASS " Facility $facility passed"
 		fi
 		# Increment the facility_no for next...
-		facility_no=$(($facility_no+1))
+		: $(( facility_no += 1 ))
 	done
 }
-
-export TST_TOTAL=1
-export TST_COUNT=1
-export TCID=$(basename $0)
-
-RC=0
-status_flag=0
 
 tst_resm TINFO " Test all the facilities at a particular level."
 tst_resm TINFO " Facilities available are: LOG_KERN, LOG_USER, LOG_MAIL"
@@ -240,7 +127,6 @@ tst_resm TINFO " Don't know how to send kernel messages from syslog()"
 tst_resm TINFO " o Create seperate entries in config file for each facility."
 tst_resm TINFO " o Send the message and grep for the entry in log file."
 
-
-
+setup
 syslog_case8
-cleanup
+cleanup ${status_flag:=0}

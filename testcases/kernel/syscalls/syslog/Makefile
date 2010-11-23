@@ -20,8 +20,7 @@ top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-# Not all of the files are bourne shell scripts; hence, I removed the syslog*
-# glob to avoid overridden target command noise from make.
-INSTALL_TARGETS		:= syslog0* syslog10
+# Not all of the syslog* files are bourne shell scripts.
+INSTALL_TARGETS		:= syslog0* syslog10 syslog-lib.sh
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

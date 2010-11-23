@@ -35,186 +35,69 @@
 #         o Send syslog messages at all levels and see whether   #
 #           higher level messages are logged.                    #
 ##################################################################
-#number of seconds to wait for another syslog test to complete
-wait_count=60
-#configuration file for syslog or syslog-ng
-CONFIG_FILE=""
 
-#Command for syslog or syslog-ng
-syslog_cmd=""
-
-cleanup()
-{
-
-  if [ $status_flag -eq 0 ]
-  then
-	tst_resm TPASS "$explaination level messages are logged."
-  else
-	tst_resm TFAIL "$explaination level messages are not logged."
-  fi
-
-#Restore syslog.conf
-  [ -f "$CONFIG_FILE.ltpback" ] && mv "$CONFIG_FILE.ltpback" "$CONFIG_FILE"
-
-#Restart syslog
-  [ -x "$syslog_cmd" ] && {
-      tst_resm TINFO "restart $syslog_cmd"
-      "$syslog_cmd" restart 2>&1 1>/dev/null
-  }
-
-
-  sleep 2
-exit $status_flag
-}
+. syslog-lib.sh || exit 1
 
 syslog_case7()
 {
-	RSYSLOG_CONFIG=""
-	#set the trap to handle signals.
-	trap '
-		tst_resm TBROK "Testing is terminating due to a signal"
-		status_flag=1
-		cleanup
-	' 1 2 3 6 11 15
+	tst_resm TINFO "testing syslog priorities ..."
 
-	echo
-	tst_resm TINFO "syslog: Testing the priorities ..."
-	echo
-
-	# check if syslogd command exits.
-	echo
-
-   #check to see if syslogd or syslog-ng exists
-	if [ -e /sbin/syslogd  ]
-	then
-	    CONFIG_FILE="/etc/syslog.conf"
-	    syslog_cmd="/etc/init.d/sysklogd"
-	    tst_resm TINFO "o Add lowest prority level i.e debug level entry to"$
-            tst_resm TINFO "  configuration file."
-	elif [ -e /sbin/syslog-ng ] || [ -e /usr/sbin/syslog-ng ]
-        then
-	    tst_resm TINFO "o Ensure all priority levels can be logged"
-	    CONFIG_FILE="/etc/syslog-ng/syslog-ng.conf"
-	    syslog_cmd="/etc/init.d/syslog-ng"
-	elif [ -e /sbin/rsyslogd ] || [ -e /usr/sbin/rsyslogd ]
-        then
-	    tst_resm TINFO "o Add lowest prority level i.e debug level entry to"
-	    tst_resm TINFO "  configuration file."
-	    CONFIG_FILE="/etc/rsyslog.conf"
-	    syslog_cmd="/etc/init.d/rsyslog"
-	    RSYSLOG_CONFIG='$ModLoad imuxsock.so'
+	# Adds some clarification of log message when syslog-ng is used
+	if [ $CONFIG_FILE = /etc/syslog.conf ]; then
+		explanation="Higher"
 	else
-	    tst_resm TCONF "syslogd, syslog-ng or rsyslogd no such command"
-	    status_flag=0
-	    cleanup	
-	fi
-	[ -x $syslog_cmd ] || syslog_cmd="/etc/init.d/syslog"
-
-# Adds some clarification of log message when syslog-ng is used
-        if [ $CONFIG_FILE = /etc/syslog.conf ]; then
-           explaination="Higher"
-        else
-           explaination="All"
-        fi
-
-
-tst_resm TINFO " o Send syslog messages at all levels and see whether"
-tst_resm TINFO "   $explaination level messages are logged."
-
-
-
-#Back up configuration file
-if [ ! -e $CONFIG_FILE ]
-then
-	tst_resm TBROK  "$CONFIG_FILE not found!"
-else
-#Pause if another LTP syslog test is running
-      while [ -e $CONFIG_FILE.ltpback ]
-      do
-          if [ $(( wait_count-- )) -gt 0 ]
-          then
-            sleep 1
-          else
-	    tst_resm TBROK "Another syslog test appears to be stuck, could not run"
-            status_flag=1
-	    exit $status_flag
-           fi
-        done
-        cp $CONFIG_FILE $CONFIG_FILE.ltpback
-fi
-         echo "Running tests"
-
-	# check if /etc/init/syslog script exists
-	if ! [ -e "$syslog_cmd" ]
-	then
-		tst_resm TBROK "/etc/init.d/syslog no such script"
-		status_flag=1
-		cleanup
+		explanation="All"
 	fi
 
+	tst_resm TINFO " o Send syslog messages at all levels and see whether"
+	tst_resm TINFO "   $explanation level messages are logged."
 
 	# Create the configuration file specific to this test case.
 	case "$CONFIG_FILE" in
-		"/etc/syslog.conf" |\
-		"/etc/rsyslog.conf")
+	/etc/syslog.conf|/etc/rsyslog.conf)
 	        echo "$RSYSLOG_CONFIG" > $CONFIG_FILE
-	        echo "user.debug        /var/log/messages" >> $CONFIG_FILE;;
+	        echo "user.debug /var/log/messages" >> $CONFIG_FILE
+		;;
 
-		"/etc/syslog-ng/syslog-ng.conf")
-			echo "source src{ internal(); unix-dgram(\"/dev/log\"); \
-                udp(ip(\"0.0.0.0\") port(514)); };" > $CONFIG_FILE
-			echo " " >> $CONFIG_FILE
-			echo " " >> $CONFIG_FILE
-			echo "# Added for syslog testcase"  >> $CONFIG_FILE
-			echo "filter f_syslog_messages {facility(user); };"  >> $CONFIG_FILE
-			echo "destination syslog-messages { file(\"/var/log/messages\");};" \
-				>> $CONFIG_FILE
-			echo "log { source(src); filter(f_syslog_messages); \
-                destination(syslog-messages); };" >> $CONFIG_FILE
-    esac
+	/etc/syslog-ng/syslog-ng.conf)
+		echo "source src{ internal(); unix-dgram(\"/dev/log\"); udp(ip(\"0.0.0.0\") port(514)); };" > $CONFIG_FILE
+		echo " " >> $CONFIG_FILE
+		echo " " >> $CONFIG_FILE
+		echo "# Added for syslog testcase" >> $CONFIG_FILE
+		echo "filter f_syslog_messages {facility(user); };" >> $CONFIG_FILE
+		echo "destination syslog-messages { file(\"/var/log/messages\");};" >> $CONFIG_FILE
+		echo "log { source(src); filter(f_syslog_messages); destination(syslog-messages); };" >> $CONFIG_FILE
+		;;
+	esac
 
-       #Restart syslog
-       $syslog_cmd restart 2>&1 1>/dev/null
-	sleep 2
+	restart_syslog_daemon
 
-       if [ -e /var/log/messages ]; then
-	emerg_old=`grep -c "syslogtst: emergency log" /var/log/messages`
-	alert_old=`grep -c "syslogtst: alert log" /var/log/messages`
-	crit_old=`grep -c "syslogtst: critical log" /var/log/messages`
-	err_old=`grep -c "syslogtst: error log" /var/log/messages`
-	warning_old=`grep -c "syslogtst: warning log" /var/log/messages`
-	notice_old=`grep -c "syslogtst: notice log" /var/log/messages`
-	info_old=`grep -c "syslogtst: info log" /var/log/messages`
-	debug_old=`grep -c "syslogtst: debug log" /var/log/messages`
-else
-	emerg_old=0
-	alert_old=0
-	crit_old=0
-	err_old=0
-	notice_old=0
-	warning_old=0
-	notice_old=0
-	info_old=0
-	debug_old=0
-fi
+	if [ -e /var/log/messages ]; then
+		emerg_old=`grep -c "syslogtst: emergency log" /var/log/messages`
+		alert_old=`grep -c "syslogtst: alert log" /var/log/messages`
+		crit_old=`grep -c "syslogtst: critical log" /var/log/messages`
+		err_old=`grep -c "syslogtst: error log" /var/log/messages`
+		warning_old=`grep -c "syslogtst: warning log" /var/log/messages`
+		notice_old=`grep -c "syslogtst: notice log" /var/log/messages`
+		info_old=`grep -c "syslogtst: info log" /var/log/messages`
+		debug_old=`grep -c "syslogtst: debug log" /var/log/messages`
+	else
+		emerg_old=0
+		alert_old=0
+		crit_old=0
+		err_old=0
+		notice_old=0
+		warning_old=0
+		notice_old=0
+		info_old=0
+		debug_old=0
+	fi
 
 	# Call syslogtst. It will send the messages of all levels.
-	syslogtst 7 2>/dev/null
-	if [ $? -ne 0 ]; then
-		status_flag=1
-		return
+	if ! syslogtst 7 2>/dev/null; then
+		cleanup 1
 	fi
 	sleep 2
-
-	# check if /var/log/maillog script exists
-#	find /var/log/ |grep maillog 2>&1 1>/dev/null
-#	RC=$?
-#	if [ $RC -ne 0 ]
-#	then
-#		tst_resm TBROK "/var/log/maillog no such log file"
-#		status_flag=1
-#		cleanup
-#	fi
 
 	emerg_new=`grep -c "syslogtst: emergency log" /var/log/messages`
 	alert_new=`grep -c "syslogtst: alert log" /var/log/messages`
@@ -233,23 +116,13 @@ fi
 	notice=$(( $notice_new - $notice_old ))
 	info=$(( $info_new - $info_old ))
 
-	if [ $emerg   -ne 1 ] || [ $alert  -ne 1 ] || [ $crit -ne 1 ] || [ $err  -ne 1 ] || \
-	[ $warning -ne 1 ] || [ $notice -ne 1 ] || [ $info -ne 1 ] || [ $info -ne 1 ]; then
+	if [ $emerg -ne 1 -o $alert -ne 1 -o $crit -ne 1 -o $err -ne 1 \
+	     $warning -ne 1 -o $notice -ne 1 -o $info -ne 1 -o \
+	     $info -ne 1 ]; then
 		status_flag=1
 	fi
 }
 
-export TST_TOTAL=1
-export TST_COUNT=1
-export TCID=$(basename $0)
-
-RC=0
-status_flag=0
-
-
-tst_resm TINFO " Test the priorities"
-
-
-
+setup
 syslog_case7
-cleanup
+cleanup ${status_flag:=0}
