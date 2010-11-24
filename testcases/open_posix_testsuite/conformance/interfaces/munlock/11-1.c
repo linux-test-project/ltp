@@ -40,7 +40,6 @@ int main() {
 	
 	result = munlock(notpage_ptr, page_size - 1);
 
-<<<<<<< HEAD
 	if (result == 0) {
 		printf("munlock() does not require that addr be a multiple of {PAGESIZE}.\nTest PASSED\n");
 		return PTS_PASS;
@@ -48,15 +47,6 @@ int main() {
 		printf("munlock() requires that addr be a multiple of {PAGESIZE}.\nTest PASSED\n");
 		return PTS_PASS;
 	} else if (result != -1) {
-=======
-	if (result == 0){
-		printf("munlock() does not require that addr be a multiple of {PAGESIZE}.\nTest PASSED\n");
-		return PTS_PASS;
-	} else if (result == -1 && errno == EINVAL){
-		printf("munlock() requires that addr be a multiple of {PAGESIZE}.\nTest PASSED\n");
-		return PTS_PASS;
-	} else if (result != -1){
->>>>>>> origin
 		printf("munlock() returns a value of %i instead of 0 or 1.\n",
 		       result);
 		perror("munlock");

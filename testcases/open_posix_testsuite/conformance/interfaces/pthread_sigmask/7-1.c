@@ -44,11 +44,7 @@ void *a_thread_func()
 		{
 			for (j = 0; j < i; j++)
 			{
-<<<<<<< HEAD
-				if (sigismember( &oactl, siglist[ j ] ) != 1)
-=======
-				if (sigismember(&oactl, siglist[ j ]) != 1)
->>>>>>> origin
+				if (sigismember(&oactl, siglist[j]) != 1)
 				{
 					test_failed = 1;
 				}
@@ -56,11 +52,7 @@ void *a_thread_func()
 
 			for (j = i + 1; j < NUMSIGNALS; j++)
 			{
-<<<<<<< HEAD
-				if (sigismember( &oactl, siglist[ j ] ) != 0)
-=======
-				if (sigismember(&oactl, siglist[ j ]) != 0)
->>>>>>> origin
+				if (sigismember(&oactl, siglist[j]) != 0)
 				{
 					test_failed = 1;
 				}
@@ -89,44 +81,26 @@ int main()
 
 	pthread_t new_thread;
 
-<<<<<<< HEAD
-	if (pthread_create( &new_thread, NULL, a_thread_func, NULL ) != 0)
-=======
 	if (pthread_create(&new_thread, NULL, a_thread_func, NULL) != 0)
->>>>>>> origin
 	{
 		perror("Error creating new thread\n");
 		return PTS_UNRESOLVED;
 	}
 
-<<<<<<< HEAD
-	if (pthread_join( new_thread, ( void* ) & thread_return_value ) != 0)
-=======
 	if (pthread_join(new_thread, (void*) & thread_return_value) != 0)
->>>>>>> origin
 	{
 		perror("Error in pthread_join()\n");
 		return PTS_UNRESOLVED;
 	}
 
-<<<<<<< HEAD
-	if (( long ) thread_return_value != 0)
-	{
-		if (( long ) thread_return_value == 1)
-=======
 	if ((long) thread_return_value != 0)
 	{
 		if ((long) thread_return_value == 1)
->>>>>>> origin
 		{
 			printf ("Test UNRESOLVED\n");
 			return PTS_UNRESOLVED;
 		}
-<<<<<<< HEAD
-		else if (( long ) thread_return_value == -1)
-=======
 		else if ((long) thread_return_value == -1)
->>>>>>> origin
 		{
 			printf ("Test FAILED\n");
 			return PTS_FAIL;
@@ -140,4 +114,3 @@ int main()
 
 	return PTS_PASS;
 }
-

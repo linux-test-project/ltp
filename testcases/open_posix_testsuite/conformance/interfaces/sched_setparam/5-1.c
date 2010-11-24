@@ -21,11 +21,7 @@ int main() {
         int result, new_priority, old_priority, max_prio, policy;
 	struct sched_param param;
 
-<<<<<<< HEAD
 	if (sched_getparam(getpid(), &param) != 0) {
-=======
-	if (sched_getparam(getpid(), &param) != 0){
->>>>>>> origin
 		perror("An error occurs when calling sched_getparam()");
 		return PTS_UNRESOLVED;
 	}
@@ -46,11 +42,7 @@ int main() {
 
 	result = sched_setparam(0, &param);
 
-<<<<<<< HEAD
 	if (sched_getparam(getpid(), &param) != 0) {
-=======
-	if (sched_getparam(getpid(), &param) != 0){
->>>>>>> origin
 		perror("An error occurs when calling sched_getparam()");
 		return PTS_UNRESOLVED;
 	}

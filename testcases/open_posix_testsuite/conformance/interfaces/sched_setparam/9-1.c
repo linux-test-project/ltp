@@ -158,15 +158,11 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 
-	for (i=0; i<nb_cpu-1; i++) {
+	for (i = 0; i < (nb_cpu - 1); i++) {
 		child_pid[i] = fork();
-<<<<<<< HEAD
 		if (child_pid[i] == -1) {
-=======
-		if (child_pid[i] == -1){
->>>>>>> origin
 			perror("An error occurs when calling fork()");
-			for (j=0; j<i; j++) {
+			for (j = 0; j < i; j++) {
 				kill(child_pid[j], SIGTERM);		
 			}
 			return PTS_UNRESOLVED;
@@ -180,13 +176,9 @@ int main() {
 	}		
 
 	child_pid[i] = fork();
-<<<<<<< HEAD
 	if (child_pid[i] == -1) {
-=======
-	if (child_pid[i] == -1){
->>>>>>> origin
 		perror("An error occurs when calling fork()");
-		for (j=0; j<i; j++) {
+		for (j = 0; j < i; j++) {
 			kill(child_pid[j], SIGTERM);		
 		}
 		return PTS_UNRESOLVED;
@@ -211,11 +203,7 @@ int main() {
 	}
 	newcount = *shmptr;
 	
-<<<<<<< HEAD
 	if (newcount == oldcount) {
-=======
-	if (newcount == oldcount){
->>>>>>> origin
 		printf("The target process does not preempt the calling process\n");
 		kill_children(child_pid);
 		return PTS_FAIL;

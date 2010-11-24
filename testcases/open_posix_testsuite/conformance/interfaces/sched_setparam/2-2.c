@@ -92,11 +92,7 @@ void child_process(int id) {
 	int i;
 	struct sched_param param;
 
-<<<<<<< HEAD
 	if (id == nb_child-1) {
-=======
-	if (id == nb_child-1){
->>>>>>> origin
 		param.sched_priority = sched_get_priority_min(SCHED_RR);
 		sched_setparam(getpid(), &param);
 	}
@@ -134,13 +130,8 @@ int main() {
 	param.sched_priority = (sched_get_priority_min(SCHED_RR) +
 				 sched_get_priority_max(SCHED_RR)) / 2;
 	
-<<<<<<< HEAD
 	if (sched_setscheduler(getpid(), SCHED_RR, &param) == -1) {
 		if (errno == EPERM) {
-=======
-	if (sched_setscheduler(getpid(), SCHED_RR, &param) == -1){
-		if (errno == EPERM){
->>>>>>> origin
 			printf("This process does not have the permission to set its own scheduling policy.\nTry to launch this test as root\n");
 		} else {
 			perror("An error occurs when calling sched_setscheduler()");
@@ -148,11 +139,7 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 
-<<<<<<< HEAD
 	if (signal(SIGTERM, sigterm_handler) == SIG_ERR) {
-=======
-	if (signal(SIGTERM, sigterm_handler) == SIG_ERR){
->>>>>>> origin
 		perror("An error occurs when calling signal()");
 		return PTS_UNRESOLVED;
         }
@@ -161,11 +148,7 @@ int main() {
 
 	for (i=0; i<nb_child; i++) {
 		child_pid[i] = fork();
-<<<<<<< HEAD
 		if (child_pid[i] == -1) {
-=======
-		if (child_pid[i] == -1){
->>>>>>> origin
 			perror("An error occurs when calling fork()");
 			return PTS_UNRESOLVED;
 		} else if (child_pid[i] == 0) {
@@ -205,11 +188,7 @@ int main() {
 	while (scanf("*%i*",&child_count) == 0) 
 		sched_yield();
 
-<<<<<<< HEAD
 	for (i=0; i<nb_child-1; i++) {
-=======
-	for(i=0; i<nb_child-1; i++) {
->>>>>>> origin
 		if (kill(child_pid[i], SIGKILL) != 0) {
 			perror("An error occurs when calling kill()");
 			return PTS_UNRESOLVED;

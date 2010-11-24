@@ -34,17 +34,10 @@ int main() {
 	
 	result = munlockall();
 	
-<<<<<<< HEAD
 	if (result == 0) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	} else if (errno == EPERM) {
-=======
-	if (result == 0){
-		printf("Test PASSED\n");
-		return PTS_PASS;
-	} else if (errno == EPERM){
->>>>>>> origin
 		printf("You don't have permission to unlock your address space.\nTry to rerun this test as root.\n");
 		return PTS_UNRESOLVED;
 	} else {
@@ -62,28 +55,17 @@ int main() {
 	long memlock;
 
 	memlock = sysconf(_SC_MEMLOCK);
-<<<<<<< HEAD
 	if (errno) {
-=======
-	if (errno){
->>>>>>> origin
 		perror("An errno occurs when calling sysconf().\n");
 		return PTS_UNRESOLVED;
 	}
 
 	result = munlockall();
 	
-<<<<<<< HEAD
-	if ((result == 0 && memlock > 0) || (result == -1 && memlock <=0)) {
+	if ((result == 0 && memlock > 0) || (result == -1 && memlock <= 0)) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	} else if (errno == EPERM) {
-=======
-	if ((result == 0 && memlock > 0) || (result == -1 && memlock <=0)){
-		printf("Test PASSED\n");
-		return PTS_PASS;
-	} else if (errno == EPERM){
->>>>>>> origin
 		printf("You don't have permission to unlock your address space.\nTry to rerun this test as root.\n");
 		return PTS_UNRESOLVED;
 	} else {

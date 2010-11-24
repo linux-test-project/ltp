@@ -137,34 +137,20 @@ void * threaded(void * arg)
 	/* fork */
 	child = fork();
 
-<<<<<<< HEAD
-	if (child == ( pid_t ) - 1)
-=======
 	if (child == -1)
->>>>>>> origin
 	{
 		UNRESOLVED(errno, "Failed to fork");
 	}
 
 	/* child */
-<<<<<<< HEAD
-	if (child == ( pid_t ) 0)
-	{
-		if (!pthread_equal( ch, threads[ 0 ] ))
-=======
 	if (child == 0)
 	{
-		if (!pthread_equal(ch, threads[ 0 ]))
->>>>>>> origin
+		if (!pthread_equal(ch, threads[0]))
 		{
 			FAILED("prepare handler was not called in the thread s context");
 		}
 
-<<<<<<< HEAD
-		if (!pthread_equal( pthread_self(), threads[ 2 ] ))
-=======
-		if (!pthread_equal(pthread_self(), threads[ 2 ]))
->>>>>>> origin
+		if (!pthread_equal(pthread_self(), threads[2]))
 		{
 			FAILED("child handler was not called in the thread s context");
 		}
@@ -173,20 +159,12 @@ void * threaded(void * arg)
 		exit(PTS_PASS);
 	}
 
-<<<<<<< HEAD
-	if (!pthread_equal( ch, threads[ 0 ] ))
-=======
 	if (!pthread_equal(ch, threads[ 0 ]))
->>>>>>> origin
 	{
 		FAILED("prepare handler was not called in the thread s context");
 	}
 
-<<<<<<< HEAD
-	if (!pthread_equal( pthread_self(), threads[ 1 ] ))
-=======
-	if (!pthread_equal(pthread_self(), threads[ 1 ]))
->>>>>>> origin
+	if (!pthread_equal(pthread_self(), threads[1]))
 	{
 		FAILED("parent handler was not called in the thread s context");
 	}
@@ -199,11 +177,7 @@ void * threaded(void * arg)
 		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-<<<<<<< HEAD
-	if (( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ))
-=======
 	if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != PTS_PASS))
->>>>>>> origin
 	{
 		FAILED("Child exited abnormally");
 	}

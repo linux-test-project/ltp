@@ -40,20 +40,12 @@ int main() {
 	param.sched_priority++;
 	sched_setparam(0,&param);
 	
-<<<<<<< HEAD
 	if (sched_getparam(0, &param) != 0) {
-=======
-	if (sched_getparam(0, &param) != 0){
->>>>>>> origin
 		perror("An error occurs when calling sched_getparam()");
 		return PTS_UNRESOLVED;
 	}
 	
-<<<<<<< HEAD
 	if (param.sched_priority == old_priority) {
-=======
-	if (param.sched_priority == old_priority){
->>>>>>> origin
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	} else {

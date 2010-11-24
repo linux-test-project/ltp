@@ -150,20 +150,12 @@ int main (int argc, char *argv[])
 
 	sa.sa_handler = sighdl;
 
-<<<<<<< HEAD
-	if (( ret = sigaction ( SIGUSR1, &sa, NULL ) ))
-=======
 	if ((ret = sigaction (SIGUSR1, &sa, NULL)))
->>>>>>> origin
 	{
 		UNRESOLVED(ret, "Unable to register signal handler");
 	}
 
-<<<<<<< HEAD
-	if (( ret = sigaction ( SIGALRM, &sa, NULL ) ))
-=======
 	if ((ret = sigaction (SIGALRM, &sa, NULL)))
->>>>>>> origin
 	{
 		UNRESOLVED(ret, "Unable to register signal handler");
 	}
@@ -221,11 +213,7 @@ int main (int argc, char *argv[])
 			UNRESOLVED(errno, "Failed to get sem value");
 		}
 
-<<<<<<< HEAD
-		if (( value != INIT_VAL ) && ( value != INIT_VAL + 1 ))
-=======
 		if ((value != INIT_VAL) && (value != INIT_VAL + 1))
->>>>>>> origin
 		{
 			output("Got value %d, expected %d or %d only\n",
 			        value, INIT_VAL, INIT_VAL + 1);
@@ -239,11 +227,7 @@ int main (int argc, char *argv[])
 			UNRESOLVED(errno, "Failed to get sem value");
 		}
 
-<<<<<<< HEAD
-		if (( value != INIT_VAL ) && ( value != INIT_VAL + 1 ))
-=======
 		if ((value != INIT_VAL) && (value != INIT_VAL + 1))
->>>>>>> origin
 		{
 			output("Got value %d, expected %d or %d only\n",
 			        value, INIT_VAL, INIT_VAL + 1);
