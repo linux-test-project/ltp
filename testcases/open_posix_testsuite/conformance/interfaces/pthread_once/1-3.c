@@ -82,45 +82,45 @@
 int control;
 pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
 
-void my_init( void )
+void my_init(void)
 {
 	int ret = 0;
-	ret = pthread_mutex_lock( &mtx );
+	ret = pthread_mutex_lock(&mtx);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to lock mutex in initializer" );
+		UNRESOLVED(ret, "Failed to lock mutex in initializer");
 	}
 
 	control++;
 
-	ret = pthread_mutex_unlock( &mtx );
+	ret = pthread_mutex_unlock(&mtx);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to unlock mutex in initializer" );
+		UNRESOLVED(ret, "Failed to unlock mutex in initializer");
 	}
 
 	return ;
 }
 
 /* Thread function */
-void * threaded ( void * arg )
+void * threaded (void * arg)
 {
 	int ret;
 
-	ret = pthread_once( arg, my_init );
+	ret = pthread_once(arg, my_init);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "pthread_once failed" );
+		UNRESOLVED(ret, "pthread_once failed");
 	}
 
 	return NULL;
 }
 
 /* The main test function. */
-int main( int argc, char * argv[] )
+int main(int argc, char * argv[])
 {
 	int ret, i;
 
@@ -135,46 +135,46 @@ int main( int argc, char * argv[] )
 
 	/* Create the children */
 
-	for ( i = 0; i < NTHREADS; i++ )
+	for (i = 0; i < NTHREADS; i++)
 	{
-		ret = pthread_create( &th[ i ], NULL, threaded, &myctl );
+		ret = pthread_create(&th[ i ], NULL, threaded, &myctl);
 
-		if ( ret != 0 )
+		if (ret != 0)
 		{
-			UNRESOLVED( ret, "Failed to create a thread" );
+			UNRESOLVED(ret, "Failed to create a thread");
 		}
 	}
 
 	/* Then join */
-	for ( i = 0; i < NTHREADS; i++ )
+	for (i = 0; i < NTHREADS; i++)
 	{
-		ret = pthread_join( th[ i ], NULL );
+		ret = pthread_join(th[ i ], NULL);
 
-		if ( ret != 0 )
+		if (ret != 0)
 		{
-			UNRESOLVED( ret, "Failed to join a thread" );
+			UNRESOLVED(ret, "Failed to join a thread");
 		}
 	}
 
 	/* Fetch the memory */
-	ret = pthread_mutex_lock( &mtx );
+	ret = pthread_mutex_lock(&mtx);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to lock mutex in initializer" );
+		UNRESOLVED(ret, "Failed to lock mutex in initializer");
 	}
 
-	if ( control != 1 )
+	if (control != 1)
 	{
-		output( "Control: %d\n", control );
-		FAILED( "The initializer function did not execute once" );
+		output("Control: %d\n", control);
+		FAILED("The initializer function did not execute once");
 	}
 
-	ret = pthread_mutex_unlock( &mtx );
+	ret = pthread_mutex_unlock(&mtx);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to unlock mutex in initializer" );
+		UNRESOLVED(ret, "Failed to unlock mutex in initializer");
 	}
 
 	PASSED;

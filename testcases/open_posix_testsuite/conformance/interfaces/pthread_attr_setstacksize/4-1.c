@@ -42,7 +42,7 @@ int main()
 
 	/* Initialize attr */
 	rc = pthread_attr_init(&attr);
-	if( rc != 0) {
+	if (rc != 0) {
 		perror(ERROR_PREFIX "pthread_attr_init");
 		exit(PTS_UNRESOLVED);
 	}
@@ -58,13 +58,13 @@ int main()
     	}
 
 	rc = pthread_attr_setstacksize(&attr, stack_size);
-        if (rc != EINVAL ) {
+        if (rc != EINVAL) {
                 perror(ERROR_PREFIX "Got the wrong return value");
                 exit(PTS_FAIL);
         }
 
 	rc = pthread_attr_destroy(&attr);
-	if(rc != 0)
+	if (rc != 0)
         {
                 perror(ERROR_PREFIX "pthread_attr_destroy");
 		exit(PTS_UNRESOLVED);

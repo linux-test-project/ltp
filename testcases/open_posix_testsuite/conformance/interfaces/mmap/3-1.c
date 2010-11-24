@@ -4,7 +4,7 @@
  * of this license, see the COPYING file at the top level of this 
  * source tree.
  *
- * The mapping established by mmap( ) shall replace any previous 
+ * The mapping established by mmap() shall replace any previous 
  * mappings for those whole pages containing any part of the address 
  * space of the process starting at pa and continuing for len bytes.
  *

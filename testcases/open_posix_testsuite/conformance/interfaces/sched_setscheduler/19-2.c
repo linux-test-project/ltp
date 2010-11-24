@@ -27,7 +27,7 @@ int main(){
 	struct sched_param param;
 
 	invalid_priority = sched_get_priority_max(SCHED_SPORADIC);
-	if(invalid_priority == -1){
+	if (invalid_priority == -1){
 		perror("An error occurs when calling sched_get_priority_max()");
 		return PTS_UNRESOLVED;
 	}
@@ -38,13 +38,13 @@ int main(){
 
 	result = sched_setscheduler(0, SCHED_SPORADIC, &param);
 	
-	if(result == -1 && errno == EINVAL){
+	if (result == -1 && errno == EINVAL){
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else if(result != -1) {
+	} else if (result != -1) {
 		printf("The returned code is not -1.\n");
 		return PTS_FAIL;
-	} else if(errno == EPERM) {
+	} else if (errno == EPERM) {
 		printf("This process does not have the permission to set its own scheduling policy.\nTry to launch this test as root.\n");
 		return PTS_UNRESOLVED;
 	} else {

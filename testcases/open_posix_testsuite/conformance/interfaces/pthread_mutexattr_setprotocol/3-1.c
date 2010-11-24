@@ -30,7 +30,7 @@ int main()
 	int ret;
 
 	/* Initialize a mutex attributes object */
-	if(pthread_mutexattr_init(&mta) != 0)
+	if (pthread_mutexattr_init(&mta) != 0)
 	{
 		perror("Error at pthread_mutexattr_init()\n");
 		return PTS_UNRESOLVED;
@@ -43,7 +43,7 @@ int main()
 	
 	/* Set the protocol to an invalid value. */
 	ret = pthread_mutexattr_setprotocol(&mta,protocol);
-	if((ret == ENOTSUP) || (ret == EINVAL))
+	if ((ret == ENOTSUP) || (ret == EINVAL))
 	{
 		printf("Test PASSED\n");
 		return PTS_PASS;

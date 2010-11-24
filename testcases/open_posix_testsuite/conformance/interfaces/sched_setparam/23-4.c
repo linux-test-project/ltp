@@ -24,7 +24,7 @@ int main(){
 	int old_priority;
 	struct sched_param param;
 
-	if(sched_getparam(0, &param) == -1) {
+	if (sched_getparam(0, &param) == -1) {
 		perror("An error occurs when calling sched_getparam()");
 		return PTS_UNRESOLVED;
 	}	
@@ -34,12 +34,12 @@ int main(){
 	param.sched_priority++;
 	sched_setparam(0,&param);
 	
-	if(sched_getparam(0, &param) != 0){
+	if (sched_getparam(0, &param) != 0){
 		perror("An error occurs when calling sched_getparam()");
 		return PTS_UNRESOLVED;
 	}
 	
-	if(param.sched_priority == old_priority){
+	if (param.sched_priority == old_priority){
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	} else {

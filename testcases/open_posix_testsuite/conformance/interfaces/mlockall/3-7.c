@@ -27,25 +27,25 @@ int main() {
 	void *foo;
 
 	page_size = sysconf(_SC_PAGESIZE);
-	if(errno) {
+	if (errno) {
 		perror("An error occurs when calling sysconf()");
 		return PTS_UNRESOLVED;
 	}
 
 	fd = open("conformance/interfaces/mlockall/3-7.c", O_RDONLY);
-	if(fd == -1) {
+	if (fd == -1) {
 		perror("An error occurs when calling open()");
 		return PTS_UNRESOLVED;	
 	}
 
 	foo = mmap(NULL, page_size, PROT_READ, MAP_SHARED, fd, 0);
-		if(foo == MAP_FAILED) {
+		if (foo == MAP_FAILED) {
 		perror("An error occurs when calling mmap()");
 		return PTS_UNRESOLVED;
 	}
 
-	if(mlockall(MCL_CURRENT) == -1) {
-		if(errno == EPERM){
+	if (mlockall(MCL_CURRENT) == -1) {
+		if (errno == EPERM){
 			printf("You don't have permission to lock your address space.\nTry to rerun this test as root.\n");
 		} else {
 			perror("An error occurs when calling mlockall()");
@@ -53,13 +53,13 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 
-	page_ptr = (void*) ( (long)foo - ((long)foo % page_size) );
+	page_ptr = (void*) ((long)foo - ((long)foo % page_size));
 
 	result = msync(page_ptr, page_size, MS_SYNC|MS_INVALIDATE);
-	if(result == -1 && errno == EBUSY) {
+	if (result == -1 && errno == EBUSY) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else if(result == 0) {
+	} else if (result == 0) {
 		printf("The mapped files pages of the process are not locked.\n");
 		return PTS_FAIL;
 	}

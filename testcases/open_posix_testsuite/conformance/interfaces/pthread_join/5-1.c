@@ -35,7 +35,7 @@ int main()
 	int ret;
 	
 	/* Create a new thread. */
-	if(pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
 	{	
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
@@ -44,9 +44,9 @@ int main()
 	/* Wait for thread to return */
 	ret=pthread_join(new_th, NULL);
 	
-	if(ret != 0)
+	if (ret != 0)
 	{
-		if((ret != EINVAL) && (ret != ESRCH) && (ret != EDEADLK))
+		if ((ret != EINVAL) && (ret != ESRCH) && (ret != EDEADLK))
 		{
 			printf("Test FAILED: Invalid return code %d.\n", ret);
 			return PTS_FAIL;

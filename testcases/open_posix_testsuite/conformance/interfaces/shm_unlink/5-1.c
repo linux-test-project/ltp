@@ -27,12 +27,12 @@ int main() {
 	int fd;
 	
 	fd = shm_open(SHM_NAME, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
-	if(fd == -1) {
+	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		return PTS_UNRESOLVED;
 	}
 
-	if(shm_unlink(SHM_NAME) != 0 ) {
+	if (shm_unlink(SHM_NAME) != 0) {
 		perror("An error occurs when calling shm_unlink()");
 		return PTS_UNRESOLVED;
 	}
@@ -41,7 +41,7 @@ int main() {
 	if (fd == -1 && errno == EEXIST) {
 		printf("shm_open() can not create a new object.\n");
 		return PTS_FAIL;
-	} else if(fd == -1) {
+	} else if (fd == -1) {
 		perror("shm_open");
 		return PTS_UNRESOLVED;
 	}

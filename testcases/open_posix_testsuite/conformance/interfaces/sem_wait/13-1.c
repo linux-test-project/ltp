@@ -88,20 +88,20 @@
 /******************************************************************************/
 sem_t sem;
 
-void handler( int sig )
+void handler(int sig)
 {
 	int ret;
-	ret = sem_post( &sem );
+	ret = sem_post(&sem);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( errno, "Failed to post semaphore" );
+		UNRESOLVED(errno, "Failed to post semaphore");
 	}
 }
 
 
 /* The main test function. */
-int main( int argc, char * argv[] )
+int main(int argc, char * argv[])
 {
 	int ret;
 
@@ -113,11 +113,11 @@ int main( int argc, char * argv[] )
 	output_init();
 
 	/* Initialize semaphore */
-	ret = sem_init( &sem, 0, 0 );
+	ret = sem_init(&sem, 0, 0);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( errno, "Failed to init semaphore" );
+		UNRESOLVED(errno, "Failed to init semaphore");
 	}
 
 	/* Register signal handler */
@@ -125,65 +125,65 @@ int main( int argc, char * argv[] )
 
 	sa.sa_handler = handler;
 
-	ret = sigemptyset( &sa.sa_mask );
+	ret = sigemptyset(&sa.sa_mask);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to empty signal set" );
+		UNRESOLVED(ret, "Failed to empty signal set");
 	}
 
-	sigaction( SIGALRM, &sa, 0 );
+	sigaction(SIGALRM, &sa, 0);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to set signal handler" );
+		UNRESOLVED(ret, "Failed to set signal handler");
 	}
 
 	/* Save current time */
-	ret = clock_gettime( CLOCK_REALTIME, &ts_ref );
+	ret = clock_gettime(CLOCK_REALTIME, &ts_ref);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( errno, "Unable to read clock" );
+		UNRESOLVED(errno, "Unable to read clock");
 	}
 
 	/* Alarm */
-	alarm( 1 );
+	alarm(1);
 
 	/* Wait for the semaphore */
-	ret = sem_wait( &sem );
+	ret = sem_wait(&sem);
 
-	if ( ( ret != 0 ) && ( errno != EINTR ) )
+	if ((ret != 0) && (errno != EINTR))
 	{
-		UNRESOLVED( errno, "Failed to wait for the semaphore" );
+		UNRESOLVED(errno, "Failed to wait for the semaphore");
 	}
 
 	/* Check that 1 second has really elapsed */
-	ret = clock_gettime( CLOCK_REALTIME, &ts_fin );
+	ret = clock_gettime(CLOCK_REALTIME, &ts_fin);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( errno, "Unable to read clock" );
+		UNRESOLVED(errno, "Unable to read clock");
 	}
 
-	if ( ( ( ts_fin.tv_sec - ts_ref.tv_sec ) * 1000000000 ) + ( ts_fin.tv_nsec - ts_ref.tv_nsec ) < 1000000000 )
+	if (((ts_fin.tv_sec - ts_ref.tv_sec) * 1000000000) + (ts_fin.tv_nsec - ts_ref.tv_nsec) < 1000000000)
 	{
-		output( "Ts: %d.%9.9d  ->  %d.%9.9d\n", ts_ref.tv_sec, ts_ref.tv_nsec, ts_fin.tv_sec, ts_fin.tv_nsec );
-		FAILED( "The sem_wait call did not block" );
+		output("Ts: %d.%9.9d  ->  %d.%9.9d\n", ts_ref.tv_sec, ts_ref.tv_nsec, ts_fin.tv_sec, ts_fin.tv_nsec);
+		FAILED("The sem_wait call did not block");
 	}
 
 	/* Destroy the semaphore */
-	ret = sem_destroy( &sem );
+	ret = sem_destroy(&sem);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( errno, "Failed to sem_destroy" );
+		UNRESOLVED(errno, "Failed to sem_destroy");
 	}
 
 	/* Test passed */
 #if VERBOSE > 0
 
-	output( "Test passed\n" );
+	output("Test passed\n");
 
 #endif
 

@@ -80,11 +80,11 @@
 /******************************************************************************/
 
 int called = 0;
-void handler( int sig, siginfo_t *info, void *context )
+void handler(int sig, siginfo_t *info, void *context)
 {
-	if ( info->si_signo != SIGNAL )
+	if (info->si_signo != SIGNAL)
 	{
-		FAILED( "Wrong signal generated?" );
+		FAILED("Wrong signal generated?");
 	}
 
 	called = 1;
@@ -102,11 +102,11 @@ int main()
 	output_init();
 
 	/* Test the RTS extension */
-	rts = sysconf( _SC_REALTIME_SIGNALS );
+	rts = sysconf(_SC_REALTIME_SIGNALS);
 
-	if ( rts < 0L )
+	if (rts < 0L)
 	{
-		UNTESTED( "This test needs the RTS extension" );
+		UNTESTED("This test needs the RTS extension");
 	}
 
 	/* Set the signal handler */
@@ -114,43 +114,43 @@ int main()
 
 	sa.sa_sigaction = handler;
 
-	ret = sigemptyset( &sa.sa_mask );
+	ret = sigemptyset(&sa.sa_mask);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to empty signal set" );
+		UNRESOLVED(ret, "Failed to empty signal set");
 	}
 
 	/* Install the signal handler for SIGPOLL */
-	ret = sigaction( SIGNAL, &sa, 0 );
+	ret = sigaction(SIGNAL, &sa, 0);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to set signal handler" );
+		UNRESOLVED(ret, "Failed to set signal handler");
 	}
 
-	if ( called )
+	if (called)
 	{
-		FAILED( "The signal handler has been called when no signal was raised" );
+		FAILED("The signal handler has been called when no signal was raised");
 	}
 
-	ret = raise( SIGNAL );
+	ret = raise(SIGNAL);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to raise SIGPOLL" );
+		UNRESOLVED(ret, "Failed to raise SIGPOLL");
 	}
 
-	if ( !called )
+	if (!called)
 	{
-		FAILED( "the sa_handler was not called whereas SA_SIGINFO was not set" );
+		FAILED("the sa_handler was not called whereas SA_SIGINFO was not set");
 	}
 
 
 	/* Test passed */
 #if VERBOSE > 0
 
-	output( "Test passed\n" );
+	output("Test passed\n");
 
 #endif
 

@@ -7,7 +7,7 @@
  * pthread_barrier_destroy()
  *
  *
- * The pthread_barrier_destroy( ) function shall destroy the barrier 
+ * The pthread_barrier_destroy() function shall destroy the barrier 
  * referenced by barrier and release any resources used by the barrier.
  *
  * Steps:
@@ -34,14 +34,14 @@ int main()
 	
 	for(cnt = 0; cnt < LOOP_NUM; cnt++)
 	{
-		if(pthread_barrier_init(&barrier, NULL, 2) != 0)
+		if (pthread_barrier_init(&barrier, NULL, 2) != 0)
 		{
 			printf("Test FAILED: Error at pthread_barrier_init()\n");
 			return PTS_FAIL;
 		}
 
 		rc = pthread_barrier_destroy(&barrier);
-		if(rc != 0)
+		if (rc != 0)
 		{
 			printf("Test FAILED: Error at pthread_barrier_destroy() "
 				" return code: %d, %s\n", rc, strerror(rc));

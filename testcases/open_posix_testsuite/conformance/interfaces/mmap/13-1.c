@@ -145,7 +145,7 @@ int main()
   printf("atime1: %d, atime2: %d, atime3: %d\n",
          (int)atime1, (int)atime2, (int)atime3);
   if (atime1 != atime3 || 
-  	  atime1 != atime2 )
+  	  atime1 != atime2)
   {
   	printf ("Test Pass\n");
     unlink(tmpfname);

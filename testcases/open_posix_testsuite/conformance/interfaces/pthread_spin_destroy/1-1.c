@@ -6,7 +6,7 @@
  * 
  * Test pthread_spin_destroy(pthread_spinlock_t * lock)
  *
- * pthread_spin_destroy( ) function shall destroy the spin lock 
+ * pthread_spin_destroy() function shall destroy the spin lock 
  * referenced by lock and release any resources used by the lock.
  *
  * Steps:
@@ -32,7 +32,7 @@ int main()
 	int rc = 0;
 
 	printf("main: initialize spin lock\n");
-	if(pthread_spin_init(&spinlock, PTHREAD_PROCESS_PRIVATE) != 0)
+	if (pthread_spin_init(&spinlock, PTHREAD_PROCESS_PRIVATE) != 0)
 	{
 		printf("main: Error at pthread_spin_init()\n");
 		return PTS_UNRESOLVED;
@@ -41,7 +41,7 @@ int main()
 	printf("main: attempt spin lock\n");
 
 	/* We should get the lock */	
-	if(pthread_spin_lock(&spinlock) != 0)
+	if (pthread_spin_lock(&spinlock) != 0)
 	{
 		printf("Unresolved: main cannot get spin lock when no one owns the lock\n");
 		return PTS_UNRESOLVED;
@@ -50,7 +50,7 @@ int main()
 	printf("main: acquired spin lock\n");
 	
 	printf("main: unlock spin lock\n");	
-	if(pthread_spin_unlock(&spinlock) != 0)
+	if (pthread_spin_unlock(&spinlock) != 0)
 	{
 		printf("main: Error at pthread_spin_unlock()\n");
 		return PTS_UNRESOLVED;
@@ -58,7 +58,7 @@ int main()
 
 	printf("main: destroy spin lock\n");
 	rc = pthread_spin_destroy(&spinlock);
-	if(rc != 0)
+	if (rc != 0)
 	{
 		printf("Test FAILED: Error at pthread_spin_destroy()"
 			"Return code : %d\n", rc);

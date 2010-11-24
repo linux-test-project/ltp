@@ -69,7 +69,7 @@ int main()
 	sem=0;
 	
 	/* Create a new thread. */
-	if(pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
 	{	
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
@@ -79,7 +79,7 @@ int main()
 	while(sem==0)
 		sleep(1);
 
-	if(pthread_cancel(new_th) != 0)
+	if (pthread_cancel(new_th) != 0)
 	{
 		printf("Error canceling thread\n");
 		return PTS_FAIL;
@@ -89,7 +89,7 @@ int main()
 	while(sem==1)
 	{
 		sleep(1);	
-		if(i==10)
+		if (i==10)
 		{
 			printf("Test FAILED: Timed out while waiting for cancelation cleanup handlers to execute\n");
 			return PTS_FAIL;
@@ -99,7 +99,7 @@ int main()
 
 	/* If the cleanup function was not reached by calling the
 	 * pthread_cancel function, then the test fails. */
-	if(cleanup_flag != 1)
+	if (cleanup_flag != 1)
 	{
 		printf("Test FAILED: Could not cancel thread\n");
 		return PTS_FAIL;

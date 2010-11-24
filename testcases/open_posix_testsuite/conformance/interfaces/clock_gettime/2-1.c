@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 		if (gettimeofday(&tvstandard, NULL) == 0) {
 			delta = (int) tvstandard.tv_sec - 
 				(int) tpundertest.tv_sec;
-			if ( abs(delta) <= ACCEPTABLEDELTA) {
+			if (abs(delta) <= ACCEPTABLEDELTA) {
 				printf("Test PASSED\n");
 				return PTS_PASS;
 			} else {

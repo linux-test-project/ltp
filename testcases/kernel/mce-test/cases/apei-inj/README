@@ -1,0 +1,33 @@
+MCE APEI INJ testing cases 
+=========================
+
+Nov 6th, 2009
+
+Jiajia Zheng
+
+Start
+------------
+This test suite is based on apei-inj APEI haredware injection tool. 
+It's structure and usage are the same with soft-inj test suite.
+To be root and invoke simple test driver on test configuration file as follow
+	drivers/simple/driver.sh config/simple_apei_ucr.conf
+
+Test Dependencies
+-----------------
+MCE APEI INJ test suite has following dependencies on kernel and other tools:
+
+* Make sure following configuration options are enabled in linux kernel:
+	CONFIG_FTRACE=y
+	CONFIG_FUNCTION_TRACER=y
+
+* page-types:
+  A tool to query page types, which is accompanied with Linux kernel
+  source (2.6.32 or newer, $KERNEL_SRC/Documentation/vm/page-types.c).
+  For detail, please see 3.4 in doc/howto.txt.
+
+* simple-process:
+  APEI hardware injection will inject an error to a page used by this simple-process.  Intall simple-process.
+	cd mce-test/tools/simple_process
+	make
+
+

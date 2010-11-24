@@ -4,7 +4,7 @@
  * of this license, see the COPYING file at the top level of this 
  * source tree.
  * 
- * The fsync( ) function shall fail if:
+ * The fsync() function shall fail if:
  * [EINVAL] The fildes argument does not refer to a file 
  * on which this operation is possible.   
  *

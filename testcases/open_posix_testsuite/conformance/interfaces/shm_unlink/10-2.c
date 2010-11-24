@@ -32,7 +32,7 @@ int main() {
 	char *shm_name;
 
 	path_max = pathconf("/", _PC_PATH_MAX);
-	if(path_max == -1) {
+	if (path_max == -1) {
 		perror("An error occurs when calling pathconf()");
 		return PTS_UNRESOLVED;
         }
@@ -44,10 +44,10 @@ int main() {
 	
 	result = shm_unlink(shm_name);
 	
-	if(result == -1 && errno == ENAMETOOLONG) {
+	if (result == -1 && errno == ENAMETOOLONG) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else if(result != -1) {
+	} else if (result != -1) {
 		printf("shm_unlink() success.\n");
 		return PTS_FAIL;
 	}

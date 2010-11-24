@@ -4,7 +4,7 @@
  * of this license, see the COPYING file at the top level of this 
  * source tree.
  *
- * The mmap( ) function shall fail if:
+ * The mmap() function shall fail if:
  * [EOVERFLOW] The file is a regular file and the value of off 
  * plus len exceeds the offset maximum established in the open 
  * file description associated with fildes.

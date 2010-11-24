@@ -1,0 +1,16 @@
+# WARNING
+# this will panic your machine!
+# don't try casually
+CPU 0 BANK 3
+MCGSTATUS RIPV EIPV MCIP
+# S is regarded as SRAO for SER_P = 1 and ignored otherwise
+STATUS UNCORRECTED S
+RIP 0x10:0x12343434
+MISC 0x2314
+ADDR 0xabcd1234
+HOLD
+
+CPU 1 BANK 1
+MCGSTATUS MCIP
+STATUS FATAL S
+RIP 0x10:0xabcdcdcd

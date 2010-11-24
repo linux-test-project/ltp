@@ -62,6 +62,7 @@
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
+ *	11/2010 Code cleanup by Cyril Hrubis chrubis@suse.cz
  *
  * RESTRICTIONS:
  *  This test should be run by 'super-user' (root) only.
@@ -83,68 +84,61 @@
 #define TESTFILE	"testfile"
 #define SFILE		"slink_file"
 
-char *TCID = "lchown01";	/* Test program identifier.    */
-int TST_TOTAL = 5;		/* Total number of test conditions */
-extern int Tst_count;		/* Test Case counter for tst_* routines */
+char *TCID = "lchown01";
+int TST_TOTAL = 5;
+extern int Tst_count;
 
-struct test_case_t {		/* test case struct. to test different conditions */
+struct test_case_t {
 	char *desc;
 	uid_t user_id;
 	gid_t group_id;
-} Test_cases[] = {
-	{
-	"Change Owner/Group ids", 700, 701}, {
-	"Change Owner id only", 702, -1}, {
-	"Change Owner id only", 703, 701}, {
-	"Change Group id only", -1, 704}, {
-	"Change Group id only", 703, 705}, {
-	NULL, 0, 0}
 };
 
-void setup();			/* setup function for the test */
-void cleanup();			/* cleanup function for the test */
+static struct test_case_t test_cases[] = {
+	{"Change Owner/Group ids", 700, 701},
+	{"Change Owner id only",   702,  -1},
+	{"Change Owner/Group ids", 703, 701},
+	{"Change Group id only",    -1, 704},
+	{"Change Group/Group ids", 703, 705},
+	{"Change none",             -1,  -1},
+	{NULL,                       0,   0}
+};
 
-int main(int ac, char **av)
+void setup(void);
+void cleanup(void);
+
+int main(int argc, char *argv[])
 {
-	struct stat stat_buf;	/* stat(2) struct contents */
-	int lc;			/* loop counter */
-	char *msg;		/* message returned from parse_opts */
-	int ind;		/* counter variable for chmod(2) tests */
-	uid_t User_id;		/* user id of the user set for testfile */
-	gid_t Group_id;		/* group id of the user set for testfile */
-	char *test_desc;	/* test specific message */
+	struct stat stat_buf;
+	int lc, i;
+	char *msg;
 
-	/* Parse standard options given to run the test. */
-	msg = parse_opts(ac, av, (option_t *) NULL, NULL);
-	if (msg != (char *)NULL) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
-	}
+	msg = parse_opts(argc, argv, NULL, NULL);
+	
+	if (msg != NULL)
+		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 
-	/* Perform global setup for test */
 	setup();
 
-	/* Check looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		/* Reset Tst_count in case we are looping. */
 		Tst_count = 0;
 
-		for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
-			test_desc = Test_cases[ind].desc;
-			User_id = Test_cases[ind].user_id;
-			Group_id = Test_cases[ind].group_id;
+		for (i = 0; test_cases[i].desc != NULL; i++) {
+			uid_t user_id = test_cases[i].user_id;
+			gid_t group_id = test_cases[i].group_id;
+			char *test_desc = test_cases[i].desc;
 
 			/*
 			 * Call lchwon(2) with different user id and
 			 * group id (numeric values) to set it on
 			 * symlink of testfile.
 			 */
-			TEST(lchown(SFILE, User_id, Group_id));
+			TEST(lchown(SFILE, user_id, group_id));
 
-			/* check return code of lchown(2) */
 			if (TEST_RETURN == -1) {
 				tst_resm(TFAIL,
-					 "lchown() Fails to %s, errno=%d",
+					 "lchown() Fails to %s, errno %d",
 					 test_desc, TEST_ERRNO);
 				continue;
 			}
@@ -158,27 +152,31 @@ int main(int ac, char **av)
 				 * lstat(2).
 				 */
 				if (lstat(SFILE, &stat_buf) < 0) {
-					tst_brkm(TFAIL, cleanup, "lstat(2) of "
-						 "%s failed, errno:%d",
+					tst_brkm(TFAIL, cleanup, "lstat(2) "
+					         "%s failed, errno %d",
 						 SFILE, TEST_ERRNO);
 				}
-				if (User_id == -1) {
-					User_id = Test_cases[ind - 1].user_id;
-				}
-				if (Group_id == -1) {
-					Group_id = Test_cases[ind - 1].group_id;
+
+				if (user_id == (uid_t)-1) {
+					if (i > 0)
+						user_id = test_cases[i-1].user_id;
+					else
+						user_id = geteuid();
 				}
 
-				/*
-				 * Check for expected Ownership ids
-				 * set on testfile.
-				 */
-				if ((stat_buf.st_uid != User_id) ||
-				    (stat_buf.st_gid != Group_id)) {
+				if (group_id == (gid_t)-1) {
+					if (i > 0)
+						group_id = test_cases[i - 1].group_id;
+					else
+						group_id = getegid();
+				}
+
+				if ((stat_buf.st_uid != user_id) ||
+				    (stat_buf.st_gid != group_id)) {
 					tst_resm(TFAIL,
-						 "%s: Incorrect ownership set, "
-						 "Expected %d %d", SFILE,
-						 User_id, Group_id);
+						 "%s: incorrect ownership set, "
+						 "expected %u %u", SFILE,
+						 user_id, group_id);
 				} else {
 					tst_resm(TPASS, "lchown() succeeds to "
 						 "%s of %s", test_desc, SFILE);
@@ -187,13 +185,11 @@ int main(int ac, char **av)
 				tst_resm(TPASS, "call succeeded");
 			}
 		}
-	}			/* End for TEST_LOOPING */
+	}
 
-	/* Call cleanup() to undo setup done for the test. */
 	cleanup();
-
-	 /*NOTREACHED*/ return 0;
-}				/* End main */
+	tst_exit();
+}
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -201,41 +197,29 @@ int main(int ac, char **av)
  *	     Create a test file under temporary directory and close it
  *	     Create a symlink of testfile under temporary directory.
  */
-void setup()
+void setup(void)
 {
 	int fd;
 
 	/* capture signals */
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	/* Check that the test process id is super/root  */
-	if (geteuid() != 0) {
-		tst_brkm(TBROK, NULL, "Must be super/root for this test!");
-		tst_exit();
-	}
-
-	/* Pause if that option was specified */
+	
+	tst_require_root(tst_exit);
+	
 	TEST_PAUSE;
-
-	/* make a temp directory and cd to it */
 	tst_tmpdir();
 
 	if ((fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, %o) Failed, errno=%d : %s",
-			 TESTFILE, FILE_MODE, errno, strerror(errno));
+		tst_brkm(TBROK | TERRNO, cleanup, "open(2) %s mode %o failed",
+		         TESTFILE, FILE_MODE);
 	}
-	if (close(fd) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "close(%s) Failed, errno=%d : %s",
-			 TESTFILE, errno, strerror(errno));
-	}
+	
+	if (close(fd) == -1)
+		tst_brkm(TBROK | TERRNO, cleanup, "close(2) %s", TESTFILE);
 
-	/* Create a symlink for testfile created */
 	if (symlink(TESTFILE, SFILE) < 0) {
-		tst_brkm(TBROK, cleanup,
-			 "symlink() of %s Failed, errno=%d : %s",
-			 TESTFILE, errno, strerror(errno));
+		tst_brkm(TBROK | TERRNO, cleanup, "symlink(2) %s to %s failed",
+		         TESTFILE, SFILE);
 	}
 }
 
@@ -244,16 +228,9 @@ void setup()
  *	       completion or premature exit.
  *	       Remove the test directory and testfile created in the setup.
  */
-void cleanup()
+void cleanup(void)
 {
-	/*
-	 * print timing stats if that option was specified.
-	 */
 	TEST_CLEANUP;
 
-	/* Remove tmp dir and all files in it */
 	tst_rmdir();
-
-	/* exit with return code appropriate for results */
-	tst_exit();
 }

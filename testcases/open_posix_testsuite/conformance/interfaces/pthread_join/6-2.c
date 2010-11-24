@@ -48,7 +48,7 @@ int main()
 	int ret;
 	
 	/* Create a new thread. */
-	if(pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
 	{	
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
@@ -57,7 +57,7 @@ int main()
 	/* Wait for thread to return */
 	ret=pthread_join(new_th, NULL);
 	
-	if(ret != 0)
+	if (ret != 0)
 	{
 		perror("Error in pthread_join()\n");
 		return PTS_UNRESOLVED;
@@ -67,7 +67,7 @@ int main()
 	 * code of ESRCH. */
 	ret=pthread_join(new_th, NULL);
 	
-	if(ret != ESRCH)
+	if (ret != ESRCH)
 	{
 		printf("Test FAILED: Return code should be ESRCH, but is: %d instead.\n", ret);
 		return PTS_FAIL;

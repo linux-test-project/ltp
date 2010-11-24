@@ -45,7 +45,7 @@ int main()
 	}
 
 	/* Initialize a cond attributes object */
-	if((rc=pthread_condattr_init(&condattr)) != 0)
+	if ((rc=pthread_condattr_init(&condattr)) != 0)
 	{
 		fprintf(stderr,"Error at pthread_condattr_init(), rc=%d\n",rc);
 		printf("Test FAILED\n");
@@ -61,7 +61,7 @@ int main()
 	}
 		
 	rc = pthread_condattr_setclock(&condattr, clockid);
-	if(rc != EINVAL)
+	if (rc != EINVAL)
 	{
 		printf("Test FAILED: Expected EINVAL when passing a cpu clock id, instead it returned: %d \n", rc);
 		return PTS_FAIL;

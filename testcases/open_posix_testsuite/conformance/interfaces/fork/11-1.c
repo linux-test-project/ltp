@@ -83,19 +83,19 @@
 /***********************************    Test case   *****************************************/
 /********************************************************************************************/
 /* Thread function */
-void * threaded( void * arg )
+void * threaded(void * arg)
 {
 	int ret;
-	ret = ftrylockfile( stdout );
+	ret = ftrylockfile(stdout);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		FAILED( "The child process is owning the file lock." );
+		FAILED("The child process is owning the file lock.");
 	}
 
 #if VERBOSE > 1
 
-	output( "The file lock was not inherited in the child process\n" );
+	output("The file lock was not inherited in the child process\n");
 
 #endif
 
@@ -103,7 +103,7 @@ void * threaded( void * arg )
 }
 
 /* The main test function. */
-int main( int argc, char * argv[] )
+int main(int argc, char * argv[])
 {
 	int ret, status;
 	pid_t child, ctl;
@@ -113,60 +113,60 @@ int main( int argc, char * argv[] )
 	output_init();
 
 	/* lock the stdout file */
-	flockfile( stdout );
+	flockfile(stdout);
 
 	/* Create the child */
 	child = fork();
 
-	if ( child == ( pid_t ) - 1 )
+	if (child == -1)
 	{
-		UNRESOLVED( errno, "Failed to fork" );
+		UNRESOLVED(errno, "Failed to fork");
 	}
 
 	/* child */
-	if ( child == ( pid_t ) 0 )
+	if (child == 0)
 	{
 
-		ret = pthread_create( &ch, NULL, threaded, NULL );
+		ret = pthread_create(&ch, NULL, threaded, NULL);
 
-		if ( ret != 0 )
+		if (ret != 0)
 		{
-			UNRESOLVED( ret, "Failed to create a thread" );
+			UNRESOLVED(ret, "Failed to create a thread");
 		}
 
-		ret = pthread_join( ch, NULL );
+		ret = pthread_join(ch, NULL);
 
-		if ( ret != 0 )
+		if (ret != 0)
 		{
-			UNRESOLVED( ret, "Failed to join the thread" );
+			UNRESOLVED(ret, "Failed to join the thread");
 		}
 
 		/* We're done */
-		exit( PTS_PASS );
+		exit(PTS_PASS);
 	}
 
 	/* Parent sleeps for a while to create contension in case the file lock is inherited */
-	sleep( 1 );
+	sleep(1);
 
-	funlockfile( stdout );
+	funlockfile(stdout);
 
 	/* Parent joins the child */
-	ctl = waitpid( child, &status, 0 );
+	ctl = waitpid(child, &status, 0);
 
-	if ( ctl != child )
+	if (ctl != child)
 	{
-		UNRESOLVED( errno, "Waitpid returned the wrong PID" );
+		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-	if ( ( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ) )
+	if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != PTS_PASS))
 	{
-		FAILED( "Child exited abnormally" );
+		FAILED("Child exited abnormally");
 	}
 
 	/* Test passed */
 #if VERBOSE > 0
 
-	output( "Test passed\n" );
+	output("Test passed\n");
 
 #endif
 

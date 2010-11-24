@@ -85,7 +85,7 @@
 /********************************************************************************************/
 
 /* The main test function. */
-int main( int argc, char * argv[] )
+int main(int argc, char * argv[])
 {
 	int status;
 	pid_t child, ctl;
@@ -98,135 +98,135 @@ int main( int argc, char * argv[] )
 	output_init();
 
 	/* Initialize first times */
-	st_time = times( &ini_tms );
+	st_time = times(&ini_tms);
 
-	if ( st_time == ( clock_t ) - 1 )
+	if (st_time == (clock_t) -1)
 	{
-		UNRESOLVED( errno, "times failed" );
+		UNRESOLVED(errno, "times failed");
 	}
 
-	if ( ( ini_tms.tms_cutime != 0 ) || ( ini_tms.tms_cstime != 0 ) )
+	if ((ini_tms.tms_cutime != 0) || (ini_tms.tms_cstime != 0))
 	{
-		FAILED( "The process is created with non-zero tms_cutime or tms_cstime" );
+		FAILED("The process is created with non-zero tms_cutime or tms_cstime");
 	}
 
 #if VERBOSE > 1
-	output( "Starting loop...\n" );
+	output("Starting loop...\n");
 
 #endif
 
 	/* Busy loop for some times */
 	do
 	{
-		cur_time = times( &parent_tms );
+		cur_time = times(&parent_tms);
 
-		if ( cur_time == ( clock_t ) - 1 )
+		if (cur_time == (clock_t) -1)
 		{
-			UNRESOLVED( errno, "times failed" );
+			UNRESOLVED(errno, "times failed");
 		}
 	}
-	while ( ( cur_time - st_time ) < sysconf( _SC_CLK_TCK ) );
+	while ((cur_time - st_time) < sysconf(_SC_CLK_TCK));
 
 #if VERBOSE > 1
 
-	output( "Busy loop terminated\n" );
+	output("Busy loop terminated\n");
 
-	output( " Real time: %ld, User Time %ld, System Time %ld, Ticks per sec %ld\n",
-	        ( long ) ( cur_time - st_time ),
-	        ( long ) ( parent_tms.tms_utime - ini_tms.tms_utime ),
-	        ( long ) ( parent_tms.tms_stime - ini_tms.tms_stime ),
-	        sysconf( _SC_CLK_TCK ) );
+	output(" Real time: %ld, User Time %ld, System Time %ld, Ticks per sec %ld\n",
+	        (long) (cur_time - st_time),
+	        (long) (parent_tms.tms_utime - ini_tms.tms_utime),
+	        (long) (parent_tms.tms_stime - ini_tms.tms_stime),
+	        sysconf(_SC_CLK_TCK));
 
 #endif
 
 	/* Create the child */
 	child = fork();
 
-	if ( child == ( pid_t ) - 1 )
+	if (child == -1)
 	{
-		UNRESOLVED( errno, "Failed to fork" );
+		UNRESOLVED(errno, "Failed to fork");
 	}
 
 	/* child */
-	if ( child == ( pid_t ) 0 )
+	if (child == 0)
 	{
 
-		cur_time = times( &child_tms );
+		cur_time = times(&child_tms);
 
-		if ( cur_time == ( clock_t ) - 1 )
+		if (cur_time == (clock_t) -1)
 		{
-			UNRESOLVED( errno, "times failed" );
+			UNRESOLVED(errno, "times failed");
 		}
 
-		if ( child_tms.tms_utime + child_tms.tms_stime >= sysconf( _SC_CLK_TCK ) )
+		if (child_tms.tms_utime + child_tms.tms_stime >= sysconf(_SC_CLK_TCK))
 		{
-			FAILED( "The tms struct was not reset during fork() operation" );
+			FAILED("The tms struct was not reset during fork() operation");
 		}
 
 		do
 		{
-			cur_time = times( &child_tms );
+			cur_time = times(&child_tms);
 
-			if ( cur_time == ( clock_t ) - 1 )
+			if (cur_time == (clock_t) -1)
 			{
-				UNRESOLVED( errno, "times failed" );
+				UNRESOLVED(errno, "times failed");
 			}
 		}
-		while ( ( child_tms.tms_utime + child_tms.tms_stime ) <= 0 );
+		while ((child_tms.tms_utime + child_tms.tms_stime) <= 0);
 
 		/* We're done */
-		exit( PTS_PASS );
+		exit(PTS_PASS);
 	}
 
 	/* Parent joins the child */
-	ctl = waitpid( child, &status, 0 );
+	ctl = waitpid(child, &status, 0);
 
-	if ( ctl != child )
+	if (ctl != child)
 	{
-		UNRESOLVED( errno, "Waitpid returned the wrong PID" )
+		UNRESOLVED(errno, "Waitpid returned the wrong PID")
 		;
 	}
 
-	if ( ( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ) )
+	if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != PTS_PASS))
 	{
-		FAILED( "Child exited abnormally" )
+		FAILED("Child exited abnormally")
 		;
 	}
 
 	/* Check the children times were reported as expected */
-	cur_time = times( &parent_tms );
+	cur_time = times(&parent_tms);
 
 #if VERBOSE > 1
 
-	output( "Child joined\n" );
+	output("Child joined\n");
 
-	output( " Real time: %ld,\n"
+	output(" Real time: %ld,\n"
 	        "  User Time %ld, System Time %ld,\n"
 	        "  Child User Time %ld, Child System Time %ld\n",
-	        ( long ) ( cur_time - st_time ),
-	        ( long ) ( parent_tms.tms_utime - ini_tms.tms_utime ),
-	        ( long ) ( parent_tms.tms_stime - ini_tms.tms_stime ),
-	        ( long ) ( parent_tms.tms_cutime - ini_tms.tms_cutime ),
-	        ( long ) ( parent_tms.tms_cstime - ini_tms.tms_cstime )
+	        (long) (cur_time - st_time),
+	        (long) (parent_tms.tms_utime - ini_tms.tms_utime),
+	        (long) (parent_tms.tms_stime - ini_tms.tms_stime),
+	        (long) (parent_tms.tms_cutime - ini_tms.tms_cutime),
+	        (long) (parent_tms.tms_cstime - ini_tms.tms_cstime)
 	      );
 
 #endif
 
-	if ( cur_time == ( clock_t ) - 1 )
+	if (cur_time == (clock_t) -1)
 	{
-		UNRESOLVED( errno, "times failed" );
+		UNRESOLVED(errno, "times failed");
 	}
 
-	if ( ( parent_tms.tms_cutime == 0 ) && ( parent_tms.tms_cstime == 0 ) )
+	if ((parent_tms.tms_cutime == 0) && (parent_tms.tms_cstime == 0))
 	{
-		FAILED( "The process is created with non-zero tms_cutime or tms_cstime" );
+		FAILED("The process is created with non-zero tms_cutime or tms_cstime");
 	}
 
 
 	/* Test passed */
 #if VERBOSE > 0
 
-	output( "Test passed\n" );
+	output("Test passed\n");
 
 #endif
 

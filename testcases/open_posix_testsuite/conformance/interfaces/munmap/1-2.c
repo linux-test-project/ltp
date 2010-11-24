@@ -4,7 +4,7 @@
  * of this license, see the COPYING file at the top level of this 
  * source tree.
  *
- * The munmap( ) function shall remove any mappings for those 
+ * The munmap() function shall remove any mappings for those 
  * entire pages containing any part of the address space of 
  * the process starting at addr and continuing for len bytes. 
  * Further references to these pages shall result in the 

@@ -67,9 +67,9 @@ int main(int argc, char *argv[])
 		return PTS_UNRESOLVED;
 	}
 
-	if ( (ts1.tv_sec <= ts2.tv_sec) &&
+	if ((ts1.tv_sec <= ts2.tv_sec) &&
 		(ts2.tv_sec <= ts3.tv_sec) &&
-		(ts3.tv_sec <= ts4.tv_sec) ) {
+		(ts3.tv_sec <= ts4.tv_sec)) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	} else {

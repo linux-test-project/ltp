@@ -85,7 +85,7 @@ int main()
 	cleanup_flag=CLEANUP_NOTCALLED;
 	
 	/* Create a new thread. */
-	if(pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
 	{	
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
@@ -96,7 +96,7 @@ int main()
 	while(sem1==INTHREAD)
 		sleep(1);
 
-	if(pthread_cancel(new_th) != 0) 
+	if (pthread_cancel(new_th) != 0) 
 	{
 		printf("Error: Couldn't cancel thread\n");
 		return PTS_UNRESOLVED;
@@ -107,14 +107,14 @@ int main()
 	sem1=INTHREAD;
 	
 	/* Wait for thread to return. */
-	if(pthread_join(new_th, &value_ptr) != 0)
+	if (pthread_join(new_th, &value_ptr) != 0)
 	{
 		printf("Error in pthread_join()\n");
 		return PTS_UNRESOLVED;
 	}
 	
 	/* Make sure cancellation happened correctly */
-	if((long)value_ptr == PTS_UNRESOLVED)
+	if ((long)value_ptr == PTS_UNRESOLVED)
 	{
 		printf("Error: cancellation not correctly handled\n");
 		return PTS_UNRESOLVED;
@@ -122,7 +122,7 @@ int main()
 
 	/* This means that the cleanup function wasn't called, so the cancel
 	 * request was not honord immediately like it should have been. */
-	if(cleanup_flag != CLEANUP_CALLED)
+	if (cleanup_flag != CLEANUP_CALLED)
 	{
 		printf("Test FAILED: Cleanup hanlder not called up cancellation\n");
 		return PTS_FAIL;

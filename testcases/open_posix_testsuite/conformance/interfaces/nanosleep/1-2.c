@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 		 * pass if we slept for less than the (large) sleep time
 		 * allotted
 		 */
-		if ( (tsafter.tv_sec-tsbefore.tv_sec) < sleepsec) {
+		if ((tsafter.tv_sec-tsbefore.tv_sec) < sleepsec) {
 			printf("Test PASSED\n");
 			return PTS_PASS;
 		} else {

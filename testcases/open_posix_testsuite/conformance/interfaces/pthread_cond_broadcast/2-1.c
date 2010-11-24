@@ -44,7 +44,7 @@ void *thr_func(void *arg)
 	
 	fprintf(stderr,"[Thread 0x%p] is waiting for the cond\n", (void*)self);
 	rc = pthread_cond_wait(&td.cond, &td.mutex);
-	if(rc != 0) {
+	if (rc != 0) {
 		fprintf(stderr,"pthread_cond_wait return %d\n", rc);
                 exit(PTS_UNRESOLVED);
 	}

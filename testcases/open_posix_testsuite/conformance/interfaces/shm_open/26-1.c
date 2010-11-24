@@ -34,12 +34,12 @@ int main(){
 	mode_t old_mode;
 
 	fd = shm_open(SHM_NAME, O_RDWR|O_CREAT, CREATION_MODE);
-	if(fd == -1) {
+	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		return PTS_UNRESOLVED;
 	}
 
-	if(fstat(fd, &stat_buf) != 0) {
+	if (fstat(fd, &stat_buf) != 0) {
 		perror("An error occurs when calling fstat()");
 		shm_unlink(SHM_NAME);
 		return PTS_UNRESOLVED;
@@ -47,13 +47,13 @@ int main(){
 	old_mode = stat_buf.st_mode;	
 
 	fd = shm_open(SHM_NAME, O_RDWR|O_TRUNC, OPEN_MODE);
-	if(fd == -1) {
+	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		shm_unlink(SHM_NAME);
 		return PTS_UNRESOLVED;
 	}
 
-	if(fstat(fd, &stat_buf) != 0) {
+	if (fstat(fd, &stat_buf) != 0) {
 		perror("An error occurs when calling fstat()");
 		shm_unlink(SHM_NAME);
 		return PTS_UNRESOLVED;
@@ -61,7 +61,7 @@ int main(){
 
 	shm_unlink(SHM_NAME);
 
-	if(stat_buf.st_mode == old_mode) {
+	if (stat_buf.st_mode == old_mode) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}

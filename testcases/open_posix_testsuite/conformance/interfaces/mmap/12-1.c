@@ -4,9 +4,9 @@
  * of this license, see the COPYING file at the top level of this 
  * source tree.
  *
- * The mmap( ) function shall add an extra reference to the file
+ * The mmap() function shall add an extra reference to the file
  * associated with the file descriptor fildes which is not removed
- * by a subsequent close( ) on that file descriptor. 
+ * by a subsequent close() on that file descriptor. 
  * This reference shall be removed when there are no more 
  * mappings to the file.
  * 

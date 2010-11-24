@@ -35,16 +35,16 @@ int set_nonroot()
 	setpwent();
 	/* search for the first user which is non root */ 
 	while((pw = getpwent()) != NULL)
-		if(strcmp(pw->pw_name, "root"))
+		if (strcmp(pw->pw_name, "root"))
 			break;
 	endpwent();
-	if(pw == NULL) {
+	if (pw == NULL) {
 		printf("There is no other user than current and root.\n");
 		return 1;
 	}
 
-	if(seteuid(pw->pw_uid) != 0) {
-		if(errno == EPERM) {
+	if (seteuid(pw->pw_uid) != 0) {
+		if (errno == EPERM) {
 			printf("You don't have permission to change your UID.\n");
 			return 1;
 		}
@@ -69,18 +69,18 @@ int main() {
         }
 
 	fd = shm_open(SHM_NAME, O_RDWR|O_CREAT, 0);
-	if(fd == -1) {
+	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		return PTS_UNRESOLVED;
 	}
 	
 	fd = shm_open(SHM_NAME, O_RDWR, 0);
 	
-	if(fd == -1 && errno == EACCES) {
+	if (fd == -1 && errno == EACCES) {
 		printf("Test PASSED\n");
 		shm_unlink(SHM_NAME);
 		return PTS_PASS;
-	} else if(fd != -1) {
+	} else if (fd != -1) {
 		printf("shm_open success.\n");
 		shm_unlink(SHM_NAME);
 		return PTS_FAIL;

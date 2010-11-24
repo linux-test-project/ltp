@@ -6,7 +6,7 @@
  *
  * pthread_barrierattr_setpshared() 
  *
- * The pthread_barrierattr_setpshared( ) function shall
+ * The pthread_barrierattr_setpshared() function shall
  * set the process-shared attribute in an initialized attributes object referenced by attr.
  */
 
@@ -34,7 +34,7 @@ int main()
 	int	rc; 
 
 	/* Initialize a barrier attributes object */
-	if(pthread_barrierattr_init(&ba) != 0)
+	if (pthread_barrierattr_init(&ba) != 0)
 	{
 		printf("Error at pthread_barrierattr_init()\n");
 		return PTS_UNRESOLVED;
@@ -42,19 +42,19 @@ int main()
 	
 	/* Set pshared to PTHREAD_PROCESS_SHARED */
 	rc = pthread_barrierattr_setpshared(&ba, pshared);
-	if(rc != 0)
+	if (rc != 0)
 	{
 		printf("Test FAILED: Error at pthread_barrierattr_setpshared()\n");
 		return PTS_FAIL;
 	}
 	
-	if(pthread_barrierattr_getpshared(&ba, &pshared) != 0)
+	if (pthread_barrierattr_getpshared(&ba, &pshared) != 0)
 	{
 		printf("Error at pthread_barrierattr_getpshared()\n");
 		return PTS_FAIL;
 	}
 	
-	if(pshared != PTHREAD_PROCESS_SHARED)
+	if (pshared != PTHREAD_PROCESS_SHARED)
 	{
 		printf("Test FAILED: Got error shared attribute value %d\n", pshared);
 		return PTS_FAIL;
@@ -62,19 +62,19 @@ int main()
 	
 	/* Set pshared to PTHREAD_PROCESS_SHARED */
 	rc = pthread_barrierattr_setpshared(&ba, pshared2);
-	if(rc != 0)
+	if (rc != 0)
 	{
 		printf("Test FAILED: Error at pthread_barrierattr_setpshared()\n");
 		return PTS_FAIL;
 	}
 	
-	if(pthread_barrierattr_getpshared(&ba, &pshared2) != 0)
+	if (pthread_barrierattr_getpshared(&ba, &pshared2) != 0)
 	{
 		printf("Error at pthread_barrierattr_getpshared()\n");
 		return PTS_FAIL;
 	}
 	
-	if(pshared2 != PTHREAD_PROCESS_PRIVATE)
+	if (pshared2 != PTHREAD_PROCESS_PRIVATE)
 	{
 		printf("Test FAILED: Got error shared attribute value %d\n", pshared);
 		return PTS_FAIL;

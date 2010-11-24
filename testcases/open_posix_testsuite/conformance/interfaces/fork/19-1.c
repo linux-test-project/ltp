@@ -85,7 +85,7 @@
 /********************************************************************************************/
 
 /* The main test function. */
-int main( int argc, char * argv[] )
+int main(int argc, char * argv[])
 {
 	int ret, status;
 	pid_t child, ctl;
@@ -103,107 +103,107 @@ int main( int argc, char * argv[] )
 	mqa.mq_maxmsg = 2;
 	mqa.mq_msgsize = 20;
 
-	mq = mq_open( "/fork_19_1_mq"
+	mq = mq_open("/fork_19_1_mq"
 	              , O_RDWR | O_CREAT | O_NONBLOCK
 	              , S_IRUSR | S_IWUSR
-	              , &mqa );
+	              , &mqa);
 
-	if ( mq == ( mqd_t ) - 1 )
+	if (mq == (mqd_t) -1)
 	{
-		UNRESOLVED( errno, "Failed to create the message queue descriptor" );
+		UNRESOLVED(errno, "Failed to create the message queue descriptor");
 	}
 
 	/* Send 1 message to this message queue */
-	ret = mq_send( mq, "I'm your father...", 19, 0 );
+	ret = mq_send(mq, "I'm your father...", 19, 0);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( errno, "Failed to send the message" );
+		UNRESOLVED(errno, "Failed to send the message");
 	}
 
 	/* Check the message has been queued */
-	ret = mq_getattr( mq, &mqa );
+	ret = mq_getattr(mq, &mqa);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( errno, "Failed to get message queue attributes" );
+		UNRESOLVED(errno, "Failed to get message queue attributes");
 	}
 
-	if ( mqa.mq_curmsgs != 1 )
+	if (mqa.mq_curmsgs != 1)
 	{
-		UNRESOLVED( -1, "The queue information does not show the new message" );
+		UNRESOLVED(-1, "The queue information does not show the new message");
 	}
 
 
 	/* Create the child */
 	child = fork();
 
-	if ( child == ( pid_t ) - 1 )
+	if (child == -1)
 	{
-		UNRESOLVED( errno, "Failed to fork" );
+		UNRESOLVED(errno, "Failed to fork");
 	}
 
 	/* child */
-	if ( child == ( pid_t ) 0 )
+	if (child == 0)
 	{
-		ret = mq_getattr( mq, &mqa );
+		ret = mq_getattr(mq, &mqa);
 
-		if ( ret != 0 )
+		if (ret != 0)
 		{
-			FAILED( "Failed to get message queue attributes in child" );
+			FAILED("Failed to get message queue attributes in child");
 		}
 
-		if ( mqa.mq_curmsgs != 1 )
+		if (mqa.mq_curmsgs != 1)
 		{
-			FAILED( "The queue information does not show the message in child" );
+			FAILED("The queue information does not show the message in child");
 		}
 
 		/* Now, receive the message */
-		ret = mq_receive( mq, rcv, 20, NULL );
+		ret = mq_receive(mq, rcv, 20, NULL);
 
-		if ( ret != 19 )  /* expected message size */
+		if (ret != 19)  /* expected message size */
 		{
-			UNRESOLVED( errno, "Failed to receive the message" );
+			UNRESOLVED(errno, "Failed to receive the message");
 		}
 
 #if VERBOSE > 0
-		output( "Received message: %s\n", rcv );
+		output("Received message: %s\n", rcv);
 
 #endif
 
 		/* We're done */
-		exit( PTS_PASS );
+		exit(PTS_PASS);
 	}
 
 	/* Parent joins the child */
-	ctl = waitpid( child, &status, 0 );
+	ctl = waitpid(child, &status, 0);
 
-	if ( ctl != child )
+	if (ctl != child)
 	{
-		UNRESOLVED( errno, "Waitpid returned the wrong PID" );
+		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-	if ( ( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ) )
+	if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != PTS_PASS))
 	{
-		FAILED( "Child exited abnormally" );
+		FAILED("Child exited abnormally");
 	}
 
 	/* Check the message has been unqueued */
-	ret = mq_getattr( mq, &mqa );
+	ret = mq_getattr(mq, &mqa);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( errno, "Failed to get message queue attributes the 2nd time" );
+		UNRESOLVED(errno, "Failed to get message queue attributes the 2nd time");
 	}
 
-	if ( mqa.mq_curmsgs != 0 )
+	if (mqa.mq_curmsgs != 0)
 	{
-		FAILED( "The message received in child was not dequeued." );
+		FAILED("The message received in child was not dequeued.");
 	}
 
 	/* Test passed */
 #if VERBOSE > 0
-	output( "Test passed\n" );
+	output("Test passed\n");
 
 #endif
 	PASSED;

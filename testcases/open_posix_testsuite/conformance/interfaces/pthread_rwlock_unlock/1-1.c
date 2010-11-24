@@ -6,7 +6,7 @@
 
  * Test that pthread_rwlock_unlock(pthread_rwlock_t *rwlock)
  *
- * 	pthread_rwlock_unlock( ) function shall release a lock held on the 
+ * 	pthread_rwlock_unlock() function shall release a lock held on the 
  *	read-write lock object referenced by rwlock
  *	If this function is called to release a read lock from the read-write lock object 
  *	and there are other read locks currently held on this read-write lock object, 
@@ -54,7 +54,7 @@ static void* fn_rd(void *arg)
 
 	thread_state = ENTERED_THREAD;
 	printf("thread: attempt 1st read lock\n");
-	if(pthread_rwlock_rdlock(&rwlock) != 0)
+	if (pthread_rwlock_rdlock(&rwlock) != 0)
 	{
 		printf("thread: cannot get read lock\n");
 		exit(PTS_UNRESOLVED);
@@ -62,7 +62,7 @@ static void* fn_rd(void *arg)
 	printf("thread: acquired read lock\n");
 	printf("thread: unlock read lock\n");
 	rc = pthread_rwlock_unlock(&rwlock);
-	if(rc != 0)
+	if (rc != 0)
 	{
 		printf("Test FAILED: thread: Error at pthread_rwlock_unlock(), Error Code=%d\n", rc);
 		exit(PTS_FAIL);
@@ -70,7 +70,7 @@ static void* fn_rd(void *arg)
 	
 	thread_state = PASSED_RLOCK1;
 	printf("thread: attempt 2nd read lock\n");
-	if(pthread_rwlock_rdlock(&rwlock) != 0)
+	if (pthread_rwlock_rdlock(&rwlock) != 0)
 	{
 		printf("thread: cannot get read lock\n");
 		exit(PTS_UNRESOLVED);
@@ -78,7 +78,7 @@ static void* fn_rd(void *arg)
 	printf("thread: acquired read lock\n");
 	printf("thread: unlock read lock\n");
 	rc = pthread_rwlock_unlock(&rwlock);
-	if(rc != 0)
+	if (rc != 0)
 	{
 		printf("Test FAILED: thread: Error at 2nd pthread_rwlock_unlock(), Error Code=%d\n", rc);
 		exit(PTS_FAIL);
@@ -87,7 +87,7 @@ static void* fn_rd(void *arg)
 	thread_state = PASSED_RLOCK2;
 	/* The thread should block here */
 	printf("thread: attempt write lock\n");
-	if(pthread_rwlock_wrlock(&rwlock) != 0)
+	if (pthread_rwlock_wrlock(&rwlock) != 0)
 	{
 		printf("thread: cannot get write lock\n");
 		exit(PTS_UNRESOLVED);
@@ -95,7 +95,7 @@ static void* fn_rd(void *arg)
 	printf("thread: acquired write lock\n");
 	printf("thread: unlock write lock\n");
 	rc = pthread_rwlock_unlock(&rwlock);
-	if(rc != 0)
+	if (rc != 0)
 	{
 		printf("Test FAILED: thread failed to release write lock, Error Code=%d\n", rc);
 		exit(PTS_FAIL);
@@ -111,7 +111,7 @@ int main()
 
 	pthread_t rd_thread;
 	
-	if(pthread_rwlock_init(&rwlock, NULL) != 0)
+	if (pthread_rwlock_init(&rwlock, NULL) != 0)
 	{
 		printf("main: Error at pthread_rwlock_init()\n");
 		return PTS_UNRESOLVED;
@@ -120,7 +120,7 @@ int main()
 	printf("main: attempt read lock\n");
 
 	/* This read lock should succeed */	
-	if(pthread_rwlock_rdlock(&rwlock) != 0)
+	if (pthread_rwlock_rdlock(&rwlock) != 0)
 	{
 		printf("main: Error at pthread_rwlock_rdlock()\n");
 		return PTS_UNRESOLVED;
@@ -128,7 +128,7 @@ int main()
 	
 	thread_state = NOT_CREATED_THREAD;
 	printf("main: create thread\n");
-	if(pthread_create(&rd_thread, NULL, fn_rd, NULL) != 0)
+	if (pthread_create(&rd_thread, NULL, fn_rd, NULL) != 0)
 	{
 		printf("main: Error at pthread_create()\n");
 		return PTS_UNRESOLVED;
@@ -141,18 +141,18 @@ int main()
 		sleep(1);
 	}while (thread_state !=PASSED_RLOCK2 && cnt++ < 3); 
 	
-	if(thread_state == ENTERED_THREAD)
+	if (thread_state == ENTERED_THREAD)
 	{
 		printf("Thread should not block on first read lock\n");
 		exit(PTS_UNRESOLVED);
 	}
-	else if(thread_state == PASSED_RLOCK1)
+	else if (thread_state == PASSED_RLOCK1)
 	{
 		/* child thread blocked on second read lock*/
 		printf("thread should not block on second read lock\n");
 		exit(PTS_UNRESOLVED);
 	}
-	else if(thread_state != PASSED_RLOCK2)
+	else if (thread_state != PASSED_RLOCK2)
 	{
 		printf("Unexpected thread state: %d\n", thread_state);
 		exit(PTS_UNRESOLVED);
@@ -161,7 +161,7 @@ int main()
 	/* thread_state == 4, i.e. child thread blocks on write lock */
 	printf("main: unlock read lock\n");
 	rc = pthread_rwlock_unlock(&rwlock);
-	if(rc != 0)
+	if (rc != 0)
 	{
 		printf("Test FAILED: Main cannot release read lock\n");
 		exit(PTS_FAIL);
@@ -172,19 +172,19 @@ int main()
 		sleep(1);
 	}while (thread_state !=EXITING_THREAD && cnt++ < 3); 
 	
-	if(thread_state != EXITING_THREAD)
+	if (thread_state != EXITING_THREAD)
 	{
 		printf("Test FAILED: thread did not get write lock even when the lock has no owner\n");
 		exit(PTS_FAIL);
 	}
 
-	if(pthread_join(rd_thread, NULL) != 0)
+	if (pthread_join(rd_thread, NULL) != 0)
 	{
 		printf("Error at pthread_join()\n");
 		exit(PTS_UNRESOLVED);
 	}
 
-	if(pthread_rwlock_destroy(&rwlock) != 0)
+	if (pthread_rwlock_destroy(&rwlock) != 0)
 	{
 		printf("Error at pthread_rwlock_destroy()\n");
 		return PTS_UNRESOLVED;

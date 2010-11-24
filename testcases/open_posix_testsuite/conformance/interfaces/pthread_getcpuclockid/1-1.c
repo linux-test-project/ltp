@@ -33,7 +33,7 @@ void *thread_func()
 	clockid_t cid;
 
 	rc = pthread_getcpuclockid(pthread_self(), &cid); 
-        if (rc !=0 ) {
+        if (rc !=0) {
                 perror(ERROR_PREFIX "pthread_getcpuclockid");
                 exit(PTS_FAIL);
         }
@@ -49,13 +49,13 @@ int main()
 	pthread_t new_th;
 
 	rc = pthread_create(&new_th, NULL, thread_func, NULL);
-        if (rc !=0 ) {
+        if (rc !=0) {
                 perror(ERROR_PREFIX "failed to create a thread");
                 exit(PTS_UNRESOLVED);
         }
 
 	rc = pthread_join(new_th, NULL);
-        if(rc != 0)
+        if (rc != 0)
         {
                 perror(ERROR_PREFIX "pthread_join");
                 exit(PTS_UNRESOLVED);

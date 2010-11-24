@@ -296,7 +296,7 @@ void * cellmanager(void * arg)
 		/* choose a (pseudo) random thread to cancel */
 		ret = clock_gettime(cd->cid, &ts);
 		if (ret != 0)  {  UNRESOLVED(errno, "Failed to read clock");  }
-		randval = (ts.tv_sec + (ts.tv_nsec >> 10) ) % (NCHILDREN * SCALABILITY_FACTOR + 2);
+		randval = (ts.tv_sec + (ts.tv_nsec >> 10)) % (NCHILDREN * SCALABILITY_FACTOR + 2);
 		
 		/* wait for the workers to be ready */
 		do
@@ -310,7 +310,7 @@ void * cellmanager(void * arg)
 			if (ret != 0)  {  UNRESOLVED(ret, "Mutex unlock failed");  }
 		} while (i < NCHILDREN * SCALABILITY_FACTOR + 2);
 		
-		/* Set the boolean ( 1 => no lock in signaler; -1 => lock ) */
+		/* Set the boolean (1 => no lock in signaler; -1 => lock) */
 		cd->boolean = (ts.tv_sec & 1)?-1:1;
 		
 		/* create the signaler */
@@ -399,7 +399,7 @@ int main (int argc, char * argv[])
 
 
 	/* Initialize the celldatas according to scenarii */
-	for ( i=0; i< NSCENAR ; i++)
+	for (i=0; i< NSCENAR ; i++)
 	{
 		#if VERBOSE > 1
 		output("[parent] Preparing attributes for: %s\n", scenarii[i].descr);
@@ -506,7 +506,7 @@ int main (int argc, char * argv[])
 	/* create the NSCENAR * SCALABILITY_FACTOR manager threads */
 	for (i=0; i<NSCENAR * SCALABILITY_FACTOR; i++)
 	{
-		ret = pthread_create( &mngrs[i], &ta, cellmanager, &(cells[i]));
+		ret = pthread_create(&mngrs[i], &ta, cellmanager, &(cells[i]));
 		/* In case of failure we can exit; the child process will die after a while */
 		if (ret != 0)  {  UNRESOLVED(ret, "[Parent] Failed to create a thread");  }
 		
@@ -523,7 +523,7 @@ int main (int argc, char * argv[])
 	/* join the manager threads and destroy the cells */
 	for (i=0; i<NSCENAR * SCALABILITY_FACTOR; i++)
 	{
-		ret = pthread_join( mngrs[i], NULL);
+		ret = pthread_join(mngrs[i], NULL);
 		if (ret != 0)  {  UNRESOLVED(ret, "[Parent] Failed to join a thread");  }
 		
 		canceled += cells[i].canceled;

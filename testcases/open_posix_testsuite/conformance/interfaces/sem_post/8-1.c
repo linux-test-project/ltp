@@ -82,12 +82,12 @@ int child_fn(int priority, int id)
 	if (set_my_prio(priority) == -1)
 		exit(-1);
 	sem = sem_open(semname, 0);
-	if( sem == SEM_FAILED || sem == NULL ) {
+	if (sem == SEM_FAILED || sem == NULL) {
 		perror(ERROR_PREFIX "sem_open: sem");
 		return -1;
 	}
 	sem_1 = sem_open(semname_1, 0);
-	if( sem_1 == SEM_FAILED || sem_1 == NULL ) {
+	if (sem_1 == SEM_FAILED || sem_1 == NULL) {
 		perror(ERROR_PREFIX "sem_open: sem_1");
 		return -1;
 	}
@@ -120,14 +120,14 @@ int main()
 	snprintf(semname, 20, "/" TEST "_%d", getpid());
 	/* Initial value of Semaphore is 1 */
 	sem = sem_open(semname, O_CREAT, 0777, 1);
-	if( sem == SEM_FAILED || sem == NULL ) {
+	if (sem == SEM_FAILED || sem == NULL) {
 		perror(ERROR_PREFIX "sem_open");
 		return PTS_UNRESOLVED;
 	}
 	
 	snprintf(semname_1, 20, "/" TEST "_%d_1", getpid());
 	sem_1 = sem_open(semname_1, O_CREAT, 0777, val);
-	if( sem_1 == SEM_FAILED || sem_1 == NULL ) {
+	if (sem_1 == SEM_FAILED || sem_1 == NULL) {
 		perror(ERROR_PREFIX "sem_open: sem_1");
 		sem_unlink(semname);
 		return PTS_UNRESOLVED;
@@ -141,7 +141,7 @@ int main()
 	}
 
 	/* Lock Semaphore */
-	if( sem_wait(sem) == -1 ) {
+	if (sem_wait(sem) == -1) {
 		perror(ERROR_PREFIX "sem_wait");
 		retval = PTS_UNRESOLVED; 
 		goto clean_up;

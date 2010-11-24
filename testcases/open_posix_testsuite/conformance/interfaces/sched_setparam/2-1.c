@@ -92,7 +92,7 @@ void child_process(int id){
 	int i;
 	struct sched_param param;
 
-	if(id == nb_child-1){
+	if (id == nb_child-1){
 		param.sched_priority = sched_get_priority_min(SCHED_FIFO);
 		sched_setparam(getpid(), &param);
 	}
@@ -121,17 +121,17 @@ int main(){
 	float ratio;
 
 	nb_child = get_ncpu();
-	if(nb_child == -1) {
+	if (nb_child == -1) {
 		printf("Can not get the number of CPUs of your machine.\n");
 		return PTS_UNRESOLVED;
 	}
 	child_pid = malloc(nb_child);
 
-	param.sched_priority = ( sched_get_priority_min(SCHED_FIFO) +
-				 sched_get_priority_max(SCHED_FIFO) ) / 2;
+	param.sched_priority = (sched_get_priority_min(SCHED_FIFO) +
+				 sched_get_priority_max(SCHED_FIFO)) / 2;
 	
-	if(sched_setscheduler(getpid(), SCHED_FIFO, &param) == -1){
-		if(errno == EPERM){
+	if (sched_setscheduler(getpid(), SCHED_FIFO, &param) == -1){
+		if (errno == EPERM){
 			printf("This process does not have the permission to set its own scheduling policy.\nTry to launch this test as root\n");
 		} else {
 			perror("An error occurs when calling sched_setscheduler()");
@@ -139,7 +139,7 @@ int main(){
 		return PTS_UNRESOLVED;
 	}
 
-	if(signal(SIGTERM, sigterm_handler) == SIG_ERR){
+	if (signal(SIGTERM, sigterm_handler) == SIG_ERR){
 		perror("An error occurs when calling signal()");
 		return PTS_UNRESOLVED;
         }
@@ -148,7 +148,7 @@ int main(){
 
 	for(i=0; i<nb_child; i++) {
 		child_pid[i] = fork();
-		if(child_pid[i] == -1){
+		if (child_pid[i] == -1){
 			perror("An error occurs when calling fork()");
 			return PTS_UNRESOLVED;
 		} else if (child_pid[i] == 0){
@@ -160,7 +160,7 @@ int main(){
 	}
 
 	param.sched_priority = sched_get_priority_max(SCHED_FIFO);
-	if(sched_setparam(0, &param) != 0) {
+	if (sched_setparam(0, &param) != 0) {
 		perror("An error occurs when calling sched_setparam()");
 		return PTS_UNRESOLVED;
 	}
@@ -174,13 +174,13 @@ int main(){
 		count++;
 	}
 
-	if(kill(child_pid[nb_child-1], SIGTERM) != 0) {
+	if (kill(child_pid[nb_child-1], SIGTERM) != 0) {
 		perror("An error occurs when calling kill()");
 		return PTS_UNRESOLVED;
 	}
 
 	param.sched_priority = sched_get_priority_min(SCHED_FIFO);
-	if(sched_setparam(0, &param) != 0) {
+	if (sched_setparam(0, &param) != 0) {
 		perror("An error occurs when calling sched_setparam()");
 		return PTS_UNRESOLVED;
 	}
@@ -189,19 +189,19 @@ int main(){
 		sched_yield();
 
 	for(i=0; i<nb_child-1; i++) {
-		if(kill(child_pid[i], SIGKILL) != 0) {
+		if (kill(child_pid[i], SIGKILL) != 0) {
 			perror("An error occurs when calling kill()");
 			return PTS_UNRESOLVED;
 		}
 	}
 
-	if(child_count)
+	if (child_count)
 		ratio = (float)count / (float)child_count;
 
-	if(child_count == 0 || ratio >= ACCEPTABLE_RATIO) {
+	if (child_count == 0 || ratio >= ACCEPTABLE_RATIO) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else if(ratio <= (1/ACCEPTABLE_RATIO)) {
+	} else if (ratio <= (1/ACCEPTABLE_RATIO)) {
 		printf("Higher numerical values for the priority represent the lower priorities.\n");
 		return PTS_FAIL;
 	} else {

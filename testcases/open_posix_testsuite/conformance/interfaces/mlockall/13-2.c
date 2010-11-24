@@ -22,10 +22,10 @@ int main() {
 
 	result = mlockall(~(MCL_CURRENT|MCL_FUTURE));
 
-	if(result == -1 && errno == EINVAL) {
+	if (result == -1 && errno == EINVAL) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else if(result != -1) {
+	} else if (result != -1) {
 		printf("mlockall() return %i instead of -1.\n", result);
 		return PTS_FAIL;
 	} else {

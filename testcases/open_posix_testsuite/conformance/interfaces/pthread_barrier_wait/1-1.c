@@ -6,9 +6,9 @@
  *
  * pthread_barrier_wait()
  *
- * The pthread_barrier_wait( ) function shall synchronize participating threads 
+ * The pthread_barrier_wait() function shall synchronize participating threads 
  * at the barrier referenced by barrier. The calling thread shall block 
- * until the required number of threads have called pthread_barrier_wait( ) 
+ * until the required number of threads have called pthread_barrier_wait() 
  * specifying the barrier.
  *
  * Steps:
@@ -40,13 +40,13 @@ static void* fn_chld(void *arg)
 	
 	printf("child: barrier wait\n");
 	rc = pthread_barrier_wait(&barrier);
-	if(rc != 0 && rc != PTHREAD_BARRIER_SERIAL_THREAD)
+	if (rc != 0 && rc != PTHREAD_BARRIER_SERIAL_THREAD)
 	{
 		printf("Test FAILED: child: pthread_barrier_wait() got unexpected "
 			"return code : %d\n" , rc);
 		exit(PTS_FAIL);
 	} 
-	else if(rc == PTHREAD_BARRIER_SERIAL_THREAD)
+	else if (rc == PTHREAD_BARRIER_SERIAL_THREAD)
 	{
 		printf("child: get PTHREAD_BARRIER_SERIAL_THREAD\n");
 	} 
@@ -77,7 +77,7 @@ int main()
 	sigaction(SIGALRM, &act, 0);
 	
 	printf("Initialize barrier with count = 2\n");
-	if(pthread_barrier_init(&barrier, NULL, 2) != 0)
+	if (pthread_barrier_init(&barrier, NULL, 2) != 0)
 	{
 		printf("main: Error at pthread_barrier_init()\n");
 		return PTS_UNRESOLVED;
@@ -85,7 +85,7 @@ int main()
 
 	printf("main: create child thread\n");
 	thread_state = NOT_CREATED_THREAD;
-	if(pthread_create(&child_thread, NULL, fn_chld, NULL) != 0)
+	if (pthread_create(&child_thread, NULL, fn_chld, NULL) != 0)
 	{
 		printf("main: Error at pthread_create()\n");
 		return PTS_UNRESOLVED;
@@ -97,14 +97,14 @@ int main()
 		sleep(1);
 	}while (thread_state !=EXITING_THREAD && cnt++ < 2); 
 	
-	if(thread_state == EXITING_THREAD)
+	if (thread_state == EXITING_THREAD)
 	{
 		/* child thread did not block */
 		printf("Test FAILED: child thread did not block on "
 			"pthread_barrier_wait()\n");
 		exit(PTS_FAIL);
 	}
-	else if(thread_state != ENTERED_THREAD)
+	else if (thread_state != ENTERED_THREAD)
 	{
 		printf("Unexpected thread state: %d\n", thread_state);
 		exit(PTS_UNRESOLVED);
@@ -117,13 +117,13 @@ int main()
 
 	rc = pthread_barrier_wait(&barrier);
 	
-	if(rc != 0 && rc != PTHREAD_BARRIER_SERIAL_THREAD)
+	if (rc != 0 && rc != PTHREAD_BARRIER_SERIAL_THREAD)
 	{
 		printf("Test FAILED: main: pthread_barrier_wait() get unexpected "
 			"return code : %d\n" , rc);
 		exit(PTS_FAIL);
 	} 
-	else if(rc == PTHREAD_BARRIER_SERIAL_THREAD)
+	else if (rc == PTHREAD_BARRIER_SERIAL_THREAD)
 	{
 		printf("main: got PTHREAD_BARRIER_SERIAL_THREAD\n");
 	}
@@ -134,25 +134,25 @@ int main()
 		sleep(1);
 	}while (thread_state != EXITING_THREAD && cnt++ < 3); 
 	
-	if(thread_state == ENTERED_THREAD)
+	if (thread_state == ENTERED_THREAD)
 	{
 		printf("Test FAILED: child thread still blocked on "
 			"barrier wait\n");
 		return PTS_FAIL;
 	}
-	else if(thread_state != EXITING_THREAD)
+	else if (thread_state != EXITING_THREAD)
 	{
 		printf("main: Unexpected thread state: %d\n", thread_state);
 		return PTS_UNRESOLVED;
 	}
 
-	if(pthread_join(child_thread, NULL) != 0)
+	if (pthread_join(child_thread, NULL) != 0)
 	{
 		printf("main: Error at pthread_join()\n");
 		exit(PTS_UNRESOLVED);
 	}
 
-	if(pthread_barrier_destroy(&barrier) != 0)
+	if (pthread_barrier_destroy(&barrier) != 0)
 	{
 		printf("Error at pthread_barrier_destroy()");
 		return PTS_UNRESOLVED;

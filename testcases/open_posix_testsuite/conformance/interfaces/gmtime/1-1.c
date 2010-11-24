@@ -27,7 +27,7 @@ int main ()
 	printf("gmtime gives:\n");
 
 	/* Checking the seconds */
-	if ((tm_ptr->tm_sec >= 0) && (tm_ptr->tm_sec < 60 )) {
+	if ((tm_ptr->tm_sec >= 0) && (tm_ptr->tm_sec < 60)) {
 		printf("sec %02d\n", tm_ptr->tm_sec);
 	} else {
 		puts("Test FAILED: seconds");
@@ -35,7 +35,7 @@ int main ()
 	}
 
 	/* Checking the Minutes */
-	if ((tm_ptr->tm_min >= 0) && (tm_ptr->tm_min <= 59 )) {
+	if ((tm_ptr->tm_min >= 0) && (tm_ptr->tm_min <= 59)) {
 		printf("min %02d\n", tm_ptr->tm_min);
 	} else {
 		puts("Test FAILED: minutes");
@@ -43,7 +43,7 @@ int main ()
 	}
 
 	/* Checking the Hour */
-	if ((tm_ptr->tm_hour >= 0) && (tm_ptr->tm_hour <= 23 )) {
+	if ((tm_ptr->tm_hour >= 0) && (tm_ptr->tm_hour <= 23)) {
 		printf("hour %02d\n", tm_ptr->tm_hour);
 	} else {
 		puts("Test FAILED: hour");
@@ -51,7 +51,7 @@ int main ()
 	}
 
 	/* Checking the Month Day */
-	if ((tm_ptr->tm_mday >= 1) && (tm_ptr->tm_mday <= 31 )) {
+	if ((tm_ptr->tm_mday >= 1) && (tm_ptr->tm_mday <= 31)) {
 		printf("mday %02d\n", tm_ptr->tm_mday);
 	} else {
 		puts("Test FAILED: mday");
@@ -59,7 +59,7 @@ int main ()
 	}
 
 	/* Checking the Month */
-	if ((tm_ptr->tm_mon >= 0) && (tm_ptr->tm_mon <= 11 )) {
+	if ((tm_ptr->tm_mon >= 0) && (tm_ptr->tm_mon <= 11)) {
 		printf("mon %02d\n", tm_ptr->tm_mon);
 	} else {
 		puts("Test FAILED: mon");
@@ -77,7 +77,7 @@ int main ()
 	}
 
 	/* Checking the Day of week */
-	if ((tm_ptr->tm_wday >= 0) && (tm_ptr->tm_wday <= 6 )) {
+	if ((tm_ptr->tm_wday >= 0) && (tm_ptr->tm_wday <= 6)) {
 		printf("wday %02d\n", tm_ptr->tm_wday);
 	} else {
 		puts("Test FAILED: wday");
@@ -85,7 +85,7 @@ int main ()
 	}
 
 	/* Checking the Day in year */
-	if ((tm_ptr->tm_yday >= 0) && (tm_ptr->tm_yday <= 365 )) {
+	if ((tm_ptr->tm_yday >= 0) && (tm_ptr->tm_yday <= 365)) {
 		printf("yday %02d\n", tm_ptr->tm_yday);
 	} else {
 		puts("Test FAILED: yday");
@@ -93,7 +93,7 @@ int main ()
 	}
 
 	/* Checking the DTS */
-	if ((tm_ptr->tm_isdst >= -1) && (tm_ptr->tm_isdst <= 1 )) {
+	if ((tm_ptr->tm_isdst >= -1) && (tm_ptr->tm_isdst <= 1)) {
 		printf("isdst %02d\n", tm_ptr->tm_isdst);
 	} else {
 		puts("Test FAILED: isdst");

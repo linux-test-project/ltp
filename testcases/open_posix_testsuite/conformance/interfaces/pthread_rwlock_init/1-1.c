@@ -6,7 +6,7 @@
  * 
  * Test pthread_rwlock_init().
  *
- *	pthread_rwlock_init( ) function shall allocate any resources 
+ *	pthread_rwlock_init() function shall allocate any resources 
  *	required to use the read-write lock referenced by rwlock and 
  *	initializes the lock to an unlocked state with attributes referenced
  *	by attr.
@@ -34,11 +34,11 @@ static void* fn_rd(void *arg)
 
 	printf("child: lock for reading\n");	
 	rc = pthread_rwlock_rdlock(&rwlock);
-	if(rc == 0)
+	if (rc == 0)
 	{
 		printf("child: get read lock\n");
 		printf("child: unlock\n");
-		if(pthread_rwlock_unlock(&rwlock) != 0)
+		if (pthread_rwlock_unlock(&rwlock) != 0)
 		{
 			printf("child: release read lock\n");
 			exit(PTS_UNRESOLVED);
@@ -64,14 +64,14 @@ int main()
 	pthread_t thread;
 	pthread_rwlockattr_t rwlockattr;	
 
-	if(pthread_rwlockattr_init(&rwlockattr) != 0)
+	if (pthread_rwlockattr_init(&rwlockattr) != 0)
 	{
 		printf("main: Error at pthread_rwlockattr_init()\n");
 		return PTS_UNRESOLVED;	
 	}
 	
 	rc = pthread_rwlock_init(&rwlock, &rwlockattr);
-	if(rc != 0)
+	if (rc != 0)
 	{
 		printf("Test FAILED: Error at pthread_rwlock_init(), returns %d\n", rc);
 		return PTS_FAIL;
@@ -79,7 +79,7 @@ int main()
 	
 	thread_state = 1;
 	printf("main: create thread\n");
-	if(pthread_create(&thread, NULL, fn_rd, NULL) != 0)
+	if (pthread_create(&thread, NULL, fn_rd, NULL) != 0)
 	{
 		printf("main: failed to create thread\n");
 		return PTS_UNRESOLVED;
@@ -93,31 +93,31 @@ int main()
 		sleep(1);
 	}while (thread_state !=3 && cnt++ < 3); 
 	
-	if(thread_state == 2)
+	if (thread_state == 2)
 	{
 		printf("Test FAILED: thread blocked on read lock\n");
 		exit(PTS_FAIL);
 	}
-	else if(thread_state != 3)
+	else if (thread_state != 3)
 	{
 		printf("main: Unexpected thread state\n");
 		exit(PTS_UNRESOLVED);
 	}
 		
-	if(pthread_join(thread, NULL) != 0)
+	if (pthread_join(thread, NULL) != 0)
 	{
 		printf("main: Error at pthread_join()\n");
 		exit(PTS_UNRESOLVED);
 	}
 
 	/* Cleanup */	
-	if(pthread_rwlock_destroy(&rwlock) != 0)
+	if (pthread_rwlock_destroy(&rwlock) != 0)
 	{
 		printf("Error at pthread_rwlock_destroy()\n");
 		return PTS_UNRESOLVED;
 	}	
 
-	if(pthread_rwlockattr_destroy(&rwlockattr) != 0)
+	if (pthread_rwlockattr_destroy(&rwlockattr) != 0)
 	{
 		printf("Error at pthread_rwlockattr_destroy()\n");
 		return PTS_UNRESOLVED;

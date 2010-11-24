@@ -28,14 +28,14 @@ int main()
 	int protocol,rc;
 	
 	/* Initialize a mutex attributes object */
-	if(pthread_mutexattr_init(&mta) != 0)
+	if (pthread_mutexattr_init(&mta) != 0)
 	{
 		perror("Error at pthread_mutexattr_init()\n");
 		return PTS_UNRESOLVED;
 	}
 	
 	/* Get the protocol mutex attr. */
-	if((rc=pthread_mutexattr_getprotocol(&mta, &protocol)) != 0)
+	if ((rc=pthread_mutexattr_getprotocol(&mta, &protocol)) != 0)
 	{
 		printf("Test FAILED: Error in pthread_mutexattr_getprotocol rc=%d\n", rc);
 		return PTS_FAIL;

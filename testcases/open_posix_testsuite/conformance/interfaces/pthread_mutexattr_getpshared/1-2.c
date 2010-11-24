@@ -36,7 +36,7 @@ int main()
 	int pshared;
 	
 	/* Initialize a mutex attributes object */
-	if(pthread_mutexattr_init(&mta) != 0)
+	if (pthread_mutexattr_init(&mta) != 0)
 	{
 		perror("Error at pthread_mutexattr_init()\n");
 		return PTS_UNRESOLVED;
@@ -44,20 +44,20 @@ int main()
 
 	/* Set 'pshared' to PTHREAD_PROCESS_SHARED. */
 	ret=pthread_mutexattr_setpshared(&mta, PTHREAD_PROCESS_SHARED);
-	if(ret != 0)
+	if (ret != 0)
 	{
 		printf("Error in pthread_mutexattr_setpshared(), error: %d\n", ret);
 		return PTS_UNRESOLVED;
 	}
 	
 	 /* Get 'pshared'.  */
-	if(pthread_mutexattr_getpshared(&mta, &pshared) != 0)
+	if (pthread_mutexattr_getpshared(&mta, &pshared) != 0)
 	{
 		fprintf(stderr,"Error obtaining the attribute process-shared\n");
 		return PTS_UNRESOLVED;
 	}
 	
-	if(pshared != PTHREAD_PROCESS_SHARED)
+	if (pshared != PTHREAD_PROCESS_SHARED)
 	{
 		printf("Test FAILED: Incorrect pshared value: %d\n", pshared);
 		return PTS_FAIL;

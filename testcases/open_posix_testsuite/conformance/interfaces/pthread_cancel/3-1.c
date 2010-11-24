@@ -68,7 +68,7 @@ void *a_thread_func()
 	 * is PTHREAD_CANCEL_DEFERRED. 
 	 */
 	rc = pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_setcanceltype\n");
 		exit(PTS_UNRESOLVED);
 	}
@@ -104,14 +104,14 @@ int main()
 
 	/* Increase priority of main, so the new thread doesn't get to run */
 	rc = pthread_setschedparam(pthread_self(), FIFOPOLICY, &param);
-	if(rc != 0) {	
+	if (rc != 0) {	
 		printf(ERROR_PREFIX "pthread_setschedparam\n");
 		exit(PTS_UNRESOLVED);
 	}
 	
 	/* Create a new thread. */
 	rc = pthread_create(&new_th, NULL, a_thread_func, NULL);
-	if(rc != 0) {	
+	if (rc != 0) {	
 		printf(ERROR_PREFIX "pthread_create\n");
 		return PTS_UNRESOLVED;
 	}
@@ -121,7 +121,7 @@ int main()
 		sleep(1);
 
 	rc = pthread_cancel(new_th);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_cancel\n");
 		exit(PTS_FAIL);
 	}
@@ -131,7 +131,7 @@ int main()
 	i = 0;
 	while(sem == 1) {
 		sleep(1);	
-		if(i == TIMEOUT_IN_SECS) {
+		if (i == TIMEOUT_IN_SECS) {
 			printf(ERROR_PREFIX "Cleanup handler was not called\n");
 			exit(PTS_FAIL);
 		}
@@ -141,14 +141,14 @@ int main()
 	/* If the cleanup function was not reached by calling the
 	 * pthread_cancel function, then the test fails. 
 	 */
-	if(cleanup_flag != 1) {
+	if (cleanup_flag != 1) {
 		printf(ERROR_PREFIX "Cleanup handler was not called\n");
 		exit(PTS_FAIL);
 	}
 	
 	diff = cleanup_time.tv_sec - main_time.tv_sec;
 	diff += (double)(cleanup_time.tv_nsec - main_time.tv_nsec)/1000000000.0;
-	if(diff < 0) {
+	if (diff < 0) {
 		printf(ERROR_PREFIX "Cleanup function was called before main continued\n");
 		exit(PTS_FAIL);
 	}

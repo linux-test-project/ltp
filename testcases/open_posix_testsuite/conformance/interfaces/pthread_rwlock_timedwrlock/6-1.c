@@ -6,7 +6,7 @@
  * Test pthread_rwlock_timedwrlock(pthread_rwlock_t * rwlock)
  * 
  * If a signal that causes a signal handler to be executed is delivered to 
- * a thread blocked on a read-write lock via a call to pthread_rwlock_timedwrlock( ),
+ * a thread blocked on a read-write lock via a call to pthread_rwlock_timedwrlock(),
  * upon return from the signal handler the thread shall resume waiting for the lock 
  * as if it was not interrupted.
  *
@@ -60,7 +60,7 @@ static struct timeval before_wait, after_wait;
 /* Signal handler called by the thread when SIGUSR1 is received */
 static void sig_handler() {
 
-	if(pthread_equal(pthread_self(), sig_thread))
+	if (pthread_equal(pthread_self(), sig_thread))
 	{
 		printf("sig_handler: signal is handled by sig_thread\n");
 		handler_called = 1;
@@ -96,7 +96,7 @@ static void * th_fn(void *arg)
 	printf("thread: attempt timed write lock, %d seconds\n", TIMEOUT);
 	thread_state = ENTERED_THREAD;
 	rc = pthread_rwlock_timedwrlock(&rwlock, &abs_timeout);
-	if(rc != ETIMEDOUT)
+	if (rc != ETIMEDOUT)
 	{
 		printf("sig_thread: pthread_rwlock_timedwrlock returns %d\n", rc);
 		exit(PTS_FAIL);
@@ -114,14 +114,14 @@ int main()
 	int cnt;
 	struct timeval time_diff;
 
-	if(pthread_rwlock_init(&rwlock, NULL) != 0)
+	if (pthread_rwlock_init(&rwlock, NULL) != 0)
 	{
 		printf("Error at pthread_rwlock_init()\n");
 		return PTS_UNRESOLVED;
 	}
 	
 	printf("main: attempt write lock\n");
-	if(pthread_rwlock_wrlock(&rwlock) != 0)
+	if (pthread_rwlock_wrlock(&rwlock) != 0)
 	{
 		printf("main: Error at pthread_rwlock_wrlock()\n");
 		return PTS_UNRESOLVED;
@@ -129,7 +129,7 @@ int main()
 	printf("main: acquired write lock\n");
 
 	thread_state = NOT_CREATED_THREAD;
-	if(pthread_create(&sig_thread, NULL, th_fn, NULL) != 0)
+	if (pthread_create(&sig_thread, NULL, th_fn, NULL) != 0)
 	{
 		printf("Error at pthread_create()\n");
 		return PTS_UNRESOLVED;
@@ -142,14 +142,14 @@ int main()
 		sleep(1);
 	}while(thread_state != ENTERED_THREAD && cnt++ < TIMEOUT);
 	
-	if(thread_state != ENTERED_THREAD)
+	if (thread_state != ENTERED_THREAD)
 	{
 		printf("Unexpected thread state %d\n", thread_state);
 		exit(PTS_UNRESOLVED);
 	}
 
 	printf("main: fire SIGUSR1 to thread\n");
-	if(pthread_kill(sig_thread, SIGUSR1) != 0)
+	if (pthread_kill(sig_thread, SIGUSR1) != 0)
 	{
 		printf("main: Error at pthread_kill()\n");
 		exit(PTS_UNRESOLVED);
@@ -161,14 +161,14 @@ int main()
 		sleep(1);
 	}while(thread_state != EXITING_THREAD && cnt++ < 2*TIMEOUT);
 	
-	if(cnt >= 2*TIMEOUT)
+	if (cnt >= 2*TIMEOUT)
 	{
 		/* thread blocked*/
 		printf("Test FAILED: thread blocked even afer the abs_timeout expired\n");
 		exit(PTS_FAIL);		
 	}
 	
-	if(handler_called != 1)
+	if (handler_called != 1)
 	{
 		printf("The handler for SIGUSR1 did not get called\n");
 		exit(PTS_UNRESOLVED);
@@ -182,7 +182,7 @@ int main()
 		--time_diff.tv_sec;
 		time_diff.tv_usec += 1000000;
 	}
-	if(time_diff.tv_sec < TIMEOUT)
+	if (time_diff.tv_sec < TIMEOUT)
 	{
 		printf("Test FAILED: Timeout was for %d seconds, but waited for %ld.%06ld seconds instead\n",
 			TIMEOUT, (long)time_diff.tv_sec, (long)time_diff.tv_usec);
@@ -190,19 +190,19 @@ int main()
 	}
 
 	printf("main: unlock write lock\n");
-	if(pthread_rwlock_unlock(&rwlock) != 0)
+	if (pthread_rwlock_unlock(&rwlock) != 0)
 	{
 		printf("main: Error at pthread_rwlock_unlock()\n");
 		return PTS_UNRESOLVED;
 	}
 	
-	if(pthread_join(sig_thread, NULL) != 0)
+	if (pthread_join(sig_thread, NULL) != 0)
 	{
 		printf("main: Error at pthread_join()\n");
 		return PTS_UNRESOLVED;
 	}
 	
-	if(pthread_rwlock_destroy(&rwlock) != 0)
+	if (pthread_rwlock_destroy(&rwlock) != 0)
 	{
 		printf("Error at pthread_destroy()\n");
 		return PTS_UNRESOLVED;

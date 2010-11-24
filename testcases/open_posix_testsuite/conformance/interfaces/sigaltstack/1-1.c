@@ -33,7 +33,7 @@ stack_t alternate_s;
 void handler(int signo)
 {
 	int i = 0;
-	if ( (void*)&i < (alternate_s.ss_sp) || (long)&i>=((long)alternate_s.ss_sp + (long)alternate_s.ss_size)) {
+	if ((void*)&i < (alternate_s.ss_sp) || (long)&i>=((long)alternate_s.ss_sp + (long)alternate_s.ss_size)) {
 	 
 		printf("Test FAILED: address of local variable is not inside the memory allocated for the alternate signal stack\n");
 		exit(PTS_FAIL);	

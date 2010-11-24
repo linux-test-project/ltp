@@ -1,0 +1,62 @@
+KVM RAS Test Suite
+==================
+The KVM RAS Test Suite is a collection of test scripts for testing the
+Linux kernel MCE processing features in KVM guest system.
+
+Jan 26th, 2010
+
+Jiajia Zheng
+
+
+In the Package
+----------------
+
+Here is a short description of what is included in the package
+
+host/*
+	Contains host test scripts, which drive test procedure on host system.
+guest/*
+	Contains guest test scripts, which drive test procedure on guest system.
+
+Dependencies
+----------------
+
+KVM RAS Test Suite has following dependencies on kernel and other tools:
+
+* Linux Kernel:
+  Version 2.6.32 or newer, with MCA high level handlers enabled.
+
+* page-types:
+  A tool to query page types, which is accompanied with Linux kernel
+  source (2.6.32 or newer, $KERNEL_SRC/Documentation/vm/page-types.c).
+
+* simple_process:
+  A process constantly access the allocated memeory. (../tools/simple_process)
+
+Installation
+---------------
+1. Build host kernel with
+	CONFIG_KVM=y
+	CONFIG_KVM_INTEL=y
+2. Create a testing dirctory on host system and put the host test scripts
+   and test tool (page-types) into it.
+   By default, the testing directory is /test.
+3. Use ssh-keygen to generate public and privite keys, and copy them into the
+   testing directory on host system.
+4. Mount guest image
+5. Create a testing dirctory on guest system and copy guest test script and
+   tools (page-types, simple_process) into it.
+   By default, the testing directory is /test.
+6. Use qemu to start guest system, install page-types and simple_process on
+   guest system.
+     gcc -o page-types page-types.c
+     cd simple_process
+     make
+
+Start Testing
+---------------
+Run testing by
+	./host_run.sh <option> <argument>
+You can get the help information by
+	./host_run.sh -h
+

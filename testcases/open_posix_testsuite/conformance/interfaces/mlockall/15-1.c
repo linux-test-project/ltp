@@ -35,10 +35,10 @@ int set_nonroot()
 	setpwent();
 	/* search for the first user which is non root */ 
 	while((pw = getpwent()) != NULL)
-		if(strcmp(pw->pw_name, "root"))
+		if (strcmp(pw->pw_name, "root"))
 			break;
 	endpwent();
-	if(pw == NULL) {
+	if (pw == NULL) {
 		printf("There is no other user than current and root.\n");
 		return 1;
 	}
@@ -48,8 +48,8 @@ int set_nonroot()
         if ((ret = setrlimit(RLIMIT_MEMLOCK,&rlim)) != 0)
                 printf("Failed at setrlimit() return %d \n", ret);
 
-	if(seteuid(pw->pw_uid) != 0) {
-		if(errno == EPERM) {
+	if (seteuid(pw->pw_uid) != 0) {
+		if (errno == EPERM) {
 			printf("You don't have permission to change your UID.\n");
 			return 1;
 		}
@@ -75,10 +75,10 @@ int main() {
 
 	result = mlockall(MCL_CURRENT);
 
-	if(result == -1 && errno == EPERM) {
+	if (result == -1 && errno == EPERM) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else if(result == 0) {
+	} else if (result == 0) {
 		printf("You have the right to call mlockall\n");
 		return PTS_UNRESOLVED;
 	} else {

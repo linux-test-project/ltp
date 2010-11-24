@@ -7,7 +7,7 @@
  * The st_ctime and st_mtime fields of a file that is mapped with 
  * MAP_SHARED and PROT_WRITE shall be marked for update at some point
  * in the interval between a write reference to the
- * mapped region and the next call to msync( ) with MS_ASYNC or MS_SYNC
+ * mapped region and the next call to msync() with MS_ASYNC or MS_SYNC
  * for that portion of the file by any process. 
  * If there is no such call and if the underlying file is modified 
  * as a result of a write reference, then these fields shall be marked

@@ -33,11 +33,11 @@ int verify_param(pthread_attr_t *attr, int priority) {
 	struct sched_param param;
 
 	rc = pthread_attr_getschedparam(attr, &param);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_attr_getschedparam\n");
 		exit(PTS_UNRESOLVED);
 	}
-	if(priority != param.sched_priority) {
+	if (priority != param.sched_priority) {
 		printf(ERROR_PREFIX "got wrong sched param\n");
 		exit(PTS_FAIL);
 	}	
@@ -52,49 +52,49 @@ int main()
 	int                   priority;
 
 	rc = pthread_attr_init(&attr);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_attr_init\n");
 		exit(PTS_UNRESOLVED);
 	}
 
 	rc = pthread_attr_setschedpolicy(&attr, FIFOPOLICY);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_attr_setschedpolicy\n");
 		exit(PTS_UNRESOLVED);
 	}
 	priority = sched_get_priority_max(FIFOPOLICY);
-	if(priority == -1) {
+	if (priority == -1) {
 		printf(ERROR_PREFIX "sched_get_priority_max\n");
 		exit(PTS_UNRESOLVED);
 	}
 	param.sched_priority = priority;
 	rc = pthread_attr_setschedparam(&attr, &param);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_attr_setschedparam\n");
 		exit(PTS_UNRESOLVED);
 	}
 	verify_param(&attr, priority);
 
 	rc = pthread_attr_setschedpolicy(&attr, RRPOLICY);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_attr_setschedpolicy\n");
 		exit(PTS_UNRESOLVED);
 	}
 	priority = sched_get_priority_max(RRPOLICY);
-	if(priority == -1) {
+	if (priority == -1) {
 		printf(ERROR_PREFIX "sched_get_priority_max\n");
 		exit(PTS_UNRESOLVED);
 	}
 	param.sched_priority = priority;
 	rc = pthread_attr_setschedparam(&attr, &param);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_attr_setschedparam\n");
 		exit(PTS_UNRESOLVED);
 	}
 	verify_param(&attr, priority);
 
 	rc = pthread_attr_destroy(&attr);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_attr_destroy\n");
 		exit(PTS_UNRESOLVED);
 	}

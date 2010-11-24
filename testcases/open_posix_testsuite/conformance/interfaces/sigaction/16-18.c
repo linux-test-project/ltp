@@ -96,28 +96,28 @@ volatile sig_atomic_t caught = 0;
 sem_t sem;
 
 /* Handler function */
-void handler( int signo )
+void handler(int signo)
 {
-	printf( "Caught signal %d\n", signo );
+	printf("Caught signal %d\n", signo);
 	caught++;
 }
 
 /* Thread function */
-void * threaded ( void * arg )
+void * threaded (void * arg)
 {
 	int ret = 0;
 
-	ret = sem_wait( &sem );
+	ret = sem_wait(&sem);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		if ( errno == EINTR )
+		if (errno == EINTR)
 		{
-			FAILED( "The function returned EINTR while SA_RESTART is set" );
+			FAILED("The function returned EINTR while SA_RESTART is set");
 		}
 		else
 		{
-			UNRESOLVED( errno, "sem_wait failed" );
+			UNRESOLVED(errno, "sem_wait failed");
 		}
 	}
 
@@ -139,35 +139,35 @@ int main()
 	/* Set the signal handler */
 	sa.sa_flags = SA_RESTART;
 	sa.sa_handler = handler;
-	ret = sigemptyset( &sa.sa_mask );
+	ret = sigemptyset(&sa.sa_mask);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to empty signal set" );
+		UNRESOLVED(ret, "Failed to empty signal set");
 	}
 
 	/* Install the signal handler for SIGNAL */
-	ret = sigaction( SIGNAL, &sa, 0 );
+	ret = sigaction(SIGNAL, &sa, 0);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to set signal handler" );
+		UNRESOLVED(ret, "Failed to set signal handler");
 	}
 
 	/* Initialize the semaphore */
-	ret = sem_init( &sem, 0, 0 );
+	ret = sem_init(&sem, 0, 0);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to init a semaphore" );
+		UNRESOLVED(ret, "Failed to init a semaphore");
 	}
 
 	/* Create the child thread */
-	ret = pthread_create( &child, NULL, threaded, NULL );
+	ret = pthread_create(&child, NULL, threaded, NULL);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to create a child thread" );
+		UNRESOLVED(ret, "Failed to create a child thread");
 	}
 
 	/* Let the child thread enter the wait routine...
@@ -180,45 +180,45 @@ int main()
 	sched_yield();
 
 	/* Ok, now kill the child */
-	ret = pthread_kill( child, SIGNAL );
+	ret = pthread_kill(child, SIGNAL);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to kill the child thread" );
+		UNRESOLVED(ret, "Failed to kill the child thread");
 	}
 
 	/* wait that the child receives the signal */
-	while ( !caught )
+	while (!caught)
 		sched_yield();
 
 	/* Now let the child run and terminate */
-	ret = sem_post( &sem );
+	ret = sem_post(&sem);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( errno, "Failed to post the semaphore" );
+		UNRESOLVED(errno, "Failed to post the semaphore");
 	}
 
-	ret = pthread_join( child, NULL );
+	ret = pthread_join(child, NULL);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to join the thread" );
+		UNRESOLVED(ret, "Failed to join the thread");
 	}
 
 	/* terminate */
-	ret = sem_destroy( &sem );
+	ret = sem_destroy(&sem);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to destroy the semaphore" );
+		UNRESOLVED(ret, "Failed to destroy the semaphore");
 	}
 
 
 	/* Test passed */
 #if VERBOSE > 0
 
-	output( "Test passed\n" );
+	output("Test passed\n");
 
 #endif
 

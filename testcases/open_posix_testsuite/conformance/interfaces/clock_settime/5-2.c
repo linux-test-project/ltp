@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
 	sigset_t set;
 	
 	/* Check that we're root...can't call clock_settime with CLOCK_REALTIME otherwise */
-	if(getuid() != 0)
+	if (getuid() != 0)
 	{
 		printf("Run this test as ROOT, not as a Regular User\n");
 		return PTS_UNTESTED;
@@ -66,8 +66,8 @@ int main(int argc, char *argv[])
 	act.sa_handler=handler;
 	act.sa_flags=0;
 
-	if ( (sigemptyset(&set) != 0) ||
-		(sigemptyset(&act.sa_mask) != 0) ) {
+	if ((sigemptyset(&set) != 0) ||
+		(sigemptyset(&act.sa_mask) != 0)) {
 		perror("sigemptyset() was not successful\n");
 		return PTS_UNRESOLVED;
 	}
@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
 		return PTS_FAIL;
 	}
 
-	if ( abs(tsleft.tv_sec-SLEEPDELTA) <= ACCEPTABLEDELTA) {
+	if (abs(tsleft.tv_sec-SLEEPDELTA) <= ACCEPTABLEDELTA) {
 		printf("Test PASSED\n");
 		tsreset.tv_sec += TIMERSEC;
 		setBackTime(tsreset);

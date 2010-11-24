@@ -1,0 +1,25 @@
+File system metadata test program is used to test i-node operations
+with heavy workload. Make sure every i-node operation gets the
+expected result. This script creates a lot of directory entries with
+k-tree data structure.
+
+k-tree is a transformation of binary tree, For a binary tree, each father
+node has 2 children at most; but for a k-tree, it can has k children. We 
+need to test both file and directory, so we do some changes for k-tree 
+concept here. viz. each father node has k sub directories and k text files. 
+
+Note, test will caculate approximate disk space firstly based on the test  
+parameters from user. parameter tree_depth should be less than 10; 
+parameter node_number should be less than 20. If user passes a larger 
+number, it will generate a huge directory hierarchy, which might exhaust
+your disk space soon.
+
+As a suggestion, it's better to run the script on a free partition, so
+you can recover it easily by formatting disk after test gets finished!
+
+Here are the component list of fs-metadata test program.
+k-tree-gen		k-tree generator
+k-tree-trav		to modify a k-tree with i-nodes operations
+k-thread.sh		test thread
+fs-metadata.sh		the script to lauch test threads.
+

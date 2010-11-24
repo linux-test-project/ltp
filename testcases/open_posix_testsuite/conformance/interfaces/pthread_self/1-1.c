@@ -38,14 +38,14 @@ int main()
 	pthread_t new_th1;
 
 	/* Create a new thread. */
-	if(pthread_create(&new_th1, NULL, a_thread_func, NULL) != 0)
+	if (pthread_create(&new_th1, NULL, a_thread_func, NULL) != 0)
 	{	
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Wait for thread to return */
-	if(pthread_join(new_th1, NULL) != 0)
+	if (pthread_join(new_th1, NULL) != 0)
 	{
 		perror("Error in pthread_join()\n");
 		return PTS_UNRESOLVED;
@@ -55,7 +55,7 @@ int main()
 	 * parameters.  It should return a non-zero value, indicating that
 	 * both thread IDs are equal, and therefore refer to the same
 	 * thread. */ 
-	if(pthread_equal(new_th1, new_th2) == 0)
+	if (pthread_equal(new_th1, new_th2) == 0)
 	{
 		printf("Test FAILED\n");
 		return PTS_FAIL;

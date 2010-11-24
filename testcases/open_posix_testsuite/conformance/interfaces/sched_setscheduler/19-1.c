@@ -59,7 +59,7 @@ int main(){
 		fflush(stdout);
 
 		invalid_priority = sched_get_priority_max(policy);
-		if(invalid_priority == -1){
+		if (invalid_priority == -1){
 			perror("An error occurs when calling sched_get_priority_max()");
 			return PTS_UNRESOLVED;
 		}
@@ -70,14 +70,14 @@ int main(){
 
 		tmp = sched_setscheduler(0, policy, &param);
 
-		if(tmp == -1 && errno == EINVAL) {
+		if (tmp == -1 && errno == EINVAL) {
 			printf("  OK\n");
-		} else if(tmp != -1) {
+		} else if (tmp != -1) {
 			printf("  The returned code is not -1.\n");
 			result = PTS_FAIL;
-		} else if(errno == EPERM) {
+		} else if (errno == EPERM) {
 			printf("  This process does not have the permission to set its own scheduling policy.\n  Try to launch this test as root.\n");
-			if(result != PTS_FAIL) {
+			if (result != PTS_FAIL) {
 				result = PTS_UNRESOLVED;
 			}
 		} else {
@@ -88,7 +88,7 @@ int main(){
 		tst++;
 	}
 
-	if(result == PTS_PASS) {
+	if (result == PTS_PASS) {
 		printf("Test PASSED\n");
 	}
 	return result;

@@ -72,7 +72,7 @@ int main()
 	cancel_flag=0;
 	
 	/* Create a new thread. */
-	if(pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
 	{	
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
@@ -83,7 +83,7 @@ int main()
 	while(sem1==INTHREAD)
 		sleep(1);
 
-	if(pthread_cancel(new_th) != 0) 
+	if (pthread_cancel(new_th) != 0) 
 	{
 		perror("Error sending cancel request\n");
 		return PTS_UNRESOLVED;
@@ -94,7 +94,7 @@ int main()
 	sem1=INTHREAD;
 
 	/* Wait for thread to end execution. */
-	if(pthread_join(new_th, NULL) != 0)
+	if (pthread_join(new_th, NULL) != 0)
 	{
 		perror("Error in pthread_join()\n");
 		return PTS_UNRESOLVED;
@@ -102,7 +102,7 @@ int main()
 	
 	/* This means that the cancel request was ignored rather than honored, and 
 	 * the test fails. */
-	if(cancel_flag < 0)
+	if (cancel_flag < 0)
 	{
 		printf("Test FAILED: Thread of cancel type PTHREAD_CANCEL_ENABLE did not honor cancel request\n");
 		return PTS_FAIL;

@@ -29,17 +29,17 @@ int main()
     	int rc;
 	int policy = SCHED_FIFO;
 
-	if(pthread_attr_init(&attr) != 0) {
+	if (pthread_attr_init(&attr) != 0) {
 		printf("Error on pthread_attr_init()\n");
 		return PTS_UNRESOLVED;
 	}
 		
-	if((rc=pthread_attr_setschedpolicy(&attr,policy)) != 0) {
+	if ((rc=pthread_attr_setschedpolicy(&attr,policy)) != 0) {
     		printf("Error on pthread_attr_setschedpolicy()\t rc=%d\n", rc);
     		return PTS_FAIL;
     	}
 		
-    	if((rc=pthread_create(&thread,&attr,thread_func,NULL)) != 0) {
+    	if ((rc=pthread_create(&thread,&attr,thread_func,NULL)) != 0) {
   		if (rc == EPERM) {
   	    		printf("Permission Denied when creating thread with policy %d\n", policy);
   	    		return PTS_UNRESOLVED;

@@ -4,7 +4,7 @@
  * of this license, see the COPYING file at the top level of this 
  * source tree.
 
- * The mmap( ) function shall fail if:
+ * The mmap() function shall fail if:
  * [ENOTSUP] MAP_FIXED or MAP_PRIVATE was specified 
  * in the flags argument and the
  * implementation does not support this functionality.

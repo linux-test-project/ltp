@@ -35,12 +35,12 @@ int main() {
 
 	/* Initial value of Semaphore is 1 */
 	mysemp = sem_open(semname, O_CREAT,0,1);
-	if( mysemp == SEM_FAILED || mysemp == NULL ) {
+	if (mysemp == SEM_FAILED || mysemp == NULL) {
 		perror(ERROR_PREFIX "sem_open");
 		return PTS_UNRESOLVED;
 	}
 
-	if ( sem_unlink(semname) == -1) {
+	if (sem_unlink(semname) == -1) {
 		puts("TEST FAILED: Couldn't remove the named semaphore");
 		return PTS_FAIL;
 	} else {

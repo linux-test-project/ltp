@@ -38,27 +38,27 @@ int main() {
 		SCHED_RR :
 		SCHED_FIFO;
 
-	if(pthread_attr_init(&attr) != 0) {
+	if (pthread_attr_init(&attr) != 0) {
 		printf("An error occurs when calling pthread_attr_init()");
 		return PTS_UNRESOLVED;
 	}
 	result = pthread_attr_setscope(&attr, PTHREAD_SCOPE_PROCESS);
-	if(result == ENOTSUP) {
+	if (result == ENOTSUP) {
 		printf("Process contention scope threads are not supported.\n");
 		return PTS_UNSUPPORTED;
-	} else if(result != 0) {
+	} else if (result != 0) {
 		printf("An error occurs when calling pthread_attr_setscope()");
 		return PTS_UNRESOLVED;
 	}
-	if(pthread_create(&tid, &attr, runner, NULL) != 0) {
+	if (pthread_create(&tid, &attr, runner, NULL) != 0) {
 		printf("An error occurs when calling pthread_create()");
 		return PTS_UNRESOLVED;
 	}
 
 
 	param.sched_priority = sched_get_priority_min(new_policy);
-	if(sched_setscheduler(getpid(), new_policy, &param) != 0){
-		if(errno == EPERM) {
+	if (sched_setscheduler(getpid(), new_policy, &param) != 0){
+		if (errno == EPERM) {
 			printf("This process does not have the permission to set its own scheduling policy.\nTry to launch this test as root.\n");
 			return PTS_UNRESOLVED;
 		}
@@ -66,14 +66,14 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 
-	if(pthread_getschedparam(tid , &policy, &param) != 0) {
+	if (pthread_getschedparam(tid , &policy, &param) != 0) {
 		printf("An error occurs when calling pthread_getschedparam()");
 		return PTS_UNRESOLVED;
 	}
 
 	pthread_cancel(tid);
 
-	if(policy == new_policy){
+	if (policy == new_policy){
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}

@@ -6,12 +6,12 @@
 
  * Test that pthread_rwlock_tryrdlock(pthread_rwlock_t *rwlock)
  *
- *	The pthread_rwlock_tryrdlock( ) function shall apply a read lock as in the 
- *	pthread_rwlock_rdlock( )
+ *	The pthread_rwlock_tryrdlock() function shall apply a read lock as in the 
+ *	pthread_rwlock_rdlock()
  *	function, with the exception that the function shall fail if the 
- *	equivalent pthread_rwlock_rdlock( )
+ *	equivalent pthread_rwlock_rdlock()
  *	call would have blocked the calling thread. In no case shall the 
- *	pthread_rwlock_tryrdlock( )
+ *	pthread_rwlock_tryrdlock()
  *	function ever block; it always either acquires the lock or fails and 
  *	returns immediately.
  *
@@ -52,14 +52,14 @@ static void* fn_rd_1(void *arg)
 	thread_state = ENTERED_THREAD;
 	printf("rd_thread1: attempt pthread_rwlock_tryrdlock\n");
 	rc = pthread_rwlock_tryrdlock(&rwlock);
-	if(rc != 0)
+	if (rc != 0)
 	{
 		printf("Test fail at pthread_rwlock_tryrdlock(): error code: %d\n", rc);
 		exit(PTS_FAIL);
 	}
 	printf("rd_thread1: acquired read lock\n");
 	printf("rd_thread1: unlock read lock\n");
-	if(pthread_rwlock_unlock(&rwlock) != 0)
+	if (pthread_rwlock_unlock(&rwlock) != 0)
 	{
 		printf("Error at pthread_rwlock_unlock()\n");
 		exit(PTS_UNRESOLVED);
@@ -74,7 +74,7 @@ static void* fn_rd_2(void *arg)
 	thread_state = ENTERED_THREAD;
 	printf("rd_thread2: attempt pthread_rwlock_tryrdlock\n");
 	ret = pthread_rwlock_tryrdlock(&rwlock);
-	if(ret != EBUSY)
+	if (ret != EBUSY)
 	{
 		printf("Test FAILED: expected EBUSY, got %d\n", ret);
 		exit(PTS_FAIL);
@@ -92,7 +92,7 @@ int main()
 
 	pthread_t rd_thread1, rd_thread2;
 	
-	if(pthread_rwlock_init(&rwlock, NULL) != 0)
+	if (pthread_rwlock_init(&rwlock, NULL) != 0)
 	{
 		printf("main: Error at pthrad_rwlock_init()\n");
 		return PTS_UNRESOLVED;
@@ -101,7 +101,7 @@ int main()
 	printf("main: attempt pthread_rwlock_tryrdlock\n");
 	/* We have no lock, this read lock should succeed */	
 	rc = pthread_rwlock_tryrdlock(&rwlock);
-	if(rc != 0)
+	if (rc != 0)
 	{
 		printf("Test FAILED: in main()  at pthread_rwlock_tryrdlock, error code:%d\n", rc);
 		return PTS_FAIL;
@@ -111,7 +111,7 @@ int main()
 	
 	thread_state = NOT_CREATED_THREAD;
 	printf("main: create rd_thread1\n");
-	if(pthread_create(&rd_thread1, NULL, fn_rd_1, NULL) != 0)
+	if (pthread_create(&rd_thread1, NULL, fn_rd_1, NULL) != 0)
 	{
 		printf("main: Error at creating rd_thread1\n");
 		return PTS_UNRESOLVED;
@@ -126,33 +126,33 @@ int main()
 		sleep(1);
 	}while (thread_state !=EXITING_THREAD && cnt++ < 3); 
 	
-	if(thread_state == ENTERED_THREAD)
+	if (thread_state == ENTERED_THREAD)
 	{
 		/* the child thread started but blocked */
 		printf("Test FAILED: rd_thread1 block at pthread_rwlock_tryrdlock()\n");
 		return PTS_FAIL;
 	}
-	else if(thread_state != EXITING_THREAD)
+	else if (thread_state != EXITING_THREAD)
 	{
 		printf("Unexpected thread state for rd_thread1: %d\n", thread_state);
 		return PTS_UNRESOLVED;
 	}
 		
 	printf("main: unlock read lock\n");
-	if(pthread_rwlock_unlock(&rwlock) != 0)
+	if (pthread_rwlock_unlock(&rwlock) != 0)
 	{
 		printf("main: Error at pthread_rwlock_unlock\n");
 		return PTS_UNRESOLVED;
 	}
 	
-	if(pthread_join(rd_thread1, NULL) != 0)
+	if (pthread_join(rd_thread1, NULL) != 0)
 	{
 		printf("main: Error joining rd_thread1\n");
 		return PTS_UNRESOLVED;
 	}
 
 	printf("main: attempt write lock\n");
-	if(pthread_rwlock_wrlock(&rwlock) != 0)
+	if (pthread_rwlock_wrlock(&rwlock) != 0)
 	{
 		printf("main: Error getting write lock\n");
 		return PTS_UNRESOLVED;	
@@ -163,7 +163,7 @@ int main()
 	thread_state = NOT_CREATED_THREAD;
 	cnt = 0;
 	printf("main: create rd_thread2\n");
-	if(pthread_create(&rd_thread2, NULL, fn_rd_2, NULL) != 0)
+	if (pthread_create(&rd_thread2, NULL, fn_rd_2, NULL) != 0)
 	{
 		printf("main: Error at creating rd_thread2\n");
 		return PTS_UNRESOLVED;
@@ -174,12 +174,12 @@ int main()
 		sleep(1);
 	}while (thread_state !=EXITING_THREAD && cnt++ < 3); 
 	
-	if(thread_state == ENTERED_THREAD)
+	if (thread_state == ENTERED_THREAD)
 	{
 		printf("Test FAILED: pthread_rwlock_trylock() should not block rd_thread2\n");
 		return PTS_FAIL;
 	}
-	else if(thread_state != EXITING_THREAD)
+	else if (thread_state != EXITING_THREAD)
 	{
 		printf("Unexpected thread state for rd_thread2\n");
 		return PTS_UNRESOLVED;
@@ -187,13 +187,13 @@ int main()
 	
 	printf("main: unlock write lock\n");
 	thread_state = NOT_CREATED_THREAD;
-	if(pthread_rwlock_unlock(&rwlock) != 0)
+	if (pthread_rwlock_unlock(&rwlock) != 0)
 	{
 		printf("main: Error at releasing write lock\n");
 		return PTS_UNRESOLVED;
 	}
 	
-	if(pthread_rwlock_destroy(&rwlock) != 0)
+	if (pthread_rwlock_destroy(&rwlock) != 0)
 	{
 		printf("Error at pthread_rwlockattr_destroy()\n");
 		return PTS_UNRESOLVED;

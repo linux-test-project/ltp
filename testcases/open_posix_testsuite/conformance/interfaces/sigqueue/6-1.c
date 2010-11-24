@@ -8,8 +8,8 @@
  This program verifies that if the value of pid causes signo to be
  generated for the sending process, and if signo is not blocked for
  the calling thread and if no other thread has signo unblocked or is
- waiting in a sigwait( ) function for signo, then signal SIGTOTEST
- is delivered to the calling thread before the sigqueue( ) function returns.
+ waiting in a sigwait() function for signo, then signal SIGTOTEST
+ is delivered to the calling thread before the sigqueue() function returns.
 
  Steps:
  - Register for myhandler to be called when SIGTOTEST is called, and make

@@ -32,7 +32,7 @@ int main()
 
 	/* Initialize the rwlock */
 	rc = pthread_rwlock_init(&rwlock, NULL);
-	if(rc != 0)
+	if (rc != 0)
 	{
 		printf("Test FAILED: Error at pthread_rwlock_init(), returns %d\n", rc);
 		return PTS_FAIL;
@@ -42,14 +42,14 @@ int main()
 	rc = pthread_rwlock_init(&rwlock, NULL);
 	
 	/* Cleanup */	
-	if(pthread_rwlock_destroy(&rwlock) != 0)
+	if (pthread_rwlock_destroy(&rwlock) != 0)
 	{
 		printf("Error at pthread_rwlock_destroy()\n");
 		return PTS_UNRESOLVED;
 	}	
 
 	
-	if(rc == EBUSY)
+	if (rc == EBUSY)
 	{
 		printf("Test PASSED\n");
 		return PTS_PASS;

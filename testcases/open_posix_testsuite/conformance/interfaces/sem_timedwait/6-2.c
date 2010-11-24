@@ -36,7 +36,7 @@ int main() {
 	struct timespec ts;
 	int sts;
 
-        if ( sem_init (&mysemp, 0, 0) == -1 ) {
+        if (sem_init (&mysemp, 0, 0) == -1) {
                 perror(ERROR_PREFIX "sem_init");
                 return PTS_UNRESOLVED;
         }
@@ -45,7 +45,7 @@ int main() {
 
 	sts = sem_timedwait(&mysemp, &ts);
 
-	if(( errno == EINVAL) && ( sts == -1)) {
+	if ((errno == EINVAL) && (sts == -1)) {
 		puts("TEST PASSED");
 		sem_destroy(&mysemp);
 		return PTS_PASS;

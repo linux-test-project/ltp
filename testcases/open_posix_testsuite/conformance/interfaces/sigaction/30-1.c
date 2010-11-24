@@ -85,7 +85,7 @@
 /***************************    Test case   ***********************************/
 /******************************************************************************/
 
-void handler( int signo )
+void handler(int signo)
 {
 	return ;
 }
@@ -105,115 +105,115 @@ int main()
 
 	sa.sa_handler = handler;
 
-	ret = sigemptyset( &sa.sa_mask );
+	ret = sigemptyset(&sa.sa_mask);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to empty signal set" );
+		UNRESOLVED(ret, "Failed to empty signal set");
 	}
 
 	/* Install the signal handler for SIGRTMAX */
 #if VERBOSE > 0
-	output( "Trying to catch invalid signal %d\n", SIG_INVALID );
+	output("Trying to catch invalid signal %d\n", SIG_INVALID);
 
 #endif
-	ret = sigaction( SIG_INVALID, &sa, 0 );
+	ret = sigaction(SIG_INVALID, &sa, 0);
 
-	if ( ret == 0 )
+	if (ret == 0)
 	{
-		output( "Is signal %d valid on this implementation?\n", SIG_INVALID );
-		FAILED( "Setting handler for invalid signal did not fail" );
+		output("Is signal %d valid on this implementation?\n", SIG_INVALID);
+		FAILED("Setting handler for invalid signal did not fail");
 	}
 
-	if ( errno != EINVAL )
+	if (errno != EINVAL)
 	{
-		output( "Got error %d (%s) instead of %d (%s)\n",
-		        errno, strerror( errno ), EINVAL, strerror( EINVAL ) );
-		FAILED( "Wrong error code returned" );
+		output("Got error %d (%s) instead of %d (%s)\n",
+		        errno, strerror(errno), EINVAL, strerror(EINVAL));
+		FAILED("Wrong error code returned");
 	}
 
 	/* Install the signal handler for SIGKILL */
 #if VERBOSE > 0
-	output( "Trying to catch unauthorized signal SIGKILL (%d)\n", SIGKILL );
+	output("Trying to catch unauthorized signal SIGKILL (%d)\n", SIGKILL);
 
 #endif
-	ret = sigaction( SIGKILL, &sa, 0 );
+	ret = sigaction(SIGKILL, &sa, 0);
 
-	if ( ret == 0 )
+	if (ret == 0)
 	{
-		FAILED( "Setting handler for SIGKILL did not fail" );
+		FAILED("Setting handler for SIGKILL did not fail");
 	}
 
-	if ( errno != EINVAL )
+	if (errno != EINVAL)
 	{
-		output( "Got error %d (%s) instead of %d (%s)\n",
-		        errno, strerror( errno ), EINVAL, strerror( EINVAL ) );
-		FAILED( "Wrong error code returned" );
+		output("Got error %d (%s) instead of %d (%s)\n",
+		        errno, strerror(errno), EINVAL, strerror(EINVAL));
+		FAILED("Wrong error code returned");
 	}
 
 	/* Install the signal handler for SIGSTOP */
 #if VERBOSE > 0
-	output( "Trying to catch unauthorized signal SIGSTOP (%d)\n", SIGSTOP );
+	output("Trying to catch unauthorized signal SIGSTOP (%d)\n", SIGSTOP);
 
 #endif
-	ret = sigaction( SIGSTOP, &sa, 0 );
+	ret = sigaction(SIGSTOP, &sa, 0);
 
-	if ( ret == 0 )
+	if (ret == 0)
 	{
-		FAILED( "Setting handler for SIGSTOP did not fail" );
+		FAILED("Setting handler for SIGSTOP did not fail");
 	}
 
-	if ( errno != EINVAL )
+	if (errno != EINVAL)
 	{
-		output( "Got error %d (%s) instead of %d (%s)\n",
-		        errno, strerror( errno ), EINVAL, strerror( EINVAL ) );
-		FAILED( "Wrong error code returned" );
+		output("Got error %d (%s) instead of %d (%s)\n",
+		        errno, strerror(errno), EINVAL, strerror(EINVAL));
+		FAILED("Wrong error code returned");
 	}
 
 	sa.sa_handler = SIG_IGN;
 
 	/* Ingrore SIGKILL */
 #if VERBOSE > 0
-	output( "Trying to ignore unauthorized signal SIGKILL (%d)\n", SIGKILL );
+	output("Trying to ignore unauthorized signal SIGKILL (%d)\n", SIGKILL);
 
 #endif
-	ret = sigaction( SIGKILL, &sa, 0 );
+	ret = sigaction(SIGKILL, &sa, 0);
 
-	if ( ret == 0 )
+	if (ret == 0)
 	{
-		FAILED( "Ignoring SIGKILL did not fail" );
+		FAILED("Ignoring SIGKILL did not fail");
 	}
 
-	if ( errno != EINVAL )
+	if (errno != EINVAL)
 	{
-		output( "Got error %d (%s) instead of %d (%s)\n",
-		        errno, strerror( errno ), EINVAL, strerror( EINVAL ) );
-		FAILED( "Wrong error code returned" );
+		output("Got error %d (%s) instead of %d (%s)\n",
+		        errno, strerror(errno), EINVAL, strerror(EINVAL));
+		FAILED("Wrong error code returned");
 	}
 
 	/* Ignore SIGSTOP */
 #if VERBOSE > 0
-	output( "Trying to ignore unauthorized signal SIGSTOP (%d)\n", SIGSTOP );
+	output("Trying to ignore unauthorized signal SIGSTOP (%d)\n", SIGSTOP);
 
 #endif
-	ret = sigaction( SIGSTOP, &sa, 0 );
+	ret = sigaction(SIGSTOP, &sa, 0);
 
-	if ( ret == 0 )
+	if (ret == 0)
 	{
-		FAILED( "Ignoring SIGSTOP did not fail" );
+		FAILED("Ignoring SIGSTOP did not fail");
 	}
 
-	if ( errno != EINVAL )
+	if (errno != EINVAL)
 	{
-		output( "Got error %d (%s) instead of %d (%s)\n",
-		        errno, strerror( errno ), EINVAL, strerror( EINVAL ) );
-		FAILED( "Wrong error code returned" );
+		output("Got error %d (%s) instead of %d (%s)\n",
+		        errno, strerror(errno), EINVAL, strerror(EINVAL));
+		FAILED("Wrong error code returned");
 	}
 
 	/* Test passed */
 #if VERBOSE > 0
 
-	output( "Test passed\n" );
+	output("Test passed\n");
 
 #endif
 

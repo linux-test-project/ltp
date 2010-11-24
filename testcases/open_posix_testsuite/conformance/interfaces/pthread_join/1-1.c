@@ -50,20 +50,20 @@ int main()
 	end_exec = 0;
 	
 	/* Create a new thread. */
-	if(pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
 	{	
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Wait for thread to return */
-	if(pthread_join(new_th, NULL) != 0)
+	if (pthread_join(new_th, NULL) != 0)
 	{
 		perror("Error in pthread_join()\n");
 		return PTS_UNRESOLVED;
 	}
 
-	if(end_exec == 0)
+	if (end_exec == 0)
 	{
 		printf("Test FAILED: When using pthread_join(), main() did not wait for thread to finish execution before continuing.\n");
 		return PTS_FAIL;

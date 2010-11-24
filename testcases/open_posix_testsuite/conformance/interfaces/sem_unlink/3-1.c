@@ -100,32 +100,32 @@ int set_nonroot()
 	setpwent();
 	/* search for the first user which is non root */
 
-	while ( ( pw = getpwent() ) != NULL )
-		if ( strcmp( pw->pw_name, "root" ) )
+	while ((pw = getpwent()) != NULL)
+		if (strcmp(pw->pw_name, "root"))
 			break;
 
 	endpwent();
 
-	if ( pw == NULL )
+	if (pw == NULL)
 	{
-		output( "There is no other user than current and root.\n" );
+		output("There is no other user than current and root.\n");
 		return 1;
 	}
 
-	if ( seteuid( pw->pw_uid ) != 0 )
+	if (seteuid(pw->pw_uid) != 0)
 	{
-		if ( errno == EPERM )
+		if (errno == EPERM)
 		{
-			output( "You don't have permission to change your UID.\n" );
+			output("You don't have permission to change your UID.\n");
 			return 1;
 		}
 
-		perror( "An error occurs when calling seteuid()" );
+		perror("An error occurs when calling seteuid()");
 		return 1;
 	}
 
-	output( "Testing with user '%s' (uid: %d)\n",
-	        pw->pw_name, ( int ) geteuid() );
+	output("Testing with user '%s' (uid: %d)\n",
+	        pw->pw_name, (int) geteuid());
 	return 0;
 }
 
@@ -133,7 +133,7 @@ int set_nonroot()
 
 
 /* The main test function. */
-int main( int argc, char * argv[] )
+int main(int argc, char * argv[])
 {
 	int ret, status;
 	pid_t ch, ctl;
@@ -143,105 +143,105 @@ int main( int argc, char * argv[] )
 	output_init();
 
 	/* Create the semaphore */
-	sem = sem_open( SEM_NAME, O_CREAT | O_EXCL, 0744, 1 );
+	sem = sem_open(SEM_NAME, O_CREAT | O_EXCL, 0744, 1);
 
-	if ( ( sem == SEM_FAILED ) && ( errno == EEXIST ) )
+	if ((sem == SEM_FAILED) && (errno == EEXIST))
 	{
-		sem_unlink( SEM_NAME );
-		sem = sem_open( SEM_NAME, O_CREAT | O_EXCL, 0744, 1 );
+		sem_unlink(SEM_NAME);
+		sem = sem_open(SEM_NAME, O_CREAT | O_EXCL, 0744, 1);
 	}
 
-	if ( sem == SEM_FAILED )
+	if (sem == SEM_FAILED)
 	{
-		UNRESOLVED( errno, "Failed to create the semaphore" );
+		UNRESOLVED(errno, "Failed to create the semaphore");
 	}
 
 	/* fork */
 	ch = fork();
 
-	if ( ch == ( pid_t ) - 1 )
+	if (ch == -1)
 	{
-		UNRESOLVED( errno, "Failed to fork" );
+		UNRESOLVED(errno, "Failed to fork");
 	}
 
-	if ( ch == ( pid_t ) 0 )         /* child */
+	if (ch == 0)         /* child */
 	{
 		/* connect to the semaphore */
-		sem = sem_open( SEM_NAME, 0 );
+		sem = sem_open(SEM_NAME, 0);
 
-		if ( sem == SEM_FAILED )
+		if (sem == SEM_FAILED)
 		{
-			output( "Failed to connect to the semaphore, error %d: %s\n", errno, strerror( errno ) );
-			exit( 1 );
+			output("Failed to connect to the semaphore, error %d: %s\n", errno, strerror(errno));
+			exit(1);
 		}
 
 		/* change euid */
 		ret = set_nonroot();
 
-		if ( ret )
+		if (ret)
 		{
-			output( "Changing euid failed\n" );
-			exit ( 1 );
+			output("Changing euid failed\n");
+			exit (1);
 		}
 
 		/* try and unlink, it should fail */
-		ret = sem_unlink( SEM_NAME );
+		ret = sem_unlink(SEM_NAME);
 
-		if ( ret == 0 )
+		if (ret == 0)
 		{
-			output( "sem_unlink did not fail in child" );
-			exit( 2 );
+			output("sem_unlink did not fail in child");
+			exit(2);
 		}
 
-		if ( errno != EACCES )
+		if (errno != EACCES)
 		{
-			output( "sem_unlink failed with unexpected error %d: %s\n", errno, strerror( errno ) );
-			exit( 2 );
+			output("sem_unlink failed with unexpected error %d: %s\n", errno, strerror(errno));
+			exit(2);
 		}
 
 		/* Ok, child is done. */
-		exit( 0 );
+		exit(0);
 	}
 
 	/* Parent waits for the child to finish */
-	ctl = waitpid( ch, &status, 0 );
+	ctl = waitpid(ch, &status, 0);
 
-	if ( ctl != ch )
+	if (ctl != ch)
 	{
-		UNRESOLVED( errno, "Waitpid returned the wrong PID" );
+		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-	if ( !WIFEXITED( status ) )
+	if (!WIFEXITED(status))
 	{
-		FAILED( "Child exited abnormally" );
+		FAILED("Child exited abnormally");
 	}
 
-	if ( WEXITSTATUS( status ) == 1 )
+	if (WEXITSTATUS(status) == 1)
 	{
-		UNRESOLVED( 0, "An error occured in child" );
+		UNRESOLVED(0, "An error occured in child");
 	}
 
-	if ( WEXITSTATUS( status ) == 2 )
+	if (WEXITSTATUS(status) == 2)
 	{
-		FAILED( "Test failed in child" );
+		FAILED("Test failed in child");
 	}
 
-	if ( WEXITSTATUS( status ) != 0 )
+	if (WEXITSTATUS(status) != 0)
 	{
-		UNRESOLVED( 0, "Unexpected return value from child" );
+		UNRESOLVED(0, "Unexpected return value from child");
 	}
 
 	/* Unlink */
-	ret = sem_unlink( SEM_NAME );
+	ret = sem_unlink(SEM_NAME);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( errno, "Failed to unlink the semaphore" );
+		UNRESOLVED(errno, "Failed to unlink the semaphore");
 	}
 
 	/* Test passed */
 #if VERBOSE > 0
-	output( "Test passed\n" );
+	output("Test passed\n");
 
 #endif
 	PASSED;

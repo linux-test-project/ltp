@@ -25,13 +25,13 @@ int main() {
         void *ptr, *notpage_ptr;
 
         page_size = sysconf(_SC_PAGESIZE);
-        if(errno) {
+        if (errno) {
                 perror("An error occurs when calling sysconf()");
                 return PTS_UNRESOLVED;
         }
 
 	ptr = malloc(page_size);       
-	if(ptr == NULL) {
+	if (ptr == NULL) {
                 printf("Can not allocate memory.\n");
                 return PTS_UNRESOLVED;
         }
@@ -40,13 +40,13 @@ int main() {
 	
 	result = munlock(notpage_ptr, page_size - 1);
 
-	if(result == 0){
+	if (result == 0){
 		printf("munlock() does not require that addr be a multiple of {PAGESIZE}.\nTest PASSED\n");
 		return PTS_PASS;
-	} else if(result == -1 && errno == EINVAL){
+	} else if (result == -1 && errno == EINVAL){
 		printf("munlock() requires that addr be a multiple of {PAGESIZE}.\nTest PASSED\n");
 		return PTS_PASS;
-	} else if(result != -1){
+	} else if (result != -1){
 		printf("munlock() returns a value of %i instead of 0 or 1.\n",
 		       result);
 		perror("munlock");

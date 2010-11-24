@@ -34,7 +34,7 @@ int main()
 
 	mysemp = sem_open(semname, O_CREAT, 0777, 1);
 
-	if (mysemp == SEM_FAILED ) {	
+	if (mysemp == SEM_FAILED) {	
   		perror(ERROR_PREFIX "sem_open");
 		return PTS_UNRESOLVED;
 		}
@@ -47,7 +47,7 @@ int main()
 	/* Make mysemp available for reuse */
 	mysemp = sem_open(semname, O_CREAT, 0777, 1);
 
-	if (mysemp == SEM_FAILED ) {	
+	if (mysemp == SEM_FAILED) {	
   		perror(ERROR_PREFIX "sem_open");
 		return PTS_UNRESOLVED;
 	}

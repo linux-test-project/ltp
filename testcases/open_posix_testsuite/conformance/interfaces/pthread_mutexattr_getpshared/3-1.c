@@ -41,9 +41,9 @@ int main()
 	
 	 /* The default 'pshared' attribute should be PTHREAD_PROCESS_PRIVATE  */
 	ret=pthread_mutexattr_getpshared(&mta, &pshared);
-	if(ret != 0)
+	if (ret != 0)
 	{
-		if(ret == EINVAL)
+		if (ret == EINVAL)
 		{
 			printf("Test PASSED\n");
 			return PTS_PASS;

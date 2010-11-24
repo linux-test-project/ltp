@@ -94,119 +94,119 @@ pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
  The ultimate combination is already tested in other testcase.
  tot:  50   84  104
  */
-void p1( void )
+void p1(void)
 {
 	iPrepare |= 1 << 1;
 }
 
-void p4( void )
+void p4(void)
 {
 	iPrepare |= 1 << 4;
 }
 
-void p5( void )
+void p5(void)
 {
 	iPrepare |= 1 << 5;
 }
 
-void pa2( void )
+void pa2(void)
 {
 	iParent |= 1 << 2;
 }
 
-void pa4( void )
+void pa4(void)
 {
 	iParent |= 1 << 4;
 }
 
-void pa6( void )
+void pa6(void)
 {
 	iParent |= 1 << 6;
 }
 
-void c3( void )
+void c3(void)
 {
 	iChild |= 1 << 3;
 }
 
-void c5( void )
+void c5(void)
 {
 	iChild |= 1 << 5;
 }
 
-void c6( void )
+void c6(void)
 {
 	iChild |= 1 << 6;
 }
 
 
 /* Thread function */
-void * threaded( void * arg )
+void * threaded(void * arg)
 {
 	int ret, status;
 	pid_t child, ctl;
 
 	/* Wait main thread has registered the handler */
-	ret = pthread_mutex_lock( &mtx );
+	ret = pthread_mutex_lock(&mtx);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to lock mutex" );
+		UNRESOLVED(ret, "Failed to lock mutex");
 	}
 
-	ret = pthread_mutex_unlock( &mtx );
+	ret = pthread_mutex_unlock(&mtx);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to unlock mutex" );
+		UNRESOLVED(ret, "Failed to unlock mutex");
 	}
 
 	/* fork */
 	child = fork();
 
-	if ( child == ( pid_t ) - 1 )
+	if (child == -1)
 	{
-		UNRESOLVED( errno, "Failed to fork" );
+		UNRESOLVED(errno, "Failed to fork");
 	}
 
 	/* child */
-	if ( child == ( pid_t ) 0 )
+	if (child == 0)
 	{
-		if ( iPrepare != 50 )
+		if (iPrepare != 50)
 		{
-			FAILED( "prepare handler were not called as expected" );
+			FAILED("prepare handler were not called as expected");
 		}
 
-		if ( iChild != 104 )
+		if (iChild != 104)
 		{
-			FAILED( "prepare handler were not called as expected" );
+			FAILED("prepare handler were not called as expected");
 		}
 
 		/* We're done */
-		exit( PTS_PASS );
+		exit(PTS_PASS);
 	}
 
-	if ( iPrepare != 50 )
+	if (iPrepare != 50)
 	{
-		FAILED( "prepare handler were not called as expected" );
+		FAILED("prepare handler were not called as expected");
 	}
 
-	if ( iParent != 84 )
+	if (iParent != 84)
 	{
-		FAILED( "prepare handler were not called as expected" );
+		FAILED("prepare handler were not called as expected");
 	}
 
 	/* Parent joins the child */
-	ctl = waitpid( child, &status, 0 );
+	ctl = waitpid(child, &status, 0);
 
-	if ( ctl != child )
+	if (ctl != child)
 	{
-		UNRESOLVED( errno, "Waitpid returned the wrong PID" );
+		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-	if ( ( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ) )
+	if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != PTS_PASS))
 	{
-		FAILED( "Child exited abnormally" );
+		FAILED("Child exited abnormally");
 	}
 
 	/* quit */
@@ -214,7 +214,7 @@ void * threaded( void * arg )
 }
 
 /* The main test function. */
-int main( int argc, char * argv[] )
+int main(int argc, char * argv[])
 {
 	int ret;
 	pthread_t ch;
@@ -222,89 +222,89 @@ int main( int argc, char * argv[] )
 	/* Initialize output */
 	output_init();
 
-	ret = pthread_mutex_lock( &mtx );
+	ret = pthread_mutex_lock(&mtx);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to lock mutex" );
+		UNRESOLVED(ret, "Failed to lock mutex");
 	}
 
-	ret = pthread_create( &ch, NULL, threaded, NULL );
+	ret = pthread_create(&ch, NULL, threaded, NULL);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to create a thread" );
+		UNRESOLVED(ret, "Failed to create a thread");
 	}
 
 	/* Register the handlers */
-	ret = pthread_atfork( NULL, NULL, NULL );
+	ret = pthread_atfork(NULL, NULL, NULL);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to register the atfork handlers(N,N,N)" );
+		UNRESOLVED(ret, "Failed to register the atfork handlers(N,N,N)");
 	}
 
-	ret = pthread_atfork( p1, NULL, NULL );
+	ret = pthread_atfork(p1, NULL, NULL);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to register the atfork handlers(h,N,N)" );
+		UNRESOLVED(ret, "Failed to register the atfork handlers(h,N,N)");
 	}
 
-	ret = pthread_atfork( NULL, pa2, NULL );
+	ret = pthread_atfork(NULL, pa2, NULL);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to register the atfork handlers(N,h,N)" );
+		UNRESOLVED(ret, "Failed to register the atfork handlers(N,h,N)");
 	}
 
-	ret = pthread_atfork( NULL, NULL, c3 );
+	ret = pthread_atfork(NULL, NULL, c3);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to register the atfork handlers(N,N,h)" );
+		UNRESOLVED(ret, "Failed to register the atfork handlers(N,N,h)");
 	}
 
-	ret = pthread_atfork( p4, pa4, NULL );
+	ret = pthread_atfork(p4, pa4, NULL);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to register the atfork handlers(h,h,N)" );
+		UNRESOLVED(ret, "Failed to register the atfork handlers(h,h,N)");
 	}
 
-	ret = pthread_atfork( p5, NULL, c5 );
+	ret = pthread_atfork(p5, NULL, c5);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to register the atfork handlers(h,N,h)" );
+		UNRESOLVED(ret, "Failed to register the atfork handlers(h,N,h)");
 	}
 
-	ret = pthread_atfork( NULL, pa6, c6 );
+	ret = pthread_atfork(NULL, pa6, c6);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to register the atfork handlers(N,h,h)" );
+		UNRESOLVED(ret, "Failed to register the atfork handlers(N,h,h)");
 	}
 
 	/* Let the child go on */
-	ret = pthread_mutex_unlock( &mtx );
+	ret = pthread_mutex_unlock(&mtx);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to unlock mutex" );
+		UNRESOLVED(ret, "Failed to unlock mutex");
 	}
 
-	ret = pthread_join( ch, NULL );
+	ret = pthread_join(ch, NULL);
 
-	if ( ret != 0 )
+	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to join the thread" );
+		UNRESOLVED(ret, "Failed to join the thread");
 	}
 
 	/* Test passed */
 #if VERBOSE > 0
 
-	output( "Test passed\n" );
+	output("Test passed\n");
 
 #endif
 

@@ -7,7 +7,7 @@
  * pthread_barrier_init()
  *
  *
- * The pthread_barrier_init( ) function shall fail if:
+ * The pthread_barrier_init() function shall fail if:
  * [EINVAL] The value specified by count is equal to zero.
  *
  */
@@ -33,7 +33,7 @@ int main()
 
 	rc = pthread_barrier_init(&barrier, NULL, COUNT);
 	
-	if(rc != EINVAL)
+	if (rc != EINVAL)
 	{
 		printf("Test FAILED: pthread_barrier_init() does not return EINVAL when intializing a barrier with count=0,"
 			" return code %d, %s\n", rc, strerror(rc));

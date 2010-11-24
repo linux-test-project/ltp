@@ -29,18 +29,18 @@ int main() {
 	void *page_ptr;
 
 	page_size = sysconf(_SC_PAGESIZE);
-        if(errno) {
+        if (errno) {
                 perror("An error occurs when calling sysconf()");
                 return PTS_UNRESOLVED;
         }
 
-	page_ptr = (void*)( LONG_MAX - (LONG_MAX % page_size) );
+	page_ptr = (void*)(LONG_MAX - (LONG_MAX % page_size));
 	result = mlock(page_ptr, BUFSIZE);
 
-	if(result == -1 && errno == ENOMEM) {
+	if (result == -1 && errno == ENOMEM) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else if(errno == EPERM) {
+	} else if (errno == EPERM) {
 		printf("You don't have permission to lock your address space.\nTry to rerun this test as root.\n");
 		return PTS_UNRESOLVED;
 	} else {

@@ -25,14 +25,14 @@ int main()
 	int rc;
 
 	/* Initialize a condition variable attributes object */
-	if((rc=pthread_condattr_init(&condattr)) == 0)
+	if ((rc=pthread_condattr_init(&condattr)) == 0)
 	{
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}
 
 	/* Insufficient memory exists to initialize the condition variable attributes object */
-	else if(rc == ENOMEM)
+	else if (rc == ENOMEM)
 	{
 		fprintf(stderr,"pthread_condattr_init() returns ENOMEM\n");
 		return PTS_UNRESOLVED;

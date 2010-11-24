@@ -35,13 +35,13 @@ int main(){
 
 	result = sched_setscheduler(0, -1, &param);
 
-	if(result == -1 && errno == EINVAL){
+	if (result == -1 && errno == EINVAL){
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else if(errno == EPERM){
+	} else if (errno == EPERM){
 		printf("This process does not have the permission to set its own scheduling policy.\nTry to launch this test as root.\n");
 		return PTS_UNRESOLVED;
-	} else if(errno == 0) {
+	} else if (errno == 0) {
 		printf("No error occurs, check if -1 a valid value for the scheduling policy.\n");
 	} else {
 		perror("Unknow error");
@@ -53,10 +53,10 @@ int main(){
 
 	result = sched_setscheduler(0, INVALID_POLICY, &param);
 
-	if(result == -1 && errno == EINVAL){
+	if (result == -1 && errno == EINVAL){
 		printf("Test PASSED with policy value %i\n", INVALID_POLICY);
 		return PTS_PASS; 
-	} else if(errno == 0) {
+	} else if (errno == 0) {
 		printf("No error occurs, could %i be a valid value for the scheduling policy ???\n", INVALID_POLICY);
 		return PTS_UNRESOLVED;
 	} else {

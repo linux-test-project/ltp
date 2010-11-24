@@ -78,7 +78,7 @@ int main()
 	cleanup_flag=0;
 	
 	/* Create a new thread. */
-	if(pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
 	{	
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
@@ -89,7 +89,7 @@ int main()
 	while(sem1==INTHREAD)
 		sleep(1);
 
-	if(pthread_cancel(new_th) != 0) 
+	if (pthread_cancel(new_th) != 0) 
 	{
 		perror("Error sending cancel request\n");
 		return PTS_UNRESOLVED;
@@ -107,7 +107,7 @@ int main()
 
 	/* This means that the cleanup function was called, meaning the
 	 * thread was canceled rather than ignored the cancel request. */
-	if(cleanup_flag <= 0)
+	if (cleanup_flag <= 0)
 	{
 		printf("Test FAILED\n");
 		return PTS_FAIL;

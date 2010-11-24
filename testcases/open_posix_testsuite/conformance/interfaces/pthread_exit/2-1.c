@@ -83,25 +83,25 @@ int main()
 	j=0;
 
 	/* Create a new thread. */
-	if(pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
 	{	
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
 	
 	/* Wait for thread to return */
-	if(pthread_join(new_th, NULL) != 0)
+	if (pthread_join(new_th, NULL) != 0)
 	{
 		perror("Error in pthread_join()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Check to make sure that the cleanup handlers were executed in order. */
-	if(i[0] == 3)
+	if (i[0] == 3)
 	{
-		if(i[1] == 2)
+		if (i[1] == 2)
 		{
-			if(i[2] == 1)
+			if (i[2] == 1)
 			{
 				printf("Test PASSED\n");
 				return PTS_PASS;
@@ -113,7 +113,7 @@ int main()
 		printf("Test FAILED: Did not execute cleanup handlers in order.\n");
 		return PTS_FAIL;
 	}
-	else if(i[0] == 0)
+	else if (i[0] == 0)
 	{
 		printf("Test FAILED: Did not execute cleanup handlers.\n");
 		return PTS_FAIL;

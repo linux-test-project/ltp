@@ -27,7 +27,7 @@ int main() {
 		fd = shm_open(SHM_NAME, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
 		count++;
 	}
-	if(errno == EMFILE) {
+	if (errno == EMFILE) {
 		shm_unlink(SHM_NAME);
 		printf("Test PASSED: %i files open.\n", count);
 		return PTS_PASS;

@@ -30,7 +30,7 @@ int main()
 	static pthread_rwlock_t rwlock;
 	int i;
 	
-	if(pthread_rwlock_init(&rwlock, NULL) != 0)
+	if (pthread_rwlock_init(&rwlock, NULL) != 0)
 	{
 		printf("main: Error at pthread_rwlock_init()\n");
 		return PTS_UNRESOLVED;
@@ -38,7 +38,7 @@ int main()
 	
 	for(i=0;i < COUNT;i++)
 	{
-		if(pthread_rwlock_rdlock(&rwlock) != 0)
+		if (pthread_rwlock_rdlock(&rwlock) != 0)
 		{
 			printf("Test FAILED: main cannot get read-lock rwlock number: %d\n", i);
 			return PTS_FAIL;
@@ -47,7 +47,7 @@ int main()
 	
 	for(i = 0;i < COUNT;i++)
 	{
-		if(pthread_rwlock_unlock(&rwlock) != 0)
+		if (pthread_rwlock_unlock(&rwlock) != 0)
 		{
 			printf("Test FAILED: main cannot unlock rwlock number %d", i);
 			return PTS_FAIL;
@@ -55,7 +55,7 @@ int main()
 	}	
 	
 
-	if(pthread_rwlock_destroy(&rwlock) != 0)
+	if (pthread_rwlock_destroy(&rwlock) != 0)
 	{
 		printf("Error at pthread_rwlockattr_destroy()");
 		return PTS_UNRESOLVED;

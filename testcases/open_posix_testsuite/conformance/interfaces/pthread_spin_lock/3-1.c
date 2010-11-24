@@ -6,7 +6,7 @@
 
  * Test pthread_spin_lock(pthread_spinlock_t *lock)
  *
- * The pthread_spin_lock( ) function may fail if:
+ * The pthread_spin_lock() function may fail if:
  * [EDEADLK] The calling thread already holds the lock.
  * 
  * This case will always pass. The thread might keep spin
@@ -45,7 +45,7 @@ int main()
 	sigaction(SIGALRM, &act, 0);
 	
 	
-	if(pthread_spin_init(&spinlock, PTHREAD_PROCESS_PRIVATE) != 0)
+	if (pthread_spin_init(&spinlock, PTHREAD_PROCESS_PRIVATE) != 0)
 	{
 		printf("main: Error at pthread_spin_init()\n");
 		return PTS_UNRESOLVED;
@@ -54,7 +54,7 @@ int main()
 	printf("main: attempt spin lock\n");
 
 	/* We should get the lock */	
-	if(pthread_spin_lock(&spinlock) != 0)
+	if (pthread_spin_lock(&spinlock) != 0)
 	{
 		printf("Test FAILED: main cannot get spin lock when no one owns the lock\n");
 		return PTS_FAIL;
@@ -67,7 +67,7 @@ int main()
 	printf("main: re-lock spin lock\n");
 	rc = pthread_spin_lock(&spinlock);
 
-	if(rc == EDEADLK)
+	if (rc == EDEADLK)
 	{
 		printf("main: correctly got EDEADLK when re-locking the spin lock\n");
 		printf("Test PASSED\n");
