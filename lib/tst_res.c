@@ -162,7 +162,6 @@ static void tst_condense(int tnum, int ttype, char *tmesg);
 static void tst_print(char *tcid, int tnum, int trange, int ttype, char *tmesg);
 static void cat_file(char *filename);
 
-
 /*
  * Define some static/global variables.
  */
@@ -476,7 +475,7 @@ static void tst_print(char *tcid, int tnum, int trange, int ttype, char *tmesg)
 
 #ifdef GARRETT_IS_A_PEDANTIC_BASTARD
 	/* Don't execute these APIs unless you have the same pid as main! */
-	if (spawned_pid != 0) {
+	if (spawned_program_pid != 0) {
 		/* 
 		 * Die quickly and noisily so people get the cluebat that the
 		 * test needs to be fixed. These APIs should _not_ be called
@@ -491,7 +490,7 @@ static void tst_print(char *tcid, int tnum, int trange, int ttype, char *tmesg)
 		 * handler, unless you have a buggy OS that you've hacked 15
 		 * different ways to Sunday.
 		 */
-		assert(spawned_pid == getpid());
+		assert(spawned_program_pid == getpid());
 	}
 #endif
 
@@ -578,7 +577,7 @@ static void check_env(void)
 
 	first_time = 0;
 
-	BTOUTPUT not defined, use default */
+	/* BTOUTPUT not defined, use default */
   	if ((value = getenv(TOUTPUT)) == NULL) {
 		T_mode = VERBOSE;
 		return;
