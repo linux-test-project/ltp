@@ -102,6 +102,7 @@
 
 void setup();
 void cleanup();
+void trapper();
 
 char *TCID = "alarm03";		/* Test program identifier.    */
 int TST_TOTAL = 1;		/* Total number of test cases. */
@@ -149,13 +150,13 @@ int main(int ac, char **av)
 
 			if (TEST_RETURN != 0) {
 				retval = 1;
-				tst_resm(TFAIL,
-					 "alarm(100), fork, alarm(0) child's alarm returned %ld",
-					 TEST_RETURN);
+				printf("%d: alarm(100), fork, alarm(0) child's "
+				    "alarm returned %ld\n",
+				    getpid(), TEST_RETURN);
 			} else if (STD_FUNCTIONAL_TEST) {
-				tst_resm(TPASS,
-					 "alarm(100), fork, alarm(0) child's alarm returned %ld",
-					 TEST_RETURN);
+				printf("%d: alarm(100), fork, alarm(0) child's "
+				    "alarm returned %ld\n",
+				    getpid(), TEST_RETURN);
 			}
 
 			exit(retval);
@@ -187,21 +188,13 @@ int main(int ac, char **av)
 
 	}			/* End for TEST_LOOPING */
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
 
 	return 0;
 }				/* End main */
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
 void setup()
 {
-	void trapper();
-
 	/* capture signals */
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
@@ -211,10 +204,6 @@ void setup()
 	TEST_PAUSE;
 }				/* End setup() */
 
-/***************************************************************
- * cleanup() - performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- ***************************************************************/
 void cleanup()
 {
 	/*
@@ -227,8 +216,7 @@ void cleanup()
 	tst_exit();
 }				/* End cleanup() */
 
-void trapper(sig)
-int sig;
+void trapper(int sig)
 {
 	signal(SIGALRM, trapper);
 }
