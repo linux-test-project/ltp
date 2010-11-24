@@ -6,7 +6,7 @@
 
  * Test that pthread_rwlock_unlock(pthread_rwlock_t *rwlock)
  *
- * pthread_rwlock_unlock( ) function shall release a lock held on the 
+ * pthread_rwlock_unlock() function shall release a lock held on the 
  * read-write lock object referenced by rwlock
  * If this function is called to release a write lock for this read-write 
  * lock object, the read-write lock object shall be put in the unlocked state.

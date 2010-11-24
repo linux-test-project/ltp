@@ -26,18 +26,30 @@ int main() {
 	int policy, invalid_priority, old_priority;
 	struct sched_param param;
 
+<<<<<<< HEAD
 	if (sched_getparam(0, &param) != 0) {
+=======
+	if (sched_getparam(0, &param) != 0){
+>>>>>>> origin
 		perror("An error occurs when calling sched_getparam()");
 		return PTS_UNRESOLVED;
 	}
 	old_priority = param.sched_priority;
 
 	policy = sched_getscheduler(0);
+<<<<<<< HEAD
 	if (policy == -1) {
 		perror("An error occurs when calling sched_getscheduler()");
 		return PTS_UNRESOLVED;
 	} else if (policy != SCHED_SPORADIC) {
 		if (sched_setscheduler(0, SCHED_SPORADIC, &param) != 0) {
+=======
+	if (policy == -1){
+		perror("An error occurs when calling sched_getscheduler()");
+		return PTS_UNRESOLVED;
+	} else if (policy != SCHED_SPORADIC){
+		if (sched_setscheduler(0, SCHED_SPORADIC, &param) != 0){
+>>>>>>> origin
 			perror("An error occurs when calling sched_getparam()");
 			return PTS_UNRESOLVED;
 		}
@@ -45,7 +57,11 @@ int main() {
 
 
 	invalid_priority = sched_get_priority_max(SCHED_SPORADIC);
+<<<<<<< HEAD
 	if (invalid_priority == -1) {
+=======
+	if (invalid_priority == -1){
+>>>>>>> origin
 		perror("An error occurs when calling sched_get_priority_max()");
 		return PTS_UNRESOLVED;
 	}
@@ -56,12 +72,20 @@ int main() {
 	param.sched_priority++;
 	sched_setparam(0,&param);
 
+<<<<<<< HEAD
 	if (sched_getparam(0, &param) != 0) {
+=======
+	if (sched_getparam(0, &param) != 0){
+>>>>>>> origin
 		perror("An error occurs when calling sched_getparam()");
 		return PTS_UNRESOLVED;
 	}
 	
+<<<<<<< HEAD
 	if (param.sched_priority == old_priority) {
+=======
+	if (param.sched_priority == old_priority){
+>>>>>>> origin
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	} else {

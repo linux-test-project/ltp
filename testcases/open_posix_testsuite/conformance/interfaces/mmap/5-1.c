@@ -12,7 +12,7 @@
  * PROT_EXEC Data can be executed.
  * PROT_NONE Data cannot be accessed. 
  * If an implementation cannot support the combination of access types
- * specified by prot, the call to mmap( ) shall fail.
+ * specified by prot, the call to mmap() shall fail.
  *
  * Test Step:
  * 1. mmap(), setting 'prot' as PROT_NONE;

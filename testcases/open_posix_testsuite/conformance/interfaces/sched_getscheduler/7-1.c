@@ -27,7 +27,11 @@ int set_nonroot()
 	struct passwd *pw;
 	setpwent();
 	/* search for the first user which is non root */ 
+<<<<<<< HEAD
 	while ((pw = getpwent()) != NULL)
+=======
+	while((pw = getpwent()) != NULL)
+>>>>>>> origin
 		if (strcmp(pw->pw_name, "root"))
 			break;
 	endpwent();
@@ -65,7 +69,7 @@ int main(int argc, char **argv)
 		}
         }
 
-	result = sched_getscheduler( 1 );
+	result = sched_getscheduler(1);
 	
 	if (result == -1 && errno == EPERM) {
 		printf("Test PASSED\n");

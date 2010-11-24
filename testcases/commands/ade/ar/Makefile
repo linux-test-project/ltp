@@ -24,13 +24,6 @@ top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-CPPFLAGS		+= -fpic
-
 INSTALL_TARGETS		:= ar01 *.in
-
-MAKE_TARGETS		:= $(patsubst $(abs_srcdir)/%.c,%.obj,$(wildcard $(abs_srcdir)/*.c))
-
-$(MAKE_TARGETS): %.obj: %.o
-	mv "$^" "$@"
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

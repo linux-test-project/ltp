@@ -40,11 +40,11 @@ void output_init()
 	/* do nothing */
 	return;
 }
-void output( char * string, ... )
+void output(char * string, ...)
 {
    va_list ap;
    pthread_mutex_lock(&m_trace);
-   va_start( ap, string);
+   va_start(ap, string);
    vprintf(string, ap);
    va_end(ap);
    pthread_mutex_unlock(&m_trace);

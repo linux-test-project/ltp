@@ -57,7 +57,7 @@ int main() {
 		unresolved=1;
 	}
 
-	if (( sts == 0) && (unresolved == 0)) {
+	if ((sts == 0) && (unresolved == 0)) {
 		puts("TEST PASSED");
 		sem_destroy(&mysemp);
 		return PTS_PASS;

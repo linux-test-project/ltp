@@ -61,7 +61,11 @@ int main() {
 	}	
 
 	if (mlockall(MCL_CURRENT) == -1) {
+<<<<<<< HEAD
 		if (errno == EPERM) {
+=======
+		if (errno == EPERM){
+>>>>>>> origin
 			printf("You don't have permission to lock your address space.\nTry to rerun this test as root.\n");
 		} else {
 			perror("An error occurs when calling mlockall()");
@@ -69,7 +73,7 @@ int main() {
 		return PTS_UNRESOLVED;
 	}
 
-	page_ptr = (void*) ( (long)foo - ((long)foo % page_size) );
+	page_ptr = (void*) ((long)foo - ((long)foo % page_size));
 
 	result = msync(page_ptr, page_size, MS_SYNC|MS_INVALIDATE);
 	if (result == -1 && errno == EBUSY) {

@@ -83,7 +83,7 @@
 /********************************************************************************************/
 
 /* The main test function. */
-int main( int argc, char * argv[] )
+int main(int argc, char * argv[])
 {
 	int ret, status;
 	pid_t child, ctl;
@@ -92,58 +92,70 @@ int main( int argc, char * argv[] )
 	output_init();
 
 	/* Set the alarm pending */
-	alarm( 10 );
+	alarm(10);
 
 	/* Check the alarm() behavior */
-	ret = alarm( 10 );
+	ret = alarm(10);
 
 	if (ret == 0)
 	{
-		FAILED( "the alarm() routine does not behave as expected" );
+		FAILED("the alarm() routine does not behave as expected");
 	}
 
 	/* Create the child */
 	child = fork();
 
+<<<<<<< HEAD
 	if (child == ( pid_t ) - 1)
+=======
+	if (child == -1)
+>>>>>>> origin
 	{
-		UNRESOLVED( errno, "Failed to fork" );
+		UNRESOLVED(errno, "Failed to fork");
 	}
 
 	/* child */
+<<<<<<< HEAD
 	if (child == ( pid_t ) 0)
+=======
+	if (child == 0)
+>>>>>>> origin
 	{
 
-		ret = alarm( 10 );
+		ret = alarm(10);
 
 		if (ret != 0)
 		{
-			FAILED( "The child alarm pending was not reset." );
+			FAILED("The child alarm pending was not reset.");
 		}
 
 		/* We're done */
-		exit( PTS_PASS );
+		exit(PTS_PASS);
 	}
 
 	/* Parent joins the child */
-	ctl = waitpid( child, &status, 0 );
+	ctl = waitpid(child, &status, 0);
 
 	if (ctl != child)
 	{
-		UNRESOLVED( errno, "Waitpid returned the wrong PID" );
+		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
+<<<<<<< HEAD
 	if (( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ))
+=======
+	if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != PTS_PASS))
+>>>>>>> origin
 	{
-		FAILED( "Child exited abnormally" );
+		FAILED("Child exited abnormally");
 	}
 
-	alarm( 0 );
+	alarm(0);
 
 	/* Test passed */
 #if VERBOSE > 0
 
-	output( "Test passed\n" );
+	output("Test passed\n");
 
 #endif
 

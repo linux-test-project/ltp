@@ -35,10 +35,17 @@ int main() {
 
 	result = sched_setscheduler(0, -1, &param);
 
+<<<<<<< HEAD
 	if (result == -1 && errno == EINVAL) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	} else if (errno == EPERM) {
+=======
+	if (result == -1 && errno == EINVAL){
+		printf("Test PASSED\n");
+		return PTS_PASS;
+	} else if (errno == EPERM){
+>>>>>>> origin
 		printf("This process does not have the permission to set its own scheduling policy.\nTry to launch this test as root.\n");
 		return PTS_UNRESOLVED;
 	} else if (errno == 0) {
@@ -53,7 +60,11 @@ int main() {
 
 	result = sched_setscheduler(0, INVALID_POLICY, &param);
 
+<<<<<<< HEAD
 	if (result == -1 && errno == EINVAL) {
+=======
+	if (result == -1 && errno == EINVAL){
+>>>>>>> origin
 		printf("Test PASSED with policy value %i\n", INVALID_POLICY);
 		return PTS_PASS; 
 	} else if (errno == 0) {

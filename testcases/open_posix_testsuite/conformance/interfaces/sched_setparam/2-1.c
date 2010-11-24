@@ -127,8 +127,8 @@ int main() {
 	}
 	child_pid = malloc(nb_child);
 
-	param.sched_priority = ( sched_get_priority_min(SCHED_FIFO) +
-				 sched_get_priority_max(SCHED_FIFO) ) / 2;
+	param.sched_priority = (sched_get_priority_min(SCHED_FIFO) +
+				 sched_get_priority_max(SCHED_FIFO)) / 2;
 	
 	if (sched_setscheduler(getpid(), SCHED_FIFO, &param) == -1) {
 		if (errno == EPERM) {

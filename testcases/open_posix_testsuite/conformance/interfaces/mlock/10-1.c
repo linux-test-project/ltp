@@ -40,16 +40,27 @@ int main() {
 	
 	result = mlock(notpage_ptr, page_size - 1);
 
+<<<<<<< HEAD
 	if (result == 0) {
 		printf("mlock() does not require that addr be a multiple of {PAGESIZE}.\nTest PASSED\n");
 		return PTS_PASS;
 	} else if (result == -1 && errno == EINVAL) {
+=======
+	if (result == 0){
+		printf("mlock() does not require that addr be a multiple of {PAGESIZE}.\nTest PASSED\n");
+		return PTS_PASS;
+	} else if (result == -1 && errno == EINVAL){
+>>>>>>> origin
 		printf("mlock() requires that addr be a multiple of {PAGESIZE}.\nTest PASSED\n");
 		return PTS_PASS;
 	} else if (errno == EPERM) {
 		printf("You don't have permission to lock your address space.\nTry to rerun this test as root.\n");
 		return PTS_UNRESOLVED;
+<<<<<<< HEAD
 	} else if (result != -1) {
+=======
+	} else if (result != -1){
+>>>>>>> origin
 		printf("mlock() returns a value of %i instead of 0 or 1.\n",
 		       result);
 		perror("mlock");

@@ -6,7 +6,7 @@
  *
  * pthread_barrierattr_getpshared()
  *
- * The pthread_barrierattr_getpshared( ) function shall obtain the value of 
+ * The pthread_barrierattr_getpshared() function shall obtain the value of 
  * the process-shared attribute from the attributes object referenced by attr.
  *
  */

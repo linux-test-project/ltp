@@ -4,8 +4,8 @@
  * of this license, see the COPYING file at the top level of this 
  * source tree.
  *
- * The mmap( ) function shall fail if:
- * [ENODEV] The fildes argument refers to a file whose type is not supported by mmap( ).
+ * The mmap() function shall fail if:
+ * [ENODEV] The fildes argument refers to a file whose type is not supported by mmap().
  *
  * Test Step:
  * 1. Create pipe;

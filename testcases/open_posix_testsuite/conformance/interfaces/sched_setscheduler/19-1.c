@@ -59,7 +59,11 @@ int main() {
 		fflush(stdout);
 
 		invalid_priority = sched_get_priority_max(policy);
+<<<<<<< HEAD
 		if (invalid_priority == -1) {
+=======
+		if (invalid_priority == -1){
+>>>>>>> origin
 			perror("An error occurs when calling sched_get_priority_max()");
 			return PTS_UNRESOLVED;
 		}

@@ -4,9 +4,9 @@
  * of this license, see the COPYING file at the top level of this 
  * source tree.
 
- * Upon successful completion, fsync( ) shall return 0. 
+ * Upon successful completion, fsync() shall return 0. 
  * Otherwise, .1 shall be returned and errno set
- * to indicate the error. If the fsync( ) function fails.
+ * to indicate the error. If the fsync() function fails.
  *
  * 1. Create a regular file;
  * 2. Write a few bytes to the file, call fsycn(), should return 0;

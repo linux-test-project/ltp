@@ -82,7 +82,11 @@ static void* fn_chld(void *arg)
 	
 	thread_state = GET_SPIN_LOCK;
 	/* Wait 10 seconds for SIGALRM to be sent */
+<<<<<<< HEAD
 	while (cnt++ < 10)
+=======
+	while(cnt++ < 10)
+>>>>>>> origin
 	{
 		ts.tv_sec = 1;
 		ts.tv_nsec = 0;

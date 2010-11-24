@@ -6,12 +6,12 @@
  *
  * pthread_barrier_wait()
  *
- * When the required number of threads have called pthread_barrier_wait( ) 
+ * When the required number of threads have called pthread_barrier_wait() 
  * specifying the barrier, the constant PTHREAD_BARRIER_SERIAL_THREAD shall 
  * be returned to one unspecified thread and zero shall be returned 
  * to each of the remaining threads. At this point, the barrier shall
  * be reset to the state it had as a result of the most recent 
- * pthread_barrier_init( ) function that referenced it.
+ * pthread_barrier_init() function that referenced it.
  * 
  * Steps:
  * 1. Main thread do the following for LOOP_NUM times

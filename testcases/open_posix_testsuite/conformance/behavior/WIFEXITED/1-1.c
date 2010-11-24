@@ -41,5 +41,5 @@ int main()
 	}
 
 	printf("Test FAILED\n");
-	return(PTS_FAIL);	
+	return (PTS_FAIL);	
 }

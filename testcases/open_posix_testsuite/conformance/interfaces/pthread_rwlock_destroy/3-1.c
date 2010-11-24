@@ -5,7 +5,7 @@
  * source tree.
  *
  *
- *	pthread_rwlock_destroy( ) function may fail if:
+ *	pthread_rwlock_destroy() function may fail if:
  *	[EBUSY] The implementation has detected an attempt to destroy the object referenced
  *	by rwlock while it is locked.
  *

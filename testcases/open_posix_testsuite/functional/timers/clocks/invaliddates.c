@@ -61,15 +61,15 @@ int main(int argc, char *argv[])
 			}
 
 #ifdef DEBUG
-		printf("Delta:  %ds %dns\n", secdelta, nsecdelta);
+			printf("Delta:  %ds %dns\n", secdelta, nsecdelta);
 #endif
                 	if ((secdelta > ACCEPTABLESECDELTA) || 
-					(secdelta < 0) ) {
+			    (secdelta < 0)) {
                         	printf("clock does not appear to be set\n");
 				failure = 1;
                 	}
                 	if ((nsecdelta > ACCEPTABLENSECDELTA) || 
-					(nsecdelta < 0) ) {
+			    (nsecdelta < 0)) {
                         	printf("clock does not appear to be set\n");
 				failure = 1;
                 	}

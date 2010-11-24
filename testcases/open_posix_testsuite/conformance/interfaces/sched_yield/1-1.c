@@ -181,7 +181,11 @@ int main() {
 
         param.sched_priority = sched_get_priority_min(SCHED_FIFO) + 1;
         if (sched_setscheduler(getpid(), SCHED_FIFO, &param) != 0) {
+<<<<<<< HEAD
 		if (errno == EPERM) {
+=======
+		if (errno == EPERM){
+>>>>>>> origin
 			printf("This process does not have the permission to set its own scheduling policy.\nTry to launch this test as root.\n");
 			return PTS_UNRESOLVED;
 		}
@@ -193,7 +197,11 @@ int main() {
 
 	for (i=0; i<ncpu-1; i++) {
 		child_pid[i] = fork();
+<<<<<<< HEAD
 		if (child_pid[i] == -1) {
+=======
+		if (child_pid[i] == -1){
+>>>>>>> origin
 			perror("An error occurs when calling fork()");
 			return PTS_UNRESOLVED;
 		} else if (child_pid[i] == 0) {
@@ -229,7 +237,11 @@ int main() {
                 waitpid(child_pid[i], NULL, 0);
 	
         result = (long)tmpresult;
+<<<<<<< HEAD
 	if (result) {
+=======
+	if (result){
+>>>>>>> origin
 		printf("A thread does not relinquish the processor.\n");
 		return PTS_FAIL;
 	}

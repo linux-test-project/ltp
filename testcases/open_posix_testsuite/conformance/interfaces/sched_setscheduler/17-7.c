@@ -56,7 +56,11 @@ int main() {
 
         /* Create a child process which exit immediately */
         child_pid = fork();
+<<<<<<< HEAD
         if (child_pid == -1) {
+=======
+        if (child_pid == -1){
+>>>>>>> origin
 		perror("An error occurs when calling fork()");
 		return PTS_UNRESOLVED;
         } else if (child_pid == 0) {
@@ -64,7 +68,11 @@ int main() {
         }
 
         /* Wait for the child process to exit */
+<<<<<<< HEAD
         if (wait(&stat_loc) == -1) {
+=======
+        if (wait(&stat_loc) == -1){
+>>>>>>> origin
 		perror("An error occurs when calling wait()");
 		return PTS_UNRESOLVED;
         }

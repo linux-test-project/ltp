@@ -34,7 +34,7 @@ int main() {
                 return PTS_UNRESOLVED;
         }
 
-	page_ptr = (void*)( LONG_MAX - (LONG_MAX % page_size) );
+	page_ptr = (void*)(LONG_MAX - (LONG_MAX % page_size));
 	result = mlock(page_ptr, BUFSIZE);
 
 	if (result == -1 && errno == ENOMEM) {

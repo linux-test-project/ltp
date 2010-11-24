@@ -84,89 +84,101 @@ pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
 
 int controls[ 3 ] = {0, 0, 0};
 /* pthread_atfork handlers */
-void prepare( void )
+void prepare(void)
 {
 	controls[ 0 ] ++;
 }
 
-void parent( void )
+void parent(void)
 {
 	controls[ 1 ] ++;
 }
 
-void child( void )
+void child(void)
 {
 	controls[ 2 ] ++;
 }
 
 
 /* Thread function */
-void * threaded( void * arg )
+void * threaded(void * arg)
 {
 	int ret, status;
 	pid_t child, ctl;
 
 	/* Wait main thread has registered the handler */
-	ret = pthread_mutex_lock( &mtx );
+	ret = pthread_mutex_lock(&mtx);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to lock mutex" );
+		UNRESOLVED(ret, "Failed to lock mutex");
 	}
 
-	ret = pthread_mutex_unlock( &mtx );
+	ret = pthread_mutex_unlock(&mtx);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to unlock mutex" );
+		UNRESOLVED(ret, "Failed to unlock mutex");
 	}
 
 	/* fork */
 	child = fork();
 
+<<<<<<< HEAD
 	if (child == ( pid_t ) - 1)
+=======
+	if (child == -1)
+>>>>>>> origin
 	{
-		UNRESOLVED( errno, "Failed to fork" );
+		UNRESOLVED(errno, "Failed to fork");
 	}
 
 	/* child */
+<<<<<<< HEAD
 	if (child == ( pid_t ) 0)
+=======
+	if (child == 0)
+>>>>>>> origin
 	{
 		if (controls[ 0 ] != 10000)
 		{
-			FAILED( "prepare handler skipped some rounds" );
+			FAILED("prepare handler skipped some rounds");
 		}
 
 		if (controls[ 2 ] != 10000)
 		{
-			FAILED( "child handler skipped some rounds" );
+			FAILED("child handler skipped some rounds");
 		}
 
 		/* We're done */
-		exit( PTS_PASS );
+		exit(PTS_PASS);
 	}
 
 	if (controls[ 0 ] != 10000)
 	{
-		FAILED( "prepare handler skipped some rounds" );
+		FAILED("prepare handler skipped some rounds");
 	}
 
 	if (controls[ 1 ] != 10000)
 	{
-		FAILED( "parent handler skipped some rounds" );
+		FAILED("parent handler skipped some rounds");
 	}
 
 	/* Parent joins the child */
-	ctl = waitpid( child, &status, 0 );
+	ctl = waitpid(child, &status, 0);
 
 	if (ctl != child)
 	{
-		UNRESOLVED( errno, "Waitpid returned the wrong PID" );
+		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
+<<<<<<< HEAD
 	if (( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ))
+=======
+	if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != PTS_PASS))
+>>>>>>> origin
 	{
-		FAILED( "Child exited abnormally" );
+		FAILED("Child exited abnormally");
 	}
 
 
@@ -175,7 +187,7 @@ void * threaded( void * arg )
 }
 
 /* The main test function. */
-int main( int argc, char * argv[] )
+int main(int argc, char * argv[])
 {
 	int ret, i;
 	pthread_t ch;
@@ -183,34 +195,34 @@ int main( int argc, char * argv[] )
 	/* Initialize output */
 	output_init();
 
-	ret = pthread_mutex_lock( &mtx );
+	ret = pthread_mutex_lock(&mtx);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to lock mutex" );
+		UNRESOLVED(ret, "Failed to lock mutex");
 	}
 
-	ret = pthread_create( &ch, NULL, threaded, NULL );
+	ret = pthread_create(&ch, NULL, threaded, NULL);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to create a thread" );
+		UNRESOLVED(ret, "Failed to create a thread");
 	}
 
 	/* Register the handlers */
 	for (i = 0; i < 10000; i++)
 	{
-		ret = pthread_atfork( prepare, parent, child );
+		ret = pthread_atfork(prepare, parent, child);
 
 		if (ret == ENOMEM)
 		{
-			output( "ENOMEM returned after %i iterations\n", i );
+			output("ENOMEM returned after %i iterations\n", i);
 			break;
 		}
 
 		if (ret != 0)
 		{
-			UNRESOLVED( ret, "Failed to register the atfork handlers" );
+			UNRESOLVED(ret, "Failed to register the atfork handlers");
 		}
 	}
 
@@ -218,25 +230,25 @@ int main( int argc, char * argv[] )
 	{
 
 		/* Let the child go on */
-		ret = pthread_mutex_unlock( &mtx );
+		ret = pthread_mutex_unlock(&mtx);
 
 		if (ret != 0)
 		{
-			UNRESOLVED( ret, "Failed to unlock mutex" );
+			UNRESOLVED(ret, "Failed to unlock mutex");
 		}
 
-		ret = pthread_join( ch, NULL );
+		ret = pthread_join(ch, NULL);
 
 		if (ret != 0)
 		{
-			UNRESOLVED( ret, "Failed to join the thread" );
+			UNRESOLVED(ret, "Failed to join the thread");
 		}
 	}
 
 	/* Test passed */
 #if VERBOSE > 0
 
-	output( "Test passed\n" );
+	output("Test passed\n");
 
 #endif
 

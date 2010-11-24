@@ -84,7 +84,7 @@ char do_it = 1;
 long long iterations = 0;
 
 /* Handler for user request to terminate */
-void sighdl( int sig )
+void sighdl(int sig)
 {
 	do
 	{
@@ -98,23 +98,23 @@ int once_chk;
 pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
 
 
-void init_routine( void )
+void init_routine(void)
 {
 	int ret = 0;
-	ret = pthread_mutex_lock( &mtx );
+	ret = pthread_mutex_lock(&mtx);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to lock mutex in initializer" );
+		UNRESOLVED(ret, "Failed to lock mutex in initializer");
 	}
 
 	once_chk++;
 
-	ret = pthread_mutex_unlock( &mtx );
+	ret = pthread_mutex_unlock(&mtx);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to unlock mutex in initializer" );
+		UNRESOLVED(ret, "Failed to unlock mutex in initializer");
 	}
 
 	return ;
@@ -122,31 +122,31 @@ void init_routine( void )
 
 
 /* Thread function */
-void * threaded( void * arg )
+void * threaded(void * arg)
 {
 	int ret = 0;
 
 	/* Wait for all threads being created */
-	ret = pthread_barrier_wait( arg );
+	ret = pthread_barrier_wait(arg);
 
-	if (( ret != 0 ) && ( ret != PTHREAD_BARRIER_SERIAL_THREAD ))
+	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD))
 	{
-		UNRESOLVED( ret, "Barrier wait failed" );
+		UNRESOLVED(ret, "Barrier wait failed");
 	}
 
 	/* Call init routine */
-	ret = pthread_once( &once_ctl, init_routine );
+	ret = pthread_once(&once_ctl, init_routine);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( ret, "pthread_once failed" );
+		UNRESOLVED(ret, "pthread_once failed");
 	}
 
 	return NULL;
 }
 
 /* Main function */
-int main ( int argc, char *argv[] )
+int main (int argc, char *argv[])
 {
 	int ret = 0, i;
 
@@ -161,33 +161,33 @@ int main ( int argc, char *argv[] )
 
 
 	/* Initialize barrier */
-	ret = pthread_barrier_init( &bar, NULL, NTHREADS );
+	ret = pthread_barrier_init(&bar, NULL, NTHREADS);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to init barrier" );
+		UNRESOLVED(ret, "Failed to init barrier");
 	}
 
 
 	/* Register the signal handler for SIGUSR1 */
-	sigemptyset ( &sa.sa_mask );
+	sigemptyset (&sa.sa_mask);
 
 	sa.sa_flags = 0;
 
 	sa.sa_handler = sighdl;
 
-	if (( ret = sigaction ( SIGUSR1, &sa, NULL ) ))
+	if ((ret = sigaction (SIGUSR1, &sa, NULL)))
 	{
-		UNRESOLVED( ret, "Unable to register signal handler" );
+		UNRESOLVED(ret, "Unable to register signal handler");
 	}
 
-	if (( ret = sigaction ( SIGALRM, &sa, NULL ) ))
+	if ((ret = sigaction (SIGALRM, &sa, NULL)))
 	{
-		UNRESOLVED( ret, "Unable to register signal handler" );
+		UNRESOLVED(ret, "Unable to register signal handler");
 	}
 
 #if VERBOSE > 1
-	output( "[parent] Signal handler registered\n" );
+	output("[parent] Signal handler registered\n");
 
 #endif
 
@@ -201,44 +201,44 @@ int main ( int argc, char *argv[] )
 
 		for (i = 0; i < NTHREADS; i++)
 		{
-			ret = pthread_create( &th[ i ], NULL, threaded, &bar );
+			ret = pthread_create(&th[ i ], NULL, threaded, &bar);
 
 			if (ret != 0)
 			{
-				UNRESOLVED( ret, "Failed to create a thread" );
+				UNRESOLVED(ret, "Failed to create a thread");
 			}
 		}
 
 		/* Then join */
 		for (i = 0; i < NTHREADS; i++)
 		{
-			ret = pthread_join( th[ i ], NULL );
+			ret = pthread_join(th[ i ], NULL);
 
 			if (ret != 0)
 			{
-				UNRESOLVED( ret, "Failed to join a thread" );
+				UNRESOLVED(ret, "Failed to join a thread");
 			}
 		}
 
 		/* check the value */
-		ret = pthread_mutex_lock( &mtx );
+		ret = pthread_mutex_lock(&mtx);
 
 		if (ret != 0)
 		{
-			UNRESOLVED( ret, "Failed to lock mutex in initializer" );
+			UNRESOLVED(ret, "Failed to lock mutex in initializer");
 		}
 
 		if (once_chk != 1)
 		{
-			output( "Control: %d\n", once_chk );
-			FAILED( "The initializer function did not execute once" );
+			output("Control: %d\n", once_chk);
+			FAILED("The initializer function did not execute once");
 		}
 
-		ret = pthread_mutex_unlock( &mtx );
+		ret = pthread_mutex_unlock(&mtx);
 
 		if (ret != 0)
 		{
-			UNRESOLVED( ret, "Failed to unlock mutex in initializer" );
+			UNRESOLVED(ret, "Failed to unlock mutex in initializer");
 		}
 
 		iterations++;
@@ -246,13 +246,13 @@ int main ( int argc, char *argv[] )
 
 	/* We've been asked to stop */
 
-	output( "pthread_once stress test PASSED -- %llu iterations\n", iterations );
+	output("pthread_once stress test PASSED -- %llu iterations\n", iterations);
 
-	ret = pthread_barrier_destroy( &bar );
+	ret = pthread_barrier_destroy(&bar);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to destroy the barrier" );
+		UNRESOLVED(ret, "Failed to destroy the barrier");
 	}
 
 	PASSED;

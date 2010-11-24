@@ -5,7 +5,7 @@
  * source tree.
  *
  * When the implementation selects a
- * The mmap( ) function shall fail if:
+ * The mmap() function shall fail if:
  * [EINVAL] The value of flags is invalid (neither MAP_PRIVATE nor MAP_SHARED is
  * set).
  * 

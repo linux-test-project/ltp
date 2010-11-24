@@ -55,10 +55,14 @@ int main()
         return PTS_UNRESOLVED;
    }
 
-   if (( pthread_join(prod, NULL) == 0) && ( pthread_join(cons, NULL) == 0)) {
+   if ((pthread_join(prod, NULL) == 0) && (pthread_join(cons, NULL) == 0)) {
 	puts("TEST PASS");
 	pthread_exit(NULL);
+<<<<<<< HEAD
    	if (( sem_destroy(&psem) == 0) &&( sem_destroy (&csem)) == 0)
+=======
+   	if ((sem_destroy(&psem) == 0) &&(sem_destroy (&csem)) == 0)
+>>>>>>> origin
 		return PTS_PASS;
    	} else {
 		puts("TEST FAILED");

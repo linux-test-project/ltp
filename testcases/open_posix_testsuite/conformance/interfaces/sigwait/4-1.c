@@ -31,62 +31,87 @@ int main()
 
 	/* Empty set of blocked signals */
 
+<<<<<<< HEAD
 	if (( sigemptyset( &newmask ) == -1) ||
 	        ( sigemptyset( &pendingset ) == -1 ) )
+=======
+	if ((sigemptyset(&newmask) == -1) ||
+	        (sigemptyset(&pendingset) == -1))
+>>>>>>> origin
 	{
-		printf( "Error in sigemptyset()\n" );
+		printf("Error in sigemptyset()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Add SIGALRM to the set of blocked signals */
+<<<<<<< HEAD
 	if (sigaddset( &newmask, SIGALRM ) == -1)
+=======
+	if (sigaddset(&newmask, SIGALRM) == -1)
+>>>>>>> origin
 	{
-		perror( "Error in sigaddset()\n" );
+		perror("Error in sigaddset()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Block SIGALRM */
+<<<<<<< HEAD
 	if (sigprocmask( SIG_SETMASK, &newmask, NULL ) == -1)
+=======
+	if (sigprocmask(SIG_SETMASK, &newmask, NULL) == -1)
+>>>>>>> origin
 	{
-		printf( "Error in sigprocmask()\n" );
+		printf("Error in sigprocmask()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Read clock */
+<<<<<<< HEAD
 	if (gettimeofday( &tv_ref, NULL ) != 0)
+=======
+	if (gettimeofday(&tv_ref, NULL) != 0)
+>>>>>>> origin
 	{
-		printf( "Failed to get time of day" );
+		printf("Failed to get time of day");
 		return PTS_UNRESOLVED;
 	}
 
 	/* SIGALRM will be sent in 5 seconds */
-	alarm( 3 );
+	alarm(3);
 
 	/* Call sigwait.  It should wait for 5 seconds and then move
 	 * along the rest of the process when it received the SIGALRM */
+<<<<<<< HEAD
 	if (sigwait( &newmask, &sig ) != 0)
+=======
+	if (sigwait(&newmask, &sig) != 0)
+>>>>>>> origin
 	{
-		printf( "Error in sigwait()\n" );
+		printf("Error in sigwait()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Re-read clock */
+<<<<<<< HEAD
 	if (gettimeofday( &tv_cur, NULL ) != 0)
+=======
+	if (gettimeofday(&tv_cur, NULL) != 0)
+>>>>>>> origin
 	{
-		printf( "Failed to get time of day" );
+		printf("Failed to get time of day");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Check the operation was blocking until the signal was generated */
 	if (tv_cur.tv_sec - tv_ref.tv_sec < 2)
 	{
-		printf( "The operation lasted less than 3 seconds!\n" );
+		printf("The operation lasted less than 3 seconds!\n");
 		return PTS_FAIL;
 	}
 
 	/* If we get here, then the process was suspended until
 	 * SIGALRM was raised.  */
-	printf( "Test PASSED\n" );
+	printf("Test PASSED\n");
 
 	return PTS_PASS;
 

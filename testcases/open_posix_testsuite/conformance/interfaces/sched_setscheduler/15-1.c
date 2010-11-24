@@ -57,7 +57,11 @@ int main() {
 
 
 	param.sched_priority = sched_get_priority_min(new_policy);
+<<<<<<< HEAD
 	if (sched_setscheduler(getpid(), new_policy, &param) != 0) {
+=======
+	if (sched_setscheduler(getpid(), new_policy, &param) != 0){
+>>>>>>> origin
 		if (errno == EPERM) {
 			printf("This process does not have the permission to set its own scheduling policy.\nTry to launch this test as root.\n");
 			return PTS_UNRESOLVED;
@@ -73,7 +77,11 @@ int main() {
 
 	pthread_cancel(tid);
 
+<<<<<<< HEAD
 	if (policy == new_policy) {
+=======
+	if (policy == new_policy){
+>>>>>>> origin
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}

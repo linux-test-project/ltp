@@ -85,31 +85,39 @@
 sem_t * sem;
 
 /* Thread function */
-void * threaded( void * arg )
+void * threaded(void * arg)
 {
 	int ret = 0;
 
 	do
 	{
-		ret = sem_wait( sem );
+		ret = sem_wait(sem);
 	}
+<<<<<<< HEAD
 	while (( ret != 0 ) && ( errno == EINTR ));
+=======
+	while ((ret != 0) && (errno == EINTR));
+>>>>>>> origin
 
 	if (ret != 0)
 	{
-		UNRESOLVED( errno, "failed to wait for the semaphore in child" );
+		UNRESOLVED(errno, "failed to wait for the semaphore in child");
 	}
 
+<<<<<<< HEAD
 	if (*( pid_t * ) arg != getpid())
+=======
+	if (*(pid_t *) arg != getpid())
+>>>>>>> origin
 	{
-		FAILED( "The thread is executing in the child process" );
+		FAILED("The thread is executing in the child process");
 	}
 
 	return NULL;
 }
 
 /* The main test function. */
-int main( int argc, char * argv[] )
+int main(int argc, char * argv[])
 {
 	int ret, status;
 	pid_t child, ctl;
@@ -121,86 +129,106 @@ int main( int argc, char * argv[] )
 	ctl = getpid();
 
 	/* Initialize the semaphore */
-	sem = sem_open( "/fork_21_1", O_CREAT, O_RDWR, 0 );
+	sem = sem_open("/fork_21_1", O_CREAT, O_RDWR, 0);
 
+<<<<<<< HEAD
 	if (sem == ( sem_t * ) SEM_FAILED)
+=======
+	if (sem == (sem_t *) SEM_FAILED)
+>>>>>>> origin
 	{
-		UNRESOLVED( errno, "Failed to open the semaphore" );
+		UNRESOLVED(errno, "Failed to open the semaphore");
 	}
 
-	sem_unlink( "/fork_21_1" );
+	sem_unlink("/fork_21_1");
 
 
 	/* Create thread */
-	ret = pthread_create( &th, NULL, threaded, &ctl );
+	ret = pthread_create(&th, NULL, threaded, &ctl);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to create the thread" );
+		UNRESOLVED(ret, "Failed to create the thread");
 	}
 
 
 	/* Create the child */
 	child = fork();
 
+<<<<<<< HEAD
 	if (child == ( pid_t ) - 1)
+=======
+	if (child == -1)
+>>>>>>> origin
 	{
-		UNRESOLVED( errno, "Failed to fork" );
+		UNRESOLVED(errno, "Failed to fork");
 	}
 
 	/* We post the semaphore twice */
 	do
 	{
-		ret = sem_post( sem );
+		ret = sem_post(sem);
 	}
+<<<<<<< HEAD
 	while (( ret != 0 ) && ( errno == EINTR ));
+=======
+	while ((ret != 0) && (errno == EINTR));
+>>>>>>> origin
 
 	if (ret != 0)
 	{
-		UNRESOLVED( errno, "Failed to post the semaphore" );
+		UNRESOLVED(errno, "Failed to post the semaphore");
 	}
 
 	/* child */
+<<<<<<< HEAD
 	if (child == ( pid_t ) 0)
+=======
+	if (child == 0)
+>>>>>>> origin
 	{
 		/* sleep a little while to let the thread execute in case it exists */
-		sleep( 1 );
+		sleep(1);
 
 		/* We're done */
-		exit( PTS_PASS );
+		exit(PTS_PASS);
 	}
 
 	/* Parent joins the child */
-	ctl = waitpid( child, &status, 0 );
+	ctl = waitpid(child, &status, 0);
 
 	if (ctl != child)
 	{
-		UNRESOLVED( errno, "Waitpid returned the wrong PID" );
+		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
+<<<<<<< HEAD
 	if (( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ))
+=======
+	if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != PTS_PASS))
+>>>>>>> origin
 	{
-		FAILED( "Child exited abnormally" );
+		FAILED("Child exited abnormally");
 	}
 
 	/* Destroy everything */
-	ret = sem_close( sem );
+	ret = sem_close(sem);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( errno, "Failed to close the semaphore" );
+		UNRESOLVED(errno, "Failed to close the semaphore");
 	}
 
-	ret = pthread_join( th, NULL );
+	ret = pthread_join(th, NULL);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to join the thread in parent" );
+		UNRESOLVED(ret, "Failed to join the thread in parent");
 	}
 
 	/* Test passed */
 #if VERBOSE > 0
-	output( "Test passed\n" );
+	output("Test passed\n");
 
 #endif
 	PASSED;

@@ -39,7 +39,7 @@ int main ()
                 return PTS_UNRESOLVED;
         }
 
-	if (( sts == -1 ) && ( val != 1)) {
+	if ((sts == -1) && (val != 1)) {
                 puts("TEST FAILED");
                 return PTS_FAIL;
         } else {

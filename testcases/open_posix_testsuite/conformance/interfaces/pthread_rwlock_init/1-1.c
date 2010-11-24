@@ -6,7 +6,7 @@
  * 
  * Test pthread_rwlock_init().
  *
- *	pthread_rwlock_init( ) function shall allocate any resources 
+ *	pthread_rwlock_init() function shall allocate any resources 
  *	required to use the read-write lock referenced by rwlock and 
  *	initializes the lock to an unlocked state with attributes referenced
  *	by attr.

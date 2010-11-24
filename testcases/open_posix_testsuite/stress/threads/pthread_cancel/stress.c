@@ -84,7 +84,7 @@ char do_it = 1;
 
 
 /* Handler for user request to terminate */
-void sighdl( int sig )
+void sighdl(int sig)
 {
 	do
 	{
@@ -96,14 +96,14 @@ void sighdl( int sig )
 long long canceled, ended;
 
 /* The canceled thread */
-void * th( void * arg )
+void * th(void * arg)
 {
 	int ret = 0;
-	ret = pthread_barrier_wait( arg );
+	ret = pthread_barrier_wait(arg);
 
-	if (( ret != 0 ) && ( ret != PTHREAD_BARRIER_SERIAL_THREAD ))
+	if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD))
 	{
-		UNRESOLVED( ret, "Failed to wait for the barrier" );
+		UNRESOLVED(ret, "Failed to wait for the barrier");
 	}
 
 	return NULL;
@@ -111,42 +111,42 @@ void * th( void * arg )
 
 
 /* Thread function */
-void * threaded( void * arg )
+void * threaded(void * arg)
 {
 	int ret = 0;
 	pthread_t child;
 
 	/* Initialize the barrier */
-	ret = pthread_barrier_init( arg, NULL, 2 );
+	ret = pthread_barrier_init(arg, NULL, 2);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to initialize a barrier" );
+		UNRESOLVED(ret, "Failed to initialize a barrier");
 	}
 
 
 	while (do_it)
 	{
 		/* Create the thread */
-		ret = pthread_create( &child, NULL, th, arg );
+		ret = pthread_create(&child, NULL, th, arg);
 
 		if (ret != 0)
 		{
-			UNRESOLVED( ret, "Thread creation failed" );
+			UNRESOLVED(ret, "Thread creation failed");
 		}
 
 
 		/* Synchronize */
-		ret = pthread_barrier_wait( arg );
+		ret = pthread_barrier_wait(arg);
 
-		if (( ret != 0 ) && ( ret != PTHREAD_BARRIER_SERIAL_THREAD ))
+		if ((ret != 0) && (ret != PTHREAD_BARRIER_SERIAL_THREAD))
 		{
-			UNRESOLVED( ret, "Failed to wait for the barrier" );
+			UNRESOLVED(ret, "Failed to wait for the barrier");
 		}
 
 
 		/* Cancel the thread */
-		ret = pthread_cancel( child );
+		ret = pthread_cancel(child);
 
 		if (ret == 0)
 			canceled++;
@@ -154,29 +154,29 @@ void * threaded( void * arg )
 			ended++;
 
 		/* Join the thread */
-		ret = pthread_join( child, NULL );
+		ret = pthread_join(child, NULL);
 
 		if (ret != 0)
 		{
-			UNRESOLVED( ret, "Unable to join the child" );
+			UNRESOLVED(ret, "Unable to join the child");
 		}
 
 	}
 
 
 	/* Destroy the barrier */
-	ret = pthread_barrier_destroy( arg );
+	ret = pthread_barrier_destroy(arg);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to destroy a barrier" );
+		UNRESOLVED(ret, "Failed to destroy a barrier");
 	}
 
 	return NULL;
 }
 
 /* Main function */
-int main ( int argc, char *argv[] )
+int main (int argc, char *argv[])
 {
 	int ret = 0, i;
 
@@ -190,61 +190,61 @@ int main ( int argc, char *argv[] )
 
 
 	/* Register the signal handler for SIGUSR1 */
-	sigemptyset ( &sa.sa_mask );
+	sigemptyset (&sa.sa_mask);
 
 	sa.sa_flags = 0;
 
 	sa.sa_handler = sighdl;
 
-	if (( ret = sigaction ( SIGUSR1, &sa, NULL ) ))
+	if ((ret = sigaction (SIGUSR1, &sa, NULL)))
 	{
-		UNRESOLVED( ret, "Unable to register signal handler" );
+		UNRESOLVED(ret, "Unable to register signal handler");
 	}
 
-	if (( ret = sigaction ( SIGALRM, &sa, NULL ) ))
+	if ((ret = sigaction (SIGALRM, &sa, NULL)))
 	{
-		UNRESOLVED( ret, "Unable to register signal handler" );
+		UNRESOLVED(ret, "Unable to register signal handler");
 	}
 
 #if VERBOSE > 1
-	output( "[parent] Signal handler registered\n" );
+	output("[parent] Signal handler registered\n");
 
 #endif
 
 	for (i = 0; i < NTHREADS; i++)
 	{
-		ret = pthread_create( &th[ i ], NULL, threaded, &b[ i ] );
+		ret = pthread_create(&th[ i ], NULL, threaded, &b[ i ]);
 
 		if (ret != 0)
 		{
-			UNRESOLVED( ret, "Failed to create a thread" );
+			UNRESOLVED(ret, "Failed to create a thread");
 		}
 	}
 
 #if VERBOSE > 1
-	output( "[parent] All threads are running\n" );
+	output("[parent] All threads are running\n");
 
 #endif
 
 	/* Then join */
 	for (i = 0; i < NTHREADS; i++)
 	{
-		ret = pthread_join( th[ i ], NULL );
+		ret = pthread_join(th[ i ], NULL);
 
 		if (ret != 0)
 		{
-			UNRESOLVED( ret, "Failed to join a thread" );
+			UNRESOLVED(ret, "Failed to join a thread");
 		}
 	}
 
 
 	/* We've been asked to stop */
 
-	output( "pthread_cancel stress test PASSED\n" );
+	output("pthread_cancel stress test PASSED\n");
 
-	output( " - %llu threads canceled\n", canceled );
+	output(" - %llu threads canceled\n", canceled);
 
-	output( " - %llu threads ended\n", ended );
+	output(" - %llu threads ended\n", ended);
 
 
 	PASSED;

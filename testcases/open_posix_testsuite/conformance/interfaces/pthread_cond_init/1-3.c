@@ -220,7 +220,7 @@ void * child_process_th(void * arg)
 	if (ret != 0)
 	{
 		#if VERBOSE > 1
-		output("[child][thr] Unable to wait for the cond: %d - %s", ret, strerror(ret) );
+		output("[child][thr] Unable to wait for the cond: %d - %s", ret, strerror(ret));
 		#endif
 		*(dt->pcntr) = 0; /* this will signal the parent thread that an error happened */
 	}
@@ -763,7 +763,7 @@ int do_tps_test(void)
 	if (WIFSIGNALED(status))
 	{ 
 		output("Child process killed with signal %d\n",WTERMSIG(status)); 
-		UNRESOLVED( rc2 , "Child process was killed"); 
+		UNRESOLVED(rc2 , "Child process was killed"); 
 	}
 	
 	if (WIFEXITED(status))
@@ -772,7 +772,7 @@ int do_tps_test(void)
 	}
 	else
 	{
-		UNRESOLVED( rc2, "Child process was neither killed nor exited");
+		UNRESOLVED(rc2, "Child process was neither killed nor exited");
 	}
 	
 	#if VERBOSE > 1

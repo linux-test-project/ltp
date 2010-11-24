@@ -83,7 +83,7 @@
 /***********************************    Test case   *****************************************/
 /********************************************************************************************/
 /* The main test function. */
-int main( int argc, char * argv[] )
+int main(int argc, char * argv[])
 {
 	int ret, status;
 	pid_t child, ctl;
@@ -93,140 +93,168 @@ int main( int argc, char * argv[] )
 	/* Initialize output */
 	output_init();
 
-	sem_linked = sem_open( "/fork_14_1a", O_CREAT, O_RDWR, 0 );
+	sem_linked = sem_open("/fork_14_1a", O_CREAT, O_RDWR, 0);
 
 	if (sem_linked == SEM_FAILED)
 	{
-		UNRESOLVED( errno, "Failed to create the named semaphore" );
+		UNRESOLVED(errno, "Failed to create the named semaphore");
 	}
 
-	sem_unlinked = sem_open( "/fork_14_1b", O_CREAT, O_RDWR, 0 );
+	sem_unlinked = sem_open("/fork_14_1b", O_CREAT, O_RDWR, 0);
 
 	if (sem_unlinked == SEM_FAILED)
 	{
-		UNRESOLVED( errno, "Failed to create the named semaphore" );
+		UNRESOLVED(errno, "Failed to create the named semaphore");
 	}
 
-	ret = sem_unlink( "/fork_14_1b" );
+	ret = sem_unlink("/fork_14_1b");
 
 	if (ret != 0)
 	{
-		UNRESOLVED( errno, "Failed to unlink the semaphore" );
+		UNRESOLVED(errno, "Failed to unlink the semaphore");
 	}
 
 	/* Create the child */
 	child = fork();
 
+<<<<<<< HEAD
 	if (child == ( pid_t ) - 1)
+=======
+	if (child == -1)
+>>>>>>> origin
 	{
-		UNRESOLVED( errno, "Failed to fork" );
+		UNRESOLVED(errno, "Failed to fork");
 	}
 
 	/* child */
+<<<<<<< HEAD
 	if (child == ( pid_t ) 0)
+=======
+	if (child == 0)
+>>>>>>> origin
 	{
 		do
 		{
-			ret = sem_post( sem_linked );
+			ret = sem_post(sem_linked);
 		}
+<<<<<<< HEAD
 		while (( ret != 0 ) && ( errno == EINTR ));
+=======
+		while ((ret != 0) && (errno == EINTR));
+>>>>>>> origin
 
 		if (ret != 0)
 		{
-			UNRESOLVED( errno, "Failed to post semaphore A" );
+			UNRESOLVED(errno, "Failed to post semaphore A");
 		}
 
 		do
 		{
-			ret = sem_post( sem_unlinked );
+			ret = sem_post(sem_unlinked);
 		}
+<<<<<<< HEAD
 		while (( ret != 0 ) && ( errno == EINTR ));
+=======
+		while ((ret != 0) && (errno == EINTR));
+>>>>>>> origin
 
 		if (ret != 0)
 		{
-			UNRESOLVED( errno, "Failed to post semaphore B" );
+			UNRESOLVED(errno, "Failed to post semaphore B");
 		}
 
 
 		/* We're done */
-		exit( PTS_PASS );
+		exit(PTS_PASS);
 	}
 
 	/* Parent joins the child */
-	ctl = waitpid( child, &status, 0 );
+	ctl = waitpid(child, &status, 0);
 
 	if (ctl != child)
 	{
-		UNRESOLVED( errno, "Waitpid returned the wrong PID" );
+		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
+<<<<<<< HEAD
 	if (( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ))
+=======
+	if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != PTS_PASS))
+>>>>>>> origin
 	{
-		FAILED( "Child exited abnormally" );
+		FAILED("Child exited abnormally");
 	}
 
 	/* Check both semaphores have been posted */
 	do
 	{
-		ret = sem_trywait( sem_linked );
+		ret = sem_trywait(sem_linked);
 	}
+<<<<<<< HEAD
 	while (( ret != 0 ) && ( errno == EINTR ));
+=======
+	while ((ret != 0) && (errno == EINTR));
+>>>>>>> origin
 
 	if (ret != 0)
 	{
 		if (errno == EAGAIN)
 		{
-			FAILED( "Child did not inherit the semaphore A" );
+			FAILED("Child did not inherit the semaphore A");
 		}
 		else
 		{
-			UNRESOLVED( errno, "sem_trywait failed" );
+			UNRESOLVED(errno, "sem_trywait failed");
 		}
 	}
 
 	do
 	{
-		ret = sem_trywait( sem_unlinked );
+		ret = sem_trywait(sem_unlinked);
 	}
+<<<<<<< HEAD
 	while (( ret != 0 ) && ( errno == EINTR ));
+=======
+	while ((ret != 0) && (errno == EINTR));
+>>>>>>> origin
 
 	if (ret != 0)
 	{
 		if (errno == EAGAIN)
 		{
-			FAILED( "Child did not inherit the semaphore B" );
+			FAILED("Child did not inherit the semaphore B");
 		}
 		else
 		{
-			UNRESOLVED( errno, "sem_trywait failed" );
+			UNRESOLVED(errno, "sem_trywait failed");
 		}
 	}
 
-	ret = sem_unlink( "/fork_14_1a" );
+	ret = sem_unlink("/fork_14_1a");
 
 	if (ret != 0)
 	{
-		UNRESOLVED( errno, "Failed to unlink semaphore A" );
+		UNRESOLVED(errno, "Failed to unlink semaphore A");
 	}
 
-	ret = sem_close( sem_linked );
+	ret = sem_close(sem_linked);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( errno, "Failed to close semaphore A" );
+		UNRESOLVED(errno, "Failed to close semaphore A");
 	}
 
-	ret = sem_close( sem_unlinked );
+	ret = sem_close(sem_unlinked);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( errno, "Failed to close semaphore B" );
+		UNRESOLVED(errno, "Failed to close semaphore B");
 	}
 
 	/* Test passed */
 #if VERBOSE > 0
 
-	output( "Test passed\n" );
+	output("Test passed\n");
 
 #endif
 

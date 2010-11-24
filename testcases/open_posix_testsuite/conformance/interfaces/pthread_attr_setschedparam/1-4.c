@@ -68,7 +68,11 @@ int main()
 		printf(ERROR_PREFIX "pthread_attr_init\n");
 		exit(PTS_UNRESOLVED);
 	}
+<<<<<<< HEAD
 	rc = pthread_attr_setschedpolicy( &attr, POLICY);
+=======
+	rc = pthread_attr_setschedpolicy(&attr, POLICY);
+>>>>>>> origin
 	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_attr_setschedpolicy\n");
 		exit(PTS_UNRESOLVED);

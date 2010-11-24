@@ -28,7 +28,11 @@ int main() {
                 return PTS_UNRESOLVED;
         }
 
+<<<<<<< HEAD
 	if (mlock(ptr, BUFSIZE) != 0) {
+=======
+	if (mlock(ptr, BUFSIZE) != 0){
+>>>>>>> origin
 		if (errno == EPERM) {
 			printf("You don't have permission to lock your address space.\nTry to rerun this test as root.\n");
 		} else {
@@ -38,7 +42,11 @@ int main() {
 	}
 
 	result = munlock(ptr, BUFSIZE);
+<<<<<<< HEAD
 	if (result == 0 && errno == 0) {
+=======
+	if (result == 0 && errno == 0){
+>>>>>>> origin
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	} else if (errno == 0) {

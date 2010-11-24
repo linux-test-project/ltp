@@ -91,7 +91,7 @@
 /********************************************************************************************/
 
 /* thread function */
-void * threaded ( void * arg )
+void * threaded (void * arg)
 {
 	int ret = 0;
 	int i;
@@ -101,18 +101,18 @@ void * threaded ( void * arg )
 		sched_yield();
 
 	/* Now tell we're done */
-	ret = clock_gettime( CLOCK_REALTIME, arg );
+	ret = clock_gettime(CLOCK_REALTIME, arg);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( errno, "Failed to get clock time" );
+		UNRESOLVED(errno, "Failed to get clock time");
 	}
 
 	return NULL;
 }
 
 /* The main test function. */
-int main( int argc, char *argv[] )
+int main(int argc, char *argv[])
 {
 	int ret = 0;
 	pthread_t child;
@@ -128,25 +128,25 @@ int main( int argc, char *argv[] )
 	for (sc = 0; sc < NSCENAR; sc++)
 	{
 #if VERBOSE > 0
-		output( "-----\n" );
-		output( "Starting test with scenario (%i): %s\n", sc, scenarii[ sc ].descr );
+		output("-----\n");
+		output("Starting test with scenario (%i): %s\n", sc, scenarii[ sc ].descr);
 #endif
-		ret = clock_gettime( CLOCK_REALTIME, &ts_pre );
+		ret = clock_gettime(CLOCK_REALTIME, &ts_pre);
 
 		if (ret != 0)
 		{
-			UNRESOLVED( errno, "Failed to read clock" );
+			UNRESOLVED(errno, "Failed to read clock");
 		}
 
-		ret = pthread_create( &child, &scenarii[ sc ].ta, threaded, &ts_th );
+		ret = pthread_create(&child, &scenarii[ sc ].ta, threaded, &ts_th);
 
-		switch ( scenarii[ sc ].result )
+		switch (scenarii[ sc ].result)
 		{
 				case 0:                        /* Operation was expected to succeed */
 
 				if (ret != 0)
 				{
-					UNRESOLVED( ret, "Failed to create this thread" );
+					UNRESOLVED(ret, "Failed to create this thread");
 				}
 
 				break;
@@ -155,7 +155,7 @@ int main( int argc, char *argv[] )
 
 				if (ret == 0)
 				{
-					UNRESOLVED( -1, "An error was expected but the thread creation succeeded" );
+					UNRESOLVED(-1, "An error was expected but the thread creation succeeded");
 				}
 
 				break;
@@ -166,11 +166,11 @@ int main( int argc, char *argv[] )
 
 				if (ret == 0)
 				{
-					output( "Thread has been created successfully for this scenario\n" );
+					output("Thread has been created successfully for this scenario\n");
 				}
 				else
 				{
-					output( "Thread creation failed with the error: %s\n", strerror( ret ) );
+					output("Thread creation failed with the error: %s\n", strerror(ret));
 				}
 
 #endif
@@ -180,37 +180,47 @@ int main( int argc, char *argv[] )
 		if (ret == 0)                        /* The new thread is running */
 		{
 
-			ret = pthread_join( child, NULL );
+			ret = pthread_join(child, NULL);
 
 			if (ret != 0)
 			{
-				UNRESOLVED( ret, "Unable to join a thread" );
+				UNRESOLVED(ret, "Unable to join a thread");
 			}
 
-			ret = clock_gettime( CLOCK_REALTIME, &ts_post );
+			ret = clock_gettime(CLOCK_REALTIME, &ts_post);
 
 			if (ret != 0)
 			{
-				UNRESOLVED( errno, "Failed to read clock" );
+				UNRESOLVED(errno, "Failed to read clock");
 			}
 
 			/* Now check that ts_pre <= ts_th <= ts_post */
+<<<<<<< HEAD
 			if (( ts_th.tv_sec < ts_pre.tv_sec)
 			        || ( ( ts_th.tv_sec == ts_pre.tv_sec ) && ( ts_th.tv_nsec < ts_pre.tv_nsec ) ) )
+=======
+			if ((ts_th.tv_sec < ts_pre.tv_sec)
+			        || ((ts_th.tv_sec == ts_pre.tv_sec) && (ts_th.tv_nsec < ts_pre.tv_nsec)))
+>>>>>>> origin
 			{
-				output( "Pre  : %d.%09d\n", ts_pre.tv_sec, ts_pre.tv_nsec );
-				output( "child: %d.%09d\n", ts_th.tv_sec, ts_th.tv_nsec );
-				output( "Post : %d.%09d\n", ts_post.tv_sec, ts_post.tv_nsec );
-				FAILED( "Child returned before its creation ???" );
+				output("Pre  : %d.%09d\n", ts_pre.tv_sec, ts_pre.tv_nsec);
+				output("child: %d.%09d\n", ts_th.tv_sec, ts_th.tv_nsec);
+				output("Post : %d.%09d\n", ts_post.tv_sec, ts_post.tv_nsec);
+				FAILED("Child returned before its creation ???");
 			}
 
+<<<<<<< HEAD
 			if (( ts_post.tv_sec < ts_th.tv_sec)
 			        || ( ( ts_post.tv_sec == ts_th.tv_sec ) && ( ts_post.tv_nsec < ts_th.tv_nsec ) ) )
+=======
+			if ((ts_post.tv_sec < ts_th.tv_sec)
+			        || ((ts_post.tv_sec == ts_th.tv_sec) && (ts_post.tv_nsec < ts_th.tv_nsec)))
+>>>>>>> origin
 			{
-				output( "Pre  : %d.%09d\n", ts_pre.tv_sec, ts_pre.tv_nsec );
-				output( "child: %d.%09d\n", ts_th.tv_sec, ts_th.tv_nsec );
-				output( "Post : %d.%09d\n", ts_post.tv_sec, ts_post.tv_nsec );
-				FAILED( "pthread_join returned before child terminated" );
+				output("Pre  : %d.%09d\n", ts_pre.tv_sec, ts_pre.tv_nsec);
+				output("child: %d.%09d\n", ts_th.tv_sec, ts_th.tv_nsec);
+				output("Post : %d.%09d\n", ts_post.tv_sec, ts_post.tv_nsec);
+				FAILED("pthread_join returned before child terminated");
 			}
 
 		}
@@ -218,9 +228,9 @@ int main( int argc, char *argv[] )
 
 	scenar_fini();
 #if VERBOSE > 0
-	output( "-----\n" );
-	output( "All test data destroyed\n" );
-	output( "Test PASSED\n" );
+	output("-----\n");
+	output("All test data destroyed\n");
+	output("Test PASSED\n");
 #endif
 
 	PASSED;

@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
 		delta = (tpget.tv_sec-LONGTIME) - TESTTIME;
 	
 		if ((delta <= ACCEPTABLEDELTA-DELTA) ||
-				(delta <= ACCEPTABLEDELTA+DELTA) ) {
+		    (delta <= ACCEPTABLEDELTA+DELTA)) {
 			pass = 1;
 		}
 

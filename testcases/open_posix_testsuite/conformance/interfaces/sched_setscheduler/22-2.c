@@ -33,7 +33,11 @@ int main() {
 	pthread_t tid;
 	pthread_attr_t attr;
 
+<<<<<<< HEAD
 	if (sched_getparam(getpid(), &param) != 0) {
+=======
+	if (sched_getparam(getpid(), &param) != 0){
+>>>>>>> origin
 		perror("An error occurs when calling sched_getparam()");
 		pthread_exit((void*)-1);
 	}
@@ -43,7 +47,11 @@ int main() {
 		sched_get_priority_min(SCHED_FIFO) :
 		max_priority;
 	param.sched_priority = new_priority;
+<<<<<<< HEAD
 	if (sched_setscheduler(getpid(), SCHED_FIFO, &param) != 0) {
+=======
+	if (sched_setscheduler(getpid(), SCHED_FIFO, &param) != 0){
+>>>>>>> origin
 		if (errno == EPERM) {
 			printf("This process does not have the permission to set its own scheduling policy.\nTry to launch this test as root.\n");
 			return PTS_UNRESOLVED;
@@ -78,7 +86,11 @@ int main() {
 
 	pthread_cancel(tid);
 
+<<<<<<< HEAD
 	if (param.sched_priority == new_priority) {
+=======
+	if (param.sched_priority == new_priority){
+>>>>>>> origin
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}

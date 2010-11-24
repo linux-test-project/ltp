@@ -90,7 +90,7 @@
 /******************************************************************************/
 
 /* The main test function. */
-int main( int argc, char * argv[] )
+int main(int argc, char * argv[])
 {
 	int ret, value;
 
@@ -100,79 +100,87 @@ int main( int argc, char * argv[] )
 	output_init();
 
 	/* Create the semaphore */
-	sem = sem_open( SEM_NAME, O_CREAT | O_EXCL, 0777, 2 );
+	sem = sem_open(SEM_NAME, O_CREAT | O_EXCL, 0777, 2);
 
+<<<<<<< HEAD
 	if (( sem == SEM_FAILED ) && ( errno == EEXIST ))
+=======
+	if ((sem == SEM_FAILED) && (errno == EEXIST))
+>>>>>>> origin
 	{
-		sem_unlink( SEM_NAME );
-		sem = sem_open( SEM_NAME, O_CREAT | O_EXCL, 0777, 2 );
+		sem_unlink(SEM_NAME);
+		sem = sem_open(SEM_NAME, O_CREAT | O_EXCL, 0777, 2);
 	}
 
 	if (sem == SEM_FAILED)
 	{
-		UNRESOLVED( errno, "Failed to create the semaphore" );
+		UNRESOLVED(errno, "Failed to create the semaphore");
 	}
 
 	/* Use the semaphore to change its value. */
 	do
 	{
-		ret = sem_wait( sem );
+		ret = sem_wait(sem);
 	}
+<<<<<<< HEAD
 	while (( ret != 0 ) && ( errno == EINTR ));
+=======
+	while ((ret != 0) && (errno == EINTR));
+>>>>>>> origin
 
 	if (ret != 0)
 	{
-		UNRESOLVED( errno, "Failed to wait for the semaphore" );
+		UNRESOLVED(errno, "Failed to wait for the semaphore");
 	}
 
 	/* Here, count is 1. Now, close the semaphore */
-	ret = sem_close( sem );
+	ret = sem_close(sem);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( errno, "Failed to close the semaphore" );
+		UNRESOLVED(errno, "Failed to close the semaphore");
 	}
 
 	/* Open the semaphore again */
-	sem = sem_open( SEM_NAME, O_CREAT, 0777, 3 );
+	sem = sem_open(SEM_NAME, O_CREAT, 0777, 3);
 
 	if (sem == SEM_FAILED)
 	{
-		UNRESOLVED( errno, "Failed to re-open the semaphore" );
+		UNRESOLVED(errno, "Failed to re-open the semaphore");
 	}
 
 	/* Check current semaphore count */
-	ret = sem_getvalue( sem, &value );
+	ret = sem_getvalue(sem, &value);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( errno, "Failed to get semaphore value" );
+		UNRESOLVED(errno, "Failed to get semaphore value");
 	}
 
 	if (value != 1)
 	{
-		output( "Got value: %d\n", value );
-		FAILED( "The semaphore count has changed after sem_close" );
+		output("Got value: %d\n", value);
+		FAILED("The semaphore count has changed after sem_close");
 	}
 
 	/* Now, we can destroy all */
-	ret = sem_close( sem );
+	ret = sem_close(sem);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( errno, "Failed to close the semaphore" );
+		UNRESOLVED(errno, "Failed to close the semaphore");
 	}
 
-	ret = sem_unlink( SEM_NAME );
+	ret = sem_unlink(SEM_NAME);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( errno, "Failed to unlink the semaphore" );
+		UNRESOLVED(errno, "Failed to unlink the semaphore");
 	}
 
 	/* Test passed */
 #if VERBOSE > 0
-	output( "Test passed\n" );
+	output("Test passed\n");
 
 #endif
 	PASSED;

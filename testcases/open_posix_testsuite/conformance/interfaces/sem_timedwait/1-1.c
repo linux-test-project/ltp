@@ -58,7 +58,11 @@ int main() {
 	}
 
 	/* Checking if the value of the Semaphore decremented by one */
+<<<<<<< HEAD
 	if (( val == 0 ) && ( sts == 0)) {
+=======
+	if ((val == 0) && (sts == 0)) {
+>>>>>>> origin
 		puts("TEST PASSED");
 		sem_destroy(&mysemp);
 		return PTS_PASS;

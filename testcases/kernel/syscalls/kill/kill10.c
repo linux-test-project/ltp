@@ -217,9 +217,6 @@ option_t options[] = {
 	{NULL, NULL, NULL}
 };
 
-/***********************************************************************
- * Main
- ***********************************************************************/
 int main(int ac, char **av)
 {
 	int lc;			/* loop counter */
@@ -228,58 +225,36 @@ int main(int ac, char **av)
 
 	Tst_nobuf = 1;
 
-    /***************************************************************
-     * parse standard options
-     ***************************************************************/
-	/* start off by parsing the command line options.  We provide a function
-	 * that understands many common options to control looping.  If you are not
-	 * adding any new options, pass NULL in place of options and &help.
-	 */
 	if ((msg = parse_opts(ac, av, options, &help))) {
-		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
-		tst_exit();
+		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
 	if (nflag) {
 		if (sscanf(narg, "%i", &num_procs) != 1) {
-			tst_brkm(TBROK, NULL, "-n option arg is not a number");
-			tst_exit();
+			tst_brkm(TBROK, tst_exit,
+			    "-n option arg is not a number");
 		}
 	}
 	if (gflag) {
 		if (sscanf(garg, "%i", &num_pgrps) != 1) {
-			tst_brkm(TBROK, NULL, "-g option arg is not a number");
-			tst_exit();
+			tst_brkm(TBROK, tst_exit,
+			    "-g option arg is not a number");
 		}
 	}
 
 	if (dflag) {
 		if (sscanf(darg, "%i", &debug_flag) != 1) {
-			tst_brkm(TBROK, NULL, "-d option arg is not a number");
-			tst_exit();
+			tst_brkm(TBROK, tst_exit,
+			    "-d option arg is not a number");
 		}
 	}
 
-    /***************************************************************
-     * perform global setup for test
-     ***************************************************************/
-	/* Next you should run a setup routine to make sure your environment is
-	 * sane.
-	 */
 	setup();
 
-	/* set the expected errnos... */
 	TEST_EXP_ENOS(exp_enos);
 
-    /***************************************************************
-     * check looping state
-     ***************************************************************/
-	/* TEST_LOOPING() is a macro that will make sure the test continues
-	 * looping according to the standard command line args.
-	 */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
-		/* reset Tst_count in case we are looping. */
 		Tst_count = 0;
 		child_signal_counter = 0;
 		pgrps_ready = 0;
@@ -304,26 +279,13 @@ int main(int ac, char **av)
 		tst_resm(TPASS, "All %d pgrps received their signals",
 			 child_signal_counter);
 
-		/* Here we clean up after the test case so we can do another iteration.
-		 */
-
 	}			/* End for TEST_LOOPING */
 
-    /***************************************************************
-     * cleanup and exit
-     ***************************************************************/
 	cleanup();
 
 	return 0;
 }				/* End main */
 
-/***************************************************************
- * help
- ***************************************************************/
-/* The custom help() function is really simple.  Just write your help message to
- * standard out.  Your help function will be called after the standard options
- * have been printed
- */
 void help()
 {
 	printf("  -g n    Create n process groups (default: %d)\n", num_pgrps);
@@ -333,9 +295,6 @@ void help()
 	printf("  -d n    Set debug level to n (default: %d)\n", debug_flag);
 }
 
-/***************************************************************
- * setup() - performs all ONE TIME setup for this test.
- ***************************************************************/
 void setup()
 {
 	struct sigaction sa;
@@ -359,22 +318,22 @@ void setup()
 	sa.sa_flags = 0;
 	if (debug_flag >= 1)
 		printf("%d: setting SIGTRAP -> SIG_DFL\n", mypid);
-	k_sigaction(SIGTRAP, &sa, 0);
+	k_sigaction(SIGTRAP, &sa, NULL);
 	if (debug_flag >= 1)
 		printf("%d: setting SIGCONT -> SIG_DFL\n", mypid);
-	k_sigaction(SIGCONT, &sa, 0);
+	k_sigaction(SIGCONT, &sa, NULL);
 
 	sa.sa_handler = set_create_procs;
 	if (debug_flag >= 4)
 		printf("%d: setting SIGALRM -> set_create_procs\n", mypid);
-	k_sigaction(SIGALRM, &sa, 0);
+	k_sigaction(SIGALRM, &sa, NULL);
 
 	sa.sa_handler = NULL;
 	sa.sa_sigaction = ack_ready;
 	sa.sa_flags = SA_SIGINFO;
 	if (debug_flag >= 1)
 		printf("%d: setting SIGUSR1 -> ack_ready\n", mypid);
-	k_sigaction(SIGUSR1, &sa, 0);
+	k_sigaction(SIGUSR1, &sa, NULL);
 
 	fork_pgrps(num_pgrps);
 
@@ -410,14 +369,14 @@ void setup()
 	sa.sa_handler = wakeup;
 	if (debug_flag >= 4)
 		printf("%d: setting SIGALRM -> wakeup\n", mypid);
-	k_sigaction(SIGALRM, &sa, 0);
+	k_sigaction(SIGALRM, &sa, NULL);
 	/* reply to child on USR2 */
 	sa.sa_handler = NULL;
 	sa.sa_sigaction = ack_done;
 	sa.sa_flags = SA_SIGINFO;
 	if (debug_flag >= 1)
 		printf("%d: setting SIGUSR2 -> ack_done\n", mypid);
-	k_sigaction(SIGUSR2, &sa, 0);
+	k_sigaction(SIGUSR2, &sa, NULL);
 }
 
 void ack_ready(int sig, siginfo_t * si, void *data)
@@ -442,9 +401,8 @@ void ack_ready(int sig, siginfo_t * si, void *data)
 				       mypid, si->si_pid);
 		}
 	} else {
-		tst_brkm(TBROK, cleanup,
-			 "received unexpected signal %d from %d", sig,
-			 si->si_pid);
+		printf("received unexpected signal %d from %d",
+		    sig, si->si_pid);
 	}
 }
 
@@ -470,8 +428,8 @@ void ack_done(int sig, siginfo_t * si, void *data)
 				       si->si_pid);
 		}
 	} else {
-		tst_brkm(TBROK, cleanup,
-			 "received unexpected signal from %d", si->si_pid);
+		printf("received unexpected signal %d from %d",
+		    sig, si->si_pid);
 	}
 }
 
@@ -488,6 +446,7 @@ void cleanup()
 		kill(-child_checklist[i].pid, SIGQUIT);
 		waitpid(child_checklist[i].pid, NULL, 0);
 	}
+	free(child_checklist);
 	/*
 	 * print timing stats if that option was specified.
 	 * print errno log if that option was specified.
@@ -516,9 +475,8 @@ void fork_pgrps(int pgrps_left)
 			printf("%d: forking new Manager\n", mypid);
 		switch (child = fork()) {
 		case -1:
-			tst_brkm(TBROK, cleanup,
-				 "fork() failed in fork_pgrps(%d), errno=%d : %s",
-				 pgrps_left, errno, strerror(errno));
+			tst_brkm(TBROK|TERRNO, cleanup,
+				 "fork() failed in fork_pgrps(%d)", pgrps_left);
 			break;
 		case 0:
 			mypid = getpid();
@@ -573,31 +531,31 @@ void manager(int num_procs)
 	sa.sa_flags = 0;
 	if (debug_flag >= 4)
 		printf("%d: setting SIGHUP -> SIG_IGN\n", mypid);
-	k_sigaction(SIGHUP, &sa, 0);
+	k_sigaction(SIGHUP, &sa, NULL);
 
 	/* We use ALRM to make sure that we don't miss the signal effects ! */
 	sa.sa_handler = wakeup;
 	if (debug_flag >= 4)
 		printf("%d: setting SIGALRM -> wakeup\n", mypid);
-	k_sigaction(SIGALRM, &sa, 0);
+	k_sigaction(SIGALRM, &sa, NULL);
 
 	/* exit on QUIT */
 	sa.sa_handler = graceful_exit;
 	if (debug_flag >= 4)
 		printf("%d: setting SIGQUIT -> graceful_exit\n", mypid);
-	k_sigaction(SIGQUIT, &sa, 0);
+	k_sigaction(SIGQUIT, &sa, NULL);
 
 	/* start signaling on USR1 */
 	sa.sa_handler = set_signal_parents;
 	sigfillset(&sa.sa_mask);
 	if (debug_flag >= 7)
 		printf("%d: setting SIGUSR1 -> set_signal_parents\n", mypid);
-	k_sigaction(SIGUSR1, &sa, 0);
+	k_sigaction(SIGUSR1, &sa, NULL);
 	/* stop signaling on USR2 */
 	sa.sa_handler = clear_signal_parents;
 	if (debug_flag >= 7)
 		printf("%d: setting SIGUSR2 -> clear_signal_parents\n", mypid);
-	k_sigaction(SIGUSR2, &sa, 0);
+	k_sigaction(SIGUSR2, &sa, NULL);
 
 	fork_procs(num_procs);
 	sleep(1);		/* wait a sec to let all the children pause */
@@ -608,17 +566,17 @@ void manager(int num_procs)
 	sa.sa_handler = wakeup;
 	if (debug_flag >= 4)
 		printf("%d: setting SIGALRM -> wakeup\n", mypid);
-	k_sigaction(SIGALRM, &sa, 0);
+	k_sigaction(SIGALRM, &sa, NULL);
 	/* mark ready confirmation on USR1 */
 	sa.sa_handler = set_confirmed_ready;
 	if (debug_flag >= 4)
 		printf("%d: setting SIGUSR1 -> set_confirmed_ready\n", mypid);
-	k_sigaction(SIGUSR1, &sa, 0);
+	k_sigaction(SIGUSR1, &sa, NULL);
 	/* reset our counter on HUP */
 	sa.sa_handler = reset_counter;
 	if (debug_flag >= 4)
 		printf("%d: setting SIGHUP -> reset_counter\n", mypid);
-	k_sigaction(SIGHUP, &sa, 0);
+	k_sigaction(SIGHUP, &sa, NULL);
 
 	/* reply to child on USR2 */
 	sa.sa_handler = NULL;
@@ -626,7 +584,7 @@ void manager(int num_procs)
 	sa.sa_flags = SA_SIGINFO;
 	if (debug_flag >= 4)
 		printf("%d: setting SIGUSR2 -> reply_to_child\n", mypid);
-	k_sigaction(SIGUSR2, &sa, 0);
+	k_sigaction(SIGUSR2, &sa, NULL);
 
 	/* tell our parent that we are ready to rock */
 	while (!confirmed_ready_flag) {
@@ -634,9 +592,9 @@ void manager(int num_procs)
 			printf("%d: Manager, SIGUSR1 -> %d\n", mypid,
 			       getppid());
 		if (kill(getppid(), SIGUSR1) == -1) {
-			tst_resm(TWARN,
-				 "%d: Couldn't signal master (%d) that we're ready. %d: %s",
-				 mypid, getppid(), errno, strerror(errno));
+			printf("%d: Couldn't signal master (%d) that we're "
+			    "ready. %d: %s",
+			    mypid, getppid(), errno, strerror(errno));
 			exit(errno);
 		}
 		usleep(100);
@@ -651,17 +609,17 @@ void manager(int num_procs)
 		pause();
 		if (child_signal_counter >= num_procs) {
 			confirmed_ready_flag = 0;
-			tst_resm(TINFO, "%d: All %d children reported in",
-				 mypid, child_signal_counter);
+			printf("%d: All %d children reported in\n",
+			    mypid, child_signal_counter);
 			while (child_signal_counter) {
 				if (debug_flag >= 3)
 					printf("%d: Manager, SIGUSR2 -> %d\n",
 					       mypid, getppid());
 				if (kill(getppid(), SIGUSR2) == -1) {
-					tst_resm(TINFO,
-						 "%d: Couldn't signal master (%d) that we're ready. %d: %s",
-						 mypid, getppid(), errno,
-						 strerror(errno));
+					printf("%d: Couldn't signal master "
+					    "(%d) that we're ready. %d: %s\n",
+					    mypid, getppid(), errno,
+					    strerror(errno));
 					exit(errno);
 				}
 				usleep(100);
@@ -678,13 +636,13 @@ void graceful_exit(int sig)
 void set_signal_parents(int sig)
 {
 	if (debug_flag >= 8)
-		printf("%d: Child start signalling\n", mypid);
+		printf("%d: Child start signaling\n", mypid);
 	signal_parents_flag = 1;
 }
 void clear_signal_parents(int sig)
 {
 	if (debug_flag >= 8)
-		printf("%d: Child stop signalling\n", mypid);
+		printf("%d: Child stop signaling\n", mypid);
 	signal_parents_flag = 0;
 }
 void set_confirmed_ready(int sig)
@@ -753,19 +711,19 @@ void fork_procs(int procs_left)
 
 	while (procs_left) {
 		if (debug_flag >= 4)
-			printf("%d: forking new Child\n", mypid);
+			printf("%d: forking new child\n", mypid);
 		switch (child = fork()) {
 		case -1:
-			tst_brkm(TBROK, cleanup,
-				 "fork() failed in fork_procs(%d), errno=%d : %s",
-				 procs_left, errno, strerror(errno));
+			tst_brkm(TBROK|TERRNO, cleanup,
+				 "fork() failed in fork_procs(%d)",
+				 procs_left);
 			break;
 		case 0:
 			mypid = getpid();
 			while (1) {
 				/* wait to start */
 				if (debug_flag >= 8)
-					printf("%d: Child pausing\n", mypid);
+					printf("%d: child pausing\n", mypid);
 				/*
 				 * If we have already recieved the signal, we dont
 				 * want to pause for it !
@@ -778,16 +736,15 @@ void fork_procs(int procs_left)
 				/* if we started, call mama */
 				while (signal_parents_flag) {
 					if (debug_flag >= 6)
-						printf
-						    ("%d: child, SIGUSR2 -> %d\n",
-						     mypid, getppid());
+						printf("%d: child, SIGUSR2 "
+						    "-> %d\n",
+						    mypid, getppid());
 					if (kill(getppid(), SIGUSR2) == -1) {
 						/* something went wrong */
-						tst_resm(TINFO,
-							 "%d: kill(ppid:%d, SIGUSR2) failed. %d: %s",
-							 mypid, getppid(),
-							 errno,
-							 strerror(errno));
+						printf("%d: kill(ppid:%d, "
+						    "SIGUSR2) failed. %d: %s",
+						    mypid, getppid(), errno,
+						    strerror(errno));
 						exit(errno);
 					}
 					usleep(100);
@@ -797,7 +754,7 @@ void fork_procs(int procs_left)
 		default:
 			child_checklist[child_checklist_total++].pid = child;
 		}
-		--procs_left;
+		procs_left--;
 	}
 	qsort(child_checklist, child_checklist_total, sizeof(*child_checklist),
 	      checklist_cmp);
@@ -824,9 +781,8 @@ inline int k_sigaction(int sig, struct sigaction *sa, struct sigaction *osa)
 {
 	int ret;
 	if ((ret = sigaction(sig, sa, osa)) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "sigaction(%d, ...) failed, errno %d: %s",
-			 sig, errno, strerror(errno));
+		tst_brkm(TBROK|TERRNO, cleanup, "sigaction(%d, ...) failed",
+		    sig);
 	}
 	return ret;
 }

@@ -289,7 +289,7 @@ void * threaded_A (void * arg)
 		if (WIFSIGNALED(status))
 		{ 
 			output("Child process killed with signal %d\n",WTERMSIG(status)); 
-			UNRESOLVED( 0 , "Child process was killed"); 
+			UNRESOLVED(0 , "Child process was killed"); 
 		}
 		
 		if (WIFEXITED(status))
@@ -298,7 +298,7 @@ void * threaded_A (void * arg)
 		}
 		else
 		{
-			UNRESOLVED( 0, "Child process was neither killed nor exited");
+			UNRESOLVED(0, "Child process was neither killed nor exited");
 		}
 	}
 	
@@ -408,7 +408,7 @@ int main(int argc, char * argv[])
 		ps = (size_t)sysconf(_SC_PAGESIZE);
 		sz= ((sizeof(testdata_t) / ps) + 1) * ps; /* # pages needed to store the testdata */
 		
-		tmp = calloc( 1 , sz);
+		tmp = calloc(1 , sz);
 		if (tmp == NULL)
 		{ UNRESOLVED(errno, "Memory allocation failed"); }
 				
@@ -556,7 +556,7 @@ int main(int argc, char * argv[])
 	
 	for (i=0; i<NTOT; i++)
 	{
-		ret = pthread_create( &th[i], &ta, threaded_A, &(td->cd[i]));
+		ret = pthread_create(&th[i], &ta, threaded_A, &(td->cd[i]));
 		/* In case of failure we can exit; the child processes will die after a while */
 		if (ret != 0)  {  UNRESOLVED(ret, "[Parent] Failed to create a thread");  }
 		
@@ -572,7 +572,7 @@ int main(int argc, char * argv[])
 	
 	for (i=0; i<NTOT; i++)
 	{
-		ret = pthread_join( th[i], NULL);
+		ret = pthread_join(th[i], NULL);
 		if (ret != 0)  {  UNRESOLVED(ret, "[Parent] Failed to join a thread");  }
 	}
 	

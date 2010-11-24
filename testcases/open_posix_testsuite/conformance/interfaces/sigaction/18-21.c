@@ -83,7 +83,7 @@
 /******************************************************************************/
 
 int called = 0;
-void handler( int sig )
+void handler(int sig)
 {
 	called = 1;
 }
@@ -101,43 +101,43 @@ int main()
 	/* Set the signal handler */
 	sa.sa_flags = 0;
 	sa.sa_handler = handler;
-	ret = sigemptyset( &sa.sa_mask );
+	ret = sigemptyset(&sa.sa_mask);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to empty signal set" );
+		UNRESOLVED(ret, "Failed to empty signal set");
 	}
 
 	/* Install the signal handler for SIGSYS */
-	ret = sigaction( SIGNAL, &sa, 0 );
+	ret = sigaction(SIGNAL, &sa, 0);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to set signal handler" );
+		UNRESOLVED(ret, "Failed to set signal handler");
 	}
 
 	if (called)
 	{
-		FAILED( "The signal handler has been called when no signal was raised" );
+		FAILED("The signal handler has been called when no signal was raised");
 	}
 
-	ret = raise( SIGNAL );
+	ret = raise(SIGNAL);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to raise SIGSYS" );
+		UNRESOLVED(ret, "Failed to raise SIGSYS");
 	}
 
 	if (!called)
 	{
-		FAILED( "the sa_handler was not called whereas SA_SIGINFO was not set" );
+		FAILED("the sa_handler was not called whereas SA_SIGINFO was not set");
 	}
 
 
 	/* Test passed */
 #if VERBOSE > 0
 
-	output( "Test passed\n" );
+	output("Test passed\n");
 
 #endif
 

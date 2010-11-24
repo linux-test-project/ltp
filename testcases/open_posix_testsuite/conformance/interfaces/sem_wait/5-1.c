@@ -41,7 +41,11 @@ int main() {
 	}
 
 	/* Lock Semaphore by sem_trywait*/
+<<<<<<< HEAD
 	if (( sem_trywait(mysemp) == -1) && ( errno == EAGAIN)) {
+=======
+	if ((sem_trywait(mysemp) == -1) && (errno == EAGAIN)) {
+>>>>>>> origin
 		puts("TEST PASSED");
 		sem_close(mysemp);
 		sem_unlink(semname);

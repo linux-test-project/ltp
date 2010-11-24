@@ -160,7 +160,11 @@ int main() {
 
 	for (i=0; i<nb_cpu-1; i++) {
 		child_pid[i] = fork();
+<<<<<<< HEAD
 		if (child_pid[i] == -1) {
+=======
+		if (child_pid[i] == -1){
+>>>>>>> origin
 			perror("An error occurs when calling fork()");
 			for (j=0; j<i; j++) {
 				kill(child_pid[j], SIGTERM);		
@@ -176,7 +180,11 @@ int main() {
 	}		
 
 	child_pid[i] = fork();
+<<<<<<< HEAD
 	if (child_pid[i] == -1) {
+=======
+	if (child_pid[i] == -1){
+>>>>>>> origin
 		perror("An error occurs when calling fork()");
 		for (j=0; j<i; j++) {
 			kill(child_pid[j], SIGTERM);		
@@ -193,7 +201,7 @@ int main() {
 	sleep(1);
 
 	param.sched_priority = (sched_get_priority_min(SCHED_FIFO) +
-				sched_get_priority_max(SCHED_FIFO) ) / 2;
+				sched_get_priority_max(SCHED_FIFO)) / 2;
 
 	oldcount = *shmptr;
 	if (sched_setparam(child_pid[i], &param) != 0) {
@@ -203,7 +211,11 @@ int main() {
 	}
 	newcount = *shmptr;
 	
+<<<<<<< HEAD
 	if (newcount == oldcount) {
+=======
+	if (newcount == oldcount){
+>>>>>>> origin
 		printf("The target process does not preempt the calling process\n");
 		kill_children(child_pid);
 		return PTS_FAIL;

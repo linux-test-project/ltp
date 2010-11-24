@@ -94,17 +94,17 @@
 /***********************************    Test case   *****************************************/
 /********************************************************************************************/
 
-void handler( int sig )
+void handler(int sig)
 {
 	/* this won't be used */
-	output( "Sig %d received\n", sig );
+	output("Sig %d received\n", sig);
 
 	return ;
 }
 
 
 /* The main test function. */
-int main( int argc, char * argv[] )
+int main(int argc, char * argv[])
 {
 	int ret, status;
 	pid_t child, ctl;
@@ -119,7 +119,7 @@ int main( int argc, char * argv[] )
 		void * four;
 	}
 
-	mystruct = {1, 2, 3, ( void * ) 4};
+	mystruct = {1, 2, 3, (void *) 4};
 
 	/* pointer for malloc'ed memory */
 	void * malloced;
@@ -132,157 +132,193 @@ int main( int argc, char * argv[] )
 	output_init();
 
 	/* Initialize the memory pointer */
-	malloced = ( void * ) malloc( sysconf( _SC_PAGESIZE ) );
+	malloced = (void *) malloc(sysconf(_SC_PAGESIZE));
 
 	if (malloced == NULL)
 	{
-		UNRESOLVED( errno, "Unable to alloc memory" );
+		UNRESOLVED(errno, "Unable to alloc memory");
 	}
 
-	*( double * ) malloced = 2.3;
+	*(double *) malloced = 2.3;
 
 	/* Initialize an environment variable */
-	ret = setenv( "OPTS_FORK_TC", "2-1.c", 1 );
+	ret = setenv("OPTS_FORK_TC", "2-1.c", 1);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( errno, "Failed to set the environment variable" );
+		UNRESOLVED(errno, "Failed to set the environment variable");
 	}
 
 	/* Initialize the signal handler */
 	sa_ori.sa_handler = handler;
 
-	ret = sigemptyset( &sa_ori.sa_mask );
+	ret = sigemptyset(&sa_ori.sa_mask);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( errno, "sigemptyset failed" );
+		UNRESOLVED(errno, "sigemptyset failed");
 	}
 
-	ret = sigaddset( &sa_ori.sa_mask, SIGUSR2 );
+	ret = sigaddset(&sa_ori.sa_mask, SIGUSR2);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( errno, "sigaddset failed" );
+		UNRESOLVED(errno, "sigaddset failed");
 	}
 
 	sa_ori.sa_flags = SA_NOCLDSTOP;
-	ret = sigaction( SIGUSR1, &sa_ori, NULL );
+	ret = sigaction(SIGUSR1, &sa_ori, NULL);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( errno, "Failed to set the signal handler" );
+		UNRESOLVED(errno, "Failed to set the signal handler");
 	}
 
 	/* Create the child */
 	child = fork();
 
+<<<<<<< HEAD
 	if (child == ( pid_t ) - 1)
+=======
+	if (child == -1)
+>>>>>>> origin
 	{
-		UNRESOLVED( errno, "Failed to fork" );
+		UNRESOLVED(errno, "Failed to fork");
 	}
 
 	/* child */
+<<<<<<< HEAD
 	if (child == ( pid_t ) 0)
 	{
 		/* Check the struct was copied */
 
 		if (( mystruct.one != 1 ) || ( mystruct.two != 2 ) || ( mystruct.three != 3 ) || ( mystruct.four != ( void * ) 4 ))
+=======
+	if (child == 0)
+	{
+		/* Check the struct was copied */
+
+		if ((mystruct.one != 1) || (mystruct.two != 2) || (mystruct.three != 3) || (mystruct.four != (void *) 4))
+>>>>>>> origin
 		{
-			FAILED( "The struct data was not copied to the child process" );
+			FAILED("The struct data was not copied to the child process");
 		}
 
 		/* Check the malloc'ed memory is copied */
+<<<<<<< HEAD
 		if (*( double * ) malloced != 2.3)
+=======
+		if (*(double *) malloced != 2.3)
+>>>>>>> origin
 		{
-			FAILED( "Malloc'd block not copied in child process" );
+			FAILED("Malloc'd block not copied in child process");
 		}
 
 		/* Free the memory -- this should suceed */
-		free( malloced );
+		free(malloced);
 
 		/* Check the env variable */
+<<<<<<< HEAD
 		if (strncmp( "2-1.c", getenv( "OPTS_FORK_TC" ), 6 ) != 0)
+=======
+		if (strncmp("2-1.c", getenv("OPTS_FORK_TC"), 6) != 0)
+>>>>>>> origin
 		{
-			FAILED( "The environment is not copied to the child" );
+			FAILED("The environment is not copied to the child");
 		}
 
 		/* Check the signal handler stuff */
-		ret = sigaction( SIGUSR1, NULL, &sa_child );
+		ret = sigaction(SIGUSR1, NULL, &sa_child);
 
 		if (ret != 0)
 		{
-			UNRESOLVED( errno, "Failed to read sigaction information in child" );
+			UNRESOLVED(errno, "Failed to read sigaction information in child");
 		}
 
 		if (sa_child.sa_handler != handler)
 		{
-			FAILED( "The child signal handler function is different from the parent's" );
+			FAILED("The child signal handler function is different from the parent's");
 		}
 
-		ret = sigismember( &sa_child.sa_mask, SIGUSR2 );
+		ret = sigismember(&sa_child.sa_mask, SIGUSR2);
 
 		if (ret == 0)
 		{
-			FAILED( "The child signal handler mask is different from the parent's" );
+			FAILED("The child signal handler mask is different from the parent's");
 		}
 
 		if (ret != 1)
 		{
-			UNRESOLVED( errno, "Unexpected return code from sigismember" );
+			UNRESOLVED(errno, "Unexpected return code from sigismember");
 		}
 
+<<<<<<< HEAD
 		if (( ( sa_child.sa_flags & SA_NOCLDSTOP ) != SA_NOCLDSTOP)
+=======
+		if (((sa_child.sa_flags & SA_NOCLDSTOP) != SA_NOCLDSTOP)
+>>>>>>> origin
 #ifndef WITHOUT_XOPEN
-		        || ( ( sa_child.sa_flags & SA_ONSTACK ) != 0 )
-		        || ( ( sa_child.sa_flags & SA_RESETHAND ) != 0 )
-		        || ( ( sa_child.sa_flags & SA_RESTART ) != 0 )
-		        || ( ( sa_child.sa_flags & SA_SIGINFO ) != 0 )
-		        || ( ( sa_child.sa_flags & SA_NOCLDWAIT ) != 0 )
-		        || ( ( sa_child.sa_flags & SA_NODEFER ) != 0 )
+		        || ((sa_child.sa_flags & SA_ONSTACK) != 0)
+		        || ((sa_child.sa_flags & SA_RESETHAND) != 0)
+		        || ((sa_child.sa_flags & SA_RESTART) != 0)
+		        || ((sa_child.sa_flags & SA_SIGINFO) != 0)
+		        || ((sa_child.sa_flags & SA_NOCLDWAIT) != 0)
+		        || ((sa_child.sa_flags & SA_NODEFER) != 0)
 #endif
 		   )
 		{
-			FAILED( "The sigaction flags are different in the child" );
+			FAILED("The sigaction flags are different in the child");
 		}
 
 		/* The child stops here */
-		exit( PTS_PASS );
+		exit(PTS_PASS);
 	}
 
 	/* Parent joins the child */
-	ctl = waitpid( child, &status, 0 );
+	ctl = waitpid(child, &status, 0);
 
 	if (ctl != child)
 	{
-		UNRESOLVED( errno, "Waitpid returned the wrong PID" );
+		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
+<<<<<<< HEAD
 	if (!WIFEXITED( status ))
+=======
+	if (!WIFEXITED(status))
+>>>>>>> origin
 	{
-		UNRESOLVED( status, "Child exited abnormally" );
+		UNRESOLVED(status, "Child exited abnormally");
 	}
 
+<<<<<<< HEAD
 	if (WEXITSTATUS( status ) == PTS_PASS)
+=======
+	if (WEXITSTATUS(status) == PTS_PASS)
+>>>>>>> origin
 	{
 
 		/* Test passed */
 #if VERBOSE > 0
-		output( "Test passed\n" );
+		output("Test passed\n");
 #endif
 
 		PASSED;
 	}
 
+<<<<<<< HEAD
 	if (WEXITSTATUS( status ) == PTS_FAIL)
+=======
+	if (WEXITSTATUS(status) == PTS_FAIL)
+>>>>>>> origin
 	{
 
 		/* Test failed */
-		FAILED( "Test failed in child\n" );
+		FAILED("Test failed in child\n");
 	}
 
 	/* Otherwise we've an unexpected return code */
-	UNRESOLVED( WEXITSTATUS( status ), "Child returned an unexpected error code" );
+	UNRESOLVED(WEXITSTATUS(status), "Child returned an unexpected error code");
 }
 
 

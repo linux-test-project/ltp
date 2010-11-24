@@ -75,7 +75,7 @@ int main(int argc, char **argv)
 		}
 	}
 
-	result = sched_getparam( 1, &param);
+	result = sched_getparam(1, &param);
 	
 	if (result == -1 && errno == EPERM) {
 		printf("Test PASSED\n");

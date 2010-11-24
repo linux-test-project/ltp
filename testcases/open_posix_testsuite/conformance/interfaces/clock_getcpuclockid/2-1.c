@@ -34,12 +34,12 @@ int main(int argc, char *argv[])
 	}
 
 	if (clock_getcpuclockid(getpid(), &clockid_1) != 0) {
-		printf("clock_getcpuclockid(getpid(), ) failed\n");
+		printf("clock_getcpuclockid(getpid(),) failed\n");
 		return PTS_FAIL;
 	}
 
 	if (clock_getcpuclockid(0, &clockid_2) != 0) {
-		printf("clock_getcpuclockid(0, ) failed\n");
+		printf("clock_getcpuclockid(0,) failed\n");
 		return PTS_FAIL;
 	}
 

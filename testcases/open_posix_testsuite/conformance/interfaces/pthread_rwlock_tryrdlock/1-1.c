@@ -6,12 +6,12 @@
 
  * Test that pthread_rwlock_tryrdlock(pthread_rwlock_t *rwlock)
  *
- *	The pthread_rwlock_tryrdlock( ) function shall apply a read lock as in the 
- *	pthread_rwlock_rdlock( )
+ *	The pthread_rwlock_tryrdlock() function shall apply a read lock as in the 
+ *	pthread_rwlock_rdlock()
  *	function, with the exception that the function shall fail if the 
- *	equivalent pthread_rwlock_rdlock( )
+ *	equivalent pthread_rwlock_rdlock()
  *	call would have blocked the calling thread. In no case shall the 
- *	pthread_rwlock_tryrdlock( )
+ *	pthread_rwlock_tryrdlock()
  *	function ever block; it always either acquires the lock or fails and 
  *	returns immediately.
  *

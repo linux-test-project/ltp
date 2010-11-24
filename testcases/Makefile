@@ -29,8 +29,7 @@ include $(top_srcdir)/include/mk/env_pre.mk
 # 2. kdump shouldn't be compiled by default, because it's runtime based and
 #    WILL crash the build host (the tests need to be fixed to just build, not
 #    run).
-# 3. mce-test doesn't fit cleanly in the build, yet.
-FILTER_OUT_DIRS		:= ballista kdump mce-test open%
+FILTER_OUT_DIRS		:= ballista kdump open%
 
 ifneq ($(WITH_REALTIME_TESTSUITE),yes)
 FILTER_OUT_DIRS		+= realtime

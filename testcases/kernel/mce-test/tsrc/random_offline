@@ -1,0 +1,156 @@
+#!/bin/bash
+# randomly soft offline pages
+# random_offline options
+# -t seconds   runtime in seconds (default unlimited)
+# -m max-pages maximum pages to tie up before unpoisoning
+# -s seed      random seed
+# Note: running this for too long may still run out of memory
+# because unpoison cannot completely undo what soft offline
+# does to larger free memory areas (TBD in the kernel)
+# Author: Andi Kleen
+
+# fixme: uses time seed, non reproducible
+
+#mount -t debugfs none /debug
+
+THRESH=1000
+SEED=""
+RUNTIME=""
+DEBUG=/sys/kernel/debug
+
+fail() { 
+	echo "ERROR: $@"
+	exit 0
+}
+
+usage() { 
+	echo "Usage:"
+	echo "random_offline options"
+	echo -- "-t seconds   runtime in seconds (default unlimited)"
+	echo -- "-m max-pages maximum pages to tie up before unpoisoning"
+	echo -- "-s seed      random seed"
+	fail "Invalid option $1"
+}
+
+while getopts "t:m:s:" option ; do
+	case "$option" in 
+	t) RUNTIME=$OPTARG ;;
+	m) THRESH=$OPTARG ;;
+	s) SEED=$OPTARG ;;
+	*) usage $option ;;
+	esac
+done
+
+[ "$(whoami)" != root ] && fail "Not root"
+[ ! -d $DEBUG/hwpoison ] && mount -t debugfs none $DEBUG
+[ ! -d $DEBUG/hwpoison ] && fail "No debugfs"
+[ ! -w /sys/devices/system/memory/soft_offline_page ] && fail "No soft offlining support in kernel"
+[ ! -w $DEBUG/hwpoison/unpoison-pfn ] && fail "no unpoison support in kernel"
+
+end_of_memory() {
+	for i in /sys/firmware/memmap/* ; do
+		case "$(< $i/type)" in
+		"System RAM") ;;
+		*) continue ;;
+		esac	
+	
+		k=$(< $i/end)
+		k=${k/0x/}
+		k=$(echo $k | tr a-z A-Z)
+
+		echo "ibase=16; $k/1000" | bc
+	done | sort -n | tail -n1
+}
+
+E=$(end_of_memory)
+
+echo "soft offlining pages upto $E" 
+
+unpoison() { 
+	if [ ! -f offlined ] ; then
+		return
+	fi
+	
+	echo unpoisioning
+	while read i ; do 
+		#echo -n ,
+		#echo "u $i"
+		(( utotal++ ))
+	 	if ! echo $i | sed 's/000$//' > $DEBUG/hwpoison/unpoison-pfn ; then
+			echo "$i $?" >> unpoison-failed
+			echo "unpoisioning $i failed: $?"
+		else
+			(( usuccess++ ))
+		fi
+	done < offlined
+	echo done
+	echo
+}
+
+trap unpoison 0
+
+if [ "$SEED" = "" ] ; then
+	SEED=$(date +%s)
+fi
+RANDOM=$SEED
+echo "Using random seed $SEED"
+
+start=$(date +%s)
+failed=0
+ufailed=0
+success=0
+usuccess=0
+total=0
+utotal=0
+
+cbefore=$(grep HardwareCorrupted /proc/meminfo)
+
+
+(( k = 0 ))
+rm -f offlined unpoison-failed
+while true ; do 
+	T=$( 
+	R=$RANDOM
+	X=$(echo "obase=16; ($R%$E)*4096"  | bc)
+	echo 0x$X
+	) 
+	#echo "p $T" 
+	(( total++ )) 
+	if echo 2>/dev/null $T >/sys/devices/system/memory/soft_offline_page ; then
+		echo $T >> offlined
+		(( success++ )) 
+	else
+		#echo offlining $T failed $?
+		(( failed++ ))
+		true
+	fi
+	#echo -n . 
+
+	(( k++ )) 
+	if [ $k -gt $THRESH ] ; then
+		unpoison
+		(( k = 0 ))
+		rm offlined
+	fi
+
+	if [ ! -z "$RUNTIME" ] ; then
+		((DIFF = $(date +%s) - $start))
+		if [ $DIFF -gt "$RUNTIME" ] ; then
+			echo time over
+			trap 0
+			break
+		fi
+	fi
+done	
+
+if [ -f unpoison-failed ] ; then
+	ufailed=$(wc -l unpoison-failed | awk ' {print $1}')
+fi
+echo "soft-poison: success $success failed $failed of total $total"
+echo "unpoison-failed: success $usuccess failed $ufailed of total $utotal"
+echo "poisoned before: $cbefore"
+echo -n "poisoned after: "
+grep HardwareCorrupted /proc/meminfo
+
+### xxx automatic success/failure criteria?
+

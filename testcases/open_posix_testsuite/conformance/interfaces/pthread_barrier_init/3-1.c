@@ -7,7 +7,7 @@
  * pthread_barrier_init()
  *
  *
- * The pthread_barrier_init( ) function shall fail if:
+ * The pthread_barrier_init() function shall fail if:
  * [EINVAL] The value specified by count is equal to zero.
  *
  */

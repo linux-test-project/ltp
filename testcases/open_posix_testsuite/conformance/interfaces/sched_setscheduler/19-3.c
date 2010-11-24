@@ -43,7 +43,11 @@ int main() {
 
 	result = sched_setscheduler(0, SCHED_SPORADIC, &param);
       
+<<<<<<< HEAD
 	if (result == -1 && errno == EINVAL) {
+=======
+	if (result == -1 && errno == EINVAL){
+>>>>>>> origin
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	} else if (result != -1) {

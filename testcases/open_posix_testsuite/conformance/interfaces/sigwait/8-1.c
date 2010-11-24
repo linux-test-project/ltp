@@ -29,7 +29,11 @@ int main()
 
 	/* Empty set of blocked signals */
 	if ((sigemptyset(&newmask) == -1) || 
+<<<<<<< HEAD
 		(sigemptyset(&pendingset) == -1) )
+=======
+		(sigemptyset(&pendingset) == -1))
+>>>>>>> origin
 	{
 		printf("Error in sigemptyset()\n");
 		return PTS_UNRESOLVED;

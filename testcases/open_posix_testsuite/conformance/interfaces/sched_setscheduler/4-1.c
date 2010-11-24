@@ -45,7 +45,11 @@ int main() {
 
 	result = sched_setscheduler(0, new_policy, &param);
 
+<<<<<<< HEAD
 	if (sched_getparam(getpid(), &param) != 0) {
+=======
+	if (sched_getparam(getpid(), &param) != 0){
+>>>>>>> origin
 		perror("An error occurs when calling sched_getparam()");
 		return PTS_UNRESOLVED;
 	}

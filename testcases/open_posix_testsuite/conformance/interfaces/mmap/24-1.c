@@ -4,7 +4,7 @@
  * of this license, see the COPYING file at the top level of this 
  * source tree.
  *
- * The mmap( ) function shall fail if:
+ * The mmap() function shall fail if:
  * [ENOMEM] MAP_FIXED was specified, and the range [addr,addr+len)
  * exceeds that allowed for the address space of a process; 
  * or, if MAP_FIXED was not specified and

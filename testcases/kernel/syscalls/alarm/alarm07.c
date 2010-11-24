@@ -113,8 +113,7 @@ int main(int ac, char **av)
 		/* Now, fork a child process */
 		cpid = FORK_OR_VFORK();
 		if (cpid < 0) {
-			tst_resm(TFAIL, "fork() fails to create child, "
-				 "errno:%d", errno);
+			tst_resm(TFAIL|TERRNO, "fork() failed");
 		}
 
 		/* Wait for signal SIGALRM to be generated */
@@ -127,13 +126,12 @@ int main(int ac, char **av)
 				 * means alarm request is cleared.
 				 */
 				if (almreceived == 0) {
-					tst_resm(TPASS, "Functionality of "
-						 "alarm(%u) successful",
-						 time_sec);
+					printf("Functionality of alarm(%u) "
+					    "successful\n", time_sec);
 				} else {
-					tst_resm(TFAIL, "alarm request not "
-						 "cleared in child, "
-						 "almreceived:%d", almreceived);
+					printf("alarm request not cleared in "
+					    "child, almreceived:%d\n",
+					    almreceived);
 				}
 			} else {	/* Parent process */
 				/* Wait for child to complete execution */
@@ -164,8 +162,8 @@ void setup()
 
 	/* Set the signal catching function */
 	if (signal(SIGALRM, sigproc) == SIG_ERR) {
-		tst_brkm(TFAIL, cleanup,
-			 "signal() fails to catch SIGALARM, errno=%d", errno);
+		tst_brkm(TFAIL|TERRNO, cleanup,
+			 "signal() fails to catch SIGALARM");
 	}
 }
 

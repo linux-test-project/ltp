@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# Source function library.
+. /etc/init.d/functions
+
+
+RETVAL=0
+
+start() {
+
+    touch /root/jobdone
+    mount -t debugfs null /sys/kernel/debug
+    echo 1 > /sys/kernel/debug/mce/fake_ser_p
+    echo 1 > /proc/sys/vm/memory_failure_early_kill
+    sh GUESTRUN &
+    return "$RETVAL"
+}
+
+stop() {
+    return "$RETVAL"
+}
+
+# See how we were called.
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  *)
+	echo $"Usage: $0 {start|stop}"
+	exit 3
+esac
+
+exit "$RETVAL"
+

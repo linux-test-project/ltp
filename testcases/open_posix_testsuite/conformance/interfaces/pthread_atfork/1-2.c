@@ -97,89 +97,115 @@ pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
 pthread_t ch;
 
 /* at fork handlers */
-void prepare( void )
+void prepare(void)
 {
 	threads[ 0 ] = pthread_self();
 }
 
-void parent( void )
+void parent(void)
 {
 	threads[ 1 ] = pthread_self();
 }
 
-void child( void )
+void child(void)
 {
 	threads[ 2 ] = pthread_self();
 }
 
 
 /* Thread function */
-void * threaded( void * arg )
+void * threaded(void * arg)
 {
 	int ret, status;
 	pid_t child, ctl;
 
 	/* Wait main thread has registered the handler */
-	ret = pthread_mutex_lock( &mtx );
+	ret = pthread_mutex_lock(&mtx);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to lock mutex" );
+		UNRESOLVED(ret, "Failed to lock mutex");
 	}
 
-	ret = pthread_mutex_unlock( &mtx );
+	ret = pthread_mutex_unlock(&mtx);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to unlock mutex" );
+		UNRESOLVED(ret, "Failed to unlock mutex");
 	}
 
 	/* fork */
 	child = fork();
 
+<<<<<<< HEAD
 	if (child == ( pid_t ) - 1)
+=======
+	if (child == -1)
+>>>>>>> origin
 	{
-		UNRESOLVED( errno, "Failed to fork" );
+		UNRESOLVED(errno, "Failed to fork");
 	}
 
 	/* child */
+<<<<<<< HEAD
 	if (child == ( pid_t ) 0)
 	{
 		if (!pthread_equal( ch, threads[ 0 ] ))
+=======
+	if (child == 0)
+	{
+		if (!pthread_equal(ch, threads[ 0 ]))
+>>>>>>> origin
 		{
-			FAILED( "prepare handler was not called in the thread s context" );
+			FAILED("prepare handler was not called in the thread s context");
 		}
 
+<<<<<<< HEAD
 		if (!pthread_equal( pthread_self(), threads[ 2 ] ))
+=======
+		if (!pthread_equal(pthread_self(), threads[ 2 ]))
+>>>>>>> origin
 		{
-			FAILED( "child handler was not called in the thread s context" );
+			FAILED("child handler was not called in the thread s context");
 		}
 
 		/* We're done */
-		exit( PTS_PASS );
+		exit(PTS_PASS);
 	}
 
+<<<<<<< HEAD
 	if (!pthread_equal( ch, threads[ 0 ] ))
+=======
+	if (!pthread_equal(ch, threads[ 0 ]))
+>>>>>>> origin
 	{
-		FAILED( "prepare handler was not called in the thread s context" );
+		FAILED("prepare handler was not called in the thread s context");
 	}
 
+<<<<<<< HEAD
 	if (!pthread_equal( pthread_self(), threads[ 1 ] ))
+=======
+	if (!pthread_equal(pthread_self(), threads[ 1 ]))
+>>>>>>> origin
 	{
-		FAILED( "parent handler was not called in the thread s context" );
+		FAILED("parent handler was not called in the thread s context");
 	}
 
 	/* Parent joins the child */
-	ctl = waitpid( child, &status, 0 );
+	ctl = waitpid(child, &status, 0);
 
 	if (ctl != child)
 	{
-		UNRESOLVED( errno, "Waitpid returned the wrong PID" );
+		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
+<<<<<<< HEAD
 	if (( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ))
+=======
+	if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != PTS_PASS))
+>>>>>>> origin
 	{
-		FAILED( "Child exited abnormally" );
+		FAILED("Child exited abnormally");
 	}
 
 	/* quit */
@@ -187,54 +213,54 @@ void * threaded( void * arg )
 }
 
 /* The main test function. */
-int main( int argc, char * argv[] )
+int main(int argc, char * argv[])
 {
 	int ret;
 
 	/* Initialize output */
 	output_init();
 
-	ret = pthread_mutex_lock( &mtx );
+	ret = pthread_mutex_lock(&mtx);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to lock mutex" );
+		UNRESOLVED(ret, "Failed to lock mutex");
 	}
 
-	ret = pthread_create( &ch, NULL, threaded, NULL );
+	ret = pthread_create(&ch, NULL, threaded, NULL);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to create a thread" );
+		UNRESOLVED(ret, "Failed to create a thread");
 	}
 
 	/* Register the handlers */
-	ret = pthread_atfork( prepare, parent, child );
+	ret = pthread_atfork(prepare, parent, child);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to register the atfork handlers" );
+		UNRESOLVED(ret, "Failed to register the atfork handlers");
 	}
 
 	/* Let the child go on */
-	ret = pthread_mutex_unlock( &mtx );
+	ret = pthread_mutex_unlock(&mtx);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to unlock mutex" );
+		UNRESOLVED(ret, "Failed to unlock mutex");
 	}
 
-	ret = pthread_join( ch, NULL );
+	ret = pthread_join(ch, NULL);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to join the thread" );
+		UNRESOLVED(ret, "Failed to join the thread");
 	}
 
 	/* Test passed */
 #if VERBOSE > 0
 
-	output( "Test passed\n" );
+	output("Test passed\n");
 
 #endif
 

@@ -86,20 +86,24 @@
 /******************************************************************************/
 int thread_state = 0;
 
-void * threaded ( void * arg )
+void * threaded (void * arg)
 {
 	int ret;
 	thread_state = 1;
 
 	do
 	{
-		ret = sem_wait( arg );
+		ret = sem_wait(arg);
 	}
+<<<<<<< HEAD
 	while (( ret != 0 ) && ( errno == EINTR ));
+=======
+	while ((ret != 0) && (errno == EINTR));
+>>>>>>> origin
 
 	if (ret != 0)
 	{
-		UNRESOLVED( errno, "Failed to wait for the semaphore" );
+		UNRESOLVED(errno, "Failed to wait for the semaphore");
 	}
 
 	thread_state = 2;
@@ -107,7 +111,7 @@ void * threaded ( void * arg )
 }
 
 /* The main test function. */
-int main( int argc, char * argv[] )
+int main(int argc, char * argv[])
 {
 	int ret;
 	pthread_t child;
@@ -117,25 +121,29 @@ int main( int argc, char * argv[] )
 	output_init();
 
 	/* Create the semaphore */
-	sem = sem_open( SEM_NAME, O_CREAT | O_EXCL, 0777, 0 );
+	sem = sem_open(SEM_NAME, O_CREAT | O_EXCL, 0777, 0);
 
+<<<<<<< HEAD
 	if (( sem == SEM_FAILED ) && ( errno == EEXIST ))
+=======
+	if ((sem == SEM_FAILED) && (errno == EEXIST))
+>>>>>>> origin
 	{
-		sem_unlink( SEM_NAME );
-		sem = sem_open( SEM_NAME, O_CREAT | O_EXCL, 0777, 0 );
+		sem_unlink(SEM_NAME);
+		sem = sem_open(SEM_NAME, O_CREAT | O_EXCL, 0777, 0);
 	}
 
 	if (sem == SEM_FAILED)
 	{
-		UNRESOLVED( errno, "Failed to create the semaphore" );
+		UNRESOLVED(errno, "Failed to create the semaphore");
 	}
 
 	/* Create the child */
-	ret = pthread_create( &child, NULL, threaded, sem );
+	ret = pthread_create(&child, NULL, threaded, sem);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to create the thread" );
+		UNRESOLVED(ret, "Failed to create the thread");
 	}
 
 	/* Wait for the child to be waiting. */
@@ -145,49 +153,49 @@ int main( int argc, char * argv[] )
 	}
 
 	/* Unlink */
-	ret = sem_unlink( SEM_NAME );
+	ret = sem_unlink(SEM_NAME);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( errno, "Failed to unlink the semaphore" );
+		UNRESOLVED(errno, "Failed to unlink the semaphore");
 	}
 
 	/* Check the semaphore state did not change. */
-	sleep( 1 );
+	sleep(1);
 
 	if (thread_state != 1)
 	{
-		FAILED( "sem_unlink made sem_wait thread return" );
+		FAILED("sem_unlink made sem_wait thread return");
 	}
 
 	/* Post the semaphore */
-	ret = sem_post( sem );
+	ret = sem_post(sem);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( errno, "Failed to post the semaphore" );
+		UNRESOLVED(errno, "Failed to post the semaphore");
 	}
 
 	/* Join the thread */
-	ret = pthread_join( child, NULL );
+	ret = pthread_join(child, NULL);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( ret, "Failed to join the thread" );
+		UNRESOLVED(ret, "Failed to join the thread");
 	}
 
 	/* Now, we can destroy all */
-	ret = sem_close( sem );
+	ret = sem_close(sem);
 
 	if (ret != 0)
 	{
-		UNRESOLVED( errno, "Failed to close the semaphore" );
+		UNRESOLVED(errno, "Failed to close the semaphore");
 	}
 
 
 	/* Test passed */
 #if VERBOSE > 0
-	output( "Test passed\n" );
+	output("Test passed\n");
 
 #endif
 	PASSED;

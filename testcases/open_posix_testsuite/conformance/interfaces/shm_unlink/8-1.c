@@ -60,7 +60,11 @@ int main() {
 	
 	/* search for the first user which is non root and which is not the
 	   current user */
+<<<<<<< HEAD
 	while ((pw = getpwent()) != NULL)
+=======
+	while((pw = getpwent()) != NULL)
+>>>>>>> origin
 		if (strcmp(pw->pw_name, "root") && pw->pw_uid != getuid())
 			break;
 

@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
 	printf("_POSIX_MESSAGE_PASSING is not defined \n");
 	return PTS_UNRESOLVED;
 #endif */
-	if ((2 != argc) || (( num = atoi(argv[1])) <= 0)) {
+	if ((2 != argc) || ((num = atoi(argv[1])) <= 0)) {
 		fprintf(stderr, "Usage: %s number_of_threads\n", argv[0]);
                 return PTS_FAIL;
         }
