@@ -153,11 +153,7 @@ int main(int argc, char * argv[])
 	/* Wait for the semaphore */
 	ret = sem_wait(&sem);
 
-<<<<<<< HEAD
-	if (( ret != 0 ) && ( errno != EINTR ))
-=======
 	if ((ret != 0) && (errno != EINTR))
->>>>>>> origin
 	{
 		UNRESOLVED(errno, "Failed to wait for the semaphore");
 	}
@@ -170,11 +166,8 @@ int main(int argc, char * argv[])
 		UNRESOLVED(errno, "Unable to read clock");
 	}
 
-<<<<<<< HEAD
-	if (( ( ts_fin.tv_sec - ts_ref.tv_sec ) * 1000000000 ) + ( ts_fin.tv_nsec - ts_ref.tv_nsec ) < 1000000000)
-=======
-	if (((ts_fin.tv_sec - ts_ref.tv_sec) * 1000000000) + (ts_fin.tv_nsec - ts_ref.tv_nsec) < 1000000000)
->>>>>>> origin
+	if (((ts_fin.tv_sec - ts_ref.tv_sec) * 1000000000) +
+	    (ts_fin.tv_nsec - ts_ref.tv_nsec) < 1000000000)
 	{
 		output("Ts: %d.%9.9d  ->  %d.%9.9d\n", ts_ref.tv_sec, ts_ref.tv_nsec, ts_fin.tv_sec, ts_fin.tv_nsec);
 		FAILED("The sem_wait call did not block");

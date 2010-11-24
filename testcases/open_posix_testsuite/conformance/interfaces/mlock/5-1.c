@@ -29,11 +29,7 @@ int main() {
         }
 
 	result = mlock(ptr, BUFSIZE);
-<<<<<<< HEAD
 	if (result == 0 && errno == 0) {
-=======
-	if (result == 0 && errno == 0){
->>>>>>> origin
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	} else if (errno == 0) {

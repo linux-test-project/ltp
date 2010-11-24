@@ -138,11 +138,7 @@ void output(char * string, ...)
 	now = localtime(&nw);
 
 	if (now == NULL)
-<<<<<<< HEAD
-		printf( ts );
-=======
 		printf(ts);
->>>>>>> origin
 	else
 		printf("[%2.2d:%2.2d:%2.2d]", now->tm_hour, now->tm_min, now->tm_sec);
 
@@ -198,11 +194,7 @@ int main()
 
 	/* Register the signal handler with signal */
 
-<<<<<<< HEAD
-	if (SIG_ERR == signal( SIGNAL, handler_1 ))
-=======
 	if (SIG_ERR == signal(SIGNAL, handler_1))
->>>>>>> origin
 	{
 		UNRESOLVED(errno, "Failed to register signal handler with signal()");
 	}

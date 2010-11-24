@@ -155,11 +155,7 @@ void scenar_init()
 		{
 
 			if (scenarii[ i ].explicitsched == 1)
-<<<<<<< HEAD
-				ret = pthread_attr_setinheritsched( &scenarii[ i ].ta, PTHREAD_EXPLICIT_SCHED );
-=======
 				ret = pthread_attr_setinheritsched(&scenarii[ i ].ta, PTHREAD_EXPLICIT_SCHED);
->>>>>>> origin
 			else
 				ret = pthread_attr_setinheritsched(&scenarii[ i ].ta, PTHREAD_INHERIT_SCHED);
 
@@ -199,11 +195,7 @@ void scenar_init()
 
 #if VERBOSE > 4
 			if (scenarii[ i ].schedpolicy)
-<<<<<<< HEAD
-				output( "Sched policy was set sucessfully\n" );
-=======
 				output("Sched policy was set sucessfully\n");
->>>>>>> origin
 			else
 				output("Sched policy untouched\n");
 
@@ -228,12 +220,10 @@ void scenar_init()
 			}
 
 			if (scenarii[ i ].schedparam == 1)
-<<<<<<< HEAD
 				sp.sched_priority = sched_get_priority_max( old );
 
 			if (scenarii[ i ].schedparam == -1)
 				sp.sched_priority = sched_get_priority_min( old );
-=======
 				sp.sched_priority = sched_get_priority_max(old);
 
 			if (scenarii[ i ].schedparam == -1)
@@ -299,12 +289,7 @@ void scenar_init()
 #endif
 
 		/* Stack related attributes */
-<<<<<<< HEAD
-		if (( tss > 0 ) && ( tsa > 0 ))     /* This routine is dependent on the Thread Stack Address Attribute
-=======
-		if ((tss > 0) && (tsa > 0))     /* This routine is dependent on the Thread Stack Address Attribute
->>>>>>> origin
-															                   and Thread Stack Size Attribute options */
+		if ((tss > 0) && (tsa > 0))     /* This routine is dependent on the Thread Stack Address Attribute and Thread Stack Size Attribute options */
 		{
 
 			if (scenarii[ i ].altstack != 0)
@@ -344,17 +329,10 @@ void scenar_init()
 		if (scenarii[ i ].guard != 0)
 		{
 			if (scenarii[ i ].guard == 1)
-<<<<<<< HEAD
-				ret = pthread_attr_setguardsize( &scenarii[ i ].ta, 0 );
-
-			if (scenarii[ i ].guard == 2)
-				ret = pthread_attr_setguardsize( &scenarii[ i ].ta, pagesize );
-=======
 				ret = pthread_attr_setguardsize(&scenarii[ i ].ta, 0);
 
 			if (scenarii[ i ].guard == 2)
 				ret = pthread_attr_setguardsize(&scenarii[ i ].ta, pagesize);
->>>>>>> origin
 
 			if (ret != 0)
 			{
@@ -413,11 +391,7 @@ void scenar_fini(void)
 	for (i = 0; i < NSCENAR; i++)
 	{
 		if (scenarii[ i ].bottom != NULL)
-<<<<<<< HEAD
-			free( scenarii[ i ].bottom );
-=======
 			free(scenarii[ i ].bottom);
->>>>>>> origin
 
 		ret = pthread_attr_destroy(&scenarii[ i ].ta);
 

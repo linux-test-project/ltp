@@ -38,11 +38,7 @@ int main() {
 	param.sched_priority = sched_get_priority_max(new_policy);
 	result = sched_setscheduler(0, new_policy, &param);
 
-<<<<<<< HEAD
 	if (result == old_policy) {
-=======
-	if (result == old_policy){
->>>>>>> origin
 		printf("Test PASSED\n");
 		return PTS_PASS;	
 	} else if (result == -1 && errno == EPERM) {

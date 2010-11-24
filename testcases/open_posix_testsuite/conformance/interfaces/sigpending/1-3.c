@@ -57,11 +57,7 @@ void handler(int signo)
 	}
 
 	if ((sigismember(&pendingset, SIGALRM) == 1) &&
-<<<<<<< HEAD
-		(sigismember(&pendingset, SIGCONT) == 1) ) {
-=======
-		(sigismember(&pendingset, SIGCONT) == 1)) {
->>>>>>> origin
+	    (sigismember(&pendingset, SIGCONT) == 1)) {
 		printf("All pending signals found\n");
 		if ((sigismember(&pendingset, SIGHUP) == 0) &&
 			(sigismember(&pendingset, SIGABRT) == 0) &&
@@ -98,11 +94,7 @@ int main()
 	}
 
         if ((sigaddset(&blockset, SIGALRM) == -1) ||
-<<<<<<< HEAD
-                (sigaddset(&blockset, SIGHUP) == -1) ) {
-=======
-                (sigaddset(&blockset, SIGHUP) == -1)) {
->>>>>>> origin
+            (sigaddset(&blockset, SIGHUP) == -1)) {
                 perror("Error calling sigaddset()\n");
                 return PTS_UNRESOLVED;
         }

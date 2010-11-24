@@ -44,11 +44,7 @@ int main() {
 
 	sts = sem_timedwait(&mysemp, &ts);
 
-<<<<<<< HEAD
-	if ((errno == EINVAL) && ( sts == -1)) {
-=======
-	if ((errno == EINVAL) && (sts == -1)) {
->>>>>>> origin
+	if (errno == EINVAL && sts == -1) {
 		puts("TEST PASSED");
 		sem_destroy(&mysemp);
 		return PTS_PASS;

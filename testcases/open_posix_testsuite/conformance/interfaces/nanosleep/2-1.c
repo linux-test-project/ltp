@@ -54,11 +54,7 @@ int main(int argc, char *argv[])
 		}
 
 		if ((slepts >= 1) ||
-<<<<<<< HEAD
-			(sleptns > sleepnsec[i]) ) {
-=======
-			(sleptns > sleepnsec[i])) {
->>>>>>> origin
+		    (sleptns > sleepnsec[i])) {
 			printf("PASS slept %ds %dns >= %d\n", 
 				slepts, sleptns, sleepnsec[i]);
 		} else {

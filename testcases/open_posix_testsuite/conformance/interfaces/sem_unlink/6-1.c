@@ -96,11 +96,7 @@ int main(int argc, char * argv[])
 	/* Create the semaphore */
 	sem1 = sem_open(SEM_NAME, O_CREAT | O_EXCL, 0777, 1);
 
-<<<<<<< HEAD
-	if (( sem1 == SEM_FAILED ) && ( errno == EEXIST ))
-=======
 	if ((sem1 == SEM_FAILED) && (errno == EEXIST))
->>>>>>> origin
 	{
 		sem_unlink(SEM_NAME);
 		sem1 = sem_open(SEM_NAME, O_CREAT | O_EXCL, 0777, 1);

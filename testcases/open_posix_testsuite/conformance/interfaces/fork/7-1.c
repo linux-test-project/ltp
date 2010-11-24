@@ -66,23 +66,10 @@ void read_catalog(nl_catd cat, char *who)
 	output("Reading the message catalog from %s...\n", who);
 #endif
 
-<<<<<<< HEAD
-	for (i = 1; i <= 2; i++)
-	{
-		for (j = 1; j <= 2; j++)
-		{
-			msg = catgets( cat, i, j, "not found" );
-
-			if (errno != 0)
-			{
-				UNRESOLVED( errno, "catgets returned an error" );
-			}
-=======
 	for (i = 1; i <= 2; i++) {
 		for (j = 1; j <= 2; j++) {
 
 			msg = catgets(cat, i, j, "not found");
->>>>>>> origin
 
 			if (errno != 0)
 				UNRESOLVED(errno, "catgets returned an error");
@@ -126,42 +113,19 @@ int main(int argc, char * argv[])
 	output_init();
 
 	/* Generate the message catalog file from the text sourcefile */
-<<<<<<< HEAD
-
-	if (system( NULL ))
-	{
-		ret = system( "gencat mess.cat " PATH_OFFSET "messcat_src.txt" );
-
-		if (ret != 0)
-		{
-			output( "Unable to find messcat_src.txt in standard directory %s\n", PATH_OFFSET );
-			output( "Trying local dir\n" );
-			ret = system( "gencat mess.cat messcat_src.txt" );
-
-			if (ret != 0)
-			{
-				output( "Could not find the source file for message catalog.\n" \
-				        "You may need to execute gencat yourself.\n" );
-			}
-=======
 	if (system(NULL)) {
 		
 		if (create_catalog() != 0) {
 			UNRESOLVED(errno, "Can't create "MESSCAT_IN);
->>>>>>> origin
 		}
 
 		ret = system("gencat "MESSCAT_OUT" "MESSCAT_IN);
 
-<<<<<<< HEAD
-	if (messcat == ( nl_catd ) - 1)
+	if (messcat == -1)
 	{
-		UNRESOLVED( errno, "Could not open ./mess.cat. You may need to do a gencat before executing this testcase" );
-=======
 		if (ret != 0)
 			output("Could not find the source file for message catalog.\n" \
 			        "You may need to execute gencat yourself.\n");
->>>>>>> origin
 	}
 
 	messcat = catopen("./"MESSCAT_OUT, 0);
@@ -171,22 +135,10 @@ int main(int argc, char * argv[])
 
 	read_catalog(messcat, "parent");
 
-<<<<<<< HEAD
-	if (child == ( pid_t ) - 1)
-	{
-		UNRESOLVED( errno, "Failed to fork" );
-	}
-
-	/* child */
-	if (child == ( pid_t ) 0)
-	{
-		read_catalog( messcat, "child" );
-=======
 	child = fork();
 
 	if (child == -1)
 		UNRESOLVED(errno, "Failed to fork");
->>>>>>> origin
 
 	if (child == 0) {
 		read_catalog(messcat, "child");
@@ -196,32 +148,15 @@ int main(int argc, char * argv[])
 	ctl = waitpid(child, &status, 0);
 
 	if (ctl != child)
-<<<<<<< HEAD
-	{
-		UNRESOLVED( errno, "Waitpid returned the wrong PID" );
-	}
-
-	if (( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ))
-	{
-		FAILED( "Child exited abnormally" );
-	}
-=======
 		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 
 	if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != PTS_PASS))
 		FAILED("Child exited abnormally");
->>>>>>> origin
 
 	ret = catclose(messcat);
 
 	if (ret != 0)
-<<<<<<< HEAD
-	{
-		UNRESOLVED( errno, "Failed to close the message catalog" );
-	}
-=======
 		UNRESOLVED(errno, "Failed to close the message catalog");
->>>>>>> origin
 
 	system("rm -f "MESSCAT_IN" "MESSCAT_OUT);
 

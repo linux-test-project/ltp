@@ -195,13 +195,9 @@ int main(int argc, char *argv[])
 			}
 
 			/* Now check that ts_pre <= ts_th <= ts_post */
-<<<<<<< HEAD
-			if (( ts_th.tv_sec < ts_pre.tv_sec)
-			        || ( ( ts_th.tv_sec == ts_pre.tv_sec ) && ( ts_th.tv_nsec < ts_pre.tv_nsec ) ) )
-=======
-			if ((ts_th.tv_sec < ts_pre.tv_sec)
-			        || ((ts_th.tv_sec == ts_pre.tv_sec) && (ts_th.tv_nsec < ts_pre.tv_nsec)))
->>>>>>> origin
+			if ((ts_th.tv_sec < ts_pre.tv_sec) ||
+			    ((ts_th.tv_sec == ts_pre.tv_sec) &&
+			     (ts_th.tv_nsec < ts_pre.tv_nsec)))
 			{
 				output("Pre  : %d.%09d\n", ts_pre.tv_sec, ts_pre.tv_nsec);
 				output("child: %d.%09d\n", ts_th.tv_sec, ts_th.tv_nsec);
@@ -209,13 +205,9 @@ int main(int argc, char *argv[])
 				FAILED("Child returned before its creation ???");
 			}
 
-<<<<<<< HEAD
-			if (( ts_post.tv_sec < ts_th.tv_sec)
-			        || ( ( ts_post.tv_sec == ts_th.tv_sec ) && ( ts_post.tv_nsec < ts_th.tv_nsec ) ) )
-=======
-			if ((ts_post.tv_sec < ts_th.tv_sec)
-			        || ((ts_post.tv_sec == ts_th.tv_sec) && (ts_post.tv_nsec < ts_th.tv_nsec)))
->>>>>>> origin
+			if ((ts_post.tv_sec < ts_th.tv_sec) ||
+			    ((ts_post.tv_sec == ts_th.tv_sec) &&
+			     (ts_post.tv_nsec < ts_th.tv_nsec)))
 			{
 				output("Pre  : %d.%09d\n", ts_pre.tv_sec, ts_pre.tv_nsec);
 				output("child: %d.%09d\n", ts_th.tv_sec, ts_th.tv_nsec);

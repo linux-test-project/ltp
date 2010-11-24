@@ -50,11 +50,7 @@ int main()
 
 	/* Empty set of signal mask and blocked signals */
 	if ((sigemptyset(&main_sigmask) != 0) || 
-<<<<<<< HEAD
-		(sigemptyset(&main_pendingset) != 0) )
-=======
-		(sigemptyset(&main_pendingset) != 0))
->>>>>>> origin
+	    (sigemptyset(&main_pendingset) != 0))
 	{
 		perror("Error in sigemptyset()\n");
 		return PTS_UNRESOLVED;

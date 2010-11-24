@@ -100,20 +100,12 @@ int main(int argc, char * argv[])
 	/* Initialize first times */
 	st_time = times(&ini_tms);
 
-<<<<<<< HEAD
-	if (st_time == ( clock_t ) - 1)
-=======
 	if (st_time == (clock_t) -1)
->>>>>>> origin
 	{
 		UNRESOLVED(errno, "times failed");
 	}
 
-<<<<<<< HEAD
-	if (( ini_tms.tms_cutime != 0 ) || ( ini_tms.tms_cstime != 0 ))
-=======
 	if ((ini_tms.tms_cutime != 0) || (ini_tms.tms_cstime != 0))
->>>>>>> origin
 	{
 		FAILED("The process is created with non-zero tms_cutime or tms_cstime");
 	}
@@ -128,20 +120,12 @@ int main(int argc, char * argv[])
 	{
 		cur_time = times(&parent_tms);
 
-<<<<<<< HEAD
-		if (cur_time == ( clock_t ) - 1)
-=======
 		if (cur_time == (clock_t) -1)
->>>>>>> origin
 		{
 			UNRESOLVED(errno, "times failed");
 		}
 	}
-<<<<<<< HEAD
-	while (( cur_time - st_time ) < sysconf( _SC_CLK_TCK ));
-=======
 	while ((cur_time - st_time) < sysconf(_SC_CLK_TCK));
->>>>>>> origin
 
 #if VERBOSE > 1
 
@@ -158,39 +142,23 @@ int main(int argc, char * argv[])
 	/* Create the child */
 	child = fork();
 
-<<<<<<< HEAD
-	if (child == ( pid_t ) - 1)
-=======
 	if (child == -1)
->>>>>>> origin
 	{
 		UNRESOLVED(errno, "Failed to fork");
 	}
 
 	/* child */
-<<<<<<< HEAD
-	if (child == ( pid_t ) 0)
-=======
 	if (child == 0)
->>>>>>> origin
 	{
 
 		cur_time = times(&child_tms);
 
-<<<<<<< HEAD
-		if (cur_time == ( clock_t ) - 1)
-=======
 		if (cur_time == (clock_t) -1)
->>>>>>> origin
 		{
 			UNRESOLVED(errno, "times failed");
 		}
 
-<<<<<<< HEAD
-		if (child_tms.tms_utime + child_tms.tms_stime >= sysconf( _SC_CLK_TCK ))
-=======
 		if (child_tms.tms_utime + child_tms.tms_stime >= sysconf(_SC_CLK_TCK))
->>>>>>> origin
 		{
 			FAILED("The tms struct was not reset during fork() operation");
 		}
@@ -199,18 +167,11 @@ int main(int argc, char * argv[])
 		{
 			cur_time = times(&child_tms);
 
-<<<<<<< HEAD
-			if (cur_time == ( clock_t ) - 1)
-=======
 			if (cur_time == (clock_t) -1)
->>>>>>> origin
 			{
 				UNRESOLVED(errno, "times failed");
 			}
 		}
-<<<<<<< HEAD
-		while (( child_tms.tms_utime + child_tms.tms_stime ) <= 0);
-=======
 		while ((child_tms.tms_utime + child_tms.tms_stime) <= 0);
 >>>>>>> origin
 
@@ -227,11 +188,7 @@ int main(int argc, char * argv[])
 		;
 	}
 
-<<<<<<< HEAD
-	if (( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ))
-=======
 	if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != PTS_PASS))
->>>>>>> origin
 	{
 		FAILED("Child exited abnormally")
 		;
@@ -256,20 +213,12 @@ int main(int argc, char * argv[])
 
 #endif
 
-<<<<<<< HEAD
-	if (cur_time == ( clock_t ) - 1)
-=======
 	if (cur_time == (clock_t) -1)
->>>>>>> origin
 	{
 		UNRESOLVED(errno, "times failed");
 	}
 
-<<<<<<< HEAD
-	if (( parent_tms.tms_cutime == 0 ) && ( parent_tms.tms_cstime == 0 ))
-=======
 	if ((parent_tms.tms_cutime == 0) && (parent_tms.tms_cstime == 0))
->>>>>>> origin
 	{
 		FAILED("The process is created with non-zero tms_cutime or tms_cstime");
 	}

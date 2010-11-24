@@ -100,13 +100,8 @@ int set_nonroot()
 	setpwent();
 	/* search for the first user which is non root */
 
-<<<<<<< HEAD
-	while (( pw = getpwent() ) != NULL)
-		if (strcmp( pw->pw_name, "root" ))
-=======
 	while ((pw = getpwent()) != NULL)
 		if (strcmp(pw->pw_name, "root"))
->>>>>>> origin
 			break;
 
 	endpwent();
@@ -117,11 +112,7 @@ int set_nonroot()
 		return 1;
 	}
 
-<<<<<<< HEAD
-	if (seteuid( pw->pw_uid ) != 0)
-=======
 	if (seteuid(pw->pw_uid) != 0)
->>>>>>> origin
 	{
 		if (errno == EPERM)
 		{
@@ -154,11 +145,7 @@ int main(int argc, char * argv[])
 	/* Create the semaphore */
 	sem = sem_open(SEM_NAME, O_CREAT | O_EXCL, 0744, 1);
 
-<<<<<<< HEAD
-	if (( sem == SEM_FAILED ) && ( errno == EEXIST ))
-=======
 	if ((sem == SEM_FAILED) && (errno == EEXIST))
->>>>>>> origin
 	{
 		sem_unlink(SEM_NAME);
 		sem = sem_open(SEM_NAME, O_CREAT | O_EXCL, 0744, 1);
@@ -172,20 +159,12 @@ int main(int argc, char * argv[])
 	/* fork */
 	ch = fork();
 
-<<<<<<< HEAD
-	if (ch == ( pid_t ) - 1)
-=======
 	if (ch == -1)
->>>>>>> origin
 	{
 		UNRESOLVED(errno, "Failed to fork");
 	}
 
-<<<<<<< HEAD
-	if (ch == ( pid_t ) 0)         /* child */
-=======
 	if (ch == 0)         /* child */
->>>>>>> origin
 	{
 		/* connect to the semaphore */
 		sem = sem_open(SEM_NAME, 0);
@@ -232,38 +211,22 @@ int main(int argc, char * argv[])
 		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-<<<<<<< HEAD
-	if (!WIFEXITED( status ))
-=======
 	if (!WIFEXITED(status))
->>>>>>> origin
 	{
 		FAILED("Child exited abnormally");
 	}
 
-<<<<<<< HEAD
-	if (WEXITSTATUS( status ) == 1)
-=======
 	if (WEXITSTATUS(status) == 1)
->>>>>>> origin
 	{
 		UNRESOLVED(0, "An error occured in child");
 	}
 
-<<<<<<< HEAD
-	if (WEXITSTATUS( status ) == 2)
-=======
 	if (WEXITSTATUS(status) == 2)
->>>>>>> origin
 	{
 		FAILED("Test failed in child");
 	}
 
-<<<<<<< HEAD
-	if (WEXITSTATUS( status ) != 0)
-=======
 	if (WEXITSTATUS(status) != 0)
->>>>>>> origin
 	{
 		UNRESOLVED(0, "Unexpected return value from child");
 	}

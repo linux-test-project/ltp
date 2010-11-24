@@ -56,11 +56,7 @@ int main() {
 	result = sched_setscheduler(0, SCHED_SPORADIC, &param);
 
 	if (result == -1 && errno == EINVAL) {
-<<<<<<< HEAD
 		if (result_code == PTS_PASS) {
-=======
-		if (result_code == PTS_PASS){
->>>>>>> origin
 			printf("Test PASSED\n");
 		}
 		return result_code;
@@ -68,11 +64,7 @@ int main() {
 		printf("The returned code is not -1 when sched_ss_max_repl > SS_REPL_MAX.\n");
 		return PTS_FAIL;
 	} else if (errno == EPERM) {
-<<<<<<< HEAD
 		if (result_code == PTS_FAIL) {
-=======
-		if (result_code == PTS_FAIL){
->>>>>>> origin
 			printf("This process does not have the permission to set its own scheduling parameter.\nTry to launch this test as root.\n");
 			return PTS_FAIL;
 		}

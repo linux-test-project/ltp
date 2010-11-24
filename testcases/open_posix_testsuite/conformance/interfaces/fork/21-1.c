@@ -93,20 +93,13 @@ void * threaded(void * arg)
 	{
 		ret = sem_wait(sem);
 	}
-<<<<<<< HEAD
-	while (( ret != 0 ) && ( errno == EINTR ));
-=======
 	while ((ret != 0) && (errno == EINTR));
->>>>>>> origin
 
 	if (ret != 0)
 	{
 		UNRESOLVED(errno, "failed to wait for the semaphore in child");
 	}
 
-<<<<<<< HEAD
-	if (*( pid_t * ) arg != getpid())
-=======
 	if (*(pid_t *) arg != getpid())
 >>>>>>> origin
 	{
@@ -131,11 +124,7 @@ int main(int argc, char * argv[])
 	/* Initialize the semaphore */
 	sem = sem_open("/fork_21_1", O_CREAT, O_RDWR, 0);
 
-<<<<<<< HEAD
-	if (sem == ( sem_t * ) SEM_FAILED)
-=======
 	if (sem == (sem_t *) SEM_FAILED)
->>>>>>> origin
 	{
 		UNRESOLVED(errno, "Failed to open the semaphore");
 	}
@@ -155,11 +144,7 @@ int main(int argc, char * argv[])
 	/* Create the child */
 	child = fork();
 
-<<<<<<< HEAD
-	if (child == ( pid_t ) - 1)
-=======
 	if (child == -1)
->>>>>>> origin
 	{
 		UNRESOLVED(errno, "Failed to fork");
 	}
@@ -169,11 +154,7 @@ int main(int argc, char * argv[])
 	{
 		ret = sem_post(sem);
 	}
-<<<<<<< HEAD
-	while (( ret != 0 ) && ( errno == EINTR ));
-=======
 	while ((ret != 0) && (errno == EINTR));
->>>>>>> origin
 
 	if (ret != 0)
 	{
@@ -181,11 +162,7 @@ int main(int argc, char * argv[])
 	}
 
 	/* child */
-<<<<<<< HEAD
-	if (child == ( pid_t ) 0)
-=======
 	if (child == 0)
->>>>>>> origin
 	{
 		/* sleep a little while to let the thread execute in case it exists */
 		sleep(1);
@@ -202,11 +179,7 @@ int main(int argc, char * argv[])
 		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-<<<<<<< HEAD
-	if (( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ))
-=======
 	if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != PTS_PASS))
->>>>>>> origin
 	{
 		FAILED("Child exited abnormally");
 	}

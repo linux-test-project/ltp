@@ -177,39 +177,24 @@ int main(int argc, char * argv[])
 	/* Create the child */
 	child = fork();
 
-<<<<<<< HEAD
-	if (child == ( pid_t ) - 1)
-=======
 	if (child == -1)
->>>>>>> origin
 	{
 		UNRESOLVED(errno, "Failed to fork");
 	}
 
 	/* child */
-<<<<<<< HEAD
-	if (child == ( pid_t ) 0)
-	{
-		/* Check the struct was copied */
-
-		if (( mystruct.one != 1 ) || ( mystruct.two != 2 ) || ( mystruct.three != 3 ) || ( mystruct.four != ( void * ) 4 ))
-=======
 	if (child == 0)
 	{
 		/* Check the struct was copied */
 
-		if ((mystruct.one != 1) || (mystruct.two != 2) || (mystruct.three != 3) || (mystruct.four != (void *) 4))
->>>>>>> origin
+		if ((mystruct.one != 1) || (mystruct.two != 2) ||
+		    (mystruct.three != 3) || (mystruct.four != (void *) 4))
 		{
 			FAILED("The struct data was not copied to the child process");
 		}
 
 		/* Check the malloc'ed memory is copied */
-<<<<<<< HEAD
-		if (*( double * ) malloced != 2.3)
-=======
 		if (*(double *) malloced != 2.3)
->>>>>>> origin
 		{
 			FAILED("Malloc'd block not copied in child process");
 		}
@@ -218,11 +203,7 @@ int main(int argc, char * argv[])
 		free(malloced);
 
 		/* Check the env variable */
-<<<<<<< HEAD
-		if (strncmp( "2-1.c", getenv( "OPTS_FORK_TC" ), 6 ) != 0)
-=======
 		if (strncmp("2-1.c", getenv("OPTS_FORK_TC"), 6) != 0)
->>>>>>> origin
 		{
 			FAILED("The environment is not copied to the child");
 		}
@@ -252,11 +233,7 @@ int main(int argc, char * argv[])
 			UNRESOLVED(errno, "Unexpected return code from sigismember");
 		}
 
-<<<<<<< HEAD
-		if (( ( sa_child.sa_flags & SA_NOCLDSTOP ) != SA_NOCLDSTOP)
-=======
 		if (((sa_child.sa_flags & SA_NOCLDSTOP) != SA_NOCLDSTOP)
->>>>>>> origin
 #ifndef WITHOUT_XOPEN
 		        || ((sa_child.sa_flags & SA_ONSTACK) != 0)
 		        || ((sa_child.sa_flags & SA_RESETHAND) != 0)
@@ -282,20 +259,12 @@ int main(int argc, char * argv[])
 		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-<<<<<<< HEAD
-	if (!WIFEXITED( status ))
-=======
 	if (!WIFEXITED(status))
->>>>>>> origin
 	{
 		UNRESOLVED(status, "Child exited abnormally");
 	}
 
-<<<<<<< HEAD
-	if (WEXITSTATUS( status ) == PTS_PASS)
-=======
 	if (WEXITSTATUS(status) == PTS_PASS)
->>>>>>> origin
 	{
 
 		/* Test passed */
@@ -306,11 +275,7 @@ int main(int argc, char * argv[])
 		PASSED;
 	}
 
-<<<<<<< HEAD
-	if (WEXITSTATUS( status ) == PTS_FAIL)
-=======
 	if (WEXITSTATUS(status) == PTS_FAIL)
->>>>>>> origin
 	{
 
 		/* Test failed */

@@ -93,11 +93,7 @@ int main(int argc, char * argv[])
 	ctp = sysconf(_SC_CPUTIME);
 	ctt = sysconf(_SC_THREAD_CPUTIME);
 
-<<<<<<< HEAD
-	if (( ctp == -1 ) && ( ctt == -1 ))
-=======
 	if ((ctp == -1) && (ctt == -1))
->>>>>>> origin
 	{
 		UNTESTED("The testcase needs CPUTIME or THREAD_CPUTIME support");
 	}
@@ -156,21 +152,13 @@ int main(int argc, char * argv[])
 	/* Create the child */
 	child = fork();
 
-<<<<<<< HEAD
-	if (child == ( pid_t ) - 1)
-=======
 	if (child == -1)
->>>>>>> origin
 	{
 		UNRESOLVED(errno, "Failed to fork");
 	}
 
 	/* child */
-<<<<<<< HEAD
-	if (child == ( pid_t ) 0)
-=======
 	if (child == 0)
->>>>>>> origin
 	{
 		if (ctp > 0)
 		{
@@ -228,11 +216,7 @@ int main(int argc, char * argv[])
 		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-<<<<<<< HEAD
-	if (( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ))
-=======
 	if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != PTS_PASS))
->>>>>>> origin
 	{
 		FAILED("Child exited abnormally");
 	}

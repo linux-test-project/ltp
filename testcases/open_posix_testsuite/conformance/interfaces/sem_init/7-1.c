@@ -121,11 +121,7 @@ int main(int argc, char * argv[])
 			output("Error is %d: %s\n", errno, strerror(errno));
 
 			for (; i > 0; i--)
-<<<<<<< HEAD
-				sem_destroy( &sems[ i - 1 ] );
-=======
-				sem_destroy(&sems[ i -1 ]);
->>>>>>> origin
+				sem_destroy(&sems[i-1]);
 
 			free(sems);
 
@@ -146,11 +142,7 @@ int main(int argc, char * argv[])
 	}
 
 	for (i = 0; i < max; i++)
-<<<<<<< HEAD
-		sem_destroy( &sems[ i ] );
-=======
-		sem_destroy(&sems[ i ]);
->>>>>>> origin
+		sem_destroy(&sems[i]);
 
 	free(sems);
 

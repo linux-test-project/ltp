@@ -142,32 +142,20 @@ int main(int argc, char * argv[])
 	/* Create the child */
 	child = fork();
 
-<<<<<<< HEAD
-	if (child == ( pid_t ) - 1)
-=======
 	if (child == -1)
->>>>>>> origin
 	{
 		UNRESOLVED(errno, "Failed to fork");
 	}
 
 	/* child */
-<<<<<<< HEAD
-	if (child == ( pid_t ) 0)
-=======
 	if (child == 0)
->>>>>>> origin
 	{
 
 		sleep(1);
 
 		if (notified != 0)
 		{
-<<<<<<< HEAD
-			if (notified == ( int ) getpid())
-=======
 			if (notified == (int) getpid())
->>>>>>> origin
 			{
 				FAILED("Per-Process Timer was inherited in child");
 			}
@@ -189,20 +177,12 @@ int main(int argc, char * argv[])
 		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-<<<<<<< HEAD
-	if (( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ))
-=======
 	if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != PTS_PASS))
->>>>>>> origin
 	{
 		FAILED("Child exited abnormally");
 	}
 
-<<<<<<< HEAD
-	if (notified != ( int ) getpid())
-=======
 	if (notified != (int) getpid())
->>>>>>> origin
 	{
 		output("Notified value: %d\n", notified);
 		UNRESOLVED(-1, "No notification occured -- per process timers do not work?");

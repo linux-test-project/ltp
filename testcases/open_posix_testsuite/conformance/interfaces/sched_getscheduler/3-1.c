@@ -54,11 +54,7 @@ int main(int argc, char **argv)
 	tst = sym;
 	result = sched_getscheduler(0);
 
-<<<<<<< HEAD
 	if (result == -1) {
-=======
-	if (result == -1){
->>>>>>> origin
 		printf("Returned code is -1.\n");
 		return PTS_FAIL;
 	}

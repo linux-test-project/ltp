@@ -172,11 +172,7 @@ int main(int argc, char * argv[])
 		FAILED("Unexpected number of threads awaken");
 	}
 
-<<<<<<< HEAD
-	if (!pthread_equal( last_awaken, ch[ 0 ] ))
-=======
-	if (!pthread_equal(last_awaken, ch[ 0 ]))
->>>>>>> origin
+	if (!pthread_equal(last_awaken, ch[0]))
 	{
 		FAILED("The awaken thread is not the signal target one.");
 	}

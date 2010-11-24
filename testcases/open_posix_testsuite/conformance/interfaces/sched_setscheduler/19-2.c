@@ -27,11 +27,7 @@ int main() {
 	struct sched_param param;
 
 	invalid_priority = sched_get_priority_max(SCHED_SPORADIC);
-<<<<<<< HEAD
 	if (invalid_priority == -1) {
-=======
-	if (invalid_priority == -1){
->>>>>>> origin
 		perror("An error occurs when calling sched_get_priority_max()");
 		return PTS_UNRESOLVED;
 	}
@@ -42,11 +38,7 @@ int main() {
 
 	result = sched_setscheduler(0, SCHED_SPORADIC, &param);
 	
-<<<<<<< HEAD
 	if (result == -1 && errno == EINVAL) {
-=======
-	if (result == -1 && errno == EINVAL){
->>>>>>> origin
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	} else if (result != -1) {

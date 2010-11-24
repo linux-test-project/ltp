@@ -50,25 +50,21 @@ int main() {
 			ts[i].tv_sec=time(NULL) + INVALIDTIMEOUT;
 		        ts[i].tv_nsec=0;
 		}
-	/* Lock Semaphore */
+		/* Lock Semaphore */
 		sts[i] = sem_timedwait(&mysemp[i], &ts[i]);
         	if (sts[i] == -1) {
 			perror(ERROR_PREFIX "sem_timedwait");
 			return PTS_UNRESOLVED; 
 		}
 
-	/* Value of Semaphore */
+		/* Value of Semaphore */
 		if (sem_getvalue(&mysemp[i], &val[i]) == -1) {
 			perror(ERROR_PREFIX "sem_getvalue");
 			return PTS_UNRESOLVED;
 		}
 
-	/* Checking if the value of the Semaphore decremented by one */
-<<<<<<< HEAD
-		if (( val[i] == 0 ) && ( sts[i] == 0)) {
-=======
+		/* Checking if the value of the Semaphore decremented by one */
 		if ((val[i] == 0) && (sts[i] == 0)) {
->>>>>>> origin
 			puts("TEST PASSED");
 			sem_destroy(&mysemp[i]);
 			return PTS_PASS;

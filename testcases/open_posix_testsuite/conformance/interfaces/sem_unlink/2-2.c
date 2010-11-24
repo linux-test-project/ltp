@@ -108,11 +108,7 @@ sem_t * common()
 	{
 		ret = sem_wait(sem);
 	}
-<<<<<<< HEAD
-	while (( ret != 0 ) && ( errno == EINTR ));
-=======
 	while ((ret != 0) && (errno == EINTR));
->>>>>>> origin
 
 	if (ret != 0)
 	{
@@ -151,11 +147,7 @@ int main(int argc, char * argv[])
 	/* Create the semaphore */
 	sem = sem_open(SEM_NAME, O_CREAT | O_EXCL, 0777, 0);
 
-<<<<<<< HEAD
-	if (( sem == SEM_FAILED ) && ( errno == EEXIST ))
-=======
 	if ((sem == SEM_FAILED) && (errno == EEXIST))
->>>>>>> origin
 	{
 		sem_unlink(SEM_NAME);
 		sem = sem_open(SEM_NAME, O_CREAT | O_EXCL, 0777, 0);
@@ -169,20 +161,12 @@ int main(int argc, char * argv[])
 	/* fork 3 times */
 	p1 = fork();
 
-<<<<<<< HEAD
-	if (p1 == ( pid_t ) - 1)
-=======
 	if (p1 == -1)
->>>>>>> origin
 	{
 		UNRESOLVED(errno, "Failed to fork");
 	}
 
-<<<<<<< HEAD
-	if (p1 == ( pid_t ) 0)        /* child */
-=======
 	if (p1 == 0)        /* child */
->>>>>>> origin
 	{
 		sem = common();
 		ret = sem_close(sem);
@@ -197,20 +181,12 @@ int main(int argc, char * argv[])
 
 	p2 = fork();
 
-<<<<<<< HEAD
-	if (p2 == ( pid_t ) - 1)
-=======
 	if (p2 == -1)
->>>>>>> origin
 	{
 		UNRESOLVED(errno, "Failed to fork");
 	}
 
-<<<<<<< HEAD
-	if (p2 == ( pid_t ) 0)        /* child */
-=======
 	if (p2 == 0)        /* child */
->>>>>>> origin
 	{
 		sem = common();
 		_exit(0);
@@ -218,20 +194,12 @@ int main(int argc, char * argv[])
 
 	p3 = fork();
 
-<<<<<<< HEAD
-	if (p3 == ( pid_t ) - 1)
-=======
 	if (p3 == -1)
->>>>>>> origin
 	{
 		UNRESOLVED(errno, "Failed to fork");
 	}
 
-<<<<<<< HEAD
-	if (p3 == ( pid_t ) 0)        /* child */
-=======
 	if (p3 == 0)        /* child */
->>>>>>> origin
 	{
 		sem = common();
 		ret = execl("/bin/ls", "ls",  NULL);
@@ -273,11 +241,7 @@ int main(int argc, char * argv[])
 		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-<<<<<<< HEAD
-	if (( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != 0 ))
-=======
 	if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != 0))
->>>>>>> origin
 	{
 		FAILED("Child 'sem_close' exited abnormally");
 	}
@@ -289,11 +253,7 @@ int main(int argc, char * argv[])
 		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-<<<<<<< HEAD
-	if (( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != 0 ))
-=======
 	if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != 0))
->>>>>>> origin
 	{
 		FAILED("Child '_exit' exited abnormally");
 	}
@@ -305,11 +265,7 @@ int main(int argc, char * argv[])
 		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-<<<<<<< HEAD
-	if (( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != 0 ))
-=======
 	if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != 0))
->>>>>>> origin
 	{
 		FAILED("Child 'exec' exited abnormally");
 	}

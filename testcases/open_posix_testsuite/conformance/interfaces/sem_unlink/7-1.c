@@ -88,11 +88,7 @@ void * threaded (void * arg)
 	{
 		ret = sem_wait(arg);
 	}
-<<<<<<< HEAD
-	while (( ret != 0 ) && ( errno == EINTR ));
-=======
 	while ((ret != 0) && (errno == EINTR));
->>>>>>> origin
 
 	if (ret != 0)
 	{
@@ -116,11 +112,7 @@ int main(int argc, char * argv[])
 	/* Create the semaphore */
 	sem = sem_open(SEM_NAME, O_CREAT | O_EXCL, 0777, 1);
 
-<<<<<<< HEAD
-	if (( sem == SEM_FAILED ) && ( errno == EEXIST ))
-=======
 	if ((sem == SEM_FAILED) && (errno == EEXIST))
->>>>>>> origin
 	{
 		sem_unlink(SEM_NAME);
 		sem = sem_open(SEM_NAME, O_CREAT | O_EXCL, 0777, 1);

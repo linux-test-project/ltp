@@ -153,29 +153,17 @@ int main(int argc, char * argv[])
 	/* Create the child */
 	child = fork();
 
-<<<<<<< HEAD
-	if (child == ( pid_t ) - 1)
-=======
 	if (child == -1)
->>>>>>> origin
 	{
 		UNRESOLVED(errno, "Failed to fork");
 	}
 
 	/* child */
-<<<<<<< HEAD
-	if (child == ( pid_t ) 0)
-	{
-		/* Check the values are read -- so that the mappings were inherited */
-
-		if (( *( long * ) buf_ns != 123456L ) || ( *( long * ) buf_s != 654321L ))
-=======
 	if (child == 0)
 	{
 		/* Check the values are read -- so that the mappings were inherited */
 
 		if ((*(long *) buf_ns != 123456L) || (*(long *) buf_s != 654321L))
->>>>>>> origin
 		{
 			output("Read values: %ld, %ld\n", *(long *) buf_ns, *(long *) buf_s);
 			FAILED("The memory mappings were not inherited by the child process");
@@ -198,21 +186,13 @@ int main(int argc, char * argv[])
 		UNRESOLVED(errno, "Waitpid returned the wrong PID");
 	}
 
-<<<<<<< HEAD
-	if (( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ))
-=======
 	if ((!WIFEXITED(status)) || (WEXITSTATUS(status) != PTS_PASS))
->>>>>>> origin
 	{
 		FAILED("Child exited abnormally");
 	}
 
 	/* Check that only the MAP_SHARED segment modification is visible */
-<<<<<<< HEAD
-	if (( *( long * ) buf_ns != 123456L ) || ( *( long * ) buf_s != 200000L ))
-=======
 	if ((*(long *) buf_ns != 123456L) || (*(long *) buf_s != 200000L))
->>>>>>> origin
 	{
 		output("Read values: %ld, %ld\n", *(long *) buf_ns, *(long *) buf_s);
 		FAILED("The memory mappings were not inherited by the child process");
