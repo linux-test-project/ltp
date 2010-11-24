@@ -102,7 +102,7 @@ end_testcase()
 exists()
 {
     for cmd in $*; do
-        if ! type $cmd >/dev/null 2>&1; then
+        if ! command -v $cmd >/dev/null 2>&1; then
             end_testcase "$cmd: command not found"
             exit 1
         fi
