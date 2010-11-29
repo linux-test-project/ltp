@@ -389,12 +389,12 @@ get_a_lla_byifindex(struct sockaddr_in6 *lla_p, int ifindex)
     char line[PROC_IFINET6_FILE_LINELENGTH];
     int pos;
 
-    if((fp = fopen(PROC_IFINET6_FILE, "r")) == NULL) {
+    if ((fp = fopen(PROC_IFINET6_FILE, "r")) == NULL) {
 	fprintf(stderr, "Faile to open %s\n", PROC_IFINET6_FILE);
 	return 1;
     }
 
-    while(fgets(line, PROC_IFINET6_FILE_LINELENGTH, fp) != NULL) {
+    while (fgets(line, PROC_IFINET6_FILE_LINELENGTH, fp) != NULL) {
 	ret = sscanf(line,
 		"%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x%2x %x %x %x",
 		&oct[0],  &oct[1],  &oct[2],  &oct[3],
@@ -408,13 +408,13 @@ get_a_lla_byifindex(struct sockaddr_in6 *lla_p, int ifindex)
 	else if (ret != 19)
 	    fatal_error("The number of input item is less than the expected");
 
-	if(ifidx != ifindex)
+	if (ifidx != ifindex)
 	    continue;
 
-	if(prefixlen != 64)
+	if (prefixlen != 64)
 	    continue;
 
-	if(scope != PROC_IFINET6_LINKLOCAL)
+	if (scope != PROC_IFINET6_LINKLOCAL)
 	    continue;
 
 	/* Find a link-local address */
@@ -423,7 +423,7 @@ get_a_lla_byifindex(struct sockaddr_in6 *lla_p, int ifindex)
 	lla_p->sin6_flowinfo	= 0;
 	lla_p->sin6_scope_id	= ifindex;
 
-	for(pos = 0; pos < 16; pos++)
+	for (pos = 0; pos < 16; pos++)
 	    lla_p->sin6_addr.s6_addr[pos] = oct[pos];
 
 	return 0;
@@ -570,7 +570,7 @@ create_source_filter(uint32_t ifindex, struct addrinfo *mainfo_p, uint32_t fmode
     hints.ai_flags |= AI_NUMERICHOST;
 
     sp = saddrs;
-    for(idx = 0; idx < numsrc; idx++) {
+    for (idx = 0; idx < numsrc; idx++) {
 	ep = strchr(sp, ',');
 	if (ep != NULL)
 	    *ep = '\0';

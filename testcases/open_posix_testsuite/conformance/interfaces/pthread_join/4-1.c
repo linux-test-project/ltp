@@ -101,14 +101,14 @@ void * threaded ( void * arg )
 
 	ret = pthread_mutex_lock( &mtx );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( ret, "Failed to lock mutex" );
 	}
 
 	ret = pthread_mutex_unlock( &mtx );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( ret, "Failed to unlock mutex" );
 	}
@@ -141,7 +141,7 @@ int main( int argc, char *argv[] )
 	/* Initialize thread attribute objects */
 	scenar_init();
 
-	for ( sc = 0; sc < NSCENAR; sc++ )
+	for (sc = 0; sc < NSCENAR; sc++ )
 	{
 #if VERBOSE > 0
 		output( "-----\n" );
@@ -151,7 +151,7 @@ int main( int argc, char *argv[] )
 		/* Lock the mutex */
 		ret = pthread_mutex_lock( &mtx );
 
-		if ( ret != 0 )
+		if (ret != 0 )
 		{
 			UNRESOLVED( ret, "failed to lock the mutex" );
 		}
@@ -162,7 +162,7 @@ int main( int argc, char *argv[] )
 		{
 				case 0:                                       /* Operation was expected to succeed */
 
-				if ( ret != 0 )
+				if (ret != 0 )
 				{
 					UNRESOLVED( ret, "Failed to create this thread" );
 				}
@@ -171,7 +171,7 @@ int main( int argc, char *argv[] )
 
 				case 1:                                       /* Operation was expected to fail */
 
-				if ( ret == 0 )
+				if (ret == 0 )
 				{
 					UNRESOLVED( -1, "An error was expected but the thread creation succeeded" );
 				}
@@ -182,7 +182,7 @@ int main( int argc, char *argv[] )
 				default:
 #if VERBOSE > 0
 
-				if ( ret == 0 )
+				if (ret == 0 )
 				{
 					output( "Thread has been created successfully for this scenario\n" );
 				}
@@ -195,13 +195,13 @@ int main( int argc, char *argv[] )
 
 		}
 
-		if ( ret == 0 )                                       /* The new thread is running */
+		if (ret == 0 )                                       /* The new thread is running */
 		{
 
 			/* Now create the joiner thread */
 			ret = pthread_create( &joiner, NULL, joiner_func, &child );
 
-			if ( ret != 0 )
+			if (ret != 0 )
 			{
 				UNRESOLVED( ret, "Failed to create the joiner thread" );
 			}
@@ -212,7 +212,7 @@ int main( int argc, char *argv[] )
 			/* Cancel the joiner thread */
 			ret = pthread_cancel( joiner );
 
-			if ( ret != 0 )
+			if (ret != 0 )
 			{
 				UNRESOLVED( ret, "Failed to cancel the thread" );
 			}
@@ -220,7 +220,7 @@ int main( int argc, char *argv[] )
 			/* Join the canceled thread */
 			ret = pthread_join( joiner, NULL );
 
-			if ( ret != 0 )
+			if (ret != 0 )
 			{
 				UNRESOLVED( ret, "Failed to join the canceled thread" );
 			}
@@ -228,7 +228,7 @@ int main( int argc, char *argv[] )
 			/* Unblock the child thread */
 			ret = pthread_mutex_unlock( &mtx );
 
-			if ( ret != 0 )
+			if (ret != 0 )
 			{
 				UNRESOLVED( ret, "Failed to unlock the mutex" );
 			}
@@ -236,7 +236,7 @@ int main( int argc, char *argv[] )
 			/* Check the first thread is still joinable */
 			ret = pthread_join( child, NULL );
 
-			if ( ret != 0 )
+			if (ret != 0 )
 			{
 				output( "Error returned: %d\n" );
 				FAILED( "The thread is no more joinable" );
@@ -247,7 +247,7 @@ int main( int argc, char *argv[] )
 		{
 			ret = pthread_mutex_unlock( &mtx );
 
-			if ( ret != 0 )
+			if (ret != 0 )
 			{
 				UNRESOLVED( ret, "Failed to unlock the mutex" );
 			}

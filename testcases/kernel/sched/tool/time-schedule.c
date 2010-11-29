@@ -135,7 +135,7 @@ int main (int argc, char **argv)
         else if (strcmp (argv[count], "-pipe") == 0) use_pipe = TRUE;
         else if (strcmp (argv[count], "-notest") == 0) no_test = TRUE;
         else if (strcmp (argv[count], "-fpu") == 0) frob_fpu = TRUE;
-        else if ( isdigit (argv[count][0]) )
+        else if (isdigit (argv[count][0]) )
             num_low_priority = atoi (argv[count]);
         else
         {
@@ -455,7 +455,7 @@ static unsigned long compute_median (unsigned long values[MAX_ITERATIONS],
     unsigned long *table;
 
     /*  Crude but effective  */
-    if ( ( table = calloc (max_value + 1, sizeof *table) ) == NULL )
+    if (( table = calloc (max_value + 1, sizeof *table) ) == NULL )
     {
         fprintf (stderr, "Error allocating median table\n");
         exit (1);
@@ -487,12 +487,12 @@ static unsigned int get_run_queue_size ()
     struct dirent *de;
     char txt[64], dummy_str[64];
 
-    if ( ( dp = opendir ("/proc") ) == NULL ) return (0);
-    while ( ( de = readdir (dp) ) != NULL )
+    if (( dp = opendir ("/proc") ) == NULL ) return (0);
+    while (( de = readdir (dp) ) != NULL )
     {
-        if ( !isdigit (de->d_name[0]) ) continue;
+        if (!isdigit (de->d_name[0]) ) continue;
         sprintf (txt, "/proc/%s/stat", de->d_name);
-        if ( ( fp = fopen (txt, "r") ) == NULL ) return (length);
+        if (( fp = fopen (txt, "r") ) == NULL ) return (length);
         fscanf (fp, "%d %s %s", &dummy_i, dummy_str, txt);
         if (txt[0] == 'R') ++length;
         fclose (fp);
@@ -510,7 +510,7 @@ static unsigned long get_num_switches ()
     FILE *fp;
     char line[256], name[64];
 
-    if ( ( fp = fopen ("/proc/stat", "r") ) == NULL ) return (0);
+    if (( fp = fopen ("/proc/stat", "r") ) == NULL ) return (0);
     while (fgets (line, sizeof line, fp) != NULL)
     {
         sscanf (line, "%s %lu", name, &val);

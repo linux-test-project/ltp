@@ -32,27 +32,27 @@ int main()
 	int type;
 	
 	/* Initialize a mutex attributes object */
-	if(pthread_mutexattr_init(&mta) != 0)
+	if (pthread_mutexattr_init(&mta) != 0)
 	{
 		perror("Error at pthread_mutexattr_init()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Set the mutex attribute 'type' to PTHREAD_MUTEX_RECURSIVE. */
-	if(pthread_mutexattr_settype(&mta, PTHREAD_MUTEX_RECURSIVE) != 0)
+	if (pthread_mutexattr_settype(&mta, PTHREAD_MUTEX_RECURSIVE) != 0)
 	{
 		fprintf(stderr,"pthread_mutexattr_settype(): Error setting the attribute 'type'\n");
 		return PTS_UNRESOLVED;
 	}
 	
 	 /* The 'type' attribute should be PTHREAD_MUTEX_RECURSIVE  */
-	if(pthread_mutexattr_gettype(&mta, &type) != 0)
+	if (pthread_mutexattr_gettype(&mta, &type) != 0)
 	{
 		fprintf(stderr,"pthread_mutexattr_gettype(): Error obtaining the attribute 'type'\n");
 		return PTS_UNRESOLVED;
 	}
 	
-	if(type != PTHREAD_MUTEX_RECURSIVE)
+	if (type != PTHREAD_MUTEX_RECURSIVE)
 	{
 		printf("Test FAILED: Incorrect mutexattr 'type' value: %d. Should be PTHREAD_MUTEX_RECURSIVE\n", type);
 		return PTS_FAIL;

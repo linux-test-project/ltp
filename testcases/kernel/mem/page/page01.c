@@ -112,14 +112,14 @@ int main(argc, argv)
 	/*					*/
 	/****************************************/
 
-	for(i = 1; i <= nchild; i++) {
-		if((pid = fork()) == -1) {
+	for (i = 1; i <= nchild; i++) {
+		if ((pid = fork()) == -1) {
 			terror("Fork failed (may be OK if under stress)");
 			if (instress())
 				ok_exit();
 			forkfail();
 		}
-		else if(pid == 0) {
+		else if (pid == 0) {
 			/********************************/
 			/*				*/
 			/*   allocate memory  of size	*/
@@ -128,7 +128,7 @@ int main(argc, argv)
 			/********************************/
 
 			memory_pointer = (int*)malloc(memory_size*sizeof(int));
-			if(memory_pointer == 0) {
+			if (memory_pointer == 0) {
 					tst_resm(TBROK, "Cannot allocate memory - malloc failed.\n");
 				if (i < 2) {
 					tst_resm(TBROK, "This should not happen for first two children.\n");
@@ -148,7 +148,7 @@ int main(argc, argv)
 			/*				*/
 			/********************************/
 
-			for(j = 1; j <= memory_size; j++)
+			for (j = 1; j <= memory_size; j++)
 				*(number_pointer++) = j;
 			sleep(1);
 
@@ -161,8 +161,8 @@ int main(argc, argv)
 			/********************************/
 
 			number_pointer = memory_pointer;
-			for(j = 1; j <= memory_size; j++) {
-				if(*(number_pointer++) != j) error_count++;
+			for (j = 1; j <= memory_size; j++) {
+				if (*(number_pointer++) != j) error_count++;
 			}
 			exit(error_count);
 		}

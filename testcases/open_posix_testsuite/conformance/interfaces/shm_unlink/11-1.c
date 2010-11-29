@@ -27,7 +27,7 @@ int main() {
 
 	result = shm_unlink(SHM_NAME);
 	
-	if(result == -1 && errno == ENOENT) {
+	if (result == -1 && errno == ENOENT) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	} else if (result == -1) {

@@ -435,7 +435,7 @@ int main(int argc, char * argv[])
 	pBoolean = &(td->boolean);
 	
 	/* Init the structure */
-	for ( i=0; i< NSCENAR ; i++)
+	for (i=0; i< NSCENAR ; i++)
 	{
 		#if VERBOSE > 1
 		output("[parent] Preparing attributes for: %s\n", scenarii[i].descr);
@@ -577,7 +577,7 @@ int main(int argc, char * argv[])
 	}
 	
 	/* Destroy everything */
-	for ( i=0; i< NTOT ; i++)
+	for (i=0; i< NTOT ; i++)
 	{
 		/* destroy the condvar */
 		ret = pthread_cond_destroy(&(td->cd[i].cnd));

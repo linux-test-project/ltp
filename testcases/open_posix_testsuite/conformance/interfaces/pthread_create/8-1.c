@@ -49,7 +49,7 @@ int main()
 	int ret;
 
 	/* Empty set of signal mask and blocked signals */
-	if ( (sigemptyset(&main_sigmask) != 0) || 
+	if ((sigemptyset(&main_sigmask) != 0) || 
 		(sigemptyset(&main_pendingset) != 0) )
 	{
 		perror("Error in sigemptyset()\n");
@@ -87,14 +87,14 @@ int main()
 	}
 
 	/* Create a new thread. */
-	if(pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
 	{	
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
 	
 	/* Wait until the thread has finished execution. */
-	if(pthread_join(new_th, NULL) != 0)
+	if (pthread_join(new_th, NULL) != 0)
 	{
 		perror("Error in pthread_join()\n");
 		return PTS_UNRESOLVED;
@@ -102,9 +102,9 @@ int main()
 
 	/* Check to make sure that the sigmask of the thread is the same as the main thread */
 	ret = sigismember(&th_sigmask, SIGUSR1);
-	if(ret != 1)
+	if (ret != 1)
 	{
-		if(ret == 0)
+		if (ret == 0)
 		{
 			printf("Error: Thread did not inherit main()s signal mask. SIGUSR1 not a member of the signal set.\n");
 			return PTS_FAIL;
@@ -115,9 +115,9 @@ int main()
 	}
 
 	ret = sigismember(&th_sigmask, SIGUSR2);
-	if(ret != 1)
+	if (ret != 1)
 	{
-		if(ret == 0)
+		if (ret == 0)
 		{
 			printf("Test FAILED: Thread did not inherit main()s signal mask. SIGUSR2 not a member of the signal set.\n");
 			return PTS_FAIL;
@@ -131,9 +131,9 @@ int main()
 	 * SIGUSR2. */
 	
 	ret = sigismember(&th_pendingset, SIGUSR1);
-	if(ret != 0)
+	if (ret != 0)
 	{
-		if(ret == 1)
+		if (ret == 1)
 		{
 			printf("Error: Thread did not inherit main()s signal mask. SIGUSR1 not a member of the signal set.\n");
 			return PTS_FAIL;
@@ -144,9 +144,9 @@ int main()
 	}
 
 	ret = sigismember(&th_pendingset, SIGUSR2);
-	if(ret != 0)
+	if (ret != 0)
 	{
-		if(ret == 1)
+		if (ret == 1)
 		{
 			printf("Test FAILED: Thread did not inherit main()s signal mask. SIGUSR2 not a member of the signal set.\n");
 			return PTS_FAIL;

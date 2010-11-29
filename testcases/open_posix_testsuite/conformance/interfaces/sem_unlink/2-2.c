@@ -96,7 +96,7 @@ sem_t * common()
 	/* Reconnect to the semaphore */
 	sem = sem_open( SEM_NAME, 0 );
 
-	if ( sem == SEM_FAILED )
+	if (sem == SEM_FAILED )
 	{
 		UNRESOLVED( errno, "Failed to reconnect the semaphore" );
 	}
@@ -108,9 +108,9 @@ sem_t * common()
 	{
 		ret = sem_wait( sem );
 	}
-	while ( ( ret != 0 ) && ( errno == EINTR ) );
+	while (( ret != 0 ) && ( errno == EINTR ) );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		FAILED( "Waiting for the semaphore failed" );
 	}
@@ -125,7 +125,7 @@ sem_t * common()
 	/* Post the semaphore back */
 	ret = sem_post( sem );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		FAILED( "Failed to post the semaphore" );
 	}
@@ -147,13 +147,13 @@ int main( int argc, char * argv[] )
 	/* Create the semaphore */
 	sem = sem_open( SEM_NAME, O_CREAT | O_EXCL, 0777, 0 );
 
-	if ( ( sem == SEM_FAILED ) && ( errno == EEXIST ) )
+	if (( sem == SEM_FAILED ) && ( errno == EEXIST ) )
 	{
 		sem_unlink( SEM_NAME );
 		sem = sem_open( SEM_NAME, O_CREAT | O_EXCL, 0777, 0 );
 	}
 
-	if ( sem == SEM_FAILED )
+	if (sem == SEM_FAILED )
 	{
 		UNRESOLVED( errno, "Failed to create the semaphore" );
 	}
@@ -161,17 +161,17 @@ int main( int argc, char * argv[] )
 	/* fork 3 times */
 	p1 = fork();
 
-	if ( p1 == ( pid_t ) - 1 )
+	if (p1 == ( pid_t ) - 1 )
 	{
 		UNRESOLVED( errno, "Failed to fork" );
 	}
 
-	if ( p1 == ( pid_t ) 0 )        /* child */
+	if (p1 == ( pid_t ) 0 )        /* child */
 	{
 		sem = common();
 		ret = sem_close( sem );
 
-		if ( ret != 0 )
+		if (ret != 0 )
 		{
 			FAILED( "Failed to sem_close in child" );
 		}
@@ -181,12 +181,12 @@ int main( int argc, char * argv[] )
 
 	p2 = fork();
 
-	if ( p2 == ( pid_t ) - 1 )
+	if (p2 == ( pid_t ) - 1 )
 	{
 		UNRESOLVED( errno, "Failed to fork" );
 	}
 
-	if ( p2 == ( pid_t ) 0 )        /* child */
+	if (p2 == ( pid_t ) 0 )        /* child */
 	{
 		sem = common();
 		_exit( 0 );
@@ -194,12 +194,12 @@ int main( int argc, char * argv[] )
 
 	p3 = fork();
 
-	if ( p3 == ( pid_t ) - 1 )
+	if (p3 == ( pid_t ) - 1 )
 	{
 		UNRESOLVED( errno, "Failed to fork" );
 	}
 
-	if ( p3 == ( pid_t ) 0 )        /* child */
+	if (p3 == ( pid_t ) 0 )        /* child */
 	{
 		sem = common();
 		ret = execl( "/bin/ls", "ls",  NULL );
@@ -212,7 +212,7 @@ int main( int argc, char * argv[] )
 	/* Unlink */
 	ret = sem_unlink( SEM_NAME );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( errno, "Failed to unlink the semaphore" );
 	}
@@ -220,7 +220,7 @@ int main( int argc, char * argv[] )
 	/* Post the semaphore */
 	ret = sem_post( sem );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( errno, "Failed to post the semaphore" );
 	}
@@ -228,7 +228,7 @@ int main( int argc, char * argv[] )
 	/* and close it in this process */
 	ret = sem_close( sem );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( errno, "Failed to close the semaphore" );
 	}
@@ -236,36 +236,36 @@ int main( int argc, char * argv[] )
 	/* Wait all processes */
 	ctl = waitpid( p1, &status, 0 );
 
-	if ( ctl != p1 )
+	if (ctl != p1 )
 	{
 		UNRESOLVED( errno, "Waitpid returned the wrong PID" );
 	}
 
-	if ( ( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != 0 ) )
+	if (( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != 0 ) )
 	{
 		FAILED( "Child 'sem_close' exited abnormally" );
 	}
 
 	ctl = waitpid( p2, &status, 0 );
 
-	if ( ctl != p2 )
+	if (ctl != p2 )
 	{
 		UNRESOLVED( errno, "Waitpid returned the wrong PID" );
 	}
 
-	if ( ( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != 0 ) )
+	if (( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != 0 ) )
 	{
 		FAILED( "Child '_exit' exited abnormally" );
 	}
 
 	ctl = waitpid( p3, &status, 0 );
 
-	if ( ctl != p3 )
+	if (ctl != p3 )
 	{
 		UNRESOLVED( errno, "Waitpid returned the wrong PID" );
 	}
 
-	if ( ( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != 0 ) )
+	if (( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != 0 ) )
 	{
 		FAILED( "Child 'exec' exited abnormally" );
 	}

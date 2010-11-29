@@ -44,7 +44,7 @@ int main()
     char *script, *ltproot;
 
     ltproot = getenv("LTPROOT");
-    if ( ! ltproot) {
+    if (! ltproot) {
         printf("LTPROOT env variable is not set\n");
         printf("Please set LTPROOT and re-run the test.. Thankyou\n");
         return -1;
@@ -61,7 +61,7 @@ int main()
     /* Parent should be able to view child sysfs and vice versa */
     ret = system(script);
     status = WEXITSTATUS(ret);
-    if ( ret == -1 || status != 0) {
+    if (ret == -1 || status != 0) {
         printf("Error while executing the script %s\n", script);
         fflush(stdout);
         exit(1);

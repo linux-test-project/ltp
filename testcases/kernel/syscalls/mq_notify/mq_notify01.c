@@ -421,7 +421,7 @@ int main(int ac, char **av) {
 		Tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 			 TEST(c = getopt_long(ac, av, "dh", long_options, NULL));
-			 while(TEST_RETURN != -1) {
+			 while (TEST_RETURN != -1) {
 				switch (c) {
 				case 'd':
 					opt_debug = 1;

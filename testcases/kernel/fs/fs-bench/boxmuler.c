@@ -10,12 +10,12 @@ int box_muler(int min, int max)
   int ave;
   int range;
   int ZZ;
-  if ( min >= max ) {
+  if (min >= max ) {
     return (-1);
   }
   range = max - min;
   ave = range/2;
-  for ( i = 0 ; i< 10 ; i++ ) {
+  for (i = 0 ; i< 10 ; i++ ) {
     u1 =  ((double)(random() % 1000000))/ 1000000;
     u2 =  ((double)(random() % 1000000))/ 1000000;
     z = sqrt( -2.0 * log(u1) ) * cos ( M_2PI * u2 );

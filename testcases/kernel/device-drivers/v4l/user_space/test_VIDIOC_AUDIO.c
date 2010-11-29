@@ -51,7 +51,7 @@ int valid_audio_capability(__u32 capability) {
 int valid_audio_mode(__u32 mode) {
 	int valid = 0;
 
-	if ( (mode & ~(V4L2_AUDMODE_AVL))
+	if ((mode & ~(V4L2_AUDMODE_AVL))
 		== 0) {
 		valid = 1;
 	} else {

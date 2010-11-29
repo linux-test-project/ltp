@@ -133,7 +133,7 @@ int main(int ac, char **av) {
             tst_exit();
 	}
 	fd=open(av[1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if(fd < 0 ) {
+	if (fd < 0 ) {
 		tst_resm(TFAIL, "open(%s) failed - errno = %d : %s", av[1], errno, strerror(errno));
 	   cleanup();
 	   tst_exit();
@@ -146,12 +146,12 @@ int main(int ac, char **av) {
 	        cleanup();
 		tst_exit();
 	    } else
-            if (TEST_RETURN == 0){
+            if (TEST_RETURN == 0) {
 							tst_resm(TPASS, "splice() system call Passed");
 		close(fd);
 	        cleanup();
 	        tst_exit();
 	    }
-	} while(1);
+	} while (1);
 }
 

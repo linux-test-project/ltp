@@ -97,7 +97,7 @@ die(int exit_code, char *format, ... )
 }
 
 void
-usage(char *mesg){
+usage(char *mesg) {
 	if (mesg != NULL) {
 		fprintf(stderr, "%s\n", mesg);
 	}
@@ -183,7 +183,7 @@ signal_handler(int sig, siginfo_t *info, void *vcontext)
 	infocopy = *info;
 	gcp->siginfo   = &infocopy;
 
-	while(*sigp) {
+	while (*sigp) {
 		if (*sigp == sig)
 			break;
 		++isig; ++sigp;
@@ -340,7 +340,7 @@ touch_memory(bool rw, unsigned long *memp, size_t memlen)
 	vprint("!!!%s from 0x%lx thru 0x%lx\n",
 		rw ? "Writing" : "Reading", memp, memend);
 
-	for(pp = memp; pp < memend;  pp += longs_in_page) {
+	for (pp = memp; pp < memend;  pp += longs_in_page) {
 		// vprint("%s:  touching 0x%lx\n", __FUNCTION__, pp);
 		if (!sigsetjmp(gcp->sigjmp_env, true)) {
 			gcp->sigjmp = true;
@@ -363,7 +363,7 @@ touch_memory(bool rw, unsigned long *memp, size_t memlen)
 		/*
 		 * Any [handled] signal breaks the loop
 		 */
-		if(gcp->siginfo != NULL) {
+		if (gcp->siginfo != NULL) {
 			reset_signal();
 			break;
 		}
@@ -389,7 +389,7 @@ init_glctx(glctx_t *gcp)
 
 	segment_init(gcp);
 
-	if(isatty(fileno(stdin)))
+	if (isatty(fileno(stdin)))
 		set_option(INTERACTIVE);
 
 }
@@ -474,7 +474,7 @@ main(int argc, char *argv[])
 	int error;
 
 	init_glctx(gcp);
-	if(!is_option(INTERACTIVE))
+	if (!is_option(INTERACTIVE))
 		setbuf(stdout, NULL);
 
 	/*

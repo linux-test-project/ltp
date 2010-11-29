@@ -139,7 +139,7 @@ static int test_init_module(void) {
 
 	printk("BLK INC - result =%d major %d\n",rc,INCLUDEMAJOR);
 
-        if(rc < 0) {
+        if (rc < 0) {
                 printk("Failed to register device.\n");
                 return rc;
         }
@@ -190,7 +190,7 @@ static void test_exit_module(void) {
 
 	rc = unregister_blkdev(INCLUDEMAJOR, DEVICE_NAME);
 	
-        if(rc < 0) {
+        if (rc < 0) {
                 printk("unregister failed %d\n",rc);
         }
         else {
@@ -201,13 +201,13 @@ static void test_exit_module(void) {
 static void test_acpi(void) {
 	u32 flag;
 
-	for(flag=0; flag<=4; flag++)
+	for (flag=0; flag<=4; flag++)
 		acpi_set_debug(flag);
 
 	printk("finished acpi test\n");
 }
 
-static void test_sunrpc_auth(void){
+static void test_sunrpc_auth(void) {
 	struct rpc_cred cred;
 
 	atomic_set(&(cred.cr_count),0);
@@ -224,7 +224,7 @@ static void test_vga(void) {
 }
 
 
-static void test_nfsfh(void){
+static void test_nfsfh(void) {
 	dev_t dev=0;
 	u32 unfs=0, u32ptr[2];
 	ino_t ino=0;
@@ -243,7 +243,7 @@ static void test_nfsfh(void){
 	printk("finished nfsfh test\n");
 }
 
-static void test_lockd(void){
+static void test_lockd(void) {
 
 	struct nlm_file file;
 	struct sockaddr_in sin1, sin2;
@@ -256,7 +256,7 @@ static void test_lockd(void){
 }
 
 
-static void test_sunrpc_cache(void){
+static void test_sunrpc_cache(void) {
 	struct cache_head head;
 	struct cache_detail detail;
 
@@ -265,7 +265,7 @@ static void test_sunrpc_cache(void){
 	printk("finished cache test\n");
 }
 
-static void test_sunrpc_svc(void){
+static void test_sunrpc_svc(void) {
 	u32 val;
 	struct svc_rqst rqstp;
         char name[50];
@@ -288,7 +288,7 @@ static void test_sunrpc_svc(void){
 
 }
 
-static void test_sunrpc_timer(){
+static void test_sunrpc_timer() {
 	struct rpc_rtt rt;
 
 	rpc_inc_timeo(&rt);

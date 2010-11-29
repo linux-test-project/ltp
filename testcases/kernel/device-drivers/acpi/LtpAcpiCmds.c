@@ -227,22 +227,22 @@ static int ltpdev_ioctl(struct block_device *bdev, fmode_t mode, unsigned cmd, u
 
 	printk(KERN_ALERT "TEST -- acpi_install_fixed_event_handler \n");
 	status = acpi_install_fixed_event_handler(ACPI_EVENT_POWER_BUTTON, ltp_test_power_button_ev_handler, NULL);
-	if(status)
+	if (status)
 		printk(KERN_ALERT "Failed installing fixed event handler \n");
 
 	printk(KERN_ALERT "TEST -- acpi_remove_fixed_event_handler \n");
 	status = acpi_remove_fixed_event_handler(ACPI_EVENT_POWER_BUTTON, ltp_test_power_button_ev_handler);
-	if(status)
+	if (status)
 		printk(KERN_ALERT "Failed removing fixed event handler \n");
 
 	printk(KERN_ALERT "TEST -- acpi_install_fixed_event_handler \n");
 	status = acpi_install_fixed_event_handler(ACPI_EVENT_SLEEP_BUTTON, ltp_test_sleep_button_ev_handler, NULL);
-	if(status)
+	if (status)
 		printk(KERN_ALERT "Failed installing fixed event handler \n");
 
 	printk(KERN_ALERT "TEST -- acpi_remove_fixed_event_handler \n");
 	status = acpi_remove_fixed_event_handler(ACPI_EVENT_SLEEP_BUTTON, ltp_test_sleep_button_ev_handler);
-	if(status)
+	if (status)
 		printk(KERN_ALERT "Failed removing fixed event handler \n");
 
 	printk(KERN_ALERT "TEST -- acpi_acquire_global_lock \n");
@@ -262,14 +262,14 @@ static int ltpdev_ioctl(struct block_device *bdev, fmode_t mode, unsigned cmd, u
 
 	printk(KERN_ALERT "TEST -- acpi_bus_get_power \n");
 	status = acpi_bus_get_power(next_child_handle, &state);
-	if(status)
+	if (status)
 	printk(KERN_ALERT "Error reading power state \n");
 
         printk(KERN_ALERT "TEST -- acpi_driver_data \n");
 
         ec = acpi_driver_data(device);
 
-        if (!ec){
+        if (!ec) {
             printk(KERN_ALERT "Failure getting device data \n");
         }
         else {
@@ -319,7 +319,7 @@ static int ltpdev_ioctl(struct block_device *bdev, fmode_t mode, unsigned cmd, u
 
 	printk(KERN_ALERT "TEST -- acpi_evaluate_integer \n");
 	status = acpi_evaluate_integer(ec->handle, "_GPE", NULL, &ec->gpe_bit);
-	if(status)
+	if (status)
 	printk(KERN_ALERT "Error obtaining GPE bit assignment\n");
 
 #if 0

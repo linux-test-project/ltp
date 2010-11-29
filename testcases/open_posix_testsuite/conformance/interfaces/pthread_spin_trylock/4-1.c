@@ -33,7 +33,7 @@ int main()
 	/* attemp to lock an uninitalized spin lock */
 
 	rc = pthread_spin_trylock(&spinlock);
-	if(rc == EINVAL)
+	if (rc == EINVAL)
 	{
 		printf("Correctly got EINVAL at pthread_spin_trylock()\n");
 		printf("Test PASSED\n");

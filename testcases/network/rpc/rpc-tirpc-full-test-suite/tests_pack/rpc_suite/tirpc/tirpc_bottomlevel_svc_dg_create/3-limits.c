@@ -88,7 +88,7 @@ int main(int argn, char *argc[])
 		transp = svc_dg_create(RPC_ANYFD, paramList[i].bufsnd, paramList[i].bufrec);
 			 				 
 		//Check result
-		if (transp == (SVCXPRT *)NULL)
+		if (transp == NULL)
 		{
 			//test has failed
 			test_status = 1;

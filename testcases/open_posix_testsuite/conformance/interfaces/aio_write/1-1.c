@@ -116,7 +116,7 @@ int main()
 		exit(PTS_FAIL);
 	}
 
-	if ( check[BUF_SIZE] != 1)
+	if (check[BUF_SIZE] != 1)
 	{
 		printf(TNAME " Buffer overflow\n");
 		close(fd);

@@ -757,7 +757,7 @@ capture_frames(struct redirector_info *redirector_p)
      */
     start_time = time(NULL);
 
-    for(;;) {
+    for (;;) {
 	frame_size = read(sd, (void *)(&frame), sizeof (frame));
 	if (frame_size < 0) {
 	    if (errno != EAGAIN)

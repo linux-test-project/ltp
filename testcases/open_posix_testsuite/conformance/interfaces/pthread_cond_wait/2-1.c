@@ -51,13 +51,13 @@ void *t1_func(void *arg)
 	
 	fprintf(stderr,"Thread1 is waiting for the cond\n");
 	rc = pthread_cond_wait(&td.cond, &td.mutex);
-	if(rc != 0) {
+	if (rc != 0) {
 		fprintf(stderr,"pthread_cond_wait return %d\n", rc);
                 exit(PTS_UNRESOLVED);
 	}
 	
 	fprintf(stderr,"Thread1 wakened\n");
-	if(signaled == 0) {
+	if (signaled == 0) {
 		fprintf(stderr,"Thread1 did not block on the cond at all\n");
                 exit(PTS_UNRESOLVED);
 	}
@@ -96,7 +96,7 @@ int main()
 		fprintf(stderr,"Fail to create thread 1\n");
 		return PTS_UNRESOLVED;
 	}
-	while(!t1_start)	/* wait for thread1 started */
+	while (!t1_start)	/* wait for thread1 started */
 		usleep(100);
 	
 	/* acquire the mutex released by pthread_cond_wait() within thread 1 */

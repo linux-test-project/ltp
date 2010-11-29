@@ -67,13 +67,13 @@ int main()
   /* Create shared object */
 	shm_unlink(tmpfname);
 	shm_fd = shm_open(tmpfname, O_RDWR|O_CREAT|O_EXCL, S_IRUSR|S_IWUSR);
-	if(shm_fd == -1)
+	if (shm_fd == -1)
 	{
 		printf(TNAME " Error at shm_open(): %s\n", strerror(errno));
 		return PTS_UNRESOLVED;
 	}
   shm_unlink(tmpfname);   
-  if(ftruncate(shm_fd, shm_size) == -1) {
+  if (ftruncate(shm_fd, shm_size) == -1) {
     printf(TNAME " Error at ftruncate(): %s\n", strerror(errno));
     return PTS_UNRESOLVED;
   }

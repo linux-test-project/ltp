@@ -79,7 +79,7 @@ main(int argc, char *argv[])
 	}
 
 	/* Initialize psuedo PCR registers 0 - 7 */
-	for ( i = 0; i < NUM_PCRS; i++)
+	for (i = 0; i < NUM_PCRS; i++)
 		memset(&pcr[i].digest, 0, SHA_DIGEST_LENGTH);
 
 	/* Extend the pseudo PCRs with the event digest */

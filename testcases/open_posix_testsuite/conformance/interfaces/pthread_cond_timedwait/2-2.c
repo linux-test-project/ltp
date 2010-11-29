@@ -93,7 +93,7 @@ int main()
 		return PTS_UNRESOLVED;
 	}
 
-	while(!t1_start)	/* wait for thread1 started */
+	while (!t1_start)	/* wait for thread1 started */
 		usleep(100);
 	
 	/* acquire the mutex released by pthread_cond_wait() within thread 1 */
@@ -111,13 +111,13 @@ int main()
 	alarm(INTERVAL);
 
 	/* Wait for the thread to return. */
-	if(pthread_join(thread1, (void*)&th_ret) != 0)
+	if (pthread_join(thread1, (void*)&th_ret) != 0)
 	{
 		fprintf(stderr, "Could not join the thread.\n");
 		return PTS_UNRESOLVED;
 	}
 	
-	if(th_ret == PTS_PASS)
+	if (th_ret == PTS_PASS)
 	{
 		printf("Test PASSED\n");
 		return PTS_PASS;

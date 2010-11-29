@@ -37,9 +37,9 @@ int main()
 	
 	 /* Set the attribute to PTHREAD_PROCESS_PRIVATE.  */
 	ret=pthread_mutexattr_setpshared(&mta, PTHREAD_PROCESS_PRIVATE);
-	if(ret != 0)
+	if (ret != 0)
 	{
-		if(ret == EINVAL)
+		if (ret == EINVAL)
 		{
 			printf("Test PASSED\n");
 			return PTS_PASS;

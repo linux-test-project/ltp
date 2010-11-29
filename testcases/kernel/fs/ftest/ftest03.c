@@ -183,7 +183,7 @@ static void runtest(void)
 
 	nwait = 0;
 
-	for(i = 0; i < nchild; i++) {
+	for (i = 0; i < nchild; i++) {
 
 		test_name[0] = 'a' + i;
 		test_name[1] = '\0';
@@ -306,7 +306,7 @@ static void dotest(int testers, int me, int fd)
 		tst_exit();
 	}
 
-	if((hold_bits = malloc((nchunks+7) / 8)) == 0) {
+	if ((hold_bits = malloc((nchunks+7) / 8)) == 0) {
 		tst_resm(TBROK, "\tmalloc failed");
 		tst_exit();
 	}
@@ -382,7 +382,7 @@ static void dotest(int testers, int me, int fd)
 
 	while (iterations-- > 0) {
 
-		for(i = 0; i < NMISC; i++)
+		for (i = 0; i < NMISC; i++)
 			misc_cnt[i] = 0;
 
 		ftruncate(fd,0);
@@ -430,7 +430,7 @@ static void dotest(int testers, int me, int fd)
 						me, xfr, csize);
 					tst_exit();
 				}
-				for(i=0;i<MAXIOVCNT; i++) {
+				for (i=0;i<MAXIOVCNT; i++) {
 					if (memcmp(r_iovec[i].iov_base, zero_iovec[i].iov_base, r_iovec[i].iov_len)) {
 						tst_resm(TFAIL,
 					  	"\tTest[%d] bad verify @ 0x%x for val %d count %d xfr %d file_max 0x%x, should be 0.",
@@ -455,7 +455,7 @@ static void dotest(int testers, int me, int fd)
 					tst_exit();
 				}
 				++collide;
-				for(i=0; i<MAXIOVCNT; i++) {
+				for (i=0; i<MAXIOVCNT; i++) {
 					if (memcmp(r_iovec[i].iov_base, val_iovec[i].iov_base, r_iovec[i].iov_len)) {
 						tst_resm(TFAIL, "\tTest[%d] bad verify @ 0x%x for val %d count %d xfr %d file_max 0x%x.",
 							me, CHUNK(chunk), val, count, xfr, file_max);
@@ -511,7 +511,7 @@ static void dotest(int testers, int me, int fd)
 		++misc_cnt[m_fsync];
 		//tst_resm(TINFO, "\tTest{%d} val %d done, count = %d, collide = {%d}",
 	        //		me, val, count, collide);
-		//for(i = 0; i < NMISC; i++)
+		//for (i = 0; i < NMISC; i++)
 		//	tst_resm(TINFO, "\t\tTest{%d}: {%d} %s's.", me, misc_cnt[i], m_str[i]);
 		++val;
 	}
@@ -552,9 +552,9 @@ static void domisc(int me, int fd, char *bits)
 			}
 			tr_flag = 1;
 		}
-		for(; chunk%8 != 0; chunk++)
+		for (; chunk%8 != 0; chunk++)
 			bits[chunk/8] &= ~(1<<(chunk%8));
-		for(; chunk < nchunks; chunk += 8)
+		for (; chunk < nchunks; chunk += 8)
 			bits[chunk/8] = 0;
 		break;
 	case m_fstat:

@@ -27,16 +27,16 @@ int main()
 	int cnt = 0;
 	int rc = 0;
 	
-	while(cnt++ < COUNT)
+	while (cnt++ < COUNT)
 	{ 
-		if(pthread_rwlock_init(&rwlock, NULL) != 0)
+		if (pthread_rwlock_init(&rwlock, NULL) != 0)
 		{
 				printf("Error at pthread_rwlock_init()\n");
 				return PTS_UNRESOLVED;
 		}
 		
 		rc = pthread_rwlock_destroy(&rwlock);
-		if(rc != 0)
+		if (rc != 0)
 		{
 			printf("Test FAILED: at %d-th pthread_rwlock_destroy(), with Error code=%d\n", cnt, rc);
 			return PTS_FAIL;

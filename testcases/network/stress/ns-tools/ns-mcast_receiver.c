@@ -403,7 +403,7 @@ receive_mcast(struct mcast_rcv_info *info_p)
 
     /* Receive the message */
     start_time = time(NULL);
-    for(;;) {
+    for (;;) {
 	struct sockaddr_storage addr;
 	socklen_t addrlen;
 

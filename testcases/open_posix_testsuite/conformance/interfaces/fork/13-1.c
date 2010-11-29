@@ -105,21 +105,21 @@ int main( int argc, char * argv[] )
 
 	ret = setitimer( ITIMER_REAL, &it, NULL );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( errno, "Failed to set interval timer for ITIMER_REAL" );
 	}
 
 	ret = setitimer( ITIMER_VIRTUAL, &it, NULL );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( errno, "Failed to set interval timer for ITIMER_VIRTUAL" );
 	}
 
 	ret = setitimer( ITIMER_PROF, &it, NULL );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( errno, "Failed to set interval timer for ITIMER_PROF" );
 	}
@@ -132,47 +132,47 @@ int main( int argc, char * argv[] )
 	/* Create the child */
 	child = fork();
 
-	if ( child == ( pid_t ) - 1 )
+	if (child == ( pid_t ) - 1 )
 	{
 		UNRESOLVED( errno, "Failed to fork" );
 	}
 
 	/* child */
-	if ( child == ( pid_t ) 0 )
+	if (child == ( pid_t ) 0 )
 	{
 		/* Check we get the correct information: timer is reset */
 		ret = getitimer( ITIMER_REAL, &it );
 
-		if ( ret != 0 )
+		if (ret != 0 )
 		{
 			UNRESOLVED( errno, "Failed to read ITIMER_REAL in child" );
 		}
 
-		if ( it.it_value.tv_sec != 0 )
+		if (it.it_value.tv_sec != 0 )
 		{
 			FAILED( "Timer ITIMER_REAL was not reset in child" );
 		}
 
 		ret = getitimer( ITIMER_VIRTUAL, &it );
 
-		if ( ret != 0 )
+		if (ret != 0 )
 		{
 			UNRESOLVED( errno, "Failed to read ITIMER_VIRTUAL in child" );
 		}
 
-		if ( it.it_value.tv_sec != 0 )
+		if (it.it_value.tv_sec != 0 )
 		{
 			FAILED( "Timer ITIMER_VIRTUAL was not reset in child" );
 		}
 
 		ret = getitimer( ITIMER_PROF, &it );
 
-		if ( ret != 0 )
+		if (ret != 0 )
 		{
 			UNRESOLVED( errno, "Failed to read ITIMER_PROF in child" );
 		}
 
-		if ( it.it_value.tv_sec != 0 )
+		if (it.it_value.tv_sec != 0 )
 		{
 			FAILED( "Timer ITIMER_PROF was not reset in child" );
 		}
@@ -184,12 +184,12 @@ int main( int argc, char * argv[] )
 	/* Parent joins the child */
 	ctl = waitpid( child, &status, 0 );
 
-	if ( ctl != child )
+	if (ctl != child )
 	{
 		UNRESOLVED( errno, "Waitpid returned the wrong PID" );
 	}
 
-	if ( ( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ) )
+	if (( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ) )
 	{
 		FAILED( "Child exited abnormally" );
 	}

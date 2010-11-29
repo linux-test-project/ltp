@@ -116,7 +116,7 @@ int main(int ac, char **av) {
         char *msg;              /* message returned from parse_opts */
 	
         /* parse standard options */
-        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL){
+        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
              tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
              tst_exit();
            }
@@ -129,18 +129,18 @@ int main(int ac, char **av) {
                 for (testno = 0; testno < TST_TOTAL; ++testno) {
                      
 		     TEST(cpid = fork());     //call exit_group()
-                     if(TEST_RETURN == -1) {
+                     if (TEST_RETURN == -1) {
         			tst_resm(TFAIL, "fork() error ...errno %d",TEST_ERRNO);
                         	cleanup();
 				tst_exit();
-                     } else if (TEST_RETURN == 0){
+                     } else if (TEST_RETURN == 0) {
 	                 	tst_resm(TINFO, "In the child process");
                            	sleep(5);
 				TEST(syscall(__NR_exit_group,4));
                      }else {
 				tst_resm(TINFO,"in the parent process");
 				TEST(w = wait(&status));
-				if(WIFEXITED(status) && (WEXITSTATUS(status) == 4)) {
+				if (WIFEXITED(status) && (WEXITSTATUS(status) == 4)) {
 		                       tst_resm(TPASS,"exit_group call Succeed");
 		                        cleanup();
 		                }

@@ -33,12 +33,12 @@ int HT_InterruptDistribution()
 
 	tst_resm(TINFO, "Get interrupts distribution with HT.");
 
-	if((cpucount=get_cpu_count())<=0)
+	if ((cpucount=get_cpu_count())<=0)
 	{
 		return 0;
 	}
 
-	if((pFile=fopen(INTERRUPT_NAME, "r"))==NULL)
+	if ((pFile=fopen(INTERRUPT_NAME, "r"))==NULL)
 	{
 		return 0;
 	}
@@ -54,13 +54,13 @@ ci+28, ci+29, ci+30, ci+31);
 
 	fclose(pFile);
 
-	for(i=0;i<10;i++)
+	for (i=0;i<10;i++)
 	{
 		sleep(1);
 		printf(".");
 	}
 
-	if((pFile=fopen(INTERRUPT_NAME, "r"))==NULL)
+	if ((pFile=fopen(INTERRUPT_NAME, "r"))==NULL)
 	{
 		return 0;
 	}
@@ -81,13 +81,13 @@ cj+28, cj+29, cj+30, cj+31);
 	d=cj[0]-ci[0];
 	printf("%d ", d);
 	cmax=cmin=d;
-	for(i=1;i<cpucount;i++)
+	for (i=1;i<cpucount;i++)
 	{
 		d=cj[i]-ci[i];
 		printf("%d ", d);
-		if(cmax<d)
+		if (cmax<d)
 			cmax=d;
-		if(cmin>d)
+		if (cmin>d)
 			cmin=d;
 	}
 
@@ -96,7 +96,7 @@ cj+28, cj+29, cj+30, cj+31);
 	printf("min value: %d\n", cmin);
 	printf("\n");
 
-	if(cmin==0 || cmax/cmin>10)
+	if (cmin==0 || cmax/cmin>10)
 	{
 	 	return 0;
 	}
@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
 #else
 	if (!check_ht_capability())
 	{
-		if(HT_InterruptDistribution())
+		if (HT_InterruptDistribution())
 			tst_resm(TPASS, "Interrupt distribution is balanceable.");
 		else
 			tst_resm(TFAIL, "Interrupt distribution is not balanceable.");

@@ -41,18 +41,18 @@ int main() {
 	struct stat stat_before, stat_after;
 	
 	fd = shm_open(SHM_NAME, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
-	if(fd == -1) {
+	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		return PTS_UNRESOLVED;
 	}
 
-	if(ftruncate(fd, BUF_SIZE) != 0) {
+	if (ftruncate(fd, BUF_SIZE) != 0) {
 		perror("An error occurs when calling ftruncate()");
 		shm_unlink(SHM_NAME);
 		return PTS_UNRESOLVED;	
 	}
 
-	if(fstat(fd, &stat_before) != 0) {
+	if (fstat(fd, &stat_before) != 0) {
 		perror("An error occurs when calling fstat()");
 		shm_unlink(SHM_NAME);
 		return PTS_UNRESOLVED;	
@@ -60,17 +60,17 @@ int main() {
 	
 	/* search for the first user which is non root and which is not the
 	   current user */
-	while((pw = getpwent()) != NULL)
-		if(strcmp(pw->pw_name, "root") && pw->pw_uid != getuid())
+	while ((pw = getpwent()) != NULL)
+		if (strcmp(pw->pw_name, "root") && pw->pw_uid != getuid())
 			break;
 
-	if(pw == NULL) {
+	if (pw == NULL) {
 		printf("There is no other user than current and root.\n");
 		return PTS_UNRESOLVED;
 	}
 
-	if(seteuid(pw->pw_uid) != 0) {
-		if(errno == EPERM) {
+	if (seteuid(pw->pw_uid) != 0) {
+		if (errno == EPERM) {
 			printf("You don't have permission to change your UID.\nTry to rerun this test as root.\n");
 			return PTS_UNRESOLVED;
 		}
@@ -82,20 +82,20 @@ int main() {
 	       pw->pw_name, pw->pw_uid);
 
 	result = shm_unlink(SHM_NAME);
-	if(result == 0) {
+	if (result == 0) {
 		printf("shm_unlink() success.\n");
 		return PTS_UNRESOLVED;
 	}
 		
 	seteuid(getuid());
 	
-	if(fstat(fd, &stat_after) != 0) {
+	if (fstat(fd, &stat_after) != 0) {
 		perror("An error occurs when calling fstat()");
 		shm_unlink(SHM_NAME);
 		return PTS_UNRESOLVED;	
 	}
 	
-	if(stat_after.st_uid != stat_before.st_uid ||
+	if (stat_after.st_uid != stat_before.st_uid ||
 	   stat_after.st_gid != stat_before.st_gid ||
 	   stat_after.st_size != stat_before.st_size ||
 	   stat_after.st_mode != stat_before.st_mode) {

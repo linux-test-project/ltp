@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
 		}
 	
 		delta = timeelapsed-its.it_value.tv_sec;
-		if ( (delta > ACCEPTABLEDELTA) || (delta < 0) ) {
+		if ((delta > ACCEPTABLEDELTA) || (delta < 0) ) {
 			printf("FAIL:  timer_settime() invalid on %d\n",
 					(int) its.it_value.tv_sec);
 			failure = 1;

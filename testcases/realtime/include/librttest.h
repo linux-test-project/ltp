@@ -179,7 +179,7 @@ static volatile int _debug_count = 0;
 		}\
 		pthread_mutex_unlock(&_buffer_mutex);\
 	}\
-} while(0)
+} while (0)
 #define DBG_ERR  1
 #define DBG_WARN 2
 #define DBG_INFO 3

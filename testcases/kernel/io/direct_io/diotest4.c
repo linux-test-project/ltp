@@ -621,7 +621,7 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	if(fd1 != -1)
+	if (fd1 != -1)
 		unlink(filename);
 
 	tst_rmdir();

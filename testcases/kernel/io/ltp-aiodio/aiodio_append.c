@@ -143,7 +143,7 @@ void aiodio_append(char *filename)
                 if (n > 0) {
 		  iocbp = (struct iocb *)event.obj;
 
-		if( n > 0){
+		if (n > 0) {
 		io_prep_pwrite(iocbp, fd, iocbp->u.c.buf, AIO_SIZE, offset);
 		offset += AIO_SIZE;
 		if ((w = io_submit(myctx, 1, &iocbp)) < 0) {

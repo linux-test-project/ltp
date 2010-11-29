@@ -59,7 +59,7 @@ int main(int ac, char *av[])
          /*
           * parse standard options
           */
-        if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+        if ((msg = parse_opts(ac, av, NULL) {
                         tst_resm(TBROK, "OPTION PARSING ERROR - %s", msg);
                  tst_exit();
                  /*NOTREACHED*/
@@ -73,12 +73,12 @@ int main(int ac, char *av[])
 		sprintf(tempfile2, "stream012.%d", getpid());
 	/*--------------------------------------------------------------------*/
 	//block0:
-		if((stream=fopen(tempfile1,"a+")) == NULL) {
+		if ((stream=fopen(tempfile1,"a+")) == NULL) {
 			tst_resm(TFAIL,"fopen(%s) a+ failed: %s", tempfile1, strerror(errno));
 			tst_exit();
 		}
 		fwrite("a",1,1,stream);
-		if((stream=freopen(tempfile2,"a+",stream)) == NULL) {
+		if ((stream=freopen(tempfile2,"a+",stream)) == NULL) {
 			tst_resm(TFAIL,"freopen(%s) a+ failed: %s", tempfile2, strerror(errno));
 			tst_exit();
 		}
@@ -86,27 +86,27 @@ int main(int ac, char *av[])
 		fclose(stream);
 
 		/* now check that a single "a" is in each file */
-		if((stream=fopen(tempfile1,"r")) == NULL) {
+		if ((stream=fopen(tempfile1,"r")) == NULL) {
 			tst_resm(TFAIL,"fopen(%s) r failed: %s", tempfile1, strerror(errno));
 			tst_exit();
 		}
 		else {
-			for(i=0; i<10; i++) buf[i]=0;
+			for (i=0; i<10; i++) buf[i]=0;
 			fread(buf,1,1,stream);
-			if((buf[0] != 'a') || (buf[1] != 0)) {
+			if ((buf[0] != 'a') || (buf[1] != 0)) {
 				tst_resm(TFAIL,"bad contents in %s", tempfile1);
 				local_flag = FAILED;
 			}
 			fclose(stream);
 		}
-		if((stream=fopen(tempfile2,"r")) == NULL) {
+		if ((stream=fopen(tempfile2,"r")) == NULL) {
 			tst_resm(TFAIL,"fopen(%s) r failed: %s", tempfile2, strerror(errno));
 			tst_exit();
 		}
 		else {
-			for(i=0; i<10; i++) buf[i]=0;
+			for (i=0; i<10; i++) buf[i]=0;
 			fread(buf,1,1,stream);
-			if((buf[0] != 'a') || (buf[1] != 0)) {
+			if ((buf[0] != 'a') || (buf[1] != 0)) {
 				tst_resm(TFAIL,"bad contents in %s", tempfile2);
 				local_flag = FAILED;
 			}

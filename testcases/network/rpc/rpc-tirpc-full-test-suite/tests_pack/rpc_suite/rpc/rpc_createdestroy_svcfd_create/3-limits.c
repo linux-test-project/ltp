@@ -87,7 +87,7 @@ int main(int argn, char *argc[])
 		svcr = svcfd_create(fd, paramList[i].bufsnd, paramList[i].bufrec);
 		
 		//Check result
-		if (svcr == (SVCXPRT *)NULL)
+		if (svcr == NULL)
 		{
 			//test has failed
 			test_status = 1;

@@ -86,7 +86,7 @@ int create_Data_file()
 
 	Inc = (2*M_PIl)/nbVal; 
 
-	for(i=0; i<nbVal; i++) {
+	for (i=0; i<nbVal; i++) {
 		tabD[i] = (Inc * i);
 		}
 

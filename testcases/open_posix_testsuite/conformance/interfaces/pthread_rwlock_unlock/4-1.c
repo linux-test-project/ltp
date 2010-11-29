@@ -33,9 +33,9 @@ int main()
 	int rc;
 	
 	rc = pthread_rwlock_unlock(&rwlock);
-	if(rc != 0)
+	if (rc != 0)
 	{
-		if(rc == EINVAL)
+		if (rc == EINVAL)
 		{
 			printf("Test PASSED\n");
 			return PTS_PASS;

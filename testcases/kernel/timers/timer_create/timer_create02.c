@@ -120,7 +120,7 @@ main(int ac, char **av)
 					 * is not supported on kernel versions
 					 * lower than 2.6.12
 					 */
-					if((tst_kvercmp(2, 6, 12)) < 0) {
+					if ((tst_kvercmp(2, 6, 12)) < 0) {
 						continue;
 					}
 				}

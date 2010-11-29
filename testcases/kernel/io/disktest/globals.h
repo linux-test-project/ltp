@@ -84,11 +84,11 @@
 #define GLB_FLG_PERFP	0x00000004 /* forces alternate performance printing format */
 #define GLB_FLG_KILL	0x00000008 /* will kill all threads to all targets when set */
 
-#define PDBG1  if(gbl_dbg_lvl > 0) pMsg
-#define PDBG2  if(gbl_dbg_lvl > 1) pMsg
-#define PDBG3  if(gbl_dbg_lvl > 2) pMsg
-#define PDBG4  if(gbl_dbg_lvl > 3) pMsg
-#define PDBG5  if(gbl_dbg_lvl > 4) pMsg
+#define PDBG1  if (gbl_dbg_lvl > 0) pMsg
+#define PDBG2  if (gbl_dbg_lvl > 1) pMsg
+#define PDBG3  if (gbl_dbg_lvl > 2) pMsg
+#define PDBG4  if (gbl_dbg_lvl > 3) pMsg
+#define PDBG5  if (gbl_dbg_lvl > 4) pMsg
 
 extern unsigned int gbl_dbg_lvl;
 

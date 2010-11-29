@@ -57,7 +57,7 @@ int main(int argn, char *argc[])
 	rslt = clnt_spcreateerror("#SUCCESS");
     
     //If we are here, test has passed
-    test_status = (rslt == (char *)NULL);
+    test_status = (rslt == NULL);
 
 	//This last printf gives the result status to the tests suite
 	//normally should be 0: test has passed or 1: test has failed

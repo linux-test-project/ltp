@@ -263,7 +263,7 @@ int testrun(int flag, int bytes, int ti)
 		if (TEST_RETURN == -1) {
 			tst_brkm(TBROK|TTERRNO, cleanup, "write() failed");
 		}
-	}			/* end for() */
+	}			/* end for () */
 
 	/*
 	 *      Attempt to close the file which also flushes the buffers.

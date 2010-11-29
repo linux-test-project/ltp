@@ -12,7 +12,7 @@ int check_directory_access(char * directory) {
 
 	printf("Checking %s\n", directory);
 	                                                             
-	if ( stat(directory, &statbuf) == -1) {
+	if (stat(directory, &statbuf) == -1) {
 		printf("FAIL: %s. Could not obtain directory status\n", directory);
 		return 1;
 	}

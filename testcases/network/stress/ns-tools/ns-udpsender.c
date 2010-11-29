@@ -398,7 +398,7 @@ send_udp_datagram(struct udp_info *udp_p)
      */
     start_time = time(NULL);
 
-    for(;;) {
+    for (;;) {
 	retval = sendto(udp_p->sd, udp_p->msg, udp_p->msgsize, 0,
 			udp_p->addr_info.ai_addr, udp_p->addr_info.ai_addrlen);
 	if (retval != udp_p->msgsize) {

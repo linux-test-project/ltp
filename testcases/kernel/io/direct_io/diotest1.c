@@ -188,7 +188,7 @@ main(int argc, char *argv[])
 	}
 
 	/* Verify */
-	if(filecmp(infile, outfile) != 0) {
+	if (filecmp(infile, outfile) != 0) {
 		tst_resm(TFAIL,"file compare failed for %s and %s",
 			infile, outfile);
 		fail_clean(fd1, fd2, infile, outfile);

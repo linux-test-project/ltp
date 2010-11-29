@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 		return PTS_UNRESOLVED;
 	}
 
-	for(i=0; i<NUMTESTS; i++) {
+	for (i=0; i<NUMTESTS; i++) {
         	tpset.tv_sec = testtimes[i][0];
         	tpset.tv_nsec = testtimes[i][1];
 #ifdef DEBUG
@@ -63,12 +63,12 @@ int main(int argc, char *argv[])
 #ifdef DEBUG
 		printf("Delta:  %ds %dns\n", secdelta, nsecdelta);
 #endif
-                	if ( (secdelta > ACCEPTABLESECDELTA) || 
+                	if ((secdelta > ACCEPTABLESECDELTA) || 
 					(secdelta < 0) ) {
                         	printf("clock does not appear to be set\n");
 				failure = 1;
                 	}
-                	if ( (nsecdelta > ACCEPTABLENSECDELTA) || 
+                	if ((nsecdelta > ACCEPTABLENSECDELTA) || 
 					(nsecdelta < 0) ) {
                         	printf("clock does not appear to be set\n");
 				failure = 1;

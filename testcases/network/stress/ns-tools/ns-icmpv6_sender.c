@@ -318,7 +318,7 @@ create_mld_query(struct icmp6_info *info_p, uint16_t mrc, char *saddrs)
 
     /* substitute source addresses */
     sp = saddrs;
-    for(idx = 0; idx < numsrc; idx++) {
+    for (idx = 0; idx < numsrc; idx++) {
 	ep = strchr(sp, ',');
 	if (ep != NULL)
 	    *ep = '\0';
@@ -456,7 +456,7 @@ parse_options(int argc, char *argv[], struct icmp6_info *info_p, int *bg_p)
     while ((optc = getopt(argc, argv, "I:S:M:D:t:w:obdhs:iLnvma:r:")) != EOF ) {
 	switch (optc) {
 	    case 'I':
-		if(if_nametoindex(optarg) == 0) {
+		if (if_nametoindex(optarg) == 0) {
 		    fprintf(stderr, "specified interface is incorrect\n");
 		    usage(program_name, EXIT_FAILURE);
 		}
@@ -674,7 +674,7 @@ thrust_fakes(struct ip6_datagram *pkt, u_int16_t fake_flag)
 		if (rand_val) {
 		    int number;
 		    int counter;
-		    for(counter=0; counter <= 0xff; counter++) {
+		    for (counter=0; counter <= 0xff; counter++) {
 			number = rand() / ((RAND_MAX + 1U) / 0x100);
 			if (getprotobynumber(number) == NULL) {
 			    pkt->hdr.ip6_nxt = number;
@@ -745,7 +745,7 @@ send_packets(struct icmp6_info *info_p)
     pkt	= info_p->pkt;
     start_time = time(NULL);
 
-    for(;;) {
+    for (;;) {
 	if (info_p->fake_flag) {
 	    pkt	= info_p->pkt;
 	    thrust_fakes(&pkt, info_p->fake_flag);

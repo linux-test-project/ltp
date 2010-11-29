@@ -87,7 +87,7 @@ int sctp_recvmsg(int s, void *msg, size_t len, struct sockaddr *from,
 		return error;
 
 	for (cmsg = CMSG_FIRSTHDR(&inmsg); cmsg != NULL;
-				 cmsg = CMSG_NXTHDR(&inmsg, cmsg)){
+				 cmsg = CMSG_NXTHDR(&inmsg, cmsg)) {
 		if ((IPPROTO_SCTP == cmsg->cmsg_level) &&
 		    (SCTP_SNDRCV == cmsg->cmsg_type))
 			break;

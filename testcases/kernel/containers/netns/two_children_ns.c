@@ -91,7 +91,7 @@ int main()
     sprintf(par[1], "%s/testcases/bin/parent_2.sh" , ltproot);
 
     /* Loop for creating two child Network Namespaces */
-    for(i=0;i<2;i++) {
+    for (i=0;i<2;i++) {
 
         if ((pid[i] = fork()) == 0) {
 		/* Child1 and Child2 based on the iteration. */
@@ -119,10 +119,10 @@ int main()
     } //End of FOR Loop
 
     /* Parent waiting for two children to quit */
-    for(i=0;i<2;i++) {
+    for (i=0;i<2;i++) {
         ret = waitpid(pid[i], &status,__WALL);
         status = WEXITSTATUS(status);
-        if (status != 0 || ret == -1){
+        if (status != 0 || ret == -1) {
             tst_resm(TFAIL,"waitpid() returns %d, errno %d\n", ret, status);
             fflush(stdout);
             exit(status);

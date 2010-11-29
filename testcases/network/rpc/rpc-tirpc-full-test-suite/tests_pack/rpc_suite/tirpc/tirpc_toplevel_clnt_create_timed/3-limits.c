@@ -84,7 +84,7 @@ int main(int argn, char *argc[])
 		clnt = clnt_create_timed(argc[1], progNum, VERSNUM, nettype, &tv);	
 		
 		//Check result
-		if (clnt == (CLIENT *)NULL)
+		if (clnt == NULL)
 		{
 			//test has failed
 			test_status = 1;

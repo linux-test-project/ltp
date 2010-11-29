@@ -316,8 +316,8 @@ static void dotest(int testers, int me, int fd)
 
 	srand(getpid());
 	if (misc_intvl) whenmisc = NEXTMISC;
-	while(iterations-- > 0) {
-		for(i = 0; i < NMISC; i++)
+	while (iterations-- > 0) {
+		for (i = 0; i < NMISC; i++)
 			misc_cnt[i] = 0;
 		ftruncate(fd, 0);
 		file_max = 0;
@@ -327,7 +327,7 @@ static void dotest(int testers, int me, int fd)
 		memset(zero_buf, 0, csize);
 		count = 0;
 		collide = 0;
-		while(count < nchunks) {
+		while (count < nchunks) {
 			chunk = rand() % nchunks;
 			/*
 			 * Read it.
@@ -435,7 +435,7 @@ static void dotest(int testers, int me, int fd)
 		++misc_cnt[m_fsync];
 		//tst_resm(TINFO, "\tTest{%d} val %d done, count = %d, collide = {%d}",
 		//		me, val, count, collide);
-		//for(i = 0; i < NMISC; i++)
+		//for (i = 0; i < NMISC; i++)
 		//	tst_resm(TINFO, "\t\tTest{%d}: {%d} %s's.", me, misc_cnt[i], m_str[i]);
 		++val;
 	}
@@ -476,9 +476,9 @@ static void domisc(int me, int fd, char *bits)
 			}
 			tr_flag = 1;
 		}
-		for(; chunk%8 != 0; chunk++)
+		for (; chunk%8 != 0; chunk++)
 			bits[chunk/8] &= ~(1<<(chunk%8));
-		for(; chunk < nchunks; chunk += 8)
+		for (; chunk < nchunks; chunk += 8)
 			bits[chunk/8] = 0;
 		break;
 	case m_sync:

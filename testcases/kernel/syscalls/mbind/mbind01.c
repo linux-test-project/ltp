@@ -285,7 +285,7 @@ static int do_test(struct test_case *tc) {
 		cleanup();
 		tst_exit();
 	}
-	if(tc->ttype == INVALID_POINTER)
+	if (tc->ttype == INVALID_POINTER)
 		invalid_nodemask = (unsigned long *)0xc0000000;
 	/*
 	 * Execute system call
@@ -378,7 +378,7 @@ int main(int argc, char **argv) {
 
 		for (testno = 0; testno < TST_TOTAL; testno++) {
 			TEST(getopt_long(argc, argv, "dh", long_options, NULL));
-			while (TEST_RETURN != -1){
+			while (TEST_RETURN != -1) {
 				switch (TEST_RETURN) {
 				case 'd':
 					opt_debug = 1;
@@ -387,7 +387,7 @@ int main(int argc, char **argv) {
 					usage(progname);
 				}
 			} /* end of while */
-			if(argc != optind) {
+			if (argc != optind) {
 				tst_resm(TFAIL | TERRNO, "Options don't match");
 				usage(progname);
 				cleanup();

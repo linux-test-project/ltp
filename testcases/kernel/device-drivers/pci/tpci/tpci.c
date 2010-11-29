@@ -136,12 +136,12 @@ static int tpci_ioctl(struct inode *ino, struct file *f,
 	 */
 	if (tif.in_len > 0) {
 		inparms = (caddr_t *)kmalloc(tif.in_len, GFP_KERNEL);
-		if(!inparms) {
+		if (!inparms) {
 			return(-ENOMEM);
 		}
 	
 		rc = copy_from_user(inparms, tif.in_data, tif.in_len);
-		if(rc) {
+		if (rc) {
 			kfree(inparms);
 			return(-EFAULT);
 		}
@@ -184,7 +184,7 @@ static int tpci_ioctl(struct inode *ino, struct file *f,
 			break;
 	}
 
-	if(!(ltp_pci.dev))
+	if (!(ltp_pci.dev))
 		printk("tpci: After ioctl call dev is NULL\n");
 
 	/*
@@ -194,15 +194,15 @@ static int tpci_ioctl(struct inode *ino, struct file *f,
 	rc = 0;
 
 	/* if outparms then copy outparms into tif.out_data */
-	if(outparms) {
-		if(copy_to_user(tif.out_data, outparms, tif.out_len)) {
+	if (outparms) {
+		if (copy_to_user(tif.out_data, outparms, tif.out_len)) {
 			printk("tpci: Unsuccessful copy_to_user of outparms\n");
 			rc = -EFAULT;
 		}
 	}
 
 	/* copy tif structure into l so that can be used by user program */
-	if(copy_to_user((void*)l, &tif, sizeof(tif)) ) {
+	if (copy_to_user((void*)l, &tif, sizeof(tif)) ) {
 		printk("tpci: Unsuccessful copy_to_user of tif\n");
 		rc = -EFAULT;
 	}
@@ -243,7 +243,7 @@ static int probe_pci_dev() {
 	for (i = MAX_BUS; i > 0; i--) {
 		for (j = MAX_DEVFN; j > 1; j--) {
 			dev = pci_find_slot(i, j);
-			if(dev && dev->driver) {
+			if (dev && dev->driver) {
 				printk("tpci: found pci_dev, bus %d, devfn %d\n", i, j);
 				printk("Slot number: %d\n", dev->devfn );
 			
@@ -277,13 +277,13 @@ static int pci_enable() {
 
 
 	/* check if can enable the device pointer */
-	if(!dev) {
+	if (!dev) {
 		printk("tpci: dev is NULL\n");
 		return 1;
 	}
 
 
-	if( pci_enable_device(dev) ) {
+	if (pci_enable_device(dev)) {
 		printk("tpci: failed to enable pci device\n");
 		rc = 1;
 	}
@@ -305,7 +305,7 @@ static int pci_disable() {
 	struct pci_dev *dev = ltp_pci.dev;
 
 	/* check if device pointer exists */
-	if(!dev) {
+	if (!dev) {
 		printk("tpci: dev is NULL\n");
 		return 1;
 	}
@@ -337,11 +337,11 @@ static int test_find_bus() {
 
 	temp = pci_find_bus(num);
 
-	if(!temp) {
+	if (!temp) {
 		printk("tpci: pci_find_bus failed to return bus pointer\n");
 		rc = 1;
 	}
-	else if(temp->number != num) {
+	else if (temp->number != num) {
 		printk("tpci: returned bus pointer w/ wrong bus number\n");
 		rc = 1;
 	}
@@ -365,7 +365,7 @@ static int test_find_class() {
 
 	temp = pci_find_class(num, NULL);
 
-	if(!temp) {
+	if (!temp) {
 		printk("tpci: failed to find pci device from class number\n");
 		rc = 1;
 	}
@@ -391,7 +391,7 @@ static int test_find_device() {
 
 	temp = pci_find_device(ven, dev, NULL);
 
-        if(!temp) {
+        if (!temp) {
                 printk("tpci: failed to find pci device from device info\n");
                 rc = 1;
         }
@@ -419,7 +419,7 @@ static int test_find_subsys() {
 
 	temp = pci_find_subsys(ven, dev, ss_ven, ss_dev, NULL);
 
-	if(!temp) {
+	if (!temp) {
                 printk("tpci: failed to find pci device from subsys info\n");
                 rc = 1;
         }
@@ -448,7 +448,7 @@ static int test_scan_bus() {
 	 * check if returned number is greater than
 	 * max number of bus or less than 0
 	 */
-	if(num > MAX_BUS ||  num < 0) {
+	if (num > MAX_BUS ||  num < 0) {
 		printk("tpci: Failed scan bus\n");
 		rc = 1;
 	}
@@ -473,7 +473,7 @@ static int test_slot_scan() {
 
 	ret = pci_scan_slot(bus, num);
 
-	if(ret > 0) {
+	if (ret > 0) {
 		printk("tpci: Found device from scan slot\n");
 		rc = 0;
 	}
@@ -498,7 +498,7 @@ static int test_bus_add_devices() {
 
 	pci_bus_add_devices(bus);
 
-	if(bus) {
+	if (bus) {
 		printk("tpci: Called bus_add_device\n");
 		rc = 0;
 	}
@@ -522,7 +522,7 @@ static int test_enable_bridges() {
 
 	pci_enable_bridges(bus);
 
-	if(bus) {
+	if (bus) {
                 printk("tpci: Called enable bridges\n");
                 rc = 0;
         }
@@ -548,14 +548,14 @@ static int test_match_device() {
 
 	drv = pci_dev_driver(dev);
 
-	if(!drv) {
+	if (!drv) {
 		printk("driver pointer not allocated for pci_dev\n");
 		return 1;
 	}
 
 	id = pci_match_device(drv->id_table, dev);
 
-	if(id) {
+	if (id) {
 		printk("tpci: Match device success\n");
 		rc = 0;
 	}
@@ -590,14 +590,14 @@ static int test_reg_driver() {
 	ltp_pci.drv = drv;
 	memcpy(ltp_pci.drv, drv, sizeof(struct pci_driver));
 
-	if(!drv) {
+	if (!drv) {
 		printk("tpci: Device does not have a driver pointer\n");
 		return 1;
 	}
 
 	ret = pci_register_driver(drv);
 
-	if(ret) {
+	if (ret) {
 		printk("tpci: Success driver register\n");
 		rc = 0;
 	}
@@ -618,13 +618,13 @@ static int test_unreg_driver() {
 	int rc;
         struct pci_driver *drv = ltp_pci.drv;
 
-        if(!drv) {
+        if (!drv) {
                 printk("tpci: Device does not have a driver pointer\n");
                 return 1;
         }
 
         pci_unregister_driver(drv);
-        if(!drv) {
+        if (!drv) {
                 printk("tpci: Unsuccesful driver unregister\n");
 		rc = 1;
 	}
@@ -673,7 +673,7 @@ static int test_save_state() {
 	struct pci_dev *dev = ltp_pci.dev;
 
 	rc = pci_save_state(dev, buffer);
-	if(rc)
+	if (rc)
 		printk("tpci: Failed save state\n");
 	else
 		printk("tpci: Saved state of device\n");
@@ -692,7 +692,7 @@ static int test_restore_state() {
 	struct pci_dev *dev = ltp_pci.dev;
 
 	rc = pci_restore_state(dev, buffer);
-        if(rc)
+        if (rc)
                 printk("tpci: Failed restore state\n");
         else
                 printk("tpci: Restored state of device\n");
@@ -709,7 +709,7 @@ static int test_max_bus() {
 	int rc, ret;
 
 	ret = pci_max_busnr();
-	if(ret) {
+	if (ret) {
 		printk("Found max busnr\n");
 		rc = 0;
 	}
@@ -733,7 +733,7 @@ static int test_find_cap() {
 	struct pci_dev *dev = ltp_pci.dev;
 
 	rc = pci_find_capability(dev, PCI_CAP_ID_PM);
-	if(rc)
+	if (rc)
 		printk("tpci: Does not have tested capability\n");
 	else
 		printk("tpci: Device has PM capability\n");
@@ -753,7 +753,7 @@ static int test_find_pci_exp_cap() {
 	struct pci_dev *dev = ltp_pci.dev;
 
 	rc = pci_find_capability(dev, PCI_CAP_ID_EXP);
-	if(rc)
+	if (rc)
 	 	printk("tpci: Device has PCI-EXP capability\n");
 	else
 		printk ("tpci: Device doesn't have PCI-EXP capability\n");
@@ -808,7 +808,7 @@ static int tpci_init_module(void) {
 		return rc;
 	}
 
-	if(Major == 0)
+	if (Major == 0)
 		Major = rc;
 
 	

@@ -198,12 +198,12 @@ static int tusb_ioctl(struct inode *ino, struct file *f,
          */
         if (tif.in_len > 0) {
                 inparms = (caddr_t *)kmalloc(tif.in_len, GFP_KERNEL);
-                if(!inparms) {
+                if (!inparms) {
                         return(-ENOMEM);
                 }
 
                 rc = copy_from_user(inparms, tif.in_data, tif.in_len);
-                if(rc) {
+                if (rc) {
                         kfree(inparms);
                         return(-EFAULT);
                 }
@@ -229,7 +229,7 @@ static int tusb_ioctl(struct inode *ino, struct file *f,
 			break;
 	}
 
-	if(!ltp_usb.dev)
+	if (!ltp_usb.dev)
 		printk("tusb: After ioctl call dev DNE\n");
 
 	/*
@@ -239,15 +239,15 @@ static int tusb_ioctl(struct inode *ino, struct file *f,
         rc = 0;
 
         /* if outparms then copy outparms into tif.out_data */
-        if(outparms) {
-                if(copy_to_user(tif.out_data, outparms, tif.out_len)) {
+        if (outparms) {
+                if (copy_to_user(tif.out_data, outparms, tif.out_len)) {
                         printk("tpci: Unsuccessful copy_to_user of outparms\n");
                         rc = -EFAULT;
                 }
         }
 
         /* copy tif structure into l so that can be used by user program */
-        if(copy_to_user((void*)l, &tif, sizeof(tif)) ) {
+        if (copy_to_user((void*)l, &tif, sizeof(tif)) ) {
                 printk("tpci: Unsuccessful copy_to_user of tif\n");
                 rc = -EFAULT;
         }
@@ -287,7 +287,7 @@ static int test_find_usbdev() {
 	/* allocate the usb_bus pointer */
 #if 0
 	bus = usb_alloc_bus(&test_device_operations);
-	if(!bus) {
+	if (!bus) {
 		printk("tusb: Did not allocate a bus\n");
 		return 1;
 	}
@@ -333,13 +333,13 @@ static int test_find_hcd() {
 #if 0
 	/* try and get a usb hostcontroller if possible */
 	pdev = pci_find_class(PCI_CLASS_SERIAL_USB << 8, NULL);
-	if(pdev) {
+	if (pdev) {
 		printk("tusb: WOOT! Found a usb host controller!\n");
 		printk("tusb: Slot number: %d\n", pdev->devfn);
 	
 		memcpy(ltp_usb.pdev, pdev, sizeof(struct pci_dev));
 
-		if(pdev->driver->id_table)
+		if (pdev->driver->id_table)
 			printk("tusb: id_table exists\n");
 	
 		return 0;
@@ -367,12 +367,12 @@ static int test_hcd_probe() {
 	struct pci_dev *pdev = ltp_usb.pdev;
 	struct pci_device_id *id = (struct pci_device_id *)pdev->driver->id_table;
 
-	if(!pdev) {
+	if (!pdev) {
 		printk("tusb: pdev pointer not set\n");
 		return 1;
 	}
 
-	if(!id || !id->driver_data) {
+	if (!id || !id->driver_data) {
 		printk("tusb: id_table not set\n");
 		return 1;
 	}
@@ -380,7 +380,7 @@ static int test_hcd_probe() {
 	/* release regions before probe call */
 	hcd = pci_get_drvdata(pdev);
 
-	if(!hcd) {
+	if (!hcd) {
 		printk("tusb: hcd pointer not found\n");
 		return 1;
 	}
@@ -391,7 +391,7 @@ static int test_hcd_probe() {
 	/* make test call */
 	rc = usb_hcd_pci_probe(pdev, id);
 
-	if(rc)
+	if (rc)
 		printk("tusb: retval hcd probe = %d\n", rc);
 	else
 		printk("tusb: Success for usb_hcd_pci_probe\n");
@@ -413,7 +413,7 @@ static int test_hcd_remove() {
 	struct hc_driver *hdrv = NULL;
 
 	/* check that hcd pointer exists */
-	if(!ltp_usb.pdev) {
+	if (!ltp_usb.pdev) {
 		printk("tusb: pdev pointer not found\n");
 		return 1;
 	}
@@ -422,7 +422,7 @@ static int test_hcd_remove() {
 		hcd = pci_get_drvdata(pdev);
 	}
 	
-	if(!hdrv->stop) {
+	if (!hdrv->stop) {
 		printk("tusb: stop function not found\n");
 		return 1;
 	}
@@ -443,14 +443,14 @@ static int test_hcd_suspend() {
 	struct pci_dev *pdev = NULL;
 
 	/* check that pdev is set */
-	if(!(pdev = ltp_usb.pdev)) {
+	if (!(pdev = ltp_usb.pdev)) {
 		printk("tusb: Cant find host controller pci_dev pointer\n");
 		return 1;
 	}
 
 	/* make call and check return value */
 	rc = usb_hcd_pci_suspend(pdev, (u32) 2);
-	if(rc)
+	if (rc)
 		printk("tusb: Suspend retval failure\n");
 	else
 		printk("tusb: Suspend success\n");
@@ -469,14 +469,14 @@ static int test_hcd_resume() {
 	struct pci_dev *pdev = NULL;
 
 	/* check that pdev is set */
-        if(!(pdev = ltp_usb.pdev)) {
+        if (!(pdev = ltp_usb.pdev)) {
                 printk("tusb: Cant find host controller pci_dev pointer\n");
                 return 1;
         }
 
         /* make call and check return value */
         rc = usb_hcd_pci_resume(pdev);
-        if(rc)
+        if (rc)
                 printk("tusb: Resume got retval, failure\n");
         else
                 printk("tusb: Resume success\n");
@@ -492,12 +492,12 @@ static int tusb_init_module(void) {
 	SET_MODULE_OWNER(&tusb_fops);
 
 	rc = register_chrdev(Major, DEVICE_NAME, &tusb_fops);
-	if(rc < 0) {
+	if (rc < 0) {
 		printk("tusb: Failed to register tusb device\n");
 		return rc;
 	}
 
-	if(Major == 0)
+	if (Major == 0)
 		Major = rc;
 
 	printk("tusb: Registration success at major number %i\n", Major);

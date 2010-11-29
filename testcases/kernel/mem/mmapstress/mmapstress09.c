@@ -354,7 +354,7 @@ cleanup:
 		continue;
 
 	if (no_prob) {		/* only check file if no errors */
-		if (!mapokay(buf)){
+		if (!mapokay(buf)) {
 			(void)fprintf(stderr, "map data incorrect!\n");
                		 anyfail();
 		}

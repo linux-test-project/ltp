@@ -133,7 +133,7 @@ int main(int ac, char **av) {
 		Tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 
-			for(i=0; i<2; i++){
+			for (i=0; i<2; i++) {
 
 				TEST(syscall(__NR_tkill, test_cases[i].tid, SIGUSR1));
 

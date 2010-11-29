@@ -83,7 +83,7 @@ int main()
 		fprintf(stderr,"Fail to create thread 1\n");
 		return PTS_UNRESOLVED;
 	}
-	while(!t1_start)	/* wait for thread1 started */
+	while (!t1_start)	/* wait for thread1 started */
 		usleep(100);
 	
 	/* acquire the mutex released by pthread_cond_wait() within thread 1 */

@@ -132,7 +132,7 @@ int main(int argc, char **argv)
                 struct can_frame frame;
         } msg;
 
-        if((sl = socket(PF_INET, SOCK_STREAM, 0)) < 0) {
+        if ((sl = socket(PF_INET, SOCK_STREAM, 0)) < 0) {
                 perror("inetsocket");
                 exit(1);
         }
@@ -141,7 +141,7 @@ int main(int argc, char **argv)
         saddr.sin_addr.s_addr = htonl(INADDR_ANY);
         saddr.sin_port = htons(28600);
 
-        while(bind(sl,(struct sockaddr*)&saddr, sizeof(saddr)) < 0) {
+        while (bind(sl,(struct sockaddr*)&saddr, sizeof(saddr)) < 0) {
                 printf(".");fflush(NULL);
                 usleep(100000);
         }
@@ -153,7 +153,7 @@ int main(int argc, char **argv)
 
         while (1) { 
                 sa = accept(sl,(struct sockaddr *)&clientaddr, &sin_size);
-                if (sa > 0 ){
+                if (sa > 0 ) {
 
                         if (fork())
                                 close(sa);

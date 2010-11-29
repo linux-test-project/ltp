@@ -127,7 +127,7 @@ main(int ac, char **av)
 	/* PROCESS_CPUTIME_ID & THREAD_CPUTIME_ID are not supported on
 	 * kernel versions lower than 2.6.12
 	 */
-	if((tst_kvercmp(2, 6, 12)) < 0) {
+	if ((tst_kvercmp(2, 6, 12)) < 0) {
 		testcase[7] = EINVAL;
 		testcase[8] = EINVAL;
 	} else {

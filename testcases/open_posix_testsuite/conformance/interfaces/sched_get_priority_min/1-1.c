@@ -22,7 +22,7 @@ int main(int argc, char **argv)
 	
 	result = sched_get_priority_min(SCHED_RR);
 	
-	if(result != -1 && errno == 0 ) {
+	if (result != -1 && errno == 0 ) {
 		printf("The minimum priority for policy SCHED_RR is %i.\n",
 		       result);
 		printf("Test PASSED\n");

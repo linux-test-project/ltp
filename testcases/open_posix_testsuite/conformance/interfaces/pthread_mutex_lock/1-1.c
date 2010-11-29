@@ -57,7 +57,7 @@ int main()
   	pthread_mutex_destroy(&mutex);
   
   	/* Check if the final value is as expected */
-  	if(value != (THREAD_NUM) * LOOPS) {
+  	if (value != (THREAD_NUM) * LOOPS) {
 	  	fprintf(stderr,"Using %d threads and each loops %d times\n", THREAD_NUM, LOOPS);
     		fprintf(stderr,"Final value must be %d instead of %d\n", (THREAD_NUM)*LOOPS, value);
 		printf("Test FAILED\n");
@@ -79,7 +79,7 @@ void *f1(void *parm)
 	   
   	for (i=0; i<LOOPS; ++i) {
       		rc = pthread_mutex_lock(&mutex);
-      		if(rc!=0) {
+      		if (rc!=0) {
         		fprintf(stderr,"Error on pthread_mutex_lock(), rc=%d\n", rc);
 			return (void*)(PTS_FAIL);
       		}
@@ -91,7 +91,7 @@ void *f1(void *parm)
     		value = tmp;
 
       		rc = pthread_mutex_unlock(&mutex);
-      		if(rc!=0) {
+      		if (rc!=0) {
         		fprintf(stderr,"Error on pthread_mutex_unlock(), rc=%d\n", rc);
  			return (void*)(PTS_UNRESOLVED);
       		}

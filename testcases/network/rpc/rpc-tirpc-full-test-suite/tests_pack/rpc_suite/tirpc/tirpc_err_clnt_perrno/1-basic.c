@@ -74,7 +74,7 @@ int main(int argn, char *argc[])
 	
 	//Then call remote procedure
 	rslt = clnt_call((CLIENT *)clnt, PROCNUM, 
-						    (xdrproc_t)xdr_void, (char *)NULL, // xdr_in
+						    (xdrproc_t)xdr_void, NULL, // xdr_in
                     		(xdrproc_t)xdr_int, (char *)&recVar, // xdr_out
 						    total_timeout);	/**/
 						    

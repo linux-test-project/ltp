@@ -29,7 +29,7 @@ int main ()
 {
 	sem_t   mysemp;
 
-	if ( sem_init (&mysemp, 0, 1) == -1 ) {
+	if (sem_init (&mysemp, 0, 1) == -1 ) {
                 puts("TEST FAILED");
                 return PTS_FAIL;
         } else {

@@ -64,7 +64,7 @@ void process_options(int argc, char **argv)
         	}
     	}
 
-	if(memsize <= 0)
+	if (memsize <= 0)
 		errx(3, "Invalid usage");
 }
 
@@ -86,7 +86,7 @@ void mem_map()
 
 	if (!flag_allocated) {
 		p = mmap(NULL, memsize, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, 0, 0);
-		if(p == MAP_FAILED)
+		if (p == MAP_FAILED)
 			errx(4, "mmap failed");
 		touch_memory(p);
 	}else {
@@ -133,7 +133,7 @@ int main(int argc, char **argv)
 
 		if (ch == 'm')
 			mem_map();
-	}while(ch != 'x');
+	}while (ch != 'x');
 
 	remove(STATUS_PIPE);
 

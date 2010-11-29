@@ -102,7 +102,7 @@
 	if (proc_pid == parent_pid)	\
 		printf ("\t   %3d    %3d    %-10s %-20s\n", p1, p2, p3, p4)
 
-#define SAFE_FREE(p) { if(p) { free(p); (p)=NULL; } }
+#define SAFE_FREE(p) { if (p) { free(p); (p)=NULL; } }
 
 /*
  * Function prototypes
@@ -259,7 +259,7 @@ static void test_commands (pid_t proc_pid)
 	if (proc_pid == parent_pid)
 		printf ("\n\tSetting semaphore uid, gid and mode ... semid = %d\n", semid);
 	arg.buf = (struct semid_ds *) calloc (1, sizeof (struct semid_ds));
-	if(!arg.buf)
+	if (!arg.buf)
 		error("calloc failed", __LINE__);
 	arg.buf->sem_perm.uid = uid;
 	arg.buf->sem_perm.gid = gid;
@@ -289,7 +289,7 @@ static void test_commands (pid_t proc_pid)
 	 * Set the value of each semaphore in the set to 2.
 	 */
         arg.array = malloc(sizeof(int) * nsems);
-	if(!arg.array)
+	if (!arg.array)
 		error("malloc failed", __LINE__);
 	for (i = 0; i < nsems; i++)
 		arg.array [i] = 2;
@@ -385,7 +385,7 @@ static void test_commands (pid_t proc_pid)
 	/* ------------------------------------------------------------------ */
 	SEMOP_TABLE(5, 1, "0", "Return resource");
         arg.array = malloc(sizeof(int) * nsems);
-	if(!arg.array)
+	if (!arg.array)
 		error("malloc failed", __LINE__);
 	for (i = 0; i < nsems; i++) {
 		arg.array [i] = 5;
@@ -693,7 +693,7 @@ static void test_commands (pid_t proc_pid)
 	 * Set the semaphore uid, gid and mode
 	 */
 	arg.buf = (struct semid_ds *) calloc (1, sizeof (struct semid_ds));
-	if(!arg.buf)
+	if (!arg.buf)
 		error("calloc failed", __LINE__);
 	arg.buf->sem_perm.uid = uid;
 	arg.buf->sem_perm.gid = gid;
@@ -718,7 +718,7 @@ static void test_commands (pid_t proc_pid)
 	SAFE_FREE(arg.buf);
 
         arg.array = malloc(sizeof(int) * nsems);
-	if(!arg.array)
+	if (!arg.array)
 		error("malloc failed", __LINE__);
 	for (i = 0; i < nsems; i++)
 		arg.array [i] = 9;
@@ -775,7 +775,7 @@ static void test_commands (pid_t proc_pid)
 	}
 
         arg.array = malloc(sizeof(int) * nsems);
-	if(!arg.array)
+	if (!arg.array)
 		error("malloc failed", __LINE__);
 	for (i = 0; i < nsems; i++)
 		arg.array [i] = 9;

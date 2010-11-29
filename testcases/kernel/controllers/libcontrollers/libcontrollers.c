@@ -128,7 +128,7 @@ int read_file(char *filepath, int action, unsigned int *value)
 			fp = fopen (filepath, "r");
 			if (fp == NULL)
 				error_function("Could not open file", filepath);
-			while(fgets(target, LINE_MAX, fp) != NULL)
+			while (fgets(target, LINE_MAX, fp) != NULL)
 				num_line++;
 			*value = (unsigned int)num_line;
 			if (fclose (fp))

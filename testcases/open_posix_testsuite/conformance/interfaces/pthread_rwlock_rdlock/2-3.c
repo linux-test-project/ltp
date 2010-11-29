@@ -85,7 +85,7 @@ static void* fn_rd(void *arg)
 
 	printf("rd_thread: attempt read lock\n");
 	rc = pthread_rwlock_rdlock(&rwlock);
-	if(rc != 0)
+	if (rc != 0)
 	{
 		printf("Test FAILED: rd_thread failed to get read lock, Error code:%d\n"
 			, rc);
@@ -97,7 +97,7 @@ static void* fn_rd(void *arg)
 	sleep(1);
 
 	printf("rd_thread: unlock read lock\n");
-	if(pthread_rwlock_unlock(&rwlock) != 0)
+	if (pthread_rwlock_unlock(&rwlock) != 0)
 	{
 		printf("rd_thread: Error at pthread_rwlock_unlock()\n");
 		exit(PTS_UNRESOLVED);
@@ -118,7 +118,7 @@ static void* fn_wr(void *arg)
 
 	printf("wr_thread: attempt write lock\n");
 	rc = pthread_rwlock_wrlock(&rwlock);
-	if(rc != 0)
+	if (rc != 0)
 	{
 		printf("Test FAILED: wr_thread failed to get write lock, Error code:%d\n"
 			, rc);
@@ -129,7 +129,7 @@ static void* fn_wr(void *arg)
 	sleep(1);
 
 	printf("wr_thread: unlock write lock\n");
-	if(pthread_rwlock_unlock(&rwlock) != 0)
+	if (pthread_rwlock_unlock(&rwlock) != 0)
 	{
 		printf("wr_thread: Error at pthread_rwlock_unlock()\n");
 		exit(PTS_UNRESOLVED);
@@ -155,7 +155,7 @@ int main()
 	priority = sched_get_priority_min(TRD_POLICY) + 2;
 	set_priority(pthread_self(), TRD_POLICY, priority);
 
-	if(pthread_rwlock_init(&rwlock, NULL) != 0)
+	if (pthread_rwlock_init(&rwlock, NULL) != 0)
 	{
 		printf("main: Error at pthread_rwlock_init()\n");
 		return PTS_UNRESOLVED;
@@ -163,7 +163,7 @@ int main()
 
 	printf("main: attempt read lock\n");
 	/* We have no lock, this read lock should succeed */	
-	if(pthread_rwlock_rdlock(&rwlock) != 0)
+	if (pthread_rwlock_rdlock(&rwlock) != 0)
 	{
 		printf("Test FAILED: main cannot get read lock when no one owns the lock\n");
 		return PTS_FAIL;
@@ -173,7 +173,7 @@ int main()
 	wr_thread_state = NOT_CREATED_THREAD;
 	priority = sched_get_priority_min(TRD_POLICY);
 	printf("main: create wr_thread, with priority: %d\n", priority);
-	if(pthread_create(&wr_thread, NULL, fn_wr, (void*)(long)priority) != 0)
+	if (pthread_create(&wr_thread, NULL, fn_wr, (void*)(long)priority) != 0)
 	{
 		printf("main: Error at 1st pthread_create()\n");
 		return PTS_UNRESOLVED;
@@ -188,12 +188,12 @@ int main()
 		sleep(1);
 	}while (wr_thread_state !=EXITING_THREAD && cnt++ < 3); 
 	
-	if(wr_thread_state == EXITING_THREAD )
+	if (wr_thread_state == EXITING_THREAD )
 	{
 		printf("wr_thread did not block on write lock, when a reader owns the lock\n");
 		exit(PTS_UNRESOLVED);
 	}
-	else if(wr_thread_state != ENTERED_THREAD)
+	else if (wr_thread_state != ENTERED_THREAD)
 	{
 		printf("Unexpected wr_thread state\n");
 		exit(PTS_UNRESOLVED);
@@ -202,7 +202,7 @@ int main()
 	rd_thread_state = NOT_CREATED_THREAD;
 	priority = sched_get_priority_min(TRD_POLICY) + 1;
 	printf("main: create rd_thread, with priority: %d\n", priority);
-	if(pthread_create(&rd_thread, NULL, fn_rd, (void*)(long)priority) != 0)
+	if (pthread_create(&rd_thread, NULL, fn_rd, (void*)(long)priority) != 0)
 	{
 		printf("main: failed at creating rd_thread\n");
 		return PTS_UNRESOLVED;
@@ -214,19 +214,19 @@ int main()
 		sleep(1);
 	}while (rd_thread_state !=EXITING_THREAD && cnt++ < 3); 
 	
-	if(rd_thread_state == ENTERED_THREAD )
+	if (rd_thread_state == ENTERED_THREAD )
 	{
 		printf("Test FAILED: rd_thread blocked on read lock\n");
 		exit(PTS_FAIL);
 	}
-	else if(rd_thread_state != EXITING_THREAD)
+	else if (rd_thread_state != EXITING_THREAD)
 	{
 		printf("Unexpected rd_thread state\n");
 		exit(PTS_UNRESOLVED);
 	}
 
 	printf("main: unlock read lock\n");
-	if(pthread_rwlock_unlock(&rwlock) != 0)
+	if (pthread_rwlock_unlock(&rwlock) != 0)
 	{
 		printf("main: failed to release read lock\n");
 		exit(PTS_UNRESOLVED);
@@ -238,30 +238,30 @@ int main()
 		sleep(1);
 	}while (wr_thread_state !=EXITING_THREAD && cnt++ < 3); 
 	
-	if(wr_thread_state == ENTERED_THREAD )
+	if (wr_thread_state == ENTERED_THREAD )
 	{
 		printf("Test FAILED: higher priority wr_thread still blocked on write lock, when a reader release the lock\n");
 		exit(PTS_FAIL);
 	}
-	else if(wr_thread_state != EXITING_THREAD)
+	else if (wr_thread_state != EXITING_THREAD)
 	{
 		printf("Unexpected wr_thread state\n");
 		exit(PTS_UNRESOLVED);
 	}
 
-	if(pthread_join(wr_thread, NULL) != 0)
+	if (pthread_join(wr_thread, NULL) != 0)
 	{
 		printf("main: Error at 1st pthread_join()\n");
 		exit(PTS_UNRESOLVED);
 	}
 	
-	if(pthread_join(rd_thread, NULL) != 0)
+	if (pthread_join(rd_thread, NULL) != 0)
 	{
 		printf("main: Error at 2nd pthread_join()\n");
 		exit(PTS_UNRESOLVED);
 	}
 
-	if(pthread_rwlock_destroy(&rwlock) != 0)
+	if (pthread_rwlock_destroy(&rwlock) != 0)
 	{
 		printf("Error at pthread_rwlockattr_destroy()");
 		return PTS_UNRESOLVED;

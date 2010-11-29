@@ -55,7 +55,7 @@ int main(int argn, char *argc[])
 	sock = socket(AF_UNIX, SOCK_DGRAM, IPPROTO_TCP);
 	svcr = svctcp_create(sock, 0, 0);
 	
-	test_status = (svcr != (SVCXPRT *)NULL) ? 0 : 1;
+	test_status = (svcr != NULL) ? 0 : 1;
 	
 	//clean up
 	svc_destroy(svcr);

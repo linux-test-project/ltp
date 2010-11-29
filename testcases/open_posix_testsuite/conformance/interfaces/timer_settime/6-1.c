@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
 
 	delta = timeelapsed-TIMERVALUESEC;
 
-	if ( (delta > ACCEPTABLEDELTA) || (delta < 0) ) {
+	if ((delta > ACCEPTABLEDELTA) || (delta < 0) ) {
 		perror("timer_settime() did not expire after value.it_value\n");
 		return PTS_UNRESOLVED;
 	}
@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
 
 		delta = timeelapsed-TIMERINTERVALSEC;
 
-		if ( (delta > ACCEPTABLEDELTA) || (delta < 0) ) {
+		if ((delta > ACCEPTABLEDELTA) || (delta < 0) ) {
 			printf("timer did not wait for correct interval\n");
 			return PTS_FAIL;
 		}

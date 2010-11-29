@@ -35,7 +35,7 @@ int main() {
 
 	/* Initial value of Semaphore is 0 Locked */
 	mysemp = sem_open(semname, O_CREAT, 0777, 0);
-	if( mysemp == SEM_FAILED || mysemp == NULL ) {
+	if (mysemp == SEM_FAILED || mysemp == NULL ) {
 		perror(ERROR_PREFIX "sem_open");
 		return PTS_UNRESOLVED;
 	}

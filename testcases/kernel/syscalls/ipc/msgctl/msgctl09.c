@@ -657,9 +657,9 @@ void cleanup()
 	tst_resm(TINFO, "Removing the message queue");
 #endif
 	fflush(stdout);
-	(void)msgctl(tid, IPC_RMID, (struct msqid_ds *)NULL);
-	if ((status = msgctl(tid, IPC_STAT, (struct msqid_ds *)NULL)) != -1) {
-		(void)msgctl(tid, IPC_RMID, (struct msqid_ds *)NULL);
+	(void)msgctl(tid, IPC_RMID, NULL);
+	if ((status = msgctl(tid, IPC_STAT, NULL)) != -1) {
+		(void)msgctl(tid, IPC_RMID, NULL);
 		tst_resm(TFAIL, "msgctl(tid, IPC_RMID) failed");
 		tst_exit();
 	}

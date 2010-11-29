@@ -43,7 +43,7 @@ void *thr_func(void *arg)
 	
 	fprintf(stderr,"[Thread 0x%p] is waiting for the cond\n", (void*)self);
 	rc = pthread_cond_wait(&td.cond, &td.mutex);
-	if(rc != 0) {
+	if (rc != 0) {
 		fprintf(stderr,"pthread_cond_wait return %d\n", rc);
                 exit(PTS_UNRESOLVED);
 	}
@@ -108,7 +108,7 @@ int main()
 	}
 	fprintf(stderr,"[Main thread] pthread_cond_broadcast() returned 0\n");
 	sleep(1);
-	if (waken_num < THREAD_NUM){
+	if (waken_num < THREAD_NUM) {
 		fprintf(stderr,"[Main thread] Not all waiters were wakened\n");
 		for (i=0; i<THREAD_NUM; i++) {
 			pthread_cancel(thread[i]);

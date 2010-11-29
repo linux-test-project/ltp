@@ -40,7 +40,7 @@ int main()
 	int ret;
 	
 	/* Initialize a cond attributes object */
-	if(pthread_condattr_init(&attr) != 0)
+	if (pthread_condattr_init(&attr) != 0)
 	{
 		perror("Error at pthread_condattr_init()\n");
 		return PTS_UNRESOLVED;
@@ -48,9 +48,9 @@ int main()
 
 	/* Set 'pshared' to INVALID_PSHARED_VALUE. */
 	ret=pthread_condattr_setpshared(&attr, INVALID_PSHARED_VALUE);
-	if(ret != 0)
+	if (ret != 0)
 	{
-		if(ret == EINVAL)
+		if (ret == EINVAL)
 		{
 			printf("Test PASSED\n");
 			return PTS_PASS;
@@ -61,7 +61,7 @@ int main()
 	}
 	
 	/* Destory the cond attributes object */
-	if(pthread_condattr_destroy(&attr) != 0)
+	if (pthread_condattr_destroy(&attr) != 0)
 	{
 		perror("Error at pthread_condattr_destroy()\n");
 		return PTS_UNRESOLVED;

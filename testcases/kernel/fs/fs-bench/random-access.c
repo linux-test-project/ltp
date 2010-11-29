@@ -27,13 +27,13 @@ int main(int ac, char **av)
   int i;
   int m;
 
-  if ( ac != 2 ) {
+  if (ac != 2 ) {
     printf("%s hex-style-filename \n", av[0]);
     printf("ex) %s 00022300\n", av[0]);
     exit(1);
   }
   sscanf(av[1],"%x",&m);
-  if ( m < 1 || m > MAXNUM ) {
+  if (m < 1 || m > MAXNUM ) {
     printf("out of size %d\n",m);
     exit(1);
   }
@@ -41,14 +41,14 @@ int main(int ac, char **av)
   time(&t);
   srandom((unsigned int)getpid()^(((unsigned int)t<<16)| (unsigned int)t>>16));
 
-  if ( (nullfd=open("/dev/null",O_WRONLY)) < 0 ) {
+  if ((nullfd=open("/dev/null",O_WRONLY)) < 0 ) {
     perror("/dev/null");
     exit(1);
   }
 
 
   /* 00/00/00/00 */
-  for ( i = 0 ; i < m ; i++) {
+  for (i = 0 ; i < m ; i++) {
     r = random() % m;
     sprintf(fname,"00/%2.2x/%2.2x/00%2.2x%2.2x%2.2x",
 	   ((r>>16)&0xFF),
@@ -70,20 +70,20 @@ void open_read_close(char *fname)
   char buf[BUFS];
   int c;
 
-  if ( (fd=open(fname, O_RDONLY)) < 0 ) {
+  if ((fd=open(fname, O_RDONLY)) < 0 ) {
       openlog[FAIL]++;
       close(fd);
       return;
   }
   openlog[SUCCESS]++;
-  while ( (c=read(fd, buf, BUFS)) > 0 ) {
+  while ((c=read(fd, buf, BUFS)) > 0 ) {
     if (write(nullfd,buf,c) < 0 ) {
       perror("/dev/null");
       printf("Opened\t %d\nUnopend:\t%d\n",openlog[SUCCESS],openlog[FAIL]);
       exit(1);
     }
   }
-  if ( c < 0 ) {
+  if (c < 0 ) {
     perror(fname);
     printf("Opened\t %d\nUnopend:\t%d\n",openlog[SUCCESS],openlog[FAIL]);
     exit(1);

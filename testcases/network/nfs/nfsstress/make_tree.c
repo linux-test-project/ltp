@@ -338,7 +338,7 @@ init_compile( int  what_todo,		 /* do a compile or clean             */
             return status;
         }
            
-    } while(1);
+    } while (1);
 }
    
     
@@ -393,7 +393,7 @@ rm_file_dir( int  numsdir,		/* how many subdirs to remove         */
     }
 
     dprt("pid[%d]: base directory: %s\n", gettid(), base_dir);
-    while(sindex)
+    while (sindex)
     {
         /* get the name of the last directory created. */
         for (dircnt = 0; dircnt < sindex; dircnt++)

@@ -84,7 +84,7 @@ void *async_event_server(void *arg)
 	thread->func = NULL;	// entrypoint
 	thread->flags |= THREAD_FLAG_SUSPENDED;
 
-	for ( ; ; ) {
+	for (; ; ) {
 		if ((err = pthread_mutex_lock(&thread->mutex)))
 			return (void*)(intptr_t)err;
 

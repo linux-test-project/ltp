@@ -24,78 +24,78 @@ int main()
 	int type;
 	
 	/* Initialize a mutex attributes object */
-	if(pthread_mutexattr_init(&mta) != 0)
+	if (pthread_mutexattr_init(&mta) != 0)
 	{
 		perror("Error at pthread_mutexattr_init()\n");
 		return PTS_UNRESOLVED;
 	}
 
-	if(pthread_mutexattr_gettype(&mta, &type) != 0)
+	if (pthread_mutexattr_gettype(&mta, &type) != 0)
 	{
 		printf("Error getting the attribute 'type'\n");
 		return PTS_UNRESOLVED;
 	}
 	
-	if(type != PTHREAD_MUTEX_DEFAULT)
+	if (type != PTHREAD_MUTEX_DEFAULT)
 	{
 		printf("Test FAILED: Default value of the 'type' attribute is not PTHREAD_MUTEX_DEFAULT \n");
 		return PTS_FAIL;		
 	}	
 	
-	if(pthread_mutexattr_settype(&mta, PTHREAD_MUTEX_NORMAL) != 0)
+	if (pthread_mutexattr_settype(&mta, PTHREAD_MUTEX_NORMAL) != 0)
 	{
 		printf("Test FAILED: Error setting the attribute 'type'\n");
 		return PTS_FAIL;
 	}
 	
-	if(pthread_mutexattr_gettype(&mta, &type) != 0)
+	if (pthread_mutexattr_gettype(&mta, &type) != 0)
 	{
 		printf("Error getting the attribute 'type'\n");
 		return PTS_UNRESOLVED;
 	}
 	
-	if(type != PTHREAD_MUTEX_NORMAL)
+	if (type != PTHREAD_MUTEX_NORMAL)
 	{
 		printf("Test FAILED: Type not correct get/set \n");
 		return PTS_FAIL;		
 	}	
 
-	if(pthread_mutexattr_settype(&mta, PTHREAD_MUTEX_ERRORCHECK) != 0)
+	if (pthread_mutexattr_settype(&mta, PTHREAD_MUTEX_ERRORCHECK) != 0)
 	{
 		printf("Test FAILED: Error setting the attribute 'type'\n");
 		return PTS_FAIL;
 	}
-	if(pthread_mutexattr_gettype(&mta, &type) != 0)
+	if (pthread_mutexattr_gettype(&mta, &type) != 0)
 	{
 		printf("Error getting the attribute 'type'\n");
 		return PTS_UNRESOLVED;
 	}
 	
-	if(type != PTHREAD_MUTEX_ERRORCHECK)
+	if (type != PTHREAD_MUTEX_ERRORCHECK)
 	{
 		printf("Test FAILED: Type not correct get/set \n");
 		return PTS_FAIL;		
 	}	
 
-	if(pthread_mutexattr_settype(&mta, PTHREAD_MUTEX_RECURSIVE) != 0)
+	if (pthread_mutexattr_settype(&mta, PTHREAD_MUTEX_RECURSIVE) != 0)
 	{
 		printf("Test FAILED: Error setting the attribute 'type'\n");
 		return PTS_FAIL;
 	}
 	
-	if(pthread_mutexattr_gettype(&mta, &type) != 0)
+	if (pthread_mutexattr_gettype(&mta, &type) != 0)
 	{
 		printf("Error getting the attribute 'type'\n");
 		return PTS_UNRESOLVED;
 	}
 	
-	if(type != PTHREAD_MUTEX_RECURSIVE)
+	if (type != PTHREAD_MUTEX_RECURSIVE)
 	{
 		printf("Test FAILED: Type not correct get/set \n");
 		return PTS_FAIL;		
 	}	
 
-	if(pthread_mutexattr_destroy(&mta) != 0)
+	if (pthread_mutexattr_destroy(&mta) != 0)
 	{
 		printf("Error at pthread_mutexattr_destroy()\n");
 		return PTS_UNRESOLVED;

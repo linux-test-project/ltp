@@ -162,7 +162,7 @@ do {					\
 				WTERMSIG(kid_status), strsignal(WTERMSIG(kid_status)));	\
 		}								\
 	}									\
-} while(0)
+} while (0)
 
 /*
  * Call a function in a "protected" context.
@@ -357,7 +357,7 @@ static const char *result_strings[] = {
 #if EPOLL_CTL_TEST_RESULTS_SHOW_PARAMS
 #define EPOLL_CTL_TEST_FAIL(msg , ...) \
 ({ \
-	if (ev_ptr != NULL){ \
+	if (ev_ptr != NULL) { \
 		tst_resm(TFAIL, ( "(epoll_ctl(%d,%08x,%d,%p = {%08x,%08d}) returned %d:%s)" ) , ##__VA_ARGS__ , \
 			epoll_fds[epfd_index], epoll_ctl_ops[op_index], \
 			epoll_fds[fd_index], ev_ptr, ev_ptr->events, ev_ptr->data.fd, errno, \
@@ -371,7 +371,7 @@ static const char *result_strings[] = {
 
 #define EPOLL_CTL_TEST_PASS(msg , ...) \
 ({ \
-	if (ev_ptr != NULL){ \
+	if (ev_ptr != NULL) { \
 		tst_resm(TPASS, ( "(epoll_ctl(%d,%08x,%d,%p = {%08x,%08d}) returned %d:%s)" ) , ##__VA_ARGS__ , \
 			epoll_fds[epfd_index], epoll_ctl_ops[op_index], \
 			epoll_fds[fd_index], ev_ptr, ev_ptr->events, ev_ptr->data.fd, errno, \

@@ -36,13 +36,13 @@ int main(int argc, char **argv)
 	result1 = sched_rr_get_interval(getpid(), &interval1);
 
 	
-	if(result0 == result1 &&
+	if (result0 == result1 &&
 	   interval0.tv_sec == interval1.tv_sec &&
 	   interval0.tv_nsec == interval1.tv_nsec &&
 	   errno == 0) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else if(errno != 0) {
+	} else if (errno != 0) {
 		perror("Unexpected error");
 		return PTS_FAIL;
 	} else {

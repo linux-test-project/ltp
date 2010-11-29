@@ -30,7 +30,7 @@ int main()
 	static pthread_rwlock_t rwlock;
 	int rc;
 	
-	if(pthread_rwlock_init(&rwlock, NULL) != 0)
+	if (pthread_rwlock_init(&rwlock, NULL) != 0)
 	{
 		printf("Error at pthread_rwlock_init()\n");
 		return PTS_UNRESOLVED;
@@ -39,7 +39,7 @@ int main()
 	/* Attempt to write lock rwlock, it should return successfully */	
 	
 	printf("main: attempt write lock\n");
-	if(pthread_rwlock_wrlock(&rwlock) != 0)
+	if (pthread_rwlock_wrlock(&rwlock) != 0)
 	{
 		printf("Error at pthread_rwlock_wrlock()\n");
 		return PTS_UNRESOLVED;
@@ -53,21 +53,21 @@ int main()
 	rc = pthread_rwlock_wrlock(&rwlock);	
 	
 	/* Clean up before we test the return value of pthread_rwlock_wrlock() */
-	if(pthread_rwlock_unlock(&rwlock) != 0)
+	if (pthread_rwlock_unlock(&rwlock) != 0)
 	{
 		printf("Error releasing write lock\n");
 		exit(PTS_UNRESOLVED);
 	}
 	
-	if(pthread_rwlock_destroy(&rwlock) != 0)
+	if (pthread_rwlock_destroy(&rwlock) != 0)
 	{
 		printf("Error at pthread_rwlock_destroy()\n");
 		return PTS_UNRESOLVED;
 	}	
 
-	if(rc != 0)
+	if (rc != 0)
 	{
-		if(rc == EDEADLK)
+		if (rc == EDEADLK)
 		{
 			printf("main: correctly got EDEADLK\n");
 			printf("Test PASSED\n");

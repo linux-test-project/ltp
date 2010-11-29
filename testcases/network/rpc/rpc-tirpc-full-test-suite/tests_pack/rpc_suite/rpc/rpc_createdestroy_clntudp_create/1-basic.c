@@ -79,7 +79,7 @@ int main(int argn, char *argc[])
 	}
 	
 	//If we are here, macro call was successful
-	test_status = (clnt != (CLIENT *)NULL) ? 0 : 1;
+	test_status = (clnt != NULL) ? 0 : 1;
 	
 	//This last printf gives the result status to the tests suite
 	//normally should be 0: test has passed or 1: test has failed

@@ -63,7 +63,7 @@ int create_Result_file()
 		TestInputValue = ((Inc*i) + Inc);
 		tabR[i] = modf(TestInputValue, &tabRI[i]);
 		// tabR[i] = modf( ((Inc*i) + Inc), &tabRI[i]);
-		if( (TestChkSum = tabR[i] + tabRI[i]) != TestInputValue)
+		if ((TestChkSum = tabR[i] + tabRI[i]) != TestInputValue)
 		  {
 		    return -1;
 		  }

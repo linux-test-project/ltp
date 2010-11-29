@@ -59,7 +59,7 @@ int create_Result_file()
 
 	fp = open(F_name,O_RDWR|O_CREAT|O_TRUNC,0777);
 	fp1 = open(F_name1,O_RDWR|O_CREAT|O_TRUNC,0777);
-        if ( !fp || !fp1 )
+        if (!fp || !fp1 )
         {
             	printf("error opening file");
 		close(fp);

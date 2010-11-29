@@ -93,14 +93,14 @@ void * threaded( void * arg )
 	{
 		ret = sem_wait( sem );
 	}
-	while ( ( ret != 0 ) && ( errno == EINTR ) );
+	while (( ret != 0 ) && ( errno == EINTR ) );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( errno, "failed to wait for the semaphore in child" );
 	}
 
-	if ( *( pid_t * ) arg != getpid() )
+	if (*( pid_t * ) arg != getpid() )
 	{
 		FAILED( "The thread is executing in the child process" );
 	}
@@ -123,7 +123,7 @@ int main( int argc, char * argv[] )
 	/* Initialize the semaphore */
 	sem = sem_open( "/fork_21_1", O_CREAT, O_RDWR, 0 );
 
-	if ( sem == ( sem_t * ) SEM_FAILED )
+	if (sem == ( sem_t * ) SEM_FAILED )
 	{
 		UNRESOLVED( errno, "Failed to open the semaphore" );
 	}
@@ -134,7 +134,7 @@ int main( int argc, char * argv[] )
 	/* Create thread */
 	ret = pthread_create( &th, NULL, threaded, &ctl );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( ret, "Failed to create the thread" );
 	}
@@ -143,7 +143,7 @@ int main( int argc, char * argv[] )
 	/* Create the child */
 	child = fork();
 
-	if ( child == ( pid_t ) - 1 )
+	if (child == ( pid_t ) - 1 )
 	{
 		UNRESOLVED( errno, "Failed to fork" );
 	}
@@ -153,15 +153,15 @@ int main( int argc, char * argv[] )
 	{
 		ret = sem_post( sem );
 	}
-	while ( ( ret != 0 ) && ( errno == EINTR ) );
+	while (( ret != 0 ) && ( errno == EINTR ) );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( errno, "Failed to post the semaphore" );
 	}
 
 	/* child */
-	if ( child == ( pid_t ) 0 )
+	if (child == ( pid_t ) 0 )
 	{
 		/* sleep a little while to let the thread execute in case it exists */
 		sleep( 1 );
@@ -173,12 +173,12 @@ int main( int argc, char * argv[] )
 	/* Parent joins the child */
 	ctl = waitpid( child, &status, 0 );
 
-	if ( ctl != child )
+	if (ctl != child )
 	{
 		UNRESOLVED( errno, "Waitpid returned the wrong PID" );
 	}
 
-	if ( ( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ) )
+	if (( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ) )
 	{
 		FAILED( "Child exited abnormally" );
 	}
@@ -186,14 +186,14 @@ int main( int argc, char * argv[] )
 	/* Destroy everything */
 	ret = sem_close( sem );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( errno, "Failed to close the semaphore" );
 	}
 
 	ret = pthread_join( th, NULL );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( ret, "Failed to join the thread in parent" );
 	}

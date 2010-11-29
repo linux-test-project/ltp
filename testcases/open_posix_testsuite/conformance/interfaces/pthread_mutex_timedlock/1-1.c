@@ -52,33 +52,33 @@ int main()
 	struct timeval time_diff;
 
 	/* Lock the mutex. */
-	if(pthread_mutex_lock(&mutex) != 0)
+	if (pthread_mutex_lock(&mutex) != 0)
 	{
 		perror("Error in pthread_mutex_lock().\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Create a thread that will call pthread_mutex_timedlock */	
-	if(pthread_create(&new_th, NULL, f1, NULL) != 0)
+	if (pthread_create(&new_th, NULL, f1, NULL) != 0)
 	{
 		perror("Error in pthread_create().\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Wait for thread to end. */
-	if(pthread_join(new_th, NULL) != 0)
+	if (pthread_join(new_th, NULL) != 0)
 	{
 		perror("Error in pthread_join().\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Cleaning up the mutexes. */
-	if(pthread_mutex_unlock(&mutex) != 0)
+	if (pthread_mutex_unlock(&mutex) != 0)
 	{
 		perror("Error in pthread_mutex_unlock().\n");
 		return PTS_UNRESOLVED;
 	}
-	if(pthread_mutex_destroy(&mutex) != 0)
+	if (pthread_mutex_destroy(&mutex) != 0)
 	{
 		perror("Error in pthread_mutex_destroy().\n");
 		return PTS_UNRESOLVED;
@@ -92,7 +92,7 @@ int main()
 		--time_diff.tv_sec;
 		time_diff.tv_usec += 1000000;
 	}
-	if(time_diff.tv_sec < TIMEOUT)
+	if (time_diff.tv_sec < TIMEOUT)
 	{
 		printf("Test FAILED: Timed lock did not wait long enough. (%d secs.)\n", TIMEOUT);
 		printf("time before mutex locked: %ld.%06ld, time after mutex timed out: %ld.%06ld.\n", (long)currsec1.tv_sec, (long)currsec1.tv_usec, (long)currsec2.tv_sec, (long)currsec2.tv_usec);
@@ -121,7 +121,7 @@ void *f1(void *parm)
 	timeout.tv_nsec = currsec1.tv_usec * 1000;	
 
 	printf("Timed mutex lock will block for %d seconds starting from: %ld.%06ld\n", TIMEOUT, (long)currsec1.tv_sec, (long)currsec1.tv_usec);
-	if(pthread_mutex_timedlock(&mutex, &timeout) != ETIMEDOUT)
+	if (pthread_mutex_timedlock(&mutex, &timeout) != ETIMEDOUT)
 	{
 		perror("Error in pthread_mutex_timedlock().\n");
 		pthread_exit((void*)PTS_UNRESOLVED);

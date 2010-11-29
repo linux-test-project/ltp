@@ -27,7 +27,7 @@ char *argv[];
         char myname[64];
 	char ttl=0;
 
-  	if ( argc < 4) {
+  	if (argc < 4) {
            fprintf(stderr, 
                    "usage: %s g.g.g.g interface_name (or i.i.i.i) port [ttl]\n",
                    argv[ 0]);
@@ -41,16 +41,16 @@ char *argv[];
         }
 
         /* set up multicast membership structure */
-        if((n = sscanf(argv[1], "%u.%u.%u.%u", &g1, &g2, &g3, &g4)) != 4) {
+        if ((n = sscanf(argv[1], "%u.%u.%u.%u", &g1, &g2, &g3, &g4)) != 4) {
           fprintf(stderr, "bad group address\n" );
           exit(1);
         }
         imr.imr_multiaddr.s_addr = htonl((g1<<24) | (g2<<16) | (g3<<8) | g4);
 
-        if((hp = gethostbyname(argv[2]))) {
+        if ((hp = gethostbyname(argv[2]))) {
            memcpy(&imr.imr_interface.s_addr, hp->h_addr, hp->h_length);
         } else 
-           if((n = sscanf(argv[2], "%u.%u.%u.%u", &i1, &i2, &i3, &i4)) != 4) {
+           if ((n = sscanf(argv[2], "%u.%u.%u.%u", &i1, &i2, &i3, &i4)) != 4) {
                fprintf (stderr,"Bad interface address\n");
                exit (1);
            } else
@@ -89,7 +89,7 @@ char *argv[];
         }
 */
 	ttl = atoi(argv[4]);
-	if(setsockopt(s, IPPROTO_IP, IP_MULTICAST_TTL, &ttl, sizeof(ttl)) < 0)
+	if (setsockopt(s, IPPROTO_IP, IP_MULTICAST_TTL, &ttl, sizeof(ttl)) < 0)
 	{
 		perror("can not set ttl");
 		exit(1);

@@ -71,14 +71,14 @@ int main(int argn, char *argc[])
 	
 	//Then call remote procedure
 	rslt = clnt_call((CLIENT *)clnt, PROCNUM, 
-						    (xdrproc_t)xdr_void, (char *)NULL, // xdr_in
+						    (xdrproc_t)xdr_void, NULL, // xdr_in
                     		(xdrproc_t)xdr_int, (char *)&recVar, // xdr_out
 						    total_timeout);	/**/
 						    
 	chrRslt = clnt_sperror(clnt, "#SUCCESS");
 	
 	//If we are here, test has passed
-	test_status = (chrRslt == (char *)NULL);
+	test_status = (chrRslt == NULL);
 	
 	//This last printf gives the result status to the tests suite
 	//normally should be 0: test has passed or 1: test has failed

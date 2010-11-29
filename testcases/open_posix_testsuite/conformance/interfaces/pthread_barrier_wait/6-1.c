@@ -52,7 +52,7 @@ int main()
 	
 	rc = pthread_barrier_wait(&barrier);
 	
-	if(rc == EINVAL)
+	if (rc == EINVAL)
 	{
 		printf("Test PASSED\n");
 	}

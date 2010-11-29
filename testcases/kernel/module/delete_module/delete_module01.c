@@ -89,7 +89,7 @@ main(int argc, char **argv)
 	char *module_name = "dummy_del_mod";
 
 	/* parse standard options */
-	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) !=
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
 		(char *) NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
@@ -108,7 +108,7 @@ main(int argc, char **argv)
 			module_name);
 
 		/* Insmod the module */
- 		if ( (system( cmd )) != 0 ) {
+ 		if ((system( cmd )) != 0 ) {
 			tst_resm(TBROK, "Failed to load %s module",
 					module_name);
 			printf("system() failed; cannot test init_module: "

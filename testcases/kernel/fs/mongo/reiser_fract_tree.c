@@ -74,7 +74,7 @@ void chngdir(char *name)
 {
   int i;
 
-  if ( name[0] == '.' && name[1] == '.') {
+  if (name[0] == '.' && name[1] == '.') {
     for (i=strlen(path); i>0; i--) {
       if (path[i] == '/') {
 	path[i]=0;
@@ -173,7 +173,7 @@ void make_file(int size)
 	inside the same directory, and that means skipping over filenames that
 	already exist.  Thus we ignore EEXIST, and pay attention to all
 	else. */
-    if ( errno == EEXIST) {	/* just skip existing file */
+    if (errno == EEXIST) {	/* just skip existing file */
       return;
     }
     perror ("open");
@@ -290,7 +290,7 @@ int make_directory(char * dirname)
     /*  it is sometimes useful to be able to run this program more than once
 	inside the same directory, and that means skipping over filenames that
 	already exist.  Thus we ignore EEXIST, and pay attention to all else. */
-    if ( errno != EEXIST ) {
+    if (errno != EEXIST ) {
       perror ("mkdir");
       exit (errno);		
     }

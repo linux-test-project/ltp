@@ -105,13 +105,13 @@ OFF_T my_strtofft(const char *pStr)
 
 	int neg = 0;
 
-	for(;;pStr++) {
+	for (;;pStr++) {
 		switch(*pStr) {
 			case '0':
 				bOct = 1;
 				continue;
 			case 'x':
-				if(bOct) bHex = 1;
+				if (bOct) bHex = 1;
 				continue;
 			case ' ':
 			case '\t':
@@ -124,22 +124,22 @@ OFF_T my_strtofft(const char *pStr)
 		}
 		break;
 	}
-	if((!bOct) && (!bHex)) {
+	if ((!bOct) && (!bHex)) {
 		while (*pStr >= '0' && *pStr <= '9') {
 			value = (value * 10) + (*pStr++ - '0');
 		}
-	} else if(bHex) {
+	} else if (bHex) {
 		while ((*pStr >= '0' && *pStr <= '9') ||
 			   (*pStr >= 'A' && *pStr <= 'F') ||
 			   (*pStr >= 'a' && *pStr <= 'f')) {
-			if(*pStr >= '0' && *pStr <= '9')
+			if (*pStr >= '0' && *pStr <= '9')
 				value = (value << 4) + (*pStr++ - '0');
-			else if(*pStr >= 'A' && *pStr <= 'F')
+			else if (*pStr >= 'A' && *pStr <= 'F')
 				value = (value << 4) + 10 + (*pStr++ - 'A');
-			else if(*pStr >= 'a' && *pStr <= 'f')
+			else if (*pStr >= 'a' && *pStr <= 'f')
 				value = (value << 4) + 10 + (*pStr++ - 'a');
 		}
-	} else if(bOct) {
+	} else if (bOct) {
 		while (*pStr >= '0' && *pStr <= '7') {
 			value = (value * 8) + (*pStr++ - '0');
 		}
@@ -177,19 +177,19 @@ int pMsg(lvl_t level, const child_args_t *args, char *Msg,...)
 
 	time(&my_time);
 	pstruct_time = localtime(&my_time);
-	if(pstruct_time != NULL)
+	if (pstruct_time != NULL)
 		memcpy(&struct_time, pstruct_time, sizeof(struct tm));
 
 #ifndef WINDOWS
 	UNLOCK(mTime);
 #endif
 
-	if((glb_flags & GLB_FLG_QUIET) && (level == INFO))
+	if ((glb_flags & GLB_FLG_QUIET) && (level == INFO))
 		return 0;
 
 	va_start(l, Msg);
 
-	if(glb_flags & GLB_FLG_SUPRESS) {
+	if (glb_flags & GLB_FLG_SUPRESS) {
 		rv = vprintf(Msg,l);
 		va_end(l);
 		return rv;
@@ -235,7 +235,7 @@ int pMsg(lvl_t level, const child_args_t *args, char *Msg,...)
 	len += strlen(args->device);
 	len += strlen(Msg);
 
-	if((cpTheMsg = (char *)ALLOC(len)) == NULL) {
+	if ((cpTheMsg = (char *)ALLOC(len)) == NULL) {
 		printf("Can't print formatted message, printing message raw.\n");
 		rv = vprintf(Msg,l);
 		va_end(l);
@@ -262,7 +262,7 @@ OFF_T getByteOrderedData(const OFF_T data)
 	size_t i = 0;
 
 	ucharpattern = (unsigned char *) &data;
-	for(i=0;i<sizeof(OFF_T);i++) {
+	for (i=0;i<sizeof(OFF_T);i++) {
 		off_tpat |= (((OFF_T)(ucharpattern[i])) << sizeof(OFF_T)*((sizeof(OFF_T)-1)-i));
 	}
 #endif
@@ -277,7 +277,7 @@ OFF_T getByteOrderedData(const OFF_T data)
 	size_t i = 0;
 
 	ucharpattern = (unsigned char *) &data;
-	for(i=0;i<sizeof(OFF_T);i++) {
+	for (i=0;i<sizeof(OFF_T);i++) {
 		off_tpat |= (((OFF_T)(ucharpattern[i])) << sizeof(OFF_T)*((sizeof(OFF_T)-1)-i));
 	}
 #else
@@ -301,36 +301,36 @@ void mark_buffer(void *buf, const size_t buf_len, void *lba, const child_args_t 
 	extern char hostname[];
 
 	off_tpat2 = getByteOrderedData(pass_count);
-	if(args->flags & CLD_FLG_ALT_MARK) {
+	if (args->flags & CLD_FLG_ALT_MARK) {
 		off_tpat3 = getByteOrderedData(args->alt_mark);
 	} else {
 		off_tpat3 = getByteOrderedData(start_time);
 	}
 	off_tpat4 = getByteOrderedData(args->seed);
 
-	for(i=0;i<buf_len;i=i+BLK_SIZE) {
-		if(args->flags & CLD_FLG_MRK_LBA) {
+	for (i=0;i<buf_len;i=i+BLK_SIZE) {
+		if (args->flags & CLD_FLG_MRK_LBA) {
 			/* fill first 8 bytes with lba number */
 			off_tpat = getByteOrderedData(local_lba);
 			*(off_tbuf+(i/sizeof(OFF_T))) = off_tpat;
 		}
-		if(args->flags & CLD_FLG_MRK_PASS) {
+		if (args->flags & CLD_FLG_MRK_PASS) {
 			/* fill second 8 bytes with pass_count */
 			*(off_tbuf+(i/sizeof(OFF_T))+1) = off_tpat2;
 		}
-		if(args->flags & CLD_FLG_MRK_TIME) {
+		if (args->flags & CLD_FLG_MRK_TIME) {
 			/* fill third 8 bytes with start_time */
 			*(off_tbuf+(i/sizeof(OFF_T))+2) = off_tpat3;
 		}
-		if(args->flags & CLD_FLG_MRK_SEED) {
+		if (args->flags & CLD_FLG_MRK_SEED) {
 			/* fill fourth 8 bytes with seed data */
 			*(off_tbuf+(i/sizeof(OFF_T))+3) = off_tpat4;
 		}
-		if(args->flags & CLD_FLG_MRK_HOST) {
+		if (args->flags & CLD_FLG_MRK_HOST) {
 			/* now add the hostname to the mark data */
 			memcpy(ucharBuf+32+i, hostname, HOSTNAME_SIZE);
 		}
-		if(args->flags & CLD_FLG_MRK_TARGET) {
+		if (args->flags & CLD_FLG_MRK_TARGET) {
 			/* now add the target to the mark data */
 			memcpy(ucharBuf+32+HOSTNAME_SIZE+i, args->device, strlen(args->device));
 		}
@@ -358,14 +358,14 @@ void fill_buffer(void *buf, size_t len, void *pattern, size_t pattern_len, const
 	switch (pattern_type) { /* the pattern type should only be one of the following */
 		case CLD_FLG_CPTYPE :
 			/* Will fill buffer with counting pattern 0x00 thru 0xff */
-			for(i=0;i<len;i++)
+			for (i=0;i<len;i++)
 				ucharbuf[i] = (unsigned char) (i & 0xff);
 			break;
 		case CLD_FLG_FPTYPE :
 			/* arrange data to go on the wire correctly */
 			off_tpat = 0;
-			for(j=0;j<(sizeof(OFF_T)/pattern_len);j++)
-				for(i=0;i<pattern_len;++i)
+			for (j=0;j<(sizeof(OFF_T)/pattern_len);j++)
+				for (i=0;i<pattern_len;++i)
 #ifdef WINDOWS
 					off_tpat |= (((OFF_T)(ucharpattern[i])) << 8*(7-((j*pattern_len)+i)));
 #endif
@@ -381,16 +381,16 @@ void fill_buffer(void *buf, size_t len, void *pattern, size_t pattern_len, const
 #endif
 
 			/* fill buffer with fixed pattern */
-			for(i=0;i<len/8;i++)
+			for (i=0;i<len/8;i++)
 				*(off_tbuf+i) = off_tpat;
 			break;
 		case CLD_FLG_LPTYPE :
 			off_tpat2 = *poff_tpattern;
-			for(j=0;j<len;j++) {
+			for (j=0;j<len;j++) {
 				/* arrange data to go on the wire correctly */
 				ucharpattern = (unsigned char *) &off_tpat2;
 				off_tpat = 0;
-				for(i=0;i<pattern_len;i++)
+				for (i=0;i<pattern_len;i++)
 #ifdef WINDOWS
 					off_tpat |= (((OFF_T)(ucharpattern[i])) << 8*(7-i));
 #endif
@@ -406,7 +406,7 @@ void fill_buffer(void *buf, size_t len, void *pattern, size_t pattern_len, const
 #endif
 
 				/* fill buffer with lba number */
-				for(i=0;i<BLK_SIZE/8;i++) {
+				for (i=0;i<BLK_SIZE/8;i++) {
 					*(off_tbuf+i+(j*(BLK_SIZE/8))) = off_tpat;
 				}
 				off_tpat2++;
@@ -419,10 +419,10 @@ void fill_buffer(void *buf, size_t len, void *pattern, size_t pattern_len, const
 			 * boundary requirement of disktest.  This should be fixed
 			 * at some point...
 			 */
-			for(i=0;i<BLK_SIZE/sizeof(OFF_T);i++)
+			for (i=0;i<BLK_SIZE/sizeof(OFF_T);i++)
 				*(off_tbuf+i) = Rand64();
 
-			for(i=BLK_SIZE;i<len;i+=BLK_SIZE)
+			for (i=BLK_SIZE;i<len;i+=BLK_SIZE)
 				memcpy((ucharbuf+i), ucharbuf, BLK_SIZE);
 			break;
 		default :
@@ -435,14 +435,14 @@ void normalize_percs(child_args_t *args)
 {
 	int i, j;
 
-	if((args->flags & CLD_FLG_R) && !(args->flags & CLD_FLG_W)) {
-		if((args->flags & CLD_FLG_DUTY) && (args->rperc < 100)) {
+	if ((args->flags & CLD_FLG_R) && !(args->flags & CLD_FLG_W)) {
+		if ((args->flags & CLD_FLG_DUTY) && (args->rperc < 100)) {
 			pMsg(WARN, args, "Read specified w/o write, ignoring -D, forcing read only...\n");
 		}
 		args->rperc = 100;
 		args->wperc = 0;
-	} else if((args->flags & CLD_FLG_W) && !(args->flags & CLD_FLG_R)) {
-		if((args->flags & CLD_FLG_DUTY) && (args->wperc < 100)) {
+	} else if ((args->flags & CLD_FLG_W) && !(args->flags & CLD_FLG_R)) {
+		if ((args->flags & CLD_FLG_DUTY) && (args->wperc < 100)) {
 			pMsg(WARN, args, "Write specified w/o read, ignoring -D, forcing write only...\n");
 		}
 		args->rperc = 0;
@@ -451,7 +451,7 @@ void normalize_percs(child_args_t *args)
 		if (args->rperc == 0 && args->wperc == 0) {
 			args->rperc = 50;
 			args->wperc = 50;
-		} else if(args->rperc == 0) {
+		} else if (args->rperc == 0) {
 			args->rperc = 100 - args->wperc;
 		} else if (args->wperc == 0) {
 			args->wperc = 100 - args->rperc;
@@ -460,7 +460,7 @@ void normalize_percs(child_args_t *args)
 
 	if (args->rperc + args->wperc != 100) {
 		pMsg(INFO, args, "Balancing percentage between reads and writes\n");
-		if((args->flags & CLD_FLG_R) && (args->flags & CLD_FLG_W)) {
+		if ((args->flags & CLD_FLG_R) && (args->flags & CLD_FLG_W)) {
 			i = 100 - (args->rperc + args->wperc);
 			j = i / 2;
 			args->wperc += j;
@@ -473,7 +473,7 @@ void normalize_percs(child_args_t *args)
 char *strupr(char *String) {
 	unsigned int i;
 
-	for(i=0;i<strlen(String);i++) {
+	for (i=0;i<strlen(String);i++) {
 		*(String+i) = toupper(*(String+i));
 	}
 	return(String);
@@ -482,7 +482,7 @@ char *strupr(char *String) {
 char *strlwr(char *String) {
 	unsigned int i;
 
-	for(i=0;i<strlen(String);i++) {
+	for (i=0;i<strlen(String);i++) {
 		*(String+i) = tolower(*(String+i));
 	}
 	return(String);
@@ -507,7 +507,7 @@ OFF_T get_file_size(char *device) {
 	fd = open(device, 0);
 #endif
 
-	if(INVALID_FD(fd)) {
+	if (INVALID_FD(fd)) {
 		return size;
 	}
 
@@ -542,7 +542,7 @@ OFF_T get_vsiz(const char *device)
 		0,
 		NULL);
 
-	if(hFileHandle == INVALID_HANDLE_VALUE) {
+	if (hFileHandle == INVALID_HANDLE_VALUE) {
 		return(GetLastError());
 	}
 
@@ -557,7 +557,7 @@ OFF_T get_vsiz(const char *device)
 		NULL);
 
 
-	if(bRV) {
+	if (bRV) {
 		size = myLengthInfo.Length.QuadPart;
 		size /= BLK_SIZE; /* return requires BLOCK */
 	} else {
@@ -570,7 +570,7 @@ OFF_T get_vsiz(const char *device)
 			&dwLength,
 			NULL);
 
-		if(bRV) {
+		if (bRV) {
 			size =  (OFF_T) DiskGeom.Cylinders.QuadPart;
 			size *= (OFF_T) DiskGeom.TracksPerCylinder;
 			size *= (OFF_T) DiskGeom.SectorsPerTrack;
@@ -586,17 +586,17 @@ OFF_T get_vsiz(const char *device)
 	unsigned long ulSizeTmp;
 #endif
 
-	if((fd = open(device, 0)) < 0) {
+	if ((fd = open(device, 0)) < 0) {
 		return 0;
 	}
 
 #if AIX
 	my_devinfo = (struct devinfo*) ALLOC(sizeof(struct devinfo));
-	if(my_devinfo != NULL) {
+	if (my_devinfo != NULL) {
 		memset(my_devinfo, 0, sizeof(struct devinfo));
-		if(ioctl(fd, IOCINFO, my_devinfo) == -1) size = -1;
+		if (ioctl(fd, IOCINFO, my_devinfo) == -1) size = -1;
 		else {
-			if(my_devinfo->flags & DF_LGDSK) {
+			if (my_devinfo->flags & DF_LGDSK) {
 				ulSizeTmp = (unsigned long) my_devinfo->un.scdk64.hi_numblks;
 				size |= ((((OFF_T)ulSizeTmp) << 32) & 0xFFFFFFFF00000000ll);
 				ulSizeTmp = (unsigned long) my_devinfo->un.scdk64.lo_numblks;
@@ -609,7 +609,7 @@ OFF_T get_vsiz(const char *device)
 		FREE(my_devinfo);
 	}
 #else
-	if(ioctl(fd, BLKGETSIZE, &size) == -1) size = -1;
+	if (ioctl(fd, BLKGETSIZE, &size) == -1) size = -1;
 #endif
 
 	close(fd);

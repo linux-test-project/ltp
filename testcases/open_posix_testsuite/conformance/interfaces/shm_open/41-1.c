@@ -24,7 +24,7 @@ int main() {
 	int fd, result;
 
 	result = shm_unlink(SHM_NAME);
-	if(result != 0 && errno != ENOENT) { 
+	if (result != 0 && errno != ENOENT) { 
 		/* The shared memory object exist and shm_unlink can not 
 		   remove it. */
 		perror("An error occurs when calling shm_unlink()");
@@ -33,10 +33,10 @@ int main() {
 
 	fd = shm_open(SHM_NAME, O_RDONLY, S_IRUSR);
 
-	if(fd == -1 && errno == ENOENT) {
+	if (fd == -1 && errno == ENOENT) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else if(fd != -1) {
+	} else if (fd != -1) {
 		printf("shm_open() success.\n");
 		return PTS_FAIL;
 	}

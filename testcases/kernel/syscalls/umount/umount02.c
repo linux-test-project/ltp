@@ -252,7 +252,7 @@ int setup_test(int i, int cnt)
 	switch (i) {
 	case 0:
 		/* Setup for umount(2) returning errno EBUSY. */
-		if(access(Device,F_OK)) {
+		if (access(Device,F_OK)) {
 			tst_brkm(TBROK, cleanup,
 				"Device %s does not exist", Device);
 			return 1;

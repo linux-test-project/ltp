@@ -25,7 +25,7 @@ main (int argc, char *argv[])
 	int		n, remain;
 	static	char	buf[BUFSIZ];
 
-	for ( fsize = 0; fsize < BUFSIZ; ) {
+	for (fsize = 0; fsize < BUFSIZ; ) {
 		buf[fsize++] = 'U';
 		buf[fsize++] = '\n';
 	}
@@ -40,7 +40,7 @@ main (int argc, char *argv[])
 	} else
 		remain = fsize;
 	while (count-- !=0) {
-		if((n = write(fd, buf, BUFSIZ)) != BUFSIZ) 
+		if ((n = write(fd, buf, BUFSIZ)) != BUFSIZ) 
 			perror("createfile");
 	}
 	if ((n = write(fd, buf, remain)) != remain)

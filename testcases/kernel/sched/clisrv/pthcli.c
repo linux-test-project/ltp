@@ -51,7 +51,7 @@
 #include <stdlib.h>
 #define MAXLINE 1024
 
-void noprintf(char* string, ...){
+void noprintf(char* string, ...) {
 }
 
 /* Read contents of FILE *fp. Write each line to socket, then

@@ -74,12 +74,12 @@ int main(int ac, char **av)
         unsigned long huge_pages_shm_to_be_allocated;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, (option_t *)NULL, NULL)) != (char *)NULL){
+	if ((msg = parse_opts(ac, av, NULL) {
 		tst_brkm(TBROK, cleanup, "OPTION PARSING ERROR - %s", msg);
 	}
 
 	/* The following loop checks looping state if -i option given */
-        if ( get_no_of_hugepages() <= 0 || hugepages_size() <= 0 )
+        if (get_no_of_hugepages() <= 0 || hugepages_size() <= 0 )
              tst_brkm(TCONF, tst_exit, "Not enough available Hugepages");
         else             
               huge_pages_shm_to_be_allocated = ( get_no_of_hugepages() * hugepages_size() * 1024) / 2 ;

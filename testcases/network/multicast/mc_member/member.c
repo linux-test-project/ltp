@@ -79,10 +79,10 @@ char *argv[];
             exit(1);
         }
 
-        if((hp = gethostbyname(interface))) {
+        if ((hp = gethostbyname(interface))) {
            memcpy(&imr.imr_interface.s_addr, hp->h_addr, hp->h_length);
         } else 
-           if((n = sscanf(interface, "%u.%u.%u.%u", &i1, &i2, &i3, &i4)) != 4) {
+           if ((n = sscanf(interface, "%u.%u.%u.%u", &i1, &i2, &i3, &i4)) != 4) {
               fprintf(stderr, "bad group address\n" ); 
               exit (1);
            } else
@@ -98,12 +98,12 @@ char *argv[];
 	   printf("Socket set for Multicasting on: %s\n",interface);
 
  
-        if ( (!jflg && !lflg) || jflg )
+        if ((!jflg && !lflg) || jflg )
            join_group ( s, group_list, &imr );
 
         sleep (sflg);
 
-        if ( (!jflg && !lflg) || lflg )
+        if ((!jflg && !lflg) || lflg )
            leave_group ( s, group_list, &imr );
 
         close (s);
@@ -122,15 +122,15 @@ int join_group (int s, char *glist, struct ip_mreq *imr)
         if ((fd = fopen(glist,"r")) == NULL)
            printf ("Error: unable to open %s\n",glist);
 
-        while(fgets(buf, sizeof(buf), fd) != NULL) {
-           if(sscanf(buf, "%u.%u.%u.%u", &g1, &g2, &g3, &g4) != 4) {
+        while (fgets(buf, sizeof(buf), fd) != NULL) {
+           if (sscanf(buf, "%u.%u.%u.%u", &g1, &g2, &g3, &g4) != 4) {
              fprintf(stderr, "bad group address\n" );
              exit(1);
            }
 
            imr->imr_multiaddr.s_addr = htonl((g1<<24) | (g2<<16) | (g3<<8) | g4);
 
-           if(setsockopt(s, IPPROTO_IP, IP_ADD_MEMBERSHIP,
+           if (setsockopt(s, IPPROTO_IP, IP_ADD_MEMBERSHIP,
                          imr, sizeof(struct ip_mreq)) == -1) {
               fprintf(stderr, "errno is %d \n", errno);
               perror("can't join group");
@@ -154,8 +154,8 @@ int leave_group (int s, char *glist, struct ip_mreq *imr)
         if ((fd = fopen(glist,"r")) == NULL)
            printf ("Error: unable to open %s\n",glist);
 
-        while(fgets(buf, sizeof(buf), fd) != NULL) {
-           if(sscanf(buf, "%u.%u.%u.%u", &g1, &g2, &g3, &g4) != 4) {
+        while (fgets(buf, sizeof(buf), fd) != NULL) {
+           if (sscanf(buf, "%u.%u.%u.%u", &g1, &g2, &g3, &g4) != 4) {
              fprintf(stderr, "leave_group: bad group address\n" );
              exit(1);
            }
@@ -163,7 +163,7 @@ int leave_group (int s, char *glist, struct ip_mreq *imr)
            imr->imr_multiaddr.s_addr = 
                                       htonl((g1<<24) | (g2<<16) | (g3<<8) | g4);
 
-           if(setsockopt(s, IPPROTO_IP, IP_DROP_MEMBERSHIP,
+           if (setsockopt(s, IPPROTO_IP, IP_DROP_MEMBERSHIP,
                          imr, sizeof(struct ip_mreq)) == -1) {
               perror("can't leave group");
               errors++;

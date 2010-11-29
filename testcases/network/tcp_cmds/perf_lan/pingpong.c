@@ -221,7 +221,7 @@ main (int argc, char *argv[])
 
 			/* Receive packet from socket */
 			tst_resm (TINFO, "Receiving packet");
-			if ( (cc = recvfrom(s, packet, len, 0, (sa_t*) &from, &fromlen)) < 0) {
+			if ((cc = recvfrom(s, packet, len, 0, (sa_t*) &from, &fromlen)) < 0) {
 				tst_resm (TINFO, "ERROR - recvfrom");
 			}
 			/* Verify contents of packet */
@@ -395,7 +395,7 @@ ck_packet (uint8_t *buf, size_t cc, sai_t *from)
 		datalen = 118;
 	}
 	tst_resm (TINFO, "Checking Data.");
-	for(i = 8; i < datalen; i++) {		/* skip 8 for time */
+	for (i = 8; i < datalen; i++) {		/* skip 8 for time */
 		if (i !=  (*datap)) {		       
 			tst_resm (TINFO, "Data cannot be validated.");
 		}

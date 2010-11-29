@@ -15,7 +15,7 @@
 #include "posixtest.h"
 
 int main() {
-	if(sched_yield() == 0) {
+	if (sched_yield() == 0) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}

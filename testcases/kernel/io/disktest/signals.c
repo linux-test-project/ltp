@@ -69,7 +69,7 @@ void* sig_handler( void* arg )
 	sigdelset( &signal_set, SIGSTOP );
 #endif
 
-	for(;;) {
+	for (;;) {
 		rv = sigwait( &signal_set, &sig );
 #endif
 
@@ -130,7 +130,7 @@ void setup_sig_mask( void )
 #endif
 
 #ifdef WINDOWS
-	if((sig_mutex = CreateMutex(NULL, FALSE, NULL)) == NULL) {
+	if ((sig_mutex = CreateMutex(NULL, FALSE, NULL)) == NULL) {
 		return;
 	}
 #endif
@@ -161,7 +161,7 @@ void setup_sig_mask( void )
 
 void clear_stat_signal( void )
 {
-	if(signal_action & SIGNAL_STAT) {
+	if (signal_action & SIGNAL_STAT) {
 		LOCK(sig_mutex);
 		signal_action &= ~SIGNAL_STAT;
 		UNLOCK(sig_mutex);

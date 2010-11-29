@@ -155,7 +155,7 @@ int main(int ac, char **av) {
         char *msg;              /* message returned from parse_opts */
 	
         /* parse standard options */
-        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL){
+        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
              tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
              tst_exit();
            }
@@ -167,7 +167,7 @@ int main(int ac, char **av) {
                 Tst_count = 0;
                 for (testno = 0; testno < TST_TOTAL; ++testno) {
 			TEST(syscall(__NR_bdflush,0,data));	//bdflush(0,data);
-			if(TEST_RETURN < 0){
+			if (TEST_RETURN < 0) {
 				tst_resm(TFAIL|TTERRNO,"Call to bdflush() failed");
                         	cleanup();
 				tst_exit();

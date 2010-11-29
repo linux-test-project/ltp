@@ -76,7 +76,7 @@ static void timeout_handler (int sig)
 
 	printf("Inside the timeout handler, killing the TC threads \n");
 	kill( pid, SIGKILL );
-	for(i=0; i<5; i++) {
+	for (i=0; i<5; i++) {
 		killed = waitpid(pid, &status, WNOHANG|WUNTRACED);
 		if (0 != killed)
 			break;
@@ -102,7 +102,7 @@ int  main(int argc, char **argv)
 	rt_init("h",parse_args,argc,argv);
 
 	pid = fork();
-	if ( 0 == pid) {
+	if (0 == pid) {
 						//This is the child
 		exit (TEST_FUNCTION);
 	}
@@ -114,7 +114,7 @@ int  main(int argc, char **argv)
 	signal( SIGALRM, timeout_handler);
 	alarm(TIMEOUT);
 	termpid = TEMP_FAILURE_RETRY (waitpid (pid, &status, 0));
-	if ( -1 == termpid ) {
+	if (-1 == termpid ) {
 		printf("\n Waiting for test program failed, Exiting \n");
 		exit(1);
 	}

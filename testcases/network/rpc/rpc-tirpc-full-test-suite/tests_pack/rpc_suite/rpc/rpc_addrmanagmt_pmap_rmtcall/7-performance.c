@@ -115,7 +115,7 @@ int main(int argn, char *argc[])
     maxIter = atoi(argc[3]);
     resultTbl = (double *)malloc(maxIter * sizeof(double));
     
-    if ((hp = gethostbyname(argc[1])) == (struct hostent *)NULL)
+    if ((hp = gethostbyname(argc[1])) == NULL)
 	{
 		fprintf(stderr, "gethostbyname failed\n");
 		exit(1);

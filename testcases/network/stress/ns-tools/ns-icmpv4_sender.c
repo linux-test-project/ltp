@@ -499,7 +499,7 @@ thrust_fakes(struct ip4_datagram *pkt, u_int16_t fake_flag)
 		if (rand_val) {
 		    int number;
 		    int counter;
-		    for(counter=0; counter <= 0xff; counter++) {
+		    for (counter=0; counter <= 0xff; counter++) {
 			number = rand() / ((RAND_MAX + 1U) / 0x100);
 			if (getprotobynumber(number) == NULL) {
 			    pkt->hdr.protocol = number;
@@ -581,7 +581,7 @@ send_packets(struct icmpv4_fake *fake_p)
     pkt	= fake_p->pkt;
     start_time = time(NULL);
 
-    for(;;) {
+    for (;;) {
 	if (fake_p->fake_flag) {
 	    pkt	= fake_p->pkt;
 	    thrust_fakes(&pkt, fake_p->fake_flag);

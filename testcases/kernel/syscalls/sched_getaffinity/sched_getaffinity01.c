@@ -133,7 +133,7 @@ int main(int ac, char **av) {
 	unsigned int len;
 
 	/* parse standard options */
-	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL){
+	if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
 		tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
 	}
 
@@ -185,13 +185,13 @@ realloc:
 			} else {
 				tst_resm(TINFO,"cpusetsize is %d", len);
 				tst_resm(TINFO,"mask.__bits[0] = %lu ",mask->__bits[0]);
-				for(i=0;i<num;i++){    // check the processor
+				for (i=0;i<num;i++) {    // check the processor
 #if __GLIBC_PREREQ(2,7)
 					TEST(CPU_ISSET_S(i, len, mask));
 #else
 					TEST(CPU_ISSET(i, mask));
 #endif
-					if (TEST_RETURN != -1 ){
+					if (TEST_RETURN != -1 ) {
 						tst_resm(TPASS,"sched_getaffinity() succeed ,this process %d is running processor: %d",getpid(), i);
 					}
 				}

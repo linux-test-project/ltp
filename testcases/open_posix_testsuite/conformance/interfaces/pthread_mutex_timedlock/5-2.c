@@ -54,21 +54,21 @@ int main()
 	pthread_t new_th;
 
 	/* Create a thread that will call pthread_mutex_timedlock */	
-	if(pthread_create(&new_th, NULL, f1, NULL) != 0)
+	if (pthread_create(&new_th, NULL, f1, NULL) != 0)
 	{
 		perror("Error in pthread_create().\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Wait for thread to end. */
-	if(pthread_join(new_th, NULL) != 0)
+	if (pthread_join(new_th, NULL) != 0)
 	{
 		perror("Error in pthread_join().\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Check the return status of pthread_mutex_timedlock(). */
-	if(ret != EINVAL)
+	if (ret != EINVAL)
 	{
 		printf("Test FAILED: Expected return code EINVAL, got: %d.\n", ret);
 		return PTS_FAIL;
@@ -89,7 +89,7 @@ void *f1(void *parm)
 	struct timespec timeout;
 
 	/* Lock the mutex */
-	if(pthread_mutex_lock(&mutex) != 0)
+	if (pthread_mutex_lock(&mutex) != 0)
 	{
 		perror("Error in pthread_mutex_lock()\n");
 		pthread_exit((void*)PTS_UNRESOLVED);
@@ -104,13 +104,13 @@ void *f1(void *parm)
 	ret = pthread_mutex_timedlock(&mutex, &timeout);
 
 	/* Cleaning up the mutexes. */
-	if(pthread_mutex_unlock(&mutex) != 0)
+	if (pthread_mutex_unlock(&mutex) != 0)
 	{
 		perror("Error in pthread_mutex_unlock().\n");
 		pthread_exit((void*)PTS_UNRESOLVED);
 		return (void*)PTS_UNRESOLVED;
 	}
-	if(pthread_mutex_destroy(&mutex) != 0)
+	if (pthread_mutex_destroy(&mutex) != 0)
 	{
 		perror("Error in pthread_mutex_destroy().\n");
 		pthread_exit((void*)PTS_UNRESOLVED);

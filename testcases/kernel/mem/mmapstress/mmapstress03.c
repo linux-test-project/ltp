@@ -103,7 +103,7 @@ main(int argc, char *argv[])
 	}
 	/* The brk is now at the beginning of a page. */
 
-	if ((hole_addr = hole_start = sbrk(NUM_SEGS * 2 * pagesize)) == NEG1){
+	if ((hole_addr = hole_start = sbrk(NUM_SEGS * 2 * pagesize)) == NEG1) {
 		ERROR("couldn't brk large space for segments");
                 anyfail();
 	}

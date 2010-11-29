@@ -68,7 +68,7 @@ void *my_thread_process (void * arg)
 	//First of all, create client using top level API
 	clnt = clnt_create(hostname, progNum, VERSNUM, nettype);	
 	
-	if (clnt == (CLIENT *)NULL)
+	if (clnt == NULL)
 	{
 		printf("5\n");
 		exit (5);
@@ -168,7 +168,7 @@ int main(int argn, char *argc[])
 		//Clean threads
 		for (j = 0; j < curThd; j++)
 		{
-			if ((pthread_t *)pThreadArray[j] != (pthread_t *)NULL)
+			if ((pthread_t *)pThreadArray[j] != NULL)
 			{
 				(void)pthread_join (pThreadArray[j], &ret);
 			}

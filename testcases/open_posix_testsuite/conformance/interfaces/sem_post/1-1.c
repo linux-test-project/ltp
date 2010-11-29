@@ -36,24 +36,24 @@ int main() {
 
 	/* Initial value of Semaphore is 0 */
 	mysemp = sem_open(semname, O_CREAT, 0777, 0);
-	if( mysemp == SEM_FAILED || mysemp == NULL ) {
+	if (mysemp == SEM_FAILED || mysemp == NULL ) {
 		perror(ERROR_PREFIX "sem_open");
 		return PTS_UNRESOLVED;
 	}
 
 
-	if( sem_post(mysemp) == -1 ) {
+	if (sem_post(mysemp) == -1 ) {
 		perror(ERROR_PREFIX "sem_post");
 		return PTS_UNRESOLVED; 
 	}
 
 
-	if( sem_getvalue(mysemp, &val) == -1 ) {
+	if (sem_getvalue(mysemp, &val) == -1 ) {
 		perror(ERROR_PREFIX "sem_getvalue");
 		return PTS_UNRESOLVED;
 
 	/* Checking if the value of the Semaphore incremented by one */
-	} else if( val == 1 ) {
+	} else if (val == 1 ) {
 		puts("TEST PASSED");
 		sem_close(mysemp);
 		sem_unlink(semname);

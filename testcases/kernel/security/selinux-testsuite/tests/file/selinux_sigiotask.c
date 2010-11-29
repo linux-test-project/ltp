@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
 
   fd = open(ctermid(NULL), O_RDWR, 0);
  
-  if(fd == -1) {
+  if (fd == -1) {
     perror("selinux_sigiotask:open");
     exit(2);
   }
@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
  /*
   * Spawn off the child process to handle the information protocol.
   */
-  if( (pid = fork()) < 0 ) {
+  if ((pid = fork()) < 0 ) {
      perror("selinux_sigiotask:fork");
      exit(2);
   }
@@ -55,12 +55,12 @@ int main(int argc, char **argv) {
  /*
   * child process
   */
-  if( pid == 0 ) {
+  if (pid == 0 ) {
     /* Create the path to the executable the child will run */
     char exname[FILENAME_MAX+1];
     snprintf(exname, sizeof(exname), "%s/selinux_wait_io", dirname(argv[0]));
     printf("exname is %s\n", exname);
-    if( execl(exname, "selinux_wait_io", (char *) 0) < 0 ) {
+    if (execl(exname, "selinux_wait_io", (char *) 0) < 0 ) {
       perror("selinux_sigiotask:execl");
       exit(2);
     }
@@ -70,38 +70,38 @@ int main(int argc, char **argv) {
    * parent process
    */
   rc = fcntl(fd, F_SETSIG, 0);
-  if( rc == -1 ) {
+  if (rc == -1 ) {
     perror("selinux_sigiotask:F_SETSIG");
     exit(2);
   }
 
   rc = fcntl(fd, F_SETOWN, pid);
-  if( rc == -1 ) {
+  if (rc == -1 ) {
     perror("selinux_sigiotask:F_SETOWN");
     exit(2);
   }
 
   flags = fcntl(fd, F_GETFL, 0);
-  if( flags < 0 ) {
+  if (flags < 0 ) {
     perror("selinux_sigiotask:F_GETFL");
     exit(2);
   }
   flags |= O_ASYNC;
   rc = fcntl(fd, F_SETFL, flags);
-  if( rc == -1 ) {
+  if (rc == -1 ) {
     perror("selinux_sigiotask:F_SETFL");
     exit(2);
   }
 
   sleep(1);          /* Allow the child time to start up */
   rc = ioctl(fd, TIOCSTI, &key);  /* Send a key to the tty device */
-  if( rc == -1 ) {
+  if (rc == -1 ) {
     perror("selinux_sigiotask:write");
     exit(2);
   }
   close(fd);
   wait(&rc);
-  if( WIFEXITED(rc) ) {   /* exit status from child is normal? */
+  if (WIFEXITED(rc)) {   /* exit status from child is normal? */
     exit(WEXITSTATUS(rc));
   } else {
     exit(1);

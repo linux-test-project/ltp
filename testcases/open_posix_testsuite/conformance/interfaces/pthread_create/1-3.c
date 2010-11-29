@@ -47,7 +47,7 @@ int main()
 	alarm(5);
 	
 	/* Create a new thread. */
-	if(pthread_create(&a, NULL, a_thread_function, NULL) != 0)
+	if (pthread_create(&a, NULL, a_thread_function, NULL) != 0)
 	{
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
@@ -66,7 +66,7 @@ void *a_thread_function()
 {
 	pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
 	
-	while(1)
+	while (1)
 		sleep(1);
 
 	pthread_exit(0);

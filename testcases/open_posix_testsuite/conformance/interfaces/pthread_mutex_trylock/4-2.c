@@ -247,7 +247,7 @@ int main(int argc, char * argv[])
  * For each test scenario, initialize the attributes and other variables.
  * Do the whole thing for each time to test.
  */
-	for ( sc=0; sc < NSCENAR ; sc++)
+	for (sc=0; sc < NSCENAR ; sc++)
 	{
 		#if VERBOSE > 1
 		output("[parent] Preparing attributes for: %s\n", scenarii[sc].descr);

@@ -33,26 +33,26 @@ void *a_thread_func()
 	                 SIGUSR1, SIGUSR2, SIGPOLL, SIGPROF, SIGSYS,
 	                 SIGTRAP, SIGURG, SIGVTALRM, SIGXCPU, SIGXFSZ };
 
-	for ( i = 0; i < NUMSIGNALS; i++ )
+	for (i = 0; i < NUMSIGNALS; i++ )
 	{
 		sigemptyset( &oactl );
 		sigemptyset( &tempset );
 		sigaddset( &tempset, siglist[ i ] );
 		pthread_sigmask( SIG_BLOCK, &tempset, &oactl );
 
-		if ( i > 0 )
+		if (i > 0 )
 		{
-			for ( j = 0; j < i; j++ )
+			for (j = 0; j < i; j++ )
 			{
-				if ( sigismember( &oactl, siglist[ j ] ) != 1 )
+				if (sigismember( &oactl, siglist[ j ] ) != 1 )
 				{
 					test_failed = 1;
 				}
 			}
 
-			for ( j = i + 1; j < NUMSIGNALS; j++ )
+			for (j = i + 1; j < NUMSIGNALS; j++ )
 			{
-				if ( sigismember( &oactl, siglist[ j ] ) != 0 )
+				if (sigismember( &oactl, siglist[ j ] ) != 0 )
 				{
 					test_failed = 1;
 				}
@@ -60,7 +60,7 @@ void *a_thread_func()
 		}
 	}
 
-	if ( test_failed != 0 )
+	if (test_failed != 0 )
 	{
 		printf( "Old set is invalid.\n" );
 		pthread_exit( ( void* ) - 1 );
@@ -81,26 +81,26 @@ int main()
 
 	pthread_t new_thread;
 
-	if ( pthread_create( &new_thread, NULL, a_thread_func, NULL ) != 0 )
+	if (pthread_create( &new_thread, NULL, a_thread_func, NULL ) != 0 )
 	{
 		perror( "Error creating new thread\n" );
 		return PTS_UNRESOLVED;
 	}
 
-	if ( pthread_join( new_thread, ( void* ) & thread_return_value ) != 0 )
+	if (pthread_join( new_thread, ( void* ) & thread_return_value ) != 0 )
 	{
 		perror( "Error in pthread_join()\n" );
 		return PTS_UNRESOLVED;
 	}
 
-	if ( ( long ) thread_return_value != 0 )
+	if (( long ) thread_return_value != 0 )
 	{
-		if ( ( long ) thread_return_value == 1 )
+		if (( long ) thread_return_value == 1 )
 		{
 			printf ( "Test UNRESOLVED\n" );
 			return PTS_UNRESOLVED;
 		}
-		else if ( ( long ) thread_return_value == -1 )
+		else if (( long ) thread_return_value == -1 )
 		{
 			printf ( "Test FAILED\n" );
 			return PTS_FAIL;

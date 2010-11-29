@@ -162,12 +162,12 @@ main(int argc, char **argv)
 	size_t buflen = sizeof(out_buf);
 
 	/* parse standard options */
-	if ((msg = parse_opts(argc, argv, (option_t *)NULL, NULL)) !=
+	if ((msg = parse_opts(argc, argv, NULL, NULL)) !=
 	    (char *)NULL) {
 		tst_brkm(TBROK, tst_exit, "OPTION PARSING ERROR - %s", msg);
 	}
 
-	if(STD_COPIES != 1) {
+	if (STD_COPIES != 1) {
 		tst_resm(TINFO, "-c option has no effect for these testcases - "
 			"doesn't allow running more than one instance "
 			"at a time");
@@ -183,7 +183,7 @@ main(int argc, char **argv)
 		Tst_count = 0;
 
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
-			if( (tdat[testno].setup) && (tdat[testno].setup()) ) {
+			if ((tdat[testno].setup) && (tdat[testno].setup()) ) {
 				/* setup() failed, skip this test */
 				continue;
 			}
@@ -192,7 +192,7 @@ main(int argc, char **argv)
 				tdat[testno].which, (void *)out_buf, buflen,
 				&ret));
 
-			if ( (TEST_RETURN == EXP_RET_VAL) &&
+			if ((TEST_RETURN == EXP_RET_VAL) &&
 				!test_functionality(tdat[testno].which,
 				out_buf, buflen, ret) ) {
 				tst_resm(TPASS, "query_module() successful "
@@ -204,7 +204,7 @@ main(int argc, char **argv)
 					" 0)", tdat[testno].desc,
 					TEST_RETURN, EXP_RET_VAL, TEST_ERRNO);
 			}
-			if(tdat[testno].cleanup) {
+			if (tdat[testno].cleanup) {
 				tdat[testno].cleanup();
 			}
 		}
@@ -226,7 +226,7 @@ test_functionality(int which, char *buf, size_t bufsize, size_t ret)
 	 * Don't perform functional verification, if STD_FUNCTIONAL_TEST is
 	 * turned off
 	 */
-	if(STD_FUNCTIONAL_TEST == 0) {
+	if (STD_FUNCTIONAL_TEST == 0) {
 		return 0;
 	}
 
@@ -251,7 +251,7 @@ test_functionality(int which, char *buf, size_t bufsize, size_t ret)
 			 * Since module is already loaded, flags should show
 			 * MOD_RUNNING
 			 */
-			if(((struct module_info *) buf) -> flags &
+			if (((struct module_info *) buf) -> flags &
 					MOD_RUNNING) {
 				return 0;
 			}
@@ -264,10 +264,10 @@ test_functionality(int which, char *buf, size_t bufsize, size_t ret)
 			 * Find entry for atleast one symbol, checking for
 			 * EXP_FUNC_NAME symbol, if found return SUCCESS.
 			 */
-			for( i = 0; i < ret; i++, vals +=2) {
+			for (i = 0; i < ret; i++, vals +=2) {
 
 				/* buf + vals[1] - address of symbol name */
-				if(!strcmp(buf + vals[1], EXP_FUNC_NAME)) {
+				if (!strcmp(buf + vals[1], EXP_FUNC_NAME)) {
 					return 0;
 				}
 			}
@@ -279,8 +279,8 @@ test_functionality(int which, char *buf, size_t bufsize, size_t ret)
 	}
 
 	/* Return SUCCESS if found entry */
-	for(i = 0; i != ret; i++) {
-		if(strcmp(buf, modname)) {
+	for (i = 0; i != ret; i++) {
+		if (strcmp(buf, modname)) {
 			buf += strlen(buf) + 1;
 		} else{
 			return 0;
@@ -296,23 +296,23 @@ insert_mod(char *mod)
 {
 	char cmd[80];
 
-	if( sprintf(cmd, "cp `which %s.o` ./", mod) == -1) {
+	if (sprintf(cmd, "cp `which %s.o` ./", mod) == -1) {
 		tst_resm(TBROK, "sprintf failed");
 		return 1;
 	}
-	if(system(cmd) != 0 ) {
+	if (system(cmd) != 0 ) {
 		tst_resm(TBROK, "Failed to copy %s module", mod);
 		return 1;
 	}
 
         /* Should use force to ignore kernel version & insure loading  */
         /* -RW                                                         */
-	/* if( sprintf(cmd, "insmod %s.o", mod) == -1) {               */
-	if( sprintf(cmd, "insmod --force -q %s.o >/dev/null 2>&1", mod) == -1) {
+	/* if (sprintf(cmd, "insmod %s.o", mod) == -1) {               */
+	if (sprintf(cmd, "insmod --force -q %s.o >/dev/null 2>&1", mod) == -1) {
 		tst_resm(TBROK, "sprintf failed");
 		return 1;
 	}
-	if(system(cmd) != 0 ) {
+	if (system(cmd) != 0 ) {
 		tst_resm(TBROK, "Failed to load %s module", mod);
 		return 1;
 	}
@@ -322,7 +322,7 @@ insert_mod(char *mod)
 int
 setup1(void)
 {
-	if(insert_mod(DUMMY_MOD)) {
+	if (insert_mod(DUMMY_MOD)) {
 		/* Failed */
 		return 1;
 	} else {
@@ -334,11 +334,11 @@ setup1(void)
 int
 setup2(void)
 {
-	if(insert_mod(DUMMY_MOD)) {
+	if (insert_mod(DUMMY_MOD)) {
 		/* Failed */
 		return 1;
 	}
-	if(insert_mod(DUMMY_MOD_DEP)) {
+	if (insert_mod(DUMMY_MOD_DEP)) {
 		/* Falied to load DUMMY_MOD_DEP, unload DUMMY_MOD */
 		cleanup1();
 		return 1;
@@ -350,7 +350,7 @@ void
 cleanup1(void)
 {
 	/* Remove the loadable module - DUMMY_MOD */
-	if(system("rmmod "DUMMY_MOD) != 0) {
+	if (system("rmmod "DUMMY_MOD) != 0) {
 		tst_brkm(TBROK, cleanup, "Failed to unload module %s",
 			DUMMY_MOD);
 	}
@@ -360,7 +360,7 @@ void
 cleanup2(void)
 {
 	/* Remove the loadable module - DUMMY_MOD_DEP */
-	if(system("rmmod "DUMMY_MOD_DEP) != 0) {
+	if (system("rmmod "DUMMY_MOD_DEP) != 0) {
 		tst_brkm(TBROK, cleanup, "Failed to unload module %s",
 			DUMMY_MOD_DEP);
 	}

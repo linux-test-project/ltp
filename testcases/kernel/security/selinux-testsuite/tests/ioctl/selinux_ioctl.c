@@ -31,35 +31,35 @@ int main(int argc, char **argv) {
 
   fd = open(argv[1], O_RDONLY, 0);
  
-  if(fd == -1) {
+  if (fd == -1) {
     perror("test_ioctl:open");
     exit(1);
   }
 
   /* This one should hit the FILE__IOCTL test */
   rc = ioctl(fd, FIGETBSZ, &val);
-  if( rc != 0 ) {
+  if (rc != 0 ) {
     perror("test_ioctl:FIGETBSZ");
     exit(1);
   }
 
   /* This one should hit the FILE__IOCTL test */
   rc = ioctl(fd, FIOCLEX);
-  if( rc != 0 ) {
+  if (rc != 0 ) {
     perror("test_ioctl:FIOCLEX");
     exit(1);
   }
 
   /* This one should hit the FILE__IOCTL test */
   rc = ioctl(fd, FIONBIO, &val);
-  if( rc != 0 ) {
+  if (rc != 0 ) {
     perror("test_ioctl:FIONBIO");
     exit(1);
   }
 
   /* This one should hit the FILE__READ test */
   rc = ioctl(fd, EXT2_IOC_GETVERSION, &val);
-  if( rc != 0 ) {
+  if (rc != 0 ) {
     perror("test_ioctl:EXT2_IOC_GETVERSION");
     exit(1);
   }
@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
   /* This one should hit the FILE__WRITE test */
   val = 0;
   rc = ioctl(fd, EXT2_IOC_SETVERSION, &val);
-  if( rc != 0 ) {
+  if (rc != 0 ) {
     perror("test_ioctl:EXT2_IOC_SETVERSION");
     exit(1);
   }

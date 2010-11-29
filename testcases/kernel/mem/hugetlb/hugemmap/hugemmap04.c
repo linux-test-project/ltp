@@ -155,7 +155,7 @@ main(int ac, char **av)
 #if __WORDSIZE==32
 		tst_resm(TINFO,"Total amount of free huge pages is %d",freepages);
 		tst_resm(TINFO,"Max number allowed for 1 mmap file in 32-bits is 128");
-		if ( freepages > 128 )
+		if (freepages > 128 )
 		  freepages=128;
 #endif
 		/*
@@ -181,7 +181,7 @@ main(int ac, char **av)
 		/* Make sure the number of free huge pages AFTER testing decreased */
 		aftertest = getfreehugepages();
 		hugepagesmapped = beforetest - aftertest;
-		if (hugepagesmapped < 1){
+		if (hugepagesmapped < 1) {
 			tst_resm(TWARN,"Number of HUGEPAGES_FREE stayed the same. Okay if");
 			tst_resm(TWARN,"multiple copies running due to test collision.");
 		}
@@ -243,8 +243,8 @@ getfreehugepages()
 	if (!f) 
      		tst_brkm(TFAIL, cleanup, "Could not open /proc/meminfo for reading");
 
-	while(fgets(buff,BUFFER_SIZE, f) != NULL){
-		if((retcode = sscanf(buff, "HugePages_Free: %d ", &hugefree)) == 1)
+	while (fgets(buff,BUFFER_SIZE, f) != NULL) {
+		if ((retcode = sscanf(buff, "HugePages_Free: %d ", &hugefree)) == 1)
 			break;
 	}
 
@@ -271,8 +271,8 @@ get_huge_pagesize()
 	if (!f) 
      		tst_brkm(TFAIL, cleanup, "Could not open /proc/meminfo for reading");
 
-	while(fgets(buff,BUFFER_SIZE, f) != NULL){
-		if((retcode = sscanf(buff, "Hugepagesize: %d ", &hugesize)) == 1)
+	while (fgets(buff,BUFFER_SIZE, f) != NULL) {
+		if ((retcode = sscanf(buff, "Hugepagesize: %d ", &hugesize)) == 1)
 			break;
 	}
 

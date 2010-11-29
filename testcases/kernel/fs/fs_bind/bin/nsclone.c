@@ -26,7 +26,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-int myfunc(void *arg){
+int myfunc(void *arg) {
 	return system(arg);
 }
 
@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 	char *parent_cmd;
 	int ret=0, childret=0;
 
-	if ( argc < 3 ) {
+	if (argc < 3 ) {
 		usage(argv[0]);
 		exit(1);
 	}
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
 	} else {
 		fprintf(stderr, "clone failed\n");
 	}
-	if (ret || !WIFEXITED(childret)){
+	if (ret || !WIFEXITED(childret)) {
 		exit(1);
 	}
 	exit(0);

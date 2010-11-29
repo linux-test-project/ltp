@@ -65,7 +65,7 @@ int create_Result_file()
 	fpi = open(F_namini,O_RDONLY,0777);
 	fpd = open(F_namind,O_RDONLY,0777);
 
-	if ( !fpi || !fpd) {
+	if (!fpi || !fpd) {
             	printf("error opening file");
 		close(fpi);
 		close(fpd);

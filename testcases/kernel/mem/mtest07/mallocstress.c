@@ -413,11 +413,11 @@ main(int	argc,		/* number of input parameters		      */
     }
     printf("main(): test passed.\n");
 out:
-    if(semctl(semid, 0, IPC_RMID) == -1) {
+    if (semctl(semid, 0, IPC_RMID) == -1) {
         perror("semctl\n");
         ret = -1;
     }
-    if(thrdid){
+    if (thrdid) {
         free(thrdid);
         thrdid = NULL;
     }

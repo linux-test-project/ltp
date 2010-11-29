@@ -62,9 +62,9 @@ void print_stats(child_args_t *args, test_env_t *env, statop_t operation)
 
 	curr_time = time(NULL);
 
-	if((curr_time - env->start_time) == 0) curr_time++;
+	if ((curr_time - env->start_time) == 0) curr_time++;
 
-	if((args->flags & CLD_FLG_LINEAR) && !(args->flags & CLD_FLG_NTRLVD)) {
+	if ((args->flags & CLD_FLG_LINEAR) && !(args->flags & CLD_FLG_NTRLVD)) {
 		hread_time = env->hbeat_stats.rtime;
 		hwrite_time = env->hbeat_stats.wtime;
 		read_time = env->cycle_stats.rtime;
@@ -81,54 +81,54 @@ void print_stats(child_args_t *args, test_env_t *env, statop_t operation)
 	}
 
 	/* if one second really has not passed, then make it at least one second */
-	if(hread_time == 0) hread_time++;
-	if(hwrite_time == 0) hwrite_time++;
-	if(read_time == 0) read_time++;
-	if(write_time == 0) write_time++;
-	if(gr_time == 0) gr_time++;
-	if(gw_time == 0) gw_time++;
+	if (hread_time == 0) hread_time++;
+	if (hwrite_time == 0) hwrite_time++;
+	if (read_time == 0) read_time++;
+	if (write_time == 0) write_time++;
+	if (gr_time == 0) gr_time++;
+	if (gw_time == 0) gw_time++;
 
-	if(glb_flags & GLB_FLG_PERFP) {
-		if(args->flags & CLD_FLG_PRFTYPS) {
+	if (glb_flags & GLB_FLG_PERFP) {
+		if (args->flags & CLD_FLG_PRFTYPS) {
 			printf("%s;", args->device);
 		}
 		switch(operation) {
 			case HBEAT: /* only display current HBEAT stats */
-				if((args->flags & CLD_FLG_XFERS)) {
+				if ((args->flags & CLD_FLG_XFERS)) {
 					printf(CTRSTR, (env->hbeat_stats.rbytes), (env->hbeat_stats.rcount));
 					printf(CTWSTR, (env->hbeat_stats.wbytes), (env->hbeat_stats.wcount));
 				}
-				if((args->flags & CLD_FLG_TPUTS)) {
+				if ((args->flags & CLD_FLG_TPUTS)) {
 					printf(CTRRSTR, ((double)(env->hbeat_stats.rbytes) / (double)(hread_time)), ((double)(env->hbeat_stats.rcount) / (double)(hread_time)));
 					printf(CTRWSTR, ((double)(env->hbeat_stats.wbytes) / (double)(hwrite_time)), ((double)(env->hbeat_stats.wcount) / (double)(hwrite_time)));
 				}
-				if((args->flags & CLD_FLG_RUNT)) {
+				if ((args->flags & CLD_FLG_RUNT)) {
 					printf("%lu;Rsecs;%lu;Wsecs;", hread_time, hwrite_time);
 				}
 				break;
 			case CYCLE: /* only display current CYCLE stats */
-				if((args->flags & CLD_FLG_XFERS)) {
+				if ((args->flags & CLD_FLG_XFERS)) {
 					printf(CTRSTR, (env->cycle_stats.rbytes), (env->cycle_stats.rcount));
 					printf(CTWSTR, (env->cycle_stats.wbytes), (env->cycle_stats.wcount));
 				}
-				if((args->flags & CLD_FLG_TPUTS)) {
+				if ((args->flags & CLD_FLG_TPUTS)) {
 					printf(CTRRSTR, ((double)(env->cycle_stats.rbytes) / (double)(read_time)), ((double)(env->cycle_stats.rcount) / (double)(read_time)));
 					printf(CTRWSTR, ((double)(env->cycle_stats.wbytes) / (double)(write_time)), ((double)(env->cycle_stats.wcount) / (double)(write_time)));
 				}
-				if((args->flags & CLD_FLG_RUNT)) {
+				if ((args->flags & CLD_FLG_RUNT)) {
 					printf("%lu;Rsecs;%lu;Wsecs;",read_time, write_time);
 				}
 				break;
 			case TOTAL: /* display total read and write stats */
-				if((args->flags & CLD_FLG_XFERS)) {
+				if ((args->flags & CLD_FLG_XFERS)) {
 					printf(TCTRSTR, (env->global_stats.rbytes), (env->global_stats.rcount));
 					printf(TCTWSTR, (env->global_stats.wbytes), (env->global_stats.wcount));
 				}
-				if((args->flags & CLD_FLG_TPUTS)) {
+				if ((args->flags & CLD_FLG_TPUTS)) {
 					printf(TCTRRSTR, ((double)(env->global_stats.rbytes) / (double)(gr_time)), ((double)(env->global_stats.rcount) / (double)(gr_time)));
 					printf(TCTRWSTR, ((double)(env->global_stats.wbytes) / (double)(gw_time)), ((double)(env->global_stats.wcount) / (double)(gw_time)));
 				}
-				if((args->flags & CLD_FLG_RUNT)) {
+				if ((args->flags & CLD_FLG_RUNT)) {
 					printf("%lu;secs;",(curr_time - env->start_time));
 				}
 				break;
@@ -136,33 +136,33 @@ void print_stats(child_args_t *args, test_env_t *env, statop_t operation)
 				pMsg(ERR, args, "Unknown stats display type.\n");
 		}
 
-		if(args->flags & CLD_FLG_PRFTYPS) {
+		if (args->flags & CLD_FLG_PRFTYPS) {
 			printf("\n");
 		}
 	} else {
-		if((args->flags & CLD_FLG_XFERS)) {
+		if ((args->flags & CLD_FLG_XFERS)) {
 			switch(operation) {
 				case HBEAT: /* only display current HBEAT stats */
-					if(args->flags & CLD_FLG_R) {
+					if (args->flags & CLD_FLG_R) {
 						pMsg(STAT, args, HRTSTR, (env->hbeat_stats.rbytes), (env->hbeat_stats.rcount));
 					}
-					if(args->flags & CLD_FLG_W) {
+					if (args->flags & CLD_FLG_W) {
 						pMsg(STAT, args, HWTSTR, (env->hbeat_stats.wbytes), (env->hbeat_stats.wcount));
 					}
 					break;
 				case CYCLE: /* only display current CYCLE stats */
-					if(args->flags & CLD_FLG_R) {
+					if (args->flags & CLD_FLG_R) {
 						pMsg(STAT, args, CRTSTR, (env->cycle_stats.rbytes), (env->cycle_stats.rcount));
 					}
-					if(args->flags & CLD_FLG_W) {
+					if (args->flags & CLD_FLG_W) {
 						pMsg(STAT, args, CWTSTR, (env->cycle_stats.wbytes), (env->cycle_stats.wcount));
 					}
 					break;
 				case TOTAL: /* display total read and write stats */
-					if(args->flags & CLD_FLG_R) {
+					if (args->flags & CLD_FLG_R) {
 						pMsg(STAT, args, TRTSTR, (env->global_stats.rcount), (env->global_stats.rbytes));
 					}
-					if(args->flags & CLD_FLG_W) {
+					if (args->flags & CLD_FLG_W) {
 						pMsg(STAT, args, TWTSTR, (env->global_stats.wcount), (env->global_stats.wbytes));
 					}
 					break;
@@ -171,16 +171,16 @@ void print_stats(child_args_t *args, test_env_t *env, statop_t operation)
 			}
 		}
 
-		if((args->flags & CLD_FLG_TPUTS)) {
+		if ((args->flags & CLD_FLG_TPUTS)) {
 			switch(operation) {
 				case HBEAT: /* only display current read stats */
-					if(args->flags & CLD_FLG_R) {
+					if (args->flags & CLD_FLG_R) {
 						pMsg(STAT, args, HRTHSTR,
 							((double) env->hbeat_stats.rbytes / (double) (hread_time)),
 							(((double) env->hbeat_stats.rbytes / (double) hread_time) / (double) 1048576.),
 							((double) env->hbeat_stats.rcount / (double) (hread_time)));
 					}
-					if(args->flags & CLD_FLG_W) {
+					if (args->flags & CLD_FLG_W) {
 						pMsg(STAT, args, HWTHSTR,
 							((double) env->hbeat_stats.wbytes / (double) hwrite_time),
 							(((double) env->hbeat_stats.wbytes / (double) hwrite_time) / (double) 1048576.),
@@ -188,13 +188,13 @@ void print_stats(child_args_t *args, test_env_t *env, statop_t operation)
 					}
 					break;
 				case CYCLE: /* only display current read stats */
-					if(args->flags & CLD_FLG_R) {
+					if (args->flags & CLD_FLG_R) {
 						pMsg(STAT, args, CRTHSTR,
 							((double) env->cycle_stats.rbytes / (double) (read_time)),
 							(((double) env->cycle_stats.rbytes / (double) read_time) / (double) 1048576.),
 							((double) env->cycle_stats.rcount / (double) (read_time)));
 					}
-					if(args->flags & CLD_FLG_W) {
+					if (args->flags & CLD_FLG_W) {
 						pMsg(STAT, args, CWTHSTR,
 							((double) env->cycle_stats.wbytes / (double) write_time),
 							(((double) env->cycle_stats.wbytes / (double) write_time) / (double) 1048576.),
@@ -202,13 +202,13 @@ void print_stats(child_args_t *args, test_env_t *env, statop_t operation)
 					}
 					break;
 				case TOTAL: /* display total read and write stats */
-					if(args->flags & CLD_FLG_R) {
+					if (args->flags & CLD_FLG_R) {
 						pMsg(STAT, args, TRTHSTR,
 							((double) env->global_stats.rbytes / (double) gr_time),
 							(((double) env->global_stats.rbytes / (double) gr_time) / (double) 1048576.),
 							((double) env->global_stats.rcount / (double) gr_time));
 					}
-					if(args->flags & CLD_FLG_W) {
+					if (args->flags & CLD_FLG_W) {
 						pMsg(STAT, args, TWTHSTR,
 							((double) env->global_stats.wbytes / (double) gw_time),
 							(((double) env->global_stats.wbytes / (double) gw_time) / (double) 1048576.),
@@ -219,34 +219,34 @@ void print_stats(child_args_t *args, test_env_t *env, statop_t operation)
 					pMsg(ERR, args, "Unknown stats display type.\n");
 			}
 		}
-		if(args->flags & CLD_FLG_RUNT) {
+		if (args->flags & CLD_FLG_RUNT) {
 			switch(operation) {
 				case HBEAT: /* only display current cycle stats */
-					if(args->flags & CLD_FLG_R) {
+					if (args->flags & CLD_FLG_R) {
 						time_struct = format_time(hread_time);
 						pMsg(STAT,args,"Heartbeat Read Time: %u seconds (%luh%lum%lus)\n", hread_time, time_struct.hours, time_struct.minutes, time_struct.seconds);
 					}
-					if(args->flags & CLD_FLG_W) {
+					if (args->flags & CLD_FLG_W) {
 						time_struct = format_time(hwrite_time);
 						pMsg(STAT,args,"Heartbeat Write Time: %u seconds (%luh%lum%lus)\n", hwrite_time, time_struct.hours, time_struct.minutes, time_struct.seconds);
 					}
 					break;
 				case CYCLE: /* only display current cycle stats */
-					if(args->flags & CLD_FLG_R) {
+					if (args->flags & CLD_FLG_R) {
 						time_struct = format_time(read_time);
 						pMsg(STAT,args,"Cycle Read Time: %u seconds (%luh%lum%lus)\n", read_time, time_struct.hours, time_struct.minutes, time_struct.seconds);
 					}
-					if(args->flags & CLD_FLG_W) {
+					if (args->flags & CLD_FLG_W) {
 						time_struct = format_time(write_time);
 						pMsg(STAT,args,"Cycle Write Time: %u seconds (%luh%lum%lus)\n", write_time, time_struct.hours, time_struct.minutes, time_struct.seconds);
 					}
 					break;
 				case TOTAL:
-					if(args->flags & CLD_FLG_R) {
+					if (args->flags & CLD_FLG_R) {
 						time_struct = format_time(gr_time);
 						pMsg(STAT,args, "Total Read Time: %u seconds (%lud%luh%lum%lus)\n", gr_time, time_struct.days, time_struct.hours, time_struct.minutes, time_struct.seconds);
 					}
-					if(args->flags & CLD_FLG_W) {
+					if (args->flags & CLD_FLG_W) {
 						time_struct = format_time(gw_time);
 						pMsg(STAT,args, "Total Write Time: %u seconds (%lud%luh%lum%lus)\n", gw_time, time_struct.days, time_struct.hours, time_struct.minutes, time_struct.seconds);
 					}

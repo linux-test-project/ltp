@@ -186,7 +186,7 @@ void child (pid_t pid)
 		if (i == SIGCHLD) continue;
 #ifdef _IA64
 		/* RESERVED - DON'T USE */
-		if ( i == SIGWAITING) continue;
+		if (i == SIGWAITING) continue;
 #endif
 
 		printf ("\tSending (%d)\n", i);

@@ -24,26 +24,26 @@
 
 
 
-int main(){
+int main() {
 	struct sched_param param;
         int result, child_pid, stat_loc;
 
-	if(sched_getparam(0, &param) == -1) {
+	if (sched_getparam(0, &param) == -1) {
 		perror("An error occurs when calling sched_getparam()");
 		return PTS_UNRESOLVED;
 	}
 
         /* Create a child process which exit immediately */
         child_pid = fork();
-        if(child_pid == -1){
+        if (child_pid == -1) {
 		perror("An error occurs when calling fork()");
 		return PTS_UNRESOLVED;
-        } else if (child_pid == 0){
+        } else if (child_pid == 0) {
 		exit(0);
         }
 
         /* Wait for the child process to exit */
-        if(wait(&stat_loc) == -1){
+        if (wait(&stat_loc) == -1) {
 		perror("An error occurs when calling wait()");
 		return PTS_UNRESOLVED;
         }
@@ -51,10 +51,10 @@ int main(){
         /* Assume the pid is not yet reatributed to an other process */
 	result = sched_setparam(child_pid, &param);
 
-	if(result == -1 && errno == ESRCH) {
+	if (result == -1 && errno == ESRCH) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
-	} else if(result != -1) {
+	} else if (result != -1) {
 		printf("The returned code is not -1.\n");
 		return PTS_FAIL;
 	} else if (errno == EPERM) {

@@ -39,14 +39,14 @@ void *thread(void *tmp)
 	int                   rc = 0;
 
 	rc = pthread_getschedparam(pthread_self(), &policy, &param);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_getschedparam\n");
 		exit(PTS_UNRESOLVED);
 	}
-	if(policy == POLICY) {
+	if (policy == POLICY) {
 		policy_correct = 1;
 	}
-	if(param.sched_priority == PRIORITY) {
+	if (param.sched_priority == PRIORITY) {
 		priority_correct = 1;
 	}
 
@@ -63,36 +63,36 @@ int main()
 	param.sched_priority = PRIORITY;
 
 	rc = pthread_attr_init(&attr);
-	if(rc != 0) {	
+	if (rc != 0) {	
 		printf(ERROR_PREFIX "pthread_attr_init\n");
 		exit(PTS_UNRESOLVED);
 	}
 
 	rc = pthread_attr_setinheritsched(&attr, PTHREAD_INHERIT_SCHED);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_attr_setinheritsched\n");
 		exit(PTS_UNRESOLVED);
 	}
 
 	rc = pthread_setschedparam(pthread_self(), POLICY, &param);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_setschedparam\n");
 		exit(PTS_UNRESOLVED);
 	}
 
 	rc = pthread_create(&thread_id, &attr, thread, NULL);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_create\n");
 		exit(PTS_UNRESOLVED);
 	}
 
 	rc = pthread_join(thread_id, NULL);
-	if(rc != 0) {
+	if (rc != 0) {
 		printf(ERROR_PREFIX "pthread_join\n");
 		exit(PTS_UNRESOLVED);
 	}
 
-	if((priority_correct != 1) || (policy_correct != 1)) {
+	if ((priority_correct != 1) || (policy_correct != 1)) {
 		printf("Test FAILED\n");
 		exit(PTS_FAIL);
 	}

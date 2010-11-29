@@ -35,15 +35,15 @@ int main()
 	pthread_key_t keys[NUM_OF_KEYS];
 	int i;
 
-	for(i = 0;i<NUM_OF_KEYS;i++)
+	for (i = 0;i<NUM_OF_KEYS;i++)
 	{
-		if(pthread_key_create(&keys[i], NULL) != 0)
+		if (pthread_key_create(&keys[i], NULL) != 0)
 		{
 			printf("Error: pthread_key_create() failed\n");
 			return PTS_UNRESOLVED;
 		}
 
-		if(pthread_key_delete(keys[i]) != 0)
+		if (pthread_key_delete(keys[i]) != 0)
 		{
 			printf("Test FAILED\n");
 			return PTS_FAIL;

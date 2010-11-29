@@ -75,7 +75,7 @@ int main(void)
 			 "Error: shmget: shmid = %d, errno = %d\n",
 			 shmid, errno);
 	} else {
-		cp = (char *)shmat(shmid, (void *)NULL, 0);
+		cp = (char *)shmat(shmid, NULL, 0);
 
 		if (cp == (char *)-1) {
 			tst_resm(TFAIL, "shmat");

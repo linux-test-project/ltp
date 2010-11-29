@@ -358,7 +358,7 @@ void join_thread(int i)
 	}
 	if (t) {
 		t->flags |= THREAD_QUIT;
-		if(t->pthread)
+		if (t->pthread)
 			pthread_join(t->pthread, NULL);
 		list_del(&t->_threads);
 	}
@@ -377,7 +377,7 @@ void join_threads(void)
 	all_threads_quit();
 	struct thread *p, *t;
 	list_for_each_entry_safe(p, t, &_threads, _threads) {
-		if(p->pthread)
+		if (p->pthread)
 			pthread_join(p->pthread, NULL);
 		list_del(&p->_threads);
 	}
@@ -679,13 +679,13 @@ void latency_trace_enable(void)
 
 void latency_trace_start(void)
 {
-	if(prctl(PR_SET_TRACING, 1) < 0)
+	if (prctl(PR_SET_TRACING, 1) < 0)
 		perror("Failed to start tracing");
 }
 
 void latency_trace_stop(void)
 {
-	if(prctl(PR_SET_TRACING, 0) < 0)
+	if (prctl(PR_SET_TRACING, 0) < 0)
 		perror("Failed to stop tracing");
 }
 

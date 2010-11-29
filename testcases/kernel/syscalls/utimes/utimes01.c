@@ -265,7 +265,7 @@ static int do_test(struct test_case *tc)
 		if (tc->user == NULL)
 			TEST(sys_ret = utimes(fpath, tv));
 		else
-			TEST(sys_ret = utimes(fpath, (struct timeval *)NULL));
+			TEST(sys_ret = utimes(fpath, NULL));
 	}
 	sys_errno = errno;
 	if (tc->ttype == FILE_NOT_EXIST)

@@ -208,7 +208,7 @@
 
 #define SETUP_MODE_PAGE(NPAGE, NPARAM)          \
   status = get_mode_page(NPAGE, page_code);     \
-  if(status) { printf("\n"); return status; }   \
+  if (status) { printf("\n"); return status; }   \
   bdlen = buffer[11];                           \
   pagestart = buffer + 12 + bdlen;             
 
@@ -954,7 +954,7 @@ static void dStrHex(const char* str, int len, int no_ascii)
     if (bpos >= ((bpstart + (9 * 3))))
     	bpos++;
 
-    for(i = 0; i < len; i++)
+    for (i = 0; i < len; i++)
     {
 	c = *p++;
 	bpos += 3;
@@ -1659,7 +1659,7 @@ int show_devfs_devices()
 
     strcat(di_root, "/.devfsd");
 
-    if (stat(di_root, &st) < 0){
+    if (stat(di_root, &st) < 0) {
         printf("Didn't find %s so perhaps devfs is not present,"
                " attempting to continue ...\n", di_root);
     }
@@ -3199,7 +3199,7 @@ static int do_modes(int sg_fd, int dbd, int pc, int pg_code, int sub_pg_code,
     	printf( ME "mx_resp_len too big\n");
 	return -1;
     }
-    if(mode6) {
+    if (mode6) {
 	modesCmdBlk[0] = MODE_SENSE6_CMD;
 	modesCmdBlk[4] = (unsigned char)(mx_resp_len & 0xff);
     } else {
@@ -3464,7 +3464,7 @@ int show_scsi_modes (char * device)
 	list_page_codes(0);
 
     /* The 6 bytes command only allows up to 255 bytes of response data */
-    if(do_mode6) rsp_buff_size = 255;
+    if (do_mode6) rsp_buff_size = 255;
 
     if ((sg_fd = open(file_name, oflags)) < 0) {
         snprintf(ebuff, EBUFF_SZ, ME "error opening file: %s", file_name);
@@ -3503,7 +3503,7 @@ int show_scsi_modes (char * device)
 
     	printf("Mode parameter header from %s byte MODE SENSE:\n",
 	       (do_mode6 ? "6" : "10"));
-	if(do_mode6) {
+	if (do_mode6) {
 	    headerlen = 4;
 	    if (do_hex)
 		dStrHex((const char *)rsp_buff, headerlen, 1);
@@ -4134,7 +4134,7 @@ static int do_modes_0a(int sg_fd, void * resp, int mx_resp_len, int noisy,
     	printf( ME "mx_resp_len too big\n");
 	return -1;
     }
-    if(mode6) {
+    if (mode6) {
 	modesCmdBlk[0] = MODE_SENSE6_CMD;
 	modesCmdBlk[4] = (unsigned char)(mx_resp_len & 0xff);
     } else {
@@ -6511,7 +6511,7 @@ void * read_write_thread(void * v_clp)
     rep->out_scsi_type = clp->out_scsi_type;
     rep->cdbsz = clp->cdbsz;
 
-    while(1) {
+    while (1) {
         status = pthread_mutex_lock(&clp->in_mutex);
         if (0 != status) err_exit(status, "lock in_mutex");
         if (clp->in_stop || (clp->in_count <= 0)) {

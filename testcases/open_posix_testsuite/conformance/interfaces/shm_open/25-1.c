@@ -32,30 +32,30 @@
 #define SHM_NAME "posixtest_25-1"
 #define SHM_SZ 16
 
-int main(){
+int main() {
 	int fd;
 	struct stat stat_buf;
 
 	/* Create the shared memory object */
 	fd = shm_open(SHM_NAME, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
-	if(fd == -1) {
+	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		return PTS_UNRESOLVED;
 	}
 	
-	if(ftruncate(fd, SHM_SZ) == -1) {
+	if (ftruncate(fd, SHM_SZ) == -1) {
 		perror("An error occurs when calling ftruncate()");
 		return PTS_UNRESOLVED;
 	}	
 
 	fd = shm_open(SHM_NAME, O_RDWR|O_TRUNC, S_IRUSR|S_IWUSR);
-	if(fd == -1) {
+	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
 		shm_unlink(SHM_NAME);
 		return PTS_UNRESOLVED;
 	}
 
-	if(fstat(fd, &stat_buf) != 0) {
+	if (fstat(fd, &stat_buf) != 0) {
 		perror("An error occurs when calling fstat()");
 		shm_unlink(SHM_NAME);
 		return PTS_UNRESOLVED;
@@ -63,7 +63,7 @@ int main(){
 
 	shm_unlink(SHM_NAME);
 
-	if(stat_buf.st_size == 0) {
+	if (stat_buf.st_size == 0) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}

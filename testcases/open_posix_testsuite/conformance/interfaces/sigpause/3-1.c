@@ -71,7 +71,7 @@ int main()
 {
 	pthread_t new_th;
 
-	if(pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
 	{
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
@@ -79,7 +79,7 @@ int main()
 
 	sleep(1);
 
-	if(pthread_kill(new_th, SIGTOTEST) != 0) 
+	if (pthread_kill(new_th, SIGTOTEST) != 0) 
 	{
 		printf("Test UNRESOLVED: Couldn't send signal to thread\n");
 		return PTS_UNRESOLVED;
@@ -89,10 +89,10 @@ int main()
 	while (sem == INTHREAD)
 		sleep(1);
 
-	if(result == 2) {
+	if (result == 2) {
 		return PTS_UNRESOLVED;
 	}
-	if(result == 1) {
+	if (result == 1) {
 		return PTS_FAIL;
 	}
 

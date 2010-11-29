@@ -28,20 +28,20 @@ int main(int argc, char **argv) {
   void *ptr;
   int rc;
 
-  if( argc != 3 ) {
+  if (argc != 3 ) {
     printf("usage: %s filename context\n", argv[0]);
     exit(2);
   }
 
   fd = open(argv[1], O_RDONLY, 0);
  
-  if(fd == -1) {
+  if (fd == -1) {
     perror("selinux_mprotect:open");
     exit(2);
   }
 
   ptr = mmap(0, 1024, PROT_READ, MAP_SHARED, fd, getpagesize());
-  if( ptr == MAP_FAILED ) {
+  if (ptr == MAP_FAILED ) {
     close(fd);
     perror("selinux_mprotect:mmap");
     exit(2);
@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
   }
 
   rc = mprotect(ptr, 1024, PROT_READ);
-  if( rc == -1 ) {
+  if (rc == -1 ) {
     close(fd);
     perror("selinux_mprotect:mprotect");
     exit(1);

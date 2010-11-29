@@ -71,18 +71,18 @@ int main()
 	init_flag=0;
 	
 	/* Create a thread that will execute the first call to pthread_once() */
-	if(pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
+	if (pthread_create(&new_th, NULL, a_thread_func, NULL) != 0)
 	{	
 		perror("Error creating thread\n");
 		return PTS_UNRESOLVED;
 	}
 	
 	/* Wait until the init function is reached to cancel the thread */
-	while(init_flag==0)
+	while (init_flag==0)
 		sleep(1);	
 
 	/* Send cancel request to the thread*/
-	if(pthread_cancel(new_th) != 0) 
+	if (pthread_cancel(new_th) != 0) 
 	{
 		perror("Could send cancel request to thread\n");
 		return PTS_UNRESOLVED;
@@ -107,7 +107,7 @@ int main()
 
 	/* If the init function from the 2nd call to pthread_once() was not
  	 * reached, the test fails. */	
-	if(init_flag != 1)
+	if (init_flag != 1)
 	{
 		printf("Test FAILED\n: %d", init_flag);
 		return PTS_FAIL;

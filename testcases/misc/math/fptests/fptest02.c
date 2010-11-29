@@ -112,7 +112,7 @@ char *argv[];
 
 	init();
 
-	while ( (ev=nextevent()) != (struct event *)NULL) {
+	while ((ev=nextevent()) != NULL) {
 		doevent(ev);
 	}
 

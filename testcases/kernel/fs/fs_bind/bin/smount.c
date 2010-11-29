@@ -35,7 +35,7 @@
 int main(int argc, char *argv[])
 {
 	int type;
-	if(argc != 3) {
+	if (argc != 3) {
 		fprintf(stderr, "usage: %s DIR "
 	"[rshared|rslave|rprivate|runclone|shared|slave|private|unclone]\n"
 					, argv[0]);
@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 	setfsuid(getuid());
-	if(mount("", argv[1], "ext2", type, "") == -1) {
+	if (mount("", argv[1], "ext2", type, "") == -1) {
 		perror("mount");
 		return 1;
 	}

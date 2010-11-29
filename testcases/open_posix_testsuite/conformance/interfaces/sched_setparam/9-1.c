@@ -86,47 +86,47 @@ int get_ncpu() {
 	return ncpu;
 }
 
-void child_process(){
+void child_process() {
 	struct sched_param param;
 
 	param.sched_priority = sched_get_priority_max(SCHED_FIFO);
-	if(sched_setparam(getpid(), &param) != 0) {
+	if (sched_setparam(getpid(), &param) != 0) {
 		perror("An error occurs when calling sched_setparam()");
 		return;
 	}
 
 	/* to avoid blocking */
 	alarm(2);
-	while(1);
+	while (1);
 
 }
 
-void test_process(){
+void test_process() {
 	/* to avoid blocking */
 	alarm(2);
 
-	while(1) {
+	while (1) {
 		(*shmptr)++;
 		sched_yield();
 	}
 }
 
-void kill_children(int *child_pid){
+void kill_children(int *child_pid) {
 	int i;
 
-	for(i=0; i<nb_cpu; i++) {
+	for (i=0; i<nb_cpu; i++) {
 		kill(child_pid[i], SIGTERM);		
 	}
 }
 
-int main(){
+int main() {
         int *child_pid, oldcount, newcount, shm_id, i, j;
 	struct sched_param param;
 	key_t key; 
 
 	/* Get the number of CPUs */
 	nb_cpu = get_ncpu();
-	if(nb_cpu == -1) {
+	if (nb_cpu == -1) {
 		printf("Can not get the number of CPUs of your machines.\n");
 		return PTS_UNRESOLVED;
 	}
@@ -136,21 +136,21 @@ int main(){
 
 	key = ftok("conformance/interfaces/sched_setparam/9-1.c",1234);
 	shm_id = shmget(key, sizeof(int), IPC_CREAT|0600);
-	if(shm_id < 0) {
+	if (shm_id < 0) {
 		perror("An error occurs when calling shmget()");
 		return PTS_UNRESOLVED;
 	}
 
 	shmptr = (int *)shmat(shm_id, 0, 0);
-	if(shmptr < (int*)0) {
+	if (shmptr < (int*)0) {
 		perror("An error occurs when calling shmat()");
 		return PTS_UNRESOLVED;
 	}
 	*shmptr = 0;
 
 	param.sched_priority = sched_get_priority_min(SCHED_FIFO);
-	if(sched_setscheduler(getpid(), SCHED_FIFO, &param) != 0) {
-		if(errno == EPERM) {
+	if (sched_setscheduler(getpid(), SCHED_FIFO, &param) != 0) {
+		if (errno == EPERM) {
 			printf("This process does not have the permission to set its own scheduling parameter.\nTry to launch this test as root\n");
 		} else {
 			perror("An error occurs when calling sched_setscheduler()");
@@ -158,15 +158,15 @@ int main(){
 		return PTS_UNRESOLVED;
 	}
 
-	for(i=0; i<nb_cpu-1; i++) {
+	for (i=0; i<nb_cpu-1; i++) {
 		child_pid[i] = fork();
-		if(child_pid[i] == -1){
+		if (child_pid[i] == -1) {
 			perror("An error occurs when calling fork()");
-			for(j=0; j<i; j++) {
+			for (j=0; j<i; j++) {
 				kill(child_pid[j], SIGTERM);		
 			}
 			return PTS_UNRESOLVED;
-		} else if (child_pid[i] == 0){
+		} else if (child_pid[i] == 0) {
 			
 			child_process();
 
@@ -176,13 +176,13 @@ int main(){
 	}		
 
 	child_pid[i] = fork();
-	if(child_pid[i] == -1){
+	if (child_pid[i] == -1) {
 		perror("An error occurs when calling fork()");
-		for(j=0; j<i; j++) {
+		for (j=0; j<i; j++) {
 			kill(child_pid[j], SIGTERM);		
 		}
 		return PTS_UNRESOLVED;
-	} else if (child_pid[i] == 0){
+	} else if (child_pid[i] == 0) {
 		
 		test_process();
 		
@@ -196,14 +196,14 @@ int main(){
 				sched_get_priority_max(SCHED_FIFO) ) / 2;
 
 	oldcount = *shmptr;
-	if(sched_setparam(child_pid[i], &param) != 0) {
+	if (sched_setparam(child_pid[i], &param) != 0) {
 		perror("An error occurs when calling sched_setparam()");
 		kill_children(child_pid);
 		return PTS_UNRESOLVED;
 	}
 	newcount = *shmptr;
 	
-	if(newcount == oldcount){
+	if (newcount == oldcount) {
 		printf("The target process does not preempt the calling process\n");
 		kill_children(child_pid);
 		return PTS_FAIL;

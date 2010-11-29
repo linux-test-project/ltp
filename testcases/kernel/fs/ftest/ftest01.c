@@ -166,7 +166,7 @@ static void runtest(void)
 
 	nwait = 0;
 
-	for(i = 0; i < nchild; i++) {
+	for (i = 0; i < nchild; i++) {
 
 		test_name[0] = 'a' + i;
 		test_name[1] = '\0';
@@ -440,7 +440,7 @@ static void dotest(int testers, int me, int fd)
 		++misc_cnt[m_fsync];
 		//tst_resm(TINFO, "Test{%d} val %d done, count = %d, collide = {%d}",
 		//		me, val, count, collide);
-		//for(i = 0; i < NMISC; i++)
+		//for (i = 0; i < NMISC; i++)
 		//	tst_resm(TINFO, "Test{%d}: {%d} %s's.", me, misc_cnt[i], m_str[i]);
 		++val;
 	}

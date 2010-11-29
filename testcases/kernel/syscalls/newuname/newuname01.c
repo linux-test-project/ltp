@@ -116,7 +116,7 @@ int main(int ac, char **av) {
         char *msg;              /* message returned from parse_opts */
 	
         /* parse standard options */
-        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL){
+        if ((msg = parse_opts(ac, av, NULL, NULL)) != NULL) {
              tst_brkm(TBROK, NULL, "OPTION PARSING ERROR - %s", msg);
              tst_exit();
            }
@@ -128,14 +128,14 @@ int main(int ac, char **av) {
                 Tst_count = 0;
                 for (testno = 0; testno < TST_TOTAL; ++testno) {
                      TEST(syscall(__NR_uname,&name));     //call newuname()
-                     if(TEST_RETURN == -1) {
+                     if (TEST_RETURN == -1) {
                  	   tst_resm(TFAIL, "%s failed - errno = %d : %s", TCID, TEST_ERRNO, strerror(TEST_ERRNO));
                            cleanup();
 	  	           tst_exit();
                      }else {
 	   		tst_resm(TPASS, "newuname call succeed: return value = %ld ",TEST_RETURN);
 			TEST(strcmp(name.sysname,"Linux")); //Linux ?
-			if(TEST_RETURN == 0){
+			if (TEST_RETURN == 0) {
 				tst_resm(TINFO,"This system is %s",name.sysname);
 				tst_resm(TINFO,"The system infomation is :");
 				tst_resm(TINFO,"System is %s on %s hardware",name.sysname,name.machine);

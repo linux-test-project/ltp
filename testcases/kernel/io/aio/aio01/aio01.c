@@ -134,7 +134,7 @@ int main(int argc, char **argv)
 	pos = 0;
 	gettimeofday(&stv, NULL);
 	io_prep_pwrite(iocbs[0], fd, srcbuf, bufsize, pos);
-	for(i = 0; i< nr; i++) {
+	for (i = 0; i< nr; i++) {
 		ts.tv_sec = 30;
 		ts.tv_nsec = 0;
 		do {
@@ -166,7 +166,7 @@ int main(int argc, char **argv)
 	failflag=0;
 	gettimeofday(&stv, NULL);
 	io_prep_pread(iocbs[0], fd, dstbuf, bufsize, pos);
-	for(i = 0; i< nr; i++) {
+	for (i = 0; i< nr; i++) {
 		ts.tv_sec = 30;
 		ts.tv_nsec = 0;
 		do {
@@ -197,7 +197,7 @@ int main(int argc, char **argv)
 	pos = 0;
 	failflag=0;
 	gettimeofday(&stv, NULL);
-	for(i = 0; i< nr; i++) {
+	for (i = 0; i< nr; i++) {
 		io_prep_pwrite(iocbs[0], fd, srcbuf, bufsize, pos);
 		ts.tv_sec = 30;
 		ts.tv_nsec = 0;
@@ -229,7 +229,7 @@ int main(int argc, char **argv)
 	pos = 0;
 	failflag=0;
 	gettimeofday(&stv, NULL);
-	for(i = 0; i< nr; i++) {
+	for (i = 0; i< nr; i++) {
 		io_prep_pread(iocbs[0], fd, dstbuf, bufsize, pos);
 		ts.tv_sec = 30;
 		ts.tv_nsec = 0;
@@ -261,7 +261,7 @@ int main(int argc, char **argv)
 	pos = 0;
 	failflag=0;
 	gettimeofday(&stv, NULL);
-	for(i = 0; i< nr; i++) {
+	for (i = 0; i< nr; i++) {
 		io_prep_pwrite(iocbs[0], fd, srcbuf, bufsize, pos);
 		ts.tv_sec = 30;
 		ts.tv_nsec = 0;
@@ -309,7 +309,7 @@ int main(int argc, char **argv)
 	pos = 0;
 	failflag=0;
 	gettimeofday(&stv, NULL);
-	for(i = 0; i< nr; i++) {
+	for (i = 0; i< nr; i++) {
 		io_prep_pwrite(iocbs[0], fd, srcbuf, bufsize, pos);
 		ts.tv_sec = 30;
 		ts.tv_nsec = 0;

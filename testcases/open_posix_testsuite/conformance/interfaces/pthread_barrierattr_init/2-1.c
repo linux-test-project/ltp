@@ -33,16 +33,16 @@ int main()
 	
 	/* Initialize the barrier attribute object */
 	rc = pthread_barrierattr_init(&ba);
-	if(rc != 0)
+	if (rc != 0)
 	{
 		printf("Test FAILED: Error while initialize attribute object\n");
 		return PTS_FAIL;
 	}
 
 	/* Initialize BARRIER_NUM barrier objects, with count==1 */
-	for(cnt = 0; cnt < BARRIER_NUM; cnt++)
+	for (cnt = 0; cnt < BARRIER_NUM; cnt++)
 	{
-		if(pthread_barrier_init(&barriers[cnt], &ba, 1) != 0)
+		if (pthread_barrier_init(&barriers[cnt], &ba, 1) != 0)
 		{
 			printf("Error at %dth initialization\n", cnt);
 			return PTS_UNRESOLVED;	
@@ -51,7 +51,7 @@ int main()
 
 	/* Destroy barrier attribute object */
 	rc = pthread_barrierattr_destroy(&ba);
-	if(rc != 0)
+	if (rc != 0)
 	{
 		printf("Error at pthread_barrierattr_destroy() "
 			"return code: %d, %s", rc, strerror(rc));
@@ -60,10 +60,10 @@ int main()
 
 	/* Check that pthread_barrier_wait can still be performed, even after the attributes
 	 * object has been destroyed */
-	for(cnt = 0; cnt < BARRIER_NUM; cnt++)
+	for (cnt = 0; cnt < BARRIER_NUM; cnt++)
 	{
 		rc = pthread_barrier_wait(&barriers[cnt]);
-		if(rc != 0 && rc != PTHREAD_BARRIER_SERIAL_THREAD)
+		if (rc != 0 && rc != PTHREAD_BARRIER_SERIAL_THREAD)
 		{
 			printf("Test Fail: Error at %dth wait, %s\n", cnt, strerror(rc));
 			return PTS_FAIL;	
@@ -71,10 +71,10 @@ int main()
 	}
 
 	/* Cleanup */
-	for(cnt = 0; cnt < BARRIER_NUM; cnt++)
+	for (cnt = 0; cnt < BARRIER_NUM; cnt++)
 	{
 		rc = pthread_barrier_destroy(&barriers[cnt]);
-		if(rc != 0)
+		if (rc != 0)
 		{
 			printf("Error at %dth destruction, %s\n", cnt, strerror(rc));
 			return PTS_UNRESOLVED;	

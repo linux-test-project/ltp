@@ -97,10 +97,10 @@ int count( DIR * thedir )
 	{
 		dp = readdir( thedir );
 
-		if ( dp != NULL )
+		if (dp != NULL )
 			counter++;
 	}
-	while ( dp != NULL );
+	while (dp != NULL );
 
 	return counter;
 }
@@ -122,7 +122,7 @@ int main( int argc, char * argv[] )
 	/* Open the directory */
 	dotdir = opendir( "." );
 
-	if ( dotdir == NULL )
+	if (dotdir == NULL )
 	{
 		UNRESOLVED( errno, "opendir failed" );
 	}
@@ -139,13 +139,13 @@ int main( int argc, char * argv[] )
 	/* Create the child */
 	child = fork();
 
-	if ( child == ( pid_t ) - 1 )
+	if (child == ( pid_t ) - 1 )
 	{
 		UNRESOLVED( errno, "Failed to fork" );
 	}
 
 	/* child */
-	if ( child == ( pid_t ) 0 )
+	if (child == ( pid_t ) 0 )
 	{
 		/* Count in child process */
 		counted = count( dotdir );
@@ -157,7 +157,7 @@ int main( int argc, char * argv[] )
 
 		ret = closedir( dotdir );
 
-		if ( ret != 0 )
+		if (ret != 0 )
 		{
 			UNRESOLVED( errno, "Failed to close dir in child" );
 		}
@@ -169,12 +169,12 @@ int main( int argc, char * argv[] )
 	/* Parent joins the child */
 	ctl = waitpid( child, &status, 0 );
 
-	if ( ctl != child )
+	if (ctl != child )
 	{
 		UNRESOLVED( errno, "Waitpid returned the wrong PID" );
 	}
 
-	if ( ( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ) )
+	if (( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ) )
 	{
 		FAILED( "Child exited abnormally -- dir stream not copied?" );
 	}
@@ -182,7 +182,7 @@ int main( int argc, char * argv[] )
 	/* close the directory stream */
 	ret = closedir( dotdir );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( errno, "Failed to closedir in parent" );
 	}

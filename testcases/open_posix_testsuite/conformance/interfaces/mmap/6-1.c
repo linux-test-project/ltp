@@ -76,7 +76,7 @@ int main(void)
 
   if (child == 0)
   {
-    if(ftruncate(fd, total_size) == -1)
+    if (ftruncate(fd, total_size) == -1)
     {
       printf(TNAME "Error at ftruncate(): %s\n", 
               strerror(errno));    

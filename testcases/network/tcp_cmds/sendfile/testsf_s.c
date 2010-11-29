@@ -176,7 +176,7 @@ main(int argc, char *argv[])
 
 	}
 
-	close(s); /* close parent socket (never reached because of the while(1)) */
+	close(s); /* close parent socket (never reached because of the while (1)) */
 
 	return 0;
 

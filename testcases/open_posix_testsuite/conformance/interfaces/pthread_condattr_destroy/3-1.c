@@ -27,14 +27,14 @@ int main()
 	pthread_condattr_t condattr;
 
 	/* Initialize a condition variable attributes object */
-	if(pthread_condattr_init(&condattr) != 0)
+	if (pthread_condattr_init(&condattr) != 0)
 	{
 		fprintf(stderr,"Cannot initialize condition variable attributes object\n");
 		return PTS_UNRESOLVED;
 	}
 
 	/* Destroy the condition variable attributes object */
-	if(pthread_condattr_destroy(&condattr) != 0)
+	if (pthread_condattr_destroy(&condattr) != 0)
 	{
 		printf("Test FAILED\n");
 		return PTS_FAIL;

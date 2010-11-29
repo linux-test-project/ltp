@@ -84,7 +84,7 @@ int main()
              strerror(errno));    
       exit(PTS_UNRESOLVED);
     }
-    if(ftruncate(fd, total_size) == -1) {
+    if (ftruncate(fd, total_size) == -1) {
       printf(TNAME " Error at ftruncate(): %s\n", strerror(errno));
       return PTS_UNRESOLVED;
     }   

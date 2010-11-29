@@ -88,7 +88,7 @@ int notified;
 /* Notification routine */
 void notification( union sigval sv )
 {
-	if ( sv.sival_int != SIGUSR1 )
+	if (sv.sival_int != SIGUSR1 )
 	{
 		output( "Got signal %d, expected %d\n", sv.sival_int, SIGUSR1 );
 		UNRESOLVED( 1, "Unexpected notification" );
@@ -123,7 +123,7 @@ int main( int argc, char * argv[] )
 
 	ret = timer_create( CLOCK_REALTIME, &se, &tmr );
 
-	if ( ret != 0 )
+	if (ret != 0 )
 	{
 		UNRESOLVED( errno, "Failed to create a timer" );
 	}
@@ -142,20 +142,20 @@ int main( int argc, char * argv[] )
 	/* Create the child */
 	child = fork();
 
-	if ( child == ( pid_t ) - 1 )
+	if (child == ( pid_t ) - 1 )
 	{
 		UNRESOLVED( errno, "Failed to fork" );
 	}
 
 	/* child */
-	if ( child == ( pid_t ) 0 )
+	if (child == ( pid_t ) 0 )
 	{
 
 		sleep( 1 );
 
-		if ( notified != 0 )
+		if (notified != 0 )
 		{
-			if ( notified == ( int ) getpid() )
+			if (notified == ( int ) getpid() )
 			{
 				FAILED( "Per-Process Timer was inherited in child" );
 			}
@@ -172,17 +172,17 @@ int main( int argc, char * argv[] )
 	/* Parent joins the child */
 	ctl = waitpid( child, &status, 0 );
 
-	if ( ctl != child )
+	if (ctl != child )
 	{
 		UNRESOLVED( errno, "Waitpid returned the wrong PID" );
 	}
 
-	if ( ( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ) )
+	if (( !WIFEXITED( status ) ) || ( WEXITSTATUS( status ) != PTS_PASS ) )
 	{
 		FAILED( "Child exited abnormally" );
 	}
 
-	if ( notified != ( int ) getpid() )
+	if (notified != ( int ) getpid() )
 	{
 		output( "Notified value: %d\n", notified );
 		UNRESOLVED( -1, "No notification occured -- per process timers do not work?" );
